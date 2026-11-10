@@ -22,14 +22,40 @@ from typehaus.resolve.walking_surface import surfaces_at
 
 
 def fixture_support_elevation(model: ResolvedModel, point: tuple[float, float],
-                              structural_anchor_m: float) -> float:
-    """Top of the supporting slab/subfloor, rather than the storey's joist datum."""
-    surfaces = [surface for surface in surfaces_at(model, point)
-                if abs(surface.deck_top_m - structural_anchor_m) < SLAB_MATCH_TOLERANCE_M]
-    if not surfaces:
+                              structural_anchor_m: float, *, fixture_tag: str | None = None,
+                              footprint: Polygon | None = None) -> float:
+    """Supporting sheet top; a fixture may bridge its own declared internal drain cut."""
+    elevations = [surface.deck_top_m for surface in surfaces_at(model, point)
+                  if abs(surface.deck_top_m - structural_anchor_m) < SLAB_MATCH_TOLERANCE_M]
+    if not elevations and fixture_tag is not None and footprint is not None:
+        elevations = _support_across_drain_holes(model, point, structural_anchor_m,
+                                                fixture_tag, footprint)
+    if not elevations:
         raise ValueError("Fixture has no supporting slab or subfloor at its location")
-    return min(surfaces, key=lambda surface: abs(
-        surface.deck_top_m - structural_anchor_m)).deck_top_m
+    return min(elevations, key=lambda top: abs(top - structural_anchor_m))
+
+
+def _support_across_drain_holes(model, point, structural_anchor_m, fixture_tag, footprint):
+    # A center-drained pan's location lies in its pipe hole, while its body stands on the
+    # surrounding sheet. Only holes declared for this fixture's waste can be bridged;
+    # a stairwell, unrelated hole or cut crossing the body's edge must still fail.
+    drains = {run.tag for run in model.pipe_runs
+              if run.system == "drain" and fixture_tag in run.serves}
+    elevations = []
+    for floor in model.floors:
+        if len(floor.deck_outline) < 3:
+            continue
+        top = floor.deck_top_at(*point)
+        if abs(top - structural_anchor_m) >= SLAB_MATCH_TOLERANCE_M:
+            continue
+        owned = [Polygon(ring) for _, ring, runs in floor.penetrations
+                 if drains.intersection(runs) and footprint.contains(Polygon(ring))]
+        if not owned:
+            continue
+        sheet = Polygon(floor.deck_outline, holes=list(floor.deck_voids))
+        if union_all([sheet, *owned]).covers(footprint):
+            elevations.append(top)
+    return elevations
 
 
 def _geometry(parts: tuple[FinishPart, ...]):

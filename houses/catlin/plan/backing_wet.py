@@ -217,6 +217,11 @@ ATTIC_WET_BACKING = [
 
 # Suspension rails and ledger feet for the selected floating boxes (2026-10-24).
 BASEMENT_WET_BACKING = [
+    # Face x=212.5: exactly 2 3/4 in. behind the finished tile at x=209.75.
+    WallBacking(uid="SHSAUNABK1", tag="BK-B-SAUNA-VALVE", wall_ref="W-B-CS", face="right",
+                start=inch(8.75), length=inch(14.5), elevation=inch(49.6875),
+                datum="finished-floor", height=inch(3.5), profile="2x4", material_ref="spf",
+                face_offset=inch(0.75), purpose="Delta 50353 valve stringer, 2 3/4 in. behind tile"),
     WallBacking(uid="D9Q5V8QJ9N", tag="BK-B-CW2-VANITY-RAIL", wall_ref="W-B-CW2", face="left",
                 start=inch(0.75), length=inch(42.5), elevation=inch(30), height=inch(7.25),
                 profile="2x8", material_ref="spf", purpose="ÄNGSJÖN suspension rail"),

@@ -27,7 +27,9 @@ from library.placeables.fixtures import (
     water_closet_required_clearance,
 )
 
-from plan.wet_ports import floor_drain_port, floor_wc_ports, valve_ports
+from plan.shower_assemblies import (ATTIC_SHOWER, BATH2_SHOWER_ASSEMBLY, SAUNA_SHOWER,
+                                   TUB_SHOWER_ASSEMBLY)
+from plan.wet_ports import floor_drain_port, floor_wc_ports
 from typehaus.model import (
     FixtureType,
     Footprint2D,
@@ -246,6 +248,7 @@ TOTO_DRAKE = FixtureType(
 # stops short of the ceiling on purpose. The generated model carries the stock Flex
 # front and the stock clipped return (2026-11-05); the post detail remains open.
 SHOWER_36_THERMO_COMBO = SHOWER.model_copy(update={
+    "shower_assembly": BATH2_SHOWER_ASSEMBLY,
     "excludes_floor_finish": True,
     "tag": "FX-SHOWER-36-THERMO-COMBO",
     "height": inch(BATH2_SHOWER.model_height),
@@ -254,11 +257,12 @@ SHOWER_36_THERMO_COMBO = SHOWER.model_copy(update={
         symbol="swanstone-flex-3636", material_refs={"solid-surface": "solid-surface-base"}),
     "name": 'Shower, 36", thermostatic valve with a two-in-one rainshower combo',
     "product_ref": "PROD-DELTA-T17T",
-    # Back wall is W-M-BA2E (+y). The drain is the authored 2 3/4" offset off the SS-3636's
-    # centre drain, which the base maker has not confirmed (notes/bath2_shower.md).
-    "ports": (floor_drain_port(-2.75, 0, note="SS-3636 is a centre drain; the 2 3/4\" offset "
-                               "clearing joist 11 is unconfirmed with Swanstone"),
-              *valve_ports((0, 18, 48), (0, 1), "48\" over the base")),
+    # Swan form 200-06-10 p.12: pipe centered in the molded drain, top 1/4" below subfloor.
+    # Keep approximate until the delivered base is measured; the valve hubs remain estimated.
+    "ports": (floor_drain_port(0, 0, -0.25, note="SS-3636 molded centre drain; Fit-Flo 2 in. "
+                               "pipe top 1/4 in. below subfloor (Swan form 200-06-10 p.12); "
+                               "verify delivered base before cutting"),
+              *BATH2_SHOWER_ASSEMBLY.inlet_ports()),
     "source": 'RM-M-BATH2, owner selection 2026-10-12, replacing FX-SHOWER-36-DIVERTED. '
               'Delta MultiChoice R10000-UNBX rough (ASSE 1016) under a Trinsic T17T059 17T '
               'thermostatic trim (PROD-DELTA-T17T): separate temperature and volume, no '
@@ -287,8 +291,9 @@ SHOWER_36_THERMO_COMBO = SHOWER.model_copy(update={
               'radiant cable under it. Mould-inhibiting 100% silicone at panel-to-base, the '
               'corner and the Corian stall face; escutcheons sealed to the panel and the R10000 '
               'plaster guard set to the panel face. No niche. The stock Flex bottom rail '
-              'supersedes the earlier trackless-door preference. Molded pan drain remains '
-              'central; the offset plumbing connection remains unresolved (bath2_shower.md).',
+              'supersedes the earlier trackless-door preference. Molded pan drain and pipe '
+              'are centered; FS-M-WEST moves joist 011 to y=170 in. and adds y=186 in., '
+              'retaining full-span joists and <=16 in. spacing (bath2_shower.md).',
 })
 
 # RM-B-SAUNA's rinse and RM-A-STUBATH's guest shower. ** ONE OUTLET, ON PURPOSE. ** A
@@ -297,6 +302,7 @@ SHOWER_36_THERMO_COMBO = SHOWER.model_copy(update={
 # separate handshower in a basement sauna rinse is bad value, and RM-A-STUBATH has a second
 # reason to stay simple — see the freeze note below.
 SHOWER_36_COMBO = SHOWER.model_copy(update={
+    "shower_assembly": SAUNA_SHOWER,
     "excludes_floor_finish": True,
     "tag": "FX-SHOWER-36-COMBO",
     # No base SKU: the threshold, at P2709.1's 9" most over the drain.
@@ -306,8 +312,7 @@ SHOWER_36_COMBO = SHOWER.model_copy(update={
     # RM-B-SAUNA only (the attic took the neo-angle type): pan drain at its centre on the
     # liner's 2" build-up, valve in W-B-CS east of the pan.
     "ports": (floor_drain_port(0, 0, 2, note="Curbed liner pan, no base SKU; centre drain"),
-              *valve_ports((18.25, -22.1875, 51.4375), (1, 0),
-                           "W-B-CS shiplap face 1/4\" past the pan; the stubs stop at mid-stud")),
+              *SAUNA_SHOWER.inlet_ports()),
     "source": 'RM-B-SAUNA and RM-A-STUBATH, owner selection 2026-09-06. Delta MultiChoice '
               'R10000-UNBX rough (ASSE 1016), single-function trim, and a Moen Engage '
               'Magnetix 26010SRN two-in-one head — ONE outlet, so no diverter and no second '
@@ -355,12 +360,13 @@ SHOWER_36_COMBO = SHOWER.model_copy(update={
 # and the same ASSE 1016 rough this file's header argument applies to every shower here.
 _NEO_SIZE = (ft(3), ft(3))
 SHOWER_36_NEO_COMBO = SHOWER_36_COMBO.model_copy(update={
+    "shower_assembly": ATTIC_SHOWER,
     "tag": "FX-SHOWER-36-NEO-COMBO",
     "name": 'Shower, 36" neo-angle, pressure-balance valve with a two-in-one combo head',
     "plan_symbol": "shower-neo-angle",
     "ports": (floor_drain_port(0, 0, note="Class-allowance base: drain centre vs corner offset "
                                "varies by maker; confirm on the ordered base"),
-              *valve_ports((0, 18, 48), (0, 1), "48\" over the base, north wall")),
+              *ATTIC_SHOWER.inlet_ports()),
     "footprint_shape": Footprint2D(points=tuple(
         pt(m(x), m(y)) for x, y in neo_angle_points(
             _NEO_SIZE[0].meters, _NEO_SIZE[1].meters,
@@ -395,6 +401,7 @@ SHOWER_36_NEO_COMBO = SHOWER_36_COMBO.model_copy(update={
 # Of the five showers: BATH2 and STUBATH carry a modelled panel (WP-M-BATH2-SURR,
 # WP-A-STUBATH-SURR), the sauna a tile splash (WP-B-SAUNA-SPLASH), these two are integral.
 TUBSHOWER_60_DIVERTED = TUB_SHOWER.model_copy(update={
+    "shower_assembly": TUB_SHOWER_ASSEMBLY,
     "excludes_floor_finish": True,
     "tag": "FX-TUBSHOWER-60-DIVERTED",
     "name": 'Alcove tub-shower, 60", complete trim with diverter and handshower',
@@ -405,7 +412,7 @@ TUBSHOWER_60_DIVERTED = TUB_SHOWER.model_copy(update={
     # deepened stud wall that carries the drain off the framing: notes/framing_bore_limits.md §12.
     "ports": (floor_drain_port(-21.75, 0, size_in=1.5, note="Waste-and-overflow 8 1/4\" off the "
                                "end studs (1214192-4-A p.2): confirm on the delivered bath"),
-              *valve_ports((-30, 0, 30), (-1, 0), "30\" over the tub base")),
+              *TUB_SHOWER_ASSEMBLY.inlet_ports()),
     "source": 'RM-S-BATH1 and RM-S-SUITEBATH, owner selection 2026-09-06. INSERT: Sterling '
               'Ensemble 30" bath and Medley wall surround with backer boards, left drain, '
               '71370116-0, Sterling spec sheet '
@@ -424,7 +431,7 @@ TUBSHOWER_60_DIVERTED = TUB_SHOWER.model_copy(update={
               'substitute is Moen Spot Resist Brushed Nickel throughout — mixing Delta '
               'SpotShield BN and Moen Spot Resist BN across rooms is fine, mixing them in '
               'the SAME room is not, they are visibly different tones. ** NOTHING '
-              'PENETRATES THE INTEGRAL INSERT ** except the valve and spout knockouts: no '
+              'PENETRATES THE INTEGRAL INSERT ** except coordinated plumbing knockouts: no '
               'niche, no grab-bar screw, no accessory. Use the moulded shelves; a hole in a '
               'one-piece insert has nothing behind it to lap to.',
 })

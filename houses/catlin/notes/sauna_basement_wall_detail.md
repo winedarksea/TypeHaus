@@ -84,3 +84,12 @@ is 84 1/16 inches AFF; use that surface for headroom and heater checks.
 
 - Foundation: 8" concrete wall with #6 @ 48" o.c. vertical reinforcement, bearing on 20"×8" footing per IRC Table R403.1 (confirm local requirements). Footing concrete 5000 psi. Footing bears on 6" compacted washed stone aggregate (wider than footing) with French drain located in the wider area, not under the footing. (Same pipe the model calls drain tile — see `basement_to_framed_wall_detail.md`; the two names do not describe two runs.)
 
+
+## Local shower-wall exception — 2026-11-09
+
+The two tiled 36-inch spans remove the shiplap and use 1/2-inch USG Durock over supported
+packing, with the local insulated valve pocket and a stringer 2 3/4 inches behind tile.
+The sauna's general wood liner remains on the dry spans. The complete waterproofing,
+foil-tape, collar and sealant system still needs documented temperature qualification;
+Durock permission alone does not resolve it. See [shower_assemblies.md](shower_assemblies.md)
+for the actual faces, quantities, section and unresolved construction interfaces.

@@ -149,7 +149,7 @@ from typehaus.model.millwork import (
 from typehaus.model.opening_size import OpeningSize
 from typehaus.model.opening_supports import OpeningFrameEndSupports
 from typehaus.model.paint import PaintSpec, PaintStandard
-from typehaus.model.paneling import BoardAndBatten, PanelingSpan, WallPaneling
+from typehaus.model.paneling import BoardAndBatten, PanelingSpan, PanelingSubstrate, WallPaneling
 from typehaus.model.placeables import (
     ClearancePolicy,
     ClearanceZone,
@@ -206,6 +206,12 @@ from typehaus.model.registry import (
 )
 from typehaus.model.screens import SlatScreen
 from typehaus.model.sheathing_nailing import SheathingNailing
+from typehaus.model.shower_assembly import (
+    ShowerAssemblySpec,
+    ShowerComponent,
+    ShowerValveDimensions,
+    ShowerValvePocket,
+)
 from typehaus.model.site import (
     Basemap,
     Benchmark,
@@ -367,6 +373,8 @@ for _name, _obj in (
     ("BookcaseDoorSpec", BookcaseDoorSpec),
     ("Footprint2D", Footprint2D), ("CountertopHole", CountertopHole),
     ("ClearanceZone", ClearanceZone), ("ServicePort", ServicePort),
+    ("ShowerAssemblySpec", ShowerAssemblySpec), ("ShowerComponent", ShowerComponent),
+    ("ShowerValveDimensions", ShowerValveDimensions), ("ShowerValvePocket", ShowerValvePocket),
     ("PlanRepresentation", PlanRepresentation), ("ModelRepresentation", ModelRepresentation),
     ("Location", Location), ("WallAttachment", WallAttachment), ("Mount", Mount),
 ):
@@ -422,7 +430,8 @@ __all__ = [
     "Slab", "SlabThermalBreak",
     "Soffit", "SoffitOpening",
     "FloorHeat", "FinishZone",
-    "BoardAndBatten", "PanelingSpan", "WallPaneling", "WallBacking", "BracedWallPanel",
+    "PanelingSubstrate", "BoardAndBatten", "PanelingSpan", "WallPaneling", "WallBacking",
+    "BracedWallPanel",
     "SuspensionAnchor", "HangingSeatType",
     "Countertop", "MillworkStandard", "RoomTrim", "StairLandingMillwork", "ShelfBank", "ShelfBay",
     "DoorTrim", "DoorUndercut", "StairSkirt", "TrimStandard", "TrimStock", "WindowStool",
@@ -467,7 +476,8 @@ __all__ = [
     "ConnectorKind", "RailingKind", "TrimKind", "ShelfProcurement",
     "ClearZone", "PlacementStrategy", "MountKind", "ClearancePolicy",
     "Footprint2D", "CountertopHole", "ClearanceZone",
-    "ServicePort", "PortCertainty",
+    "ServicePort", "PortCertainty", "ShowerAssemblySpec", "ShowerComponent",
+    "ShowerValveDimensions", "ShowerValvePocket",
     "PlanRepresentation", "ModelRepresentation", "Location", "WallAttachment",
     "Mount",
     "Length", "Area", "Angle", "Pitch", "RValue", "UFactor", "Temperature", "Point2D",

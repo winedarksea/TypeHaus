@@ -189,8 +189,8 @@ def test_band_thickness_comes_from_the_material_stock(bands):
             assert band.thickness_m == pytest.approx(0.75 * _IN, abs=1e-6), \
                 "4/4 walnut wainscot draws at its dressed 3/4in"
         if band.tag == "WP-B-SAUNA-SPLASH":
-            assert band.thickness_m == pytest.approx(0.5 * _IN, abs=1e-6), \
-                "tile states no board stock, so the band takes the default"
+            assert band.thickness_m == pytest.approx(0.25 * _IN, abs=1e-6), \
+                "tile and setting bed have an explicit thickness"
 
 
 def test_the_catlin_bands_are_the_ten_authored_ones(bands, catlin_model):
@@ -199,6 +199,7 @@ def test_the_catlin_bands_are_the_ten_authored_ones(bands, catlin_model):
     for band in bands:
         by_tag.setdefault(band.tag, []).append(band)
     assert set(by_tag) == {"WP-B-SAUNA-SPLASH", "WP-M-STUDY-WAINSCOT", "WP-M-STUDY-FELT",
+                           "WP-B-SAUNA-SPLASH-substrate-0", "WP-B-SAUNA-SPLASH-substrate-1",
                            "WP-M-BATH2-SURR", "WP-M-BATH2-SURR-CAP", "WP-S-SUITE-HEADBOARD",
                            "WP-A-STUBATH-SURR",
                            "WP-M-MUDROOM-SHIPLAP", "WP-M-KIT-BACKSPLASH",

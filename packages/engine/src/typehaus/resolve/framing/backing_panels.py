@@ -58,6 +58,7 @@ class BackingBand:
     purpose: str
     datum: str = "sill"
     furred: bool = False
+    face_offset_m: float = 0.0
 
 
 def backing_bands(plan: PlanModel) -> dict[str, list[BackingBand]]:
@@ -85,6 +86,7 @@ def backing_bands(plan: PlanModel) -> dict[str, list[BackingBand]]:
             purpose=element.purpose,
             datum=element.datum,
             furred=element.furred,
+            face_offset_m=0.0 if element.face_offset is None else element.face_offset.meters,
         ))
     return bands
 
@@ -252,6 +254,7 @@ def _backing_face_axis(rw: ResolvedWall, band: BackingBand, direction,
     inward = -half_thickness if not band.furred else half_thickness
     offset = (max(projections) + inward if band.face == "left"
               else min(projections) - inward)
+    offset += band.face_offset_m * (1 if band.face == "left" else -1)
     return add(wall_start, scale(normal, offset))
 
 

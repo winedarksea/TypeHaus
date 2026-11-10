@@ -384,10 +384,11 @@ SUPPLY = [
             serves=("FX-M-BATH2-WC", "FX-M-BATH2-SINK")),
     PipeRun(uid="CBPW36AAAA", tag="PR-B-HW-BATH2", system=PipeSystem.WATER_HOT,
             # Straight south under the header off out-8: one bend, not two 1 1/2" apart.
+            # y=188" clears the new FS-M-WEST y=186" joist (BATH2 centre-drain correction).
             path=(pt(inch(90), inch(293.874)), pt(inch(90), inch(293.874)),
                   pt(inch(90), inch(206)),
-                  pt(inch(90), inch(206)), pt(inch(90), inch(186)),
-                  pt(inch(9), inch(186)), pt(inch(9), inch(201.6)),
+                  pt(inch(90), inch(206)), pt(inch(90), inch(188)),
+                  pt(inch(9), inch(188)), pt(inch(9), inch(201.6)),
                   pt(inch(9), inch(201.6)),),
                         diameter=inch(0.5), material="pex",
             elevations=(inch(86.149), inch(83.5), inch(83.5), inch(97.4375),
@@ -526,8 +527,9 @@ SUPPLY = [
             # bend a 3/4" PEX cannot make in that little tube.
             path=(pt(inch(90), inch(296.874)), pt(inch(90), inch(296.874)),
                   pt(inch(95), inch(296.874)), pt(inch(95), inch(206)),
-                  pt(inch(95), inch(206)), pt(inch(95), inch(186)),
-                  pt(inch(162), inch(186)), pt(inch(162), inch(197)),
+                  # The y=188" turn clears BATH2's added y=186" joist (2026-11-09).
+                  pt(inch(95), inch(206)), pt(inch(95), inch(188)),
+                  pt(inch(162), inch(188)), pt(inch(162), inch(197)),
                   pt(inch(162), inch(197)), pt(inch(210), inch(197)),
                   # Crosses the trusses in D12 (x=370.6), not D11, which PR-B-CW-TRUNK
                   # fills (one run per pocket); back to the sink riser in the last bay.
@@ -728,49 +730,33 @@ SUPPLY = [
     # 7'-11 3/16" ceiling, inside the floor cavity, with `mep.run_member_crossing` reading
     # each web bore at crown +7.112", invert +1.388" in the 9.12" window. The arrangement is
     # kept on its own merits, not on a clearance that no longer binds.
-    # The rotation moved the pan to the room's NORTH-EAST corner, so the drops land at
-    # y 6'-6"/6'-2" — inside the pan and 1'-1" clear of PR-B-SAUNA-VENT's riser at
-    # 8'-2 3/16", which shares this build-up.
-    # No supply to FX-B-SAUNA-FD: a floor drain has none.
-    #
-    # ** THE DROPS ARE IN THE WALL SINCE 2026-09-07, WHICH IS WHERE THIS NOTE ALWAYS SAID
-    # THE VALVE WAS. ** Both legs used to turn down at x=17'-4"/17'-3", 1 3/4" and 2 3/4"
-    # WEST of W-B-CS's liner face — three and a half feet of bare PEX standing in a sauna
-    # on its way to a mixer that is inside the wall. `mep.run_in_finished_volume` called both
-    # at 31.6" for 2.64 ft once the ceiling came down. Each now jogs east at its own y and
-    # drops inside W-B-CS's stud cavity (x 213 1/4"..218 3/4"), on x=18'-0", mid-bay. The
-    # two are 4" apart in y, so one x serves both. ** THE VALVE IS NOT THERE. ** Delta's
-    # R10000 inlets sit 1 3/4" behind the finished face (50353 Rev L p.2), so with the trim on
-    # the shiplap they are at x=211 3/4", inside the 2" foil polyiso (211 1/4"..213 1/4"), and
-    # these drops end 4 1/4" short. How the valve mounts and how the supplies pass the
-    # polyiso are open owner items.
-    # The east jog itself rides at 8'-4 5/8" — 6" higher than the 7'-10 5/8" it was
-    # authored at, and still above the sauna's 6'-11 1/16" ceiling and inside its service
-    # cavity, which is the only thing that paragraph ever asked of it.
-    # ** HOT IS NORTH SINCE 2026-10-31 (owner): the R10000 body is hot-left facing east. **
-    # The hot's lane is the west one, so its jog to the north inlet crosses the cold's leg:
-    # it steps down 1" at the corner and passes under it.
+    # Shower setout: east-wall centreline y=98 3/16 in., hot north (user's left).
+    # Drops and final elbows occupy the local insulated valve pocket behind the tile.
+    # The existing overhead lanes stay unchanged; side arrivals land on estimated hubs.
     PipeRun(uid="CBPW46AAAA", tag="PR-B-CW-SAUNA", system=PipeSystem.WATER_COLD,
             # ESR-1153 Table A: x=206.5" (was 208") puts the 0.88" hole 6.3" off the x=213.25 face;
             # it tees on the trunk's y=15'-0" leg (was y=16'-0").
-            path=(pt(inch(206.5), inch(180)), pt(inch(206.5), ft(6, 2)),
-                  pt(ft(18), ft(6, 2)), pt(ft(18), ft(6, 2))),
+            path=(pt(inch(206.5), inch(180)), pt(inch(206.5), inch(92.1875)),
+                  pt(inch(211.5), inch(92.1875)), pt(inch(211.5), inch(92.1875)),
+                  pt(inch(211.5), inch(96.1875))),
             diameter=inch(0.5), material="pex",
-            elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375), ft(4, 3.4375)),
+            elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375), ft(4, 3.4375), ft(4, 3.4375)),
             serves=("FX-B-SAUNA-SH",)),
     PipeRun(uid="CBPW47AAAA", tag="PR-B-HW-SAUNA", system=PipeSystem.WATER_HOT,
             path=(pt(inch(90), inch(295.374)), pt(inch(90), inch(295.374)),
                   pt(inch(93), inch(295.374)), pt(inch(93), inch(206)),
-                  pt(inch(93), inch(206)), pt(inch(93), inch(186)),
-                  # ESR-1153 Table A: x=198" (was 207"), 15" off the x=213.25 face and 8.5" clear of the
-                  # cold; stopping short of x=200" keeps it off the trunk's turn.
-                  pt(inch(93), inch(186)), pt(inch(198), inch(186)),
-                  pt(inch(198), inch(78)), pt(inch(198), inch(78)),
-                  pt(inch(216), inch(78)), pt(inch(216), inch(78)),),
+                  pt(inch(93), inch(206)), pt(inch(93), inch(188)),
+                  # The added y=186" joist makes x=200" CW and x=198" HW holes too close.
+                  # x=195" leaves 3.75" edge-to-edge, above ESR-1153's 3.25" requirement.
+                  # y=188" keeps the step and lateral clear of the new joist's flanges/web.
+                  pt(inch(93), inch(188)), pt(inch(195), inch(188)),
+                  pt(inch(195), inch(104.1875)), pt(inch(195), inch(104.1875)),
+                  pt(inch(211.5), inch(104.1875)), pt(inch(211.5), inch(104.1875)),
+                  pt(inch(211.5), inch(100.1875)),),
                         diameter=inch(0.5), material="pex",
             elevations=(inch(86.149), inch(83.5), inch(83.5), inch(83.5), inch(97.4375),
                   inch(97.4375), inch(100.6375), inch(100.6375), inch(100.6375),
-                  inch(99.4375), inch(99.4375), inch(51.4375),),
+                  inch(99.4375), inch(99.4375), inch(51.4375), inch(51.4375),),
                         serves=("FX-B-SAUNA-SH",)),
 ]
 

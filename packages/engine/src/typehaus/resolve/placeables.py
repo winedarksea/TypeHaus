@@ -109,7 +109,9 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                 from typehaus.resolve.fixture_floor_finish import fixture_support_elevation
 
                 try:
-                    mount_elevation = fixture_support_elevation(model, center, structural_floor)
+                    mount_elevation = fixture_support_elevation(
+                        model, center, structural_floor, fixture_tag=item.tag,
+                        footprint=Polygon(_transformed_polygon(local_footprint, center, rotation)))
                 except ValueError as exc:
                     findings.append(_finding("integrity.fixture_floor_finish", item.tag,
                                              str(exc)))

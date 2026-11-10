@@ -251,6 +251,9 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
     # Apron cutouts use the resolved service leaves, including their final elevations.
     with _stage("paneling"):
         findings.extend(resolve_paneling(plan, model))
+        from typehaus.resolve.shower_pockets import resolve_shower_pockets
+
+        resolve_shower_pockets(plan, model)
     with _stage("tub_enclosures"):
         from typehaus.resolve.tub_enclosures import resolve_tub_enclosures
 

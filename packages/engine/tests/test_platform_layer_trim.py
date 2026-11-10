@@ -108,8 +108,10 @@ def test_the_trim_is_a_min_so_an_authored_band_still_wins(catlin_model_ro):
     wall = catlin_model_ro.wall(_SAUNA_WALL)
     assert wall.plate_top_z_m == pytest.approx(inch(_SAUNA_PLATE_IN).meters)
     for name in ("shiplap-liner", "liner-furring", "foil-polyiso"):
-        layer = next(ly for ly in wall.layers if ly.name == name)
-        assert layer.band(wall)[1] == pytest.approx(inch(_SAUNA_CEILING_IN).meters), name
+        regions = [ly for ly in wall.layers if ly.name == name or ly.name.startswith(name + "-")]
+        assert regions
+        assert max(ly.band(wall)[1] for ly in regions) == pytest.approx(
+            inch(_SAUNA_CEILING_IN).meters), name
     for name in ("gwb-b", "stud"):
         layer = next(ly for ly in wall.layers if ly.name == name)
         assert layer.band(wall)[1] == pytest.approx(inch(_SAUNA_PLATE_IN).meters), name

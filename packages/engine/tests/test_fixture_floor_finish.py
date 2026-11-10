@@ -121,6 +121,33 @@ def test_point_queries_keep_room_ownership_and_room_aff_uses_remaining_finish():
         fixture_support_elevation(model, (20, 20), 0)
 
 
+@pytest.mark.parametrize(("owner", "system", "hole", "other_cut", "supported"), [
+    ("FX-0", "drain", box(4.7, 4.7, 5.3, 5.3), None, True),
+    ("OTHER", "drain", box(4.7, 4.7, 5.3, 5.3), None, False),
+    ("FX-0", "water_cold", box(4.7, 4.7, 5.3, 5.3), None, False),
+    ("FX-0", "drain", box(3, 3, 7, 7), None, False),
+    ("FX-0", "drain", box(4.7, 4.7, 5.3, 5.3), box(5.6, 5.6, 6.2, 6.2), False),
+])
+def test_fixture_bridges_only_its_own_internal_drain_cut(owner, system, hole,
+                                                       other_cut, supported):
+    model = _model(box(4, 4, 6, 6))
+    ring = list(hole.exterior.coords)[:-1]
+    voids = (ring,) if other_cut is None else (ring, list(other_cut.exterior.coords)[:-1])
+    model.floors = [ResolvedFloor(
+        uid="DECK", tag="DECK", storey="main", direction="x", members=(),
+        deck_outline=model.rooms[0].clear_face, deck_voids=voids,
+        deck_z1_m=inch(0.75).meters, penetrations=(("HOLE", ring, ("WASTE",)),))]
+    model.pipe_runs = [SimpleNamespace(tag="WASTE", system=system, serves=(owner,))]
+    if supported:
+        assert fixture_support_elevation(model, (5, 5), 0, fixture_tag="FX-0",
+                                          footprint=box(4, 4, 6, 6)) == pytest.approx(
+                                              inch(0.75).meters)
+    else:
+        with pytest.raises(ValueError, match="supporting"):
+            fixture_support_elevation(model, (5, 5), 0, fixture_tag="FX-0",
+                                       footprint=box(4, 4, 6, 6))
+
+
 @pytest.mark.parametrize(("excludes", "mount_in", "base_in"), [
     (False, None, 1.5), (True, None, 0.75), (True, 4, 5.5),
 ])

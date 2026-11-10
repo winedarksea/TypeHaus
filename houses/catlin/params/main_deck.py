@@ -291,6 +291,13 @@ _WEST_FLOOR_REINFORCEMENT = (
 WEST_FLOOR = FloorSystem(
     uid="CMFS01AAAA", tag="FS-M-WEST",
     joists=JoistSpec(member=_JOIST, spacing=_JOIST_OC, direction="x",
+                     # SS-3636's molded drain is at y=176.25", almost on joist 011.
+                     # Move that whole joist south and add an uncut full-span line north:
+                     # 160/170/186/192 gives 10/16/6" bays, all <= the rated 16" module.
+                     # The drain's 6" subfloor cut fits between them; no header is needed.
+                     # Coordinated hot-water crossings: notes/bath2_shower.md §5.
+                     line_overrides=((inch(176), inch(170)),),
+                     extra_lines=(inch(186),),
                      # x=0': W-B-W2 carries y 0..18', W-B-W1 the rest. x=18': W-B-CS
                      # carries y 0..10'-0" since the sauna rotated (2026-09-05), W-B-CS3
                      # to 13'-10", W-B-CS2 to 18', W-B-CN2 to the node line.
@@ -306,6 +313,7 @@ WEST_FLOOR = FloorSystem(
     reinforcements=_WEST_FLOOR_REINFORCEMENT,
     # The basement's ceiling: 5/8" gypsum end to end (houses/catlin/preferences.toml).
     ceiling_below=_CEILING_GWB,
+    openings=("FO-M-BATH2-SH-DRAIN",),
     outline=_rect(_ZERO, _ZERO, _CENTRE_X, _MECH_Y_S),
     source="catlin main floor, west half south of the bathroom node line — 11 7/8\" "
            "TJI 230 joists at 16\" o.c. spanning 18'-0\" east-west from the west wall to the "

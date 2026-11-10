@@ -77,6 +77,8 @@ class ResolvedLayer:
     # in every assembly authored before slots existed — is a row of its own.
     slot: str | None = None
     run_span_m: tuple[float, float] | None = None
+    # An instance cut keeps the original assembly-layer link for framing and quantities.
+    source_layer_name: str | None = None
     # The *unresolved* ``Layer.extent`` that produced ``z0_m``/``z1_m``, as
     # ``((datum, offset_m) | None, (datum, offset_m) | None)`` — bottom, then top.
     # ``z0_m``/``z1_m`` are absolute and therefore stale the moment the wall's own extent
@@ -1053,6 +1055,8 @@ class ResolvedPaneling:
     band_z1_m: float
     run_m: float
     replaces_wall_finish: bool
+    # Its original finish has already been cut from layer geometry and quantities.
+    finish_replaced_in_geometry: bool = False
     # The layout line the band belongs to, or ``None`` for the room-scoped path.
     layout_line: str | None = None
     # The band as drawable geometry: a plan rectangle on the wall's room-side face, plus the

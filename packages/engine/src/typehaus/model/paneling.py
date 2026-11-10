@@ -26,9 +26,11 @@ from __future__ import annotations
 
 from typing import Literal
 
+from pydantic import model_validator
+
 from typehaus.model.base import Element, HausModel
 from typehaus.model.registry import register_constructor, register_element
-from typehaus.quantities import Length
+from typehaus.quantities import Length, m
 
 
 class PanelingSpan(HausModel):
@@ -56,6 +58,13 @@ class BoardAndBatten(HausModel):
     rail_width: Length
     target_spacing: Length
     base_height: Length
+
+
+class PanelingSubstrate(HausModel):
+    """A backing layer behind a replacement finish; ordered room to wall."""
+
+    material_ref: str
+    thickness: Length
 
 
 @register_element
@@ -90,9 +99,22 @@ class WallPaneling(Element):
     # material's board stock.
     thickness: Length | None = None
     board_and_batten: BoardAndBatten | None = None
+    substrates: tuple[PanelingSubstrate, ...] = ()
+    # Physical projection toward the room, for a replacement with real backing layers.
+    finish_projection: Length = m(0)
+
+    @model_validator(mode="after")
+    def validate_substrates(self):
+        if self.substrates and not self.replaces_wall_finish:
+            raise ValueError("substrates require a replacement wall finish")
+        if any(layer.thickness.meters <= 0 for layer in self.substrates):
+            raise ValueError("paneling substrate thickness must be positive")
+        return self
+
 
 
 for _name, _obj in (
+    ("PanelingSubstrate", PanelingSubstrate),
     ("BoardAndBatten", BoardAndBatten),
     ("PanelingSpan", PanelingSpan),
     ("WallPaneling", WallPaneling),

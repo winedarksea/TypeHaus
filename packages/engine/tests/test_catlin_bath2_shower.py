@@ -2,7 +2,8 @@
 
 import ifcopenshell
 import pytest
-from shapely.geometry import Point, Polygon
+from shapely.geometry import LineString, Point, Polygon
+from shapely.ops import unary_union
 
 from typehaus.emit.gltf.canvas_objects import _add_canvas_parts
 from typehaus.emit.gltf.mesh import _MeshBuilder
@@ -15,6 +16,10 @@ from typehaus.model.placeable_symbols._swanstone_flex import (
 )
 from typehaus.model.placeable_symbols._swanstone_flex_config import BATH2_SHOWER
 from typehaus.resolve.paneling import _FLUSH_REVEAL_M
+from typehaus.resolve.framing.footprint import member_footprint
+from typehaus.resolve.mep_sleeves import expected_port_point
+from typehaus.model import Service
+from typehaus.findings import Result
 
 INCH = 0.0254
 
@@ -99,11 +104,80 @@ def test_pan_glass_datums_and_solid_surface_wire_material(catlin_model_ro):
     drain = next(p for p in parts if p["color"] == "chrome" and p["points"])
     assert drain["center"][:2] == pytest.approx((0, 0))
     authored = next(e for e in model.plan.storey_elements("main") if e.tag == fixture.tag)
-    assert authored.drain_position.xy_m != pytest.approx(fixture.position)
+    assert authored.drain_position is None
     wire = next(t for t in canvas_object_types(model.plan) if t["tag"] == product.tag)
     assert any(p.get("material_ref") == "solid-surface-base" for p in wire["model_parts"])
     assert any(p.get("opacity", 1) < 1 for p in wire["model_parts"])
     assert any(p.get("metalness") == 1 for p in wire["model_parts"])
+
+
+def test_center_drain_and_pipe_top_follow_the_manufacturer_station(catlin_model_ro):
+    model = catlin_model_ro
+    fixture = _fixture(model)
+    drain = next(run for run in model.pipe_runs if run.tag == "PR-B-SH2-DRAIN")
+    port = expected_port_point(model, fixture.tag, Service.DRAIN)
+    assert port[:2] == pytest.approx(fixture.position)
+    assert (*drain.path[0], drain.z_m[0]) == pytest.approx(port)
+    assert drain.path[1] == pytest.approx(fixture.position)
+    floor = next(floor for floor in model.floors if floor.tag == "FS-M-WEST")
+    assert floor.deck_z1_m - drain.z_m[0] == pytest.approx(0.25 * INCH)
+    assert drain.z_m[1] == pytest.approx(floor.deck_z0_m - 3 * INCH)
+
+
+def test_drain_bay_keeps_full_span_joists_and_the_basement_ceiling(catlin_model_ro):
+    model = catlin_model_ro
+    floor = next(floor for floor in model.floors if floor.tag == "FS-M-WEST")
+    joists = [member for member in floor.members if member.category == "joist"]
+    stations = sorted({round(member.p0[1] / INCH, 6) for member in joists})
+    assert [y for y in stations if 160 <= y <= 192] == [160, 170, 186, 192]
+    assert max(b - a for a, b in zip(stations, stations[1:])) <= 16
+    adjacent = [member for member in joists if round(member.p0[1] / INCH) in (170, 186)]
+    assert len(adjacent) == 2
+    assert all(member.profile == "11.875 TJI 230" for member in adjacent)
+    assert adjacent[0].p0[0] == pytest.approx(adjacent[1].p0[0])
+    assert adjacent[0].p1[0] == pytest.approx(adjacent[1].p1[0])
+    assert all(member.length_m > 17 * 12 * INCH for member in adjacent)
+    opening = model.plan.by_tag("FO-M-BATH2-SH-DRAIN")
+    cut = Polygon([point.xy_m for point in opening.outline])
+    assert cut.area == pytest.approx((6 * INCH) ** 2)
+    assert (cut.centroid.x, cut.centroid.y) == pytest.approx(_fixture(model).position)
+    assert any(Polygon(ring).equals(cut) for ring in floor.deck_voids)
+    for member in adjacent:
+        ring, _, _ = member_footprint(member)
+        assert cut.distance(Polygon(ring)) >= 2 * INCH - 1e-8
+    assert not [member for member in floor.members if opening.tag in member.child_key]
+    assert opening.cuts_ceiling_below is False
+    ceilings = unary_union([Polygon(ceiling.outline) for ceiling in model.ceilings
+                            if ceiling.storey == "basement"])
+    assert cut.difference(ceilings).area < 1e-8
+
+
+def test_cleanout_takeoff_stays_on_the_straight_trap_arm(catlin_model_ro):
+    model = catlin_model_ro
+    drain = next(run for run in model.pipe_runs if run.tag == "PR-B-SH2-DRAIN")
+    arm = LineString([drain.path[1], drain.path[3]])
+    assert arm.distance(Point(drain.path[2])) < 1e-8
+    cleanout = model.plan.by_tag("CO-M-SH2-HEAD")
+    assert cleanout.position.xy_m == pytest.approx(drain.path[2])
+    main_datum = model.plan.storey("main").elevation.meters
+    assert cleanout.fitting_elevation.meters + main_datum == pytest.approx(drain.z_m[2])
+
+
+def test_center_drain_has_a_vented_sloped_connected_branch(catlin_check_report):
+    findings = catlin_check_report().findings
+    expectations = {
+        "mep.drain_slope": "PR-B-SH2-DRAIN",
+        "mep.drain_tie_in": "PR-B-SH2-DRAIN",
+        "mep.drain_cleanouts": "PR-B-SH2-DRAIN",
+        "mep.trap_arm_length": "FX-M-BATH2-SH",
+        "mep.vent_connection": "PR-M-BATH2-SH-VENT",
+    }
+    for check_id, tag in expectations.items():
+        matching = [f for f in findings if f.check_id == check_id and tag in f.element_tags]
+        assert matching, (check_id, tag)
+        assert all(f.result is Result.PASS for f in matching), matching
+    assert not [f for f in findings if f.result is Result.FAIL
+                and (f.check_id.startswith("mep.") or f.check_id.startswith("structural."))]
 
 
 def test_molded_pan_has_a_recessed_basin_and_published_threshold():

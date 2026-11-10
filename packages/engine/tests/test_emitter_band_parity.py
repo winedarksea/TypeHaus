@@ -153,13 +153,15 @@ def _banded_part_names(wall, openings=()) -> set[str]:
     body = wall_body_band(wall)
     names = set()
     for layer in wall.body_layers():
-        if not layer.is_banded or len(layer.polygon) < 3 or layer.coating:
+        if ((not layer.is_banded and layer.run_span_m is None)
+                or len(layer.polygon) < 3 or layer.coating):
             continue  # a coating takes no depth and exports no part
         z0, z1 = layer.band(wall)
         # A layer standing at the wall's own body band is IN the body prism, not a part —
         # the same predicate ``_emit_wall`` uses. Every layer of a platform-trimmed
         # partition is one of those, which is why trimming adds no parts.
-        if abs(z0 - body[0]) <= 1e-9 and abs(z1 - body[1]) <= 1e-9:
+        if (layer.run_span_m is None and abs(z0 - body[0]) <= 1e-9
+                and abs(z1 - body[1]) <= 1e-9):
             continue
         if z1 - z0 <= 1e-9:
             continue
@@ -245,8 +247,12 @@ def test_the_sauna_liner_no_longer_runs_across_its_own_door_and_window(catlin_mo
         assert f"W-B-S2-FR:{layer}" not in names, "the unsplit part must be gone"
         assert {n for n in names if n.startswith(f"W-B-S2-FR:{layer} (")} == {
             f"W-B-S2-FR:{layer} ({i}/4)" for i in range(1, 5)}
-        assert {n for n in names if n.startswith(f"W-B-CS:{layer} (")} == {
-            f"W-B-CS:{layer} ({i}/3)" for i in range(1, 4)}
+        wall = catlin_model_ro.wall("W-B-CS")
+        openings = [o for o in catlin_model_ro.openings if o.host_wall == wall.tag]
+        expected = {n for n in _banded_part_names(wall, openings)
+                    if n.startswith(f"W-B-CS:{layer}")}
+        assert len(expected) >= 3
+        assert {n for n in names if n.startswith(f"W-B-CS:{layer}")} == expected
 
 
 def test_an_unsplit_banded_layer_keeps_its_globalid(catlin_model_ro, catlin_ifc):
@@ -276,8 +282,9 @@ def test_an_unsplit_banded_layer_keeps_its_globalid(catlin_model_ro, catlin_ifc)
     parts = {p.Name: p.GlobalId for p in catlin_ifc.by_type("IfcBuildingElementPart")}
     unsplit = [(w, ly) for w in catlin_model_ro.walls for ly in w.body_layers()
                if f"{w.tag}:{ly.name}" in parts]
-    assert len(unsplit) == 37, \
-        f"expected the banded non-coating layers less the 6 that split, got {len(unsplit)}"
+    untouched = [(w, ly) for w, ly in unsplit
+                 if not (ly.slot or "").startswith("service-region:")]
+    assert len(untouched) == 37, "unaffected banded layers retain their identity"
     for wall, layer in unsplit:
         assert parts[f"{wall.tag}:{layer.name}"] == derive_child_guid(
             project_uuid, "wall-parts", f"{wall.uid}/{layer.name}")

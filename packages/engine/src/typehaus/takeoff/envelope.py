@@ -163,6 +163,8 @@ def replaced_finish_m2(model: ResolvedModel) -> dict[tuple[str, str], float]:
     walls = {wall.tag: wall for wall in model.walls}
     replaced: dict[tuple[str, str], float] = defaultdict(float)
     for band in model.panelings:
+        if getattr(band, "finish_replaced_in_geometry", False):
+            continue
         wall = walls.get(band.wall_tag)
         if not band.replaces_wall_finish or not band.outline or wall is None:
             continue

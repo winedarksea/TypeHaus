@@ -191,9 +191,9 @@ ducts or pipes". The owner's bounce goal, so two:
   | W-B-W1 | FS-M-MECH, TJI | 10 | 16" | 533 lb | 563 | 0.95 |
   | W-B-W1 | FS-M-WEST, TJI | 2 | 16" | 533 lb | 563 | 0.95 |
   | W-B-W1 | FS-M-WEST, 2-ply pack (240, the bath) | 1 | 16" | 533 lb | 2 x 563 | 0.47 |
-  | W-B-W2 | FS-M-WEST, TJI | 14 | 16" | 533 lb | 563 | 0.95 |
+  | W-B-W2 | FS-M-WEST, TJI (includes BATH2 drain bay's added line) | 15 | 16" max | 533 lb | 563 | 0.95 |
 
-  56 ends, **59 A35Z**: one an end (37 TJI + 19 truss), plus one on each sister ply that lands on
+  57 ends, **60 A35Z**: one an end (38 TJI + 19 truss), plus one on each sister ply that lands on
   a sill (the 316 and 332 trusses, and `FS-M-WEST`'s bath ply at y 240").
   A second angle is not needed for demand anywhere.
   Hand count of the truss ends: W-B-E1's axis runs y 0..216", so lines 156, 172, 188, 204 = 4;

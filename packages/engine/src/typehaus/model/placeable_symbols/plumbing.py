@@ -216,7 +216,7 @@ def tub_shower() -> Builder:
         basin_w = width - 2 * rim
         basin_d = depth - 2 * rim
         # Standard alcove tub rim, clamped so a short type still reads as tub-under-walls.
-        tub_h = min(0.51, height * 0.4)
+        tub_h = min(16 * 0.0254, height * 0.4)
         drain_cx = -width / 2 + rim + basin_w * 0.12
         head_r = min(width, depth) * 0.03
         strokes = [rect(0, 0, width, depth, fill="porcelain"),
@@ -230,13 +230,7 @@ def tub_shower() -> Builder:
         for sign in (-1, 1):
             parts.append(box(sign * (width / 2 - wall_t / 2), 0, tub_h, height, wall_t,
                              depth - wall_t, "porcelain"))
-        # Riser and head at the plumbing end, on the back wall above the drain.
-        riser_t = min(0.035, width * 0.05)
-        head_z = min(height * 0.85, height - riser_t)
-        parts.append(box(-width / 2 + rim, depth / 2 - wall_t - riser_t / 2, tub_h, head_z,
-                         riser_t, riser_t, "metal"))
-        parts.append(box(-width / 2 + rim, depth / 2 - wall_t - riser_t * 1.5, head_z,
-                         min(head_z + riser_t, height), riser_t * 2, riser_t * 2, "metal"))
+            parts[-1]["role"] = "shower:end-wall"
         return tuple(strokes), tuple(parts)
 
     return build
@@ -284,7 +278,6 @@ def shower(*, corner_cut_fraction: float | None = None) -> Builder:
         pan_h = min(curb, height * 0.2)
         wall_z0 = min(curb * 2, height * 0.4)
         glass_t = min(0.012, min(width, depth) * 0.1)
-        head = min(0.06, min(width, depth) * 0.2)
         cut = min(width, depth) * corner_cut_fraction if corner_cut_fraction else 0.0
         ring = neo_angle_points(width, depth, cut)
         # The two square diagonals, the second of them clipped back to the cut face: a line
@@ -306,8 +299,6 @@ def shower(*, corner_cut_fraction: float | None = None) -> Builder:
         for p0, p1, inward in open_edges:
             parts.append(prism(_edge_band(p0, p1, inward, curb), 0.0, wall_z0, "porcelain"))
             parts.append(prism(_edge_band(p0, p1, inward, glass_t), wall_z0, height, "glass"))
-        parts.append(box(0, depth / 2 - head / 2, height * 0.78, height * 0.82, head, head,
-                         "metal"))
         return tuple(strokes), tuple(parts)
 
     return build

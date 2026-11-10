@@ -8,7 +8,6 @@ from math import cos, pi, sin
 
 from typehaus.model.placeable_symbols._frame import Part, box, circle, prism, rect
 from typehaus.model.placeable_symbols._mesh import mesh_part
-from typehaus.model.placeable_symbols._round_hardware import round_cylinder
 from typehaus.model.placeable_symbols._swanstone_flex_config import BATH2_SHOWER
 
 
@@ -133,24 +132,6 @@ def swanstone_flex(width: float, depth: float, height: float):
     for y in (post_back, half_depth - clip / 2):  # the wall clip stays inside the pan's back edge
         for z in (glass_z0 + 12, glass_z1 - 12):
             solid(post, y, z, z + clip, grip, clip, "chrome")
-    # Retain visible showering trim as the generic symbol did. These are product-family
-    # massing at illustrative mounting heights, not rough-in coordinates or service ports.
-    head_z = (dimensions.head_height - dimensions.base_datum) * sz
-    head_y = (half_depth - dimensions.head_projection) * sy
-    parts.append(round_cylinder((0, head_y, head_z), dimensions.head_diameter * min(sx, sy) / 2,
-                                dimensions.head_thickness * sz, axis=2, color="chrome"))
-    solid(0, half_depth - dimensions.head_projection / 2,
-          dimensions.head_height - dimensions.base_datum,
-          dimensions.head_height - dimensions.base_datum + dimensions.head_thickness,
-          dimensions.head_thickness, dimensions.head_projection, "chrome")
-    valve_z = (dimensions.valve_height - dimensions.base_datum) * sz
-    parts.append(round_cylinder((0, (half_depth - dimensions.head_thickness / 2) * sy, valve_z),
-                                dimensions.valve_plate_diameter * min(sx, sz) / 2,
-                                dimensions.head_thickness * sy, axis=1, color="chrome"))
-    solid(0, half_depth - dimensions.valve_projection / 2,
-          dimensions.valve_height - dimensions.base_datum,
-          dimensions.valve_height - dimensions.base_datum + dimensions.head_thickness,
-          dimensions.head_thickness, dimensions.valve_projection, "chrome")
     strokes = (rect(0, 0, width, depth, fill="solid-surface"),
                circle(0, 0, dimensions.drain_diameter * sx / 2))
     return strokes, tuple(parts)

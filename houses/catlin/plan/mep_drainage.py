@@ -202,17 +202,19 @@ DRAINS = [
                         inch(93.9375), inch(84.9375)),
             serves=("FX-M-BATH2-TUB",)),
     PipeRun(uid="CBPD04AAAA", tag="PR-B-SH2-DRAIN", system=PipeSystem.DRAIN,
-            # Moved to the centre drain (2026-10-22). The drop at y=14'-11" is in joist 11's bay
-            # (flanges 174 3/4"..177 1/4", its underside at 97 9/16" basement). The run stays
-            # below the joists, west along y=14'-11" and south into PR-B-MAIN-DRAIN's corner.
-            # The trap sits 3" under the subfloor; its arm runs 21 1/2" east in the bay to a
+            # Centered on the molded SS-3636 outlet (2026-11-09). FS-M-WEST's uncut joists
+            # now flank the drain at y=170"/186". The pipe top is 1/4" below the 3/4"
+            # subfloor top (Swan form 200-06-10 p.12); the trap weir stays 3" below datum.
+            # Its straight 21.80" arm runs east in the bay to a
             # sanitary tee under W-M-BA2E2 at (8'-2", 15'-0 1/2") (PR-M-BATH2-SH-VENT up),
-            # 2" north of the shower's hot riser, and drops there to the old under-joist leg.
-            path=(pt(ft(6, 4.615), ft(14, 11)), pt(ft(6, 4.615), ft(14, 11)),
-                  pt(inch(96), inch(180.36)), pt(inch(98), inch(180.5)), pt(inch(98), inch(180.5)),
+            # and drops there to the old under-joist leg. The x=96" cleanout station is
+            # interpolated on this line so recentering the inlet introduces no extra bend.
+            # The vent, cleanout cap, wall drop and under-joist main connection stay put.
+            path=(pt(ft(6, 4.615), ft(14, 8.25)), pt(ft(6, 4.615), ft(14, 8.25)),
+                  pt(inch(96), inch(180.102525)), pt(inch(98), inch(180.5)), pt(inch(98), inch(180.5)),
                   pt(ft(3), ft(14, 11)), pt(ft(3), ft(16, 6))),
             diameter=inch(2), material="pvc",
-            elevations=(ft(9, 1.4375), inch(106.4375), inch(105.984), inch(105.9375), inch(87.4375),
+            elevations=(inch(109.9375), inch(106.4375), inch(105.984262), inch(105.9375), inch(87.4375),
                         inch(85.9375), inch(85.3875)),
             serves=("FX-M-BATH2-SH",)),
     PipeRun(uid="CBPD05AAAA", tag="PR-B-SINK2-DRAIN", system=PipeSystem.DRAIN,

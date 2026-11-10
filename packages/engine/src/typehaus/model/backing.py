@@ -70,6 +70,8 @@ class WallBacking(Element):
     #: off the framing (a tub insert in an out-of-plane alcove). It runs over the studs;
     #: ``False`` is ordinary backing, fitted between them flush with their face.
     furred: bool = False
+    # Positive projects toward the room from the ordinary stud-face mounting plane.
+    face_offset: Length | None = None
     #: Band height. A CRC R328.1.1 grab-bar band is 7 1/4"; catlin's wet-wall strip is 12".
     height: Length
     #: Cross-section, parsed by ``resolve/framing/profiles.cross_section``. **Write the

@@ -23,6 +23,7 @@ from typehaus import (
     Node,
     Occupancy,
     PanelingSpan,
+    PanelingSubstrate,
     PublishedSpan,
     ReinforcementSpec,
     Room,
@@ -1447,20 +1448,20 @@ FLOOR_OPENINGS = [
     # Shower recess is a finish-zone concern; the stair arrives via the slab above.
 ]
 
-# The sauna's corner-shower splash walls (plans/TODO.md §Hardwood): the 36"x36" pan's two
-# closed sides are tile for the full 7'-6" liner height, not basswood T&G — an override
-# that bills as tile and is subtracted from the SAUNA assemblies' sauna-shiplap liner area.
-# W-B-CS runs from N-B-SA-NE (the shower corner) south, so its splash is the first 3';
-# the north wall runs west→east into that same corner, so its splash is the last 3' of that
-# line, on W-B-SA-N2 (the east segment the hall's tee at N-B-HALL-S cut off). Both spans
-# are 36" of TILE measured from the pan corner's FINISH face, which sits 6 1/4" off the
-# W-B-CS axis and 4 13/16" off the W-B-SA-N2 axis — the room's clear face is that finish
-# face, so a span datumed at an axis corner loses those inches to the wall.
+# The two 36 in. tiled splash spans replace wood with Durock and supported packing.
+# Finished faces close on the pan: east x=209.75, north y=116.125 in. The quarter-inch
+# projection is physical, not a renderer reveal. See notes/shower_assemblies.md for the
+# valve pocket, stringer and still-unqualified waterproofing/foil/pan transitions.
 PANELING = [
     WallPaneling(uid="CBK901AAAA", tag="WP-B-SAUNA-SPLASH", room="RM-B-SAUNA",
                  material_ref="tile", height=ft(7, 6), replaces_wall_finish=True,
-                 spans=(PanelingSpan(wall_ref="W-B-CS", start=inch(4.8125), length=ft(3)),
-                        PanelingSpan(wall_ref="W-B-SA-N2", start=inch(5.6875), length=ft(3)))),
+                 thickness=inch(0.25), finish_projection=inch(0.25),
+                 substrates=(PanelingSubstrate(material_ref="durock-half-inch",
+                                              thickness=inch(0.5)),
+                             PanelingSubstrate(material_ref="struct-1-plywood",
+                                               thickness=inch(0.25))),
+                 spans=(PanelingSpan(wall_ref="W-B-CS", start=inch(3.875), length=ft(3)),
+                        PanelingSpan(wall_ref="W-B-SA-N2", start=inch(5.75), length=ft(3)))),
 ]
 
 # --- RM-B-BATH's wet-wall bulkhead --------------------------------------------------

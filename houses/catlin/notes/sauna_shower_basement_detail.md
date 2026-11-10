@@ -37,7 +37,7 @@ is 84 1/16 inches AFF; use that surface for headroom and heater checks.
 
 - Drains: the pan drain is centered in the 36 × 36-inch pan. The separate 6 × 6-inch floor grate is centered at (162, 98 3/16) inches, 18 inches south of the north liner and 8 3/4 inches clear west of the pan's west curb. It is beneath `FURN-B-SAUNA-LOWER`, with removable deck panels and an open frame. Both condensate drops descend in the north-wall cavity and run beneath the deck, ending 9 inches AFF over the floor grate at x=162 and x=160 inches. Both sanitary receptors connect below the slab to `PR-B-SAUNA-DRAIN`; the vent riser remains in the east-wall liner. Keep all access panels and the aisle cleanout cap reachable; see sauna_seating.md.
 
-- Shower walls: foam tile backer board to ceiling (polyiso backer preferred for heat tolerance); finish with tile system and compatible waterproofing.
+- Shower walls: 1/2-inch USG Durock under tile, with supported packing and a bonded waterproofing system still requiring sauna temperature qualification. See the 2026-11-09 revision below.
 
 - Partition: glass shower enclosure wall + 36" glass divider door between shower and sauna. Partition is elevated leaving a 1" gap at bottom for air + water flow. Use 1/2" tempered glass with 2–3 spigots (sealant anchor method) and ≥1" standoff; maintain cleanable, durable edges at the floor.
 
@@ -51,12 +51,18 @@ is 84 1/16 inches AFF; use that surface for headroom and heater checks.
 
 - Coordinate: thresholds (now flush throughout — see the slab note), the pan curb's two open sides, slip resistance, and transitions between the sealed slab, any duckboards, and the pan curb.
 
-## Open item — the rinse's wet walls (2026-10-12)
+## Wet-wall revision — 2026-11-09
 
-**The model and this note disagree, and this note is the intent.** `WP-B-SAUNA-SPLASH` bills
-tile on the sauna's T&G shiplap liner (`W-B-CS`, `W-B-SA-N2`); the bullet above specifies
-foam tile backer to the ceiling under a bonded waterproofing. Tile on shiplap is the
-detail the house-wide wet-wall rule forbids: backer and a bonded membrane behind any finish
-a shower wets, lapped over the pan's flange. **Before the tile is bought:** confirm the two
-spans' substrate is polyiso foam backer (GoBoard class), sealed at seams and to the pan,
-and re-type the liner behind them, or record why the shiplap stays.
+[Shower assembly coordination](shower_assemblies.md) supersedes the earlier foam-backer
+wall intent. Both tiled spans now remove shiplap, model 1/2-inch USG Durock over supported
+packing, and include the local valve pocket and a stringer 2 3/4 inches behind tile.
+The control stays 51 7/16 inches above slab, which is 49 7/16 inches above the 2-inch
+shower standing surface. Control and head are centred on the pan's east wall, at
+north–south centreline y=98 3/16 inches. Hot/cold endpoints meet their approximate hubs
+with axial side arrivals; their geometric match does not make the manufacturer dimensions exact.
+
+**Construction remains BLOCKED** until the complete waterproofing/tape/mortar/collar/sealant
+system is qualified for sauna temperatures and the pan connection and foil continuity are
+accepted. USG permits Durock in saunas; that does not approve the remaining materials.
+See the linked coordination note and its rendered valve section for the actual layer planes,
+insulation termination, supported stringer, sealed pipe penetrations and required foil return.

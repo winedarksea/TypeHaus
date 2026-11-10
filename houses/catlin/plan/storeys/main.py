@@ -1871,6 +1871,13 @@ FLOOR_HEAT = [
 # springing point — so both wells share that same south edge. Run here is 8'-11 5/8": IRC
 # R311.7.6's 36" landing plus six 11 15/16" treads, well inside R311.7.5.2's 10" minimum.
 FLOOR_OPENINGS = [
+    # Subfloor clearance for the centered Fit-Flo drain, entirely inside the 170..186"
+    # joist bay. This 6x6" bounding cut represents Swan's recommended 6" round site cut;
+    # it cuts no joist, generates no header/trimmer and leaves the basement ceiling closed.
+    FloorOpening(uid="B2SHDRAIN1", tag="FO-M-BATH2-SH-DRAIN", purpose=FloorOpeningPurpose.CHASE,
+                 outline=(pt(inch(73.615), inch(173.25)), pt(inch(79.615), inch(173.25)),
+                          pt(inch(79.615), inch(179.25)), pt(inch(73.615), inch(179.25))),
+                 penetration_for=("PR-B-SH2-DRAIN",), cuts_ceiling_below=False),
     FloorOpening(uid="CMF601AAAA", tag="FO-M-STAIR",
                  outline=(pt(ft(10, 3.25), ft(26, 0.375)), pt(inch(212.75), ft(26, 0.375)),
                           pt(inch(212.75), ft(35, 4.875)), pt(ft(10, 3.25), ft(35, 4.875))),

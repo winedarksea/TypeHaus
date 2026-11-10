@@ -41,6 +41,7 @@ from typehaus.model.placeables import (
 )
 from typehaus.model.refs_holes import PublishedHole
 from typehaus.model.registry import register_constructor
+from typehaus.model.shower_assembly import ShowerAssemblySpec
 from typehaus.model.surface_mount import SurfaceMountSpec, SurfacePostMount
 from typehaus.model.track_lighting import (
     ASSEMBLY_DIMENSION_RELATIVE_TOLERANCE,
@@ -564,6 +565,7 @@ class FixtureType(HausModel):
     # Flood-level rim above the body's base, like ``height``: a basin's rim, a shower's
     # threshold, a bowl's rim. None reads the body's top, which no rim exceeds but a
     # surround, backsplash or tank does (UPC 905.3, ``mep.vent_connection``).
+    shower_assembly: ShowerAssemblySpec | None = None
     flood_rim_height: Length | None = None
     # Prefabricated receptors bear on the slab/subfloor, without the room's covering.
     # Enclosed drop-in baths exclude their enclosure rather than just the rim footprint.

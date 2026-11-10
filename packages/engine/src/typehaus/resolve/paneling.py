@@ -53,6 +53,11 @@ def resolve_paneling(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                 findings.append(_error(
                     el, f"paneling {el.tag} names no material {el.material_ref!r}"))
                 continue
+            missing_substrates = [layer.material_ref for layer in el.substrates
+                                  if layer.material_ref not in materials]
+            if missing_substrates:
+                findings.append(_error(el, f"unknown substrate materials {missing_substrates}"))
+                continue
             walls = (_line_walls(model, line) if line is not None
                      else bounding_walls(model, room))
             if el.walls:
@@ -156,10 +161,14 @@ def resolve_paneling(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                         continue
                     outline = ([] if toward is None else
                                _band_outline(wall, lo, hi, toward, thickness_m,
-                                             el.replaces_wall_finish, skip))
+                                             el.replaces_wall_finish, skip,
+                                             el.finish_projection.meters if el.substrates
+                                             else _FLUSH_REVEAL_M))
                     pieces = () if not outline else tuple(
                         (_band_outline(wall, a, b, toward, thickness_m,
-                                       el.replaces_wall_finish, skip),
+                                       el.replaces_wall_finish, skip,
+                                             el.finish_projection.meters if el.substrates
+                                             else _FLUSH_REVEAL_M),
                          wall.base_ref_z_m + z0, wall.base_ref_z_m + z1)
                         for a, b, z0, z1 in _net_cells(
                             lo, hi, band_z0, band_z1, holes,
@@ -179,6 +188,10 @@ def resolve_paneling(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                         thickness_m=thickness_m,
                         pieces=pieces,
                     ))
+                    if el.substrates and outline:
+                        from typehaus.resolve.paneling_substrate import add_paneling_substrates
+
+                        add_paneling_substrates(model, el, model.panelings[-1])
     from typehaus.resolve.paneling_trim import resolve_paneling_trim
 
     findings.extend(resolve_paneling_trim(plan, model))
@@ -368,7 +381,8 @@ def _room_side_offset(wall, toward: tuple[float, float],
 
 def _band_outline(wall, lo: float, hi: float, toward: tuple[float, float],
                   thickness_m: float, replaces_finish: bool,
-                  skip: frozenset[str] = frozenset()):
+                  skip: frozenset[str] = frozenset(),
+                  projection_m: float = _FLUSH_REVEAL_M):
     """The band's plan rectangle: the ``lo``..``hi`` stretch of the wall's room-side face.
 
     A band that *replaces* the wall finish occupies the depth that finish had, so it lies
@@ -383,7 +397,7 @@ def _band_outline(wall, lo: float, hi: float, toward: tuple[float, float],
     face = _room_side_offset(wall, toward, skip)
     # A replacing band shifts _FLUSH_REVEAL_M proud: coplanar with the finish it meets, the
     # viewer z-fights the two faces.
-    inner, outer = ((face - thickness_m + _FLUSH_REVEAL_M, face + _FLUSH_REVEAL_M)
+    inner, outer = ((face - thickness_m + projection_m, face + projection_m)
                     if replaces_finish else (face, face + thickness_m))
     p0 = add(wall.axis[0], scale(direction, lo))
     p1 = add(wall.axis[0], scale(direction, hi))

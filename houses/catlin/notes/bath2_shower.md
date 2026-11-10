@@ -190,20 +190,49 @@ BATH2's 20 cfm, so the grille's position is the only lever.
    height: the 96" panel on the 5 1/2" base stops short of the 106" ceiling, so a top cap or trim. A Corian
    floor-to-ceiling stall (about $1.5-3k more, one piece) was considered and declined.
 
-**Drain coordination, updated 2026-10-23.** The SS-3636's centre drain, (6'-4 5/8",
-14'-8 1/4"), sits over FS-M-WEST joist 11, whose top flange runs y 174 3/4"..177 1/4". A riser
-there cuts the flange: `mep.run_in_joist_flange` FAILs it and `mep.riser_through_deck` finds no
-opening to head it. `drain_position` is now (6'-4 5/8", 14'-11"), the nearest bay point that
-clears the flange for a 2" pipe, 2 3/4" north of centre. `PR-B-SH2-DRAIN` drops from the drain
-into that bay, runs below the joists (underside 97 9/16" basement) west along y=14'-11" from
-87 1/16" to 85 15/16", and enters PR-B-MAIN-DRAIN's corner at (3', 16'-6") at the old 85 3/8"
-invert. Flattest slope 0.33"/ft, against the 1/4" minimum. `haus route --run` was no use here:
-it routes to the main's sewer exit at 37', 35 ft long, with footing, sleeve and cleanout
-FAILs, so the run is hand-authored. Checks: `haus check` 0 FAIL, no new UNKNOWN. Under
-`--no-suppress` the only SH2 line is the riser through the deck (2.38" against the 2" undrawn
-allowance), the same class the old run carried. **OPEN, owner:** a 2 3/4" offset from a moulded
-centre drain sits off the pan's low point. Confirm with Swanstone that the SS-3636 takes it, or
-frame a centre floor opening with joist 11 cut and headed (a structural call).
+<a id="drain-coordination"></a>
+
+**Drain coordination — resolved 2026-11-09.** The SS-3636's molded drain stays at the pan's
+centre, **(76.615, 176.25) inches**. The former 2 3/4-inch plumbing offset is removed from
+both the fixture and its service port. At the old framing station the drain was only
+1/4 inch north of joist 011's centre: the 2-inch riser and the recommended drain clearance
+could not pass its flange.
+
+The correction moves the **entire uncut joist 011 from y=176 to y=170 inches** and adds
+**one full-span TJI 230 at y=186 inches**. With the unchanged neighbours at y=160 and 192,
+the bays are 10, 16 and 6 inches o.c.; none exceeds the published 16-inch spacing or
+increases the existing span. Both members bear on the existing west sill and x=18-foot
+wall line. Subfloor support is continuous except for the drain clearance; there are no
+cut joists, opening headers, trimmers or stairwell. The extra TJI, its west-sill A35Z and
+the adjusted bearing blocking are derived and billed by the existing framing takeoff.
+
+`FO-M-BATH2-SH-DRAIN` declares only the **6x6-inch subfloor clearance** centred on the
+outlet, a model bounding box for Swan's recommended 6-inch round site cut. It lies at
+least 2 inches clear of the adjacent joist flanges and preserves the ceiling below.
+`PR-B-SH2-DRAIN` starts **1/4 inch below the 3/4-inch subfloor top**, on the molded drain
+axis, as [Swan's installation instructions, form 200-06-10 p.12](https://pdf.lowes.com/installationguides/671037270270_install.pdf)
+require. Dry-fit the delivered base before the site cut; use the included Fit-Flo gasket
+around the straight 2-inch pipe. The manufacturer's nominal centre remains an approximate
+setout until that measurement; correcting geometry does not change port certainty.
+
+The trap weir remains 3 inches below the structural datum. Its straight plan arm is 21.80
+inches to the existing sanitary tee at (98, 180.5); the vent and wall drop stay there.
+The cleanout takeoff at x=96 moves about 1/4 inch south to y=180.102525 on the same line,
+removing a kink; its existing cap and service-panel position remain.
+The under-joist leg retains its entry into `PR-B-MAIN-DRAIN` at (36, 198), elevation
+85.3875 inches above the basement datum. The branch's flattest slope is **0.275 in./ft**,
+above the 1/4-inch minimum; the existing dry vent still terminates the trap arm.
+
+The new full-span joist also requires coordinated crossings: BATH2's shower hot riser is
+at y=189.5, and the BATH2-lavatory, kitchen and sauna hot turns move from y=186 to 188.
+The sauna hot lane moves from x=198 to 195, leaving **3.75 inches edge-to-edge** between
+its bore and the cold trunk's x=200 bore at the new joist, against ESR-1153's 3.25-inch
+minimum. The lavatory drain at y=182.375 clears the new joist. The shower hot branch
+still arrives axially at its y=178.25 side hub, now along an 11 1/4-inch final approach.
+
+![Centered BATH2 drain and full-span joist coordination](assets/bath2-shower-drain-framing.svg)
+
+Drawing source: `scripts/render_bath2_shower_drain.py`, using resolved geometry.
 
 ## 6. Wet walls (follow-up, 2026-10-12)
 
@@ -350,3 +379,12 @@ manufacturer's 10x10x1 size is nominal: verify the final grille holder accepts t
   2026-10-22. https://www.jm.com/en/building-insulation/commercial/tile-backer-board
 - `houses/catlin/out/model.json`: `rooms` (RM-M-BATH2 clear height), and
   `plan/mep_registers_main.py`, `plan/mep_erv_l2.py`, `plan/fixture_types_wc.py`.
+
+## Shared assembly placement — 2026-11-09
+
+[Shower assembly coordination](shower_assemblies.md) places both visible 17T controls at
+the existing 48-inch valve station, with a 78-inch configurable head mounting height above
+the base's standing surface. Viewer, GLB and IFC share the same hardware builder. Keep the
+hot riser at y=189.5 inches to clear SH2's drain/cleanout and the added y=186 joist;
+its side-hub approach is 11 1/4 inches. The molded centre drain is connected by the
+coordinated full-span joist layout in §5.

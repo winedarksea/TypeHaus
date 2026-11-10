@@ -130,8 +130,7 @@ MAIN_FIXTURES = (
     # built element down the east wall instead of two boxes with dead floor between them.
     # The room's depth is spent exactly: 36" of shower + 70.365" of deck = 106.365" clear.
     #
-    # `drain_position` is unchanged and is NOT the pan's centre — it never was; it is where
-    # PR-B-SH2-DRAIN picks the waste up on its way to the stack. Left alone deliberately.
+    # The molded centre drain follows the fixture position; no independent drain override.
     #
     # ** -5 3/8" WEST, 2026-09-09, AND THE WALL IS WHY. ** W-M-BA2E2 was flush (0" clearance)
     # against this pan's east edge, so taking that wall off its jog and back onto W-M-BA2E's
@@ -142,12 +141,10 @@ MAIN_FIXTURES = (
     # gwb at 94.625" put it 1/100" inside the finish. The owner moved the knee wall and pan
     # 1/8" south (2026-10-23), closing the south jamb gap while keeping the 36" pan and
     # north shared line. The aisle to the vanity is 33 11/16".
-    # Centre drain (Swanstone SS-3636) at x of the pan centre, but y 2 3/4" north of it: at
-    # y=14'-8 1/4" the riser stands on joist 11's top flange (174 3/4"..177 1/4"). y=14'-11" is
-    # the nearest bay point that clears the flange by 1/2" for a 2" pipe. PR-B-SH2-DRAIN.
+    # FS-M-WEST moves joist 011 to y=170" and adds y=186", keeping <=16" spacing while
+    # clearing the centre drain at y=176.25" and its 6" subfloor hole (2026-11-09).
     Fixture(uid="CMQ805AAAA", tag="FX-M-BATH2-SH", type_ref="FX-SHOWER-36-THERMO-COMBO", room="RM-M-BATH2",
-            position=pt(ft(6, 4.615), ft(14, 8.25)), rotation=deg(-90), wall_ref="W-M-BA2E",
-            drain_position=pt(ft(6, 4.615), ft(14, 11))),
+            position=pt(ft(6, 4.615), ft(14, 8.25)), rotation=deg(-90), wall_ref="W-M-BA2E"),
     # ** THE KOHLER K-1130-W1-0 UNDERSCORE, A DROP-IN (2026-10-22; K-5713-W1 before). ** No
     # skirt: it drops through SL-M-TUBDK onto a 1"-2" mortar bed on the subfloor, and the rim
     # carries no load. So this Fixture is the RIM; the deck box in storeys/main.py is what

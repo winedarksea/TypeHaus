@@ -21,6 +21,8 @@ from .materials_exterior_darks import MATERIALS_EXTERIOR_DARKS
 MATERIALS = [
     # Every exterior dark: coloured from plan/exterior_palette.py (METAL, WINDOW).
     *MATERIALS_EXTERIOR_DARKS,
+    Material(tag="durock-half-inch", name="USG Durock cement board, 1/2 in.",
+             source="USG FAQ 567 permits sauna use; complete waterproofing/tape/sealant heat qualification OPEN"),
     Material(tag="pvc-opening-flashing", name="SureSill PVC opening flashing",
              color="#eeeeee", source="SureSill stock HeadFlash/sloped sill pan; catalog coordination envelopes."),
     Material(tag="silicone-transition", name="Proglaze ETA standard silicone transition",

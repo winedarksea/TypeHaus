@@ -44,6 +44,7 @@ _INSTEAD = {
 #: and an entry that no longer corresponds to a real load is a lie about the suite — which
 #: ``test_the_budget_table_is_not_stale`` below is what catches.
 _BUDGET: dict[str, tuple[int, str]] = {
+    "test_catlin_shower_assemblies.py": (0, "five shower assemblies reuse read-only model, context and IFC"),
     "test_surface_mount_assembly.py": (0, "surface bases and stair bearings reuse catlin_model_ro"),
     "test_fascia_mount_assembly.py": (0, "mount fit and export parity reuse model and IFC fixtures"),
     "test_bath_finish_variant.py": (1, "explicit finish parameter override is a different plan"),
@@ -77,7 +78,7 @@ _BUDGET: dict[str, tuple[int, str]] = {
     "test_catlin_bath2_vanity_heat_and_joists.py": (
         1, "a @cache'd module helper — one load for the module, not one per test"),
     "test_catlin_bath2_shower.py": (
-        0, "shared read-only Catlin model and IFC; no additional loads or emissions"),
+        0, "shared read-only model, IFC and check report for the stall and centered drain bay"),
     "test_winder_integration.py": (
         0, "shared read-only Catlin model/context; no additional loads"),
     "test_winder_ifc.py": (

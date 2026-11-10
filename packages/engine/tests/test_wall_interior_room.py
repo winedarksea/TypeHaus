@@ -46,18 +46,20 @@ def test_sauna_liner_lands_inside_the_sauna(catlin_model) -> None:
     asked of a foundation wall whose finish layers all sit outboard of the pour.
     """
     sauna = _sauna(catlin_model).buffer(1e-6)  # absorb the shared-edge tolerance
-    checked = 0
+    checked = set()
     for wall in catlin_model.walls:
         if wall.tag not in _SAUNA_WALLS:
             continue
         for layer in wall.layers:
-            if layer.name not in _LINER_LAYERS:
+            original = next((name for name in _LINER_LAYERS
+                             if layer.name == name or layer.name.startswith(name + "-")), None)
+            if original is None:
                 continue
             poly = Polygon(layer.polygon)
             covered = poly.intersection(sauna).area / poly.area
             assert covered > 0.99, f"{wall.tag}/{layer.name} is {covered:.2f} inside the sauna"
-            checked += 1
-    assert checked == len(_SAUNA_WALLS) * len(_LINER_LAYERS), checked
+            checked.add((wall.tag, original))
+    assert len(checked) == len(_SAUNA_WALLS) * len(_LINER_LAYERS), checked
 
 
 def test_sauna_cold_side_stays_outside_the_sauna(catlin_model) -> None:

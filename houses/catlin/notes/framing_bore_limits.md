@@ -601,8 +601,11 @@ Edge = |station - face| - hole/2. Worked, as found and as moved:
 3. **`PR-B-CW-TRUNK`** (1 1/4", hole 1.625, 2" row 12"): at x=209 on FS-M-WEST joist 012,
    213.25 - 209 - 0.8125 = **3.44" FAIL**; at x=200, 213.25 - 200 - 0.8125 = **12.44" PASS**.
 4. **`PR-B-HW-SAUNA` / `PR-B-CW-SAUNA`** (1/2", hole 0.875, field 6"): at 207/208, 5.81" and
-   4.81" against 6, and 1 - 0.875 = **0.125"** apart against 1.75. Moved to 198 / 206.5:
-   14.8" and 213.25 - 206.5 - 0.4375 = **6.31" PASS**, 7.62" apart.
+   4.81" against 6, and 1 - 0.875 = **0.125"** apart against 1.75. Now 195 / 206.5
+   (2026-11-09, BATH2 drain bay coordination): 17.8" and
+   213.25 - 206.5 - 0.4375 = **6.31" PASS**, 10.62" apart. The new y=186" joist also
+   crosses the x=200 cold trunk; its 1.625" hole and the sauna hot's 0.875" hole leave
+   **3.75" edge-to-edge**, against 3.25".
 5. **`PR-B-CW-BATH2`** (3/4", hole 1.125, field 6"): x=12, 12 - 6 - 0.5625 = **5.44" FAIL**;
    x=13, **6.44" PASS**.
 

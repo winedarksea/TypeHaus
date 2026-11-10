@@ -7782,3 +7782,16 @@ soffit by about 4", and the bay east is 5 5/8" clear. The exhaust stays ducted w
 the inlet is open, fed by a 12x10 grille and sleeve in `W-B-WELL`, with the 3/4" undercut Rheem's
 one-duct listing asks for. Moving the tank was not pursued: the closet has about 13" of spare
 width and it would need about 17". Numbers: `notes/basement_winter_heat.md`.
+
+## 2026-11-09 — BATH2 molded drain centered by adjusting the full joist layout
+
+The SS-3636 drain was 1/4" off FS-M-WEST joist 011's centre, so the 2 3/4" plumbing offset
+could not connect to the pan. Move the entire joist from y=176" to 170" and add one uncut
+TJI 230 at y=186": bays 10/16/6", all <= the existing 16" rating, same span and bearing.
+The centered 6" subfloor clearance leaves the basement ceiling closed. The service port
+and 2" pipe now meet at the molded centre, pipe top 1/4" below subfloor per Swan's guide.
+Hot turns move to y=188", the sauna hot lane to x=195", and the shower hot riser to y=189.5"
+to clear the new joist and its neighbouring routes. One TJI and one A35Z are added by the
+existing takeoff. The trap arm is straight, with its cleanout takeoff shifted 1/4" south;
+the vent tee, cleanout cap and main-drain tie remain. Detail and drawing:
+`notes/bath2_shower.md` §5.

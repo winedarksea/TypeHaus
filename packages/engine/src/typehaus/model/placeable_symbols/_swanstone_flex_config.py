@@ -49,13 +49,6 @@ class SwanstoneFlexDimensions:
     handle_height: float = 8.0
     handle_projection: float = 1.0
     handle_center_height: float = 36.0
-    head_diameter: float = 6.75  # Moen 26008; mounting positions below are visual allowances.
-    head_height: float = 78.0
-    head_projection: float = 4.0
-    head_thickness: float = 0.5
-    valve_height: float = 44.0
-    valve_plate_diameter: float = 6.5
-    valve_projection: float = 1.5
     basin_segments: int = 32
     swing_segments: int = 36
 

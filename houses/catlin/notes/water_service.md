@@ -127,7 +127,11 @@ also feeds its WC: 5.5 WSFU). WCs get an angle stop each. Three are floor-fed: `
 closes the bath's own riser off. The hall bath's shower pair runs north in `FS-ATTIC`'s webs and
 drops down `W-S-CH-W`: `DU-M-ERV-EXH-TRUNK` fills `FS-S-WEST`'s depth between the risers and the
 chase. `PA-M-DW-WHA-HW` is on the dishwasher's own stub. The sauna's stubs were swapped so hot
-meets the R10000's hot-left inlet.
+meets the R10000's hot-left inlet. Updated 2026-11-09: all five showers now have axial
+side-hub arrivals from shared assemblies. The sauna is centred on the east wall; BATH1's
+WC tee stays at its original chase drop, and the attic elbows move into the hub plane above
+the vents. [Shower assembly coordination](shower_assemblies.md) records the stations,
+BATH2's retained hot/drain clearance, and the outstanding sauna material qualification.
 
 ## 4. Thermal expansion (research; nothing modelled)
 
@@ -240,6 +244,12 @@ The basin (`PR-B-HW-BATH1`, 12.8 ft, 1.2 gpm) loses under 0.5 psi. So the sink h
 fixture minimum (the usual UPC 608 figure, not read here) with about 25 psi at the header, even
 with both running. Against the still-unmeasured street pressure above, that is the number to
 compare. The 3.0 gpm case is worst-case; the dishwasher's fill rate is an assumption.
+
+**BATH2 drain bay coordination, 2026-11-09.** The new y=186-inch TJI requires the kitchen,
+BATH2-lavatory and sauna hot turns at y=188 inches. The sauna hot crosses at x=195 to
+separate its web bore from the x=200 cold trunk. The shower hot riser is y=189.5 and its
+48-inch valve station stays fixed. `notes/bath2_shower.md` §5 gives the drain and framing
+setout; manifold outlets and branch diameters are unchanged.
 
 `mep.water_manifold_ports` holds one run per outlet. `haus route houses/catlin --manifold
 EQ-B-HW-HEADER` re-lays the eight together; its first pass proposed several branches running

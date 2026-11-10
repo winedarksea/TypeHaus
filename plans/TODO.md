@@ -242,13 +242,19 @@ the future.
 - Pg 288 of the book has a roof eave detail where the roof and drip flashing alone extend out about an inch (no metal or sheathing).
 - [x] D-B-SUNKEN: removed the stock HeadFlash from the brick face above the sheltered arch (2026-11-09; `notes/court_opening_detail.md`). The Earthwork grade strip between the court and house is also cut out using the shared enclosure outline.
 - Fixture connections (stations applied 2026-11-07, `houses/catlin/plan/wet_ports.py`). Still open:
-  - BATH2/BATH1 R10000 supplies stub straight in at the finished face. BATH2's hot riser is elbowed
-    6 3/4" north (riser y 185, not the cold's 1 1/2"); at hub + 1 1/2" it FAILs `run_interference`
-    on PR-B-SH2-DRAIN, which moving the SH2 arm tee, its vent leg and CO-M-SH2-HEAD 2" north
-    (tee y 182.5) clears with 0 FAIL (owner, BATH2 note option 1); BATH1's cold drop doubles as the WC tee, so an
-    along-wall arrival moves the drop and tee to y >= 413" in W-S-CH-W.
-  - Sauna R10000: the W-B-CS stubs stop at mid-stud, 4 1/4" behind the hubs, which sit inside
-    the 2" foil-polyiso layer. Decide stub depth and how the supplies pass the vapour layer.
+  - [x] Five shower assemblies aligned (2026-11-09): shared controls/heads and approximate
+    side hubs; sauna centred on its east wall, BATH2 at 48", attic arrivals above vents,
+    BATH1's WC tee retained. `mep.shower_assembly_alignment` grades position and axis
+    independently of manufacturer certainty. See `houses/catlin/notes/shower_assemblies.md`.
+  - [ ] Sauna wet-wall release: 1/2" Durock replaces shiplap under the tiled spans, with
+    packing, a local valve pocket and Delta's 2 3/4" stringer setback. **BLOCKED** pending
+    documented temperature compatibility of the complete waterproofing, tape, mortar,
+    collars and sealants, and the sealed foil/pan-liner transitions. Durock suitability
+    alone is not system approval.
+  - [x] BATH2 molded-pan drain offset (2026-11-09): pipe and port centred on the SS-3636;
+    joist 011 moves from y=176 to 170", with one full-span TJI added at y=186" so bays
+    stay <=16" o.c. Six-inch subfloor clearance, ceiling below closed; adjacent hot routes
+    coordinated. See `houses/catlin/notes/bath2_shower.md` §5.
   - APPL-LG-DISHWASHER: a Product and price row for the 48" braided 3/8" supply its `hose_length` assumes.
   - The floor-fed WC stops (FX-M-BATH2-WC, FX-S-BATH1-WC) are house setout, APPROXIMATE.
   - The washer's real valves are mid-run tees, which the endpoint grade cannot see.
@@ -276,6 +282,17 @@ the future.
 - Is TypeHaus organized such that a contractor building typehaus could hand their chatbot/llm of choice the github repo link and easily get answers they need on the design?
 - Reverse osmosis sink?
 - Reduce the number of LED strip controllers, ideally one or two for the soffits, not six (Zigbee vs Matter: see the cove-controller item above).
+- 3d heat pump head model
+- 3d model of the plant room reservoir
+- 3d model of the bedside lighting
+- 3d model of the washer dryer
+- 3d model of the terminal_neck and transfer grills. Also REG-M-XFER-MUD-NECK doesn't have the depth for the full grill, it can probably just be a hole with a grill plate
+- Pantry shelves have a middle support that would ideally only go half depth (sticking to north half), right now it is rather restricting access to the west end of the pantry.
+- drywall window returns need to have a paint layer (matching the room, ideally)
+- 3d model of the utility sink to show a basin
+- Drywall returns on the rough openings that aren't doors.
+- ED-B-BATH-CAN1 is placed inside the soffit
+- Tile of the bathroom
 
 # Project Management
 

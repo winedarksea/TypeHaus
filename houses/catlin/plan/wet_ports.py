@@ -1,21 +1,14 @@
-"""Rough-in stations for the water closets, showers and tubs, in each product's local frame.
+"""Water-closet and floor-drain stations in each product's local frame.
 
 +y toward the product's back, z from its body base (``resolve/mep_sleeves.expected_port_point``).
-A floor bowl's base is the finished floor, so its flange is z=0. Valve inlets follow Delta's
-R10000-UNBX sheets for side and depth; their spacing is undimensioned, so they stay APPROXIMATE.
+A floor bowl's base is the finished floor, so its flange is z=0. Shower valve stations now
+come from the shared ShowerAssemblySpec in plan/shower_assemblies.py.
 """
 
 from typehaus.model import PortCertainty, Service, ServicePort, inch
 
 #: Finished wall to closet-flange centre, every TOTO floor bowl in the house.
 WC_ROUGH_IN_IN = 12.0
-#: Undimensioned (DSP-B-R10000 Rev L p.1 scales ~1 3/4"); ±2" kept as the allowance.
-VALVE_HALF_SPACING_IN = 2.0
-#: Inlet hub centre behind the finished face: scaled, bounded by the published 2 3/4" ±1/4"
-#: finished wall to stringer (M&I 50353 Rev L p.2 step 1B).
-VALVE_HUB_DEPTH_IN = 1.75
-_DELTA = ("Delta M&I 50353 Rev L p.2 fig. 2A + DSP-B-R10000 Rev L p.1, "
-          "media.deltafaucet.com, read 2026-11-07")
 
 
 def floor_wc_ports(depth_in: float, wall_gap_in: float, *, source: str, stop_note: str = "",
@@ -59,25 +52,6 @@ def floor_wc_ports(depth_in: float, wall_gap_in: float, *, source: str, stop_not
                           f'the finished wall; the tank back stands {wall_gap_in}" off it.'),
         cold,
     )
-
-
-def valve_ports(centre_in: tuple[float, float, float], wall: tuple[float, float],
-                note: str) -> tuple[ServicePort, ...]:
-    """Hot and cold inlets of a valve body whose finished-face centre is ``centre_in``; ``wall``
-    points from the room into the valve's wall (product frame). Facing the valve, hot is on
-    the left and its side hub points left, cold the mirror (50353 fig. 2A)."""
-    (x, y, z), (nx, ny) = centre_in, wall
-    left = (-ny, nx)  # facing +n, left is +90 degrees from it
-    x, y = x + nx * VALVE_HUB_DEPTH_IN, y + ny * VALVE_HUB_DEPTH_IN
-    return tuple(
-        ServicePort(tag=tag, service=service,
-                    position=(inch(x + side * left[0] * VALVE_HALF_SPACING_IN),
-                              inch(y + side * left[1] * VALVE_HALF_SPACING_IN), inch(z)),
-                    connection_size=inch(0.5), direction=(side * left[0], side * left[1], 0),
-                    notes='R10000-UNBX side hub, 1 3/4" behind the finished face; spacing '
-                          f"undimensioned ({_DELTA}); {note}")
-        for tag, service, side in (("VALVE-HOT", Service.WATER_HOT, 1),
-                                   ("VALVE-COLD", Service.WATER_COLD, -1)))
 
 
 def floor_drain_port(x_in: float, y_in: float, z_in: float = 0.0, *,

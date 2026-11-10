@@ -23,6 +23,10 @@ from __future__ import annotations
 
 import math
 from collections.abc import Callable, Mapping, Sequence
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typehaus.model.shower_assembly import ShowerAssemblySpec
 
 from typehaus.model.placeable_symbols._frame import (
     PART_COLORS,
@@ -162,11 +166,22 @@ def plan_symbol_strokes(symbol: str | None, width_m: float,
 
 
 def model_parts(symbol: str | None, width_m: float, depth_m: float,
-                height_m: float, *, material_refs: Mapping[str, str] | None = None
+                height_m: float, *, shower_assembly: ShowerAssemblySpec | None = None,
+                material_refs: Mapping[str, str] | None = None
                 ) -> tuple[Part, ...]:
     """The generated 3D parts for ``symbol`` at a W×D×H size, in the local frame."""
-    return with_material_refs(symbol_geometry(symbol, width_m, depth_m, height_m)[1],
-                              material_refs)
+    parts = symbol_geometry(symbol, width_m, depth_m, height_m)[1]
+    if shower_assembly is not None:
+        from typehaus.model.placeable_symbols._shower_hardware import shower_hardware_parts
+
+        # Generic shells fit their catalog box. An assembly's actual end-face setout
+        # puts the thin surround behind the control plane instead of burying its trim.
+        parts = tuple({**part, "center": (
+            part["center"][0] + math.copysign(part["size"][0], part["center"][0]),
+            *part["center"][1:])} if part.get("role") == "shower:end-wall" else part
+                      for part in parts)
+        parts += shower_hardware_parts(shower_assembly)
+    return with_material_refs(parts, material_refs)
 
 
 def place_local(points: Sequence[Point], position: tuple[float, float],

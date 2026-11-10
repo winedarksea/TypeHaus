@@ -514,8 +514,9 @@ def test_every_wall_layer_is_billed_or_waived(catlin_model) -> None:
                 # structure is a pour and frames none. Keyed by layer name (the child_key
                 # `resolve/framing/furring.py` mints) rather than by category alone, so a
                 # second furring layer cannot ride on the first one's strapping.
+                source_layer = layer.source_layer_name or layer.name
                 assert any(member.category == "strapping"
-                           and member.child_key.startswith(f"strapping-{layer.name}-")
+                           and member.child_key.startswith(f"strapping-{source_layer}-")
                            for member in wall.members), (
                     f"{wall.tag}: its {layer.material_ref} FURRING layer {layer.name!r} "
                     "frames no strapping — it is billed nowhere")

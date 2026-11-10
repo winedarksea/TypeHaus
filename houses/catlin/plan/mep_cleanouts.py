@@ -95,12 +95,13 @@ MAIN_CLEANOUTS = [
                   cap_position=pt(ft(12, 6), ft(18, 1.75)), cap_elevation=ft(2),
                   access="wall", wall_ref="W-M-CLN",
                   clear_width=inch(24), clear_depth=inch(24)),
-    # PR-B-SH2-DRAIN's upper terminal: its 21 1/2" trap arm made the branch 81" of horizontal,
+    # PR-B-SH2-DRAIN's upper terminal: its 21.8" trap arm makes the branch >81" of horizontal,
     # past 707.4's 5' exemption. A cleanout tee on the arm 2" short of the vent tee, its
     # extension up W-M-BA2E2's west bay clear of the hot riser and stud-004, capped 12" up
     # behind a panel in RM-M-CLOSET's face (never the shower's).
     DrainCleanout(uid="05QYQYFP72", tag="CO-M-SH2-HEAD", pipe_ref="PR-B-SH2-DRAIN",
-                  position=pt(inch(96), inch(180.36)), fitting_elevation=inch(-3.456),
+                  # On the straight recentered arm; cap remains at the existing service panel.
+                  position=pt(inch(96), inch(180.102525)), fitting_elevation=inch(-3.453238),
                   cap_position=pt(inch(96), inch(182.4)), cap_elevation=inch(12),
                   access="wall", wall_ref="W-M-BA2E2",
                   clear_width=inch(18), clear_depth=inch(18)),

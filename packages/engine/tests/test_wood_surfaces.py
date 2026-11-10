@@ -44,20 +44,23 @@ def _liner_net_ft2(catlin_model, wall, material_ref="catlin-sauna-shiplap") -> f
     openings inside the band. W-B-S2's liner stops at the sauna's 7'-6" ceiling while its
     host foundation wall runs 9'-0", so billing the wall's face would buy 13.7 sf of
     basswood for concrete nobody sees."""
-    layer = next(ly for ly in wall.layers if ly.material_ref == material_ref)
-    if not layer.is_banded:
-        return _wall_net_ft2(catlin_model, wall)
-    band_z0, band_z1 = layer.band(wall)
-    run = length(sub(wall.axis[1], wall.axis[0]))
-    area = run * (band_z1 - band_z0)
-    for opening in catlin_model.openings:
-        if opening.host_wall != wall.tag:
+    area = 0.0
+    for layer in wall.layers:
+        if layer.material_ref != material_ref:
             continue
-        overlap = (min(band_z1, wall.z0_m + opening.sill_m + opening.height_m)
-                   - max(band_z0, wall.z0_m + opening.sill_m))
-        if overlap > 0.0:
-            area -= opening.width_m * overlap
-    return max(0.0, area) * _M2_TO_FT2
+        start, end = layer.run_span_m or (0, length(sub(wall.axis[1], wall.axis[0])))
+        bottom, top = layer.band(wall)
+        covered = (end-start) * (top-bottom)
+        for opening in catlin_model.openings:
+            if opening.host_wall != wall.tag:
+                continue
+            width = max(0, min(end, opening.center_along_m+opening.width_m/2)
+                        - max(start, opening.center_along_m-opening.width_m/2))
+            lower = wall.base_ref_z_m + opening.sill_m
+            height = max(0, min(top, lower+opening.height_m)-max(bottom, lower))
+            covered -= width * height
+        area += max(0, covered)
+    return area * _M2_TO_FT2
 
 
 # --- the sauna liner and its tile splash ---------------------------------------------------
@@ -96,7 +99,7 @@ def test_the_sauna_liner_bills_net_of_the_shower_splash(catlin_model, bom):
                  and p.tag == "WP-B-SAUNA-SPLASH") * _M2_TO_FT2
     assert splash == pytest.approx(2 * 3.0 * 7.5, rel=1e-3)  # two 3' bands x 7'-6"
     sauna = next(room for room in catlin_model.rooms if room.tag == "RM-B-SAUNA")
-    assert float(basswood["net_area_sqft"]) == pytest.approx(gross - splash, abs=0.05)
+    assert float(basswood["net_area_sqft"]) == pytest.approx(gross, abs=0.05)
     ceiling = next(row for row in rows if row["material"] == "catlin-sauna-ceiling-shiplap")
     assert float(ceiling["net_area_sqft"]) == pytest.approx(
         sauna.area_m2 * _M2_TO_FT2, abs=0.05)
@@ -166,7 +169,7 @@ def test_envelope_layers_nets_the_splash(catlin_model, bom):
                           and ly.material_ref == "catlin-sauna-shiplap" for ly in w.layers)]
     gross = sum(_liner_net_ft2(catlin_model, w) for w in liner_walls)
     billed = sum(float(r["net_area_sqft"]) for r in liner_rows)
-    assert billed == pytest.approx(gross - 45.0, abs=0.1)
+    assert billed == pytest.approx(gross, abs=0.1)
     basswood = next(row for row in bom["wood_surfaces"]
                     if row["material"] == "catlin-sauna-shiplap")
     assert billed == pytest.approx(float(basswood["net_area_sqft"]), abs=0.1)
@@ -177,11 +180,11 @@ def test_a_replacing_band_nets_only_the_finish_on_its_own_face(catlin_model):
     foil, and the gym face's gypsum, alone; a bath surround takes its face's gypsum, except a
     glass-mat backer, which it is glued to (BATH2, #27)."""
     replaced = replaced_finish_m2(catlin_model)
-    assert {layer for wall, layer in replaced if wall in ("W-B-CS", "W-B-SA-N2")} == {
-        "shiplap-liner"}
-    splash = sum(area for (wall, _), area in replaced.items()
-                 if wall in ("W-B-CS", "W-B-SA-N2")) * _M2_TO_FT2
-    assert splash == pytest.approx(45.0, abs=0.05)
+    # Sauna substrate replacement cuts the resolved wood regions directly: deducting
+    # the splash again here would under-order the liner by another 45 square feet.
+    assert not {layer for wall, layer in replaced if wall in ("W-B-CS", "W-B-SA-N2")}
+    assert all(p.finish_replaced_in_geometry for p in catlin_model.panelings
+               if p.tag == "WP-B-SAUNA-SPLASH")
     stubath = {p.wall_tag for p in catlin_model.panelings if p.tag == "WP-A-STUBATH-SURR"}
     bath2 = {p.wall_tag for p in catlin_model.panelings if p.tag == "WP-M-BATH2-SURR"}
     assert {w for w, layer in replaced if layer.startswith("gwb") and w in stubath | bath2} == (
