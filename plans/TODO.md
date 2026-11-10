@@ -300,6 +300,8 @@ the future.
 - Tile of the bathroom
 - Grounding rod
 - Robot training
+- Camera in ESS Room and Plant Room
+- 3d model of the S-5! snowguards over the entry of the canopy (already present but not well modeled)
 
 # Project Management
 
