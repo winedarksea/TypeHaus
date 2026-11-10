@@ -66,14 +66,17 @@ DUCTS_HVAC_BRANCHES_SECOND = [
             elevations=(inch(99.375), inch(99.375)),
             diameter=inch(6), routing=DuctRouting.EXPOSED,
             material="galvanized", design_cfm=80),
+    # Centre 112 1/4" storey: 5/8" over the x=18' pass-through box's bottom rail. Underived,
+    # it sat on the bay floor, inside that rail.
     DuctRun(uid="0E3JTBJFFN", tag="DU-S-HP-SUITE-RET", system=DuctSystem.RETURN,
             path=(pt(inch(104), inch(184)), pt(inch(254), inch(184))),
+            elevations=(inch(112.25), inch(112.25)),
             width=inch(6), depth=inch(4), routing=DuctRouting.JOIST_BAY,
             floor_ref="FS-ATTIC", material="galvanized", design_cfm=80),
     # Centre 105 3/8" storey: 1" over BED2/BED3's crowns, 1/8" under the hall ceiling board.
     DuctRun(uid="3NR7A186BJ", tag="DU-S-HP-SUITE-RET-LANE", system=DuctSystem.RETURN,
             path=(pt(inch(254), inch(184)), pt(inch(254), inch(184)), pt(inch(254), inch(335))),
-            elevations=(inch(110.125), inch(105.375), inch(105.375)),
+            elevations=(inch(112.25), inch(105.375), inch(105.375)),
             width=inch(6), depth=inch(4), routing=DuctRouting.SOFFIT,
             soffit_ref="SF-S-DUCT", material="galvanized", design_cfm=80),
 ]

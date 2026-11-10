@@ -52,7 +52,7 @@ room it opens from, and treats the zone a stair reaches as the house:
 | Zone | Net | Door | Free area | dP | Needs at 3 Pa |
 |---|---|---|---|---|---|
 | `RM-S-BED1/2/3` | 75 cfm out | 30" x 3/4" | 22.5 in^2 | **9.7 Pa** | 40 in^2 |
-| `RM-S-SUITE` (+ suite bath, closet; ducted return since 2026-11-09, below) | 80 cfm out | `D-S-SUITE` 32" x 3/4" | 24.0 in^2 | **9.7 Pa** | 43 in^2 |
+| `RM-S-SUITE` (+ suite bath, closet) | 0 (80 cfm out until its ducted return, 2026-11-09, below) | `D-S-SUITE` 32" x 1/2", sealed | - | balanced (9.7 Pa before) | - |
 | `RM-A-STUDIO` (+ studio bath, ERV closet) | 50 cfm out | `D-A-HALVES` 32" x 3/4" | 24.0 in^2 | **3.8 Pa** | 27 in^2 |
 | `RM-S-PLANT` | 70 cfm out | `D-S-PLANT` 30" x 1/2" | 15.0 in^2 | **19.0 Pa** (8.5 at 3/4") | 38 in^2 |
 | `RM-A-EAST-UNFIN` | 35 cfm out | `D-A-STUDY` 30" x 1/2" | 15.0 in^2 | **4.8 Pa** (2.1 at 3/4") | 19 in^2 |
@@ -118,8 +118,9 @@ returns to System 1 through its own duct instead:
 
 * `REG-S-HP-SUITE-RET`: 12x12 filter-back ceiling grille at (104", 184"), MERV 13 12x12x1
   (stocked), a locked balancing damper at its boot.
-* `DU-S-HP-SUITE-RET`: 6x4 in FS-ATTIC's y 176-192" bay, x 104" -> 254", through a derived
-  pass-through box at the x=18' bearing line.
+* `DU-S-HP-SUITE-RET`: 6x4 in FS-ATTIC's y 176-192" bay, x 104" -> 254", at 232 1/4"
+  absolute, through a derived pass-through box at the x=18' bearing line (5/8" over its
+  bottom rail).
 * `DU-S-HP-SUITE-RET-LANE`: drops into `SF-S-DUCT`'s east lane at (254", 184"), runs north at
   225 3/8" absolute to `EQ-S-ERV-MIX`'s south face at y=335". `DU-S-HP-BED2`/`-BED3` were
   lowered 3/4" so it clears their crowns by 1".
