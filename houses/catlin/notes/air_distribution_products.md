@@ -101,11 +101,12 @@ hall filter, so it carries its own: **12x12x1 MERV 13, a stocked size**. 144 in�
 80 fpm. Face estimated as the 28x12's (+2 5/8"). Balance and commissioning:
 `notes/system1_return_path.md`.
 
-## 6. The mudroom transfer — `REG-T-TRANSFER-PAIR-1210`
+## 6. The mudroom transfer — `REG-T-TRANSFER-MUD-1210`
 
-A pair of 12x10 aluminium fixed-bar return grilles (TRUaire A170 class, or equal H&C A650) on
-a lined sleeve through `W-M-STRW`'s bay. Acoustic alternative: Tamarack RAPR (baffled; no
-published STC or free area found). `CD-M-DATA-DOORBELL` was moved 1/2" north to clear it.
+One 12x10 aluminium fixed-bar return grille (TRUaire A170 class, or equal H&C A650)
+on the stair face of `W-M-STRW`. `AO-M-XFER-MUD` cuts only the painted 1/2in MDO
+back panel; the coat nook behind is open. No sleeve and no second grille. The existing
+location and nominal free-area basis remain. `CD-M-DATA-DOORBELL` stays at its shifted location.
 
 `REG-T-TRANSFER-0606` (2026-11-03) is D-S-BATH1's offset pair: one 6x6 grille of the same
 family on each face of `W-S-BD-N`'s lined west bay. The steel 170 6x6 lists 0.17 sf (~24 in^2)
@@ -187,7 +188,7 @@ kept as the record of what was weighed.
 |---|---|---|---|---|---|
 | `REG-M-SUP1` (living, ERV 4" supply) | disc valve with plaster-in frame (Lindab VGU + Airy, Trox Z-LVS subframe) | +$40-120 | frame in the 104 mm hole before taping; the duct stub must land exactly | disc twists out | same valve, no penalty |
 | `REG-M-RET5` (living, ERV 4" extract) | same | +$40-120 | same | same | none |
-| `REG-M-XFER-MUD` (12x10 wall) | mud-in flush cover (Invisagrille-type, magnetic face) | +$60-200 plus finishing | framed 12x10 opening and sleeve before board | face lifts off | free-area loss on a passive transfer: unpublished, the riskiest one |
+| `REG-M-XFER-MUD` (12x10 wall) | mud-in flush cover (Invisagrille-type, magnetic face) | +$60-200 plus finishing | 12x10 cut in MDO before painting | face lifts off | free-area loss on a passive transfer: unpublished, the riskiest one |
 | `REG-M-SUP3` (bedroom, ERV 4" supply) | plaster-in valve frame | +$40-120 | as SUP1 | as SUP1 | none |
 | former stall-fan intake (removed 2026-11-02; retained 10" filter option) | **not recommended** | +$100-250 | no standard mud-in filter frame | the filter comes out every change | filter + reduced face: a real penalty |
 | `REG-S-HP-STAIR` (12x6 sidewall in SF-S-DUCT's lining) | mud-in supply (Invisagrille 6x10 class; no 12x6 found) or a mud-in slot diffuser | +$100-250 plus finishing | frame set before the soffit is boarded; the boot flange meets the board face | magnetic face, damper behind | throw unverified at 50 cfm; free area unpublished |
@@ -218,7 +219,7 @@ mud-in face cannot hold one. (Whether the stairway request covered that return i
 | `REG-S-ERV-PLANT-EXH` | collar in W-S-C1's top plate | 1 3/4" lower, surface valve on the liner | |
 | `REG-A-STUBATH-EXH` | collar under the two vents | 1" lower (36" → 35") | |
 | `REG-A-HP-STUDY` / `-WEST` | damper box on FS-ATTIC joists | bay-centred, +1" / −1 7/8" | |
-| `REG-M-XFER-MUD` | sleeve vs the doorbell conduit | conduit +1/2" | |
+| `REG-M-XFER-MUD` | former sleeve vs the doorbell conduit (sleeve removed) | conduit +1/2" | |
 | A117 §307.2 at `REG-A-STUBATH-EXH` | 1 3/4" ≤ 4" | PASS | AM 100 overall H |
 | motorised damper bodies, floor boot heights, FA8 plate | not published | **confirm on submittal** | §7, §3, §8 |
 

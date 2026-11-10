@@ -291,7 +291,7 @@ the future.
 - [x] 3d heat pump head model — rounded white plastic casing, intake grille and recessed outlet.
 - 3d model of the plant room reservoir
 - [x] 3d model of the washer dryer — WashTower silhouette with round glazed doors and center controls.
-- 3d model of the terminal_neck and transfer grills. Also REG-M-XFER-MUD-NECK doesn't have the depth for the full grill, it can probably just be a hole with a grill plate
+- [x] Terminal-neck and transfer-grille 3D geometry: open collars/shells and framed blades; REG-M-XFER-MUD is one stair-side grille over a cut in the painted MDO panel, without a full-depth sleeve.
 - Pantry shelves have a middle support that would ideally only go half depth (sticking to north half), right now it is rather restricting access to the west end of the pantry.
 - drywall window returns need to have a paint layer (matching the room, ideally)
 - [x] 3d model of the utility sink — open stainless basin, cabinet doors and curved faucet with spray head.

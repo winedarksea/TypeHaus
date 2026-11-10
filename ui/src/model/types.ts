@@ -674,6 +674,8 @@ export interface Furniture {
 // furniture fields remain above during the transition, while the canvas uses this list
 // for appliances, mechanical, and electrical domains too.
 export interface CanvasObject {
+  /** Resolved world-space geometry, shared with GLB and IFC. */
+  body_mesh?: PackedMesh | null;
   uid: string;
   tag: string;
   storey: string;

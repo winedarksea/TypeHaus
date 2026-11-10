@@ -224,6 +224,9 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         from typehaus.resolve.terminal_necks import emit_terminal_necks
 
         emit_terminal_necks(model)  # a register's boot or spigot, behind its placed face
+        from typehaus.resolve.terminal_geometry import resolve_terminal_faces
+
+        resolve_terminal_faces(model)
     with _stage("terminal_ducts"):
         # These endpoints depend on the resolved ceiling-mounted terminal, not a copied Z.
         from typehaus.model.mep import DuctRun

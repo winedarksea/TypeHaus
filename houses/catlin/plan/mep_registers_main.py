@@ -7,7 +7,9 @@ from typehaus import (
     Mount,
     MountKind,
     Register,
+    RoughOpening,
     deg,
+    from_node,
     ft,
     inch,
     pt,
@@ -217,16 +219,24 @@ REGISTERS_MAIN = [
     # REG-M-RET-MUD is what actually drives airflow through it: the mudroom is the main
     # storey's low-pressure end by design, so the ERV pulls stair air through this louver.
     #
-    # Geometry: x=10'-3 3/4" backs onto W-M-STRW's stair face (10'-3 1/8"), facing east —
-    # the mudroom side is bare 2x6 bay, no opening needed there. y=34'-0" is the only bay
-    # wide enough (14 1/2" clear) on this BEARING wall; the bay north is 7 1/8", too narrow
-    # for the 12" face without cutting and heading a stud. z=3'-6" (top 4'-4") since
-    # 2026-09-24 (was 7'-6"), dropped with EQ-M-HP3-STAIR under ST-M2S's upper landing:
-    # the top clears that landing's 2x10 ledger on this wall (bottom 4'-9 3/4") by 5 3/4".
+    # One stair-side plate covers a cut in the painted MDO; the coat nook behind is open.
+    # Keep the hosted station in its existing clear bearing-wall bay. The 42in mount is
+    # the face bottom above finished LVP, not the centre of the nominal 12x10 opening.
     Register(uid="MW7W7SBZ65", tag="REG-M-XFER-MUD", kind=DuctSystem.TRANSFER, room="RM-M-LIVING",
-            type_ref="REG-T-TRANSFER-PAIR-1210",
+            type_ref="REG-T-TRANSFER-MUD-1210",
             mount=Mount(kind=MountKind.WALL, elevation=ft(3, 6)),
              location=Location(attachment=WallAttachment(
                  wall_ref="W-M-STRW", face="left", distance_from_start=inch(17.125),
                  normal_gap=inch(0), rotation_offset=deg(-180)))),
+]
+
+
+# Cut only the painted 1/2in MDO on the stair side (left/exterior). The sill is off
+# W-M-STRW's wall datum, while the register's 42in mount is its FACE BOTTOM above LVP.
+# Face centre: 42 + 1.02559055 + 11.75/2 = 48.90059055in; nominal hole bottom is 5in lower.
+TRANSFER_PANEL_OPENINGS_MAIN = [
+    RoughOpening(uid="MUDXFER001", tag="AO-M-XFER-MUD", host="W-M-STRW",
+                 position=from_node("N-M-N2", inch(11.125)),
+                 width=inch(12), height=inch(10), sill_height=inch(43.90059055),
+                 depth=inch(0.5), depth_from="exterior", framing_required=False),
 ]

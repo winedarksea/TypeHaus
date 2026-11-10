@@ -53,15 +53,18 @@ _FLOOR_GRILLE_PA = ((10.0, 1.0), (20.0, 4.0), (30.0, 9.0))
 _SUITEBATH_BOOT_REFERENCE_CFM = 20.0
 _SUITEBATH_BOOT_REFERENCE_LOSS_PA = 4.0
 
-_VALVE_NECK = TerminalNeck(width=inch(4), height=inch(4), depth=inch(2.9375),
+_VALVE_NECK = TerminalNeck(section="round", width=inch(4), height=inch(4), depth=inch(2.9375),
                            part="100 mm valve collar in a 4in snap-lock collar")
-_OBD_NECK_1206 = TerminalNeck(width=inch(12), height=inch(6), depth=inch(2.6875),
+_OBD_NECK_1206 = TerminalNeck(section="rectangular",
+                              width=inch(12), height=inch(6), depth=inch(2.6875),
                               part="opposed-blade damper and register box")
-_OBD_NECK_0806 = TerminalNeck(width=inch(8), height=inch(6), depth=inch(2.6875),
+_OBD_NECK_0806 = TerminalNeck(section="rectangular",
+                              width=inch(8), height=inch(6), depth=inch(2.6875),
                               part="opposed-blade damper and register box")
 
 AIR_REGISTER_TYPES = (
     RegisterType(tag="REG-T-ERV-VALVE-SUP",
+                 face_style="disc_valve",
                  name="ERV supply disc valve, 100 mm, white steel, ceiling collar",
                  footprint=(inch(5.0625), inch(5.0625)), height=inch(1), plan_symbol="register",
                  ventilation_terminal=True, product_ref="PROD-AIR-DISC-VALVE-100",
@@ -74,18 +77,21 @@ AIR_REGISTER_TYPES = (
     # 125 mm valve on a 4x5 increaser — 8 Pa (notes/erv_static_budget.md §10). On the wall
     # since 2026-11-10, like both basement supplies: (face width, projection), height.
     RegisterType(tag="REG-T-ERV-VALVE-SUP-125-WALL",
+                 face_style="disc_valve",
                  name="ERV supply disc valve, 125 mm, white steel, sidewall collar, 4x5in "
                       "increaser",
                  footprint=(inch(6.375), inch(1.75)), height=inch(6.375),
                  plan_symbol="register", ventilation_terminal=True,
                  product_ref="PROD-AIR-DISC-VALVE-100",
                  static_loss_pa_at_cfm=_VALVE_125_PA,
-                 neck=TerminalNeck(width=inch(5), height=inch(5), depth=inch(2.9375),
+                 neck=TerminalNeck(section="round",
+                                   width=inch(5), height=inch(5), depth=inch(2.9375),
                                    part="125 mm valve collar on a 4x5in increaser"),
                  source=f"Same family at 125 mm: face 162 mm (Trox LVS 125 table), spigot "
                         f"124 mm into a 5in collar, screwed to the stud-bay blocking. {_NOTE} §2.",
                  ports=(_port("supply", Service.SUPPLY_AIR),)),
     RegisterType(tag="REG-T-ERV-VALVE-SUP-WALL",
+                 face_style="disc_valve",
                  name="ERV supply disc valve, 100 mm, white steel, sidewall collar",
                  footprint=(inch(5.0625), inch(1.75)), height=inch(5.0625),
                  plan_symbol="register", ventilation_terminal=True,
@@ -95,6 +101,7 @@ AIR_REGISTER_TYPES = (
                         f"{_NOTE} §2.",
                  ports=(_port("supply", Service.SUPPLY_AIR),)),
     RegisterType(tag="REG-T-ERV-VALVE-EXH",
+                 face_style="disc_valve",
                  name="ERV extract disc valve, 100 mm, white steel, ceiling collar",
                  footprint=(inch(5.0625), inch(5.0625)), height=inch(1), plan_symbol="register",
                  ventilation_terminal=True, product_ref="PROD-AIR-DISC-VALVE-100",
@@ -105,6 +112,7 @@ AIR_REGISTER_TYPES = (
     # Wall type: (face width, projection), face height in `height`. 1 3/4in is the AM 100's
     # published overall height, so A117 sec. 307.2's 4in at REG-A-STUBATH-EXH holds on it.
     RegisterType(tag="REG-T-ERV-VALVE-EXH-WALL",
+                 face_style="disc_valve",
                  name="ERV extract disc valve, 100 mm, white steel, sidewall collar",
                  footprint=(inch(5.0625), inch(1.75)), height=inch(5.0625),
                  plan_symbol="register", ventilation_terminal=True,
@@ -117,6 +125,7 @@ AIR_REGISTER_TYPES = (
     # Same removable valve; a dimensioned bottom-entry box replaces the implicit elbow.
     # A 1.5D round elbow cannot turn inside this 5 1/2in staggered wall cavity.
     RegisterType(tag="REG-T-ERV-SUITEBATH-WALL",
+                 face_style="disc_valve",
                  name="Suite bath 100 mm extract valve on TH-ERV-SUITEBATH-BOOT-01",
                  footprint=(inch(5.0625), inch(1.75)), height=inch(5.0625),
                  plan_symbol="register", ventilation_terminal=True,
@@ -124,7 +133,8 @@ AIR_REGISTER_TYPES = (
                  static_loss_pa_at_cfm=tuple(
                      (cfm, pa + _SUITEBATH_BOOT_REFERENCE_LOSS_PA
                       * (cfm / _SUITEBATH_BOOT_REFERENCE_CFM) ** 2) for cfm, pa in _VALVE_PA),
-                 neck=TerminalNeck(width=inch(4), height=inch(8), depth=inch(5.25),
+                 neck=TerminalNeck(section="rectangular",
+                                   width=inch(4), height=inch(8), depth=inch(5.25),
                      part="TH-ERV-SUITEBATH-BOOT-01 4x8x5-1/4in bottom-entry valve box",
                      product_ref="PROD-AIR-SUITEBATH-BOOT"),
                  parts=(ProductPart(role="fitting", product_ref="PROD-AIR-SUITEBATH-BOOT"),),
@@ -134,11 +144,14 @@ AIR_REGISTER_TYPES = (
                  ports=(_port("return", Service.RETURN_AIR),)),
     # A disc valve cannot sit in a floor. Long side along the joist bay.
     RegisterType(tag="REG-T-ERV-EXH-FLOOR",
+                 face_opening=(inch(10), inch(2.25)),
+                 face_style="rectangular_grille",
                  name="ERV extract floor grille, 2 1/4x10 aluminium, on a 4in-round boot",
                  footprint=(inch(12), inch(3.5)), height=inch(1), plan_symbol="register",
                  ventilation_terminal=True, product_ref="PROD-AIR-FLOOR-GRILLE-2X10",
                  static_loss_pa_at_cfm=_FLOOR_GRILLE_PA,
-                 neck=TerminalNeck(width=inch(10), height=inch(2.25), depth=inch(5),
+                 neck=TerminalNeck(section="rectangular",
+                                   width=inch(10), height=inch(2.25), depth=inch(5),
                                    part="2 1/4x10x4 stamped 90-degree boot"),
                  source=f"Face 12 x 3 1/2in outside (Ferguson 412-AH listing, 2026-10-31); "
                         f"the boot's 5in height is unpublished, an estimate. Loss: derived K 5 "
@@ -148,6 +161,7 @@ AIR_REGISTER_TYPES = (
     # extract is RH-controlled. The 4in 24 VAC damper sits on DU-M-ERV-R-PLANT's start
     # collar in RM-M-MECH, reachable without an access panel in the humid liner.
     RegisterType(tag="REG-T-ERV-PLANT-EXH",
+                 face_style="disc_valve",
                  name="Plant-room extract disc valve, 100 mm, RH-controlled 4in damper at "
                       "the plenum",
                  footprint=(inch(5.0625), inch(1.75)), height=inch(5.0625),
@@ -161,6 +175,8 @@ AIR_REGISTER_TYPES = (
                         f"valve is cleaned yearly. {_NOTE} §7.",
                  ports=(_port("return", Service.RETURN_AIR),)),
     RegisterType(tag="REG-T-HP-SIDE-1206",
+                 face_opening=(inch(12), inch(6)),
+                 face_style="rectangular_grille", double_deflection=True,
                  name="Heat-pump supply, 12x6 aluminium double-deflection sidewall with OBD",
                  footprint=(inch(13.75), inch(1)), height=inch(7.75), plan_symbol="register",
                  product_ref="PROD-AIR-SIDEWALL-DD-OBD", neck=_OBD_NECK_1206,
@@ -168,10 +184,13 @@ AIR_REGISTER_TYPES = (
                         f"vertical blades aim, the horizontal set the spread. {_NOTE} §4.",
                  ports=(_port("supply", Service.SUPPLY_AIR),)),
     RegisterType(tag="REG-T-HP-STAIR-SIDE",
+                 face_opening=(inch(12), inch(6)),
+                 face_style="rectangular_grille", double_deflection=True,
                  name="Stair supply A220VO 12x6 with TH-HP-STAIR-BOX-01 and 4in branch",
                  footprint=(inch(13.75), inch(1)), height=inch(7.75), plan_symbol="register",
                  product_ref="PROD-AIR-SIDEWALL-DD-OBD",
-                 neck=TerminalNeck(width=inch(12), height=inch(6), depth=inch(4),
+                 neck=TerminalNeck(section="rectangular",
+                                   width=inch(12), height=inch(6), depth=inch(4),
                      part="TH-HP-STAIR-BOX-01 12x6x4 register box with centred 4in back collar",
                      product_ref="PROD-AIR-STAIR-REGISTER-BOX",
                      inlet=TerminalNeckInlet(position=(inch(0), inch(4), inch(0)),
@@ -180,6 +199,8 @@ AIR_REGISTER_TYPES = (
                         "notes/stair_supply_connection.md; grille retains OBD and westward throw.",
                  ports=(_port("supply", Service.SUPPLY_AIR),)),
     RegisterType(tag="REG-T-HP-STUDY-SIDE",
+                 face_opening=(inch(8), inch(6)),
+                 face_style="rectangular_grille", double_deflection=True,
                  name="Study heat-pump supply, 8x6 aluminium double-deflection sidewall with "
                       "OBD",
                  footprint=(inch(9.75), inch(1)), height=inch(7.75), plan_symbol="register",
@@ -188,16 +209,21 @@ AIR_REGISTER_TYPES = (
                         f"supply.md keeps the Titus 300R 8x6 throw basis. {_NOTE} §4.",
                  ports=(_port("supply", Service.SUPPLY_AIR),)),
     RegisterType(tag="REG-T-HP-FLOOR-0612",
+                 face_opening=(inch(12), inch(6)),
+                 face_style="rectangular_grille",
                  name="Heat-pump supply, 6x12 aluminium floor register with damper",
                  footprint=(inch(13.375), inch(7.375)), height=inch(1), plan_symbol="register",
                  product_ref="PROD-AIR-FLOOR-REG-6X12",
-                 neck=TerminalNeck(width=inch(12), height=inch(6), depth=inch(2),
+                 neck=TerminalNeck(section="rectangular",
+                                   width=inch(12), height=inch(6), depth=inch(2),
                                    part="multi-shutter damper below the flange"),
                  source=f"Face 7 3/8 x 13 3/8in and 2in damper depth are planning figures, "
                         f"not published at this size. {_NOTE} §4.",
                  ports=(_port("supply", Service.SUPPLY_AIR),)),
     # One assembly allowance: grille, collar, motorized damper (including actuator), boot.
     RegisterType(tag="REG-T-HP-CEIL-DAMPERED",
+                 face_opening=(inch(12), inch(6)),
+                 face_style="rectangular_grille", double_deflection=True,
                  name="Plant supply A220V 12x6 / ZD12X6TZ / TH-HP-PLANT-BOOT-01 assembly",
                  footprint=(inch(13.75), inch(7.75)), height=inch(1), plan_symbol="register",
                  product_ref="PROD-AIR-PLANT-GRILLE-12X6", neck=PLANT_SUPPLY_NECK,
@@ -209,11 +235,14 @@ AIR_REGISTER_TYPES = (
     # 12 x 29 opening under Manual D's 300 fpm (12x24x1: ~304 fpm over its media at 570 cfm),
     # so the filter is ordered as a custom size. RM-S-SUITE's return carries its own, below.
     RegisterType(tag="REG-T-HP-RET-FILTER",
+                 face_opening=(inch(28), inch(12)),
+                 face_style="rectangular_grille",
                  name="Heat-pump return, 28x12 aluminium hinged filter-back grille",
                  footprint=(inch(30.625), inch(14.625)), height=inch(1),
                  plan_symbol="register", product_ref="PROD-AIR-FILTER-RETURN-28X12",
                  filter_nominal_size="28x12x1", filter_merv=13, service_face="bottom",
-                 neck=TerminalNeck(width=inch(28), height=inch(12), depth=inch(1.75),
+                 neck=TerminalNeck(section="rectangular",
+                                   width=inch(28), height=inch(12), depth=inch(1.75),
                                    part="1in filter rack"),
                  source=f"Face estimated off H&C 673 30x12 (32 5/8in overall); 28 x 12in duct "
                         f"size, 336 in2, 244 fpm at 570 cfm. {_NOTE} §5.",
@@ -222,31 +251,38 @@ AIR_REGISTER_TYPES = (
     # behind REG-T-HP-RET-FILTER's. 12x12x1 is stocked; a locked balancing damper rides at the
     # boot, reached through the hinged face.
     RegisterType(tag="REG-T-HP-RET-FILTER-1212",
+                 face_opening=(inch(12), inch(12)),
+                 face_style="rectangular_grille",
                  name="Heat-pump return, 12x12 aluminium hinged filter-back grille",
                  footprint=(inch(14.625), inch(14.625)), height=inch(1),
                  plan_symbol="register", product_ref="PROD-AIR-FILTER-RETURN-12X12",
                  filter_nominal_size="12x12x1", filter_merv=13, service_face="bottom",
-                 neck=TerminalNeck(width=inch(12), height=inch(12), depth=inch(1.75),
+                 neck=TerminalNeck(section="rectangular",
+                                   width=inch(12), height=inch(12), depth=inch(1.75),
                                    part="1in filter rack"),
                  source=f"Face estimated as the 28x12's (+2 5/8in); 144 in2, 80 fpm at 80 cfm. "
                         f"{_NOTE} §5.",
                  ports=(_port("return", Service.RETURN_AIR),)),
-    RegisterType(tag="REG-T-TRANSFER-PAIR-1210",
-                 name="Transfer grille pair, 12x10 aluminium return grilles through the wall",
+    RegisterType(tag="REG-T-TRANSFER-MUD-1210",
+                 face_opening=(inch(12), inch(10)),
+                 face_style="rectangular_grille",
+                 name="Transfer grille, 12x10 aluminium, over the stair-side panel cutout",
                  footprint=(inch(13.75), inch(1)), height=inch(11.75), plan_symbol="register",
                  product_ref="PROD-AIR-RETURN-GRILLE-12X10",
-                 neck=TerminalNeck(width=inch(12), height=inch(10), depth=inch(5.5),
-                                   part="12x10 sheet-metal sleeve through the stud bay"),
-                 source=f"Two grilles back to back on a lined sleeve; 12in fits a 14 1/2in "
-                        f"bay without cutting a stud. Face estimated at +1 3/4in. {_NOTE} §6.",
+                 source=f"One stair-side grille over a 12x10 cut in the painted 1/2in MDO; "
+                        f"open coat nook behind. No sleeve. "
+                        f"Face estimated at +1 3/4in. {_NOTE} §6.",
                  ports=()),
     # EQ-B-WH's two grilles (2026-11-09): indoor register approved for HVAC (AP22654
     # p.15); 12in fits W-B-HALL-W's 12 1/2in bay. Same grille as the transfer pair, one face.
     RegisterType(tag="REG-T-HPWH-STAIR-1210",
+                 face_opening=(inch(12), inch(10)),
+                 face_style="rectangular_grille",
                  name="HPWH stair grille, 12x10 aluminium return grille on an 8in boot",
                  footprint=(inch(13.75), inch(1)), height=inch(11.75), plan_symbol="register",
                  product_ref="PROD-AIR-RETURN-GRILLE-12X10",
-                 neck=TerminalNeck(width=inch(12), height=inch(10), depth=inch(3.5),
+                 neck=TerminalNeck(section="rectangular",
+                                   width=inch(12), height=inch(10), depth=inch(3.5),
                                    part="12x10 shallow boot with projecting rear 8in collar",
                                    inlet=TerminalNeckInlet(
                                        position=(inch(0), inch(6.75), inch(0)),
@@ -260,10 +296,13 @@ AIR_REGISTER_TYPES = (
     # offset in height on a lined bay. The bath face's only clear patch is 7 1/4 x 7 1/8 in.
     # between the SEKTION rail backing and the top plate, so 6x6 is the size.
     RegisterType(tag="REG-T-TRANSFER-0606",
+                 face_opening=(inch(6), inch(6)),
+                 face_style="rectangular_grille",
                  name="Transfer grille, 6x6 aluminium return grille, one face of a lined bay",
                  footprint=(inch(7.75), inch(0.75)), height=inch(7.75), plan_symbol="register",
                  product_ref="PROD-AIR-RETURN-GRILLE-6X6",
-                 neck=TerminalNeck(width=inch(6), height=inch(6), depth=inch(1.5),
+                 neck=TerminalNeck(section="rectangular",
+                                   width=inch(6), height=inch(6), depth=inch(1.5),
                                    part="6x6 sheet-metal collar into the lined bay"),
                  source=f"Face estimated at +1 3/4in. ~24 in2 effective (steel 170 6x6 listing), "
                         f"against 10.8 in2 for 20 cfm at 3 Pa. {_NOTE} §6.",

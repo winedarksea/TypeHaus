@@ -67,7 +67,7 @@ FILTER_RETURN_GRILLE_1212 = Product(
 )
 RETURN_GRILLE_1210 = Product(
     tag="PROD-AIR-RETURN-GRILLE-12X10", brand="TRUaire", model="A170 12X10",
-    name="12x10 aluminium fixed-bar return grille, white (a pair through the wall)",
+    name="12x10 aluminium fixed-bar return grille, white (one grille per terminal)",
     source=f"Basis of design, or equal: Hart & Cooley A650. Acoustic alternative: Tamarack "
            f"RAPR return-air pathway (baffled, no published STC). {_SPEC} §6.",
 )

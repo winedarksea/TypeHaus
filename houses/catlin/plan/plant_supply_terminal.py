@@ -7,6 +7,7 @@ travel are checked as envelopes; the actuator is included in the damper purchase
 from typehaus import TerminalNeck, TerminalNeckComponent, TerminalNeckInlet, inch
 
 PLANT_SUPPLY_NECK = TerminalNeck(
+    section="rectangular",
     # Legacy dimensions describe the boot; every component is placed and checked separately.
     width=inch(12), height=inch(10), depth=inch(10.5),
     part="TH-HP-PLANT-BOOT-01 / ZD12X6TZ / 12x6 collar assembly",
@@ -19,14 +20,16 @@ PLANT_SUPPLY_NECK = TerminalNeck(
         TerminalNeckComponent(tag="DAMPER", width=inch(12), height=inch(6), depth=inch(4),
             offset=(inch(0), inch(0), inch(.5)), part="Honeywell Home ZD12X6TZ",
             product_ref="PROD-AIR-PLANT-DAMPER-12X6"),
-        TerminalNeckComponent(tag="ACTUATOR", width=inch(4.0625), height=inch(4.96875),
+        TerminalNeckComponent(tag="ACTUATOR",
+                              body_style="solid", width=inch(4.0625), height=inch(4.96875),
             depth=inch(4.640625), offset=(inch(-8.03125), inch(0), inch(.5)),
             part="M847D actuator envelope, included with ZD12X6TZ",
             product_ref="PROD-AIR-PLANT-DAMPER-12X6"),
         TerminalNeckComponent(tag="BOOT", width=inch(12), height=inch(10), depth=inch(6),
             offset=(inch(0), inch(0), inch(4.5)), part="TH-HP-PLANT-BOOT-01 26ga end boot",
             product_ref="PROD-AIR-PLANT-END-BOOT", receives_duct=True),
-        TerminalNeckComponent(tag="SERVICE-HATCH", width=inch(12), height=inch(8),
+        TerminalNeckComponent(tag="SERVICE-HATCH",
+                              body_style="solid", width=inch(12), height=inch(8),
             depth=inch(.5), offset=(inch(-16), inch(0), inch(-.5)),
             part="TH-HP-PLANT-HATCH-01 gasketed PVC service cover",
             product_ref="PROD-AIR-PLANT-SERVICE-HATCH"),

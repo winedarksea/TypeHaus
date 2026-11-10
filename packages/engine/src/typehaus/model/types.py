@@ -995,6 +995,12 @@ class EquipmentType(FurnitureType, AirHandlingProductFacts):
 
 
 class RegisterType(FurnitureType, AirHandlingProductFacts):
+    #: Explicit opt-in to shared physical terminal geometry.
+    face_style: Literal["rectangular_grille", "disc_valve"] | None = None
+    #: Nominal opening behind the flange; independent of any in-cavity neck.
+    face_opening: tuple[Length, Length] | None = None
+    double_deflection: bool = False
+
     needs: frozenset[Service] = frozenset({Service.SUPPLY_AIR})
     # A ventilation terminal (the ERV's fresh-air/stale-air grilles) rather than a
     # conditioned-air register. Same product family, different sizing basis — a ventilation

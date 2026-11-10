@@ -17,6 +17,7 @@ import {
 import { makeSurfaceMesh, NORDIC_ROUGHNESS, standardMaterial } from "../surfaces";
 import { applyPieceGrainUv, boardBoxGeometry, pieceSeed, woodMaterialsForGeometry } from "../woodPiece";
 import { boardStyleFor } from "./millwork";
+import { createSolidBodyMesh } from "../solidBodyMesh";
 import { createModelPartMeshGeometry } from "../modelPartMesh";
 import { applyPlankPlaneUv } from "../plankMaterial";
 import { createTapestryMaterial, isTapestry } from "../tapestryMaterial";
@@ -131,6 +132,18 @@ export function buildCanvasObject(
   shared?: PartGeometries,
 ): THREE.Object3D | null {
   if (!item.position_m) return null;
+  const resolvedGeometry = createSolidBodyMesh(item, center);
+  if (resolvedGeometry) {
+    const material = standardMaterial(0xf0f0ed, mode,
+      { roughness: mode === "nordic" ? NORDIC_ROUGHNESS.massing : 1 });
+    const mesh = new THREE.Mesh(resolvedGeometry, material);
+    mesh.userData.uid = item.uid;
+    mesh.userData.selectionKind = "canvas_object";
+    parent.add(mesh);
+    picks.push(mesh);
+    byUid.set(item.uid, [material]);
+    return mesh;
+  }
   const [width, depth] = type?.footprint_m ?? [0.45, 0.45];
   const height = type?.height_m ?? 0.25;
   // A host under a drawn countertop slab drops its symbol's grey counter (→ millwork.ts).

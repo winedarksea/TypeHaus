@@ -24,6 +24,7 @@ from typehaus.resolve.geometry_countertops import slab_hosts
 from typehaus.resolve.model import ResolvedModel
 from typehaus.server.model_json_catalog import catalog_json, placed_type_tags
 from typehaus.server.model_json_fabric import framing_json, shell_json, wall_graph_json
+from typehaus.server.model_json_mesh import mesh_json
 from typehaus.server.model_json_placeables import placeables_json
 from typehaus.server.model_json_rebar import rebar_summary_json
 from typehaus.server.model_json_shared import _findings_json, _provenance
@@ -46,6 +47,8 @@ def _document_header(
     types: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """The payload preamble: revision/hash/units plus the project, site and storey frame."""
+    terminal_meshes = {obj.uid: mesh_json(obj.body_mesh.positions, obj.body_mesh.triangles)
+                       for obj in model.canvas_objects if obj.body_mesh is not None}
     return {
         # revision is the PATCH /plan precondition (#30); UI echoes it back on every op.
         "revision": revision,
@@ -57,7 +60,8 @@ def _document_header(
         # skips the symbol's grey counter. Bases without explicit slab holes keep theirs.
         "canvas_objects": [
             {**item, "trades": [CANVAS_DOMAIN_TRADE.get(str(item.get("domain")), "furniture")],
-             "countertop_ref": hosted.get(str(item.get("tag")))}
+             "countertop_ref": hosted.get(str(item.get("tag"))),
+             "body_mesh": terminal_meshes.get(str(item.get("uid")))}
             for hosted in (slab_hosts(model),)
             for item in resolved_canvas_objects(
                 model, lambda tag: _provenance(provenance, tag), types)

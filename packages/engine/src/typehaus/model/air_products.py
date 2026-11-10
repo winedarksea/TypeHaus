@@ -89,6 +89,8 @@ class TerminalNeckComponent(HausModel):
     offset: tuple[Length, Length, Length]
     part: str
     product_ref: str | None = None
+    #: Actuators and service covers are solid envelopes, rather than air passages.
+    body_style: Literal["shell", "solid"] = "shell"
     clearance_only: bool = False
     receives_duct: bool = False
 
@@ -150,6 +152,8 @@ class TerminalNeck(HausModel):
     part: str
     product_ref: str | None = None
 
+    #: Physical drawing shape; None retains the legacy box. Fit envelopes stay rectangular.
+    section: Literal["round", "rectangular"] | None = None
     #: Multipart geometry currently uses ceiling-face coordinates only. Legacy single-box
     #: necks retain their wall, ceiling and floor placement conventions.
     components: tuple[TerminalNeckComponent, ...] = ()
@@ -157,6 +161,8 @@ class TerminalNeck(HausModel):
 
     @model_validator(mode="after")
     def _unique_components(self) -> TerminalNeck:
+        if self.section == "round" and abs(self.width.meters - self.height.meters) > 1e-6:
+            raise ValueError("round terminal neck width and height must match")
         tags = [component.tag for component in self.components]
         if len(tags) != len(set(tags)):
             raise ValueError("terminal neck component tags must be unique")

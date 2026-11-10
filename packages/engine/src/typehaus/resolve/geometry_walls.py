@@ -191,7 +191,13 @@ def cuts_layer(wall: ResolvedWall, layer_name: str | None, opening) -> bool:
     if depth is None or layer_name is None:
         return True
     face = getattr(opening, "depth_from", "interior")
-    return wall.layer_depth_m(layer_name, face) < depth - 1e-6
+    near = wall.layer_depth_m(layer_name, face)
+    layer = next((layer for layer in wall.layers if layer.name == layer_name), None)
+    # Paint is a zero-depth surface: a cut ending at its plane also opens that face,
+    # while the volumetric layer beginning there (a stud bay) must remain uncut.
+    if layer is not None and layer.thickness_m <= 1e-9:
+        return near <= depth + 1e-6
+    return near < depth - 1e-6
 
 
 def layer_solids(wall: ResolvedWall, polygon, openings,

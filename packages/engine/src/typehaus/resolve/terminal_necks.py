@@ -192,6 +192,8 @@ def _back(model: ResolvedModel, obj, axis: tuple[float, float]) -> tuple[float, 
 
 def emit_terminal_necks(model: ResolvedModel) -> None:
     """Draw parts, with a shared inspect group; quantities come from the catalog parts."""
+    from typehaus.resolve.terminal_geometry import neck_mesh
+
     types = {t.tag: t for t in model.plan.library.register_types}
     for obj in model.canvas_objects:
         catalog = types.get(obj.type_ref) if obj.kind == "Register" else None
@@ -212,7 +214,8 @@ def emit_terminal_necks(model: ResolvedModel) -> None:
                     uid=f"{obj.uid}-{suffix.lower()}", tag=f"{obj.tag}-{suffix}",
                     storey=obj.storey, category="terminal_neck", outline=ring,
                     z0_m=z0, z1_m=z1, product=component.product_ref,
-                    host_ref=obj.tag, group=obj.tag))
+                    host_ref=obj.tag, group=obj.tag,
+                    body_mesh=_component_mesh(obj, component, neck)))
         else:
             box = (_box(model, obj, neck)
                    if obj.mount is not None and obj.body_z0_m is not None else None)
@@ -222,7 +225,8 @@ def emit_terminal_necks(model: ResolvedModel) -> None:
             model.solids.append(ResolvedSolid(
                 uid=f"{obj.uid}-neck", tag=f"{obj.tag}-NECK", storey=obj.storey,
                 category="terminal_neck", outline=ring, z0_m=z0, z1_m=z1,
-                product=neck.product_ref, host_ref=obj.tag))
+                product=neck.product_ref, host_ref=obj.tag, group=obj.tag,
+                body_mesh=neck_mesh(model, obj, neck)))
             _emit_projecting_round_collar(model, obj, neck)
 
 
@@ -232,9 +236,11 @@ def _emit_projecting_round_collar(model: ResolvedModel, obj, neck) -> None:
     Extending the whole box to the inlet would invent rectangular corners beside the
     round collar, producing false collisions with raked stair stringers.
     """
+    from typehaus.resolve.connector_geometry.mesh import transform_mesh
     from typehaus.resolve.model import SolidSweep
     from typehaus.resolve.round_solids import PIPE_FACETS
     from typehaus.resolve.sweep import round_profile, sweep_plan_silhouette, sweep_z_extent
+    from typehaus.resolve.terminal_geometry import tube
 
     inlet = neck.inlet
     if (obj.mount is None or obj.mount.kind.value != "wall" or inlet is None
@@ -252,4 +258,33 @@ def _emit_projecting_round_collar(model: ResolvedModel, obj, neck) -> None:
     model.solids.append(ResolvedSolid(
         uid=f"{obj.uid}-neck-collar", tag=f"{obj.tag}-NECK-COLLAR", storey=obj.storey,
         category="terminal_neck", outline=sweep_plan_silhouette(sweep),
-        z0_m=z0, z1_m=z1, sweep=sweep, host_ref=obj.tag, group=obj.tag, derived=True))
+        z0_m=z0, z1_m=z1, sweep=sweep, host_ref=obj.tag, group=obj.tag, derived=True,
+        body_mesh=transform_mesh(
+            tube(diameter, diameter, length, "round"), end,
+            (-normal[1], normal[0], 0), (0, 0, 1), (*normal, 0))
+            if neck.section is not None else None))
+
+
+def _component_mesh(obj, component, neck):
+    from typehaus.resolve.connector_geometry.mesh import transform_mesh
+    from typehaus.resolve.terminal_geometry import circle, rectangle, shell
+
+    if neck.section is None or component.body_style == "solid":
+        return None
+    width, height, depth = (v.meters for v in
+                            (component.width, component.height, component.depth))
+    offset = tuple(v.meters for v in component.offset)
+    inlet = None
+    if component.receives_duct and neck.inlet is not None:
+        authored = neck.inlet
+        position = tuple(v.meters - delta for v, delta in
+                         zip(authored.position, offset, strict=True))
+        inlet = (position, (*authored.normal, 0),
+                 circle(authored.width.meters) if authored.section == "round"
+                 else rectangle(authored.width.meters, authored.height.meters))
+    mesh = shell(width, height, depth, "rectangular", inlet)
+    u = (*_rotate((1, 0), obj.rotation_degrees), 0)
+    v = (*_rotate((0, 1), obj.rotation_degrees), 0)
+    dx, dy = _rotate(offset[:2], obj.rotation_degrees)
+    return transform_mesh(mesh, (obj.position[0] + dx, obj.position[1] + dy,
+                                 obj.body_z0_m + offset[2]), u, v)

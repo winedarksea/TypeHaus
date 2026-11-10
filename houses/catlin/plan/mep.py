@@ -103,7 +103,8 @@ MAIN_ELEMENTS = [*mep_sleeves.SLEEVES,
                  # penetration note in mep_erv_outdoor.py.
                  *mep_erv_outdoor.PENETRATIONS_ERV_MAIN,
                  *mep_erv_risers.DUCTS_ERV_RISERS,
-                 *mep_registers_main.REGISTERS_MAIN]
+                 *mep_registers_main.REGISTERS_MAIN,
+                 *mep_registers_main.TRANSFER_PANEL_OPENINGS_MAIN]
 
 # ** THE GARAGE'S MEP AT THE MAIN DATUM, NOT THE HOUSE'S (2026-09-13). ** These two rode in
 # ``MAIN_ELEMENTS`` because that was the only storey at 0'-0" and a storey key was carrying

@@ -3682,7 +3682,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # RM-S-SUITE's 12x12 filter-back return (2026-11-09), off REG-T-HP-RET-FILTER; stocked 12x12x1 filters.
 "REG-T-HP-RET-FILTER-1212" = { material = { low = 35, high = 80 }, labour = { low = 18, high = 45 } }  # 1 ea
 # The passive transfer: two 12x10 aluminium return grilles on a lined sleeve through the bay.
-"REG-T-TRANSFER-PAIR-1210" = { material = { low = 60, high = 110 }, labour = { low = 30, high = 70 } }  # 1 ea
+"REG-T-TRANSFER-MUD-1210" = { material = { low = 30, high = 55 }, labour = { low = 30, high = 70 } }  # 1 grille, panel cut; no sleeve
 # D-S-BATH1's offset pair (2026-11-03): one 6x6 grille plus half the bay's sheet-metal liner.
 "REG-T-TRANSFER-0606" = { material = { low = 30, high = 60 }, labour = { low = 30, high = 70 } }  # 2 ea
 "REG-T-HPWH-STAIR-1210" = { material = { low = 45, high = 85 }, labour = { low = 30, high = 70 } }  # 2 ea; grille + boot, estimate (2026-11-09)

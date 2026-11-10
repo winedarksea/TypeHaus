@@ -397,9 +397,13 @@ def _emit_register(f: Any, body: Any, register: Any, storey: Any, storeys: dict[
     z0 = resolved.z_m if resolved is not None else storey.elevation.meters
     element = ll.create_entity(f, "IfcAirTerminal", name=register.tag)
     element.GlobalId = derive_guid(project_uuid, register.uid)
-    ll.assign_representation(f, element, ll.add_prism_from_profile(
-        f, body, outline, height, z0,
-    ))
+    if resolved is not None and resolved.body_mesh is not None:
+        from typehaus.emit.ifc.structural import _solid_body
+
+        representation = _solid_body(f, body, resolved)
+    else:
+        representation = ll.add_prism_from_profile(f, body, outline, height, z0)
+    ll.assign_representation(f, element, representation)
     ll.ensure_pset(f, element, PSET_SOURCE, {
         "uid": register.uid, "tag": register.tag,
         "rotation_degrees": _rotation_metadata(register, resolved)})
