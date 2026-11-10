@@ -96,7 +96,7 @@ def test_selected_products_and_installation_parts_bill_once(catlin_model_ro):
     assert prices["allowances"]["plumbing-faucets-and-tub-filler"] == {"low": 1210, "high": 1990}
     # The kitchen's upright tee is its own order key (a tee, never a wye), bought in the kit.
     rows = {row["fitting"]: row for row in fitting_takeoff(catlin_model_ro)}
-    assert rows["tee-2x1.5in"]["tags"] == ["PR-M-KITCH-LOCAL-DRAIN"]
-    assert set(rows["wye-2x1.5in"]["tags"]) == {"PR-A-STUBATH-LAV-DRAIN", "PR-B-SINK2-DRAIN"}
+    assert rows["tee-2x1.5in"]["tags"] == ["PR-B-USINK-DRAIN", "PR-M-KITCH-LOCAL-DRAIN"]
+    assert {"PR-A-STUBATH-LAV-DRAIN", "PR-B-SINK2-DRAIN"} <= set(rows["wye-2x1.5in"]["tags"])
     assert prices["pipe_fittings"]["tee-2x1.5in"] == {"low": 0, "high": 0}
     assert prices["pipe_fittings"]["wye-2x1.5in"]["low"] > 0

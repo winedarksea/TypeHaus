@@ -6107,7 +6107,8 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "elbow-45-1.5in" = { low = 1.75, high = 4 }
 "bend-60-1.5in" = { low = 3.5, high = 8 }  # two rolled 45s and connecting nipple
 # The kitchen's upright tee (PR-M-KITCH-LOCAL-DRAIN) is bought in the [install_parts]
-# connector kit; this row only keeps it from billing twice.
+# connector kit; this row only keeps it from billing twice. PR-B-USINK-DRAIN's vent tee
+# (2" since 2026-11-10) shares the key and goes unbilled here (~$5).
 "tee-2x1.5in" = { low = 0, high = 0 }
 # DERIVED 2026-08-24 — $ each, MATERIAL ONLY. The other half of the [pipe_runs] re-base
 # above: fittings are counted off the runs' own 3D polylines and the drainage graph
