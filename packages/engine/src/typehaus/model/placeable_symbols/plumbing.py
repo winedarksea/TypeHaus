@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import math
 
+from typehaus.model.placeable_symbols._basin import rectangular_basin
 from typehaus.model.placeable_symbols._drawer_vanity import drawer_vanity
 from typehaus.model.placeable_symbols._families import Builder, Geometry
 from typehaus.model.placeable_symbols._frame import (
@@ -30,6 +31,7 @@ from typehaus.model.placeable_symbols._frame import (
 )
 from typehaus.model.placeable_symbols._kohler_underscore import kohler_underscore
 from typehaus.model.placeable_symbols._kohler_underscore_rect import kohler_underscore_rect
+from typehaus.model.placeable_symbols._laundry_sink import laundry_tub
 from typehaus.model.placeable_symbols._roman_tub_filler import roman_tub_filler
 from typehaus.model.placeable_symbols._solid_surface_vanity import solid_surface_vanity
 from typehaus.model.placeable_symbols._sunnersta import sunnersta_sink
@@ -43,17 +45,6 @@ SQRT_HALF = math.sqrt(0.5)
 # specifies. Not universal: a deeper cut takes the P2708.1 circle under 30", so the ordered
 # base is confirmed against the type's own note before the enclosure is bought.
 NEO_ANGLE_CUT_FRACTION = 16.0 / 36.0
-
-
-def _basin(cx: float, cy: float, width: float, depth: float, z0: float, z1: float,
-           wall_t: float, color: str) -> list[Part]:
-    """A hollow vessel as four rim walls over a floor — an opaque box would read as solid."""
-    wall_t = min(wall_t, width * 0.3, depth * 0.3, (z1 - z0) * 0.5)
-    return [box(cx, cy, z0, z0 + wall_t, width, depth, color),
-            box(cx, cy + depth / 2 - wall_t / 2, z0, z1, width, wall_t, color),
-            box(cx, cy - depth / 2 + wall_t / 2, z0, z1, width, wall_t, color),
-            box(cx - width / 2 + wall_t / 2, cy, z0, z1, wall_t, depth - 2 * wall_t, color),
-            box(cx + width / 2 - wall_t / 2, cy, z0, z1, wall_t, depth - 2 * wall_t, color)]
 
 
 def toilet() -> Builder:
@@ -143,7 +134,7 @@ def lavatory(*, pedestal: bool = False, faucet_height_m: float | None = None) ->
                    line((-width * 0.08, depth / 2 - depth * 0.12),
                         (width * 0.08, depth / 2 - depth * 0.12))]
         bowl_h = min(0.16, deck_z * 0.8)
-        parts = [*_basin(0, basin_cy, width * 0.8, basin_ry * 2, deck_z - bowl_h, deck_z,
+        parts = [*rectangular_basin(0, basin_cy, width * 0.8, basin_ry * 2, deck_z - bowl_h, deck_z,
                          rim, "porcelain"),
                  box(0, depth / 2 - depth * 0.1, deck_z, deck_z + faucet, width * 0.1,
                      depth * 0.12, "faucet")]
@@ -173,7 +164,7 @@ def vanity() -> Builder:
         parts = [box(0, 0, deck_z - top_t, deck_z, width, depth, "counter"),
                  box(0, 0.01, kick, deck_z - top_t, width, depth - 0.02, "wood"),
                  box(0, 0.03, 0.0, kick, width * 0.98, depth - 0.06, "wood-dark"),
-                 *_basin(0, basin_cy, width * 0.5, basin_ry * 2,
+                 *rectangular_basin(0, basin_cy, width * 0.5, basin_ry * 2,
                          max(kick, deck_z - top_t - 0.16), deck_z - top_t, 0.02, "porcelain"),
                  box(0, depth / 2 - depth * 0.08, deck_z, deck_z + faucet, width * 0.08,
                      depth * 0.1, "metal")]
@@ -193,7 +184,7 @@ def tub() -> Builder:
         strokes = [rect(0, 0, width, depth, fill="porcelain"),
                    ellipse(0, 0, basin_w / 2, basin_d / 2, weight=DETAIL_WEIGHT),
                    circle(drain_cx, 0, min(width, depth) * 0.035, weight=DETAIL_WEIGHT)]
-        parts = _basin(0, 0, width, depth, 0.0, height, rim, "porcelain")
+        parts = rectangular_basin(0, 0, width, depth, 0.0, height, rim, "porcelain")
         return tuple(strokes), tuple(parts)
 
     return build
@@ -225,7 +216,7 @@ def tub_shower() -> Builder:
                    # The shower head, over the plumbing end, drawn against the back wall.
                    circle(-width / 2 + rim, depth / 2 - rim, head_r, fill="metal")]
         wall_t = min(0.05, rim, depth * 0.1)
-        parts = list(_basin(0, 0, width, depth, 0.0, tub_h, rim, "porcelain"))
+        parts = list(rectangular_basin(0, 0, width, depth, 0.0, tub_h, rim, "porcelain"))
         parts.append(box(0, depth / 2 - wall_t / 2, tub_h, height, width, wall_t, "porcelain"))
         for sign in (-1, 1):
             parts.append(box(sign * (width / 2 - wall_t / 2), 0, tub_h, height, wall_t,
@@ -374,7 +365,7 @@ def kitchen_sink(*, bowls: int = 2) -> Builder:
             strokes.append(rect(cx, bowl_cy, bowl_w, bowl_d, weight=DETAIL_WEIGHT))
             strokes.append(circle(cx, bowl_cy, min(bowl_w, bowl_d) * 0.06,
                                   weight=DETAIL_WEIGHT))
-            parts.extend(_basin(cx, bowl_cy, bowl_w, bowl_d, bowl_z0, counter_z, 0.015,
+            parts.extend(rectangular_basin(cx, bowl_cy, bowl_w, bowl_d, bowl_z0, counter_z, 0.015,
                                 "appliance-steel"))
             if index:  # the rim band the two bowls share
                 parts.append(box(cx - bowl_w / 2 - rim / 2, bowl_cy, counter_z, deck_z, rim,
@@ -465,57 +456,6 @@ def hydrant() -> Builder:
             parts.append(box(0, -outlet_far, outlet_z0 - breaker_r * 0.5,
                              min(outlet_z1 + breaker_r * 0.5, height),
                              breaker_r * 2.0, breaker_r * 2.0, "metal"))
-        return tuple(strokes), tuple(parts)
-
-    return build
-
-
-# A laundry tub's rim is the cabinet it is sold as — 34" — and the declared box is 43"
-# because it has to contain a tall utility gooseneck. ``_deck_height`` cannot express that:
-# it subtracts a fixed 5 1/2" faucet band, which would put the rim of a 43" box at 37 1/2".
-# So this family authors the deck as the ratio it actually is and lets the faucet take the
-# remainder, which keeps the rim at 34" for the catalog size and still scales cleanly.
-LAUNDRY_TUB_DECK_FRACTION = 34.0 / 43.0
-# The basin's plan and depth, in inches. Taken from the Glacier Bay QL039 listing (sibling of
-# the QL033Y the house selected, 2026-10-24): 22.31 in. across the cabinet, 19.5 in. front to
-# back, 9 in. deep. The QL033Y's own basin is unverified; replace these when its spec is read.
-LAUNDRY_TUB_BASIN_IN = (22.31, 19.5)
-LAUNDRY_TUB_BASIN_DEPTH_M = 9.0 * 0.0254
-
-
-def laundry_tub() -> Builder:
-    """A freestanding utility tub: cabinet carcass on a kick, one deep square basin, tall spout.
-
-    Square-cornered, not ovoid: a laundry basin is a pressed rectangular vessel, and drawing it
-    as an oval would make it read as the lavatory it exists not to be.
-    """
-
-    def build(width: float, depth: float, height: float) -> Geometry:
-        deck_z = height * LAUNDRY_TUB_DECK_FRACTION
-        top_t = min(0.03, deck_z * 0.2)
-        kick = min(0.09, deck_z * 0.12)
-        rim = clamp(min(width, depth) * 0.05, 0.012, 0.03)
-        basin_w = min(LAUNDRY_TUB_BASIN_IN[0] * 0.0254, width * 0.94)
-        # The basin sits 5% of depth toward the back, so 90% is the most that fits inside.
-        basin_d = min(LAUNDRY_TUB_BASIN_IN[1] * 0.0254, depth * 0.90)
-        basin_cy = -depth * 0.05
-        bowl_top = deck_z - top_t
-        bowl_z0 = max(kick, bowl_top - min(LAUNDRY_TUB_BASIN_DEPTH_M,
-                                           (bowl_top - kick) * 0.9))
-        faucet = max(height - deck_z, 0.0)
-        strokes = [rect(0, 0, width, depth, fill="counter"),
-                   rect(0, basin_cy, basin_w, basin_d, weight=DETAIL_WEIGHT),
-                   circle(0, basin_cy, min(basin_w, basin_d) * 0.06, weight=DETAIL_WEIGHT),
-                   line((-width * 0.07, depth / 2 - depth * 0.12),
-                        (width * 0.07, depth / 2 - depth * 0.12))]
-        parts = [box(0, 0, bowl_top, deck_z, width, depth, "counter"),
-                 box(0, 0, kick, bowl_top, width, depth * 0.96, "cabinet-cream"),
-                 box(0, 0, 0.0, kick, width * 0.98, depth * 0.90, "cabinet-cream-dark"),
-                 *_basin(0, basin_cy, basin_w, basin_d, bowl_z0, bowl_top, rim,
-                         "appliance-steel")]
-        if faucet > 0:
-            parts.append(box(0, depth / 2 - depth * 0.09, deck_z, deck_z + faucet,
-                             width * 0.07, depth * 0.10, "metal"))
         return tuple(strokes), tuple(parts)
 
     return build
