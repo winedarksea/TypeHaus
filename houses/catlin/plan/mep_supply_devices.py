@@ -22,7 +22,7 @@ from typehaus import (
 # valve sitting on its pipe). Only devices off that line — a stub, a breaker at handle
 # height — author one.
 SUPPLY_DEVICES_BASEMENT = [
-    # P2903.9.1. The service (buried -8'-10", PR-G-SERVICE-CW) enters at (11'-4", 35'-6") —
+    # UPC 606.2. The service (buried -8'-10", PR-G-SERVICE-CW) enters at (11'-4", 35'-6") —
     # SP-B-N2-SVC, under ST-B2M's upper landing — and rises to the basement ceiling 6"
     # inboard (y=35'-0" since 2026-10-31, clear of W-B-N2's concrete); this valve sits on
     # that riser at 3'-0", under the landing (4'-2" clear beneath it). Since
@@ -126,7 +126,7 @@ SUPPLY_DEVICES_BASEMENT = [
 # would mean inventing panels, so the stops go where the pipe already comes out into the
 # room it serves** — at the riser head, under the lavatory, behind the WC, at the machine
 # box. Every one is reachable standing or kneeling in a finished room with no panel and no
-# ladder, which is what P2903.9.1 means by accessible and what makes a stop worth having.
+# ladder, which is what UPC 606.6 means by accessible and what makes a stop worth having.
 #
 # The consequence, stated rather than hidden: these isolate a FIXTURE GROUP at its point of
 # use, not a whole branch at its origin. Working on the pipe *between* the tee and the room
@@ -180,19 +180,8 @@ SUPPLY_STOPS = [
                   accessible=True, room="RM-S-SUITEBATH",
                   model='3/4" quarter-turn ball valve, chrome, at the riser head',
                   serves=("FX-S-SUITEBATH-LAV", "FX-S-SUITEBATH-TUBSH")),
-    # RM-B-BATH, the stair-foot bathroom. Each valve matches its branch: the cold is 3/4"
-    # since it also feeds FX-B-UTIL-SINK (2026-10-30), the hot stays 1/2". Both stops moved
-    # to W-B-STR2, clear of the bath pocket, and both sit upstream of the sink's stubs.
-    PipeAccessory(uid="F1M7RSZV67", tag="PA-B-BATH-STOP-CW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-B-CW-BATH", position=pt(ft(10), ft(19, 10)),
-                  accessible=True, room="RM-B-BATH",
-                  model='3/4" quarter-turn ball valve, chrome, at the riser head',
-                  serves=("FX-B-BATH-WC", "FX-B-BATH-LAV", "FX-B-UTIL-SINK")),
-    PipeAccessory(uid="2DD9DEYNAS", tag="PA-B-BATH-STOP-HW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-B-HW-BATH", position=pt(ft(10), ft(18, 8.5)),
-                  accessible=True, room="RM-B-BATH",
-                  model='1/2" quarter-turn ball valve, chrome, at the riser head',
-                  serves=("FX-B-BATH-LAV", "FX-B-UTIL-SINK")),
+    # RM-B-BATH's riser-head stops are gone (2026-11-10): past the WC's tee they isolated
+    # only the lav and the utility sink, each already on its own angle stops (W5).
     # The kitchen. Its hot has its own branch; its COLD comes straight off the end of
     # PR-B-CW-TRUNK, so the cold stop sits on the trunk's own terminus at the sink base.
     # That is a stop for the kitchen, not a second main: PA-B-MAIN-SHUTOFF is upstream of
@@ -234,7 +223,7 @@ SUPPLY_STOPS = [
                   model='1/2" quarter-turn fixture stop, in the tub cabinet',
                   serves=("FX-M-LAUNDRY-SINK",)),
     # The water heater's cold inlet — the one stop in this list that IS at its branch's own
-    # end rather than at a fixture, and the one the house most obviously lacked. P2903.9.2
+    # end rather than at a fixture, and the one the house most obviously lacked. UPC 606.2
     # wants a valve on the cold supply to a water heater; without it, changing an anode rod
     # or a T&P valve means closing the main. It stands on the cold drop beside the tank,
     # at hand height in the workshop (2026-11-09).

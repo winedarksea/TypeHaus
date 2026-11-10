@@ -332,7 +332,7 @@ class PipeAccessoryKind(Enum):
     differ only in what IFC class and code section they answer to.
     """
 
-    MAIN_SHUTOFF = "main_shutoff"            # UPC 606.1 — the one valve for the whole house
+    MAIN_SHUTOFF = "main_shutoff"            # UPC 606.2 — the one valve for the whole house
     SHUTOFF = "shutoff"                      # UPC 606.5 — a branch/fixture control valve
     BACKFLOW_PREVENTER = "backflow_preventer"  # UPC 603 — cross-connection control
     VACUUM_BREAKER = "vacuum_breaker"        # UPC 603.5.7 — hose-connection backflow

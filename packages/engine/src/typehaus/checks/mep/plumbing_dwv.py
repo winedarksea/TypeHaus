@@ -386,6 +386,7 @@ def pipe_sizing(ctx: CheckContext) -> list[Finding]:
     whenever the serves graph is incomplete: a partial sum passed off as a load is how a
     house ends up with a 1.5" line feeding three fixtures."""
     from typehaus.resolve.mep import accumulated_serves
+    from typehaus.resolve.mep_trap_arm import whole_trap_arms
     from typehaus.takeoff.plumbing_calc import (
         branch_load,
         fixture_units,
@@ -396,12 +397,17 @@ def pipe_sizing(ctx: CheckContext) -> list[Finding]:
     cid = "mep.pipe_sizing"
     units_by_tag = {row.tag: row for row in fixture_units(ctx.plan)}
     rolled_up = accumulated_serves(ctx.model.pipe_runs)
+    trap_arms = whole_trap_arms(ctx.model)
     out: list[Finding] = []
     for run in ctx.model.pipe_runs:
         if run.system not in ("drain", "water_hot", "water_cold"):
             continue
         serves = rolled_up.get(run.tag, run.serves) if run.system == "drain" else run.serves
         if not serves:
+            continue
+        if run.tag in trap_arms:
+            out.append(_pass(cid, f"run {run.tag} is a trap arm, outside Table 703.2 "
+                                  "(note 1); mep.trap_arm_length grades it", (run.tag,)))
             continue
         load, unresolved = branch_load(serves, units_by_tag, run.system)
         if load is None:
@@ -410,7 +416,8 @@ def pipe_sizing(ctx: CheckContext) -> list[Finding]:
                      "fixture-unit table row — its load cannot be summed", (run.tag,)))
             continue
         diameter_in = run.diameter_m / M_PER_IN
-        required = (required_drain_diameter_in(load) if run.system == "drain"
+        symbols = [units_by_tag[t].symbol for t in serves if t in units_by_tag]
+        required = (required_drain_diameter_in(load, symbols) if run.system == "drain"
                     else required_supply_size_in(load))
         unit_name = "DFU" if run.system == "drain" else "WSFU"
         if required is None:

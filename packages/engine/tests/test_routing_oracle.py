@@ -104,7 +104,7 @@ def test_the_two_arms_arrive_above_the_collector_they_tie_into(catlin_model_ro) 
     runs = {r.tag: r for r in catlin_model_ro.pipe_runs}
     for tag, parent_at, expected in (
             ("PR-M-S-SUITE-TUB-DRAIN", 114.4 - 1.8 * (18 / 30), 113.32),
-            ("PR-M-S-SUITE-LAV-DRAIN", 115.85 - 0.35 * (5.5 / 15.25), 115.724)):
+            ("PR-M-S-SUITE-LAV-DRAIN", 115.6 - 0.35 * (5.5 / 15.25), 115.474)):
         assert parent_at == pytest.approx(expected, abs=0.001)
         arrival = _in(runs[tag].z_m[-1])
         assert arrival > parent_at

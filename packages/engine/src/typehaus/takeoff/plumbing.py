@@ -66,7 +66,10 @@ def fixture_unit_rows(model: ResolvedModel) -> dict[str, object]:
 
     units = fixture_units(model.plan)
     units_by_tag = {row.tag: row for row in units}
+    from typehaus.resolve.mep_trap_arm import whole_trap_arms
+
     rolled_up = accumulated_serves(model.pipe_runs)
+    trap_arms = whole_trap_arms(model)
     run_rows: list[dict[str, object]] = []
     for run in model.pipe_runs:
         if run.system not in ("drain", "water_hot", "water_cold"):
@@ -77,13 +80,14 @@ def fixture_unit_rows(model: ResolvedModel) -> dict[str, object]:
             continue
         load, unresolved = branch_load(serves, units_by_tag, run.system)
         required = None
-        if load is not None:
-            required = (required_drain_diameter_in(load) if run.system == "drain"
+        if load is not None and run.tag not in trap_arms:
+            symbols = [units_by_tag[t].symbol for t in serves if t in units_by_tag]
+            required = (required_drain_diameter_in(load, symbols) if run.system == "drain"
                         else required_supply_size_in(load))
         diameter_in = round(run.diameter_m / M_PER_IN, 2)
         status = None
         if load is not None:
-            status = ("unknown" if required is None
+            status = ("pass" if run.tag in trap_arms else "unknown" if required is None
                       else "pass" if diameter_in + 0.06 >= required else "fail")
         run_rows.append({
             "tag": run.tag, "uid": run.uid, "system": run.system,

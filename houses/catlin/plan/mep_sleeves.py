@@ -50,8 +50,8 @@ SLAB_STUBS = [
                       sleeve_diameter=inch(2), serves_fixture="FX-B-BATH-LAV"),
     # FX-B-UTIL-SINK's drop, inside W-B-STR2 under the vent tee (mep_lavatories.py).
     SleevePenetration(uid="RF0AQ0KDPT", tag="SP-B-SLAB-USINK", host_ref="SL-B-FLOOR",
-                      position=pt(inch(120), inch(229.5)), pipe_diameter=inch(1.5),
-                      sleeve_diameter=inch(2), serves_fixture="FX-B-UTIL-SINK",
+                      position=pt(inch(120), inch(229.5)), pipe_diameter=inch(2),
+                      sleeve_diameter=inch(3), serves_fixture="FX-B-UTIL-SINK",
                       seal="continuous radon-rated elastomeric seal to pipe and slab membrane"),
     # FX-B-BATH-WC's vent riser (mep_vent_tees.py PR-B-BATH-WC-VENT), up W-B-STR2's cavity.
     SleevePenetration(uid="PXGXETEFWC", tag="SP-B-SLAB-WC-VENT", host_ref="SL-B-FLOOR",

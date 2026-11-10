@@ -4,8 +4,8 @@
 on the basement fixtures, arrestors at the washer, a main shutoff that is accessible — and
 these are the three checks that ask them.
 
-CODE tier, all three. None of them is a preference: UPC 606.1 requires the full-open valve
-controlling the building supply and 606.3 requires access to it, UPC 603.5.7 requires
+CODE tier, all three. None of them is a preference: UPC 606.2 requires the fullway valve
+controlling the building supply and 606.6 requires access to it, UPC 603.5.7 requires
 backflow protection at every hose connection, and UPC 609.10 requires arrestors where
 quick-closing valves are installed.
 
@@ -51,7 +51,7 @@ def _named(device) -> str:
 
 @check(Tier.CODE, "mep.main_shutoff")
 def main_shutoff(ctx: CheckContext) -> list[Finding]:
-    """UPC 606.1 / 606.3 — one full-open valve on the supply, and it has to be reachable.
+    """UPC 606.2 / 606.6 — one fullway valve on the supply, and it has to be accessible.
 
     Two failures, not one, because they fail differently on site. A missing valve is caught
     at rough-in; a valve behind the water heater passes rough-in and is discovered the night
@@ -68,18 +68,17 @@ def main_shutoff(ctx: CheckContext) -> list[Finding]:
         return []
     mains = _of_kind(ctx, PipeAccessoryKind.MAIN_SHUTOFF)
     if not mains:
-        return [_fail(cid, "the water service has no main shutoff — UPC 606.1 requires a "
-                           "full-open valve controlling the whole supply")]
+        return [_fail(cid, "the water service has no main shutoff — UPC 606.2 requires a "
+                           "fullway valve controlling the whole supply")]
     if len(mains) > 1:
         return [_fail(cid, "the supply declares "
                            f"{len(mains)} main shutoffs ({', '.join(a.tag for a in mains)}); "
-                           "UPC 606.1's supply valve is singular",
+                           "UPC 606.2's supply valve is singular",
                       tuple(a.tag for a in mains))]
     main = mains[0]
     if not main.accessible:
         return [_fail(cid, f"main shutoff {main.tag} does not declare `accessible=True` — "
-                           "UPC 606.3 requires the valve be reachable without removing a "
-                           "panel or standing on something",
+                           "UPC 606.6 requires a required shutoff be accessible",
                       (main.tag,))]
     where = f" in {main.room}" if main.room else ""
     return [_pass(cid, f"main shutoff {main.tag} is on {main.pipe_ref}{where} and is "

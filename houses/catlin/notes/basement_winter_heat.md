@@ -72,17 +72,20 @@ wording is about, so keep finishing work and solvent away from the tank anyway.
   flex is the p.15 12" isolation section. Total under 10 ft against 125 ft.
 - **The tank is rotated -40 deg** so the side port and the elbow's outlet share one plan line
   (`plan/mep_hvac.py`).
-- **Filter.** 6" above the top is 80 3/16"; nothing but the elbow is under 83" over the tank.
+- **Filter (resolved 2026-11-10).** Rheem's Gen 5 Inlet Duct Adapter instructions (AP21628,
+  kit SP21105) step 1: "For inlet connection where ducting will cross over air filter of water
+  heater, place short length of rigid duct provided between elbow and inlet flange to allow for
+  air filter removal". AP22654 asks 6" above for filter maintenance: 80 3/16". The model's
+  stack (adapter, spacer, elbow) rises 12 13/16" to the 87" outlet centreline, so the flex's
+  underside is 83", 2 13/16" over that line; the elbow top (H 91", 92 1/2" jacketed) leaves
+  ~4" under the 8'-0 15/16" ceiling if the delivered spacer runs long. Install the spacer.
 
 **Remaining holds:**
 
 1. Port positions are scaled (+-1.5"), and SP20890's size is unpublished. Fit both on the
    delivered unit; the boots cannot move (y=177 1/4" is pinned by the stud on one side and
    the door casing on the other), so any error is taken up in the flex.
-2. Filter service with the inlet adapter fitted is not stated in AP22654 (p.26 lifts it
-   out of the top; p.11 and p.17 give 6"). Confirm with the SP21105/AP21365 adapter
-   instructions or Rheem before ordering.
-3. Commissioning: check the hall grilles' noise and that the exhaust does not short-circuit
+2. Commissioning: check the hall grilles' noise and that the exhaust does not short-circuit
    into the intake 10" above it (the grilles are fixed-blade returns: hang the exhaust one
    with its blades throwing down).
 
@@ -91,5 +94,6 @@ the stair hall; the stair heat pump must replace that heat in winter. This impro
 heated air volume but does not create heat or prove the two unheated rooms reach 65 F.
 The room-temperature estimates above have not been recalculated.
 
-Sources: [AP22654 Rev 01, pp. 7-17, 26](https://media.rheem.com/media/uploads/iat/sites/36/2022/09/AP22654-Rev-01-Manual-THOR-Ph2-UC-Manual_2022-1.pdf)
+Sources: [AP21628 Gen 5 Inlet Duct Adapter](https://images.thdstatic.com/catalog/pdfImages/45/4506e417-9910-4fdf-ab08-774a6a2f8e38.pdf),
+[AP22654 Rev 01, pp. 7-17, 26](https://media.rheem.com/media/uploads/iat/sites/36/2022/09/AP22654-Rev-01-Manual-THOR-Ph2-UC-Manual_2022-1.pdf)
 and [Rheem plug-in specification, pp. 2-3](https://media.rheem.com/blobazrheem/wp-content/uploads/sites/36/2024/12/Plug-in-with-HydroBoost-and-LeakGuard-Spec-Sheet.pdf).

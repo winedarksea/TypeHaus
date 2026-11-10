@@ -271,11 +271,12 @@ def test_the_bask_heated_surface_has_its_dedicated_gfci_circuit_and_outlet():
 
 
 def test_the_drain_matches_the_bath_kohler_actually_specifies():
-    """1 1/2", the K-7272 Clearflo's tee — not the 2" the FX-TUB-60 allowance was drawn at."""
+    """2" past the K-7272 Clearflo's 1 1/2" trap: UPC Table 703.2 gives 1 1/2" horizontal
+    1 DFU and a bathtub is 2 (2026-11-10)."""
     plan = _plan()
     run = next(e for e in plan.storey_elements("basement")
                if getattr(e, "tag", "") == "PR-B-TUB2-DRAIN")
-    assert round(run.diameter.meters / M_PER_IN, 4) == 1.5
+    assert round(run.diameter.meters / M_PER_IN, 4) == 2.0
     assert run.serves == ("FX-M-BATH2-TUB",)
 
 

@@ -7,6 +7,8 @@ different limit from the check that judges it cannot close the loop.
 
 from __future__ import annotations
 
+from collections.abc import Iterable
+
 from typehaus.quantities import M_PER_IN
 
 # MN Plumbing Code Table 702.1 (private). A tub-shower is one fixture, valued as a tub.
@@ -60,21 +62,28 @@ FIXTURE_CLASS_BY_SYMBOL: dict[str, str] = {
     "roman-tub-filler": "tub filler (trim on its bath)",
 }
 
-# MN Plumbing Code 710.1 (UPC 710.1): no water closet discharges to a drain smaller than
-# 3". Table 703.2 alone does not say so — a 3 DFU closet sits comfortably inside the 2"
-# row's 6 DFU — and sizing a closet branch from capacity alone is the classic table-only
-# error. Only the fixtures the rule actually names appear here; a symbol with no row has no
-# floor, which is the honest reading rather than a defensive one.
+# Minimum drain size by fixture, applied over Table 703.2's capacity row. 710.1: no water
+# closet discharges to a drain under 3" (the table alone would put a 3 DFU closet on 2").
+# Table 702.1 note 2 (MN 4714.0702): a laundry tub/utility sink, kitchen sink or dishwasher
+# takes a 2" minimum drain. Only fixtures a rule names appear; no row means no floor.
 MINIMUM_DRAIN_IN_BY_SYMBOL: dict[str, float] = {
     "toilet": 3.0,
     "toilet-wall-hung": 3.0,
+    "kitchen-sink": 2.0,
+    "kitchen-sink-undermount-single": 2.0,
+    "dishwasher": 2.0,
+    "laundry-sink": 2.0,
 }
 
-# MN Plumbing Code Table 703.2: max DFU on a horizontal drainage branch, by size (in).
+# UPC 2018 Table 703.2 (MN 4714, unamended): max DFU on a horizontal drainage branch, by
+# size (in). Note 1: trap arms excluded; the 2" row excludes water closets (710.1 above).
+# Source: secondary copies agreeing (WA 2015 UPC exam guide, King County, Hawaii 2021 UPC on
+# up.codes); the IAPMO 2018 table itself was not read.
 DRAIN_BRANCH_CAPACITY_DFU: tuple[tuple[float, float], ...] = (
     (1.25, 1.0),
-    (1.5, 3.0),
-    (2.0, 6.0),
+    (1.5, 1.0),
+    (2.0, 8.0),
+    (2.5, 14.0),
     (3.0, 35.0),
     (4.0, 216.0),
 )
@@ -109,11 +118,13 @@ BATHROOM_GROUP_SYMBOLS: frozenset[str] = frozenset(
     if not k.startswith(("kitchen-sink", "washer")) and k not in {"dishwasher", "laundry-sink"})
 
 
-def required_drain_diameter_in(dfu: float) -> float | None:
-    """Smallest horizontal-branch size carrying ``dfu`` (Table 703.2); None = beyond it."""
+def required_drain_diameter_in(dfu: float, symbols: Iterable[str] = ()) -> float | None:
+    """Smallest horizontal-branch size carrying ``dfu`` (Table 703.2), raised to the largest
+    ``MINIMUM_DRAIN_IN_BY_SYMBOL`` floor among ``symbols``; None = beyond the table."""
+    floor_in = max((MINIMUM_DRAIN_IN_BY_SYMBOL.get(s, 0.0) for s in symbols), default=0.0)
     for size_in, capacity in DRAIN_BRANCH_CAPACITY_DFU:
         if dfu <= capacity + 1e-9:
-            return size_in
+            return max(size_in, floor_in)
     return None
 
 

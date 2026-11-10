@@ -35,7 +35,9 @@ but each quoted passage is intact.
 Nearby: **606.4** "Valves used to control two or more openings shall be fullway gate valves, ball
 valves, or other approved valves designed and approved for the service intended." **605.14** "In
 water piping, slip joints shall be permitted to be used only on the exposed fixture supply."
-**606.2** requires a fullway valve on each water heater's cold supply (graded by `mep.main_shutoff`).
+**606.2** requires a fullway valve on the building supply and on each water heater's cold
+supply; `mep.main_shutoff` grades only the building valve (606.2, access 606.6), and the heater's
+cold stop is graded as an appliance supply by `mep.fixture_control_valve`.
 
 Ch. 2 (§203.0, p. 9):
 
@@ -115,6 +117,17 @@ Neither sees an access panel or a cabinet door, so a valved manifold behind one 
 
 Cite "UPC 606.5 / 606.6 (MN Rules 4714.0050, not amended)". CODE; redundant series stops are
 the separate `advisory.redundant_isolation` preference.
+
+## 4. Catlin's stops (W5, owner 2026-11-10: "Keep fixture stops")
+
+Angle stops stay at every lav, sink, WC and appliance; the header is not swapped for a manifold.
+A zone or riser-head valve is dropped only where everything it isolates already has its own
+stop. Of the 47 shutoffs, two qualified: **PA-B-BATH-STOP-CW/HW** (past the WC's tee they fed
+only FX-B-BATH-LAV and FX-B-UTIL-SINK, both on terminal angle stops). Kept: the main and
+PA-B-WH-STOP-CW (606.2); the riser-head pairs in RM-S-BATH1, RM-S-SUITEBATH and RM-A-STUBATH,
+each the only isolation for a shower or tub (no stop of its own) and a several-fixture zone;
+PA-B-HYD-ISO, the hydrants' service valve (their seats are the faucet). Every other shutoff is
+itself a fixture or appliance stop. `advisory.redundant_isolation` finds no valve in series.
 
 ## Sources and limits
 

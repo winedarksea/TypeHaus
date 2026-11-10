@@ -144,13 +144,12 @@ def branch_diameter_m(model: ResolvedModel, fixtures: tuple[str, ...],
     Unknown fixture loads produce a refusal rather than an assumed branch diameter."""
     from typehaus.takeoff.plumbing_calc import (
         M_PER_IN,
-        MINIMUM_DRAIN_IN_BY_SYMBOL,
         fixture_units,
         required_drain_diameter_in,
     )
 
     rows = {row.tag: row for row in fixture_units(model.plan)}
-    load, floor_in = 0.0, 0.0
+    load, symbols = 0.0, []
     for tag in fixtures:
         row = rows.get(tag)
         if row is None or row.dfu is None:
@@ -159,13 +158,13 @@ def branch_diameter_m(model: ResolvedModel, fixtures: tuple[str, ...],
                  "proposal will not make one up")
             return None
         load += row.dfu
-        floor_in = max(floor_in, MINIMUM_DRAIN_IN_BY_SYMBOL.get(row.symbol, 0.0))
-    size_in = required_drain_diameter_in(load)
+        symbols.append(row.symbol)
+    size_in = required_drain_diameter_in(load, symbols)
     if size_in is None:
         miss(problems, target, f"{load:.0f} DFU is past the last row of the horizontal "
              "branch table, so this is a stack or a building drain and not a branch")
         return None
-    return max(size_in, floor_in) * M_PER_IN
+    return size_in * M_PER_IN
 
 
 def _endpoints(model: ResolvedModel, target: str, mode: str,

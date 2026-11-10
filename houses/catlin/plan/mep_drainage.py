@@ -187,8 +187,8 @@ DRAINS = [
     # 1 1/2": FX-M-BATH2-TUB is the Kohler K-1130-W1 (plan/fixtures.py), whose spec
     # drawing labels a 1 1/2" bath drain and whose required waste-and-overflow — K-7272
     # Clearflo, PROD-KOHLER-7272 — is a 1 1/2" PVC tee.
-    # One bathtub at 2 DFU, and 1 1/2" is the trap size the code tables give a
-    # bathtub, so nothing about the sizing moves; only the pipe that gets ordered.
+    # The trap is 1 1/2"; the run is 2" since 2026-11-10, because past the vent tee it is a
+    # branch and UPC Table 703.2 gives 1 1/2" horizontal only 1 DFU (a bathtub is 2).
     # The trap hangs 3" under the subfloor and the arm runs 22 1/2" SE at 1/4"/ft, through
     # FS-M-WEST's partition block at x=6'-8" and joist 13's web, to a sanitary tee under
     # W-M-BA2E2 at (8'-2", 17'-0") — PR-M-BATH2-TUB-VENT rises from it. The bay-209 station
@@ -198,7 +198,7 @@ DRAINS = [
             path=(pt(inch(78.49), inch(215.1775)), pt(inch(78.49), inch(215.1775)),
                   pt(inch(98), inch(204)), pt(inch(98), inch(204)),
                   pt(ft(6), inch(204)), pt(ft(6), inch(204))),
-            diameter=inch(1.5), material="pvc",
+            diameter=inch(2), material="pvc",
             elevations=(ft(9, 3.1875), inch(106.4375), inch(105.9375), inch(95.4375),
                         inch(93.9375), inch(84.9375)),
             serves=("FX-M-BATH2-TUB",)),
@@ -455,12 +455,13 @@ SECOND_BRANCH_DRAINS = [
     # FO-S-BATH1-TUB-DRAIN into RM-M-MECH's ceiling, south under it and the mud closet's, east
     # to x=5'-0" and onto the water closet's last drop at (5'-0", 27'-1 1/2"), a side entry.
     # The tee is the TOP of the drop, so PR-S-BATH1-SH-VENT rises plumb from it (UPC 905.2,
-    # MN 905.3), 0.25" under the weir (905.5). 1 1/2": the bathtub trap size (cf. PR-B-TUB2-DRAIN).
+    # MN 905.3), 0.25" under the weir (905.5). 2" past a 1 1/2" trap, for Table 703.2
+    # (cf. PR-B-TUB2-DRAIN).
     PipeRun(uid="0W45BR6619", tag="PR-M-S-BATH1-TUB-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(inch(48.5), inch(409.5)), pt(inch(48.5), inch(409.5)),
                   pt(inch(38), inch(409.5)), pt(inch(38), inch(409.5)),
                   pt(inch(38), inch(330)), pt(ft(5), inch(330)), pt(ft(5), inch(325.5))),
-            diameter=inch(1.5), material="pvc",
+            diameter=inch(2), material="pvc",
             elevations=(ft(10, 0.75), inch(117.0), inch(116.75), inch(103.4),
                         inch(101.2), inch(100.7), inch(100.5)),
             serves=("FX-S-BATH1-SH",)),
@@ -483,16 +484,21 @@ SECOND_BRANCH_DRAINS = [
             # claims EVERY segment is in that wall, which this run cannot honestly say.
             serves=("FX-S-BATH1-LAV",)),
     # ** THE DOUBLE VANITY'S ARM NEVER LEAVES THE WALL. ** W-S-BD-N is
-    # INT_2X6_STAGGERED_PLUMBING — 5 1/2" of continuous cavity with no stud to bore — and
-    # both bowls sit on it, so their 1 1/2" arm runs east inside it at 2 3/4" above the
-    # finished floor and lands on the stack head at 10'-2 9/16". That is what took the head
-    # up to 10'-3": a stack tops out at its highest inlet, and this is it. Both lavatories
-    # are named because both drain here; LAV2 at x=52 3/8" already sat 7 5/8" from the head
-    # and passed `fixture_drain_reach` for a reason that was true by accident.
-    PipeRun(uid="WJ1ZY1QTET", tag="PR-M-S-VANITY-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(inch(22.375), inch(318)), pt(inch(52.375), inch(318)), pt(inch(60), inch(320)), pt(inch(60), inch(320)),),
+    # INT_2X6_STAGGERED_PLUMBING and both bowls sit on it, so the arm runs east inside it
+    # at 2 3/4" above the finished floor and lands on the stack head at 10'-2 9/16" (the
+    # stack tops out at this, its highest inlet). LAV1's 1 1/2" leg carries 1 DFU past
+    # stud-006 (x=56") to LAV2's inlet at x=58 1/4"; from there both bowls' 2 DFU ride 2"
+    # (UPC Table 703.2: 1 1/2" is 1 DFU), 2026-11-10. A 2" bore in a 2x4 passes R602.6's 60%,
+    # so LAV2's arm runs east in its cabinet to enter the wall past that stud.
+    PipeRun(uid="67KKJ3MBFA", tag="PR-M-S-VANITY-LAV1-DRAIN", system=PipeSystem.DRAIN,
+            path=(pt(inch(22.375), inch(318)), pt(inch(58.25), inch(318)),),
             diameter=inch(1.5), material="pvc",
-            elevations=(inch(141.2), inch(140.55), inch(140.38), inch(122.5625),),
+            elevations=(inch(141.2), inch(140.45),),
+            serves=("FX-S-VANITY-LAV1",), wall_ref="W-S-BD-N"),
+    PipeRun(uid="WJ1ZY1QTET", tag="PR-M-S-VANITY-DRAIN", system=PipeSystem.DRAIN,
+            path=(pt(inch(58.25), inch(318)), pt(inch(60), inch(320)), pt(inch(60), inch(320)),),
+            diameter=inch(2), material="pvc",
+            elevations=(inch(140.45), inch(140.38), inch(122.5625),),
             serves=("FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2"), wall_ref="W-S-BD-N"),
     # ** THE SUITE BATH: THREE INDIVIDUALLY VENTED ARMS (2026-11-05). ** A 908.2 wet vent
     # was tried and does not fit: the lav's 2" wet vent must lie flatter than 45 deg (25" of
@@ -534,14 +540,16 @@ SECOND_BRANCH_DRAINS = [
     # PR-S-SUITEBATH-TUB-VENT takes off at y=262.375", then west on y=22'-0" over
     # CD-M-DATA-KITCH and under PR-A-HW-STUBATH, takes the lav at x=13'-9 1/2", south at
     # x=12'-11 3/4" (pocket D11) and west on y=19'-0" to the collector.
+    # 2" since 2026-11-10 (3 DFU, UPC Table 703.2); the y=22'-0" leg sits 1/4" lower to pass
+    # under PR-A-HW-STUBATH.
     PipeRun(uid="WVNA8G8ZHX", tag="PR-M-S-SUITE-TUB-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(inch(197.615), inch(251.875)), pt(inch(197.615), inch(251.875)),
                   pt(inch(197.615), inch(249.25)), pt(inch(185.5), inch(249.25)),
                   pt(inch(185.5), inch(264)), pt(inch(171), inch(264)),
                   pt(inch(155.75), inch(264)), pt(inch(155.75), ft(19)), pt(ft(12), ft(19))),
-            diameter=inch(1.5), material="pvc",
+            diameter=inch(2), material="pvc",
             elevations=(ft(10, 0.75), inch(116.9375), inch(116.875), inch(116.62),
-                        inch(116.31), inch(115.85), inch(115.5), inch(114.75), inch(114.2)),
+                        inch(116.31), inch(115.6), inch(115.25), inch(114.5), inch(114.2)),
             serves=("FX-S-SUITEBATH-TUBSH",)),
 ]
 

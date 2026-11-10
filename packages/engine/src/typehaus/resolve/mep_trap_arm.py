@@ -449,6 +449,18 @@ def wet_vent_data(model) -> WetVentData:
     return WetVentData(drains, radii, fx, vent_ends, all_ends)
 
 
+def whole_trap_arms(model, data: WetVentData | None = None) -> set[str]:
+    """Drain runs that are wholly one fixture's trap arm: its leaf run, ending on one of its
+    own vent tees. Table 703.2 note 1 leaves these out of branch capacity."""
+    data = data or wet_vent_data(model)
+    out = set()
+    for tag, (leaf, *_rest) in data.fx.items():
+        pts = data.drains.get(leaf)
+        if pts and any(math.dist(pts[-1], e) <= TEE_TOL_M for e in data.vent_ends.get(tag, ())):
+            out.add(leaf)
+    return out
+
+
 def arm_is_vented(model, fixture: str, drain_point,
                   data: WetVentData | None = None) -> tuple[bool, str]:
     """``(vented, what vents it)``: the check's own walk, wet vents graded under 908.

@@ -400,7 +400,9 @@ def test_dfu_table_sizing():
         trap_arm_limit_in,
     )
 
-    assert required_drain_diameter_in(3) == 1.5
+    assert required_drain_diameter_in(1) == 1.25
+    assert required_drain_diameter_in(3) == 2.0
+    assert required_drain_diameter_in(1, ("kitchen-sink",)) == 2.0  # Table 702.1 note 2
     assert required_drain_diameter_in(18) == 3.0
     assert required_drain_diameter_in(500) is None
     assert required_supply_size_in(8) == 0.75

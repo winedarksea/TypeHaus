@@ -53,7 +53,8 @@ def test_the_engine_default_is_a_sixteenth(catlin_plan, catlin_model_ro) -> None
     # 2026-11-07: condensate (sanitary=False) left this check for mep.drain_slope's IMC
     # 307.2.1 floor + 1/4 ADVISORY, taking PR-B-COND and PR-M-COND-HEADS off the list.
     # 2026-11-09: PR-M-S-SUITE-DRAIN's new legs past EQ-B-WH run at ~0.27"/ft.
-    assert len(fails) == 22
+    # 2026-11-10: PR-S-VANITY-LAV2-ARM's cabinet leg to its 2" junction, 0.306"/ft.
+    assert len(fails) == 23
     assert all(f.severity is Severity.WARN for f in fails), "ADVISORY, not a permit blocker"
 
 

@@ -18,8 +18,9 @@
 # 12": the 8" inner radius p.16 asks), 13" into the boot: 2.4 ft.
 # Intake: Rheem's inlet adapter and SP20890 elbow (H 91" to its top), then about 28" of the
 # same flex and the same bend (4.5 ft): the p.15 12" isolation section. Both together are
-# under 10 ft of flex against Table 1's 125 ft. The filter lifts out of the top (p.26); its
-# 6" above the tank stays clear except for the elbow (open item: notes/basement_winter_heat.md).
+# under 10 ft of flex against Table 1's 125 ft. The filter lifts out of the top (p.26): the
+# kit's rigid spacer between flange and elbow (AP21628 step 1) keeps the flex 2 13/16" over
+# AP22654's 6" line (notes/basement_winter_heat.md "Filter").
 #
 # Elevations off the slab. Duct ends are the boots' collar tips, 6 3/4" behind the hall face.
 

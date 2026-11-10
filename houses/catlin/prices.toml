@@ -6565,7 +6565,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "main_shutoff" = { material = { low = 25, high = 70 }, labour = { low = 25, high = 70 } }  # 1 ea
 "penetration_seal" = { material = { low = 25, high = 90 }, labour = { low = 25, high = 70 } }  # 4 ea (PA-B-ESS-SEAL-W/-E joined 2026-10-30)
 "ro_stub" = { material = { low = 15, high = 45 }, labour = { low = 25, high = 70 } }  # 3 ea
-"shutoff" = { material = { low = 8, high = 25 }, labour = { low = 25, high = 70 } }  # 47 ea (2026-11-10)
+"shutoff" = { material = { low = 8, high = 25 }, labour = { low = 25, high = 70 } }  # 45 ea (2026-11-10: PA-B-BATH-STOP-CW/HW dropped, W5)
 "vacuum_breaker" = { material = { low = 10, high = 35 }, labour = { low = 25, high = 70 } }  # 2 ea (PA-B-USINK-VB joined 2026-10-30; Woodford 34HD ~$32)
 "water_hammer_arrestor" = { material = { low = 12, high = 35 }, labour = { low = 25, high = 70 } }  # 3 ea
 # Cleanouts (2026-11-04). One-way is an access fitting + cap at 1.5-3" (estimate, no single

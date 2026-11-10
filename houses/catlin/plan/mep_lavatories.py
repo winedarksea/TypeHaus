@@ -25,13 +25,14 @@ BASEMENT_LAV_CONNECTIONS = [
     # and tees under PR-B-BATH-VENT's riser at (10'-0", 19'-1 1/2") — the vent before the
     # drop, so no S-trap — then drops through SP-B-SLAB-USINK and, since 2026-11-10, runs
     # under the slab to the main as the lavatory's branch too (PR-B-BATH-LAV-DRAIN lands on
-    # the drop's foot): 3 DFU, Table 703.2's 1 1/2" row. Past the drop it bends 1/8 south-west
+    # the drop's foot): 3 DFU, so 2" (UPC Table 703.2, and Table 702.1 note 2's 2" minimum
+    # for a utility sink; 2026-11-10). Past the drop it bends 1/8 south-west
     # and runs west on y=18'-4", tying in 20" south of PR-B-BATH-DRAIN: 45° + 90° = 135°, so
     # CO-B-USINK on the arm is its only cleanout.
     PipeRun(uid="TV31MEHNBX", tag="PR-B-USINK-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(inch(115), inch(229.5)), pt(inch(120), inch(229.5)), pt(inch(120), inch(229.5)), pt(inch(110.5), inch(220)), pt(inch(42), inch(220)),),
             elevations=(inch(16), inch(15.84375), inch(-11.0), inch(-11.41), inch(-13.5),),
-            diameter=inch(1.5), material="pvc", serves=("FX-B-UTIL-SINK",)),
+            diameter=inch(2), material="pvc", serves=("FX-B-UTIL-SINK",)),
     # Stubs tee off the bath branches' W-B-STR2 drop ends (the hot carries on down to 24",
     # under the lavatory's cold terminal) and drop in the cabinet: hot at 18'-8 1/2", south
     # of the vent and trap arm, cold at 19'-10". The faucet's flex supplies span the 13 1/2".
@@ -175,8 +176,9 @@ MAIN_LAV_CONNECTIONS = [
                   accessible=True, room="RM-S-VANITY", model='1/2 in. quarter-turn fixture angle stop',
                   serves=("FX-S-VANITY-LAV2",)),
     PipeRun(uid="F85SRM3ZCE", tag="PR-S-VANITY-LAV2-ARM", system=PipeSystem.DRAIN,
-            path=(pt(inch(52.375), inch(316.245)), pt(inch(52.375), inch(318)),),
-            elevations=(inch(141.5), inch(140.55),),
+            path=(pt(inch(52.375), inch(316.245)), pt(inch(52.375), inch(315)),
+                  pt(inch(58.25), inch(315)), pt(inch(58.25), inch(318)),),
+            elevations=(inch(141.5), inch(141.45), inch(141.3), inch(140.45),),
             diameter=inch(1.5), material="pvc",
             serves=("FX-S-VANITY-LAV2",)),
     # Both also feed FX-A-STUBATH-SH, whose pair tees on at the stop corners

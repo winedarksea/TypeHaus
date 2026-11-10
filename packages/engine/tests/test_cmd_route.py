@@ -101,11 +101,11 @@ def test_the_tree_mode_routes_each_branch_at_its_own_derived_size(runner) -> Non
 
     **One lattice per branch SIZE.** Every branch used to be 2" because the CLI held one
     literal; each is now sized from its own fixture's drainage load, so the suite bath is
-    3" / 1 1/2" / 1 1/4" and each size gets its own world — inflating one shared world at
+    3" / 2" / 1 1/4" and each size gets its own world — inflating one shared world at
     the widest walls the narrow branches out of lanes they fit perfectly well.
 
     **Two of three route, and the third is refused with its reason.** The suite bath's
-    tub-shower and lav route on their own 1 1/2" and 1 1/4" lattices; its WC finds no 3"
+    tub-shower and lav route on their own 2" and 1 1/4" lattices; its WC finds no 3"
     lane. (The basement bath carried this until 2026-11-10, when its WC got a branch of its
     own and its lav moved onto PR-B-USINK-DRAIN.)
     """
@@ -113,9 +113,9 @@ def test_the_tree_mode_routes_each_branch_at_its_own_derived_size(runner) -> Non
     result = runner.invoke(app, ["route", str(_CATLIN),
                                  "--tree", "PR-M-S-SUITE-DRAIN", "--explain"])
     assert result.exit_code == 0, result.output
-    assert '3 branch sizes (3", 1.5", 1.25")' in result.output
+    assert '3 branch sizes (3", 2", 1.25")' in result.output
     assert "FX-S-SUITEBATH-TUBSH-PROPOSED" in result.output
-    assert "diameter=inch(1.5)" in result.output
+    assert "diameter=inch(2)" in result.output
     assert "FX-S-SUITEBATH-WC: no route" in result.output
     assert "deepest first" in result.output
     assert _plan_digest() == before
@@ -161,7 +161,7 @@ def test_a_tree_terminal_short_of_head_is_reported_with_the_number(runner) -> No
 def test_a_branch_is_sized_from_its_own_drainage_load(runner) -> None:
     """3", not 2", for a water closet — and the table alone does not say so.
 
-    Table 703.2 puts a 3 DFU closet comfortably inside the 2" row's 6 DFU, which is why
+    Table 703.2 puts a 3 DFU closet comfortably inside the 2" row's 8 DFU, which is why
     sizing from capacity alone is the classic error. 710.1 sets the floor and
     `plumbing_calc.MINIMUM_DRAIN_IN_BY_SYMBOL` carries it, so the proposal comes out at the
     size the house itself authors.

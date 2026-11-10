@@ -121,7 +121,7 @@ collector tying there, rather than at 112 on the barrel below it, there would ha
 in hand — which is exactly what makes 0.0622" the right *ordering* number and the wrong
 *margin* number.
 
-**The two 1 1/2" arms** (since 2026-11-05): the tub's ties onto the collector's south leg, and
+**The two arms** (since 2026-11-05; the tub's is 2" since 2026-11-10, 3 DFU): the tub's ties onto the collector's south leg, and
 the lav's onto the tub's, each fixture with its own vent tee at the top of its drop:
 
 | arm | route | start → end | ties onto |
@@ -134,8 +134,9 @@ Each end elevation is checked against its parent's own **centreline** at that st
 centreline — see `model/mep.py`). An arm entering in the parent's upper half is an ordinary
 side entry; `mep.drain_tie_in` grades it. At y=228 the collector reads
 114.4 − 1.8 × (18/30) = 113.32 against the tub arm's 114.2, **0.88" above** (2026-11-08); at x=165.5 the
-tub arm (171 → 155.75, 115.85 → 115.5 since 2026-11-06, J12 pocket D11) reads
-115.85 − 0.35 × (5.5/15.25) = 115.724 against the lav's 115.85, **0.126" above**.
+tub arm (171 → 155.75, 115.6 → 115.25 since 2026-11-10, 2" and 1/4" lower under
+PR-A-HW-STUBATH) reads 115.6 − 0.35 × (5.5/15.25) = 115.474 against the lav's 115.85,
+**0.376" above**.
 Both are inside `_TIE_IN_INVERT_TOL_M` (1"), which keeps `drain_tie_ins` linking them and
 `accumulated_serves` rolling the load up.
 

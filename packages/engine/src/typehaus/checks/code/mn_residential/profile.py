@@ -505,14 +505,14 @@ MN_2020 = JurisdictionProfile(
         #
         # ** THE CITATIONS WERE IRC P2902 / P2903.5 / P2903.9.1 AND MINNESOTA DELETED
         # THEM. ** Same strike, 1309.0010 subp. 3.D. What a Minnesota reviewer opens is
-        # UPC 606.1 (the full-open valve on the building supply) with 606.3 (access to it),
+        # UPC 606.2 (the fullway valve on the building supply) with 606.6 (access to it),
         # 603.5.7 (a backflow preventer or vacuum breaker at every hose thread), and
         # 609.10 (a water-hammer arrester where a quick-acting valve is installed).
         PermitItemSpec("Water supply protection and shutoff",
                        ("mep.main_shutoff", "mep.backflow_prevention",
                         "mep.water_hammer_arrestor"),
-                       ("MN Plumbing Code (ch. 4714) 606.1",
-                        "MN Plumbing Code (ch. 4714) 606.3",
+                       ("MN Plumbing Code (ch. 4714) 606.2",
+                        "MN Plumbing Code (ch. 4714) 606.6",
                         "MN Plumbing Code (ch. 4714) 603.5.7",
                         "MN Plumbing Code (ch. 4714) 609.10")),
         # A control valve immediately ahead of each appliance and slip-joint supply, or a
