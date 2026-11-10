@@ -290,7 +290,6 @@ the future.
 - Reduce the number of LED strip controllers, ideally one or two for the soffits, not six (Zigbee vs Matter: see the cove-controller item above).
 - [x] 3d heat pump head model — rounded white plastic casing, intake grille and recessed outlet.
 - 3d model of the plant room reservoir
-- 3d model of the bedside lighting, WAC Lighting BL-23210-BK the ED-T-LT-SPOT-SW
 - 3d model of the washer dryer
 - 3d model of the terminal_neck and transfer grills. Also REG-M-XFER-MUD-NECK doesn't have the depth for the full grill, it can probably just be a hole with a grill plate
 - Pantry shelves have a middle support that would ideally only go half depth (sticking to north half), right now it is rather restricting access to the west end of the pantry.

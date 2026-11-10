@@ -23,17 +23,18 @@ from .porch_lighting_types import GARDEN_FLOOD_TYPE
 _POWER_120 = (ServicePort(tag="power", service=Service.POWER_120,
                           position=(ft(0), ft(0), ft(0))),)
 
-_STRETCH_BODY = dict(
-    footprint=(inch(8), inch(4)), height=inch(8), plan_symbol="sconce-swing-arm",
+_SPRIG_BODY = dict(
+    footprint=(inch(4.375), inch(9.875)), height=inch(8), plan_symbol="sconce-wac-sprig",
     canopy_diameter=inch(4.375), box_use="luminaire-round",
     lamp="LED integrated, toggle on the canopy", watts=5.0, lumens=287.0,
     cct_k=3000, cri=90, dimmable=True, damp_rated=True, load_va=5.0, ports=_POWER_120,
     product_ref="PROD-WAC-BL-23210-BK", replaceable_lamp=False)
-_STRETCH = LuminaireType(
+_SPRIG = LuminaireType(
     tag="ED-T-LT-SCONCE-SPOT", name="Swing-arm LED reading light, black",
-    form=LuminaireForm.SCONCE, type_mark="J", **_STRETCH_BODY,
-    source="WAC Sprig BL-23210-BK (spec sheet), drawn folded; canopy 4 3/8 in. dia. (spec "
-           "sheet p.1, read 2026-11-07). Retyped from the Stretch BL-1660-BK 2026-10-29 "
+    form=LuminaireForm.SCONCE, type_mark="J", **_SPRIG_BODY,
+    source="WAC Sprig BL-23210-BK (spec sheet), arm extended, head down; 9 7/8 in. "
+           "projection, 8 in. overall, canopy 4 3/8 in. dia. (spec sheet p.1, read "
+           "2026-11-10). Retyped from the Stretch BL-1660-BK 2026-10-29 "
            "(plain, cheaper; no touch dimmer). Leave the canopy toggle ON so the wall switch "
            "rules; hardwired to a junction box (installation sheet p.2).")
 
@@ -56,9 +57,9 @@ DECORATIVE_LUMINAIRE_TYPES = (
     # J and J1 are one product (WAC Sprig): J is wall-switched, J1 uses the canopy toggle.
     # The plant room's old wet copy retyped to J (damp is enough there). J2 (the bed
     # sconces' shaded E26) retired 2026-11-02: RM-M-BED's pair are J1 too.
-    _STRETCH,
+    _SPRIG,
     LuminaireType(tag="ED-T-LT-SPOT-SW", name="Swing-arm LED reading light, switch on fixture",
-                  form=LuminaireForm.SCONCE, type_mark="J1", **_STRETCH_BODY,
+                  form=LuminaireForm.SCONCE, type_mark="J1", **_SPRIG_BODY,
                   integral_switch=True,
                   source="WAC Sprig BL-23210-BK, switched at its canopy toggle (a true on/off); "
                          "canopy 4 3/8 in. dia. (spec sheet p.1, read 2026-11-07)."),

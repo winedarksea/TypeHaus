@@ -47,6 +47,7 @@ from typehaus.model.placeable_symbols._product_sconces import (
     swing_arm_sconce,
     tube_sconce,
 )
+from typehaus.model.placeable_symbols._sprig_sconce import sprig_sconce
 from typehaus.model.placeable_symbols._track_lighting import track_light
 from typehaus.model.placeable_symbols._vanity_lights import socketed_vanity_light
 from typehaus.model.placeable_symbols._wave_chandelier import wave_chandelier
@@ -438,6 +439,7 @@ LIGHTING_SYMBOLS: dict[str, Builder] = {
     "sconce-tube": tube_sconce(),
     "sconce-slim-updown": slim_updown_sconce(),
     "sconce-swing-arm": swing_arm_sconce(),
+    "sconce-wac-sprig": sprig_sconce,
     "sconce-candle": candle_sconce(),
     "pendant": pendant(),
     "chandelier": chandelier(arms=6),
