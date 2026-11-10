@@ -937,9 +937,9 @@ WALLS = [
     # 17.5 sf closet, RM-B-UNDERSTAIR; both are gone (2026-09-05, round three). The storage
     # runs the full length of the flight now — north past y=31'-0" and on under the landing
     # deck — and the volume is part of RM-B-STAIR again, reached only through D-B-CLOSET
-    # from the furnace room: the north end runs on under the landing, too low to walk. See ROOMS for why it is no
-    # longer a `Room`: with nothing closing it, a second seed in the same face resolved the
-    # SAME 114.8 sf polygon twice, and nothing grades that.
+    # from the furnace room: the north end runs on under the landing, too low to walk. See
+    # ROOMS for why it is no longer a `Room`: with nothing closing it, a second seed in the
+    # same face resolved the SAME 114.8 sf polygon twice, and nothing grades that.
     #
     # `resolve/stairs/common.py` budgets 4 1/2" between ST-B2M's two flights and emits no
     # member, so W-B-WELL fills a RESERVED VOID: it is not colliding with the stair, it is

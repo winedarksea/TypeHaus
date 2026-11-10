@@ -103,6 +103,18 @@ def test_a_pipe_over_the_head_track_is_not_in_the_pocket(catlin_model) -> None:
                                                 "PR-M-S-SUITE-LAV-DRAIN")]
 
 
+def test_a_duct_in_the_leafs_travel_fails(catlin_model) -> None:
+    """The duct branch: any main-storey duct laid on that same plan line at 40" is in it."""
+    lav = next(r for r in catlin_model.pipe_runs if r.tag == "PR-M-S-SUITE-LAV-DRAIN")
+    original = next(d for d in catlin_model.ducts if d.storey == "main")
+    moved = dataclasses.replace(original, path=lav.path,
+                                z_m=tuple(40 * 0.0254 for _ in lav.path))
+    model = dataclasses.replace(
+        catlin_model,
+        ducts=tuple(moved if d.tag == original.tag else d for d in catlin_model.ducts))
+    assert ("D-M-LAUN", "W-M-HS4", original.tag) in [f.element_tags for f in _fails(model)]
+
+
 def _fails(model):
     return [f for f in run_from_model(model, [], tier=Tier.CODE,
                                       only="mep.pocket_occupancy").findings

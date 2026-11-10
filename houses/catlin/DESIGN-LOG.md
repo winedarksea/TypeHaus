@@ -7808,7 +7808,7 @@ Rev 01, read in full) lists ducting both connections for any size room and names
 workshop exclusion. Both air connections are ducted through `W-B-HALL-W` into the stair hall,
 so the chill and the evaporator's air are the hall's and shop dust stays off the filter. The
 header moved beside the tank: trunk 7.2 ft, every branch but the powder lav's shorter, every
-fixture's wait lower (kitchen 1.35 -> 0.71 gal). `D-B-CLOSET` is plain storage again, 32" leaf
+fixture's wait lower (kitchen 1.35 -> 0.70 gal). `D-B-CLOSET` is plain storage again, 32" leaf
 kept, standard undercut. `RM-B-ESS` was not shrunk.
 
 What the review's plan assumed and the model refused:

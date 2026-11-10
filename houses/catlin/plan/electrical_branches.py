@@ -80,7 +80,8 @@ BRANCH_RACEWAYS = [
     # 3/4" EMT capped spare, panel to the TV-wall box: a dedicated AV circuit pulls in later
     # without opening the ceiling. No new circuit now; the panel is nearly full. Up out of
     # the panel top (78" AFF) and under the gypsum at -1'-1 7/16" (west of PR-B-SAUNA-VENT's x=4'-3
-    # 1/2" leg, ducking 1.6" under PR-B-HW-BATH's x=7'-3 5/8" leg on 6" ramps (15° bends) and rising back over the
+    # 1/2" leg, dipping 1.6" between x=6'-10" and 7'-11" on 6" ramps (15° bends; it ducked a
+    # PR-B-HW-BATH leg that has since moved, and now ducks nothing) and rising back over the
     # vent's x=9'-0" leg, 2.8" over CD-B-KITCHEN and CD-B-DATA-MEDIA: the
     # furnace room has no lane beside those two, W-B-STR3's face is at x=9'-9 1/4"),
     # through W-B-STR2's top plate and RM-B-BATH, then up the hall to a body at y=25'-6" (south

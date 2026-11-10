@@ -218,20 +218,21 @@ trunk (conservative for the two 3/4" tees): 19.3 ft x 0.0429 = 0.83 gal before, 
 
 | fixture | branch ft (closet) | gal (closet) | branch ft (now) | gal (now) |
 | --- | --- | --- | --- | --- |
-| kitchen sink, `PR-B-HW-KITCH` | 57.0 | 1.35 | 42.9 | 0.71 |
+| kitchen sink, `PR-B-HW-KITCH` | 57.0 | 1.35 | 42.9 | 0.70 |
 | main bath shower, `PR-B-BATH2-SH-HW` | 17.1 | 0.99 | 14.5 | 0.44 |
-| main bath tub, `PR-B-FILLER-HW` | 12.5 | 0.94 | 12.4 | 0.43 |
+| main bath tub, `PR-B-FILLER-HW` | 12.5 | 0.94 | 12.4 | 0.42 |
 | main bath sink, `PR-B-HW-BATH2` | 22.1 | 1.03 | 22.6 | 0.52 |
 | laundry, `PR-B-HW-WASH` | 16.5 | 0.98 | 12.9 | 0.43 |
 | sauna shower, `PR-B-HW-SAUNA` | 32.1 | 1.12 | 19.7 | 0.49 |
 | powder lav, `PR-B-HW-BATH1` | 12.8 | 0.95 | 20.8 | 0.50 |
 | basement lav, `PR-B-HW-BATH` | 15.8 | 0.97 | 14.2 | 0.44 |
-| suite and attic (`PR-B-HW-SUITE`, 3/4" PEX) | 41.0 | 1.60 | 25.6 | 0.80 |
-| hall bath upstairs (`PR-B-HW-SBATH`, 3/4" copper) | 21.8 | 1.37 | 39.7 | 1.31 |
+| suite and attic (`PR-B-HW-SUITE`, 3/4" PEX) | 41.0 | 1.60 | 25.6 | 0.79 |
+| hall bath upstairs (`PR-B-HW-SBATH`, 3/4" copper) | 21.7 | 1.37 | 39.7 | 1.31 |
 
-At 1.5 gpm the kitchen waits ~28 s (was ~54 s in the closet). Only the powder lav's branch
-got longer (it now crosses from the workshop), and it still waits less: the trunk it
-shares is 12 ft shorter. The hall bath upstairs is the longest wait left; a ninth outlet
+At 1.5 gpm the kitchen waits ~28 s (was ~54 s in the closet). Three branches got longer: the
+powder lav (+8.0 ft, it now crosses from the workshop), the hall bath upstairs (+18 ft of
+3/4" copper) and the main bath sink (+0.5 ft). Each still waits less: the trunk is 12 ft
+shorter. The hall bath upstairs is the longest wait left; a ninth outlet
 cannot feed it (3/4" by `mep.pipe_sizing`).
 
 **Pressure on the 1/2" kitchen branch, by hand (2026-11-08).** Hazen-Williams, C = 150, ID

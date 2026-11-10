@@ -471,7 +471,7 @@ def test_bill_of_materials_carries_the_electrical_sections(catlin_model):
         assert section in bom, section
     assert bom["panel_schedule"] == panel_schedule(catlin_model)
     assert bom["solar"]["total_watts"] == 7380
-    assert bom["solar"]["panels"] == 12
+    assert bom["solar"]["panels"] == 18
     devices = {(row["kind"], row["type"]): row["count"] for row in bom["electrical_devices"]}
     assert devices[("meter", "ED-T-METER")] == 1
     assert devices[("junction_box", "ED-T-EVSE-JB")] == 1

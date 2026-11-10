@@ -83,7 +83,8 @@ wording is about, so keep finishing work and solvent away from the tank anyway.
    out of the top; p.11 and p.17 give 6"). Confirm with the SP21105/AP21365 adapter
    instructions or Rheem before ordering.
 3. Commissioning: check the hall grilles' noise and that the exhaust does not short-circuit
-   into the intake 10" above it. If it does, turn the exhaust boot's vanes down first.
+   into the intake 10" above it (the grilles are fixed-blade returns: hang the exhaust one
+   with its blades throwing down).
 
 Moving the air connections transfers roughly 1,100 Btu/h of assumed average extraction to
 the stair hall; the stair heat pump must replace that heat in winter. This improves access to a

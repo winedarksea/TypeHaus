@@ -1731,8 +1731,8 @@ BASEMENT_DATA_TRUNKS = [
     #
     # ** -1'-0 1/2" IS SWEPT, NOT PICKED. ** The basement ceiling is the busiest plane in the
     # house and the obvious answers are all occupied: CD-B-DATA-MEDIA's -1'-6" line puts this
-    # run 3/8" INTO PR-B-SAUNA-VENT where that vent crosses (9'-0", 19'-0"), and -1'-4" puts
-    # it 7/8" into PR-B-HW-TRUNK. Sweeping the whole -3'-4"..-0'-11" band against every other
+    # run 3/8" INTO PR-B-SAUNA-VENT where that vent crosses (9'-0", 19'-0"), and -1'-4" put
+    # it 7/8" into the old furnace-room PR-B-HW-TRUNK (gone 2026-11-09). Sweeping the whole -3'-4"..-0'-11" band against every other
     # run in the model, interpolating each neighbour's elevation at the actual crossing, the
     # only lane that is both clear AND above D-B-FURN's head is the one tight to the joists.
     #
