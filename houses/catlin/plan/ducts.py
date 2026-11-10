@@ -214,6 +214,8 @@ DUCT_STANDARD = [
                         source="top take-off register boot on the trunk, shop-fabricated"),
             DuctPartRow(kind="boot", size="10x18", branch="28x12", fabricated=True,
                         source="return filter box, shop-fabricated"),
+            DuctPartRow(kind="boot", size="6x4", branch="12x12", fabricated=True,
+                        source="RM-S-SUITE return filter box, locking balancing damper, shop-fabricated"),
         ),
         supports=(
             DuctSupportRow(section="round", max_size=inch(10), spacing=ft(12),

@@ -8,16 +8,16 @@
 # only register here with no `duct_ref`. Their types and the ducts they sit on are in
 # plan/mep_hvac.py.
 #
-# ================== SYSTEM 1 HAS ONE RETURN, AND SIX DOORS ARE IT ==================
+# ================== SYSTEM 1 HAS TWO RETURNS; THE REST GO UNDER DOORS ==================
 #
-# REG-S-HP-RET is the only return, it is in RM-S-HALL, every other System 1 terminal below is
-# a supply, and the ERV's bedroom pickups are stale-air tokens, not a return path. So a
-# room's air gets back to the machine UNDER ITS DOOR. Since 2026-11-06 an undercut stays in
-# 1/2"-3/4" (owner: stock prehungs cut on site), so the relief doors hang at 3/4" and still
-# fall short: a bedroom's 75 cfm net through 22.5 in2 is 9.7 Pa against Manual D's 3 Pa.
-# mep.door_transfer_air grades it; the 1 1/4"-1 3/4" undercuts once named here are withdrawn
-# and the fix (transfer grilles, jump ducts or a return) is open. D-S-PLANT keeps 1/2": its
-# room's pressure is a design output held by an interlocked damper.
+# REG-S-HP-RET is the hall return; RM-S-SUITE has its own ducted REG-S-HP-SUITE-RET behind a
+# sealed door (2026-11-09). Every other System 1 terminal below is a supply, and the ERV's
+# bedroom pickups are stale-air tokens, not a return path. So a room's air gets back to the
+# machine UNDER ITS DOOR. Since 2026-11-06 an undercut stays in 1/2"-3/4" (owner: stock
+# prehungs cut on site), so the relief doors hang at 3/4" and still fall short: a bedroom's
+# 75 cfm net through 22.5 in2 is 9.7 Pa against Manual D's 3 Pa. mep.door_transfer_air grades
+# it; relief for the bedrooms is open. D-S-PLANT keeps 1/2": its room's pressure is a design
+# output held by an interlocked damper.
 # Arithmetic and history: notes/system1_return_path.md.
 
 from typehaus import (
@@ -52,7 +52,8 @@ from .erv_balance import (
 # on the trunk's 100 1/8"; a WALL mount is measured off the finished floor, so it is authored
 # 95 7/8" over the carpet's 1 1/4". They throw east across the room, over the desk below.
 # Both are now over the PAX frame (plan/bedroom_wardrobes.py), whose top is 93 3/8" over the
-# carpet: 2 1/2" under the grille face. The throw clears it; nothing grades it.
+# carpet: 2 1/2" under the grille face. The throw clears it; nothing grades it. BED2/BED3 sit
+# 3/4" lower with their collars (2026-11-09, the suite return's lane): 1 3/4" over BED2's PAX.
 #
 # BED3 is a ceiling boot at its bay leg's end, at the room's resolved ceiling, 8'-10 1/4".
 # NOTHING GRADES A REGISTER AGAINST ITS HOST SURFACE — a Register resolves no solid, so
@@ -72,7 +73,7 @@ REGISTERS_HVAC_SECOND = [
                  normal_gap=inch(0), rotation_offset=deg(0)))),
     Register(uid="CSRH02AAAA", tag="REG-S-HP-BED2", kind=DuctSystem.SUPPLY, room="RM-S-BED2",
              duct_ref="DU-S-HP-BED2", type_ref="REG-T-HP-SIDE-1206", design_cfm=80,
-             mount=Mount(kind=MountKind.WALL, elevation=inch(95)),
+             mount=Mount(kind=MountKind.WALL, elevation=inch(94.25)),
              location=Location(attachment=WallAttachment(
                  wall_ref="W-S-BW2", face="right", distance_from_start=inch(24),
                  normal_gap=inch(0), rotation_offset=deg(0)))),
@@ -80,7 +81,7 @@ REGISTERS_HVAC_SECOND = [
     # branch passes south of the return plenum (see mep_hvac_branches.py).
     Register(uid="CSRH03AAAA", tag="REG-S-HP-BED3", kind=DuctSystem.SUPPLY, room="RM-S-BED3",
              duct_ref="DU-S-HP-BED3", type_ref="REG-T-HP-SIDE-1206", design_cfm=80,
-             mount=Mount(kind=MountKind.WALL, elevation=inch(95)),
+             mount=Mount(kind=MountKind.WALL, elevation=inch(94.25)),
              location=Location(attachment=WallAttachment(
                  wall_ref="W-S-BW3", face="right", distance_from_start=inch(12.75),
                  normal_gap=inch(0), rotation_offset=deg(0)))),
@@ -188,10 +189,10 @@ REGISTERS_HVAC_SECOND = [
     # at 30'-7 5/8" by 4 3/8". The same rule is why the closet's ceiling access panel is
     # gasketed: an open lid over this cavity would be a closet return by another name.
     #
-    # ** design_cfm IS 650, NOT 750, AND THE 100 IS NOT LOST. ** The air handler moves 750;
-    # the ERV puts 100 of that into the plenum through DU-S-ERV-HP-FEED, so the ROOM air
-    # this grille draws is 650. Authoring 750 here double-counted the ERV's share. 336 in2
-    # at 650 cfm is 279 fpm, inside Manual D SS4-10's 300 for a grille carrying the filter.
+    # ** design_cfm IS 570. ** The air handler moves 750: the ERV puts 100 into the plenum
+    # through DU-S-ERV-HP-FEED and REG-S-HP-SUITE-RET 80 more (2026-11-09), so the hall air
+    # this grille draws is 570. 336 in2 at 570 cfm is 244 fpm, inside Manual D SS4-10's 300
+    # for a grille carrying the filter.
     #
     # ** THE ELEVATION IS HAND-COUPLED AND UNCHECKED. ** 7'-1" is SF-S-HP1's finished
     # underside (23" drop, storeys/second.py), not SF-S-DUCT's 7'-10". Change the drop and
@@ -201,8 +202,17 @@ REGISTERS_HVAC_SECOND = [
     Register(uid="CSRH05AAAA", tag="REG-S-HP-RET", kind=DuctSystem.RETURN,
              room="RM-S-HALL", rotation=deg(90),
              position=pt(inch(251.5), inch(350.25)), duct_ref="DU-S-HP-RET",
-             type_ref="REG-T-HP-RET-FILTER", design_cfm=650,
+             type_ref="REG-T-HP-RET-FILTER", design_cfm=570,
              mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 1))),
+    # RM-S-SUITE's ducted return (2026-11-09): a 12x12 filter-back ceiling grille between two
+    # FS-ATTIC joists, clear of the W-S-SBS/W-S-DC2 corner, the bed and CAN3. Its own MERV 13
+    # filter, because it enters the plenum behind REG-S-HP-RET's; a locked balancing damper
+    # at the boot, set to 80 cfm through the hinged face. With D-S-SUITE sealed the suite's
+    # pressure follows that damper and the hall filter's loading: re-check at filter changes.
+    Register(uid="1G7M6SM0ND", tag="REG-S-HP-SUITE-RET", kind=DuctSystem.RETURN, room="RM-S-SUITE",
+             position=pt(inch(104), inch(184)), duct_ref="DU-S-HP-SUITE-RET",
+             type_ref="REG-T-HP-RET-FILTER-1212", design_cfm=80,
+             mount=Mount(kind=MountKind.CEILING)),
 ]
 
 # CONDENSATE — the indoor heads gravity-drain through PR-M-COND-HEADS / PR-B-COND to an air

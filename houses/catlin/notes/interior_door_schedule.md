@@ -35,7 +35,7 @@ sweep or automatic bottom closes its undercut (`DoorType.bottom_seal`).
 | D-M-PANTRY, D-M-LAUN | - | DT-POCKET-INT-36 | pocket passage: flush + edge pull | - | - | - |
 | D-M-MUDC | mud closet | DT-INT-BYPASS48 | closet | - | - | - |
 | D-S-BED1/2/3 | bedroom / hall | DT-INT-SWING30-PRIV | privacy | hollow | 3/4" (needs ~1.8x more: see return note) | System 1 return |
-| D-S-SUITE | suite / hall | DT-INT-SWING32-PRIV | privacy | hollow | 3/4" (needs ~1.8x more) | System 1 return |
+| D-S-SUITE | suite / hall | DT-INT-SWING32-PRIV-SOLID-SEALED | privacy | solid | 1/2", kerf seal + sweep | none: ducted return REG-S-HP-SUITE-RET (2026-11-09) |
 | D-S-SUITEBATH | suite bath / suite | DT-INT-SWING30-PRIV | privacy | hollow | 3/4" | - |
 | D-S-BATH1 | bath1 / hall | DT-INT-SWING30-PRIV-SOLID | privacy | solid | kerf seal + sweep across a 1/2" undercut | REG-S-XFER-VANITY -> lined bay -> REG-S-XFER-BATH1 |
 | D-S-NCLOSET | closet / hall | DT-INT-SWING30 | passage | hollow | 1/2" | - |

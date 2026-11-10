@@ -56,8 +56,14 @@ FILTER_RETURN_GRILLE = Product(
     name="28x12 hinged filter-back return grille, aluminium, white, 1in filter rack",
     source=f"Basis of design, or equal: TRUaire 190RF, Shoemaker 620FG. 12x28x1 is NOT a "
            f"stocked filter size; no stocked size fits EQ-S-ERV-MIX's 12x29 opening under "
-           f"300 fpm (12x24x1 runs 347 fpm at 650 cfm), so the filter is ordered as a custom "
+           f"300 fpm (12x24x1 runs ~304 fpm at 570 cfm), so the filter is ordered as a custom "
            f"size online. {_SPEC} §5.",
+)
+FILTER_RETURN_GRILLE_1212 = Product(
+    tag="PROD-AIR-FILTER-RETURN-12X12", brand="Hart & Cooley", model="673 series 12x12",
+    name="12x12 hinged filter-back return grille, aluminium, white, 1in filter rack",
+    source=f"Basis of design, or equal: TRUaire 190RF, Shoemaker 620FG. RM-S-SUITE's return; "
+           f"12x12x1 MERV 13 is a stocked filter size. {_SPEC} §5.",
 )
 RETURN_GRILLE_1210 = Product(
     tag="PROD-AIR-RETURN-GRILLE-12X10", brand="TRUaire", model="A170 12X10",
@@ -165,6 +171,6 @@ SPOT_NOZZLE_4 = Product(
 AIR_PRODUCTS = (
     SUITEBATH_EXTRACT_BOOT,
     DISC_VALVE_100, FLOOR_GRILLE_ERV, SIDEWALL_DD_OBD, FLOOR_REGISTER_HP,
-    FILTER_RETURN_GRILLE, RETURN_GRILLE_1210, RETURN_GRILLE_0606, ROUND_DAMPER_4_24V, STAIR_REGISTER_BOX, PLANT_CEILING_GRILLE, PLANT_ZONE_DAMPER, PLANT_END_BOOT, PLANT_COLLAR, PLANT_SERVICE_HATCH,
+    FILTER_RETURN_GRILLE, FILTER_RETURN_GRILLE_1212, RETURN_GRILLE_1210, RETURN_GRILLE_0606, ROUND_DAMPER_4_24V, STAIR_REGISTER_BOX, PLANT_CEILING_GRILLE, PLANT_ZONE_DAMPER, PLANT_END_BOOT, PLANT_COLLAR, PLANT_SERVICE_HATCH,
     WALL_HOOD_8, WALL_SEAL_FOAM, ELASTOMERIC_SHEET, SPOT_NOZZLE_4,
 )

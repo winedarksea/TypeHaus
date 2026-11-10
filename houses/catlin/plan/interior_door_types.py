@@ -49,11 +49,15 @@ INTERIOR_DOOR_TYPES = (
              "undercut; the bath's makeup air comes through the REG-S-XFER-BATH1 grille pair.",
            sealed=True),
     _swing("DT-INT-SWING32", ft(2, 8), "passage", "hollow", _HOLLOW.format(lever="passage")),
-    # D-S-SUITE, D-A-HALVES (System 1 return), D-M-BATH2 (RM-M-BED's 15 cfm out).
+    # D-A-HALVES (System 1 return), D-M-BATH2 (RM-M-BED's 15 cfm out).
     _swing("DT-INT-SWING32-PRIV", ft(2, 8), "privacy", "hollow", _HOLLOW.format(lever="privacy"),
            relief=True),
     _swing("DT-INT-SWING32-PRIV-SOLID", ft(2, 8), "privacy", "solid", _SOLID
            + " The powder room's exhaust makes up under it.", relief=True),
+    # D-S-SUITE (2026-11-09): the suite balances through its own ducted return.
+    _swing("DT-INT-SWING32-PRIV-SOLID-SEALED", ft(2, 8), "privacy", "solid", _SOLID
+           + " Sealed: kerf-in seal at stops and head plus a door-bottom sweep across the "
+             "undercut; the suite returns through REG-S-HP-SUITE-RET.", sealed=True),
     _swing("DT-INT-SWING24-PRIV", ft(2), "privacy", "hollow", _HOLLOW.format(lever="privacy"),
            relief=True),
     _swing("DT-INT-SWING36", ft(3), "passage", "hollow", _HOLLOW.format(lever="passage")

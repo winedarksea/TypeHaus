@@ -3678,6 +3678,8 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # 28x12 hinged filter-back return (H&C 673 class). The custom 12x28x1 MERV 13 filters are an
 # owner consumable, not in the build.
 "REG-T-HP-RET-FILTER" = { material = { low = 60, high = 130 }, labour = { low = 18, high = 45 } }  # 1 ea
+# RM-S-SUITE's 12x12 filter-back return (2026-11-09), off REG-T-HP-RET-FILTER; stocked 12x12x1 filters.
+"REG-T-HP-RET-FILTER-1212" = { material = { low = 35, high = 80 }, labour = { low = 18, high = 45 } }  # 1 ea
 # The passive transfer: two 12x10 aluminium return grilles on a lined sleeve through the bay.
 "REG-T-TRANSFER-PAIR-1210" = { material = { low = 60, high = 110 }, labour = { low = 30, high = 70 } }  # 1 ea
 # D-S-BATH1's offset pair (2026-11-03): one 6x6 grille plus half the bay's sheet-metal liner.
@@ -5915,8 +5917,10 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # D-S-BATH1: solid-core plus a kerf-in seal set and a door-bottom sweep ($40-90).
 "DT-INT-SWING30-PRIV-SOLID" = { material = { low = 340, high = 640 }, labour = { low = 140, high = 280 } }  # 1 ea
 "DT-INT-SWING32" = { material = { low = 155, high = 180 }, labour = { low = 115, high = 240 } }  # 2 ea, D-M-MUD, D-M-BED (hollow passage)
-"DT-INT-SWING32-PRIV" = { material = { low = 155, high = 180 }, labour = { low = 115, high = 240 } }  # 3 ea, D-M-BATH2, D-S-SUITE, D-A-HALVES
+"DT-INT-SWING32-PRIV" = { material = { low = 155, high = 180 }, labour = { low = 115, high = 240 } }  # 2 ea, D-M-BATH2, D-A-HALVES
 "DT-INT-SWING32-PRIV-SOLID" = { material = { low = 300, high = 550 }, labour = { low = 115, high = 240 } }  # 1 ea, D-M-BATH1
+# D-S-SUITE (2026-11-09): off DT-INT-SWING30-PRIV-SOLID, solid core plus kerf seal and sweep.
+"DT-INT-SWING32-PRIV-SOLID-SEALED" = { material = { low = 345, high = 650 }, labour = { low = 140, high = 280 } }  # 1 ea
 # 2026-09-07, the basement equipment route: D-B-FURN widened and D-B-SHOP is new. Bracketed off
 # the 32" row above with a shade added for the wider leaf and slab — a 36" prehung is a stock
 # size, not a special, so the step is small; labour is the same hang either way plus the wider
@@ -6258,7 +6262,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # (their gauge band is IRC M1601.1.1's, printed on the row), and a rectangular row's 0.0
 # diameter truncates the key here — so this row IS the shop-fabricated sheet-metal rate, the
 # one the bare `return`/`supply` rows carried. No round run falls through to it today.
-"return:galvanized" = { material = { low = 7, high = 13 }, labour = { low = 12, high = 28 } }  # 7.2 LF — DU-S-HP-RET, 10x18
+"return:galvanized" = { material = { low = 7, high = 13 }, labour = { low = 12, high = 28 } }  # DU-S-HP-RET 10x18 + RM-S-SUITE's 6x4 return (2026-11-09)
 "return:semi_rigid" = { material = { low = 2.5, high = 5 }, labour = { low = 3, high = 7 } }  # 0 LF since 2026-09-12 — was 198.1 LF of 3" radial
 "supply" = { material = { low = 7, high = 13 }, labour = { low = 12, high = 28 } }  # 0 LF since the trunks name their material
 "supply:semi_rigid:3.0" = { material = { low = 2.25, high = 4.5 }, labour = { low = 2.75, high = 6.5 } }  # 0 LF since 2026-09-12 — was 181.6 LF of 75 mm radial
@@ -6336,6 +6340,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "PROD-DUCT-REDUCER-8-4" = { low = 32, high = 35 }        # 1 set — Imperial GV0821 8-6 + GV0811 6-4, stacked
 # Shop fabrication, estimate (material only; the make-up time is the sheet-metal visit):
 "boot-10x18-28x12" = { low = 40, high = 80 }             # 1 ea — shop fabrication, estimate
+"boot-6x4-12x12" = { low = 40, high = 90 }               # 1 ea — RM-S-SUITE return box + locking damper, estimate
 "boot-10x6-12x6" = { low = 25, high = 60 }               # 1 ea — shop fabrication, estimate
 "boot-10x8-12x6" = { low = 25, high = 60 }               # 2 ea — shop fabrication, estimate
 "boot-18x8-12x6" = { low = 30, high = 70 }               # 1 ea — shop fabrication, estimate

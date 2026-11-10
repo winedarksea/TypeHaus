@@ -83,11 +83,20 @@ The stair supply has an [explicit 4in branch and named register box](stair_suppl
 **12x28x1 is not a stocked filter size** (Filterbuy, Filter King, AllFilters, Home Depot).
 **No stocked size fits EQ-S-ERV-MIX's opening and clears 300 fpm:** 12x30x1 is stocked but
 its 30" grille needs a 30" hole and the plenum is boxed in at 29 1/4" by the cabinet and
-BED3's collar; 12x24x1 fits but runs 650 cfm over ~270 in² of media = **347 fpm**. So the
+BED3's collar; 12x24x1 fits but runs 570 cfm over ~270 in² of media = **304 fpm** (347 at the
+old 650). So the
 28x12 grille stays (H&C 673 class, hinged, or equal TRUaire 190RF / Shoemaker 620FG) and the
 **filter is ordered as a custom 12x28x1 MERV 13** online — a standard order, not a quote.
-336 in² at 650 cfm is 279 fpm (Manual D §4-10: 300). The rung that crossed the hole is now
-headed off (`AO-S-HP1-RET`).
+336 in² at 570 cfm is 244 fpm (Manual D §4-10: 300); it was 650 until RM-S-SUITE took its
+own 80 cfm return (2026-11-09). The rung that crossed the hole is now headed off
+(`AO-S-HP1-RET`).
+
+**RM-S-SUITE's return — `REG-T-HP-RET-FILTER-1212` (2026-11-09).** A 12x12 hinged
+filter-back grille (H&C 673 class, or equal TRUaire 190RF / Shoemaker 620FG) on a
+shop-fabricated 6x4 boot with a locking balancing damper. It lands in the plenum behind the
+hall filter, so it carries its own: **12x12x1 MERV 13, a stocked size**. 144 in² at 80 cfm is
+80 fpm. Face estimated as the 28x12's (+2 5/8"). Balance and commissioning:
+`notes/system1_return_path.md`.
 
 ## 6. The mudroom transfer — `REG-T-TRANSFER-PAIR-1210`
 

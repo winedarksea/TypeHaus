@@ -8,9 +8,10 @@ now computes this table from the model (`checks/mep/door_transfer_air.py`, pinne
 
 ## The condition
 
-System 1 (`EQ-S-HP1-AH`, 750 cfm) has **one** return: `REG-S-HP-RET`, a 28 x 12 filter-back
-grille in `SF-S-HP1`'s underside at (20'-11 1/2", 29'-1 1/4"), in `RM-S-HALL`, drawing 650
-cfm of room air. Every other System 1 terminal is a supply. So the supply air delivered to a
+System 1 (`EQ-S-HP1-AH`, 750 cfm) has **two** returns: `REG-S-HP-RET`, a 28 x 12 filter-back
+grille in `SF-S-HP1`'s underside at (20'-11 1/2", 29'-1 1/4"), in `RM-S-HALL`, drawing 570
+cfm of room air, and since 2026-11-09 `REG-S-HP-SUITE-RET`, the suite's ducted 80 cfm (below).
+Every other System 1 terminal is a supply. So the supply air delivered to a
 room behind a closed door has to get back to that hall through the door.
 
 The ERV does not help. Its second-storey bedroom pickups (`REG-S-RET-BED1/2/3`) run at
@@ -51,7 +52,7 @@ room it opens from, and treats the zone a stair reaches as the house:
 | Zone | Net | Door | Free area | dP | Needs at 3 Pa |
 |---|---|---|---|---|---|
 | `RM-S-BED1/2/3` | 75 cfm out | 30" x 3/4" | 22.5 in^2 | **9.7 Pa** | 40 in^2 |
-| `RM-S-SUITE` (+ suite bath, closet) | 80 cfm out | `D-S-SUITE` 32" x 3/4" | 24.0 in^2 | **9.7 Pa** | 43 in^2 |
+| `RM-S-SUITE` (+ suite bath, closet; ducted return since 2026-11-09, below) | 80 cfm out | `D-S-SUITE` 32" x 3/4" | 24.0 in^2 | **9.7 Pa** | 43 in^2 |
 | `RM-A-STUDIO` (+ studio bath, ERV closet) | 50 cfm out | `D-A-HALVES` 32" x 3/4" | 24.0 in^2 | **3.8 Pa** | 27 in^2 |
 | `RM-S-PLANT` | 70 cfm out | `D-S-PLANT` 30" x 1/2" | 15.0 in^2 | **19.0 Pa** (8.5 at 3/4") | 38 in^2 |
 | `RM-A-EAST-UNFIN` | 35 cfm out | `D-A-STUDY` 30" x 1/2" | 15.0 in^2 | **4.8 Pa** (2.1 at 3/4") | 19 in^2 |
@@ -64,7 +65,7 @@ the model holds no opening between it and the well; if it is open to the void, t
 **No undercut inside the owner's range carries this air.** The bedrooms and the suite need
 about 1.8x the free area 3/4" gives. Closing it is an owner decision: a transfer grille
 pair or a jump duct per room (each about 20 in^2 net free area more), or a ducted return in
-the room. Until then the six rows above stand as `mep.door_transfer_air` ADVISORYs.
+the room. Until then the rows above stand as `mep.door_transfer_air` ADVISORYs; the suite's is closed.
 
 **What it was.** A conventional 3/4" undercut on a 30" leaf is 22.5 in^2. At 80 cfm that is
 
@@ -109,6 +110,36 @@ the check: `RegisterType` states no free area.
 The bath pair is 6x6 because the bath face of `W-S-BD-N`'s west bay is clear only between the
 SEKTION rail backing (top 97 1/4") and the top plate (104 3/8"), 7 1/4" wide.
 
+## RM-S-SUITE: a ducted return, door sealed (owner, 2026-11-09)
+
+A north-wall transfer in `W-S-SN2` (one usable bay, a cut stud, a moved switch, beside the
+bed) and a passive jump duct (about 7 Pa sealed) were compared and set aside. The suite
+returns to System 1 through its own duct instead:
+
+* `REG-S-HP-SUITE-RET`: 12x12 filter-back ceiling grille at (104", 184"), MERV 13 12x12x1
+  (stocked), a locked balancing damper at its boot.
+* `DU-S-HP-SUITE-RET`: 6x4 in FS-ATTIC's y 176-192" bay, x 104" -> 254", through a derived
+  pass-through box at the x=18' bearing line.
+* `DU-S-HP-SUITE-RET-LANE`: drops into `SF-S-DUCT`'s east lane at (254", 184"), runs north at
+  225 3/8" absolute to `EQ-S-ERV-MIX`'s south face at y=335". `DU-S-HP-BED2`/`-BED3` were
+  lowered 3/4" so it clears their crowns by 1".
+
+Balance, by hand:
+
+    in   REG-S-HP-SUITE            100 cfm
+    out  suite bath extract          20 cfm
+    out  REG-S-HP-SUITE-RET          80 cfm   -> net 0: D-S-SUITE carries nothing
+    6x4 = 24 in^2 = 0.1667 ft^2:   80 / 0.1667 = 480 fpm (a return branch)
+    12x12 face = 1.0 ft^2:         80 fpm
+    hall grille 336 in^2 = 2.333 ft^2 at 750 - 100 (ERV) - 80 = 570 cfm: 244 fpm (< 300)
+
+`D-S-SUITE` is `DT-INT-SWING32-PRIV-SOLID-SEALED` at the stock 1/2" undercut, kerf seal and a
+sweep; `mep.door_transfer_air` reads the zone "balanced".
+
+**Commissioning.** With the door sealed the suite's pressure follows the damper setting and
+the hall filter's loading. Set the damper to 80 cfm and lock it; re-check at every filter
+change. With System 1's fan off, the bath's 20 cfm makes up backward through this duct.
+
 ## The two honest costs
 
 1. **Sound.** `W-S-BW1/2/3` are `INT_2X4_RC` — resilient channel, chosen for acoustic
@@ -117,7 +148,7 @@ SEKTION rail backing (top 97 1/4") and the top plate (104 3/8"), 7 1/4" wide.
    (a jump duct in an `FS-ATTIC` bay is the only option that keeps the wall intact), so the
    undercut is the cheapest point on that curve, not a free one. Light and privacy go the
    same way.
-2. **Carpet.** `RM-S-BED1/2/3` and `RM-S-SUITE` are carpeted, and an undercut is specified to
+2. **Carpet.** `RM-S-BED1/2/3` are carpeted (the suite is oak), and an undercut is specified to
    the *finished* floor. Pile throttles the gap, so the effective free area is below the
    geometric figure — perhaps 20-25% below. The table above is the geometric minimum. If the
    balance report shows more than 3 Pa at a closed door, the next step is a jump duct or a transfer

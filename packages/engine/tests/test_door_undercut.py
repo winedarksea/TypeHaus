@@ -58,3 +58,15 @@ def test_bedroom_return_at_the_largest_allowed_undercut_matches_the_hand_note(ca
     expected = (75 / (1.07 * 22.5)) ** 2
     assert bed1.result == Result.ADVISORY
     assert f"{expected:.1f} Pa" in bed1.message
+
+
+def test_suite_balances_through_its_ducted_return_behind_a_sealed_door(catlin_ctx):
+    """100 supply = 80 ducted return + 20 bath extract, so sealed D-S-SUITE carries nothing."""
+    from typehaus.checks.advisory.door_undercut import door_undercut
+    from typehaus.checks.mep.door_transfer_air import door_transfer_air
+    from typehaus.findings import Result
+
+    suite = next(f for f in door_transfer_air(catlin_ctx) if f.element_tags[0] == "RM-S-SUITE")
+    assert suite.result == Result.PASS and "balanced" in suite.message
+    door = next(f for f in door_undercut(catlin_ctx) if f.element_tags[:1] == ("D-S-SUITE",))
+    assert "SOLID-SEALED) hangs 0.50\"" in door.message

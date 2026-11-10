@@ -96,6 +96,7 @@ def test_catlin_door_catalog_tags_state_operation_and_width(catlin_plan):
         "DT-INT-SWING30-PRIV-SOLID": (30.0, DoorOperation.SWING, False, False),
         "DT-INT-SWING32-PRIV": (32.0, DoorOperation.SWING, False, False),
         "DT-INT-SWING32-PRIV-SOLID": (32.0, DoorOperation.SWING, False, False),
+        "DT-INT-SWING32-PRIV-SOLID-SEALED": (32.0, DoorOperation.SWING, False, False),
         "DT-INT-SWING24-PRIV": (24.0, DoorOperation.SWING, False, False),
         "DT-INT-STEEL36-KEYED": (36.0, DoorOperation.SWING, False, False),
         "DT-INT-SAUNA24": (24.0, DoorOperation.SWING, False, False),

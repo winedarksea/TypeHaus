@@ -24,7 +24,14 @@
 # grille inside the plenum. This replaces the former attic rise and ceiling boot.
 #
 # 6" round galvanized at 80 cfm is `size_for_cfm`'s answer: 407 fpm, under Manual D's 700 fpm
-# branch limit.
+# branch limit. BED2/BED3 sit 3/4" under the trunk centre (2026-11-09) so the suite return's
+# lane clears their crowns by 1"; hangers re-hung or bracketed off the east plate.
+#
+# RM-S-SUITE's ducted return (2026-11-09, notes/system1_return_path.md): 80 cfm, balancing the
+# 100 supply less the bath's 20, so D-S-SUITE is sealed. 6x4 at 80 cfm is 480 fpm. Two runs: the
+# bay leg in FS-ATTIC's y 176-192" bay, then a drop into SF-S-DUCT's east lane to
+# EQ-S-ERV-MIX's south face — one run would be graded across the box's whole width.
+# 8x4 hits the BED2/BED3 hanger straps at x~249.7". The 24 V cove feeder stays clear of the lane.
 
 from typehaus import DuctRouting, DuctRun, DuctSystem, ft, inch, pt
 
@@ -51,12 +58,22 @@ DUCTS_HVAC_BRANCHES_SECOND = [
             material="galvanized", design_cfm=80),
     DuctRun(uid="QBDPVD0HE2", tag="DU-S-HP-BED2", system=DuctSystem.SUPPLY,
             path=(pt(ft(19, 6), ft(19, 8)), pt(inch(265.375), ft(19, 8))),
-            elevations=(inch(100.125), inch(100.125)),
+            elevations=(inch(99.375), inch(99.375)),
             diameter=inch(6), routing=DuctRouting.EXPOSED,
             material="galvanized", design_cfm=80),
     DuctRun(uid="FJGDT6V42D", tag="DU-S-HP-BED3", system=DuctSystem.SUPPLY,
             path=(pt(ft(19, 6), ft(27, 6)), pt(inch(265.375), ft(27, 6))),
-            elevations=(inch(100.125), inch(100.125)),
+            elevations=(inch(99.375), inch(99.375)),
             diameter=inch(6), routing=DuctRouting.EXPOSED,
             material="galvanized", design_cfm=80),
+    DuctRun(uid="0E3JTBJFFN", tag="DU-S-HP-SUITE-RET", system=DuctSystem.RETURN,
+            path=(pt(inch(104), inch(184)), pt(inch(254), inch(184))),
+            width=inch(6), depth=inch(4), routing=DuctRouting.JOIST_BAY,
+            floor_ref="FS-ATTIC", material="galvanized", design_cfm=80),
+    # Centre 105 3/8" storey: 1" over BED2/BED3's crowns, 1/8" under the hall ceiling board.
+    DuctRun(uid="3NR7A186BJ", tag="DU-S-HP-SUITE-RET-LANE", system=DuctSystem.RETURN,
+            path=(pt(inch(254), inch(184)), pt(inch(254), inch(184)), pt(inch(254), inch(335))),
+            elevations=(inch(110.125), inch(105.375), inch(105.375)),
+            width=inch(6), depth=inch(4), routing=DuctRouting.SOFFIT,
+            soffit_ref="SF-S-DUCT", material="galvanized", design_cfm=80),
 ]

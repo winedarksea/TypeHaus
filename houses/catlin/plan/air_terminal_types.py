@@ -194,9 +194,9 @@ AIR_REGISTER_TYPES = (
                         f"damper, removable service cassette. {_NOTE} §7; "
                         "notes/plant_supply_connection.md.",
                  ports=(_port("supply", Service.SUPPLY_AIR),)),
-    # The only filter in System 1. 12x28x1 is not a stocked size and no stocked size fits
-    # EQ-S-ERV-MIX's 12 x 29 opening under Manual D's 300 fpm (12x24x1: 347 fpm at 650 cfm),
-    # so the 28x12 grille stays and the filter is ordered as a custom size.
+    # The hall filter. 12x28x1 is not a stocked size and no stocked size fits EQ-S-ERV-MIX's
+    # 12 x 29 opening under Manual D's 300 fpm (12x24x1: ~304 fpm over its media at 570 cfm),
+    # so the filter is ordered as a custom size. RM-S-SUITE's return carries its own, below.
     RegisterType(tag="REG-T-HP-RET-FILTER",
                  name="Heat-pump return, 28x12 aluminium hinged filter-back grille",
                  footprint=(inch(30.625), inch(14.625)), height=inch(1),
@@ -205,7 +205,20 @@ AIR_REGISTER_TYPES = (
                  neck=TerminalNeck(width=inch(28), height=inch(12), depth=inch(1.75),
                                    part="1in filter rack"),
                  source=f"Face estimated off H&C 673 30x12 (32 5/8in overall); 28 x 12in duct "
-                        f"size, 336 in2, 279 fpm at 650 cfm. {_NOTE} §5.",
+                        f"size, 336 in2, 244 fpm at 570 cfm. {_NOTE} §5.",
+                 ports=(_port("return", Service.RETURN_AIR),)),
+    # RM-S-SUITE's ducted return (2026-11-09): its own filter, since it lands in the plenum
+    # behind REG-T-HP-RET-FILTER's. 12x12x1 is stocked; a locked balancing damper rides at the
+    # boot, reached through the hinged face.
+    RegisterType(tag="REG-T-HP-RET-FILTER-1212",
+                 name="Heat-pump return, 12x12 aluminium hinged filter-back grille",
+                 footprint=(inch(14.625), inch(14.625)), height=inch(1),
+                 plan_symbol="register", product_ref="PROD-AIR-FILTER-RETURN-12X12",
+                 filter_nominal_size="12x12x1", filter_merv=13, service_face="bottom",
+                 neck=TerminalNeck(width=inch(12), height=inch(12), depth=inch(1.75),
+                                   part="1in filter rack"),
+                 source=f"Face estimated as the 28x12's (+2 5/8in); 144 in2, 80 fpm at 80 cfm. "
+                        f"{_NOTE} §5.",
                  ports=(_port("return", Service.RETURN_AIR),)),
     RegisterType(tag="REG-T-TRANSFER-PAIR-1210",
                  name="Transfer grille pair, 12x10 aluminium return grilles through the wall",

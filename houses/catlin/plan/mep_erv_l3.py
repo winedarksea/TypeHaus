@@ -72,7 +72,7 @@ EQUIPMENT_ERV_ATTIC = [
 #
 # ** IT IS THE RETURN PLENUM NOW, NOT A BOX BESIDE THE RETURN (2026-09-04). ** It fills the
 # east lane of SF-S-HP1 from the box's south end to the air handler's south face —
-# x 20'-5 1/2"..21'-5 1/2", y 27'-10 1/2"..30'-4", z on the cavity floor and 18" tall — and
+# x 20'-5 1/2"..21'-5 1/2", y 27'-10 1/2"..30'-4", z on the cavity floor and 20 1/4" tall — and
 # REG-S-HP-RET's whole 336 in2 face is inside it. What that replaced: a 10 x 12 box with a
 # 30 x 16 ceiling grille lapping it, the return duct and 120 in2 of bare soffit cavity all at
 # once. A return drawing a quarter of its face out of a framed cavity is IMC 601.5's
@@ -94,7 +94,8 @@ EQUIPMENT_ERV_ATTIC = [
 # y=30'-4 1/2": overlap the cabinet along the box by even an inch and the pair is graded
 # across it, where the gap is 7/8" and the check FAILs. The south end is trimmed 1/2" for
 # BED3's straight supply collar, leaving 1/4" beyond the return grille's south edge.
-# 18" fills the 18 1/4" cavity.
+# 20 1/4" (top 227 1/2") fills SF-S-HP1's 20 7/8" clear; RM-S-SUITE's 6x4 return lands on the
+# south face (2026-11-09).
 EQUIPMENT_ERV_SECOND = [
     Equipment(uid="8PE9E87JX5", tag="EQ-S-ERV-MIX", kind=EquipmentKind.MIXING_BOX,
               position=pt(inch(251.5), inch(349.625)), footprint=(inch(12), inch(29.25)),

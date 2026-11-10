@@ -599,7 +599,7 @@ OPENINGS = [
              condition="the row is 65 psf x 18' + 52 psf x 16' + 80 plf = 2,082 plf; this header carries the ridge line (900 plf), FS-ATTIC (18' x 42 psf = 756) and the attic wall (~90), 1,746 plf; deflection L/360 live, L/240 total; dry use; uniform load only; see notes/header_spans_r602_7.md section 5a")),                      # y 2'-8"
     # Derived RO since 2026-10-29, centred between W-S-CLN and W-S-SBS on the suite's little
     # hall (owner), which leaves both cherry casing legs ~2 7/16".
-    Door(uid="CSD206AAAA", tag="D-S-SUITE", host="W-S-C2B", type_ref="DT-INT-SWING32-PRIV",
+    Door(uid="CSD206AAAA", tag="D-S-SUITE", host="W-S-C2B", type_ref="DT-INT-SWING32-PRIV-SOLID-SEALED",
          position=from_node("N-S-C2", inch(3.875)),                    # y 14'-2"
          header_spec='2-ply 9.5" LVL',
          published_span=PublishedSpan(

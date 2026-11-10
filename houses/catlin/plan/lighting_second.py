@@ -51,7 +51,8 @@ SECOND_LIGHTING = [
     # fed at its leg's NORTH end. East: straight out through the bulkhead, ~3 ft. West: 18 AWG
     # Class 2 through SF-S-HP1/SF-S-DUCT along the east wall to y=22'-4", ~12 ft each way; at
     # 38 W (1.6 A) the pair drops ~0.3 V (1.3% of 24 V), then the tape's own run. The engine
-    # models no 24 V feeder, so the path is this comment; pull it before the board goes up.
+    # models no 24 V feeder, so the path is this comment; pull it before the board goes up,
+    # clear of DU-S-HP-SUITE-RET-LANE (x 251-257", up at the ceiling board) in SF-S-DUCT.
     ElectricalDevice(uid="QTS0001AAA", tag="ED-S-HALL-LT-PSU", kind=DeviceKind.JUNCTION_BOX,
                      type_ref="ED-T-LT-PSU-96-WE",
                      circuit="CKT-LT-UPPER", room="RM-S-NCLOSET",
