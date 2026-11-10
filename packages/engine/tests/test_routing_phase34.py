@@ -193,7 +193,6 @@ def test_catlin_ports_are_approximate_EXCEPT_the_shop_drawn_collars(catlin_model
                      "EQ-B-ERV.supply",
                      "EQ-B-HW-HEADER.inlet",
                      *(f"EQ-B-HW-HEADER.out-{i}" for i in range(1, 9)),
-                     "EQ-B-WH.air-in",
                      "EQ-B-WH.air-out",
                      "EQ-B-WH.cold",
                      "EQ-B-WH.condensate",

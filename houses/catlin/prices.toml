@@ -3682,7 +3682,8 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "REG-T-TRANSFER-PAIR-1210" = { material = { low = 60, high = 110 }, labour = { low = 30, high = 70 } }  # 1 ea
 # D-S-BATH1's offset pair (2026-11-03): one 6x6 grille plus half the bay's sheet-metal liner.
 "REG-T-TRANSFER-0606" = { material = { low = 30, high = 60 }, labour = { low = 30, high = 70 } }  # 2 ea
-"REG-T-HPWH-STAIR-1210" = { material = { low = 45, high = 85 }, labour = { low = 30, high = 70 } }  # 2 ea; grille + boot, estimate (2026-11-09)
+"REG-T-HPWH-STAIR-1210" = { material = { low = 45, high = 85 }, labour = { low = 30, high = 70 } }  # 1 ea; grille + boot, estimate (2026-11-09)
+"REG-T-HPWH-INTAKE-1210" = { material = { low = 45, high = 85 }, labour = { low = 30, high = 70 } }  # 1 ea; grille + sleeve, estimate (2026-11-09)
 
 [floor_finishes]
 # RESEARCHED 2026-08-08 — [low, high] $/SF on the ORDER quantity (waste already in the

@@ -2,8 +2,8 @@
 title: "Basement winter heat: the unheated rooms and the HPWH's chill"
 applied_to:
   - equipment: EQ-B-WH
-  - duct_run: DU-B-WH-IN
   - duct_run: DU-B-WH-OUT
+  - register: REG-B-WH-IN
 tags:
   - hvac
   - water-heater
@@ -25,9 +25,9 @@ Check on that term: 60 gal/day x 8.34 lb/gal x 80 F rise = 40,000 Btu/day delive
 about 3, two thirds comes out of the air: 26,700 Btu/day, 1,110 Btu/h. The 80 F rise is an
 assumption.
 
-**Decision (owner, 2026-11-09).** Move `EQ-B-WH` to the under-stair closet and duct both air
-connections through `W-B-WELL` into the stair. No added heater. Layout, Rheem's rules and
-field holds: `notes/water_service.md` §1.
+**Decision (owner, 2026-11-09).** Move `EQ-B-WH` to the under-stair closet, exhaust ducted
+through `W-B-WELL` into the stair, intake drawn from the stair through a grille in the same
+wall. No added heater. Layout, Rheem's rules and field holds: `notes/water_service.md` §1.
 
 **Expected, doors closed (workshop / mech), from the same room model:**
 
@@ -41,70 +41,59 @@ These are estimates on assumed U-values. The closest they come to the target is 
 at -15 F. The chill now lands in the stair instead of the furnace room. Nothing in the model
 grades this; it has not been measured.
 
-## Air connection review (2026-11-09)
+## Air connections (2026-11-09, resolves the fit review)
 
-**The location remains conditional.** The routing model now verifies the connections and
-framing clearance, but does not establish a constructible inlet fitting assembly or prove
-thermal performance. A clean house check alone cannot release this installation.
+**The ducted top inlet was dropped: it cannot be built here.** Rheem (AP22654 p.15) requires a
+12" minimum flex section between the heater and rigid duct, and p.16 holds flex to an inner
+bend radius of at least its diameter (8" inner, 12" centreline). Numbers, off the resolved
+model (`ST-B2M` members, stringer underside `53.78 + 0.7364 x (373.38 - y)` AFF):
 
-The original relocation left the inlet at an 81" centreline while assuming a 91" factory
-elbow crown in a comment. It also placed the wall grilles by their bottom edges as though
-those elevations were their centres. Their shallow neck boxes did not reach the duct ends,
-so an implicit boot allowance hid the disconnected geometry.
+- The adapter axis (159.1", 317.9") is 11 1/4" in plan from the boot in the 321"-335 1/2" bay
+  and 6.65" from `W-B-WELL`'s face. Rheem's rigid elbow (SP20890) has no published dimensions.
+  Its mouth scales 8-10" off the axis on RH-PIHP-SC-SO p.2, leaving 1-3" of the 12".
+- North, the elbow top is 91" (H, published) against a lined soffit of 87.2" at the mouth
+  (y=327"): about 4" short. East, the south bay is 5 5/8" clear for an 8" duct.
+- The drawing is generic across tank sizes, so only the head module scales. H - A is 16.8" on
+  all four sizes.
 
-The revised model:
+**What is built, all stock:**
 
-- Declares separate 8" air-in and air-out adapter stations on the heater. Both use transfer
-  air, so no ERV airflow or mini-split duct-system credit is implied. These are dimensioned
-  model stations based on scaled drawings, with about ±1.5" field uncertainty.
-- Raises the inlet routing envelope to an 87" centreline to expose the factory elbow's
-  approximate height. This mitred envelope is **not** the factory fitting's actual shape.
-- Aligns grille centres with the duct mouths at 81" and 63" AFF, at y=328.25" and 344.5".
-  The 12" openings lie within their individual stud bays; centres are about 24.3" apart
-  in three dimensions. This is an authored layout, not a manufacturer separation rule.
-- Models each boot as a 12x10x3.5" shallow box with an 8" round collar reaching 6.75"
-  behind the grille. The metal collar projects 3.25" past the rectangular box. It is a
-  shop design envelope requiring fabrication confirmation, not a catalogued boot.
-- Stops the insulated flex at x=163.5". An exact solid intersection check found that
-  x=164.5" let the inlet's jacket clip the upper stringer; the longer bare round collar
-  bridges the connection without moving the jacket into the flight. The regression test
-  checks the emitted ducts, insulation, boxes and collars against actual stair framing,
-  rather than the broad vertical bounding box of a raked stringer.
+- **Rheem's listing.** p.9 and the spec sheet p.3: "ducted with inlet or outlet duct, any size
+  room, air gap under door equal to 18 in2". `D-B-CLOSET`'s undercut went to 3/4", 24 in2 on a
+  32" leaf. The louver minimums (1.5 ft2 manual, 3.25 ft2 spec sheet) are for a not-ducted
+  closet and do not apply.
+- **The real intake is the wall, beyond what Rheem asks** (owner). A door gap alone would draw
+  every cfm from the furnace room. `REG-B-WH-IN` is a stock 12x10 return grille on the stair
+  face of the 321"-335 1/2" bay, with a sheet-metal sleeve and 2x4 blocks head and sill
+  (R302.11 at the bay). About 80 in2 effective against an 8" duct's 50 in2, plus the door's 24:
+  roughly three quarters of the intake comes from the stair by area. Neck 70 1/2"-80 1/2",
+  under the lined stringer at its north edge (81.8"). There is no closet-side grille: its
+  flange would hit that stringer and the tank. The sleeve ends flush with the gypsum.
+- **Exhaust.** `SP17829` outlet adapter, one 8" adjustable 90 set full (`SP20890`, or a stock
+  8" adjustable, bare on the unit as in p.17's figure), then about 32" of R-6 8" flex to the
+  12x10 boot. From a mouth near (134.5", 337"), a 12" centreline bend ends near y=344.8": the
+  bay's boot centre, within the scaled port's +-1.5". 10 equivalent feet of fittings plus the
+  register and 3' of flex against 125': length is not the limit.
+- **Filter.** 6" above the top is 80 3/16". The lined soffit at the tank's north edge is 83.1".
 
-The overlap ratchet retains two reviewed contacts: the inlet jacket laps its own round
-boot collar, and the outlet/jacket intersects the heater's simplified full-height footprint
-extrusion. That proxy incorrectly carries the HydroBoost lobe above its real 54 5/16" top;
-the outlet is at 65 1/2". The detailed product symbol stops the cover at its published height.
-These contacts are recorded in the geometry baseline, not excused as framing penetrations.
+**The boot** is a 12x10 shallow box with an 8" collar, shop-made (fabrication envelope,
+`REG-T-HPWH-STAIR-1210`).
 
-**Remaining installation holds:**
+**Remaining holds, none a fit condition:**
 
-1. Fit the actual inlet adapter, rigid elbow, insulation and removable filter beneath the
-   lined flight. The former 1 3/4" clearance claim omitted the full assembly and uncertainty.
-   The short descending inlet offset still lacks a demonstrated fitting layout. The engine
-   reports this as an unevaluable fitting pattern; do not treat its mitres as bendable flex.
-2. Resolve both short turns using real fittings. Rheem requires flex inner bend radius at
-   least its diameter: 8" inner / 12" centreline here, stricter than ADC's generic 8"
-   centreline rule. The outlet's first straight is only about 6.6", which cannot seat such
-   a bend. Tight turns require rigid elbows, with the manufacturer's minimum 12" flex
-   isolation section before rigid duct. The inlet route has no demonstrated space for that
-   combination; change the layout if the measured assembly cannot satisfy it.
-3. Confirm supports to the protected flight or adjacent framing without crushing the flex.
-   The existing house check still has an unresolved outlet hanger location.
-4. Confirm the exhaust grille throws down and away from the inlet, clear of the handrail
-   and cold-sensitive surfaces. At commissioning, run the HPWH with the closet door shut
-   and test intake/exhaust temperatures and airflow with the stair head both cycling and
-   operating. Verify that the intake does not pull the cold discharge back in, and that
-   filter removal and future tank replacement remain practical.
-
-Rheem allows both air connections to another room with no additional closet ventilation.
-Its 8" flexible-duct length limit is 125' for inlet plus outlet, with 5' per bend and per
-full-size indoor register; the short run length is not the limiting issue. Its manual
-requires separate ductwork, insulated ducts and measures to reduce recirculation. Sources:
-[AP22654 Rev 01, pp. 9, 15–17](https://media.rheem.com/media/uploads/iat/sites/36/2022/09/AP22654-Rev-01-Manual-THOR-Ph2-UC-Manual_2022-1.pdf)
-and [Rheem plug-in specification, pp. 2–3](https://media.rheem.com/blobazrheem/wp-content/uploads/sites/36/2024/12/Plug-in-with-HydroBoost-and-LeakGuard-Spec-Sheet.pdf).
+1. Port positions are scaled (+-1.5"), and SP20890's size is unpublished. Fit the outlet elbow
+   to the delivered unit before cutting the boot's bay position; the bay allows y=343-345 1/2".
+2. `mep.duct_supports` reads UNKNOWN at (150", 344.5"): the engine's hanger host excludes raked
+   members. The strap goes on `stringer-upper-1`'s face, 4 3/4" off the station. No crushed flex.
+3. Commissioning: run with the closet door shut. Check the intake does not pull the exhaust
+   back in (centres 20 1/2" apart, an authored layout; Rheem p.15 asks only that recirculation
+   be reduced), and that compressor noise at the stair grille is acceptable. If not, the
+   Tamarack RAPR baffled path (`PROD-AIR-RETURN-GRILLE-12X10`'s note) is the first thing to try.
 
 Moving the air connections transfers roughly 1,100 Btu/h of assumed average extraction to
 the stair; the stair heat pump must replace that heat in winter. This improves access to a
 heated air volume but does not create heat or prove the two unheated rooms reach 65 F.
-The room-temperature estimates above have not been recalculated by this geometry review.
+The room-temperature estimates above have not been recalculated.
+
+Sources: [AP22654 Rev 01, pp. 9, 15-17](https://media.rheem.com/media/uploads/iat/sites/36/2022/09/AP22654-Rev-01-Manual-THOR-Ph2-UC-Manual_2022-1.pdf)
+and [Rheem plug-in specification, pp. 2-3](https://media.rheem.com/blobazrheem/wp-content/uploads/sites/36/2024/12/Plug-in-with-HydroBoost-and-LeakGuard-Spec-Sheet.pdf).

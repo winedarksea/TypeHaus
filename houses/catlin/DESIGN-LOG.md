@@ -7775,3 +7775,10 @@ off the corner so its jamb clears `FO-M-STAIR`'s point load. R302.7 gypsum under
 allowance, because no `Stair` field holds it. `EQ-B-HP2-GYM` moved to `W-B-S3-FR`, straddling the
 jog, with its plate on the framed run (`BK-B-S3FR-HP2-GYM`); the ESS-lid transfer grilles were
 dropped. EQ-M-HP2-OD's comments now say four-port, per Gree's submittal.
+
+**Amended the same day (owner): the inlet duct is dropped.** A review found no buildable inlet
+assembly: Rheem's elbow leaves 1-3" of the 12" flex section it requires, the north turn hits the
+soffit by about 4", and the bay east is 5 5/8" clear. The exhaust stays ducted with stock parts;
+the inlet is open, fed by a 12x10 grille and sleeve in `W-B-WELL`, with the 3/4" undercut Rheem's
+one-duct listing asks for. Moving the tank was not pursued: the closet has about 13" of spare
+width and it would need about 17". Numbers: `notes/basement_winter_heat.md`.

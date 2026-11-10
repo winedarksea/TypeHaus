@@ -182,28 +182,23 @@ def test_the_condensate_run_leaves_the_published_port_and_ties_into_the_erv_line
     assert drain_tie_ins(catlin_model.pipe_runs)["PR-B-WH-COND"] == "PR-B-ERV-COND"
 
 
-@pytest.mark.parametrize(('run_tag', 'port_tag', 'register_tag'), (
-    ('DU-B-WH-IN', 'air-in', 'REG-B-WH-IN'),
-    ('DU-B-WH-OUT', 'air-out', 'REG-B-WH-OUT'),
-))
-def test_air_connections_reach_their_own_adapter_and_square_boot(
-        catlin_model_ro, run_tag, port_tag, register_tag):
+def test_exhaust_duct_reaches_its_adapter_and_square_boot(catlin_model_ro):
     from typehaus.resolve.duct_terminations import end_landings
     from typehaus.resolve.terminal_connections import inlet_connection_error
 
     landing = next(end for end in end_landings(catlin_model_ro)
-                   if end.run_tag == run_tag and end.index == 0)
+                   if end.run_tag == 'DU-B-WH-OUT' and end.index == 0)
     assert landing.landing == 'port'
-    assert (landing.other, landing.port.port_tag) == ('EQ-B-WH', port_tag)
+    assert (landing.other, landing.port.port_tag) == ('EQ-B-WH', 'air-out')
     assert landing.port.duct_system == 'transfer'
-    assert inlet_connection_error(catlin_model_ro, register_tag) is None
+    assert inlet_connection_error(catlin_model_ro, 'REG-B-WH-OUT') is None
 
 
 def test_air_boot_collars_bridge_the_gap_without_extending_rectangular_corners(catlin_model_ro):
     from typehaus.resolve.terminal_necks import terminal_inlet
 
     solids = {solid.tag: solid for solid in catlin_model_ro.solids}
-    for tag in ('REG-B-WH-IN', 'REG-B-WH-OUT'):
+    for tag in ('REG-B-WH-OUT',):
         box = solids[f'{tag}-NECK']
         collar = solids[f'{tag}-NECK-COLLAR']
         centre, _, diameter, _ = terminal_inlet(catlin_model_ro, tag)

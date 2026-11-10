@@ -216,7 +216,18 @@ AIR_REGISTER_TYPES = (
                  source=f"Two grilles back to back on a lined sleeve; 12in fits a 14 1/2in "
                         f"bay without cutting a stud. Face estimated at +1 3/4in. {_NOTE} §6.",
                  ports=()),
-    # EQ-B-WH's two stair grilles (2026-11-09): indoor registers approved for HVAC (AP22654
+    # EQ-B-WH's intake: one grille on the stair face, open sleeve into the closet.
+    RegisterType(tag="REG-T-HPWH-INTAKE-1210",
+                 name="HPWH intake, 12x10 aluminium return grille on a through-wall sleeve",
+                 footprint=(inch(13.75), inch(1)), height=inch(11.75), plan_symbol="register",
+                 product_ref="PROD-AIR-RETURN-GRILLE-12X10",
+                 neck=TerminalNeck(width=inch(12), height=inch(10), depth=inch(4.5),
+                                   part="12x10 sheet-metal sleeve through W-B-WELL, closet end flush, "
+                                        "2x4 blocks head and sill"),
+                 source=f"Stock grille. 120 in2 gross, about 80 in2 effective at the 6x6 listing's "
+                        f"ratio, against an 8in duct's 50 in2. {_NOTE} §6.",
+                 ports=()),
+    # EQ-B-WH's exhaust grille (2026-11-09): indoor register approved for HVAC (AP22654
     # p.15); 12in fits W-B-WELL's 14 1/2in bay. Same grille as the transfer pair, one face.
     RegisterType(tag="REG-T-HPWH-STAIR-1210",
                  name="HPWH stair grille, 12x10 aluminium return grille on an 8in boot",

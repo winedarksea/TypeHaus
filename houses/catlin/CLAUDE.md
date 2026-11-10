@@ -2187,9 +2187,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **Under-stair space.** No `RM-B-UNDERSTAIR` room exists; the storage under the arriving
   stair flight (and on under the landing deck) is part of `RM-B-STAIR`'s single polygon.
   `D-B-CLOSET` (32" leaf, 6'-0" head, 55-degree stop) opens it to the furnace room; `ED-B-CLOSET-LT`
-  (`room=RM-B-STAIR`) lights it. **`EQ-B-WH` stands in its SE corner since 2026-11-09**, with both
-  air connections ducted through `W-B-WELL` into the stair (`plan/mep_hpwh_air.py`,
-  `notes/basement_winter_heat.md`). R302.7 gypsum under the flight is a `prices.toml` allowance:
+  (`room=RM-B-STAIR`) lights it. **`EQ-B-WH` stands in its SE corner since 2026-11-09**, exhaust ducted
+  through `W-B-WELL` into the stair, top inlet open and fed by `REG-B-WH-IN`'s grille and sleeve
+  in the same wall; a ducted inlet cannot meet Rheem's 12" flex section there (`plan/mep_hpwh_air.py`,
+  `notes/basement_winter_heat.md`). `D-B-CLOSET`'s 3/4" undercut is Rheem's 18 in2. R302.7 gypsum under the flight is a `prices.toml` allowance:
   no `Stair` field models it.
   `LR-B-STAIR-RAIL` lies under the flight rather than along it — one `Mount` elevation for
   the whole `LightRun`, measured off the slab, so it cannot rake.

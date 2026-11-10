@@ -84,8 +84,8 @@ EQUIPMENT_TYPES = (
                   # Product frame: -y front, +x right, z off the floor. Heights published (E, K,
                   # C); every x/y SCALED off p.2's plan and elevation (+-1"), and the T&P height
                   # too. 3/4" NPT, MIP fittings. `power` is the factory cord, a face only.
-                  # Clearances 0" rear/sides, 6" top, 2" T&P release. Ducted on both air
-                  # connections, so "any size room" and no exhaust zone (Use & Care p.9).
+                  # Clearances 0" rear/sides, 6" top, 2" T&P release. Exhaust ducted, inlet
+                  # open: "any size room" with 18 in2 under the door (Use & Care p.9).
                   ports=(ServicePort(tag="cold", service=Service.WATER_COLD,
                                      position=(inch(10.7), inch(-11.9), inch(5.0625)),
                                      connection_size=inch(0.75), direction=(0.669, -0.743, 0.0),
@@ -106,11 +106,6 @@ EQUIPMENT_TYPES = (
                                      connection_size=inch(0.75), direction=(-0.342, -0.940, 0.0),
                                      certainty=PortCertainty.EXACT,
                                      notes="Factory T&P valve outlet, front-left, ~20 deg left of front, r ~15.4in. Position AND height scaled off RH-PIHP-SC-SO Rev. 7 p.2 (not published); confirm on the delivered unit."),
-                         ServicePort(tag="air-in", service=Service.TRANSFER_AIR,
-                                     position=(inch(-5.475), inch(2.475), inch(74.1875)),
-                                     connection_size=inch(8), direction=(0.0, 0.0, 1.0),
-                                     certainty=PortCertainty.EXACT,
-                                     notes="Inlet adapter: plan position scaled (+/-1.5in); field verify. Duct route includes the raised elbow envelope."),
                          ServicePort(tag="air-out", service=Service.TRANSFER_AIR,
                                      position=(inch(11.4), inch(-4.15), inch(65.5)),
                                      connection_size=inch(8), direction=(0.940, -0.342, 0.0),
@@ -362,14 +357,13 @@ DUCTS_HVAC_ATTIC = []
 
 # ** IN THE UNDER-STAIR CLOSET'S SE CORNER SINCE 2026-11-09 (owner). ** Body hard on
 # W-B-WELL (x 165.75") and W-B-BA-N (y 308.25"), so its chill leaves the furnace room:
-# both air connections are ducted into the stair (plan/mep_hpwh_air.py,
-# notes/basement_winter_heat.md). The south end is the one place the 91" inlet elbow fits
-# under the flight (soffit 92.8" bare at the tank's centre, falling 0.736"/" north).
+# its exhaust is ducted into the stair and it draws stair air through a sleeve in W-B-WELL
+# (plan/mep_hpwh_air.py, notes/basement_winter_heat.md). The 6" filter clearance holds at
+# the rake: lined soffit 83.1" at the tank's north edge against an 80 3/16" need.
 #
-# ** ROTATED 180: DISPLAY NORTH, EXHAUST WEST, INLET SOUTH-EAST OF CENTRE. ** Not a choice
-# of taste. Rheem's exhaust sits right of the display, over the riser, with the top inlet
-# opposite (RH-PIHP-SC-SO p.2), and only this quarter both lands the inlet on the high
-# side of the rake and keeps the T&P off W-B-WELL (6.8"). World ports
+# ** ROTATED 180: DISPLAY NORTH, EXHAUST WEST. ** Rheem's exhaust sits right of the display,
+# over the riser (RH-PIHP-SC-SO p.2), and this quarter keeps the T&P off W-B-WELL (6.8").
+# World ports
 # (notes/water_service.md §1): hot (139.5", 325.5", 42 3/8"), cold (142.9", 332.3",
 # 5 1/16"), T&P (158.9", 334.9", ~46"), condensate (161.1", 331.4", 59").
 EQUIPMENT = [
