@@ -134,8 +134,10 @@ stack pitch is left to the check; a tie's fitting is named but not priced; rack 
 only inside `--house` and `--manifold` campaigns. `--tree` prints each branch graded alone, so
 a branch meets the authored drain another branch replaces; the scorecard grades the tree as
 one network. Neither catlin bathroom group lays on today's geometry (the supply lanes stop
-it). On `tree:main`, P8 re-lays BATH2-TUB one size up onto BATH2-SH; 7 of 8 branches lay in about
-83 s and one still refuses (read the scorecard row for which). The stamped Linx elbow has no published centre-to-face (the 1.5 D gored
+it). On `tree:main`, P8 re-lays BATH2-TUB one size up onto BATH2-SH. Its 2" group is a 339 x 416
+plan lattice (`MAX_CANDIDATE_LINES` 450; its 1.5" form was 315 x 393 before UPC 2018's 2" drains):
+all three size groups build and 8 of 8 fixtures lay (395 s wall measured with other runs on the
+machine: search 69 s for the 2" group, 1.18 GB peak). The stamped Linx elbow has no published centre-to-face (the 1.5 D gored
 radius stands in), and the flex bend radius and the GV0772 transition length are unread
 (counted 0, and said so).
 
@@ -224,8 +226,14 @@ then run `haus fmt`, `haus trial`, inspect the drawing, and run repository verif
 - An off-catalog round duct turn (outside the 30/45/90 +/-10 deg windows) is made by the house's
   adjustable `DuctElbowRow`, graded as the bought 90 with loss C x K read from the row's authored
   `angle_k`. A turn no adjustable row at that size can make (a reversal, or no row) stays ungraded.
-- `PR-B-BATH-VENT` builds under `MAX_LATTICE_NODES` (650,000) but finds no route: its root
-  lanes are blocked by PR-B-BATH-DRAIN, and a narrower `--margin` changes nothing.
+- A vent with no `--level` is banded to the storeys its terminals span (`routing/terminal_band`),
+  not the whole house: `PR-B-BATH-VENT` was 674,698 nodes (19 levels, eight of them corridor planes
+  on main, second and attic) and is 268,128 (13 levels, all basement). A vent that must leave its
+  terminals' storeys needs an explicit wider band, which does not exist yet; ducts and risers are
+  not banded.
+- A `RoughOpening` that names a run in `penetration_for` is no obstacle to that run (nor to a run it
+  is joined to): the origin standing in `AO-M-ERV-OA` had no lattice step off it when no other
+  level was nominated. The fit is still graded by `mep.duct_penetrations`.
 - The riser-cover rule covers flat-ceiling rooms only; sloped (FollowRoof) rooms, mechanical
   rooms and rooms with `exposed_services` are not zones. `SUPPLY-GATE` holes confine supply
   risers regardless of cover (the lattice never reads a prism's `applies`).
@@ -233,7 +241,7 @@ then run `haus fmt`, `haus trial`, inspect the drawing, and run repository verif
   which need a chase (a house edit). Laid-run holes reach supply campaigns only; drain campaigns
   do not pass `build_space(laid=)` yet.
 - A full scorecard run takes about 7 minutes: rows run in forked workers (`HAUS_SCORECARD_JOBS`,
-  default min(4, cores/2)) and the longest row (`tree:main`, about 107 s) sets the floor.
+  default min(4, cores/2)) and the longest row (`tree:main`, minutes now its 2" group lays) sets the floor.
 
 ## Read only the relevant implementation
 

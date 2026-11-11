@@ -121,12 +121,20 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
                          for path in ends.root_paths for v in path)
         terminals.extend(wet_terminals(model, ends))
         clock = Timer(target, enabled=timing is not None)
+        space_band = band
+        if band is None and ends.kind == "pipe" and ends.system == "vent":
+            # A vent stays on the storeys its terminals span; `--level` still wins.
+            from typehaus.routing.terminal_band import terminal_band
+
+            space_band = terminal_band({s.elevation.meters for s in model.plan.storeys},
+                                       [t[2] for t in terminals if len(t) > 2])
         try:
             try:
                 with clock.stage("build-space"):
                     space = build_space(model, radius_m=ends.radius_m, terminals=terminals,
-                                        margin_ft=margin_ft, avoid=avoid, touch=ends.touch | lifted,
-                                        cost=cost.for_run(ends.kind, ends.system), z_band=band,
+                                        margin_ft=margin_ft, avoid=avoid,
+                                        touch=ends.touch | lifted, z_band=space_band,
+                                        cost=cost.for_run(ends.kind, ends.system),
                                         cavity_radius_m=ends.cavity_radius_m or None,
                                         panel_space=ends.kind != "conduit")
                     space.bend_radius_m = ends.bend_radius_m

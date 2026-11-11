@@ -349,11 +349,11 @@ def build_graph(space: RoutingSpace,
             for kx, x in enumerate(level_xs):
                 if is_blocked[ky, kx]:
                     pins = fixed.get((round(x, 6), round(y, 6)), ())
-                    if not pins or (strict_block(space, x, y, z) and not any(
-                            tz is None or abs(tz - z) <= 2 * _LINE_TOL_M for tz in pins)):
+                    own = any(tz is None or abs(tz - z) <= 2 * _LINE_TOL_M for tz in pins)
+                    if not pins or (not own and strict_block(space, x, y, z)):
                         continue
-                    offender = space.blocked((x, y), z)
-                    blocked_terminals.append(offender)
+                    if own:  # a terminal stands only at its own level, not up its column
+                        blocked_terminals.append(space.blocked((x, y), z))
                     lenient[len(nodes)] = space.blocked_all((x, y), z)
                 lookup[(kx, ky, kz)] = len(nodes)
                 plan_index[(round(x, 6), round(y, 6))] = len(nodes)
