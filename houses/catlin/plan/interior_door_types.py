@@ -44,6 +44,9 @@ INTERIOR_DOOR_TYPES = (
     # Bedrooms, the suite bath: each room's relief path (notes/system1_return_path.md).
     _swing("DT-INT-SWING30-PRIV", ft(2, 6), "privacy", "hollow", _HOLLOW.format(lever="privacy"),
            relief=True),
+    # D-S-BED3 (2026-11-11): its room balances through REG-S-HP-BED3-RET, so the stock 1/2".
+    _swing("DT-INT-SWING30-PRIV-STOCK", ft(2, 6), "privacy", "hollow",
+           _HOLLOW.format(lever="privacy")),
     _swing("DT-INT-SWING30-PRIV-SOLID", ft(2, 6), "privacy", "solid", _SOLID
            + " Sealed: kerf-in seal at stops and head plus a door-bottom sweep across the "
              "undercut; the bath's makeup air comes through the REG-S-XFER-BATH1 grille pair.",

@@ -1,6 +1,6 @@
 # haus: editable
 # Catlin MEP — the ERV on LEVEL 3: the attic extract plenum, the mixing box it does not
-# feed, the four FS-ATTIC radials and the mixing-box feed.
+# feed, the three FS-ATTIC radials and the mixing-box feed.
 #
 # The system as a whole is documented once, in plan/mep_erv_l1.py's header; the routing
 # declarations are there too. EQ-S-ERV-MIX is second-storey equipment and is filed here
@@ -21,7 +21,6 @@ from typehaus import (
 from .erv_balance import (
     DU_A_ERV_R_ATTIC,
     DU_A_ERV_R_BATH1,
-    DU_A_ERV_R_BED3,
     DU_A_ERV_R_STUBATH,
     DU_S_ERV_HP_FEED,
 )
@@ -159,27 +158,24 @@ DUCTS_ERV_ATTIC = [
     # ** THE WEST CHASE CARRIES ONE DUCT, AND THAT IS THE ROOF TALKING. ** At x=1'-0" the
     # 6:12 underside is `1 1/2" + x/2` = 7 1/2" over the deck, and a 4" duct on
     # _ATTIC_DECK_Z spans 3/4"..4 3/4" of it (2"..6" when this was written). There is no second tier at that station and there
-    # never was — so the four radials, DU-S-ERV-HP-FEED and the first 41" of
+    # never was — so the radials, DU-S-ERV-HP-FEED and the first 41" of
     # DU-ERV-RISER-EXH were all drawn on the one line, five and six deep, and
     # `mep.run_interference` reported fourteen duct-against-duct pairs for it.
     #
     # ** THE FIX IS WIDTH, BECAUSE SOUTH IS THE ONE DIRECTION A BAY CANNOT GO. ** FS-ATTIC
     # is 11 7/8" I-joist with NO web opening, so a duct rides ALONG a bay or it rides the
     # deck; travelling south means the deck, and the deck's usable band is whatever the
-    # rake leaves. The chase widens to x 9"..38" — heights 6" to 20 1/2" — and carries four
-    # lanes on their own stations instead of one line carrying five runs:
+    # rake leaves. The chase widens to x 9"..38" — heights 6" to 20 1/2" — and carries its
+    # lanes on their own stations instead of one line carrying every run:
     #
     #     x=1'-0"    DU-S-ERV-HP-FEED (6")   7 1/2" of roof
     #     x=2'-0"    STUBATH                13 1/2"
     #     x=2'-4 1/2" ATTIC                 15 3/4"
-    #     x=3'-0"    BED3                   19 1/2"
     #
-    # BED3's lane is at 3'-0" and not the 2'-9" the 4 1/2" module would give, because these
-    # lanes cross W-A-STU-N on the deck and that partition's studs stand at 2'-8" and 4'-0":
-    # a 4" duct on 2'-9" spans 2'-7"..2'-11" and takes the first of them, which is the one
-    # `mep.run_through_stud` returns UNKNOWN for. 3'-0" clears it by 1 1/4". STUBATH (2'-0")
-    # and ATTIC (2'-4 1/2") already fall in cavities — 5 1/4" clear on both sides and 3/4"
-    # off the same 2'-8" stud respectively.
+    # The x=3'-0" lane was DU-A-ERV-R-BED3's and is free since 2026-11-11 (BED3 returns to
+    # System 1 instead). A new lane there clears W-A-STU-N's 2'-8" stud by 1 1/4"; 2'-9" would
+    # hit it. STUBATH (2'-0") and ATTIC (2'-4 1/2") fall in that wall's cavities — 5 1/4"
+    # clear on both sides and 3/4" off the 2'-8" stud respectively.
     #
     # **Lane 1 starts at x=2'-0" and DU-ERV-RISER-EXH is why**: the riser drops at
     # x=1'-6 5/8" and is 6", so it owns 15 5/8"..21 5/8" and a 4" lane needs its centre 5"
@@ -187,7 +183,7 @@ DUCTS_ERV_ATTIC = [
     # collar's station at x=5'-7 1/2" and runs the last 7 1/2" west to its terminal, so it
     # never enters the chase.
     #
-    # ** EACH RADIAL LEAVES ITS OWN COLLAR AND CROSSES THE DECK ON ITS OWN y. ** The four
+    # ** EACH RADIAL LEAVES ITS OWN COLLAR AND CROSSES THE DECK ON ITS OWN y. ** The
     # collars are on the plenum's SOUTH face at 4 1/2" centres (EQ-T-ERV-PLENUM-A-EXH), and
     # each run drops to its own east-west line before turning west, so no two share a
     # station anywhere. The ordering is not free: the collar that turns west FURTHEST NORTH
@@ -231,7 +227,9 @@ DUCTS_ERV_ATTIC = [
             # adjustable elbow at its foot: two stamped 90s need 12" and an adjustable pair 9 1/2".
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
             adjustable_elbows=(4,), design_cfm=DU_A_ERV_R_STUBATH),
-    DuctRun(uid="DYNQDC9ZMJ", tag="DU-A-ERV-R-ATTIC", system=DuctSystem.EXHAUST,
+    # RETURN, like every stale-air pickup (REG-A-RET1 is a return); since 2026-11-11 it is
+    # also the run that serves EQ-A-ERV-MAN-EXH's declared return port.
+    DuctRun(uid="DYNQDC9ZMJ", tag="DU-A-ERV-R-ATTIC", system=DuctSystem.RETURN,
             # (2026-11-07) Stock turns only: the 6" vertical drop at the foot of the lane was
             # shorter than its two 90s' take-offs (12"). The lane turns west on the deck and
             # goes into the bay on a 54.7 degree ramp (the stamped 45's 10 degree snap): 9 1/8" of
@@ -245,44 +243,6 @@ DUCTS_ERV_ATTIC = [
                         _ATTIC_DECK_Z, inch(-2), inch(-2)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=DU_A_ERV_R_ATTIC),
-    # ** BED3 RIDES THE 18'-0" BAY, AND IT IS THE ONLY ONE OF THE FOUR THAT IS FREE. **
-    # DU-S-ERV-HP-FEED is already in the 22'-0" bay at y=21'-11 1/2", 1/8" off
-    # FO-A-HALL's trimmer ply at 22'-2 5/8" (its own note says so), leaving 2 3/4" south of
-    # it — a 4" duct does not go in 2 3/4". And the 19'-4" bay carries PR-A-STUBATH-DRAIN's
-    # 10'-0" drop on the wet-wall axis at (9'-7 1/2", 19'-4"): a bay leg at 19'-2 1/8" passed
-    # straight through a 3" stack, which is the pair D2 was sent here to remove. Shifting
-    # within that bay does not help — PR-A-STUBATH-LAV-DRAIN's own leg runs its line too,
-    # and at 19'-8" the two are 1/8" inside each other.
-    #
-    # 20'-8" is no better, and that was measured rather than assumed: the shower waste, the
-    # lavatory waste and PR-A-CW-STUBATH's riser all cross that bay on the same axis, three
-    # of them within 1 1/2" of this duct. **18'-0" is what is left**, and only the bar sink's
-    # waste comes near it — PR-A-BAR-DRAIN's north leg crosses 1" over this duct's crown,
-    # perpendicular. It is the bay DU-A-ERV-R-STUBATH vacated, and nothing else wants it.
-    #
-    # ** IT COMES OUT OF THE BAY AT x=21'-0" AND RUNS THE LAST LEG ON THE DIAGONAL. ** The
-    # trip south to 18'-0" is a detour of 15 ft that `mep.run_route_efficiency` charges for:
-    # squared off to x=29'-0" and then north, this run develops 59.9 ft against 23.9 ft of
-    # straight line — 2.50 against the house's 2.50, a FAIL by a hair. x=21'-0" is where
-    # DU-S-ERV-HP-FEED already leaves the bays for RM-A-EAST-UNFIN's deck, and east of it
-    # nothing is finished and nothing is in the way for more than 2" in any direction, so the
-    # last leg goes straight at the grille instead of round two sides of a rectangle: 54.0 ft
-    # and a ratio of 2.26. REG-S-RET-BED3 is a CEILING grille in the storey below, so this
-    # deck leg is over an unfinished floor from end to end.
-    DuctRun(uid="73FJZH564X", tag="DU-A-ERV-R-BED3", system=DuctSystem.RETURN,
-            path=(pt(ft(5, 3), ft(34, 2)), pt(ft(5, 3), ft(32, 3)),
-                  pt(ft(3), ft(32, 3)), pt(ft(3), ft(18)),
-                  pt(ft(3), ft(18)), pt(ft(21), ft(18)),
-                  pt(ft(21), ft(18)), pt(ft(29), ft(31, 4))),
-            # The bay leg rides 0.8" under _ATTIC_BAY_Z to pass beneath PR-A-BAR-DRAIN's
-            # x=9'-7 1/2" leg (2026-09-24), and since the deck legs came down to bear
-            # (2026-11-07) to keep 12" of drop between the stamped 90s; 9/16" clear of the
-            # ceiling below.
-            elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z,
-                        inch(-9.3), inch(-9.3),
-                        _ATTIC_DECK_Z, _ATTIC_DECK_Z),
-            diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
-            design_cfm=DU_A_ERV_R_BED3),
     DuctRun(uid="4YT114ADP3", tag="DU-A-ERV-R-BATH1", system=DuctSystem.EXHAUST,
             # The bearing deck leg ends over REG-S-EXH1 and drops 12 5/16" onto its collar on
             # one stock 90 (2026-11-10; the 7 1/2" leg under the deck is gone).
@@ -312,8 +272,7 @@ DUCTS_ERV_ATTIC = [
 # ** IT NEVER ENTERS THE GUEST STUDIO. ** Running the x=1'-0" deck chase south all the way
 # would put 10'-11" of 6" duct along the base of a finished bedroom's knee wall — the single
 # item that would set that chase's SECTION, where everything else on that wall is 4".
-# It turns east in **y=22'-0"** — the same bay DU-A-ERV-R-BED3 takes, and for the same
-# reason: 264" = 8 + 16 x 16 is a bay centre, it sits under W-A-STU-N's sole plate so the
+# It turns east in **y=22'-0"**: 264" = 8 + 16 x 16 is a bay centre, it sits under W-A-STU-N's sole plate so the
 # partition is irrelevant, and it is the last bay south of FO-A-HALL, which severs every
 # west-to-east route north of it.
 #

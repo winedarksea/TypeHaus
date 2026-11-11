@@ -8,11 +8,12 @@
 # only register here with no `duct_ref`. Their types and the ducts they sit on are in
 # plan/mep_hvac.py.
 #
-# ================== SYSTEM 1 HAS TWO RETURNS; THE REST GO UNDER DOORS ==================
+# ================ SYSTEM 1 HAS THREE RETURNS; THE REST GO UNDER DOORS ================
 #
 # REG-S-HP-RET is the hall return; RM-S-SUITE has its own ducted REG-S-HP-SUITE-RET behind a
-# sealed door (2026-11-09). Every other System 1 terminal below is a supply, and the ERV's
-# bedroom pickups are stale-air tokens, not a return path. So a room's air gets back to the
+# sealed door (2026-11-09) and RM-S-BED3 its REG-S-HP-BED3-RET (2026-11-11). Every other
+# System 1 terminal below is a supply, and the ERV's BED1/BED2 pickups are stale-air tokens,
+# not a return path. So a room's air gets back to the
 # machine UNDER ITS DOOR. Since 2026-11-06 an undercut stays in 1/2"-3/4" (owner: stock
 # prehungs cut on site), so the relief doors hang at 3/4" and still fall short: a bedroom's
 # 75 cfm net through 22.5 in2 is 9.7 Pa against Manual D's 3 Pa. mep.door_transfer_air grades
@@ -39,7 +40,6 @@ from .erv_balance import (
     REG_S_EXH4,
     REG_S_RET_BED1,
     REG_S_RET_BED2,
-    REG_S_RET_BED3,
 )
 
 # Terminals off the chase name their drawn branch in `duct_ref`. Until 2026-09-23 the bedroom
@@ -55,7 +55,6 @@ from .erv_balance import (
 # carpet: 2 1/2" under the grille face. The throw clears it; nothing grades it. BED2/BED3 sit
 # 3/4" lower with their collars (2026-11-09, the suite return's lane): 1 3/4" over BED2's PAX.
 #
-# BED3 is a ceiling boot at its bay leg's end, at the room's resolved ceiling, 8'-10 1/4".
 # NOTHING GRADES A REGISTER AGAINST ITS HOST SURFACE — a Register resolves no solid, so
 # `Mount.elevation` is a number the schedule and the sections print and no check reads.
 #
@@ -189,10 +188,10 @@ REGISTERS_HVAC_SECOND = [
     # at 30'-7 5/8" by 4 3/8". The same rule is why the closet's ceiling access panel is
     # gasketed: an open lid over this cavity would be a closet return by another name.
     #
-    # ** design_cfm IS 570. ** The air handler moves 750: the ERV puts 100 into the plenum
-    # through DU-S-ERV-HP-FEED and REG-S-HP-SUITE-RET 80 more (2026-11-09), so the hall air
-    # this grille draws is 570. 336 in2 at 570 cfm is 244 fpm, inside Manual D SS4-10's 300
-    # for a grille carrying the filter.
+    # ** design_cfm IS 490. ** The air handler moves 750: the ERV puts 100 into the plenum
+    # through DU-S-ERV-HP-FEED, REG-S-HP-SUITE-RET 80 (2026-11-09) and REG-S-HP-BED3-RET 80
+    # (2026-11-11), so the hall air this grille draws is 490. 336 in2 at 490 cfm is 210 fpm,
+    # inside Manual D SS4-10's 300 for a grille carrying the filter.
     #
     # ** THE ELEVATION IS HAND-COUPLED AND UNCHECKED. ** 7'-1" is SF-S-HP1's finished
     # underside (23" drop, storeys/second.py), not SF-S-DUCT's 7'-10". Change the drop and
@@ -202,7 +201,7 @@ REGISTERS_HVAC_SECOND = [
     Register(uid="CSRH05AAAA", tag="REG-S-HP-RET", kind=DuctSystem.RETURN,
              room="RM-S-HALL", rotation=deg(90),
              position=pt(inch(251.5), inch(350.25)), duct_ref="DU-S-HP-RET",
-             type_ref="REG-T-HP-RET-FILTER", design_cfm=570,
+             type_ref="REG-T-HP-RET-FILTER", design_cfm=490,
              mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 1))),
     # RM-S-SUITE's ducted return (2026-11-09): a 12x12 filter-back ceiling grille between two
     # FS-ATTIC joists, clear of the W-S-SBS/W-S-DC2 corner, the bed and CAN3. Its own MERV 13
@@ -213,6 +212,16 @@ REGISTERS_HVAC_SECOND = [
              position=pt(inch(104), inch(184)), duct_ref="DU-S-HP-SUITE-RET",
              type_ref="REG-T-HP-RET-FILTER-1212", design_cfm=80,
              mount=Mount(kind=MountKind.CEILING)),
+    # RM-S-BED3's return (2026-11-11): the suite's grille and filter on W-S-BW3's bedroom face,
+    # over D-S-BED3's header, centred y=28'-11 1/2" (trim 1/2" off REG-S-HP-BED3's); face
+    # 209"..221" absolute (85 15/16" AFF), level with its stub into EQ-S-ERV-MIX. Damper
+    # locked at 80 cfm; re-check at filter changes. D-S-BED3 is back at the stock 1/2".
+    Register(uid="M9R1FECSXZ", tag="REG-S-HP-BED3-RET", kind=DuctSystem.RETURN, room="RM-S-BED3",
+             duct_ref="DU-S-HP-BED3-RET", type_ref="REG-T-HP-RET-FILTER-1212-SIDE", design_cfm=80,
+             mount=Mount(kind=MountKind.WALL, elevation=inch(85.9375)),
+             location=Location(attachment=WallAttachment(
+                 wall_ref="W-S-BW3", face="right", distance_from_start=inch(27.5),
+                 normal_gap=inch(0), rotation_offset=deg(0)))),
 ]
 
 # CONDENSATE — the indoor heads gravity-drain through PR-M-COND-HEADS / PR-B-COND to an air
@@ -225,7 +234,7 @@ REGISTERS_HVAC_SECOND = [
 # frame below it, not a kerb on top, so it still counts against a neighbour's clear floor
 # space.
 #
-# The second storey has no supply on the ERV: the three bedroom boots kept their uids (IFC
+# The second storey has no supply on the ERV: the BED1/BED2 boots kept their uids (IFC
 # GlobalId stability) but are stale-air pickups on DU-M-ERV-RET. Fresh air comes from
 # REG-S-HP-BED1/2/3 and REG-S-HP-SUITE (REGISTERS_HVAC_SECOND above), so extracting here is
 # what moves the storey's air: in at the hall soffit, out at the far wall of each room.
@@ -234,7 +243,8 @@ REGISTERS_HVAC_SECOND = [
 # REG-S-HP-STUDY2 in REGISTERS_HVAC_SECOND above. The plant takes a ceiling boot
 # from DU-S-HP-SOUTH; the study takes a sidewall boot off DU-S-HP-SOUTH-RISE.
 REGISTERS = [
-    # One per bedroom: BED1 y 9'-18', BED2 y 18'-27', BED3 y 27'-36'.
+    # BED1 y 9'-18', BED2 y 18'-27'. BED3 has no ERV pickup since 2026-11-11: it returns
+    # to System 1 through REG-S-HP-BED3-RET instead, and its old 5 cfm went to the kitchen.
     #
     # BED1/BED2 ARE FLOOR BOOTS AGAINST THE SOUTH WALL (2026-10-02), not mid-floor at x=29'.
     # x=28'-1" leaves 5 1/8" from the east PAX frame to the grille's west edge (2026-10-03).
@@ -250,17 +260,6 @@ REGISTERS = [
             position=pt(ft(28, 1), ft(18, 4)), duct_ref="DU-M-ERV-R-BED2",
             type_ref="REG-T-ERV-EXH-FLOOR", design_cfm=REG_S_RET_BED2,
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
-    # BED3 IS A CEILING GRILLE, AND ITS TWO NEIGHBOURS ARE NOT: FO-S-STAIR blocks every
-    # FS-S bay between y=26'-0 3/8" and y=35'-5 3/8" across x 10'-3 1/8"..17'-8 5/8", BED3
-    # spans y 27'-36', and FS-S-EAST is I-joist so nothing travels north-south on the far
-    # side of the well. So this one is fed from the ATTIC sub-manifold instead of the
-    # RM-M-MECH one (DU-A-ERV-R-BED3), which makes it a grille in the ceiling rather than a
-    # boot in the floor. For stale air that is the better end of the room anyway; the
-    # asymmetry with BED1/BED2 is real and is the price of the stair well being where it is.
-    Register(uid="CMR904AAAA", tag="REG-S-RET-BED3", kind=DuctSystem.RETURN, room="RM-S-BED3",
-            position=pt(ft(29), ft(31, 4)), duct_ref="DU-A-ERV-R-BED3",
-            type_ref="REG-T-ERV-VALVE-EXH", design_cfm=REG_S_RET_BED3,
-            mount=Mount(kind=MountKind.CEILING)),
     # No REG-S-RET2 (the suite's own extract) — the owner's call, and defensible on the
     # model too: no check fires for its absence (BEDROOM is not in
     # checks/mep/hvac.py's _STALE_OCCUPANCIES), and RM-S-SUITEBATH's REG-S-EXH3 carries the

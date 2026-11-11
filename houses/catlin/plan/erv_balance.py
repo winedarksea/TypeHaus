@@ -13,8 +13,10 @@ EQ-S-ERV-MIX. Extract is 210 on the dampers, holding every code minimum:
 
 * The seven bathroom terminals and the sauna at 20 cfm each (IRC M1505.4.4's continuous
   local-exhaust rate): 160 cfm, untouchable, 76% of the machine.
-* The other ten share 50: RM-S-PLANT 5, the workshop bench hood 6, the study return 5,
-  mudroom 5, kitchen 6, laundry 3, the three bedroom pickups 5 each, the attic return 5.
+* The other nine share 50: RM-S-PLANT 5, the workshop bench hood 6, the study return 5,
+  mudroom 5, kitchen 11, laundry 3, the BED1/BED2 pickups 5 each, the attic return 5.
+  BED3's 5 went to the kitchen on 2026-11-11, when BED3 took a ducted System 1 return
+  (REG-S-HP-BED3-RET) instead of a long attic radial.
 
 PLANT and the bench hood are token flows. The honest fix is a LARGER ERV, not a
 redistribution; this arithmetic is true against the machine the house has.
@@ -37,11 +39,10 @@ REG_M_EXH1 = 20        # RM-M-BATH1
 REG_M_EXH2 = 20        # RM-M-BATH2
 REG_M_RET_STUDY = 5    # RM-M-STUDY-CLOSET
 REG_M_RET3 = 3         # RM-M-LAUNDRY
-REG_M_RET5 = 6         # the kitchen, in RM-M-LIVING
+REG_M_RET5 = 11        # the kitchen, in RM-M-LIVING
 REG_M_RET_MUD = 5      # RM-M-MUDROOM
 REG_S_RET_BED1 = 5     # RM-S-BED1
 REG_S_RET_BED2 = 5     # RM-S-BED2
-REG_S_RET_BED3 = 5     # RM-S-BED3
 REG_S_EXH1 = 20        # RM-S-BATH1
 REG_S_EXH3 = 20        # RM-S-SUITEBATH
 REG_S_EXH4 = 20        # RM-S-VANITY
@@ -72,22 +73,21 @@ DU_M_ERV_R_SUITEBATH = REG_S_EXH3
 DU_M_ERV_R_VANITY = REG_S_EXH4
 DU_M_ERV_R_PLANT = REG_S_ERV_PLANT_EXH
 
-DU_A_ERV_R_BED3 = REG_S_RET_BED3
 DU_A_ERV_R_BATH1 = REG_S_EXH1
 DU_A_ERV_R_ATTIC = REG_A_RET1
 DU_A_ERV_R_STUBATH = REG_A_STUBATH_EXH
 DU_S_ERV_HP_FEED = EQ_S_ERV_MIX
 
 # --- trunks and risers: the legs each one gathers -----------------------------------------
-# Level 2 (the RM-M-MECH plenums): 50 supply, 114 extract.
+# Level 2 (the RM-M-MECH plenums): 50 supply, 119 extract.
 _LEVEL2_SUPPLY = DU_M_ERV_R_LIVING + DU_M_ERV_R_BED + DU_M_ERV_R_STUDY
 DU_M_ERV_EXH_TRUNK = (DU_M_ERV_R_BATH1 + DU_M_ERV_R_BATH2 + DU_M_ERV_R_LAUNDRY
                       + DU_M_ERV_R_KITCH + DU_M_ERV_R_MUD + DU_M_ERV_R_BED1
                       + DU_M_ERV_R_BED2 + DU_M_ERV_R_SUITEBATH + DU_M_ERV_R_VANITY
                       + DU_M_ERV_R_PLANT)
 DU_M_ERV_EXH_FEED = DU_M_ERV_EXH_TRUNK
-# The attic plenum: the 100 System 1 feed out, 50 extract in.
-_ATTIC_EXTRACT = DU_A_ERV_R_BED3 + DU_A_ERV_R_BATH1 + DU_A_ERV_R_ATTIC + DU_A_ERV_R_STUBATH
+# The attic plenum: the 100 System 1 feed out, 45 extract in.
+_ATTIC_EXTRACT = DU_A_ERV_R_BATH1 + DU_A_ERV_R_ATTIC + DU_A_ERV_R_STUBATH
 # The chase risers carry everything above the basement plenums (150 / 164).
 DU_ERV_RISER_SUP = _LEVEL2_SUPPLY + DU_S_ERV_HP_FEED
 DU_ERV_RISER_EXH = DU_M_ERV_EXH_FEED + _ATTIC_EXTRACT

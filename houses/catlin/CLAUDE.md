@@ -979,23 +979,27 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     (second) — off the attic GABLE (where the leg crossed both gable windows' ROs) and, since
     2026-09-15, off the WEST facade too (`plan/mep_erv_outdoor.py`). The gable objection is about
     W-A-N* at +23'-0" and never applied to W-M-N3B/W-S-N3B. (→ log4.md, why the gable failed)
-  - `DU-A-ERV-R-BED3` and `CD-A-DATA-NE` both route SOUTH — the only option, since
+  - `CD-A-DATA-NE` routes SOUTH — the only option, since
     `FO-A-HALL`'s maxy is `W-A-N2`'s gwb face, severing every west→east route north of the
     studio. `DU-S-ERV-HP-FEED` (100 cfm) sets the chase section, turning east at y=22'-0" to
     `SF-S-HP1`'s drop up `RM-A-EAST-UNFIN`.
-  - **The west chase is FOUR lanes, not one line** (D2, 2026-09-19). At x=1'-0" the 6:12
+  - **The west chase is lanes, not one line** (D2, 2026-09-19). At x=1'-0" the 6:12
     underside is 7 1/2" over the deck and there is no second tier, so five runs drawn on that
     one station were fourteen `mep.run_interference` pairs. It widens to x 9"..38" and each
-    radial takes its own lane — HP-FEED 1'-0", STUBATH 2'-0", ATTIC 2'-4 1/2", BED3 3'-0";
-    BATH1 drops where it stands. Lane order is fixed: the collar turning west FURTHEST NORTH
+    radial takes its own lane — HP-FEED 1'-0", STUBATH 2'-0", ATTIC 2'-4 1/2"; 3'-0" is free
+    since BED3's radial was retired (2026-11-11); BATH1 drops where it stands. Lane order is fixed: the collar turning west FURTHEST NORTH
     takes the WESTMOST lane, or west legs cross their neighbours' south legs.
   - **FS-ATTIC is I-joist with NO web opening**, so a duct rides ALONG a bay or on the deck —
     there is no crossing bays as there is on `FS-S-WEST`. That is why all north-south attic
     travel is on the deck, and why each radial's east leg is a bay assignment: STUBATH
-    21'-8 1/2" (stacked over HP-FEED, the only free tier there), BED3 18'-0", ATTIC 20'-8".
-    BED3 (5 cfm) is 54.3 LF / ratio 2.27 — it leaves the bays at x=21'-0" for one diagonal
-    across `RM-A-EAST-UNFIN`'s deck, because squared off it develops 60.1 LF for 2.51 and
-    `mep.run_route_efficiency`'s limit here is 2.50. STUBATH came down 34.1 -> 27.8 LF.
+    21'-8 1/2" (stacked over HP-FEED, the only free tier there), ATTIC 20'-8"; the 18'-0" bay
+    is free. STUBATH came down 34.1 -> 27.8 LF.
+  - **`RM-S-BED3` has no ERV pickup; it returns to System 1** (owner, 2026-11-11). The 55 LF
+    attic radial `DU-A-ERV-R-BED3` is gone; `REG-S-HP-BED3-RET` (12x12 filter-back sidewall
+    over `D-S-BED3`'s header) and a 6x12 stub land in `EQ-S-ERV-MIX` behind `W-S-BW3`,
+    `D-S-BED3` is back at the stock 1/2", and BED3's 5 cfm went to the kitchen (11).
+    `DU-A-ERV-R-ATTIC` is RETURN, like every stale-air pickup, and it is what serves
+    `EQ-A-ERV-MAN-EXH`'s return port. `notes/system1_return_path.md`.
   - `DU-A-ERV-R-STUBATH`'s riser is at y=21'-8 1/2" in `W-A-STU-W` — the bath's ONLY 5 1/2"
     cavity, and the suite's wet wall. Both drains hold the axis south of 21'-4 5/8", so that
     station is the first one north of them; it lands between the 21'-4" and 22'-0" studs and

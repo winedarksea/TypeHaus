@@ -237,8 +237,8 @@ DUCTS_HVAC_SECOND = [
     # the pan, the cabinet reads 2 + 18 1/8 = 20 1/8 and this return 2 + 18 = 20, both
     # inside 20.25. That is what the deepening was sized to, and it is why 18" survived.
     #
-    # It carries the full 750: 570 of hall air off the grille, the suite's 80 through
-    # REG-S-HP-SUITE-RET and the ERV's 100, mixed in
+    # It carries the full 750: 490 of hall air off the grille, 80 each through
+    # REG-S-HP-SUITE-RET and REG-S-HP-BED3-RET and the ERV's 100, mixed in
     # the plenum behind it. Everything here is upstream of the coil and therefore upstream of
     # EQ-S-HP1-STRIP, which sits SOUTH of the cabinet in the discharge.
     DuctRun(uid="CSDH02AAAA", tag="DU-S-HP-RET", system=DuctSystem.RETURN,

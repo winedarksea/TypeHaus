@@ -575,7 +575,7 @@ OPENINGS = [
     # Asserted in test_openings_land_on_the_source_gaps.
     Door(uid="CSD202AAAA", tag="D-S-BED2", host="W-S-BW2", type_ref="DT-INT-SWING30-PRIV",
          position=from_node("N-S-B2", ft(5, 7.5)), flip_swing=True, flip_hinge=False, doorway=BEDROOM_ZBAR),  # y 24'-6 1/2"
-    Door(uid="CSD203AAAA", tag="D-S-BED3", host="W-S-BW3", type_ref="DT-INT-SWING30-PRIV",
+    Door(uid="CSD203AAAA", tag="D-S-BED3", host="W-S-BW3", type_ref="DT-INT-SWING30-PRIV-STOCK",
          position=from_node("N-S-B3", ft(0, 8)), flip_swing=True, flip_hinge=True, doorway=BEDROOM_ZBAR),  # y 28'-11"
     # Just an opening, framed the same as a 30" door: no leaf needed for this passthrough.
     RoughOpening(uid="CSD204AAAA", tag="D-S-STUDY2", host="W-S-SS1",

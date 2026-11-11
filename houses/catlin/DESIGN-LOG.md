@@ -7915,3 +7915,22 @@ side over 15 inches. The listing was read from third-party copies, so DCOF, thic
 rectification are to be verified on the delivered box. Tile-only falls to 8 cases at $298.16
 from $682.14. The viewer samples the supplied swatch; see
 `ui/src/assets/tiles/lifeproof-limestone.md`.
+
+## BED3 returns to System 1; its attic ERV radial is retired (2026-11-11, owner)
+
+`DU-A-ERV-R-BED3` carried a 5 cfm stale-air pickup about 55 LF on six elbows (ratio 2.30
+against 2.50): west to the deck chase, south, east in the 18'-0" FS-ATTIC bay, then diagonally
+across `RM-A-EAST-UNFIN`, through three attic floor holes. BED3's 80 cfm supply meanwhile
+returned only under a 3/4" undercut (9.7 Pa). The HP1 return plenum is on the other side of
+`W-S-BW3`, so the pickup is deleted and BED3 returns directly: `REG-S-HP-BED3-RET`, a 12x12
+filter-back sidewall grille over `D-S-BED3`'s flat header (no cripples, so the bay is clear
+king to king), and `DU-S-HP-BED3-RET`, a 6 wide x 12 tall stub into `EQ-S-ERV-MIX`'s east
+face. Inside the box, DU-S-HP-RET's inlet and DU-S-ERV-HP-FEED's drop leave only the south
+half of the neck for the stub, and it stops 1/2" short of the face. Hall return 570 -> 490.
+
+Owner's choices: the freed 5 cfm of extract goes to the kitchen (6 -> 11; supply cannot drop,
+N1103.6 has 1.6 cfm of margin); `D-S-BED3` goes to the factory 1/2" (`DT-INT-SWING30-PRIV-STOCK`);
+BED3 keeps its fixed windows plus the ERV air System 1 delivers. `DU-A-ERV-R-ATTIC` was retyped
+EXHAUST -> RETURN to match every other stale-air pickup; it is now the run serving
+`EQ-A-ERV-MAN-EXH`'s declared return port, which BED3's run used to serve. Open: line the stub (the
+blower is a few feet away); the hall's 490 cfm would now take a stocked 12x24x1 filter (~245 fpm).

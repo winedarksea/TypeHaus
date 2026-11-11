@@ -50,8 +50,8 @@ def test_the_friction_factor_matches_the_notes_colebrook_solution() -> None:
 
 
 def test_a_laminar_branch_uses_hagen_poiseuille_and_not_colebrook() -> None:
-    """Note §3: six of the 23 radials run below Re 4,000 and ``DU-A-ERV-R-BED3`` at 5 cfm is
-    outright laminar at Re ~1,950. f = 64/Re is exact there; Colebrook is not valid at all,
+    """Note §3: the 5 cfm radials (``DU-M-ERV-R-PLANT`` among them) are outright laminar at
+    Re ~1,950. f = 64/Re is exact there; Colebrook is not valid at all,
     and reporting the regime as a gap in the MODEL would be reporting the correlation's
     limitation as the building's."""
     assert _friction_factor(1953.0, 0.0009) == pytest.approx(64.0 / 1953.0)
@@ -309,7 +309,7 @@ def test_catlin_reports_no_fail_from_this_check(catlin_model_ro) -> None:
 
 
 def test_every_branch_clears_the_products_own_flow_limit(catlin_model_ro) -> None:
-    """23 radials all inside ``DUCT-T-GALV-4``'s 50 cfm — a 600 fpm QUIET limit for a branch
+    """22 radials all inside ``DUCT-T-GALV-4``'s 50 cfm — a 600 fpm QUIET limit for a branch
     running continuously beside a bed, not the pipe's capacity. The highest is
     ``DU-B-ERV-R-PLAY`` at 30 cfm.
 
@@ -318,7 +318,7 @@ def test_every_branch_clears_the_products_own_flow_limit(catlin_model_ro) -> Non
     sheet metal since 2026-11-08, and a rectangular row publishes no ``max_cfm`` to grade
     it against (its friction is still in the path)."""
     rows = [f for f in _findings(catlin_model_ro) if " carries " in f.message]
-    assert len(rows) == 23
+    assert len(rows) == 22
     assert all(f.result is Result.PASS for f in rows)
     for tag in ("DU-M-ERV-R-PLANT", "DU-M-ERV-R-BATH1", "DU-M-ERV-R-KITCH"):
         assert any(f.message.startswith(f"{tag} carries ") for f in rows), tag

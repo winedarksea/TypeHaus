@@ -2,7 +2,7 @@
 
 **House:** catlin
 **Structure:** `EQ-B-ERV` (Broan B210E75RT) and the whole balanced distribution system it
-drives — 5 fabricated plenums, 23 radials, 4 trunks/risers, 2 outdoor legs, 26 terminals.
+drives — 5 fabricated plenums, 22 radials, 4 trunks/risers, 2 outdoor legs, 25 terminals.
 **Written:** 2026-09-12, by hand, before the calculation it oracles was encoded.
 **Oracle for:** `checks/mep/erv_static.py`, reported by `mep.erv_static_budget`; reproduced
 by `tests/test_erv_static_oracle.py`.
@@ -65,7 +65,7 @@ plenum — did not change; what it is built from did.
 |---|---|---|
 | the machine | Broan B210E75RT, 6" top ports, `fan_curve` authored | 1 |
 | plenums | fabricated galvanized box, 8" inlet collar, N x 4" dampered start collars | 5 (28 ports, 23 live) |
-| radials | 4" galvanized snap-lock, one per terminal | 23 |
+| radials | 4" galvanized snap-lock, one per terminal | 22 |
 | trunks and risers | 6" galvanized | 5 (the level-2 extract feed joined them 2026-09-20) |
 | outdoor legs | `DU-ERV-OA` and `DU-ERV-EA`, both **8"**, both inside an R-8 vapour-sealed wrap, both out the NORTH face | 2 |
 | terminals | 4"-collar commodity diffusers and grilles | 26 |
@@ -125,7 +125,6 @@ Every radial is 4" galvanized. `Δp_duct` is §2's formula; `Δp_terminal` is §
 | `DU-B-ERV-R-PLAY` | 30 | 25.48 | 8 | 45.48 | 344 | 0.00737 | 11,717 | 0.0311 | **0.0313** |
 | `DU-M-ERV-R-LIVING` | 20 | 44.93 | 5 | 57.43 | 229 | 0.00327 | 7,812 | 0.0342 | 0.0193 |
 | `DU-M-ERV-R-PLANT` | 5 | 23.32 | 1 | 25.82 | 57 | 0.00020 | 1,953 | — | ~0.0005 |
-| `DU-A-ERV-R-BED3` | 5 | 54.05 | 6 | 69.05 | 57 | 0.00020 | 1,953 | — | ~0.001 |
 
 `DU-B-ERV-R-PLAY` was 15.50 ft on 2 elbows (0.0141) until 2026-09-22, when it came off
 `ST-B2M` (R311.7.2 headroom) and went round through `SF-B-BATH`: 0.5 + 10.90 + 0.60 ft of
@@ -133,14 +132,13 @@ drop, lane and rise, 1.50 + 2.75 + 1.04 + 4.50 + 6.44 + 2.25 ft of level legs, a
 30.48 ft, 0.0347. On 2026-09-23 `REG-B-SUP2` moved from y=25' to y=20' and the hall leg went
 6.44 -> 1.44 ft: 25.48 ft on the same 8 turns, 0.0311 x (45.48 / 0.3333) x 0.00737 = 0.0313.
 
-The last two rows are the point worth writing down: **`DU-A-ERV-R-BED3` is the LONGEST
-radial in the house at 54'-1", and it is nowhere near the worst.** Static goes as Q², and at
-5 cfm it costs about a thousandth of an inch. Length was never the criterion.
+`DU-A-ERV-R-BED3`, the longest radial in the house at 54'-1" and about a thousandth of an
+inch at 5 cfm, sat in this table until 2026-11-11: BED3 returns to System 1 now
+(`notes/system1_return_path.md`) and its 5 cfm went to the kitchen. Static goes as Q², so
+length was never the criterion.
 
-**THREE OF THESE FIVE ROWS WERE STALE AND ALL THREE ARE RE-READ OFF THE MODEL HERE
-(2026-09-20).** `DU-A-ERV-R-BED3` read 56.15 ft on 5 elbows and develops 54.05 on 6 — the
-`_ATTIC_BAY_Z` re-derivation to -8 1/2" lifted two bay-leg verticals 1 3/8" each, which
-shortens the run and adds a turn. `DU-M-ERV-R-LIVING` read 46.01 on 2 and is 44.93 on 5, and
+**THREE ROWS WERE STALE AND ALL THREE WERE RE-READ OFF THE MODEL (2026-09-20)**, BED3 among
+them. `DU-M-ERV-R-LIVING` read 46.01 on 2 and is 44.93 on 5, and
 `DU-M-ERV-R-PLANT` read 53.00 on 3 and is **23.32 on 1** — the level-2 trunk-and-branch
 redesign stopped it being a home run from the plenum and made it a takeoff off the trunk at
 the trunk's own south end. So PLANT is no longer the second-longest radial in the house;
@@ -159,9 +157,9 @@ The two runs that matter now are `DU-B-ERV-R-SAUNA-EXH` (20 cfm through a motori
 the damper is most of it, not the duct) and `DU-B-ERV-R-PLAY` (30 cfm, still the highest flow
 on any radial).
 
-**`DU-A-ERV-R-BED3` at 5 cfm is LAMINAR (Re ≈ 1,950), and Colebrook is a turbulent
-correlation.** Six of the 23 radials run below Re 4,000. Where Re < 2,300 the flow is laminar
-and Hagen–Poiseuille is exact, so f = 64/Re = 64/1,953 = 0.0328 and the drop is
+**A 5 cfm radial (`DU-M-ERV-R-PLANT`, the old BED3) is LAMINAR (Re ≈ 1,950), and Colebrook is
+a turbulent correlation.** Where Re < 2,300 the flow is laminar and Hagen–Poiseuille is exact,
+so f = 64/Re = 64/1,953 = 0.0328; on BED3's 69.05 ft the drop was
 0.0328 × (69.05/0.3333) × 0.00020 = **0.0014 in.** Between 2,300 and 4,000 there is no
 correlation at all and the conservative read is the turbulent value at the top of the band,
 which is what the check uses. Nothing in this band can govern — a 5 cfm branch's velocity
@@ -484,7 +482,7 @@ play radial's detour round the basement stair, §3, is the newest term on that s
 
 ## 8. Commissioning — and the real risk is the measurement
 
-23 radials averaging 9 cfm each is not hard to balance; it is hard to **measure**. Every
+22 radials averaging 9 cfm each is not hard to balance; it is hard to **measure**. Every
 term in §3–§5 is a design figure, and the only thing that closes this system out is a
 measured one.
 

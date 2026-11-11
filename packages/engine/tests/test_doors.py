@@ -93,6 +93,7 @@ def test_catlin_door_catalog_tags_state_operation_and_width(catlin_plan):
         "DT-INT-SWING30": (30.0, DoorOperation.SWING, False, False),
         # Interior function/core split, 2026-11-03 (plan/interior_door_types.py).
         "DT-INT-SWING30-PRIV": (30.0, DoorOperation.SWING, False, False),
+        "DT-INT-SWING30-PRIV-STOCK": (30.0, DoorOperation.SWING, False, False),
         "DT-INT-SWING30-PRIV-SOLID": (30.0, DoorOperation.SWING, False, False),
         "DT-INT-SWING32-PRIV": (32.0, DoorOperation.SWING, False, False),
         "DT-INT-SWING32-PRIV-SOLID": (32.0, DoorOperation.SWING, False, False),

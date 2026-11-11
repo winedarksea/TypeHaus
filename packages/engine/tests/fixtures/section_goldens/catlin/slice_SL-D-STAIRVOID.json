@@ -3856,71 +3856,15 @@
       "node": "polyline",
       "points": [
         [
-          249.5,
-          227.50000000000003
-        ],
-        [
-          254.5,
-          227.50000000000003
-        ],
-        [
-          254.5,
-          228.12500000000003
-        ],
-        [
-          249.5,
-          228.12500000000003
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CSR409AAAA-ceiling-9",
-      "tag": "CEIL-RM-S-HALL-9"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          249.5,
-          227.50000000000003
-        ],
-        [
-          254.5,
-          227.50000000000003
-        ],
-        [
-          254.5,
-          228.12500000000003
-        ],
-        [
-          249.5,
-          228.12500000000003
-        ]
-      ],
-      "pattern": "gwb",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "gwb"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           248.5,
           227.50000000000003
         ],
         [
-          249.5,
+          255.5,
           227.50000000000003
         ],
         [
-          249.5,
+          255.5,
           228.12500000000003
         ],
         [
@@ -3932,8 +3876,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CSR409AAAA-ceiling-12",
-      "tag": "CEIL-RM-S-HALL-12"
+      "uid": "CSR409AAAA-ceiling-6",
+      "tag": "CEIL-RM-S-HALL-6"
     },
     {
       "space": "model",
@@ -3944,71 +3888,15 @@
           227.50000000000003
         ],
         [
-          249.5,
+          255.5,
           227.50000000000003
         ],
         [
-          249.5,
+          255.5,
           228.12500000000003
         ],
         [
           248.5,
-          228.12500000000003
-        ]
-      ],
-      "pattern": "gwb",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "gwb"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          254.5,
-          227.50000000000003
-        ],
-        [
-          255.5,
-          227.50000000000003
-        ],
-        [
-          255.5,
-          228.12500000000003
-        ],
-        [
-          254.5,
-          228.12500000000003
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CSR409AAAA-ceiling-13",
-      "tag": "CEIL-RM-S-HALL-13"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          254.5,
-          227.50000000000003
-        ],
-        [
-          255.5,
-          227.50000000000003
-        ],
-        [
-          255.5,
-          228.12500000000003
-        ],
-        [
-          254.5,
           228.12500000000003
         ]
       ],

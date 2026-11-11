@@ -3722,6 +3722,8 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "REG-T-HP-RET-FILTER" = { material = { low = 60, high = 130 }, labour = { low = 18, high = 45 } }  # 1 ea
 # RM-S-SUITE's 12x12 filter-back return (2026-11-09), off REG-T-HP-RET-FILTER; stocked 12x12x1 filters.
 "REG-T-HP-RET-FILTER-1212" = { material = { low = 35, high = 80 }, labour = { low = 18, high = 45 } }  # 1 ea
+# RM-S-BED3's sidewall twin (2026-11-11); same grille, labour includes the short lined stub.
+"REG-T-HP-RET-FILTER-1212-SIDE" = { material = { low = 35, high = 80 }, labour = { low = 25, high = 60 } }  # 1 ea
 # The passive transfer: two 12x10 aluminium return grilles on a lined sleeve through the bay.
 "REG-T-TRANSFER-MUD-1210" = { material = { low = 30, high = 55 }, labour = { low = 30, high = 70 } }  # 1 grille, panel cut; no sleeve
 # D-S-BATH1's offset pair (2026-11-03): one 6x6 grille plus half the bay's sheet-metal liner.
@@ -6383,6 +6385,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # Shop fabrication, estimate (material only; the make-up time is the sheet-metal visit):
 "boot-10x18-28x12" = { low = 40, high = 80 }             # 1 ea — shop fabrication, estimate
 "boot-6x4-12x12" = { low = 40, high = 90 }               # 1 ea — RM-S-SUITE return box + locking damper, estimate
+"boot-6x12-12x12" = { low = 40, high = 90 }              # 1 ea — RM-S-BED3 return box + locking damper, estimate
 "boot-10x6-12x6" = { low = 25, high = 60 }               # 1 ea — shop fabrication, estimate
 "boot-10x8-12x6" = { low = 25, high = 60 }               # 2 ea — shop fabrication, estimate
 "boot-18x8-12x6" = { low = 30, high = 70 }               # 1 ea — shop fabrication, estimate

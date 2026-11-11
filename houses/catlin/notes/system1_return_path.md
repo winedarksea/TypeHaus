@@ -8,14 +8,15 @@ now computes this table from the model (`checks/mep/door_transfer_air.py`, pinne
 
 ## The condition
 
-System 1 (`EQ-S-HP1-AH`, 750 cfm) has **two** returns: `REG-S-HP-RET`, a 28 x 12 filter-back
-grille in `SF-S-HP1`'s underside at (20'-11 1/2", 29'-1 1/4"), in `RM-S-HALL`, drawing 570
-cfm of room air, and since 2026-11-09 `REG-S-HP-SUITE-RET`, the suite's ducted 80 cfm (below).
+System 1 (`EQ-S-HP1-AH`, 750 cfm) has **three** returns: `REG-S-HP-RET`, a 28 x 12 filter-back
+grille in `SF-S-HP1`'s underside at (20'-11 1/2", 29'-1 1/4"), in `RM-S-HALL`, drawing 490
+cfm of room air; since 2026-11-09 `REG-S-HP-SUITE-RET`, the suite's ducted 80 cfm; and since
+2026-11-11 `REG-S-HP-BED3-RET`, BED3's ducted 80 cfm (both below).
 Every other System 1 terminal is a supply. So the supply air delivered to a
 room behind a closed door has to get back to that hall through the door.
 
-The ERV does not help. Its second-storey bedroom pickups (`REG-S-RET-BED1/2/3`) run at
-**5 cfm each** (`plan/erv_balance.py`) — they are stale-air tokens on a 210 cfm balanced machine, not a return path.
+The ERV does not help. Its second-storey bedroom pickups (`REG-S-RET-BED1/2`; BED3's went
+2026-11-11) run at **5 cfm each** (`plan/erv_balance.py`) — they are stale-air tokens on a 210 cfm balanced machine, not a return path.
 
 ## The arithmetic
 
@@ -51,7 +52,8 @@ room it opens from, and treats the zone a stair reaches as the house:
 
 | Zone | Net | Door | Free area | dP | Needs at 3 Pa |
 |---|---|---|---|---|---|
-| `RM-S-BED1/2/3` | 75 cfm out | 30" x 3/4" | 22.5 in^2 | **9.7 Pa** | 40 in^2 |
+| `RM-S-BED1/2` | 75 cfm out | 30" x 3/4" | 22.5 in^2 | **9.7 Pa** | 40 in^2 |
+| `RM-S-BED3` | 0 (75 cfm out until its ducted return, 2026-11-11, below) | `D-S-BED3` 30" x 1/2" | - | balanced | - |
 | `RM-S-SUITE` (+ suite bath, closet) | 0 (80 cfm out until its ducted return, 2026-11-09, below) | `D-S-SUITE` 32" x 1/2", sealed | - | balanced (9.7 Pa before) | - |
 | `RM-A-STUDIO` (+ studio bath, ERV closet) | 50 cfm out | `D-A-HALVES` 32" x 3/4" | 24.0 in^2 | **3.8 Pa** | 27 in^2 |
 | `RM-S-PLANT` | 70 cfm out | `D-S-PLANT` 30" x 1/2" | 15.0 in^2 | **19.0 Pa** (8.5 at 3/4") | 38 in^2 |
@@ -140,6 +142,34 @@ sweep; `mep.door_transfer_air` reads the zone "balanced".
 **Commissioning.** With the door sealed the suite's pressure follows the damper setting and
 the hall filter's loading. Set the damper to 80 cfm and lock it; re-check at every filter
 change. With System 1's fan off, the bath's 20 cfm makes up backward through this duct.
+
+## RM-S-BED3: a ducted return, door at 1/2" (owner, 2026-11-11)
+
+BED3's 5 cfm ERV pickup rode `DU-A-ERV-R-BED3`, about 55 LF and six elbows round the attic.
+`W-S-BW3` stands against `SF-S-HP1`, and `EQ-S-ERV-MIX` is about 3" behind it, so the ERV
+pickup is gone and BED3 returns to System 1 directly:
+
+* `REG-S-HP-BED3-RET`: 12x12 filter-back SIDEWALL grille (`REG-T-HP-RET-FILTER-1212-SIDE`,
+  MERV 13 12x12x1) on BW3's bedroom face over `D-S-BED3`'s flat header, centred y=29'-2",
+  face 209"..221" absolute. The header carries no cripples, so the bay is clear from the
+  south king to the north king. Locked balancing damper at the boot.
+* `DU-S-HP-BED3-RET`: a 6 wide x 12 tall stub, x 265 1/4" -> 258" at y=347", into the box's
+  east face. It sits on the south half of the neck, clear of `DU-S-ERV-HP-FEED`'s drop and
+  `DU-S-HP-RET`'s inlet inside the box.
+
+Balance, by hand:
+
+    in   REG-S-HP-BED3             80 cfm
+    out  REG-S-HP-BED3-RET         80 cfm   -> net 0: D-S-BED3 carries nothing
+    6x12 = 72 in^2 = 0.5 ft^2:     80 / 0.5 = 160 fpm
+    12x12 face = 1.0 ft^2:         80 fpm
+    hall grille 336 in^2 = 2.333 ft^2 at 750 - 100 (ERV) - 80 - 80 = 490 cfm: 210 fpm (< 300)
+
+`D-S-BED3` is `DT-INT-SWING30-PRIV-STOCK`, the factory 1/2" undercut, not sealed. Ventilation:
+BED3 keeps its fixed windows and gets ERV air through System 1's mixing box. With the
+fan off it has no extract, and no check asks a bedroom for one (BEDROOM is not a stale
+occupancy). **Sound:** the grille is about 1' from the mixing box and a few feet from the
+blower. Line the stub (open item).
 
 ## The two honest costs
 

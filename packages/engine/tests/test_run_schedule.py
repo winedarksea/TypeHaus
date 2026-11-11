@@ -128,27 +128,6 @@ def test_elbow_count_matches_the_fitting_takeoffs_own_walk(catlin_model, by_tag)
             assert duct.tag in billed, duct.tag
 
 
-def test_ratio_ranking_reproduces_the_run_the_hand_analysis_named(by_tag):
-    """Validation with a known answer. ``DU-A-ERV-R-BED3``'s 56.2 LF / 2.32 was derived by
-    hand before this module existed, and it is the figure ``houses/catlin/CLAUDE.md``
-    adjudicated that run's route on. If this moves, either the ratio arithmetic changed or
-    somebody re-opened a decision that was closed on the merits.
-
-    ** IT MOVED ON 2026-09-19 (D2), ON THE MERITS, AND THAT IS THE SECOND CASE. ** The route
-    was closed on a bay assignment that turned out to be the bath's: the 19'-4" bay carries
-    PR-A-STUBATH-DRAIN's 10'-0" drop on the wet-wall axis and the leg ran through the 3"
-    stack. It rides 18'-0" now and leaves the bays at x=21'-0" for a single diagonal across
-    RM-A-EAST-UNFIN's deck rather than two sides of a rectangle — 54.3 LF / 2.27 on six
-    elbows where it was 56.2 / 2.32 on five. (54.05 / 2.26 since 2026-09-20, when
-    `_ATTIC_BAY_Z` was re-derived to -8 1/2" and lifted the two bay-leg verticals 1 3/8"
-    each — the duct rides the top of the I-joist's bottom flange, not the ceiling board.) Squared off from the further-south bay it
-    developed 60.1 LF for a ratio of 2.51, which `mep.run_route_efficiency` FAILs against
-    this house's 2.50; the diagonal is what bought the margin back, and it costs one elbow.
-    54.96 / 2.30 since 2026-11-10: the derived 12 5/16" drop onto REG-S-RET-BED3's collar."""
-    assert by_tag["DU-A-ERV-R-BED3"]["ratio"] == pytest.approx(2.30, abs=0.03)
-    assert by_tag["DU-A-ERV-R-BED3"]["developed_ft"] == pytest.approx(54.96, abs=0.2)
-
-
 def test_the_reroute_is_visible_in_the_schedule(by_tag):
     """``CD-A-DATA-NE`` is what this module was built to make arguable, and it has been
     rerouted more than once — worth pinning, because a good ratio is not by itself a

@@ -32,6 +32,17 @@
 # bay leg in FS-ATTIC's y 176-192" bay, then a drop into SF-S-DUCT's east lane to
 # EQ-S-ERV-MIX's south face — one run would be graded across the box's whole width.
 # 8x4 hits the BED2/BED3 hanger straps at x~249.7". The 24 V cove feeder stays clear of the lane.
+#
+# RM-S-BED3's ducted return (2026-11-11): 80 cfm, balancing its supply; it replaced the attic
+# ERV pickup DU-A-ERV-R-BED3. W-S-BW3 stands against SF-S-HP1 and EQ-S-ERV-MIX is right behind
+# it, so this is a 7" stub: grille face over D-S-BED3's flat header (no cripples, clear
+# y 326 1/2"..361 3/4", 84 3/4"..104 3/8" storey), straight west into the box's east face.
+# 6 wide x 12 tall at 80 cfm is 160 fpm, on the south half of the grille's neck: inside the
+# box, DU-S-HP-RET's inlet starts at y=29'-7" and DU-S-ERV-HP-FEED drops at x=21'-0", so the
+# stub stops 1/2" short of the box face (within mep.duct_connectivity's 3") and stands clear
+# of both, and south of SF-S-HP1's east-lining 2x2 at y=29'-0 5/8". EXPOSED for the
+# bedroom-collar reason. Lined stub: the blower is a few feet away
+# (open item).
 
 from typehaus import DuctRouting, DuctRun, DuctSystem, ft, inch, pt
 
@@ -79,4 +90,9 @@ DUCTS_HVAC_BRANCHES_SECOND = [
             elevations=(inch(112.25), inch(105.375), inch(105.375)),
             width=inch(6), depth=inch(4), routing=DuctRouting.SOFFIT,
             soffit_ref="SF-S-DUCT", material="galvanized", design_cfm=80),
+    DuctRun(uid="2CFDX4Z7TG", tag="DU-S-HP-BED3-RET", system=DuctSystem.RETURN,
+            path=(pt(inch(265.25), inch(344.5)), pt(inch(258), inch(344.5))),
+            elevations=(inch(95), inch(95)),
+            width=inch(6), depth=inch(12), routing=DuctRouting.EXPOSED,
+            material="galvanized", design_cfm=80),
 ]

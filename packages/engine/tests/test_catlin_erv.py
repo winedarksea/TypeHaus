@@ -415,7 +415,7 @@ def test_the_fresh_feed_drops_into_the_soffit(catlin_model) -> None:
 
 # --- the 2026-09-12 standard-parts redesign (plans/buildability.md BLD-08) -----------------
 
-def test_every_radial_is_four_inch_galvanized_and_there_are_twenty_four(catlin_model) -> None:
+def test_every_radial_is_four_inch_galvanized_and_there_are_twenty_three(catlin_model) -> None:
     """The whole BLD-08 distribution decision, in one assertion.
 
     The 75 mm semi-rigid tube had three US sellers and no Minnesota dealer, so it is gone;
@@ -424,8 +424,8 @@ def test_every_radial_is_four_inch_galvanized_and_there_are_twenty_four(catlin_m
     """
     radials = [d for d in catlin_model.ducts
                if d.tag.startswith(("DU-B-ERV-R-", "DU-M-ERV-R-", "DU-A-ERV-R-"))]
-    # 23 home runs plus REG-M-RET3's branch off LAUNDRY (2026-11-10).
-    assert len(radials) == 24, sorted(d.tag for d in radials)
+    # 22 home runs plus REG-M-RET3's branch off LAUNDRY (2026-11-10); BED3's left 2026-11-11.
+    assert len(radials) == 23, sorted(d.tag for d in radials)
     for duct in radials:
         assert duct.diameter_m == pytest.approx(4 * M_PER_IN), duct.tag
         assert duct.material == "galvanized", duct.tag
@@ -571,7 +571,7 @@ def test_an_undimensioned_plenum_still_counts(catlin_model) -> None:
 
     findings = erv_manifold_ports(check_context(model=catlin_model))
     counted = next(f for f in findings if "EQ-A-ERV-MAN-EXH" in f.message)
-    assert '4 of 6 x 4" ports used, 2 spare' in counted.message
+    assert '3 of 6 x 4" ports used, 3 spare' in counted.message
     assert "by POSITION" not in counted.message
 
 
