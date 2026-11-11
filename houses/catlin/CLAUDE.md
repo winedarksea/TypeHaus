@@ -60,8 +60,8 @@
 > out to out, bottom chord across the full 5 1/2", SBCA standard heel 3.939" (plumb 3.689" +
 > 1/4" butt cut) at the OUTSIDE face of bearing; ridge 143.0 -> 139.73", eave 86.40". Canopy
 > overhang 1'-7 3/8" keeps one fascia line. Collector blocks 2-2x8. `roof_beam` grades the
-> trusses' chord bearing (0.877, governs). `D-G-SERVICE` stops at **81°** (the moved screen
-> face), open in plans/TODO.md. Notes: `canopy_west_band.md` / `canopy_garage_diaphragm.md`
+> trusses' chord bearing (0.877, governs). `D-G-SERVICE` stops at **87°** (the screen cap;
+> owner, 2026-11-10). Notes: `canopy_west_band.md` / `canopy_garage_diaphragm.md`
 > 2026-10-31.
 
 > **Canopy headers, 2026-10-28:** `BM-BW-RW`/`-RE` end flush on the outer faces of their

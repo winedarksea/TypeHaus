@@ -67,11 +67,11 @@ def test_normal_swing_reaches_exports_and_preserves_east_jamb(catlin_model_ro):
     assert door.width_m / INCH == pytest.approx(34)
     assert hinge[0] / INCH == pytest.approx(82)
     assert hinge[0] / INCH - 1 + door.width_m / INCH == pytest.approx(115)
-    # Stopped at 81deg, not 90 (the moved screen): the tip sits 32 cos 81 east of the hinge.
-    assert (tip[0] - hinge[0]) / INCH == pytest.approx(32 * math.cos(math.radians(81)))
-    assert (tip[1] - hinge[1]) / INCH == pytest.approx(-32 * math.sin(math.radians(81)))
+    # Stopped at 87deg, not 90 (the slat band): the tip sits 32 cos 87 east of the hinge.
+    assert (tip[0] - hinge[0]) / INCH == pytest.approx(32 * math.cos(math.radians(87)))
+    assert (tip[1] - hinge[1]) / INCH == pytest.approx(-32 * math.sin(math.radians(87)))
     exported = next(o for o in model_to_dict(catlin_model_ro)["openings"] if o["tag"] == door.tag)
-    assert exported["maximum_opening_degrees"] == 81
+    assert exported["maximum_opening_degrees"] == 87
     assert catlin_model_ro.plan.by_tag(
         "SL-D-NORTH-BRIDGE"
     ).cut_origin.x.meters / INCH == pytest.approx(99)
@@ -84,7 +84,7 @@ def _service_sweep(model, **overrides):
 
 
 def test_stock_leaf_sweep_clears_hold_down_and_screen_with_required_margin(catlin_model_ro):
-    """At the authored 81deg stop the landing ties govern.
+    """At the authored 87deg stop the lever to the screen cap governs.
 
     Re-pinned 2026-11-01 when the MMI frame was anchored flush with the sheathing
     (``factory_frame_depth`` 6-9/16"), which moved the leaf plane: ties 0.320 -> 0.381",

@@ -313,11 +313,13 @@ AIR_REGISTER_TYPES = (
 # intake and 0.215 exhaust at 400 cfm) scaled as Q^2. No backdraft damper on either: Broan
 # forbids one on the discharge (AI manual 2.4, it freezes; the ERV's motorized port dampers
 # close it), so the BD8 was dropped 2026-11-05 (C4 E3). A 12 x 12 x 12 box is kept as the
-# envelope: the FA8's plate is unpublished and the FML8's is 9 x 9.
+# clearance envelope: the FA8's plate is unpublished and the FML8's is 9 x 9.
+# The dedicated hood symbol estimates the folded shell from RenewAire's product photo.
 AIR_HOOD_TYPES = (
     EquipmentType(tag="EQ-T-ERV-HOOD-8",
                   name="Exterior intake hood, 8in round, 1/4in screen, no damper",
-                  footprint=(inch(12), inch(12)), height=inch(12), plan_symbol="erv",
+                  footprint=(inch(12), inch(12)), height=inch(12),
+                  plan_symbol="renewaire-fa8-wall-hood",
                   duct_ports=1, port_diameter=inch(8), product_ref="PROD-AIR-HOOD-8",
                   static_loss_pa_at_cfm=((100.0, 5.3), (150.0, 11.9), (210.0, 23.3),
                                          (250.0, 33.1), (400.0, 84.7)),
@@ -325,7 +327,8 @@ AIR_HOOD_TYPES = (
                   source=f"RenewAire FA8-P, supply-mode chart. {_NOTE} §8."),
     EquipmentType(tag="EQ-T-ERV-HOOD-8-EXH",
                   name="Exterior discharge hood, 8in round, 1/4in screen, no damper",
-                  footprint=(inch(12), inch(12)), height=inch(12), plan_symbol="erv",
+                  footprint=(inch(12), inch(12)), height=inch(12),
+                  plan_symbol="renewaire-fa8-wall-hood",
                   duct_ports=1, port_diameter=inch(8), product_ref="PROD-AIR-HOOD-8",
                   static_loss_pa_at_cfm=((100.0, 3.3), (150.0, 7.5), (210.0, 14.8),
                                          (250.0, 20.9), (400.0, 53.6)),

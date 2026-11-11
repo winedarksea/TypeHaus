@@ -28,6 +28,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typehaus.model.shower_assembly import ShowerAssemblySpec
 
+from typehaus.model.placeable_symbols._erv_wall_hood import erv_wall_hood
 from typehaus.model.placeable_symbols._frame import (
     PART_COLORS,
     Part,
@@ -57,6 +58,7 @@ Builder = Callable[[float, float, float], tuple[tuple[Stroke, ...], tuple[Part, 
 _REGISTRY: dict[str, Builder] = {**FURNITURE_SYMBOLS, **APPLIANCE_SYMBOLS, **PLUMBING_SYMBOLS,
                                  **LIGHTING_SYMBOLS, **KITCHEN_SEKTION_SYMBOLS,
                                  **RECEPTACLE_SYMBOLS,
+                                 "renewaire-fa8-wall-hood": erv_wall_hood,
                                  "swanstone-flex-3636": swanstone_flex,
                                  "infrared-heater": infrared_heater,
                                  "sunnersta-frame": sunnersta_frame}
@@ -102,7 +104,7 @@ SYMBOL_NAMES = frozenset(KITCHEN_SEKTION_SYMBOLS) | frozenset(RECEPTACLE_SYMBOLS
     # appliances + mechanical/electrical equipment
     "refrigerator", "range", "dishwasher", "washer", "dryer", "washer-dryer-stacked",
     "microwave", "countertop-microwave", "hood", "tea-kettle", "espresso-machine",
-    "furnace", "erv", "heat-pump-outdoor", "heat-pump-indoor",
+    "furnace", "erv", "renewaire-fa8-wall-hood", "heat-pump-outdoor", "heat-pump-indoor",
     "water-heater", "sauna-heater", "panel", "register",
     "rheem-proterra-plugin-80",
     "infrared-heater",

@@ -135,7 +135,12 @@ screen swapped for 1/4" mesh — no curve published. 1/4" screen and not insect 
 does not blind it. Published loss (chart end points, Q² scaled): **intake 23.3 Pa, discharge
 14.8 Pa at 210 cfm** (budget §10.1, §10.10). FA8 plate and projection are unpublished: the model keeps
 the 12 x 12 x 12 envelope, which is larger than either hood, so every clearance it passed
-still holds. Painted to the north-face cladding. **10" option**: budget §10.4.
+still holds. The `renewaire-fa8-wall-hood` symbol follows the sloping folded hood in
+RenewAire's product photo: mounting flange, triangular cheeks, rain cover and an open
+downward-facing 1/4" wire screen, with no damper. Its 10.5" shell width, 7.5" projection,
+12" plate and sheet thickness are visual estimates, pending a dimensioned submittal;
+they do not replace the clearance envelope. The existing 8" duct models the wall neck.
+Painted to match the north-face cladding's grey model colour. **10" option**: budget §10.4.
 
 ## 9. Outdoor legs: insulation and the wall line
 

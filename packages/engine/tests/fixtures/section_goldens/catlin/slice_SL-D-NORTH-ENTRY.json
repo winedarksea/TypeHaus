@@ -1018,19 +1018,19 @@
       "node": "polyline",
       "points": [
         [
-          73.625,
+          72.625,
           0.5600000000000006
         ],
         [
-          75.125,
+          78.125,
           0.5600000000000006
         ],
         [
-          75.125,
+          78.125,
           45.0
         ],
         [
-          73.625,
+          72.625,
           45.0
         ]
       ],
@@ -1039,98 +1039,14 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "BWMDT00007-00",
-      "tag": "TR-BW-MDO-TIMBER-PLY-1-1"
+      "tag": "TR-BW-MDO-TIMBER-1"
     },
     {
       "space": "model",
       "node": "hatch",
       "boundary": [
         [
-          73.625,
-          0.5600000000000006
-        ],
-        [
-          75.125,
-          0.5600000000000006
-        ],
-        [
-          75.125,
-          45.0
-        ],
-        [
-          73.625,
-          45.0
-        ]
-      ],
-      "pattern": "kdat",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "kdat"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          75.125,
-          0.5600000000000006
-        ],
-        [
-          76.625,
-          0.5600000000000006
-        ],
-        [
-          76.625,
-          45.0
-        ],
-        [
-          75.125,
-          45.0
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "BWMDT00008-00",
-      "tag": "TR-BW-MDO-TIMBER-PLY-2-1"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          75.125,
-          0.5600000000000006
-        ],
-        [
-          76.625,
-          0.5600000000000006
-        ],
-        [
-          76.625,
-          45.0
-        ],
-        [
-          75.125,
-          45.0
-        ]
-      ],
-      "pattern": "kdat",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "kdat"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          76.625,
+          72.625,
           0.5600000000000006
         ],
         [
@@ -1142,35 +1058,7 @@
           45.0
         ],
         [
-          76.625,
-          45.0
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "BWMDT00009-00",
-      "tag": "TR-BW-MDO-TIMBER-PLY-3-1"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          76.625,
-          0.5600000000000006
-        ],
-        [
-          78.125,
-          0.5600000000000006
-        ],
-        [
-          78.125,
-          45.0
-        ],
-        [
-          76.625,
+          72.625,
           45.0
         ]
       ],

@@ -56,6 +56,17 @@ def test_the_erv_names_a_condensate_drain(catlin_plan) -> None:
 
 # --- the terminal set ----------------------------------------------------------------------
 
+
+def test_outdoor_terminals_use_the_specified_renewaire_hood_geometry(catlin_plan):
+    types = {item.tag: item for item in catlin_plan.library.equipment_types}
+    for tag in ("EQ-M-ERV-HOOD-OA", "EQ-S-ERV-HOOD-EA"):
+        terminal = next(item for item in catlin_plan.all_elements() if item.tag == tag)
+        product_type = types[terminal.type_ref]
+        assert product_type.plan_symbol == "renewaire-fa8-wall-hood"
+        assert product_type.product_ref == "PROD-AIR-HOOD-8"
+        assert product_type.port_diameter == inch(8)
+
+
 def test_the_two_deleted_terminals_stay_deleted(catlin_plan) -> None:
     """REG-S-RET2 (the suite extract) and DU-M-ERV-RET (the last rectangular trunk). The
     suite keeps its System 1 supply — that is a conditioned-air terminal, untouched — and
