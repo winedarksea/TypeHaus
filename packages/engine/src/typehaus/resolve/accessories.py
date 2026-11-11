@@ -82,6 +82,11 @@ def resolve_accessories(model: ResolvedModel) -> list[Finding]:
             elif isinstance(el, IsolationBoard):
                 _resolve_isolation_board(model, el, storey.tag)
             elif isinstance(el, Connector):
+                if el.snow_retention is not None:
+                    from typehaus.resolve.snow_retention import resolve_snow_retention
+
+                    findings.extend(resolve_snow_retention(model, el, storey.tag))
+                    continue
                 if el.roof_mount is not None:
                     from typehaus.resolve.connector_geometry.ties import STRAPS
 

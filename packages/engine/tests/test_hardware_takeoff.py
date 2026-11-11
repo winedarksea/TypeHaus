@@ -664,37 +664,17 @@ def test_pipe_fixings_bill_by_size_not_as_a_bare_family(catlin_model) -> None:
                 if row["scope"] == "carried-mount" and "strap" in row["basis"]]
 
 
-def test_a_part_that_mounts_on_another_also_bills_that_carrier(catlin_model) -> None:
-    """ColorGard is a RAIL: the seam clamps under it are what reach the roof.
-
-    Same part number, its own row: the carrier line's ``scope`` marks it as implied by a
-    modeled rail rather than authored directly, so the count stays auditable back to the
-    plan instead of being folded into the directly-modeled clamps' total. In the 3D view a
-    rail and the clamps it mounts on stay one modeled ``Connector`` — this split only
-    affects how the BOM itemizes the same hardware, not the geometry.
-
-    ColorGard is this house's only ``requires_role`` part, and it left and came back. The
-    six rails on RF-GARAGE's south slope were deleted on 2026-09-07 when that slope became a
-    rake and stopped shedding onto the breezeway canopy. The east pair here is a different
-    rail for a different reason: it sits on the EAST EAVE over the entrance and tier approach,
-    which ``notes/north_entry_structure.md`` §5 requires snow retention along. There is no
-    entrance or walking route beneath the west side. The target is a walking surface rather
-    than a roof, so ``sliding_snow`` cannot see it and the note is the only thing that asks for
-    it.
-
-    Two rails, two carried clamps, one apiece — and no bare seam clamp authored anywhere,
-    which is the other half of the rule: every S-5! in this house is implied by a rail.
-    """
-    rows = hardware_takeoff(catlin_model)
-    rails = sum(row["count"] for row in rows if row["role"] == "snow_retention")
-    seam = [row for row in rows if row["role"] == "nail_strip_seam_clamp"]
-    assert rails == 2, "the east pair of CN-BW-SNOW rails over the entrance"
-    assert not [row for row in seam if row["scope"] == "modeled connector"], \
-        "no bare S-5-N is authored; the rails and PV kits imply theirs"
-    carried = [row for row in seam
-               if row["scope"] == "carried-mount" and "ColorGard" in row["basis"]]
-    assert sum(row["count"] for row in carried) == rails, \
-        "a rail reaches the seam through a clamp; the two counts move together"
+def test_snow_retention_run_bills_each_seam_support(catlin_model_ro) -> None:
+    """The continuous canopy run bills four supports, without the old point allowances."""
+    rows = hardware_takeoff(catlin_model_ro)
+    run = [row for row in rows if row["scope"] == "snow-retention run"]
+    counts = {row["part_number"]: row["count"] for row in run}
+    assert counts["ColorGard 2.0 Unpunched"] == 1
+    assert counts["S-5-N"] == counts["VersaClip 2.0"] == 4
+    assert counts["SnoClip 2.0 II"] == 3
+    assert not [row for row in rows if row["part_number"] == "S-5! ColorGard"]
+    assert not [row for row in rows if row["scope"] == "carried-mount"
+                and "ColorGard" in row["basis"]]
 
 
 def test_every_hardware_row_is_a_purchasable_catalogued_line(catlin_model) -> None:

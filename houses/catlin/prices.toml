@@ -1259,12 +1259,16 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # `size=` change in the plan and nothing here.
 "S-5! CanDuit #11" = { low = 10, high = 22 }  # 0 ea (was 3 — vent riser, now a strap)
 "S-5! CanDuit #13" = { low = 10, high = 22 }  # 0 ea (was 8 — roof leaders, now straps)
-# ColorGard is a BAR system quoted by the foot of rail plus its clamps. What bills
-# (2026-11-04): each of the 2 modeled units as one 8' crossbar + colour strip at $10-16/LF
-# plus its one carried S-5-N at $8-10; that S-5-N row is $0 (PV), so the clamp is here.
-# NOT SCHEDULED: the second end clamp per bar and the calculator's clamp spacing/row count.
-# Replace this with the S-5! calculator output (plans/TODO.md).
-"S-5! ColorGard" = { low = 88, high = 190 }  # 2 ea
+# Legacy point-only assembly allowance, unused by the dimensioned canopy run.
+"S-5! ColorGard" = { low = 88, high = 190 }  # 0 ea
+# Component budget allowances, not supplier quotes. Crossmember is 7'8" stock and
+# includes its splice; the full S-5-N includes its M8 bolt and two setscrews;
+# SnoClip includes its securing screw. Supplier drift sizing remains outstanding.
+"ColorGard 2.0 Unpunched" = { low = 40, high = 65 }
+"VersaClip 2.0" = { low = 2, high = 5 }
+"SnoClip 2.0 II" = { low = 3, high = 7 }
+"ColorGard ColorStrip" = { low = 8, high = 16 }  # one sheared strip for this canopy run
+"S-5-N:snow-retention run" = { low = 8, high = 15 }
 # PVKIT 2.0 module grabs exclude the profile-matched seam clamp, ordered below.
 # S-5-S: published MSRP $7.34 (s-5.com/products/s-5-s-clamps/); carton/street range.
 # 2026-10-29: zeroed. [solar_modules] $/W covers modules + racking + rapid shutdown, so PVKIT and its S-5-N clamp
@@ -1305,8 +1309,8 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # GARAGE_WALL_2X6 is a 7/8" corrugated exposed-fastener panel now, with no seam of any kind
 # for an N clamp to close on — the same swap, and the same argument, as the 48 S-5-S house-
 # wall clamps that went on 2026-08-26. The garage roof remains nail strip.
-# 2026-10-29: zeroed, see S-5-PVKIT; the 2 ColorGard carriers are priced in the "S-5! ColorGard" row.
-"S-5-N" = { low = 0, high = 0 }  # 74 ea — 72 PV seam clamps bill in [solar_modules] $/W
+# PV scope stays zeroed; four canopy clamps price under "S-5-N:snow-retention run".
+"S-5-N" = { low = 0, high = 0 }  # 72 PV clamps included in [solar_modules]; snow scope priced above
 # S-5-N Mini: one setscrew, wind (uplift-only) clamps on both nail-strip roofs. Price is a
 # placeholder range pending a quote; MSRP is below the full S-5-N's.
 "S-5-N Mini" = { low = 4, high = 8 }  # 24 ea — 12 house roof + 12 garage roof wind clamps

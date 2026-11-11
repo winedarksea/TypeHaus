@@ -248,6 +248,8 @@ ALLOWANCE_KEY_FIELD = "item"
 #: forced it: a 3" radial branch and a 6" trunk are not the same article at all, and one
 #: blended per-foot rate across 246 LF of each was the standing admission in prices.toml.
 QUALIFIED_KEY_FIELD: dict[str, str | tuple[str, ...]] = {
+    # PV clamps are included in the solar allowance; snow-retention clamps are not.
+    "hardware": "scope",
     **{section: "assembly" for section in SOLID_SECTIONS},
     # THE one line that prices black and galvanized bar separately while leaving a house
     # that authors only `#5` completely unchanged — `#5:hdg-a767` falls back to `#5` through

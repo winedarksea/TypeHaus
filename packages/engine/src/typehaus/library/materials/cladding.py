@@ -250,6 +250,22 @@ _BASE_ROWS: tuple[Material, ...] = (
     # "alum" matches no needle in the family inference at all, so this colour is authored
     # for the same reason the polycarbonate's is.
     Material(
+        tag="aluminum-6000-series",
+        name="6000-series structural aluminum accessory",
+        hatch="metal",
+        color="#b6bac0",
+        source="S-5! ColorGard 2.0 / S-5-N manufacturer drawings: 6000-series aluminum; "
+               "appearance only, thermal and strength properties unset",
+    ),
+    Material(
+        tag="stainless-steel-300-series",
+        name="300-series stainless steel accessory fastener",
+        hatch="metal",
+        color="#bfc3c8",
+        source="S-5! S-5-N manufacturer product sheet: included 300-series stainless hardware; "
+               "appearance only, thermal and strength properties unset",
+    ),
+    Material(
         tag="aluminum-extrusion",
         name="Extruded aluminium glazing bar / channel",
         r_per_inch=0.0007,

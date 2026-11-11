@@ -7873,3 +7873,17 @@ Hardware estimate $930.42 includes dated allowances, not a complete supplier quo
 delivered bracket travel/dimensions, procurement, both-sensor spill coverage, electrical/
 hydraulic commissioning and the physical ten-day closed-tap trial. No invented fixture-unit
 row was added to make supply sizing appear graded.
+
+
+## 2026-11-10 — Dimensioned canopy ColorGard run
+
+Replaced the two east-entry snow-retention point markers with one ColorGard 2.0
+unpunched run hosted by RF-BW-CANOPY. Four full S-5-N seam clamps, four VersaClips,
+three SnoClip II feet and the roof-matching ColorStrip now resolve from the same
+layout as their purchase quantities. A 7-5/8-inch south setback keeps the shared
+panel register's first-clamp cantilever below S-5!'s eight-inch limit; the north
+setback stays two inches. One 7-foot-8-inch crossmember is cut to about 5.2 feet.
+
+Geometry, component quantities and budget pricing are corrected; supplier drift-load
+sizing, adjoining-garage tributary snowpack and SnoClip pan support remain open.
+See notes/north_entry_structure.md §5.

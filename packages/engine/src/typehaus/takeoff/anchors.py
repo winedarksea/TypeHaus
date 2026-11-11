@@ -364,6 +364,8 @@ def authored_connector_rows(model: ResolvedModel) -> list:
     # A catalog leader's strap station bills once, as the leader's own strap.
     leader_straps = catalog_leader_strap_tags(model.plan) if model.plan is not None else ()
     for _storey, element in _authored_connectors(model):
+        if element.snow_retention is not None:
+            continue  # shared rail layout bills its stock and component counts
         if element.kind is ConnectorKind.KNEEBRACE or element.tag in leader_straps:
             continue
         if element.hanger_spec_pair(model.plan) is not None:

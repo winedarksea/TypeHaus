@@ -231,6 +231,7 @@ from typehaus.model.site import (
     WindowWell,
     load_basemap_geojson,
 )
+from typehaus.model.snow_retention import SnowRetentionSpec
 from typehaus.model.spatial import (
     Alarm,
     Annotation,
@@ -402,7 +403,7 @@ __all__ = [
     "FrenchDrain", "Drywell", "AreaDrain", "DrainColumn", "Excavation", "SideSlope", "SoilFactor",
     "Dowel", "IsolationBoard", "Connector", "PlateTie", "KneeBrace", "SlatBrace", "StrapBrace",
     "Wedge",
-    "Railing",
+    "Railing", "SnowRetentionSpec",
     "Fascia", "Gutter",
     "Flashing", "FormedFlashingSection", "MovementJoint",
     "EaveSoffit", "FasciaBoard", "EaveGutter", "EaveDripEdge", "EaveTrim", "GlazingPanel",

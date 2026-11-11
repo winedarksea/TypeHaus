@@ -9809,17 +9809,125 @@
 2,
 "909a8d60b026"
 ],
-"geometry/BWNSE1AAAA/body": [
-2.183892,
-2.336292,
-2,
-"b4cdab8b5e7e"
+"geometry/BWNSE1AAAA-BOLT-1/body": [
+2.3464166,
+2.355252,
+8,
+"c89d533494a8"
 ],
-"geometry/BWNSE2AAAA/body": [
-2.183892,
-2.336292,
-2,
-"b4cdab8b5e7e"
+"geometry/BWNSE1AAAA-BOLT-2/body": [
+2.3464166,
+2.355252,
+8,
+"c89d533494a8"
+],
+"geometry/BWNSE1AAAA-BOLT-3/body": [
+2.3464166,
+2.355252,
+8,
+"c89d533494a8"
+],
+"geometry/BWNSE1AAAA-BOLT-4/body": [
+2.3464166,
+2.355252,
+8,
+"c89d533494a8"
+],
+"geometry/BWNSE1AAAA-CLAMP-1/body": [
+2.2893078,
+2.3480231,
+24,
+"09c2efdad3c7"
+],
+"geometry/BWNSE1AAAA-CLAMP-2/body": [
+2.2893078,
+2.3480231,
+24,
+"09c2efdad3c7"
+],
+"geometry/BWNSE1AAAA-CLAMP-3/body": [
+2.2893078,
+2.3480231,
+24,
+"09c2efdad3c7"
+],
+"geometry/BWNSE1AAAA-CLAMP-4/body": [
+2.2893078,
+2.3480231,
+24,
+"09c2efdad3c7"
+],
+"geometry/BWNSE1AAAA-COLORSTRIP/body": [
+2.3126903,
+2.3610754,
+8,
+"cd701bfa4187"
+],
+"geometry/BWNSE1AAAA-FOOT-1/body": [
+2.2967111,
+2.3026549,
+8,
+"7abe8dff7bbb"
+],
+"geometry/BWNSE1AAAA-FOOT-2/body": [
+2.2967111,
+2.3026549,
+8,
+"7abe8dff7bbb"
+],
+"geometry/BWNSE1AAAA-FOOT-3/body": [
+2.2967111,
+2.3026549,
+8,
+"7abe8dff7bbb"
+],
+"geometry/BWNSE1AAAA-RAIL-1/body": [
+2.3102718,
+2.3636858,
+48,
+"2f6d8e141246"
+],
+"geometry/BWNSE1AAAA-SNOCLIP-1/body": [
+2.2986388,
+2.3407941,
+24,
+"e60346f6af9f"
+],
+"geometry/BWNSE1AAAA-SNOCLIP-2/body": [
+2.2986388,
+2.3407941,
+24,
+"e60346f6af9f"
+],
+"geometry/BWNSE1AAAA-SNOCLIP-3/body": [
+2.2986388,
+2.3407941,
+24,
+"e60346f6af9f"
+],
+"geometry/BWNSE1AAAA-VERSACLIP-1/body": [
+2.3323603,
+2.3504327,
+24,
+"b7c9a961b593"
+],
+"geometry/BWNSE1AAAA-VERSACLIP-2/body": [
+2.3323603,
+2.3504327,
+24,
+"b7c9a961b593"
+],
+"geometry/BWNSE1AAAA-VERSACLIP-3/body": [
+2.3323603,
+2.3504327,
+24,
+"b7c9a961b593"
+],
+"geometry/BWNSE1AAAA-VERSACLIP-4/body": [
+2.3323603,
+2.3504327,
+24,
+"b7c9a961b593"
 ],
 "geometry/BWPT01AAAA/body": [
 -2.7289125,
@@ -116255,10 +116363,46 @@
 "solids/CN-BW-PLATE-N/z1_m": 1.3335,
 "solids/CN-BW-PLATE-S/z0_m": 1.2192,
 "solids/CN-BW-PLATE-S/z1_m": 1.3335,
-"solids/CN-BW-SNOW-E-1/z0_m": 2.183892,
-"solids/CN-BW-SNOW-E-1/z1_m": 2.336292,
-"solids/CN-BW-SNOW-E-2/z0_m": 2.183892,
-"solids/CN-BW-SNOW-E-2/z1_m": 2.336292,
+"solids/CN-BW-SNOW-E-1-BOLT-1/z0_m": 2.3464166,
+"solids/CN-BW-SNOW-E-1-BOLT-1/z1_m": 2.355252,
+"solids/CN-BW-SNOW-E-1-BOLT-2/z0_m": 2.3464166,
+"solids/CN-BW-SNOW-E-1-BOLT-2/z1_m": 2.355252,
+"solids/CN-BW-SNOW-E-1-BOLT-3/z0_m": 2.3464166,
+"solids/CN-BW-SNOW-E-1-BOLT-3/z1_m": 2.355252,
+"solids/CN-BW-SNOW-E-1-BOLT-4/z0_m": 2.3464166,
+"solids/CN-BW-SNOW-E-1-BOLT-4/z1_m": 2.355252,
+"solids/CN-BW-SNOW-E-1-CLAMP-1/z0_m": 2.2893078,
+"solids/CN-BW-SNOW-E-1-CLAMP-1/z1_m": 2.3480231,
+"solids/CN-BW-SNOW-E-1-CLAMP-2/z0_m": 2.2893078,
+"solids/CN-BW-SNOW-E-1-CLAMP-2/z1_m": 2.3480231,
+"solids/CN-BW-SNOW-E-1-CLAMP-3/z0_m": 2.2893078,
+"solids/CN-BW-SNOW-E-1-CLAMP-3/z1_m": 2.3480231,
+"solids/CN-BW-SNOW-E-1-CLAMP-4/z0_m": 2.2893078,
+"solids/CN-BW-SNOW-E-1-CLAMP-4/z1_m": 2.3480231,
+"solids/CN-BW-SNOW-E-1-COLORSTRIP/z0_m": 2.3126903,
+"solids/CN-BW-SNOW-E-1-COLORSTRIP/z1_m": 2.3610754,
+"solids/CN-BW-SNOW-E-1-FOOT-1/z0_m": 2.2967111,
+"solids/CN-BW-SNOW-E-1-FOOT-1/z1_m": 2.3026549,
+"solids/CN-BW-SNOW-E-1-FOOT-2/z0_m": 2.2967111,
+"solids/CN-BW-SNOW-E-1-FOOT-2/z1_m": 2.3026549,
+"solids/CN-BW-SNOW-E-1-FOOT-3/z0_m": 2.2967111,
+"solids/CN-BW-SNOW-E-1-FOOT-3/z1_m": 2.3026549,
+"solids/CN-BW-SNOW-E-1-RAIL-1/z0_m": 2.3102718,
+"solids/CN-BW-SNOW-E-1-RAIL-1/z1_m": 2.3636858,
+"solids/CN-BW-SNOW-E-1-SNOCLIP-1/z0_m": 2.2986388,
+"solids/CN-BW-SNOW-E-1-SNOCLIP-1/z1_m": 2.3407941,
+"solids/CN-BW-SNOW-E-1-SNOCLIP-2/z0_m": 2.2986388,
+"solids/CN-BW-SNOW-E-1-SNOCLIP-2/z1_m": 2.3407941,
+"solids/CN-BW-SNOW-E-1-SNOCLIP-3/z0_m": 2.2986388,
+"solids/CN-BW-SNOW-E-1-SNOCLIP-3/z1_m": 2.3407941,
+"solids/CN-BW-SNOW-E-1-VERSACLIP-1/z0_m": 2.3323603,
+"solids/CN-BW-SNOW-E-1-VERSACLIP-1/z1_m": 2.3504327,
+"solids/CN-BW-SNOW-E-1-VERSACLIP-2/z0_m": 2.3323603,
+"solids/CN-BW-SNOW-E-1-VERSACLIP-2/z1_m": 2.3504327,
+"solids/CN-BW-SNOW-E-1-VERSACLIP-3/z0_m": 2.3323603,
+"solids/CN-BW-SNOW-E-1-VERSACLIP-3/z1_m": 2.3504327,
+"solids/CN-BW-SNOW-E-1-VERSACLIP-4/z0_m": 2.3323603,
+"solids/CN-BW-SNOW-E-1-VERSACLIP-4/z1_m": 2.3504327,
 "solids/CN-BW-STDF-E/z0_m": -0.411226,
 "solids/CN-BW-STDF-E/z1_m": -0.392176,
 "solids/CN-BW-STDF-GE/z0_m": -0.411226,

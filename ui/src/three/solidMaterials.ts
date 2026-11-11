@@ -139,7 +139,7 @@ export function createSolidMaterial(
   mode: "nordic" | "schematic",
   palette: ResolvedNordicPalette,
 ): THREE.MeshStandardMaterial {
-  const metallic = METALLIC_SOLID_CATEGORIES.has(solid.category);
+  const metallic = solid.material !== "epdm" && METALLIC_SOLID_CATEGORIES.has(solid.category);
   const opacity = solidOpacity(solid, catalog);
   const translucent = opacity < 1;
   const backfill = BACKFILL_CATEGORIES.has(solid.category);

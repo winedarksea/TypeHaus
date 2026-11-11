@@ -11,6 +11,7 @@ from typehaus.model.enums import ConnectorKind, RailingKind
 from typehaus.model.rebar import ReinforcementSpec
 from typehaus.model.refs import FaceRef, HeadConnector, InServiceMoisture, PublishedSpan
 from typehaus.model.registry import register_constructor, register_element
+from typehaus.model.snow_retention import SnowRetentionSpec
 from typehaus.model.surface_mount import SurfacePostMount
 from typehaus.quantities import Length, Point2D, inch
 
@@ -783,6 +784,7 @@ class Connector(Element):
     joins."""
 
     kind: ConnectorKind
+    snow_retention: SnowRetentionSpec | None = None
     position: Point2D
     elevation: Length | None = None  # connector center, project-frame absolute
     #: Flat strap seated on this roof's structural top plane, length parallel to its ridge.

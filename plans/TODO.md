@@ -298,7 +298,8 @@ the future.
 - Tile of the bathroom
 - Robot training
 - Camera in ESS Room and Plant Room
-- 3d model of the S-5! snowguards over the entry of the canopy (already present but not well modeled)
+- [x] 3d model of the S-5! snowguards over the canopy entry — continuous ColorGard 2.0 with seam-aligned S-5-N clamps, ColorStrip and SnoClip feet; component takeoff follows the same layout.
+- Supplier sizing and quote for the canopy ColorGard drift case: confirm tributary garage snowpack, row count, seam compatibility and SnoClip pan support (`notes/north_entry_structure.md` §5). The modeled single row is provisional.
 
 # Project Management
 

@@ -6,6 +6,11 @@ from typehaus.model import Material
 
 MATERIALS: tuple[Material, ...] = (
     Material(
+        tag="epdm", name="EPDM accessory gasket / rubber foot", hatch="membrane",
+        color="#242629",
+        source="S-5! ColorGard SnoClip rubber foot; appearance only, thermal properties unset",
+    ),
+    Material(
         tag="air-barrier",
         name="Air/weather-resistive barrier",
         r_per_inch=0.0,

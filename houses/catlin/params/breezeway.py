@@ -15,7 +15,7 @@ the house-wide KDAT longevity spec every treated member here also carries.
 
 from typehaus import (
     Annotation, Connector, ConnectorKind, FloorSystem, Footing, JoistSpec,
-    Node, Post, Railing, RailingKind, ShearPanelSpec, Slab, Stair, Wall,
+    Node, Post, Railing, RailingKind, ShearPanelSpec, Slab, SnowRetentionSpec, Stair, Wall,
     face, ft, inch, pt,
 )
 
@@ -44,6 +44,7 @@ from params.north_entry_frame import (
     GARAGE_SEAT_Y_FT,
     HEADER_SOFFIT_FT,
     HEADER_TOP_FT,
+    HEADER_NORTH_Y_FT,
     HOUSE_CLADDING_Y_FT,
     HOUSE_SEAT_Y_FT,
     LANDING_EAST_FT,
@@ -706,20 +707,27 @@ GABLE_CLIPS = [
     for _i, _uid in enumerate(GABLE_CLIP_UIDS)
 ]
 
-# Procurement allowance on the east eave over the entrance. Supplier must size rail
-# lengths, row spacing and clamp demand for the actual drift load and roof profile.
-# The elevation is stated, so it follows the plane by hand: 7'-8 1/4" since the
-# standard-heel trusses dropped RF-GARAGE / RF-BW-CANOPY 5.75" (2026-10-08), and 7'-4.98"
-# since the heel is read at the outside face of bearing (plane down 3.269", 2026-10-31).
+# Continuous east-canopy coverage; supplier must still size the drift-load system.
+# RF-BW-CANOPY's south and north rake oversails are 1-3/8 and 6-1/8 inches.
+# Its south bearing starts at TRUSS_DATUM_Y_FT. The shared garage seam register
+# requires a 7-5/8" south setback to keep the first clamp's cantilever below 8";
+# a 2" setback there would cantilever 13-9/16". North keeps the 2" setback.
 SNOW_RETENTION_EAST_X_FT = 30.5
-SNOW_RETENTION_STATIONS_FT = (38.5, 42.5)
+SNOW_RETENTION_SOUTH_SETBACK_IN = 7.625
+SNOW_RETENTION_NORTH_SETBACK_IN = 2.0
+SNOW_RETENTION_SOUTH_Y_FT = (TRUSS_DATUM_Y_FT - 1.375 / 12
+                           + SNOW_RETENTION_SOUTH_SETBACK_IN / 12)
+SNOW_RETENTION_NORTH_Y_FT = (HEADER_NORTH_Y_FT + 6.125 / 12
+                           - SNOW_RETENTION_NORTH_SETBACK_IN / 12)
 SNOW_RETENTION = [
-    Connector(uid=f"BWNSE{index}AAAA", tag=f"CN-BW-SNOW-E-{index}",
+    Connector(uid="BWNSE1AAAA", tag="CN-BW-SNOW-E-1",
               kind=ConnectorKind.SNOW_GUARD,
-              position=pt(ft(SNOW_RETENTION_EAST_X_FT), ft(station_y)),
-              elevation=ft(7, 4.98), size="S-5! ColorGard", connects=("RF-GARAGE",),
-              source="north_entry_structure.md — provisional east entrance snow-rail layout")
-    for index, station_y in enumerate(SNOW_RETENTION_STATIONS_FT, 1)
+              position=pt(ft(SNOW_RETENTION_EAST_X_FT),
+                          ft((SNOW_RETENTION_SOUTH_Y_FT + SNOW_RETENTION_NORTH_Y_FT) / 2)),
+              axis="y", size="S-5! ColorGard", connects=("RF-BW-CANOPY",),
+              snow_retention=SnowRetentionSpec(
+                  length=ft(SNOW_RETENTION_NORTH_Y_FT - SNOW_RETENTION_SOUTH_Y_FT)),
+              source="north_entry_structure.md — provisional continuous east entrance run")
 ]
 
 MAIN_ELEMENTS = [*FRAME_ELEMENTS, FLOOR, TIERS, *TIER_SLABS,

@@ -248,9 +248,20 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
                              category=solid.category)
         elif solid.body_mesh is not None:
             mb = _MeshBuilder()
-            mb.add_mesh(solid.body_mesh, _solid_color(model, solid))
+            color = _solid_color(model, solid)
+            mb.add_mesh(solid.body_mesh, color)
+            surfaces = None
+            snow_component = solid.category == "snow_guard"
+            if snow_component:
+                from typehaus.hardware.snow_retention import COMPONENT_SURFACES, PAINTED_SURFACE
+
+                surface = COMPONENT_SURFACES.get(solid.material, PAINTED_SURFACE)
+                surfaces = {color: surface}
             scene.add_object(mb, _solid_trades(model, solid), kind="solid", uid=solid.uid,
-                             category=solid.category)
+                             category=solid.category,
+                             material_surfaces=surfaces,
+                             host_ref=solid.host_ref if snow_component else None,
+                             material_ref=solid.material if snow_component else None)
         elif legs:
             mb = _MeshBuilder()
             color = _solid_color(model, solid)

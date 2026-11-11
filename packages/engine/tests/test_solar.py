@@ -95,7 +95,7 @@ def test_x_ridge_roof_branch(catlin_model):
     turns its ridge back to "x" in a throwaway plan. That is honest about what is being
     exercised (the resolver, not the house) and it cannot rot when the house moves again.
     """
-    from typehaus.model import Roof, SolarPanel, ft, inch, pt
+    from typehaus.model import Connector, Roof, SolarPanel, ft, inch, pt
 
     # `model_copy`, not `dataclasses.replace`: every model element is a pydantic model here,
     # not a dataclass, and `replace()` raises TypeError on one.
@@ -113,6 +113,11 @@ def test_x_ridge_roof_branch(catlin_model):
                    origin=pt(ft(10), ft(52)), width=inch(69.4), length=inch(44.6),
                    thickness=inch(1.2), watts=440.0),
     ))
+    # Turning the garage also breaks the canopy's shared seam register. This PV-only
+    # variant omits retention whose clamp layout would now need to be redesigned.
+    plan = plan.with_elements("entry", tuple(
+        element for element in plan.storey_elements("entry")
+        if not (isinstance(element, Connector) and element.snow_retention is not None)))
     model, findings = resolve(plan)
     assert not [f for f in findings if f.severity.value == "error"]
     panel = next(p for p in model.solar_panels if p.tag == "SP-G-TEST")
@@ -179,12 +184,15 @@ def test_pv_mounting_kits_are_billed(catlin_model):
     assert len(pv) == 1
     assert pv[0]["count"] == 72  # 4 kits x 18 modules
     # No plain S-5! is billed: every carrier on a nail-strip roof is an S-5-N (2026-10-27,
-    # Image II). 72 carry the PV kits and 2 the east-eave ColorGard rails; the wind clamps
+    # Image II). 72 carry the PV kits and 4 the east-eave ColorGard run; the wind clamps
     # are S-5-N Mini.
     assert not [row for row in rows if row["part_number"] == "S-5!"]
     carriers = [row for row in rows if row["part_number"] == "S-5-N"
                 and row["scope"] == "carried-mount"]
-    assert sorted(row["count"] for row in carriers) == [2, 72]
+    assert [row["count"] for row in carriers] == [72]
+    snow_clamps = [row for row in rows if row["part_number"] == "S-5-N"
+                   and row["scope"] == "snow-retention run"]
+    assert [row["count"] for row in snow_clamps] == [4]
     mini = [row for row in rows if row["part_number"] == "S-5-N Mini"]
     assert sum(row["count"] for row in mini) == 24, "12 house roof + 12 garage roof"
 

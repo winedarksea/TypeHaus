@@ -356,7 +356,6 @@
   "railing|wall": [9, 0.002809],
   "roof|roof": [1, 0.003179],
   "roof|seam_clamp": [12, 1.3e-05],
-  "roof|snow_guard": [2, 0.000574],
   "shutoff|shutoff": [1, 0.000152],
   "shutoff|vacuum_breaker": [1, 0.001573],
   "shutoff|wall": [39, 0.032282],

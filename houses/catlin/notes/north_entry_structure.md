@@ -381,6 +381,29 @@ west side has no entrance or walking route beneath it, so it needs no guard pair
 sizes crossbars and clamps for the **drift** case, not the ground load. **Wind seam clamps are
 not a substitute for snow retention.**
 
+The provisional 3D layout is now **one continuous ColorGard 2.0 unpunched run**,
+`CN-BW-SNOW-E-1`, hosted by `RF-BW-CANOPY`, with its clamp line at x = 30.5 ft.
+Four full S-5-N clamps follow the shared garage/canopy panel seams; four VersaClip 2.0
+attachments carry the profiled crossmember and roof-matching 2-inch ColorStrip. Three
+SnoClip 2.0 II clips have rubber feet on flat pan intervals between striations. Roof
+pitch, layer depth and seam height determine elevation; there is no hand-set Z.
+
+The north rail end is 2 inches inside the canopy rake. The south setback is **7-5/8
+inches**: a 2-inch setback would leave a 13-9/16-inch cantilever from the first shared
+seam, exceeding S-5!'s 8-inch limit. The modeled south cantilever is 7-15/16 inches.
+One 7-foot-8-inch stock crossmember is cut to the run; its supplied splice is unused.
+The S-5-N bolts/setscrews and SnoClip securing screws are included with those parts,
+not additional purchases. Takeoff reports installed rail/strip length and actual
+component counts; component prices remain budget allowances pending a supplier quote.
+
+**This is hardware geometry and provisional coverage, not a retention-capacity check.**
+The supplier must confirm the drift-load tributary area (including the adjoining garage
+snowpack), row count, clamp/profile compatibility and support below the SnoClip feet.
+S-5! cautions that short doorway-only runs can retain a larger snow wedge than their
+own width implies. See [ColorGard 2.0 product documents](https://www.s-5.com/products/colorgard/)
+and installation instructions, revision 110426. Small extrusion lips and clip bends
+are simplified from the manufacturer's assembly drawing; the model is not fabrication CAD.
+
 ## 6. KDAT longevity — the house-wide spec (owner, 2026-09-10)
 
 Stated once here and carried onto the drawings by `AN-BW-KDAT`, because it applies to every

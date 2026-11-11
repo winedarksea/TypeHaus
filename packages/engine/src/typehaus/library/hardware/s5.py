@@ -98,19 +98,34 @@ S5_CANDUIT_PIPE_CLAMP = StructuralHardware(
     requires_role=ROLE_STANDING_SEAM_CLAMP,
 )
 
-# Snow retention for a standing-seam slope that sheds onto something. ColorGard is a rail
-# system, not a discrete "guard": a continuous 1"x1" aluminum bar runs the width of the slope
-# through the seam clamps, with a colour-matched strip clipped into it. It reaches the panel
-# only through those clamps, so like the CanDuit ring above it declares ``requires_role`` and
-# every foot of rail ordered brings its clamps with it.
+# Legacy point-only allowance. Dimensioned runs bill their individual components.
 S5_COLORGARD_SNOW_RETENTION = StructuralHardware(
     tag="s5-colorgard-snow-retention",
     name="S-5! ColorGard snow-retention rail",
     role=ROLE_SNOW_RETENTION,
     manufacturer="S-5!",
     model="S-5! ColorGard",
-    source="S-5! ColorGard snow retention system (s-5.com) — 1\" x 1\" aluminum crossbar "
+    source="S-5! ColorGard snow retention system (s-5.com) — profiled aluminum crossmember "
            "with a colour-matched panel strip, carried on S-5! seam clamps; spacing and row "
            "count are the manufacturer's calculation at the site ground snow load",
     requires_role=ROLE_NAIL_STRIP_SEAM_CLAMP,
 )
+
+
+def _colorgard_components():
+    from typehaus.hardware.snow_retention import (
+        COLORSTRIP,
+        CROSSMEMBER,
+        SNOCLIP,
+        SOURCE,
+        VERSACLIP,
+    )
+
+    return tuple(StructuralHardware(
+        tag=f"s5-colorgard-component-{index}", name=part.name,
+        role=ROLE_SNOW_RETENTION, manufacturer="S-5!" if part != COLORSTRIP else "Roof supplier",
+        model=part.model, source=f"{SOURCE}; {part.included}".rstrip("; "))
+        for index, part in enumerate((CROSSMEMBER, VERSACLIP, SNOCLIP, COLORSTRIP), 1))
+
+
+S5_COLORGARD_COMPONENTS = _colorgard_components()
