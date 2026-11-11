@@ -214,7 +214,7 @@ NODES = [
     # partition centreline, midway between W-M-STRW's MDO (123 1/8") and W-M-C5's gypsum
     # (212 3/4"), so these faces and the stair's studs are one wall (2026-10-30).
     Node(uid="4YBM7GZBJZ", tag="N-M-WELL-S", position=pt(inch(167.9375), ft(26, 0.375)), open_end=True),
-    Node(uid="0RW1TEC7JH", tag="N-M-WELL-N", position=pt(inch(167.9375), ft(31, 9.375)), open_end=True),
+    Node(uid="0RW1TEC7JH", tag="N-M-WELL-N", position=pt(inch(167.9375), ft(31, 10.375)), open_end=True),
     # W-M-BAE shifts 2' east; the mudroom door remains at its existing
     # 6" tee clearance.
     #

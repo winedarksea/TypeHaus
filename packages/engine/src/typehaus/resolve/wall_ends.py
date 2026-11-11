@@ -12,7 +12,7 @@ import math
 from collections.abc import Iterator
 from typing import Any
 
-from shapely.geometry import Polygon, box
+from shapely.geometry import Point, Polygon, box
 
 from typehaus.resolve.coatings import COATING_SKIN_M
 from typehaus.resolve.drywall_trims import TrimContext
@@ -25,6 +25,8 @@ _CATEGORY = "wall_end_board"
 # Shorter than this between obstructions is a sliver of joist band, not a run of board.
 _MIN_HEIGHT_M = 0.075
 _OVERLAP_M2 = 1e-6
+# Twice ``drywall_trims``' sliver clean-up, which can round a ring's corner by that much.
+_ON_RING_M = 0.04
 
 
 def wall_end_boards(ctx: TrimContext) -> None:
@@ -97,6 +99,8 @@ def _close_end(ctx: TrimContext, wall: ResolvedWall, junction: Any,
         wall=wall.tag, node=junction.node_tag, storey=wall.storey, room=room,
         material_ref=material, thickness_m=thickness, coating=coating,
         area_m2=(hi - lo) * height, height_m=height))
+    if _on_room_ring(ctx.model, wall.storey, board[0]):
+        return  # the ring walk has already beaded this end
     for z0, z1 in bands:
         for _corner in range(2):
             ctx.add("outside_corner", room, wall.storey, ctx.standard.outside_corner_ref,
@@ -117,6 +121,12 @@ def _room_tag(ctx: TrimContext, wall: ResolvedWall, board: Polygon) -> str | Non
         return authored
     room = room_owning(ctx.model, wall.storey, (board.centroid.x, board.centroid.y))
     return room.tag if room is not None else None
+
+
+def _on_room_ring(model: Any, storey: str, point: tuple[float, float]) -> bool:
+    """Does any room's outer face on ``storey`` pass through this end's corner?"""
+    return any(Polygon(room.clear_face).exterior.distance(Point(point)) <= _ON_RING_M
+               for room in model.rooms if room.storey == storey and len(room.clear_face) >= 3)
 
 
 def _clear_bands(model: Any, wall: ResolvedWall, board: Polygon,
@@ -157,6 +167,6 @@ def _occupants(model: Any, wall: ResolvedWall,
         yield Polygon(ring), z0, z1
     for solid in model.solids:
         if len(solid.outline) >= 3 and solid.category != _CATEGORY:
-            shape = Polygon(solid.outline)
+            shape = Polygon(solid.outline, [list(void) for void in solid.voids])
             if shape.is_valid:
                 yield shape, solid.z0_m, solid.z1_m

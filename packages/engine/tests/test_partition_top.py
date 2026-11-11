@@ -171,6 +171,11 @@ def test_a_partition_standing_in_a_well_is_boarded_through_the_floor_band(catlin
              if s.category == "opening_lining" and s.material == "paint-wall"]
     assert sum(s.tag.startswith("FO-M-STAIR") for s in films) == 4
     assert sum(s.tag.startswith("FO-S-STAIR") for s in films) == 4
+    ends = {end.node for end in catlin_model_ro.wall_ends}
+    assert {"N-M-WELL-S", "N-M-WELL-N", "N-S-KNEE-S", "N-S-KNEE-N"} <= ends
+    beads = [t for t in catlin_model_ro.drywall_trims
+             if t.kind == "outside_corner" and "W-M-WELL" in t.tags]
+    assert len(beads) == 4
 
 
 # --- the SDPW schedule -----------------------------------------------------------------

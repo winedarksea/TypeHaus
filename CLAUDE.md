@@ -72,6 +72,8 @@ a release or for exhaustive local verification.
   face (`integrity.light_run_host`), the reveal cut from the board, `z_m` on the board face,
   the Z bead's depth graded by `mep.plaster_in_depth`. The run's swept section is served to
   the viewer, never copied there.
+  A free wall end with gypsum on both faces takes a board, its coat and two corner beads
+  (`resolve/wall_ends.py`, `ResolvedModel.wall_ends`), over the height nothing else occupies.
 - **Paint is derived from one `PaintStandard`** (decision #113, `model/paint.py`): rooms take its
   `walls`/`ceilings`/`wet` system through `resolve/room_paint.py`, swapping default coats only;
   trim and doors bill in `takeoff/trim_paint.py`; `Material.paint` + `Product.equals` feed A-604.

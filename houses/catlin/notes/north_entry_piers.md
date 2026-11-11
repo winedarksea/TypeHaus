@@ -1709,3 +1709,14 @@ guard M 1,308.3, X 100; Y = 1,308.3 x 1.59375/5.08008 = 410.4
 ```
 
 **Verdict: every row passes; E-W wind at W governs at 0.800** (was 0.811).
+
+**The cast variant's head joint (§12e).** The panel's rigidity moves with it, so about its new
+centre of rigidity (9,970.5 at 6.19792', 3,135.4 at 29.71875') x_r = 11.8249':
+
+```
+e   = 19.8586 − 11.8249 = 8.0337'     M_t = 1,173.43 x 8.0337 = 9,427.0 lb-ft
+J   = 9,970.5 x 5.6270² + 3,135.4 x 17.8939² + 44,758 + 3,452 = 1,367,834
+col = 140.36 + 9,427.0 x 1,567.7 x 17.8939 / 1,367,834 = 140.36 + 193.33 = 333.69 lb
+```
+
++0.88 lb on 332.81; the engine moves the same, 333.40 → 334.28. Connector 333.69/1,350 = 0.247.

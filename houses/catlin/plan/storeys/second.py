@@ -142,11 +142,10 @@ NODES = [
     Node(uid="CSN035AAAA", tag="N-S-CH1", position=pt(ft(3, 1.5), ft(33, 0.875))),
     Node(uid="CSN036AAAA", tag="N-S-CH2", position=pt(ft(3, 1.5), ft(36))),
     Node(uid="CSN037AAAA", tag="N-S-CH3", position=pt(ft(0), ft(33, 0.875))),
-    # W-S-WELL-KNEE on ST-M2S's well partition, 167 15/16" its centre (STAIRS). 1/2" inside
-    # SL-S-KNEE-CAP at each end: the wall's end boards finish flush with the cap's edges.
-    Node(uid="ZSW0B25N8C", tag="N-S-KNEE-S", position=pt(inch(167.9375), ft(26, 0.875)),
+    # W-S-WELL-KNEE on ST-M2S's well partition, 167 15/16" its centre (STAIRS).
+    Node(uid="ZSW0B25N8C", tag="N-S-KNEE-S", position=pt(inch(167.9375), ft(26, 0.375)),
          open_end=True),
-    Node(uid="DXS13T771Y", tag="N-S-KNEE-N", position=pt(inch(167.9375), ft(30, 1.875)),
+    Node(uid="DXS13T771Y", tag="N-S-KNEE-N", position=pt(inch(167.9375), ft(30, 2.375)),
          open_end=True),
     # W-S-SBF, FX-S-SUITEBATH-TUBSH's furred plumbing end (see the wall).
     Node(uid="NDKXJJQSF8", tag="N-S-SBF-W", position=pt(inch(182.615), inch(262.375)), open_end=True),
@@ -1601,11 +1600,11 @@ STAIRS = [
 ]
 
 # W-S-WELL-KNEE's cap: a 5/4 red oak tread ripped to 5 1/4", 3/8" proud of each gypsum face,
-# glued and screwed down into the top plate.
+# glued and screwed down into the top plate. Its ends run 1/2" over the wall's end boards.
 CAPS = [
     Slab(uid="CMJRX0C2X2", tag="SL-S-KNEE-CAP", kind="platform",
-         outline=(pt(inch(165.3125), ft(26, 0.375)), pt(inch(170.5625), ft(26, 0.375)),
-                  pt(inch(170.5625), ft(30, 2.375)), pt(inch(165.3125), ft(30, 2.375))),
+         outline=(pt(inch(165.3125), ft(25, 11.875)), pt(inch(170.5625), ft(25, 11.875)),
+                  pt(inch(170.5625), ft(30, 2.875)), pt(inch(165.3125), ft(30, 2.875))),
          thickness=inch(1), assembly="KNEE_WALL_OAK_CAP", top_elevation=inch(158.5)),
 ]
 
