@@ -113,7 +113,7 @@ top out at 96" against the 106" ceiling, so `bath2_shower.md` §5 confirm 3 stay
   the **Modern Subway** relief (6x24 simulated tile). White is the closest Swanstone match to
   the Corian; Tahiti White (.011) is the warmer alternative. Replaces Carrara (221).
 - **Corian Glacier White or HI-MACS/Staron equal**, solid, for the deck, faces, splash, vanity top and stool.
-- The room's one pattern is now the floor: Selene Opera Blue 24x48 onyx-look porcelain.
+- The room's one pattern is now the floor: Lifeproof Limestone 12x24 matte porcelain (2026-11-10).
   Every solid surface is plain white, the stall reading only by its subway relief, so no
   two veined imitations sit side by side.
 - Judge the White chip against the Corian under both 5000 K and 2700 K (`bath2_lighting.md`),

@@ -39,9 +39,10 @@ try {
     if (checks.failures.length) throw new Error(checks.failures.join("\n"));
     if (view === "rooms" || view === "detail") {
       const previews = [
-        ["RM-S-VANITY", "vanity"], ["RM-M-BATH2", "opera-blue"],
-        ["tile-onyx-opera-blue-grid · top", "opera-blue-swatch"],
-        ["tile-onyx-opera-blue-grid · grazing", "opera-blue-grazing"],
+        ["RM-S-VANITY", "vanity"], ["RM-M-BATH2", "limestone-bath2"],
+        ["RM-S-BATH1", "limestone-bath1"],
+        ["tile-limestone-grid · top", "limestone-swatch"],
+        ["tile-limestone-grid · grazing", "limestone-grazing"],
       ];
       for (const [caption, name] of previews) {
         const png = await evaluate(session, `return [...document.querySelectorAll('figure')]

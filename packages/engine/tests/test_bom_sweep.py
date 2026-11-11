@@ -274,8 +274,8 @@ def test_every_finish_row_resolved_a_real_material(bom):
     assert unknown == [], unknown
     assert {row["finish"] for row in bom["floor_finishes"] if "under" not in row} == {
         "catlin-theater-carpet", "catlin-carpet-raised", "lvp", "oak-floor-custom",
-        "catlin-tile-opera-blue", "catlin-tile-kaleo-brick",
-        "catlin-tile-jume-onyx-blue", "catlin-tile-carrara", "sealed-concrete",
+        "catlin-tile-limestone", "catlin-tile-kaleo-brick",
+        "catlin-tile-jume-onyx-blue", "sealed-concrete",
         "catlin-rubber-stall-mat", "catlin-plant-vinyl-raised",
         "catlin-vinyl-gatsby", None}
 
@@ -324,7 +324,7 @@ def test_a_finish_is_ordered_with_its_waste_not_at_bare_polygon_area(bom):
     the most — every perimeter cut is scrap — and sealed concrete carries none, because a
     sealer is measured by coverage rate rather than cut to fit."""
     rows = {row["finish"]: row for row in bom["floor_finishes"]}
-    assert float(rows["catlin-tile-opera-blue"]["waste_pct"]) > float(
+    assert float(rows["catlin-tile-jume-onyx-blue"]["waste_pct"]) > float(
         rows["oak-floor-custom"]["waste_pct"])
     assert float(rows["sealed-concrete"]["waste_pct"]) == 0.0
     for row in bom["floor_finishes"]:
@@ -342,8 +342,7 @@ def test_a_finish_brings_the_layer_it_implies(bom):
         ("catlin-theater-carpet", "catlin-bedroom-carpet-pad"),
         ("catlin-carpet-raised", "catlin-bedroom-carpet-pad"),
         ("catlin-plant-vinyl-raised", "catlin-plant-sureply"),
-        ("catlin-tile-opera-blue", "catlin-ditra-heat"),
-        ("catlin-tile-carrara", "catlin-ditra-heat"),
+        ("catlin-tile-limestone", "catlin-ditra-heat"),
         ("catlin-tile-kaleo-brick", "catlin-ditra-xl"),
         ("catlin-tile-jume-onyx-blue", "tile-uncoupling-membrane"),
     }

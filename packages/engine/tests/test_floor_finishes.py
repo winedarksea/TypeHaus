@@ -25,8 +25,8 @@ from typehaus.resolve.solid_categories import in_slab_family
 _CATLIN_FINISHES = {"oak-floor-custom", "lvp", "catlin-theater-carpet", "sealed-concrete",
                     "catlin-rubber-stall-mat", "catlin-plant-vinyl-raised",
                     "catlin-vinyl-gatsby", "catlin-carpet-raised",
-                    "catlin-tile-opera-blue", "catlin-tile-kaleo-brick",
-                    "catlin-tile-jume-onyx-blue", "catlin-tile-carrara"}
+                    "catlin-tile-limestone", "catlin-tile-kaleo-brick",
+                    "catlin-tile-jume-onyx-blue"}
 # One printed sheet under two tags (the plant room's carries a SurePly companion): they
 # share a colour by design, so the distinct-colour checks count the pair once.
 _SAME_SHEET = {"catlin-plant-vinyl-raised"}
@@ -117,7 +117,7 @@ def test_second_storey_finishes_match_the_doorway_assemblies(catlin_model):
                           if product.tag == vanity_tile.product_ref)
     assert vanity_product.brand == "Ivy Hill Tile"
     assert vanity_product.model == "EXT3RD107036"
-    assert finishes["RM-S-BATH1"] == "catlin-tile-carrara"
+    assert finishes["RM-S-BATH1"] == "catlin-tile-limestone"
     assert finishes["RM-S-PLANT"] == "catlin-plant-vinyl-raised"
     assert "RM-S-LANDING" not in finishes
     assert "RM-S-STAIR" not in finishes
@@ -305,19 +305,18 @@ def test_the_billed_finishes_are_one_lvp_field(catlin_model):
             + float(rows["catlin-plant-vinyl-raised"]["net_area_sqft"])) == pytest.approx(
                 519.3, abs=0.5)
     assignments = {
-        "catlin-tile-opera-blue": ("RM-M-BATH2", "catlin-ditra-heat"),
-        "catlin-tile-carrara": ("RM-S-BATH1", "catlin-ditra-heat"),
-        "catlin-tile-kaleo-brick": ("RM-S-SUITEBATH", "catlin-ditra-xl"),
-        "catlin-tile-jume-onyx-blue": ("RM-S-VANITY", "tile-uncoupling-membrane"),
+        "catlin-tile-limestone": ({"RM-M-BATH2", "RM-S-BATH1"}, "catlin-ditra-heat"),
+        "catlin-tile-kaleo-brick": ({"RM-S-SUITEBATH"}, "catlin-ditra-xl"),
+        "catlin-tile-jume-onyx-blue": ({"RM-S-VANITY"}, "tile-uncoupling-membrane"),
     }
     # Two heated finishes share a membrane tag: key companion rows by parent as well.
     companion_rows = {(row["under"], row["finish"]): row
                       for row in floor_finish_rows(catlin_model) if "under" in row}
-    for finish, (room, companion) in assignments.items():
-        assert rows[finish]["rooms"] == [room]
+    for finish, (assigned_rooms, companion) in assignments.items():
+        assert set(rows[finish]["rooms"]) == assigned_rooms
         companion_row = companion_rows[finish, companion]
         assert companion_row["net_area_sqft"] == rows[finish]["net_area_sqft"]
-        assert companion_row["rooms"] == [room]
+        assert set(companion_row["rooms"]) == assigned_rooms
         assert rows[finish]["known"] and companion_row["known"]
     assert "catlin-tile-heated" not in rows
     assert "catlin-tile-oak-height" not in rows
@@ -394,20 +393,18 @@ def test_bathroom_tile_product_contracts(catlin_plan):
     materials = {material.tag: material for material in catlin_plan.library.materials}
     products = {product.tag: product for product in catlin_plan.library.products}
     for tag, product, recipe, companion in (
-        ("catlin-tile-opera-blue", "PROD-IVY-SELENE-OPERA-BLUE", "tile-onyx-opera-blue-grid",
+        ("catlin-tile-limestone", "PROD-LIFEPROOF-LIMESTONE", "tile-limestone-grid",
          "catlin-ditra-heat"),
         ("catlin-tile-kaleo-brick", "PROD-IVY-KALEO-BRICK", "tile-kaleo-running-bond",
          "catlin-ditra-xl"),
         ("catlin-tile-jume-onyx-blue", "PROD-IVY-JUME-ONYX-BLUE", "tile-onyx-jume-blue-grid",
          "tile-uncoupling-membrane"),
-        ("catlin-tile-carrara", "PROD-FLORIDA-CARRARA-MATTE", "tile-carrara-grid",
-         "catlin-ditra-heat"),
     ):
         material = materials[tag]
         assert material.product_ref == product
         assert material.finish == recipe
         assert material.finish_thickness_in == 0.75
         assert material.floor_companion_refs == (companion,)
-        assert "epoxy grout" in material.source
+        assert "grout" in material.source
         assert products[product].url
         assert products[product].model

@@ -85,16 +85,20 @@ MATERIALS_FLOORING = [
                     'selected, so the carpet stands 1/4 inch over the oak (owner 2026-11-01). '
                     'Confirm carpet manufacturer acceptance and warranty; '
                     'notes/bedroom_carpet.md.'),
-    Material(tag="catlin-tile-opera-blue",
-             name="Selene Opera Blue 24x48 polished, platinum epoxy grout",
-             hatch="masonry", color="#c5c6cc", finish="tile-onyx-opera-blue-grid",
-             finish_thickness_in=0.75, floor_waste_fraction=0.20,
+    Material(tag="catlin-tile-limestone",
+             name="Lifeproof Limestone 12x24 matte, Biscuit grout",
+             hatch="masonry", color="#cdbea9", finish="tile-limestone-grid",
+             finish_thickness_in=0.75, floor_waste_fraction=0.15,
              base_joint_ref="catlin-base-toe-silicone",
              floor_companion_refs=("catlin-ditra-heat",),
-             product_ref="PROD-IVY-SELENE-OPERA-BLUE",
-             source='RM-M-BATH2: 24 x 48-inch polished onyx-look porcelain, 1/16-inch '
-                    'rectified joints, platinum epoxy grout. 1/4-inch DITRA-HEAT + '
-                    '~0.40-inch tile + ~0.10-inch mortar = 3/4 inch. ' + _LARGE_FORMAT + _TOE),
+             product_ref="PROD-LIFEPROOF-LIMESTONE",
+             source='RM-M-BATH2, RM-S-BATH1: 12 x 24-inch matte porcelain, straight grid, long '
+                    'axis along plan Y, 3/16-inch joints, MAPEI Ultracolor Plus FA #5014 Biscuit '
+                    'grout (nearest warm shade to Haystack, no published cross-reference: confirm '
+                    'on a cured sample on a tile; #5015 Bone is the paler fallback), Mapesil T '
+                    'Plus #5014 silicone at changes of plane. Do not run the floor heat until '
+                    'the grout has cured. 1/4-inch DITRA-HEAT + 8 mm tile + ~0.185-inch combined '
+                    'mortar = 3/4 inch; verify thickness and beds. ' + _LARGE_FORMAT + _TOE),
     Material(tag="catlin-tile-kaleo-brick", name="Kaleo Brick terracotta, cream epoxy grout",
              hatch="masonry", color="#bc7658", finish="tile-kaleo-running-bond",
              finish_thickness_in=0.75, floor_waste_fraction=0.15,
@@ -116,17 +120,6 @@ MATERIALS_FLOORING = [
                     '10.5 mm (~0.413-inch) tile + ~0.212-inch combined mortar = 3/4 inch. '
                     'Listing conflicts at 10/10.5 mm; verify thickness and beds. DCOF <0.42; '
                     'selected for the sinks-only room, no bathing. ' + _LARGE_FORMAT + _TOE),
-    Material(tag="catlin-tile-carrara", name="Budget Carrara matte 12x24, white epoxy grout",
-             hatch="masonry", color="#e9edf0", finish="tile-carrara-grid",
-             finish_thickness_in=0.75, floor_waste_fraction=0.15,
-             base_joint_ref="catlin-base-toe-silicone",
-             floor_companion_refs=("catlin-ditra-heat",),
-             product_ref="PROD-FLORIDA-CARRARA-MATTE",
-             source='RM-S-BATH1: budget 12 x 24-inch matte porcelain, straight grid, 1/8-inch '
-                    'white epoxy grout joints. 1/4-inch DITRA-HEAT + nominal 9 mm tile + '
-                    '0.146-inch combined mortar = 3/4 inch. Verify thickness and beds; '
-                    'matte selected '
-                    'instead of requested polished HDC for published wet DCOF >=0.42. ' + _TOE),
     Material(tag="catlin-ditra-xl", name='DITRA-XL uncoupling membrane, 5/16"',
              hatch="membrane", color="#da7433",
              source="Nonheated tile membrane; seams and perimeters waterproofed where required."),

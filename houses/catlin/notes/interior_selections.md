@@ -349,8 +349,8 @@ This is the part of the pass with a deadline on it.
 - **`RM-M-BATH2`'s colours, 2026-10-22, revised 2026-10-29:** Swanstone **White (.010)** for the
   SS-3636 and the shower walls, the walls in the **Modern Subway** relief (2 x MSMK-9636-1); **Corian Glacier White or HI-MACS/Staron equal** for the tub deck (one bonded piece with its
   waterfall faces and a 6" splash), the vanity top and the window stool. Confirm both with
-  physical chips under 5000 K and 2700 K, next to a floor tile. The floor (Selene Opera Blue
-  24x48 onyx-look) is the room's only pattern (`notes/bath2_tub_deck_finish.md`).
+  physical chips under 5000 K and 2700 K, next to a floor tile. The floor (Lifeproof Limestone
+  12x24 matte, since 2026-11-10) is the room's only pattern (`notes/bath2_tub_deck_finish.md`).
 - Fit-check the **selected mirror factory brackets and Karlie mounting plates** before
   closing the backing zones; exact products and sources are in `mirror_selections.md`.
 - ~~**`RM-A-STUBATH`'s vanity contradiction**~~ — closed 2026-09-09 at `FX-VANITY-24-SHALLOW`,

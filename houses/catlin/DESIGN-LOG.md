@@ -7887,3 +7887,19 @@ setback stays two inches. One 7-foot-8-inch crossmember is cut to about 5.2 feet
 Geometry, component quantities and budget pricing are corrected; supplier drift-load
 sizing, adjoining-garage tributary snowpack and SnoClip pan support remain open.
 See notes/north_entry_structure.md §5.
+
+## Bath floors: Lifeproof Limestone (2026-11-10, owner)
+
+Opera Blue did not work in RM-M-BATH2. RM-M-BATH2 and RM-S-BATH1 both take Lifeproof Limestone
+LP521224HD1P6 (`catlin-tile-limestone`), one material replacing Opera Blue and Carrara;
+RM-S-VANITY keeps Jume Onyx Blue. Straight grid, long axis along plan Y: the product photos show
+a half offset, which a 12x24 should avoid. 3/16-inch joints. Both floors stay 3/4 inch total
+(1/4-inch DITRA-HEAT + 8 mm tile + ~0.185-inch mortar), so no door or transition height moves.
+
+Grout leaves epoxy on these two floors for MAPEI Ultracolor Plus FA #5014 Biscuit, the owner's
+Haystack warm tan in MAPEI's line; no published cross-reference exists, so confirm on a cured
+sample (#5015 Bone is the paler fallback). A large-format setting note applies: a 12x24 has a
+side over 15 inches. The listing was read from third-party copies, so DCOF, thickness and
+rectification are to be verified on the delivered box. Tile-only falls to 8 cases at $298.16
+from $682.14. The viewer samples the supplied swatch; see
+`ui/src/assets/tiles/lifeproof-limestone.md`.

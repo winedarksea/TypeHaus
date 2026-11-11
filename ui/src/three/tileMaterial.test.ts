@@ -91,20 +91,31 @@ export function runTileMaterialTests() {
     "Photo atlas keeps tile scale through its 2x2 repeat");
   assert(sampleTile(jume, 0.2, 0.2).heightM === sampleTile(jume, 0.3, 0.3).heightM,
     "Printed veining adds no physical relief");
-  const opera = TILE_STYLES["tile-onyx-opera-blue-grid"];
-  assert(opera.photo === "opera-blue", "Opera Blue uses photographed onyx layers");
-  const [ow, oh] = tileRepeatSizeM(opera);
-  assert(close(ow, 3 * (24 + 1 / 16) * IN) && close(oh, 2 * (48 + 1 / 16) * IN),
-    "Opera's six-cell photo atlas preserves the 24x48 tile and narrow grout scale");
-  const recipe = tilePhotoRecipe(opera.photo);
-  assert(recipe.photographedFaces === 3 && recipe.faces.length === 6,
-    "Opera uses three photographed faces and their rotations");
+  const lime = TILE_STYLES["tile-limestone-grid"];
+  assert(lime.photo === "lifeproof-limestone", "Limestone uses bundled product photography");
+  assert(close(lime.sizeM[0], 12 * IN) && close(lime.sizeM[1], 24 * IN) && close(lime.jointM, 3 / 16 * IN),
+    "Limestone is 12x24 with the long axis along plan Y and 3/16-inch joints");
+  const [lw, lh] = tileRepeatSizeM(lime);
+  assert(close(lw, 5 * (12 + 3 / 16) * IN) && close(lh, 2 * (24 + 3 / 16) * IN),
+    "Limestone's ten-cell atlas preserves the 12x24 tile and joint scale");
+  const recipe = tilePhotoRecipe(lime.photo);
+  assert(recipe.photographedFaces === 5 && recipe.faces.length === 10,
+    "Limestone uses five photographed faces and their rotations");
   assert(recipe.faces.every(face => face.crop[2] > 0 && face.crop[3] > 0),
     "Every source face has a valid crop");
-  assert(sampleTile(opera, 0.2, 0.2).heightM === sampleTile(opera, 0.3, 0.3).heightM,
-    "The onyx print's visual depth stays beneath a smooth polished face");
-  const [m1, m2] = [opera.color, jume.color];
-  assert(Math.hypot(m1[0] - m2[0], m1[1] - m2[1], m1[2] - m2[2]) > 10, "The two prints are different blues");
+  const [cols, rows] = lime.repeat!;
+  const neighbours = recipe.faces.every((face, i) => {
+    const c = i % cols, r = Math.floor(i / cols);
+    return [(r * cols) + (c + 1) % cols, ((r + 1) % rows) * cols + c]
+      .every(n => `${recipe.faces[n].crop}` !== `${face.crop}`);
+  });
+  assert(neighbours, "No limestone face sits beside, or above, its own rotation, wrapping included");
+  assert(lime.clearcoat === 0 && lime.roughness > 0.5, "Limestone is matte, not glazed");
+  assert(lime.color[0] > lime.color[2] + 20 && lime.grout[0] > lime.grout[2] + 20, "Limestone and Biscuit grout are warm");
+  assert(sampleTile(lime, 0.1, 0.25).heightM === sampleTile(lime, 0.3, 0.75).heightM,
+    "The printed stone adds no physical relief");
+  assert(Math.hypot(lime.color[0] - jume.color[0], lime.color[1] - jume.color[1], lime.color[2] - jume.color[2]) > 10,
+    "Limestone and Jume are different prints");
   // Geometry tests run without a DOM; browser review exercises actual cached canvas maps.
   assert(buildTileMaps(carrara) === null, "Headless sampling requires no DOM or external assets");
   disposeTileTextures();

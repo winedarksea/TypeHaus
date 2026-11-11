@@ -1099,7 +1099,7 @@ ROOMS = [
     # roughly the mudroom's own 9.9' span, and at half the table limit the L/360 basis
     # is no longer the binding number it would have been out in the 18' field.
     Room(uid="CSR408AAAA", tag="RM-S-BATH1", seed=pt(ft(5), ft(31)),
-         occupancy=Occupancy.BATHROOM, floor_finish="catlin-tile-carrara",
+         occupancy=Occupancy.BATHROOM, floor_finish="catlin-tile-limestone",
          wall_lining_exceptions=(
              WallLiningException(
                  uid="SMVSX6ZSCT", tag="LX-S-BATH1-N3", wall_ref="W-S-N3",

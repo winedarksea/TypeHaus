@@ -18,6 +18,8 @@ export interface TileStyle {
   readonly color: readonly [number, number, number];
   readonly grout: readonly [number, number, number];
   readonly roughness: number;
+  /** Photo-tile glaze lobe; default 0.25, 0 for matte. */
+  readonly clearcoat?: number;
   /** Per-tile shade: fired-clay batches, faint porcelain lots (default), or none. */
   readonly variation?: "terracotta" | "subtle" | "none";
   /** Strength of the printed vein; 0 (default) is an unveined face. */
@@ -55,10 +57,11 @@ export const TILE_STYLES: Readonly<Record<string, TileStyle>> = {
     color: [244, 244, 242], grout: [244, 244, 242], roughness: 0.35, variation: "none",
     jointRoughness: 0.45,
   },
-  // Photographed onyx-look polished porcelain; grout is platinum.
-  "tile-onyx-opera-blue-grid": {
-    pattern: "grid", sizeM: [24 * INCH, 48 * INCH], jointM: INCH / 16, repeat: [3, 2],
-    color: [197, 198, 204], grout: [200, 201, 200], roughness: 0.16, variation: "none", photo: "opera-blue",
+  // Lifeproof Limestone 12x24 matte porcelain, long axis along plan Y; Mapei Biscuit grout.
+  "tile-limestone-grid": {
+    pattern: "grid", sizeM: [12 * INCH, 24 * INCH], jointM: INCH * 3 / 16, repeat: [5, 2],
+    color: [205, 190, 169], grout: [180, 165, 145], roughness: 0.58, clearcoat: 0,
+    variation: "none", photo: "lifeproof-limestone",
   },
   "tile-onyx-jume-blue-grid": {
     pattern: "grid", sizeM: [23.62 * INCH, 47.24 * INCH], jointM: INCH / 16, repeat: [2, 2],

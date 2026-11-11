@@ -15,7 +15,7 @@ export function createTileMaterial(mode: "nordic" | "schematic", style: TileStyl
   if (maps && style.photo) return new THREE.MeshPhysicalMaterial({
     color: 0xffffff, metalness: 0, roughness: 1,
     map: maps.color, normalMap: maps.normal, roughnessMap: maps.roughness,
-    clearcoatMap: maps.roughness, clearcoat: 0.25, clearcoatRoughness: 0.12, ior: 1.5,
+    clearcoatMap: maps.roughness, clearcoat: style.clearcoat ?? 0.25, clearcoatRoughness: 0.12, ior: 1.5,
   });
   return new THREE.MeshStandardMaterial({
     color: maps ? 0xffffff : schematicColor, metalness: 0,

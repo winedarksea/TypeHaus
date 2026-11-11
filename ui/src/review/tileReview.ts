@@ -60,18 +60,20 @@ for (const key of Object.keys(TILE_STYLES).filter(k => gatsby
   if (style.photo) {
     const canvas = material.map!.image as HTMLCanvasElement;
     const pixels = canvas.getContext("2d")!.getImageData(0, 0, canvas.width, canvas.height).data;
-    let white = 0, blue = 0;
+    let white = 0, tinted = 0;
+    const warm = style.photo === "lifeproof-limestone";
     for (let i = 0; i < pixels.length; i += 4) {
       if (pixels[i] > 240 && pixels[i + 1] > 240 && pixels[i + 2] > 240) white++;
-      if (pixels[i + 2] - pixels[i] > 20) blue++;
+      // Expected print tint: warm (R well above B) for limestone, blue otherwise.
+      if (warm ? pixels[i] - pixels[i + 2] > 20 : pixels[i + 2] - pixels[i] > 20) tinted++;
     }
     const [cols, rows] = style.repeat ?? [2, 2];
     if (canvas.width !== cols * TILE_PHOTO_FACE_PIXELS[0]
       || canvas.height !== rows * TILE_PHOTO_FACE_PIXELS[1]) failures.push(`${key}: missing full-resolution atlas`);
-    const minimumBlueFraction = style.photo === "opera-blue" ? 0.12 : 0.8;
-    if (white / (pixels.length / 4) > 0.01 || blue / (pixels.length / 4) < minimumBlueFraction) {
-      failures.push(`${key}: photo borders or blue face missing`);
+    if (white / (pixels.length / 4) > 0.01 || tinted / (pixels.length / 4) < 0.8) {
+      failures.push(`${key}: photo borders or ${warm ? "warm" : "blue"} face missing`);
     }
+    if (warm && (material as THREE.MeshPhysicalMaterial).clearcoat !== 0) failures.push(`${key}: matte tile is glazed`);
     // Inside a tile, print veining must change colour without adding surface relief.
     const normal = material.normalMap!.image as HTMLCanvasElement;
     const n = normal.getContext("2d")!.getImageData(128, 128, 1, 1).data;
@@ -83,7 +85,7 @@ for (const key of Object.keys(TILE_STYLES).filter(k => gatsby
       failures.push(`${key}: glaze mask or roughness does not distinguish grout`);
     }
     records.push({ finish: key, atlas: [canvas.width, canvas.height], photographedFaces: tilePhotoRecipe(style.photo).photographedFaces,
-      whiteFraction: white / (pixels.length / 4), blueFraction: blue / (pixels.length / 4) });
+      whiteFraction: white / (pixels.length / 4), tintFraction: tinted / (pixels.length / 4) });
   }
   if (style.inlay === "gatsby") {
     const canvas = material.map!.image as HTMLCanvasElement;

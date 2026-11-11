@@ -77,7 +77,7 @@ def _zbar(sign):
                  "Fasten to the subfloor against the oak/tile edge; cushion stops at the bar",
                  sign=sign, rise_in=0.25, max_in=0.25,
                  pairs=(("catlin-carpet-raised", "oak-floor-custom"),
-                        ("catlin-carpet-raised", "catlin-tile-opera-blue")),
+                        ("catlin-carpet-raised", "catlin-tile-limestone")),
                  edges_in=(0.0, 0.0),
                  parts=(_part("z-bar", "aluminum-extrusion",
                               ((0, -0.25), (0.0625, -0.25), (0.0625, -0.0625), (0.75, -0.0625),
@@ -111,7 +111,7 @@ TILE_EDGE_FLUSH = DoorwayTreatment(transition=_spec(
     SCHIENE, "aluminium, height to the tile", "Anchoring leg in the tile bed under the "
     "door; oak butts it over a 1/4 in. silicone joint", sign=1, rise_in=0.0, max_in=0.0625,
     pairs=(("oak-floor-custom", "catlin-tile-kaleo-brick"),
-           ("oak-floor-custom", "catlin-tile-carrara"),
+           ("oak-floor-custom", "catlin-tile-limestone"),
            ("oak-floor-custom", "catlin-tile-jume-onyx-blue")),
     edges_in=(0.0, 0.0625), url=SCHIENE.url, drawing="Schluter-SCHIENE product page; "
     "profile height to the delivered tile",

@@ -3804,18 +3804,17 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "tile" = { material = { low = 3, high = 9 }, labour = { low = 7, high = 14 } }
 "tile-uncoupling-membrane" = { material = { low = 1.5, high = 2.5 }, labour = { low = 0, high = 0.5 } }
 # Product-specific estimates, 2026-10-22 (onyx rows 2026-10-29), $/SF: tile + setting
-# supplies + epoxy grout. Tile-only anchors: Ivy Hill Selene Opera Blue $123/15.49-SF case
-# (~$7.94/SF), Jume Onyx Blue owner allowance $8/SF (2026-11-06; HD currently $9.19),
-# Kaleo $7.99, Florida Tile
-# Carrara $2.38. Freight/tax not included.
-# Installed labour includes epoxy application/cleanup. No separate grout row is billed.
+# supplies + grout. Tile-only anchors: Jume Onyx Blue owner allowance $8/SF (2026-11-06; HD
+# currently $9.19), Kaleo $7.99, Lifeproof Limestone $2.39 (2026-11-10, $37.27/15.6-SF case).
+# Freight/tax not included.
+# Installed labour includes grout application/cleanup (epoxy, except Limestone's Ultracolor
+# Plus FA). No separate grout row is billed.
 # 24x48 labour is large-format setting (flatness prep, LHT mortar, lippage clips), against
 # the retired glass mosaic's $14-24. Membrane companions below are additional; heat cable
 # stays in its existing scope.
-"catlin-tile-opera-blue" = { material = { low = 9.5, high = 12 }, labour = { low = 10, high = 18 } }
 "catlin-tile-kaleo-brick" = { material = { low = 9, high = 12 }, labour = { low = 9, high = 16 } }
 "catlin-tile-jume-onyx-blue" = { material = { low = 9.5, high = 12 }, labour = { low = 10, high = 18 } }  # membrane bills on tile-uncoupling-membrane
-"catlin-tile-carrara" = { material = { low = 3.5, high = 6 }, labour = { low = 8, high = 15 } }
+"catlin-tile-limestone" = { material = { low = 3.5, high = 6 }, labour = { low = 8, high = 15 } }  # economy 12x24 rates, as the Carrara it replaced
 "catlin-ditra-xl" = { material = { low = 2.5, high = 4.5 }, labour = { low = 0, high = 0.75 } }
 "catlin-ditra-heat" = { material = { low = 5, high = 7 }, labour = { low = 0, high = 0.75 } }
 # The library sheet serves no room since 2026-11-03 (all four sheet rooms are Gatsby); kept priced as the revert.

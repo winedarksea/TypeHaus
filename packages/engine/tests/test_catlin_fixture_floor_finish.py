@@ -66,8 +66,7 @@ def test_tub_deck_cutout_and_aprons_do_not_restore_tile(catlin_model_ro):
 
 def test_takeoff_and_membranes_bill_only_retained_floor(catlin_model_ro):
     rows = floor_finish_rows(catlin_model_ro)
-    for finish, net, order in (("catlin-tile-opera-blue", 39.5, 48),
-                                ("catlin-tile-carrara", 59.1, 69),  # the shower moved to 70.25", 2026-11-08
+    for finish, net, order in (("catlin-tile-limestone", 98.7, 114),  # RM-M-BATH2 + RM-S-BATH1
                                 # D-S-SUITEBATH's 1 3/8" leaf moved the break 0.2" (b90360591)
                                 ("catlin-tile-kaleo-brick", 34.1, 40)):
         row = next(row for row in rows if row["finish"] == finish)
