@@ -212,7 +212,9 @@ the plan's own attic legs at z 262 .. 270 (y = 208 in `W-A-BATH-S`, x = 113.5 to
 above FS-ATTIC's gate and between the 12" holes (125.5 < x < 143.5 is shut), and the bar's end
 column crosses D-S-SUITEBATH's swing, so `PR-A-BAR-LAV-CW` and `PR-A-STUBATH-SH-CW` still fall
 to cover-off. `PR-B-LAV-TERMINAL-CW`'s FAIL is a level leg at z = -17.38, inside the gate band
-but under RM-B-BATH's finished ceiling: the gate does not read a room's ceiling.
+but under RM-B-BATH's finished ceiling: the gate does not read a room's ceiling. The stations
+stay anyway: the `trunk:CW` row without them measured 30 eval FAILs, 7.21 ft in exterior
+cavities and 27 proposals, against 27, 6.75 and 28 with them (2026-11-11).
 
 ## 6. Expected outcome and what E4's tests should assert
 

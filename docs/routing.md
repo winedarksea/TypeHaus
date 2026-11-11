@@ -245,7 +245,8 @@ then run `haus fmt`, `haus trial`, inspect the drawing, and run repository verif
   its feeders (each also a lattice line, `supply_tree.riser_stations`, trunk basis §5a). Level
   legs the plan runs outside every floor gate (catlin's attic bar and shower supplies, z 262-270)
   stay shut, and the gate does not read a room's finished ceiling, so the trunk's three open-air
-  members still fall to cover-off. Opening the gate over every wall's plan area, full height,
+  members still fall to cover-off (the stations still pay: without them `trunk:CW` reads 30
+  eval FAILs and 7.21 exterior ft, not 27 and 6.75). Opening the gate over every wall's plan area, full height,
   was tried and not adopted: it cut the trunk's eval FAILs 27 to 20 but moved two into
   RM-A-STUBATH and took the search 98 s to 180 s; a storey-banded opening is the open item.
 - `shortest_route` charges no turn for reversing along one axis (its state is the axis, not the
