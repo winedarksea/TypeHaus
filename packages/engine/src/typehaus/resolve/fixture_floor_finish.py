@@ -39,8 +39,11 @@ def _support_across_drain_holes(model, point, structural_anchor_m, fixture_tag, 
     # A center-drained pan's location lies in its pipe hole, while its body stands on the
     # surrounding sheet. Only holes declared for this fixture's waste can be bridged;
     # a stairwell, unrelated hole or cut crossing the body's edge must still fail.
+    # A hole naming only runs the model no longer holds (lifted or replaced by a route
+    # proposal) is still its drain's; one naming a live run that skips this fixture is not.
     drains = {run.tag for run in model.pipe_runs
               if run.system == "drain" and fixture_tag in run.serves}
+    live = {run.tag for run in model.pipe_runs}
     elevations = []
     for floor in model.floors:
         if len(floor.deck_outline) < 3:
@@ -49,7 +52,8 @@ def _support_across_drain_holes(model, point, structural_anchor_m, fixture_tag, 
         if abs(top - structural_anchor_m) >= SLAB_MATCH_TOLERANCE_M:
             continue
         owned = [Polygon(ring) for _, ring, runs in floor.penetrations
-                 if drains.intersection(runs) and footprint.contains(Polygon(ring))]
+                 if (drains.intersection(runs) or (runs and not live.intersection(runs)))
+                 and footprint.contains(Polygon(ring))]
         if not owned:
             continue
         sheet = Polygon(floor.deck_outline, holes=list(floor.deck_voids))
