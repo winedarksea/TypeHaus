@@ -180,3 +180,22 @@ Roles: BATH2 dry = shower, wet = tub, last = WC; lav own vent. Synthetic ladder:
 * No grading of the vent-sizing table beyond the repo's Table 703.2 column, nor of 905.3's 6" over the rim for
   the wet-vented fixtures' reused vents.
 * Option X/Y choice is a design decision (owner/AHJ); neither is claimed built.
+
+## 9. The tie offer (`haus route --group`)
+
+`cli/group_ties.tie_stations` offers where the group may tie into its main. A main whose head lies across
+a floor-system seam from the room used to offer its three highest in-band stations, all possibly on the far
+side of a joist break. Now: at most **4 stations** (`MAX_TIES`), the plan's own authored ties first (at most 2),
+then the in-band stations (z within 24" below to 6" above the storey datum, a 3" wye pitch clear of every inlet,
+8" apart) dealt round-robin over the storey's floor systems, **nearest the room's drain points first, the highest
+station of each system before any system's second, 3 per system** at most. `_lay` tries them at step 0 in turn
+(a refused station's refusal is tagged "tie i of n at (x, y)" and dropped if a later one lays); each is one
+full gravity search, so a refused dry fixture costs at most 4 searches, and `_dry` then searches the wet vent
+over the same list with the laid station first. The authored three-vent design is untouched; opening the group
+is not the aim, and vent-free 908.2 stays an AHJ question.
+
+BATH2 worked: main `PR-B-MAIN-DRAIN` runs (72, 271) -> (72, 198) in plan inches; the seam between `FS-M-WEST`
+(y <= 259) and `FS-M-MECH` (y >= 261) lies between the head and the room (y 179 to 252). The head is in the
+far system, but two wye inlets stand on the main at y 271 (z -15.4) and y 262 (z -17.0), and 8.125" either way of
+them (y 253.9 to 279) is taken, so the far system offers none; the room's system offers y 253.9 / 245.7 / 237.5
+(z -18.2 / -19.3 / -20.4), as before.

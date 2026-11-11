@@ -40,7 +40,10 @@ ORACLES: dict[str, tuple[Oracle, ...]] = {
               Oracle(note="mep_drain_routing_basis.md", section="§11",
                      test="tests/test_routing_supply.py"),
               Oracle(note="mep_duct_routing_basis.md", section="§5",
-                     test="tests/test_routing_graph.py")),
+                     test="tests/test_routing_graph.py"),
+              # A port stub's tip loses its lattice step back toward the port (no 180).
+              Oracle(note="mep_drain_routing_basis.md", section="§11",
+                     test="tests/test_routing_port_lead.py")),
     "search": (Oracle(note="mep_drain_routing_basis.md", section="§4",
                       test="tests/test_routing_oracle.py"),
                Oracle(note="vent_grade_basis.md", section="§5",
@@ -59,6 +62,10 @@ ORACLES: dict[str, tuple[Oracle, ...]] = {
                             test="tests/test_gravity_search.py"),
                      Oracle(note="mep_drain_routing_basis.md", section="§13",
                             test="tests/test_gravity_search.py"),),
+    "gravity_webs": (Oracle(note="framing_bore_limits.md", section="§13",
+                            test="tests/test_gravity_search.py"),
+                     Oracle(note="framing_bore_limits.md", section="§13",
+                            test="tests/test_open_web_shape.py"),),
     "compaction": (Oracle(note="mep_drain_routing_basis.md", section="§10",
                           test="tests/test_routing_compaction.py"),),
     "fitting_room": (Oracle(note="mep_drain_routing_basis.md", section="§10",
@@ -97,7 +104,10 @@ ORACLES: dict[str, tuple[Oracle, ...]] = {
     # -- /E3 --
     # -- E4 --
     "supply_tree": (Oracle(note="mep_supply_trunk_basis.md", section="§2, §4, §5",
-                           test="tests/test_routing_supply_tree.py"),),
+                           test="tests/test_routing_supply_tree.py"),
+                    # Riser stations as gate holes; a served body excuses a riser in it.
+                    Oracle(note="mep_supply_trunk_basis.md", section="§5a",
+                           test="tests/test_routing_riser_terminal.py"),),
     # -- /E4 --
     # -- E5 --
     # -- /E5 --
@@ -136,6 +146,7 @@ NOT_A_CALCULATION = frozenset({
     # ``floor_blocking.bearing_bays``: a check's rule restated, no arithmetic of its own.
     "bearing_bays",
     "terminal_block",  # a search for a clear point along a wall: geometry, no calculation
+    "terminal_band",  # a vent's z band read off storey datums: a selection, no arithmetic
     "trades/__init__", "trades/pipe", "trades/conduit",
     # -- E0 --
     # -- /E0 --

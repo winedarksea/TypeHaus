@@ -38,7 +38,10 @@
 >   face held, mud closet 29 1/2"); `haus route` found no lane into HS1 or the chase.
 >   `mep.trap_arm_length` (CODE) is the 3D trap-arm walk; `mep.vent_connection` (ADVISORY) grades each tee; BATH2-WC is the one open vent.
 > - **ERV:** EQ-B-ERV carries Broan's port pattern (`rotation=deg(0)`: box west, door south); only
->   the supply lands on its collar. OA/EA/RET are held at service level by the owner.
+>   the supply lands on its collar. OA/EA/RET are held at service level by the owner. The 270 deg
+>   rotate-and-swap was built and does NOT close (2026-11-11, `notes/erv_static_budget.md` §10.18):
+>   an exact OA kit alone drops delivery to ~200.5 cfm, and the crossing is bound by PR-B-SAUNA-VENT's
+>   x=51.5" leg and the 92.7" conduits. Read §10.18 before retrying it.
 > - **Roof:** RF-GARAGE is the RDM vented peak under the same 7" 52131XX as the canopy (one cap
 >   ring, no step); R806.2 passes 873/553 in2: 562 ridge on Profile Vent's 23.4 in2/ft + 311 eave intake
   (48 LF x 6.48). Rake soffits are not intake. Coplanar abutting roofs

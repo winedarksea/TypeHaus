@@ -737,15 +737,17 @@ FLOOR_OPENINGS = [
                  penetration_for=("DU-A-ERV-R-BATH1",),
                  cuts_ceiling_below=False),
     # DU-A-ERV-R-ATTIC's 54.7 degree ramp off the deck into its 20'-8" bay, and
-    # DU-A-ERV-R-STUBATH's drop at (2'-0", 21'-8 1/2") into the 21'-8 1/2" bay (2026-11-07).
+    # DU-A-ERV-R-STUBATH's 45 degree ramp (y 21'-8 1/2" to 22'-2 1/4") off the deck into the 21'-8 1/2"
+    # bay (2026-11-11). It stays in the bay above the board, so the suite ceiling stays whole.
     FloorOpening(uid="NJK1P8AW0K", tag="FO-A-ERV-ATTIC", purpose=FloorOpeningPurpose.CHASE,
                  outline=(pt(inch(14.5), inch(245.75)), pt(inch(20), inch(245.75)),
                           pt(inch(20), inch(250.25)), pt(inch(14.5), inch(250.25))),
                  penetration_for=("DU-A-ERV-R-ATTIC",)),
     FloorOpening(uid="3BDZ9RY2XP", tag="FO-A-ERV-STUBATH", purpose=FloorOpeningPurpose.CHASE,
                  outline=(pt(inch(21.5), inch(258)), pt(inch(26.5), inch(258)),
-                          pt(inch(26.5), inch(263)), pt(inch(21.5), inch(263))),
-                 penetration_for=("DU-A-ERV-R-STUBATH",)),
+                          pt(inch(26.5), inch(269)), pt(inch(21.5), inch(269))),
+                 penetration_for=("DU-A-ERV-R-STUBATH",),
+                 cuts_ceiling_below=False),
     # Its riser back up into W-A-STU-W's cavity at (9'-7 1/2", 21'-8 1/2"), in the same bay.
     FloorOpening(uid="410PHWMXXT", tag="FO-A-ERV-STUBATH-RISER", purpose=FloorOpeningPurpose.CHASE,
                  outline=(pt(inch(113), inch(258)), pt(inch(118), inch(258)),

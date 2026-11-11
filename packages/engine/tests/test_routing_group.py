@@ -71,3 +71,35 @@ def test_a_dry_vented_lav_dropping_to_the_branch_is_graded_908_1_vertical() -> N
     908.1 vertical wet vent the tub does not discharge into, so the tub is not vented."""
     arm, _what, _gap, notes = _ladder(25.58)("T")
     assert arm is None and any("908.1 vertical" in n for n in notes)
+
+
+def test_tie_offer_spans_both_sides_of_a_floor_seam_nearest_first() -> None:
+    """A main running +y across a seam: the room's system first, the far one still offered,
+    and the whole offer capped (group_ties.MAX_TIES)."""
+    from types import SimpleNamespace
+
+    from typehaus.cli.group_ties import MAX_TIES, tie_stations
+
+    def deck(y0, y1):
+        return SimpleNamespace(storey="main", deck_outline=[(0, y0), (9, y0), (9, y1), (0, y1)])
+
+    model = SimpleNamespace(floors=[deck(0, 5), deck(5.1, 10)], pipe_runs=[])
+    main = [(1.0, 0.0, 0.0), (1.0, 10.0, -0.5)]  # metres
+    ties = tie_stations(model, [], main, (-1.0, 1.0), frozenset(), ("main", (1.0, 2.0)))
+    assert len(ties) == MAX_TIES
+    assert {t[1] > 5.05 for t in ties} == {True, False}
+    assert ties[0][1] < 5.05 and ties[1][1] > 5.05  # best of each system before any second
+    near = tie_stations(model, [], main, (-1.0, 1.0), frozenset(), ("main", (1.0, 9.0)))
+    assert near[0][1] > 5.05
+
+
+def test_the_laid_notice_counts_only_what_laid() -> None:
+    from typehaus.cli.cmd_route_group import _laid_fixtures
+
+    order = group_order([_member("WC", "toilet", 3, False, 30.0, 252.74, (72.0, 271.0)),
+                         _member("TUB", "kohler-underscore-6032", 2, True, 78.49, 215.18,
+                                 (72.0, 271.0)),
+                         _member("SH", "shower", 2, True, 76.62, 179.0, (72.0, 271.0))])
+    assert _laid_fixtures(order, []) == ()
+    assert _laid_fixtures(order, [0, 1, 2]) == ("SH",)
+    assert _laid_fixtures(order, [0, 1, 2, 3, 4]) == order.laying

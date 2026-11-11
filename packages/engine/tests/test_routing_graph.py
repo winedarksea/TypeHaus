@@ -125,6 +125,19 @@ def test_a_terminal_inside_an_obstacle_is_kept_and_reported() -> None:
     assert any(abs(n.x - 9.0) < 1e-9 and abs(n.y - 9.0) < 1e-9 for n in graph.nodes)
 
 
+def test_a_terminal_is_reported_only_at_its_own_level() -> None:
+    """The whole column is pardoned, but a terminal stands in what is at ITS z, not in what
+    shares its plan point on another plane."""
+    from shapely.geometry import box
+
+    foot = box(8.0, 8.0, 10.0, 10.0)
+    here = HardPrism(tag="HERE", kind="run", footprint=foot, z0_m=-1.0, z1_m=1.0)
+    above = HardPrism(tag="ABOVE", kind="run", footprint=foot, z0_m=2.0, z1_m=4.0)
+    graph = build_graph(_space(hard=[here, above]), [(9.0, 9.0, 0.0), (0.0, 0.0, 3.0)])
+    assert graph.blocked_terminals == ["HERE"]
+    assert any(abs(n.z - 3.0) < 1e-9 and abs(n.x - 9.0) < 1e-9 for n in graph.nodes)
+
+
 def test_a_vertical_leg_is_cheaper_per_foot_than_a_horizontal_one() -> None:
     """``riser_per_ft`` under 1.0 is what makes a drop the cheap way to change level — it
     is pipe in a wall or a bay rather than pipe across a room. Not free, because it still

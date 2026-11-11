@@ -222,13 +222,15 @@ DUCTS_ERV_ATTIC = [
     # ** CLOSED 2026-09-26: the grille came down to 3'-0", so the riser stops under the vent. **
     DuctRun(uid="WCH6Z4DZX0", tag="DU-A-ERV-R-STUBATH", system=DuctSystem.EXHAUST,
             path=(pt(ft(4, 6), ft(34, 2)), pt(ft(4, 6), ft(33, 1)),
-                  pt(ft(2), ft(33, 1)), pt(ft(2), ft(21, 8.5)),
+                  pt(ft(2), ft(33, 1)), pt(ft(2), ft(22, 2.25)),
                   pt(ft(2), ft(21, 8.5)), pt(ft(9, 7.5), ft(21, 8.5)),
                   pt(ft(9, 7.5), ft(21, 8.5))),
             elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z,
                         _ATTIC_BAY_HIGH_Z, _ATTIC_BAY_HIGH_Z, inch(36)),
+            # (2026-11-11) The 5 3/4" deck-to-bay drop is a 45 degree ramp (5 3/4" of run) with an
+            # adjustable elbow at its foot: two stamped 90s need 12" and an adjustable pair 9 1/2".
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
-            design_cfm=DU_A_ERV_R_STUBATH),
+            adjustable_elbows=(4,), design_cfm=DU_A_ERV_R_STUBATH),
     DuctRun(uid="DYNQDC9ZMJ", tag="DU-A-ERV-R-ATTIC", system=DuctSystem.EXHAUST,
             # (2026-11-07) Stock turns only: the 6" vertical drop at the foot of the lane was
             # shorter than its two 90s' take-offs (12"). The lane turns west on the deck and

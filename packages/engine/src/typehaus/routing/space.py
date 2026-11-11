@@ -37,7 +37,15 @@ from typehaus.routing.obstacles import (
 #: roughly a 20x20 lattice on both plan axes, which is far past anything a house needs and
 #: comfortably inside what A* explores in a second. **Raise it deliberately** if a real
 #: model needs more; do not make the world coarser to fit under it.
-MAX_CANDIDATE_LINES = 400
+#:
+#: **450 on 2026-11-11 (was 400), for one plan search.** `tree:main`'s 1.5" group measured
+#: 315 x 393 on 2026-11-07, 7 under the cap; UPC 2018's 2" drains made it the 2" group (a
+#: larger radius moves every prism edge) and the same lattice is 339 x 416 (banded: 1,148
+#: prisms, 166 x + 172 y lines from existing runs alone). Merging near lines is not safe: a
+#: kept low edge sits inside a neighbour's prism. It is a plan search, so the cap does not
+#: bound it: 339 x 416 = 141k nodes of MAX_LATTICE_NODES' 650k. Measured with the cap at 450
+#: (loaded machine): graph 4.0 s, search 69 s, 1.18 GB peak, all 8 fixtures lay (4 before).
+MAX_CANDIDATE_LINES = 450
 
 #: How many lattice nodes the graph may build. The line caps above do not bound this —
 #: 400 x 400 x 60 is inside both of them and is nine million nodes — so this is the guard

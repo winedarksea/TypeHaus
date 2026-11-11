@@ -138,6 +138,9 @@ that keep the tees:
   (57, 192, -8.8) is also the first vertex of CW-BATH1, CW-BATH2 and CW-SBATH, which all derive
   CW-TRUNK: three false losses. Its one true child is CW-BATH (tee at (84, 330, -6.8) on its y = 330 leg).
   Drains and vents keep the geometric test (either end within 1" of the line).
+  *2026-11-11:* EQ-B-WH's move (2026-11-10) cut CW-WH to 9.0 ft; it has no kept child now and
+  CW-BATH tees on the trunk at (57, 243). The lift re-lays CW-WH in 8.91 ft (dropping on the heater
+  inlet's own axis to -104.38") and CW-BATH in 12.05 ft. The L6 numbers above are the 11-07 house.
 * **L7 Hold the tail an unlifted branch tees on.** For the branches that are not lifted, find the segment
   `i` (parameter `t`) of the lifted run's authored line nearest each tee; the hold starts at vertex
   `k = i + 1` if `t = 1`, else `i`, minimised over the branches and capped at `n - 2`. The last

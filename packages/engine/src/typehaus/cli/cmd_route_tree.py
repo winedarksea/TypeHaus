@@ -132,8 +132,11 @@ def _propose_tree(model: ResolvedModel, target: str, *, slope: float | None,
         (tie_path, [z for _p, z in reachable])]
     from typehaus.cli.route_tree_branches import Branches
     from typehaus.cli.route_tree_group import _route_group as route_group
+    from typehaus.routing.trades import pipe as pipe_trade
 
-    branches = Branches.of_main(target, [(x, y, z) for (x, y), z in reachable])
+    branches = Branches.of_main(
+        target, [(x, y, z) for (x, y), z in reachable],
+        pipe_trade.radius_m(main.diameter_m, main.material, main.insulation))
     proposals: list[tuple[RouteProposal, str]] = []
     notices: list[str] = []
     sizes = sorted({diameters[tag] for tag in points}, reverse=True)

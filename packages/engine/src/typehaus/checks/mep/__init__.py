@@ -70,6 +70,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     shower_assembly,
     soakaway_storage,
     sump_discharge,
+    supply_freeze,
     supply_protection,
     terminal_necks,
     vent_geometry,

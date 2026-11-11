@@ -19,6 +19,7 @@ from typing import TYPE_CHECKING, Any
 import typer
 
 from typehaus.cli._shared import console
+from typehaus.cli.group_ties import tie_stations
 from typehaus.cli.route_options import RouteOptions
 from typehaus.quantities import M_PER_IN
 
@@ -29,7 +30,6 @@ if TYPE_CHECKING:  # pragma: no cover - typing only
 
 #: ``mep.fixture_drain_reach``'s band round the storey datum, where a group may tie in.
 _BAND_BELOW_M, _BAND_ABOVE_M = 24 * M_PER_IN, 6 * M_PER_IN
-_SPREAD_M = 8 * M_PER_IN
 _SUBFLOOR_M = 0.75 * M_PER_IN
 
 
@@ -85,7 +85,7 @@ def group_proposals(model: ResolvedModel, group: str, opts: RouteOptions
     plan = None if room is None else _group_plan(model, room, problems)
     if plan is None:
         return [], problems or [f"{group}: names no room"], [], []
-    members, storey, tie_run, band = plan
+    members, storey, tie_run, band, near = plan
     own: frozenset[str] = frozenset()
     notices: list[str] = []
     passes: list[str] = []  # every pass's problems, tagged, the last early return included
@@ -94,8 +94,9 @@ def group_proposals(model: ResolvedModel, group: str, opts: RouteOptions
         order = group_order(members, own)
         if isinstance(order, str):
             return [], [*problems, *passes, f"{room}: no 908.2 group — {order}"], notices, seen
-        ties = _ties(model, set(order.laying), tie_run, band)
+        ties = _ties(model, set(order.laying), tie_run, band, (storey, near))
         laid, tried, refusals, blame = _lay(model, room, order, storey, ties, tie_run, opts)
+        done = _laid_fixtures(order, laid)
         label = _pass_label(attempt, order.dry, own)
         passes += [f"[{label}] {line}" for line in tried]
         seen += [replace(r, attempts=(f"group {label}", *r.attempts)) for r in refusals]
@@ -104,13 +105,25 @@ def group_proposals(model: ResolvedModel, group: str, opts: RouteOptions
         notices.append(f"{room}: {', '.join(blame)} held to its own vent and the group laid "
                        f"again — {tried[-1] if tried else 'no wet join'}")
         own |= set(blame)
-    notices.append(f"{room}: {order.why}; laid {' -> '.join(order.laying)}, tied to {tie_run}")
-    # The runs lifted are exactly what the group stands in for: never the tie run by serves.
-    lifted = tuple(sorted(_lifted(model, set(order.laying))))
+    if done:
+        left = order.laying[len(done):]
+        notices.append(f"{room}: {order.why}; laid {' -> '.join(done)}, tied to {tie_run}"
+                       + (f"; {' -> '.join(left)} unlaid" if left else ""))
+    else:
+        notices.append(f"{room}: {order.why}; nothing laid")
+    # The runs lifted are exactly what the laid fixtures stand in for: never the tie run by
+    # serves, and never the drain of a fixture left unlaid.
+    lifted = tuple(sorted(_lifted(model, set(done))))
     laid = [replace(p, replaces=lifted) for p in laid]
     notices += [f"{t}: keeps its own vent and authored tie (908.2.1.3, 908.2.1.5)"
-                for t in order.own_vent]
+                for t in order.own_vent if done]
     return [(p, storey) for p in laid], [*problems, *passes], notices, seen
+
+
+def _laid_fixtures(order: GroupOrder, laid: list) -> tuple[str, ...]:
+    """The fixtures ``laid`` holds: the dry arm, wet vent and dry vent stand for the first,
+    each later proposal for the next."""
+    return order.laying[:max(0, len(laid) - 2)]
 
 
 def _pass_label(attempt: int, dry: str, held: frozenset[str]) -> str:
@@ -131,8 +144,10 @@ def _lay(model: ResolvedModel, room: str, order: GroupOrder, storey: str, ties: 
         if work is None:
             break
         touch = frozenset({tie_run, *(p.tag for p in laid)})
-        found = _step(work, fixture, ties[0], touch, laid[1].tag if laid else None, opts,
-                      problems, refusals)
+        if step == 0:
+            found, ties = _first_step(work, fixture, ties, touch, opts, problems, refusals)
+        else:
+            found = _step(work, fixture, ties[0], touch, laid[1].tag, opts, problems, refusals)
         if found is not None and step == 0:
             found = _dry(work, found, (ties, storey), touch, room, order, opts, problems,
                          refusals)
@@ -153,6 +168,28 @@ def _lay(model: ResolvedModel, room: str, order: GroupOrder, storey: str, ties: 
         if step < len(order.laying) - 1:
             work = _resolved(_with(work, laid), problems)
     return laid, problems, refusals, ()
+
+
+def _first_step(work: ResolvedModel, fixture: str, ties: list, touch: frozenset[str],
+                opts: RouteOptions, problems: list[str], refusals: list
+                ) -> tuple[tuple | None, list]:
+    """The dry fixture's drain and vent to the first tie station that takes it, and ``ties``
+    with that station first (the rest follow it into ``_dry`` and the later steps). A refused
+    station's problems and refusals go when a later one lays; when none does, each stays,
+    its refusal tagged with the station it was searched to. At most ``len(ties)`` searches
+    (``group_ties.MAX_TIES``)."""
+    tried = len(problems), len(refusals)
+    for i, tie in enumerate(ties):
+        before = len(problems), len(refusals)
+        found = _step(work, fixture, tie, touch, None, opts, problems, refusals)
+        if found is not None:
+            del problems[tried[0]:before[0]], refusals[tried[1]:before[1]]
+            return found, [tie, *ties[:i], *ties[i + 1:]]
+        x, y, z = (c / M_PER_IN for c in tie)
+        label = f"tie {i + 1} of {len(ties)} at ({x:g}\", {y:g}\", z {z:.1f}\")"
+        refusals[before[1]:] = [replace(r, attempts=(label, *r.attempts))
+                                for r in refusals[before[1]:]]
+    return None, ties
 
 
 def _dry(work: ResolvedModel, found: tuple, at: tuple, touch: frozenset[str], room: str,
@@ -182,12 +219,12 @@ def _dry(work: ResolvedModel, found: tuple, at: tuple, touch: frozenset[str], ro
                      cavity_radius_m=pipe_trade.cavity_radius_m(size, "drain"),
                      serves=arm.serves, falls=True, touch=touch | {arm.tag, vent.tag})
     # Each tie station in turn: the next is tried only where the one before refused.
+    tried = len(problems), len(refusals)
     for tie in ties:
-        tried = len(problems)
         made = _search(model, replace(ends, root=tuple(tie)), f"{room}-WV", (), opts,
                        problems, refusals)
         if made is not None:
-            del problems[tried:]
+            del problems[tried[0]:], refusals[tried[1]:]
             break
     if made is None:
         return None
@@ -230,7 +267,9 @@ def _group_plan(model: ResolvedModel, room: str, problems: list[str]) -> tuple |
         return None
     tie_run = parents.most_common(1)[0][0]
     band = (datum - _BAND_BELOW_M, datum + _BAND_ABOVE_M)
-    ties = _tie_stations(model, [], drains[tie_run], band, frozenset(own))
+    near = (sum(p[0] for p in points.values()) / len(points),
+            sum(p[1] for p in points.values()) / len(points))
+    ties = tie_stations(model, [], drains[tie_run], band, frozenset(own), (str(storey.tag), near))
     if not ties:
         problems.append(f"{room}: {tie_run} has no station within 2 ft below and 6 in above "
                         f"the {storey.tag} datum (mep.fixture_drain_reach's band) clear of "
@@ -243,11 +282,13 @@ def _group_plan(model: ResolvedModel, room: str, problems: list[str]) -> tuple |
             tag=tag, symbol=units[tag].symbol, dfu=units[tag].dfu,
             floor_level=under_floor_weir_m(model, tag, datum, port) is not None,
             flow_m=abs(point[0] - ties[0][0]) + abs(point[1] - ties[0][1])))
-    return members, str(storey.tag), tie_run, band
+    return members, str(storey.tag), tie_run, band, near
 
 
-def _ties(model: ResolvedModel, relaid: set[str], tie_run: str, band: tuple) -> list[tuple]:
-    """The tie stations for the members re-laid: their own authored ties first."""
+def _ties(model: ResolvedModel, relaid: set[str], tie_run: str, band: tuple,
+          site: tuple[str, tuple[float, float]]) -> list[tuple]:
+    """The tie stations for the members re-laid: their own authored ties first, then the
+    main's stations floor system by floor system (``group_ties``)."""
     from typehaus.resolve.mep_trap_arm import drain_parent, run_points
 
     drains = {r.tag: pts for r in model.pipe_runs
@@ -257,35 +298,7 @@ def _ties(model: ResolvedModel, relaid: set[str], tie_run: str, band: tuple) -> 
     authored = sorted((drains[t][-1] for t in own
                        if (p := drain_parent(drains[t][-1], t, drains, radii)) and p[0] == tie_run),
                       key=lambda p: -p[2])
-    return _tie_stations(model, authored, drains[tie_run], band, frozenset(own))
-
-
-def _tie_stations(model: ResolvedModel, authored: list, pts: list, band: tuple[float, float],
-                  lifted: frozenset[str]) -> list[tuple]:
-    """Where the group may tie in, best first: its authored ties, highest first (where the
-    plan already ties it, band or no band), then the tie run's highest point inside
-    ``band`` (sampled every 1/4", spread 8" apart), each a 3" wye's pitch clear of every inlet
-    left on it (``route_roots._spaced_goals``' test). At most three, tried in turn."""
-    from typehaus.resolve.mep_inlet_spacing import level_inlets, main_inlet_pitch_m
-
-    pitch = main_inlet_pitch_m(3 * M_PER_IN) or 0.0
-    inlets = level_inlets(model.pipe_runs, lifted)
-
-    def clear(p: tuple, banded: bool = True) -> bool:
-        return (not banded or band[0] <= p[2] <= band[1]) and all(
-            abs(z - p[2]) >= pitch or abs(x - p[0]) + abs(y - p[1]) >= pitch
-            for x, y, z, _t in inlets)
-
-    sampled = [tuple(a[i] + k / n * (b[i] - a[i]) for i in range(3))
-               for a, b in zip(pts, pts[1:], strict=False)
-               for n in [max(1, int(math.dist(a, b) / (0.25 * M_PER_IN)))]
-               for k in range(n + 1)]
-    # Spread at least a joist bay's half apart: a station hard by a member takes no drop.
-    spread: list[tuple] = []
-    for p in sorted(sampled, key=lambda p: -p[2]):
-        if clear(p) and all(math.dist(p[:2], q[:2]) >= _SPREAD_M for q in spread):
-            spread.append(p)
-    return ([p for p in authored if clear(p, False)] + spread)[:3]
+    return tie_stations(model, authored, drains[tie_run], band, frozenset(own), site)
 
 
 def _lifted(model: ResolvedModel, fixtures: set[str]) -> set[str]:

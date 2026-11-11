@@ -555,6 +555,14 @@ line crosses in y from y = 8" to 40" at z = 4 5/8".
 * Cost: 32" of travel + 2 x `bore_joist_in` 36" = **104"**.
 * At z = 7" the hole leaves 1.0625" to the top edge and the edge is refused.
 
+**A run that stays still holds its holes.** A search hides the runs it may occupy (`touch`), and
+the run a drain ties into is one of them; so a branch could take a D pocket, or sit 2.7" from a
+TJI hole, beside its own parent. `holes.kept_lines` hands the touched runs that stay back as laid
+lines, and a tree's `Branches.laid_lines()` hands the main and every branch laid so far: the same
+rules as above (one run per D pocket, "2 x the larger hole" clear in a TJI), read off the same
+`leg_crossings` stations. The 2" run through D13 in §13 is the worked case: it takes the pocket
+once, and a second run through it is refused until the first is lifted.
+
 ## 11. The I-joist ladder: ESR-1153 Table A, read (2026-11-06, decision #117)
 
 `plan/framing_charts.py` transcribes the 11 7/8" TJI 230 round-hole row of ESR-1153 Fig. 2
@@ -691,3 +699,62 @@ placeholder 3 1/2" is gone), and each plumbing end is 4 1/2" deeper:
   truss's pocket D13 under W-S-SBF, where the vent takes off. That truss's seven pockets D9..D15
   were all spoken for, so `PR-B-CW-SUITE` moved from D13 to D14 and `CD-M-DATA-KITCH` left the
   truss for the 257.75..270.25 bay at y=22'-2".
+
+---
+
+## 13. A falling run through an open-web truss: the height each station leaves (2026-11-11)
+
+A level run's crossing is graded exactly at graph build (§10, `members.cuts`). A falling run's
+height is not known there, so until now its only limit was chord to chord, and `--tree
+PR-M-S-SUITE-DRAIN` laid a 2" drain down pocket D13 and a 1 1/4" one through the top of R1.
+`resolve/open_web.station_bands` solves the check's own outline test for z at one station;
+`routing/gravity_webs` hands the search the complement. Reproduced by
+`test_open_web_shape.py` and `test_gravity_search.py`.
+
+**Constants** (`open_web_truss_geometry.md` §0-1, J12, the 18' truss): truss bottom z = 108.125,
+x = u + 1.75, window 1.5 .. 10.375 above the bottom. Nodes: 142 top, 154 bottom, 166 top, 178
+bottom, 190 top, end vertex 203.5 bottom. A 12" diagonal rises 8.875 / 12 = 0.7396, so its
+secant is sqrt(1 + 0.7396^2) = 14.925 / 12 = 1.24375. A round of radius r clears a diagonal
+when its centre stands off the diagonal's centreline, measured vertically, by
+**0.75 x 1.24375 + r x 1.24375**: the half web and the radius, each square to the web. For 2"
+PVC (2.375 OD, r = 1.1875): 1.9375 x 1.24375 = **2.4098**.
+
+Chords, 2" PVC: bottom 1.5 + r = 2.6875, **110.8125**; top 10.375 - r = 9.1875, **117.3125**.
+
+| Case | Working (above the bottom) | Band (absolute) |
+|---|---|---|
+| D11 (hung on the top chord, apex 154 bottom), u = 154 | both diagonals at 1.5; 1.5 + 2.4098 = 3.9098 | 112.035 .. 117.3125 |
+| D11, u = 153.06 (x = 154.81) | 1.5 + 0.94 x 0.7396 = 2.195; + 2.4098 = 4.605 | 112.73 .. 117.3125 |
+| Stacked, u = 172 | the 166-178 diagonal at mid-height 5.9375; under it 5.9375 - 2.4098 = 3.5277 (D12), over it 5.9375 + 2.4098 = 8.3473 (D13) | 110.8125 .. 111.653 and 116.472 .. 117.3125 |
+| u = 177.94 (x = 179.69) | D12 ends at 178 - 1.261 = 176.74, D14 starts at 178 + 1.261 = 179.26, so only D13: 1.5 + 0.06 x 0.7396 + 2.4098 = 3.954 | 112.08 .. 117.3125; **none once D13 is taken** |
+| 1 1/4" PVC (1.66 OD, r = 0.83) in R1 | R1 is 1.9375 .. 9.9375: 1.9375 + r = 2.7675, 9.9375 - r = 9.1075 | 110.8925 .. 117.2325 |
+
+**The two proposals this refuses.**
+
+1. **TUBSH, x = 179.69.** It crosses joists y = 224 and 240 at u = 177.94, the row above: D13
+   alone, and `PR-B-CW-SUITE` holds D13 on both. The station is an all-z block, named.
+2. **LAV at joist y = 256.** The leg x = 110.19 falls 117.5625 -> 116.75 between y = 263.25 and
+   227.0625; at y = 256, t = 7.25 / 36.1875 = 0.2003, z = 117.5625 - 0.2003 x 0.8125 = **117.40**.
+   Against R1's 117.2325 that is **0.17" over**: `mep.run_member_crossing`'s "ON A WEB".
+
+**Why D14 does not rescue TUBSH.** D14 hangs on the bottom chord from apex 190 between 178 and
+the end vertex 203.5. Its right diagonal is the 13.5" end diagonal, rise 8.875 / 13.5 = 0.6574,
+secant 1.19675, offset 1.9375 x 1.19675 = 2.3187. Under the left diagonal the crown limit is
+10.375 + 0.7396 d - 2.4098, under the right 10.375 - 0.6574 d - 2.3187, d = u - 190. They meet
+at d = 0.0911 / 1.397 = 0.0652: the pocket's best height is 8.0134, **116.135 at x = 191.82**.
+A lane there owes the tie (115.5 at x = 150, y = 216) its fall from joist y = 240:
+(41.82 + 24) / 12 x 0.25 = 1.371, so z >= **116.871: 0.74" short** at the very best station.
+At x = 192 exactly, d = 0.25, the limit is 10.2107 - 2.3187 = 7.892, 116.017, against 116.875:
+0.86" short.
+
+**Worked in the search.** A centreline at a station is `start - shift`, so each free band
+`[low, high]` leaves the starts `[low + shift, high + shift]`; `gravity_webs` gives the search
+everything else in the chord window, each free band inset 1/16" for the snap. Worked on §8's
+row: ceiling 116.50, tie 114.00 at 72", 1/4"/ft, a truss at 36" (0.75" of fall), one pocket
+115.50 .. 116.50. Inset, 115.5625 .. 116.4375, so the start is at least 115.5625 + 0.75 =
+**116.3125**, where the tie alone wanted 115.50. The pocket taken, no start passes and the
+crossing's tag names the holder.
+
+**A lane on the line.** `leg_crossings` is strict, so a lattice node standing exactly on a truss
+line (catlin has them at y = 208, 310, 324) makes neither edge a crossing; a straight lane
+through it would pass unread. `gravity_webs` reads the line from both edges.

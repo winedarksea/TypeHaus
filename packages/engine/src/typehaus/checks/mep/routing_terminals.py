@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from shapely.geometry import LineString, Point, Polygon
+from shapely.geometry import LineString, Point
 
 from typehaus.checks.registry import CheckContext
 from typehaus.resolve.placeables import placed_xy
@@ -80,20 +80,18 @@ def fixture_trim(ctx: CheckContext, tag: str, path: tuple[tuple[float, float], .
                  z: tuple[float, ...], radius: float) -> set[int]:
     """Legs from a run's end inside a served fixture's footprint and under its top: its trap
     and drop. Neither a long leg nor a riser climbing out of it to the ceiling qualifies."""
+    from typehaus.resolve.riser_cover import in_body, served_bodies
+
     run = next((r for r in ctx.model.pipe_runs if r.tag == tag), None)
     if run is None or not run.serves:
         return set()
-    bodies = [(Polygon(c.footprint).buffer(1e-3), c.body_z1_m)
-              for c in ctx.model.canvas_objects
-              if c.tag in run.serves and len(c.footprint) >= 3 and c.body_z1_m is not None]
+    bodies = served_bodies(ctx.model, run.serves)  # one predicate with the router's
     if not bodies:
         return set()
 
     def inside(index: int) -> bool:
         piece = LineString([path[index], path[index + 1]])
-        top = max(z[index], z[index + 1]) + radius
-        return any(shape.covers(piece) and top <= body_top + 1e-3
-                   for shape, body_top in bodies)
+        return in_body(bodies, piece, max(z[index], z[index + 1]) + radius)
 
     out: set[int] = set()
     for order in (range(len(path) - 1), reversed(range(len(path) - 1))):

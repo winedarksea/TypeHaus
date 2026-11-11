@@ -88,7 +88,7 @@ exterior wall. Every rule has a hand-worked note (`routing/oracle.py`).
 | A falling run crosses rims and joists, never rides them, and never a blocking flange; foundation walls, exterior insulated cavities (at their own height) and the outside of the decks are hard; a tie is pardoned only its own run; the drop into a tie is tested | `gravity_band.rail_prisms`, `obstacles`, `gravity_band.terminal_pardons` | drain basis §13 |
 | A trunk's level legs stay inside the floor system's z gate; a riser only in a 24" hole at each end | `routing/supply_tree`, `cli/cmd_route_supply_tree` | `mep_supply_trunk_basis.md` §5 |
 | A branch tees only onto a run that can carry its WSFU, up the whole host chain | `cli/route_supply_group` | `mep_supply_trunk_basis.md` §2 |
-| A pipe riser stands in wall cover or a soffit, never a finished flat-ceiling room's open air, except at the route's own ends in the room they stand in; a supply branch with no such lane is laid last with cover off and noted | `resolve/riser_cover`, `routing/members.cuts` | `mep.run_in_finished_volume` |
+| A pipe riser stands in wall cover or a soffit, never a finished flat-ceiling room's open air, except at the route's own ends, or inside a served fixture's body holding one and under its top (the check's `fixture_trim`), in the room they stand in; a supply branch with no such lane is laid last with cover off and noted | `resolve/riser_cover`, `routing/members.cuts` | `mep.run_in_finished_volume`, `mep_supply_trunk_basis.md` §5a |
 | A fixture end inside a door swing or a duct moves to the nearest legal point on its own wall, or (its riser column crossing one) is refused with a typed `TerminalBlock`; a swing or duct is pardoned at the terminal's own level only | `routing/terminal_block`, `graph.build_graph` | — |
 | `--lift` keeps a supply's tees: only branches derived to tee on it count, their legs are held as authored, and a lifted branch tees onto its feeder's re-laid line | `cli/route_tree_lift`, `cli/route_supply_roots` | `mep_tree_ripup_basis.md` §3 L6-L9 |
 | A buried outdoor run is left as authored | `cli/cmd_route_supply_tree` | `mep_supply_trunk_basis.md` §3 |
@@ -101,6 +101,7 @@ exterior wall. Every rule has a hand-worked note (`routing/oracle.py`).
 | A refusal names what stopped the furthest-reaching label (its path), not the tightest miss anywhere in the search | `GravityRefusal.front`, `settle` | drain basis §13 |
 | A floor crossing keeps clear of the holes already there, authored or laid earlier in the campaign: I-joist "2 x the larger hole" (ESR-1153 Table A fn1); an open-web crossing lands in an opening it fits, one run per D pocket | `routing/holes`, `resolve/mep_hole_chart`, `resolve/open_web` | `framing_bore_limits.md` §10-11 |
 | A level edge through a blocked bearing-line bay stays inside its 2x6 box (crown under the top rail, sides in the bay); risers pass | `routing/bearing_bays`, `resolve/floor_blocking.bearing_bays` | `mep.run_through_blocking` |
+| A falling run crosses a truss only at a height a free opening leaves it there: the complement of each station's bands is forbidden, a station with none is an all-z block naming the pocket's holder | `routing/gravity_webs`, `resolve/open_web.station_bands` | `framing_bore_limits.md` §13 |
 | Open-web chords are flange prisms along each truss: a run crosses a truss through its web window, never rides inside a chord | `routing/obstacles` | drain basis §13 |
 | A turn back along its own axis (a lav arm out to its wall tee and back) stays a vertex through simplification; its take-off is that vertex (UPC 908.2) | `routing/search._reverses`, `RouteProposal.snapped` | group basis §3 to §5 |
 | 908.2 is graded strictly: a child rising more than it runs is a 908.1 vertical wet vent, a dry-vented lavatory's drop included; a closet may drop to the drain | `resolve/mep_trap_arm.grade_wet_vent`, `cli/route_fixture_wet` | group basis §4, §5 |
@@ -132,10 +133,12 @@ lays the whole group); seeds keep the two cheapest take-offs (`keep=2`); a verti
 stack pitch is left to the check; a tie's fitting is named but not priced; rack lanes exist
 only inside `--house` and `--manifold` campaigns. `--tree` prints each branch graded alone, so
 a branch meets the authored drain another branch replaces; the scorecard grades the tree as
-one network. Neither catlin bathroom group lays on today's geometry (the supply lanes stop
-it). On `tree:main`, P8 re-lays BATH2-TUB one size up onto BATH2-SH; 7 of 8 branches lay in about
-83 s and one still refuses (read the scorecard row for which). The stamped Linx elbow has no published centre-to-face (the 1.5 D gored
-radius stands in), and the flex bend radius and the GV0772 transition length are unread
+one network. Neither catlin bathroom group lays whole: BATH2 lays its SH arm, 3" wet vent and
+dry vent and refuses TUB and WC; SUITEBATH stays the authored three-vent design. On `tree:main`, P8 re-lays BATH2-TUB one size up onto BATH2-SH. Its 2" group is a 339 x 416
+plan lattice (`MAX_CANDIDATE_LINES` 450; its 1.5" form was 315 x 393 before UPC 2018's 2" drains):
+all three size groups build and 8 of 8 fixtures lay (395 s wall measured with other runs on the
+machine: search 69 s for the 2" group, 1.18 GB peak). The stamped Linx elbow has no published
+centre-to-face (its catalog gives only rC ≈ 1.5 d1; the 1.5 D radius stands in), and the flex bend radius and the GV0772 transition length are unread
 (counted 0, and said so).
 
 ## Interpret and accept
@@ -154,7 +157,11 @@ is a refusal naming the obstruction. Oblique directions, approximate ports, tee 
 gravity runs are not constrained. The stub's travel and one bend where the route turns at its
 tip are priced into the proposal's cost (`port_stub_stated_in`, `port_stub_bend_in`) after the
 search, so they change a reported cost, never a route. `PortKit` leads and duct tip turns are
-not added (`duct_search` already charges the start heading).
+not added (`duct_search` already charges the start heading). The search has no heading at a
+terminal, so `forbid_port_reversal` cuts the tip's lattice step back along the stub toward the
+port, both ways, right after each `build_graph` (`_propose`, `space_for`): a route may not
+leave or reach the tip over its own stub (drain basis §11). A reversal that still reaches
+`attach_priced` is noted and never priced as a bend.
 
 **What a proposal replaces.** `--evaluate` removes from the candidate plan the run of the
 proposal's own name and any same-system run whose `serves` it covers, so a route is never graded
@@ -216,23 +223,55 @@ then run `haus fmt`, `haus trial`, inspect the drawing, and run repository verif
 
 - `--lift` still refuses a supply whose unlifted branch tees on its first leg ("loses N"), and
   grades each re-laid line on its own, against the authored runs.
-- `--group` offers only the three highest in-band tie stations on the tie run; on a main whose
-  head lies across a floor-system seam from the room, every offered tie is on the far side.
+- `--group` offers at most four tie stations (`cli/group_ties`): two authored, then the main's
+  in-band stations dealt per floor system, nearest the room first; each refused station costs a
+  full search. A station refused before one that lays is dropped from the refusals. A partial
+  group (the dry fixture laid, a later one refused) is proposed and replaces only the laid
+  fixtures' runs.
 - Vent-free 908.2 bathroom groups are not proposed; whether 908.2 admits a dry-vented lavatory's
   drop is an AHJ question.
 - An off-catalog round duct turn (outside the 30/45/90 +/-10 deg windows) is made by the house's
   adjustable `DuctElbowRow`, graded as the bought 90 with loss C x K read from the row's authored
   `angle_k`. A turn no adjustable row at that size can make (a reversal, or no row) stays ungraded.
-- `PR-B-BATH-VENT` builds under `MAX_LATTICE_NODES` (650,000) but finds no route: its root
-  lanes are blocked by PR-B-BATH-DRAIN, and a narrower `--margin` changes nothing.
+- A vent with no `--level` is banded to the storeys its terminals span (`routing/terminal_band`),
+  not the whole house: `PR-B-BATH-VENT` was 674,698 nodes (19 levels, eight of them corridor planes
+  on main, second and attic) and is 268,128 (13 levels, all basement). A vent that must leave its
+  terminals' storeys needs an explicit wider band, which does not exist yet; ducts and risers are
+  not banded.
+- A `RoughOpening` that names a run in `penetration_for` is no obstacle to that run (nor to a run it
+  is joined to): the origin standing in `AO-M-ERV-OA` had no lattice step off it when no other
+  level was nominated. The fit is still graded by `mep.duct_penetrations`.
 - The riser-cover rule covers flat-ceiling rooms only; sloped (FollowRoof) rooms, mechanical
   rooms and rooms with `exposed_services` are not zones. `SUPPLY-GATE` holes confine supply
-  risers regardless of cover (the lattice never reads a prism's `applies`).
-- The supply trunk's remaining evaluation fails are the three open-air risers in RM-M-LAUNDRY,
-  which need a chase (a house edit). Laid-run holes reach supply campaigns only; drain campaigns
-  do not pass `build_space(laid=)` yet.
+  risers regardless of cover (the lattice never reads a prism's `applies`): a group's holes are
+  its fixture ends, laid branch ends, and the riser stations of each member's authored run and
+  its feeders (each also a lattice line, `supply_tree.riser_stations`, trunk basis §5a). Level
+  legs the plan runs outside every floor gate (catlin's attic bar and shower supplies, z 262-270)
+  stay shut, and the gate does not read a room's finished ceiling, so the trunk's three open-air
+  members still fall to cover-off (the stations still pay: without them `trunk:CW` reads 30
+  eval FAILs and 7.21 exterior ft, not 27 and 6.75). Opening the gate over every wall's plan area, full height,
+  was tried and not adopted: it cut the trunk's eval FAILs 27 to 20 but moved two into
+  RM-A-STUBATH and took the search 98 s to 180 s; a storey-banded opening is the open item.
+- `shortest_route` charges no turn for reversing along one axis (its state is the axis, not the
+  signed heading), and `bend_price` reads the arc off the previous node, so a sub-inch back-step
+  can buy a 4" PEX bend for a 24" fitting: catlin's `trunk:CW` proposals carry 9 such
+  180-degree vertices (`mep.fitting_pattern` UNKNOWN), none at a port. Unchanged: drain basis §4
+  pins the search's expansions.
+- The router excuses a riser in a served fixture's body when the body holds one of the route's
+  ends, in the body's own room; the check excuses only the legs walked in from a run's end, so
+  a mid-run riser through that body would still be graded.
+- Exterior insulated bays are priced per foot, not refused, and the router does not know where
+  in the bay a pipe sits; `mep.supply_freeze_exposure` (a house advisory) grades that depth, so a
+  supply proposal through an exterior bay may carry its FAIL (`trunk:CW`: 12).
+- Laid-run holes reach supply and drain campaigns: a
+  house campaign and a `--lift` re-lay pass what is laid so far (`holes.laid_lines`), a tree its
+  `Branches.laid_lines()` (the main it ties into included, hidden from the space by `touch`), and a
+  drain keeps its tie target's own holes (`holes.kept_lines`). Known gap: same-size I-joist siblings
+  of one tree group, since `ijoist_bores_ok` reads the space built per size group (the D pockets are
+  per search and exact); `mep.run_member_crossing` grades two branches bored too close, the search
+  does not. A P8 re-lay's world is built without `laid` for the same reason.
 - A full scorecard run takes about 7 minutes: rows run in forked workers (`HAUS_SCORECARD_JOBS`,
-  default min(4, cores/2)) and the longest row (`tree:main`, about 107 s) sets the floor.
+  default min(4, cores/2)) and the longest row (`tree:main`, minutes now its 2" group lays) sets the floor.
 
 ## Read only the relevant implementation
 

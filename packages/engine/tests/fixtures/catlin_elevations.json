@@ -2469,8 +2469,6 @@
 "ceilings/CEIL-RM-S-PLANT/z1_m": 5.794375,
 "ceilings/CEIL-RM-S-STUDY2/z0_m": 5.7785,
 "ceilings/CEIL-RM-S-STUDY2/z1_m": 5.794375,
-"ceilings/CEIL-RM-S-SUITE-10/z0_m": 5.7785,
-"ceilings/CEIL-RM-S-SUITE-10/z1_m": 5.794375,
 "ceilings/CEIL-RM-S-SUITE-2/z0_m": 5.7785,
 "ceilings/CEIL-RM-S-SUITE-2/z1_m": 5.794375,
 "ceilings/CEIL-RM-S-SUITE-3/z0_m": 5.7785,
@@ -2483,10 +2481,6 @@
 "ceilings/CEIL-RM-S-SUITE-6/z1_m": 5.794375,
 "ceilings/CEIL-RM-S-SUITE-7/z0_m": 5.7785,
 "ceilings/CEIL-RM-S-SUITE-7/z1_m": 5.794375,
-"ceilings/CEIL-RM-S-SUITE-8/z0_m": 5.7785,
-"ceilings/CEIL-RM-S-SUITE-8/z1_m": 5.794375,
-"ceilings/CEIL-RM-S-SUITE-9/z0_m": 5.7785,
-"ceilings/CEIL-RM-S-SUITE-9/z1_m": 5.794375,
 "ceilings/CEIL-RM-S-SUITE/z0_m": 5.7785,
 "ceilings/CEIL-RM-S-SUITE/z1_m": 5.794375,
 "ceilings/CEIL-RM-S-SUITEBATH/z0_m": 5.7785,
@@ -46469,12 +46463,6 @@
 2,
 "17bfcd6c7f91"
 ],
-"geometry/CSR406AAAA-ceiling-10/body": [
-5.7785,
-5.794375,
-2,
-"f6453ae16db5"
-],
 "geometry/CSR406AAAA-ceiling-2/body": [
 5.7785,
 5.794375,
@@ -46506,18 +46494,6 @@
 "f6453ae16db5"
 ],
 "geometry/CSR406AAAA-ceiling-7/body": [
-5.7785,
-5.794375,
-2,
-"f6453ae16db5"
-],
-"geometry/CSR406AAAA-ceiling-8/body": [
-5.7785,
-5.794375,
-2,
-"f6453ae16db5"
-],
-"geometry/CSR406AAAA-ceiling-9/body": [
 5.7785,
 5.794375,
 2,
@@ -74535,7 +74511,7 @@
 5.969,
 7.0104,
 144,
-"37a63ddd204d"
+"537576cae912"
 ],
 "geometry/WJ1ZY1QTET-run/body": [
 3.1130875,
@@ -116487,8 +116463,6 @@
 "solids/CEIL-RM-S-PLANT/z1_m": 5.794375,
 "solids/CEIL-RM-S-STUDY2/z0_m": 5.7785,
 "solids/CEIL-RM-S-STUDY2/z1_m": 5.794375,
-"solids/CEIL-RM-S-SUITE-10/z0_m": 5.7785,
-"solids/CEIL-RM-S-SUITE-10/z1_m": 5.794375,
 "solids/CEIL-RM-S-SUITE-2/z0_m": 5.7785,
 "solids/CEIL-RM-S-SUITE-2/z1_m": 5.794375,
 "solids/CEIL-RM-S-SUITE-3/z0_m": 5.7785,
@@ -116501,10 +116475,6 @@
 "solids/CEIL-RM-S-SUITE-6/z1_m": 5.794375,
 "solids/CEIL-RM-S-SUITE-7/z0_m": 5.7785,
 "solids/CEIL-RM-S-SUITE-7/z1_m": 5.794375,
-"solids/CEIL-RM-S-SUITE-8/z0_m": 5.7785,
-"solids/CEIL-RM-S-SUITE-8/z1_m": 5.794375,
-"solids/CEIL-RM-S-SUITE-9/z0_m": 5.7785,
-"solids/CEIL-RM-S-SUITE-9/z1_m": 5.794375,
 "solids/CEIL-RM-S-SUITE/z0_m": 5.7785,
 "solids/CEIL-RM-S-SUITE/z1_m": 5.794375,
 "solids/CEIL-RM-S-SUITEBATH/z0_m": 5.7785,

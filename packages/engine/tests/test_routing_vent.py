@@ -154,3 +154,27 @@ def test_a_duct_touches_only_ducts_its_system_can_join(catlin_model_ro, monkeypa
     assert others, "the supply side has ducts it can join"
     assert all(systems_join(systems[duct.tag], systems[tag]) for tag in others)
     assert not any(systems[tag][1] in ("exhaust", "return") for tag in others)
+
+
+def test_a_vent_band_is_the_storeys_its_terminals_span() -> None:
+    from typehaus.routing.terminal_band import terminal_band
+
+    datums = [-2.78, -2.78, -0.305, 0.0, 3.048, 6.096]
+    assert terminal_band(datums, [-3.03, -2.4, -0.34]) == (-3.03, -0.305)  # pit below the datum
+    assert terminal_band(datums, [-0.34, 3.2]) == (-2.78, 6.096)  # spans basement to second
+    assert terminal_band(datums, [7.0]) == (6.096, float("inf"))  # the top storey is open
+    assert terminal_band(datums, []) is None
+
+
+@pytest.mark.slow
+def test_an_opening_made_for_a_run_is_no_obstacle_to_it(catlin_model_ro) -> None:
+    """AO-M-ERV-OA names DU-ERV-OA in `penetration_for`: with the origin standing in its
+    prism the lattice had no step off it (docs/routing.md), as `mep.run_through_opening`
+    already pardons the run it is for."""
+    from typehaus.routing.obstacles import hard_prisms
+
+    def tags(touch):
+        return {p.tag for p in hard_prisms(catlin_model_ro, 0.1, touch=touch)}
+
+    assert "AO-M-ERV-OA" in tags(frozenset())
+    assert "AO-M-ERV-OA" not in tags(frozenset({"DU-ERV-OA"}))

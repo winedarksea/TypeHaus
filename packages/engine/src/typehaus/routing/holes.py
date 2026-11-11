@@ -49,15 +49,23 @@ def laid_lines(proposals: Iterable[Any]) -> list[Line]:
     return out
 
 
-def run_lines(model: Any, touch: frozenset[str], laid: Iterable[Line] = ()) -> list[Line]:
-    """Every authored run but those in ``touch``, then ``laid``."""
+def _authored(model: Any) -> list[Line]:
     from typehaus.resolve.mep_envelopes import run_polylines, run_radii
 
     radii = run_radii(model)
-    out: list[Line] = [(tag, path, z, radii.get(tag, 0.0))
-                       for _kind, tag, path, z in run_polylines(model)
-                       if tag not in touch and len(path) >= 2 and len(z) == len(path)]
-    return [*out, *laid]
+    return [(tag, path, z, radii.get(tag, 0.0))
+            for _kind, tag, path, z in run_polylines(model)
+            if len(path) >= 2 and len(z) == len(path)]
+
+
+def run_lines(model: Any, touch: frozenset[str], laid: Iterable[Line] = ()) -> list[Line]:
+    """Every authored run but those in ``touch``, then ``laid``."""
+    return [*(line for line in _authored(model) if line[0] not in touch), *laid]
+
+
+def kept_lines(model: Any, touch: frozenset[str], replaced: frozenset[str]) -> list[Line]:
+    """Authored lines in ``touch`` that stay: the run a branch ties into keeps its pockets."""
+    return [line for line in _authored(model) if line[0] in touch and line[0] not in replaced]
 
 
 def crossings(lines: list[Line], floor: Any) -> list[tuple[str, float, Any]]:
@@ -100,21 +108,21 @@ def hole_index(lines: list[Line]) -> Callable[[Any, list[str]], list[list[tuple[
     return holes
 
 
-def taken_pockets(lines: list[Line], floor: Any, members: list[Any]) -> list[set[str]]:
-    """Per member, the keys of its D pockets some line already passes through."""
+def taken_pockets(lines: list[Line], floor: Any, members: list[Any]) -> list[dict[str, str]]:
+    """Per member, its D pockets some line already passes through: key -> that line's tag."""
     from typehaus.resolve.open_web import run_of
 
     along_x = floor.direction == "x"
     index = {m.child_key: i for i, m in enumerate(members)}
-    out: list[set[str]] = [set() for _ in members]
-    for _tag, _radius, crossing in crossings(lines, floor):
+    out: list[dict[str, str]] = [{} for _ in members]
+    for tag, _radius, crossing in crossings(lines, floor):
         i = index.get(crossing.member_key)
         if i is None or members[i].web is None:
             continue
         opening = members[i].web.opening_at(run_of(members[i], crossing.station_m, along_x),
                                             crossing.z_m - members[i].z0_m)
         if opening is not None and opening.kind == "D":
-            out[i].add(opening.key)
+            out[i].setdefault(opening.key, tag)
     return out
 
 
