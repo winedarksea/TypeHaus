@@ -1,8 +1,9 @@
-# S-5! canopy review — public resources, 2026-11-10
+# S-5! canopy review — online resources and owner-supplied load tables, 2026-11-10
 
 Owner direction: use online resources only; no supplier contact. The model and
 component budget are resolved below. **The single row remains provisional:** public
-resources do not establish a complete capacity check for this short, drift-loaded run.
+resources and the owner-supplied load tables do not establish a complete capacity
+check for this short, drift-loaded run.
 
 ## Modeled installation
 
@@ -35,8 +36,44 @@ explicitly lists N Mini on **Image II 24 ga**: 1,064 lb parallel ultimate and
 1,577 lb uplift ultimate, at 115 in-lb installation torque. Those are ultimate
 values in a jurisdiction-specific bulletin, not allowable snow-retention loads
 for our full N clamps. They support the profile match without supplying the
-missing full-N design value. Do not substitute Mini, another gauge, or an
+full-N design value subsequently supplied below. Do not substitute Mini, another gauge, or an
 ultimate value for the full N's allowable drag capacity.
+
+### Owner-supplied S-5! load tables
+
+On 2026-11-10 the owner supplied screenshots from the authenticated
+[S-5! load-test table](https://calculators.s-5.com/load-tests), filtered to Metal
+Sales Image II. The parallel screenshot explicitly shows its orientation; the
+owner confirmed the earlier screenshot is normal-to-seam uplift. These values
+are transcribed from the supplied images, rather than independently retrieved
+through the login. All rows show **115 in-lb test screw tension**; that is a test
+condition, not a field installation torque specification. Failure-mode letters
+are reproduced without interpretation because the supplied images omit the key.
+
+| Direction | Clamp | Steel gauge | Ultimate (lbf) | Safety factor | Displayed allowable (lbf) | Failure mode |
+| --- | --- | ---: | ---: | ---: | ---: | --- |
+| Parallel | S-5-N | 24 | 1,726 | 2 | **863** | F |
+| Parallel | S-5-N | 26 | 826 | 2 | 413 | B |
+| Parallel | S-5-N Mini | 26 | 689 | 2 | 345 | B, D, F |
+| Parallel | S-5-S | 24 | 1,391 | 2 | 696 | B, F |
+| Uplift | S-5-N | 26 | 1,107 | 3 | 369 | D |
+| Uplift | S-5-N Mini | 26 | 741 | 3 | 247 | D |
+| Uplift | S-5-S Mini | 24 | 993 | 3 | 331 | C, D |
+| Uplift | S-5-S Mini | 26 | 965 | 3 | 322 | C, D |
+
+The **863 lbf parallel allowable** matches the specified full N and 24 ga panel,
+closing the missing clamp snow-drag datum at the displayed safety factor of 2.
+The screenshots do not establish 24 ga **N Mini uplift** capacity: the 24 ga
+uplift row is S Mini, a different clamp. However, the RB12 bulletin cited above
+does supply the exact N Mini / Image II 24 ga uplift test datum: **1,577 lbf
+ultimate**, report **MET-071019-1 RP1**, with clamp fabrication identifiers
+NG73-A-1-A and NG73-A-0-A. Thus locating a published test value is complete.
+RB12's own design requirements specify safety factor **4**, giving **394.25 lbf
+allowable** under that bulletin's method. Do not mix this with the screenshots'
+safety factors or assume that the Los Angeles approval establishes local
+acceptance. Retain the separate check of applicable product revision, design
+basis, corner-zone wind demand and panel/fastener load path; this is not a
+completed wind-clamp design or PVKIT assembly capacity check.
 
 SnoClip 2.0 II fits the 1-inch seam. The three modeled rubber feet bear on flat pan
 intervals clear of striations, over a continuously sheathed roof with 19/32-inch
@@ -76,14 +113,23 @@ a doorway-width strip and four equally loaded clamps cannot be presumed adequate
 The full drift distribution, rail bending, end reactions and panel attachments
 must all enter the final check.
 
-The [S-5! snow calculator](https://calculators.s-5.com/snow-project) and
-[load tests](https://calculators.s-5.com/load-tests) require login. Public data
-reviewed did not yield the exact full-N / Image II 24 ga allowable drag load and
-ColorGard 2.0 capacity needed to close this case. A 26 ga Image II listing exists
-in public evaluation reports, but is not substituted for 24 ga. **No defensible
-final row count follows from the available inputs.** Retain one row as provisional
-geometry; resolve with the exact clamp test and a complete drift/tributary check
-before ordering or treating the installation as designed. No supplier was contacted.
+Using the owner's exact 24 ga full-N datum, four clamps provide an aggregate
+allowable of **4 × 863 = 3,452 lbf**, assuming all four can reach that allowable
+simultaneously. The 3,839 lbf screening demand exceeds this sum by **387 lbf
+(11.2%)**. Even ideal equal sharing therefore fails this screening case; actual
+rail and end reactions can govern sooner. The narrow-strip demand of 1,575 lbf
+is below the sum but excludes the adjacent garage tributary area. Dividing the
+wedge demand by 863 gives 4.45, or at least five fully effective clamps for this
+screen alone. That is not a five-clamp layout or a row-count design: the current
+rail has four seam supports, and adding rows changes load distribution and must
+also satisfy rail, panel and attachment limits.
+
+The [S-5! snow calculator](https://calculators.s-5.com/snow-project) requires login.
+The exact clamp datum is now recorded, but **no defensible final row count follows
+from the available inputs**. Retain one row as provisional geometry; resolve the
+complete drift/tributary check, ColorGard 2.0 rail/end reactions and panel
+attachments before ordering or treating the installation as designed. No supplier
+was contacted.
 
 ## Online component budget
 

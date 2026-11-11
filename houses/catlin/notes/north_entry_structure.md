@@ -402,9 +402,12 @@ see the review below.
 The online-only [S-5! review](s5_snow_retention_review.md) records profile evidence,
 SnoClip support, tributary-garage screening and published component prices. The
 provisional assembly is $86 in displayed hardware prices, plus ColorStrip, tax and
-freight. Exact full-N / Image II 24 ga allowable loads and a complete drift/tributary
-check remain unresolved; S-5!'s calculator and load tables require login. The
-single row must not be treated as sized. No supplier contact is requested.
+freight. Owner-supplied S-5! parallel load data establish **863 lbf allowable per
+full N on Image II 24 ga steel at safety factor 2**. Four clamps total 3,452 lbf,
+below the review's 3,839 lbf tributary-wedge screening demand even with ideal load
+sharing. The full drift/tributary check, rail/end reactions and panel attachments
+remain unresolved; the single row must not be treated as sized. No supplier
+contact is requested.
 
 ## 6. KDAT longevity — the house-wide spec (owner, 2026-09-10)
 

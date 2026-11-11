@@ -94,8 +94,10 @@ allowance.)
 
 - **PV residue after the R324.6 re-lay** (18 x Aptos DNA-108-BF10-410W bifacial, portrait, one
   row per plane, 18.0" hull ridge setback, 36" north-rake pathway; `code.R324_rooftop_pv_access`
-  passes). Open: S-5 PVKIT uplift capacity at the rake (south module sits in the edge zone, hand
-  estimate only), the Aptos short-edge clamp zone, the DLI roof load table for 873 lb of modules,
+  passes). Published PVKIT grab-capacity lookup is complete (EdgeGrab 353 lbf / MidGrab 861 lbf;
+  see `houses/catlin/notes/pvkit_rake_review.md`). Open: actual grab/frame engagement and
+  Aptos-approved clamp zones, current evaluation/applicability, site rake-zone uplift reactions
+  and complete PV-to-roof load path, the DLI roof load table for 873 lb of modules,
   AHJ acceptance of a rake-end pathway, the PV homerun path (keep it out of the pathway). The
   R324 text is read off [MN DLI's sheet](https://www.dli.mn.gov/sites/default/files/pdf/fs_res_solar.pdf); confirm with St Paul DSI.
   `plans/cost-options.md` lines 94 and 402 still say 5.28 kW.
@@ -291,10 +293,8 @@ the future.
 - ED-B-BATH-CAN1 is placed inside the soffit
 - Robot training (light switches correspond, doors open)
 - Camera in ESS Room and Plant Room (for keeping an eye on them while on vacation). Something cheap, effective, and works well with the rest of the camera system
-- [x] 3d model of the S-5! snowguards over the canopy entry — continuous ColorGard 2.0 with seam-aligned S-5-N clamps, ColorStrip and SnoClip feet; component takeoff follows the same layout.
-- [x] Online S-5! review: Image II profile evidence, SnoClip pan support and published component pricing documented in `houses/catlin/notes/s5_snow_retention_review.md`; no supplier contact.
-- [ ] Final canopy ColorGard sizing: obtain exact full-N / Image II 24 ga allowable drag capacity and check the drift-loaded tributary wedge including garage snowpack, rail/end reactions and panel attachments. Public calculator/load tables require login; one modeled row remains provisional.
-- [x] Garage/canopy S-5-N Mini clamps follow the shared seams and resolved roof height; open-throat geometry shared with house clamps and ColorGard. Southeast snow-guard corner omits separate Minis (9 garage/canopy + 12 house).
+- [ ] Final canopy ColorGard sizing: check the drift-loaded tributary wedge including garage snowpack, rail/end reactions and panel attachments. Four clamps total 3,452 lbf allowable, below the 3,839 lbf wedge screening demand even with ideal sharing; one modeled row remains provisional.
+- [ ] Roof N Mini wind-clamp design: check applicable product revision/design basis, corner-zone uplift demand and panel/fastener load path using the published Image II 24 ga test data. Test-data lookup is complete; clamp count and omission at the ColorGard corner still need wind justification.
 - The house has four grounding rods, which might be overkill?
 - Drywall corners and drywall remove where walls meet (drywall depth might be causing a small bug in stud placement)
 - Eave and gutter hardware: Select the gutter bracket and outlet, and finish the splice, fastener, and sealant details. The eave sealant product and its compatibility with the roof and membrane also need confirmation. [Eave detail (line 153)](/Users/colincatlin/Documents-NoCloud/TypeHaus/houses/catlin/notes/roof_wall_eave_detail.md:153)
