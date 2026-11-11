@@ -143,7 +143,7 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
 
                         # A pipe riser stands in cover or a soffit, never a room's open air.
                         space.members.riser_cover = riser_cover(
-                            model, space.bbox, [ends.origin, ends.root])
+                            model, space.bbox, [ends.origin, ends.root], serves=ends.serves)
                     if racks and ends.kind == "pipe":
                         from typehaus.routing.rack import rack_lanes
 
@@ -187,6 +187,9 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
                 problems.append(f"{target}: {exc}")
                 continue
             clock.lattice(graph)
+            from typehaus.cli.route_ports import forbid_port_reversal
+
+            forbid_port_reversal(graph, ends)  # no doubling back over a port's stub
             start = _nearest(graph, ends.origin)
             # **A vent ties in ANYWHERE along its parent, a drain at its invert.** A branch
             # vent joining a common vent is ordinary IRC P3104 work, and with the root

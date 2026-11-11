@@ -177,6 +177,43 @@ here 3.2". The trunk's gate is not the hot's: the hot band is not a legal cold b
 shared legs counting half (`resolve/mep_fittings._bend`). The trunk has no bend; the baseline's one
 PEX bend gap is `PR-S-VANITY-LAV2-CW`'s 108.5 degrees on a 2.9" leg, elsewhere.
 
+## 5a. Where a riser may stand (2026-11-11)
+
+**Riser stations as gate holes.** The gate's holes were each end's square only (24" half-width
+at the trunk's ends, 12" at fixture and laid-branch ends); where that square holds no wall or
+soffit in a finished room the riser has nowhere legal and the group falls to cover-off. A
+station is two consecutive authored vertices on one plan point at different heights
+(`supply_tree.riser_stations`, 1/4" `ON_M`). By hand, from the plan's own runs (inches):
+
+| run | stations | end's body (x; y; top) |
+|---|---|---|
+| `PR-A-BAR-LAV-CW` | (113.5, 208.0), (155.5, 208.0) | BAR-SINK 143.5..161.5; 187.75..201.75; 283.12 |
+| `PR-A-STUBATH-SH-CW` | (198.62, 266.0) | STUBATH-SH 176.62..212.63; 229.62..265.62; 324.75 |
+| `PR-B-LAV-TERMINAL-CW` | none | B-BATH-LAV 125.5..162.5; 218.25..240.0; -67.07 |
+| `PR-B-CW-TRUNK` (kitchen end) | (357.6, 424.2), (357.6, 421.5) | KITCH-SINK 336..368; 402.5..424.5; 45.84 |
+
+Each member's stations become 12" holes and lattice lines at its end's height (no new level).
+`PR-B-LAV-TERMINAL-CW` has none, so the gate cannot help it.
+
+**A served body excuses a riser** (one predicate with `mep.run_in_finished_volume`'s
+`fixture_trim`, `resolve/riser_cover.served_bodies`/`in_body`): a riser at (x, y) from za to zb
+is excused in a room when a body of a fixture the run serves covers (x, y) grown 1 mm, holds one
+of the route's exempt ends, has its top in that room's floor..ceiling band, and
+max(za, zb) + r <= top + 1 mm. The kitchen end (357.62, 421.5, 20.0) is in KITCH-SINK
+(336 <= 357.62 <= 368, 402.5 <= 421.5 <= 424.5), so a riser anywhere in that box under 45.84"
+is excused on the main floor. The truss chord at y = 420 blocks a riser at 421.5; y in
+(420.75 + r + clearance) .. 424.5 is still inside the cabinet, where before the only legal
+riser near the end was W-M-N1's exterior cavity at y = 428.8 (outside the body, y > 424.5).
+
+**What the stations do not reach.** The attic runs are fed down `PR-A-CW-STUBATH`'s riser at
+(113.5, 246.0), z 114.1 .. 270, so a member's feeders up to the trunk contribute their stations
+too. That column is in cover (every lattice step 119.56 .. 264.87 reads `exposed` False), but
+the plan's own attic legs at z 262 .. 270 (y = 208 in `W-A-BATH-S`, x = 113.5 to y = 246) lie
+above FS-ATTIC's gate and between the 12" holes (125.5 < x < 143.5 is shut), and the bar's end
+column crosses D-S-SUITEBATH's swing, so `PR-A-BAR-LAV-CW` and `PR-A-STUBATH-SH-CW` still fall
+to cover-off. `PR-B-LAV-TERMINAL-CW`'s FAIL is a level leg at z = -17.38, inside the gate band
+but under RM-B-BATH's finished ceiling: the gate does not read a room's ceiling.
+
 ## 6. Expected outcome and what E4's tests should assert
 
 **0 refusals, 0 evaluation fails.** The 23 fixtures are all served by the authored lanes at the

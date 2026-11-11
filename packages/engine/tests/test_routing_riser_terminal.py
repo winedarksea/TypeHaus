@@ -12,6 +12,7 @@ from typehaus.routing.graph import build_graph
 from typehaus.routing.members import _Floor, _riser_on_member
 from typehaus.routing.obstacles import HardPrism
 from typehaus.routing.space import RoutingSpace
+from typehaus.routing.supply_tree import riser_stations
 from typehaus.routing.terminal_block import resolve_ends
 
 M = 0.0254
@@ -30,8 +31,20 @@ def test_riser_in_open_air_is_the_checks_predicate() -> None:
     here = RiserCover(zones=[zone], exempt=[(2.0, 2.0, 1.0)])
     assert not here.exposed(2.0, 2.0, 0.3, 1.2, 0.02)
     assert RiserCover(zones=[zone], exempt=[(2.0, 2.0, 5.0)]).exposed(2.0, 2.0, 0.3, 1.2, 0.02)
+    # A served fixture's body excuses a riser in it, under its top, in its own room only
+    # (the check's ``fixture_trim``): a sink cabinet 0.9 m tall.
+    sink = [(box(1.5, 1.5, 2.5, 2.5).buffer(1e-3), 0.9)]
+    assert not RiserCover(zones=[zone], bodies=sink).exposed(2.0, 2.0, 0.3, 0.85, 0.02)
+    assert RiserCover(zones=[zone], bodies=sink).exposed(2.0, 2.0, 0.3, 1.2, 0.02)
+    upstairs = _Zone(zone.open_air, floor=3.0, ceiling_z=5.4)
+    assert RiserCover(zones=[upstairs], bodies=sink).exposed(2.0, 2.0, 3.3, 3.85, 0.02)
     assert riser_row((2.0, 2.0), 0.3, 1.2, 0.02, room, cover, None, 0.0, 2.4, 3 * M)
     assert not riser_row((0.1, 2.0), 0.3, 1.2, 0.02, room, cover, None, 0.0, 2.4, 3 * M)
+
+
+def test_riser_stations_are_where_the_plan_already_rises() -> None:
+    path = [(0.0, 0.0), (1.0, 0.0), (1.0, 0.0), (1.0, 2.0), (1.0, 2.0)]
+    assert riser_stations(path, [0.0, 0.0, 1.0, 1.0, 1.0]) == [(1.0, 0.0)]
 
 
 def test_a_riser_may_not_pass_through_an_lvl_trimmer() -> None:

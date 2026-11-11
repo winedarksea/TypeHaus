@@ -88,7 +88,7 @@ exterior wall. Every rule has a hand-worked note (`routing/oracle.py`).
 | A falling run crosses rims and joists, never rides them, and never a blocking flange; foundation walls, exterior insulated cavities (at their own height) and the outside of the decks are hard; a tie is pardoned only its own run; the drop into a tie is tested | `gravity_band.rail_prisms`, `obstacles`, `gravity_band.terminal_pardons` | drain basis §13 |
 | A trunk's level legs stay inside the floor system's z gate; a riser only in a 24" hole at each end | `routing/supply_tree`, `cli/cmd_route_supply_tree` | `mep_supply_trunk_basis.md` §5 |
 | A branch tees only onto a run that can carry its WSFU, up the whole host chain | `cli/route_supply_group` | `mep_supply_trunk_basis.md` §2 |
-| A pipe riser stands in wall cover or a soffit, never a finished flat-ceiling room's open air, except at the route's own ends in the room they stand in; a supply branch with no such lane is laid last with cover off and noted | `resolve/riser_cover`, `routing/members.cuts` | `mep.run_in_finished_volume` |
+| A pipe riser stands in wall cover or a soffit, never a finished flat-ceiling room's open air, except at the route's own ends, or inside a served fixture's body holding one and under its top (the check's `fixture_trim`), in the room they stand in; a supply branch with no such lane is laid last with cover off and noted | `resolve/riser_cover`, `routing/members.cuts` | `mep.run_in_finished_volume`, `mep_supply_trunk_basis.md` §5a |
 | A fixture end inside a door swing or a duct moves to the nearest legal point on its own wall, or (its riser column crossing one) is refused with a typed `TerminalBlock`; a swing or duct is pardoned at the terminal's own level only | `routing/terminal_block`, `graph.build_graph` | — |
 | `--lift` keeps a supply's tees: only branches derived to tee on it count, their legs are held as authored, and a lifted branch tees onto its feeder's re-laid line | `cli/route_tree_lift`, `cli/route_supply_roots` | `mep_tree_ripup_basis.md` §3 L6-L9 |
 | A buried outdoor run is left as authored | `cli/cmd_route_supply_tree` | `mep_supply_trunk_basis.md` §3 |
@@ -157,7 +157,11 @@ is a refusal naming the obstruction. Oblique directions, approximate ports, tee 
 gravity runs are not constrained. The stub's travel and one bend where the route turns at its
 tip are priced into the proposal's cost (`port_stub_stated_in`, `port_stub_bend_in`) after the
 search, so they change a reported cost, never a route. `PortKit` leads and duct tip turns are
-not added (`duct_search` already charges the start heading).
+not added (`duct_search` already charges the start heading). The search has no heading at a
+terminal, so `forbid_port_reversal` cuts the tip's lattice step back along the stub toward the
+port, both ways, right after each `build_graph` (`_propose`, `space_for`): a route may not
+leave or reach the tip over its own stub (drain basis §11). A reversal that still reaches
+`attach_priced` is noted and never priced as a bend.
 
 **What a proposal replaces.** `--evaluate` removes from the candidate plan the run of the
 proposal's own name and any same-system run whose `serves` it covers, so a route is never graded
@@ -236,7 +240,22 @@ then run `haus fmt`, `haus trial`, inspect the drawing, and run repository verif
   level was nominated. The fit is still graded by `mep.duct_penetrations`.
 - The riser-cover rule covers flat-ceiling rooms only; sloped (FollowRoof) rooms, mechanical
   rooms and rooms with `exposed_services` are not zones. `SUPPLY-GATE` holes confine supply
-  risers regardless of cover (the lattice never reads a prism's `applies`).
+  risers regardless of cover (the lattice never reads a prism's `applies`): a group's holes are
+  its fixture ends, laid branch ends, and the riser stations of each member's authored run and
+  its feeders (each also a lattice line, `supply_tree.riser_stations`, trunk basis §5a). Level
+  legs the plan runs outside every floor gate (catlin's attic bar and shower supplies, z 262-270)
+  stay shut, and the gate does not read a room's finished ceiling, so the trunk's three open-air
+  members still fall to cover-off. Opening the gate over every wall's plan area, full height,
+  was tried and not adopted: it cut the trunk's eval FAILs 27 to 20 but moved two into
+  RM-A-STUBATH and took the search 98 s to 180 s; a storey-banded opening is the open item.
+- `shortest_route` charges no turn for reversing along one axis (its state is the axis, not the
+  signed heading), and `bend_price` reads the arc off the previous node, so a sub-inch back-step
+  can buy a 4" PEX bend for a 24" fitting: catlin's `trunk:CW` proposals carry 9 such
+  180-degree vertices (`mep.fitting_pattern` UNKNOWN), none at a port. Unchanged: drain basis §4
+  pins the search's expansions.
+- The router excuses a riser in a served fixture's body when the body holds one of the route's
+  ends, in the body's own room; the check excuses only the legs walked in from a run's end, so
+  a mid-run riser through that body would still be graded.
 - The supply trunk's remaining evaluation fails are the three open-air risers in RM-M-LAUNDRY,
   which need a chase (a house edit). Laid-run holes reach supply campaigns only; drain campaigns
   do not pass `build_space(laid=)` yet.

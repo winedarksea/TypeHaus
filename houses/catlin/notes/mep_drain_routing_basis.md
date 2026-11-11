@@ -638,6 +638,17 @@ the prism `electrical.panel_dedicated_space` grades) is hard for every pipe and 
 the floor under the panel to the lower of 6 ft over its top and the room's clear height. A
 raceway is the electrical installation and is not refused it.
 
+**The port stub (2026-11-11).** An exact port with a direction is left along it for one OD
+plus 2": `EQ-B-HW-HEADER.out-2` faces -z at z = -23.31", 1/2" PEX OD 0.625", so the stub is
+0.625 + 2 = 2.625" and the tip stands at -23.31 - 2.625 = **-25.94"**. The search starts or
+ends at the tip with no heading, so it reached the tip from the node above (-6.25") heading
+down, and the stub back up made a 180-degree vertex: `mep.fitting_pattern` UNKNOWN, priced as
+an ordinary 24" `port_stub_bend_in`. Rule: at the tip, a lattice neighbour n along the stub's
+axis is cut when (n - tip) . (tip - port) < 0. Above: (+19.69)(-2.625) < 0, cut, both ways.
+Below: (-)(-) > 0, kept; neighbours off the axis are kept. So the route leaves the tip straight
+down (no bend) or sideways (one 90-degree elbow, the 24" it already paid).
+`tests/test_routing_port_lead.py` pins the cut on a four-node lattice.
+
 `tests/test_routing_supply.py` pins the bend both ways (clear; a 1/4" post on the arc's
 midpoint) and the 192".
 

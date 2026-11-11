@@ -250,6 +250,39 @@ def _lead_blocked(space: Any, ends: Endpoints) -> str | None:
     return None
 
 
+def forbid_port_reversal(graph: Any, ends: Any) -> int:
+    """Drop each lead tip's lattice steps back along its stub toward the port, both ways.
+
+    The search has no heading at a terminal, so it could leave (or reach) the tip back over
+    the stub: a 180-degree reversal no fitting makes (drain basis §11). Returns steps cut."""
+    leads = [lead for lead in (getattr(ends, "origin_lead", None),
+                               getattr(ends, "root_lead", None)) if lead is not None]
+    if not leads or not graph.nodes:
+        return 0
+    import numpy as np
+
+    xyz = np.array([(n.x, n.y, n.z) for n in graph.nodes])
+    removed = 0
+    for lead in leads:
+        along = [t - e for t, e in zip(lead.tip, lead.corner or lead.port, strict=True)]
+        axis = max(range(3), key=lambda i: abs(along[i]))
+        if abs(along[axis]) < 1e-9:
+            continue
+        near = np.flatnonzero(np.abs(xyz - np.array(lead.tip)).max(axis=1) <= _TIP_TOL_M)
+        for tip in near.tolist():
+            others = graph.edges.get(tip, {}).get("xyz"[axis], [])
+            back = [o for o in others if along[axis] * (xyz[o, axis] - xyz[tip, axis]) < 0]
+            for other in back:
+                others.remove(other)
+                graph.edges[other]["xyz"[axis]].remove(tip)
+            removed += len(back)
+    return removed
+
+
+#: A lattice node this close to a lead's tip (each axis) is the tip: the 1/16" line tolerance.
+_TIP_TOL_M = 0.0015875
+
+
 def attach_leads(points: list[Point3], ends: Endpoints) -> tuple[list[Point3], list[str], int]:
     """Found path (origin tip -> root tip) with the port points put back on its ends.
 
@@ -276,12 +309,16 @@ def attach_priced(points: list[Point3], ends: Endpoints, cost: Any
         ordered = points if side == "origin" else points[::-1]
         elbow = lead.corner or lead.port  # the vertex the tip's continuation is judged from
         straight = _collinear(elbow, ordered[0], ordered[1])
+        reverses = _collinear(elbow, ordered[0], ordered[1], -1)
         ordered = [*lead.points()[:-1], *(ordered[1:] if straight else ordered)]
         bends += (0 if straight else 1) + (lead.corner is not None)
+        if reverses:  # `forbid_port_reversal` cuts these steps; a reversal is no bend
+            notes.append(f"port lead: the route doubles back over {lead.label}'s stub, a "
+                         "180-degree reversal no fitting makes; not priced as a bend")
         if cost is not None and not lead.kit:
             terms["port_stub_stated_in"] = terms.get("port_stub_stated_in", 0.0) + cost.travel(
                 lead.inches / 12.0, vertical=lead.direction[-1] == "z")
-            if not straight and ends.kind != "duct":
+            if not straight and not reverses and ends.kind != "duct":
                 terms["port_stub_bend_in"] = terms.get("port_stub_bend_in", 0.0) + cost.bend_in
         points = ordered if side == "origin" else ordered[::-1]
         notes.append(f'port lead: leaves {lead.label} {lead.direction} for '
@@ -292,10 +329,11 @@ def attach_priced(points: list[Point3], ends: Endpoints, cost: Any
     return points, notes, bends, terms
 
 
-def _collinear(a: Point3, b: Point3, c: Point3) -> bool:
+def _collinear(a: Point3, b: Point3, c: Point3, sense: int = 1) -> bool:
+    """``a -> b -> c`` on one line, going on (``sense`` 1) or doubling back (-1)."""
     ab = [y - x for x, y in zip(a, b, strict=True)]
     bc = [y - x for x, y in zip(b, c, strict=True)]
     cross = [ab[1] * bc[2] - ab[2] * bc[1], ab[2] * bc[0] - ab[0] * bc[2],
              ab[0] * bc[1] - ab[1] * bc[0]]
     dot = sum(p * q for p, q in zip(ab, bc, strict=True))
-    return all(abs(v) < 1e-9 for v in cross) and dot > 0
+    return all(abs(v) < 1e-9 for v in cross) and dot * sense > 0
