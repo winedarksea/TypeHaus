@@ -22,6 +22,7 @@ from library.hvac_equipment import (
 from typehaus import (
     EquipmentType,
     HeatPumpRating,
+    ModelRepresentation,
     RegisterType,
     RatingBasis,
     Service,
@@ -345,6 +346,7 @@ EQUIPMENT_TYPES = (
     # not by model choice. (The one glossy-LCD shallow unit with a verified owner glare
     # complaint, Modern Flames' HelioVision, starts at 52" and never reaches this decision.)
     EquipmentType(tag="EQ-T-FIREPLACE-EL",
+                  model_representation=ModelRepresentation(symbol="fireplace-insert"),
                   name="ClassicFlame 28II042FGL infrared electric fireplace, 1.5 kW built-in",
                   footprint=(inch(29.25), inch(9.5)), height=inch(23.25),
                   # Resistance heat, so a SCALAR and not a table: an element's output is

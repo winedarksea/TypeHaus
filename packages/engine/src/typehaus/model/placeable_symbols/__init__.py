@@ -29,6 +29,7 @@ if TYPE_CHECKING:
     from typehaus.model.shower_assembly import ShowerAssemblySpec
 
 from typehaus.model.placeable_symbols._erv_wall_hood import erv_wall_hood
+from typehaus.model.placeable_symbols._fireplace_insert import fireplace_insert
 from typehaus.model.placeable_symbols._frame import (
     PART_COLORS,
     Part,
@@ -63,6 +64,7 @@ _REGISTRY: dict[str, Builder] = {**FURNITURE_SYMBOLS, **APPLIANCE_SYMBOLS, **PLU
                                  "renewaire-fa8-wall-hood": erv_wall_hood,
                                  "swanstone-flex-3636": swanstone_flex,
                                  "infrared-heater": infrared_heater,
+                                 "fireplace-insert": fireplace_insert,
                                  "gree-flexx-ultra-24-horizontal": gree_flexx_horizontal,
                                  "gree-flexx-ultra-24-outdoor": gree_flexx_outdoor,
                                  "sunnersta-frame": sunnersta_frame}
@@ -113,7 +115,7 @@ SYMBOL_NAMES = frozenset(KITCHEN_SEKTION_SYMBOLS) | frozenset(RECEPTACLE_SYMBOLS
     "rheem-proterra-plugin-80",
     "gree-flexx-ultra-24-horizontal",
     "gree-flexx-ultra-24-outdoor",
-    "infrared-heater",
+    "infrared-heater", "fireplace-insert",
     "disconnect", "meter", "junction-box", "spd",
     # plumbing fixtures. "hydrant" is the odd one out: it is a standpipe, not a vessel, so
     # its glyph is the riser's own diameter with a handle bar and an outlet nipple rather
