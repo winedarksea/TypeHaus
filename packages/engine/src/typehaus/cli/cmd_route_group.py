@@ -219,12 +219,12 @@ def _dry(work: ResolvedModel, found: tuple, at: tuple, touch: frozenset[str], ro
                      cavity_radius_m=pipe_trade.cavity_radius_m(size, "drain"),
                      serves=arm.serves, falls=True, touch=touch | {arm.tag, vent.tag})
     # Each tie station in turn: the next is tried only where the one before refused.
+    tried = len(problems), len(refusals)
     for tie in ties:
-        tried = len(problems)
         made = _search(model, replace(ends, root=tuple(tie)), f"{room}-WV", (), opts,
                        problems, refusals)
         if made is not None:
-            del problems[tried:]
+            del problems[tried[0]:], refusals[tried[1]:]
             break
     if made is None:
         return None
