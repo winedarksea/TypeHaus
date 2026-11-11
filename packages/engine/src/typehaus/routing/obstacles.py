@@ -103,7 +103,9 @@ def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] 
     # either, and half an inch of tolerance is exactly the width of the lane it would
     # propose. The check's tolerance is forgiveness after the fact and the router has
     # nothing to forgive, so the two are one derivation with one parameter.
-    for tag, _is_door, _host, prism, low, high, _for in opening_prisms(model, erode_m=0.0):
+    for tag, _is_door, _host, prism, low, high, made_for in opening_prisms(model, erode_m=0.0):
+        if touch.intersection(made_for):
+            continue  # the hole is FOR this run, as `mep.run_through_opening` reads it
         grown = prism.buffer(inflate)
         if grown.is_empty:
             continue
