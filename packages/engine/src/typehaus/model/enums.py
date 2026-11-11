@@ -172,6 +172,8 @@ class Service(Enum):
     WATER_COLD = "water_cold"
     DRAIN = "drain"
     GAS = "gas"
+    REFRIGERANT_LIQUID = "refrigerant_liquid"
+    REFRIGERANT_VAPOR = "refrigerant_vapor"
     POWER_120 = "power_120"
     POWER_240 = "power_240"
     POWER_24 = "power_24"  # Class 2 DC lighting feeds, separate from line-voltage trunks

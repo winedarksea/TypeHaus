@@ -35,6 +35,15 @@ Note that many of the pinned decisions in the code base here aren't as fixed as 
 
 ### MEP / lighting residuals
 
+- **EQ-S-HP1-AH geometry review (2026-11-11):** the horizontal FLEXX now has a
+  product-specific 3D shell, sized supply opening, eight declared interfaces and a
+  24-inch front service zone. `mep.air_handler_coordination` FAILs the east-facing
+  service zone through SF-S-HP1; the underside hatch does not provide that access.
+  Rework orientation/enclosure and return together, model the offset supply transition,
+  primary/secondary condensate and pan, and replace the heat kit's legacy external body
+  with a hosted internal accessory. See `houses/catlin/notes/flexx_ultra_geometry.md`;
+  port stations and return aperture remain unverified.
+
 **The open MEP campaigns' live record is `houses/catlin/preferences.toml`**, not this file:
 the itemised web crossings, each with its count and a dated note. `haus check houses/catlin
 --no-suppress` is the score with every suppression lifted. (`mep.run_interference` closed

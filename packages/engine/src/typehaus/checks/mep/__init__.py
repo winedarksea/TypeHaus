@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typehaus.checks.mep import (  # noqa: F401 - register
+    air_handler_coordination,
     bay_packing,
     conduit_bends,
     data,

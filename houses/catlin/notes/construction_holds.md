@@ -19,6 +19,13 @@ the model goes back to `plans/TODO.md` as a design item.
 
 ## Supplier and manufacturer confirmations
 
+- **Gree FXU24HP230V1R32AH:** obtain the dimensioned drawing for the ordered cabinet
+  revision. The 2026-01-27 model-specific submittal and current generic indoor manual
+  disagree on cabinet dimensions. Need the return aperture, supply setback, refrigerant
+  and condensate fitting stations/projections, electrical/control knockouts, and the
+  internal heat-kit envelope. `notes/flexx_ultra_geometry.md` records the model basis;
+  do not fabricate transitions or drain rough-ins from its schematic port stations.
+
 - **Sconce J/J1 (WAC Sprig BL-23210-BK):** confirm it can be hardwired. Output drops from
   623 lm to 287 lm compared with the Stretch it replaced.
 - The garage GL-C-208M's electrical and temperature figures come from a manual mirror

@@ -109,6 +109,9 @@ def test_parts_stay_inside_the_declared_box_and_name_a_real_colour(
         # riser. Side fittings (including T&P) project beyond that nominal cylinder.
         side_projection = width * 3.5 / 24.25
         projection = depth * 3.5 / 24.25
+    if symbol == "gree-flexx-ultra-24-outdoor":
+        # Gree's B dimension includes feet; catalog depth is its cabinet F dimension.
+        projection = depth * (16.8125 - 14.5625) / 2 / 14.5625
     for part in parts:
         (cx, cy, cz), (sx, sy, sz) = part["center"], part["size"]
         assert part["color"] in PART_COLORS
