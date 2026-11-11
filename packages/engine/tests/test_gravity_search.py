@@ -285,3 +285,44 @@ def test_the_step_into_a_tie_crosses_its_collector_and_riding_it_does_not() -> N
     out_of = band_obstacles(space, graph, {4: frozenset({"WC"})}, start=4)
     assert "WC" not in {o[4] for o in out_of(5, 6)}
     assert "WC" in {o[4] for o in out_of(6, 5)}
+
+
+def _truss_world(pocket_in: tuple[float, float], held: dict[str, str]):
+    """framing_bore_limits.md §13: §8's row, one truss at x = 36", one pocket in it."""
+    from types import SimpleNamespace
+
+    from typehaus.resolve.open_web import OpenWebShape, WebOpening
+    from typehaus.routing.gravity_band import band_obstacles
+    from typehaus.routing.members import _Floor
+
+    bottom = 114.0
+    low, high = ((z - bottom) * M_PER_IN for z in pocket_in)
+    span = 24.0 * M_PER_IN
+    ring = ((0.0, low), (span, low), (span, high), (0.0, high))
+    shape = OpenWebShape(stock_m=span, trim_lo_m=0.0, trim_hi_m=0.0, length_m=span,
+                         chase_run_m=None, pitch_m=span, sticks=(), assumptions=(),
+                         openings=(WebOpening("D1", "D", ring, 5.0 * M_PER_IN, None),),
+                         window_z_m=(0.0, 3.0 * M_PER_IN))
+    x, z0, z1 = 36.0 * M_PER_IN, bottom * M_PER_IN, 117.0 * M_PER_IN
+    member = SimpleNamespace(web=shape, z0_m=z0, child_key="joist-0", p0=(x, -span / 2),
+                             p1=(x, span / 2))
+    floor = _Floor(tag="FS-ORACLE", across="x", kind="open_web", window=(z0, z1), stations=[x],
+                   joists=[(x, -span / 2, span / 2, z0, z1)], parts=[member], pockets=[held])
+    graph, space, problem, _none = _row_world((100.0, 100.5))
+    space.members = SimpleNamespace(floors=[floor], radius_m=0.0)
+    return graph, space, problem, band_obstacles(space, graph)
+
+
+def test_a_free_pocket_narrows_the_start_and_a_taken_one_refuses_and_names_it() -> None:
+    """§13's working: a pocket 115.50..116.50 at 0.75" of fall, inset 1/16", starts at
+    116.3125, where the tie alone wanted 115.50."""
+    graph, space, problem, obstacles = _truss_world((115.50, 116.50), {})
+    route = sloped_route(graph, space, 0, {3}, problem, obstacles=obstacles)
+    assert route is not None and route.nodes == [0, 1, 2, 3]
+    assert route.start_m / M_PER_IN == pytest.approx(116.3125, abs=2e-3)
+
+    graph, space, problem, obstacles = _truss_world((115.50, 116.50), {"D1": "PR-HOLDER"})
+    report = GravityRefusal()
+    assert sloped_route(graph, space, 0, {3}, problem, obstacles=obstacles,
+                        refusal=report) is None
+    assert 'FS-ORACLE joist-0 y=0.00": D1 held by PR-HOLDER' in report.notes[0]

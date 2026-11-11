@@ -17,7 +17,7 @@ prism covering the whole band stays a plan obstacle: no start passes it.
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from typehaus.resolve.model import ResolvedModel
@@ -147,17 +147,23 @@ def split_banded(space: RoutingSpace, band: tuple[float, float]) -> None:
 
 def band_obstacles(space: RoutingSpace, graph: Graph,
                    pardon: dict[int, frozenset[str]] | None = None,
-                   start: int | None = None) -> Obstacles:
+                   start: int | None = None, laid: Any = ()) -> Obstacles:
     """Per-edge banded obstacles, cached per undirected edge and reversed on the way back.
 
     ``pardon`` names, per terminal node, the prisms the terminal stands in at its own
     height — the step off it may pass through those, as ``graph.build_graph`` pardons a
     plan-hard terminal. Across such a prism (never along it), a step heading for a tie, or
     away from ``start``, is excused all the way through (§13).
+
+    An open-web crossing's own heights (``gravity_webs``) ride along, never pardoned: a
+    terminal may stand in a prism, but no pipe passes a web. ``laid``: ``holes.laid_lines``.
     """
     from shapely import STRtree
     from shapely.geometry import LineString, Point
 
+    from typehaus.routing.gravity_webs import web_obstacles
+
+    webs = web_obstacles(space, graph, laid)
     prisms = list(space.banded)
     tree = STRtree([p.footprint for p in prisms]) if prisms else None
     eroded: dict[int, object] = {}
@@ -257,7 +263,11 @@ def band_obstacles(space: RoutingSpace, graph: Graph,
             return found
         return [(1.0 - t1, 1.0 - t0, z0, z1, tag) for t0, t1, z0, z1, tag in found]
 
-    return obstacles
+    def with_webs(a: int, b: int) -> list[Obstacle]:
+        crossing = webs(a, b)
+        return obstacles(a, b) + crossing if crossing else obstacles(a, b)
+
+    return with_webs
 
 
 def terminal_pardons(space: RoutingSpace, graph: Graph, at: dict[int, float],

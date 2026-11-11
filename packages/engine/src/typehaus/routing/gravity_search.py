@@ -437,8 +437,10 @@ def _clear_of(obstacles: Obstacles | None, problem: GravityProblem, a: int, b: i
             low, high = min(b[0] for b in bands), max(b[1] for b in bands)
             # Under or over, whichever is nearer; a leftover thinner than ``_TOL_M`` is no
             # lane, so it is short by the rest of a sixteenth's sixteenth, never "0.000".
+            # An all-z block has no nearer side: named at 0.0, as ``drop_blocker`` is.
+            short = min(low - forbidden[0], forbidden[1] - high) + _TOL_M
             _note(report, f"{tag} across the fall band",
-                  (min(low - forbidden[0], forbidden[1] - high) + _TOL_M) / M_PER_IN)
+                  short / M_PER_IN if short < float("inf") else 0.0)
             return []
         bands = split
     return bands
