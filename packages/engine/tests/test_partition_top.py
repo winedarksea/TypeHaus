@@ -201,8 +201,9 @@ def test_the_three_count_rules_are_three_rows(sdpw_rows) -> None:
     # 71 -> 63 blocked bays (2026-11-06): W-M-HS3/-HS4 are BEARING (#116), no gapped top.
     # 63 -> 67: W-S-BD-N1B is NONBEARING (owner, 2026-11-06) and parallel to FS-ATTIC.
     # 67 -> 69: W-S-SBF, the suite tub's furred end (2026-11-08), parallel to FS-ATTIC.
+    # 107 -> 108 (2026-11-09): W-B-HALL-W crosses FS-M-WEST's added BATH2 drain joist, y=186".
     assert counts == {
-        "partition top plate, perpendicular framing above": 107,
+        "partition top plate, perpendicular framing above": 108,
         "partition top plate, under a parallel member": 12,
         "partition top plate, blocking between parallel members": 69,
     }
