@@ -313,32 +313,52 @@ def grade_crossing(shape: OpenWebShape, run_m: float, z_m: float, size: RunSize)
     run's whole outline must also sit inside the opening's polygon.
     """
     opening = shape.opening_at(run_m, z_m)
-    inch = 0.0254
     if opening is None:
         return CrossingGrade(None, False, "it lands on a web or a chord, which nobody bores")
-    if opening.kind == "trim_end":
-        return CrossingGrade(opening, False, "it lands in the OSB TrimEnd, which passes nothing")
-    if size.round_:
-        limit = opening.round_m
-        if size.height_m > limit + _EPS:
-            return CrossingGrade(opening, False, (
-                f"a {size.height_m / inch:.2f}\" round is over the {limit / inch:.3g}\" "
-                f"{opening.kind} opening it lands in"))
-    elif opening.rect_m is None or (
-            size.along_m > opening.rect_m[0] + _EPS or size.height_m > opening.rect_m[1] + _EPS):
-        want = f"{size.along_m / inch:.2f}\" x {size.height_m / inch:.2f}\""
-        has = ("no rectangle" if opening.rect_m is None else
-               f"{opening.rect_m[0] / inch:g}\" x {opening.rect_m[1] / inch:g}\"")
-        return CrossingGrade(opening, False, (
-            f"a {want} rectangle is over the {opening.kind} opening's {has}"))
+    fault = _size_fault(opening, size)
+    if fault is not None:
+        return CrossingGrade(opening, False, fault)
     if not _inside(opening.ring, run_m, z_m, size):
         return CrossingGrade(opening, False, (
             f"its outline reaches the webs around {opening.kind} opening {opening.key}"))
     return CrossingGrade(opening, True)
 
 
-def _inside(ring, u: float, z: float, size: RunSize) -> bool:
-    """Whether the run's ellipse (round) or box lies in a convex CCW ring."""
+def station_bands(shape: OpenWebShape, run_m: float, size: RunSize
+                  ) -> list[tuple[float, float, WebOpening]]:
+    """``(low, high, opening)``, lowest first: the centre heights at this station that
+    :func:`grade_crossing` passes. ``_inside``'s inequality solved for z; a station may hold
+    two, Warren pockets stacked either side of one diagonal. Heights above the member's
+    bottom. ``framing_bore_limits.md`` §13."""
+    out = []
+    for opening in shape.openings:
+        band = None if _size_fault(opening, size) else _ring_band(opening.ring, run_m, size)
+        if band is not None:
+            out.append((band[0], band[1], opening))
+    return sorted(out, key=lambda entry: entry[0])
+
+
+def _size_fault(opening: WebOpening, size: RunSize) -> str | None:
+    """Why this opening cannot take this run at any station, or None."""
+    inch = 0.0254
+    if opening.kind == "trim_end":
+        return "it lands in the OSB TrimEnd, which passes nothing"
+    if size.round_:
+        if size.height_m > opening.round_m + _EPS:
+            return (f"a {size.height_m / inch:.2f}\" round is over the "
+                    f"{opening.round_m / inch:.3g}\" {opening.kind} opening it lands in")
+    elif opening.rect_m is None or (
+            size.along_m > opening.rect_m[0] + _EPS or size.height_m > opening.rect_m[1] + _EPS):
+        want = f"{size.along_m / inch:.2f}\" x {size.height_m / inch:.2f}\""
+        has = ("no rectangle" if opening.rect_m is None else
+               f"{opening.rect_m[0] / inch:g}\" x {opening.rect_m[1] / inch:g}\"")
+        return f"a {want} rectangle is over the {opening.kind} opening's {has}"
+    return None
+
+
+def _edges(ring, size: RunSize):
+    """Per ring edge ``(x0, z0, nx, nz, reach)``: its inward normal, and how far the run's
+    ellipse (round) or box stands off its centre along that normal."""
     a, b = size.along_m / 2.0, size.height_m / 2.0
     n = len(ring)
     for i in range(n):
@@ -348,10 +368,29 @@ def _inside(ring, u: float, z: float, size: RunSize) -> bool:
         if length < _EPS:
             continue
         nx, nz = -dz / length, dx / length
-        reach = (math.hypot(nx * a, nz * b) if size.round_ else abs(nx) * a + abs(nz) * b)
-        if nx * (u - x0) + nz * (z - z0) - reach < -1e-6:
-            return False
-    return True
+        yield x0, z0, nx, nz, (math.hypot(nx * a, nz * b) if size.round_
+                               else abs(nx) * a + abs(nz) * b)
+
+
+def _inside(ring, u: float, z: float, size: RunSize) -> bool:
+    """Whether the run's ellipse (round) or box lies in a convex CCW ring."""
+    return all(nx * (u - x0) + nz * (z - z0) - reach >= -1e-6
+               for x0, z0, nx, nz, reach in _edges(ring, size))
+
+
+def _ring_band(ring, u: float, size: RunSize) -> tuple[float, float] | None:
+    """The ``z`` interval over which :func:`_inside` holds at ``u``, or None."""
+    low, high = -math.inf, math.inf
+    for x0, z0, nx, nz, reach in _edges(ring, size):
+        clear = nx * (u - x0) - reach  # the edge wants clear + nz * (z - z0) >= 0
+        if abs(nz) < _EPS:
+            if clear < -1e-6:
+                return None  # a vertical edge: no height helps
+        elif nz > 0.0:
+            low = max(low, z0 - clear / nz)
+        else:
+            high = min(high, z0 - clear / nz)
+    return (low, high) if low <= high else None
 
 
 # --- attaching to a floor's members ---------------------------------------------------

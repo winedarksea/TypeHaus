@@ -9,7 +9,7 @@ from __future__ import annotations
 import pytest
 
 from typehaus.quantities import M_PER_IN
-from typehaus.resolve.open_web import RunSize, grade_crossing
+from typehaus.resolve.open_web import RunSize, grade_crossing, station_bands
 
 _TOL = 0.01  # inches
 
@@ -80,3 +80,41 @@ def test_each_opening_grades_what_it_publishes(catlin_model_ro) -> None:
     assert not grade(142.0, z_low, 5.5).ok  # over the published round
     assert not grade(131.5, z_low, 4.0).ok  # against the diagonal: outline reaches it
     assert grade(142.0, z_low, 4.0).opening.kind == "D"
+
+
+_BOTTOM = 108.125  # FS-S-WEST's truss bottom (framing_bore_limits.md §13)
+_PVC_2, _PVC_125 = 1.1875, 0.83  # outside radii
+
+
+@pytest.mark.parametrize(("run_in", "radius_in", "expected"), [
+    (154.0, _PVC_2, [(112.035, 117.3125, "D11")]),
+    (153.06, _PVC_2, [(112.73, 117.3125, "D11")]),
+    (172.0, _PVC_2, [(110.8125, 111.653, "D12"), (116.472, 117.3125, "D13")]),
+    (177.94, _PVC_2, [(112.08, 117.3125, "D13")]),
+    (107.5, _PVC_125, [(110.8925, 117.2325, "R1")]),
+])
+def test_station_bands_are_section_13s_and_the_check_agrees(
+        catlin_model_ro, run_in, radius_in, expected) -> None:
+    shape = _truss(catlin_model_ro, 215.0).web
+    size = RunSize(2 * radius_in * M_PER_IN, 2 * radius_in * M_PER_IN, True)
+    run = run_in * M_PER_IN
+    bands = station_bands(shape, run, size)
+    got = [(_BOTTOM + _in(low), _BOTTOM + _in(high), opening.key) for low, high, opening in bands]
+    assert [g[2] for g in got] == [e[2] for e in expected]
+    for (low, high, _key), (want_low, want_high, _same) in zip(got, expected, strict=True):
+        assert (low, high) == pytest.approx((want_low, want_high), abs=2e-3)
+    step = 1e-5  # metres: past ``_inside``'s 1e-6 tolerance
+    for low, high, _opening in bands:
+        assert grade_crossing(shape, run, low + step, size).ok
+        assert grade_crossing(shape, run, high - step, size).ok
+        assert not grade_crossing(shape, run, low - step, size).ok
+        assert not grade_crossing(shape, run, high + step, size).ok
+
+
+def test_the_lav_proposal_stood_section_13s_inches_over_r1(catlin_model_ro) -> None:
+    shape = _truss(catlin_model_ro, 215.0).web
+    size = RunSize(2 * _PVC_125 * M_PER_IN, 2 * _PVC_125 * M_PER_IN, True)
+    run = (110.187 - 1.75) * M_PER_IN
+    (_low, high, _r1), = station_bands(shape, run, size)
+    assert 117.40 - (_BOTTOM + _in(high)) == pytest.approx(0.17, abs=5e-3)
+    assert not grade_crossing(shape, run, (117.40 - _BOTTOM) * M_PER_IN, size).ok

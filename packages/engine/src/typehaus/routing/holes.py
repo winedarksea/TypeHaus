@@ -100,21 +100,21 @@ def hole_index(lines: list[Line]) -> Callable[[Any, list[str]], list[list[tuple[
     return holes
 
 
-def taken_pockets(lines: list[Line], floor: Any, members: list[Any]) -> list[set[str]]:
-    """Per member, the keys of its D pockets some line already passes through."""
+def taken_pockets(lines: list[Line], floor: Any, members: list[Any]) -> list[dict[str, str]]:
+    """Per member, its D pockets some line already passes through: key -> that line's tag."""
     from typehaus.resolve.open_web import run_of
 
     along_x = floor.direction == "x"
     index = {m.child_key: i for i, m in enumerate(members)}
-    out: list[set[str]] = [set() for _ in members]
-    for _tag, _radius, crossing in crossings(lines, floor):
+    out: list[dict[str, str]] = [{} for _ in members]
+    for tag, _radius, crossing in crossings(lines, floor):
         i = index.get(crossing.member_key)
         if i is None or members[i].web is None:
             continue
         opening = members[i].web.opening_at(run_of(members[i], crossing.station_m, along_x),
                                             crossing.z_m - members[i].z0_m)
         if opening is not None and opening.kind == "D":
-            out[i].add(opening.key)
+            out[i].setdefault(opening.key, tag)
     return out
 
 

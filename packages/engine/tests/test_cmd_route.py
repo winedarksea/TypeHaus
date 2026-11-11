@@ -104,19 +104,19 @@ def test_the_tree_mode_routes_each_branch_at_its_own_derived_size(runner) -> Non
     3" / 2" / 1 1/4" and each size gets its own world — inflating one shared world at
     the widest walls the narrow branches out of lanes they fit perfectly well.
 
-    **Two of three route, and the third is refused with its reason.** The suite bath's
-    tub-shower and lav route on their own 2" and 1 1/4" lattices; its WC finds no 3"
-    lane. (The basement bath carried this until 2026-11-10, when its WC got a branch of its
-    own and its lav moved onto PR-B-USINK-DRAIN.)
+    **All three are refused, each with its reason** (framing_bore_limits.md §13). The tub's
+    only lane is pocket D13, which PR-B-CW-SUITE holds; the lav's went through the top of
+    R1; the WC finds no 3" lane. A refusal beats a proposal mep.open_web_panel would fail.
     """
     before = _plan_digest()
     result = runner.invoke(app, ["route", str(_CATLIN),
                                  "--tree", "PR-M-S-SUITE-DRAIN", "--explain"])
-    assert result.exit_code == 0, result.output
+    assert result.exit_code == 1, result.output
     assert '3 branch sizes (3", 2", 1.25")' in result.output
-    assert "FX-S-SUITEBATH-TUBSH-PROPOSED" in result.output
-    assert "diameter=inch(2)" in result.output
-    assert "FX-S-SUITEBATH-WC: no route" in result.output
+    output = " ".join(result.output.split())
+    for said in ("FX-S-SUITEBATH-TUBSH: no route", "D13 held by PR-B-CW-SUITE",
+                 "FX-S-SUITEBATH-LAV: no route", "FX-S-SUITEBATH-WC: no route"):
+        assert said in output
     assert "deepest first" in result.output
     assert _plan_digest() == before
 

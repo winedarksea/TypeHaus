@@ -67,8 +67,9 @@ class _Floor:
     #: Trimmers, sisters, headers of ANY profile (an LVL edge) as ``(x0, y0, x1, y1, z0, z1)``.
     blocks: list[tuple[float, float, float, float, float, float]] = field(default_factory=list)
     parts: list[Any] = field(default_factory=list)  #: the FramedMember of each joist line
-    #: Per joist line, its D web pockets another run passes (``holes.taken_pockets``).
-    pockets: list[set[str]] = field(default_factory=list)
+    #: Per joist line, its D web pockets another run passes, and who (``holes.taken_pockets``).
+    pockets: list[dict[str, str]] = field(default_factory=list)
+    source: Any = None  #: the resolved floor, for a per-search ``taken_pockets``
 
 
 class Penetrations:
@@ -369,7 +370,7 @@ def _floor(floor: Any, library: Any = None, model: Any = None,
         joists.append((p0, extent[0], extent[1], member.z0_m, top, member.profile, member))
     joists.sort(key=lambda j: j[:5])
     out = _Floor(tag=floor.tag, across="y" if along_x else "x", kind=window.kind,
-                 window=(window.z0_m, window.z1_m))
+                 window=(window.z0_m, window.z1_m), source=floor)
     out.joists = [j[:5] for j in joists]
     for member in floor.members:
         if member.z0_m is None or member.category not in _SOLID_EDGE or is_member_line(member):
