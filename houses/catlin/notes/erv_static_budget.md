@@ -1045,6 +1045,92 @@ the leg returns to x=12" with a 3.4" jog in the bay. One more 90 on 100 cfm: gov
 **0.4282 -> 0.432 in.**, off the curve 206 - (0.032 / 0.1) x 5 = **204.4 cfm**, against R403.5's
 203.0: **+1.4 cfm**.
 
+### 10.18 The 270 degree build, attempted: neither a+ nor the swap closes (2026-11-11)
+
+Owner brief: rotate EQ-B-ERV to 270, choose a+ (OA in 1" AP Armaflex, CD-B-GARAGE off the
+crossing) or the OA/EA riser swap, make all four Broan ports exact. **Not landed.** The draft
+(layout X below) is on branch `wip/erv-270-layout-x-not-landed` for reference; the house is
+unchanged and the ERV OA/EA/RET hold stands.
+
+**1. The static fails before any routing.** Making the outdoor port exact derives Broan's kit on
+OA: the 6-to-8 transition and the bent flex, both on the governing supply column.
+
+    6" at 210 cfm:  V = 210 / (pi/4 x 0.5^2) = 1069.5 fpm   VP = (1069.5/4005)^2 = 0.07131 in.
+    8" at 210 cfm:  V = 210 / 0.3491 = 601.6 fpm           VP = (601.6/4005)^2  = 0.02256 in.
+    transition      C 0.22 x 0.07131                        = +0.0157 in.  (3.9 Pa)
+    bent flex       C 2.85 x 0.02256 + friction (engine 16.6 Pa)  = +0.0666 in.
+    port-end stamped 90 the bend replaces: -0.22 x 0.02256  = -0.0050 in.
+    supply column:  0.432 + 0.0773 = 0.509 in.  ->  201 - 0.009/0.1 x 5 = 200.5 cfm
+
+That is 2.5 cfm under R403.5's 203.0, outside the 2 cfm commissioning band: a FAIL with OA
+re-routed at no extra length at all. §10.12's 201.5 cfm left out the transition and the
+flex's friction. The draft measured **0.519 in., 200.6 cfm** (engine: PLAY 0.026, valve 8.2 Pa,
+MAN-SUP 15.2 Pa, SUP-TRUNK 0.003 + flex 1.2 Pa, RISER-SUP 0.108, OA 0.045 + hood 23.3 +
+transition 3.9 + flex 16.6 Pa, HP-FEED 0.062). Extract was 0.40-0.41 in., not governing.
+
+Any 270 layout therefore needs a supply-side saving as well. The one that is worked: an **8"
+supply trunk into an 8" plenum inlet** (Broan's own 8" advice). §4 at an 8" collar gives 0.80 x
+5.62 + 1.02 = 5.5 Pa against 15.2 (-9.7 Pa); the supply port then takes the 6-to-8 transition
+(+3.9 Pa) and an 8" flex (1.2 -> about 0.3 Pa). Net -6.7 Pa = **-0.027 in.**: 0.482 in.,
+**about 201.9 cfm**. The 10" hood (§10.4) is the other lever and is unverified.
+
+**2. Geometry: the layer at 92.7-94" is what binds, not CD-B-GARAGE.** Measured off the resolved
+model (AFF, basement datum -109.4375" project):
+
+| item | where | z |
+|---|---|---|
+| CZ-B-DRYFIRE | x 40.5-68", y <= 411.6" | top 72.0" |
+| CD-B-KITCHEN / CD-B-DATA-MEDIA (3/4" EMT) | E-W at y 348" / 360", x 10-115" | bottom 92.73" |
+| PR-B-SAUNA-VENT | N-S x = 51.5" (y 344-400"); E-W y = 344" (x 51.5-108") | bottom 93.95" / 93.3" |
+| CD-B-PLAY-SPARE | E-W y = 349.4", x 9.5-40"; N-S x = 40" | bottom 95.5" |
+| FS-M-MECH joists | E-W, 16" o.c. (341.4", 357.4", 373.4"...) | underside 97.56" |
+| ports at 270 | case at 49.0" (the condensate's 1/4"/ft limit, §10.11) | 70.6" |
+| EA's bent lead | port + 2" start + R tan 45 = 8" | corner 80.6" |
+
+Topology: at 270 the outdoor port is north of the exhaust port, and EA's riser foot (24.6",
+418.5") is north-west of OA's (40", 409"). West of OA's riser there is 5.1" to DU-ERV-RISER-EXH
+(§10.12), so EA reaches its foot from the east along y = 418.5" and its north leg stands at
+x 51-62.6" (between OA's 10" wrap and W-B-ESS-W). OA's row from its port to x = 40" must cross
+that leg, so the two stack once. Over the lane EA's centre is >= 78.0" (wrap 72-84"), so OA's
+bottom is >= 84.0" and its top >= **94.0"**. OA's row has to pass the vent's x = 51.5" leg, which
+spans every y from 344" to 400", where its top must be <= **93.95"**; and every route out of the
+machine passes a 3/4" conduit at 92.73". OA cannot be over EA and under the vent at once: 0.05"
+short with zero slack everywhere else, and the study's 1.47" a side (§10.13) is 3.0" short.
+§10.13 put EA's leg at x_e 59-62", clear of the vent, but OA's row still has to pass the vent
+on its way to x = 40"; that study screened the crossing station and did not route OA beyond it. EA also cannot reach 78.0" off its
+80.6" corner before the crossing: a 15 degree pair takes 12 + 0.9 + 9.6" of north travel.
+
+Under OA instead (EA high): EA's west row runs between the vent's y = 344" leg and CD-B-KITCHEN,
+so it is <= 86.7" there, and then OA's top <= 80.7", bottom 70.7", in the lane. No.
+
+**Layout X (drawn, the WIP branch).** It crosses at the machine, off the lane: OA's flex lead
+rises 21.4" and turns south at 92" over EA's lead (0.4" over its wrap, 0.56" under the joists),
+then west at y = 335.5" and north on x = 40". `haus check`: **12 FAIL**. The three that kill it are
+OA's south leg through CD-B-DATA-MEDIA (3.77" in plan), CD-B-KITCHEN (5.29") and the vent's
+y = 344" leg (3.40"). Every E-W line over the machine sits at 92.7-96.3". The rest are fixable
+(SAUNA-SUP vs SUP-TRUNK 0.89"; BATH vs PR-B-HW-SBATH 0.94"; EA vs PR-B-KITCH-DRAIN 0.19";
+CD-B-DATA-STUDY vs RISER-SUP 0.52"), plus the static and four R303.1 cascades from it. Parts
+of it worth keeping: plenums over the east ports with straight 12" trunks (a bent 6" lead
+costs 1.18 x 0.0713 = 0.084 in.), risers out of the box tops through the FS-M-MECH bays
+(RISER-SUP 4 x 90 + 2 x 30, one 90 fewer than today), and SAUNA-SUP and PLAY with no short
+straights. `haus route --run DU-ERV-OA` on the draft: no route ("not within this search"; the
+port lead is laid straight at port + 24" = 94.6"); `--counterfactual` lifting EA or RET opens nothing.
+
+**Swap (not drawn).** EA east of OA puts EA's riser at x >= 51". On the second storey that is
+RM-S-BATH1 (the chase notch is x 6.6-30.6"), over its tub; on main the level-2 plenums fill the
+closet's east half at +97-105". A main-storey EA hood on W-M-N3B is 3-4 ft from the intake;
+`mep.erv_outdoor_terminals` wants 10 ft (3-D, no 3 ft exception). It needs a new chase through BATH1.
+
+**What would close it, for the owner.**
+1. Re-lane PR-B-SAUNA-VENT's furnace-room loop (y = 344", x = 51.5", y = 400") and
+   CD-B-KITCHEN / CD-B-DATA-MEDIA out of the crossing (into FS-M-MECH bays, or west of x 35").
+   That frees 72-97.56" for 22" of OA + EA, about 1" a side. Add the 8" supply trunk (1.) for
+   the static. Five elements beyond the ERV set.
+2. The 66" notch (§10.13 b): rejected by the owner.
+3. Keep the 0 degree machine and its cross-wired EA/RET.
+
+Thermal and wrap figures for a+ (OA 1", +285 Btu/h) stand as §10.13 worked them.
+
 ### 10.5 The thermal penalty of the legs (hand-worked)
 
 Both legs run through conditioned space in 2" of closed-cell elastomeric (two 1" layers of
