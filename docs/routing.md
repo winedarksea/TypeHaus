@@ -133,12 +133,12 @@ lays the whole group); seeds keep the two cheapest take-offs (`keep=2`); a verti
 stack pitch is left to the check; a tie's fitting is named but not priced; rack lanes exist
 only inside `--house` and `--manifold` campaigns. `--tree` prints each branch graded alone, so
 a branch meets the authored drain another branch replaces; the scorecard grades the tree as
-one network. Neither catlin bathroom group lays on today's geometry (the supply lanes stop
-it). On `tree:main`, P8 re-lays BATH2-TUB one size up onto BATH2-SH. Its 2" group is a 339 x 416
+one network. Neither catlin bathroom group lays whole: BATH2 lays its SH arm, 3" wet vent and
+dry vent and refuses TUB and WC; SUITEBATH stays the authored three-vent design. On `tree:main`, P8 re-lays BATH2-TUB one size up onto BATH2-SH. Its 2" group is a 339 x 416
 plan lattice (`MAX_CANDIDATE_LINES` 450; its 1.5" form was 315 x 393 before UPC 2018's 2" drains):
 all three size groups build and 8 of 8 fixtures lay (395 s wall measured with other runs on the
-machine: search 69 s for the 2" group, 1.18 GB peak). The stamped Linx elbow has no published centre-to-face (the 1.5 D gored
-radius stands in), and the flex bend radius and the GV0772 transition length are unread
+machine: search 69 s for the 2" group, 1.18 GB peak). The stamped Linx elbow has no published
+centre-to-face (its catalog gives only rC ≈ 1.5 d1; the 1.5 D radius stands in), and the flex bend radius and the GV0772 transition length are unread
 (counted 0, and said so).
 
 ## Interpret and accept
@@ -223,8 +223,11 @@ then run `haus fmt`, `haus trial`, inspect the drawing, and run repository verif
 
 - `--lift` still refuses a supply whose unlifted branch tees on its first leg ("loses N"), and
   grades each re-laid line on its own, against the authored runs.
-- `--group` offers only the three highest in-band tie stations on the tie run; on a main whose
-  head lies across a floor-system seam from the room, every offered tie is on the far side.
+- `--group` offers at most four tie stations (`cli/group_ties`): two authored, then the main's
+  in-band stations dealt per floor system, nearest the room first; each refused station costs a
+  full search. A station refused before one that lays is dropped from the refusals. A partial
+  group (the dry fixture laid, a later one refused) is proposed and replaces only the laid
+  fixtures' runs.
 - Vent-free 908.2 bathroom groups are not proposed; whether 908.2 admits a dry-vented lavatory's
   drop is an AHJ question.
 - An off-catalog round duct turn (outside the 30/45/90 +/-10 deg windows) is made by the house's
@@ -257,8 +260,10 @@ then run `haus fmt`, `haus trial`, inspect the drawing, and run repository verif
 - The router excuses a riser in a served fixture's body when the body holds one of the route's
   ends, in the body's own room; the check excuses only the legs walked in from a run's end, so
   a mid-run riser through that body would still be graded.
-- The supply trunk's remaining evaluation fails are the three open-air risers in RM-M-LAUNDRY,
-  which need a chase (a house edit). Laid-run holes reach supply and drain campaigns: a
+- Exterior insulated bays are priced per foot, not refused, and the router does not know where
+  in the bay a pipe sits; `mep.supply_freeze_exposure` (a house advisory) grades that depth, so a
+  supply proposal through an exterior bay may carry its FAIL (`trunk:CW`: 12).
+- Laid-run holes reach supply and drain campaigns: a
   house campaign and a `--lift` re-lay pass what is laid so far (`holes.laid_lines`), a tree its
   `Branches.laid_lines()` (the main it ties into included, hidden from the space by `touch`), and a
   drain keeps its tie target's own holes (`holes.kept_lines`). Known gap: same-size I-joist siblings
