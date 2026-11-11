@@ -38,8 +38,8 @@ def test_the_tie_is_derived_from_the_authored_hardware(catlin_ctx):
         ("BM-BW-FE", "W-G-S", 2, "HL43HDG", "x", None, False, None, "y"),
         ("W-BW-SCREEN", "W-G-W", 2, "HL33HDG", "y", None, False, "dry", "y")]
     assert "windblown" in joints[1].service_basis
-    # The screen's east face moved 3 3/8" east with its posts (§10k, 2026-10-31).
-    assert [round(j.x_ft, 4) for j in joints] == [9.5833, 6.4792]
+    # The screen's stud line stands flush with its posts' west faces (§10m, 2026-11-10).
+    assert [round(j.x_ft, 4) for j in joints] == [9.5833, 6.3958]
     assert [round(j.y_ft, 4) for j in joints] == [43.1458, 43.1458]
 
 
@@ -59,17 +59,17 @@ def test_the_loads_reproduce_section_10b(catlin_ctx):
 
 
 def test_the_verdicts_reproduce_section_10h(catlin_ctx):
-    """§10l: every row passes; E-W wind at W governs at 0.811 since the screen stopped on the
-    garage cladding (2026-11-06)."""
+    """§10m: every row passes; E-W wind at W governs at 0.800 since the screen's stud line
+    moved 1in west (2026-11-10)."""
     record = catlin_ctx.engineering[_ITEM]
     assert record.status is Status.OK
     ns = _state(record, "tie interaction, N-S wind")
-    assert ns.ratio == pytest.approx(0.7761, abs=5e-4)
+    assert ns.ratio == pytest.approx(0.7738, abs=5e-4)
     assert record.governing.name == "tie interaction, E-W wind"
     ew = _state(record, "tie interaction, E-W wind")
-    assert ew.ratio == pytest.approx(0.8109, abs=5e-4)
-    assert _state(record, "tie interaction, guard").ratio == pytest.approx(0.6719, abs=5e-4)
-    assert "616.0 lb along the wall / 1,480.0 + 292.1 lb across it / 740.0" in ew.citation
+    assert ew.ratio == pytest.approx(0.8001, abs=5e-4)
+    assert _state(record, "tie interaction, guard").ratio == pytest.approx(0.6599, abs=5e-4)
+    assert "599.9 lb along the wall / 1,480.0 + 292.1 lb across it / 740.0" in ew.citation
     # W's dry service is a judgement named for the engineer of record, on the record.
     assert any("DRY SERVICE at W-BW-SCREEN/W-G-W" in n and "engineer of record" in n
                for n in record.notes)

@@ -53,6 +53,7 @@ from params.north_entry_frame import (
     PIER_LINE_Y_FT,
     PIER_TOP_FT,
     ROOF_COLUMN_EAST_X_FT,
+    SCREEN_AXIS_X_FT,
     SCREEN_CLADDING_WEST_X_FT,
     SCREEN_PANEL_TOP_FT,
     SEAT_START_X_FT,
@@ -261,9 +262,9 @@ SCREEN_START_Y_FT = DECK_SHEET_SOUTH_Y_FT
 SCREEN_END_Y_FT = GARAGE_CLADDING_Y_FT
 SCREEN_PANEL_NODES = [
     Node(uid="BWNS01AAAA", tag="N-BW-SCREEN-S",
-         position=pt(ft(LANDING_WEST_FT), ft(SCREEN_START_Y_FT)), open_end=True),
+         position=pt(ft(SCREEN_AXIS_X_FT), ft(SCREEN_START_Y_FT)), open_end=True),
     Node(uid="BWNS02AAAA", tag="N-BW-SCREEN-N",
-         position=pt(ft(LANDING_WEST_FT), ft(SCREEN_END_Y_FT)), open_end=True),
+         position=pt(ft(SCREEN_AXIS_X_FT), ft(SCREEN_END_Y_FT)), open_end=True),
 ]
 # ** IT IS FILED ON THE GARAGE STOREY, NOT ON MAIN, AND THAT IS NOT A FILING DETAIL. **
 # Every derivation that answers "how big is this building" and "where are its braced wall
@@ -276,8 +277,9 @@ SCREEN_PANEL_NODES = [
 # move it.
 GARAGE_STOREY_ELEMENTS = []
 # ** THE STUD LINE HOLDS THE DATUM, NOT THE MIDDLE OF THE STACK (2026-09-11). ** The panel
-# is centred between PT-BW-CW and PT-BW-CNW, two 6x6s on the same x=6'-3 3/8" node line, and the
-# 2x4s are what die into them. Left to centre on its own axis the stack would re-centre when
+# stands between PT-BW-CW and PT-BW-CNW, and the 2x4s die into them, flush with their west
+# faces (owner, 2026-11-10; centred on the column line the posts cut through the CDX and
+# stood 1" inboard of the garage's planes). Left to centre on its own axis the stack would re-centre when
 # the east corrugated skin came off, sliding every plate and stud 7/16" east off the columns.
 #
 # ** WHAT THAT 7/16" WAS HOLDING OFF CHANGED ON 2026-09-12, AND ONLY HALF OF IT SURVIVES. **
@@ -500,11 +502,11 @@ SEAT_BEAM_HANGERS = [
               elevation=ft(SEAT_TOP_FT), size="LUS26-2Z",
               connects=("BM-BW-GARAGE-SEAT", "PT-BW-CNW")),
     Connector(uid="BWSH03AAAA", tag="CN-BW-HGR-SCS-S", kind=ConnectorKind.JOIST_HANGER,
-              position=pt(ft(LANDING_WEST_FT), ft(PIER_LINE_Y_FT + COLUMN_HALF_FT)),
+              position=pt(ft(SCREEN_AXIS_X_FT), ft(PIER_LINE_Y_FT + COLUMN_HALF_FT)),
               elevation=ft(SEAT_TOP_FT), size="LUS28Z",
               connects=("BM-BW-SCSILL", "PT-BW-CW")),
     Connector(uid="BWSH04AAAA", tag="CN-BW-HGR-SCS-N", kind=ConnectorKind.JOIST_HANGER,
-              position=pt(ft(LANDING_WEST_FT), ft(GARAGE_SEAT_Y_FT - COLUMN_HALF_FT)),
+              position=pt(ft(SCREEN_AXIS_X_FT), ft(GARAGE_SEAT_Y_FT - COLUMN_HALF_FT)),
               elevation=ft(SEAT_TOP_FT), size="LUS28Z",
               connects=("BM-BW-SCSILL", "PT-BW-CNW")),
     # CN-BW-HGR-FC/-FE (FZXT6JSTBY/FYC66TSEYW) are retired with BM-BW-LAND-HDR (2026-10-13).

@@ -80,10 +80,13 @@ LANDING_WEST_FT = GARAGE_X_WEST.feet + GARAGE_PLATE_INSET_FT
 # `D-G-SERVICE` at 10'-0"); with the door centres three inches apart the RO's east jamb covers both.
 LANDING_EAST_FT = SERVICE_RO_EAST_FT
 # ** THE WEST CORRUGATED PLANE, PUBLISHED SO NOTHING RE-DERIVES IT. ** `W-BW-SCREEN` carries
-# `alignment=face("stud-ext", offset=inch(-1.75))` (params/breezeway.py): its 2x4s centre on
-# this column line, so the west face lands a half stud + 5/8" CDX + 7/8" corrugated out.
-# `W-BW-SCREEN-SKIRT` READS THIS: a drifted skirt is a 7/16" step in steel, graded by nothing.
-SCREEN_CLADDING_WEST_X_FT = LANDING_WEST_FT - (1.75 + 0.625 + 0.875) / 12
+# `alignment=face("stud-ext", offset=inch(-1.75))` (params/breezeway.py). Its 2x4s stand flush
+# with the 6x6s' west faces, 1" west of the column line, so the CDX laps and nails to its
+# chords and both west planes are the garage's own.
+# `W-BW-SCREEN-SKIRT` READS THIS: a drifted skirt is a step in steel, graded by nothing.
+SCREEN_AXIS_X_FT = LANDING_WEST_FT - (5.5 - 3.5) / 24
+SCREEN_CLADDING_WEST_X_FT = SCREEN_AXIS_X_FT - (1.75 + 0.625 + 0.875) / 12
+assert abs(SCREEN_CLADDING_WEST_X_FT - (GARAGE_X_WEST.feet - 0.875 / 12)) < 1e-9
 DECK_FINISH_FT = 0.0
 DECK_JOIST_TOP_FT = DECK_FINISH_FT - TREX_ENHANCE_BASICS_DECK_LAYER.thickness.feet
 JOIST_DEPTH_IN = 7.25
@@ -402,8 +405,8 @@ beam(7, "BM-BW-RE", ROOF_COLUMN_EAST_X_FT, HEADER_SOUTH_Y_FT,
 # its path ends and `pier_basis`'s tributary is built on that naming. This sill is different:
 # its load is taken by the column itself, which stands on its own pier through `supported_by`,
 # and the seat beams it used to name are members it no longer touches at all.
-beam(10, "BM-BW-SCSILL", LANDING_WEST_FT, PIER_LINE_Y_FT + COLUMN_HALF_FT,
-     LANDING_WEST_FT, GARAGE_SEAT_Y_FT - COLUMN_HALF_FT,
+beam(10, "BM-BW-SCSILL", SCREEN_AXIS_X_FT, PIER_LINE_Y_FT + COLUMN_HALF_FT,
+     SCREEN_AXIS_X_FT, GARAGE_SEAT_Y_FT - COLUMN_HALF_FT,
      ("PT-BW-CW", "PT-BW-CNW"), DECK_JOIST_TOP_FT, "2x8")
 
 # --- piers, pedestals and columns -------------------------------------------------------

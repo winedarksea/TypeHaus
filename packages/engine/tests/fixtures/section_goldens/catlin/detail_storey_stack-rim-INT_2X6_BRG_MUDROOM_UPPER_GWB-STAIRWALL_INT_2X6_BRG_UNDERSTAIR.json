@@ -297,6 +297,119 @@
       "node": "polyline",
       "points": [
         [
+          122.62500000000001,
+          -13.437499999999996
+        ],
+        [
+          123.25,
+          -13.437499999999996
+        ],
+        [
+          123.25,
+          0.0
+        ],
+        [
+          122.62500000000001,
+          0.0
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMF601AAAA-LN0W",
+      "tag": "FO-M-STAIR-lining-west-gwb-well"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          122.62500000000001,
+          -13.437499999999996
+        ],
+        [
+          123.25,
+          -13.437499999999996
+        ],
+        [
+          123.25,
+          0.0
+        ],
+        [
+          122.62500000000001,
+          0.0
+        ]
+      ],
+      "pattern": "gwb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "gwb"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          123.25,
+          -13.437499999999996
+        ],
+        [
+          123.26968503937009,
+          -13.437499999999996
+        ],
+        [
+          123.26968503937009,
+          0.0
+        ],
+        [
+          123.25,
+          0.0
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMF601AAAA-LNPW",
+      "tag": "FO-M-STAIR-lining-west-paint"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          123.25,
+          -13.437499999999996
+        ],
+        [
+          123.26968503937009,
+          -13.437499999999996
+        ],
+        [
+          123.26968503937009,
+          0.0
+        ],
+        [
+          123.25,
+          0.0
+        ]
+      ],
+      "pattern": "paint-wall",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "paint-wall",
+      "fill": "#f4f6f1"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           115.28900000000002,
           -16.25
         ],

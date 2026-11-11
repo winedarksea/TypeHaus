@@ -182,7 +182,7 @@ def service_door_envelope():
     """Installed 32-inch leaf envelope inside the independent 34-inch rough opening."""
     return SwingEnvelope(
         # Pivot inset from the west RO edge. 1/2in is the lower tested value the landing ties allow
-        # (flush fails); 1/2..2in all pass. Field-verify the delivered frame's pivot.
+        # 1/2..2in all pass. Field-verify the delivered frame's pivot.
         hinge_inset=inch(0.5), hinge_normal_datum="exterior_placement",
         hinge_normal_offset=inch(0), leaf_start=inch(0), leaf_end=inch(32),
         leaf_face_min=inch(-0.875), leaf_face_max=inch(0.875),
@@ -195,8 +195,9 @@ def service_door_clearance(model, **overrides):
     """D-G-SERVICE swept to its AUTHORED stop (``Door.maximum_opening_degrees``).
 
     81 degrees since the canopy headers moved 3 3/8" inboard onto the garage truss bearing
-    lines (2026-10-31): W-BW-SCREEN moved with its chord posts, and at 90 degrees the lever
-    meets the screen assembly and the leaf the CN-BW-GWTIE ties. Verify final trims.
+    lines (2026-10-31): W-BW-SCREEN moved with its chord posts. The stud line went 1in west
+    on 2026-11-10, clearing the leaf from the ties; at 90 degrees the lever still meets the
+    slat band. Verify final trims.
     """
     from dataclasses import replace
 

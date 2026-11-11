@@ -330,6 +330,7 @@
     "vacuum_breaker": 12096583,
     "vent": 14737627,
     "wall_corner": 12567756,
+    "wall_end_board": 15592419,
     "water_hammer_arrestor": 10396584,
     "winder": 11699540,
     "window_return": 15592419,
@@ -550,6 +551,7 @@
     "vacuum_breaker": 12096583,
     "vent": 14737627,
     "wall_corner": 12567756,
+    "wall_end_board": 15592419,
     "water_hammer_arrestor": 10396584,
     "winder": 11699540,
     "window_return": 15592419,
@@ -855,6 +857,9 @@
     "wall_corner": [
       "siding"
     ],
+    "wall_end_board": [
+      "drywall"
+    ],
     "water_hammer_arrestor": [
       "plumbing"
     ],
@@ -962,6 +967,7 @@
     "vacuum_breaker": "plumbing",
     "vent": "mechanical",
     "wall_corner": "siding",
+    "wall_end_board": "drywall",
     "water_hammer_arrestor": "plumbing",
     "window_return": "drywall"
   },

@@ -61,13 +61,13 @@ def local_timber_checks(wind_pressure_psf):
                        "in", "ER-192 Table 8"))
     timber_weight = (sum(s.volume_in3 for s in spec.SUPPORTS if s.profile == "2x6")
                      * spec.LB_PER_IN3)
-    # East ply bears only 0.5in on the existing 3.5in plate; never use the 4.5in pack
-    # width as bearing area or count the timber as supporting the roof.
-    east_ply_bearing = 77.125 - (spec.TIMBER_EAST_IN - depth)
-    rows.append(_check("east-ply bottom-plate bearing, self weight",
-                       timber_weight / spec.TIMBER_PLY_COUNT / (east_ply_bearing * width),
+    # The east ply overhangs the plate and hangs on the ply screws, so the middle ply's
+    # 1in strip carries both; never use the 4.5in pack width or credit the roof.
+    middle_ply_bearing = spec.STUD_EAST_IN - (spec.TIMBER_EAST_IN - 2 * depth)
+    rows.append(_check("middle-ply bottom-plate bearing, self weight of two plies",
+                       2 * timber_weight / spec.TIMBER_PLY_COUNT / (middle_ply_bearing * width),
                        spec.SOUTHERN_PINE_FC_PERP_PSI * spec.WOOD_FC_PERP_WET_FACTOR, "psi",
-                       "NDS Table 4B Fc-perp565 x CM0.67; actual 0.5x5.5in contact; "
+                       "NDS Table 4B Fc-perp565 x CM0.67; actual 1.0x5.5in contact; "
                        "no roof credit"))
     for name in ("end attachments: installed directions and fit", "local plate load transfer",
                  "end screw penetration, edge distances and cross-grain effects"):

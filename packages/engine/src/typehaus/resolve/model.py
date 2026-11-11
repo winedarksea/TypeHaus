@@ -20,7 +20,12 @@ from typehaus.resolve.model_door_products import CasedDoorSpec
 from typehaus.resolve.model_ducts import ResolvedDuctPart, ResolvedDuctSupport
 from typehaus.resolve.model_earthwork import ResolvedExcavation, ResolvedWallColumn
 from typehaus.resolve.model_eave_sealing import ResolvedEaveSealingRun
-from typehaus.resolve.model_trim import ResolvedBaseRun, ResolvedDoorCasing, ResolvedDrywallTrim
+from typehaus.resolve.model_trim import (
+    ResolvedBaseRun,
+    ResolvedDoorCasing,
+    ResolvedDrywallTrim,
+    ResolvedWallEnd,
+)
 from typehaus.resolve.model_window_returns import ResolvedWindowReturn
 from typehaus.resolve.model_window_seat import WindowSeat
 from typehaus.resolve.rebar.records import ResolvedRebarSet
@@ -1727,6 +1732,7 @@ class ResolvedModel:
     eave_sealing_runs: list[ResolvedEaveSealingRun] = field(default_factory=list)
     # Drywall beads and shadow-gap LED reveals off the house's DrywallStandard (#103).
     drywall_trims: list[ResolvedDrywallTrim] = field(default_factory=list)
+    wall_ends: list[ResolvedWallEnd] = field(default_factory=list)
     conditions: list[BoundaryCondition] = field(default_factory=list)
     stack_edges: list[StackEdge] = field(default_factory=list)
     # Derived wall-line chains (#43): collinear within a storey, stacked across them,

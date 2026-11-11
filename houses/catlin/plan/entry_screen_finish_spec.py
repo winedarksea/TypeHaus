@@ -23,6 +23,9 @@ NAILER_STATIONS_IN = (7.125, 14.375, 37.000, 44.250, 66.875, 74.125)
 NAILER_BOTTOM_IN = 0.56
 NAILER_TOP_IN = 45.0
 TIMBER_STATION_IN = 40.625
+STUD_WEST_IN = 72.625
+STUD_EAST_IN = 76.125
+# Held flush with the post east faces: 1in off the CDX, its east ply past the plate.
 TIMBER_WEST_IN = 73.625
 TIMBER_PLY_THICKNESS_IN = 1.5
 TIMBER_WIDTH_IN = 5.5
@@ -53,7 +56,7 @@ class ScreenSupport:
 # Preserve the identities of the four retained nailers; -3 is deliberately retired.
 NAILER_IDENTITIES = (1, 2, 6, 7, 4, 5)
 SUPPORTS = tuple(
-    ScreenSupport(f"TR-BW-MDO-NAILER-{identity}", "2x4", 73.625, 77.125,
+    ScreenSupport(f"TR-BW-MDO-NAILER-{identity}", "2x4", STUD_WEST_IN, STUD_EAST_IN,
                   station - 0.75, station + 0.75)
     for identity, station in zip(NAILER_IDENTITIES, NAILER_STATIONS_IN, strict=True)
 ) + tuple(

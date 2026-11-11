@@ -17,8 +17,8 @@ INCH = 0.0254
 def test_mdos_keep_posts_exposed_and_west_structure_fixed(catlin_model_ro):
     wall = catlin_model_ro.wall("W-BW-SCREEN")
     layers = {layer.name: layer for layer in wall.layers}
-    for name, expected in {"stud": (73.625, 77.125), "cdx-out": (73, 73.625),
-                           "cladding-out": (72.125, 73)}.items():
+    for name, expected in {"stud": (72.625, 76.125), "cdx-out": (72, 72.625),
+                           "cladding-out": (71.125, 72)}.items():
         xs = [x / INCH for x, _y in layers[name].polygon]
         assert (min(xs), max(xs)) == pytest.approx(expected)
     expected_runs = ((0.125, 7.875), (13.625, 37.750),
@@ -26,7 +26,7 @@ def test_mdos_keep_posts_exposed_and_west_structure_fixed(catlin_model_ro):
     for index, expected in enumerate(expected_runs, 1):
         layer = layers[f"mdo-in-{index}"]
         xs = [x / INCH for x, _ in layer.polygon]
-        assert (min(xs), max(xs)) == pytest.approx((77.125, 77.875))
+        assert (min(xs), max(xs)) == pytest.approx((76.125, 76.875))
         assert tuple(value / INCH for value in layer.run_span_m) == pytest.approx(expected)
         assert tuple(value / INCH for value in layer.band(wall)) == pytest.approx((2, 47.5))
     assert catlin_model_ro.plan.by_tag(wall.tag).shear_panel.sheathing_layer == "cdx-out"
@@ -93,8 +93,10 @@ def test_stock_leaf_sweep_clears_hold_down_and_screen_with_required_margin(catli
     results = _service_sweep(catlin_model_ro)
     anchor = [result for result in results if result.obstacle == "CN-G-BWHD-S-DR"]
     assert min(result.clearance_m for result in anchor) / INCH == pytest.approx(2.865, abs=1e-3)
-    assert results[0].obstacle == "CN-BW-GWTIE-LO"
-    assert min(result.clearance_m for result in results) / INCH == pytest.approx(0.381, abs=1e-3)
+    assert results[0].obstacle == "RL-G-SERVICE-RETURN2"
+    assert min(result.clearance_m for result in results) / INCH == pytest.approx(0.645, abs=1e-3)
+    ties = [result for result in results if result.obstacle == "CN-BW-GWTIE-LO"]
+    assert min(result.clearance_m for result in ties) / INCH == pytest.approx(1.371, abs=1e-3)
     assert any(result.obstacle == "W-BW-SCREEN" for result in results)
     assert any(result.obstacle == "PT-BW-CNW" for result in results)
     assert any(result.obstacle.startswith("TR-BW-MDO-") for result in results)
@@ -102,29 +104,21 @@ def test_stock_leaf_sweep_clears_hold_down_and_screen_with_required_margin(catli
 
 @pytest.mark.parametrize("inset_in", [0.5, 1.0, 2.0])
 def test_stock_leaf_clears_across_the_hinge_inset_range(catlin_model_ro, inset_in):
-    """The 1/2in pivot inset is the LOWER bound the landing ties need, not a conservative
-    pick: the 32in leaf passes from 1/2in to 2in, and a flush hinge fails."""
+    """The 32in leaf passes across the frame's 1/2in to 2in pivot range."""
     from typehaus.quantities import inch
 
     results = _service_sweep(catlin_model_ro, hinge_inset=inch(inset_in))
     assert min(result.clearance_m for result in results) / INCH >= 0.25
 
 
-def test_a_90_degree_stop_meets_the_landing_ties(catlin_model_ro):
-    """The landing ties are still struck at 90 degrees."""
+def test_a_90_degree_stop_meets_the_band(catlin_model_ro):
+    """The lever strikes the slat band at 90 degrees; the leaf now clears the ties."""
     from scripts.garage_service_door_clearance import clearance_results, service_door_envelope
 
     door = next(o for o in catlin_model_ro.openings if o.tag == "D-G-SERVICE")
     results = clearance_results(catlin_model_ro, door, 90, service_door_envelope())
     hit = {r.obstacle for r in results if r.clearance_m < 0}
-    assert "CN-BW-GWTIE-LO" in hit
-
-
-def test_a_flush_hinge_fails(catlin_model_ro):
-    from typehaus.quantities import inch
-
-    results = _service_sweep(catlin_model_ro, hinge_inset=inch(0))
-    assert results[0].clearance_m / INCH < 0.25
+    assert "SB-BW-BAND" in hit and "CN-BW-GWTIE-LO" not in hit
 
 
 def test_the_old_schematic_leaf_overlaps_the_hold_down(catlin_model_ro):

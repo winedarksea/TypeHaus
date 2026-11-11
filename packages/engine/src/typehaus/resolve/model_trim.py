@@ -114,3 +114,18 @@ class ResolvedDrywallTrim:
     length_m: float
     pieces: int
     tags: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
+class ResolvedWallEnd:
+    """A free wall end's board (``resolve/wall_ends.py``); its solids are in ``model.solids``."""
+
+    wall: str
+    node: str
+    storey: str
+    room: str | None
+    material_ref: str
+    thickness_m: float
+    coating: str | None
+    area_m2: float
+    height_m: float

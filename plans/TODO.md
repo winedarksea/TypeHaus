@@ -301,6 +301,9 @@ the future.
 - [x] 3d model of the S-5! snowguards over the canopy entry — continuous ColorGard 2.0 with seam-aligned S-5-N clamps, ColorStrip and SnoClip feet; component takeoff follows the same layout.
 - Supplier sizing and quote for the canopy ColorGard drift case: confirm tributary garage snowpack, row count, seam compatibility and SnoClip pan support (`notes/north_entry_structure.md` §5). The modeled single row is provisional.
 - 3d model of the ERV intake and outlet on the exterior
+- garage roof seam clamps (S-5-N Mini) are in the wrong spots and could use a little 3d modeling work (might share with house roof and snow guard models). We also don't need seam clamps on the corner where the snow guards are.
+- The house has four grounding rods, which might be overkill?
+- Drywall corners and drywall remove where walls meet (drywall depth might be causing a small bug in stud placement)
 
 # Project Management
 

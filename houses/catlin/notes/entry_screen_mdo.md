@@ -25,9 +25,10 @@ alone does not approve the added detail. See `entry_screen_mdo_calculations.json
   x=78.125. Match its pigmented penetrating-oil finish; do not paint the timber white.
 - The original centre nailer is removed; the other four retain their tags and locations.
   Add KDAT 2x4 edge nailers `-6` and `-7` at stations 37.000 and 44.250. All six nailers
-  are x=73.625–77.125 and +0.56 to +45; retained stations 7.125, 14.375, 66.875, 74.125.
+  are x=72.625–76.125 and +0.56 to +45; retained stations 7.125, 14.375, 66.875, 74.125.
 - White-painted nominal 3/4-inch Roseburg DuraGard Premium exterior MDO, directly screwed
-  to framing, face x=77.875, 1/4 inch behind exposed timber. No east WRB or cavity.
+  to framing, face x=76.875, 1 1/4 inch behind exposed timber. No east WRB or cavity.
+  (2026-11-10: the studs went flush with the posts' west faces; timber faces held at 78.125.)
 
 | Panel | Stations from south node, in | Width, in | Height, in |
 |---|---|---|---|
@@ -74,8 +75,8 @@ trim solids; they are not roof columns. Their modeled volume is not charged a se
   per member per angle. It has no approved installed configuration. ESR-3096 Table 5
   bent A2/C2/D directions are 260/260/150 lb at CD=1, rather than the unbent F1/F2
   695/845 lb. Directions cannot be combined. Do not use the upper band's F1 rating here.
-- Coordinate the actual bent tabs and all holes. The east ply overhangs the 3.5-inch
-  plate by 1 inch; its bearing strip is only 0.5 x 5.5 inches. West-side angles must
+- Coordinate the actual bent tabs and all holes. The plate ends at x=76.125, so the
+  east ply has no plate bearing and hangs on the ply screws; the middle ply's strip is 1 x 5.5 inches. West-side angles must
   preserve the plywood. North/south tabs encounter the adjacent nailers: the 1/8-inch
   gaps cannot accommodate a 1-7/16-inch leg. No unauthorized plywood/plate cuts are implied.
 - Verify SD9112 penetration after steel thickness, edge/end distances, opposing screw

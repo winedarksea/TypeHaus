@@ -8257,21 +8257,21 @@
 ],
 "geometry/9AYPA03VAE/layer:gwb-a": [
 -2.7797125,
--0.3413125,
+0.02605,
 2,
-"c0fa4924d6c7"
+"edc80fe965de"
 ],
 "geometry/9AYPA03VAE/layer:gwb-b": [
 -2.7797125,
--0.3413125,
+0.02605,
 2,
-"c0fa4924d6c7"
+"edc80fe965de"
 ],
 "geometry/9AYPA03VAE/layer:stud": [
 -2.7797125,
--0.3413125,
+0.02605,
 2,
-"c0fa4924d6c7"
+"edc80fe965de"
 ],
 "geometry/9BDG7R9DHR-run/body": [
 3.819525,
@@ -29621,6 +29621,54 @@
 2,
 "b0fb82fcf9ac"
 ],
+"geometry/CMF601AAAA-LN0E/body": [
+-0.3413125,
+0.0,
+2,
+"f5a904311a45"
+],
+"geometry/CMF601AAAA-LN0N/body": [
+-0.3413125,
+0.0,
+2,
+"f5a904311a45"
+],
+"geometry/CMF601AAAA-LN0S/body": [
+-0.320675,
+0.0,
+2,
+"889e8152fa61"
+],
+"geometry/CMF601AAAA-LN0W/body": [
+-0.3413125,
+0.0,
+2,
+"f5a904311a45"
+],
+"geometry/CMF601AAAA-LNPE/body": [
+-0.3413125,
+0.0,
+2,
+"f5a904311a45"
+],
+"geometry/CMF601AAAA-LNPN/body": [
+-0.3413125,
+0.0,
+2,
+"f5a904311a45"
+],
+"geometry/CMF601AAAA-LNPS/body": [
+-0.320675,
+0.0,
+2,
+"889e8152fa61"
+],
+"geometry/CMF601AAAA-LNPW/body": [
+-0.3413125,
+0.0,
+2,
+"f5a904311a45"
+],
 "geometry/CMFS01AAAA/deck": [
 0.0,
 0.01905,
@@ -45599,6 +45647,30 @@
 2,
 "63b6897b456e"
 ],
+"geometry/CSF602AAAA-LNPE/body": [
+2.7305,
+3.048,
+2,
+"63b6897b456e"
+],
+"geometry/CSF602AAAA-LNPN/body": [
+2.7305,
+3.048,
+2,
+"63b6897b456e"
+],
+"geometry/CSF602AAAA-LNPS/body": [
+2.7305,
+3.048,
+2,
+"63b6897b456e"
+],
+"geometry/CSF602AAAA-LNPW/body": [
+2.7305,
+3.048,
+2,
+"63b6897b456e"
+],
 "geometry/CSF603AAAA/deck": [
 3.048,
 3.06705,
@@ -47635,9 +47707,9 @@
 ],
 "geometry/CST701AAAA::framing/member:well-partition-stud-head": [
 -2.7416125,
--0.301625,
+-0.01205,
 8,
-"04fd60928860"
+"6eafe4938bfd"
 ],
 "geometry/CST702AAAA-landing-base-A5K4RVWPWW-0/body": [
 1.556075,
@@ -48079,9 +48151,9 @@
 ],
 "geometry/CST702AAAA::framing/member:well-partition-stud-head": [
 0.06415,
-2.746375,
+3.048,
 8,
-"ea594fd7e0c7"
+"cb0c85ff9dd0"
 ],
 "geometry/CST703AAAA::finish/stairhead:nosing": [
 6.1087,
@@ -72943,21 +73015,21 @@
 ],
 "geometry/SNNBY9M3CE/layer:gwb-a": [
 0.02605,
-2.727325,
+3.0861,
 2,
-"b0f02f2a2b90"
+"57ac741f38d0"
 ],
 "geometry/SNNBY9M3CE/layer:gwb-b": [
 0.02605,
-2.727325,
+3.0861,
 2,
-"b0f02f2a2b90"
+"57ac741f38d0"
 ],
 "geometry/SNNBY9M3CE/layer:stud": [
 0.02605,
-2.727325,
+3.0861,
 2,
-"b0f02f2a2b90"
+"57ac741f38d0"
 ],
 "geometry/SPB72B0ZDN/body": [
 -0.3175,
@@ -74050,6 +74122,24 @@
 0.518175,
 2,
 "673c563a17c6"
+],
+"geometry/VJPS36HCSB/layer:gwb-a": [
+-2.7797125,
+-0.320675,
+2,
+"a1269395efc9"
+],
+"geometry/VJPS36HCSB/layer:gwb-b": [
+-2.7797125,
+-0.320675,
+2,
+"a1269395efc9"
+],
+"geometry/VJPS36HCSB/layer:stud": [
+-2.7797125,
+-0.320675,
+2,
+"a1269395efc9"
 ],
 "geometry/VK3C96KFRF-run/body": [
 6.626098,
@@ -99243,9 +99333,9 @@
 ],
 "member/CST701AAAA/well-partition-stud-head": [
 -2.7416125,
--0.301625,
+-0.01205,
 2,
-"8cbd3d32a734"
+"175f76e64bb2"
 ],
 "member/CST702AAAA/landing-joist-lower-000": [
 1.333825,
@@ -99651,9 +99741,9 @@
 ],
 "member/CST702AAAA/well-partition-stud-head": [
 0.06415,
-2.746375,
+3.048,
 2,
-"fdda32438ce2"
+"d48d3bd7d22a"
 ],
 "member/CST703AAAA/hanger-winder-stringer-0": [
 3.521075,
@@ -119295,6 +119385,22 @@
 "solids/FO-M-ERV-OA-fireblock-sheet/z1_m": 0.01905,
 "solids/FO-M-ERV-OA-fireblock-wool/z0_m": -0.0889,
 "solids/FO-M-ERV-OA-fireblock-wool/z1_m": 0.0,
+"solids/FO-M-STAIR-lining-east-gwb-well/z0_m": -0.3413125,
+"solids/FO-M-STAIR-lining-east-gwb-well/z1_m": 0.0,
+"solids/FO-M-STAIR-lining-east-paint/z0_m": -0.3413125,
+"solids/FO-M-STAIR-lining-east-paint/z1_m": 0.0,
+"solids/FO-M-STAIR-lining-north-gwb-well/z0_m": -0.3413125,
+"solids/FO-M-STAIR-lining-north-gwb-well/z1_m": 0.0,
+"solids/FO-M-STAIR-lining-north-paint/z0_m": -0.3413125,
+"solids/FO-M-STAIR-lining-north-paint/z1_m": 0.0,
+"solids/FO-M-STAIR-lining-south-gwb-well/z0_m": -0.320675,
+"solids/FO-M-STAIR-lining-south-gwb-well/z1_m": 0.0,
+"solids/FO-M-STAIR-lining-south-paint/z0_m": -0.320675,
+"solids/FO-M-STAIR-lining-south-paint/z1_m": 0.0,
+"solids/FO-M-STAIR-lining-west-gwb-well/z0_m": -0.3413125,
+"solids/FO-M-STAIR-lining-west-gwb-well/z1_m": 0.0,
+"solids/FO-M-STAIR-lining-west-paint/z0_m": -0.3413125,
+"solids/FO-M-STAIR-lining-west-paint/z1_m": 0.0,
 "solids/FO-S-BATH1-TUB-DRAIN-fireblock-sheet/z0_m": 3.048,
 "solids/FO-S-BATH1-TUB-DRAIN-fireblock-sheet/z1_m": 3.06705,
 "solids/FO-S-BATH1-TUB-DRAIN-fireblock-wool/z0_m": 2.9591,
@@ -119305,12 +119411,20 @@
 "solids/FO-S-ERV-CHASE-fireblock-wool/z1_m": 3.048,
 "solids/FO-S-STAIR-lining-east-gwb-well/z0_m": 2.7305,
 "solids/FO-S-STAIR-lining-east-gwb-well/z1_m": 3.048,
+"solids/FO-S-STAIR-lining-east-paint/z0_m": 2.7305,
+"solids/FO-S-STAIR-lining-east-paint/z1_m": 3.048,
 "solids/FO-S-STAIR-lining-north-gwb-well/z0_m": 2.7305,
 "solids/FO-S-STAIR-lining-north-gwb-well/z1_m": 3.048,
+"solids/FO-S-STAIR-lining-north-paint/z0_m": 2.7305,
+"solids/FO-S-STAIR-lining-north-paint/z1_m": 3.048,
 "solids/FO-S-STAIR-lining-south-gwb-well/z0_m": 2.7305,
 "solids/FO-S-STAIR-lining-south-gwb-well/z1_m": 3.048,
+"solids/FO-S-STAIR-lining-south-paint/z0_m": 2.7305,
+"solids/FO-S-STAIR-lining-south-paint/z1_m": 3.048,
 "solids/FO-S-STAIR-lining-west-gwb-well/z0_m": 2.7305,
 "solids/FO-S-STAIR-lining-west-gwb-well/z1_m": 3.048,
+"solids/FO-S-STAIR-lining-west-paint/z0_m": 2.7305,
+"solids/FO-S-STAIR-lining-west-paint/z1_m": 3.048,
 "solids/FT-B-CN/z0_m": -3.0337125,
 "solids/FT-B-CN/z1_m": -2.7797125,
 "solids/FT-B-CN2/z0_m": -3.0337125,
@@ -124413,7 +124527,9 @@
 "walls/W-B-W1/z1_m": -0.3413125,
 "walls/W-B-W2/z0_m": -2.7797125,
 "walls/W-B-W2/z1_m": -0.3413125,
-"walls/W-B-WELL/plate_top_z_m": -0.320675,
+"walls/W-B-WELL-HEAD/plate_top_z_m": -0.320675,
+"walls/W-B-WELL-HEAD/z0_m": -2.7797125,
+"walls/W-B-WELL-HEAD/z1_m": -0.320675,
 "walls/W-B-WELL/z0_m": -2.7797125,
 "walls/W-B-WELL/z1_m": 0.02605,
 "walls/W-BW-SCREEN-SKIRT/z0_m": -0.366776,
@@ -124636,7 +124752,6 @@
 "walls/W-M-W4/plate_top_z_m": 2.746375,
 "walls/W-M-W4/z0_m": -0.3413125,
 "walls/W-M-W4/z1_m": 3.048,
-"walls/W-M-WELL/plate_top_z_m": 2.727325,
 "walls/W-M-WELL/z0_m": 0.02605,
 "walls/W-M-WELL/z1_m": 3.0861,
 "walls/W-RG-BLOCK/z0_m": -1.2192,

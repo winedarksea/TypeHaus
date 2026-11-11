@@ -46,8 +46,8 @@
     {
       "tag": "TR-BW-MDO-NAILER-1",
       "profile": "2x4",
-      "west_in": 73.625,
-      "east_in": 77.125,
+      "west_in": 72.625,
+      "east_in": 76.125,
       "station_start_in": 6.375,
       "station_end_in": 7.875,
       "bottom_in": 0.56,
@@ -56,8 +56,8 @@
     {
       "tag": "TR-BW-MDO-NAILER-2",
       "profile": "2x4",
-      "west_in": 73.625,
-      "east_in": 77.125,
+      "west_in": 72.625,
+      "east_in": 76.125,
       "station_start_in": 13.625,
       "station_end_in": 15.125,
       "bottom_in": 0.56,
@@ -66,8 +66,8 @@
     {
       "tag": "TR-BW-MDO-NAILER-6",
       "profile": "2x4",
-      "west_in": 73.625,
-      "east_in": 77.125,
+      "west_in": 72.625,
+      "east_in": 76.125,
       "station_start_in": 36.25,
       "station_end_in": 37.75,
       "bottom_in": 0.56,
@@ -76,8 +76,8 @@
     {
       "tag": "TR-BW-MDO-NAILER-7",
       "profile": "2x4",
-      "west_in": 73.625,
-      "east_in": 77.125,
+      "west_in": 72.625,
+      "east_in": 76.125,
       "station_start_in": 43.5,
       "station_end_in": 45.0,
       "bottom_in": 0.56,
@@ -86,8 +86,8 @@
     {
       "tag": "TR-BW-MDO-NAILER-4",
       "profile": "2x4",
-      "west_in": 73.625,
-      "east_in": 77.125,
+      "west_in": 72.625,
+      "east_in": 76.125,
       "station_start_in": 66.125,
       "station_end_in": 67.625,
       "bottom_in": 0.56,
@@ -96,8 +96,8 @@
     {
       "tag": "TR-BW-MDO-NAILER-5",
       "profile": "2x4",
-      "west_in": 73.625,
-      "east_in": 77.125,
+      "west_in": 72.625,
+      "east_in": 76.125,
       "station_start_in": 73.375,
       "station_end_in": 74.875,
       "bottom_in": 0.56,
@@ -323,13 +323,13 @@
       "basis": "ER-192 Table 8"
     },
     {
-      "name": "east-ply bottom-plate bearing, self weight",
+      "name": "middle-ply bottom-plate bearing, self weight of two plies",
       "status": "ok",
       "demand": 2.889894341606757,
       "capacity": 378.55,
       "unit": "psi",
       "ratio": 0.0076341152862415985,
-      "basis": "NDS Table 4B Fc-perp565 x CM0.67; actual 0.5x5.5in contact; no roof credit"
+      "basis": "NDS Table 4B Fc-perp565 x CM0.67; actual 1.0x5.5in contact; no roof credit"
     },
     {
       "name": "end attachments: installed directions and fit",
@@ -352,10 +352,10 @@
     {
       "name": "complete service-door sweep at authored stop including ply screws",
       "status": "ok",
-      "clearance_in": 0.38077805966295564,
+      "clearance_in": 0.6452415944923982,
       "minimum_in": 0.25,
-      "obstacle": "CN-BW-GWTIE-LO",
-      "ratio": 0.6565504331349516
+      "obstacle": "RL-G-SERVICE-RETURN2",
+      "ratio": 0.3874517733108499
     },
     {
       "name": "door sweep with installed end angles and SD9112 heads",
@@ -443,7 +443,7 @@
       {
         "key": "deck_tie/FS-BW-FLOOR",
         "status": "ok",
-        "ratio": 0.8108973183288983
+        "ratio": 0.800016341861821
       },
       {
         "key": "lateral_system/RF-BW-CANOPY",
@@ -538,7 +538,7 @@
       {
         "key": "deck_tie/FS-BW-FLOOR",
         "status": "ok",
-        "ratio": 0.8108973183288983
+        "ratio": 0.800016341861821
       },
       {
         "key": "lateral_system/RF-BW-CANOPY",
@@ -588,8 +588,8 @@
   },
   "door_sweep": {
     "stop_degrees": 81.0,
-    "minimum_clearance_in": 0.38077805966295564,
-    "obstacle": "CN-BW-GWTIE-LO",
+    "minimum_clearance_in": 0.6452415944923982,
+    "obstacle": "RL-G-SERVICE-RETURN2",
     "new_hardware_scope": "ply screw heads; end A35Z/SD9112 installation unresolved"
   }
 }

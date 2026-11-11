@@ -357,6 +357,12 @@ def _body_at_joint(index: ConnectorPlacementIndex, solid: ResolvedSolid,
         if beam is not None:
             member_width_m = _width(beam.outline, (-tangent[1], tangent[0]))
             member_depth_m = beam.z1_m - beam.z0_m
+            # An end cap is one-sided: its leaves run from the beam's end into its span.
+            centre = _centroid(beam.outline)
+            if part.startswith("ACE") and sum(
+                    (centre[i] - point[i]) * x_axis[i] for i in range(2)) < 0:
+                x_axis = (-x_axis[0], -x_axis[1], 0.0)
+                y_axis = (-y_axis[0], -y_axis[1], 0.0)
     elif part.startswith("LSTA") and joint is not None and joint.role == ROLE_RIDGE_TIE_STRAP:
         slope = _roof_slope(index, references)
         # Level across the beam top, which is flush with the rafter tops at its faces.

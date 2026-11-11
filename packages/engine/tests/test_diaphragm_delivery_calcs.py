@@ -93,14 +93,14 @@ def test_the_receivers_are_on_the_record_and_graded_by_nobody_else(catlin_ctx) -
 
 def test_the_landing_tie_reads_the_envelope_share(catlin_ctx) -> None:
     """§4e: the tie's N-S panel load is the whole 1,034.49 lb (10-31). E-W at the screen's
-    joint governs, 0.8109 since the screen stopped on the garage cladding (north_entry_piers.md §10l)."""
+    joint governs, 0.800 since the screen's stud line moved 1in west (north_entry_piers.md §10m)."""
     record = catlin_ctx.engineering["deck_tie/FS-BW-FLOOR"]
     loads = {q.name: q.value for q in record.inputs}
     assert loads["y:W-BW-SCREEN panel share of RF-BW-CANOPY"] == pytest.approx(1034.49, abs=0.1)
     assert record.status is Status.OK
     worst = max(record.limit_states, key=lambda s: s.demand / s.capacity)
     assert "E-W" in worst.name
-    assert worst.demand / worst.capacity == pytest.approx(0.8109, abs=0.002)
+    assert worst.demand / worst.capacity == pytest.approx(0.8001, abs=0.002)
 
 
 class _Swapped:

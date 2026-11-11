@@ -117,6 +117,10 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
                 areas[("opening lining", layer.material_ref, layer.thickness.meters,
                        layer_sheet_length_in(layer))] += area
 
+    # A free wall end's strip of the face board.
+    for end in model.wall_ends:
+        areas[("wall end", end.material_ref, end.thickness_m, None)] += end.area_m2
+
     # A chase fireblock: the deck sheet run across the hole, net of its derived penetrations.
     for block in model.fireblocks:
         for material, thickness, area in block.layers:

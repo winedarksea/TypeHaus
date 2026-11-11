@@ -32,7 +32,7 @@ from params.north_entry_frame import (
     EDGE_BEAM_X_FT,
     GARAGE_CLADDING_Y_FT,
     JOIST_DEPTH_IN,
-    LANDING_WEST_FT,
+    SCREEN_AXIS_X_FT,
 )
 from typehaus import Connector, ConnectorKind, InServiceMoisture, ft, inch, pt
 
@@ -42,7 +42,7 @@ _FE_EAST_FACE_FT = EDGE_BEAM_X_FT + EDGE_BEAM_WIDTH_IN / 24
 _FE_TIE_Z_FT = (DECK_JOIST_TOP_FT - (JOIST_DEPTH_IN - 1.75) / 12,
                 DECK_JOIST_TOP_FT - 1.75 / 12)
 #: Line 2: the end post's east face (a half stud, then the 5/8" 303 ply), and two heights.
-_SCREEN_EAST_FACE_FT = LANDING_WEST_FT + (1.75 + 0.625) / 12
+_SCREEN_EAST_FACE_FT = SCREEN_AXIS_X_FT + (1.75 + 0.625) / 12
 _GARAGE_TIE_Z_FT = (1.0, 3.0)
 #: Line 2's service condition: an owner judgement (2026-09-21) the EOR confirms.
 _W_SERVICE = InServiceMoisture(
@@ -77,7 +77,7 @@ LANDING_TIES = [
               elevation=ft(sum(_GARAGE_TIE_Z_FT) / 2), size="TIE-BLOCK-4X4-KDAT",
               connects=("W-BW-SCREEN",)),
     Connector(uid="HSFTHD5JAJ", tag="CN-BW-GWTIE-FILLER", kind=ConnectorKind.TIE_BLOCK,
-              position=pt(ft(LANDING_WEST_FT), ft(GARAGE_CLADDING_Y_FT) - inch(1.75)),
+              position=pt(ft(SCREEN_AXIS_X_FT), ft(GARAGE_CLADDING_Y_FT) - inch(1.75)),
               elevation=ft(sum(_GARAGE_TIE_Z_FT) / 2), size="FILLER-4X4-KDAT",
               connects=("W-BW-SCREEN",)),
 ]

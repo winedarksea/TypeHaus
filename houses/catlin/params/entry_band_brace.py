@@ -19,6 +19,7 @@ from params.north_entry_frame import (
     LANDING_WEST_FT,
     PIER_LINE_Y_FT,
     ROOF_COLUMN_EAST_X_FT,
+    SCREEN_AXIS_X_FT,
     SCREEN_CLADDING_WEST_X_FT,
     SCREEN_PANEL_TOP_FT,
 )
@@ -106,7 +107,7 @@ if EAST_POST_SYSTEM == "kdat":
 # bottom half) reaches the posts through one A35Z at each plate end (note §5b).
 PLATE_ANGLES = [
     Connector(uid=_uid, tag=f"CN-BW-PLATE-{_s}", kind=ConnectorKind.TENSION_TIE,
-              position=pt(ft(LANDING_WEST_FT), ft(_y)), elevation=ft(SCREEN_PANEL_TOP_FT),
+              position=pt(ft(SCREEN_AXIS_X_FT), ft(_y)), elevation=ft(SCREEN_PANEL_TOP_FT),
               size="A35Z", axis="x", connects=("W-BW-SCREEN", _post))
     for _s, _y, _post, _uid in (
         ("S", PIER_LINE_Y_FT + COLUMN_HALF_FT, "PT-BW-CW", "F7D0CY64SS"),

@@ -1688,3 +1688,24 @@ header nails keep 3.108" in the post. The demand is unchanged, 268.0 / 721 = **0
 now read inside the gap the row was tested at. The row does not publish a filler installation:
 Simpson's confirmation is the remaining line, and gravity bears on the pack either way. Backing
 is unchanged, because the flange moves out, not up.
+
+### 10m. 2026-11-10 — the screen's stud line moved 1" west
+
+`W-BW-SCREEN`'s 2x4s now stand flush with the 6x6s' west faces, axis 74.375" = 6.19792',
+so the CDX laps its chords and both west planes are the garage's. `BM-BW-SCSILL` moved under
+it. Posts, seats and deck hold. Line 2's joint is `6.19792 + 2.375/12 =` **6.3958'**.
+
+Joints W (6.3958, 43.1458), FE (9.5833, 43.1458); centroid 7.98955, `dx = ∓1.59375`,
+`J = 2 x 1.59375² = 5.08008 ft²`.
+
+```
+N-S   ΣFy 1,034.49 + 89.91 = 1,124.40
+      M = 1,034.49 (6.19792 − 7.98955) + 89.91 (7.9323 − 7.98955) = −1,858.6 lb-ft
+      W:  562.20 + 1,858.6 x 1.59375/5.08008 = 562.20 + 583.08 = 1,145.3 lb / 1,480 = 0.774
+E-W   M 1,912.2 unchanged (§10l); X 292.1; Y = 1,912.2 x 1.59375/5.08008 = 599.9 lb
+      W:  599.9/1,480 + 292.1/740 = 0.4053 + 0.3947 = 0.800
+guard M 1,308.3, X 100; Y = 1,308.3 x 1.59375/5.08008 = 410.4
+      W:  410.4/925 + 100/462.5 = 0.4437 + 0.2162 = 0.660
+```
+
+**Verdict: every row passes; E-W wind at W governs at 0.800** (was 0.811).

@@ -261,14 +261,13 @@ NODES = [
     # was the under-stair closet's north-east corner, where the well partition met
     # W-B-CL-N; that cross wall is gone (see WALLS) and the storage under the flight runs
     # north past this point to the landing instead of stopping at it. x stays N-B-BA-NE's —
-    # the stair well's partition centreline — and y=31'-0" stays N-B-ESS-SE's, so the
-    # partition still ends on the W-B-STR3/W-B-STR split and needs no second node on the
-    # x=10' line.
+    # the stair well's partition centreline. y=30'-11 5/8" is the end stud's face, against
+    # the landing post, so the wall's end board is backed.
     #
     # `open_end=True` is the honest description and not a silencer: a wall that dies in the
     # middle of a stair well has one edge at this node, which is `integrity.wall_loop_open`'s
     # whole subject, and the flag is how the model says "this end is meant to be free".
-    Node(uid="SQZSP1P9DC", tag="N-B-CL-NE", position=pt(inch(168), ft(31)),
+    Node(uid="SQZSP1P9DC", tag="N-B-CL-NE", position=pt(inch(168), ft(30, 11.625)),
          open_end=True),
     # Glazed-brick veneer over the exposed south wall (W-B-BRICK): a freestanding wythe off
     # the concrete, both ends ``open_end`` like the sunken garden's N-SG-NW/NE (not part of

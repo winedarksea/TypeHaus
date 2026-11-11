@@ -412,7 +412,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 
 - **Current canopy, 2026-09-30:** `EAST_POST_SYSTEM = "kdat"` selects two 6x6 KDAT east
   posts; the west pair `PT-BW-CW`/`-CNW` are 6x6 KDAT in every variant and are the chords of
-  `W-BW-SCREEN` (`ShearPanelSpec.chord_refs`). All four: `ACE6Z` end caps on the glulam,
+  `W-BW-SCREEN` (`ShearPanelSpec.chord_refs`), whose 2x4s stand flush with their west faces so the CDX laps them and its west planes are the garage's (`SCREEN_AXIS_X_FT`, 2026-11-10). All four: `ACE6Z` end caps on the glulam,
   `A35Z` across the beam, cast-in `CBSTQ66Z-SDS2` bases (no `AB-058-10-SS`, no ACI Ch. 17 row) in
   14" piers; `axis="y"` puts their straps on the E/W faces, so the seat beams start
   `SEAT_END_GAP_IN` (0.4495") off the west columns' faces, 1/8" past the SDS heads (C2 E9); the LUS26-2Z hangs on an 11/32" filler notched round the strap (owner, 2026-11-06), 0.1055" off the beam end against note m's 1/8" (a longer beam cannot: the strap is as wide as the beam); gravity bears on the pack. `wood_roof_post` grades all four both ways; `lateral_system/RF-BW-CANOPY` grades the
@@ -2305,7 +2305,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     grades how many studs an opening interrupts, and the only hard bound is the corner pack
     (x 6'-0"..6'-3 5/8"). The selected MMI unit uses its published 34 x 81.5in RO; frame it
     to that size and set the unit by normal prehung practice. The leaf sweep passes for a
-    hinge-pivot inset of 1/2..2in off the west RO edge; flush fails. `DoorType.width` is the
+    hinge-pivot inset of 1/2..2in off the west RO edge. `DoorType.width` is the
     32in nominal leaf and `rough_opening` the published 34in RO (decision #96; outswing note §2).
     `D-M-ENTRY` still cannot move (its east jamb is 6" west of `N-M-N2`, the
     bearing tee). `code.R311_3_exterior_landing` passes both on a 3'-7" deck (x 6'-0"..9'-7").

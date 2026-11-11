@@ -244,6 +244,7 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     # so this is only what an unpainted/uncoloured ceiling material falls back to.
     "ceiling": (0.93, 0.92, 0.89, 1.0),
     "opening_lining": (0.93, 0.92, 0.89, 1.0),  # a well's band of the same board
+    "wall_end_board": (0.93, 0.92, 0.89, 1.0),  # a free wall end, the same board
     "tub_batt": (0.78, 0.76, 0.74, 1.0),  # authored mineral-wool colour wins
     "tub_insulation_return": (0.78, 0.76, 0.74, 1.0),
     "tub_mortar_bed": (0.64, 0.62, 0.56, 1.0),

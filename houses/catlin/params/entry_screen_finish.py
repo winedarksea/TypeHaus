@@ -15,11 +15,11 @@ from params.north_entry_frame import (
     DECK_JOIST_TOP_FT,
     DECK_SHEET_SOUTH_Y_FT,
     GARAGE_CLADDING_Y_FT,
-    LANDING_WEST_FT,
+    SCREEN_AXIS_X_FT,
 )
 from typehaus import Flashing, RoughOpening, TrimKind, from_node, ft, inch, pt
 
-STUD_EAST_IN = LANDING_WEST_FT * 12 + 1.75
+STUD_EAST_IN = SCREEN_AXIS_X_FT * 12 + 1.75
 # The panel schedule is in inches off N-BW-SCREEN-S; hold it to the wall it cuts.
 assert abs((GARAGE_CLADDING_Y_FT - DECK_SHEET_SOUTH_Y_FT) * 12 - SCREEN_LENGTH_IN) < 1e-6
 # Trim solids coordinate supplemental timber in the existing stud cavity. Their mass

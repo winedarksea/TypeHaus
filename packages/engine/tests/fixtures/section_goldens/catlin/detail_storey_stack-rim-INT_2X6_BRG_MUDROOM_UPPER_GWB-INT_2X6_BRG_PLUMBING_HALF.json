@@ -537,6 +537,63 @@
       "node": "polyline",
       "points": [
         [
+          123.125,
+          107.50000000000001
+        ],
+        [
+          123.14468503937009,
+          107.50000000000001
+        ],
+        [
+          123.14468503937009,
+          120.0
+        ],
+        [
+          123.125,
+          120.0
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CSF602AAAA-LNPW",
+      "tag": "FO-S-STAIR-lining-west-paint"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          123.125,
+          107.50000000000001
+        ],
+        [
+          123.14468503937009,
+          107.50000000000001
+        ],
+        [
+          123.14468503937009,
+          120.0
+        ],
+        [
+          123.125,
+          120.0
+        ]
+      ],
+      "pattern": "paint-wall",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "paint-wall",
+      "fill": "#f4f6f1"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           124.8,
           111.09852825453122
         ],

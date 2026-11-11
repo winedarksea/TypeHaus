@@ -187,6 +187,12 @@ def test_both_headers_end_flush_on_their_posts(catlin_plan, catlin_model_ro):
         assert bearing.axis[1][1] == pytest.approx(inch(512.5).meters)
     for cap in ("CN-BW-CAP-W", "CN-BW-CAP-NW", "CN-BW-CAP-E", "CN-BW-CAP-NE"):
         assert catlin_plan.by_tag(cap).size == "ACE6Z"
+    # An end cap's leaves start at the beam end at either post, never past it.
+    solids = {solid.tag: solid for solid in catlin_model_ro.solids}
+    for side, beam_end_in in (("W", 447.25), ("E", 447.25), ("NW", 512.5), ("NE", 512.5)):
+        ys = [point[1] for point in solids[f"CN-BW-CAP-{side}"].body_mesh.positions]
+        edge = max(ys) if side.startswith("N") else min(ys)
+        assert edge == pytest.approx(inch(beam_end_in).meters, abs=inch(0.1).meters)
 
 
 def test_shared_trex_surfaces_supports_and_stem_seats(catlin_model_ro):

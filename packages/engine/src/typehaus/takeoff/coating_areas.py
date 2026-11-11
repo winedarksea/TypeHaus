@@ -48,6 +48,9 @@ def ceiling_coating_areas(model: ResolvedModel) -> dict[tuple[str, str], float]:
         for _tag, area, coating in floor.linings:
             if coating is not None:
                 areas[("opening lining", coating)] += area
+    for end in model.wall_ends:
+        if end.coating is not None:
+            areas[("wall end", end.coating)] += end.area_m2
     # A host's own coat under a face no Room claims (a stair hall): no Room decides it, so
     # it stays as authored, as a wall face with no Room does — save a default coat, which
     # takes the ``PaintStandard``'s ceiling system.
