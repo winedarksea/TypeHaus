@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import type { Floor, Member } from "../../model/types";
+import type { MaterialAppearance } from "../../nordic/palette";
 import { RESOLVED_NORDIC_PALETTE } from "../../nordic/palette";
 import { buildFloor } from "./structure";
 
@@ -22,5 +23,18 @@ export function runFloorCoverTests() {
   if (hits(2, 2.5).length) throw new Error("Decking fills resolved doorway approach cutback");
   if (hits(0.5, 0.5).length) throw new Error("Decking fills resolved deck void");
   if (!hits(3.5, 0.5).length) throw new Error("Resolved decking loses its walking surface");
+  const deckTrades = (material: string, finish?: string) => {
+    const built = new THREE.Group();
+    buildFloor(built, { ...floor, subfloor: { material, thickness_m: 0.03, trades: ["framing"] } },
+      [0, 0], "schematic", RESOLVED_NORDIC_PALETTE.light, [], new Map(), new THREE.Group(),
+      [{ tag: material, finish }] as MaterialAppearance[]);
+    return built.children[0].userData.trades as string[];
+  };
+  if (deckTrades("aluminum-deck", "aluminum-deck-board")[0] !== "flooring") {
+    throw new Error("A deck plank bid as framing must view as flooring");
+  }
+  if (deckTrades("plywood-subfloor")[0] !== "framing:sheathing") {
+    throw new Error("A plywood subfloor keeps the sheathing facet");
+  }
   console.log("Resolved floor cover and approach cutback tests passed.");
 }

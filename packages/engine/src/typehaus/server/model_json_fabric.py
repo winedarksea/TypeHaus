@@ -417,9 +417,7 @@ def framing_json(model: ResolvedModel, provenance: Provenance | None) -> dict[st
                             if floor.deck_plane is not None else None),
              "deck_outline": [list(point) for point in floor.deck_outline],
              "deck_voids": [[list(point) for point in ring] for ring in floor.deck_voids],
-             # `trades` so the viewer can tell a plywood deck (sheathing, hidden with the
-             # rest of the framing skin) from the porch's composite plank and the balcony's
-             # aluminium one, which are the finished walking surface and always draw.
+             # The bid trade. The viewer files a deck plank under flooring from its material.
              "subfloor": ({"material": authored.subfloor.material_ref,
                            "trades": [layer_trade("sheathing", "floor",
                                                   authored.subfloor.material_ref)],

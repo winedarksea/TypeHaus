@@ -1953,8 +1953,7 @@ export interface Floor {
   deck_voids?: Vec2[][];
   deck_z0_m?: number;
   deck_plane?: { origin: Vec2; lift_at_origin_m: number; gradient: Vec2 } | null;
-  // `trades` tells a plywood deck (sheathing) from the porch's composite plank and the
-  // balcony's aluminium one (flooring — the finished walking surface).
+  // `trades` is the bid trade: a deck plank bids as framing but views as flooring (buildFloor).
   subfloor: { material: string; thickness_m: number; trades?: string[] } | null;
   openings: Vec2[][];
   provenance: Provenance | null;

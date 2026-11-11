@@ -201,17 +201,15 @@ export function buildFloor(parent: THREE.Group, floor: Floor, center: PlanCenter
       const boardRun: [number, number] = floor.direction === "x" ? [0, 1] : [1, 0];
       applyPlankPlaneUv(geometry, center, boardRun, plankTileSizeM(plankStyle));
     }
-    // A plywood subfloor is sheathing laid flat and takes the sheathing facet, so dropping it
-    // shows the joist field under it — the same gesture that peels a wall down to its studs.
-    // A deck board is NOT: the porch's composite plank and the balcony's aluminium plank are
-    // the finished walking surface, and filing them as sheathing hid both of them the moment
-    // that facet started off. The material decides; only one that says nothing falls through.
+    // A plywood subfloor takes the sheathing facet, so dropping it shows the joists under it.
+    // A deck board is the finished walking surface: it views as flooring, though it bids
+    // as framing (decision #115).
     const deckMaterial = plankStyle
       ? createPlankMaterial(mode, plankStyle,
         materialColor(materialRef, palette, materials), undefined, appearance)
       : standardMaterial(new THREE.Color(materialColor(materialRef, palette, materials)), mode);
     const deck = new THREE.Mesh(geometry, deckMaterial);
-    deck.userData.trades = layerTrades({
+    deck.userData.trades = plankStyle ? ["flooring"] : layerTrades({
       function: "sheathing", trades: floor.subfloor.trades,
     } as Parameters<typeof layerTrades>[0]);
     parent.add(deck);
