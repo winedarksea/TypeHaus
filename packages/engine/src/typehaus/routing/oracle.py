@@ -140,6 +140,7 @@ NOT_A_CALCULATION = frozenset({
     # ``floor_blocking.bearing_bays``: a check's rule restated, no arithmetic of its own.
     "bearing_bays",
     "terminal_block",  # a search for a clear point along a wall: geometry, no calculation
+    "terminal_band",  # a vent's z band read off storey datums: a selection, no arithmetic
     "trades/__init__", "trades/pipe", "trades/conduit",
     # -- E0 --
     # -- /E0 --
