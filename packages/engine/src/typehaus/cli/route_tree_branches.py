@@ -29,10 +29,12 @@ class Branches:
 
     main: str
     lines: list[_Branch] = field(default_factory=list)
+    main_radius_m: float = 0.0  #: the main's outside radius, for its holes
 
     @classmethod
-    def of_main(cls, main: str, points: list[tuple[float, float, float]]) -> Branches:
-        return cls(main, [_Branch(main, float("inf"), points, set(), None)])
+    def of_main(cls, main: str, points: list[tuple[float, float, float]],
+                radius_m: float = 0.0) -> Branches:
+        return cls(main, [_Branch(main, float("inf"), points, set(), None)], radius_m)
 
     def add(self, tag: str, size_m: float, points: list[tuple[float, float, float]],
             tie: int) -> int:
@@ -73,7 +75,8 @@ class Branches:
 
     def copy(self) -> Branches:
         """Deep enough for a rollback: ``remove`` rewrites ``down`` and ``served`` in place."""
-        return Branches(self.main, [replace(b, served=set(b.served)) for b in self.lines])
+        return Branches(self.main, [replace(b, served=set(b.served)) for b in self.lines],
+                        self.main_radius_m)
 
     def admits(self, model: Any, line: int, tag: str) -> bool:
         """Can ``tag`` tie onto ``line`` without any pipe downstream needing upsizing?"""
@@ -114,6 +117,16 @@ class Branches:
                 for node in _line_nodes(graph, [branch.points[-1][:2]], TIE_TOLERANCE_M):
                     out[node] = index
         return out
+
+    def laid_lines(self) -> list:
+        """Every laid line, the main included, as ``holes.laid_lines`` reads a proposal: the
+        main is hidden from the space (``touch``), so its pockets would otherwise be free."""
+        from typehaus.routing.trades.pipe import radius_m as pipe_radius_m
+
+        return [(branch.tag, tuple(p[:2] for p in branch.points),
+                 tuple(p[2] for p in branch.points),
+                 self.main_radius_m if i == 0 else pipe_radius_m(branch.size_m))
+                for i, branch in enumerate(self.lines) if len(branch.points) >= 2]
 
     def prisms(self, radius_m: float, clearance_m: float) -> list:
         """Every laid branch, inflated by its radius and this run's, as a banded run prism."""

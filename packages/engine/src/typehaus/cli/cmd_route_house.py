@@ -98,6 +98,8 @@ def campaign_result(model: Any, *, trades: list[str] | None, storey: str | None,
     made: dict[str, Any] = {}  # every proposal laid so far; occupancy says which still are
 
     def propose(target: Any, occupancy: list) -> Outcome:
+        from typehaus.routing.holes import laid_lines
+
         laid = {prism.tag for prism in occupancy}
         proposals, problems, notices, refusals = _propose(
             model, [target.tag], mode="run", slope=slope, margin_ft=margin_ft, band=band,
@@ -108,6 +110,7 @@ def campaign_result(model: Any, *, trades: list[str] | None, storey: str | None,
             extra_prisms=[*occupancy, *(prism for tag, prisms in leads.items()
                                         if tag != target.tag for prism in prisms)],
             racks=[p for tag, p in made.items() if tag in laid],
+            laid=laid_lines(p for tag, p in made.items() if tag in laid),
             # A manifold's branches are re-laid together: none of their authored lines is a
             # fact the others must route round (only the campaign's own occupancy is).
             lifted=only or frozenset())

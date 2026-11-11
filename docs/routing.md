@@ -238,8 +238,13 @@ then run `haus fmt`, `haus trial`, inspect the drawing, and run repository verif
   rooms and rooms with `exposed_services` are not zones. `SUPPLY-GATE` holes confine supply
   risers regardless of cover (the lattice never reads a prism's `applies`).
 - The supply trunk's remaining evaluation fails are the three open-air risers in RM-M-LAUNDRY,
-  which need a chase (a house edit). Laid-run holes reach supply campaigns only; drain campaigns
-  do not pass `build_space(laid=)` yet.
+  which need a chase (a house edit). Laid-run holes reach supply and drain campaigns: a
+  house campaign and a `--lift` re-lay pass what is laid so far (`holes.laid_lines`), a tree its
+  `Branches.laid_lines()` (the main it ties into included, hidden from the space by `touch`), and a
+  drain keeps its tie target's own holes (`holes.kept_lines`). Known gap: same-size I-joist siblings
+  of one tree group, since `ijoist_bores_ok` reads the space built per size group (the D pockets are
+  per search and exact); `mep.run_member_crossing` grades two branches bored too close, the search
+  does not. A P8 re-lay's world is built without `laid` for the same reason.
 - A full scorecard run takes about 7 minutes: rows run in forked workers (`HAUS_SCORECARD_JOBS`,
   default min(4, cores/2)) and the longest row (`tree:main`, minutes now its 2" group lays) sets the floor.
 

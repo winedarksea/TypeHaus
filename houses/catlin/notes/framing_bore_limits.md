@@ -555,6 +555,14 @@ line crosses in y from y = 8" to 40" at z = 4 5/8".
 * Cost: 32" of travel + 2 x `bore_joist_in` 36" = **104"**.
 * At z = 7" the hole leaves 1.0625" to the top edge and the edge is refused.
 
+**A run that stays still holds its holes.** A search hides the runs it may occupy (`touch`), and
+the run a drain ties into is one of them; so a branch could take a D pocket, or sit 2.7" from a
+TJI hole, beside its own parent. `holes.kept_lines` hands the touched runs that stay back as laid
+lines, and a tree's `Branches.laid_lines()` hands the main and every branch laid so far: the same
+rules as above (one run per D pocket, "2 x the larger hole" clear in a TJI), read off the same
+`leg_crossings` stations. The 2" run through D13 in §13 is the worked case: it takes the pocket
+once, and a second run through it is refused until the first is lifted.
+
 ## 11. The I-joist ladder: ESR-1153 Table A, read (2026-11-06, decision #117)
 
 `plan/framing_charts.py` transcribes the 11 7/8" TJI 230 round-hole row of ESR-1153 Fig. 2

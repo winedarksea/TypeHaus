@@ -60,20 +60,35 @@ def endpoint_refusal(model: Any, target: str, log: MissLog) -> EndpointRefusal:
         cause=first.cause, element=first.element or target, fix=first.fix)
 
 
+def _holes(model: ResolvedModel, ends: Any, target: str, lifted: frozenset[str],
+           laid: list | None) -> list:
+    """The campaign's laid runs, and for a drain the authored run it ties into: a touched
+    run that stays still holds its D pockets and I-joist holes."""
+    from typehaus.routing.holes import kept_lines
+
+    if not ends.falls:
+        return list(laid or ())
+    replaced = {target, *lifted, *(r.tag for r in model.pipe_runs
+                                   if ends.fixture and r.system == "drain"
+                                   and target in r.serves)}
+    return [*kept_lines(model, ends.touch | lifted, frozenset(replaced)), *(laid or ())]
+
+
 def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
              slope: float | None, margin_ft: float, band: tuple[float, float] | None,
              avoid: frozenset[str], via: list[tuple[float, float]], explain: bool,
              cost: RouteCost, alternatives: int = 1, timing: list[str] | None = None,
              counterfactual: bool = False, extra_prisms: list | None = None,
              hold: int = 0, racks: list | None = None, lifted: frozenset[str] = frozenset(),
-             root_lines: dict | None = None
+             root_lines: dict | None = None, laid: list | None = None
              ) -> tuple[list[tuple[RouteProposal, str]], list[str], list[str], list]:
     """Return (proposal/storey pairs, problems, notices, structured refusals).
 
     ``extra_prisms`` are already-inflated campaign occupancy, appended without further
     inflation; ``racks`` the laid proposals whose level legs offer rack lanes
     (``routing/rack.py``); ``lifted`` authored runs a campaign re-lays, never obstacles;
-    ``root_lines`` a re-laid feeder's new line by tag, which a supply tees onto instead.
+    ``root_lines`` a re-laid feeder's new line by tag, which a supply tees onto instead;
+    ``laid`` (``holes.laid_lines``) the campaign's runs whose holes a crossing keeps clear of.
     Every target refusal is reported; it never becomes an approximate route."""
     from typehaus.routing.alternatives import alternative_routes
     from typehaus.routing.graph import build_graph
@@ -136,7 +151,8 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
                                         touch=ends.touch | lifted, z_band=space_band,
                                         cost=cost.for_run(ends.kind, ends.system),
                                         cavity_radius_m=ends.cavity_radius_m or None,
-                                        panel_space=ends.kind != "conduit")
+                                        panel_space=ends.kind != "conduit",
+                                        laid=_holes(model, ends, target, lifted, laid))
                     space.bend_radius_m = ends.bend_radius_m
                     if ends.kind == "pipe" and not ends.falls and space.members is not None:
                         from typehaus.resolve.riser_cover import riser_cover

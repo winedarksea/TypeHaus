@@ -38,6 +38,7 @@ def propose_tree_lifted(model: ResolvedModel, tree: str, lift: tuple[str, ...],
     from typehaus.cli.cmd_route_tree import _propose_tree
     from typehaus.cli.route_roots import supply_records
     from typehaus.routing.campaign import proposal_prisms
+    from typehaus.routing.holes import laid_lines
     from typehaus.routing.obstacles import CLEARANCE_M
 
     runs = {r.tag: r for r in (*model.pipe_runs, *model.ducts, *model.conduits)}
@@ -77,7 +78,7 @@ def propose_tree_lifted(model: ResolvedModel, tree: str, lift: tuple[str, ...],
             band=None, avoid=opts.avoid, via=[], explain=opts.details, cost=opts.cost,
             timing=opts.timing, extra_prisms=list(occupancy),
             lifted=frozenset(order[index + 1:]) | replaced, hold=hold,
-            root_lines=dict(lines))
+            root_lines=dict(lines), laid=laid_lines(proposal for proposal, _s in made))
         notices.extend(run_notices)
         if got:
             proposal, storey = got[0]
