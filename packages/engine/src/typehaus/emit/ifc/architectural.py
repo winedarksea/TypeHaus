@@ -82,8 +82,15 @@ def _full_height_layers(wall: ResolvedWall) -> tuple[ResolvedLayer, ...]:
     ``EXT_2X6`` a different key from the assembly's own signature and export all 28 of them
     as ``EXT_2X6~lining0`` — a lining variant that is not a lining.
     """
-    return tuple(ly for ly in wall.depth_layers()
-                 if ly.band_spec is None and ly.run_span_m is None)
+    # An instance cut (a tee, a valve pocket) is an instance fact too: the type keeps the
+    # source layer, under its own name (``layer_pockets.subtract_layer_region``).
+    return tuple(replace(ly, name=ly.source_layer_name) if _instance_cut(ly) else ly
+                 for ly in wall.depth_layers()
+                 if ly.band_spec is None and (ly.run_span_m is None or _instance_cut(ly)))
+
+
+def _instance_cut(layer) -> bool:
+    return bool(layer.source_layer_name) and (layer.slot or "").startswith("service-region:")
 
 
 def is_external_wall(model: ResolvedModel, wall: ResolvedWall) -> bool:

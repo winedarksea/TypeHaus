@@ -261,6 +261,11 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         from typehaus.resolve.shower_pockets import resolve_shower_pockets
 
         resolve_shower_pockets(plan, model)
+    with _stage("tee_interruptions"):
+        # Late, so earlier stages never meet the split pieces (resolve/tee_interrupt.py).
+        from typehaus.resolve.tee_interrupt import resolve_tee_interruptions
+
+        resolve_tee_interruptions(plan, model)
     with _stage("tub_enclosures"):
         from typehaus.resolve.tub_enclosures import resolve_tub_enclosures
 

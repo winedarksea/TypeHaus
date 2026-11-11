@@ -24,6 +24,7 @@ emitter inventing parts for a wall that has no bands).
 
 from __future__ import annotations
 
+import re
 import uuid
 
 import pytest
@@ -261,6 +262,7 @@ def test_an_unsplit_banded_layer_keeps_its_globalid(catlin_model_ro, catlin_ifc)
     65 since 2026-10-25: W-BW-SCREEN's east veneer stack adds four banded layers (brick,
     setting mortar, cement board, drainage mat), all whole-height and unsplit; the face
     liquid membrane is omitted.
+    30 since 2026-11-11: seven banded layers are cut at tees (``resolve/tee_interrupt``).
     37 since 2026-11-02: east MDO replaces the metal/WRB stack; its north panel
     splits around the garage tie block and the other three retain their identities.
     47 since 2026-09-16: W-SG-W1/E1's dimpleboard stops at grade. 61 since the platform
@@ -284,7 +286,7 @@ def test_an_unsplit_banded_layer_keeps_its_globalid(catlin_model_ro, catlin_ifc)
                if f"{w.tag}:{ly.name}" in parts]
     untouched = [(w, ly) for w, ly in unsplit
                  if not (ly.slot or "").startswith("service-region:")]
-    assert len(untouched) == 37, "unaffected banded layers retain their identity"
+    assert len(untouched) == 30, "unaffected banded layers retain their identity"
     for wall, layer in unsplit:
         assert parts[f"{wall.tag}:{layer.name}"] == derive_child_guid(
             project_uuid, "wall-parts", f"{wall.uid}/{layer.name}")
@@ -429,11 +431,13 @@ def test_a_lifted_partition_exports_one_shortened_body_and_no_parts(catlin_model
     assert all(ly.band(wall)[1] == pytest.approx(wall.plate_top_z_m)
                for ly in wall.body_layers()), "the whole body should stop at the plate"
 
-    assert _parts_of(catlin_ifc, _LIFTED_PARTITION) == set()
+    # Only its tee-cut board exports as parts (``resolve/tee_interrupt``).
+    assert all("-tee-" in name for name in _parts_of(catlin_ifc, _LIFTED_PARTITION))
     body = next(rep for rep in _wall(catlin_ifc, _LIFTED_PARTITION)
                 .Representation.Representations
                 if rep.RepresentationIdentifier == "Body")
-    assert len(body.Items) == len([ly for ly in wall.depth_layers() if not ly.coating])
+    assert len(body.Items) == len([ly for ly in wall.depth_layers() if not ly.coating
+                                   and not (ly.slot or "").startswith("service-region:")])
     # The body really is shorter than the wall — the joist bay above it is open.
     depth = body.Items[0].Depth
     assert depth == pytest.approx(wall.plate_top_z_m - wall.z0_m, abs=1e-9)
@@ -446,7 +450,7 @@ def test_a_lifted_partition_exports_one_shortened_body_and_no_parts(catlin_model
                      if _wall(catlin_ifc, _LIFTED_PARTITION) in rel.RelatedObjects
                      and rel.RelatingMaterial.is_a("IfcMaterialLayerSetUsage"))
     assert [ly.Name for ly in layer_set.MaterialLayers] == \
-        [ly.name for ly in wall.depth_layers()]
+        [ly.source_layer_name or ly.name for ly in wall.depth_layers()]
     assert sum(ly.LayerThickness for ly in layer_set.MaterialLayers) == \
         pytest.approx(wall.thickness_m, abs=1e-6)
 
@@ -458,14 +462,15 @@ def test_a_lifted_envelope_wall_exports_its_interior_finishes_as_parts(catlin_mo
     way every part is. The TYPE is untouched, which is the assertion that matters: 28 lifted
     EXT_2X6 walls on one ``IfcWallType``, not 28 ``~lining0`` variants."""
     wall = catlin_model_ro.wall(_LIFTED_ENVELOPE)
-    trimmed = [ly.name for ly in wall.depth_layers()
+    trimmed = [ly.source_layer_name or ly.name for ly in wall.depth_layers()
                if ly.band(wall) != (wall.z0_m, wall.z1_m)]
     assert trimmed == ["paint", "gwb-int"]
 
     parts = _parts_of(catlin_ifc, _LIFTED_ENVELOPE)
     assert parts, "the trimmed finishes must still reach the IFC somewhere"
     # The paint is a coating: no depth, so no part; the board still exports.
-    assert {name.split(":")[1].split(" (")[0] for name in parts} == {"gwb-int"}
+    assert {re.sub(r"-tee-\d+$", "", name.split(":")[1].split(" (")[0])
+            for name in parts} == {"gwb-int"}
 
     wall_type = next(iter(_wall(catlin_ifc, _LIFTED_ENVELOPE).IsTypedBy)).RelatingType
     assert wall_type.Name == "EXT_2X6"

@@ -96,6 +96,9 @@ a release or for exhaustive local verification.
 - **A wall stands on the subfloor; its sills stay on the datum** (decision #110):
   `ResolvedWall.frame_base_z_m` (plates, studs, `resolve/plate_seat.py`) vs `base_ref_z_m`
   (every `sill_m`, backing band and girt course). Never measure framing off `base_ref_z_m`.
+- **A tee branch frames to the through wall's framing** (`resolve/tee_interrupt.py`): its core
+  passes the through wall's room-face layers, which a late stage cuts over its stud band
+  into `<layer>-tee-<i>` pieces sharing one slot. Walk a stack by slot, not by entry.
 - **`Slab.kind`** is `pour | deck | platform | band` (decision #81). Code that means concrete
   reads `is_pour_slab`, never `category == "slab"`.
 - **`clear_face` is the finish face; `axis_face` owns points** (decision #82). Measure

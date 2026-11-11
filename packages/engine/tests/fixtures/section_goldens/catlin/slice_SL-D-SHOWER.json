@@ -443,7 +443,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CMW135AAAA",
-      "tag": "W-M-N3B/paint",
+      "tag": "W-M-N3B/paint-tee-0",
       "material": "paint-wall"
     },
     {
@@ -1289,7 +1289,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CSW109AAAA",
-      "tag": "W-S-N3/paint",
+      "tag": "W-S-N3/paint-tee-0",
       "material": "paint-wet"
     },
     {

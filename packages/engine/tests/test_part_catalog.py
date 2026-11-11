@@ -35,7 +35,8 @@ def test_wall_layers_carry_their_raw_material_ref(catlin_model):
 def test_every_wall_layer_part_is_catalogued(catlin_model):
     for (element, part) in _parts(catlin_model, "wall"):
         assert part.catalog is not None, f"{element.uid}/{part.key}"
-        assert part.catalog.name and part.key.endswith(part.catalog.name)
+        # A cut layer's pieces (``layer:gwb-tee-0``) catalogue their source layer's name.
+        assert part.catalog.name and part.key.startswith(f"layer:{part.catalog.name}")
         assert part.catalog.role
         assert part.catalog.thickness_m is not None and part.catalog.thickness_m > 0
 

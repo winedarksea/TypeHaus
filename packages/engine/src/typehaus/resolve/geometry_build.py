@@ -120,7 +120,7 @@ def _wall_geometry(wall: ResolvedWall, openings) -> ElementGeometry:
             material_key=normalize(function),
             layer_group=layer_visibility_group(function),
             catalog=PartCatalogRef(material_ref=layer.material_ref, role=function,
-                                   name=layer.name,
+                                   name=layer.source_layer_name or layer.name,
                                    thickness_m=layer.thickness_m),
         ))
     return ElementGeometry(uid=wall.uid, kind="wall", trades=wall_trades(wall),

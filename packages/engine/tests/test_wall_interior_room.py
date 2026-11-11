@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import pytest
 from shapely.geometry import Polygon
+from shapely.ops import unary_union
 
 from typehaus.quantities import inch
 
@@ -70,10 +71,9 @@ def test_sauna_cold_side_stays_outside_the_sauna(catlin_model) -> None:
     for wall in catlin_model.walls:
         if wall.tag not in ("W-B-SA-W", "W-B-SA-N"):
             continue
-        for layer in wall.layers:
-            if layer.name != "gwb-cold":
-                continue
-            poly = Polygon(layer.polygon)
+        pieces = [ly for ly in wall.layers if (ly.source_layer_name or ly.name) == "gwb-cold"]
+        if pieces:
+            poly = unary_union([Polygon(ly.polygon) for ly in pieces])
             assert poly.intersection(sauna).area / poly.area < 0.01, wall.tag
             checked += 1
     assert checked == 2, checked

@@ -154,18 +154,25 @@ def test_the_takeoff_bills_no_finish_above_the_plate(catlin_model_ro):
     interior finish may not bill more face than the plate-to-plate rectangle it covers."""
     from shapely.geometry import LineString
 
-    from typehaus.takeoff.envelope import wall_layer_net_area_m2, wall_net_areas_m2
+    from typehaus.takeoff.envelope import (
+        finish_run_m,
+        wall_layer_net_area_m2,
+        wall_net_areas_m2,
+    )
 
     nets = wall_net_areas_m2(catlin_model_ro)
     over = []
     for wall in _lifted(catlin_model_ro):
         run = LineString(wall.axis).length
         base = wall.plate_base_z_m if wall.plate_base_z_m is not None else wall.z0_m
-        ceiling = run * (wall.plate_top_z_m - base)
+        height = wall.plate_top_z_m - base
         owed = _trimmed_names(wall)
         for layer in wall.layers:
             if layer.function != "finish" or layer.name not in owed:
                 continue
+            # The layer's drawn run: its cut span, else its polygon (a board stops at corners).
+            span = layer.run_span_m
+            ceiling = (span[1] - span[0] if span else finish_run_m(layer, run)) * height
             billed = wall_layer_net_area_m2(catlin_model_ro, wall, layer, nets[wall.tag])
             if billed > ceiling + 1e-9:
                 over.append(f"{wall.tag}/{layer.name}: {billed:.3f} > {ceiling:.3f}")

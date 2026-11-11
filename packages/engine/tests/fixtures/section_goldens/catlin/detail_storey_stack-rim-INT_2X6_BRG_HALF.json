@@ -209,7 +209,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CBW112AAAA",
-      "tag": "W-B-CS2/paint-b",
+      "tag": "W-B-CS2/paint-b-tee-0",
       "material": "paint-wall"
     },
     {
@@ -399,7 +399,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CMW113AAAA",
-      "tag": "W-M-C2/paint-a",
+      "tag": "W-M-C2/paint-a-tee-0",
       "material": "paint-wall"
     },
     {

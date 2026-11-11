@@ -87,6 +87,8 @@ def _casing(plan, model, scope: TrimScope, wall: ResolvedWall, opening, side: in
     floor_z, _structural = scope.floors(model, room)
     into_wall = (-normal[0] * side, -normal[1] * side)
     function = face_function(wall, at(outer, face), into_wall, floor_z, floor_z + 0.1)
+    if not is_finish(function):  # the outer edge may stand over a tee's cut (tee_interrupt)
+        function = face_function(wall, at(inner, face), into_wall, floor_z, floor_z + 0.1)
     if not is_finish(function):
         return None
 

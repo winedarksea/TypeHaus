@@ -44,7 +44,7 @@ def _edge_bases(frame: OpeningFrame, z0: float,
         top = wall_body_band(wall)[1]
         if not z0 - _MAX_DROP_M <= top < z0:
             continue
-        polygons = [Polygon(layer.polygon) for layer in wall.depth_layers()
+        polygons = [Polygon(layer.polygon) for layer in wall.body_layers()
                     if len(layer.polygon) >= 3]
         if not polygons:
             continue

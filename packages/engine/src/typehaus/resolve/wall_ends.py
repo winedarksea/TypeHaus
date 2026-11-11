@@ -47,12 +47,25 @@ def wall_end_boards(ctx: TrimContext) -> None:
 def _gypsum_faces(ctx: TrimContext, wall: ResolvedWall) -> tuple[Any, Any, str | None] | None:
     """``(first board, last board, face coat)`` when both faces are gypsum, else ``None``."""
     layers = wall.body_layers()
-    boards = [layer for layer in layers if not layer.coating]
+    boards = _boards(wall)
     if len(boards) < 2 or not all(
             getattr(ctx.materials.get(layer.material_ref), "gypsum_type", None)
             for layer in (boards[0], boards[-1])):
         return None
     return boards[0], boards[-1], layers[0].material_ref if layers[0].coating else None
+
+
+def _boards(wall: ResolvedWall) -> list[Any]:
+    """The non-coating layers, a cut layer's pieces (tee, pocket) collapsed to the first:
+    its other pieces are slivers of band (``tee-above``) and would read as the board."""
+    out, seen = [], set()
+    for layer in wall.body_layers():
+        if layer.coating or (layer.source_layer_name or "") in seen:
+            continue
+        if layer.source_layer_name:
+            seen.add(layer.source_layer_name)
+        out.append(layer)
+    return out
 
 
 def _close_end(ctx: TrimContext, wall: ResolvedWall, junction: Any,

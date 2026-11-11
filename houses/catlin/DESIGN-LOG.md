@@ -7934,3 +7934,20 @@ BED3 keeps its fixed windows plus the ERV air System 1 delivers. `DU-A-ERV-R-ATT
 EXHAUST -> RETURN to match every other stale-air pickup; it is now the run serving
 `EQ-A-ERV-MAN-EXH`'s declared return port, which BED3's run used to serve. Open: line the stub (the
 blower is a few feet away); the hall's 490 cfm would now take a stocked 12x24x1 filter (~245 fpm).
+
+## Tee branches frame to the through wall's studs; the board goes on after (2026-11-11)
+
+At every T/X the branch's framing stopped at the through wall's gypsum face: 57 of 69 catlin
+tee branches were 1/2" short (one 5/8" at a Type X wall), with plates short and the end stud
+floating off the tee backing. The stud module never moved — layout phases off nodes, not faces.
+Now the branch's core runs to the through wall's framing and a late resolve stage
+(`resolve/tee_interrupt.py`) cuts the through wall's room-face layers — gypsum, furring, liner,
+paint — over the branch's stud band, stopping at the first weather/sheathing layer, so a
+vapour retarder, WRB or sheathing stays continuous behind the branch. Every tee now measures
+0.000". 55 walls' members change (plates +1/2" a tee end, end studs move, +3 studs); 0 FAIL delta.
+
+Finish layers now bill off their polygons rather than node-to-node axis runs
+(`takeoff/envelope.py`): a branch board stops at the through wall, the through board loses the
+branch's band, and L-corner boards are polygon-true. Gypsum -730 sf (12,328 -> 11,597; about
+-327 from the tee cuts, -350 from branch ends, -65 from L corners), paint -663 sf, PVC liner -31,
+sauna shiplap -11.

@@ -84,13 +84,14 @@ def test_stair_wall_studs_remain_plumb_beneath_the_flush_finish(catlin_model_ro)
     )
     walls = {wall.tag: wall for wall in catlin_model_ro.walls}
     for tag in wall_tags:
-        layers = {layer.name: layer for layer in walls[tag].depth_layers()}
+        layers = {layer.source_layer_name or layer.name: layer
+                  for layer in walls[tag].depth_layers()}
         stud_x = [point[0] / _INCH for point in layers["stud"].polygon]
         assert min(stud_x) == pytest.approx(117.125)
         assert max(stud_x) == pytest.approx(122.625)
         stair_finish = layers.get("ply-stair", layers.get("gwb-x", layers.get("mdo-stair")))
         assert stair_finish is not None
         finish_x = [point[0] / _INCH for point in stair_finish.polygon]
-        mdo = stair_finish.name == "mdo-stair"
+        mdo = (stair_finish.source_layer_name or stair_finish.name) == "mdo-stair"
         assert min(finish_x) == pytest.approx(122.625)
         assert max(finish_x) == pytest.approx(123.125 if mdo else 123.25)

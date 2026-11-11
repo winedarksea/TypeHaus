@@ -25,13 +25,14 @@ from __future__ import annotations
 
 import math
 from collections import defaultdict
+from types import SimpleNamespace
 
 from shapely.geometry import Polygon
 
 from typehaus.model.enums import LayerFunction, TrimKind
 from typehaus.model.layer_functions import LAYER_FUNCTIONS
 from typehaus.resolve.coatings import coating_tags
-from typehaus.resolve.geometry import length, polygon_area, sub
+from typehaus.resolve.geometry import length, polygon_area, sub, wall_frame
 from typehaus.resolve.geometry_walls import cuts_layer
 from typehaus.resolve.model import ResolvedLayer, ResolvedModel, ResolvedWall
 from typehaus.resolve.rainscreen_closures import BUG_SCREEN_MATERIAL
@@ -117,7 +118,9 @@ def wall_layer_net_area_m2(model: ResolvedModel, wall: ResolvedWall,
         start, end = layer.run_span_m
         bottom, top = layer.band(wall)
         top = min(top, mean_top)
-        area = (end - start) * max(0.0, top - bottom)
+        run = (end - start if layer.coating or layer.function != LayerFunction.FINISH.value
+               else layer_run_m(layer, end - start))
+        area = run * max(0.0, top - bottom)
         for opening in model.openings:
             if opening.host_wall != wall.tag or not cuts_layer(wall, layer.name, opening):
                 continue
@@ -127,10 +130,14 @@ def wall_layer_net_area_m2(model: ResolvedModel, wall: ResolvedWall,
             height = max(0.0, min(top, lower + opening.height_m) - max(bottom, lower))
             area -= width * height
         return max(0.0, area)
-    # Sheathing runs off its own polygon (a through corner panel is longer than the axis);
-    # ``sheet_goods_takeoff`` measures the same run, so the two sections agree.
-    run = (layer_run_m(layer, axis_run)
-           if layer.function == LayerFunction.SHEATHING.value else axis_run)
+    # Sheathing and finish run off their own polygon (a through corner panel is longer than
+    # the axis, a branch's board stops at the through wall's face); ``sheet_goods_takeoff``
+    # measures the same sheathing run, so the two sections agree.
+    run = axis_run
+    if layer.function == LayerFunction.SHEATHING.value:
+        run = layer_run_m(layer, axis_run)
+    elif layer.function == LayerFunction.FINISH.value:
+        run = finish_run_m(layer, axis_run)
     if not getattr(layer, "is_banded", False):
         return max(0.0, wall_net_m2 + (run - axis_run) * (mean_top - wall.z0_m) - blind)
     band_z0, band_z1 = layer.band(wall)
@@ -148,6 +155,35 @@ def wall_layer_net_area_m2(model: ResolvedModel, wall: ResolvedWall,
         if overlap > 0.0:
             area -= opening.width_m * overlap
     return max(0.0, area)
+
+
+def finish_run_m(layer: ResolvedLayer, axis_run: float) -> float:
+    """A finish layer's drawn run: a board by area / thickness, a coating by its ring."""
+    if layer.thickness_m > 0.0:
+        return layer_run_m(layer, axis_run)
+    half = Polygon(layer.polygon).length / 2.0 if len(layer.polygon) >= 3 else 0.0
+    return half if half > 0.0 else axis_run
+
+
+def _band_share(wall: ResolvedWall, layer: ResolvedLayer, band) -> float:
+    """Fraction of a paneling band's face that lies over this layer's cut region.
+
+    A layer a tee cut into pieces (``run_span_m``) shares one band between them: each takes
+    the part of the band's station x height box that overlaps its own, so a band is deducted
+    once across the pieces and not at all where the board was cut away. Whole layers: 1.
+    """
+    if layer.run_span_m is None:
+        return 1.0
+    origin, tangent, _normal, _ = wall_frame(wall)
+    stations = [(x - origin[0]) * tangent[0] + (y - origin[1]) * tangent[1]
+                for x, y in band.outline]
+    b0 = wall.z0_m + band.band_z0_m if band.z0_m is None else band.z0_m
+    b1 = wall.z0_m + band.band_z1_m if band.z1_m is None else band.z1_m
+    box = (max(stations) - min(stations)) * (b1 - b0)
+    z0, z1 = layer.band(wall)
+    across = max(0.0, min(max(stations), layer.run_span_m[1])
+                 - max(min(stations), layer.run_span_m[0]))
+    return across * max(0.0, min(b1, z1) - max(b0, z0)) / box if box > 0.0 else 0.0
 
 
 def replaced_finish_m2(model: ResolvedModel) -> dict[tuple[str, str], float]:
@@ -180,8 +216,15 @@ def replaced_finish_m2(model: ResolvedModel) -> dict[tuple[str, str], float]:
             if (layer.function != LayerFunction.FINISH.value
                     or getattr(material, "gypsum_facer", None) == "glass-mat"):
                 break
-            replaced[(wall.tag, layer.name)] += band.area_m2
+            replaced[(wall.tag, layer.name)] += band.area_m2 * _band_share(wall, layer, band)
     return replaced
+
+
+def _covered_paneling(model: ResolvedModel, wall: ResolvedWall, layer: ResolvedLayer) -> float:
+    """``covered_paneling_m2``, each band weighted by its share of a cut coating piece."""
+    return sum(covered_paneling_m2(SimpleNamespace(panelings=[band]), wall, layer)
+               * _band_share(wall, layer, band) for band in model.panelings
+               if band.retains_baseboard and band.wall_tag == wall.tag and band.outline)
 
 
 def _blind_deduction_m2(model: ResolvedModel, wall: ResolvedWall,
@@ -208,22 +251,24 @@ def wall_layer_areas(model: ResolvedModel):
             # A finish a paneling band replaces (the sauna's tile splash) is not bought.
             covered = max(0.0, wall_layer_net_area_m2(model, wall, layer, net)
                           - replaced.get((wall.tag, layer.name), 0.0)
-                          - (covered_paneling_m2(model, wall, layer) if layer.coating else 0.0))
+                          - (_covered_paneling(model, wall, layer) if layer.coating else 0.0))
             # A cavity layer shares the structure layer's polygon and adds no depth; billing
             # it as its own area would order insulation for a wall band twice.
             if getattr(layer, "is_cavity", False):
                 covered -= sum(fill.area_m2 for fill in model.jamb_fills
                                if fill.host_wall == wall.tag and fill.replaced_layer == layer.name)
                 yield wall, layer, (scope, "insulation (cavity)", layer.material_ref,
-                                    layer.thickness_m), covered
+                                    round(layer.thickness_m, 9)), covered
                 continue
             try:
                 function = LayerFunction(layer.function)
             except ValueError:
                 continue
             if function in _BILLABLE:
+                # Rounded: a tee-cut piece re-derives its depth from its polygon, and float
+                # noise must not split one board into a BOM line per piece.
                 yield (wall, layer, (scope, function.value, layer.material_ref,
-                                     layer.thickness_m), covered)
+                                     round(layer.thickness_m, 9)), covered)
 
 
 def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:

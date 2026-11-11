@@ -37,6 +37,7 @@ from typehaus.resolve.overlay import union_all
 from typehaus.resolve.room_paint import RoomPaint
 from typehaus.resolve.rooms import wall_lining_overrides
 from typehaus.resolve.sheathing_corner import butt_sheathing
+from typehaus.resolve.tee_interrupt import core_indices, framing_envelope
 
 _EPS = 1e-4  # meters — cavity-insulation coincidence tolerance
 _DIRECTION_EPS = 1e-9
@@ -826,24 +827,30 @@ def _through_envelope(walls: dict[str, ResolvedWall], wall_tags: tuple[str, ...]
     polygons = [
         Polygon(layer.polygon)
         for wall_tag in wall_tags
-        for layer in walls[wall_tag].depth_layers()
-        if len(layer.polygon) >= 3
+        for layer in walls[wall_tag].body_layers()
+        if not layer.coating and len(layer.polygon) >= 3
     ]
     return union_all(polygons) if polygons else GeometryCollection()
 
 
 def _butt_branches(walls: dict[str, ResolvedWall], junction: ResolvedJunction) -> None:
+    """Branches butt the through walls; at a supported T/X their core reaches its framing."""
     envelope = _through_envelope(walls, junction.through_walls)
     if envelope.is_empty:
         return
+    tee = junction.supported and junction.kind in {"t", "x"}
+    directions = {item.wall_tag: item.direction for item in junction.incidents}
     for wall_tag in junction.branch_walls:
         if wall_tag not in walls:
             continue
         wall = walls[wall_tag]
+        core = core_indices(wall) if tee and wall_tag in directions else set()
+        framing = (framing_envelope(walls, junction.through_walls, directions[wall_tag])
+                   if core else envelope)
         butted: dict[int, list[tuple[float, float]]] = {}
         for index, layer in enumerate(wall.layers):
             original = layer.polygon
-            difference = Polygon(original).difference(envelope)
+            difference = Polygon(original).difference(framing if index in core else envelope)
             butted[index] = _normalized_ring(difference, original)
         walls[wall_tag] = _with_layer_polygons(wall, butted)
 

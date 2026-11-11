@@ -147,7 +147,8 @@ def test_ifc_material_layer_set_sums_to_the_wall_thickness(catlin_model_ro, catl
     assert not any(layer.band_spec for layer in wall_ir.layers), \
         "W-M-S1 gained an AUTHORED band; this assertion is about the unbanded layer set"
     body_band = wall_body_band(wall_ir)
-    trimmed = [ly.name for ly in wall_ir.depth_layers() if ly.band(wall_ir) != body_band]
+    trimmed = [ly.source_layer_name or ly.name for ly in wall_ir.depth_layers()
+               if ly.band(wall_ir) != body_band]
     assert trimmed == ["paint", "gwb-int"]
     assert len(body.Items) == len(wall_ir.depth_layers()) - len(trimmed)
     assert len(axis.Items) == 1

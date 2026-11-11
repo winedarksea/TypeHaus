@@ -29,7 +29,7 @@ from typehaus.server.model_json import model_to_dict
 
 def _library() -> Library:
     materials = tuple(Material(tag=tag, name=tag) for tag in (
-        "gwb", "spf", "wool", "osb", "foam", "metal",
+        "gwb", "spf", "wool", "osb", "foam", "metal", "poly",
     ))
     interior = Assembly(tag="INT", layers=(
         Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.625),
@@ -63,7 +63,15 @@ def _library() -> Library:
         Layer(name="gwb-b", material_ref="gwb", thickness=inch(0.625),
               function=LayerFunction.FINISH),
     ))
-    return Library(materials=materials, assemblies=(interior, exterior, plumbing))
+    # Gypsum over a poly vapour retarder: the retarder runs on behind a tee branch.
+    lined = Assembly(tag="EXTG", layers=(
+        Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.5),
+              function=LayerFunction.FINISH),
+        Layer(name="poly", material_ref="poly", thickness=inch(0.0625),
+              function=LayerFunction.MEMBRANE),
+        *exterior.layers,
+    ))
+    return Library(materials=materials, assemblies=(interior, exterior, plumbing, lined))
 
 
 def _plan(project, coordinates, edges) -> PlanModel:
@@ -153,6 +161,69 @@ def test_mixed_exterior_partition_tee_butts_against_envelope(project) -> None:
     assert host.distance(branch) < 1e-9
     assert any(member.category == "blocking" for tag in ("W-L", "W-R")
                for member in model.wall(tag).members)
+
+
+def _stud_band(wall):
+    return Polygon(next(ly for ly in wall.layers if ly.name == "stud").polygon)
+
+
+def _pieces(wall, name):
+    return [ly for ly in wall.layers if (ly.source_layer_name or ly.name) == name]
+
+
+def test_tee_branch_frames_to_through_framing_and_cuts_its_board(project) -> None:
+    plan = _plan(
+        project,
+        {"L": (-10, 0), "C": (0, 0), "R": (10, 0), "B": (0, -10)},
+        [("W-L", "L", "C", "INT"), ("W-R", "C", "R", "INT"), ("W-B", "B", "C", "INT")],
+    )
+    model, _ = resolve(plan)
+    through = [model.wall(tag) for tag in ("W-L", "W-R")]
+    branch = model.wall("W-B")
+    host = unary_union([_stud_band(wall) for wall in through])
+    assert host.distance(_stud_band(branch)) < 1e-9
+    assert host.intersection(_stud_band(branch)).area < 1e-10
+    face_y = host.bounds[1]  # the through framing's branch-side (south) face
+    plates = [m for m in branch.members if m.category == "plate"]
+    assert plates and all(abs(max(m.p0[1], m.p1[1]) - face_y) < 1e-6 for m in plates)
+    end_stud = max((m for m in branch.members if m.category == "stud"), key=lambda m: m.p0[1])
+    assert abs(end_stud.p0[1] + inch(1.5).meters / 2 - face_y) < 1e-6
+    # The south board is cut over the branch's 3 1/2" stud band; the north board is whole.
+    south = [ly for wall in through for ly in wall.layers
+             if (ly.source_layer_name or ly.name) in {"gwb-a", "gwb-b"}
+             and Polygon(ly.polygon).centroid.y < face_y]
+    north = [ly for wall in through for ly in wall.layers
+             if (ly.source_layer_name or ly.name) in {"gwb-a", "gwb-b"}
+             and Polygon(ly.polygon).centroid.y > 0]
+    assert all("-tee-" not in ly.name for ly in north) and len(north) == 2
+    covered = unary_union([Polygon(ly.polygon) for ly in south])
+    gap = covered.envelope.difference(covered)
+    assert abs(gap.area / inch(0.625).meters - inch(3.5).meters) < 1e-6
+    branch_board = unary_union([Polygon(ly.polygon) for ly in branch.layers
+                                if ly.function == "finish"])
+    assert covered.intersection(branch_board).area < 1e-10
+
+
+def test_tee_cut_stops_at_the_vapour_retarder_and_spares_the_weather_side(project) -> None:
+    for branch_node, y, expected in (("B", -10, {"gwb-a"}), ("T", 10, set())):
+        plan = _plan(
+            project,
+            {"L": (-10, 0), "C": (0, 0), "R": (10, 0), branch_node: (0, y)},
+            [("W-L", "L", "C", "EXTG"), ("W-R", "C", "R", "EXTG"),
+             ("W-X", branch_node, "C", "INT")],
+        )
+        model, _ = resolve(plan)
+        through = [model.wall(tag) for tag in ("W-L", "W-R")]
+        assert {ly.source_layer_name for wall in through for ly in wall.layers
+                if "-tee-" in ly.name} == expected
+        stud = _stud_band(model.wall("W-X"))
+        body = unary_union([Polygon(ly.polygon) for wall in through for ly in wall.layers
+                            if ly.function != "finish" and not ly.coating and not ly.is_cavity])
+        assert stud.intersection(body).area < 1e-10
+        poly = unary_union([Polygon(ly.polygon) for wall in through
+                            for ly in _pieces(wall, "poly")])
+        # Room side: it reaches the retarder. Weather side: it stops at the cladding.
+        assert (poly.distance(stud) < 1e-6) == (branch_node == "B")
 
 
 def test_x_junction_and_json_diagnostics_are_deterministic(project) -> None:

@@ -41,7 +41,12 @@ def _finish_stack(model: ResolvedModel, wall: ResolvedWall) -> FinishStack:
     """Only the exposed coatings and consecutive gypsum boards, never buried linings."""
     layers = []
     has_gypsum = False
+    slots: set[str] = set()
     for layer in wall.body_layers():
+        if layer.slot is not None:  # a split board's other pieces share its slice
+            if layer.slot in slots:
+                continue
+            slots.add(layer.slot)
         material = model.plan.library.material(layer.material_ref)
         gypsum = bool(getattr(material, "gypsum_type", None))
         coating = bool(getattr(material, "coating", False))
@@ -279,7 +284,8 @@ def _fit_return(wall: ResolvedWall, opening: ResolvedOpening,
         if coating:
             area += (remaining + lining) * (opening.width_m + 2 * (head_bottom - bottom))
             coating_depth += layer.thickness_m
-        quantities.append(WindowReturnLayer(layer.name, layer.material_ref,
+        quantities.append(WindowReturnLayer(layer.source_layer_name or layer.name,
+                                             layer.material_ref,
                                              layer.thickness_m, area, coating))
         remaining = backing
     exposed_area = (depth * (2 * (top - total - bottom) + opening.width_m - 2 * inset)

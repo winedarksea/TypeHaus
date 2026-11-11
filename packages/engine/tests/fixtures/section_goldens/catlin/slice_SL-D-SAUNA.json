@@ -28,7 +28,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CBW111AAAA",
-      "tag": "W-B-CS/shiplap-liner-WP-B-SAUNA-SPLASH-1"
+      "tag": "W-B-CS/shiplap-liner"
     },
     {
       "space": "model",
@@ -85,7 +85,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CBW111AAAA",
-      "tag": "W-B-CS/liner-furring-valve-pocket-1"
+      "tag": "W-B-CS/liner-furring"
     },
     {
       "space": "model",
@@ -141,7 +141,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CBW111AAAA",
-      "tag": "W-B-CS/foil-polyiso-valve-pocket-2"
+      "tag": "W-B-CS/foil-polyiso"
     },
     {
       "space": "model",
@@ -933,7 +933,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CMW112AAAA",
-      "tag": "W-M-C1/paint-a",
+      "tag": "W-M-C1/paint-a-tee-0",
       "material": "paint-wall"
     },
     {
@@ -3077,7 +3077,7 @@
         212.25,
         -20.757499999999997
       ],
-      "text": "foil-polyiso-valve-pocket-2 2\"",
+      "text": "foil-polyiso 2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -3102,7 +3102,7 @@
         211.0,
         -23.357499999999998
       ],
-      "text": "liner-furring-valve-pocket-1 1/2\" (NTS)",
+      "text": "liner-furring 1/2\" (NTS)",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -3127,7 +3127,7 @@
         210.375,
         -25.9575
       ],
-      "text": "shiplap-liner-WP-B-SAUNA-SPLASH-1 3/4\" (NTS)",
+      "text": "shiplap-liner 3/4\" (NTS)",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",

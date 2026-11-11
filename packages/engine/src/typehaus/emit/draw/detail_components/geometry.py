@@ -238,7 +238,11 @@ def layer_intervals(wall, direction: str, station: float) -> dict:
         if ivs:
             lo = min(min(iv) for iv in ivs)
             hi = max(max(iv) for iv in ivs)
-            out[layer.name] = (lo / M_PER_IN, hi / M_PER_IN, layer.function)
+            # A cut layer's pieces (tee, pocket) are one layer here.
+            name = getattr(layer, "source_layer_name", None) or layer.name
+            if name in out:
+                lo, hi = min(lo, out[name][0] * M_PER_IN), max(hi, out[name][1] * M_PER_IN)
+            out[name] = (lo / M_PER_IN, hi / M_PER_IN, layer.function)
     return out
 
 

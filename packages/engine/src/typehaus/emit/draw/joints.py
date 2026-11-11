@@ -203,7 +203,8 @@ def _apply_authored_join(plan: JointPlan, wall: ResolvedWall, join, direction, s
     interface_z = wall.top_z1_m if wall.top_z1_m is not None else wall.z1_m
     term = interface_z + join.termination.meters
     for layer in wall.layers:
-        if matches(join.layer, layer.name) or matches(join.layer, layer.function):
+        if (matches(join.layer, layer.source_layer_name or layer.name)
+                or matches(join.layer, layer.function)):
             u_iv = _layer_u_interval(layer, direction, station)
             u0 = station if u_iv is None else sum(u_iv) / 2.0
             plan.terminations[(wall.uid, layer.name)] = TerminationPlane(u0=u0, z0=term)

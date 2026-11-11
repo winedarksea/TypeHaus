@@ -28,7 +28,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CBW111AAAA",
-      "tag": "W-B-CS/shiplap-liner-WP-B-SAUNA-SPLASH-1"
+      "tag": "W-B-CS/shiplap-liner"
     },
     {
       "space": "model",
@@ -85,7 +85,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CBW111AAAA",
-      "tag": "W-B-CS/liner-furring-valve-pocket-1"
+      "tag": "W-B-CS/liner-furring"
     },
     {
       "space": "model",
@@ -141,7 +141,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CBW111AAAA",
-      "tag": "W-B-CS/foil-polyiso-valve-pocket-2"
+      "tag": "W-B-CS/foil-polyiso"
     },
     {
       "space": "model",
@@ -603,7 +603,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CMW112AAAA",
-      "tag": "W-M-C1/paint-a",
+      "tag": "W-M-C1/paint-a-tee-0",
       "material": "paint-wall"
     },
     {
@@ -1453,19 +1453,19 @@
         "kind": "point",
         "xy": [
           210.375,
-          -16.07083333333333
+          -15.254166666666663
         ],
         "name": ""
       },
       "at": [
         199.15748031496065,
-        -16.07083333333333
+        -15.254166666666663
       ],
       "to": [
         210.375,
-        -16.07083333333333
+        -15.254166666666663
       ],
-      "text": "shiplap-liner-WP-B-\nSAUNA-SPLASH-1 3/4\"",
+      "text": "shiplap-liner 3/4\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1478,19 +1478,19 @@
         "kind": "point",
         "xy": [
           211.0,
-          -19.556249999999995
+          -17.149999999999995
         ],
         "name": ""
       },
       "at": [
         199.15748031496065,
-        -19.556249999999995
+        -17.149999999999995
       ],
       "to": [
         211.0,
-        -19.556249999999995
+        -17.149999999999995
       ],
-      "text": "liner-furring-valve-\npocket-1 1/2\"",
+      "text": "liner-furring 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1503,19 +1503,19 @@
         "kind": "point",
         "xy": [
           212.25,
-          -20.65354330708662
+          -19.045833333333327
         ],
         "name": ""
       },
       "at": [
         199.15748031496065,
-        -23.04166666666666
+        -19.045833333333327
       ],
       "to": [
         212.25,
-        -20.65354330708662
+        -19.045833333333327
       ],
-      "text": "foil-polyiso-valve-\npocket-2 2\"",
+      "text": "foil-polyiso 2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1534,7 +1534,7 @@
       },
       "at": [
         199.15748031496065,
-        -25.71041666666666
+        -20.94166666666666
       ],
       "to": [
         216.0,
@@ -1559,7 +1559,7 @@
       },
       "at": [
         199.15748031496065,
-        -27.606249999999992
+        -22.83749999999999
       ],
       "to": [
         219.0,
@@ -1689,10 +1689,60 @@
     },
     {
       "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          212.25000000000003,
+          0.0
+        ],
+        "name": ""
+      },
+      "at": [
+        224.25000000000006,
+        18.020209973753285
+      ],
+      "to": [
+        212.25000000000003,
+        0.0
+      ],
+      "text": "vapor continuity — foil-polyiso → foil-\npolyiso",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          212.25000000000003,
+          0.0
+        ],
+        "name": ""
+      },
+      "at": [
+        224.25000000000006,
+        14.53479330708662
+      ],
+      "to": [
+        212.25000000000003,
+        0.0
+      ],
+      "text": "air continuity — foil-polyiso → foil-\npolyiso",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
       "node": "text",
       "anchor": [
         200.15748031496065,
-        -29.65354330708662
+        -25.65354330708662
       ],
       "content": "TR-CATLIN-SAUNA-RIM  ·  rim-band-air-seal",
       "height": 3.0,
@@ -1702,6 +1752,240 @@
       "layer": "A-ANNO-TEXT",
       "align": "left",
       "uid": "layout-caption:caption"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          210.70550000000003,
+          -3.0504387317152686
+        ],
+        [
+          210.48132522324576,
+          -1.9234360234000794
+        ],
+        [
+          209.8429294705944,
+          -0.9680092611208866
+        ],
+        [
+          208.88750270831522,
+          -0.32961350846952975
+        ],
+        [
+          207.76050000000004,
+          -0.10543873171526918
+        ],
+        [
+          206.63349729168485,
+          -0.32961350846952975
+        ],
+        [
+          205.67807052940566,
+          -0.9680092611208866
+        ],
+        [
+          205.0396747767543,
+          -1.9234360234000791
+        ],
+        [
+          204.81550000000004,
+          -3.050438731715268
+        ],
+        [
+          205.0396747767543,
+          -4.177441440030457
+        ],
+        [
+          205.67807052940566,
+          -5.13286820230965
+        ],
+        [
+          206.63349729168485,
+          -5.771263954961007
+        ],
+        [
+          207.76050000000004,
+          -5.995438731715268
+        ],
+        [
+          208.88750270831522,
+          -5.771263954961007
+        ],
+        [
+          209.8429294705944,
+          -5.132868202309651
+        ],
+        [
+          210.48132522324576,
+          -4.17744144003046
+        ]
+      ],
+      "layer": "A-ANNO-KEYN",
+      "lineweight": 0.25,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        207.76050000000004,
+        -3.0504387317152686
+      ],
+      "content": "K1",
+      "height": 3.0,
+      "height_pt": 9.5,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-KEYN",
+      "align": "center",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          211.00000000000003,
+          -8.661417322834646
+        ],
+        "name": ""
+      },
+      "at": [
+        207.76050000000004,
+        -3.0504387317152686
+      ],
+      "to": [
+        211.00000000000003,
+        -8.661417322834646
+      ],
+      "text": "",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          220.8059785911194,
+          -5.421917322834647
+        ],
+        [
+          220.58180381436514,
+          -4.294914614519458
+        ],
+        [
+          219.9434080617138,
+          -3.3394878522402647
+        ],
+        [
+          218.9879812994346,
+          -2.701092099588908
+        ],
+        [
+          217.86097859111942,
+          -2.4769173228346473
+        ],
+        [
+          216.73397588280423,
+          -2.701092099588908
+        ],
+        [
+          215.77854912052504,
+          -3.3394878522402647
+        ],
+        [
+          215.1401533678737,
+          -4.294914614519457
+        ],
+        [
+          214.91597859111943,
+          -5.421917322834647
+        ],
+        [
+          215.1401533678737,
+          -6.5489200311498355
+        ],
+        [
+          215.77854912052504,
+          -7.504346793429029
+        ],
+        [
+          216.73397588280423,
+          -8.142742546080385
+        ],
+        [
+          217.86097859111942,
+          -8.366917322834645
+        ],
+        [
+          218.9879812994346,
+          -8.142742546080385
+        ],
+        [
+          219.9434080617138,
+          -7.504346793429029
+        ],
+        [
+          220.58180381436514,
+          -6.548920031149837
+        ]
+      ],
+      "layer": "A-ANNO-KEYN",
+      "lineweight": 0.25,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        217.86097859111942,
+        -5.421917322834647
+      ],
+      "content": "K3",
+      "height": 3.0,
+      "height_pt": 9.5,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-KEYN",
+      "align": "center",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          212.25000000000003,
+          -8.661417322834646
+        ],
+        "name": ""
+      },
+      "at": [
+        217.86097859111942,
+        -5.421917322834647
+      ],
+      "to": [
+        212.25000000000003,
+        -8.661417322834646
+      ],
+      "text": "",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
     },
     {
       "space": "paper",
@@ -2589,11 +2873,13 @@
     "• Slab perimeter isolation joint: 1\" XPS with 1/2\" polyurethane sealant.",
     "• Base: 6\" fiber cement replaces shiplap and furring, membrane lapped up it.",
     "• Foundation: 8\" wall, #6 at 48\" o.c., on a 25\"x15\" footing over washed stone.",
-    "• Furring to the pour: masonry anchors, embedment verified for the substrate.",
-    "• Return the foil facing into the jamb and seal it. Do not stop it short.",
     "• Independent lying bench at 42 inches, foot platform at 24 inches and lighting rails at 16 inches AFF.",
     "• Drop framing: 2x4 wall on the pour, 2x4 ceiling hung from the I-joists.",
-    "• Footing drain: perforated pipe in the stone beside the footing, not under."
+    "• Footing drain: perforated pipe in the stone beside the footing, not under.",
+    "",
+    "KEYED NOTES:",
+    "K1  Furring to the pour: masonry anchors, embedment verified for the substrate.",
+    "K3  Return the foil facing into the jamb and seal it. Do not stop it short."
   ],
   "frame": {
     "paper": [

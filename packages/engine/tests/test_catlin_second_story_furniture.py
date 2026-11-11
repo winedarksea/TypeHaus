@@ -104,7 +104,8 @@ def test_study_chess_table_dimensions_and_takeoff(catlin_model_ro):
         (inch(27.75).meters, inch(31.5).meters))
     south_wall = next(wall for wall in catlin_model_ro.walls if wall.tag == "W-S-S2")
     finished_drywall_face = max(y for layer in south_wall.layers
-                               if layer.name == "paint" for _, y in layer.polygon)
+                               if (layer.source_layer_name or layer.name) == "paint"
+                               for _, y in layer.polygon)
     assert south == pytest.approx(finished_drywall_face, abs=1e-9)
     assert table.body_z1_m - table.body_z0_m == pytest.approx(inch(27.5).meters)
     row = next(row for row in placeables_takeoff(catlin_model_ro)

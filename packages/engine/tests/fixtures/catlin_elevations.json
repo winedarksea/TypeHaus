@@ -3795,11 +3795,23 @@
 20,
 "fd9eded78399"
 ],
-"geometry/03GPR9ZAA5/layer:gwb-int": [
+"geometry/03GPR9ZAA5/layer:gwb-int-tee-0": [
 6.096,
-9.233577,
+9.198652,
 20,
-"fd9eded78399"
+"eace1e340ac8"
+],
+"geometry/03GPR9ZAA5/layer:gwb-int-tee-1": [
+8.80745,
+9.233577,
+6,
+"28170ef43e97"
+],
+"geometry/03GPR9ZAA5/layer:gwb-int-tee-2": [
+7.6581,
+8.036602,
+6,
+"f83b9ab856d1"
 ],
 "geometry/03GPR9ZAA5/layer:outer-girt": [
 6.096,
@@ -4365,7 +4377,7 @@
 80,
 "b7bd874cf405"
 ],
-"geometry/1H4KR79N9M/layer:gwb-x": [
+"geometry/1H4KR79N9M/layer:gwb-x-tee-0": [
 -2.7797125,
 -0.3413125,
 6,
@@ -5145,13 +5157,13 @@
 2,
 "09fb1012f45f"
 ],
-"geometry/21GE85HJDT/layer:gwb-a": [
+"geometry/21GE85HJDT/layer:gwb-a-tee-0": [
 0.0,
 2.727325,
 2,
 "4cd3770f4a5a"
 ],
-"geometry/21GE85HJDT/layer:gwb-b": [
+"geometry/21GE85HJDT/layer:gwb-b-tee-0": [
 0.0,
 2.727325,
 2,
@@ -5697,11 +5709,11 @@
 16,
 "7f95efe976e4"
 ],
-"geometry/3TKS0Y8EH7/layer:gwb-a": [
+"geometry/3TKS0Y8EH7/layer:gwb-a-tee-0": [
 6.096,
-7.6581,
+7.635875,
 20,
-"ec53535ee469"
+"5c84d168f1d7"
 ],
 "geometry/3TKS0Y8EH7/layer:gwb-b": [
 6.096,
@@ -7455,7 +7467,7 @@
 2,
 "b8da406103fe"
 ],
-"geometry/78VGE6A81J/layer:gwb-a": [
+"geometry/78VGE6A81J/layer:gwb-a-tee-0": [
 6.096,
 8.80745,
 2,
@@ -7881,11 +7893,17 @@
 72,
 "3c2c7d7d61ab"
 ],
-"geometry/8BRZAXSW73/layer:gwb-a": [
+"geometry/8BRZAXSW73/layer:gwb-a-tee-0": [
 -2.7797125,
 -0.320675,
 6,
 "c8f7c925b1c9"
+],
+"geometry/8BRZAXSW73/layer:gwb-a-tee-1": [
+-0.3413125,
+-0.320675,
+2,
+"f96d347d8d94"
 ],
 "geometry/8BRZAXSW73/layer:gwb-b": [
 -2.7797125,
@@ -8445,6 +8463,12 @@
 8,
 "c8590d9eb9b0"
 ],
+"geometry/9WC345CCP1::framing/member:stud-011": [
+6.15315,
+7.5819,
+8,
+"c8590d9eb9b0"
+],
 "geometry/A4BAA399PA-RETURN-1-head/body": [
 4.854067,
 4.866767,
@@ -8565,11 +8589,17 @@
 2,
 "08fa410dc44f"
 ],
-"geometry/A5K4RVWPWW/layer:gwb-b": [
+"geometry/A5K4RVWPWW/layer:gwb-b-tee-0": [
 0.0,
 2.7432,
 2,
 "08fa410dc44f"
+],
+"geometry/A5K4RVWPWW/layer:gwb-b-tee-1": [
+2.727325,
+2.7432,
+2,
+"4a0dde23165e"
 ],
 "geometry/A5K4RVWPWW/layer:stud": [
 0.0,
@@ -15471,11 +15501,17 @@
 34,
 "f396e866e5a7"
 ],
-"geometry/CAW102AAAA/layer:gwb-int": [
+"geometry/CAW102AAAA/layer:gwb-int-tee-0": [
 6.096,
-9.233577,
+9.198652,
 34,
-"f396e866e5a7"
+"4db472f1d267"
+],
+"geometry/CAW102AAAA/layer:gwb-int-tee-1": [
+8.80745,
+9.233577,
+6,
+"ab402372df91"
 ],
 "geometry/CAW102AAAA/layer:outer-girt": [
 6.096,
@@ -16011,11 +16047,17 @@
 34,
 "faadaf2ea0df"
 ],
-"geometry/CAW103AAAA/layer:gwb-int": [
+"geometry/CAW103AAAA/layer:gwb-int-tee-0": [
 6.096,
-9.233577,
+9.198652,
 34,
-"e77ef51facb0"
+"c4ed7032a586"
+],
+"geometry/CAW103AAAA/layer:gwb-int-tee-1": [
+8.80745,
+9.233577,
+6,
+"28170ef43e97"
 ],
 "geometry/CAW103AAAA/layer:outer-girt": [
 6.096,
@@ -16647,11 +16689,17 @@
 20,
 "a09a10198e6a"
 ],
-"geometry/CAW104AAAA/layer:gwb-int": [
+"geometry/CAW104AAAA/layer:gwb-int-tee-0": [
 6.096,
-9.233577,
+9.198652,
 20,
-"31758eaaf7b8"
+"ed6696ec07d8"
+],
+"geometry/CAW104AAAA/layer:gwb-int-tee-1": [
+8.80745,
+9.233577,
+6,
+"ab402372df91"
 ],
 "geometry/CAW104AAAA/layer:outer-girt": [
 6.096,
@@ -17229,11 +17277,17 @@
 6,
 "24f25bf7dff3"
 ],
-"geometry/CAW105AAAA/layer:gwb-int": [
+"geometry/CAW105AAAA/layer:gwb-int-tee-0": [
 6.096,
+7.992152,
+6,
+"1757c99e75e3"
+],
+"geometry/CAW105AAAA/layer:gwb-int-tee-1": [
+7.6581,
 8.014377,
 6,
-"b22fc3cd9180"
+"4ff0f59e8c79"
 ],
 "geometry/CAW105AAAA/layer:outer-girt": [
 6.096,
@@ -17565,13 +17619,13 @@
 8,
 "1c9978fedb69"
 ],
-"geometry/CAW110AAAA/layer:gwb-a": [
+"geometry/CAW110AAAA/layer:gwb-a-tee-0": [
 6.096,
 8.80745,
 2,
 "67d2728dda2d"
 ],
-"geometry/CAW110AAAA/layer:gwb-b": [
+"geometry/CAW110AAAA/layer:gwb-b-tee-0": [
 6.096,
 8.80745,
 2,
@@ -17681,9 +17735,9 @@
 ],
 "geometry/CAW113AAAA/layer:stud": [
 6.096,
-8.836025,
+8.842375,
 20,
-"0f627c7708f4"
+"2a011652c1cc"
 ],
 "geometry/CAW113AAAA::framing/member:header-0": [
 8.2169,
@@ -17729,15 +17783,15 @@
 ],
 "geometry/CAW113AAAA::framing/member:plate-raked-0": [
 8.213725,
-8.836025,
+8.842375,
 8,
-"f53af732e406"
+"15040319daba"
 ],
 "geometry/CAW113AAAA::framing/member:plate-raked-1": [
 8.131175,
-8.797925,
+8.804275,
 8,
-"2403bb430c16"
+"9ff969420ef0"
 ],
 "geometry/CAW113AAAA::framing/member:stud-000": [
 6.15315,
@@ -17751,7 +17805,7 @@
 8,
 "759ad6bd7af3"
 ],
-"geometry/CAW115AAAA/layer:gwb-b": [
+"geometry/CAW115AAAA/layer:gwb-b-tee-0": [
 6.096,
 8.80745,
 8,
@@ -19335,19 +19389,19 @@
 2,
 "4ae448fa6191"
 ],
-"geometry/CBW102AAAA/layer:foil-polyiso": [
+"geometry/CBW102AAAA/layer:foil-polyiso-tee-0": [
 -2.7797125,
 -2.5955625,
 2,
 "4ae448fa6191"
 ],
-"geometry/CBW102AAAA/layer:liner-furring": [
+"geometry/CBW102AAAA/layer:liner-furring-tee-0": [
 -2.7797125,
 -2.5955625,
 2,
 "4ae448fa6191"
 ],
-"geometry/CBW102AAAA/layer:shiplap-liner": [
+"geometry/CBW102AAAA/layer:shiplap-liner-tee-0": [
 -2.7797125,
 -2.5955625,
 2,
@@ -19575,7 +19629,7 @@
 2,
 "c0fa4924d6c7"
 ],
-"geometry/CBW111AAAA/layer:foil-polyiso-valve-pocket-0": [
+"geometry/CBW111AAAA/layer:foil-polyiso-valve-pocket-0-tee-0": [
 -2.7797125,
 -0.4937125,
 2,
@@ -19611,7 +19665,7 @@
 6,
 "b490c5697804"
 ],
-"geometry/CBW111AAAA/layer:liner-furring-valve-pocket-0": [
+"geometry/CBW111AAAA/layer:liner-furring-valve-pocket-0-tee-0": [
 -2.7797125,
 -0.4937125,
 2,
@@ -19635,7 +19689,7 @@
 2,
 "5abed34d53ce"
 ],
-"geometry/CBW111AAAA/layer:shiplap-liner-WP-B-SAUNA-SPLASH-0": [
+"geometry/CBW111AAAA/layer:shiplap-liner-WP-B-SAUNA-SPLASH-0-tee-0": [
 -2.7797125,
 -0.4937125,
 2,
@@ -19881,7 +19935,7 @@
 2,
 "c0fa4924d6c7"
 ],
-"geometry/CBW112AAAA/layer:gwb-b": [
+"geometry/CBW112AAAA/layer:gwb-b-tee-0": [
 -2.7797125,
 -0.3413125,
 2,
@@ -20391,7 +20445,7 @@
 8,
 "0710bbf2ecf0"
 ],
-"geometry/CBW116AAAA/layer:gwb-x": [
+"geometry/CBW116AAAA/layer:gwb-x-tee-0": [
 -2.7797125,
 -0.3413125,
 2,
@@ -20619,7 +20673,7 @@
 2,
 "4afb73555a14"
 ],
-"geometry/CBW118AAAA/layer:gwb-cold": [
+"geometry/CBW118AAAA/layer:gwb-cold-tee-0": [
 -2.7797125,
 -0.4937125,
 2,
@@ -20763,7 +20817,7 @@
 8,
 "53912671eb11"
 ],
-"geometry/CBW119AAAA/layer:gwb-a": [
+"geometry/CBW119AAAA/layer:gwb-a-tee-0": [
 -2.7797125,
 -0.3413125,
 2,
@@ -20961,7 +21015,7 @@
 2,
 "c0fa4924d6c7"
 ],
-"geometry/CBW121AAAA/layer:gwb-b": [
+"geometry/CBW121AAAA/layer:gwb-b-tee-0": [
 -2.7797125,
 -0.3413125,
 2,
@@ -21087,7 +21141,7 @@
 8,
 "0710bbf2ecf0"
 ],
-"geometry/CBW123AAAA/layer:gwb-a": [
+"geometry/CBW123AAAA/layer:gwb-a-tee-0": [
 -2.7797125,
 -0.3413125,
 2,
@@ -28257,7 +28311,7 @@
 2,
 "4afb73555a14"
 ],
-"geometry/CM3FCDT2ST/layer:gwb-cold": [
+"geometry/CM3FCDT2ST/layer:gwb-cold-tee-0": [
 -2.7797125,
 -0.4937125,
 2,
@@ -31563,7 +31617,7 @@
 20,
 "9d49476d8741"
 ],
-"geometry/CMW101AAAA/layer:gwb-int": [
+"geometry/CMW101AAAA/layer:gwb-int-tee-0": [
 0.0,
 2.7432,
 14,
@@ -32415,7 +32469,7 @@
 20,
 "3c70bab31f6a"
 ],
-"geometry/CMW102AAAA/layer:gwb-int": [
+"geometry/CMW102AAAA/layer:gwb-int-tee-0": [
 0.0,
 2.7432,
 18,
@@ -35541,11 +35595,17 @@
 14,
 "2960059c0b5e"
 ],
-"geometry/CMW105AAAA/layer:gwb-int": [
+"geometry/CMW105AAAA/layer:gwb-int-tee-0": [
 0.0,
 2.7432,
 14,
 "dbd7f1acb801"
+],
+"geometry/CMW105AAAA/layer:gwb-int-tee-1": [
+2.727325,
+2.7432,
+2,
+"4a0dde23165e"
 ],
 "geometry/CMW105AAAA/layer:outer-girt": [
 -0.3413125,
@@ -36447,7 +36507,7 @@
 2,
 "b19a2b3e7cda"
 ],
-"geometry/CMW106AAAA/layer:gwb-int": [
+"geometry/CMW106AAAA/layer:gwb-int-tee-0": [
 0.0,
 2.7432,
 2,
@@ -36801,11 +36861,17 @@
 8,
 "3523d653a428"
 ],
-"geometry/CMW107AAAA/layer:gwb-int": [
+"geometry/CMW107AAAA/layer:gwb-int-tee-0": [
 0.0,
 2.7432,
 6,
 "12572a16461f"
+],
+"geometry/CMW107AAAA/layer:gwb-int-tee-1": [
+2.727325,
+2.7432,
+2,
+"4a0dde23165e"
 ],
 "geometry/CMW107AAAA/layer:outer-girt": [
 -0.3413125,
@@ -37119,11 +37185,23 @@
 8,
 "ad81d99bf4a7"
 ],
-"geometry/CMW108AAAA/layer:gwb-int": [
+"geometry/CMW108AAAA/layer:gwb-int-tee-0": [
 0.0,
 2.7432,
 8,
 "707917c09152"
+],
+"geometry/CMW108AAAA/layer:gwb-int-tee-1": [
+2.727325,
+2.7432,
+2,
+"4a0dde23165e"
+],
+"geometry/CMW108AAAA/layer:gwb-int-tee-2": [
+2.727325,
+2.7432,
+2,
+"4a0dde23165e"
 ],
 "geometry/CMW108AAAA/layer:outer-girt": [
 -0.3413125,
@@ -37473,11 +37551,23 @@
 8,
 "ad81d99bf4a7"
 ],
-"geometry/CMW109AAAA/layer:gwb-int": [
+"geometry/CMW109AAAA/layer:gwb-int-tee-0": [
 0.0,
 2.7432,
 8,
 "707917c09152"
+],
+"geometry/CMW109AAAA/layer:gwb-int-tee-1": [
+2.727325,
+2.7432,
+2,
+"4a0dde23165e"
+],
+"geometry/CMW109AAAA/layer:gwb-int-tee-2": [
+2.727325,
+2.7432,
+2,
+"4a0dde23165e"
 ],
 "geometry/CMW109AAAA/layer:outer-girt": [
 -0.3413125,
@@ -37809,11 +37899,23 @@
 8,
 "fa50686acf57"
 ],
-"geometry/CMW110AAAA/layer:gwb-int": [
+"geometry/CMW110AAAA/layer:gwb-int-tee-0": [
 0.0,
 2.7432,
 8,
 "3e3f29d5e710"
+],
+"geometry/CMW110AAAA/layer:gwb-int-tee-1": [
+2.727325,
+2.7432,
+2,
+"4a0dde23165e"
+],
+"geometry/CMW110AAAA/layer:gwb-int-tee-2": [
+2.727325,
+2.7432,
+2,
+"4a0dde23165e"
 ],
 "geometry/CMW110AAAA/layer:outer-girt": [
 -0.3413125,
@@ -38439,11 +38541,17 @@
 14,
 "1446d95df9d1"
 ],
-"geometry/CMW111AAAA/layer:gwb-int": [
+"geometry/CMW111AAAA/layer:gwb-int-tee-0": [
 0.0,
 2.7432,
 14,
 "2a7f5522ffcc"
+],
+"geometry/CMW111AAAA/layer:gwb-int-tee-1": [
+2.727325,
+2.7432,
+2,
+"4a0dde23165e"
 ],
 "geometry/CMW111AAAA/layer:outer-girt": [
 -0.3413125,
@@ -39123,11 +39231,17 @@
 8,
 "6be4faac9cfd"
 ],
-"geometry/CMW112AAAA/layer:gwb-a": [
+"geometry/CMW112AAAA/layer:gwb-a-tee-0": [
 0.0,
 2.7432,
 8,
 "aea7e46853c6"
+],
+"geometry/CMW112AAAA/layer:gwb-a-tee-1": [
+2.727325,
+2.7432,
+2,
+"4a0dde23165e"
 ],
 "geometry/CMW112AAAA/layer:gwb-b": [
 0.0,
@@ -39135,11 +39249,17 @@
 8,
 "aea7e46853c6"
 ],
-"geometry/CMW112AAAA/layer:resilient-channel": [
+"geometry/CMW112AAAA/layer:resilient-channel-tee-0": [
 0.0,
 2.7432,
 8,
 "aea7e46853c6"
+],
+"geometry/CMW112AAAA/layer:resilient-channel-tee-1": [
+2.727325,
+2.7432,
+2,
+"4a0dde23165e"
 ],
 "geometry/CMW112AAAA/layer:stud": [
 0.0,
@@ -39339,11 +39459,23 @@
 8,
 "bf2685fe6d33"
 ],
-"geometry/CMW113AAAA/layer:gwb-a": [
+"geometry/CMW113AAAA/layer:gwb-a-tee-0": [
 0.0,
 2.7432,
 2,
 "08fa410dc44f"
+],
+"geometry/CMW113AAAA/layer:gwb-a-tee-1": [
+2.727325,
+2.7432,
+2,
+"4a0dde23165e"
+],
+"geometry/CMW113AAAA/layer:gwb-a-tee-2": [
+2.727325,
+2.7432,
+2,
+"4a0dde23165e"
 ],
 "geometry/CMW113AAAA/layer:gwb-b": [
 0.0,
@@ -39447,11 +39579,17 @@
 8,
 "bf2685fe6d33"
 ],
-"geometry/CMW114AAAA/layer:gwb-a": [
+"geometry/CMW114AAAA/layer:gwb-a-tee-0": [
 0.0,
 2.7432,
 8,
 "e45bf9365e58"
+],
+"geometry/CMW114AAAA/layer:gwb-a-tee-1": [
+2.727325,
+2.7432,
+2,
+"4a0dde23165e"
 ],
 "geometry/CMW114AAAA/layer:gwb-b": [
 0.0,
@@ -39561,11 +39699,17 @@
 2,
 "08fa410dc44f"
 ],
-"geometry/CMW116AAAA/layer:gwb-b": [
+"geometry/CMW116AAAA/layer:gwb-b-tee-0": [
 0.0,
 2.7432,
 2,
 "08fa410dc44f"
+],
+"geometry/CMW116AAAA/layer:gwb-b-tee-1": [
+2.727325,
+2.7432,
+2,
+"4a0dde23165e"
 ],
 "geometry/CMW116AAAA/layer:stud": [
 0.0,
@@ -40251,13 +40395,13 @@
 8,
 "97b385feff6e"
 ],
-"geometry/CMW121AAAA/layer:gwb-a": [
+"geometry/CMW121AAAA/layer:gwb-a-tee-0": [
 0.0,
 2.727325,
 8,
 "b8e811b5a2f0"
 ],
-"geometry/CMW121AAAA/layer:gwb-b": [
+"geometry/CMW121AAAA/layer:gwb-b-tee-0": [
 0.0,
 2.727325,
 8,
@@ -40335,7 +40479,7 @@
 8,
 "97b385feff6e"
 ],
-"geometry/CMW122AAAA/layer:gwb-a": [
+"geometry/CMW122AAAA/layer:gwb-a-tee-0": [
 0.0,
 2.727325,
 2,
@@ -40701,13 +40845,13 @@
 8,
 "bf2685fe6d33"
 ],
-"geometry/CMW123AAAA/layer:gwb-a": [
+"geometry/CMW123AAAA/layer:gwb-a-tee-0": [
 0.0,
 2.727325,
 2,
 "4cd3770f4a5a"
 ],
-"geometry/CMW123AAAA/layer:gwb-b": [
+"geometry/CMW123AAAA/layer:gwb-b-tee-0": [
 0.0,
 2.727325,
 2,
@@ -40797,11 +40941,23 @@
 8,
 "05a8c266648e"
 ],
-"geometry/CMW124AAAA/layer:gwb-b": [
+"geometry/CMW124AAAA/layer:gwb-b-tee-0": [
 0.0,
 2.7432,
 8,
 "05a8c266648e"
+],
+"geometry/CMW124AAAA/layer:gwb-b-tee-1": [
+2.727325,
+2.7432,
+2,
+"4a0dde23165e"
+],
+"geometry/CMW124AAAA/layer:gwb-b-tee-2": [
+2.727325,
+2.7432,
+2,
+"4a0dde23165e"
 ],
 "geometry/CMW124AAAA/layer:stud": [
 0.0,
@@ -40929,11 +41085,17 @@
 2,
 "08fa410dc44f"
 ],
-"geometry/CMW125AAAA/layer:gwb-b": [
+"geometry/CMW125AAAA/layer:gwb-b-tee-0": [
 0.0,
 2.7432,
 2,
 "08fa410dc44f"
+],
+"geometry/CMW125AAAA/layer:gwb-b-tee-1": [
+2.727325,
+2.7432,
+2,
+"4a0dde23165e"
 ],
 "geometry/CMW125AAAA/layer:stud": [
 0.0,
@@ -40971,7 +41133,7 @@
 8,
 "6be4faac9cfd"
 ],
-"geometry/CMW126AAAA/layer:gwb-a": [
+"geometry/CMW126AAAA/layer:gwb-a-tee-0": [
 0.0,
 2.727325,
 2,
@@ -41121,7 +41283,7 @@
 8,
 "bf2685fe6d33"
 ],
-"geometry/CMW127AAAA/layer:gwb-a": [
+"geometry/CMW127AAAA/layer:gwb-a-tee-0": [
 0.0,
 2.727325,
 2,
@@ -41301,6 +41463,12 @@
 8,
 "97b385feff6e"
 ],
+"geometry/CMW127AAAA::framing/member:stud-008": [
+0.05715,
+2.651125,
+8,
+"97b385feff6e"
+],
 "geometry/CMW128AAAA/layer:gwb-a": [
 0.0,
 2.727325,
@@ -41385,7 +41553,7 @@
 8,
 "97b385feff6e"
 ],
-"geometry/CMW129AAAA/layer:gwb-a": [
+"geometry/CMW129AAAA/layer:gwb-a-tee-0": [
 0.0,
 2.727325,
 2,
@@ -41559,7 +41727,7 @@
 8,
 "bf2685fe6d33"
 ],
-"geometry/CMW130AAAA/layer:gwb-a": [
+"geometry/CMW130AAAA/layer:gwb-a-tee-0": [
 0.0,
 2.727325,
 2,
@@ -41679,7 +41847,7 @@
 8,
 "903b4cc05b9f"
 ],
-"geometry/CMW131AAAA/layer:gwb-b": [
+"geometry/CMW131AAAA/layer:gwb-b-tee-0": [
 0.0,
 2.727325,
 8,
@@ -41811,7 +41979,7 @@
 8,
 "bf2685fe6d33"
 ],
-"geometry/CMW132AAAA/layer:gwb-a": [
+"geometry/CMW132AAAA/layer:gwb-a-tee-0": [
 0.0,
 2.727325,
 8,
@@ -41991,11 +42159,17 @@
 8,
 "998358de4011"
 ],
-"geometry/CMW135AAAA/layer:gwb-int": [
+"geometry/CMW135AAAA/layer:gwb-int-tee-0": [
 0.0,
 2.7432,
 8,
 "d71f7dc829d2"
+],
+"geometry/CMW135AAAA/layer:gwb-int-tee-1": [
+2.727325,
+2.7432,
+2,
+"4a0dde23165e"
 ],
 "geometry/CMW135AAAA/layer:outer-girt": [
 -0.3413125,
@@ -42393,11 +42567,17 @@
 2,
 "b19a2b3e7cda"
 ],
-"geometry/CMW136AAAA/layer:gwb-int": [
+"geometry/CMW136AAAA/layer:gwb-int-tee-0": [
 0.0,
 2.7432,
 2,
 "08fa410dc44f"
+],
+"geometry/CMW136AAAA/layer:gwb-int-tee-1": [
+2.727325,
+2.7432,
+2,
+"4a0dde23165e"
 ],
 "geometry/CMW136AAAA/layer:outer-girt": [
 -0.3413125,
@@ -44223,11 +44403,17 @@
 6,
 "63404ac08212"
 ],
-"geometry/CQRJZCM0R1/layer:gwb-b": [
+"geometry/CQRJZCM0R1/layer:gwb-b-tee-0": [
 -2.7797125,
 -0.320675,
 6,
 "63404ac08212"
+],
+"geometry/CQRJZCM0R1/layer:gwb-b-tee-1": [
+-0.3413125,
+-0.320675,
+2,
+"f96d347d8d94"
 ],
 "geometry/CQRJZCM0R1/layer:stud": [
 -2.7797125,
@@ -48579,7 +48765,7 @@
 20,
 "6dc6233cab23"
 ],
-"geometry/CSW101AAAA/layer:liner-furring": [
+"geometry/CSW101AAAA/layer:liner-furring-tee-0": [
 3.048,
 5.7912,
 20,
@@ -48591,7 +48777,7 @@
 26,
 "4d30e5838f45"
 ],
-"geometry/CSW101AAAA/layer:pvc-panel": [
+"geometry/CSW101AAAA/layer:pvc-panel-tee-0": [
 3.048,
 5.7912,
 20,
@@ -49623,7 +49809,7 @@
 18,
 "1643207f0d3c"
 ],
-"geometry/CSW102AAAA/layer:gwb-int": [
+"geometry/CSW102AAAA/layer:gwb-int-tee-0": [
 3.048,
 5.7912,
 18,
@@ -50643,11 +50829,17 @@
 8,
 "45f53c9f49e5"
 ],
-"geometry/CSW102BAAA/layer:gwb-int": [
+"geometry/CSW102BAAA/layer:gwb-int-tee-0": [
 3.048,
 5.7912,
 8,
 "0568ed4a1003"
+],
+"geometry/CSW102BAAA/layer:gwb-int-tee-1": [
+5.775325,
+5.7912,
+2,
+"f6fb720675b7"
 ],
 "geometry/CSW102BAAA/layer:outer-girt": [
 3.048,
@@ -51087,7 +51279,7 @@
 8,
 "45f53c9f49e5"
 ],
-"geometry/CSW103AAAA/layer:gwb-int": [
+"geometry/CSW103AAAA/layer:gwb-int-tee-0": [
 3.048,
 5.7912,
 8,
@@ -51555,11 +51747,23 @@
 8,
 "45f53c9f49e5"
 ],
-"geometry/CSW104AAAA/layer:gwb-int": [
+"geometry/CSW104AAAA/layer:gwb-int-tee-0": [
 3.048,
 5.7912,
 8,
 "0568ed4a1003"
+],
+"geometry/CSW104AAAA/layer:gwb-int-tee-1": [
+5.775325,
+5.7912,
+2,
+"f6fb720675b7"
+],
+"geometry/CSW104AAAA/layer:gwb-int-tee-2": [
+5.775325,
+5.7912,
+2,
+"f6fb720675b7"
 ],
 "geometry/CSW104AAAA/layer:outer-girt": [
 3.048,
@@ -52011,11 +52215,17 @@
 8,
 "b6f447ccd1ba"
 ],
-"geometry/CSW105AAAA/layer:gwb-int": [
+"geometry/CSW105AAAA/layer:gwb-int-tee-0": [
 3.048,
 5.7912,
 8,
 "52fdb65fa6a9"
+],
+"geometry/CSW105AAAA/layer:gwb-int-tee-1": [
+5.775325,
+5.7912,
+2,
+"f6fb720675b7"
 ],
 "geometry/CSW105AAAA/layer:outer-girt": [
 3.048,
@@ -52431,11 +52641,17 @@
 14,
 "3017f0b9aece"
 ],
-"geometry/CSW107AAAA/layer:gwb-int": [
+"geometry/CSW107AAAA/layer:gwb-int-tee-0": [
 3.048,
 5.7912,
 14,
 "644aa8633c78"
+],
+"geometry/CSW107AAAA/layer:gwb-int-tee-1": [
+5.775325,
+5.7912,
+2,
+"f6fb720675b7"
 ],
 "geometry/CSW107AAAA/layer:outer-girt": [
 3.048,
@@ -53163,7 +53379,7 @@
 8,
 "5bb6b7155ea5"
 ],
-"geometry/CSW108AAAA/layer:gwb-int": [
+"geometry/CSW108AAAA/layer:gwb-int-tee-0": [
 3.048,
 5.7912,
 8,
@@ -53589,11 +53805,17 @@
 2,
 "9eb90b542987"
 ],
-"geometry/CSW109AAAA/layer:gwb-int": [
+"geometry/CSW109AAAA/layer:gwb-int-tee-0": [
 3.048,
 5.7912,
 2,
 "7981cbeae3a4"
+],
+"geometry/CSW109AAAA/layer:gwb-int-tee-1": [
+5.775325,
+5.7912,
+2,
+"f6fb720675b7"
 ],
 "geometry/CSW109AAAA/layer:outer-girt": [
 3.048,
@@ -53841,11 +54063,23 @@
 8,
 "2c8f28c5aaa5"
 ],
-"geometry/CSW110AAAA/layer:gwb-int": [
+"geometry/CSW110AAAA/layer:gwb-int-tee-0": [
 3.048,
 5.7912,
 8,
 "c557e63a062b"
+],
+"geometry/CSW110AAAA/layer:gwb-int-tee-1": [
+5.775325,
+5.7912,
+2,
+"f6fb720675b7"
+],
+"geometry/CSW110AAAA/layer:gwb-int-tee-2": [
+5.775325,
+5.7912,
+2,
+"f6fb720675b7"
 ],
 "geometry/CSW110AAAA/layer:outer-girt": [
 3.048,
@@ -54249,11 +54483,23 @@
 8,
 "2c8f28c5aaa5"
 ],
-"geometry/CSW111AAAA/layer:gwb-int": [
+"geometry/CSW111AAAA/layer:gwb-int-tee-0": [
 3.048,
 5.7912,
 8,
 "c557e63a062b"
+],
+"geometry/CSW111AAAA/layer:gwb-int-tee-1": [
+5.775325,
+5.7912,
+2,
+"f6fb720675b7"
+],
+"geometry/CSW111AAAA/layer:gwb-int-tee-2": [
+5.775325,
+5.7912,
+2,
+"f6fb720675b7"
 ],
 "geometry/CSW111AAAA/layer:outer-girt": [
 3.048,
@@ -54543,11 +54789,23 @@
 14,
 "a3a4ffeaec74"
 ],
-"geometry/CSW112AAAA/layer:gwb-int": [
+"geometry/CSW112AAAA/layer:gwb-int-tee-0": [
 3.048,
 5.7912,
 14,
 "82bad1e94350"
+],
+"geometry/CSW112AAAA/layer:gwb-int-tee-1": [
+5.775325,
+5.7912,
+2,
+"f6fb720675b7"
+],
+"geometry/CSW112AAAA/layer:gwb-int-tee-2": [
+5.775325,
+5.7912,
+2,
+"f6fb720675b7"
 ],
 "geometry/CSW112AAAA/layer:outer-girt": [
 3.048,
@@ -55209,11 +55467,17 @@
 8,
 "b83fa20f43ee"
 ],
-"geometry/CSW113AAAA/layer:liner-furring": [
+"geometry/CSW113AAAA/layer:liner-furring-tee-0": [
 3.048,
 5.7912,
 8,
 "b83fa20f43ee"
+],
+"geometry/CSW113AAAA/layer:liner-furring-tee-1": [
+5.775325,
+5.7912,
+2,
+"f6fb720675b7"
 ],
 "geometry/CSW113AAAA/layer:outer-girt": [
 3.048,
@@ -55221,11 +55485,17 @@
 8,
 "7904c811516c"
 ],
-"geometry/CSW113AAAA/layer:pvc-panel": [
+"geometry/CSW113AAAA/layer:pvc-panel-tee-0": [
 3.048,
 5.7912,
 8,
 "b83fa20f43ee"
+],
+"geometry/CSW113AAAA/layer:pvc-panel-tee-1": [
+5.775325,
+5.7912,
+2,
+"f6fb720675b7"
 ],
 "geometry/CSW113AAAA/layer:sheathing": [
 3.048,
@@ -55701,11 +55971,17 @@
 8,
 "2902d6e507c1"
 ],
-"geometry/CSW114AAAA/layer:gwb-b": [
+"geometry/CSW114AAAA/layer:gwb-b-tee-0": [
 3.048,
 5.7912,
 8,
 "b830fbf3a7f5"
+],
+"geometry/CSW114AAAA/layer:gwb-b-tee-1": [
+5.775325,
+5.7912,
+2,
+"f6fb720675b7"
 ],
 "geometry/CSW114AAAA/layer:humid-membrane": [
 3.048,
@@ -55713,17 +55989,29 @@
 8,
 "b830fbf3a7f5"
 ],
-"geometry/CSW114AAAA/layer:liner-furring": [
+"geometry/CSW114AAAA/layer:liner-furring-tee-0": [
 3.048,
 5.7912,
 8,
 "b830fbf3a7f5"
 ],
-"geometry/CSW114AAAA/layer:pvc-panel": [
+"geometry/CSW114AAAA/layer:liner-furring-tee-1": [
+5.775325,
+5.7912,
+2,
+"f6fb720675b7"
+],
+"geometry/CSW114AAAA/layer:pvc-panel-tee-0": [
 3.048,
 5.7912,
 8,
 "b830fbf3a7f5"
+],
+"geometry/CSW114AAAA/layer:pvc-panel-tee-1": [
+5.775325,
+5.7912,
+2,
+"f6fb720675b7"
 ],
 "geometry/CSW114AAAA/layer:stud": [
 3.048,
@@ -55905,17 +56193,35 @@
 8,
 "2902d6e507c1"
 ],
-"geometry/CSW115AAAA/layer:gwb-a": [
+"geometry/CSW115AAAA/layer:gwb-a-tee-0": [
 3.048,
 5.7912,
 2,
 "7981cbeae3a4"
 ],
-"geometry/CSW115AAAA/layer:gwb-b": [
+"geometry/CSW115AAAA/layer:gwb-a-tee-1": [
+5.775325,
+5.7912,
+2,
+"f6fb720675b7"
+],
+"geometry/CSW115AAAA/layer:gwb-a-tee-2": [
+5.775325,
+5.7912,
+2,
+"f6fb720675b7"
+],
+"geometry/CSW115AAAA/layer:gwb-b-tee-0": [
 3.048,
 5.7912,
 2,
 "7981cbeae3a4"
+],
+"geometry/CSW115AAAA/layer:gwb-b-tee-1": [
+5.775325,
+5.7912,
+2,
+"f6fb720675b7"
 ],
 "geometry/CSW115AAAA/layer:stud": [
 3.048,
@@ -55983,7 +56289,7 @@
 8,
 "900d98934258"
 ],
-"geometry/CSW118AAAA/layer:gwb-cold": [
+"geometry/CSW118AAAA/layer:gwb-cold-tee-0": [
 3.048,
 5.775325,
 2,
@@ -56181,7 +56487,7 @@
 8,
 "900d98934258"
 ],
-"geometry/CSW119AAAA/layer:gwb-cold": [
+"geometry/CSW119AAAA/layer:gwb-cold-tee-0": [
 3.048,
 5.775325,
 2,
@@ -56427,7 +56733,7 @@
 8,
 "324e755ecf95"
 ],
-"geometry/CSW120AAAA/layer:gwb-a": [
+"geometry/CSW120AAAA/layer:gwb-a-tee-0": [
 3.048,
 5.775325,
 6,
@@ -56541,17 +56847,29 @@
 2,
 "7981cbeae3a4"
 ],
-"geometry/CSW121AAAA/layer:gwb-resilient": [
+"geometry/CSW121AAAA/layer:gwb-resilient-tee-0": [
 3.048,
 5.7912,
 2,
 "7981cbeae3a4"
 ],
-"geometry/CSW121AAAA/layer:resilient-channel": [
+"geometry/CSW121AAAA/layer:gwb-resilient-tee-1": [
+5.775325,
+5.7912,
+2,
+"f6fb720675b7"
+],
+"geometry/CSW121AAAA/layer:resilient-channel-tee-0": [
 3.048,
 5.7912,
 2,
 "7981cbeae3a4"
+],
+"geometry/CSW121AAAA/layer:resilient-channel-tee-1": [
+5.775325,
+5.7912,
+2,
+"f6fb720675b7"
 ],
 "geometry/CSW121AAAA/layer:stud": [
 3.048,
@@ -56709,7 +57027,7 @@
 8,
 "54f84b66bd55"
 ],
-"geometry/CSW122AAAA/layer:gwb-b": [
+"geometry/CSW122AAAA/layer:gwb-b-tee-0": [
 3.048,
 5.775325,
 8,
@@ -56859,7 +57177,7 @@
 8,
 "54f84b66bd55"
 ],
-"geometry/CSW123AAAA/layer:gwb-b": [
+"geometry/CSW123AAAA/layer:gwb-b-tee-0": [
 3.048,
 5.775325,
 8,
@@ -57003,13 +57321,19 @@
 8,
 "900d98934258"
 ],
-"geometry/CSW124AAAA/layer:gwb-a": [
+"geometry/CSW124AAAA/layer:gwb-a-tee-0": [
 3.048,
 5.775325,
 8,
 "54f84b66bd55"
 ],
-"geometry/CSW124AAAA/layer:gwb-b": [
+"geometry/CSW124AAAA/layer:gwb-a-tee-1": [
+5.26415,
+5.775325,
+2,
+"6de47bc12d00"
+],
+"geometry/CSW124AAAA/layer:gwb-b-tee-0": [
 3.048,
 5.775325,
 8,
@@ -57117,11 +57441,17 @@
 8,
 "900d98934258"
 ],
-"geometry/CSW125AAAA/layer:gwb-a": [
+"geometry/CSW125AAAA/layer:gwb-a-tee-0": [
 3.048,
 5.775325,
 2,
 "b7b31aff550e"
+],
+"geometry/CSW125AAAA/layer:gwb-a-tee-1": [
+5.26415,
+5.775325,
+2,
+"6de47bc12d00"
 ],
 "geometry/CSW125AAAA/layer:gwb-b": [
 3.048,
@@ -57603,7 +57933,7 @@
 2,
 "b7b31aff550e"
 ],
-"geometry/CSW132AAAA/layer:gwb-b": [
+"geometry/CSW132AAAA/layer:gwb-b-tee-0": [
 3.048,
 5.775325,
 2,
@@ -57951,11 +58281,17 @@
 2,
 "9eb90b542987"
 ],
-"geometry/CSW135AAAA/layer:gwb-int": [
+"geometry/CSW135AAAA/layer:gwb-int-tee-0": [
 3.048,
 5.7912,
 2,
 "7981cbeae3a4"
+],
+"geometry/CSW135AAAA/layer:gwb-int-tee-1": [
+5.775325,
+5.7912,
+2,
+"f6fb720675b7"
 ],
 "geometry/CSW135AAAA/layer:outer-girt": [
 3.048,
@@ -58197,11 +58533,23 @@
 8,
 "900d98934258"
 ],
-"geometry/CSW138AAAA/layer:gwb-a": [
+"geometry/CSW138AAAA/layer:gwb-a-tee-0": [
 3.048,
 5.7912,
 8,
 "b830fbf3a7f5"
+],
+"geometry/CSW138AAAA/layer:gwb-a-tee-1": [
+5.775325,
+5.7912,
+2,
+"f6fb720675b7"
+],
+"geometry/CSW138AAAA/layer:gwb-a-tee-2": [
+5.775325,
+5.7912,
+2,
+"f6fb720675b7"
 ],
 "geometry/CSW138AAAA/layer:gwb-b": [
 3.048,
@@ -58209,11 +58557,23 @@
 8,
 "b830fbf3a7f5"
 ],
-"geometry/CSW138AAAA/layer:resilient-channel": [
+"geometry/CSW138AAAA/layer:resilient-channel-tee-0": [
 3.048,
 5.7912,
 8,
 "b830fbf3a7f5"
+],
+"geometry/CSW138AAAA/layer:resilient-channel-tee-1": [
+5.775325,
+5.7912,
+2,
+"f6fb720675b7"
+],
+"geometry/CSW138AAAA/layer:resilient-channel-tee-2": [
+5.775325,
+5.7912,
+2,
+"f6fb720675b7"
 ],
 "geometry/CSW138AAAA/layer:stud": [
 3.048,
@@ -58371,11 +58731,17 @@
 8,
 "900d98934258"
 ],
-"geometry/CSW139AAAA/layer:gwb-a": [
+"geometry/CSW139AAAA/layer:gwb-a-tee-0": [
 3.048,
 5.7912,
 2,
 "7981cbeae3a4"
+],
+"geometry/CSW139AAAA/layer:gwb-a-tee-1": [
+5.775325,
+5.7912,
+2,
+"f6fb720675b7"
 ],
 "geometry/CSW139AAAA/layer:gwb-b": [
 3.048,
@@ -58713,6 +59079,12 @@
 8,
 "324e755ecf95"
 ],
+"geometry/CSW142AAAA::framing/member:stud-010": [
+3.10515,
+5.699125,
+8,
+"324e755ecf95"
+],
 "geometry/CSW143AAAA/layer:gwb-a": [
 3.048,
 5.775325,
@@ -58905,7 +59277,7 @@
 8,
 "324e755ecf95"
 ],
-"geometry/CSW145AAAA/layer:gwb-a": [
+"geometry/CSW145AAAA/layer:gwb-a-tee-0": [
 3.048,
 5.775325,
 2,
@@ -59031,13 +59403,13 @@
 8,
 "900d98934258"
 ],
-"geometry/CSW146AAAA/layer:gwb-a": [
+"geometry/CSW146AAAA/layer:gwb-a-tee-0": [
 3.048,
 5.775325,
 2,
 "b7b31aff550e"
 ],
-"geometry/CSW146AAAA/layer:gwb-b": [
+"geometry/CSW146AAAA/layer:gwb-b-tee-0": [
 3.048,
 5.775325,
 2,
@@ -59139,11 +59511,17 @@
 2,
 "7981cbeae3a4"
 ],
-"geometry/CSW147AAAA/layer:gwb-b": [
+"geometry/CSW147AAAA/layer:gwb-b-tee-0": [
 3.048,
 5.7912,
 2,
 "7981cbeae3a4"
+],
+"geometry/CSW147AAAA/layer:gwb-b-tee-1": [
+5.775325,
+5.7912,
+2,
+"f6fb720675b7"
 ],
 "geometry/CSW147AAAA/layer:staggered-studs": [
 3.048,
@@ -59433,7 +59811,7 @@
 8,
 "2b75d23a8f6d"
 ],
-"geometry/CSW149AAAA/layer:gwb-b": [
+"geometry/CSW149AAAA/layer:gwb-b-tee-0": [
 3.048,
 5.775325,
 8,
@@ -59817,11 +60195,17 @@
 8,
 "bcba3115fbbe"
 ],
-"geometry/CSW153AAAA/layer:gwb-int": [
+"geometry/CSW153AAAA/layer:gwb-int-tee-0": [
 3.048,
 5.7912,
 8,
 "c7e964e126c3"
+],
+"geometry/CSW153AAAA/layer:gwb-int-tee-1": [
+5.775325,
+5.7912,
+2,
+"f6fb720675b7"
 ],
 "geometry/CSW153AAAA/layer:outer-girt": [
 3.048,
@@ -60111,11 +60495,17 @@
 2,
 "ddabe9bfd693"
 ],
-"geometry/CSW154AAAA/layer:gwb-int": [
+"geometry/CSW154AAAA/layer:gwb-int-tee-0": [
 3.048,
 5.7912,
 2,
 "7981cbeae3a4"
+],
+"geometry/CSW154AAAA/layer:gwb-int-tee-1": [
+5.775325,
+5.7912,
+2,
+"f6fb720675b7"
 ],
 "geometry/CSW154AAAA/layer:outer-girt": [
 3.048,
@@ -66615,6 +67005,12 @@
 192,
 "0848be4b879d"
 ],
+"geometry/MSJJGJTJ42-casing-l/body": [
+0.02605,
+2.2088625,
+4,
+"47d90756636d"
+],
 "geometry/MSJJGJTJ42-casing-r/body": [
 0.02605,
 2.2088625,
@@ -67305,11 +67701,17 @@
 6,
 "9bbec3881b04"
 ],
-"geometry/NJ21M7MF6R/layer:gwb-b": [
+"geometry/NJ21M7MF6R/layer:gwb-b-tee-0": [
 -2.7797125,
 -0.3413125,
 6,
 "9bbec3881b04"
+],
+"geometry/NJ21M7MF6R/layer:gwb-b-tee-1": [
+-0.4937125,
+-0.3413125,
+2,
+"1bbcde55a5de"
 ],
 "geometry/NJ21M7MF6R/layer:stud": [
 -2.7797125,
@@ -69027,11 +69429,17 @@
 2,
 "b19a2b3e7cda"
 ],
-"geometry/R0STSQM95Y/layer:gwb-int": [
+"geometry/R0STSQM95Y/layer:gwb-int-tee-0": [
 0.0,
 2.7432,
 2,
 "08fa410dc44f"
+],
+"geometry/R0STSQM95Y/layer:gwb-int-tee-1": [
+2.727325,
+2.7432,
+2,
+"4a0dde23165e"
 ],
 "geometry/R0STSQM95Y/layer:outer-girt": [
 -0.3413125,
@@ -69365,9 +69773,9 @@
 ],
 "geometry/REREWJKFAZ/layer:stud": [
 6.096,
-8.836025,
+8.842375,
 20,
-"9e33e4c4be5d"
+"02d9a74e08e8"
 ],
 "geometry/REREWJKFAZ::framing/member:backing-0-000": [
 6.731,
@@ -69449,15 +69857,15 @@
 ],
 "geometry/REREWJKFAZ::framing/member:plate-raked-0": [
 7.527925,
-8.836025,
+8.842375,
 8,
-"42a99fe1a55e"
+"5d7d8c1c3ae0"
 ],
 "geometry/REREWJKFAZ::framing/member:plate-raked-1": [
 7.559675,
-8.797925,
+8.804275,
 8,
-"38cfe6e8866a"
+"7c01e2a883b5"
 ],
 "geometry/REREWJKFAZ::framing/member:stud-000": [
 6.15315,
@@ -69717,11 +70125,17 @@
 12,
 "264ab482e4b5"
 ],
-"geometry/RV6PJZ6WWM/layer:gwb-a": [
+"geometry/RV6PJZ6WWM/layer:gwb-a-tee-0": [
 6.096,
 8.836025,
 6,
-"bda739659357"
+"45a77def4014"
+],
+"geometry/RV6PJZ6WWM/layer:gwb-a-tee-1": [
+7.6581,
+7.680325,
+6,
+"93fabe1b1fd9"
 ],
 "geometry/RV6PJZ6WWM/layer:gwb-b": [
 6.096,
@@ -69731,9 +70145,9 @@
 ],
 "geometry/RV6PJZ6WWM/layer:stud": [
 6.096,
-8.836025,
+8.842375,
 7,
-"9a2684ce64d6"
+"9d44de425ec7"
 ],
 "geometry/RV6PJZ6WWM::framing/member:backing-0-000": [
 6.223,
@@ -69797,15 +70211,15 @@
 ],
 "geometry/RV6PJZ6WWM::framing/member:plate-raked-0": [
 7.62,
-8.836025,
+8.842375,
 8,
-"d020ffb32b36"
+"f5adb365486b"
 ],
 "geometry/RV6PJZ6WWM::framing/member:plate-raked-1": [
 7.5819,
-8.797925,
+8.804275,
 8,
-"83f9d8ad8b94"
+"d0699989dced"
 ],
 "geometry/RV6PJZ6WWM::framing/member:stud-000": [
 6.15315,
@@ -69845,9 +70259,9 @@
 ],
 "geometry/RV6PJZ6WWM::framing/member:stud-006": [
 6.15315,
-8.7503,
+8.75665,
 8,
-"16b0f01d5f95"
+"fc0d59ca6bbd"
 ],
 "geometry/RV6PJZ6WWM::framing/member:tee-N-A-H1-block-00": [
 6.76275,
@@ -69921,7 +70335,7 @@
 72,
 "94914843010d"
 ],
-"geometry/S9N320V34H/layer:gwb-a": [
+"geometry/S9N320V34H/layer:gwb-a-tee-0": [
 6.096,
 8.80745,
 2,
@@ -74103,7 +74517,7 @@
 2,
 "a1269395efc9"
 ],
-"geometry/VJPS36HCSB/layer:gwb-b": [
+"geometry/VJPS36HCSB/layer:gwb-b-tee-0": [
 -2.7797125,
 -0.320675,
 2,
@@ -74199,7 +74613,7 @@
 32,
 "773eb900eb87"
 ],
-"geometry/VZPMT59XVQ/layer:ply-stair": [
+"geometry/VZPMT59XVQ/layer:ply-stair-tee-0": [
 -2.7797125,
 -0.3413125,
 2,
@@ -74463,11 +74877,23 @@
 2,
 "b19a2b3e7cda"
 ],
-"geometry/WM8EB2TX38/layer:gwb-int": [
+"geometry/WM8EB2TX38/layer:gwb-int-tee-0": [
 0.0,
 2.7432,
 2,
 "08fa410dc44f"
+],
+"geometry/WM8EB2TX38/layer:gwb-int-tee-1": [
+2.727325,
+2.7432,
+2,
+"4a0dde23165e"
+],
+"geometry/WM8EB2TX38/layer:gwb-int-tee-2": [
+2.727325,
+2.7432,
+2,
+"4a0dde23165e"
 ],
 "geometry/WM8EB2TX38/layer:outer-girt": [
 -0.3413125,
@@ -78222,6 +78648,12 @@
 "0cd6874677e2"
 ],
 "member/9WC345CCP1/stud-010": [
+6.15315,
+7.5819,
+2,
+"0cd6874677e2"
+],
+"member/9WC345CCP1/stud-011": [
 6.15315,
 7.5819,
 2,
@@ -84619,15 +85051,15 @@
 ],
 "member/CAW113AAAA/plate-raked-0": [
 8.213725,
-8.836025,
+8.842375,
 4,
-"25eb1f69e7c7"
+"cc7ef4be67ca"
 ],
 "member/CAW113AAAA/plate-raked-1": [
 8.131175,
-8.797925,
+8.804275,
 4,
-"f31456b26f4d"
+"5d85efeb4304"
 ],
 "member/CAW113AAAA/stud-000": [
 6.15315,
@@ -97181,6 +97613,12 @@
 2,
 "252e16268b26"
 ],
+"member/CMW127AAAA/stud-008": [
+0.05715,
+2.651125,
+2,
+"252e16268b26"
+],
 "member/CMW128AAAA/plate-bottom": [
 0.01905,
 0.05715,
@@ -109553,6 +109991,12 @@
 2,
 "c3a7c925afe9"
 ],
+"member/CSW142AAAA/stud-010": [
+3.10515,
+5.699125,
+2,
+"c3a7c925afe9"
+],
 "member/CSW143AAAA/corner-start": [
 3.10515,
 5.699125,
@@ -112075,15 +112519,15 @@
 ],
 "member/REREWJKFAZ/plate-raked-0": [
 7.527925,
-8.836025,
+8.842375,
 4,
-"8bfc40a00c80"
+"2b764b087e1c"
 ],
 "member/REREWJKFAZ/plate-raked-1": [
 7.559675,
-8.797925,
+8.804275,
 4,
-"a9f2abc6288f"
+"2a58fed5de8d"
 ],
 "member/REREWJKFAZ/stud-000": [
 6.15315,
@@ -112177,15 +112621,15 @@
 ],
 "member/RV6PJZ6WWM/plate-raked-0": [
 7.62,
-8.836025,
+8.842375,
 4,
-"7bc6319d5a89"
+"3aab47886e43"
 ],
 "member/RV6PJZ6WWM/plate-raked-1": [
 7.5819,
-8.797925,
+8.804275,
 4,
-"a2d67caaa0da"
+"da1b229b113a"
 ],
 "member/RV6PJZ6WWM/stud-000": [
 6.15315,
@@ -112225,9 +112669,9 @@
 ],
 "member/RV6PJZ6WWM/stud-006": [
 6.15315,
-8.7503,
+8.75665,
 2,
-"6de6379704f6"
+"e7947aad3359"
 ],
 "member/RV6PJZ6WWM/tee-N-A-H1-block-00": [
 6.76275,

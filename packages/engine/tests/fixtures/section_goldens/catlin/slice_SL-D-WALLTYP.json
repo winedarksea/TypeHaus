@@ -1595,7 +1595,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CMW101AAAA",
-      "tag": "W-M-S1/paint",
+      "tag": "W-M-S1/paint-tee-0",
       "material": "paint-wall"
     },
     {
@@ -3425,7 +3425,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CAW102AAAA",
-      "tag": "W-A-S2/paint",
+      "tag": "W-A-S2/paint-tee-0",
       "material": "paint-wall"
     },
     {

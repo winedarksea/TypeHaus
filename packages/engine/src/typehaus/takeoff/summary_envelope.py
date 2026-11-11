@@ -110,7 +110,8 @@ def drywall_summary(inputs: SummaryInputs) -> list[SummaryTable]:
     for wall, layer, (_scope, _f, material, thickness), area in _wall_layers(model):
         if material in gypsum:
             length = order_sheet_length_in(layer_sheet_length_in(
-                wall_layer(plan, plan.by_tag(wall.tag), layer.name)))
+                wall_layer(plan, plan.by_tag(wall.tag),
+                           layer.source_layer_name or layer.name)))
             board[(wall.storey, "walls", material, thickness, length)] += area
     ceiling_areas: dict[str, float] = defaultdict(float)
     for ceiling in model.ceilings:

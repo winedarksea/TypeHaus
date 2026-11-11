@@ -186,7 +186,14 @@ def _face_layers(wall: Any, frame: tuple, band: Band) -> list[Any]:
     present = [layer for layer in wall.layers if not layer.is_cavity and layer.polygon
                and (layer.z0_m is None or layer.z0_m < z1 + 1e-6)
                and (layer.z1_m is None or layer.z1_m > z0 - 1e-6)]
-    return sorted(present, key=reach, reverse=True)
+    out, seen = [], set()
+    for layer in sorted(present, key=reach, reverse=True):
+        if layer.source_layer_name:  # a cut layer's pieces (tee, pocket) are one layer
+            if layer.source_layer_name in seen:
+                continue
+            seen.add(layer.source_layer_name)
+        out.append(layer)
+    return out
 
 
 def _host(model: ResolvedModel, layers: list[Any]) -> tuple[str, float | None, str] | None:

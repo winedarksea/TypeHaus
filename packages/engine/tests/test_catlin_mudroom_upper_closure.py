@@ -3,6 +3,7 @@
 import math
 
 import pytest
+from shapely.geometry import Polygon
 
 from typehaus.quantities import inch
 from typehaus.resolve.framing.footprint import member_footprint
@@ -50,7 +51,9 @@ def test_upper_finish_is_on_the_mudroom_face_and_stops_at_the_ceiling(catlin_mod
         assert all(solid.z1_m == pytest.approx(inch(108).meters) for solid in solids)
         net_area = wall_layer_net_area_m2(catlin_model_ro, wall, layer,
                                          wall_net_areas_m2(catlin_model_ro)[wall.tag])
-        assert net_area == pytest.approx(math.dist(*wall.axis) * inch(24).meters)
+        # Billed polygon-true: the board's own run (area / thickness), not node to node.
+        run = Polygon(layer.polygon).area / layer.thickness_m
+        assert net_area == pytest.approx(run * inch(24).meters)
     assert wall.z1_m > inch(108).meters  # The platform skin must not extend this finish.
 
 

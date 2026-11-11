@@ -323,7 +323,8 @@ def _wall_body(wall: ResolvedWall):
 
     from typehaus.resolve.overlay import union_all
 
-    bodies = [Polygon(layer.polygon) for layer in wall.depth_layers() if len(layer.polygon) >= 3]
+    # body_layers, not depth_layers: a cut layer's later pieces are still footprint.
+    bodies = [Polygon(layer.polygon) for layer in wall.body_layers() if len(layer.polygon) >= 3]
     if not bodies:
         return None
     return union_all(bodies)

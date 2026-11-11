@@ -609,62 +609,6 @@
       "node": "polyline",
       "points": [
         [
-          218.75000000000003,
-          -109.4375
-        ],
-        [
-          219.25,
-          -109.4375
-        ],
-        [
-          219.25,
-          -13.437499999999996
-        ],
-        [
-          218.75000000000003,
-          -13.437499999999996
-        ]
-      ],
-      "layer": "A-WALL-FINI",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CBW112AAAA",
-      "tag": "W-B-CS2/gwb-b"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          218.75000000000003,
-          -109.4375
-        ],
-        [
-          219.25,
-          -109.4375
-        ],
-        [
-          219.25,
-          -13.437499999999996
-        ],
-        [
-          218.75000000000003,
-          -13.437499999999996
-        ]
-      ],
-      "pattern": "gypsum",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "gwb"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           212.75000000000003,
           -109.4375
         ],
@@ -679,27 +623,6 @@
       "closed": false,
       "uid": "CBW112AAAA",
       "tag": "W-B-CS2/paint-a",
-      "material": "paint-wall"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          219.25000000000006,
-          -109.4375
-        ],
-        [
-          219.25000000000006,
-          -13.437499999999996
-        ]
-      ],
-      "layer": "A-WALL-FINI",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CBW112AAAA",
-      "tag": "W-B-CS2/paint-b",
       "material": "paint-wall"
     },
     {
@@ -987,7 +910,7 @@
       "node": "polyline",
       "points": [
         [
-          219.25,
+          218.75000000000003,
           -109.4375
         ],
         [
@@ -999,7 +922,7 @@
           -12.625
         ],
         [
-          219.25,
+          218.75000000000003,
           -12.625
         ]
       ],
@@ -1015,7 +938,7 @@
       "node": "hatch",
       "boundary": [
         [
-          219.25,
+          218.75000000000003,
           -109.4375
         ],
         [
@@ -1027,7 +950,7 @@
           -12.625
         ],
         [
-          219.25,
+          218.75000000000003,
           -12.625
         ]
       ],
@@ -1155,7 +1078,7 @@
       "node": "hatch",
       "boundary": [
         [
-          219.25,
+          218.75000000000003,
           -109.4375
         ],
         [
@@ -1167,7 +1090,7 @@
           -12.625
         ],
         [
-          219.25,
+          218.75000000000003,
           -12.625
         ]
       ],
@@ -1386,7 +1309,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CQRJZCM0R1",
-      "tag": "W-B-HALL-W/paint-b",
+      "tag": "W-B-HALL-W/paint-b-tee-0",
       "material": "paint-wall"
     },
     {
@@ -2879,7 +2802,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CMW110AAAA",
-      "tag": "W-M-W3/paint",
+      "tag": "W-M-W3/paint-tee-0",
       "material": "paint-wet"
     },
     {
@@ -2888,11 +2811,11 @@
       "points": [
         [
           212.75000000000003,
-          0.0
+          107.375
         ],
         [
           213.25,
-          0.0
+          107.375
         ],
         [
           213.25,
@@ -2916,11 +2839,11 @@
       "boundary": [
         [
           212.75000000000003,
-          0.0
+          107.375
         ],
         [
           213.25,
-          0.0
+          107.375
         ],
         [
           213.25,
@@ -3056,27 +2979,6 @@
       "node": "polyline",
       "points": [
         [
-          212.75000000000003,
-          0.0
-        ],
-        [
-          212.75000000000003,
-          108.00000000000001
-        ]
-      ],
-      "layer": "A-WALL-FINI",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CMW113AAAA",
-      "tag": "W-M-C2/paint-a",
-      "material": "paint-wall"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           219.25000000000006,
           0.0
         ],
@@ -3092,62 +2994,6 @@
       "uid": "CMW113AAAA",
       "tag": "W-M-C2/paint-b",
       "material": "paint-wall"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          100.75,
-          0.0
-        ],
-        [
-          101.25000000000001,
-          0.0
-        ],
-        [
-          101.25000000000001,
-          107.375
-        ],
-        [
-          100.75,
-          107.375
-        ]
-      ],
-      "layer": "A-WALL-FINI",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMW127AAAA",
-      "tag": "W-M-BA2E2/gwb-a"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          100.75,
-          0.0
-        ],
-        [
-          101.25000000000001,
-          0.0
-        ],
-        [
-          101.25000000000001,
-          107.375
-        ],
-        [
-          100.75,
-          107.375
-        ]
-      ],
-      "pattern": "gypsum",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "gwb"
     },
     {
       "space": "model",
@@ -3295,27 +3141,6 @@
       "node": "polyline",
       "points": [
         [
-          101.25000000000001,
-          0.0
-        ],
-        [
-          101.25000000000001,
-          107.375
-        ]
-      ],
-      "layer": "A-WALL-FINI",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CMW127AAAA",
-      "tag": "W-M-BA2E2/paint-a",
-      "material": "paint-wall"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           94.75000000000001,
           0.0
         ],
@@ -3337,7 +3162,7 @@
       "node": "polyline",
       "points": [
         [
-          101.25000000000001,
+          100.75,
           0.0
         ],
         [
@@ -3349,7 +3174,7 @@
           107.375
         ],
         [
-          101.25000000000001,
+          100.75,
           107.375
         ]
       ],
@@ -3365,7 +3190,7 @@
       "node": "hatch",
       "boundary": [
         [
-          101.25000000000001,
+          100.75,
           0.0
         ],
         [
@@ -3377,7 +3202,7 @@
           107.375
         ],
         [
-          101.25000000000001,
+          100.75,
           107.375
         ]
       ],
@@ -3393,7 +3218,7 @@
       "node": "hatch",
       "boundary": [
         [
-          101.25000000000001,
+          100.75,
           0.0
         ],
         [
@@ -3405,7 +3230,7 @@
           107.375
         ],
         [
-          101.25000000000001,
+          100.75,
           107.375
         ]
       ],
@@ -3425,11 +3250,11 @@
           0.0
         ],
         [
-          212.75000000000003,
+          213.25,
           0.0
         ],
         [
-          212.75000000000003,
+          213.25,
           107.375
         ],
         [
@@ -3453,11 +3278,11 @@
           0.0
         ],
         [
-          212.75000000000003,
+          213.25,
           0.0
         ],
         [
-          212.75000000000003,
+          213.25,
           107.375
         ],
         [
@@ -3481,11 +3306,11 @@
           0.0
         ],
         [
-          212.75000000000003,
+          213.25,
           0.0
         ],
         [
-          212.75000000000003,
+          213.25,
           107.375
         ],
         [
@@ -4137,7 +3962,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CSW104AAAA",
-      "tag": "W-S-E3/paint",
+      "tag": "W-S-E3/paint-tee-0",
       "material": "paint-wall"
     },
     {
@@ -4581,7 +4406,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CSW112AAAA",
-      "tag": "W-S-W3/paint",
+      "tag": "W-S-W3/paint-tee-0",
       "material": "paint-wall"
     },
     {
@@ -4772,7 +4597,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CSW139AAAA",
-      "tag": "W-S-C2C/paint-a",
+      "tag": "W-S-C2C/paint-a-tee-0",
       "material": "paint-wet"
     },
     {
@@ -5004,7 +4829,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CSW123AAAA",
-      "tag": "W-S-BW2/paint-b",
+      "tag": "W-S-BW2/paint-b-tee-0",
       "material": "paint-wall"
     },
     {
@@ -5601,7 +5426,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "78VGE6A81J",
-      "tag": "W-A-C2M/paint-a",
+      "tag": "W-A-C2M/paint-a-tee-0",
       "material": "paint-wet"
     },
     {

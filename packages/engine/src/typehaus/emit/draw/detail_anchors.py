@@ -68,7 +68,8 @@ _ROLE_CONTROL = {"ci": "thermal", "thermal": "thermal", "air": "air",
 
 def _find_layer(wall, name: str):
     """Resolve a layer by name, then by the control-layer role it publishes."""
-    exact = next((layer for layer in wall.layers if layer.name == name), None)
+    exact = next((layer for layer in wall.layers if name in (layer.name, layer.source_layer_name)),
+                 None)
     if exact is not None:
         return exact
     control = _ROLE_CONTROL.get(name)
@@ -80,8 +81,12 @@ def _find_layer(wall, name: str):
 
 
 def _layer_point(layer, wall, frame, side: str):
-    xs = [p[0] for p in layer.polygon]
-    ys = [p[1] for p in layer.polygon]
+    # A cut layer's pieces (tee, pocket) answer for the whole layer.
+    source = layer.source_layer_name or layer.name
+    ring = [p for ly in wall.layers if (ly.source_layer_name or ly.name) == source
+            for p in ly.polygon] or layer.polygon
+    xs = [p[0] for p in ring]
+    ys = [p[1] for p in ring]
     cx, cy = sum(xs) / len(xs), sum(ys) / len(ys)
     zmid = (wall.z0_m + (wall.top_z1_m if wall.top_z1_m is not None else wall.z1_m)) / 2.0
     return frame(cx, cy, zmid)

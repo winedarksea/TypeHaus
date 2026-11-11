@@ -443,7 +443,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CMW102AAAA",
-      "tag": "W-M-S2/paint",
+      "tag": "W-M-S2/paint-tee-0",
       "material": "paint-wall"
     },
     {
@@ -887,7 +887,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CSW102AAAA",
-      "tag": "W-S-S2/paint",
+      "tag": "W-S-S2/paint-tee-0",
       "material": "paint-wall"
     },
     {

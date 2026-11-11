@@ -209,7 +209,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CBW121AAAA",
-      "tag": "W-B-CN2/paint-b",
+      "tag": "W-B-CN2/paint-b-tee-0",
       "material": "paint-wall"
     },
     {
@@ -568,7 +568,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CMW114AAAA",
-      "tag": "W-M-C3/paint-a",
+      "tag": "W-M-C3/paint-a-tee-0",
       "material": "paint-wall"
     },
     {
@@ -589,7 +589,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CMW114AAAA",
-      "tag": "W-M-C3/paint-a",
+      "tag": "W-M-C3/paint-a-tee-0",
       "material": "paint-wall"
     },
     {

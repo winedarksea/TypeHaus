@@ -17,7 +17,7 @@ from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import length, sub
 from typehaus.takeoff.bom import bill_of_materials
 from typehaus.takeoff.cost_codes import cost_code
-from typehaus.takeoff.envelope import replaced_finish_m2
+from typehaus.takeoff.envelope import finish_run_m, replaced_finish_m2
 from typehaus.takeoff.hardwood import hardwood_takeoff
 from typehaus.takeoff.wood_surfaces import wood_surfaces_takeoff
 
@@ -50,7 +50,8 @@ def _liner_net_ft2(catlin_model, wall, material_ref="catlin-sauna-shiplap") -> f
             continue
         start, end = layer.run_span_m or (0, length(sub(wall.axis[1], wall.axis[0])))
         bottom, top = layer.band(wall)
-        covered = (end-start) * (top-bottom)
+        # A finish run is its drawn polygon (a board stops at the corner), not the axis.
+        covered = finish_run_m(layer, end-start) * (top-bottom)
         for opening in catlin_model.openings:
             if opening.host_wall != wall.tag:
                 continue
