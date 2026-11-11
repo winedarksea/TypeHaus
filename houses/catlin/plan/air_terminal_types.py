@@ -264,21 +264,6 @@ AIR_REGISTER_TYPES = (
                  source=f"Face estimated as the 28x12's (+2 5/8in); 144 in2, 80 fpm at 80 cfm. "
                         f"{_NOTE} §5.",
                  ports=(_port("return", Service.RETURN_AIR),)),
-    # RM-S-BED3's return (2026-11-11): the same 12x12 grille and filter, on a wall. Its face
-    # opens on W-S-BW4 into a short 6x12 take-off on DU-S-HP-RET's east face.
-    RegisterType(tag="REG-T-HP-RET-FILTER-1212-SIDE",
-                 face_opening=(inch(12), inch(12)),
-                 face_style="rectangular_grille",
-                 name="Heat-pump return, 12x12 aluminium hinged filter-back sidewall grille",
-                 footprint=(inch(14.625), inch(1)), height=inch(14.625),
-                 plan_symbol="register", product_ref="PROD-AIR-FILTER-RETURN-12X12",
-                 filter_nominal_size="12x12x1", filter_merv=13, service_face="front",
-                 neck=TerminalNeck(section="rectangular",
-                                   width=inch(12), height=inch(12), depth=inch(1.75),
-                                   part="1in filter rack"),
-                 source=f"REG-T-HP-RET-FILTER-1212 hung on a wall; 144 in2, 80 fpm at 80 cfm. "
-                        f"{_NOTE} §5.",
-                 ports=(_port("return", Service.RETURN_AIR),)),
     RegisterType(tag="REG-T-TRANSFER-MUD-1210",
                  face_opening=(inch(12), inch(10)),
                  face_style="rectangular_grille",

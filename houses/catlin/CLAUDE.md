@@ -639,8 +639,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     — see DESIGN-LOG.md, "The laundry is not acoustically treated".
   - **`W-S-SBS`, `W-S-BW1`, `W-S-BW2`, `W-S-BW3` and `W-S-BW4` are plain 1/2" partitions
     (2026-10-23).** Each has an undercut door into the hall, so the channel's STC does not
-    reach the room. `W-S-BW4` stays plain against `SF-S-HP1`'s rectangle (`mep.duct_soffit_occupancy`
-    still finds it). `W-S-BD1`/`W-S-BD2` keep the 5/8" `INT_2X4_RC` (cited STC 48), the only
+    reach the room. `W-S-BD1`/`W-S-BD2` keep the 5/8" `INT_2X4_RC` (cited STC 48), the only
     cited channel wall that clears 45; the 1/2" channel cites 42.
   - **`W-M-BDN1` returned to `INT_2X4_PARTITION` on 2026-09-30.** The ensuite serves this
     bedroom's occupants; removing the channel avoids a 1/2" face step where it meets
@@ -981,8 +980,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     W-A-N* at +23'-0" and never applied to W-M-N3B/W-S-N3B. (→ log4.md, why the gable failed)
   - `CD-A-DATA-NE` routes SOUTH — the only option, since
     `FO-A-HALL`'s maxy is `W-A-N2`'s gwb face, severing every west→east route north of the
-    studio. `DU-S-ERV-HP-FEED` (100 cfm) sets the chase section, turning east at y=22'-0" to
-    `SF-S-HP1`'s drop up `RM-A-EAST-UNFIN`.
+    studio. `DU-S-ERV-HP-FEED` (100 cfm) sets the chase section, turning east at y=21'-10 5/8"
+    in the bay and up through `FO-A-ERV-HPFEED-E` onto the deck into `EQ-S-ERV-MIX`.
   - **The west chase is lanes, not one line** (D2, 2026-09-19). At x=1'-0" the 6:12
     underside is 7 1/2" over the deck and there is no second tier, so five runs drawn on that
     one station were fourteen `mep.run_interference` pairs. It widens to x 9"..38" and each
@@ -995,9 +994,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     21'-8 1/2" (stacked over HP-FEED, the only free tier there), ATTIC 20'-8"; the 18'-0" bay
     is free. STUBATH came down 34.1 -> 27.8 LF.
   - **`RM-S-BED3` has no ERV pickup; it returns to System 1** (owner, 2026-11-11). The 55 LF
-    attic radial `DU-A-ERV-R-BED3` is gone; `REG-S-HP-BED3-RET` (12x12 filter-back sidewall
-    on `W-S-BW4` in the NW corner, 6'-5" north of the supply) and a 6x12 stub take off
-    `DU-S-HP-RET`'s east face, which runs 8 1/4" behind that wall;
+    attic radial `DU-A-ERV-R-BED3` is gone; `REG-S-HP-BED3-RET` (12x12 filter-back ceiling
+    grille at (26'-5 1/2", 32'-8"), 6'-7" north of the supply) rises a 12x6 through
+    `FO-A-HP1-BED3-RET` and runs south on the deck into `EQ-S-ERV-MIX`;
     `D-S-BED3` is back at the stock 1/2", and BED3's 5 cfm went to the kitchen (11).
     `DU-A-ERV-R-ATTIC` is RETURN, like every stale-air pickup, and it is what serves
     `EQ-A-ERV-MAN-EXH`'s return port. `notes/system1_return_path.md`.
@@ -1742,8 +1741,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     Nothing else goes in that chase.
   - **Every ERV riser through a deck stands in a drawn hole**: `FO-M-ERV-OA` (FS-M-MECH, the
     two ERV holes merged 2026-09-23), `FO-S-ERV-CHASE` and `FO-S-ERV-LAUNDRY` (FS-S-WEST),
-    and `FO-A-ERV-CHASE`, `-HPFEED`, `-HPFEED-E`, `-BED3`, `-BED3-E`, `-BATH1`, `-MIX`
-    (FS-ATTIC). A hole inside one joist bay takes no framing; one that cuts a joist gets a
+    and `FO-A-ERV-CHASE`, `-HPFEED`, `-HPFEED-E`, `-BED3`, `-BED3-E`, `-BATH1` (FS-ATTIC);
+    System 1's attic risers likewise (`FO-A-HP1-SUP`, `-RET`, `-SUITE-RET`, `-BED3-RET`). Each
+    must also be listed in `FS-ATTIC.openings`. A hole inside one joist bay takes no framing; one that cuts a joist gets a
     header and trimmers bearing to bearing, and the joist maker's header table governs.
     `tests/test_catlin_erv_clearance.py` pins it.
   - **The two outdoor hoods are STACKED on the NORTH face** (moved off the west facade
@@ -1798,8 +1798,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   DERIVED — never author a clear width.** `mep.duct_soffit_occupancy` derives the cavity from
   the soffit's own drop, `FramingSpec` member, 5/8" lining, and a 2" hanger gap; an authored
   width is a second source of truth that drifts the first time framing changes. Current
-  derived boxes: `SF-S-DUCT` 41 1/2" wide, drop 14 1/8" (clear section 37 1/4" x 12"); `SF-S-HP1`
-  40 3/4" x 7'-9 3/8" (in `RM-S-NCLOSET`'s ceiling), drop 23", underside at 7'-1".
+  derived boxes: `SF-S-DUCT` 41 1/2" wide, drop 14 1/8" (clear section 37 1/4" x 12"), its
+  north end on `W-S-CLN-S`'s hall face. `SF-S-HP1` (the air-handler box) retired 2026-11-11.
   **Three soffits were retired on 2026-09-13** — `SF-B-HALL`, `SF-B-GYM` and `SF-S-SUITE` —
   each one built only to satisfy `mep.run_in_finished_volume`, each replaced by a
   `Room.exposed_services` sentence on `RM-B-STAIR`, `RM-B-GYM` and `RM-S-SUITE`. Two soffits
@@ -1814,7 +1814,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   trunk to `REG-A-HP-WEST` at x=17'-0"; the 75 cfm loft boot is rotated 90 degrees and the
   100 cfm suite outlet is a high sidewall grille on W-S-C2B above D-S-SUITE.
   - **A box's LONG plan dimension is its axis; every occupant is measured ACROSS the other
-    one.** Near-square soffits (e.g. `SF-S-HP1`) need this ordering chosen deliberately, or
+    one.** Near-square soffits need this ordering chosen deliberately, or
     the check grades the trunk's travel as "width" and never compares lane to machine.
   - **A hatch through a soffit must be AUTHORED as `Soffit.openings` (`SoffitOpening`,
     `model/floors.py`)**, or `resolve/framing/soffit.py` never cuts the rungs it crosses —
@@ -1864,56 +1864,37 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - **A `# TODO verify datasheet` marker on any equipment type is not documentation debt —
     every clearance, lane, and velocity downstream of it is provisional** until the type is
     replaced with a verified one; re-check all of them when it is.
-  - **`SF-S-HP1`'s box is 40 3/4" x 7'-9 3/8", flush on all four finished faces**, in
-    `RM-S-NCLOSET`'s ceiling; the air handler is `rotation=deg(90)` so only its 21 1/4" case
-    depth competes for the graded width. Consequences that must stay true:
-    - **A SECONDARY DRAIN PAN IS REQUIRED UNDER IT, IT DID NOT FIT, AND THE BOX IS 2"
-      DEEPER BECAUSE OF IT (2026-09-18).** The FLEXX Ultra AH is a MULTI-POSITION air
-      handler (18 1/8 x 43 1/2 x 21 1/4 upflow cabinet, laid on a side for horizontal
-      ceiling mount — a factory configuration, "Horizontal Left: No Modification Needed",
-      against submittal `GREE_FXU24_230V_R32_SUB_01272026`), **not** a slim ducted cassette.
-      The same page requires an emergency pan where the unit sits over a finished ceiling,
-      and so does IRC M1411.3 / IMC 307.2.3 — sized by M1411.3.1 at 1 1/2" deep minimum and
-      3" larger than the unit each way. **A DROP IS NOT A CAVITY**: the 21" drop this
-      carried gave 18.25" of clear cavity (5/8" of lining top and bottom, 1 1/2" of bottom
-      rung), so the slack under an 18 1/8" cabinet was **1/8"** and the pan did not fit at
-      all — while `mep.duct_soffit_occupancy` PASSed, because nothing in the model knew the
-      pan was coming. The drop is **23"** now: 20.25" of cavity, sized so both things on the
-      cavity floor can ride 2" up on the pan — cabinet 2 + 18 1/8 = 20 1/8, `DU-S-HP-RET`
-      2 + 18 = 20. **The clear under the box is 7'-0 1/8" and that is the whole margin** —
-      the section's CLG tag, off the finished floor, where it read 7'-2 1/8" at the 21" drop
-      (the "7'-3"" this guide and the plan source both used to quote was the face struck
-      from the storey datum, ~2" optimistic). IRC R305.1 is cleared by 1/8". **The pan
-      itself is still unmodelled and the 2" is NOT reserved by any
-      check** — no element kind holds one, and authoring it as `Equipment` would clash with
-      the machine it catches, since the hanger-gap test ignores z. Do not spend that 2" on a
-      new occupant. It reaches the installer through `tasks.toml`'s `site/long-lead-orders`,
-      which also carries the other half: horizontal RIGHT requires relocating the factory
-      drain pan, so which hand `rotation=deg(90)` lands on goes on the ORDER.
-    - **`W-S-BW4` must stay retyped `INT_2X4_RC`.** A plain partition jogs 1/2" at
-      y=30'-10" and `_rectangle` returns `None` on a non-rectangle, sending every occupant to
-      UNKNOWN.
-    - **`DU-S-ERV-HP-FEED` must name NO soffit.** It shares the box's y-band with the attic
-      chase legs twenty feet west; naming the soffit would grade those as occupants of a
-      cavity they never enter — a false FAIL.
-    - **`EQ-S-ERV-MIX` is a full return plenum** (12" x 29 1/4" x 18", x
-      20'-5 1/2"..21'-5 1/2", y 27'-11"..30'-4 1/4", 1/4" off the cabinet) — `REG-S-HP-RET`'s
-      whole 28 x 12 hole must sit inside it (`AO-S-HP1-RET` heads off the ladder rung that
-      crossed it; the 12x28x1 filter is a custom order, no stocked size fits), or part of the return face draws from the bare soffit cavity
-      (IMC 601.5's building-cavity-as-plenum, which no check here catches — see
-      DESIGN-LOG.md).
+  - **System 1's air handler is on `RM-A-EAST-UNFIN`'s deck (2026-11-11)**; `SF-S-HP1` and
+    the closet hatch retired, because no closet soffit gave the front-panel service zone
+    (→ DESIGN-LOG.md, "System 1 moves to the attic"; `notes/flexx_ultra_geometry.md`).
+    Horizontal, length east-west: return in at the east end, discharge west, front panel
+    south onto open deck (its 24" zone checked clear by hand; `mep.air_handler_coordination`
+    stays UNKNOWN with no enclosure to test). Consequences that must stay true:
+    - **`EQ-S-ERV-MIX` is the return plenum on the cabinet's east face**, 4" off the case:
+      any closer and the return neck's end is credited to the box, not the cabinet, and
+      `mep.erv_blower_interlock` goes N/A. `DU-S-HP-RET`, `DU-S-HP-SUITE-RET-UP`,
+      `DU-S-HP-BED3-RET` and `DU-S-ERV-HP-FEED` all end in it, so fresh air mixes upstream
+      of coil and heat kit. `DU-A-HP1-RET-NECK` is 20x16 and that return opening is
+      INFERRED; measure the delivered cabinet before the neck is built.
+    - **`EQ-A-HP1-SUP-BOX`** (22 1/2 x 14 x 21 shop box; `MIXING_BOX` so walks pass through)
+      takes the published 11 5/8 x 16 3/4 supply aperture and drops a 12x12
+      (`DU-S-HP-SUP-DROP`) as a top take-off into the 18x8 trunk in `SF-S-DUCT`. Its solid
+      floor is Gree's "solid bottom first 6 in" below the outlet.
+    - **The heat kit sits inside the cabinet's discharge half**, power port only;
+      `blower_interlock_ref` to the AH is the relation that pardons the overlap.
+    - **The secondary drain pan (IMC 307.2.3, over finished ceilings) is still
+      unmodelled**: the cabinet sits FLOOR-mounted on the deck. Adding the pan lifts the
+      cabinet and both necks about 2".
+    - **`REG-S-HP-RET` is a ceiling filter grille in `SF-S-DUCT`'s underside**: `AO-S-DUCT-RET`
+      is exactly its 28x12 neck, and the return duct (not the soffit cavity) is behind it
+      (IMC 601.5; no check catches a cavity return). The 12x28x1 filter is a custom order.
     - **BED1-3 use straight 6" side collars.** BED3 is at y=27'-6", centreline 100 1/8"
-      above the second-storey datum, through W-S-BW3 above D-S-BED3's header. Its collar
-      clears the south king by 1/2" and EQ-S-ERV-MIX by 2"; the plenum's south end was
-      trimmed 1/2" for that gap. Keep its whole return grille inside the plenum. The former
-      BED3 attic riser and ceiling boot are gone. Close the shadow gap and cut the local
-      resilient channel as for BED1/2 (plan/mep_hvac_branches.py).
+      above the second-storey datum, through W-S-BW3 above D-S-BED3's header; its collar
+      clears the south king by 1/2". Close the shadow gap and cut the local resilient
+      channel as for BED1/2 (plan/mep_hvac_branches.py).
     - **A wall grille on `W-S-C4B` is NOT buildable — do not re-propose it.** It is the
-      x=18' bearing line (`RB-HOUSE`'s load path); the one bay overlapping the plenum band
-      leaves 7 1/4" clear, and cutting the stud puts the plate at f≈1,940 psi against
-      Fb≈1,310. `RM-S-NCLOSET` and ~7'-9" of north hall are at a 7'-1" face / 7'-0 1/8"
-      clear in trade;
-      `RM-S-HALL`'s graded `clear_height` is unchanged at 8'-11 1/2".
+      x=18' bearing line (`RB-HOUSE`'s load path); cutting a stud puts the plate at
+      f≈1,940 psi against Fb≈1,310.
     - **`Mount.elevation` is above the finished floor.** Registers resolve a body and
       wall mounts are checked against their host face and overhead surface. Duct elevations
       are storey-relative: subtract the floor build-up when aligning a wall grille to a duct.
@@ -1946,9 +1927,6 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       `D-B-SHOP` (through `D-B-FURN`, which must keep its undercut), `D-M-BED2` (RM-M-BED
       exhausts through `D-M-BATH2`, which must keep its undercut) and `D-B-SAUNA` (balanced
       20/20). `D-B-PLAY` and `D-M-BATH1` keep 3/4".
-    - **`AO-S-HP1-AP` (30" x 29" clear) must stay gasketed.** Leaving the soffit's bottom
-      open in the closet makes the closet itself the return plenum, which IMC 601.5(7)
-      forbids.
     - Where the box passes under `ST-S2A`'s flight, `ledger-W-S-SS2-stringer-2` (the 2x10 on
       `W-S-SS2` at y 104 1/8"..105 5/8") may NOT be lapped — `structural.member_interference`
       excuses treads/stringers over a soffit but not that ledger.

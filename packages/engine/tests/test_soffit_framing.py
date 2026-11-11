@@ -229,7 +229,10 @@ def test_catlin_duct_soffit_frames_and_clears_the_two_trunks(catlin_model_ro) ->
     assert all(member.profile == "2x2" for member in soffit.members)
     assert all(member.parent_uid == soffit.uid for member in soffit.members)
 
-    rungs = [m for m in soffit.members if m.child_key.startswith("soffit-rung-")]
+    # Full rungs only: the one AO-S-DUCT-RET (the hall return grille) cuts is two stubs
+    # into its headers, ``soffit-rung-NNNa``/``b``.
+    rungs = [m for m in soffit.members if m.child_key.startswith("soffit-rung-")
+             and m.child_key[-1].isdigit()]
     assert rungs, "a 28'-long soffit must have interior rungs"
     clear_in = min(rung.length_m for rung in rungs) / inch(1).meters
     assert clear_in >= 37.24

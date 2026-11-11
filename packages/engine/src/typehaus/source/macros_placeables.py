@@ -481,7 +481,7 @@ def _product_words(product, type_ref: str) -> str:
 #: family it is a member of ("water heater" before "heat pump", the ERV's own plenums and
 #: hoods before "erv" itself, which their tags also carry).
 _EQUIPMENT_KIND_TOKENS = (
-    ("mixing", EquipmentKind.MIXING_BOX),
+    ("mixing", EquipmentKind.MIXING_BOX), ("supply box", EquipmentKind.MIXING_BOX),
     ("water manifold", EquipmentKind.WATER_MANIFOLD),
     ("water header", EquipmentKind.WATER_MANIFOLD),
     ("manifold", EquipmentKind.DUCT_MANIFOLD), ("plenum", EquipmentKind.DUCT_MANIFOLD),

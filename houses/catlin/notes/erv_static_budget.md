@@ -1129,6 +1129,20 @@ closet's east half at +97-105". A main-storey EA hood on W-M-N3B is 3-4 ft from 
 
 Thermal and wrap figures for a+ (OA 1", +285 Btu/h) stand as §10.13 worked them.
 
+### 10.19 HP-FEED ends on the attic deck (2026-11-11)
+
+System 1's air handler and `EQ-S-ERV-MIX` moved onto RM-A-EAST-UNFIN's deck, so the feed no
+longer drops through the second-storey ceiling: it runs east in the FS-ATTIC bay to x = 310",
+rises through `FO-A-ERV-HPFEED-E` and turns north on the deck into the box's south face.
+**44.694 ft on 7 elbows -> 45.954 ft on 6.** Rate backed out of the old term:
+
+    VP, 6" at 100 cfm:  V = 100 / 0.19635 = 509.3 fpm   VP = (509.3/4005)^2 = 0.016171 in.
+    old term 0.062088 = rate x 44.694 + 1.54 x 0.016171  ->  rate = 0.000832 in./ft
+    new term = 0.000832 x 45.954 + 1.32 x 0.016171 = 0.03824 + 0.02135 = 0.05958 in.
+
+Engine: 0.059580. Governing supply **0.43223 -> 0.42972 in.**; off the curve
+206 - (0.02972 / 0.1) x 5 = **204.5 cfm** against R403.5's 203.0: **+1.5 cfm**.
+
 ### 10.5 The thermal penalty of the legs (hand-worked)
 
 Both legs run through conditioned space in 2" of closed-cell elastomeric (two 1" layers of

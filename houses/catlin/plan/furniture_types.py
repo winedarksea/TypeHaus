@@ -119,18 +119,9 @@ PORCH_TRACK_102 = FurnitureType(
 # out 1" deep. For a ceiling panel the whole clear opening is in PLAN and the frame's
 # projection is the height, so the fields swap roles and the type has to be its own.
 #
-# ** 30 x 29, AND IT IS THAT BIG BECAUSE THE LADDER WAS HEADED OFF FOR IT. ** It was 20 x 13
-# for one day — the clear bay between two rungs at 16" o.c., which is a hand and a filter and
-# nothing else. `Soffit.openings` now exists (model/floors.py), so SF-S-HP1 authors a real
-# framed hole: one rung cut, two 32" headers along the box, and 30 x 29 of clear opening
-# under the air handler's north two-thirds and its return face. That is a service hatch a
-# blower comes out of, and `structural.soffit_opening` grades the header it hangs on.
-#
-# ** IT IS SEALED AND GASKETED, AND THAT IS A CODE LINE, NOT A DETAIL. ** The obvious
-# convenience — leave the soffit's bottom open in the closet and reach straight up — makes
-# the CLOSET the return plenum, which is exactly what IMC 601.5(7) forbids. A hinged, gasketed
-# door is the compliant version of the same convenience: air does not enter through it, so it
-# is a service hatch and not an inlet.
+# 30 x 29 served SF-S-HP1's air-handler hatch; with that soffit retired (2026-11-11) no panel
+# is placed and the type stays catalog-only. A ceiling hatch into a return path must be
+# gasketed, or the room becomes the plenum (IMC 601.5(7)).
 
 # --- built-in millwork ----------------------------------------------------------------
 #

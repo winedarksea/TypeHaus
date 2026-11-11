@@ -104,16 +104,16 @@ def test_soffit_ladder_framing_is_in_the_payload(catlin_model_ro):
     # is COVERAGE, not a census: enumerating the tags made this a tripwire that fired on any
     # new soffit (two basement bulkheads landed on 2026-09-07), which is not what it is for.
     assert set(soffits) == {item.tag for item in catlin_model_ro.soffits}
-    assert {"SF-S-DUCT", "SF-S-HP1"} <= set(soffits)
+    assert "SF-S-DUCT" in soffits
     assert all(entry["members"] for entry in soffits.values())
-    hp1 = soffits["SF-S-HP1"]
-    categories = {member["category"] for member in hp1["members"]}
+    duct = soffits["SF-S-DUCT"]
+    categories = {member["category"] for member in duct["members"]}
     assert categories == {"plate", "stud", "blocking"}
-    # And the two-stock ladder is visible in the payload, not just in the framing module:
-    # rails on the plate profile, rungs on the member profile.
-    rails = {m["profile"] for m in hp1["members"] if m["category"] == "plate"}
-    rungs = {m["profile"] for m in hp1["members"] if m["key"].startswith("soffit-rung-")}
-    assert rails == {"2x2"} and rungs == {"2x4"}
+    # Rails on the plate profile, rungs on the member profile, both visible in the payload.
+    # (The two-stock 2x2/2x4 ladder left with SF-S-HP1, retired 2026-11-11.)
+    rails = {m["profile"] for m in duct["members"] if m["category"] == "plate"}
+    rungs = {m["profile"] for m in duct["members"] if m["key"].startswith("soffit-rung-")}
+    assert rails == {"2x2"} and rungs == {"2x2"}
 
 
 def test_every_rebar_piece_reaches_both_emitters(catlin_model_ro):

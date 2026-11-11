@@ -165,44 +165,20 @@ REGISTERS_HVAC_SECOND = [
              location=Location(attachment=WallAttachment(
                  wall_ref="W-S-C1", face="left", distance_from_start=inch(88),
                  normal_gap=inch(0), rotation_offset=deg(0)))),
-    # THE ONE RETURN, and since 2026-09-04 it opens into a BOX rather than into three
-    # things at once. It is a filter-back grille in SF-S-HP1's underside at (20'-11 1/2",
-    # 29'-1 1/4"), wholly inside EQ-S-ERV-MIX — the return plenum that fills the box's east
-    # lane south of the cabinet — where the ERV's 100 cfm of fresh air enters through its own
-    # 6" drop and damper. Room air and outdoor air mix across 29" of plenum, then leave
-    # north up DU-S-HP-RET to the coil. Upstream of the coil and of EQ-S-HP1-STRIP, which
-    # sits south of the cabinet in the discharge.
+    # THE HALL RETURN: a 28 x 12 filter-back grille in SF-S-DUCT's underside at the hall's
+    # north end (AO-S-DUCT-RET), its boot rising through the soffit's open top into
+    # DU-S-HP-RET in FS-ATTIC's y 352-368 bay (2026-11-11; it was in SF-S-HP1's underside,
+    # opening into EQ-S-ERV-MIX). In the hall, not the closet: IMC 601.5(7) forbids return
+    # air from a closet (MN adopts the IMC). 336 in2 at 490 cfm is 210 fpm, inside Manual D
+    # SS4-10's 300 for a grille carrying the filter. The air handler moves 750: the ERV's 100,
+    # RM-S-SUITE's 80 and RM-S-BED3's 80 join in EQ-S-ERV-MIX.
     #
-    # ** WHAT IT WAS, AND WHY IT MOVED. ** A 30 x 16 face at (20'-9", 29'-0"): 240 in2 of it
-    # opened into DU-S-HP-RET, 120 in2 into the old 10 x 12 mixing box, and 120 in2 into bare
-    # soffit cavity. A return drawing a quarter of its face out of a framed ceiling cavity is
-    # IMC 601.5's building-cavity-as-plenum, and no check in this engine looks for it.
-    #
-    # ** `rotation=deg(90)` IS STILL REQUIRED. ** REG-T-HP-RET is catalogued 28 x 12; turned,
-    # it is 12 (x) x 28 (y), which is the plenum's own 12" east lane. Unrotated it would run
-    # 28" straight through the box lining.
-    #
-    # ** IT IS IN THE HALL, AND THAT IS ** IMC 601.5(7) **, NOT A PREFERENCE. ** MN adopts the
-    # IMC (Minn. R. 1309.0010 deletes IRC ch. 12-24), and 601.5(7) forbids taking return air
-    # from a closet. The face runs y 27'-11 1/4"..30'-3 1/4", clear of W-S-CLN-S's hall face
-    # at 30'-7 5/8" by 4 3/8". The same rule is why the closet's ceiling access panel is
-    # gasketed: an open lid over this cavity would be a closet return by another name.
-    #
-    # ** design_cfm IS 490. ** The air handler moves 750: the ERV puts 100 into the plenum
-    # through DU-S-ERV-HP-FEED, REG-S-HP-SUITE-RET 80 (2026-11-09) and REG-S-HP-BED3-RET 80
-    # (2026-11-11), so the hall air this grille draws is 490. 336 in2 at 490 cfm is 210 fpm,
-    # inside Manual D SS4-10's 300 for a grille carrying the filter.
-    #
-    # ** THE ELEVATION IS HAND-COUPLED AND UNCHECKED. ** 7'-1" is SF-S-HP1's finished
-    # underside (23" drop, storeys/second.py), not SF-S-DUCT's 7'-10". Change the drop and
-    # this number must be changed with it, or the grille sits inside the box and nothing
-    # says so. It has happened once: the drop went 21" -> 23" on 2026-09-18 to find room
-    # for the air handler's emergency drain pan, and this line followed it by hand.
+    # 92 1/2" is SF-S-DUCT's 94" underside off the hall's 1 1/2" oak floor, hand-coupled.
     Register(uid="CSRH05AAAA", tag="REG-S-HP-RET", kind=DuctSystem.RETURN,
-             room="RM-S-HALL", rotation=deg(90),
-             position=pt(inch(251.5), inch(350.25)), duct_ref="DU-S-HP-RET",
+             room="RM-S-HALL",
+             position=pt(inch(239), inch(359.5)), duct_ref="DU-S-HP-RET",
              type_ref="REG-T-HP-RET-FILTER", design_cfm=490,
-             mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 1))),
+             mount=Mount(kind=MountKind.CEILING, elevation=inch(92.5))),
     # RM-S-SUITE's ducted return (2026-11-09): a 12x12 filter-back ceiling grille between two
     # FS-ATTIC joists, clear of the W-S-SBS/W-S-DC2 corner, the bed and CAN3. Its own MERV 13
     # filter, because it enters the plenum behind REG-S-HP-RET's; a locked balancing damper
@@ -212,16 +188,13 @@ REGISTERS_HVAC_SECOND = [
              position=pt(inch(104), inch(184)), duct_ref="DU-S-HP-SUITE-RET",
              type_ref="REG-T-HP-RET-FILTER-1212", design_cfm=80,
              mount=Mount(kind=MountKind.CEILING)),
-    # RM-S-BED3's return (2026-11-11): the suite's grille and filter on W-S-BW4's bedroom face,
-    # above FURN-S-DESK3, centred y=34'-2" in the 402"/418" stud bay; face 209"..221" absolute
-    # (85 15/16" AFF), level with its take-off into DU-S-HP-RET. Over D-S-BED3 it sat 15" from
-    # REG-S-HP-BED3. Damper locked at 80 cfm; re-check at filter changes. D-S-BED3: stock 1/2".
+    # RM-S-BED3's return (2026-11-11): the suite's 12x12 filter-back ceiling grille, 6'-7" from
+    # REG-S-HP-BED3, clear of the bed and desk, rising to EQ-S-ERV-MIX on the attic deck.
+    # Damper locked at 80 cfm; re-check at filter changes. D-S-BED3: stock 1/2".
     Register(uid="M9R1FECSXZ", tag="REG-S-HP-BED3-RET", kind=DuctSystem.RETURN, room="RM-S-BED3",
-             duct_ref="DU-S-HP-BED3-RET", type_ref="REG-T-HP-RET-FILTER-1212-SIDE", design_cfm=80,
-             mount=Mount(kind=MountKind.WALL, elevation=inch(85.9375)),
-             location=Location(attachment=WallAttachment(
-                 wall_ref="W-S-BW4", face="right", distance_from_start=inch(40),
-                 normal_gap=inch(0), rotation_offset=deg(0)))),
+             position=pt(inch(317.5), inch(392)), duct_ref="DU-S-HP-BED3-RET",
+             type_ref="REG-T-HP-RET-FILTER-1212", design_cfm=80,
+             mount=Mount(kind=MountKind.CEILING)),
 ]
 
 # CONDENSATE — the indoor heads gravity-drain through PR-M-COND-HEADS / PR-B-COND to an air

@@ -180,5 +180,6 @@ ATTIC_ELEMENTS = [*mep_venting.VENT_BRANCHES_ATTIC,
                   *mep_electrical.ATTIC_DEVICES,
                   *mep_hvac.DUCTS_ATTIC,
                   *mep_hvac.DUCTS_HVAC_ATTIC,
+                  *mep_hvac.EQUIPMENT_HVAC_ATTIC,
                   *mep_registers_attic.REGISTERS_ATTIC,
                   *mep_registers_attic.REGISTERS_HVAC_ATTIC]

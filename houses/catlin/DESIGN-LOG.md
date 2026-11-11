@@ -7960,3 +7960,36 @@ Finish layers now bill off their polygons rather than node-to-node axis runs
 branch's band, and L-corner boards are polygon-true. Gypsum -730 sf (12,328 -> 11,597; about
 -327 from the tee cuts, -350 from branch ends, -65 from L corners), paint -663 sf, PVC liner -31,
 sauna shiplap -11.
+
+## System 1 moves to the attic; SF-S-HP1 retired (2026-11-11, owner)
+
+The FLEXX Ultra's front panel needs 24" of clear space (submittal p.6). In `SF-S-HP1` over
+`RM-S-NCLOSET` it faced east with 13 3/8" to the cavity wall, and the underside hatch gave no
+access perpendicular to the panel (`mep.air_handler_coordination` FAIL). The owner accepted
+either the linen closet or the attic and asked for the cleanest design. The attic won on
+every count: open service space, no closet lost, the shortest return runs, and the fresh-air
+feed no longer drops through a ceiling.
+
+`EQ-S-HP1-AH` is on `RM-A-EAST-UNFIN`'s deck at rotation 0: discharge west, return east, front
+south onto open deck. The 24" zone was checked clear by hand, with 70 1/2-91 1/2" of headroom.
+Supply: an 11 5/8 x 16 3/4 neck to `EQ-A-HP1-SUP-BOX` (shop box, 22 1/2 x 14 x 21; its solid
+floor meets the IOM's solid-bottom rule), then a 12x12 drop through `FO-A-HP1-SUP` as a top
+take-off into the 18x8 trunk in `SF-S-DUCT`, which was extended north to `W-S-CLN-S`. Return: `EQ-S-ERV-MIX` (27 1/2 x 39 x 21) sits 4" off the east end with a 20x16
+neck. The return opening is unpublished, so 20x16 is inferred and flagged. The hall,
+suite and BED3 returns and the ERV feed all end in it. The hall grille is a ceiling grille in
+`SF-S-DUCT` (`AO-S-DUCT-RET`); BED3's is a ceiling grille rising 12x6 onto the deck. The heat kit
+sits inside the cabinet with its power port only. Retired: `SF-S-HP1`, `FURN-S-NCLOSET-AP`, the
+-SIDE grille type, the BW4 take-off and `FO-A-ERV-MIX`. `RM-S-NCLOSET` and the north hall get
+their full ceiling back.
+
+Engine: the interlock walk from an un-interlocked AH now crosses passive boxes the ERV side
+did not reach, so System 1's rooms still go UNKNOWN through the supply box. `needs_hangers` lets
+a run with no level leg >= 12" be carried by its fittings. A rectangular saddle row holds
+deck-bearing runs, and the "supply box" token infers `MIXING_BOX`. ERV supply column 0.432 ->
+0.430 in., 204.5 cfm against 203.0 (`notes/erv_static_budget.md` §10.19). `haus check`: 0
+FAIL. The coordination FAIL is now an honest UNKNOWN, and five rectangular shop elbows read
+UNKNOWN like the rest of the house's.
+
+Open (`plans/TODO.md`): the secondary pan (lifts the cabinet about 2"), the condensate route,
+the lineset to `EQ-M-HP1-OD`, attic service provisions (passageway, a light switched at the
+entry, a receptacle), and measuring the delivered return aperture.

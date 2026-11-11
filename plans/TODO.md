@@ -35,14 +35,19 @@ Note that many of the pinned decisions in the code base here aren't as fixed as 
 
 ### MEP / lighting residuals
 
-- **EQ-S-HP1-AH geometry review (2026-11-11):** the horizontal FLEXX now has a
-  product-specific 3D shell, sized supply opening, eight declared interfaces and a
-  24-inch front service zone. `mep.air_handler_coordination` FAILs the east-facing
-  service zone through SF-S-HP1; the underside hatch does not provide that access.
-  Rework orientation/enclosure and return together, model the offset supply transition,
-  primary/secondary condensate and pan, and replace the heat kit's legacy external body
-  with a hosted internal accessory. See `houses/catlin/notes/flexx_ultra_geometry.md`;
-  port stations and return aperture remain unverified.
+- **System 1 in the attic (2026-11-11), what is still open.** The air handler is on
+  `RM-A-EAST-UNFIN`'s deck (`houses/catlin/notes/flexx_ultra_geometry.md`):
+  - Secondary drain pan (IMC 307.2.3) is unmodelled. It lifts the cabinet and both necks
+    about 2" (`tasks.toml` air-handler-drain-pan).
+  - Primary and secondary condensate route from the attic to a receptor is undrawn.
+  - Lineset and control cable from `EQ-M-HP1-OD` to the attic are unrouted.
+  - Attic service provisions: a passageway from `D-A-STUDY`, a level service space, a
+    light switched at the entry and a receptacle near the unit (IRC M1305.1.3 / IMC 306.3).
+  - Measure the delivered cabinet's return aperture (modelled as 20x16, inferred) and the
+    supply opening setback before the necks are built.
+  - `RM-A-EAST-UNFIN` must stay inside the thermal envelope while it holds the air
+    handler. This matters for the "don't count the attic lofts as conditioned" item below.
+  - Engine: there is no PLENUM equipment kind. Passive shop boxes ride `MIXING_BOX`.
 
 **The open MEP campaigns' live record is `houses/catlin/preferences.toml`**, not this file:
 the itemised web crossings, each with its count and a dated note. `haus check houses/catlin

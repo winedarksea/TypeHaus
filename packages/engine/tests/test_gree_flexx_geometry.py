@@ -60,38 +60,56 @@ def test_visible_connection_markers_agree_with_declared_front_face_ports():
         assert part["center"][2] == pytest.approx(z)
 
 
-def test_catlin_rotates_front_service_space_east_and_supply_south(catlin_model_ro):
+def test_catlin_faces_front_service_space_south_and_supply_west(catlin_model_ro):
+    """On RM-A-EAST-UNFIN's deck (2026-11-11): the front panel faces the open attic south,
+    supply discharges west into EQ-A-HP1-SUP-BOX, return enters east from EQ-S-ERV-MIX."""
     obj = next(obj for obj in catlin_model_ro.canvas_objects if obj.tag == "EQ-S-HP1-AH")
     ports = {port.port_tag: port for port in placed_ports(catlin_model_ro)
              if port.equipment_tag == obj.tag}
-    assert ports["power"].direction == pytest.approx((1, 0, 0))
-    assert ports["supply"].direction == pytest.approx((0, -1, 0))
+    assert ports["power"].direction == pytest.approx((0, -1, 0))
+    assert ports["supply"].direction == pytest.approx((-1, 0, 0))
+    assert ports["return"].direction == pytest.approx((1, 0, 0))
     zone, = obj.required_clearances
-    case_east = max(x for x, _ in obj.footprint)
-    assert min(x for x, _ in zone) == pytest.approx(case_east)
-    assert (max(x for x, _ in zone) - case_east) / M_PER_IN == pytest.approx(24)
+    case_south = min(y for _, y in obj.footprint)
+    assert max(y for _, y in zone) == pytest.approx(case_south)
+    assert (case_south - min(y for _, y in zone)) / M_PER_IN == pytest.approx(24)
     assert ports["supply"].x_m < obj.position[0]
 
 
-def test_catlin_cannot_claim_the_underside_hatch_as_front_service_space(
-    catlin_plan, catlin_model_ro,
-):
+def test_catlin_open_deck_install_stays_unknown_not_pass(catlin_plan, catlin_model_ro):
+    """No enclosure to test against: the check asks for coordination rather than passing."""
     findings = air_handler_coordination(check_context(catlin_plan, catlin_model_ro))
+    assert [finding.result.value for finding in findings] == ["unknown", "unknown"]
+    assert "no soffit enclosure" in findings[0].message
+    assert "return clear aperture" in findings[1].message
+
+
+def _boxed(catlin_plan, catlin_model_ro, grow_to_zone: bool):
+    """The AH declared inside a synthetic soffit: its case, or its case plus the zone."""
+    obj = next(obj for obj in catlin_model_ro.canvas_objects if obj.tag == "EQ-S-HP1-AH")
+    outline = Polygon(obj.footprint)
+    if grow_to_zone:
+        outline = outline.union(Polygon(obj.required_clearances[0])).convex_hull
+    model = dataclasses.replace(catlin_model_ro, soffits=[
+        dataclasses.replace(s, outline=list(outline.exterior.coords)[:-1])
+        if s.tag == "SF-S-DUCT" else s for s in catlin_model_ro.soffits])
+    elements = {storey: tuple(el.model_copy(update={"soffit_ref": "SF-S-DUCT"})
+                              if el.tag == obj.tag else el for el in items)
+                for storey, items in catlin_plan.elements.items()}
+    plan = catlin_plan.model_copy(update={"elements": elements})
+    return air_handler_coordination(check_context(plan, model))
+
+
+def test_an_enclosure_without_the_front_zone_fails(catlin_plan, catlin_model_ro):
+    findings = _boxed(catlin_plan, catlin_model_ro, grow_to_zone=False)
     assert [finding.result.value for finding in findings] == ["fail", "unknown"]
     assert "underside hatch" in findings[0].message
-    assert "return clear aperture" in findings[1].message
 
 
 def test_an_enclosure_that_covers_the_zone_still_needs_obstruction_coordination(
     catlin_plan, catlin_model_ro,
 ):
-    obj = next(obj for obj in catlin_model_ro.canvas_objects if obj.tag == "EQ-S-HP1-AH")
-    soffit = next(s for s in catlin_model_ro.soffits if s.tag == "SF-S-HP1")
-    expanded = Polygon(soffit.outline).union(Polygon(obj.required_clearances[0])).convex_hull
-    model = dataclasses.replace(catlin_model_ro, soffits=[
-        dataclasses.replace(s, outline=list(expanded.exterior.coords)[:-1])
-        if s.tag == soffit.tag else s for s in catlin_model_ro.soffits])
-    findings = air_handler_coordination(check_context(catlin_plan, model))
+    findings = _boxed(catlin_plan, catlin_model_ro, grow_to_zone=True)
     assert {finding.result.value for finding in findings} == {"unknown"}
 
 

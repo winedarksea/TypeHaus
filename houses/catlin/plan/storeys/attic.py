@@ -755,15 +755,30 @@ FLOOR_OPENINGS = [
                  outline=(pt(inch(213.75), inch(246.375)), pt(inch(216.25), inch(246.375)),
                           pt(inch(216.25), inch(248.875)), pt(inch(213.75), inch(248.875))),
                  penetration_for=("PR-A-STUBATH-SH-TEE",)),
-    # ...and where HP-FEED climbs back onto the deck at x=21'-0".
+    # ...and where HP-FEED climbs back onto the deck at x=25'-10" (2026-11-11).
     FloorOpening(uid="S2EY02EB8Q", tag="FO-A-ERV-HPFEED-E", purpose=FloorOpeningPurpose.CHASE,
-                 outline=(pt(inch(248.5), inch(259.5)), pt(inch(255.5), inch(259.5)),
-                          pt(inch(255.5), inch(265.7)), pt(inch(248.5), inch(265.7))),
-                 penetration_for=("DU-S-ERV-HP-FEED",)),
-    FloorOpening(uid="WE96G7XJTG", tag="FO-A-ERV-MIX", purpose=FloorOpeningPurpose.CHASE,
-                 outline=(pt(inch(248.5), inch(341.5)), pt(inch(255.5), inch(341.5)),
-                          pt(inch(255.5), inch(348.5)), pt(inch(248.5), inch(348.5))),
-                 penetration_for=("DU-S-ERV-HP-FEED",)),
+                 outline=(pt(inch(306.5), inch(259.5)), pt(inch(313.5), inch(259.5)),
+                          pt(inch(313.5), inch(265.7)), pt(inch(306.5), inch(265.7))),
+                 penetration_for=("DU-S-ERV-HP-FEED",), cuts_ceiling_below=False),
+    # System 1 at the attic air handler (2026-11-11): each hole sized to its riser inside one
+    # FS-ATTIC bay, so none cuts a joist. The supply drop goes on down into SF-S-DUCT's open
+    # top; the three returns come up out of bays above whole ceilings.
+    FloorOpening(uid="8HSCTAG7ZJ", tag="FO-A-HP1-SUP", purpose=FloorOpeningPurpose.CHASE,
+                 outline=(pt(inch(227.5), inch(337.5)), pt(inch(240.5), inch(337.5)),
+                          pt(inch(240.5), inch(350.5)), pt(inch(227.5), inch(350.5))),
+                 penetration_for=("DU-S-HP-SUP-DROP",)),
+    FloorOpening(uid="963KT65P56", tag="FO-A-HP1-RET", purpose=FloorOpeningPurpose.CHASE,
+                 outline=(pt(inch(298), inch(353.5)), pt(inch(311), inch(353.5)),
+                          pt(inch(311), inch(366.5)), pt(inch(298), inch(366.5))),
+                 penetration_for=("DU-S-HP-RET",), cuts_ceiling_below=False),
+    FloorOpening(uid="73S6GC16TR", tag="FO-A-HP1-SUITE-RET", purpose=FloorOpeningPurpose.CHASE,
+                 outline=(pt(inch(309), inch(340.5)), pt(inch(316), inch(340.5)),
+                          pt(inch(316), inch(347.5)), pt(inch(309), inch(347.5))),
+                 penetration_for=("DU-S-HP-SUITE-RET-UP",), cuts_ceiling_below=False),
+    FloorOpening(uid="NFNCAG8PXN", tag="FO-A-HP1-BED3-RET", purpose=FloorOpeningPurpose.CHASE,
+                 outline=(pt(inch(311), inch(385.5)), pt(inch(324), inch(385.5)),
+                          pt(inch(324), inch(398.5)), pt(inch(311), inch(398.5))),
+                 penetration_for=("DU-S-HP-BED3-RET",), cuts_ceiling_below=False),
     # Where the radon/vent bundle rises again after its jog: vent at x=9'-7 1/2", radon 6.2"
     # west at 9'-1.3" (side by side since 2026-10-08). The two risers straddle the y=34'-8"
     # joist, so each takes its own hole in its own bay. The radon hole runs east to the vent
@@ -871,7 +886,8 @@ FLOOR = [
                 # NOT in `joists.bearing_refs` are all in plan/storeys/stair_hall_void.py.
                 openings=("FO-A-STAIR", "FO-A-HALL", "FO-A-ERV-CHASE",
                           "FO-A-VENT-STACK", "FO-A-RADON-STACK", "FO-A-ERV-HPFEED",
-                          "FO-A-ERV-BATH1", "FO-A-ERV-HPFEED-E", "FO-A-ERV-MIX", "FO-A-ERV-ATTIC",
+                          "FO-A-ERV-BATH1", "FO-A-ERV-HPFEED-E", "FO-A-HP1-SUP", "FO-A-HP1-RET",
+                          "FO-A-HP1-SUITE-RET", "FO-A-HP1-BED3-RET", "FO-A-ERV-ATTIC",
                           "FO-A-ERV-STUBATH", "FO-A-ERV-STUBATH-RISER",
                           "FO-A-STUBATH-SH-TEE")),
 ]

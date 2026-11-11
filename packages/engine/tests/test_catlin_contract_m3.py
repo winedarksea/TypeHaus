@@ -1359,12 +1359,13 @@ def test_catlin_is_all_electric_with_no_gas_appliance(catlin_model):
     # collars could state their stations, and it declares SUPPLY_AIR on them. Its extract
     # twin declares RETURN_AIR and EXHAUST_AIR and is not in this set.
     #
-    # The FLEXX heat kit joined in Phase 9: it sits in the supply stream, and the SUPPLY_AIR
-    # port is the relation that lets DU-S-HP-SUP pass through it.
+    # 2026-11-11: the FLEXX heat kit left (it slides inside the cabinet's discharge and keeps
+    # only its power port) and System 1's shop-built supply box joined, between the cabinet
+    # and DU-S-HP-SUP-DROP on the attic deck.
     assert air == {"EQ-T-BROAN-B210E75RT", "EQ-T-GREE-FLEXX-ULTRA-24-AH",
                    "EQ-T-ERV-MANIFOLD-6", "EQ-T-ERV-MIXING-BOX",
                    "EQ-T-ERV-PLENUM-M-SUP", "EQ-T-ERV-PLENUM-B-SUP",
-                   "EQ-T-GREE-FLEXX-HEATKIT-46KW"}
+                   "EQ-T-HP1-SUP-BOX"}
 
 
 # The invariant is one number per group, not a single value: every perimeter assembly

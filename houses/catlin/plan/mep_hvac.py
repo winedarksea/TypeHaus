@@ -23,6 +23,8 @@ from typehaus import (
     EquipmentKind,
     EquipmentType,
     Footprint2D,
+    Mount,
+    MountKind,
     PortCertainty,
     Service,
     ServicePort,
@@ -154,6 +156,15 @@ EQUIPMENT_TYPES = (
                   ports=(ServicePort(tag="dc", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),),
                   source="EG4 WallMount Indoor 280Ah product page (read 2026-10-31): 14.3 kWh LFP, 36.4 x 18.1 x 9.6 in (H x W x D), 282 lb, UL 1973 + UL 9540A; UL 9540 as a system with the 12kPV/18kPV/FlexBOSS21; closed-loop RS485 comms. Capacity is nameplate; the autonomy calc applies its own depth of discharge (takeoff/backup_calc.py)."),
+    # EQ-S-HP1-AH's supply box (2026-11-11), filed MIXING_BOX: the passive-box kind.
+    EquipmentType(tag="EQ-T-HP1-SUP-BOX",
+                  name="System 1 supply box, 22 1/2 x 14 x 21 in, shop-fabricated",
+                  footprint=(inch(22.5), inch(14)), height=inch(21), plan_symbol="erv",
+                  source="Shop-fabricated galvanized plenum, 22 1/2 x 14 x 21 in, on the attic deck at EQ-S-HP1-AH's discharge: the cabinet's 11 5/8 x 16 3/4 in opening enters its east face through the unit's 3 in canvas connector, and DU-S-HP-SUP (18x8) leaves through its floor down FS-ATTIC's y 336-352 bay. It is the transition between the two sections. Gree's IOM asks for a solid sheet-metal bottom for the first 6 in after the unit; that reads as the downflow-over-combustible-floor case, but the drop here starts at the inlet wall, so confirm with Gree before fabrication. Mastic-sealed, 26 ga, set on the deck.",
+                  ports=(ServicePort(tag="inlet", service=Service.SUPPLY_AIR,
+                                     position=(inch(11.25), ft(0), inch(11))),
+                         ServicePort(tag="drop", service=Service.SUPPLY_AIR,
+                                     position=(ft(0), ft(0), ft(0))))),
 )
 
 # --- Ventilation: ERV fresh-air / stale-air trunks ------------------------------------
@@ -172,80 +183,46 @@ DUCTS_BASEMENT = []
 DUCTS_ATTIC = []
 
 # --- System 1: the conditioned-air chase (plans/TODO.md §HVAC) -----------------------
-# EQ-S-HP1-AH (plan/electrical.py) hangs INSIDE SF-S-HP1 at the NORTH end of the chase
-# (y 30'-4 1/2"..34'-0", over RM-S-NCLOSET) and feeds ONE straight supply trunk running
-# SOUTH down the second-floor hallway inside SF-S-DUCT. The return comes back up the east
-# lane of SF-S-HP1 from a proper central-hall grille, and the ERV's fresh feed is wyed into
-# EQ-S-ERV-MIX at the return's far (south) end. The whole system reversed on 2026-09-04
-# when the machine moved out of RM-S-STUDY2's ceiling.
+# EQ-S-HP1-AH lies on the attic deck over the north hall (EQUIPMENT_HVAC_ATTIC below, since
+# 2026-11-11: SF-S-HP1's 36 1/2" clear width could not hold Gree's 24" front service space in
+# any orientation). Its west discharge feeds EQ-A-HP1-SUP-BOX, which drops DU-S-HP-SUP through
+# FS-ATTIC's y 336-352 bay into SF-S-DUCT; the trunk runs SOUTH down the hallway. The hall
+# return rises from REG-S-HP-RET through the y 352-368 bay to EQ-S-ERV-MIX at the unit's east
+# end, where the ERV feed and RM-S-SUITE's and RM-S-BED3's returns also land.
 #
-# SOFFIT routing + `soffit_ref`: naming the modeled Soffit puts these runs under
-# `mep.duct_soffit_occupancy`, which derives the box's clear section from its own drop,
-# framing member and lining and measures every occupant against it side by side. It also
-# gives them their elevation for free: a run that names a soffit and authors no elevation
-# sits on the box's clear underside. CHASE keeps its honest meaning for a framed shaft that
-# is not modeled as a Soffit. The two crossings of the x=18' bearing line are legal either way.
-# Hall is x 18'-2 3/4"..21'-8" clear; the trunk runs at x=19'-6".
+# SOFFIT routing + `soffit_ref` puts the trunk under `mep.duct_soffit_occupancy`. Hall is
+# x 18'-2 3/4"..21'-8" clear; the trunk runs at x=19'-6".
 DUCTS_HVAC_SECOND = [
-    # ** THE TRUNK CARRIES THE WHOLE 750 NOW, AND THAT IS THE POINT OF THE REVERSAL. **
-    # It used to leave the machine as a 500 north / 250 east split at the discharge. With
-    # the machine at the north end there is one discharge and one direction: 750 cfm goes
-    # south, sheds 3 x 80 (plan/mep_hvac_branches.py) + 50 + 175 + 35 along the way, and hands
-    # the last 250 to DU-S-HP-SOUTH-RISE at the cap. Tapered by intent, one section by build.
+    # 750 cfm through 18x8 is 750 fpm (14x8 was 965, over Manual D's 900 for a trunk in a
+    # finished space). It sheds 3 x 80 (plan/mep_hvac_branches.py) + 50 + 175 + 35 and hands
+    # the last 250 to DU-S-HP-SOUTH-RISE collinearly at the cap (y=9'-10").
     #
-    # 750 cfm through 14x8 is 965 fpm, above Manual D's 900 fpm ceiling for a trunk in a
-    # finished space; 18x8 is 750 fpm. 18" and not 20" because SF-S-DUCT's 30 3/4" clear
-    # has to carry the ERV mixing-box riser past the trunk as well.
-    #
-    # x=19'-6": the west face lands 3/8" inside the cavity and the east face keeps the full
-    # 2" off the ERV riser. REG-A-HP-EAST at (19'-4", 11'-4") is still squarely over the
-    # trunk (x 18'-9"..20'-3"), so its floor boot still rises straight.
-    #
-    # It begins ON the air handler's discharge face at (19'-6", 30'-4 1/2") inside SF-S-HP1
-    # and crosses the y=27'-8" seam into SF-S-DUCT. `soffit_ref` names the hall box because
-    # that is where the great majority of it runs; the check clips a run's extent to the box
-    # it names. (DU-S-HP-SUITE used the same idiom where SF-S-SUITE abutted; that box was
-    # retired 2026-09-13 and the branch is EXPOSED now, so this trunk is the only user left.)
-    #
-    # It ends at y=9'-10", where DU-S-HP-SOUTH-RISE picks it up COLLINEARLY at the cap.
+    # Its north cap is at y=29'-2", 6" past DU-S-HP-SUP-DROP's top take-off and north of
+    # DU-S-HP-BED3's collar (y=27'-6"). REG-A-HP-EAST at (19'-4", 11'-4") is still squarely
+    # over it. 100 1/8" storey is SF-S-DUCT's cavity floor.
     DuctRun(uid="CSDH01AAAA", tag="DU-S-HP-SUP", system=DuctSystem.SUPPLY,
-            path=(pt(ft(19, 6), ft(30, 4.5)), pt(ft(19, 6), ft(9, 10))),
+            path=(pt(ft(19, 6), inch(350)), pt(ft(19, 6), ft(9, 10))),
+            elevations=(inch(100.125), inch(100.125)),
             width=inch(18), depth=inch(8), routing=DuctRouting.SOFFIT,
             soffit_ref="SF-S-DUCT", design_cfm=750, material="galvanized"),
-    # THE RETURN — a real one, up the east lane of SF-S-HP1. The old system had no return
-    # duct worth the name: the machine breathed through RM-S-STUDY2's cased opening off a
-    # 6" stub.
-    #
-    # ** IT STARTS INSIDE THE PLENUM, NOT AT A GRILLE. ** REG-S-HP-RET opens into
-    # EQ-S-ERV-MIX's underside and the ERV's fresh feed drops into the same box; this run is
-    # what leaves it. It begins at (21'-0", 29'-7"), inside the plenum's y 27'-11"..30'-4",
-    # runs north up the east lane past the cabinet, then west across the box's north end onto
-    # the cabinet's return face at (19'-6", 34'-0"). `_pair_is_plumbed` excuses the
-    # plenum<->duct overlap at the start — `mep.duct_connectivity` earns that, it is not a
-    # tolerance.
-    #
-    # 10 (x) x 18 (depth): 180 in2 at 750 cfm is 600 fpm, a return velocity. The 10" is what
-    # the box's 36.50" clear width can spare beside the 21 1/4" cabinet and a 2 3/8" hanger
-    # gap; the 18" goes into the 20.25" cavity, which is why there is no `elevations` here —
-    # the run derives the cavity floor for itself. ** If `mep.duct_soffit_occupancy` ever
-    # objects to 18" in the cavity, the fallback is 10x16 at 675 fpm. ** Let the check
-    # decide; never hand-author a clear width.
-    #
-    # THE CAVITY WAS 18.25" until 2026-09-18, when the box went to a 23" drop to make room
-    # for the air handler's emergency drain pan. This run derives the floor, so it simply
-    # moved down with it — but the 2" the pan takes is the machine's AND this duct's: set on
-    # the pan, the cabinet reads 2 + 18 1/8 = 20 1/8 and this return 2 + 18 = 20, both
-    # inside 20.25. That is what the deepening was sized to, and it is why 18" survived.
-    #
-    # It carries the full 750: 490 of hall air off the grille, 80 each through
-    # REG-S-HP-SUITE-RET and REG-S-HP-BED3-RET and the ERV's 100, mixed in
-    # the plenum behind it. Everything here is upstream of the coil and therefore upstream of
-    # EQ-S-HP1-STRIP, which sits SOUTH of the cabinet in the discharge.
+    # THE DROP from EQ-A-HP1-SUP-BOX's floor through FS-ATTIC's y 336-352 bay (FO-A-HP1-SUP)
+    # onto the trunk's top. 12x12 and not the trunk's 18x8: the same 144 in2 (750 fpm), and a
+    # 12" riser passes between joists 16" apart where an 18" one cuts one.
+    DuctRun(uid="F5569DXC7B", tag="DU-S-HP-SUP-DROP", system=DuctSystem.SUPPLY,
+            path=(pt(ft(19, 6), inch(344)), pt(ft(19, 6), inch(344))),
+            elevations=(inch(121), inch(102)),
+            width=inch(12), depth=inch(12), routing=DuctRouting.CHASE,
+            design_cfm=750, material="galvanized"),
+    # THE HALL RETURN: REG-S-HP-RET's boot rises through SF-S-DUCT's open top into FS-ATTIC's
+    # y 352-368 bay, runs east along it (12 wide x 10 deep in 13 11/16" clear; 490 cfm is
+    # 588 fpm) and turns up through the deck into EQ-S-ERV-MIX. The bay runs in x, so
+    # nothing is bored.
     DuctRun(uid="CSDH02AAAA", tag="DU-S-HP-RET", system=DuctSystem.RETURN,
-            path=(pt(ft(21), ft(29, 7)), pt(ft(21), ft(34, 8)),
-                  pt(ft(19, 6), ft(34, 8)), pt(ft(19, 6), ft(34))),
-            width=inch(10), depth=inch(18), routing=DuctRouting.SOFFIT,
-            soffit_ref="SF-S-HP1", design_cfm=750, material="galvanized"),
+            path=(pt(inch(239), inch(360)), pt(inch(304.5), inch(360)),
+                  pt(inch(304.5), inch(360))),
+            elevations=(inch(114.125), inch(114.125), inch(121)),
+            width=inch(12), depth=inch(10), routing=DuctRouting.JOIST_BAY,
+            floor_ref="FS-ATTIC", design_cfm=490, material="galvanized"),
     # West branch to RM-S-SUITE: tees off DU-S-HP-SUP at y=14'-8 7/8", 7" north of
     # D-S-SUITE's centreline, and crosses W-S-C2B above the door in the CLEAR bay between
     # its header cripples (2026-10-31: on the door centre the 10x8 ran through the middle
@@ -338,8 +315,8 @@ DUCTS_HVAC_SECOND = [
     # So the soffit leg is not laziness — it is the only way to travel 6'-6" in y under a
     # floor whose joists run in x. The 7 ft of box in the study is what that costs.
     #
-    # 99 1/8" is a 6"-deep duct on SF-S-DUCT's clear underside (the box's 14" drop, not
-    # SF-S-HP1's 21"); 111 1/8" is the same duct's centreline on FS-ATTIC's bottom chord,
+    # 99 1/8" is a 6"-deep duct on SF-S-DUCT's clear underside (the box's 14" drop);
+    # 111 1/8" is the same duct's centreline on FS-ATTIC's bottom chord,
     # the elevation DU-S-HP-SOUTH derives for itself from the joists. Both storey-relative
     # to `second`, whose datum is 10'-0" — the same convention every PipeRun here uses.
     DuctRun(uid="27B8FKNDPB", tag="DU-S-HP-SOUTH-RISE", system=DuctSystem.SUPPLY,
@@ -349,17 +326,66 @@ DUCTS_HVAC_SECOND = [
             width=inch(10), depth=inch(6), routing=DuctRouting.SOFFIT,
             soffit_ref="SF-S-DUCT", design_cfm=250, material="galvanized"),
     # DU-S-ERV-HP-FEED is in plan/mep_erv_l3.py: it comes off the attic sub-manifold and
-    # drops straight onto EQ-S-ERV-MIX in SF-S-HP1; it never enters SF-S-DUCT. DU-S-PLANT-EXH is DU-M-ERV-R-PLANT there,
+    # ends in EQ-S-ERV-MIX on the attic deck; it never enters SF-S-DUCT. DU-S-PLANT-EXH is DU-M-ERV-R-PLANT there,
     # on the LEVEL-2 manifold, running in FS-S-WEST's open-web trusses and rising inside
     # W-S-C1 to a high sidewall grille — it is not System 1's, it is the ERV's stale pull
     # out of RM-S-PLANT: 25 cfm against ~20 of makeup, extract-biased on purpose, and an ERV
     # is damage limitation rather than humidity control (notes/plant_room.md).
 ]
 
-# Both of the loft's terminals are straight floor boots — REG-A-HP-EAST off DU-S-HP-SUP and
-# REG-A-HP-STUDY off DU-S-HP-SOUTH. DUCTS_HVAC_ATTIC is empty rather than absent, because
-# "this storey has no horizontal duct" is a fact worth stating where the list would be.
-DUCTS_HVAC_ATTIC = []
+# THE AIR HANDLER IN THE ATTIC (2026-11-11). Horizontal-left on the deck of RM-A-EAST-UNFIN
+# (conditioned, under the hot roof), over the north hall; its emergency pan (2" deep, 3"
+# oversize, tasks.toml) is not modelled and lifts every connection 2" on site. Rotation 0
+# puts the discharge west, the return east and the service front SOUTH, where Gree's 24" zone
+# (x 20'-10 1/2"..24'-6", y 25'-4 9/16"..27'-4 9/16") is open deck at the end of the walk
+# from D-A-STUDY: ~20' at
+# 6'-9" headroom or more, inside IMC 306.3's 50' passageway. The supply opening's rear-biased
+# centre (y=28'-8") is the drop bay's centre. Tags keep their `-S-` for continuity. The
+# refrigerant lines and condensate are not modelled (notes/flexx_ultra_geometry.md).
+EQUIPMENT_HVAC_ATTIC = [
+    Equipment(uid="CEE032AAAA", tag="EQ-S-HP1-AH",
+              kind=EquipmentKind.DUCTED_AIR_HANDLER,
+              position=pt(inch(272.25), inch(339.1875)), footprint=(inch(43.5), inch(21.25)),
+              room="RM-A-EAST-UNFIN", type_ref="EQ-T-GREE-FLEXX-ULTRA-24-AH",
+              outdoor_ref="EQ-M-HP1-OD", circuit="CKT-HP1-AH",
+              mount=Mount(kind=MountKind.FLOOR),
+              zone_rooms=("RM-S-STUDY2", "RM-S-PLANT", "RM-S-BED1", "RM-S-BED2",
+                          "RM-S-BED3", "RM-S-SUITE", "RM-S-SUITEBATH", "RM-S-VANITY",
+                          "RM-S-BATH1", "RM-S-HALL", "RM-S-CLOSET", "RM-S-NCLOSET",
+                          "RM-A-EAST-UNFIN", "RM-A-STUDY", "RM-A-STUDIO",
+                          "RM-A-STUBATH", "RM-A-POCKET")),
+    # The FLEXA2LHTR05KWD kit slides into the cabinet's discharge end and is drawn there.
+    # `blower_interlock_ref` is what makes the overlap intended: the unit's own 24 VAC board
+    # stages it with the blower. Fed from CKT-HP1-AH (35 A).
+    Equipment(uid="CEE033AAAA", tag="EQ-S-HP1-STRIP", kind=EquipmentKind.SPACE_HEATER,
+              position=pt(inch(256.5), inch(339.1875)), footprint=(inch(16), inch(10)),
+              rotation=deg(90), room="RM-A-EAST-UNFIN",
+              type_ref="EQ-T-GREE-FLEXX-HEATKIT-46KW", circuit="CKT-HP1-AH",
+              blower_interlock_ref="EQ-S-HP1-AH",
+              mount=Mount(kind=MountKind.FLOOR)),
+    Equipment(uid="HP2Y52SMWG", tag="EQ-A-HP1-SUP-BOX", kind=EquipmentKind.MIXING_BOX,
+              position=pt(inch(236.25), inch(344)), footprint=(inch(22.5), inch(14)),
+              room="RM-A-EAST-UNFIN", type_ref="EQ-T-HP1-SUP-BOX",
+              mount=Mount(kind=MountKind.FLOOR)),
+]
+
+# The cabinet's two air connections: each is the unit's 3" canvas connector (DuctStandard
+# PortKit) and a 1" collar into its shop box (the return box stands 4" off the cabinet). Sections are the openings: supply 11 5/8 across x
+# 16 3/4 high (submittal p.4); return 20 x 16, INFERRED from the 16x20x1 internal filter
+# (IOM §2.5). Measure the delivered cabinet before either box is made. REG-A-HP-EAST and
+# REG-A-HP-STUDY are straight floor boots off the second-storey trunks.
+DUCTS_HVAC_ATTIC = [
+    DuctRun(uid="Q3DEES5ZH3", tag="DU-A-HP1-SUP-NECK", system=DuctSystem.SUPPLY,
+            path=(pt(inch(250.5), inch(344)), pt(inch(246.5), inch(344))),
+            elevations=(inch(9.8125), inch(9.8125)),
+            width=inch(11.625), depth=inch(16.75), routing=DuctRouting.EXPOSED,
+            design_cfm=750, material="galvanized"),
+    DuctRun(uid="XNJFPY0B2F", tag="DU-A-HP1-RET-NECK", system=DuctSystem.RETURN,
+            path=(pt(inch(299), inch(339.1875)), pt(inch(294), inch(339.1875))),
+            elevations=(inch(9.8125), inch(9.8125)),
+            width=inch(20), depth=inch(16), routing=DuctRouting.EXPOSED,
+            design_cfm=750, material="galvanized"),
+]
 
 # ** OPEN IN RM-B-WORKSHOP's NE CORNER SINCE 2026-11-09 (owner). ** Back on W-B-CW2 (Rheem
 # 0" rear), riser lobe 14" off W-B-HALL-W. Both air connections are ducted through

@@ -43,65 +43,30 @@ EQUIPMENT_ERV_ATTIC = [
               # serviceable.
               room="RM-A-POCKET", type_ref="EQ-T-ERV-MANIFOLD-6-EXH",
               mount=Mount(kind=MountKind.FLOOR)),
-]
-# THE MIXING BOX — inside SF-S-HP1, in the return chamber at the air handler's return
-# face, which is the one place in this loop where fresh air may legally arrive, upstream of
-# the coil, the strip heater and the unit's own filter-back grille. Injecting it anywhere
-# downstream of the coil and the 2 kW strip heater would deliver 100 cfm of -15 F design
-# outdoor air — half the house's fresh air — untempered.
-#
-# ** IT LOOKS LIKE A FITTING ONCE THE RETURN IS A PROPER PLENUM, AND A WYE WOULD NOT DO. **
-# `plan/mep_registers_second.py` states the ERV enters the return "not a hard-coupled duct … so
-# either machine can run alone", and this box is where that damper lives:
-#   * AIR HANDLER RUNNING, ERV OFF — the return chamber is at negative pressure. With no
-#     damper the blower pulls backwards through the 6" feed, through the attic sub-manifold
-#     and out through a stopped, therefore non-recovering, ERV core and its outdoor intake.
-#     A stopped ERV is not airtight. That is unrecovered -15 F air straight into the return,
-#     plus depressurisation of the ERV's own ductwork.
-#   * ERV RUNNING, AIR HANDLER OFF — 100 cfm enters a still chamber and leaves through
-#     REG-S-HP-RET into the study, the only low-resistance path. The house still ventilates;
-#     distribution to the other rooms depends on the AH fan turning. So the ERV calls the AH
-#     fan: EQ-B-ERV.blower_interlock_ref (plan/electrical.py), graded by
-#     mep.erv_blower_interlock. It matters
-#     because code.N1103_6_whole_house_ventilation is already tight, 210 cfm provided against
-#     205 required. (At the 206 cfm HVI actually certifies, tighter still: 206 against 205.
-#     That is the live verdict `ventilation_cfm` moves, and why the field is left at 210
-#     pending a deliberate decision — see plan/mep_erv_types.py.)
-# Keeping it costs the second lane past the machine, which SF-S-HP1's width already carries.
-#
-# ** IT IS THE RETURN PLENUM NOW, NOT A BOX BESIDE THE RETURN (2026-09-04). ** It fills the
-# east lane of SF-S-HP1 from the box's south end to the air handler's south face —
-# x 20'-5 1/2"..21'-5 1/2", y 27'-10 1/2"..30'-4", z on the cavity floor and 20 1/4" tall — and
-# REG-S-HP-RET's whole 336 in2 face is inside it. What that replaced: a 10 x 12 box with a
-# 30 x 16 ceiling grille lapping it, the return duct and 120 in2 of bare soffit cavity all at
-# once. A return drawing a quarter of its face out of a framed cavity is IMC 601.5's
-# building-cavity-as-plenum; nothing in the engine grades it, and it was wrong.
-#
-# So the airflow is now what the drawing says it is: room air in through the grille, ERV
-# fresh air in through the 6" drop and its damper, the two mixing across 29 1/2" of plenum,
-# then north up DU-S-HP-RET past the cabinet to its return face. Still upstream of the coil
-# and of EQ-S-HP1-STRIP, which is SOUTH of the cabinet in the discharge — the ordering that
-# matters (fresh -> mix -> coil -> strip) is preserved end to end.
-#
-# ** IT IS ON THE RETURN AND NOT ON THE TRUNK, AND THAT IS FORCED. ** `_pair_is_plumbed`
-# excuses only equipment<->duct pairs; a duct riser landing on another duct is always a
-# clash. The ERV feed therefore has to land on a piece of EQUIPMENT, and this plenum is it.
-#
-# ** THE THREE DIMENSIONS ARE EACH A CLEARANCE, NOT A CHOICE. ** 12" across is the east lane
-# less the 2" HANGER_GAP_M off DU-S-HP-SUP (which runs x 18'-9"..20'-3"), leaving 1/2" to the
-# cavity's east face. 29" along stops it clear of the cabinet's south face at
-# y=30'-4 1/2": overlap the cabinet along the box by even an inch and the pair is graded
-# across it, where the gap is 7/8" and the check FAILs. The south end is trimmed 1/2" for
-# BED3's straight supply collar, leaving 1/4" beyond the return grille's south edge.
-# 20 1/4" (top 227 1/2") fills SF-S-HP1's 20 7/8" clear; RM-S-SUITE's 6x4 return lands on the
-# south face (2026-11-09).
-EQUIPMENT_ERV_SECOND = [
     Equipment(uid="8PE9E87JX5", tag="EQ-S-ERV-MIX", kind=EquipmentKind.MIXING_BOX,
-              position=pt(inch(251.5), inch(349.625)), footprint=(inch(12), inch(29.25)),
-              room="RM-S-HALL", type_ref="EQ-T-ERV-MIXING-BOX",
-              soffit_ref="SF-S-HP1",
-              mount=Mount(kind=MountKind.CEILING)),
+              position=pt(inch(311.75), inch(348.5)), footprint=(inch(27.5), inch(39)),
+              room="RM-A-EAST-UNFIN", type_ref="EQ-T-ERV-MIXING-BOX",
+              mount=Mount(kind=MountKind.FLOOR)),
 ]
+# THE MIXING BOX — System 1's return plenum at EQ-S-HP1-AH's return end, on the attic deck
+# since 2026-11-11 (it was in SF-S-HP1, retired with the unit's move). Fresh air may arrive
+# only here, upstream of the coil and the internal heat kit: 100 cfm of -15 F air downstream
+# of them would be delivered untempered.
+#
+# ** A BOX WITH A BACKDRAFT DAMPER, NOT A WYE. ** The ERV and the air handler run on their own
+# schedules. AH running, ERV off: the return is negative and, undampered, pulls backwards
+# through the 6" feed and a stopped (non-recovering, not airtight) ERV core. ERV running, AH
+# off: 100 cfm enters a still chamber and leaves through the return grilles, so the ERV calls
+# the AH fan (EQ-B-ERV.blower_interlock_ref, mep.erv_blower_interlock).
+# `_pair_is_plumbed` excuses only equipment<->duct pairs, which is why the feed lands on
+# equipment.
+#
+# 27 1/2" x 39" x 21" on the deck, x 24'-10"..27'-1 1/2", y 27'-5"..30'-8", 4" off the
+# cabinet (its connector and a 1" collar): it takes the
+# hall return riser (DU-S-HP-RET, from the y 352-368 bay), RM-S-SUITE's (y 336-352 bay),
+# RM-S-BED3's deck leg on its north face and the ERV feed (DU-S-ERV-HP-FEED) on its floor, and
+# gives the cabinet DU-A-HP1-RET-NECK on its west face. The tag keeps its `-S-`.
+EQUIPMENT_ERV_SECOND = []
 # ============================== LEVEL 3 — ATTIC RADIALS ==============================
 #
 # Four runs off the deck manifold at (5'-0", 34'-6"): three extracts and, separately below,
@@ -255,15 +220,9 @@ DUCTS_ERV_ATTIC = [
 # THE MIXING-BOX FEED — the one place fresh air enters the heat-pump loop.
 #
 # It keeps DU-S-ERV-HP-FEED's tag and uid. It comes off the supply riser's head on the attic
-# deck, takes the open deck chase south, rides the FS-ATTIC bay at y=22'-0" east, comes
-# back up onto RM-A-EAST-UNFIN's deck and runs NORTH to the mixing box, dropping onto it
-# through SF-S-HP1's lid.
-#
-# ** THE 12'-2" SOFFIT TAIL IS GONE. ** Until 2026-09-04 the box sat at the far south end of
-# SF-S-HP1 in RM-S-STUDY2's ceiling, and this run had to travel the length of SF-S-DUCT
-# beside the trunk, cross a seam, jog east across three lanes with 1 1/8" to spare, and come
-# back south. Nine vertices now instead of twelve; the tail, both of its turns and the pinch
-# are all gone. Developed ~43'-7" against ~61'-2".
+# deck, takes the open deck chase south, rides the FS-ATTIC bay at y=22'-0" east to x=25'-10",
+# comes back up onto RM-A-EAST-UNFIN's deck and runs NORTH into the mixing box beside the air
+# handler (2026-11-11; it used to drop into SF-S-HP1). Developed ~44'-3".
 #
 # 6" and not a 4" radial: ~100 of the machine's 210 authored cfm goes through here (206
 # certified — see the header), which is half the house's fresh air arriving in one place, and
@@ -276,9 +235,8 @@ DUCTS_ERV_ATTIC = [
 # partition is irrelevant, and it is the last bay south of FO-A-HALL, which severs every
 # west-to-east route north of it.
 #
-# ** ROUTE EFFICIENCY: ~2.05 AGAINST `mep.run_route_efficiency`'S 2.5. WATCH IT. ** It was
-# 1.54 before, and it got WORSE only because the destination moved 27 ft closer to the
-# origin while the route still has to go round FO-A-HALL. The margin is 0.45, not 0.96.
+# Route efficiency is graded by `mep.run_route_efficiency` against 2.5; the route has to go
+# round FO-A-HALL.
 DUCTS_ERV_MIX_FEED = [
     DuctRun(uid="CSDV02AAAA", tag="DU-S-ERV-HP-FEED", system=DuctSystem.SUPPLY,
             # ** ITS FIRST 7" IS IN THE BAY. ** It comes off the riser head on the deck at
@@ -288,20 +246,15 @@ DUCTS_ERV_MIX_FEED = [
             # I-joists span x — so nothing is bored; the north-south leg that follows stays
             # on the deck for the same reason.
             #
-            # ** THE DECK LEG TURNS DOWN AT y=28'-9", INSIDE THE PLENUM. ** It has to land
-            # within EQ-S-ERV-MIX's footprint (y 27'-11"..30'-4") for
-            # `mep.duct_connectivity` to read the joint, and 28'-9" is comfortably inside it
-            # rather than on an edge. It was y=27'-9" while the plenum was a 12"-deep box.
-            #
-            # This run names NO soffit (below), so the old "stop exactly here or the attic
-            # legs get graded" constraint is gone with it — but the drop still has to land
-            # IN the plenum, so moving the plenum in y means moving this vertex with it.
+            # ** IT ENDS IN EQ-S-ERV-MIX's FLOOR ON THE ATTIC DECK (2026-11-11). ** The bay leg
+            # runs on east to x=25'-10" (short of ED-S-BED2-LT's can), stands up there and
+            # runs north on the deck, east of the walk to EQ-S-HP1-AH and of its service
+            # zone, into the box's floor at y=27'-7".
             #
             # -8 1/2" is a 6" duct strapped low in an FS-ATTIC bay, invert 228 1/2", 3/8"
             # off the ceiling board (2026-11-07; -8 7/8" laid it ON the board at 228 1/8":
             # an I-joist bay has no chord under a duct, only gypsum); +4" is the same duct
-            # lying on the attic deck; -24 7/8" is 6" above SF-S-HP1's cavity floor, unchanged by the
-            # move because the 21" drop keeps that floor at 209 1/8" absolute.
+            # lying on the attic deck.
             # 21'-11 1/2", not the 22'-0" bay centre, since 2026-09-16: centred, the 6" duct
             # stood 3/8" into FO-A-HALL's outboard trimmer ply (face at 22'-2 5/8") for the
             # whole 8' it runs beside the hole. `mep.run_through_blocking` found it where
@@ -311,23 +264,12 @@ DUCTS_ERV_MIX_FEED = [
             # leg at 15.4" stands in it; at 12" the duct clears the stud by 1/4".
             path=(pt(inch(15.4), inch(406.8)), pt(inch(12), inch(406.8)), pt(inch(12), inch(406.8)),
                   pt(inch(12), ft(21, 10.625)),
-                  pt(inch(12), ft(21, 10.625)), pt(ft(21), ft(21, 10.625)),
-                  pt(ft(21), ft(21, 10.625)), pt(ft(21), ft(28, 9)),
-                  pt(ft(21), ft(28, 9))),
+                  pt(inch(12), ft(21, 10.625)), pt(inch(310), ft(21, 10.625)),
+                  pt(inch(310), ft(21, 10.625)), pt(inch(310), inch(331))),
             elevations=(inch(-8.5), inch(-8.5), inch(4), inch(4),
                         inch(-8.5), inch(-8.5),
-                        inch(4), inch(4), inch(-24.875)),
-            # ** IT NAMES NO SOFFIT, AND THAT IS THE 2026-09-04 CHANGE THAT COSTS SOMETHING. **
-            # It used to name SF-S-HP1. `duct_occupants` clips a run's extent ALONG the box
-            # it names and deliberately not ACROSS it — and SF-S-HP1 now spans y
-            # 27'-8"..35'-5 3/8", which is the same y band the x=1'-0" attic chase and the
-            # riser head run through, twenty feet west of the box and fourteen inches above
-            # its lid. Named, those three attic legs are graded as occupants of a cavity
-            # they never enter: a hard FAIL against geometry that is correct.
-            # What is given up is the grading of the final 12" drop, and that costs little:
-            # the drop lands inside EQ-S-ERV-MIX's own 10 x 12 footprint, which IS a graded
-            # occupant of the box, in the east lane with 1" to the cavity face. Nothing else
-            # of this run is in the box at all — the 12'-2" tail that used to be is gone.
+                        inch(4), inch(4)),
+            # It names no soffit: CHASE, one run in two cavities (bay and deck).
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=DU_S_ERV_HP_FEED),
 ]

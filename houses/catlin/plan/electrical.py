@@ -6,9 +6,9 @@
 #
 # All-electric: no gas, no furnace. Three Gree heat-pump systems plus electric radiant
 # floor zones (FloorHeat in plan/storeys/):
-#   System 1  EQ-M-HP1-OD (FLEXX Ultra, NORTH pad) -> EQ-S-HP1-AH, concealed ducted AH in
-#             SF-S-HP1 over RM-S-NCLOSET, feeding the dropped hallway chase SOUTHWARD —
-#             upstairs + two attic branches.
+#   System 1  EQ-M-HP1-OD (FLEXX Ultra, NORTH pad) -> EQ-S-HP1-AH, ducted AH on the attic
+#             deck over the north hall (since 2026-11-11), dropping into the hallway chase
+#             SF-S-DUCT — upstairs + two attic branches.
 #   System 2  EQ-M-HP2-OD (Multi Ultra 4-port, -22F) -> EQ-B-HP2-GYM, EQ-M-HP2-BED,
 #             EQ-M-HP2-LIVING.
 #   System 3  EQ-M-HP3-OD (Sapphire R32, VFD soft start, backup battery circuit) ->
@@ -635,8 +635,8 @@ MAIN_EQUIPMENT = [
     # carries its northward drainage. The piped, heat-traced condensate runs the balcony
     # needed are deleted.
     # ** SYSTEM 1'S UNIT LEFT THE POCKET ON 2026-09-04 AND STANDS ON THE NORTH FACE. **
-    # It follows its air handler, which moved to SF-S-HP1 over RM-S-NCLOSET at the north end
-    # of the second storey; the whole argument is in `params/hp1_north_pad.py`, which carries
+    # It followed its air handler to the north end of the house (in the attic over the north
+    # hall since 2026-11-11); the whole argument is in `params/hp1_north_pad.py`, which carries
     # SL-M-HP1PAD, PT-M-HP1-L1..4 and CN-M-HP1-A1..4. The centre here and the centre there
     # are the same literal, written twice on purpose — the two files cannot import each
     # other — and `test_catlin_outdoor_structures.py` holds them together.
@@ -958,78 +958,10 @@ SECOND_DEVICES = [
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 ]
 
-SECOND_EQUIPMENT = [
-    # System 1's concealed ducted AH — inside SF-S-HP1, the box that IS the ceiling of
-    # RM-S-NCLOSET and the north end of RM-S-HALL (plan/storeys/second.py). It moved here
-    # from RM-S-STUDY2 on 2026-09-04. Own branch circuit (CKT-HP1-AH) since a ducted unit's
-    # blower is fed at the unit, unlike a multi's heads.
-    #
-    # `soffit_ref` is load-bearing: WITHOUT it a CEILING mount with no stated elevation
-    # hangs off the room's finished ceiling (resolve/placeables.py), which puts this unit
-    # above the box it lives in.
-    #
-    # ** rotation=deg(90), NOT a hand-swapped `footprint`. ** The type states (43.5, 21.25);
-    # `_transformed_polygon` rotates the catalogued case, so the 43 1/2" runs ALONG the box
-    # (y) where there is 7'-9", and only the 21 1/4" case depth competes for the box's
-    # 36.50" clear width. Hand-swapping the footprint would have left the type and the
-    # instance disagreeing about which dimension is which.
-    #
-    # ** x = 19'-6" IS FORCED, NOT PREFERRED. ** Three constraints intersect at one 1 3/8"
-    # band: DU-S-HP-SUITE's tee bounds the cabinet centre to [229, 235], SF-S-DUCT's cavity
-    # to [233.625, 246.375], and the discharge face to within 1 5/8" of the cabinet centre.
-    # The intersection is [233.625, 235] and 19'-6" = 234 sits in it.
-    #
-    # (19'-6", 32'-2 1/4") puts the case at y 30'-4 1/2"..34'-0" and x 18'-11 3/8"..20'-0 5/8".
-    # y=30'-4 1/2" is DU-S-HP-SUP's start (supply, running SOUTH now); y=34'-0" is
-    # DU-S-HP-RET's end. The lanes across the box are 1 7/8 | cabinet 21 1/4 | 2 3/8 |
-    # return 10 | 1 against 36.50" clear; the check prints them, so they are not restated.
-    #
-    # zone_rooms covers the whole conditioned second storey plus RM-A-STUDY/RM-A-EAST-UNFIN
-    # (short attic branches) and RM-A-STUDIO/RM-A-STUBATH/RM-A-POCKET — the three rooms the
-    # west loft split into, all conditioned by the one boot REG-A-HP-WEST on the suite
-    # branch. Dropping any of the three from this list would report it as unheated.
-    Equipment(uid="CEE032AAAA", tag="EQ-S-HP1-AH",
-              kind=EquipmentKind.DUCTED_AIR_HANDLER,
-              position=pt(ft(19, 6), inch(386.25)), footprint=(inch(43.5), inch(21.25)),
-              rotation=deg(90),
-              room="RM-S-NCLOSET", type_ref="EQ-T-GREE-FLEXX-ULTRA-24-AH",
-              outdoor_ref="EQ-M-HP1-OD", circuit="CKT-HP1-AH",
-              mount=Mount(kind=MountKind.CEILING), soffit_ref="SF-S-HP1",
-              zone_rooms=("RM-S-STUDY2", "RM-S-PLANT", "RM-S-BED1", "RM-S-BED2",
-                          "RM-S-BED3", "RM-S-SUITE", "RM-S-SUITEBATH", "RM-S-VANITY",
-                          "RM-S-BATH1", "RM-S-HALL", "RM-S-CLOSET", "RM-S-NCLOSET",
-                          "RM-A-EAST-UNFIN", "RM-A-STUDY", "RM-A-STUDIO",
-                          "RM-A-STUBATH", "RM-A-POCKET")),
-    # System 1's heat kit, INSIDE the air handler's discharge plenum in SF-S-HP1.
-    #
-    # The FLEXX Ultra's 24 VAC board stages this kit itself, and the kit is a factory part
-    # that lands in the cabinet's discharge — hence `soffit_ref` is SF-S-HP1. With the
-    # machine turned and the trunk running SOUTH, the discharge is the cabinet's SOUTH face
-    # at y=30'-4 1/2", so the plate sits at (19'-6", 29'-11 1/2"): its north edge flush on
-    # that face, on the trunk's own centreline, upstream of DU-S-HP-SUP's start.
-    # Across the box it is 16" against 36.50" clear with the 10" return beside it —
-    # 16 + 2 + 10 = 28.00, 8 1/2" spare — so it is nowhere near the graded pair.
-    # It is also DOWNSTREAM of EQ-S-ERV-MIX, which is on the return at the box's south end:
-    # fresh air mixes across the whole 6'-7" return before the coil, then gets heated.
-    #
-    # `room` follows the box: RM-S-HALL, the room the discharge end of SF-S-HP1 hangs in
-    # (the cabinet itself is filed under RM-S-NCLOSET at the north end). It changes nothing
-    # about the credit — `supplemental_heat_by_room` keys on the room and both rooms are in
-    # the same EQ-S-HP1-AH zone_rooms list — and it is where the part is.
-    #
-    # ITS JOB CHANGED TOO, and that is the more important half. It is no longer covering a
-    # design-temperature shortfall: EQ-M-HP1-OD makes 21,000 Btu/h at -15 F against a
-    # 15,164 Btu/h zone load, unaided. This is defrost-recovery and sub-lockout backup.
-    #
-    # CKT-HP1-STRIP IS GONE. A factory kit inside the cabinet is fed from the air handler's
-    # own circuit, so CKT-HP1-AH goes 15A -> 35A (the kit's MCA 29.9 A / max OCPD 35 A) and
-    # the panel gets its spare 2-pole back at slot 18 (plan/circuits.py).
-    Equipment(uid="CEE033AAAA", tag="EQ-S-HP1-STRIP", kind=EquipmentKind.SPACE_HEATER,
-              position=pt(ft(19, 6), ft(29, 11.5)), footprint=(inch(16), inch(10)),
-              room="RM-S-HALL", type_ref="EQ-T-GREE-FLEXX-HEATKIT-46KW",
-              circuit="CKT-HP1-AH", mount=Mount(kind=MountKind.CEILING),
-              soffit_ref="SF-S-HP1"),
-]
+# System 1's air handler EQ-S-HP1-AH and its internal heat kit EQ-S-HP1-STRIP moved to the
+# attic (RM-A-EAST-UNFIN) on 2026-11-11 and are authored in plan/mep_hvac.py
+# (EQUIPMENT_HVAC_ATTIC): SF-S-HP1 had no room for Gree's 24" front service space.
+SECOND_EQUIPMENT = []
 
 # --- Garage: south-wall EV feed, west-wall bench group, east-bay outlet ----------
 # Offsets are from each wall's start node (W-G-W: NW corner, y = 67'-2 5/8" - d; W-G-S: SW

@@ -360,9 +360,7 @@ WALLS = [
          layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), interior_room="RM-S-HALL", top=ft(9),
          alignment=face("stud-ext", offset=inch(-1.75)),
          structural_role=StructuralRole.NONBEARING),
-    # W-S-BW4 stays a plain half-board partition like W-S-BW3. Their matching thicknesses
-    # keep SF-S-HP1's east boundary rectangular at y=30'-10"; adding channel here would
-    # create a 1/2" step in the soffit's footprint.
+    # W-S-BW4 stays a plain half-board partition like W-S-BW3 (undercut door into the hall).
     Wall(uid="CSW125AAAA", tag="W-S-BW4", start_node="N-S-B4", end_node="N-S-B5",
          assembly="INT_2X4_PARTITION_HALF", interior_room="RM-S-NCLOSET", top=ft(9),
          alignment=face("stud-ext", offset=inch(-1.75))),
@@ -372,14 +370,13 @@ WALLS = [
     Wall(uid="CSW127AAAA", tag="W-S-BD2", start_node="N-S-B3", end_node="N-S-E3",
          assembly="INT_2X4_RC", interior_room="RM-S-BED2", top=ft(9),
          alignment=face("stud-ext", offset=inch(-1.75))),
-    # North-centre closet (source 30.853 / 21.898), off the hall's north end.
-    # Stops at SF-S-HP1's underside (7'-3 1/4"): the box runs across it wall to wall, and
-    # EQ-S-HP1-AH's 43 1/2" case straddles this line inside the box.
+    # North-centre closet (source 30.853 / 21.898), off the hall's north end. Full height
+    # since SF-S-HP1 was retired (2026-11-11); SF-S-DUCT's north end butts its hall face.
     # Nonbearing (owner, 2026-10-29): D-S-NCLOSET heads with R602.7.4's flat 2x4 under a
-    # single top plate (R602.5), which is what fits under the soffit.
+    # single top plate (R602.5).
     Wall(uid="CSW141AAAA", tag="W-S-CLN-S", start_node="N-S-C3D", end_node="N-S-B4",
          assembly="INT_2X4_PARTITION_HALF_SINGLE_PLATE",
-         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=inch(87.25),
+         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(9),
          structural_role=StructuralRole.NONBEARING),
     # --- west block: walk-in, suite, suite bath, vanity alcove ------------------
     Wall(uid="CSW129AAAA", tag="W-S-DC1", start_node="N-S-D1", end_node="N-S-D2",
@@ -643,8 +640,8 @@ OPENINGS = [
     # the 90-degree leaf tip. Keep a stop to protect the adjacent switch and cabinet.
     Door(uid="CSD208AAAA", tag="D-S-BATH1", host="W-S-BD-N1B", type_ref="DT-INT-SWING30-PRIV-SOLID",
          position=from_node("N-S-V2", inch(11.5)), flip_hinge=False, doorway=TILE_EDGE_FLUSH),  # x 8'-1"
-    # Derived RO since 2026-10-29 (owner): a flat 2x4 head keeps it under the wall top and
-    # SF-S-HP1, and the door slid 2 1/4" west, clear of ED-S-NCLOSET-SW.
+    # Derived RO since 2026-10-29 (owner): a flat 2x4 head; the door slid 2 1/4" west,
+    # clear of ED-S-NCLOSET-SW.
     Door(uid="CSD217AAAA", tag="D-S-NCLOSET", host="W-S-CLN-S", type_ref="DT-INT-SWING30",
          position=from_node("N-S-C3D", inch(6.25)), flip_swing=True, flip_hinge=True,
          header_spec="flat 2x4 nonbearing"),                     # x 19'-10 3/8"
@@ -1191,14 +1188,16 @@ FLOOR_HEAT = [
 # The west wall ends at the landing; only exposed portions receive vertical board and
 # ladders. Wall-backed portions use stud-fastened bottom ledgers. The top remains open.
 #
-# North y=27'-8" abuts SF-S-HP1; south y=2'-10" encloses DU-S-HP-SOUTH-RISE's handoff.
+# North end on W-S-CLN-S's hall face (30'-7 3/4") since SF-S-HP1 was retired (2026-11-11):
+# DU-S-HP-SUP's drop from the attic air handler lands in it at y=28'-8", and REG-S-HP-RET
+# sits in its underside north of that. South y=2'-10" encloses DU-S-HP-SOUTH-RISE's handoff.
 # Even at the wider east face, the box clears the stair ledger beginning at x=273 7/8".
 # The 94" face stays pinned. LR-S-HALL-GAP follows its underside perimeter with a 5/8"
 # shadow-gap reveal opening toward the walls, rather than lighting tall gaps beside a narrow box.
 SOFFITS = [
     Soffit(uid="CSF601AAAA", tag="SF-S-DUCT",
            outline=(pt(ft(18, 6.5), ft(2, 10)), pt(ft(21, 5.5), ft(2, 10)),
-                    pt(ft(21, 5.5), ft(27, 8)), pt(ft(18, 6.5), ft(27, 8))),
+                    pt(ft(21, 5.5), inch(367.75)), pt(ft(18, 6.5), inch(367.75))),
            # ** THE FACE IS PINNED, NOT DROPPED (2026-09-07). ** 7'-10" AFF is a stated
            # design elevation — the paragraph above quotes it and DU-S-HP-SOUTH-RISE is sized
            # to the cavity it leaves. `drop` measures from the plane overhead, and that plane
@@ -1207,103 +1206,18 @@ SOFFITS = [
            # cavity with it and the duct read 0.1" proud. 94" states the face itself.
            underside_elevation=inch(94),
            width_between_walls=("W-S-C2B", "W-S-BW1"),
-           framing=FramingSpec(member="2x2", spacing=inch(16))),
-    # THE AIR-HANDLER BOX — the ceiling of RM-S-NCLOSET and the north end of RM-S-HALL,
-    # abutting SF-S-DUCT on the y=27'-8" seam and reading as one continuous soffit with it.
-    # It moved here from RM-S-STUDY2 on 2026-09-04, with the outdoor unit (params/hp1_north_pad.py).
-    #
-    # ** ONE RECTANGLE. ** `soffit_clear_section` frames axis-aligned rectangles only; a
-    # non-rectangular outline returns None and every occupant goes UNKNOWN rather than
-    # graded. This box is FLUSH on all four finished faces — it IS the closet/hall ceiling,
-    # not a bulkhead in a wide room, so there is no shadow-gap inset here the way there is
-    # on SF-S-DUCT. (SF-S-SUITE used the same inset and was retired 2026-09-13; the rule it
-    # illustrated is still SF-S-DUCT's.) That flushness is what forces W-S-BW4's retype to
-    # INT_2X4_RC (see its block above): without it the east face jogs 1/2" at y=30'-10" and
-    # the outline stops being a rectangle at all.
-    #
-    # 40 3/4" (x) x 7'-9 3/8" (y), so the LONG axis is y and `soffit_clear_section` measures
-    # every occupant ACROSS x: 36.50" clear across, 20.25" clear cavity at a 23" drop. That
-    # ordering is load-bearing — a box longer in x would have graded the trunk's travel as
-    # its "width".
-    #
-    # ** THE DROP IS 23" AND NOT 21" BECAUSE OF THE DRAIN PAN (2026-09-18). ** A 21" drop is
-    # not 21" of cavity: `soffit_clear_section` takes 5/8" of lining top and bottom and the
-    # 1 1/2" bottom rung, leaving 18.25" for an 18 1/8" cabinet — 1/8". The FLEXX Ultra's
-    # submittal requires an emergency drain pan under a unit over a finished ceiling
-    # (equipment_types.py), and so does IRC M1411.3.1: 1 1/2" deep minimum. There was no
-    # room for it and no way to find that out on site. 23" gives 20.25", which is sized so
-    # that BOTH things that sit on the cavity floor can ride 2" up on the pan: the cabinet
-    # at 2 + 18 1/8 = 20 1/8, and DU-S-HP-RET at 2 + 18 = 20. The old 1/8" margin, kept.
-    #
-    # THE LANES, west -> east: 1 7/8 | cabinet 21 1/4 | 2 3/8 | return 10 | 1. The machine
-    # is turned (rotation=deg(90)), so its 43 1/2" runs ALONG the box where there is 7'-9"
-    # and no pressure, and only the 21 1/4" case depth competes for the 36.50". The one
-    # machine-graded pair is cabinet<->return at 2 3/8" against the 2" HANGER_GAP_M. The
-    # heat strip sits south of the cabinet in the discharge, not beside it, and EQ-S-ERV-MIX
-    # sits at the SOUTH end on the return: 16 + 2 + 10 = 28.00 against 36.50, 8 1/2" spare.
-    #
-    # DROP 23", FACE 7'-1", AND THE REAL CLEAR IS 7'-0 1/8". That last figure is the one to
-    # quote: the section's own CLG tag, measured off the finished floor rather than the
-    # storey datum the face is struck from, and it read 7'-2 1/8" at the old 21" drop — the
-    # "7'-3"" this block used to claim was already an eighth of an inch shy of two inches
-    # optimistic. **So this box now clears IRC R305.1's 7'-0" by 1/8", and there is nothing
-    # left.** 24" was rejected for being under it and is still the line: at a 24" drop the
-    # clear is 6'-11 1/8", and `code.R305_ceiling_height` — which reads the room's minimum
-    # underside off the storey datum — would still have reported a passing 7'-0". A cabinet
-    # deeper than 18 1/8", or a pan deeper than 2", does not fit this house.
-    #
-    # ** THE PAN ITSELF IS NOT MODELLED, AND THE 2" IS NOT RESERVED. ** No element kind here
-    # holds a drip pan; authoring one as `Equipment` would sit under the cabinet in plan and
-    # `soffit_occupancy`'s hanger-gap test ignores z, so the pan would be reported as
-    # clashing with the machine it catches. So the bottom 2" of this cavity is spoken for by
-    # a comment and by tasks.toml, not by a check — do not spend it on a new occupant.
-    #
-    # `framing` is a LADDER WITH TWO STOCKS. `plate_member="2x2"` holds the RAILS at the
-    # size that sets this cavity; `member="2x4"` gives the rungs I = 0.984 in^4 against
-    # IRC R301.7's L/360 (`structural.soffit_rung_span`). Upsizing one shared profile would
-    # widen the rails and eat the cavity instead.
-    #
-    # THE PRICE, STATED PLAINLY. RM-S-STUDY2 gets ~29 sf of its ceiling back to full height
-    # and the remainder rises 7"; RM-S-NCLOSET's whole ceiling and about 7'-9" of the north
-    # hall drop to 7'-1", and the closet loses 1/2" of width to the RC channel. That is the
-    # trade, made with open eyes: a study people work in against a closet and a hall's dead
-    # end. `RM-S-HALL`'s graded clear_height is unchanged at 8'-11 1/2" — the check's
-    # unsoffited-area escape holds. A modelled ceiling access panel goes in under the
-    # cabinet (plan/placeables.py::FURN-S-NCLOSET-AP), which the old box never had.
-    Soffit(uid="6DAADXAD7P", tag="SF-S-HP1",
-           outline=(pt(ft(18, 3.375), ft(27, 8)), pt(ft(21, 8.125), ft(27, 8)),
-                    pt(ft(21, 8.125), ft(35, 5.375)), pt(ft(18, 3.375), ft(35, 5.375))),
-           drop=inch(23),
-           framing=FramingSpec(member="2x4", plate_member="2x2", spacing=inch(16)),
-           # ** THE SERVICE HATCH IS FRAMED, NOT JUST DRAWN. ** The lid is
-           # FURN-S-NCLOSET-AP (plan/placeables.py); THIS is the hole it covers, and until
-           # `Soffit.openings` existed the generator laid a 2x4 rung straight through the
-           # middle of it at y=33'-0 5/8" with nothing to report the collision — a panel
-           # the model said could not be opened.
-           #
-           # 30" (x) x 29" (y), clear, at x 18'-10"..21'-4" by y 31'-10"..34'-3". It heads
-           # off exactly ONE station (the rung at y=33'-0 5/8") between the rungs at
-           # 31'-8 5/8" and 34'-4 5/8". One header spans 32" along the box just west of
-           # x=18'-10" (outboard of the clear hole, since 2026-10-31); the 1" stub that
-           # left is under the 1 1/2" minimum, so it is not cut and the header carries the
-           # board. The east edge is 2" off the rail, which carries that 2" stub.
-           # `structural.soffit_opening` grades the header.
-           #
-           # It is wholly inside RM-S-NCLOSET (y 30'-10"..36'-0") and it sits under the
-           # air handler's north two-thirds AND its return face at y=34'-0", which is the
-           # point: one opening reaches the filter rack, the coil, the blower and the
-           # condensate trap. A hand-sized panel between two rungs reaches none of them.
+           framing=FramingSpec(member="2x2", spacing=inch(16)),
+           # REG-S-HP-RET's 28 x 12 hole; its boot rises through the open cavity top into
+           # DU-S-HP-RET in FS-ATTIC's y 352-368 bay.
            openings=(SoffitOpening(
-               tag="AO-S-HP1-AP",
-               outline=(pt(ft(18, 10), ft(31, 10)), pt(ft(21, 4), ft(31, 10)),
-                        pt(ft(21, 4), ft(34, 3)), pt(ft(18, 10), ft(34, 3)))),
-                     # REG-S-HP-RET's 28 x 12 hole (2026-10-31): the rung at y=28'-10 5/8"
-                     # ran straight across the return face, and the hole cuts the next one.
-                     # Its 1/2" east stubs are dropped (under the 1 1/2" minimum stub).
-                     SoffitOpening(
-               tag="AO-S-HP1-RET",
-               outline=(pt(inch(245.5), inch(336.25)), pt(inch(257.5), inch(336.25)),
-                        pt(inch(257.5), inch(364.25)), pt(inch(245.5), inch(364.25)))),)),
+               tag="AO-S-DUCT-RET",
+               outline=(pt(inch(225), inch(353.5)), pt(inch(253), inch(353.5)),
+                        pt(inch(253), inch(365.5)), pt(inch(225), inch(365.5)))),)),
+    # SF-S-HP1, the 23" air-handler box over RM-S-NCLOSET and the north hall, is RETIRED
+    # (2026-11-11): EQ-S-HP1-AH could not get Gree's 24" front service space inside its
+    # 36 1/2" clear width in any orientation, so the unit moved to the attic
+    # (plan/mep_hvac.py, notes/flexx_ultra_geometry.md). The closet takes the 9'-0" ceiling
+    # and the hall stub SF-S-DUCT's 7'-10".
     # --- SF-S-SUITE IS RETIRED (2026-09-13) -------------------------------------------
     #
     # It was the suite entry arm's ceiling: x 12'-0" (D-S-SUITEBATH's jamb) to 18'-6 1/2"

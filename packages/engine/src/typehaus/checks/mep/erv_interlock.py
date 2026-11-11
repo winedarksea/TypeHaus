@@ -76,8 +76,10 @@ def _graph(ctx: CheckContext) -> dict[tuple[str, str], set[tuple[str, str]]]:
     return adj
 
 
-def _reached_air_handlers(adj, kinds: dict[str, EquipmentKind], start: str) -> set[str]:
-    seen = {("e", start)}
+def _reached_air_handlers(adj, kinds: dict[str, EquipmentKind], start: str,
+                          seen: set | None = None) -> set[str]:
+    seen = set() if seen is None else seen
+    seen.add(("e", start))
     queue = deque([("e", start)])
     found: set[str] = set()
     while queue:
@@ -119,17 +121,25 @@ def uninterlocked(ctx: CheckContext) -> list[Coupling]:
 def blower_dependent_ducts(ctx: CheckContext) -> dict[str, str]:
     """``{duct tag: ERV tag}`` for an un-interlocked air handler's own runs — the ducts
     whose fresh air arrives only when a blower nobody has tied to the ventilator turns.
-    The walk from the AH stops at every machine, so it stays on the AH's side of the mix."""
+    The walk from the AH crosses passive boxes (a supply plenum) but never a node the
+    ventilator's own walk reached, so it stays on the AH's side of the mix."""
     adj = _graph(ctx)
+    kinds = {tag: el.kind for tag, el in _equipment(ctx).items()}
     out: dict[str, str] = {}
     for c in couplings(ctx, adj):
+        ventilator_side: set = set()
+        _reached_air_handlers(adj, kinds, c.erv, ventilator_side)
         for ah in c.missing:
-            seen, queue = {("e", ah)}, deque([("e", ah)])
+            seen, queue = {("e", ah)} | ventilator_side, deque([("e", ah)])
             while queue:
                 for nxt in adj.get(queue.popleft(), ()):
-                    if nxt[0] == "d" and nxt not in seen:
-                        seen.add(nxt)
+                    if nxt in seen:
+                        continue
+                    seen.add(nxt)
+                    if nxt[0] == "d":
                         out.setdefault(nxt[1], c.erv)
+                        queue.append(nxt)
+                    elif kinds.get(nxt[1]) in _PASSIVE:
                         queue.append(nxt)
     return out
 

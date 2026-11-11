@@ -57,34 +57,16 @@ def test_open_top_recovers_the_fictional_top_board_allowance(catlin_model_ro) ->
     assert section.drop_m > 8 * M_PER_IN
 
 
-def test_the_air_handler_is_the_real_cabinet_and_the_lane_beside_it_is_real_too(
-        catlin_model) -> None:
-    """The real cabinet is 43 1/2" x 21 1/4" (EQ-T-GREE-FLEXX-ULTRA-24-AH) and lives in
-    SF-S-HP1.
-
-    ** THE BOX TURNED ON 2026-09-04 AND SO DID THE MACHINE. ** SF-S-HP1 used to be 77" in x
-    by 80" in y in RM-S-STUDY2's ceiling, with the cabinet's 43 1/2" ACROSS the graded axis
-    and two lanes beside it. It is now 40 3/4" x 7'-9 3/8" over RM-S-NCLOSET and the north
-    hall, and ``rotation=deg(90)`` turns the cabinet so its 43 1/2" runs ALONG the box where
-    there is no pressure. So the assertion inverts: across the graded axis the machine is
-    21 1/4", not 43 1/2", and what has to fit beside it is the ONE 10" return — the ERV feed
-    now lands on EQ-S-ERV-MIX at the box's south end instead of passing the cabinet, and the
-    south-branch riser left the box entirely for SF-S-DUCT's south cap.
-
-    ``east >= 10 + 6 + 2 x gap`` is not merely false now, it is impossible in a 36 1/2"
-    cavity beside a 21 1/4" case, which is exactly what the turn bought."""
-    _, section = _section(catlin_model, "SF-S-HP1")
+def test_the_air_handler_is_the_real_cabinet_on_the_attic_deck(catlin_model) -> None:
+    """The real cabinet is 43 1/2" x 21 1/4" (EQ-T-GREE-FLEXX-ULTRA-24-AH). SF-S-HP1 held it
+    until 2026-11-11, when it moved onto RM-A-EAST-UNFIN's deck for front-panel access the
+    closet soffit could not give; it lies with its length east-west, in no soffit."""
     handler = next(o for o in catlin_model.canvas_objects if o.tag == "EQ-S-HP1-AH")
     xs = [x for x, _ in handler.footprint]
     ys = [y for _, y in handler.footprint]
-    assert (max(xs) - min(xs)) / M_PER_IN == pytest.approx(21.25, abs=1e-6), "across"
-    assert (max(ys) - min(ys)) / M_PER_IN == pytest.approx(43.5, abs=1e-6), "along"
-    west = (min(xs) - section.across[0]) / M_PER_IN
-    east = (section.across[1] - max(xs)) / M_PER_IN
-    assert west > 0.0, "the case must be inside its own cavity"
-    assert west + east == pytest.approx(section.width_m / M_PER_IN - 21.25, abs=1e-6)
-    # The east lane carries the 10" return with the hanger gap and an inch of lining relief.
-    assert east >= 10 + HANGER_GAP_M / M_PER_IN
+    assert (max(xs) - min(xs)) / M_PER_IN == pytest.approx(43.5, abs=1e-6)
+    assert (max(ys) - min(ys)) / M_PER_IN == pytest.approx(21.25, abs=1e-6)
+    assert "SF-S-HP1" not in {s.tag for s in catlin_model.soffits}
 
 
 # --- the occupancy rule itself -----------------------------------------------------------
@@ -128,28 +110,15 @@ def test_both_soffits_are_actually_graded(soffit_findings) -> None:
     ``DuctRouting.EXPOSED`` now and claims no box, so there is nothing here to grade."""
     graded = {tuple(f.element_tags): f.result for f in soffit_findings}
     assert graded.get(("SF-S-DUCT",)) is Result.PASS
-    # SF-S-HP1 is the one that has to be graded: it is the only box in the house holding a
-    # machine and two lanes side by side.
-    assert graded.get(("SF-S-HP1",)) is Result.PASS
-    assert ("SF-S-SUITE",) not in graded
+    assert graded.get(("SF-B-BATH",)) is Result.PASS
+    # SF-S-HP1, the box that held the air handler, retired 2026-11-11.
+    assert ("SF-S-SUITE",) not in graded and ("SF-S-HP1",) not in graded
 
 
-def test_the_air_handler_hangs_inside_the_soffit_not_at_the_storey_ceiling(catlin_model) -> None:
-    """The bug ``soffit_ref`` fixed. A CEILING mount with no stated elevation fell back to
-    ``storey.default_ceiling_height``, so both EQ-S-HP1-AH and EQ-S-HP1-STRIP resolved at
-    9'-0" — fourteen inches above the box every comment in the plan says they live in.
-
-    Each machine is checked against ITS OWN box, and the split is still the point even
-    though all three name the same one: a single shared section would hide a machine hung
-    against the wrong soffit's underside, so the mapping is authored here rather than derived.
-
-    EQ-S-HP1-STRIP is a FACTORY heat kit (EQ-T-GREE-FLEXX-HEATKIT-46KW) staged off the air
-    handler's own 24 VAC board, sitting in its discharge — the DUC24 has no aux-heat
-    terminal, so it cannot be drawn there. SF-S-HP1's underside is 7'-3" (21" drop, for the
-    deeper cabinet); SF-S-DUCT is 7'-10" (14" drop)."""
-    homes = {"EQ-S-HP1-AH": "SF-S-HP1", "EQ-S-HP1-STRIP": "SF-S-HP1",
-             "EQ-S-ERV-MIX": "SF-S-HP1"}
-    for tag, soffit_tag in homes.items():
-        _, section = _section(catlin_model, soffit_tag)
+def test_the_attic_machines_bear_on_the_deck(catlin_model) -> None:
+    """The bug ``soffit_ref`` once fixed was a CEILING mount falling back to the storey
+    ceiling height. On the attic deck the three System 1 boxes are FLOOR mounts and all sit
+    at its top, 240 3/4" (the 3/4" deck over the attic storey's 20'-0" datum)."""
+    for tag in ("EQ-S-HP1-AH", "EQ-S-HP1-STRIP", "EQ-S-ERV-MIX", "EQ-A-HP1-SUP-BOX"):
         obj = next(o for o in catlin_model.canvas_objects if o.tag == tag)
-        assert obj.z_m == pytest.approx(section.z[0]), tag
+        assert obj.z_m / M_PER_IN == pytest.approx(240.75), tag

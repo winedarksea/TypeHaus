@@ -3042,7 +3042,8 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # Fabricated plenum box with a 6" collar and a gravity backdraft damper. Sheet-metal shop
 # work, not a catalogue item: the material range is the metal and the damper, the labour is
 # the fabrication plus fitting it into a 30 3/4" soffit with an air handler already in it.
-"EQ-T-ERV-MIXING-BOX" = { material = { low = 120, high = 300 }, labour = { low = 180, high = 420 } }  # 1 ea
+"EQ-T-ERV-MIXING-BOX" = { material = { low = 160, high = 380 }, labour = { low = 200, high = 460 } }  # 1 ea — 27 1/2 x 39 x 21 since 2026-11-11 (was 12 x 29 x 20), estimate
+"EQ-T-HP1-SUP-BOX" = { material = { low = 90, high = 220 }, labour = { low = 120, high = 300 } }  # 1 ea — 22 1/2 x 14 x 21 supply box at the attic air handler, estimate
 # The two north-face hoods, 8" since 2026-10-31 (RenewAire FA8-P basis, 1/4" screen,
 # notes/air_distribution_products.md §8). ESTIMATES: no retailer price was readable for the
 # FA8 (SupplyHouse/Young Supply refused the fetch); the band brackets the Fantech FML8 or-equal
@@ -3144,15 +3145,6 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "FT-CATLIN-TUB-ACCESS-1414" = { material = { low = 35, high = 90 }, labour = { low = 45, high = 110 } }  # 1 ea
 "FT-CATLIN-TUB-ACCESS-2015" = { material = { low = 35, high = 90 }, labour = { low = 45, high = 110 } }  # 1 ea
 "FT-ACCESS-PANEL-1429" = { material = { low = 55, high = 140 }, labour = { low = 45, high = 110 } }  # 2 ea
-# The mechanical hatch under EQ-S-HP1-AH, new 2026-09-04. It is a bigger article than the two
-# rows above in three ways and each of them is money: it is 30 x 29 against 14 x 29, it is
-# GASKETED (the cavity above it is return-side, so an unsealed lid would be IMC 601.5(7)'s
-# return air from a closet), and it is in a CEILING, where a door is hung overhead against
-# its own weight rather than screwed to a wall. The labour also carries the framing that made
-# the opening: SF-S-HP1's rung at y=33'-0 5/8" is cut and headed off with two 32" 2x4s
-# (plan/storeys/second.py::AO-S-HP1-AP), which is about an hour of a carpenter's day and
-# ~8 LF of 2x4 that the soffit's own $/cy row already carries.
-"FT-ACCESS-PANEL-CLG-3029" = { material = { low = 150, high = 380 }, labour = { low = 90, high = 220 } }  # 1 ea — insulated/gasketed hinged ceiling door, 30 x 29 clear
 # Site-built, not bought: a 20" x 30" x 84" plywood carcass closing RM-S-BATH1's tub alcove,
 # whose west panel is the tub's east return. ~95 SF of cabinet plywood — cross-check against
 # the "cabinet-plywood" row, which carries the same $/SF casework-fabrication read —
@@ -3720,10 +3712,8 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # 28x12 hinged filter-back return (H&C 673 class). The custom 12x28x1 MERV 13 filters are an
 # owner consumable, not in the build.
 "REG-T-HP-RET-FILTER" = { material = { low = 60, high = 130 }, labour = { low = 18, high = 45 } }  # 1 ea
-# RM-S-SUITE's 12x12 filter-back return (2026-11-09), off REG-T-HP-RET-FILTER; stocked 12x12x1 filters.
-"REG-T-HP-RET-FILTER-1212" = { material = { low = 35, high = 80 }, labour = { low = 18, high = 45 } }  # 1 ea
-# RM-S-BED3's sidewall twin (2026-11-11); same grille, labour includes the short lined stub.
-"REG-T-HP-RET-FILTER-1212-SIDE" = { material = { low = 35, high = 80 }, labour = { low = 25, high = 60 } }  # 1 ea
+# RM-S-SUITE's and RM-S-BED3's 12x12 filter-back returns (2026-11-09/11); stocked 12x12x1 filters.
+"REG-T-HP-RET-FILTER-1212" = { material = { low = 35, high = 80 }, labour = { low = 18, high = 45 } }  # 2 ea
 # The passive transfer: two 12x10 aluminium return grilles on a lined sleeve through the bay.
 "REG-T-TRANSFER-MUD-1210" = { material = { low = 30, high = 55 }, labour = { low = 30, high = 70 } }  # 1 grille, panel cut; no sleeve
 # D-S-BATH1's offset pair (2026-11-03): one 6x6 grille plus half the bay's sheet-metal liner.
@@ -6305,7 +6295,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # (their gauge band is IRC M1601.1.1's, printed on the row), and a rectangular row's 0.0
 # diameter truncates the key here — so this row IS the shop-fabricated sheet-metal rate, the
 # one the bare `return`/`supply` rows carried. No round run falls through to it today.
-"return:galvanized" = { material = { low = 7, high = 13 }, labour = { low = 12, high = 28 } }  # DU-S-HP-RET 10x18 + RM-S-SUITE's 6x4 return (2026-11-09)
+"return:galvanized" = { material = { low = 7, high = 13 }, labour = { low = 12, high = 28 } }  # DU-S-HP-RET 12x10, the suite and BED3 returns, the two cabinet necks (2026-11-11)
 "return:semi_rigid" = { material = { low = 2.5, high = 5 }, labour = { low = 3, high = 7 } }  # 0 LF since 2026-09-12 — was 198.1 LF of 3" radial
 "supply" = { material = { low = 7, high = 13 }, labour = { low = 12, high = 28 } }  # 0 LF since the trunks name their material
 "supply:semi_rigid:3.0" = { material = { low = 2.25, high = 4.5 }, labour = { low = 2.75, high = 6.5 } }  # 0 LF since 2026-09-12 — was 181.6 LF of 75 mm radial
@@ -6336,7 +6326,8 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "elbow-adj-90-4in" = { low = 4, high = 10 }        # 16 ea — 4" adjustable, set to the turn
 "elbow-adj-90-6in" = { low = 9, high = 22 }        # 4 ea — 6" adjustable
 "elbow-adj-90-8in" = { low = 11.01, high = 22 }    # 6 ea — SupplyHouse 26 ga adjustable, $11.01 (2026-11-04)
-"elbow-90-10x18" = { low = 30, high = 80 }         # 2 ea — DU-S-HP-RET, shop-fabricated (estimate)
+"elbow-90-12x10" = { low = 30, high = 80 }         # 1 ea — DU-S-HP-RET up into EQ-S-ERV-MIX, shop-fabricated (estimate)
+"elbow-90-12x6" = { low = 25, high = 70 }          # 1 ea — DU-S-HP-BED3-RET onto the deck, shop-fabricated (estimate)
 "elbow-90-10x6" = { low = 25, high = 70 }          # 1 ea — DU-S-HP-SOUTH-RISE, shop-fabricated (estimate)
 "elbow-45-10x6" = { low = 25, high = 70 }          # 2 ea — DU-S-HP-SOUTH, shop-fabricated (estimate)
 # The OA/EA wall seals (SleevePenetration.serves_duct, 2026-10-31): low-expansion window-and-
@@ -6383,16 +6374,16 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "PROD-DUCT-TEE-4-4" = { low = 14, high = 18 }            # 1 ea — Master Flow T4X4X4, Home Depot ~$16 (owner, 2026-11-10)
 "PROD-DUCT-REDUCER-8-4" = { low = 32, high = 35 }        # 1 set — Imperial GV0821 8-6 + GV0811 6-4, stacked
 # Shop fabrication, estimate (material only; the make-up time is the sheet-metal visit):
-"boot-10x18-28x12" = { low = 40, high = 80 }             # 1 ea — shop fabrication, estimate
+"boot-12x10-28x12" = { low = 40, high = 80 }             # 1 ea — REG-S-HP-RET boot up into the bay, shop fabrication, estimate
 "boot-6x4-12x12" = { low = 40, high = 90 }               # 1 ea — RM-S-SUITE return box + locking damper, estimate
-"boot-6x12-12x12" = { low = 40, high = 90 }              # 1 ea — RM-S-BED3 return box + locking damper, estimate
+"boot-12x6-12x12" = { low = 40, high = 90 }              # 1 ea — RM-S-BED3 return box + locking damper, estimate
 "boot-10x6-12x6" = { low = 25, high = 60 }               # 1 ea — shop fabrication, estimate
 "boot-10x8-12x6" = { low = 25, high = 60 }               # 2 ea — shop fabrication, estimate
 "boot-18x8-12x6" = { low = 30, high = 70 }               # 1 ea — shop fabrication, estimate
 "boot-6in-8x6" = { low = 25, high = 60 }                 # 1 ea — shop fabrication, estimate
 "reducer-18x8-10x6" = { low = 30, high = 70 }            # 1 ea — shop fabrication, estimate
 "takeoff-18x8-10x8" = { low = 30, high = 70 }            # 1 ea — shop fabrication, estimate
-"takeoff-10x18-6x12" = { low = 30, high = 70 }           # 1 ea — RM-S-BED3 return into DU-S-HP-RET, estimate
+"takeoff-18x8-12x12" = { low = 40, high = 90 }           # 1 ea — DU-S-HP-SUP-DROP onto the trunk's north cap, estimate
 
 [duct_supports]
 # NEW 2026-11-05 (#114). ESTIMATES 2026-11-05, no retailer price read (retail pages refused the

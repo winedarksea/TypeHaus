@@ -46,10 +46,9 @@ SECOND_LIGHTING = [
              emission_side="left",
              mount=Mount(kind=MountKind.CEILING, elevation=inch(94.5))),
     # Both Class 2 HLG-100 (96 W) drivers and their GL-C-001P controllers are in RM-S-NCLOSET,
-    # on the east wall (W-S-BW4's closet face) east of EQ-S-HP1-AH, 16" free: reachable with
-    # no soffit hatch. 12.75 ft / 17.9 ft at 3 W/ft x1.25 is 48 / 67 W. Each 24 V pair is
+    # on the east wall (W-S-BW4's closet face), reachable from the closet floor. 12.75 ft / 17.9 ft at 3 W/ft x1.25 is 48 / 67 W. Each 24 V pair is
     # fed at its leg's NORTH end. East: straight out through the bulkhead, ~3 ft. West: 18 AWG
-    # Class 2 through SF-S-HP1/SF-S-DUCT along the east wall to y=22'-4", ~12 ft each way; at
+    # Class 2 through SF-S-DUCT along the east wall to y=22'-4", ~12 ft each way; at
     # 38 W (1.6 A) the pair drops ~0.3 V (1.3% of 24 V), then the tape's own run. The engine
     # models no 24 V feeder, so the path is this comment; pull it before the board goes up,
     # clear of DU-S-HP-SUITE-RET-LANE (x 251-257", up at the ceiling board) in SF-S-DUCT.

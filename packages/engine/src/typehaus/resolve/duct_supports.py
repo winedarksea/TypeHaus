@@ -92,6 +92,18 @@ def _record(duct: Any, point: Point3, row: DuctSupportRow, member: str | None, d
         gap=None if member else reach)
 
 
+def needs_hangers(duct: Any) -> bool:
+    """Whether any leg is level and long enough to hang; else its fittings carry the run."""
+    if len(duct.path) < 2 or len(duct.z_m) != len(duct.path):
+        return True
+    pts = clean_path([(x, y, z) for (x, y), z in zip(duct.path, duct.z_m, strict=True)])
+    for a, b in zip(pts, pts[1:], strict=False):
+        plan = math.dist(a[:2], b[:2])
+        if plan > abs(b[2] - a[2]) and plan >= MIN_HUNG_LEG_M:
+            return True
+    return False
+
+
 def stations(a: Point3, b: Point3, near_m: float, spacing_m: float) -> list[Point3]:
     """Hanger points on one leg: near each end, then evenly between within ``spacing_m``."""
     plan = math.dist(a[:2], b[:2])

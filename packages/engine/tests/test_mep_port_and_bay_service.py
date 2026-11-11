@@ -252,14 +252,15 @@ def test_the_only_serviceable_face_on_system_1_states_its_filter(catlin_plan):
 
 
 def test_the_new_installation_fields_are_additive_and_default_off(catlin_plan):
-    """Additive fields: only the ERV's interlock is authored (``mep.erv_blower_interlock``,
+    """Additive fields: only the ERV's interlock and the System 1 heat kit's (it runs only
+    with the AH blower) are authored (``mep.erv_blower_interlock``,
     tests/test_erv_blower_interlock.py); the rest still default off."""
     equipment = [el for el in catlin_plan.all_elements() if el.element_kind == "Equipment"]
     assert equipment
     for unit in equipment:
         assert unit.behind_access_panel is False
         assert unit.access_panel_ref is None
-        if unit.tag != "EQ-B-ERV":
+        if unit.tag not in {"EQ-B-ERV", "EQ-S-HP1-STRIP"}:
             assert unit.blower_interlock_ref is None
 
 

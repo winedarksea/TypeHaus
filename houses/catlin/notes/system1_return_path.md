@@ -9,7 +9,8 @@ now computes this table from the model (`checks/mep/door_transfer_air.py`, pinne
 ## The condition
 
 System 1 (`EQ-S-HP1-AH`, 750 cfm) has **three** returns: `REG-S-HP-RET`, a 28 x 12 filter-back
-grille in `SF-S-HP1`'s underside at (20'-11 1/2", 29'-1 1/4"), in `RM-S-HALL`, drawing 490
+grille in `SF-S-DUCT`'s underside at (19'-11", 29'-11 1/2") since 2026-11-11 (framed hole
+`AO-S-DUCT-RET`; it was in the retired `SF-S-HP1`), in `RM-S-HALL`, drawing 490
 cfm of room air; since 2026-11-09 `REG-S-HP-SUITE-RET`, the suite's ducted 80 cfm; and since
 2026-11-11 `REG-S-HP-BED3-RET`, BED3's ducted 80 cfm (both below).
 Every other System 1 terminal is a supply. So the supply air delivered to a
@@ -123,9 +124,11 @@ returns to System 1 through its own duct instead:
 * `DU-S-HP-SUITE-RET`: 6x4 in FS-ATTIC's y 176-192" bay, x 104" -> 254", at 232 1/4"
   absolute, through a derived pass-through box at the x=18' bearing line (5/8" over its
   bottom rail).
-* `DU-S-HP-SUITE-RET-LANE`: drops into `SF-S-DUCT`'s east lane at (254", 184"), runs north at
-  225 3/8" absolute to `EQ-S-ERV-MIX`'s south face at y=335". `DU-S-HP-BED2`/`-BED3` were
-  lowered 3/4" so it clears their crowns by 1".
+* `DU-S-HP-SUITE-RET-LANE`: drops into `SF-S-DUCT`'s east lane at (254", 184") and runs north
+  at 225 3/8" absolute to y=344". `DU-S-HP-BED2`/`-BED3` were lowered 3/4" so it clears
+  their crowns by 1". Since 2026-11-11 it rises to the FS-ATTIC bay there and
+  `DU-S-HP-SUITE-RET-UP` carries it east, up through `FO-A-HP1-SUITE-RET` into
+  `EQ-S-ERV-MIX` on the attic deck.
 
 Balance, by hand:
 
@@ -146,31 +149,29 @@ change. With System 1's fan off, the bath's 20 cfm makes up backward through thi
 ## RM-S-BED3: a ducted return, door at 1/2" (owner, 2026-11-11)
 
 BED3's 5 cfm ERV pickup rode `DU-A-ERV-R-BED3`, about 55 LF and six elbows round the attic.
-`W-S-BW3` stands against `SF-S-HP1`, and `EQ-S-ERV-MIX` is about 3" behind it, so the ERV
-pickup is gone and BED3 returns to System 1 directly:
+It is gone, and BED3 returns to System 1 directly:
 
-* `REG-S-HP-BED3-RET`: 12x12 filter-back SIDEWALL grille (`REG-T-HP-RET-FILTER-1212-SIDE`,
-  MERV 13 12x12x1) on `W-S-BW4`'s bedroom face in the NW corner, above the desk, centred
-  y=34'-2" in the 402"/418" stud bay, face 209"..221" absolute. Locked balancing damper at
-  the boot. (First placed over `D-S-BED3`'s header, 15" from the supply grille; moved the same
-  day so the return does not draw on the supply's own air.)
-* `DU-S-HP-BED3-RET`: a 6 wide x 12 tall stub, x 265 1/4" -> 252" at y=407", a shop take-off
-  on `DU-S-HP-RET`'s east face (8 1/4" behind the bedroom face), on the south half of the
-  neck: clear of BW4's 402" stud, `SF-S-HP1`'s east 2x2 at 412 5/8" and the trunk's turn west.
+* `REG-S-HP-BED3-RET`: 12x12 filter-back CEILING grille (`REG-T-HP-RET-FILTER-1212`, MERV 13
+  12x12x1) at (26'-5 1/2", 32'-8"), in the room's north part, 6'-7" north of the supply so
+  the return does not draw on the supply's own air. A locked balancing damper is at the
+  boot. (It was a sidewall grille on `W-S-BW4` feeding a take-off on `DU-S-HP-RET` until
+  the air handler moved to the attic the same day.)
+* `DU-S-HP-BED3-RET`: 12x6, up through `FO-A-HP1-BED3-RET` and south on the attic deck
+  (invert on the deck) into `EQ-S-ERV-MIX`'s north end.
 
 Balance, by hand:
 
     in   REG-S-HP-BED3             80 cfm
     out  REG-S-HP-BED3-RET         80 cfm   -> net 0: D-S-BED3 carries nothing
-    6x12 = 72 in^2 = 0.5 ft^2:     80 / 0.5 = 160 fpm
+    12x6 = 72 in^2 = 0.5 ft^2:     80 / 0.5 = 160 fpm
     12x12 face = 1.0 ft^2:         80 fpm
     hall grille 336 in^2 = 2.333 ft^2 at 750 - 100 (ERV) - 80 - 80 = 490 cfm: 210 fpm (< 300)
 
 `D-S-BED3` is `DT-INT-SWING30-PRIV-STOCK`, the factory 1/2" undercut, not sealed. Ventilation:
 BED3 keeps its fixed windows and gets ERV air through System 1's mixing box. With the
 fan off it has no extract, and no check asks a bedroom for one (BEDROOM is not a stale
-occupancy). **Sound:** the grille is about 1' from the mixing box and a few feet from the
-blower. Line the stub (open item).
+occupancy). **Sound:** the grille is about 3' of duct from the mixing box and a few feet
+from the blower. Lining the 12x6 is an open item.
 
 ## The two honest costs
 

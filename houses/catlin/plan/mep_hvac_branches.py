@@ -19,29 +19,26 @@
 #
 # BED3's centre is y=27'-6", above the door header and north of its south king: the 6"
 # collar spans y=27'-3"..27'-9", leaving 1/2" to the king's north edge at 27'-2 1/2".
-# W-S-BD2's north stud face is farther south, at 26'-9 3/4". EQ-S-ERV-MIX's south end is
-# trimmed 1/2" to 27'-11", keeping 2" for hangers beside this branch and the whole return
-# grille inside the plenum. This replaces the former attic rise and ceiling boot.
+# W-S-BD2's north stud face is farther south, at 26'-9 3/4". DU-S-HP-SUP's drop from the
+# attic is north of it, at y=28'-8". This replaces the former attic rise and ceiling boot.
 #
 # 6" round galvanized at 80 cfm is `size_for_cfm`'s answer: 407 fpm, under Manual D's 700 fpm
 # branch limit. BED2/BED3 sit 3/4" under the trunk centre (2026-11-09) so the suite return's
 # lane clears their crowns by 1"; hangers re-hung or bracketed off the east plate.
 #
 # RM-S-SUITE's ducted return (2026-11-09, notes/system1_return_path.md): 80 cfm, balancing the
-# 100 supply less the bath's 20, so D-S-SUITE is sealed. 6x4 at 80 cfm is 480 fpm. Two runs: the
-# bay leg in FS-ATTIC's y 176-192" bay, then a drop into SF-S-DUCT's east lane to
-# EQ-S-ERV-MIX's south face — one run would be graded across the box's whole width.
+# 100 supply less the bath's 20, so D-S-SUITE is sealed. 6x4 at 80 cfm is 480 fpm. Three runs:
+# the bay leg in FS-ATTIC's y 176-192" bay, a drop into SF-S-DUCT's east lane north to y=28'-8"
+# (one run would be graded across the box's whole width), and since 2026-11-11 a rise into the
+# y 336-352 bay, east along it and up into EQ-S-ERV-MIX on the attic deck.
 # 8x4 hits the BED2/BED3 hanger straps at x~249.7". The 24 V cove feeder stays clear of the lane.
 #
 # RM-S-BED3's ducted return (2026-11-11): 80 cfm, balancing its supply; it replaced the attic
-# ERV pickup DU-A-ERV-R-BED3. Moved 2026-11-11 from over D-S-BED3 (15" from REG-S-HP-BED3,
-# short-circuiting) to W-S-BW4 in the room's NW corner, 6'-5" north of the supply: a side
-# take-off into DU-S-HP-RET's east face, which runs 8 1/4" behind the bedroom face there.
-# 6 wide x 12 tall at 80 cfm is 160 fpm, on the south half of the grille's neck: y 404"..410"
-# clears BW4's stud at 402" by 1 1/4", SF-S-HP1's east 2x2 at 412 5/8" by 1 7/8", and the
-# trunk's turn west (inside corner y=411"). It ends on the trunk's centreline, the take-off
-# idiom. EXPOSED for the bedroom-collar reason. Lined stub: the blower is a few feet away
-# (open item).
+# ERV pickup DU-A-ERV-R-BED3. A 12x12 filter-back CEILING grille at (26'-5 1/2", 32'-8"), 6'-7"
+# from REG-S-HP-BED3 and clear of the bed and desk, in FS-ATTIC's y 384-400 bay; a 12x6 riser
+# up through the deck and 2' south on it into EQ-S-ERV-MIX's north face (160 fpm). It was a
+# sidewall grille over D-S-BED3, 15" from the supply, then a stub into SF-S-HP1's return;
+# both went with the air handler's move to the attic.
 
 from typehaus import DuctRouting, DuctRun, DuctSystem, ft, inch, pt
 
@@ -85,13 +82,21 @@ DUCTS_HVAC_BRANCHES_SECOND = [
             floor_ref="FS-ATTIC", material="galvanized", design_cfm=80),
     # Centre 105 3/8" storey: 1" over BED2/BED3's crowns, 1/8" under the hall ceiling board.
     DuctRun(uid="3NR7A186BJ", tag="DU-S-HP-SUITE-RET-LANE", system=DuctSystem.RETURN,
-            path=(pt(inch(254), inch(184)), pt(inch(254), inch(184)), pt(inch(254), inch(335))),
-            elevations=(inch(112.25), inch(105.375), inch(105.375)),
+            path=(pt(inch(254), inch(184)), pt(inch(254), inch(184)), pt(inch(254), inch(344)),
+                  pt(inch(254), inch(344))),
+            elevations=(inch(112.25), inch(105.375), inch(105.375), inch(114.125)),
             width=inch(6), depth=inch(4), routing=DuctRouting.SOFFIT,
             soffit_ref="SF-S-DUCT", material="galvanized", design_cfm=80),
+    # Up out of SF-S-DUCT's east lane into the y 336-352 bay, east and up into the box.
+    DuctRun(uid="Y5DZW6J0YX", tag="DU-S-HP-SUITE-RET-UP", system=DuctSystem.RETURN,
+            path=(pt(inch(254), inch(344)), pt(inch(312.5), inch(344)), pt(inch(312.5), inch(344))),
+            elevations=(inch(114.125), inch(114.125), inch(121)),
+            width=inch(6), depth=inch(4), routing=DuctRouting.JOIST_BAY,
+            floor_ref="FS-ATTIC", material="galvanized", design_cfm=80),
+    # 123 3/4" storey: the 6"-tall deck leg bears on the attic deck (a strap saddle).
     DuctRun(uid="2CFDX4Z7TG", tag="DU-S-HP-BED3-RET", system=DuctSystem.RETURN,
-            path=(pt(inch(265.25), inch(407)), pt(inch(252), inch(407))),
-            elevations=(inch(95), inch(95)),
-            width=inch(6), depth=inch(12), routing=DuctRouting.EXPOSED,
+            path=(pt(inch(317.5), inch(392)), pt(inch(317.5), inch(392)), pt(inch(317.5), inch(366))),
+            elevations=(inch(111), inch(123.75), inch(123.75)),
+            width=inch(12), depth=inch(6), routing=DuctRouting.EXPOSED,
             material="galvanized", design_cfm=80),
 ]

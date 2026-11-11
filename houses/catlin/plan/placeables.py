@@ -708,29 +708,6 @@ SECOND_PLACEABLES = [
                   wall_ref="W-S-CH-S", face="left", distance_from_start=inch(13.5),
                   normal_gap=inch(-0.5), rotation_offset=deg(-180)))),
 
-    # ** THE AIR HANDLER'S SERVICE OPENING, AND THE OLD BOX HAD NOTHING LIKE IT. **
-    # Until 2026-09-04 the only way into System 1's machine was REG-S-HP-RET's hinged
-    # filter face — fine for a filter, useless for a coil, a blower wheel, a condensate
-    # trap or a control board. This is a 20 x 13 hinged panel in SF-S-HP1's underside
-    # directly BELOW EQ-S-HP1-AH, in RM-S-NCLOSET where a stepladder can stand.
-    #
-    # ** IT IS THE LID ON A FRAMED HOLE, AND THE HOLE IS AUTHORED. ** `AO-S-HP1-AP` in
-    # plan/storeys/second.py is the `SoffitOpening` this covers: 30" x 29" clear at
-    # x 18'-10"..21'-4" by y 31'-10"..34'-3", made by heading off SF-S-HP1's rung at
-    # y=33'-0 5/8" between the rungs either side of it. This panel is drawn to the same
-    # rectangle, so the two agree by construction rather than by a comment.
-    #
-    # It was 20 x 13 for one day — the clear bay between two rungs, which is a hand and a
-    # filter. The engine had no way to say "cut the rung" then; it does now, and the
-    # opening reaches the air handler's north two-thirds AND its return face at y=34'-0",
-    # which is where the filter rack, the coil, the blower and the condensate trap are.
-    #
-    # elevation 7'-3" is the box's finished underside, hand-coupled to the 21" drop the
-    # same way REG-S-HP-RET's is.
-    Furniture(uid="J49Q7W1RWR", tag="FURN-S-NCLOSET-AP", type_ref="FT-ACCESS-PANEL-CLG-3029",
-              room="RM-S-NCLOSET", position=pt(ft(20, 1), inch(396.5)),
-              mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 3))),
-
     # Suite double hang: 80"/40" shelf tops, with the 1" bodies mounted at 79"/39" AFF.
     # Retain the existing identity on the upper tier; both rods face south into the closet.
     # RM-S-CLOSET: 94 3/4" of clear wall on the north side (W-S-CLN, face y 12'-2 5/8");

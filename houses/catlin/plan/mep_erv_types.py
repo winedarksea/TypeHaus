@@ -137,28 +137,13 @@ EQUIPMENT_TYPES_ERV = (
     # return working when the ERV is off, which is the behaviour the owner asked for and is
     # behaviour, not geometry.
     #
-    # ** IT GREW FROM 10 x 12 x 8 TO A REAL RETURN PLENUM ON 2026-09-04, AND THAT IS A FIX. **
-    # It used to be a small box beside the return duct, and REG-S-HP-RET was a 30 x 16 ceiling
-    # grille that lapped BOTH of them: 240 in2 of its face opened into the duct, 120 in2 into
-    # this box, and the remaining 120 in2 into bare soffit cavity. A return drawing a quarter
-    # of its face out of a framed cavity is IMC 601.5's building-cavity-as-plenum, and nothing
-    # in the engine grades it. The box is now 12 x 29 x 18 — the full east lane of
-    # SF-S-HP1 south of the air handler — and the grille sits WHOLLY inside it, which is what
-    # makes the fresh air and the room air actually mix in a box instead of in a joist bay.
-    #
-    # 12" is the east lane less the 2" hanger gap off DU-S-HP-SUP; 29" stops it clear of
-    # the cabinet's south face at y=30'-4 1/2"; 20 1/4" fills SF-S-HP1's 20 7/8" clear
-    # (2026-11-09; was 18" in the old 18 1/4" cavity), so RM-S-SUITE's return lands on its
-    # south face. 750 cfm through the 12 x 18 it presents to DU-S-HP-RET is 500 fpm, a duct
-    # velocity, and the grille's own face is 336 in2 at 244 fpm (570 cfm). The south end was trimmed 1/2" on 2026-10-02
-    # for BED3's straight collar, retaining full coverage of the 28" return grille. It grew
-    # 1/4" north on 2026-10-31 (still 1/4" off the cabinet) so the grille's hole could clear
-    # the ladder's south end block: the 28" hole now sits y 28'-0 1/4"..30'-4 1/4".
+    # 27 1/2 x 39 x 21 on the attic deck at the air handler's return end since 2026-11-11
+    # (plan/mep_erv_l3.py). 750 cfm leaves through the 20 x 16 neck at 340 fpm.
     EquipmentType(tag="EQ-T-ERV-MIXING-BOX",
                   name="Return-air mixing plenum, 6\" ERV leg with backdraft damper",
-                  footprint=(inch(12), inch(29.25)), height=inch(20.25),
+                  footprint=(inch(27.5), inch(39)), height=inch(21),
                   plan_symbol="erv",
-                  source="Fabricated plenum box, 12 x 29 1/4 x 20 1/4 in: System 1's return plenum, with a 6 in ERV inlet on a gravity backdraft damper and a filter-back return grille in its underside. The damper is the whole point — the ERV and the air handler run on independent schedules and each must breathe without the other. It was a 10 x 12 x 8 box until 2026-09-04, beside the return rather than containing it; the grille then lapped the box, the duct and 120 in2 of bare cavity at once.",
+                  source="Fabricated plenum box, 27 1/2 x 39 x 21 in, on the attic deck at EQ-S-HP1-AH's return end: System 1's return plenum, taking the hall return riser, RM-S-SUITE's and RM-S-BED3's returns and a 6 in ERV inlet on a gravity backdraft damper, and giving the cabinet a 20 x 16 neck through its canvas connector. The damper is the whole point: the ERV and the air handler run on independent schedules and each must breathe without the other. Mastic-sealed galvanized; the neck size waits on the delivered cabinet's return opening.",
                   ports=(ServicePort(tag="fresh", service=Service.SUPPLY_AIR,
                                      position=(ft(0), ft(0), inch(4))),
                          ServicePort(tag="return", service=Service.RETURN_AIR,

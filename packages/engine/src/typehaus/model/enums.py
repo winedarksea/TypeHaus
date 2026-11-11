@@ -445,7 +445,8 @@ class EquipmentKind(Enum):
     # air handler's return. Equipment rather than a duct fitting because it is a purchased
     # enclosure with a footprint, it occupies a soffit the way the air handler beside it
     # does, and the backdraft damper in it is what keeps the return working when the ERV is
-    # off — behaviour, not a tee.
+    # off — behaviour, not a tee. Also any passive shop box air passes through (an air
+    # handler's supply box): no backing, walked through by the interlock graph.
     MIXING_BOX = "mixing_box"
     # A radial-distribution plenum: one collared trunk connection, N small round takeoffs.
     # The thing that makes a semi-rigid radial install a radial install, and a real box with

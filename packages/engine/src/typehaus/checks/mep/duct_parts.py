@@ -79,7 +79,10 @@ def duct_supports(ctx: CheckContext) -> list[Finding]:
             held[support.hanger] += 1
         else:
             hung[support.run_tag] += 1
-    unruled = sorted(d.tag for d in ctx.model.ducts if standard.support_for(
+    from typehaus.resolve.duct_supports import needs_hangers
+
+    # A run with no hung leg (risers, a neck between two boxes) is carried by its fittings.
+    unruled = sorted(d.tag for d in ctx.model.ducts if needs_hangers(d) and standard.support_for(
         "flex" if d.material == "flex" else "round" if d.diameter_m else "rectangular",
         d.diameter_m or (d.width_m + d.depth_m)) is None)
     out = [advisory(_SUPPORTS, f"{tag}: {len(points)} hanger(s) with no framing to hang "

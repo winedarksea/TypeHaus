@@ -28,15 +28,16 @@ has been promoted to `EXACT`: the published drawings do not dimension their stat
 ## Product frame and placed geometry
 
 The horizontal cabinet is 43 1/2 inches along local x, 21 1/4 along local y and
-18 1/8 high. Discharge is -x, return +x and service front -y. Catlin's 90-degree
-placement turns those faces south, north and east respectively. The small face
+18 1/8 high. Discharge is -x, return +x and service front -y. Since 2026-11-11 Catlin
+places it at rotation 0 on `RM-A-EAST-UNFIN`'s attic deck, so those faces point west,
+east and south; `SF-S-HP1` and its closet hatch are retired. The small face
 markers are entirely within the cabinet envelope; they do not reserve fitting,
 insulation, wrench, trap or cable-bend space.
 
 | Interface | Verified size | Location certainty |
 | --- | --- | --- |
-| Supply | 11 5/8 across × 16 3/4 high when horizontal | South end; rear-biased centre inferred |
-| Return | Clear opening unpublished | North end; provisional centre |
+| Supply | 11 5/8 across × 16 3/4 high when horizontal | West end; rear-biased centre inferred |
+| Return | Clear opening unpublished; modelled 20 × 16 (inferred) | East end; provisional centre |
 | Liquid refrigerant | 3/8 inch tube | Front face; schematic station |
 | Vapor refrigerant | 3/4 inch tube | Front face; schematic station |
 | Primary condensate | 3/4 inch PVC nominal | Front face; schematic station |
@@ -44,37 +45,33 @@ insulation, wrench, trap or cable-bend space.
 | Power | 208–230 V | Front entry allowance; knockout not located |
 | Controls | 24 VAC / RS485 | Separate front entry allowance; knockout not located |
 
-## Fit findings that remain open
+## Fit findings
 
-1. **Service space fails.** The east case face is x244 5/8 inches; the derived
-   east cavity limit is x258 inches, leaving 13 3/8 inches against the required 24.
-   The return occupies the east lane as well. `AO-S-HP1-AP` is an underside hatch;
-   it does not establish access perpendicular to the east-facing service panels.
-   `mep.air_handler_coordination` reports a FAIL rather than crediting cabinet fit
-   as service access. Rework the cabinet orientation/enclosure and return together.
-2. **Supply transition is missing.** The 18×8 trunk begins at the cabinet face,
-   but cannot be attached directly to the 11 5/8×16 3/4 aperture. With the provisional
-   rear-aligned station, the opening centre is 4 13/16 inches west and 3 13/16 inches
-   below the trunk centre. A 3-inch vibration connector does not make that offset
-   transition. Its length, flange allowance, eccentricity and service clearance need
-   explicit geometry once the cabinet revision and opening setback are confirmed.
-3. **Return transition is unverified.** The 10×18 return reaches the north case,
-   but no manufacturer drawing establishes its mating aperture. Do not copy the
-   supply dimensions onto it or mark its case-level connectivity as exact fit.
-4. **Condensate assembly is absent.** The primary line from this handler is still
-   undrawn (`mep_drainage.py`). An independent secondary protection arrangement,
-   trap/cleanout, external emergency pan, supports and their removal path need geometry.
-   The resolved cabinet currently starts at the cavity floor; that does not reserve
-   space under it for a pan. Re-check the complete pitched assembly vertically.
-5. **Heat kit still has legacy external geometry.** `EQ-S-HP1-STRIP` is drawn south
-   of the cabinet, despite FLEXA2LHTR05KWD being an internal accessory. Its current
-   envelope and air port are not a verified factory assembly. Replace that independent
-   external body with an explicitly hosted internal accessory while preserving its
-   circuit, heating capacity and takeoff identity. Do not fabricate an inline heater
-   from the existing placement.
-6. **Lineset and control routing are unverified.** The new connection markers expose
-   the interfaces, but the model has no routed refrigerant pair or verified fitting and
-   insulation envelopes. Face markers do not establish separation from the return duct.
+1. **Service space: resolved by the attic move (2026-11-11).** The front panel faces
+   south onto open deck. The 24-inch zone (x 250 1/2–294, y 304 9/16–328 9/16) was checked
+   clear of walls, ducts and equipment, with 70 1/2–91 1/2 inches of headroom under the
+   roof. `mep.air_handler_coordination` stays UNKNOWN because there is no enclosure to
+   test against, and that is correct. The attic service rules (passageway, level
+   service space, a light switched at the entry and a receptacle near the unit) are open
+   items in `plans/TODO.md`.
+2. **Supply transition: modelled as a shop box.** `DU-A-HP1-SUP-NECK` (11 5/8 × 16 3/4,
+   4 inches long) joins the aperture to `EQ-A-HP1-SUP-BOX` (22 1/2 × 14 × 21). Its 12 × 12
+   bottom outlet drops through `FO-A-HP1-SUP` into the 18 × 8 trunk in `SF-S-DUCT`. The
+   indoor manual asks for a solid bottom for the first 6 inches past the outlet, and the
+   box floor provides it. The aperture's setback is still unpublished: confirm it on the
+   delivered cabinet before the neck is cut.
+3. **Return transition: 20 × 16, inferred.** `DU-A-HP1-RET-NECK` joins `EQ-S-ERV-MIX`
+   (the return plenum) to the east end. No drawing dimensions the return aperture, so
+   20 × 16 is an assumption, flagged on the duct. Measure the delivered cabinet.
+4. **Condensate assembly is absent.** No primary or secondary line is drawn
+   (`mep_drainage.py`), and neither is the external emergency pan (IMC 307.2.3: the unit
+   is over finished ceilings). The cabinet is FLOOR-mounted on the deck, and the pan
+   will lift it about 2 inches. A route down to a receptor is open.
+5. **Heat kit: now inside the cabinet.** `EQ-S-HP1-STRIP` is drawn within the
+   discharge half and keeps only its power port. `blower_interlock_ref` to the AH is
+   the relation that pardons the overlap.
+6. **Lineset and control routing are unverified.** The attic location sets a new route
+   from `EQ-M-HP1-OD`, and no refrigerant pair is modelled.
 
 The software tests verify aperture geometry, certainty labels, placement transforms,
 service-zone detection and shared viewer/GLB/IFC geometry. They do not resolve these

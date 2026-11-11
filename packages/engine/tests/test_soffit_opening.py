@@ -227,43 +227,28 @@ def test_the_check_grades_the_header_and_earns_its_not_applicable() -> None:
     assert none[0].result is Result.NOT_APPLICABLE
 
 
-def test_catlin_heads_off_one_rung_for_its_air_handler_hatch(catlin_model) -> None:
-    """The live case: SF-S-HP1's AO-S-HP1-AP, and the panel that covers it.
+def test_catlin_frames_the_hall_return_grille_into_the_duct_soffit(catlin_model) -> None:
+    """The live case: SF-S-DUCT's AO-S-DUCT-RET, and the 28x12 filter grille that fills it.
 
-    The two are authored in different files — the opening in ``plan/storeys/second.py``, the
-    lid in ``plan/placeables.py`` — and nothing in the engine ties them together, so this is
-    where the two rectangles are held to be the same rectangle. A panel drawn larger than its
-    hole is a panel whose flange lands on the rungs; drawn smaller, it is a hole nobody closed.
+    The opening (``plan/storeys/second.py``) and REG-S-HP-RET (``mep_registers_second.py``)
+    are authored apart and nothing in the engine ties them, so this holds the hole to the
+    grille's neck: larger and the face flange misses the board, smaller and the rack won't
+    seat. (The SF-S-HP1 access hatch this test pinned retired with that soffit, 2026-11-11.)
     """
-    soffit = next(s for s in catlin_model.soffits if s.tag == "SF-S-HP1")
-    assert [tag for tag, _ring in soffit.openings] == ["AO-S-HP1-AP", "AO-S-HP1-RET"]
+    soffit = next(s for s in catlin_model.soffits if s.tag == "SF-S-DUCT")
+    assert [tag for tag, _ring in soffit.openings] == ["AO-S-DUCT-RET"]
     _tag, ring = soffit.openings[0]
     hole = (round(min(x for x, _ in ring) / M_PER_IN, 3),
             round(max(x for x, _ in ring) / M_PER_IN, 3),
             round(min(y for _, y in ring) / M_PER_IN, 3),
             round(max(y for _, y in ring) / M_PER_IN, 3))
-    panel = next(o for o in catlin_model.canvas_objects if o.tag == "FURN-S-NCLOSET-AP")
-    lid = (round(min(x for x, _ in panel.footprint) / M_PER_IN, 3),
-           round(max(x for x, _ in panel.footprint) / M_PER_IN, 3),
-           round(min(y for _, y in panel.footprint) / M_PER_IN, 3),
-           round(max(y for _, y in panel.footprint) / M_PER_IN, 3))
-    assert hole == lid, "the access panel and the framed opening are one rectangle"
+    grille = next(o for o in catlin_model.canvas_objects if o.tag == "REG-S-HP-RET")
+    x, y = (v / M_PER_IN for v in grille.position[:2])
+    assert hole == pytest.approx((x - 14, x + 14, y - 6, y + 6), abs=1e-3)
 
-    # Exactly one rung is cut. The west edge is 4 1/2" off the rail, so its header stands
-    # outboard and would leave a 1" stub, under the 1 1/2" minimum, so none is cut and the
-    # header takes it; the east edge is 2" off the rail, too close for a header, so the rail
-    # carries that 2" stub. One header spans the 32" between the rungs.
-    stubs = sorted(round(m.length_m / M_PER_IN, 3) for m in soffit.members
-                   if m.child_key.startswith("soffit-rung-004"))
-    assert stubs == [2.0]
+    # One rung is cut; both stubs clear the minimum and two headers close the hole.
     assert all(m.length_m >= MIN_SOFFIT_STUB_M for m in soffit.members
                if m.child_key.startswith("soffit-rung-") and m.child_key[-1] in "ab")
     headers = [m for m in soffit.members
-               if m.child_key.startswith(f"{SOFFIT_HEADER_KEY_PREFIX}AO-S-HP1-AP")]
-    assert len(headers) == 1
-    assert all(m.length_m / M_PER_IN == pytest.approx(32.0, abs=1e-6) for m in headers)
-
-    # And the hole is under the machine it serves, in the closet a ladder stands in.
-    handler = next(o for o in catlin_model.canvas_objects if o.tag == "EQ-S-HP1-AH")
-    assert min(y for _, y in handler.footprint) / M_PER_IN < hole[3]
-    assert hole[2] > 370.0, "wholly inside RM-S-NCLOSET, which starts at y=30'-10\""
+               if m.child_key.startswith(f"{SOFFIT_HEADER_KEY_PREFIX}AO-S-DUCT-RET")]
+    assert len(headers) == 2

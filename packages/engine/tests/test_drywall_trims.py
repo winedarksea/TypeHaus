@@ -87,13 +87,9 @@ def test_jbead_stops_with_the_bare_face_and_slivers_are_not_corners(catlin_model
                       if t.kind == "termination" and t.room == "RM-M-MUDROOM")[:2]
     assert vertical == pytest.approx([84 - 1.0255906] * 2, abs=1e-3)
     # A clear face's ~1" mitre sliver (the closet's SW corner, the attic's building corners)
-    # is an inside corner. SF-S-HP1 butts walls 0.1-0.6" off three sides and SF-S-DUCT's
-    # higher board on the fourth: free are its 40 3/4" south edge and its west edge's
-    # 35 3/4" over the hall, less the 1" a wall's gap reaches.
+    # is an inside corner.
     rooms = {t.room for t in trims if t.kind == "outside_corner" and len(t.tags) == 1}
     assert not rooms & {"RM-S-NCLOSET", "RM-B-ESS", "RM-A-POCKET", "RM-S-SUITEBATH"}
-    hp1 = sum(t.length_m for t in trims if "SF-S-HP1" in t.tags) / _IN
-    assert hp1 == pytest.approx(40.75 + 35.74, abs=1.5)
 
 
 def test_a_tile_end_reveal_stops_at_what_covers_the_board(catlin_model_ro):

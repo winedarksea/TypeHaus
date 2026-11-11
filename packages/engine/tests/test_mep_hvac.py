@@ -236,7 +236,7 @@ def test_each_bedroom_grille_is_fed_by_a_drawn_branch(catlin_plan, catlin_model,
     assert register.location.attachment.wall_ref == f"W-S-BW{n}"
 
 
-def test_bed3_straight_branch_clears_framing_and_keeps_return_grille_in_plenum(
+def test_bed3_straight_branch_clears_framing_and_hall_return_grille_fills_its_hole(
     catlin_model_ro,
 ):
     """The soffit check clips at its end, so explicitly measure this tight corner too."""
@@ -245,7 +245,6 @@ def test_bed3_straight_branch_clears_framing_and_keeps_return_grille_in_plenum(
     from typehaus.quantities import inch
     from typehaus.resolve.framing.profiles import cross_section
     from typehaus.resolve.mep_bore_geometry import member_plan_shape
-    from typehaus.resolve.mep_soffit import HANGER_GAP_M
 
     model = catlin_model_ro
     assert not any(d.tag == "DU-S-HP-BED3-RISE" for d in model.ducts)
@@ -253,8 +252,6 @@ def test_bed3_straight_branch_clears_framing_and_keeps_return_grille_in_plenum(
     half_diameter = branch.diameter_m / 2
     branch_body = box(branch.path[0][0], branch.path[0][1] - half_diameter,
                       branch.path[1][0], branch.path[1][1] + half_diameter)
-    plenum = next(o for o in model.canvas_objects if o.tag == "EQ-S-ERV-MIX")
-    assert branch_body.distance(Polygon(plenum.footprint)) >= HANGER_GAP_M - 1e-9
     structural_shapes = []
     for wall in model.walls:
         if wall.tag not in ("W-S-BD2", "W-S-BW3"):
@@ -270,11 +267,14 @@ def test_bed3_straight_branch_clears_framing_and_keeps_return_grille_in_plenum(
                 structural_shapes.append(shape)
     assert structural_shapes
     assert min(branch_body.distance(shape) for shape in structural_shapes) >= inch(.5).meters - 1e-9
-    # The 28x12 hole (the grille's neck), not its wider face, must open into the plenum.
+    # The 28x12 hole (the grille's neck), not its wider face, is SF-S-DUCT's framed
+    # AO-S-DUCT-RET: the return duct, not the soffit cavity, is behind it (IMC 601.5).
     from typehaus.resolve.terminal_necks import neck_boxes
 
     hole = next(b[1] for b in neck_boxes(model) if b[0] == "REG-S-HP-RET")
-    assert Polygon(plenum.footprint).buffer(1e-9).covers(Polygon(hole))
+    soffit = next(s for s in model.soffits if s.tag == "SF-S-DUCT")
+    opening = next(ring for tag, ring in soffit.openings if tag == "AO-S-DUCT-RET")
+    assert Polygon(opening).buffer(1e-9).covers(Polygon(hole))
 
 
 def test_study_sidewall_boot_connects_and_clears_soffit_framing(catlin_plan, catlin_model_ro):

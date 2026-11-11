@@ -298,8 +298,9 @@ def test_the_unfinished_rooms_are_the_two_attic_lofts_and_bill_nothing(bom):
     assert row["rooms"] == ["RM-A-EAST-UNFIN", "RM-A-POCKET"]
     # 564.1 between finish faces (607.6 while the clear face was axis-derived); 559.0 net
     # of the ERV/vent/radon chases through RM-A-POCKET's and RM-A-EAST-UNFIN's floor, and
-    # 559.6 after the 1/2" walls moved the attic faces (2026-10-23).
-    assert float(row["net_area_sqft"]) == pytest.approx(559.6, abs=0.5)
+    # 559.6 after the 1/2" walls moved the attic faces (2026-10-23); 556.2 once System 1's
+    # air handler moved onto RM-A-EAST-UNFIN's deck and its four duct chases cut it (2026-11-11).
+    assert float(row["net_area_sqft"]) == pytest.approx(556.2, abs=0.5)
     assert float(row["order_area_sqft"]) == 0.0
 
 

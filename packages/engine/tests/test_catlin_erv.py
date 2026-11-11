@@ -339,78 +339,55 @@ def test_the_hoods_are_stacked_with_the_discharge_on_top(catlin_plan, catlin_mod
 # --- the mixing box --------------------------------------------------------------------
 
 def test_the_mixing_box_is_upstream_of_the_coil_and_the_strip_heater(catlin_model) -> None:
-    """** THIS TEST ONCE ASSERTED THE DEFECT, AND THE REVERSAL IS THE POINT. **
+    """100 cfm of -15 F design outdoor air, half the house's fresh air, has to enter UPSTREAM
+    of both the coil and the heat kit, or it reaches the rooms untempered. That is an airflow
+    argument, not a packing outcome, and it is pinned here because no check grades it.
 
-    It used to require the mixing box NORTH of the strip heater, because that is where
-    `mep.duct_soffit_occupancy` had pushed it: reading south to north, SF-S-DUCT's cavity
-    was the air handler's case to 9'-7", the return grille at 9'-8", the strip heater's
-    plate to 10'-8", and the box at 11'-4". That is a packing outcome, and packing is not
-    an airflow argument — it put 100 cfm of -15 F design outdoor air, half the house's
-    fresh air, DOWNSTREAM of both the coil and the 2 kW strip heater, where it reaches the
-    rooms untempered.
+    Since 2026-11-11 the machine lies horizontal on RM-A-EAST-UNFIN's deck (SF-S-HP1 and its
+    closet hatch retired): return in at the east end, discharge out the west. So:
 
-    ** AND THE GEOMETRY INVERTED AGAIN ON 2026-09-04, WITHOUT THE ORDER CHANGING. ** The
-    machine moved to the north end of the storey and the trunk now runs SOUTH, so the
-    cabinet's discharge is its south face and the strip heater sits south of it, where it
-    used to sit north. The mixing box — a full return PLENUM since later the same day, and
-    REG-S-HP-RET opens into its underside — is south of the cabinet too. Both are, and that
-    is the point: on this side of the machine the return and the supply run SIDE BY SIDE in
-    two lanes, not one behind the other, so "which is upstream" is no longer a question
-    about y at all.
+    * the mixing box is wholly EAST of the cabinet, on its return face, and the return neck
+      joins the two;
+    * the heat kit slides into the cabinet's discharge (west) half, where Gree puts it;
+    * every System 1 return lands in the box, so the fresh air mixes before the filter-less
+      cabinet ever sees it (the filters are at the grilles)."""
+    def box(tag):
+        o = next(o for o in catlin_model.canvas_objects if o.tag == tag)
+        xs = [x for x, _ in o.footprint]
+        ys = [y for _, y in o.footprint]
+        return min(xs), max(xs), min(ys), max(ys)
 
-    What still has to hold, and is asserted here:
-
-    * both the plenum and the strip are wholly SOUTH of the cabinet — the plenum because it
-      feeds the return face, the strip because it sits in the discharge;
-    * they are in DIFFERENT LANES across the box, with the hanger gap between them. If they
-      ever shared a lane, return air and 4.6 kW of supply-side heat would be in one duct,
-      and `mep.duct_soffit_occupancy` would say so — but only because of this separation,
-      which is a siting decision rather than a check's doing."""
-    box = next(o for o in catlin_model.canvas_objects if o.tag == "EQ-S-ERV-MIX")
-    handler = next(o for o in catlin_model.canvas_objects if o.tag == "EQ-S-HP1-AH")
-    strip = next(o for o in catlin_model.canvas_objects if o.tag == "EQ-S-HP1-STRIP")
-    # The strip's north edge is flush ON the cabinet's discharge face, so this pair is
-    # tangent to the micrometre and compares with a tolerance rather than exactly.
+    mix, handler, strip = box("EQ-S-ERV-MIX"), box("EQ-S-HP1-AH"), box("EQ-S-HP1-STRIP")
     tol = 1e-9
-    assert max(y for _, y in box.footprint) <= min(y for _, y in handler.footprint) + tol
-    assert max(y for _, y in strip.footprint) <= min(y for _, y in handler.footprint) + tol
-    # Side by side, and clear of one another: the plenum takes the east lane, the strip the
-    # centre, with more than the 2" hanger gap between them.
-    box_west = min(x for x, _ in box.footprint)
-    strip_east = max(x for x, _ in strip.footprint)
-    assert box_west > strip_east
-    assert (box_west - strip_east) / M_PER_IN > 2.0
+    assert mix[0] >= handler[1] - tol
+    assert handler[0] - tol <= strip[0] and strip[1] <= (handler[0] + handler[1]) / 2
+    assert handler[2] - tol <= strip[2] and strip[3] <= handler[3] + tol
 
-    # And the room-air inlet is INSIDE the plenum, which is the whole 2026-09-04 fix: the
-    # grille used to lap the plenum, the return duct and 120 in2 of bare soffit cavity at
-    # once, and a return drawing part of its face out of a framed cavity is IMC 601.5's
-    # building-cavity-as-plenum. Nothing in this engine grades that, so it is pinned here.
-    # The HOLE (the filter rack behind the face, 28 x 12) is what must be inside; the face's
-    # flange laps the soffit board round it (2026-10-31: footprints are submittal faces).
-    from typehaus.resolve.terminal_necks import neck_boxes
+    def inside(xy, b):
+        return b[0] - tol <= xy[0] <= b[1] + tol and b[2] - tol <= xy[1] <= b[3] + tol
 
-    hole = next(ring for tag, ring, *_ in neck_boxes(catlin_model) if tag == "REG-S-HP-RET")
-    for axis in (0, 1):
-        assert min(p[axis] for p in hole) >= min(p[axis] for p in box.footprint) - tol
-        assert max(p[axis] for p in hole) <= max(p[axis] for p in box.footprint) + tol
-    # And it is in the box the machine is in, not the trunk's.
-    plan_refs = {el.tag: getattr(el, "soffit_ref", None)
-                 for el in catlin_model.plan.all_elements()}
-    assert plan_refs["EQ-S-ERV-MIX"] == "SF-S-HP1"
+    ducts = {d.tag: d for d in catlin_model.ducts}
+    neck = ducts["DU-A-HP1-RET-NECK"]
+    assert inside(neck.path[0], mix)
+    assert neck.path[-1][0] == pytest.approx(handler[1], abs=1e-6)
+    for tag in ("DU-S-HP-RET", "DU-S-HP-SUITE-RET-UP", "DU-S-ERV-HP-FEED"):
+        assert inside(ducts[tag].path[-1], mix), tag
+    plan = {el.tag: el for el in catlin_model.plan.all_elements()}
+    assert plan["EQ-S-ERV-MIX"].room == "RM-A-EAST-UNFIN"
+    assert getattr(plan["EQ-S-ERV-MIX"], "soffit_ref", None) is None
 
 
-def test_the_fresh_feed_drops_into_the_soffit(catlin_model) -> None:
-    """The last of plans/TODO.md's three undrawn verticals. It used to tap a joist-bay trunk
-    that no longer exists, and its rise was undrawn because ``DuctRun`` had no elevation."""
+def test_the_fresh_feed_ends_in_the_mixing_box_on_the_attic_deck(catlin_model) -> None:
+    """The feed crosses the FS-ATTIC bays and comes up through FO-A-ERV-HPFEED-E onto the
+    deck, ending in EQ-S-ERV-MIX's south face near its floor (2026-11-11: no drop through
+    the second-storey ceiling any more)."""
     feed = next(d for d in catlin_model.ducts if d.tag == "DU-S-ERV-HP-FEED")
     assert feed.uid == "CSDV02AAAA"
-    # Two drawn drops, 28 7/8" in total: the attic deck down into the FS-ATTIC bay, and the
-    # bay down through the second-storey ceiling onto EQ-S-ERV-MIX inside SF-S-HP1.
-    # The second drop is 21" for the FLEXX Ultra cabinet, whose cavity floor came down with
-    # it. The tail sits 6" above that floor, which is the invariant; the fall is the
-    # consequence.
-    fall_in = (max(feed.z_m) - min(feed.z_m)) / M_PER_IN
-    assert fall_in == pytest.approx(28.875, abs=0.01)
+    deck_top = 240.75
+    tail = feed.z_m[-1] / M_PER_IN
+    # 6" duct, its invert a quarter inch over the deck it bears on.
+    assert tail - 3.0 == pytest.approx(deck_top + 0.25, abs=0.01)
+    assert min(feed.z_m) / M_PER_IN == pytest.approx(231.5, abs=0.01)
 
 
 # --- the 2026-09-12 standard-parts redesign (plans/buildability.md BLD-08) -----------------

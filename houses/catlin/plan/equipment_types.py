@@ -113,9 +113,9 @@ EQUIPMENT_TYPES = (
     # compressor, and three head ratings summed would size a zone against capacity that
     # compressor cannot deliver simultaneously.
     #
-    # System 1 — the concealed ducted air handler in RM-S-STUDY2's ceiling bulkhead
-    # (SF-S-HP1) feeding the hallway trunk to the bedrooms plus the south branch and two
-    # attic boots; FLEXX Ultra R32 outdoor unit. One 24k system covers the whole upstairs.
+    # System 1 — the ducted air handler on RM-A-EAST-UNFIN's attic deck (since 2026-11-11;
+    # SF-S-HP1 before) feeding the hallway trunk to the bedrooms plus the south branch and
+    # two attic boots; FLEXX Ultra R32 outdoor unit. One 24k system covers the whole upstairs.
     #
     # ** IT REPLACED EQ-T-GREE-DUC24 / EQ-T-GREE-VIREO-GEN3, AND THAT PAIRING WAS SHORT. **
     # The DUC24/VIR24 record was wrong in three ways at once, all of them found by checking
@@ -190,30 +190,15 @@ EQUIPMENT_TYPES = (
     #
     # So horizontal ceiling mounting is a factory configuration and the geometry authored
     # below is the horizontal one (the cabinet rests on a 43 1/2 x 21 1/4 side, so 18 1/8 in
-    # is what the soffit has to swallow). What was NOT right is the box it was swallowed by.
+    # is its height). What was NOT right was the soffit it first lived in (SF-S-HP1).
     #
-    #  1. ** A SECONDARY DRAIN PAN IS REQUIRED, AND IT DID NOT FIT. ** This unit sits over
-    #     RM-S-NCLOSET's finished ceiling. The manufacturer requires an emergency pan under
-    #     it and so does the code (IRC M1411.3 / IMC 307.2.3, equipment over a finished
-    #     area); IRC M1411.3.1 sizes it — 1 1/2 in deep minimum, 3 in larger than the unit
-    #     in width and length, corrosion-resistant, on its own drain.
-    #
-    #     ** THE ARITHMETIC THIS COMMENT FIRST CARRIED WAS WRONG, AND IT WAS WRONG IN THE
-    #     ** DIRECTION THAT MATTERS. ** It read the pan's 1 1/2-2 in against a 21 in drop
-    #     and called it "the whole remaining slack". A drop is not a cavity:
-    #     `soffit_clear_section` takes 5/8 in of lining top and bottom and the 1 1/2 in
-    #     bottom rung off it, and `haus check` reported SF-S-HP1 at 36.50 x 18.25 in. The
-    #     slack under an 18 1/8 in cabinet was 1/8 in. The pan did not fit at all — not
-    #     tightly, not at all — and the check that PASSED said nothing, because nothing in
-    #     the model knew the pan was coming.
-    #
-    #     SF-S-HP1's drop went 21 -> 23 in (storeys/second.py), which is 20.25 in of cavity:
-    #     2 in of pan under 18 1/8 in of cabinet, back to the same 1/8 in. RM-S-NCLOSET and
-    #     ~7'-9" of the north hall finish at 7'-1" instead of 7'-3" and that is the price.
-    #     The PAN ITSELF is still unmodelled — no element kind holds one, and authoring it
-    #     as `Equipment` would clash with the machine it catches, since the hanger-gap test
-    #     ignores z. It reaches the installer through `tasks.toml`, not through a check.
-    #  2. ** WHICH HAND. ** `EQ-S-HP1-AH` is authored `rotation=deg(90)`. Horizontal LEFT
+    #  1. ** A SECONDARY DRAIN PAN IS REQUIRED. ** The unit sits over finished ceilings, so
+    #     the manufacturer and the code (IRC M1411.3 / IMC 307.2.3) both require one; IRC
+    #     M1411.3.1 sizes it at 1 1/2 in deep minimum, 3 in larger than the unit each way,
+    #     on its own drain. In SF-S-HP1 it forced the drop from 21 to 23 in. On the attic
+    #     deck it costs only height. It is still unmodelled and reaches the installer
+    #     through `tasks.toml`.
+    #  2. ** WHICH HAND. ** `EQ-S-HP1-AH` is authored at rotation 0 (discharge west). Horizontal LEFT
     #     needs no modification and horizontal RIGHT needs the factory drain pan relocated
     #     in the field. Which hand that rotation lands on is a fabrication question this
     #     model does not answer; it is on the purchase order (`tasks.toml`,
@@ -389,11 +374,10 @@ EQUIPMENT_TYPES = (
                   aux_lockout_above_f=-22.0,
                   supplemental_heat=True,
                   source="Gree FLEXA2LHTR05KWD factory electric heat kit for the FLEXX Ultra air handler: 4.6 kW at 240 V (4.6 x 3,412 = 15,695 Btu/h, no cold-weather derate), MCA 29.9 A, maximum overcurrent device 35 A. It mounts INSIDE the EQ-T-GREE-FLEXX-ULTRA-24-AH cabinet on the discharge side of the coil and is staged by the air handler's own 24 VAC control, which is the whole point of the retype: the EQ-T-DUCT-HEATER-2KW it replaces was a generic inline element in the supply plenum, and the DUC24 it was drawn against had no aux-heat terminal to interlock it with. Its job also changed. It is no longer covering a design-temperature shortfall — the outdoor unit makes 21,000 Btu/h at -15 F against a 15,164 Btu/h zone load unaided — but is true backup for defrost recovery and for the hours below the -22 F compressor lockout. `supplemental_heat` like the fireplace: it counts toward its room's zone and opens none of its own.",
-                  # It sits in the supply air stream: DU-S-HP-SUP passes through it.
+                  # Internal to the cabinet (2026-11-11): the air handler's own ports are the
+                  # air connections, so the kit declares only its power.
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
-                                     position=(ft(0), ft(0), ft(0))),
-                         ServicePort(tag="discharge", service=Service.SUPPLY_AIR,
-                                     position=(ft(0), ft(0), ft(0))))),
+                                     position=(ft(0), ft(0), ft(0))),)),
     # DR-238 v250108 manual pp3-6: body and the four wall-bracket mounting holes.
     # The envelope includes an allowance of 6in behind the tilted body.
     EquipmentType(tag="EQ-T-GARAGE-HEATER", name="Dr Infrared Heater DR-238 carbon radiant heater, 1500 W, 120 V",
