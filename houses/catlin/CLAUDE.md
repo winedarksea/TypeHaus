@@ -616,7 +616,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   siblings, `*_HALF` in `library/assemblies/partitions_half.py`). Ceilings stay 5/8" (rafters
   and trusses at 24" o.c.). The walls that keep 5/8" are the ESS closet (advisory owner rule),
   `W-B-STR`/`W-B-STR3` (Type X, R302.7, "do not retype it back"), the garage walls and the
-  `gwb-stem` band, and `FO-S-STAIR`'s `gwb-well` lining (the joist clip is struck behind it).
+  `gwb-stem` band, and `FO-S-STAIR`/`FO-M-STAIR`'s `gwb-well` linings (the joist clip is struck behind them).
   "Regular" means standard weight, never lightweight (UltraLight) board.
   Upgrade boards are all 1/2" and are swapped by material only: `gwb-ar` on hall and stair faces
   and in the mudroom (a supply-yard item: 1/2" standard-weight regular or Type C is an accepted

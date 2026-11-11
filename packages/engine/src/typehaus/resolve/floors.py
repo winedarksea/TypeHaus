@@ -304,11 +304,12 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey, anchors=()
         if not frame.opening.lining:
             continue
         lo, hi = _plane_range(deck_plane, frame.framed_ring(along_x))
-        solids, area = lining_solids(frame, storey.tag, z0 - ceiling_m + lo, z1 + hi)
-        model.solids.extend(solids)
         centre = ((frame.minx + frame.maxx) / 2.0, (frame.miny + frame.maxy) / 2.0)
-        linings.append((frame.opening.tag, area,
-                        lining_coating(model.plan, storey.tag, frame.opening.lining, centre)))
+        coating = lining_coating(model.plan, storey.tag, frame.opening.lining, centre)
+        solids, area = lining_solids(frame, storey.tag, z0 - ceiling_m + lo, z1 + hi,
+                                     coating, model.walls)
+        model.solids.extend(solids)
+        linings.append((frame.opening.tag, area, coating))
 
     chases = tuple(
         (f.opening.tag, [(f.minx, f.miny), (f.maxx, f.miny),

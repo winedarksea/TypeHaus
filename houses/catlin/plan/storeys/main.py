@@ -623,11 +623,11 @@ WALLS = [
     # the studs (its stud-head stands at this south end, under the trimmer), this wall adds
     # the faces and carries no FramingSpec — see STAIRWELL_PARTITION_4H. Base at the stairs' 1.0255906" walking surface,
     # where ST-M2S's generated bottom plate sits and ST-B2M's partition top plate stops; top
-    # at 9'-0" like every main wall — higher runs into FO-S-STAIR's south trimmer
-    # (structural.through_deck_clearance).
+    # at the oak (+121.5"), W-S-WELL-KNEE's base: it stands in FO-S-STAIR's hole, and the
+    # lining has stepped that opening's south trimmer clear.
     Wall(uid="SNNBY9M3CE", tag="W-M-WELL", start_node="N-M-WELL-S", end_node="N-M-WELL-N",
          assembly="STAIRWELL_PARTITION_4H",
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"), LayerMaterial(layer="gwb-b", material="gwb-ar"),), base_elevation=inch(1.0255906), top=inch(106.9744094),
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"), LayerMaterial(layer="gwb-b", material="gwb-ar"),), base_elevation=inch(1.0255906), top=inch(120.4744094),
          interior_room="RM-M-LIVING"),
     # A wet wall since 2026-11-01: it carries PR-M-S-BATH1-DRAIN's 3" stack (3.50" OD, ~4.2"
     # hub) and the hall-bath supply risers. `haus route` found no lane into W-M-HS1 or the
@@ -1878,7 +1878,7 @@ FLOOR_OPENINGS = [
                  penetration_for=("PR-B-SH2-DRAIN",), cuts_ceiling_below=False),
     FloorOpening(uid="CMF601AAAA", tag="FO-M-STAIR",
                  outline=(pt(ft(10, 3.25), ft(26, 0.375)), pt(inch(212.75), ft(26, 0.375)),
-                          pt(inch(212.75), ft(35, 4.875)), pt(ft(10, 3.25), ft(35, 4.875))),
+                          pt(inch(212.75), ft(35, 4.25)), pt(ft(10, 3.25), ft(35, 4.25))),
                  # The basement walls *under* the two long edges, not the main-storey walls
                  # that stand on them. W-M-STRW/W-M-STRW2 were named here while this hole
                  # was cut in a concrete pour and nothing framed it, so the wrong tags were
@@ -1898,7 +1898,14 @@ FLOOR_OPENINGS = [
                  # the pour became framing, which this list also does not have to notice:
                  # `_opening_edge_has_declared_bearing` reads the named walls' full layer
                  # footprints either way, and the west edge moved with them.
-                 bearing_refs=("W-B-STR", "W-B-STR3", "W-B-CN")),
+                 bearing_refs=("W-B-STR", "W-B-STR3", "W-B-CN"),
+                 # The joist band closed in the ceiling's 5/8" board on all four edges, as
+                 # FO-S-STAIR; the framing steps back behind it. North edge 5/8" in so that
+                 # framing stays within PR-B-KITCH-DRAIN's strap reach (mep.run_over_void).
+                 lining=(
+                     Layer(name="gwb-well", material_ref="gwb", thickness=inch(0.625),
+                           function=LayerFunction.FINISH),
+                 )),
     # The hole FX-M-BATH2-TUB drops through, in SL-M-TUBDK's ply cap. Not a
     # hole in a floor at all — no `bearing_refs`, nothing spans it, and the bath does not
     # hang in it: it passes through and lands on a 1"-2" mortar bed on the subfloor, with

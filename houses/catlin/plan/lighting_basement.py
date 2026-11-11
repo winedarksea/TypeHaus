@@ -428,7 +428,7 @@ BASEMENT_LIGHTING = [
                      mount=Mount(kind=MountKind.CEILING)),
     # The 3-way at the stair foot. It hung on W-B-STR3's east face at (10'-4 3/8", 26'-6")
     # until 2026-09-05, which the under-stair closet then enclosed — so it moved across the
-    # well onto **W-B-WELL's east face** (x=14'-0 7/8") at the same height, level with the
+    # well onto **W-B-WELL-HEAD's east face** (x=14'-0 7/8") at the same height, level with the
     # bathroom's north wall. That is the hall side, which is where you reach for it.
     # y=25'-10" and not 25'-6": at the bathroom's north wall line the box straddles
     # W-B-BA-E's own end — that wall's gypsum runs to x=14'-2", four inches past this
@@ -439,7 +439,7 @@ BASEMENT_LIGHTING = [
                      circuit="CKT-LT-BSMT", room="RM-B-STAIR",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-WELL", face="right", distance_from_start=inch(4),
+                         wall_ref="W-B-WELL-HEAD", face="right", distance_from_start=inch(4),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # The can lights the HALL — the slot between W-B-BA-E and W-B-CN2 — centred in it and
     # level with D-B-BATH's leaf. The slot was 3'-2 5/8" and the can sat at x=15'-9";

@@ -36,6 +36,8 @@ from typehaus.resolve.construction_geometry import _EPS
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.overlay import difference, intersection, union_all
 
+_HOLE_TOLERANCE_M2 = 1e-6
+
 
 def decks_covering(face: Polygon,
                    candidates: Sequence[tuple[Any, Any]]) -> list[tuple[Any, Any]]:
@@ -113,6 +115,15 @@ def ceiling_decks_over(plan: PlanModel, room_storey_tag: str,
         if covering:
             return covering
     return []
+
+
+def stands_in_a_hole(plan: PlanModel, deck: Any, face: Polygon) -> bool:
+    """Is ``face`` wholly inside one of ``deck``'s openings, so the deck is not over it?"""
+    for tag in getattr(deck, "openings", ()):
+        hole = Polygon([point.xy_m for point in plan.by_tag(tag).outline])
+        if difference(face, hole).area <= _HOLE_TOLERANCE_M2:
+            return True
+    return False
 
 
 def deck_structure_underside_m(storey: Any, deck: Any) -> float | None:

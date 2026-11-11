@@ -224,6 +224,8 @@ NODES = [
     # which are absolute coordinates and not node references, did (mep_venting.py,
     # mep_supply.py, mep_supply_devices.py).
     Node(uid="ZHKG5KWP08", tag="N-B-BA-NE", position=pt(inch(168), ft(25, 6))),
+    # FO-M-STAIR's south edge on the same line: W-B-WELL rises through the hole north of it.
+    Node(uid="HATJTCSNNE", tag="N-B-WELL-HEAD", position=pt(inch(168), ft(26, 0.375))),
     Node(uid="R1KFP0S4NQ", tag="N-B-BA-SE", position=pt(inch(168), ft(18))),
     # ** THE HALL'S SOUTH END, NEW 2026-09-07. ** The 2026-09-05 hall stopped at the y=18'
     # line and crossed into the workshop through a cased opening, which made the workshop a
@@ -951,12 +953,17 @@ WALLS = [
     # Its north end is free now (`open_end` on N-B-CL-NE) — the reserved slot ends where
     # the two flights stop being two, and nothing north of that is a wall line.
     #
-    # top=ft(8) is the basement's bearing seat, like every other partition down here. Above
-    # it is FO-M-STAIR's void, not joists, so nothing lands on it and it is not BEARING.
+    # It stands in FO-M-STAIR's void, not under joists, so its board runs up to the main
+    # floor (+1.0255906", W-M-WELL's base). Nothing lands on it and it is not BEARING.
+    # W-B-WELL-HEAD is the stub still under the deck, south of the opening, at the 8'-0" seat.
     # It carries no framing of its own — see the assembly.
-    Wall(uid="9AYPA03VAE", tag="W-B-WELL", start_node="N-B-BA-NE",
-         end_node="N-B-CL-NE", assembly="STAIRWELL_PARTITION_4H",
+    Wall(uid="VJPS36HCSB", tag="W-B-WELL-HEAD", start_node="N-B-BA-NE",
+         end_node="N-B-WELL-HEAD", assembly="STAIRWELL_PARTITION_4H",
          layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"), LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(8),
+         interior_room="RM-B-STAIR"),
+    Wall(uid="9AYPA03VAE", tag="W-B-WELL", start_node="N-B-WELL-HEAD",
+         end_node="N-B-CL-NE", assembly="STAIRWELL_PARTITION_4H",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"), LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=inch(110.4630906),
          interior_room="RM-B-STAIR"),
     # Unglazed buff brick veneer over the exposed run of W-B-S2/W-B-S3, where the sunken
     # garden is dug against them — everywhere else this wall is buried and the parge is a

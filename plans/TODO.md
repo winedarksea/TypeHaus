@@ -296,10 +296,11 @@ the future.
 - Drywall returns on the rough openings that aren't doors.
 - ED-B-BATH-CAN1 is placed inside the soffit
 - Tile of the bathroom
-- Robot training
+- Robot training (light switches correspond, doors open)
 - Camera in ESS Room and Plant Room
 - [x] 3d model of the S-5! snowguards over the canopy entry — continuous ColorGard 2.0 with seam-aligned S-5-N clamps, ColorStrip and SnoClip feet; component takeoff follows the same layout.
 - Supplier sizing and quote for the canopy ColorGard drift case: confirm tributary garage snowpack, row count, seam compatibility and SnoClip pan support (`notes/north_entry_structure.md` §5). The modeled single row is provisional.
+- 3d model of the ERV intake and outlet on the exterior
 
 # Project Management
 

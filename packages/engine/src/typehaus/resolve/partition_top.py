@@ -36,6 +36,7 @@ from typehaus.model.refs import ToRoof
 from typehaus.resolve.ceiling_over import (
     ceiling_decks_over,
     deck_structure_underside_m,
+    stands_in_a_hole,
 )
 from typehaus.resolve.layer_bands import reband, reband_for_platform
 from typehaus.resolve.layout_lines import lines_by_wall
@@ -72,7 +73,8 @@ def deck_underside_over(model: ResolvedModel, wall: ResolvedWall) -> float | Non
     """
     face = _wall_face(wall)
     undersides = [z for storey, deck in ceiling_decks_over(model.plan, wall.storey, face)
-                  if (z := deck_structure_underside_m(storey, deck)) is not None]
+                  if not stands_in_a_hole(model.plan, deck, face)
+                  and (z := deck_structure_underside_m(storey, deck)) is not None]
     return min(undersides) if undersides else None
 
 

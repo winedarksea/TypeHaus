@@ -141,24 +141,36 @@ def test_a_wall_something_bears_on_is_not_a_partition(catlin_model_ro, tag: str)
 
 
 def test_the_gate_answers_the_same_before_and_after_the_pass(catlin_model_ro) -> None:
-    """62 partitions, including the four new study return/rear segments and W-M-WELL (the
-    main stair's well partition, 2026-09-23); W-M-HS3/-HS4 left as BEARING (#116);
+    """61 partitions, including the four new study return/rear segments; W-M-WELL and
+    W-B-WELL left, standing in their wells to the floor above; W-M-HS3/-HS4 left as BEARING (#116);
     W-S-BD-N1B joined as NONBEARING (owner, 2026-11-06); W-S-SBF, the suite tub's furred
     plumbing end (2026-11-08).
 
     Not a tautology: the pass MOVES the plate it selects on, so a full-height tolerance
     measured only upward would drop ``W-B-CE`` — whose plate lands 1-11/16" below its
-    storey line — the moment it had been treated as a partition. ``W-M-WELL`` is in this
-    candidate set but has no wall-framed top plate, so the fastener take-off records a refusal
-    instead of inventing a screw joint. The fastener take-off asks this question of the
-    resolved model, so it has to be a fixed point.
+    storey line — the moment it had been treated as a partition. The fastener take-off asks
+    this question of the resolved model, so it has to be a fixed point.
     """
     refs = bearing_ref_tags(catlin_model_ro.plan)
     tags = [w.tag for w in catlin_model_ro.walls
             if takes_a_deflection_gap(catlin_model_ro, w, refs)]
-    assert len(tags) == 62
+    assert len(tags) == 61
     assert "W-B-CE" in tags
-    assert "W-M-WELL" in tags
+
+
+def test_a_partition_standing_in_a_well_is_boarded_through_the_floor_band(catlin_model_ro) -> None:
+    """No deck is over a wall in the hole: its board meets the wall above, and the well's
+    lining carries a drawn coat on every edge."""
+    def board_top(tag: str) -> float:
+        wall = catlin_model_ro.wall(tag)
+        return next(layer for layer in wall.layers if layer.name == "gwb-a").band(wall)[1] / _IN
+
+    assert board_top("W-B-WELL") == pytest.approx(1.0255906, abs=1e-6)
+    assert board_top("W-M-WELL") == pytest.approx(121.5, abs=1e-6)
+    films = [s for s in catlin_model_ro.solids
+             if s.category == "opening_lining" and s.material == "paint-wall"]
+    assert sum(s.tag.startswith("FO-M-STAIR") for s in films) == 4
+    assert sum(s.tag.startswith("FO-S-STAIR") for s in films) == 4
 
 
 # --- the SDPW schedule -----------------------------------------------------------------

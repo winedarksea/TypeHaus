@@ -128,7 +128,9 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     #
     # **42 SINCE 2026-11-01** (decision #112): W-B-CS2 / W-B-CN2 / W-B-CN, the x=18' pours,
     # are framed 2x6 bearing walls now and bill in [framing].
-    assert len({tag for row in rows for tag in row["tags"]}) == 42
+    #
+    # **43 SINCE 2026-11-10:** `W-B-WELL-HEAD`, the stub of W-B-WELL still under the deck.
+    assert len({tag for row in rows for tag in row["tags"]}) == 43
     # **`metal-flat-sheet` LEFT THIS TABLE ON 2026-09-03, and it did not leave the house.**
     # The garage's base skin is now the 24" `coil-ext` band on the ICF stem, which is a
     # banded LAYER inside GARAGE_ICF_6 and bills through `[envelope_layers]` — 156.2 SF,

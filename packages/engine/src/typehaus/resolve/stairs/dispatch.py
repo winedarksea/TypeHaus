@@ -245,7 +245,7 @@ def _resolve_stair(
         members = _stair_members(stair, origin_x, origin_y, z0, risers, riser,
                                  going_m, physical_tread_m, nosing_m, landing_depth_m,
                                  _deck_underside(model, stair, opening), finish_thickness_m,
-                                 support_floor_m)
+                                 support_floor_m, bool(opening and opening.lining))
     except ValueError as exc:
         if stair.layout != "right_angle_winder":
             raise
@@ -438,14 +438,15 @@ def _stair_members(stair: Stair, minx: float, miny: float, z0: float, risers: in
                    landing_depth_m: float,
                    head_z: float | None = None,
                    finish_m: float = 0.0,
-                   support_floor_m: float | None = None) -> tuple[FramedMember, ...]:
+                   support_floor_m: float | None = None,
+                   lined_head: bool = False) -> tuple[FramedMember, ...]:
     if stair.layout == "right_angle_winder":
         return _winder_stair_members(stair, minx, miny, z0, risers, riser, going,
                                      tread_depth, nosing, support_floor_m)
     if stair.layout in {"u_split_landing", "u_level_landing"}:
         return _u_split_landing_members(stair, minx, miny, z0, risers, riser, going,
                                         tread_depth, nosing,
-                                        landing_depth_m, head_z, finish_m)
+                                        landing_depth_m, head_z, finish_m, lined_head)
     return _straight_stair_members(stair, minx, miny, z0, risers, riser, going,
                                   tread_depth, nosing)
 

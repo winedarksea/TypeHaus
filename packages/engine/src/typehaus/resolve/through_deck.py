@@ -40,7 +40,7 @@ from shapely.geometry import Polygon
 
 from typehaus.model.elements import Wall
 from typehaus.quantities import inch
-from typehaus.resolve.ceiling_over import polygon_parts
+from typehaus.resolve.ceiling_over import polygon_parts, stands_in_a_hole
 from typehaus.resolve.framing.footprint import member_footprint
 from typehaus.resolve.model import FramedMember, Ring
 from typehaus.resolve.overlay import difference, intersection, union_all
@@ -116,6 +116,8 @@ def through_deck_walls(model: Any, system: Any, floor_z0_m: float, floor_z1_m: f
             continue
         if not sheet.covers(face.buffer(_SHEET_CLEARANCE_M, join_style=2)):
             continue
+        if stands_in_a_hole(model.plan, system, face):
+            continue  # the deck was never cut round it
         out.append(wall)
     return tuple(out)
 
