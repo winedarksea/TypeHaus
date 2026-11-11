@@ -25,12 +25,10 @@ NAILER_TOP_IN = 45.0
 TIMBER_STATION_IN = 40.625
 STUD_WEST_IN = 72.625
 STUD_EAST_IN = 76.125
-# Held flush with the post east faces: 1in off the CDX, its east ply past the plate.
-TIMBER_WEST_IN = 73.625
-TIMBER_PLY_THICKNESS_IN = 1.5
+# One solid 6x6 under the band's centre post, on both its faces and the chord posts'.
+TIMBER_WEST_IN = 72.625
 TIMBER_WIDTH_IN = 5.5
-TIMBER_PLY_COUNT = 3
-TIMBER_EAST_IN = TIMBER_WEST_IN + TIMBER_PLY_COUNT * TIMBER_PLY_THICKNESS_IN
+TIMBER_EAST_IN = TIMBER_WEST_IN + TIMBER_WIDTH_IN
 WOOD_DENSITY_KG_M3 = 600.0
 SAW_KERF_IN = 0.125
 STOCK_LENGTH_IN = 96.0
@@ -59,27 +57,10 @@ SUPPORTS = tuple(
     ScreenSupport(f"TR-BW-MDO-NAILER-{identity}", "2x4", STUD_WEST_IN, STUD_EAST_IN,
                   station - 0.75, station + 0.75)
     for identity, station in zip(NAILER_IDENTITIES, NAILER_STATIONS_IN, strict=True)
-) + tuple(
-    ScreenSupport(f"TR-BW-MDO-TIMBER-PLY-{ply + 1}", "2x6",
-                  TIMBER_WEST_IN + ply * TIMBER_PLY_THICKNESS_IN,
-                  TIMBER_WEST_IN + (ply + 1) * TIMBER_PLY_THICKNESS_IN,
+) + (
+    ScreenSupport("TR-BW-MDO-TIMBER", "6x6", TIMBER_WEST_IN, TIMBER_EAST_IN,
                   TIMBER_STATION_IN - TIMBER_WIDTH_IN / 2,
-                  TIMBER_STATION_IN + TIMBER_WIDTH_IN / 2)
-    for ply in range(TIMBER_PLY_COUNT)
-)
-
-# Side-grain screws between adjacent plies, assembled west-to-east. Stagger the two
-# interfaces vertically to avoid intersecting shanks inside the centre ply.
-PLY_SCREW_PART = "SDWS22300DB"
-PLY_SCREW_LENGTH_IN = 3.0
-PLY_SCREW_THREAD_IN = 1.5
-PLY_SCREW_HEAD_DIAMETER_IN = 0.760
-PLY_SCREW_HEAD_PROJECTION_IN = 0.125
-PLY_SCREW_OFFSETS_IN = ((6.0, 14.0, 30.0, 38.0), (7.0, 15.0, 29.0, 37.0))
-PLY_SCREWS = tuple(
-    (TIMBER_WEST_IN + (interface + 2) * TIMBER_PLY_THICKNESS_IN,
-     TIMBER_STATION_IN, NAILER_BOTTOM_IN + offset)
-    for interface, offsets in enumerate(PLY_SCREW_OFFSETS_IN) for offset in offsets
+                  TIMBER_STATION_IN + TIMBER_WIDTH_IN / 2),
 )
 
 END_ANGLE_PART = "A35Z"
@@ -105,16 +86,13 @@ END_CONNECTION_MISSING = (
 PAINT_RESERVE_LB = 2.0
 ANGLE_MASS_ALLOWANCE_LB = 0.35
 CONNECTOR_SCREW_MASS_ALLOWANCE_LB = 0.02
-TIMBER_SCREW_MASS_ALLOWANCE_LB = 0.03
 HARDWARE_QUANTITIES = {
-    PLY_SCREW_PART: len(PLY_SCREWS),
     END_ANGLE_PART: 2 * END_ANGLES_PER_END,
     END_SCREW_PART: 2 * END_ANGLES_PER_END * END_SCREWS_PER_ANGLE,
 }
 HARDWARE_AND_PAINT_RESERVE_LB = (
     PAINT_RESERVE_LB + HARDWARE_QUANTITIES[END_ANGLE_PART] * ANGLE_MASS_ALLOWANCE_LB
     + HARDWARE_QUANTITIES[END_SCREW_PART] * CONNECTOR_SCREW_MASS_ALLOWANCE_LB
-    + HARDWARE_QUANTITIES[PLY_SCREW_PART] * TIMBER_SCREW_MASS_ALLOWANCE_LB
 )
 
 
@@ -142,26 +120,19 @@ PURCHASING = tuple(
      "cuts_per_board": floor(STOCK_LENGTH_IN / (NAILER_TOP_IN - NAILER_BOTTOM_IN + SAW_KERF_IN)),
      "boards": ceil(sum(s.profile == profile for s in SUPPORTS) / floor(
          STOCK_LENGTH_IN / (NAILER_TOP_IN - NAILER_BOTTOM_IN + SAW_KERF_IN)))}
-    for profile in ("2x4", "2x6")
+    for profile in ("2x4", "6x6")
 )
 
-# Local member screening uses a SINGLE loaded ply; no composite inertia or assumed
-# equal ply sharing. End load transfer and attachment still require verified details.
+# Local member screening of the solid 6x6. End load transfer and attachment still require
+# verified details.
 GUARD_CONCENTRATED_LB = 200.0
 GUARD_INFILL_PSF = 50.0
 GUARD_INFILL_AREA_FT2 = 1.0
 LOCAL_DEFLECTION_LIMIT_IN = 0.25  # project coordination limit, not a statutory guard limit
 WIND_TRIBUTARY_WIDTH_IN = 32.0
-SOUTHERN_PINE_2X6_FB_PSI = 1000.0
-SOUTHERN_PINE_2X6_E_PSI = 1.4e6
-SOUTHERN_PINE_FV_PSI = 175.0
-SOUTHERN_PINE_FC_PERP_PSI = 565.0
-WOOD_E_WET_FACTOR = 0.90
-WOOD_FV_WET_FACTOR = 0.97
+# NDS Supplement Table 4D, SP No.2 timbers, wet row (no further C_M but Fc-perp's).
+SOUTHERN_PINE_TIMBER_FB_PSI = 850.0
+SOUTHERN_PINE_TIMBER_E_PSI = 1.2e6
+SOUTHERN_PINE_TIMBER_FV_PSI = 165.0
+SOUTHERN_PINE_TIMBER_FC_PERP_PSI = 375.0
 WOOD_FC_PERP_WET_FACTOR = 0.67
-SCREW_WET_FACTOR = 0.70
-PLY_SCREW_WITHDRAWAL_LB_IN = 164.0
-PLY_SCREW_WITHDRAWAL_MAX_LB = 245.0
-PLY_SCREW_MIN_EDGE_IN = 1.4375
-PLY_SCREW_MIN_END_IN = 6.0
-PLY_SCREW_MIN_SPACING_IN = 8.0

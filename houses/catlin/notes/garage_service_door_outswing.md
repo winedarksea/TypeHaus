@@ -71,15 +71,15 @@ and `code.R311_door_width`/`R311_2_door_height` grade the leaf (32 × 80), never
 A 32-inch nominal leaf is still not 32 inches of clear passage; see §1.
 
 The clearance regression sweeps the **32-inch leaf** inside the 34-inch RO through the
-authored **81° stop**, including a 1° stop tolerance, 1/8-inch installation allowance and
-1/4-inch required clearance. Table re-swept 2026-11-10, with the screen's stud line and ties 1 inch west. The model has direct-mounted 3/4-inch white MDO panels,
+authored **87° stop**, including a 1° stop tolerance, 1/8-inch installation allowance and
+1/4-inch required clearance. Table re-swept 2026-11-10 at the owner's 87° stop, with the screen's stud line and ties 1 inch west. The model has direct-mounted 3/4-inch white MDO panels,
 vertical edge nailers and modeled face screw-head envelopes. The face remains at the
 same plane, with screw heads up to 1/8 inch proud. These modeled obstacles give:
 
 | Pivot inset | Worst clearance | Governing obstacle |
 |---:|---:|---|
-| 0 | 0.622 in | RL-G-SERVICE-RETURN2 |
-| 1/2 in | 0.645 in | RL-G-SERVICE-RETURN2 |
+| 0 | 0.141 in | TR-BW-SCREEN-CAP, fails |
+| 1/2 in | 0.641 in | TR-BW-SCREEN-CAP |
 | 1 in | 0.890 in | RL-G-SERVICE-RETURN2 |
 | 2 in | 1.366 in | CN-G-BWHD-S-DR |
 
@@ -95,7 +95,7 @@ nails. Set the strap at the stem top, z=−12 inches, with 14 inches of embedmen
 continuous 6-inch concrete core and one centered No. 4 × 40 inch bar 4 inches below the
 pour top. The calculated delivered tension is 276.50 lb (2026-10-28) against the documented 3,065 lb
 end-wall allowable. See [canopy_garage_diaphragm.md](canopy_garage_diaphragm.md) §3f for
-the load path and reinforcement basis. The door keeps its stop-only operation, at the 81° stop.
+the load path and reinforcement basis. The door keeps its stop-only operation, at the 87° stop.
 
 The separate plan-review question about the stair-to-threshold exception remains in §1.
 

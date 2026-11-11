@@ -1,4 +1,4 @@
-> Brick load assumptions below are historical. Current white MDO screen: 38.39 plf including the three-ply timber, six nailers and hardware/paint reserve; see [current detail](entry_screen_mdo.md).
+> Brick load assumptions below are historical. Current white MDO screen: 39.23 plf including the solid 6x6 timber, six nailers and hardware/paint reserve; see [current detail](entry_screen_mdo.md).
 
 # North entry canopy, piers and headers — hand-worked basis
 
@@ -1720,3 +1720,9 @@ col = 140.36 + 9,427.0 x 1,567.7 x 17.8939 / 1,367,834 = 140.36 + 193.33 = 333.6
 ```
 
 +0.88 lb on 332.81; the engine moves the same, 333.40 → 334.28. Connector 333.69/1,350 = 0.247.
+
+## Addendum 2026-11-10 — the lower timber is one solid 6x6
+
+The three 2x6 plies became one 6x6 (`entry_screen_mdo.md`). Wood 1,344.31 in³ against 1,099.9,
++5.30 lb, less 0.24 lb of ply screws: the screen is 39.23 plf (was 38.45) and each west chord
+receives 169.20 lb. No roof-support role; the local checks stay in that note.

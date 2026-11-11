@@ -325,11 +325,10 @@ OPENINGS = [
     # open leaf parks along W-BW-SCREEN at x=6'-11" and leaves the tier approach and D-M-ENTRY's
     # sweep (y <= 36'-0") clear. The frame's own sill stands on the deck at 0'-0", so the leaf
     # requires a leaf bottom >=1in above the rough sill; set and check in the standard install.
-    # Frame-mounted overhead STOP-ONLY at 81deg: AN-G-SERVICE-DOOR. ** 81, NOT 90, SINCE THE
-    # CANOPY HEADERS MOVED 3 3/8" INBOARD (owner, 2026-10-31). ** W-BW-SCREEN moved with its
-    # chord posts. The stud line and ties went 1" west on 2026-11-10, so the leaf now clears
-    # the ties by 1.37" at this stop, and at 90deg it is the lever that meets SB-BW-BAND
-    # (scripts/garage_service_door_clearance.py). Owner to revisit the stop.
+    # Frame-mounted overhead STOP-ONLY at 87deg: AN-G-SERVICE-DOOR (owner, 2026-11-10). The
+    # largest stop the sweep clears at the 1/2" pivot inset with the 1/8" allowance and 1/4"
+    # minimum (scripts/garage_service_door_clearance.py): 88deg brings the lever within
+    # 0.19" of TR-BW-SCREEN-CAP, and at 90deg it meets SB-BW-BAND.
     # Its rough sill sits flush with the deck: KDAT under a sloped, back-dammed pan
     # (notes/opening_flashing_spec.md §6).
     #
@@ -343,7 +342,7 @@ OPENINGS = [
     # possible on an 81" unit.
     Door(uid="CGD202AAAA", tag="D-G-SERVICE", host="W-G-S", type_ref="DT-EXT-SWING32-G",
          position=from_node("N-G-SW", SERVICE_DOOR_OFFSET), sill_height=ft(1),
-         flip_hinge=True, flip_swing=True, maximum_opening_degrees=81,
+         flip_hinge=True, flip_swing=True, maximum_opening_degrees=87,
          header_spec="flat 2x6 nonbearing",
          # The MMI listing's 6-9/16" composite frame, set flush with the sheathing.
          exterior_installation=ExteriorDoorInstallation(interior_material_ref="pine-fj-base",

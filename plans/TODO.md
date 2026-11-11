@@ -12,7 +12,6 @@ Note that many of the pinned decisions in the code base here aren't as fixed as 
 - **Budget policy (pricing review 2026-10-29):** `site-general-conditions` is $35–80k on an
   owner-GC build (cash items alone look like $15–30k), and `[contingency]` 10% also applies on
   top of the lump-sum allowances, which already carry wide spreads (~$15–36k at stake).
-- **D-G-SERVICE swing limited by W-BW-SCREEN after the canopy-beam move — owner to revisit (slide door, rebuild screen face).** Stopped at 81° for now (`maximum_opening_degrees`): clear opening 24.3" vs 29.3" at 90°.
 
 ## Remaining Work
 
@@ -304,6 +303,10 @@ the future.
 - garage roof seam clamps (S-5-N Mini) are in the wrong spots and could use a little 3d modeling work (might share with house roof and snow guard models). We also don't need seam clamps on the corner where the snow guards are.
 - The house has four grounding rods, which might be overkill?
 - Drywall corners and drywall remove where walls meet (drywall depth might be causing a small bug in stud placement)
+- Eave and gutter hardware: Select the gutter bracket and outlet, and finish the splice, fastener, and sealant details. The eave sealant product and its compatibility with the roof and membrane also need confirmation. [Eave detail (line 153)](/Users/colincatlin/Documents-NoCloud/TypeHaus/houses/catlin/notes/roof_wall_eave_detail.md:153)
+- Plant-room reservoir: The BOM exists, but it is not purchase-ready. Confirm the MA252 fill valve’s potable suitability and air-gap geometry, then close exact commodity SKUs and supplier totals within the $1,000 allowance. [Reservoir note (line 200)](/Users/colincatlin/Documents-NoCloud/TypeHaus/houses/catlin/notes/plant_reservoir.md:200)
+- Interior selections: Remaining checks include the Aquia IV height suffix, SP bowl projection, Delta stainless-stock availability, the neo-angle shower’s door opening, and whether the studio wet bar needs a stainless bowl. Bath 2’s selected surface colors still need physical-chip checks. [Interior selections (line 336)](/Users/colincatlin/Documents-NoCloud/TypeHaus/houses/catlin/notes/interior_selections.md:336)
+- Other order confirmations: The Williams railing panel SKU is inferred; the Breezeway guard package, Simpson HHUS410 fastener/coating, and titanium handrail fittings still need product or order details. [Construction holds (line 29)](/Users/colincatlin/Documents-NoCloud/TypeHaus/houses/catlin/notes/construction_holds.md:29)
 
 # Project Management
 
@@ -327,4 +330,4 @@ Secondly gather bids, organize the timeline (inspection gates, etc), then track 
 Thirdly use the house design as a reference (ie for agents understanding live data on home assistant in context), potentially with feedback loop of updating the design or later running a remodel
 
 
-- [ ] Complete W-BW-SCREEN metal cassette engineering, support/trim details, complete loads and fabrication estimate; rerun structural and 81° door checks including all hardware. See houses/catlin/notes/entry_screen_metal_cassettes.md.
+- [ ] Complete W-BW-SCREEN metal cassette engineering, support/trim details, complete loads and fabrication estimate; rerun structural and 87° door checks including all hardware. See houses/catlin/notes/entry_screen_metal_cassettes.md.

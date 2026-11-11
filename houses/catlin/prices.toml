@@ -3850,7 +3850,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # is the real order quantity for stock culled at the moulder rather than at the rack.
 
 [envelope_layers]
-# Budget only: one MDO sheet, six nailers, three 2x6 plies, candidate hardware and finishes.
+# Budget only: one MDO sheet, six nailers, one 6x6 timber, candidate hardware and finishes.
 # Entire supplemental scope counted here once; connections remain blocked in entry_screen_mdo.md.
 "entry-screen-white-mdo" = { material = { low = 10, high = 16 }, labour = { low = 10, high = 20 } }
 # Installed budget rates for full-depth jamb foam and site door paint.

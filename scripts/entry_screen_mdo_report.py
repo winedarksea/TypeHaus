@@ -71,13 +71,13 @@ def build_report(context, before):
     results = service_door_clearance(context.model)
     minimum = min(results, key=lambda result: result.clearance_m)
     clearance_in = minimum.clearance_m / 0.0254
-    checks.append({"name": "complete service-door sweep at authored stop including ply screws",
+    checks.append({"name": "complete service-door sweep at authored stop",
                    "status": "ok" if clearance_in >= 0.25 else "over",
                    "clearance_in": clearance_in, "minimum_in": 0.25,
                    "obstacle": minimum.obstacle, "ratio": 0.25 / clearance_in})
     checks.append({"name": "door sweep with installed end angles and SD9112 heads",
                    "status": "incomplete", "ratio": None,
-                   "basis": "end connection geometry unresolved; only ply screws represented"})
+                   "basis": "end connection geometry unresolved"})
     checks.append({"name": "concentrated total sill/hanger effects", "status": "incomplete",
                    "ratio": None, "basis": concentrated_sill_delta(context.model)["acceptance"]})
     after = load_summary(context)
@@ -98,9 +98,6 @@ def build_report(context, before):
         "support_weight_lb": spec.SUPPORT_WEIGHT_LB,
         "hardware_and_paint_reserve_lb": spec.HARDWARE_AND_PAINT_RESERVE_LB,
         "support_weight_delta_lb": spec.SUPPORT_WEIGHT_LB - spec.PREVIOUS_SUPPORT_WEIGHT_LB,
-        "candidate_ply_screws": {"part": spec.PLY_SCREW_PART, "axes": "west, into side grain",
-                                  "head_coordinates_in": spec.PLY_SCREWS,
-                                  "thread_penetration_in": spec.PLY_SCREW_THREAD_IN},
         "end_connection_missing": spec.END_CONNECTION_MISSING,
         "wind_pressure_psf": pressure, "local_checks": checks,
         "concentrated_sill_effects": concentrated_sill_delta(context.model),
@@ -109,8 +106,7 @@ def build_report(context, before):
                                    for tag, load in after["wall_reaction_lb"].items()},
         "door_sweep": {"stop_degrees": context.plan.by_tag("D-G-SERVICE").maximum_opening_degrees,
                        "minimum_clearance_in": clearance_in, "obstacle": minimum.obstacle,
-                       "new_hardware_scope": ("ply screw heads; end A35Z/SD9112 "
-                                              "installation unresolved")},
+                       "new_hardware_scope": "end A35Z/SD9112 installation unresolved"},
     }
 
 

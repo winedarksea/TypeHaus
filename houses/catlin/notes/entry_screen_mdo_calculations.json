@@ -1,8 +1,6 @@
 {
   "acceptance": "blocked",
   "acceptance_blockers": [
-    "guard concentrated/infill: single-ply bending",
-    "ply transfer: one screw, full load envelope",
     "end attachments: installed directions and fit",
     "local plate load transfer",
     "end screw penetration, edge distances and cross-grain effects",
@@ -104,29 +102,9 @@
       "top_in": 45.0
     },
     {
-      "tag": "TR-BW-MDO-TIMBER-PLY-1",
-      "profile": "2x6",
-      "west_in": 73.625,
-      "east_in": 75.125,
-      "station_start_in": 37.875,
-      "station_end_in": 43.375,
-      "bottom_in": 0.56,
-      "top_in": 45.0
-    },
-    {
-      "tag": "TR-BW-MDO-TIMBER-PLY-2",
-      "profile": "2x6",
-      "west_in": 75.125,
-      "east_in": 76.625,
-      "station_start_in": 37.875,
-      "station_end_in": 43.375,
-      "bottom_in": 0.56,
-      "top_in": 45.0
-    },
-    {
-      "tag": "TR-BW-MDO-TIMBER-PLY-3",
-      "profile": "2x6",
-      "west_in": 76.625,
+      "tag": "TR-BW-MDO-TIMBER",
+      "profile": "6x6",
+      "west_in": 72.625,
       "east_in": 78.125,
       "station_start_in": 37.875,
       "station_end_in": 43.375,
@@ -144,69 +122,21 @@
       "boards": 3
     },
     {
-      "profile": "2x6",
+      "profile": "6x6",
       "cut_length_in": 44.44,
-      "cuts": 3,
+      "cuts": 1,
       "stock_length_in": 96.0,
       "cuts_per_board": 2,
-      "boards": 2
+      "boards": 1
     }
   ],
   "candidate_hardware_quantities": {
-    "SDWS22300DB": 8,
     "A35Z": 4,
     "SD9112": 48
   },
-  "support_weight_lb": 54.185518905126706,
-  "hardware_and_paint_reserve_lb": 4.6,
-  "support_weight_delta_lb": 28.898943416067578,
-  "candidate_ply_screws": {
-    "part": "SDWS22300DB",
-    "axes": "west, into side grain",
-    "head_coordinates_in": [
-      [
-        76.625,
-        40.625,
-        6.5600000000000005
-      ],
-      [
-        76.625,
-        40.625,
-        14.56
-      ],
-      [
-        76.625,
-        40.625,
-        30.56
-      ],
-      [
-        76.625,
-        40.625,
-        38.56
-      ],
-      [
-        78.125,
-        40.625,
-        7.5600000000000005
-      ],
-      [
-        78.125,
-        40.625,
-        15.56
-      ],
-      [
-        78.125,
-        40.625,
-        29.56
-      ],
-      [
-        78.125,
-        40.625,
-        37.56
-      ]
-    ],
-    "thread_penetration_in": 1.5
-  },
+  "support_weight_lb": 59.48365853140576,
+  "hardware_and_paint_reserve_lb": 4.359999999999999,
+  "support_weight_delta_lb": 34.197083042346634,
   "end_connection_missing": [
     "Select and verify the bent A35Z stud-to-plate configuration and installed load directions; F1/F2 695/845 lb from the unbent upper-band detail do not establish this connection.",
     "Verify all SD9112 hole locations, side-grain penetration, wood edge/end distances and plate contact at both ends without cutting west shear plywood or existing plates.",
@@ -215,121 +145,67 @@
   "wind_pressure_psf": 16.661038255629844,
   "local_checks": [
     {
-      "name": "guard concentrated/infill: single-ply bending",
-      "status": "over",
-      "demand": 1077.3333333333333,
-      "capacity": 1000.0,
+      "name": "guard concentrated/infill: 6x6 bending",
+      "status": "ok",
+      "demand": 80.13223140495867,
+      "capacity": 850.0,
       "unit": "psi",
-      "ratio": 1.0773333333333333,
-      "basis": "NDS Supplement Table 4B SP No.2 2x6 Fb=1000; wet Fb factor 1 where Fb<=1150, CD=1, CL=1 for this 5.5x1.5 flatwise orientation; no sharing"
+      "ratio": 0.09427321341759844,
+      "basis": "NDS Supplement Table 4D SP No.2 timbers, wet row, Fb=850; CD=1"
     },
     {
-      "name": "guard concentrated/infill: single-ply shear",
+      "name": "guard concentrated/infill: 6x6 shear",
       "status": "ok",
-      "demand": 36.36363636363637,
-      "capacity": 169.75,
+      "demand": 9.917355371900827,
+      "capacity": 165.0,
       "unit": "psi",
-      "ratio": 0.21421877091980188,
-      "basis": "NDS Table 4B Fv=175, wet CM=0.97; full point at end bounds reaction"
+      "ratio": 0.06010518407212623,
+      "basis": "NDS Table 4D Fv=165, wet row; full point at end bounds reaction"
     },
     {
-      "name": "guard concentrated/infill: single-ply deflection",
+      "name": "guard concentrated/infill: 6x6 deflection",
       "status": "ok",
-      "demand": 0.18762259715461488,
+      "demand": 0.003996319030303029,
       "capacity": 0.25,
       "unit": "in",
-      "ratio": 0.7504903886184595,
-      "basis": "project 1/4in local limit; wet E=0.9E"
+      "ratio": 0.015985276121212116,
+      "basis": "project 1/4in local limit; wet-row E"
     },
     {
-      "name": "out-of-plane wind: single-ply bending",
+      "name": "out-of-plane wind: 6x6 bending",
       "status": "ok",
-      "demand": 443.1530106554028,
-      "capacity": 1000.0,
+      "demand": 32.96179418098037,
+      "capacity": 850.0,
       "unit": "psi",
-      "ratio": 0.4431530106554028,
-      "basis": "NDS Supplement Table 4B SP No.2 2x6 Fb=1000; wet Fb factor 1 where Fb<=1150, CD=1, CL=1 for this 5.5x1.5 flatwise orientation; no sharing"
+      "ratio": 0.038778581389388674,
+      "basis": "NDS Supplement Table 4D SP No.2 timbers, wet row, Fb=850; CD=1"
     },
     {
-      "name": "out-of-plane wind: single-ply shear",
+      "name": "out-of-plane wind: 6x6 shear",
       "status": "ok",
-      "demand": 14.957909900609906,
-      "capacity": 169.75,
+      "demand": 4.079429972893611,
+      "capacity": 165.0,
       "unit": "psi",
-      "ratio": 0.08811728954703921,
-      "basis": "NDS Table 4B Fv=175, wet CM=0.97; full point at end bounds reaction"
+      "ratio": 0.024723818017537036,
+      "basis": "NDS Table 4D Fv=165, wet row; full point at end bounds reaction"
     },
     {
-      "name": "out-of-plane wind: single-ply deflection",
+      "name": "out-of-plane wind: 6x6 deflection",
       "status": "ok",
-      "demand": 0.09647144043477729,
+      "demand": 0.0020548199371344376,
       "capacity": 0.25,
       "unit": "in",
-      "ratio": 0.38588576173910916,
-      "basis": "project 1/4in local limit; wet E=0.9E"
+      "ratio": 0.00821927974853775,
+      "basis": "project 1/4in local limit; wet-row E"
     },
     {
-      "name": "ply transfer: one screw, full load envelope",
-      "status": "over",
-      "demand": 200.0,
-      "capacity": 171.5,
-      "unit": "lb",
-      "ratio": 1.1661807580174928,
-      "basis": "ER-192 Table 7: 164 lb/in, Wmax245, actual 1.5in side-grain thread, CM0.7, CD1.0; no unverified group distribution"
-    },
-    {
-      "name": "interface 1: screw end distance",
+      "name": "timber bottom-plate bearing, self weight",
       "status": "ok",
-      "demand": 6.0,
-      "capacity": 6.0,
-      "unit": "in",
-      "ratio": 1.0,
-      "basis": "ER-192 Table 8"
-    },
-    {
-      "name": "interface 1: screw row spacing",
-      "status": "ok",
-      "demand": 8.0,
-      "capacity": 8.0,
-      "unit": "in",
-      "ratio": 1.0,
-      "basis": "ER-192 Table 8"
-    },
-    {
-      "name": "interface 2: screw end distance",
-      "status": "ok",
-      "demand": 6.0,
-      "capacity": 7.0,
-      "unit": "in",
-      "ratio": 0.8571428571428571,
-      "basis": "ER-192 Table 8"
-    },
-    {
-      "name": "interface 2: screw row spacing",
-      "status": "ok",
-      "demand": 8.0,
-      "capacity": 8.0,
-      "unit": "in",
-      "ratio": 1.0,
-      "basis": "ER-192 Table 8"
-    },
-    {
-      "name": "screw edge distance",
-      "status": "ok",
-      "demand": 1.4375,
-      "capacity": 2.75,
-      "unit": "in",
-      "ratio": 0.5227272727272727,
-      "basis": "ER-192 Table 8"
-    },
-    {
-      "name": "middle-ply bottom-plate bearing, self weight of two plies",
-      "status": "ok",
-      "demand": 2.889894341606757,
-      "capacity": 378.55,
+      "demand": 1.513754178936873,
+      "capacity": 251.25000000000003,
       "unit": "psi",
-      "ratio": 0.0076341152862415985,
-      "basis": "NDS Table 4B Fc-perp565 x CM0.67; actual 1.0x5.5in contact; no roof credit"
+      "ratio": 0.006024892254475115,
+      "basis": "NDS Table 4D Fc-perp375 x CM0.67; actual 3.5x5.5in contact; no roof credit"
     },
     {
       "name": "end attachments: installed directions and fit",
@@ -350,18 +226,18 @@
       "basis": "Select and verify the bent A35Z stud-to-plate configuration and installed load directions; F1/F2 695/845 lb from the unbent upper-band detail do not establish this connection.; Verify all SD9112 hole locations, side-grain penetration, wood edge/end distances and plate contact at both ends without cutting west shear plywood or existing plates.; Resolve A35Z bent-tab interference with the two new edge nailers; the 1/8in gaps are narrower than a 1-7/16in angle leg. Candidate hardware envelopes are not installation approval."
     },
     {
-      "name": "complete service-door sweep at authored stop including ply screws",
+      "name": "complete service-door sweep at authored stop",
       "status": "ok",
-      "clearance_in": 0.6452415944923982,
+      "clearance_in": 0.6408584905385432,
       "minimum_in": 0.25,
-      "obstacle": "RL-G-SERVICE-RETURN2",
-      "ratio": 0.3874517733108499
+      "obstacle": "TR-BW-SCREEN-CAP",
+      "ratio": 0.3901017208805541
     },
     {
       "name": "door sweep with installed end angles and SD9112 heads",
       "status": "incomplete",
       "ratio": null,
-      "basis": "end connection geometry unresolved; only ply screws represented"
+      "basis": "end connection geometry unresolved"
     },
     {
       "name": "concentrated total sill/hanger effects",
@@ -375,7 +251,7 @@
     "point_loads": [
       {
         "station_in": 40.625,
-        "load_lb": 18.78431322044392
+        "load_lb": 24.08245284672298
       },
       {
         "station_in": 37.0,
@@ -387,9 +263,9 @@
       }
     ],
     "span_in": 54.25000000000006,
-    "additional_south_reaction_lb": 14.44947170803383,
-    "additional_north_reaction_lb": 14.449471708033741,
-    "maximum_additional_moment_lb_in": 373.60915285084894,
+    "additional_south_reaction_lb": 17.098541521173367,
+    "additional_north_reaction_lb": 17.09854152117326,
+    "maximum_additional_moment_lb_in": 445.4651715322587,
     "acceptance": "incomplete: total sill stress, local plate distribution and hanger effects under concentrated loading require verification"
   },
   "before": {
@@ -488,11 +364,11 @@
     ]
   },
   "after": {
-    "wall_dead_load_plf": 38.45291237733067,
-    "wall_and_upper_band_plf": 56.54363075531379,
+    "wall_dead_load_plf": 39.227963735241154,
+    "wall_and_upper_band_plf": 57.31868211322428,
     "wall_reaction_lb": {
-      "PT-BW-CW": 166.66562890108523,
-      "PT-BW-CNW": 166.66562890108523
+      "PT-BW-CW": 169.20069271758413,
+      "PT-BW-CNW": 169.20069271758413
     },
     "structural_records": [
       {
@@ -518,7 +394,7 @@
       {
         "key": "deck_post/PT-BW-GW",
         "status": "ok",
-        "ratio": 0.017204196618382375
+        "ratio": 0.017211915186558832
       },
       {
         "key": "deck_post/PT-BW-PE",
@@ -533,7 +409,7 @@
       {
         "key": "deck_post/PT-BW-W",
         "status": "ok",
-        "ratio": 0.01853812707881915
+        "ratio": 0.01854584564699561
       },
       {
         "key": "deck_tie/FS-BW-FLOOR",
@@ -583,13 +459,13 @@
     ]
   },
   "wall_reaction_delta_lb": {
-    "PT-BW-CW": 13.403790766896662,
-    "PT-BW-CNW": 13.403790766896662
+    "PT-BW-CW": 15.938854583395567,
+    "PT-BW-CNW": 15.938854583395567
   },
   "door_sweep": {
-    "stop_degrees": 81.0,
-    "minimum_clearance_in": 0.6452415944923982,
-    "obstacle": "RL-G-SERVICE-RETURN2",
-    "new_hardware_scope": "ply screw heads; end A35Z/SD9112 installation unresolved"
+    "stop_degrees": 87.0,
+    "minimum_clearance_in": 0.6408584905385432,
+    "obstacle": "TR-BW-SCREEN-CAP",
+    "new_hardware_scope": "end A35Z/SD9112 installation unresolved"
   }
 }

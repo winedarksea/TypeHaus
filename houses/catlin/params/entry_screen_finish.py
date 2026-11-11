@@ -1,9 +1,6 @@
 """Direct-mounted MDO edge supports and accessible garage tie-block relief."""
 
 from plan.entry_screen_finish_spec import (
-    PLY_SCREW_HEAD_DIAMETER_IN,
-    PLY_SCREW_HEAD_PROJECTION_IN,
-    PLY_SCREWS,
     SCREEN_LENGTH_IN,
     SUPPORTS,
     TIE_RELIEF_BOTTOM_IN,
@@ -45,20 +42,6 @@ FINISH_ELEMENTS = [
     )
     for i, support in enumerate(SUPPORTS, 1)
 ]
-
-# Conservative head envelopes are included in the complete service-door sweep. Hidden
-# interface screws are installed before the next ply; all axes point west into side grain.
-for index, (east, station, elevation) in enumerate(PLY_SCREWS, 1):
-    FINISH_ELEMENTS.append(Flashing(
-        uid=f"BWMDP{index:05d}", tag=f"TR-BW-MDO-PLY-SCREW-{index}",
-        kind=TrimKind.WRB_COUNTERFLASHING,
-        path=(pt(inch(east + PLY_SCREW_HEAD_PROJECTION_IN / 2),
-                 ft(DECK_SHEET_SOUTH_Y_FT) + inch(station - PLY_SCREW_HEAD_DIAMETER_IN / 2)),
-              pt(inch(east + PLY_SCREW_HEAD_PROJECTION_IN / 2),
-                 ft(DECK_SHEET_SOUTH_Y_FT) + inch(station + PLY_SCREW_HEAD_DIAMETER_IN / 2))),
-        top_elevation=inch(elevation + PLY_SCREW_HEAD_DIAMETER_IN / 2),
-        depth=inch(PLY_SCREW_HEAD_DIAMETER_IN), thickness=inch(PLY_SCREW_HEAD_PROJECTION_IN),
-        material="entry-screen-white-hardware", host_ref="W-BW-SCREEN"))
 
 FINISH_ELEMENTS.append(
     RoughOpening(

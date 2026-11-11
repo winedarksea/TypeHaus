@@ -10,16 +10,14 @@ def _check(name, demand, capacity, unit, basis):
 
 
 def local_timber_checks(wind_pressure_psf):
-    """Do not credit composite bending, screw slip stiffness or equal ply sharing.
-
-    Each load case is applied in full to a single ply; the member calculations are
-    conditional on end restraint. They do not establish the unverified end connection.
+    """Screen the solid 6x6. The member calculations are conditional on end restraint;
+    they do not establish the unverified end connection.
     """
     length = spec.NAILER_TOP_IN - spec.NAILER_BOTTOM_IN
-    width, depth = spec.TIMBER_WIDTH_IN, spec.TIMBER_PLY_THICKNESS_IN
-    inertia = width * depth**3 / 12
-    section = width * depth**2 / 6
-    modulus = spec.SOUTHERN_PINE_2X6_E_PSI * spec.WOOD_E_WET_FACTOR
+    side = spec.TIMBER_WIDTH_IN
+    inertia = side**4 / 12
+    section = side**3 / 6
+    modulus = spec.SOUTHERN_PINE_TIMBER_E_PSI
     point = max(spec.GUARD_CONCENTRATED_LB, spec.GUARD_INFILL_PSF * spec.GUARD_INFILL_AREA_FT2)
     wind_line = wind_pressure_psf * spec.WIND_TRIBUTARY_WIDTH_IN / 144
     rows = []
@@ -30,44 +28,23 @@ def local_timber_checks(wind_pressure_psf):
          5 * wind_line * length**4 / (384 * modulus * inertia)),
     ):
         rows += [
-            _check(f"{name}: single-ply bending", moment / section,
-                   spec.SOUTHERN_PINE_2X6_FB_PSI, "psi",
-                   "NDS Supplement Table 4B SP No.2 2x6 Fb=1000; wet Fb factor 1 "
-                   "where Fb<=1150, CD=1, CL=1 for this 5.5x1.5 flatwise orientation; no sharing"),
-            _check(f"{name}: single-ply shear", 1.5 * shear / (width * depth),
-                   spec.SOUTHERN_PINE_FV_PSI * spec.WOOD_FV_WET_FACTOR, "psi",
-                   "NDS Table 4B Fv=175, wet CM=0.97; full point at end bounds reaction"),
-            _check(f"{name}: single-ply deflection", deflection,
-                   spec.LOCAL_DEFLECTION_LIMIT_IN, "in", "project 1/4in local limit; wet E=0.9E"),
+            _check(f"{name}: 6x6 bending", moment / section,
+                   spec.SOUTHERN_PINE_TIMBER_FB_PSI, "psi",
+                   "NDS Supplement Table 4D SP No.2 timbers, wet row, Fb=850; CD=1"),
+            _check(f"{name}: 6x6 shear", 1.5 * shear / side**2,
+                   spec.SOUTHERN_PINE_TIMBER_FV_PSI, "psi",
+                   "NDS Table 4D Fv=165, wet row; full point at end bounds reaction"),
+            _check(f"{name}: 6x6 deflection", deflection,
+                   spec.LOCAL_DEFLECTION_LIMIT_IN, "in", "project 1/4in local limit; wet-row E"),
         ]
-    penetration = min(spec.PLY_SCREW_THREAD_IN,
-                      spec.PLY_SCREW_LENGTH_IN - depth)
-    withdrawal = min(penetration * spec.PLY_SCREW_WITHDRAWAL_LB_IN,
-                     spec.PLY_SCREW_WITHDRAWAL_MAX_LB) * spec.SCREW_WET_FACTOR
-    # Report ONE screw, without an unsupported equal-distribution assumption. A group
-    # calculation may resolve this failure, but dividing by four would conceal it.
-    rows.append(_check("ply transfer: one screw, full load envelope", point, withdrawal, "lb",
-                       "ER-192 Table 7: 164 lb/in, Wmax245, actual 1.5in side-grain thread, "
-                       "CM0.7, CD1.0; no unverified group distribution"))
-    for index, offsets in enumerate(spec.PLY_SCREW_OFFSETS_IN, 1):
-        rows += [
-            _check(f"interface {index}: screw end distance", spec.PLY_SCREW_MIN_END_IN,
-                   min(min(offsets), length - max(offsets)), "in", "ER-192 Table 8"),
-            _check(f"interface {index}: screw row spacing", spec.PLY_SCREW_MIN_SPACING_IN,
-                   min(b - a for a, b in zip(offsets, offsets[1:], strict=False)),
-                   "in", "ER-192 Table 8"),
-        ]
-    rows.append(_check("screw edge distance", spec.PLY_SCREW_MIN_EDGE_IN, width / 2,
-                       "in", "ER-192 Table 8"))
-    timber_weight = (sum(s.volume_in3 for s in spec.SUPPORTS if s.profile == "2x6")
+    timber_weight = (sum(s.volume_in3 for s in spec.SUPPORTS if s.profile == "6x6")
                      * spec.LB_PER_IN3)
-    # The east ply overhangs the plate and hangs on the ply screws, so the middle ply's
-    # 1in strip carries both; never use the 4.5in pack width or credit the roof.
-    middle_ply_bearing = spec.STUD_EAST_IN - (spec.TIMBER_EAST_IN - 2 * depth)
-    rows.append(_check("middle-ply bottom-plate bearing, self weight of two plies",
-                       2 * timber_weight / spec.TIMBER_PLY_COUNT / (middle_ply_bearing * width),
-                       spec.SOUTHERN_PINE_FC_PERP_PSI * spec.WOOD_FC_PERP_WET_FACTOR, "psi",
-                       "NDS Table 4B Fc-perp565 x CM0.67; actual 1.0x5.5in contact; "
+    # Bears on the 3.5in plate only; never use the 5.5in depth or credit the roof.
+    plate_contact = spec.STUD_EAST_IN - spec.TIMBER_WEST_IN
+    rows.append(_check("timber bottom-plate bearing, self weight",
+                       timber_weight / (plate_contact * side),
+                       spec.SOUTHERN_PINE_TIMBER_FC_PERP_PSI * spec.WOOD_FC_PERP_WET_FACTOR,
+                       "psi", "NDS Table 4D Fc-perp375 x CM0.67; actual 3.5x5.5in contact; "
                        "no roof credit"))
     for name in ("end attachments: installed directions and fit", "local plate load transfer",
                  "end screw penetration, edge distances and cross-grain effects"):
@@ -78,7 +55,7 @@ def local_timber_checks(wind_pressure_psf):
 
 def support_load_delta():
     """Point-load differences against the previous centre nailer, in wall stations."""
-    timber = (sum(s.volume_in3 for s in spec.SUPPORTS if s.profile == "2x6")
+    timber = (sum(s.volume_in3 for s in spec.SUPPORTS if s.profile == "6x6")
               * spec.LB_PER_IN3)
     nailer = spec.PREVIOUS_SUPPORT_WEIGHT_LB / 5
     return ((spec.TIMBER_STATION_IN, timber - nailer),

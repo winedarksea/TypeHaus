@@ -1,15 +1,15 @@
-# W-BW-SCREEN — white MDO and lower centre timber, 2026-11-02
+# W-BW-SCREEN — white MDO and lower centre timber, 2026-11-02 (timber solid since 2026-11-10)
 
 **Coordination model; lower timber attachment is NOT accepted for construction.**
-The geometry implements the selected three-ply appearance. New checks block acceptance
-until the ply load transfer, bent A35Z end connections, local plate/sill/hanger effects,
+The geometry implements one solid 6x6 timber. New checks block acceptance
+until the bent A35Z end connections, local plate/sill/hanger effects,
 and final installed-hardware door sweep are verified. Passing existing canopy checks
 alone does not approve the added detail. See `entry_screen_mdo_calculations.json`.
 
 ## Sheet notes
 ### General
 - Lower centre timber: coordination geometry only; attachments are not released for construction.
-- Three KDAT 2x6 plies, six 2x4 MDO edge nailers; retain west plywood, plates and cap.
+- One KDAT 6x6, six 2x4 MDO edge nailers; retain west plywood, plates and cap.
 - White 3/4-inch exterior MDO with removable stainless screws; leave 1/8-inch timber gaps.
 - Keep the north tie-access relief and bottom drainage open.
 
@@ -18,11 +18,11 @@ alone does not approve the added detail. See `entry_screen_mdo_calculations.json
 
 - Retain the west 5/8-inch shear plywood, corrugated skin, field studs, upper brace band,
   horizontal plates, upper cap and drainage below. No additional roof support or shear chord.
-- Replace `TR-BW-MDO-NAILER-3` with three vertical KDAT Southern Pine No. 2 nominal 2x6s,
-  each actual 1.5 x 5.5 inches, cut 44.44 inches long. Stack west-to-east at
-  x=73.625–75.125, 75.125–76.625 and 76.625–78.125 inches. All three occupy stations
-  37.875–43.375, elevations +0.56 to +45. The upper timber's exposed east face is also
-  x=78.125. Match its pigmented penetrating-oil finish; do not paint the timber white.
+- Replace `TR-BW-MDO-NAILER-3` with one vertical KDAT Southern Pine No. 2 6x6, actual
+  5.5 x 5.5 inches, cut 44.44 inches long, `TR-BW-MDO-TIMBER`: x=72.625–78.125, stations
+  37.875–43.375, +0.56 to +45. Both faces line up with the upper centre post and the chord
+  posts (owner, 2026-11-10; it replaced three laminated 2x6 plies, which could not reach both
+  faces). Match its pigmented penetrating-oil finish; do not paint the timber white.
 - The original centre nailer is removed; the other four retain their tags and locations.
   Add KDAT 2x4 edge nailers `-6` and `-7` at stations 37.000 and 44.250. All six nailers
   are x=72.625–76.125 and +0.56 to +45; retained stations 7.125, 14.375, 66.875, 74.125.
@@ -62,21 +62,13 @@ The shared source is `plan/entry_screen_finish_spec.py`; dimensions, cuts, suppo
 procurement, hardware reserve and local checks all read it. Supplemental supports remain
 trim solids; they are not roof columns. Their modeled volume is not charged a second time.
 
-- Ply-fastening candidate: eight **SDWS22300DB**, driven west into side grain, four per
-  adjacent-ply interface. West/middle interface elevations +6.56, +14.56, +30.56, +38.56;
-  middle/east +7.56, +15.56, +29.56, +37.56. All at station 40.625. Assemble the concealed
-  interface first. Actual main-member/thread penetration is 1.5 inches; thread does not
-  engage the clamped 1.5-inch side ply. Interface screw shanks are staggered to avoid collision.
-- ER-192 Table 7: W=164 lb/in, Wmax=245 lb, giving **171.5 lb wet-service withdrawal**
-  at CD=1. Table 8 spacing, edge and end distances pass. A conservative full 200 lb
-  transfer on one screw does not pass. A verified group/load-distribution calculation or
-  revised schedule is needed. Dividing by four without a load-transfer model is not accepted.
+- No ply fastening: the timber is one piece.
 - End candidate allowance: **four A35Z and 48 SD9112**, two angles per end, six screws
   per member per angle. It has no approved installed configuration. ESR-3096 Table 5
   bent A2/C2/D directions are 260/260/150 lb at CD=1, rather than the unbent F1/F2
   695/845 lb. Directions cannot be combined. Do not use the upper band's F1 rating here.
-- Coordinate the actual bent tabs and all holes. The plate ends at x=76.125, so the
-  east ply has no plate bearing and hangs on the ply screws; the middle ply's strip is 1 x 5.5 inches. West-side angles must
+- Coordinate the actual bent tabs and all holes. The timber bears on the plate's full
+  3.5 x 5.5 inches and overhangs it 2 inches east. West-side angles must
   preserve the plywood. North/south tabs encounter the adjacent nailers: the 1/8-inch
   gaps cannot accommodate a 1-7/16-inch leg. No unauthorized plywood/plate cuts are implied.
 - Verify SD9112 penetration after steel thickness, edge/end distances, opposing screw
@@ -87,10 +79,9 @@ trim solids; they are not roof columns. Their modeled volume is not charged a se
   exposure and coating compatibility remain procurement prerequisites.
 
 Local calculations apply the full 200 lb concentrated guard load, the 50 psf / 1 sf infill
-case and the house's out-of-plane ASD wind pressure to **one ply**, with no composite
-inertia or equal ply sharing. Southern Pine No.2 2x6 Fb is **1,000 psi**, E=1.4e6 psi;
-wet E=0.9E. The 200 lb single-ply bending screen exceeds Fb; a justified load-sharing
-model is therefore required. The 1/4-inch deflection limit is a project coordination
+case and the house's out-of-plane ASD wind pressure to the solid 6x6. NDS Table 4D, SP No.2
+timbers, wet row: Fb **850 psi**, Fv 165 psi, E=1.2e6 psi. 200 lb x 44.44 in / 4 / 27.729 in3
+= 80.1 psi, ratio 0.094. The 1/4-inch deflection limit is a project coordination
 criterion, not a claimed statutory guard-deflection provision. Existing structural guard
 and shear systems retain their roles; MDO gains no shear credit.
 
@@ -104,22 +95,21 @@ load consumers still carry revised wall weight into canopy posts and foundations
 Run `.venv/bin/python scripts/entry_screen_mdo_report.py --output
 houses/catlin/notes/entry_screen_mdo_calculations.json` on one line. It writes the report
 and exits **1** for any failed or incomplete new check. A clear door sweep of the timber
-and ply screw heads does not close the full installed-hardware sweep while end hardware
-is unresolved. Final acceptance requires that sweep at the authored 81-degree stop,
+does not close the full installed-hardware sweep while end hardware
+is unresolved. Final acceptance requires that sweep at the authored 87-degree stop,
 including installation allowance and stop tolerance, with >=1/4-inch clearance.
 
 ## Purchasing and budget
 
 Purchase one 48 x 96-inch MDO sheet, **three 8-foot KDAT 2x4s** for six nailers and
-**two 8-foot KDAT 2x6s** for three plies. Two 44.44-inch cuts plus two 1/8-inch kerfs
-use 89.13 inches per board, leaving 6.87 inches for cleanup. Two 24.125 x 45.5-inch
+**one 8-foot KDAT 6x6** for the timber. Two 24.125 x 45.5-inch
 panels fit end-to-end in one strip; narrow panels fit alongside. Verify actual thickness,
 framing, finish sample and tie relief before cutting. Attachment hardware is a candidate
 allowance pending verification, not a released installation order.
 
-Support wood weighs 54.1855 lb (previously 25.2866). The hardware/paint reserve is 4.6 lb:
-2 lb paint and retained face/nailer fastening reserve, four 0.35 lb angle allowances,
-48 x 0.02 lb connector screws and eight x 0.03 lb ply screws. All counted once through
+Support wood weighs 59.4837 lb (previously 25.2866). The hardware/paint reserve is 4.36 lb:
+2 lb paint and retained face/nailer fastening reserve, four 0.35 lb angle allowances and
+48 x 0.02 lb connector screws. All counted once through
 net MDO areal density. The finish budget rate includes these materials and the timber
 finish; do not bill a second hardware or lumber allowance. Prices are budget allowances,
 not supplier quotes.
@@ -135,8 +125,5 @@ Sources: [Simpson A angles](https://www.strongtie.com/framinganglesandplates_ang
 ## Geometry overlap review
 
 The supplemental wood occupies the wall's continuous stud-cavity proxy; these are not
-intersections with west plywood or existing field studs. The overlap golden also records
-four conservative hidden screw-head envelopes extending into the next ply. Their actual
-flush seating or recess detail remains unverified; pinning those envelopes does not
-release the fastening design. The three timber plies themselves meet at faces without
-volume overlap. Reviewed changes are limited to these two overlap categories.
+intersections with west plywood or existing field studs.
+Reviewed changes are limited to this overlap category.
