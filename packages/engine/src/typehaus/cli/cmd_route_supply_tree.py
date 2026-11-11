@@ -200,10 +200,12 @@ def _lay_trunk(model, tree, opts, net, order, clock, problems, notices, refusals
         fx, fy, fz = net.ends[far].origin
         seeds = [(rx, ry, rz), (fx, fy, fz),
                  *[(x, y, z) for x, y in ((rx, ry), (fx, fy)) for z in gate.planes]]
+        ends = replace(trunk_ends, origin=(fx, fy, fz), origin_lead=net.ends[far].origin_lead)
         try:
             space, graph = space_for(
                 model, opts, net, trunk_ends, seeds, clock, f"trunk to {far}",
-                extra=lambda sp, hole=(fx, fy): gate_prisms(sp.bbox, gate, [(rx, ry), hole]))
+                extra=lambda sp, hole=(fx, fy): gate_prisms(sp.bbox, gate, [(rx, ry), hole]),
+                leads=(ends,), serves=net.ends[far].serves)
         except RoutingSpaceTooLarge as exc:
             notices.append(f"{tree}: trunk to {far}: {exc}")
             continue
@@ -221,7 +223,6 @@ def _lay_trunk(model, tree, opts, net, order, clock, problems, notices, refusals
             if far == tries[-1]:
                 refusals.append(refused)
             continue
-        ends = replace(trunk_ends, origin=(fx, fy, fz), origin_lead=net.ends[far].origin_lead)
         scratch: list[str] = []
         made = one_proposal(model, ends, found, tree, "", opts.slope, opts.details, scratch,
                             space=space)

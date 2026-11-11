@@ -57,3 +57,22 @@ def test_stub_tip_that_the_route_continues_through_is_dropped(monkeypatch):
 def test_approximate_obliqued_or_foreign_ports_do_not_constrain(monkeypatch, over):
     ends = _lead(monkeypatch, _port(**over))
     assert ends.root == ROOT and ends.root_lead is None
+
+
+def test_the_lattice_may_not_double_back_over_a_stub(monkeypatch):
+    """A route reaching a downward port's tip from above would reverse over the stub."""
+    from typehaus.cli.route_ports import attach_priced, forbid_port_reversal
+    from typehaus.routing.cost import RouteCost
+    from typehaus.routing.graph import Graph, Node
+
+    ends = _lead(monkeypatch, _port(direction=(0.0, 0.0, -1.0)))  # faces down: tip below
+    tip = ends.root
+    above, below, side = (*tip[:2], ROOT[2] + 0.5), (*tip[:2], tip[2] - 0.5), (8.0, 3.0, tip[2])
+    nodes = [Node(i, *p) for i, p in enumerate((tip, above, below, side))]
+    graph = Graph(nodes=nodes, edges={0: {"z": [1, 2], "x": [3]}, 1: {"z": [0]},
+                                      2: {"z": [0]}, 3: {"x": [0]}})
+    assert forbid_port_reversal(graph, ends) == 1
+    assert graph.edges[0] == {"z": [2], "x": [3]} and graph.edges[1] == {"z": []}
+    # The guard: a reversal that reached attach anyway is flagged, never priced as a bend.
+    _points, notes, _bends, terms = attach_priced([ends.origin, above, tip], ends, RouteCost())
+    assert "port_stub_bend_in" not in terms and any("doubles back" in n for n in notes)

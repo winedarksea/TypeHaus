@@ -7,6 +7,9 @@ check then fails. Pipes only; ducts and raceways are not attached (``routing/gra
 
 Flat ceilings only: a ``FollowRoof`` room, a mechanical room and a room declared
 ``exposed_services`` (graded against a headroom line, a preference) are not zones here.
+
+A served fixture's body excuses the legs from a run's end inside it and under its top (the
+check's ``fixture_trim``); :func:`served_bodies` and :func:`in_body` are that one predicate.
 """
 
 from __future__ import annotations
@@ -50,6 +53,18 @@ def soffit_cover(model: ResolvedModel, storey: str) -> Any:
     return union_all(valid) if valid else None
 
 
+def served_bodies(model: ResolvedModel, serves: Any) -> list[tuple[Any, float]]:
+    """``[(footprint grown 1 mm, body top)]`` of each fixture in ``serves`` that has a body."""
+    tags = set(serves)
+    return [(Polygon(c.footprint).buffer(1e-3), c.body_z1_m) for c in model.canvas_objects
+            if c.tag in tags and len(c.footprint) >= 3 and c.body_z1_m is not None]
+
+
+def in_body(bodies: Any, piece: Any, top: float) -> bool:
+    """Whether ``piece`` (plan geometry) lies in a body's footprint with ``top`` under its top."""
+    return any(shape.covers(piece) and top <= body_top + 1e-3 for shape, body_top in bodies)
+
+
 def riser_row(a: tuple[float, float], za: float, zb: float, radius: float, outline: Any,
               cover: Any, soffits: Any, floor: float, ceiling_z: float,
               tol: float) -> list[tuple[float, float]]:
@@ -89,6 +104,9 @@ class RiserCover:
     tol_m: float = RISER_TOL_M
     #: Plan points a route starts or ends at; the check excuses the leg that connects them.
     exempt: list[tuple[float, float, float | None]] = field(default_factory=list)
+    #: Served fixture bodies holding an exempt end: a riser in one, under its top, is its
+    #: trap and drop (``fixture_trim``), excused in the room the body stands in.
+    bodies: list[tuple[Any, float]] = field(default_factory=list)
     _at: dict[tuple[float, float], list[_Zone]] = field(default_factory=dict, repr=False)
 
     def exposed(self, x: float, y: float, za: float, zb: float, radius: float) -> bool:
@@ -104,6 +122,10 @@ class RiserCover:
             # storey): a riser passing through the room below is in that room's air.
             if any(ez is None or zone.floor - 1e-3 <= ez <= zone.ceiling_z for ez in ends):
                 continue
+            if self.bodies and in_body(
+                    [b for b in self.bodies if zone.floor - 1e-3 <= b[1] <= zone.ceiling_z],
+                    Point(x, y), max(za, zb) + radius):
+                continue
             low, high = riser_band(za, zb, radius, zone.floor, zone.ceiling_z)
             if high - low > self.tol_m:
                 return True
@@ -111,9 +133,11 @@ class RiserCover:
 
 
 def riser_cover(model: ResolvedModel, bbox: tuple[float, float, float, float] | None = None,
-                exempt: Any = (), *, tol_m: float = RISER_TOL_M) -> RiserCover:
+                exempt: Any = (), *, tol_m: float = RISER_TOL_M,
+                serves: Any = ()) -> RiserCover:
     """Open-air zones for ``model``'s graded flat-ceiling rooms, inside ``bbox`` if given;
-    a riser at an ``exempt`` point (a route's own end) is excused in the room at its z."""
+    a riser at an ``exempt`` point (a route's own end) is excused in the room at its z, and
+    one inside a ``serves`` fixture's body holding an exempt end, under its top, likewise."""
     from shapely import prepare
     from shapely.geometry import box
 
@@ -126,6 +150,8 @@ def riser_cover(model: ResolvedModel, bbox: tuple[float, float, float, float] | 
     soffits: dict[str, Any] = {}
     out = RiserCover(tol_m=tol_m,
                      exempt=[(p[0], p[1], p[2] if len(p) > 2 else None) for p in exempt])
+    out.bodies = [b for b in served_bodies(model, serves) if serves
+                  and any(b[0].covers(Point(p[0], p[1])) for p in exempt)]
     for ceiling in model.ceilings:
         if ceiling.z0_m is None or ceiling.room_ref in declared or len(ceiling.outline) < 3:
             continue

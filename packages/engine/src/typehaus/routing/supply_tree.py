@@ -75,6 +75,18 @@ def gate_prisms(bbox: tuple[float, float, float, float], gates: Gate | Sequence[
             for i, (lo, hi) in enumerate(zip(edges[0::2], edges[1::2], strict=True))]
 
 
+def riser_stations(path: Sequence[Sequence[float]], z: Sequence[float]
+                   ) -> list[tuple[float, float]]:
+    """Plan points where an authored run rises (consecutive vertices on one plan point, at
+    different heights): where the plan already stands a riser, in cover (§5a)."""
+    out: list[tuple[float, float]] = []
+    for (a, za), (b, zb) in zip(zip(path, z, strict=False), zip(path[1:], z[1:], strict=False),
+                                 strict=False):
+        if math.dist(a[:2], b[:2]) < ON_M and abs(za - zb) > ON_M and (a[0], a[1]) not in out:
+            out.append((a[0], a[1]))
+    return out
+
+
 def plan_key(root: tuple[float, ...], point: tuple[float, ...]) -> float:
     """Manhattan plan distance from the root: the key that picks the trunk's far end, before
     any route exists to develop a length on."""

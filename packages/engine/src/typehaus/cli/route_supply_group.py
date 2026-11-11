@@ -64,13 +64,16 @@ def gates(model: ResolvedModel, radius_m: float) -> dict[str, Any]:
 def space_for(model: ResolvedModel, opts: RouteOptions, net: _Net, ends: Any, seeds: list,
               clock: Any, name: str, *, extra: Any = None, band: Any = None,
               exempt: Any = None, fixture_ends: tuple = (), cover: bool = True,
-              laid: Any = ()) -> tuple[Any, Any]:
+              laid: Any = (), leads: tuple = (), serves: Any = ()) -> tuple[Any, Any]:
     """Space and lattice for ``ends``' pipe; ``extra(space)`` gives prisms to add first.
 
     A riser stands only in wall cover or a soffit (``resolve/riser_cover``) except at the
-    route's own ends, ``exempt`` (default: every seed — the trunk's two ends). A
+    route's own ends, ``exempt`` (default: every seed — the trunk's two ends), or inside a
+    ``serves`` fixture's body holding one of them, under its top (``fixture_trim``). A
     ``fixture_ends`` point in a door or a duct is built at the nearest legal wall point.
-    ``laid``: runs this campaign laid already, whose holes a new crossing keeps clear of."""
+    ``laid``: runs this campaign laid already, whose holes a new crossing keeps clear of.
+    ``leads``: endpoints whose port stubs the lattice may not double back over."""
+    from typehaus.cli.route_ports import forbid_port_reversal
     from typehaus.routing.graph import build_graph
     from typehaus.routing.space import build_space
 
@@ -86,12 +89,14 @@ def space_for(model: ResolvedModel, opts: RouteOptions, net: _Net, ends: Any, se
         from typehaus.resolve.riser_cover import riser_cover
 
         space.members.riser_cover = riser_cover(
-            model, space.bbox, seeds if exempt is None else exempt)
+            model, space.bbox, seeds if exempt is None else exempt, serves=serves)
     if extra is not None:
         space.hard.extend(extra(space))
         space._hard_index = None
     with clock.stage(f"build-graph {name}"):
         graph = build_graph(space, seeds, None, ends=fixture_ends)
+    for one in leads:
+        forbid_port_reversal(graph, one)
     clock.lattice(graph)
     return space, graph
 
@@ -225,6 +230,11 @@ def _build(model, tree, mode, reach_m, opts, net, group, members, routes, clock,
     holes = [p[:2] for p in (routes[0].proposal.points[0], routes[0].proposal.points[-1])]
     tight = [e.origin[:2] for e in ends.values()] + [
         r.proposal.points[-1][:2] for r in routes[1:] if listed(r)]
+    # ...and where the plan already stands the risers feeding each member (its own run and its
+    # feeders up to the trunk): a hole and a lattice line, at the end's height. Basis §5a.
+    stations = [(*p, ends[t].origin[2]) for t in ends for p in _plan_risers(net, t)]
+    tight += [p[:2] for p in stations]
+    seeds += stations
     stands = [routes[0].proposal.points[0], routes[0].proposal.points[-1],
               *(e.origin for e in ends.values()),
               *(r.proposal.points[-1] for r in routes[1:] if listed(r))]
@@ -232,10 +242,27 @@ def _build(model, tree, mode, reach_m, opts, net, group, members, routes, clock,
         model, opts, net, template, seeds, clock, label, band=opts.band,
         exempt=stands, fixture_ends=tuple(e.origin for e in ends.values()), cover=cover,
         laid=laid_lines(r.proposal for r in routes),
+        leads=tuple(replace(e, root_lead=None) for e in ends.values()),
+        serves={f for e in ends.values() for f in e.serves},
         extra=lambda sp: [*walls, *(gate_prisms(sp.bbox, flight, holes, tight) if flight else [])])
     xyz = np.array([(n.x, n.y, n.z) for n in graph.nodes]).reshape(-1, 3)
     space.reuse = True
     return ends, listed, space, graph, xyz, template.diameter_m
+
+
+def _plan_risers(net: Any, tag: str) -> list[tuple[float, float]]:
+    """Authored riser stations of ``tag`` and of its feeders, up to (not including) the trunk:
+    the plan's own path for that water to rise (an attic bar fed down a hall wall)."""
+    from typehaus.routing.supply_tree import riser_stations
+
+    out: list[tuple[float, float]] = []
+    seen: set[str] = set()
+    while tag and tag != net.trunk.tag and tag not in seen and tag in net.runs:
+        seen.add(tag)
+        run = net.runs[tag]
+        out.extend(p for p in riser_stations(run.path, run.z_m or ()) if p not in out)
+        tag = net.parent.get(tag)
+    return out
 
 
 def _search(model, tree, opts, net, group, members, routes, clock, loads, built, problems,
