@@ -11,7 +11,7 @@ from typehaus.resolve.rafter_seat import eave_deck_z_m
 PITCH = 6 / 12
 PANEL_PITCH_IN = 16.0
 RIDGE_IN = 18 * 12.0
-PLATE_TOP_IN = 20 * 12 + 2.25
+PLATE_TOP_IN = 20 * 12 + 3.75
 STRUCTURE = next(layer for layer in HOUSE_ROOF.layers if layer.function.value == 'structure')
 STRUCTURE_INDEX = HOUSE_ROOF.layers.index(STRUCTURE)
 ABOVE_DECK = HOUSE_ROOF.layers[STRUCTURE_INDEX + 1:]

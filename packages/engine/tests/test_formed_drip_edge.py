@@ -137,7 +137,7 @@ def _rafter() -> FramedMember:
 
 @pytest.mark.parametrize("member", [
     _rafter(), _ringed(), _ringed(rise=0.6),
-    *bearing_stiffeners((replace(_rafter(), profile="11.875 TJI 230"),), hung_at_ridge=True),
+    *bearing_stiffeners((replace(_rafter(), profile="11.875 TJI 230"),), stiffened_at_ridge=True),
 ], ids=["rafter", "eave-leg", "rake-leg", "eave-stiffener", "ridge-stiffener"])
 def test_ifc_solid_bounds_the_ir_sweep(member) -> None:
     pytest.importorskip("ifcopenshell")

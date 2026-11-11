@@ -2710,6 +2710,9 @@ add 203.6 lb of house D, 280,270.6 lb: the shared numerator is 0.25 x 280,270.6 
 102,442.6, so FS capped 102,442.6 / 27,315.75 = **3.7503** (d/c 0.4000) and basis 8
 102,442.6 / 43,656.2 = **2.3466** (d/c 0.6392). T and the at-rest term are unchanged.
 
+2026-11-10: the double eave plate and the walls under the raised roof add about 207 lb of house
+D: numerator 102,494.3, FS capped **3.7522** (d/c 0.3998), basis 8 **2.3478** (d/c 0.6389).
+
 **The near line.** The E footing is the strut at the line's east end; its station is the middle
 of its overlap with the line, (413.97 + 432) / 2 = **422.98"** (was (412.94 + 432) / 2 = 422.47").
 Strut k = 4.0305e6 x 250 / 394 = 2.5576e6 lb/in, unchanged. Stiff-bed rows do not see it

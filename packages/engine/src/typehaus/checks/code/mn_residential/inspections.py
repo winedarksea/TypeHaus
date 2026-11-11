@@ -188,7 +188,7 @@ MN_INSPECTIONS: tuple[InspectionSpec, ...] = (
         check_ids=("structural.ijoist_span", "structural.rafter_span",
                    "structural.header_prescriptive", "structural.header_span",
                    "structural.wall_role_load", "structural.stacked_line_ladder",
-                   "structural.ridge_beam_depth",
+                   "structural.ridge_beam_depth", "structural.ridge_bearing",
                    "structural.stair_stringer",
                    "structural.member_interference", "structural.floor_opening_header",
                    "structural.uplift_path_coverage", "code.R302_5_garage_separation",

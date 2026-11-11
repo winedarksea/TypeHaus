@@ -111,6 +111,13 @@ ROLE_EQUIPMENT_PAD_ANCHOR = "equipment_pad_anchor"
 # asks 1/2" expansion or adhesive anchors with washers and leaves spacing to the maker.
 ROLE_LEDGER_ANCHOR = "ledger_anchor"
 ROLE_HURRICANE_TIE = "hurricane_tie"
+#: A roof I-joist above 3:12 tied through a web stiffener. Weyerhaeuser NW-D217 note 1 limits
+#: the H2.5A family to 3:12 or less and bars nailing it into the flange.
+ROLE_IJOIST_ROOF_TIE = "ijoist_roof_tie"
+#: Joist to joist over a beveled ridge plate (TJ-4000 R14/R14W): carries the lateral thrust.
+ROLE_RIDGE_PLATE_STRAP = "ridge_plate_strap"
+#: A beveled ridge plate fastened down to the wall under it. Billed per bay, a run not a joint.
+ROLE_RIDGE_PLATE_SCREW = "ridge_plate_screw"
 #: A joist end tied to a concrete wall's sill by the part its floor names
 #: (``JoistSpec.sill_tie``, Minn. R. 1309.0404). A row/joint label, never a lookup key: the
 #: part comes from ``hardware_by_model``.

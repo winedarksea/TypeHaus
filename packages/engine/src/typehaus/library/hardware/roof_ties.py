@@ -12,8 +12,10 @@ from typehaus.hardware.catalog import (
     ROLE_GABLE_END_TIE,
     ROLE_GABLE_TRUSS_ANCHOR,
     ROLE_HURRICANE_TIE,
+    ROLE_IJOIST_ROOF_TIE,
     ROLE_LATERAL_TIE_PLATE,
     ROLE_MASONRY_GUSSET_ANGLE,
+    ROLE_RIDGE_PLATE_STRAP,
     ROLE_SILL_ANCHOR_BOLT,
     AllowableLoads,
     StructuralHardware,
@@ -127,6 +129,45 @@ H25A_HURRICANE_TIE = StructuralHardware(
                   "and footnote 5 states the uplift is already increased for wind with no "
                   "further increase allowed. The lateral F1/F2 do not move with species on "
                   "this page: 110 lbf in both halves"),
+    ),
+)
+
+H8_HURRICANE_TIE = StructuralHardware(
+    tag="simpson-h8-ijoist-roof-tie",
+    name="H8 hurricane tie, roof I-joist through a web stiffener",
+    role=ROLE_IJOIST_ROOF_TIE,
+    manufacturer=_SIMPSON,
+    model="H8",
+    exposure=EXPOSURE_DRY,
+    source="Weyerhaeuser NW-D217, TJI Roof Joist Uplift Connection (expires Jan 2027): H8 "
+           "to 12:12, nailed through a web stiffener running 1 in past the plate. Note 1 "
+           "limits H2.5A, H2.5T, RT7A and RT8A to 3:12 or less",
+    allowable=AllowableLoads(
+        uplift_lb=710.0,
+        load_duration_factor=1.6,
+        species="SPF / HF, the column this house is framed in (DF/SP publishes 780)",
+        fasteners="5 - 10d (0.148 in x 3 in) each leg, the joist leg through the stiffener "
+                  "(NW-D217); the catalog's 0.148 in x 1-1/2 in row needs extra stiffener "
+                  "nailing to reach this value",
+        citation=("Simpson Strong-Tie C-C-2026 pp.299-301, H8 row, detail 13 \"H8 attaching "
+                  "I-Joist to Double Top Plates\"; Weyerhaeuser NW-D217"),
+    ),
+)
+
+LSTA18_RIDGE_PLATE_STRAP = StructuralHardware(
+    tag="simpson-lsta18-ridge-plate-strap",
+    name="LSTA18 strap tie, joist to joist over a beveled ridge plate",
+    role=ROLE_RIDGE_PLATE_STRAP,
+    manufacturer=_SIMPSON,
+    model="LSTA18",
+    source="Weyerhaeuser TJ-4000 Jul 2025 p.32 details R14/R14W: double-bevel bearing plate, "
+           "LSTA18 with twelve 10d (0.148 in x 1-1/2 in) nails, 2-3/8 in minimum end distance",
+    allowable=AllowableLoads(
+        uplift_lb=1115.0,
+        load_duration_factor=1.6,
+        species="SPF / HF (DF/SP publishes 1,235)",
+        fasteners="14 - 0.148 in x 2-1/2 in. R14 names twelve: x 12/14 x 1.15/1.6 = 687 lbf",
+        citation="Simpson Strong-Tie C-C-2026 pp.290-291, LSTA18 row",
     ),
 )
 

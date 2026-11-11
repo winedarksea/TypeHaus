@@ -254,10 +254,11 @@ def test_the_static_and_the_delivered_flow_are_the_notes(catlin_model_ro) -> Non
     # Note §10.15 (2026-11-10): REG-B-SUP2 on the wall, PLAY 1.36 ft and one 45 shorter,
     # 0.0314 -> 0.0295": supply still governs at 0.428, 204.59 cfm (§10.10's 0.430 / 204.5).
     assert "supply side" in message
-    assert "0.428 in. w.g." in message
+    # 2026-11-10: HP-FEED back on x=12" for W-A-STU-N's new stud; 0.432, 204.4 cfm (note §10.16).
+    assert "0.432 in. w.g." in message
     assert "DU-B-ERV-R-PLAY 0.029\"" in message
     assert "EQ-B-ERV-MAN-SUP 15.2 Pa at 210 cfm" in message
-    assert "delivering 205 cfm" in message
+    assert "delivering 204 cfm" in message
 
 
 def test_sauna_radials_route_through_clear_stud_bays_without_plate_or_duct_conflicts(

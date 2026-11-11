@@ -345,15 +345,15 @@ DUCTS_ERV_MIX_FEED = [
             # stood 3/8" into FO-A-HALL's outboard trimmer ply (face at 22'-2 5/8") for the
             # whole 8' it runs beside the hole. `mep.run_through_blocking` found it where
             # the leg crosses x=18'; 1/8" clear now.
-            # (2026-11-05) The deck leg stands at x=15.4" (the riser's own station), not 12": the 3.4"
-            # west jog sat between two 90s on a 6" duct that want 6". The roof is 1/4" higher
-            # there than at x=12", and the x=24" lanes stay 3 5/8" clear.
-            path=(pt(inch(15.4), inch(406.8)), pt(inch(15.4), inch(406.8)),
-                  pt(inch(15.4), ft(21, 10.625)),
-                  pt(inch(15.4), ft(21, 10.625)), pt(ft(21), ft(21, 10.625)),
+            # (2026-11-10) The deck leg stands at x=12" again, a 3.4" west jog in the bay off the
+            # riser's x=15.4". The roof rose 1 1/2", W-A-STU-N grew a real stud at x=16", and a
+            # leg at 15.4" stands in it; at 12" the duct clears the stud by 1/4".
+            path=(pt(inch(15.4), inch(406.8)), pt(inch(12), inch(406.8)), pt(inch(12), inch(406.8)),
+                  pt(inch(12), ft(21, 10.625)),
+                  pt(inch(12), ft(21, 10.625)), pt(ft(21), ft(21, 10.625)),
                   pt(ft(21), ft(21, 10.625)), pt(ft(21), ft(28, 9)),
                   pt(ft(21), ft(28, 9))),
-            elevations=(inch(-8.5), inch(4), inch(4),
+            elevations=(inch(-8.5), inch(-8.5), inch(4), inch(4),
                         inch(-8.5), inch(-8.5),
                         inch(4), inch(4), inch(-24.875)),
             # ** IT NAMES NO SOFFIT, AND THAT IS THE 2026-09-04 CHANGE THAT COSTS SOMETHING. **

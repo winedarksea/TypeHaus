@@ -25,10 +25,12 @@ from typehaus.hardware.catalog import (
     ROLE_GABLE_TRUSS_ANCHOR,
     ROLE_HURRICANE_TIE,
     ROLE_IJOIST_FACE_MOUNT_HANGER,
+    ROLE_IJOIST_ROOF_TIE,
     ROLE_LATERAL_TIE_PLATE,
     ROLE_MUDSILL_ANCHOR,
     ROLE_POST_BASE,
     ROLE_POST_BASE_ANCHOR,
+    ROLE_RIDGE_PLATE_STRAP,
     ROLE_RIDGE_TIE_STRAP,
     ROLE_SCL_FACE_MOUNT_HANGER,
     ROLE_SILL_ANCHOR_BOLT,
@@ -69,6 +71,7 @@ COVERED_ROLES = frozenset({
     ROLE_GABLE_END_TIE,
     ROLE_GABLE_TRUSS_ANCHOR,
     ROLE_HURRICANE_TIE,
+    ROLE_IJOIST_ROOF_TIE,
     ROLE_SILL_TIE,
     ROLE_MUDSILL_ANCHOR,
     ROLE_SILL_ANCHOR_BOLT,
@@ -80,6 +83,7 @@ COVERED_ROLES = frozenset({
     ROLE_FLOOR_TRUSS_HANGER,
     ROLE_SCL_FACE_MOUNT_HANGER,
     ROLE_RIDGE_TIE_STRAP,
+    ROLE_RIDGE_PLATE_STRAP,
     ROLE_EMBEDDED_STRAP_HOLDOWN,
     ROLE_LATERAL_TIE_PLATE,
     ROLE_POST_BASE,
@@ -137,14 +141,15 @@ def _bearing_tie_joints(model, config: HardwareTakeoffConfig, grid_m: float) -> 
     for connection in bearing_connections(model, config.uplift):
         exposure = EXPOSURE_TREATED if connection.support_treated else EXPOSURE_DRY
         item = (hardware_by_model(connection.sill_tie) if connection.sill_tie
-                else hardware_for_role(ROLE_HURRICANE_TIE, exposure=exposure))
+                else hardware_for_role(connection.tie_role, exposure=exposure))
         for _ in range(connection.sill_ties if connection.sill_tie else ties):
             out.append(_joint(
-                ROLE_SILL_TIE if connection.sill_tie else ROLE_HURRICANE_TIE, item.model,
+                ROLE_SILL_TIE if connection.sill_tie else connection.tie_role, item.model,
                 connection.storey, connection.point_m,
                 connection.z_m, connection.axis, embedded=False,
                 members=(connection.support_tag, connection.assembly_tag),
-                anchor_tag=connection.support_tag, grid_m=grid_m))
+                anchor_tag=connection.support_tag, grid_m=grid_m,
+                carried_member_key=connection.member_key))
     return out
 
 
@@ -224,14 +229,14 @@ def _hanger_joints(model, config: HardwareTakeoffConfig, grid_m: float) -> list[
 
 
 def _ridge_strap_joints(model, config: HardwareTakeoffConfig, grid_m: float) -> list[Joint]:
-    item = hardware_for_role(ROLE_RIDGE_TIE_STRAP)
     storeys = _carrier_storeys(model)
     out: list[Joint] = []
     for straps in ridge_strap_pairs(model, config.hanger_detection):
+        item = hardware_for_role(straps.role)
         storey = storeys.get(straps.carrier_tag, "")
         for station_m in straps.stations_m:
             out.append(_joint(
-                ROLE_RIDGE_TIE_STRAP, item.model, storey,
+                straps.role, item.model, storey,
                 point_along(straps.p0, straps.p1, station_m), straps.z_m, straps.axis,
                 embedded=False, members=(straps.carrier_tag,),
                 anchor_tag=straps.carrier_tag, grid_m=grid_m))

@@ -96,7 +96,7 @@ def test_canopy_columns_reproduce_9b_9c_9e(catlin_cast_ctx):
         assert _state(record, "column shear").demand == pytest.approx(shear, abs=0.1)
         # N-S head force 342.52 lb ASD with torsion, not the 142.27 k/Σk share (§9e).
         torsion = _state(record, "column torsion")
-        assert torsion.demand == pytest.approx(127.34, abs=0.02)
+        assert torsion.demand == pytest.approx(127.68, abs=0.02)
         assert _input(record, "torsion_lever") == pytest.approx(2.75)
         combined = _state(record, "connector combined")
         assert combined.ratio == pytest.approx(0.414, abs=1e-3)

@@ -329,6 +329,25 @@ class RidgeHangerConfig:
 RIDGE_HANGER = RidgeHangerConfig()
 
 
+@dataclass(frozen=True)
+class RidgePlateConfig:
+    """The beveled ridge plate's hardware (``ridge-beveled-plate``), drawn schematically."""
+
+    #: Horizontal reach of each leg of the LSTA18 over the peak.
+    strap_run_in: float = 8.0
+    #: The H8's reach down the plate face and up the joist.
+    tie_below_in: float = 1.5
+    tie_above_in: float = 3.5
+    #: ER-192 edge distance off the centreline, and the screw's length.
+    screw_offset_in: float = 1.25
+    screw_length_in: float = 6.0
+    #: Half the closure block's 1-1/2" thickness.
+    closure_half_in: float = 0.75
+
+
+RIDGE_PLATE = RidgePlateConfig()
+
+
 # --- Shower -------------------------------------------------------------------
 # Building facts from ``saunashowerdetail.json`` ``shower``. Flat module constants, like
 # the sauna's, because the room-scale functions take them one at a time and the parity

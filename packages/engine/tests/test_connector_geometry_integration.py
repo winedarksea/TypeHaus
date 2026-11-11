@@ -74,13 +74,11 @@ def test_hanger_seats_use_carried_member_ends_and_face_into_them(catlin_model_ro
     assert any(a[0] * b[0] + a[1] * b[1] < -0.99 for a in tested for b in tested)
 
 
-def test_opposite_ridge_hangers_have_separate_bodies(catlin_model_ro):
+def test_opposite_ridge_ties_have_separate_markers(catlin_model_ro):
     joints = [joint for joint in derived_joints(catlin_model_ro, DEFAULT_HARDWARE_TAKEOFF_CONFIG)
-              if joint.part == "LSSR2.37Z"]
-    bodies = {solid.uid for solid in _simpson_solids(catlin_model_ro)
-              if solid.product == "LSSR2.37Z"}
-    assert len(joints) == len({joint.key for joint in joints}) == len(bodies)
-    assert len(joints) > 30
+              if joint.part == "H8"]
+    markers = {solid.uid for solid in catlin_model_ro.solids if solid.product == "H8"}
+    assert len(joints) == len({joint.key for joint in joints}) == len(markers) == 76
 
 
 def test_canopy_joint_straps_follow_the_roof_and_cross_the_garage_joint(catlin_model_ro):

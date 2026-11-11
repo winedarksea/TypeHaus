@@ -68,6 +68,7 @@ def graded_against_published(
     deflection_limit: str | None = None,
     loads_both_sides: bool | None = None,
     throat_in: float | None = None,
+    high_end: str | None = None,
     fix: str | None = None,
 ) -> Finding:
     """One member, graded against the row authored on it. Always returns exactly one finding."""
@@ -82,7 +83,7 @@ def graded_against_published(
                    service_condition=service_condition, species_grade=species_grade,
                    treatment=treatment, bearing_in=bearing_in,
                    deflection_limit=deflection_limit, loads_both_sides=loads_both_sides,
-                   throat_in=throat_in)
+                   throat_in=throat_in, high_end=high_end)
     if drift is not None:
         return structural_advisory(
             cid, f"{subject}: the authored published row no longer describes this "
@@ -343,7 +344,8 @@ def _drift(published: PublishedSpan, member: str | None, spacing_in: float | Non
            treatment: str | None = None, bearing_in: float | None = None,
            deflection_limit: str | None = None,
            loads_both_sides: bool | None = None,
-           throat_in: float | None = None) -> str | None:
+           throat_in: float | None = None,
+           high_end: str | None = None) -> str | None:
     """What stops this row from describing the model, or ``None`` when nothing does.
 
     ** A GUARD THE CALLER CANNOT ANSWER IS A MISMATCH, NOT AGREEMENT — AND THAT IS THE
@@ -388,7 +390,8 @@ def _drift(published: PublishedSpan, member: str | None, spacing_in: float | Non
             ("a service condition", published.service_condition, service_condition),
             ("a species and grade", published.species_grade, species_grade),
             ("a treatment", published.treatment, treatment),
-            ("a deflection limit", published.deflection_limit, deflection_limit)):
+            ("a deflection limit", published.deflection_limit, deflection_limit),
+            ("a high-end support", published.high_end, high_end)):
         if row_value is None:
             continue
         if model_value is None:

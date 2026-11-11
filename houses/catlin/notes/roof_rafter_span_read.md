@@ -1,150 +1,103 @@
-# `RF-HOUSE` rafter span — published-table read
+# `RF-HOUSE` rafter span and ridge bearing — published-table read
 
 **House:** catlin, Ramsey County, Minnesota (MN Residential Code 2020, adopting the 2018 IRC).
-**Structure:** the house roof's 11-7/8" TJI 230 rafters at 24" o.c., 6:12, hung on the ridge
-beam `RB-HOUSE` with LSSR2.37Z hangers.
-**Written:** 2026-09-11, from the specifier's guide, before the check was pointed at it.
-**Oracle for:** nothing in `typehaus/engineering/` — a PRESCRIPTIVE read, graded by
+**Structure:** the house roof's 11-7/8" TJI 230 rafters at 24" o.c., 6:12, bearing on the beveled
+ridge plate `RB-HOUSE` (TJ-4000 R14W).
+**Written:** 2026-09-11; rewritten 2026-11-10 when the joists went from hung to bearing.
+**Oracle for:** `structural.ridge_bearing`, and a PRESCRIPTIVE read graded by
 `structural.rafter_span` through `checks/structural/published.py`, pinned by
-`tests/test_snow_checks.py`.
-**What is asked of the reviewer:** two things — the high-end support condition in §3, which
-is genuinely unresolved, and the hanger re-strike in §4. The span read itself is a table
-lookup with 6-1/4" of margin.
+`tests/test_snow_checks.py` and `tests/test_ridge_beam_depth.py`.
 
-> ⚠ **The 19'-3" this house quoted in five places was WRONG, and it is corrected here.**
-> It was an interpolation between two published rows to this site's 35 psf roof snow.
-> `checks/structural/snow.py` refuses exactly that move for its own sawn-lumber table —
-> *"interpolating between two published rows is not a lookup, it is a design"* — and the
-> same rule has to bind a manufacturer's table. The honest read of the published row is
-> **18'-4"**. The roof still passes, by 6-1/4" instead of by an imagined 17-1/4".
-
----
+> The 19'-3" this house once quoted was an interpolation to 35 psf, and a span table is not
+> interpolated (`checks/structural/snow.py`). The honest read is the row, **18'-4"**.
 
 ## 1. The span, and which span it is
 
 | Term | Working | Value |
 |---|---|---|
-| Horizontal run | ridge to bearing, perpendicular to the ridge | **17'-9 3/4"** (17.81') |
-| Sloped length | the run at 6:12, x 1.118 | 19.91' |
+| Horizontal run | eave plumb cut to the ridge centreline | **17'-11 1/2"** (17.96') |
+| Sloped length | the run at 6:12, x 1.118 | 20.08' |
 | Spacing | resolved, not authored | **24" o.c.** |
 | Profile | `ROOF` assembly | **11.875 TJI 230** |
 | Flat-roof snow | Ps, ASCE 7-16 §7.3, Pg 50 at Ce/Ct/Is = 1.0 | 35 psf |
 | Roof dead | the table's own basis | 15 psf |
 
-**The comparison is the HORIZONTAL projection and the check enforces it.** An I-joist roof
-table is indexed by horizontal clear span. At 6:12 the sloped length is 11.8% longer, so
-comparing `member.length_m` against the row would fail a roof the table passes — and the
-error grows with the pitch, which is exactly backwards.
+The comparison is the HORIZONTAL projection, which is what an I-joist roof table is indexed by.
+The run to the centreline overstates the clear span between bearings, so the read is conservative.
 
 ## 2. The row, read verbatim
 
-Weyerhaeuser **TJ-4000** *Trus Joist TJI Joist Specifier's Guide* (Jul 2019), p.12,
-**"Maximum Horizontal Clear Spans"**, roof, low slope:
+Weyerhaeuser **TJ-4000**, July 2025, **p.13**, roof table (p.12 is cantilevers), 11-7/8" TJI 230,
+40 + 15, Low: **24" 18'-4"**, 16" 22'-5"; "If your slope is 6:12 or less, use the Low slope column."
 
-> 11-7/8" **TJI 230** at **24" o.c.**, **40 psf snow + 15 psf dead** → **18'-4"**
+    17'-11 1/2"  <=  18'-4"        margin 4-1/2"
 
-    17'-9 3/4"  <=  18'-4"        margin 6-1/4"
+p.13 general notes: "Minimum bearing length of 1¾" end and 3½" intermediate, without web
+stiffeners." "A support beam or wall at the high end is required. Ridge board applications do
+not provide adequate support."
 
-The row is read at 40 psf snow against this site's 35 psf, so the read is conservative on
-load as well as inside on span.
+## 3. The high-end support: R14W
 
-## 3. The high-end support condition — RESOLVED 2026-09-18, and the resolution is that it
-does not turn on the disputed reading
+This note used to quote that last sentence as "ridge **beam** applications". That was a
+mistranscription; the guide says ridge **board**. A wall at the high end is exactly what p.13
+asks for, so the row applies outright. `PublishedSpan.high_end="bearing"` is the typed guard: if
+the resolved seat stops agreeing, `structural.rafter_span` refuses the row.
 
-This section said the question was open on the strength of "two transcriptions that
-disagree". **They do not disagree, and that was the error.** Both notes quote TJ-4000's
-general note in the same words — `notes/roof_flash_and_batt.md` §8 and the 2026-09-11 pass
-behind this one — namely *"a support beam or wall at the high end; ridge beam applications
-do not provide adequate support."* What differed was an **interpretation** recorded in one
-place and never reconciled with the other, and calling an unreconciled interpretation a
-transcription dispute is what kept it open for a week.
+**p.32, R14/R14W:** double-bevel bearing plate, **LSTA18 with twelve 10d (0.148" x 1½") nails**,
+2⅜" minimum end distance, web stiffeners both sides at R14W only, "additional blocking may be
+required for shear transfer". **p.30:** end bearing is one 8d (0.113" x 2½") each side, 1½"
+minimum from the end. R7S is an intermediate-bearing detail and does not apply.
 
-The interpretation was that the note excludes a ridge **BOARD** — a non-structural plate
-that only aligns the two slopes, leaving the rafters to work as a couple — and therefore
-permits `RB-HOUSE`, a real beam carrying the upslope reaction in bending to its own posts.
-**On the quotation's plain words that reading is wrong**: the note names "ridge beam
-applications" and `RB-HOUSE` is a ridge beam. The plain reading is the one this note takes.
+The plate is 5-1/2" wide, so each joist bears **2-3/4"** against 1-3/4".
 
-**And it changes nothing, because a second condition already excludes the row and is not in
-dispute.** These joists **HANG** off `RB-HOUSE` on 38 LSSR2.37Z hangers rather than
-**bearing** on it, and every printed span table — this one included — assumes bearing. A row
-whose bearing assumption is not met is indicative whatever its general notes say about what
-is above the bearing. So both readings land in the same place:
+**APA D710A 10a:** above 1/4:12 "design joist attachment to beveled plate to transfer lateral
+thrust"; above 4:12 "connectors are required to resist lateral thrust". Plate attachment is "1 -
+16d at 16" o.c.", with a "blocking panel, x-bridging, or 23/32" ... continuous closure". A 3-1/2"
+16d barely reaches the wall plate at the 2-1/8" edge, so this house screws instead (§4).
 
-**The row is a margin check, not a verdict, and ForteWEB owns the last word.** That is what
-the `condition` on the element says, and it is now a typed guard rather than prose: nothing
-in this house rests on the disputed sentence, and the five-minute job of re-opening TJ-4000
-p.12 would confirm the plain reading rather than reopen the design.
+## 4. Reaction, thrust and fasteners
 
-## 4. The hanger, re-struck — and this is the part to check
+    tributary  = 17.96' / 2 x 2.0' o.c.        = 17.96 ft2
+    reaction   = 17.96 x (35 + 15) psf          = ~900 lb
+    with the ridge's share of the unbalanced case, take    **~980 lb**
 
-`notes/ridge_beam_detail.md` worked the hanger reaction at **600 lb**, at 4:12. The roof is
-6:12 and the run is longer than that pass assumed. Re-struck here:
+**Joist end bearing, p.6:** TJI 230 11-7/8" at 1¾": **1,060 lb** no stiffeners, **1,485 lb** with.
+The row's own maximum reaction is 18.33 x 55 = 1,008 lb.
 
-    tributary  = 17.81' / 2 x 2.0' o.c.        = 17.81 ft2
-    reaction   = 17.81 x (35 + 15) psf          = ~890 lb
-    with the ridge's share of the unbalanced case, take       **~980 lb**
+**Thrust:** with no friction, R x tan(θ) = 980 x 0.5 = **~490 lb per joist**. The strap is primary.
 
-    LSSR2.37Z, with web stiffeners, allowable   **1,090 lb**    d/c 0.90
+    LSTA18, C-C-2026 pp.290-291: (14) 0.148" x 2-1/2", 1,235 DF/SP, **1,115 SPF/HF**
+    at R14's twelve nails: 1,115 x 12/14 x 1.15/1.6 = **687 lb**       d/c 0.71
 
-**RE-SOURCED 2026-09-14, and the allowable moved for a reason worth reading.** This line
-said **1,060 lb** until today. That is a real published number and it is the wrong row: it
-is the **sloped AND skewed** case (Weyerhaeuser TJ-4000, Jul 2025, p. 15, TJI 230 /
-LSSR2.37Z; the same 1,060 appears in IAPMO-ES ER-280 Table 11 at C_D = 1.00). Every document
-that publishes this hanger splits the two — C-C-2026 pp. 178 vs 179, ER-280 Table 11,
-TJ-4000 p. 15 — because skewing costs fasteners: CSG-TJUS25 p. 10, "All holes must be filled
-except for the LSSR hanger **when skewed**", which takes the header schedule from 14 nails to
-13 and the joist from 12 to 9. **`RB-HOUSE` is a straight ridge and these rafters land square
-on it.** The joint is sloped only, and its row is **1,090 lb**.
+**Uplift:** IRC R802.11 requires 212 lb per connection.
 
-**And 1,090 is the right KIND of number, which 1,565 was not.** TJ-4000 p. 15's general note:
-"Hanger capacities shown are either joist bearing capacity or hanger capacity — **whichever
-is less**." On a TJI the joist's own end bearing governs, not the hanger's steel, so the
-1,565 lb that `ridge_beam_detail.md` §2 argued against is the hanger side alone and is not
-available here at any fastener schedule. 1,090 is the connection.
+    H8, C-C-2026 pp.299-301: (5) 0.148" x 1-1/2" each leg, 780 DF/SP, **710 SPF/HF**    d/c 0.30
 
-    demand ~980 lb  /  1,090 lb at 100% duration            d/c 0.90
-    with TJ-4000 p.16 fn.1's +15% snow-roof increase, 1,254 d/c 0.78
+Detail 13 is "H8 attaching I-Joist to Double Top Plates". **NW-D217** (TJI Roof Joist Uplift
+Connection, expires Jan 2027; cites Simpson 2024) allows H8 with 10d at **780 DF/SP, 710 SPF/HF**,
+to 12:12, nailed through a web stiffener running 1" past the plate; 10d (0.148" x 3") reaches that
+value, and the 1-1/2" nail row needs extra stiffener nailing. **Note 1: H2.5A, H2.5T, RT7A and
+RT8A are limited to 3:12 or less, and are not to be nailed into the flange.** NW-D217 draws H8 at
+a low-end seat; using it on the high-end bevel is this house's reading of a joist-to-plate row. No
+manufacturer letter is sought.
 
-**Still tight, and still the number in front of the reviewer.** The 600 lb figure in
-`ridge_beam_detail.md` is superseded by this line. Web stiffeners are not optional at this
-reaction, and above 1/4:12 they are **beveled**, not square (TJ-4000 p. 14).
-
-**No slope reduction applies.** ER-280 Table 11 note 4 bounds the tabulated loads at +45 to
--45 degrees of slope and skew and publishes no multiplier inside that range; 6:12 is 26.57
-degrees. The 0.85 factor above 45 degrees belongs to the **LRUZ**, and CSG-TJUS25 p. 3's
-sloped-joist reductions belong to hangers with no sloped seat (ITS, IUS, MIT, MIU, BA, HB,
-WP, HU). Neither is this part.
-
-**One open edge, and it is inside the margin.** Nothing published gives a sloped-only TJI
-value by joist depth — TJ-4000's 1,090 is flat across 9-1/2" to 16", while CSG-TJUS25's
-*skewed* numbers do vary with depth (1,080 / 1,105 / 1,105). CSG-TJUS25 p. 5 tabulates only
-the skewed case and disagrees with TJ-4000 on it by ~4% (1,105 vs 1,060), attributable to the
-header nail (2-1/2" 10DN there, 3" 10d in TJ-4000). At d/c 0.90 that spread does not decide
-anything; a design sitting at the cap is a call to Weyerhaeuser, not a table read.
+**Plate to wall:** SDWS22600DB, two per 24" bay, ±1-1/4" off the centreline, staggered 8" apart.
+ER-192 rev. 09/08/2026 Table 7: thread 3", HF/SPF W 187 lb/in, **W_max 495 lb** at C_D 1.0, 792 lb
+at 1.6; Table 8: 1-7/16" edge, 6" end, staggered rows. At ±1-1/4" the plate is 2.875" thick, leaving
+the whole thread in the 3" double top plate. 424 lb per bay, 212 lb a screw, **d/c 0.27**.
 
 ## 5. What is NOT graded here
 
-- **The hanger.** §4 is a hand re-strike printed for a reader, not a check: nothing in this
-  engine grades a hanger allowable against a computed reaction.
-- **The eave oversail and the birdsmouth.** The row is a clear span between bearings.
-- **Deflection beyond the row's own L/240**, and vibration, which a roof has no criterion for.
-- **The high-end support condition of §3**, which no check can settle and which the element's
-  `condition` string names for the reviewer.
-- **The unbalanced and drift snow cases** on the gable. S-001 carries the drift number for
-  the canopy; the house roof's own unbalanced case is inside the 40 psf column by inspection
-  and has not been worked.
-- **The two TRUSSED roofs.** `RF-GARAGE` and `RF-BW-CANOPY` resolve no rafter member at all,
-  so no table describes them and they stay deferred to the fabricator
-  (`notes/catlin_truss_engineering.md`).
+- **Snow basis.** MN metro standard (pg 50, 35 psf roof) against the 40 psf column. Unbalanced
+  snow is not part of the prescriptive basis.
+- **The unbalanced lateral difference.** The strap ties opposing joists; the difference in their
+  thrust under unbalanced snow is outside the row and ungraded.
+- **The strap, the H8 nailing and the plate screws** are hand reads above. The check grades the
+  plate's bearing, its top against the joist underside, and its continuous support.
+- **The eave birdsmouth.** The row is a clear span between bearings.
+- **The two TRUSSED roofs**, deferred to the fabricator (`notes/catlin_truss_engineering.md`).
 
 ## Sources
 
-- **Weyerhaeuser TJ-4000**, *Trus Joist TJI Joist Specifier's Guide*, Jul 2019 — p.12
-  "Maximum Horizontal Clear Spans". Cite the edition actually read.
-- **ASCE 7-16 §7.3** — the flat-roof snow this site's 35 psf comes from.
-- **Weyerhaeuser TJ-4000**, Jul 2025, p. 15 (Variable Slope Seat Joist Hanger) and p. 16
-  footnote 1 — the LSSR2.37Z-on-TJI-230 **sloped-only** allowable in §4, and the snow
-  increase on it. **Simpson C-C-2026** pp. 178-179 and **IAPMO-ES ER-280** Table 11 are the
-  two other places the sloped-only/skewed split is published; **CSG-TJUS25** (Aug 2025)
-  pp. 3, 5 and 10 gives the web-stiffener rule and the skewed-hole clause.
+TJ-4000 July 2025 pp.6, 13, 30-32; Weyerhaeuser NW-D217; Simpson C-C-2026 pp.290-291, 299-301;
+IAPMO UES ER-192 rev. 09/08/2026 Tables 7-8; APA D710A; ASCE 7-16 §7.3.

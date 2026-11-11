@@ -8,6 +8,24 @@
 that item was about a garage-door header — and that deferral is now gone: the header is a
 published-table read (`notes/garage_door_header.md`). No calculation in the engine is pinned
 to the sections below.
+> **SUPERSEDED 2026-11-10: the joists no longer hang.** `RB-HOUSE` is now a 5-1/2" x 3-1/2" LSL
+> double-beveled bearing plate (TJ-4000 R14W; `notes/roof_rafter_span_read.md`). Everything below
+> records the hung design, and the swap-back keeps it one data edit away.
+
+## Swap-back: LSSR hangers (H5S)
+
+Going back is a data edit; the engine's hung branch and the price rows stay live.
+
+- **Set:** `ridge_seat="hung"`, `RB-HOUSE` `size="2-1.75x16 LVL"`, `PublishedSpan.high_end="hung"`,
+  the LSSR `PublishedCapacity` row (510 lb uplift, C-C-2026 p.178) at the ridge. Eave stays H8.
+  `TR-CATLIN-RIDGE-BEAM`'s overlay goes back to `lvl-ridge-hanger`.
+- **Key details:** TJ-4000 July 2025 **p.32 H5/H5S** (required above 3:12): variable slope hanger,
+  beveled web stiffeners both sides, **LSTA24 with twelve 10d (0.148" x 1½")**, 2⅜" end distance.
+  **p.15:** LSSR2.37Z on TJI 230 **1,090 lb** sloped-only, against ~980 lb, d/c 0.90. Header nail
+  1-1/2" (C-C-2026 p.178). SDW22 3-3/4" stitching (SE-N101 Table 1). Foam laps the beam and hanger
+  flanges.
+- **Closes as a table read** under p.13's "support beam or wall at the high end".
+
 **Superseded in part:** §4's hanger reaction, **600 lb at 4:12**, is re-struck at
 **~980 lb at 6:12** in `notes/roof_rafter_span_read.md` §4, against the LSSR2.37Z's
 **1,090 lb** with web stiffeners (re-sourced 2026-09-14; the 1,060 this note carried is the

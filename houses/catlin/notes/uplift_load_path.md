@@ -23,9 +23,12 @@ as an open item rather than pretending otherwise.
 >   36' row covering its 35.9' span, V_ult 115, 6:12) that is **212 lb per connection**,
 >   already net of footnote b's 15 psf dead-load allowance and taken at the full corner-zone
 >   value with no footnote d reduction claimed.
-> - the **capacity** is each connector's own published allowable: **615 lbf** for the eave
->   H2.5A in SPF/HF (Simpson C-C-2024 p.288) and **510 lbf** uplift for the ridge LSSR2.37Z
->   (C-C-2026 p.178). d/c **0.34** and **0.42**.
+> - the **capacity** is the connector's own published allowable: **710 lbf** for the H8 in
+>   SPF/HF at both the eave and the ridge (Simpson C-C-2026 pp.299-301). d/c **0.30**. Since
+>   2026-11-10: Weyerhaeuser NW-D217 note 1 limits the H2.5A on a roof I-joist to 3:12 or less
+>   and bars nailing it into the flange, so RF-HOUSE's 38 eave H2.5As were outside that detail.
+>   The ridge plate goes to the wall on two SDWS22600DB per bay, 212 lb a screw against 792 lb,
+>   d/c 0.27 (`notes/roof_rafter_span_read.md` §4).
 >
 > Comparing two published tables is a prescriptive read, so `RF-HOUSE` is graded and mints
 > nothing — the same argument that took PBR cladding and the garage-door header out of the
@@ -61,7 +64,9 @@ wall that moves takes its hardware with it.
 
 | Joint | Part | Count | Rule |
 |---|---|---|---|
-| Rafter / truss heel on its bearing wall | H2.5A | 56 + 34 | one per seated end |
+| Rafter / truss heel on its bearing wall | H2.5A | 26 | one per seated end |
+| RF-HOUSE I-joist end, eave and ridge plate | H8 | 76 | one per seated end, through the web stiffener |
+| Ridge plate to the wall under it | SDWS22600DB | 36 | two per joist bay |
 | Floor joist on a deck beam | H2.5AZ | 57 | one per bearing joint; joists on WALL plates are toe-nailed, no tie (2026-09-16) |
 | Beam landing on a wood post | KBS1Z | 8 | one per beam end |
 | Bottom plate of a framed wall on a framed floor band | LTP4 | 108 | 4' o.c., min 2 per wall |

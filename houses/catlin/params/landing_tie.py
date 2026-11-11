@@ -27,8 +27,8 @@ the post leg a 3 1/2" face (two 2x plies give 3"; HL fn 3). Collinear with the s
 """
 
 from params.north_entry_frame import (
-    EDGE_BEAM_WIDTH_IN,
     DECK_JOIST_TOP_FT,
+    EDGE_BEAM_WIDTH_IN,
     EDGE_BEAM_X_FT,
     GARAGE_CLADDING_Y_FT,
     JOIST_DEPTH_IN,

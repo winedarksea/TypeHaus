@@ -676,13 +676,14 @@ def test_sauna_opening_returns_the_foil_face(catlin_model):
 
 # --- ridge --------------------------------------------------------------------
 
-def test_ridge_detail_draws_hangers_on_both_beam_faces(catlin_model):
-    """The lvl-ridge-hanger overlay: one face-mount hanger each side of the beam."""
+def test_ridge_detail_draws_the_r14w_seat(catlin_model):
+    """The ridge-beveled-plate overlay: strap, an H8 and a screw each side, the closure."""
     _derived, scene = _exact_detail_scene(catlin_model, "roof_ridge:RF-HOUSE")
-    hangers = _component_nodes(scene, "ridge-hanger")
-    assert len(hangers) == 2
-    for hanger in hangers:
-        assert isinstance(hanger, Polyline) and hanger.closed
+    for tag, count in (("ridge-strap", 1), ("ridge-h8", 2), ("ridge-plate-screw", 2),
+                       ("ridge-closure", 1)):
+        nodes = _component_nodes(scene, tag)
+        assert len(nodes) == count, tag
+        assert all(isinstance(node, Polyline) and node.closed for node in nodes)
 
 
 def test_ridge_beam_width_parses_multi_ply_lvl():

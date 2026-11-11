@@ -17,6 +17,7 @@ from typehaus.hardware.catalog import (
     ROLE_PIPE_CLAMP,
     ROLE_SIDELAP_STITCH_SCREW,
     ROLE_SLAB_PLATE_PIN,
+    ROLE_RIDGE_TIE_STRAP,
     ROLE_SLOPED_JOIST_HANGER,
     ROLE_THROUGH_PANEL_PIPE_STRAP,
     hardware_for_role,
@@ -327,7 +328,8 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     # 1160 on 2026-11-06 (decision #116): WIN-M-LIV-E1, -BED-W1/-W2 and -BATH2 take R602.7's
     # NJ 3, and the wider packs take one more jamb station on W-M-E1, -W3 and -W4 each.
     # 1156 on 2026-11-08: WIN-S-STUDY3's 16" south move drops its four packed stations.
-    assert row["count"] == 1156 and furring[0]["count"] == 198
+    # 1164 on 2026-11-10: the 1-1/2" roof rise lifts the gable girts past one more course.
+    assert row["count"] == 1164 and furring[0]["count"] == 198
 
 
 # --- hangers -------------------------------------------------------------------------
@@ -360,18 +362,26 @@ def test_standalone_beam_solid_is_also_a_carrier() -> None:
         == ["BM-1"]
 
 
-def test_catlin_hangs_every_rafter_off_the_ridge_beam(catlin_model) -> None:
-    connections = hung_connections(catlin_model, CONFIG.hanger_detection)
+def test_the_hung_swap_back_hangs_every_rafter_off_the_ridge_beam(catlin_hung_model) -> None:
+    connections = hung_connections(catlin_hung_model, CONFIG.hanger_detection)
     rafters = [item for item in connections if item.carrier_tag.endswith("ridge-beam")]
-    ridge_rafters = [member for member in catlin_model.all_members()
+    ridge_rafters = [member for member in catlin_hung_model.all_members()
                      if member.category == "rafter"]
     # Every resolved rafter frames into the ridge beam's depth — one sloped hanger each.
     assert len(rafters) == len(ridge_rafters) > 0
     assert all(item.sloped for item in rafters)
 
-    row = next(row for row in hardware_takeoff(catlin_model)
+    rows = hardware_takeoff(catlin_hung_model)
+    row = next(row for row in rows
                if row["role"] == ROLE_SLOPED_JOIST_HANGER and "ridge-beam" in row["basis"])
     assert row["part_number"] == "LSSR2.37Z" and row["count"] == len(ridge_rafters)
+    strap = next(row for row in rows if row["role"] == ROLE_RIDGE_TIE_STRAP)
+    assert strap["part_number"] == "LSTA24" and strap["count"] == len(ridge_rafters) // 2
+
+
+def test_catlin_seats_every_rafter_on_the_ridge_plate(catlin_model) -> None:
+    connections = hung_connections(catlin_model, CONFIG.hanger_detection)
+    assert not [item for item in connections if item.carrier_tag.endswith("ridge-beam")]
 
     # Every catlin floor joist *bears* — on a plate, or on top of a beam — with four
     # exceptions, all flush-framed on purpose and all of which must be billed a hanger each:

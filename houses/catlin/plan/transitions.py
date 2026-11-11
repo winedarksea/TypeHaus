@@ -350,6 +350,6 @@ TRANSITIONS = (
                            Continuity(control="air", from_face="humid-membrane",
                                       to_face="humid-membrane")),
                star=True),
-    Transition(uid="CATR013AAAA", tag="TR-CATLIN-RIDGE-BEAM", title="Ridge beam",
-               condition_pattern="roof_ridge:*", overlay="lvl-ridge-hanger"),
+    Transition(uid="CATR013AAAA", tag="TR-CATLIN-RIDGE-BEAM", title="Ridge plate",
+               condition_pattern="roof_ridge:*", overlay="ridge-beveled-plate"),
 )

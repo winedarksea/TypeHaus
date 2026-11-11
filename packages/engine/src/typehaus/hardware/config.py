@@ -248,6 +248,8 @@ class UpliftTieRules:
     # straps already share — three schedules a framer would otherwise have to hold separately.
     # Ends are always tied, so a 36' run at 4' o.c. is ten ties, not nine.
     continuous_bearing_pitch_ft: float = 4.0
+    # A beveled ridge plate is screwed down, two per joist bay, staggered between the joists.
+    ridge_plate_screws_per_bay: int = 2
     # Below this height a ``Post`` is a squash block, not a column: a short piece filling a
     # joist bay to carry a point reaction down to the concrete. It bears and that is all it
     # does, so it takes no base and no uplift connector. 2'-0" is DCA6-2015 p.10's own

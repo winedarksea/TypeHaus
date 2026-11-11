@@ -36,6 +36,9 @@ the model goes back to `plans/TODO.md` as a design item.
   the peninsula point loads (confirm both pairs: doubled, the hand bound is still 1.02-1.10x the
   row's moment) and the fridge/freezer and partition loads; also the blocking panel for the
   `W-B-N1` bays and the two strongbacks (cuts at y 180/196/292/414).
+- **Ridge plate, before foam (TJ-4000 R14W):** inspect every LSTA18 and its twelve 10d, the plate's
+  straightness along the wall, and full foam contact on the closures and bevel faces. The strap
+  is primary structure and is invisible once sprayed.
 - Rainscreen closures (2026-10-29): close the supplier questions in `notes/metal_trim_kit.md`
   "Open with suppliers" (Metal Sales x4, the membrane maker, the screen supplier).
 - Exterior darks (`notes/exterior_darks.md`): Clopay Black at R-12.9 (dealer), the Tuff II tint

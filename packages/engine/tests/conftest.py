@@ -79,6 +79,31 @@ def _catlin_resolved(catlin_plan) -> ResolvedCopies:
 
 
 @pytest.fixture(scope="session")
+def catlin_hung_model(tmp_path_factory):
+    """Catlin with the documented swap-back applied: joists hung on a 16" LVL ridge.
+
+    The house bears on a beveled plate, and the hung branch stays live for other houses and
+    for ``notes/ridge_beam_detail.md``'s revert. Read-only.
+    """
+    from typehaus.resolve import resolve
+    from typehaus.source import load_plan
+
+    house = copy_house(CATLIN, tmp_path_factory.mktemp("hung-ridge") / "catlin")
+    attic = house / "plan/storeys/attic.py"
+    text = attic.read_text()
+    for bearing, hung in (('ridge_seat="bearing"', 'ridge_seat="hung"'),
+                          ('high_end="bearing"', 'high_end="hung"'),
+                          ('size="5.5x3.5 LSL"', 'size="2-1.75x16 LVL"')):
+        assert bearing in text
+        text = text.replace(bearing, hung)
+    attic.write_text(text)
+    loaded = load_plan(house)
+    assert loaded.plan is not None, [f.message for f in loaded.findings]
+    model, _findings = resolve(loaded.plan)
+    return model
+
+
+@pytest.fixture(scope="session")
 def catlin_model_ro(_catlin_resolved):
     """The resolved catlin model, once for the whole suite — for **read-only** use.
 

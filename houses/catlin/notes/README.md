@@ -75,11 +75,11 @@ retype or a spacing change turns the PASS back into an UNKNOWN.
 | Note | Reads | Status |
 |---|---|---|
 | `garage_door_header.md` | Weyerhaeuser TJ-9000 p.9 → `structural.header_prescriptive` on `D-G-OVERHEAD` | live |
-| `roof_rafter_span_read.md` | Weyerhaeuser TJ-4000 p.12 → `structural.rafter_span` on `RF-HOUSE`. §3 is OPEN | live |
+| `roof_rafter_span_read.md` | Weyerhaeuser TJ-4000 p.13 and R14W → `structural.rafter_span` and `structural.ridge_bearing` on `RF-HOUSE` | live |
 | `balcony_moment_columns.md` §5 | Anthony/Canfor Power Preserved Glulam Deck Guide Table 2 → `structural.deck_beam_span` on `BM-SG-BL{W,C,E}` | live |
 
 | `rebar_backout.md` | the rebar back-out in `takeoff/reinforcement.py` | live |
-| `ridge_beam_detail.md` | the ridge beam section. Its §hanger reaction (600 lb at 4:12) is SUPERSEDED by `roof_rafter_span_read.md` §4 (~980 lb at 6:12), and it no longer oracles the garage header — that deferral is gone | live, revised in part |
+| `ridge_beam_detail.md` | the retired hung ridge, kept as a named swap-back to LSSR hangers | superseded |
 | `mep_drain_routing_basis.md` | `routing/{gravity,corridors,graph,search,tree}.py` (`tests/test_routing_oracle.py`); `mep.fixture_drain_reach` §1 | live, ahead of the code it oracles |
 | `mep_duct_routing_basis.md` | `routing/trades/duct.py`, the corridor half of `routing/corridors.py` | live, ahead of the code it oracles |
 

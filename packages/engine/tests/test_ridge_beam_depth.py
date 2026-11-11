@@ -20,7 +20,7 @@ from dataclasses import replace
 import pytest
 from _helpers import check_context
 
-from typehaus.checks.structural.ridge import CHECK_ID, ridge_beam_depth
+from typehaus.checks.structural.ridge import CHECK_ID, ridge_bearing, ridge_beam_depth
 from typehaus.findings import Result
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.framing.profiles import cross_section
@@ -46,8 +46,16 @@ def _reprofile(model, profile: str):
     return replace(model, roofs=roofs)
 
 
-def test_the_house_as_built_passes_with_the_margin_stated(catlin_model_ro) -> None:
-    found = _findings(catlin_model_ro)
+def test_a_bearing_seat_is_graded_on_its_bearing_not_its_depth(catlin_model_ro) -> None:
+    """2-3/4" a side on the 5-1/2" plate (TJ-4000 R14W; notes/roof_rafter_span_read.md)."""
+    assert _findings(catlin_model_ro) == []
+    found = ridge_bearing(check_context(model=catlin_model_ro))
+    assert [f.result for f in found] == [Result.PASS]
+    assert "bear 2.75\"" in found[0].message
+
+
+def test_the_house_as_built_passes_with_the_margin_stated(catlin_hung_model) -> None:
+    found = _findings(catlin_hung_model)
     assert len(found) == 1
     assert found[0].result is Result.PASS
     assert "RB-HOUSE" in found[0].element_tags
@@ -59,7 +67,7 @@ def test_the_house_as_built_passes_with_the_margin_stated(catlin_model_ro) -> No
 
 @pytest.mark.parametrize("profile", ["3-1.75x11.875 LVL", "2-1.75x11.875 LVL"])
 def test_11_875_fails_at_any_width_which_is_why_narrowing_was_not_the_lever(
-        catlin_model_ro, profile: str) -> None:
+        catlin_hung_model, profile: str) -> None:
     """3-1.75x11.875 LVL is the ridge as originally authored. Both widths fail.
 
     Worth parametrizing rather than pinning the one historical section: the tempting cheap
@@ -73,15 +81,15 @@ def test_11_875_fails_at_any_width_which_is_why_narrowing_was_not_the_lever(
     its historical 5.25". That difference IS the half-width term above, arriving from the
     other direction.
     """
-    found = _findings(_reprofile(catlin_model_ro, profile))
+    found = _findings(_reprofile(catlin_hung_model, profile))
     assert len(found) == 1
     assert found[0].result is Result.FAIL
     assert found[0].fix_hint and "9.5/11.875/14/16/18" in found[0].fix_hint
 
 
-def test_the_shortfall_it_reports_is_the_hand_arithmetic(catlin_model_ro) -> None:
+def test_the_shortfall_it_reports_is_the_hand_arithmetic(catlin_hung_model) -> None:
     """Plumb cut minus what the beam reaches, to the thousandth, computed independently."""
-    model = _reprofile(catlin_model_ro, "2-1.75x11.875 LVL")
+    model = _reprofile(catlin_hung_model, "2-1.75x11.875 LVL")
     roof = next(r for r in model.roofs if r.tag == "RF-HOUSE")
     beam = next(m for m in roof.members if m.category == "ridge_beam")
     rafter = next(m for m in roof.members if m.category == "rafter")
@@ -98,14 +106,14 @@ def test_the_shortfall_it_reports_is_the_hand_arithmetic(catlin_model_ro) -> Non
 
 @pytest.mark.parametrize("profile", ["2-1.75x14 LVL", "3-1.75x14 LVL", "2-1.75x16 LVL",
                                      "2-1.75x18 LVL"])
-def test_fourteen_inches_reaches_once_the_beam_top_is_flush(catlin_model_ro,
+def test_fourteen_inches_reaches_once_the_beam_top_is_flush(catlin_hung_model,
                                                            profile: str) -> None:
     """14" covers the 13.28" plumb cut at 6:12 with 0.72" to spare.
 
     It read 0.15" short while the beam's top was pinned to the PEAK, 0.875" above the rafter
     tops at its faces. That was also why the LSTA24 over each pair ran through the beam.
     """
-    found = _findings(_reprofile(catlin_model_ro, profile))
+    found = _findings(_reprofile(catlin_hung_model, profile))
     assert found[0].result is Result.PASS
 
 

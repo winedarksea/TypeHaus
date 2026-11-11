@@ -29,7 +29,7 @@ from typehaus.emit.draw.detail_components.opening import (
     window_head_jamb_sill,
 )
 from typehaus.emit.draw.detail_components.rake import rake
-from typehaus.emit.draw.detail_components.ridge import lvl_ridge_hanger
+from typehaus.emit.draw.detail_components.ridge import lvl_ridge_hanger, ridge_beveled_plate
 from typehaus.emit.draw.detail_components.sauna import sauna_components
 from typehaus.emit.draw.detail_components.shower import shower_components
 from typehaus.emit.draw.detail_components.stack import (
@@ -144,6 +144,11 @@ def _recipe_lvl_ridge_hanger(model, context) -> list[IRNode]:
                             context.station)
 
 
+def _recipe_ridge_beveled_plate(model, context) -> list[IRNode]:
+    return ridge_beveled_plate(model, context.roof, context.crop, context.direction,
+                               context.station)
+
+
 #: overlay id → recipe. Every id Catlin authors that has drawable vocabulary appears here.
 OVERLAY_RECIPES = {
     "zero-overhang-eave": _recipe_zero_overhang_eave,
@@ -160,6 +165,7 @@ OVERLAY_RECIPES = {
     "sauna-liner-opening": _recipe_sauna_liner_opening,
     "humid-liner-opening": _recipe_humid_liner_opening,
     "lvl-ridge-hanger": _recipe_lvl_ridge_hanger,
+    "ridge-beveled-plate": _recipe_ridge_beveled_plate,
 }
 
 

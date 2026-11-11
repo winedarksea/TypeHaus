@@ -20,7 +20,7 @@ source:
 ## Sheet notes
 
 ### General
-- Roof: 11-7/8" TJI 230 at 24" o.c., LSSR hangers to a structural ridge beam.
+- Roof: TJI 230 at 24" o.c., milled LSL ridge plate. LSTA18, H8 primary.
 - Bay: 5" ccSPF on deck, R-30C batt. Foam is the air and vapour barrier.
 - Deck: 19/32" CDX, 40/20, oversailing the rafter ends to the girt face.
 - Butyl membrane 240 F, full field + eave strip-in. 24 ga Image II, nail flange.
@@ -28,8 +28,8 @@ source:
 - {wall_roof:INT_*} Partition stops 3/4" under rafters; SDPW19600 screw per crossing.
 
 ### Keyed
-- {wall_roof:EXT_2X6|*} [K1] Low-end birdsmouth: heel at plate outer face, 2-1/2" seat, 1-1/4" cut. 7/8" beveled stiffeners both sides. H2.5A each rafter.
-- {wall_roof:INT_2X6_BRG*|*} [K2] Foam first lift 1-1/2" min; lap ridge beam and hanger flanges in one pass.
+- {wall_roof:EXT_2X6|*} [K1] Birdsmouth: heel at plate outer face, 2-1/2" seat, 1-1/4" cut. 7/8" beveled stiffeners both sides. H8 each rafter.
+- {wall_roof:INT_2X6_BRG*|*} [K2] Foam first lift 1-1/2" min; lap the ridge closure and bevel faces in one pass.
 - {wall_roof:EXT_2X6|*} [K3] 2x6 eave block on edge on the plate, every bay. ccSPF over it.
 - {wall_roof:EXT_2X6|*} [K4] Wall foam tight to the deck underside: closed-cell fill. No high-expansion foam.
 - {wall_roof:EXT_2X6|*} [K5] Membrane to deck edge; gutter flange, then eave leg, on it. Bearing 2.04".
@@ -59,10 +59,9 @@ path that replaced the prior nailbase stack. **Read that note before
 changing anything here** — several of the rules it retired look like rules you would want to
 reinstate, and each of them was load-bearing only for the stack it belonged to.
 
-- Roof framing: 11-7/8" **TJI 230 at 24" o.c.** on the flat 2x6 rafter plate. Structural
-  ridge beam per D710 10c — not a rafter-tie roof. **6:12**, zero overhang. The spacing is NOT
-  FINAL: the printed TJ-4000 table assumes bearing at the high end and these joists hang off
-  the ridge on LSSR hangers, so ForteWEB owns the last word. See `notes/roof_flash_and_batt.md` §8.
+- Roof framing: 11-7/8" **TJI 230 at 24" o.c.** on the flat double 2x6 rafter plate, bearing at the
+  ridge on a beveled plate over the centre wall (TJ-4000 R14W) — not a rafter-tie roof. **6:12**,
+  zero overhang. See `notes/roof_rafter_span_read.md`.
 
 - **Eave seat: TJ-4000's low-end birdsmouth** (owner, 2026-10-31; geometry review C3-E5,
   decision #109). Weyerhaeuser TJ-4000 (Jul 2025) p.31 detail R5, and p.32's overhang
@@ -87,9 +86,12 @@ reinstate, and each of them was load-bearing only for the stack it belonged to.
   - Rafter underside at x from the house line: 241.0 + (x - 0.5)/2 = 240.75 + x/2, i.e.
     `x/2` over the 3/4" attic subfloor (was `1 1/2" + x/2`, itself 1.40" optimistic:
     the old model read d plumb).
+  - **2026-11-10, double plate:** plate top **243.75"**, so every line above rises 1-1/2": deck
+    at the heel 255.777", footprint edge 251.902", ridge **363.53"**, and the rafter underside
+    is `1 1/2" + x/2` again. The 2.50" seat is unchanged.
 
-  Stiffeners: a pair per rafter end, two 7/8" plies ripped 4" (TJ-4000 p.29's minimum for a
-  TJI 230 is 7/8" x 2-5/16"; 4" is the ridge LSSR's), tight to the bottom flange, 1/8" short
+  Stiffeners: a pair per rafter end, two 7/8" plies ripped 6-1/2" (TJ-4000 p.29's minimum for a
+  TJI 230 is 7/8" x 2-5/16"; 6-1/2" is NW-D217's 1" past the plate), tight to the bottom flange, 1/8" short
   of the top, beveled to 6:12, 3 8d each side (p.29).
 
   **Code-approved alternatives**, not taken: a beveled bearing plate (TJ-4000 p.31 R1/R3/R7

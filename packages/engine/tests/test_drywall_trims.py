@@ -49,7 +49,7 @@ def test_trimless_door_bead_and_living_corner_by_hand(catlin_model_ro):
     # RM-M-LIVING's outside corners run its plank top (+3/4" + 7 mm, decision #112) to the 5/8"
     # ceiling face at 9'-1/8" less 1/2" RC less 5/8" = 107": 105.9744".
     corners = [t for t in model.drywall_trims
-               if t.kind == "outside_corner" and t.room == "RM-M-LIVING"]
+               if t.kind == "outside_corner" and "RM-M-LIVING" in t.tags]  # not wall ends
     assert corners and all(t.length_m / _IN == pytest.approx(107.0 - (0.75 + 7 / 25.4), abs=1e-3)
                            for t in corners)
 

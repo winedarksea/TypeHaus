@@ -15,7 +15,6 @@ from typehaus.hardware.catalog import (
     EXPOSURE_DRY,
     ROLE_CONCRETE_FACE_MOUNT_HANGER,
     ROLE_FACE_MOUNT_JOIST_HANGER,
-    ROLE_RIDGE_TIE_STRAP,
     ROLE_STAIR_STRINGER_CONNECTOR,
     hardware_for_role,
 )
@@ -40,7 +39,7 @@ def ridge_tie_strap_rows(model: ResolvedModel, rules: HangerDetectionRules) -> l
     """
     rows = []
     for straps in ridge_strap_pairs(model, rules):
-        item = hardware_for_role(ROLE_RIDGE_TIE_STRAP)
+        item = hardware_for_role(straps.role)
         carrier_name = straps.carrier_tag.split(":")[-1]
         pairs = len(straps.stations_m)
         note = (f" ({straps.unpaired} unpaired rafter end(s) take none)"

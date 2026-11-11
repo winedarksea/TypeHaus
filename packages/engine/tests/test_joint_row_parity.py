@@ -60,6 +60,11 @@ _WITNESSED_ELSEWHERE = {
     "stair_stringer_connector":
         "test_hung_detection.py::test_a_deck_joist_carries_a_stringer_head_and_nothing_else",
     "beam_hold_down": "test_uplift_takeoff.py::test_a_bare_beam_on_a_wood_post_is_strapped",
+    # The house's ridge bears since 2026-11-10; these two are the hung seat's.
+    "sloped_joist_hanger":
+        "test_hardware_takeoff.py::test_the_hung_swap_back_hangs_every_rafter_off_the_ridge_beam",
+    "ridge_tie_strap":
+        "test_hardware_takeoff.py::test_the_hung_swap_back_hangs_every_rafter_off_the_ridge_beam",
 }
 
 
@@ -116,7 +121,10 @@ def test_the_joint_counts_are_the_ones_the_house_is_known_to_have(catlin_model_r
     # 24 floor trusses take a tie at both wall seats (+48: 24 x=18' plates, 24 on W-B-E1/E2).
     # 130 -> 82 on 2026-11-02: ``JoistSpec.sill_tie`` ties only the concrete-wall ends, with
     # an A35Z each (Minn. R. 1309.0404), which is its own part and role: the 48 leave.
-    assert joints["hurricane_tie"] == 82
+    # 82 -> 34 on 2026-11-10: the bearing ridge. RF-HOUSE's 38 eave ties became H8s (below)
+    # and the 10 along the ridge went to plate screws, which are a run and not a joint.
+    assert joints["hurricane_tie"] == 34
+    assert joints["ijoist_roof_tie"] == 76
     # 137 -> 136 in 2026-09: the main-storey sill run over the sunken garden (y = -11 3/4")
     # spans axis to axis of the court's side walls, 20'-0" -> 18'-0" with the 17'-0" court.
     # At a 4' pitch, fencepost: floor(20/4)+1 = 6 became floor(18/4)+1 = 5.
@@ -137,12 +145,13 @@ def test_the_joint_counts_are_the_ones_the_house_is_known_to_have(catlin_model_r
     # the pantry partitions on SL-M-DECK's cap went with it. The eight x=18' mudsill anchors
     # moved from the pour tops to the reframed walls' slab plates, count unchanged.
     assert joints["slab_plate_pin"] == 43
-    # 38 rafters on the ridge. ST-G-SERVICE's two stringer heads were two more until
+    # The rafters bear on the ridge plate since 2026-11-10. ST-G-SERVICE's two stringer heads were two more until
     # 2026-09-24, then hung on BM-BW-LAND-HDR on LSCZ, their own role, until 2026-10-13: they
     # seat on the stem now, on authored standoffs, and hang on nothing.
-    assert joints["sloped_joist_hanger"] == 38
+    assert joints["sloped_joist_hanger"] == 0
     assert joints["stair_stringer_connector"] == 0
-    assert joints["ridge_tie_strap"] == 19
+    assert joints["ridge_tie_strap"] == 0
+    assert joints["ridge_plate_strap"] == 19
     # 40 -> 6 on 2026-10-09: derived STHDs only at exterior foundation corners. The house's
     # NE corner and the garage's SW corner stand down for their authored braced-panel STHDs.
     assert joints["embedded_strap_holdown"] == 6

@@ -11,14 +11,25 @@ sheet-metal thickness so the load path reads.
 Self-gates on the roof actually carrying a ridge beam inside the crop; a hangerless ridge
 board or an out-of-frame beam draws nothing. Dimensions from
 :data:`~typehaus.emit.draw.detail_components.config.RIDGE_HANGER`.
+
+``ridge-beveled-plate`` is the bearing seat (TJ-4000 R14W): the cut shows the plate and the
+joists; this adds what is too thin or beyond the cut to survive it, the strap over the peak,
+an H8 each side, the plate screws and the closure block in the next bay.
 """
 
 from __future__ import annotations
 
-from typehaus.emit.draw.detail_components.config import RIDGE_HANGER
-from typehaus.emit.draw.detail_components.geometry import flashing_nodes, path_from_steps
-from typehaus.emit.draw.scene import IRNode
+from typehaus.emit.draw.detail_components.config import RIDGE_HANGER, RIDGE_PLATE
+from typehaus.emit.draw.detail_components.geometry import (
+    LAYER,
+    flashing_nodes,
+    path_from_steps,
+)
+from typehaus.emit.draw.lineweights import PROFILE
+from typehaus.emit.draw.scene import IRNode, Polyline
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.framing.roof_ridge_closure import RIDGE_PLATE_CONNECTION
+from typehaus.resolve.roof_geometry import roof_slope_factor
 
 
 def ridge_beam_member(roof):
@@ -77,6 +88,40 @@ def lvl_ridge_hanger(model, roof, crop, direction, station) -> list[IRNode]:
     return nodes
 
 
+def ridge_beveled_plate(model, roof, crop, direction, station) -> list[IRNode]:
+    """The R14W seat: strap over the peak, H8 each side, plate screws, closure beyond."""
+    member = ridge_beam_member(roof)
+    if member is None or crop is None or member.connection != RIDGE_PLATE_CONNECTION:
+        return []
+    (_cu0, cz0), (_cu1, cz1) = crop
+    top, bottom = member.z1_m / M_PER_IN, member.z0_m / M_PER_IN
+    if top < min(cz0, cz1) / M_PER_IN or bottom > max(cz0, cz1) / M_PER_IN:
+        return []
+    cfg = RIDGE_PLATE
+    centre = (member.p0[0] if direction == "x" else member.p0[1]) / M_PER_IN
+    half = (max(u for u, _ in member.section_ring)) / M_PER_IN
+    pitch = (roof_slope_factor(roof) ** 2 - 1.0) ** 0.5
+    peak = roof.ridge_z_m / M_PER_IN
+    edge = top - half * pitch
+    nodes: list[IRNode] = flashing_nodes(path_from_steps(
+        (centre - cfg.strap_run_in, peak - cfg.strap_run_in * pitch),
+        [(cfg.strap_run_in, cfg.strap_run_in * pitch),
+         (cfg.strap_run_in, -cfg.strap_run_in * pitch)]), material="metal", tag="ridge-strap")
+    for sign in (-1.0, 1.0):
+        nodes += flashing_nodes(path_from_steps(
+            (centre + sign * half, edge - cfg.tie_below_in),
+            [(0.0, cfg.tie_below_in + cfg.tie_above_in)]), material="metal", tag="ridge-h8")
+        nodes += flashing_nodes(path_from_steps(
+            (centre + sign * cfg.screw_offset_in, top - cfg.screw_offset_in * pitch),
+            [(0.0, -cfg.screw_length_in)]), material="metal", tag="ridge-plate-screw")
+    block, notch = cfg.closure_half_in, cfg.closure_half_in * pitch
+    nodes.append(Polyline(
+        points=((centre - block, top - notch), (centre, top), (centre + block, top - notch),
+                (centre + block, peak - notch), (centre, peak), (centre - block, peak - notch)),
+        layer=LAYER, closed=True, lineweight=PROFILE, tag="detail-component:ridge-closure"))
+    return nodes
+
+
 def ridge_overlay_for_slice(model, view) -> list[IRNode]:
     """Ridge-hanger vocabulary for an authored ``Slice`` (documentation-only path).
 
@@ -103,5 +148,7 @@ def ridge_overlay_for_slice(model, view) -> list[IRNode]:
         center_u = member.p0[0] if direction == "x" else member.p0[1]
         if not (min(cu0, cu1) <= center_u <= max(cu0, cu1)):
             continue
-        nodes += lvl_ridge_hanger(model, roof, crop, direction, station)
+        draw = (ridge_beveled_plate if member.connection == RIDGE_PLATE_CONNECTION
+                else lvl_ridge_hanger)
+        nodes += draw(model, roof, crop, direction, station)
     return nodes

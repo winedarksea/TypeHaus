@@ -272,16 +272,13 @@
 # why this is not folded into the row above: that row carries 2,436 LF of FLOOR joist that
 # has no reason to be dragged up to the roof's rate. Naming the series is also what lets a
 # quote be asked for — "11.875 I-joist" cannot be ordered from anybody.
-# CONFIDENCE: MEDIUM. The upcharge is a catalogue-step estimate, not a lumberyard quote, and
-# the SPACING IS NOT FINAL: the printed TJ-4000 table assumes bearing at the high end while
-# these joists hang off the ridge on LSSR hangers, so ForteWEB owns the last word. The
-# fallback if it says no is a TJI 210 at 19.2" o.c. (2'-6" of margin, ~200 LF saved).
+# CONFIDENCE: MEDIUM. The upcharge is a catalogue-step estimate, not a lumberyard quote.
 "11.875 TJI 230" = { material = { low = 4.2, high = 6.6 }, labour = { low = 0.9, high = 1.9 } }  # 760 LF — RF-HOUSE rafters, 38 pc x 20'
 # THE RAFTERS' WEB STIFFENERS, 2026-09-02 — and they are PLYWOOD, not the 2x4 this row
 # replaced. A stiffener fills the joist's own web cavity, which on a TJI 230 is
 # (2 5/16" flange - 3/8" web) / 2 = 15/16" a side: a 1 1/2" stick does not go in there at
-# all. 23/32" CDX both sides per Weyerhaeuser TJ-9000, ripped 4" wide because CSG-TJUS25
-# conditions the LSSR hanger on stiffeners "4" wide and attached with (4) nails each side".
+# all. 23/32" CDX both sides per Weyerhaeuser TJ-9000, ripped 6-1/2" wide since 2026-11-10 so the
+# H8 reaches 1" past the plate (NW-D217). The per-LF figures below were struck at the 4" rip.
 # ONE MODELLED MEMBER PER RAFTER END IS THE PAIR, so both numbers below are for two pieces:
 #   material — 2 x a 4" rip = 0.67 SF per LF of member, at the $45-65/sheet ($1.41-2.03/SF)
 #     23/32 CDX the "plywood-subfloor" row in [sheet_goods] is basised on, plus rip waste.
@@ -405,7 +402,13 @@
 # +14% — and the labour does not: same three 12' sticks, same two-man lift (a 12' ply of this
 # section is about 105 lb against 92 lb at 14"), same splice-over-any-bearing-point rule
 # because it bears continuously. 36 LF, three 12s, no offcut, no waste to price.
-"2-1.75x16 LVL" = { material = { low = 18, high = 34 }, labour = { low = 9, high = 20 } }  # 36 LF
+"2-1.75x16 LVL" = { material = { low = 18, high = 34 }, labour = { low = 9, high = 20 } }  # 0 LF — the hung ridge, kept for the hanger swap-back (notes/ridge_beam_detail.md)
+# The ridge plate, 2026-11-10: 3-1/2" x 5-1/2" LSL shop-milled to a 6:12 double bevel. ESTIMATE:
+# the 1-1/2" x 5-1/2" LSL stud row scaled by thickness ($4-5.40/LF) plus $3-6.60/LF milling.
+"5.5x3.5 LSL" = { material = { low = 7, high = 12 }, labour = { low = 2, high = 4 } }  # 36 LF, three 12s
+# Ridge closures, one per bay: 1-1/2" LSL, notched over the plate and beveled on top. ESTIMATE
+# off the 1.75x11.875 LSL row; labour carries the two cuts.
+"1.5x14 LSL" = { material = { low = 6, high = 9 }, labour = { low = 3, high = 6 } }  # 40 LF ordered, 18 blocks
 "2-2x10" = { material = { low = 3, high = 4 }, labour = { low = 1, high = 2 } }  # 56 LF — 40 header + 16 canopy collector blocking (2026-10-08: was 3.5x16 LSL, unpriced)
 "2-2x6" = { material = { low = 1.7, high = 2.3 }, labour = { low = 0.9, high = 1.8 } }  # 48 LF
 "2-2x8" = { material = { low = 2.2, high = 3.1 }, labour = { low = 1, high = 2 } }  # 168 LF
@@ -971,7 +974,9 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # UNTREATED wood. The split is derived, not authored — `takeoff/uplift.py::_exposure` reads
 # `Material.preservative_treated` off the support — so it follows a retype of the beam rather
 # than needing a count kept here.
-"H2.5A" = { low = 0.8, high = 1.75 }  # 74 ea — all derived: the roof bearings; floors on walls untied since 2026-09-16 (concrete-wall seats take an A35Z since 2026-11-02, JoistSpec.sill_tie)
+# Every RF-HOUSE joist end, eave and ridge (NW-D217). ESTIMATE: H2.5A band, scaled for the longer leg.
+"H8" = { low = 1.25, high = 2.75 }  # 76 ea
+"H2.5A" = { low = 0.8, high = 1.75 }  # 26 ea — all derived: the roof bearings; floors on walls untied since 2026-09-16 (concrete-wall seats take an A35Z since 2026-11-02, JoistSpec.sill_tie)
 # ** THE GABLE ENDS. ** The leg of the uplift chain that had no hardware at all until
 # 2026-09-14: no rafter bears on a gable end, so every bearing rule looked past the wall that
 # takes the largest out-of-plane wind pressure in the house. Twenty-two ties at 4' o.c. along
@@ -1174,7 +1179,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # notes/uplift_load_path.md) — so this row prices the authored one-offs only.
 "PC6Z" = { low = 14, high = 26 }  # 0 ea
 # 2026-11-06: catalog LSSR -> LSSR2.37Z (C-C-2026 p.178, TJI 230). Search snippets: singles ~$18-28, 25-pack $425.68 (dkhardware, $17/ea).
-"LSSR2.37Z" = { low = 17, high = 28 }  # 38 ea — the ridge
+"LSSR2.37Z" = { low = 17, high = 28 }  # 0 ea — the hung ridge, kept for the hanger swap-back
 # LSCZ $2.99 each, fastenersplus.com (read 2026-09-24); the band carries the house's usual
 # contractor-carton low and a ZMAX/short-stock high.
 "LSCZ" = { low = 2.5, high = 5 }  # 3 ea — resolver-emitted at an interior winder landing rim. ST-G-SERVICE's 2 went with BM-BW-LAND-HDR, 2026-10-13: its stringers now seat on the garage stem
@@ -1182,7 +1187,10 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # NOT do. A 24" x 1-1/4" 20ga strap tie is $3.50-4.50 single-piece retail (Fasteners Plus /
 # Home Depot, 2026); the low end is the contractor carton this section discounts to
 # throughout, the high end carries the twelve 10d x 1-1/2" nails H5S specifies per strap.
-"LSTA24" = { low = 2.75, high = 5.5 }  # 25 ea — 19 derived over the house ridge, 6 authored as CN-BW-JOINT-1..3, -5..7, the diaphragm continuity ties across the garage south wall line
+# The bearing ridge's strap, TJ-4000 R14W, one per opposing pair. ESTIMATE: the LSTA24 band less
+# a quarter of the steel.
+"LSTA18" = { low = 2.25, high = 4.5 }  # 19 ea — over the house ridge
+"LSTA24" = { low = 2.75, high = 5.5 }  # 6 ea — the hung-ridge row stays for the swap-back; 6 authored as CN-BW-JOINT-1..3, -5..7, the diaphragm continuity ties across the garage south wall line
 "LUS" = { low = 2, high = 6 }
 # Level I-joist hangers authored on the three flush LVLs (BM-M-HALL, BM-S-HALL, BM-S-BATH-E).
 # ESTIMATE, unconfirmed: single-piece retail band for an IUS2.37/11.88 (TJI 230 since
@@ -1503,7 +1511,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "SDWS22400DB" = { low = 0.6, high = 0.95 }  # 88 ea — 72 eave blocking, 16 through SB-BW-BAND's plates
 # ST-M2S's two skirted wall stringers, through the flat 2x4 spacer into each stud it crosses
 # (notes/stair_skirt_basis.md §6). ESTIMATE between the 4" row and the 8" carton rate above.
-"SDWS22600DB" = { low = 0.85, high = 1.35 }  # 9 ea
+"SDWS22600DB" = { low = 0.85, high = 1.35 }  # 44 ea — 8 stair spacers, 36 ridge plate to wall (two per bay)
 # The interior partitions' deflection screw at every top plate — one per crossing of the
 # framing above, a 24" pitch where a wall runs under a parallel member, one per blocked bay
 # where it runs between them (takeoff/partition_fasteners.py). The SIX-inch 0.195" screw and

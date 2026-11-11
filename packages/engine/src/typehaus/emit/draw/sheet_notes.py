@@ -14,7 +14,7 @@ Authoring format — a body section, not frontmatter
 
     ## Sheet notes
     ### General
-    - Structural ridge beam; not a rafter-tie roof. Do not omit the LSSR hangers.
+    - Bearing ridge plate; not a rafter-tie roof. Do not omit the LSTA18 straps.
     ### Keyed
     - [K1 @ W-M-N-EXT#layer:sheathing:out] 5" closed-cell foam to deck underside.
     - {*BOARD_BATTEN*} [K2] Batten wall only: a note scoped to the conditions it is true of.

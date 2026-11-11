@@ -17,10 +17,12 @@ from typehaus.hardware.catalog import (
     ROLE_GABLE_TRUSS_ANCHOR,
     ROLE_HURRICANE_TIE,
     ROLE_IJOIST_FACE_MOUNT_HANGER,
+    ROLE_IJOIST_ROOF_TIE,
     ROLE_LATERAL_TIE_PLATE,
     ROLE_MUDSILL_ANCHOR,
     ROLE_POST_BASE,
     ROLE_POST_BASE_ANCHOR,
+    ROLE_RIDGE_PLATE_STRAP,
     ROLE_RIDGE_TIE_STRAP,
     ROLE_SCL_FACE_MOUNT_HANGER,
     ROLE_SILL_ANCHOR_BOLT,
@@ -64,6 +66,8 @@ class MarkerRule:
 MARKER_RULES: dict[str, MarkerRule] = {
     # Straddling the plate top. Long in the support's direction, thin across it.
     ROLE_HURRICANE_TIE: MarkerRule(draw=True, along_in=1.00, across_in=0.25, half_h_in=2.25),
+    # Up the web stiffener and down the plate, so taller than an H2.5A.
+    ROLE_IJOIST_ROOF_TIE: MarkerRule(draw=True, along_in=0.63, across_in=0.03, half_h_in=4.00),
     # Across the sill, coming up out of the pour.
     ROLE_MUDSILL_ANCHOR: MarkerRule(draw=True, along_in=0.75, across_in=0.25, half_h_in=3.00,
                                     category=CATEGORY_CONNECTOR_EMBEDDED),
@@ -81,6 +85,8 @@ MARKER_RULES: dict[str, MarkerRule] = {
     # An LSTA24 is two feet of strap over the peak: long, and almost nothing thick.
     ROLE_RIDGE_TIE_STRAP: MarkerRule(draw=True, along_in=12.00, across_in=0.63,
                                      half_h_in=0.25),
+    ROLE_RIDGE_PLATE_STRAP: MarkerRule(draw=True, along_in=9.00, across_in=0.63,
+                                       half_h_in=0.25),
     # Deep, because most of an STHD is inside the pour and that is the point of seeing it.
     ROLE_EMBEDDED_STRAP_HOLDOWN: MarkerRule(draw=True, along_in=0.75, across_in=0.25,
                                             half_h_in=10.00,

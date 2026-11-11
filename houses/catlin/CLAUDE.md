@@ -905,9 +905,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   on RF-HOUSE; 36 blocks, one per bay). Lower bay only, so ccSPF fills over it; the air
   barrier is the sheathing band plus that foam, not the block. It is also what the gutter
   girt screws into. See `notes/roof_wall_eave_detail.md` K3.
-- **The line every attic station answers to**: roof underside is `x/2` above the 3/4"
-  attic subfloor top (240.75"; decision #109, was `1 1/2" + x/2`), mirrored past x=18'-0" —
-  9'-0" at the ridge line, 6'-10 1/2" at x=13'-9", 4'-10 1/2" at x=9'-9", 2'-10 1/2" at x=5'-9". Every height quoted in `plan/` (window
+- **The line every attic station answers to**: roof underside is `1 1/2" + x/2` above the 3/4"
+  attic subfloor top (240.75"; decision #109, amended 2026-11-10 by the double eave plate),
+  mirrored past x=18'-0" — 9'-1 1/2" at the ridge line, 7'-0" at x=13'-9", 5'-0" at x=9'-9",
+  3'-0" at x=5'-9". Every height quoted in `plan/` (window
   head, can light, receptacle, door, duct, furniture, vent riser) is measured from this
   line — **and since 2026-09-19 the seven attic partitions answer to it too**: their raked
   top plates stop 3/4" under it, where they used to rake to the roof DECK plane and run
@@ -1085,41 +1086,25 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     leaves no gap to dry into. The butyl membrane replacing both self-seals ~1,160
     standing-seam nail-flange screws, this roof's real water risk (counted since
     2026-10-31: Metal Sales 8243100 at 16" x 12" o.c., 1,159 here, 1,822 on all three roofs).
-  - 24" o.c. spacing is NOT FINAL: `structural.rafter_span` is UNKNOWN/engineered at both
-    16" and 24" o.c., and the printed TJ-4000 table assumes bearing at the high end where
-    these joists instead HANG off the ridge on 38 LSSR hangers — confirm in ForteWEB
-    (fallback TJI 210 @ 19.2" o.c.). Budget for
-    upsized eave uplift ties (H10A+); don't bank the H2.5A count falling 378→360 — catlin
-    frames SPF at SG 0.42 against H2.5A's SG 0.50 rating, with 1.5x the tributary.
+  - 24" o.c. closes as a table read: TJ-4000 p.13 18'-4" against the 17'-11 1/2" run, with the
+    joists bearing at the high end (`notes/roof_rafter_span_read.md`). Eave and ridge both take
+    H8s on SPF: NW-D217 bars the H2.5A above 3:12.
   - The roof deck oversails the last rafter and spans the wall girts, clipping at the
     cladding's back face — that cantilever is graded by nothing in the engine. Stack depth
     reaches the gutter through `params/roof_panel` (`EAVE_DECK_IN`, `ROOFING_BASE_IN`,
     `PITCH`) and `EaveStack`, so moving a layer moves the gutter; nothing is transcribed.
 
-- **Structural ridge, not a rafter-tie roof**: `RB-HOUSE` bears continuously on the
-  `W-A-C1/C1B/C2` bearing wall (unbroken to footings), keeping rafters simple spans and
-  thrust off the eave line — a beamless center line dumps ~1.5 klf of thrust into a 1 1/2"
-  rafter plate that can't take it.
-  - Section is `2-1.75x16 LVL`; depth is a HANGER dimension, not span-driven. The beam's
-    top is flush with the rafter tops at its faces, 7/8" under the peak
-    (`roof_geometry.ridge_beam_top_m`), so each LSTA24 lies across it and the beam need
-    only reach the 13.28" plumb cut: 14" would clear by 0.72", 16" clears by 2.72". The
-    centreline walls stop at its soffit, 345 5/32" (derived, never authored).
-    3 1/2" width only works because demand is small, and the 1-1/2" LSSR header nail that
-    keeps mirrored patterns on 28 opposing rafter pairs from overlapping is a **published
-    row**, not an ER-280 §3.2.2 derivation (C-C-2026 p. 178 sloped-only, DF/SP: 1,175 lbf).
-    The connection is capped by the TJI's end bearing at **1,090 lbf** (TJ-4000 Jul 2025
-    p. 15, sloped-only — 1,565 is hanger-side-only and 1,060 is the *skewed* row), against
-    ~980 lb/rafter: d/c 0.90.
-  - Peak hardware: 38 beveled web stiffeners both sides (7/8" ply ripped 4" wide, TJ-4000
-    p.29's TJI 230 minimum — NOT a 2x4, cavity is 15/16" a side; the same pair at all 38
-    eave seats, the low-end birdsmouth of decision #109), 19 LSTA24 over the top per pair (mandatory above 3:12
-    per Weyerhaeuser H5S), 10 H2.5A tying beam to plate at 4' o.c. (`uplift_path.py` skips
-    a `Beam.bearing_ref` that resolves to a wall, so this joint had none before).
-  - Ordered as three 12' pieces, not one 36' stick — `FramedMember.continuously_supported`
-    sends a beam supported everywhere to the stock ladder. Cap is handling
-    (`_MAX_SPLICE_PIECE_FT` in `takeoff/framing.py`), not stock — plies stagger 6+12+12+6.
-    `structural.ridge_beam_depth` grades the depth.
+- **Supported ridge, not a rafter-tie roof**: `RB-HOUSE` is a 5-1/2" x 3-1/2" LSL plate milled to a
+  6:12 double bevel (TJ-4000 R14W), bearing continuously on the `W-A-C*` wall (`Roof.ridge_seat=
+  "bearing"`). The joists run to the centreline and bear 2-3/4" a side against 1-3/4".
+  `structural.ridge_bearing` grades it. The centre walls stop at its soffit, 16.78" under the
+  peak (derived, never authored).
+  - Hardware: 76 H8s through 7/8" beveled web stiffeners ripped 6-1/2" (NW-D217: 1" past the
+    plate), 19 LSTA18 with twelve 10d, primary for ~490 lb of thrust per joist (687 lb, d/c 0.71),
+    18 closures of 1-1/2" LSL, 36 SDWS22600DB plate screws, two per bay.
+  - The eave is a double 2x6 for the H8's row, so the deck plane rose 1-1/2" (ridge 363.53").
+  - Bought as three 12s: `FramedMember.continuously_supported` sends it to the stock ladder.
+  - **Revert to hangers** is a data edit: `notes/ridge_beam_detail.md`, "Swap-back".
 
 ### Windows and facade
 

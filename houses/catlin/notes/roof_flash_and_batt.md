@@ -200,14 +200,11 @@ Recorded plainly because the engine will neither stop you nor help you on any of
   between two published rows, and a span table is not interpolated — `snow.py` refuses
   exactly that move for its own table. The TJI 110 that carried this roof at 16" o.c. does
   not reach it at 24".
-  **Two things make the printed table indicative rather than authoritative here**, and both
-  belong in ForteWEB: its general note requires *a support beam or wall at the high end —
-  ridge beam applications do not provide adequate support*, and catlin **hangs** its joists
-  off `RB-HOUSE` on 38 LSSR hangers rather than bearing on it (`notes/roof_rafter_span_read.md`
-  §3 settles what that general note means and why the design does not turn on it); and its deflection basis is
-  L/180 total, L/240 live, where a gypsum cathedral ceiling may want L/240 total, which
-  shortens the allowable span. The second is the stronger reason to take the 230 rather than
-  the marginal 210. **The fallback is a TJI 210 at 19.2" o.c.** — 2'-6" of margin, ff ~0.058.
+  Its general note requires *a support beam or wall at the high end; ridge **board**
+  applications do not provide adequate support*, and since 2026-11-10 the joists bear on a
+  beveled plate over a wall, so the row applies (`notes/roof_rafter_span_read.md` §3). Its
+  deflection basis is L/180 total, L/240 live, where a gypsum cathedral ceiling may want L/240
+  total. That is the reason to take the 230 rather than the marginal 210.
 - **Two conservatisms worth banking while reading those spans.** The model takes no ASCE 7
   §7.4 **Cs slope factor**, which a 6:12 slippery standing-seam roof earns; and the new stack
   is LIGHTER than the one it replaces (~10 psf against ~12-14 — 6" of polyiso and a 5/8" OSB
@@ -227,14 +224,16 @@ Recorded plainly because the engine will neither stop you nor help you on any of
   (footnote b). **This stack is ~10 psf and does not deliver that 15**, so the table's offset
   is optimistic here by roughly 5 psf of tributary. The two numbers bracket the answer; the
   480 is the one to design to.
-- **So: still budget for upsizing the eave ties (H10A or equivalent)** rather than booking
+- **Since 2026-11-10 the ties are H8s at both ends**, 710 lbf SPF/HF (NW-D217 bars the H2.5A
+  above 3:12). The rest of this bullet is the earlier reasoning: still budget for upsizing the eave ties (H10A or equivalent) rather than booking
   the 378 -> 360 count reduction as a saving. In SPF the H10A is the efficient upgrade — it
   loses only 2% moving out of the DF/SP column (1,040 -> **1,015** lbf) where the H2.5A loses
   12%, because its capacity is governed by the steel rather than by nail withdrawal from the
   plate. A PAIR of H2.5As is not the cheap alternative it looks: Simpson publish no pair row,
   and the footnote that licenses doubling requires a 2-1/2" minimum rafter thickness, which a
   single 2x does not have.
-- **The ridge hangers survive the move, but "comfortably" was an artifact of the wrong
+- *(Hung ridge, retired 2026-11-10; kept for the swap-back in `ridge_beam_detail.md`.)*
+  **The ridge hangers survive the move, but "comfortably" was an artifact of the wrong
   allowable.** 1,565 lb is the hanger's own steel on sawn lumber; on an 11-7/8" TJI 230 the
   connection is the **lesser** of that and the joist's end bearing, which TJ-4000 (Jul 2025,
   p. 15) puts at **1,090 lb** sloped-only. The demand at 24" o.c. is `roof_rafter_span_read.md`
@@ -260,8 +259,8 @@ Three, and the first is worth more than the other two together.
    and a visual void inspection of every bay before the batts go in. A void holds water AND
    air, which is what a sandwich rots from. After the batts the deck underside is invisible
    for the life of the house.
-3. **The ccSPF laps onto the ridge beam and over the hanger flanges, in the same pass.**
-   19 bay ends die into `RB-HOUSE`'s faces at 38 hanger flanges — the most awkward
+3. **The ccSPF laps the ridge closure and the plate's bevel faces, in the same pass.**
+   18 bays die into their closure blocks over the plate — the most awkward
    air-barrier junction in the roof, free if specified and the detail most likely to be
    skipped. There is no separate air barrier to catch it: the foam *is* the air barrier now.
 

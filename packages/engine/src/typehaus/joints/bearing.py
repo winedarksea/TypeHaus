@@ -18,7 +18,8 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
-from typehaus.hardware.config import FT_TO_M, UpliftTieRules
+from typehaus.hardware.catalog import ROLE_HURRICANE_TIE
+from typehaus.hardware.config import UpliftTieRules
 from typehaus.hardware.plan_geometry import (
     centerline_endpoints,
     distance_point_to_segment,
@@ -29,16 +30,20 @@ from typehaus.joints.authored import (
     authored_joints,
     tags_covered_by,
 )
-from typehaus.joints.hosts import member_storeys
+from typehaus.joints.continuous import ContinuousBearing, continuous_bearing_members
 from typehaus.joints.model import axis_of
+from typehaus.joints.ridge_plate import ridge_plate_of, ridge_seat_point, roof_tie_role
 from typehaus.model.enums import ConnectorKind
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.assembly_material import assembly_structure_material
 from typehaus.resolve.construction_assemblies import _is_concrete as is_concrete_assembly
-from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.model import ResolvedModel, ResolvedRoof
 from typehaus.resolve.sweep import interpolate_along, straight_sweep_band
 
-_M_TO_FT = 3.280839895013123
+__all__ = ["BearingConnection", "BearingSupport", "ContinuousBearing", "authored_tie_gaps",
+           "bearing_connections", "bearing_line_tags", "continuous_bearing_members", "is_treated"]
+
 #: How far below a support's top a member underside may read and still sit on it — float
 #: and rounding slack (a joist on a tilted beam is seated exactly, ``resolve/floor_tilt.py``);
 #: a hung end is a full carrier depth below, so 1/8" cannot admit one.
@@ -72,6 +77,8 @@ class BearingSupport:
     #: A concrete wall: the member seats on its PT sill return, which is the plate a
     #: ``JoistSpec.sill_tie`` ties to (Minn. R. 1309.0404).
     sill: bool = False
+    #: A beveled ridge plate: both joists of a pair land on it at one station, one tie each.
+    ridge_plate: bool = False
 
 
 @dataclass(frozen=True)
@@ -108,6 +115,10 @@ class BearingConnection:
     #: floor names a ``JoistSpec.sill_tie``; ``None`` is the house's hurricane-tie rule.
     sill_tie: str | None = None
     sill_ties: int = 0
+    #: The catalog role of the tie this end takes (see ``ridge_plate.roof_tie_role``).
+    tie_role: str = ROLE_HURRICANE_TIE
+    #: Set where two ends share a station and each takes its own tie (a ridge plate).
+    member_key: str | None = None
 
 
 def _support(model: ResolvedModel, tag: str, fallback_half_width_m: float):
@@ -390,6 +401,12 @@ def _derive(model: ResolvedModel, rules: UpliftTieRules, *, authored: bool):
                 seen.add(support.tag)
                 if on_walls or not support.wall or (sill_tie and support.sill):
                     supports.append(support)
+        plate = ridge_plate_of(resolved) if isinstance(resolved, ResolvedRoof) else None
+        if plate is not None:
+            supports.append(BearingSupport(
+                tag=f"{plate.parent_uid}:{plate.child_key}", p0=plate.p0, p1=plate.p1,
+                top_z_m=plate.z1_m, half_width_m=cross_section(plate.profile).width_m / 2.0,
+                ridge_plate=True))
         if not supports:
             continue
         sisters = [m for m in resolved.members if m.category == "sister_joist"]
@@ -412,6 +429,12 @@ def _derive(model: ResolvedModel, rules: UpliftTieRules, *, authored: bool):
                     ties.append((crossing[0], support))
             for point, support in ties:
                 key_point = (round(point[0] / grid_m), round(point[1] / grid_m))
+                member_key = None
+                seat_z = _seat_z(point, support)
+                if support.ridge_plate:
+                    member_key = f"{member.parent_uid}:{member.child_key}"
+                    key_point = (*key_point, member.child_key)
+                    point, seat_z = ridge_seat_point(member, support.half_width_m)
                 on_sill = sill_tie is not None and support.sill
                 # A sistered pack takes a sill tie on each OUTER face: nothing fits between plies.
                 plies = min(1 + _sisters_at(member, point, sisters, grid_m), 2) if on_sill else 1
@@ -420,10 +443,12 @@ def _derive(model: ResolvedModel, rules: UpliftTieRules, *, authored: bool):
                     assembly_tag=resolved.tag, member_profile=member.profile,
                     member_category=member.category, key_point=key_point,
                     support_treated=support.treated,
-                    point_m=(point[0], point[1]), z_m=_seat_z(point, support),
+                    point_m=(point[0], point[1]), z_m=seat_z,
                     axis=axis_of(support.p0, support.p1),
                     sill_tie=sill_tie[0] if on_sill else None,
-                    sill_ties=sill_tie[1] * plies if on_sill else 0), support
+                    sill_ties=sill_tie[1] * plies if on_sill else 0,
+                    tie_role=roof_tie_role(resolved, member, support.treated),
+                    member_key=member_key), support
 
 
 def _sisters_at(member, point: tuple, sisters: list, tolerance_m: float) -> int:
@@ -438,50 +463,3 @@ def _sisters_at(member, point: tuple, sisters: list, tolerance_m: float) -> int:
         if min(math.dist(point, sister.p0), math.dist(point, sister.p1)) <= tolerance_m:
             count += 1
     return count
-
-
-@dataclass(frozen=True)
-class ContinuousBearing:
-    """A member bedded on its support for its whole length, and the stations along it.
-
-    ``bearing_connections`` above locates member ENDS, which is the right rule for every
-    rafter, truss heel and joist in the house and the wrong one for a beam that never leaves
-    its wall — catlin's ridge is the case, and nothing else in the load path covers it.
-    """
-
-    category: str
-    profile: str
-    storey: str
-    length_m: float
-    #: One station per tie, in metres from ``p0``. Ends included: a run is a fencepost count,
-    #: not a division — which is why this is a list of places and not just a number.
-    stations_m: tuple[float, ...]
-    p0: tuple
-    p1: tuple
-    z_m: float
-    member_key: str = ""
-
-
-def continuous_bearing_members(model: ResolvedModel, rules: UpliftTieRules) -> list:
-    """Every continuously supported member, with its ties' stations.
-
-    The pitch is the house's own; both it and the part are commodity choices recorded in
-    ``houses/catlin/notes/ridge_beam_detail.md``, not an engineered uplift design. This
-    derives a *schedule* — how many ties, where — and no part of it reads a wind field,
-    computes a tributary uplift, or compares one against the tie's allowable.
-    """
-    pitch_m = max(rules.continuous_bearing_pitch_ft, 0.5) * FT_TO_M
-    storeys = member_storeys(model)
-    found = []
-    for member in model.all_members():
-        if not member.continuously_supported:
-            continue
-        count = int(math.floor(member.length_m / pitch_m + 1e-9)) + 1
-        found.append(ContinuousBearing(
-            category=member.category, profile=member.profile,
-            storey=storeys.get(member.parent_uid, ""),
-            length_m=member.length_m,
-            stations_m=tuple(min(index * pitch_m, member.length_m) for index in range(count)),
-            p0=member.p0, p1=member.p1, z_m=member.z0_m,
-            member_key=f"{member.parent_uid}:{member.child_key}"))
-    return found

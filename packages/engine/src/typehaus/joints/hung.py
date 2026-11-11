@@ -13,10 +13,12 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
+from typehaus.hardware.catalog import ROLE_RIDGE_PLATE_STRAP, ROLE_RIDGE_TIE_STRAP
 from typehaus.hardware.config import HangerDetectionRules
 from typehaus.hardware.plan_geometry import centerline_endpoints, distance_point_to_segment
 from typehaus.joints.bearing import is_treated
 from typehaus.joints.model import axis_of
+from typehaus.joints.ridge_plate import ridge_plate_of
 from typehaus.quantities import M_PER_FT, M_PER_IN
 from typehaus.resolve.framing.profiles import cross_section, is_sawn_lumber
 from typehaus.resolve.model import ResolvedModel
@@ -304,6 +306,43 @@ class RidgeStraps:
     #: The carrier's TOP: a strap crosses over the peak, not through the beam.
     z_m: float
     axis: str
+    #: Which strap: LSTA24 over a hung ridge, LSTA18 over a beveled plate.
+    role: str = ROLE_RIDGE_TIE_STRAP
+
+
+def _pair_stations(values: list[float]) -> tuple[list[float], int]:
+    """Opposing ends matched by station, and how many had no opposite number."""
+    paired: list[float] = []
+    unpaired, index = 0, 0
+    while index < len(values):
+        if (index + 1 < len(values)
+                and values[index + 1] - values[index] <= _PAIR_STATION_TOL_M):
+            # The two ends may be trimmed to opposite faces of the beam and never share a
+            # plan point; the strap sits between them, which is their mean station.
+            paired.append((values[index] + values[index + 1]) / 2.0)
+            index += 2
+        else:
+            unpaired += 1
+            index += 1
+    return paired, unpaired
+
+
+def _plate_straps(model: ResolvedModel) -> list:
+    """One strap per opposing pair over a beveled ridge plate (TJ-4000 R14/R14W)."""
+    found = []
+    for roof in model.roofs:
+        plate = ridge_plate_of(roof)
+        if plate is None:
+            continue
+        rafters = [m for m in roof.members if m.category == "rafter"]
+        paired, unpaired = _pair_stations(sorted(_station_along(m.p1, plate) for m in rafters))
+        if paired:
+            found.append(RidgeStraps(
+                carrier_tag=f"{plate.parent_uid}:{plate.child_key}",
+                stations_m=tuple(paired), unpaired=unpaired, p0=plate.p0, p1=plate.p1,
+                z_m=roof.ridge_z_m, axis=axis_of(plate.p0, plate.p1),
+                role=ROLE_RIDGE_PLATE_STRAP))
+    return found
 
 
 def ridge_strap_pairs(model: ResolvedModel, rules: HangerDetectionRules) -> list:
@@ -323,19 +362,7 @@ def ridge_strap_pairs(model: ResolvedModel, rules: HangerDetectionRules) -> list
 
     found = []
     for carrier_tag in sorted(stations):
-        values = sorted(stations[carrier_tag])
-        paired: list[float] = []
-        unpaired, index = 0, 0
-        while index < len(values):
-            if (index + 1 < len(values)
-                    and values[index + 1] - values[index] <= _PAIR_STATION_TOL_M):
-                # The two ends are trimmed to opposite faces of the beam and never share a
-                # plan point; the strap sits between them, which is their mean station.
-                paired.append((values[index] + values[index + 1]) / 2.0)
-                index += 2
-            else:
-                unpaired += 1
-                index += 1
+        paired, unpaired = _pair_stations(sorted(stations[carrier_tag]))
         if not paired:
             continue
         carrier = carriers.get(carrier_tag)
@@ -345,7 +372,7 @@ def ridge_strap_pairs(model: ResolvedModel, rules: HangerDetectionRules) -> list
             carrier_tag=carrier_tag, stations_m=tuple(paired), unpaired=unpaired,
             p0=carrier.p0, p1=carrier.p1, z_m=carrier.z1_m,
             axis=axis_of(carrier.p0, carrier.p1)))
-    return found
+    return found + _plate_straps(model)
 
 
 def point_along(carrier_p0: tuple, carrier_p1: tuple, station_m: float) -> tuple:

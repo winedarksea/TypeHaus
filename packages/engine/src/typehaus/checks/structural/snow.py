@@ -19,6 +19,7 @@ from typehaus.checks.structural.published import graded_against_published
 from typehaus.engineering import item_id
 from typehaus.findings import Finding, Result
 from typehaus.model.enums import ConnectorKind
+from typehaus.resolve.framing.roof_ridge_closure import RIDGE_PLATE_CONNECTION
 
 _M_PER_FT = 0.3048
 
@@ -246,6 +247,7 @@ def rafter_span(ctx: CheckContext) -> list[Finding]:
                 (roof.tag,), _horizontal_run_ft(roof, rafters),
                 _authored_row(ctx, roof.tag), profile,
                 spacing_in=spacing_in, demand_psf=_ROOF_SNOW_PSF + _ROOF_DEAD_PSF,
+                high_end=_high_end(roof, rafters),
                 fix="author Roof.published_span with the manufacturer's span-table row for "
                     "this joist at this spacing, or leave the roof to an engineered design"))
             continue
@@ -259,6 +261,14 @@ def rafter_span(ctx: CheckContext) -> list[Finding]:
     if not out:
         out.append(_unknown(cid, "the model resolves no roofs"))
     return out
+
+
+def _high_end(roof, rafters) -> str | None:
+    """How the resolved rafters are held at the ridge: "bearing", "hung", or no ridge member."""
+    if not any(member.category == "ridge_beam" for member in roof.members):
+        return None
+    connection = rafters[0].connection or ""
+    return "bearing" if connection.startswith(RIDGE_PLATE_CONNECTION) else "hung"
 
 
 def _authored_row(ctx: CheckContext, tag: str):

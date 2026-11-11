@@ -1,3 +1,15 @@
+## The joists bear on a beveled ridge plate; ForteWEB is gone (2026-11-10, owner)
+
+- `RF-HOUSE`'s joists hung on 38 LSSRs off a 16" LVL. TJ-4000 July 2025 p.13 wants a support beam or
+  wall at the high end; the old note read "ridge beam" where the guide says ridge **board**.
+- Now TJ R14W: `RB-HOUSE` is a shop-milled LSL double-bevel plate over the continuous wall. Gravity
+  goes through wood, ~1,000 hanger nails drop, and foam runs past the ridge.
+- Span, ridge bearing and uplift are all table reads. H8 at both ends (NW-D217 bars the H2.5A above
+  3:12), LSTA18 for thrust, closures, plate screws. Unbalanced lateral stays ungraded.
+- The eave plate doubled for the H8's row: the whole plane rose 1-1/2", the attic line returned to
+  `1 1/2" + x/2`, and `DU-S-ERV-HP-FEED` moved back to x=12" to clear a new stud.
+- Swap-back to hangers is a data edit (`notes/ridge_beam_detail.md`).
+
 ## Grounding and bonding modelled; the Ufer the old comment claimed did not exist (2026-11-10, owner)
 
 - No footing carried a bar, and the wall steel sits behind XPS, so the comment's "Ufer" was not

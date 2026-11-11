@@ -42,10 +42,10 @@ GRID_FT = 18.0
 ATTIC_FULL_BAY_FT = 17.812
 WEST_TRUSS_FT = 17.917
 EAST_BAY_FT = 17.792
-# What stands on the attic deck at the eave is a 2x6 laid FLAT — RAFTER_PLATE, 1 1/2"
-# on 3/4" of subfloor — so the bearing datum is 20'-2 1/4" rather than 25'-0". PLATE_FT is
-# that 2.25" expressed in feet above the attic datum.
-PLATE_FT = 2.25 / 12.0
+# What stands on the attic deck at the eave is a double 2x6 laid FLAT — RAFTER_PLATE, 3"
+# on 3/4" of subfloor — so the bearing datum is 20'-3 3/4" rather than 25'-0". PLATE_FT is
+# that 3.75" expressed in feet above the attic datum.
+PLATE_FT = 3.75 / 12.0
 # 6:12 over an 18'-0" half-run: 9'-0" of rise, plus the cladding lap the footprint takes.
 RIDGE_OVER_ATTIC_FT = 9.0
 ATTIC_ELEV_FT = 20.0
@@ -362,11 +362,10 @@ def test_ridge_beam_member_and_condition(catlin_model):
     beam = beams[0]
     # NOT RIDGE_BEAM_DEFAULT: the house authors its own section. See
     # test_ridge_beam_depth.py and plan/storeys/attic.py's derivation.
-    assert beam.profile == "2-1.75x16 LVL"
+    assert beam.profile == "5.5x3.5 LSL"
     section = cross_section(beam.profile)
-    # Its top is flush with the trimmed rafters' tops at its faces, so the LSTA24 over each
-    # pair crosses it rather than running through its corners.
-    top = roof.ridge_z_m - (6.0 / 12.0) * (section.width_m / 2.0)
+    # Its peak meets the joist underside on the centreline: the joists bear on the bevel.
+    top = roof.ridge_z_m - inch(11.875).meters * (1.25 ** 0.5)
     assert beam.z1_m == pytest.approx(top)
     assert beam.z0_m == pytest.approx(top - section.depth_m)
     assert any(c.kind.value == "roof_ridge" for c in catlin_model.conditions)

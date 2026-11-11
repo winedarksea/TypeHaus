@@ -742,7 +742,8 @@ def _flat_plate_wall(height_m: float) -> ResolvedWall:
 def _plan_plate(wall_frame: str = "plate"):
     layer = Layer(name="plate", material_ref="spf", thickness=inch(3.5),
                   function=LayerFunction.STRUCTURE,
-                  framing=FramingSpec(member="2x4", wall_frame=wall_frame))
+                  framing=FramingSpec(member="2x4", wall_frame=wall_frame,
+                                      double_top_plate=wall_frame != "plate"))
     return SimpleNamespace(
         library=SimpleNamespace(resolve_assembly=lambda tag: SimpleNamespace(layers=(layer,)))
     )

@@ -279,7 +279,7 @@ on sheathing. If the reviewer is willing to count it, HeadLOK is the better scre
 ### 3.5 The demand, and the three ratios
 
 The site's own basis — **115 mph V_ult, Exposure B, Risk Category II** — at the building's
-mean roof height of 25.52 ft (2026-11-01, decision #109's plane), worked in full in `notes/board_batten_girt_span.md` §2-§4 and
+mean roof height of 25.52 ft (2026-11-01, decision #109's plane; 25.64 ft and 18.27 psf since the 1-1/2" rise of 2026-11-10, a 97.5 lb crossing), worked in full in `notes/board_batten_girt_span.md` §2-§4 and
 recomputed identically here because the panel and the screw carry **one** suction:
 
 ```

@@ -223,18 +223,17 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
     # --- plates ---------------------------------------------------------------
     top_start, top_end = _wall_top_elevations(rw)
     if spec.wall_frame == "plate":
-        # One flat course and nothing else. `_append_plates` with `top_plates=0` emits
-        # exactly the sole plate, and does it through the same corner-lap rule every other
-        # wall's sole plate uses — so two plates meeting at an L still lap rather than
-        # doubling in the corner square. The course fills the wall: for this layer the
-        # wall's height IS the lumber's thickness, which is why it is read off the wall
-        # rather than assumed to be 1 1/2".
-        course_h = min(top_start, top_end) - z0
+        # Flat courses and nothing else: one, or two for a doubled plate. They go through the
+        # same corner-lap rule every other wall's sole plate uses, so two plates meeting at an
+        # L still lap rather than doubling in the corner square. The courses fill the wall:
+        # for this layer the wall's height IS the lumber's thickness.
+        extra_courses = _top_plate_count(spec) - 1
+        course_h = (min(top_start, top_end) - z0) / (1 + extra_courses)
         plate_only: list[FramedMember] = []
         # `openings` is passed for symmetry with the framed arm below; a `wall_frame ==
         # "plate"` layer is a single flat course with no openings hosted in it, so the
         # break list is provably empty today.
-        _append_plates(plate_only, rw, plate_member, p0, d, axis_len, z0, course_h, 0,
+        _append_plates(plate_only, rw, plate_member, p0, d, axis_len, z0, course_h, extra_courses,
                        top_start, top_end, structure_polygon, start_role, end_role,
                        thickness, neighbour_insets_start, neighbour_insets_end,
                        openings=openings, post_bands=post_bands,

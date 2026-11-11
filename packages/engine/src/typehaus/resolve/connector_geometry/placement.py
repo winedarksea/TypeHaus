@@ -9,7 +9,7 @@ from typing import cast
 
 from shapely.geometry import Point, Polygon
 
-from typehaus.hardware.catalog import ROLE_RIDGE_TIE_STRAP
+from typehaus.hardware.catalog import ROLE_RIDGE_PLATE_STRAP, ROLE_RIDGE_TIE_STRAP
 from typehaus.hardware.plan_geometry import centerline_endpoints
 from typehaus.joints.model import Joint
 from typehaus.model import Beam, Connector, Element, KneeBrace
@@ -367,6 +367,8 @@ def _body_at_joint(index: ConnectorPlacementIndex, solid: ResolvedSolid,
         slope = _roof_slope(index, references)
         # Level across the beam top, which is flush with the rafter tops at its faces.
         member_width_m = index.support_width(references[0], tangent) if references else None
+    elif part.startswith("LSTA") and joint is not None and joint.role == ROLE_RIDGE_PLATE_STRAP:
+        slope = _roof_slope(index, references)  # folded over the peak: no flat across a beam
     elif part.startswith("THD"):
         beam = _connected_beam(index, references)
         wall = next((index.model.wall(tag) for tag in references

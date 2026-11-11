@@ -43,10 +43,11 @@ not modeled ones), and every other edit made for this certification cites it.
 
 ## Roof structure — §2.5
 
-**Gap:** the house uses a structural ridge beam (`RB-HOUSE`), which eliminates rafter
-thrust and is the standard's own "engineered alternative" to collar ties — but that is
-documented only as engineering narrative in `notes/ridge_beam_detail.md`, not a stamped PE
-letter.
+**Gap:** the ridge is a supported ridge: the joists bear on a beveled plate (`RB-HOUSE`) over a
+continuous wall, which is the standard's own "engineered alternative" to collar ties
+**provided the strap and joist connections resist the lateral thrust**. There is no thrust at
+the eave only on that condition (`notes/roof_rafter_span_read.md` §4). It is documented as
+engineering narrative, not a stamped PE letter.
 
 **Fix:** procurement — a PE letter citing §2.5/Appendix B1, covering the ridge-beam
 alternative.

@@ -105,13 +105,21 @@ def test_every_rafter_is_tied_at_its_eave(catlin_model_ro, connections) -> None:
     assert len(stiffeners) == 2 * len(rafters)
 
     tied = [c for c in connections if c.member_category == "rafter"]
-    assert len(tied) == len(rafters)
-    # The ridge end is HUNG on RB-HOUSE and billed an LSSR by hangers.py, so only the attic
-    # side walls appear here — never the ridge beam. FOUR of them since 2026-08-29: W-A-W1
+    assert len(tied) == 2 * len(rafters)  # both ends bear: the eave, and the ridge plate
+    # FOUR side walls since 2026-08-29, plus the ridge plate since 2026-11-10: W-A-W1
     # split at N-A-W2 (y=22'-4") when the guest studio walled its storage pocket off, so the
     # west knee wall is W-A-W1 north of that line and W-A-W1B south of it. Same wall, same
     # rafters landing on it, one more tag.
-    assert {c.support_tag for c in tied} == {"W-A-W1", "W-A-W1B", "W-A-E1", "W-A-E2"}
+    assert {c.support_tag for c in tied} == {"W-A-W1", "W-A-W1B", "W-A-E1", "W-A-E2",
+                                             "CABM01AAAA:ridge-beam"}
+
+
+def test_an_ijoist_roof_above_3_in_12_takes_h8_not_h25a(rows) -> None:
+    """NW-D217 note 1: the H2.5A family stops at 3:12 on a roof I-joist."""
+    joist_rows = [r for r in rows if r["scope"] == "rafter bearing"
+                  and r["size"] == "11.875 TJI 230"]
+    assert {r["part_number"] for r in joist_rows} == {"H8"}
+    assert sum(r["count"] for r in joist_rows) == 76
 
 
 def test_a_truss_roof_is_tied_at_both_ends_of_every_truss(catlin_model_ro,
@@ -255,7 +263,8 @@ def test_a_tie_row_names_the_bearings_it_came_from(rows) -> None:
             assert "o.c. plus both ends" in row["basis"]
 
 
-def test_a_beam_that_bears_everywhere_is_tied_at_a_pitch_not_at_its_ends(rows) -> None:
+def test_a_beam_that_bears_everywhere_is_tied_at_a_pitch_not_at_its_ends(
+        catlin_hung_model) -> None:
     """RB-HOUSE had no uplift connector at all until 2026-08-28.
 
     ``bearing_connections`` ties member ENDS, and the ridge does not meaningfully have two —
@@ -264,7 +273,7 @@ def test_a_beam_that_bears_everywhere_is_tied_at_a_pitch_not_at_its_ends(rows) -
     which name the eave line. So the member carrying the whole roof down the centre of
     the house was in neither. Ten is the fencepost count, not 36/4.
     """
-    ridge = [row for row in rows
+    ridge = [row for row in uplift_rows(catlin_hung_model, UpliftTieRules())
              if row["part_number"] == "H2.5A" and row["scope"].endswith("continuous bearing")]
     assert len(ridge) == 1
     assert ridge[0]["size"] == "2-1.75x16 LVL"  # 14 -> 16 with the 6:12 pitch
@@ -594,8 +603,8 @@ def test_a_house_with_no_bearing_declarations_reports_nothing(swinburne_model) -
     assert uplift_rows(swinburne_model, RULES) == []
 
 
-def test_the_rules_are_configurable_without_editing_the_derivation(catlin_model_ro,
-                                                                   rows) -> None:
+def test_the_rules_are_configurable_without_editing_the_derivation(catlin_model_ro, rows,
+                                                                   catlin_hung_model) -> None:
     """The per-bearing multiplier is the main cost lever, so it must live in the config.
 
     Ties are the largest count in this module by an order of magnitude. A schedule that ties
@@ -617,5 +626,6 @@ def test_the_rules_are_configurable_without_editing_the_derivation(catlin_model_
         return sum(row["count"] for row in source
                    if row["part_number"] == "H2.5A"
                    and row["scope"].endswith("continuous bearing"))
-    tighter = uplift_rows(catlin_model_ro, UpliftTieRules(continuous_bearing_pitch_ft=2.0))
-    assert pitched(tighter) == 19 and pitched(rows) == 10
+    tighter = uplift_rows(catlin_hung_model, UpliftTieRules(continuous_bearing_pitch_ft=2.0))
+    assert pitched(tighter) == 19
+    assert pitched(uplift_rows(catlin_hung_model, UpliftTieRules())) == 10

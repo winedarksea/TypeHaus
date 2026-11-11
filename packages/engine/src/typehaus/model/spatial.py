@@ -312,6 +312,9 @@ class Roof(Element):
     # ``checks/structural/published.graded_against_published_capacity`` for the grading. A
     # roof that authors these takes its uplift capacity OUT of the engineering register.
     published_uplift: tuple[PublishedCapacity, ...] = ()
+    # How a rafter roof's joists meet an authored ridge Beam: ``"hung"`` on face-mount hangers,
+    # or ``"bearing"`` on the Beam as a double-beveled plate over a continuous wall.
+    ridge_seat: Literal["hung", "bearing"] = "hung"
     # A trussed roof's bearing reactions off the fabricator's sealed design, one row per
     # bearing — the demand ``structural.truss_reactions`` grades the chain below the heel at.
     published_reactions: tuple[PublishedReaction, ...] = ()

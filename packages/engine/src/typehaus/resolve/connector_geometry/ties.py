@@ -63,6 +63,7 @@ class StrapDimensions:
 
 
 STRAPS = {
+    "LSTA18": StrapDimensions(1.25, 18.0, 20),
     "LSTA24": StrapDimensions(1.25, 24.0, 20),
     "MSTA12": StrapDimensions(1.25, 12.0, 18),
     "CS16": StrapDimensions(1.25, 0.0, 16),
@@ -397,7 +398,7 @@ def tie_mesh(part: str, *, member_width_in: float | None = None,
             if not math.isfinite(strap_length_in) or strap_length_in <= 0.0:
                 raise ValueError("CS16 cut length must be finite and positive")
             dimensions = StrapDimensions(dimensions.width_in, strap_length_in, dimensions.gauge)
-        if normalized == "LSTA24":
+        if normalized in ("LSTA18", "LSTA24"):
             return _flat_or_ridge_strap(dimensions, slope_radians, member_width_in or 0.0)
         return _flat_or_ridge_strap(dimensions, 0.0)
     if normalized in ANGLES:

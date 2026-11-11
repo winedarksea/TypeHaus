@@ -150,6 +150,11 @@ heel with the rafters' true plumb depth, decision #109, and dropped 0.973" — e
     ridge 9.195477 m  = 30.1689 ft
     h = (20.8668 + 30.1689) / 2 = 25.5178 ft
 
+> **Re-struck 2026-11-10** for the double eave plate, which lifts the whole roof plane 1-1/2":
+> eave 20.9918 ft, ridge 30.2939 ft, h = 25.6428 ft, K_z = 0.669872, q_h = 19.2773 psf,
+> zone 5 30.4581 psf strength, **18.2749 psf ASD** (d/c 0.315 against 58). The
+> crossing is 97.47 lb. The working below is at the prior plane; the method is unchanged.
+
 K_z, Table 26.10-1, Exposure B (z_g = 1200 ft, alpha = 7):
 
     K_z = 2.01 (z/z_g)^(2/alpha) = 2.01 x (25.5178/1200)^(2/7)

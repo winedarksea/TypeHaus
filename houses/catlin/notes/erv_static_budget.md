@@ -1038,6 +1038,13 @@ The STUDY path rises 0.0005 in., **0.3332 -> 0.3337 in.** (radial + 4.6 Pa valve
 plenum's 0.5 Pa + the supply trunks), 0.0945 in. under `DU-B-ERV-R-PLAY`'s governing
 **0.4282 in.** Delivery is unchanged: **204.6 cfm** against 203.0, **+1.6 cfm**.
 
+### 10.17 HP-FEED back on x=12" (2026-11-10)
+
+The 1-1/2" roof rise grew `W-A-STU-N` a real stud at x=16", in the deck leg's way at x=15.4", so
+the leg returns to x=12" with a 3.4" jog in the bay. One more 90 on 100 cfm: governing supply
+**0.4282 -> 0.432 in.**, off the curve 206 - (0.032 / 0.1) x 5 = **204.4 cfm**, against R403.5's
+203.0: **+1.4 cfm**.
+
 ### 10.5 The thermal penalty of the legs (hand-worked)
 
 Both legs run through conditioned space in 2" of closed-cell elastomeric (two 1" layers of

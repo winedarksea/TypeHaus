@@ -48,6 +48,7 @@ from typehaus.hardware.catalog import (
     ROLE_GABLE_TRUSS_ANCHOR,
     ROLE_HURRICANE_TIE,
     ROLE_LATERAL_TIE_PLATE,
+    ROLE_RIDGE_PLATE_SCREW,
     ROLE_SILL_TIE,
     hardware_by_model,
     hardware_for_role,
@@ -55,6 +56,7 @@ from typehaus.hardware.catalog import (
 from typehaus.hardware.config import GableEndTieRules, UpliftTieRules
 from typehaus.joints.bearing import bearing_connections, continuous_bearing_members
 from typehaus.joints.gable import gable_end_ties
+from typehaus.joints.ridge_plate import ridge_plate_screws
 from typehaus.joints.sills import tie_plate_stations, tie_plate_walls
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff.hardware_row import hardware_row
@@ -92,21 +94,23 @@ def bearing_uplift_tie_rows(model: ResolvedModel, rules: UpliftTieRules) -> list
     groups: dict = {}
     for connection in connections:
         key = (connection.member_category, connection.member_profile,
-               _exposure(connection), connection.sill_tie or "", connection.sill_ties)
+               _exposure(connection), connection.sill_tie or "", connection.sill_ties,
+               connection.tie_role)
         entry = groups.setdefault(key, {"by_storey": Counter(), "supports": Counter()})
         entry["by_storey"][connection.storey] += (connection.sill_ties if connection.sill_tie
                                                   else rules.ties_per_bearing)
         entry["supports"][connection.support_tag] += 1
 
     rows = []
-    for (category, profile, exposure, sill_tie, per_end), entry in sorted(groups.items()):
+    for (category, profile, exposure, sill_tie, per_end, tie_role), entry in sorted(
+            groups.items()):
         by_storey, supports = entry["by_storey"], entry["supports"]
         if sill_tie:
             item = hardware_by_model(sill_tie)
             note = (" — joist to concrete-wall sill, Minn. R. 1309.0404 (listed capacity "
                     "against the Table R404.1(1) top-of-wall reaction)")
         else:
-            item = hardware_for_role(ROLE_HURRICANE_TIE, exposure=exposure)
+            item = hardware_for_role(tie_role, exposure=exposure)
             note = ("" if exposure == EXPOSURE_DRY else
                     " — preservative-treated bearings, so a G185/ZMAX tie under IRC R317.3.1")
         per = per_end if sill_tie else rules.ties_per_bearing
@@ -166,6 +170,17 @@ def continuous_bearing_tie_rows(model: ResolvedModel, rules: UpliftTieRules) -> 
             basis=(f"{rules.continuous_bearing_pitch_ft:g}' o.c. plus both ends along "
                    f"{runs} of {profile} bearing on a wall for its whole length")))
     return rows
+
+
+def ridge_plate_screw_rows(model: ResolvedModel, rules: UpliftTieRules) -> list:
+    """The screws holding a beveled ridge plate to the wall under it, two per joist bay."""
+    item = hardware_for_role(ROLE_RIDGE_PLATE_SCREW)
+    return [hardware_row(
+        item, scope="ridge plate", size=run.profile, count=run.count,
+        part_number=item.part_number_by_length_in[6.0],
+        basis=(f"{rules.ridge_plate_screws_per_bay} per bay x {run.bays} bays, staggered "
+               f"between the joists, plate into the wall's double top plate"))
+        for run in ridge_plate_screws(model, rules)]
 
 
 # --- rule 4: lateral tie plates ------------------------------------------------------
@@ -247,6 +262,7 @@ def uplift_rows(model: ResolvedModel, rules: UpliftTieRules,
     return [
         *bearing_uplift_tie_rows(model, rules),
         *continuous_bearing_tie_rows(model, rules),
+        *ridge_plate_screw_rows(model, rules),
         *gable_end_tie_rows(model, gable_rules),
         *post_base_rows(model, rules),
         *post_base_anchor_rows(model, rules),

@@ -133,8 +133,7 @@ def test_the_capacity_question_moved_rather_than_vanished(ctx) -> None:
     text = " ".join(f.message for f in house)
     assert "R802.11" in text
     assert "212 lb" in text
-    for member in ("H2.5A", "LSSR"):
-        assert member in text
+    assert "H8" in text
 
 
 def test_every_roof_is_covered_at_its_bearings(findings) -> None:

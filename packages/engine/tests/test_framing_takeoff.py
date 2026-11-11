@@ -415,6 +415,8 @@ _BOM_COVERAGE: dict[str, tuple[str, ...]] = {
     # The resolved layer stack per room: ``sheet_goods``'s "ceiling" scopes bill off it
     # (``takeoff/ceiling_areas``).
     "ceilings": ("sheet_goods",),
+    # A free wall end's board; its paint rides ``envelope_layers``' coating rows.
+    "wall_ends": ("sheet_goods",),
     # Derived interior millwork — the stools and the shelf banks — scheduled as a cut list
     # in rough stock. Unpriced by design (see ``UNPRICED_VIEWS``), but not unread: this is
     # the section that says how much oak the mill has to saw.

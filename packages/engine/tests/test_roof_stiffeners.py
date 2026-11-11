@@ -30,13 +30,13 @@ def _rafter(axis: tuple[float, float], slope: float) -> FramedMember:
 @pytest.mark.parametrize("slope", [4 / 12, 6 / 12, -4 / 12, 0.0])
 def test_stiffener_vertices_follow_the_rafter_planes(axis, slope):
     rafter = _rafter(axis, slope)
-    stiffeners = bearing_stiffeners((rafter,), hung_at_ridge=True)
+    stiffeners = bearing_stiffeners((rafter,), stiffened_at_ridge=True)
     assert {m.child_key for m in stiffeners} == {
         "rafter-005-eave-stiffener", "rafter-005-ridge-stiffener"}
     for stiffener in stiffeners:
         solid = member_solid(stiffener)
         assert isinstance(solid, GSweep)
-        assert math.dist(stiffener.p0, stiffener.p1) == pytest.approx(inch(4).meters)
+        assert math.dist(stiffener.p0, stiffener.p1) == pytest.approx(inch(6.5).meters)
         # On the 1 1/4" bottom flange, 1/8" short of the top one (TJ-4000 p.29).
         assert stiffener.length_m == pytest.approx(inch(11.875 - 1.25 - 1.375).meters)
         assert stiffener.material == "struct-1-plywood"
@@ -68,17 +68,17 @@ def test_stiffener_vertices_follow_the_rafter_planes(axis, slope):
         assert z_high == pytest.approx(max(z for _, _, z in vertices))
 
 
-def test_only_hung_i_joists_get_ridge_stiffeners():
+def test_only_i_joists_seated_on_a_ridge_get_ridge_stiffeners():
     rafter = _rafter((1.0, 0.0), 0.5)
-    assert len(bearing_stiffeners((rafter,), hung_at_ridge=False)) == 1
-    assert bearing_stiffeners((replace(rafter, profile="2x12"),), hung_at_ridge=True) == ()
+    assert len(bearing_stiffeners((rafter,), stiffened_at_ridge=False)) == 1
+    assert bearing_stiffeners((replace(rafter, profile="2x12"),), stiffened_at_ridge=True) == ()
     generic = replace(rafter, profile="11.875 I-joist")
-    assert len(bearing_stiffeners((generic,), hung_at_ridge=True)) == 2
+    assert len(bearing_stiffeners((generic,), stiffened_at_ridge=True)) == 2
 
 
 def test_level_member_without_end_elevations_stays_level():
     rafter = replace(_rafter((0.0, 1.0), 0.0), z0_end_m=None, z1_end_m=None)
-    for stiffener in bearing_stiffeners((rafter,), hung_at_ridge=True):
+    for stiffener in bearing_stiffeners((rafter,), stiffened_at_ridge=True):
         assert stiffener.z0_m == stiffener.z0_end_m == pytest.approx(
             rafter.z0_m + inch(1.25).meters)
         assert stiffener.z1_m == stiffener.z1_end_m == pytest.approx(
@@ -87,4 +87,4 @@ def test_level_member_without_end_elevations_stays_level():
 
 def test_degenerate_rafter_has_no_drawable_stiffener():
     rafter = _rafter((1.0, 0.0), 0.5)
-    assert bearing_stiffeners((replace(rafter, p1=rafter.p0),), hung_at_ridge=True) == ()
+    assert bearing_stiffeners((replace(rafter, p1=rafter.p0),), stiffened_at_ridge=True) == ()

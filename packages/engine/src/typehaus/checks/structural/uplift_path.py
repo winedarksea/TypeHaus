@@ -61,6 +61,7 @@ from typehaus.joints.bearing import (
 from typehaus.joints.gable import gable_end_ties
 from typehaus.joints.hung import hung_connections
 from typehaus.joints.posts import catalogued_post_sizes, is_squash_block
+from typehaus.joints.ridge_plate import is_steep_ijoist_roof
 from typehaus.joints.sills import anchored_sill_returns
 from typehaus.model.enums import ConnectorKind
 from typehaus.model.structure import Beam, Post
@@ -86,6 +87,8 @@ _CHECK_ID = "structural.uplift_path_coverage"
 #: Feet per metre, for the plan extents R802.11's span is read off.
 _M_PER_FT = 0.3048
 _CONFIG = DEFAULT_HARDWARE_TAKEOFF_CONFIG
+#: NW-D217 note 1's ties, limited to 3:12 or less on a roof I-joist.
+_LOW_SLOPE_TIES = frozenset({"H2.5A", "H2.5T", "RT7A", "RT8A"})
 _RULES = _CONFIG.uplift
 
 #: The connector kinds that make a seated end's uplift connection. A plan that authors one
@@ -626,6 +629,13 @@ def _published_uplift_findings(ctx: CheckContext, roof, published: tuple) -> lis
 
     out: list[Finding] = []
     for row in published:
+        if row.member in _LOW_SLOPE_TIES and rafters and is_steep_ijoist_roof(
+                roof, rafters[0].profile):
+            out.append(_advisory_unknown(
+                f"roof {roof.tag} authors a {row.member} row, but Weyerhaeuser NW-D217 note 1 "
+                f"limits that tie on a roof I-joist to 3:12 or less and bars nailing it into "
+                f"the flange", (roof.tag,)))
+            continue
         out.append(graded_against_published_capacity(
             "structural.uplift_capacity",
             _joint_subject(roof.tag, row),

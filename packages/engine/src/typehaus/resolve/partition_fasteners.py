@@ -29,6 +29,7 @@ from typehaus.hardware.config import PartitionDeflectionRules
 from typehaus.hardware.plan_geometry import point_in_ring, segment_crossing
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.framing.roof_ridge_closure import RIDGE_CLOSURE_CONNECTION
 from typehaus.resolve.model import ResolvedModel
 from typehaus.resolve.partition import (
     bearing_ref_tags,
@@ -216,7 +217,8 @@ def _structures_over(model: ResolvedModel, wall: Any,
         if not roof.footprint or not point_in_ring(midpoint, roof.footprint):
             continue
         members = tuple(m for m in roof.members
-                        if m.category in rules.screwable_roof_categories)
+                        if m.category in rules.screwable_roof_categories
+                        and m.connection != RIDGE_CLOSURE_CONNECTION)
         out.append((members, _spacing_in(roof_structure_framing(model, roof))))
     return [entry for entry in out if entry[0]]
 

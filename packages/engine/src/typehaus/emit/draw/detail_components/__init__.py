@@ -90,6 +90,7 @@ from typehaus.emit.draw.detail_components.opening import (
 )
 from typehaus.emit.draw.detail_components.ridge import (
     lvl_ridge_hanger,
+    ridge_beveled_plate,
     ridge_overlay_for_slice,
 )
 from typehaus.emit.draw.detail_components.sauna import (
@@ -176,6 +177,7 @@ __all__ = [
     "grade_line",
     "interior_slab_drip_flashing",
     "lvl_ridge_hanger",
+    "ridge_beveled_plate",
     "material_legend",
     "path_from_steps",
     "ridge_overlay_for_slice",

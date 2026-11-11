@@ -204,9 +204,9 @@ def test_the_ijoist_roof_is_a_published_table_read_and_the_trussed_ones_are_not(
     assert house.authority is Authority.PRESCRIPTIVE
     assert house.engineering_item is None
     assert "TJ-4000" in house.message
-    # The comparison is the HORIZONTAL run, 17'-9 3/4". The sloped length is 19.91' and
-    # would fail an 18'-4" row that the roof in fact passes.
-    assert "17.81'" in house.message and "18.33'" in house.message
+    # The comparison is the HORIZONTAL run to the centreline, 17'-11 1/2". The sloped length
+    # is 20.08' and would fail an 18'-4" row that the roof in fact passes.
+    assert "17.96'" in house.message and "18.33'" in house.message
 
     trussed = [f for f in findings if "RF-HOUSE" not in f.element_tags]
     assert {f.engineering_item for f in trussed} == {"rafter/RF-GARAGE",

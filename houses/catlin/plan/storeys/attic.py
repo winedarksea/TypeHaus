@@ -151,7 +151,7 @@ WALLS = [
     # scope both clauses to the *required* floor area (70 sf), not the whole room, and
     # R304.3 says floor under 5'-0" simply does not count rather than disqualifying the
     # room. With that read the knee walls have no job left, so they are gone: what stands
-    # here now is a single 2x6 laid FLAT on the attic subfloor, over the second-storey wall
+    # here now is a double 2x6 laid FLAT on the attic subfloor, over the second-storey wall
     # line, and the rafters birdsmouth straight onto it. See RAFTER_PLATE.
     #
     # ** TAGS AND UIDS ARE PRESERVED ** — test_uplift_takeoff.py asserts the tag set, and
@@ -163,18 +163,18 @@ WALLS = [
     # enclosure's edge on this line.
     #
     # base_elevation is ABSOLUTE — ft(20, 0.75) is the 20'-0" storey datum plus 3/4" subfloor; `top` is a height
-    # above it, so the plate top is 20'-2 1/4" and the roof's bearing_z_m follows.
+    # above it, so the plate top is 20'-3 3/4" and the roof's bearing_z_m follows.
     # The alignment moves the axis 1/2" outboard of the plate's own outer face, which puts
     # the plate over the STUDS below rather than out on the sheathing line: EXT_2X6
     # is datumed at sheathing-ext, so its 5.5" studs run 0.5"..6.0" in from the node line
     # and the plate now covers exactly that.
     Wall(uid="CAW106AAAA", tag="W-A-E1", start_node="N-A-SE", end_node="N-A-E1",
          assembly="RAFTER_PLATE", alignment=face("plate-ext", inch(0.5)),
-         base_elevation=ft(20, 0.75), top=inch(1.5),
+         base_elevation=ft(20, 0.75), top=inch(3.0),
          structural_role=StructuralRole.BEARING, stacks_on="W-S-E1"),
     Wall(uid="CAW107AAAA", tag="W-A-E2", start_node="N-A-E1", end_node="N-A-NE",
          assembly="RAFTER_PLATE", alignment=face("plate-ext", inch(0.5)),
-         base_elevation=ft(20, 0.75), top=inch(1.5),
+         base_elevation=ft(20, 0.75), top=inch(3.0),
          structural_role=StructuralRole.BEARING, stacks_on="W-S-E2"),
     # SPLIT AT N-A-PK-W (y=22'-4") — the third split this change forces, and
     # the third for one reason: W-A-STU-N (storeys/attic_studio.py) tees in here, and a
@@ -195,16 +195,15 @@ WALLS = [
     # is y 9'-0"..22'-4", so each piece names the one actually under it.
     Wall(uid="CAW108AAAA", tag="W-A-W1", start_node="N-A-NW", end_node="N-A-PK-W",
          assembly="RAFTER_PLATE", alignment=face("plate-ext", inch(0.5)),
-         base_elevation=ft(20, 0.75), top=inch(1.5),
+         base_elevation=ft(20, 0.75), top=inch(3.0),
          structural_role=StructuralRole.BEARING, stacks_on="W-S-W1"),
     Wall(uid="8PJW960EK6", tag="W-A-W1B", start_node="N-A-PK-W", end_node="N-A-SW",
          assembly="RAFTER_PLATE", alignment=face("plate-ext", inch(0.5)),
-         base_elevation=ft(20, 0.75), top=inch(1.5),
+         base_elevation=ft(20, 0.75), top=inch(3.0),
          structural_role=StructuralRole.BEARING, stacks_on="W-S-W3"),
-    # Center bearing wall under the ridge, full length. NOT a partition: RB-HOUSE bears on
-    # it continuously, making this a structural-ridge roof (rafters simply span ridge->knee
-    # wall, no thrust on the 5' knee walls). Opening this line without a beam would dump
-    # ~1.5 klf of thrust into the knee walls. 2x6 to match the bearing stack below (W-S-C1/C3).
+    # Center bearing wall under the ridge, full length. NOT a partition: the joists bear on it
+    # through the RB-HOUSE plate, so they simply span ridge to eave. Opening this line without
+    # a beam would dump ~1.5 klf of thrust on the eaves. 2x6 to match the stack below (W-S-C1/C3).
     Wall(uid="CAW109AAAA", tag="W-A-C1", start_node="N-A-S2", end_node="N-A-C1",
          assembly="INT_2X6_BRG_HALF", top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.BEARING, stacks_on="W-S-C1"),
@@ -341,7 +340,7 @@ OPENINGS = [
              member='2-ply 9.5" LVL',
              span=ft(3, 2),
              load_psf=65.0,
-             condition="the row is trusses on an exterior wall over a 32' width with 2' overhang (65 psf x 18' + 80 plf of wall = 1,250 plf) and this header stands on the x=18' line under RB-HOUSE (18' of rafters x 50 psf = 900 plf, plus ~60 plf of partition); roof only, deflection L/240 live, L/180 total; dry use; uniform load only; see notes/header_spans_r602_7.md section 5a")),
+             condition="the row is trusses on an exterior wall over a 32' width with 2' overhang (65 psf x 18' + 80 plf of wall = 1,250 plf) and this header stands on the x=18' line under the RB-HOUSE ridge plate (18' of rafters x 50 psf = 900 plf, plus ~60 plf of partition); roof only, deflection L/240 live, L/180 total; dry use; uniform load only; see notes/header_spans_r602_7.md section 5a")),
     # The band wall's opening onto the stair head — the source's 2'-7 1/2" gap at
     # x 18'-6"..21'-1 3/4", the only way between the east loft and the stair vestibule.
     # Purchased 30x80 (custom width) Murphy bookcase door, west hinged and swinging into the
@@ -610,20 +609,21 @@ ROOFS = [
          pitch=Pitch(6, 12),
          bearing_refs=("W-A-E1", "W-A-E2", "W-A-W1", "W-A-W1B"),
          assembly="ROOF", overhang=ft(0), ridge_direction="y",
-         # A PRESCRIPTIVE read, not an engineered design (since 2026-09-11). The joist's own
-         # maker publishes a horizontal clear span for exactly this joist at exactly this
-         # spacing and load, and reading it closes the question — see
-         # notes/roof_rafter_span_read.md. The 19'-3" this house used to quote was an
-         # interpolation to 35 psf that snow.py's own no-interpolation rule forbids; the
-         # honest read of the published table is 18'-4".
+         # The joists bear on the RB-HOUSE plate (TJ-4000 R14W), not hang off it. Swap-back to
+         # hangers: notes/ridge_beam_detail.md.
+         ridge_seat="bearing",
+         # A PRESCRIPTIVE read: the joist's maker publishes this clear span, and p.13 requires
+         # a support beam or wall at the high end, which this seat gives it. See
+         # notes/roof_rafter_span_read.md.
          published_span=PublishedSpan(
-             source="Weyerhaeuser TJ-4000 Trus Joist TJI Joist Specifier's Guide (Jul 2019) p.12, \"Maximum Horizontal Clear Spans\" (roof)",
+             source="Weyerhaeuser TJ-4000 Trus Joist TJI Joist Specifier's Guide (Jul 2025) p.13, \"Maximum Horizontal Clear Spans\" (roof)",
              table="11-7/8\" TJI 230 at 24\" o.c., 40 psf snow + 15 psf dead, low slope: 18'-4\"",
              member="11.875 TJI 230",
              span=ft(18, 4),
              spacing=inch(24),
              load_psf=55.0,
-             condition="the row is a HORIZONTAL clear span and this roof's run is 17'-9 3/4\" against a 19.91' sloped length; UNRESOLVED — the guide's high-end support note is transcribed two contradictory ways in this house and these joists HANG off RB-HOUSE on 38 LSSR2.37Z hangers rather than bearing on it, so ForteWEB owns the last word (notes/roof_rafter_span_read.md section 3); the hangers carry 1,090 lb with web stiffeners against a ~980 lb reaction (TJ-4000 Jul 2025 p.15, LSSR2.37Z on TJI 230, SLOPED ONLY — the 1,060 read here until 2026-09-14 is the skewed row and this ridge is straight; the number is the joist's end bearing, not the hanger's steel, which is why C-C's 1,565 does not apply), re-struck from ridge_beam_detail.md's 600 lb at 4:12; deflection L/240; the eave oversail and the birdsmouth are not in the row"),
+             high_end="bearing",
+             condition="the row is a HORIZONTAL clear span, read here against the full run to the ridge centreline; the high end bears on a beveled plate over a continuous wall (TJ-4000 p.32 R14W), minimum 1-3/4\" end bearing; deflection L/240; the eave birdsmouth is not in the row"),
          # ** THE UPLIFT CAPACITY IS A PRESCRIPTIVE READ TOO, SINCE 2026-09-14, AND THAT
          # RETIRED `lateral_uplift/RF-HOUSE` FROM THE ENGINEERING REGISTER. ** The item had
          # been UNKNOWN and seal-blocked on the reasoning that this engine derives no wind
@@ -635,32 +635,30 @@ ROOFS = [
          #
          # The demand both rows are graded against is **212 lb per connection**: exposure B,
          # 24" o.c., 36' span (the row covering this roof's 35.6'), Vult 115, pitch >= 5:12.
-         # Footnote b's 15 psf dead-load allowance is already netted out of it, and the
-         # value is the full CORNER-ZONE figure — footnote d's 0.75 is not claimed here.
-         #
-         # Both joints clear it about threefold, which is the reason this is a lookup and
-         # not a design: nothing about this roof is near a limit.
+         # Footnote b's 15 psf dead-load allowance is netted out, and the value is the full
+         # CORNER-ZONE figure; footnote d's 0.75 is not claimed. NW-D217 note 1 bars the H2.5A
+         # above 3:12, so one H8 serves both ends. See notes/uplift_load_path.md.
          published_uplift=(
              PublishedCapacity(
-                 source="Simpson Strong-Tie C-C-2024 p.288, the H/TSP table, SPF/HF half",
-                 table="the eave tie; H2.5A, SPF/HF (SG 0.42), uplift 615 lbf at 160%",
-                 member="H2.5A",
-                 capacity_lb=615.0,
+                 source="Simpson Strong-Tie C-C-2026 pp.299-301, H8 row; Weyerhaeuser NW-D217",
+                 table="the eave tie; H8, SPF/HF, uplift 710 lbf, double top plates, detail 13",
+                 member="H8",
+                 capacity_lb=710.0,
                  demand_lb=212.0,
                  spacing=inch(24),
                  wind_speed_mph=115.0,
                  exposure="B",
-                 condition="the 615 is the SPF/HF column and this roof's plates are SPF — General Note e picks the column by the LOWEST specific gravity in the connection, so a single southern-pine member in the joint would not move it back to the DF/SP 700; the row assumes the full published nail schedule driven into 1-1/2\" of plate, and neither the nailing nor the tie's own installation is modelled here"),
+                 condition="10d (0.148\" x 3\") through a web stiffener running 1\" past the plate (NW-D217), onto the double 2x6 plate; neither the nailing nor the stiffener reach is modelled here"),
              PublishedCapacity(
-                 source="Simpson Strong-Tie C-C-2026 p.178, sloped-only LSSR rows",
-                 table="the ridge hanger; LSSR2.37Z, uplift 510 lbf (identical in the skewed row)",
-                 member="LSSR",
-                 capacity_lb=510.0,
+                 source="Simpson Strong-Tie C-C-2026 pp.299-301, H8 row; Weyerhaeuser NW-D217",
+                 table="the ridge tie; H8, SPF/HF, uplift 710 lbf",
+                 member="H8",
+                 capacity_lb=710.0,
                  demand_lb=212.0,
                  spacing=inch(24),
                  wind_speed_mph=115.0,
                  exposure="B",
-                 condition="uplift on this hanger does not vary with the header nail length the way its DOWNLOAD does (1,175 / 1,565 / 1,870 lbf across the three schedules) and it is the same in the sloped and skewed rows; web stiffeners are required with this hanger regardless, and above 1/4:12 they are beveled — neither is checked here. The LSTA24 over the peak carries the rafter-pair tension across the ridge and is a separate load path, not part of this number"),
+                 condition="NW-D217 draws the H8 at a low-end seat; using it on the high-end bevel is this house's reading of a joist-to-plate row. 10d through the web stiffener. The LSTA18 over the peak carries the thrust and is a separate load path, not part of this number"),
          ),
          # The barge-board answer for a roof that cannot have a barge board.
          # With zero overhang the formed corner trim is the only piece standing at the rake,
@@ -679,57 +677,17 @@ ROOFS = [
 ]
 
 BEAMS = [
-    # Ridge beam over the center wall line: 2 plies of 1.75x16 LVL (3.5x16), 36'-0".
+    # The ridge plate over the center wall line: 5-1/2" wide x 3-1/2" LSL, milled to a 6:12
+    # double bevel (TJ-4000 R14W), 36'-0". Still a Beam so the load path and the header rule
+    # keep reading it. It spans nothing: W-A-C* hold it end to end, so it is bought as three
+    # 12s. Each joist gets 2-3/4" of bearing against 1-3/4". Edges 2-1/8"; the underside lands
+    # 16.78" under the peak. Shop-milled: the 3.07" bevel cut is past a 7-1/4" saw, and sawn 4x
+    # would shrink and twist once ripped. `structural.ridge_bearing` grades the seat.
+    # notes/ridge_beam_detail.md carries the swap-back to hangers.
     #
-    # ** IT SPANS NOTHING, AND ITS DEPTH IS A HANGER DIMENSION, NOT A BENDING ONE. **
-    # W-A-C1/C1B/C2 hold it up end to end, so there is no clear span between the gables and
-    # no moment to size for — ply count here buys strength nobody is asking for. It was
-    # 3-1.75x11.875 until 2026-08-28, and that section was wrong in BOTH directions: three
-    # plies answered no load, and 11 7/8" was too SHALLOW. The 5.25" was never an
-    # engineering result either — resolve/framing/roof.py's RIDGE_BEAM_DEFAULT recorded it
-    # as "approximating the user's 6x12 ask".
-    #
-    # What sets the depth: the resolver trims each rafter back to this beam's face, where it
-    # is cut PLUMB and hung on an LSSR, and sets the beam's TOP flush with the rafter tops
-    # there — 0.875" under the peak at 6:12 — so the LSTA24 over each pair lies across it.
-    # An 11 7/8" I-joist on a 6:12 plane has a 13.28" plumb face (11.875 x 1.1180), and that
-    # is all the beam has to reach (R802.3's "cut end of the rafter"). 14" would clear by
-    # 0.72"; the 16" bought clears by 2.72". `structural.ridge_beam_depth` reports it.
-    # (Until 2026-10-14 the top was pinned to the peak, which stood the beam 0.875" proud of
-    # the rafters, put the straps through it, and made 14" read 0.15" short.)
-    #
-    # The beam hangs ~16 7/8" under the ridge line, so the clear height reads ~9'-1 1/2"
-    # between beams and ~7'-8 5/8" directly under it.
-    #
-    # THREE THINGS A FRAMER HAS TO BE TOLD, all in notes/ridge_beam_detail.md:
-    #  - 3.5" is only defensible because the demand is small. LSSR header fasteners are
-    #    (14) 10d x 2.5" and 28 rafter PAIRS land opposite each other, so two mirrored
-    #    patterns overlap through a 1.5" band and the usual escape — clinch the tips on the
-    #    back face — is blocked by the other hanger. RE-SOURCED 2026-09-14: the short nail
-    #    needs no ER-280 sec 3.2.2 derivation — C-C-2026 p.178 publishes (14) 0.148 x 1.5
-    #    sloped-only on DF/SP at 1,175 lb outright. And 1,565 is hanger-side-only: on a TJI
-    #    the connection is the joist's end bearing, 1,090 lb (TJ-4000 p.15), against ~980 lb
-    #    per rafter at 6:12 — d/c 0.90, not "room several times over". The width is still
-    #    available; the margin belongs to the joist, not to the nail.
-    #  - Beveled web stiffeners both sides at this end (Weyerhaeuser H5, APA D710 10c), and
-    #    an LSTA24 over the peak per pair — H5S makes the strap mandatory above 3:12.
-    #  - The two plies are stitched with SDW22 3-3/4" (Trus Joist SE-N101 Assembly A, side
-    #    loaded, 4 per hanger, one face). A 3-ply would want 5" screws from BOTH faces.
-    #
-    # ORDERED IN THREE 12s, NOT ONE 36. A beam supported everywhere may be butt-spliced over
-    # any bearing point, so the takeoff buys the run off the ordinary ladder instead of as one
-    # over-length special order that needs a crane: 36'-0" divides exactly three ways with no
-    # waste, and a 12' ply of this section is about 92 lb — two framers, no lift. Same lineal
-    # feet, same money. `FramedMember.continuously_supported` is derived from bearing_refs
-    # actually reaching, not claimed. STAGGER the two plies: cut one stick of ply B in half so
-    # it reads 6+12+12+6, putting its joints at 6'/18'/30' against ply A's 12'/24'. Same three
-    # sticks per ply, no offcut, and the beam is continuous in one ply at every station.
-    #
-    # bearing_refs names all THREE segments of the line, which is what the framing schedule
-    # prints and what the continuity derivation measures. W-A-C1B (y 5'-7"..9'-4") was
-    # missing until 2026-08-28; nothing read it then, and the splice rule reads it now.
+    # bearing_refs names every segment of the line, which the continuity derivation measures.
     Beam(uid="CABM01AAAA", tag="RB-HOUSE", start_node="N-A-S2",
-         end_node="N-A-N1", size="2-1.75x16 LVL",
+         end_node="N-A-N1", size="5.5x3.5 LSL",
          bearing_refs=("W-A-C1", "W-A-C1B", "W-A-C2", "W-A-C2M", "W-A-C2B")),
 ]
 

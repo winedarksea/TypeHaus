@@ -221,6 +221,9 @@ class PublishedSpan(HausModel):
     #: A load table's Allowable Total Load in plf at ``span`` (centre to centre of supports,
     #: the plies already multiplied in). Read against the derived line load, not a psf.
     capacity_plf: float | None = None
+    #: How a roof-joist row's high end is held: ``"bearing"`` on a wall or support beam, or
+    #: ``"hung"`` off a beam's face. ``structural.rafter_span`` refuses a mismatch.
+    high_end: Literal["bearing", "hung"] | None = None
 
 
 class PublishedCapacity(HausModel):

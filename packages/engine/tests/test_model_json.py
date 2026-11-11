@@ -259,11 +259,11 @@ def test_roofs_carry_bearing_datum_and_layer_edge_setbacks(catlin_payload):
     assert garage["layer_edge_setbacks"] == []  # truss roof deferred
 
 
-def test_ridge_beam_member_carries_multi_ply_width(catlin_payload):
+def test_ridge_member_carries_its_section(catlin_payload):
     roof = next(r for r in catlin_payload["roofs"] if r["tag"] == "RF-HOUSE")
     beams = [m for m in roof["members"] if m["category"] == "ridge_beam"]
     assert len(beams) == 1
-    assert beams[0]["plies"] == 2
+    assert beams[0]["plies"] == 1
     assert beams[0]["shape"] == "rect"
 
 

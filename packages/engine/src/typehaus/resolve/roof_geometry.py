@@ -343,8 +343,17 @@ def apply_to_roof_wall_tops(model: ResolvedModel) -> None:
     model.walls = resolved
 
 
-def ridge_beam_top_m(roof: ResolvedRoof, beam_width_m: float) -> float:
-    """A ridge beam's top: flush with the hung rafters' tops at its faces.
+def ridge_seat_plumb_m(model: ResolvedModel, roof: ResolvedRoof) -> float | None:
+    """The joists' plumb depth when they BEAR on the ridge member, else ``None`` (hung)."""
+    if getattr(model.plan.by_tag(roof.tag), "ridge_seat", "hung") != "bearing":
+        return None
+    return roof_structure_plumb_depth_m(model, roof)
+
+
+def ridge_beam_top_m(roof: ResolvedRoof, beam_width_m: float,
+                     bearing_plumb_m: float | None = None) -> float:
+    """A ridge member's top: at the rafter underside on the centreline when they bear on it,
+    else flush with the hung rafters' tops at its faces.
 
     The rafters are trimmed back half the beam's width, so the roof plane meets each face
     ``(width / 2) x pitch`` below the peak. A beam topped at the peak stands proud of them by
@@ -353,6 +362,8 @@ def ridge_beam_top_m(roof: ResolvedRoof, beam_width_m: float) -> float:
     """
     if roof.form != "gable":
         return roof.ridge_z_m
+    if bearing_plumb_m is not None:
+        return roof.ridge_z_m - bearing_plumb_m
     pitch = math.sqrt(max(roof_slope_factor(roof) ** 2 - 1.0, 0.0))
     return roof.ridge_z_m - beam_width_m / 2.0 * pitch
 
@@ -376,7 +387,8 @@ def ridge_beam_soffits(model: ResolvedModel) -> dict[tuple[str, str], float]:
             continue
         beam = found[0]
         section = cross_section(beam.size)
-        soffit = ridge_beam_top_m(roof, section.width_m) - section.depth_m
+        soffit = (ridge_beam_top_m(roof, section.width_m, ridge_seat_plumb_m(model, roof))
+                  - section.depth_m)
         for ref in beam.bearing_refs:
             out[(roof.tag, ref)] = soffit
     return out

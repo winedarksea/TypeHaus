@@ -107,7 +107,7 @@ def test_catlin_panels_bill_once_and_by_the_sheet(catlin_model_ro) -> None:
     stiff = rips[("bearing stiffener rip", "struct-1-plywood")]
     # 7/8" plies since 2026-10-31: TJ-4000 p.29's TJI 230 minimum (decision #109).
     assert stiff["thickness_in"] == pytest.approx(0.875, abs=1e-3)
-    assert int(stiff["sheets"]) == 2
+    assert int(stiff["sheets"]) == 3  # 2 until the rip went 4" -> 6-1/2" for the H8 (NW-D217)
 
     # ...and neither is also billed as lineal feet of an 8-ft stick.
     assert not [row for row in framing if row["category"] in ("buck", "bearing_stiffener")]

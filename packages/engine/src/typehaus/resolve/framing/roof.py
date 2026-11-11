@@ -13,13 +13,12 @@ Two declarative framing modes, chosen per roof assembly's STRUCTURE ``FramingSpe
   so the plane this module frames to is already final. The two end trusses are gable-end
   trusses carrying the rake overhang (``roof_gable``).
 
-Also resolves an authored ridge :class:`Beam` (WP4) for *rafter* roofs. The beam's TOP is
-pinned to the roof plane at the peak — the deck bears across it — and each rafter is trimmed
-back by half the beam's width, so the rafter is cut plumb at the beam's FACE and hangs there
-on a sloped hanger, its own top ending half-a-width-times-the-slope below the beam's. It does
-not land on top of the beam. What that geometry demands of the beam's DEPTH is
-``checks/structural/ridge.py``'s business. A truss roof carries its own ridge, so it emits no
-ridge Beam advisory.
+Also resolves an authored ridge :class:`Beam` (WP4) for *rafter* roofs, seated one of two ways
+(``Roof.ridge_seat``). **Hung:** each rafter is trimmed back by half the beam's width, cut plumb
+at the beam's face and hung there on a sloped hanger, with the beam's top flush with the rafter
+tops. **Bearing:** the rafters run to the centreline and sit on the Beam as a double-beveled
+plate (``roof_ridge_closure``). ``checks/structural/ridge.py`` grades both. A truss roof carries
+its own ridge, so it emits no ridge Beam advisory.
 """
 
 from __future__ import annotations
@@ -41,6 +40,11 @@ from typehaus.resolve.framing.roof_gable import (
     is_gable_end_position,
     truss_member,
 )
+from typehaus.resolve.framing.roof_ridge_closure import (
+    RIDGE_PLATE_CONNECTION,
+    plate_ring,
+    ridge_closures,
+)
 from typehaus.resolve.framing.roof_stiffeners import bearing_stiffeners
 from typehaus.resolve.framing.tables import DEFAULT_SPACING
 from typehaus.resolve.model import (
@@ -53,11 +57,15 @@ from typehaus.resolve.model import (
 from typehaus.resolve.roof_bearing import resolved_bearings
 from typehaus.resolve.roof_geometry import (
     ridge_beam_top_m,
+    ridge_seat_plumb_m,
     roof_slope_factor,
     roof_structure_framing,
+    roof_structure_plumb_depth_m,
 )
 
-_RAFTER_CONNECTION = "ridge:adjustable-slope-hanger;eave:birdsmouth"
+_RAFTER_CONNECTION = {"hung": "ridge:adjustable-slope-hanger;eave:birdsmouth",
+                      "bearing": f"{RIDGE_PLATE_CONNECTION};eave:birdsmouth"}
+_RIDGE_DETAIL = {"hung": "lvl-ridge-hanger", "bearing": "ridge-beveled-plate"}
 # How much of a beam's run its declared bearing walls may miss and still read as
 # continuous support. A stud bay — below it the beam is bridging a gap no wider than
 # the plate already spans, above it there is a real span the refs are not describing.
@@ -76,21 +84,30 @@ def frame_roofs(model: ResolvedModel) -> list[Finding]:
         rafters = _roof_rafters(model, roof)
         beam_member, beam_findings = _resolve_ridge_beam(model, roof)
         findings.extend(beam_findings)
-        if beam_member is not None:
-            beam_width_m = cross_section(beam_member.profile).width_m
-            rafters = tuple(_trim_rafter_to_beam(r, roof, beam_width_m) for r in rafters)
-            model.conditions.append(_ridge_condition(roof, beam_member))
-        rafters = _seat_rafters(model, roof, rafters)
-        rafters = tuple(replace(r, connection=_RAFTER_CONNECTION) for r in rafters)
         element = _roof_element(model, roof)
+        seat = element.ridge_seat if element is not None else "hung"
+        if beam_member is not None:
+            if seat == "hung":
+                beam_width_m = cross_section(beam_member.profile).width_m
+                rafters = tuple(_trim_rafter_to_beam(r, roof, beam_width_m) for r in rafters)
+            model.conditions.append(_ridge_condition(roof, beam_member, seat))
+        rafters = _seat_rafters(model, roof, rafters)
+        rafters = tuple(replace(r, connection=_RAFTER_CONNECTION[seat]) for r in rafters)
         blocks = eave_blocking(roof, element.eave_blocking if element else None, rafters,
                                _eave_plumb_cuts(model, roof), _bearing_plate_top(model, roof))
+        if seat == "bearing" and beam_member is not None:
+            blocks += ridge_closures(roof, rafters, beam_member,
+                                     roof_structure_plumb_depth_m(model, roof), _pitch(roof))
         members = (rafters + bearing_stiffeners(rafters, beam_member is not None) + blocks
                    + ((beam_member,) if beam_member is not None else ()))
         # ``replace`` (not reconstruction) so bearing_z_m / layer_edge_setbacks survive.
         framed.append(replace(roof, members=members))
     model.roofs = framed
     return findings
+
+
+def _pitch(roof: ResolvedRoof) -> float:
+    return math.sqrt(max(roof_slope_factor(roof) ** 2 - 1.0, 0.0))
 
 
 def _roof_element(model: ResolvedModel, roof: ResolvedRoof) -> Roof | None:
@@ -366,11 +383,15 @@ def _resolve_ridge_beam(
     beam, start, end = found
     section = cross_section(beam.size)
     depth = section.depth_m
-    z1 = ridge_beam_top_m(roof, section.width_m)
+    plumb = ridge_seat_plumb_m(model, roof)
+    z1 = ridge_beam_top_m(roof, section.width_m, plumb)
     length = math.hypot(end[0] - start[0], end[1] - start[1])
+    bearing = plumb is not None and roof.form == "gable"
     member = FramedMember(
         beam.uid, "ridge-beam", "ridge_beam", beam.size, start, end, z1 - depth, z1, length,
         continuously_supported=_continuously_supported(model, beam, start, end),
+        connection=RIDGE_PLATE_CONNECTION if bearing else None,
+        section_ring=plate_ring(section.width_m, depth, _pitch(roof)) if bearing else None,
     )
     return member, []
 
@@ -433,9 +454,10 @@ def _trim_rafter_to_beam(rafter: FramedMember, roof: ResolvedRoof,
     return replace(rafter, p1=new_p1, length_m=new_length, z0_end_m=new_bottom, z1_end_m=new_top)
 
 
-def _ridge_condition(roof: ResolvedRoof, beam_member: FramedMember) -> BoundaryCondition:
+def _ridge_condition(roof: ResolvedRoof, beam_member: FramedMember,
+                     seat: str) -> BoundaryCondition:
     assemblies = (roof.assembly,)
     return BoundaryCondition(
-        kind=ConditionKind.ROOF_RIDGE, assemblies=assemblies, detail="lvl-ridge-hanger",
+        kind=ConditionKind.ROOF_RIDGE, assemblies=assemblies, detail=_RIDGE_DETAIL[seat],
         element_tags=(roof.tag, beam_member.parent_uid), key=f"roof_ridge:{roof.tag}",
     )

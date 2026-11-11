@@ -211,12 +211,10 @@ EXT_2X6 = Assembly(
 # `wall_frame="plate"` is what stops the framing solver treating 1 1/2" of wall as a stud
 # wall and framing a top plate inside the bottom plate with negative-length studs between.
 #
-# **`double_top_plate=False` here is NOT the double plate the 24" o.c. roof needs** — that
-# one belongs to the stud wall underneath (EXT_2X6, where it is now stated rather
-# than defaulted, with the reasoning). This element is a single flat 2x6 bearing plate lying
-# on the attic subfloor; doubling *it* would raise the deck plane, the ridge and every PV
-# clamp by 1 1/2" and answer a question nobody asked. The load path is rafter -> this plate
-# -> 3/4" subfloor -> the second storey's DOUBLE top plate -> studs at 16" o.c.
+# **Doubled because the H8's published row is to double top plates** (C-C-2026 detail 13).
+# One plate would have to mix a stud-to-sill row with NW-D217's joist row. The H8 goes on the
+# plates' inside face; the outside is sheathed. The load path is rafter -> these plates ->
+# 3/4" subfloor -> the second storey's double top plate -> studs at 16" o.c.
 RAFTER_PLATE = Assembly(
     tag="RAFTER_PLATE",
     layers=(
@@ -226,7 +224,7 @@ RAFTER_PLATE = Assembly(
               # with — but it is stated to match EXT_2X6 so the junction solver
               # sees one rule at N-A-NE/NW/SE/SW rather than two that disagree.
               framing=FramingSpec(member="2x6", wall_frame="plate", corner_style="4-stud",
-                                  double_top_plate=False, layout_origin="line")),
+                                  double_top_plate=True, layout_origin="line")),
     ),
     source="2026-08-29 attic redesign: rafter bearing plate laid flat on the attic deck",
 )

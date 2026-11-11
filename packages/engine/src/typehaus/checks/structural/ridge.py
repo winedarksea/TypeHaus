@@ -37,10 +37,14 @@ from typehaus.findings import Finding, Result, Severity
 from typehaus.model.structure import Beam
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.framing.roof_ridge_closure import RIDGE_PLATE_CONNECTION
 from typehaus.resolve.model import ResolvedRoof
 from typehaus.resolve.roof_geometry import roof_slope_factor
 
 CHECK_ID = "structural.ridge_beam_depth"
+BEARING_CHECK_ID = "structural.ridge_bearing"
+#: TJ-4000 Jul 2025 p.13 general notes: minimum end bearing without web stiffeners.
+_MIN_END_BEARING_IN = 1.75
 
 # The beam soffit may sit this far ABOVE the plumb cut's bottom and still pass. It is not a
 # construction tolerance — it is the arithmetic's own noise, since both elevations are
@@ -83,6 +87,8 @@ def _grade(ctx: CheckContext, roof: ResolvedRoof) -> list[Finding]:
     if not beams or not rafters:
         return []  # a truss roof, or a roof with no authored ridge — not this check's business
     beam = beams[0]
+    if beam.connection == RIDGE_PLATE_CONNECTION:
+        return []  # no hanger to back; ``structural.ridge_bearing`` grades the seat
     tag = _ridge_beam_tag(ctx, beam.parent_uid) or beam.parent_uid
     tags = (roof.tag, tag)
     factor = roof_slope_factor(roof)
@@ -121,3 +127,44 @@ def _grade(ctx: CheckContext, roof: ResolvedRoof) -> list[Finding]:
                  f"{margin_in:.4g}\" to spare — {needed_in:.4g}\" needed below the beam "
                  f"top, {section.depth_m / M_PER_IN:g}\" provided ({detail})"),
         element_tags=tags, result=Result.PASS)]
+
+
+@check(Tier.STRUCTURAL, BEARING_CHECK_ID)
+def ridge_bearing(ctx: CheckContext) -> list[Finding]:
+    """Do joists seated on a beveled ridge plate actually bear on it (TJ-4000 R14/R14W)?"""
+    out: list[Finding] = []
+    for roof in ctx.model.roofs:
+        plate = next((m for m in roof.members if m.connection == RIDGE_PLATE_CONNECTION), None)
+        rafters = [m for m in roof.members if m.category == "rafter"]
+        if plate is not None and rafters:
+            out.append(_grade_bearing(ctx, roof, plate, rafters))
+    return out
+
+
+def _grade_bearing(ctx: CheckContext, roof: ResolvedRoof, plate, rafters) -> Finding:
+    tag = _ridge_beam_tag(ctx, plate.parent_uid) or plate.parent_uid
+    tags = (roof.tag, tag)
+    half_in = cross_section(plate.profile).width_m / 2.0 / M_PER_IN
+    axis = 0 if roof.ridge_direction == "y" else 1
+    centre = plate.p0[axis]
+    bearing_in = min(half_in - abs(m.p1[axis] - centre) / M_PER_IN for m in rafters)
+    gap_in = max(abs(plate.z1_m - m.z0_end_m) / M_PER_IN for m in rafters)
+    problems = []
+    if bearing_in < _MIN_END_BEARING_IN - 1e-6:
+        problems.append(f"{bearing_in:.3g}\" of end bearing against "
+                        f"{_MIN_END_BEARING_IN:g}\" required")
+    if gap_in > _TOL_IN:
+        problems.append(f"the plate's top misses the joist underside by {gap_in:.3g}\"")
+    if not plate.continuously_supported:
+        problems.append("the plate's bearing walls do not run its whole length")
+    if problems:
+        return Finding(
+            severity=Severity.ERROR, check_id=BEARING_CHECK_ID, result=Result.FAIL,
+            message=f"ridge plate {tag} under {roof.tag}: " + "; ".join(problems),
+            element_tags=tags, code_ref="TJ-4000 Jul 2025 pp.13, 32")
+    return Finding(
+        severity=Severity.WARN, check_id=BEARING_CHECK_ID, result=Result.PASS,
+        message=(f"{roof.tag}'s {len(rafters)} joist ends bear {bearing_in:.3g}\" on ridge "
+                 f"plate {tag} ({_MIN_END_BEARING_IN:g}\" required), on a plate continuously "
+                 f"supported along its run"),
+        element_tags=tags, code_ref="TJ-4000 Jul 2025 pp.13, 32")

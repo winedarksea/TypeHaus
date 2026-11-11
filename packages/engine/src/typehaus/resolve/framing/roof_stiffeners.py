@@ -8,12 +8,12 @@ from typehaus.quantities import inch
 from typehaus.resolve.framing.profiles import cross_section, panel_profile
 from typehaus.resolve.model import FramedMember
 
-# One member is the PAIR: two 7/8" plies, each ripped 4" wide. 7/8" is TJ-4000 (Jul 2025)
-# p.29's minimum for a TJI 230/360 web stiffener (7/8" x 2 5/16"); 4" is the LSSR hanger's
-# (catlin/notes/ridge_beam_detail.md §3). One spec at both ends. The pair stays a single
-# block centred on the web, preserving its sheet-goods takeoff and plywood detail hatch.
+# One member is the PAIR: two 7/8" plies, each ripped 6-1/2" wide. 7/8" is TJ-4000 (Jul 2025)
+# p.29's minimum for a TJI 230/360 web stiffener (7/8" x 2 5/16"); 6-1/2" is NW-D217's 1" past
+# a 5-1/2" plate, for the H8's nails. One spec at both ends. The pair stays a single block
+# centred on the web, preserving its sheet-goods takeoff and plywood detail hatch.
 _PLY_IN = 0.875
-_STIFFENER_PROFILE = panel_profile(4.0, 2 * _PLY_IN, "stiffener")
+_STIFFENER_PROFILE = panel_profile(6.5, 2 * _PLY_IN, "stiffener")
 #: TJ-4000 p.29 / D710A 10h: tight to the bearing flange, 1/8" minimum gap at the other.
 _TOP_GAP_IN = 0.125
 _STIFFENER_MATERIAL = "struct-1-plywood"
@@ -21,11 +21,11 @@ _MINIMUM_RAFTER_RUN_M = 1e-9
 
 
 def bearing_stiffeners(
-    rafters: tuple[FramedMember, ...], hung_at_ridge: bool,
+    rafters: tuple[FramedMember, ...], stiffened_at_ridge: bool,
 ) -> tuple[FramedMember, ...]:
-    """One beveled pair per I-joist eave, and per ridge end hung on a beam.
+    """One beveled pair per I-joist eave, and per ridge end on a beam or plate.
 
-    TJ-4000 p.31 R5 requires the eave pair at a low-end birdsmouth. The 4" face runs along the
+    TJ-4000 p.31 R5 requires the eave pair at a low-end birdsmouth. The rip face runs along the
     rafter's web plane, with plumb sides and pitched top/bottom, standing on the bottom flange
     and 1/8" short of the top one.
     The cut silhouette, plan endpoints and end elevations carry the same bevel into the
@@ -46,7 +46,7 @@ def bearing_stiffeners(
         insets = (joist.flange_thickness_m * plumb,
                   (joist.flange_thickness_m + inch(_TOP_GAP_IN).meters) * plumb)
         stiffeners.append(_beveled_stiffener(rafter, "eave", 0.0, stiffener_run, run, insets))
-        if hung_at_ridge:
+        if stiffened_at_ridge:
             stiffeners.append(_beveled_stiffener(
                 rafter, "ridge", run - stiffener_run, run, run, insets))
     return tuple(stiffeners)
@@ -84,6 +84,6 @@ def _beveled_stiffener(
         elevation_profile=((0.0, z0), (stiffener_run_m, z0_end),
                            (stiffener_run_m, z1_end), (0.0, z1)),
         # The panel profile's WIDTH is the rip face along the web; its DEPTH is the pair's
-        # thickness across it. A horizontal-member default would put the 4" across the web.
+        # thickness across it. A horizontal-member default would put the rip across the web.
         plan_width_m=cross_section(_STIFFENER_PROFILE).depth_m,
     )

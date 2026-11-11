@@ -13,6 +13,7 @@ from typehaus.hardware.catalog import (
     ROLE_EXTERIOR_INSULATION_SCREW,
     ROLE_GIRT_STANDOFF_SCREW,
     ROLE_PARTITION_DEFLECTION_SCREW,
+    ROLE_RIDGE_PLATE_SCREW,
     ROLE_SIDELAP_STITCH_SCREW,
     ROLE_SLAB_PLATE_PIN,
     ROLE_STAIR_SPACER_SCREW,
@@ -61,6 +62,21 @@ SDWS_STAIR_SPACER_SCREW = StructuralHardware(
     thread_length_in_by_length_in={6.0: 3.0},
     source="Simpson Strong-Tie SDWS Timber Screw (strongtie.com/sdws), Double-Barrier coated; "
            "thread length per IAPMO UES ER-192 Table 1",
+)
+
+# A beveled ridge plate down into the double top plate of the wall under it. At +/-1-1/4" off
+# the centreline the plate is 2.875" thick, leaving the 3" thread wholly in the 3" plates.
+SDWS_RIDGE_PLATE_SCREW = StructuralHardware(
+    tag="simpson-sdws-ridge-plate-screw",
+    name="SDWS Timber Screw (0.220 in shank), ridge plate to wall top plates",
+    role=ROLE_RIDGE_PLATE_SCREW,
+    manufacturer=_SIMPSON,
+    model="SDWS22___DB",
+    part_number_by_length_in={6.0: "SDWS22600DB"},
+    thread_length_in_by_length_in={6.0: 3.0},
+    source="Simpson Strong-Tie SDWS Timber Screw; IAPMO UES ER-192 rev. 09/08/2026 Table 7 "
+           "(HF/SPF W 187 lbf/in, W_max 495 lbf at C_D 1.0, 792 lbf at 1.6) and Table 8 "
+           "(1-7/16 in edge, 6 in end, staggered rows)",
 )
 
 #: An SDWS22 driven SQUARE into the side grain of a DF/SP main member (ER-192 Table 5 fn. 3),
