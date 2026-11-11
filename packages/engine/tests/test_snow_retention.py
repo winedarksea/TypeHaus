@@ -208,7 +208,7 @@ def test_snow_clamps_are_priced_separately_from_pv_allowance():
         {"part_number": "S-5-N", "scope": "carried-mount", "count": 72},
     ]}
     estimate = estimate_costs(bom, replace(prices, allowances={}))
-    assert estimate["total"]["low"] == 32
+    assert estimate["total"]["low"] == pytest.approx(28.2)
     assert estimate["total"]["high"] == 60
 
 
@@ -258,3 +258,67 @@ def test_catlin_components_clear_roof_and_gutters(catlin_model_ro):
         body = to_manifold(part.body_mesh)
         assert (body ^ roof_body).volume() < 1e-9, part.tag
         assert (body ^ gutter_body).volume() < 1e-9, part.tag
+
+
+@pytest.mark.parametrize("direction", ["x", "y"])
+@pytest.mark.parametrize("form", ["gable", "shed"])
+@pytest.mark.parametrize("size,length", [("S-5-N", 2.0), ("S-5-N Mini", 1.18)])
+def test_roof_clamp_uses_normal_dimensions(direction, form, size, length):
+    from typehaus.resolve.seam_clamp import roof_seam_clamp_mesh
+    from typehaus.solids3d.convert import to_manifold
+
+    model, run = roof_run(direction=direction, form=form)
+    layout, _ = snow_retention_layout(model, run)
+    along_index = 0 if direction == "x" else 1
+    position = list(run.position.xy_m)
+    position[along_index] += layout.supports[0]
+    clamp = run.model_copy(update={
+        "kind": ConnectorKind.STANDING_SEAM_CLAMP, "snow_retention": None, "size": size,
+        "position": pt(inch(position[0] / INCH_M), inch(position[1] / INCH_M)),
+    })
+    mesh = roof_seam_clamp_mesh(model, clamp)
+    projected = [sum(p[i] * layout.downhill[i] for i in range(3)) for p in mesh.positions]
+    assert max(projected) - min(projected) == pytest.approx(length * INCH_M)
+    assert to_manifold(mesh).volume() > 0
+
+
+def test_catlin_wind_clamps_follow_seams_clear_roof_and_omit_snow_corner(catlin_model_ro):
+    from typehaus.resolve.roof_panel_skin import profiled_roof_layers, seam_stations
+    from typehaus.solids3d.convert import to_manifold, union
+
+    model = catlin_model_ro
+    clamps = [s for s in model.solids if s.tag.startswith(("CN-G-WIND-", "CN-A-WIND-"))]
+    assert len(clamps) == 21
+    assert not any(s.tag.startswith("CN-G-WIND-RFSE-") for s in clamps)
+    for solid in clamps:
+        connector = model.plan.by_tag(solid.tag)
+        roof = next(r for r in model.roofs if r.tag in connector.connects)
+        assert connector.elevation is None
+        assert connector.position.y.meters == pytest.approx(min(
+            seam_stations(roof, model), key=lambda y: abs(y - connector.position.y.meters)))
+        body = to_manifold(solid.body_mesh)
+        roof_body = union(to_manifold(mesh) for _, mesh in roof.layer_surface_meshes)
+        assert (body ^ roof_body).volume() < 1e-9, solid.tag
+        if solid.tag.startswith("CN-G-"):
+            _, _, rect, _ = next(profiled_roof_layers(roof, model))
+            x = connector.position.x.meters
+            assert min(x - rect[0], rect[1] - x) / INCH_M == pytest.approx(3.79959, abs=1e-4)
+
+
+@pytest.mark.parametrize("change,reason", [
+    ({"position": pt(inch(64), inch(65))}, "align"),
+    ({"position": pt(inch(120), inch(64))}, "inside"),
+    ({"position": pt(inch(48), inch(64))}, "ridge"),
+    ({"connects": ("missing",)}, "exactly one"),
+])
+def test_invalid_roof_clamp_reports_finding_without_marker(change, reason):
+    from typehaus.resolve.seam_clamp import resolve_roof_seam_clamp
+
+    model, run = roof_run()
+    clamp = run.model_copy(update={
+        "kind": ConnectorKind.STANDING_SEAM_CLAMP, "snow_retention": None,
+        "size": "S-5-N Mini", **change,
+    })
+    findings = resolve_roof_seam_clamp(model, clamp, "main")
+    assert reason in findings[0].message
+    assert not model.solids

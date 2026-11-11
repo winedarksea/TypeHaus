@@ -292,8 +292,9 @@ the future.
 - Robot training (light switches correspond, doors open)
 - Camera in ESS Room and Plant Room (for keeping an eye on them while on vacation). Something cheap, effective, and works well with the rest of the camera system
 - [x] 3d model of the S-5! snowguards over the canopy entry — continuous ColorGard 2.0 with seam-aligned S-5-N clamps, ColorStrip and SnoClip feet; component takeoff follows the same layout.
-- Supplier sizing and quote for the canopy ColorGard drift case: confirm tributary garage snowpack, row count, seam compatibility and SnoClip pan support (`notes/north_entry_structure.md` §5). The modeled single row is provisional.
-- garage roof seam clamps (S-5-N Mini) are in the wrong spots and could use a little 3d modeling work (might share with house roof and snow guard models). We also don't need seam clamps on the corner where the snow guards are.
+- [x] Online S-5! review: Image II profile evidence, SnoClip pan support and published component pricing documented in `houses/catlin/notes/s5_snow_retention_review.md`; no supplier contact.
+- [ ] Final canopy ColorGard sizing: obtain exact full-N / Image II 24 ga allowable drag capacity and check the drift-loaded tributary wedge including garage snowpack, rail/end reactions and panel attachments. Public calculator/load tables require login; one modeled row remains provisional.
+- [x] Garage/canopy S-5-N Mini clamps follow the shared seams and resolved roof height; open-throat geometry shared with house clamps and ColorGard. Southeast snow-guard corner omits separate Minis (9 garage/canopy + 12 house).
 - The house has four grounding rods, which might be overkill?
 - Drywall corners and drywall remove where walls meet (drywall depth might be causing a small bug in stud placement)
 - Eave and gutter hardware: Select the gutter bracket and outlet, and finish the splice, fastener, and sealant details. The eave sealant product and its compatibility with the roof and membrane also need confirmation. [Eave detail (line 153)](/Users/colincatlin/Documents-NoCloud/TypeHaus/houses/catlin/notes/roof_wall_eave_detail.md:153)

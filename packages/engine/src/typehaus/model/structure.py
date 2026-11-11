@@ -786,7 +786,9 @@ class Connector(Element):
     kind: ConnectorKind
     snow_retention: SnowRetentionSpec | None = None
     position: Point2D
-    elevation: Length | None = None  # connector center, project-frame absolute
+    #: Connector center, project-frame absolute. S-5-N/Mini without an elevation
+    #: require a roof in connects and seat on its resolved pan and seam.
+    elevation: Length | None = None
     #: Flat strap seated on this roof's structural top plane, length parallel to its ridge.
     #: The roof supplies elevation and pitch; this does not assert that nailing wood exists.
     roof_mount: str | None = None

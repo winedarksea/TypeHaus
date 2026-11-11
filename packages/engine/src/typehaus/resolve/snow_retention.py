@@ -6,6 +6,7 @@ from typehaus.model.structure import Connector
 from typehaus.resolve.geometry_ir import GBox, GMesh
 from typehaus.resolve.geometry_slice_box import _hull, outward_box_mesh
 from typehaus.resolve.model import ResolvedModel, ResolvedSolid
+from typehaus.resolve.seam_clamp import clamp_body_boxes
 from typehaus.resolve.snow_retention_layout import snow_retention_layout
 
 
@@ -76,17 +77,9 @@ def resolve_snow_retention(model: ResolvedModel, connector: Connector,
 
     for index, station in enumerate(layout.supports, 1):
         u = station / inch
-        half_width = dimensions.CLAMP_WIDTH_IN / 2
-        throat = dimensions.CLAMP_THROAT_WIDTH_IN / 2
         half_length = dimensions.CLAMP_LENGTH_IN / 2
-        throat_top = clamp_bottom + dimensions.CLAMP_THROAT_HEIGHT_IN
-        part(f"CLAMP-{index}", spec.clamp, [
-            (u - half_width, u - throat, -half_length, half_length,
-             clamp_bottom, throat_top),
-            (u + throat, u + half_width, -half_length, half_length,
-             clamp_bottom, throat_top),
-            (u - half_width, u + half_width, -half_length, half_length,
-             throat_top, clamp_top)])
+        part(f"CLAMP-{index}", spec.clamp,
+             clamp_body_boxes(u, layout.seam_height / inch))
         half_clip = dimensions.VERSACLIP_WIDTH_IN / 2
         foot_end = dimensions.VERSACLIP_FOOT_END_IN
         rise_end = dimensions.VERSACLIP_RISE_END_IN

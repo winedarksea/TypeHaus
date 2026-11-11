@@ -377,12 +377,13 @@ into, an open canopy's underside is exposed framing by design, and the garage's 
 soffit is there to feed a vented attic this roof does not have.
 
 Snow retention is required along the **east eave over the entrance and tier approach**. The
-west side has no entrance or walking route beneath it, so it needs no guard pair. The supplier
-sizes crossbars and clamps for the **drift** case, not the ground load. **Wind seam clamps are
+west side has no entrance or walking route beneath it, so it needs no guard pair. Size
+crossbars and clamps for the **drift** case, not the ground load. **Wind seam clamps are
 not a substitute for snow retention.**
 
 The provisional 3D layout is now **one continuous ColorGard 2.0 unpunched run**,
-`CN-BW-SNOW-E-1`, hosted by `RF-BW-CANOPY`, with its clamp line at x = 30.5 ft.
+`CN-BW-SNOW-E-1`, hosted by `RF-BW-CANOPY`, with its clamp line at x = 31 ft
+(4 inches inside the roof eave).
 Four full S-5-N clamps follow the shared garage/canopy panel seams; four VersaClip 2.0
 attachments carry the profiled crossmember and roof-matching 2-inch ColorStrip. Three
 SnoClip 2.0 II clips have rubber feet on flat pan intervals between striations. Roof
@@ -394,15 +395,16 @@ seam, exceeding S-5!'s 8-inch limit. The modeled south cantilever is 7-15/16 inc
 One 7-foot-8-inch stock crossmember is cut to the run; its supplied splice is unused.
 The S-5-N bolts/setscrews and SnoClip securing screws are included with those parts,
 not additional purchases. Takeoff reports installed rail/strip length and actual
-component counts; component prices remain budget allowances pending a supplier quote.
+component counts; component prices use published online pricing with contingency;
+see the review below.
 
 **This is hardware geometry and provisional coverage, not a retention-capacity check.**
-The supplier must confirm the drift-load tributary area (including the adjoining garage
-snowpack), row count, clamp/profile compatibility and support below the SnoClip feet.
-S-5! cautions that short doorway-only runs can retain a larger snow wedge than their
-own width implies. See [ColorGard 2.0 product documents](https://www.s-5.com/products/colorgard/)
-and installation instructions, revision 110426. Small extrusion lips and clip bends
-are simplified from the manufacturer's assembly drawing; the model is not fabrication CAD.
+The online-only [S-5! review](s5_snow_retention_review.md) records profile evidence,
+SnoClip support, tributary-garage screening and published component prices. The
+provisional assembly is $86 in displayed hardware prices, plus ColorStrip, tax and
+freight. Exact full-N / Image II 24 ga allowable loads and a complete drift/tributary
+check remain unresolved; S-5!'s calculator and load tables require login. The
+single row must not be treated as sized. No supplier contact is requested.
 
 ## 6. KDAT longevity — the house-wide spec (owner, 2026-09-10)
 

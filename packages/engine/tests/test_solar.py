@@ -95,7 +95,7 @@ def test_x_ridge_roof_branch(catlin_model):
     turns its ridge back to "x" in a throwaway plan. That is honest about what is being
     exercised (the resolver, not the house) and it cannot rot when the house moves again.
     """
-    from typehaus.model import Connector, Roof, SolarPanel, ft, inch, pt
+    from typehaus.model import Connector, ConnectorKind, Roof, SolarPanel, ft, inch, pt
 
     # `model_copy`, not `dataclasses.replace`: every model element is a pydantic model here,
     # not a dataclass, and `replace()` raises TypeError on one.
@@ -104,6 +104,8 @@ def test_x_ridge_roof_branch(catlin_model):
         e.model_copy(update={"ridge_direction": "x"})
         if isinstance(e, Roof) and e.tag == "RF-GARAGE" else e
         for e in garage
+        if not (isinstance(e, Connector) and e.kind is ConnectorKind.STANDING_SEAM_CLAMP
+                and set(e.connects) & {"RF-GARAGE", "RF-BW-CANOPY"})
     )
     assert any(isinstance(e, Roof) and e.ridge_direction == "x" for e in turned), \
         "the fixture this branch needs is built here, not borrowed from the house"
@@ -113,8 +115,8 @@ def test_x_ridge_roof_branch(catlin_model):
                    origin=pt(ft(10), ft(52)), width=inch(69.4), length=inch(44.6),
                    thickness=inch(1.2), watts=440.0),
     ))
-    # Turning the garage also breaks the canopy's shared seam register. This PV-only
-    # variant omits retention whose clamp layout would now need to be redesigned.
+    # Turning the garage breaks the shared panel register. This PV-only variant omits
+    # both the wind clamps above and retention below; both layouts need redesign.
     plan = plan.with_elements("entry", tuple(
         element for element in plan.storey_elements("entry")
         if not (isinstance(element, Connector) and element.snow_retention is not None)))
@@ -194,7 +196,7 @@ def test_pv_mounting_kits_are_billed(catlin_model):
                    and row["scope"] == "snow-retention run"]
     assert [row["count"] for row in snow_clamps] == [4]
     mini = [row for row in rows if row["part_number"] == "S-5-N Mini"]
-    assert sum(row["count"] for row in mini) == 24, "12 house roof + 12 garage roof"
+    assert sum(row["count"] for row in mini) == 21, "12 house roof + 9 garage/canopy roof"
 
 
 def test_model_json_serializes_solar(catlin_model):

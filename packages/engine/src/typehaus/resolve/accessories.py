@@ -87,6 +87,12 @@ def resolve_accessories(model: ResolvedModel) -> list[Finding]:
 
                     findings.extend(resolve_snow_retention(model, el, storey.tag))
                     continue
+                if (el.kind is ConnectorKind.STANDING_SEAM_CLAMP
+                        and el.size in ("S-5-N", "S-5-N Mini") and el.elevation is None):
+                    from typehaus.resolve.seam_clamp import resolve_roof_seam_clamp
+
+                    findings.extend(resolve_roof_seam_clamp(model, el, storey.tag))
+                    continue
                 if el.roof_mount is not None:
                     from typehaus.resolve.connector_geometry.ties import STRAPS
 

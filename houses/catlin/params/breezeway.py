@@ -25,6 +25,7 @@ from typehaus.resolve.connector_geometry.hangers import LUS_DIMENSIONS, SHEET_TH
 
 from params.column_heads import STANDOFF_PACK_IN
 from params.foundations import SITE_GRADE
+from params.garage_roof_wind_clamps import EAST_CLAMP_X_IN
 from params.landing_tie import LANDING_TIES
 from params.entry_screen_finish import FINISH_ELEMENTS
 from params.north_entry_frame import (
@@ -714,7 +715,7 @@ GABLE_CLIPS = [
 # Its south bearing starts at TRUSS_DATUM_Y_FT. The shared garage seam register
 # requires a 7-5/8" south setback to keep the first clamp's cantilever below 8";
 # a 2" setback there would cantilever 13-9/16". North keeps the 2" setback.
-SNOW_RETENTION_EAST_X_FT = 30.5
+SNOW_RETENTION_EAST_X_FT = EAST_CLAMP_X_IN / 12  # 4 inches inside the roof eave
 SNOW_RETENTION_SOUTH_SETBACK_IN = 7.625
 SNOW_RETENTION_NORTH_SETBACK_IN = 2.0
 SNOW_RETENTION_SOUTH_Y_FT = (TRUSS_DATUM_Y_FT - 1.375 / 12

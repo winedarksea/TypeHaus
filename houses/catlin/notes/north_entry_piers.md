@@ -1725,4 +1725,6 @@ col = 140.36 + 9,427.0 x 1,567.7 x 17.8939 / 1,367,834 = 140.36 + 193.33 = 333.6
 
 The three 2x6 plies became one 6x6 (`entry_screen_mdo.md`). Wood 1,344.31 in³ against 1,099.9,
 +5.30 lb, less 0.24 lb of ply screws: the screen is 39.23 plf (was 38.45) and each west chord
-receives 169.20 lb. No roof-support role; the local checks stay in that note.
+receives 169.20 lb (+2.53). With SB-BW-BAND 18.09 the line is 57.32 plf. No roof-support role;
+the local checks stay in that note. The retired GW soft-end example gains 1.2 x 2.53 = 3.04 lb
+factored: 1/δ falls 3.04/(0.75 x 9,270) = 0.00044, from 1/34.24 to 1/34.76. It remains OVER.

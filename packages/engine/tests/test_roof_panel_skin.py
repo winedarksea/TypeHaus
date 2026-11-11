@@ -110,7 +110,20 @@ def test_catlin_skin_and_clamps_follow_shared_seams(catlin_model_ro):
         x, y = clamp.position.xy_m
         assert min(abs(y - station) for station in stations) < 0.25 * 0.0254
         expected = roof_plane_z(roof, x) + top * roof_slope_factor(roof)
-        assert clamp.elevation.meters == pytest.approx(expected, abs=1e-6)
+        if clamp.elevation is not None:
+            assert clamp.elevation.meters == pytest.approx(expected, abs=1e-6)
+        else:
+            from typehaus.hardware import snow_retention as dimensions
+
+            solid = next(s for s in model.solids if s.tag == clamp.tag)
+            slope = (roof_plane_z(roof, x + .01) - roof_plane_z(roof, x - .01)) / .02
+            factor = math.hypot(1, slope)
+            normal = (-slope / factor, 0, 1 / factor)
+            offsets = [sum((point[i] - (x, y, expected)[i]) * normal[i] for i in range(3))
+                       for point in solid.body_mesh.positions]
+            assert min(offsets) / .0254 == pytest.approx(-dimensions.CLAMP_TOE_BELOW_SEAM_TOP_IN)
+            assert max(offsets) / .0254 == pytest.approx(
+                dimensions.CLAMP_HEIGHT_IN - dimensions.CLAMP_TOE_BELOW_SEAM_TOP_IN)
 
 
 def test_catlin_param_stations_match_the_resolver(catlin_model_ro):

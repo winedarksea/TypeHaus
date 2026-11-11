@@ -234,7 +234,7 @@
   "flashing|framing": [4, 8.8e-05],
   "flashing|opening_flashing_membrane": [2, 3e-06],
   "flashing|railing": [8, 5.3e-05],
-  "flashing|wall": [13, 0.034362],
+  "flashing|wall": [12, 0.038368],
   "floor|framing": [12, 0.010128],
   "floor|pipe_drain": [21, 0.001095],
   "floor|pipe_vent": [9, 0.000813],

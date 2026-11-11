@@ -1,15 +1,13 @@
 """House-roof wind clamps — parametric module (plan/wind_clamps.py has the layout rationale).
 
 Twelve S-5-N Mini clamps, three per eave corner, on the first three seams in from each rake. Each
-clamp's elevation is the top of the standing-seam metal at its x, from the same
-``seam_top_inches`` the PV clamps in ``params/solar.py`` use — never a typed literal.
+clamp's elevation and open throat follow the resolved roof pan and seam.
 
 Not ``# haus: editable``: a Connector is not a UI-movable kind, so nothing is written back
 to these. The eave x-stations are derived from the cladding face and the eave stack.
 """
 
 from params.cladding import HOUSE_EW_OUTBOARD_IN
-from params.roof_panel import seam_top_inches
 from params.roof_trim import EAVE_STACK
 from typehaus import Connector, ConnectorKind, inch, pt
 from typehaus.quantities import M_PER_IN
@@ -31,7 +29,7 @@ NORTH_STATIONS_IN = (424, 408, 392)
 def _clamp(uid: str, tag: str, x_in: float, y_in: float) -> Connector:
     return Connector(
         uid=uid, tag=tag, kind=ConnectorKind.STANDING_SEAM_CLAMP,
-        position=pt(inch(x_in), inch(y_in)), elevation=inch(seam_top_inches(x_in)),
+        position=pt(inch(x_in), inch(y_in)),
         connects=(ROOF_TAG,), size=_SIZE)
 
 

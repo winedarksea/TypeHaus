@@ -1,123 +1,24 @@
-# haus: editable
-# Wind-mitigation seam clamps on the metal skin.
-#
-# Non-penetrating S-5! seam clamps set on the panel seam for one job only: UPLIFT. They carry
-# nothing. Distinct from every other S-5! clamp in this plan (``plan/mep_venting.py``,
-# ``params/solar.py``), each of which exists to hang an accessory off the seam; these exist
-# because a corner is where wind peels a panel off a wall.
-#
-# **Why corners.** Wind pressure on a building is not uniform: ASCE 7 zones a wall and a roof
-# into field, perimeter and corner, and the corner zone sees the highest uplift and suction of
-# the three. FM Global DS 1-31 Table 2 — the one prescriptive layout anybody publishes, since
-# S-5! itself puts spacing on "the user and/or installer" — adds external seam clamps at CORNER
-# clip positions above 90 psf and only reaches the perimeter above 135 psf. So: corners.
-#
-# ** THE 48 HOUSE-WALL CLAMPS ARE GONE, AND NOT AS AN ECONOMY. ** They were `S-5-S`, and an
-# S clamp closes on a snap-lock leg. The house walls are now `pbr-panel-24` — an
-# exposed-fastener PBR panel with no seam of any kind — so there is nothing left for the
-# clamp to grip and the part is not merely unnecessary but uninstallable. What resisted
-# corner uplift through those clamps is now resisted by the panel's own face-fastened
-# screws, which pass through the panel into the girt at every rib flat and every course:
-# `takeoff.fasteners.exposed_fastener_cladding_screw_rows` bills 2,623 of them on the house
-# walls, and they are already denser at a corner than the 8"/4'-0" grid below ever was.
-#
-# **The layout that remains, and what it assumes.**
-#   garage walls   NONE — see the paragraph above the list below. It was 4 corners x 2
-#                  faces x 2 levels = 16 `S-5-N`, back when the wall was 26 ga nail strip;
-#                  a corrugated panel has no seam to clamp.
-#   garage roof    4 eave corners x 3 seams = 12 clamps, `S-5-N Mini`, on the first three seams in
-#                  from each rake, at the eave. The garage roof is nail strip, which has no
-#                  concealed clips at all — uplift is resisted by the face-fastened flange
-#                  alone — so the corner zone is exactly where a clamp earns its keep.
-#
-#   house roof      4 eave corners x 3 seams = 12 S-5-N Mini clamps. Image II is a
-#                   direct-fastened nail-flange snap-seam with no floating clips.
-#
-# ** THIS IS AN AUTHORED LAYOUT, NOT AN ENGINEERED ONE. ** `plan/site.py` carries a design
-# wind speed (V_ult = 115 mph, Exposure B, Risk Category II, MN Rules 1309.0301), so the
-# *first* missing input is not missing — but nobody has run it through ASCE 7 Ch. 30 to get
-# a design pressure, and **no zone width has been calculated**, which is the input this
-# layout actually turns on. A clamp grid is a map of corner/perimeter/field zones; having V
-# without the zone map buys nothing. The grid above is a reasonable builder's layout, and
-# the count it produces (24 across the house and garage roofs) is what the estimate bills. The same
-# caveat covers both the HOUSE and the GARAGE walls, in a different form: the screw
-# schedule that replaced the clamps there is a uniform field grid, so it carries no
-# corner-zone densification at all. **That densification is the lever** if a wind analysis
-# is ever run — tightening the screw pitch in the corner zone, not re-authoring clamps onto
-# a panel that cannot take them. If one is done, S-5! runs a project configurator and a load
-# test database at calculators.s-5.com, and the corner/perimeter zone widths come out of
-# ASCE 7 and FM DS 1-28, not out of this file. Expect the count to move.
-#
-# Clamps are non-penetrating in both profiles: stainless Torx T-30 setscrews dimple the seam
-# without piercing it, so there is no sealant, no flashing and no effect on the panel warranty.
-# Setscrews ship with the clamp, so there is no separate fastener line. S-5! does require the
-# setscrews to be verified with a DIAL-calibrated torque wrench (explicitly not a clicking one)
-# where published load values are relied on, which is a QA pass beyond the screw gun.
+"""Authored S-5-N Mini corner uplift layout; quantities are not an engineered schedule.
 
-from typehaus import Connector, ConnectorKind, ft, pt
+House roof: four eave corners, three seams each (12 Minis).
+Garage/canopy roof: northwest, northeast and southwest, three seams each (9 Minis).
+The southeast canopy corner carries ColorGard and omits separate Minis per owner
+instruction. Snow-retention clamps do not establish an equivalent uplift schedule.
 
-# ** THE 16 GARAGE-WALL CLAMPS ARE GONE TOO, for the same reason and by the same argument.
-# ** They were `S-5-N`, and an N clamp closes on a nail strip's bulb-and-lip seam.
-# GARAGE_WALL_2X6 is `corrugated-panel-24` now — a 7/8" corrugated exposed-fastener panel
-# with no seam of any kind — so the part is uninstallable there, not merely unneeded. What
-# resisted corner uplift through them is resisted by the panel's own face screws:
-# `exposed_fastener_cladding_screw_rows` bills 640 over the four garage walls (500 field +
-# 140 sidelap), where the retired grid was 16 clamps at two levels. The NAME survives as an
-# empty list rather than being deleted: `plan/manifest.py` splices it, and the swap back —
-# `EXT_2X6_SWINBURNE`'s convention — is then re-authoring the sixteen constructors
-# here and nothing else. The `S-5-N` PRICE ROW stays too, because the garage ROOF is still
-# nail strip and still carries 12 of them.
+Both roofs are Image II direct-fastened nail-flange panels. House PBR walls and
+garage corrugated walls have no standing seams, so neither receives seam clamps.
+
+The site's V_ult = 115 mph, Exposure B is authored, but ASCE 7 corner-zone widths,
+pressures and a panel attachment design remain outstanding. These 21 clamps are a
+builder's layout and estimate, not a wind-capacity claim. S-5! publishes no general
+prescriptive spacing for these panels. FM DS 1-31's corner-zone guidance motivated
+the layout; it does not engineer this nail-flange roof. Panel fasteners must carry
+the loads delivered to them, including snow-retention drag at the canopy corner.
+
+Dimensions, seam stations and roof-derived placement live in params modules.
+See notes/s5_snow_retention_review.md for public product evidence and open checks.
+"""
+
+from params.garage_roof_wind_clamps import GARAGE_ROOF_WIND_CLAMPS as GARAGE_ROOF_WIND_CLAMPS
+
 GARAGE_WALL_WIND_CLAMPS = []
-
-GARAGE_ROOF_WIND_CLAMPS = [
-    # ** THE EAVES ARE EAST AND WEST SINCE 2026-09-07, AND THE GARAGE IS AT x 6'..30'. **
-    # The row structure is unchanged and is the only thing to reproduce: three clamps at
-    # each of the roof's four corners, on the EAVE, three seams in from the RAKE beside
-    # them — stations at -8", +8" and +24" off the rake's own wall line, on a 16" seam
-    # pitch. What turned is which pair of edges is which: the eaves used to be y=39'-2 7/8"
-    # and 65'-10 7/8" and are now x=4'-6 1/4" and 31'-5 3/4" (each 17 3/4" outboard of its
-    # node line), and the stations that used to run in x now run in y off GARAGE_Y_SOUTH /
-    # GARAGE_Y_NORTH. `elevation` is untouched: same 4:12, same 24' span, same 16" overhang,
-    # so the eave line is at the same height it always was.
-    # Stations are the seam stations themselves (resolve/roof_panel_skin.seam_stations), as
-    # the house roof's are. Since the canopy shares the garage's seam register (2026-11-01) the
-    # south corner is the canopy's: its first three seams, 462 3/16..494 3/16".
-    Connector(uid="M2BE9KCQQ7", tag="CN-G-WIND-RFSW-1", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(4, 6.25), ft(38, 6.1875)), elevation=ft(7, 11.44),
-              connects=("RF-BW-CANOPY",), size="S-5-N Mini"),
-    Connector(uid="PPM5H4K6EK", tag="CN-G-WIND-RFSW-2", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(4, 6.25), ft(39, 10.1875)), elevation=ft(7, 11.44),
-              connects=("RF-BW-CANOPY",), size="S-5-N Mini"),
-    Connector(uid="QAZ18JEVTF", tag="CN-G-WIND-RFSW-3", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(4, 6.25), ft(41, 2.1875)), elevation=ft(7, 11.44),
-              connects=("RF-BW-CANOPY",), size="S-5-N Mini"),
-    Connector(uid="X9PQ5K1CYX", tag="CN-G-WIND-RFSE-1", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(31, 5.75), ft(38, 6.1875)), elevation=ft(7, 11.44),
-              connects=("RF-BW-CANOPY",), size="S-5-N Mini"),
-    Connector(uid="6Y59G1FQDX", tag="CN-G-WIND-RFSE-2", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(31, 5.75), ft(39, 10.1875)), elevation=ft(7, 11.44),
-              connects=("RF-BW-CANOPY",), size="S-5-N Mini"),
-    Connector(uid="H8GJE348NE", tag="CN-G-WIND-RFSE-3", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(31, 5.75), ft(41, 2.1875)), elevation=ft(7, 11.44),
-              connects=("RF-BW-CANOPY",), size="S-5-N Mini"),
-    Connector(uid="QNY7KXYE7F", tag="CN-G-WIND-RFNE-1", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(31, 5.75), ft(67, 10.1875)), elevation=ft(7, 11.44),
-              connects=("RF-GARAGE",), size="S-5-N Mini"),
-    Connector(uid="S67JTBKR21", tag="CN-G-WIND-RFNE-2", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(31, 5.75), ft(66, 6.1875)), elevation=ft(7, 11.44),
-              connects=("RF-GARAGE",), size="S-5-N Mini"),
-    Connector(uid="5WVHPSXHFD", tag="CN-G-WIND-RFNE-3", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(31, 5.75), ft(65, 2.1875)), elevation=ft(7, 11.44),
-              connects=("RF-GARAGE",), size="S-5-N Mini"),
-    Connector(uid="8REEX7CC35", tag="CN-G-WIND-RFNW-1", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(4, 6.25), ft(67, 10.1875)), elevation=ft(7, 11.44),
-              connects=("RF-GARAGE",), size="S-5-N Mini"),
-    Connector(uid="4YB7X5WM5X", tag="CN-G-WIND-RFNW-2", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(4, 6.25), ft(66, 6.1875)), elevation=ft(7, 11.44),
-              connects=("RF-GARAGE",), size="S-5-N Mini"),
-    Connector(uid="CM84J5D2KA", tag="CN-G-WIND-RFNW-3", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(4, 6.25), ft(65, 2.1875)), elevation=ft(7, 11.44),
-              connects=("RF-GARAGE",), size="S-5-N Mini"),
-]
-# The twelve house-roof clamps are in params/roof_wind_clamps.py: their elevation is the
-# standing-seam top, derived, and a typed number here would drift from the roof.
