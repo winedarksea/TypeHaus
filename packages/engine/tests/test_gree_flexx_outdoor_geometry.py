@@ -20,7 +20,13 @@ def outdoor_parts():
 
 def test_published_cabinet_and_projecting_foot_envelopes(outdoor_parts):
     cabinet, = [part for part in outdoor_parts if part.get("role") == "flexx-od:cabinet"]
-    assert np.asarray(cabinet["size"])[:2] / M_PER_IN == pytest.approx((39, 14.5625))
+    shell = [part for part in outdoor_parts
+             if part.get("role") in {"flexx-od:cabinet", "flexx-od:cabinet-lip"}]
+    case_low = np.min([np.asarray(part["center"]) - np.asarray(part["size"]) / 2
+                       for part in shell], axis=0)
+    case_high = np.max([np.asarray(part["center"]) + np.asarray(part["size"]) / 2
+                        for part in shell], axis=0)
+    assert (case_high - case_low)[:2] / M_PER_IN == pytest.approx((39, 14.5625))
     assert (cabinet["center"][2] + cabinet["size"][2] / 2) / M_PER_IN == pytest.approx(37.8125)
     feet = [part for part in outdoor_parts if part.get("role") == "flexx-od:foot"]
     assert len(feet) == 2

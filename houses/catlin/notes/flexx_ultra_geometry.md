@@ -1,5 +1,8 @@
 # EQ-S-HP1-AH connection and service-space review — 2026-11-11
 
+The matched outdoor unit's model and drawing datums are recorded separately in
+[`flexx_ultra_outdoor_geometry.md`](flexx_ultra_outdoor_geometry.md).
+
 The model now has a horizontal-left FXU24 cabinet shell, an open supply aperture,
 an open return end, schematic connection markers and a required front service zone.
 The connection markers are coordination allowances, not drilling locations. No port

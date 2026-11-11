@@ -320,6 +320,7 @@ the future.
 - DU-B-ERV-R-PLAY (the governing path) and DU-M-ERV-R-STUDY (it's a small room) look like they might be oversized in CFM and extra could go to DU-S-ERV-HP-FEED-RUN possibly. REG-M-SUP1-NECK on DU-M-ERV-R-LIVING-RUN might be able to share from DU-B-ERV-R-GYM-RUN or PLAY-RUN coming up a few feet as a low sidewall outlet or at least share more with DU-M-ERV-R-BED-RUN? DU-M-ERV-R-BED1-RUN and -BED2-RUN might be able to share more duct with BED1 on the north side of its room and BED2 on the south side of its room. Note we want to keep RM-S-PLANT mostly separate (mostly humid air staying there). Sauna supply could maybe go to the north side of the sauna and share with the gym. Sauna return could maybe share with the wokrshop hood more of the connection. DU-M-ERV-R-PLANT-RUN could probably move to the north west corner and get much shorter, possibly a sidewall rather than ceiling return.
 - Try to keep most interior doors as 1/2" factory undercut or privacy doors where decided
 - Shower in sauna?
+- Attic level heat pump outlet grills don't seem to have modeled duct connects. Also see if we can change things so RM-A-EAST-UNFIN and RM-A-POCKET aren't counted as conditioned square footage (tax savings there)
 
 # Project Management
 

@@ -30,6 +30,7 @@ FOOT_WIDTH_IN = 2.0
 FOOT_THICKNESS_IN = 0.5
 FIXING_MARKER_RADIUS_IN = 0.22  # visual marker, not a claimed hole/slot dimension
 VISUAL_SHEET_IN = 0.05
+FRONT_RECESS_IN = 0.25
 FAN_CENTER_IN = (-5.25, 20.5)
 FAN_RADIUS_IN = 14.0
 FAN_GUARD_RING_RADII_IN = (3.0, 6.0, 9.0, 12.0, 14.0)
@@ -91,8 +92,17 @@ def gree_flexx_outdoor(width, depth, height):
         return part
 
     case_width, case_depth, case_height = OUTDOOR_CABINET_IN
-    parts = [panel(0, 0, FOOT_THICKNESS_IN, case_height, case_width, case_depth,
-                   "flexx-od:cabinet")]
+    # Recess the front skin so the fan and service panel are visible in every renderer,
+    # rather than buried inside a solid cabinet box or coplanar with its front face.
+    parts = [panel(-VISUAL_SHEET_IN / 2, (FRONT_RECESS_IN - VISUAL_SHEET_IN) / 2,
+                   FOOT_THICKNESS_IN, case_height,
+                   case_width - VISUAL_SHEET_IN,
+                   case_depth - FRONT_RECESS_IN - VISUAL_SHEET_IN, "flexx-od:cabinet")]
+    for sign in (-1, 1):
+        parts.append(panel(sign * (case_width - FRONT_RECESS_IN) / 2,
+                           (-case_depth + FRONT_RECESS_IN) / 2,
+                           FOOT_THICKNESS_IN, case_height, FRONT_RECESS_IN, FRONT_RECESS_IN,
+                           "flexx-od:cabinet-lip"))
     for x in (-OUTDOOR_FIXING_PITCH_IN[0] / 2, OUTDOOR_FIXING_PITCH_IN[0] / 2):
         parts.append(panel(x, 0, 0, FOOT_THICKNESS_IN, FOOT_WIDTH_IN, OUTDOOR_FOOT_DEPTH_IN,
                            "flexx-od:foot", "metal"))
@@ -112,8 +122,16 @@ def gree_flexx_outdoor(width, depth, height):
                             2.0, 0, VISUAL_SHEET_IN, "flexx-od:fan-hub"))
     parts.append(panel(13, front + VISUAL_SHEET_IN / 2, 2, case_height - 2,
                        9, VISUAL_SHEET_IN, "flexx-od:service-panel", "metal"))
+    # Back coil occupies the surface rather than sitting hidden inside the casing.
     parts.append(panel(0, case_depth / 2 - VISUAL_SHEET_IN / 2, 2, case_height - 2,
                        case_width - 2, VISUAL_SHEET_IN, "flexx-od:rear-coil", "metal-black"))
+    for z0, z1 in ((FOOT_THICKNESS_IN, 2), (case_height - 2, case_height)):
+        parts.append(panel(0, case_depth / 2 - VISUAL_SHEET_IN / 2, z0, z1,
+                           case_width, VISUAL_SHEET_IN, "flexx-od:cabinet-lip"))
+    for sign in (-1, 1):
+        parts.append(panel(sign * (case_width - 1) / 2,
+                           case_depth / 2 - VISUAL_SHEET_IN / 2, 2, case_height - 2,
+                           1, VISUAL_SHEET_IN, "flexx-od:cabinet-lip"))
     for tag, (station, diameter) in OUTDOOR_CONNECTIONS_IN.items():
         x, y, z = station
         parts.append(round_part((x - VISUAL_SHEET_IN / 2, y, z), diameter / 2, 0,
