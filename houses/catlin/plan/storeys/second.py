@@ -1151,8 +1151,9 @@ ALARMS = [
           circuit="CKT-LT-BACKUP"),
     Alarm(uid="CSA702AAAA", tag="AL-S-BED2", kind=AlarmKind.COMBO, room="RM-S-BED2",
           circuit="CKT-LT-BACKUP"),
+    # Off the seed, which sat on REG-S-RET-BED3's grille; centred in an FS-ATTIC joist bay.
     Alarm(uid="CSA703AAAA", tag="AL-S-BED3", kind=AlarmKind.COMBO, room="RM-S-BED3",
-          circuit="CKT-LT-BACKUP"),
+          circuit="CKT-LT-BACKUP", position=pt(ft(25, 4), ft(30))),
     Alarm(uid="CSA704AAAA", tag="AL-S-SUITE", kind=AlarmKind.COMBO, room="RM-S-SUITE",
           circuit="CKT-LT-BACKUP"),
     Alarm(uid="CSA705AAAA", tag="AL-S-HALL", kind=AlarmKind.COMBO, room="RM-S-HALL",
