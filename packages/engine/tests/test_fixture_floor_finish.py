@@ -148,6 +148,27 @@ def test_fixture_bridges_only_its_own_internal_drain_cut(owner, system, hole,
                                        footprint=box(4, 4, 6, 6))
 
 
+@pytest.mark.parametrize(("hole", "supported"), [
+    (box(4.7, 4.7, 5.3, 5.3), True),  # the named drain was lifted or replaced
+    (box(3, 3, 7, 7), False),  # still must lie inside the body
+])
+def test_cut_naming_an_absent_run_is_still_its_fixtures_drain(hole, supported):
+    model = _model(box(4, 4, 6, 6))
+    ring = list(hole.exterior.coords)[:-1]
+    model.floors = [ResolvedFloor(
+        uid="DECK", tag="DECK", storey="main", direction="x", members=(),
+        deck_outline=model.rooms[0].clear_face, deck_voids=(ring,),
+        deck_z1_m=inch(0.75).meters, penetrations=(("HOLE", ring, ("GONE",)),))]
+    model.pipe_runs = [SimpleNamespace(tag="NEW", system="drain", serves=("FX-0",))]
+    args = ((5, 5), 0)
+    kw = {"fixture_tag": "FX-0", "footprint": box(4, 4, 6, 6)}
+    if supported:
+        assert fixture_support_elevation(model, *args, **kw) == pytest.approx(inch(0.75).meters)
+    else:
+        with pytest.raises(ValueError, match="supporting"):
+            fixture_support_elevation(model, *args, **kw)
+
+
 @pytest.mark.parametrize(("excludes", "mount_in", "base_in"), [
     (False, None, 1.5), (True, None, 0.75), (True, 4, 5.5),
 ])
