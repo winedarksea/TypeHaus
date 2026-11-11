@@ -81,5 +81,6 @@ def widen(model: Any, branches: Any, points: list[tuple[float, float, float]],
     found = sloped_route(graph, space, start, {end}, problem,
                          constraints=member_constraints(model, graph, (arrival, ceiling)),
                          refusal=GravityRefusal(),
-                         obstacles=band_obstacles(space, graph, pardons, start), heels={})
+                         obstacles=band_obstacles(space, graph, pardons, start,
+                                                  laid=branches.laid_lines()), heels={})
     return None if found is None else (found, graph)

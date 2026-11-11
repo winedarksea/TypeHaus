@@ -49,15 +49,23 @@ def laid_lines(proposals: Iterable[Any]) -> list[Line]:
     return out
 
 
-def run_lines(model: Any, touch: frozenset[str], laid: Iterable[Line] = ()) -> list[Line]:
-    """Every authored run but those in ``touch``, then ``laid``."""
+def _authored(model: Any) -> list[Line]:
     from typehaus.resolve.mep_envelopes import run_polylines, run_radii
 
     radii = run_radii(model)
-    out: list[Line] = [(tag, path, z, radii.get(tag, 0.0))
-                       for _kind, tag, path, z in run_polylines(model)
-                       if tag not in touch and len(path) >= 2 and len(z) == len(path)]
-    return [*out, *laid]
+    return [(tag, path, z, radii.get(tag, 0.0))
+            for _kind, tag, path, z in run_polylines(model)
+            if len(path) >= 2 and len(z) == len(path)]
+
+
+def run_lines(model: Any, touch: frozenset[str], laid: Iterable[Line] = ()) -> list[Line]:
+    """Every authored run but those in ``touch``, then ``laid``."""
+    return [*(line for line in _authored(model) if line[0] not in touch), *laid]
+
+
+def kept_lines(model: Any, touch: frozenset[str], replaced: frozenset[str]) -> list[Line]:
+    """Authored lines in ``touch`` that stay: the run a branch ties into keeps its pockets."""
+    return [line for line in _authored(model) if line[0] in touch and line[0] not in replaced]
 
 
 def crossings(lines: list[Line], floor: Any) -> list[tuple[str, float, Any]]:

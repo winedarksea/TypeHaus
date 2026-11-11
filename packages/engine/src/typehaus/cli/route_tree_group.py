@@ -71,7 +71,7 @@ def _route_group(model: ResolvedModel, target: str, group: list[str], *,
         with clock.stage(f"build-space {size / 0.0254:.3g}in"):
             space = build_space(model, radius_m=pipe_trade.radius_m(size),
                                 terminals=terminals_xyz, margin_ft=margin_ft, avoid=avoid,
-                                cost=cost, touch=touch,
+                                cost=cost, touch=touch, laid=branches.laid_lines(),
                                 cavity_radius_m=pipe_trade.cavity_radius_m(size, "drain"))
         # Inverts lie between the main's tie and the highest fixture floor (§8a).
         prepare_falling(space, (root_z, max(floors[tag] for tag in group)), model)
@@ -157,7 +157,8 @@ def _route_group(model: ResolvedModel, target: str, group: list[str], *,
             if owners.get(n, 0):
                 own = f"{branches.lines[owners[n]].tag}{_PROPOSED}"
                 pardons[n] = pardons.get(n, frozenset()) | {own}
-        obstacles = band_obstacles(a_space, a_graph, pardons, start)
+        obstacles = band_obstacles(a_space, a_graph, pardons, start,
+                                   laid=branches.laid_lines())
         # A goal whose own plumb is inside a prism cannot be tied at: drop it, so the head
         # bound is taken over the ties that are really there (§13).
         inside = {n: [t for _a, _b, z0, z1, t in obstacles(n, n) if z0 < z < z1]

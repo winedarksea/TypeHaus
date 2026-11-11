@@ -17,7 +17,7 @@ from __future__ import annotations
 from typehaus.quantities import M_PER_IN
 from typehaus.routing.bearing_bays import BearingBays
 from typehaus.routing.holes import ijoist_bores_ok as _ijoist_bores_ok
-from typehaus.routing.holes import run_lines
+from typehaus.routing.holes import kept_lines, run_lines
 from typehaus.routing.members import Penetrations
 
 PEX_HALF_OD_M = 0.625 * M_PER_IN
@@ -69,6 +69,19 @@ def test_a_d_pocket_takes_one_run(catlin_model_ro):
 
     assert cuts() is None
     assert cuts(frozenset({"PR-B-CW-TRUNK"})) is not None
+
+
+def test_a_kept_run_holds_its_pocket_until_replaced(catlin_model_ro):
+    touch = frozenset({"PR-B-CW-TRUNK"})
+
+    def cuts(replaced):
+        pen = Penetrations(catlin_model_ro, (330 * M_PER_IN, 280 * M_PER_IN, 380 * M_PER_IN,
+                                             320 * M_PER_IN), 0.4375 * M_PER_IN, touch=touch,
+                           laid=kept_lines(catlin_model_ro, touch, replaced))
+        return pen.cuts(_p(360, 296, -6), _p(360, 304, -6), "y")
+
+    assert cuts(frozenset()) is None  # the tie target's own pocket
+    assert cuts(touch) is not None  # replaced: gone
 
 
 def test_a_bearing_box_passes_only_its_window(catlin_model_ro):
