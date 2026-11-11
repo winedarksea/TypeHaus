@@ -131,8 +131,8 @@ def _propose_tree(model: ResolvedModel, target: str, *, slope: float | None,
     accepted: list[tuple[list[tuple[float, float]], list[float]]] = [
         (tie_path, [z for _p, z in reachable])]
     from typehaus.cli.route_tree_branches import Branches
-    from typehaus.routing.trades import pipe as pipe_trade
     from typehaus.cli.route_tree_group import _route_group as route_group
+    from typehaus.routing.trades import pipe as pipe_trade
 
     branches = Branches.of_main(
         target, [(x, y, z) for (x, y), z in reachable],
