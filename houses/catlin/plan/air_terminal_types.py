@@ -265,7 +265,7 @@ AIR_REGISTER_TYPES = (
                         f"{_NOTE} §5.",
                  ports=(_port("return", Service.RETURN_AIR),)),
     # RM-S-BED3's return (2026-11-11): the same 12x12 grille and filter, on a wall. Its face
-    # opens over D-S-BED3's header into a short 12x8 stub to EQ-S-ERV-MIX's east face.
+    # opens on W-S-BW4 into a short 6x12 take-off on DU-S-HP-RET's east face.
     RegisterType(tag="REG-T-HP-RET-FILTER-1212-SIDE",
                  face_opening=(inch(12), inch(12)),
                  face_style="rectangular_grille",

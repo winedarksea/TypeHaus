@@ -6392,6 +6392,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "boot-6in-8x6" = { low = 25, high = 60 }                 # 1 ea — shop fabrication, estimate
 "reducer-18x8-10x6" = { low = 30, high = 70 }            # 1 ea — shop fabrication, estimate
 "takeoff-18x8-10x8" = { low = 30, high = 70 }            # 1 ea — shop fabrication, estimate
+"takeoff-10x18-6x12" = { low = 30, high = 70 }           # 1 ea — RM-S-BED3 return into DU-S-HP-RET, estimate
 
 [duct_supports]
 # NEW 2026-11-05 (#114). ESTIMATES 2026-11-05, no retailer price read (retail pages refused the

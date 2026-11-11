@@ -996,7 +996,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     is free. STUBATH came down 34.1 -> 27.8 LF.
   - **`RM-S-BED3` has no ERV pickup; it returns to System 1** (owner, 2026-11-11). The 55 LF
     attic radial `DU-A-ERV-R-BED3` is gone; `REG-S-HP-BED3-RET` (12x12 filter-back sidewall
-    over `D-S-BED3`'s header) and a 6x12 stub land in `EQ-S-ERV-MIX` behind `W-S-BW3`,
+    on `W-S-BW4` in the NW corner, 6'-5" north of the supply) and a 6x12 stub take off
+    `DU-S-HP-RET`'s east face, which runs 8 1/4" behind that wall;
     `D-S-BED3` is back at the stock 1/2", and BED3's 5 cfm went to the kitchen (11).
     `DU-A-ERV-R-ATTIC` is RETURN, like every stale-air pickup, and it is what serves
     `EQ-A-ERV-MAN-EXH`'s return port. `notes/system1_return_path.md`.

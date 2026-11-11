@@ -7935,6 +7935,15 @@ EXHAUST -> RETURN to match every other stale-air pickup; it is now the run servi
 `EQ-A-ERV-MAN-EXH`'s declared return port, which BED3's run used to serve. Open: line the stub (the
 blower is a few feet away); the hall's 490 cfm would now take a stocked 12x24x1 filter (~245 fpm).
 
+**Moved north the same day (owner).** Over the door the return was 15" from `REG-S-HP-BED3` on
+the same wall at the same height, drawing on the supply's own air. `W-S-BW3` has only 6 3/4"
+north of the door's king, so the grille went round the corner onto `W-S-BW4` (centre y=34'-2",
+above the desk, 6'-5" from the supply), where `DU-S-HP-RET`'s east lane runs 8 1/4" behind the
+bedroom face. The 6x12 stub is now a shop take-off on the trunk's side, ending on its
+centreline. Its slot is set by two out-of-step 16" grids: BW4's studs (402"/418") and
+`SF-S-HP1`'s east 2x2s (396 5/8"/412 5/8") leave a 9" overlap, and the trunk turns west at
+y=411". A slot at y 32'-3"..32'-11" also fits, 5'-0" out; the north one was taken.
+
 ## Tee branches frame to the through wall's studs; the board goes on after (2026-11-11)
 
 At every T/X the branch's framing stopped at the through wall's gypsum face: 57 of 69 catlin

@@ -150,12 +150,13 @@ BED3's 5 cfm ERV pickup rode `DU-A-ERV-R-BED3`, about 55 LF and six elbows round
 pickup is gone and BED3 returns to System 1 directly:
 
 * `REG-S-HP-BED3-RET`: 12x12 filter-back SIDEWALL grille (`REG-T-HP-RET-FILTER-1212-SIDE`,
-  MERV 13 12x12x1) on BW3's bedroom face over `D-S-BED3`'s flat header, centred y=29'-2",
-  face 209"..221" absolute. The header carries no cripples, so the bay is clear from the
-  south king to the north king. Locked balancing damper at the boot.
-* `DU-S-HP-BED3-RET`: a 6 wide x 12 tall stub, x 265 1/4" -> 258" at y=347", into the box's
-  east face. It sits on the south half of the neck, clear of `DU-S-ERV-HP-FEED`'s drop and
-  `DU-S-HP-RET`'s inlet inside the box.
+  MERV 13 12x12x1) on `W-S-BW4`'s bedroom face in the NW corner, above the desk, centred
+  y=34'-2" in the 402"/418" stud bay, face 209"..221" absolute. Locked balancing damper at
+  the boot. (First placed over `D-S-BED3`'s header, 15" from the supply grille; moved the same
+  day so the return does not draw on the supply's own air.)
+* `DU-S-HP-BED3-RET`: a 6 wide x 12 tall stub, x 265 1/4" -> 252" at y=407", a shop take-off
+  on `DU-S-HP-RET`'s east face (8 1/4" behind the bedroom face), on the south half of the
+  neck: clear of BW4's 402" stud, `SF-S-HP1`'s east 2x2 at 412 5/8" and the trunk's turn west.
 
 Balance, by hand:
 

@@ -226,6 +226,8 @@ DUCT_STANDARD = [
                         source="RM-S-SUITE return filter box, locking balancing damper, shop-fabricated"),
             DuctPartRow(kind="boot", size="6x12", branch="12x12", fabricated=True,
                         source="RM-S-BED3 sidewall return filter box, locking balancing damper, shop-fabricated"),
+            DuctPartRow(kind="takeoff", size="10x18", branch="6x12", fabricated=True,
+                        source="RM-S-BED3 return into DU-S-HP-RET's side, shop-fabricated"),
         ),
         supports=(
             DuctSupportRow(section="round", max_size=inch(10), spacing=ft(12),

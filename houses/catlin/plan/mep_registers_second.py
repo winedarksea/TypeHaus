@@ -212,15 +212,15 @@ REGISTERS_HVAC_SECOND = [
              position=pt(inch(104), inch(184)), duct_ref="DU-S-HP-SUITE-RET",
              type_ref="REG-T-HP-RET-FILTER-1212", design_cfm=80,
              mount=Mount(kind=MountKind.CEILING)),
-    # RM-S-BED3's return (2026-11-11): the suite's grille and filter on W-S-BW3's bedroom face,
-    # over D-S-BED3's header, centred y=28'-11 1/2" (trim 1/2" off REG-S-HP-BED3's); face
-    # 209"..221" absolute (85 15/16" AFF), level with its stub into EQ-S-ERV-MIX. Damper
-    # locked at 80 cfm; re-check at filter changes. D-S-BED3 is back at the stock 1/2".
+    # RM-S-BED3's return (2026-11-11): the suite's grille and filter on W-S-BW4's bedroom face,
+    # above FURN-S-DESK3, centred y=34'-2" in the 402"/418" stud bay; face 209"..221" absolute
+    # (85 15/16" AFF), level with its take-off into DU-S-HP-RET. Over D-S-BED3 it sat 15" from
+    # REG-S-HP-BED3. Damper locked at 80 cfm; re-check at filter changes. D-S-BED3: stock 1/2".
     Register(uid="M9R1FECSXZ", tag="REG-S-HP-BED3-RET", kind=DuctSystem.RETURN, room="RM-S-BED3",
              duct_ref="DU-S-HP-BED3-RET", type_ref="REG-T-HP-RET-FILTER-1212-SIDE", design_cfm=80,
              mount=Mount(kind=MountKind.WALL, elevation=inch(85.9375)),
              location=Location(attachment=WallAttachment(
-                 wall_ref="W-S-BW3", face="right", distance_from_start=inch(27.5),
+                 wall_ref="W-S-BW4", face="right", distance_from_start=inch(40),
                  normal_gap=inch(0), rotation_offset=deg(0)))),
 ]
 
