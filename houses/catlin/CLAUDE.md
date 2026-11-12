@@ -231,8 +231,11 @@ not instruction: when it disagrees with this file or the model, it is the one th
   argument, the routing declarations — plus the basement plenums and their six radials),
   `mep_erv_l2` (the two RM-M-MECH plenums, the thirteen FS-S-WEST radials), `mep_erv_l3`
   (the attic plenum, `EQ-S-ERV-MIX` and the FS-ATTIC radials), `mep_erv_outdoor` (the two
-  north-facade hoods and their wall penetrations) and `mep_erv_risers` (`DUCTS_ERV_RISERS`:
-  three chase risers plus `DU-ERV-OA`/`-EA`, one list because `mep.py` spreads it whole).
+  north-facade hoods and their wall penetrations), `mep_erv_outdoor_legs`
+  (`DUCTS_ERV_OUTDOOR_LEGS`: `DU-ERV-OA`/`-EA`) and `mep_erv_risers` (`DUCTS_ERV_RISERS`: the
+  two chase risers and the level-2 feeds; `EQ-M-ERV-MAN-SUP` is fed from below through
+  `FO-M-ERV-SUP-FEED`, note §10.25). `DU-ERV-RISER-SUP`'s foot is one skewed leg 0.17" off
+  `ED-B-BACKUP-ENCL`'s dedicated space and ~0.1" off `CD-B-ATTIC-RISER`: don't move it.
   `mep_erv_types` is the catalog. The split was byte-neutral: every element in
   `out/model.json` is unchanged, and only `contentHash` — which hashes the plan SOURCE —
   moved.
@@ -1889,24 +1892,36 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       `DU-S-HP-BED3-RET` and `DU-S-ERV-HP-FEED` all end in it, so fresh air mixes upstream
       of coil and heat kit. `DU-A-HP1-RET-NECK` is 20x16 and that return opening is
       INFERRED; measure the delivered cabinet before the neck is built.
-    - **`EQ-A-HP1-SUP-BOX`** (22 1/2 x 14 x 21 shop box; `PLENUM`, a passive box walks pass through)
+    - **`EQ-A-HP1-SUP-BOX`** (22 1/2 x 14 x 23 shop box; `PLENUM`, a passive box walks pass through)
       takes the published 11 5/8 x 16 3/4 supply aperture and drops a 12x12
-      (`DU-S-HP-SUP-DROP`) as a top take-off into the 18x8 trunk in `SF-S-DUCT`. Its solid
+      (`DU-S-HP-SUP-DROP`) as a top take-off into the 18x8 trunk in `SF-S-DUCT`, 6" from the
+      trunk's north cap, which that take-off earns (decision #129). Its solid
       floor is Gree's "solid bottom first 6 in" below the outlet.
     - **The heat kit sits inside the cabinet's discharge half**, power port only;
       `blower_interlock_ref` to the AH is the relation that pardons the overlap.
     - **The cabinet stands on `SL-A-HP1-PLATFORM`, 4 1/4" up** (3/4" ply on 2x4s on edge),
       which is what lets the primary condensate port carry Gree's trap above the deck. Its
       emergency pan (IMC 307.2.3, over finished ceilings; required although the attic is
-      conditioned) sits on the platform with a float switch that opens the cooling call;
-      the pan is not modelled and its rails add about 1".
+      conditioned) is declared (`secondary_drain_pan`, `float_switch_ref="EQ-M-HP1-OD"`) but
+      not drawn; its rails add about 1", which the canvas connectors absorb.
+    - **The attic floor boots stand on 6" rises** (`DU-S-HP-STUDY-BOOT`, `-EAST-BOOT`,
+      `-WEST-BOOT`, `plan/mep_hvac_branches.py`): `mep.register_reach` wants each neck within
+      4" of its run's section. WEST leaves `DU-S-HP-SUITE`'s side because that duct is under a
+      joist.
     - **Condensate goes to `FX-B-UTIL-SINK`** (`plan/mep_condensate.py`): `PR-A-COND-HP1` down
       `W-S-DC2`/`W-M-CLN` beside the attic bath stack, and `PR-M-COND-HP3` down `W-M-STRW`,
       both south of `RM-B-ESS` and in the furnace room's one free lane at x 8'-2".
-      `EQ-B-HP2-GYM`'s is open (plans/TODO.md).
+      `EQ-B-HP2-GYM`'s is `PR-B-COND-HP2-GYM`, pumped from its lineset cover onto `PR-B-COND`.
     - **`REG-S-HP-RET` is a ceiling filter grille in `SF-S-DUCT`'s underside**: `AO-S-DUCT-RET`
       is exactly its 28x12 neck, and the return duct (not the soffit cavity) is behind it
-      (IMC 601.5; no check catches a cavity return). The 12x28x1 filter is a custom order.
+      (IMC 601.5; no check catches a cavity return). The neck is the rack plus the shop filter
+      box, 15 1/8" up to `DU-S-HP-RET`'s underside: do not draw the box as a run (a vertical
+      rectangular riser grades as a square of its width). 490 cfm; the 12x28x1 filter stays
+      custom until System 1 books a static budget (`notes/air_distribution_products.md` §5).
+    - **RM-S-PLANT's supply is `REG-S-HP-PLANT`, a high sidewall on W-S-C1's plant face above
+      D-S-PLANT** (y=41", the cripple bay between y=33" and 49"), fed by `DU-S-HP-PLANT`, a 6"
+      take-off off `DU-S-HP-SOUTH-RISE`; its 24 VAC RH damper is behind the grille. No hatch, no
+      ceiling penetration. The riser's 250 = STUDY2 75 + plant 75 + `DU-S-HP-SOUTH` 100 (a stub).
     - **BED1-3 use straight 6" side collars.** BED3 is at y=27'-6", centreline 100 1/8"
       above the second-storey datum, through W-S-BW3 above D-S-BED3's header; its collar
       clears the south king by 1/2". Close the shadow gap and cut the local resilient

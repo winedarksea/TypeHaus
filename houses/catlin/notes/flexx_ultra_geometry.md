@@ -55,7 +55,7 @@ insulation, wrench, trap or cable-bend space.
    service space, a light switched at the entry and a receptacle near the unit) are open
    items in `plans/TODO.md`.
 2. **Supply transition: modelled as a shop box.** `DU-A-HP1-SUP-NECK` (11 5/8 × 16 3/4,
-   4 inches long) joins the aperture to `EQ-A-HP1-SUP-BOX` (22 1/2 × 14 × 21). Its 12 × 12
+   4 inches long) joins the aperture to `EQ-A-HP1-SUP-BOX` (22 1/2 × 14 × 23). Its 12 × 12
    bottom outlet drops through `FO-A-HP1-SUP` into the 18 × 8 trunk in `SF-S-DUCT`. The
    indoor manual asks for a solid bottom for the first 6 inches past the outlet, and the
    box floor provides it. The aperture's setback is still unpublished: confirm it on the

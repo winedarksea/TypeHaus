@@ -8111,3 +8111,47 @@ plenum pass-through and look for a fix.
   only and PS1 is non-bearing. The fabricated rectangular elbows stay `fitting_pattern`
   UNKNOWN (owner): their throat radius comes from a shop drawing.
 
+
+## ERV and System 1 duct cleanup (2026-11-12, owner)
+
+The plan in `plans/01-decisions.md` #124–#129 fixed the engine gaps first, then the house
+lane by lane. Catlin stays at 0 FAIL; delivered ventilation stays 200.0 cfm against 188.0.
+
+- **Elbows (#124).** The Linx stamped E90/E45 is bought at 1.0 D (was a 1.5 D stand-in) and
+  shop rectangular elbows are specified at r/W 1.0, Co 0.25 (the same reading as the budget's
+  59" bend). `mep.fitting_pattern` UNKNOWNs 21 → 4: `DU-S-ERV-HP-FEED` (no lane gives its
+  3.4" straight 6") and three non-duct runs. The other ERV short straights were lengthened by
+  moving vertices, not by buying shop parts: the neck/trunk junction 2.5" west, the EXH-FEED
+  tee 0.4", PLAY's flat 7/8" lower, BED's ramp 1.4" east, BATH2's pair 2.7" west, an E45 pair
+  on the EXH riser's attic jog, and one skewed leg at the SUP riser's foot (5 fittings, not 7;
+  it clears ED-B-BACKUP-ENCL's dedicated space by 0.17"). Static note §10.26.
+- **Attic boots.** The three attic floor boots stood 5–15" above their trunks, which the new
+  `mep.register_reach` (#126) caught. Each now has a drawn 6" rise (`DU-S-HP-STUDY-BOOT`,
+  `-EAST-BOOT`, `-WEST-BOOT`), a stock spin-collar take-off into the stock 12x6x6 end boot.
+  WEST leaves `DU-S-HP-SUITE`'s side (that duct is under a joist); SUITE ends at x=16'-6".
+  `DU-S-HP-SUP`'s north cap is earned by `DU-S-HP-SUP-DROP`'s take-off (#129).
+- **AH pan (#127).** `EQ-S-HP1-AH` declares its emergency pan and a UL 508 float switch that
+  stops `EQ-M-HP1-OD` (IMC 307.2.3 item 3); the permit item gates. The pan's +1" stays
+  undrawn: both connections are canvas into shop boxes and nothing needs to move. The attic
+  storage lights went 3-way with a switch at D-A-STUDY's latch side; `ED-A-EAST-LT3` lights the
+  unit and `ED-A-HP1-RC1` is its receptacle.
+- **Hall return.** `REG-S-HP-RET` is 490 cfm (750 − ERV 100 − suite 80 − BED3 80; the 570 was
+  stale). Its filter box is its 15 1/8" neck up to `DU-S-HP-RET`, not a drawn drop: a 28x12
+  run does not fit the 14 1/4" bay. A stock 12x24x1 MERV 13 runs 245 fpm, but System 1 books no
+  static budget, so the custom 12x28 stays (`notes/air_distribution_products.md` §5).
+- **ERV supply manifold.** `EQ-M-ERV-MAN-SUP` is fed from below: `DU-M-ERV-SUP-FEED` tees off
+  `DU-ERV-RISER-SUP`'s basement corner (its lane 3" west, `EQ-B-ERV-MAN-SUP` 38") and rises
+  through `FO-M-ERV-SUP-FEED` into an 11 1/2"-deep MAN-SUP. `CD-B-GARAGE`'s north leg moved to
+  x=4'-6 1/2" to open the lane; the closet itself has no 6" lane (§10.25). Supply via LIVING
+  0.540" → 0.430".
+- **Bench damper (#128).** `DU-B-ERV-R-BENCH`'s 4" balancing damper is the run's in-line part,
+  drawn and billed; the hood's K is 6 again (§10.24).
+- **Plant room.** `REG-S-HP-PLANT` is a 12x6 high sidewall in W-S-C1's cripple bay above
+  D-S-PLANT, fed by `DU-S-HP-PLANT` (6" take-off off the riser), its RH damper behind the
+  grille. The ceiling boot, service hatch, ZD damper and dampered-ceiling assembly are
+  retired; `DU-S-HP-SOUTH` is a 100 cfm stub and no longer crosses the x=18' bearing line.
+- **Gym condensate.** `EQ-B-HP2-GYM`'s drain (~79") is below D-B-SUNKEN's 83" head and the
+  only lower pipe is unreachable under the 6'-8" line, so a mini pump in the lineset cover
+  lifts it: `PR-B-COND-HP2-GYM` rises to 95" and falls 0.26"/ft onto `PR-B-COND` at 91.7".
+- **Kinds (#125).** `EQ-A-HP1-SUP-BOX` is a `PLENUM`; `EQ-S-ERV-MIX` keeps `MIXING_BOX` (it
+  has a backdraft damper). `DU-S-HP-SUITE-RET`'s blocking slot is 7" clear, not 1".
