@@ -55,9 +55,8 @@ FILTER_RETURN_GRILLE = Product(
     tag="PROD-AIR-FILTER-RETURN-28X12", brand="Hart & Cooley", model="673 series",
     name="28x12 hinged filter-back return grille, aluminium, white, 1in filter rack",
     source=f"Basis of design, or equal: TRUaire 190RF, Shoemaker 620FG. 12x28x1 is NOT a "
-           f"stocked filter size; no stocked size fits EQ-S-ERV-MIX's 12x29 opening under "
-           f"300 fpm (12x24x1 runs ~304 fpm at 570 cfm), so the filter is ordered as a custom "
-           f"size online. {_SPEC} §5.",
+           f"stocked filter size, so it is ordered custom online (12x24x1 is stocked: 245 fpm "
+           f"at 490 cfm, but its loaded drop is no better: {_SPEC} §5 has the numbers).",
 )
 FILTER_RETURN_GRILLE_1212 = Product(
     tag="PROD-AIR-FILTER-RETURN-12X12", brand="Hart & Cooley", model="673 series 12x12",

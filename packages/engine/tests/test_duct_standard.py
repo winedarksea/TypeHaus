@@ -90,12 +90,12 @@ def test_elbow_key_reads_the_bought_angles_and_rect_sizes():
 
 def test_catlin_branch_census(catlin_model_ro):
     """M4-102: seven 4" take-offs on the flat level-2 extract trunk (BED1 tees off BED2 since
-    2026-11-11), MUD's on its neck (PLANT is the trunk's end transition), and seven System 1
-    taps (BED3's return on DU-S-HP-RET)."""
+    2026-11-11), MUD's on its neck (PLANT is the trunk's end transition), and ten System 1
+    taps (BED3's return on DU-S-HP-RET; the three attic boot rises since 2026-11-12)."""
     takeoffs = [p for p in catlin_model_ro.duct_parts if p.kind == "takeoff"]
     assert sum(p.run_tag == "DU-M-ERV-EXH-TRUNK" for p in takeoffs) == 7
     assert sum(p.run_tag == "DU-M-ERV-EXH-NECK" for p in takeoffs) == 1
-    assert sum(p.run_tag.startswith("DU-S-HP-") for p in takeoffs) == 7
+    assert sum(p.run_tag.startswith("DU-S-HP-") for p in takeoffs) == 10
 
 
 def test_a_saddle_row_is_only_a_fallback():

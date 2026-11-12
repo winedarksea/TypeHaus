@@ -137,7 +137,8 @@ Balance, by hand:
     out  REG-S-HP-SUITE-RET          80 cfm   -> net 0: D-S-SUITE carries nothing
     6x4 = 24 in^2 = 0.1667 ft^2:   80 / 0.1667 = 480 fpm (a return branch)
     12x12 face = 1.0 ft^2:         80 fpm
-    hall grille 336 in^2 = 2.333 ft^2 at 750 - 100 (ERV) - 80 = 570 cfm: 244 fpm (< 300)
+    hall grille 336 in^2 = 2.333 ft^2 at 750 - 100 (ERV) - 80 (suite) - 80 (BED3) = 490 cfm:
+    210 fpm (< 300)   [570 until BED3's return, 2026-11-11; corrected 2026-11-12]
 
 `D-S-SUITE` is `DT-INT-SWING32-PRIV-SOLID-SEALED` at the stock 1/2" undercut, kerf seal and a
 sweep; `mep.door_transfer_air` reads the zone "balanced".

@@ -232,10 +232,11 @@ AIR_REGISTER_TYPES = (
                         f"damper, removable service cassette. {_NOTE} §7; "
                         "notes/plant_supply_connection.md.",
                  ports=(_port("supply", Service.SUPPLY_AIR),)),
-    # The hall filter. 12x28x1 is not a stocked size and no stocked size fits EQ-S-ERV-MIX's
-    # 12 x 29 opening under Manual D's 300 fpm (12x24x1: ~304 fpm over its media at 570 cfm),
-    # so the filter is ordered as a custom size. The suite's and BED3's returns carry their own.
-    # At 490 cfm since BED3's return (2026-11-11) a stocked 12x24x1 reads ~245 fpm: open item.
+    # The hall filter, 490 cfm (750 - ERV 100 - suite 80 - BED3 80). 12x28x1 is not stocked, so
+    # it is ordered custom; a stocked 12x24x1 reads 245 fpm but fails the loaded-static test
+    # no better than this one does (notes/air_distribution_products.md §5), so it stays. The
+    # neck is the 1" rack plus the shop filter box up to DU-S-HP-RET's underside (15 1/8"): a
+    # 28x12 duct does not fit its 14 1/4" bay, so the box is a boot, not a drawn run.
     RegisterType(tag="REG-T-HP-RET-FILTER",
                  face_opening=(inch(28), inch(12)),
                  face_style="rectangular_grille",
@@ -244,8 +245,8 @@ AIR_REGISTER_TYPES = (
                  plan_symbol="register", product_ref="PROD-AIR-FILTER-RETURN-28X12",
                  filter_nominal_size="28x12x1", filter_merv=13, service_face="bottom",
                  neck=TerminalNeck(section="rectangular",
-                                   width=inch(28), height=inch(12), depth=inch(1.75),
-                                   part="1in filter rack"),
+                                   width=inch(28), height=inch(12), depth=inch(15.125),
+                                   part="1in filter rack and shop filter box"),
                  source=f"Face estimated off H&C 673 30x12 (32 5/8in overall); 28 x 12in duct "
                         f"size, 336 in2, 210 fpm at 490 cfm. {_NOTE} §5.",
                  ports=(_port("return", Service.RETURN_AIR),)),

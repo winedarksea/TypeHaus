@@ -214,14 +214,17 @@ DUCTS_HVAC_SECOND = [
             elevations=(inch(121), inch(102)),
             width=inch(12), depth=inch(12), routing=DuctRouting.CHASE,
             design_cfm=750, material="galvanized"),
-    # THE HALL RETURN: REG-S-HP-RET's boot rises through SF-S-DUCT's open top into FS-ATTIC's
-    # y 352-368 bay, runs east along it (12 wide x 10 deep in 13 11/16" clear; 490 cfm is
-    # 588 fpm) and turns up through the deck into EQ-S-ERV-MIX. The bay runs in x, so
-    # nothing is bored.
+    # THE HALL RETURN: REG-S-HP-RET's filter box (its neck, 15 1/8" tall: the 1" rack and the
+    # shop-made box above it) rises through SF-S-DUCT's open top into FS-ATTIC's y 352-368 bay;
+    # this run starts on its top, runs east along the bay (12 wide x 10 deep in 13 11/16" clear;
+    # 490 cfm is 588 fpm) and turns up through the deck into EQ-S-ERV-MIX. The bay runs in x,
+    # so nothing is bored. The box is the neck and not a drawn 28x12 run: E6's drop needs the
+    # arriving run to BE the neck's section, and a 28x12 run does not fit a 14 1/4" bay (a
+    # vertical rectangular riser is also graded as a square of its width).
     DuctRun(uid="CSDH02AAAA", tag="DU-S-HP-RET", system=DuctSystem.RETURN,
             path=(pt(inch(239), inch(360)), pt(inch(304.5), inch(360)),
                   pt(inch(304.5), inch(360))),
-            elevations=(inch(114.125), inch(114.125), inch(121)),
+            elevations=(inch(114.125), inch(114.125), inch(124.125)),
             width=inch(12), depth=inch(10), routing=DuctRouting.JOIST_BAY,
             floor_ref="FS-ATTIC", design_cfm=490, material="galvanized"),
     # West branch to RM-S-SUITE: tees off DU-S-HP-SUP at y=14'-8 7/8", 7" north of
