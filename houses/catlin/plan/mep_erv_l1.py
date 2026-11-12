@@ -264,7 +264,8 @@ DUCTS_ERV_BASEMENT = [
                         inch(90.125), inch(90.125), inch(90.125), inch(90.125)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=DU_B_ERV_R_GYM),
-    # THE PLAY RADIAL GOES THROUGH SF-B-BATH. From the plenum's east end it drops to -25 7/16"
+    # THE PLAY RADIAL GOES THROUGH SF-B-BATH. From the plenum's east end it drops to 83 1/8"
+    # (7/8" lower, 2026-11-12: the rise to the plate wants 8" between its two stamped 90s)
     # on x=9'-6" (east of the sauna vent, under everything), rises to 91 1/4" at
     # y=19'-7 1/4" and crosses W-B-STR2 in its 19'-4"..20'-8" bay under the top plate
     # (-15 5/8"). It eases down 1/2" on the eastbound leg to clear PR-B-LSINK-DRAIN's riser,
@@ -280,7 +281,7 @@ DUCTS_ERV_BASEMENT = [
                   pt(ft(12, 3), ft(19, 7.25)), pt(ft(12, 3), ft(18, 6.75)),
                   pt(ft(16, 9), ft(18, 6.75)), pt(ft(16, 9), ft(20, 6)),
                   pt(ft(18), ft(20, 6))),
-            elevations=(ft(7, 6), ft(7, 6), inch(84), inch(84), inch(91.25), inch(90.75),
+            elevations=(ft(7, 6), ft(7, 6), inch(83.15), inch(83.15), inch(91.25), inch(90.75),
                         inch(90.75), inch(90.75), inch(90.75), inch(90.75)),
             diameter=inch(4), routing=DuctRouting.SOFFIT, soffit_ref="SF-B-BATH",
             material="galvanized", design_cfm=DU_B_ERV_R_PLAY),

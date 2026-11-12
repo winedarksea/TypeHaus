@@ -150,12 +150,14 @@ DUCTS_ERV_LEVEL2 = [
     # own bay.
     DuctRun(uid="AJKBQGRJTP", tag="DU-M-ERV-EXH-NECK", system=DuctSystem.EXHAUST,
             path=(pt(inch(57.5), inch(420)), pt(inch(57.5), inch(420)),
-                  pt(inch(57.5), inch(360)), pt(inch(54), inch(360))),
+                  pt(inch(57.5), inch(360)), pt(inch(51.5), inch(360))),
+            # (2026-11-12) The neck ends at x=51.5" (was 54"): the rect 90 at x=57.5" wants 6" of
+            # straight before the transition, and the trunk's ramp starts there.
             elevations=(inch(-14.75), _NECK_Z, _NECK_Z, _NECK_Z),
             width=inch(6), depth=inch(4), routing=DuctRouting.JOIST_BAY,
             floor_ref="FS-S-WEST", material="galvanized", design_cfm=DU_M_ERV_EXH_TRUNK),
     DuctRun(uid="Y3G88SKSRG", tag="DU-M-ERV-EXH-TRUNK", system=DuctSystem.EXHAUST,
-            path=(pt(inch(54), inch(360)), pt(inch(48.5), inch(360)), pt(inch(27), inch(360)),
+            path=(pt(inch(51.5), inch(360)), pt(inch(46), inch(360)), pt(inch(27), inch(360)),
                   pt(inch(27), ft(9))),
             elevations=(_NECK_Z, _TRUNK_Z, _TRUNK_Z, _TRUNK_Z),
             width=inch(8), depth=inch(4), routing=DuctRouting.JOIST_BAY,
@@ -203,7 +205,7 @@ DUCTS_ERV_LEVEL2 = [
             # East under the neck, up over CD-M-DATA-KITCH, south in the D pockets at
             # x=83 3/4" on the upper tier, and straight down onto the valve in its own bay.
             path=(pt(inch(62), inch(404.125)), pt(inch(62), inch(404.125)),
-                  pt(inch(66), inch(404.125)), pt(inch(73), inch(404.125)),
+                  pt(inch(67.4), inch(404.125)), pt(inch(74.4), inch(404.125)),
                   pt(inch(83.75), inch(404.125)), pt(inch(83.75), inch(71.25))),
             elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _UP_Z, _UP_Z, _UP_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
@@ -225,9 +227,9 @@ DUCTS_ERV_LEVEL2 = [
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=DU_M_ERV_R_VANITY),
     DuctRun(uid="0DMX0NM8XS", tag="DU-M-ERV-R-BATH2", system=DuctSystem.EXHAUST,
-            # Under LIVING's x=42 1/4" lane, then 3" up: the valve is 6" past it.
-            path=(pt(inch(27), inch(186.25)), pt(inch(46), inch(186.25)),
-                  pt(inch(49), inch(186.25)), pt(ft(4, 4), inch(186.25))),
+            # A 45 pair 3" up, 5.7" before the valve's 90 (the stamped 45's 1.66" + the 90's 4").
+            path=(pt(inch(27), inch(186.25)), pt(inch(43.3), inch(186.25)),
+                  pt(inch(46.3), inch(186.25)), pt(ft(4, 4), inch(186.25))),
             elevations=(_BAY_Z, _BAY_Z, inch(-5.375), inch(-5.375)),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=DU_M_ERV_R_BATH2),

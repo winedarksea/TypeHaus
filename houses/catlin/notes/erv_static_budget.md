@@ -1481,6 +1481,41 @@ The engine reads the same figures (0.429614, 0.485167; feed leg 0.0029610). The 
 trails the extract by 0.0656". **Delivered is unchanged: 200.0 cfm against 188.0.** The tee's own
 junction loss is ungraded, as everywhere else in this budget.
 
+### 10.26 Short straights lengthened: the neck, the feed and the supply riser's foot (2026-11-12)
+
+`mep.fitting_pattern` asks a straight to hold the take-offs of the two elbows at its ends. Five
+runs were moved to pass it (stamped 90 = 1.0 D = 6" on a 6", 4" on a 4"; a 45 is R tan 22.5):
+
+| run | move | straight now |
+|---|---|---|
+| `DU-M-ERV-EXH-NECK` | ends 51.5" (was 54"); the trunk's ramp starts there, 2.5" west | 6.0" against 6.0 |
+| `DU-M-ERV-EXH-FEED` | tees 29" (was 29.4") | 6.0" against 6.0 |
+| `DU-ERV-RISER-SUP` | the foot's jog (30 pair) is one skewed leg 17.9" -> 15.4", the foot at -18 7/16" | 12.0" between the drop's two 90s |
+| `DU-ERV-RISER-EXH` | the attic jog is a 45 pair; the basement ramp starts 0.6" east | 8.5" and 7.7" |
+| `DU-B-ERV-R-PLAY`, `-R-BED`, `-R-BATH2` | PLAY 7/8" lower on its flat; BED's ramp 1.4" east; BATH2's pair 2.7" west | 4"-leg take-offs hold |
+
+**Terms that moved, hand-worked** (119 cfm; De by Huebscher, A = pi De^2/4 as in §10.14,
+Colebrook at nu 1.63e-4 ft2/s, eps 0.0003 ft; a turn's 59" equivalent length is constant):
+
+    trunk 8x4: De 6.0935", A 0.20252 ft2, V 587.6 fpm, Re 30,509, f 0.02493, VP 0.021526
+      8.805e-5 in./in. x -2.5"                    = -0.000220
+    neck 6x4:  De 5.3281", A 0.15484 ft2, V 768.5 fpm, Re 34,892, f 0.02453, VP 0.036824
+      1.6952e-4 in./in. x +2.5"                   = +0.000424
+    feed 6":   V 606.1 fpm, Re 30,985, f 0.02488, VP 0.022900
+      9.494e-5 in./in. x +0.4"                    = +0.000038
+    governing extract (SUITEBATH): 0.550724 + 0.000242 = 0.550966 in.
+
+Delivered off the curve between (0.5, 201) and (0.6, 199): 201 - 2 x (0.550966 - 0.5) / 0.1 =
+**199.981 cfm** (was 199.986); it reads 200.0 against R403.5's 188.0 either way. The engine reads
+0.550965 and 199.98. `DU-ERV-RISER-EXH`'s 45 pair is above the level-2 tap and not on the
+governing stretch (19.7 ft), so its extra turn costs the extract side nothing.
+
+**The supply riser** loses two turns (the 30 pair): 355.545" at 160 cfm, V 814.87 fpm, VP
+0.0413976, f 0.02358: friction 0.02358 x (355.545 / 6) x 0.0413976 = 0.057845 + five stamped 90s
+1.10 x VP = 0.045537 = **0.103382 in.** (was 0.117172). Past the tap (330.745" at 115 cfm, VP
+0.0213861, f 0.02504): 0.029519 + 1.10 x VP 0.023525 = 0.053044 (was 0.060164), so supply via
+HP-FEED reads 0.485167 - 0.007120 = 0.478047. The supply side stays under the extract.
+
 ### 10.5 The thermal penalty of the legs (hand-worked)
 
 Both legs run through conditioned space in 2" of closed-cell elastomeric (two 1" layers of

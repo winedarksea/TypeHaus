@@ -113,19 +113,20 @@ DUCTS_ERV_RISERS = [
             # at x=1'-3.4" the drop stood 1.6" into ED-B-BACKUP-ENCL's NEC 110.26(E)
             # dedicated space (x <= 14", y 382..398"). North to y=401 1/2", then west onto
             # the riser foot, at the old -17 15/16".
-            # The 1 5/8" x-jog onto the riser foot is a PAIR OF 30 DEGREE bends (2026-11-05): two 90s
-            # on a 6" duct want 6" between them and the jog had 1.7". It starts at y=399 1/8", past
-            # the enclosure's y=398" space edge, so the duct never leaves x >= 14".
+            # (2026-11-12) The foot's 12" tail is one SKEWED leg, not a 30 degree jog: the drop stands
+            # at x=17.9" and the tail runs 12.2" NNW onto the riser's x=15.4" (two stamped 90s want
+            # 12", and the jog's three turns wanted 18"). The skew's edge stays 0.17" off
+            # ED-B-BACKUP-ENCL's y=398" space edge (x 14") and 0.1" off CD-B-ATTIC-RISER's x=19.1" face.
             # (2026-11-12) x=5'-2" and 1" up (-18 7/16", the bay leg -6.4"): its corner is
             # DU-M-ERV-SUP-FEED's tee, a lane 4.2" off PR-B-KITCH-DRAIN's x=66 1/2" drop.
             path=(pt(inch(62), ft(30, 10)), pt(inch(62), inch(394.8)),
-                  pt(inch(62), inch(394.8)), pt(inch(17.0625), inch(394.8)),
-                  pt(inch(17.0625), inch(394.8)), pt(inch(17.0625), inch(399.1)),
-                  pt(inch(15.4), inch(401.98)), pt(inch(15.4), inch(406.8)),
+                  pt(inch(62), inch(394.8)), pt(inch(17.9), inch(394.8)),
+                  pt(inch(17.9), inch(394.8)), pt(inch(15.4), inch(406.8)),
                   pt(inch(15.4), inch(406.8))),
+            # The foot is at the bay leg's -18 7/16" (it was -17 15/16"): the 12" drop between
+            # the bay leg's two 90s was 11.5".
             elevations=(inch(-18.4375), inch(-18.4375), inch(-6.4), inch(-6.4),
-                        inch(-17.9375), inch(-17.9375), inch(-17.9375), inch(-17.9375),
-                        inch(231.875)),
+                        inch(-18.4375), inch(-18.4375), inch(231.875)),
             # 150 cfm: the 210 at its foot less the basement plenum's 60. Its highest flow
             # anywhere (notes/erv_static_budget.md §10.6).
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
@@ -165,11 +166,14 @@ DUCTS_ERV_RISERS = [
             # extract plenum's WEST face at -22", stopping at x=59.8" so it does not reach
             # DU-B-ERV-R-SAUNA-EXH's collar at x=63". The box moved to y=27'-2 1/2" on
             # 2026-11-11 and the leg went with it; the x=26.9" drop is 14 1/2" longer.
-            path=(pt(ft(4, 2), ft(34, 6)), pt(inch(26.9), ft(34, 6)),
-                  pt(inch(26.9), inch(406.8)), pt(inch(26.9), inch(406.8)),
-                  pt(inch(26.9), ft(27, 2.5)), pt(inch(34), ft(27, 2.5)),
-                  pt(inch(45.26), ft(27, 2.5)), pt(inch(59.8), ft(27, 2.5))),
-            elevations=(inch(244), inch(244), inch(244), inch(-28.4),
+            # (2026-11-12) The attic jog is a 45 pair (7.2" south over 10 1/4" of the y=34'-6" lane):
+            # two 90s need 12" between them and have 7.2". The ramp starts 0.5" east for the 90 before it.
+            path=(pt(ft(4, 2), ft(34, 6)), pt(inch(42.6), ft(34, 6)),
+                  pt(inch(35.4), inch(406.8)), pt(inch(26.9), inch(406.8)),
+                  pt(inch(26.9), inch(406.8)),
+                  pt(inch(26.9), ft(27, 2.5)), pt(inch(34.6), ft(27, 2.5)),
+                  pt(inch(45.86), ft(27, 2.5)), pt(inch(59.8), ft(27, 2.5))),
+            elevations=(inch(244), inch(244), inch(244), inch(244), inch(-28.4),
                         inch(-28.4), inch(-28.4), inch(-22), inch(-22)),
             # 164 cfm below the level-2 tap (attic 50 + level-2 114), 50 above it: the
             # basement's 46 never enters it (notes/erv_static_budget.md §10.6).
@@ -271,7 +275,7 @@ DUCTS_ERV_RISERS = [
             # landing on the riser. Since 2026-09-23 it tees into the riser's EAST face on
             # y=33'-10", clear of the three conduit risers now standing on y=34'-2 3/8".
             path=(pt(ft(2, 11), ft(35)), pt(ft(2, 11), ft(35)),
-                  pt(ft(2, 11), inch(406.8)), pt(inch(29.4), inch(406.8))),
+                  pt(ft(2, 11), inch(406.8)), pt(inch(29), inch(406.8))),
             elevations=(inch(101.25), inch(93.5), inch(93.5), inch(93.5)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=DU_M_ERV_EXH_FEED),

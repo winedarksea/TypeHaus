@@ -302,6 +302,24 @@ def test_the_level2_supply_feed_is_the_notes(catlin_model_ro) -> None:
     assert tee[0].point[:2] == pytest.approx(feed.path[0], abs=1e-6)
 
 
+def test_the_lengthened_straights_move_the_terms_the_notes_say(catlin_model_ro) -> None:
+    """Note §10.26: the neck +2.5" (0.032594 -> 0.033018), the trunk -2.5" (0.035072 ->
+    0.034852), the feed +0.4" (0.012596 -> 0.012634) and the supply riser's two 30 degree
+    bends gone (0.117172 -> 0.103382): the governing extract path 0.550724 -> 0.550966."""
+    from typehaus.checks.mep.erv_static import _delivered, _duct_drop
+
+    ctx = check_context(model=catlin_model_ro)
+    ducts = {d.tag: d for d in catlin_model_ro.ducts}
+    for tag, elbows, drop in (("DU-M-ERV-EXH-NECK", 2, 0.0330180),
+                              ("DU-M-ERV-EXH-TRUNK", 2, 0.0348519),
+                              ("DU-M-ERV-EXH-FEED", 2, 0.0126344),
+                              ("DU-ERV-RISER-SUP", 5, 0.103382)):
+        assert _duct_drop(ctx, ducts[tag], elbows).drop_in_wg == pytest.approx(drop, abs=2e-6)
+    assert ducts["DU-M-ERV-EXH-NECK"].length_m / 0.0254 == pytest.approx(76.775, abs=1e-3)
+    assert "0.551 in. w.g." in _machine_finding(catlin_model_ro).message
+    assert _delivered(_BROAN_CURVE, 0.550966) == pytest.approx(199.9807, abs=1e-3)
+
+
 def test_sauna_radials_route_through_clear_stud_bays_without_plate_or_duct_conflicts(
         catlin_model_ro, catlin_model_report) -> None:
     """Both sauna branches stay in the authored wall bays and clear the former header cut."""
