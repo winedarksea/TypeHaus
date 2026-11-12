@@ -52,6 +52,8 @@ severity, so the weight is the same where it matters.
 
 from __future__ import annotations
 
+import math
+
 from typehaus.checks._authoring import failed as _fail
 from typehaus.checks._authoring import passed as _pass
 from typehaus.checks._authoring import unknown as _unknown
@@ -123,6 +125,7 @@ def run_interference(ctx: CheckContext) -> list[Finding]:
     bundled = _bundled_pairs(ctx)
     sleeves = _sleeves(ctx)
     systems = run_systems(ctx.model)
+    leads = _kit_leads(ctx)
     joints: dict[tuple[str, str], tuple[tuple, float]] = {}
 
     flat = [(shell.tag, prism) for shell in shells for prism in shell.prisms]
@@ -160,6 +163,8 @@ def run_interference(ctx: CheckContext) -> list[Finding]:
             if contact is None or contact.score_m <= TOUCH_TOLERANCE_M:
                 continue
             if _in_sleeve(sleeves.get(pair, ()), prism, other):
+                continue
+            if _kit_lead_pair(leads, tag, other_tag, contact):
                 continue
             # In PAIR order, not iteration order: the message names the runs sorted and
             # would otherwise hang the first run's leg number — and its elevation — off the
@@ -339,6 +344,37 @@ def _envelope_gaps(every, schematic) -> list[Finding]:
             out.append(_unknown(_CID, f"{gap}. Its contacts are graded on what could be "
                                       "measured, so a clash may be missing", (shell.tag,)))
     return out
+
+
+def _kit_leads(ctx: CheckContext) -> dict[str, list[tuple[str, tuple, float]]]:
+    """``run -> [(equipment, port point, lead length)]`` for each derived port-kit lead."""
+    out: dict[str, list[tuple[str, tuple, float]]] = {}
+    for part in getattr(ctx.model, "duct_parts", ()):
+        if part.kind in ("flex", "transition") and part.other and part.port:
+            out.setdefault(part.run_tag, []).append(
+                (part.other, tuple(part.point), part.length_m or 0.0))
+    return out
+
+
+def _kit_lead_pair(leads, tag: str, other_tag: str, contact) -> bool:
+    """Two runs touching inside their kit leads off ONE machine: the maker's port spacing.
+
+    Broan's 8" outdoor/exhaust ports stand 9 3/4" apart and its kit puts a lagged lead on
+    each, so the two lead envelopes overlap at the collars by construction. That is the
+    product, not a route; contact past either lead is still graded."""
+    mine, theirs = leads.get(tag), leads.get(other_tag)
+    if not mine or not theirs:
+        return False
+
+    def within(entries, z, machine):
+        reach = sum(length for owner, _pt, length in entries if owner == machine)
+        return any(owner == machine and math.dist(
+            (*contact.point, z), point) <= reach + TOUCH_TOLERANCE_M
+            for owner, point, _length in entries)
+
+    machines = {owner for owner, _pt, _l in mine} & {owner for owner, _pt, _l in theirs}
+    return any(within(mine, contact.near_z_m, m) and within(theirs, contact.far_z_m, m)
+               for m in machines)
 
 
 def _bundled_pairs(ctx: CheckContext) -> set[tuple[str, str]]:

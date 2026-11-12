@@ -34,8 +34,9 @@ def test_the_continuous_rate_is_half_the_total_with_a_forty_cfm_floor(catlin_mod
 
 def test_catlin_grades_the_delivered_flow_against_the_cfa_rate(catlin_model_ro) -> None:
     """4,900 sf of CFA to the structural face (`notes/conditioned_floor_area.md`) and six
-    bedrooms ask 203.0 cfm; the ERV delivers 204.4 off its curve, not its 210 rating
-    (`notes/erv_static_budget.md` §10.21)."""
+    bedrooms ask 203.0 cfm; the ERV delivers 200.0 off its curve, not its 210 rating
+    (`notes/erv_static_budget.md` §10.22). 3 cfm short is past the commissioning band: a FAIL
+    the owner carries until the attic bedroom drops (2026-11-11, plans/TODO.md)."""
     summary = whole_house_summary(catlin_model_ro, catlin_model_ro.plan)
     assert summary is not None
     assert summary.conditioned_area_ft2 == pytest.approx(4897.9, abs=1.0)
@@ -43,8 +44,8 @@ def test_catlin_grades_the_delivered_flow_against_the_cfa_rate(catlin_model_ro) 
         {"basement": 1296.0, "main": 1226.1, "second": 1225.6, "attic": 1150.3}, abs=0.5)
     assert summary.total_rate_cfm == pytest.approx(203.0, abs=0.1)
     assert summary.provided_cfm == pytest.approx(210.0)
-    assert summary.delivered_cfm == pytest.approx(204.4, abs=0.1)
-    assert summary.verdict() == "pass"
+    assert summary.delivered_cfm == pytest.approx(200.0, abs=0.1)
+    assert summary.verdict() == "fail"
 
 
 @pytest.mark.parametrize(("delivered", "verdict"), [
@@ -73,7 +74,8 @@ def test_the_finding_prints_the_summarys_numbers(catlin_model_ro) -> None:
                             only="code.N1103_6_whole_house_ventilation")
     matched = [f for f in report.findings
                if f.check_id == "code.N1103_6_whole_house_ventilation"]
-    assert matched and all(f.result is Result.PASS for f in matched)
+    # FAIL until the attic bedroom drops (note §10.22); the numbers print either way.
+    assert matched and all(f.result is Result.FAIL for f in matched)
     assert f"{summary.total_rate_cfm:.1f} cfm total" in matched[0].message
     assert f"{summary.delivered_cfm:.1f} cfm delivered" in matched[0].message
     assert f"{summary.continuous_rate_cfm:.0f} cfm continuous" in matched[0].message

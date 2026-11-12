@@ -70,5 +70,5 @@ def test_erv_legs_print_where_they_meet_the_erv(catlin_model):
     the ERV's own port tags print with them (M1-002, M1-009)."""
     texts = {n.content for n in build_hvac_plan(catlin_model, "basement").nodes
              if isinstance(n, Text)}
-    assert '8" RD OUTDOOR AIR, 2" WRAP = 12" OD' in texts
+    assert '8" RD OUTDOOR AIR, 1" WRAP = 10" OD' in texts
     assert {'SUPPLY 6" RD', 'RETURN 6" RD', 'OUTDOOR 6" RD', 'EXHAUST 6" RD'} <= texts

@@ -219,11 +219,12 @@ DUCTS_ERV_RISERS = [
             # runs level at -28.4" (underside 78" AFF: the NEC 110.26(A) working spaces of ED-B-PANEL and
             # ED-B-BACKUP-ENCL) to x=34", climbs 6.4" on a pair of 30 degree bends, and enters the
             # extract plenum's WEST face at -22", stopping at x=59.8" so it does not reach
-            # DU-B-ERV-R-SAUNA-EXH's collar at x=63".
+            # DU-B-ERV-R-SAUNA-EXH's collar at x=63". The box moved to y=27'-2 1/2" on
+            # 2026-11-11 and the leg went with it; the x=26.9" drop is 14 1/2" longer.
             path=(pt(ft(4, 2), ft(34, 6)), pt(inch(26.9), ft(34, 6)),
                   pt(inch(26.9), inch(406.8)), pt(inch(26.9), inch(406.8)),
-                  pt(inch(26.9), ft(28, 5)), pt(inch(34), ft(28, 5)),
-                  pt(inch(45.26), ft(28, 5)), pt(inch(59.8), ft(28, 5))),
+                  pt(inch(26.9), ft(27, 2.5)), pt(inch(34), ft(27, 2.5)),
+                  pt(inch(45.26), ft(27, 2.5)), pt(inch(59.8), ft(27, 2.5))),
             elevations=(inch(244), inch(244), inch(244), inch(-28.4),
                         inch(-28.4), inch(-28.4), inch(-22), inch(-22)),
             # 164 cfm below the level-2 tap (attic 50 + level-2 114), 50 above it: the
@@ -242,9 +243,9 @@ DUCTS_ERV_RISERS = [
     # ** BOTH OUTDOOR LEGS LEAVE THROUGH THE NORTH WALL. ** See plan/mep_erv_outdoor.py for
     # why the gable route is not viable. Each is a riser off the machine and one straight
     # penetration: the intake at +5'-0" on the main storey, the discharge at +17'-0" on the
-    # second. Both are wrapped end to end in 2" of closed-cell elastomeric (its own vapour
-    # retarder, two 1" layers so each is 25/50-rated), mastic-sealed under the wrap; the wrap
-    # stops in the stud bay (notes/air_distribution_products.md §9).
+    # second. Both are wrapped end to end in 1" of closed-cell elastomeric (AP Armaflex, its
+    # own vapour retarder, 25/50-rated; 2" until 2026-11-11, §10.22 and §10.13 a), mastic-sealed
+    # under the wrap; the wrap stops in the stud bay (notes/air_distribution_products.md §9).
     #
     # ** THE HOOD VERTEX IS x = -0'-8", AND -0'-6" WAS SHORT (corrected 2026-09-11). **
     # -6" was picked to clear `mep.erv_outdoor_terminals`, which decides which EXHAUST run is
@@ -299,18 +300,24 @@ DUCTS_ERV_RISERS = [
             # 1" south for it) to its port. It holds -21" north of 31'-1" to clear DU-ERV-EA's
             # west leg. Length and elbow count are unchanged.
             # (2026-11-05) The 3.9" step at y=31'-1" is two 30 degree bends, y=31'-8" to 31'-1".
+            # (2026-11-11, §10.22) It lands EXACT on the 90-degree machine's south-east port:
+            # down x=3'-4" to y=28'-5" and east on that row at 84 1/2", over the return
+            # trunk's leg (top 73"), then down the port's kit lead (12" flex + the 90). The row
+            # is 11/32" south of the port centre (the flex takes it, under 1 degree) so the two
+            # 10" wraps clear by 0.09" where Broan's ports stand 9 3/4" apart.
             path=(pt(ft(3, 4), ft(36, 8)), pt(ft(3, 4), ft(34, 1)),
                   pt(ft(3, 4), ft(34, 1)), pt(ft(3, 4), ft(31, 8)),
-                  pt(ft(3, 4), inch(373.2)), pt(ft(3, 4), ft(29, 3)),
-                  pt(ft(6, 2), ft(29, 3)), pt(ft(6, 2), ft(29, 3))),
+                  pt(ft(3, 4), inch(373.2)), pt(ft(3, 4), inch(341)),
+                  pt(inch(83.6875), inch(341)), pt(inch(83.6875), inch(341.34375))),
             elevations=(inch(60), inch(60), inch(-21), inch(-21),
-                        inch(-24.9375), inch(-24.9375), inch(-24.9375), inch(-33.8375)),
+                        inch(-24.9375), inch(-24.9375), inch(-24.9375), inch(-47.4375)),
             # ** 8", AND THE MOVE IS WHAT PAID FOR IT. ** notes/erv_static_budget.md §7's
             # upsize was blocked by the chase (at the old x=2'-3 5/8" an 8" envelope overran
             # the shaft's east face). Out here the lane is 1'-10"; the term fell 0.1318 ->
             # 0.0315 and handed the governing side back to EXTRACT, so §7 is spent.
             diameter=inch(8), routing=DuctRouting.CHASE, material="galvanized",
-            insulation='2" closed-cell elastomeric, two 1" layers, R-8.4, vapour-sealed', design_cfm=DU_ERV_OA),
+            insulation='1" closed-cell elastomeric (AP Armaflex), R-4.2, vapour-sealed', design_cfm=DU_ERV_OA,
+            adjustable_elbows=(6,)),
     DuctRun(uid="BYAVBJKRS6", tag="DU-ERV-EA", system=DuctSystem.EXHAUST,
             # Manifold first, hood last — the direction the air goes, and the direction
             # `erv_outdoor_terminals` reads an EXHAUST run.
@@ -336,34 +343,22 @@ DUCTS_ERV_RISERS = [
             # both trunks. On the north wall the riser and its hood share one station: the
             # run goes straight up and straight out, two elbows fewer.
             #
-            # ** THE BASEMENT LEG RIDES THE PORT ELEVATION, NOT THE RADIAL LAYER. ** It used
-            # to rise to -2'-3" at the machine and run the radial layer; it now holds
-            # -2'-9 7/8" — the port's own height — the whole way to the riser. That ducks it
-            # under the vent bundle at -15", under the 4" radial field at -2'-3", and out of
-            # PR-B-KITCH-DRAIN's lane, which it previously ran INSIDE for 4'-3". The cost is
-            # headroom: the duct's underside sits 6'-7" over the basement floor in
-            # RM-B-FURNACE, 17" below the 8'-0 15/16" ceiling. That is a mechanical room and
-            # it is walkable, but it is lower than anything else down there and should be on
-            # the drawing.
             # (2'-0 5/8", 34'-9.5") since 2026-09-23, the chase's NE corner: it tops out at
             # 17'-0", below the radon/vent jog at 19'-6", so it is the one riser that may
             # stand in the jog's lane, and the north strip it exits through is empty. At
             # 35'-0" its 12" wrapped section stood an inch inside W-B-N4.
-            # Off the machine's port face at (4'-10 1/2", 31'-2 1/2") since 2026-09-24: at
-            # (4'-7", 31'-1") its 2" wrap touched DU-ERV-OA's, 11" away.
-            # (2026-10-17) Its port moved east with the ERV. It leaves the case's west edge at
-            # 78 1/2" AFF (its 2" wrap clears the lane's 72" line) and joins the north leg.
-            # (2026-11-05) Short-leg clearing: it rises 4 1/8" off the port (an 8" duct wants 4" before
-            # its first elbow; its wrap top stops 1/4" under EQ-B-ERV-MAN-SUP). It steps down to -31.4" (lane
-            # bottom 72" AFF, the CZ-B-DRYFIRE ceiling) on 30 degree bends at y=372", and to -33 3/4"
-            # at x=52" (under DU-ERV-OA's -21" lane, outside the lane). The old 2.9" drop between two
-            # 90s wanted 8" and the x-jog at 58.5"/52" had 6.5".
-            path=(pt(inch(74), inch(363)), pt(inch(74), inch(363)), pt(inch(58.5), inch(363)),
-                  pt(inch(58.5), inch(372)), pt(inch(58.5), inch(374.88)),
-                  pt(inch(58.5), inch(418.5)), pt(inch(52), inch(418.5)),
-                  pt(inch(47.95), inch(418.5)), pt(inch(24.625), inch(418.5)),
+            # (2026-11-11, §10.22) Off the 90-degree machine's north-east port, EXACT: up the
+            # kit lead to 81" (port + 12" flex + the 90), west on y=29'-3 5/16" over the supply
+            # trunk's leg (top 73"), down to 78" on 30 degree bends before the lane, and north
+            # on x=58.5" under EQ-B-ERV-MAN-SUP's west end as before. Its row is north of
+            # DU-ERV-OA's, which is why the two never cross.
+            path=(pt(inch(83.6875), inch(351.09375)), pt(inch(83.6875), inch(351.3)),
+                  pt(inch(72.87), inch(351.3)), pt(inch(67.74), inch(351.3)),
+                  pt(inch(58.5), inch(351.3)), pt(inch(58.5), inch(418.5)),
+                  pt(inch(49.5), inch(418.5)),
+                  pt(inch(44.37), inch(418.5)), pt(inch(24.625), inch(418.5)),
                   pt(inch(24.625), inch(418.5)), pt(inch(24.625), ft(36, 8))),
-            elevations=(inch(-33.8375), inch(-29.7375), inch(-29.7375), inch(-29.7375),
+            elevations=(inch(-47.4375), inch(-28.4375), inch(-28.4375), inch(-31.4),
                         inch(-31.4), inch(-31.4), inch(-31.4), inch(-33.7375), inch(-33.7375),
                         inch(204), inch(204)),
             # ** 8", NOT 6" (owner, in the measured package). ** This is the single biggest
@@ -373,7 +368,8 @@ DUCTS_ERV_RISERS = [
             # shaft was sized for THIS diameter months before it was bought.
             # `AO-S-ERV-EA` grows 7" -> 9" to match.
             diameter=inch(8), routing=DuctRouting.CHASE, material="galvanized",
-            insulation='2" closed-cell elastomeric, two 1" layers, R-8.4, vapour-sealed', design_cfm=DU_ERV_EA),
+            insulation='1" closed-cell elastomeric (AP Armaflex), R-4.2, vapour-sealed', design_cfm=DU_ERV_EA,
+            adjustable_elbows=(1, 4, 5)),
     # ================== THE TWO LEVEL-2 MANIFOLD FEEDS (2026-09-20) ==================
     #
     # ** THE TWO MAIN-STOREY PLENUMS HAD NO DRAWN FEED AT ALL, AND THAT WAS A HOLE IN THE

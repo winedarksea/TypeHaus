@@ -263,11 +263,14 @@ def test_the_static_and_the_delivered_flow_are_the_notes(catlin_model_ro) -> Non
     # 0.42334 - (0.03679 - 0.03503) = 0.4216, 204.9 cfm (note §10.20).
     # 2026-11-12: the basement box it passes through (+0.06102) and the riser only to its
     # tap (0.12118 -> 0.07127): 0.43269, 204.4 cfm (note §10.21).
+    # 2026-11-11: the 90-degree machine, all four ports exact: the return's bent kit flex
+    # (+0.08894), EA's transition and straight flex, its longer leg and the riser's longer
+    # drop: 0.43269 + 0.11803 = 0.55072, 200.0 cfm (note §10.22).
     assert "extract side" in message
-    assert "0.433 in. w.g." in message
+    assert "0.551 in. w.g." in message
     assert "DU-M-ERV-R-SUITEBATH 0.006\"" in message
     assert "DU-M-ERV-EXH-TRUNK 0.035\"" in message
-    assert "delivering 204 cfm" in message
+    assert "delivering 200 cfm" in message
 
 
 def test_sauna_radials_route_through_clear_stud_bays_without_plate_or_duct_conflicts(
@@ -282,8 +285,9 @@ def test_sauna_radials_route_through_clear_stud_bays_without_plate_or_duct_confl
     schedule = {row["tag"]: row for row in run_schedule(catlin_model_ro)}
     exhaust = schedule["DU-B-ERV-R-SAUNA-EXH"]
     # 44.33 since the 2026-10-31 move to x=1'-7" (note §10.7); 43.86 since its collar
-    # step became a 30° ramp (2026-11-01); 43.69 without its 2" register-end jog (note §10.9).
-    assert exhaust["developed_ft"] == pytest.approx(43.69)
+    # step became a 30° ramp (2026-11-01); 43.69 without its 2" register-end jog (note §10.9);
+    # 43.16 off the box's new collar at x=5'-10", y=26'-10 1/2" on a 45° ramp (note §10.22).
+    assert exhaust["developed_ft"] == pytest.approx(43.16)
     assert exhaust["elbows"] == 6  # the jog took one off
 
     routed_stud_passes = [finding for finding in catlin_model_report.findings

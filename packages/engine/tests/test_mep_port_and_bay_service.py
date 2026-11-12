@@ -51,14 +51,13 @@ def test_the_erv_is_reached_on_all_four_of_its_sides(catlin_model):
     """EQ-B-ERV is the regression this check exists for: it stood for a fortnight with four
     declared ports and no duct to either manifold, and every check in the engine passed."""
     findings = _findings(catlin_model, "mep.equipment_port_service")
-    served = [f for f in findings if f.element_tags == ("EQ-B-ERV",)]
-    assert len(served) == 1
-    assert served[0].result.value == "pass"
-    for system in ("return", "exhaust", "outdoor_air"):
-        assert system in served[0].message
-    # Broan's port 2 is dimensioned (2026-11-01): the supply trunk ends ON it.
-    exact = [f for f in findings if f.element_tags == ("EQ-B-ERV", "supply")]
-    assert [f.result.value for f in exact] == ["pass"]
+    # All four of Broan's ports are dimensioned and every one has a run ending ON it
+    # (2026-11-11, note §10.22): no service-level verdict is left for the machine.
+    assert not [f for f in findings if f.element_tags == ("EQ-B-ERV",)]
+    for port in ("supply", "return", "outdoor", "exhaust"):
+        exact = [f for f in findings if f.element_tags == ("EQ-B-ERV", port)]
+        assert [f.result.value for f in exact] == ["pass"], port
+        assert "exact connection" in exact[0].message
 
 
 def test_deleting_the_supply_trunk_orphans_the_manifold(catlin_model):

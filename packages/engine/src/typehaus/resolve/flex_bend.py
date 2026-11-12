@@ -104,7 +104,9 @@ def run_bend(duct: Any, index: int, kit: Any, standard: Any, *,
     bend = flex_bend(kit, size, angle, corner_m=d0, transition_m=transition_m)
     if bend is None or bend.out_m > d1 + 1e-6:
         return None
-    hit = elbow_for_turn(standard, size, angle)
+    # A corner the run names in ``adjustable_elbows`` takes the adjustable row's take-off.
+    adjustable = any(math.dist(b, q) < 1e-3 for q in getattr(duct, "adjustable_points", ()) or ())
+    hit = elbow_for_turn(standard, size, angle, adjustable)
     radius = hit[0].center_to_face.meters if hit and hit[0].center_to_face else 1.5 * size
     nominal = kit.flex_length.meters if kit.flex_length is not None else 0.0
     stock = transition_m + nominal + radius * math.tan(math.radians(angle) / 2.0)

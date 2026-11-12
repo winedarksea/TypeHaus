@@ -1261,6 +1261,99 @@ Engine: 0.432693. Supply via LIVING takes the supply box the same way: 0.3396 + 
 coefficient is authored), and extract's riser-collar term above the box curve (~5 Pa,
 ~1 cfm). Together they are the margin's real risk; the commissioning reading (§8) settles it.
 
+### 10.22 All four ports exact: the machine at 90 degrees, 13" south (2026-11-11)
+
+Owner brief: keep the Broan B210E75RT and its gravity drain, land all four ports exact, accept a
+low cfm for now. **Landed.** The ERV OA/EA/RET hold is retired.
+
+**Why every earlier layout crossed.** The risers fix the order. `DU-ERV-OA` turns north at
+x = 40" (W-M-N3B's stud module), and `DU-ERV-EA` reaches its chase foot (24.6", 418.5") from
+the east, because `DU-ERV-RISER-EXH` holds x = 26.9" and only 5.1" is left west of OA. So EA's
+north leg stands east of OA's, and for the two rows travelling west EA must be the NORTH row.
+Broan's ports (local frame, port 2 SUP at +x+y, RET at -x+y, OA at -x-y, EA at +x-y) give, per
+rotation, for the two outdoor ports:
+
+| rotation | outdoor ports | order vs the risers | blocked by |
+|---|---|---|---|
+| 0 (until today) | SW / SE, same y | EA east of OA | EA must cross OA or the SUP stem north of it |
+| 90 | east half, EA north of OA | **right** | SUP/RET stems under the rows (below) |
+| 180 | north half, EA west of OA | wrong | door north into W-B-ESS-S |
+| 270 | west half, OA north of EA | wrong | the §10.18 crossing |
+
+At 90 the supply and return ports sit on the west half, under those two rows. With straight
+leads neither can turn below the rows (6" lead: 12" flex + 6" elbow = port + 18"; 8": port + 19"),
+and the supply plenum sits right above the supply stem, so EA's westbound row runs into it.
+That is why the 2026-11-11 morning plan (90 with straight leads everywhere) could not close.
+**Bent leads under the rows are the answer**: each 6" kit flex bends at port + 8" (2" straight,
+R = 1D), runs level under the rows and turns up into its plenum. The 13" that leg needs (the
+flex's 6.6" out plus the 6" adjustable elbow) is what moved the machine.
+
+**Other options considered.** West of the lane: NEC 110.26(A) working spaces (x 12-50", to 78").
+The RS (side-port) unit: horizontal leads add a 90 at every port and the same handedness holds.
+Hanging RT above the lane (bottom >= 72"): the case top meets the 92.7" layer. The south furnace
+room (y 245-314"): open, but OA and EA would each grow by about 10 ft. Moving MAN-SUP east of
+the case: its three radials and the riser move with it, and EA still meets the supply stem.
+
+**As built.**
+
+| element | was | now |
+|---|---|---|
+| `EQ-B-ERV` | (80.44, 358"), rotation 0, case 52.3" | (80.44, 344.75"), **rotation 90**, case 40.4", ports 62.0" |
+| ports | SUP exact; RET/OA/EA approximate | all four exact: SUP (73.81, 352.97), RET (75.56, 339.59), OA (83.69, 341.34), EA (83.69, 351.09) |
+| `DU-B-ERV-SUP-TRUNK` | straight 12.1" | bent flex to 70", 13" north, adjustable 90 up into `EQ-B-ERV-MAN-SUP` (unchanged) |
+| `DU-B-ERV-RET-TRUNK` | jog under the case | bent flex to 70", 13" south, adjustable 90 up into `EQ-B-ERV-MAN-EXH` |
+| `EQ-B-ERV-MAN-EXH` | y = 341" | **y = 326.5"**; `collar-sauna` x -15" -> -8" (between `PR-M-S-BATH1-DRAIN` and `PR-B-HW-SBATH`) |
+| `DU-ERV-OA` | onto (74, 351) at service level | row at y = 341" (11/32" off its port, taken by the flex), 84.5", straight kit lead |
+| `DU-ERV-EA` | onto (74, 363) at service level | straight kit lead to 81", row at y = 351.3", 30 deg pair to 78" before the lane |
+| OA / EA wrap | 2" (12" OD) | **1" AP Armaflex (10" OD)**; the rows clear by 0.09" |
+| `PR-B-ERV-COND` | 12.9 ft via x = 115.5" | 9.7 ft straight down x = 91.5", ends 2.3" over the 34" rim |
+| radials | | GYM holds 90" over EA's elbow; BATH, SAUNA-EXH and RISER-EXH follow the box |
+
+Two engine changes came with it. `resolve/flex_bend.run_bend` takes the adjustable elbow's take-off
+where the run names that vertex in `adjustable_elbows`: an 8" stamped 90 publishes no
+centre-to-face, so at 1.5D a 19" lead read as bent. And `mep.run_interference` does not report
+two kit leads touching inside their own lead lengths off one machine: Broan's 8" ports stand
+9 3/4" apart, so two lagged leads overlap at the collars by construction. EA's elbow against
+OA's flex is outside that and was still reported; it moved 0.2".
+
+**The static, hand-worked against §10.21** (210 cfm on both trunks; 6": V 1069.5 fpm,
+VP 0.071314, Re 54,679, f 0.02255; 8": V 601.6, VP 0.022564, Re 41,009, f 0.02322; galvanized
+eps 9.14e-5 m, nu 1.63e-4 ft2/s):
+
+    RET flex, bent    1.18 x 0.071314 = 0.084150 + 12" of flex friction (1.196 Pa) 0.004802 = 0.088952
+    RET rigid         0.02255 x (3.0312 / 0.5) x 0.071314 + 0.37 x 0.071314
+                      = 0.009747 + 0.026386 = 0.036133   (was 0.037448: 1.8875 ft, C 0.44)  -0.001315
+    EA transition     0.22 x 0.071314                                                    = 0.015689
+    EA flex, straight 12" of 8" flex at 210 cfm (0.268 Pa)                               = 0.001076
+    EA rigid          0.02322 x (33.8169 / 0.6667) x 0.022564 + 2.1550 x 0.022564
+                      = 0.026576 + 0.048625 = 0.075201   (was 0.064030: 30.7737 ft, C 1.7659) +0.011171
+                      (C: three adjustable 90s 1.11, two stamped 90s at the chase 0.44, the
+                      30 deg pair 0.329, the 24.5 deg pair at y = 418.5" 0.276)
+    RISER-EXH         below the tap 18.52 -> 19.73 ft at 164 cfm, 0.0020424 in./ft x 1.2083 = +0.002468
+
+    extract via SUITEBATH: 0.43269 + 0.11803 = 0.55072 in.
+    delivered: 201 - (0.05072 / 0.1) x 2 = 200.0 cfm   (R403.5: 203.0, -3.0)
+
+Engine: 0.550724, 200.0 cfm. Supply via LIVING takes the same two kit terms on OA and SUP's bent
+flex: 0.4006 + 0.1395 = about 0.540, still behind extract. **3 cfm short is outside the 2 cfm
+commissioning band, so `code.N1103_6_whole_house_ventilation` FAILs** and, with it, R303.1
+Exception 1 in RM-A-STUDIO, RM-B-PLAY-N, RM-S-BED3 and RM-S-PLANT. The owner carries that red
+(no suppression) until the attic bedroom drops, which takes about 15 cfm off the 203.0.
+Almost all of the cost is the return's bend (0.089 in.); levers if it is wanted back: tee
+`DU-ERV-RISER-EXH` into the return trunk instead of through the box (about 20 Pa, but junction
+loss is not graded), or a stamped 90 on the return's rise (2.7 Pa, needs MAN-EXH 2 1/2" further
+south and off the `PR-M-S-BATH1-DRAIN` stack).
+
+**Thermal, 1" wrap** (§10.5's method): R-4.2 + 0.8 films = R-5.0 over pi x 9" = 2.356 ft2/ft,
+UA 0.471 Btu/h.F.ft. OA 0.471 x 20.60 x 85 = 825; EA 0.471 x 33.82 x 55 = 876; **1,701 Btu/h**
+(2" at these lengths: 1,029). Effective recovery 65% -> 0.65 x (12,530 - 1,701) / 12,530 = 56%.
+Surface condensation stays safe to about 66% RH indoors (§10.13 a).
+
+**Field items.** Hang the case on threaded rod or strut, about 35" from the joists (Broan's straps
+are not that long). The ERV door zone shares about 10" x 14" with D-B-CLOSET's swing. GV0772's
+length is still unread (counted 0): every inch of it lifts OA and EA, and OA has 3.2" to the
+92.73" conduits. Broan's top-port drainage question (`air_distribution_products.md`) stands.
+
 ### 10.5 The thermal penalty of the legs (hand-worked)
 
 Both legs run through conditioned space in 2" of closed-cell elastomeric (two 1" layers of

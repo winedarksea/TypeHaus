@@ -322,42 +322,31 @@ BASEMENT_EQUIPMENT = [
     # makes water into (plan/mep_drainage.py). The footprint on the element is
     # documentation; the TYPE's 24.8" x 21" is what resolves.
     #
-    # Position (6'-8 7/16", 29'-10"), east of the dry-fire lane (2026-10-17; 3/16" west on
-    # 2026-10-29 so the 24 1/4" tank clears its east face, and the west face stays 0.04"
-    # out of CZ-B-DRYFIRE: a full 1/4" lands 0.025" in it). Its north edge
-    # stops 1 1/8" short of W-B-ESS-S (y 369 5/8"), which is why it moved south from 30'-6".
-    # Clear of EQ-B-ESS-BATT's 36" REQUIRED separation zone (x 49 1/4"..145 1/4", y 378"..460")
-    # Every ERV branch is authored off the two manifolds
-    # (plan/mep_erv_l1.py), not off the machine.
+    # Position (6'-8 7/16", 28'-8 3/4"), east of the dry-fire lane (west face 1.94" out of
+    # CZ-B-DRYFIRE). Every ERV branch is authored off the two manifolds (plan/mep_erv_l1.py).
     Equipment(uid="CEE016AAAA", tag="EQ-B-ERV", kind=EquipmentKind.ERV,
-              position=pt(ft(6, 8.4375), ft(29, 10)), footprint=(inch(24.8), inch(21)),
+              position=pt(ft(6, 8.4375), ft(28, 8.75)), footprint=(inch(24.8), inch(21)),
               room="RM-B-FURNACE", type_ref="EQ-T-BROAN-B210E75RT", circuit="CKT-ERV",
-              rotation=deg(0),  # electrical box west, door south: the collars follow
-              # HUNG, not floor-standing. Two reasons and the second is the binding one: a
-              # Broan ships with hanging straps and this is how the unit installs, and a
-              # floor-standing ERV cannot drain by gravity. Its core makes water all winter,
-              # the nearest receptor is FX-B-SAUNA-FD nine feet up the basement's other end,
-              # and a spigot at slab level has nowhere to fall to.
+              rotation=deg(90),  # electrical box south, door east: the collars follow
+              # ** ALL FOUR PORTS ARE EXACT (2026-11-11, notes/erv_static_budget.md §10.22). **
+              # At 90 the outdoor ports are on the east half with EA north of OA, the order the
+              # risers want (OA turns north at x=3'-4", EA comes in along y=34'-10 1/2"), so the
+              # two outdoor legs never cross. Supply and return are on the west half, under
+              # those two rows: their kit flex bends at 70" (R = 1D) and each takes a 13" leg
+              # under the rows, supply north into EQ-B-ERV-MAN-SUP, return south into
+              # EQ-B-ERV-MAN-EXH. The 13" is what put the machine at 28'-8 3/4".
               #
-              # ELEVATION 52.3" (was 4'-6" until 2026-11-07: the direct condensate line left
-              # 1.7" to spend, which is what the supply trunk's 12" flex lead was short;
-              # notes/erv_static_budget.md §10.11 has the 5" the condensate fall allows). ALL FOUR
-              # air ports are 6" round on its TOP face (EQ-T-BROAN-B210E75RT,
-              # plan/mep_erv_types.py). At 4'-6" the case top was at 6'-3 5/8", giving the two
-              # outdoor legs (plan/mep_erv_risers.py) and the two manifold trunks
-              # (plan/mep_erv_l1.py) a 6'-10 7/16"
-              # crossing band: 1 5/8" under the 7'-6" radial layer, 6 13/16" over this case,
-              # and 6'-7 3/8" of headroom beneath — over R305.1.1's 6'-4" basement
-              # projection floor. PR-B-ERV-COND (plan/mep_drainage.py) falls by gravity from
-              # the pan to FX-B-UTIL-SINK: south at x=91 1/2", east on y=311" and south
-              # along W-B-STR2's mech face, all inside the furnace room.
+              # HUNG at 40.4" to the case bottom, ports at 62". It hangs because it drains by
+              # gravity: PR-B-ERV-COND falls to FX-B-UTIL-SINK, and the case height is set by
+              # that fall and by OA/EA's straight leads (port + 12" flex + elbow = 19") staying
+              # under the 92.73" conduits. Hang it on threaded rod or strut from the FS-M-MECH
+              # joists (about 35" of drop); Broan's straps are not that long.
               #
-              # SERVICE ACCESS (notes/erv_service_access.md): keep this exposed in
-              # RM-B-FURNACE, with 13" clear in front of the hinged maintenance door and
-              # 3" clear on the electrical-box side. The north edge is only 1 1/8" from
-              # W-B-ESS-S, so orient both service zones toward the open room, not that wall.
-              # Quarterly filter/core service uses a portable ladder; do not box the unit in.
-              mount=Mount(kind=MountKind.CEILING, elevation=inch(52.3)),
+              # SERVICE ACCESS (notes/erv_service_access.md): exposed in RM-B-FURNACE, 13" clear
+              # in front of the east door (x 7'-6 15/16"..8'-7 15/16") and 3" on the south
+              # electrical-box side. The door zone shares about 10" x 14" with D-B-CLOSET's
+              # swing; one door at a time. Quarterly filter/core service from the floor.
+              mount=Mount(kind=MountKind.CEILING, elevation=inch(40.4)),
               pan_drain_ref="PR-B-ERV-COND",
               # Its fresh air reaches the second storey through EQ-S-ERV-MIX and this AH's
               # ducts, so the ERV's furnace/air-handler interlock contacts (Broan

@@ -74,9 +74,7 @@ EQUIPMENT_TYPES_ERV = (
                   # off the case sides and 5 5/8" / 3 7/8" off the back; ports 4/3 sit
                   # 6 1/16" off each side and 13 3/4" off the back, so 9 3/4" apart (the
                   # 21 7/8" case less two 6 1/16"; derived, not dimensioned directly).
-                  # Only `supply` is EXACT: return, outdoor and exhaust cannot all leave
-                  # their collars under the two basement plenums (A4, 2026-11-01), so they
-                  # stay graded at service level until that layout is decided.
+                  # All four are EXACT since 2026-11-11 (EQ-B-ERV at 90 degrees, §10.22).
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),
                          # Port 2, fresh air to building.
@@ -88,17 +86,17 @@ EQUIPMENT_TYPES_ERV = (
                          ServicePort(tag="return", service=Service.RETURN_AIR,
                                      position=(inch(-5.15625), inch(4.875), inch(21.6)),
                                      connection_size=inch(6), direction=(0, 0, 1),
-                                     certainty=PortCertainty.APPROXIMATE),
+                                     certainty=PortCertainty.EXACT),
                          # Port 4, fresh air from outside.
                          ServicePort(tag="outdoor", service=Service.OUTDOOR_AIR,
                                      position=(inch(-3.40625), inch(-3.25), inch(21.6)),
                                      connection_size=inch(6), direction=(0, 0, 1),
-                                     certainty=PortCertainty.APPROXIMATE),
+                                     certainty=PortCertainty.EXACT),
                          # Port 3, exhaust air to outside.
                          ServicePort(tag="exhaust", service=Service.EXHAUST_AIR,
                                      position=(inch(6.34375), inch(-3.25), inch(21.6)),
                                      connection_size=inch(6), direction=(0, 0, 1),
-                                     certainty=PortCertainty.APPROXIMATE))),
+                                     certainty=PortCertainty.EXACT))),
     # ** THREE FABRICATED PLENUMS, NOT A PROPRIETARY MANIFOLD (2026-09-12, BLD-08). **
     # These rows read "160 mm collar, 75 mm outlets" until today, and that part is sold in
     # the USA by exactly two importers (Zehnder and Brink via 475) with no Minnesota dealer
@@ -263,7 +261,7 @@ EQUIPMENT_TYPES_ERV = (
                          ServicePort(tag="riser", service=Service.RETURN_AIR,
                                      position=(inch(-4.5), inch(0), inch(0))),
                          ServicePort(tag="collar-sauna", service=Service.EXHAUST_AIR,
-                                     position=(inch(-15), inch(-4), inch(4)),
+                                     position=(inch(-8), inch(-4), inch(4)),
                                      connection_size=inch(4),
                                      certainty=PortCertainty.EXACT),
                          # (2026-11-11) collar-bench is not cut: DU-B-ERV-R-BENCH taps SAUNA-EXH.

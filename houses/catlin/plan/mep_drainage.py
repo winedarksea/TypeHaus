@@ -592,24 +592,20 @@ CONDENSATE_MAIN = [
 #
 # ** GRAVITY TO A RECEPTOR, NOT THE SUMP (owner, 2026-10-17). ** No pump: the pan
 # (50.8" AFF, 1 1/2" under the case bottom at 52.3") is the highest the line can ever be.
-# ** EXPOSED THROUGH THE MECH ROOM, DIRECT TO THE SINK (owner, 2026-11-07). ** A mechanical room
-# may show a 3/4" pipe, so the 2026-10-29 detour behind the tank, through the under-stair storage
-# and inside W-B-BA-N is gone (275" of run, 5.7" of fall at 1/4"). East under the case to the
-# gap between its east face and the tank (x 91.5", 0.9" off the tank's tangent), south along it
-# to y=311" (5" clear of D-B-CLOSET's swing, y >= 316"), east on y=311" to the W-B-STR3B face,
-# then the old exposed leg south to the sink: 155" of plan, 12.9 ft. Every leg 0.33-0.52"/ft
-# (slope is not the binding term; 1/4" over 155" is 3.2" of the 6.55" head, notes/
-# erv_static_budget.md §10.11). It ends where it did: a 10" air gap over the 34" rim, above the
-# faucet's 43" box. The sink's own trap seals it, so the line takes none (Rheem: no trap to a
-# non-sewer receptor). Nothing crosses the dry-fire lane (x 40..68") or the door swing.
+# ** EXPOSED THROUGH THE MECH ROOM, STRAIGHT TO THE SINK (2026-11-11, notes/erv_static_budget.md
+# §10.22). ** A mechanical room may show a 3/4" pipe. Off the 90-degree machine's pan (front centre,
+# now its east side) east under the case, south on x=91 1/2" (west of D-B-CLOSET's swing) and east
+# onto the front of FX-B-UTIL-SINK: 116" of plan, 9.7 ft, every leg >= 0.26"/ft. It ends 2.3" over the
+# 34" rim, below the faucet's 43" box: UPC 801.3 / Minn. R. 4714 want an air gap of twice the pipe
+# diameter and >= 1" (1 1/2" here). The sink's own trap seals it, so the line takes none (no trap
+# to a non-sewer receptor). Nothing crosses the dry-fire lane (x 40..68") or a door swing. The
+# water heater moved to RM-B-WORKSHOP; PR-B-WH-COND reaches the sink on its own.
 ERV_CONDENSATE = [
     PipeRun(uid="3XVTM6HD5T", tag="PR-B-ERV-COND", system=PipeSystem.DRAIN, sanitary=False,
-            path=(pt(inch(80.6), inch(352)), pt(inch(91.5), inch(352)),
-                  pt(inch(91.5), inch(311)), pt(inch(115.5), inch(311)),
-                  pt(inch(115.5), inch(238)), pt(inch(110), inch(238))),
+            path=(pt(inch(86.4375), inch(344.9125)), pt(inch(91.5), inch(344.9125)),
+                  pt(inch(91.5), inch(240)), pt(inch(97.5), inch(240))),
             diameter=inch(0.75), material="pvc",
-            elevations=(inch(50.8), inch(50.5), inch(48.72), inch(47.67), inch(44.49),
-                        inch(44.25),)),
+            elevations=(inch(38.9), inch(38.78), inch(36.5), inch(36.3))),
     # EQ-B-WH's primary condensate (3/4" NPT, 59" AFF, Rheem sheet C), 2026-11-09: off the
     # port's axis, west along the tank's side, north at x=9'-8" through W-B-CW3 into the
     # furnace room, and down to its own 13" air gap over FX-B-UTIL-SINK's rim, beside

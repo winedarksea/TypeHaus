@@ -79,7 +79,8 @@ def test_erv_condensate_stays_outside_the_dry_fire_lane(catlin_model_ro):
 
 def test_erv_condensate_falls_to_the_utility_sink(catlin_model_ro):
     """No pump and no sump (owner, 2026-10-17): the line falls the whole way and ends over
-    FX-B-UTIL-SINK's basin (2026-10-30), an air gap above its 34" rim and 43" faucet box."""
+    FX-B-UTIL-SINK's basin (2026-10-30), an air gap over its 34" rim of at least twice the
+    pipe's diameter (UPC 801.3), below the 43" faucet box since the case dropped (§10.22)."""
     import math
 
     from shapely.geometry import Point, Polygon
@@ -91,7 +92,8 @@ def test_erv_condensate_falls_to_the_utility_sink(catlin_model_ro):
     sink = next(o for o in catlin_model_ro.canvas_objects if o.tag == "FX-B-UTIL-SINK")
     assert Polygon(sink.footprint).contains(Point(run.path[-1]))
     room = next(r for r in catlin_model_ro.rooms if r.tag == "RM-B-FURNACE")
-    assert (run.z_m[-1] - room_floor_elevation(catlin_model_ro, room)) / M_PER_IN > 43
+    gap = (run.z_m[-1] - room_floor_elevation(catlin_model_ro, room)) / M_PER_IN - 34
+    assert gap >= 2 * run.diameter_m / M_PER_IN
     for a, b, za, zb in zip(run.path, run.path[1:], run.z_m, run.z_m[1:]):
         run_ft = math.dist(a, b) / M_PER_IN / 12
         assert za - zb >= 0

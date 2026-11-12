@@ -160,12 +160,11 @@ EQUIPMENT_ERV_BASEMENT = [
               position=pt(ft(6, 6), ft(30, 5.5)), footprint=(inch(36), inch(8)),
               room="RM-B-FURNACE", type_ref="EQ-T-ERV-PLENUM-B-SUP",
               mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 2))),
-    # 5/8" lower than its twin: PR-B-SAUNA-VENT's y=28'-8" leg crosses over this box at
-    # 7'-10 7/16" and its top stood in the pipe (structural.placeable_interference).
-    # y=28'-5" since 2026-10-31, 1" south, so DU-ERV-OA's port leg passes beside it at
-    # 84 1/2" (over the panels' 78" working space) instead of under it.
+    # y=27'-2 1/2" since 2026-11-11 (14 1/2" south): the return port's 13" leg under
+    # DU-ERV-OA's row rises into its underside, and OA's row takes the old y=28'-5" slot.
+    # The box is clear of PR-B-SAUNA-VENT's y=28'-8" leg now; it kept its 7'-1 3/8".
     Equipment(uid="CRN5GT0ECP", tag="EQ-B-ERV-MAN-EXH", kind=EquipmentKind.DUCT_MANIFOLD,
-              position=pt(ft(6, 6), ft(28, 5)), footprint=(inch(36), inch(8)),
+              position=pt(ft(6, 6), ft(27, 2.5)), footprint=(inch(36), inch(8)),
               room="RM-B-FURNACE", type_ref="EQ-T-ERV-PLENUM-B-EXH",
               mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 1.375))),
 ]
@@ -211,25 +210,23 @@ EQUIPMENT_ERV_BASEMENT = [
 # about nine feet short of the old (27', 27') position, and throws away from FURN-B-PLAY-TV
 # on the east wall.
 DUCTS_ERV_BASEMENT = [
-    # ** THE MACHINE'S OWN TWO TRUNKS. ** Both are 6", the machine's full 210 cfm, and both
-    # leave its top.
-    #
-    # (2026-10-17) The ERV sits at x=6'-8 5/8", so both trunks leave its top inside the case.
-    # The supply rises straight off Broan's port 2 into EQ-B-ERV-MAN-SUP's underside
-    # (2026-11-01; it stood 4 5/8" off the collar). The case sits 1.7" lower since 2026-11-07, so
-    # the port is at 73.9" and the trunk is 12.1" long: Broan's 12" flex lead fits.
+    # ** THE MACHINE'S OWN TWO TRUNKS (2026-11-11, notes/erv_static_budget.md §10.22). **
+    # Both 6", the machine's full 210 cfm, off the west half of its top. Each kit flex bends
+    # at 70" (2" straight, R = 6") under DU-ERV-EA's and DU-ERV-OA's rows, runs 13" level
+    # and turns up into its plenum: the supply north into EQ-B-ERV-MAN-SUP's underside, the
+    # return south into EQ-B-ERV-MAN-EXH's. 13" is the flex's 6.6" out plus the 6" elbow.
     DuctRun(uid="225MZ1YDWB", tag="DU-B-ERV-SUP-TRUNK", system=DuctSystem.SUPPLY,
-            path=(pt(inch(88.65625), inch(364.625)), pt(inch(88.65625), inch(364.625))),
-            elevations=(inch(73.9), ft(7, 2)),
+            path=(pt(inch(73.8125), inch(352.96875)), pt(inch(73.8125), inch(352.96875)),
+                  pt(inch(73.8125), inch(365.96875)), pt(inch(73.8125), inch(365.96875))),
+            elevations=(inch(62), inch(70), inch(70), ft(7, 2)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
-            design_cfm=DU_B_ERV_SUP_TRUNK),
-    # (2026-10-17) Off the case's north-east top, under the collars. Nothing west of x=6'-0".
+            design_cfm=DU_B_ERV_SUP_TRUNK, adjustable_elbows=(2,)),
     DuctRun(uid="6BTCWW2S1V", tag="DU-B-ERV-RET-TRUNK", system=DuctSystem.RETURN,
-            path=(pt(inch(85.25), ft(29, 2)), pt(ft(7, 4.5), ft(29, 2)),
-                  pt(ft(7, 4.5), ft(28, 5)), pt(ft(7, 4.5), ft(28, 5))),
-            elevations=(inch(75.6), inch(75.6), inch(75.6), ft(7, 2)),
+            path=(pt(inch(75.5625), inch(339.59375)), pt(inch(75.5625), inch(339.59375)),
+                  pt(inch(75.5625), inch(326.59375)), pt(inch(75.5625), inch(326.59375))),
+            elevations=(inch(62), inch(70), inch(70), ft(7, 1.375)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
-            design_cfm=DU_B_ERV_RET_TRUNK),
+            design_cfm=DU_B_ERV_RET_TRUNK, adjustable_elbows=(2,)),
     # ** NEITHER RADIAL CROSSES ST-B2M ANY MORE (2026-09-22). ** Both used to ride the
     # y=29'-6"/30'-6" belt east over the stair, 1" (GYM) and 15 5/8" (PLAY) into the 6'-8"
     # headroom over the upper flight's nosings — `code.R311_7_2_stair_headroom` counts runs
@@ -258,12 +255,12 @@ DUCTS_ERV_BASEMENT = [
     # exposed in the gym any more.
     DuctRun(uid="CND5TE40W0", tag="DU-B-ERV-R-GYM", system=DuctSystem.SUPPLY,
             # Stock turns only: a 45 degree ramp and a 45 degree offset.
-            path=(pt(ft(6, 10), ft(30, 2)), pt(ft(6, 10), ft(29, 8)),
-                  pt(inch(92.375), ft(29, 8)), pt(ft(9), ft(29, 8)),
+            path=(pt(ft(6, 10), ft(30, 2)), pt(ft(6, 10), ft(29, 8)), pt(inch(92.375), ft(29, 8)),
+                  pt(inch(98.375), ft(29, 8)), pt(ft(9), ft(29, 8)),
                   pt(ft(9), inch(224.5)), pt(ft(9), inch(218.375)), pt(ft(9), inch(212)),
                   pt(inch(112), inch(208)),
                   pt(inch(112), ft(13, 4)), pt(ft(18), ft(13, 4))),
-            elevations=(ft(7, 6), ft(7, 6), inch(84), inch(84), inch(84), inch(90.125),
+            elevations=(ft(7, 6), ft(7, 6), ft(7, 6), inch(84), inch(84), inch(84), inch(90.125),
                         inch(90.125), inch(90.125), inch(90.125), inch(90.125)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=DU_B_ERV_R_GYM),
@@ -325,13 +322,14 @@ DUCTS_ERV_BASEMENT = [
     # the upper flight to (12', 24'-1 5/8") through `stringer-upper-0`, `tread-upper-003` and
     # W-B-STR3's ledger. The flight's own structure is now inside the volume a router refuses.
     DuctRun(uid="03883CKF0H", tag="DU-B-ERV-R-BATH", system=DuctSystem.EXHAUST,
-            path=(pt(ft(8), ft(28, 5)), pt(ft(8, 6), ft(28, 5)),
+            path=(pt(ft(8), ft(27, 2.5)), pt(ft(8, 6), ft(27, 2.5)),
                   pt(ft(8, 6), ft(24)), pt(inch(119.875), ft(24))),
             elevations=(ft(7, 6), ft(7, 6), ft(7, 6), ft(7, 6)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=DU_B_ERV_R_BATH),
-    # It leaves its collar 6" south and steps down on a 30° ramp (2026-11-01; a 2" stub and
-    # a 7 3/4" drop were shorter than their elbows' take-offs).
+    # It leaves its collar 4" south and steps down on a 45° ramp to 82 1/4" before it turns
+    # west, so it passes under PR-M-S-BATH1-DRAIN's x=5'-0" fall (2026-11-11, with the box). Its
+    # collar is at x=5'-10", between that stack and PR-B-HW-SBATH's riser at x=5'-6 1/2".
     # The low pickup is 4" off the floor on W-B-SA-W. The route uses W-B-CW's x=1'-7" bay
     # (out of the panels' 110.26(E) space since 2026-10-31), clear of D-B-FURN's header,
     # then turns east at y=3'-4". (Until 2026-11-11 the sauna supply shared the lane, 1/4" over
@@ -342,8 +340,8 @@ DUCTS_ERV_BASEMENT = [
     DuctRun(uid="1Y457X9DMH", tag="DU-B-ERV-R-SAUNA-EXH", system=DuctSystem.EXHAUST,
             # (2026-11-07) The drop stands at x=116" (was 116 9/16"): the last stub to the
             # register is 6", the take-off of the 90 above it (was 5 7/16").
-            path=(pt(ft(5, 3), ft(28, 1)), pt(ft(5, 3), ft(27, 7)), pt(inch(49.5625), ft(27, 7)),
-                  pt(ft(1, 7), ft(27, 7)), pt(ft(1, 7), inch(40)),
+            path=(pt(ft(5, 10), inch(322.5)), pt(ft(5, 10), inch(318.5)), pt(ft(5, 10), inch(310.75)),
+                  pt(ft(1, 7), inch(310.75)), pt(ft(1, 7), inch(40)),
                   pt(inch(116), inch(40)), pt(inch(116), inch(40)),
                   pt(inch(122), inch(40))),
             elevations=(ft(7, 6), ft(7, 6), inch(82.25), inch(82.25), inch(82.25), inch(82.25),
