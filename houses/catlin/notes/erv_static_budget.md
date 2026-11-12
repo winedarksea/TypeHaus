@@ -1406,6 +1406,48 @@ SAUNA-EXH 0.029835 at 26 cfm, `EQ-B-ERV-MAN-EXH`, and the extract chain.
 **Governing:** unchanged. Extract via `DU-M-ERV-R-SUITEBATH`, 0.550724 in., **200.0 cfm**
 against R403.5's 188.0 (§10.23, +12.0). Engine: 0.550724, 199.99 cfm; bench leg 0.000208.
 
+### 10.25 EQ-M-ERV-MAN-SUP's feed, re-measured with EA's 1" wrap: still no 6" lane (2026-11-12)
+
+`mep.manifold_feed` FAILs the box: BED and STUDY leave its collars and nothing arrives. §10.13's
+gates, re-read off the resolved envelopes (EA's wrap now 10" OD, axis (24.625", 418.5")):
+
+| gate (main closet, full height) | §10.13 (2" wrap) | now |
+|---|---|---|
+| EXH riser crown 409.8" to EA wrap | 2.70 (2.92 round) | **3.70 (3.92 round)** |
+| CD-B-SPARE-CHASE top 410.5" to EA wrap | under 1 | **3.0, binds** |
+| SUP riser 18.4" to EXH riser 23.9" | 5.50, three conduits in it | 5.50 |
+| EXH riser 403.8" to W-M-MECH-S finish 402.25" | 1.55 | 1.55 |
+| EA wrap 423.5" to W-M-N3B finish 425.375" | 1.00 | **1.88** |
+
+An east-going feed off the riser must clear all three verticals on one line: y >= 409.4 + 1.1 + 3
+= 413.5 for SPARE and y <= 418.5 - 5 - 3 = 410.5 for EA, so it is **3.0" short**. Across the
+column the closet is 23 1/8" deep; EXH 6 + feed 6 + EA 10 + four 1/2" clearances is 24.0, so
+re-packing SUP/EXH/EA around the conduits cannot open it either. `haus route` from the riser at
++80": 80 of 12,881 nodes reachable, blocked by CD-B-ATTIC-RISER and CD-B-SPARE-CHASE, and lifting
+either alone opens nothing.
+
+The basement does not either. Under FO-M-ERV-OA every point east of the column is DU-ERV-OA's
+leg (x 35-45", AFF 83.4-93.4) or EA (y 413.5-423.5"). East of the header the FS-M-MECH bay
+(405.4-421.4") has no drawn hole, and the lane up to it is CD-B-GARAGE (x 58.7-60.3") to
+PR-B-KITCH-DRAIN (x 65.3"): **5.0"**. §10.11's R1 window over EA's x=58.5" leg is 8.0" now (EA top
+AFF 83.0 to CD-B-GARAGE's 91.0; was 7.0), but KITCH-DRAIN's leg (y 401.8-404.2", AFF 84.8-87.6)
+stands in it, leaving 3.4" over and 1.8" under.
+
+**What the budget charges meanwhile.** `erv_routes` gives an unfed plenum the nearest trunk,
+whole: MAN-SUP's three paths pay `DU-ERV-RISER-SUP` end to end at 160 cfm, **0.117"**. Supply
+via LIVING is 0.5401", 0.0106" under the governing extract (0.5507"). A drawn 6" feed at 45 cfm
+would cost A = 0.19635 ft2, V = 229.2 fpm, VP = (229.2 / 4005)^2 = 0.003275 in.; 0.020"/100 ft
+and 0.22 x VP = 0.00072" per stamped elbow, so about 0.0002" per foot plus 0.0007" per turn, and
+the riser would be charged only to its tap. The supply paths can only fall, and the extract
+governs, so **delivered stays 200.0 cfm against 188.0**. No term moved; the oracle is unchanged.
+
+**What would open it** (not in this lane's files): (a) CD-B-GARAGE off x 58.7-60.3" north of
+y 394", which leaves a 7.6" lane between PR-B-CW-TRUNK and KITCH-DRAIN over KITCH-DRAIN's leg, plus a
+drawn 6" FloorOpening in that bay under the box (east of FO-M-ERV-OA's header). Not routed:
+the tee off the riser's basement corner still has to step 3 1/2" west. (b) The three chase
+conduits out of x 18.8-22.8", so EXH can stand north of SUP and the feed leaves SUP's east
+face at y 406.8". (c) EA's riser and hood moved: held (§10.12).
+
 ### 10.5 The thermal penalty of the legs (hand-worked)
 
 Both legs run through conditioned space in 2" of closed-cell elastomeric (two 1" layers of

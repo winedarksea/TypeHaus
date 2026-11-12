@@ -17,7 +17,8 @@ The 2,515-line original was split by system (AGENTS.md §1.1 keeps files under 5
 - ``plan/mep_erv_l2.py``         — the two RM-M-MECH plenums and the thirteen FS-S-WEST radials
 - ``plan/mep_erv_l3.py``         — the attic plenum, the mixing box and the FS-ATTIC radials
 - ``plan/mep_erv_outdoor.py``    — the two north-facade hoods and their wall penetrations
-- ``plan/mep_erv_risers.py``     — the three chase risers and the two outdoor legs
+- ``plan/mep_erv_risers.py``     — the two chase risers and their level-2 feeds
+- ``plan/mep_erv_outdoor_legs.py`` — the two outdoor legs, DU-ERV-OA and DU-ERV-EA
 - ``plan/mep_erv_types.py``      — the ERV catalog: the Broan, the two manifold sizes, the
   mixing box, the exterior hood, the over-bench capture hood
 - ``plan/mep_registers_<storey>.py`` — the air terminals themselves, one file per storey
@@ -46,6 +47,7 @@ from plan import (
                   mep_erv_l2,
                   mep_erv_l3,
                   mep_erv_outdoor,
+                  mep_erv_outdoor_legs,
                   mep_erv_risers,
                   mep_erv_types,
                   mep_hvac,
@@ -105,6 +107,7 @@ MAIN_ELEMENTS = [*mep_sleeves.SLEEVES,
                  # penetration note in mep_erv_outdoor.py.
                  *mep_erv_outdoor.PENETRATIONS_ERV_MAIN,
                  *mep_erv_risers.DUCTS_ERV_RISERS,
+                 *mep_erv_outdoor_legs.DUCTS_ERV_OUTDOOR_LEGS,
                  *mep_registers_main.REGISTERS_MAIN,
                  *mep_registers_main.TRANSFER_PANEL_OPENINGS_MAIN]
 

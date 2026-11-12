@@ -2,8 +2,8 @@
 # Catlin MEP — the ERV's OUTDOOR side: the two north-facade hoods, the two wall
 # penetrations they stand on, and the two wall seals.
 #
-# The legs that reach them, DU-ERV-OA and DU-ERV-EA, are in plan/mep_erv_risers.py with
-# the three risers — they are one authored list because plan/mep.py spreads it whole.
+# The legs that reach them, DU-ERV-OA and DU-ERV-EA, are in plan/mep_erv_outdoor_legs.py, in
+# DUCTS_ERV_OUTDOOR_LEGS (split out of plan/mep_erv_risers.py, 2026-11-12).
 # The system as a whole is documented once, in plan/mep_erv_l1.py's header.
 from typehaus import (
     Equipment,
@@ -25,7 +25,7 @@ from typehaus.model import Location, WallAttachment, deg
 # to sweep the NW chase to reach a west hood — DU-ERV-OA across x -0'-8"..2'-3 5/8" at
 # +4'-0", DU-ERV-EA across x 1'-11"..-0'-8" at +17'-0" — and the pair carried TWELVE measured
 # interpenetrations between them. Out the north wall each leaves at its own station and
-# sweeps nothing. The RISERS block below has the twelve, term by term, and the argument for
+# sweeps nothing. plan/mep_erv_outdoor_legs.py has the twelve, term by term, and the argument for
 # why this also bought DU-ERV-OA its 8".
 #
 # ** THE NORTH GABLE IS STILL NOT A VIABLE ROUTE, AND IT IS A DIFFERENT WALL. ** What
