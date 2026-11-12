@@ -231,13 +231,11 @@ def _capped_past_a_takeoff(ctx: CheckContext, duct: ResolvedDuct,
 
 
 def _collars(ctx: CheckContext, duct: ResolvedDuct) -> list:
-    """The ceiling collars naming a ROUND run; each takes a run end from above."""
-    from typehaus.resolve.terminal_drops import collars_by_run
+    """The ceiling necks naming this run; each takes a run end from above."""
+    from typehaus.resolve.terminal_drops import collars_by_run, engaged
 
-    if duct.diameter_m is None:
-        return []
-    return shared(ctx, "duct_connectivity.collars",
-                  lambda: collars_by_run(ctx.model)).get(duct.tag, [])
+    return engaged(duct, shared(ctx, "duct_connectivity.collars",
+                                lambda: collars_by_run(ctx.model)).get(duct.tag, []))
 
 
 def _collar_tags(ctx: CheckContext, duct: ResolvedDuct) -> set[str]:
@@ -262,7 +260,7 @@ def _collar_end(ctx: CheckContext, duct: ResolvedDuct,
     if not near:
         return None
     tag, collar = min(near, key=lambda item: span(item[1], point))
-    return tag, collar_seat_problem(duct.path, duct.z_m, at_end, tag, collar)
+    return tag, collar_seat_problem(duct.path, duct.z_m, at_end, tag, collar, duct)
 
 
 def _mid_run_collars(ctx: CheckContext, duct: ResolvedDuct,

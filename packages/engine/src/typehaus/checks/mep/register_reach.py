@@ -13,8 +13,9 @@ the named run's section in plan *and* z.
   authored boots top out at 3.1" (floor boots over an ERV radial); the attic floor boots
   are 5.4"-14.7" short.
 
-Not graded here (another check owns them): a plain round ceiling COLLAR (``_collar_end``
-and ``terminal_drops`` already demand it be seated on top of the run), and a register the
+Not graded here (another check owns them): a plain ceiling NECK the run is
+drawn onto (``_collar_end``/``terminal_drops``: a round collar always, a rectangular neck once
+a run end sits on it) is graded there for its seat and section, and a register the
 run names in ``end_terminal_ref`` (``inlet_connection_error``). A register with no neck box
 has only its face: within the drop, PASS; farther, UNKNOWN (the boot is unmodelled).
 """

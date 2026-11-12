@@ -86,7 +86,8 @@ def test_a_ceiling_collar_takes_its_run_on_a_derived_drop(catlin_model_ro) -> No
 
     model = catlin_model_ro
     duct = next(d for d in model.ducts if d.tag == "DU-M-ERV-R-LIVING")
-    (_, (x, y, top, _)), = collars_by_run(model)[duct.tag]
+    (_, collar), = collars_by_run(model)[duct.tag]
+    x, y, top = collar.x, collar.y, collar.z_top
     assert duct.path[-1] == pytest.approx((x, y))
     assert duct.path[-2] == pytest.approx((x, y))
     assert duct.z_m[-1] == pytest.approx(top)
@@ -102,6 +103,46 @@ def test_a_ceiling_collar_takes_its_run_on_a_derived_drop(catlin_model_ro) -> No
     failed = [f for f in duct_connectivity(check_context(model=sunk))
               if f.result is Result.FAIL and duct.tag in f.element_tags]
     assert failed and "below REG-M-SUP1's collar top" in failed[0].message
+
+
+def test_a_rectangular_return_neck_takes_a_drop_and_guards_its_section(
+        catlin_model_ro) -> None:
+    """REG-S-HP-RET's 28x12 neck: a rectangular run drawn onto its top is graded connected
+    (connectivity, end landing, and register_reach stands aside); another section is not."""
+    from typehaus.checks.mep.register_reach import register_reach
+    from typehaus.resolve.duct_terminations import end_landings
+    from typehaus.resolve.terminal_drops import collars_by_run, drop_onto_collars
+
+    model = catlin_model_ro
+    duct = next(d for d in model.ducts if d.tag == "DU-S-HP-RET")
+    (reg, neck), = collars_by_run(model)[duct.tag]
+    assert (reg, neck.is_round) == ("REG-S-HP-RET", False)
+
+    def with_drop(**section):
+        at = (neck.x, neck.y)
+        run = replace(duct, path=[at, at, *duct.path[1:]],
+                      z_m=(neck.z_top, *duct.z_m), **section)
+        found = replace(model, ducts=[run if d is duct else d for d in model.ducts])
+        ctx = check_context(model=found)
+        mine = [f for f in duct_connectivity(ctx) if duct.tag in f.element_tags
+                and "start" in f.message]
+        reach = [f for f in register_reach(ctx) if reg in f.element_tags]
+        lands = next(e for e in end_landings(found) if (e.run_tag, e.index) == (duct.tag, 0))
+        return mine, reach, lands
+
+    mine, reach, lands = with_drop(width_m=neck.width, depth_m=neck.depth)
+    assert [f.result for f in mine] == [Result.PASS]
+    assert "drops onto REG-S-HP-RET" in mine[0].message
+    assert not reach and (lands.landing, lands.other) == ("terminal", reg)
+    flipped, *_ = with_drop(width_m=neck.depth, depth_m=neck.width)  # either orientation
+    assert flipped[0].result is Result.PASS
+    wrong, *_ = with_drop()  # DU-S-HP-RET is 12x10 and the neck 28x12
+    assert wrong[0].result is Result.FAIL and "arrives as 12x10 but" in wrong[0].message
+
+    # A level end over the neck gets its drop appended, as a round collar's does.
+    path, z = [(neck.x, neck.y), (neck.x + 1.0, neck.y)], [neck.z_top + 0.3] * 2
+    drop_onto_collars(model, duct.tag, path, z)
+    assert path[0] == (neck.x, neck.y) and z[0] == neck.z_top and len(path) == 3
 
 
 def test_study_drops_on_the_adjustable_elbow_it_names(catlin_model_ro) -> None:

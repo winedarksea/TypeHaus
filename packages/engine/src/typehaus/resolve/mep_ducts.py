@@ -242,10 +242,10 @@ def resolve_duct_run(model: ResolvedModel, duct: DuctRun, storey,
     adjustable = tuple((path[j][0], path[j][1], z[j]) for i in duct.adjustable_elbows
                        if 0 < i < authored
                        for j in [len(path) - 1 if i == authored - 1 else i])
-    if collar_fed and diameter_m is not None:
+    if collar_fed:
         from typehaus.resolve.terminal_drops import drop_onto_collars
 
-        drop_onto_collars(model, duct.tag, path, z)
+        drop_onto_collars(model, duct.tag, path, z, (diameter_m, width_m, depth_m))
     developed = sum(
         math.hypot(length(sub(path[i], path[i + 1])), z[i + 1] - z[i])
         for i in range(len(path) - 1))

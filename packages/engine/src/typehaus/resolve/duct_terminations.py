@@ -26,7 +26,7 @@ from typehaus.resolve.mep_soffit import (
     plan_distance_to_segment,
 )
 from typehaus.resolve.model_ducts import Point3, ResolvedDuctPart
-from typehaus.resolve.terminal_drops import collar_seat_problem, collars_by_run
+from typehaus.resolve.terminal_drops import collar_seat_problem, collars_by_run, engaged
 
 #: A duct end this close to an exact port or collar lands on it.
 PORT_TOLERANCE_M = 1.0 * M_PER_IN
@@ -91,13 +91,13 @@ def end_landings(model: Any) -> list[EndLanding]:
     for duct in sorted(model.ducts, key=lambda d: d.tag):
         for index, point, axis in duct_ends(duct):
             out.append(EndLanding(duct.tag, index, point, axis, *_classify(
-                model, duct, point, registers, _round_collars(duct, collars), index != 0)))
+                model, duct, point, registers, _neck_collars(duct, collars), index != 0)))
     return out
 
 
-def _round_collars(duct: Any, collars: dict[str, list]) -> dict[str, Any]:
-    """``{register tag: collar}`` for the ceiling collars a ROUND run must drop onto."""
-    return dict(collars.get(duct.tag, ())) if duct.diameter_m is not None else {}
+def _neck_collars(duct: Any, collars: dict[str, list]) -> dict[str, Any]:
+    """``{register tag: Collar}`` for the ceiling necks this run must drop onto."""
+    return dict(engaged(duct, collars.get(duct.tag, ())))
 
 
 def _classify(model: Any, duct: Any, point: Point3, registers: dict[str, list[Any]],
@@ -114,7 +114,7 @@ def _classify(model: Any, duct: Any, point: Point3, registers: dict[str, list[An
     for obj in registers.get(duct.tag, ()):
         if obj.tag in collars:  # seated on its top, or nothing: no plan-only reach
             if collar_seat_problem(duct.path, duct.z_m, at_end, obj.tag,
-                                   collars[obj.tag]) is None:
+                                   collars[obj.tag], duct) is None:
                 return "terminal", obj.tag, None
         elif math.dist(obj.position, point[:2]) <= BOOT_REACH_M:
             return "terminal", obj.tag, None
@@ -215,7 +215,7 @@ def _boots(model: Any, standard: DuctStandard) -> list[ResolvedDuctPart]:
         if duct is None or len(duct.path) < 2:
             continue
         size = section(duct)
-        seated = _round_collars(duct, collars)
+        seated = _neck_collars(duct, collars)
         for obj in sorted(objects, key=lambda o: o.tag):
             neck = neck_text(types.get(obj.type_ref))
             row = standard.part("boot", size, neck)

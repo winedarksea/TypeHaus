@@ -91,24 +91,24 @@ def terminal_inlet(model: ResolvedModel, tag: str):
             inlet.width.meters, inlet.height.meters)
 
 
-def ceiling_collar(model: ResolvedModel, obj) -> tuple[float, float, float, float] | None:
-    """``(x, y, z_top, diameter)`` of a plain round ceiling collar, else None.
+def ceiling_collar(model: ResolvedModel, obj):
+    """The placed ``terminal_drops.Collar`` of a plain ceiling neck, else None.
 
-    A neck with components or a dimensioned inlet is reached by ``end_terminal_ref``; a
-    rectangular one is not a collar a round duct drops onto.
+    A neck with components or a dimensioned inlet is reached by ``end_terminal_ref``.
     """
     if (obj.kind != "Register" or obj.mount is None or obj.body_z0_m is None
             or obj.mount.kind.value != "ceiling"):
         return None
-    from typehaus.resolve.terminal_drops import plain_round_collar
+    from typehaus.resolve.terminal_drops import Collar, plain_collar
 
     catalog = next((t for t in model.plan.library.register_types
                     if t.tag == obj.type_ref), None)
-    if not plain_round_collar(catalog):
+    kind = plain_collar(catalog)
+    if kind is None:
         return None
     neck = catalog.neck
-    return (obj.position[0], obj.position[1], obj.body_z0_m + neck.depth.meters,
-            neck.width.meters)
+    return Collar(obj.position[0], obj.position[1], obj.body_z0_m + neck.depth.meters,
+                  neck.width.meters, neck.height.meters, kind == "round")
 
 
 def _rotate(local: tuple[float, float], degrees: float) -> tuple[float, float]:
