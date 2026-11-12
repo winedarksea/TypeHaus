@@ -273,6 +273,20 @@ def test_the_static_and_the_delivered_flow_are_the_notes(catlin_model_ro) -> Non
     assert "delivering 200 cfm" in message
 
 
+def test_the_bench_dampers_fully_open_charge_is_the_notes(catlin_model_ro) -> None:
+    """Note §10.24: the in-line damper at C 0.34 on 6 cfm through 4" adds 0.00010020 in. to
+    ``DU-B-ERV-R-BENCH``'s 0.00010769 (friction + one stamped 90)."""
+    from typehaus.checks.mep.erv_static import _duct_drop
+
+    ctx = check_context(model=catlin_model_ro)
+    duct = next(d for d in catlin_model_ro.ducts if d.tag == "DU-B-ERV-R-BENCH")
+    damper = [p for p in catlin_model_ro.duct_parts
+              if p.kind == "damper" and p.run_tag == duct.tag]
+    assert len(damper) == 1 and damper[0].product_ref == "PROD-AIR-DAMPER-4-MANUAL"
+    assert damper[0].point[2] - duct.z_m[1] == pytest.approx(-6.25 * 0.0254, abs=1e-6)
+    assert _duct_drop(ctx, duct, 1).drop_in_wg == pytest.approx(0.00020789, abs=2e-8)
+
+
 def test_sauna_radials_route_through_clear_stud_bays_without_plate_or_duct_conflicts(
         catlin_model_ro, catlin_model_report) -> None:
     """Both sauna branches stay in the authored wall bays and clear the former header cut."""

@@ -6386,6 +6386,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # makes has no product and keys "<kind>-<size>[-<branch>]".
 "PROD-DUCT-SPIN-4" = { low = 8, high = 15 }              # 13 ea — 4" spin collar with damper (12 collar_damper + 1 takeoff)
 "PROD-DUCT-SPIN-6" = { low = 9, high = 18 }              # 4 ea — 6" spin collar with damper
+"PROD-AIR-DAMPER-4-MANUAL" = { low = 10, high = 25 }     # 1 ea — 4" in-line volume damper, locking quadrant (DU-B-ERV-R-BENCH, 2026-11-12; estimate, no listing read)
 "PROD-DUCT-SADDLE-4" = { low = 6, high = 12 }            # 9 ea — 4" wye saddle on the 8" trunk
 "PROD-DUCT-INCREASER-4-5" = { low = 4, high = 10 }       # 1 ea — 4" to 5" increaser at a boot
 "PROD-DUCT-BOOT-2X10X4" = { low = 6, high = 12 }         # 4 ea — 2-1/4 x 10 x 4 floor boot

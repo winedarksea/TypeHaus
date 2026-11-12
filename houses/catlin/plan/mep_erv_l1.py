@@ -305,13 +305,14 @@ DUCTS_ERV_BASEMENT = [
     # at y=8'-6" (82 1/4"; SAUNA-EXH carries its 6 cfm), east 6" (the hood moved 1" east), then
     # drops to the hood at 5'-6". Side, never the bottom: the sauna's duct sweats and a bottom
     # take-off would drain it into the hood. Both are extract (RETURN joins EXHAUST,
-    # `mep_envelopes.systems_join`). Closing the sauna hatches swings flow to the hood, so its
-    # 4" balancing damper rides in the hood's collar (REG-T-ERV-BENCH-HOOD's part, billed).
+    # `mep_envelopes.systems_join`). Closing the sauna hatches swings flow to the hood, so a 4"
+    # in-line balancing damper sits on the drop, centred 2" over the hood's collar (76"), its
+    # quadrant reached from the workshop floor.
     DuctRun(uid="MTVYDDP43W", tag="DU-B-ERV-R-BENCH", system=DuctSystem.RETURN,
             path=(pt(ft(1, 7), ft(8, 6)), pt(ft(2, 1), ft(8, 6)), pt(ft(2, 1), ft(8, 6))),
             elevations=(inch(82.25), inch(82.25), ft(6, 2)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
-            design_cfm=DU_B_ERV_R_BENCH),
+            design_cfm=DU_B_ERV_R_BENCH, inline_dampers=(inch(12.25),)),
     # The basement bath's extract leaves the plenum's EAST end straight off its collar (6",
     # one elbow's take-off; it dropped 1 1/4" there until 2026-11-01), then south on x=8'-6"
     # and east on y=24'-0" to a sidewall grille in W-B-STR3B (REG-B-EXH1). At -19 7/16" it

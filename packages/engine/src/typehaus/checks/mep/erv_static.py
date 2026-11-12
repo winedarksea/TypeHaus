@@ -56,6 +56,7 @@ from typehaus.checks.mep.erv_landings import (
 )
 from typehaus.checks.mep.erv_routes import trunk_routes
 from typehaus.checks.mep.erv_static_terms import (
+    damper_drop_in_wg,
     elbow_loss_sum,
     interpolate,
     machine_trunk_flows,
@@ -141,6 +142,17 @@ def _rect_drop(ctx: CheckContext, duct, elbows: int) -> _Leg:
 
 
 def _duct_drop(ctx: CheckContext, duct, elbows: int) -> _Leg:
+    """The run's friction and turns, plus its in-line dampers fully open."""
+    leg = _run_drop(ctx, duct, elbows)
+    if leg.drop_in_wg is None:
+        return leg
+    damper, gaps = damper_drop_in_wg(ctx, duct, duct.design_cfm)
+    if gaps:
+        return _Leg(duct.tag, None, "; ".join(gaps))
+    return _Leg(duct.tag, leg.drop_in_wg + damper, None)
+
+
+def _run_drop(ctx: CheckContext, duct, elbows: int) -> _Leg:
     """Darcy-Weisbach over developed length plus the elbows' equivalent length."""
     diameter_m = getattr(duct, "diameter_m", None)
     if diameter_m is None and duct.material is not None:
@@ -201,8 +213,11 @@ def _stretch_drop(ctx: CheckContext, duct, nodes: list, trunks: list
             return None
         bends = 0.0 if c is not None or not inside else inside * bend.meters
         effective = min(hi, length) - max(lo, 0.0) + bends
+        damper, gaps = damper_drop_in_wg(ctx, duct, cfm, keep)
+        if gaps:
+            return None
         return duct_sizing.leg_drop_in_wg(cfm, bore, rough, effective) + (c or 0.0) \
-            * velocity_pressure_in_wg(cfm, bore)
+            * velocity_pressure_in_wg(cfm, bore) + damper
 
     walked = [drop(lo, hi, q) for lo, hi, q in spans]
     whole = drop(-1.0, length + 1.0, duct.design_cfm)  # every turn, ends included

@@ -87,7 +87,7 @@ ROUND_DAMPER_4_24V = Product(
 ROUND_DAMPER_4_MANUAL = Product(
     tag="PROD-AIR-DAMPER-4-MANUAL", brand="Imperial",
     name="4in round manual volume damper, locking quadrant, galvanized",
-    source="The bench hood's balancing damper, in its collar (REG-T-ERV-BENCH-HOOD): closing "
+    source="The DuctStandard's in-line damper (DU-B-ERV-R-BENCH, over the bench hood): closing "
            "the sauna hatches swings DU-B-ERV-R-SAUNA-EXH's flow to the hood. SKU picked at "
            "order; any retail 4in round volume damper with a quadrant lock.",
 )

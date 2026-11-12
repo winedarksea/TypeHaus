@@ -286,6 +286,9 @@ class DuctRun(Element):
     #: Authored path vertices whose turn is the DuctStandard's adjustable elbow rather than
     #: the stamped one: where the stamped laying length does not fit (decision #114).
     adjustable_elbows: tuple[int, ...] = ()
+    #: In-line volume dampers, each the damper's centre as developed length along the
+    #: resolved path from its first vertex; the DuctStandard's ``damper`` row is the part.
+    inline_dampers: tuple[Length, ...] = ()
 
 
 @register_element

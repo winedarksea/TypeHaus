@@ -2,10 +2,11 @@
 
 ``resolve/duct_parts.py`` leaves ``ResolvedDuctPart`` / ``ResolvedDuctSupport`` records;
 this turns each into one ``derived`` ``ResolvedSolid`` with a closed ``body_mesh``: a loft
-between two sections for a collar, reducer, transition, boot or flex, a U strap or paired
-rods for a hanger. Billing stays on the records. An integral part (the terminal's or
-machine's own collar) draws nothing. Dimensions the row never read fall back to the
-envelope of the sections it joins, never to detail the standard does not state.
+between two sections for a collar, reducer, transition, boot or flex, a sleeve and quadrant
+for a damper, a U strap or paired rods for a hanger. Billing stays on the records. An
+integral part (the terminal's or machine's own collar) draws nothing. Dimensions the row
+never read fall back to the envelope of the sections it joins, never to detail the standard
+does not state.
 
 Sections parse from the record text (``4in`` round, ``18x8`` width x depth, inches).
 """
@@ -33,7 +34,7 @@ HANDLE_M = (1.5 * M_PER_IN, 2.0 * M_PER_IN, 0.25 * M_PER_IN)
 HANDLE_STANDOFF_M = 0.125 * M_PER_IN  # the shaft, undrawn
 _CATEGORY = {"takeoff": "duct_fitting", "tee": "duct_fitting", "reducer": "duct_fitting",
              "transition": "duct_fitting", "boot": "duct_fitting",
-             "collar_damper": "duct_damper", "flex": "duct_connector",
+             "collar_damper": "duct_damper", "damper": "duct_damper", "flex": "duct_connector",
              "connector": "duct_connector"}
 
 
@@ -236,10 +237,15 @@ def _part_mesh(model: ResolvedModel, part: ResolvedDuctPart,
         flipped = _into_run(part, model) if part.kind == "reducer" else True
         ends = (small, size) if flipped else (size, small)
         return loft(part.point, axis, *ends, length)
-    if part.kind == "collar_damper":
-        collar = loft(part.point, axis, size, size, COLLAR_LENGTH_M)
+    if part.kind in ("collar_damper", "damper"):
+        # A collar starts at its plenum; an in-line body is centred on its station.
+        body = COLLAR_LENGTH_M if part.kind == "collar_damper" else (
+            part.length_m or size.larger)
+        start = part.point if part.kind == "collar_damper" else _add(part.point, axis,
+                                                                      -body / 2.0)
+        collar = loft(start, axis, size, size, body)
         right, up = leg_frame(axis)
-        mid = _add(part.point, axis, COLLAR_LENGTH_M / 2.0)
+        mid = _add(start, axis, body / 2.0)
         out = size.width / 2.0 + HANDLE_STANDOFF_M + HANDLE_M[2] / 2.0
         along, around, thick = HANDLE_M
         return combine_meshes(collar, _box(_add(mid, right, out), (axis, up, right),

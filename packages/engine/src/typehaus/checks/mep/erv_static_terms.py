@@ -284,3 +284,33 @@ def _diameter_in(size: str | None) -> float | None:
     from typehaus.quantities import M_PER_IN
 
     return float(size[:-2]) * M_PER_IN if size and size.endswith("in") else None
+
+
+def damper_drop_in_wg(ctx: CheckContext, duct, cfm: float,
+                      keep=None) -> tuple[float, list[str]]:
+    """``(in. w.g., gaps)`` of the run's in-line dampers fully open: the ``damper`` row's
+    published C x the run's velocity pressure (round: the product's bore; rectangular: the
+    flow area's round equivalent). An unread C is a gap, never a zero. ``keep(point)``
+    filters by station, as ``elbow_loss_sum`` does."""
+    import math
+
+    from typehaus.resolve.duct_standard import duct_standard
+
+    parts = [p for p in ctx.model.duct_parts if p.kind == "damper" and p.run_tag == duct.tag
+             and (keep is None or keep(p.point))]
+    if not parts:
+        return 0.0, []
+    standard = duct_standard(ctx.plan)[0]
+    if duct.diameter_m is not None:
+        product = product_for(ctx, duct.material, duct.diameter_m)
+        bore = product.bore_diameter.meters if product is not None else duct.diameter_m
+    else:
+        bore = math.sqrt(4.0 * duct.width_m * duct.depth_m / math.pi)
+    total, gaps = 0.0, []
+    for part in parts:
+        row = standard.part("damper", part.size) if standard else None
+        if row is None or row.loss_c is None:
+            gaps.append(f"the in-line damper at {part.size} has no published fully-open C")
+            continue
+        total += row.loss_c * velocity_pressure_in_wg(cfm, bore)
+    return total, gaps

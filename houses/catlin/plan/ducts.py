@@ -24,6 +24,8 @@
 #     2026-11-07). Flex per JP Lamborn (IMC 603.10).
 #   * Mastic billed by the gallon at the TDS's UL 181B-M 30 mil film: 320 LF at 3" x 20 mil
 #     scaled to 30 mil = 213 LF/gal.
+#   * In-line damper: C 0.34 fully open, from the smallest round damper with a published AMCA
+#     500-D test (Greenheck VCDR-53, 12"); notes/erv_static_budget.md s.10.24.
 #   * Broan port kit (manual pp. 10-11): 6 to 8 in. transition, then 12 in. of flex.
 
 from typehaus import (
@@ -55,6 +57,7 @@ _ROUND = "SMACNA HVAC DCS 1995 Table 4-2, round to 10 in."
 _RECT = "SMACNA HVAC DCS 1995 Table 4-1, half-perimeter to 30 in."
 _FLEX = "JP Lamborn Installation Guidelines Rev. 11-16 (sylvane.com/cdn/shop/files/installation-guide-jpl-mhp25-25-ft-insulated-flex-duct.pdf, read 2026-11-07): 'supported at 4 ft maximum intervals by means of min 1.5 in. wide straps'; IMC 603.10 sends flex to the manufacturer"
 _RECT_ELBOW = "SMACNA HVAC DCS 1995 rectangular radius elbow, shop-fabricated, r/W 1.0, no vanes; Co 0.25 at r/W 1.0, H/W 0.5 (ASHRAE 'Fitting Loss Coefficients', online supplement to Principles of HVAC 9th ed., 2021, Fitting 3-5 p. 12, after Idelchik Diagram 6-1; read 2026-11-08, notes/erv_static_budget.md)"
+_DAMPER = "In-line single-blade volume damper fully open: no 4 in. maker publishes a loss, so C is read off Greenheck VCDR-53 (Aug 2023) AMCA 500-D Fig. 5.3 fully ducted, 12 in.: 0.19 in. wg at 3000 fpm = 0.34 x VP (0.32-0.36 over the table), above the 0.30 ASHRAE butterfly term notes/erv_static_budget.md s.4 uses; body length unpublished (drawn at its diameter)"
 _KIT = "Broan B210E75RT manual pp. 10-11; transition C 0.22 is the sudden 6/8 in. bound"
 
 DUCT_PRODUCTS = (
@@ -165,6 +168,8 @@ DUCT_STANDARD = [
         parts=(
             DuctPartRow(kind="collar_damper", size="4in", product_ref="PROD-DUCT-SPIN-4",
                         source=_IMPERIAL),
+            DuctPartRow(kind="damper", size="4in", product_ref="PROD-AIR-DAMPER-4-MANUAL",
+                        loss_c=0.34, source=_DAMPER),
             DuctPartRow(kind="collar_damper", size="8in", integral=True,
                         source="the plenum's own trunk spigot; a trunk is not balanced"),
             DuctPartRow(kind="collar_damper", size="6in", integral=True,
@@ -187,6 +192,8 @@ DUCT_STANDARD = [
                         source="flanged 3 1/4 x 8 stack boot with a 4 in collar for the disc valve, shop-fabricated; flange sealed to the humid liner (notes/plant_room.md)"),
             DuctPartRow(kind="takeoff", size="8in", branch="4in",
                         product_ref="PROD-DUCT-SADDLE-4", source=_IMPERIAL),
+            DuctPartRow(kind="takeoff", size="10x8", branch="6in",
+                        product_ref="PROD-DUCT-SPIN-6", source=_IMPERIAL),
             DuctPartRow(kind="takeoff", size="18x8", branch="6in",
                         product_ref="PROD-DUCT-SPIN-6", source=_IMPERIAL),
             DuctPartRow(kind="takeoff", size="18x8", branch="4in",
@@ -195,8 +202,8 @@ DUCT_STANDARD = [
                         product_ref="PROD-DUCT-SPIN-6", source=_IMPERIAL),
             DuctPartRow(kind="takeoff", size="18x8", branch="10x8", fabricated=True,
                         source="rectangular branch, shop-fabricated with the trunk"),
-            DuctPartRow(kind="takeoff", size="18x8", branch="12x12", fabricated=True,
-                        source="DU-S-HP-SUP-DROP's top take-off at the trunk's north cap, shop-fabricated"),
+            DuctPartRow(kind="reducer", size="18x8", branch="12x12", fabricated=True,
+                        source="DU-S-HP-SUP-DROP lands on the trunk's north end: a rectangular transition, shop-fabricated"),
             DuctPartRow(kind="tee", size="6in", branch="6in", product_ref="PROD-DUCT-TEE-6-6",
                         source=_IMP26),
             # REG-M-RET3's branch off LAUNDRY's crown (2026-11-10).

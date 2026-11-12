@@ -208,7 +208,7 @@ K on the **collar** velocity pressure (0.81 Pa at 20 cfm through 4"):
 |---|---|---|---|
 | `REG-T-ERV-SUP` / `-EXH` / `-EXH-WALL` | 5 | plain dampered round diffuser | 4.0 Pa |
 | `REG-T-ERV-SAUNA-SUP` / `-SAUNA-EXH` / `-PLANT-EXH` | 8 | face carries a closable or motorised damper of its own | 6.5 Pa |
-| `REG-T-ERV-BENCH-HOOD` | 6.3 | fabricated hood — a plenum with a collar (6) + its balancing damper full open (0.3, §4) since 2026-11-12 | 8.0 Pa at 25 cfm |
+| `REG-T-ERV-BENCH-HOOD` | 6 | fabricated hood — a plenum with a collar; its balancing damper is the run's in-line part (§10.24) | 7.6 Pa at 25 cfm |
 
 Each row is authored as three points scaling Q², so the check interpolates rather than
 re-derives. **A submitted product with a real test curve replaces the three points and
@@ -1189,7 +1189,7 @@ flow + its own leg + its own terminal (at the register's own flow) + the plenum.
 | run | was | now | how |
 |---|---|---|---|
 | `DU-B-ERV-R-SAUNA-SUP` | 49.5 ft, 9 elbows | 5.3 ft, 3 | tee off GYM's y=13'-4" leg at x=11.2', hatch over the upper bench (owner accepts leaving Harvia's "inlet near heater") |
-| `DU-B-ERV-R-BENCH` | 25.1 ft, 4 | 1.2 ft, 1 | side take-off off SAUNA-EXH's x=1'-7" leg at y=8'-6"; damper not modelled (no in-line damper part) |
+| `DU-B-ERV-R-BENCH` | 25.1 ft, 4 | 1.2 ft, 1 | side take-off off SAUNA-EXH's x=1'-7" leg at y=8'-6"; damper in-line since §10.24 |
 | `DU-M-ERV-R-LIVING` | 46.6 ft, 7 | 20.8 ft, 5 | tee off BED's 83 3/4" lane at y=12'-8"; the 42 1/4" lane is free |
 | `DU-M-ERV-R-BED1` | 25.8 ft, 0 | 11.9 ft, 0 | tee off BED2's crossing at (16.15', 16'-8"); grille at (28'-1", 16'-8") |
 | `DU-M-ERV-R-PLANT` | 24.9 ft round, 1 | 10.3 ft 3 1/4x8 rect, 1 | trunk end, up W-S-PS1 to a high sidewall at x=3'-6 1/2", 8'-3" to centre |
@@ -1365,6 +1365,46 @@ habitable but not sleeping, so R403.5 counts five bedrooms:
 No duct or flow changes; `EQ_S_ERV_MIX` stays at 115 and the margin is banked. The FAIL clears,
 and R303.1 Exception 1 carries its four rooms again. Retyping the room BEDROOM puts back the 15
 cfm and the −3.0.
+
+### 10.24 The bench damper is an in-line part (2026-11-12)
+
+The bench hood's 4" balancing damper left the hood's K (6.3 -> 6, curve back to
+`((10, 1.2), (25, 7.6), (40, 19.4))`) and is now `DU-B-ERV-R-BENCH`'s
+`inline_dampers=(12.25",)`: centred 6" + 6 1/4" along the run, 2" over the hood's collar at 76",
+below the 90's 4" laying length. The DuctStandard's `damper` row charges it, fully open, at
+C x the run's velocity pressure.
+
+**C = 0.34.** No 4" damper maker publishes a loss. The smallest round damper with a published
+AMCA 500-D test is Greenheck VCDR-53 at 12", Fig. 5.3 (fully ducted, Aug 2023 sheet):
+
+| fpm | in. wg | VP = (V/4005)^2 | C |
+|---|---|---|---|
+| 1500 | 0.05 | 0.14028 | 0.356 |
+| 2000 | 0.08 | 0.24938 | 0.321 |
+| 2500 | 0.13 | 0.38966 | 0.334 |
+| 3000 | 0.19 | 0.56110 | 0.339 |
+
+0.34 is the 3000 fpm row (the table's two-digit rounding matters least there). §4's ASHRAE
+butterfly term is 0.30, so this is the higher of the two. A 4" blade and shaft block more of
+the bore than a 12" one, so a measured 4" C would likely be higher still. At 6 cfm that cannot
+reach the delivered figure.
+
+**`DU-B-ERV-R-BENCH`, hand-worked** (6 cfm, 4" bore, 1.1875 ft, one stamped 90):
+
+    A = 0.087266 ft2;  V = 6 / 0.087266 = 68.755 fpm;  VP = (68.755 / 4005)^2 = 0.00029472 in.
+    Re = 1.1459 x 0.33333 / 1.63e-4 = 2,343: transition band, f read at 4,000 = 0.04081
+    friction = 0.04081 x (1.1875 / 0.33333) x 0.00029472 = 0.00004285 in.
+    elbow    = 0.22 x 0.00029472                         = 0.00006484 in.
+    damper   = 0.34 x 0.00029472                         = 0.00010020 in.
+    leg      = 0.00010769 -> 0.00020789 in.
+
+**Its path** pays the hood at the register's 6 cfm, under the curve's first point, so it reads
+that point: 1.3 -> 1.2 Pa (-0.000401 in.). Net on the bench path: +0.000100 - 0.000401 =
+**-0.000301 in.** The bench path is far from governing either way. The shared terms are
+SAUNA-EXH 0.029835 at 26 cfm, `EQ-B-ERV-MAN-EXH`, and the extract chain.
+
+**Governing:** unchanged. Extract via `DU-M-ERV-R-SUITEBATH`, 0.550724 in., **200.0 cfm**
+against R403.5's 188.0 (§10.23, +12.0). Engine: 0.550724, 199.99 cfm; bench leg 0.000208.
 
 ### 10.5 The thermal penalty of the legs (hand-worked)
 
