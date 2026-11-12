@@ -37,11 +37,12 @@
 > - **W-M-STOS is a staggered 2x6 wet wall** carrying the hall-bath 3" stack at y=26'-8" (powder
 >   face held, mud closet 29 1/2"); `haus route` found no lane into HS1 or the chase.
 >   `mep.trap_arm_length` (CODE) is the 3D trap-arm walk; `mep.vent_connection` (ADVISORY) grades each tee; BATH2-WC is the one open vent.
-> - **ERV:** EQ-B-ERV carries Broan's port pattern (`rotation=deg(0)`: box west, door south); only
->   the supply lands on its collar. OA/EA/RET are held at service level by the owner. The 270 deg
->   rotate-and-swap was built and does NOT close (2026-11-11, `notes/erv_static_budget.md` §10.18):
->   an exact OA kit alone drops delivery to ~200.5 cfm, and the crossing is bound by PR-B-SAUNA-VENT's
->   x=51.5" leg and the 92.7" conduits. Read §10.18 before retrying it.
+> - **ERV:** EQ-B-ERV is at `rotation=deg(90)` (box south, door east), case 40.4" AFF, 13" south
+>   of its old station, and **all four Broan ports are EXACT** (2026-11-11, `notes/erv_static_budget.md`
+>   §10.22). EA lands north of OA on the east half, the order the risers need, so the outdoor legs
+>   never cross. SUP and RET duck under their rows on bent kit flex (C 1.18) into MAN-SUP and the
+>   moved MAN-EXH (y=27'-2 1/2"). OA/EA wear 1" AP Armaflex (10" OD). Cost: 200.0 cfm against 203.0,
+>   a carried FAIL until the attic bedroom drops. Read §10.22 before moving any of it.
 > - **Roof:** RF-GARAGE is the RDM vented peak under the same 7" 52131XX as the canopy (one cap
 >   ring, no step); R806.2 passes 873/553 in2: 562 ridge on Profile Vent's 23.4 in2/ft + 311 eave intake
   (48 LF x 6.48). Rake soffits are not intake. Coplanar abutting roofs
@@ -253,8 +254,9 @@ not instruction: when it disagrees with this file or the model, it is the one th
   collars with dampers on the plenums, saddle taps, boots by (duct, neck), 1" x 22 ga straps
   on SMACNA spacing (a strap saddle to the deck where nothing above can hang one, #121), the Broan and air-handler port kits. A new duct size, neck or branch pair
   needs a row here or `mep.duct_terminations` goes UNKNOWN. Basis: `notes/air_distribution_
-  products.md` "DuctStandard". The Broan's three non-supply ports are still approximate, so no
-  kit derives on them until the E2 rotate-and-swap (`plans/TODO.md`).
+  products.md` "DuctStandard". All four Broan ports are exact (2026-11-11), so the kit derives on
+  each: 6-to-8 increaser + 12" flex on OA/EA (straight, an adjustable 90 on top), 12" flex bent at
+  R = 1D on SUP/RET.
 - `plan/fixtures.py` — `# haus: editable` plumbing-fixture *instances* (so UI drags
   round-trip). Only explicit constructors in any of these — no functions/generators.
 - `plan/electrical.py` — `# haus: editable` electrical service upgrade: meter, backup
@@ -1024,17 +1026,18 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     `checks/mep/erv_routes.py`), every plenum it passes THROUGH (riser air expands into
     the basement boxes too), and a trunk it leaves at a tap only to that tap
     (`erv_segments.py`, 2026-11-12, note §10.21): extract via `DU-M-ERV-R-SUITEBATH` governs
-    at 0.433" -> 204.4 cfm. A same-size tee is a branch when its FIRST vertex lies on the
+    at 0.551" -> 200.0 cfm (note §10.22). A same-size tee is a branch when its FIRST vertex lies on the
     parent. Junction losses are still ungraded.
   - `AL-A-COMBO` is in `RM-A-STUDY`, `AL-A-STUDIO` in the studio — reversed is a hard
     FAIL: `code.R315_co_every_sleeping_area` fails if every CO alarm on a storey is inside
     a bedroom.
-  - `code.N1103_6_whole_house_ventilation` grades the DELIVERED 204.4 cfm against **203.0**
+  - `code.N1103_6_whole_house_ventilation` grades the DELIVERED 200.0 cfm against **203.0**
     required (owner, 2026-10-31): MN 1322 R403.5 on 4,900 sf of conditioned floor area,
     measured to the outer face of the structure (sheathing / foundation concrete, not the
     ccSPF, girts or cladding), each stair well deducted once on the storey above
-    (`resolve/conditioned_area.py`, `notes/conditioned_floor_area.md`). +1.4 cfm; a shortfall
-    of 2 cfm or less would be UNKNOWN (commissioning), more a FAIL.
+    (`resolve/conditioned_area.py`, `notes/conditioned_floor_area.md`). -3.0 cfm since the
+    ports went exact (2026-11-11): a FAIL the owner carries, with R303.1 Exception 1 in four
+    rooms, until the attic bedroom drops; 2 cfm or less short would be UNKNOWN.
 
 - **`FO-A-STAIR`'s WEST edge is the stair head, `x=21'-4 3/8"`, not the source's 21'-2"**
   (moved 2026-09-15; one 3/4" head riser board past the top riser since 2026-09-28,

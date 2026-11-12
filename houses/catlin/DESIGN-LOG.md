@@ -1,3 +1,24 @@
+## The ERV turns 90 degrees and all four ports land exact (2026-11-11, owner)
+
+- The hold is over. EQ-B-ERV hangs at 90 (door east), 13" south, case 40.4". EA comes off the east
+  half north of OA, which is the order the risers need: OA turns north at x=3'-4", and EA comes
+  in from the east along y=34'-10 1/2". So the outdoor legs never cross. SUP and RET duck under
+  the rows on bent kit flex. MAN-EXH moved 14 1/2" south to take the return.
+- Rejected, with what binds each (note §10.22):
+  - 0: EA same y as OA, so it crosses OA or the SUP stem.
+  - 180: the door faces W-B-ESS-S.
+  - 270: OA north of EA, the §10.18 crossing at the vent and the 92.7" conduits.
+  - 90 with straight leads everywhere (the morning plan): the supply stem rises into MAN-SUP
+    right in EA's row.
+  - West of the lane: NEC 110.26 working spaces.
+  - RS side ports: a 90 on every port and the same handedness.
+  - RT over the lane: the case meets the 92.7" layer.
+  - The south room: about 10 ft more on each outdoor leg.
+- The price is the return's bend: 200.0 cfm against 203.0. The owner carries the code FAIL red
+  until the attic bedroom drops. The wraps went to 1" (+670 Btu/h, recovery 60% -> 56%).
+- Engine: `run_bend` honours `adjustable_elbows`; `run_interference` pardons two kit leads
+  touching inside their own lengths off one machine (Broan's 9 3/4" port spacing).
+
 ## The joists bear on a beveled ridge plate; ForteWEB is gone (2026-11-10, owner)
 
 - `RF-HOUSE`'s joists hung on 38 LSSRs off a 16" LVL. TJ-4000 July 2025 p.13 wants a support beam or

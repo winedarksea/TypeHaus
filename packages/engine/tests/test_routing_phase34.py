@@ -178,7 +178,8 @@ def test_catlin_ports_are_approximate_EXCEPT_the_shop_drawn_collars(catlin_model
     scaled-position caveat. The collar assertion is scoped to the ERV boxes.
 
     The hot-water header (2026-11-04) is exact the same way: Uponor's LF2821050 submittal
-    dimensions the sweat inlet and the eight outlets (A, B + C, D pitch, G)."""
+    dimensions the sweat inlet and the eight outlets (A, B + C, D pitch, G). All four of the
+    Broan's own ports are exact since 2026-11-11 (EQ-B-ERV at 90, note §10.22)."""
     from typehaus.resolve.mep_ports import placed_ports
 
     ports = placed_ports(catlin_model)
@@ -188,6 +189,9 @@ def test_catlin_ports_are_approximate_EXCEPT_the_shop_drawn_collars(catlin_model
                      "EQ-B-ERV-MAN-EXH.collar-sauna",
                      "EQ-B-ERV-MAN-SUP.collar-gym",
                      "EQ-B-ERV-MAN-SUP.collar-play",
+                     "EQ-B-ERV.exhaust",
+                     "EQ-B-ERV.outdoor",
+                     "EQ-B-ERV.return",
                      "EQ-B-ERV.supply",
                      "EQ-B-HW-HEADER.inlet",
                      *(f"EQ-B-HW-HEADER.out-{i}" for i in range(1, 9)),

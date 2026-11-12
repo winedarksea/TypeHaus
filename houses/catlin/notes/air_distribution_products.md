@@ -296,8 +296,9 @@ transitions on the ports, and secure using duct tape only. If rigid ducting is u
 12-in. section of flexible duct between the transition and the rigid ducting." "Do not use
 screws to connect the ducts or transitions to the ports." Kit: GV0772 6-to-8 increaser (C 0.22,
 the sudden 6/8 in. contraction bound 0.5(1 - 0.5625)) + 12" JP Lamborn MHP-45R8 (UL 181 Class 1,
-R-8) on outdoor/exhaust; 12" flex on supply/return; a Duro Dyne MFN at the air handler. Only the
-supply port is EXACT today, so only its flex is derived (1.2 Pa); the rest follows E2. **Open
+R-8) on outdoor/exhaust; 12" flex on supply/return; a Duro Dyne MFN at the air handler. All four
+ports are EXACT since 2026-11-11 (`erv_static_budget.md` §10.22): OA/EA take the increaser and a
+straight flex under an adjustable 90 (3.9 + 0.3 Pa); SUP/RET's flex bends at R = 1D (22.2 Pa). **Open
 (owner, 2026-11-07: keep the kit as modelled pending Broan's answer):** p.11 says insulated
 ducts "must have the same diameter as the ports to ensure proper drainage of water that may
 accumulate in ducts"; its figures are side-port cases and the RT is top-port, so a vertical
@@ -386,3 +387,12 @@ gauges and dimensions (login). Answer from Broan on the port-diameter question a
 - SMACNA HVAC DCS 1995 (law.resource.org) S4.1, Figs. 4-4 / 4-8, Table 4-2.
 - Broan B210E75RT installation guide 1107081WEB rev. E (broan-nutone.com), pp. 10-11.
 - Best Access Doors Invisagrille; Lindab VGU frame (ahlsell.dk); Trox Z-LVS subframe — §12.
+
+**Ventilator alternates (2026-11-11).** The Broan B210E75RT stays the designated unit. Ranked by
+15-yr cost basis: Fantech ATMO 300E-EC ~$4.5k, Lifebreath 267 MAX ~$5.4k, RenewAire EV Premium+ L
+~$5.5k, Broan ~$6.5k, Zehnder Q ~$8.2k+. The Lifebreath 267 MAX (mirrored ports) is the named
+alternate: recirculation defrost and auto-balance, like the Broan. Fantech and RenewAire L were
+not chosen (exhaust-only defrost or none, no constant airflow); Aldes InspirAIR and Zehnder Q are
+named but out on cost; Panasonic is out (130 cfm cap below 23 F). Twin units on one hood pair are
+an unmeasured fallback. The Broan's RS (side-port) sibling was screened: the same handedness, plus
+a 90 on every horizontal lead (§10.22).
