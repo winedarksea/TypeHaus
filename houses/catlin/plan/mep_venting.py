@@ -406,7 +406,7 @@ VENT_RISERS = [
             # cross in plan at two heights: the jog at 19'-6", the exit at 23'-10".
             chase_offset=pt(ft(8, 2.5), ft(0)), chase_offset_elevation=ft(19, 6),
             exit_elevation=ft(23, 10), exit_offset=pt(ft(0), inch(28.7)),
-            exit_bundle_spacing=inch(-14), fan_power_ref="ED-A-RADON-JB",
+            exit_bundle_spacing=inch(-14), fan_power_ref="ED-A-RADON-RC",
             wall_ref="W-A-N2", attachment="pipe_strap"),
 ]
 
@@ -423,8 +423,17 @@ VENT_RISERS = [
 #
 # Sizing is on OUTER diameter: 3" PVC DWV is 3.5" OD, which is the **#11** (3.4-3.7") size;
 # the 4" leaders take #13. The size suffix stays because a bare part family once billed
-# brackets and no rings. The radon leg stands 5.95" off the cladding (pipe centre), the
-# 9.7" fan's half plus 1/2" with 0.6" spare: the strap's standoff block sets that.
+# brackets and no rings.
+#
+# ** STANDOFF: 4 1/4" from the cladding face to the pipe's surface ** (centre 5.95"), the
+# 9.7" fan's half plus 1/2" with 0.6" spare (subp. 5.D). The generic strap record states no
+# block depth, so ORDER it here: a 4" cellular-PVC block under each strap, with 316 screws
+# long enough to take 1 1/4" into the girt (~6"), not the panel's T09150HWAM.
+#
+# ** THE FAN, IF IT IS EVER FITTED, ** goes at the bottom of the space: an in-line fan
+# (~8 1/2" tall) on rubber couplings just above the 23'-10" elbow, its wall bracket on the
+# 24'-0" course where CN-M-RADON-CLAMP1 stands now (the strap comes off). That puts the
+# fan below the ~26'-1" wall top, with the rake-nailer strap holding the pipe above it.
 VENT_CLAMPS = [
     # The vent leg on 8'-5 1/2". Rake nailer centre there is 25'-4 1/2".
     Connector(uid="CMVC01AAAA", tag="CN-M-VENT-CLAMP1", kind=ConnectorKind.PIPE_STRAP,

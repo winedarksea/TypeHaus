@@ -89,16 +89,27 @@ def fan_power_finding(ctx: CheckContext, riser: VentRun,
     storey = exit_wall.storey if exit_wall is not None else None
     from shapely.geometry import Point
 
+    outdoors = True
     for room in ctx.model.rooms:
-        if (room.conditioned and len(axis_ring(room)) >= 3
-                and (storey is None or room.storey == storey)
-                and axis_polygon(room).covers(Point(bx, by))):
+        if (len(axis_ring(room)) < 3 or (storey is not None and room.storey != storey)
+                or not axis_polygon(room).covers(Point(bx, by))):
+            continue
+        outdoors = False
+        if room.conditioned:
             return _fail(_CID, f"{ref} stands inside conditioned room {room.tag} — subpart 6 "
                                "forbids the fan's box in any conditioned space, basement or "
                                "crawl space", (ref, riser.tag), _CODE)
+    # An outdoor fan outlet, hardwired or not, needs GFCI protection (NEC 210.8(F)).
+    guarded = (getattr(box, "kind", None) is DeviceKind.RECEPTACLE_GFCI or circuit.gfci
+               or bool(getattr(box, "gfci_ref", None)))
+    if outdoors and not guarded:
+        return _fail(_CID, f"{ref} is the fan's outlet outdoors on {circuit.tag}, and neither "
+                           "it nor its breaker is GFCI; NEC 210.8(F) requires GFCI protection "
+                           "for an outdoor outlet", (ref, riser.tag), _CODE)
     slot = f", slot {circuit.slot}" if getattr(circuit, "slot", None) else ""
+    gfci = ", GFCI-protected" if guarded else ""
     return _pass(_CID, f"{ref} powers {riser.tag}'s future fan on {circuit.tag} "
-                       f"({circuit.panel_ref}{slot}), outside conditioned space "
+                       f"({circuit.panel_ref}{slot}){gfci}, outside conditioned space "
                        "(subpart 6)", _CODE)
 
 

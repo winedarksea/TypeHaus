@@ -161,7 +161,9 @@ THROUGH_PANEL_PIPE_STRAP = StructuralHardware(
     source="generic Type 316 stainless two-hole pipe strap on a moulded standoff block, "
            "sized on pipe OUTER diameter the way the CanDuit ring is; fixed with two "
            "T09150HWAM gasketed panel screws per point. No single manufacturer system is "
-           "specified, so this record is deliberately generic",
+           "specified, so this record is deliberately generic. The block's depth is not "
+           "part of the record: a house states what its pipe must stand off, and the "
+           "screw length that depth needs",
 )
 
 # Multiwall polycarbonate is fastened through oversize holes so the sheet can move: the

@@ -2818,6 +2818,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "ED-T-LEV-GFCI-DF" = { material = { low = 30, high = 45 }, labour = { low = 48, high = 92 } }  # 1 ea, ED-G-GDO-GFCI (GFRBF-W ~$42, McNaughton-McKay 2026-10-30)
 "ED-T-LEV-GFCI-ALARM" = { material = { low = 30, high = 70 }, labour = { low = 48, high = 92 } }  # 1 ea
 "ED-T-LEV-GFCI-WR" = { material = { low = 38, high = 85 }, labour = { low = 65, high = 135 } }  # 8 ea
+"ED-T-LEV-GFCI-WR-15" = { material = { low = 38, high = 85 }, labour = { low = 65, high = 135 } }  # 1 ea, the radon fan outlet (GFWT1-W, priced as the 20 A sibling)
 "ED-T-LEV-GUIDE" = { material = { low = 12, high = 28 }, labour = { low = 38, high = 78 } }  # 6 ea since 2026-11-03 (+ the two breaker-GFCI bath outlets)
 "ED-T-LEV-GFCI-GUIDE" = { material = { low = 30, high = 50 }, labour = { low = 48, high = 92 } }  # 5 ea, the device-GFCI bath vanity outlets with a dusk guide light (GFNL2-W, estimate, 2026-11-03)
 "ED-T-LEV-MATTER" = { material = { low = 34, high = 60 }, labour = { low = 40, high = 80 } }  # 11 ea since 2026-11-03 (was 24 + 2 companions + 1 ELV); D315S-1BW, ~$34 retail listing (estimate)

@@ -129,12 +129,13 @@ SERVICE_GROUNDING = [
 # --- PV: DC SPD at the array box and the down-lead ---------------------------------------
 PV_GROUNDING = [
     # Beside ED-A-PV-JB on the 22'-0" girt course (2026-11-12): x 9'-3"..9'-9", 2" west of
-    # the box, out from under the radon fan's space (MN 1303.2402 subp. 5.D).
+    # the box, out from under the radon fan's space (MN 1303.2402 subp. 5.D). On a PVC block
+    # like the box (plan/mep_electrical.py, GABLE ENCLOSURE MOUNTING).
     ElectricalDevice(uid="XQ69SAWHP0", tag="ED-A-PV-SPD", kind=DeviceKind.SPD, type_ref="ED-T-SPD-PV",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(22.75)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-A-N2", face="right", distance_from_start=inch(6),
-                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+                         normal_gap=inch(0.75), rotation_offset=deg(-180)))),
     # Aluminium (never copper on the Galvalume skin) on seam clips from SP-A-PV-W9 north to
     # the rake, down the rake and the NW corner trim to 18" above grade. Confirm the PVKIT's
     # UL 2703 module-to-rail bonding before relying on the array as one conductor.

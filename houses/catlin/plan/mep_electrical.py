@@ -566,28 +566,32 @@ ATTIC_DEVICES = [
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 ]
 
-# --- Outdoor NEMA 3R weatherproof junction box on the north gable siding -------------
-# ** THE RADON FAN BOX (MN 1303.2402 subp. 6), 2026-11-12. ** Was ED-A-NEMA-JB, an unfed
-# box at x=13'-10"; now the circuit's end at the fan. VR-M-STACK names it (fan_power_ref).
+# --- The radon fan's outlet on the north gable siding ----------------------------------
+# ** MN 1303.2402 subp. 6, 2026-11-12. ** Was ED-A-NEMA-JB, an unfed blank box at x=13'-10".
+# VR-M-STACK names it (fan_power_ref).
+#   * A WR GFCI receptacle under an in-use cover, not a blank box. A radon fan comes with a
+#     cord; the outlet is its GFCI (NEC 210.8(F), outdoors) and its disconnect in one, on a
+#     15 A device to match the 15 A breaker (210.21(B)(3)).
 #   * W-A-N2, centre x=8'-10", below the radon leg's 23'-10" elbow and so below the fan's
 #     24" x 3' space (graded, subp. 5.D). East along the same course, 2" apart: ED-A-PV-SPD,
 #     then ED-A-PV-JB.
-#   * Centred on the 22'-0" girt course (264"-267 1/2"): the enclosure's back screws through
-#     a panel flat into the KDAT, one row of two. Gasketed, surface-mounted on wood.
+#   * GABLE ENCLOSURE MOUNTING (all three): a 3/4" cellular-PVC block, 1" larger than the
+#     box all round, centred on the 22'-0" girt course (264"-267 1/2") and screwed through a
+#     panel flat into the KDAT with two gasketed screws in one row. The box screws to the
+#     block, so its own hole pattern never has to fit a 3 1/2" course (normal_gap 3/4").
 #   * Fed on CKT-RC-ATTIC (15 A AFCI, slot 47) by NM off ED-A-POCKET-RC1's run in RM-A-POCKET,
 #     through a short sealed nipple behind the box: ccSPF and sheathing foamed, the panel
-#     hole under the box's gasket. Not modelled, like every NM branch.
-# Mount elevation is storey-relative (attic datum 20'): 23 3/4" is the 4" box's bottom.
+#     hole under the block. Not modelled, like every NM branch.
+# Mount elevation is storey-relative (attic datum 20'): 24 1/4" is the 3" box's bottom.
 NEMA_BOX = [
-    ElectricalDevice(uid="CEJ901AAAA", tag="ED-A-RADON-JB", kind=DeviceKind.JUNCTION_BOX,
-                     type_ref="ED-T-JBOX", circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(23.75)),
+    ElectricalDevice(uid="CEJ901AAAA", tag="ED-A-RADON-RC", kind=DeviceKind.RECEPTACLE_GFCI,
+                     type_ref="ED-T-LEV-GFCI-WR-15", circuit="CKT-RC-ATTIC",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(24.25)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-A-N2", face="right", distance_from_start=inch(14),
-                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+                         normal_gap=inch(0.75), rotation_offset=deg(0)))),
 ]
-# No clamp: a surface enclosure on a face-fastened panel screws through the flat with the
-# same gasketed T09150HWAM the panel is hung on, inside the field-grid count
+# No clamp: the block's two gasketed screws per enclosure are inside the field-grid count
 # (``takeoff.fasteners``). An S-5! seam clamp has no seam to close on here.
 NEMA_CLAMP = []
 

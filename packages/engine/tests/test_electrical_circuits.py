@@ -419,8 +419,9 @@ def test_catlin_conduit_trunks(catlin_model):
     # 2026-10-30: + the doorbell run and the two camera extensions (plan/smart_home.py),
     # and CD-M-DATA-KITCH-TRUNK, the 1" first legs split off CD-M-DATA-KITCH.
     # 2026-11-07: + the V2H spare, CD-B-V2H-SPARE and its buried leg CD-B-V2H-GAP.
+    # 2026-11-10: + CD-M-DATA-ENTRY, the grounding entry's data run from its own outlet.
     authored = [run for run in catlin_model.conduits if run.derived is None]
-    assert len(authored) == 29  # includes the laundry's Class 2 surface feed
+    assert len(authored) == 30  # includes the laundry's Class 2 surface feed
     # Not all from the panel: the three microgrid runs start at the PV junction box and at
     # the inverter, and every data run starts at the patch enclosure — except the two camera
     # extensions, which continue from the AP whose raceway carries their Cat 6A.
@@ -430,7 +431,7 @@ def test_catlin_conduit_trunks(catlin_model):
     assert {run.from_ref for run in authored} == {
         "ED-B-PANEL", "ED-A-PV-JB", "EQ-B-ESS-INV", "ED-B-NET-PATCH", "CD-B-ATTIC-RISER",
         "ED-M-LAUNDRY-PSU", "ED-B-PANEL-2", "ED-B-WORKSHOP-JB", "ED-B-PLAY-N-JB",
-        "ED-M-KITCH-AP", "ED-M-PORCH-AP"}
+        "ED-M-KITCH-AP", "ED-M-PORCH-AP", "ED-M-DATA-ENTRY"}
     rows = conduit_takeoff(catlin_model)
     # Power only — data and the capped spare are billed by takeoff/data.py, because comms
     # and power are separate orders pulled by separate trades and may not share a raceway.
@@ -457,7 +458,8 @@ def test_catlin_conduit_trunks(catlin_model):
     east = next(run for run in catlin_model.conduits if run.tag == "CD-A-PV-EAST")
     assert east.to_ref == "ED-A-PV-JB" and east.from_ref == riser.tag
     assert east.z_start_m == pytest.approx(riser.z_end_m, abs=1e-6)
-    assert east.z_end_m > 7.5
+    # 2026-11-12: the PV box moved down to 21'-11 3/4" (6.70 m); the leg still climbs past the deck.
+    assert east.z_end_m > riser.z_end_m + 0.3
 
 
 def test_bill_of_materials_carries_the_electrical_sections(catlin_model):

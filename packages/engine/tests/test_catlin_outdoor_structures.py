@@ -399,7 +399,7 @@ def test_the_gable_enclosures_carry_no_seam_clamp_on_an_exposed_fastener_wall(
 
     An S-5! seam clamp closes on a standing-seam leg, and `pbr-panel-24` has no leg — the
     fixing is uninstallable on this wall, so neither clamp exists. Neither box sits on the
-    roof: the 4:12 rake at x=4' and x=9' is well above their ~25'-6" elevation, so what has
+    roof: the rake at x=9'-10" is well above their ~22' elevation, so what has
     to hold is that the boxes ride W-A-N2's gable, below its rake.
     """
     attic = next(s for s in catlin_model.plan.storeys if s.tag == "attic")
@@ -407,7 +407,7 @@ def test_the_gable_enclosures_carry_no_seam_clamp_on_an_exposed_fastener_wall(
     for tag in ("CN-A-NEMA-CLAMP", "CN-A-PV-CLAMP"):
         assert catlin_model.plan.by_tag(tag) is None, (
             f"{tag} clamps a seam the wall no longer has; see plan/wind_clamps.py")
-    for tag in ("ED-A-RADON-JB", "ED-A-PV-JB"):
+    for tag in ("ED-A-RADON-RC", "ED-A-PV-JB"):
         box = catlin_model.plan.by_tag(tag)
         assert box is not None, f"{tag} is the enclosure itself and must survive the swap"
         # The gable siding must still reach it: the 4:12 rake is highest toward the x=18' ridge.
@@ -612,7 +612,7 @@ def test_the_apron_pads_butt_at_the_corners_rather_than_overlapping(catlin_model
 def _band_width(outline) -> float:
     """Short side of a four-point band, in metres."""
     edges = [((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5
-             for (x0, y0), (x1, y1) in zip(outline, list(outline[1:]) + [outline[0]])]
+             for (x0, y0), (x1, y1) in zip(outline, list(outline[1:]) + [outline[0]], strict=True)]
     return min(edges)
 
 
@@ -1171,7 +1171,7 @@ def test_hp3s_stand_is_a_rail_pair_that_lands_wholly_on_its_pad(catlin_model) ->
         assert any(abs(got[0] - w[0]) < tol and abs(got[1] - w[1]) < tol for w in want), tag
     assert len(legs) == len(want)
     # The rails span more than the cabinet's own depth, which is the whole reason for them.
-    assert 17.5 > _HP3_CAB_D_IN
+    assert _HP3_CAB_D_IN < 17.5
 
 
 def test_hp3_has_open_yard_airflow_and_its_coordinated_pad(catlin_model):

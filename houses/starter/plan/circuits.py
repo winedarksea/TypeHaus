@@ -57,6 +57,7 @@ CIRCUITS = (
     # by the nearest face it touches. That reading is also the safe one: the homerun runs
     # through habitable space to reach the siding, and AFCI protects the wiring, not only
     # the outlet at the end of it.
+    # Dual-function (AFCI + GFCI) breaker: the box is an outdoor outlet, NEC 210.8(F).
     Circuit(tag="CKT-RADON", slot=7, panel_ref=_PANEL, breaker_amps=15, poles=1,
-            afci=True, description="Future radon fan (MN 1303.2402 subp. 6)"),
+            afci=True, gfci=True, description="Future radon fan (MN 1303.2402 subp. 6)"),
 )

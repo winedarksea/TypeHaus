@@ -282,7 +282,7 @@ def test_s100_radon_block_is_derived_item_by_item(catlin_model):
     assert "SUBP. 5: VENT VR-M-STACK" in notes
     assert "NOT MODELLED — A FIELD ITEM" in notes
     # Subp. 6 and 5.D read the riser's named box and the graded fan window.
-    assert "SUBP. 6: POWER FOR A FUTURE FAN AT ED-A-RADON-JB, ON CKT-RC-ATTIC" in notes
+    assert "SUBP. 6: POWER FOR A FUTURE FAN AT ED-A-RADON-RC, ON CKT-RC-ATTIC" in notes
     assert "SUBP. 5.D: 24\" DIA. x 3 FT FAN SPACE KEPT CLEAR ON VR-M-STACK'S" in notes
     # A schedule that abbreviates carries its legend on the sheet, not in this repo.
     assert "NO PLATE RUN TAKES FEWER THAN 2 (IRC R403.1.6)" in notes

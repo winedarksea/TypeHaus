@@ -45,6 +45,7 @@ GFTR2 = _prod("GFTR2-W", "Lever Edge SmartlockPro GFCI, 20 A, TR, white")
 GFTR1 = _prod("GFTR1-W", "Lever Edge SmartlockPro GFCI, 15 A, TR, white")
 GFTA2 = _prod("GFTA2-W", "SmartlockPro GFCI with audible alarm, 20 A, TR, white")
 GFWT2 = _prod("GFWT2-W", "SmartlockPro GFCI, weather-resistant, 20 A, TR, white")
+GFWT1 = _prod("GFWT1-W", "SmartlockPro GFCI, weather-resistant, 15 A, TR, white")
 GFRBF = _prod("GFRBF-W", "SmartlockPro Slim blank-face GFCI, 20 A feed-through, white")
 T5836 = _prod("T5836-W", "Decora duplex with 60 W USB-C PD, 20 A TR, white")
 T5380 = _prod("T5380-W", "Decora surge duplex, 20 A TR, white",
@@ -76,6 +77,11 @@ RECEPTACLE_TYPES = (
     _dev("ED-T-LEV-GFCI-WR",
          "WR GFCI 20 A TR (GFWT2-W), 5980-UCL in-use cover, non-metallic gasketed box",
          GFWT2, footprint=(inch(4.5), inch(3)), height=inch(3), nema="5-20R",
+         device_box=False),
+    # On a 15 A branch (NEC 210.21(B)(3)): the radon fan's outlet on CKT-RC-ATTIC.
+    _dev("ED-T-LEV-GFCI-WR-15",
+         "WR GFCI 15 A TR (GFWT1-W), 5980-UCL in-use cover, non-metallic gasketed box",
+         GFWT1, footprint=(inch(4.5), inch(3)), height=inch(3), nema="5-15R",
          device_box=False),
     _dev("ED-T-LEV-GFCI-DF", "Blank-face GFCI 20 A, feed-through (GFRBF-W)", GFRBF,
          symbol=None, deadfront=True),
@@ -166,6 +172,6 @@ SWITCH_TYPES = (
 
 DEVICE_TYPES = (*RECEPTACLE_TYPES, *SWITCH_TYPES)
 DEVICE_PRODUCTS = (
-    E5825, E5325, GFTR2, GFTR1, GFTA2, GFWT2, GFRBF, T5836, T5380, T6525, GFNL2, T5020, T5461,
-    R278, IN_USE, E5601, E5603, DIVA, DIVA_ELV, D315S, DAWSC, DOS02, ODS10, MAT51, ZEN32,
+    E5825, E5325, GFTR2, GFTR1, GFTA2, GFWT2, GFWT1, GFRBF, T5836, T5380, T6525, GFNL2, T5020,
+    T5461, R278, IN_USE, E5601, E5603, DIVA, DIVA_ELV, D315S, DAWSC, DOS02, ODS10, MAT51, ZEN32,
 )

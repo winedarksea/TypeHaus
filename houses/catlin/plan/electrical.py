@@ -1051,19 +1051,19 @@ PV_JBOX = [
     #
     # ** DROPPED TO THE 22'-0" GIRT COURSE ON 2026-11-12. ** At 25'-0" it hung in panel
     # alone, between courses, and inside the radon fan's 24" circle once the radon leg took
-    # 9'-7 1/2" (MN 1303.2402 subp. 5.D). Centred on 264"-267 1/2" its back screws land in
-    # KDAT; ED-A-PV-SPD and ED-A-RADON-JB are west of it on the same course. The window notes above still hold.
+    # 9'-7 1/2" (MN 1303.2402 subp. 5.D). On a PVC block centred on 264"-267 1/2"
+    # (plan/mep_electrical.py, GABLE ENCLOSURE MOUNTING); ED-A-PV-SPD and ED-A-RADON-RC are
+    # west of it on the same course. The window notes above still hold.
     ElectricalDevice(uid="CEE014AAAA", tag="ED-A-PV-JB", kind=DeviceKind.JUNCTION_BOX,
                      type_ref="ED-T-PV-JB", circuit="CKT-ESS-GRID",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(23.75)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-A-N2B", face="right", distance_from_start=inch(94),
-                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+                         normal_gap=inch(0.75), rotation_offset=deg(-180)))),
 ]
 # ** THERE IS NO CN-A-PV-CLAMP. ** W-A-N2 wears `pbr-panel-24`, an exposed-fastener panel
-# with no seam, so a seam clamp there is uninstallable. The box screws through a panel flat
-# into the 22'-0" girt course with the gasketed T09150HWAM the panel is hung on, inside
-# the field-grid screw count.
+# with no seam, so a seam clamp there is uninstallable. The box screws to a PVC block that
+# is screwed through a panel flat into the 22'-0" girt course, inside the field-grid count.
 #
 # NOT to be confused with the 72 S-5-PVKIT clamps in params/solar.py: those are on the
 # mechanically seamed ROOF, which is untouched, and they stay exactly as they are.

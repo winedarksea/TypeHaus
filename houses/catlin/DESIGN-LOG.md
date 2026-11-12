@@ -8164,9 +8164,12 @@ unfed `ED-A-NEMA-JB` and the PV backfeed box), and 5.D was not graded.
 
 - **The fan goes outside.** The attic is inside the hot-roof envelope, so the fan location
   is `VR-M-STACK`'s exterior leg on the north gable (`W-A-N2`).
-- **Power.** `ED-A-NEMA-JB` became `ED-A-RADON-JB` on `CKT-RC-ATTIC` (15 A AFCI, slot 47). It
-  is fed by NM from the pocket's receptacle run through a sealed nipple behind the box, and
-  `VentRun.fan_power_ref` names it. The check now wants a named box on a panel load branch.
+- **Power.** `ED-A-NEMA-JB` (a blank box) became `ED-A-RADON-RC`: a 15 A WR GFCI receptacle
+  (GFWT1-W, new type `ED-T-LEV-GFCI-WR-15`) under an in-use cover on `CKT-RC-ATTIC` (15 A AFCI,
+  slot 47). A radon fan comes with a cord, so the outlet is its GFCI (NEC 210.8(F)) and its
+  disconnect. It is fed by NM from the pocket's receptacle run through a sealed nipple behind
+  it, and `VentRun.fan_power_ref` names it. Subp. 6 now wants a named outlet on a panel load
+  branch, and GFCI protection when it is outdoors.
 - **Space.** At 6.2" c-c the vent leg stood inside the fan's circle. The plan was to move the
   radon west, but the rake drops it: its own exhaust would have been 20" over WIN-A-N1's head,
   3.6' away (at 9'-1.3" it was already 23.99"). So the exit pair swaps and spreads
@@ -8177,5 +8180,11 @@ unfed `ED-A-NEMA-JB` and the PV backfeed box), and 5.D was not graded.
 - **Girts.** On W-A-N2 the courses are 20', 22', 24' and the rake nailer. The old straps
   (24'-4"/24'-10"/25'-4") and boxes were in panel alone, so the "into the girt behind" notes
   were false. Now each pipe has a strap on the 24' course and one on the rake nailer.
-  `ED-A-RADON-JB`, `ED-A-PV-SPD` and `ED-A-PV-JB` sit 2" apart on the 22' course, below the
-  elbow and out of the fan space. Each is surface-mounted on wood with one row of back screws.
+  `ED-A-RADON-RC`, `ED-A-PV-SPD` and `ED-A-PV-JB` sit 2" apart on the 22' course, below the
+  elbow and out of the fan space. Each screws to a 3/4" PVC block, and the block screws into
+  the course with one row of two, so no enclosure's hole pattern has to fit 3 1/2".
+- **Standoff and the fan.** The radon pipe's surface stands 4 1/4" off the siding, on 4" PVC
+  blocks with ~6" 316 screws; the generic strap record states no depth, so the house orders
+  it. A fan would sit just above the elbow, its bracket on the 24' course in place of the
+  strap, below the ~26'-1" wall top. It is a tall-ladder or lift job at ~24', which is
+  accepted for a fan that may never be fitted.

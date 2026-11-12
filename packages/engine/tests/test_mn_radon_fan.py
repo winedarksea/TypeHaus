@@ -38,5 +38,6 @@ def test_catlin_passes_both_fan_subparts(catlin_ctx) -> None:
     found = radon_control_system(catlin_ctx)
     assert {f.result for f in found} == {Result.PASS}, [f.message for f in found]
     messages = " ".join(f.message for f in found)
-    assert "ED-A-RADON-JB powers VR-M-STACK's future fan on CKT-RC-ATTIC" in messages
+    assert "ED-A-RADON-RC powers VR-M-STACK's future fan on CKT-RC-ATTIC" in messages
+    assert "GFCI-protected" in messages
     assert "clear cylinder from 23'-10.0\"" in messages
