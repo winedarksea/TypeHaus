@@ -37,7 +37,7 @@ from typehaus.emit.draw.plan_labels import (
     _overlaps,
     _place_block,
     _short_label,
-    block_pitch_m,
+    line_pitch_m,
     room_display_name,
 )
 from typehaus.emit.draw.scene import Polyline, SceneBuilder, Text
@@ -254,7 +254,7 @@ def emit_floor_opening_notes(b: SceneBuilder, model: ResolvedModel, storey: str,
                                          scale=scale)
             uid = deck.uid
         for index, (content, height_pt) in enumerate(lines):
-            b.add(Text(anchor=_in((anchor[0], anchor[1] - index * block_pitch_m(scale))),
+            b.add(Text(anchor=_in((anchor[0], anchor[1] - index * line_pitch_m(lines, scale))),
                        content=content, height_pt=height_pt, layer="A-ANNO-TEXT",
                        align="center", uid=uid))
         boxes.append(_block_box(anchor, lines, scale))

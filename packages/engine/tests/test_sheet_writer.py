@@ -206,11 +206,12 @@ def test_authored_sections_join_the_a301_series(catlin_model_ro, catlin_model_re
 
 
 def test_every_sheet_has_the_same_paper_size(catlin_sheet_index):
+    # A ledger set is laid out on ARCH D and reduced at write time (``pdf_reduce``).
     sheets = catlin_sheet_index()
-    assert all(s.paper == LEDGER for s in sheets)
+    assert all(s.paper == ARCH_D for s in sheets)
     # E-602 is the one deliberate orientation exception, and it is a *rotation* of the
     # set's paper rather than a second preset — so it follows the set onto any paper.
-    assert {s.size for s in sheets} <= {LEDGER, PORTRAIT_LEDGER}
+    assert {s.size for s in sheets} <= {ARCH_D, ARCH_D[::-1]}
     portrait = [s.number for s in sheets if s.portrait]
     assert portrait[:2] == ["E-602", "E-602.1"]  # the control schedule pages on (.1, .2 …)
     assert all(n.startswith("E-602") for n in portrait)

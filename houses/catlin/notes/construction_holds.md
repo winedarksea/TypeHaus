@@ -48,8 +48,8 @@ the model goes back to `plans/TODO.md` as a design item.
   is primary structure and is invisible once sprayed.
 - Rainscreen closures (2026-10-29): close the supplier questions in `notes/metal_trim_kit.md`
   "Open with suppliers" (Metal Sales x4, the membrane maker, the screen supplier).
-- Exterior darks (`notes/exterior_darks.md`): Clopay Black at R-12.9 (dealer), the Tuff II tint
-  limit, order chips, Metal Sales Rogers stock of Matte Black 106, Drutex's RAL 9017 warranty.
+- Exterior darks (`notes/exterior_darks.md`): Clopay Black at R-12.9 (dealer),
+  order chips, Metal Sales Rogers stock of Matte Black 106, Drutex's RAL 9017 warranty.
 - House eave/gutter: confirm strip-in width (provisional 9") with GCP, and Image II + deck +
   membrane acceptance with Metal Sales; deck bearing is 2.036" vs 2" min, provisional.
 - Air-distribution products (`notes/air_distribution_products.md`): Vents-US AM 100/125 loss
@@ -77,6 +77,16 @@ the model goes back to `plans/TODO.md` as a design item.
     cover; DVFR1W trim stand-off. Bypass/bifold 1/2" head allowance.
   - Plumber: the attic WC's 1 1/2" vent (UPC 904.1); basement WC re-route under the slab to
     W-B-BA-E.
+- Duct and air-distribution submittals (`houses/catlin/plan/ducts.py`, decisions #114/#121/#124):
+  Imperial laying lengths and boot heights (the 12.25" GV0821+GV0811 reducer is a stand-in);
+  GV0772's length; Linx's dimensioned E90/E45 submittal (centre-to-face, which `radius_m()`
+  reads first; 1.0 D assumed). Broan: insulated ducts "same diameter as the ports" vs its own
+  6-to-8 transition advice, and top-port drainage (draft at
+  `notes/air_distribution_products.md` :331). `REG-T-HP-PLANT-SIDE`'s throw (unread).
+  AAF PerfectPleat HC M8 (nominal 10x10x1) actual size vs the bath-2 stall-dryer's grille holder.
+- ERV level 2 flat trunk (`notes/erv_static_budget.md` §10.14): a shop drawing confirming the
+  rectangular elbows at r/W 1.0; TrimJoist's and TRIFORCE's shop layouts for the deck pocket
+  stations, which assume a 24" pitch.
 - Product/cost review holds (2026-11-04, `plans/catlin-product-cost-review/REPORT.md`):
   - 03-004 Simpson: HHUS410 fastener option and coating.
   - 07-001 Breezeway: the 5.9 LF guard package (product, posts, price).
@@ -100,6 +110,15 @@ the treatment; none of these has been done.
   bonded; the plug bonds nothing that must move. **Fail:** revise the strip-in detail; do not
   cut weeps or reopen ribs. Photograph finished rib ends and record product and batch. This is
   an installation check, not a certified wind-driven rain, ice-dam or durability test.
+
+## Utilities
+
+- **SPRWS** (Engineering 651-266-6270): does the meter set carry a check valve, and what is the
+  static pressure at the main? This decides the expansion tank and PRV
+  (`notes/water_service.md` §4).
+- **Sewer:** the next upstream manhole-cover elevation on the survey datum (Public Works
+  651-266-6234; the `site/sewer-permit` task asks only for invert). This feeds the UPC 710.1
+  backwater item in `plans/TODO.md`.
 
 ## Delivered parts, dry-fits and site measurements
 

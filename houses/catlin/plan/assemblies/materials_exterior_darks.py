@@ -1,4 +1,4 @@
-"""The exterior darks, every one coloured and named from ``plan/exterior_palette.py``.
+"""Exterior finishes, with coordinated darks from ``plan/exterior_palette.py``.
 
 Swap the facade there, not here. Tags name the PRODUCT, never the colour, so a swap moves no
 join key (prices.toml, tests, goldens). Not ``# haus: editable``: it computes from the palette.
@@ -53,17 +53,14 @@ MATERIALS_EXTERIOR_DARKS = [
              r_per_inch=0.0, density=7850.0, perm_rating=0.0, hatch="metal",
              color=POWDER_RAL.hex,
              source=f"PT-BW-RE/-RNE steel variant — ASTM A500 Gr C, ASTM A123 then powder coat RAL {POWDER_RAL.colour}, the RAL nearest {_M} (notes/canopy_garage_diaphragm.md §5; notes/exterior_darks.md)"),
-    # The basement's exposed-XPS band (`_PROTECTION_PANEL`). The library's
-    # `foundation-coating-acrylic` is the same product in stock grey; Tuff II has no stock
-    # dark (stock Concrete Grey, White; special order Tanner, Linens, Foundation Grey, Cairn,
-    # Wheaton; "custom color matched at an additional cost", Styro TDS), so this is a custom
-    # tint to the metal above it. A dark skin over XPS runs hot (XPS softens near 165 F) and
-    # no TDS states a darkness limit: confirm it with Styro before ordering (open).
+    # Owner (2026-11-12): darkest stock foundation-coating colour, independent of METAL.
+    # Styro lists Concrete Grey and White as stock; the other colours are special order.
+    # Keep the legacy tag so assembly, price, task and section-golden join keys stay stable.
     Material(tag="foundation-coating-acrylic-tinted",
-             name=f"Trowel-applied acrylic foundation coating over mesh (1/8\"), tinted to {METAL.colour}",
+             name='Styro Industries Tuff II Concrete Grey acrylic foundation coating over mesh (1/8")',
              r_per_inch=0.0, density=1400.0, vapor_permeance_perms=5.0, coating=True,
-             hatch="concrete", color=METAL.hex,
-             source=f"basement exposed-XPS band, 6\" below grade to wall top; acrylic foundation coating over mesh (Tuff II class), custom-tinted to {_M} (the trim above it); Styro Tuff II TDS publishes no darkness limit over XPS: confirm the custom match and the limit with Styro before ordering (open, 2026-11-07)"),
+             hatch="concrete", color="#8e8f8c",
+             source='Basement exposed-XPS band, 6" below grade to wall top; Styro Industries Tuff II, stock Concrete Grey (darkest stock colour; White is the other stock option), over Sticky Mesh HD; two 1/16" coats. Display grey is the library approximation, not a measured maker chip. Styro colour sheet, read 2026-11-12: https://images.thdstatic.com/catalog/pdfImages/9e/9ecc5d27-5094-4503-b1f4-d88cefa6b450.pdf'),
     # Site paint on the exterior door faces and frames: no product named, so matched to METAL.
     Material(tag="door-paint-exterior", name=f"Exterior door field paint, matched to {_M}",
              coating=True, color=METAL.hex, finish="paint",

@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from dataclasses import replace
 from functools import partial
+from io import BytesIO
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -23,6 +24,8 @@ from typehaus.emit.draw.elevation import elevation_sheets
 from typehaus.emit.draw.floorplan import build_floorplan
 from typehaus.emit.draw.floorplan_sheet import floorplan_sheet
 from typehaus.emit.draw.hvacplan import build_hvac_plan
+from typehaus.emit.draw.paper import composed_paper
+from typehaus.emit.draw.pdf_reduce import reduce_pdf
 from typehaus.emit.draw.pdf_writer import _close
 from typehaus.emit.draw.plan_enlarged import (
     enlarged_groups,
@@ -131,13 +134,14 @@ def build_sheet_index(model: ResolvedModel,
     thirty-odd constructors below: sheet *content* has no opinion about sheet size, and a
     set printed half on 11x17 and half on 24x36 should not be expressible. A bigger sheet
     is not just a bigger picture — ``select_scale`` gets a bigger viewport, so the drawing
-    climbs the ladder for free: catlin's A-101 goes from 1/16" = 1'-0" on ledger to
-    3/16" = 1'-0" on ARCH D, and its main floor plan from 1/8" to 3/8".
+    climbs the ladder for free. A ledger set is laid out on ARCH D and reduced
+    (``paper.composed_paper``), so its index is the 24x36 index.
 
     ``report`` is an optional registry run for this same model, house and jurisdiction,
     supplied by a caller that already has one. Only S-603 reads it (→
     ``_has_engineered_items``); the index is otherwise identical either way. Omitted, the
     registry runs here, which on catlin is the most expensive thing this function does."""
+    paper = composed_paper(paper)
     # NCS discipline order is G -> C -> S -> A -> P -> M -> E, and the second digit is the
     # SHEET TYPE: 0 general, 1 plans, 2 elevations, 3 sections, 4 large-scale views,
     # 5 details, 6 schedules, 7-8 user-defined, 9 3D. Sequence within a type is
@@ -324,6 +328,7 @@ def write_permit_set(model: ResolvedModel, output: Path,
 
     The PDF is vector: it has no resolution and plots at whatever the plotter can do, which
     is why 24x36 is a *paper* choice here and a ``--dpi`` choice only for ``haus render``.
+    An 11x17 set is the 24x36 set reduced page by page (``pdf_reduce``).
     """
     from matplotlib.backends.backend_pdf import PdfPages
 
@@ -342,7 +347,9 @@ def write_permit_set(model: ResolvedModel, output: Path,
     # inside ``schedules/`` against a preset name, and this is the only place that knows
     # which paper the *set* is on (→ sheet_writer.schedule_sheet).
     seal = seal_block_for(profile, house_dir)
-    with PdfPages(output) as pdf, set_paper(paper), set_seal_block(seal):
+    composed = composed_paper(paper)
+    target = BytesIO() if composed != paper else output
+    with PdfPages(target) as pdf, set_paper(composed), set_seal_block(seal):
         for sheet in sheets:
             if sheet.page is not None:
                 sheet.page(pdf, model, sheet.number, sheet.title)
@@ -350,6 +357,8 @@ def write_permit_set(model: ResolvedModel, output: Path,
                 fig = compose_sheet(sheet.scene(model), sheet, model, size=sheet.size)
                 pdf.savefig(fig)
                 _close(fig)
+    if composed != paper:
+        reduce_pdf(target.getvalue(), paper, output)
     return output, {"index": index}
 
 

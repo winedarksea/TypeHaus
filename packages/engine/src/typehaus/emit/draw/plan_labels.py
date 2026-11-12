@@ -55,6 +55,12 @@ def block_pitch_m(scale: float = PLAN_RESERVATION_SCALE) -> float:
     (``floorplan_sheet`` passes it; a frameless plan uses the reservation scale)."""
     return LINE_SPACING * ROOM_NAME_PT * model_in_per_pt(scale) * M_PER_IN
 
+
+def line_pitch_m(lines: list[tuple[str, float]], scale: float = PLAN_RESERVATION_SCALE) -> float:
+    """Pitch of ``lines``' own largest size: a block shrunk to ``TAG_PT`` reserves its own
+    lines, not the name's (ESS beside a door bubble)."""
+    return LINE_SPACING * max(pt for _, pt in lines) * model_in_per_pt(scale) * M_PER_IN
+
 #: Two ceiling records land on the same plane when their soffits agree within this. Well
 #: under the 1 9/16" step the basement's mixed deck makes and well over resolver noise.
 CEILING_PLANE_TOLERANCE_IN = 0.25
@@ -131,7 +137,7 @@ def _fitted_lines(lines: list[tuple[str, float]], ring: Ring,
     while len(kept) > 1:
         widest = max(len(text) * height_pt * CHAR_ASPECT * per_pt * M_PER_IN
                      for text, height_pt in kept)
-        stack = (len(kept) - 1) * block_pitch_m(scale)
+        stack = (len(kept) - 1) * line_pitch_m(kept, scale)
         if widest <= width_m and stack <= height_m:
             break
         kept.pop()
@@ -168,8 +174,8 @@ def _clamped_anchor(at: tuple[float, float], lines: list[tuple[str, float]],
     room the glyphs themselves take.
     """
     half_width = _block_half_width(lines, scale)
-    stack = (len(lines) - 1) * block_pitch_m(scale)
-    half_line = block_pitch_m(scale) / 2.0
+    stack = (len(lines) - 1) * line_pitch_m(lines, scale)
+    half_line = line_pitch_m(lines, scale) / 2.0
     minx, maxx = min(p[0] for p in ring), max(p[0] for p in ring)
     miny, maxy = min(p[1] for p in ring), max(p[1] for p in ring)
     x = at[0]
@@ -222,7 +228,7 @@ def _block_box(at: tuple[float, float], lines: list[tuple[str, float]],
                scale: float = PLAN_RESERVATION_SCALE) -> tuple[float, float, float, float]:
     """The ``(minx, miny, maxx, maxy)`` box, in metres, a block of ``lines`` anchored at ``at``."""
     half_w = _block_half_width(lines, scale)
-    pitch = block_pitch_m(scale)
+    pitch = line_pitch_m(lines, scale)
     return (at[0] - half_w, at[1] - (len(lines) - 1) * pitch - pitch / 2.0,
             at[0] + half_w, at[1] + pitch / 2.0)
 
@@ -303,7 +309,7 @@ def _place_block(at: tuple[float, float], lines: list[tuple[str, float]], ring: 
     name a slot: ``plan_voids``).
     """
     poly = Polygon(ring)
-    step_y = block_pitch_m(scale) / 2.0
+    step_y = line_pitch_m(lines, scale) / 2.0
     for trial in (lines[:count] for count in range(len(lines), 0, -1)):
         step_x = _block_half_width(trial, scale)
         for obstacles in ([*avoid, *prefer], avoid) if prefer else (avoid,):
@@ -331,7 +337,7 @@ def _place_block(at: tuple[float, float], lines: list[tuple[str, float]], ring: 
         for trial in dict.fromkeys(tuple(t) for t in trials):
             step_x = _block_half_width(trial, scale)
             anchors = [(at[0] + dx * step_x, at[1] + dy * step_y) for dx, dy in _SPILL_STEPS]
-            if contained and trial[0][1] == size:  # snapping keeps the size; never shrinks
+            if contained:  # a slot one grid step off (STUDY CLOSET beside D18)
                 anchors += _snapped_anchors(at, trial, poly, avoid, scale)
             for anchor in anchors:
                 box = _block_box(anchor, trial, scale)
@@ -361,7 +367,7 @@ def _snapped_anchors(at: tuple[float, float], lines: list[tuple[str, float]], po
     The spill grid steps in half-block widths from the room's inside point, so a slot beside a
     door bubble one grid step too far off (``MUD CL.`` west of ``D9``) is never tried.
     """
-    half_w, pitch = _block_half_width(lines, scale), block_pitch_m(scale)
+    half_w, pitch = _block_half_width(lines, scale), line_pitch_m(lines, scale)
     top, bottom = pitch / 2.0 + 1e-4, (len(lines) - 1) * pitch + pitch / 2.0 + 1e-4
     minx, miny, maxx, maxy = poly.bounds
     near = [o for o in avoid if o[0] < maxx and o[2] > minx and o[1] < maxy and o[3] > miny]
@@ -428,7 +434,7 @@ def emit_room_blocks(b: SceneBuilder, model: ResolvedModel, storey: str,
         (cx, cy), lines = _place_block((cx, cy), lines, room.clear_face, [*avoid, *boxes],
                                        prefer, scale, spill=True,
                                        short=_short_label(model, room.tag))
-        pitch = block_pitch_m(scale)
+        pitch = line_pitch_m(lines, scale)
         for index, (content, height_pt) in enumerate(lines):
             b.add(Text(anchor=_in((cx, cy - index * pitch)),
                        content=content, height_pt=height_pt, layer=ROOM_LAYER,

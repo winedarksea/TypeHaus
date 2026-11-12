@@ -52,6 +52,9 @@ dependencies = [
     # `Canvas.addOutlineEntry`'s current signature and for `rl_config.invariant`, which is
     # what makes the bundle byte-deterministic.
     "reportlab>=4.0",
+    # `haus print --paper ledger`: the 11x17 check print is the 24x36 set reduced page by
+    # page (emit/draw/pdf_reduce.py). 5.0 is the floor for `Transformation` on a page.
+    "pypdf>=5.0",
 ]
 
 [project.optional-dependencies]

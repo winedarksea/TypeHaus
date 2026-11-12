@@ -61,6 +61,9 @@ def test_haus_print_writes_the_manifest_beside_the_pdf(tmp_path: Path):
     pdf = house / "out" / "permit_set.pdf"
     manifest_path = house / "out" / "permit_set.json"
     assert pdf.is_file() and manifest_path.is_file()
+    from pypdf import PdfReader  # the 11x17 set is the 24x36 set reduced (pdf_reduce)
+    assert {(round(float(p.mediabox.width)), round(float(p.mediabox.height)))
+            for p in PdfReader(pdf).pages} <= {(1224, 792), (792, 1224)}
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     numbers = [sheet["number"] for sheet in manifest["sheets"]]
     assert numbers[0] == "G-001", "the cover is page 1"
@@ -68,7 +71,7 @@ def test_haus_print_writes_the_manifest_beside_the_pdf(tmp_path: Path):
     # catlin authors `[print] issue`, and the house has the last word on the wording of
     # its own submittal — the engine's "NOT FOR CONSTRUCTION" is only the fallback. The
     # default ledger paper is the reduced set, and it says so after the house's words.
-    assert manifest["issue"] == "ISSUED FOR PERMIT · REDUCED CHECK PRINT", (
+    assert manifest["issue"] == "ISSUED FOR PERMIT · REDUCED · DO NOT SCALE", (
         "the house's [print] issue is stamped, qualified on the 11x17 set")
     assert manifest["content_hash"], "the manifest names the model it was printed from"
     assert [s["page"] for s in manifest["sheets"]] == list(

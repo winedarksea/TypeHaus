@@ -100,6 +100,21 @@ def test_a_tight_room_takes_its_short_label_before_a_smaller_size():
                         short="MUD CL.")[1] == block
 
 
+
+def test_a_shrunk_name_reserves_its_own_pitch():
+    """ESS at 3/16": a 42" x 50" closet whose door bubble leaves a 14" strip, too low for a
+    12 pt line's pitch and enough for 9.5 pt's (and the STUDY CLOSET slot is snapped to)."""
+    from typehaus.emit.draw.plan_labels import _block_box, _overlaps, _place_block
+
+    i = M_PER_IN
+    ring = [(74.4 * i, 374.4 * i), (116.5 * i, 374.4 * i), (116.5 * i, 424.0 * i),
+            (74.4 * i, 424.0 * i)]
+    bubble = [(68.1 * i, 388.3 * i, 120.0 * i, 419.7 * i)]
+    anchor, lines = _place_block((95.9 * i, 399.7 * i), [("ESS", ROOM_NAME_PT)], ring, bubble,
+                                 scale=0.1875, spill=True)
+    assert lines == [("ESS", TAG_PT)]
+    assert not _overlaps(_block_box(anchor, lines, 0.1875), bubble)
+
 def test_a_void_caption_leaves_its_room_a_slot_for_the_name(catlin_model_ro):
     """A-102 at 1/4": FO-M-ERV-OA fills two thirds of MECH (63" x 23") and D16a stands in the
     rest. Centred, ``CHASE`` left the name nowhere; it now drops so ``MECH`` stacks above."""

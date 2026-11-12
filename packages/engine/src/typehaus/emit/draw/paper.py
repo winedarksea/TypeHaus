@@ -33,6 +33,15 @@ PORTRAIT_LEDGER = (11.0, 17.0)
 PAPERS: dict[str, tuple[float, float]] = {"ledger": LEDGER, "arch-d": ARCH_D}
 PAPER_SUFFIX: dict[str, str] = {"ledger": "", "arch-d": "_24x36"}
 
+#: A set printed on a key paper is composed on its value and reduced (``pdf_reduce``): the
+#: 11x17 check print is the 24x36 set shrunk, so both carry one layout and one sheet list.
+REDUCED_FROM: dict[tuple[float, float], tuple[float, float]] = {LEDGER: ARCH_D}
+
+
+def composed_paper(paper: tuple[float, float]) -> tuple[float, float]:
+    """The paper a set printed on ``paper`` is laid out on."""
+    return REDUCED_FROM.get(paper, paper)
+
 
 def suffix_for_size(size: tuple[float, float] | None) -> str:
     """The filename suffix for a paper *size*, the inverse of :data:`PAPER_SUFFIX`.

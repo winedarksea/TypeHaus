@@ -33,6 +33,7 @@ from typehaus.emit.draw.door_symbols import (
     symbol_name_for_operation,
 )
 from typehaus.emit.draw.lineweights import LIGHT, PROFILE
+from typehaus.emit.draw.plan_alarms import _alarm_glyph_boxes, _emit_alarms
 from typehaus.emit.draw.plan_dimensions import emit_interior_dimension_chains
 from typehaus.emit.draw.plan_labels import _block_box, emit_room_blocks
 from typehaus.emit.draw.plan_marks import (
@@ -46,15 +47,9 @@ from typehaus.emit.draw.plan_voids import (
 )
 from typehaus.emit.draw.scene import Polyline, Scene, SceneBuilder, Symbol, Text
 from typehaus.emit.draw.stair_symbol import emit_stairs
-from typehaus.emit.draw.typography import (
-    CHAR_ASPECT,
-    TAG_PT,
-    TEXT_PT,
-    model_in_per_pt,
-)
+from typehaus.emit.draw.typography import TEXT_PT
 from typehaus.model.enums import DoorOperation
 from typehaus.quantities import M_PER_IN
-from typehaus.resolve.alarms import alarm_xy
 from typehaus.resolve.assembly_material import is_cast_beam, is_flatwork
 from typehaus.resolve.door_plan_dimensions import door_plan_dimensions
 from typehaus.resolve.geometry import opening_center, wall_frame
@@ -93,7 +88,7 @@ def build_floorplan(model: ResolvedModel, storey: str, *,
     opening_segments = emit_floor_opening_rings(b, model, storey)
     stair_boxes = emit_stairs(b, model, storey, opening_segments)
     _emit_railings(b, model, storey)
-    alarm_boxes = _alarm_glyph_boxes(model, storey)
+    alarm_boxes = _alarm_glyph_boxes(model, storey, dimension_scale)
     void_boxes = emit_floor_opening_notes(b, model, storey, stair_boxes + slab_boxes,
                                           dimension_scale, mark_boxes + alarm_boxes)
     # Order is the whole argument here. A mark bubble is pinned to its opening and an alarm
@@ -102,13 +97,13 @@ def build_floorplan(model: ResolvedModel, storey: str, *,
     # told where the other two already are. Its caption then goes back the other way: the
     # block is fixed by the time the alarm's SD/CO label picks a side.
     room_boxes = emit_room_blocks(b, model, storey,
-                                  avoid=mark_boxes + void_boxes + alarm_boxes,
+                                  avoid=mark_boxes + void_boxes + alarm_boxes + stair_boxes,
                                   prefer=_placeable_boxes(model, storey),
                                   scale=dimension_scale)
     # Floor heat is MECHANICAL and now lives in ``_shared.emit_floor_heat`` for the HVAC
     # plan to adopt; the smoke/CO alarms stay, because A-1xx is where a plan reviewer looks
     # for them and ``code.R314``/``R315`` reconcile against the same elements.
-    _emit_alarms(b, model, storey, room_boxes)
+    _emit_alarms(b, model, storey, room_boxes + mark_boxes, dimension_scale)
     emit_fixtures(b, model, storey, domains=ARCHITECTURAL_DOMAINS, labels=False)
     # Three dimension tiers, inner to outer: per-facade opening strings, the face-to-face
     # interior partition chains, the overall bbox chain. Each sits outside the last so a
@@ -410,104 +405,6 @@ def _emit_railings(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
         seen.add(key)
         b.add(Polyline(points=tuple(_in(point) for point in solid.outline), closed=True,
                        layer="A-RAIL", lineweight=LIGHT, uid=solid.uid, tag=solid.tag))
-
-
-#: Candidate caption offsets around an alarm glyph, in glyph-radii, first that clears wins.
-#: Right first because that is where a reader looks for a symbol's label; below-right last
-#: because it is the direction a room block already occupies.
-_ALARM_LABEL_SIDES = ((1.0, 0.0), (-1.0, 0.0), (0.0, 1.0), (0.0, -1.0))
-
-#: How far off the glyph a caption sits, metres. The glyph is drawn by the writer at a fixed
-#: printed size, so this is the model-space room that size takes at the scale plan annotation
-#: reserves against — the same convention every other label on this sheet uses.
-_ALARM_LABEL_GAP_M = 0.14
-
-
-#: Half-width of the reserved box around an alarm glyph, metres. The symbol draws at a
-#: fixed printed size, so this is the room it takes on the sheet at the scale plan
-#: annotation reserves against — enough that a label block placed clear of it does not sit
-#: on its shoulder either.
-_ALARM_GLYPH_HALF_M = 0.11
-
-
-def _alarm_positions(model: ResolvedModel, storey: str) -> list[tuple[float, float]]:
-    """Where each alarm symbol will be drawn on ``storey`` — the same rule ``_emit_alarms`` uses.
-
-    Read before the room blocks are placed and again when the symbols are drawn. The two
-    must agree, which is why the seed-or-authored-position rule lives here once instead of
-    being spelled out at both call sites.
-    """
-    rooms = {element.tag: element for element in model.plan.storey_elements(storey)
-             if element.element_kind == "Room"}
-    out: list[tuple[float, float]] = []
-    for alarm in (element for element in model.plan.storey_elements(storey)
-                  if element.element_kind == "Alarm"):
-        room = rooms.get(alarm.room)
-        if room is None:
-            continue
-        out.append(alarm_xy(alarm, room))
-    return out
-
-
-def _alarm_glyph_boxes(model: ResolvedModel,
-                       storey: str) -> list[tuple[float, float, float, float]]:
-    """The boxes the alarm SYMBOLS will occupy, for the room block to place itself around.
-
-    The caption dodges the block and the block dodges the glyph, which is not circular: a
-    glyph cannot move at all, a block can move anywhere inside its room, and a caption can
-    only pick a side. Ordering them by how much freedom each has is what stopped ``BED``
-    and ``231 SF`` printing above and below a symbol sitting between them.
-    """
-    return [(x - _ALARM_GLYPH_HALF_M, y - _ALARM_GLYPH_HALF_M,
-             x + _ALARM_GLYPH_HALF_M, y + _ALARM_GLYPH_HALF_M)
-            for x, y in _alarm_positions(model, storey)]
-
-
-def _emit_alarms(b: SceneBuilder, model: ResolvedModel, storey: str,
-                 avoid: list[tuple[float, float, float, float]] = ()) -> None:
-    """Place code-life-safety symbols at their hosted room seed points.
-
-    ``avoid`` is the room label blocks' boxes (``plan_labels.emit_room_blocks`` returns
-    them). A room's seed and its label block are both derived from the room, so on a small
-    room they land on each other: ``SD/CO`` printed straight through ``CLOSET / 48 SF`` and
-    through ``PLAY N``'s ceiling line. The SYMBOL stays where it is — its position is a
-    statement about where the alarm goes — and only the caption steps aside.
-    """
-    rooms = {element.tag: element for element in model.plan.storey_elements(storey)
-             if element.element_kind == "Room"}
-    for alarm in (element for element in model.plan.storey_elements(storey)
-                  if element.element_kind == "Alarm"):
-        room = rooms.get(alarm.room)
-        if room is None:
-            continue
-        # Every AlarmKind must appear here — this is a hard index, so a new member without a
-        # label KeyErrors the whole plan sheet rather than drawing an unlabelled symbol.
-        label = {"smoke": "SD", "co": "CO", "combo": "SD/CO", "heat": "HD",
-                 "leak": "WD", "freeze": "FD"}[alarm.kind.value]
-        # The room stays the host (it is what the check rules reconcile against); the seed is
-        # only the default *drawing* point, so an alarm that names its own position draws
-        # there — e.g. a hall lobe of a big open room rather than that room's centroid.
-        at = alarm_xy(alarm, room)
-        b.add(Symbol(name="alarm", insert=_in(at), layer="A-ANNO-SYMB"))
-        b.add(Text(anchor=_in(_alarm_label_anchor(at, label, avoid)),
-                   content=label, height_pt=TAG_PT, layer="A-ANNO-TEXT"))
-
-
-def _alarm_label_anchor(at: tuple[float, float], label: str,
-                        avoid: list[tuple[float, float, float, float]]
-                        ) -> tuple[float, float]:
-    """The first side of the glyph whose caption clears every room block, else the right."""
-    half_w = (len(label) * TAG_PT * CHAR_ASPECT
-              * model_in_per_pt(PLAN_RESERVATION_SCALE) * M_PER_IN / 2.0)
-    half_h = _ALARM_LABEL_GAP_M / 2.0
-    for dx, dy in _ALARM_LABEL_SIDES:
-        cx = at[0] + dx * (_ALARM_LABEL_GAP_M + half_w)
-        cy = at[1] + dy * (_ALARM_LABEL_GAP_M + half_h)
-        if not any(cx + half_w > minx and cx - half_w < maxx
-                   and cy + half_h > miny and cy - half_h < maxy
-                   for minx, miny, maxx, maxy in avoid):
-            return (cx - half_w, cy - half_h)
-    return (at[0] + _ALARM_LABEL_GAP_M, at[1] + _ALARM_LABEL_GAP_M)
 
 
 def _angle(sx: float, sy: float, ex: float, ey: float) -> float:

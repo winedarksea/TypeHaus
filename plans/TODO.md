@@ -36,26 +36,7 @@ the future.
   do not, if wanted. Place them before drywall, on the AP rollout's pattern (type,
   placement, PoE budget re-check). -- DEFERRED
 
-### MEP / lighting residuals
-
-- **System 1 in the attic (2026-11-11), what is still open.** The air handler is on
-  `RM-A-EAST-UNFIN`'s deck (`houses/catlin/notes/flexx_ultra_geometry.md`):
-  - The emergency pan is declared (`secondary_drain_pan`, float switch stopping `EQ-M-HP1-OD`)
-    but not drawn; its rails lift the cabinet about 1" on site, which the connectors absorb.
-  - Lineset and control cable from `EQ-M-HP1-OD` to the attic are unrouted.
-  - Attic service provisions: the passageway from `D-A-STUDY` and the level service space
-    are not graded (the light, its entry switch and the receptacle are in, 2026-11-12).
-  - Measure the delivered cabinet's return aperture (modelled as 20x16, inferred) and the
-    supply opening setback before the necks are built.
-  - `RM-A-EAST-UNFIN` must stay inside the thermal envelope while it holds the air
-    handler. It stays conditioned and leaves only the finished area (`resolve/finished_area.py`).
-
-**The open MEP campaigns' live record is `houses/catlin/preferences.toml`**, not this file:
-the itemised web crossings, each with its count and a dated note. `haus check houses/catlin
---no-suppress` is the score with every suppression lifted. (`mep.run_interference` closed
-2026-10-08; `test_catlin_erv_clearance.py` holds it at zero bar its two ERV level-2 `_ON_HOLD`
-pairs. `mep.riser_through_deck` has no suppression: 0 FAIL, 53 UNKNOWN under the 4" drill
-allowance.)
+### Lighting Residuals
 
 - **Lighting confirms left after 2026-11-07** (`houses/catlin/notes/smart_home.md`): the Omvi 3i
   is not on HA's `reolink` list (RTSP works, ONVIF unlisted); the garage GL-C-208M's Wi-Fi/Matter
@@ -64,39 +45,103 @@ allowance.)
   stay ~102 lm/ft per white channel (no 12 mm RGB+CCT tape reaches 250; owner accepts).
 - **Owner: move the indoor cove controllers to the Matter GL-C-208M too?** The coves are the
   only Zigbee devices; doing it retires the second ZBT-2.
-- **Determine basement backwater protection before under-slab rough-in.** Add the next
-  upstream manhole-cover elevation on the survey datum, compare it with basement fixture
-  floors under UPC 710.1, and protect only affected low branches if required. The existing
-  sewer-permit task records invert, not cover elevation. [UPC 710.1 guidance](https://forms.iapmo.org/email_marketing/codespotlight/2019/Oct17.htm)
-- **Water-heater thermal expansion: ask SPRWS** (Engineering 651-266-6270) whether the meter set
-  carries a check valve and what the static pressure at the main is. Then model a listed expansion
-  tank on the heater inlet (and a PRV over 80 psi). `PA-G-HYD-BFP` is on the hydrant branch only
-  since 2026-10-29, so the meter set is the only possible check. `notes/water_service.md` §4.
 
-- **Filter and service access is only partly resolved; no reachability rule grades it.**
-  System 1's 28x12x1 MERV 13 return filter is typed and reachable from the hall floor;
-  the Broan ERV's exposed service door, published clearances, and high outdoor screen's ladder
-  access are recorded in `houses/catlin/notes/erv_service_access.md`. Gree wall-head screens
-  are front-access; three high heads require a ladder. The bath-2 stall-dryer intake now
-  specifies an AAF PerfectPleat HC M8, nominal 10x10x1 filter; verify its actual dimensions
-  against the selected grille holder. A ladder below the high intake screen temporarily
-  occupies part of the HP3 disconnect's working-width; confirm that maintenance-time overlap
-  or relocate the disconnect.
-  General open item: grade filter-change/service envelopes and decide
-  whether a reachability rule is worth a swing envelope; `Equipment.behind_access_panel` /
-  `access_panel_ref` remain unused in catlin.
-- **`mep.run_in_finished_volume`'s terminal grace is blind to leg length** (decision #94): a
-  fixture's whole first or last leg is excused however far it runs. Measured 2026-11-07: a 24" or
-  48" cap newly raises the same two, PR-M-CW-COLDSTORE-STUB (5.03 ft) and PR-M-DW-HW (4.12 ft),
-  both in RM-M-LIVING; they clear only above ~60". Owner: cap it (and chase those two) or keep
-  the grace.
-- [ ] DuctStandard residue (decisions #114/#121, `houses/catlin/plan/ducts.py`): an Imperial submittal for laying lengths and boot heights (the 12.25" stacked GV0821+GV0811 reducer is a stand-in), a proofread of IMC 2018 §603.10 / Table 603.4 against the printed code, and `_ATTIC_DECK_Z` derived from the deck rather than authored (optional). The stamped Linx E90/E45 is taken at its 1.0 D radius (decision #124); ask a Linx rep for the dimensioned submittal (centre-to-face), which `radius_m()` reads first; STUBATH's drop is a 45 deg ramp since 2026-11-11. Broan's manual says insulated ducts "must have the same diameter as the ports to ensure proper drainage" against its own 6-to-8 transition advice: ask Broan.
-- [ ] **ERV residue from the 90 deg rotation (2026-11-11).** Still open from the old OA/EA/RET hold: EA drain-back (M1-114), the OA chase lid (no ledger element in the engine), GV0772's length (unread, counted 0; OA has 3.2" to the 92.73" conduits), Broan's top-port drainage question, and hanging hardware (~35" drop: rod or strut), which the engine cannot express: there are no equipment hangers (`SuspensionAnchor` is seat-only and lays an LVL line). Needs `Equipment.hangers` (drop, count, hardware row, joist load check).
-- [ ] **System 1 static budget** (2026-11-12): grille + the 490 cfm hall filter (Zephyr 1" MERV 13: 0.32" initial, 1.0" final at 300 fpm) + trunk + coil against `EQ-S-HP1-AH`'s 0.5" ESP at 760 cfm. No note books it, so the stock 12x24x1 swap was declined (245 fpm passes; `notes/air_distribution_products.md` §5). Decide the change-out drop, then re-ask the 12x24.
-- [ ] Engine: `sweep_plan_silhouette` grades a vertical rectangular riser as a square of its width, so `REG-S-HP-RET`'s 28x12 filter box is its 15 1/8" neck rather than a drawn drop (decision #129). Use per-axis half extents.
-- [ ] Engine: a condensate pump has no element (`PipeAccessoryKind` has no pump). `PR-B-COND-HP2-GYM` is pumped from the head's lineset cover; pick a UL 778 unit, give it power and a float cut-out, and add a `CONDENSATE_PUMP` accessory kind.
-- [ ] Plant-room supply (2026-11-12, `notes/plant_supply_connection.md`): confirm the 6" 24 VAC RH damper's body, actuator and price (EWC 6RSD class, page unread) and that the actuator is reachable through the 12x6 grille in a 5 1/2" cavity; fallback: the damper at the soffit take-off with a hall access panel. `REG-T-HP-PLANT-SIDE`'s throw is unread.
-- [ ] RM-S-PLANT runs about 70 cfm positive (System 1's 75 in, 5 extract) against its "neutral to slightly negative" design; `notes/plant_room.md`'s 25/25 and `mep_hvac.py`'s 25 cfm prose are stale. Decide the extract, the undercut or the target.
+### MEP residuals
+
+Live campaign record: `houses/catlin/preferences.toml`; `haus check houses/catlin --no-suppress`
+is the unsuppressed score. `mep.run_interference` (2026-11-08) and `mep.riser_through_deck`
+(2026-10-26) are closed with no suppressions. Supplier and utility asks for these items are in
+`houses/catlin/notes/construction_holds.md`.
+
+**Owner decisions**
+
+- [ ] **System 1 return relief and plant-room pressure** (`notes/system1_return_path.md`;
+  deferred by owner 2026-11-07). At the 1/2"-3/4" undercut rule, `mep.door_transfer_air` shows
+  RM-S-BED1/2/3 at 9.7 Pa, RM-S-PLANT 19.0, RM-A-EAST-UNFIN 4.8 and RM-A-STUDIO 3.8 against
+  3 Pa. RM-M-BED nets 5 cfm in behind sealed D-M-BED2. Choose transfer grilles, jump ducts or
+  room returns. RM-S-PLANT also runs ~70 cfm positive (75 in, 5 extract) against its
+  "neutral to slightly negative" design: decide the extract, the undercut or the target. Then
+  fix the stale 25 cfm prose in `notes/plant_room.md` (:43, :69, :462) and in `plan/mep_hvac.py`
+  :330, `mep_erv_types.py` :122 and `air_terminal_types.py` :159.
+- [ ] **System 1 static budget** (2026-11-12). Book grille + hall filter (Zephyr 1" MERV 13:
+  0.32" initial, 1.0" final at 300 fpm) + trunk + coil against `EQ-S-HP1-AH`'s 0.5" ESP at
+  760 cfm. Pick the filter change-out drop, then reconsider the declined stock 12x24x1
+  (`notes/air_distribution_products.md` §5).
+- [ ] **ERV airflow** (`notes/erv_static_budget.md` §10.4, §10.6): accept the 1.1 cfm shortfall
+  under 205 or go to 10" hoods (needs RenewAire FA10 data and a plate fit check). Owner/AHJ:
+  which floor area MN 1322 R403.5 means. The engine uses finish-face area (195 cfm); centreline
+  gives 205 and exterior dimensions give 214, past the 210 cfm machine.
+- [ ] **`mep.run_in_finished_volume` terminal grace ignores leg length** (decision #94). A
+  fixture's whole first or last leg is excused however long it is. Capping it at 24" or 48"
+  flags PR-M-CW-COLDSTORE-STUB (5.03 ft) and PR-M-DW-HW (4.12 ft) in RM-M-LIVING; both clear
+  only above ~60". Cap it and re-route those two, or keep the grace.
+- [ ] **HP3 disconnect:** a ladder under the bath-2 stall-dryer's high intake screen briefly
+  blocks part of its working width. Accept the overlap at maintenance time, or move the
+  disconnect (`notes/erv_service_access.md` :33).
+
+**System 1 air handler in the attic** (`RM-A-EAST-UNFIN`, 2026-11-11,
+`notes/flexx_ultra_geometry.md`). The room stays conditioned while it holds the unit; only its
+finished area drops out.
+
+- [ ] The emergency pan is declared (`secondary_drain_pan`, float switch stopping `EQ-M-HP1-OD`)
+  but not drawn. Its rails raise the cabinet about 1", which the connectors take up.
+- [ ] The lineset and control cable from `EQ-M-HP1-OD` are not routed, because refrigerant
+  piping is not an engine element.
+- [ ] No check grades the passageway from `D-A-STUDY` or the level service space; they exist
+  only in `mep_hvac.py` prose.
+
+**ERV**
+
+- [ ] **Residue from the 90 deg rotation (2026-11-11):** EA drain-back (M1-114); the OA chase
+  lid (the engine has no ledger element); GV0772's length (unread and counted as 0; OA has 3.2"
+  to the 92.73" conduits). This also covers the "ERV flex/transition terms" in the cluster list.
+  Hanging hardware (~35" drop, rod or strut) cannot be modelled: `SuspensionAnchor` is seat-only.
+  Needs `Equipment.hangers` (drop, count, hardware row, joist load check).
+- [ ] **DU-S-ERV-HP-FEED** is the last ERV `mep.fitting_pattern` UNKNOWN: 3.4" from riser head
+  to standpipe against the stamped 90's 6.0". The standpipe is blocked west by the roof
+  underside (~6.2" at x=9.4" vs a 7" duct top) and east by the W-A-STU-N stud (x=16"); the
+  riser is blocked east by CD-B-ATTIC-RISER. No stocked part fits under the R = D/2 floor, so
+  the attic deck lanes need re-packing.
+- [ ] Proofread IMC 2018 §603.10 / Table 603.4 in `houses/catlin/plan/ducts.py` against the
+  printed code.
+
+**Plumbing**
+
+- [ ] **Basement backwater protection, before under-slab rough-in.** Once the upstream
+  manhole-cover elevation is known (construction holds), compare it with the basement fixture
+  floors under UPC 710.1 and protect only the affected low branches.
+  [UPC 710.1 guidance](https://forms.iapmo.org/email_marketing/codespotlight/2019/Oct17.htm)
+- [ ] **Water-heater thermal expansion.** After the SPRWS answer (construction holds), model a
+  listed expansion tank on the heater's cold inlet downstream of `PA-B-WH-STOP-CW`, plus a PRV
+  if static pressure is over 80 psi. `PipeAccessoryKind` has neither kind yet.
+  `PA-G-HYD-BFP` serves only the hydrant, so the meter set is the only possible check valve
+  (`notes/water_service.md` §4).
+- [ ] **Condensate pump.** There is no element for one (`PipeAccessoryKind` has no pump).
+  `PR-B-COND-HP2-GYM` is pumped from the head's lineset cover. Pick a UL 778 unit, give it
+  power and a float cut-out, and add a `CONDENSATE_PUMP` kind.
+
+**Engine**
+
+- [ ] `sweep_plan_silhouette` treats a vertical rectangular riser as a square of its width, so
+  `REG-S-HP-RET`'s 28x12 filter box is graded as its 15 1/8" neck instead of a drawn drop
+  (decision #129). Use separate half extents per axis (`resolve/sweep.py` `_plan_half_width`).
+- [ ] Deferred checks: insulation vs R403.2.1; per-segment duct insulation; M1506.3's 3 ft
+  exception and the operable-opening distance; an insulation spec's thickness vs its R-value;
+  a damper actuator inside a duct.
+
+**Autorouter.** `docs/routing.md` Limitations covers the open supply-trunk finished-volume and
+freeze FAILs, search U-turns, same-size I-joist siblings, and `--lift` on a first-leg tee. Two
+items have details that are recorded only here:
+
+- [ ] `--tree PR-M-S-SUITE-DRAIN` refuses all three fixtures now that falling runs respect D
+  pockets. WC: no plan lane (D12 is held by PR-A-HW-STUBATH, D8 by DU-M-ERV-R-STUDY). TUBSH:
+  D13 is held by PR-B-CW-SUITE. LAV: the head is 0.025" short. The authored tub drain passes;
+  the router can't reach its lane because the barrel tie sits at its head (115.5") and
+  PR-A-HW-STUBATH's inflated prism spans 115.18"-120.43". Open: a barrel tie below its head,
+  and the router's 1/2" clearance vs the authored lane (`framing_bore_limits.md` §13).
+- [ ] `--group BATH2` refuses TUB (held to its own vent) and WC (no tie: the wye inlets at
+  y 262/271 on PR-B-MAIN-DRAIN block y 254-279). The partial lay grades 2 FAIL and 1 illegal
+  bore. The authored three-vent design stands; vent-free 908.2 groups are an AHJ question.
 
 ### Performance / energy follow-ups
 
@@ -150,7 +195,6 @@ allowance.)
   `integrity.unknown_product_ref` ERROR. Same seam as the Bituthene selection. Needs a
   house-level catalog-override mechanism, or the type retagged house-local (which moves the
   `[placeables]` price key and four tests).
-- **Plan lettering residue:** on the 24x36 set PANTRY, the attic STUDY and the chase captions are clear. D1-109 is closed: MUD CLOSET abbreviates through `Room.short_label`, and a void caption now keeps its room a slot for its name, so MECH stacks over CHASE (cff89ae74). STUDY CLOSET and ESS still spill into the next room without overprinting. On the 11x17 reduced check print most small rooms still spill or overprint, which is what 3/32" scale does to them.
 - A reviewer suggested 1/2" drywall as the standard otherwise, with cheaper end 'abuse' resistant drywall 1/2" for major Hallways, Kids' Rooms, Stairwells. Some options: 1/2" Type C, Paper-Faced 1/2" AR (e.g., Gold Bond Hi-Abuse or USG Sheetrock AR), LP SmartSide 38 Series Panel 7/16" (Sidings Used Indoors), 1/2" MDF (4x8 Sheets with V-Groove or Batten Strips), 1/2" MDO (Medium Density Overlay) Plywood
 - Best Cheap STC Upgrade (~+$0.12/sq ft): 1/2" Type C Drywall (also staggered stud framing which we use in some places, cheap low-expansion spray foam or standard elastomeric latex caulk ), Best Seamless Durability Upgrade (~+$0.45/sq ft): 1/2" Paper-Faced Abuse-Resistant (AR) Drywall, Best "Skip-the-Taper" Durable Wall (~$1.30/sq ft material, $0 mudding): 4x8 Pre-Primed MDF Shiplap Panels (or LP SmartSide 38 Series), The Winner for General Bath Walls: 1/2" Mold-Resistant Paper-Faced Drywall ("Purple Board" / USG Mold Tough, although not strictly needed on well ventilated walls with good high-resin paint), The Bathroom Ceiling Secret: 1/2" Interior Soffit Board (Sag-Resistant), Best Value for Speed & Zero-Fail Waterproofing behind tile: 1/2" Polyisocyanurate Foam Board (Johns Manville GoBoard), Places where 5/8" may still make sense: floor to floor ceilings (Type X), garage walls (5/8" AR Type X). Apparently the resonant frequency of 1/2" Type C drywall is one of the more ideal for household noises (being higher than the others)
 - Around bathrooms and bedrooms we want higher STC. Around major hallways and stairs we want abuse resistance (but only need it on the lower 4' above the walking surface probably). Around the mudroom we want highest abuse resistant with something like wainscot (shiplap there carries the idea already, can be improved further possibly like LP Smartside). Some walls likely worth abuse resistance on a side: W-M-WELL, W-M-HS2/HS3/HS4, W-M-BAE, W-M-C1/C2/C3 and walls facing RM-S-HALLWAY and next to stair landings. A reviewer also said that we should focus STC drywall/framing upgrades strictly for the solid walls without undercut doors (as they say doors bypass sound so much they make upgrades not worth the price, although doors that are weatherstripped, solid, and with no undercut do have better STC), based on this we can perhaps remove resilient channel assemblies from W-S-SBS and W-S-BW1/BW2/BW3
@@ -167,18 +211,15 @@ allowance.)
   - [ ] `D-B-SUNKEN` band header (structural project): load takedown for the stacked D-S-BALCONY/D-M-PORCH jamb packs, their bearing interfaces, LVL ply fastening, and the edge I-joist filler/backer connections (`notes/sunken_door_band_header.md` §4).
 - The balcony backing's nail schedule back to the joists is undrawn (`houses/catlin/notes/balcony_fascia_mounts.md`).
   - [ ] DWV: `PR-M-BATH2-WC-VENT` runs level under the FS-M-WEST joist 016/017 + FS-M-MECH 000 seam at -13 1/2" (MN 905.3, under the bowl's real rim too; `mep.vent_connection` ADVISORY, C4 E11). A 45-degree climb is 0.21" short (7.69" of flange footprint vs 7.475" of web-zone travel), so no WC position along W-M-HS1 helps. Owner: WC to W-M-W3 bay 13-14 on a 1/4" offset flange (measured, [note](../houses/catlin/notes/bath2_vent_move_options.md) option 2: costs the floor-heat bite, the washlet outlet, the window centring), or an engineered chase.
-  - [ ] ERV level 2 flat trunk residue (`notes/erv_static_budget.md` §10.14): shop rectangular elbows are specified at r/W 1.0 (decision #124) and graded; a shop drawing confirms it. Both truss decks' pocket stations rest on an assumed 24" pitch until TrimJoist's and TRIFORCE's shop layouts.
   - [ ] S-102's drift trusses (from `engineering/snow_drift.drift_reach`, the function `structural.truss_reactions` grades by) carry no per-truss mark on the plan; the note names them `TRUSS-000`/`-001` (2 of 13).
   - [ ] Header residue (decision #116, `houses/catlin/notes/header_spans_r602_7.md` §5): the `5.25x7 LVL` row in `prices.toml` is an estimate ($13-24/LF material, off the house's own LVL $/bf); replace it with a retail number, ordered as a beam (R/L, probably special order; sold as a column it runs about twice that). `RL-A-HANDRAIL`'s new return beside WIN-S-STUDY3 is tight (end plate 5/8" off the RO, bar about 0.7" off the bookcase): field check. The moved FO-A-STAIR trimmer lands on the plate just past WIN-S-STUDY3's north king, ungraded. D-B-GYM's north king stands 1.2" past W-B-CS3's end on W-B-CS2's line.
   - [ ] D-M-LAUN after the 2026-11-07 move (review of 8b1cf155d). Owner: (1) **washer** (done 2026-11-07): valves behind the tower in W-M-CLN; the washer drains into the laundry tub (Minn. R. 4714.1001's adjacent-washer exception). Confirm with the AHJ against 4714.0804. The tower stands 0" off W-M-CLN against LG's 4" (guide p.14), so it needs 90-degree inlet hoses; name the washer valves at order. (2) **tub access**: 20" of the tub stands behind the strike wall; it is reached through the opening's west 8 1/4" and the 13 3/4" strip in front of the tower (pinned in `test_mep_plumbing.py`). (3) **36' width**: the header reads Boise p.4's 32' column (the widest) plus a load comparison; the literal 36' cell is p.9 Floor Beams 8'-0": 3 1/2 x 9 1/2, 2 trimmers, i.e. a 2-ply 9 1/2" LVL on doubled jacks (the engine frames one jack here; `WIN-M-DINING-E` reads its 32' column the same way). (4) **W-S-SN3's uniform load into W-M-HS3**: `resolve/stacked_ladder.py` records the FS-S-WEST line (W-S-SN2/SN3 over W-M-HS3/HS4, 256/272 bay) and lays nothing on an open-web deck; `structural.stacked_line_ladder` is UNKNOWN until TrimJoist's shop layout carries the line (a blocking panel or a truss over the wall), and the header reads "assumes a ladder in FS-S-WEST". `P-S-SN3-SQUASH` still carries BM-S-BATH-E's point. Still open: neither header nor PublishedSpan grades the guide's structure width against the derived building width.
   - [ ] Construction-set residue after items 12–19 (REPORT §1.12–19): Open: bay-cut rim conditions with no floor (A-570.x); C1 E2 interior guard fascia mount spec; LSSR2.37Z catalog name; A-301/A-204 level labels clip on ledger; MDO layer undrawn on A-508. Overprints found in review: E-101's northwest device-tag cluster (B-INV-BACKUP / B-PV-INV / B-SPARE-CHASE and neighbours), the B&B door detail's K5 leader crossing the K2 bubble (old A-514), and the old A-531's air/water/thermal continuity tags over the detail head (both renumbered into the A-560 series 2026-11-06). Detail sheets were renumbered into decimal series (`emit/draw/callouts.py` `DERIVED_SERIES`, 2026-11-06), so a family grows without overflowing A-599. The renumbering noted G-002's permit note index lists full-set-only sheets (the `permit_drop`/`permit_add` decimal-prefix catch and `visitSheets`'s string sort are fixed).
   - [ ] Owner decisions left open by the 2026-11-06 fit pass (REPORT §1.20-32): the titanium handrail fittings (no published load read; the EZA200 projection and load rating are unpublished too); C4 E8 runs vs backing; C4 E14 supply items; O2-110 pocket head (Eclisse detail). Backing bands: the owner kept BK-M-S1-HP2-BED, BK-M-S2-HP2-LIVING and BK-M-N2-HP3-STAIR.
-  - [ ] Fit residue after the 2026-11-06 fit pass: no readable DensShield price (`gwb-glass-mat` unpriced, ~99 SF billed since the review); Sterling drain 8 1/4" (see the second-floor tub drain item); FX-S-SUITE-WC tank 1.09" off (flange held); Uponor LF2821050 A 14.95" (submittal) vs 14.675" carried; 8 flush boxes still on studs (`advisory.box_on_stud`); `mep_hvac.py` ~350 plant-room negative-pressure prose at 25 cfm, now 5; seat beams: the LUS26-2Z now hangs on an 11/32" filler notched round the CBSTQ strap (end gap 0.1055" vs note m's 1/8"; `notes/canopy_west_band.md` 2026-11-06 (b)). Simpson publishes no filler installation, so ask Simpson to confirm. It does not gate gravity (the beam bears on the pack); the fallback is a cast-in HETA20Z pair.
-  - [ ] System 1 return relief (follows #21, b90360591): at the owner's 1/2"-3/4" undercut rule, RM-S-BED1/2/3 hold 9.7 Pa (RM-S-SUITE closed 2026-11-09 by a ducted return), RM-A-STUDIO 3.8, RM-S-PLANT 19.0 (at its 1/2"), RM-A-EAST-UNFIN 4.8 against 3 Pa, and RM-M-BED nets 5 cfm in behind sealed D-M-BED2 (`mep.door_transfer_air` ADVISORY). Choose transfer grilles, jump ducts or room returns (`notes/system1_return_path.md`). **Owner, 2026-11-07: deferred to a later pass.** Also: steel/sauna slabs are modelled cut 1/8" (steel may need ordering to size); the library interior types and the plan door symbol still use the 45 mm schematic leaf.
-  - [ ] Smaller open items, by cluster file: C1 E11 (O1-102 relief doors), O2-110 pocket head (Eclisse detail); C2 E12 rest; C3 I4-004/005; the ERV flex/transition terms, E8, E14. SCONCE-CANDLE (Livex 4451-04, no published backplate) and SCONCE-STAIR (see `BoxRow` shape) state no `LuminaireType.canopy`; `place_box` centres a wall-light box on the body's mid-height, not its canopy; the WAC LINE's in-box transformer is not in `electrical.box_fill`; no check grades a run through a room's `ceiling_lining`.
+  - [ ] Fit residue after the 2026-11-06 fit pass: no readable DensShield price (`gwb-glass-mat` unpriced, ~99 SF billed since the review); Sterling drain 8 1/4" (see the second-floor tub drain item); FX-S-SUITE-WC tank 1.09" off (flange held); Uponor LF2821050 A 14.95" (submittal) vs 14.675" carried; 8 flush boxes still on studs (`advisory.box_on_stud`); seat beams: the LUS26-2Z now hangs on an 11/32" filler notched round the CBSTQ strap (end gap 0.1055" vs note m's 1/8"; `notes/canopy_west_band.md` 2026-11-06 (b)). Simpson publishes no filler installation, so ask Simpson to confirm. It does not gate gravity (the beam bears on the pack); the fallback is a cast-in HETA20Z pair.
+  - [ ] Smaller open items, by cluster file: C1 E11 (O1-102 relief doors), O2-110 pocket head (Eclisse detail); C2 E12 rest; C3 I4-004/005; E8, E14. SCONCE-CANDLE (Livex 4451-04, no published backplate) and SCONCE-STAIR (see `BoxRow` shape) state no `LuminaireType.canopy`; `place_box` centres a wall-light box on the body's mid-height, not its canopy; the WAC LINE's in-box transformer is not in `electrical.box_fill`; no check grades a run through a room's `ceiling_lining`.
   - [ ] TB-SG-W1/E1 closure boards 8" vs FT-B-S2/S3 at 10" (F5-104); FB-B-CS drain-tile ring 1" into FT-B-S2/S3 (F5-105); 14" north-entry pier cage 0.806% (engineer hold, C2 E6).
 - **Andersen's 1⅛" stool rail cannot coexist with the 1 1/2" pan back dam** (`resolve/flashing_config.back_dam_m`, [window profiles](../houses/catlin/notes/window_profile_measurements.md)): the nine egress casements' stools pass through the dam (18 solid overlaps, ~139 in³, blessed 2026-11-07 so the ratchet can track the rest). Read Andersen's installation guide for its back-dam / sill-pan detail, then lower the dam for those openings, shim the unit, or raise the stool clear of the crank operator.
-- Generally our goal is to have every piece of the house linked to a named product (or a standard or commodity size, like a 2x4) so we can confirm every piece fits together correctly.
 - Improve the wainscot of the mudrooms (the wainscot should be tall—typically 54" to 66" high (or roughly two-thirds of the wall height), mid-to-dark tone (e.g., muddy green, slate blue, warm mushroom, or charcoal), Satin or Semi-Gloss finish using a high-end urethane alkyd enamel (like Sherwin-Williams Emerald Urethane or Benjamin Moore Scuff-X) (Scuff-X is held for this item; the house paint systems are decision #113, houses/catlin/notes/paint_selection.md), 1x6 or 1x8 Cellular PVC board for the bottom baseboard, smooth 1/4" MDF panel backers (if walls are textured) with 1x3 Primed Poplar (for impact resistance) or Primed MDF (for lowest cost) for the vertical battens (or shiplap))
 - Oksana wants an elm slab sofa table
 - See if we can practically use the fleur de lis molds on the top of PT-BW-PE and PT-BW-PNE https://historystones.com/collections/business-industrial-construction-building-materials-supplies-marble-tile-stone/products/fluer-de-lys-tuscany-column-insert
@@ -186,18 +227,6 @@ allowance.)
 - D-B-SUNKEN: separate brick reveal, widened RO, 5-1/2 inch concrete seat and a foam-bed Trex tread with fascia box sides (2026-11-04, §6 of the note) are modeled; the section-intersection check passes against every nearby solid. Still open: the tread's drain-slot outlet (its outer edge sits ~1/2" under W-SG-BRKBM's top), the PVC water sheet's laps and the box sides' seal to the brick, installed pan/sweep/hinge sections, and assembled-unit label/warranty evidence. Submittal (06-002): CPD and NFRC/NAFS label, astragal, Endura sill and PanoLock+. See notes/french_door_catalog_installation.md; installation remains UNKNOWN.
 - D-S-BALCONY: catalog coordination replaces the schematic plate/wrapped trim with a digitized ZAI outline, composite returns and short AridDek boards. BE365 adapter F is documented; crest heights come from the [engine-generated review](../houses/catlin/notes/french_door_catalog_installation.md#3-height-and-geometry-review). Complete house-root connections and cross-bearer bearing, installed pan/sweep/hinge sections and the flexible flashing-end application; confirm assembly dimensions/label/warranty, plus the 06-002 submittal (CPD, NFRC/NAFS, astragal, Endura sill, PanoLock+). Complete preferred/Tru-Defense prices remain unavailable publicly. See notes/french_door_catalog_installation.md; installation remains UNKNOWN.
 - House K2 base flashing and wall-top closures now derive, bill and receive coverage checks; coordinate the garage Sill to Soffit panel break and installation order, which the fit check records UNKNOWN. See the trim note for the selected aluminium section, isolation and quantities.
-- Autorouter open items (2026-11-11 pass; `docs/routing.md` Limitations):
-  - [ ] `--tree PR-M-S-SUITE-DRAIN` (tree:second) refuses all three now that falling runs respect D pockets: WC (no plan lane; D12 held by PR-A-HW-STUBATH, D8 by DU-M-ERV-R-STUDY), TUBSH (D13 held by PR-B-CW-SUITE), LAV (head short 0.025"). The authored tub drain passes; the router cannot reach its lane because the barrel tie sits at its head (115.5") and PR-A-HW-STUBATH's inflated prism stands at 115.18"-120.43". Open: a barrel tie below its head and the router's 1/2" clearance vs the authored lane (`framing_bore_limits.md` §13).
-  - [ ] `--group BATH2` lays the SH arm, 3" wet vent and dry vent and refuses TUB (held to its own vent) and WC (no tie: the wye inlets at y 262/271 on PR-B-MAIN-DRAIN block y 254-279); the partial lay grades 2 FAIL and 1 illegal bore. The authored three-vent design stands; vent-free 908.2 groups are an AHJ question.
-  - [ ] Supply trunk proposals keep their finished-volume FAILs (PR-A-BAR-LAV-CW 8.96 ft in RM-S-SUITEBATH; PR-A-STUBATH-SH-CW 5.19 + 1.63 ft; PR-B-LAV-TERMINAL-CW under RM-B-BATH's ceiling): the SUPPLY-GATE band reads no room ceiling and the attic legs fall outside it. A storey-banded wall-cover gate is the tested lead (27 -> 20 FAILs, search 98 -> 180 s; `mep_supply_trunk_basis.md` §5a). Proposals through exterior bays now carry `mep.supply_freeze_exposure` FAILs (12 on trunk:CW): the router prices a bay, not the pipe's depth in it.
-  - [ ] Search U-turns: `shortest_route` keys its state on the axis, not the signed heading, so a sub-inch back-step costs no turn and buys a PEX bend (23 bend-180s on the scorecard, none at a port). A search change; drain basis §4 pins its expansions.
-  - [ ] Same-size I-joist siblings in one tree group do not see each other's holes (`ijoist_bores_ok` is build-time), and P8's re-lay world is built without `laid`.
-  - [ ] `--lift` refuses a supply whose unlifted branch tees on its first leg (deferred: no catlin lift hits it). Fix: hold the head and search the middle (`mep_tree_ripup_basis.md` L7).
-  - [ ] DU-S-ERV-HP-FEED: the last ERV `mep.fitting_pattern` UNKNOWN, 3.4" (riser head to standpipe) against the stamped 90's 6.0". The standpipe cannot move west (roof underside ~6.2" at x=9.4" against a 7" duct top) or east (W-A-STU-N stud at x=16"), the riser not east (CD-B-ATTIC-RISER); no stocked part fits under the R = D/2 floor. Needs a re-pack of the attic deck lanes.
-- Air-distribution products (specified 2026-10-31, [note](../houses/catlin/notes/air_distribution_products.md)); still open:
-  - Owner: the 1.1 cfm residual under 205, or the 10" hoods (needs RenewAire FA10 test data and a plate fit check) — `notes/erv_static_budget.md` §10.4, §10.6.
-  - Owner/AHJ: which floor area MN 1322 R403.5 means. The engine grades finish-face room area (195 cfm required); centreline gave 205, exterior dimensions give 214, past the 210 cfm machine — `notes/erv_static_budget.md` §10.6.
-  - Engine, deferred: an insulation-vs-R403.2.1 check; per-segment duct insulation; M1506.3's 3 ft exception and the operable-opening distance; checking an insulation spec's thickness against its R-value; grading a damper actuator inside a duct.
 - [ ] House eave/gutter, remaining after the geometry pass ([plan](roof-wall-eave-detail.md), [note](../houses/catlin/notes/roof_wall_eave_detail.md)):
   - Supports: select the gutter bracket, draw a section through a support, seal or move the fixing above the crest (screw now 4.7" below it), rework the eave girt for edge distance.
   - Joints: eave and gutter splices, thermal movement, sealant/fastener schedule.
@@ -206,10 +235,6 @@ allowance.)
 - Consider 1/2" advantech for walls sheathing, maybe 1/2" osb and tape the seams
 - Pg 288 of the book has a roof eave detail where the roof and drip flashing alone extend out about an inch (no metal or sheathing).
 - Fixture connections (stations applied 2026-11-07, `houses/catlin/plan/wet_ports.py`). Still open:
-  - [x] Five shower assemblies aligned (2026-11-09): shared controls/heads and approximate
-    side hubs; sauna centred on its east wall, BATH2 at 48", attic arrivals above vents,
-    BATH1's WC tee retained. `mep.shower_assembly_alignment` grades position and axis
-    independently of manufacturer certainty. See `houses/catlin/notes/shower_assemblies.md`.
   - [ ] Sauna wet-wall release: 1/2" Durock replaces shiplap under the tiled spans, with
     packing, a local valve pocket and Delta's 2 3/4" stringer setback. **BLOCKED** pending
     documented temperature compatibility of the complete waterproofing, tape, mortar,
@@ -262,9 +287,9 @@ allowance.)
 - Eave and gutter hardware: Select the gutter bracket and outlet, and finish the splice, fastener, and sealant details. The eave sealant product and its compatibility with the roof and membrane also need confirmation. [Eave detail (line 153)](/Users/colincatlin/Documents-NoCloud/TypeHaus/houses/catlin/notes/roof_wall_eave_detail.md:153)
 - Interior selections: Remaining checks include the Aquia IV height suffix, SP bowl projection, Delta stainless-stock availability, the neo-angle shower’s door opening, and whether the studio wet bar needs a stainless bowl. Bath 2’s selected surface colors still need physical-chip checks. [Interior selections (line 336)](/Users/colincatlin/Documents-NoCloud/TypeHaus/houses/catlin/notes/interior_selections.md:336)
 - Other order confirmations: The Williams railing panel SKU is inferred; the Breezeway guard package, Simpson HHUS410 fastener/coating, and titanium handrail fittings still need product or order details. [Construction holds (line 29)](/Users/colincatlin/Documents-NoCloud/TypeHaus/houses/catlin/notes/construction_holds.md:29)
-- Replace the Custom foundation-coating color: stock Concrete Grey preserves the coating system if you accept the color change
 - Attic suite simplified to unfinished space. Done 2026-11-11: the bedroom count (RM-A-STUDIO is `Occupancy.HOBBY`, a craft room, so R403.5 drops 15 cfm) and a finished-area report that already leaves out RM-A-EAST-UNFIN and RM-A-POCKET (4,021 sf finished vs 4,898 CFA). Still open, if wanted: take the suite itself out of the finished area (leaving just the small attic study), although likely still keeping an ERV terminal of some sort in the attic suite, and likely still basic rough in stubs for plumbing so we can realize this design later. We would still want to keep the current products used for it in the library, and a clear set of notes so we could swap these items into the design easily.
 - Try to keep most interior doors as 1/2" factory undercut or privacy doors where decided
+- Door residue: the steel and sauna slabs are modelled cut down 1/8" (the steel may need ordering to size); the library interior types and the plan door symbol still use the 45 mm schematic leaf.
 - Shower in sauna?
 
 # Project Management

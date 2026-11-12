@@ -149,9 +149,9 @@ def print_sheets(
         None, "--details", hidden=True,
         help="deprecated alias for --set: primary -> permit, all -> full"),
     paper: str = typer.Option(
-        "ledger", help="ledger (11x17) | arch-d (24x36). The paper decides the drawn "
-                       "scale: a bigger sheet gives select_scale a bigger viewport, so "
-                       "catlin's A-101 goes from 1/16\" = 1'-0\" to 3/16\" = 1'-0\""),
+        "ledger", help="ledger (11x17) | arch-d (24x36). arch-d is the submittal at "
+                       "true scale; ledger is the same sheets reduced to fit 11x17, "
+                       "stamped DO NOT SCALE"),
     sealed: bool = typer.Option(
         False, "--sealed",
         help="Require the FINAL gate: every engineered requirement sealed by a licensed "
@@ -249,10 +249,10 @@ def print_sheets(
             FOR_PLAN_CHECK if sealed else NOT_FOR_CONSTRUCTION)
         if sealed:
             issue += " · SEALED"
-        # 11x17 plans print at 3/32" and smaller, below every permit checklist's floor-plan
-        # scale; the submittal is the 24x36 set, and the reduced set says what it is.
+        # The 11x17 set is the 24x36 sheets reduced (``pdf_reduce``): the scale labels
+        # are the 24x36 ones, and the reduced set says so.
         if size == LEDGER:
-            issue += " · REDUCED CHECK PRINT"
+            issue += " · REDUCED · DO NOT SCALE"
         # The full set writes its OWN file rather than overwriting the submittal. The two
         # are different documents — one is what was handed in — and a set already sent out
         # must never be silently replaced by a different one.

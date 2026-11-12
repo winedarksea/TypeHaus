@@ -12,7 +12,7 @@ from typehaus.emit.draw.schedules.cover_index import (
     INDEX_TIGHT_PT,
     expand_numbers,
 )
-from typehaus.emit.draw.sheet_writer import ARCH_D, LEDGER, set_paper
+from typehaus.emit.draw.sheet_writer import ARCH_D, LEDGER
 
 # Tight lettering, 3 columns of 10 rows on the first page and of 20 on each later one.
 _WIDTH = 3.2 * INDEX_COLUMN_IN * INDEX_TIGHT_PT / INDEX_PT
@@ -65,16 +65,3 @@ def test_every_emitted_sheet_is_printed_on_the_index(catlin_sheet_index, sets, p
     assert len(plan.pages) == len(cover)
     printed = expand_numbers([e for page in plan.pages for e in page.entries])
     assert printed == numbers
-
-
-def test_ledger_full_set_continues_on_g001_1(catlin_sheet_index, catlin_model_ro, tmp_path):
-    """The full set outgrows even the tight, grouped G-001; each spec renders one page."""
-    from matplotlib.backends.backend_pdf import PdfPages
-
-    sheets = catlin_sheet_index(sets="full", paper=LEDGER)
-    cover = [s for s in sheets if s.number.startswith(COVER)]
-    assert [s.number for s in cover][:2] == [COVER, f"{COVER}.1"]
-    with PdfPages(tmp_path / "cover.pdf") as pdf, set_paper(LEDGER):
-        for spec in cover:
-            spec.page(pdf, catlin_model_ro, spec.number, spec.title)
-        assert pdf.get_pagecount() == len(cover)

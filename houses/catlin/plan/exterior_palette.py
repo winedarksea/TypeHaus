@@ -4,6 +4,7 @@ Every dark on the envelope reads its name and colour from here (``plan/assemblie
 materials_exterior_darks.py``, ``plan/products_trim_stock.py``). Products with no matching
 colour follow ``METAL.family`` through the tables below. Hexes are the makers' own chips or
 published sRGB, never pre-darkened (the viewer crushes a dark, it does not lift it).
+The foundation coating independently takes the darkest stock colour (Concrete Grey).
 Not ``# haus: editable``: a catalog. Basis and sources: ``notes/exterior_darks.md``.
 """
 

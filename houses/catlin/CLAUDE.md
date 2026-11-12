@@ -2079,8 +2079,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     closed court loop at FS 1.73 (`retaining_system/W-SG-ARCH`), not on these walls
     individually (→ "Sunken garden court").
   - Skin: `BASEMENT_12`/`_8` cover the XPS with a 1/8" `foundation-coating-acrylic-tinted`
-    (troweled over mesh; custom-tinted to `METAL` since 2026-10-30, `plan/exterior_palette.py` —
-    a dark over foam runs hot, confirm the maker's LRV floor) banded from 6" below grade to the wall top, `Layer.extent` off the `GRADE`
+    (Styro Industries Tuff II, stock Concrete Grey over Sticky Mesh HD; darkest stock
+    colour, owner 2026-11-12, independent of `METAL`; legacy tag retained) banded from 6"
+    below grade to the wall top, `Layer.extent` off the `GRADE`
     datum so a grade lift grows it with no edit. Do not revert to the old
     `foundation-protection-panel` alternate (kept, priced, as a named alternate only) — its
     joint permeance is unpublished and makes `building_science.condensation` report UNKNOWN,

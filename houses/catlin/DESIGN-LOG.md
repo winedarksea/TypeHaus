@@ -8188,3 +8188,17 @@ unfed `ED-A-NEMA-JB` and the PV backfeed box), and 5.D was not graded.
   it. A fan would sit just above the elbow, its bracket on the 24' course in place of the
   strap, below the ~26'-1" wall top. It is a tall-ladder or lift job at ~24', which is
   accepted for a fan that may never be fitted.
+
+## Foundation coating: darkest stock colour (2026-11-12, owner)
+
+Use Styro Industries Tuff II **Concrete Grey**, the darker of Styro's two stock colours
+(Concrete Grey and White). This replaces the custom black match to Metal Sales 106 and
+resolves the foundation-colour TODO and custom dark-tint confirmation. Keep Sticky Mesh HD,
+two 1/16" coats, and the existing band extent. The coating no longer follows `METAL`.
+The legacy `foundation-coating-acrylic-tinted` tag stays as the assembly/price/task join key;
+its name and source now specify stock Concrete Grey. Display grey uses the library's
+`#8e8f8c` approximation; a physical sample governs. Pricing retains the conservative range
+pending a stock-colour quote, with no specified tint surcharge or third coat.
+
+Basis: [Styro Industries colour sheet](https://images.thdstatic.com/catalog/pdfImages/9e/9ecc5d27-5094-4503-b1f4-d88cefa6b450.pdf),
+read 2026-11-12; other swatches are labelled special order.

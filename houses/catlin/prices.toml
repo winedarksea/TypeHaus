@@ -4164,13 +4164,14 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 #   mesh     $201.17 / 475 SF, +2" laps      = $0.45/SF, and it does want the 10%
 #   target ordered cost                      = 1.46 + 0.45 x 1.10 = $1.955/SF
 #   low authored here                        = 1.955 / 1.10       = $1.78/SF
-# The high column is the same shape over a custom tint and a third coat ($2.30 + $0.60,
-# shaded to $2.65). Take the low as the arithmetic and the high as the quote.
+# Owner 2026-11-12: stock Concrete Grey; no custom tint or third coat specified.
+# Retain the existing high as a conservative unquoted procurement allowance, not a tint
+# surcharge. The low uses the historical pail benchmark below; obtain a stock-colour quote.
 #
 # What is in the rate, per the manufacturer's own instructions:
 #   - Tuff II, 5-gal pail, 80 SF/pail, TWO coats (1/16" skim + 1/16" texture) = the 1/8"
-#     the assembly carries. $116.74/pail retail 2026 ("Overcast" grey, one of 10 stock
-#     colours; custom tint is a special order and sits at the high end).
+#     the assembly carries. Historical benchmark: $116.74/pail retail 2026 (Overcast,
+#     actually special order per Styro's colour sheet). Selected stock colour: Concrete Grey.
 #   - Sticky Mesh HD over the WHOLE face, which is not optional over foam — 38" x 150 ft
 #     roll, 475 SF, $201.17, so ~$0.42/SF before the 2" laps and ~$0.45 after.
 #   - Wire-brushing the XPS to open the pores before coating. It is a named, mandatory step

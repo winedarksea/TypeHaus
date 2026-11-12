@@ -1,7 +1,8 @@
 # Exterior darks: the black family
 
 2026-11-07 (owner): **every exterior dark follows the "more black" family.** Each one takes its
-name and colour from `plan/exterior_palette.py`. `METAL` recolours all exterior metal and
+name and colour from `plan/exterior_palette.py`, except the stock Concrete Grey foundation
+coating selected 2026-11-12. `METAL` recolours all exterior metal and
 everything matched to it, and `WINDOW` recolours the Drutex caps, the Max Light frames and the
 canopy powder coat. Tags name the product, never the colour, so a swap moves no price row, test
 or golden key. Hexes are the makers' own chips or published sRGB, never pre-darkened (the
@@ -36,7 +37,7 @@ Slate Grey is.
 | Rainscreen base Z, balcony base flashings | `metal-flat-sheet` | Metal Sales PVDF Galvalume flat, Matte Black (106) | `#2c2829` | as above |
 | K-style gutters and leaders | `metal-dark-kstyle` | aluminium gutter coil, matched to 106 (no maker named; Metal Sales has no gutter line) | `#2c2829` | matched |
 | Canopy steel-post powder coat | `steel-hss-duplex` | powder coat `POWDER_RAL`, the RAL nearest `METAL`: RAL 9017 matt | `#262625` | RAL |
-| Basement XPS band coating | `foundation-coating-acrylic-tinted` | Styro Tuff II, custom tint matched to 106 | `#2c2829` | matched; **open** |
+| Basement XPS band coating | `foundation-coating-acrylic-tinted` | Styro Industries Tuff II, stock Concrete Grey (darkest stock) | `#8e8f8c` | library display approximation; physical sample governs |
 | Entry door paint; entry, service and French-door frames | `door-paint-exterior` | site paint matched to a 106 chip | `#2c2829` | matched |
 | French-door composite frame (`frame_material_ref`) | `composite-door-frame` | Therma-Tru composite, site-painted as above | `#2c2829` | matched |
 | 29 Drutex caps | `drutex-alucover-cap` | Alucover RAL 9017 matt powder coat | `#262625` | RAL |
@@ -52,8 +53,6 @@ Slate Grey is.
   "available on select models". Home Depot's Black SKU (GDU266) is R-6.5. Ask the Clopay
   dealer for Black on GDU293. Until then the door stays Charcoal, the one dark outside the
   family.
-- **Tuff II darkness limit over XPS.** Neither Styro TDS has a darkness or LRV clause, and XPS
-  softens near 165 F. Confirm with Styro through a distributor (styro.net is dead).
 - **Physical chips.** Put Metal Sales 106, RAL 9017 matt and Una-Clad Matte Black side by side
   before ordering.
 - **Stock.** Ask the Rogers, MN branch (800.328.9316) whether it stocks 106 in 24 ga. The guide
@@ -71,6 +70,13 @@ Slate Grey is.
   for the Z. Matte Black is stocked in both gauges (ΔE 2.9 from 106). Hems are open (2T/3T
   minimum radius). Where the Galvalume corrugated panel oversails the Z, put sealant or EPDM
   between them.
+- **Foundation coating: darkest stock colour (owner, 2026-11-12).** Use Styro Industries
+  Tuff II **Concrete Grey** over Sticky Mesh HD, two 1/16" coats. Styro's colour sheet lists
+  Concrete Grey and White as stock; Foundation Grey, Overcast and the other swatches are
+  special order. This replaces the custom match to Metal Sales 106 and closes the custom
+  dark-tint confirmation. The foundation colour stays independent of `METAL`. The existing
+  `foundation-coating-acrylic-tinted` tag is a retained join key, not a custom-tint requirement.
+  `#8e8f8c` is the library's approximate display grey, not a measured product chip.
 - **The MMI service-door leaf** is not repainted by the palette. Its frame is.
 
 ## Sources
@@ -91,3 +97,6 @@ All read 2026-11-07 unless dated. Copies are in the Wave 4 research downloads.
 - AZEK Captivate swatch, azekexteriors.com/products/trim-moulding/prefinished/ (sampled).
 - Clopay Classic colours, clopaydoor.com/classic (Charcoal chip read 2026-10-30).
 - Styro Tuff II TDS (Home Depot-hosted copies; styro.net now redirects elsewhere).
+
+- Styro Industries Tuff II colour sheet, stock versus special-order colours (read 2026-11-12):
+  https://images.thdstatic.com/catalog/pdfImages/9e/9ecc5d27-5094-4503-b1f4-d88cefa6b450.pdf.
