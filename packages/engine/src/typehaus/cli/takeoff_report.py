@@ -43,7 +43,17 @@ def _print_driver_overlaps(estimate: dict, console: Console) -> None:
 # Sections whose full-detail rows this rollup never speaks for — the giant nested payloads
 # (`cost_estimate`, `space_summary`) get their own compact treatment below rather than a
 # meaningless "N keys" line.
-_SUMMARY_SKIP = {"cost_estimate", "space_summary"}
+_SUMMARY_SKIP = {"cost_estimate", "space_summary", "floor_areas"}
+
+
+def _print_floor_areas(payload: dict, console: Console) -> None:
+    """CFA (the energy code's) beside finished area (an assessor's): two different questions."""
+    areas = payload["floor_areas"]
+    left_out = ", ".join(areas["unfinished_rooms"]) or "none"
+    console.print(f"[bold]Floor area[/bold]  {areas['conditioned_ft2']:,.0f} ft2 conditioned; "
+                  f"{areas['finished_ft2']:,.0f} ft2 finished (ANSI Z765-style: "
+                  f"{areas['finished_above_grade_ft2']:,.0f} above grade + "
+                  f"{areas['finished_below_grade_ft2']:,.0f} below; unfinished: {left_out})")
 
 
 def _print_run_schedule(rows: list, console: Console) -> None:
@@ -83,6 +93,7 @@ def _print_takeoff_summary(payload: dict, console: Console) -> None:
     many, and how much" per section, not every row. Sourced straight from the same payload
     the full/--json modes print, so it can never disagree with them about a count or a total.
     """
+    _print_floor_areas(payload, console)
     console.print("[bold]Bill of materials summary[/bold]  (rows/keys per section)")
     total_rows = 0
     section_count = 0

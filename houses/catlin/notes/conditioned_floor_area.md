@@ -53,16 +53,19 @@ The engine reports 1,296 / 1,226 / 1,226 / 1,150, total 4,898.
 
 ## 5. The R403.5 rate
 
-Six bedrooms (`RM-M-BED`, `RM-S-BED1`, `-BED2`, `-BED3`, `RM-S-SUITE`, `RM-A-STUDIO`):
+Five bedrooms (`RM-M-BED`, `RM-S-BED1`, `-BED2`, `-BED3`, `RM-S-SUITE`); `RM-A-STUDIO` is a
+craft room (`Occupancy.HOBBY`) since 2026-11-11:
 
-    TVR = 0.02 x 4,897.939 + 15 x (6 + 1) = 97.959 + 105 = 203.0 cfm
-    CVR = max(203.0 / 2, 40)                                 = 101.5 cfm
+    TVR = 0.02 x 4,897.939 + 15 x (5 + 1) = 97.959 + 90 = 188.0 cfm
+    CVR = max(188.0 / 2, 40)                                = 94.0 cfm
 
-Against the ERV's **delivered 203.9 cfm** (`notes/erv_static_budget.md` §10.6, extract side
-at 0.441 in. w.g. off the Broan curve): **+0.9 cfm, PASS.** The rated 210 is not what is
-graded.
+Against the ERV's **delivered 200.0 cfm** (`notes/erv_static_budget.md` §10.22–§10.23):
+**+12.0 cfm, PASS.** The rated 210 is not what is graded. (With six bedrooms it was 203.0,
+and the 200.0 was a FAIL.)
 
 ## 6. Sensitivities (none is the graded figure)
+
+Recorded at six bedrooms against 203.9 delivered (2026-10-31); every TVR here is 15 cfm lower now.
 
 | reading | area (sf) | TVR (cfm) | vs 203.9 delivered |
 |---|---|---|---|

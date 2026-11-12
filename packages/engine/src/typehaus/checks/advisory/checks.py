@@ -25,7 +25,7 @@ def habitable_room_window(ctx: CheckContext) -> list[Finding]:
     from typehaus.model.enums import Occupancy
 
     habitable = {Occupancy.BEDROOM, Occupancy.LIVING, Occupancy.KITCHEN,
-                 Occupancy.DINING, Occupancy.OFFICE}
+                 Occupancy.DINING, Occupancy.OFFICE, Occupancy.HOBBY}
     out: list[Finding] = []
     has_window = any(not op.is_door for op in ctx.model.openings)
     for room in (e for e in ctx.plan.all_elements() if e.element_kind == "Room"):

@@ -245,8 +245,8 @@ def test_the_glass_load_is_the_daily_average_plus_the_aed_excursion(catlin_model
 # --- §5. internal gains and the latent split ------------------------------------------------
 
 def test_occupants_are_bedrooms_plus_one(catlin_model_ro) -> None:
-    """§5. Manual J's own rule, and a fact the model already carries. catlin has six
-    conditioned bedrooms, so seven occupants."""
+    """§5. Manual J's own rule, and a fact the model already carries. catlin has five
+    conditioned bedrooms (the attic studio is a craft room), so six occupants."""
     gains = internal_gains(catlin_model_ro)
     bedrooms = sum(1 for room in catlin_model_ro.rooms
                    if room.conditioned and room.occupancy == "bedroom")

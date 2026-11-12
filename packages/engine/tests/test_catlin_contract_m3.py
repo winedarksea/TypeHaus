@@ -712,12 +712,13 @@ def test_bedroom_egress_is_associated_with_its_own_bounding_wall(catlin_check_re
     report = catlin_check_report()
     findings = [finding for finding in report.findings if finding.check_id == "code.R310_egress"]
     # 27 1/2" jack-to-jack ROs seat a 26 1/8" Andersen unit, 20.3" clear (2026-10-23).
-    assert len(findings) == 6
+    # Five: RM-A-STUDIO is a craft room since 2026-11-11 (WIN-A-S-JUL-W is kept).
+    assert len(findings) == 5
     assert all(finding.result is Result.PASS for finding in findings)
     credited = {finding.message.split()[0]: finding.message.split()[-1] for finding in findings}
     assert credited == {"RM-M-BED": "WIN-M-BED-S1", "RM-S-BED1": "WIN-S-BED1",
                         "RM-S-BED2": "WIN-S-BED2", "RM-S-BED3": "WIN-S-HALL-N",
-                        "RM-S-SUITE": "WIN-S-SUITE1", "RM-A-STUDIO": "WIN-A-S-JUL-W"}
+                        "RM-S-SUITE": "WIN-S-SUITE1"}
     assert all("WIN-B-SAUNA" not in finding.message for finding in findings)
 
 
@@ -741,7 +742,7 @@ def test_every_credited_egress_window_is_in_an_exterior_wall(catlin_ctx,
                 for word in finding.message.split()
                 if word.startswith("WIN-")}
     assert credited == {"WIN-M-BED-S1", "WIN-S-BED1", "WIN-S-BED2", "WIN-S-HALL-N",
-                        "WIN-S-SUITE1", "WIN-A-S-JUL-W"}
+                        "WIN-S-SUITE1"}
     rooms_by_storey = _rooms_by_storey(ctx)
     for tag in sorted(credited):
         opening = next(o for o in ctx.model.openings if o.tag == tag)

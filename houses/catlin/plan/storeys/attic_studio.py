@@ -13,8 +13,8 @@
 # footage in the building. Re-measured 2026-08-29 against a modelled trussed cold attic, the
 # premium is $69,100-133,900 over 1,170.9 conditioned sf = $59-114/sf, against $159-331 per
 # conditioned sf and $132-273 per gross sf for the house as a whole (2026-08-31 baseline).
-# It becomes a guest suite —
-# bedroom, bathroom, wet bar — specified as cheaply as the code allows. NOT an apartment: THERE IS
+# It becomes a suite —
+# craft room (a bedroom later, maybe), bathroom, wet bar — specified as cheaply as the code allows. NOT an apartment: THERE IS
 # NO COOKING APPLIANCE, deliberately, and that is the whole IRC R302.3 argument (see the wet bar in
 # plan/fixtures.py). The engine has no R302.3 rule at all, so that argument lives in comments and in
 # the permit narrative: write it down or it is not made.
@@ -398,10 +398,10 @@ OPENINGS = [
 # precedent. It moved out of attic.py and into this file with the rest of the suite, and that is
 # safe for the same reason: a uid follows the ELEMENT, not the file it is authored in.
 #
-# Occupancy.BEDROOM is load-bearing four times over: it is what pulls IRC R310 in (PASSing on
-# WIN-A-S-JUL-W with nothing added — WT-2764's raw opening is 27" x 64" = 12.0 sf against 5.7),
-# what `_whole_house_ventilation_rate` counts, what makes R314/R315 want an alarm inside AND one
-# outside, and what makes `electrical.receptacle_spacing` evaluate this room at all.
+# ** Occupancy.HOBBY: THE OWNER'S CRAFT ROOM (2026-11-11). ** A bedroom is a maybe-later use. Retyping
+# it BEDROOM re-adds 15 cfm to MN R403.5's rate (the ERV goes from ~12 cfm over to ~3 short, the
+# FAIL this retype cleared) and brings back R310 and the R314 alarm pair. WIN-A-S-JUL-W
+# (12.0 sf clear vs 5.7) and AL-A-STUDIO are kept so that conversion needs no rework.
 #
 # ** LEAVE ALL THREE AT THE `NORMAL` HUMIDITY DEFAULT. ** Every other bath in the house is NORMAL;
 # only RM-B-SAUNA is WET. Setting WET here would pull ROOF into the humid-room condensation
@@ -409,8 +409,9 @@ OPENINGS = [
 # surfaces — a new building-science surface bought for nothing, on a shower one storey above three
 # identical NORMAL ones. It was authored WET first and taken back out; do not "fix" it again.
 #
-# The pocket keeps `conditioned` at its default True — it is inside the hot-roof envelope. Setting
-# it False would buy back ~3.9 cfm of whole-house ventilation margin if that ever gets tight.
+# The pocket and RM-A-EAST-UNFIN keep `conditioned=True`: inside the hot-roof envelope, behind
+# uninsulated partitions, holding ducts — indirectly conditioned by the energy code's definition.
+# They leave the FINISHED area instead (resolve/finished_area.py: no floor finish + unpainted).
 ROOMS = [
     # Seed moved (9'-0", 20'-0") -> (7'-0", 8'-0"): the old point is now 4" west of the wet bar's
     # back wall. R305 PASSES on the sloped path via Exception 1's *required floor area* (70 sf)
@@ -443,7 +444,7 @@ ROOMS = [
     # them into RM-A-POCKET was rejected: it needs a 4 1/2" stub at the bath's NW corner and
     # re-routes W-A-STU-N's conduits. DESIGN-LOG, "Studio eave services".
     Room(uid="CAR401AAAA", tag="RM-A-STUDIO", seed=pt(ft(7), ft(8)),
-         occupancy=Occupancy.BEDROOM, floor_finish="catlin-vinyl-gatsby",
+         occupancy=Occupancy.HOBBY, floor_finish="catlin-vinyl-gatsby",
          ceiling=FollowRoof(roof_ref="RF-HOUSE"),
          exposed_services="owner accepts exposed services in the studio's eave, a rustic attic: the lavatory lines along W-A-STU-W and the ERV and heat-pump branches on the west deck run open under less than 5'-0\" of head, where nobody walks into them"),
     # ** THE TAG IS `RM-A-STUBATH`, NOT `RM-A-STUDIO-BATH`, AND THAT IS NOT COSMETIC. **
@@ -471,7 +472,9 @@ ROOMS = [
 ]
 
 # ============================== ALARMS ================================================
-# ** TWO ALARMS, AND GETTING THE PAIR ROUND THE WRONG WAY IS A FAIL. **
+# ** TWO ALARMS, AND GETTING THE PAIR ROUND THE WRONG WAY IS A FAIL. ** Since the studio became a
+# craft room (2026-11-11) AL-A-STUDIO is beyond code: kept, wired and interconnected, so a future
+# bedroom needs no retrofit. The rest of this note is what holds once it is a bedroom.
 # `code.R314_R315_alarms` needs an alarm IN the bedroom AND a second on the same storey in a
 # NON-SLEEPING room; `code.R315_co_every_sleeping_area` FAILs outright if every CO alarm on the
 # storey is inside a bedroom. AL-A-COMBO was filed in RM-A-WEST-UNFIN — if it merely followed the

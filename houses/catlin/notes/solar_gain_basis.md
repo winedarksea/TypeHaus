@@ -378,3 +378,16 @@ shading credit of the court, porch and floors above (§3), and no more than it s
 average is over the 12 daylight hours, not 24, which is the conservative reading. No interior
 shading (IAC) is credited. Cooling is not a sizing driver: the zones' units are 2.4 / 4.1 /
 25 x their sensible load (`mep.cooling_capacity`).
+
+## Revision 2026-11-11 — RM-A-STUDIO is a craft room: six occupants
+
+`RM-A-STUDIO` became `Occupancy.HOBBY`, so §5 counts five bedrooms:
+
+```
+occupants = 5 + 1 = 6
+sensible  = 6 × 230 + 1,200 = 2,580 Btu/h   (−230)
+latent    = 6 × 200         = 1,200 Btu/h   (−200)
+```
+
+Cooling sensible and latent each fall by exactly those amounts. Glass, roof and conduction
+are unchanged.

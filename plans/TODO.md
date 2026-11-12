@@ -45,7 +45,7 @@ Note that many of the pinned decisions in the code base here aren't as fixed as 
   - Measure the delivered cabinet's return aperture (modelled as 20x16, inferred) and the
     supply opening setback before the necks are built.
   - `RM-A-EAST-UNFIN` must stay inside the thermal envelope while it holds the air
-    handler. This matters for the "don't count the attic lofts as conditioned" item below.
+    handler. It stays conditioned and leaves only the finished area (`resolve/finished_area.py`).
   - Engine: there is no PLENUM equipment kind. Passive shop boxes ride `MIXING_BOX`.
 
 **The open MEP campaigns' live record is `houses/catlin/preferences.toml`**, not this file:
@@ -96,7 +96,7 @@ allowance.)
   both in RM-M-LIVING; they clear only above ~60". Owner: cap it (and chase those two) or keep
   the grace.
 - [ ] DuctStandard residue (decisions #114/#121, `houses/catlin/plan/ducts.py`): an Imperial submittal for laying lengths and boot heights (the 12.25" stacked GV0821+GV0811 reducer is a stand-in), a proofread of IMC 2018 §603.10 / Table 603.4 against the printed code, and `_ATTIC_DECK_Z` derived from the deck rather than authored (optional). Linx's public catalog gives the E90 only as rC ≈ 1.5 d1, no dimension A (REV11 p.13; ask a Linx rep for the dimensioned submittal); STUBATH's drop is a 45 deg ramp since 2026-11-11. Broan's manual says insulated ducts "must have the same diameter as the ports to ensure proper drainage" against its own 6-to-8 transition advice: ask Broan.
-- [ ] **Whole-house ventilation is 3 cfm short, carried red (owner, 2026-11-11).** EQ-B-ERV's four ports went exact at 90 deg (`houses/catlin/notes/erv_static_budget.md` §10.22): the return's bent kit flex costs 0.089", so delivery is 200.0 cfm against R403.5's 203.0 and `code.N1103_6_whole_house_ventilation` FAILs, with R303.1 Exception 1 in RM-A-STUDIO, RM-B-PLAY-N, RM-S-BED3 and RM-S-PLANT. No suppression: the attic-bedroom drop (below, about -15 cfm) clears all five. Levers if wanted sooner: tee DU-ERV-RISER-EXH into the return trunk (~20 Pa, junction loss ungraded) or a stamped 90 on the return's rise (2.7 Pa). Still open from the old OA/EA/RET hold: EA drain-back (M1-114), the OA chase lid (no ledger element in the engine), GV0772's length (unread, counted 0; OA has 3.2" to the 92.73" conduits), Broan's top-port drainage question, and hanging hardware (~35" drop: rod or strut).
+- [ ] **ERV residue from the 90 deg rotation (2026-11-11).** Still open from the old OA/EA/RET hold: EA drain-back (M1-114), the OA chase lid (no ledger element in the engine), GV0772's length (unread, counted 0; OA has 3.2" to the 92.73" conduits), Broan's top-port drainage question, and hanging hardware (~35" drop: rod or strut).
 - Replace the Custom 12×28 air filter: reconsider a stock 12×24 MERV 13 filter and matching grille. Catalog options exist, but pressure drop and noise need checking before substitution. [Manufacturer data](https://zephyrfiltration.com/wp-content/uploads/2025/03/ZEP25252-VGP-MERV-13-Product-Spec-Sheet-Updates-V2.pdf
 - Attic level heat pump outlet grills don't seem to have modeled duct connects.
 
@@ -317,7 +317,7 @@ the future.
   4" to its west, so no gravity lane reaches the sauna floor drain, and PR-B-COND's overhead
   head still sits over the head's old station. Options worked 2026-11-11: re-site the head
   on W-B-CS3 (gravity, ~6 ft in the wall, +15 ft lineset) or a mini pump in its lineset cover.
-- Attic suite simplified to unfinished space: the goal to reduce the taxable and ERV bedroom count by 1, and reduce the sq foot (leaving just the small attic study in the habitable sq footage), although likely still keeping an ERV terminal of some sort in the attic suite, and likely still basic rough in stubs for plumbing so we can realize this design later. We would still want to keep the current products used for it in the library, and a clear set of notes so we could swap these items into the design easily.
+- Attic suite simplified to unfinished space. Done 2026-11-11: the bedroom count (RM-A-STUDIO is `Occupancy.HOBBY`, a craft room, so R403.5 drops 15 cfm) and a finished-area report that already leaves out RM-A-EAST-UNFIN and RM-A-POCKET (4,021 sf finished vs 4,898 CFA). Still open, if wanted: take the suite itself out of the finished area (leaving just the small attic study), although likely still keeping an ERV terminal of some sort in the attic suite, and likely still basic rough in stubs for plumbing so we can realize this design later. We would still want to keep the current products used for it in the library, and a clear set of notes so we could swap these items into the design easily.
 - Try to keep most interior doors as 1/2" factory undercut or privacy doors where decided
 - Shower in sauna?
 

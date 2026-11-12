@@ -13,6 +13,9 @@ EQ-S-ERV-MIX (2026-11-11: PLAY 30 -> 20 and STUDY 15 -> 10, the freed 15 to Syst
 return, which reaches every second-floor room). The STUDY booth now runs +5 net under
 D-M-STUDY: 10 in against the 5 its return takes (``mep_registers_main.py``).
 
+MN R403.5 asks ~188 cfm since RM-A-STUDIO became a craft room (2026-11-11, 5 bedrooms); the
+machine delivers ~200 off its curve, so the 115 feed stands and the margin is banked.
+
 A shared leg carries every terminal beyond it over its whole length, the LAUNDRY
 precedent: GYM carries the sauna supply, SAUNA-EXH the bench hood, BED the living supply,
 BED2 the BED1 return. A branch keeps its own terminal's constant; trunks sum the parents.

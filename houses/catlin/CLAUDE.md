@@ -41,8 +41,8 @@
 >   of its old station, and **all four Broan ports are EXACT** (2026-11-11, `notes/erv_static_budget.md`
 >   §10.22). EA lands north of OA on the east half, the order the risers need, so the outdoor legs
 >   never cross. SUP and RET duck under their rows on bent kit flex (C 1.18) into MAN-SUP and the
->   moved MAN-EXH (y=27'-2 1/2"). OA/EA wear 1" AP Armaflex (10" OD). Cost: 200.0 cfm against 203.0,
->   a carried FAIL until the attic bedroom drops. Read §10.22 before moving any of it.
+>   moved MAN-EXH (y=27'-2 1/2"). OA/EA wear 1" AP Armaflex (10" OD). Cost: 200.0 cfm delivered, now
+>   against 188.0 (the studio is a craft room, §10.23). Read §10.22 before moving any of it.
 > - **Roof:** RF-GARAGE is the RDM vented peak under the same 7" 52131XX as the canopy (one cap
 >   ring, no step); R806.2 passes 873/553 in2: 562 ridge on Profile Vent's 23.4 in2/ft + 311 eave intake
   (48 LF x 6.48). Rake soffits are not intake. Coplanar abutting roofs
@@ -930,11 +930,12 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     fall-protection checking entirely. Never add x=10' to `FS-ATTIC.joists.bearing_refs`
     for this void — the field is global to the deck and would cut all ~34 joist lines
     including the 17 over the suite.
-  - `RM-A-STUDIO`: `Occupancy.BEDROOM`, `floor_finish="catlin-vinyl-gatsby"` over
-    `plywood-subfloor`, uid `CAR401AAAA` (retagged in place). `RM-A-STUDY` next door is
-    oak. BEDROOM occupancy is load-bearing for R310, the ventilation bedroom count,
-    R314/R315, and whether `electrical.receptacle_spacing` evaluates the room at all. (→
-    log4.md, floor-finish history)
+  - `RM-A-STUDIO`: `Occupancy.HOBBY` (the owner's craft room, 2026-11-11; a bedroom only
+    maybe later), `floor_finish="catlin-vinyl-gatsby"` over `plywood-subfloor`, uid
+    `CAR401AAAA` (retagged in place). `RM-A-STUDY` next door is oak. HOBBY is habitable
+    (R303/R304/R305, receptacle spacing) but not sleeping. **Retyping it BEDROOM adds 15 cfm
+    to R403.5** (200.0 delivered vs 203.0, a FAIL) and brings back R310 and the R314 pair;
+    `WIN-A-S-JUL-W` and `AL-A-STUDIO` are kept so that conversion needs no rework.
     - 13.6 sf glazing, none addable (south gable mirror about x=18' is fixed; dormer/roof
       penetration excluded). R303.1 has passed on daylight since 2026-09-10 via
       `ResolvedRoom.head_limited_area_m2` (146 sf, area under the roof UNDERSIDE per
@@ -945,8 +946,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       (`checks/code/mn_residential/ventilation.py`). (→ log4.md, literal-reading risk)
     - Exception 1's lumen floor no longer binds this room while it passes on daylight —
       `plan/lighting_attic.py` claims of R303.1-required fittings are stale (room carries
-      2,327 rated lm over 146 sf). `REG-A-HP-WEST` stays regardless (graded on BEDROOM
-      occupancy, not Exception 1).
+      2,327 rated lm over 146 sf). `REG-A-HP-WEST` stays regardless (heat, and
+      `mep.ventilation_distribution`'s fresh-air supply).
   - **The studio eave's services are exposed by choice** (owner, 2026-10-29: "a little
     rustic"): the three lav lines along `W-A-STU-W` and the four west-deck ducts, declared by
     `RM-A-STUDIO.exposed_services`. UPC 312.4 / IMC 603.15 ask protection only where damage is
@@ -1028,16 +1029,17 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     (`erv_segments.py`, 2026-11-12, note §10.21): extract via `DU-M-ERV-R-SUITEBATH` governs
     at 0.551" -> 200.0 cfm (note §10.22). A same-size tee is a branch when its FIRST vertex lies on the
     parent. Junction losses are still ungraded.
-  - `AL-A-COMBO` is in `RM-A-STUDY`, `AL-A-STUDIO` in the studio — reversed is a hard
-    FAIL: `code.R315_co_every_sleeping_area` fails if every CO alarm on a storey is inside
-    a bedroom.
-  - `code.N1103_6_whole_house_ventilation` grades the DELIVERED 200.0 cfm against **203.0**
-    required (owner, 2026-10-31): MN 1322 R403.5 on 4,900 sf of conditioned floor area,
+  - `AL-A-COMBO` is in `RM-A-STUDY`, `AL-A-STUDIO` in the studio. `AL-A-STUDIO` is beyond
+    code while the studio is a craft room. If it becomes a bedroom again, swapping the two is a hard FAIL:
+    `code.R315_co_every_sleeping_area` fails if every CO alarm on a storey is inside a bedroom.
+  - `code.N1103_6_whole_house_ventilation` grades the DELIVERED 200.0 cfm against **188.0**
+    required (five bedrooms since 2026-11-11): MN 1322 R403.5 on 4,900 sf of conditioned floor area,
     measured to the outer face of the structure (sheathing / foundation concrete, not the
     ccSPF, girts or cladding), each stair well deducted once on the storey above
-    (`resolve/conditioned_area.py`, `notes/conditioned_floor_area.md`). -3.0 cfm since the
-    ports went exact (2026-11-11): a FAIL the owner carries, with R303.1 Exception 1 in four
-    rooms, until the attic bedroom drops; 2 cfm or less short would be UNKNOWN.
+    (`resolve/conditioned_area.py`, `notes/conditioned_floor_area.md`). +12.0 cfm. With the
+    studio as a bedroom it was −3.0 (a FAIL, with R303.1 Exception 1 in four rooms); 2 cfm or
+    less short would be UNKNOWN. RM-A-POCKET and RM-A-EAST-UNFIN stay conditioned (inside the
+    hot roof, holding ducts) and leave only the FINISHED area (`resolve/finished_area.py`).
 
 - **`FO-A-STAIR`'s WEST edge is the stair head, `x=21'-4 3/8"`, not the source's 21'-2"**
   (moved 2026-09-15; one 3/4" head riser board past the top riser since 2026-09-28,

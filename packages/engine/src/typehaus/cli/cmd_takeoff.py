@@ -15,6 +15,7 @@ from typehaus.cli.takeoff_report import (
     _print_basis,
     _print_bid_ladder,
     _print_driver_overlaps,
+    _print_floor_areas,
     _print_per_sf,
     _print_run_schedule,
     _print_takeoff_summary,
@@ -53,6 +54,19 @@ def takeoff(
     if strict and unpriced:
         console.print(f"[red]--strict: {len(unpriced)} unpriced row group(s)[/red]")
         raise typer.Exit(1)
+
+
+def _floor_areas(model) -> dict:
+    """CFA and finished area, reported beside the bill; neither drives a quantity."""
+    from typehaus.resolve.conditioned_area import SF_PER_M2, conditioned_floor_area
+    from typehaus.resolve.finished_area import finished_floor_area
+
+    finished = finished_floor_area(model)
+    return {"conditioned_ft2": round(conditioned_floor_area(model).area_ft2, 1),
+            "finished_ft2": round(finished.area_m2 * SF_PER_M2, 1),
+            "finished_above_grade_ft2": round(finished.above_grade_m2 * SF_PER_M2, 1),
+            "finished_below_grade_ft2": round(finished.below_grade_m2 * SF_PER_M2, 1),
+            "unfinished_rooms": list(finished.excluded_rooms), "basis": finished.basis}
 
 
 def _takeoff(house: Path | None, as_json: bool, summary: bool, csv: Path | None,
@@ -174,6 +188,7 @@ def _takeoff(house: Path | None, as_json: bool, summary: bool, csv: Path | None,
     # Opt-in because it is a per-RUN view, not a bill: 111 rows that group into the dozen
     # `pipe_runs`/`ducts`/`conduit` lines already in the payload. Carried in `--json` too
     # when asked for, so the before/after diff a reroute is judged on is machine-readable.
+    payload["floor_areas"] = _floor_areas(model)
     if runs:
         payload["runs"] = run_schedule(model, prices)
     if prices is not None:
@@ -209,6 +224,7 @@ def _takeoff(house: Path | None, as_json: bool, summary: bool, csv: Path | None,
     if summary:
         _print_takeoff_summary(payload, console)
         return payload
+    _print_floor_areas(payload, console)
     console.print("[bold]Framing bill of materials[/bold]  (size · type: pieces / lineal ft)")
     for row in framing_bom:
         buckets = ", ".join(f"{b['count']}×{b['label']}" for b in row["stock"])

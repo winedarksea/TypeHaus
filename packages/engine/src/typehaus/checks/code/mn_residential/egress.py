@@ -13,6 +13,7 @@ from shapely.geometry import Point, Polygon
 from shapely.ops import nearest_points
 
 from typehaus.checks.code.mn_residential._common import (
+    HABITABLE_OCCUPANCIES,
     _fail,
     _pass,
     _room_windows,
@@ -24,7 +25,7 @@ from typehaus.checks.code.mn_residential._common import (
 from typehaus.checks.code.mn_residential.egress_door import designated_egress_doors
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
-from typehaus.model.enums import SLEEPING_OCCUPANCIES, Occupancy
+from typehaus.model.enums import SLEEPING_OCCUPANCIES
 from typehaus.quantities import inch
 from typehaus.resolve.geometry import wall_frame
 from typehaus.resolve.model_window_seat import window_frame_dimensions
@@ -39,11 +40,7 @@ _MIN_EGRESS_AREA_SF = 5.7  # grade-floor 5.0; upper 5.7 (R310.2.1)
 # R310.1 applies to a basement holding habitable space. "Habitable" is R202's list — living,
 # sleeping, eating, cooking — and explicitly excludes bathrooms, closets, halls, storage and
 # utility space, which is why a mechanical-only cellar is not on the hook for an escape
-# opening and a finished rec room is.
-HABITABLE_OCCUPANCIES = frozenset({
-    Occupancy.BEDROOM, Occupancy.LIVING, Occupancy.DINING, Occupancy.KITCHEN,
-    Occupancy.MEDIA, Occupancy.OFFICE,
-})
+# opening and a finished rec room is. The one table is `_common.HABITABLE_OCCUPANCIES`.
 
 
 def _window_type(ctx: CheckContext, opening):

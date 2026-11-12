@@ -354,7 +354,7 @@ def _sink_points(ctx: CheckContext) -> dict[str, list]:
 _AFCI_OCCUPANCIES = frozenset({
     Occupancy.KITCHEN.value, Occupancy.LIVING.value, Occupancy.DINING.value,
     Occupancy.BEDROOM.value, Occupancy.HALLWAY.value, Occupancy.LAUNDRY.value,
-    Occupancy.MEDIA.value, Occupancy.OFFICE.value, Occupancy.STORAGE.value,
+    Occupancy.MEDIA.value, Occupancy.OFFICE.value, Occupancy.HOBBY.value, Occupancy.STORAGE.value,
     Occupancy.STUDY_CLOSET.value,  # "similar rooms or areas"
 })
 

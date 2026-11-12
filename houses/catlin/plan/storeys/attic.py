@@ -569,7 +569,7 @@ ROOMS = [
 ALARMS = [
     # ** RE-POINTED TO RM-A-STUDY, AND NOT TO THE STUDIO. ** Same device, same
     # place; only the room claim moved. Sending it the OTHER way — following the retag into
-    # what is now a bedroom — is the failure this comment exists to prevent:
+    # a room that may become a bedroom — is the failure this comment exists to prevent:
     # `code.R315_co_every_sleeping_area` FAILs outright if every CO alarm on a storey sits
     # inside a bedroom, and `code.R314_R315_alarms` wants one outside the sleeping area
     # besides. RM-A-STUDY is the stair head, which is literally R315.3's "immediate vicinity

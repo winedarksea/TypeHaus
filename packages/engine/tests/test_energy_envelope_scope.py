@@ -69,10 +69,12 @@ _HEATING_BTUH = 30_182.8
 # 2026-11-04 (notes/block_load_basis.md Revisions): the glass is the daily average plus the
 # excursion, not the peak plus it (-3,216.4); summer 90 -> 88 F (-598.9); the air-side
 # latent at 88/72 F against 75 F / 50% (+4,676.4).
-_COOLING_SENSIBLE_BTUH = 16_522.1
-_LATENT_BTUH = 6_076.4
-_COOLING_TONS = 1.8832
-_INTERNAL_SENSIBLE_BTUH = 2_810.0
+# 2026-11-11: RM-A-STUDIO is a craft room, six occupants not seven (notes/solar_gain_basis.md):
+# exactly -230 sensible and -200 latent off 16,525.7 / 6,077.3.
+_COOLING_SENSIBLE_BTUH = 16_295.7
+_LATENT_BTUH = 5_877.3
+_COOLING_TONS = 1.8478
+_INTERNAL_SENSIBLE_BTUH = 2_580.0
 
 # ``(kind, area_ft2, ua_btu_per_hour_f)`` in the order the report emits them.
 # The 17'-0" court (2026-09-22): W-B-S2-FR/-S3-FR lost 1' each (2 x 8.52' = -17.0 sf), the

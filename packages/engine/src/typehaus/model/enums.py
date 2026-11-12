@@ -93,6 +93,8 @@ class Occupancy(Enum):
     STAIR = "stair"
     MEDIA = "media"
     OFFICE = "office"
+    #: A habitable, non-sleeping room for craft or hobby work; graded as an office.
+    HOBBY = "hobby"
     #: A finished, occupied closet fitted for desk work, too small to be a room: one of
     #: R202's "similar areas" that are not habitable space, so R304/R305 do not reach it.
     STUDY_CLOSET = "study_closet"

@@ -45,9 +45,9 @@ REGISTERS_HVAC_ATTIC = [
     # The room gets conditioned air off System 1 like RM-A-STUDY/RM-A-EAST-UNFIN, returning
     # stale air at REG-A-RET1, so the ERV's attic side is extract-only.
     #
-    # `room=RM-A-STUDIO` is LOAD-BEARING TWICE OVER: the room is a BEDROOM, and this one
-    # register answers two different checks for it — `mep.ventilation_distribution` wants a
-    # fresh-air supply in a conditioned bedroom, and R303.1 Exception 1 (which is how this
+    # `room=RM-A-STUDIO` is LOAD-BEARING TWICE OVER: the room is habitable (the craft room),
+    # and this one register answers two checks for it — `mep.ventilation_distribution` wants a
+    # fresh-air supply in it, and R303.1 Exception 1 (which is how this
     # room gets out of its 8% glazing shortfall — see plan/lighting_attic.py) requires a
     # mechanical fresh-air SUPPLY Register in the room as one of its four conditions. NO
     # MINI-SPLIT IS WANTED: reusing this boot is the whole reason the studio costs what it
@@ -60,7 +60,7 @@ REGISTERS_HVAC_ATTIC = [
 
 # The attic ERV terminals: extract only. Fresh air is off System 1 (REG-A-HP-WEST, the
 # floor boot in REGISTERS_HVAC_ATTIC above); this is the stale pickup — the same pattern as
-# every other storey. The attic is not one cathedral volume: it is a guest bedroom, a closed
+# every other storey. The attic is not one cathedral volume: it is a craft room, a closed
 # bathroom and a walled storage pocket with three doors between them, so REG-A-RET1 sits in
 # the studio and the bath gets its own terminal, because R303.3 requires local exhaust from
 # a bathroom and a grille in the next room is not it.
@@ -68,7 +68,7 @@ REGISTERS_ATTIC = [
     # x=1'-0": the 6:12 roof underside there is 7 1/2" above the deck — a wedge nothing else
     # can use, no furniture can stand in and nobody walks through — which is exactly what
     # makes it the right home for a boxed-in 3" surface duct and a floor grille at its end.
-    # Moving it inboard would put a duct across a finished bedroom to buy headroom a floor
+    # Moving it inboard would put a duct across a finished room to buy headroom a floor
     # boot has no use for.
     # (1'-0", 20'-8") is a floor boot in the studio's NW corner, on the existing x=1'-0" chase,
     # at a bay centre (248" = 8 + 15 x 16), diagonally opposite REG-A-HP-WEST's supply at

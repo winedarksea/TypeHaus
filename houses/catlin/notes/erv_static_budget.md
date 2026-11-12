@@ -10,7 +10,7 @@ by `tests/test_erv_static_oracle.py`.
 BLD-08 pass; `notes/system1_return_path.md` — the *other* air system's return path, which
 shares none of this machine's duct.
 **What is asked of the reviewer:** redo §6's two column sums and §10.4/§10.6's additions, and
-check that 203.9 delivered against R403.5's 203.0 (4,900 sf CFA, §10.6) holds. Both of §7's 8" upsizes are now bought, so there
+check that 200.0 delivered (§10.22) against R403.5's 188.0 (4,900 sf CFA, five bedrooms, §10.23) holds. Both of §7's 8" upsizes are now bought, so there
 is no cheap lever left in this note — what remains is `DU-ERV-RISER-EXH`, which is 58 % of the
 governing column on its own. The friction arithmetic in §2–§5 is ordinary Darcy–Weisbach and
 is offered for checking, not for deciding.
@@ -509,7 +509,7 @@ measured one.
   makes it whistle.
 - **Report per terminal**: tag, design cfm, measured cfm, damper position. 23 rows, one
   page, filed with the O&M.
-- **The number to hit is 203 cfm net supply** (MN 1322 R403.5 on 4,900 sf, §10.6), not 210.
+- **The number to hit is 188 cfm net supply** (MN 1322 R403.5 on 4,900 sf and five bedrooms, §10.23), not 210.
 
 ## 9. What is NOT graded here
 
@@ -1354,6 +1354,18 @@ are not that long). The ERV door zone shares about 10" x 14" with D-B-CLOSET's s
 length is still unread (counted 0): every inch of it lifts OA and EA, and OA has 3.2" to the
 92.73" conduits. Broan's top-port drainage question (`air_distribution_products.md`) stands.
 
+### 10.23 The attic bedroom drops: RM-A-STUDIO is a craft room (2026-11-11)
+
+Owner: the attic suite is a craft room now and maybe a bedroom later. `Occupancy.HOBBY` is
+habitable but not sleeping, so R403.5 counts five bedrooms:
+
+    TVR = 0.02 x 4,898 + 15 x (5 + 1) = 97.97 + 90 = 188.0 cfm
+    delivered (unchanged, §10.22)                       200.0 cfm   (+12.0)
+
+No duct or flow changes; `EQ_S_ERV_MIX` stays at 115 and the margin is banked. The FAIL clears,
+and R303.1 Exception 1 carries its four rooms again. Retyping the room BEDROOM puts back the 15
+cfm and the −3.0.
+
 ### 10.5 The thermal penalty of the legs (hand-worked)
 
 Both legs run through conditioned space in 2" of closed-cell elastomeric (two 1" layers of
@@ -1398,8 +1410,8 @@ it. `SP-M-ERV-OA-SEAL` / `SP-S-ERV-EA-SEAL` carry the detail and bill it.
 - Broan **AI Series installation manual** — quarterly filter and intake-hood inspection,
   unit-door access, and low-airflow troubleshooting (W22/W32).
 - HVI **Certified Products Directory**, HVI ID 2004940 — 206 cfm net supply at 0.4 in. w.g.
-- Minnesota Rules **1322** (MN amendments to IRC Ch. 11), R403.5 — the 203.0 cfm whole-house
-  rate this building requires on 4,900 sf of CFA (§10.6), graded against the delivered flow
+- Minnesota Rules **1322** (MN amendments to IRC Ch. 11), R403.5 — the 188.0 cfm whole-house
+  rate this building requires on 4,900 sf of CFA and five bedrooms (§10.23), graded against the delivered flow
   by `code.N1103_6_whole_house_ventilation`.
 - RenewAire **Hoods and Dampers** sheet (renewaire.com, 2025-09) — FA8 supply/exhaust and BD8
   pressure-drop charts (§10.1).

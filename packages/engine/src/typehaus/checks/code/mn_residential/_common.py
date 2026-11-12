@@ -23,7 +23,7 @@ from typehaus.resolve.room_openings import room_windows, rooms_by_storey, wall_i
 #: rather than re-typed per module, where the copies drift.
 HABITABLE_OCCUPANCIES = frozenset({
     Occupancy.BEDROOM, Occupancy.LIVING, Occupancy.DINING, Occupancy.KITCHEN,
-    Occupancy.MEDIA, Occupancy.OFFICE,
+    Occupancy.MEDIA, Occupancy.OFFICE, Occupancy.HOBBY,
 })
 
 #: Square feet per square metre. Findings are read by people who think in feet.
@@ -193,12 +193,7 @@ def _foundation_footprint(ctx: CheckContext):
     return enclosures[0] if enclosures else None
 
 
-# A storey counts as below grade once its finished floor sits this far under the site's
-# average-grade datum. Two feet, not zero: a slab-on-grade main floor is normally authored a
-# few inches below the grade datum, and calling that a basement would put every house's
-# ground floor under R310.1's below-grade escape rule.
-_BELOW_GRADE_MARGIN_M = 0.6
-
+# The below-grade margin lives in `resolve/finished_area.BELOW_GRADE_MARGIN_M`.
 
 def _storey_is_below_grade(ctx: CheckContext, storey) -> bool | None:
     """Is this storey's floor below the site's average grade?
@@ -207,10 +202,9 @@ def _storey_is_below_grade(ctx: CheckContext, storey) -> bool | None:
     UNKNOWN in that case: "we do not know where grade is" is not "this storey is above it",
     and R310.1 and NEC 210.8(A) both change answer on the distinction.
     """
-    grade = ctx.plan.project.site.grade
-    if grade is None:
-        return None
-    return storey.elevation.meters + _BELOW_GRADE_MARGIN_M <= grade.meters
+    from typehaus.resolve.finished_area import storey_below_grade
+
+    return storey_below_grade(ctx.plan, storey)
 
 
 def _min_clear_width(ring, *, ceiling_m: float = 4.0) -> float | None:

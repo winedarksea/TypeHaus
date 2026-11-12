@@ -7,6 +7,23 @@ from rich.console import Console
 from typehaus.model.plan import PlanModel
 
 
+def _print_areas(model, console: Console) -> None:
+    """CFA beside finished area per storey (``resolve/finished_area.py``)."""
+    from typehaus.resolve.conditioned_area import SF_PER_M2
+    from typehaus.resolve.finished_area import finished_floor_area
+
+    finished = finished_floor_area(model)
+    for row in finished.storeys:
+        grade = {True: "below", False: "above", None: "grade?"}[row.below_grade]
+        console.print(f"  area {row.storey}: {row.conditioned_m2 * SF_PER_M2:,.0f} sf "
+                      f"conditioned, {row.area_ft2:,.0f} sf finished ({grade})")
+    conditioned_ft2 = sum(r.conditioned_m2 for r in finished.storeys) * SF_PER_M2
+    console.print(f"  area total: {conditioned_ft2:,.0f} sf conditioned, "
+                  f"{finished.area_m2 * SF_PER_M2:,.0f} sf finished "
+                  f"({finished.above_grade_m2 * SF_PER_M2:,.0f} above + "
+                  f"{finished.below_grade_m2 * SF_PER_M2:,.0f} below grade)")
+
+
 def print_summary(plan: PlanModel, console: Console) -> None:
     from typehaus.analysis import assembly_r_value
     from typehaus.resolve import resolve
@@ -27,6 +44,7 @@ def print_summary(plan: PlanModel, console: Console) -> None:
                     r.area_m2 - r.head_limited_area_m2 > 0.5:
                 head = f" ({r.head_limited_area_m2 * 10.7639:.0f} sf over 5'-0\" head)"
             console.print(f"    {r.tag} ({r.occupancy}) {r.area_m2 * 10.7639:.0f} sf{head}")
+    _print_areas(model, console)
     console.print("  assemblies:")
     for asm in plan.library.assemblies:
         ra = plan.library.resolve_assembly(asm.tag)
