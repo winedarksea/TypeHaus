@@ -307,6 +307,7 @@ the future.
 - Attic suite simplified to unfinished space. Done 2026-11-11: the bedroom count (RM-A-STUDIO is `Occupancy.HOBBY`, a craft room, so R403.5 drops 15 cfm) and a finished-area report that already leaves out RM-A-EAST-UNFIN and RM-A-POCKET (4,021 sf finished vs 4,898 CFA). Still open, if wanted: take the suite itself out of the finished area (leaving just the small attic study), although likely still keeping an ERV terminal of some sort in the attic suite, and likely still basic rough in stubs for plumbing so we can realize this design later. We would still want to keep the current products used for it in the library, and a clear set of notes so we could swap these items into the design easily.
 - Try to keep most interior doors as 1/2" factory undercut or privacy doors where decided
 - Shower in sauna?
+- Plant room pressure: it runs about 70 cfm positive (75 cfm in, 5 cfm extracted) against its neutral-to-negative design.
 
 # Project Management
 
