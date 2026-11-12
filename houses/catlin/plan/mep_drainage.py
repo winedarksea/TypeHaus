@@ -557,9 +557,10 @@ SECOND_BRANCH_DRAINS = [
 # Heat-pump condensate (plans/TODO.md §condensate): a collected 3/4" air-gap line, falling
 # continuously to a receptor, never tied into the sanitary system. PR-M-COND-HEADS drops
 # the two main-storey wall heads (master bed + living room, south centre line) through
-# the floor to PR-B-COND. The two north units are in plan/mep_condensate.py. EQ-B-HP2-GYM's
-# line is open (plans/TODO.md): on the south wall since 2026-11-09 it sits below PR-B-COND's
-# head, and D-B-SUNKEN blocks every gravity lane west to the sauna drain.
+# the floor to PR-B-COND. The two north units are in plan/mep_condensate.py, and so is
+# EQ-B-HP2-GYM's PUMPED line (PR-B-COND-HP2-GYM, tied onto PR-B-COND's y=10'-11"
+# leg): on the south wall since 2026-11-09 its drain sits below PR-B-COND's head, and
+# D-B-SUNKEN blocks every gravity lane west to the sauna drain.
 #
 # ** IT NO LONGER CUTS THE GYM DIAGONALLY (2026-09-09). ** The old leg ran from the drop at
 # (17'-6", 1'-0") north-east to a collector at (27'-0", 9'-0"), which put 11'-5" of it in

@@ -9,8 +9,7 @@
 # the room where exposed pipe is accepted beats a spout in the laundry. Hoses inside a head's
 # own body are drawn as its first leg; the AH's trap (Gree IOM) sits at the second vertex,
 # off the front of SL-A-HP1-PLATFORM, and is not drawn. Its emergency pan takes a float switch,
-# not a second line. EQ-B-HP2-GYM has no line yet: D-B-SUNKEN's head is above its drain
-# (plans/TODO.md).
+# not a second line. EQ-B-HP2-GYM is the exception: a PUMPED line (PR-B-COND-HP2-GYM, below).
 
 from typehaus import (
     PipeRun,
@@ -56,4 +55,20 @@ CONDENSATE_NORTH = [
             elevations=(inch(246), inch(245.9), inch(245.6), inch(243.32), inch(236),
                         inch(232.2), inch(232.15), inch(-6), inch(-6.08), inch(-6.5),
                         inch(-14), inch(-14.22), inch(-62), inch(-62.13))),
+    # EQ-B-HP2-GYM (basement storey, filed here at the main datum so elevations are absolute;
+    # rel = abs + 109 7/16"). NOT GRAVITY (2026-11-12): the head's drain is ~79" AFF, 4" under
+    # D-B-SUNKEN's 83" head, and PR-B-COND is 87 3/4"..92" AFF from the head east to the sauna
+    # riser; the only pipe lower than the drain is that riser, 12 ft away behind the door, and
+    # a 79" line across the gym breaks the 80" headroom line. A listed condensate mini pump
+    # (UL 778) rides the head's lineset cover at its east end; its 3/8" outlet tube adapts
+    # to 3/4" PVC (drawn 3/4" throughout) that climbs to 95" beside the head, runs the open
+    # ceiling band (97" soffit) north on x=326" and west, and drops onto PR-B-COND's y=131" leg
+    # at x=312" (91.7"), falling 0.26"/ft after the rise (so the grade checks read it like the
+    # others). The pump itself is not an engine element: spec and power are in the design log.
+    PipeRun(uid="1TFJSE4NC5", tag="PR-B-COND-HP2-GYM", system=PipeSystem.DRAIN, sanitary=False,
+            path=(pt(inch(326), inch(12)), pt(inch(326), inch(12)), pt(inch(326), inch(135)),
+                  pt(inch(312), inch(135)), pt(inch(312), inch(131))),
+            diameter=inch(0.75), material="pvc",
+            elevations=(inch(-29.4375), inch(-14.4375), None, None, None),
+            slope_in_per_ft=0.26),
 ]

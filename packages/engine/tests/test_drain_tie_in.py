@@ -29,8 +29,9 @@ def test_catlin_is_clean(catlin_plan, catlin_model_ro) -> None:
     # incl. two kitchen waste connections and PR-B-USINK-DRAIN; the washer's standpipe and
     # drop went when it began draining into the laundry tub (2026-11-07), and PR-B-WH-COND
     # ends at its own air gap since 2026-11-09; PR-B-BATH-WC-DRAIN joined 2026-11-10, and
-    # PR-M-S-VANITY-LAV1-DRAIN the same day (the vanity drain split at LAV2 for its 2" leg)
-    assert len(findings) == 35
+    # PR-M-S-VANITY-LAV1-DRAIN the same day (the vanity drain split at LAV2 for its 2" leg); and
+    # PR-B-COND-HP2-GYM, the gym head's pumped line, 2026-11-12
+    assert len(findings) == 36
     # E16: a branch entering a stack prints its 3D station, not 120" over the stack's foot.
     wc = next(f for f in findings if "PR-M-S-BATH1-WC-DRAIN" in f.element_tags)
     assert "on its centreline" in wc.message, wc.message
