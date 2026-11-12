@@ -44,7 +44,7 @@ is 84 1/16 inches AFF; use that surface for headroom and heater checks.
 - Tape each polyiso seam and each insulation-to-insulation junction at the wall and ceiling corner.
 - Lap the liquid floor membrane up the fiber cement base and flash the polyiso over its top edge.
 - Set heat-rated light strips on the new framing rails at 16 inches AFF; keep drivers and transformers out of the hot zone.
-- Retain ERV supply above the heater and low west exhaust. Keep the bench frame clear of the grille and plastic pipe behind insulation.
+- ERV supply: north hatch over the upper bench (2026-11-11). Keep the low west exhaust, bench clear of grilles, plastic pipe behind insulation.
 
 ### Spec 09 28 16
 - BATH2 shower walls: 1/2" glass-mat backer, ASTM C1178 (DensShield), floor to ceiling, grey face out, over the base flange.

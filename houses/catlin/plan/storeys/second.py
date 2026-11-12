@@ -1272,6 +1272,14 @@ FLOOR_OPENINGS = [
                  outline=(pt(inch(113.375), inch(193.875)), pt(inch(117.625), inch(193.875)),
                           pt(inch(117.625), inch(198.125)), pt(inch(113.375), inch(198.125))),
                  penetration_for=("DU-M-ERV-R-SUITEBATH",), cuts_ceiling_below=False),
+    # DU-M-ERV-R-PLANT's 3 1/4 x 8 stack rising from FS-S-WEST's 8'-0".."9'-4" bay into
+    # W-S-PS1's stud bay at x=3'-6 1/2" (2026-11-11): 9" x 4" over the stack, clear of the
+    # y=9'-4" truss's chord. Cuts the deck and the wall's bottom plate, never the ceiling
+    # below. Pack with mineral wool and seal to the stack (humid room).
+    FloorOpening(uid="7WFC3ZX7N1", tag="FO-S-ERV-PLANT", purpose=FloorOpeningPurpose.CHASE,
+                 outline=(pt(inch(38), inch(106)), pt(inch(47), inch(106)),
+                          pt(inch(47), inch(110)), pt(inch(38), inch(110))),
+                 penetration_for=("DU-M-ERV-R-PLANT",), cuts_ceiling_below=False),
     # ** THE NW CHASE, FRAMED THROUGH FS-S-WEST (2026-09-23). ** Two ERV risers, DU-ERV-EA,
     # the radon/vent bundle and three conduits stand in W-S-CH-W/-CH-S's 2'-0" x 2'-2"
     # chase; the y=34'-5.8" truss was running straight through it. The fabricator shortens

@@ -54,6 +54,7 @@ from typehaus.checks.mep.erv_landings import (
     network,
     radial_landings,
 )
+from typehaus.checks.mep.erv_routes import trunk_routes
 from typehaus.checks.mep.erv_static_terms import (
     elbow_loss_sum,
     interpolate,
@@ -205,24 +206,26 @@ def _worst_path(ctx: CheckContext, machine_tag: str, elbows: dict[str, int],
             continue
         radials = [duct for duct in runs if duct.tag in landings]
         trunks = [duct for duct in runs if duct.tag not in landings]
-        # The trunk chain is summed WHOLE. A branch that parallels the path rather than
-        # lying on it — Catlin's mixing-box feed — is counted, which over-states that
-        # side. Conservative, named in the note's §9, and the alternative is a graph
-        # walk over joints the model does not author.
-        trunk_total = 0.0
-        terms: list[str] = []
+        # Each trunk's drop (with the hood and port kit riding on it) is worked once and
+        # charged only to the paths that cross it (``erv_routes``, note §9).
+        trunk_legs: dict[str, tuple[float, list[str]]] = {}
         for duct in trunks:
             leg = _duct_drop(ctx, duct, elbows.get(duct.tag, 0))
             if leg.drop_in_wg is None:
                 gaps.append(f"{leg.tag}: {leg.gap}")
                 continue
-            trunk_total += leg.drop_in_wg
-            terms.append(f"{leg.tag} {leg.drop_in_wg:.3f}\"")
-            # The outdoor hood and the port kit pass the whole side's air: they ride here.
             extra, missing = trunk_terms(ctx, duct, plenums, kinds)
-            trunk_total += sum(loss for _, loss in extra) / PA_PER_IN_WG
-            terms.extend(f"{name} {loss:.1f} Pa" for name, loss in extra)
+            trunk_legs[duct.tag] = (
+                leg.drop_in_wg + sum(loss for _, loss in extra) / PA_PER_IN_WG,
+                [f"{leg.tag} {leg.drop_in_wg:.3f}\""]
+                + [f"{term} {loss:.1f} Pa" for term, loss in extra])
             gaps.extend(missing)
+        routes = trunk_routes(ctx, machine_tag, trunks, plenums, kinds,
+                              {landings[duct.tag] for duct in radials})
+
+        def chain(tags: list[str], legs=trunk_legs) -> tuple[float, list[str]]:
+            hit = [legs[tag] for tag in tags if tag in legs]
+            return sum(h[0] for h in hit), [term for h in hit for term in h[1]]
 
         # A plenum's curve is keyed on its trunk-collar flow (note §4). A trunk-and-branch
         # tree counts its trunk once, never the trunk plus the branches it carries; and a
@@ -260,9 +263,15 @@ def _worst_path(ctx: CheckContext, machine_tag: str, elbows: dict[str, int],
                 branch += loss / PA_PER_IN_WG
                 detail.append(f"{host} {loss:.1f} Pa at "
                               f"{plenum_cfm.get(host, 0.0):.0f} cfm")
+            trunk_total, terms = chain(routes.for_plenum(host))
             total = branch + trunk_total
             if worst is None or total > worst[0]:
                 worst = (total, f"{name} side via {duct.tag}", detail + terms)
+        # A trunk landing in other equipment (the System 1 mixing box) is a path of its own.
+        for equipment, route in routes.to_equipment:
+            total, terms = chain(routes.for_route(route))
+            if worst is None or total > worst[0]:
+                worst = (total, f"{name} side via {route[-1]} into {equipment}", terms)
 
     return worst, gaps
 

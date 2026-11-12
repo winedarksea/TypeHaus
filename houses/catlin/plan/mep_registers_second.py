@@ -124,46 +124,29 @@ REGISTERS_HVAC_SECOND = [
     # The plant room's extract. RM-S-PLANT was supply-only, so its own ventilation pushed
     # 70%-RH air into every crack in the envelope it is now lined to protect; slightly
     # negative is the only pressure a continuously humid room may be held at, which takes an
-    # extract, not a better barrier.
+    # extract, not a better barrier. The ERV's stale pull, not System 1's.
     #
-    # At (14'-0", 4'-8"): the far east end of the room, 7'-5" from the supply and across
-    # the room from it, so conditioned air lands on the south glass, crosses the planting
-    # and leaves at the far end rather than short-circuiting. Ceiling at 9'-0" because
-    # humid air stratifies — the wettest air in the room is the air at the ceiling, which is
-    # also the air directly under FS-ATTIC's I-joists. Repointed onto the ERV: the plant
-    # extract is not System 1's, it is the ERV's stale pull.
+    # HIGH SIDEWALL, 8'-3" to its centre (face bottom 96 1/2" over the carpet), because humid air
+    # stratifies: the wettest air is the air at the ceiling. 3" under the 8'-6" of the W-S-C1
+    # version so the stack boot clears PS1's top plates (underside 104 3/8"). In W-S-PS1's plant
+    # face at x=3'-6 1/2" (2026-11-11; it was W-S-C1 at x=18'-0", 25 ft of duct away), at the
+    # end of DU-M-ERV-R-PLANT's 3 1/4 x 8 stack in the stud bay x 32 3/4".."47 1/4" (studs at 32"
+    # and 48"). It is across the room from REG-S-HP-PLANT at (14'-8", 3'-3"), and its face stands 6"
+    # east of FURN-S-PLANT-HANG-NW (edge x 33.8"), so the hung pot is not in the throw.
     #
-    # HIGH SIDEWALL, not ceiling: its radial runs off the attic manifold down into
-    # FS-S-WEST's open-web trusses (DU-M-ERV-R-PLANT), putting the duct BELOW this room
-    # instead of above it — but the stratification argument does not care whether the boot
-    # comes from above or from the side, only that the terminal is in the warm wet air at
-    # the top of the room. 8'-6" is six inches under the 9'-0" ceiling.
-    #
-    # In W-S-C1 because that wall is PLANT_INT_2X6_BRG_HUMID — 5 1/2" of cavity, which takes a
-    # 75 mm riser and a vapour-tight boot through the Class I liner. The room's north wall
-    # W-S-PS1 is 2x4 and would take the duct but not the boot.
-    #
-    # x=17'-7" is that wall's room-side pvc-panel face (17'-7.96") plus the same ~1" inboard
-    # offset the electrical devices carry, NOT the wall axis at 18'-0". Authored on the axis it
-    # resolves with its footprint centre outside the room and
-    # `integrity.placeable_room_mismatch` says so. (REG-A-STUBATH-EXH and ED-A-POCKET-SW still
-    # carry that UNKNOWN and want the same treatment.) The duct's riser is still on the axis,
-    # inside the stud cavity; the boot is the 5" of horizontal that crosses the liner.
-    #
-    # Approximately 5' from the supply at (14'-8", 3'-3"). Supply blades aim west;
-    # whole-room throw and short-circuit performance remain commissioning checks.
+    # PS1 is the 2x4 PLANT_INT_2X4_HUMID wall, 3 1/2" cavity: the stack fits (3 1/4"), a round
+    # riser plus boot did not, which is why the first design used W-S-C1's 5 1/2". The boot is
+    # a flanged rectangular stack boot with a 4" collar, its flange sealed to the Class I
+    # membrane (butyl tape) and mastic round the stack: the vapour-tight detail is in
+    # plan/mep_erv_l2.py above DU-M-ERV-R-PLANT, and the opening cut through the furring and
+    # panel is the boot's own size. The valve sits on the liner, as before, 2026-10-31: the
+    # collar crosses the liner, the face does not.
     Register(uid="C7LM4KAP2X", tag="REG-S-ERV-PLANT-EXH", kind=DuctSystem.EXHAUST,
-             # y=7'-4" is a truss bay centre and a stud bay centre at once; y=4'-8" would
-             # put the riser inside D-S-PLANT's rough opening — 78 1/2" of bare duct standing
-             # in the doorway and a bore through the 2-ply 2x8 header (see mep_erv_l2.py) — with
-             # no legal riser station in that opening.
              room="RM-S-PLANT", duct_ref="DU-M-ERV-R-PLANT",
              type_ref="REG-T-ERV-PLANT-EXH", design_cfm=REG_S_ERV_PLANT_EXH,
-             # A surface disc valve on the liner since 2026-10-31: the collar crosses the
-             # liner, the face does not (it was a ceiling-style face let 2" into the wall).
-             mount=Mount(kind=MountKind.WALL, elevation=inch(98.75)),
+             mount=Mount(kind=MountKind.WALL, elevation=inch(96.5)),
              location=Location(attachment=WallAttachment(
-                 wall_ref="W-S-C1", face="left", distance_from_start=inch(88),
+                 wall_ref="W-S-PS1", face="right", distance_from_start=inch(42.5),
                  normal_gap=inch(0), rotation_offset=deg(0)))),
     # THE HALL RETURN: a 28 x 12 filter-back grille in SF-S-DUCT's underside at the hall's
     # north end (AO-S-DUCT-RET), its boot rising through the soffit's open top into
@@ -219,14 +202,17 @@ REGISTERS = [
     # BED1 y 9'-18', BED2 y 18'-27'. BED3 has no ERV pickup since 2026-11-11: it returns
     # to System 1 through REG-S-HP-BED3-RET instead, and its old 5 cfm went to the kitchen.
     #
-    # BED1/BED2 ARE FLOOR BOOTS AGAINST THE SOUTH WALL (2026-10-02), not mid-floor at x=29'.
+    # BED1/BED2 ARE FLOOR BOOTS (2026-10-02), not mid-floor at x=29'. BED2's is against the south
+    # wall of its room; BED1's moved from y=9'-9" to y=16'-8", the north side of RM-S-BED1
+    # (2026-11-11), when its radial became a branch off BED2's x=16'-1 3/4" crossing: clear of the
+    # y=17'-4" joist line, inside the room (y<17'-5"), ~4'-11" west of FURN-S-DESK-CHAIR1.
     # x=28'-1" leaves 5 1/8" from the east PAX frame to the grille's west edge (2026-10-03).
     # It is the open floor between the expanded SW PAX run (to 27'-4 3/8") and the bed's west
-    # side (~29'-11"); y is the FS-S-EAST bay beside the south wall (I-joists span x, so the
+    # side (~29'-11"); y is the FS-S-EAST bay beside the wall (I-joists span x, so the
     # boot cannot leave its bay). A low sidewall grille was rejected: the south walls are
     # INT_2X4_RC, whose 3 1/2" cavity takes no 4" riser without a shop-made stack.
     Register(uid="CMR903AAAA", tag="REG-S-RET-BED1", kind=DuctSystem.RETURN, room="RM-S-BED1",
-            position=pt(ft(28, 1), ft(9, 9)), duct_ref="DU-M-ERV-R-BED1",
+            position=pt(ft(28, 1), ft(16, 8)), duct_ref="DU-M-ERV-R-BED1",
             type_ref="REG-T-ERV-EXH-FLOOR", design_cfm=REG_S_RET_BED1,
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     Register(uid="CMR907AAAA", tag="REG-S-RET-BED2", kind=DuctSystem.RETURN, room="RM-S-BED2",

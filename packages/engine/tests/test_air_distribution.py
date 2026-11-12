@@ -106,7 +106,8 @@ def test_a_ceiling_collar_takes_its_run_on_a_derived_drop(catlin_model_ro) -> No
 
 def test_study_drops_on_the_adjustable_elbow_it_names(catlin_model_ro) -> None:
     """``adjustable_elbows=(6, 9)`` makes those two turns the 4.75" adjustable 90: the 4.76"
-    drop onto REG-M-SUP4 fits it, and the radial is the note's §10.16 hand figure."""
+    drop onto REG-M-SUP4 fits it, and the radial is the note's hand figure (§10.16, re-worked
+    at 10 cfm in §10.20)."""
     from typehaus.checks.mep.erv_static import _duct_drop
     from typehaus.resolve.mep_fittings import fitting_records
 
@@ -118,4 +119,4 @@ def test_study_drops_on_the_adjustable_elbow_it_names(catlin_model_ro) -> None:
     assert keys[1] == ("elbow-90-4in", False)
     assert (duct.z_m[-2] - duct.z_m[-1]) / M_PER_IN == pytest.approx(4.7625, abs=0.01)
     leg = _duct_drop(check_context(model=model), duct, 0)
-    assert leg.drop_in_wg == pytest.approx(0.008474, abs=2e-6)
+    assert leg.drop_in_wg == pytest.approx(0.004011, abs=2e-6)

@@ -396,7 +396,7 @@ DUCTS_ERV_RISERS = [
     #
     # ** NEITHER FEED IS 4" OR 8", AND THE CENSUS IS PART OF WHY. ** `mep.erv_manifold_ports`
     # counts a BRANCH as a run landing in the case whose section equals the type's own
-    # `port_diameter`. EQ-T-ERV-PLENUM-M-SUP is FULL at 3 of 3 4" collars and
+    # `port_diameter`. EQ-T-ERV-PLENUM-M-SUP is FULL at 2 of 2 4" collars and
     # EQ-T-ERV-PLENUM-M-EXH at 1 of 1 8" collar, so a feed drawn at either of those sizes
     # would read as a fourth radial or a second trunk and FAIL. An inlet is not a branch.
     #

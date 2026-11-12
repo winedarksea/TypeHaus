@@ -100,10 +100,10 @@ EQUIPMENT_ERV_MAIN = [
 #
 #     x (in)   run                     height over the chord   pocket
 #     27       DU-M-ERV-EXH-TRUNK 8x4  3 7/8"                   D1/D2 R2
-#     42 1/4   DU-M-ERV-R-LIVING       8"                       D2/D3
 #     83 3/4   DU-M-ERV-R-BED          7 1/2"                   D6
 #     106 7/8  DU-M-ERV-R-STUDY        7.9"                     D8 north, R1 south
 #
+# (DU-M-ERV-R-LIVING had the x=42 1/4" lane, 8" over the chord, until 2026-11-11; it tees off BED now.)
 # The supply radials ride the upper tier, so every extract takeoff rides its own bay low and
 # crosses them underneath. The neck crosses the chase trimmers in R1 at x=57 1/2".
 #
@@ -156,7 +156,7 @@ DUCTS_ERV_LEVEL2 = [
             floor_ref="FS-S-WEST", material="galvanized", design_cfm=DU_M_ERV_EXH_TRUNK),
     DuctRun(uid="Y3G88SKSRG", tag="DU-M-ERV-EXH-TRUNK", system=DuctSystem.EXHAUST,
             path=(pt(inch(54), inch(360)), pt(inch(48.5), inch(360)), pt(inch(27), inch(360)),
-                  pt(inch(27), ft(7, 4))),
+                  pt(inch(27), ft(9))),
             elevations=(_NECK_Z, _TRUNK_Z, _TRUNK_Z, _TRUNK_Z),
             width=inch(8), depth=inch(4), routing=DuctRouting.JOIST_BAY,
             floor_ref="FS-S-WEST", material="galvanized", design_cfm=DU_M_ERV_EXH_TRUNK),
@@ -186,14 +186,15 @@ DUCTS_ERV_LEVEL2 = [
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=DU_M_ERV_R_STUDY, adjustable_elbows=(6, 9)),
     DuctRun(uid="MRH0QZT6NN", tag="DU-M-ERV-R-LIVING", system=DuctSystem.SUPPLY,
-            # Straight south in the D pockets at x=42 1/4", over the trunk's cross leg, then
-            # east in the 12'-8" bay, ramping to the low tier under BED and PR-M-CW-HYD-DIST
-            # (x=96.5"), and back up to _DROP_Z for the valve.
-            path=(pt(inch(42.25), inch(405.375)), pt(inch(42.25), inch(405.375)),
-                  pt(inch(42.25), ft(12, 8)), pt(inch(46), ft(12, 8)),
-                  pt(inch(53.8), ft(12, 8)), pt(inch(99.5), ft(12, 8)),
-                  pt(inch(103.875), ft(12, 8)), pt(ft(27), ft(12, 8))),
-            elevations=(_PORT_Z, _HI_Z, _HI_Z, _HI_Z, _BAY_Z, _BAY_Z, _DROP_Z, _DROP_Z),
+            # A BRANCH OF BED since 2026-11-11 (owner): a 4x4 tee on BED's x=83 3/4" pocket lane
+            # at the 12'-8" bay, east in that bay, down 4" to the low tier under PR-M-CW-HYD-DIST's
+            # x=96.5" leg and back up to _DROP_Z for the valve. It had its own collar, the 42 1/4"
+            # lane south and a jog (46.6 ft, five turns); this is 20.7 ft. `collar-living` is
+            # gone from EQ-T-ERV-PLENUM-M-SUP: the shop cuts two collars, not three.
+            path=(pt(inch(83.75), ft(12, 8)), pt(inch(88), ft(12, 8)), pt(inch(94), ft(12, 8)),
+                  pt(inch(99.5), ft(12, 8)), pt(inch(103.875), ft(12, 8)),
+                  pt(ft(27), ft(12, 8))),
+            elevations=(_UP_Z, _UP_Z, _BAY_Z, _BAY_Z, _DROP_Z, _DROP_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=DU_M_ERV_R_LIVING),
     # 1/4" south of 34'-1" (2026-10-30): CD-M-DATA-KITCH-TRUNK's 1" EMT needs the 1" between
@@ -236,11 +237,11 @@ DUCTS_ERV_LEVEL2 = [
             elevations=(_NECK_Z, _NECK_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=DU_M_ERV_R_MUD),
-    # BED1 and BED2 end at south-wall floor boots (2026-10-02; mep_registers_second.py), each in
-    # the FS-S-EAST bay by that wall, because I-joists take no north-south run. BED1's 9'-9"
-    # bay is clear the whole way. BED2's 18'-4" bay is not, west of x=16' (LAUNDRY,
-    # SUITEBATH, the suite WC and STUBATH drains, KITCH-VENT), so it leaves the trunk in the
-    # 14'-0" bay BED1 vacated and crosses north at x=16'-1 3/4".
+    # BED1 and BED2 end at floor boots (2026-10-02; mep_registers_second.py), each in an
+    # FS-S-EAST bay, because I-joists take no north-south run. BED2's 18'-4" bay is not clear
+    # west of x=16' (LAUNDRY, SUITEBATH, the suite WC and STUBATH drains, KITCH-VENT), so it
+    # leaves the trunk in the 14'-0" bay and crosses north at x=16'-1 3/4"; since 2026-11-11
+    # BED1 tees off that crossing and its boot is on BED1's north side (y=16'-8").
     # Both tails extend 4" east with the boots for the east PAX frames (2026-10-03).
     DuctRun(uid="HGMQ4AWG3S", tag="DU-M-ERV-R-BED2", system=DuctSystem.RETURN,
             # North on the low tier in the x=193 3/4" D pockets, between PR-M-KITCH-VENT and
@@ -251,7 +252,11 @@ DUCTS_ERV_LEVEL2 = [
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=DU_M_ERV_R_BED2),
     DuctRun(uid="XA7NRRGJ50", tag="DU-M-ERV-R-BED1", system=DuctSystem.RETURN,
-            path=(pt(inch(27), ft(9, 9)), pt(ft(28, 1), ft(9, 9))),
+            # A BRANCH OF BED2 since 2026-11-11 (owner): a 4x4 tee on BED2's x=193 3/4" pocket
+            # crossing, east in the 16'-8" bay (y 16'-1 1/4".."17'-2 7/8") to the north-side boot.
+            # It left the trunk at y=9'-9" and ran 25.8 ft; this is 11.9 ft. REG-S-RET-BED1 moved
+            # to y=16'-8", inside the room (y<17'-5"), clear of the y=17'-4" joist line.
+            path=(pt(inch(193.75), ft(16, 8)), pt(ft(28, 1), ft(16, 8))),
             elevations=(_BAY_Z, _BAY_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=DU_M_ERV_R_BED1),
@@ -290,10 +295,27 @@ DUCTS_ERV_LEVEL2 = [
             elevations=(_KITCH_Z, _KITCH_Z, _DROP_Z, _DROP_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=DU_M_ERV_R_KITCH),
+    # THE PLANT EXTRACT IS THE FLAT TRUNK'S LAST PIECE (owner, 2026-11-11). It left the trunk
+    # at y=7'-4" and ran 25 ft east under the plant room to W-S-C1; now the trunk stops at
+    # y=9'-0" (W-S-PS1's axis, in the 8'-0".."9'-4" bay) and this runs 15 1/2" east to x=3'-6 1/2" and
+    # up inside PS1's 3 1/2" cavity as a 3 1/4 x 8 wall stack (width through the wall, depth
+    # along it, so the 8" lies in the stud bay x 32 3/4".."47 1/4", 3/4" off the east stud, and
+    # its grille stands 6" east of FURN-S-PLANT-HANG-NW, the test's "clear exhaust" gap). One RECTANGULAR run end-to-end with the trunk, so
+    # `mep.erv_static_budget` grades it (a rectangle joins only a rectangle); the flat leg is
+    # the stack on edge, 8" tall, and turns up on its own plane. A 4" round take-off off the trunk
+    # would be the old part count, but the stack beyond it would be outside the budget.
+    # The 24 V RH damper (PROD-AIR-DAMPER-4-24V, REG-T-ERV-PLANT-EXH's part) goes in the stack
+    # boot's 4" collar behind the valve, reached by pulling the valve, not in the bay.
+    # VAPOUR-TIGHT BOOT (plant room 70% RH, notes/plant_room.md): a flanged boot, flange
+    # sealed to the Class I membrane with butyl tape and the hole's edge to the stack with
+    # mastic, the 3/4" furring and PVC panel cut to it; the deck opening FO-S-ERV-PLANT
+    # is packed with mineral wool and sealed to the stack. W-S-PS1's bottom plate is notched
+    # 8" at x=3'-6 1/2" (a non-bearing 2x4 partition). The stack ends at 100 1/4" (the register's
+    # centre): the engine's section is isotropic, so its 8" depth puts 4" more over that end
+    # and anything higher reads as bored through PS1's top plates (underside 104 3/8").
     DuctRun(uid="X05VC14PBH", tag="DU-M-ERV-R-PLANT", system=DuctSystem.EXHAUST,
-            path=(pt(inch(27), ft(7, 4)), pt(ft(18), ft(7, 4)),
-                  pt(ft(18), ft(7, 4))),
-            elevations=(_BAY_Z, _BAY_Z, inch(102)),
-            diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
-            material="galvanized", design_cfm=DU_M_ERV_R_PLANT),
+            path=(pt(inch(27), ft(9)), pt(inch(42.5), ft(9)), pt(inch(42.5), ft(9))),
+            elevations=(_TRUNK_Z, _TRUNK_Z, inch(100.25)),
+            width=inch(3.25), depth=inch(8), routing=DuctRouting.JOIST_BAY,
+            floor_ref="FS-S-WEST", material="galvanized", design_cfm=DU_M_ERV_R_PLANT),
 ]

@@ -70,7 +70,7 @@ REGISTERS_BASEMENT = [
     # one 30" hood captures a fraction of that. It is a bench hood, not bench-run
     # coverage. It is a bench hood, not bench-run coverage.
     Register(uid="CBRV03AAAA", tag="REG-B-RET1", kind=DuctSystem.RETURN, room="RM-B-WORKSHOP",
-            position=pt(ft(2), ft(8, 6)), duct_ref="DU-B-ERV-R-BENCH",
+            position=pt(ft(2, 1), ft(8, 6)), duct_ref="DU-B-ERV-R-BENCH",
             type_ref="REG-T-ERV-BENCH-HOOD", design_cfm=REG_B_RET1,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(5, 6))),
     # The sauna's stale pickup is on the wall, 4" above the floor on the WEST liner below
@@ -98,7 +98,7 @@ REGISTERS_BASEMENT = [
     # 20 cfm since 2026-11-03, balancing REG-B-EXH2 behind the sealed sauna door; the 8 cfm
     # came off REG-B-SUP1 on the same plenum (notes/erv_static_budget.md §10.8).
     Register(uid="CBRV06AAAA", tag="REG-B-SUP3", kind=DuctSystem.SUPPLY, room="RM-B-SAUNA",
-            position=pt(inch(199.75), inch(20.5)), duct_ref="DU-B-ERV-R-SAUNA-SUP",
+            position=pt(inch(134.4), inch(109.2)), duct_ref="DU-B-ERV-R-SAUNA-SUP",
             type_ref="REG-T-SAUNA-VENT-SUP", design_cfm=REG_B_SUP3,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(7))),
     # RM-B-BATH. Filed as EXHAUST rather than RETURN, like RM-S-BATH1's terminal and unlike

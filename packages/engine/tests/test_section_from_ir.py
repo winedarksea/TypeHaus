@@ -259,7 +259,13 @@ def test_a_cut_member_shows_its_real_section_face(catlin_model):
             if abs(member.p0[u_index] - member.p1[u_index]) > 1e-9:
                 continue  # the plane runs along it, so the face is its elevation
             section = cross_section(member.profile)
-            expected = plan_cross_section_m(section, member.z1_m - member.z0_m) / 0.0254
+            if member.p0 == member.p1 and member.orient is not None:
+                # A vertical stick (a pass-through block's cheek): ``orient`` is its face
+                # normal, so the cut sees the thin face along it and the deep face across it.
+                along = abs(member.orient[u_index]) > 0.5
+                expected = (section.width_m if along else section.depth_m) / 0.0254
+            else:
+                expected = plan_cross_section_m(section, member.z1_m - member.z0_m) / 0.0254
             us = [u for (u, _z) in node.points]
             assert max(us) - min(us) <= expected + 1e-6, node.tag
             checked += 1

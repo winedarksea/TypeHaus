@@ -41,8 +41,10 @@ def test_terminal_runs_are_not_graded_as_rejected_junctions(catlin_model_ro) -> 
     reporting them would be reporting the building for being a building."""
     records = drain_tie_in_records(_drains(catlin_model_ro))
     orphans = {tie.child for tie in records if tie.parent is None}
+    # The north units' air-gap lines over FX-B-UTIL-SINK joined 2026-11-11.
     assert orphans == {
         "PR-B-COND", "PR-B-MAIN-DRAIN", "PR-B-ERV-COND", "PR-B-WH-TPR", "PR-B-WH-COND",
+        "PR-M-COND-HP3", "PR-A-COND-HP1",
     }
     assert all(tie.drop_m is None for tie in records if tie.parent is None)
 

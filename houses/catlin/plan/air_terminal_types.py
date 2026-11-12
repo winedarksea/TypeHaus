@@ -158,8 +158,9 @@ AIR_REGISTER_TYPES = (
                         f"(erv_static_budget §5). {_NOTE} §3.",
                  ports=(_port("return", Service.RETURN_AIR),)),
     # RM-S-PLANT is held at 75 F / 70% RH and slightly negative (notes/plant_room.md): its
-    # extract is RH-controlled. The 4in 24 VAC damper sits on DU-M-ERV-R-PLANT's start
-    # collar in RM-M-MECH, reachable without an access panel in the humid liner.
+    # extract is RH-controlled. Since 2026-11-11 the run is a rectangular stack up W-S-PS1,
+    # so the 4in 24 VAC damper sits in the stack boot's 4in collar behind the valve,
+    # reached by pulling the valve.
     RegisterType(tag="REG-T-ERV-PLANT-EXH",
                  face_style="disc_valve",
                  name="Plant-room extract disc valve, 100 mm, RH-controlled 4in damper at "
@@ -170,7 +171,7 @@ AIR_REGISTER_TYPES = (
                  parts=(ProductPart(role="fitting", product_ref="PROD-AIR-DAMPER-4-24V"),),
                  static_loss_pa_at_cfm=_PLANT_PA, neck=_VALVE_NECK,
                  source=f"notes/plant_room.md — dedicated dampered extract off EQ-B-ERV; "
-                        f"damper PROD-AIR-DAMPER-4-24V at the level-2 plenum. A stainless "
+                        f"damper PROD-AIR-DAMPER-4-24V in the boot collar behind the valve. A stainless "
                         f"valve was looked for and not found retail; the powder-coated steel "
                         f"valve is cleaned yearly. {_NOTE} §7.",
                  ports=(_port("return", Service.RETURN_AIR),)),

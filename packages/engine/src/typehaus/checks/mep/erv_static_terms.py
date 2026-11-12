@@ -52,16 +52,21 @@ def type_for(ctx: CheckContext, type_ref: str | None, collection: str) -> object
 
 
 def terminal_loss(ctx: CheckContext, duct) -> float | None:
-    """The loss of the terminal on this run, Pa at the run's design flow, or None."""
+    """The loss of the terminal on this run, Pa at the terminal's own flow, or None.
+
+    A shared leg carries its branch's air too, so the run's flow is not the terminal's:
+    the register's ``design_cfm`` wins, the run's is the fallback.
+    """
     best: float | None = None
     for element in ctx.plan.all_elements():
         if element.element_kind != "Register" or element.duct_ref != duct.tag:
             continue
         product = type_for(ctx, element.type_ref, "register_types")
         curve = tuple(getattr(product, "static_loss_pa_at_cfm", ()) or ())
-        if not curve or duct.design_cfm is None:
+        cfm = getattr(element, "design_cfm", None) or duct.design_cfm
+        if not curve or cfm is None:
             continue
-        loss = interpolate(curve, duct.design_cfm)
+        loss = interpolate(curve, cfm)
         # A two-headed radial carries two terminals; the worse one is on the worst path.
         best = loss if best is None else max(best, loss)
     return best

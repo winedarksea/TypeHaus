@@ -65,12 +65,12 @@ REGISTERS_MAIN = [
     # strictly better than either terminal alone, and the supply is overhead where the
     # owner asked for it, over ED-M-STUDY-SPOT.
     #
-    # D-M-STUDY'S UNDERCUT IS THE RELIEF PATH AND MAY NOT BE CLOSED. 15 cfm in, 10 cfm out:
-    # the booth runs +5 cfm POSITIVE, which is what a call booth wants — nothing is drawn in
+    # D-M-STUDY'S UNDERCUT IS THE RELIEF PATH AND MAY NOT BE CLOSED. 10 cfm in, 5 cfm out
+    # (2026-11-11; 15 in before, the 5 went to System 1's return): the booth runs +5 cfm POSITIVE, which is what a call booth wants — nothing is drawn in
     # under the door from the hall, so the staggered studs and the felt stay the whole
     # acoustic boundary. The 5 cfm leaves under the door. A gasket, a sweep or a drop seal
     # added later for the last few STC points needs a transfer grille or a jump duct to come
-    # with it — or the extract raised to 15 cfm, the cheap version of that fix. (Not free:
+    # with it — or the extract raised to 10 cfm, the cheap version of that fix. (Not free:
     # see the 3" radial's ~17 cfm ceiling on DU-M-ERV-R-LAUNDRY, which this shares.)
     #
     # -- the supply, back in the ceiling ---------------------------------------------

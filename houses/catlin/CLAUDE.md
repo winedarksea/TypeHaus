@@ -1006,26 +1006,32 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     bores nothing. The two VENTS run that axis end to end at 3'-5"..3'-9" above the attic
     floor, so the grille (`REG-A-STUBATH-EXH`) sits at 3'-0" and the riser stops under them
     (2026-09-26). Raising it again re-opens the crossing.
-  - `DU-M-ERV-R-PLANT` (was `-A-`): the level-2 extract trunk's last takeoff, east along
-    y=7'-4" off its end, up inside `W-S-C1` to a high sidewall grille
-    at 8'-6" (humid air stratifies). `W-S-C1` is `PLANT_INT_2X6_BRG_HUMID` (5 1/2" cavity
-    for riser + vapour-tight boot) — `W-S-PS1` is plain 2x4, not sized for this. It is the
-    longer, pressure-critical run at 55'-8", affordable because the ERV's rating point is
-    0.4" w.g. — HVI certifies the B210E75RT at 206 cfm net supply at 0.4" (HVI ID
-    2004940). (→ log4.md, 0.2" misconception)
+  - `DU-M-ERV-R-PLANT` (was `-A-`, 2026-11-11): the flat trunk's end continues as a
+    3 1/4"x8" rectangular stack, 15 1/2" east then up `W-S-PS1`'s 2x4 bay at x=3'-6 1/2" to a
+    high sidewall grille, 8'-3" to centre (humid air stratifies; higher reads as a bore through
+    PS1's top plates). 10.3 ft; `FO-S-ERV-PLANT` is its deck opening, the RH damper sits in
+    the boot collar behind the valve (`notes/plant_room.md`, 2026-11-11 addendum). It must stay
+    END-TO-END with the trunk: a rectangle joins the static budget only by chaining.
   - **Level-2 extract is a FLAT trunk in J12's D pockets** (owner 2026-11-07, routed 2026-11-08):
     an 8x4 at x=27" (the one x where every truss's 9x4 R2 lines up) off a 6x4 neck from
-    `EQ-M-ERV-MAN-EXH`'s top collar; ten 4" takeoffs on shop-made side taps, each in its own bay.
-    The three supply radials hold their own pocket lanes on the upper tier (LIVING 42 1/4",
-    BED 83 3/4", STUDY 106 7/8"); one run per D pocket (`mep.open_web_panel`). Pressure: §10.14.
+    `EQ-M-ERV-MAN-EXH`'s top collar, ending at PS1's axis; seven 4" takeoffs on shop-made side
+    taps, each in its own bay, plus MUD's on the neck. **Shared legs (2026-11-11):** BED1 tees
+    off BED2's crossing at y=16'-8", LIVING off BED's 83 3/4" lane at y=12'-8"; the parent
+    carries the branch's flow (`plan/erv_balance.py`). Supply lanes on the upper tier: BED
+    83 3/4", STUDY 106 7/8"; the 42 1/4" lane is free. One run per D pocket
+    (`mep.open_web_panel`). Pressure: §10.14, §10.20.
+  - **The static budget charges a path only the trunks on its own route** (2026-11-11,
+    `checks/mep/erv_routes.py`): extract via `DU-M-ERV-R-SUITEBATH` governs at 0.422" ->
+    204.9 cfm. A same-size tee is a branch when its FIRST vertex lies on the parent. The
+    basement-plenum pass-through for riser paths is uncounted (note §9).
   - `AL-A-COMBO` is in `RM-A-STUDY`, `AL-A-STUDIO` in the studio — reversed is a hard
     FAIL: `code.R315_co_every_sleeping_area` fails if every CO alarm on a storey is inside
     a bedroom.
-  - `code.N1103_6_whole_house_ventilation` grades the DELIVERED 204.6 cfm against **203.0**
+  - `code.N1103_6_whole_house_ventilation` grades the DELIVERED 204.9 cfm against **203.0**
     required (owner, 2026-10-31): MN 1322 R403.5 on 4,900 sf of conditioned floor area,
     measured to the outer face of the structure (sheathing / foundation concrete, not the
     ccSPF, girts or cladding), each stair well deducted once on the storey above
-    (`resolve/conditioned_area.py`, `notes/conditioned_floor_area.md`). +1.6 cfm; a shortfall
+    (`resolve/conditioned_area.py`, `notes/conditioned_floor_area.md`). +1.9 cfm; a shortfall
     of 2 cfm or less would be UNKNOWN (commissioning), more a FAIL.
 
 - **`FO-A-STAIR`'s WEST edge is the stair head, `x=21'-4 3/8"`, not the source's 21'-2"**
@@ -1699,8 +1705,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     accepts; 1.41" left); `PR-B-MAIN-DRAIN` (x 6'-0") passes over it. **Do not put a
     bearing header back here without re-reading `notes/framing_bore_limits.md` §8-§9**, and
     do not land anything on `W-B-CW` — it stops being nonbearing, and the flat header with it.
-    `DU-B-ERV-R-SAUNA-SUP` (and `-EXH`) is at **x=1'-7"** in `W-B-CW`'s second bay since
-    2026-10-31 (out of the panels' NEC 110.26(E) dedicated space) and
+    `DU-B-ERV-R-SAUNA-EXH` is at **x=1'-7"** in `W-B-CW`'s second bay since
+    2026-10-31 (`-SAUNA-SUP` left it 2026-11-11, a tee off GYM; `-BENCH` tees off `-EXH`) (out of the panels' NEC 110.26(E) dedicated space) and
     `DU-B-ERV-R-GYM` crosses OVER `D-B-GYM`'s header between two whole cripples; neither cuts
     anything. `stud_bore` reads a member shorter than two depths as UNKNOWN (§6a), so a hole
     in a short cripple no longer reads legal — passing BETWEEN cripples is still the thing to do.
@@ -1882,9 +1888,15 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       floor is Gree's "solid bottom first 6 in" below the outlet.
     - **The heat kit sits inside the cabinet's discharge half**, power port only;
       `blower_interlock_ref` to the AH is the relation that pardons the overlap.
-    - **The secondary drain pan (IMC 307.2.3, over finished ceilings) is still
-      unmodelled**: the cabinet sits FLOOR-mounted on the deck. Adding the pan lifts the
-      cabinet and both necks about 2".
+    - **The cabinet stands on `SL-A-HP1-PLATFORM`, 4 1/4" up** (3/4" ply on 2x4s on edge),
+      which is what lets the primary condensate port carry Gree's trap above the deck. Its
+      emergency pan (IMC 307.2.3, over finished ceilings; required although the attic is
+      conditioned) sits on the platform with a float switch that opens the cooling call;
+      the pan is not modelled and its rails add about 1".
+    - **Condensate goes to `FX-B-UTIL-SINK`** (`plan/mep_condensate.py`): `PR-A-COND-HP1` down
+      `W-S-DC2`/`W-M-CLN` beside the attic bath stack, and `PR-M-COND-HP3` down `W-M-STRW`,
+      both south of `RM-B-ESS` and in the furnace room's one free lane at x 8'-2".
+      `EQ-B-HP2-GYM`'s is open (plans/TODO.md).
     - **`REG-S-HP-RET` is a ceiling filter grille in `SF-S-DUCT`'s underside**: `AO-S-DUCT-RET`
       is exactly its 28x12 neck, and the return duct (not the soffit cavity) is behind it
       (IMC 601.5; no check catches a cavity return). The 12x28x1 filter is a custom order.
@@ -2091,7 +2103,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     condensate drops descend inside the north-wall cavity; outlets land over the grate at
     (162, 98 3/16) and (160, 98 3/16) inches, 9 inches AFF. Inset posts
     preserve the west exhaust; `CO-B-SAUNA-HEAD` has a flush aisle cap at **(181", 60")**.
-  - Vents: `REG-B-SUP3` (over the heater) and `REG-B-EXH2` keep their stations (20/20 cfm since 2026-11-03, sealed door) and are
+  - Vents: `REG-B-SUP3` is a north ceiling hatch over the upper bench since 2026-11-11 (a branch off `DU-B-ERV-R-GYM`; owner accepts leaving Harvia's inlet-near-heater guidance), `REG-B-EXH2` keeps its station (20/20 cfm since 2026-11-03, sealed door); both are
     house-local `REG-T-SAUNA-VENT-SUP`/`-EXH`: a ProSaunas 11" x 5.2" aspen sliding vent hatch
     on a 4" round-to-rectangular boot (`PROD-PROSAUNAS-VENT-HATCH-ASPEN`, owner 2026-10-29).
     Wood, not plastic, at both ends; a shop-built sliding hatch is the DIY fallback.

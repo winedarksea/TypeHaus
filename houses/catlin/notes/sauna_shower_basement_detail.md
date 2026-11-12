@@ -45,7 +45,7 @@ is 84 1/16 inches AFF; use that surface for headroom and heater checks.
 
 - Lighting: Heat-rated 24V LED tape on the new framing rails at 16 inches AFF; no line voltage inside the hot room. Keep drivers/transformers outside it.
 
-- Ventilation: retain the modeled ERV supply above the heater and the low west-wall exhaust at 4 inches AFF; both terminals are adjustable. Keep plastic vent pipe behind insulation.
+- Ventilation: the ERV supply is a ceiling hatch at the NORTH end, over the upper bench (`REG-B-SUP3`, a 4" branch off the gym radial since 2026-11-11). The owner accepted this departure from Harvia's "inlet near the heater" guidance for 44 ft less duct. The low west-wall exhaust stays at 4 inches AFF; both terminals are adjustable. Keep plastic vent pipe behind insulation.
 
 - **The room floor is sealed concrete, not tile.** `FX-B-SAUNA-SH` is a curbed *liner* pan: it brings its own waterproof floor inside the curb, so there is no tile bed to lay there and no reason to tile the wet floor outside it either. `RM-B-SAUNA.floor_finish` is `sealed-concrete` — densifier plus two coats on `SL-B-FLOOR`, which already slopes 1/8" per foot to `FX-B-SAUNA-FD`. The tile that remains in this room is `WP-B-SAUNA-SPLASH`, the pan's two closed wall sides, unchanged. The "shower tile" and "foam tile backer" bullets above are superseded for the *floor*; the wall build-up still stands. Duckboards over the sealed slab in the hot zone remain an owner option and are not modelled.
 

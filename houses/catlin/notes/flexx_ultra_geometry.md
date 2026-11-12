@@ -63,10 +63,13 @@ insulation, wrench, trap or cable-bend space.
 3. **Return transition: 20 × 16, inferred.** `DU-A-HP1-RET-NECK` joins `EQ-S-ERV-MIX`
    (the return plenum) to the east end. No drawing dimensions the return aperture, so
    20 × 16 is an assumption, flagged on the duct. Measure the delivered cabinet.
-4. **Condensate assembly is absent.** No primary or secondary line is drawn
-   (`mep_drainage.py`), and neither is the external emergency pan (IMC 307.2.3: the unit
-   is over finished ceilings). The cabinet is FLOOR-mounted on the deck, and the pan
-   will lift it about 2 inches. A route down to a receptor is open.
+4. **Condensate: primary drawn, pan on a float switch (2026-11-11).** The cabinet stands
+   on `SL-A-HP1-PLATFORM` (4 1/4 in), so the primary port (schematic, 1 in up the case)
+   clears Gree's trap above the deck. `PR-A-COND-HP1` runs to `FX-B-UTIL-SINK`
+   (`plan/mep_condensate.py`). The secondary port is plugged: the emergency pan (IMC
+   307.2.3) carries a float switch in the cooling call (item 3), not a second line. The
+   pan is unmodelled; its rails add about 1 in. Confirm the port's real height on the
+   delivered cabinet: the trap needs about 3 1/2 in under it.
 5. **Heat kit: now inside the cabinet.** `EQ-S-HP1-STRIP` is drawn within the
    discharge half and keeps only its power port. `blower_interlock_ref` to the AH is
    the relation that pardons the overlap.

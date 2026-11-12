@@ -203,9 +203,9 @@ EQUIPMENT_ERV_BASEMENT = [
 # y=10'-6" to y=34'-6", rising -20" to -15 1/2" as it goes, so every east-west lane in the
 # west half crosses it and the crossing elevation depends on where. At y=29'-6" it is at
 # -16 7/16" and a duct passes under it at -20 7/16" with 1 3/16" to spare; at y=10'-6" it
-# is at -20" and nothing passes under it at all inside the ceiling. That is why the two
-# sauna radials go down the WEST corridors and come east along y=1'-8 1/2" and y=3'-2",
-# south of the vent's corner, where the floor is clear the full width of the house.
+# is at -20" and nothing passes under it at all inside the ceiling. That is why SAUNA-EXH
+# still goes down the WEST corridor and east along y=3'-4", south of the vent's corner; the
+# sauna supply (2026-11-11) crosses the vent's y=10'-6" run OVER it instead.
 #
 # REG-B-SUP2's radial is the short one on purpose: it stops in the play room's west wall,
 # about nine feet short of the old (27', 27') position, and throws away from FURN-B-PLAY-TV
@@ -287,47 +287,33 @@ DUCTS_ERV_BASEMENT = [
                         inch(90.75), inch(90.75), inch(90.75), inch(90.75)),
             diameter=inch(4), routing=DuctRouting.SOFFIT, soffit_ref="SF-B-BATH",
             material="galvanized", design_cfm=DU_B_ERV_R_PLAY),
-    # The sauna supply crosses W-B-CW at x=1'-7", in its 1'-4 3/4"..2'-7 1/4" stud bay and
-    # west of D-B-FURN's header. It travels south on that lane, then turns east along the
-    # clear southern band to REG-B-SUP3.
-    #
-    # ** THE LAST LEG RIDES THE SAUNA'S SERVICE CAVITY (2026-11-01). ** At y=1'-8 1/2" it
-    # rises 6" to 7'-8 1/2", over W-B-SA-W's top plates (+90") and above the hung ceiling's
-    # foil (+87 5/16"), runs east in the cavity, and drops 8 1/2" to REG-B-SUP3 on the 7'-0"
-    # face. At 7'-0" it ran through the shiplap, furring and foil, inside the sauna's
-    # vapour layer.
-    #
-    # ** x=1'-7" SINCE 2026-10-31, OUT OF THE PANELS' NEC 110.26(E) SPACE. ** At 1'-0 1/2"
-    # both sauna radials stood 1 1/2" over the three 4"-deep enclosures on W-B-W1 (x <= 12");
-    # 1'-7" is the next W-B-CW bay. West at y=30'-2 1/2": 89" under CD-B-GARAGE and
-    # PR-B-SAUNA-VENT, 92 1/2" over DU-ERV-OA's wrap (top 90 1/2"), 87 1/2" over
-    # DU-ERV-RISER-EXH, then 86 1/2" down the lane to clear PR-B-SINK2-DRAIN's rake.
+    # ** THE SAUNA SUPPLY IS A BRANCH OFF GYM'S y=13'-4" LEG (2026-11-11). ** It used to leave its
+    # own plenum collar and go 49 1/2 ft: west, south down x=1'-7" and east along the south band.
+    # Now it taps GYM at x=11'-2" (GYM carries its 20 cfm, plan/erv_balance.py) and runs 3 ft
+    # south: a 45 ramp up to 94 3/4" over PR-B-SAUNA-VENT's y=10'-6" run (top 92 1/4"), over
+    # W-B-SA-N's plates and the hung ceiling's foil, then 10 3/4" down to REG-B-SUP3 on the
+    # 7'-0" face over the north end of the upper bench. The top stands 3/4" under the joists
+    # (-11 7/8"); PR-B-SAUNA-FD-VENT (x=11'-11") is 8 1/2" east. EQ-B-ERV-MAN-SUP's collar-sauna
+    # is spare: the shop leaves it uncut (or blanks it). Harvia wants the inlet near the heater;
+    # the owner accepted the departure for the 41 ft it saves.
     DuctRun(uid="VXGA0P0V72", tag="DU-B-ERV-R-SAUNA-SUP", system=DuctSystem.SUPPLY,
-            # A 4" duct needs 2" between a run end and its first elbow, 4" between two 90s: the
-            # collar drop is 2 1/10" (to 88 1/2", 3/4" under DU-ERV-EA's wrap), both steps >= 4",
-            # and the 1" jog at x=19" is gone (the lane is 86 1/2" from x=32" on, under PR-B-SINK2-DRAIN's rake).
-            path=(pt(ft(5, 3), inch(362.5)), pt(ft(5, 3), inch(362.5)),
-                  pt(inch(48), inch(362.5)), pt(inch(48), inch(362.5)),
-                  pt(inch(32), inch(362.5)), pt(inch(32), inch(362.5)),
-                  pt(ft(1, 7), inch(362.5)),
-                  pt(ft(1, 7), inch(20.5)),
-                  pt(ft(1, 7), inch(20.5)), pt(inch(199.75), inch(20.5)),
-                  pt(inch(199.75), inch(20.5))),
-            elevations=(inch(90.6), inch(88.5), inch(88.5), inch(92.6), inch(92.6), inch(86.5),
-                        inch(86.5), inch(86.5), inch(92.5), inch(92.5), ft(7)),
+            path=(pt(inch(134.4), ft(13, 4)), pt(inch(134.4), inch(156)),
+                  pt(inch(134.4), inch(151.375)), pt(inch(134.4), inch(109.2)),
+                  pt(inch(134.4), inch(109.2))),
+            elevations=(inch(90.125), inch(90.125), inch(94.75), inch(94.75), ft(7)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=DU_B_ERV_R_SAUNA_SUP),
-    # The bench hood's pull. It drops out of the ceiling chase to the hood face at 5'-6",
-    # which is the vertical leg that makes it a capture hood rather than a ceiling diffuser.
-    # It steps south to y=27'-0" before turning west so that its own drop and the plenum's
-    # two 6" underside ports are not in each other's way, then runs the deepest of the four
-    # corridors: under PR-B-KITCH-DRAIN, under PR-B-WC1-DRAIN's tail, and under the SH2 and
-    # SINK2 drops that used to be three of its four reported pairs. The step down is a 45°
-    # ramp (2026-11-01): a 7 1/2" drop between two 90s is shorter than their take-offs.
+    # ** THE BENCH HOOD IS A BRANCH OFF SAUNA-EXH'S x=1'-7" LEG (2026-11-11). ** It used to leave
+    # its own plenum collar and run 25 ft down x=2'-0" beside it. It now takes off SAUNA-EXH's SIDE
+    # at y=8'-6" (82 1/4"; SAUNA-EXH carries its 6 cfm), east 6" (the hood moved 1" east), then
+    # drops to the hood at 5'-6". Side, never the bottom: the sauna's duct sweats and a bottom
+    # take-off would drain it into the hood. Both are extract (RETURN joins EXHAUST,
+    # `mep_envelopes.systems_join`). Closing the sauna hatches swings flow to the hood: a 4"
+    # balancing damper belongs 6" off the tee; the engine derives no in-line damper, so none is
+    # drawn or billed.
     DuctRun(uid="MTVYDDP43W", tag="DU-B-ERV-R-BENCH", system=DuctSystem.RETURN,
-            path=(pt(ft(6, 6), ft(28, 1)), pt(ft(6, 6), inch(331.5)), pt(ft(6, 6), ft(27)),
-                  pt(ft(2), ft(27)), pt(ft(2), ft(8, 6)), pt(ft(2), ft(8, 6))),
-            elevations=(ft(7, 6), ft(7, 6), inch(82.5), inch(82.5), inch(82.5), ft(6, 2)),
+            path=(pt(ft(1, 7), ft(8, 6)), pt(ft(2, 1), ft(8, 6)), pt(ft(2, 1), ft(8, 6))),
+            elevations=(inch(82.25), inch(82.25), ft(6, 2)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=DU_B_ERV_R_BENCH),
     # The basement bath's extract leaves the plenum's EAST end straight off its collar (6",
@@ -349,8 +335,8 @@ DUCTS_ERV_BASEMENT = [
     # a 7 3/4" drop were shorter than their elbows' take-offs).
     # The low pickup is 4" off the floor on W-B-SA-W. The route uses W-B-CW's x=1'-7" bay
     # (out of the panels' 110.26(E) space since 2026-10-31), clear of D-B-FURN's header,
-    # then turns east at y=3'-4". Both sauna radials share the lane at separate tiers: this
-    # one at 82 1/4", 1/4" under the supply's underside. At y=3'-4" it enters the centre of W-B-SA-W's 5 1/2" cavity and drops
+    # then turns east at y=3'-4". (Until 2026-11-11 the sauna supply shared the lane, 1/4" over
+    # this at 86 1/2".) At y=3'-4" it enters the centre of W-B-SA-W's 5 1/2" cavity and drops
     # between the studs to 4" AFF. The 2" shift to the register's y=3'-2" station stays
     # inside that stud bay. W-B-SA-W uses SAUNA_2X6 so the 4" section fits, 1/4" off
     # the west stud face and 1 1/4" off the east; its hot-side liner face stays fixed.

@@ -247,3 +247,45 @@ def test_a_one_port_plenum_with_a_rectangular_collar_distributes_and_counts_its_
     assert set(radial_landings(rect_ctx)) == {"NECK-6X4", "BRANCH-4"}
     census = next(f for f in erv_manifold_ports(rect_ctx) if "PLENUM" in f.message)
     assert census.result is Result.PASS and "1 of 1" in census.message
+
+
+# --- per-path trunk chains and same-size tees (2026-11-11, note §9) -------------------------
+
+def test_a_same_size_tee_is_a_branch_and_carries_its_parent_leg(ctx):
+    # A 4" off a 4": the old size rule never hopped it, so its terminal went ungraded.
+    ducts = [*ctx.model.ducts[:-1], _duct("RADIAL-4", (22, 0), (30, 0), diameter=4),
+             _duct("TEE-4", (26, 0), (26, 3), diameter=4)]
+    tee_ctx = check_context(model=replace(ctx.model, ducts=ducts))
+    assert radial_landings(tee_ctx)["TEE-4"] == "PLENUM"
+    pressure = sum(leg_drop_in_wg(d.design_cfm, d.diameter_m, 0.00009, d.length_m)
+                   for d in ducts)
+    finding = next(f for f in erv_static_budget(tee_ctx) if "worst path" in f.message)
+    assert "via TEE-4" in finding.message and "RADIAL-4" in finding.message
+    assert f"at {pressure:.3f} in. w.g." in finding.message
+
+
+def test_a_trunk_off_the_path_is_not_charged_to_it_and_grades_on_its_own(ctx):
+    mix_type = EquipmentType(tag="MIX-T", name="mixing box", footprint=(m(0.4), m(0.02)),
+                             height=m(0.2))
+    mix = Equipment(uid="MIX", tag="MIX", kind=EquipmentKind.MIXING_BOX,
+                    footprint=(m(0.4), m(0.02)), position=pt(m(11), m(5)), type_ref="MIX-T")
+    body = ResolvedCanvasObject(uid="MIX", tag="MIX", storey="basement", domain="mechanical",
+        kind="Equipment", type_ref="MIX-T", room=None, position=(11, 5), z_m=1,
+        rotation_degrees=0, footprint=[(10.8, 4.99), (11.2, 4.99), (11.2, 5.01), (10.8, 5.01)])
+    side = _duct("SIDE-6", (11, 0), (11, 5))
+    lib = ctx.plan.library
+    plan = ctx.plan.model_copy(update={
+        "elements": {"basement": (*ctx.plan.elements["basement"], mix)},
+        "library": lib.model_copy(update={"equipment_types": (*lib.equipment_types, mix_type)})})
+    side_ctx = check_context(model=replace(ctx.model, plan=plan, ducts=[*ctx.model.ducts, side],
+                                           canvas_objects=[*ctx.model.canvas_objects, body]))
+    on_path = sum(leg_drop_in_wg(d.design_cfm, d.diameter_m, 0.00009, d.length_m)
+                  for d in ctx.model.ducts)
+    finding = next(f for f in erv_static_budget(side_ctx) if "worst path" in f.message)
+    assert "via RADIAL-4" in finding.message
+    assert f"at {on_path:.3f} in. w.g." in finding.message
+    # Lengthen the side trunk past the radial's route and it governs, into its own box.
+    long_side = replace(side, length_m=40.0)
+    side_ctx.model.ducts = [*ctx.model.ducts, long_side]
+    finding = next(f for f in erv_static_budget(side_ctx) if "worst path" in f.message)
+    assert "via SIDE-6 into MIX" in finding.message

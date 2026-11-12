@@ -162,19 +162,15 @@ EQUIPMENT_TYPES_ERV = (
     # diameter — two 4" collars on 2" centres are one 6" hole — and refuses a layout that
     # disagrees with `duct_ports`.
     EquipmentType(tag="EQ-T-ERV-PLENUM-M-SUP",
-                  name="Fabricated supply plenum, 8in inlet, 3 x 4in dampered collars",
+                  name="Fabricated supply plenum, 8in inlet, 2 x 4in dampered collars",
                   footprint=(inch(24), inch(8)), height=inch(8), plan_symbol="erv",
-                  duct_ports=3, port_diameter=inch(4),
+                  duct_ports=2, port_diameter=inch(4),
                   static_loss_pa_at_cfm=((60.0, 0.5), (120.0, 1.8), (210.0, 5.5)),
-                  source="Fabricated galvanized plenum for THIS house, 24 x 8 x 8 in: an 8 in trunk inlet and three 4 in dampered start collars at the stations below. The collar layout is a shop drawing and is authored here rather than in library/hvac.py for that reason. No submittal has been read; the stations are the design's and the fabricator confirms them.",
+                  source="Fabricated galvanized plenum for THIS house, 24 x 8 x 8 in: an 8 in trunk inlet and two 4 in dampered start collars at the stations below (a third, for LIVING, was cut from the order 2026-11-11: LIVING tees off BED). The collar layout is a shop drawing and is authored here rather than in library/hvac.py for that reason. No submittal has been read; the stations are the design's and the fabricator confirms them.",
                   ports=(ServicePort(tag="trunk", service=Service.SUPPLY_AIR,
                                      position=(ft(0), ft(0), inch(4))),
                          ServicePort(tag="collar-study", service=Service.SUPPLY_AIR,
                                      position=(inch(6), inch(0.625), inch(4)),
-                                     connection_size=inch(4),
-                                     certainty=PortCertainty.EXACT),
-                         ServicePort(tag="collar-living", service=Service.SUPPLY_AIR,
-                                     position=(inch(-9.75), inch(-2.5), inch(4)),
                                      connection_size=inch(4),
                                      certainty=PortCertainty.EXACT),
                          # y +1" (2026-09-23): +4" stood the riser in FS-S-WEST's
@@ -229,22 +225,19 @@ EQUIPMENT_TYPES_ERV = (
     # there is room to space them. Neither 6" port is a collar — no `connection_size`, so
     # `mep.equipment_port_service` grades them at service level the way it always has.
     EquipmentType(tag="EQ-T-ERV-PLENUM-B-SUP",
-                  name="Fabricated supply plenum, 6in trunk + 6in riser, 3 x 4in dampered collars",
+                  name="Fabricated supply plenum, 6in trunk + 6in riser, 2 x 4in dampered collars",
                   footprint=(inch(36), inch(8)), height=inch(8), plan_symbol="erv",
-                  duct_ports=3, port_diameter=inch(4),
+                  duct_ports=2, port_diameter=inch(4),
                   # Note §4's method on a 6in trunk collar (it was the 8in box's curve): 0.80 x
                   # 17.76 Pa expansion + 1.02 Pa port = 15.2 Pa at 210 cfm, Q^2 (§10.6).
                   static_loss_pa_at_cfm=((60.0, 1.24), (120.0, 4.96), (210.0, 15.2)),
-                  source="Fabricated galvanized plenum for THIS house, 36 x 8 x 8 in: a 6 in trunk inlet and a 6 in riser takeoff in the underside, and three 4 in dampered start collars at the stations below. The collar layout is a shop drawing and is authored here rather than in library/hvac.py for that reason. No submittal has been read; the stations are the design's and the fabricator confirms them.",
+                  source="Fabricated galvanized plenum for THIS house, 36 x 8 x 8 in: a 6 in trunk inlet and a 6 in riser takeoff in the underside, and two 4 in dampered start collars at the stations below. The collar layout is a shop drawing and is authored here rather than in library/hvac.py for that reason. No submittal has been read; the stations are the design's and the fabricator confirms them.",
                   # Trunk inlet where DU-B-ERV-SUP-TRUNK rises off Broan port 2 (2026-11-05).
                   ports=(ServicePort(tag="trunk", service=Service.SUPPLY_AIR,
                                      position=(inch(10.65625), inch(-0.875), inch(0))),
                          ServicePort(tag="riser", service=Service.SUPPLY_AIR,
                                      position=(inch(-12), inch(4), inch(4))),
-                         ServicePort(tag="collar-sauna", service=Service.SUPPLY_AIR,
-                                     position=(inch(-15), inch(-4), inch(4)),
-                                     connection_size=inch(4),
-                                     certainty=PortCertainty.EXACT),
+                         # (2026-11-11) collar-sauna is not cut: DU-B-ERV-R-SAUNA-SUP taps GYM.
                          # x 9" -> 4" (2026-11-01): the trunk now rises at x +10 5/8".
                          ServicePort(tag="collar-gym", service=Service.SUPPLY_AIR,
                                      position=(inch(4), inch(-4), inch(4)),
@@ -259,11 +252,11 @@ EQUIPMENT_TYPES_ERV = (
     # The collar on the east end is the only one that faces its terminal directly; the other
     # two step clear of the riser's and the trunk's drops before they turn.
     EquipmentType(tag="EQ-T-ERV-PLENUM-B-EXH",
-                  name="Fabricated extract plenum, 6in trunk + 6in riser, 3 x 4in dampered collars",
+                  name="Fabricated extract plenum, 6in trunk + 6in riser, 2 x 4in dampered collars",
                   footprint=(inch(36), inch(8)), height=inch(8), plan_symbol="erv",
-                  duct_ports=3, port_diameter=inch(4),
+                  duct_ports=2, port_diameter=inch(4),
                   static_loss_pa_at_cfm=((60.0, 1.24), (120.0, 4.96), (210.0, 15.2)),
-                  source="Fabricated galvanized plenum for THIS house, 36 x 8 x 8 in: a 6 in riser inlet and a 6 in trunk outlet in the underside, and three 4 in dampered start collars at the stations below. Same shell as EQ-T-ERV-PLENUM-B-SUP; a separate row because the declared services differ and the BOM should read which box is which.",
+                  source="Fabricated galvanized plenum for THIS house, 36 x 8 x 8 in: a 6 in riser inlet and a 6 in trunk outlet in the underside, and two 4 in dampered start collars at the stations below. Same shell as EQ-T-ERV-PLENUM-B-SUP; a separate row because the declared services differ and the BOM should read which box is which.",
                   ports=(ServicePort(tag="trunk", service=Service.RETURN_AIR,
                                      position=(inch(10.5), inch(0), inch(0))),
                          ServicePort(tag="riser", service=Service.RETURN_AIR,
@@ -272,10 +265,7 @@ EQUIPMENT_TYPES_ERV = (
                                      position=(inch(-15), inch(-4), inch(4)),
                                      connection_size=inch(4),
                                      certainty=PortCertainty.EXACT),
-                         ServicePort(tag="collar-bench", service=Service.RETURN_AIR,
-                                     position=(inch(0), inch(-4), inch(4)),
-                                     connection_size=inch(4),
-                                     certainty=PortCertainty.EXACT),
+                         # (2026-11-11) collar-bench is not cut: DU-B-ERV-R-BENCH taps SAUNA-EXH.
                          ServicePort(tag="collar-bath", service=Service.EXHAUST_AIR,
                                      position=(inch(18), inch(0), inch(4)),
                                      connection_size=inch(4),
@@ -304,6 +294,8 @@ REGISTER_TYPES_ERV = (
                  name="Over-bench capture hood, 30\" x 12\" face, 4\" collar",
                  footprint=(inch(30), inch(12)), height=inch(8),
                  plan_symbol="register", ventilation_terminal=True,
+                 # (2026-11-11) The hood hangs off SAUNA-EXH's side, not a dampered plenum collar;
+                 # its 4" balancing damper is NOT modelled (no derived part, no billed type part).
                  # A fabricated hood is a plenum with a collar, so the coefficient is higher
                  # than a diffuser's: K = 6 on the 4" collar velocity pressure
                  # (notes/erv_static_budget.md §5). 25 cfm is this terminal's design flow.

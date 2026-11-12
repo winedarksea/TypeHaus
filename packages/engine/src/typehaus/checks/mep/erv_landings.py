@@ -6,6 +6,7 @@ Split out of ``erv_static.py`` for size. Membership and topology only: the frict
 
 from __future__ import annotations
 
+import math
 from collections import deque
 
 from typehaus.checks.mep.erv_network import connected_distribution, rectangular_chain
@@ -117,15 +118,10 @@ def _cfm(ctx: CheckContext, tag: str) -> float | None:
 
 
 def direct_landings(ctx: CheckContext, landings: dict[str, str]) -> set[str]:
-    """The landings whose own end is in the plenum: a branch off a trunk is not one."""
-    from typehaus.resolve.mep_soffit import ducts_are_joined
-
-    return {tag for tag in landings
-            if not any(other != tag and landings[other] == landings[tag]
-                       and ducts_are_joined(ctx.model, tag, other)
-                       and _diameter(ctx, other) > _diameter(ctx, tag) + 1e-9
-                       and _cfm(ctx, other) is not None
-                       for other in landings)}
+    """The landings whose own end is in the plenum: a branch off a trunk (or off another
+    radial, whatever its size) is not one, so its flow is never added to the box twice."""
+    ancestors = landing_ancestors(ctx, landings)
+    return {tag for tag in landings if tag not in ancestors}
 
 
 def landing_ancestors(ctx: CheckContext, landings: dict[str, str]) -> dict[str, list[str]]:
@@ -173,35 +169,80 @@ def _through_trunks(ctx: CheckContext, landings: dict[str, str]) -> dict[str, st
     duct. Ten runs left the static budget and nothing said so, which is the failure mode
     this whole module is written against.
 
-    One hop is deliberate and it is enough: a branch tee'd off a branch is a topology
-    nobody has drawn here, and inventing a general graph walk for it would be grading a
-    system this house does not have. A run reached this way is graded exactly as a radial
-    is — its own flow against its own product — plus the trunk it crosses
-    (:func:`landing_ancestors`). Only a ROUND run hops: a rectangle never joins by contact
-    with a round one, and a trunk's size is its equivalent diameter when it is rectangular.
+    Hops repeat to a fixed point since 2026-11-11, when shared legs made a branch off a
+    branch real (SAUNA-SUP off GYM, BED1 off BED2, RET3 off LAUNDRY). A run reached this way
+    is graded exactly as a radial is — its own flow against its own product — plus the trunk
+    it crosses (:func:`landing_ancestors`). Only a ROUND run hops: a rectangle never joins by
+    contact with a round one, and a trunk's size is its equivalent diameter when rectangular.
     """
     from typehaus.resolve.mep_soffit import ducts_are_joined
 
     sizes = {duct.tag: effective_diameter_m(duct) for duct in ctx.model.ducts
              if effective_diameter_m(duct) is not None}
+    ducts = {duct.tag: duct for duct in ctx.model.ducts}
     out = dict(landings)
-    for duct in ctx.model.ducts:
-        if duct.tag in out or not duct.path or duct.diameter_m is None:
-            continue
-        for trunk_tag, host in sorted(landings.items()):
-            # **A branch is SMALLER than the trunk it comes off, and the test is that way
-            # round on purpose.** Without it the hop runs backwards: catlin's basement
-            # radials land in their plenum and the 6" trunk is joined to them, so the trunk
-            # would inherit the plenum and its 210 cfm would be added to the plenum's own
-            # 60 — the box would be worked at 270 cfm it never sees, and the supply column
-            # of notes/erv_static_budget.md §6 would move for a reason that is not in the
-            # building.
-            if duct.diameter_m >= sizes.get(trunk_tag, 0.0) - 1e-9:
+    # To a fixed point: a branch off a branch (catlin's RET3 off LAUNDRY) hops too.
+    changed = True
+    while changed:
+        changed = False
+        for duct in ctx.model.ducts:
+            if duct.tag in out or not duct.path or duct.diameter_m is None:
                 continue
-            if trunk_tag != duct.tag and ducts_are_joined(ctx.model, duct.tag, trunk_tag):
-                out[duct.tag] = host
-                break
+            for trunk_tag, host in sorted(out.items()):
+                if trunk_tag == duct.tag:
+                    continue
+                # **A branch leaves its parent, and the test is DIRECTION.** Its first vertex
+                # sits on the parent away from the parent's plenum end. Without it the hop
+                # runs backwards: catlin's 6" basement trunk is joined to radials that land
+                # in their plenum, and inheriting the plenum would add its 210 cfm to the
+                # box's own 60. A strictly smaller run joined to the parent still hops, as
+                # before 2026-11-11.
+                smaller = duct.diameter_m < sizes.get(trunk_tag, 0.0) - 1e-9
+                if (_leaves(ctx, duct, ducts[trunk_tag], host, out)
+                        or (smaller and ducts_are_joined(ctx.model, duct.tag, trunk_tag))):
+                    out[duct.tag] = host
+                    changed = True
+                    break
     return out
+
+
+def _on_run(point, z, duct, tolerance: float) -> bool:
+    from typehaus.checks.mep.erv_routes import distance_to_run
+
+    return distance_to_run(point, z, duct) <= tolerance
+
+
+def _end_point(duct, index: int) -> tuple[tuple[float, float], float | None]:
+    z = duct.z_m[index] if duct.z_m and len(duct.z_m) == len(duct.path) else None
+    return duct.path[index], z
+
+
+def _leaves(ctx: CheckContext, duct, parent, host: str, landings: dict[str, str]) -> bool:
+    """Whether ``duct``'s first vertex is on ``parent``, away from the parent's plenum end.
+
+    The parent's plenum end is the end in ``host``'s case, else the end lying on another
+    run of the same plenum (a branch's own tee), else its first vertex.
+    """
+    from typehaus.resolve.mep_envelopes import joint_tolerance_m
+
+    tolerance = joint_tolerance_m()
+    start, z = _end_point(duct, 0)
+    if not _on_run(start, z, parent, tolerance):
+        return False
+    others = [d for d in ctx.model.ducts
+              if d.tag != parent.tag and landings.get(d.tag) == host]
+    plenum_end = 0
+    for index in (0, -1):
+        point, pz = _end_point(parent, index)
+        if _end_host(ctx, parent, index)[0] == host or any(
+                _on_run(point, pz, other, tolerance) for other in others):
+            plenum_end = index
+            break
+    point, pz = _end_point(parent, plenum_end)
+    gap = math.dist(start, point)
+    if z is not None and pz is not None:
+        gap = math.hypot(gap, z - pz)
+    return gap > tolerance
 
 
 def network(ctx: CheckContext, machine_tag: str, landings: dict[str, str]) -> list[object]:

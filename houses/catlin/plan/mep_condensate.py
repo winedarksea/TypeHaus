@@ -8,7 +8,9 @@
 # water-heater lines: the laundry sink's rim is level with HP3's drain, and one receptor in
 # the room where exposed pipe is accepted beats a spout in the laundry. Hoses inside a head's
 # own body are drawn as its first leg; the AH's trap (Gree IOM) sits at the second vertex,
-# off the front of SL-A-HP1-PLATFORM, and is not drawn.
+# off the front of SL-A-HP1-PLATFORM, and is not drawn. Its emergency pan takes a float switch,
+# not a second line. EQ-B-HP2-GYM has no line yet: D-B-SUNKEN's head is above its drain
+# (plans/TODO.md).
 
 from typehaus import (
     PipeRun,
@@ -39,18 +41,19 @@ CONDENSATE_NORTH = [
     # cabinet's end clear of the service zone, south on the deck at x=24'-11 1/2" (blocked
     # off the deck at 4' o.c.), down into FS-ATTIC's free y 208-224 bay, west along it over
     # the x=18' bearing, then down W-S-DC2's plumbing cavity beside PR-A-STUBATH-DRAIN and
-    # W-M-CLN (the laundry's south wall), west in FS-M-WEST's bay past the laundry sink's
-    # drop and PR-B-CW-WASH, out into the furnace room, and over the sink's bowl 13" up.
+    # W-M-CLN (the laundry's south wall, 3 1/2" east of the sink's hot stop), west in
+    # FS-M-WEST's bay past the laundry sink's drop and PR-B-CW-WASH, out into the furnace
+    # room, and over the sink's bowl 13" up.
     PipeRun(uid="31MM8G5WV4", tag="PR-A-COND-HP1", system=PipeSystem.DRAIN, sanitary=False,
             path=(pt(inch(288.25), inch(328.5625)), pt(inch(288.25), inch(324.5)),
                   pt(inch(299.5), inch(324.5)), pt(inch(299.5), inch(216)),
-                  pt(inch(299.5), inch(216)), pt(inch(115.5), inch(216)),
-                  pt(inch(115.5), inch(218)), pt(inch(115.5), inch(218)),
-                  pt(inch(115.5), inch(221.5)), pt(inch(97.5), inch(221.5)),
+                  pt(inch(299.5), inch(216)), pt(inch(117.5), inch(216)),
+                  pt(inch(117.5), inch(218)), pt(inch(117.5), inch(218)),
+                  pt(inch(117.5), inch(221.5)), pt(inch(97.5), inch(221.5)),
                   pt(inch(97.5), inch(221.5)), pt(inch(97.5), inch(232)),
                   pt(inch(97.5), inch(232)), pt(inch(103.5), inch(232))),
             diameter=inch(0.75), material="pvc",
             elevations=(inch(246), inch(245.9), inch(245.6), inch(243.32), inch(236),
-                        inch(232.16), inch(232.11), inch(-6), inch(-6.08), inch(-6.46),
+                        inch(232.2), inch(232.15), inch(-6), inch(-6.08), inch(-6.5),
                         inch(-14), inch(-14.22), inch(-62), inch(-62.13))),
 ]

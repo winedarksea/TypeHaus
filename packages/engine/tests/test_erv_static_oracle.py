@@ -162,7 +162,7 @@ def test_the_broan_carries_the_whole_published_curve(catlin_plan) -> None:
     assert broan.fan_curve_max_static_in_wg == pytest.approx(1.3)
 
 
-def test_the_governing_side_is_supply_via_the_play_radial(catlin_model_ro) -> None:
+def test_the_governing_side_is_extract_via_the_suitebath_takeoff(catlin_model_ro) -> None:
     """Note §6, and the governing SIDE swapped THREE times on 2026-09-15.
 
     The machine's curve is an external static PER SIDE, so what governs is the worse of two
@@ -190,10 +190,14 @@ def test_the_governing_side_is_supply_via_the_play_radial(catlin_model_ro) -> No
 
     ** 2026-11-05: supply leads, 0.430 against 0.400 (note §10.10). ** The elbows pay a
     published C, the BD8 is off the discharge (-7.9 Pa) and the supply port's 12" flex counts.
+
+    ** 2026-11-11: extract leads, 0.422 against 0.340 (note §10.20). ** A path now pays only
+    the trunks on its own route: PLAY sheds the supply riser and HP-FEED (0.430 -> 0.232), and
+    the PLAY/STUDY cut and the shared legs leave LIVING as the worst supply.
     """
     message = _machine_finding(catlin_model_ro).message
-    assert "supply side via DU-B-ERV-R-PLAY" in message
-    assert "extract side" not in message
+    assert "extract side via DU-M-ERV-R-SUITEBATH" in message
+    assert "supply side" not in message
 
 
 def test_the_static_and_the_delivered_flow_are_the_notes(catlin_model_ro) -> None:
@@ -253,12 +257,14 @@ def test_the_static_and_the_delivered_flow_are_the_notes(catlin_model_ro) -> Non
     message = _machine_finding(catlin_model_ro).message
     # Note §10.15 (2026-11-10): REG-B-SUP2 on the wall, PLAY 1.36 ft and one 45 shorter,
     # 0.0314 -> 0.0295": supply still governs at 0.428, 204.59 cfm (§10.10's 0.430 / 204.5).
-    assert "supply side" in message
     # 2026-11-10: HP-FEED back on x=12" for W-A-STU-N's new stud; 0.432, 204.4 cfm (note §10.17).
     # 2026-11-11: HP-FEED ends on the attic deck, one elbow fewer; 0.430, 204.5 cfm (§10.19).
-    assert "0.430 in. w.g." in message
-    assert "DU-B-ERV-R-PLAY 0.029\"" in message
-    assert "EQ-B-ERV-MAN-SUP 15.2 Pa at 210 cfm" in message
+    # 2026-11-11 later: per-path trunks, extract governs, the trunk's dead end trimmed:
+    # 0.42334 - (0.03679 - 0.03503) = 0.4216, 204.9 cfm (note §10.20).
+    assert "extract side" in message
+    assert "0.422 in. w.g." in message
+    assert "DU-M-ERV-R-SUITEBATH 0.006\"" in message
+    assert "DU-M-ERV-EXH-TRUNK 0.035\"" in message
     assert "delivering 205 cfm" in message
 
 
@@ -310,9 +316,12 @@ def test_catlin_reports_no_fail_from_this_check(catlin_model_ro) -> None:
 
 
 def test_every_branch_clears_the_products_own_flow_limit(catlin_model_ro) -> None:
-    """22 radials all inside ``DUCT-T-GALV-4``'s 50 cfm — a 600 fpm QUIET limit for a branch
-    running continuously beside a bed, not the pipe's capacity. The highest is
-    ``DU-B-ERV-R-PLAY`` at 30 cfm.
+    """22 round radials all inside ``DUCT-T-GALV-4``'s 50 cfm — a 600 fpm QUIET limit for a
+    branch running continuously beside a bed, not the pipe's capacity. The highest is
+    ``DU-M-ERV-R-BED`` at 35 cfm, which carries the LIVING branch over its whole length.
+
+    ``DU-M-ERV-R-RET3`` is graded since 2026-11-11: a 4" branch off a 4" never hopped the old
+    size rule. ``DU-M-ERV-R-PLANT`` is a rectangular wall stack and has no ``max_cfm``.
 
     The ten level-2 takeoffs are here because ``radial_landings`` follows one hop through
     the trunk; ten runs left this budget silently until it did. The trunk itself is flat
@@ -321,7 +330,8 @@ def test_every_branch_clears_the_products_own_flow_limit(catlin_model_ro) -> Non
     rows = [f for f in _findings(catlin_model_ro) if " carries " in f.message]
     assert len(rows) == 22
     assert all(f.result is Result.PASS for f in rows)
-    for tag in ("DU-M-ERV-R-PLANT", "DU-M-ERV-R-BATH1", "DU-M-ERV-R-KITCH"):
+    for tag in ("DU-M-ERV-R-RET3", "DU-B-ERV-R-SAUNA-SUP", "DU-M-ERV-R-BATH1",
+                "DU-M-ERV-R-KITCH"):
         assert any(f.message.startswith(f"{tag} carries ") for f in rows), tag
 
 

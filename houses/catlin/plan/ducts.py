@@ -172,6 +172,12 @@ DUCT_STANDARD = [
                         source="rectangular transition, shop-fabricated"),
             DuctPartRow(kind="reducer", size="8x4", branch="4in", fabricated=True,
                         source="end transition to the last branch, shop-fabricated"),
+            # DU-M-ERV-R-PLANT (2026-11-11): the flat trunk's end continues as a 3 1/4 x 8 wall stack
+            # on edge, so its 8x4 end transition and its head boot are shop-made, with the trunk.
+            DuctPartRow(kind="reducer", size="8x4", branch="3.25x8", fabricated=True,
+                        source="end transition from the trunk's 8x4 to the 3 1/4 x 8 stack on edge, shop-fabricated"),
+            DuctPartRow(kind="boot", size="3.25x8", branch="4x4", fabricated=True,
+                        source="flanged 3 1/4 x 8 stack boot with a 4 in collar for the disc valve, shop-fabricated; flange sealed to the humid liner (notes/plant_room.md)"),
             DuctPartRow(kind="takeoff", size="8in", branch="4in",
                         product_ref="PROD-DUCT-SADDLE-4", source=_IMPERIAL),
             DuctPartRow(kind="takeoff", size="18x8", branch="6in",

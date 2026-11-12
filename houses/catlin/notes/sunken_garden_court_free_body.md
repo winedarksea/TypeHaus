@@ -2713,6 +2713,17 @@ add 203.6 lb of house D, 280,270.6 lb: the shared numerator is 0.25 x 280,270.6 
 2026-11-10: the double eave plate and the walls under the raised roof add about 207 lb of house
 D: numerator 102,494.3, FS capped **3.7522** (d/c 0.3998), basis 8 **2.3478** (d/c 0.6389).
 
+2026-11-11: the take-down stops weighing wood slabs as 150 pcf concrete (a `platform`, or a slab
+whose STRUCTURE layer is framed). SL-M-TUBDK's plywood cap (-487.9 lb) and SL-S-KNEE-CAP's oak
+tread (-23.2 lb) leave D, and SL-A-HP1-PLATFORM (the attic air handler's, +497.6 lb as
+concrete) never enters. W-S-CLN-S now runs to the ceiling: +20.75" x ~46" at 8 psf = +53.5 lb.
+
+    D = (102,494.3 - 32,375.0) / 0.25          = 280,477.2
+      - 487.9 - 23.2 + 53.5                    = 280,019.6
+    numerator 0.25 x 280,019.6 + 32,375.0      = 102,379.9
+    FS capped 102,379.9 / 27,315.75            = **3.7480** (d/c 0.4002; engine 3.748008)
+    basis 8   102,379.9 / 43,656.2             = **2.3451** (d/c 0.6396; engine 2.345135)
+
 **The near line.** The E footing is the strut at the line's east end; its station is the middle
 of its overlap with the line, (413.97 + 432) / 2 = **422.98"** (was (412.94 + 432) / 2 = 422.47").
 Strut k = 4.0305e6 x 250 / 394 = 2.5576e6 lb/in, unchanged. Stiff-bed rows do not see it

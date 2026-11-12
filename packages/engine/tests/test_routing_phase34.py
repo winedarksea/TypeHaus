@@ -185,11 +185,9 @@ def test_catlin_ports_are_approximate_EXCEPT_the_shop_drawn_collars(catlin_model
     assert ports, "catlin places equipment declaring ServicePorts"
     exact = sorted(f"{p.equipment_tag}.{p.port_tag}" for p in ports if p.exact)
     assert exact == ["EQ-B-ERV-MAN-EXH.collar-bath",
-                     "EQ-B-ERV-MAN-EXH.collar-bench",
                      "EQ-B-ERV-MAN-EXH.collar-sauna",
                      "EQ-B-ERV-MAN-SUP.collar-gym",
                      "EQ-B-ERV-MAN-SUP.collar-play",
-                     "EQ-B-ERV-MAN-SUP.collar-sauna",
                      "EQ-B-ERV.supply",
                      "EQ-B-HW-HEADER.inlet",
                      *(f"EQ-B-HW-HEADER.out-{i}" for i in range(1, 9)),
@@ -201,9 +199,9 @@ def test_catlin_ports_are_approximate_EXCEPT_the_shop_drawn_collars(catlin_model
                      "EQ-B-WH.relief",
                      "EQ-M-ERV-MAN-EXH.collar-trunk",
                      "EQ-M-ERV-MAN-SUP.collar-bed",
-                     "EQ-M-ERV-MAN-SUP.collar-living",
                      "EQ-M-ERV-MAN-SUP.collar-study"]
-    # The machine's own port 2 is Broan's drawing (2026-11-01), a spigot and not a collar.
+    # The supply sauna, bench and living collars are not cut since their runs tee off a neighbour
+    # (2026-11-11). The machine's own port 2 is Broan's drawing (2026-11-01), a spigot.
     # EQ-M-ERV-MAN-EXH's 6x4 trunk collar (2026-11-08) is exact and rectangular, not a branch.
     assert all(p.collar or (p.section_m and abs(p.section_m[0] - p.section_m[1]) > 1e-6)
                for p in ports if p.exact and "ERV-MAN" in p.equipment_tag), (

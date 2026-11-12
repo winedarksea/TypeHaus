@@ -664,3 +664,19 @@ superseded here: wired fill shutoff and manually reset pump cutoff are required.
 [Reservoir installation](plant_reservoir.md) owns product selections, qualification holds,
 water budget, service geometry and commissioning; earlier hose-thread advice does not
 replace the reservoir's open air gap.
+
+## Addendum, 2026-11-11 — the extract is a NW high sidewall on W-S-PS1
+
+Supersedes the 2026-08-29 addendum's W-S-C1 route. `DU-M-ERV-R-PLANT` (5 cfm) now leaves the
+level-2 flat trunk's end at W-S-PS1's axis and rises inside PS1's 2x4 cavity as a 3 1/4" x 8"
+galvanized stack (`DUCT-T-GALV-RECT-10`, 10.3 ft against 24.9 ft) to
+`REG-S-ERV-PLANT-EXH` at x=3'-6 1/2", 8'-3" to its centre — 3" under the 8'-6" first aimed
+at, because a higher stack end reads as a bore through PS1's top plates. It stays high and
+6" clear of `FURN-S-PLANT-HANG-NW`. The deck opening is `FO-S-ERV-PLANT`.
+
+- **Vapour-tight boot**: flanged boot taped with butyl to the room's Class I membrane, mastic
+  round the stack, mineral wool in the deck opening (`plan/mep_erv_l2.py`).
+- **The RH damper** (`PROD-AIR-DAMPER-4-24V`, 4" round) sits in the boot's 4" collar behind
+  the valve and is reached by pulling the valve; it can no longer go at the run's start.
+- Open: PS1's 1x4 furring at the boot is cut or jogged by the shop, and the bottom plate is
+  cut 8" at the stack. Nothing grades either.

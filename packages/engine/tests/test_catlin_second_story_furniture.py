@@ -256,8 +256,9 @@ def test_east_pax_frame_meets_corner_and_leaves_outlet_and_erv_access(catlin_mod
     assert Polygon(grille.footprint).bounds[0] - east == pytest.approx(inch(2.625).meters)
     duct = next(item for item in catlin_model_ro.ducts if item.tag == f"DU-M-ERV-R-{bedroom}")
     assert duct.path[-1] == pytest.approx(grille.position)
+    # BED1's grille is on the room's north side since it teed off BED2 (2026-11-11).
     assert grille.position[1] == pytest.approx(
-        ft(9, 9).meters if bedroom == "BED1" else ft(18, 4).meters)
+        ft(16, 8).meters if bedroom == "BED1" else ft(18, 4).meters)
     if bedroom == "BED1":
         bed_west = Polygon(objects["FURN-S-BED1"].footprint).bounds[0]
         assert bed_west - east >= inch(18).meters

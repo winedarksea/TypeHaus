@@ -29,6 +29,11 @@ is offered for checking, not for deciding.
 > grades against the delivered figure. `mep.erv_static_budget` reports the shortfall against 210 as UNKNOWN and never as
 > a FAIL, for exactly that reason — see §8.
 
+> ⚠ **2026-11-11: A PATH PAYS ONLY THE TRUNKS ON ITS OWN ROUTE (§10.20).** The second
+> conservatism below is retired: `DU-S-ERV-HP-FEED` is a graded path of its own and no
+> basement radial carries a riser. Extract governs at **0.4216 in., 204.9 cfm** against
+> 203.0. The block below is the 2026-09 record.
+
 > ⚠ **THE GRADED NUMBER IS DELIBERATELY CONSERVATIVE IN TWO PLACES**, both named in §9: the
 > risers are worked at their authored 210 cfm over their whole length though the real flow
 > below the level-2 tap is 200 and above it 54, and the trunk chain is summed whole though
@@ -219,7 +224,9 @@ it never loosens it.**
 The machine's curve is an **external static per side**, so the governing figure is the worse
 of the two paths and never their sum. Each path is: worst radial + its terminal + the plenum
 that radial lands in (at the sum of that plenum's radial flows; since §10.6, at its trunk's
-flow when that trunk runs to the machine) + every trunk on that side.
+flow when that trunk runs to the machine) + every trunk on that side. **Since 2026-11-11
+(§10.20) it is the trunks on that radial's own route from the machine, plus the outdoor leg;
+the tables below are the 2026-09 record of the old rule.**
 
 **EXTRACT — `DU-B-ERV-R-SAUNA-EXH` → `EQ-B-ERV-MAN-EXH` → basement trunk → machine → `DU-ERV-EA`**
 
@@ -534,6 +541,12 @@ measured one.
   differs, and the answer is **about a tenth of an inch, all of it on the side that appeared
   to govern.**
 
+- **2026-11-11: the supply riser is charged WHOLE to every path that crosses it, at 160
+  cfm** (`DU-M-ERV-R-BED` 35 incl. LIVING + `-STUDY` 10 + `DU-S-ERV-HP-FEED` 115). Those
+  paths are the level-2 supplies and HP-FEED's own (§10.20); no basement radial crosses it
+  any more. The geometric reason below still stands, so the level-2 supply plenum is charged
+  the riser as the tap it would take (`erv_routes`: an unfed plenum takes its nearest trunk).
+  This is the one named conservatism left on the supply side.
 - **The supply riser still cannot be segmented, and the reason is geometric.**
   `DU-ERV-RISER-SUP` carries 150 cfm below its level-2 tap and 100 above (`DU-S-ERV-HP-FEED`
   takes the 100; `EQ-M-ERV-MAN-SUP`'s three radials take 15 + 20 + 15 = 50) — but **there is
@@ -558,10 +571,18 @@ measured one.
   `VR-M-STACK`, which opens the gate to 6 1/8" and still clears W-M-N3B; that is a
   drainage-set decision and it is the owner's.
 
-- **The trunk chain is summed whole.** `DU-S-ERV-HP-FEED` is a parallel branch off the
-  supply riser, not a segment of the path to `DU-B-ERV-R-PLAY`; summing it over-counts the
-  supply path by 0.0630 in. The supply path does not govern either way — though after D3 it
-  is only 0.0051 in. behind, so this over-count is now larger than the gap it sits inside.
+- ~~**The trunk chain is summed whole.**~~ **Resolved 2026-11-11 (§10.20).** Each path walks
+  the joint graph from the machine (`checks/mep/erv_routes.py`): PLAY no longer pays the
+  riser (25.9 Pa) or `DU-S-ERV-HP-FEED` (15.5 Pa), and the basement extract radials no longer
+  pay `DU-ERV-RISER-EXH`/`DU-M-ERV-EXH-FEED`.
+- **A path does not pay the basement plenum it passes THROUGH.** Riser air enters
+  `EQ-B-ERV-MAN-SUP` through the same trunk collar the basement radials' air does, and leaves
+  `EQ-B-ERV-MAN-EXH` through it; both boxes are worked at 210 cfm for their own radials
+  (§10.6) but every level-2 and attic path skips them. Charged, the 15.2 Pa would put extract
+  SUITEBATH at ~0.483 in. and ~201.8 cfm, under R403.5's 203.0. Not charged here, and not
+  hand-worked: whether the riser collar's pass-through loss is the box curve (an inlet
+  expansion keyed on the trunk collar) or a smaller straight-through term is an owner/engineer
+  question, recorded 2026-11-11.
 - **Leakage.** Sealed rigid pipe leaks; nothing here models it. A duct-leakage test is the
   only answer and it is a commissioning item, not a calculation.
 - **Filter loading and airflow indication.** This budget uses the clean-filter curve and does
@@ -1142,6 +1163,63 @@ rises through `FO-A-ERV-HPFEED-E` and turns north on the deck into the box's sou
 
 Engine: 0.059580. Governing supply **0.43223 -> 0.42972 in.**; off the curve
 206 - (0.02972 / 0.1) x 5 = **204.5 cfm** against R403.5's 203.0: **+1.5 cfm**.
+
+### 10.20 Shorter shared runs and per-path trunks (2026-11-11)
+
+**Engine.** `mep.erv_static_budget` charges each path only the trunks on its own route from
+the machine (`checks/mep/erv_routes.py`): a walk over trunk-to-equipment ends and trunk joints,
+passing through distributing plenums only. The outdoor leg and its hood ride every path of
+their side. A trunk ending in other equipment is a path of its own, so `DU-S-ERV-HP-FEED` into
+`EQ-S-ERV-MIX` is graded. A round run whose FIRST vertex lies on a landing radial away from
+its plenum end is a branch whatever its size (the old rule hopped only a smaller one, so
+`DU-M-ERV-R-RET3` was never graded); a branch's path is its parent leg at the parent's authored
+flow + its own leg + its own terminal (at the register's own flow) + the plenum.
+
+**Moves (owner, 2026-11-11).**
+
+| run | was | now | how |
+|---|---|---|---|
+| `DU-B-ERV-R-SAUNA-SUP` | 49.5 ft, 9 elbows | 5.3 ft, 3 | tee off GYM's y=13'-4" leg at x=11.2', hatch over the upper bench (owner accepts leaving Harvia's "inlet near heater") |
+| `DU-B-ERV-R-BENCH` | 25.1 ft, 4 | 1.2 ft, 1 | side take-off off SAUNA-EXH's x=1'-7" leg at y=8'-6"; damper not modelled (no in-line damper part) |
+| `DU-M-ERV-R-LIVING` | 46.6 ft, 7 | 20.8 ft, 5 | tee off BED's 83 3/4" lane at y=12'-8"; the 42 1/4" lane is free |
+| `DU-M-ERV-R-BED1` | 25.8 ft, 0 | 11.9 ft, 0 | tee off BED2's crossing at (16.15', 16'-8"); grille at (28'-1", 16'-8") |
+| `DU-M-ERV-R-PLANT` | 24.9 ft round, 1 | 10.3 ft 3 1/4x8 rect, 1 | trunk end, up W-S-PS1 to a high sidewall at x=3'-6 1/2", 8'-3" to centre |
+| `DU-M-ERV-EXH-TRUNK` | 25.03 ft | 23.36 ft | dead end trimmed to PS1's axis |
+
+About **124 ft** less duct, three plenum collars not cut (`collar-sauna` on the supply box,
+`collar-bench`, `collar-living`). **Flows:** PLAY 30 -> 20, STUDY 15 -> 10, HP-FEED 100 -> 115
+(supply 95 + 115 = 210); shared legs carry their branch (GYM 30, SAUNA-EXH 26, BED 35, BED2 10).
+
+**The trimmed trunk, hand-worked** (§10.14's method; 8x4, De 6.0935", 119 cfm, 2 turns x 59"):
+
+    L_eff = 23.36 + 9.83 = 33.19 ft;  V = 119 / 0.20252 = 587.6 fpm;  VP = 0.021526 in.
+    Re = 9.793 x 0.50779 / 1.62e-4 = 30,698;  Colebrook f = 0.0249 (eps/D 5.908e-4)
+    dp = 0.0249 x (33.19 / 0.50779) x 0.021526 = 0.03503 in.   (25.03 ft read 0.03679)
+
+**The governing path, extract via `DU-M-ERV-R-SUITEBATH`.** Every other term is unchanged
+from the Phase-0 reading of the same geometry (0.42334 in., the old SUITEBATH sum less RET3's
+0.0001 in., which was a trunk in the chain and is now a branch):
+
+    0.42334 - (0.03679 - 0.03503) = 0.42158 in.
+    terms (Pa): radial 1.5 + trunk 8.7 + neck 8.1 + terminal 11.5 + plenum 1.8 at 119
+                + EA 15.9 + hood 14.8 + RET-TRUNK 9.3 + RISER-EXH 30.2 + EXH-FEED 3.1 = 105.0
+    delivered: 206 - 5 x 0.2158 = 204.9 cfm   (R403.5: 203.0, +1.9)
+
+Engine: 0.421580, 204.92 cfm.
+
+**The supply column.** Worst is now `DU-M-ERV-R-LIVING` at 0.3396 in. (LIVING 2.4 + BED at 35
+cfm 9.4 + valve 7.3 + plenum 0.5 + OA 10.3 + hood 23.3 + trunk and flex 2.0 + riser at 160
+cfm 29.3 Pa). HP-FEED's own path reads 0.3379 (riser 29.3 + feed at 115 cfm 19.3). PLAY fell
+**0.4297 -> 0.2323** (no riser, no feed, 20 cfm). Supply is 0.082 in. behind extract.
+
+**STUDY at 10 cfm** (§10.16's run, flow only): Re 3,930 is under the turbulent floor, so f is
+read at 4,000: f = 0.04081, VP = 0.0008187 in.;
+24.863 x 0.04081 / 0.3333 x 0.0008187 + 1.8551 x 0.0008187 = 0.002492 + 0.001519 = **0.004011
+in.** Engine: 0.004011.
+
+**Next lever** (not in scope): extract SUITEBATH. Its terminal (11.5 Pa) and the level-2 neck
+(8.1) and trunk (8.7) are the radial-side terms. §9's pass-through bullet is the open question
+that could move the figure the other way.
 
 ### 10.5 The thermal penalty of the legs (hand-worked)
 

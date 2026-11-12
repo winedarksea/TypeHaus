@@ -65,10 +65,22 @@ def house_slab(ctx, footings: list[str]):
     return best
 
 
+def _wood_slab(ctx, slab) -> bool:
+    """A plywood/lumber platform or framed deck: not concrete, so not 150 pcf of D."""
+    if slab.kind == "platform":
+        return True
+    assembly = ctx.plan.library.assembly(slab.assembly) if slab.assembly else None
+    return assembly is not None and any(
+        layer.function.value == "structure" and layer.framing is not None
+        for layer in assembly.layers)
+
+
 def take_down(ctx, slab_solid, court: frozenset[str] = frozenset()) -> tuple[float, str]:
-    """``(lb, basis)`` — every Footing and Slab solid and every concrete wall's STRUCTURE
-    layer inside the slab's outline + reach at 150 pcf, every other wall at
-    ``FRAMED_WALL_PSF``. Floors, roof, finishes and contents are left off. ``court`` is the
+    """``(lb, basis)`` — every Footing and concrete Slab solid and every concrete wall's
+    STRUCTURE layer inside the slab's outline + reach at 150 pcf, every other wall at
+    ``FRAMED_WALL_PSF``. Floors, roof, finishes and contents are left off, and so is a wood
+    slab (a ``platform``, or one whose STRUCTURE is framed): weighing a plywood cap as
+    concrete overstates D, which is unconservative for sliding. ``court`` is the
     structure across the break: a court pour inside the reach (catlin's W-SG-BRKBM flush on
     the strips since 2026-11-04) is not the house's weight."""
     from shapely.geometry import LineString
@@ -82,7 +94,8 @@ def take_down(ctx, slab_solid, court: frozenset[str] = frozenset()) -> tuple[flo
     for s in ctx.model.solids:
         el = ctx.plan.by_tag(s.tag)
         kind = ("footings" if isinstance(el, Footing) and s.category == "footing" else
-                "slabs" if isinstance(el, Slab) and in_slab_family(s.category) else None)
+                "slabs" if isinstance(el, Slab) and in_slab_family(s.category)
+                and not _wood_slab(ctx, el) else None)
         if kind and zone.contains(p := _poly(s.outline)):
             parts[kind] += p.area * (s.z1_m - s.z0_m) * _IN * CONCRETE_PCF / 1728.0
     for w in ctx.model.walls:

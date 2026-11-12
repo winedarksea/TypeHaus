@@ -7993,3 +7993,73 @@ UNKNOWN like the rest of the house's.
 Open (`plans/TODO.md`): the secondary pan (lifts the cabinet about 2"), the condensate route,
 the lineset to `EQ-M-HP1-OD`, attic service provisions (passageway, a light switched at the
 entry, a receptacle), and measuring the delivered return aperture.
+
+## Heat-pump condensate to the utility sink; the attic AH on a platform (2026-11-11, owner)
+
+The two north units had no condensate line. Both now run to `FX-B-UTIL-SINK` in the furnace
+room (`plan/mep_condensate.py`), the receptor the ERV and water-heater lines already use. The
+laundry sink was the nearer one, but its rim sits level with `EQ-M-HP3-STAIR`'s drain, and
+one receptor in the room where exposed pipe is accepted is simpler than a spout over the
+laundry sink.
+
+- **`PR-M-COND-HP3`** drops from the head's west end into `W-M-STRW`'s cavity. It runs south
+  in the cavity past `RM-B-ESS`'s rated corner, enters the furnace ceiling between the two
+  conduits, and follows the room's only free lane, x=8'-2". It passes under
+  `DU-B-ERV-R-BATH` and `PR-B-HW-SBATH` at about 6'-10" AFF.
+- **`PR-A-COND-HP1`** runs from the AH's front port, east past the service zone and south on
+  the deck. It then goes west in FS-ATTIC's free y 208-224 bay, over the x=18' bearing (the
+  engine derives the block). From there it drops down `W-S-DC2` beside `PR-A-STUBATH-DRAIN`,
+  then down `W-M-CLN`, and comes out past the laundry sink's drop and `PR-B-CW-WASH`.
+- **Both lines** fall at least 1/4"/ft and end 13" over the sink bowl. `haus check` stays at 0
+  FAIL.
+
+The AH's primary port is 1" up the case. With the cabinet flat on the deck there was no room
+for Gree's trap or for any fall, so the cabinet stands on `SL-A-HP1-PLATFORM`: 3/4" plywood
+on 2x4s on edge, 4 1/4". Its necks rose with it, and both shop boxes grew 21 -> 23" so the
+taller necks still land inside them.
+
+The emergency pan stays (IMC 307.2.3). The attic is conditioned, but an overflow still wets the
+second-storey ceiling, and Gree's IOM requires the pan over a finished ceiling. The owner
+asked for a pan plus a leak sensor. A sensor that only alerts does not meet 307.2.3, so the
+pan gets a float switch in the cooling call (item 3) and no second drain line.
+
+`EQ-B-HP2-GYM` stays undrawn (owner). Its drain (~79" AFF; ~80 1/2" with the most ceiling
+clearance Gree allows) is below `D-B-SUNKEN`'s 83" head, 4" west of the head. So no gravity
+lane reaches the sauna floor drain, and `PR-B-COND`'s overhead head still marks the old
+station. A gravity route through the gym-sauna partition was tried and crossed both doors.
+Re-siting the head onto `W-B-CS3` or adding a mini pump are the options left
+(plans/TODO.md).
+
+## ERV runs share legs; the static budget walks each path (2026-11-11, owner)
+
+The owner asked for the small ERV moves in `plans/TODO.md`: shorter duct, less cost, and a few
+cfm of static back. The research found the governing supply path (PLAY, 0.430") paying for
+trunks its air never crosses. The check summed every trunk on a side into every path, so the
+supply riser (25.9 Pa) and `DU-S-ERV-HP-FEED` (15.5 Pa) rode on a basement radial. It also
+found extract only 2.2 Pa behind. Cutting supply alone would buy ~0.4 cfm before extract
+governed.
+
+- **Engine first.** `mep.erv_static_budget` now charges a path only the trunks on its route
+  from the machine (`checks/mep/erv_routes.py`). HP-FEED into `EQ-S-ERV-MIX` is graded as its
+  own path. A same-size tee is a branch when its first vertex lies on the parent: the old
+  rule hopped only a smaller run, so `DU-M-ERV-R-RET3`'s terminal had never been graded, and
+  every sharing move below would have hidden the same way. A terminal reads its loss at the
+  register's own flow, not the shared leg's.
+- **Flows.** PLAY 30 -> 20 and STUDY 15 -> 10, with the 15 to HP-FEED (100 -> 115; System 1
+  reaches every second-floor room). A shared leg carries its branch's flow over its whole
+  length, as LAUNDRY already did.
+- **Moves.** Sauna supply tees off GYM to a north hatch over the upper bench. The owner
+  accepts this against Harvia's "inlet near heater". The bench hood tees off SAUNA-EXH from
+  the side, so sauna condensate cannot drain into it. LIVING tees off BED and frees the
+  42 1/4" lane. BED1 tees off BED2 to a grille at (28'-1", 16'-8"). PLANT is a 3 1/4x8 stack
+  up W-S-PS1 to a NW high sidewall. Together that is ~124 ft less duct and three plenum
+  collars not cut.
+- **Result.** Extract via SUITEBATH governs at 0.4216" -> **204.9 cfm** against 203.0
+  (+1.9, was +1.5). Supply fell to 0.340" (LIVING), and PLAY to 0.232". Note §10.20 has the
+  hand work.
+- **Not closed.**
+  - The bench branch's balancing damper: no in-line damper part exists, so it is a comment.
+  - PLANT's grille is at 8'-3" to centre, not 8'-6". A higher stack end reads as a bore
+    through PS1's top plates.
+  - The basement plenums' pass-through loss on riser paths is uncounted (note §9). Charged,
+    it would put delivery near 201.8 cfm; that question is the owner's.

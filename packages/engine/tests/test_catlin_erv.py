@@ -126,8 +126,13 @@ def test_every_erv_radial_carries_exactly_its_registers_flow(catlin_plan) -> Non
     for e in catlin_plan.all_elements():
         if e.element_kind == "Register" and e.duct_ref in ducts:
             served[e.duct_ref] = served.get(e.duct_ref, 0.0) + e.design_cfm
-    # A branch's air also crosses the radial it tees off (REG-M-RET3's, 2026-11-10).
-    branches = {"DU-M-ERV-R-RET3": "DU-M-ERV-R-LAUNDRY"}
+    # A branch's air also crosses the radial it tees off (REG-M-RET3's, 2026-11-10; the
+    # four shared legs, 2026-11-11).
+    branches = {"DU-M-ERV-R-RET3": "DU-M-ERV-R-LAUNDRY",
+                "DU-B-ERV-R-SAUNA-SUP": "DU-B-ERV-R-GYM",
+                "DU-B-ERV-R-BENCH": "DU-B-ERV-R-SAUNA-EXH",
+                "DU-M-ERV-R-LIVING": "DU-M-ERV-R-BED",
+                "DU-M-ERV-R-BED1": "DU-M-ERV-R-BED2"}
     carried = dict(served)
     for branch, parent in branches.items():
         carried[parent] += served[branch]
@@ -403,7 +408,10 @@ def test_every_radial_is_four_inch_galvanized_and_there_are_twenty_three(catlin_
                if d.tag.startswith(("DU-B-ERV-R-", "DU-M-ERV-R-", "DU-A-ERV-R-"))]
     # 22 home runs plus REG-M-RET3's branch off LAUNDRY (2026-11-10); BED3's left 2026-11-11.
     assert len(radials) == 23, sorted(d.tag for d in radials)
-    for duct in radials:
+    # The plant room's extract is a 3 1/4 x 8 wall stack up W-S-PS1 (2026-11-11).
+    plant = next(d for d in radials if d.tag == "DU-M-ERV-R-PLANT")
+    assert (plant.width_m, plant.depth_m) == pytest.approx((3.25 * M_PER_IN, 8 * M_PER_IN))
+    for duct in (d for d in radials if d is not plant):
         assert duct.diameter_m == pytest.approx(4 * M_PER_IN), duct.tag
         assert duct.material == "galvanized", duct.tag
 
@@ -477,7 +485,8 @@ def test_the_port_census_is_clean_and_is_graded_by_POSITION_on_level_two(
     exhaust = next(f for f in findings if "EQ-M-ERV-MAN-EXH" in f.message)
     assert '1 of 1 x 6" ports used, full' in exhaust.message
     supply = next(f for f in findings if "EQ-M-ERV-MAN-SUP" in f.message)
-    assert '3 of 3 x 4" collars used, each by one run, full' in supply.message
+    # collar-living capped 2026-11-11: LIVING tees off BED.
+    assert '2 of 2 x 4" collars used, each by one run, full' in supply.message
 
 
 def test_the_duct_product_catalog_is_keyed_like_the_price_rows(catlin_plan) -> None:

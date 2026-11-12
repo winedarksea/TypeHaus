@@ -115,9 +115,10 @@ def test_baskets_meet_finished_ceiling_over_existing_joist_and_clear_exhaust(cat
         assert Polygon(room.clear_face).covers(Polygon(basket.footprint))
         assert basket.z_m + inch(24).meters - floor == pytest.approx(
             inch(84).meters, abs=inch(0.5).meters)
-    east_edge = Polygon(baskets[1].footprint).bounds[2]
+    # The grille is on W-S-PS1 by the NW basket since 2026-11-11, 6" clear of its east edge.
+    nw_east_edge = Polygon(baskets[0].footprint).bounds[2]
     grille_edge = Polygon(objects["REG-S-ERV-PLANT-EXH"].footprint).bounds[0]
-    assert grille_edge - east_edge >= inch(6).meters
+    assert grille_edge - nw_east_edge >= inch(6).meters
 
 
 def test_displays_clear_existing_bodies_in_three_dimensions(catlin_model_ro):
