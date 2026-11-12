@@ -85,8 +85,8 @@ def elbow(standard: Any, angle_deg: float, *, diameter_m: float | None = None) -
     if standard is None:  # no standard says what is bought: a neutral stand-in, not a shop
         return Elbow(stand_in_radius_m(diameter_m) or 1.5 * diameter_m, "stand-in")
     hit = elbow_for_turn(standard, diameter_m, angle_deg)
-    if hit is not None and hit[0].center_to_face is not None:
-        return Elbow(hit[0].center_to_face.meters, "bought")
+    if hit is not None and hit[0].radius_m() is not None:
+        return Elbow(hit[0].radius_m(), "bought")
     return Elbow(stand_in_radius_m(diameter_m) or 1.5 * diameter_m,
                  "stand-in" if hit is not None else "fabricated")
 

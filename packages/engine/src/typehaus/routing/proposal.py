@@ -248,6 +248,8 @@ class RouteProposal:
 
             duct = {"duct_standard": self.duct_standard, "order_size": duct_size_text(
                 self.diameter_m or None, self.width_m, self.depth_m)}
+            if rectangular:
+                duct["section"] = (self.width_m, self.depth_m)
         return polyline_fittings(self.tag, family, self.system, self.points, size,
                                  rectangular=rectangular, **duct)
 
