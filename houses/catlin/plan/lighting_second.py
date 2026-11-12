@@ -84,7 +84,7 @@ SECOND_LIGHTING = [
     # CKT-RC-SECOND (20 A AFCI, GFCI at the device); and one exterior sconce on a plain paddle
     # inside Study 2 at the door, CKT-LT-UPPER with the load it switches. No room= on either
     # outdoor fitting: the exterior classifiers place them geometrically.
-    ElectricalDevice(uid="VA4Z7YCQDQ", tag="ED-S-BALCONY-RC1", kind=DeviceKind.RECEPTACLE,
+    ElectricalDevice(uid="VA4Z7YCQDQ", tag="ED-S-BALCONY-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
                      type_ref="ED-T-LEV-GFCI-WR", circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(18)),
                      location=Location(attachment=WallAttachment(

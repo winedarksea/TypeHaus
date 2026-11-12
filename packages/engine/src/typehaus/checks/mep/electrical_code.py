@@ -87,7 +87,7 @@ def gfci_locations(ctx: CheckContext) -> list[Finding]:
     out: list[Finding] = []
     for device, storey_tag in devices:
         point = Point(placed_xy(ctx.model, device))
-        room = _room_of(device, point, rooms.get(storey_tag, ()), by_tag)
+        room = _room_of(ctx.model, device, point, rooms.get(storey_tag, ()), by_tag)
         reasons = [r for r in (_why_gfci_required(ctx, device, room, point,
                                                   sinks.get(storey_tag, ()), below_grade,
                                                   barriers.get(storey_tag)),
@@ -197,22 +197,34 @@ def _outdoor_consumers(ctx: CheckContext, barriers) -> dict[str, tuple[str, str]
 _WALL_HUNG_M = 2 * 0.0254  # a wall-hung unit's point may stand just off the wall face
 
 
-# How far outside a room's finish face a device may sit and still be in that room. A
-# receptacle is mounted *on* the wall, so its point lands on or just past the clear face —
-# a plain point-in-polygon test calls half the receptacles in the house outdoors.
+# How far outside a room's axis cell an UNHOSTED element may sit and still be in that room.
+# A wall-hosted one never reads this: its own face says which side it is on.
 _IN_ROOM_TOL_M = 0.5
+# How far past its host face a wall-mounted device is probed for the room it faces.
+_FACE_PROBE_M = 0.15
 
 
-def _room_of(device, point, storey_rooms, by_tag):
-    """The room this element is in: authored if it says, else the nearest face it touches.
+def _room_of(model, device, point, storey_rooms, by_tag):
+    """The room this element is in: authored if it says, else the room its host face looks
+    into, else the axis cell covering (or nearest within tolerance of) its point.
 
-    ``getattr`` rather than attribute access because the AFCI rule walks every circuit
-    consumer, and Equipment, Registers and devices do not share a base that promises a
-    ``room`` field.
+    A tolerance alone is wrong on a thick exterior wall: a receptacle on its outer face sits
+    inches off the room's axis cell and was counted indoors. ``getattr`` because the AFCI
+    rule walks every circuit consumer, and they share no base promising ``room``.
     """
     authored = getattr(device, "room", None)
     if authored and authored in by_tag:
         return by_tag[authored]
+    hosted = _host_of(model, device)
+    if hosted is not None:
+        wall, attachment = hosted
+        from shapely.geometry import Point
+
+        from typehaus.resolve.wall_hosting import face_frame
+
+        (x, y), _, (nx, ny) = face_frame(wall, attachment, None)
+        probe = Point(x + nx * _FACE_PROBE_M, y + ny * _FACE_PROBE_M)
+        return next((room for room, poly in storey_rooms if poly.covers(probe)), None)
     covering = [room for room, poly in storey_rooms if poly.covers(point)]
     if covering:
         return covering[0]
@@ -222,6 +234,13 @@ def _room_of(device, point, storey_rooms, by_tag):
         if distance <= _IN_ROOM_TOL_M:
             return room
     return None
+
+
+def _host_of(model, element):
+    """(wall, attachment) when ``element`` is wall-hosted on a resolved wall, else None."""
+    attachment = getattr(getattr(element, "location", None), "attachment", None)
+    wall = model.wall(attachment.wall_ref) if attachment is not None else None
+    return None if wall is None else (wall, attachment)
 
 
 def _why_gfci_required(ctx, device, room, point, sinks, below_grade, barrier) -> str | None:
@@ -410,9 +429,11 @@ def afci_branch_circuits(ctx: CheckContext) -> list[Finding]:
             xy = placed_xy(ctx.model, element)
             if xy is None:
                 continue
-            room = _room_of(element, Point(xy), rooms.get(storey.tag, ()), by_tag)
+            room = _room_of(ctx.model, element, Point(xy), rooms.get(storey.tag, ()), by_tag)
             if room is None:
-                unplaced.setdefault(circuit_tag, set()).add(element.tag)
+                # A hosted face that looks into no room is outdoors: out of 210.12's scope.
+                if _host_of(ctx.model, element) is None:
+                    unplaced.setdefault(circuit_tag, set()).add(element.tag)
             else:
                 served.setdefault(circuit_tag, set()).add(room.occupancy)
 

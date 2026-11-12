@@ -49,14 +49,14 @@ STAIR_ATTIC = [
 # No room=: an exterior placeable names none (the wet-location checks rely on it).
 EXTERIOR_MAIN = [
     # Front: north face of W-M-N2 on the entry bridge side of D-M-ENTRY, 18" up.
-    ElectricalDevice(uid="1XK99YN2KR", tag="ED-M-FRONT-RC1", kind=DeviceKind.RECEPTACLE,
+    ElectricalDevice(uid="1XK99YN2KR", tag="ED-M-FRONT-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
                      type_ref="ED-T-LEV-GFCI-WR", circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(18)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-N2", face="right", distance_from_start=inch(18),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # Rear: south face of W-M-S2 between D-M-PORCH and WIN-M-LIV-S2, x=24'-7".
-    ElectricalDevice(uid="7QVNCGSY39", tag="ED-M-REAR-RC1", kind=DeviceKind.RECEPTACLE,
+    ElectricalDevice(uid="7QVNCGSY39", tag="ED-M-REAR-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
                      type_ref="ED-T-LEV-GFCI-WR", circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(18)),
                      location=Location(attachment=WallAttachment(

@@ -1,9 +1,9 @@
-"""Views & transitions: Slice, Transition, condition keys (#36/#37, → 11b)."""
+"""Views & transitions: Slice, Transition (#36/#37, → 11b)."""
 
 from __future__ import annotations
 
 from typehaus.model.base import Element, HausModel
-from typehaus.model.enums import ConditionKind, SliceKind
+from typehaus.model.enums import SliceKind
 from typehaus.model.registry import register_constructor, register_element
 from typehaus.quantities import Length, Point2D
 
@@ -53,16 +53,6 @@ class Slice(Element):
     condition_key: str | None = None  # authored DETAIL claims this condition, suppressing
     # its auto-scaffold (→ 11b transition details)
     dimensions: tuple[SliceDimension, ...] = ()  # authored strings (detail sheets only)
-
-
-class ConditionKey(HausModel):
-    """A derived boundary-condition key: junction kind + participating assemblies (#37).
-
-    Produced by the resolver, matched by Transition condition patterns."""
-
-    kind: ConditionKind
-    assemblies: tuple[str, ...]  # participating assembly tags, sorted
-    detail: str = ""  # extra discriminator (e.g. "rim", "width-change")
 
 
 class Continuity(HausModel):

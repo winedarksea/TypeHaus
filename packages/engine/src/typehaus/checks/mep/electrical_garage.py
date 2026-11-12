@@ -88,7 +88,8 @@ def garage_bay_receptacles(ctx: CheckContext) -> list[Finding]:
             xy = placed_xy(ctx.model, element)
             if xy is None:
                 continue
-            room = _room_of(element, Point(xy), storey_rooms.get(garage.storey, ()), by_tag)
+            room = _room_of(ctx.model, element, Point(xy),
+                            storey_rooms.get(garage.storey, ()), by_tag)
             mount = element.mount
             height = mount.elevation.meters if mount.elevation is not None else 0.0
             if (room is None or room.tag != garage.tag or height > _MAX_COUNTING_HEIGHT_M

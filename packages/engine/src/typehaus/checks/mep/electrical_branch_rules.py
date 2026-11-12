@@ -154,7 +154,8 @@ def _grade_circuit(ctx: CheckContext, circuit: Any, consumers: list, rooms: dict
             continue  # a cord-and-plug load in one of this circuit's receptacles
         xy = placed_xy(ctx.model, element)
         storey_rooms = rooms.get(storey_of.get(element.tag, ""), ())
-        room = None if xy is None else _room_of(element, Point(xy), storey_rooms, by_tag)
+        room = None if xy is None else _room_of(ctx.model, element, Point(xy),
+                                                storey_rooms, by_tag)
         if room is None or room.occupancy != Occupancy.BATHROOM.value:
             outside.append(element.tag)
             continue

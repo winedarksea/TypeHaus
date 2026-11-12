@@ -146,18 +146,6 @@ allowance.)
   `PipeRun` plus a `mep.pipe_support` reading the material off the run — and is not needed to
   make the permit story honest.
 
-## Phase 2 — Complete Catlin junctions (deferred by decision 2026-08-02)
-
-- Resolve mixed-assembly L corners and collinear assembly changes through named
-  `AssemblyInterface` roles rather than layer-name or layer-index matching.
-- Resolve the porch/basement five-way and other high-valence nodes with explicit bearing and
-  layer-continuity ownership.
-- Render transition/detail overlays from the resolved junctions. `Transition` stays
-  post-resolve documentation.
-- Add `Node.junction_override` only if the audit proves a rule cannot express a condition.
-- `model/views.py::ConditionKey` (+ `Continuity`/`LayerJoin`) is schema-only until WP1.4
-  condition derivation lands — keep it, don't flag it dead.
-
 ## Current Orientation
 
 +X: east, +Y: north, +Z: vertical/up. Will need to support rotating the house off axis in

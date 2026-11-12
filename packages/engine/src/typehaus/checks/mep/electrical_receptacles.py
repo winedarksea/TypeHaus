@@ -246,7 +246,7 @@ def _receptacles(ctx: CheckContext, rooms: dict[str, list],
             obj = resolved.get(element.tag)
             if obj is None:
                 continue
-            room = _room_of(element, Point(obj.position), rooms.get(obj.storey, ()),
+            room = _room_of(ctx.model, element, Point(obj.position), rooms.get(obj.storey, ()),
                             by_tag)
             out.append((obj, room))
     return out
