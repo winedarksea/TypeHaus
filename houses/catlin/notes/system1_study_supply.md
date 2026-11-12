@@ -33,7 +33,9 @@ Do not aim the supply back toward D-S-STUDY2 or D-S-PLANT.
 ## Branch consequences
 
 DU-S-HP-SOUTH-RISE carries 250 cfm before this take-off and 175 cfm after it.
-DU-S-HP-SOUTH now carries 175 cfm to the attic desk (100) and plant room (75),
-and ends east at its x=19'-6" riser station. Its length is 7'-6", down from
+DU-S-HP-SOUTH now carries 100 cfm to the attic desk only (the plant room's 75 leaves
+the riser west on DU-S-HP-PLANT, 2026-11-12) and is a 12" stub past the riser station
+(a 175 cfm run to a plant ceiling boot before that). The riser's 250 is 75 + 75 + 100.
+The following lengths are the pre-2026-11-12 state:  Its length is 7'-6", down from
 10'-8" after the attic register relocation. The new sidewall boot adds
 2'-3 1/4" of 6" round duct; the removed 3'-2" was 10x6 rectangular duct.

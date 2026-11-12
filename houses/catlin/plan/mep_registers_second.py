@@ -114,13 +114,19 @@ REGISTERS_HVAC_SECOND = [
              position=pt(inch(261.25), inch(43.5)), rotation=deg(90),
              duct_ref="DU-S-HP-STUDY2", type_ref="REG-T-HP-STUDY-SIDE", design_cfm=75,
              mount=Mount(kind=MountKind.WALL, elevation=inch(93.75))),
-    # East-window supply, 75 cfm with RH-interlocked isolation. The complete rectangular
-    # assembly and raised feed are dimensioned in notes/plant_supply_connection.md.
-    # Westward vane setting distributes air across the planting; window wash is unverified.
+    # RM-S-PLANT's 75 cfm supply (2026-11-12): a HIGH SIDEWALL grille on W-S-C1's plant face,
+    # in the clear cripple bay above D-S-PLANT's header (cripples at y=33" and 49", 14 1/2"
+    # between), throwing west down the room's 17' length. It was a ceiling boot at x=14'-8"
+    # with a service hatch in the humid liner. The RH-interlocked 6" 24 VAC damper rides in the
+    # type's collar behind the grille, reached by pulling it; nothing is opened in the liner.
+    # DU-S-HP-PLANT feeds it off DU-S-HP-SOUTH-RISE inside SF-S-DUCT; the wall's Class I
+    # membrane is taped to the box flange as at REG-S-ERV-PLANT-EXH. notes/plant_supply_connection.md.
     Register(uid="CXDCYN7YQ2", tag="REG-S-HP-PLANT", kind=DuctSystem.SUPPLY, room="RM-S-PLANT",
-             position=pt(ft(14, 8), ft(3, 3)), duct_ref="DU-S-HP-SOUTH",
-             type_ref="REG-T-HP-CEIL-DAMPERED", design_cfm=75,
-             mount=Mount(kind=MountKind.CEILING)),
+             duct_ref="DU-S-HP-PLANT", type_ref="REG-T-HP-PLANT-SIDE", design_cfm=75,
+             mount=Mount(kind=MountKind.WALL, elevation=inch(94.125)),
+             location=Location(attachment=WallAttachment(
+                 wall_ref="W-S-C1", face="left", distance_from_start=inch(41),
+                 normal_gap=inch(0), rotation_offset=deg(0)))),
     # The plant room's extract. RM-S-PLANT was supply-only, so its own ventilation pushed
     # 70%-RH air into every crack in the envelope it is now lined to protect; slightly
     # negative is the only pressure a continuously humid room may be held at, which takes an
@@ -196,8 +202,8 @@ REGISTERS_HVAC_SECOND = [
 # what moves the storey's air: in at the hall soffit, out at the far wall of each room.
 #
 # RM-S-PLANT and RM-S-STUDY2 are served as System 1 terminals — REG-S-HP-PLANT and
-# REG-S-HP-STUDY2 in REGISTERS_HVAC_SECOND above. The plant takes a ceiling boot
-# from DU-S-HP-SOUTH; the study takes a sidewall boot off DU-S-HP-SOUTH-RISE.
+# REG-S-HP-STUDY2 in REGISTERS_HVAC_SECOND above. Both take sidewall boots straight off
+# DU-S-HP-SOUTH-RISE: the plant's through W-S-C1 above its door, the study's through SF-S-DUCT's east lining.
 REGISTERS = [
     # BED1 y 9'-18', BED2 y 18'-27'. BED3 has no ERV pickup since 2026-11-11: it returns
     # to System 1 through REG-S-HP-BED3-RET instead, and its old 5 cfm went to the kitchen.

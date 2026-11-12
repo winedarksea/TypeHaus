@@ -65,7 +65,7 @@ source:
 - One sheet, no seam; the base toe is a maintained sealant joint. Nothing impermeable under it.
 
 ### Spec 23 00 00
-- Plant HP supply: [dimensioned boot, damper and sealed service hatch](plant_supply_connection.md).
+- Plant HP supply: [sidewall grille over the door, 6in RH damper behind it](plant_supply_connection.md).
 - Hold the room neutral to slightly negative, -0.05 to -0.15 in. w.g. against adjacent spaces.
 - A humidifier is required: an 84%-latent ERV still loses 1.5 to 2 gal/day at design.
 
@@ -402,7 +402,7 @@ over TPO/EPDM. The sheet plus the sealed base toe is the waterproofing.
   The membrane is returned onto the buck behind the frame. Authored as
   `WindowStool.return_material_ref` on `PLANT_STOOLS`; the pieces are in `haus countertops`
   and bill with the stools, about 35 SF for the four windows.
-- **Keep the glass-wash airflow.** `REG-S-HP-PLANT`'s throw washes the south glass, and that
+- **Keep the glass-wash airflow.** `REG-S-HP-PLANT` (now a sidewall over the door, 2026-11-12) throws west down the room past the south glass; that
   function survives the damper retype below.
 - **`D-S-DECK-W` IS DELETED (2026-09-03), and `WIN-S-PLANT4` stands on its centre.** A 60"
   exterior French door was the one hole in the six-sided liner that no detail closes: it is
@@ -680,3 +680,22 @@ at, because a higher stack end reads as a bore through PS1's top plates. It stay
   the valve and is reached by pulling the valve; it can no longer go at the run's start.
 - Open: PS1's 1x4 furring at the boot is cut or jogged by the shop, and the bottom plate is
   cut 8" at the stack. Nothing grades either.
+
+## Addendum, 2026-11-12 — the supply is a sidewall over the door
+
+Supersedes the ceiling boot, damper box and hatch of [plant_supply_connection.md](plant_supply_connection.md)'s
+first version. `REG-S-HP-PLANT` is a high sidewall grille on W-S-C1's plant face above D-S-PLANT
+(y=41", centre 99 1/8" storey), fed by a 6" take-off off the soffit riser, with the RH damper
+in its box collar. The service hatch is retired.
+
+- **Air and vapour separation improves.** The ceiling lost a 12x6 grille collar and a 10x6 hatch
+  through its liner; the wall gains one 12x6 box through the Class I membrane (flange taped as
+  at the extract boot). The duct stays on the dry side.
+- **Pressure is unchanged**, which is to say not what this note says. Supply 75 cfm, ERV extract
+  5 cfm (`erv_balance.py`; the 25 above is stale): the room is about 70 cfm positive when the
+  damper is open and leaves under the 1/2" door undercut at 19 Pa (`system1_return_path.md`). The
+  damper closing on the RH call is what brings it toward neutral. Nothing moved the balance.
+- **Cooling season:** cold supply across a 75 F / 64 F-dew-point room can sweat the grille face
+  and drip toward the door sill (no drain). Same exposure as the ceiling grille, now above the
+  threshold; the damper's RH closure is the defence.
+

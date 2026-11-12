@@ -116,10 +116,9 @@ the treatment; none of these has been done.
   access, full hose stroke, cleanout clearance, vent fitting/bore envelopes and the inward
   tilt-turn window sweep (full turn likely obstructed). See `notes/kitchen_sink_installation.md`;
   product/connection specification is complete, physical fit is not released.
-- Plant supply fabrication hold: dry-fit A220V / ZD12X6TZ / TH-HP-PLANT-BOOT-01 and gasketed
-  service hatch, including actuator fasteners, hand/tool access, seams/supports and the
-  approximately 3/8-inch deck margin. Geometry and connection are specified; see
-  `notes/plant_supply_connection.md`.
+- Plant supply hold: confirm the EWC 6RSD (or equal) body and actuator size, and that its
+  actuator can be reached through the grille opening, before W-S-C1's liner is closed. Not read.
+  See `notes/plant_supply_connection.md`.
 - Measure Glacier Bay QL033Y and SUNNERSTA on site; confirm the Chulton as one-hole.
 
 ## Commissioning

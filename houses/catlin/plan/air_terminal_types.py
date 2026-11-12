@@ -14,7 +14,6 @@ REG-T-ERV-*/REG-T-HP-*/hood rows stay for other houses.
 
 from __future__ import annotations
 
-from plan.plant_supply_terminal import PLANT_SUPPLY_NECK
 from typehaus import (
     EquipmentType,
     RegisterType,
@@ -221,16 +220,23 @@ AIR_REGISTER_TYPES = (
                  source=f"Face 7 3/8 x 13 3/8in and 2in damper depth are planning figures, "
                         f"not published at this size. {_NOTE} §4.",
                  ports=(_port("supply", Service.SUPPLY_AIR),)),
-    # One assembly allowance: grille, collar, motorized damper (including actuator), boot.
-    RegisterType(tag="REG-T-HP-CEIL-DAMPERED",
+    # RM-S-PLANT's supply (2026-11-12): A220V 12x6 (no OBD: the take-off's locked collar
+    # damper balances, the motorised one isolates) on the stock 6x12x6 end boot, with the 6" 24 VAC
+    # RH damper in the boot's collar behind the grille, reached by pulling it, as at
+    # REG-T-ERV-PLANT-EXH. One allowance buys the grille, the damper and the labour.
+    RegisterType(tag="REG-T-HP-PLANT-SIDE",
                  face_opening=(inch(12), inch(6)),
                  face_style="rectangular_grille", double_deflection=True,
-                 name="Plant supply A220V 12x6 / ZD12X6TZ / TH-HP-PLANT-BOOT-01 assembly",
-                 footprint=(inch(13.75), inch(7.75)), height=inch(1), plan_symbol="register",
-                 product_ref="PROD-AIR-PLANT-GRILLE-12X6", neck=PLANT_SUPPLY_NECK,
-                 source=f"75 cfm, RH interlocked; westward throw. Motor actuator west of the "
-                        f"damper, removable service cassette. {_NOTE} §7; "
-                        "notes/plant_supply_connection.md.",
+                 name="Plant supply, A220V 12x6 aluminium double-deflection sidewall with "
+                      "RH-interlocked 6in damper",
+                 footprint=(inch(13.75), inch(1)), height=inch(7.75), plan_symbol="register",
+                 product_ref="PROD-AIR-PLANT-GRILLE-12X6",
+                 parts=(ProductPart(role="fitting", product_ref="PROD-AIR-DAMPER-6-24V"),),
+                 neck=TerminalNeck(section="rectangular",
+                                   width=inch(12), height=inch(6), depth=inch(2.6875),
+                                   part="register box on the stock 6x12x6 end boot"),
+                 source=f"75 cfm, RH interlocked, throws west. A220V 12X06 face 13 3/4 x 7 3/4in. "
+                        f"{_NOTE} §4, §7; notes/plant_supply_connection.md.",
                  ports=(_port("supply", Service.SUPPLY_AIR),)),
     # The hall filter, 490 cfm (750 - ERV 100 - suite 80 - BED3 80). 12x28x1 is not stocked, so
     # it is ordered custom; a stocked 12x24x1 reads 245 fpm but fails the loaded-static test

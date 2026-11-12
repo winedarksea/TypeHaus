@@ -3734,10 +3734,11 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "REG-T-HP-STUDY-SIDE" = { material = { low = 65, high = 100 }, labour = { low = 25, high = 60 } }  # 1 ea
 # 6x12 aluminium floor register (H&C 531SA class; price not read — aluminium runs 2-3x steel).
 "REG-T-HP-FLOOR-0612" = { material = { low = 40, high = 95 }, labour = { low = 18, high = 45 } }  # 3 ea
-# Plant supply assembly: A220V 12x6 (no OBD), ZD12X6TZ including actuator,
-# TH-HP-PLANT-BOOT-01 26ga boot, collar, and gasketed PVC service hatch. Included once.
-# Budget allowance, not a supplier quote; includes fabrication, support, seal and service work.
-"REG-T-HP-CEIL-DAMPERED" = { material = { low = 260, high = 430 }, labour = { low = 220, high = 480 } }  # 1 ea
+# Plant supply (2026-11-12): TRUaire A220V 12X06 (no OBD, ~$80) plus the 6" 24 VAC spring-return RH
+# damper (EWC 6RSD class; the 4RSD is ~$177, the 6RSD price NOT READ) in the box collar behind it.
+# The stock 6x12x6 end boot bills in [duct_parts]. Allowance, not a quote; labour includes the
+# membrane flange seal, the 24 VAC pull and the RH interlock. Included once.
+"REG-T-HP-PLANT-SIDE" = { material = { low = 250, high = 380 }, labour = { low = 90, high = 200 } }  # 1 ea
 # 28x12 hinged filter-back return (H&C 673 class). The custom 12x28x1 MERV 13 filters are an
 # owner consumable, not in the build.
 "REG-T-HP-RET-FILTER" = { material = { low = 60, high = 130 }, labour = { low = 18, high = 45 } }  # 1 ea

@@ -1,83 +1,45 @@
 # Plant-room heat-pump supply connection
 
-`REG-S-HP-PLANT` is centred at x=14′8″, y=3′3″. It moves 2′8″ east from the previous
-location, leaving approximately 5′ to the actual extract location. Retain 75 cfm and the
-existing RH interlock. Aim the double-deflection blades west across the planting. This is
-a distribution intent, not a verified window-wash or throw result.
+Revised 2026-11-12 (owner: sidewall supply over the door, no service hatch). Replaces the
+ceiling boot at x=14'8", y=3'3" with its 12x6 ZD damper, fabricated boot and PVC hatch.
 
-## Parts and dimensioned section
+`REG-S-HP-PLANT`: 75 cfm, a **TRUaire A220V 12X06** (no OBD) high sidewall grille on
+`W-S-C1`'s plant face at y=41", face centre 99 1/8" storey (219 1/8" absolute), throwing
+west down the room. It sits in the clear cripple bay above `D-S-PLANT`'s header: head
+cripples at y=33" and 49" leave 14 1/2", the 12" opening has 1 1/4" each side; header top
+92 1/2", grille face 95 1/4"..103", top-plate underside 105 1/8".
 
-One `REG-T-HP-CEIL-DAMPERED` allowance buys all five items below. The actuator ships with
-the damper; it is neither a second purchase nor a second allowance.
+## Feed
 
-| Item | Specification | Installed band above grille face |
-|---|---|---|
-| Grille | TRUaire **A220V 12X06**, aluminium, white, **without OBD** | face datum |
-| Collar | **TH-HP-PLANT-COLLAR-01**, 26ga galvanized, 12×6 passage | 0–½″ |
-| Damper | Honeywell Home **ZD12X6TZ**, 12×6 nominal, vertical airflow | ½–4½″ |
-| Actuator | Included M847D; conservative 4 1/16″ E-W × 4 31/32″ N-S × 4 41/64″ high box | ½–5 9/64″, west side |
-| End boot | **TH-HP-PLANT-BOOT-01**, 26ga galvanized, 12″ E-W × 10″ N-S × 6″ high | 4½–10½″ |
-| Service hatch | **TH-HP-PLANT-HATCH-01**, matching PVC cover 12×8 over 10×6 clear opening | cover below face plane |
+`DU-S-HP-PLANT`: stock 6" round galvanized, a take-off west off `DU-S-HP-SOUTH-RISE`'s last 2"
+inside `SF-S-DUCT` at the riser's own 99 1/8" centreline, through the soffit's west lining and
+the wall's hall face into the cripple bay, 382 fpm at 75 cfm. The stock 6x12x6 end boot
+(Imperial GV0671, DuctStandard) turns it into the register box. The riser carries 250 =
+`REG-S-HP-STUDY2` 75 + this 75 + 100 to `DU-S-HP-SOUTH`, now a 12" stub capped past the attic
+study's take-off (it used to run 4'4" west over the plant room at 175 cfm).
 
-```text
-WEST                                               EAST
-                 boot, closed west end       10×6 inlet at x=15′2″
- +10½″           ┌─────────────────────┐       ┌── 6″ level approach ──┐
-                 │ turning vane        ├───────┘                       ╲
-  +7½″           │                     │                         rise from x=17′6″
-  +4½″           └───────12×6──────────┘
-                 ┌─────────────────────┐
-    +½″  [motor]─┤ ZD12X6TZ, 4″ body   │
-     0″  hatch   └─────½″ collar────────┘
-                 A220V grille (x=14′8″)
-```
+## Damper and service
 
-The motor is **west**, correcting the initially proposed east position: an east motor
-would conflict with the rising feed. The damper's second dimension is the actuator side.
-The boot's east inlet is full 10×6, centred 7½″ above the grille face. Its outlet is centred
-12×6 downward, with closed side cheeks and a turning vane. Installed dimensions exclude
-slip engagements; the fabricator adds engagement lengths without consuming the stated
-clear passage or raising the assembly. Use sealed, mechanically secured sheet-metal joints.
+The RH interlock is a **6" 24 VAC spring-return damper (EWC 6RSD class, not read)** in the
+box's collar behind the grille, reached by pulling the grille, the way the extract's 4" damper
+is reached by pulling its valve. **There is no hatch**: nothing is opened in the liner, and
+the ceiling's membrane has no penetration for this terminal. What the model does not show:
+the damper's body length and actuator size (confirm on the submittal), and whether a hand
+reaches the actuator through a 12x6 opening in a 5 1/2" cavity. If it does not, the fallback is
+the same damper at the take-off inside the soffit with a 12x12 access panel in the hall
+soffit's underside, which is not drawn.
 
-The feed remains at its existing elevation across the x=18′ bearing line. It starts
-rising at x=17′6″ and finishes at x=15′8″, followed by a 6″ level approach to the boot. The
-last elevation is derived from the resolved grille face, not copied from an absolute Z.
-The engine checks inlet centre, section, approach direction and a level mouth independently
-of its legacy implicit-boot allowance.
+## Humid-room seal
 
-The current cavity is z=228⅛–240″ absolute; the grille face resolves to approximately
-229.12″. The boot top is approximately 239.62″, leaving **about ⅜″ below the deck**.
-The two approximately 14° offset bends remain fabricated fittings; the fitting-pattern
-check correctly leaves their throat/shop detail UNKNOWN pending the fabricator's drawing.
-These are close design clearances: do not add unmodeled top flanges, insulation or hangers
-in that margin. Support the boot and damper from the adjacent joists, not from the PVC
-liner. No joist cuts are authorized. Confirm delivered frame, seams and supports before
-fabrication; the geometry is an envelope, not a fabrication tolerance certificate.
+Flanged box, flange taped with butyl to the Class I membrane, mastic round the collar, the
+3/4" furring and PVC panel cut to the box (the extract boot's detail, `plan/mep_erv_l2.py`).
+The duct itself is behind the membrane, on the dry hall side.
 
-## Service and humid-room seal
+## Throw
 
-The grille opening alone cannot service the attached side actuator. Provide the separate
-hatch at **x=13′4″, y=3′3″**, in the same joist bay. Its matching ½″ PVC screw-fixed cover
-is 12×8; the fixed flanged curb has a 10×6 clear passage, a closed-cell EPDM compression
-gasket and stainless captive screws. Seal the membrane continuously to the fixed curb
-and to the grille collar's fixed perimeter. Neither service operation should peel a
-membrane seal. Seal all duct seams against humid room air.
+Not catalogued: no throw for the A220V at 12x6 is recorded in this house's notes, and none was
+read, so none is claimed. Core velocity at the 12x6 nominal opening is 150 fpm. The far wall is 17' off;
+verify the vane setting on site against the plants and the south glass. Do not aim it at
+the door.
 
-1. Isolate the 24 VAC supply; remove the grille and the gasketed hatch cover.
-2. Reach through the hatch to disconnect wiring and release the actuator from its shaft.
-   Withdraw it 6″ west, then lower it through the hatch. The modeled withdrawal corridor
-   and lowering envelope clear framing, other services and fixtures; the detached motor's
-   plan envelope fits inside the 10×6 clear opening.
-3. Support the damper, release its accessible internal retaining screws and removable
-   collar, and lower the damper through the 12×6 grille opening. Its frame is nominally
-   5/32″ undersize per the ZD submittal. The boot stays supported above.
-4. Reassemble, restore the compression gaskets, verify the seal and interlock, and
-   rebalance to 75 cfm. Keep the actuator, wiring and both withdrawal paths unobstructed.
-
-The model checks the motor box, blade envelope and removal corridors. Tool access,
-delivered hardware and hand reach still require a physical dry fit before the liner is
-closed. Do not label the assembly fabrication-released on the strength of envelope checks.
-
-Sources: [TRUaire A220 family](https://rectorseal.com/hvac/a220-adjustable-double-deflection/),
-[Resideo ZD specifications](https://customer.resideo.com/resources/Techlit/TechLitDocuments/33-00000s/33-00264.pdf),
-[M847D dimension drawing](https://customer.resideo.com/resources/Techlit/TechLitDocuments/68-0000s/68-0247.pdf).
+Sources: [TRUaire A220 family](https://rectorseal.com/hvac/a220-adjustable-double-deflection/).

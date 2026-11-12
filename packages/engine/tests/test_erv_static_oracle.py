@@ -395,7 +395,8 @@ def test_the_system_1_trunks_are_not_pulled_into_the_ventilators_budget(
     read. Grading them here would report a gap in a system this check has no business
     grading. A run that DOES state a material and matches no product row stays in."""
     messages = " ".join(f.message for f in _findings(catlin_model_ro))
-    for tag in ("DU-S-HP-SUP", "DU-S-HP-RET", "DU-S-HP-SOUTH", "DU-S-HP-SUITE"):
+    for tag in ("DU-S-HP-SUP", "DU-S-HP-RET", "DU-S-HP-SOUTH", "DU-S-HP-SUITE",
+                "DU-S-HP-PLANT"):
         assert tag not in messages
 
 

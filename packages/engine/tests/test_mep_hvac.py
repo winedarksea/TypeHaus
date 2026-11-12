@@ -295,8 +295,9 @@ def test_study_sidewall_boot_connects_and_clears_soffit_framing(catlin_plan, cat
     assert register.mount.kind.value == "wall"
     assert register.design_cfm == 75
     assert branch.design_cfm == 75
-    assert bay.design_cfm == 175
-    assert riser.design_cfm == branch.design_cfm + bay.design_cfm
+    plant = next(d for d in model.ducts if d.tag == "DU-S-HP-PLANT")
+    assert bay.design_cfm == 100  # the attic desk only; the plant room leaves west
+    assert riser.design_cfm == branch.design_cfm + plant.design_cfm + bay.design_cfm
     assert branch.diameter_m == pytest.approx(inch(6).meters)
     assert branch.path[-1] == pytest.approx(grille.position)
     assert branch.z_m[0] == pytest.approx(riser.z_m[0])
@@ -307,7 +308,7 @@ def test_study_sidewall_boot_connects_and_clears_soffit_framing(catlin_plan, cat
     # Bay-centred between FS-ATTIC joists since 2026-10-31: 1" off the axis, over the 10" duct.
     assert LineString(bay.path).distance(Point(attic_boot.position)) < bay.width_m / 2
     assert Polygon(room.clear_face).covers(Polygon(grille.footprint))
-    # The plant supply now ends at its raised boot east of the east window.
+    # The bay run is a stub capped just past the attic desk's take-off.
     assert bay.length_m < inch(54).meters
     assert not bay.conflicts
 

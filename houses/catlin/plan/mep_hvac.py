@@ -250,38 +250,21 @@ DUCTS_HVAC_SECOND = [
             path=(pt(ft(19, 4), ft(14, 8.875)), pt(ft(16, 6), ft(14, 8.875))),
             width=inch(10), depth=inch(8), routing=DuctRouting.EXPOSED,
             start_elevation=inch(100.125), end_elevation=inch(100.125), design_cfm=175, material="galvanized"),
-    # The plant room and attic study share FS-ATTIC's y=3'-3" I-joist bay.
-    # RM-S-STUDY2 takes 75 cfm from the soffit leg below before it rises; this
-    # bay run carries the remaining 175 cfm west across the x=18' bearing line.
-    #
-    # JOIST_BAY and not CHASE because the alternative — running west along the attic floor —
-    # cannot get past W-A-C1/C1B, the x=18' bearing wall RB-HOUSE sits on, which does not
-    # open up. Inside the bay the duct passes UNDER that wall's bottom plate;
-    # mep.duct_joist_bay reports the bearing-line crossing as a fire-blocking note
-    # (R302.11), not a conflict. That note is the regression canary for this whole branch
-    # and it requires the run stay filed on the `second` storey.
-    #
-    # 10x6/175 cfm: REG-A-HP-STUDY is a floor boot at x=18'-10", fed by DU-S-HP-STUDY-BOOT.
-    # The riser still receives 250 cfm (75 + 75 + 100); after the 75 cfm sidewall
-    # take-off, 175 rises into this bay. 420 fpm before the attic boot, then 180 fpm
-    # to REG-S-HP-PLANT. The section remains 10x6 to match the riser and fits the
-    # 13 1/2" clear bay and 11 7/8" I-joist depth.
-    #
-    # The riser lands at x=19'-6"; the entire bay run now travels west from there.
+    # The attic study's feed: the last 100 cfm of the riser, in FS-ATTIC's y=3'-3" I-joist bay.
+    # RM-S-STUDY2 (75, east) and RM-S-PLANT (75, west, DU-S-HP-PLANT) leave the riser inside
+    # SF-S-DUCT before it rises; this stub carries 100 cfm to DU-S-HP-STUDY-BOOT's take-off at
+    # x=18'-10" and is capped 4" past it (2026-11-12: it used to run on 4'-4" west across the
+    # x=18' bearing line to a ceiling boot over the plant room, 175 cfm). It no longer crosses
+    # W-A-C1, so mep.duct_joist_bay no longer notes an R302.11 crossing here.
     # Manual D App. A13 calls a take-off this close to a supply plenum a noise defect; it is
     # mitigated by turning vanes at the riser, a lined plenum and first 5 ft, and a balancing
     # damper, and the 18x8 trunk was chosen partly so the take-off could sit further
-    # downstream than a 14x8 would have allowed.
-    #
-    # Rise only west of the x=18' bearing line; final elevation follows the terminal's
-    # resolved ceiling face and inlet. The boot begins at x=15'-2", grille at 14'-8".
-    # The attic study still takes 100 cfm from this branch before its 75 cfm plant tail.
+    # downstream than a 14x8 would have allowed. 10x6 at 100 cfm is 240 fpm; it fits the
+    # 13 1/2" clear bay and 11 7/8" I-joist depth.
     DuctRun(uid="NYRX7TBEGH", tag="DU-S-HP-SOUTH", system=DuctSystem.SUPPLY,
-            path=(pt(ft(19, 6), ft(3, 3)), pt(ft(17, 6), ft(3, 3)),
-                  pt(ft(15, 2), ft(3, 3))),
+            path=(pt(ft(19, 6), ft(3, 3)), pt(ft(18, 6), ft(3, 3))),
             width=inch(10), depth=inch(6), routing=DuctRouting.JOIST_BAY,
-            end_terminal_ref="REG-S-HP-PLANT",
-            floor_ref="FS-ATTIC", design_cfm=175, material="galvanized"),
+            floor_ref="FS-ATTIC", design_cfm=100, material="galvanized"),
     # THE RISER — a repeated plan point at two elevations is the vertical leg, the idiom
     # DU-S-ERV-HP-FEED's drop already uses.
     #
@@ -330,6 +313,16 @@ DUCTS_HVAC_SECOND = [
             elevations=(inch(99.125), inch(99.125), inch(111.125)),
             width=inch(10), depth=inch(6), routing=DuctRouting.SOFFIT,
             soffit_ref="SF-S-DUCT", design_cfm=250, material="galvanized"),
+    # RM-S-PLANT's supply (2026-11-12): a 6" round branch west off the riser's last 2" at the
+    # riser's own centreline (99 1/8"), through SF-S-DUCT's west lining and W-S-C1 above D-S-PLANT's
+    # header, into REG-S-HP-PLANT's box at y=41", the middle of the 14 1/2" clear bay between
+    # the head cripples at y=33" and 49" (header top 92 1/2", the 6" duct spans 96 1/8"..102 1/8",
+    # plate underside 105 1/8"). 382 fpm at 75 cfm. EXPOSED like DU-S-HP-STUDY2, its mirror.
+    DuctRun(uid="7HJXQ8KR61", tag="DU-S-HP-PLANT", system=DuctSystem.SUPPLY,
+            path=(pt(ft(19, 6), inch(41)), pt(inch(212), inch(41))),
+            elevations=(inch(99.125), inch(99.125)),
+            diameter=inch(6), routing=DuctRouting.EXPOSED,
+            material="galvanized", design_cfm=75),
     # DU-S-ERV-HP-FEED is in plan/mep_erv_l3.py: it comes off the attic sub-manifold and
     # ends in EQ-S-ERV-MIX on the attic deck; it never enters SF-S-DUCT. DU-S-PLANT-EXH is DU-M-ERV-R-PLANT there,
     # on the LEVEL-2 manifold, running in FS-S-WEST's open-web trusses and rising inside

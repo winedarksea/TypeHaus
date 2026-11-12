@@ -234,8 +234,6 @@ DUCT_STANDARD = [
                         product_ref="PROD-DUCT-BOOT-12X6X6", source=_IMPERIAL),
             DuctPartRow(kind="boot", size="6in", branch="8x6", fabricated=True,
                         source="no 8 x 6 x 6 boot stocked by Imperial; shop-fabricated"),
-            DuctPartRow(kind="boot", size="10x6", branch="10x6", integral=True,
-                        source="the dampered ceiling assembly's own boot"),
             DuctPartRow(kind="boot", size="10x6", branch="12x6", fabricated=True,
                         source="top take-off register boot on the trunk, shop-fabricated"),
             DuctPartRow(kind="boot", size="10x8", branch="12x6", fabricated=True,
