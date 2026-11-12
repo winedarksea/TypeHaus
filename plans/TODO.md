@@ -7,6 +7,9 @@ We generally want exact products specified (or standard/commodity sizes) so we c
 Our general goals are decent longevity and quality at a reasonable price, avoiding premium items unless clearly a major improvement for our needs.
 Note that many of the pinned decisions in the code base here aren't as fixed as they sometimes claim, the "fixed" decisions were usually fixed in a narrower context, and can be changed for sufficiently good reasons.
 
++X: east, +Y: north, +Z: vertical/up. Will need to support rotating the house off axis in
+the future.
+
 ## Needs your decision
 
 - **Budget policy (pricing review 2026-10-29):** `site-general-conditions` is $35–80k on an
@@ -97,13 +100,6 @@ allowance.)
 
 ### Performance / energy follow-ups
 
-- **Compare the ERV/air-handler interlock's annual fan energy with dedicated ERV supplies.**
-  `EQ-B-ERV.blower_interlock_ref` calls `EQ-S-HP1-AH` so ventilation reaches remote rooms
-  while the heat pump is off (`houses/catlin/plan/mep_erv_l3.py`). Measure incremental
-  ventilation-only watts and annual runtime, then price a balanced dedicated supply
-  alternative. Preserve room delivery and backdraft protection. `mep.erv_blower_interlock`
-  grades the present arrangement but does not compare operating energy or lifecycle cost.
-
 - **PV residue after the R324.6 re-lay** (18 x Aptos DNA-108-BF10-410W bifacial, portrait, one
   row per plane, 18.0" hull ridge setback, 36" north-rake pathway; `code.R324_rooftop_pv_access`
   passes). Published PVKIT grab-capacity lookup is complete (EdgeGrab 353 lbf / MidGrab 861 lbf;
@@ -114,42 +110,18 @@ allowance.)
   R324 text is read off [MN DLI's sheet](https://www.dli.mn.gov/sites/default/files/pdf/fs_res_solar.pdf); confirm with St Paul DSI.
   `plans/cost-options.md` lines 94 and 402 still say 5.28 kW.
 
-### Structural/framing residuals
+### Schema cleanup
 
-- **Four matchers share one arithmetic but still answer at three tolerances.**
-  `platform._collinear_overlap`, `stacking._axis_match`, `construction_geometry._stack_overlap`
-  and `layout_lines._collinear` all route through `layout_lines.collinear_overlap` since
-  2026-09-20, so the arithmetic is written once. Unifying the TOLERANCES is not a mechanical
-  edit: `layout_lines` measures on the datum face and `_axis_match` on the raw node axis, and
-  they differ by 43.8mm (basement) / 57.0mm (garage) — 13 stack pairs stack in one pass and
-  not the other (`W-B-S1`->`W-M-S1` + 8 garage walls). All under-framed-wall pours, so nothing
-  reads the difference today. The two endpoint formulations differ too and are preserved
-  behind `both_ends=`.
-
-### Schema gaps found during selections/fireplace passes
-
-- **No `Lintel` element type.** A `Beam` stands in, and its `size` is a free string.
 - **`ResolvedRoom.head_limited_area_m2` and `room_area.countable_floor` are two derivations**
-  of R304.3's countable floor; `resolve/roof_geometry` should return the polygon both read.
+  of R304.3's countable floor (same helpers, so drift risk is low); `resolve/roof_geometry`
+  should return the polygon both read.
+
+### Someday (low value)
+
 - **Derive a fixture-supplied box** (Bantam's JB-0501) so SCONCE-STAIR can state its canopy.
-- **R502.10.1's single-member header allowance is sawn-lumber only, deliberately** — an
-  I-joist/floor-truss deck would need a manufacturer's hung-header table this engine doesn't
-  have, so catlin (all I-joist/floor-truss decks) sees no saving from it. **Still open:**
-  nothing grades a single-member header against a span table at all —
-  `structural.floor_opening_header` only reports past the prescriptive 8' ceiling.
-- **Nothing grades pipe SUPPORT spacing, and the profile now says so out loud.** `PipeRun`
-  carries no support, hanger or guide field, so there is no spacing to measure. The governing
-  rule in Minnesota is **UPC Table 313.3 via Minn. R. 4714.0313**, which Minnesota reprints
-  amended: hubless cast iron at every other joint and every joint on a run over 4 ft, and
-  Schedule 40 PVC with mid-story guides plus a 30 ft expansion interval against the new
-  Minnesota-only Table 313.3.1. Building the check is a feature — a `support_spacing_in` on
-  `PipeRun` plus a `mep.pipe_support` reading the material off the run — and is not needed to
-  make the permit story honest.
-
-## Current Orientation
-
-+X: east, +Y: north, +Z: vertical/up. Will need to support rotating the house off axis in
-the future.
+- **Pipe support spacing is ungraded** (UPC Table 313.3 via Minn. R. 4714.0313, plus MN Table
+  313.3.1); the profile says so. Needs a `support_spacing_in` on `PipeRun` and a
+  `mep.pipe_support` check. Field-inspected, not a permit gap.
 
 ## Questions
 
@@ -189,6 +161,7 @@ the future.
 - W-BW-SCREEN's shear role is already redundant with the garage path (graded 100%). Relaxing its 4″ edge nailing needs the reviewer to accept `canopy_garage_diaphragm.md`'s 'garage takes the whole load'.
 - Plan limited mobility bathroom use on the main floor. Looks like full wheelchair clearance won't work, but look what we can add to make limited mobility practical there. Perhaps a vertical grab bar between the toilet and the tub, serving both.
 - Plant-room reservoir (2026-11-11): manual-fill tank, two independently timed shelf-pot circuits, one packaged wired WaterWatcher cutoff and automatic M8000-NO/RIBU1C low-water permission; shared geometry/BOM and 11.75-gal spill budget updated. Itemized provisional hardware $1,026.61 against $1,200 target/$1,500 ceiling. Still open: WaterWatcher revision/humidity/load/recovery qualification, commodity supplier SKUs/quotes and NPT/NPSM sealing interface, plumber-approved removable fill, supply-sizing basis, physical containment, electrical/hydraulic commissioning and ten-day trial. See `houses/catlin/notes/plant_reservoir.md` and its procurement CSV.
+- Plant-room reservoir: close WaterWatcher qualification, exact supplier SKUs/quotes and NPT/NPSM adapter seals before purchasing. Itemized estimate $1,026.61; target $1,200 plus $300 contingency under $1,500. Confirm attended removable potable filling and complete commissioning/ten-day trial. [Reservoir note](../houses/catlin/notes/plant_reservoir.md).
 - Maybe add a lighting view to the UI (lights generate cast lighting effect, background otherwise goes to full shadow/black)
 - Geometry review round 2 (2026-11-05): [report](geometry-review/REPORT.md) §1 ranks the open escalations; detail in `geometry-review/2026-11-04/adjudicated/C1..C5.md`. 0 FAIL kept. Open, by rank:
   - [ ] `D-B-SUNKEN` band header (structural project): load takedown for the stacked D-S-BALCONY/D-M-PORCH jamb packs, their bearing interfaces, LVL ply fastening, and the edge I-joist filler/backer connections (`notes/sunken_door_band_header.md` §4).
@@ -287,14 +260,12 @@ the future.
 - [ ] Roof N Mini wind-clamp design: check applicable product revision/design basis, corner-zone uplift demand and panel/fastener load path using the published Image II 24 ga test data. Test-data lookup is complete; clamp count and omission at the ColorGard corner still need wind justification.
 - The house has four grounding rods, which might be overkill?
 - Eave and gutter hardware: Select the gutter bracket and outlet, and finish the splice, fastener, and sealant details. The eave sealant product and its compatibility with the roof and membrane also need confirmation. [Eave detail (line 153)](/Users/colincatlin/Documents-NoCloud/TypeHaus/houses/catlin/notes/roof_wall_eave_detail.md:153)
-- Plant-room reservoir: close WaterWatcher qualification, exact supplier SKUs/quotes and NPT/NPSM adapter seals before purchasing. Itemized estimate $1,026.61; target $1,200 plus $300 contingency under $1,500. Confirm attended removable potable filling and complete commissioning/ten-day trial. [Reservoir note](../houses/catlin/notes/plant_reservoir.md).
 - Interior selections: Remaining checks include the Aquia IV height suffix, SP bowl projection, Delta stainless-stock availability, the neo-angle shower’s door opening, and whether the studio wet bar needs a stainless bowl. Bath 2’s selected surface colors still need physical-chip checks. [Interior selections (line 336)](/Users/colincatlin/Documents-NoCloud/TypeHaus/houses/catlin/notes/interior_selections.md:336)
 - Other order confirmations: The Williams railing panel SKU is inferred; the Breezeway guard package, Simpson HHUS410 fastener/coating, and titanium handrail fittings still need product or order details. [Construction holds (line 29)](/Users/colincatlin/Documents-NoCloud/TypeHaus/houses/catlin/notes/construction_holds.md:29)
 - Replace the Custom foundation-coating color: stock Concrete Grey preserves the coating system if you accept the color change
 - Attic suite simplified to unfinished space. Done 2026-11-11: the bedroom count (RM-A-STUDIO is `Occupancy.HOBBY`, a craft room, so R403.5 drops 15 cfm) and a finished-area report that already leaves out RM-A-EAST-UNFIN and RM-A-POCKET (4,021 sf finished vs 4,898 CFA). Still open, if wanted: take the suite itself out of the finished area (leaving just the small attic study), although likely still keeping an ERV terminal of some sort in the attic suite, and likely still basic rough in stubs for plumbing so we can realize this design later. We would still want to keep the current products used for it in the library, and a clear set of notes so we could swap these items into the design easily.
 - Try to keep most interior doors as 1/2" factory undercut or privacy doors where decided
 - Shower in sauna?
-- Plant room pressure: it runs about 70 cfm positive (75 cfm in, 5 cfm extracted) against its neutral-to-negative design.
 
 # Project Management
 

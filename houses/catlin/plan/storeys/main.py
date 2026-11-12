@@ -2182,13 +2182,10 @@ BEAMS = [
     # ** WHY A BEAM AND NOT A MASONRY FIELD. ** There is no lintel element type in this
     # engine and FIREPLACE_BRICK_WYTHE carries no MasonrySpec, so the choice was a Beam or a
     # priced allowance. A Beam is the honest one: it has two ends, a section, a span and a
-    # place in space, which is everything a lintel is. `size` is a free string, so "3.5x3.5"
-    # is the ANGLE'S BOUNDING BOX — `resolve/framing/profiles.cross_section` parses that and
-    # only that (a "L3-1/2x3-1/2x1/4" or a trailing " STEEL" both fall through to the 1.5x5.5
-    # rectangle silently, which is the trap here). The piece is an L3-1/2 x 3-1/2 x 1/4 A36
-    # hot-dip galvanised angle; the drawn solid is therefore ~2.7x the steel actually there,
-    # and the takeoff will bill it as a 3 1/2" square stick. ** THAT OVER-BILL IS KNOWN AND
-    # IS THE PRICE OF MODELLING IT AT ALL ** — see plans/TODO.md.
+    # place in space, which is everything a lintel is. `size="L3.5x3.5x0.25"` is the AISC
+    # decimal spelling `profiles.cross_section` parses as an angle (the leading L is the
+    # tell; "L3-1/2x..." would fall through to a rectangle). It bills per LF from
+    # `prices.toml [steel_members]`. The piece is an L3-1/2 x 3-1/2 x 1/4 A36 HDG angle.
     #
     # ** SPAN AND BEARING. ** N-M-FIRE-JS-S to N-M-FIRE-JN-N is the whole 45 1/2" panel, so
     # the angle runs end to end with 8" of bearing on each jamb pier — the piers ARE the

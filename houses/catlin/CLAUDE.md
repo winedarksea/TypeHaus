@@ -1478,17 +1478,12 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     `FIREPLACE_BRICK_WYTHE` carries no `MasonrySpec`, so a `Beam` (free-string `size`, two
     ends, a span) is the closest honest schema. It runs `N-M-FIRE-JS-S`→`N-M-FIRE-JN-N`, the
     whole 45 1/2" panel, so 8" of bearing lands on each jamb pier and no node had to be
-    invented; `top_elevation=inch(49.0625)` puts the horizontal leg on the jamb tops at
-    45 9/16" with the vertical leg in `W-M-FIRE-HEAD`'s bed joints. Piece is an
-    **L3-1/2 x 3-1/2 x 1/4 A36 HDG angle**, named in `engineering_note` (a `Beam` has no
-    `source` field). **`size="3.5x3.5"` is the angle's BOUNDING BOX and it is the trap here**:
-    `cross_section` parses that and only that — `"L3-1/2x3-1/2x1/4"` or a trailing `" STEEL"`
-    both fall silently to the 1.5x5.5 rectangle. The drawn solid is ~2.7x the steel. It billed
-    at **$0** until 2026-09-20 — a `Beam` reaches the estimate through its `assembly` as a
-    `beam · <assembly>` cubic-yard row, this one has none, and a volume rate is the wrong
-    shape for an angle anyway. It has a row of its own now: `prices.toml`'s `[steel_members]`,
-    keyed on the AISC section string and priced by the LINEAL FOOT, with `takeoff/steel.py`
-    taking these members OUT of `structural_solids` so nothing bills twice.
+    invented; `top_elevation` puts the horizontal leg on the jamb tops at the opening head,
+    with the vertical leg in `W-M-FIRE-HEAD`'s bed joints. Piece is an
+    **L3-1/2 x 3-1/2 x 1/4 A36 HDG angle**, `size="L3.5x3.5x0.25"`: the AISC decimal spelling
+    `cross_section` parses as an angle (`"L3-1/2x..."` falls through to a rectangle). It bills
+    by the LINEAL FOOT from `prices.toml`'s `[steel_members]`, keyed on that section string;
+    `takeoff/steel.py` takes it OUT of `structural_solids` so nothing bills twice.
   - `FO-M-FIRE` is **RETIRED (2026-09-19)** — see the pier split above. Its two live engine
     traps are salvaged onto `FO-M-ERV-OA`'s note. The first (a trimmer ply centred on the
     opening edge, half inside the hole) is fixed since 2026-09-25 — framing stands outboard
@@ -1896,6 +1891,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       `DU-S-HP-BED3-RET` and `DU-S-ERV-HP-FEED` all end in it, so fresh air mixes upstream
       of coil and heat kit. `DU-A-HP1-RET-NECK` is 20x16 and that return opening is
       INFERRED; measure the delivered cabinet before the neck is built.
+    - **The ERV interlock stays; no dedicated upper ERV supplies (2026-11-12).** Ventilation-only
+      blower energy is roughly $25–70/yr, against thousands for a second duct network.
+      Commissioning: set the AH's fan-only speed to the lowest that still meets room airflows.
     - **`EQ-A-HP1-SUP-BOX`** (22 1/2 x 14 x 23 shop box; `PLENUM`, a passive box walks pass through)
       takes the published 11 5/8 x 16 3/4 supply aperture and drops a 12x12
       (`DU-S-HP-SUP-DROP`) as a top take-off into the 18x8 trunk in `SF-S-DUCT`, 6" from the

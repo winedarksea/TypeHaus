@@ -51,8 +51,8 @@ from typehaus.quantities import ft, inch
 # ``_axis_match`` measures on the raw **node** axis. On concrete under wood those differ by
 # more than ``_TOL`` — 43.8 mm at catlin's basement, 57.0 mm at the garage — so 13 pours-
 # under-framed-walls stack in one pass and not the other. Pours frame no studs, so nothing
-# reads the difference today; ``plans/TODO.md`` logs the wider "four matchers, three
-# tolerances" problem, and warns that unifying them is not a mechanical edit.
+# reads the difference today. Unifying the matchers' tolerances is not a mechanical edit;
+# re-check this before anything reads stacking on a pour.
 _TOL = inch(0.5).meters
 _MIN_OVERLAP = ft(2).meters
 # Two walls of one storey chain when they share a node and run the same way. The node is
