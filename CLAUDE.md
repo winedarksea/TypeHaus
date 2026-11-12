@@ -84,6 +84,17 @@ a release or for exhaustive local verification.
   reducers, collar dampers, boots, port kits and hangers into `ResolvedModel.duct_parts` /
   `duct_supports`; elbows stay `mep_fittings` records keyed off the standard's angles (rect W×D).
   Billed in `[duct_parts]`/`[duct_supports]`/`[duct_sealing]`, printed on M-601.
+  An elbow's R is `DuctElbowRow.radius_m()` (centre-to-face, else `radius_diameters` × D); a
+  rectangular turn is the standard's shop-made `rect_elbow` (r/W × the side in the turn's plane,
+  `resolve/rect_elbows.py`), else a coverage gap (#124). An in-line damper is a station on its
+  run (`DuctRun.inline_dampers`), charged its row's fully-open `loss_c` (#128).
+- **A register reaches its run in 3D; a manifold needs a feed** (decision #126):
+  `checks/mep/register_reach.py` (36" in plan, 4" in z of the section) and `manifold_feed.py`. A
+  plain ceiling neck, round or rectangular, takes a drop from above and must match the arriving
+  section (`resolve/terminal_drops.py`, #129). A passive shop box is `EquipmentKind.PLENUM`, one
+  with a damper `MIXING_BOX` (#125); a blocking `RunBand` is boxed by half-width and half-height.
+- **Condensate overflow is authored on the unit** (decision #127): `Equipment.secondary_drain_pan`
+  / `overflow_drain_ref` / `float_switch_ref`, graded by `mep.condensate_overflow` (IMC 307.2.3).
 - **A wall header is chosen from its host's role and derived load** (decision #116):
   `resolve/header_loads.py` walks `bearing_refs` and the walls above; a BEARING host takes the
   smallest IRC 2018 R602.7(1)/(2) row (`resolve/framing/header_tables.py`, note f's 0.70 where
