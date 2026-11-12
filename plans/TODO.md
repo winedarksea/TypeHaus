@@ -121,12 +121,6 @@ allowance.)
 
 ### Structural/framing residuals
 
-- **Court stems as a two-way plate (owner option, 2026-11-02).** A screening PyNite MITC4 plate
-  model (±5%) of W2/S/E2 with W1's braced top reads base moments 0.50–0.51× the cantilever
-  `retaining_wall` grades, enough for `#5 @ 18"` (~295 lb HDG, $380–640 below today's
-  `#5 @ 10"`). Waits on: an engine calc for a two-way wall (none exists), a PE, and the corner
-  horizontals going borderline (0.148 vs 0.15 in²/ft) with a rotating footing. Free body §6c.
-
 - **Four matchers share one arithmetic but still answer at three tolerances.**
   `platform._collinear_overlap`, `stacking._axis_match`, `construction_geometry._stack_overlap`
   and `layout_lines._collinear` all route through `layout_lines.collinear_overlap` since
@@ -211,7 +205,7 @@ the future.
 - Perhaps mount the espalier posts on sonotubes to increase the lifespan of the posts.
 - W-BW-SCREEN's shear role is already redundant with the garage path (graded 100%). Relaxing its 4″ edge nailing needs the reviewer to accept `canopy_garage_diaphragm.md`'s 'garage takes the whole load'.
 - Plan limited mobility bathroom use on the main floor. Looks like full wheelchair clearance won't work, but look what we can add to make limited mobility practical there. Perhaps a vertical grab bar between the toilet and the tub, serving both.
-- Plant-room reservoir (2026-11-10): shared 3D tank/rack/wired sensors, two-zone product BOM and water-budget tests implemented; `houses/catlin/notes/plant_reservoir.md`. Still open before fabrication/use: MA252 potable suitability and actual bracket/air-gap travel, supplier quotes/commodity SKUs within $1,000 (allowance estimate $930.42), WSFU sizing basis, both-detector spill coverage, electrical/hydraulic commissioning and a ten-day closed-tap trial.
+- Plant-room reservoir (2026-11-11): manual-fill tank, two independently timed shelf-pot circuits, one packaged wired WaterWatcher cutoff and automatic M8000-NO/RIBU1C low-water permission; shared geometry/BOM and 11.75-gal spill budget updated. Itemized provisional hardware $1,026.61 against $1,200 target/$1,500 ceiling. Still open: WaterWatcher revision/humidity/load/recovery qualification, commodity supplier SKUs/quotes and NPT/NPSM sealing interface, plumber-approved removable fill, supply-sizing basis, physical containment, electrical/hydraulic commissioning and ten-day trial. See `houses/catlin/notes/plant_reservoir.md` and its procurement CSV.
 - Maybe add a lighting view to the UI (lights generate cast lighting effect, background otherwise goes to full shadow/black)
 - Geometry review round 2 (2026-11-05): [report](geometry-review/REPORT.md) §1 ranks the open escalations; detail in `geometry-review/2026-11-04/adjudicated/C1..C5.md`. 0 FAIL kept. Open, by rank:
   - [ ] `D-B-SUNKEN` band header (structural project): load takedown for the stacked D-S-BALCONY/D-M-PORCH jamb packs, their bearing interfaces, LVL ply fastening, and the edge I-joist filler/backer connections (`notes/sunken_door_band_header.md` §4).
@@ -312,7 +306,7 @@ the future.
 - [ ] Roof N Mini wind-clamp design: check applicable product revision/design basis, corner-zone uplift demand and panel/fastener load path using the published Image II 24 ga test data. Test-data lookup is complete; clamp count and omission at the ColorGard corner still need wind justification.
 - The house has four grounding rods, which might be overkill?
 - Eave and gutter hardware: Select the gutter bracket and outlet, and finish the splice, fastener, and sealant details. The eave sealant product and its compatibility with the roof and membrane also need confirmation. [Eave detail (line 153)](/Users/colincatlin/Documents-NoCloud/TypeHaus/houses/catlin/notes/roof_wall_eave_detail.md:153)
-- Plant-room reservoir: The BOM exists, but it is not purchase-ready. Confirm the MA252 fill valve’s potable suitability and air-gap geometry, then close exact commodity SKUs and supplier totals within the $1,000 allowance. [Reservoir note (line 200)](/Users/colincatlin/Documents-NoCloud/TypeHaus/houses/catlin/notes/plant_reservoir.md:200)
+- Plant-room reservoir: close WaterWatcher qualification, exact supplier SKUs/quotes and NPT/NPSM adapter seals before purchasing. Itemized estimate $1,026.61; target $1,200 plus $300 contingency under $1,500. Confirm attended removable potable filling and complete commissioning/ten-day trial. [Reservoir note](../houses/catlin/notes/plant_reservoir.md).
 - Interior selections: Remaining checks include the Aquia IV height suffix, SP bowl projection, Delta stainless-stock availability, the neo-angle shower’s door opening, and whether the studio wet bar needs a stainless bowl. Bath 2’s selected surface colors still need physical-chip checks. [Interior selections (line 336)](/Users/colincatlin/Documents-NoCloud/TypeHaus/houses/catlin/notes/interior_selections.md:336)
 - Other order confirmations: The Williams railing panel SKU is inferred; the Breezeway guard package, Simpson HHUS410 fastener/coating, and titanium handrail fittings still need product or order details. [Construction holds (line 29)](/Users/colincatlin/Documents-NoCloud/TypeHaus/houses/catlin/notes/construction_holds.md:29)
 - Radon fan power: the future-fan junction box exists but has no specified supply circuit. The checker can pass based on a nearby box alone. Minnesota requires an actual circuit terminating at the anticipated fan location. [Rule](https://www.revisor.mn.gov/rules/1303.2402/) and we also need to double check how the exterior parts of the vent and the junction boxes are mounted to the siding (perhaps the power box can be mounted above a girt, recessed, then flashed and trimmed cutout in siding, or just surface mount)

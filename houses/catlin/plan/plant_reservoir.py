@@ -3,7 +3,7 @@
 # notes/plant_reservoir.md. Full handle envelope is 18 inches. The rack's east edge is 182",
 # west of the door swing's x>=186" strip. The lid lifts below WIN-S-PLANT4's 32" sill.
 
-from typehaus import Appliance, Mount, MountKind, deg, inch, pt
+from typehaus import Appliance, deg, inch, pt
 
 PLANT_RESERVOIR_PLACED = [
     Appliance(
@@ -28,13 +28,5 @@ PLANT_RESERVOIR_PLACED = [
         type_ref="APPL-PLANT-WIRED-LEAK",
         room="RM-S-PLANT",
         position=pt(inch(166), inch(28.8)),
-    ),
-    Appliance(
-        uid="PLNTFILL01",
-        tag="APPL-S-PLANT-FILL-VALVE",
-        type_ref="APPL-PLANT-FILL-VALVE",
-        room="RM-S-PLANT",
-        position=pt(inch(155), inch(9.75)),
-        mount=Mount(kind=MountKind.FLOOR, elevation=inch(13)),
     ),
 ]

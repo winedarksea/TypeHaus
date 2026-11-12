@@ -1,8 +1,9 @@
 # Leak detectors (2026-11-08)
 
 HA observes; nothing depends on the Zigbee sensors. **Plant-room exception, owner
-2026-11-10:** separate wired FloodStop and WS-1 controls shut down reservoir fill and
-irrigation, with local manual reset. `AL-S-PLANT-LEAK` still only notifies; see
+2026-11-11:** the manually filled reservoir uses one wired WaterWatcher floor probe
+to stop both pump circuits, plus automatic M8000-NO/RIBU1C low-water permission.
+`AL-S-PLANT-LEAK` still only notifies; see
 [reservoir safety and commissioning](plant_reservoir.md).
 
 ## Product
@@ -32,7 +33,7 @@ probe. Why this one:
 | `AL-M-KITCH-LEAK` | RM-M-LIVING | sink base floor, 4 1/2" (cabinet bottom): sink, disposal, dishwasher hoses |
 | `AL-M-BATH1-LEAK`, `AL-M-BATH2-LEAK` | main baths | lav/WC; tub side in BATH2 |
 | `AL-S-BATH1-LEAK`, `AL-S-VANITY-LEAK`, `AL-S-SUITEBATH-LEAK` | second-floor baths | over finished ceilings |
-| `AL-S-PLANT-LEAK` | RM-S-PLANT | 10 gal reservoir: notifications supplement independent wired fill/pump protection |
+| `AL-S-PLANT-LEAK` | RM-S-PLANT | 10 gal reservoir: notifications supplement wired leak cutoff and automatic low-water pump permission |
 | `AL-A-STUBATH-LEAK`, `AL-A-STUDIO-LEAK` | attic | guest bath, studio bar sink |
 
 16 sensors. Instances are in `plan/smart_home.py` (basement, main, second) and

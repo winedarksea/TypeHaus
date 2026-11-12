@@ -16,13 +16,9 @@ class ReservoirGeometry:
     body_diameter_in: float = 15.63
     handle_width_in: float = 18.0
     rim_height_in: float = 17.13
-    installed_height_in: float = 21.0
+    installed_height_in: float = 18.25
     envelope_depth_in: float = 18.0
-    discharge_height_in: float = 19.13
-    discharge_x_in: float = 0.0
-    discharge_y_in: float = 5.75
-    inlet_height_in: float = 19.63
-    # Bracket, taper, wall and water-line heights are illustrative pending delivered parts.
+    # Taper, wall and water-line heights are illustrative pending delivered parts.
     bottom_radius_share: float = 0.82
     wall_thickness_in: float = 0.12
     normal_water_height_in: float = 15.0
@@ -44,10 +40,6 @@ class ReservoirWaterBudget:
     plants_per_zone: int = 12
     zone_count: int = 2
     emitter_gallons_per_hour: float = 0.5
-    maximum_fill_gallons_per_minute: float = 0.1
-    # Acceptance limits, not manufacturer response-time claims. Includes water travel.
-    detection_seconds: float = 60.0
-    valve_closure_seconds: float = 15.0
     # Includes both full 50-ft 0.600-inch-ID headers, 100 ft of 0.170-inch-ID outlet
     # tube, suction legs and filter bodies; remeasure if installed lengths increase.
     retained_line_gallons: float = 1.75
@@ -72,13 +64,7 @@ class ReservoirWaterBudget:
 
     @property
     def fault_release_gallons(self) -> float:
-        return (
-            self.nominal_gallons
-            + self.retained_line_gallons
-            + self.maximum_fill_gallons_per_minute
-            * (self.detection_seconds + self.valve_closure_seconds)
-            / 60
-        )
+        return self.nominal_gallons + self.retained_line_gallons
 
     def spill_depth_m(self, floor_area_m2: float, tank_footprint_m2: float) -> float:
         available = floor_area_m2 - tank_footprint_m2 - self.displaced_floor_area_m2

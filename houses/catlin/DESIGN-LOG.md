@@ -8063,3 +8063,30 @@ governed.
     through PS1's top plates.
   - The basement plenums' pass-through loss on riser paths is uncounted (note §9). Charged,
     it would put delivery near 201.8 cfm; that question is the owner's.
+
+## The ERV budget pays the box it passes through; the extract riser only to its tap (2026-11-12, owner)
+
+A review of the shared-runs change left four items. The owner chose to count the basement
+plenum pass-through and look for a fix.
+
+- **Pass-through counted.** Riser air enters and leaves `EQ-B-ERV-MAN-SUP`/`-EXH` through
+  collars on different faces, so it takes the box's full expansion. There is no
+  straight-through term. Every path now pays each plenum its walk passes through
+  (`checks/mep/erv_routes.py`). Charged alone it read 0.483", 201.9 cfm, under 203.0.
+- **Riser segmented.** SUITEBATH's air joins `DU-ERV-RISER-EXH` at the `DU-M-ERV-EXH-FEED`
+  tap and never travels the 15 ft above it. A path now pays a tapped trunk only to its tap.
+  An attic path pays the stretch above at the trunk's flow less the tap's
+  (`checks/mep/erv_segments.py`). This closes §9's 2026-09 IOU in the engine, not just in
+  the note.
+- **Result:** extract via SUITEBATH, **0.433" -> 204.4 cfm** (+1.4); supply 0.401". Note
+  §10.21 has the hand work. Junction losses and extract's riser-collar term (~1 cfm) are
+  still ungraded, so the commissioning reading settles the margin.
+- **Bench damper:** a 4" manual volume damper in the hood's collar, billed as
+  `REG-T-ERV-BENCH-HOOD`'s part. The hood's K goes 6 -> 6.3.
+- **PLANT reducer:** the engine now draws a reducer at a turned joint as the small run's
+  stub, in that run's frame (`resolve/duct_part_solids.py`). The trunk-end reducer no
+  longer reaches back across the y=9'-4" truss (1.9 L -> 0).
+- **Not changed:** PS1's notched bottom plate and cut furring. R602.6.1 governs top plates
+  only and PS1 is non-bearing. The fabricated rectangular elbows stay `fitting_pattern`
+  UNKNOWN (owner): their throat radius comes from a shop drawing.
+

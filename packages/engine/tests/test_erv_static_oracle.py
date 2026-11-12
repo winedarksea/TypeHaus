@@ -261,11 +261,13 @@ def test_the_static_and_the_delivered_flow_are_the_notes(catlin_model_ro) -> Non
     # 2026-11-11: HP-FEED ends on the attic deck, one elbow fewer; 0.430, 204.5 cfm (§10.19).
     # 2026-11-11 later: per-path trunks, extract governs, the trunk's dead end trimmed:
     # 0.42334 - (0.03679 - 0.03503) = 0.4216, 204.9 cfm (note §10.20).
+    # 2026-11-12: the basement box it passes through (+0.06102) and the riser only to its
+    # tap (0.12118 -> 0.07127): 0.43269, 204.4 cfm (note §10.21).
     assert "extract side" in message
-    assert "0.422 in. w.g." in message
+    assert "0.433 in. w.g." in message
     assert "DU-M-ERV-R-SUITEBATH 0.006\"" in message
     assert "DU-M-ERV-EXH-TRUNK 0.035\"" in message
-    assert "delivering 205 cfm" in message
+    assert "delivering 204 cfm" in message
 
 
 def test_sauna_radials_route_through_clear_stud_bays_without_plate_or_duct_conflicts(

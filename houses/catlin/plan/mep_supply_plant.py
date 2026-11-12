@@ -23,12 +23,10 @@ from typehaus import (
 # gasketed to the humid membrane like the room's electrical boxes (notes/plant_room.md).
 # Filed on `main`: project elevations.
 #
-# Reservoir-only fill, owner 2026-11-10: manual stop -> FloodStop -> throttling valve ->
-# mechanical float -> open air -> tank. Wired floor protection stops fill and both pumps;
-# the Zigbee sensor only notifies. See notes/plant_reservoir.md for qualification holds.
-# No drain. Single-release containment is finite; failure of both fill protections is not.
-# The supply run still has no tank `serves` link: no adopted fixture-unit basis has been
-# established. Do not invent a WSFU row to conceal that permit-sizing UNKNOWN.
+# Attended manual fill only (2026-11-11): removable potable tube secured above tank rim,
+# disconnected afterward. The stop remains a separate house service, not a reservoir port.
+# No permanent supply or drain. Supply sizing still has no adopted fixture-unit basis;
+# retain that permit-sizing UNKNOWN rather than inventing a WSFU row.
 PLANT_STUB_MAIN = [
     PipeRun(uid="9R0AYJMJZ4", tag="PR-M-CW-PLANT-STUB", system=PipeSystem.WATER_COLD,
             path=(pt(ft(12, 8), ft(0, 3.25)), pt(ft(12, 11), ft(0, 3.25))),
@@ -43,7 +41,6 @@ PLANT_STUB_DEVICES_SECOND = [
     PipeAccessory(uid="KX282R48FS", tag="PA-S-PLANT-RESERVOIR-STOP", kind=PipeAccessoryKind.SHUTOFF,
                   pipe_ref="PR-M-CW-PLANT-STUB", position=pt(ft(12, 11), ft(0, 3.25)),
                   elevation=inch(14.829), room="RM-S-PLANT", accessible=True,
-                  serves=("APPL-S-PLANT-RESERVOIR",),
                   model='1/2" push x 1/4" compression quarter-turn straight stop, in a recessed box gasketed to the humid membrane'),
 ]
 

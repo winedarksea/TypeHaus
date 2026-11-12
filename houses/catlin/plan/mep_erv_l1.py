@@ -308,9 +308,8 @@ DUCTS_ERV_BASEMENT = [
     # at y=8'-6" (82 1/4"; SAUNA-EXH carries its 6 cfm), east 6" (the hood moved 1" east), then
     # drops to the hood at 5'-6". Side, never the bottom: the sauna's duct sweats and a bottom
     # take-off would drain it into the hood. Both are extract (RETURN joins EXHAUST,
-    # `mep_envelopes.systems_join`). Closing the sauna hatches swings flow to the hood: a 4"
-    # balancing damper belongs 6" off the tee; the engine derives no in-line damper, so none is
-    # drawn or billed.
+    # `mep_envelopes.systems_join`). Closing the sauna hatches swings flow to the hood, so its
+    # 4" balancing damper rides in the hood's collar (REG-T-ERV-BENCH-HOOD's part, billed).
     DuctRun(uid="MTVYDDP43W", tag="DU-B-ERV-R-BENCH", system=DuctSystem.RETURN,
             path=(pt(ft(1, 7), ft(8, 6)), pt(ft(2, 1), ft(8, 6)), pt(ft(2, 1), ft(8, 6))),
             elevations=(inch(82.25), inch(82.25), ft(6, 2)),

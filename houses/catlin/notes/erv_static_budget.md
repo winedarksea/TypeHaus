@@ -29,6 +29,10 @@ is offered for checking, not for deciding.
 > grades against the delivered figure. `mep.erv_static_budget` reports the shortfall against 210 as UNKNOWN and never as
 > a FAIL, for exactly that reason — see §8.
 
+> ⚠ **2026-11-12: A PATH PAYS THE BOX IT PASSES THROUGH, AND A TAPPED TRUNK ONLY TO ITS
+> TAP (§10.21).** Both §9 items are closed in the engine. Extract via SUITEBATH governs at
+> **0.4327 in., 204.4 cfm** against 203.0.
+
 > ⚠ **2026-11-11: A PATH PAYS ONLY THE TRUNKS ON ITS OWN ROUTE (§10.20).** The second
 > conservatism below is retired: `DU-S-ERV-HP-FEED` is a graded path of its own and no
 > basement radial carries a riser. Extract governs at **0.4216 in., 204.9 cfm** against
@@ -204,7 +208,7 @@ K on the **collar** velocity pressure (0.81 Pa at 20 cfm through 4"):
 |---|---|---|---|
 | `REG-T-ERV-SUP` / `-EXH` / `-EXH-WALL` | 5 | plain dampered round diffuser | 4.0 Pa |
 | `REG-T-ERV-SAUNA-SUP` / `-SAUNA-EXH` / `-PLANT-EXH` | 8 | face carries a closable or motorised damper of its own | 6.5 Pa |
-| `REG-T-ERV-BENCH-HOOD` | 6 | fabricated hood — a plenum with a collar | 7.6 Pa at its own 25 cfm |
+| `REG-T-ERV-BENCH-HOOD` | 6.3 | fabricated hood — a plenum with a collar (6) + its balancing damper full open (0.3, §4) since 2026-11-12 | 8.0 Pa at 25 cfm |
 
 Each row is authored as three points scaling Q², so the check interpolates rather than
 re-derives. **A submitted product with a real test curve replaces the three points and
@@ -509,6 +513,10 @@ measured one.
 
 ## 9. What is NOT graded here
 
+- **2026-11-12: the extract riser is GRADED in segments (§10.21).** A path that leaves
+  `DU-ERV-RISER-EXH` at the `DU-M-ERV-EXH-FEED` tap pays it only below the tap; an attic path
+  pays the stretch above at 164 − 119 = 45 cfm (`checks/mep/erv_segments.py`). The 2026-09
+  record follows.
 - **THE EXTRACT RISER'S SEGMENTED FIGURE IS RESTORED (2026-09-20), AND THE SUPPLY RISER'S
   IS STILL WITHDRAWN.** This bullet has been an IOU since the level-2 manifolds were drawn
   with no feed. Half of it is now payable.
@@ -575,7 +583,8 @@ measured one.
   the joint graph from the machine (`checks/mep/erv_routes.py`): PLAY no longer pays the
   riser (25.9 Pa) or `DU-S-ERV-HP-FEED` (15.5 Pa), and the basement extract radials no longer
   pay `DU-ERV-RISER-EXH`/`DU-M-ERV-EXH-FEED`.
-- **A path does not pay the basement plenum it passes THROUGH.** Riser air enters
+- ~~**A path does not pay the basement plenum it passes THROUGH.**~~ **Charged since
+  2026-11-12 (§10.21)**, at the box's §10.6 curve. The 2026-11-11 record: Riser air enters
   `EQ-B-ERV-MAN-SUP` through the same trunk collar the basement radials' air does, and leaves
   `EQ-B-ERV-MAN-EXH` through it; both boxes are worked at 210 cfm for their own radials
   (§10.6) but every level-2 and attic path skips them. Charged, the 15.2 Pa would put extract
@@ -1218,8 +1227,39 @@ read at 4,000: f = 0.04081, VP = 0.0008187 in.;
 in.** Engine: 0.004011.
 
 **Next lever** (not in scope): extract SUITEBATH. Its terminal (11.5 Pa) and the level-2 neck
-(8.1) and trunk (8.7) are the radial-side terms. §9's pass-through bullet is the open question
-that could move the figure the other way.
+(8.1) and trunk (8.7) are the radial-side terms. §9's pass-through bullet is closed by §10.21.
+
+### 10.21 The pass-through box and the tapped riser (2026-11-12)
+
+**Pass-through.** Riser air reaches a basement box through one collar and leaves through
+another on a different face, so it takes the same abrupt expansion the radials' air does
+(§10.6: 14.2 of the box's 15.2 Pa at 210 cfm). A straight-through term is not available.
+`erv_routes` now names every plenum a walk passes THROUGH and the path pays its curve at its
+trunk-collar flow. That is the low side on extract: there the riser's own 6" collar dumps
+164 cfm into the box (~10.8 Pa), then contracts into the 6" trunk at 210 (~8.9 Pa), ~20 Pa.
+Charged alone, SUITEBATH read **0.4826 in., 201.9 cfm**.
+
+**Tapped riser.** `DU-ERV-RISER-EXH` is 33.59 ft with six turns; `DU-M-ERV-EXH-FEED` lands on
+it 15.07 ft from its top, so SUITEBATH's air travels the lower **18.52 ft** with the two 90s
+(stamped, C 0.22) and the two 29.6° bends (adjustable, 0.37 x K 0.444) at 164 cfm:
+
+    V = 164 / 0.19635 = 835.2 fpm;  VP = 0.043493 in.;  Re 42,702;  f = 0.02348
+    friction = 0.02348 x (18.52 / 0.5) x 0.043493 = 0.03783 in.
+    turns    = (2 x 0.22 + 2 x 0.37 x 0.44415) x 0.043493 = 0.7687 x 0.043493 = 0.03343 in.
+    below the tap = 0.07127 in.   (whole run at 164 cfm: 0.12118)
+
+**The governing path, extract via `DU-M-ERV-R-SUITEBATH`:**
+
+    0.42158 + 15.2 / 249.089 - (0.12118 - 0.07127) = 0.42158 + 0.06102 - 0.04991 = 0.43269 in.
+    delivered: 206 - 50 x 0.03269 = 204.4 cfm   (R403.5: 203.0, +1.4)
+
+Engine: 0.432693. Supply via LIVING takes the supply box the same way: 0.3396 + 0.0610 =
+**0.4006 in.**, 0.032 behind extract. An attic extract pays the riser 0.0757 (18.52 ft at 164
++ 15.07 ft at 45) where it paid 0.1212.
+
+**Still not graded:** tee and take-off junction losses anywhere in the system (no
+coefficient is authored), and extract's riser-collar term above the box curve (~5 Pa,
+~1 cfm). Together they are the margin's real risk; the commissioning reading (§8) settles it.
 
 ### 10.5 The thermal penalty of the legs (hand-worked)
 

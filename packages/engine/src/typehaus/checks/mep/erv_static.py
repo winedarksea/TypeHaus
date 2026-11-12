@@ -45,7 +45,6 @@ the two places the graded figure is deliberately conservative.
 
 from __future__ import annotations
 
-
 from typehaus.checks._authoring import advisory, not_applicable, passed, unknown
 from typehaus.checks.mep.erv_landings import (
     direct_landings,
@@ -277,7 +276,8 @@ def _worst_path(ctx: CheckContext, machine_tag: str, elbows: dict[str, int],
                               {landings[duct.tag] for duct in radials})
 
         def chain(tags: list[str], key: str | None = None, legs=trunk_legs,
-                  routes=routes, trunks=trunks) -> tuple[float, list[str]]:
+                  routes=routes, trunks=trunks, by_tag=trunk_by_tag
+                  ) -> tuple[float, list[str]]:
             """The trunks' drops; one on ``key``'s walk only over the stretch it travels."""
             nodes = routes.nodes.get(key, []) if key else []
             total, terms = 0.0, []
@@ -285,7 +285,7 @@ def _worst_path(ctx: CheckContext, machine_tag: str, elbows: dict[str, int],
                 if tag not in legs:
                     continue
                 drop, detail = legs[tag]
-                part = (_stretch_drop(ctx, trunk_by_tag[tag], nodes, trunks)
+                part = (_stretch_drop(ctx, by_tag[tag], nodes, trunks)
                         if ("T", tag) in nodes else None)
                 if part is not None:
                     drop += part[0] - part[1]

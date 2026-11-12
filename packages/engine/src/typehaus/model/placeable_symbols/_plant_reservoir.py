@@ -6,7 +6,7 @@ Outside tank dimensions are published; small fittings and rack equipment are ser
 
 import math
 
-from shapely.geometry import Polygon
+from shapely.geometry import Point
 from shapely.geometry import box as polygon_box
 
 from typehaus.model.placeable_symbols._families import Geometry
@@ -141,16 +141,10 @@ def plant_reservoir(width: float, depth: float, height: float) -> Geometry:
         parts.append(
             _box(sign * 8.75, 0, 15.6, 16.1, 0.5, 2.4, "nordvalla-gray", "reservoir:handle")
         )
-    # A real notch below the free jet: a full disc would block the modeled air gap.
+    # Only top-entry suction needs lid notches; filling is attended with the lid removed.
     radius = G.body_diameter_in / 2 * M_PER_IN
-    notch_angle = math.asin(1.5 * M_PER_IN / radius)
-    angles = [
-        math.pi / 2 + notch_angle + (math.tau - 2 * notch_angle) * i / ROUND_SEGMENTS
-        for i in range(ROUND_SEGMENTS + 1)
-    ]
-    lid_ring = tuple((radius * math.cos(a), radius * math.sin(a)) for a in angles)
-    lid_ring += ((1.5 * M_PER_IN, 5.0 * M_PER_IN), (-1.5 * M_PER_IN, 5.0 * M_PER_IN))
-    lid_outline = Polygon(lid_ring)
+    # Use a circular disc, preserving the suction notches as real mesh openings.
+    lid_outline = Point(0, 0).buffer(radius, quad_segs=ROUND_SEGMENTS // 4)
     for x in (-3, 3):
         lid_outline = lid_outline.difference(
             polygon_box(
@@ -169,20 +163,7 @@ def plant_reservoir(width: float, depth: float, height: float) -> Geometry:
             "reservoir:lid",
         )
     )
-    # The lid stops at the rim; the fill crosses free air outside the removable lid's notch.
-    parts += [
-        _box(0, 7.4, 17.2, G.installed_height_in, 0.65, 0.4, "metal", "reservoir:bracket"),
-        _box(0, 6.5, 19.63, 20.0, 1.0, 2.2, "metal", "reservoir:float-valve"),
-        _box(0, 2.8, 14.5, 15.4, 2.5, 2, "appliance-white", "reservoir:float"),
-        _box(-5.4, 1, 1.2, 2.5, 1, 1, "appliance-white", "reservoir:low-water"),
-    ]
-    parts += _tube(
-        ((0, 6.5, 19.8), (0, G.discharge_y_in, 19.8), (0, G.discharge_y_in, G.discharge_height_in)),
-        "reservoir:discharge",
-        "faucet",
-    )
-    parts += _tube(((0, 6.5, 19.63), (6, 7, 19.63), (6, 7, 14)), "reservoir:fill")
-    parts += _tube(((0, 6.5, 19.63), (0, 2.8, 15)), "reservoir:float-arm", "metal")
+    parts.append(_box(-5.4, 1, 1.2, 2.5, 1, 1, "appliance-white", "reservoir:low-water"))
     for x in (-3, 3):
         parts += _tube(((x, -4, 1.8), (x, -4, 18), (x, -8.5, 18)), "reservoir:suction")
     strokes = (
@@ -224,11 +205,20 @@ def plant_irrigation_rack(width: float, depth: float, height: float) -> Geometry
             _box(x, 2.5, 17, 22, 3, 2.5, "appliance-white", "irrigation:timer"),
             _box(x, 1.2, 19.5, 21, 2, 0.12, "screen", "irrigation:timer-screen"),
         ]
-        parts += _tube(((x - 4, 0, 6), (x - 5.5, 0, 6), (x - 5.5, -5, 12)), "irrigation:suction")
-        parts += _tube(((x + 4, 0, 6), (x + 5.5, 0, 6), (x + 5.5, 0, 23)), "irrigation:outlet")
+        parts += _tube(
+            ((x - 4, 0, 6), (x - 5.5, -5.5, 6), (x - 5.5, -5.5, 12)), "irrigation:suction"
+        )
+        parts += _tube(((x + 4, 0, 6), (x + 5.5, 5.5, 6), (x + 5.5, 5.5, 23)), "irrigation:outlet")
+    # The upper compartment protects all mains-connected equipment, including timers/PSUs.
+    # Panels show a removable cover; environmental and thermal qualification is still required.
+    for x in (-16.75, 16.75):
+        parts.append(_box(x, 0, 9.5, 24, 0.5, 10, "electrical-plate", "irrigation:dry-compartment"))
+    for y in (-4.75, 4.75):
+        parts.append(_box(0, y, 9.5, 24, 33, 0.5, "electrical-plate", "irrigation:dry-compartment"))
     parts += [
+        _box(0, 0, 23.5, 24, 34, 10, "electrical-plate", "irrigation:dry-compartment"),
         _box(0, 1, 12, 23, 6, 5, "electrical-plate", "irrigation:control-enclosure"),
-        _box(0, -4.8, 13, 17, 4, 1.5, "appliance-white", "irrigation:fill-controller"),
+        _box(0, -2.7, 13, 17, 4, 3.5, "appliance-white", "irrigation:leak-cutoff"),
     ]
     strokes = (rect(0, 0, width, depth, fill="metal"),)
     return strokes, _scaled(
@@ -237,17 +227,6 @@ def plant_irrigation_rack(width: float, depth: float, height: float) -> Geometry
 
 
 def plant_leak_sensors(width: float, depth: float, height: float) -> Geometry:
-    parts = [
-        _box(-1.5, 0, 0, 1.3, 3, 3, "electrical-plate", "irrigation:wet-switch"),
-        _box(1.5, 0, 0, 0.12, 2, 3, "metal", "irrigation:fill-sensor"),
-    ]
-    return (rect(0, 0, width, depth),), _scaled(parts, width, depth, height, (6, 3, 1.3))
-
-
-def plant_fill_shutoff(width: float, depth: float, height: float) -> Geometry:
-    """FloodStop component at the manual stop, upstream of the flexible fill tube."""
-    parts = [
-        _box(0, 0, 0, 1, 2.5, 1.8, "faucet", "irrigation:fill-valve"),
-        _box(0, 0, 1, 3, 2.7, 1.8, "metal-black", "irrigation:valve-actuator"),
-    ]
-    return (rect(0, 0, width, depth),), _scaled(parts, width, depth, height, (3, 2, 3))
+    # One packaged WaterWatcher probe; the controller is represented on the rack.
+    parts = [_box(0, 0, 0, 1.3, 3, 3, "electrical-plate", "irrigation:leak-sensor")]
+    return (rect(0, 0, width, depth),), _scaled(parts, width, depth, height, (3, 3, 1.3))

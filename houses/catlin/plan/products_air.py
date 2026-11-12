@@ -84,6 +84,13 @@ ROUND_DAMPER_4_24V = Product(
     source=f"Basis of design, or equal: Duro Dyne NSPRD024-4, Zonefirst RDSC. RH-controlled "
            f"locally. Body length and actuator size unpublished online. {_SPEC} §7.",
 )
+ROUND_DAMPER_4_MANUAL = Product(
+    tag="PROD-AIR-DAMPER-4-MANUAL", brand="Imperial",
+    name="4in round manual volume damper, locking quadrant, galvanized",
+    source="The bench hood's balancing damper, in its collar (REG-T-ERV-BENCH-HOOD): closing "
+           "the sauna hatches swings DU-B-ERV-R-SAUNA-EXH's flow to the hood. SKU picked at "
+           "order; any retail 4in round volume damper with a quadrant lock.",
+)
 STAIR_REGISTER_BOX = Product(
     tag="PROD-AIR-STAIR-REGISTER-BOX", brand="Project fabrication", model="TH-HP-STAIR-BOX-01",
     name="26ga galvanized 12x6x4in register box, centred 4in round back collar",
@@ -171,6 +178,6 @@ SPOT_NOZZLE_4 = Product(
 AIR_PRODUCTS = (
     SUITEBATH_EXTRACT_BOOT,
     DISC_VALVE_100, FLOOR_GRILLE_ERV, SIDEWALL_DD_OBD, FLOOR_REGISTER_HP,
-    FILTER_RETURN_GRILLE, FILTER_RETURN_GRILLE_1212, RETURN_GRILLE_1210, RETURN_GRILLE_0606, ROUND_DAMPER_4_24V, STAIR_REGISTER_BOX, PLANT_CEILING_GRILLE, PLANT_ZONE_DAMPER, PLANT_END_BOOT, PLANT_COLLAR, PLANT_SERVICE_HATCH,
+    FILTER_RETURN_GRILLE, FILTER_RETURN_GRILLE_1212, RETURN_GRILLE_1210, RETURN_GRILLE_0606, ROUND_DAMPER_4_24V, ROUND_DAMPER_4_MANUAL, STAIR_REGISTER_BOX, PLANT_CEILING_GRILLE, PLANT_ZONE_DAMPER, PLANT_END_BOOT, PLANT_COLLAR, PLANT_SERVICE_HATCH,
     WALL_HOOD_8, WALL_SEAL_FOAM, ELASTOMERIC_SHEET, SPOT_NOZZLE_4,
 )

@@ -169,8 +169,8 @@ setpoint and mode, so bench one unit on the AH before buying more. It sits on th
 library stat on all three zones and uses its own floor sensor. Ask Schluter in writing whether
 the cable warranty survives a non-Schluter thermostat.
 
-**Plant-room leak shutoff revised 2026-11-10:** independent wired FloodStop fill and
-WS-1/relay pump protection replace the earlier no-shutoff preference for this reservoir.
+**Plant-room leak shutoff revised 2026-11-11:** manual reservoir filling, a packaged wired
+WaterWatcher cutoff and automatic M8000-NO/RIBU1C low-water permission protect both circuits.
 ZAC36 and YoLink remain retired. See [plant_reservoir.md](plant_reservoir.md).
 **Court flood, inside the basement door** (2026-11-09): `ED-B-SUNKEN-SW-FLOOD`, a Leviton DAWSC-1BW wire-free RF companion of `ED-M-PORCH-FLOOD-SW`'s D315S (Leviton lists it compatible; no hub; 50 ft published). No circuit, no box; `ED-M-PORCH-FLOOD` names both in `controlled_by`. Bench-pair it before the board goes up.
 **Leak sensors** (2026-11-08): 16 SONOFF SNZB-05P Zigbee probes on the floor at the wet points, ZHA on the second ZBT-2, notify only; locations and automation in [leak_detectors.md](leak_detectors.md).
@@ -266,8 +266,8 @@ receptacles. Nothing battery-only, nothing for HA to run.
 - **Basement stair at night**: no night lights (owner, 2026-10-31); the railing tape on the stair 3-way and the landing guide-light receptacles light it.
 
 
-## Plant reservoir safety exception (owner, 2026-11-10)
+## Plant reservoir safety exception (owner, 2026-11-11)
 
-The earlier no-shutoff preference is superseded for the plant-room reservoir. Separate
-wired FloodStop fill protection and WS-1 / low-level / manually armed relay pump protection
+The earlier no-shutoff preference is superseded for the plant-room reservoir. Manual filling,
+one wired WaterWatcher sensor and automatic low-water relay permission
 operate locally; HA and `AL-S-PLANT-LEAK` only notify. See [reservoir](plant_reservoir.md).

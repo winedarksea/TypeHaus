@@ -123,8 +123,8 @@ TILE_EDGE_FLUSH = DoorwayTreatment(transition=_spec(
 #
 # ** THE WATER STOP IS THE SPILL DAM (notes/plant_reservoir.md). ** RM-S-PLANT has no drain; a
 # spill stands on the vinyl behind this profile. The riser is cut from the same 12 mm piece, its
-# top on the oak plane: PLANT_RISER_IN above the vinyl, over the 1/4" the room holds at ~21 gal
-# and the 0.12" a whole 10 gal tank makes. The vinyl butts the toe; the toe, both ends and the
+# top on the oak plane: PLANT_RISER_IN above the vinyl, over the 0.25" design allowance
+# and the ~0.143" modeled 11.75 gal tank/distribution release. The vinyl butts the toe; the toe, both ends and the
 # jamb returns take one silicone bead. The slope stops at the riser's low face.
 PLANT_RISER_IN = 0.38
 PLANT_RISER_RUN_IN = 0.375

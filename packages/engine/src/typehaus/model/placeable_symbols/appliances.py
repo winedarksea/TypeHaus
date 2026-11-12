@@ -23,7 +23,6 @@ from typehaus.model.placeable_symbols._frame import (
 from typehaus.model.placeable_symbols._laundry_tower import laundry_tower
 from typehaus.model.placeable_symbols._mini_split_head import mini_split_head
 from typehaus.model.placeable_symbols._plant_reservoir import (
-    plant_fill_shutoff,
     plant_irrigation_rack,
     plant_leak_sensors,
     plant_reservoir,
@@ -338,7 +337,6 @@ def grille(*, louvers: int = 5) -> Builder:
 
 
 APPLIANCE_SYMBOLS: dict[str, Builder] = {
-    "plant-fill-shutoff": plant_fill_shutoff,
     "plant-reservoir": plant_reservoir,
     "plant-irrigation-rack": plant_irrigation_rack,
     "plant-leak-sensors": plant_leak_sensors,

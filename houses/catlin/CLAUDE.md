@@ -1021,17 +1021,19 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     83 3/4", STUDY 106 7/8"; the 42 1/4" lane is free. One run per D pocket
     (`mep.open_web_panel`). Pressure: §10.14, §10.20.
   - **The static budget charges a path only the trunks on its own route** (2026-11-11,
-    `checks/mep/erv_routes.py`): extract via `DU-M-ERV-R-SUITEBATH` governs at 0.422" ->
-    204.9 cfm. A same-size tee is a branch when its FIRST vertex lies on the parent. The
-    basement-plenum pass-through for riser paths is uncounted (note §9).
+    `checks/mep/erv_routes.py`), every plenum it passes THROUGH (riser air expands into
+    the basement boxes too), and a trunk it leaves at a tap only to that tap
+    (`erv_segments.py`, 2026-11-12, note §10.21): extract via `DU-M-ERV-R-SUITEBATH` governs
+    at 0.433" -> 204.4 cfm. A same-size tee is a branch when its FIRST vertex lies on the
+    parent. Junction losses are still ungraded.
   - `AL-A-COMBO` is in `RM-A-STUDY`, `AL-A-STUDIO` in the studio — reversed is a hard
     FAIL: `code.R315_co_every_sleeping_area` fails if every CO alarm on a storey is inside
     a bedroom.
-  - `code.N1103_6_whole_house_ventilation` grades the DELIVERED 204.9 cfm against **203.0**
+  - `code.N1103_6_whole_house_ventilation` grades the DELIVERED 204.4 cfm against **203.0**
     required (owner, 2026-10-31): MN 1322 R403.5 on 4,900 sf of conditioned floor area,
     measured to the outer face of the structure (sheathing / foundation concrete, not the
     ccSPF, girts or cladding), each stair well deducted once on the storey above
-    (`resolve/conditioned_area.py`, `notes/conditioned_floor_area.md`). +1.9 cfm; a shortfall
+    (`resolve/conditioned_area.py`, `notes/conditioned_floor_area.md`). +1.4 cfm; a shortfall
     of 2 cfm or less would be UNKNOWN (commissioning), more a FAIL.
 
 - **`FO-A-STAIR`'s WEST edge is the stair head, `x=21'-4 3/8"`, not the source's 21'-2"**

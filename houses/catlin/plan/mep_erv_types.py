@@ -13,6 +13,7 @@ from typehaus import (
     DuctProductType,
     EquipmentType,
     PortCertainty,
+    ProductPart,
     RegisterType,
     Service,
     ServicePort,
@@ -294,12 +295,12 @@ REGISTER_TYPES_ERV = (
                  name="Over-bench capture hood, 30\" x 12\" face, 4\" collar",
                  footprint=(inch(30), inch(12)), height=inch(8),
                  plan_symbol="register", ventilation_terminal=True,
-                 # (2026-11-11) The hood hangs off SAUNA-EXH's side, not a dampered plenum collar;
-                 # its 4" balancing damper is NOT modelled (no derived part, no billed type part).
-                 # A fabricated hood is a plenum with a collar, so the coefficient is higher
-                 # than a diffuser's: K = 6 on the 4" collar velocity pressure
-                 # (notes/erv_static_budget.md §5). 25 cfm is this terminal's design flow.
-                 static_loss_pa_at_cfm=((10.0, 1.2), (25.0, 7.6), (40.0, 19.4)),
+                 # The hood hangs off SAUNA-EXH's side (2026-11-11), not a dampered plenum
+                 # collar, so its balancing damper rides in the hood's collar, reached from
+                 # the workshop floor. K = 6 (a plenum with a collar) + 0.3 (the damper full
+                 # open, note §4's term) = 6.3 on the 4" collar velocity pressure (§5).
+                 parts=(ProductPart(role="fitting", product_ref="PROD-AIR-DAMPER-4-MANUAL"),),
+                 static_loss_pa_at_cfm=((10.0, 1.3), (25.0, 8.0), (40.0, 20.5)),
                  source="Fabricated sheet capture hood over FURN-B-WORKSHOP-BENCH-N/S, hung at 5'-6\" — 24\" above the 34\" bench tops. Captures at the source instead of diluting into the room; 4 in. collar since 2026-09-12, with the radial it hangs off. One hood does not cover ten feet of bench; see the note in plan/mep_erv.py.",
                  ports=(ServicePort(tag="return", service=Service.RETURN_AIR,
                                     position=(ft(0), ft(0), ft(0))),)),

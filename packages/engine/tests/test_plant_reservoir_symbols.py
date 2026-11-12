@@ -56,6 +56,24 @@ def test_rack_has_two_pumps_and_two_independent_timers():
     assert len([p for p in parts if p.get("role") == "irrigation:outlet"]) == 4
 
 
+def test_rack_keeps_water_risers_outside_protected_electrical_compartment():
+    parts = model_parts("plant-irrigation-rack", 36 * M_PER_IN, 12 * M_PER_IN, 24 * M_PER_IN)
+    # Water lines rising through the upper shelf must clear the compartment's +/-5 in faces.
+    for part in parts:
+        if part.get("role") not in {"irrigation:suction", "irrigation:outlet"}:
+            continue
+        if part["center"][2] + part["size"][2] / 2 > 9.5 * M_PER_IN:
+            assert abs(part["center"][1]) - part["size"][1] / 2 > 5 * M_PER_IN
+
+
+def test_floor_cutoff_has_one_probe_and_rack_has_no_fill_controller():
+    parts = model_parts("plant-leak-sensors", 3 * M_PER_IN, 3 * M_PER_IN, 1.3 * M_PER_IN)
+    assert [part.get("role") for part in parts] == ["irrigation:leak-sensor"]
+    rack = model_parts("plant-irrigation-rack", 36 * M_PER_IN, 12 * M_PER_IN, 24 * M_PER_IN)
+    assert sum(part.get("role") == "irrigation:leak-cutoff" for part in rack) == 1
+    assert not any("fill" in part.get("role", "") for part in rack)
+
+
 def test_ifc_tessellates_the_same_vertices_as_the_viewer(tank_parts):
     import ifcopenshell
 

@@ -289,3 +289,38 @@ def test_a_trunk_off_the_path_is_not_charged_to_it_and_grades_on_its_own(ctx):
     side_ctx.model.ducts = [*ctx.model.ducts, long_side]
     finding = next(f for f in erv_static_budget(side_ctx) if "worst path" in f.message)
     assert "via SIDE-6 into MIX" in finding.message
+
+
+def test_a_tapped_trunk_is_charged_per_stretch_and_only_to_the_tap(ctx):
+    # SIDE-4 (60 cfm) taps REMOTE-8 half way. The radial pays REMOTE-8's far half at 150 cfm;
+    # SIDE-4's own path pays only the near half (note §9, ``erv_segments``).
+    mix_type = EquipmentType(tag="MIX-T", name="mixing box", footprint=(m(0.4), m(0.02)),
+                             height=m(0.2))
+    mix = Equipment(uid="MIX", tag="MIX", kind=EquipmentKind.MIXING_BOX,
+                    footprint=(m(0.4), m(0.02)), position=pt(m(6), m(30)), type_ref="MIX-T")
+    body = ResolvedCanvasObject(uid="MIX", tag="MIX", storey="basement", domain="mechanical",
+        kind="Equipment", type_ref="MIX-T", room=None, position=(6, 30), z_m=1,
+        rotation_degrees=0, footprint=[(5.8, 29.99), (6.2, 29.99), (6.2, 30.01), (5.8, 30.01)])
+    side = replace(_duct("SIDE-4", (6, 0), (6, 30), diameter=4), design_cfm=60)
+    lib = ctx.plan.library
+    plan = ctx.plan.model_copy(update={
+        "elements": {"basement": (*ctx.plan.elements["basement"], mix)},
+        "library": lib.model_copy(update={"equipment_types": (*lib.equipment_types, mix_type)})})
+    tap_ctx = check_context(model=replace(ctx.model, plan=plan, ducts=[*ctx.model.ducts, side],
+                                          canvas_objects=[*ctx.model.canvas_objects, body]))
+    eight, six, four = 8 * 0.0254, 6 * 0.0254, 4 * 0.0254
+
+    def drop(cfm, bore, length):
+        return leg_drop_in_wg(cfm, bore, 0.00009, length)
+
+    rest = sum(drop(d.design_cfm, d.diameter_m, d.length_m) for d in ctx.model.ducts
+               if d.tag != "REMOTE-8")
+    radial = rest + drop(210, eight, 5) + drop(150, eight, 5)
+    via_side = drop(210, six, 1) + drop(210, eight, 5) + drop(60, four, 30)
+    finding = next(f for f in erv_static_budget(tap_ctx) if "worst path" in f.message)
+    assert via_side > radial and "via SIDE-4 into MIX" in finding.message
+    assert f"at {via_side:.3f} in. w.g." in finding.message
+    side_ctx = check_context(model=replace(tap_ctx.model, ducts=[
+        *ctx.model.ducts, replace(side, path=[(6, 0), (6, 1)], length_m=1.0)]))
+    finding = next(f for f in erv_static_budget(side_ctx) if "worst path" in f.message)
+    assert "via RADIAL-4" in finding.message and f"at {radial:.3f} in. w.g." in finding.message
