@@ -104,7 +104,7 @@ ATTIC_LIGHTING = [
     ElectricalDevice(uid="QTA0002AAA", tag="ED-A-EAST-SCONCE2", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-SCONCE-CANDLE",
                      circuit="CKT-LT-UPPER", room="RM-A-EAST-UNFIN",
-                     controlled_by=("ED-A-EAST-SW",),
+                     controlled_by=("ED-A-EAST-SW", "ED-A-EAST-SW2"),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-A-C2B", face="right", distance_from_start=inch(44),
@@ -112,7 +112,7 @@ ATTIC_LIGHTING = [
     ElectricalDevice(uid="QTA0003AAA", tag="ED-A-EAST-SCONCE3", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-SCONCE-CANDLE",
                      circuit="CKT-LT-UPPER", room="RM-A-EAST-UNFIN",
-                     controlled_by=("ED-A-EAST-SW",),
+                     controlled_by=("ED-A-EAST-SW", "ED-A-EAST-SW2"),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-A-C2", face="right", distance_from_start=inch(72),
@@ -120,7 +120,7 @@ ATTIC_LIGHTING = [
     ElectricalDevice(uid="QTA0004AAA", tag="ED-A-EAST-SCONCE4", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-SCONCE-CANDLE",
                      circuit="CKT-LT-UPPER", room="RM-A-EAST-UNFIN",
-                     controlled_by=("ED-A-EAST-SW",),
+                     controlled_by=("ED-A-EAST-SW", "ED-A-EAST-SW2"),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-A-C2M", face="right", distance_from_start=inch(38),
@@ -131,13 +131,25 @@ ATTIC_LIGHTING = [
     ElectricalDevice(uid="2S0EP92C13", tag="ED-A-EAST-LT2", kind=DeviceKind.LIGHT,
                      position=pt(ft(20, 6), ft(17)), type_ref="ED-T-LT-KEYLESS",
                      circuit="CKT-LT-UPPER", room="RM-A-EAST-UNFIN",
-                     controlled_by=("ED-A-EAST-SW",),
+                     controlled_by=("ED-A-EAST-SW", "ED-A-EAST-SW2"),
                      mount=Mount(kind=MountKind.CEILING, elevation=inch(89))),
     ElectricalDevice(uid="S4AY538D7V", tag="ED-A-EAST-LT3", kind=DeviceKind.LIGHT,
                      position=pt(ft(20, 6), ft(27)), type_ref="ED-T-LT-KEYLESS",
                      circuit="CKT-LT-UPPER", room="RM-A-EAST-UNFIN",
-                     controlled_by=("ED-A-EAST-SW",),
+                     controlled_by=("ED-A-EAST-SW", "ED-A-EAST-SW2"),
                      mount=Mount(kind=MountKind.CEILING, elevation=inch(89))),
+    # ** THE ATTIC-APPLIANCE LIGHT (IMC 306.3 / IRC M1305.1.3, 2026-11-12). ** EQ-S-HP1-AH stands
+    # in this room, so the lighting at it is switched at the entrance to its passageway: LT3
+    # is the lampholder at the cabinet's service front (4" off the platform), and the
+    # storage lights are a 3-way pair, ED-A-EAST-SW inside D-A-HALVES and this one on the
+    # north face of W-A-SN, 7 1/2" east of D-A-STUDY's casing (the door swings south, hinged
+    # west, so this is its latch side), the way in from the study ~20' from the unit.
+    ElectricalDevice(uid="9WYCKYE6FK", tag="ED-A-EAST-SW2", kind=DeviceKind.SWITCH,
+                     type_ref="ED-T-LEV-SW3", circuit="CKT-LT-UPPER",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-SN", face="left", distance_from_start=inch(46.5),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # RM-A-STUDY: the second of the notes' two studies. The stair sconce lights ST-S2A's
     # landing at the top of the flight.

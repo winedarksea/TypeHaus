@@ -83,6 +83,20 @@ def _registers(model: Any) -> dict[str, list[Any]]:
     return out
 
 
+def branch_near_end(model: Any, duct: Any, point: Any) -> str | None:
+    """A run taking off this run's end leg within ``BOOT_REACH_M`` of the end: like a boot,
+    it makes the stub past it a cap. The far end of a two-point trunk earns nothing."""
+    end = 0 if tuple(point[:2]) == tuple(duct.path[0][:2]) else len(duct.path) - 2
+    for other in model.ducts:
+        if other is duct or len(other.path) < 2:
+            continue
+        for _, p, _ in duct_ends(other):
+            if (math.dist(p[:2], point[:2]) <= BOOT_REACH_M
+                    and duct_joint_index(p[:2], p[2], duct.path, duct.z_m) == end):
+                return other.tag
+    return None
+
+
 def end_landings(model: Any) -> list[EndLanding]:
     """Both ends of every run, classified."""
     registers = _registers(model)
@@ -135,6 +149,9 @@ def _classify(model: Any, duct: Any, point: Point3, registers: dict[str, list[An
             continue
         if plan_distance_to_segment(obj.position, leg[0], leg[1])[0] <= BOOT_REACH_M:
             return "cap", obj.tag, None
+    branch = branch_near_end(model, duct, point)
+    if branch is not None:
+        return "cap", branch, None
     return None, None, None
 
 

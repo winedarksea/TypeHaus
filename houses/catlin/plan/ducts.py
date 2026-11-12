@@ -202,8 +202,8 @@ DUCT_STANDARD = [
                         product_ref="PROD-DUCT-SPIN-6", source=_IMPERIAL),
             DuctPartRow(kind="takeoff", size="18x8", branch="10x8", fabricated=True,
                         source="rectangular branch, shop-fabricated with the trunk"),
-            DuctPartRow(kind="reducer", size="18x8", branch="12x12", fabricated=True,
-                        source="DU-S-HP-SUP-DROP lands on the trunk's north end: a rectangular transition, shop-fabricated"),
+            DuctPartRow(kind="takeoff", size="18x8", branch="12x12", fabricated=True,
+                        source="DU-S-HP-SUP-DROP's top take-off at the trunk's north cap, shop-fabricated"),
             DuctPartRow(kind="tee", size="6in", branch="6in", product_ref="PROD-DUCT-TEE-6-6",
                         source=_IMP26),
             # REG-M-RET3's branch off LAUNDRY's crown (2026-11-10).

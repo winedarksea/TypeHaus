@@ -198,9 +198,9 @@ DUCTS_HVAC_SECOND = [
     # finished space). It sheds 3 x 80 (plan/mep_hvac_branches.py) + 50 + 175 + 35 and hands
     # the last 250 to DU-S-HP-SOUTH-RISE collinearly at the cap (y=9'-10").
     #
-    # Its north cap is at y=29'-2", 6" past DU-S-HP-SUP-DROP's top take-off and north of
-    # DU-S-HP-BED3's collar (y=27'-6"). REG-A-HP-EAST at (19'-4", 11'-4") is still squarely
-    # over it. 100 1/8" storey is SF-S-DUCT's cavity floor.
+    # Its north cap is at y=29'-2", 6" past DU-S-HP-SUP-DROP's top take-off (which earns the
+    # cap) and north of DU-S-HP-BED3's collar (y=27'-6"). 100 1/8" storey is SF-S-DUCT's
+    # cavity floor.
     DuctRun(uid="CSDH01AAAA", tag="DU-S-HP-SUP", system=DuctSystem.SUPPLY,
             path=(pt(ft(19, 6), inch(350)), pt(ft(19, 6), ft(9, 10))),
             elevations=(inch(100.125), inch(100.125)),
@@ -227,9 +227,10 @@ DUCTS_HVAC_SECOND = [
     # West branch to RM-S-SUITE: tees off DU-S-HP-SUP at y=14'-8 7/8", 7" north of
     # D-S-SUITE's centreline, and crosses W-S-C2B above the door in the CLEAR bay between
     # its header cripples (2026-10-31: on the door centre the 10x8 ran through the middle
-    # cripple, which `mep.terminal_neck_fit` found), ending at the loft boot 28" west. REG-S-HP-SUITE is a high sidewall
-    # grille on W-S-C2B's suite face; REG-A-HP-WEST is the floor boot at the duct end in
-    # RM-A-STUDIO. 175 cfm feeds both: 100 to the suite and 75 to the loft.
+    # cripple, which `mep.terminal_neck_fit` found), ending at x=16'-6", 6" past the loft boot's take-off. REG-S-HP-SUITE is
+    # a high sidewall grille on W-S-C2B's suite face; REG-A-HP-WEST is the floor boot in
+    # RM-A-STUDIO, fed by DU-S-HP-WEST-BOOT off this duct's side. 175 cfm feeds both: 100 to
+    # the suite and 75 to the loft.
     # 315 fpm through 10x8, quiet.
     #
     # ** EXPOSED SINCE 2026-09-13, AND THE ELEVATION IS AUTHORED BECAUSE OF IT. ** SF-S-SUITE
@@ -243,7 +244,7 @@ DUCTS_HVAC_SECOND = [
     # Underside 8'-0 1/8" over the arm floor, against the 6'-8" headroom line the declaration
     # does not retire.
     DuctRun(uid="CSDH03AAAA", tag="DU-S-HP-SUITE", system=DuctSystem.SUPPLY,
-            path=(pt(ft(19, 4), ft(14, 8.875)), pt(ft(17), ft(14, 8.875))),
+            path=(pt(ft(19, 4), ft(14, 8.875)), pt(ft(16, 6), ft(14, 8.875))),
             width=inch(10), depth=inch(8), routing=DuctRouting.EXPOSED,
             start_elevation=inch(100.125), end_elevation=inch(100.125), design_cfm=175, material="galvanized"),
     # The plant room and attic study share FS-ATTIC's y=3'-3" I-joist bay.
@@ -257,7 +258,7 @@ DUCTS_HVAC_SECOND = [
     # (R302.11), not a conflict. That note is the regression canary for this whole branch
     # and it requires the run stay filed on the `second` storey.
     #
-    # 10x6/175 cfm: REG-A-HP-STUDY is a straight floor boot at x=18'-10".
+    # 10x6/175 cfm: REG-A-HP-STUDY is a floor boot at x=18'-10", fed by DU-S-HP-STUDY-BOOT.
     # The riser still receives 250 cfm (75 + 75 + 100); after the 75 cfm sidewall
     # take-off, 175 rises into this bay. 420 fpm before the attic boot, then 180 fpm
     # to REG-S-HP-PLANT. The section remains 10x6 to match the riser and fits the
@@ -337,11 +338,18 @@ DUCTS_HVAC_SECOND = [
 # THE AIR HANDLER IN THE ATTIC (2026-11-11). Horizontal-left on the deck of RM-A-EAST-UNFIN
 # (conditioned, under the hot roof), over the north hall. It stands on SL-A-HP1-PLATFORM, 4 1/4"
 # up, which is what gives the primary condensate port room for Gree's trap above the deck
-# (PR-A-COND-HP1, plan/mep_condensate.py). The emergency pan (2" deep, 3" oversize,
-# tasks.toml) sits on the platform under the cabinet and is not modelled: its rails lift every
-# connection about 1" more on site. A float switch in it opens the cooling call (IMC 307.2.3
-# item 3; owner, 2026-11-11: the attic is conditioned, but an overflow still wets the
-# second-storey ceiling, so the code and Gree's IOM both apply). Rotation 0
+# (PR-A-COND-HP1, plan/mep_condensate.py). The emergency pan (min 1 1/2" deep, 3" oversize,
+# tasks.toml) sits on the platform under the cabinet; `secondary_drain_pan` and
+# `float_switch_ref` say it is there: a UL 508 switch in it opens the cooling call, which
+# stops the outdoor unit (EQ-M-HP1-OD) before the pan overflows (IMC 307.2.3 item 3; owner,
+# 2026-11-11: the attic is conditioned, but an overflow still wets the second-storey ceiling).
+# The pan is not drawn and the model keeps the cabinet at 4 1/4": its rails stand it ~1"
+# higher on site, and nothing needs to move (re-checked 2026-11-12). Both air connections are
+# 3" canvas connectors into shop boxes cut to the delivered cabinet; at +1" the supply
+# neck's top (263.4") still clears the 23" box (263.75") and the return neck's the plenum's;
+# the primary port only gains fall and trap height. Drawing the pan means a 1" layer in
+# AH_PLATFORM_PLY (the support check wants a surface at the cabinet's base) and 1" on both
+# necks, the box inlet and PR-A-COND-HP1's start. Rotation 0
 # puts the discharge west, the return east and the service front SOUTH, where Gree's 24" zone
 # (x 20'-10 1/2"..24'-6", y 25'-4 9/16"..27'-4 9/16") is open deck at the end of the walk
 # from D-A-STUDY: ~20' at
@@ -354,6 +362,7 @@ EQUIPMENT_HVAC_ATTIC = [
               position=pt(inch(272.25), inch(339.1875)), footprint=(inch(43.5), inch(21.25)),
               room="RM-A-EAST-UNFIN", type_ref="EQ-T-GREE-FLEXX-ULTRA-24-AH",
               outdoor_ref="EQ-M-HP1-OD", circuit="CKT-HP1-AH",
+              secondary_drain_pan=True, float_switch_ref="EQ-M-HP1-OD",
               mount=Mount(kind=MountKind.FLOOR, elevation=inch(4.25)),
               zone_rooms=("RM-S-STUDY2", "RM-S-PLANT", "RM-S-BED1", "RM-S-BED2",
                           "RM-S-BED3", "RM-S-SUITE", "RM-S-SUITEBATH", "RM-S-VANITY",
@@ -383,8 +392,9 @@ EQUIPMENT_HVAC_ATTIC = [
 # The cabinet's two air connections: each is the unit's 3" canvas connector (DuctStandard
 # PortKit) and a 1" collar into its shop box (the return box stands 4" off the cabinet). Sections are the openings: supply 11 5/8 across x
 # 16 3/4 high (submittal p.4); return 20 x 16, INFERRED from the 16x20x1 internal filter
-# (IOM §2.5). Measure the delivered cabinet before either box is made. REG-A-HP-EAST and
-# REG-A-HP-STUDY are straight floor boots off the second-storey trunks.
+# (IOM §2.5). Measure the delivered cabinet before either box is made. REG-A-HP-EAST,
+# -STUDY and -WEST are floor boots on 6" rises off the second-storey trunks
+# (plan/mep_hvac_branches.py).
 DUCTS_HVAC_ATTIC = [
     DuctRun(uid="Q3DEES5ZH3", tag="DU-A-HP1-SUP-NECK", system=DuctSystem.SUPPLY,
             path=(pt(inch(250.5), inch(344)), pt(inch(246.5), inch(344))),

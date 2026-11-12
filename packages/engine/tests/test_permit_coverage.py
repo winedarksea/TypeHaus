@@ -159,9 +159,10 @@ def test_every_code_finding_carries_a_citation(profile, starter_dir) -> None:
 # #123); earth contact through a drained stone bed is the inspector's reading, and the rods
 # complete the electrode system whatever it is, so it stages rather than gates.
 #
-# RAISED 28 -> 29 on 2026-11-12: "Condensate overflow protection" (IMC 307.2.3); staged until
-# catlin authors EQ-S-HP1-AH's float switch, then flips to blocking and this falls back.
-MAX_NON_BLOCKING_ITEMS = {"mn-2020": 29}
+# RAISED 28 -> 29 on 2026-11-12: "Condensate overflow protection" (IMC 307.2.3), staged until
+# catlin authored EQ-S-HP1-AH's pan and float switch; LOWERED 29 -> 28 the same day when it
+# flipped to blocking.
+MAX_NON_BLOCKING_ITEMS = {"mn-2020": 28}
 
 # The engineered lines are counted separately, and the split is not bookkeeping — the two
 # lanes have different exit conditions. A staging item leaves its lane when *this engine*

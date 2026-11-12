@@ -99,4 +99,32 @@ DUCTS_HVAC_BRANCHES_SECOND = [
             elevations=(inch(111), inch(123.75), inch(123.75)),
             width=inch(12), depth=inch(6), routing=DuctRouting.EXPOSED,
             material="galvanized", design_cfm=80),
+    # The three attic floor boots stand 5"-15" over their trunks, so each is fed by a drawn 6" round
+    # rise (2026-11-12; `mep.register_reach` found a boot neck with no duct under it). A stock take-off
+    # collar on the trunk, then the stock 6x12x6 end boot under the register's damper box
+    # (DuctStandard boot 6in -> 12x6). 6" round: 509 fpm at 100 cfm, 178 at 35, 382 at 75, all under
+    # Manual D's 700. Each stands in its FS-ATTIC bay's clear width (13 11/16"), never on a joist.
+    #
+    # STUDY: off DU-S-HP-SOUTH's top (10x6 in the y 32-48 bay), centre 2" under its crown.
+    DuctRun(uid="45ZN1WN7QE", tag="DU-S-HP-STUDY-BOOT", system=DuctSystem.SUPPLY,
+            path=(pt(ft(18, 10), ft(3, 4)), pt(ft(18, 10), ft(3, 4))),
+            elevations=(inch(112.125), inch(119.5)),
+            diameter=inch(6), routing=DuctRouting.EXPOSED,
+            material="galvanized", design_cfm=100),
+    # EAST: up off DU-S-HP-SUP's crown (18x8; its top is 104 1/8") through the box's open top.
+    DuctRun(uid="HW1ZFWXRCZ", tag="DU-S-HP-EAST-BOOT", system=DuctSystem.SUPPLY,
+            path=(pt(ft(19, 4), ft(11, 4)), pt(ft(19, 4), ft(11, 4))),
+            elevations=(inch(102), inch(118.75)),
+            diameter=inch(6), routing=DuctRouting.EXPOSED,
+            material="galvanized", design_cfm=35),
+    # WEST: DU-S-HP-SUITE lies under the y=176 joist, so a straight rise would cut its flange.
+    # A side take-off at the duct's centre turns 10" south (the stamped 6" elbow starts on the
+    # south face) into the y 160-176 bay and stands up there to the boot. The duct's end moved
+    # 6" west to x=16'-6" so the take-off is mid-run (6" in, not a reducer).
+    DuctRun(uid="PV9K8DR0T3", tag="DU-S-HP-WEST-BOOT", system=DuctSystem.SUPPLY,
+            path=(pt(ft(17), ft(14, 8.875)), pt(ft(17), ft(13, 9.875)),
+                  pt(ft(17), ft(13, 9.875))),
+            elevations=(inch(100.125), inch(100.125), inch(118.875)),
+            diameter=inch(6), routing=DuctRouting.EXPOSED,
+            material="galvanized", design_cfm=75),
 ]

@@ -362,10 +362,10 @@ MN_2020 = JurisdictionProfile(
                        (cite(NEC.SERVICE_SPD),)),
         PermitItemSpec("Dryer exhaust", ("code.M1502_dryer_exhaust",), ("IRC M1502",),
                        blocking=False),
-        # Staged until catlin authors EQ-S-HP1-AH's float switch; then it gates.
+        # Gates since catlin authored EQ-S-HP1-AH's auxiliary pan and float switch (2026-11-12).
         PermitItemSpec("Condensate overflow protection", ("mep.condensate_overflow",),
                        ("MN Mechanical Code (Minn. R. 1346.0050, IMC 2018) 307.2.3",),
-                       blocking=False),
+                       blocking=True),
         # ** THE CITATION WAS IRC P2801.6 / P2804.6.1 AND MINNESOTA DELETED BOTH. ** Same
         # reason as the two below: 1309.0010 subp. 3.D strikes IRC ch. 25-33. UPC 608.5 is
         # the relief discharge and 507.5 the pan (Minn. R. 4714.0507 deletes 507.6-507.11

@@ -528,16 +528,27 @@ ATTIC_DEVICES = [
     ElectricalDevice(uid="CED011K1AA", tag="ED-A-EAST-LT", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-SCONCE-CANDLE",
                      circuit="CKT-LT-UPPER", room="RM-A-EAST-UNFIN",
-                     controlled_by=("ED-A-EAST-SW",),
+                     controlled_by=("ED-A-EAST-SW", "ED-A-EAST-SW2"),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-A-C2B", face="right", distance_from_start=inch(110),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="CED011K2AA", tag="ED-A-EAST-SW", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-SW1", circuit="CKT-LT-UPPER",
+                     type_ref="ED-T-LEV-SW3", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-A-C2B", face="right", distance_from_start=inch(121.5),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
+    # The air handler's service receptacle (NEC 210.63; IMC 306.3 / IRC M1305.1.3 "at or near
+    # the appliance"): on the centre wall's east face 34" west of EQ-S-HP1-AH's platform,
+    # level with its front panel, 10" off ED-A-EAST-SCONCE2. Plain duplex on the attic
+    # circuit, not the unit's own CKT-HP1-AH. Its light and switch are ED-A-EAST-LT3 / -SW2.
+    ElectricalDevice(uid="QPHY6A75YB", tag="ED-A-HP1-RC1", kind=DeviceKind.RECEPTACLE,
+                     type_ref="ED-T-LEV-DUPLEX-15", circuit="CKT-RC-ATTIC",
+                     room="RM-A-EAST-UNFIN",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-C2B", face="right", distance_from_start=inch(54),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # RM-A-STUDY (x 18'-36', y 0-8'-8"): wall light and switch on W-A-C1's east face.
     ElectricalDevice(uid="CED012K1AA", tag="ED-A-STUDY-LT", kind=DeviceKind.LIGHT,

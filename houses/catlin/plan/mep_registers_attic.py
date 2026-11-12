@@ -20,28 +20,28 @@ from .erv_balance import (
 )
 
 REGISTERS_HVAC_ATTIC = [
-    # Keep the straight floor boot in FS-ATTIC's y=3'-4" bay, under the desk's
-    # open top near the centreline wall. Rotate the 12x6 grille along the desk:
-    # x=18'-7"..19'-1" clears the desk chair's west edge (~19'-3") and stays
-    # inside the desk footprint. The room below takes its supply from the soffit
-    # leg, so DU-S-HP-SOUTH ends at its riser station, x=19'-6".
+    # Keep the floor boot in FS-ATTIC's y=3'-4" bay, under the desk's open top near the
+    # centreline wall. Rotate the 12x6 grille along the desk: x=18'-7"..19'-1" clears the
+    # desk chair's west edge (~19'-3") and stays inside the desk footprint. Its 6" rise
+    # (DU-S-HP-STUDY-BOOT) leaves DU-S-HP-SOUTH's crown 5 1/2" below the box.
     Register(uid="CARH01AAAA", tag="REG-A-HP-STUDY", kind=DuctSystem.SUPPLY,
              room="RM-A-STUDY", position=pt(ft(18, 10), ft(3, 4)), rotation=deg(90),
-             duct_ref="DU-S-HP-SOUTH",
+             duct_ref="DU-S-HP-STUDY-BOOT",
              type_ref="REG-T-HP-FLOOR-0612", design_cfm=100,
              mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
-    # Directly above the hall soffit: the boot rises straight through FS-ATTIC off the
-    # x=19'-4" trunk below, no attic duct run needed. y=11'-4" is the next FS-ATTIC bay
-    # centre north of W-A-SN's north face (9'-10 3/8", thickened to 12 3/4" for the study's
-    # bookcase wall) and is still over DU-S-HP-SUP, so the boot rises straight; the grille
-    # stays inside RM-A-EAST-UNFIN and clear of FO-A-STAIR's walkway.
+    # Directly above the hall soffit: a 6" rise (DU-S-HP-EAST-BOOT) stands off the trunk's
+    # crown through FS-ATTIC's bay. y=11'-4" is the next FS-ATTIC bay centre north of
+    # W-A-SN's north face (9'-10 3/8", thickened to 12 3/4" for the study's bookcase wall)
+    # and is still over DU-S-HP-SUP; the grille stays inside RM-A-EAST-UNFIN and clear of
+    # FO-A-STAIR's walkway.
     Register(uid="CARH02AAAA", tag="REG-A-HP-EAST", kind=DuctSystem.SUPPLY,
-             room="RM-A-EAST-UNFIN", position=pt(ft(19, 4), ft(11, 4)), duct_ref="DU-S-HP-SUP",
+             room="RM-A-EAST-UNFIN", position=pt(ft(19, 4), ft(11, 4)), duct_ref="DU-S-HP-EAST-BOOT",
              type_ref="REG-T-HP-FLOOR-0612", design_cfm=35,
              mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
-    # The west loft's supply: a floor boot straight up off DU-S-HP-SUITE through FS-ATTIC.
-    # Shifted 6" west (2026-10-04), then 12" back east to x=17'-0" (2026-10-14), still rotated
-    # 90 degrees to terminate the branch. Its 6" x-face clears W-A-C2's gypsum by 5 5/8".
+    # The west loft's supply: a floor boot fed by DU-S-HP-WEST-BOOT, a side take-off off
+    # DU-S-HP-SUITE (which lies under the y=14'-8" joist) that turns south into the bay and
+    # stands up. At (17'-0", 14'-0") since 2026-10-14, rotated 90 degrees; its 6" x-face
+    # clears W-A-C2's gypsum by 5 5/8".
     # The room gets conditioned air off System 1 like RM-A-STUDY/RM-A-EAST-UNFIN, returning
     # stale air at REG-A-RET1, so the ERV's attic side is extract-only.
     #
@@ -54,7 +54,7 @@ REGISTERS_HVAC_ATTIC = [
     # costs.
     Register(uid="CARH03AAAA", tag="REG-A-HP-WEST", kind=DuctSystem.SUPPLY,
              room="RM-A-STUDIO", position=pt(ft(17), ft(14)), rotation=deg(90),
-             duct_ref="DU-S-HP-SUITE", type_ref="REG-T-HP-FLOOR-0612", design_cfm=75,
+             duct_ref="DU-S-HP-WEST-BOOT", type_ref="REG-T-HP-FLOOR-0612", design_cfm=75,
              mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
 ]
 
@@ -72,7 +72,7 @@ REGISTERS_ATTIC = [
     # boot has no use for.
     # (1'-0", 20'-8") is a floor boot in the studio's NW corner, on the existing x=1'-0" chase,
     # at a bay centre (248" = 8 + 15 x 16), diagonally opposite REG-A-HP-WEST's supply at
-    # (17'-0", 14'-1 7/8"). Fresh in at one corner, stale out at the other, which is the
+    # (17'-0", 14'-0"). Fresh in at one corner, stale out at the other, which is the
     # arrangement every other storey already has.
     Register(uid="CARV04AAAA", tag="REG-A-RET1", kind=DuctSystem.RETURN, room="RM-A-STUDIO",
             position=pt(ft(1), ft(20, 8)), duct_ref="DU-A-ERV-R-ATTIC",

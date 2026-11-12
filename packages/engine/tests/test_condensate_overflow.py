@@ -21,15 +21,19 @@ _AH = "EQ-S-HP1-AH"
 def _grade(model, **update):
     """The finding for the air handler with ``update`` applied (``kind`` re-kinds EQ-B-WH)."""
     target = "EQ-B-WH" if "kind" in update else _AH
-    elements = [e.model_copy(update=update) if e.tag == target else e
+    bare = {"secondary_drain_pan": False, "overflow_drain_ref": None, "float_switch_ref": None}
+    elements = [e.model_copy(update={**bare, **update}) if e.tag == target else e
                 for e in model.plan.all_elements()]
     plan = SimpleNamespace(all_elements=lambda: elements)
     ctx = CheckContext(plan=plan, model=model, preferences=None, profile=None)
     return {f.element_tags[0]: f for f in condensate_overflow(ctx)}[target]
 
 
-def test_catlin_air_handler_is_unknown_until_authored(catlin_model_ro) -> None:
-    assert _grade(catlin_model_ro).result is Result.UNKNOWN
+def test_catlin_air_handler_has_a_pan_and_a_float_switch(catlin_model_ro) -> None:
+    plan = SimpleNamespace(all_elements=catlin_model_ro.plan.all_elements)
+    ctx = CheckContext(plan=plan, model=catlin_model_ro, preferences=None, profile=None)
+    finding = {f.element_tags[0]: f for f in condensate_overflow(ctx)}[_AH]
+    assert finding.result is Result.PASS and "item 3" in finding.message
 
 
 @pytest.mark.parametrize(("update", "result", "words"), [

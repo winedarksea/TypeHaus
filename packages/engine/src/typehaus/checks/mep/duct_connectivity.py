@@ -227,7 +227,10 @@ def _capped_past_a_takeoff(ctx: CheckContext, duct: ResolvedDuct,
         span, _ = plan_distance_to_segment(at, leg[0], leg[1])
         if span <= BOOT_REACH_M:
             return tag
-    return None
+    from typehaus.resolve.duct_terminations import branch_near_end
+
+    z = duct.z_m[-1] if point == duct.path[-1] else duct.z_m[0]
+    return branch_near_end(ctx.model, duct, (*point, z))
 
 
 def _collars(ctx: CheckContext, duct: ResolvedDuct) -> list:
