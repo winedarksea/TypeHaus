@@ -63,7 +63,8 @@ _BACKED_DEVICE_KINDS = frozenset({DeviceKind.PANEL, DeviceKind.METER, DeviceKind
 #: Equipment that rides on its own ducts or pipes (a plenum, hood, mixing box, inline fan),
 #: not on a wall bracket.
 _UNBACKED_EQUIPMENT_KINDS = frozenset({EquipmentKind.DUCT_MANIFOLD, EquipmentKind.MIXING_BOX,
-                                       EquipmentKind.WATER_MANIFOLD, EquipmentKind.FAN})
+                                       EquipmentKind.PLENUM, EquipmentKind.WATER_MANIFOLD,
+                                       EquipmentKind.FAN})
 
 
 def _bodies_and_types(

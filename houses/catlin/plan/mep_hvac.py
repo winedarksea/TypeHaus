@@ -157,7 +157,7 @@ EQUIPMENT_TYPES = (
                   ports=(ServicePort(tag="dc", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),),
                   source="EG4 WallMount Indoor 280Ah product page (read 2026-10-31): 14.3 kWh LFP, 36.4 x 18.1 x 9.6 in (H x W x D), 282 lb, UL 1973 + UL 9540A; UL 9540 as a system with the 12kPV/18kPV/FlexBOSS21; closed-loop RS485 comms. Capacity is nameplate; the autonomy calc applies its own depth of discharge (takeoff/backup_calc.py)."),
-    # EQ-S-HP1-AH's supply box (2026-11-11), filed MIXING_BOX: the passive-box kind.
+    # EQ-S-HP1-AH's supply box (2026-11-11), filed PLENUM (passive shop box).
     EquipmentType(tag="EQ-T-HP1-SUP-BOX",
                   name="System 1 supply box, 22 1/2 x 14 x 23 in, shop-fabricated",
                   footprint=(inch(22.5), inch(14)), height=inch(23), plan_symbol="erv",
@@ -374,7 +374,7 @@ EQUIPMENT_HVAC_ATTIC = [
          outline=(pt(inch(247.5), inch(325.5625)), pt(inch(297), inch(325.5625)),
                   pt(inch(297), inch(352.8125)), pt(inch(247.5), inch(352.8125))),
          thickness=inch(4.25), assembly="AH_PLATFORM_PLY", top_elevation=inch(245)),
-    Equipment(uid="HP2Y52SMWG", tag="EQ-A-HP1-SUP-BOX", kind=EquipmentKind.MIXING_BOX,
+    Equipment(uid="HP2Y52SMWG", tag="EQ-A-HP1-SUP-BOX", kind=EquipmentKind.PLENUM,
               position=pt(inch(236.25), inch(344)), footprint=(inch(22.5), inch(14)),
               room="RM-A-EAST-UNFIN", type_ref="EQ-T-HP1-SUP-BOX",
               mount=Mount(kind=MountKind.FLOOR)),

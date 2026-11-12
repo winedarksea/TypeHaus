@@ -81,7 +81,7 @@ _LAYER_CATEGORY = {
 _DATA_KINDS = frozenset({"data_outlet", "camera", "access_point"})
 _LIGHTING_ROLES = frozenset({"lamp", "trim"})
 _SOLAR_EQUIPMENT = frozenset({"battery", "inverter"})
-_TERMINAL_EQUIPMENT = frozenset({"duct_manifold", "mixing_box"})
+_TERMINAL_EQUIPMENT = frozenset({"duct_manifold", "mixing_box", "plenum"})
 _DOOR_HARDWARE_TRADE = "openings"
 _FASTENER_ROLE = re.compile(r"(screw|nail|fastener)")
 # Engineered members by profile: LVL/LSL/PSL, I-joists, trusses, rim board.

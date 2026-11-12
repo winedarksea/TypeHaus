@@ -450,6 +450,9 @@ class EquipmentKind(Enum):
     # off — behaviour, not a tee. Also any passive shop box air passes through (an air
     # handler's supply box): no backing, walked through by the interlock graph.
     MIXING_BOX = "mixing_box"
+    # A passive shop-made air box: no fan, no dampers (an air handler's supply box). Walked
+    # through by the interlock graph, never wall-backed; a box with a damper is MIXING_BOX.
+    PLENUM = "plenum"
     # A radial-distribution plenum: one collared trunk connection, N small round takeoffs.
     # The thing that makes a semi-rigid radial install a radial install, and a real box with
     # a real footprint that has to fit the space it hangs in.

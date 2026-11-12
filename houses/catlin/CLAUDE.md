@@ -1889,7 +1889,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       `DU-S-HP-BED3-RET` and `DU-S-ERV-HP-FEED` all end in it, so fresh air mixes upstream
       of coil and heat kit. `DU-A-HP1-RET-NECK` is 20x16 and that return opening is
       INFERRED; measure the delivered cabinet before the neck is built.
-    - **`EQ-A-HP1-SUP-BOX`** (22 1/2 x 14 x 21 shop box; `MIXING_BOX` so walks pass through)
+    - **`EQ-A-HP1-SUP-BOX`** (22 1/2 x 14 x 21 shop box; `PLENUM`, a passive box walks pass through)
       takes the published 11 5/8 x 16 3/4 supply aperture and drops a 12x12
       (`DU-S-HP-SUP-DROP`) as a top take-off into the 18x8 trunk in `SF-S-DUCT`. Its solid
       floor is Gree's "solid bottom first 6 in" below the outlet.

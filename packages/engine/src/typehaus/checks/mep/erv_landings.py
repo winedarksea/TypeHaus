@@ -257,16 +257,16 @@ def network(ctx: CheckContext, machine_tag: str, landings: dict[str, str]) -> li
 
     **A rectangular run is in only when anchored on one of the distributing plenums** (an end
     inside its case), or chained end-to-end to such a run (a neck and its trunk). It is never
-    anchored by a MIXING_BOX and never pulled by a joint from a round run: Catlin's System 1
-    shares the mixing box with this machine and its trunks are fabricated rectangular sheet
-    metal, which this budget has no business grading. Round runs joined to an included
+    anchored by a MIXING_BOX or PLENUM and never pulled by a joint from a round run: Catlin's
+    System 1 shares the mixing box with this machine and its trunks are fabricated rectangular
+    sheet metal, which this budget has no business grading. Round runs joined to an included
     rectangle (the takeoffs off a flat trunk) come in as usual.
     """
     kinds = equipment_kinds(ctx)
     plenums = manifolds(ctx)
     anchors = {machine_tag, *landings.values()}
     anchors |= {tag for tag, kind in kinds.items()
-                if kind == EquipmentKind.MIXING_BOX.value}
+                if kind in (EquipmentKind.MIXING_BOX.value, EquipmentKind.PLENUM.value)}
     seeds: set[str] = set()
     rect_seeds: dict[str, str] = {}
     for duct in ctx.model.ducts:

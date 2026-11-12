@@ -7,8 +7,8 @@ the bay, FAILs ``mep.run_through_blocking``. That is the same for a truss deck a
 I-joists, and the router read neither: the bays were laid after the runs.
 
 This reproduces ``blocking_parts.crossing_runs``' reading against each run-blind
-``floor_blocking.bearing_bays`` bay: the block (its width, grown by the run's radius, along
-the joists) by the clear bay across them. A level edge inside it at a depth that is not a
+``floor_blocking.bearing_bays`` bay: the block (its width, grown by the run's half-width,
+along the joists) by the clear bay across them. A level edge inside it at a depth that is not a
 graze must keep its whole section inside the bay and under the top rail.
 
 An edge rule, not a hard prism, on purpose: a 3-D lattice prism blocks its nodes and every
@@ -29,10 +29,12 @@ class BearingBays:
     """Every blocked bay of every floor meeting ``bbox``, bucketed by edge axis and station."""
 
     def __init__(self, model: Any, bbox: tuple[float, float, float, float],
-                 radius_m: float) -> None:
+                 radius_m: float, half_h_m: float | None = None) -> None:
         from typehaus.resolve.floor_blocking import bearing_bays
 
+        # Half-width in plan; the half-height in z is the same for a round run.
         self.radius_m = r = radius_m
+        self.half_h_m = radius_m if half_h_m is None else half_h_m
         self.index: dict[tuple[str, int], list[tuple]] = {}
         minx, miny, maxx, maxy = bbox
         for floor in model.floors:
@@ -56,10 +58,10 @@ class BearingBays:
                 z: float) -> str | None:
         """``"<floor> <bay>"`` if a level edge from ``lo`` to ``hi`` along ``axis`` at
         ``station``, centreline ``z``, cannot pass that bay's box, else None."""
-        r = self.radius_m
+        r, h = self.radius_m, self.half_h_m
         for along, a0, a1, g0, g1, z0, z1, tag, key in self.index.get(
                 (axis, int(station / _BUCKET_M)), ()):
-            if z + r < z0 + GRAZE_M or z - r > z1 - GRAZE_M:
+            if z + h < z0 + GRAZE_M or z - h > z1 - GRAZE_M:
                 continue  # under or over the joists
             if axis == along:  # in the bay, crossing the line
                 if not (g0 <= station <= g1 and hi > a0 and lo < a1):
@@ -69,7 +71,7 @@ class BearingBays:
                 if not (a0 <= station <= a1 and hi > g0 and lo < g1):
                     continue
                 p_lo, p_hi = max(lo, g0) - r, min(hi, g1) + r
-            if (z + r > z1 - BOX_T_M + FIT_TOL_M or p_lo < g0 - FIT_TOL_M
+            if (z + h > z1 - BOX_T_M + FIT_TOL_M or p_lo < g0 - FIT_TOL_M
                     or p_hi > g1 + FIT_TOL_M):
                 return f"{tag} {key}"
         return None

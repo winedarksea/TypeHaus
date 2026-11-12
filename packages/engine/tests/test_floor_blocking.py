@@ -154,3 +154,14 @@ def test_a_duct_along_its_bay_through_a_flush_beam_overlaps_it() -> None:
     clear = _leg_overlap((0.0, 260 * _IN), (300 * _IN, 260 * _IN), 111.6 * _IN, 111.6 * _IN,
                          2 * _IN, beam, 108.1 * _IN, 120 * _IN)
     assert clear <= 0.0
+
+
+def test_a_rectangular_run_is_boxed_by_its_width_and_depth() -> None:
+    from typehaus.resolve.blocking_parts import crossing_runs
+
+    w, h = 6 * M_PER_IN / 2.0, 4 * M_PER_IN / 2.0  # a 6 x 4 duct, centreline z 100"
+    z = 100 * M_PER_IN
+    runs = [("D", ((5.0, 0.0), (5.0, 10.0)), (z, z), w, h)]
+    (tag, p_lo, p_hi, z_lo, z_hi), = crossing_runs(
+        runs, False, 5.0, 0.04, (4.0, 6.0), z - 1.0, z + 1.0)
+    assert (p_hi - p_lo, z_hi - z_lo) == pytest.approx((2 * w, 2 * h))

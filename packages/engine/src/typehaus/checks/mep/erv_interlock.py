@@ -35,7 +35,8 @@ CODE = "IRC M1505.4 / N1103.6 (MN 1322 R403.5); ventilator installation manual"
 AIR_HANDLERS = frozenset({EquipmentKind.AIR_HANDLER, EquipmentKind.DUCTED_AIR_HANDLER,
                           EquipmentKind.FURNACE})
 #: Boxes air passes THROUGH: a walk continues across them rather than stopping.
-_PASSIVE = frozenset({EquipmentKind.DUCT_MANIFOLD, EquipmentKind.MIXING_BOX})
+_PASSIVE = frozenset({EquipmentKind.DUCT_MANIFOLD, EquipmentKind.MIXING_BOX,
+                      EquipmentKind.PLENUM})
 
 
 @dataclass(frozen=True)

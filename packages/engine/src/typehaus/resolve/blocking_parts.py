@@ -48,7 +48,8 @@ class BlockingConflict:
 
 
 Span = tuple[float, float]
-RunBand = tuple[str, tuple[Vec2, ...], tuple[float, ...], float]
+#: ``(tag, plan path, per-vertex centreline z, half-width in plan, half-height in z)``
+RunBand = tuple[str, tuple[Vec2, ...], tuple[float, ...], float, float]
 Crossing = tuple[str, float, float, float, float]
 
 
@@ -174,7 +175,8 @@ def pass_through_box(
 
 
 def run_bands(model: ResolvedModel) -> list[RunBand]:
-    """``(tag, plan path, per-vertex centreline z, outside radius)`` for every routed run."""
+    """A ``RunBand`` per routed run: round is its outside radius both ways, a rectangular
+    duct its width/2 across the leg in plan and its depth/2 in z (a horizontal leg)."""
     from typehaus.resolve.pipe_sections import (
         pipe_outside_diameter_m,
         raceway_outside_diameter_m,
@@ -183,12 +185,15 @@ def run_bands(model: ResolvedModel) -> list[RunBand]:
     out: list[RunBand] = []
     for run in model.pipe_runs:
         if run.z_m and len(run.z_m) == len(run.path):
-            out.append((run.tag, tuple(run.path), tuple(run.z_m),
-                        pipe_outside_diameter_m(run.diameter_m or 0.0, run.material) / 2.0))
+            radius = pipe_outside_diameter_m(run.diameter_m or 0.0, run.material) / 2.0
+            out.append((run.tag, tuple(run.path), tuple(run.z_m), radius, radius))
     for duct in model.ducts:
         if len(duct.z_m) == len(duct.path):
-            out.append((duct.tag, tuple(duct.path), tuple(duct.z_m),
-                        (duct.diameter_m or 0.0) / 2.0))
+            if duct.diameter_m is None and duct.width_m and duct.depth_m:
+                half_w, half_h = duct.width_m / 2.0, duct.depth_m / 2.0
+            else:
+                half_w = half_h = (duct.diameter_m or 0.0) / 2.0
+            out.append((duct.tag, tuple(duct.path), tuple(duct.z_m), half_w, half_h))
     for raceway in model.conduits:
         if raceway.z_m and len(raceway.z_m) == len(raceway.path):
             z = tuple(raceway.z_m)  # placed in z: never the schematic end-pair profile
@@ -196,9 +201,9 @@ def run_bands(model: ResolvedModel) -> list[RunBand]:
             start = raceway.z_start_m or 0.0
             end = raceway.z_end_m if raceway.z_end_m is not None else start
             z = (*([start] * (len(raceway.path) - 1)), end)
-        out.append((raceway.tag, tuple(raceway.path), z,
-                    raceway_outside_diameter_m(raceway.trade_size_m or 0.0,
-                                               raceway.material) / 2.0))
+        radius = raceway_outside_diameter_m(raceway.trade_size_m or 0.0,
+                                            raceway.material) / 2.0
+        out.append((raceway.tag, tuple(raceway.path), z, radius, radius))
     return out
 
 
@@ -216,21 +221,21 @@ def crossing_runs(
 
     out: list[Crossing] = []
     base_a0, base_a1 = centre - width / 2.0, centre + width / 2.0
-    blocks_by_radius = {}
-    for tag, path, z, radius in runs:
-        a0_run, a1_run = base_a0 - radius, base_a1 + radius
+    blocks_by_half_w = {}
+    for tag, path, z, half_w, half_h in runs:
+        a0_run, a1_run = base_a0 - half_w, base_a1 + half_w
         if along_x:
             run_bounds = a0_run, a1_run, gap[0], gap[1]
-            block = blocks_by_radius.get(radius)
+            block = blocks_by_half_w.get(half_w)
             if block is None:
                 block = box(a0_run, gap[0], a1_run, gap[1])
-                blocks_by_radius[radius] = block
+                blocks_by_half_w[half_w] = block
         else:
             run_bounds = gap[0], gap[1], a0_run, a1_run
-            block = blocks_by_radius.get(radius)
+            block = blocks_by_half_w.get(half_w)
             if block is None:
                 block = box(gap[0], a0_run, gap[1], a1_run)
-                blocks_by_radius[radius] = block
+                blocks_by_half_w[half_w] = block
         for i in range(len(path) - 1):
             pa, pb = path[i], path[i + 1]
             if abs(pa[0] - pb[0]) < 1e-9 and abs(pa[1] - pb[1]) < 1e-9:
@@ -246,9 +251,9 @@ def crossing_runs(
                 continue
             ts = [leg.project(Point(xy)) / leg.length for xy in piece.coords]
             zs = [z[i] + (z[i + 1] - z[i]) * t for t in ts]
-            if max(zs) + radius < z0 + GRAZE_M or min(zs) - radius > z1 - GRAZE_M:
+            if max(zs) + half_h < z0 + GRAZE_M or min(zs) - half_h > z1 - GRAZE_M:
                 continue  # under or over the joists, grazing at most
             perps = [xy[1] if along_x else xy[0] for xy in piece.coords]
-            out.append((tag, min(perps) - radius, max(perps) + radius,
-                        min(zs) - radius, max(zs) + radius))
+            out.append((tag, min(perps) - half_w, max(perps) + half_w,
+                        min(zs) - half_h, max(zs) + half_h))
     return out
