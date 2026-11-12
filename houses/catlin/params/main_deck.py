@@ -336,7 +336,8 @@ MECH_FLOOR = FloorSystem(
     # FO-M-ERV-EA is the discharge, which stayed in the chase but re-stationed. Each cuts one
     # joist. The vents, the radon riser and the conduits through this deck are still undrawn —
     # see the openings' own notes in plan/storeys/main.py.
-    openings=("FO-M-ERV-OA",),
+    # FO-M-ERV-SUP-FEED (2026-11-12): DU-M-ERV-SUP-FEED's 6" hole in one bay, no member cut.
+    openings=("FO-M-ERV-OA", "FO-M-ERV-SUP-FEED"),
     # W-B-N3 at x=8', W-B-N4 at x=5'-10", its east end: the FO-M-ERV-OA chase (x 6"..48 1/2")
     # and DU-ERV-RISER-SUP's 6" run west through the third space (x 17"..68") leave no other
     # spot. The station also serves W-B-N3's west end.

@@ -287,6 +287,21 @@ def test_the_bench_dampers_fully_open_charge_is_the_notes(catlin_model_ro) -> No
     assert _duct_drop(ctx, duct, 1).drop_in_wg == pytest.approx(0.00020789, abs=2e-8)
 
 
+def test_the_level2_supply_feed_is_the_notes(catlin_model_ro) -> None:
+    """Note §10.25 addendum: 45 cfm through 6", 134.1375" and one stamped 90 is 0.002241
+    friction + 0.000720 elbow, teed off the riser's basement corner."""
+    from typehaus.checks.mep.erv_static import _duct_drop
+
+    ctx = check_context(model=catlin_model_ro)
+    feed = next(d for d in catlin_model_ro.ducts if d.tag == "DU-M-ERV-SUP-FEED")
+    assert feed.length_m / 0.0254 == pytest.approx(134.1375, abs=1e-3)
+    assert _duct_drop(ctx, feed, 1).drop_in_wg == pytest.approx(0.0029610, abs=2e-7)
+    tee = [p for p in catlin_model_ro.duct_parts
+           if p.kind == "tee" and p.run_tag == "DU-ERV-RISER-SUP"]
+    assert [t.product_ref for t in tee] == ["PROD-DUCT-TEE-6-6"]
+    assert tee[0].point[:2] == pytest.approx(feed.path[0], abs=1e-6)
+
+
 def test_sauna_radials_route_through_clear_stud_bays_without_plate_or_duct_conflicts(
         catlin_model_ro, catlin_model_report) -> None:
     """Both sauna branches stay in the authored wall bays and clear the former header cut."""

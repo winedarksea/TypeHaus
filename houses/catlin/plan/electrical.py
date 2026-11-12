@@ -1213,9 +1213,11 @@ CONDUIT_TRUNKS = [
                # under CD-B-KITCHEN and the sauna vent, north between the cold trunk's dip and the supply plenum, and
                # east along the north wall under the kitchen drain and the cold riser.
                # Since 2026-10-31 from ED-B-PANEL-2 (CKT-EV-1450's panel): up its top at x=9",
-               # north on the wall strip to y=27'-10", then east as before.
+               # north on the wall strip to y=27'-10", then east as before. x=4'-6 1/2" since
+               # 2026-11-12 (was 4'-11 1/2"), west of the cold trunk: DU-M-ERV-SUP-FEED takes
+               # the lane between the trunk and the kitchen drain (erv_static_budget.md §10.25).
                path=(pt(inch(9), inch(304)), pt(inch(9), inch(304)), pt(inch(9), inch(334)),
-                     pt(inch(59.5), inch(334)), pt(inch(59.5), ft(35, 3)),
+                     pt(inch(54.5), inch(334)), pt(inch(54.5), ft(35, 3)),
                      pt(ft(16), ft(35, 3)),
                      pt(ft(16), ft(35, 5)), pt(ft(16), ft(35, 5))),
                start_elevation=inch(-31.4375), end_elevation=ft(-4), elevations=(inch(-31.4375), inch(-17.6), inch(-17.6), inch(-17.6), inch(-17.6), inch(-17.6), inch(-17.6), ft(-4)),

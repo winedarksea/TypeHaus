@@ -159,21 +159,23 @@ EQUIPMENT_TYPES_ERV = (
     # diameter — two 4" collars on 2" centres are one 6" hole — and refuses a layout that
     # disagrees with `duct_ports`.
     EquipmentType(tag="EQ-T-ERV-PLENUM-M-SUP",
-                  name="Fabricated supply plenum, 8in inlet, 2 x 4in dampered collars",
-                  footprint=(inch(24), inch(8)), height=inch(8), plan_symbol="erv",
+                  name="Fabricated supply plenum, 6in bottom inlet, 2 x 4in dampered collars",
+                  footprint=(inch(24), inch(11.5)), height=inch(8), plan_symbol="erv",
                   duct_ports=2, port_diameter=inch(4),
                   static_loss_pa_at_cfm=((60.0, 0.5), (120.0, 1.8), (210.0, 5.5)),
-                  source="Fabricated galvanized plenum for THIS house, 24 x 8 x 8 in: an 8 in trunk inlet and two 4 in dampered start collars at the stations below (a third, for LIVING, was cut from the order 2026-11-11: LIVING tees off BED). The collar layout is a shop drawing and is authored here rather than in library/hvac.py for that reason. No submittal has been read; the stations are the design's and the fabricator confirms them.",
+                  source="Fabricated galvanized plenum for THIS house, 24 x 11 1/2 x 8 in: a 6 in inlet in the underside (DU-M-ERV-SUP-FEED) and two 4 in dampered start collars at the stations below (a third, for LIVING, was cut from the order 2026-11-11: LIVING tees off BED). The collar layout is a shop drawing and is authored here rather than in library/hvac.py for that reason. No submittal has been read; the stations are the design's and the fabricator confirms them.",
+                  # 11 1/2" deep since 2026-11-12: the feed's collar must clear the joist under
+                  # it and STUDY's riser beside it (§10.25); collars keep their stations.
                   ports=(ServicePort(tag="trunk", service=Service.SUPPLY_AIR,
-                                     position=(ft(0), ft(0), inch(4))),
+                                     position=(inch(10), inch(2.375), inch(0))),
                          ServicePort(tag="collar-study", service=Service.SUPPLY_AIR,
-                                     position=(inch(6), inch(0.625), inch(4)),
+                                     position=(inch(6), inch(-1.125), inch(4)),
                                      connection_size=inch(4),
                                      certainty=PortCertainty.EXACT),
                          # y +1" (2026-09-23): +4" stood the riser in FS-S-WEST's
                          # moved 34'-5 3/4" truss.
                          ServicePort(tag="collar-bed", service=Service.SUPPLY_AIR,
-                                     position=(inch(10), inch(-3.75), inch(4)),
+                                     position=(inch(10), inch(-5.5), inch(4)),
                                      connection_size=inch(4),
                                      certainty=PortCertainty.EXACT))),
     # ** THE EXTRACT BOX IS NOT A MANIFOLD ANY MORE. ** Level 2 went trunk-and-branch on
@@ -223,25 +225,27 @@ EQUIPMENT_TYPES_ERV = (
     # `mep.equipment_port_service` grades them at service level the way it always has.
     EquipmentType(tag="EQ-T-ERV-PLENUM-B-SUP",
                   name="Fabricated supply plenum, 6in trunk + 6in riser, 2 x 4in dampered collars",
-                  footprint=(inch(36), inch(8)), height=inch(8), plan_symbol="erv",
+                  footprint=(inch(38), inch(8)), height=inch(8), plan_symbol="erv",
                   duct_ports=2, port_diameter=inch(4),
                   # Note §4's method on a 6in trunk collar (it was the 8in box's curve): 0.80 x
                   # 17.76 Pa expansion + 1.02 Pa port = 15.2 Pa at 210 cfm, Q^2 (§10.6).
                   static_loss_pa_at_cfm=((60.0, 1.24), (120.0, 4.96), (210.0, 15.2)),
-                  source="Fabricated galvanized plenum for THIS house, 36 x 8 x 8 in: a 6 in trunk inlet and a 6 in riser takeoff in the underside, and two 4 in dampered start collars at the stations below. The collar layout is a shop drawing and is authored here rather than in library/hvac.py for that reason. No submittal has been read; the stations are the design's and the fabricator confirms them.",
+                  source="Fabricated galvanized plenum for THIS house, 38 x 8 x 8 in: a 6 in trunk inlet in the underside, a 6 in riser takeoff on the north face, and two 4 in dampered start collars at the stations below. The collar layout is a shop drawing and is authored here rather than in library/hvac.py for that reason. No submittal has been read; the stations are the design's and the fabricator confirms them.",
                   # Trunk inlet where DU-B-ERV-SUP-TRUNK rises off Broan port 2 (2026-11-05).
                   ports=(ServicePort(tag="trunk", service=Service.SUPPLY_AIR,
-                                     position=(inch(10.65625), inch(-0.875), inch(0))),
+                                     position=(inch(11.65625), inch(-0.875), inch(0))),
+                         # 38" since 2026-11-12: the riser moved 3" west to x=5'-2" for the
+                         # feed's lane, and the box grew 2" west to keep its collar on the face.
                          ServicePort(tag="riser", service=Service.SUPPLY_AIR,
-                                     position=(inch(-12), inch(4), inch(4))),
+                                     position=(inch(-15), inch(4), inch(4))),
                          # (2026-11-11) collar-sauna is not cut: DU-B-ERV-R-SAUNA-SUP taps GYM.
                          # x 9" -> 4" (2026-11-01): the trunk now rises at x +10 5/8".
                          ServicePort(tag="collar-gym", service=Service.SUPPLY_AIR,
-                                     position=(inch(4), inch(-4), inch(4)),
+                                     position=(inch(5), inch(-4), inch(4)),
                                      connection_size=inch(4),
                                      certainty=PortCertainty.EXACT),
                          ServicePort(tag="collar-play", service=Service.SUPPLY_AIR,
-                                     position=(inch(18), inch(0), inch(4)),
+                                     position=(inch(19), inch(0), inch(4)),
                                      connection_size=inch(4),
                                      certainty=PortCertainty.EXACT))),
     # The extract box is the same shell with the air going the other way: the riser brings

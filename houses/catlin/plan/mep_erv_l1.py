@@ -157,7 +157,7 @@ EQUIPMENT_ERV_BASEMENT = [
     # y=30'-5 1/2", not 30'-6": at 30'-6" the box's north face stood 3/8" inside
     # W-B-ESS-S's gypsum (structural.placeable_interference). Collars move 1/2", in tolerance.
     Equipment(uid="QGMYDXSMKH", tag="EQ-B-ERV-MAN-SUP", kind=EquipmentKind.DUCT_MANIFOLD,
-              position=pt(ft(6, 6), ft(30, 5.5)), footprint=(inch(36), inch(8)),
+              position=pt(ft(6, 5), ft(30, 5.5)), footprint=(inch(38), inch(8)),
               room="RM-B-FURNACE", type_ref="EQ-T-ERV-PLENUM-B-SUP",
               mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 2))),
     # y=27'-2 1/2" since 2026-11-11 (14 1/2" south): the return port's 13" leg under

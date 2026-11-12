@@ -1406,7 +1406,7 @@ SAUNA-EXH 0.029835 at 26 cfm, `EQ-B-ERV-MAN-EXH`, and the extract chain.
 **Governing:** unchanged. Extract via `DU-M-ERV-R-SUITEBATH`, 0.550724 in., **200.0 cfm**
 against R403.5's 188.0 (§10.23, +12.0). Engine: 0.550724, 199.99 cfm; bench leg 0.000208.
 
-### 10.25 EQ-M-ERV-MAN-SUP's feed, re-measured with EA's 1" wrap: still no 6" lane (2026-11-12)
+### 10.25 EQ-M-ERV-MAN-SUP's feed: no lane in the closet; drawn from the basement (2026-11-12)
 
 `mep.manifold_feed` FAILs the box: BED and STUDY leave its collars and nothing arrives. §10.13's
 gates, re-read off the resolved envelopes (EA's wrap now 10" OD, axis (24.625", 418.5")):
@@ -1447,6 +1447,39 @@ drawn 6" FloorOpening in that bay under the box (east of FO-M-ERV-OA's header). 
 the tee off the riser's basement corner still has to step 3 1/2" west. (b) The three chase
 conduits out of x 18.8-22.8", so EXH can stand north of SUP and the feed leaves SUP's east
 face at y 406.8". (c) EA's riser and hood moved: held (§10.12).
+
+**Addendum, same day: (a) drawn.** CD-B-GARAGE's north leg moved from x=59.5" to 54.5", west of
+PR-B-CW-TRUNK. `DU-ERV-RISER-SUP` moved from x=65" to 62" and up 1" (-18 7/16"; bay leg -6.4"), and
+`EQ-B-ERV-MAN-SUP` grew 36 -> 38" west so its collar stays on the face. `DU-M-ERV-SUP-FEED` tees off
+the riser's basement corner (62", 394.8") and runs straight north at -18 7/16", 4.2" off
+KITCH-DRAIN's drop and 0.4" over its leg. One stamped 90 takes it up through `FO-M-ERV-SUP-FEED`
+(7" x 6 1/2", in the 405-421" bay, cutting no member) into the box's underside at y=412".
+`EQ-M-ERV-MAN-SUP` is 11 1/2" deep now (was 8), so that collar clears the joist flange (406.5") and
+STUDY's riser (5.32" between centres against 5.0); the radials' collars keep their stations.
+
+    feed: 45 cfm, 6", 17.2" + 116.9375" = 134.1375", one stamped 90 (C 0.22)
+      A = 0.19635 ft2, V = 229.18 fpm, VP = 0.0032746 in., Re = 11,717, f = 0.03061
+      friction = 0.03061 x (11.178 / 0.5) x 0.0032746 = 0.002241;  elbow 0.000720
+      leg = 0.002961 in.
+    riser to the tap: 24.8" at 160 cfm, no turn before it (the corner is the tee)
+      V = 814.87, VP = 0.0413976, Re = 41,660, f = 0.02358 -> 0.004035 in.
+    riser past the tap: 330.77" at 115 cfm, the seven turns (five stamped 90s at 0.22, the two
+      30 degree bends adjustable, 0.37 x 0.45): C = 1.433
+      V = 585.69, VP = 0.0213861, Re = 29,943, f = 0.02504 -> 0.029518 + 1.433 x VP 0.030646
+      = 0.060164 in.
+    riser whole (the old charge): 357.57" -> 355.57" now; 0.117497 -> 0.117172 in.
+
+| path | before | after | delta |
+|---|---|---|---|
+| supply via LIVING | 0.540112 | 0.540112 - 0.117494 + 0.004035 + 0.002961 = **0.429614** | -0.1105 |
+| supply via BED | 0.519253 | 0.408754 | -0.1105 |
+| supply via STUDY | 0.474268 | 0.363770 | -0.1105 |
+| supply via HP-FEED into EQ-S-ERV-MIX | 0.538463 | 0.538463 - 0.117494 + 0.064199 = **0.485167** | -0.0533 |
+| extract via SUITEBATH (governs) | 0.550724 | 0.550724 | 0 |
+
+The engine reads the same figures (0.429614, 0.485167; feed leg 0.0029610). The supply side now
+trails the extract by 0.0656". **Delivered is unchanged: 200.0 cfm against 188.0.** The tee's own
+junction loss is ungraded, as everywhere else in this budget.
 
 ### 10.5 The thermal penalty of the legs (hand-worked)
 

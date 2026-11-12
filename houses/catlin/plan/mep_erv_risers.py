@@ -19,6 +19,7 @@ from .erv_balance import (
     DU_ERV_RISER_EXH,
     DU_ERV_RISER_SUP,
     DU_M_ERV_EXH_FEED,
+    DU_M_ERV_SUP_FEED,
 )
 
 # ====================================== RISERS =======================================
@@ -115,12 +116,14 @@ DUCTS_ERV_RISERS = [
             # The 1 5/8" x-jog onto the riser foot is a PAIR OF 30 DEGREE bends (2026-11-05): two 90s
             # on a 6" duct want 6" between them and the jog had 1.7". It starts at y=399 1/8", past
             # the enclosure's y=398" space edge, so the duct never leaves x >= 14".
-            path=(pt(inch(65), ft(30, 10)), pt(inch(65), inch(394.8)),
-                  pt(inch(65), inch(394.8)), pt(inch(17.0625), inch(394.8)),
+            # (2026-11-12) x=5'-2" and 1" up (-18 7/16", the bay leg -6.4"): its corner is
+            # DU-M-ERV-SUP-FEED's tee, a lane 4.2" off PR-B-KITCH-DRAIN's x=66 1/2" drop.
+            path=(pt(inch(62), ft(30, 10)), pt(inch(62), inch(394.8)),
+                  pt(inch(62), inch(394.8)), pt(inch(17.0625), inch(394.8)),
                   pt(inch(17.0625), inch(394.8)), pt(inch(17.0625), inch(399.1)),
                   pt(inch(15.4), inch(401.98)), pt(inch(15.4), inch(406.8)),
                   pt(inch(15.4), inch(406.8))),
-            elevations=(inch(-19.4375), inch(-19.4375), inch(-7.4), inch(-7.4),
+            elevations=(inch(-18.4375), inch(-18.4375), inch(-6.4), inch(-6.4),
                         inch(-17.9375), inch(-17.9375), inch(-17.9375), inch(-17.9375),
                         inch(231.875)),
             # 150 cfm: the 210 at its foot less the basement plenum's 60. Its highest flow
@@ -272,21 +275,20 @@ DUCTS_ERV_RISERS = [
             elevations=(inch(101.25), inch(93.5), inch(93.5), inch(93.5)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=DU_M_ERV_EXH_FEED),
-    # ===== THE SUPPLY FEED IS NOT DRAWN: NO 6" LANE LEAVES DU-ERV-RISER-SUP =====
+    # ===== THE SUPPLY FEED (2026-11-12, notes/erv_static_budget.md §10.25) =====
     #
-    # Re-measured 2026-11-12 with DU-ERV-EA's 1" wrap (notes/erv_static_budget.md §10.25).
-    # Every obstacle is full height, so no elevation opens anything:
-    #
-    #     north: CD-B-SPARE-CHASE top 410.5" -> EA wrap 413.5"   = 3.0" (EXH crown alone 3.7")
-    #     east:  SUP riser 18.4" -> EXH riser 23.9"              = 5.5", holding three conduits
-    #     south: EXH riser 403.8" -> W-M-MECH-S finish 402.25"   = 1.55"
-    #
-    # The closet is 23 1/8" deep across the column; EXH + feed + EA stacked at 1/2"
-    # clearances is 24", so no re-pack of this file's ducts around the conduits opens it.
-    # The basement is fenced too: under FO-M-ERV-OA by DU-ERV-OA's leg, and east of its
-    # header by CD-B-GARAGE (x 60.3") and PR-B-KITCH-DRAIN (x 65.3"), 5.0" apart, with a
-    # joist bay (no drawn hole) above. `haus route` from the riser at +80": 80 of 12,881
-    # nodes reachable, and lifting either chase conduit alone opens nothing. Until another
-    # trade moves, `mep.manifold_feed` FAILs EQ-M-ERV-MAN-SUP, and the static budget charges
-    # its paths the whole riser at 160 cfm (`erv_routes`' nearest-trunk rule).
+    # No 6" lane leaves the riser in the closet: SUP, the three chase conduits, EXH and EA
+    # leave 3.0" at best, and the closet is 23 1/8" deep against the 24" a re-pack needs. So
+    # the feed tees off the riser's BASEMENT corner, where the riser turns up into its bay:
+    # straight on north at -18 7/16" under the joists, in the lane between PR-B-CW-TRUNK
+    # (x 57") and PR-B-KITCH-DRAIN's drop (x 66 1/2") that CD-B-GARAGE vacated, 0.4" over
+    # the drain's leg at y=33'-7"; then one stamped 90 up through FO-M-ERV-SUP-FEED (the
+    # 405-421" bay east of FO-M-ERV-OA's header) into the box's underside at y=412". In the
+    # closet it stands 6 3/4" off W-M-MECH-S, behind the doorway's east end.
+    DuctRun(uid="BKT25YWMSR", tag="DU-M-ERV-SUP-FEED", system=DuctSystem.SUPPLY,
+            path=(pt(inch(62), inch(394.8)), pt(inch(62), inch(412)),
+                  pt(inch(62), inch(412))),
+            elevations=(inch(-18.4375), inch(-18.4375), inch(98.5)),
+            diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
+            design_cfm=DU_M_ERV_SUP_FEED),
 ]

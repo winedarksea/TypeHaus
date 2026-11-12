@@ -71,7 +71,7 @@ from .erv_balance import (
 # the finding that put a manifold here at all.
 EQUIPMENT_ERV_MAIN = [
     Equipment(uid="NTBY655GF8", tag="EQ-M-ERV-MAN-SUP", kind=EquipmentKind.DUCT_MANIFOLD,
-              footprint=(inch(24), inch(8)),
+              footprint=(inch(24), inch(11.5)),
               room="RM-M-MECH", type_ref="EQ-T-ERV-PLENUM-M-SUP",
               mount=Mount(kind=MountKind.WALL, elevation=ft(8)),
               location=Location(attachment=WallAttachment(

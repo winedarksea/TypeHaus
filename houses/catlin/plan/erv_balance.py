@@ -92,6 +92,7 @@ DU_S_ERV_HP_FEED = EQ_S_ERV_MIX
 # --- trunks and risers: the legs each one gathers -----------------------------------------
 # Level 2 (the RM-M-MECH plenums): 45 supply, 119 extract.
 _LEVEL2_SUPPLY = DU_M_ERV_R_BED + DU_M_ERV_R_STUDY  # BED carries LIVING
+DU_M_ERV_SUP_FEED = _LEVEL2_SUPPLY  # the riser's basement tee up to EQ-M-ERV-MAN-SUP
 DU_M_ERV_EXH_TRUNK = (DU_M_ERV_R_BATH1 + DU_M_ERV_R_BATH2 + DU_M_ERV_R_LAUNDRY
                       + DU_M_ERV_R_KITCH + DU_M_ERV_R_MUD + DU_M_ERV_R_BED2
                       + DU_M_ERV_R_SUITEBATH + DU_M_ERV_R_VANITY

@@ -2003,6 +2003,12 @@ FLOOR_OPENINGS = [
                            function=LayerFunction.INSULATION),
                  ),
                  fireblock_sealant="firestop-sealant"),
+    # DU-M-ERV-SUP-FEED's hole (2026-11-12): sized to the 6" duct inside the 405-421" bay east
+    # of FO-M-ERV-OA's header and west of the x=70" blocking, so it cuts no member.
+    FloorOpening(uid="4HJC87AJHH", tag="FO-M-ERV-SUP-FEED", purpose=FloorOpeningPurpose.CHASE,
+                 outline=(pt(inch(58.5), inch(408.75)), pt(inch(65.5), inch(408.75)),
+                          pt(inch(65.5), inch(415.25)), pt(inch(58.5), inch(415.25))),
+                 penetration_for=("DU-M-ERV-SUP-FEED",)),
 ]
 
 # The tub deck's cap: 3/4" exterior-grade plywood over W-M-TUBDK-W/-S and the two room walls
