@@ -350,6 +350,14 @@ class Equipment(Element):
     # the indirect waste that empties the pan.
     drain_pan: bool = False
     pan_drain_ref: str | None = None
+    # IMC 307.2.3 (``mep.condensate_overflow``), the four options in three fields: an
+    # auxiliary pan under the coil; the PipeRun carrying overflow to a conspicuous point (from
+    # that pan, or from the unit's own pan's overflow port when there is none); and the
+    # Equipment a UL 508 water-level switch shuts off (this unit or its ``outdoor_ref``) —
+    # in the auxiliary pan when there is one, else in the primary pan or drain line.
+    secondary_drain_pan: bool = False
+    overflow_drain_ref: str | None = None
+    float_switch_ref: str | None = None
     # --- Installation facts: how the unit is got at once the ceiling is closed -----------
     # A machine concealed behind a removable panel is serviceable; the same machine behind
     # a taped ceiling is not, and nothing else in this model distinguishes them. Shaped

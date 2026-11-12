@@ -158,7 +158,10 @@ def test_every_code_finding_carries_a_citation(profile, starter_dir) -> None:
 # RAISED 27 -> 28 on 2026-11-10: "Concrete-encased electrode" (NEC 250.52(A)(3), decision
 # #123); earth contact through a drained stone bed is the inspector's reading, and the rods
 # complete the electrode system whatever it is, so it stages rather than gates.
-MAX_NON_BLOCKING_ITEMS = {"mn-2020": 28}
+#
+# RAISED 28 -> 29 on 2026-11-12: "Condensate overflow protection" (IMC 307.2.3); staged until
+# catlin authors EQ-S-HP1-AH's float switch, then flips to blocking and this falls back.
+MAX_NON_BLOCKING_ITEMS = {"mn-2020": 29}
 
 # The engineered lines are counted separately, and the split is not bookkeeping — the two
 # lanes have different exit conditions. A staging item leaves its lane when *this engine*
