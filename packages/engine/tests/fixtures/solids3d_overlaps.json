@@ -183,7 +183,7 @@
   "duct_exhaust|terminal_neck": [1, 4e-06],
   "duct_exhaust|wall": [7, 0.07329],
   "duct_fitting|duct_outdoor_air": [1, 0.004944],
-  "duct_fitting|duct_return": [8, 0.003633],
+  "duct_fitting|duct_return": [9, 0.010241],
   "duct_fitting|duct_supply": [14, 0.033223],
   "duct_fitting|duct_support": [2, 3e-06],
   "duct_fitting|equipment": [2, 7e-06],

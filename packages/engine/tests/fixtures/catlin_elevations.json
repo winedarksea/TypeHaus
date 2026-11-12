@@ -2255,6 +2255,9 @@
 "canvas_objects/FX-S-VANITY-LAV2/body_z0_m": 3.0861,
 "canvas_objects/FX-S-VANITY-LAV2/body_z1_m": 4.2148125,
 "canvas_objects/FX-S-VANITY-LAV2/z_m": 3.0861,
+"canvas_objects/REG-A-HP-EAST-RET/body_z0_m": 6.26745,
+"canvas_objects/REG-A-HP-EAST-RET/body_z1_m": 6.638925,
+"canvas_objects/REG-A-HP-EAST-RET/z_m": 6.26745,
 "canvas_objects/REG-A-HP-EAST/body_z0_m": 6.08965,
 "canvas_objects/REG-A-HP-EAST/body_z1_m": 6.11505,
 "canvas_objects/REG-A-HP-EAST/z_m": 6.11505,
@@ -3395,6 +3398,12 @@
 7.0104,
 7,
 "b4dc62525cfa"
+],
+"ducts/DU-A-HP1-EAST-RET/z_m": [
+6.4516,
+6.4516,
+2,
+"392ef2e9035d"
 ],
 "ducts/DU-A-HP1-RET-NECK/z_m": [
 6.4531875,
@@ -67220,6 +67229,18 @@
 2,
 "b68239981866"
 ],
+"geometry/MZW8P3P49V-boot-1/body": [
+6.2569646,
+6.4620854,
+10,
+"e048ddfc84ef"
+],
+"geometry/MZW8P3P49V-run/body": [
+6.2992,
+6.604,
+8,
+"7793be350af4"
+],
 "geometry/N-G-NE-corrugated-corner-0/body": [
 -0.3048,
 2.2352,
@@ -118558,6 +118579,10 @@
 "solids/DU-A-ERV-R-STUBATH-HANGER-9/z1_m": 6.2175034,
 "solids/DU-A-ERV-R-STUBATH-RUN/z0_m": 5.969,
 "solids/DU-A-ERV-R-STUBATH-RUN/z1_m": 7.0104,
+"solids/DU-A-HP1-EAST-RET-BOOT-1/z0_m": 6.2569646,
+"solids/DU-A-HP1-EAST-RET-BOOT-1/z1_m": 6.4620854,
+"solids/DU-A-HP1-EAST-RET-RUN/z0_m": 6.2992,
+"solids/DU-A-HP1-EAST-RET-RUN/z1_m": 6.604,
 "solids/DU-A-HP1-RET-NECK-CONNECTOR-1/z0_m": 6.2499875,
 "solids/DU-A-HP1-RET-NECK-CONNECTOR-1/z1_m": 6.6563875,
 "solids/DU-A-HP1-RET-NECK-RUN/z0_m": 6.2499875,

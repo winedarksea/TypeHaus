@@ -1915,11 +1915,13 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       both south of `RM-B-ESS` and in the furnace room's one free lane at x 8'-2".
       `EQ-B-HP2-GYM`'s is `PR-B-COND-HP2-GYM`, pumped from its lineset cover onto `PR-B-COND`.
     - **`REG-S-HP-RET` is a ceiling filter grille in `SF-S-DUCT`'s underside**: `AO-S-DUCT-RET`
-      is exactly its 28x12 neck, and the return duct (not the soffit cavity) is behind it
+      is exactly its 24x12 neck, and the return duct (not the soffit cavity) is behind it
       (IMC 601.5; no check catches a cavity return). The neck is the rack plus the shop filter
       box, 15 1/8" up to `DU-S-HP-RET`'s underside: do not draw the box as a run (a vertical
-      rectangular riser grades as a square of its width). 490 cfm; the 12x28x1 filter stays
-      custom until System 1 books a static budget (`notes/air_distribution_products.md` §5).
+      rectangular riser grades as a square of its width). 455 cfm on a stock 12x24x1 (14x25x1
+      does not fit: 12.5" clear in y); static budget and change-out drop in
+      `notes/air_distribution_products.md` §5. `RM-A-EAST-UNFIN` returns through
+      `REG-A-HP-EAST-RET` on `EQ-S-ERV-MIX`'s south face, damper-locked at 35 cfm.
     - **RM-S-PLANT's supply is `REG-S-HP-PLANT`, a high sidewall on W-S-C1's plant face above
       D-S-PLANT** (y=41", the cripple bay between y=33" and 49"), fed by `DU-S-HP-PLANT`, a 6"
       take-off off `DU-S-HP-SOUTH-RISE`; its 24 VAC RH damper is behind the grille. No hatch, no

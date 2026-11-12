@@ -83,41 +83,66 @@ The stair supply has an [explicit 4in branch and named register box](stair_suppl
 
 ## 5. The return filter grille — `REG-T-HP-RET-FILTER`
 
-**12x28x1 is not a stocked filter size** (Filterbuy, Filter King, AllFilters, Home Depot), so
-the 28x12 grille (H&C 673 class, hinged, or equal TRUaire 190RF / Shoemaker 620FG) takes a
-**custom 12x28x1 MERV 13** ordered online. The rung that crossed the hole is headed off
+The hall grille is a 24x12 hinged filter-back (H&C 673 class, or equal TRUaire 190RF /
+Shoemaker 620FG) taking a **stock 12x24x1 MERV 13** (owner, 2026-11-12). The custom 12x28x1
+this section used to carry is retired. The rung that crossed the hole is headed off
 (`AO-S-HP1-RET`).
+
+**Why 12x24 and not 14x25x1.** 14x25x1 is the largest stock size that would otherwise fit
+`SF-S-DUCT`, and was tried first (187 fpm, ~0.20" clean). It cannot stand in the hole: the
+`FS-ATTIC` joists leave 13 11/16" clear in the y 352-368 bay and the soffit's north end takes
+2 1/8" of it, so the neck has **12.5" in y**, and `mep.terminal_neck_fit` refused a 14" neck
+(0.91" into the joist, 0.62" into `soffit-end-n`). The short side stays at 12".
 
 **Design airflow (2026-11-12).** `EQ-S-HP1-AH` is 760 cfm at 0.5" ESP, speed 3 (Gree FXU24
 submittal); the plan runs 750. The hall grille carries 750 - 100 (ERV) - 80 (suite) - 80 (BED3)
-= **490 cfm**. The 570 this section and `system1_return_path.md` carried was before BED3's
-return (2026-11-11); `REG-S-HP-RET`'s 490 is right.
+- 35 (east room, `REG-A-HP-EAST-RET`) = **455 cfm** (490 before the east return; 570 before
+BED3's, 2026-11-11).
 
-**Re-test of a stocked 12x24x1 (2026-11-12): not swapped.** Zephyr VGP MERV 13 data sheet
-(`ZEP25252-VGP-MERV-13-Product-Spec-Sheet-Updates-V2.pdf`, zephyrfiltration.com, 2025): 1"
-depth at **300 fpm** is 0.32" w.g. initial and **1.0" w.g. final**; 12x24x1 is stocked, actual
-11.38 x 23.38, capacity 600 cfm (= 300 fpm on the 2.0 sf nominal face).
+**The filter.** Zephyr VGP MERV 13 data sheet (`ZEP25252-VGP-MERV-13-Product-Spec-Sheet-Updates-V2.pdf`,
+zephyrfiltration.com, 2025): 1" depth at **300 fpm** is 0.32" w.g. initial and **1.0" w.g.
+final**; 12x24x1 is stocked, actual 11.38 x 23.38, capacity 600 cfm (= 300 fpm on the 2.0 sf
+nominal face).
 
-| | 12x24x1 (stock) | 12x28x1 (custom) |
-|---|---|---|
-| nominal face | 2.0 sf | 2.333 sf |
-| face velocity at 490 cfm | 245 fpm (265 on the actual 1.85 sf) | 210 fpm |
-| initial drop, scaled linearly from 0.32" at 300 fpm | ~0.26" | ~0.22" |
-| final drop (published) | 1.0" (~0.82" scaled) | ~0.70" scaled |
+| | 12x24x1 at 455 cfm |
+|---|---|
+| nominal face | 2.0 sf |
+| face velocity | 228 fpm (246 on the actual 1.85 sf); Manual D 300 |
+| initial drop, scaled linearly from 0.32" at 300 fpm | ~0.24" |
+| final drop (published) | 1.0" (~0.76" scaled) |
 
-Velocity passes both (Manual D 300). Static does not: the AH has **0.5" ESP in all** and a
-filter loaded to the sheet's 1.0" final is twice that; clean, the stock filter takes 0.26" and
-leaves ~0.24" for everything else. **No note books System 1's duct losses** (the ERV's
-budget is `erv_static_budget.md`; this side has none), so "fits after the other losses" cannot
-be shown, and the stock size is no worse than the custom one in kind, only ~0.04" in the clean
-state. The sheet publishes no "recommended change" drop. So nothing changed in the model; the
-custom filter stays. Open: a System 1 static budget (grille + filter + trunk + coil, against
-0.5" at 760 cfm) and the change-out drop it implies. The 0.26" and 0.22" are scaled from the
-sheet's one published point, not read from it.
+The 0.24" is scaled from the sheet's one published point, not read from it, and the sheet
+publishes no "recommended change" drop.
+
+**System 1 static budget (2026-11-12), at 455 cfm through the hall grille, against 0.5" ESP:**
+
+| term | w.g. |
+|---|---|
+| hall grille face | 0.02" |
+| return duct, filter box and plenum (`DU-S-HP-RET`, `EQ-S-ERV-MIX`) | 0.06" |
+| supply side (`DU-S-HP-SUP`, trunk, boots, registers) | 0.15" |
+| filter, clean | 0.24" |
+| **total, clean** | **0.47" vs 0.5"** |
+
+The coil is **internal** to the unit's ESP rating, so the budget carries no coil term;
+that waits on the Gree submittal's rating conditions (open). The loss terms are hand
+estimates, not measured.
+
+* **Change out at a 0.27" filter drop.** That is 0.5" less the 0.23" of everything else; a
+  clean filter leaves 0.03". Read it from a manometer across the
+  filter at commissioning and at each change, not from the calendar. At 0.76" scaled final
+  the filter is far past it, so the limit is the change-out drop, not the sheet's final.
+* **The reserve is the speed-4 tap.** The unit's fan table (Gree submittal) gives the
+  delivered cfm at each tap and ESP; the number is **to be read from that table**, not assumed
+  here. It is what the system leans on once the filter loads past 0.27".
+* **The IOM (§2.5) shows a possible internal 16x20x1 filter slot** at the cabinet's return
+  opening. If the delivered cabinet has one populated it is a **second** filter in series
+  and adds its own drop (~0.36" at 750 cfm: 337 fpm on its 2.22 sf, scaled from the same sheet): leave it empty, or the budget
+  above is wrong. Confirm on the delivered unit.
 
 **The neck is the box.** `REG-T-HP-RET-FILTER`'s neck is the 1" rack plus the shop filter box,
-15 1/8" tall from the soffit face to `DU-S-HP-RET`'s underside (`boot-12x10-28x12`). E6's
-drop (`resolve/terminal_drops`) needs the arriving run to BE the neck's section, and a 28x12
+15 1/8" tall from the soffit face to `DU-S-HP-RET`'s underside (`boot-12x10-24x12`). E6's
+drop (`resolve/terminal_drops`) needs the arriving run to BE the neck's section, and a 24x12
 run does not fit the 14 1/4" bay (a vertical rectangular riser is also graded as a square of
 its width, `sweep_plan_silhouette`), so the box stays a boot.
 
@@ -125,8 +150,16 @@ its width, `sweep_plan_silhouette`), so the box stays a boot.
 filter-back grille (H&C 673 class, or equal TRUaire 190RF / Shoemaker 620FG) on a
 shop-fabricated 6x4 boot with a locking balancing damper. It lands in the plenum behind the
 hall filter, so it carries its own: **12x12x1 MERV 13, a stocked size**. 144 in² at 80 cfm is
-80 fpm. Face estimated as the 28x12's (+2 5/8"). Balance and commissioning:
+80 fpm. Face estimated as the 24x12's (+2 5/8"). Balance and commissioning:
 `notes/system1_return_path.md`.
+
+**RM-A-EAST-UNFIN's return — `REG-T-HP-RET-FILTER-1212-WALL` (2026-11-12).** The same stock
+12x12x1 MERV 13 and 12x12 grille, turned to a wall face (service face front, no neck: the
+plenum is the host), 14" AFF on the south face of `EQ-S-ERV-MIX`, 35 fpm at 35 cfm. A locked
+balancing damper in the stub (`DU-A-HP1-EAST-RET`, `boot-12x12-none`) holds 35 cfm: the
+plenum's returns are in parallel, so an open grille would pull far more than its share from
+the room. `integrity.wall_mount_on_face` cannot host a wall register on equipment, so that
+check is suppressed for this one tag (`preferences.toml`). Balance: `notes/system1_return_path.md`.
 
 ## 6. The mudroom transfer — `REG-T-TRANSFER-MUD-1210`
 

@@ -245,7 +245,7 @@ def test_the_only_serviceable_face_on_system_1_states_its_filter(catlin_plan):
     is the only filter in the system — and until now that lived only in a prose ``source``."""
     grille = next(t for t in catlin_plan.library.register_types
                   if t.tag == "REG-T-HP-RET-FILTER")
-    assert grille.filter_nominal_size == "28x12x1"
+    assert grille.filter_nominal_size == "12x24x1"
     assert grille.filter_merv == 13
     assert grille.service_face == "bottom"
 

@@ -3740,11 +3740,13 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # The stock 6x12x6 end boot bills in [duct_parts]. Allowance, not a quote; labour includes the
 # membrane flange seal, the 24 VAC pull and the RH interlock. Included once.
 "REG-T-HP-PLANT-SIDE" = { material = { low = 250, high = 380 }, labour = { low = 90, high = 200 } }  # 1 ea
-# 28x12 hinged filter-back return (H&C 673 class). The custom 12x28x1 MERV 13 filters are an
+# 24x12 hinged filter-back return (H&C 673 class). The stock 12x24x1 MERV 13 filters are an
 # owner consumable, not in the build.
 "REG-T-HP-RET-FILTER" = { material = { low = 60, high = 130 }, labour = { low = 18, high = 45 } }  # 1 ea
 # RM-S-SUITE's and RM-S-BED3's 12x12 filter-back returns (2026-11-09/11); stocked 12x12x1 filters.
 "REG-T-HP-RET-FILTER-1212" = { material = { low = 35, high = 80 }, labour = { low = 18, high = 45 } }  # 2 ea
+# RM-A-EAST-UNFIN's wall-face 12x12 (2026-11-12): the same grille on EQ-S-ERV-MIX, damper locked at 35 cfm.
+"REG-T-HP-RET-FILTER-1212-WALL" = { material = { low = 35, high = 80 }, labour = { low = 18, high = 45 } }  # 1 ea
 # The passive transfer: two 12x10 aluminium return grilles on a lined sleeve through the bay.
 "REG-T-TRANSFER-MUD-1210" = { material = { low = 30, high = 55 }, labour = { low = 30, high = 70 } }  # 1 grille, panel cut; no sleeve
 # D-S-BATH1's offset pair (2026-11-03): one 6x6 grille plus half the bay's sheet-metal liner.
@@ -6407,8 +6409,9 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "PROD-DUCT-TEE-4-4" = { low = 14, high = 18 }            # 1 ea — Master Flow T4X4X4, Home Depot ~$16 (owner, 2026-11-10)
 "PROD-DUCT-REDUCER-8-4" = { low = 32, high = 35 }        # 1 set — Imperial GV0821 8-6 + GV0811 6-4, stacked
 # Shop fabrication, estimate (material only; the make-up time is the sheet-metal visit):
-"boot-12x10-28x12" = { low = 40, high = 80 }             # 1 ea — REG-S-HP-RET boot up into the bay, shop fabrication, estimate
+"boot-12x10-24x12" = { low = 40, high = 80 }             # 1 ea — REG-S-HP-RET boot up into the bay, shop fabrication, estimate
 "boot-6x4-12x12" = { low = 40, high = 90 }               # 1 ea — RM-S-SUITE return box + locking damper, estimate
+"boot-12x12-none" = { low = 40, high = 90 }              # 1 ea — REG-A-HP-EAST-RET damper box on EQ-S-ERV-MIX's face, estimate
 "boot-12x6-12x12" = { low = 40, high = 90 }              # 1 ea — RM-S-BED3 return box + locking damper, estimate
 "boot-10x6-12x6" = { low = 25, high = 60 }               # 1 ea — shop fabrication, estimate
 "boot-10x8-12x6" = { low = 25, high = 60 }               # 2 ea — shop fabrication, estimate

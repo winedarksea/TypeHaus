@@ -267,7 +267,7 @@ def test_bed3_straight_branch_clears_framing_and_hall_return_grille_fills_its_ho
                 structural_shapes.append(shape)
     assert structural_shapes
     assert min(branch_body.distance(shape) for shape in structural_shapes) >= inch(.5).meters - 1e-9
-    # The 28x12 hole (the grille's neck), not its wider face, is SF-S-DUCT's framed
+    # The 24x12 hole (the grille's neck), not its wider face, is SF-S-DUCT's framed
     # AO-S-DUCT-RET: the return duct, not the soffit cavity, is behind it (IMC 601.5).
     from typehaus.resolve.terminal_necks import neck_boxes
 

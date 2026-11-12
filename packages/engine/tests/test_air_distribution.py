@@ -107,7 +107,7 @@ def test_a_ceiling_collar_takes_its_run_on_a_derived_drop(catlin_model_ro) -> No
 
 def test_a_rectangular_return_neck_takes_a_drop_and_guards_its_section(
         catlin_model_ro) -> None:
-    """REG-S-HP-RET's 28x12 neck: a rectangular run drawn onto its top is graded connected
+    """REG-S-HP-RET's 24x12 neck: a rectangular run drawn onto its top is graded connected
     (connectivity, end landing, and register_reach stands aside); another section is not."""
     from typehaus.checks.mep.register_reach import register_reach
     from typehaus.resolve.duct_terminations import end_landings
@@ -136,7 +136,7 @@ def test_a_rectangular_return_neck_takes_a_drop_and_guards_its_section(
     assert not reach and (lands.landing, lands.other) == ("terminal", reg)
     flipped, *_ = with_drop(width_m=neck.depth, depth_m=neck.width)  # either orientation
     assert flipped[0].result is Result.PASS
-    wrong, *_ = with_drop()  # DU-S-HP-RET is 12x10 and the neck 28x12
+    wrong, *_ = with_drop()  # DU-S-HP-RET is 12x10 and the neck 24x12
     assert wrong[0].result is Result.FAIL and "arrives as 12x10 but" in wrong[0].message
 
     # A level end over the neck gets its drop appended, as a round collar's does.

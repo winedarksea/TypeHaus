@@ -55,29 +55,12 @@ is the unsuppressed score. `mep.run_interference` (2026-11-08) and `mep.riser_th
 
 **Owner decisions**
 
-- [ ] **System 1 return relief and plant-room pressure** (`notes/system1_return_path.md`;
-  deferred by owner 2026-11-07). At the 1/2"-3/4" undercut rule, `mep.door_transfer_air` shows
-  RM-S-BED1/2/3 at 9.7 Pa, RM-S-PLANT 19.0, RM-A-EAST-UNFIN 4.8 and RM-A-STUDIO 3.8 against
-  3 Pa. RM-M-BED nets 5 cfm in behind sealed D-M-BED2. Choose transfer grilles, jump ducts or
-  room returns. RM-S-PLANT also runs ~70 cfm positive (75 in, 5 extract) against its
-  "neutral to slightly negative" design: decide the extract, the undercut or the target. Then
-  fix the stale 25 cfm prose in `notes/plant_room.md` (:43, :69, :462) and in `plan/mep_hvac.py`
-  :330, `mep_erv_types.py` :122 and `air_terminal_types.py` :159.
-- [ ] **System 1 static budget** (2026-11-12). Book grille + hall filter (Zephyr 1" MERV 13:
-  0.32" initial, 1.0" final at 300 fpm) + trunk + coil against `EQ-S-HP1-AH`'s 0.5" ESP at
-  760 cfm. Pick the filter change-out drop, then reconsider the declined stock 12x24x1
-  (`notes/air_distribution_products.md` §5).
-- [ ] **ERV airflow** (`notes/erv_static_budget.md` §10.4, §10.6): accept the 1.1 cfm shortfall
-  under 205 or go to 10" hoods (needs RenewAire FA10 data and a plate fit check). Owner/AHJ:
-  which floor area MN 1322 R403.5 means. The engine uses finish-face area (195 cfm); centreline
-  gives 205 and exterior dimensions give 214, past the 210 cfm machine.
-- [ ] **`mep.run_in_finished_volume` terminal grace ignores leg length** (decision #94). A
-  fixture's whole first or last leg is excused however long it is. Capping it at 24" or 48"
-  flags PR-M-CW-COLDSTORE-STUB (5.03 ft) and PR-M-DW-HW (4.12 ft) in RM-M-LIVING; both clear
-  only above ~60". Cap it and re-route those two, or keep the grace.
-- [ ] **HP3 disconnect:** a ladder under the bath-2 stall-dryer's high intake screen briefly
-  blocks part of its working width. Accept the overlap at maintenance time, or move the
-  disconnect (`notes/erv_service_access.md` :33).
+- [ ] **Plant-room pressure** (`notes/system1_return_path.md`; the rest of System 1's return
+  relief was settled by the owner 2026-11-12). RM-S-PLANT shows 19.0 Pa on
+  `mep.door_transfer_air` and runs ~70 cfm positive (75 in, 5 extract) against its "neutral
+  to slightly negative" design: decide the extract, the undercut or the target. Then fix the
+  stale 25 cfm prose in `notes/plant_room.md` (:43, :465), `plan/mep_hvac.py` :330 and
+  `mep_erv_types.py` :122.
 
 **System 1 air handler in the attic** (`RM-A-EAST-UNFIN`, 2026-11-11,
 `notes/flexx_ultra_geometry.md`). The room stays conditioned while it holds the unit; only its
@@ -123,8 +106,11 @@ finished area drops out.
 **Engine**
 
 - [ ] `sweep_plan_silhouette` treats a vertical rectangular riser as a square of its width, so
-  `REG-S-HP-RET`'s 28x12 filter box is graded as its 15 1/8" neck instead of a drawn drop
+  `REG-S-HP-RET`'s 24x12 filter box is graded as its 15 1/8" neck instead of a drawn drop
   (decision #129). Use separate half extents per axis (`resolve/sweep.py` `_plan_half_width`).
+- [ ] `integrity.wall_mount_on_face` hosts a wall mount only on a wall, column or soffit.
+  `REG-A-HP-EAST-RET` on `EQ-S-ERV-MIX`'s face is suppressed in catlin `preferences.toml`
+  until equipment can host one.
 - [ ] Deferred checks: insulation vs R403.2.1; per-segment duct insulation; M1506.3's 3 ft
   exception and the operable-opening distance; an insulation spec's thickness vs its R-value;
   a damper actuator inside a duct.

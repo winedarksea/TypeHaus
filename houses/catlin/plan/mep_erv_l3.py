@@ -64,7 +64,8 @@ EQUIPMENT_ERV_ATTIC = [
 # 27 1/2" x 39" x 21" on the deck, x 24'-10"..27'-1 1/2", y 27'-5"..30'-8", 4" off the
 # cabinet (its connector and a 1" collar): it takes the
 # hall return riser (DU-S-HP-RET, from the y 352-368 bay), RM-S-SUITE's (y 336-352 bay),
-# RM-S-BED3's deck leg on its north face and the ERV feed (DU-S-ERV-HP-FEED) on its floor, and
+# RM-S-BED3's deck leg on its north face, RM-A-EAST-UNFIN's 12x12 stub (DU-A-HP1-EAST-RET,
+# damper-locked at 35 cfm) on its south face and the ERV feed (DU-S-ERV-HP-FEED) on its floor, and
 # gives the cabinet DU-A-HP1-RET-NECK on its west face. The tag keeps its `-S-`.
 EQUIPMENT_ERV_SECOND = []
 # ============================== LEVEL 3 — ATTIC RADIALS ==============================

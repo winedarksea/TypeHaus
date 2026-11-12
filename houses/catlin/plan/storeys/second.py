@@ -1207,12 +1207,12 @@ SOFFITS = [
            underside_elevation=inch(94),
            width_between_walls=("W-S-C2B", "W-S-BW1"),
            framing=FramingSpec(member="2x2", spacing=inch(16)),
-           # REG-S-HP-RET's 28 x 12 hole; its boot rises through the open cavity top into
+           # REG-S-HP-RET's 24 x 12 hole; its boot rises through the open cavity top into
            # DU-S-HP-RET in FS-ATTIC's y 352-368 bay.
            openings=(SoffitOpening(
                tag="AO-S-DUCT-RET",
-               outline=(pt(inch(225), inch(353.5)), pt(inch(253), inch(353.5)),
-                        pt(inch(253), inch(365.5)), pt(inch(225), inch(365.5)))),)),
+               outline=(pt(inch(227), inch(353.5)), pt(inch(251), inch(353.5)),
+                        pt(inch(251), inch(365.5)), pt(inch(227), inch(365.5)))),)),
     # SF-S-HP1, the 23" air-handler box over RM-S-NCLOSET and the north hall, is RETIRED
     # (2026-11-11): EQ-S-HP1-AH could not get Gree's 24" front service space inside its
     # 36 1/2" clear width in any orientation, so the unit moved to the attic

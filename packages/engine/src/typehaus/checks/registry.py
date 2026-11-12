@@ -97,9 +97,9 @@ class MepPreferences:
     #: ``mep.run_over_void``. A riser is exempt from it: its plan piece is a point, so it is
     #: graded on the feet of *height* it stands in the room instead.
     min_ceiling_exposure_ft: float = 0.5
-    #: How close a terminal leg's own end vertex must land to something in the room before it
-    #: reads as the connection to that thing rather than transit through the room. See
-    #: ``routing_terminals.terminates_in_room``.
+    #: Reach of a connection: a run's end vertex within this of a terminal in the room, and the
+    #: plan length of that end leg excused from the terminal (the rest is transit). See
+    #: ``routing_terminals.terminal_leg``.
     terminal_grace_in: float = 24.0
     #: The head a run must keep in a room whose ``Room.exposed_services`` declares its
     #: ceiling deliberately open. Declaring a room exposed retires the ceiling-plane

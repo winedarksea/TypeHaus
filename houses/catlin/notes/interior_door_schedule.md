@@ -45,7 +45,7 @@ sweep or automatic bottom closes its undercut (`DoorType.bottom_seal`).
 | D-A-HALVES | studio / study | DT-INT-SWING32-PRIV | privacy | hollow | 3/4" (3.8 Pa: see return note) | System 1 return |
 | D-A-STUBATH | studio bath / studio | DT-INT-SWING24-PRIV | privacy | hollow | 3/4" | - |
 | D-A-POCKET | ERV access | DT-INT-ACCESS24 | passage | - | - | - |
-| D-A-STUDY | attic study | DT-INT-BOOKCASE30 | touch latch, ships with the unit (filtered out of the passage row) | solid | - | - |
+| D-A-STUDY | attic study | DT-INT-BOOKCASE30 | touch latch, ships with the unit (filtered out of the passage row) | solid | sealed (owner, 2026-11-12): gasketed leaf, bottom sweep | none: passes no air; the study is open to the stair |
 | D-B-FURN | furnace / workshop | DT-INT-SWING36 | passage | hollow | 3/4" **must stay** | the workshop's makeup |
 | D-B-SHOP | workshop / stair hall | DT-INT-STEEL36-KEYED | keyed entry 740HFL SQT 15 SMT + US15 hinges | steel | weatherstrip + sweep across a 1/2" undercut, no sill | via D-B-FURN |
 | D-B-SAUNA | sauna / gym | DT-INT-SAUNA24 | own handle and roller catch, no lock | insulated wood | sealed | supply and exhaust balanced 20/20 cfm |

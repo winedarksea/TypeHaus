@@ -42,8 +42,9 @@ still finished room, and only an unmodeled box would hide it — unless the room
 ``exposed_services``, whose PASS then names it. A room whose roof cannot be resolved is
 named in an UNKNOWN too.
 
-**The terminal grace is blind to length**: ``PR-A-STUBATH-VENT`` crossed the bath for 6'-4"
-from the shower, excused whole. The fixture's trim is the bounded version: legs from a pipe
+**The terminal grace is capped at ``terminal_grace_in`` of plan length** (#130): it once
+excused ``PR-A-STUBATH-VENT``'s 6'-4" across the bath whole. Casework a countertop sits on is
+cover for a pipe. The fixture's trim is the bounded version: legs from a pipe
 run's end inside a served fixture's footprint and under its top (an open sink's trap and
 drop) are its connection, not transit.
 
@@ -78,9 +79,11 @@ from typehaus.checks.mep.routing import VOID_BUFFER_M
 from typehaus.checks.mep.routing_geometry import M_TO_FT, run_polylines, wall_cover
 from typehaus.checks.mep.routing_sloped import SlopedPlane, sloped_plane
 from typehaus.checks.mep.routing_terminals import (
+    casework_bodies,
+    casework_cover,
     fixture_trim,
+    terminal_leg,
     terminals_in,
-    terminates_in_room,
 )
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
@@ -256,6 +259,7 @@ def run_in_finished_volume(ctx: CheckContext) -> list[Finding]:
 
     out: list[Finding] = []
     covers: dict[str, Any] = {}
+    cabinets = casework_bodies(ctx.model, storey_z)
     ungraded: list[str] = []
     worst: dict[tuple[str, str], tuple[float, float]] = {}
     #: (run, room) rows under a rake too low to stand under: named, not graded.
@@ -275,17 +279,25 @@ def run_in_finished_volume(ctx: CheckContext) -> list[Finding]:
         radius = vertical_radii.get(tag, 0.0)
         trim = fixture_trim(ctx, tag, path, z, radius) if kind == "pipe" else set()
         for index in range(len(path) - 1):
-            a, b = path[index], path[index + 1]
-            za, zb = z[index], z[index + 1]
-            segment = LineString([a, b])
-            riser = segment.length <= VOID_BUFFER_M
+            a0, b0 = path[index], path[index + 1]
+            riser = LineString([a0, b0]).length <= VOID_BUFFER_M
             for ceiling, floor, plane, terminals, outline, reason, eave in graded:
-                if index in trim or terminates_in_room(path, index, terminals.get(kind, ()),
-                                                        grace_m):
+                if index in trim:
                     continue
+                a, za, b, zb = a0, z[index], b0, z[index + 1]
+                clip = terminal_leg(path, z, index, terminals.get(kind, ()), grace_m)
+                if clip is not None:  # only what lies past the grace is transit
+                    a, za, b, zb = clip
+                    if a == b:
+                        continue
+                segment = LineString([a, b])
                 if ceiling.storey not in covers:
                     covers[ceiling.storey] = wall_cover(ctx, {ceiling.storey})
                     soffit_covers[ceiling.storey] = _soffit_union(ctx, ceiling.storey)
+                cover = covers[ceiling.storey]
+                if kind == "pipe":
+                    cover = casework_cover(cabinets, ceiling.storey, cover, segment,
+                                           max(za, zb) + radius)
                 if isinstance(plane, SlopedPlane):
                     # A riser has no length to cut, so it reads the plane at its own point.
                     pieces = ([(a, za, zb, segment, plane.z_at(a), plane.z_at(a))] if riser
@@ -294,7 +306,7 @@ def run_in_finished_volume(ctx: CheckContext) -> list[Finding]:
                     pieces = [(a, za, zb, segment, plane, plane)]
                 for start, pza, pzb, piece, pa, pb in pieces:
                     args = (start, pza, pzb, radius, piece, riser, outline,
-                            covers[ceiling.storey], soffit_covers[ceiling.storey], floor)
+                            cover, soffit_covers[ceiling.storey], floor)
                     rows = _segment_rows(*args, (pa, pb), tol)
                     if eave and reason is not None:
                         # A declared room's eave: the run is the design, and nobody stands

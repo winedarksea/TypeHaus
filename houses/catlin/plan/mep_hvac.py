@@ -189,7 +189,7 @@ DUCTS_ATTIC = []
 # any orientation). Its west discharge feeds EQ-A-HP1-SUP-BOX, which drops DU-S-HP-SUP through
 # FS-ATTIC's y 336-352 bay into SF-S-DUCT; the trunk runs SOUTH down the hallway. The hall
 # return rises from REG-S-HP-RET through the y 352-368 bay to EQ-S-ERV-MIX at the unit's east
-# end, where the ERV feed and RM-S-SUITE's and RM-S-BED3's returns also land.
+# end, where the ERV feed and RM-S-SUITE's, RM-S-BED3's and RM-A-EAST-UNFIN's returns also land.
 #
 # SOFFIT routing + `soffit_ref` puts the trunk under `mep.duct_soffit_occupancy`. Hall is
 # x 18'-2 3/4"..21'-8" clear; the trunk runs at x=19'-6".
@@ -217,16 +217,16 @@ DUCTS_HVAC_SECOND = [
     # THE HALL RETURN: REG-S-HP-RET's filter box (its neck, 15 1/8" tall: the 1" rack and the
     # shop-made box above it) rises through SF-S-DUCT's open top into FS-ATTIC's y 352-368 bay;
     # this run starts on its top, runs east along the bay (12 wide x 10 deep in 13 11/16" clear;
-    # 490 cfm is 588 fpm) and turns up through the deck into EQ-S-ERV-MIX. The bay runs in x,
-    # so nothing is bored. The box is the neck and not a drawn 28x12 run: E6's drop needs the
-    # arriving run to BE the neck's section, and a 28x12 run does not fit a 14 1/4" bay (a
+    # 455 cfm is 546 fpm) and turns up through the deck into EQ-S-ERV-MIX. The bay runs in x,
+    # so nothing is bored. The box is the neck and not a drawn 24x12 run: E6's drop needs the
+    # arriving run to BE the neck's section, and a 24x12 run does not fit a 14 1/4" bay (a
     # vertical rectangular riser is also graded as a square of its width).
     DuctRun(uid="CSDH02AAAA", tag="DU-S-HP-RET", system=DuctSystem.RETURN,
             path=(pt(inch(239), inch(360)), pt(inch(304.5), inch(360)),
                   pt(inch(304.5), inch(360))),
             elevations=(inch(114.125), inch(114.125), inch(124.125)),
             width=inch(12), depth=inch(10), routing=DuctRouting.JOIST_BAY,
-            floor_ref="FS-ATTIC", design_cfm=490, material="galvanized"),
+            floor_ref="FS-ATTIC", design_cfm=455, material="galvanized"),
     # West branch to RM-S-SUITE: tees off DU-S-HP-SUP at y=14'-8 7/8", 7" north of
     # D-S-SUITE's centreline, and crosses W-S-C2B above the door in the CLEAR bay between
     # its header cripples (2026-10-31: on the door centre the 10x8 ran through the middle
@@ -402,6 +402,14 @@ DUCTS_HVAC_ATTIC = [
             elevations=(inch(14.0625), inch(14.0625)),
             width=inch(20), depth=inch(16), routing=DuctRouting.EXPOSED,
             design_cfm=750, material="galvanized"),
+    # RM-A-EAST-UNFIN's return stub (2026-11-12): REG-A-HP-EAST-RET's 12x12 neck, 6" long, into
+    # EQ-S-ERV-MIX's south face (y=329") at 14" AFF. Its locked balancing damper holds 35 cfm:
+    # the plenum's returns are parallel, so an open grille would short-circuit the others.
+    DuctRun(uid="MZW8P3P49V", tag="DU-A-HP1-EAST-RET", system=DuctSystem.RETURN,
+            path=(pt(inch(311.75), inch(323)), pt(inch(311.75), inch(329))),
+            elevations=(inch(14), inch(14)),
+            width=inch(12), depth=inch(12), routing=DuctRouting.EXPOSED,
+            design_cfm=35, material="galvanized"),
 ]
 
 # ** OPEN IN RM-B-WORKSHOP's NE CORNER SINCE 2026-11-09 (owner). ** Back on W-B-CW2 (Rheem

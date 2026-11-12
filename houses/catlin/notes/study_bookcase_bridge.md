@@ -74,5 +74,6 @@ costs $0. The casing legs and head are priced in interior trim as `oak-trim:door
 
 - `ED-A-STUDY-SW` is on W-A-C1 (y=5'-0", 48" AFF), clear of the door and its casing; the
   `advisory.trim_device_clash` this note used to carry is closed.
+- The door is modelled sealed (`bottom_seal`, owner 2026-11-12): it passes no air, and RM-A-STUDY relieves to the open stair.
 - Verify threshold anchorage, jamb fastening and floor blocking against the delivered unit.
   The modelled swing envelope is the published clearance, not a calculated pivot sweep.

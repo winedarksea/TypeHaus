@@ -140,7 +140,7 @@ EQUIPMENT_TYPES_ERV = (
                   name="Return-air mixing plenum, 6\" ERV leg with backdraft damper",
                   footprint=(inch(27.5), inch(39)), height=inch(23),
                   plan_symbol="erv",
-                  source="Fabricated plenum box, 27 1/2 x 39 x 23 in, on the attic deck at EQ-S-HP1-AH's return end: System 1's return plenum, taking the hall return riser, RM-S-SUITE's and RM-S-BED3's returns and a 6 in ERV inlet on a gravity backdraft damper, and giving the cabinet a 20 x 16 neck through its canvas connector. The damper is the whole point: the ERV and the air handler run on independent schedules and each must breathe without the other. Mastic-sealed galvanized; the neck size waits on the delivered cabinet's return opening.",
+                  source="Fabricated plenum box, 27 1/2 x 39 x 23 in, on the attic deck at EQ-S-HP1-AH's return end: System 1's return plenum, taking the hall return riser, RM-S-SUITE's, RM-S-BED3's and RM-A-EAST-UNFIN's returns (the last a 12x12 stub on the south face, damper-locked at 35 cfm: the returns are in parallel) and a 6 in ERV inlet on a gravity backdraft damper, and giving the cabinet a 20 x 16 neck through its canvas connector. The damper is the whole point: the ERV and the air handler run on independent schedules and each must breathe without the other. Mastic-sealed galvanized; the neck size waits on the delivered cabinet's return opening.",
                   ports=(ServicePort(tag="fresh", service=Service.SUPPLY_AIR,
                                      position=(ft(0), ft(0), inch(4))),
                          ServicePort(tag="return", service=Service.RETURN_AIR,

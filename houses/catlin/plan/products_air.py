@@ -52,11 +52,11 @@ FLOOR_REGISTER_HP = Product(
            f"{_SPEC} §4.",
 )
 FILTER_RETURN_GRILLE = Product(
-    tag="PROD-AIR-FILTER-RETURN-28X12", brand="Hart & Cooley", model="673 series",
-    name="28x12 hinged filter-back return grille, aluminium, white, 1in filter rack",
-    source=f"Basis of design, or equal: TRUaire 190RF, Shoemaker 620FG. 12x28x1 is NOT a "
-           f"stocked filter size, so it is ordered custom online (12x24x1 is stocked: 245 fpm "
-           f"at 490 cfm, but its loaded drop is no better: {_SPEC} §5 has the numbers).",
+    tag="PROD-AIR-FILTER-RETURN-12X24", brand="Hart & Cooley", model="673 series",
+    name="24x12 hinged filter-back return grille, aluminium, white, 1in filter rack",
+    source=f"Basis of design, or equal: TRUaire 190RF, Shoemaker 620FG. 12x24x1 MERV 13 is a "
+           f"stocked filter size: 228 fpm at 455 cfm, ~0.24in clean. 14x25x1 does not fit "
+           f"SF-S-DUCT's 12.5in clear ({_SPEC} §5).",
 )
 FILTER_RETURN_GRILLE_1212 = Product(
     tag="PROD-AIR-FILTER-RETURN-12X12", brand="Hart & Cooley", model="673 series 12x12",

@@ -274,6 +274,30 @@ def test_a_drop_that_ends_at_a_thing_in_the_room_is_the_connection_to_it(
     assert _fails_for(model, "PR-B-COND")
 
 
+def test_the_grace_is_capped_and_casework_is_cover(catlin_model) -> None:
+    """Decision #130. The terminal grace excuses only the first 24" of an end leg, so a long
+    open-air leg to a fixture is graded past that. A cabinet a countertop sits on is cover:
+    ``PR-M-DW-HW`` runs behind SINKBASE/DW, and flags once the countertops are gone."""
+    from typehaus.model import inch
+
+    original = next(r for r in catlin_model.pipe_runs if r.tag == "PR-B-COND")
+    end, y, z = original.path[-1], original.path[-1][1], inch(-30).meters
+
+    def _leg(reach_in):  # one leg into the sauna drain, ``reach_in`` long
+        moved = dataclasses.replace(original, path=((end[0] + inch(reach_in).meters, y), end),
+                                    z_m=(z, z))
+        return dataclasses.replace(
+            catlin_model, pipe_runs=tuple(moved if r.tag == original.tag else r
+                                          for r in catlin_model.pipe_runs))
+
+    assert not _fails_for(_leg(20), "PR-B-COND")
+    assert _fails_for(_leg(60), "PR-B-COND")
+
+    assert not _fails_for(catlin_model, "PR-M-DW-HW")
+    bare = dataclasses.replace(catlin_model, countertops=[])
+    assert _fails_for(bare, "PR-M-DW-HW")
+
+
 def test_a_trap_under_its_own_basin_is_the_fixture_not_transit(catlin_model) -> None:
     """``PR-A-BAR-DRAIN`` leaves the open-frame SUNNERSTA in three legs (stub, trap-arm,
     drop through the floor), all inside the sink's footprint, so all are the fixture's own

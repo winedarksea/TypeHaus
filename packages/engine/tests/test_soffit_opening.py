@@ -228,7 +228,7 @@ def test_the_check_grades_the_header_and_earns_its_not_applicable() -> None:
 
 
 def test_catlin_frames_the_hall_return_grille_into_the_duct_soffit(catlin_model) -> None:
-    """The live case: SF-S-DUCT's AO-S-DUCT-RET, and the 28x12 filter grille that fills it.
+    """The live case: SF-S-DUCT's AO-S-DUCT-RET, and the 24x12 filter grille that fills it.
 
     The opening (``plan/storeys/second.py``) and REG-S-HP-RET (``mep_registers_second.py``)
     are authored apart and nothing in the engine ties them, so this holds the hole to the
@@ -244,7 +244,7 @@ def test_catlin_frames_the_hall_return_grille_into_the_duct_soffit(catlin_model)
             round(max(y for _, y in ring) / M_PER_IN, 3))
     grille = next(o for o in catlin_model.canvas_objects if o.tag == "REG-S-HP-RET")
     x, y = (v / M_PER_IN for v in grille.position[:2])
-    assert hole == pytest.approx((x - 14, x + 14, y - 6, y + 6), abs=1e-3)
+    assert hole == pytest.approx((x - 12, x + 12, y - 6, y + 6), abs=1e-3)
 
     # One rung is cut; both stubs clear the minimum and two headers close the hole.
     assert all(m.length_m >= MIN_SOFFIT_STUB_M for m in soffit.members

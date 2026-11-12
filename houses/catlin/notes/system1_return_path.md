@@ -8,11 +8,13 @@ now computes this table from the model (`checks/mep/door_transfer_air.py`, pinne
 
 ## The condition
 
-System 1 (`EQ-S-HP1-AH`, 750 cfm) has **three** returns: `REG-S-HP-RET`, a 28 x 12 filter-back
-grille in `SF-S-DUCT`'s underside at (19'-11", 29'-11 1/2") since 2026-11-11 (framed hole
-`AO-S-DUCT-RET`; it was in the retired `SF-S-HP1`), in `RM-S-HALL`, drawing 490
-cfm of room air; since 2026-11-09 `REG-S-HP-SUITE-RET`, the suite's ducted 80 cfm; and since
-2026-11-11 `REG-S-HP-BED3-RET`, BED3's ducted 80 cfm (both below).
+System 1 (`EQ-S-HP1-AH`, 750 cfm) has **four** returns: `REG-S-HP-RET`, a 24 x 12 filter-back
+grille (stock 12x24x1) in `SF-S-DUCT`'s underside at (19'-11", 29'-11 1/2") since 2026-11-11 (framed hole
+`AO-S-DUCT-RET`; it was in the retired `SF-S-HP1`), in `RM-S-HALL`, drawing 455
+cfm of room air; since 2026-11-09 `REG-S-HP-SUITE-RET`, the suite's ducted 80 cfm; since
+2026-11-11 `REG-S-HP-BED3-RET`, BED3's ducted 80 cfm; and since 2026-11-12
+`REG-A-HP-EAST-RET`, the east attic room's 35 cfm (all below). (The ERV's 100 joins them in the
+mixing box.)
 Every other System 1 terminal is a supply. So the supply air delivered to a
 room behind a closed door has to get back to that hall through the door.
 
@@ -58,12 +60,13 @@ room it opens from, and treats the zone a stair reaches as the house:
 | `RM-S-SUITE` (+ suite bath, closet) | 0 (80 cfm out until its ducted return, 2026-11-09, below) | `D-S-SUITE` 32" x 1/2", sealed | - | balanced (9.7 Pa before) | - |
 | `RM-A-STUDIO` (+ studio bath, ERV closet) | 50 cfm out | `D-A-HALVES` 32" x 3/4" | 24.0 in^2 | **3.8 Pa** | 27 in^2 |
 | `RM-S-PLANT` | 70 cfm out | `D-S-PLANT` 30" x 1/2" | 15.0 in^2 | **19.0 Pa** (8.5 at 3/4") | 38 in^2 |
-| `RM-A-EAST-UNFIN` | 35 cfm out | `D-A-STUDY` 30" x 1/2" | 15.0 in^2 | **4.8 Pa** (2.1 at 3/4") | 19 in^2 |
+| `RM-A-EAST-UNFIN` | 0 (35 cfm out until its ducted return, 2026-11-12, below) | `D-A-STUDY`, sealed | - | balanced (4.8 Pa before) | - |
 | `RM-A-STUDY` | 100 cfm | open to the stair well | - | pass | - |
 
 `RM-A-STUDY` is at the attic stair head, so its own air leaves down the well; the old table
 sent it through the bookcase door. `RM-A-EAST-UNFIN` is graded through `D-A-STUDY` because
-the model holds no opening between it and the well; if it is open to the void, that row goes.
+the model holds no opening between it and the well. It no longer needs to be: the bookcase door
+passes no air (sealed, 2026-11-12) and the room has its own return.
 
 **No undercut inside the owner's range carries this air.** The bedrooms and the suite need
 about 1.8x the free area 3/4" gives. Closing it is an owner decision: a transfer grille
@@ -87,7 +90,8 @@ all; the fan sees the extra external static and the balance moves elsewhere.
   conventional.
 * **`D-S-STUDY2`.** `is_door=False` — a cased opening with no leaf. `RM-S-STUDY2`'s 75 cfm
   has a permanently open path.
-* **`RM-A-EAST-UNFIN` (35 cfm).** Open to the stair void; no door to cut.
+* **`RM-A-EAST-UNFIN` (35 cfm).** Returns through its own grille at the air handler (below);
+  the Murphy door passes no air, so it has no undercut to cut.
 * **Every bathroom.** They are extract terminals at 20 cfm; makeup *in* under a conventional
   3/4" undercut is 0.36" worth of free area. Nothing to do.
 
@@ -137,8 +141,8 @@ Balance, by hand:
     out  REG-S-HP-SUITE-RET          80 cfm   -> net 0: D-S-SUITE carries nothing
     6x4 = 24 in^2 = 0.1667 ft^2:   80 / 0.1667 = 480 fpm (a return branch)
     12x12 face = 1.0 ft^2:         80 fpm
-    hall grille 336 in^2 = 2.333 ft^2 at 750 - 100 (ERV) - 80 (suite) - 80 (BED3) = 490 cfm:
-    210 fpm (< 300)   [570 until BED3's return, 2026-11-11; corrected 2026-11-12]
+    hall grille 288 in^2 = 2.0 ft^2 at 750 - 100 (ERV) - 80 (suite) - 80 (BED3) - 35 (east) = 455 cfm:
+    228 fpm (< 300)   [570 until BED3's return, 2026-11-11; 490 until the east return, 2026-11-12]
 
 `D-S-SUITE` is `DT-INT-SWING32-PRIV-SOLID-SEALED` at the stock 1/2" undercut, kerf seal and a
 sweep; `mep.door_transfer_air` reads the zone "balanced".
@@ -166,13 +170,35 @@ Balance, by hand:
     out  REG-S-HP-BED3-RET         80 cfm   -> net 0: D-S-BED3 carries nothing
     12x6 = 72 in^2 = 0.5 ft^2:     80 / 0.5 = 160 fpm
     12x12 face = 1.0 ft^2:         80 fpm
-    hall grille 336 in^2 = 2.333 ft^2 at 750 - 100 (ERV) - 80 - 80 = 490 cfm: 210 fpm (< 300)
+    hall grille 288 in^2 = 2.0 ft^2 at 750 - 100 (ERV) - 80 - 80 - 35 = 455 cfm: 228 fpm (< 300)
 
 `D-S-BED3` is `DT-INT-SWING30-PRIV-STOCK`, the factory 1/2" undercut, not sealed. Ventilation:
 BED3 keeps its fixed windows and gets ERV air through System 1's mixing box. With the
 fan off it has no extract, and no check asks a bedroom for one (BEDROOM is not a stale
 occupancy). **Sound:** the grille is about 3' of duct from the mixing box and a few feet
 from the blower. Lining the 12x6 is an open item.
+
+## Owner decisions 2026-11-12
+
+* **`RM-S-BED1/2`: 9.7 Pa accepted.** 75 cfm out through a 30" x 3/4" door, no new returns. The
+  `mep.door_transfer_air` ADVISORYs stand as decided.
+* **`RM-A-STUDIO`: 3.8 Pa accepted** (`D-A-HALVES` 32" x 3/4", 50 cfm net out).
+* **`RM-S-PLANT`: deferred.** Its 19.0 Pa advisory (8.5 at 3/4") stays open; `notes/plant_room.md`
+  owns the room.
+* **`D-A-STUDY` is sealed** (`DT-INT-BOOKCASE30.bottom_seal`): a bookcase door passes no air.
+  `RM-A-STUDY` stays PASS because it is open to the stair.
+* **`RM-A-EAST-UNFIN` gets a return at the air handler.** `REG-A-HP-EAST-RET` is the stock
+  `REG-T-HP-RET-FILTER-1212-WALL` (12x12x1 MERV 13), 14" AFF on the **south face of
+  `EQ-S-ERV-MIX`** (x 298-325.5", y 329-368"), through the 6" stub `DU-A-HP1-EAST-RET`, set to
+  35 cfm. **The balancing damper is what makes it work.** The plenum's returns are in
+  parallel and pull on the same static; an open 12x12 sits at the plenum and would draw far
+  more than its 35 cfm from the room, starving the hall and bedroom returns. Lock the damper
+  at 35 cfm and re-check at filter changes. The grille and its filter are reached from the room.
+  Hall grille, with the 35 gone from it, is **455 cfm** (was 490).
+
+    in   REG-A-HP-EAST            35 cfm
+    out  REG-A-HP-EAST-RET        35 cfm   -> net 0: D-A-STUDY carries nothing
+    12x12 face = 1.0 ft^2:         35 fpm
 
 ## The two honest costs
 

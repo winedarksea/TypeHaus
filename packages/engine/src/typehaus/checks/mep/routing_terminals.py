@@ -1,17 +1,21 @@
 """Connection versus transit for ``mep.run_in_finished_volume``.
 
 A run's own end at a thing in the room is the connection to it, not a run through the room:
-the terminal grace (an end leg within reach of a terminal) and the fixture trim (end legs
-inside a served fixture's body) decide which legs the check skips.
+the terminal grace (an end leg within reach of a terminal, clipped to that reach), the
+fixture trim (end legs inside a served fixture's body) and casework cover (a run behind a
+cabinet is boxed in) decide what of a run the check grades.
 """
 
 from __future__ import annotations
 
+import math
 from typing import Any
 
-from shapely.geometry import LineString, Point
+from shapely.geometry import LineString, Point, Polygon
 
 from typehaus.checks.registry import CheckContext
+from typehaus.quantities import M_PER_IN
+from typehaus.resolve.overlay import union_all
 from typehaus.resolve.placeables import placed_xy
 
 #: What each trade can actually terminate at, by run kind. **Per trade, not one list**, and
@@ -57,23 +61,63 @@ def terminals_in(ctx: CheckContext, storey: str,
     return out
 
 
-def terminates_in_room(path: tuple[tuple[float, float], ...], index: int,
-                       terminals: Any, grace_m: float) -> bool:
-    """True when this segment is the run's own first or last leg AND that terminal vertex
-    lands within ``grace_m`` of a terminal element inside this room's outline.
+def terminal_leg(path: tuple[tuple[float, float], ...], z: tuple[float, ...], index: int,
+                 terminals: Any, grace_m: float) -> tuple | None:
+    """``None`` when leg ``index`` is not a terminal leg, else ``(a, za, b, zb)``: what of it
+    lies beyond ``grace_m`` of the terminal vertex (``a == b`` when nothing does).
 
-    A drop that ends at a thing in the room *is* the connection to it; a run passing through
-    is not. Only ``index == 0`` or ``len(path) - 2`` qualifies — an interior segment is
-    transit, and no amount of proximity makes it a connection.
+    A run's own first or last leg whose end vertex lands within ``grace_m`` of a terminal in
+    the room *is* the connection to it, but only for ``grace_m`` of plan length: the rest is
+    transit, so a long leg out of a fixture is still graded from there on. A pure riser
+    stays whole. An interior segment is never a connection.
     """
-    if index == 0:
-        vertex = path[0]
-    elif index == len(path) - 2:
-        vertex = path[-1]
-    else:
-        return False
+    a, b = path[index], path[index + 1]
+    za, zb = z[index], z[index + 1]
+    near = [index == 0 and _near(a, terminals, grace_m),
+            index == len(path) - 2 and _near(b, terminals, grace_m)]
+    if not any(near):
+        return None
+    length = math.hypot(b[0] - a[0], b[1] - a[1])
+    cut_a, cut_b = (grace_m if n else 0.0 for n in near)
+    if length <= cut_a + cut_b:
+        return a, za, a, za
+    t0, t1 = cut_a / length, 1.0 - cut_b / length
+    lerp = lambda t: ((a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t),  # noqa: E731
+                      za + (zb - za) * t)
+    (pa, qa), (pb, qb) = lerp(t0), lerp(t1)
+    return pa, qa, pb, qb
+
+
+def _near(vertex: tuple[float, float], terminals: Any, grace_m: float) -> bool:
     return any((vertex[0] - x) ** 2 + (vertex[1] - y) ** 2 <= grace_m * grace_m
                for x, y in terminals)
+
+
+#: Gap closed between butted cabinet carcasses (0.1-0.2" seams) so they read as one body.
+CASEWORK_SNAP_M = 0.5 * M_PER_IN
+#: A cabinet stands on the floor, not hangs from the wall, within this of the storey datum.
+CASEWORK_FLOOR_M = 6.0 * M_PER_IN
+
+
+def casework_bodies(model: Any, floors: dict[str, float]) -> list[tuple[str, Any, float]]:
+    """``[(storey, footprint, top)]`` of each floor-standing cabinet a countertop sits on."""
+    hosts = {tag for top in model.countertops for tag in top.hosts}
+    return [(c.storey, Polygon(c.footprint).buffer(CASEWORK_SNAP_M), c.body_z1_m)
+            for c in model.canvas_objects
+            if c.tag in hosts and len(c.footprint) >= 3 and c.body_z0_m is not None
+            and c.body_z1_m is not None
+            and c.body_z0_m <= floors.get(c.storey, 0.0) + CASEWORK_FLOOR_M]
+
+
+def casework_cover(bodies: list[tuple[str, Any, float]], storey: str, cover: Any,
+                   leg: Any, top: float) -> Any:
+    """``cover`` plus the cabinets on ``storey`` that touch ``leg`` and stand over ``top``
+    (the pipe's crown): a run behind a sink base is boxed in, like a run in a wall."""
+    hit = [shape for s, shape, z1 in bodies if s == storey and z1 >= top
+           and shape.intersects(leg)]
+    if not hit:
+        return cover
+    return union_all(hit if cover is None else [cover, *hit])
 
 
 def fixture_trim(ctx: CheckContext, tag: str, path: tuple[tuple[float, float], ...],

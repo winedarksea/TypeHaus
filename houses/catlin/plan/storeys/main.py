@@ -105,7 +105,7 @@ DOOR_TYPES = [
     # published, not derived, and measured from the finished floor (Murphy to confirm).
     DoorType(tag="DT-INT-BOOKCASE30", width=inch(30), height=inch(80), core="solid",
              rough_opening=OpeningSize(width=inch(32), height=inch(82), datum="finished_floor"),
-             function="passage",
+             function="passage", bottom_seal=True,
              header_spec="flat 2x4 nonbearing", product_ref="PROD-MURPHY-BOOKCASE-30",
              bookcase_door=BookcaseDoorSpec(
                  body_width=inch(28.75), body_height=inch(78.5), body_depth=inch(8.25),
@@ -115,7 +115,7 @@ DOOR_TYPES = [
                  material_ref="oak-shelf-4q",
                  source="Custom width; scaled from the 36 in. chart (-6 in. on body, casing envelope and passage); confirm with Murphy. 36 in. chart: Murphy Door measurement charts and instruction manuals, read 2026-09-19; published installation clearance, not a calculated pivot sweep. Pre-Hung Flush Mount Installation, read 2026-10-14: 4 9/16in jamb tight to the drywall, face frame flush with the shelf-side wall, 3 3/4in protrusion on the swing side, in-swing casing applied with a 1/2in lap on the face frame",
              ),
-             source="Murphy Door 30 x 80 nominal flush-mount bookcase door, custom width; 32 x 82 rough opening. West-hinged in-swing at D-A-STUDY. Threshold anchorage, jamb fastening and final connection design require verification against the delivered unit and supporting floor blocking; exact pivot-axis sweep remains deferred."),
+             source="Murphy Door 30 x 80 nominal flush-mount bookcase door, custom width; 32 x 82 rough opening. West-hinged in-swing at D-A-STUDY. Sealed (owner, 2026-11-12): it passes no air, so gasket the leaf and fit a bottom sweep (confirm with Murphy); the study relieves to the open stair. Threshold anchorage, jamb fastening and final connection design require verification against the delivered unit and supporting floor blocking; exact pivot-axis sweep remains deferred."),
     # 2'-0" x 3'-6" — the attic pocket's ACCESS door, and the house's only
     # door that is not 6'-8" tall. D-A-POCKET hosts on W-A-STU-N, which runs in x under the
     # west rake at y=22'-4"; with the attic at 6:12 the roof underside there is

@@ -238,23 +238,24 @@ AIR_REGISTER_TYPES = (
                  source=f"75 cfm, RH interlocked, throws west. A220V 12X06 face 13 3/4 x 7 3/4in. "
                         f"{_NOTE} §4, §7; notes/plant_supply_connection.md.",
                  ports=(_port("supply", Service.SUPPLY_AIR),)),
-    # The hall filter, 490 cfm (750 - ERV 100 - suite 80 - BED3 80). 12x28x1 is not stocked, so
-    # it is ordered custom; a stocked 12x24x1 reads 245 fpm but fails the loaded-static test
-    # no better than this one does (notes/air_distribution_products.md §5), so it stays. The
-    # neck is the 1" rack plus the shop filter box up to DU-S-HP-RET's underside (15 1/8"): a
-    # 28x12 duct does not fit its 14 1/4" bay, so the box is a boot, not a drawn run.
+    # The hall filter, 455 cfm (750 - ERV 100 - suite 80 - BED3 80 - east room 35). Stock
+    # 12x24x1 MERV 13 (owner, 2026-11-12): 288 in2, 228 fpm. 14x25x1 is the larger stock size
+    # but cannot stand here: the soffit's north end and the FS-ATTIC joists leave 12.5" clear in
+    # y (13 11/16" bay less SF-S-DUCT's 2 1/8" end), so 12" is the ceiling on the short side.
+    # The neck is the 1" rack plus the shop filter box up to DU-S-HP-RET's underside (15 1/8"):
+    # a 24x12 duct does not fit its 14 1/4" bay, so the box is a boot, not a drawn run.
     RegisterType(tag="REG-T-HP-RET-FILTER",
-                 face_opening=(inch(28), inch(12)),
+                 face_opening=(inch(24), inch(12)),
                  face_style="rectangular_grille",
-                 name="Heat-pump return, 28x12 aluminium hinged filter-back grille",
-                 footprint=(inch(30.625), inch(14.625)), height=inch(1),
-                 plan_symbol="register", product_ref="PROD-AIR-FILTER-RETURN-28X12",
-                 filter_nominal_size="28x12x1", filter_merv=13, service_face="bottom",
+                 name="Heat-pump return, 24x12 aluminium hinged filter-back grille",
+                 footprint=(inch(26.625), inch(14.625)), height=inch(1),
+                 plan_symbol="register", product_ref="PROD-AIR-FILTER-RETURN-12X24",
+                 filter_nominal_size="12x24x1", filter_merv=13, service_face="bottom",
                  neck=TerminalNeck(section="rectangular",
-                                   width=inch(28), height=inch(12), depth=inch(15.125),
+                                   width=inch(24), height=inch(12), depth=inch(15.125),
                                    part="1in filter rack and shop filter box"),
-                 source=f"Face estimated off H&C 673 30x12 (32 5/8in overall); 28 x 12in duct "
-                        f"size, 336 in2, 210 fpm at 490 cfm. {_NOTE} §5.",
+                 source=f"Face estimated off H&C 673 (+2 5/8in); 24 x 12in duct size, 288 in2, "
+                        f"228 fpm at 455 cfm. {_NOTE} §5.",
                  ports=(_port("return", Service.RETURN_AIR),)),
     # RM-S-SUITE's ducted return (2026-11-09): its own filter, since it lands in the plenum
     # behind REG-T-HP-RET-FILTER's. 12x12x1 is stocked; a locked balancing damper rides at the
@@ -269,8 +270,20 @@ AIR_REGISTER_TYPES = (
                  neck=TerminalNeck(section="rectangular",
                                    width=inch(12), height=inch(12), depth=inch(1.75),
                                    part="1in filter rack"),
-                 source=f"Face estimated as the 28x12's (+2 5/8in); 144 in2, 80 fpm at 80 cfm. "
+                 source=f"Face estimated as the 24x12's (+2 5/8in); 144 in2, 80 fpm at 80 cfm. "
                         f"{_NOTE} §5.",
+                 ports=(_port("return", Service.RETURN_AIR),)),
+    # RM-A-EAST-UNFIN's return (2026-11-12): the same stock 12x12x1 on the south face of
+    # EQ-S-ERV-MIX, so the hinged face opens to the front, not the bottom. A locked balancing
+    # damper sits in the stub, set to 35 cfm. No neck: the plenum is the host.
+    RegisterType(tag="REG-T-HP-RET-FILTER-1212-WALL",
+                 face_opening=(inch(12), inch(12)),
+                 face_style="rectangular_grille",
+                 name="Heat-pump return, 12x12 aluminium hinged filter-back grille, wall face",
+                 footprint=(inch(14.625), inch(1)), height=inch(14.625),
+                 plan_symbol="register", product_ref="PROD-AIR-FILTER-RETURN-12X12",
+                 filter_nominal_size="12x12x1", filter_merv=13, service_face="front",
+                 source=f"The 12x12's face turned to a wall; 144 in2, 35 fpm at 35 cfm. {_NOTE} §5.",
                  ports=(_port("return", Service.RETURN_AIR),)),
     RegisterType(tag="REG-T-TRANSFER-MUD-1210",
                  face_opening=(inch(12), inch(10)),
