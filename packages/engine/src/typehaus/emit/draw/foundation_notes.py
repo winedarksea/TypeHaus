@@ -27,7 +27,6 @@ from typehaus.emit.draw.foundation_frost_notes import (
     lowest_adjacent_grade_notes,
 )
 from typehaus.emit.draw.structural_common import elevation_feet, feet_inches
-from typehaus.resolve.placeables import placed_xy
 
 
 def _under_slab_note(model: ResolvedModel, slab: ResolvedSolid) -> str:
@@ -144,7 +143,7 @@ def radon_control_notes(model: ResolvedModel) -> list[str]:
     derived or says "NOT MODELLED" against its own subpart — never a plausible default,
     which on a radon system would be a sheet telling an installer something nobody decided.
     """
-    from typehaus.model.enums import DeviceKind, PipeSystem
+    from typehaus.model.enums import PipeSystem
     from typehaus.model.mep import Sump, VentRun
 
     notes = ["RADON CONTROL — MN 1303.2400 (PASSIVE SOIL-GAS SYSTEM). THE ITEMS BELOW ARE "
@@ -170,9 +169,9 @@ def radon_control_notes(model: ResolvedModel) -> list[str]:
     else:
         notes.append("SUBP. 3: NO SEALED COLLECTION POINT IS MODELLED.")
     notes.extend(_radon_riser_notes(model, risers))
-    notes.append("SUBP. 5: \"RADON GAS VENT SYSTEM\" LABELLING AT EACH STOREY AND THE 24\" "
-                 "CLEAR FOR A FUTURE FAN ARE NOT MODELLED — FIELD ITEMS.")
-    notes.extend(_fan_power_notes(model, risers, DeviceKind))
+    notes.append("SUBP. 5: \"RADON GAS VENT SYSTEM\" LABELLING AT EACH STOREY IS NOT "
+                 "MODELLED — A FIELD ITEM.")
+    notes.extend(_fan_power_notes(model, risers))
     return notes
 
 
@@ -218,40 +217,33 @@ def _radon_riser_notes(model: ResolvedModel, risers: list[Any]) -> list[str]:
     return lines
 
 
-def _fan_power_notes(model: ResolvedModel, risers: list[Any],
-                     device_kind: Any) -> list[str]:
-    """Subpart 6 — an approved box at the anticipated fan location.
+def _fan_power_notes(model: ResolvedModel, risers: list[Any]) -> list[str]:
+    """Subpart 6's box and circuit, and subpart 5.D's fan window — read off the same rules
+    ``code.MN_1303_2402_radon`` grades, so sheet and verdict cannot disagree."""
+    from typehaus.checks.code.mn_residential.radon_fan import (
+        FAN_SPACE_DIAMETER,
+        FAN_SPACE_LENGTH,
+        fan_space,
+    )
 
-    Reach and riser point come from the check that grades this, so the sheet names the
-    same box the verdict does rather than a second nearest-box rule.
-    """
-    from typehaus.checks.code.mn_residential.radon import _FAN_BOX_REACH
-    from typehaus.resolve.vent_termination import exterior_riser_point
-
-    if not risers:
-        return []
-    boxes: list[Any] = [e for e in model.plan.all_elements()
-                        if getattr(e, "element_kind", None) == "ElectricalDevice"
-                        and getattr(e, "kind", None) is device_kind.JUNCTION_BOX]
-    # A box that declares a ROOM is skipped, and that is the conservative half of the
-    # check's own rule rather than a second one: the reach test is plan-only in a
-    # four-storey house, so a lighting supply two floors up falls inside the radius, and
-    # subpart 6 forbids the fan's box in conditioned space anyway. A box with no room is
-    # outside the building, which is where the rule wants this one.
-    named = []
+    lines = []
+    circuits = {c.tag: c for c in model.plan.library.circuits}
     for riser in sorted(risers, key=lambda r: r.tag):
-        rx, ry = exterior_riser_point(riser)
-        for box in boxes:
-            if getattr(box, "room", None):
-                continue
-            bx, by = placed_xy(model, box)
-            if ((bx - rx) ** 2 + (by - ry) ** 2) ** 0.5 <= _FAN_BOX_REACH.meters:
-                named.append(box.tag)
-    if named:
-        return [f"SUBP. 6: POWER FOR A FUTURE FAN AT {', '.join(sorted(set(named)))}, "
-                f"WITHIN {_FAN_BOX_REACH.inches / 12:.0f} FT OF THE RISER."]
-    return ["SUBP. 6: NO JUNCTION BOX IS MODELLED WITHIN "
-            f"{_FAN_BOX_REACH.inches / 12:.0f} FT OF THE RISER FOR A FUTURE FAN."]
+        box = model.plan.by_tag(riser.fan_power_ref) if riser.fan_power_ref else None
+        circuit = circuits.get(getattr(box, "circuit", None) or "")
+        if box is None or circuit is None:
+            lines.append(f"SUBP. 6: {riser.tag} NAMES NO POWERED BOX FOR A FUTURE FAN.")
+        else:
+            slot = f" SLOT {circuit.slot}" if getattr(circuit, "slot", None) else ""
+            lines.append(f"SUBP. 6: POWER FOR A FUTURE FAN AT {box.tag}, ON {circuit.tag} "
+                         f"({circuit.panel_ref}{slot}).")
+        window = fan_space(model, riser)
+        if window is not None:
+            lines.append(f"SUBP. 5.D: {FAN_SPACE_DIAMETER.inches:.0f}\" DIA. x "
+                         f"{FAN_SPACE_LENGTH.inches / 12:.0f} FT FAN SPACE KEPT CLEAR ON "
+                         f"{riser.tag}'S EXTERIOR LEG, {elevation_feet(window[0])} TO "
+                         f"{elevation_feet(window[1])}.")
+    return lines
 
 
 def _bearing_tier_notes(model: ResolvedModel) -> list[str]:

@@ -391,22 +391,11 @@ def test_no_authored_h25a_survives_and_the_balcony_ties_are_stainless(catlin_mod
     assert sum(1 for size in ties.values() if size == "H2.5ASS") == 4
 
 
-# --- NEMA 3R weatherproof junction box ---------------------------------------
-def test_nema_box_sits_with_the_vent_clamps_not_at_eye_level(catlin_model) -> None:
-    box = catlin_model.plan.by_tag("ED-A-NEMA-JB")
-    attic = next(s for s in catlin_model.plan.storeys if s.tag == "attic")
-    box_z = resolved_mount_elevation(attic, box)
-    clamp_z = [c.elevation.meters for c in catlin_model.plan.all_elements()
-               if c.element_kind == "Connector" and c.tag.startswith("CN-M-VENT-CLAMP")]
-    assert clamp_z, "no vent clamps to place the box against"
-    assert min(abs(box_z - z) for z in clamp_z) < 6 * INCH
-    assert box_z > 20 * FT  # up on the gable, not the main-storey wall
-
-
+# --- gable enclosures ----------------------------------------------------------
 def test_the_gable_enclosures_carry_no_seam_clamp_on_an_exposed_fastener_wall(
     catlin_model,
 ) -> None:
-    """The NEMA box and the PV junction box keep their gable perch; their clamps do not.
+    """The radon fan box and the PV junction box keep their gable perch; no seam clamps.
 
     An S-5! seam clamp closes on a standing-seam leg, and `pbr-panel-24` has no leg — the
     fixing is uninstallable on this wall, so neither clamp exists. Neither box sits on the
@@ -418,7 +407,7 @@ def test_the_gable_enclosures_carry_no_seam_clamp_on_an_exposed_fastener_wall(
     for tag in ("CN-A-NEMA-CLAMP", "CN-A-PV-CLAMP"):
         assert catlin_model.plan.by_tag(tag) is None, (
             f"{tag} clamps a seam the wall no longer has; see plan/wind_clamps.py")
-    for tag in ("ED-A-NEMA-JB", "ED-A-PV-JB"):
+    for tag in ("ED-A-RADON-JB", "ED-A-PV-JB"):
         box = catlin_model.plan.by_tag(tag)
         assert box is not None, f"{tag} is the enclosure itself and must survive the swap"
         # The gable siding must still reach it: the 4:12 rake is highest toward the x=18' ridge.

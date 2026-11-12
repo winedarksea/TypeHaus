@@ -280,10 +280,10 @@ def test_s100_radon_block_is_derived_item_by_item(catlin_model):
     assert "SUBP. 3-4: COLLECTION POINT SM-B-RADON" in notes and "SEALED COVER" in notes
     assert "SUBP. 4.E: SM-B-RADON IS CONNECTED TO THE INTERIOR DRAIN TILE OF 17" in notes
     assert "SUBP. 5: VENT VR-M-STACK" in notes
-    assert "NOT MODELLED — FIELD ITEMS" in notes
-    # Subp. 6 names the same two boxes code.MN_1303_2402_radon passes on, and only those:
-    # a box that declares a room is a lighting supply on some other storey.
-    assert "SUBP. 6: POWER FOR A FUTURE FAN AT ED-A-NEMA-JB, ED-A-PV-JB" in notes
+    assert "NOT MODELLED — A FIELD ITEM" in notes
+    # Subp. 6 and 5.D read the riser's named box and the graded fan window.
+    assert "SUBP. 6: POWER FOR A FUTURE FAN AT ED-A-RADON-JB, ON CKT-RC-ATTIC" in notes
+    assert "SUBP. 5.D: 24\" DIA. x 3 FT FAN SPACE KEPT CLEAR ON VR-M-STACK'S" in notes
     # A schedule that abbreviates carries its legend on the sheet, not in this repo.
     assert "NO PLATE RUN TAKES FEWER THAN 2 (IRC R403.1.6)" in notes
     assert "LAP CLASS IS ACI 318-19 §25.5.2.1" in notes

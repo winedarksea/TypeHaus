@@ -567,58 +567,28 @@ ATTIC_DEVICES = [
 ]
 
 # --- Outdoor NEMA 3R weatherproof junction box on the north gable siding -------------
-# Gasketed blank cover plate, at the CN-M-VENT-CLAMP riser cluster's own elevation (24'-4"/
-# 24'-10"/25'-4") — filed on the attic storey because the gable carries siding well above it
-# there, giving a 25'-6" box cladding to grip.
-#
-# ** AT x=13'-10", AS CLOSE TO THE RISER AS THE GABLE ALLOWS. ** The prose above once said
-# 3'-0" east and the box sat at 16'-4", which was 6'-8 1/2": it was written when the riser
-# was expected to come up at x=13'-4", and the riser never did. It exits at x=9'-7 1/2"
-# (mep_venting.py), and everything between it and here is spoken for —
-#   * riser pair          x  9'-5 3/4".. 9'-9 1/2"
-#   * ED-A-PV-JB          x  9'-11" ..10'-5"
-#   * WIN-A-N1's framing  x 10'-7" ..13'-5"  (rough opening 10'-9"..13'-3", head 25'-0")
-# — so the first clear cladding east of the window is x=13'-5", and 13'-10" centres a 6" box
-# 2" clear of that bumper. WEST IS NOT AN OPTION: the rake is `20'-10 3/8" + x/2`, so a
-# 25'-6" box needs x >= 9'-3 1/4" and the 1 1/2" between the riser and the PV box is the
-# whole of what is left there.
-#
-# Going over the window head instead would put the box at x=12'-7 1/2", a true 3'-0" east,
-# but only 6" over a 25'-0" head — on top of the head trim rather than on plain panel.
-#
-# At x=13'-10" the rake is 27'-10 3/8", so the box hangs with 2'-4" of cladding over it, and
-# the roof underside plane `integrity.element_above_roof` reads (`20'-1 1/2" + x/2`) is
-# 27'-0 1/2", 1'-2" over the box's 25'-10" top. MN 1303.2402 subp. 6 wants the fan's box
-# within reach of the riser and `code.MN_1303_2402_radon` grades that at 8'-0"; this is
-# 4'-2 1/2", where the old station spent 6'-8 1/2" of that budget.
-#
-# Both heights below are the same 25'-6": Mount elevation is storey-relative (attic datum
-# 20'), Connector elevation is project-frame absolute.
+# ** THE RADON FAN BOX (MN 1303.2402 subp. 6), 2026-11-12. ** Was ED-A-NEMA-JB, an unfed
+# box at x=13'-10"; now the circuit's end at the fan. VR-M-STACK names it (fan_power_ref).
+#   * W-A-N2, centre x=8'-10", below the radon leg's 23'-10" elbow and so below the fan's
+#     24" x 3' space (graded, subp. 5.D). East along the same course, 2" apart: ED-A-PV-SPD,
+#     then ED-A-PV-JB.
+#   * Centred on the 22'-0" girt course (264"-267 1/2"): the enclosure's back screws through
+#     a panel flat into the KDAT, one row of two. Gasketed, surface-mounted on wood.
+#   * Fed on CKT-RC-ATTIC (15 A AFCI, slot 47) by NM off ED-A-POCKET-RC1's run in RM-A-POCKET,
+#     through a short sealed nipple behind the box: ccSPF and sheathing foamed, the panel
+#     hole under the box's gasket. Not modelled, like every NM branch.
+# Mount elevation is storey-relative (attic datum 20'): 23 3/4" is the 4" box's bottom.
 NEMA_BOX = [
-    ElectricalDevice(uid="CEJ901AAAA", tag="ED-A-NEMA-JB", kind=DeviceKind.JUNCTION_BOX,
-                     type_ref="ED-T-JBOX",
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(5, 6)),
+    ElectricalDevice(uid="CEJ901AAAA", tag="ED-A-RADON-JB", kind=DeviceKind.JUNCTION_BOX,
+                     type_ref="ED-T-JBOX", circuit="CKT-RC-ATTIC",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(23.75)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-A-N2B", face="right", distance_from_start=inch(50),
+                         wall_ref="W-A-N2", face="right", distance_from_start=inch(14),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 ]
-# ** CN-A-NEMA-CLAMP is GONE, and this list is empty on purpose. **
-# It was a plain S-5! seam clamp: the box's own fastener, sharing ED-A-NEMA-JB's point
-# exactly.
-#
-# The gable wall it sits on is `pbr-panel-24`. **This is WALL and not roof**, which is
-# the fact that decides it: at x=4' the rake stands near 26'-6" and the box hangs at 25'-6",
-# so it is a foot below the roof line on an exposed-fastener panel with no seam anywhere in
-# it. An S-5! clamp has nothing to close on.
-#
-# Nothing replaces it, and that is the honest answer rather than a gap: a surface enclosure
-# on a face-fastened panel is screwed to the wall the way the panel itself is, with the same
-# gasketed T09150HWAM through the flat into the girt behind. Those screws are inside the
-# field-grid count (``takeoff.fasteners``), which deducts nothing for openings or
-# penetrations precisely so that fixings like this one are covered by it.
-#
-# Restoring the seam cladding means restoring this connector — see git, and see
-# EXT_2X6_SWINBURNE in plan/assemblies.py, which is the rest of that revert.
+# No clamp: a surface enclosure on a face-fastened panel screws through the flat with the
+# same gasketed T09150HWAM the panel is hung on, inside the field-grid count
+# (``takeoff.fasteners``). An S-5! seam clamp has no seam to close on here.
 NEMA_CLAMP = []
 
 # --- Downspout securement: through-panel straps on the PBR siding ---------------------

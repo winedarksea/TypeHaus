@@ -19,27 +19,30 @@ What is gradeable from the model, and what is not:
   requirement here a plan can get wrong without anyone noticing until the fan goes in.
   Measured from the exhaust point and read with IRC AF103's 2 ft vertical allowance; see
   ``_separation_findings`` for why both of those matter to the answer.
-* **Subpart 6, the fan's power source** — an approved box at the anticipated fan location,
-  and explicitly *not* in conditioned space, a basement, or a crawl space.
+* **Subpart 6, the fan's power source**, and **subpart 5.D, the fan's 24" x 3 ft space** —
+  graded in :mod:`.radon_fan`.
 
 Deliberately not graded, because the model carries no field for them and inventing one to
 hold a boolean nobody sets would be worse than saying so here: subpart 2's membrane laps,
 subpart 3's 10 ft of perforated pipe under the membrane, subpart 5's "Radon Gas Vent
-System" labels and its 24"-diameter fan clearance, and the R-4 insulation on pipe in
-unconditioned space. Those are field-verified items on this house's sheets.
+System" labels, and the R-4 insulation on pipe in unconditioned space. Those are
+field-verified items on this house's sheets.
 """
 
 from __future__ import annotations
 
 from typehaus.checks.code.mn_residential._common import _fail, _pass, _unknown
+from typehaus.checks.code.mn_residential.radon_fan import (
+    fan_power_finding,
+    fan_space_findings,
+    radon_leg,
+)
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
-from typehaus.model.enums import DeviceKind, PipeSystem
+from typehaus.model.enums import PipeSystem
 from typehaus.model.mep import Sump, VentRun
 from typehaus.quantities import ft
 from typehaus.resolve.geometry import opening_center
-from typehaus.resolve.placeables import placed_xy
-from typehaus.resolve.room_lookup import axis_polygon, axis_ring
 from typehaus.resolve.vent_termination import exterior_riser_point
 
 _CODE = "MN 1303.2402"
@@ -51,11 +54,6 @@ _MIN_OPENING_SEPARATION = ft(10)
 # IRC AF103's qualifier on that sentence, which MN's own text drops: the 10 ft applies to an
 # opening "less than 2 feet below the exhaust point". See ``_separation_findings``.
 _EXHAUST_CLEARANCE_ABOVE_OPENING = ft(2)
-# How close an approved box has to be to the exterior riser to read as "in the anticipated
-# location of the vent pipe fan" (subpart 6). A fan sits in a 3 ft length of the riser and
-# the box goes beside it; 8 ft of plan separation is generous without accepting a box on
-# the far side of the house.
-_FAN_BOX_REACH = ft(8)
 
 
 def _exterior_riser_point(vent: VentRun) -> tuple[float, float]:
@@ -117,7 +115,8 @@ def radon_control_system(ctx: CheckContext) -> list[Finding]:
                                        "sump serving as the vent termination point",
                                  (sump.tag,), _CODE))
         out.extend(_separation_findings(ctx, riser))
-        out.append(_fan_power_finding(ctx, riser))
+        out.append(fan_power_finding(ctx, riser, _exterior_riser_point(riser)))
+        out.extend(fan_space_findings(ctx, riser))
     return out
 
 
@@ -179,13 +178,16 @@ def _separation_findings(ctx: CheckContext, riser: VentRun) -> list[Finding]:
     """
     from typehaus.resolve.vent_termination import derived_termination_elevation
 
-    rx, ry = _exterior_riser_point(riser)
+    # The RADON pipe's own exhaust: on a rake the bundle's other leg stands at another height.
+    leg = radon_leg(ctx.model, riser)
+    rx, ry = leg[1] if leg is not None else _exterior_riser_point(riser)
     conditioned = {room.tag for room in ctx.model.rooms if room.conditioned}
     if not conditioned:
         return [_unknown(_CID, f"no room resolves as conditioned, so {riser.tag}'s 10 ft "
                                "separation has nothing to be measured against",
                          (riser.tag,), _CODE)]
-    exhaust_m = derived_termination_elevation(ctx.model, riser)
+    exhaust_m = (leg[3] if leg is not None
+                 else derived_termination_elevation(ctx.model, riser))
     if exhaust_m is None:
         exhaust_m = (riser.roof_termination_elevation.meters
                      if riser.roof_termination_elevation is not None else None)
@@ -230,80 +232,3 @@ def _separation_findings(ctx: CheckContext, riser: VentRun) -> list[Finding]:
     return [_pass(_CID, f"{riser.tag}'s exhaust clears the nearest opening not exempted by "
                         f"the 2' vertical allowance ({nearest_tag}) by "
                         f"{nearest_m / 0.3048:.1f}'", _CODE)]
-
-
-def _fan_power_finding(ctx: CheckContext, riser: VentRun) -> Finding:
-    """Subpart 6 — a box at the fan's anticipated location, outside conditioned space.
-
-    The rule's prohibition is the interesting half and it is *not* redundant with "put it
-    outside": a box in the basement beside the stack would be the obvious place to put it
-    and is the one place the rule names. So the location test asks which room the box stands
-    in, not merely whether it is on an exterior wall.
-    """
-    from shapely.geometry import Point
-
-    rx, ry = _exterior_riser_point(riser)
-    # An intersystem bonding bar is a JUNCTION_BOX type with ``ibt`` set; it is not a fan box.
-    ibt_types = {t.tag for t in ctx.plan.library.electrical_device_types if t.ibt}
-    boxes = [e for e in ctx.plan.all_elements()
-             if getattr(e, "element_kind", None) == "ElectricalDevice"
-             and getattr(e, "kind", None) is DeviceKind.JUNCTION_BOX
-             and getattr(e, "type_ref", None) not in ibt_types]
-    if not boxes:
-        return _fail(_CID, f"{riser.tag} has no electrical box at the fan location; subpart 6 "
-                           "requires the circuit and an approved box to be installed during "
-                           "construction so the system can be made active", (riser.tag,),
-                     _CODE)
-    # The fan sits in a 3 ft length of the riser, so its box is beside the riser — on the
-    # storey the pipe leaves the building on. The reach test alone is PLAN-ONLY and this
-    # house is four storeys tall, so on its own it can collect junction boxes anywhere in
-    # the section — a device two floors away can fall inside the plan-only radius and get
-    # reported as the radon fan's box. The room search below can likewise name a room on
-    # the wrong storey, since it too ranges over every storey at once.
-    #
-    # A box that declares no room is kept whatever storey it is on: ED-A-PV-JB is outside
-    # the building entirely, which is exactly where subpart 6 wants this one, and it has no
-    # room to match against. A box that declares a room is only a candidate on the riser's
-    # own exit storey.
-    exit_wall = ctx.model.wall(riser.wall_ref) if riser.wall_ref else None
-    exit_storey = exit_wall.storey if exit_wall is not None else None
-    room_storey = {room.tag: room.storey for room in ctx.model.rooms}
-    reach = _FAN_BOX_REACH.meters
-    near = []
-    for box in boxes:
-        bx, by = placed_xy(ctx.model, box)
-        if ((bx - rx) ** 2 + (by - ry) ** 2) ** 0.5 > reach:
-            continue
-        declared = getattr(box, "room", None)
-        if (declared and exit_storey is not None
-                and room_storey.get(declared, exit_storey) != exit_storey):
-            continue
-        near.append(box)
-    if not near:
-        return _fail(_CID, f"the plan's junction box(es) "
-                           f"({', '.join(sorted(b.tag for b in boxes))}) stand more than "
-                           f"{_FAN_BOX_REACH.inches / 12:.0f}' from {riser.tag}'s exterior "
-                           "riser; subpart 6 puts the fan's box at the anticipated fan "
-                           "location", tuple(sorted(b.tag for b in boxes)) + (riser.tag,),
-                     _CODE)
-    interior = []
-    for box in near:
-        point = Point(*placed_xy(ctx.model, box))
-        for room in ctx.model.rooms:
-            if len(axis_ring(room)) < 3 or not room.conditioned:
-                continue
-            # Same storey only — a plan point is over every storey at once, and a box is on
-            # exactly one of them.
-            if exit_storey is not None and room.storey != exit_storey:
-                continue
-            if axis_polygon(room).covers(point):
-                interior.append((box.tag, room.tag))
-                break
-    if interior:
-        return _fail(_CID, "; ".join(f"{tag} stands inside conditioned room {room}"
-                                     for tag, room in interior)
-                     + " — subpart 6 forbids the fan's box in any conditioned space, "
-                       "basement or crawl space",
-                     tuple(tag for tag, _room in interior), _CODE)
-    return _pass(_CID, f"{', '.join(sorted(b.tag for b in near))} stands at {riser.tag}'s "
-                       "exterior riser, outside conditioned space, for a future fan", _CODE)

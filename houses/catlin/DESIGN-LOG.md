@@ -8155,3 +8155,27 @@ lane by lane. Catlin stays at 0 FAIL; delivered ventilation stays 200.0 cfm agai
   lifts it: `PR-B-COND-HP2-GYM` rises to 95" and falls 0.26"/ft onto `PR-B-COND` at 91.7".
 - **Kinds (#125).** `EQ-A-HP1-SUP-BOX` is a `PLENUM`; `EQ-S-ERV-MIX` keeps `MIXING_BOX` (it
   has a backdraft damper). `DU-S-HP-SUITE-RET`'s blocking slot is 7" clear, not 1".
+
+## Radon fan: a powered box, a graded space, fixings in wood (2026-11-12, owner)
+
+MN 1303.2402 subp. 6 wants a circuit ending in a box at the fan; subp. 5.D wants a 24" x 3 ft
+clear space on the pipe. `code.MN_1303_2402_radon` passed subp. 6 on any nearby box (the
+unfed `ED-A-NEMA-JB` and the PV backfeed box), and 5.D was not graded.
+
+- **The fan goes outside.** The attic is inside the hot-roof envelope, so the fan location
+  is `VR-M-STACK`'s exterior leg on the north gable (`W-A-N2`).
+- **Power.** `ED-A-NEMA-JB` became `ED-A-RADON-JB` on `CKT-RC-ATTIC` (15 A AFCI, slot 47). It
+  is fed by NM from the pocket's receptacle run through a sealed nipple behind the box, and
+  `VentRun.fan_power_ref` names it. The check now wants a named box on a panel load branch.
+- **Space.** At 6.2" c-c the vent leg stood inside the fan's circle. The plan was to move the
+  radon west, but the rake drops it: its own exhaust would have been 20" over WIN-A-N1's head,
+  3.6' away (at 9'-1.3" it was already 23.99"). So the exit pair swaps and spreads
+  (`exit_bundle_spacing` −14"): radon on 9'-7 1/2" (top 27'-3", 2'-3" over the head), vent on
+  8'-5 1/2". Fan space 23'-10"..26'-10". Separation is now measured at the radon pipe's top.
+  `PR-A-STUBATH-VENT` turns 14" west under the exit to reach the vent; `CD-A-PV-EAST` runs
+  between the rises at 9'-0 1/2".
+- **Girts.** On W-A-N2 the courses are 20', 22', 24' and the rake nailer. The old straps
+  (24'-4"/24'-10"/25'-4") and boxes were in panel alone, so the "into the girt behind" notes
+  were false. Now each pipe has a strap on the 24' course and one on the rake nailer.
+  `ED-A-RADON-JB`, `ED-A-PV-SPD` and `ED-A-PV-JB` sit 2" apart on the 22' course, below the
+  elbow and out of the fan space. Each is surface-mounted on wood with one row of back screws.

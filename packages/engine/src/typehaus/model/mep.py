@@ -495,6 +495,12 @@ class VentRun(Element):
     # Centre-to-centre between adjacent bundled risers; None is 1.6 diameters. Set it where
     # the bundle has to straddle a joist rather than share one bay.
     bundle_spacing: Length | None = None
+    # Pitch for the exit and exterior legs, apart from the jog's; None keeps
+    # ``bundle_spacing``. Negative swaps the pair's sides on the exit (the lanes cross at
+    # two heights). Lets a fan's 24" circle (MN 1303.2402 subp. 5.D) clear the other leg.
+    exit_bundle_spacing: Length | None = None
+    # The ElectricalDevice that powers a future radon fan (MN 1303.2402 subp. 6).
+    fan_power_ref: str | None = None
 
 
 @register_element

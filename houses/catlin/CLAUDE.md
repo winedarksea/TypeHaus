@@ -37,6 +37,10 @@
 > - **W-M-STOS is a staggered 2x6 wet wall** carrying the hall-bath 3" stack at y=26'-8" (powder
 >   face held, mud closet 29 1/2"); `haus route` found no lane into HS1 or the chase.
 >   `mep.trap_arm_length` (CODE) is the 3D trap-arm walk; `mep.vent_connection` (ADVISORY) grades each tee; BATH2-WC is the one open vent.
+> - **Radon fan (MN 1303.2402 subp. 5.D/6):** `ED-A-RADON-JB` on `CKT-RC-ATTIC`, on W-A-N2's 22'
+>   girt course with the PV SPD and box. `VR-M-STACK`'s exterior pair is swapped, 14" c-c
+>   (`exit_bundle_spacing`); that spacing and the radon station hold both the fan space and the
+>   exhaust's 2' over WIN-A-N1. Gable fixings land on girt courses or the rake nailer.
 > - **ERV:** EQ-B-ERV is at `rotation=deg(90)` (box south, door east), case 40.4" AFF, 13" south
 >   of its old station, and **all four Broan ports are EXACT** (2026-11-11, `notes/erv_static_budget.md`
 >   §10.22). EA lands north of OA on the east half, the order the risers need, so the outdoor legs

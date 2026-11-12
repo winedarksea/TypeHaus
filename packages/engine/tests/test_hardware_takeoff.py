@@ -665,10 +665,11 @@ def test_pipe_fixings_bill_by_size_not_as_a_bare_family(catlin_model) -> None:
                for row in rows)
     # Selected on the pipe's OD, so the size suffix is the part number and must reach the BOM.
     by_part = {row["part_number"]: row["count"] for row in rows}
-    # Six #11: three on each of the stack's two exterior pipes (vent and radon). The roof
+    # Four #11: two on each of the stack's exterior pipes, on the 24' girt course and the rake
+    # nailer (2026-11-12). The roof
     # leaders' CN-A-LEADER-* stations bill as the 4 x 3 1/2 leader's own 58110XX strap
     # (cladding_trim, test_gutter_sizing), never a round pipe strap as well.
-    assert by_part == {"SS316-STANDOFF-STRAP #11": 6}
+    assert by_part == {"SS316-STANDOFF-STRAP #11": 4}
     # And the strap reaches the wall by itself: nothing is carried under it.
     assert not [row for row in hardware_takeoff(catlin_model)
                 if row["scope"] == "carried-mount" and "strap" in row["basis"]]

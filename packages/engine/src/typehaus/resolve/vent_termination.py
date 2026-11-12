@@ -147,31 +147,39 @@ def riser_polylines(model: ResolvedModel, vent: VentRun
     # The lead leg's spread axis keeps its historical sign (+x or +y) so index 0 stays where
     # the house authored it; the exit's normal follows with the same handedness.
     n1 = (1.0, 0.0) if abs(lead[1]) >= abs(lead[0]) else (0.0, 1.0)
-    n2, corner_t = n1, 0.0
+    n2, d1, d2, turns = n1, None, None, False
     if has_jog and has_exit:
         d1, d2 = _unit(jog), _unit((offset_x, offset_y))
         hand = 1.0 if d1[0] * n1[1] - d1[1] * n1[0] > 0 else -1.0   # n1 left (+1) or right
         n2 = (-d2[1] * hand, d2[0] * hand)
-        along = d1[0] * n2[0] + d1[1] * n2[1]
-        if abs(along) > 1e-9:
-            # corner = top + s*n1 + t*d1, on the exit's offset line: t = s(1 - n1.n2)/(d1.n2)
-            corner_t = (1.0 - (n1[0] * n2[0] + n1[1] * n2[1])) / along
-        else:
+        turns = abs(d1[0] * d2[1] - d1[1] * d2[0]) > 1e-9
+        if not turns:
             n2 = n1   # the exit carries straight on (or doubles back) — the offset holds
     count = max(len(vent.systems), 1)
     out = []
     pitch = (vent.bundle_spacing.meters if vent.bundle_spacing is not None
              else vent.diameter.meters * PIPE_BUNDLE_SPACING)
+    # The exit's own pitch. A jogless riser is one lane top to bottom, so it takes it too;
+    # a jog that carries straight on has no corner to change pitch at, so it keeps the jog's.
+    exit_pitch = pitch
+    if vent.exit_bundle_spacing is not None:
+        exit_pitch = vent.exit_bundle_spacing.meters
+        if not has_jog:
+            pitch = exit_pitch
+        elif not turns:
+            exit_pitch = pitch
     for index, system in enumerate(vent.systems or (None,)):
-        s = (index - (count - 1) / 2.0) * pitch
+        rank = index - (count - 1) / 2.0
+        s, s_exit = rank * pitch, rank * exit_pitch
         here = (chase[0] + s * n1[0], chase[1] + s * n1[1])
-        if has_jog:
-            d1 = _unit(jog)
-            there = (top[0] + s * (n1[0] + corner_t * d1[0]),
-                     top[1] + s * (n1[1] + corner_t * d1[1]))
+        if has_jog and turns:
+            # The corner is where this pipe's jog lane meets its exit lane.
+            there = _lanes_meet(top, s, n1, d1, s_exit, n2, d2)
+        elif has_jog:
+            there = (top[0] + s * n1[0], top[1] + s * n1[1])
         else:
             there = here
-        out_there = (exit_point[0] + s * n2[0], exit_point[1] + s * n2[1])
+        out_there = (exit_point[0] + s_exit * n2[0], exit_point[1] + s_exit * n2[1])
         own_top = derived_termination_elevation(model, vent, at=out_there)
         z_top = own_top if own_top is not None else vent.roof_termination_elevation.meters
         name = system.value if system is not None else "vent"
@@ -179,6 +187,13 @@ def riser_polylines(model: ResolvedModel, vent: VentRun
         z = (z_start, z_jog, z_jog, z_exit, z_exit, z_top)
         out.append((f"{vent.tag}-{name}", path, z))
     return out
+
+
+def _lanes_meet(top, s1, n1, d1, s2, n2, d2) -> tuple[float, float]:
+    """``top + s1·n1 + t·d1`` meets ``top + s2·n2 + u·d2`` (the exit offset runs along d2)."""
+    rx, ry = s2 * n2[0] - s1 * n1[0], s2 * n2[1] - s1 * n1[1]
+    t = (rx * d2[1] - ry * d2[0]) / (d1[0] * d2[1] - d1[1] * d2[0])
+    return top[0] + s1 * n1[0] + t * d1[0], top[1] + s1 * n1[1] + t * d1[1]
 
 
 def _unit(vector: tuple[float, float]) -> tuple[float, float]:

@@ -418,8 +418,8 @@ def test_catlin_vent_routes_up_out_up_to_above_roof(catlin_model) -> None:
     assembly = catlin_model.plan.library.resolve_assembly(roof.assembly)
     skin = sum(layer.thickness.meters for layer in above_structure_layers(assembly))
     # Each pipe terminates 12" over the rake at its OWN station: the pair stands side by side
-    # across the gable (vent on 9'-7 1/2", radon 6.2" west), so the two tops differ.
-    stations = {"vent": ft(9, 7.5).meters, "radon": ft(9, 7.5).meters - inch(6.2).meters}
+    # across the gable (radon on 9'-7 1/2", vent 14" west since 2026-11-12), so the tops differ.
+    stations = {"radon": ft(9, 7.5).meters, "vent": ft(9, 7.5).meters - inch(14).meters}
     # The roof skin is every above-structure layer, perpendicular to the 6:12 plane, so its
     # vertical height is the sum times the slope factor (as derived_termination_elevation does).
     # It is summed here rather than written down, so a roof rebuild moves the vent with it.

@@ -1048,19 +1048,22 @@ PV_JBOX = [
     # ** IT SITS ON W-A-N2B, NOT W-A-N2 ** — the north gable splits at x=10'-0", and
     # 10'-2" is 2" east of that. test_catlin_outdoor_structures.py names the wall it must
     # ride below; that assertion follows the box.
+    #
+    # ** DROPPED TO THE 22'-0" GIRT COURSE ON 2026-11-12. ** At 25'-0" it hung in panel
+    # alone, between courses, and inside the radon fan's 24" circle once the radon leg took
+    # 9'-7 1/2" (MN 1303.2402 subp. 5.D). Centred on 264"-267 1/2" its back screws land in
+    # KDAT; ED-A-PV-SPD and ED-A-RADON-JB are west of it on the same course. The window notes above still hold.
     ElectricalDevice(uid="CEE014AAAA", tag="ED-A-PV-JB", kind=DeviceKind.JUNCTION_BOX,
                      type_ref="ED-T-PV-JB", circuit="CKT-ESS-GRID",
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(5)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(23.75)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-A-N2B", face="right", distance_from_start=inch(94),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 ]
-# ** THERE IS NO CN-A-PV-CLAMP, for the same reason as CN-A-NEMA-CLAMP **
-# (plan/mep_electrical.py, which carries the full note): W-A-N2 wears `pbr-panel-24`, an
-# exposed-fastener panel with no seam, so a seam clamp there is uninstallable. The box is
-# screwed through the
-# panel into the girt with the same gasketed T09150HWAM the panel is hung on, and those are
-# inside the field-grid screw count.
+# ** THERE IS NO CN-A-PV-CLAMP. ** W-A-N2 wears `pbr-panel-24`, an exposed-fastener panel
+# with no seam, so a seam clamp there is uninstallable. The box screws through a panel flat
+# into the 22'-0" girt course with the gasketed T09150HWAM the panel is hung on, inside
+# the field-grid screw count.
 #
 # NOT to be confused with the 72 S-5-PVKIT clamps in params/solar.py: those are on the
 # mechanically seamed ROOF, which is untouched, and they stay exactly as they are.
@@ -1107,11 +1110,11 @@ CONDUIT_TRUNKS = [
                service=Service.POWER_DC,  # PV source circuits (decision #123)
                from_ref="ED-B-PANEL", to_ref="ED-A-PV-JB"),
     # The over-and-up leg: east along the attic deck under the north rake, into the north
-    # gable wall, and up it to ED-A-PV-JB at 25'-6". 6" above the deck for the flat part,
+    # gable wall, and up it to ED-A-PV-JB at 21'-11 3/4". 6" above the deck for the flat part,
     # which is what CD-A-DATA-NE does on the same storey and for the same reason.
     #
-    # It turns north at x=8'-8", west of VR-M-STACK's radon riser and clear of FS-ATTIC's deck void (x 10'-0"..18'-0") west
-    # edge, and finishes inside the gable wall. y=35'-10" is 4" into W-A-N2/W-A-N2B's 5 1/2"
+    # It turns north at x=9'-0 1/2", 7" from each of VR-M-STACK's two rises, and west of
+    # FS-ATTIC's deck void (x 10'-0"..18'-0"), and finishes inside the gable wall. y=35'-10" is 4" into W-A-N2/W-A-N2B's 5 1/2"
     # stud cavity (which runs y 35'-6"..35'-11 1/2"), so the run straps to gable studs for
     # its last 1'-6" and stands up between them, directly behind the box. There is no third
     # option: FS-ATTIC's void stops at y=35'-5 3/8" and W-A-N2B's gwb face starts at
@@ -1119,7 +1122,7 @@ CONDUIT_TRUNKS = [
     # 1 1/2" EMT in a 5 1/2" stud — a 2" bore, 36% of the depth, inside R502.8's 40% for a
     # bored hole.
     #
-    # The riser follows ED-A-PV-JB west to x=10'-2" and down to 25'-0"; the box's own note
+    # The riser follows ED-A-PV-JB to x=10'-2" and 21'-11 3/4"; the box's own note
     # carries why that station.
     ConduitRun(uid="XJR4KE400J", tag="CD-A-PV-EAST", trade_size=inch(1.5),
                # Up 3" off the riser head first: DU-ERV-RISER-EXH's top leg runs east at 20'-4",
@@ -1130,14 +1133,14 @@ CONDUIT_TRUNKS = [
                # void would hang over nothing (`mep.run_over_void`).
                path=(pt(_PV_CHASE_X, inch(404)), pt(_PV_CHASE_X, inch(404)),
                      pt(_PV_CHASE_X, inch(400)),
-                     pt(inch(104), inch(400)), pt(inch(104), ft(35, 10)),
+                     pt(inch(108.5), inch(400)), pt(inch(108.5), ft(35, 10)),
                      pt(ft(10, 2), ft(35, 10)), pt(ft(10, 2), ft(35, 10))),
-               start_elevation=ft(20, 6), end_elevation=ft(25),
+               start_elevation=ft(20, 6), end_elevation=inch(263.75),
                elevations=(ft(20, 6), ft(20, 9), ft(20, 9), ft(20, 9), ft(20, 9), ft(20, 9),
-                           ft(25)),
-               # Pull box at 3 (8'-8", 33'-4"), attic deck in RM-A-POCKET: the riser chains in.
-               # x=8'-8" since 2026-10-08: 9'-2" ran through VR-M-STACK's radon riser once the
-               # stack's pair went side by side across the gable. The trimmer jog's extra
+                           inch(263.75)),
+               # Pull box at 3 (9'-0 1/2", 33'-4"), attic deck in RM-A-POCKET: the riser
+               # chains in. Since 2026-11-12 the stack's rises stand at 8'-5 1/2" (vent) and
+               # 9'-7 1/2" (radon), and this leg runs between them. The trimmer jog's extra
                # quarter bend takes a conduit body at 1, the riser head, to stay within 360°.
                pull_points=(1, 3),
                service=Service.POWER_DC,  # PV source circuits (decision #123)

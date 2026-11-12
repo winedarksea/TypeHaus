@@ -281,15 +281,17 @@ VENT_BRANCHES_ATTIC = [
     # lavatory and bar sink at 3'-0" AFF (23'-0 7/8"), so 23'-6 7/8" is the floor for a dry
     # horizontal vent and the lowest vertex here is 23'-7 2/3". It rises monotonically into the stack, so condensate
     # drains back to the fixtures and there is no pocket to hold water. The last vertex at
-    # 23'-9" ties in 1" BELOW the riser's 23'-10" exit, on the vertical part of the stack.
+    # 23'-9 1/4" ties in 3/4" BELOW the riser's 23'-10" exit, on the vertical part of the stack.
     # It passes OVER DU-A-ERV-R-STUBATH's riser, which stops at REG-A-STUBATH-EXH's 3'-0"
     # grille (plan/mep_registers_attic.py) — both stand in W-A-STU-W's one 5 1/2" cavity.
     PipeRun(uid="STFQKR8Q95", tag="PR-A-STUBATH-VENT", system=PipeSystem.VENT,
-            # Ends ON the vent riser at the stack's upper station (2026-09-23), the south one
-            # of the pair; the radon riser 6.2" north is no longer in its way.
-            path=(pt(ft(9, 7.5), ft(20, 8)), pt(ft(9, 7.5), inch(412.9))),
+            # Ends ON the vent riser, the south lane of the pair. Since 2026-11-12 the radon
+            # takes 9'-7 1/2" on the exit, so the vent stands at 8'-5 1/2" and this run turns
+            # west 14" to it under the exit, still rising, to tie in 3/4" under the elbow.
+            path=(pt(ft(9, 7.5), ft(20, 8)), pt(ft(9, 7.5), inch(412.9)),
+                  pt(inch(101.5), inch(412.9))),
             diameter=inch(2),
-            elevations=(inch(43.67), ft(3, 9)),
+            elevations=(inch(43.67), ft(3, 9), inch(45.25)),
             serves=("FX-A-STUBATH-WC", "FX-A-STUBATH-LAV", "FX-A-STUBATH-SH",
                     "FX-A-STUDIO-BAR-SINK")),
     # ** THE SHOWER'S TRAP-ARM VENT, IN W-A-HALL-S. ** From the pan's north edge (a 1'-8" arm)
@@ -361,32 +363,23 @@ VENT_BRANCHES_ATTIC = [
 # grades a riser against a window it runs beside, but it is unbuildable: the standoff
 # straps have no cladding to land on and the window trim has nowhere to die.
 #
-# MN 1303.2402 subp. 5 wants the exhaust 2'-0" over WIN-A-N1's 25'-0" head or 10'-0" away in
-# plan; the termination sits 12" over the rake, which measures 27'-8 3/4" at this station and
-# falls 1/2" per inch travelled west, so subpart 5 holds anywhere east of x=8'-2" — a
-# six-foot band.
+# MN 1303.2402 subp. 5 wants the RADON exhaust 2'-0" over WIN-A-N1's 25'-0" head or 10'-0"
+# away in plan, measured at the radon pipe's own top (the rake falls 1/2" per inch west).
 #
-# 9'-7 1/2" is chosen from inside that band because it is **PR-A-STUBATH-VENT's own wet-wall
-# line**. Landing on it deletes that run's last leg outright: the bath vent goes up the wet
-# wall and straight into the stack instead of turning east for 3'-8" to meet it. Measured:
-#   * the pair spreads across EACH leg (`resolve/vent_termination.riser_polylines`): in y
-#     along the jog, in x out through the wall, turning the corner as two lanes. The vent
-#     stands on x=9'-7 1/2", the radon 6.2" west at 9'-1.3". A single spread axis left one
-#     leg collinear — first the jog, then (2026-10-08) the wall exit, where both pipes
-#     shared one bore and stood one behind the other on the siding. W-A-BA-E's stud face at
-#     x=10'-0"-1 3/4" is 1" clear of the vent pipe;
-#   * 11 3/4" clear of WIN-A-N1's west jamb (it was 9 5/8" while the pair spread in x, and
-#     2'-1 5/8" until the window moved a bay west on 2026-09-06). A further move west of
-#     that window has nowhere to go (see attic.py's rake note), but if one is ever
-#     attempted, check this first;
-#   * termination 27'-8 3/4", 2'-8 3/4" over the window head (subpart 5 wants 2'-0");
-#   * the under-deck jog is 8'-7 1/2" of 3" PVC in the FS-ATTIC band.
+# ** THE EXTERIOR PAIR, SINCE 2026-11-12 ** (`code.MN_1303_2402_radon`, subp. 5 / 5.D):
+#   * RADON on x=9'-7 1/2", PR-A-STUBATH-VENT's wet-wall line: termination 27'-3", 2'-3"
+#     over the window head. W-A-BA-E's stud face is 1" clear of it. At its old 9'-1.3" it
+#     stood 23.99" over the head, on the line;
+#   * VENT 14" west on 8'-5 1/2" (`exit_bundle_spacing`), so the fan's 24" circle clears
+#     it; PR-A-STUBATH-VENT turns west 14" under the exit to reach it;
+#   * fan space 23'-10"..26'-10" on the radon leg. Its 24" circle reaches x 10'-7 1/2",
+#     2 3/4" short of WIN-A-N1's rough opening. The PV box, its SPD and the radon fan box sit
+#     below it on the 22'-0" girt course (plan/mep_electrical.py);
+#   * the jog is 8'-2 1/2" of 3" PVC in the FS-ATTIC band; the two lanes cross the jog's
+#     at two heights.
 #
-# One consequence follows the station: the wall it exits through is W-A-N2 (x 10'..0'), not
-# W-A-N2B — 9'-7 1/2" is west of the north gable's x=10'-0" split. 115 1/2" is not 0 mod 16
-# and does not need to be: the riser is outboard of the sheathing on standoff straps and
-# grips a girt, not a stud, and the jog crosses I-joist webs at 19'-6" whose 16" grid is
-# fixed whatever this run does.
+# The exit wall is W-A-N2 (x 10'..0'), west of the north gable's x=10'-0" split. The straps
+# grip girt courses and the rake nailer, not studs (VENT_CLAMPS).
 #
 VENT_RISERS = [
     VentRun(uid="CMVR01AAAA", tag="VR-M-STACK",
@@ -406,46 +399,47 @@ VENT_RISERS = [
             # x up the gable (vent east on 9'-7 1/2", radon west on 9'-1.3"), not in y, so
             # the two pipes no longer share a bore through W-A-N2 or stand one behind the
             # other on the siding.
-            chase_offset=pt(ft(8, 6.4), ft(0)), chase_offset_elevation=ft(19, 6),
+            # ** SINCE 2026-11-12 THE EXIT IS 14" C-C AND SWAPPED ** (exit_bundle_spacing
+            # -14"): radon east on 9'-7 1/2", vent west on 8'-5 1/2", centre 9'-0 1/2". 14" is
+            # the fan's 24" circle (MN 1303.2402 subp. 5.D) plus the vent's 1 3/4"; radon
+            # east keeps its own exhaust 2'-3" over WIN-A-N1's head (subp. 5). The lanes
+            # cross in plan at two heights: the jog at 19'-6", the exit at 23'-10".
+            chase_offset=pt(ft(8, 2.5), ft(0)), chase_offset_elevation=ft(19, 6),
             exit_elevation=ft(23, 10), exit_offset=pt(ft(0), inch(28.7)),
+            exit_bundle_spacing=inch(-14), fan_power_ref="ED-A-RADON-JB",
             wall_ref="W-A-N2", attachment="pipe_strap"),
 ]
 
-# Through-panel straps fixing the exterior riser to the north gable siding. The riser spans
-# 23'-10" to its derived termination, and the gable siding at x=9'-7 1/2" runs to a 26'-8 3/4"
-# rake — so all three fixings, at 24'-4" / 24'-10" / 25'-4", sit on the pipe *and* on WALL
-# cladding, not on roof, with 1'-4 3/4" to spare on the top one. That is the question that
-# decides the part, and it was checked: a fixing that had landed above the rake would be on
-# `standing-seam` roofing and would have stayed on the CanDuit ring.
+# Through-panel straps fixing the exterior riser to the north gable siding, each screwed
+# through a panel flat INTO WOOD (2026-11-12): the 24'-0" girt course (288"-291 1/2", a strap
+# at its centre) and the rake nailer, which on W-A-N2 bottoms at 21'-0" + x/2. No other
+# course is on the pipe: 22'-0" is below the 23'-10" elbow, and W-A-N2 has no 26'-0" course
+# (the rake runs there). Each pipe then stands free 10"-14" past the nailer to its top.
 #
 # These hold a *pipe*, not a seam: the gable wall is `pbr-panel-24`, an exposed-fastener
 # panel with no seam, so an S-5! CanDuit ring's `requires_role=ROLE_STANDING_SEAM_CLAMP`
 # would order a bracket with nothing to grip. This follows the roof leaders
-# (plan/mep_electrical.py LEADER_CLAMPS) onto the 316 stainless standoff strap, screwed
-# through the panel into the girt.
+# (plan/mep_electrical.py LEADER_CLAMPS) onto the 316 stainless standoff strap.
 #
 # Sizing is on OUTER diameter: 3" PVC DWV is 3.5" OD, which is the **#11** (3.4-3.7") size;
 # the 4" leaders take #13. The size suffix stays because a bare part family once billed
-# brackets and no rings.
+# brackets and no rings. The radon leg stands 5.95" off the cladding (pipe centre), the
+# 9.7" fan's half plus 1/2" with 0.6" spare: the strap's standoff block sets that.
 VENT_CLAMPS = [
+    # The vent leg on 8'-5 1/2". Rake nailer centre there is 25'-4 1/2".
     Connector(uid="CMVC01AAAA", tag="CN-M-VENT-CLAMP1", kind=ConnectorKind.PIPE_STRAP,
-              position=pt(ft(9, 7.5), ft(37)), elevation=ft(24, 4), size="SS316-STANDOFF-STRAP #11",
+              position=pt(inch(101.5), ft(37)), elevation=inch(289.75), size="SS316-STANDOFF-STRAP #11",
               connects=("VR-M-STACK", "W-A-N2")),
     Connector(uid="CMVC02AAAA", tag="CN-M-VENT-CLAMP2", kind=ConnectorKind.PIPE_STRAP,
-              position=pt(ft(9, 7.5), ft(37)), elevation=ft(24, 10), size="SS316-STANDOFF-STRAP #11",
+              position=pt(inch(101.5), ft(37)), elevation=inch(304.5), size="SS316-STANDOFF-STRAP #11",
               connects=("VR-M-STACK", "W-A-N2")),
-    Connector(uid="CMVC03AAAA", tag="CN-M-VENT-CLAMP3", kind=ConnectorKind.PIPE_STRAP,
-              position=pt(ft(9, 7.5), ft(37)), elevation=ft(25, 4), size="SS316-STANDOFF-STRAP #11",
-              connects=("VR-M-STACK", "W-A-N2")),
-    # The radon riser, 6.2" west of the vent on the same courses.
+    # The radon leg on 9'-7 1/2". Rake nailer centre there is 25'-11 1/2". The future fan
+    # replaces a length of this leg; its straps stay where the space allows.
     Connector(uid="97GJ68XRY2", tag="CN-M-RADON-CLAMP1", kind=ConnectorKind.PIPE_STRAP,
-              position=pt(ft(9, 1.3), ft(37)), elevation=ft(24, 4), size="SS316-STANDOFF-STRAP #11",
+              position=pt(ft(9, 7.5), ft(37)), elevation=inch(289.75), size="SS316-STANDOFF-STRAP #11",
               connects=("VR-M-STACK", "W-A-N2")),
     Connector(uid="ZRBRXDKJVF", tag="CN-M-RADON-CLAMP2", kind=ConnectorKind.PIPE_STRAP,
-              position=pt(ft(9, 1.3), ft(37)), elevation=ft(24, 10), size="SS316-STANDOFF-STRAP #11",
-              connects=("VR-M-STACK", "W-A-N2")),
-    Connector(uid="7XZGATYJG5", tag="CN-M-RADON-CLAMP3", kind=ConnectorKind.PIPE_STRAP,
-              position=pt(ft(9, 1.3), ft(37)), elevation=ft(25, 4), size="SS316-STANDOFF-STRAP #11",
+              position=pt(ft(9, 7.5), ft(37)), elevation=inch(311.5), size="SS316-STANDOFF-STRAP #11",
               connects=("VR-M-STACK", "W-A-N2")),
 ]
 # The basement's two plumbing vents. Both are offset vents to VR-M-STACK's shared

@@ -50,7 +50,7 @@ RISER = [
     VentRun(uid="BAMTTS248T", tag="VR-RADON", systems=(PipeSystem.RADON,), diameter=inch(3),
             chase_position=pt(ft(1), ft(16, 8)), start_elevation=ft(-2),
             exit_elevation=ft(16), exit_offset=pt(ft(-2), ft(0)),
-            roof_termination_elevation=ft(21),
+            roof_termination_elevation=ft(21), fan_power_ref="ED-RADON-FAN-JB",
             wall_ref="W-204", attachment="standing_seam_clamp"),
 ]
 

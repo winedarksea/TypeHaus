@@ -369,7 +369,8 @@ CIRCUITS = (
             gfci=True, afci=True, load_va=1500,
             description="General receptacles — basement + spa convenience"),
     Circuit(uid="CKT029AAAA", tag="CKT-RC-ATTIC", slot=47, panel_ref=_PANEL, breaker_amps=15, poles=1,
-            afci=True, load_va=1000, description="General receptacles — attic rooms"),
+            afci=True, load_va=1000,
+            description="General receptacles — attic rooms + radon fan box, MN 1303.2402 subp. 6"),
     Circuit(uid="CKT030AAAA", tag="CKT-RC-GARAGE", slot=48, panel_ref=_PANEL, breaker_amps=20, poles=1,
             gfci=True, load_va=1500, description="Garage general receptacles"),
     # ^ The 210.11(C)(4) garage circuit: 120 V, 20 A, "no other outlets" than the two bay

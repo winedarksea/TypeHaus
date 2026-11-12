@@ -83,9 +83,6 @@
 "canvas_objects/ED-A-HP1-RC1/body_z0_m": 6.52145,
 "canvas_objects/ED-A-HP1-RC1/body_z1_m": 6.57225,
 "canvas_objects/ED-A-HP1-RC1/z_m": 6.52145,
-"canvas_objects/ED-A-NEMA-JB/body_z0_m": 7.7724,
-"canvas_objects/ED-A-NEMA-JB/body_z1_m": 7.874,
-"canvas_objects/ED-A-NEMA-JB/z_m": 7.7724,
 "canvas_objects/ED-A-POCKET-LT1/body_z0_m": 7.34695,
 "canvas_objects/ED-A-POCKET-LT1/body_z1_m": 7.48665,
 "canvas_objects/ED-A-POCKET-LT1/z_m": 7.34695,
@@ -95,12 +92,15 @@
 "canvas_objects/ED-A-POCKET-SW/body_z0_m": 7.032498,
 "canvas_objects/ED-A-POCKET-SW/body_z1_m": 7.083298,
 "canvas_objects/ED-A-POCKET-SW/z_m": 7.032498,
-"canvas_objects/ED-A-PV-JB/body_z0_m": 7.62,
-"canvas_objects/ED-A-PV-JB/body_z1_m": 7.7216,
-"canvas_objects/ED-A-PV-JB/z_m": 7.62,
-"canvas_objects/ED-A-PV-SPD/body_z0_m": 7.62,
-"canvas_objects/ED-A-PV-SPD/body_z1_m": 7.7724,
-"canvas_objects/ED-A-PV-SPD/z_m": 7.62,
+"canvas_objects/ED-A-PV-JB/body_z0_m": 6.69925,
+"canvas_objects/ED-A-PV-JB/body_z1_m": 6.80085,
+"canvas_objects/ED-A-PV-JB/z_m": 6.69925,
+"canvas_objects/ED-A-PV-SPD/body_z0_m": 6.67385,
+"canvas_objects/ED-A-PV-SPD/body_z1_m": 6.82625,
+"canvas_objects/ED-A-PV-SPD/z_m": 6.67385,
+"canvas_objects/ED-A-RADON-JB/body_z0_m": 6.69925,
+"canvas_objects/ED-A-RADON-JB/body_z1_m": 6.80085,
+"canvas_objects/ED-A-RADON-JB/z_m": 6.69925,
 "canvas_objects/ED-A-STAIR-RC1/body_z0_m": 6.4389,
 "canvas_objects/ED-A-STAIR-RC1/body_z1_m": 6.4897,
 "canvas_objects/ED-A-STAIR-RC1/z_m": 6.4389,
@@ -2524,12 +2524,12 @@
 "cd848db7390a"
 ],
 "conduits/CD-A-DATA-NE/z_start_m": 6.2484,
-"conduits/CD-A-PV-EAST/z_end_m": 7.62,
+"conduits/CD-A-PV-EAST/z_end_m": 6.69925,
 "conduits/CD-A-PV-EAST/z_m": [
 6.2484,
-7.62,
+6.69925,
 7,
-"c5722967a9ef"
+"d116e07ede1a"
 ],
 "conduits/CD-A-PV-EAST/z_start_m": 6.2484,
 "conduits/CD-B-ATTIC-RISER/z_end_m": 6.2484,
@@ -7430,12 +7430,6 @@
 2,
 "9d8df78270b2"
 ],
-"geometry/7XZGATYJG5/body": [
-7.7089,
-7.7343,
-2,
-"6dfb8fdb9ca7"
-],
 "geometry/809R3NTWXK-run/body": [
 -3.9116,
 -1.4732,
@@ -8079,10 +8073,10 @@
 "7f95efe976e4"
 ],
 "geometry/97GJ68XRY2/body": [
-7.4041,
-7.4295,
+7.34695,
+7.37235,
 2,
-"1cf2cd560905"
+"684835e5e08f"
 ],
 "geometry/9AYPA03VAE/layer:gwb-a": [
 -2.7797125,
@@ -31323,22 +31317,16 @@
 "d12c3da32007"
 ],
 "geometry/CMVC01AAAA/body": [
-7.4041,
-7.4295,
+7.34695,
+7.37235,
 2,
-"1cf2cd560905"
+"684835e5e08f"
 ],
 "geometry/CMVC02AAAA/body": [
-7.5565,
-7.5819,
+7.7216,
+7.747,
 2,
-"6a62038a0ad5"
-],
-"geometry/CMVC03AAAA/body": [
-7.7089,
-7.7343,
-2,
-"6dfb8fdb9ca7"
+"cbf8491063b0"
 ],
 "geometry/CMVR01AAAA-radon-jog00/body": [
 5.9055,
@@ -31426,9 +31414,9 @@
 ],
 "geometry/CMVR01AAAA-radon-term/body": [
 7.2644,
-8.2293984,
+8.3081384,
 2,
-"3db9c8b32e94"
+"800198d066e4"
 ],
 "geometry/CMVR01AAAA-vent-jog00/body": [
 5.9055,
@@ -31516,9 +31504,9 @@
 ],
 "geometry/CMVR01AAAA-vent-term/body": [
 7.2644,
-8.3081384,
+8.1303384,
 2,
-"800198d066e4"
+"a2e5b88a7883"
 ],
 "geometry/CMW101AAAA-basestrip-1-0/body": [
 -0.3186063,
@@ -73942,9 +73930,9 @@
 ],
 "geometry/STFQKR8Q95-run/body": [
 7.1798188,
-7.2643992,
-24,
-"a5501cbdd547"
+7.270746,
+48,
+"3e309772f09b"
 ],
 "geometry/SZ4K3PX817-box/body": [
 6.502273,
@@ -75220,9 +75208,9 @@
 ],
 "geometry/XJR4KE400J-run/body": [
 6.2484,
-7.62,
+6.69925,
 144,
-"1e183851e3b8"
+"7dd2eaf387b6"
 ],
 "geometry/XM4GM4VEZS-run/body": [
 -1.5873703,
@@ -76641,10 +76629,10 @@
 "03cebafecb8b"
 ],
 "geometry/ZRBRXDKJVF/body": [
-7.5565,
-7.5819,
+7.8994,
+7.9248,
 2,
-"6a62038a0ad5"
+"ca640b3deb79"
 ],
 "geometry/ZT98DS3W8G-run/body": [
 6.64845,
@@ -114678,12 +114666,12 @@
 "69a49cd152a4"
 ],
 "pipe_runs/PR-A-STUBATH-SH-VENT/z_start_m": 7.1374,
-"pipe_runs/PR-A-STUBATH-VENT/z_end_m": 7.239,
+"pipe_runs/PR-A-STUBATH-VENT/z_end_m": 7.24535,
 "pipe_runs/PR-A-STUBATH-VENT/z_m": [
 7.205218,
-7.239,
-2,
-"fd1dc71af5f5"
+7.24535,
+3,
+"69a21bf52a4a"
 ],
 "pipe_runs/PR-A-STUBATH-VENT/z_start_m": 7.205218,
 "pipe_runs/PR-A-STUBATH-WC-CW/z_end_m": 6.308598,
@@ -116423,7 +116411,7 @@
 "solids/CD-A-DATA-NE-RUN/z0_m": 6.2484,
 "solids/CD-A-DATA-NE-RUN/z1_m": 7.0104,
 "solids/CD-A-PV-EAST-RUN/z0_m": 6.2484,
-"solids/CD-A-PV-EAST-RUN/z1_m": 7.62,
+"solids/CD-A-PV-EAST-RUN/z1_m": 6.69925,
 "solids/CD-B-ATTIC-RISER-RUN/z0_m": -0.7985125,
 "solids/CD-B-ATTIC-RISER-RUN/z1_m": 6.2484,
 "solids/CD-B-DATA-CHASE-RUN/z0_m": -0.6398895,
@@ -116982,18 +116970,14 @@
 "solids/CN-M-HP3-C3/z1_m": -0.3175,
 "solids/CN-M-HP3-C4/z0_m": -0.4699,
 "solids/CN-M-HP3-C4/z1_m": -0.3175,
-"solids/CN-M-RADON-CLAMP1/z0_m": 7.4041,
-"solids/CN-M-RADON-CLAMP1/z1_m": 7.4295,
-"solids/CN-M-RADON-CLAMP2/z0_m": 7.5565,
-"solids/CN-M-RADON-CLAMP2/z1_m": 7.5819,
-"solids/CN-M-RADON-CLAMP3/z0_m": 7.7089,
-"solids/CN-M-RADON-CLAMP3/z1_m": 7.7343,
-"solids/CN-M-VENT-CLAMP1/z0_m": 7.4041,
-"solids/CN-M-VENT-CLAMP1/z1_m": 7.4295,
-"solids/CN-M-VENT-CLAMP2/z0_m": 7.5565,
-"solids/CN-M-VENT-CLAMP2/z1_m": 7.5819,
-"solids/CN-M-VENT-CLAMP3/z0_m": 7.7089,
-"solids/CN-M-VENT-CLAMP3/z1_m": 7.7343,
+"solids/CN-M-RADON-CLAMP1/z0_m": 7.34695,
+"solids/CN-M-RADON-CLAMP1/z1_m": 7.37235,
+"solids/CN-M-RADON-CLAMP2/z0_m": 7.8994,
+"solids/CN-M-RADON-CLAMP2/z1_m": 7.9248,
+"solids/CN-M-VENT-CLAMP1/z0_m": 7.34695,
+"solids/CN-M-VENT-CLAMP1/z1_m": 7.37235,
+"solids/CN-M-VENT-CLAMP2/z0_m": 7.7216,
+"solids/CN-M-VENT-CLAMP2/z1_m": 7.747,
 "solids/CN-S-BWHD-NE-E/z0_m": 3.0734,
 "solids/CN-S-BWHD-NE-E/z1_m": 3.2496125,
 "solids/CN-S-BWHD-NE-N/z0_m": 3.0734,
@@ -121257,7 +121241,7 @@
 "solids/PR-A-STUBATH-SH-VENT-RUN/z0_m": 7.1184158,
 "solids/PR-A-STUBATH-SH-VENT-RUN/z1_m": 7.2198842,
 "solids/PR-A-STUBATH-VENT-RUN/z0_m": 7.1798188,
-"solids/PR-A-STUBATH-VENT-RUN/z1_m": 7.2643992,
+"solids/PR-A-STUBATH-VENT-RUN/z1_m": 7.270746,
 "solids/PR-A-STUBATH-WC-CW-RUN/z0_m": 6.302248,
 "solids/PR-A-STUBATH-WC-CW-RUN/z1_m": 6.3276456,
 "solids/PR-A-STUBATH-WC-VENT-RUN/z0_m": 5.881497,
@@ -123213,7 +123197,7 @@
 "solids/VR-M-STACK-radon-OUT6/z0_m": 7.2973956,
 "solids/VR-M-STACK-radon-OUT6/z1_m": 7.3025,
 "solids/VR-M-STACK-radon-TERM/z0_m": 7.2644,
-"solids/VR-M-STACK-radon-TERM/z1_m": 8.2293984,
+"solids/VR-M-STACK-radon-TERM/z1_m": 8.3081384,
 "solids/VR-M-STACK-vent-CHASE/z0_m": -2.6924,
 "solids/VR-M-STACK-vent-CHASE/z1_m": 5.9436,
 "solids/VR-M-STACK-vent-CHASE2/z0_m": 5.9436,
@@ -123243,7 +123227,7 @@
 "solids/VR-M-STACK-vent-OUT6/z0_m": 7.2973956,
 "solids/VR-M-STACK-vent-OUT6/z1_m": 7.3025,
 "solids/VR-M-STACK-vent-TERM/z0_m": 7.2644,
-"solids/VR-M-STACK-vent-TERM/z1_m": 8.3081384,
+"solids/VR-M-STACK-vent-TERM/z1_m": 8.1303384,
 "solids/W-A-GC-S-end-0-board/z0_m": 6.11505,
 "solids/W-A-GC-S-end-0-board/z1_m": 6.2182375,
 "solids/W-A-GC-S-end-0-paint/z0_m": 6.11505,
