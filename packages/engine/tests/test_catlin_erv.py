@@ -527,6 +527,20 @@ def _plenum(tag="EQ-T-TEST-PLENUM", collars=((0.0, 0.0), (6.0, 0.0)), ports=None
                  for i, (x, y) in enumerate(collars))))
 
 
+def test_the_rect_elbow_row_is_the_static_budgets_rectangular_bend(catlin_plan) -> None:
+    """The DuctStandard's r/W 1.0 elbow and DUCT-T-GALV-RECT-10's 59" bend are one reading:
+    L = Co x De / f on the 8x4 trunk (notes/erv_static_budget.md, De 6.0935", f 0.026)."""
+    from typehaus.model.ducts import DuctStandard
+
+    std = next(e for e in catlin_plan.all_elements() if isinstance(e, DuctStandard))
+    row = std.rect_elbow
+    assert (row.radius_ratio, row.aspect_ratio) == (1.0, 0.5)
+    rect = next(t for t in catlin_plan.library.duct_product_types
+                if t.tag == "DUCT-T-GALV-RECT-10")
+    assert rect.bend_equivalent_length.meters / M_PER_IN == pytest.approx(
+        row.loss_c * 6.0935 / 0.026, abs=0.5)
+
+
 def test_a_collar_is_an_exact_port_at_the_types_own_port_diameter() -> None:
     """No new field. The trunk spigot carries no section at all (``library/hvac.py``), so
     the two are told apart by what the product says rather than by a tag convention."""

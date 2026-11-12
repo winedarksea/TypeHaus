@@ -50,6 +50,7 @@ from typehaus.quantities import M_PER_IN
 from typehaus.resolve.duct_standard import duct_elbow_key, duct_standard, set_down_spec
 from typehaus.resolve.flex_bend import flexed_vertices
 from typehaus.resolve.pipe_sections import pipe_outside_diameter_m
+from typehaus.resolve.rect_elbows import RECTANGULAR_DUCT_GAP, rect_elbow_spec
 from typehaus.resolve.sweep import clean_path, sweep_turns
 
 if TYPE_CHECKING:
@@ -70,10 +71,8 @@ SERVICE_BY_SYSTEM: dict[str, str] = {
 #: which no source in this repo publishes, so it is a coverage gap and not a defect.
 BENDABLE_SERVICES: frozenset[str] = frozenset({SERVICE_SUPPLY})
 
-#: The smallest size ASTM D3311 makes a DWV pattern in, inches. A gravity line thinner than
-#: this is not plumbed in DWV at all — a 3/4" condensate or T&P discharge runs in tube and
-#: turns on a tube fitting — so grading one against the DWV catalog reports the absence of a
-#: part nobody would have ordered. Catlin carried six such findings on that mistake.
+#: The smallest size ASTM D3311 makes a DWV pattern in, inches: a thinner gravity line (3/4"
+#: condensate, T&P) runs in tube and turns on a tube fitting.
 MIN_DWV_SIZE_IN = 1.25
 
 #: How much a *pitched* line widens a pressure fitting's snap by. A gravity run in tube still
@@ -86,9 +85,7 @@ MIN_FITTING_TURN_DEG = 10.0
 #: A turn this close to a run's ``adjustable_points`` entry is that vertex.
 _ADJUSTABLE_MATCH_M = M_PER_IN / 16.0
 
-#: Which take-off bills a record. Two families rather than one because they are two BOM
-#: sections priced by two trades, and a shared reading that lost track of which would make
-#: the plumber's sheet carry the tinner's elbows.
+#: Which take-off bills a record: two BOM sections priced by two trades.
 FAMILY_PIPE = "pipe"
 FAMILY_DUCT = "duct"
 #: Conduit. Its turns are field bends (EMT, PVC) or flexes (ENT), never a catalogued
@@ -122,22 +119,21 @@ class FittingRecord:
     plan_angle_deg: float
     nominal_in: float
     branch_in: float | None
-    #: The child run that arrives at a branch fitting. ``None`` for an elbow. A parent takes
-    #: one of these per child, so it is what tells two branches on one main apart — a bare
-    #: "this main's branch fitting" collided on catlin's building drain.
+    #: The child run that arrives at a branch fitting (None for an elbow): what tells two
+    #: branches on one main apart.
     branch_tag: str | None
-    #: The take-off row this turn is billed on — unchanged from what the take-off has always
-    #: produced, and what ``prices.toml`` is keyed on.
+    #: The take-off row this turn is billed on, what ``prices.toml`` is keyed on.
     order_key: str
     #: The catalogued pattern, or ``None``.
     spec: FittingSpec | None
-    #: Why :attr:`spec` is ``None``, in the words a report prints. ``None`` when there is a
-    #: spec.
+    #: Why :attr:`spec` is ``None``, in the words a report prints.
     gap: str | None
     #: Whether this service turns by bending the product rather than by a fitting.
     bendable: bool
     #: A duct turn its run names for the standard's adjustable elbow (``adjustable_elbows``).
     adjustable: bool = False
+    #: A rectangular duct turn: the section side in its plane, inches. None for round.
+    plane_in: float | None = None
 
     @property
     def tag_for_report(self) -> str:
@@ -226,13 +222,6 @@ def _match(service: str, kind: str, angle_deg: float, nominal_in: float,
                   f"{nominal_in:g}\" — the catalogued patterns are {listed} degrees")
 
 
-#: A rectangular elbow is fabricated to the duct's own section and throat radius, so it has no
-#: catalog row — only a shop drawing.
-RECTANGULAR_DUCT_GAP = ("a rectangular duct elbow is fabricated to the duct, not ordered "
-                        "from a pattern catalog — its throat radius comes off a shop "
-                        "drawing and nothing here can stand in for one")
-
-
 def _bend(path: Sequence[tuple[float, float, float]], index: int, angle_deg: float,
           size_m: float, material: str | None) -> tuple[FittingSpec | None, str | None]:
     """A bendable tube's off-pattern turn, graded as a BEND against the maker's radius.
@@ -277,8 +266,8 @@ def polyline_fittings(tag: str, family: str, system: str,
                       points: Sequence[tuple[float, float, float]], size_m: float,
                       *, rectangular: bool = False, material: str | None = None,
                       duct_standard: Any = None, order_size: str = "",
-                      adjustable_points: Sequence[tuple[float, float, float]] = ()
-                      ) -> list[FittingRecord]:
+                      adjustable_points: Sequence[tuple[float, float, float]] = (),
+                      section: tuple[float, float] | None = None) -> list[FittingRecord]:
     """The elbows a bare 3D polyline takes — for a run that is not in the model yet.
 
     The router proposes geometry before anybody has pasted it, and "what parts does this
@@ -307,8 +296,11 @@ def polyline_fittings(tag: str, family: str, system: str,
         if turn.angle_deg < MIN_FITTING_TURN_DEG:
             continue  # a grade change, not a fitting
         adj = any(math.dist(turn.point, p) < _ADJUSTABLE_MATCH_M for p in adjustable_points)
+        plane = None
         if rectangular:
-            spec, gap = None, RECTANGULAR_DUCT_GAP
+            spec, gap, plane = (rect_elbow_spec(duct_standard, cleaned, turn.index,
+                                                turn.angle_deg, *section) if section
+                                else (None, RECTANGULAR_DUCT_GAP, None))
         elif family == FAMILY_RACEWAY:
             spec, gap = None, RACEWAY_BEND_GAP
         else:
@@ -326,7 +318,7 @@ def polyline_fittings(tag: str, family: str, system: str,
             plan_angle_deg=turn.plan_angle_deg, nominal_in=nominal, branch_in=None,
             order_key=(duct_key(turn.angle_deg, adj) if duct_key
                        else order_key(turn.angle_deg, size_m)), spec=spec, gap=gap,
-            bendable=bendable, branch_tag=None, adjustable=adj))
+            bendable=bendable, branch_tag=None, adjustable=adj, plane_in=plane))
     return out
 
 
@@ -382,7 +374,8 @@ def fitting_records(model: ResolvedModel) -> list[FittingRecord]:
         size = duct.diameter_m if not rectangular else max(duct.width_m, duct.depth_m)
         out.extend(r for r in _turn_records(
             duct, FAMILY_DUCT, size_m=size, rectangular=rectangular, duct_standard=standard,
-            order_size=duct_size_text(duct.diameter_m, duct.width_m, duct.depth_m))
+            order_size=duct_size_text(duct.diameter_m, duct.width_m, duct.depth_m),
+            section=(duct.width_m, duct.depth_m) if rectangular else None)
             if (duct.tag, r.index) not in flexed)
 
     by_tag = {run.tag: run for run in model.pipe_runs}

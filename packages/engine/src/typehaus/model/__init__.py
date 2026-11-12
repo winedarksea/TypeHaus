@@ -45,6 +45,7 @@ from typehaus.model.ducts import (
     DuctStandard,
     DuctSupportRow,
     PortKit,
+    RectElbowRow,
     RoundGaugeRow,
 )
 from typehaus.model.electrical import BoxRow, BoxStandard, Circuit, LoadManagement
@@ -460,6 +461,7 @@ __all__ = [
     "Circuit", "LoadManagement", "BoxStandard", "BoxRow", "ConduitRun", "LightRun",
     "GroundingStandard", "GroundingElectrode", "BondingConductor",
     "DuctStandard", "RoundGaugeRow", "DuctElbowRow", "DuctPartRow", "DuctSupportRow", "PortKit",
+    "RectElbowRow",
     "Sump", "SumpPump", "VentRun",
     "MonthlyNormal", "SubgradeModulus", "SoilBasis", "ConcreteServiceTemperature",
     "SetbackSpec",

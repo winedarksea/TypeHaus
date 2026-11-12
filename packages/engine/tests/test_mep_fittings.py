@@ -164,6 +164,21 @@ def test_a_rectangular_duct_elbow_names_no_pattern_and_says_why() -> None:
     assert "shop drawing" in (records[0].gap or "")
 
 
+def test_a_rectangular_elbow_on_the_standard_takes_r_over_w_of_the_side_in_its_plane() -> None:
+    """r/W 1.0 on a 10x6: a plan turn's R is the 10" width, a turn into a rise the 6" depth."""
+    from typehaus.model.ducts import DuctStandard, RectElbowRow
+
+    std = DuctStandard(tag="DS", pressure_class_in_wg=0.5, seal_class="x",
+                       rect_elbow=RectElbowRow(radius_ratio=1.0))
+    records = polyline_fittings("DU-A", FAMILY_DUCT, "supply",
+                                [(0.0, 0.0, 0.0), (2.0, 0.0, 0.0), (2.0, 2.0, 0.0),
+                                 (2.0, 2.0, 2.0)], inch(10).meters, rectangular=True,
+                                duct_standard=std, section=(inch(10).meters, inch(6).meters))
+    assert [r.gap for r in records] == [None, None]
+    assert [round(r.spec.bend_radius_in, 3) for r in records] == [10.0, 6.0]
+    assert [round(r.plane_in, 3) for r in records] == [10.0, 6.0]
+
+
 def test_a_grade_change_is_not_a_fitting() -> None:
     """Two lengths glued straight with the pipe flexing: below the threshold, no part."""
     model = _model(_run("PR-A", [(0, 0), (3, 0), (6, 0)], [0.0, -0.05, -0.20], 3))

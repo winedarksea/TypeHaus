@@ -14,7 +14,10 @@
 #     Any other turn, or a vertex a run names in `adjustable_elbows` (the stamped laying
 #     length does not fit), is a C.L. Ward adjustable 90 set down, dimension A as centre-to-
 #     face (4.75/6/7"; read to the far side the 8" radius would be under D/2), C 0.37
-#     (Fitting 3-2, 4-piece, r/D 1.0). The stamped laying length is unpublished: 1.5 D stands in.
+#     (Fitting 3-2, 4-piece, r/D 1.0). The stamped elbow's take-off is its 1.0 D centreline
+#     radius (radius_diameters); Linx publishes no centre-to-face.
+#   * Rectangular turns: a shop-made SMACNA radius elbow at r/W 1.0, no vanes; C 0.25 read at
+#     H/W 0.5 (the 8x4 ERV trunk), the same Co the static budget's 59" rectangular bend is.
 #   * Supports: SMACNA HVAC DCS 1995 Tables 4-1/4-2; within 2' of each fitting (S4.1). With no
 #     framing in reach, a saddle strapped to the deck the duct bears on (house practice; SMACNA
 #     draws no bottom support), else a bracket to a wall within 2" (Fig. 4-8) (owner,
@@ -30,6 +33,7 @@ from typehaus import (
     DuctSupportRow,
     PortKit,
     Product,
+    RectElbowRow,
     RoundGaugeRow,
     ft,
     inch,
@@ -50,6 +54,7 @@ _BRACKET = "SMACNA HVAC DCS 1995 Fig. 4-8 supports from wall: 'locate ducts agai
 _ROUND = "SMACNA HVAC DCS 1995 Table 4-2, round to 10 in."
 _RECT = "SMACNA HVAC DCS 1995 Table 4-1, half-perimeter to 30 in."
 _FLEX = "JP Lamborn Installation Guidelines Rev. 11-16 (sylvane.com/cdn/shop/files/installation-guide-jpl-mhp25-25-ft-insulated-flex-duct.pdf, read 2026-11-07): 'supported at 4 ft maximum intervals by means of min 1.5 in. wide straps'; IMC 603.10 sends flex to the manufacturer"
+_RECT_ELBOW = "SMACNA HVAC DCS 1995 rectangular radius elbow, shop-fabricated, r/W 1.0, no vanes; Co 0.25 at r/W 1.0, H/W 0.5 (ASHRAE 'Fitting Loss Coefficients', online supplement to Principles of HVAC 9th ed., 2021, Fitting 3-5 p. 12, after Idelchik Diagram 6-1; read 2026-11-08, notes/erv_static_budget.md)"
 _KIT = "Broan B210E75RT manual pp. 10-11; transition C 0.22 is the sudden 6/8 in. bound"
 
 DUCT_PRODUCTS = (
@@ -143,11 +148,11 @@ DUCT_STANDARD = [
         ),
         elbows=(
             DuctElbowRow(diameter=inch(4), product_ref="PROD-DUCT-ELBOW-S-4", kind="stamped",
-                         loss_c=0.22, angle_k=_K, source=_STAMPED),
+                         radius_diameters=1.0, loss_c=0.22, angle_k=_K, source=_STAMPED),
             DuctElbowRow(diameter=inch(6), product_ref="PROD-DUCT-ELBOW-S-6", kind="stamped",
-                         loss_c=0.22, angle_k=_K, source=_STAMPED),
+                         radius_diameters=1.0, loss_c=0.22, angle_k=_K, source=_STAMPED),
             DuctElbowRow(diameter=inch(8), product_ref="PROD-DUCT-ELBOW-S-8", kind="stamped",
-                         loss_c=0.22, angle_k=_K, source=_STAMPED),
+                         radius_diameters=1.0, loss_c=0.22, angle_k=_K, source=_STAMPED),
             DuctElbowRow(diameter=inch(4), product_ref="PROD-DUCT-ELBOW-4", angles=(90.0,),
                          center_to_face=inch(4.75), loss_c=0.37, angle_k=_K, source=_READ),
             DuctElbowRow(diameter=inch(6), product_ref="PROD-DUCT-ELBOW-6", angles=(90.0,),
@@ -155,6 +160,8 @@ DUCT_STANDARD = [
             DuctElbowRow(diameter=inch(8), product_ref="PROD-DUCT-ELBOW-8", angles=(90.0,),
                          center_to_face=inch(7), loss_c=0.37, angle_k=_K, source=_READ),
         ),
+        rect_elbow=RectElbowRow(radius_ratio=1.0, loss_c=0.25, aspect_ratio=0.5,
+                                source=_RECT_ELBOW),
         parts=(
             DuctPartRow(kind="collar_damper", size="4in", product_ref="PROD-DUCT-SPIN-4",
                         source=_IMPERIAL),

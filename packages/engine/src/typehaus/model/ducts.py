@@ -54,12 +54,23 @@ class DuctElbowRow(HausModel):
     kind: Literal["adjustable", "stamped", "gored", "pleated"] = "adjustable"
     angles: tuple[float, ...] = (90.0, 45.0)
     center_to_face: Length | None = None
+    #: Centreline radius in diameters, as the maker sells it (Linx: 1.0 or 1.5). The take-off's
+    #: R where no ``center_to_face`` is read.
+    radius_diameters: float | None = None
     #: Dynamic loss coefficient at 90 degrees, as the source publishes it.
     loss_c: float | None = None
     #: ``(angle_deg, K)`` as published, C at an angle being ``loss_c`` x K (ASHRAE angle
     #: factor); 0 deg is 0 and 90 deg is 1 unless given. Empty: not read.
     angle_k: tuple[tuple[float, float], ...] = ()
     source: str | None = None
+
+    def radius_m(self) -> float | None:
+        """The take-off's R: the read centre-to-face, else ``radius_diameters`` x D."""
+        if self.center_to_face is not None:
+            return self.center_to_face.meters
+        if self.radius_diameters is not None:
+            return self.radius_diameters * self.diameter.meters
+        return None
 
     def k_at(self, angle_deg: float) -> float | None:
         """K at ``angle_deg`` (to 90), linear between the published points; None if unread."""
@@ -72,6 +83,18 @@ class DuctElbowRow(HausModel):
             if angle <= hi:
                 return pts[lo] + (pts[hi] - pts[lo]) * (angle - lo) / (hi - lo)
         return pts[xs[-1]]
+
+
+class RectElbowRow(HausModel):
+    """The rectangular elbow, shop-made to the duct's section (SMACNA radius elbow, no vanes):
+    R is ``radius_ratio`` (r/W) x the section side in the plane of the turn, one elbow up to
+    ``max_angle``. ``loss_c`` is C at 90 as read at ``aspect_ratio`` (H/W)."""
+
+    radius_ratio: float
+    max_angle: float = 90.0
+    loss_c: float | None = None
+    aspect_ratio: float | None = None
+    source: str | None = None
 
 
 class DuctPartRow(HausModel):
@@ -163,6 +186,8 @@ class DuctStandard(Element):
     insulation_product_ref: str | None = None
     round_gauges: tuple[RoundGaugeRow, ...] = ()
     elbows: tuple[DuctElbowRow, ...] = ()
+    #: The shop-made rectangular elbow; None: a rectangular turn stays a coverage gap.
+    rect_elbow: RectElbowRow | None = None
     parts: tuple[DuctPartRow, ...] = ()
     supports: tuple[DuctSupportRow, ...] = ()
     #: A support within this of each elbow and branch (SMACNA).
@@ -211,6 +236,7 @@ class DuctStandard(Element):
 
 
 for _name, _cls in (("DuctStandard", DuctStandard), ("RoundGaugeRow", RoundGaugeRow),
-                    ("DuctElbowRow", DuctElbowRow), ("DuctPartRow", DuctPartRow),
+                    ("DuctElbowRow", DuctElbowRow), ("RectElbowRow", RectElbowRow),
+                    ("DuctPartRow", DuctPartRow),
                     ("DuctSupportRow", DuctSupportRow), ("PortKit", PortKit)):
     register_constructor(_name, _cls)

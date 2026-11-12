@@ -19,7 +19,8 @@ the catalog, or look at the run. Inventing a FAIL out of a gap in our own catalo
 the engine grading its own ignorance as the house's defect.
 
 **Laying length.** Where a pattern defines a centreline radius (a gored round duct elbow,
-1.5 D by SMACNA, or the house's bought duct elbow, decision #114), its take-off
+1.5 D by SMACNA, the house's bought duct elbow, decision #114, or its shop-made
+rectangular one at r/W x the side in the turn's plane), its take-off
 ``R tan(theta/2)`` has to fit on the straight between it and the next fitting or the run's
 end. Shorter is UNKNOWN; shorter than two elbows at R = D/2, the tightest throat made, FAIL.
 
@@ -41,7 +42,7 @@ from typehaus.findings import Finding
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.duct_standard import elbow_for_turn
 from typehaus.resolve.flex_bend import flexed_vertices
-from typehaus.resolve.mep_fittings import FAMILY_DUCT, RECTANGULAR_DUCT_GAP
+from typehaus.resolve.mep_fittings import FAMILY_DUCT
 
 _CID = "mep.fitting_pattern"
 
@@ -104,32 +105,34 @@ def fitting_pattern(ctx: CheckContext) -> list[Finding]:
         out.append(_pass(
             _CID,
             f"{graded} of {len(records)} fittings name a catalogued pattern with its source "
-            "(ASTM D3311 for DWV, ASME B16.22 for copper, SMACNA for round duct, the "
-            "maker's minimum radius for a bent PEX tube)", ()))
+            "(ASTM D3311 for DWV, ASME B16.22 for copper, SMACNA for round and rectangular "
+            "duct, the maker's minimum radius for a bent PEX tube)", ()))
     return out
 
 
 def _takeoff_in(record, elbows: dict) -> float:
-    """Centre-to-tangent of a turn, inches: the house's bought duct elbow where the
-    ``DuctStandard`` reads its centre-to-face (#114, M4-107), else the pattern's radius; 0
-    where neither defines one. ``R tan(theta/2)`` with R the 90-degree centre-to-face."""
+    """Centre-to-tangent of a turn, inches: ``R tan(theta/2)``, R the house's bought round
+    elbow's (``DuctElbowRow.radius_m``, #114) where it reads one, else the pattern's radius
+    (a rectangular turn's r/W x its in-plane side); 0 where neither defines one."""
     if record.bendable or record.index is None:
         return 0.0
-    row = None
-    if record.family == FAMILY_DUCT and elbows and record.gap != RECTANGULAR_DUCT_GAP:
+    radius = None
+    if record.family == FAMILY_DUCT and elbows and record.plane_in is None:
         hit = elbow_for_turn(elbows["standard"], record.nominal_in * M_PER_IN,
                              record.angle_deg, record.adjustable)
-        row = hit[0] if hit is not None else None
-    radius = (row.center_to_face.meters / M_PER_IN if row is not None and row.center_to_face
-              else getattr(record.spec, "bend_radius_in", None))
+        radius_m = hit[0].radius_m() if hit is not None else None
+        radius = radius_m / M_PER_IN if radius_m else None
+    radius = radius or getattr(record.spec, "bend_radius_in", None)
     return radius * math.tan(math.radians(record.angle_deg) / 2.0) if radius else 0.0
 
 
 def _floor_in(record) -> float:
-    """The take-off at R = D/2, the tightest throat any round duct elbow has (M4-101)."""
+    """The take-off at R = D/2 (a rectangular turn: half its in-plane side), the tightest
+    throat any duct elbow has (M4-101)."""
     if record.family != FAMILY_DUCT or record.index is None or record.spec is None:
         return 0.0
-    return record.nominal_in / 2.0 * math.tan(math.radians(record.angle_deg) / 2.0)
+    side = record.plane_in or record.nominal_in
+    return side / 2.0 * math.tan(math.radians(record.angle_deg) / 2.0)
 
 
 def _laying_length(ctx: CheckContext, records: list) -> list[Finding]:
@@ -138,7 +141,7 @@ def _laying_length(ctx: CheckContext, records: list) -> list[Finding]:
     Measured along the cleaned path between consecutive fittings, or a fitting and the
     run's end (a collar, port or tee, which take no take-off of their own). Shorter than the
     R = D/2 floor is a FAIL — no elbow is made that tight. Shorter than the bought elbow
-    (or, unread, the 1.5 D pattern) is UNKNOWN: the installer cuts it to fit or it does not.
+    (or, unread, the 1.5 D pattern; rectangular, the standard's r/W) is UNKNOWN.
     """
     from typehaus.resolve.duct_standard import duct_standard
     from typehaus.resolve.sweep import clean_path
@@ -182,7 +185,8 @@ def _laying_length(ctx: CheckContext, records: list) -> list[Finding]:
                 (run.tag,), fix="lengthen the straight or drop a turn"))
         if short:
             source = ("the house's bought elbow" if run.tag in _with_row(run, elbows)
-                      else "the catalogued 1.5 D radius")
+                      else "the catalogued 1.5 D radius" if getattr(run, "diameter_m", None)
+                      else "the standard's rectangular r/W")
             out.append(_unknown(
                 _CID, f"{run.tag}: {len(short)} straight(s) shorter than the elbow take-offs "
                       f"at their ends at {source} — {_listed(short)}",

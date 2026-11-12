@@ -122,3 +122,12 @@ def test_an_adjustable_elbow_makes_any_turn_and_reads_its_own_k():
         spec, gap = set_down_spec(adj, inch(4).meters, angle, "gap")
         assert spec.angle_deg == 90.0 and gap is None
         assert set_down_spec(stamped, inch(4).meters, angle, "gap") == (None, "gap")
+
+
+def test_a_bought_elbows_radius_is_its_centre_to_face_else_its_radius_in_diameters():
+    """Linx sells a 1.0 or 1.5 D stamped elbow and publishes no centre-to-face."""
+    assert DuctElbowRow(diameter=inch(4), product_ref="S", kind="stamped",
+                        radius_diameters=1.0).radius_m() == inch(4).meters
+    assert DuctElbowRow(diameter=inch(4), product_ref="A", center_to_face=inch(4.75),
+                        radius_diameters=1.0).radius_m() == inch(4.75).meters
+    assert DuctElbowRow(diameter=inch(4), product_ref="S", kind="stamped").radius_m() is None
