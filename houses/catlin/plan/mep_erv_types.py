@@ -137,13 +137,13 @@ EQUIPMENT_TYPES_ERV = (
     # return working when the ERV is off, which is the behaviour the owner asked for and is
     # behaviour, not geometry.
     #
-    # 27 1/2 x 39 x 21 on the attic deck at the air handler's return end since 2026-11-11
+    # 27 1/2 x 39 x 23 on the attic deck at the air handler's return end since 2026-11-11
     # (plan/mep_erv_l3.py). 750 cfm leaves through the 20 x 16 neck at 340 fpm.
     EquipmentType(tag="EQ-T-ERV-MIXING-BOX",
                   name="Return-air mixing plenum, 6\" ERV leg with backdraft damper",
-                  footprint=(inch(27.5), inch(39)), height=inch(21),
+                  footprint=(inch(27.5), inch(39)), height=inch(23),
                   plan_symbol="erv",
-                  source="Fabricated plenum box, 27 1/2 x 39 x 21 in, on the attic deck at EQ-S-HP1-AH's return end: System 1's return plenum, taking the hall return riser, RM-S-SUITE's and RM-S-BED3's returns and a 6 in ERV inlet on a gravity backdraft damper, and giving the cabinet a 20 x 16 neck through its canvas connector. The damper is the whole point: the ERV and the air handler run on independent schedules and each must breathe without the other. Mastic-sealed galvanized; the neck size waits on the delivered cabinet's return opening.",
+                  source="Fabricated plenum box, 27 1/2 x 39 x 23 in, on the attic deck at EQ-S-HP1-AH's return end: System 1's return plenum, taking the hall return riser, RM-S-SUITE's and RM-S-BED3's returns and a 6 in ERV inlet on a gravity backdraft damper, and giving the cabinet a 20 x 16 neck through its canvas connector. The damper is the whole point: the ERV and the air handler run on independent schedules and each must breathe without the other. Mastic-sealed galvanized; the neck size waits on the delivered cabinet's return opening.",
                   ports=(ServicePort(tag="fresh", service=Service.SUPPLY_AIR,
                                      position=(ft(0), ft(0), inch(4))),
                          ServicePort(tag="return", service=Service.RETURN_AIR,

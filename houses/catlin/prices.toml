@@ -3042,8 +3042,8 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # Fabricated plenum box with a 6" collar and a gravity backdraft damper. Sheet-metal shop
 # work, not a catalogue item: the material range is the metal and the damper, the labour is
 # the fabrication plus fitting it into a 30 3/4" soffit with an air handler already in it.
-"EQ-T-ERV-MIXING-BOX" = { material = { low = 160, high = 380 }, labour = { low = 200, high = 460 } }  # 1 ea — 27 1/2 x 39 x 21 since 2026-11-11 (was 12 x 29 x 20), estimate
-"EQ-T-HP1-SUP-BOX" = { material = { low = 90, high = 220 }, labour = { low = 120, high = 300 } }  # 1 ea — 22 1/2 x 14 x 21 supply box at the attic air handler, estimate
+"EQ-T-ERV-MIXING-BOX" = { material = { low = 160, high = 380 }, labour = { low = 200, high = 460 } }  # 1 ea — 27 1/2 x 39 x 23 since 2026-11-11 (was 12 x 29 x 20), estimate
+"EQ-T-HP1-SUP-BOX" = { material = { low = 90, high = 220 }, labour = { low = 120, high = 300 } }  # 1 ea — 22 1/2 x 14 x 23 supply box at the attic air handler, estimate
 # The two north-face hoods, 8" since 2026-10-31 (RenewAire FA8-P basis, 1/4" screen,
 # notes/air_distribution_products.md §8). ESTIMATES: no retailer price was readable for the
 # FA8 (SupplyHouse/Young Supply refused the fetch); the band brackets the Fantech FML8 or-equal

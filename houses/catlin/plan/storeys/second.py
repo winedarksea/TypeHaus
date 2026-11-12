@@ -371,11 +371,11 @@ WALLS = [
          assembly="INT_2X4_RC", interior_room="RM-S-BED2", top=ft(9),
          alignment=face("stud-ext", offset=inch(-1.75))),
     # North-centre closet (source 30.853 / 21.898), off the hall's north end. Full height
-    # since SF-S-HP1 was retired (2026-11-11); SF-S-DUCT's north end butts its hall face.
-    # Nonbearing (owner, 2026-10-29): D-S-NCLOSET heads with R602.7.4's flat 2x4 under a
-    # single top plate (R602.5).
+    # since SF-S-HP1 was retired (2026-11-11), so the single plate that fitted under it went
+    # too: a plain double-plate partition like W-S-BW3/BW4. SF-S-DUCT's north end butts its
+    # hall face. Nonbearing (owner, 2026-10-29): D-S-NCLOSET heads with R602.7.4's flat 2x4.
     Wall(uid="CSW141AAAA", tag="W-S-CLN-S", start_node="N-S-C3D", end_node="N-S-B4",
-         assembly="INT_2X4_PARTITION_HALF_SINGLE_PLATE",
+         assembly="INT_2X4_PARTITION_HALF",
          layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(9),
          structural_role=StructuralRole.NONBEARING),
     # --- west block: walk-in, suite, suite bath, vanity alcove ------------------

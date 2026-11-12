@@ -58713,15 +58713,15 @@
 ],
 "geometry/CSW141AAAA::framing/member:king-0-l0": [
 3.10515,
-5.737225,
+5.699125,
 8,
-"28b7b8a1fac3"
+"324e755ecf95"
 ],
 "geometry/CSW141AAAA::framing/member:king-0-r0": [
 3.10515,
-5.737225,
+5.699125,
 8,
-"28b7b8a1fac3"
+"324e755ecf95"
 ],
 "geometry/CSW141AAAA::framing/member:plate-bottom-passage-0": [
 3.06705,
@@ -58741,11 +58741,17 @@
 8,
 "708c6a00acb7"
 ],
-"geometry/CSW141AAAA::framing/member:stud-000": [
-3.10515,
+"geometry/CSW141AAAA::framing/member:plate-top-1": [
+5.699125,
 5.737225,
 8,
-"28b7b8a1fac3"
+"06106c4bc25d"
+],
+"geometry/CSW141AAAA::framing/member:stud-000": [
+3.10515,
+5.699125,
+8,
+"324e755ecf95"
 ],
 "geometry/CSW142AAAA/layer:gwb-a": [
 3.048,
@@ -109577,15 +109583,15 @@
 ],
 "member/CSW141AAAA/king-0-l0": [
 3.10515,
-5.737225,
+5.699125,
 2,
-"334cd083ef86"
+"c3a7c925afe9"
 ],
 "member/CSW141AAAA/king-0-r0": [
 3.10515,
-5.737225,
+5.699125,
 2,
-"334cd083ef86"
+"c3a7c925afe9"
 ],
 "member/CSW141AAAA/plate-bottom-passage-0": [
 3.06705,
@@ -109605,11 +109611,17 @@
 2,
 "0ca584cde7e3"
 ],
-"member/CSW141AAAA/stud-000": [
-3.10515,
+"member/CSW141AAAA/plate-top-1": [
+5.699125,
 5.737225,
 2,
-"334cd083ef86"
+"4c23aa7d0322"
+],
+"member/CSW141AAAA/stud-000": [
+3.10515,
+5.699125,
+2,
+"c3a7c925afe9"
 ],
 "member/CSW142AAAA/backing-0-000": [
 4.38785,

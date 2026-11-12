@@ -399,3 +399,18 @@ KNEE_WALL_OAK_CAP = Assembly(
     ),
     source="a stock 5/4 red oak stair tread ripped to 5 1/4 in., glued and screwed to the knee wall's double top plate",
 )
+
+# EQ-S-HP1-AH's attic platform (SL-A-HP1-PLATFORM): 3/4" plywood on 2x4 sleepers on edge,
+# 4 1/4" over RM-A-EAST-UNFIN's deck. The emergency pan sits on it and the cabinet in the
+# pan; the height is what puts the primary condensate port and Gree's trap above the deck.
+AH_PLATFORM_PLY = Assembly(
+    tag="AH_PLATFORM_PLY",
+    layers=(
+        Layer(name="platform-ply", material_ref="struct-1-plywood", thickness=inch(0.75),
+              function=LayerFunction.SHEATHING),
+        Layer(name="platform-sleeper", material_ref="spf", thickness=inch(3.5),
+              function=LayerFunction.STRUCTURE,
+              framing=FramingSpec(member="2x4", spacing=inch(16))),
+    ),
+    source="attic air-handler platform: 2x4 sleepers on edge at 16 in. o.c. screwed to the deck, 3/4 in. plywood top; Gree FLEXX Ultra IOM horizontal install, emergency pan on the platform",
+)

@@ -77,6 +77,7 @@ from .interior_wet import (
     TUBDECK_INT_2X3,
     TUBDECK_INT_PLY_CAP,
     KNEE_WALL_OAK_CAP,
+    AH_PLATFORM_PLY,
 )
 from .members import (
     BEAM_WHITE_PAINT,
@@ -323,4 +324,5 @@ ASSEMBLIES = [
     TUBDECK_INT_2X3,
     TUBDECK_INT_PLY_CAP,
     KNEE_WALL_OAK_CAP,
+    AH_PLATFORM_PLY,
 ]

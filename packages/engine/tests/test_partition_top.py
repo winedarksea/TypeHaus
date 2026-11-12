@@ -141,10 +141,10 @@ def test_a_wall_something_bears_on_is_not_a_partition(catlin_model_ro, tag: str)
 
 
 def test_the_gate_answers_the_same_before_and_after_the_pass(catlin_model_ro) -> None:
-    """61 partitions, including the four new study return/rear segments; W-M-WELL and
+    """Partitions, including the four new study return/rear segments; W-M-WELL and
     W-B-WELL left, standing in their wells to the floor above; W-M-HS3/-HS4 left as BEARING (#116);
     W-S-BD-N1B joined as NONBEARING (owner, 2026-11-06); W-S-SBF, the suite tub's furred
-    plumbing end (2026-11-08).
+    plumbing end (2026-11-08); W-S-CLN-S, full height once SF-S-HP1 retired (2026-11-11): 62.
 
     Not a tautology: the pass MOVES the plate it selects on, so a full-height tolerance
     measured only upward would drop ``W-B-CE`` — whose plate lands 1-11/16" below its
@@ -154,7 +154,7 @@ def test_the_gate_answers_the_same_before_and_after_the_pass(catlin_model_ro) ->
     refs = bearing_ref_tags(catlin_model_ro.plan)
     tags = [w.tag for w in catlin_model_ro.walls
             if takes_a_deflection_gap(catlin_model_ro, w, refs)]
-    assert len(tags) == 61
+    assert len(tags) == 62
     assert "W-B-CE" in tags
 
 
@@ -219,10 +219,11 @@ def test_the_three_count_rules_are_three_rows(sdpw_rows) -> None:
     # 63 -> 67: W-S-BD-N1B is NONBEARING (owner, 2026-11-06) and parallel to FS-ATTIC.
     # 67 -> 69: W-S-SBF, the suite tub's furred end (2026-11-08), parallel to FS-ATTIC.
     # 107 -> 108 (2026-11-09): W-B-HALL-W crosses FS-M-WEST's added BATH2 drain joist, y=186".
+    # 69 -> 72 (2026-11-11): W-S-CLN-S runs full height under FS-ATTIC since SF-S-HP1 retired.
     assert counts == {
         "partition top plate, perpendicular framing above": 108,
         "partition top plate, under a parallel member": 12,
-        "partition top plate, blocking between parallel members": 69,
+        "partition top plate, blocking between parallel members": 72,
     }
 
 
