@@ -118,8 +118,9 @@ def _row(tag: str, uid: str, storey: str, system: str, kind: str, size_in: float
         "straight_ft": round(straight_ft, 2),
         # None rather than a number when the denominator is noise — see MIN_STRAIGHT_FT.
         # A ratio of "inf" printed beside a 9" stub is a distraction, not a finding.
+        # Gate on the printed straight, so a 0.99999 ft stub that prints 1.0 is graded.
         "ratio": (round(developed_ft / straight_ft, 2)
-                  if straight_ft >= MIN_STRAIGHT_FT else None),
+                  if round(straight_ft, 2) >= MIN_STRAIGHT_FT else None),
         "elbows": _elbows(path, z, size_m),
         "vertices": len(path),
     }
