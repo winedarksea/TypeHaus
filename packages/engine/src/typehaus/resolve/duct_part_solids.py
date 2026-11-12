@@ -177,6 +177,45 @@ def _transition_length(part: ResolvedDuctPart) -> float:
     return part.length_m or max((s.larger for s in sizes), default=0.0)
 
 
+def _turned_reducer(model: ResolvedModel, part: ResolvedDuctPart, big: Section,
+                    small: Section) -> GMesh | None:
+    """A reducer at a turn, recorded on the big run: drawn as the small run's stub.
+
+    Starts at the joint, runs the small run's axis at most to its first bend, and takes the
+    big section's extent along each of the stub's axes where the big run has a cross-section
+    there (its own axis has none, so the small dimension stays). None when collinear.
+    """
+    from typehaus.resolve.duct_branches import duct_ends
+
+    other = next((d for d in model.ducts if d.tag == part.other), None)
+    end = next((a for _, e, a in duct_ends(other) if math.dist(e, part.point) < 1e-3),
+               None) if other is not None else None
+    _, run = _run_at(model, part.run_tag, part.point)
+    if end is None or run is None:
+        return None
+    # Collinear, or the record's axis already is the small run's: the plain loft is right.
+    along = abs(sum(a * b for a, b in zip(end, run, strict=True)))
+    if along > 0.99 or math.dist(end, part.axis) < 1e-3:
+        return None
+    right, up = leg_frame(end)
+    br, bu = leg_frame(run)
+
+    def extent(axis: Vec3, fallback: float) -> float:
+        if big.is_round:
+            return big.width
+        if abs(sum(a * b for a, b in zip(axis, run, strict=True))) > 0.7:
+            return fallback
+        along_r = abs(sum(a * b for a, b in zip(axis, br, strict=True)))
+        along_u = abs(sum(a * b for a, b in zip(axis, bu, strict=True)))
+        return big.width if along_r >= along_u else big.depth
+
+    start = Section(big.is_round, extent(right, small.width), extent(up, small.depth))
+    pts = [(x, y, z) for (x, y), z in zip(other.path, other.z_m, strict=True)]
+    first = pts[1] if math.dist(pts[0], part.point) < 1e-3 else pts[-2]
+    return loft(part.point, end, start, small,
+                min(_transition_length(part), math.dist(part.point, first)))
+
+
 def _part_mesh(model: ResolvedModel, part: ResolvedDuctPart,
                siblings: list[ResolvedDuctPart]) -> GMesh | None:
     axis = _unit(part.axis)
@@ -192,6 +231,8 @@ def _part_mesh(model: ResolvedModel, part: ResolvedDuctPart,
         length = _transition_length(part)
         # A reducer's record is on the bigger run and its axis may point down either side;
         # a transition runs from the machine's port into the run.
+        if part.kind == "reducer" and (turned := _turned_reducer(model, part, size, small)):
+            return turned
         flipped = _into_run(part, model) if part.kind == "reducer" else True
         ends = (small, size) if flipped else (size, small)
         return loft(part.point, axis, *ends, length)

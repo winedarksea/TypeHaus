@@ -169,12 +169,12 @@ def _angle_k(row, angle: float) -> float:
     return k if k is not None else interpolate(ELBOW_ANGLE_FACTOR, min(angle, 90.0))
 
 
-def elbow_loss_sum(ctx: CheckContext, duct) -> float | None:
+def elbow_loss_sum(ctx: CheckContext, duct, keep=None) -> float | None:
     """Sum of C x K over a round run's turns, off the house's bought elbows (#114).
 
     Each turn takes ``elbow_for_turn``'s row at its own angle; a turn no row makes (a
     reversal) is two 90s. None where the standard has no elbow at this size, so the
-    caller keeps the duct row's equivalent length.
+    caller keeps the duct row's equivalent length. ``keep(point)`` filters the turns.
     """
     from typehaus.checks.registry import shared
     from typehaus.resolve.duct_standard import duct_standard, elbow_for_turn
@@ -189,7 +189,9 @@ def elbow_loss_sum(ctx: CheckContext, duct) -> float | None:
     turns = shared(ctx, "erv_static.duct_turns", lambda: _turns_by_run(
         [r for r in fitting_records(ctx.model) if r.family == FAMILY_DUCT]))
     total = 0.0
-    for angle, adjustable in turns.get(duct.tag, ()):
+    for angle, adjustable, point in turns.get(duct.tag, ()):
+        if keep is not None and not keep(point):
+            continue
         hit = elbow_for_turn(standard, size, angle, adjustable)
         if hit is None or hit[0].loss_c is None:
             total += 2 * max(r.loss_c for r in rows)
@@ -198,12 +200,23 @@ def elbow_loss_sum(ctx: CheckContext, duct) -> float | None:
     return total
 
 
-def _turns_by_run(records) -> dict[str, list[tuple[float, bool]]]:
-    out: dict[str, list[tuple[float, bool]]] = {}
+def _turns_by_run(records) -> dict[str, list[tuple[float, bool, tuple]]]:
+    out: dict[str, list[tuple[float, bool, tuple]]] = {}
     for record in records:
         if record.index is not None:
-            out.setdefault(record.run_tag, []).append((record.angle_deg, record.adjustable))
+            out.setdefault(record.run_tag, []).append(
+                (record.angle_deg, record.adjustable, tuple(record.point)))
     return out
+
+
+def turn_points(ctx: CheckContext, duct) -> list[tuple]:
+    """Where a run turns, off the same records ``elbow_loss_sum`` prices."""
+    from typehaus.checks.registry import shared
+    from typehaus.resolve.mep_fittings import FAMILY_DUCT, fitting_records
+
+    turns = shared(ctx, "erv_static.duct_turns", lambda: _turns_by_run(
+        [r for r in fitting_records(ctx.model) if r.family == FAMILY_DUCT]))
+    return [point for _, _, point in turns.get(duct.tag, ())]
 
 
 def trunk_terms(ctx: CheckContext, duct, plenums: dict[str, object],

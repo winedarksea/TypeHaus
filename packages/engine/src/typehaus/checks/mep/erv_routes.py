@@ -13,6 +13,8 @@ crosses (note §9). Now a landing pays only the trunks between the machine and i
   a feed would take (catlin's level-2 supply plenum, whose feed cannot be drawn, §9).
 * A trunk the walk never reaches rides every path, the old conservative rule, so nothing
   leaves the budget silently.
+* A plenum the walk passes THROUGH is on the path too (``through``): riser air expands into
+  the basement box like the radials' air does, so it pays the box's curve (note §9).
 """
 
 from __future__ import annotations
@@ -33,6 +35,10 @@ class TrunkRoutes:
     to_plenum: dict[str, list[str]] = field(default_factory=dict)
     #: ``[(equipment tag, route)]`` for a trunk that lands in non-plenum equipment.
     to_equipment: list[tuple[str, list[str]]] = field(default_factory=list)
+    #: Plenums passed through on the way to a plenum host, or to an equipment's route end.
+    through: dict[str, list[str]] = field(default_factory=dict)
+    #: The walk's node chain from the machine, per key, for ``erv_segments``.
+    nodes: dict[str, list[tuple[str, str]]] = field(default_factory=dict)
 
     def for_plenum(self, host: str) -> list[str]:
         return _unique(self.outdoor + self.unrouted + self.to_plenum.get(host, []))
@@ -102,19 +108,24 @@ def trunk_routes(ctx: CheckContext, machine_tag: str, trunks: list, plenums: dic
                 parent[nxt] = node
                 queue.append(nxt)
 
-    def route(node) -> list[str]:
-        chain, up = [], node
+    def route(node, key: str, tail=None) -> list[str]:
+        chain, through, nodes, up = [], [], [], node
         while up is not None:
+            nodes.append(up)
             if up[0] == "T":
                 chain.append(up[1])
+            elif up not in (root, node) and up[1] in plenums:
+                through.append(up[1])
             up = parent[up]
+        out.through[key] = through[::-1]
+        out.nodes[key] = nodes[::-1] + ([tail] if tail else [])
         return chain[::-1]
 
     outdoor = set(out.outdoor)
     out.unrouted = [t for t in tags if ("T", t) not in parent and t not in outdoor]
     for host in sorted(hosts_on_side):
         if ("E", host) in parent:
-            out.to_plenum[host] = route(("E", host))
+            out.to_plenum[host] = route(("E", host), host)
             continue
         obj = next((o for o in ctx.model.canvas_objects if o.tag == host), None)
         candidates = [d for d in trunks if d.tag not in outdoor and ("T", d.tag) in parent]
@@ -122,12 +133,12 @@ def trunk_routes(ctx: CheckContext, machine_tag: str, trunks: list, plenums: dic
             continue
         nearest = min(candidates, key=lambda d: (
             distance_to_run(obj.position, obj.z_m, d), d.tag))
-        out.to_plenum[host] = route(("T", nearest.tag))
+        out.to_plenum[host] = route(("T", nearest.tag), host)
     for tag in tags:
         if ("T", tag) not in parent or tag in outdoor:
             continue
         for host in sorted(ends[tag]):
             if kinds.get(host) not in (None, hood, EquipmentKind.ERV.value) \
                     and host not in plenums:
-                out.to_equipment.append((host, route(("T", tag))))
+                out.to_equipment.append((host, route(("T", tag), host, ("E", host))))
     return out

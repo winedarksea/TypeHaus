@@ -45,6 +45,7 @@ the two places the graded figure is deliberately conservative.
 
 from __future__ import annotations
 
+
 from typehaus.checks._authoring import advisory, not_applicable, passed, unknown
 from typehaus.checks.mep.erv_landings import (
     direct_landings,
@@ -63,6 +64,7 @@ from typehaus.checks.mep.erv_static_terms import (
     radial_capacity,
     terminal_loss,
     trunk_terms,
+    turn_points,
     type_for,
     velocity_pressure_in_wg,
 )
@@ -162,6 +164,56 @@ def _duct_drop(ctx: CheckContext, duct, elbows: int) -> _Leg:
         * velocity_pressure_in_wg(duct.design_cfm, bore), None)
 
 
+def _stretch_drop(ctx: CheckContext, duct, nodes: list, trunks: list
+                  ) -> tuple[float, float, str] | None:
+    """``(drop over the stretches walked, drop of the whole run, label)``, or None.
+
+    The whole-run figure is recomputed by the same per-turn sum, so the swap is like for
+    like; None (charge it whole) wherever a number is missing (``erv_segments``).
+    """
+    from typehaus.checks.mep.erv_segments import run_length, station, stretches
+
+    spans = stretches(ctx, duct, nodes, nodes.index(("T", duct.tag)), trunks)
+    if not spans:
+        return None
+    diameter_m = getattr(duct, "diameter_m", None)
+    if diameter_m is not None:
+        product = _product_for(ctx, duct.material, diameter_m)
+        if product is None or product.roughness_m is None:
+            return None
+        bore, rough, bend = (product.bore_diameter.meters, product.roughness_m,
+                             product.bend_equivalent_length)
+    else:
+        row = (duct_sizing.rectangular_row(ctx.plan.library, duct.material, duct.width_m,
+                                           duct.depth_m) if duct.width_m else None)
+        if row is None or row.roughness_m is None:
+            return None
+        bore = duct_sizing.equivalent_diameter_m(duct.width_m, duct.depth_m)
+        rough, bend = row.roughness_m, row.bend_equivalent_length
+    turns = [station(duct, p)[0] for p in turn_points(ctx, duct)]
+    length = run_length(duct)
+
+    def drop(lo: float, hi: float, cfm: float) -> float | None:
+        def keep(point, lo=lo, hi=hi) -> bool:
+            return lo <= station(duct, point)[0] < hi
+        inside = sum(1 for at in turns if lo <= at < hi)
+        c = elbow_loss_sum(ctx, duct, keep) if diameter_m is not None else None
+        if c is None and inside and bend is None:
+            return None
+        bends = 0.0 if c is not None or not inside else inside * bend.meters
+        effective = min(hi, length) - max(lo, 0.0) + bends
+        return duct_sizing.leg_drop_in_wg(cfm, bore, rough, effective) + (c or 0.0) \
+            * velocity_pressure_in_wg(cfm, bore)
+
+    walked = [drop(lo, hi, q) for lo, hi, q in spans]
+    whole = drop(-1.0, length + 1.0, duct.design_cfm)  # every turn, ends included
+    if whole is None or any(d is None for d in walked):
+        return None
+    label = ", ".join(f"{(hi - lo) / _M_PER_IN / 12:.1f} ft at {q:.0f} cfm"
+                      for lo, hi, q in spans)
+    return sum(walked), whole, label
+
+
 def _delivered(curve: tuple[tuple[float, float], ...], static: float) -> float | None:
     """Net cfm off the fan curve at this static, or None past its last point.
 
@@ -209,6 +261,7 @@ def _worst_path(ctx: CheckContext, machine_tag: str, elbows: dict[str, int],
         # Each trunk's drop (with the hood and port kit riding on it) is worked once and
         # charged only to the paths that cross it (``erv_routes``, note §9).
         trunk_legs: dict[str, tuple[float, list[str]]] = {}
+        trunk_by_tag = {duct.tag: duct for duct in trunks}
         for duct in trunks:
             leg = _duct_drop(ctx, duct, elbows.get(duct.tag, 0))
             if leg.drop_in_wg is None:
@@ -223,9 +276,23 @@ def _worst_path(ctx: CheckContext, machine_tag: str, elbows: dict[str, int],
         routes = trunk_routes(ctx, machine_tag, trunks, plenums, kinds,
                               {landings[duct.tag] for duct in radials})
 
-        def chain(tags: list[str], legs=trunk_legs) -> tuple[float, list[str]]:
-            hit = [legs[tag] for tag in tags if tag in legs]
-            return sum(h[0] for h in hit), [term for h in hit for term in h[1]]
+        def chain(tags: list[str], key: str | None = None, legs=trunk_legs,
+                  routes=routes, trunks=trunks) -> tuple[float, list[str]]:
+            """The trunks' drops; one on ``key``'s walk only over the stretch it travels."""
+            nodes = routes.nodes.get(key, []) if key else []
+            total, terms = 0.0, []
+            for tag in tags:
+                if tag not in legs:
+                    continue
+                drop, detail = legs[tag]
+                part = (_stretch_drop(ctx, trunk_by_tag[tag], nodes, trunks)
+                        if ("T", tag) in nodes else None)
+                if part is not None:
+                    drop += part[0] - part[1]
+                    detail = [f"{tag} {part[0]:.3f}\" over {part[2]}"] + detail[1:]
+                total += drop
+                terms += detail
+            return total, terms
 
         # A plenum's curve is keyed on its trunk-collar flow (note §4). A trunk-and-branch
         # tree counts its trunk once, never the trunk plus the branches it carries; and a
@@ -238,6 +305,16 @@ def _worst_path(ctx: CheckContext, machine_tag: str, elbows: dict[str, int],
                     plenum_cfm.get(landings[duct.tag], 0.0) + duct.design_cfm)
         for host, cfm in machine_trunk_flows(ctx, trunks, machine_tag, plenums).items():
             plenum_cfm[host] = max(plenum_cfm.get(host, 0.0), cfm)
+
+        def boxes_on(hosts: list[str], cfm=plenum_cfm) -> tuple[float, list[str]]:
+            total, terms = 0.0, []
+            for host in hosts:
+                curve_pa = tuple(getattr(plenums[host], "static_loss_pa_at_cfm", ()) or ())
+                if curve_pa:
+                    loss = _interpolate(curve_pa, cfm.get(host, 0.0))
+                    total += loss / PA_PER_IN_WG
+                    terms.append(f"{host} {loss:.1f} Pa at {cfm.get(host, 0.0):.0f} cfm")
+            return total, terms
 
         legs = {duct.tag: _duct_drop(ctx, duct, elbows.get(duct.tag, 0)) for duct in radials}
         for duct in radials:
@@ -257,21 +334,19 @@ def _worst_path(ctx: CheckContext, machine_tag: str, elbows: dict[str, int],
                 branch += terminal / PA_PER_IN_WG
                 detail.append(f"terminal {terminal:.1f} Pa")
             host = landings[duct.tag]
-            curve_pa = tuple(getattr(plenums[host], "static_loss_pa_at_cfm", ()) or ())
-            if curve_pa:
-                loss = _interpolate(curve_pa, plenum_cfm.get(host, 0.0))
-                branch += loss / PA_PER_IN_WG
-                detail.append(f"{host} {loss:.1f} Pa at "
-                              f"{plenum_cfm.get(host, 0.0):.0f} cfm")
-            trunk_total, terms = chain(routes.for_plenum(host))
-            total = branch + trunk_total
+            # Its own plenum, then every plenum its air passed through to get there.
+            box_total, boxes = boxes_on([host, *routes.through.get(host, [])])
+            trunk_total, terms = chain(routes.for_plenum(host), host)
+            total = branch + box_total + trunk_total
             if worst is None or total > worst[0]:
-                worst = (total, f"{name} side via {duct.tag}", detail + terms)
+                worst = (total, f"{name} side via {duct.tag}", detail + boxes + terms)
         # A trunk landing in other equipment (the System 1 mixing box) is a path of its own.
         for equipment, route in routes.to_equipment:
-            total, terms = chain(routes.for_route(route))
-            if worst is None or total > worst[0]:
-                worst = (total, f"{name} side via {route[-1]} into {equipment}", terms)
+            box_total, boxes = boxes_on(routes.through.get(equipment, []))
+            total, terms = chain(routes.for_route(route), equipment)
+            if worst is None or total + box_total > worst[0]:
+                worst = (total + box_total, f"{name} side via {route[-1]} into {equipment}",
+                         boxes + terms)
 
     return worst, gaps
 

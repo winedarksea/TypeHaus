@@ -39,3 +39,22 @@ def test_one_closed_solid_per_non_integral_part_and_hanger(catlin_model_ro):
     assert not bad, bad[:10]
     named = {p.product_ref for p in parts if p.product_ref}
     assert named <= {s.product for s in drawn}
+
+
+def test_turned_reducer_is_the_small_runs_stub_not_drawn_back_over_the_big_run():
+    from types import SimpleNamespace as NS
+
+    from typehaus.resolve.duct_part_solids import _part_mesh
+    from typehaus.resolve.model_ducts import ResolvedDuctPart
+
+    i = 0.0254
+
+    def run(tag, path, w, d):
+        return NS(tag=tag, path=[(x * i, y * i) for x, y in path], z_m=[0.0] * len(path),
+                  width_m=w * i, depth_m=d * i, diameter_m=None)
+
+    trunk, leg = run("T", [(0, 100), (0, 0)], 8, 4), run("L", [(0, 0), (30, 0)], 3.25, 8)
+    part = ResolvedDuctPart(kind="reducer", run_tag="T", storey="s", size="8x4", branch="3.25x8",
+                            point=(0.0, 0.0, 0.0), axis=(0.0, 1.0, 0.0), other="L")
+    xs, ys, _ = zip(*_part_mesh(NS(ducts=[trunk, leg]), part, []).positions, strict=True)
+    assert min(xs) >= -1e-9 and max(ys) <= 3.25 / 2 * i + 1e-9 and min(ys) >= -3.25 / 2 * i - 1e-9

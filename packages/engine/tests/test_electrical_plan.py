@@ -327,10 +327,12 @@ def test_outdoor_heat_pumps_have_distinct_3d_symbol_geometry(catlin_model):
     types = {product.tag: product for product in catlin_model.plan.library.equipment_types}
     # A new outdoor type that forgets `plan_symbol` draws as an anonymous massing box
     # in 3D and nothing else complains, which is what this list is here to prevent.
-    for type_tag in ("EQ-T-GREE-FLEXX-ULTRA-24-OD", "EQ-T-GREE-MULTI-U30",
-                     "EQ-T-GREE-SAPPHIRE-9-OD"):
+    # The Flexx carries its own measured cabinet (notes/flexx_ultra_outdoor_geometry.md).
+    for type_tag, symbol in (("EQ-T-GREE-FLEXX-ULTRA-24-OD", "gree-flexx-ultra-24-outdoor"),
+                             ("EQ-T-GREE-MULTI-U30", "heat-pump-outdoor"),
+                             ("EQ-T-GREE-SAPPHIRE-9-OD", "heat-pump-outdoor")):
         product = types[type_tag]
-        assert product.plan_symbol == "heat-pump-outdoor"
+        assert product.plan_symbol == symbol
         width, depth = (dimension.meters for dimension in product.footprint)
         assert len(model_parts(product.plan_symbol, width, depth, product.height.meters)) >= 3
 
