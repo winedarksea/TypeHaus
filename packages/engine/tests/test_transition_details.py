@@ -262,19 +262,31 @@ def test_garage_foundation_draws_slab_thermal_break(catlin_model):
     assert not any(getattr(n, "node", None) == "symbol" for n in scene.nodes)
 
 
-@pytest.mark.parametrize("key, band", [
-    ("storey_stack:rim:EXT_2X6", True),
-    # The garage stem sits at the house deck's height but carries no floor (F3-105).
-    ("storey_stack:rim:GARAGE_ICF_6|GARAGE_WALL_2X6", False),
-    # Cut down a joist bay: no member at the cut, so no band to name (F3-112).
-    ("storey_stack:rim:INT_2X6_BRG_MUDROOM_UPPER_GWB|INT_2X6_BRG_PLUMBING_HALF", False),
+@pytest.mark.parametrize("key", [
+    "storey_stack:rim:EXT_2X6",
+    # Cut down a joist bay at the wall midpoint (F3-112): the station moves onto a joist line.
+    "storey_stack:rim:INT_2X6_BRG_MUDROOM_UPPER_GWB|INT_2X6_BRG_PLUMBING_HALF",
+    "storey_stack:rim:INT_2X6_BRG_HALF|PLANT_INT_2X6_BRG_HUMID",
 ])
-def test_rim_band_names_only_a_floor_in_the_cut(catlin_model, key, band):
+def test_rim_band_names_a_floor_in_the_cut(catlin_model, key):
     derived = next(d for d in derive_detail_slices(catlin_model) if d.key == key)
     scene, _ = build_detail(catlin_model, derived)
     texts = [str(getattr(n, "content", "")) for n in scene.nodes]
-    assert any("FLOOR BAND" in t for t in texts) is band
-    assert ("detail-component:rim-air-barrier" in _tags(scene)) is (band and "EXT" in key)
+    assert any("FLOOR BAND" in t for t in texts)
+    assert ("detail-component:rim-air-barrier" in _tags(scene)) is ("EXT" in key)
+
+
+@pytest.mark.parametrize("key", [
+    # The garage stem bears no floor (F3-105); the stair wells are open; the exposed-ply wall
+    # pairs a basement wall with an attic wall; the garden curb sits two metres below its
+    # wall. No station cuts a floor in frame, so no rim detail derives (REPORT 1.17).
+    "storey_stack:rim:GARAGE_ICF_6|GARAGE_WALL_2X6",
+    "storey_stack:rim:STAIRWELL_PARTITION_4H",
+    "storey_stack:rim:INT_2X4_PARTITION_HALF|INT_2X6_BRG_EXPOSED_PLY",
+    "storey_stack:rim:EXT_2X6_BOARD_BATTEN|GARDEN_CURB_6",
+])
+def test_rim_band_without_a_floor_derives_no_detail(catlin_model, key):
+    assert key not in {d.key for d in derive_detail_slices(catlin_model)}
 
 
 def test_birdsmouth_rafter_reads_as_a_notched_member(catlin_model):

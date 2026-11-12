@@ -143,6 +143,7 @@ RAILING_INT_STAIR_GUARD = RailingType(
     fascia_bracket_width=inch(5.64),
     fascia_bracket_projection=inch(3.29),
     fascia_post_offset=inch(1.518),
+    fascia_mount=ULTRALOX_3_INCH_FASCIA_MOUNT,
 )
 
 RAILING_EXT_ALUMINUM_SURFACE = RailingType(

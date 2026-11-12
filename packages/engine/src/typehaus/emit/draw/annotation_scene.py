@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from typehaus.emit.draw.annotate import model_in_per_pt
 from typehaus.emit.draw.annotation_ladders import resolve_ladders
 from typehaus.emit.draw.annotation_layout import (
     AnnotationRequest,
@@ -13,7 +14,16 @@ from typehaus.emit.draw.annotation_layout import (
     resolve_annotations,
 )
 from typehaus.emit.draw.annotation_layout_config import HARD_OBSTACLE_CLEARANCE_PT
-from typehaus.emit.draw.scene import ArchDimension, Frame, Leader, NamedPoint, Polyline, Scene, Text
+from typehaus.emit.draw.scene import (
+    ArchDimension,
+    Frame,
+    Leader,
+    NamedPoint,
+    Polyline,
+    Scene,
+    Symbol,
+    Text,
+)
 
 
 def _model_viewport(frame: Frame) -> Viewport:
@@ -38,6 +48,11 @@ def _obstacles(scene: Scene, request_uids: set[str], frame: Frame,
             out.extend(SegmentObstacle(start, end, HARD_OBSTACLE_CLEARANCE_PT,
                                        hard=node.lineweight >= 0.35)
                        for start, end in zip(points, points[1:], strict=False))
+        elif isinstance(node, Symbol) and node.params.get("avoid_pt"):
+            # Opt-in: a marker a tag must not print over (``params["avoid_pt"]`` = its size).
+            half = node.params["avoid_pt"] / 2.0 * model_in_per_pt(frame.scale)
+            x, y = node.insert
+            out.append(BoxObstacle((x - half, y - half, x + half, y + half), True))
         elif isinstance(node, ArchDimension):
             out.append(SegmentObstacle(node.p0, node.p1, HARD_OBSTACLE_CLEARANCE_PT, True))
         elif isinstance(node, Text) and node.space == "model":

@@ -41,7 +41,8 @@ if TYPE_CHECKING:  # pragma: no cover — annotations only
 
 
 def _write_general_notes(pdf, model: ResolvedModel, number: str, name: str,
-                         profile: JurisdictionProfile | None = None) -> None:
+                         profile: JurisdictionProfile | None = None,
+                         sheets: tuple[str, ...] | None = None) -> None:
     """G-002 — the general notes, and an index of where every sheet note is.
 
     What this replaced silently truncated. It collected the whole of every
@@ -61,7 +62,7 @@ def _write_general_notes(pdf, model: ResolvedModel, number: str, name: str,
     which is the index at the foot of the sheet.
     """
     with schedule_sheet(pdf, model, number, name, heading_xy=(0.03, 0.945)) as fig:
-        blocks = _general_note_blocks(model, profile)
+        blocks = _general_note_blocks(model, profile, sheets)
         overflow = _lay_out_blocks(fig, blocks)
         if overflow:
             # Never silent. If this ever prints, the fix is to shorten a block, not to
@@ -72,8 +73,9 @@ def _write_general_notes(pdf, model: ResolvedModel, number: str, name: str,
                      color="#8a1c1c")
 
 
-def _general_note_blocks(model: ResolvedModel,
-                         profile: JurisdictionProfile | None) -> list[tuple[str, list[str]]]:
+def _general_note_blocks(model: ResolvedModel, profile: JurisdictionProfile | None,
+                         sheets: tuple[str, ...] | None = None,
+                         ) -> list[tuple[str, list[str]]]:
     """The five derived blocks, then the sheet-note index. All bounded by construction."""
     edition = profile.edition if profile else "see cover"
     checklist = profile.name if profile else "see cover"
@@ -117,7 +119,7 @@ def _general_note_blocks(model: ResolvedModel,
         ]),
         ("FIREBLOCKING (R302.11)", _fireblocking_block(model)),
     ]
-    index = _sheet_note_index(model)
+    index = _sheet_note_index(model, sheets)
     if index:
         blocks.append(("SHEET NOTE INDEX", index))
     return blocks
@@ -166,8 +168,9 @@ def _envelope_block(model: ResolvedModel) -> list[str]:
     return out
 
 
-def _sheet_note_index(model: ResolvedModel) -> list[str]:
-    """``note title -> the sheet numbers it prints on``.
+def _sheet_note_index(model: ResolvedModel, in_set: tuple[str, ...] | None = None) -> list[str]:
+    """``note title -> the sheet numbers it prints on``, limited to ``in_set`` when given:
+    the permit set's G-002 must not send a reader to a full-set-only detail.
 
     This is what makes G-002 useful without reprinting a word of the notes: a reader who
     knows there is guidance about the eave can find which sheet carries it. One line per
@@ -181,7 +184,7 @@ def _sheet_note_index(model: ResolvedModel) -> list[str]:
     for derived in derive_detail_slices(model):
         rel = getattr(derived.transition, "notes", None) if derived.transition else None
         sheet = sheets.get(derived.key)
-        if not rel or not sheet:
+        if not rel or not sheet or (in_set is not None and sheet not in in_set):
             continue
         where.setdefault(Path(rel).stem.replace("_", " ").upper(), []).append(sheet)
     out: list[str] = []

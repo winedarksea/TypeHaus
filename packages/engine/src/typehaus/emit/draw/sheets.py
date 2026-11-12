@@ -301,6 +301,9 @@ def build_sheet_index(model: ResolvedModel,
     kept = [sheet for sheet in sheets if in_set(sheet, chosen, preferences)]
     notes = {"profile": profile, "preferences": preferences, "house_dir": house_dir,
              "sheets": tuple(sheet.number for sheet in kept)}
+    # G-002's note index names only sheets this set prints (S-001 reads the same tuple).
+    kept = [replace(sheet, page=partial(sheet.page, sheets=notes["sheets"]))
+            if sheet.number == "G-002" else sheet for sheet in kept]
     s001 = [sheet for sheet in _paged("S-001", "General structural notes",
                                       partial(_write_structural_notes, **notes),
                                       structural_notes_pages(model, paper, **notes))

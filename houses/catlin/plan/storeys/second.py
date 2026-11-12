@@ -1401,7 +1401,9 @@ STAIR_GUARDS = [
         kind=RailingKind.METAL_FASCIA_MOUNT, height=inch(36),
         base_elevation=ft(10, 1.5), post_spacing=inch(60), post_size="3x3", rail_count=2,
         # Brackets on BM-S-HALL's wrapped well face (the path; run south so outboard is west).
-        mount="fascia", fascia_face_offset=inch(0), assembly="RAILING_DARK_METAL",
+        # Bracket top 1/2" under the joist top: 1 1/2" oak and subfloor + 1/2" (Ultralox p.37).
+        mount="fascia", fascia_face_offset=inch(0), fascia_bracket_drop=inch(2),
+        assembly="RAILING_DARK_METAL",
         # R312.1.3: vertical balusters between the 60" posts, 4" clear gap — the largest
         # opening the 4"-sphere rule admits.
         infill="balusters", baluster_spacing=inch(4),
@@ -1416,7 +1418,8 @@ STAIR_GUARDS = [
         ),
         kind=RailingKind.METAL_FASCIA_MOUNT, height=inch(36),
         base_elevation=ft(10, 1.5), post_spacing=inch(60), post_size="3x3", rail_count=2,
-        mount="fascia", fascia_face_offset=inch(0), start_post_ref="RL-S-STAIR",
+        mount="fascia", fascia_face_offset=inch(0), fascia_bracket_drop=inch(2),
+        start_post_ref="RL-S-STAIR",
         assembly="RAILING_DARK_METAL",
         infill="balusters", baluster_spacing=inch(4),
     ),

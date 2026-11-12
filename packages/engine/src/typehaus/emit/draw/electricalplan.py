@@ -9,7 +9,7 @@ from __future__ import annotations
 from typehaus.emit.draw._shared import emit_ghost_walls
 from typehaus.emit.draw._shared import to_in as _in
 from typehaus.emit.draw.annotation_requests import add_point_label
-from typehaus.emit.draw.grounding_plan import emit_grounding
+from typehaus.emit.draw.grounding_plan import LABEL_RINGS, emit_grounding
 from typehaus.emit.draw.grounding_plan import emit_legend as emit_grounding_legend
 from typehaus.emit.draw.scene import Polyline, Scene, SceneBuilder, Symbol, Text
 from typehaus.emit.draw.typography import MIN_PT
@@ -28,6 +28,8 @@ _DEVICE_LAYER = {
 }
 #: Device and raceway tags: the floor size the old 1.5" model text was raised to.
 _TAG_PT = MIN_PT
+#: Printed size (pt) a device marker reserves, so no tag prints over another device.
+_MARKER_PT = 6.0
 _LEGEND = (
     ("receptacle", "DUPLEX RECEPTACLE"), ("gfci", "GFCI RECEPTACLE"),
     ("receptacle_240", "240V RECEPTACLE"), ("switch", "SWITCH"), ("light", "LIGHT"),
@@ -52,18 +54,19 @@ def build_electrical_plan(model: ResolvedModel, storey: str) -> Scene:
             continue
         layer = _DEVICE_LAYER.get(element.kind.value, "E-POWR-DEVC")
         x, y = placed_xy(model, element)
-        b.add(Symbol(name=element.kind.value, insert=_in((x, y)), layer=layer))
+        b.add(Symbol(name=element.kind.value, insert=_in((x, y)), layer=layer,
+                     params={"avoid_pt": _MARKER_PT}))
         # Placed at frame time: fixed offsets stacked tag over tag at the panel wall and
         # the kitchen (M3-102).
         add_point_label(b, key=f"device-{element.uid}", text=element.tag.removeprefix("ED-"),
                         target=_in((x, y)), layer="A-ANNO-TEXT", height_pt=_TAG_PT,
-                        priority=40, leader=False)
+                        priority=40, leader=False, rings=LABEL_RINGS)
         if element.mount is not None and element.mount.kind.value == "floor":
             circuit = element.circuit or "UNASSIGNED"
             add_point_label(b, key=f"floor-box-{element.uid}",
                             text=f"FLOOR BOX / {circuit}", target=_in((x, y)),
                             layer="A-ANNO-TEXT", height_pt=_TAG_PT, priority=35,
-                            preferred_direction=(1.0, -1.0), leader=False)
+                            preferred_direction=(1.0, -1.0), leader=False, rings=LABEL_RINGS)
 
     # Conduit trunks: dashed homerun polylines on their own raceway layer. The label sits
     # at the polyline's middle vertex — every trunk shares the panel as its first point,
@@ -86,7 +89,8 @@ def build_electrical_plan(model: ResolvedModel, storey: str) -> Scene:
         if run.service is None:
             label = f"{label} SPARE"
         add_point_label(b, key=f"conduit-{run.uid}", text=label, target=_in(mid),
-                        layer="A-ANNO-TEXT", height_pt=_TAG_PT, priority=20, leader=False)
+                        layer="A-ANNO-TEXT", height_pt=_TAG_PT, priority=20, leader=False,
+                        rings=LABEL_RINGS)
 
     emit_grounding(b, model, storey)
     _emit_legend(b, model, storey)

@@ -21,8 +21,12 @@ def _reading_angle(dx: float, dy: float) -> float:
 def add_point_label(builder: SceneBuilder, *, key: str, text: str, target: Pt,
                     layer: str, height_pt: float = TEXT_PT, priority: int = 0,
                     preferred_direction: Pt = (1.0, 1.0), leader: bool = True,
-                    avoid_obstacles: bool = True) -> None:
-    """Add a seed text node and eight paper-offset candidates around a point feature."""
+                    avoid_obstacles: bool = True,
+                    rings: tuple[float, ...] = (1.0,)) -> None:
+    """Add a seed text node and eight paper-offset candidates around a point feature.
+
+    ``rings`` repeats the eight directions at each multiple of the offset, nearest first, so
+    a crowded point can step outward to clear ground (``leader=False`` keeps it unleadered)."""
     text = wrap_label(text, 48) if len(text) > 48 else text
     uid = f"layout-label:{key}"
     directions = (preferred_direction, (1.0, 0.0), (1.0, -1.0),
@@ -31,8 +35,8 @@ def add_point_label(builder: SceneBuilder, *, key: str, text: str, target: Pt,
         at=target,
         align="left" if dx > 0 else "right" if dx < 0 else "center",
         leader=leader,
-        paper_offset=(dx * POINT_OFFSET_PT, dy * POINT_OFFSET_PT),
-    ) for dx, dy in dict.fromkeys(directions))
+        paper_offset=(dx * POINT_OFFSET_PT * ring, dy * POINT_OFFSET_PT * ring),
+    ) for ring in rings for dx, dy in dict.fromkeys(directions))
     seed = candidates[0]
     builder.add(Text(anchor=target, content=text, height_pt=height_pt, layer=layer,
                      align=seed.align, uid=uid))

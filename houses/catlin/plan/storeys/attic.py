@@ -951,7 +951,9 @@ FLIGHT_GUARD = Railing(
     base_elevation=ft(10), post_spacing=inch(55), post_size="3x3", rail_count=2,
     # Brackets on stringer-0's study face, y=5'-9 3/4" (run east so outboard is south): the
     # posts stand outside the flight.
-    mount="fascia", fascia_face_offset=inch(-0.125), assembly="RAILING_DARK_METAL",
+    # Bracket top 1/2" under the stringer top, 1" tread under the nosing line.
+    mount="fascia", fascia_face_offset=inch(-0.125), fascia_bracket_drop=inch(1.5),
+    assembly="RAILING_DARK_METAL",
     role="guard", serves_stair="ST-S2A", top_height=inch(36),
     # R312.1.3: 4" clear between balusters — the largest opening the sphere rule admits.
     infill="balusters", baluster_spacing=inch(4),

@@ -1631,9 +1631,9 @@
         "kind": "point",
         "xy": [
           75.37500000000001,
-          42.0
+          57.0
         ],
-        "name": ""
+        "name": "continuity-claim"
       },
       "at": [
         83.75000000000001,
@@ -1641,7 +1641,7 @@
       ],
       "to": [
         75.37500000000001,
-        42.0
+        57.0
       ],
       "text": "air continuity — stud-cavity → stud-\ncavity",
       "height": 1.6,
@@ -1656,9 +1656,9 @@
         "kind": "point",
         "xy": [
           75.37500000000001,
-          42.0
+          57.0
         ],
-        "name": ""
+        "name": "continuity-claim"
       },
       "at": [
         83.75000000000001,
@@ -1666,7 +1666,7 @@
       ],
       "to": [
         75.37500000000001,
-        42.0
+        57.0
       ],
       "text": "water continuity — stud-cavity → stud-\ncavity",
       "height": 1.6,
@@ -1681,9 +1681,9 @@
         "kind": "point",
         "xy": [
           75.37500000000001,
-          42.0
+          57.0
         ],
-        "name": ""
+        "name": "continuity-claim"
       },
       "at": [
         83.75000000000001,
@@ -1691,7 +1691,7 @@
       ],
       "to": [
         75.37500000000001,
-        42.0
+        57.0
       ],
       "text": "vapor continuity — stud-cavity → stud-\ncavity",
       "height": 1.6,
@@ -1706,9 +1706,9 @@
         "kind": "point",
         "xy": [
           75.37500000000001,
-          42.0
+          57.0
         ],
-        "name": ""
+        "name": "continuity-claim"
       },
       "at": [
         83.75000000000001,
@@ -1716,7 +1716,7 @@
       ],
       "to": [
         75.37500000000001,
-        42.0
+        57.0
       ],
       "text": "thermal continuity — stud-cavity → stud-\ncavity",
       "height": 1.6,

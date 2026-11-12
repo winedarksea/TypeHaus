@@ -54,6 +54,17 @@ def test_the_note_index_points_at_sheets_that_exist(catlin_model_ro, catlin_shee
                 assert token in emitted, f"the index names {token}, which is not in the set"
 
 
+def test_the_permit_set_index_names_only_permit_sheets(catlin_model_ro, catlin_sheet_index):
+    """G-002 in the permit set must not send a reader to a full-set-only detail."""
+    permit = tuple(s.number for s in catlin_sheet_index(sets="permit"))
+    full = tuple(s.number for s in catlin_sheet_index())
+    assert set(permit) < set(full)
+    named = {token for line in _sheet_note_index(catlin_model_ro, permit)
+             for token in line.replace(",", " ").replace("..", " ").split()
+             if token.startswith("A-")}
+    assert named <= set(permit)
+
+
 def test_the_index_does_not_reprint_the_notes(catlin_model_ro):
     """A sheet-note index is titles and sheet numbers. Any sentence in it is a regression."""
     for line in _sheet_note_index(catlin_model_ro):

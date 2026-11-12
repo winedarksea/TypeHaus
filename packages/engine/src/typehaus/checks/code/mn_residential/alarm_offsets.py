@@ -100,9 +100,9 @@ def _three_ft_hazards(ctx: CheckContext, storey: str) -> list[tuple[str, str, ob
                 radius = max(product.footprint[0].meters, product.footprint[1].meters) / 2
                 out.append((e.tag, "a ceiling fan's blade tip",
                             Point(body.position).buffer(radius), False))
-        elif e.element_kind == "Register" and e.kind is DuctSystem.SUPPLY:
-            if len(body.footprint) >= 3:
-                out.append((e.tag, "a supply register", Polygon(body.footprint), False))
+        elif (e.element_kind == "Register" and e.kind is DuctSystem.SUPPLY
+              and len(body.footprint) >= 3):
+            out.append((e.tag, "a supply register", Polygon(body.footprint), False))
     return out
 
 

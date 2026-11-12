@@ -12,8 +12,9 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
-from shapely.geometry import LineString
+from shapely.geometry import LineString, Point
 from shapely.geometry import box as shapely_box
+from shapely.strtree import STRtree
 
 from typehaus.emit.draw.annotate import leader_box, model_in_per_pt, text_extent
 from typehaus.emit.draw.annotation_layout import (
@@ -24,15 +25,25 @@ from typehaus.emit.draw.annotation_layout import (
     Viewport,
     resolve_annotations,
 )
-from typehaus.emit.draw.annotation_layout_config import COLUMN_PITCH_PT
+from typehaus.emit.draw.annotation_layout_config import (
+    COLUMN_PITCH_PT,
+    HARD_OBSTACLE_CLEARANCE_PT,
+    LABEL_CLEARANCE_PT,
+)
 from typehaus.emit.draw.scene import ArchDimension, Frame, Leader, Polyline, Scene, Text
 
 #: uid prefix marking a caption or a note printed under the drawing as movable.
 CAPTION_UID = "layout-caption:"
+#: ``NamedPoint.name`` of a continuity-claim leader (the seed callout column).
+CLAIM_ANCHOR = "continuity-claim"
 _STEPS = 12
 #: Bubble stand-offs (radii) and bearings (degrees) tried around the bubble's target.
-_BUBBLE_RADII = (2.2, 3.4, 4.6, 6.0, 7.5, 9.0)
-_BUBBLE_BEARINGS = (0, 30, -30, 60, -60, 180, 150, -150, 120, -120, 90, -90)
+_BUBBLE_RADII = (2.2, 3.4, 4.6, 6.0, 7.5, 9.0, 11.0)
+#: Margins (pt) a bubble leader keeps off other bubbles' targets, widest first, and how far
+#: out (radii) a candidate still counts as close to its own target.
+_TARGET_MARGINS_PT = (5.0, 3.0, 1.5, 0.0)
+_NEAR_BUBBLE_REACH = 4.7
+_BUBBLE_BEARINGS = tuple(sorted(range(-165, 181, 15), key=lambda b: (abs(b) > 90, abs(b))))
 
 
 @dataclass(frozen=True)
@@ -89,6 +100,59 @@ def _dim_options(node: ArchDimension, per_pt: float) -> list[tuple[float, float]
 def _crosses_any(start, end, boxes) -> bool:
     line = LineString((start, end))
     return any(line.intersects(shapely_box(*b).buffer(-1e-6)) for b in boxes)
+
+
+def _leader_blocked(target, at, boxes, lines, points=(), reach=0.0) -> bool:
+    """A leader ``target``-``at`` through a label box, touching another leader, or passing
+    within ``reach`` of another leader's target in ``points`` (past its own first ``reach``:
+    neighbouring targets may sit closer than that)."""
+    if _crosses_any(target, at, boxes):
+        return True
+    own = LineString((target, at))
+    if any(own.intersects(LineString(line)) for line in lines):
+        return True
+    if not points or own.length <= reach:
+        return False
+    beyond = LineString((own.interpolate(reach), at))
+    return any(beyond.distance(Point(p)) < reach for p in points)
+
+
+def _claim_column(claims, viewport, boxes, hard_lines, leader_lines, ink, scale):
+    """New ``at`` for each claim: the whole stack moved by the best ``(dx, dy)`` in pitches.
+
+    Scored (outside the drawing window, hard hits, blocked leaders, soft ink hits, distance);
+    a hard hit is a label box or a placed line, a soft one any other linework.
+    """
+    per_pt = model_in_per_pt(scale)
+    pitch = COLUMN_PITCH_PT * per_pt
+    hard = [shapely_box(*b) for b in boxes]
+    hard += [LineString(line).buffer(HARD_OBSTACLE_CLEARANCE_PT * per_pt) for line in hard_lines]
+    soft = [LineString((o.start, o.end)).buffer(LABEL_CLEARANCE_PT * per_pt) for o in ink]
+    hard_tree, soft_tree = STRtree(hard), STRtree(soft)
+    window = shapely_box(*viewport.bounds)
+    shifts = sorted(((dx, dy) for dx in range(_STEPS) for dy in range(-_STEPS, _STEPS + 1)),
+                    key=lambda r: (abs(r[0]) + abs(r[1]), r[1] < 0, r))
+    best = None
+    for index, (dx, dy) in enumerate(shifts):
+        ats = [(n.at[0] + dx * pitch, n.at[1] + dy * pitch) for n in claims]
+        shapes = [shapely_box(*leader_box(n.model_copy(update={"at": at}), scale))
+                  for n, at in zip(claims, ats, strict=True)]
+        outside = sum(not window.contains(shape) for shape in shapes)
+        hits = sum(len(hard_tree.query(shape, predicate="intersects")) for shape in shapes)
+        touches = sum(len(soft_tree.query(shape, predicate="intersects")) for shape in shapes)
+        blocked = 0
+        for i, (node, at) in enumerate(zip(claims, ats, strict=True)):
+            blocked += _leader_blocked(node.to, at, boxes, leader_lines)
+            own = LineString((node.to, at))
+            blocked += sum(own.intersects(shape) for j, shape in enumerate(shapes) if j != i)
+            blocked += sum(own.crosses(LineString((m.to, other)))
+                           for j, (m, other) in enumerate(zip(claims, ats, strict=True)) if j > i)
+        score = (outside, hits, blocked, touches, index)
+        if best is None or score < best[0]:
+            best = (score, ats)
+        if score[:4] == (0, 0, 0, 0):
+            break
+    return best[1]
 
 
 def _bubbles(scene: Scene) -> dict:
@@ -157,6 +221,9 @@ def layout_detail(scene: Scene, frame: Frame) -> Scene:
     bubble_texts = {id(entry[0]) for entry in bubbles.values()}
     bubble_ink = set().union(*(entry[2] for entry in bubbles.values()))
     leaders = [n for n in model if isinstance(n, Leader) and n.text]
+    claims = [n for n in leaders if getattr(n.anchor, "name", "") == CLAIM_ANCHOR]
+    claim_ids = {id(n) for n in claims}
+    leaders = [n for n in leaders if id(n) not in claim_ids]
     movable = _movable_leaders(leaders, scale)
     captions = [n for n in model if isinstance(n, Text)
                 and (n.uid or "").startswith(CAPTION_UID)]
@@ -164,17 +231,25 @@ def layout_detail(scene: Scene, frame: Frame) -> Scene:
 
     fixed_boxes: list = [leader_box(n, scale) for n in leaders if id(n) not in movable]
     fixed_lines = [(n.at, n.to) for n in leaders if id(n) not in movable]
+    leader_lines = list(fixed_lines)  # what a new leader may not cross (dim lines it may)
     fixed_boxes += [leader_box(n, scale) for n in model
                     if isinstance(n, Text) and id(n) not in bubble_texts
                     and not (n.uid or "").startswith(CAPTION_UID)]
 
-    def run(requests, soft=()):
+    def solve(requests, soft=()):
         obstacles = ([BoxObstacle(tuple(b)) for b in fixed_boxes]
                      + [SegmentObstacle(a, b) for a, b in fixed_lines] + list(soft))
-        result = resolve_annotations(requests, viewport, tuple(obstacles), scale)
-        return {p.request.key: p for p in result.placements}
+        return resolve_annotations(requests, viewport, tuple(obstacles), scale)
+
+    def run(requests, soft=()):
+        return {p.request.key: p for p in solve(requests, soft).placements}
 
     replace: dict[int, list] = {}
+    # Every stroke of the drawing, soft: dimension strings and claims prefer air to it.
+    ink_all = [SegmentObstacle(a, b, hard=False) for n in model
+               if isinstance(n, Polyline) and id(n) not in bubble_ink
+               for a, b in zip(n.points, (*n.points[1:], n.points[0]) if n.closed
+                               else n.points[1:], strict=False)]
 
     # 1. Dimension strings, each kept on its own line.
     options: dict = {}
@@ -189,7 +264,7 @@ def layout_detail(scene: Scene, frame: Frame) -> Scene:
             cands.append(Candidate(at, "center", rotation))
         requests.append(AnnotationRequest(key, _dim_label(node), cands[0].at, tuple(cands),
                                           height_pt=node.height_pt, priority=30))
-    placements = run(requests) if requests else {}
+    placements = run(requests, ink_all) if requests else {}
     for index, node in enumerate(dims):
         placed = placements[f"dim:{index}"]
         at = placed.candidate.at
@@ -218,6 +293,18 @@ def layout_detail(scene: Scene, frame: Frame) -> Scene:
         replace[id(node)] = [node.model_copy(update={"at": placed.candidate.at})]
         fixed_boxes.append(placed.box)
         fixed_lines.append((placed.candidate.at, node.to))
+        leader_lines.append((placed.candidate.at, node.to))
+
+    # 2b. Continuity claims keep their column order: the stack shifts as one block, nearest
+    #     shift first, to the first spot clear of lettering and linework.
+    if claims:
+        shifted = _claim_column(claims, viewport, fixed_boxes, fixed_lines, leader_lines,
+                                ink_all, scale)
+        for node, at in zip(claims, shifted, strict=True):
+            replace[id(node)] = [node.model_copy(update={"at": at})]
+            fixed_boxes.append(leader_box(node.model_copy(update={"at": at}), scale))
+            fixed_lines.append((at, node.to))
+            leader_lines.append((at, node.to))
 
     # Heavy linework: a soft obstacle, so a caption or bubble prefers air to the drawing.
     ink = [SegmentObstacle(a, b, hard=False) for n in model
@@ -253,10 +340,32 @@ def layout_detail(scene: Scene, frame: Frame) -> Scene:
                 cands.append(Candidate((target[0] + reach * radius * math.cos(angle),
                                         target[1] + reach * radius * math.sin(angle)),
                                        "center"))
-        clean = [c for c in cands if not _crosses_any(target, c.at, fixed_boxes)]
-        request = AnnotationRequest(f"bubble:{key}", key, target, tuple(clean or cands),
-                                    extent_pt=(side_pt, side_pt))
-        placed = run([request], ink)[request.key]
+        others = [e[1].to for k, e in bubbles.items() if k != key]
+        # Hold clear of neighbouring targets by the widest margin that still leaves a clean,
+        # nearby bubble; a tight cluster relaxes it rather than flinging one across the sheet.
+        tries = []
+        for margin_pt in _TARGET_MARGINS_PT:
+            clean = [c for c in cands if not _leader_blocked(
+                target, c.at, fixed_boxes, leader_lines, others, margin_pt * per_pt)]
+            if clean:
+                tries.append(clean)
+        # Last resorts: a leader may touch another leader, never run through a label.
+        tries.append([c for c in cands if not _crosses_any(target, c.at, fixed_boxes)])
+        # Preference: clean and near, else clean, else the first result.
+        near_clean = any_clean = fallback = None
+        for clean in [t for t in tries if t] or [cands]:
+            request = AnnotationRequest(f"bubble:{key}", key, target, tuple(clean),
+                                        extent_pt=(side_pt, side_pt))
+            result = solve([request], ink)
+            placed = result.placements[0]
+            fallback = fallback or placed
+            if result.diagnostics:
+                continue
+            any_clean = any_clean or placed
+            if math.dist(placed.candidate.at, target) <= _NEAR_BUBBLE_REACH * radius:
+                near_clean = placed
+                break
+        placed = near_clean or any_clean or fallback
         at = placed.candidate.at
         replace[id(text)] = bubble_nodes(key, at, scale)
         replace[id(leader)] = [leader.model_copy(update={"at": at})]
@@ -264,6 +373,7 @@ def layout_detail(scene: Scene, frame: Frame) -> Scene:
             replace[node_id] = []
         fixed_boxes.append(placed.box)
         fixed_lines.append((target, at))
+        leader_lines.append((target, at))
 
     nodes: list = []
     for node in scene.nodes:

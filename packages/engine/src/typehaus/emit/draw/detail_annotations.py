@@ -5,6 +5,7 @@ Split out of ``details.py`` (500-line limit); ``details`` re-exports what caller
 
 from __future__ import annotations
 
+from typehaus.emit.draw.annotation_layout_detail import CAPTION_UID, CLAIM_ANCHOR
 from typehaus.emit.draw.detail_anchors import (
     _wall_anchor,
     dimension_box,
@@ -13,11 +14,12 @@ from typehaus.emit.draw.detail_anchors import (
 )
 from typehaus.emit.draw.detail_derive import (
     DerivedDetail,
+    _condition_opening,
     _host_wall,
     _junction_z,
     _wall_u_extent,
 )
-from typehaus.emit.draw.scene import ArchDimension, Leader, Scene, Text
+from typehaus.emit.draw.scene import ArchDimension, Leader, NamedPoint, Scene, Text
 from typehaus.emit.draw.sheet_notes import parse_sheet_notes
 from typehaus.emit.draw.typography import TEXT_PT
 from typehaus.findings import Finding
@@ -372,6 +374,15 @@ def _seed_nodes(model: ResolvedModel, derived: DerivedDetail,
                               derived.station) / M_PER_IN if wall else None)
     if derived.part is not None:  # an enlarged part's junction is the middle of its crop
         junction_z = (cz0 + cz1) / 2.0 / M_PER_IN
+    elif wall is not None and derived.condition.kind.value == "opening_perimeter":
+        # An opening's mid-height is air: the claim is about the wall over the head, so pin
+        # there (3" up the header) instead of leadering into the void between jambs.
+        opening = _condition_opening(model, derived.condition)
+        if opening is not None:
+            head_z = wall.base_ref_z_m + opening.sill_m + opening.height_m
+            junction_z = min(head_z + 3.0 * M_PER_IN,
+                             wall.top_z1_m if wall.top_z1_m is not None else wall.z1_m
+                             ) / M_PER_IN
     # Either side of a junction may own the layer being claimed — at a foundation detail the
     # sheathing and WRB belong to the framed wall above, not the concrete below. An opening
     # condition names no wall at all, so its host carries every claim.
@@ -412,12 +423,11 @@ def _seed_nodes(model: ResolvedModel, derived: DerivedDetail,
             nodes.append(Text(anchor=label.at, content=label.spec.text,
                               height_pt=label.height_pt, layer="A-ANNO-TEXT", uid=None))
         else:
-            nodes.append(Leader(anchor=_point_anchor(label.spec.target), at=label.at,
+            nodes.append(Leader(anchor=NamedPoint(xy=label.spec.target, name=CLAIM_ANCHOR),
+                                at=label.at,
                                 to=label.spec.target, text=label.spec.text,
                                 height_pt=label.height_pt, uid=None))
     if getattr(tr, "overlay", None):
-        from typehaus.emit.draw.annotation_layout_detail import CAPTION_UID
-
         nodes.append(Text(anchor=(cu0 / M_PER_IN, cz0 / M_PER_IN - 4.0),
                           content=f"{tr.tag}  ·  {tr.overlay}",
                           height_pt=ANNOTATION_TEXT_PT, layer="A-ANNO-TEXT",

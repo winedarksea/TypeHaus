@@ -19,6 +19,9 @@ from typehaus.emit.draw.typography import MIN_PT
 from typehaus.quantities import M_PER_IN
 
 LAYER = "E-GRND"
+#: Tag offsets tried outward from a point, in multiples of the point offset: a crowded
+#: cluster steps to clear ground rather than printing over a neighbour (E-1xx tags).
+LABEL_RINGS = (1.0, 1.8, 2.6, 3.4)
 _ROD_R_IN = 5.0
 _ROLE_LABEL = {
     "gec": "GEC", "bonding_jumper": "BJ", "ibt": "IBT BOND", "water_bond": "WATER BOND",
@@ -102,14 +105,16 @@ def emit_grounding(b: SceneBuilder, model, storey: str) -> None:
         else:
             rod_glyph(b, el.xy, lps=el.use == "lps_terminal", uid=el.uid, tag=el.tag)
         add_point_label(b, key=f"ground-{el.uid}", text=electrode_label(el), target=_in(el.xy),
-                        layer=LAYER, height_pt=MIN_PT, priority=30, leader=False)
+                        layer=LAYER, height_pt=MIN_PT, priority=30, leader=False,
+                        rings=LABEL_RINGS)
     for bond in g.bonds:
         if bond.storey not in on or not bond_polyline(b, bond):
             continue
         mid = bond.path[len(bond.path) // 2]
         add_point_label(b, key=f"bond-{bond.uid}", text=bond_label(bond),
                         target=_in((mid[0], mid[1])), layer=LAYER, height_pt=MIN_PT,
-                        priority=25, leader=False)
+                        priority=25, leader=False,
+                        rings=LABEL_RINGS)
 
 
 def legend_rows(model, storey: str) -> list[str]:

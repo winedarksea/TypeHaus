@@ -90,7 +90,6 @@ assert abs(SCREEN_CLADDING_WEST_X_FT - (GARAGE_X_WEST.feet - 0.875 / 12)) < 1e-9
 DECK_FINISH_FT = 0.0
 DECK_JOIST_TOP_FT = DECK_FINISH_FT - TREX_ENHANCE_BASICS_DECK_LAYER.thickness.feet
 JOIST_DEPTH_IN = 7.25
-DETAIL_CUT_Y_FT = (HOUSE_CLADDING_Y_FT + GARAGE_CLADDING_Y_FT) / 2
 
 # ** THE PIER LINE IS AT y=37'-6", AND THE 3 3/8" IT MOVED NORTH IS NOT COSMETIC. **
 # W-B-N2/N3 is BASEMENT_8 on an axis at y=36'-0", so its concrete face is y=36'-4" and its
@@ -253,6 +252,9 @@ FRAME_Y1_FT = GARAGE_CLADDING_Y_FT - 0.75 / 12
 # it has to be DRAWN, because a carpenter will otherwise close it.
 DECK_SHEET_SOUTH_Y_FT = HOUSE_CLADDING_Y_FT + 0.5 / 12
 DECK_SHEET_NORTH_Y_FT = GARAGE_CLADDING_Y_FT - 0.5 / 12
+# A-508's cut, 55 1/2" north of the deck sheet: mid-panel 3 of the MDO screen (43 1/2".. 67 5/8"),
+# clear of the 6x6 timber's 1/8" gaps (37 3/4".. 43 1/2"), so the MDO layer is in the cut.
+DETAIL_CUT_Y_FT = DECK_SHEET_SOUTH_Y_FT + 55.5 / 12
 
 
 def rectangle(x0, y0, x1, y1):

@@ -10292,119 +10292,203 @@
 2,
 "0c91a16c2fe5"
 ],
+"geometry/C75VZB9VX8-fascia-bolts1/body": [
+5.0776188,
+5.1966813,
+336,
+"f9a9ef4163e3"
+],
+"geometry/C75VZB9VX8-fascia-bolts2/body": [
+4.3918188,
+4.5108813,
+336,
+"ef1d9d96d6a4"
+],
+"geometry/C75VZB9VX8-fascia-bolts3/body": [
+3.7060188,
+3.8250813,
+336,
+"1d610daf072c"
+],
+"geometry/C75VZB9VX8-fascia-bracket1/body": [
+5.04825,
+5.20065,
+580,
+"0f0c416d172f"
+],
+"geometry/C75VZB9VX8-fascia-bracket2/body": [
+4.36245,
+4.51485,
+580,
+"ea0f88cddc0b"
+],
+"geometry/C75VZB9VX8-fascia-bracket3/body": [
+3.67665,
+3.82905,
+580,
+"da6957614b70"
+],
+"geometry/C75VZB9VX8-fascia-footblock1/body": [
+4.83235,
+4.994275,
+112,
+"14a4c7b9d1e0"
+],
+"geometry/C75VZB9VX8-fascia-footblock2/body": [
+4.14655,
+4.308475,
+112,
+"fd3d4fc65d63"
+],
+"geometry/C75VZB9VX8-fascia-insert1/body": [
+5.04825,
+5.051425,
+8,
+"5f8239deeb26"
+],
+"geometry/C75VZB9VX8-fascia-insert2/body": [
+4.36245,
+4.365625,
+8,
+"8d8acbb322f2"
+],
+"geometry/C75VZB9VX8-fascia-insert3/body": [
+3.67665,
+3.679825,
+8,
+"ab676a7a8a8f"
+],
+"geometry/C75VZB9VX8-fascia-screws1/body": [
+5.08,
+5.1689,
+192,
+"d76c828943f8"
+],
+"geometry/C75VZB9VX8-fascia-screws2/body": [
+4.3942,
+4.4831,
+192,
+"68b46b70d156"
+],
+"geometry/C75VZB9VX8-fascia-screws3/body": [
+3.7084,
+3.7973,
+192,
+"ba78ac96349e"
+],
 "geometry/C75VZB9VX8-i000/body": [
-5.1542156,
-6.0305156,
+5.2494656,
+6.0114656,
 2,
-"cd54504a30e8"
+"bf14b6a1b290"
 ],
 "geometry/C75VZB9VX8-i001/body": [
-5.0744438,
-5.9507438,
+5.1696938,
+5.9316938,
 2,
-"d79aedc64a5e"
+"612f456c6fda"
 ],
 "geometry/C75VZB9VX8-i002/body": [
-4.9946719,
-5.8709719,
+5.0899219,
+5.8519219,
 2,
-"8a4d5fd8c826"
+"d3fcf1da9e46"
 ],
 "geometry/C75VZB9VX8-i003/body": [
-4.9149,
-5.7912,
+5.01015,
+5.77215,
 2,
-"da9cec7a5efe"
+"f2c4422e459b"
 ],
 "geometry/C75VZB9VX8-i004/body": [
-4.8351281,
-5.7114281,
+4.9303781,
+5.6923781,
 2,
-"53fb95f575be"
+"b499df33362b"
 ],
 "geometry/C75VZB9VX8-i005/body": [
-4.7553563,
-5.6316563,
+4.8506063,
+5.6126063,
 2,
-"0e06be3a7866"
+"1b0e08077fbb"
 ],
 "geometry/C75VZB9VX8-i006/body": [
-4.6755844,
-5.5518844,
+4.7708344,
+5.5328344,
 2,
-"2203c21bb557"
+"64f6293a9e67"
 ],
 "geometry/C75VZB9VX8-i007/body": [
-4.4684156,
-5.3447156,
+4.5636656,
+5.3256656,
 2,
-"81fefa583cf2"
+"7e2aeaaa21fb"
 ],
 "geometry/C75VZB9VX8-i008/body": [
-4.3886438,
-5.2649438,
+4.4838938,
+5.2458938,
 2,
-"d54e91997348"
+"a9b5b89673d5"
 ],
 "geometry/C75VZB9VX8-i009/body": [
-4.3088719,
-5.1851719,
+4.4041219,
+5.1661219,
 2,
-"b3e5efce7cbb"
+"4f51417aa00a"
 ],
 "geometry/C75VZB9VX8-i010/body": [
-4.2291,
-5.1054,
+4.32435,
+5.08635,
 2,
-"3752098b994f"
+"b5dc189fabcd"
 ],
 "geometry/C75VZB9VX8-i011/body": [
-4.1493281,
-5.0256281,
+4.2445781,
+5.0065781,
 2,
-"a38be2a6c066"
+"b1ceb94b75be"
 ],
 "geometry/C75VZB9VX8-i012/body": [
-4.0695563,
-4.9458563,
+4.1648063,
+4.9268063,
 2,
-"0e5f083cedec"
+"ed3ef1483767"
 ],
 "geometry/C75VZB9VX8-i013/body": [
-3.9897844,
-4.8660844,
+4.0850344,
+4.8470344,
 2,
-"e92d7bbd9fbd"
+"81b97ebd32df"
 ],
 "geometry/C75VZB9VX8-p00/body": [
-5.23875,
+5.051425,
 6.15315,
 2,
-"4fe56f0b16a6"
+"f928e47c0f11"
 ],
 "geometry/C75VZB9VX8-p01/body": [
-4.55295,
+4.365625,
 5.46735,
 2,
-"9ef74fd6e0e5"
+"345437fdd4fe"
 ],
 "geometry/C75VZB9VX8-p02/body": [
-3.86715,
+3.679825,
 4.78155,
 2,
-"09ed92890511"
+"5d269e662c9f"
 ],
 "geometry/C75VZB9VX8-r00/body": [
-4.76631,
-6.16839,
+4.74726,
+6.14934,
 8,
-"18b580f5e4e1"
+"54b12c5fd01c"
 ],
 "geometry/C75VZB9VX8-r01/body": [
-3.85191,
-5.25399,
+3.94716,
+5.34924,
 8,
-"cd831acc761e"
+"01895361a898"
 ],
 "geometry/C7LM4KAP2X-neck/body": [
 5.5410417,
@@ -46892,161 +46976,245 @@
 80,
 "a71407f15568"
 ],
+"geometry/CSRL01AAAA-fascia-bolts1/body": [
+2.9122687,
+3.0313312,
+336,
+"d7931f638fb4"
+],
+"geometry/CSRL01AAAA-fascia-bolts2/body": [
+2.9122687,
+3.0313312,
+336,
+"d7931f638fb4"
+],
+"geometry/CSRL01AAAA-fascia-bracket1/body": [
+2.8829,
+3.0353,
+580,
+"f7db632f0464"
+],
+"geometry/CSRL01AAAA-fascia-bracket2/body": [
+2.8829,
+3.0353,
+580,
+"f7db632f0464"
+],
+"geometry/CSRL01AAAA-fascia-footblock1/body": [
+3.0099,
+3.184525,
+112,
+"06168cb12d49"
+],
+"geometry/CSRL01AAAA-fascia-insert1/body": [
+2.8829,
+2.886075,
+8,
+"fc7ad20ac098"
+],
+"geometry/CSRL01AAAA-fascia-insert2/body": [
+2.8829,
+2.886075,
+8,
+"fc7ad20ac098"
+],
+"geometry/CSRL01AAAA-fascia-screws1/body": [
+2.91465,
+3.00355,
+192,
+"e9b19a356095"
+],
+"geometry/CSRL01AAAA-fascia-screws2/body": [
+2.91465,
+3.00355,
+192,
+"e9b19a356095"
+],
 "geometry/CSRL01AAAA-i000/body": [
-3.10515,
-3.98145,
+3.2004,
+3.9624,
 2,
-"2477a4bc07a2"
+"1c14dac4a846"
 ],
 "geometry/CSRL01AAAA-i001/body": [
-3.10515,
-3.98145,
+3.2004,
+3.9624,
 2,
-"2477a4bc07a2"
+"1c14dac4a846"
 ],
 "geometry/CSRL01AAAA-i002/body": [
-3.10515,
-3.98145,
+3.2004,
+3.9624,
 2,
-"2477a4bc07a2"
+"1c14dac4a846"
 ],
 "geometry/CSRL01AAAA-i003/body": [
-3.10515,
-3.98145,
+3.2004,
+3.9624,
 2,
-"2477a4bc07a2"
+"1c14dac4a846"
 ],
 "geometry/CSRL01AAAA-i004/body": [
-3.10515,
-3.98145,
+3.2004,
+3.9624,
 2,
-"2477a4bc07a2"
+"1c14dac4a846"
 ],
 "geometry/CSRL01AAAA-i005/body": [
-3.10515,
-3.98145,
+3.2004,
+3.9624,
 2,
-"2477a4bc07a2"
+"1c14dac4a846"
 ],
 "geometry/CSRL01AAAA-i006/body": [
-3.10515,
-3.98145,
+3.2004,
+3.9624,
 2,
-"2477a4bc07a2"
+"1c14dac4a846"
 ],
 "geometry/CSRL01AAAA-i007/body": [
-3.10515,
-3.98145,
+3.2004,
+3.9624,
 2,
-"2477a4bc07a2"
+"1c14dac4a846"
 ],
 "geometry/CSRL01AAAA-i008/body": [
-3.10515,
-3.98145,
+3.2004,
+3.9624,
 2,
-"2477a4bc07a2"
+"1c14dac4a846"
 ],
 "geometry/CSRL01AAAA-i009/body": [
-3.10515,
-3.98145,
+3.2004,
+3.9624,
 2,
-"2477a4bc07a2"
+"1c14dac4a846"
 ],
 "geometry/CSRL01AAAA-i010/body": [
-3.10515,
-3.98145,
+3.2004,
+3.9624,
 2,
-"2477a4bc07a2"
+"1c14dac4a846"
 ],
 "geometry/CSRL01AAAA-p00/body": [
-3.0861,
+2.886075,
 4.0005,
 2,
-"d847da82ede2"
+"2ee421ac7a14"
 ],
 "geometry/CSRL01AAAA-p01/body": [
-3.0861,
+2.886075,
 4.0005,
 2,
-"d847da82ede2"
+"2ee421ac7a14"
 ],
 "geometry/CSRL01AAAA-r00/body": [
-3.98145,
-4.01955,
+3.9624,
+4.0005,
 8,
-"e1c9d43edc71"
+"9a19b5ffce09"
 ],
 "geometry/CSRL01AAAA-r01/body": [
-3.06705,
-3.10515,
+3.1623,
+3.2004,
 8,
-"fc5205b7278b"
+"03aed88dca56"
+],
+"geometry/CSRL02AAAA-fascia-bolts2/body": [
+2.9122687,
+3.0313312,
+336,
+"d7931f638fb4"
+],
+"geometry/CSRL02AAAA-fascia-bracket2/body": [
+2.8829,
+3.0353,
+580,
+"f7db632f0464"
+],
+"geometry/CSRL02AAAA-fascia-footblock1/body": [
+3.0099,
+3.184525,
+112,
+"06168cb12d49"
+],
+"geometry/CSRL02AAAA-fascia-insert2/body": [
+2.8829,
+2.886075,
+8,
+"fc7ad20ac098"
+],
+"geometry/CSRL02AAAA-fascia-screws2/body": [
+2.91465,
+3.00355,
+192,
+"e9b19a356095"
 ],
 "geometry/CSRL02AAAA-i000/body": [
-3.10515,
-3.98145,
+3.2004,
+3.9624,
 2,
-"2477a4bc07a2"
+"1c14dac4a846"
 ],
 "geometry/CSRL02AAAA-i001/body": [
-3.10515,
-3.98145,
+3.2004,
+3.9624,
 2,
-"2477a4bc07a2"
+"1c14dac4a846"
 ],
 "geometry/CSRL02AAAA-i002/body": [
-3.10515,
-3.98145,
+3.2004,
+3.9624,
 2,
-"2477a4bc07a2"
+"1c14dac4a846"
 ],
 "geometry/CSRL02AAAA-i003/body": [
-3.10515,
-3.98145,
+3.2004,
+3.9624,
 2,
-"2477a4bc07a2"
+"1c14dac4a846"
 ],
 "geometry/CSRL02AAAA-i004/body": [
-3.10515,
-3.98145,
+3.2004,
+3.9624,
 2,
-"2477a4bc07a2"
+"1c14dac4a846"
 ],
 "geometry/CSRL02AAAA-i005/body": [
-3.10515,
-3.98145,
+3.2004,
+3.9624,
 2,
-"2477a4bc07a2"
+"1c14dac4a846"
 ],
 "geometry/CSRL02AAAA-i006/body": [
-3.10515,
-3.98145,
+3.2004,
+3.9624,
 2,
-"2477a4bc07a2"
+"1c14dac4a846"
 ],
 "geometry/CSRL02AAAA-i007/body": [
-3.10515,
-3.98145,
+3.2004,
+3.9624,
 2,
-"2477a4bc07a2"
+"1c14dac4a846"
 ],
 "geometry/CSRL02AAAA-p01/body": [
-3.0861,
+2.886075,
 4.0005,
 2,
-"d847da82ede2"
+"2ee421ac7a14"
 ],
 "geometry/CSRL02AAAA-r00/body": [
-3.98145,
-4.01955,
+3.9624,
+4.0005,
 8,
-"e1c9d43edc71"
+"9a19b5ffce09"
 ],
 "geometry/CSRL02AAAA-r01/body": [
-3.06705,
-3.10515,
+3.1623,
+3.2004,
 8,
-"fc5205b7278b"
+"03aed88dca56"
 ],
 "geometry/CSRL03AAAA-b01/body": [
 1.7440144,
@@ -121632,44 +121800,72 @@
 "solids/RG-W-BASIN-STONE/z1_m": -1.5494,
 "solids/RG-W-BASIN/z0_m": -1.5494,
 "solids/RG-W-BASIN/z1_m": -1.2446,
-"solids/RL-A-FLIGHT-GUARD-BAL1/z0_m": 5.1542156,
-"solids/RL-A-FLIGHT-GUARD-BAL1/z1_m": 6.0305156,
-"solids/RL-A-FLIGHT-GUARD-BAL10/z0_m": 4.3088719,
-"solids/RL-A-FLIGHT-GUARD-BAL10/z1_m": 5.1851719,
-"solids/RL-A-FLIGHT-GUARD-BAL11/z0_m": 4.2291,
-"solids/RL-A-FLIGHT-GUARD-BAL11/z1_m": 5.1054,
-"solids/RL-A-FLIGHT-GUARD-BAL12/z0_m": 4.1493281,
-"solids/RL-A-FLIGHT-GUARD-BAL12/z1_m": 5.0256281,
-"solids/RL-A-FLIGHT-GUARD-BAL13/z0_m": 4.0695563,
-"solids/RL-A-FLIGHT-GUARD-BAL13/z1_m": 4.9458563,
-"solids/RL-A-FLIGHT-GUARD-BAL14/z0_m": 3.9897844,
-"solids/RL-A-FLIGHT-GUARD-BAL14/z1_m": 4.8660844,
-"solids/RL-A-FLIGHT-GUARD-BAL2/z0_m": 5.0744438,
-"solids/RL-A-FLIGHT-GUARD-BAL2/z1_m": 5.9507438,
-"solids/RL-A-FLIGHT-GUARD-BAL3/z0_m": 4.9946719,
-"solids/RL-A-FLIGHT-GUARD-BAL3/z1_m": 5.8709719,
-"solids/RL-A-FLIGHT-GUARD-BAL4/z0_m": 4.9149,
-"solids/RL-A-FLIGHT-GUARD-BAL4/z1_m": 5.7912,
-"solids/RL-A-FLIGHT-GUARD-BAL5/z0_m": 4.8351281,
-"solids/RL-A-FLIGHT-GUARD-BAL5/z1_m": 5.7114281,
-"solids/RL-A-FLIGHT-GUARD-BAL6/z0_m": 4.7553563,
-"solids/RL-A-FLIGHT-GUARD-BAL6/z1_m": 5.6316563,
-"solids/RL-A-FLIGHT-GUARD-BAL7/z0_m": 4.6755844,
-"solids/RL-A-FLIGHT-GUARD-BAL7/z1_m": 5.5518844,
-"solids/RL-A-FLIGHT-GUARD-BAL8/z0_m": 4.4684156,
-"solids/RL-A-FLIGHT-GUARD-BAL8/z1_m": 5.3447156,
-"solids/RL-A-FLIGHT-GUARD-BAL9/z0_m": 4.3886438,
-"solids/RL-A-FLIGHT-GUARD-BAL9/z1_m": 5.2649438,
-"solids/RL-A-FLIGHT-GUARD-POST1/z0_m": 5.23875,
+"solids/RL-A-FLIGHT-GUARD-BAL1/z0_m": 5.2494656,
+"solids/RL-A-FLIGHT-GUARD-BAL1/z1_m": 6.0114656,
+"solids/RL-A-FLIGHT-GUARD-BAL10/z0_m": 4.4041219,
+"solids/RL-A-FLIGHT-GUARD-BAL10/z1_m": 5.1661219,
+"solids/RL-A-FLIGHT-GUARD-BAL11/z0_m": 4.32435,
+"solids/RL-A-FLIGHT-GUARD-BAL11/z1_m": 5.08635,
+"solids/RL-A-FLIGHT-GUARD-BAL12/z0_m": 4.2445781,
+"solids/RL-A-FLIGHT-GUARD-BAL12/z1_m": 5.0065781,
+"solids/RL-A-FLIGHT-GUARD-BAL13/z0_m": 4.1648063,
+"solids/RL-A-FLIGHT-GUARD-BAL13/z1_m": 4.9268063,
+"solids/RL-A-FLIGHT-GUARD-BAL14/z0_m": 4.0850344,
+"solids/RL-A-FLIGHT-GUARD-BAL14/z1_m": 4.8470344,
+"solids/RL-A-FLIGHT-GUARD-BAL2/z0_m": 5.1696938,
+"solids/RL-A-FLIGHT-GUARD-BAL2/z1_m": 5.9316938,
+"solids/RL-A-FLIGHT-GUARD-BAL3/z0_m": 5.0899219,
+"solids/RL-A-FLIGHT-GUARD-BAL3/z1_m": 5.8519219,
+"solids/RL-A-FLIGHT-GUARD-BAL4/z0_m": 5.01015,
+"solids/RL-A-FLIGHT-GUARD-BAL4/z1_m": 5.77215,
+"solids/RL-A-FLIGHT-GUARD-BAL5/z0_m": 4.9303781,
+"solids/RL-A-FLIGHT-GUARD-BAL5/z1_m": 5.6923781,
+"solids/RL-A-FLIGHT-GUARD-BAL6/z0_m": 4.8506063,
+"solids/RL-A-FLIGHT-GUARD-BAL6/z1_m": 5.6126063,
+"solids/RL-A-FLIGHT-GUARD-BAL7/z0_m": 4.7708344,
+"solids/RL-A-FLIGHT-GUARD-BAL7/z1_m": 5.5328344,
+"solids/RL-A-FLIGHT-GUARD-BAL8/z0_m": 4.5636656,
+"solids/RL-A-FLIGHT-GUARD-BAL8/z1_m": 5.3256656,
+"solids/RL-A-FLIGHT-GUARD-BAL9/z0_m": 4.4838938,
+"solids/RL-A-FLIGHT-GUARD-BAL9/z1_m": 5.2458938,
+"solids/RL-A-FLIGHT-GUARD-FASCIA-BOLTS1/z0_m": 5.0776188,
+"solids/RL-A-FLIGHT-GUARD-FASCIA-BOLTS1/z1_m": 5.1966813,
+"solids/RL-A-FLIGHT-GUARD-FASCIA-BOLTS2/z0_m": 4.3918188,
+"solids/RL-A-FLIGHT-GUARD-FASCIA-BOLTS2/z1_m": 4.5108813,
+"solids/RL-A-FLIGHT-GUARD-FASCIA-BOLTS3/z0_m": 3.7060188,
+"solids/RL-A-FLIGHT-GUARD-FASCIA-BOLTS3/z1_m": 3.8250813,
+"solids/RL-A-FLIGHT-GUARD-FASCIA-BRACKET1/z0_m": 5.04825,
+"solids/RL-A-FLIGHT-GUARD-FASCIA-BRACKET1/z1_m": 5.20065,
+"solids/RL-A-FLIGHT-GUARD-FASCIA-BRACKET2/z0_m": 4.36245,
+"solids/RL-A-FLIGHT-GUARD-FASCIA-BRACKET2/z1_m": 4.51485,
+"solids/RL-A-FLIGHT-GUARD-FASCIA-BRACKET3/z0_m": 3.67665,
+"solids/RL-A-FLIGHT-GUARD-FASCIA-BRACKET3/z1_m": 3.82905,
+"solids/RL-A-FLIGHT-GUARD-FASCIA-FOOTBLOCK1/z0_m": 4.83235,
+"solids/RL-A-FLIGHT-GUARD-FASCIA-FOOTBLOCK1/z1_m": 4.994275,
+"solids/RL-A-FLIGHT-GUARD-FASCIA-FOOTBLOCK2/z0_m": 4.14655,
+"solids/RL-A-FLIGHT-GUARD-FASCIA-FOOTBLOCK2/z1_m": 4.308475,
+"solids/RL-A-FLIGHT-GUARD-FASCIA-INSERT1/z0_m": 5.04825,
+"solids/RL-A-FLIGHT-GUARD-FASCIA-INSERT1/z1_m": 5.051425,
+"solids/RL-A-FLIGHT-GUARD-FASCIA-INSERT2/z0_m": 4.36245,
+"solids/RL-A-FLIGHT-GUARD-FASCIA-INSERT2/z1_m": 4.365625,
+"solids/RL-A-FLIGHT-GUARD-FASCIA-INSERT3/z0_m": 3.67665,
+"solids/RL-A-FLIGHT-GUARD-FASCIA-INSERT3/z1_m": 3.679825,
+"solids/RL-A-FLIGHT-GUARD-FASCIA-SCREWS1/z0_m": 5.08,
+"solids/RL-A-FLIGHT-GUARD-FASCIA-SCREWS1/z1_m": 5.1689,
+"solids/RL-A-FLIGHT-GUARD-FASCIA-SCREWS2/z0_m": 4.3942,
+"solids/RL-A-FLIGHT-GUARD-FASCIA-SCREWS2/z1_m": 4.4831,
+"solids/RL-A-FLIGHT-GUARD-FASCIA-SCREWS3/z0_m": 3.7084,
+"solids/RL-A-FLIGHT-GUARD-FASCIA-SCREWS3/z1_m": 3.7973,
+"solids/RL-A-FLIGHT-GUARD-POST1/z0_m": 5.051425,
 "solids/RL-A-FLIGHT-GUARD-POST1/z1_m": 6.15315,
-"solids/RL-A-FLIGHT-GUARD-POST2/z0_m": 4.55295,
+"solids/RL-A-FLIGHT-GUARD-POST2/z0_m": 4.365625,
 "solids/RL-A-FLIGHT-GUARD-POST2/z1_m": 5.46735,
-"solids/RL-A-FLIGHT-GUARD-POST3/z0_m": 3.86715,
+"solids/RL-A-FLIGHT-GUARD-POST3/z0_m": 3.679825,
 "solids/RL-A-FLIGHT-GUARD-POST3/z1_m": 4.78155,
-"solids/RL-A-FLIGHT-GUARD-RAIL1/z0_m": 4.76631,
-"solids/RL-A-FLIGHT-GUARD-RAIL1/z1_m": 6.16839,
-"solids/RL-A-FLIGHT-GUARD-RAIL2/z0_m": 3.85191,
-"solids/RL-A-FLIGHT-GUARD-RAIL2/z1_m": 5.25399,
+"solids/RL-A-FLIGHT-GUARD-RAIL1/z0_m": 4.74726,
+"solids/RL-A-FLIGHT-GUARD-RAIL1/z1_m": 6.14934,
+"solids/RL-A-FLIGHT-GUARD-RAIL2/z0_m": 3.94716,
+"solids/RL-A-FLIGHT-GUARD-RAIL2/z1_m": 5.34924,
 "solids/RL-A-FLIGHT-SKIRT-PANEL1/z0_m": 5.3619797,
 "solids/RL-A-FLIGHT-SKIRT-PANEL1/z1_m": 5.8001297,
 "solids/RL-A-FLIGHT-SKIRT-PANEL2/z0_m": 5.5417641,
@@ -121866,58 +122062,86 @@
 "solids/RL-S-HANDRAIL-W-RETURN1/z1_m": 2.7049834,
 "solids/RL-S-HANDRAIL-W-RETURN2/z0_m": 3.8185862,
 "solids/RL-S-HANDRAIL-W-RETURN2/z1_m": 3.8668462,
-"solids/RL-S-STAIR-BAL1/z0_m": 3.10515,
-"solids/RL-S-STAIR-BAL1/z1_m": 3.98145,
-"solids/RL-S-STAIR-BAL10/z0_m": 3.10515,
-"solids/RL-S-STAIR-BAL10/z1_m": 3.98145,
-"solids/RL-S-STAIR-BAL11/z0_m": 3.10515,
-"solids/RL-S-STAIR-BAL11/z1_m": 3.98145,
-"solids/RL-S-STAIR-BAL2/z0_m": 3.10515,
-"solids/RL-S-STAIR-BAL2/z1_m": 3.98145,
-"solids/RL-S-STAIR-BAL3/z0_m": 3.10515,
-"solids/RL-S-STAIR-BAL3/z1_m": 3.98145,
-"solids/RL-S-STAIR-BAL4/z0_m": 3.10515,
-"solids/RL-S-STAIR-BAL4/z1_m": 3.98145,
-"solids/RL-S-STAIR-BAL5/z0_m": 3.10515,
-"solids/RL-S-STAIR-BAL5/z1_m": 3.98145,
-"solids/RL-S-STAIR-BAL6/z0_m": 3.10515,
-"solids/RL-S-STAIR-BAL6/z1_m": 3.98145,
-"solids/RL-S-STAIR-BAL7/z0_m": 3.10515,
-"solids/RL-S-STAIR-BAL7/z1_m": 3.98145,
-"solids/RL-S-STAIR-BAL8/z0_m": 3.10515,
-"solids/RL-S-STAIR-BAL8/z1_m": 3.98145,
-"solids/RL-S-STAIR-BAL9/z0_m": 3.10515,
-"solids/RL-S-STAIR-BAL9/z1_m": 3.98145,
-"solids/RL-S-STAIR-POST1/z0_m": 3.0861,
+"solids/RL-S-STAIR-BAL1/z0_m": 3.2004,
+"solids/RL-S-STAIR-BAL1/z1_m": 3.9624,
+"solids/RL-S-STAIR-BAL10/z0_m": 3.2004,
+"solids/RL-S-STAIR-BAL10/z1_m": 3.9624,
+"solids/RL-S-STAIR-BAL11/z0_m": 3.2004,
+"solids/RL-S-STAIR-BAL11/z1_m": 3.9624,
+"solids/RL-S-STAIR-BAL2/z0_m": 3.2004,
+"solids/RL-S-STAIR-BAL2/z1_m": 3.9624,
+"solids/RL-S-STAIR-BAL3/z0_m": 3.2004,
+"solids/RL-S-STAIR-BAL3/z1_m": 3.9624,
+"solids/RL-S-STAIR-BAL4/z0_m": 3.2004,
+"solids/RL-S-STAIR-BAL4/z1_m": 3.9624,
+"solids/RL-S-STAIR-BAL5/z0_m": 3.2004,
+"solids/RL-S-STAIR-BAL5/z1_m": 3.9624,
+"solids/RL-S-STAIR-BAL6/z0_m": 3.2004,
+"solids/RL-S-STAIR-BAL6/z1_m": 3.9624,
+"solids/RL-S-STAIR-BAL7/z0_m": 3.2004,
+"solids/RL-S-STAIR-BAL7/z1_m": 3.9624,
+"solids/RL-S-STAIR-BAL8/z0_m": 3.2004,
+"solids/RL-S-STAIR-BAL8/z1_m": 3.9624,
+"solids/RL-S-STAIR-BAL9/z0_m": 3.2004,
+"solids/RL-S-STAIR-BAL9/z1_m": 3.9624,
+"solids/RL-S-STAIR-FASCIA-BOLTS1/z0_m": 2.9122687,
+"solids/RL-S-STAIR-FASCIA-BOLTS1/z1_m": 3.0313312,
+"solids/RL-S-STAIR-FASCIA-BOLTS2/z0_m": 2.9122687,
+"solids/RL-S-STAIR-FASCIA-BOLTS2/z1_m": 3.0313312,
+"solids/RL-S-STAIR-FASCIA-BRACKET1/z0_m": 2.8829,
+"solids/RL-S-STAIR-FASCIA-BRACKET1/z1_m": 3.0353,
+"solids/RL-S-STAIR-FASCIA-BRACKET2/z0_m": 2.8829,
+"solids/RL-S-STAIR-FASCIA-BRACKET2/z1_m": 3.0353,
+"solids/RL-S-STAIR-FASCIA-FOOTBLOCK1/z0_m": 3.0099,
+"solids/RL-S-STAIR-FASCIA-FOOTBLOCK1/z1_m": 3.184525,
+"solids/RL-S-STAIR-FASCIA-INSERT1/z0_m": 2.8829,
+"solids/RL-S-STAIR-FASCIA-INSERT1/z1_m": 2.886075,
+"solids/RL-S-STAIR-FASCIA-INSERT2/z0_m": 2.8829,
+"solids/RL-S-STAIR-FASCIA-INSERT2/z1_m": 2.886075,
+"solids/RL-S-STAIR-FASCIA-SCREWS1/z0_m": 2.91465,
+"solids/RL-S-STAIR-FASCIA-SCREWS1/z1_m": 3.00355,
+"solids/RL-S-STAIR-FASCIA-SCREWS2/z0_m": 2.91465,
+"solids/RL-S-STAIR-FASCIA-SCREWS2/z1_m": 3.00355,
+"solids/RL-S-STAIR-POST1/z0_m": 2.886075,
 "solids/RL-S-STAIR-POST1/z1_m": 4.0005,
-"solids/RL-S-STAIR-POST2/z0_m": 3.0861,
+"solids/RL-S-STAIR-POST2/z0_m": 2.886075,
 "solids/RL-S-STAIR-POST2/z1_m": 4.0005,
-"solids/RL-S-STAIR-RAIL1/z0_m": 3.98145,
-"solids/RL-S-STAIR-RAIL1/z1_m": 4.01955,
-"solids/RL-S-STAIR-RAIL2/z0_m": 3.06705,
-"solids/RL-S-STAIR-RAIL2/z1_m": 3.10515,
-"solids/RL-S-STAIRHEAD-BAL1/z0_m": 3.10515,
-"solids/RL-S-STAIRHEAD-BAL1/z1_m": 3.98145,
-"solids/RL-S-STAIRHEAD-BAL2/z0_m": 3.10515,
-"solids/RL-S-STAIRHEAD-BAL2/z1_m": 3.98145,
-"solids/RL-S-STAIRHEAD-BAL3/z0_m": 3.10515,
-"solids/RL-S-STAIRHEAD-BAL3/z1_m": 3.98145,
-"solids/RL-S-STAIRHEAD-BAL4/z0_m": 3.10515,
-"solids/RL-S-STAIRHEAD-BAL4/z1_m": 3.98145,
-"solids/RL-S-STAIRHEAD-BAL5/z0_m": 3.10515,
-"solids/RL-S-STAIRHEAD-BAL5/z1_m": 3.98145,
-"solids/RL-S-STAIRHEAD-BAL6/z0_m": 3.10515,
-"solids/RL-S-STAIRHEAD-BAL6/z1_m": 3.98145,
-"solids/RL-S-STAIRHEAD-BAL7/z0_m": 3.10515,
-"solids/RL-S-STAIRHEAD-BAL7/z1_m": 3.98145,
-"solids/RL-S-STAIRHEAD-BAL8/z0_m": 3.10515,
-"solids/RL-S-STAIRHEAD-BAL8/z1_m": 3.98145,
-"solids/RL-S-STAIRHEAD-POST2/z0_m": 3.0861,
+"solids/RL-S-STAIR-RAIL1/z0_m": 3.9624,
+"solids/RL-S-STAIR-RAIL1/z1_m": 4.0005,
+"solids/RL-S-STAIR-RAIL2/z0_m": 3.1623,
+"solids/RL-S-STAIR-RAIL2/z1_m": 3.2004,
+"solids/RL-S-STAIRHEAD-BAL1/z0_m": 3.2004,
+"solids/RL-S-STAIRHEAD-BAL1/z1_m": 3.9624,
+"solids/RL-S-STAIRHEAD-BAL2/z0_m": 3.2004,
+"solids/RL-S-STAIRHEAD-BAL2/z1_m": 3.9624,
+"solids/RL-S-STAIRHEAD-BAL3/z0_m": 3.2004,
+"solids/RL-S-STAIRHEAD-BAL3/z1_m": 3.9624,
+"solids/RL-S-STAIRHEAD-BAL4/z0_m": 3.2004,
+"solids/RL-S-STAIRHEAD-BAL4/z1_m": 3.9624,
+"solids/RL-S-STAIRHEAD-BAL5/z0_m": 3.2004,
+"solids/RL-S-STAIRHEAD-BAL5/z1_m": 3.9624,
+"solids/RL-S-STAIRHEAD-BAL6/z0_m": 3.2004,
+"solids/RL-S-STAIRHEAD-BAL6/z1_m": 3.9624,
+"solids/RL-S-STAIRHEAD-BAL7/z0_m": 3.2004,
+"solids/RL-S-STAIRHEAD-BAL7/z1_m": 3.9624,
+"solids/RL-S-STAIRHEAD-BAL8/z0_m": 3.2004,
+"solids/RL-S-STAIRHEAD-BAL8/z1_m": 3.9624,
+"solids/RL-S-STAIRHEAD-FASCIA-BOLTS2/z0_m": 2.9122687,
+"solids/RL-S-STAIRHEAD-FASCIA-BOLTS2/z1_m": 3.0313312,
+"solids/RL-S-STAIRHEAD-FASCIA-BRACKET2/z0_m": 2.8829,
+"solids/RL-S-STAIRHEAD-FASCIA-BRACKET2/z1_m": 3.0353,
+"solids/RL-S-STAIRHEAD-FASCIA-FOOTBLOCK1/z0_m": 3.0099,
+"solids/RL-S-STAIRHEAD-FASCIA-FOOTBLOCK1/z1_m": 3.184525,
+"solids/RL-S-STAIRHEAD-FASCIA-INSERT2/z0_m": 2.8829,
+"solids/RL-S-STAIRHEAD-FASCIA-INSERT2/z1_m": 2.886075,
+"solids/RL-S-STAIRHEAD-FASCIA-SCREWS2/z0_m": 2.91465,
+"solids/RL-S-STAIRHEAD-FASCIA-SCREWS2/z1_m": 3.00355,
+"solids/RL-S-STAIRHEAD-POST2/z0_m": 2.886075,
 "solids/RL-S-STAIRHEAD-POST2/z1_m": 4.0005,
-"solids/RL-S-STAIRHEAD-RAIL1/z0_m": 3.98145,
-"solids/RL-S-STAIRHEAD-RAIL1/z1_m": 4.01955,
-"solids/RL-S-STAIRHEAD-RAIL2/z0_m": 3.06705,
-"solids/RL-S-STAIRHEAD-RAIL2/z1_m": 3.10515,
+"solids/RL-S-STAIRHEAD-RAIL1/z0_m": 3.9624,
+"solids/RL-S-STAIRHEAD-RAIL1/z1_m": 4.0005,
+"solids/RL-S-STAIRHEAD-RAIL2/z0_m": 3.1623,
+"solids/RL-S-STAIRHEAD-RAIL2/z1_m": 3.2004,
 "solids/RL-SG-BALCONY-BAL1/z0_m": 3.1814985,
 "solids/RL-SG-BALCONY-BAL1/z1_m": 4.0482735,
 "solids/RL-SG-BALCONY-BAL10/z0_m": 3.1611057,
