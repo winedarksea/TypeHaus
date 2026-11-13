@@ -58,6 +58,7 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     # Plies sistered onto a joist line under a point load (resolve/floors.py). Same stock as
     # the joist it doubles, a shade darker so a reinforced line reads as one in the viewer.
     "sister_joist": (0.66, 0.48, 0.30, 1.0),
+    "ledger": (0.66, 0.48, 0.30, 1.0),   # a chase lid's ledgers (FloorOpening.lid)
     # A 2x on edge through an open-web field's webs (resolve/floor_strongbacks.py).
     "strongback": (0.66, 0.48, 0.30, 1.0),
     "rim": (0.66, 0.48, 0.30, 1.0),
@@ -235,6 +236,7 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "duct_damper": (0.560, 0.580, 0.600, 1.0),     # collar with its balancing damper
     "duct_connector": (0.300, 0.310, 0.320, 1.0),  # flex / vibration connector, a dark sleeve
     "duct_support": (0.420, 0.440, 0.460, 1.0),    # strap or rod, darker than the duct
+    "equipment_hanger": (0.420, 0.440, 0.460, 1.0),  # trapeze rod and strut, as duct_support
     "solar": (0.10, 0.14, 0.28, 1.0),      # PV module glass, deep blue
     "fascia": (0.92, 0.92, 0.90, 1.0),     # PVC fascia
     "soffit": (0.88, 0.88, 0.85, 1.0),     # dropped soffit box / soffit skin member

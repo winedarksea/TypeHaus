@@ -68,6 +68,7 @@ _CAPTIONS = {
     FloorOpeningPurpose.PLANTING: "PLANTER",
 }
 _STAIR_BELOW_CAPTION = "OPEN TO STAIR BELOW"
+_LIDDED_CAPTION = "LIDDED CHASE"
 #: What a hole too narrow for its full caption says instead, rather than spill next door.
 _SHORT_CAPTIONS = {FloorOpeningPurpose.CHASE: "CHASE"}
 
@@ -151,6 +152,8 @@ def _storey_below(model: ResolvedModel, storey: str) -> str | None:
 def _caption(model: ResolvedModel, storey: str, opening, scale: float) -> tuple[str, bool]:
     """``(caption, fits)``: the short form when the full one is wider than the hole."""
     caption = _CAPTIONS.get(opening.purpose, "OPEN TO BELOW")
+    if getattr(opening, "lid", None) is not None:
+        caption = _LIDDED_CAPTION  # decked over: there is no below to be open to
     ring = [point.xy_m for point in opening.outline]
     if opening.purpose is FloorOpeningPurpose.STAIR and _stair_below(model, storey, ring):
         caption = _STAIR_BELOW_CAPTION

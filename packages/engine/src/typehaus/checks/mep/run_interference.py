@@ -126,6 +126,7 @@ def run_interference(ctx: CheckContext) -> list[Finding]:
     sleeves = _sleeves(ctx)
     systems = run_systems(ctx.model)
     leads = _kit_leads(ctx)
+    taps = _drain_taps(ctx)
     joints: dict[tuple[str, str], tuple[tuple, float]] = {}
 
     flat = [(shell.tag, prism) for shell in shells for prism in shell.prisms]
@@ -165,6 +166,9 @@ def run_interference(ctx: CheckContext) -> list[Finding]:
             if _in_sleeve(sleeves.get(pair, ()), prism, other):
                 continue
             if _kit_lead_pair(leads, tag, other_tag, contact):
+                continue
+            if any(math.dist(contact.point, tap[:2]) <= reach
+                   for tap, reach in taps.get(pair, ())):
                 continue
             # In PAIR order, not iteration order: the message names the runs sorted and
             # would otherwise hang the first run's leg number — and its elevation — off the
@@ -353,6 +357,20 @@ def _kit_leads(ctx: CheckContext) -> dict[str, list[tuple[str, tuple, float]]]:
         if part.kind in ("flex", "transition") and part.other and part.port:
             out.setdefault(part.run_tag, []).append(
                 (part.other, tuple(part.point), part.length_m or 0.0))
+    return out
+
+
+def _drain_taps(ctx: CheckContext) -> dict[tuple[str, str], list[tuple[tuple, float]]]:
+    """``(duct, pipe) -> [(tap point, reach)]``: a drain pipe meets its duct at the tee."""
+    out: dict[tuple[str, str], list[tuple[tuple, float]]] = {}
+    ducts = {d.tag: d for d in ctx.model.ducts}
+    for part in getattr(ctx.model, "duct_parts", ()):
+        duct = ducts.get(part.run_tag)
+        if part.kind != "drain_tee" or not part.other or duct is None:
+            continue
+        pair = tuple(sorted((part.run_tag, part.other)))
+        reach = (duct.diameter_m or duct.width_m) + TOUCH_TOLERANCE_M
+        out.setdefault(pair, []).append((tuple(part.point), reach))
     return out
 
 

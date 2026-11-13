@@ -55,6 +55,7 @@ from typehaus import (
     ElectricalDevice,
     ElectricalDeviceType,
     Equipment,
+    EquipmentHangers,
     EquipmentKind,
     Mount,
     MountKind,
@@ -339,14 +340,18 @@ BASEMENT_EQUIPMENT = [
               # HUNG at 40.4" to the case bottom, ports at 62". It hangs because it drains by
               # gravity: PR-B-ERV-COND falls to FX-B-UTIL-SINK, and the case height is set by
               # that fall and by OA/EA's straight leads (port + 12" flex + elbow = 19") staying
-              # under the 92.73" conduits. Hang it on threaded rod or strut from the FS-M-MECH
-              # joists (about 35" of drop); Broan's straps are not that long.
+              # under the 92.73" conduits. Broan's chains are not that long, so it sits on a
+              # strut trapeze: two P1000s under the short sides on four 3/8" rods, each rod
+              # from a strut bridge lagged into two FS-M-MECH TJI flanges (the drop, ~57" to
+              # the strut top, is derived; `structural.equipment_hangers` grades it). The
+              # struts stop 1 1/2" past the case: the west face is 1.94" off CZ-B-DRYFIRE.
               #
               # SERVICE ACCESS (notes/erv_service_access.md): exposed in RM-B-FURNACE, 13" clear
               # in front of the east door (x 7'-6 15/16"..8'-7 15/16") and 3" on the south
               # electrical-box side. The door zone shares about 10" x 14" with D-B-CLOSET's
               # swing; one door at a time. Quarterly filter/core service from the floor.
               mount=Mount(kind=MountKind.CEILING, elevation=inch(40.4)),
+              hangers=EquipmentHangers(count=4, rod_product_ref="PROD-BLINE-ATR-3-8", strut_product_ref="PROD-UNISTRUT-P1000-PG", top_fixing_product_ref="PROD-LAG-1-4X1-1-2-ZN", overhang=inch(1.5), source="owner, 2026-11-12: strut trapeze on 3/8 in. rod"),
               pan_drain_ref="PR-B-ERV-COND",
               # Its fresh air reaches the second storey through EQ-S-ERV-MIX and this AH's
               # ducts, so the ERV's furnace/air-handler interlock contacts (Broan

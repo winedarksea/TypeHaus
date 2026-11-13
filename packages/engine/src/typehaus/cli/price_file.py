@@ -52,7 +52,7 @@ _SECTIONS = ("framing", "sheet_goods", "hardware", "concrete", "site", "solids",
              # Duct elbows by the piece and duct wrap by the foot — the air-side mirrors of
              # pipe_fittings/pipe_insulation.
              "duct_fittings", "duct_insulation", "duct_parts", "duct_supports", "duct_sealing",
-             "sleeves", "conduit",
+             "equipment_hangers", "sleeves", "conduit",
              # Raceway parts and device boxes by the piece (→ takeoff/raceways.py,
              # takeoff/device_boxes.py).
              "conduit_fittings", "electrical_boxes", "grounding", "grounding_conductors",
@@ -189,6 +189,8 @@ ALTERNATE_UNITS: dict[str, dict[str, str]] = {
     # (and reads) as feet.
     "light_run_materials": {"EA": "quantity"},
     "excavation": {"SF": "quantity"},
+    # Rod and strut are stock by the foot; a lag is a piece.
+    "equipment_hangers": {"LF": "length_ft"},
 }
 
 
@@ -301,6 +303,8 @@ class Prices:
     duct_parts: Mapping[str, PriceRange] = field(default_factory=dict)
     duct_supports: Mapping[str, PriceRange] = field(default_factory=dict)
     duct_sealing: Mapping[str, PriceRange] = field(default_factory=dict)
+    # A hung machine's trapeze by product: lags each, rod and strut by the foot.
+    equipment_hangers: Mapping[str, PriceRange] = field(default_factory=dict)
     sleeves: Mapping[str, PriceRange] = field(default_factory=dict)
     # $/LF keyed on size: a bare size ("0.75") is EMT, anything else names its material
     # ("ENT 0.5", "PVC 1").

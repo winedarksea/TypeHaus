@@ -95,6 +95,19 @@ a release or for exhaustive local verification.
   with a damper `MIXING_BOX` (#125); a blocking `RunBand` is boxed by half-width and half-height.
 - **Condensate overflow is authored on the unit** (decision #127): `Equipment.secondary_drain_pan`
   / `overflow_drain_ref` / `float_switch_ref`, graded by `mep.condensate_overflow` (IMC 307.2.3).
+- **A hung machine's trapeze is derived from `Equipment.hangers`** (decision #131):
+  `resolve/equipment_hangers.py` (struts under the short sides; each rod's bridge is cut between two
+  joists' webs and bears on their bottom-flange tops, clear of the ceiling; host by
+  `_MemberIndex.member_over`, drop derived), graded by `structural.equipment_hangers`
+  against `Product.rated_load_lb` and `Library.joist_flange_allowances`, billed in `[equipment_hangers]`.
+- **A pitched duct names its drains** (decision #132): `DuctRun.drains` derives a `drain_tee`
+  (`resolve/duct_drains.py`, `[duct_parts]`); `mep.duct_drainage` grades only runs declaring
+  `slope_in_per_ft` or `drains`. Don't pitch the leg off a port kit's lead: past 90° the straight
+  lead becomes a bent flex (C 2.85).
+- **A lidded chase is floor** (decision #130): `FloorOpening.lid` (needs a fireblock sheet) takes
+  ledgers on its trimmer/header faces, cut round the runs (`resolve/opening_lid.py`, `ledger` in
+  `[framing]`). The hole stays in `deck_voids`; walkable and finish readers use
+  `ResolvedFloor.open_voids`.
 - **A wall header is chosen from its host's role and derived load** (decision #116):
   `resolve/header_loads.py` walks `bearing_refs` and the walls above; a BEARING host takes the
   smallest IRC 2018 R602.7(1)/(2) row (`resolve/framing/header_tables.py`, note f's 0.70 where

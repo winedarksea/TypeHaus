@@ -53,6 +53,7 @@ const SOLID_CATEGORY_LABEL: Record<string, string> = {
   duct_damper: "Collar damper",
   duct_connector: "Flex / vibration connector",
   duct_support: "Duct hanger",
+  equipment_hanger: "Equipment hanger",
   drain_tile: "Drain tile",
   french_drain: "French drain",
   drywell: "Drywell",

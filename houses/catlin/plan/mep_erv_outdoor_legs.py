@@ -7,6 +7,7 @@
 # feeds stay there. The hoods these legs terminate on, and the wall penetrations they pass
 # through, are in plan/mep_erv_outdoor.py.
 from typehaus import (
+    DuctDrain,
     DuctRouting,
     DuctRun,
     DuctSystem,
@@ -205,9 +206,21 @@ DUCTS_ERV_OUTDOOR_LEGS = [
                   pt(inch(49.5), inch(418.5)),
                   pt(inch(44.37), inch(418.5)), pt(inch(24.625), inch(418.5)),
                   pt(inch(24.625), inch(418.5)), pt(inch(24.625), ft(36, 8))),
+            # (2026-11-12, M1-114) Drain-back: from the 30 degree pair on, every leg falls
+            # 1/8"/ft in the air's direction to the riser foot, and the hood leg 1/8"/ft out
+            # to the hood. The 10.8" leg off the kit lead stays level: a fall there turns the
+            # lead's 90 past 90 and the straight kit lead no longer fits (resolve/flex_bend).
+            # The step at x=44.37" keeps its 2.3375" drop; the foot sits 1.10" lower (wrap
+            # 69.6" AFF, 1.6" over EQ-B-ESS-INV) and the north leg's wrap leaves the dry-fire
+            # lane at 72.3". The drain tee at the foot is capped, emptied by hand: no gravity
+            # line reaches a receptor (the lane, the panels' working spaces and the ESS room
+            # box the corner in).
             elevations=(inch(-47.4375), inch(-28.4375), inch(-28.4375), inch(-31.4),
-                        inch(-31.4), inch(-31.4), inch(-31.4), inch(-33.7375), inch(-33.7375),
-                        inch(204), inch(204)),
+                        None, None, None, inch(-34.6275), inch(-34.8332),
+                        inch(204), None),
+            slope_in_per_ft=0.125,
+            drains=(DuctDrain(at=pt(inch(24.625), inch(418.5)),
+                              product_ref="PROD-DUCT-DRAIN-TAP-8"),),
             # ** 8", NOT 6" (owner, in the measured package). ** This is the single biggest
             # lever in the static budget and the note prices it: the discharge leg is the
             # long one on the extract chain's worst path, and area goes as d^2 while friction

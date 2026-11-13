@@ -238,6 +238,7 @@ SECTION_CODES: dict[str, CostCode] = {
     "duct_insulation": CostCode("3200", "23 07 13", "mechanical"),
     "duct_parts": CostCode("3200", "23 31 00", "mechanical"),
     "duct_supports": CostCode("3200", "23 05 29", "mechanical"),
+    "equipment_hangers": CostCode("3200", "23 05 29", "mechanical"),
     "duct_sealing": CostCode("3200", "23 31 00", "mechanical"),
     "sleeves": CostCode("3100", "22 05 17", "plumbing"),
     "conduit": CostCode("3300", "26 05 33", "electrical"),

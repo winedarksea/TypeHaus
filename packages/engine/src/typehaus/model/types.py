@@ -845,6 +845,9 @@ class EquipmentType(FurnitureType, AirHandlingProductFacts):
     # Battery-to-AC conversion efficiency, a fraction (0.94, not 94), the backup calc divides
     # battery-delivered load by. Absent is unknown, never 1.0.
     inverter_efficiency: float | None = Field(default=None, gt=0, le=1)
+    #: Operating weight, lb, as the type's ``source`` publishes it; a hung case's rods and
+    #: fixings are graded against it (``structural.equipment_hangers``). Never defaulted.
+    weight_lb: float | None = Field(default=None, gt=0)
 
     @model_validator(mode="after")
     def _check_heating_ratings(self) -> EquipmentType:

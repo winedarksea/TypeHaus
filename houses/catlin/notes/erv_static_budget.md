@@ -782,9 +782,8 @@ the DuctStandard's elbow C, the Broan port kit and E3 land.
 4. A swap cannot be drawn with the machine as it hangs: OA and EA (12" wrapped) cannot cross
 inside the 21.9" between the case top and the joists, and RET/SUP lie under MAN-SUP (10.4"). It
 needs the machine rotated 270 and the two plenums' roles swapped, or the EA riser re-sited east.
-**Drain-back (M1-114):** not drawn. Falling the EA basement leg toward the unit puts its foot above
-the radial layer, and a sloped straight turns every adjoining elbow into an off-pattern angle
-(`fitting_pattern` UNKNOWN); the EA leg is level.
+**Drain-back (M1-114):** drawn since §10.28 (1/8"/ft to the foot, a capped tee); the off-pattern
+objection below does not hold at that slope.
 
 ### 10.10 The DuctStandard rework (2026-11-05, decision #114)
 
@@ -1349,10 +1348,9 @@ UA 0.471 Btu/h.F.ft. OA 0.471 x 20.60 x 85 = 825; EA 0.471 x 33.82 x 55 = 876; *
 (2" at these lengths: 1,029). Effective recovery 65% -> 0.65 x (12,530 - 1,701) / 12,530 = 56%.
 Surface condensation stays safe to about 66% RH indoors (§10.13 a).
 
-**Field items.** Hang the case on threaded rod or strut, about 35" from the joists (Broan's straps
-are not that long). The ERV door zone shares about 10" x 14" with D-B-CLOSET's swing. GV0772's
-length is still unread (counted 0): every inch of it lifts OA and EA, and OA has 3.2" to the
-92.73" conduits. Broan's top-port drainage question (`air_distribution_products.md`) stands.
+**Field items.** The case hangs on a strut trapeze and GV0772's length is read (both §10.28).
+The ERV door zone shares about 10" x 14" with D-B-CLOSET's swing. Broan's top-port drainage
+question (`air_distribution_products.md`) stands.
 
 ### 10.23 The attic bedroom drops: RM-A-STUDIO is a craft room (2026-11-11)
 
@@ -1530,6 +1528,68 @@ chained to its end, the trunk is capped 6" past BED2's take-off: y=9'-0" -> 13'-
 
 Engine: 0.546, 200.1 cfm. MUD's radial at 10 cfm is a 4" stub on the neck, far off the
 governing path.
+
+### 10.28 The rotation's residue closed: GV0772, HP-FEED's skew, EA's fall and drain (2026-11-12)
+
+**GV0772's length.** Imperial publishes none (PP1142 gives SKU and gauge). Stand-in: M&M Mfg.'s
+400 round reducer submittal (read 2026-11-12), 1.75 + 2.50-3.50 + 1.75 = 6.0-7.0"; the 7.0"
+maximum is drawn with no collar engagement, as `PROD-DUCT-REDUCER-8-4` does
+(`PortKit.transition_length`). The straight lead then needs 7 + 12 + 7 (adjustable 90) = 26";
+OA has 22.5" (port 62.0" to row 84.5"), EA 19.0", so `run_bend` lays both leads as a flex bend at
+R = 1D = 8" in place of the stock 90. Rows and paths hold; nothing new meets the 92.73" conduits.
+Getting the straight lead back would lift OA's row 3.5" and EA's about 6.2" (case down 0.8"),
+re-seating EA's first 30 pair: not worth 1.2 cfm. (Search results also name the 6x8 increaser
+GV1360; the SKU is a construction hold.)
+
+    EA (8", 210 cfm, VP 0.022564): stock adjustable 90 gone  -0.37 x VP = -0.008349
+                                   flex bend                  +2.85 x VP = +0.064307
+                                   flex 16.57" against 12"               = +0.000410
+                                                                           +0.056368 in.
+
+**EA falls to its foot (M1-114).** `slope_in_per_ft=0.125` on `DU-ERV-EA`; the foot drops
+-33.7375 -> -34.8332". §10.9's objection does not hold: a 1/8"/ft fall moves a turn ~0.6 deg, inside
+`elbow_for_turn`'s 10 deg snap, so every stamped row stays (the 30 pair reads 29.41, the 24.5 pair
+23.9, both already adjustable). The 10.8" leg off the kit lead stays level (falling it makes the
+lead's turn 90.6 deg, past what a straight lead takes), and vertex 3 holds -31.4" (lower meets
+`DU-B-ERV-SUP-TRUNK`). Basis §10.22 (f 0.02322):
+
+    length 33.81688 -> 33.90876 ft: 0.02322 x (0.091881 / 0.66667) x VP     = +0.0000722
+    turns  30 -> 29.41: 0.37 x 0.45 x (29.41/30 - 1)                      = -0.003275 C
+           24.5 pair -> 23.9: 2 x 0.37 x (0.3585 - 0.3675)                = -0.00666  C
+           dC -0.00997 x VP                                                = -0.0002249
+                                                                             -0.000153 in.
+
+A drain tee (`PROD-DUCT-DRAIN-TAP-8`, 3/4" outlet) stands one stamped take-off east of the foot,
+on the level leg, outlet down, **capped**: no gravity line reaches a receptor. The foot's wrap
+bottom is 69.6" AFF and the corner is boxed by the dry-fire lane (x 40.5-68", nothing under 72"),
+the panels' NEC 110.26 spaces (x 12-50", to 78") and the inverter / RM-B-ESS on the north wall.
+`mep.duct_drainage` passes it as emptied by hand (the owner's call; `construction_holds.md`).
+
+**HP-FEED's jog is a skew (the last ERV `fitting_pattern` UNKNOWN).** The 3.4" level jog between
+two 90s at -8 1/2" (3.4" against 6.0") is one leg off the riser head at -9 3/4", 30.06 deg off vertical
+onto x=12" at -3 7/8": 6.79" on adjustable elbows (R 6", take-off 6 tan 15.03 = 1.61"), leaving
+7.875" of stand for the deck 90's 6.0 + 1.61. The riser head drops 231.875 -> 230.25" absolute.
+The junction elbow at the riser head belongs to neither run and is charged nowhere, as its 90 was.
+
+    riser (160 cfm, VP 0.0413976, f 0.02358): 0.02358 x (353.920 / 6) x VP + 1.10 x VP
+                                            = 0.057580 + 0.045537 = 0.103117 in. (was 0.103382)
+      past the tap (115 cfm, VP 0.0213861, f 0.02504): 0.029374 + 0.023525 = 0.052899 (0.053044)
+    HP-FEED (115 cfm): 551.448 -> 550.213", C 1.32 -> 1.10 + 0.37 x 0.4506 = 1.26672
+      0.02504 x (550.213 / 6) x VP + 1.26672 x VP = 0.076193 in. (was 0.077447)
+    supply via HP-FEED: 0.478047 - 0.000145 - 0.001254 = 0.476648 in. (extract still governs)
+
+**Governing extract (SUITEBATH):** 0.546211 - 0.000153 + 0.056368 = **0.602426 in.**; delivered
+off (0.6, 199)-(0.7, 195): 199 - 4 x 0.002426 / 0.1 = **198.903 cfm** against R403.5's 188.0
+(+10.9). Engine: 0.602426, 198.9.
+
+**The case hangs on a strut trapeze** (`Equipment.hangers`): four B-Line ATR 3/8" rods (730 lb)
+at the short sides' overhangs, two Unistrut P1000 channels under the case, each rod on a strut
+bridge cut between two TJI 230 webs and BEARING on the tops of their bottom flanges, inside the
+bay (under them it stood in the ceiling board), screwed down with 1/4" x 1-1/2" lags (graded
+as if in withdrawal, 245 lb by TB-808's example). The north strut sits 1/2" inboard so its rods
+clear joist 006's flange. 47 lb / 4 = 11.8 lb a rod; the worst joist carries 21.2 lb in 5 ft,
+all on one side of its web, against TB-808's 500 lb (250 a side). Drop 57.2".
+`structural.equipment_hangers` passes all three.
 
 ### 10.5 The thermal penalty of the legs (hand-worked)
 

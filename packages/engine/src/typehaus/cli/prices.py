@@ -111,6 +111,8 @@ ESTIMATE_PLANS = (
     ("duct_parts", "duct_parts", "price_key", "count", "ea"),
     ("duct_supports", "duct_supports", "product", "count", "ea"),
     ("duct_sealing", "duct_sealing", "product", "count", "ea"),
+    # A hung machine's trapeze: lags each; rod and strut rows say ``unit = "LF"``.
+    ("equipment_hangers", "equipment_hangers", "product", "count", "ea"),
     ("sleeves", "sleeves", "sleeve_diameter_in", "count", "ea"),
     ("conduit", "conduit", "size", "length_ft", "LF"),
     ("conduit_fittings", "conduit_fittings", "fitting", "count", "ea"),

@@ -125,8 +125,10 @@ DUCTS_ERV_RISERS = [
                   pt(inch(15.4), inch(406.8))),
             # The foot is at the bay leg's -18 7/16" (it was -17 15/16"): the 12" drop between
             # the bay leg's two 90s was 11.5".
+            # (2026-11-12) The head stops at 230 1/4" (FS-ATTIC -9 3/4"), where DU-S-ERV-HP-FEED's
+            # 30 degree skew leaves it.
             elevations=(inch(-18.4375), inch(-18.4375), inch(-6.4), inch(-6.4),
-                        inch(-18.4375), inch(-18.4375), inch(231.875)),
+                        inch(-18.4375), inch(-18.4375), inch(230.25)),
             # 150 cfm: the 210 at its foot less the basement plenum's 60. Its highest flow
             # anywhere (notes/erv_static_budget.md §10.6).
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",

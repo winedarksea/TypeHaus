@@ -68,18 +68,13 @@ finished area drops out.
 
 **ERV**
 
-- [ ] **Residue from the 90 deg rotation (2026-11-11):** EA drain-back (M1-114); the OA chase
-  lid (the engine has no ledger element); GV0772's length (unread and counted as 0; OA has 3.2"
-  to the 92.73" conduits). This also covers the "ERV flex/transition terms" in the cluster list.
-  Hanging hardware (~35" drop, rod or strut) cannot be modelled: `SuspensionAnchor` is seat-only.
-  Needs `Equipment.hangers` (drop, count, hardware row, joist load check).
-- [ ] **DU-S-ERV-HP-FEED** is the last ERV `mep.fitting_pattern` UNKNOWN: 3.4" from riser head
-  to standpipe against the stamped 90's 6.0". The standpipe is blocked west by the roof
-  underside (~6.2" at x=9.4" vs a 7" duct top) and east by the W-A-STU-N stud (x=16"); the
-  riser is blocked east by CD-B-ATTIC-RISER. No stocked part fits under the R = D/2 floor, so
-  the attic deck lanes need re-packing.
-- [ ] Proofread IMC 2018 §603.10 / Table 603.4 in `houses/catlin/plan/ducts.py` against the
-  printed code.
+- [ ] **`DU-ERV-EA`'s drain tee is capped** (`notes/erv_static_budget.md` §10.28): no gravity
+  line reaches a receptor. Choose: the radon sump (~2 ft, gas-tight trap entry), a condensate
+  pump over the lane to `PR-B-ERV-COND`, or keep emptying it by hand.
+- [ ] **EQ-B-ERV's trapeze rods graze three runs** by under 1/4" in the solids audit: rod 1
+  `DU-B-ERV-R-GYM`, rod 2 `DU-ERV-EA`'s wrap, rod 3 / strut 2 `PR-B-ERV-COND`. No check grades
+  `equipment_hangers` against runs; add one (or route them through `run_interference`) and
+  nudge the rods, rather than leave it to the crew.
 
 **Plumbing**
 
@@ -104,9 +99,6 @@ finished area drops out.
 - [ ] `integrity.wall_mount_on_face` hosts a wall mount only on a wall, column or soffit.
   `REG-A-HP-EAST-RET` on `EQ-S-ERV-MIX`'s face is suppressed in catlin `preferences.toml`
   until equipment can host one.
-- [ ] Deferred checks: insulation vs R403.2.1; per-segment duct insulation; M1506.3's 3 ft
-  exception and the operable-opening distance; an insulation spec's thickness vs its R-value;
-  a damper actuator inside a duct.
 
 **Autorouter.** `docs/routing.md` Limitations covers the open supply-trunk finished-volume and
 freeze FAILs, search U-turns, same-size I-joist siblings, and `--lift` on a first-leg tee. Two
@@ -146,6 +138,9 @@ items have details that are recorded only here:
 - **Pipe support spacing is ungraded** (UPC Table 313.3 via Minn. R. 4714.0313, plus MN Table
   313.3.1); the profile says so. Needs a `support_spacing_in` on `PipeRun` and a
   `mep.pipe_support` check. Field-inspected, not a permit gap.
+- [ ] Deferred checks: insulation vs R403.2.1; per-segment duct insulation; M1506.3's 3 ft
+  exception and the operable-opening distance; an insulation spec's thickness vs its R-value;
+  a damper actuator inside a duct.
 
 ## Questions
 

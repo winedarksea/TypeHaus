@@ -34,6 +34,7 @@ SECTION_LABELS: dict[str, str] = {
     "pipe_runs": "Pipe", "pipe_fittings": "Pipe fittings", "ducts": "Ducts",
     "duct_fittings": "Duct fittings", "duct_insulation": "Duct insulation",
     "duct_parts": "Duct parts", "duct_supports": "Duct hangers", "duct_sealing": "Duct sealing",
+    "equipment_hangers": "Equipment hangers",
     "sleeves": "Cast-in sleeves", "conduit": "Conduit", "conductors": "Conductors",
     "conduit_fittings": "Conduit fittings", "electrical_boxes": "Device boxes",
     "grounding": "Grounding hardware", "grounding_conductors": "Grounding conductors",
@@ -329,6 +330,8 @@ def _label(section: str, bare: str, row: Mapping[str, Any], labels: LabelIndex) 
         return f"{kind.capitalize()}, {size}" + (", shop-made" if g("fabricated") else "")
     if section == "duct_supports":
         return f"{str(g('hanger') or 'hanger').capitalize()} hanger, {g('size')} duct"
+    if section == "equipment_hangers":
+        return f"Equipment trapeze {g('item')}"
     if section == "duct_sealing":
         return f"Duct {g('use') or 'sealant'}"
     if section == "duct_insulation":

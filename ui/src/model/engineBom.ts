@@ -77,7 +77,7 @@ export const SECTION_GROUPS: readonly BomSectionGroup[] = [
     // run normally carries both — the cable first, the lagging over it.
     sections: ["pipe_runs", "plumbing_specialties", "install_parts", "pipe_insulation",
       "freeze_protection", "ducts", "duct_fittings", "duct_insulation", "duct_parts", "duct_supports",
-      "duct_sealing", "sleeves",
+      "duct_sealing", "equipment_hangers", "sleeves",
       "floor_heat", "drainage"],
   },
   {

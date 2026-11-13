@@ -256,16 +256,21 @@ DUCTS_ERV_MIX_FEED = [
             # stood 3/8" into FO-A-HALL's outboard trimmer ply (face at 22'-2 5/8") for the
             # whole 8' it runs beside the hole. `mep.run_through_blocking` found it where
             # the leg crosses x=18'; 1/8" clear now.
-            # (2026-11-10) The deck leg stands at x=12" again, a 3.4" west jog in the bay off the
-            # riser's x=15.4". The roof rose 1 1/2", W-A-STU-N grew a real stud at x=16", and a
-            # leg at 15.4" stands in it; at 12" the duct clears the stud by 1/4".
+            # (2026-11-10) The deck leg stands at x=12" again, 3.4" west of the riser's x=15.4".
+            # The roof rose 1 1/2", W-A-STU-N grew a real stud at x=16", and a leg at 15.4"
+            # stands in it; at 12" the duct clears the stud by 1/4".
+            # (2026-11-12) That 3.4" is one SKEWED leg in the bay, not a level jog between two
+            # 90s: off the riser head at -9 3/4", 30 degrees off vertical onto x=12" at -3 7/8"
+            # (6.8" on two adjustable elbows set down, 1.6" take-off each), leaving 7 7/8" of
+            # stand for the deck 90's 6" (notes/erv_static_budget.md §10.28).
             path=(pt(inch(15.4), inch(406.8)), pt(inch(12), inch(406.8)), pt(inch(12), inch(406.8)),
                   pt(inch(12), ft(21, 10.625)),
                   pt(inch(12), ft(21, 10.625)), pt(inch(310), ft(21, 10.625)),
                   pt(inch(310), ft(21, 10.625)), pt(inch(310), inch(331))),
-            elevations=(inch(-8.5), inch(-8.5), inch(4), inch(4),
+            elevations=(inch(-9.75), inch(-3.875), inch(4), inch(4),
                         inch(-8.5), inch(-8.5),
                         inch(4), inch(4)),
+            adjustable_elbows=(1,),
             # It names no soffit: CHASE, one run in two cavities (bay and deck).
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=DU_S_ERV_HP_FEED),

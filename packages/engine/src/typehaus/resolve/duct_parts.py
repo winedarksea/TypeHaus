@@ -15,6 +15,7 @@ from typehaus.resolve.duct_standard import duct_standard
 def resolve_duct_parts(plan: Any, model: Any) -> list[Finding]:
     from typehaus.resolve.duct_branches import branch_parts
     from typehaus.resolve.duct_dampers import damper_parts
+    from typehaus.resolve.duct_drains import drain_parts
     from typehaus.resolve.duct_part_solids import part_solids
     from typehaus.resolve.duct_supports import derive_supports
     from typehaus.resolve.duct_terminations import end_landings, termination_parts
@@ -27,6 +28,7 @@ def resolve_duct_parts(plan: Any, model: Any) -> list[Finding]:
     dampers, off_run = damper_parts(model, standard)
     model.duct_parts.extend(dampers)
     findings.extend(off_run)
+    model.duct_parts.extend(drain_parts(model, standard))
     model.duct_supports.extend(derive_supports(model, standard))
     part_solids(model)
     return findings

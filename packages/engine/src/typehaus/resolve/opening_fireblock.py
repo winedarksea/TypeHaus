@@ -43,11 +43,23 @@ def _one(model: ResolvedModel, floor: ResolvedFloor, opening, ring, prisms) -> N
     top = floor.deck_top_at(centre.x, centre.y)
     layers, sheet_holes = [], {}
     offset = 0.0
+    ledgers, ledger_footprint, ledger_band = [], None, (0.0, 0.0)
+    if opening.lid is not None:
+        from typehaus.resolve.opening_lid import lid_ledgers
+
+        ledgers, ledger_footprint = lid_ledgers(
+            floor, opening, rect, top - opening.fireblock[0].thickness.meters,
+            lambda z0, z1: _holes(rect, prisms, z0, z1))
+        if ledgers:
+            ledger_band = (ledgers[0].z0_m, ledgers[0].z1_m)
     for index, layer in enumerate(opening.fireblock):
         t = layer.thickness.meters
         z0, z1 = top - offset - t, top - offset
         holes = _holes(rect, prisms, z0, z1)  # each layer is cut by what crosses ITS band
-        sheet = difference(rect, union_all(list(holes.values()))) if holes else rect
+        cuts = list(holes.values())
+        if ledger_footprint is not None and z0 < ledger_band[1] and z1 > ledger_band[0]:
+            cuts.append(ledger_footprint)  # the wool packs between the ledgers
+        sheet = difference(rect, union_all(cuts)) if cuts else rect
         parts = [g for g in getattr(sheet, "geoms", [sheet])
                  if g.geom_type == "Polygon" and g.area > 1e-9]
         for part_index, part in enumerate(parts):
@@ -62,6 +74,11 @@ def _one(model: ResolvedModel, floor: ResolvedFloor, opening, ring, prisms) -> N
             sheet_holes = holes
         offset += t
 
+    if opening.lid is not None:
+        from typehaus.resolve.opening_lid import add_ledgers, cut_run_holes_from_finish
+
+        add_ledgers(model, floor.tag, opening.tag, ledgers)
+        cut_run_holes_from_finish(model, floor.storey, rect, list(sheet_holes.values()))
     # The sheet is what is sealed and what can sliver; wool below packs round its runs.
     web, between = _min_web(rect, sheet_holes)
     model.fireblocks.append(ResolvedFireblock(

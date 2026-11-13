@@ -33,6 +33,7 @@ from plan.bedroom_wardrobe_types import BEDROOM_WARDROBE_PRODUCTS
 from plan.closet_types import CLOSET_PRODUCTS
 from plan.decking_selection import TREX_TIDE_POOL_PRODUCT
 from plan.electrical_floor_types import FLOOR_BOX_PRODUCT
+from plan.equipment_hanger_products import EQUIPMENT_HANGER_PRODUCTS
 from plan.kitchen_sink_types import DEARBORN_KITCHEN_TRAP, KRAUS_BOLDEN, KRAUS_KHU100_32
 from plan.living_east_run_types import LIVING_EAST_RUN_PRODUCTS
 from plan.plant_liner_selection import EXTRUTECH_P1600
@@ -323,5 +324,5 @@ PRODUCTS = (
     *BED_READING_CORNER_PRODUCTS, *BED_DESK_PRODUCTS,
     *BATH2_VANITY_PRODUCTS, *LIVING_EAST_RUN_PRODUCTS,
     *PLANT_ROOM_PRODUCTS, *STARTER_FURNITURE_PRODUCTS, *TITANIUM_PRODUCTS,
-    *TRIM_STOCK_PRODUCTS,
+    *TRIM_STOCK_PRODUCTS, *EQUIPMENT_HANGER_PRODUCTS,
 )

@@ -49,6 +49,7 @@ _IMPERIAL = "Imperial Mfg. catalog Dec 2017 (SKU and gauge only; no dimensions p
 _IMP26 = "Imperial PP1142 Galvanized Duct, Pipe & Fittings, Aug 2026 (imperialgroup.s3.amazonaws.com/site/PP1142-Galvanized-Catalogue-En-2026-August-2026-08-18-03.45-PM.pdf), read 2026-11-07; SKU and gauge only, no dimensions"
 _SPIN = "Imperial PP1142 Aug 2026 p.17 'Spin Collar - (With Damper)', 28 ga (read 2026-11-07); the catalog does not say the damper locks: the submittal or a sample must show a locking handle (Minn. R. 1346.0603 subp. 10 -> IMC 603.18.3 'locked in place'), otherwise M&M 504MSD4 (28 ga, 5.50 in., 'locking handle', mmmfg.com 504MSD submittal)"
 _MM400 = "M&M Mfg. 400 round reducer submittal (mmmfg.com/wp-content/themes/speedwagon/pdf/400_Model_(1).pdf, read 2026-11-07): 1.75 collar + 2.50-3.50 taper + 1.75 collar; a stand-in for the Imperial GV0821 + GV0811 set, whose length is unpublished"
+_INC68 = "Imperial GV0772 (28 ga, PP1142 Aug 2026 SKU and gauge only; no length in Imperial's catalog or the retailer listings reached; Zoro and Home Depot refused automated reads; searched 2026-11-12). Stand-in: M&M Mfg. 400 round reducer submittal (mmmfg.com/wp-content/themes/speedwagon/pdf/400_Model_(1).pdf, read 2026-11-12): 'Hemmed Collars' 1.75 + '2.50 to 3.50' + 1.75 = 6.0-7.0 in. overall, no per-size table; the 7.0 in. maximum is drawn, no collar engagement credited"
 _STAMPED = "li-hvac.com/product/sw-elbows (read 2026-11-05): die stamped, 3-12 in., 1.0 or 1.5 radius"
 _STRAP = "DiversiTech TDS DOC134521 (cdn.shopify.com/s/files/1/0253/0852/8730/files/Specifications__710-004.pdf, a reseller-hosted copy of the maker's sheet), read 2026-11-07: 710-005 (DS-221) 1 in. x 100 ft, 22 ga; 710-001 is 26 ga, not this"
 _SADDLE = "House practice (owner, 2026-11-07): 1 in. x 22 ga strap band over the duct, screwed to the deck it bears on each side. SMACNA HVAC DCS 1995 has no figure for a duct supported from below; S4.1: supports 'installed as required to maintain alignment', attachments 'not limited to the specific methods shown'"
@@ -96,6 +97,11 @@ DUCT_PRODUCTS = (
             name="4 x 4 x 4 in. round tee, galvanized",
             url="https://www.homedepot.com/p/4-in-Round-Tee-T4X4X4/100131692",
             source="Master Flow (GAF) T4X4X4, Home Depot listing, about $16 (owner, 2026-11-10); gauge and dimensions not published: the tee's laying length stays estimated"),
+    # DU-ERV-EA's drain tee at the riser foot (M1-114, 2026-11-12): a tap in the invert, no
+    # branch stub, so nothing hangs below the wrap. Capped until a line reaches a receptor.
+    Product(tag="PROD-DUCT-DRAIN-TAP-8", brand="Any", model="3/4 in. PVC bulkhead tap",
+            name="8 in. duct drain tee: 3/4 in. PVC bulkhead fitting (male adapter and locknut) through the duct's invert, mastic-sealed, with a 3/4 in. cap",
+            source="house practice (2026-11-12); no SKU read: a commodity bulkhead fitting field-set in the duct"),
     Product(tag="PROD-DUCT-REDUCER-8-4", brand="Imperial", model="GV0821 + GV0811",
             name="8 to 4 in. reducer set: GV0821 8 to 6 in. (28 ga) + GV0811 6 to 4 in. (30 ga), stacked",
             source=_IMP26),
@@ -104,7 +110,7 @@ DUCT_PRODUCTS = (
     Product(tag="PROD-DUCT-REDUCER-8-6", brand="Imperial", model="GV0821",
             name="8 to 6 in. reducer, 28 ga", source=_IMPERIAL),
     Product(tag="PROD-DUCT-INCREASER-6-8", brand="Imperial", model="GV0772",
-            name="6 to 8 in. increaser, 28 ga", source=_IMPERIAL),
+            name="6 to 8 in. increaser, 28 ga", source=_INC68),
     Product(tag="PROD-DUCT-INCREASER-4-5", brand="Imperial", model="GV0766",
             name="4 to 5 in. increaser, 30 ga", source=_IMPERIAL),
     Product(tag="PROD-DUCT-BOOT-2X10X4", brand="Snappy", model="P13-204",
@@ -147,7 +153,7 @@ DUCT_STANDARD = [
                    "SMACNA HVAC DCS 1995"),
         round_gauges=(
             RoundGaugeRow(max_diameter=inch(14), gauge=30, thickness=inch(0.013),
-                          source="IMC 2018 Table 603.4 (Minn. R. 1346.0050), round < 12 and 12-14 in., 1/2 in. w.g. galv: 0.013 in.; transcribed from UpCodes MN mirror, proofread against codes.iccsafe.org before printing"),
+                          source="IMC 2018 Table 603.4 (Minn. R. 1346.0050), round < 12 and 12-14 in., 1/2 in. w.g. galv: 0.013 in.; proofread against UpCodes, Minnesota Mechanical Code 2020 (IMC 2018 with amendments), 2026-11-12 (codes.iccsafe.org refused automated access)"),
         ),
         elbows=(
             DuctElbowRow(diameter=inch(4), product_ref="PROD-DUCT-ELBOW-S-4", kind="stamped",
@@ -270,8 +276,8 @@ DUCT_STANDARD = [
         port_kits=(
             PortKit(type_ref="EQ-T-BROAN-B210E75RT", ports=("outdoor", "exhaust"),
                     transition_product_ref="PROD-DUCT-INCREASER-6-8",
-                    transition_loss_c=0.22, flex_product_ref="PROD-DUCT-FLEX-R8",
-                    flex_length=inch(12), flex_bend_loss_c=2.85,
+                    transition_length=inch(7), transition_loss_c=0.22,
+                    flex_product_ref="PROD-DUCT-FLEX-R8", flex_length=inch(12), flex_bend_loss_c=2.85,
                     source=_KIT),
             PortKit(type_ref="EQ-T-BROAN-B210E75RT", ports=("supply", "return"),
                     flex_product_ref="PROD-DUCT-FLEX-R8", flex_length=inch(12),

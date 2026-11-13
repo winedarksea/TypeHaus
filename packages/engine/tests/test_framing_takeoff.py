@@ -282,6 +282,8 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
                         "duct_fittings", "duct_insulation",
                         # Parts, hangers and sealant off the standard (#114).
                         "duct_parts", "duct_supports", "duct_sealing",
+                        # A hung machine's trapeze.
+                        "equipment_hangers",
                         # The species-wood rollup (hardwood pass).
                         "wood_surfaces",
                         # Edge trim by the lineal foot: the fascia/soffit/flashing family,
@@ -404,6 +406,7 @@ _BOM_COVERAGE: dict[str, tuple[str, ...]] = {
     # Parts, hangers and sealant off the DuctStandard (#114).
     "duct_parts": ("duct_parts", "duct_sealing"),
     "duct_supports": ("duct_supports",),
+    "equipment_hangers": ("equipment_hangers",),
     "conduits": ("conduit", "conduit_fittings", "conductors"),
     "device_boxes": ("electrical_boxes",),
     "grounding": ("grounding", "grounding_conductors"),

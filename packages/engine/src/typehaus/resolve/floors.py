@@ -311,22 +311,21 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey, anchors=()
         model.solids.extend(solids)
         linings.append((frame.opening.tag, area, coating))
 
-    chases = tuple(
-        (f.opening.tag, [(f.minx, f.miny), (f.maxx, f.miny),
-                         (f.maxx, f.maxy), (f.minx, f.maxy)])
-        for f in opening_boxes
-        if getattr(f.opening, "purpose", None) is FloorOpeningPurpose.CHASE)
+    def box(f):
+        return [(f.minx, f.miny), (f.maxx, f.miny), (f.maxx, f.maxy), (f.minx, f.maxy)]
+
+    chases = tuple((f.opening.tag, box(f)) for f in opening_boxes
+                   if getattr(f.opening, "purpose", None) is FloorOpeningPurpose.CHASE)
     penetrations = tuple(
-        (f.opening.tag, [(f.minx, f.miny), (f.maxx, f.miny),
-                         (f.maxx, f.maxy), (f.minx, f.maxy)],
-         tuple(getattr(f.opening, "penetration_for", ()) or ()))
-        for f in opening_boxes
-        if getattr(f.opening, "penetration_for", ()))
+        (f.opening.tag, box(f), tuple(getattr(f.opening, "penetration_for", ()) or ()))
+        for f in opening_boxes if getattr(f.opening, "penetration_for", ()))
+    lids = tuple((f.opening.tag, box(f)) for f in opening_boxes
+                 if getattr(f.opening, "lid", None) is not None)
 
     return ResolvedFloor(
         uid=system.uid, tag=system.tag, storey=storey.tag, web_openings=spec.web_openings,
         direction=spec.direction, members=tuple(members), chases=chases,
-        penetrations=penetrations, linings=tuple(linings),
+        penetrations=penetrations, linings=tuple(linings), lids=lids,
         deck_outline=deck_outline, deck_voids=deck_voids,
         deck_z0_m=deck_z0_m, deck_z1_m=deck_z1_m, deck_plane=deck_plane, ends=ends,
         through_walls=tuple(w.tag for w in through_walls),

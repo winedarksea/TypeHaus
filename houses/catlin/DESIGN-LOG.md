@@ -1,3 +1,17 @@
+## The rotation's residue closed: trapeze, lid, EA fall, HP-FEED skew, GV0772 (2026-11-12, owner)
+
+- EA falls 1/8"/ft to its riser foot onto a capped drain tee (owner chose slope + piped tap; no
+  gravity route reaches a receptor past the dry-fire lane, the panel spaces and RM-B-ESS, so the
+  pipe is pending: radon sump, pump or pail). §10.9's off-pattern objection was wrong at ~1 deg.
+- EQ-B-ERV hangs on a strut trapeze (owner): four 3/8" rods bridged to two TJI flanges each.
+  Struts overhang 1 1/2", not 2": more enters CZ-B-DRYFIRE.
+- FO-M-ERV-OA is lidded on ledgers, so the mech closet's LVP runs over the chase.
+- HP-FEED's 3.4" jog became a 30 degree skew off a lower riser head. Rejected: re-packing the deck
+  lanes (the fallback, not needed).
+- GV0772 read as 7" (M&M stand-in): both outdoor kit leads now bend (+0.056", 200.1 -> 198.9
+  cfm). Rejected: lifting the rows 3.5"/6.2" to keep straight leads, for 1.2 cfm.
+- Engine: decisions #130-132 (`FloorOpening.lid`, `Equipment.hangers`, `DuctRun.drains`).
+
 ## The ERV turns 90 degrees and all four ports land exact (2026-11-11, owner)
 
 - The hold is over. EQ-B-ERV hangs at 90 (door east), 13" south, case 40.4". EA comes off the east

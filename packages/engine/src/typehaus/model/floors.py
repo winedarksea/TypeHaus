@@ -8,7 +8,7 @@ from pydantic import model_validator
 
 from typehaus.model.assembly import Layer
 from typehaus.model.base import Element, HausModel
-from typehaus.model.enums import FloorOpeningPurpose, RadiantSystem
+from typehaus.model.enums import FloorOpeningPurpose, LayerFunction, RadiantSystem
 from typehaus.model.published_web import PublishedWebOpenings
 from typehaus.model.rebar import ReinforcementSpec
 from typehaus.model.refs import Embed, PublishedHole, PublishedSpan
@@ -141,6 +141,17 @@ class DeckLayer(HausModel):
     thickness: Length
 
 
+class FloorOpeningLid(HausModel):
+    """The fireblock sheet made a floor: ledgers on the framed edges carry it.
+
+    Ledgers run on each trimmer/header face, cut round the runs (``resolve/opening_lid.py``);
+    the deck reads as walkable across the hole and the room's finish carries over it.
+    """
+
+    ledger_profile: str  # e.g. "2x4", on edge, top under the sheet
+    fastening: str
+
+
 @register_element
 class FloorOpening(Element):
     """First-class opening in a FloorSystem; referenced by tag from a Stair (#21)."""
@@ -174,6 +185,15 @@ class FloorOpening(Element):
     #: a run bored through an LVL header is UNKNOWN (``mep.run_through_floor_member``); present,
     #: it is graded against the row, as ``RoughOpening.published_hole`` is for a wall header.
     published_hole: PublishedHole | None = None
+    #: Ledgers under ``fireblock``'s sheet; the hole then counts as floor.
+    lid: FloorOpeningLid | None = None
+
+    @model_validator(mode="after")
+    def validate_lid(self):
+        if self.lid is not None and not (
+                self.fireblock and self.fireblock[0].function is LayerFunction.SHEATHING):
+            raise ValueError(f"{self.tag}: a lid needs a fireblock whose layer 0 is a sheet")
+        return self
 
 
 class FloorOpeningEdgeInterval(HausModel):
@@ -459,6 +479,7 @@ for _name, _obj in (
     ("JoistReinforcement", JoistReinforcement),
     ("DeckLayer", DeckLayer),
     ("FloorOpening", FloorOpening),
+    ("FloorOpeningLid", FloorOpeningLid),
     ("FloorOpeningEdgeInterval", FloorOpeningEdgeInterval),
     ("FloorOpeningPocketClosure", FloorOpeningPocketClosure),
     ("FloorSystem", FloorSystem),

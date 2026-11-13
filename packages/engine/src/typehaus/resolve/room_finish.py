@@ -29,7 +29,7 @@ def level_voids(model: ResolvedModel, structural: float) -> list[Polygon]:
     """Deck voids of every floor whose deck top sits at ``structural`` (within tolerance)."""
     return [Polygon(ring) for floor in model.floors
             if abs(floor.deck_z1_m - structural) < SLAB_MATCH_TOLERANCE_M
-            for ring in floor.deck_voids if len(ring) >= 3]
+            for ring in floor.open_voids if len(ring) >= 3]  # a lid carries finish
 
 
 def _ring(coords: Iterable[Sequence[float]]) -> list[tuple[float, float]]:

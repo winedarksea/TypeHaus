@@ -133,7 +133,7 @@ def _covers(model: ResolvedModel, point: tuple[float, float]):
         outline = _ring_key(floor.deck_outline)
         if len(outline) < 3 or _bbox_misses(point, outline):
             continue
-        holes = tuple(_ring_key(void) for void in floor.deck_voids)
+        holes = tuple(_ring_key(void) for void in floor.open_voids)  # a lid is floor
         cover = _shrunk_polygon(outline, holes)
         if not cover.is_empty and cover.contains(probe):
             yield floor.tag, floor.storey, floor.deck_top_at(*point)

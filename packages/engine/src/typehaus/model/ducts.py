@@ -22,9 +22,10 @@ from typehaus.quantities import M_PER_IN, Length, ft, inch
 #: plenum with its balancing damper; ``boot``: duct to a terminal neck; ``transition`` and
 #: ``flex``: an equipment port kit; ``connector``: a vibration connector at an air handler;
 #: ``damper``: an in-line volume damper at a station a run names (``DuctRun.inline_dampers``),
-#: its ``loss_c`` the published fully-open C on the duct's velocity pressure.
+#: its ``loss_c`` the published fully-open C on the duct's velocity pressure; ``drain_tee``:
+#: the tap at a low point a run names (``DuctRun.drains``), ``branch`` its outlet.
 DuctPartKind = Literal["takeoff", "tee", "reducer", "collar_damper", "boot", "transition",
-                       "flex", "connector", "damper"]
+                       "flex", "connector", "damper", "drain_tee"]
 
 
 def duct_size_text(diameter_m: float | None, width_m: float = 0.0, depth_m: float = 0.0) -> str:

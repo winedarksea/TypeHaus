@@ -25,6 +25,7 @@ from typehaus import (
     ExteriorDoorSillDesign,
     FloorHeat,
     FloorOpening,
+    FloorOpeningLid,
     FloorOpeningPurpose,
     Layer,
     LayerFunction,
@@ -2002,7 +2003,13 @@ FLOOR_OPENINGS = [
                      Layer(name="wool", material_ref="mineral-wool", thickness=inch(3.5),
                            function=LayerFunction.INSULATION),
                  ),
-                 fireblock_sealant="firestop-sealant"),
+                 fireblock_sealant="firestop-sealant",
+                 # The sheet is the mech room's floor: 2x4 ledgers on the trimmer and header
+                 # faces carry it, and the LVP runs across (D-M-MECH's threshold).
+                 lid=FloorOpeningLid(
+                     ledger_profile="2x4",
+                     fastening="ledgers 2-10d per 12 in.; sheet glued, 8d ring shank 6 in. o.c."),
+                 ),
     # DU-M-ERV-SUP-FEED's hole (2026-11-12): sized to the 6" duct inside the 405-421" bay east
     # of FO-M-ERV-OA's header and west of the x=70" blocking, so it cuts no member.
     FloorOpening(uid="4HJC87AJHH", tag="FO-M-ERV-SUP-FEED", purpose=FloorOpeningPurpose.CHASE,

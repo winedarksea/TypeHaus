@@ -36,6 +36,7 @@ from typehaus.takeoff.electrical import (
     solar_takeoff,
 )
 from typehaus.takeoff.envelope import bug_screen_takeoff, envelope_layer_takeoff
+from typehaus.takeoff.equipment_hangers import equipment_hanger_takeoff
 from typehaus.takeoff.excavation import excavation_takeoff
 from typehaus.takeoff.fabrication import fabricated_member_schedule
 from typehaus.takeoff.finishes import floor_finish_rows
@@ -245,6 +246,8 @@ def bill_of_materials(
         "duct_parts": _part_price_keys(duct_part_takeoff(model)),
         "duct_supports": duct_support_takeoff(model),
         "duct_sealing": duct_sealing_takeoff(model),
+        # A hung machine's trapeze (→ takeoff/equipment_hangers.py).
+        "equipment_hangers": equipment_hanger_takeoff(model),
         "sleeves": sleeve_takeoff(model),
         # The electrical program (→ takeoff/electrical.py): devices by type, the panel
         # schedule + NEC 120.82 service load, raceway LF, the PV array's installed

@@ -82,6 +82,7 @@ from typehaus.model.enums import (
     TrimKind,
     UtilityKind,
 )
+from typehaus.model.equipment_hangers import EquipmentHangers
 from typehaus.model.excavation import Excavation, SideSlope, SoilFactor
 from typehaus.model.exterior_door import (
     ExteriorDoorCatalogInstallation,
@@ -95,6 +96,7 @@ from typehaus.model.floors import (
     FloorHeat,
     FloorOpening,
     FloorOpeningEdgeInterval,
+    FloorOpeningLid,
     FloorOpeningPocketClosure,
     FloorSystem,
     JoistReinforcement,
@@ -108,6 +110,7 @@ from typehaus.model.floors import (
 from typehaus.model.framing_standards import HeaderStandard
 from typehaus.model.furniture_cut import FurnitureCut
 from typehaus.model.grounding import BondingConductor, GroundingElectrode, GroundingStandard
+from typehaus.model.joist_flange import JoistFlangeAllowance
 from typehaus.model.joist_holes import JoistHoleChart
 from typehaus.model.landscape import (
     AccentRule,
@@ -123,6 +126,7 @@ from typehaus.model.materials import Material
 from typehaus.model.mep import (
     ConduitRun,
     DrainCleanout,
+    DuctDrain,
     DuctRun,
     ElectricalDevice,
     Equipment,
@@ -365,6 +369,7 @@ for _name, _obj in (
     ("PublishedReaction", PublishedReaction), ("PublishedCladdingLoad", PublishedCladdingLoad),
     ("PublishedHole", PublishedHole), ("SheathingNailing", SheathingNailing),
     ("PublishedWebOpenings", PublishedWebOpenings), ("JoistHoleChart", JoistHoleChart),
+    ("JoistFlangeAllowance", JoistFlangeAllowance), ("EquipmentHangers", EquipmentHangers),
     ("SegmentalWallSpec", SegmentalWallSpec), ("SrwDrainageZone", SrwDrainageZone),
     ("EndRestraint", EndRestraint),
     ("ShearPanelSpec", ShearPanelSpec), ("DiaphragmSpec", DiaphragmSpec),
@@ -429,7 +434,7 @@ __all__ = [
     "TerminalNeckComponent", "TerminalNeckInlet", "ElectricalDeviceType",
     "LuminaireType", "MeshRef", "TrackHeadProduct", "TrackHeadSpec", "TrackLightingSpec",
     "JoistSpec", "JoistReinforcement", "Strongback", "DeckLayer", "FloorSystem", "FloorOpening",
-    "FloorOpeningEdgeInterval", "FloorOpeningPocketClosure",
+    "FloorOpeningEdgeInterval", "FloorOpeningLid", "FloorOpeningPocketClosure",
     "Slab", "SlabThermalBreak",
     "Soffit", "SoffitOpening",
     "FloorHeat", "FinishZone",
@@ -449,13 +454,14 @@ __all__ = [
     "OpeningFrameEndSupports", "OpeningPosition", "OpeningSize",
     "PublishedSpan", "PublishedCapacity", "PublishedReaction",
     "PublishedCladdingLoad", "PublishedHole", "PublishedWebOpenings", "JoistHoleChart",
+    "JoistFlangeAllowance", "EquipmentHangers",
     "SheathingNailing",
     "ShearPanelSpec", "DiaphragmSpec", "DiaphragmDelivery", "ReceivingLine", "HeadConnector",
     "CollectorBlocking", "JointNailing", "PanelEdgeBlocking",
     "InServiceMoisture",
     "Embed", "outside_of", "inside_of", "layers", "from_node", "centered",
     "in_slab", "under_subfloor",
-    "PipeRun", "PipeAccessory", "DrainCleanout", "SleevePenetration", "DuctRun",
+    "PipeRun", "PipeAccessory", "DrainCleanout", "SleevePenetration", "DuctRun", "DuctDrain",
     "Register", "Equipment",
     "ElectricalDevice",
     "Circuit", "LoadManagement", "BoxStandard", "BoxRow", "ConduitRun", "LightRun",

@@ -51,6 +51,9 @@ class Product(HausModel):
     # Accepted alternates ("or equal"), as Product tags in order of preference; this
     # record is the basis of design. Linted by ``integrity.unknown_product_ref``.
     equals: tuple[str, ...] = ()
+    # A published allowable working load per piece, lb (a rod's recommended load, a
+    # fastener's withdrawal), read in ``source``. None is unread, and a check says UNKNOWN.
+    rated_load_lb: float | None = Field(default=None, gt=0)
 
 
 register_constructor("Product", Product)

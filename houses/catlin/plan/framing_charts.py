@@ -5,7 +5,7 @@ matches each to every deck of its member, so FS-ATTIC (editable) needs no import
 Hand-worked against the house's runs in ``notes/framing_bore_limits.md`` §11.
 """
 
-from typehaus import JoistHoleChart, PublishedHole, inch
+from typehaus import JoistFlangeAllowance, JoistHoleChart, PublishedHole, ft, inch
 
 _TJI = "11.875 TJI 230"
 _SOURCE = ("ICC-ES ESR-1153 (TJI joists), Figure 2, Table A; with Weyerhaeuser TJ-4000 "
@@ -40,6 +40,19 @@ TJI_230_HOLES = JoistHoleChart(
 )
 
 JOIST_HOLE_CHARTS = (TJI_230_HOLES,)
+
+# Load hung from a TJI bottom flange (EQ-B-ERV's trapeze bridges): TB-808's one line.
+TJI_230_FLANGE = JoistFlangeAllowance(
+    member=_TJI,
+    source="Weyerhaeuser TB-808, Bottom Flange TJI Joist Attachment Connections (July 2025, "
+           "expires 7/2027): \"Maximum allowable bottom flange concentrated load is 500 lb. "
+           "every 5 ft. (250 lb. each side of flange). Do not increase for load duration.\"",
+    max_load_lb=500, max_side_load_lb=250, window=ft(5),
+    condition="bridge bearing on the flange top beside the web; the load is also carried in "
+              "the joist's design",
+)
+
+JOIST_FLANGE_ALLOWANCES = (TJI_230_FLANGE,)
 
 
 # Boise VERSA-LAM LVL, the 2-ply 1 3/4" x 11 7/8" header FO-S-ERV-CHASE carries (decision #118).

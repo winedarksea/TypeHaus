@@ -79,10 +79,16 @@ the model goes back to `plans/TODO.md` as a design item.
     W-B-BA-E.
 - Duct and air-distribution submittals (`houses/catlin/plan/ducts.py`, decisions #114/#121/#124):
   Imperial laying lengths and boot heights (the 12.25" GV0821+GV0811 reducer is a stand-in);
-  GV0772's length; Linx's dimensioned E90/E45 submittal (centre-to-face, which `radius_m()`
+  GV0772's length (drawn at M&M's 7" stand-in; confirm the SKU too, since listings name the 6x8
+  increaser GV1360, §10.28); Linx's dimensioned E90/E45 submittal (centre-to-face, which `radius_m()`
   reads first; 1.0 D assumed). Broan: insulated ducts "same diameter as the ports" vs its own
   6-to-8 transition advice, and top-port drainage (draft at
   `notes/air_distribution_products.md` :331). `REG-T-HP-PLANT-SIDE`'s throw (unread).
+  The ERV trapeze: a published hanging rating for a strut-bridge lag into a TJI 230 flange
+  (245 lb is TB-808's design example) and the 3/8" rod's 730 lb (B-Line, not MSS SP-58).
+  ICC's own IMC 2018 Table 603.4 text (proofread on UpCodes; codes.iccsafe.org refused the fetch).
+  `DU-ERV-EA`'s capped drain tap (`PROD-DUCT-DRAIN-TAP-8`): no SKU read; open it into a pail
+  each winter until a drain route is chosen (§10.28).
   AAF PerfectPleat HC M8 (nominal 10x10x1) actual size vs the bath-2 stall-dryer's grille holder.
 - ERV level 2 flat trunk (`notes/erv_static_budget.md` §10.14): a shop drawing confirming the
   rectangular elbows at r/W 1.0; TrimJoist's and TRIFORCE's shop layouts for the deck pocket

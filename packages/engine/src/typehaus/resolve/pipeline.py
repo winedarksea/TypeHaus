@@ -255,6 +255,11 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         from typehaus.resolve.duct_parts import resolve_duct_parts
 
         findings.extend(resolve_duct_parts(plan, model))
+    with _stage("equipment_hangers"):
+        # A hung machine's trapeze off the framing above (resolve/equipment_hangers.py).
+        from typehaus.resolve.equipment_hangers import resolve_equipment_hangers
+
+        resolve_equipment_hangers(plan, model)
     # Apron cutouts use the resolved service leaves, including their final elevations.
     with _stage("paneling"):
         findings.extend(resolve_paneling(plan, model))

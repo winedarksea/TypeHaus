@@ -139,6 +139,8 @@ _library = Library(
     duct_product_types=ALL_DUCT_PRODUCT_TYPES,
     # ESR-1153's TJI 230 hole ladder; graded on every TJI deck (decision #117).
     joist_hole_charts=framing_charts.JOIST_HOLE_CHARTS,
+    # TB-808's bottom-flange hanging load, graded by structural.equipment_hangers.
+    joist_flange_allowances=framing_charts.JOIST_FLANGE_ALLOWANCES,
     equipment_types=(*ALL_VENTILATION_EQUIPMENT_TYPES, *mep.EQUIPMENT_TYPES,
                      *equipment_types.EQUIPMENT_TYPES, *air_terminal_types.AIR_HOOD_TYPES),
     electrical_device_types=(*ALL_ELECTRICAL_DEVICE_TYPES, *panel_types.PANEL_TYPES,

@@ -35,7 +35,7 @@ HANDLE_STANDOFF_M = 0.125 * M_PER_IN  # the shaft, undrawn
 _CATEGORY = {"takeoff": "duct_fitting", "tee": "duct_fitting", "reducer": "duct_fitting",
              "transition": "duct_fitting", "boot": "duct_fitting",
              "collar_damper": "duct_damper", "damper": "duct_damper", "flex": "duct_connector",
-             "connector": "duct_connector"}
+             "connector": "duct_connector", "drain_tee": "duct_fitting"}
 
 
 @dataclass(frozen=True)
@@ -223,7 +223,7 @@ def _part_mesh(model: ResolvedModel, part: ResolvedDuctPart,
     size, branch = parse_section(part.size), parse_section(part.branch)
     if axis is None or size is None:
         return None
-    if part.kind in ("takeoff", "tee"):
+    if part.kind in ("takeoff", "tee", "drain_tee"):
         stub = branch or size
         start = _add(part.point, axis, _surface_offset(model, part, axis))
         return loft(start, axis, stub, stub, part.length_m or COLLAR_LENGTH_M)

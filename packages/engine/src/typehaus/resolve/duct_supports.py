@@ -140,14 +140,28 @@ class _MemberIndex:
                      for host in coll}
         self.model = model
 
-    def over(self, at: tuple[float, float], top_z: float) -> tuple[str | None, float]:
+    def over(self, at: tuple[float, float], top_z: float,
+             reach_m: float = HANGER_REACH_M) -> tuple[str | None, float]:
         """(member key, drop from its underside to the duct top), nearest above first."""
+        member, drop = self.member_over(at, top_z, reach_m)
+        return (None, 0.0) if member is None else (self.key(member), drop)
+
+    def key(self, member: Any) -> str:
+        return f"{self.tags.get(member.parent_uid, member.parent_uid)}:{member.child_key}"
+
+    def member_over(self, at: tuple[float, float], top_z: float,
+                    reach_m: float = HANGER_REACH_M,
+                    categories: frozenset[str] | None = None) -> tuple[Any | None, float]:
+        """(member, drop from its underside to ``top_z``), nearest above first; ``categories``
+        narrows the hosts."""
         from shapely.geometry import Point
 
         best: tuple[float, float, Any] | None = None
         for i in self.tree.query(Point(at).buffer(HANGER_PLAN_REACH_M)):
             member = self.members[int(i)]
-            if member.z1_m < top_z - 0.01 or member.z0_m > top_z + HANGER_REACH_M:
+            if categories is not None and member.category not in categories:
+                continue
+            if member.z1_m < top_z - 0.01 or member.z0_m > top_z + reach_m:
                 continue
             drop = max(0.0, member.z0_m - top_z)
             plan = Point(at).distance(self.tree.geometries[int(i)])
@@ -155,8 +169,7 @@ class _MemberIndex:
                 best = (drop, plan, member)
         if best is None:
             return None, 0.0
-        member = best[2]
-        return f"{self.tags.get(member.parent_uid, member.parent_uid)}:{member.child_key}", best[0]
+        return best[2], best[0]
 
     def deck_under(self, point: Point3, a: Point3, b: Point3, half_depth: float,
                    foot: float) -> tuple[str | None, float]:

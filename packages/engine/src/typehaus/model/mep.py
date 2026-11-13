@@ -29,6 +29,7 @@ from typehaus.model.enums import (
     RacewayMaterial,
     Service,
 )
+from typehaus.model.equipment_hangers import EquipmentHangers
 from typehaus.model.placeables import Location, Mount, require_placed_or_hosted
 from typehaus.model.registry import register_constructor, register_element
 from typehaus.quantities import Length, Point2D
@@ -226,6 +227,19 @@ class SleevePenetration(Element):
     serves_duct: str | None = None  # DuctRun tag this envelope crossing seals
 
 
+class DuctDrain(HausModel):
+    """A drain tap at a duct's low point, where water in the run collects.
+
+    ``at`` is the low path vertex (a riser foot names its plan point); ``product_ref`` the
+    drain tee; ``pipe_ref`` the condensate run that starts at it, None for a capped tee that
+    is emptied by hand. ``mep.duct_drainage`` grades all three.
+    """
+
+    at: Point2D
+    product_ref: str
+    pipe_ref: str | None = None
+
+
 @register_element
 class DuctRun(Element):
     """One authored HVAC duct run — a routed 3D polyline, round or rectangular.
@@ -289,6 +303,9 @@ class DuctRun(Element):
     #: In-line volume dampers, each the damper's centre as developed length along the
     #: resolved path from its first vertex; the DuctStandard's ``damper`` row is the part.
     inline_dampers: tuple[Length, ...] = ()
+    #: Drain taps at the run's low points; with ``slope_in_per_ft`` they opt the run into
+    #: ``mep.duct_drainage``.
+    drains: tuple[DuctDrain, ...] = ()
 
 
 @register_element
@@ -329,6 +346,8 @@ class Equipment(Element):
     rotation: object | None = None
     location: Location | None = None
     mount: Mount = Mount()
+    #: A hung case's strut trapeze (``resolve/equipment_hangers.py``); its drop is derived.
+    hangers: EquipmentHangers | None = None
     # Circuit tag (panel schedule) — hard-wired equipment has no receptacle device,
     # so the circuit hook lives on the equipment itself, mirroring ElectricalDevice.
     circuit: str | None = None
@@ -626,6 +645,7 @@ for _name, _obj in (
     ("PipeAccessory", PipeAccessory),
     ("SleevePenetration", SleevePenetration),
     ("DuctRun", DuctRun),
+    ("DuctDrain", DuctDrain),
     ("Register", Register),
     ("Equipment", Equipment),
     ("ElectricalDevice", ElectricalDevice),

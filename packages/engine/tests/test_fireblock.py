@@ -14,7 +14,8 @@ _IN = 0.0254
 _CHASE = ((ft(2), ft(4)), (ft(3), ft(4)), (ft(3), ft(5, 4)), (ft(2), ft(5, 4)))
 
 
-def _plan(*, fireblock=True, wool=False, sealant="firestop-sealant", stacked=True):
+def _plan(*, fireblock=True, wool=False, sealant="firestop-sealant", stacked=True,
+          outline=_CHASE, lid=None):
     import uuid
 
     from typehaus.model import (
@@ -77,9 +78,9 @@ def _plan(*, fireblock=True, wool=False, sealant="firestop-sealant", stacked=Tru
         k = storey[:2].upper()
         opening = FloorOpening(
             uid=f"FO{k}000001", tag=f"FO-{k}-CHASE", purpose=FloorOpeningPurpose.CHASE,
-            outline=tuple(pt(x, y) for x, y in _CHASE),
+            outline=tuple(pt(x, y) for x, y in outline),
             fireblock=layers if fireblock else (),
-            fireblock_sealant=sealant if fireblock else None)
+            fireblock_sealant=sealant if fireblock else None, lid=lid)
         system = FloorSystem(
             uid=f"FS{k}000001", tag=f"FS-{k}", openings=(opening.tag,) if chase else (),
             subfloor=DeckLayer(material_ref="plywood", thickness=inch(0.75)),
@@ -193,9 +194,40 @@ def test_takeoff_sheet_area_is_net_of_holes_and_sealant_is_the_perimeters():
     assert sealant["length_ft"] == pytest.approx(total / 0.3048, abs=0.05)
 
 
+def test_a_lid_sits_on_ledgers_cut_round_the_runs_and_reads_as_floor():
+    from pydantic import ValidationError
+
+    from typehaus.model import FloorOpening, FloorOpeningLid
+    from typehaus.resolve.walking_surface import surfaces_at
+    from typehaus.takeoff.framing import framing_takeoff
+
+    lid = FloorOpeningLid(ledger_profile="2x4", fastening="nailed")
+    with pytest.raises(ValidationError, match="lid needs a fireblock"):
+        FloorOpening(uid="FOX0000001", tag="FO-X", outline=(), lid=lid)
+    # 12" x 32" across two joist lines: trimmers on x, headers on y; a riser by the north
+    # trimmer gaps that ledger, and the 32" headers run corner to corner.
+    tall = ((ft(2), ft(3, 4)), (ft(3), ft(3, 4)), (ft(3), ft(6)), (ft(2), ft(6)))
+    model = _model(risers=((30.0, 70.0),), outline=tall, lid=lid)
+    deck = next(f for f in model.floors if f.tag == "FS-SE")
+    ledgers = sorted((m for m in deck.members if m.category == "ledger"),
+                     key=lambda m: m.child_key)
+    assert [m.child_key.rsplit("-", 2)[1] for m in ledgers] == [
+        "east", "north", "north", "south", "west"]
+    assert [round(m.length_m / _IN, 2) for m in ledgers if "east" in m.child_key] == [32.0]
+    assert sum(m.length_m for m in ledgers if "north" in m.child_key) < 9 * _IN
+    assert ledgers[0].z1_m == pytest.approx(deck.deck_z1_m - 0.75 * _IN)
+    row = next(r for r in framing_takeoff(model) if r["category"] == "ledger")
+    assert row["profile"] == "2x4"
+    centre = (30 * _IN, 54 * _IN)
+    assert any(s.deck_tag == "FS-SE" for s in surfaces_at(model, centre))
+    bare = _model(outline=tall)
+    assert not any(s.deck_tag == "FS-SE" for s in surfaces_at(bare, centre))
+
+
 @pytest.mark.slow
 def test_catlin_nw_chase_is_fireblocked_at_all_three_decks(catlin_ctx):
-    tags = {"FO-M-ERV-OA", "FO-S-ERV-CHASE", "FO-A-ERV-CHASE"}
+    # The bath1 tub drain's hole is sheeted too (2026-11-12); it is not the chase.
+    tags = {"FO-M-ERV-OA", "FO-S-ERV-CHASE", "FO-A-ERV-CHASE", "FO-S-BATH1-TUB-DRAIN"}
     sheets = {s.tag for s in catlin_ctx.model.solids if s.category == "fireblock"
               and s.tag.endswith("-fireblock-sheet")}
     assert sheets == {f"{t}-fireblock-sheet" for t in tags}

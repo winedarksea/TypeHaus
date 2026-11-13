@@ -217,6 +217,7 @@
     "earth": 8413248,
     "eave_soffit": 14737625,
     "electrical_box": 10396584,
+    "equipment_hanger": 7041141,
     "fascia": 15461350,
     "finish": 15131611,
     "fireblock": 13412467,
@@ -241,6 +242,7 @@
     "landing_framing": 10712639,
     "leader_extension": 15132384,
     "led_tape": 16772024,
+    "ledger": 11041356,
     "lining": 15131611,
     "main_shutoff": 12096583,
     "membrane": 5010316,
@@ -438,6 +440,7 @@
     "earth": 8413248,
     "eave_soffit": 14737625,
     "electrical_box": 10396584,
+    "equipment_hanger": 7041141,
     "fascia": 15461350,
     "finish": 15131611,
     "fireblock": 13412467,
@@ -462,6 +465,7 @@
     "landing_framing": 10712639,
     "leader_extension": 15132384,
     "led_tape": 16772024,
+    "ledger": 11041356,
     "lining": 15131611,
     "main_shutoff": 12096583,
     "membrane": 5010316,
@@ -667,6 +671,9 @@
     ],
     "electrical_box": [
       "electrical"
+    ],
+    "equipment_hanger": [
+      "mechanical"
     ],
     "fascia": [
       "siding"
@@ -904,6 +911,7 @@
     "duct_transfer": "mechanical",
     "eave_soffit": "siding",
     "electrical_box": "electrical",
+    "equipment_hanger": "mechanical",
     "fascia": "siding",
     "fireblock": "framing",
     "flashing": "roofing",

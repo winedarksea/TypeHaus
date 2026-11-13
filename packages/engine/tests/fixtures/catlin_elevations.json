@@ -3529,7 +3529,7 @@
 -1.2049125,
 5.1816,
 11,
-"995dc23bbf2f"
+"22fe06635a51"
 ],
 "ducts/DU-ERV-OA/z_m": [
 -1.2049125,
@@ -3545,9 +3545,9 @@
 ],
 "ducts/DU-ERV-RISER-SUP/z_m": [
 -0.4683125,
-5.889625,
+5.84835,
 7,
-"e42c5b8fe2ab"
+"8a2a09fcf997"
 ],
 "ducts/DU-M-ERV-EXH-FEED/z_m": [
 2.3749,
@@ -3652,10 +3652,10 @@
 "e71834b2dd71"
 ],
 "ducts/DU-S-ERV-HP-FEED/z_m": [
-5.8801,
+5.84835,
 6.1976,
 8,
-"8fde9a89297d"
+"12d621c21083"
 ],
 "ducts/DU-S-HP-BED1/z_m": [
 5.591175,
@@ -3771,6 +3771,14 @@
 3,
 "4b4f3e157a75"
 ],
+"equipment_hangers/#0/bridge_z_m": -0.269875,
+"equipment_hangers/#0/strut_top_z_m": -1.7535525,
+"equipment_hangers/#1/bridge_z_m": -0.269875,
+"equipment_hangers/#1/strut_top_z_m": -1.7535525,
+"equipment_hangers/#2/bridge_z_m": -0.269875,
+"equipment_hangers/#2/strut_top_z_m": -1.7535525,
+"equipment_hangers/#3/bridge_z_m": -0.269875,
+"equipment_hangers/#3/strut_top_z_m": -1.7535525,
 "floors/FS-ATTIC/deck_z0_m": 6.096,
 "floors/FS-ATTIC/deck_z1_m": 6.11505,
 "floors/FS-BW-FLOOR/deck_z0_m": -0.023876,
@@ -4477,9 +4485,9 @@
 ],
 "geometry/1BMFGSMKJY-run/body": [
 -0.5445125,
-5.889625,
+5.84835,
 144,
-"68c6a028fba5"
+"2b334a11bd13"
 ],
 "geometry/1BMFGSMKJY-tee-1/body": [
 -0.5445125,
@@ -10295,53 +10303,59 @@
 2,
 "a19b7901eb2e"
 ],
-"geometry/BYAVBJKRS6-flex-1/body": [
--1.0028273,
--0.6958396,
+"geometry/BYAVBJKRS6-drain_tee-1/body": [
+-1.0350465,
+-0.9842465,
 34,
-"04db282d609e"
+"3fea345389e9"
+],
+"geometry/BYAVBJKRS6-flex-1/body": [
+-1.0282258,
+-0.6052307,
+34,
+"a8339178ad59"
 ],
 "geometry/BYAVBJKRS6-hanger-42/body": [
--0.9000134,
--0.68326,
+-0.9088078,
+-0.6920544,
 16,
-"afcf1068b8f0"
+"8d5056dd47f9"
 ],
 "geometry/BYAVBJKRS6-hanger-43/body": [
--0.9000134,
--0.68326,
+-0.9138885,
+-0.6971351,
 16,
-"afcf1068b8f0"
+"5c96a243b9ff"
 ],
 "geometry/BYAVBJKRS6-hanger-44/body": [
--0.9593859,
+-0.9846043,
 -0.301625,
 16,
-"bb8e68d1902f"
+"fe5ae52ea699"
 ],
 "geometry/BYAVBJKRS6-hanger-45/body": [
-5.0791466,
+5.0763023,
 5.2959,
 16,
-"26802084ff93"
+"ff3c687ddab0"
 ],
 "geometry/BYAVBJKRS6-run/body": [
 -1.2060153,
-5.2832,
+5.2831945,
 240,
-"39f468537cd0"
+"dfd54de0d011"
 ],
 "geometry/BYAVBJKRS6-transition-1/body": [
 -1.2057396,
--1.0006216,
+-1.0260201,
 34,
-"417a3ed3b697"
+"489f6a8b736e"
 ],
 "geometry/BYAVBJKRS6-wrap/body": [
 -1.206291,
-5.3086,
+5.3085931,
 240,
-"751b4144b945"
+"a87a4eac82ca"
 ],
 "geometry/BZAC6MTT1G/body": [
 -0.2794,
@@ -21725,6 +21739,66 @@
 2,
 "7e279e0136e2"
 ],
+"geometry/CEE016AAAA-hanger-bridge-1/body": [
+-0.269875,
+-0.2286,
+10,
+"1f58064a1f56"
+],
+"geometry/CEE016AAAA-hanger-bridge-2/body": [
+-0.269875,
+-0.2286,
+10,
+"1f58064a1f56"
+],
+"geometry/CEE016AAAA-hanger-bridge-3/body": [
+-0.269875,
+-0.2286,
+10,
+"1f58064a1f56"
+],
+"geometry/CEE016AAAA-hanger-bridge-4/body": [
+-0.269875,
+-0.2286,
+10,
+"1f58064a1f56"
+],
+"geometry/CEE016AAAA-hanger-rod-1/body": [
+-1.8202275,
+-0.2032,
+34,
+"23d2705775dd"
+],
+"geometry/CEE016AAAA-hanger-rod-2/body": [
+-1.8202275,
+-0.2032,
+34,
+"23d2705775dd"
+],
+"geometry/CEE016AAAA-hanger-rod-3/body": [
+-1.8202275,
+-0.2032,
+34,
+"23d2705775dd"
+],
+"geometry/CEE016AAAA-hanger-rod-4/body": [
+-1.8202275,
+-0.2032,
+34,
+"23d2705775dd"
+],
+"geometry/CEE016AAAA-hanger-strut-1/body": [
+-1.7948275,
+-1.7535525,
+10,
+"15d4ada0f10c"
+],
+"geometry/CEE016AAAA-hanger-strut-2/body": [
+-1.7948275,
+-1.7535525,
+10,
+"15d4ada0f10c"
+],
 "geometry/CEE016AAAA/body": [
 -1.7535525,
 -1.2049125,
@@ -30556,6 +30630,30 @@
 0.0,
 8,
 "80db91a70531"
+],
+"geometry/CMFS03AAAA::framing/member:ledger-FO-M-ERV-OA-east-0": [
+-0.0889,
+0.0,
+8,
+"683653b83f44"
+],
+"geometry/CMFS03AAAA::framing/member:ledger-FO-M-ERV-OA-north-0": [
+-0.0889,
+0.0,
+8,
+"683653b83f44"
+],
+"geometry/CMFS03AAAA::framing/member:ledger-FO-M-ERV-OA-south-0": [
+-0.0889,
+0.0,
+8,
+"683653b83f44"
+],
+"geometry/CMFS03AAAA::framing/member:ledger-FO-M-ERV-OA-south-1": [
+-0.0889,
+0.0,
+8,
+"683653b83f44"
 ],
 "geometry/CMFS03AAAA::framing/member:rim-0": [
 -0.301625,
@@ -45627,7 +45725,7 @@
 5.8039,
 6.2738,
 168,
-"d0c2e2ea9787"
+"5b33a6f45890"
 ],
 "geometry/CSF601AAAA/return-0-0-0": [
 5.451475,
@@ -67296,10 +67394,10 @@
 "d56251465910"
 ],
 "geometry/MW0MY7GDME-flex-1/body": [
--1.0032883,
--0.6954197,
+-1.0286853,
+-0.5158882,
 34,
-"ec16dc9536e5"
+"aa0cbf623c67"
 ],
 "geometry/MW0MY7GDME-hanger-46/body": [
 1.4215466,
@@ -67333,9 +67431,9 @@
 ],
 "geometry/MW0MY7GDME-transition-1/body": [
 -1.2060765,
--1.0001842,
+-1.0255812,
 34,
-"d20c1f4d8306"
+"feae9b7421e0"
 ],
 "geometry/MW0MY7GDME-wrap/body": [
 -1.2068526,
@@ -88914,6 +89012,30 @@
 0.0,
 2,
 "07a4d7ea6917"
+],
+"member/CMFS03AAAA/ledger-FO-M-ERV-OA-east-0": [
+-0.0889,
+0.0,
+2,
+"f31f36c7a90b"
+],
+"member/CMFS03AAAA/ledger-FO-M-ERV-OA-north-0": [
+-0.0889,
+0.0,
+2,
+"f31f36c7a90b"
+],
+"member/CMFS03AAAA/ledger-FO-M-ERV-OA-south-0": [
+-0.0889,
+0.0,
+2,
+"f31f36c7a90b"
+],
+"member/CMFS03AAAA/ledger-FO-M-ERV-OA-south-1": [
+-0.0889,
+0.0,
+2,
+"f31f36c7a90b"
 ],
 "member/CMFS03AAAA/rim-0": [
 -0.301625,
@@ -118885,24 +119007,26 @@
 "solids/DU-B-WH-OUT-RUN/z1_m": -1.0144125,
 "solids/DU-B-WH-OUT-WRAP/z0_m": -1.2557125,
 "solids/DU-B-WH-OUT-WRAP/z1_m": -0.9763125,
-"solids/DU-ERV-EA-FLEX-1/z0_m": -1.0028273,
-"solids/DU-ERV-EA-FLEX-1/z1_m": -0.6958396,
-"solids/DU-ERV-EA-HANGER-42/z0_m": -0.9000134,
-"solids/DU-ERV-EA-HANGER-42/z1_m": -0.68326,
-"solids/DU-ERV-EA-HANGER-43/z0_m": -0.9000134,
-"solids/DU-ERV-EA-HANGER-43/z1_m": -0.68326,
-"solids/DU-ERV-EA-HANGER-44/z0_m": -0.9593859,
+"solids/DU-ERV-EA-DRAIN_TEE-1/z0_m": -1.0350465,
+"solids/DU-ERV-EA-DRAIN_TEE-1/z1_m": -0.9842465,
+"solids/DU-ERV-EA-FLEX-1/z0_m": -1.0282258,
+"solids/DU-ERV-EA-FLEX-1/z1_m": -0.6052307,
+"solids/DU-ERV-EA-HANGER-42/z0_m": -0.9088078,
+"solids/DU-ERV-EA-HANGER-42/z1_m": -0.6920544,
+"solids/DU-ERV-EA-HANGER-43/z0_m": -0.9138885,
+"solids/DU-ERV-EA-HANGER-43/z1_m": -0.6971351,
+"solids/DU-ERV-EA-HANGER-44/z0_m": -0.9846043,
 "solids/DU-ERV-EA-HANGER-44/z1_m": -0.301625,
-"solids/DU-ERV-EA-HANGER-45/z0_m": 5.0791466,
+"solids/DU-ERV-EA-HANGER-45/z0_m": 5.0763023,
 "solids/DU-ERV-EA-HANGER-45/z1_m": 5.2959,
 "solids/DU-ERV-EA-RUN/z0_m": -1.2060153,
-"solids/DU-ERV-EA-RUN/z1_m": 5.2832,
+"solids/DU-ERV-EA-RUN/z1_m": 5.2831945,
 "solids/DU-ERV-EA-TRANSITION-1/z0_m": -1.2057396,
-"solids/DU-ERV-EA-TRANSITION-1/z1_m": -1.0006216,
+"solids/DU-ERV-EA-TRANSITION-1/z1_m": -1.0260201,
 "solids/DU-ERV-EA-WRAP/z0_m": -1.206291,
-"solids/DU-ERV-EA-WRAP/z1_m": 5.3086,
-"solids/DU-ERV-OA-FLEX-1/z0_m": -1.0032883,
-"solids/DU-ERV-OA-FLEX-1/z1_m": -0.6954197,
+"solids/DU-ERV-EA-WRAP/z1_m": 5.3085931,
+"solids/DU-ERV-OA-FLEX-1/z0_m": -1.0286853,
+"solids/DU-ERV-OA-FLEX-1/z1_m": -0.5158882,
 "solids/DU-ERV-OA-HANGER-46/z0_m": 1.4215466,
 "solids/DU-ERV-OA-HANGER-46/z1_m": 1.6383,
 "solids/DU-ERV-OA-HANGER-47/z0_m": -0.6358534,
@@ -118914,7 +119038,7 @@
 "solids/DU-ERV-OA-RUN/z0_m": -1.2064645,
 "solids/DU-ERV-OA-RUN/z1_m": 1.6256,
 "solids/DU-ERV-OA-TRANSITION-1/z0_m": -1.2060765,
-"solids/DU-ERV-OA-TRANSITION-1/z1_m": -1.0001842,
+"solids/DU-ERV-OA-TRANSITION-1/z1_m": -1.0255812,
 "solids/DU-ERV-OA-WRAP/z0_m": -1.2068526,
 "solids/DU-ERV-OA-WRAP/z1_m": 1.651,
 "solids/DU-ERV-RISER-EXH-HANGER-50/z0_m": -0.7984134,
@@ -118934,7 +119058,7 @@
 "solids/DU-ERV-RISER-SUP-HANGER-55/z0_m": -0.5453659,
 "solids/DU-ERV-RISER-SUP-HANGER-55/z1_m": -0.301625,
 "solids/DU-ERV-RISER-SUP-RUN/z0_m": -0.5445125,
-"solids/DU-ERV-RISER-SUP-RUN/z1_m": 5.889625,
+"solids/DU-ERV-RISER-SUP-RUN/z1_m": 5.84835,
 "solids/DU-ERV-RISER-SUP-TEE-1/z0_m": -0.5445125,
 "solids/DU-ERV-RISER-SUP-TEE-1/z1_m": -0.3921125,
 "solids/DU-M-ERV-EXH-FEED-HANGER-56/z0_m": 2.2978466,
@@ -119707,6 +119831,26 @@
 "solids/ED-S-VANITY-SCONCE-W-BOX/z1_m": 4.759325,
 "solids/ED-S-VANITY-SW-BOX/z0_m": 4.283075,
 "solids/ED-S-VANITY-SW-BOX/z1_m": 4.378325,
+"solids/EQ-B-ERV-BRIDGE-1/z0_m": -0.269875,
+"solids/EQ-B-ERV-BRIDGE-1/z1_m": -0.2286,
+"solids/EQ-B-ERV-BRIDGE-2/z0_m": -0.269875,
+"solids/EQ-B-ERV-BRIDGE-2/z1_m": -0.2286,
+"solids/EQ-B-ERV-BRIDGE-3/z0_m": -0.269875,
+"solids/EQ-B-ERV-BRIDGE-3/z1_m": -0.2286,
+"solids/EQ-B-ERV-BRIDGE-4/z0_m": -0.269875,
+"solids/EQ-B-ERV-BRIDGE-4/z1_m": -0.2286,
+"solids/EQ-B-ERV-ROD-1/z0_m": -1.8202275,
+"solids/EQ-B-ERV-ROD-1/z1_m": -0.2032,
+"solids/EQ-B-ERV-ROD-2/z0_m": -1.8202275,
+"solids/EQ-B-ERV-ROD-2/z1_m": -0.2032,
+"solids/EQ-B-ERV-ROD-3/z0_m": -1.8202275,
+"solids/EQ-B-ERV-ROD-3/z1_m": -0.2032,
+"solids/EQ-B-ERV-ROD-4/z0_m": -1.8202275,
+"solids/EQ-B-ERV-ROD-4/z1_m": -0.2032,
+"solids/EQ-B-ERV-STRUT-1/z0_m": -1.7948275,
+"solids/EQ-B-ERV-STRUT-1/z1_m": -1.7535525,
+"solids/EQ-B-ERV-STRUT-2/z0_m": -1.7948275,
+"solids/EQ-B-ERV-STRUT-2/z1_m": -1.7535525,
 "solids/EX-HOUSE-BF-1/z0_m": -4.456112,
 "solids/EX-HOUSE-BF-1/z1_m": -4.303712,
 "solids/EX-HOUSE-BF-10/z0_m": -3.643312,

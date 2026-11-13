@@ -9,6 +9,7 @@ from pydantic import Field
 from typehaus.model.assembly import Assembly, ConstructionRule
 from typehaus.model.base import Element, HausModel
 from typehaus.model.electrical import Circuit, LoadManagement
+from typehaus.model.joist_flange import JoistFlangeAllowance
 from typehaus.model.joist_holes import JoistHoleChart
 from typehaus.model.landscape import PlantType
 from typehaus.model.materials import Material
@@ -52,6 +53,8 @@ class Library(HausModel):
     duct_product_types: tuple[DuctProductType, ...] = ()
     # I-joist ALLOWABLE HOLES ladders, keyed by member profile (``model/joist_holes.py``).
     joist_hole_charts: tuple[JoistHoleChart, ...] = ()
+    # Bottom-flange hanging-load limits, keyed by member profile (``model/joist_flange.py``).
+    joist_flange_allowances: tuple[JoistFlangeAllowance, ...] = ()
     electrical_device_types: tuple[LuminaireType | ElectricalDeviceType, ...] = ()
     circuits: tuple[Circuit, ...] = ()
     load_managements: tuple[LoadManagement, ...] = ()

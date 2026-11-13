@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** ad9b173753fa029a  
-**Lines:** 254
+**Model hash:** 4ea4c279ed12ad73  
+**Lines:** 257
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
 
@@ -37,7 +37,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 11 7/8" floor truss, 10' (11.875 floor truss) | 4 | ea | trimmer | 40 LF | building |
 | 11 7/8" floor truss, 12' (11.875 floor truss) | 5 | ea | joist | 60 LF | building |
 | 11 7/8" floor truss, 18' (11.875 floor truss) | 42 | ea | joist, sister joist, trimmer | 756 LF | building |
-| 1x4 SPF No. 2 & Btr framing lumber, 8' (1x4:spf) | 22 | pc | girt strapping | 176 LF | building |
+| 1x4 SPF No. 2 & Btr framing lumber, 8' (1x4:spf) | 21 | pc | girt strapping | 168 LF | building |
 | 1x4 SPF No. 2 & Btr framing lumber, 10' (1x4:spf) | 28 | pc | ceiling furring, girt strapping | 280 LF | building |
 | 1x4 SPF No. 2 & Btr framing lumber, 20' (1x4:spf) | 5 | pc | girt strapping | 100 LF | building |
 | 1x4 Structural 1 plywood, 8' (1x4:struct-1-plywood) | 24 | pc | ceiling furring, girt strapping | 192 LF | building |
@@ -62,12 +62,12 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x12 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (2x12:kdat) | 20 | pc | joist | 400 LF | building |
 | 2x12 White-painted PT lumber, 10' (2x12:kdat:post-paint-white) | 2 | pc | rim board | 20 LF | building |
 | 2x12 SPF No. 2 & Btr framing lumber, 8' (2x12:spf) | 2 | pc | blocking | 16 LF | building |
-| 2x2 SPF No. 2 & Btr framing lumber, 8' (2x2) | 30 | pc | blocking, plate, stud | 240 LF | building |
+| 2x2 SPF No. 2 & Btr framing lumber, 8' (2x2) | 24 | pc | blocking, plate, stud | 192 LF | building |
 | 2x2 SPF No. 2 & Btr framing lumber, 10' (2x2) | 2 | pc | plate | 20 LF | building |
 | 2x3 SPF No. 2 & Btr framing lumber, 8' (2x3) | 6 | pc | corner stud, plate, stud | 48 LF | building |
-| 2x4 SPF No. 2 & Btr framing lumber, 92 5/8" PET (2x4) | 84 | pc | corner stud, king stud, stud | 648.4 LF | building |
-| 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4) | 148 | pc | blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud | 1184 LF | building |
-| 2x4 SPF No. 2 & Btr framing lumber, 104 5/8" PET (2x4) | 249 | pc | corner stud, king stud, stud | 2171 LF | building |
+| 2x4 SPF No. 2 & Btr framing lumber, 92 5/8" PET (2x4) | 81 | pc | corner stud, king stud, stud | 625.2 LF | building |
+| 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4) | 147 | pc | blocking, corner stud, cripple stud, header, jack stud, king stud, ledger, outlooker, partition backer, plate, raked top plate, stud | 1176 LF | building |
+| 2x4 SPF No. 2 & Btr framing lumber, 104 5/8" PET (2x4) | 252 | pc | corner stud, king stud, stud | 2197.1 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 10' (2x4) | 31 | pc | partition backer, plate, raked top plate | 310 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 14' (2x4) | 12 | pc | plate | 168 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (2x4:kdat) | 213 | pc | girt strapping, truss ladder blocking | 1704 LF | building |
@@ -78,7 +78,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (2x4:kdat) | 23 | pc | girt strapping | 460 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4:spf) | 16 | pc | blocking, ceiling furring, girt strapping | 128 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 92 5/8" PET (2x6) | 110 | pc | corner stud, king stud, stud | 849.1 LF | building |
-| 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6) | 370 | pc | blocking, corner stud, cripple stud, door blocking, header, jack stud, king stud, plate, raked top plate, sill, strongback, stud | 2960 LF | building |
+| 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6) | 372 | pc | blocking, corner stud, cripple stud, door blocking, header, jack stud, king stud, plate, raked top plate, sill, strongback, stud | 2976 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 104 5/8" PET (2x6) | 203 | pc | corner stud, king stud, stud | 1769.9 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 116 5/8" PET (2x6) | 6 | pc | king stud, stud | 58.3 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 10' (2x6) | 50 | pc | plate, raked top plate, strongback | 500 LF | building |
@@ -119,9 +119,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | CDX sheathing plywood, 4- or 5-ply, Exposure 1, 19/32" roof (cdx-plywood:roof) | 49 | sheets 4x8 | 49 sheets 4x8 over 1544.4 SF net | building |
 | CDX sheathing plywood, 4- or 5-ply, Exposure 1, 1/2" sheathing rip (cdx-plywood:sheathing rip) | 1 | sheets 4x8 | 1 sheets 4x8 over 3.0 SF net | building |
 | CDX sheathing plywood, 4- or 5-ply, Exposure 1, 5/8" sheathing rip (cdx-plywood:sheathing rip) | 1 | sheets 4x8 | 1 sheets 4x8 over 2.5 SF net | building |
-| 3/4" plywood subfloor, 3/4" fireblock (plywood-subfloor:fireblock) | 1 | sheets 4x8 | 1 sheets 4x8 over 10.5 SF net | building |
+| 3/4" plywood subfloor, 3/4" fireblock (plywood-subfloor:fireblock) | 1 | sheets 4x8 | 1 sheets 4x8 over 11.3 SF net | building |
 | 3/4" plywood subfloor, 3/4" stair subdeck (plywood-subfloor:stair subdeck) | 1 | sheets 4x8 | 1 sheets 4x8 over 29.6 SF net | building |
-| 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | 112 | sheets 4x8 | 112 sheets 4x8 over 3564.2 SF net | building |
+| 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | 112 | sheets 4x8 | 112 sheets 4x8 over 3560.4 SF net | building |
 | Structural 1 plywood, 7/8" bearing stiffener rip (struct-1-plywood:bearing stiffener rip) | 3 | sheets 4x8 | 3 sheets 4x8 over 71.0 SF net | building |
 | Structural 1 plywood, 3/8" buck rip (struct-1-plywood:buck rip) | 16 | sheets 4x8 | 16 sheets 4x8 over 407.5 SF net | building |
 | Structural 1 plywood, 19/32" roof (struct-1-plywood:roof) | 28 | sheets 4x8 | 28 sheets 4x8 over 882.8 SF net | building |
@@ -212,7 +212,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 8d common ring-shank nail, 0.131in x 2.5in, Type 304 (S8ACN:sheathing nails) | 72 | ea |  | building |
 | HDG steel U-saddle on a 4 1/2 in (3-ply 2x) joist line, two 5/8 in through-bolts (SADDLE-4.5-2x58-HDG:suspension anchor) | 4 | ea |  | basement |
 | Strong-Drive SD connector screw, #9 x 1-1/2in (SD9112:connector fasteners) | 1,380 | ea |  | building |
-| Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600:partition top plate, blocking between parallel members) | 69 | ea |  | building |
+| Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600:partition top plate, blocking between parallel members) | 72 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600:partition top plate, perpendicular framing above) | 108 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600:partition top plate, under a parallel member) | 12 | ea |  | building |
 | slat brace plate screw (SDWS22400DB:slat brace plate screw) | 16 | ea |  | main |
@@ -241,6 +241,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Column — ELM_TIMBER (column:ELM_TIMBER) | 56.4 | bf | 2 placed, 0.5 SF plan; 0.17 cy in the takeoff | second |
 | Column — EQUIP_STAND_ALUM (column:EQUIP_STAND_ALUM) | 12 | ea | 12 placed, 0.3 SF plan; 0.02 cy in the takeoff | main |
 | Column — POST_WHITE_PAINT (column:POST_WHITE_PAINT) | 18 | bf | 2 placed, 0.2 SF plan; 0.06 cy in the takeoff | main |
+| Slab deck — AH_PLATFORM_PLY (slab_deck:AH_PLATFORM_PLY) | 9.4 | SF | 1 placed, 9.4 SF plan; 0.12 cy in the takeoff | attic |
 | Slab platform — KNEE_WALL_OAK_CAP (slab_platform:KNEE_WALL_OAK_CAP) | 1.9 | SF | 1 placed, 1.9 SF plan; 0.01 cy in the takeoff | second |
 | Slab platform — TUBDECK_INT_PLY_CAP (slab_platform:TUBDECK_INT_PLY_CAP) | 4.3 | SF | 1 placed, 4.3 SF plan; 0.03 cy in the takeoff | main |
 
@@ -273,7 +274,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| Fireblock sealant bead, 24 penetrations (firestop-sealant) | 30.6 | LF |  | attic, main, second |
+| Fireblock sealant bead, 24 penetrations (firestop-sealant) | 29 | LF |  | attic, main, second |
 
 ## Construction returns
 
@@ -298,6 +299,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 1/2" MDO plywood, two-sided overlay, painted white, 1/2" — wall (mdo-plywood-interior:0.5) | 80.8 | SF net |  | building |
 | Structural 1 plywood sheathing, 1/2" — wall (struct-1-plywood:0.5) | 27.4 | SF net |  | building |
 | Structural 1 plywood sheathing, 19/32" — roof (struct-1-plywood:0.594) | 882.8 | SF net |  | building |
+| Structural 1 plywood sheathing, 3/4" — slab_deck (struct-1-plywood:0.75) | 9.4 | SF net |  | building |
 | Structural 1 plywood sheathing, 3/4" — slab_platform (struct-1-plywood:0.75) | 4.3 | SF net |  | building |
 
 ## Wall structure
@@ -314,6 +316,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | rough opening, 2.5" x 2.5" (no type) (None) | 1 | ea | 2 1/2" x 2 1/2" | main |
 | rough opening, 2.5" x 2.5" (no type) (None) | 1 | ea | 2 1/2" x 2 1/2" | second |
 | rough opening, 9" x 9" (no type) (None) | 2 | ea | 9" x 9" | main, second |
+| rough opening, 10.5" x 6.5" (no type) (None) | 2 | ea | 10 1/2" x 6 1/2" | second |
 | rough opening, 12" x 10" (no type) (None) | 1 | ea | 12" x 10" | main |
 | rough opening, 14" x 20" arched (no type) (None) | 1 | ea | 14" x 20" | basement |
 | rough opening, 30" x 80" (no type) (None) | 1 | ea | 30" x 80" | second |
@@ -545,6 +548,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Column — ELM_TIMBER (column:ELM_TIMBER) | P-S-TUDOR1, P-S-TUDOR2 |
 | Column — EQUIP_STAND_ALUM (column:EQUIP_STAND_ALUM) | PT-M-HP1-L1, PT-M-HP1-L2, PT-M-HP1-L3, PT-M-HP1-L4, PT-M-HP3-L1, PT-M-HP3-L2, PT-M-HP3-L3, PT-M-HP3-L4, PT-SG-HPB1, PT-SG-HPB2, PT-SG-HPB3, PT-SG-HPB4 |
 | Column — POST_WHITE_PAINT (column:POST_WHITE_PAINT) | P-M-STRWELL-S, P-M-STRWELL-SS |
+| Slab deck — AH_PLATFORM_PLY (slab_deck:AH_PLATFORM_PLY) | SL-A-HP1-PLATFORM |
 | Slab platform — KNEE_WALL_OAK_CAP (slab_platform:KNEE_WALL_OAK_CAP) | SL-S-KNEE-CAP |
 | Slab platform — TUBDECK_INT_PLY_CAP (slab_platform:TUBDECK_INT_PLY_CAP) | SL-M-TUBDK |
 | Beam — BEAM_GLULAM_TREATED (beam:BEAM_GLULAM_TREATED) | BM-BW-RE, BM-BW-RW, BM-SG-BLE, BM-SG-BLW |
@@ -572,12 +576,14 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 1/2" MDO plywood, two-sided overlay, painted white, 1/2" — wall (mdo-plywood-interior:0.5) | — |
 | Structural 1 plywood sheathing, 1/2" — wall (struct-1-plywood:0.5) | — |
 | Structural 1 plywood sheathing, 19/32" — roof (struct-1-plywood:0.594) | — |
+| Structural 1 plywood sheathing, 3/4" — slab_deck (struct-1-plywood:0.75) | — |
 | Structural 1 plywood sheathing, 3/4" — slab_platform (struct-1-plywood:0.75) | — |
 | STAIRWELL_PARTITION_4H, SPF No. 2 & Btr framing lumber (STAIRWELL_PARTITION_4H:spf) | W-B-WELL, W-B-WELL-HEAD, W-M-WELL |
 | rough opening, 1.88" x 3.75" (no type) (None) | AO-BW-MDO-TIE-RELIEF |
 | rough opening, 2.5" x 2.5" (no type) (None) | AO-M-PORCH-HYD |
 | rough opening, 2.5" x 2.5" (no type) (None) | AO-S-BALCONY-HYD |
 | rough opening, 9" x 9" (no type) (None) | AO-M-ERV-OA, AO-S-ERV-EA |
+| rough opening, 10.5" x 6.5" (no type) (None) | AO-S-XFER-PLANT-HI, AO-S-XFER-PLANT-LO |
 | rough opening, 12" x 10" (no type) (None) | AO-M-XFER-MUD |
 | rough opening, 14" x 20" arched (no type) (None) | AO-B-BRICK-WIN |
 | rough opening, 30" x 80" (no type) (None) | D-S-STUDY2 |
@@ -611,8 +617,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 - A-401.2
 - A-401.3
 - A-401.4
-- A-401.5
-- A-401.6
 
 ## Appendix C — owner allowances in this trade
 

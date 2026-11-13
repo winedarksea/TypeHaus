@@ -125,6 +125,7 @@ SHAPES: dict[str, Shape] = {
     "duct_insulation": Shape("Duct insulation", _runs, "LF"),
     "duct_parts": Shape("Duct collars, takeoffs, boots and connectors, by the piece"),
     "duct_supports": Shape("Duct hangers, by the piece"),
+    "equipment_hangers": Shape("Equipment trapeze rod, strut and lags"),
     "duct_sealing": Shape("Duct mastic and tape, by the container"),
     "placeables": Shape("Fixtures, devices and equipment, by model"),
     "floor_heat": Shape("Radiant floor heat cable"),
@@ -304,7 +305,7 @@ RECIPES: dict[str, Recipe] = {
                          "insulation, every register and the equipment by model, and the "
                          "radiant floor cable.",
                          ("ducts", "duct_fittings", "duct_parts", "duct_supports", "duct_sealing",
-                          "duct_insulation", "placeables",
+                          "duct_insulation", "equipment_hangers", "placeables",
                           "floor_heat", "hardware", "solids", "pipe_runs", "allowances"),
                          ("M-101", "M-201")),
     "furniture": Recipe("Furniture and appliances", "Loose furniture and appliances by model; "

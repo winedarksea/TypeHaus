@@ -6413,6 +6413,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "PROD-DUCT-TEE-6-6" = { low = 20, high = 29 }            # 1 ea — Imperial GV0893 6x6x6 full-flow tee
 "PROD-DUCT-TEE-4-4" = { low = 14, high = 18 }            # 1 ea — Master Flow T4X4X4, Home Depot ~$16 (owner, 2026-11-10)
 "PROD-DUCT-REDUCER-8-4" = { low = 32, high = 35 }        # 1 set — Imperial GV0821 8-6 + GV0811 6-4, stacked
+"PROD-DUCT-DRAIN-TAP-8" = { low = 8, high = 20 }         # 1 ea — DU-ERV-EA foot: 3/4" PVC bulkhead tap + cap (M1-114, 2026-11-12; estimate, no listing read)
 # Shop fabrication, estimate (material only; the make-up time is the sheet-metal visit):
 "boot-12x10-24x12" = { low = 40, high = 80 }             # 1 ea — REG-S-HP-RET boot up into the bay, shop fabrication, estimate
 "boot-6x4-12x12" = { low = 40, high = 90 }               # 1 ea — RM-S-SUITE return box + locking damper, estimate
@@ -6447,6 +6448,16 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # (fetched 2026-11-07); $33.69 on the same page in a search snapshot the same day.
 "PROD-DUCT-MASTIC" = { low = 30, high = 36 }             # 4 gal — Hardcast Versa-Grip 181 (transverse joints, ~213 LF/gal at 30 mil)
 "PROD-DUCT-TAPE" = { low = 25, high = 45 }               # 5 ea — Nashua 324A foil tape, 60 yd roll (longitudinal seams)
+
+[equipment_hangers]
+# NEW 2026-11-12 — EQ-B-ERV's strut trapeze (resolve/equipment_hangers.py), material only; the
+# hang is inside the ERV's own installed row. Rod and strut price by the foot (`unit = "LF"`,
+# the takeoff's length_ft), the lag each. P1000 10PG: search listings 2026-11-12, not fetched —
+# sydist.com $4.27/ft, elliottelectric.com $11.37/ft (P100010PG). Rod and lag: ESTIMATES, no
+# retailer price read.
+"PROD-BLINE-ATR-3-8" = { low = 0.80, high = 1.60, unit = "LF" }      # ~20 LF — 4 rods x ~5'
+"PROD-UNISTRUT-P1000-PG" = { low = 4.25, high = 11.40, unit = "LF" } # ~10.5 LF — 2 struts + 4 bridges
+"PROD-LAG-1-4X1-1-2-ZN" = { low = 0.20, high = 0.60 }                # 8 ea — two per bridge
 
 [sleeves]
 # RESEARCHED 2026-08-08 — [low, high] $ each, by sleeve diameter. Derived, not quoted: each
@@ -8846,6 +8857,7 @@ duct_insulation      = "material"
 duct_parts           = "material"
 duct_supports        = "material"
 duct_sealing         = "material"
+equipment_hangers    = "material"
 sleeves              = "material"
 conduit              = "material"
 conduit_fittings     = "material"

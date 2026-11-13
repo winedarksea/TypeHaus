@@ -916,6 +916,15 @@ class ResolvedFloor:
     #: ``routing/obstacles`` need it and may not reach a ``PlanModel``. Each truss's own
     #: layout is ``FramedMember.web``.
     web_openings: PublishedWebOpenings | None = None
+    #: ``(tag, ring)`` per lidded ``FloorOpening`` (``resolve/opening_lid.py``). Still in
+    #: ``deck_voids`` (the subfloor is cut; the lid is the fireblock sheet), but walkable.
+    lids: tuple[tuple[str, Ring], ...] = ()
+
+    @property
+    def open_voids(self) -> tuple[Ring, ...]:
+        """``deck_voids`` less the lids: the holes a foot or a floor finish falls into."""
+        lidded = [ring for _tag, ring in self.lids]
+        return tuple(v for v in self.deck_voids if v not in lidded)
 
     def deck_lift_at(self, x: float, y: float) -> float:
         return 0.0 if self.deck_plane is None else self.deck_plane.lift(x, y)
@@ -1764,6 +1773,8 @@ class ResolvedModel:
     canvas_objects: list[ResolvedCanvasObject] = field(default_factory=list)
     # Hang points and the joist line each framed (→ resolve/suspension_anchors.py).
     suspension_anchors: list[Any] = field(default_factory=list)
+    # A hung machine's trapeze rods (→ resolve/equipment_hangers.py).
+    equipment_hangers: list[Any] = field(default_factory=list)
     # Derived geometry: every solid the building contributes, built once by the pipeline's
     # final stage so the emitters serialize rather than re-derive it. Optional because
     # ``resolve_preview`` (the drag-overlay path) skips the stage.

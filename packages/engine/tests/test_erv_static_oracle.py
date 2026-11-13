@@ -268,11 +268,13 @@ def test_the_static_and_the_delivered_flow_are_the_notes(catlin_model_ro) -> Non
     # drop: 0.43269 + 0.11803 = 0.55072, 200.0 cfm (note §10.22).
     # 2026-11-12: the plant extract retired, the trunk capped 54" shorter (note §10.27):
     # 0.550966 - 0.004755 = 0.546211, 200.1 cfm.
+    # 2026-11-12, note §10.28: EA pitched (-0.000153) and its 7" GV0772 kit lead bent on its
+    # own flex (+0.056368): 0.546211 + 0.056215 = 0.602426, 198.9 cfm.
     assert "extract side" in message
-    assert "0.546 in. w.g." in message
+    assert "0.602 in. w.g." in message
     assert "DU-M-ERV-R-SUITEBATH 0.006\"" in message
     assert "DU-M-ERV-EXH-TRUNK 0.030\"" in message
-    assert "delivering 200 cfm" in message
+    assert "delivering 199 cfm" in message
 
 
 def test_the_bench_dampers_fully_open_charge_is_the_notes(catlin_model_ro) -> None:
@@ -315,11 +317,12 @@ def test_the_lengthened_straights_move_the_terms_the_notes_say(catlin_model_ro) 
     for tag, elbows, drop in (("DU-M-ERV-EXH-NECK", 2, 0.0330180),
                               ("DU-M-ERV-EXH-TRUNK", 2, 0.0300972),  # §10.27: -54"
                               ("DU-M-ERV-EXH-FEED", 2, 0.0126344),
-                              ("DU-ERV-RISER-SUP", 5, 0.103382)):
+                              ("DU-ERV-RISER-SUP", 5, 0.103117)):  # §10.28: -1.625"
         assert _duct_drop(ctx, ducts[tag], elbows).drop_in_wg == pytest.approx(drop, abs=2e-6)
     assert ducts["DU-M-ERV-EXH-NECK"].length_m / 0.0254 == pytest.approx(76.775, abs=1e-3)
-    assert "0.546 in. w.g." in _machine_finding(catlin_model_ro).message
+    assert "0.602 in. w.g." in _machine_finding(catlin_model_ro).message  # §10.28
     assert _delivered(_BROAN_CURVE, 0.546211) == pytest.approx(200.0758, abs=1e-3)
+    assert _delivered(_BROAN_CURVE, 0.602426) == pytest.approx(198.9030, abs=1e-3)
 
 
 def test_sauna_radials_route_through_clear_stud_bays_without_plate_or_duct_conflicts(

@@ -96,6 +96,10 @@ ROWS: tuple[C, ...] = (
     C("duct_connector", trade="mechanical", ifc_class="IfcFlowFitting", billed_elsewhere=True),
     C("duct_support", trade="mechanical", ifc_class="IfcMechanicalFastener",
       billed_elsewhere=True),
+    # A hung machine's trapeze rods, struts and bridges (resolve/equipment_hanger_solids.py),
+    # billed off ``model.equipment_hangers``.
+    C("equipment_hanger", trade="mechanical", ifc_class="IfcMechanicalFastener",
+      billed_elsewhere=True),
     # Fenestration.
     _trim("glazing", "openings", ifc=_FOOTING, elevation="glaz"),
     _trim("glazing_trim", "openings", ifc=_FOOTING, elevation="sash"),
