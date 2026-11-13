@@ -78,7 +78,7 @@ def run_member_crossing(ctx: CheckContext) -> list[Finding]:
         return [_unknown(_CID, "this model resolves no floors, so no run crosses a framed "
                                "member anywhere in it")]
 
-    from typehaus.resolve.mep_envelopes import run_sections
+    from typehaus.resolve.mep_envelopes import insulation_thickness_m, run_sections
 
     runs = run_polylines(ctx)
     radii = run_radii(ctx)
@@ -123,7 +123,9 @@ def run_member_crossing(ctx: CheckContext) -> list[Finding]:
             if not crossings:
                 continue
             radius = radii.get(tag, 0.0)
-            half_w, half_d = sections.get(tag, (radius, radius, None))[:2]
+            half_w, half_d, lagging = sections.get(tag, (radius, radius, None))
+            # The window must hold the envelope, lagging included, not the bare pipe.
+            half_d += insulation_thickness_m(lagging) or 0.0
             tightest: tuple[float, float, float, str, float] | None = None
             on_web: tuple[float, str, float, str] | None = None
             for crossing in crossings:

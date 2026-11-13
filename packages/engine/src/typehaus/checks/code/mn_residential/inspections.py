@@ -143,7 +143,8 @@ MN_INSPECTIONS: tuple[InspectionSpec, ...] = (
                    "mep.run_member_crossing",
                    # The same moment for what run_member_crossing leaves: trimmers,
                    # headers and blocking, and the I-joist flanges.
-                   "mep.run_through_floor_member", "mep.run_in_joist_flange"),
+                   "mep.run_through_floor_member", "mep.run_in_joist_flange",
+                   "mep.run_in_joist_web"),
         on_site=("DWV under test", "water piping under test", "no insulation in the walls"),
         milestone="rough_ins",
         code_refs=("IRC P2503", "MN Rules 4714"),

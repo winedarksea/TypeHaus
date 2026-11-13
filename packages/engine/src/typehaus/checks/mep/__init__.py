@@ -48,6 +48,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     hvac,
     hvac_sizing,
     joist_flange,
+    joist_web,
     landscape_drainage,
     lighting,
     lighting_illuminance,

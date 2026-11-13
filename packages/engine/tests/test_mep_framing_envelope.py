@@ -11,7 +11,7 @@ from types import SimpleNamespace
 import pytest
 from shapely.geometry import LineString, Point, box
 
-from typehaus.checks.mep import floor_members, joist_flange
+from typehaus.checks.mep import floor_members, joist_flange, joist_web
 from typehaus.checks.mep.framing_envelope import Leg, bite, relation
 from typehaus.checks.mep.wall_cavity import _classify
 from typehaus.resolve.mep_bore_geometry import leg_crossings
@@ -107,8 +107,9 @@ def _run(module, monkeypatch, members, legs_) -> list:
     floor = SimpleNamespace(tag="FS", members=members)
     monkeypatch.setattr(module, "legs", lambda _model: legs_)
     ctx = SimpleNamespace(model=SimpleNamespace(floors=[floor]))
-    check = (floor_members.run_through_floor_member if module is floor_members
-             else joist_flange.run_in_joist_flange)
+    check = {floor_members: floor_members.run_through_floor_member,
+             joist_flange: joist_flange.run_in_joist_flange,
+             joist_web: joist_web.run_in_joist_web}[module]
     return check(ctx)
 
 
@@ -159,6 +160,18 @@ def test_a_riser_clear_of_the_flange_and_a_crossing_through_the_web_pass(
         _riser(72, 274.0, 1.9, z0_in=-15.4, z1_in=0.0),
         _level((60, 260), (60, 290), -6.0, 1.9)])  # the window's question, not this one
     assert [f.result.value for f in findings] == ["pass"]
+
+
+def test_a_leg_along_the_web_fails_and_under_the_flange_or_across_passes(
+        monkeypatch) -> None:
+    """``PR-B-CW-TRUNK`` in FS-M-WEST joist 012's web (TODO); a bore stays the window's."""
+    along = _level((20, 277.375), (100, 277.375), -6.0, 0.875, tag="PR-CW")
+    [finding] = _run(joist_web, monkeypatch, [_JOIST], [along])
+    assert finding.result.value == "fail" and "web of" in finding.message
+    for clear in (_level((20, 277.375), (100, 277.375), -13.5, 0.875),
+                  _level((60, 260), (60, 290), -6.0, 1.9)):
+        assert [f.result.value for f in _run(joist_web, monkeypatch, [_JOIST],
+                                             [clear])] == ["pass"]
 
 
 def test_bite_reads_a_clipped_end_as_the_clip() -> None:

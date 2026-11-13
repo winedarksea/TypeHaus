@@ -29,6 +29,7 @@ if TYPE_CHECKING:  # pragma: no cover - typing only
 BORE_CHECKS = frozenset({
     "mep.run_through_stud", "mep.run_through_plate", "mep.run_through_header",
     "mep.run_member_crossing", "mep.run_through_floor_member", "mep.run_in_joist_flange",
+    "mep.run_in_joist_web",
     "mep.run_through_blocking", "mep.run_through_beam"})
 TRAP_ARM_CHECKS = frozenset({"mep.trap_arm_length"})
 VENT_CHECKS = frozenset({"mep.vent_reachability", "mep.vent_grade",

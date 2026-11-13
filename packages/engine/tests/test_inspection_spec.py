@@ -105,7 +105,7 @@ def _on_inspection(check_id: str) -> set[str]:
 def test_member_bore_checks_ride_the_plumbing_rough() -> None:
     """The holes are cut and visible at the plumbing rough, and not after the ceiling."""
     for cid in ("mep.run_member_crossing", "mep.run_through_floor_member",
-                "mep.run_in_joist_flange"):
+                "mep.run_in_joist_flange", "mep.run_in_joist_web"):
         assert "rough_plumbing" in _on_inspection(cid), cid
     assert "rough_mechanical" in _on_inspection("mep.erv_blower_interlock")
 
