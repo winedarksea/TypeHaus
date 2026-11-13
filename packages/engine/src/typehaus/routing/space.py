@@ -269,13 +269,13 @@ class RoutingSpace:
         """
         from shapely.geometry import LineString, Point
 
-        if not self.hard:
-            return None
+        riser = abs(a[0] - b[0]) + abs(a[1] - b[1]) < _GRID_M
+        if not self.hard:  # rails are not hard prisms: an empty hard set still has them
+            return None if riser else self._rail_blocked(a, b, (za + zb) / 2.0)
         if not ignore:
             hit = self.blocked(((a[0] + b[0]) / 2.0, (a[1] + b[1]) / 2.0), (za + zb) / 2.0)
             if hit is not None:
                 return hit
-        riser = abs(a[0] - b[0]) + abs(a[1] - b[1]) < _GRID_M
         low, high = sorted((za, zb))
         probe = Point(a) if riser else LineString([a, b])
         exact = self._exact_footprints()

@@ -157,3 +157,20 @@ def test_an_unknown_occupancy_is_priced_as_a_living_room_not_as_free() -> None:
     assert cost.room_penalty("conservatory") == cost.room_penalty("living")
     assert cost.room_penalty(None) == 0.0
     assert cost.room_penalty("mechanical") == 0.0
+
+
+def test_rail_blocks_with_no_hard_prisms():
+    """A window holding only I-joists has an empty ``hard``: the rail still blocks a step
+    along the web, in both the scalar and the batched edge query."""
+    import numpy as np
+
+    from typehaus.routing.graph_batch import edges_state
+
+    space = _space()
+    space.rails = [("x", 5.0, 0.0, 10.0, 0.05, 0.0, 0.3, "J1")]
+    assert space.edge_blocked((2.0, 5.0), (3.0, 5.0), 0.1, 0.1) == "J1"
+    assert space.edge_blocked((2.0, 7.0), (3.0, 7.0), 0.1, 0.1) is None
+    a = np.array([[2.0, 5.0, 0.1], [2.0, 7.0, 0.1]])
+    b = np.array([[3.0, 5.0, 0.1], [3.0, 7.0, 0.1]])
+    blocked, _ = edges_state(space, a, b, np.array([0, 0]))
+    assert blocked.tolist() == [True, False]
