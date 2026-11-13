@@ -221,8 +221,7 @@ DUCTS_HVAC_SECOND = [
     # this run starts on its top, runs east along the bay (12 wide x 10 deep in 13 11/16" clear;
     # 455 cfm is 546 fpm) and turns up through the deck into EQ-S-ERV-MIX. The bay runs in x,
     # so nothing is bored. The box is the neck and not a drawn 24x12 run: E6's drop needs the
-    # arriving run to BE the neck's section, and a 24x12 run does not fit a 14 1/4" bay (a
-    # vertical rectangular riser is also graded as a square of its width).
+    # arriving run to BE the neck's section, and a 24x12 run does not fit a 14 1/4" bay.
     DuctRun(uid="CSDH02AAAA", tag="DU-S-HP-RET", system=DuctSystem.RETURN,
             path=(pt(inch(239), inch(360)), pt(inch(304.5), inch(360)),
                   pt(inch(304.5), inch(360))),

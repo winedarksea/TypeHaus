@@ -215,11 +215,11 @@ SUPPLY = [
                   pt(ft(11, 4), ft(34, 10)),
                   pt(ft(9, 6), ft(34, 10)), pt(ft(9, 6), ft(34, 10)),
                   pt(ft(4, 9), ft(34, 10)), pt(ft(4, 9), ft(34, 10)),
-                  pt(ft(4, 9), inch(386.5)), pt(ft(4, 9), inch(386.5)), pt(ft(4, 9), ft(16)),
-                  # ESR-1153 Table A: the 1.62" hole on joist 012 sits >= 12" off the x=213.25 face, so
-                  # the y=16'-0" run turns south at x=200" onto the old y=15'-0" line (square, so the
-                  # sauna cold tees on it).
-                  pt(ft(8), ft(16)), pt(inch(200), ft(16)), pt(inch(200), inch(180)),
+                  pt(ft(4, 9), inch(386.5)), pt(ft(4, 9), inch(386.5)),
+                  # Joist 012's web is on y=16'-0", so the trunk rides the 170..186 bay's
+                  # y=14'-8" lane (4" south of PR-B-SH2-DRAIN's x=8'-2" drop) and steps to the
+                  # old y=15'-0" line at x=200" for the bearing-line box (2026-11-12).
+                  pt(ft(4, 9), inch(176)), pt(inch(200), inch(176)), pt(inch(200), inch(180)),
                   pt(ft(29, 9.6), inch(180)),
                   pt(ft(29, 9.6), inch(424.2)), pt(ft(29, 9.6), inch(424.2)),
                   pt(ft(29, 9.6), inch(421.5)), pt(ft(29, 9.6), inch(421.5))),
@@ -227,7 +227,7 @@ SUPPLY = [
             elevations=(inch(2), ft(4), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375),
                         ft(8, 4.6375), ft(8, 4.6375), inch(93.44), inch(93.44),
                         ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375),
-                        ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375),
+                        ft(8, 4.6375), ft(8, 4.6375),
                         ft(8, 4.6375), inch(120), inch(120), ft(10, 9.4375)),
             serves=("FX-G-HYDRANT", "FX-M-BATH1-WC", "FX-M-BATH1-LAV", "FX-M-BATH2-WC",
                     "FX-M-BATH2-SH", "FX-M-BATH2-TUB", "FX-M-BATH2-FILLER",
@@ -271,11 +271,12 @@ SUPPLY = [
                     "APPL-M-DW")),
     # Cold feed to the water heater itself (equipment, not a fixture — no fixture units).
     PipeRun(uid="CBPW32AAAA", tag="PR-B-CW-WH", system=PipeSystem.WATER_COLD,
-            # Tees off PR-B-CW-TRUNK's y=16'-0" leg over the tank, runs 9 5/8" south in the
-            # cold band and drops on the inlet's axis, 3" off the riser-foot tap (K 5 1/16"),
+            # Tees off PR-B-CW-TRUNK's y=14'-8" leg over the tank, runs 6 3/8" north in the
+            # cold band (2026-11-12; was 9 5/8" south off joist 012's line) and drops on the
+            # inlet's axis, 3" off the riser-foot tap (K 5 1/16"),
             # 9" clear of the ducts (2026-11-09; 9.0 ft, was 30.8). The full drop is Rheem's
             # 6" heat trap many times over.
-            path=(pt(inch(138.152), inch(192)), pt(inch(138.152), inch(182.383)),
+            path=(pt(inch(138.152), inch(176)), pt(inch(138.152), inch(182.383)),
                   pt(inch(138.152), inch(182.383)), pt(inch(138.048), inch(185.381))),
             diameter=inch(1), material="copper",
             # The cold band rides INSIDE FS-M-WEST's I-joist
@@ -292,39 +293,18 @@ SUPPLY = [
     PipeRun(uid="CBPW33AAAA", tag="PR-B-CW-BATH1", system=PipeSystem.WATER_COLD,
             # Riser at (5'-0", 22'-4") — the east bay of the pair, centred with 2.81" of
             # clear to the 2x4 each side, on W-M-HS1's axis so a 7/8" pipe sits mid-cavity.
-            # The cold is the east one because of how it ARRIVES: the ceiling leg comes off
-            # the trunk in the south-east and the hot comes off the water heater in the
-            # west, so putting them this way round is what keeps the two feeds out of each
-            # other's lane below the deck.
-            #
-            # The old route ran the diagonal all the way to x=6'-0" and turned up there.
-            # PR-B-MAIN-DRAIN's 4" trunk occupies x=6'-0" from y=16'-6" to y=22'-7", and at
-            # y=22'-4" its crown is at -1'-2 1/4". Against the cold's OLD -1'-2.8" the two
-            # shared the same 2", which is why the diagonal was cut SHORT at (5'-0", 21'-0")
-            # with the last 1'-4" running north to the wall.
-            #
-            # ** THE CLEARANCE ARGUMENT NO LONGER HOLDS THIS SHAPE UP, AND THE SHAPE STAYS
-            # ANYWAY (2026-09-19). ** On the two-band convention this run rides -0'-8.8",
-            # 5.45" OVER that crown, so the full-length diagonal would now clear it. The
-            # short diagonal is kept because the rest of its argument never was about the
-            # drain: the turn at (5'-0", 21'-0") is what puts the riser on W-M-HS1's own bay
-            # module, and re-lengthening it would move the riser off the two bays the bay
-            # census below spends forty lines choosing. Where it does cross the 4" trunk's
-            # lane, at (6'-0", 20'-3"), the trunk has fallen to -1'-8.6" and the clear
-            # between the two pipes' surfaces is 9.1" — the old 3.1" plus the band's 6".
-            # ESR-1153 Table A spacing: the joist-013 hole sat 0.6" from PR-B-TUB2-DRAIN's, so the
-            # lane is x=6'-10" (not 7'-4.8"), and it crosses joists 016-MECH000 at x=62" (not 60"),
-            # 3.6" clear of PR-B-CW-TRUNK's x=57" hole, jogging back to the riser past the last one.
-            path=(pt(ft(4, 9), ft(16)), pt(ft(6, 10), ft(16, 9.6)),
-                  pt(ft(6, 10), ft(19, 2.4)), pt(inch(62), ft(21)), pt(inch(62), inch(263)),
-                  pt(ft(5), ft(22, 4)), pt(ft(5), ft(22, 4)), pt(ft(5), ft(22, 4)),
-                  pt(ft(5), ft(22, 4)), pt(ft(5), ft(22, 4))),
+            # Since 2026-11-12 it tees on the trunk's x=4'-9" leg level with the riser and runs
+            # 3" east to it, in FS-M-MECH's 261..277 bay: the old y=16'-0" tee stood in joist
+            # 012's web, and the diagonal's bores (x=6'-10", 5'-2") went with it. The hot
+            # (x=4'-2 1/2") still arrives from the west under the joists, so the two never share
+            # a lane.
+            path=(pt(ft(4, 9), ft(22, 4)), pt(ft(5), ft(22, 4)), pt(ft(5), ft(22, 4)),
+                  pt(ft(5), ft(22, 4)), pt(ft(5), ft(22, 4)), pt(ft(5), ft(22, 4))),
             diameter=inch(0.75), material="pex",
             # The 12.7" (main) vertex is PR-M-BATH1-WC-CW's tee, at the carrier inlet's height.
-            elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375),
-                        ft(8, 4.6375), ft(8, 4.6375), ft(9, 1.4375), inch(122.1375),
+            elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(9, 1.4375), inch(122.1375),
                         inch(133.4375), ft(12, 7.4375)),
-            wall_refs=(None, None, None, None, None, None, "W-M-HS1", "W-M-HS1", "W-M-HS1"),
+            wall_refs=(None, None, "W-M-HS1", "W-M-HS1", "W-M-HS1"),
             serves=("FX-M-BATH1-WC", "FX-M-BATH1-LAV")),
     # Basin hot rises in the shared wet wall; the insulated ceiling run stays below it.
     PipeRun(uid="CBPW34AAAA", tag="PR-B-HW-BATH1", system=PipeSystem.WATER_HOT,
@@ -353,7 +333,8 @@ SUPPLY = [
     # risen into), and FX-M-BATH2-SINK is the fixture nearest this end of the wall.
     PipeRun(uid="CBPW35AAAA", tag="PR-B-CW-BATH2", system=PipeSystem.WATER_COLD,
             # ESR-1153 Table A: x=1'-1" puts the 1.12" hole 6.4" off the x=6" face (6" wanted).
-            path=(pt(ft(4, 9), ft(16)), pt(ft(1, 1), ft(16)),
+            # Tees on the trunk's x=4'-9" leg in the 192..208 bay (y=16'-8"), not in joist 012.
+            path=(pt(ft(4, 9), ft(16, 8)), pt(ft(1, 1), ft(16, 8)),
                   pt(ft(1, 1), ft(22, 4)), pt(ft(1, 1), ft(22, 4)),
                   pt(ft(1, 1), ft(22, 4))),
             diameter=inch(0.75), material="pex",
@@ -362,16 +343,19 @@ SUPPLY = [
             wall_refs=(None, None, None, "W-M-HS1"),
             serves=("FX-M-BATH2-WC", "FX-M-BATH2-SINK")),
     PipeRun(uid="CBPW36AAAA", tag="PR-B-HW-BATH2", system=PipeSystem.WATER_HOT,
-            # Header out-5 (plan/mep_supply_header.py), then the old x=7'-6" lane south.
-            # y=188" clears the new FS-M-WEST y=186" joist (BATH2 centre-drain correction).
+            # Header out-5 (plan/mep_supply_header.py), up at x=7'-6" into the web at 103.2"
+            # (it rode 97 7/16", in the ceiling board and bottom flange; 2026-11-12), bored
+            # through joist 012 into the 186..192 bay (y=189"), west, and back through 012 at
+            # x=1'-4" (ESR-1153 field row: 9.6" off the x=6" face; x=9" is 2.6") to the riser.
+            # The sister block at x=6'-2 9/16" closes the 192..208 bay, so it cannot stay there.
             path=(pt(inch(160), inch(206.288)), pt(inch(160), inch(206.288)), pt(inch(151), inch(206.288)),
                   pt(inch(151), inch(206.288)), pt(inch(105.5), inch(206.288)),
                   pt(inch(105.5), inch(206.288)), pt(inch(90), inch(206.288)),
-                  pt(inch(90), inch(206.288)), pt(inch(90), inch(188)), pt(inch(9), inch(188)),
-                  pt(inch(9), inch(201.6)), pt(inch(9), inch(201.6))),
+                  pt(inch(90), inch(206.288)), pt(inch(90), inch(189)), pt(inch(16), inch(189)),
+                  pt(inch(16), inch(201.6)), pt(inch(9), inch(201.6)), pt(inch(9), inch(201.6))),
                         diameter=inch(0.5), material="pex",
             elevations=(inch(86.149), inch(83.5), inch(83.5), inch(95.4375), inch(95.4375), inch(83.5),
-                  inch(83.5), inch(97.4375), inch(97.4375), inch(97.4375), inch(97.4375),
+                  inch(83.5), inch(103.2), inch(103.2), inch(103.2), inch(103.2), inch(103.2),
                   inch(145.438)),
                         serves=("FX-M-BATH2-SINK",)),
     # The laundry pair riser splits at the deck top (ft(9) basement-relative = 0'-0"
@@ -419,7 +403,7 @@ SUPPLY = [
             # and still clears the hot riser on the axis: the wall is 6 3/4" (2x6), so a
             # 3/4" PEX 2" off the axis is 3/10" clear of the stud face.
             # The riser tops out at the run's own 40" and turns south inside the wall.
-            path=(pt(ft(8, 4), ft(16)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), ft(18, 1)), pt(ft(8, 6.5), ft(18, 1)), pt(inch(109.5), ft(18, 1)), pt(inch(109.5), ft(18, 1)),),
+            path=(pt(ft(8, 4), inch(176)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), ft(18, 1)), pt(ft(8, 6.5), ft(18, 1)), pt(inch(109.5), ft(18, 1)), pt(inch(109.5), ft(18, 1)),),
             diameter=inch(0.75), material="pex",
             elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(9, 1.4375),
                         ft(12, 5.4375), ft(12, 5.4375), ft(12, 5.4375), ft(12, 5.4375),
@@ -527,7 +511,9 @@ SUPPLY = [
             # x=5'-3" since 2026-09-24: at 5'-7.2" the riser stood in DU-M-ERV-R-LIVING's lane
             # through FS-S-WEST. The basement leg passes the BATH1 stack on y=26'-2" and turns
             # north onto the riser east of it (west of it, the vanity arm lands on the stack).
-            path=(pt(ft(4, 9), ft(16)), pt(ft(4), ft(16, 9.6)), pt(ft(4), ft(26, 2)),
+            # Tees on the trunk's x=4'-9" leg at y=17'-0", 4" north of PR-B-CW-BATH2's tee
+            # (2026-11-12; the y=16'-0" tee stood in joist 012's web).
+            path=(pt(ft(4, 9), ft(17)), pt(ft(4), ft(17)), pt(ft(4), ft(26, 2)),
                   pt(ft(5, 3), ft(26, 2)), pt(ft(5, 3), ft(26, 6.75)),
                   pt(ft(5, 3), ft(26, 6.75)),
                   pt(ft(5, 3), ft(26, 6.75)), pt(ft(5, 3), ft(26, 6.75)), pt(ft(5, 3), ft(26, 6.75)),
@@ -600,9 +586,11 @@ SUPPLY = [
             # housing), jogging west in the 208..224 bay; one run per pocket. 2026-11-08: the
             # y=256" truss's D13 is the tub drain's, so it jogs east to D14 (x=16'-0 3/8")
             # there; CD-M-DATA-KITCH gave that pocket up.
-            # ESR-1153 Table A: tees at x=9'-2" (was 8'-0") so the joist-013 hole falls at x=162.7",
-            # 10.3" clear of PR-M-S-SUITE-DRAIN's 3.75" hole (7.5" wanted).
-            path=(pt(inch(110), ft(16)), pt(ft(15, 9), ft(18)), pt(ft(15, 9), ft(18)),
+            # 2026-11-12: square off the trunk's y=14'-8" lane at x=15'-3", north through joists
+            # x00/012/013 (33" clear of PR-M-S-SUITE-DRAIN's hole at x=150", 7" west of the hall
+            # cans' x=190" line) and 6" east in the 208..224 bay to the riser; the old diagonal
+            # started in joist 012's web and crossed the x=14'-6" sister block.
+            path=(pt(inch(183), inch(176)), pt(inch(183), ft(18)), pt(ft(15, 9), ft(18)), pt(ft(15, 9), ft(18)),
                   pt(ft(15, 9), ft(18)), pt(ft(15, 9), ft(18)), pt(inch(183), ft(18)),
                   pt(inch(183), inch(250)), pt(inch(192.375), inch(250)),
                   pt(inch(192.375), inch(262)), pt(inch(183), inch(262)),
@@ -613,11 +601,11 @@ SUPPLY = [
             diameter=inch(0.75), material="pex",
             # +5/16" on 2026-09-16 (7.1875 -> 7.5): the 4" ERV ducts' crowns are at 9'-5 5/8",
             # and KITCH/BED2 now cross this jog at y=21'-10"/22'-2". 5/16" left under the tub drain.
-            elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(9, 1.4375), ft(18, 1.3125),
+            elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375), ft(9, 1.4375), ft(18, 1.3125),
                         ft(18, 7.5), ft(18, 7.5), ft(18, 7.5), ft(18, 7.5), ft(18, 7.5),
                         ft(18, 7.5), ft(18, 7.5), ft(18, 7.5), ft(19, 1.4375),
                         inch(238.9375), inch(253.4375), ft(21, 7.4375)),
-            wall_refs=(None, None, "W-M-CLN2", None, None, None, None, None, None, None,
+            wall_refs=(None, None, None, "W-M-CLN2", None, None, None, None, None, None, None,
                        None, None, "W-S-SN3", "W-S-SN3", "W-S-SN3"),
             serves=("FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
                     "FX-S-SUITEBATH-TUBSH")),
@@ -716,17 +704,18 @@ SUPPLY = [
             elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375), ft(4, 3.4375), ft(4, 3.4375)),
             serves=("FX-B-SAUNA-SH",)),
     PipeRun(uid="CBPW47AAAA", tag="PR-B-HW-SAUNA", system=PipeSystem.WATER_HOT,
-            # Header out-1, up to 103 3/16" and south in the joist web (over PR-B-CW-TRUNK) to
-            # its old y=15'-8" lane east, crossing the hall at x=16'-3".
+            # Header out-1, up to 103 3/16" and south in the joist web to its old y=15'-8" lane
+            # east, crossing the hall at x=16'-3". It holds 103 3/16" down x=16'-3" (2026-11-12)
+            # to pass over PR-B-CW-TRUNK's y=14'-8" lane, and steps down only past the last bore.
             path=(pt(inch(160), inch(200.288)), pt(inch(160), inch(200.288)),
                   pt(inch(154.5), inch(200.288)), pt(inch(154.5), inch(200.288)),
                   pt(inch(154.5), inch(188)), pt(inch(195), inch(188)),
-                  pt(inch(195), inch(188)), pt(inch(195), inch(104.188)),
+                  pt(inch(195), inch(104.188)),
                   pt(inch(195), inch(104.188)), pt(inch(211.5), inch(104.188)),
                   pt(inch(211.5), inch(104.188)), pt(inch(211.5), inch(100.188))),
             diameter=inch(0.5), material="pex",
             elevations=(inch(86.149), inch(83.5), inch(83.5), inch(103.2), inch(103.2), inch(103.2),
-                  inch(100.638), inch(100.638), inch(99.4375), inch(99.4375), inch(51.4375),
+                  inch(103.2), inch(99.4375), inch(99.4375), inch(51.4375),
                   inch(51.4375)),
             serves=("FX-B-SAUNA-SH",)),
 ]
@@ -747,7 +736,7 @@ HYDRANT_BRANCH_BASEMENT = [
     # Two runs, one branch, split at the deck: the ceiling leg and the slab-up leg inside the
     # wall/joist bays.
     PipeRun(uid="X4M2QP7B0K", tag="PR-B-CW-HYD", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(6), ft(16)), pt(ft(6), ft(13))),
+            path=(pt(ft(6), inch(176)), pt(ft(6), ft(13))),
             diameter=inch(0.75), material="pex",
             elevations=(ft(8, 4.6375), ft(8, 4.6375)),
             serves=("FX-M-PORCH-HYD", "FX-S-BALCONY-HYD")),

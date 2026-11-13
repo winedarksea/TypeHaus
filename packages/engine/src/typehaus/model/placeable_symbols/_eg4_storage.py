@@ -103,7 +103,8 @@ def eg4_wallmount_indoor(width, depth, height):
             triangles.extend(((a, b, c), (a, c, d)))
     for index in (0, STATUS_RING_SEGMENTS):
         a, b, c, d = index, index + count, index + 3 * count, index + 2 * count
-        triangles.extend(((a, b, c), (a, c, d)))
+        faces = ((a, b, c), (a, c, d))
+        triangles.extend(faces if index == 0 else tuple((a, c, b) for a, b, c in faces))
     parts.append(mesh_part(vertices, outward(vertices, triangles), "eg4-status-green"))
     # Top terminal covers; omit temporary lifting handles and the optional conduit box.
     for x, color in ((-.25, "metal-black"), (.25, "electrical-orange")):

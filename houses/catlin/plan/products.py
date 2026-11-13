@@ -300,13 +300,23 @@ LEVITON_EV_RECEPTACLE_1450R = Product(
            "aluminium or copper-clad.",
 )
 
+# The below-grade membrane (Minn. R. 1309.0406 subp. 2 item 5). Applied to the library's
+# `waterproofing` material in plan/manifest.py by `with_product_refs`.
+GCP_BITUTHENE_3000 = Product(
+    tag="PROD-GCP-BITUTHENE-3000", brand="GCP Applied Technologies", model="Bituthene 3000",
+    name="60-mil self-adhered rubberised-asphalt waterproofing membrane",
+    source="GCP Bituthene 3000 data sheet: 0.05 perm, 300% elongation, 200 ft hydrostatic "
+           "head, crack-cycled -25 F. Basis of design; Polyguard 650 and Carlisle MiraDRI 860 "
+           "are equals. Below 40 F spec Bituthene Low Temperature with Primer B2 LVC.",
+)
+
 
 # The machines above, then the 2026-09-06 interior-selection pass (plan/products_interior.py).
 # One catalog to every ``product_ref`` and to the manifest; two files only because of the
 # 500-line rule.
 PRODUCTS = (
     SEVERIN_WK3422, DELONGHI_RIVELIA,
-    TREX_TIDE_POOL_PRODUCT, EXTRUTECH_P1600,
+    TREX_TIDE_POOL_PRODUCT, EXTRUTECH_P1600, GCP_BITUTHENE_3000,
     LG_WASHTOWER, LG_INDUCTION_RANGE, LG_DISHWASHER, ISE_BADGER_5, BROAN_BWP1304SS,
     KRAUS_KHU100_32, KRAUS_BOLDEN, DEARBORN_KITCHEN_TRAP,
     FRIGIDAIRE_ALL_REFRIGERATOR, FRIGIDAIRE_ALL_FREEZER,

@@ -16,6 +16,7 @@ from typehaus.resolve.geometry_ir import GMesh
 from typehaus.resolve.geometry_walls import wall_top_at
 from typehaus.resolve.metal_skin_profiles import SHEET_24_GA_M
 from typehaus.resolve.model import ResolvedSolid
+from typehaus.resolve.rainscreen_closures import panel_bottom_z
 from typehaus.resolve.roof_image_ii_eave import LAP_GAP_M, capped_z, roof_head_caps
 
 _TOL = 1e-6
@@ -101,7 +102,7 @@ def resolve_mixed_corners(model) -> None:
                     side_walls.append((wall, layer))
             if not side_walls:
                 break
-            lows.append(min(layer.band(wall)[0] for wall, layer in side_walls))
+            lows.append(min(panel_bottom_z(model, wall, layer) for wall, layer in side_walls))
             tops = [min(layer.band(wall)[1], wall_top_at(wall, *junction.point))
                     for wall, layer in side_walls]
             if not any(wall.top_z0_m is not None for wall, _ in side_walls):

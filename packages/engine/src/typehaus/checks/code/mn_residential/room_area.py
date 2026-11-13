@@ -26,10 +26,9 @@ from typehaus.model.enums import Occupancy
 from typehaus.quantities import inch, m
 from typehaus.resolve.overlay import difference, union_all
 from typehaus.resolve.roof_geometry import (
-    MIN_COUNTABLE_HEAD_M,
     roof_headroom_region,
     roof_height_at,
-    roof_structure_plumb_depth_m,
+    room_countable_polygon,
 )
 
 _CID = "code.R304_1_floor_area"
@@ -61,23 +60,17 @@ def walkable_face(ctx: CheckContext, resolved_room: Any, storey_tag: str) -> Pol
 
 
 def countable_floor(ctx: CheckContext, resolved_room: Any, storey: Any) -> Any:
-    """R304.3's floor: walkable, less what a roof rakes below 5'-0" of head.
+    """R304.3's floor: the walkable face less what a roof rakes below 5'-0" of head.
 
-    The cut is ``room_head_limited_area_m2``'s (storey datum, plumb structure depth), skipped
-    where that area says no roof rakes the room. R304.1 and R304.2 both grade this polygon.
+    ``ResolvedRoom.head_limited_area_m2`` is the area of the same polygon
+    (``roof_geometry.room_countable_polygon``); where it says no roof rakes the room, skip the
+    cut. R304.1 and R304.2 both grade this.
     """
     floor = walkable_face(ctx, resolved_room, storey.tag)
     limited = getattr(resolved_room, "head_limited_area_m2", None)
-    if limited is None or limited >= resolved_room.area_m2 - 1e-9:
+    if floor.is_empty or limited is None or limited >= resolved_room.area_m2 - 1e-9:
         return floor
-    for roof in ctx.model.roofs:
-        cover = Polygon(roof.footprint) if roof.footprint else None
-        if cover is None or not floor.intersects(cover):
-            continue
-        region = roof_headroom_region(roof, storey.elevation.meters, MIN_COUNTABLE_HEAD_M
-                                      + roof_structure_plumb_depth_m(ctx.model, roof))
-        floor = difference(floor, cover if region.is_empty else difference(cover, region))
-    return floor
+    return room_countable_polygon(ctx.model, floor, storey.elevation.meters)
 
 
 # --- R304.1 ---------------------------------------------------------------------------------

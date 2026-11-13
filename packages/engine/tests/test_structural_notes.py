@@ -89,6 +89,15 @@ def test_flat_roof_snow_reads_ct_per_roof(catlin_model_ro, profile):
     garage = " ".join(roof_framing_notes(catlin_model_ro, roofs["RF-GARAGE"], prefs))
     assert "RF-GARAGE TRUSS-000, TRUSS-001 (2 OF 13) ARE DRIFT TRUSSES" in garage
     assert roof_snow_drift(catlin_model_ro, roofs["RF-HOUSE"], prefs) is None
+    # ...and S-102 marks each drift truss on the plan, with a legend line.
+    from typehaus.emit.draw.roofframingplan import build_roof_framing_plan
+    from typehaus.emit.draw.scene import Leader
+
+    scene = build_roof_framing_plan(catlin_model_ro, "RF-GARAGE", preferences=prefs)
+    marks = sorted(node.text for node in scene.nodes if isinstance(node, Leader)
+                   and node.text.startswith("DRIFT"))
+    assert marks == ["DRIFT TRUSS-000", "DRIFT TRUSS-001"]
+    assert "ON PLAN MARK THE DRIFT TRUSSES" in garage
 
 
 def test_a_silent_model_prints_not_stated_and_never_a_default(catlin_model, profile):

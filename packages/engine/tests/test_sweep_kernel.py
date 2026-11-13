@@ -149,6 +149,15 @@ def test_plan_silhouette_of_a_straight_run_is_its_rectangle() -> None:
     assert sorted(ring) == sorted([(0.0, 0.05), (4.0, 0.05), (4.0, -0.05), (0.0, -0.05)])
 
 
+def test_plan_silhouette_of_a_vertical_rect_run_is_its_section() -> None:
+    """24x12 rect duct dropping straight down: 24 in X, 12 in Y — not 24x24 or 12x12."""
+    for z in (-2.0, 2.0):
+        ring = sweep_plan_silhouette(_sweep([(1, 1, 0), (1, 1, z)], rect_profile(0.6096, 0.3048)))
+        xs, ys = [p[0] for p in ring], [p[1] for p in ring]
+        assert math.isclose(max(xs) - min(xs), 0.6096, abs_tol=1e-9)
+        assert math.isclose(max(ys) - min(ys), 0.3048, abs_tol=1e-9)
+
+
 def test_plan_silhouette_mitres_a_right_angle_to_the_union_of_its_legs() -> None:
     """At a butted 90° the mitred offset IS the union of the two squared-off legs."""
     ring = sweep_plan_silhouette(_sweep([(0, 0, 0), (1, 0, 0), (1, 1, 0)],

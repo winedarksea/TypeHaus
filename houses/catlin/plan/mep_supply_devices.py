@@ -102,7 +102,7 @@ SUPPLY_DEVICES_BASEMENT = [
     # item — the hydrants' own seats are their shutoffs — but a hose bib is the thing most
     # likely to need a fast shutoff, and this is the last point one valve reaches both.
     PipeAccessory(uid="Y6MT3HKB1F", tag="PA-B-HYD-ISO", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-B-CW-HYD", position=pt(ft(6), ft(16)), accessible=True,
+                  pipe_ref="PR-B-CW-HYD", position=pt(ft(6), inch(176)), accessible=True,
                   room="RM-B-GYM", model='3/4" quarter-turn ball valve',
                   serves=("FX-M-PORCH-HYD", "FX-S-BALCONY-HYD")),
 ]

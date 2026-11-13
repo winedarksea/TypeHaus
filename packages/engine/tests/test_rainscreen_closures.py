@@ -168,7 +168,7 @@ def _failing(model, part, needle):
 
 
 @pytest.mark.parametrize("case", ["coarse", "no screen", "dammed", "kdat", "no band strip",
-                                  "no head cap"])
+                                  "no head cap", "panel through strip"])
 def test_cavity_grade_fails(catlin_model_ro, monkeypatch, case):
     model = copy(catlin_model_ro)
     if case == "coarse":
@@ -200,6 +200,19 @@ def test_cavity_grade_fails(catlin_model_ro, monkeypatch, case):
                        for w in model.walls]
         model.index_by_tag()
         assert _failing(model, "_kdat", "W-M-W4: KDAT")
+    elif case == "panel through strip":
+        drop = inch(0.5).meters
+
+        def sunk(layer):
+            if layer.surface_mesh is None:
+                return layer
+            mesh = replace(layer.surface_mesh, positions=tuple(
+                (x, y, z - drop) for x, y, z in layer.surface_mesh.positions))
+            return replace(layer, surface_mesh=mesh)
+        model.walls = [replace(w, layers=tuple(sunk(ly) for ly in w.layers))
+                       if w.tag == "W-M-W4" else w for w in model.walls]
+        model.index_by_tag()
+        assert _failing(model, "_panel_end_strips", "W-M-W4: the panel bottom is")
     elif case == "no head cap":
         model.solids = [s for s in model.solids
                         if not (s.host_ref == "WIN-M-BED-S1" and s.product == "OPENING_HEAD_CAP")]
@@ -208,6 +221,18 @@ def test_cavity_grade_fails(catlin_model_ro, monkeypatch, case):
         model.solids = [s for s in model.solids
                         if not (s.host_ref == "W-S-S1" and s.product == BAND_OUTLET_PRODUCT)]
         assert _failing(model, "_band", "W-S-S1: the band has no vented outlet")
+
+
+def test_panel_bottom_sits_on_the_base_strip(catlin_model_ro):
+    """Over a screened base the panel stands on the strip, not at the seat."""
+    from typehaus.resolve.rainscreen_closures import panel_bottom_z
+
+    model = catlin_model_ro
+    wall = model.wall("W-M-W4")
+    layer = next(ly for ly in wall.layers if ly.function == "cladding")
+    strips = [s for s in _of(model, "W-M-W4", STRIP_PRODUCT) if "-BASESTRIP-" in s.tag]
+    assert panel_bottom_z(model, wall, layer) == pytest.approx(max(s.z1_m for s in strips))
+    assert panel_bottom_z(model, wall, layer) - layer.band(wall)[0] > _IN
 
 
 def test_base_z_matches_screen_and_follows_stock_laps(catlin_model_ro):

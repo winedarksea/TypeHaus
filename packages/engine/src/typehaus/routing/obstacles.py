@@ -274,10 +274,6 @@ def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] 
                                      footprint=poly.buffer(inflate), z0_m=z0 - inflate,
                                      z1_m=z1_band + inflate, applies=across))
 
-    from typehaus.routing.ijoist_obstacles import ijoist_body_prisms
-
-    out.extend(ijoist_body_prisms(model, inflate))
-
     # Beams: a carrier is not bored for a run, and ``mep.run_through_beam`` reads the same
     # sections (``resolve/beam_sections``).
     from typehaus.resolve.beam_sections import beam_sections

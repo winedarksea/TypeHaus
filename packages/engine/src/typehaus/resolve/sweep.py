@@ -280,9 +280,14 @@ def sweep_z_extent(sweep: SolidSweep) -> tuple[float, float]:
     return (min(zs), max(zs))
 
 
-def _plan_half_width(profile: tuple[Vec2, ...]) -> float:
-    """How far the section reaches sideways — its extent along the leg's local "right"."""
-    return max((abs(u) for u, _v in profile), default=0.0)
+def _plan_half_extents(profile: tuple[Vec2, ...]) -> tuple[float, float]:
+    """``(hu, hv)``: the section's reach along the leg's local "right" and "up".
+
+    A horizontal leg shows only ``hu`` in plan; a vertical one shows both (u is world X,
+    v is world Y per :func:`leg_frame`).
+    """
+    return (max((abs(u) for u, _v in profile), default=0.0),
+            max((abs(v) for _u, v in profile), default=0.0))
 
 
 def sweep_plan_silhouette(sweep: SolidSweep) -> list[Vec2]:
@@ -296,7 +301,7 @@ def sweep_plan_silhouette(sweep: SolidSweep) -> list[Vec2]:
     no plan direction (a vertical drop) contributes nothing but the point it drops through.
     """
     path = clean_path(sweep.path)
-    half = _plan_half_width(tuple(sweep.profile))
+    half, half_v = _plan_half_extents(tuple(sweep.profile))
     plan: list[Vec2] = []
     for x, y, _z in path:
         if not plan or math.hypot(x - plan[-1][0], y - plan[-1][1]) > 1e-9:
@@ -305,6 +310,9 @@ def sweep_plan_silhouette(sweep: SolidSweep) -> list[Vec2]:
         return []
     if len(plan) == 1 or half <= 0.0:
         (x, y) = plan[0]
+        if len(plan) == 1:  # a pure vertical run: the section itself, hu x hv
+            return [(x - half, y - half_v), (x + half, y - half_v),
+                    (x + half, y + half_v), (x - half, y + half_v)]
         return [(x - half, y - half), (x + half, y - half),
                 (x + half, y + half), (x - half, y + half)]
     normals: list[Vec2] = []

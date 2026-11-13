@@ -23,7 +23,7 @@ from library import (
     ALL_REGISTER_TYPES, ALL_VENTILATION_EQUIPMENT_TYPES,
     MICROWAVE_COUNTERTOP_NN_SN686S, STANDARD_DOOR_TYPES, STARTER_APPLIANCE_TYPES,
     STARTER_CASEWORK_TYPES, STARTER_FIXTURE_TYPES, STARTER_FURNITURE_TYPES,
-    WINDOW_TYPES_16_INCH_MODULE,
+    WINDOW_TYPES_16_INCH_MODULE, with_product_refs,
 )
 
 from params import (breezeway, driveway, entry_band_brace, foundations, hp1_north_pad, hp3_pad,
@@ -63,7 +63,9 @@ PROJECT_UUID = uuid.UUID("c471a000-93b5-4e6e-8f5a-000000000002")
 _library = Library(
     materials=(*flooring_selection.with_selected_flooring(
                    plant_liner_selection.with_selected_liner(
-                       decking_selection.with_selected_decking(assemblies.MATERIALS))),
+                       with_product_refs(
+                           decking_selection.with_selected_decking(assemblies.MATERIALS),
+                           {"waterproofing": products.GCP_BITUTHENE_3000.tag}))),
                *plant_types.FOLIAGE_MATERIALS, *bath_finish.FAUCET_MATERIALS,
                *drywall.DRYWALL_MATERIALS, *products_paint.PAINT_MATERIALS),
     assemblies=tuple(assemblies.ASSEMBLIES),

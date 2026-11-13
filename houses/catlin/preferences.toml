@@ -418,11 +418,6 @@ suppress = [
   # is approximate by design, and the door opens to heated rooms.
   "mep.room_heat_source:RM-M-BATH2",
 
-  # REG-A-HP-EAST-RET hangs on EQ-S-ERV-MIX's south face (2026-11-12). The check hosts a
-  # wall mount only on a wall, column or soffit, and an equipment box is none of them: it
-  # reads the grille as floating 85" off W-A-C2B. The grille sits 1/2" off the plenum.
-  "integrity.wall_mount_on_face:REG-A-HP-EAST-RET",
-
 ]
 
 [acoustics]

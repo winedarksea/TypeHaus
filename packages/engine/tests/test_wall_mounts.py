@@ -178,3 +178,39 @@ def test_wall_lights_face_away_from_their_host_in_both_symbol_frames(catlin_mode
                 assert sum((f - r) * n for r, f, n in zip(rear, front, outward, strict=True)) > 0
         checked.add(item.tag)
     assert {"ED-M-ENTRY-LT", "ED-M-BATH2-MIRROR-HALO"} <= checked
+
+
+def _shifted_grille(model, dy_in: float):
+    """REG-A-HP-EAST-RET moved +dy_in along y, its duct stub removed from the model."""
+    import copy
+    from dataclasses import replace
+
+    obj = next(o for o in model.canvas_objects if o.tag == "REG-A-HP-EAST-RET")
+    moved = [(x, y + inch(dy_in).meters) for x, y in obj.footprint]
+    twin = copy.copy(model)
+    twin.ducts = []
+    twin.canvas_objects = [replace(o, footprint=moved) if o is obj else o
+                           for o in model.canvas_objects]
+    return twin, obj
+
+
+def test_a_return_grille_hangs_on_its_own_duct_stub(catlin_model_ro):
+    from typehaus.checks.integrity.wall_mounts import best_host
+
+    obj = next(o for o in catlin_model_ro.canvas_objects if o.tag == "REG-A-HP-EAST-RET")
+    assert best_host(catlin_model_ro, obj).tag == "DU-A-HP1-EAST-RET"
+    ctx = SimpleNamespace(model=catlin_model_ro, plan=catlin_model_ro.plan)
+    assert not [f for f in wall_mount_on_face(ctx) if "REG-A-HP-EAST-RET" in f.element_tags]
+
+
+def test_equipment_body_hosts_a_wall_mount_within_its_standoff(catlin_model_ro):
+    """With no stub, EQ-S-ERV-MIX hosts the grille 1/2" off its face; 2" off it floats."""
+    from typehaus.checks.integrity.wall_mounts import best_host
+
+    near, obj = _shifted_grille(catlin_model_ro, 5.5)
+    assert best_host(near, obj).tag == "EQ-S-ERV-MIX"
+    assert not [f for f in wall_mount_on_face(SimpleNamespace(model=near, plan=near.plan))
+                if "REG-A-HP-EAST-RET" in f.element_tags]
+    far, _ = _shifted_grille(catlin_model_ro, 4.0)
+    findings = wall_mount_on_face(SimpleNamespace(model=far, plan=far.plan))
+    assert any("REG-A-HP-EAST-RET floats" in f.message for f in findings)

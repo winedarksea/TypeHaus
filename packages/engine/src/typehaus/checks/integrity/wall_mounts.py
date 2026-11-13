@@ -18,7 +18,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
-from shapely.geometry import Polygon
+from shapely.geometry import LineString, Polygon
 
 from typehaus.checks._authoring import failed, not_applicable, passed
 from typehaus.checks.registry import CheckContext, Tier, check
@@ -28,11 +28,14 @@ from typehaus.resolve.geometry_walls import wall_top_at
 from typehaus.resolve.model import ResolvedCanvasObject, ResolvedModel
 from typehaus.resolve.overhead import OverheadIndex
 from typehaus.resolve.overlay import union_all
+from typehaus.resolve.placeable_bodies import bodied
 
 _ON_FACE = "integrity.wall_mount_on_face"
 _BELOW = "integrity.wall_mount_below_ceiling"
 _TOL_M = inch(0.25).meters
 _EPS = 1e-6
+#: Stand-off a bodied-equipment host allows on top of the declared gap (a grille on a box).
+_EQUIPMENT_STANDOFF_M = inch(0.5).meters
 
 
 @dataclass(frozen=True)
@@ -41,6 +44,7 @@ class Host:
     overlap_m2: float
     gap_m: float
     wall: object | None  # the ResolvedWall, or None for a column
+    standoff_m: float = 0.0  # allowed gap for this host kind, beyond the declared one
 
 
 def wall_mounts(model: ResolvedModel) -> list[ResolvedCanvasObject]:
@@ -48,9 +52,12 @@ def wall_mounts(model: ResolvedModel) -> list[ResolvedCanvasObject]:
             if obj.mount is not None and obj.mount.kind.value == "wall"]
 
 
-def _hosts_at(model: ResolvedModel, z: float) -> list[tuple[str, object, object | None]]:
-    """(tag, solid, wall) for every wall and column present at absolute height ``z``."""
-    out: list[tuple[str, object, object | None]] = []
+_HostRow = tuple[str, object, object | None, float]
+
+
+def _hosts_at(model: ResolvedModel, z: float) -> list[_HostRow]:
+    """(tag, solid, wall, standoff) for every wall, column and soffit at ``z``."""
+    out: list[_HostRow] = []
     for wall in model.walls:
         if wall.z1_m <= z + _EPS or wall.z0_m >= z + _EPS:
             continue
@@ -60,17 +67,44 @@ def _hosts_at(model: ResolvedModel, z: float) -> list[tuple[str, object, object 
                    and (layer.z1_m is None or layer.z1_m >= z - _EPS)]
         present = [p for p in present if p.is_valid and p.area > 1e-9]
         if present:
-            out.append((wall.tag, union_all(present), wall))
+            out.append((wall.tag, union_all(present), wall, 0.0))
     for solid in model.solids:
         if (solid.category == "column" and len(solid.outline) >= 3
                 and solid.z0_m <= z + _EPS and solid.z1_m >= z - _EPS):
-            out.append((solid.tag, Polygon(solid.outline), None))
+            out.append((solid.tag, Polygon(solid.outline), None, 0.0))
     # A soffit's side is a face too: a side-wall grille on a dropped box hangs on it.
     for soffit in model.soffits:
         if (len(soffit.outline) >= 3
                 and soffit.z0_m <= z + _EPS and soffit.z1_m >= z - _EPS):
-            out.append((soffit.tag, Polygon(soffit.outline), None))
+            out.append((soffit.tag, Polygon(soffit.outline), None, 0.0))
     return out
+
+
+def _fallback_hosts(model: ResolvedModel, obj: ResolvedCanvasObject,
+                    z: float) -> list[_HostRow]:
+    """Bodies a mount may hang on when no wall, column or soffit is there: equipment (a
+    return grille on a plenum's side, with its 1/2" stand-off) and the mount's own duct stub."""
+    out = [(unit.tag, Polygon(unit.footprint), None, _EQUIPMENT_STANDOFF_M)
+           for unit in bodied(model)
+           if unit.tag != obj.tag and len(unit.footprint) >= 3
+           and unit.body_z0_m is not None and unit.body_z1_m is not None
+           and unit.body_z0_m <= z + _EPS and unit.body_z1_m >= z - _EPS]
+    return out + _own_stub_hosts(model, obj, z)
+
+
+def _own_stub_hosts(model: ResolvedModel, obj: ResolvedCanvasObject,
+                    z: float) -> list[_HostRow]:
+    """The register's own duct, when it is a short straight stub: a grille on its boot."""
+    plan = getattr(model, "plan", None)
+    ref = getattr(plan.by_tag(obj.tag), "duct_ref", None) if plan is not None else None
+    duct = next((d for d in model.ducts if d.tag == ref), None) if ref else None
+    if duct is None or len(duct.path) != 2 or duct.diameter_m is not None or not duct.z_m:
+        return []
+    top = obj.body_z1_m if obj.body_z1_m is not None else z
+    if duct.z_m[0] - duct.depth_m / 2 > top + _EPS or duct.z_m[0] + duct.depth_m / 2 < z - _EPS:
+        return []
+    ring = LineString(duct.path).buffer(duct.width_m / 2, cap_style="flat")
+    return [(duct.tag, ring, None, 0.0)]
 
 
 def best_host(model: ResolvedModel, obj: ResolvedCanvasObject) -> Host | None:
@@ -98,19 +132,25 @@ def best_host(model: ResolvedModel, obj: ResolvedCanvasObject) -> Host | None:
         else:
             solid = Polygon(host.footprint)
         return Host(host.tag, solid.intersection(body).area, solid.distance(body), None)
-    best: Host | None = None
-    for tag, solid, wall in _hosts_at(model, z):
+    best = _best_of(_hosts_at(model, z), body, None)
+    if best is None or (best.overlap_m2 <= 1e-9 and best.gap_m > _TOL_M):
+        best = _best_of(_fallback_hosts(model, obj, z), body, best)  # only when none bears
+    return best
+
+
+def _best_of(rows: list[_HostRow], body: Polygon, best: Host | None) -> Host | None:
+    for tag, solid, wall, standoff in rows:
         overlap = solid.intersection(body).area
         gap = solid.distance(body)
         if best is None or (overlap, -gap) > (best.overlap_m2, -best.gap_m):
-            best = Host(tag, overlap, gap, wall)
+            best = Host(tag, overlap, gap, wall, standoff)
     return best
 
 
 def _borne_at(model: ResolvedModel, obj: ResolvedCanvasObject, z: float) -> bool:
     """Something still stands behind the body at ``z``: a wall stacked on its host."""
     body = Polygon(obj.footprint)
-    return any(solid.distance(body) <= _TOL_M for _, solid, _ in _hosts_at(model, z))
+    return any(solid.distance(body) <= _TOL_M for _, solid, _, _ in _hosts_at(model, z))
 
 
 @check(Tier.INTEGRITY, _ON_FACE)
@@ -134,7 +174,8 @@ def wall_mount_on_face(ctx: CheckContext) -> list[Finding]:
                 _ON_FACE, f"{obj.tag} is buried {reach / inch(1).meters:.2f}\" into "
                           f"{host.tag}", tags=(obj.tag, host.tag),
                 fix="host it with location=Location(attachment=WallAttachment(...))"))
-        elif host.overlap_m2 <= 1e-9 and host.gap_m > _declared_gap(ctx, obj) + _TOL_M:
+        elif (host.overlap_m2 <= 1e-9
+              and host.gap_m > max(_declared_gap(ctx, obj), host.standoff_m) + _TOL_M):
             out.append(failed(
                 _ON_FACE, f"{obj.tag} floats {host.gap_m / inch(1).meters:.1f}\" off "
                           f"{host.tag}", tags=(obj.tag, host.tag),

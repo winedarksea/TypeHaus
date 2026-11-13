@@ -13,12 +13,12 @@ _ANGLE_STOP = '1/2 in. quarter-turn fixture angle stop'
 
 BASEMENT_SUPPLY_BRANCHES = [
     # FX-B-BATH-WC. Its back wall W-B-BA-N sits under FS-M-STAIR's partition blocks, and the
-    # x=10'-0" bearing line has full-depth blocking, so the branch leaves the cold trunk at
-    # y=16'-0", rides 2" over the band (over PR-B-CW-SUITE's diagonal) north through the
+    # x=10'-0" bearing line has full-depth blocking, so the branch leaves the cold trunk's
+    # y=14'-8" lane, rides 2" over the band (over PR-B-CW-WH, 1 3/8" west) north through the
     # joist webs at x=11'-7 1/2", and drops in BA-N's front half: PR-B-ERV-COND runs the
     # cavity's centre line at 5'-0" above the slab.
     PipeRun(uid="WV0NXH51VG", tag="PR-B-BATH-WC-CW", system=PipeSystem.WATER_COLD,
-            path=(pt(inch(139.5), inch(192)), pt(inch(139.5), inch(192)),
+            path=(pt(inch(139.5), inch(176)), pt(inch(139.5), inch(176)),
                   pt(inch(139.5), inch(304.875)), pt(inch(139.5), inch(304.875)),
                   pt(inch(139.5), inch(303.8125)),),
             elevations=(inch(100.6375), inch(102.6375), inch(102.6375), inch(8.12),
@@ -36,19 +36,17 @@ BASEMENT_SUPPLY_BRANCHES = [
             path=(pt(inch(13), inch(263.6)), pt(inch(24), inch(263.6)), pt(inch(24), inch(263.6)),),
             elevations=(inch(100.6375), inch(100.6375), inch(118.9375),),
             diameter=inch(0.5), material="pex", serves=("FX-M-BATH2-WC",)),
-    # FX-M-BATH2-SH's valve in W-M-BA2E2. Cold off the trunk at x=7'-0", 2" over the band to
-    # cross PR-B-HW-SAUNA, and up the wall at 8'-1 1/2"; hot off EQ-B-HW-HEADER's out-8, west
-    # at 95 7/16" over the tank, up into the joist web at x=8'-8" (clear of PR-B-TUB2-DRAIN's
-    # bore) and south over PR-M-S-SUITE-DRAIN, then west. Each rises in the wall 1 3/4" behind the face, outboard
+    # FX-M-BATH2-SH's valve in W-M-BA2E2. Cold off the trunk's y=14'-8" lane straight south
+    # under the valve and up the wall at 8'-1 1/2"; hot off EQ-B-HW-HEADER's out-8, west
+    # at 95 7/16" over the tank, up into the joist web at x=8'-8" (103.2", clear of the bottom
+    # flange; clear of PR-B-TUB2-DRAIN's bore) and south over PR-M-S-SUITE-DRAIN, then west. Each rises in the wall 1 3/4" behind the face, outboard
     # of its R10000 side hub, and elbows once along the wall into it (Delta 50353 fig. 2A):
     # the cold 1 1/2" south, the hot 11 1/4" north, past PR-B-SH2-DRAIN's arm and
     # CO-M-SH2-HEAD. The hot riser is north of the new y=186" joist and the y=188" hot lanes.
     PipeRun(uid="A4PYMFZWY8", tag="PR-B-BATH2-SH-CW", system=PipeSystem.WATER_COLD,
-            path=(pt(inch(84), inch(192)), pt(inch(84), inch(192)), pt(inch(84), inch(172.75)),
-                  pt(inch(96.365), inch(172.75)), pt(inch(96.365), inch(172.75)),
-                  pt(inch(96.365), inch(174.25)),),
-            elevations=(inch(100.6375), inch(102.6375), inch(102.6375), inch(102.6375),
-                        inch(158.1875), inch(158.1875),),
+            path=(pt(inch(96.365), inch(176)), pt(inch(96.365), inch(172.75)),
+                  pt(inch(96.365), inch(172.75)), pt(inch(96.365), inch(174.25)),),
+            elevations=(inch(100.6375), inch(100.6375), inch(158.1875), inch(158.1875),),
             diameter=inch(0.5), material="pex", serves=("FX-M-BATH2-SH",)),
     PipeRun(uid="7QKQM2TYZV", tag="PR-B-BATH2-SH-HW", system=PipeSystem.WATER_HOT,
             path=(pt(inch(160), inch(210.788)), pt(inch(160), inch(210.788)), pt(inch(151), inch(210.788)),
@@ -56,19 +54,19 @@ BASEMENT_SUPPLY_BRANCHES = [
                   pt(inch(104), inch(210.788)), pt(inch(104), inch(189.5)),
                   pt(inch(96.365), inch(189.5)), pt(inch(96.365), inch(189.5)),
                   pt(inch(96.365), inch(178.25))),
-            elevations=(inch(86.149), inch(83.5), inch(83.5), inch(95.4375), inch(95.4375), inch(99.4375),
-                  inch(99.4375), inch(99.4375), inch(158.188), inch(158.188)),
+            elevations=(inch(86.149), inch(83.5), inch(83.5), inch(95.4375), inch(95.4375), inch(103.2),
+                  inch(103.2), inch(103.2), inch(158.188), inch(158.188)),
             diameter=inch(0.5), material="pex", serves=("FX-M-BATH2-SH",)),
     # FX-M-BATH2-FILLER: the 4794 rough's inlets, inside the tub deck's foot bay (reached
     # through FURN-M-BATH2-TUBDK-AP). Both rise inside the trim's footprint, between
-    # W-M-TUBDK-S and the shell: cold off the trunk 2" over the band, west of the joist bay's
-    # sister block; hot off header out-3, stepping up over PR-M-S-SUITE-DRAIN west of
+    # W-M-TUBDK-S and the shell: cold off the trunk's x=4'-9" leg in the same 192..208 bay
+    # (y=16'-4"), east to the riser west of the bay's sister block, no bore; hot off header out-3, stepping up over PR-M-S-SUITE-DRAIN west of
     # PR-B-TUB2-DRAIN's riser. They name the tub too, whose fixture-unit row is the demand.
     PipeRun(uid="CN849KDC10", tag="PR-B-FILLER-CW", system=PipeSystem.WATER_COLD,
-            path=(pt(inch(71.25), inch(192)), pt(inch(71.25), inch(192)),
+            path=(pt(inch(57), inch(196)), pt(inch(71.25), inch(196)),
                   pt(inch(71.25), inch(200.41)), pt(inch(71.25), inch(200.41)),
                   pt(inch(73.49), inch(200.41)),),
-            elevations=(inch(100.6375), inch(102.6375), inch(102.6375), inch(126.9375),
+            elevations=(inch(100.6375), inch(100.6375), inch(100.6375), inch(126.9375),
                         inch(126.9375),),
             diameter=inch(0.5), material="pex",
             serves=("FX-M-BATH2-TUB", "FX-M-BATH2-FILLER")),

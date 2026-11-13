@@ -7,7 +7,7 @@ trim; a non-metal rainscreen's head takes a Z drip flashing instead (``rainscree
 Band: the BBD75 outlet strip's net free area. Everywhere a panel end opens its voids into the
 cavity, it sits on a perforated strip (``notes/metal_trim_kit.md``). Hole size and
 open fraction are read off the screen's Material. The slot is graded off the trim and EPDM;
-the panel surface is not a resolved piece, so a panel drawn through the trim foot is unseen.
+a panel bottom is graded against the base strip it sits on.
 """
 
 from __future__ import annotations
@@ -43,7 +43,7 @@ _CITE = "metal_trim_kit.md, Wall base stack; DIN 18516-1 (50 cm2/m)"
 _HEAD_CITE = "opening_flashing_spec.md §4; IRC R703.4"
 #: Categories of the girt band's wood: the girts, the blocks, the head and sill courses.
 _GIRT_WOOD = {"strapping", "truss_block", "truss_blocking"}
-_ALUMINIUM = {"RAINSCREEN_BASE_Z", BASE_SCREEN_PRODUCT, STRIP_PRODUCT, BAND_OUTLET_PRODUCT}
+_ALUMINIUM = {BASE_SCREEN_PRODUCT, STRIP_PRODUCT, BAND_OUTLET_PRODUCT}
 
 
 def _offsets(piece, n):
@@ -300,10 +300,10 @@ def _heads(model):
 
 
 def _panel_end_strips(model):
-    """Every free panel end over a screened base sits on a strip."""
+    """Every free panel end over a screened base sits on a strip, and no panel passes it."""
     from typehaus.resolve.cladding_trim.base import base_trim_spans
 
-    findings, graded = [], 0
+    findings, graded, checked = [], 0, set()
     for face, _key, span, lo, hi, _z, _depth in base_trim_spans(model):
         wall = face.wall
         if not screens_rainscreen_base(model, wall):
@@ -315,10 +315,29 @@ def _panel_end_strips(model):
             findings.append(failed(CAVITY, f"{wall.tag}: the panel end at the base opens its "
                                    "voids to insects (no perforated strip)", (wall.tag,),
                                    code=_CITE))
+        if wall.tag in checked:
+            continue
+        checked.add(wall.tag)
+        every = [s for s in _mine(model, wall.tag, {STRIP_PRODUCT}) if "-BASESTRIP-" in s.tag]
+        if every and (low := _panel_bottom(wall)) is not None:
+            top = max(z for s in every for *_, z in s.body_mesh.positions)
+            if low < top - _TOL:
+                findings.append(failed(
+                    CAVITY, f"{wall.tag}: the panel bottom is {(top - low) / M_PER_IN:.3f} in "
+                    "below the base strip's top, so it passes through the strip and trim foot",
+                    (wall.tag,), code=_CITE,
+                    fix="seat the panel on the strip (resolve.rainscreen_closures.panel_bottom_z)"))
     if graded and not findings:
         findings.append(passed(CAVITY, f"{graded} base panel-end runs seat on a perforated "
-                               "strip", code=_CITE))
+                               "strip, with the panel bottom on its top", code=_CITE))
     return findings
+
+
+def _panel_bottom(wall):
+    """The lowest z of the wall's drawn panel surfaces, or None if none is resolved."""
+    return min((z for layer in wall.layers if layer.function == "cladding"
+                and layer.surface_mesh is not None
+                for *_, z in layer.surface_mesh.positions), default=None)
 
 
 def _band(model):

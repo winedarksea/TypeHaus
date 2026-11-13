@@ -608,14 +608,17 @@ Edge = |station - face| - hole/2. Worked, as found and as moved:
    **1.2"** from WC-VENT against 5.25. Now square, on x=40: 40 - 6 - 1.3125 = **32.7" PASS**.
 3. **`PR-B-CW-TRUNK`** (1 1/4", hole 1.625, 2" row 12"): at x=209 on FS-M-WEST joist 012,
    213.25 - 209 - 0.8125 = **3.44" FAIL**; at x=200, 213.25 - 200 - 0.8125 = **12.44" PASS**.
+   Superseded 2026-11-12 (§11a): the trunk no longer runs on joist 012's line at all.
 4. **`PR-B-HW-SAUNA` / `PR-B-CW-SAUNA`** (1/2", hole 0.875, field 6"): at 207/208, 5.81" and
    4.81" against 6, and 1 - 0.875 = **0.125"** apart against 1.75. Now 195 / 206.5
    (2026-11-09, BATH2 drain bay coordination): 17.8" and
-   213.25 - 206.5 - 0.4375 = **6.31" PASS**, 10.62" apart. The new y=186" joist also
-   crosses the x=200 cold trunk; its 1.625" hole and the sauna hot's 0.875" hole leave
-   **3.75" edge-to-edge**, against 3.25".
+   213.25 - 206.5 - 0.4375 = **6.31" PASS**, 10.62" apart. (The x=200 trunk hole in joist
+   x00 is gone since 2026-11-12; the sauna hot's x=195 holes are at 103.2" now.)
 5. **`PR-B-CW-BATH2`** (3/4", hole 1.125, field 6"): x=12, 12 - 6 - 0.5625 = **5.44" FAIL**;
    x=13, **6.44" PASS**.
+6. **`PR-B-HW-BATH2`** (1/2", hole 0.875, field 6"): its riser foot at x=9 would be
+   9 - 6 - 0.4375 = **2.56" FAIL** through joist 012, so it crosses at x=16: **9.56" PASS**
+   and jogs west in the 192..208 bay (2026-11-12).
 
 **What the review's probe missed is fn 1.** Graded by the check, the spacing rule also took
 `PR-B-CW-BATH1` (1.6" off the trunk's 1.625 hole against 3.25; moved to 62), `PR-B-TUB2-DRAIN`
@@ -623,6 +626,38 @@ Edge = |station - face| - hole/2. Worked, as found and as moved:
 drain hole against 7.5; tee moved to 110). Every TJI crossing in the house now PASSes and cites
 its row; the router refuses a lattice edge outside the zone and prices one inside it as
 `bore_engineered_in`, not `bore_unpublished_in`.
+
+### 11a. Nothing rides a web: FS-M-WEST's cold lanes off joist 012 (2026-11-12)
+
+`mep.run_in_joist_web` FAILs a leg along, or a riser in, the web strip of an I-joist (the
+web thickness, between the flanges). The cold trunk rode y=16'-0", which IS joist 012's
+line, and seven branches teed or rose there. FS-M-WEST lines near it: 160, 170, x00 at 186,
+012 at 192, 013 at 208 (TJI 230, bottom 97 9/16" basement-relative, flanges 1 1/4", window
+98 13/16"..108 3/16"). A sister block at x=74.56" closes the 192..208 bay (a point load: not
+bored). The band stays 100 5/8"; hot crossings ride 103.2".
+
+| run | lane now | holes on x00 / 012 |
+|---|---|---|
+| `CW-TRUNK` | down x=4'-9" to the 170..186 bay, east on y=14'-8", step to y=15'-0" at x=200 | x=57 (1.625) |
+| `CW-BATH2` / `CW-SBATH` / `FILLER-CW` | tee the trunk's x=57 leg in the 192..208 bay at y=200 / 204 / 196 | none |
+| `CW-BATH1` | tees the trunk's x=57 leg at y=268, 3" east to its riser | none (four bores gone) |
+| `CW-WASH`, `BATH-WC-CW`, `CW-WH`, `BATH2-SH-CW`, `CW-HYD` | square off y=14'-8" at x=100 / 139.5 / 138.15 / 96.365 / 72 | 100 and 139.5 (1.125 / 0.875) |
+| `CW-SUITE` | square off at x=183, north, 6" east in the 208..224 bay to the riser | x=183 (1.125) |
+| `HW-BATH2` | up at x=90 to 103.2", y=189 in the 186..192 bay, back through 012 at x=16 | 012 at 90 and 16 (0.875) |
+| `BATH2-SH-HW` / `HW-SAUNA` | 99 7/16" / 100 5/8" -> 103.2" | 012 at 104 / 154.5; x00 at 195 |
+
+Fn 1 on joist 012, the tight pair: x=100 (1.125) and x=104 (0.875) leave
+4 - 0.5625 - 0.4375 = **3.00"** against 2 x 1.125 = 2.25. On 013 the TUB2 drain's diagonal
+hole at x=91 (2.625) stands 9 - 1.3125 - 0.5625 = **7.1"** off the wash cold against 5.25;
+`CW-BATH1`'s x=82 hole, which sat between them, is gone. On x00, x=183 / 195:
+12 - 0.5625 - 0.4375 = 11.0". `CW-SUITE` left x=189 because `ED-B-STAIR-CAN3`'s housing is
+on the x=190" line. With the runs gone, the resolver reframes `W-B-CW3`'s partition block at
+x=81 (a box round the TUB2 drain) and `W-B-CW2`'s at x=168.
+
+**Not graded, found on the way:** `PR-B-HW-SUITE`'s jacketed leg at (197", 204..216") is
+centred 1/8" under joist 013 and its jacket reaches 0.81" into the bottom flange.
+`leg_crossings` takes a crossing only when the centreline is inside the member's z band,
+and `run_in_joist_flange` leaves "across" legs to the crossing check, so neither sees it.
 
 ## 12. A header hole chart for a FLOOR header, and the two tub drains it shuts out (2026-11-07)
 

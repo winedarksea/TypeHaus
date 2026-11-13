@@ -8,6 +8,7 @@ drainage — and from the S-103 bill of materials, which carries every last pane
 
 from __future__ import annotations
 
+import math
 from collections import defaultdict
 
 from typehaus.emit.draw._shared import PLAN_RESERVATION_SCALE, emit_wall
@@ -43,6 +44,7 @@ from typehaus.emit.draw.structural_dimensions import (
     line_stations,
     overall_tier,
 )
+from typehaus.engineering.snow_drift import DriftReach
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import LayerFunction, StructuralRole
 from typehaus.quantities import M_PER_IN
@@ -73,7 +75,11 @@ ROOF_MEMBER_CATEGORIES = (
     ("blocking", "BK", "EAVE BLOCKING"),
 )
 _RIDGE_CATEGORY = "ridge_beam"
+_UNSET = object()
 _LEADER_DROP_M = 1.0
+DRIFT_MARK = "DRIFT"
+_DRIFT_ALONG_IN = 24.0
+_DRIFT_ASIDE_IN = 10.0
 _BEARING_LABEL_HEIGHT_IN = 2.0
 _BEARING_LABEL_OFFSET_M = 0.1
 # A gable's run is half its footprint across the ridge; a shed's run is the whole width.
@@ -107,8 +113,10 @@ def build_roof_framing_plan(model: ResolvedModel, roof_tag: str,
     plan_points = [_in(point) for point in roof.footprint]
     metrics = metrics or metrics_for(plan_points)
     _emit_ridge_callout(b, roof)
+    drift = roof_snow_drift(model, roof, preferences)
+    _emit_drift_marks(b, roof, drift)
     emit_structural_tiers(b, _roof_tiers(model, roof), dimension_scale)
-    _emit_schedule_column(b, model, roof, plan_points, metrics, preferences)
+    _emit_schedule_column(b, model, roof, plan_points, metrics, preferences, drift)
     return b.build()
 
 
@@ -160,6 +168,28 @@ def _emit_ridge_callout(b: SceneBuilder, roof: ResolvedRoof) -> None:
                  at=_in(midpoint), to=_in((midpoint[0], midpoint[1] - _LEADER_DROP_M)),
                  text=f"RIDGE {member.profile} — {feet_inches(member.length_m)}",
                  layer="S-BEAM"))
+
+
+def _emit_drift_marks(b: SceneBuilder, roof: ResolvedRoof, drift: DriftReach | None) -> None:
+    """A leader per drift truss: the note sits in the bay beside it, the arrow lands on it."""
+    if drift is None or drift.whole:
+        return
+    for member in roof.members:
+        if member.category != "roof_truss" or member.child_key not in drift.trusses:
+            continue
+        dx, dy = member.p1[0] - member.p0[0], member.p1[1] - member.p0[1]
+        length = math.hypot(dx, dy) or 1.0
+        ux, uy = dx / length, dy / length
+        if ux < 0.0 or (ux == 0.0 and uy < 0.0):
+            ux, uy = -ux, -uy
+        px, py = -uy, ux
+        if px + py < 0.0:
+            px, py = -px, -py
+        mid = _in(((member.p0[0] + member.p1[0]) / 2.0, (member.p0[1] + member.p1[1]) / 2.0))
+        note = (mid[0] + _DRIFT_ALONG_IN * ux + _DRIFT_ASIDE_IN * px,
+                mid[1] + _DRIFT_ALONG_IN * uy + _DRIFT_ASIDE_IN * py)
+        b.add(Leader(anchor=NamedPoint(xy=mid, name=member.child_key), at=note, to=mid,
+                     text=f"{DRIFT_MARK} {member.child_key.upper()}", layer="S-FRAM"))
 
 
 def roof_framing_spec(model: ResolvedModel, roof: ResolvedRoof):
@@ -267,8 +297,9 @@ def build_ridge_hardware_schedule(model: ResolvedModel,
         columns=("PART", "ITEM", "QTY"), rows=tuple(rows))
 
 
-def roof_framing_notes(model: ResolvedModel, roof: ResolvedRoof,
-                       preferences: object = None) -> list[str]:
+def roof_framing_notes(model: ResolvedModel, roof: ResolvedRoof, preferences: object = None,
+                       drift: DriftReach | None | object = _UNSET) -> list[str]:
+    """``drift`` is ``roof_snow_drift``'s result when the caller already has it."""
     notes = []
     pitch = roof_pitch_note(roof)
     if pitch:
@@ -282,13 +313,17 @@ def roof_framing_notes(model: ResolvedModel, roof: ResolvedRoof,
     if roof.bearing_z_m is not None:
         notes.append(f"ROOF SEATS ON PLATES AT {roof.bearing_z_m:.2f} m; "
                      f"DECK AREA {roof.surface_area_m2:,.0f} m2.")
-    drift = roof_snow_drift(model, roof, preferences)
+    if drift is _UNSET:
+        drift = roof_snow_drift(model, roof, preferences)
     snow = _snow_load_note(model, roof, drifted=drift is not None)
     if snow:
         notes.append(snow)
     drift_note = snow_drift_text(roof, drift, preferences)
     if drift_note:
         notes.append(drift_note)
+    if drift is not None and not drift.whole and drift.trusses:
+        notes.append(f'LEADERS "{DRIFT_MARK} TRUSS-NNN" ON PLAN MARK THE DRIFT TRUSSES '
+                     "NAMED ABOVE.")
     wind = _wind_load_note(model)
     if wind:
         notes.append(wind)
@@ -417,8 +452,9 @@ def _has_uplift_connector(model: ResolvedModel, roof: ResolvedRoof) -> bool:
 
 def _emit_schedule_column(b: SceneBuilder, model: ResolvedModel, roof: ResolvedRoof,
                           plan_points: list[tuple[float, float]],
-                          metrics: BlockMetrics, preferences: object = None) -> None:
-    notes = tuple(roof_framing_notes(model, roof, preferences))
+                          metrics: BlockMetrics, preferences: object = None,
+                          drift: DriftReach | None = None) -> None:
+    notes = tuple(roof_framing_notes(model, roof, preferences, drift))
     missing = tuple(f"{finding.check_id}: {finding.message}"
                     for finding in roof_framing_findings(model, roof))
     ridge = build_ridge_hardware_schedule(model, roof)

@@ -291,11 +291,16 @@ def resolve_profiled_metal_surfaces(model) -> None:
     def profile_for(ref):
         return PANEL_PROFILES.get(finishes.get(ref))
 
-    def joint_segments(wall, layer_name, profile, z0, z1):
-        """(bottom, top) panel runs: the lower stops 1" under a band, the upper hangs 1/4" over."""
+    def joint_segments(wall, layer, profile, z0, z1):
+        """(bottom, top) panel runs: the lower stops 1" under a band, the upper hangs 1/4" over.
+
+        The bottom is raised onto the base strip over a screened base."""
         from typehaus.quantities import M_PER_IN
+        from typehaus.resolve.rainscreen_closures import panel_bottom_z
         from typehaus.resolve.rainscreen_strips import BAND_PANEL_GAP_IN, BAND_UPPER_GAP_IN
 
+        layer_name = layer.name
+        z0 = max(z0, panel_bottom_z(model, wall, layer))
         assembly = model.plan.library.resolve_assembly(wall.assembly) if wall.assembly else None
         authored = next((layer for layer in assembly.layers if layer.name == layer_name), None) \
             if assembly else None
@@ -315,7 +320,7 @@ def resolve_profiled_metal_surfaces(model) -> None:
                 z0, z1 = layer.band(wall)
                 clearance = panel_support_clearance_m(model, wall, layer)
                 support_clearances[wall.uid, layer.material_ref] = clearance
-                segments = joint_segments(wall, layer.name, profile, z0, z1)
+                segments = joint_segments(wall, layer, profile, z0, z1)
                 meshes = [profile_mesh(
                     wall, layer.polygon, bottom, top, lines.get(wall.tag, wall.axis),
                     openings=[op for op in model.openings if op.host_wall == wall.tag],
@@ -355,10 +360,10 @@ def resolve_profiled_metal_surfaces(model) -> None:
                 top_bound = max(p[2] for p in box.corners_top)
                 if member.section_ring:
                     top_bound = max(top_bound, member.z0_m + max(z for _, z in member.section_ring))
-                layer_name = next(layer.name for layer in wall.layers
-                                  if layer.material_ref == member.material
-                                  and layer.function == "cladding")
-                segments = joint_segments(wall, layer_name, profile,
+                closure_layer = next(layer for layer in wall.layers
+                                     if layer.material_ref == member.material
+                                     and layer.function == "cladding")
+                segments = joint_segments(wall, closure_layer, profile,
                                           min(p[2] for p in box.corners_bottom), top_bound)
                 mesh = _join_meshes([profile_mesh(
                     wall, polygon, bottom, top, lines.get(wall.tag, wall.axis),

@@ -11,6 +11,7 @@ import math
 from dataclasses import replace
 
 from shapely.geometry import Polygon
+from shapely.geometry.base import BaseGeometry
 
 from typehaus.model.assembly import FramingSpec
 from typehaus.model.enums import LayerFunction
@@ -25,6 +26,7 @@ from typehaus.resolve.framing.profiles import (
 from typehaus.resolve.framing.truss_heel import truss_heel_height_m
 from typehaus.resolve.geometry import polygon_area
 from typehaus.resolve.model import ResolvedModel, ResolvedRoof, ResolvedWall
+from typehaus.resolve.overlay import difference, union_all
 from typehaus.resolve.roof_bearing import RoofBearing, resolved_bearings
 
 
@@ -458,39 +460,39 @@ def roof_headroom_areas(room_ring: list[tuple[float, float]], roof: ResolvedRoof
 MIN_COUNTABLE_HEAD_M = inch(60).meters
 
 
-def room_head_limited_area_m2(model: ResolvedModel, ring: list[tuple[float, float]],
-                              elevation_m: float,
-                              threshold_m: float = MIN_COUNTABLE_HEAD_M) -> float:
-    """A room's plan area minus whatever a roof over it rakes below ``threshold_m`` of head.
+def room_countable_polygon(model: ResolvedModel,
+                           ring: list[tuple[float, float]] | BaseGeometry,
+                           elevation_m: float,
+                           threshold_m: float = MIN_COUNTABLE_HEAD_M) -> BaseGeometry:
+    """The part of ``ring`` (a ring or a floor polygon) with ``threshold_m`` of head.
 
-    The plain ``area_m2`` a room resolves is its floor: the right number for sheathing it,
-    finishing it and heating it, and the wrong one for "how big is this room" the moment a
-    roof plane comes down inside it. Catlin's attic pocket is 134 sf of deck with 5'-3" of
-    head at its best point — floor that gets built and paid for, and not one square foot of
-    it is space anyone stands in.
-
-    Measured to the roof's UNDERSIDE (structure depth taken off the plane), because head is
-    what the rule is about. Any part of the room no roof covers keeps its full area: a deck
-    or a soffit overhead is ``ResolvedRoom.clear_height_m``'s question, one flat height
-    rather than an area, and nothing here second-guesses it.
+    Floor is what gets sheathed and heated; under a raking roof that is not usable room
+    (catlin's attic pocket: 134 sf of deck, 5'-3" of head at best). Head is measured to the
+    roof's UNDERSIDE (plumb structure depth off the plane). Each roof's low part is cut by
+    polygon difference, so overlapping roofs never double count. Floor no roof covers is
+    kept: a deck or soffit overhead is ``ResolvedRoom.clear_height_m``'s question.
     """
-    room = Polygon(ring)
-    if room.is_empty or room.area <= 1e-12:
-        return 0.0
-    area = room.area
+    floor = ring if isinstance(ring, BaseGeometry) else Polygon(ring)
+    if floor.is_empty or floor.area <= 1e-12:
+        return Polygon()
+    lows = []
     for roof in model.roofs:
         if not roof.footprint:
             continue
-        under = room.intersection(Polygon(roof.footprint))
+        under = floor.intersection(Polygon(roof.footprint))
         if under.is_empty or under.area <= 1e-12:
             continue
         region = roof_headroom_region(
             roof, elevation_m, threshold_m + roof_structure_plumb_depth_m(model, roof))
-        qualifying = 0.0 if region.is_empty else under.intersection(region).area
-        # A roof clearing the threshold over the whole room subtracts nothing — and must
-        # subtract nothing *exactly*, or clipping noise leaves every flat-ceilinged room in
-        # the house a few square microns off its own floor area.
-        deficit = under.area - qualifying
-        if deficit > 1e-9:
-            area -= deficit
-    return float(max(area, 0.0))
+        low = under if region.is_empty else difference(under, region)
+        # A fully clearing roof must cut nothing exactly, or noise shaves flat rooms.
+        if low.area > 1e-9:
+            lows.append(low)
+    return difference(floor, union_all(lows)) if lows else floor
+
+
+def room_head_limited_area_m2(model: ResolvedModel, ring: list[tuple[float, float]],
+                              elevation_m: float,
+                              threshold_m: float = MIN_COUNTABLE_HEAD_M) -> float:
+    """Area of :func:`room_countable_polygon`: a room's floor less what a roof rakes below head."""
+    return float(room_countable_polygon(model, ring, elevation_m, threshold_m).area)

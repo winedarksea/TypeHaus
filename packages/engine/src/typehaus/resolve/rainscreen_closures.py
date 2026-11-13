@@ -406,3 +406,14 @@ def screens_rainscreen_base(model: ResolvedModel, wall) -> bool:
     return (rainscreen_cavity_m(wall.layers) is not None
             and not _continues_cavity_below(model, wall))
 
+
+
+def panel_bottom_z(model: ResolvedModel, wall, layer) -> float:
+    """Where a cladding panel's bottom edge stands: the layer band's z0, or over a screened
+    base the top of the perforated strip it sits on (the trim foot, ``trim_rise`` off the
+    seat, plus the strip's sheet), so the panel never passes through the foot or strip."""
+    z0 = layer.band(wall)[0]
+    spec = base_flashing_spec(model, wall)
+    if spec is None or not screens_rainscreen_base(model, wall):
+        return z0
+    return z0 + spec.trim_rise.meters + BUG_SCREEN_SHEET_IN * M_PER_IN

@@ -83,6 +83,7 @@ from typehaus.library.hvac import (
     ALL_VENTILATION_EQUIPMENT_TYPES,
 )
 from typehaus.library.materials import ALL_MATERIALS
+from typehaus.library.overrides import with_product_refs
 from typehaus.library.placeables import (
     MICROWAVE_COUNTERTOP_NN_SN686S,
     SEKTION_CASEWORK_TYPES,
@@ -96,6 +97,7 @@ from typehaus.library.railings import ALL_RAILING_TYPES, RAILING_PRODUCTS
 from typehaus.library.windows import WINDOW_TYPES_16_INCH_MODULE
 
 __all__ = [
+    "with_product_refs",
     "TREX_ENHANCE_BASICS",
     "TREX_ENHANCE_BASICS_BOARD_WIDTH",
     "TREX_ENHANCE_BASICS_DECK_LAYER",

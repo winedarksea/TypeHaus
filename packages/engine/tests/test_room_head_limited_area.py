@@ -82,3 +82,24 @@ def test_headroom_region_is_all_or_nothing_at_the_extremes(catlin_model_ro):
     base = roof.eave_z_m
     assert not roof_headroom_region(roof, base, -1.0).is_empty
     assert roof_headroom_region(roof, base, roof.ridge_z_m - base + 1.0).is_empty
+
+
+def test_overlapping_roofs_do_not_double_count(monkeypatch):
+    """Two roofs over the same low strip cut it once: 100 m2 floor less 30, not less 60."""
+    from types import SimpleNamespace
+
+    from typehaus.resolve import roof_geometry
+
+    monkeypatch.setattr(roof_geometry, "roof_structure_plumb_depth_m", lambda *_: 0.0)
+
+    def shed(footprint):
+        return SimpleNamespace(footprint=footprint, ridge_direction="x", form="shed",
+                               eave_z_m=0.0, ridge_z_m=5.0)
+
+    model = SimpleNamespace(roofs=[shed([(0, 0), (10, 0), (10, 10), (0, 10)]),
+                                   shed([(0, 0), (10, 0), (10, 6), (0, 6)])])
+    ring = [(0, 0), (10, 0), (10, 10), (0, 10)]
+    poly = roof_geometry.room_countable_polygon(model, ring, 0.0, 1.5)
+    assert poly.area == __import__("pytest").approx(70.0, abs=1e-4)
+    assert roof_geometry.room_head_limited_area_m2(model, ring, 0.0, 1.5) == \
+        __import__("pytest").approx(70.0, abs=1e-4)

@@ -152,7 +152,7 @@ CORRUGATED_SILL_TO_SOFFIT = TrimProfile(
 )
 
 RAINSCREEN_BASE_Z = TrimProfile(
-    "Rainscreen base Z, 0.040 inch aluminium", stock_lengths_in=(120.0,),
+    "Rainscreen base Z, 24 ga formed sheet", stock_lengths_in=(120.0,),
     custom=True, maker="custom brake", source="Catlin wall base stack",
 )
 

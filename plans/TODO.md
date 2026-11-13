@@ -93,12 +93,15 @@ finished area drops out.
 
 **Engine**
 
-- [ ] `sweep_plan_silhouette` treats a vertical rectangular riser as a square of its width, so
-  `REG-S-HP-RET`'s 24x12 filter box is graded as its 15 1/8" neck instead of a drawn drop
-  (decision #129). Use separate half extents per axis (`resolve/sweep.py` `_plan_half_width`).
-- [ ] `integrity.wall_mount_on_face` hosts a wall mount only on a wall, column or soffit.
-  `REG-A-HP-EAST-RET` on `EQ-S-ERV-MIX`'s face is suppressed in catlin `preferences.toml`
-  until equipment can host one.
+- [ ] `REG-S-HP-RET`'s 24x12 filter box is authored as its 15 1/8" neck run (decision #129
+  terminal drop), not as a drawn drop. The sweep now draws a vertical rectangle at its true
+  hu×hv, so modelling the box itself is a separate redesign, not an engine fix.
+- [ ] An insulated run centred just under an I-joist is graded by nothing:
+  `resolve/mep_crossings.leg_crossings` counts a crossing only when the centreline is inside the
+  member's z band, and `mep.run_in_joist_flange` leaves legs across joists to that check. Live
+  case: `PR-B-HW-SUITE`'s jacketed leg at (197", 204..216") at 97 7/16" bsmt, whose jacket takes
+  0.81" of joist 013's bottom flange and the ceiling board. It needs a design call (an insulated
+  line is not bored, and x=197" is too near the support for the 3" row) and then the engine fix.
 
 **Autorouter.** `docs/routing.md` Limitations covers the open supply-trunk finished-volume and
 freeze FAILs, search U-turns, same-size I-joist siblings, and `--lift` on a first-leg tee. Two
@@ -126,12 +129,6 @@ items have details that are recorded only here:
   R324 text is read off [MN DLI's sheet](https://www.dli.mn.gov/sites/default/files/pdf/fs_res_solar.pdf); confirm with St Paul DSI.
   `plans/cost-options.md` lines 94 and 402 still say 5.28 kW.
 
-### Schema cleanup
-
-- **`ResolvedRoom.head_limited_area_m2` and `room_area.countable_floor` are two derivations**
-  of R304.3's countable floor (same helpers, so drift risk is low); `resolve/roof_geometry`
-  should return the polygon both read.
-
 ### Someday (low value)
 
 - **Derive a fixture-supplied box** (Bantam's JB-0501) so SCONCE-STAIR can state its canopy.
@@ -148,7 +145,6 @@ items have details that are recorded only here:
   It is drawn on the W/E lot lines for now (`houses/catlin/plan/site.py`); ask St Paul DSI at permit.
 - **Cavity "canary" RH sensors** wanted in a south and west stud bay (no liner redundancy
   otherwise); no sensor element kind exists. (desired but not as explicitly modeled)
- - **`Material.product_ref` was NOT set, and it is not an oversight.** The plan called for a `Product` record naming the GCP datasheet so the BOM row reads "GCP Bituthene 3000". `Material.product_ref` can only be set where the material is authored; the material has to live in `library/materials/` because a LIBRARY assembly (`FOUNDATION_WALL_XPS4_OUTBOARD`) references it; and a library material may not name a house-owned `Product` tag — `Library.products` is populated from `plan/products.py` and every other house would resolve it to `None`. There is no override path: `PlanModel.material()` returns the FIRST match, so a house appending a duplicate tag is shadowed for geometry while WINNING in `product_labels`, which is worse than not doing it. The identity lives in the material's `source` and in the `prices.toml` selection note instead. Closing it properly means either a house-level material-override mechanism or moving the foundation tail out of the library.
  - **`SF-B-BATH` stays, and not for want of numbers** — its three runs clear the 6'-8"
    headroom line by ~7 1/2" and a declaration on `RM-B-BATH` would pass. Nobody has decided a
    bathroom ceiling should be open. That is a design question, not a cleanup.
@@ -163,12 +159,6 @@ items have details that are recorded only here:
   remains is the datum question itself, and it is an owner decision rather than a nudge:
   widening the gap back to a nominal 5" pushes the court 2.25" south and FAILs D-B-SUNKEN.
 - Figure out a space for a cat litter box. Options: either a cat door on the current vanity planned (no change) or a wall mounted sink leaving space for a self emptying litter box.
-- **A library catalog type cannot name a house-owned `Product`.** `ED-T-EV-1450` lives in
-  `library/electrical.py` and the Leviton 1450R is authored in `houses/catlin/plan/products.py`,
-  so the `product_ref` cannot be made: `houses/starter` would resolve it to nothing and take an
-  `integrity.unknown_product_ref` ERROR. Same seam as the Bituthene selection. Needs a
-  house-level catalog-override mechanism, or the type retagged house-local (which moves the
-  `[placeables]` price key and four tests).
 - A reviewer suggested 1/2" drywall as the standard otherwise, with cheaper end 'abuse' resistant drywall 1/2" for major Hallways, Kids' Rooms, Stairwells. Some options: 1/2" Type C, Paper-Faced 1/2" AR (e.g., Gold Bond Hi-Abuse or USG Sheetrock AR), LP SmartSide 38 Series Panel 7/16" (Sidings Used Indoors), 1/2" MDF (4x8 Sheets with V-Groove or Batten Strips), 1/2" MDO (Medium Density Overlay) Plywood
 - Best Cheap STC Upgrade (~+$0.12/sq ft): 1/2" Type C Drywall (also staggered stud framing which we use in some places, cheap low-expansion spray foam or standard elastomeric latex caulk ), Best Seamless Durability Upgrade (~+$0.45/sq ft): 1/2" Paper-Faced Abuse-Resistant (AR) Drywall, Best "Skip-the-Taper" Durable Wall (~$1.30/sq ft material, $0 mudding): 4x8 Pre-Primed MDF Shiplap Panels (or LP SmartSide 38 Series), The Winner for General Bath Walls: 1/2" Mold-Resistant Paper-Faced Drywall ("Purple Board" / USG Mold Tough, although not strictly needed on well ventilated walls with good high-resin paint), The Bathroom Ceiling Secret: 1/2" Interior Soffit Board (Sag-Resistant), Best Value for Speed & Zero-Fail Waterproofing behind tile: 1/2" Polyisocyanurate Foam Board (Johns Manville GoBoard), Places where 5/8" may still make sense: floor to floor ceilings (Type X), garage walls (5/8" AR Type X). Apparently the resonant frequency of 1/2" Type C drywall is one of the more ideal for household noises (being higher than the others)
 - Around bathrooms and bedrooms we want higher STC. Around major hallways and stairs we want abuse resistance (but only need it on the lower 4' above the walking surface probably). Around the mudroom we want highest abuse resistant with something like wainscot (shiplap there carries the idea already, can be improved further possibly like LP Smartside). Some walls likely worth abuse resistance on a side: W-M-WELL, W-M-HS2/HS3/HS4, W-M-BAE, W-M-C1/C2/C3 and walls facing RM-S-HALLWAY and next to stair landings. A reviewer also said that we should focus STC drywall/framing upgrades strictly for the solid walls without undercut doors (as they say doors bypass sound so much they make upgrades not worth the price, although doors that are weatherstripped, solid, and with no undercut do have better STC), based on this we can perhaps remove resilient channel assemblies from W-S-SBS and W-S-BW1/BW2/BW3
@@ -185,7 +175,6 @@ items have details that are recorded only here:
   - [ ] `D-B-SUNKEN` band header (structural project): load takedown for the stacked D-S-BALCONY/D-M-PORCH jamb packs, their bearing interfaces, LVL ply fastening, and the edge I-joist filler/backer connections (`notes/sunken_door_band_header.md` §4).
 - The balcony backing's nail schedule back to the joists is undrawn (`houses/catlin/notes/balcony_fascia_mounts.md`).
   - [ ] DWV: `PR-M-BATH2-WC-VENT` runs level under the FS-M-WEST joist 016/017 + FS-M-MECH 000 seam at -13 1/2" (MN 905.3, under the bowl's real rim too; `mep.vent_connection` ADVISORY, C4 E11). A 45-degree climb is 0.21" short (7.69" of flange footprint vs 7.475" of web-zone travel), so no WC position along W-M-HS1 helps. Owner: WC to W-M-W3 bay 13-14 on a 1/4" offset flange (measured, [note](../houses/catlin/notes/bath2_vent_move_options.md) option 2: costs the floor-heat bite, the washlet outlet, the window centring), or an engineered chase.
-  - [ ] S-102's drift trusses (from `engineering/snow_drift.drift_reach`, the function `structural.truss_reactions` grades by) carry no per-truss mark on the plan; the note names them `TRUSS-000`/`-001` (2 of 13).
   - [ ] Header residue (decision #116, `houses/catlin/notes/header_spans_r602_7.md` §5): the `5.25x7 LVL` row in `prices.toml` is an estimate ($13-24/LF material, off the house's own LVL $/bf); replace it with a retail number, ordered as a beam (R/L, probably special order; sold as a column it runs about twice that). `RL-A-HANDRAIL`'s new return beside WIN-S-STUDY3 is tight (end plate 5/8" off the RO, bar about 0.7" off the bookcase): field check. The moved FO-A-STAIR trimmer lands on the plate just past WIN-S-STUDY3's north king, ungraded. D-B-GYM's north king stands 1.2" past W-B-CS3's end on W-B-CS2's line.
   - [ ] D-M-LAUN after the 2026-11-07 move (review of 8b1cf155d). Owner: (1) **washer** (done 2026-11-07): valves behind the tower in W-M-CLN; the washer drains into the laundry tub (Minn. R. 4714.1001's adjacent-washer exception). Confirm with the AHJ against 4714.0804. The tower stands 0" off W-M-CLN against LG's 4" (guide p.14), so it needs 90-degree inlet hoses; name the washer valves at order. (2) **tub access**: 20" of the tub stands behind the strike wall; it is reached through the opening's west 8 1/4" and the 13 3/4" strip in front of the tower (pinned in `test_mep_plumbing.py`). (3) **36' width**: the header reads Boise p.4's 32' column (the widest) plus a load comparison; the literal 36' cell is p.9 Floor Beams 8'-0": 3 1/2 x 9 1/2, 2 trimmers, i.e. a 2-ply 9 1/2" LVL on doubled jacks (the engine frames one jack here; `WIN-M-DINING-E` reads its 32' column the same way). (4) **W-S-SN3's uniform load into W-M-HS3**: `resolve/stacked_ladder.py` records the FS-S-WEST line (W-S-SN2/SN3 over W-M-HS3/HS4, 256/272 bay) and lays nothing on an open-web deck; `structural.stacked_line_ladder` is UNKNOWN until TrimJoist's shop layout carries the line (a blocking panel or a truss over the wall), and the header reads "assumes a ladder in FS-S-WEST". `P-S-SN3-SQUASH` still carries BM-S-BATH-E's point. Still open: neither header nor PublishedSpan grades the guide's structure width against the derived building width.
   - [ ] Owner decisions left open by the 2026-11-06 fit pass (REPORT §1.20-32): the titanium handrail fittings (no published load read; the EZA200 projection and load rating are unpublished too); C4 E8 runs vs backing; C4 E14 supply items; O2-110 pocket head (Eclisse detail). Backing bands: the owner kept BK-M-S1-HP2-BED, BK-M-S2-HP2-LIVING and BK-M-N2-HP3-STAIR.
@@ -213,21 +202,12 @@ items have details that are recorded only here:
     documented temperature compatibility of the complete waterproofing, tape, mortar,
     collars and sealants, and the sealed foil/pan-liner transitions. Durock suitability
     alone is not system approval.
-  - [ ] FS-M-WEST joist 012 (y=192") clashes, found by `scripts/render_bath2_shower_drain.py`'s
-    section and graded by nothing: `PR-B-CW-TRUNK` (x 57..200") and `PR-B-CW-BATH2` run
-    *inside* its web at 100 5/8" bsmt, and every branch tees there; `PR-B-CW-BATH` does the
-    same along FS-M-WEST `sister-1-0` at y=243". The hot lanes at 97 7/16" bsmt
-    (`PR-B-HW-BATH2`/`-KITCH`/`-SAUNA` and their y=188" legs) sit 1/8" under the joist
-    underside, so the 5/8" PEX is in the bottom flange and the ceiling board, and their
-    x=90/93/95" crossings plus the SH hot at 96.4" are too close to bore (ESR-1153 2x hole).
-    Needs a lane redesign, plus two check gaps: `run_member_crossing` reads the centreline,
-    not the envelope, and no check sees a run lying along a member.
   - APPL-LG-DISHWASHER: a Product and price row for the 48" braided 3/8" supply its `hose_length` assumes.
   - The floor-fed WC stops (FX-M-BATH2-WC, FX-S-BATH1-WC) are house setout, APPROXIMATE.
   - The washer's real valves are mid-run tees, which the endpoint grade cannot see.
 - Electrical placement residue: `ED-S-NCLOSET-SW` has no clear bay on W-S-CLN-S (west lands in the door opening, east in W-S-BW3), so it stays over a king with the advisory unless the door or switch moves. HLG-100H AC splice boxes (RACO 232) are billed, not drawn. `notes/basement_surface_wiring.md` lines 133 and 147 still place `ED-B-PLAY-N-SW` on its old wall. Bench-pair the DAWSC-1BW to the flood's D315S before the board goes up.
 - Block load residual (verified against the hand notes 2026-11-08: 30,183 Btu/h heating, 16,522 sensible + 6,076 latent, no engine bug): the wall load uses the card R-43.6 against the R-39.8 to 37.9 oracle, and the ERV SRE is rated at 83 cfm against about 204 delivered. Together about +3 to 4% heating, no equipment change (`houses/catlin/notes/block_load_basis.md` §10).
-- Rainscreen closures (2026-10-29): the panel bottoms are still drawn to the seat, not on the raised strip (in `resolve/board_batten.py`), and so are the wide outside corners (`cladding_trim/mixed_corners.py`, off the same layer band): both pass through the raised trim foot and the base strip, and `integrity.rainscreen_cavity` cannot see a panel surface, so it grades the slot open regardless. At the four outside corners the base and band strips also run into the corner trim and the adjoining wall's base trim; stop them at the corner once the corners land on the trim.
+- Rainscreen closures: at the four outside corners the base and band strips run into the corner trim and the adjoining wall's base trim; stop them at the corner now that the corners land on the strip top (`resolve/rainscreen_closures.panel_bottom_z`).
 - **`RL-A-FLIGHT-GUARD` newel junction (not graded).** Near the 25'-5 1/8" newel its post (top 20'-2 1/4") and top rail run into `FO-A-STAIR`'s trimmer pack (19'-0 1/8"..20'-0", south of the well edge), and `RL-A-STAIR`'s surface posts (since 2026-10-31) stand ~1 1/8" south of its bracket line: the junction needs detailing, and the surface bases need blocking under the pack (4 GRK RSS, SG >= 0.50).
 - Upgrade fasteners still uncounted (decision #105 covers panel screws, connector schedules, treated framing, roof/screen sheathing): wall sheathing and subfloor nailing, fascia/trim screws, window-install screws, and the HL angles' site-length through-bolts.
 - Backup battery, still open (`houses/catlin/notes/backup_power.md` §11-§12): EG4's UL 9540 certificate naming 12kPV + WallMount Indoor; how the 12kPV's load port behaves on its "No Battery" setting (ask EG4); its GEN port rating; declare future storage and V2H on the Xcel application; DSI's position on a UL 9540 3rd-ed. DC ESS battery; a freeze drain-down plan; a small LFP UPS for Home Assistant, the router and the leak valve. After the 2026-11-02 trim the always-on tier passes summer's 48 h and the bridge (0.28 kWh margin) and still fails December's cycle (§6).
@@ -239,7 +219,6 @@ items have details that are recorded only here:
   what initiates shutdown on the 12kPV (does opening the CL320 meter-main do it while backing
   up the house?), then place the device. Revisit Class C SPGFCI for CKT-HP1-3 after the
   NFPA Standards Council (2026-12-15/16, ACCA/AHRI appeals); they are Class A breakers meanwhile.
-- **Exterior darks are black** (2026-11-07, `houses/catlin/plan/exterior_palette.py`, `notes/exterior_darks.md`). The engine's `RAINSCREEN_BASE_Z` text still calls the base strip aluminium.
 - `haus print3d --colour-groups`: per-piece colour components bucketed from `Material.color`, matched to a sample exported from Bambu Studio before shipping.
 - Promote the leafless passage's drywall wrap (#122) to a `ResolvedModel.passage_wraps` record so emitters can draw the returns.
 - **Consider a strongback on `FS-S-WEST`** (TrimJoist J12 at 16" o.c. now reads its own published row, `J12_FLOOR_SPAN`).
