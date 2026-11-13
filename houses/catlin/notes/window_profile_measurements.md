@@ -1,9 +1,9 @@
 # Window profile measurements: public-source review
 
 Reviewed and modeled 2026-11-07 in `plan/window_types.py`. The 3D model uses the public
-Alucover exterior faces and inward sash-bottom limit, and Andersen's architectural
-head/jamb/sill faces with a separate interior sill-ledge height. Supplier confirmation
-remains for the ordered Alucover adaptor and selected Andersen triple-pane section.
+Alucover exterior faces and inward sash-bottom limit. Supplier confirmation remains for the
+ordered Alucover adaptor. §2 (Andersen) is history since 2026-11-13: the escape units are Max
+Light (35/35 mm faces), and Andersen is the documented revert.
 
 ## 1. Drutex IGLO Energy Alucover / DAKAM
 
@@ -61,7 +61,7 @@ the 73 mm fixed glazing detail is not evidence of a stool-bearing rail. Once sel
 include the retained adaptor in the unit envelope before adding its height to the stool.
 Profile and adaptor identities are also recorded on the house's `Product` records.
 
-## 2. Andersen 400 operating casement
+## 2. Andersen 400 operating casement (retired 2026-11-13; kept as the egress revert)
 
 **A published architectural face split exists.** Andersen's
 [Architectural Tools page](https://www.andersenwindows.com/for-professionals/architect/architectural-tools)

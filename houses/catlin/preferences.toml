@@ -44,8 +44,8 @@ max_window_ro_nonbearing_in = 30
 #        loses 2 x 1.5" = 27.5". THE 3" BETWEEN THIS RUNG AND THE ONE ABOVE IS THE PAIR OF
 #        JACKS — that is the whole rule, and it is why the cap is a function of bearing
 #        status and nothing else.
-#        27 -> 27.5 on 2026-10-23: the full jack-to-jack clear, for R310. A 27" RO nets a
-#        25 5/8" Andersen unit (19.8" clear); 27.5" nets 26 1/8" (20.3"). Same stud count.
+#        27 -> 27.5 on 2026-10-23: the full jack-to-jack clear, for R310. 27.5" seats a
+#        26.21" Max Light unit, ~20.1" clear (estimated; Andersen until 2026-11-13). Same studs.
 #        Went 27 -> 30 on 2026-08-01 to let WIN-S-BED1/BED2 reach R303.1's 8% glazing, and
 #        came BACK to 27 on 2026-08-25 when that turned out to be avoidable: R303.1 binds
 #        on area, and area can be bought in height. The two bedrooms are 27x54 (WT-2754)

@@ -102,7 +102,8 @@ covers the living-room blinds.
 
 - Matter over Thread needs a **Thread border router** on Home Assistant (e.g. HA Connect
   ZBT-2 set to Thread). That is an owner item; the house models no HA hardware.
-- **Tilt-turn windows** (STUDY1/2/3): mount the headrail at the reveal's room edge so a
+- **Tilt-turn windows** (STUDY1/2/3; since 2026-11-13 also the Max Light escape units,
+  BED-S1/S2, JUL-E and the rest, which turn inward): mount the headrail at the reveal's room edge so a
   tilted sash clears the lowered fabric. Turn mode needs the shade fully raised.
   **Automation rule: no auto-lowering while a sash is turned.**
 
@@ -111,6 +112,6 @@ covers the living-room blinds.
 - Confirm the US article numbers, the panel sizes and the price at order.
 - Fullness 1.8–2×; hem each panel to kiss the floor after the track is up.
 - Confirm the motorized minimum width (WIN-A-S3 is assumed under it).
-- Confirm the stack plus headrail clears the tilt-turn sash top in turn mode, and the
-  Andersen folding crank (BED-S1/S2, JUL-E) clears the shade.
+- Confirm the stack plus headrail clears the tilt-turn sash top in turn mode, including the
+  inward escape sashes (BED-S1/S2, JUL-E; Andersen cranks retired 2026-11-13).
 - The BALC header nailer (above).

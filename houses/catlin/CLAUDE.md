@@ -1203,23 +1203,22 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **Named products; window and door types are HOUSE-LOCAL (2026-10-21).** Drutex IGLO
   Energy Alucover (aluminium-capped uPVC) for the 11 tilt-turn and 18 fixed units; Aliplast
   Max Light Modern tilt-turns (NFRC STO-M-20, U 0.20, 35 + 35 mm faces) for the three operable
-  14x24s since 2026-10-31; Andersen 400 casements for the 9 R310 escape windows (`WIN-M-BED-S1`/`S2`,
-  `WIN-S-BED1`/`BED2`, `WIN-S-HALL-N`, `WIN-S-SUITE1`/`2`, `WIN-A-S-JUL-W`/`E`); Therma-Tru Smooth-Star full-lite / Endura
+  14x24s since 2026-10-31 and the 9 R310 escape windows since 2026-11-13 (`WIN-M-BED-S1`/`S2`,
+  `WIN-S-BED1`/`BED2`, `WIN-S-HALL-N`, `WIN-S-SUITE1`/`2`, `WIN-A-S-JUL-W`/`E`; Andersen 400
+  retired, the documented revert); Therma-Tru Smooth-Star full-lite / Endura
   for the French pairs (2026-10-25; laminated triple and pair label pending); an OPAQUE Therma-Tru Smooth-Star for
   `D-M-ENTRY` (owner: a solid, insulated front door, at most a tiny lite); MMI Z0364688R
   six-panel insulated steel for `D-G-SERVICE` (`DT-EXT-SWING32-G`); Clopay for the overhead. Charcoal outside until the dealer confirms Black at R-12.9 (open, `notes/exterior_darks.md`), white inside.
   `plan/window_types.py`/`plan/door_types.py` redefine every tag the house hangs, each with
   its NFRC CPD row, and `plan/manifest.py` drops the library preset of that tag; catalog-only
   sizes stay presets. **Edit the house file, never `library/windows.py`.** The escape types
-  author Andersen's `net_clear_width_deduction`/`net_clear_height_deduction`, applied to
-  the resolved unit: the seat rounds an Andersen unit DOWN to ⅛" inside the flashed opening
-  less ½" (`frame_size_increment`/`minimum_rough_opening_allowance`). **2026-10-23: at 27½"
-  the escape casements are 26⅛" units, 20.3" clear, and every sleeping room passes R310** —
-  calculated, supplier confirmation outstanding. Before retyping an escape window, read
-  `notes/window_and_door_procurement.md` §2 and §7; open quote items are §2.6.
+  author a turn-sash `net_clear_width_deduction` (154 mm: two 35 mm frames + the 84 mm sash at
+  90°) and `net_clear_height_deduction` (70 mm) on the resolved unit: at 27½" a 26.21" unit
+  nets **20.15" clear, an ESTIMATE** (0.15" margin) until Słowińscy's written figure replaces
+  it. Before retyping an escape window, read `notes/egress_window_review.md` and
+  `notes/window_and_door_procurement.md` §2; open quote items are §2.6.
   Each product type authors its visible faces (`frame_face_width`/`sash_face_width`: Drutex
-  75/50 mm off Phius W-102033, Max Light 35/35); Andersen 400's split is unpublished and
-  awaits the owner, so its units draw the schematic 75 mm frame.
+  75/50 mm off Phius W-102033, Max Light 35/35).
 
 - **Facade alignment — ONE GRID PER FACADE.** `EXT_2X6`/`PLANT_EXT_2X6_HUMID` set
   `layout_origin="line"`, so a wall segment lays out from its **layout line** (the derived

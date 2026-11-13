@@ -5,7 +5,7 @@ join key (prices.toml, tests, goldens). Not ``# haus: editable``: it computes fr
 """
 
 from plan.exterior_palette import (
-    ANDERSEN, AZEK, CLOPAY, METAL, POWDER_RAL, UNA_CLAD_MATTE_BLACK, WINDOW,
+    AZEK, CLOPAY, METAL, POWDER_RAL, UNA_CLAD_MATTE_BLACK, WINDOW,
 )
 from typehaus import Material
 
@@ -77,9 +77,6 @@ MATERIALS_EXTERIOR_DARKS = [
     Material(tag="aliplast-maxlight-powder", name=f"Aliplast Max Light powder coat, RAL {WINDOW.colour} matt",
              hatch="metal", color=WINDOW.hex,
              source=f"Aliplast Max Light Modern frame and sash, RAL {WINDOW.colour} matt powder coat, matched to the Drutex caps (plan/opening_products.py); Aliplast powder-coats any RAL to Qualicoat (professionals.aliplast.com/en/colour-palette, read 2026-11-07). Colour is RAL's own sRGB."),
-    Material(tag="andersen-400-exterior", name=f"{ANDERSEN.label} exterior (Perma-Shield vinyl)",
-             color=ANDERSEN.hex,
-             source=f"Andersen 400 casement, {ANDERSEN.colour} exterior. Colour sampled from Andersen's swatch (andersenwindows.com, read 2026-10-30). The 400 Series offers no grey."),
     # The overhead door's leaf (`DT-EXT-OVERHEAD192.leaf_material_ref`).
     Material(tag="clopay-classic-steel", name=f"{CLOPAY.label} factory paint",
              hatch="metal", color=CLOPAY.hex,

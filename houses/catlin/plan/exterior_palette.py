@@ -59,20 +59,12 @@ RAL_9017 = Finish(maker="RAL", colour="9017 Traffic black", hex="#262625", famil
 # ---- the two switches --------------------------------------------------------------
 # Black family (owner, 2026-11-07): the one family every product line can follow.
 METAL = MS_MATTE_BLACK_106     # all exterior metal + everything matched to it
-WINDOW = RAL_9017              # the 29 Drutex caps and the 3 Max Light frames
+WINDOW = RAL_9017              # the 29 Drutex caps and the 12 Max Light frames
 # -------------------------------------------------------------------------------------
 
 # Powder coat (canopy steel posts) is ordered by RAL: the RAL nearest METAL, by CIEDE2000
 # between chips (W38 -> 7015, dE 2.0; 106 -> 9017, dE 3.5). No bronze RAL is chosen yet.
 POWDER_RAL = {"grey": RAL_7015, "black": RAL_9017}[METAL.family]
-
-# Andersen 400 has no grey (White, Sandtone, Canvas, Terratone, Forest Green, Dark Bronze,
-# Black); swatches sampled from andersenwindows.com.
-_ANDERSEN_BLACK = Finish(maker="Andersen 400", colour="Black", hex="#323433", family="black")
-_ANDERSEN_DARK_BRONZE = Finish(maker="Andersen 400", colour="Dark Bronze", hex="#493f3d",
-                               family="bronze")
-ANDERSEN = {"grey": _ANDERSEN_BLACK, "black": _ANDERSEN_BLACK,
-            "bronze": _ANDERSEN_DARK_BRONZE}[METAL.family]
 
 # AZEK Captivate swatches sampled from azekexteriors.com (Midnight Black read 2026-11-07).
 # Captivate has no dark bronze; Warm Coffee is mid brown.

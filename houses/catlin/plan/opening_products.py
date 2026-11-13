@@ -1,7 +1,7 @@
 """Window and exterior-door products (2026-10-21, notes/window_and_door_procurement.md §2).
 
 Identity only, never a price (#28). One record per line and operation: every unit is ordered
-custom (Drutex builds to size; Andersen 400 sizes in 1/8" steps), so the size lives on the
+custom (Drutex and the Max Light fabricator build to size), so the size lives on the
 type and the product names what arrives. NFRC numbers are read from the CPD
 (search.nfrc.org) and cited on the types that use them.
 
@@ -38,19 +38,8 @@ ALIPLAST_MAXLIGHT_TT = Product(
            "(MAXLIGHT Tilt Turn, frame ML010 / sash ML020) or Plastixal PLX-K-17. Frame depth "
            "75 mm, sash depth 84 mm, glazing to 68 mm, Uf 1.8 W/m2K; 35 mm frame + 35 mm sash "
            "visible. Open: nail fin (Debesto quotes +15%), NAFS label at DP >= 20, minimum "
-           "tilt-turn sash at the 12.71\" modelled frame (notes/window_and_door_procurement.md "
-           "§2.6).")
-ANDERSEN_400_CASEMENT = Product(
-    tag="PROD-ANDERSEN-400-CASEMENT", brand="Andersen", model="400 Series Casement",
-    name="400 Series casement, egress hinge, Black exterior / White interior",
-    url="https://andersenwindows.com/windows-and-doors/windows/casement-windows/"
-        "400-series-casement-window",
-    source="Andersen Corp., Bayport MN. Wood with Perma-Shield vinyl cladding, custom sizes "
-           "in 1/8\" steps, factory installation flange. NFRC line AND-N-1. Clear opening "
-           "per Andersen's 2025-26 opening specifications (notes/window_and_door_procurement.md "
-           "§7). Architectural face basis: sash 1-5/8 in, exposed frame 9/16 in jamb, "
-           "3/4 in head, 13/16 in sill; interior sill ledge 1-1/8 in. Confirm for the selected "
-           "triple-pane unit; notes/window_profile_measurements.md.")
+           "tilt-turn sash at the 12.71\" modelled frame; the turn sash's written net clear "
+           "opening on the nine R310 escape units (notes/egress_window_review.md).")
 THERMATRU_SMOOTHSTAR_FULLLITE = Product(
     tag="PROD-THERMATRU-SMOOTHSTAR-FULLLITE", brand="Therma-Tru",
     model="Smooth-Star full-lite", name="Smooth-Star full-lite inswing French pair, composite frame",
@@ -145,6 +134,6 @@ HOLD_OPEN_CLOSER = Product(tag='PROD-CLOSER-HOLD-OPEN', brand='Tell Manufacturin
 OPENING_PRODUCTS = (
     HALIFAX_KEYED, STEEL_PREHUNG_HINGE, HOLD_OPEN_CLOSER,
     SENSE_PRO, PASSAGE_LEVER, STRIKE_REINFORCEMENT, DOORSCOPE, DOOR_SCREWS, DOOR_HINGE, PANOLOCK, BE365, FLA_ASTRAGAL, SECURITY_STRIKE,
-    DRUTEX_ALUCOVER_TT, DRUTEX_ALUCOVER_FIX, ALIPLAST_MAXLIGHT_TT, ANDERSEN_400_CASEMENT,
+    DRUTEX_ALUCOVER_TT, DRUTEX_ALUCOVER_FIX, ALIPLAST_MAXLIGHT_TT,
     THERMATRU_SMOOTHSTAR_FULLLITE, THERMATRU_SMOOTHSTAR, MMI_STEEL_SIX_PANEL, CLOPAY_CLASSIC_STEEL,
 )

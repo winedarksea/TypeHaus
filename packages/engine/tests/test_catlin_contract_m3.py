@@ -711,7 +711,7 @@ def test_exterior_corners_include_strength_first_third_stud(catlin_model):
 def test_bedroom_egress_is_associated_with_its_own_bounding_wall(catlin_check_report):
     report = catlin_check_report()
     findings = [finding for finding in report.findings if finding.check_id == "code.R310_egress"]
-    # 27 1/2" jack-to-jack ROs seat a 26 1/8" Andersen unit, 20.3" clear (2026-10-23).
+    # 27 1/2" jack-to-jack ROs seat a 26.21" Max Light unit, ~20.1" clear (estimated, 2026-11-13).
     # Five: RM-A-STUDIO is a craft room since 2026-11-11 (WIN-A-S-JUL-W is kept).
     assert len(findings) == 5
     assert all(finding.result is Result.PASS for finding in findings)

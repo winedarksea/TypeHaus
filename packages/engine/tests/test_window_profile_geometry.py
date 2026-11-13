@@ -19,44 +19,28 @@ def _projected_width(ring, tangent):
     return max(coordinates) - min(coordinates)
 
 
-def test_andersen_sections_keep_distinct_jamb_head_and_sill_sightlines(catlin_model_ro):
+def test_max_light_units_draw_35_mm_faces_all_round(catlin_model_ro):
+    # The three 14x24s and, since 2026-11-13, the nine escape units (Andersen retired).
     model = catlin_model_ro
-    stools = {stool.window_ref: stool for stool in model.window_stools}
+    types = {kind.tag: kind for kind in model.plan.library.window_types}
     count = 0
     for opening in model.openings:
-        if opening.kind != "window" or opening.type_ref not in {
-            "WT-2748", "WT-2748-T", "WT-2754", "WT-3048",
-        }:
+        kind = types.get(opening.type_ref)
+        if opening.kind != "window" or kind is None:
+            continue
+        if kind.product_ref != "PROD-ALIPLAST-MAXLIGHT-TT":
             continue
         count += 1
         wall = model.wall(opening.host_wall)
-        width, height, sill = window_frame_dimensions(opening)
-        bottom = wall.base_ref_z_m + sill
         parts = {part.key: part for part in opening_parts(wall, opening, None)}
         jamb, _, head, rail = parts["frame"].solids
         _, tangent, _, _ = wall_frame(wall)
-        assert _projected_width(jamb.ring, tangent) == pytest.approx(
-            inch(9 / 16).meters)
-        assert head.z1_m - head.z0_m == pytest.approx(inch(3 / 4).meters)
-        assert rail.z1_m - rail.z0_m == pytest.approx(inch(13 / 16).meters)
-        sash_jamb, _, sash_head, sash_sill = parts["sash"].solids
-        assert sash_jamb.z0_m == pytest.approx(bottom + inch(13 / 16).meters)
-        assert sash_jamb.z1_m == pytest.approx(bottom + height - inch(3 / 4).meters)
-        assert sash_head.z1_m - sash_head.z0_m == pytest.approx(inch(1.625).meters)
-        assert sash_sill.z1_m == pytest.approx(sash_jamb.z0_m + inch(1.625).meters)
-        glass = parts["glass"].solids[0]
-        assert _projected_width(glass.ring, tangent) == pytest.approx(
-            width - inch(4.375).meters)
-        assert glass.z0_m == pytest.approx(bottom + inch(2.4375).meters)
-        assert glass.z1_m == pytest.approx(bottom + height - inch(2.375).meters)
-        # The interior ledge is not the exterior sill's exposed allowance.
-        stool = stools[opening.tag]
-        assert window_stool_prism(wall, opening, stool).z1_m == pytest.approx(
-            bottom + inch(1.125).meters)
+        assert _projected_width(jamb.ring, tangent) == pytest.approx(mm(35).meters)
+        assert head.z1_m - head.z0_m == pytest.approx(mm(35).meters)
+        assert rail.z1_m - rail.z0_m == pytest.approx(mm(35).meters)
         viewer = {part["key"]: part for part in opening_parts_json(model, opening)}
-        assert viewer["glass"]["solids"][0]["z0_m"] == pytest.approx(glass.z0_m, abs=1e-6)
         assert viewer["frame"]["solids"][2]["z0_m"] == pytest.approx(head.z0_m, abs=1e-6)
-    assert count == 9
+    assert count == 12
 
 
 def test_alucover_faces_and_stool_use_the_adaptor_sash_bottom(catlin_model_ro):

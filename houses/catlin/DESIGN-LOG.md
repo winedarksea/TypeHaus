@@ -235,7 +235,8 @@ close these blockers. See `notes/entry_screen_mdo.md` and its calculation JSON.
   and stays on the schematic frame pending the owner.
 - **Cost.** HP2 +17.9 Btu/h (14,292), peak glass +80.9, AED +23.2 (oracle notes amended).
   The egress casements stay Andersen; Max Light is quoted as an alternate with a written net
-  clear opening (procurement §2.6 item 12).
+  clear opening (procurement §2.6 item 12). **Reversed 2026-11-13**: the escape units are Max
+  Light (entry below).
 
 ## Owner decisions: camera shed, garage receptacles, 1" data trunk (2026-10-30)
 
@@ -8242,3 +8243,38 @@ heat a $50 heater supplies.
 The 75 cfm went to Study 2's second grille on SF-S-DUCT's south face, a glass wash whose jet runs
 past `D-S-PLANT`. Held open on its closer, the door is the summer fallback when the shades
 (closed only above 63 F outdoors) are not enough (§6, §7).
+
+## Orientation-tuned south glass: closed, nothing taken (2026-11-13, owner)
+
+The owner scoped it to the main-floor and second-floor south glass, with one rule: if no
+NFRC-listed high-gain row exists in the chosen lines, keep the glass. A read of the CPD
+(every DRU-K-24, DRU-K-23 and AND-N-1 row) found that the selected Drutex rows are already
+the highest-SHGC glass in their lines (TT 0.33; fixed 0.39, max 0.42 at U 0.20; the plant
+room's U-0.14 is held at 0.39). Andersen's only qualifying row is the HeatLock double with
+the 180 (PassiveSun) coating, U 0.25 / SHGC 0.48. On the summer-shaded BED-S pair it needs a
+53% heating-season sunlit fraction to break even, and the pair gets less than that. No
+geometry, type, price or energy figure moved. Record:
+`notes/window_and_door_procurement.md` §2.2.
+
+## Andersen retired: the nine escape windows go Max Light (2026-11-13, owner)
+
+Goal: as few window brands as possible, Polish wherever practical. WT-2748/-T, WT-2754 and
+WT-3048 (tags kept, no uid moved) are now Aliplast Max Light tilt-turns, NFRC STO-M-20
+(Słowińscy), 0.20/0.40/0.58 against Andersen's 0.20/0.40/0.51. Brands: Drutex 29 + Max Light
+12, both Polish. That leaves 23 tilt-turns and no casements, and the Juliets open inward. The swap also clears
+three Andersen holds: the triple sold in the Northeast only, the face split was unpublished,
+and the frame was vinyl.
+
+- **R310 rests on an estimate.** No clear opening is published. Turn sash: unit less two
+  35 mm frames and the 84 mm sash at 90° on the hinge side (154 mm); height less 70 mm.
+  26.21" units net 20.15" × 44.05" (6.16 sf), 0.15" over 20". R310 passes in every graded
+  sleeping room. Słowińscy's written figure, the hinge angle, DP 20, the fin, the 16 CFR 1201
+  mark, RAL match and an exterior tool-free screen (R310.4) are a hold
+  (`notes/egress_window_review.md`).
+- **Short at 27½"?** HALL-N and the Juliets can go to 30" (nonbearing; Juliets recheck the
+  rake). BED1/2 and SUITE1/2 cannot, and Andersen 400 is the revert there.
+- **Rejected:** Max Light for all 41 units (fixed best U 0.17, the plant room needs 0.14);
+  Drutex DRU-K-25 casement for egress (~17" clear).
+- Energy unchanged (30,212 / 16,296 Btu/h). The four price rows sit on the size-matched
+  operable band, with no quote implied. `ANDERSEN_400_CASEMENT`, `andersen-400-exterior` and the
+  palette's `ANDERSEN` are deleted.

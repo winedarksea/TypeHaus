@@ -5,13 +5,11 @@ the same tag, so the presets themselves stay untouched for other houses. Catalog
 stay presets. Owner's selection, notes/window_and_door_procurement.md §2:
 
 - Drutex IGLO Energy Alucover (aluminium-capped uPVC, black outside, white inside) for every
-  27"+ tilt-turn and every fixed unit.
+  non-escape 27"+ tilt-turn and every fixed unit.
 - Aliplast Max Light Modern (thermally broken aluminium, 35 mm frame + 35 mm sash) for the
-  three 14x24 tilt-turns, where Drutex's 125 mm operable sightline leaves little glass.
-- Andersen 400 casement, egress hinge, for the nine R310 escape windows, whose narrow
-  bearing RO no Euro sightline clears. R310 applies Andersen's deductions to the unit the
-  seat resolves: the flashed opening less 1/2" (Andersen's minimum RO allowance), rounded
-  down to the 1/8" custom-size step.
+  three 14x24 tilt-turns, where Drutex's 125 mm operable sightline leaves little glass, and
+  for the nine R310 escape windows since 2026-11-13 (Andersen 400 retired: two Polish
+  brands). R310 applies a turn-sash deduction to the unit the seat resolves.
 
 Width/height stay the ROUGH OPENING (the framing module grades it); frame size comes from
 the resolved buck, pan, membranes and installation gaps. U/SHGC/VT are the whole-window
@@ -24,7 +22,6 @@ from __future__ import annotations
 
 from plan.opening_products import (
     ALIPLAST_MAXLIGHT_TT,
-    ANDERSEN_400_CASEMENT,
     DRUTEX_ALUCOVER_FIX,
     DRUTEX_ALUCOVER_TT,
 )
@@ -44,20 +41,13 @@ _DRUTEX_FIXED_STOOL_RAIL = mm(75)
 _DRUTEX_FACES = ("Alucover frame 70001, 74 mm exterior face. "
                  "Operable units include a 30 mm sill adaptor (54123); DAKAM to confirm. "
                  "Sources: notes/window_profile_measurements.md.")
-# Not published to us for the basic unit; the preset's 3 1/4" stays until the dealer's
-# section is in hand.
-_ANDERSEN_DEPTH = inch(3.25)
-# Andersen's architectural sections B/2, A/2, C/2: the frame allowance includes its sash
-# gap. Interior sill-ledge height is separate (2025-26 product details, p. 1).
-_ANDERSEN_JAMB_FACE, _ANDERSEN_SASH_FACE = inch(9 / 16), inch(1 + 5 / 8)
-_ANDERSEN_HEAD_FACE, _ANDERSEN_SILL_FACE = inch(3 / 4), inch(13 / 16)
-_ANDERSEN_INTERIOR_SILL_RAIL = inch(1 + 1 / 8)
-_ANDERSEN_FACES = ("Architectural sections: exposed frame 9/16 in jamb, 3/4 in head, "
-                   "13/16 in sill; sash face 1-5/8 in. Interior sill ledge 1-1/8 in. "
-                   "Architectural geometry basis, selected triple-pane confirmation pending. "
-                   "Sources: notes/window_profile_measurements.md.")
 _MAXLIGHT_DEPTH = inch(75 / 25.4)  # frame ML010 depth; sash 84 mm
 _MAXLIGHT_FACE = inch(35 / 25.4)   # 35 mm frame, 35 mm sash (Aliplast Max Light Modern)
+# Turn-sash clear opening, ESTIMATED (no published figure; Slowinscy's written one replaces
+# it): width = unit - two 35 mm frames - the 84 mm sash standing at 90 deg on the hinge side;
+# height = unit - two 35 mm frames. 26.21" unit -> 20.15" clear.
+_MAXLIGHT_CLEAR_W = mm(2 * 35 + 84)
+_MAXLIGHT_CLEAR_H = mm(2 * 35)
 
 _TT = ("NFRC DRU-K-24-00001: CGPrem2/ARG90/ExtraClr/ARG90/CGPrem2 (4/4/4) 48mm IG, "
        "U 0.16, SHGC 0.33, VT 0.47.")
@@ -69,12 +59,7 @@ _MAXLIGHT = ("NFRC STO-M-20 (Slowinscy, MAXLIGHT Tilt Turn, frame ML010 / sash M
              "CGPrem2/Arg/Clr/Arg/CGPrem2 48 mm triple, U 0.20, SHGC 0.40, VT 0.58, CR 69; "
              "Plastixal PLX-K-17 carries the same row (CR 66). Faces 35 mm frame + 35 mm sash "
              "(Aliplast Max Light Modern fiche). Inward tilt-turn.")
-_AND = ("NFRC AND-N-1-04162: LowE(180/180/i89) triple, argon, U 0.20, SHGC 0.40, VT 0.51. "
-        "Andersen sells 400 triple in the Northeast only; if a Twin Cities dealer cannot, "
-        "the HeatLock double AND-N-1-03559 is U 0.24.")
 _SIZE = "Frame size follows the resolved flashed opening; supplier confirmation pending."
-# Andersen 400 custom sizes: 1/8" steps, RO >= unit + 1/2" each way (opening specifications).
-_ANDERSEN_STEP, _ANDERSEN_ALLOWANCE = inch(0.125), inch(0.5)
 
 
 def _drutex(tag, width, height, operation, row, product, *, tempered=False,
@@ -95,13 +80,18 @@ def _drutex(tag, width, height, operation, row, product, *, tempered=False,
         product_ref=product.tag, source=f"{row} {_DRUTEX_FACES} {profile_detail} {_SIZE}")
 
 
-def _maxlight(tag, width, height, *, tempered=False) -> WindowType:
+def _maxlight(tag, width, height, *, tempered=False, egress=False) -> WindowType:
+    clear = ({"net_clear_width_deduction": _MAXLIGHT_CLEAR_W,
+              "net_clear_height_deduction": _MAXLIGHT_CLEAR_H} if egress else {})
+    note = (" R310 escape: turn-sash clear opening ESTIMATED (unit - 154 mm W, - 70 mm H); "
+            "fabricator's written figure pending (notes/egress_window_review.md)."
+            if egress else "")
     return WindowType(
         tag=tag, width=width, height=height, operation="tilt_turn", tempered=tempered,
         u_factor=u_us(0.20), shgc=0.40, vt=0.58, frame_depth=_MAXLIGHT_DEPTH,
         frame_face_width=_MAXLIGHT_FACE, sash_face_width=_MAXLIGHT_FACE,
-        frame_material_ref="aliplast-maxlight-powder",
-        product_ref=ALIPLAST_MAXLIGHT_TT.tag, source=f"{_MAXLIGHT} {_SIZE}")
+        frame_material_ref="aliplast-maxlight-powder", **clear,
+        product_ref=ALIPLAST_MAXLIGHT_TT.tag, source=f"{_MAXLIGHT}{note} {_SIZE}")
 
 
 def _tt(tag, width, height, *, tempered=False) -> WindowType:
@@ -119,24 +109,8 @@ def _hp(tag, width, height) -> WindowType:
                    u=0.14, shgc=0.39, vt=0.56)
 
 
-def _egress(tag, width, height, height_deduction, *, tempered=False) -> WindowType:
-    # Andersen 400 widest-clear-opening hinge (§7): clear width = unit - 5.81".
-    return WindowType(
-        tag=tag, width=width, height=height, operation="casement", tempered=tempered,
-        u_factor=u_us(0.20), shgc=0.40, vt=0.51, frame_depth=_ANDERSEN_DEPTH,
-        frame_face_width=_ANDERSEN_JAMB_FACE, sash_face_width=_ANDERSEN_SASH_FACE,
-        frame_head_face_width=_ANDERSEN_HEAD_FACE, frame_sill_face_width=_ANDERSEN_SILL_FACE,
-        sill_rail_height=_ANDERSEN_INTERIOR_SILL_RAIL,
-        net_clear_width_deduction=inch(5.81), net_clear_height_deduction=height_deduction,
-        frame_size_increment=_ANDERSEN_STEP, minimum_rough_opening_allowance=_ANDERSEN_ALLOWANCE,
-        frame_material_ref="andersen-400-exterior",
-        product_ref=ANDERSEN_400_CASEMENT.tag, source=f"{_AND} {_ANDERSEN_FACES} {_SIZE}")
-
-
-# Clear height = unit - 4.43" for a 28 3/8"-31 1/2" wide, 40 13/16"-48" tall unit, else
-# unit - 4.85" (Andersen 400 opening specifications, 2025-26). The narrow escape types take
-# the full 27 1/2" between jacks (preferences.toml's bearing rung): a 27" RO nets a 25 5/8"
-# unit and 19.8" clear; 27 1/2" nets 26 1/8" and 20.3" (notes/window_and_door_procurement.md §7).
+# The nine R310 escape units take the full 27 1/2" between jacks (preferences.toml's bearing
+# rung); WT-3048 is the nonbearing 30" (notes/egress_window_review.md).
 WINDOW_TYPES = (
     _maxlight("WT-1424-TT", inch(14), ft(2)),  # kitchen pair
     _maxlight("WT-1424-TT-T", inch(14), ft(2), tempered=True),  # WIN-M-BATH1-W
@@ -153,10 +127,10 @@ WINDOW_TYPES = (
     _tt("WT-3048-TT-T", inch(30), ft(4), tempered=True),
     _hp("WT-2754-HP", inch(27.5), ft(4, 6)),
     _hp("WT-3048-HP", inch(30), ft(4)),
-    _egress("WT-2748", inch(27.5), ft(4), inch(4.85)),
-    _egress("WT-2748-T", inch(27.5), ft(4), inch(4.85), tempered=True),
-    _egress("WT-2754", inch(27.5), ft(4, 6), inch(4.85)),
-    _egress("WT-3048", inch(30), ft(4), inch(4.43)),
+    _maxlight("WT-2748", inch(27.5), ft(4), egress=True),
+    _maxlight("WT-2748-T", inch(27.5), ft(4), tempered=True, egress=True),
+    _maxlight("WT-2754", inch(27.5), ft(4, 6), egress=True),
+    _maxlight("WT-3048", inch(30), ft(4), egress=True),
 )
 
 HOUSE_WINDOW_TAGS = frozenset(t.tag for t in WINDOW_TYPES)

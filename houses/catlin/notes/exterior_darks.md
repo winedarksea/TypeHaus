@@ -11,8 +11,8 @@ approximate, and a physical sample governs.
 
 ## Why black
 
-Black is the only family that every product line can follow. Andersen 400 has no grey, and
-Una-Clad stocks no dark grey at the band's 0.050". Both were already black, and both are fixed
+Black is the only family that every product line can follow. Andersen 400 (retired
+2026-11-13) had no grey, and Una-Clad stocks no dark grey at the band's 0.050". Both were already black, and both are fixed
 by the egress and corrosion decisions, not by colour. Heat gain is a wash: Matte Black is
 SR 0.27 / SRI 26 and Slate Grey is SR 0.30 / SRI 30. Metal Sales sells no charcoal in 24 ga.
 Charcoal (17) and Black (06) are Colorfast45 SMP, made in 26 and 29 ga only, and the owner's
@@ -41,9 +41,8 @@ Slate Grey is.
 | Entry door paint; entry, service and French-door frames | `door-paint-exterior` | site paint matched to a 106 chip | `#2c2829` | matched |
 | French-door composite frame (`frame_material_ref`) | `composite-door-frame` | Therma-Tru composite, site-painted as above | `#2c2829` | matched |
 | 29 Drutex caps | `drutex-alucover-cap` | Alucover RAL 9017 matt powder coat | `#262625` | RAL |
-| 3 Max Light frames | `aliplast-maxlight-powder` | Aliplast RAL 9017 matt powder coat | `#262625` | RAL |
+| 12 Max Light frames (3 14x24s, 9 escape units since 2026-11-13) | `aliplast-maxlight-powder` | Aliplast RAL 9017 matt powder coat | `#262625` | RAL |
 | Garage stem band and stem-top Z | `aluminum-flat-pvdf` | Una-Clad PVDF aluminium Matte Black (fixed; not on `METAL`) | `#2d2d2e` | Una-Clad chip |
-| 9 escape casements | `andersen-400-exterior` | Andersen 400 Black | `#323433` | Andersen swatch |
 | French-door returns and casing | `captivate-sheet` | AZEK Captivate Midnight Black | `#222120` | AZEK swatch |
 | Overhead door | `clopay-classic-steel` | Clopay Classic Steel Charcoal, GDU293 R-12.9 (fixed) | `#535353` | Clopay chip; **open** |
 

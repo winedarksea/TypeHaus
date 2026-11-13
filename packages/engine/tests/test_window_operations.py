@@ -103,7 +103,7 @@ def test_catlin_picture_window_selection_preserves_the_operable_exceptions(catli
     for tag in ("WIN-M-KITCH", "WIN-A-N2"):
         assert window_types[windows[tag].type_ref].operation is WindowOperation.TILT_TURN, tag
     for tag in ("WIN-S-HALL-N", "WIN-S-BED1", "WIN-S-BED2"):
-        assert window_types[windows[tag].type_ref].operation is WindowOperation.CASEMENT, tag
+        assert window_types[windows[tag].type_ref].operation is WindowOperation.TILT_TURN, tag
 
 
 def test_window_operation_coerces_authored_strings_and_rejects_unmodeled_ones():
@@ -119,25 +119,26 @@ def test_window_operation_coerces_authored_strings_and_rejects_unmodeled_ones():
         WindowType(tag="WT-TEST", width=ft(3), height=ft(5), operation="jalousie")
 
 
-# Every window a sleeping room relies on for R310 escape (notes/window_and_door_procurement.md §7).
-EGRESS_CASEMENTS = (
+# Every window a sleeping room relies on for R310 escape (notes/egress_window_review.md).
+EGRESS_WINDOWS = (
     "WIN-M-BED-S1", "WIN-M-BED-S2", "WIN-S-BED1", "WIN-S-BED2", "WIN-S-HALL-N",
     "WIN-S-SUITE1", "WIN-S-SUITE2", "WIN-A-S-JUL-W", "WIN-A-S-JUL-E",
 )
 
 
-def test_catlin_egress_windows_are_casements_and_the_rest_tilt_turn(catlin_plan):
-    # 2026-10-21: the casements went tilt-turn for import, then the egress set came back. A
-    # 27" tilt-turn nets ~18" clear at a Euro sightline and R310 wants 20"; a US egress-hinge
-    # casement nets ~20 3/4". The three operable 14x24s are Max Light tilt-turns.
+def test_catlin_has_no_casements_and_the_escape_units_are_max_light(catlin_plan):
+    # 2026-11-13: Andersen retired. A Drutex 27" tilt-turn nets ~18" clear; Max Light's 35 mm
+    # faces net ~20.1" at 27 1/2" (estimated, fabricator's written figure pending).
     window_types = {wt.tag: wt for wt in catlin_plan.library.window_types}
     operations = {
         element.tag: window_types[element.type_ref].operation
         for element in catlin_plan.all_elements() if isinstance(element, Window)
     }
-    casements = {tag for tag, op in operations.items() if op is WindowOperation.CASEMENT}
-    assert casements == set(EGRESS_CASEMENTS)
-    assert sum(op is WindowOperation.TILT_TURN for op in operations.values()) == 14
+    assert not any(op is WindowOperation.CASEMENT for op in operations.values())
+    assert sum(op is WindowOperation.TILT_TURN for op in operations.values()) == 23
+    products = {e.tag: window_types[e.type_ref].product_ref
+                for e in catlin_plan.all_elements() if isinstance(e, Window)}
+    assert {products[tag] for tag in EGRESS_WINDOWS} == {"PROD-ALIPLAST-MAXLIGHT-TT"}
     assert not any(op is WindowOperation.AWNING for op in operations.values())
 
 
@@ -189,19 +190,22 @@ def test_catlin_escape_windows_are_graded_on_the_flashed_frame(catlin_model_ro):
 
     window_types = {wt.tag: wt for wt in catlin_model_ro.plan.library.window_types}
     windows = {e.tag: e for e in catlin_model_ro.openings}
-    # Orderable units (1/8" steps, RO >= unit + 1/2"): 26 1/8" in a 27 1/2" RO, 28 5/8" in 30".
-    expected = {"WT-2748": (26.125, 46.5, 20.315, 41.65),
-                "WT-2748-T": (26.125, 46.5, 20.315, 41.65),
-                "WT-2754": (26.125, 52.5, 20.315, 47.65),
-                "WT-3048": (28.625, 46.5, 22.815, 42.07)}
-    for tag in EGRESS_CASEMENTS:
+    # Max Light units follow the flashed opening; clear = unit - 154 mm W, - 70 mm H (ESTIMATED,
+    # notes/egress_window_review.md). Replace with the fabricator's written figures.
+    expected = {"WT-2748": (26.21, 46.805, 20.147, 44.05),
+                "WT-2748-T": (26.21, 46.805, 20.147, 44.05),
+                "WT-2754": (26.21, 52.805, 20.147, 50.05),
+                "WT-3048": (28.71, 46.805, 22.647, 44.05)}
+    for tag in EGRESS_WINDOWS:
         opening = windows[tag]
         window_type = window_types[opening.type_ref]
         unit_w, unit_h, clear_w, clear_h = expected[opening.type_ref]
         frame = window_frame_dimensions(opening)
-        assert (frame[0] / .0254, frame[1] / .0254) == pytest.approx((unit_w, unit_h)), tag
+        assert (frame[0] / .0254, frame[1] / .0254) == pytest.approx((unit_w, unit_h),
+                                                                      abs=1e-3), tag
         width, height = _net_clear_dimensions_m(opening, window_type)
-        assert (width / .0254, height / .0254) == pytest.approx((clear_w, clear_h)), tag
+        assert (width / .0254, height / .0254) == pytest.approx((clear_w, clear_h),
+                                                                abs=1e-3), tag
         assert _meets_r310_2_1(opening, grade_floor=False, window_type=window_type), tag
 
 

@@ -916,6 +916,13 @@ new flashing, no new buck, no change to the girt mount plane.
 
 ## G3. Orientation-tuned glass — the product exists, and the plant room's note is backwards
 
+> **CLOSED 2026-11-13, nothing taken.** The premise below ("SHGC 0.35 everywhere") predates the
+> product selection: the selected rows are 0.33-0.40, and each is already the high-gain row of its
+> line. No listed row in the chosen lines clears +0.08 SHGC at U ≤ 0.25 except Andersen's HeatLock
+> double, which loses more in conduction than it gains on summer-shaded glass. The CPD search and
+> the arithmetic are in `houses/catlin/notes/window_and_door_procurement.md` §2.2. The plant-room
+> comment this section objects to is gone; the dew-point reason stands at `second.py:773`.
+
 **Every one of the 43 windows is SHGC 0.35 / VT 0.50, on all four facades.** The three
 plant-room `-HP` types carry a comment saying SHGC was *"deliberately unchanged at 0.35: a
 triple unit that bought its U with a low SHGC would take the light the room exists for"*

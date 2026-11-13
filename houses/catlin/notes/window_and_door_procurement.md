@@ -5,8 +5,10 @@
 - **Drutex IGLO Energy Alucover** (Polish, aluminium-capped uPVC) for the 11 tilt-turn and
   18 fixed units.
 - **Aliplast Max Light Modern** (Polish thermally broken aluminium, tilt-turn) for the three
-  operable 14x24s: `WIN-M-KITCH-N`, `WIN-M-KIT-E`, `WIN-M-BATH1-W` (2026-10-31).
-- **Andersen 400 casement** (Bayport, MN) for the 9 R310 escape windows.
+  operable 14x24s: `WIN-M-KITCH-N`, `WIN-M-KIT-E`, `WIN-M-BATH1-W` (2026-10-31), and the 9 R310
+  escape windows (2026-11-13; one fabricator, Słowińscy, STO-M-20). The clear opening is an
+  estimate with a supplier gate: [egress_window_review.md](egress_window_review.md).
+- **Andersen 400 retired 2026-11-13** (the documented revert for the escape windows).
 - **Therma-Tru Smooth-Star full-lite** fiberglass / composite frames / Endura hardware
   for all three French pairs; an opaque **Therma-Tru
   Smooth-Star** for `D-M-ENTRY`; a commodity **Masonite** insulated steel outswing for
@@ -19,9 +21,9 @@ carrying its NFRC CPD row. **Every NFRC number below was read from the CPD itsel
 (search.nfrc.org), not from a brochure or a Phius page.** What is still claimed rather than
 in hand is listed in §2.6.
 
-The schedule is 41 units: 14 tilt-turn (3 Max Light), 9 casement, 18 fixed (4 of them the
-`-HP` plant-room units); 23 operable. 11 are tempered. Suppliers: Drutex 29, Max Light 3,
-Andersen 9.
+The schedule is 41 units: 23 tilt-turn (12 Max Light), 0 casements, 18 fixed (4 of them the
+`-HP` plant-room units); 23 operable. 11 are tempered. Suppliers: Drutex 29, Max Light 12, both
+Polish.
 
 **The import risk is the code gates, more than the U-value.** Without an NFRC label, IECC
 R303.1.3 assigns a default U of about 0.55, and the house fails the energy table. Without a
@@ -64,13 +66,12 @@ Zone 5 governs any unit within 3.6 ft of a corner. Order every unit at one ratin
   (the Debesto/Aluplast candidate) rates U 0.27–0.28, over the 0.25 target. DAKO lists
   tilt-turn/fixed/awning at U 0.15–0.18, with no aluminium-capped line. Doorwin (Shandong) lists tilt-turn and fixed at
   U 0.17–0.18, but its casement is U 0.37.
-- **Egress at 27½" (2026-10-23).** A 27" RO nets a 25⅝" Andersen 400 unit and 19.8"
-  clear. The 27" family widened to the full 27½" jack-to-jack clear, which seats a 26⅛"
-  unit at **20.3" clear**; still one stud broken. Calculated; supplier confirmation
-  outstanding. See §7.
+- **Egress at 27½" (2026-11-13).** The 27" family is the full 27½" jack-to-jack clear (one stud
+  broken). The 9 escape units are Max Light tilt-turns: a 26.21" unit, **estimated** 20.15" clear
+  (0.15" margin), a supplier gate (§2.6 item 12). See [egress_window_review.md](egress_window_review.md).
 - **Dark frames.** On Alucover the black (RAL 9017 matt) is powder-coated aluminium, so no dark uPVC sees the
-  sun on any face (§3's preferred material). Andersen 400 is black Perma-Shield vinyl over
-  wood. Smooth-Star doors are painted fiberglass.
+  sun on any face (§3's preferred material). Max Light is powder-coated aluminium (the
+  Andersen vinyl frame retired 2026-11-13). Smooth-Star doors are painted fiberglass.
 - **14" units (2026-10-31).** Cascadia's outswing awning starts at 20" wide and its casement
   at 18 3/4". The three operable 14x24s are **Max Light tilt-turns**: at a 12.71" frame a
   Drutex operable lite (125 mm a side) leaves ~0.40 sf of glass, Max Light (70 mm) ~0.86 sf,
@@ -93,12 +94,34 @@ Zone 5 governs any unit within 3.6 ft of a corner. Order every unit at one ratin
 | **Fixed — selected** | Drutex Alucover | DRU-K-23-00001 | 0.15 | 0.39 | 0.57 | as above | quote |
 | **Fixed `-HP` — selected** | Drutex Alucover, laminated inner | DRU-K-23-00010 | 0.14 | 0.39 | 0.56 | as above | quote |
 | Fixed — alternate | Cascadia exterior-glazed | CWL-K-25-00118 | 0.14 | 0.43 | 0.55 | fiberglass | quote |
-| **Egress casement — selected** | Andersen 400 | AND-N-1-04162 | 0.20 | 0.40 | 0.51 | wood/vinyl | triple is Northeast-only; dealer to confirm |
-| Egress casement — fallback | Andersen 400 HeatLock double | AND-N-1-03559 | 0.24 | 0.31 | 0.53 | wood/vinyl | stocked |
+| **Tilt-turn egress — selected (2026-11-13)** | Aliplast Max Light Modern (Słowińscy) | STO-M-20 | 0.20 | 0.40 | 0.58 | thermally broken alu, 75 mm; 35 + 35 mm face | clear opening estimated; supplier gate (§2.6) |
+| Egress casement — retired 2026-11-13 (revert) | Andersen 400 (triple AND-N-1-04162 0.20/0.40/0.51; HeatLock double AND-N-1-03559 0.24/0.31/0.53) | AND-N-1 | — | — | — | wood/vinyl | revert on BED1/2, SUITE1/2 only |
 | Casement (no 27" egress) | Cascadia outswing | CWL-K-21-00079 | 0.17 | 0.29 | 0.37 | fiberglass | fails 20" |
 | **Tilt-turn 14" — selected** | Aliplast Max Light Modern (Słowińscy) | STO-M-20 | 0.20 | 0.40 | 0.58 | thermally broken alu, 75 mm; 35 + 35 mm face | CR 69; quote |
-| Tilt-turn 14" — alternate fabricator | Aliplast Max Light Modern (Plastixal) | PLX-K-17 | 0.20 | 0.40 | 0.58 | as above | CR 66; quote |
+| Tilt-turn 14" — alternate fabricator | Aliplast Max Light Modern (Plastixal) | PLX-K-17 | 0.20 | 0.40 | 0.58 | as above | CR 66; not taken: its low-U row is SN63HT solar-control (SHGC 0.22), 2026-11-13 |
 | Tilt-only 14" — retired 2026-10-31 | Drutex Alucover | DRU-K-26-00001 | 0.18 | 0.24 | 0.35 | uPVC + alu cap | 125 mm operable sightline |
+
+**High-gain south glass: searched, none taken (2026-11-13, CPD read directly).** Scope was the
+summer-shaded main-floor south (`WIN-M-LIV-S1/S2`, `WIN-M-BED-S1/S2`) and the unshaded
+second-floor south (`WIN-S-STUDY1/2`, `WIN-S-PLANT1/2/4`). A row had to be in the same line and
+frame, U ≤ 0.25, SHGC at least ~0.08 higher, and VT no lower.
+
+- **Drutex tilt-turn, DRU-K-24 (all 10 rows):** the highest SHGC is 0.35 (`-00003`/`-00004`,
+  laminated, U 0.20/0.21). The selected `-00001` (0.16/0.33/0.47) is already the high-gain glass;
+  the rest are SN63/SKN176 solar-control (0.19-0.21).
+- **Drutex fixed, DRU-K-23 (all 10 rows):** the highest is 0.42 at U 0.20 (`-00003`/`-00004`, a
+  single CGPrem2). At the plant room's U ≤ 0.14 (`glazing_dew_point`) the only row is the selected
+  `-00010` at 0.39.
+- **Andersen 400 casement, AND-N-1 (all 4,048 rows):** of the 249 rows at U ≤ 0.25, the highest
+  SHGC is 0.48, on the HeatLock **double** LowE(180/i89) (`-03558-00001`: U 0.25 / SHGC 0.48 / VT 0.59;
+  the 180 coating is the PassiveSun one). The LowE(180/180) triple is 0.22/0.43/0.52 (+0.03). Only
+  the double clears +0.08, and it gives up the triple: ΔU +0.05 on ~20 sf costs about
+  0.05 × 7,500 HDD × 24 ≈ 9,000 Btu/sf·yr. Breaking even takes ~1,000 Btu/sf·day on south glass
+  (assumed, not oracled) × 212 days × 0.08 ΔSHGC × a **53%** heating-season sunlit fraction.
+  `WIN-M-BED-S1/S2` are 51% sunlit at the winter peak and fully shaded by the equinox
+  (`plans/pattern_language_review.md` §5), so the swap loses heat.
+
+The current glass is kept, and the TODO item is closed.
 
 NAFS: Drutex holds Florida approvals (FL41835/6/7, AAMA/WDMA/CSA 101/I.S.2/A440-17) for IGLO
 5 Classic casement and tilt-turn and IGLO Energy Classic fixed, **nail-fin plus jamb-strap
@@ -166,16 +189,15 @@ claimed.
 | WT-6348-FIX | 1 | Drutex fixed | 63x48 → 62½x47½ | DRU-K-23-00001 | 0.15/0.39/0.57 | 93 mm |
 | WT-2736-TT, WT-2748-TT(-T), WT-3048-TT(-T) | 4+2+1+1+3 | Drutex tilt-turn | — | DRU-K-24-00001 | 0.16/0.33/0.47 | 93 mm |
 | WT-2754-HP, WT-3048-HP | 1+3 | Drutex fixed, laminated | — | DRU-K-23-00010 | 0.14/0.39/0.56 | 93 mm |
-| WT-2748(-T), WT-2754, WT-3048 | 2+1+4+2 | Andersen 400 casement | — | AND-N-1-04162 | 0.20/0.40/0.51 | 3¼" (preset; confirm) |
+| WT-2748(-T), WT-2754, WT-3048 | 2+1+4+2 | Max Light tilt-turn (escape) | 27½x48/54, 30x48 → 26.21/28.71 × 46.805/52.805 | STO-M-20 | 0.20/0.40/0.58 | 75 mm |
 
 Flange: factory nailing fin on all window lines (Max Light: quoted +15%, to confirm).
-Colour: black exterior (RAL 9017 Traffic black matt on Drutex and Max Light; the Andersen 400
-escape casements are Andersen Black vinyl), white interior.
+Colour: black exterior (RAL 9017 Traffic black matt on Drutex and Max Light), white interior.
 
 **Visible faces, modelled (2026-11-07, [section sources](window_profile_measurements.md)).**
 Drutex Alucover: **74 mm frame + 50 mm sash** on operable units, 74 mm on fixed units
 (70001 / 70013 dealer sections, replacing the 75/125 mm Phius basis). Max Light: 35 + 35 mm.
-Andersen 400: **1⅝" sash; exposed frame 9/16" jamb, 3/4" head, 13/16" sill**, from its
+Andersen 400 (retired 2026-11-13): **1⅝" sash; exposed frame 9/16" jamb, 3/4" head, 13/16" sill**, from its
 architectural CAD. The three frame faces are separately authored; the interior stool rail
 is independently 1⅛". Confirm the selected triple-pane section before manufacture.
 
@@ -188,7 +210,7 @@ is published, so it bounds the base product rather than re-bases a row. No US pr
 published for any of the three lines; every row in `prices.toml` stays a band with a named product.
 Drutex sells through dealers (DAKAM, Franklin Park IL, 16 years as a partner; Home One,
 Chicago), and the Chicago dealer is the freight point. The Polish landed cost adds ocean
-freight, crating, US duty on HTS 3925.20 plus the 2025 EU tariff, and 10–14 weeks. Therma-Tru and Andersen are Twin Cities dealer-stocked lines; the
+freight, crating, US duty on HTS 3925.20 plus the 2025 EU tariff, and 10–14 weeks. Therma-Tru is a Twin Cities dealer-stocked line; the
 composite-frame Endura pair and laminated triple still need a special quote and lead time.
 **One quote per supplier
 for the actual schedule** is the next step; price for performance cannot be ranked closer
@@ -209,7 +231,8 @@ than ±20% without it.
    DAKAM still confirms the ordered adaptor, unit-height datum and stool-bearing rail;
    include a retained adaptor in the unit envelope before raising the rail. Fixed stools
    retain the explicit provisional 75 mm rail, independently of the 74 mm exterior face.
-4. Andersen 400 triple-pane availability through a Twin Cities dealer; basic-unit frame depth.
+4. Closed 2026-11-13: Andersen retired (revert only), so the Northeast-only triple, the unpublished
+   face split and the Twin Cities dealer are moot.
 5. Therma-Tru pair NFRC/NAFS label under its product approval with the specified Endura
    components; laminated triple CPD row and SHGC (0.12 is only the provisional basis row);
    BE365 on PanoLock+'s compatibility list; stile width ≥ 4 inches; installed threshold
@@ -221,9 +244,7 @@ than ±20% without it.
    Read current nominal and tolerance-adjusted crest heights from the engine-generated
    [catalog height review](french_door_catalog_installation.md#3-height-and-geometry-review);
    confirm them against the actual installed section and landing.
-6. Dark-colour warranty by orientation. Andersen 400 publishes 20 years glass / 10 years
-   non-glass, transferable, not prorated (400 Series product guide), with no black-specific
-   term. Get Drutex and Therma-Tru finish terms for the selected black exterior in writing.
+6. Dark-colour warranty by orientation. Get Drutex, Max Light (powder coat) and Therma-Tru finish terms for the selected black exterior in writing.
 7. Clopay: Texas TDI approval GDR150 lists Modern Steel residential models 7208/7209,
    non-impact, at **+38/−42 psf**, about twice §1's worst 18.3 psf. The door is now Classic
    Steel GDU293 (2026-10-29): get its own rating. Confirm it is listed and that the listing reaches 16'-0" wide (drawing 104859/105042-B-TDI).
@@ -234,7 +255,7 @@ than ±20% without it.
    where the quote shows a real saving. Limits: 27" egress width, the girt-course sill module,
    R303.1 glazing area per room, and the stool heights.
 10. **Main-floor security glazing (owner request, 2026-10-26).** Ask Drutex / DAKAM and
-    the Andersen dealer to price an alternate for every main-floor (`WIN-M-*`) window:
+    the Max Light fabricator to price an alternate for every main-floor (`WIN-M-*`) window:
     factory-laminated security glass with a clear PVB (polyvinyl butyral) or manufacturer-
     specified security interlayer bonded between the glass plies, incorporated as a
     laminated lite in the insulating glass unit (IGU). Ask
@@ -247,15 +268,18 @@ than ±20% without it.
     and bedroom egress clear opening. This is a quote alternate pending supplier responses
     and owner selection; availability and security performance are not yet confirmed.
 
-11. **Max Light (2026-10-31).** Fabricator choice, Słowińscy (STO-M-20) or Plastixal
-    (PLX-K-17), and its US import route; nail fin (Debesto quotes +15%); a NAFS label at
-    DP ≥ 20; the 16 CFR 1201 mark on the `-T` unit; RAL match to the Drutex caps.
-12. **Egress alternate.** Quote the 9 Andersen casements (27½×48 ×3, 27½×54 ×4, 30×48 ×2)
-    as Max Light tilt-turns, with a **written net clear opening** ≥ 20" W / 24" H / 5.7 sf.
-    Screening only: 26.21" − 2 × 70 mm ≈ 20.7" clear before the turn sash's intrusion. The
-    model gives no R310 credit without published data, so the casements stay in it.
-13. **Whole-schedule quote** from the Max Light fabricator, so Drutex + Andersen could
-    collapse to one order if the price and the egress figures hold.
+11. **Max Light (2026-10-31).** Fabricator Słowińscy (settled 2026-11-13; STO-M-20); its US import
+    route; nail fin (Debesto quotes +15%); NAFS DP ≥ 20; the 16 CFR 1201 mark on the `-T` units;
+    RAL and gloss match to the Drutex caps. Item 12 adds the escape-unit gate.
+12. **Egress gate (a construction hold).** Ask Słowińscy for a **written** net clear opening,
+    W × H, for the turn sash at 26.21×46.805, 26.21×52.805 and 28.71×46.805, and the hinge's
+    maximum opening angle (none is published; the model's 154 mm / 70 mm deductions are an
+    estimate, 0.15" over R310's 20"). Confirm also the NAFS DP ≥ 20 with a nail fin, the 1201
+    mark on WIN-S-BED1 (-T), RAL/gloss, and an **exterior screen that releases from inside
+    without tools** on all 9 (R310.4; an inward sash cannot take an interior screen):
+    retractable or push-out. Fallback and the Andersen revert: [egress_window_review.md](egress_window_review.md).
+13. **Dropped (2026-11-13).** One Max Light order for all 41 units: Max Light fixed is best U 0.17
+    (STO-M-19), and the plant room needs U ≤ 0.14 (`glazing_dew_point`; Drutex fixed 0.14-0.15).
 
 **Security-glazing sourcing check (2026-10-26).**
 [Drutex's glass options](https://www.drutex.eu/en/products/addons/type/3/) explicitly
@@ -264,17 +288,17 @@ Alucover triple IGUs and its documented EN 356 class.
 [Eurostaklo's make-up table](https://www.eurostaklo.hr/en/staklo-lamistal) lists 44.4 as
 4 mm glass + 1.52 mm PVB + 4 mm glass, P4A. Treat this as a useful quote reference,
 not proof of Drutex's rating or of whole-window forced-entry resistance.
-[Andersen's July 2026 acoustic report](https://www.andersenwindows.com/-/media/Project/AndersenCorporation/AndersenWindows/AndersenWindows/files/technical-docs/performance/400-series-stc-oitc-web.pdf)
-lists **non-coastal laminated, insulating** glass for the 400 Series Perma-Shield casement
-(AND-N-1). Ask for this first and confirm whether it can be combined with triple glazing;
-the report lists laminated and triple as separate options. A monolithic laminated option
-is not an insulating-glass substitute. Glass impact classifications and acoustic results
+For the Max Light escape units (main-floor `WIN-M-BED-S1/S2` are among them), ask Słowińscy for the
+same laminated option combined with triple glazing, and its effect on U/SHGC and sash weight.
+(Andersen's laminated-insulating option is moot since the 2026-11-13 retirement.)
+A monolithic laminated option is not an insulating-glass substitute.
+Glass impact classifications and acoustic results
 do not establish a forced-entry rating for the complete window.
 
 **Cost signal, not a project quote.**
 [European-window supplier Debesto](https://debesto.com/en-us/blog/european-custom-windows/)
 publishes an indicative **+10% of window price for safe glass**. It does not specify a
-44.4/P4A security package or establish a Drutex/Andersen surcharge. For illustration,
+44.4/P4A security package or establish a Drutex or Max Light surcharge. For illustration,
 10% on a $500–$1,000 base unit is $50–$100 extra; that arithmetic is not a supplier quote.
 Obtain separate add prices for ordinary safety lamination and the proposed security
 lamination, including any hardware, freight and duty changes. No confirmed security
@@ -313,12 +337,12 @@ the same as east and west.
 
 ## 4. Operation
 
-- **14 tilt-turn**: Drutex `WIN-M-KITCH`, `WIN-M-LIV-E1`/`E2`/`S1`/`S2`, `WIN-M-BED-W1`/`W2`,
+- **23 tilt-turn, all inward (0 casements)**: Drutex `WIN-M-KITCH`, `WIN-M-LIV-E1`/`E2`/`S1`/`S2`, `WIN-M-BED-W1`/`W2`,
   `WIN-S-STUDY1`/`2`/`3`, `WIN-A-N2`; Max Light `WIN-M-KITCH-N`, `WIN-M-KIT-E`,
   `WIN-M-BATH1-W` (the powder room's second ventilation path, still tempered).
-- **9 egress casements, Andersen 400** (§7): `WIN-M-BED-S1`/`S2`, `WIN-S-BED1`, `WIN-S-BED2`,
+- **9 egress tilt-turns, Max Light** ([egress_window_review.md](egress_window_review.md)): `WIN-M-BED-S1`/`S2`, `WIN-S-BED1`, `WIN-S-BED2`,
   `WIN-S-HALL-N`, `WIN-S-SUITE1`/`2`, `WIN-A-S-JUL-W`/`E`. Both of each pair go, so a pair
-  reads alike. Order the egress (widest-opening) hinge, not wash mode.
+  reads alike.
 - **No awnings.** No line surveyed builds an outward awning at 14" (§2.1); the kitchen pair
   went Drutex tilt-only → Max Light tilt-turn on 2026-10-31. Bedroom 3's two 14s stay fixed.
 - **Two suppliers on one face.** The south, east and west faces each mix the two products
@@ -327,14 +351,16 @@ the same as east and west.
 - **Fixed units (18).** Fixed-in-sash matches the operable sightlines on the dark facade.
   Fixed-in-frame is cheaper and has more glass. Pick one rule per elevation. Where a fixed
   unit sits beside a tilt-turn on one face (north: `WIN-A-N1`/`N2`), fixed-in-sash.
-- **Juliets** (`WIN-A-S-JUL-W`/`E`) are outward casements: the studio's escape opening.
+- **Juliets** (`WIN-A-S-JUL-W`/`E`) are inward tilt-turns (2026-11-13): the studio's escape opening
+  if it becomes a bedroom; a craft room today, so R310 is not graded.
 - **R312.2.** The engine grades all 23 operable units: none has a sill under 24" with more
   than 72" below (PASS). **It measures the sill from the storey datum, not the finished
   floor.** The suite's 2'-3½" sill is 26" over its 1½" oak, so it holds. `WIN-A-N2` sits at
   exactly 24" over the attic datum. Confirm against the finished floor; if it lands under
   24", turn mode needs a WOCD (ASTM F2090: a lockable or limiting turn handle).
 - **Screens.** An inward sash needs an exterior-mounted screen. It sits in the mount plane,
-  so coordinate it with the J-receiver trim at the frame.
+  so coordinate it with the J-receiver trim at the frame. On the 9 escape units it must release
+  from inside without tools (R310.4): retractable or push-out (§2.6 item 12).
 
 ## 5. Install: outie flange vs Euro strap
 
@@ -363,8 +389,7 @@ trim kit is ordered**.
 - **Stool vs inward sweep (2026-11-07).** Alucover operable stools now sit at the measured
   **38 mm above the bare frame bottom**, a 37 mm drop from the previous 75 mm basis.
   Fixed Alucover stools retain the provisional 75 mm rail, preserving the dining counter
-  plane. Andersen stools now use the published **1⅛" interior sill-ledge height**, independent
-  of the exterior face. The Max Light units remain on the drawn 35 mm sill (sash 84 mm deep
+  plane. The Max Light units (the 14s and the 9 escape units) remain on the drawn 35 mm sill (sash 84 mm deep
   against a 75 mm frame); ask Aliplast/Debesto for their inward clearance. DAKAM confirms
   the retained adaptor and rail datum; all elevations start at the resolved seated unit,
   not the RO. Where a stool is coordinated with the counter (`WIN-M-LIV-E1`/
@@ -384,107 +409,21 @@ trim kit is ordered**.
   interior reveal is deep. The leaf cannot fold back against the wall, and it stands in the
   room at 90°.
 
-## 7. Frame sizing and egress review (2026-10-23)
+## 7. Egress review
 
-**Every 27" RO is now 27½", the full jack-to-jack clear of a one-stud break** (30½" bay
-less two 1½" jacks, `preferences.toml`). The owner asked for one buck pattern across the
-family, so all eighteen former 27" openings widened, not only the seven escape casements.
-Centres, studs broken, headers, sills and heads are unchanged; each `from_node` jamb offset
-dropped ¼" to hold its centre, and each adjoining braced panel gave up ¼". The perimeter
-detail is unchanged: ⅜" buck, 0.020" membrane and ¼" shim gap at each jamb and the head;
-the sill consumes about 0.550" (buck + pan fall + 0.060" membrane). Only the unit grows.
-
-The resolved seat now sizes an orderable unit where the type states one
-(`WindowType.frame_size_increment` and `minimum_rough_opening_allowance`). The four
-Andersen types carry ⅛" and ½": the unit must clear both the shim gaps and Andersen's
-RO = unit + ½" inside the **flashed** opening, rounds **down** to ⅛", stays centred between
-the jambs and bears on the pan; the head takes the remaining slack. Schedule, IFC, renders
-and R310 all read that one seat. Drutex types state no step (made to the mm) and keep the
-continuous envelope.
-
-| RO | Modeled unit / frame |
-|---|---|
-| 14×24 | 12.710×22.805 (Drutex) |
-| 27½×36 | 26.210×34.805 (Drutex) |
-| 27½×48 | 26.210×46.805 (Drutex) · **26⅛×46½ (Andersen)** |
-| 27½×54 | 26.210×52.805 (Drutex) · **26⅛×52½ (Andersen)** |
-| 30×48 | 28.710×46.805 (Drutex) · **28⅝×46½ (Andersen)** |
-| 63×48 | 61.710×46.805 |
-
-The two garage frames are 13.460×23.553" (14×24 RO less a 0.270" jamb/head and 0.177" sill seat). **WIN-B-SAUNA is unresolved:** its
-manual court-opening detail supplies no modeled seat. Its schematic placeholder is not a
-frame dimension; A-602 prints UNRESOLVED and IFC leaves overall frame dimensions unset.
-Add a dimensioned buck/pan/seat detail before ordering it. Stool heights still require the
-supplier's sill adaptor and sash-overlap section (§2.6).
-
-For the selected Andersen 400 widest-opening hinge, the engine applies the published
-**unit-width deduction of 5.81"** to the resolved unit. The height deduction is 4.43" for
-WT-3048's unit (inside 28⅜"–31½" × 40 13/16"–48") and 4.85" for the narrower types. Exact
-published clear openings remain supported for other catalog products. A selected product
-without clear-opening data (including the Drutex tilt-turns) receives no nominal-RO credit.
-
-| Escape windows | RO | Unit | Calculated clear | Area |
-|---|---|---|---|---|
-| WIN-M-BED-S1/S2 | 30×48 | 28⅝×46½ | 22.815×42.070 | 6.67 sf |
-| WIN-S-BED1, BED2, HALL-N | 27½×48 | 26⅛×46½ | 20.315×41.650 | 5.88 sf |
-| WIN-S-SUITE1/2, WIN-A-S-JUL-W/E | 27½×54 | 26⅛×52½ | 20.315×47.650 | 6.72 sf |
-
-All six sleeping rooms pass `code.R310_egress` (20" × 24", 5.7 sf). This is **calculated
-compliance with procurement confirmation outstanding.** Before ordering, obtain written
-confirmation of the exact units, widest-opening hinges, glazing, operator and any opening-
-control device, the actual net clear openings, and the installation requirements; the
-installer must confirm the finished flashed openings and attachment detail accept those
-units. If confirmation fails, the thinner-buck path below is the fallback to revisit.
-The 63" dining picture window stays an owner-approved exception with its own LVL header
-(`preferences.toml`, `notes/dining_window_header.md`).
-
-Sources checked 2026-10-23:
-[Andersen 400 opening specifications](https://www.andersenwindows.com/-/media/Project/AndersenCorporation/AndersenWindows/AndersenWindows/files/technical-docs/area-and-opening-specifications/area-openingspecifications-windows--400series-casement.pdf),
-[Minnesota R310](https://www.revisor.mn.gov/rules/1309.0310/).
-
-### Fallback, not taken: a thinner buck at the 27" RO (investigated 2026-10-23)
-
-Superseded by the 27½" RO above; kept in case supplier confirmation fails.
-
-The narrowest product path found is the already-selected Andersen 400 casement with its
-widest-clear-opening hinge, paired with a thinner buck detail. Andersen's 2025–26 guide
-allows custom widths in ⅛" increments, gives clear width as unit width minus 5.81", and
-specifies minimum RO as unit width plus ½". At the current 25.710" modeled frame envelope,
-the largest size that rounds down is 25⅝", for 19.815" clear. The next size, 25⅞", gives
-20.065" clear and fits a 27" RO only if the combined buck and membrane thickness is at most
-⅝", preserving Andersen's ½" installation allowance. With the 0.020" membrane each side,
-that means buck thickness no greater than about 9/32" per jamb; the current buck is ⅜".
-
-This is a concrete supplier/installer question, not an approved detail. Confirm that a
-25⅞" unit is available with the specified hinge and glass, that its actual egress opening
-meets R310 with the selected operator and any opening-control device, and that a 9/32" buck
-can be securely fastened and flashed in the outie wall. The 27×48 units would then have
-about 20.065" × 41.955" clear (5.84 sf); the 27×54 units about 20.065" × 47.955" (6.68 sf).
-The existing 30×48 pair remains ample. The check must use the supplier's confirmed ordered
-dimensions, not these screening calculations.
-
-No second catalog product was verified to fit the present 27" RO/frame envelope and
-provide the required clear width. Andersen 100 Series' published widest-opening formula
-loses 7.790" from unit width; it does not help at this size. Do not treat fixed jamb width
-as opening width: the sash swings outside, but the jambs stay in the passage. Andersen's
-published 400-series clear-opening formula already captures that distinction. The adopted
-2020 Minnesota Residential Code (2018 IRC base) requires a 20" net clear width, 24" height,
-the applicable minimum area, and dimensions achieved by normal operation from inside; the
-Minnesota amendments do not change R310.2.1.
-
-Sources checked 2026-10-23:
-[Andersen 400 opening specifications](https://www.andersenwindows.com/-/media/Project/AndersenCorporation/AndersenWindows/AndersenWindows/files/technical-docs/area-and-opening-specifications/area-openingspecifications-windows--400series-casement.pdf),
-[Andersen 100 opening specifications](https://www.andersenwindows.com/-/media/Project/AndersenCorporation/AndersenWindows/AndersenWindows/files/technical-docs/area-and-opening-specifications/area-openingspecifications-windows--100series-casement.pdf),
-[Minnesota R310](https://www.revisor.mn.gov/rules/1309.0310/).
+Moved to [egress_window_review.md](egress_window_review.md): the Max Light escape units
+(2026-11-13: estimated clear opening, supplier gate, fallback) and, below it, the superseded
+Andersen 400 basis (2026-10-23), the documented revert.
 
 ## Engine follow-ups (not in this pass; the owner decides)
 
 1. **The tilt-turn elevation glyph is drawn upside down.** `emit/draw/elevation_openings.py`
    draws the tilt hinge at the head, like an awning. A tilt sash hinges at the sill, so the
    apex belongs there. The retype makes this visible on every elevation.
-2. **R310 sizing calculation corrected 2026-10-23.** Andersen clear-opening deductions
+2. **R310 sizing calculation corrected 2026-10-23.** Clear-opening deductions
    read the resolved, orderable unit, and selected products without clear-opening data
-   receive no nominal-RO credit. The seven narrow escape windows clear at 27½" ROs (§7).
+   receive no nominal-RO credit. The Max Light escape units use estimated deductions
+   ([egress_window_review.md](egress_window_review.md)).
 3. **R312.2 measures the sill from the storey datum**, not the finished floor
    (`fall_protection.py`), so a sill can pass at 24" while standing 22½" over an oak floor.
 

@@ -96,7 +96,7 @@ def test_schedule_labels_both_sizes_and_identifies_the_manual_detail(catlin_mode
     assert "D-B-GYM" in {row[0] for row in rough.rows}  # a doorless passage has no unit
     assert all(len(row) == len(table.columns) for row in table.rows)
     by_tag = {row[1]: row for row in table.rows}
-    assert by_tag["WIN-S-BED1"][5:7] == ("2'-3 1/2\" × 4'-0\"", "2'-2 1/8\" × 3'-10 1/2\"")
+    assert by_tag["WIN-S-BED1"][5:7] == ("2'-3 1/2\" × 4'-0\"", "2'-2 3/16\" × 3'-10 13/16\"")
     assert by_tag["WIN-S-PLANT3"][5:7] == ("2'-3 1/2\" × 4'-6\"", "2'-2 3/16\" × 4'-4 13/16\"")
     # Bucked through the foam behind its brick reveal (resolve/veneer_window_frame.py).
     assert by_tag["WIN-B-SAUNA"][6] == "1'-0 11/16\" × 1'-10 7/8\""
