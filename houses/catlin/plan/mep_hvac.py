@@ -130,6 +130,7 @@ EQUIPMENT_TYPES = (
     # Idle/efficiency: the sheet's "<55 W standby" and 94% MAX — meter at commissioning.
     EquipmentType(tag="EQ-T-EG4-12KPV", name="EG4 12kPV hybrid inverter",
                   product_ref="PROD-EG4-12KPV",
+                  model_representation=ModelRepresentation(symbol="eg4-12kpv"),
                   footprint=(inch(27), inch(12)), height=inch(35),
                   inverter_kw_continuous=8.0, inverter_kw_surge=16.0, pv_input_kw=12.0,
                   inverter_idle_w=55.0, inverter_efficiency=0.94,
@@ -145,6 +146,7 @@ EQUIPMENT_TYPES = (
     # AHJ accepts in writing), closed-loop CAN, own BMS contactor, a UL 9540A report.
     EquipmentType(tag="EQ-T-ESS-BATT", name="EG4 WallMount Indoor 280Ah, 14.3 kWh",
                   product_ref="PROD-EG4-POWERPRO-WM",
+                  model_representation=ModelRepresentation(symbol="eg4-wallmount-indoor-280ah"),
                   footprint=(inch(18.125), inch(9.625)), height=inch(36.375),
                   storage_kwh=14.3, ul_9540_listed=True,
                   clearances=(ClearanceZone(

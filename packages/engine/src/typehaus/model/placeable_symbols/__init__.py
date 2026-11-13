@@ -28,6 +28,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typehaus.model.shower_assembly import ShowerAssemblySpec
 
+from typehaus.model.placeable_symbols._eg4_storage import eg4_12kpv, eg4_wallmount_indoor
 from typehaus.model.placeable_symbols._erv_wall_hood import erv_wall_hood
 from typehaus.model.placeable_symbols._fireplace_insert import fireplace_insert
 from typehaus.model.placeable_symbols._frame import (
@@ -61,6 +62,8 @@ Builder = Callable[[float, float, float], tuple[tuple[Stroke, ...], tuple[Part, 
 _REGISTRY: dict[str, Builder] = {**FURNITURE_SYMBOLS, **APPLIANCE_SYMBOLS, **PLUMBING_SYMBOLS,
                                  **LIGHTING_SYMBOLS, **KITCHEN_SEKTION_SYMBOLS,
                                  **RECEPTACLE_SYMBOLS,
+                                 "eg4-12kpv": eg4_12kpv,
+                                 "eg4-wallmount-indoor-280ah": eg4_wallmount_indoor,
                                  "renewaire-fa8-wall-hood": erv_wall_hood,
                                  "swanstone-flex-3636": swanstone_flex,
                                  "infrared-heater": infrared_heater,
@@ -113,6 +116,7 @@ SYMBOL_NAMES = frozenset(KITCHEN_SEKTION_SYMBOLS) | frozenset(RECEPTACLE_SYMBOLS
     "furnace", "erv", "renewaire-fa8-wall-hood", "heat-pump-outdoor", "heat-pump-indoor",
     "water-heater", "sauna-heater", "panel", "register",
     "rheem-proterra-plugin-80",
+    "eg4-12kpv", "eg4-wallmount-indoor-280ah",
     "gree-flexx-ultra-24-horizontal",
     "gree-flexx-ultra-24-outdoor",
     "infrared-heater", "fireplace-insert",
