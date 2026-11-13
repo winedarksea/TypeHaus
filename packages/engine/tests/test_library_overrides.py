@@ -1,11 +1,9 @@
 """``with_product_refs``: a house names a Product on a library row without touching the library."""
 
 import pytest
-from _helpers import CATLIN
 
 from typehaus import Material
 from typehaus.library import with_product_refs
-from typehaus.source import load_plan
 from typehaus.takeoff.product_labels import product_labels
 
 
@@ -26,7 +24,6 @@ def test_with_product_refs_raises_on_unmatched_tag():
         with_product_refs([_mat("a")], {"nope": "PROD-X"})
 
 
-def test_catlin_waterproofing_names_bituthene():
-    plan = load_plan(CATLIN).plan
-    label = product_labels(plan)[("envelope_layers", "waterproofing")]
+def test_catlin_waterproofing_names_bituthene(catlin_plan):
+    label = product_labels(catlin_plan)[("envelope_layers", "waterproofing")]
     assert "Bituthene 3000" in label

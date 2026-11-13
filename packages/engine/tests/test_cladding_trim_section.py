@@ -68,7 +68,8 @@ def test_house_corner_stock_and_overlap(catlin_model_ro):
         lower, upper = sorted((piece for piece in corners if piece.host_ref == node),
                               key=lambda piece: piece.z0_m)
         assert (lower.trim_stock_length_in, upper.trim_stock_length_in) == (243, 122)
-        assert lower.z0_m == pytest.approx(-13.4375 * M_PER_IN)
+        # On the base strip's top: the seat, 1" trim rise, 0.032" strip sheet.
+        assert lower.z0_m == pytest.approx((-13.4375 + 1.032) * M_PER_IN, abs=1e-6)
         # Level at the eave head cap, under the stack, not up at the rake (255").
         assert upper.z1_m == pytest.approx(head_cap, abs=0.05 * M_PER_IN)
         assert lower.z1_m - upper.z0_m == pytest.approx(3 * M_PER_IN)

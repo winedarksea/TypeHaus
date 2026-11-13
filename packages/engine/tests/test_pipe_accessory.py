@@ -14,7 +14,6 @@ the author has to copy and keep in step by hand.
 
 from __future__ import annotations
 
-
 import pytest
 
 from typehaus.model.enums import PipeAccessoryKind, PipeSystem
@@ -46,13 +45,13 @@ def test_an_accessory_takes_its_elevation_from_the_run_it_sits_on(catlin_plan):
     invert, and nobody should have to re-type ``ft(8, 1.2)`` to say so."""
     valve = PipeAccessory(
         uid="TSTPA00001", tag="PA-TEST-SHUTOFF", kind=PipeAccessoryKind.SHUTOFF,
-        position=pt(ft(8), ft(16)), pipe_ref="PR-B-CW-TRUNK")
+        position=pt(ft(4, 9), inch(176)), pipe_ref="PR-B-CW-TRUNK")
     model, findings = resolve(_plan_with(catlin_plan, valve))
     assert not _errors(findings)
 
     resolved = next(a for a in model.pipe_accessories if a.tag == "PA-TEST-SHUTOFF")
     trunk = next(r for r in model.pipe_runs if r.tag == "PR-B-CW-TRUNK")
-    vertex = trunk.path.index((ft(8).meters, ft(16).meters))
+    vertex = trunk.path.index((ft(4, 9).meters, inch(176).meters))
     assert resolved.z_m == pytest.approx(trunk.z_m[vertex])
     # And it inherits the run's identity, so a schedule row never has to re-find the pipe.
     assert resolved.system == "water_cold"
