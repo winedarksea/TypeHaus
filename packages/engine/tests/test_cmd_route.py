@@ -104,19 +104,22 @@ def test_the_tree_mode_routes_each_branch_at_its_own_derived_size(runner) -> Non
     3" / 2" / 1 1/4" and each size gets its own world — inflating one shared world at
     the widest walls the narrow branches out of lanes they fit perfectly well.
 
-    **All three are refused, each with its reason** (framing_bore_limits.md §13). The tub's
-    only lane is pocket D13, which PR-B-CW-SUITE holds; the lav's went through the top of
-    R1; the WC finds no 3" lane. A refusal beats a proposal mep.open_web_panel would fail.
+    **A tie down the stack** (`mep_tree_ripup_basis.md` §6): the head alone sits inside
+    STUBATH's prism, so a branch may wye in lower on the stack; the lavatory does (rung
+    107.875). The tub and the WC find no lane to the stack at any rung (the tub's is
+    framing_bore_limits.md §13's D13/D14, held by PR-B-CW-SUITE).
     """
     before = _plan_digest()
     result = runner.invoke(app, ["route", str(_CATLIN),
                                  "--tree", "PR-M-S-SUITE-DRAIN", "--explain"])
-    assert result.exit_code == 1, result.output
+    assert result.exit_code == 0, result.output  # the lavatory is proposed
     assert '3 branch sizes (3", 2", 1.25")' in result.output
     output = " ".join(result.output.split())
-    for said in ("FX-S-SUITEBATH-TUBSH: no route", "D13 held by PR-B-CW-SUITE",
-                 "FX-S-SUITEBATH-LAV: no route", "FX-S-SUITEBATH-WC: no route"):
+    for said in ("FX-S-SUITEBATH-TUBSH: no route", "held by PR-B-CW-SUITE",
+                 "FX-S-SUITEBATH-WC: no route", "stack ties tried: 115.50, 107.88, 96.00",
+                 "FX-S-SUITEBATH-LAV-PROPOSED"):
         assert said in output
+    assert "FX-S-SUITEBATH-LAV: no route to" not in output
     assert "deepest first" in result.output
     assert _plan_digest() == before
 
@@ -147,15 +150,15 @@ def test_a_tree_branch_ties_at_the_stack_and_not_at_its_basement_leg(runner) -> 
 def test_a_tree_terminal_short_of_head_is_reported_with_the_number(runner) -> None:
     """An infeasible branch names its shortfall in inches, and blocks the proposal.
 
-    A tree onto `PR-B-WC1-DRAIN` is ~3.3" short of head at the code minimum grade.
-    "No feasible route" is not actionable and is not what comes out — an inch count is, and
-    it is what `gravity.HeadBudget.shortfall_in` exists to say. (`PR-B-KITCH-DRAIN` carried
-    this until the 2026-10 sink rework stood the sink's outlet straight over it.)
+    A tree onto `PR-B-WC1-DRAIN` is ~3.3" short of head at the code minimum grade. Its closet
+    stands on the stack's own column, so a lower rung (`mep_tree_ripup_basis.md` §6) would
+    only duplicate the stack and is not offered.
     """
     result = runner.invoke(app, ["route", str(_CATLIN), "--tree", "PR-B-WC1-DRAIN"])
     assert result.exit_code == 1, result.output
     assert "of head" in result.output
     assert "PROPOSED" not in result.output
+    assert "stack ties tried" not in result.output
 
 
 def test_a_branch_is_sized_from_its_own_drainage_load(runner) -> None:

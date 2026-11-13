@@ -25,6 +25,7 @@ that rather than guessing — the failure mode this module replaces is a fallbac
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -161,6 +162,23 @@ def is_member_line(member) -> bool:
 
     section = cross_section(member.profile)
     return section is not None and open_web_opening_m(section) is not None
+
+
+#: The 2x6 box ``resolve/floor_blocking`` frames AROUND a crossing run (its own check's).
+_BOX_PART = re.compile(r"-(rail-top|rail-bottom|cheek-lo|cheek-hi)$")
+
+
+def is_solid_floor_member(member) -> bool:
+    """A placed, non-I-joist member ``mep.run_through_floor_member`` reads, and the router's
+    perpendicular bars (strongback, blocking, ledger): not a bearing block or a run's own box."""
+    from typehaus.resolve.framing.profiles import cross_section
+
+    key = member.child_key
+    if member.z0_m is None or member.p0 == member.p1 or key.startswith("bearing-block") \
+            or _BOX_PART.search(key):
+        return False
+    section = cross_section(member.profile)
+    return section is not None and section.shape != "i_joist"
 
 
 def leg_crossings(floor: ResolvedFloor,

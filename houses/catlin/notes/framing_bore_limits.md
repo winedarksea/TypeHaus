@@ -793,3 +793,80 @@ crossing's tag names the holder.
 **A lane on the line.** `leg_crossings` is strict, so a lattice node standing exactly on a truss
 line (catlin has them at y = 208, 310, 324) makes neither edge a crossing; a straight lane
 through it would pass unread. `gravity_webs` reads the line from both edges.
+
+## 14. Two siblings of one group: the second sees the first's holes (2026-11-12)
+
+A tree size group builds its space once, so a branch laid in it is not in `floor.holes` when the
+next sibling is searched. `holes.ijoist_bores_ok` reads `floor.holes`; the sibling's holes ride
+in per search instead (`gravity_webs.spacing_obstacles` for a falling run, `holes.drop_close_edges`
+on a supply group's lattice), read off the same `leg_crossings` stations and judged by the same
+function. Nothing is written to the shared space: its cuts memo and heel memo stay valid.
+
+Fn 1 (§11): clear >= 2 x the larger hole, hole = OD + 1/4". Centre to centre that is
+2 x larger + (hole_a + hole_b) / 2.
+
+| sibling already laid | new run | larger hole | clear needed | centres at least |
+|---|---|---|---|---|
+| 1/2" PEX, 0.875 | 1/2" PEX, 0.875 | 0.875 | 1.75 | 1.75 + 0.875 = **2.625** |
+| 1 1/2" PVC, 2.15 | 2" PVC, 2.625 | 2.625 | 5.25 | 5.25 + 2.3875 = **7.6375** |
+
+Worked on the first row, FS-M-WEST (support face 213.25, §11): the laid sibling bores the joist
+at x = 206.5 (`PR-B-CW-SAUNA`). A second 1/2" line at x = 204.0 is 2.5" over: clear
+2.5 - 0.4375 - 0.4375 = **1.625" < 1.75**, refused. At x = 203.8, 2.7": clear **1.825" >= 1.75**,
+passes. Both stand 213.25 - x - 0.4375 = 8.8" and 9.0" off the support, clear of the 6" field
+zone, so only the spacing differs. The 2" row: a 2" drain 7.0" from the 1 1/2" sibling leaves
+7.0 - 1.3125 - 1.075 = **4.61" < 5.25**; at 8.0" it leaves **5.61"**, and passes.
+
+The refusal is a block at the crossing's station over the joist's own z range (a falling run's
+height there is unknown, and a hole is a hole at any height); other joists and stations stay
+open. A P8 re-lay searches through `band_obstacles(laid=branches.laid_lines())`, so it keeps
+clear of every sibling still laid, the lifted ones aside.
+
+## 15. A strongback across the joists: the router grades it as the check does (2026-11-13)
+
+`mep.run_through_floor_member` bores any non-joist solid floor member a leg crosses with
+`joist_bore(profile, OD)`: **D/3 of the member's own depth**, whatever the member's role. The
+router graded only joist lines, so a 2" drain crossed FS-M-NE's `strongback-1-2` (2x6 on edge,
+x = 334.75", y 300..408", z -10.38..-4.88") at no cost and the check FAILed it.
+`routing/floor_bars.py` now reads the same members (`mep_crossings.is_solid_floor_member`, one
+predicate for both) and the same function. Reproduced by `test_routing_members.py`.
+
+D = 5.50" (2x6, the section's depth, not its 1.50" plan width): D/3 = **1.833"**.
+
+| run | OD | vs 1.833" | level crossing |
+|---|---|---|---|
+| 1 1/4" PVC | 1.660" | 0.173" under | legal: one `bore_joist_in` (36") |
+| 1 1/2" PVC | 1.900" | 0.067" over | refused |
+| 2" PVC | 2.375" | 0.542" over | refused (the check's "2.38\"") |
+
+* **Only a crossing at the member's height is a bore.** The envelope must reach into
+  [z0, z1]: a centreline at z does when z + r > z0 and z - r < z1. 2" PVC (r 1.1875") clears the
+  top above z = -4.88 + 1.1875 = **-3.69"**, and FS-M-NE's chord window tops out at -1.50", whose
+  centreline limit is -1.50 - 1.1875 = **-2.69"**: a lane over the strongback has 1.0" of play.
+  Under it needs z <= -10.38 - 1.1875 = -11.56", below the window's -10.375" floor: no lane.
+* **A falling run's z is unknown**, so a bar its bore would FAIL is a banded prism over
+  z0 - r - c .. z1 + r + c (`gravity_band.prepare_falling`), and the run passes over it in the
+  band or not at all. A legal bar in the band is priced as a joist bore.
+* **A riser through it, or a leg ending in its face, is the member's removal** (the check's
+  `riser` / `along`): refused whatever the bore would be. A bar laid flat (z span under its plan
+  width) takes a riser as a drilled hole, refused only when that hole is over D/3.
+* Engineered members (LVL trimmers: `joist_bore` UNKNOWN) and headers (`header_bore`, charts)
+  stay with the check; the router prices and refuses what the check can call PASS or FAIL.
+
+## 16. `PR-B-HW-SUITE` crosses joist 013 inside the web (2026-11-13)
+
+The jacketed 3/4" PEX rode 97.4375" at x = 197" over joist 013 (y = 208"): TJI 230 bottom
+97.5625", flanges 1.25" (bottom 97.5625..98.8125", top 108.1875..109.4375"), web window
+98.8125..108.1875" (9.375"). Jacket OD = 0.875 + 2 x 0.5 = 1.875", r = 0.9375": top at 98.375", so
+98.375 - 97.5625 = **0.81"** in the bottom flange, and its underside (96.5") below the board's
+face (96.9375").
+
+Now 105.4" (0.95" over `PR-B-HW-KITCH`'s 103.2" lane, which a 103.2" crossing would have hit at
+(158", 201.8")). Jacket 104.4625..106.3375": 104.4625 - 98.8125 = **5.65"** over the bottom
+flange's top, 108.1875 - 106.3375 = **1.85"** under the top flange's underside.
+
+Hole: the check bores the BARE pipe (the sleeve stops at the framing, as in a stud): 0.875 + 0.25 =
+**1.125"**, field row (6"). x = 197: 213.25 - 197 - 0.5625 = **15.69" >= 6**; nearest hole on 013 is
+`PR-B-CW-SUITE`'s at x = 183 (1.125"): 197 - 183 - 1.125 = **12.875" >= 2 x 1.125 = 2.25**. A sleeve
+bored through (2.125" hole, 3" row 18") would stand 213.25 - 197 - 1.0625 = 15.19" < 18: the
+sleeve is cut each side of the web, not drilled through.

@@ -326,3 +326,24 @@ def test_a_free_pocket_narrows_the_start_and_a_taken_one_refuses_and_names_it() 
     assert sloped_route(graph, space, 0, {3}, problem, obstacles=obstacles,
                         refusal=report) is None
     assert 'FS-ORACLE joist-0 y=0.00": D1 held by PR-HOLDER' in report.notes[0]
+
+
+def test_a_stack_offers_ties_down_its_leg_inside_the_tie_band() -> None:
+    """`mep_tree_ripup_basis.md` §6: PR-M-S-SUITE-DRAIN's stack at (150, 216), z 115.5 / 107.875
+    / 0 / -5, tied from a floor at 120 (band 96 .. 126). STUBATH's prism holds the head."""
+    from typehaus.cli.cmd_route_tree import _main_line, _stack_rungs, _tie_points
+    from typehaus.cli.route_tree_branches import Branches
+
+    p = (150.0 * M_PER_IN, 216.0 * M_PER_IN)
+    zs = [z * M_PER_IN for z in (115.5, 107.875, 0.0, -5.0)]
+    band = (96.0 * M_PER_IN, 126.0 * M_PER_IN)
+    ties = _tie_points([p] * 4, zs, band)
+    assert [round(z / M_PER_IN, 3) for _p, z in ties] == [115.5, 107.875, 96.0]
+    rungs = _stack_rungs(ties)
+    assert {k: [round(z / M_PER_IN, 3) for z in v] for k, v in rungs.items()} == {
+        (round(p[0], 6), round(p[1], 6)): [115.5, 107.875, 96.0]}
+    assert _main_line(ties, rungs, 0)[1] == [115.5 * M_PER_IN]
+    assert _main_line(ties, rungs, 2)[1] == [96.0 * M_PER_IN]
+    assert 115.18 < 115.5 < 120.43  # STUBATH's span holds the head, not the rung below
+    main = Branches.of_main("M", [(p[0], p[1], z) for _p, z in ties])
+    assert main.drop_top(0, p) == pytest.approx(115.5 * M_PER_IN)

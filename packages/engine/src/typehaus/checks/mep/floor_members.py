@@ -42,12 +42,9 @@ from typehaus.checks.mep.framing_envelope import (
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.quantities import M_PER_IN
-from typehaus.resolve.mep_crossings import is_member_line
+from typehaus.resolve.mep_crossings import is_member_line, is_solid_floor_member
 
 _CID = "mep.run_through_floor_member"
-#: The 2x6 box ``resolve/floor_blocking`` frames AROUND a crossing run; its fit is
-#: ``blocking_conflicts``, graded by ``mep.run_through_blocking``.
-_BOX_PART = re.compile(r"-(rail-top|rail-bottom|cheek-lo|cheek-hi)$")
 _HEADER_KEY = re.compile(r"^header-(.+)-\d+$")
 
 
@@ -59,19 +56,12 @@ def _opening_tag(member) -> str:
 
 def solid_members(floor) -> list:
     """``(member, footprint, z0, z1)`` for every non-I-joist member this check reads."""
-    from typehaus.resolve.framing.profiles import cross_section
-
     out = []
     for member in floor.members:
-        key = member.child_key
-        if member.z0_m is None or key.startswith("bearing-block") or _BOX_PART.search(key):
-            continue
-        section = cross_section(member.profile)
-        if section is None or section.shape == "i_joist" or member.p0 == member.p1:
-            continue
-        solid = member_footprint(member)
-        if solid is not None:
-            out.append((member, *solid))
+        if is_solid_floor_member(member):
+            solid = member_footprint(member)
+            if solid is not None:
+                out.append((member, *solid))
     return out
 
 

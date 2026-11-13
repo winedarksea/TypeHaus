@@ -610,10 +610,15 @@ SUPPLY = [
             serves=("FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
                     "FX-S-SUITEBATH-TUBSH")),
     PipeRun(uid="CBPW43AAAA", tag="PR-B-HW-SUITE", system=PipeSystem.WATER_HOT,
-            # Tees off PR-B-HW-TRUNK's 95 1/2" leg by the header (2026-11-09), runs north at
-            # 97 7/16" in the joist bay to y=17'-0" and square east under the joists, into the
+            # Tees off PR-B-HW-TRUNK's 95 1/2" leg by the header (2026-11-09), rises at once
+            # to 105.4", runs north in the joist bay to y=17'-0" and square east, into the
             # riser's bay from the SOUTH: FS-M-WEST blocks that bay at x=14'-6" under the
             # laundry duct's drop. It crosses the trusses in TrimJoist pocket D15.
+            # 2026-11-13: the basement lane rode 97 7/16", its jacket (r 0.94") 0.81" into joist
+            # 013's bottom flange at x=197" and in the ceiling board. 105.4" is inside the web
+            # (window 98.81..108.19; jacket 104.46..106.34, 0.95" over PR-B-HW-KITCH's 103.2"
+            # lane, 1.85" under the top flange): one bare 3/4" bore at x=197", 1.125" hole,
+            # 15.7" off the support (field row 6"), sleeve cut each side of the web.
             # ** IN THE TRUSS FLOOR IT RUNS UNDER THE TUB WASTE (2026-10-08). ** The north leg
             # shares x=16'-5" with PR-M-S-SUITE-TUB-DRAIN's leg (0.6" apart) and there is no
             # lane beside it: the web opening ends at 16'-7 1/2" and DU-M-ERV-R-BED2 and the
@@ -632,8 +637,8 @@ SUPPLY = [
                   pt(inch(171.6), inch(268)), pt(inch(171.6), inch(268)),
                   pt(inch(171.6), inch(268))),
             diameter=inch(0.75), material="pex", insulation='1/2" fiberglass sleeve, ASJ jacket (R-3.1)',
-            elevations=(inch(95.5), inch(97.4375), inch(97.4375), inch(97.4375), inch(97.4375),
-                  inch(97.4375), inch(109.438), inch(217.312), inch(224.125), inch(224.125),
+            elevations=(inch(95.5), inch(105.4), inch(105.4), inch(105.4), inch(105.4),
+                  inch(105.4), inch(109.438), inch(217.312), inch(224.125), inch(224.125),
                   inch(224.125), inch(223.438), inch(224.438), inch(224.438), inch(226.938),
                   inch(227.438), inch(229.438), inch(259.438)),
             wall_refs=(None, None, None, None, None, None, "W-M-CLN2", None, None, None, None, None, None,

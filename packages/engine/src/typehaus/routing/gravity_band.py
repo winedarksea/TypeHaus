@@ -19,6 +19,8 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any
 
+from typehaus.routing.floor_bars import bar_prisms
+
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from typehaus.resolve.model import ResolvedModel
     from typehaus.routing.graph import Graph
@@ -43,6 +45,7 @@ def prepare_falling(space: RoutingSpace, band: tuple[float, float],
     if space.members is not None:
         space.hard.extend(space.members.wall_prisms())
     space.hard.extend(rail_prisms(space))
+    space.hard.extend(bar_prisms(space))
     if model is not None:
         space.hard.extend(outside_prisms(model, space))
         space.hard.extend(exterior_prisms(model, space))
@@ -156,14 +159,16 @@ def band_obstacles(space: RoutingSpace, graph: Graph,
     away from ``start``, is excused all the way through (§13).
 
     An open-web crossing's own heights (``gravity_webs``) ride along, never pardoned: a
-    terminal may stand in a prism, but no pipe passes a web. ``laid``: ``holes.laid_lines``.
+    terminal may stand in a prism, but no pipe passes a web. ``laid`` (``holes.laid_lines``):
+    its pockets and its I-joist holes, read per search (§13, §14).
     """
     from shapely import STRtree
     from shapely.geometry import LineString, Point
 
-    from typehaus.routing.gravity_webs import web_obstacles
+    from typehaus.routing.gravity_webs import spacing_obstacles, web_obstacles
 
     webs = web_obstacles(space, graph, laid)
+    spacing = spacing_obstacles(space, graph, laid)
     prisms = list(space.banded)
     tree = STRtree([p.footprint for p in prisms]) if prisms else None
     eroded: dict[int, object] = {}
@@ -264,8 +269,11 @@ def band_obstacles(space: RoutingSpace, graph: Graph,
         return [(1.0 - t1, 1.0 - t0, z0, z1, tag) for t0, t1, z0, z1, tag in found]
 
     def with_webs(a: int, b: int) -> list[Obstacle]:
-        crossing = webs(a, b)
-        return obstacles(a, b) + crossing if crossing else obstacles(a, b)
+        found = obstacles(a, b)
+        for more in (webs(a, b), spacing(a, b)):
+            if more:
+                found = found + more
+        return found
 
     return with_webs
 

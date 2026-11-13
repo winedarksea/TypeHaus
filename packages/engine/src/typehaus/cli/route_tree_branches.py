@@ -92,8 +92,17 @@ class Branches:
         return True
 
     def drop_top(self, line: int, at: tuple[float, float] | None = None) -> float | None:
-        """The top of the plumb drop line ``line`` ends in, when it ends in one (at ``at``)."""
-        if line <= 0 or len(self.lines[line].points) < 2:
+        """The top of the plumb drop line ``line`` ends in, when it ends in one (at ``at``).
+
+        The main is a stack as often as a run: any plumb leg of it at ``at`` takes a wye at
+        any height down its side, so its top is the highest it reaches there."""
+        if line <= 0:
+            pts = self.lines[0].points
+            tops = [max(a[2], b[2]) for a, b in zip(pts, pts[1:], strict=False)
+                    if at is not None and abs(a[0] - b[0]) + abs(a[1] - b[1]) < 1e-9
+                    and abs(a[0] - at[0]) + abs(a[1] - at[1]) <= 0.0032]
+            return max(tops, default=None)
+        if len(self.lines[line].points) < 2:
             return None
         foot, above = self.lines[line].points[-1], self.lines[line].points[-2]
         if abs(foot[0] - above[0]) + abs(foot[1] - above[1]) >= 1e-9:

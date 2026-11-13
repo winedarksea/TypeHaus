@@ -7,10 +7,13 @@ the bay whose envelope clips a flange edge, which is how ``PR-B-LAV1-DRAIN`` cam
 0.765" inside ``joist-0-001``'s flange at 0 FAIL.
 
 Every I-joist floor member is read — joist, sister, I-joist blocking — against the envelope
-(``resolve/mep_envelopes``). A leg across a joist or rim stays ``run_member_crossing``'s;
-across an I-joist BLOCK it is graded here, since nothing else reads blocking. The cut is
-the envelope's plan bite into the flange's width for a riser or a leg along the member, and
-its z overlap with the flange for a leg across it.
+(``resolve/mep_envelopes``). A leg across a joist or rim whose CENTRELINE is inside the
+member's z band stays ``run_member_crossing``'s; across an I-joist BLOCK, or across a joist
+with the centreline just under or over it, it is graded here (``leg_crossings`` never counts
+those, so a jacket biting the flange was graded by nothing). Only the thin flange bands are
+read, never the web window between them. The cut is the envelope's plan bite into the
+flange's width for a riser or a leg along the member, and its z overlap with the flange
+for a leg across it.
 
 ``Tier.STRUCTURAL``, no ``PermitItemSpec`` — the ``mep.run_member_crossing`` footing.
 """
@@ -58,6 +61,18 @@ def i_joist_members(floor) -> list:
     return out
 
 
+def _centreline_inside(leg, member, z0: float, z1: float) -> bool:
+    """True where ``leg``'s centreline crosses ``member``'s axis within its z band: the
+    crossing ``resolve/mep_crossings.leg_crossings`` counts and ``run_member_crossing`` grades."""
+    from shapely.geometry import LineString
+
+    point = leg.axis().intersection(LineString([member.p0, member.p1]))
+    if point.is_empty or leg.plan_m < 1e-9:
+        return False
+    t = leg.axis().project(point.centroid) / leg.plan_m
+    return z0 <= leg.za + (leg.zb - leg.za) * t <= z1
+
+
 def flange_cuts(ctx: CheckContext) -> dict[tuple[str, str], list[tuple]]:
     """``{(run, floor): [(cut_m, member, leg, face)]}`` for every flange a run's surface takes."""
     from shapely import STRtree
@@ -78,7 +93,8 @@ def flange_cuts(ctx: CheckContext) -> dict[tuple[str, str], list[tuple]]:
                     continue
                 _direction, normal = member_axis(member)
                 how = relation(leg, member)
-                if how == "across" and member.category in _CROSSING_OWNED:
+                if (how == "across" and member.category in _CROSSING_OWNED
+                        and _centreline_inside(leg, member, flanges[1][0], flanges[0][1])):
                     continue
                 plan = bite(leg, footprint, normal) if how != "across" else None
                 for face, (z0, z1) in zip(("top", "bottom"), flanges, strict=True):

@@ -96,23 +96,20 @@ finished area drops out.
 - [ ] `REG-S-HP-RET`'s 24x12 filter box is authored as its 15 1/8" neck run (decision #129
   terminal drop), not as a drawn drop. The sweep now draws a vertical rectangle at its true
   hu×hv, so modelling the box itself is a separate redesign, not an engine fix.
-- [ ] An insulated run centred just under an I-joist is graded by nothing:
-  `resolve/mep_crossings.leg_crossings` counts a crossing only when the centreline is inside the
-  member's z band, and `mep.run_in_joist_flange` leaves legs across joists to that check. Live
-  case: `PR-B-HW-SUITE`'s jacketed leg at (197", 204..216") at 97 7/16" bsmt, whose jacket takes
-  0.81" of joist 013's bottom flange and the ceiling board. It needs a design call (an insulated
-  line is not bored, and x=197" is too near the support for the 3" row) and then the engine fix.
+- [ ] A leg running along a joist bay inside the ceiling-board plane is graded by nothing when the
+  room declares `exposed_services` (found 2026-11-13: `PR-B-HW-SUITE`'s old y=204" leg sat in the
+  stair hall's board). Decide whether exposed services pardon a run inside the board itself.
 
 **Autorouter.** `docs/routing.md` Limitations covers the open supply-trunk finished-volume and
-freeze FAILs, search U-turns, same-size I-joist siblings, and `--lift` on a first-leg tee. Two
+freeze FAILs, search U-turns, stack-rung refusal cost, and `--lift` on a first-leg tee. Two
 items have details that are recorded only here:
 
-- [ ] `--tree PR-M-S-SUITE-DRAIN` refuses all three fixtures now that falling runs respect D
-  pockets. WC: no plan lane (D12 is held by PR-A-HW-STUBATH, D8 by DU-M-ERV-R-STUDY). TUBSH:
-  D13 is held by PR-B-CW-SUITE. LAV: the head is 0.025" short. The authored tub drain passes;
-  the router can't reach its lane because the barrel tie sits at its head (115.5") and
-  PR-A-HW-STUBATH's inflated prism spans 115.18"-120.43". Open: a barrel tie below its head,
-  and the router's 1/2" clearance vs the authored lane (`framing_bore_limits.md` §13).
+- [ ] `--tree PR-M-S-SUITE-DRAIN` lays the LAV on the stack (rung 107.875, `mep_tree_ripup_basis.md`
+  §6) but refuses TUBSH and WC at every rung. Both are real holds: trusses y=224/240 leave only D13,
+  held by PR-B-CW-SUITE (§13), D14 likewise, and the WC's D12 is PR-A-HW-STUBATH's. The authored tub
+  lane (west in the 241.75..254.25 bay, north through the y=256 truss's D13) is never reached: the stack
+  column is bracketed by PR-M-KITCH-VENT and W-M-CLN's plates, and no single blocking prism is pinned.
+  The LAV proposal still starts at the fixture floor (120") rather than its port (141.5").
 - [ ] `--group BATH2` refuses TUB (held to its own vent) and WC (no tie: the wye inlets at
   y 262/271 on PR-B-MAIN-DRAIN block y 254-279). The partial lay grades 2 FAIL and 1 illegal
   bore. The authored three-vent design stands; vent-free 908.2 groups are an AHJ question.

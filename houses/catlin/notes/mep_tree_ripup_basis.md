@@ -313,3 +313,31 @@ Row `tree:main+lift` (CW-WH + HW-KITCH) does **not** propose KITCH-SINK (confirm
 * No grid-snap arithmetic on a real lane (needs the lane); §4.2 says only how much room the snap has.
 * No claim about BATH2-SH's cause, and no router run: its numbers are not inputs here.
 * No cost model for a lift beyond "re-laid or refused"; a lifted run's price is not weighed against the drain.
+
+---
+
+## 6. A tie down a stack (`cmd_route_tree._tie_points`, `_stack_rungs`; 2026-11-12)
+
+Oracle for the tie heights `--tree` offers on a vertical leg of the main. Inches, project frame, z from the
+datum, PR-M-S-SUITE-DRAIN as authored (`mep_drainage.py`), no router output as input.
+
+**Facts.** The stack stands at (150, 216) with vertices z = 115.5 (head), 107.875, 0, -5. The suite bath's
+floor is z = 120, so `mep.fixture_drain_reach`'s band is 120 - 24 = **96 .. 126** (2 ft below, 6 in above).
+
+**Ties.** 115.5 and 107.875 are in the band. The leg 107.875 -> 0 leaves it through the floor of the band,
+so z = **96** is a tie too (a wye may enter a plumb pipe anywhere on its side): ties 115.5, 107.875, 96.
+
+**Why the head alone fails.** PR-A-HW-STUBATH's inflated prism spans 115.18 .. 120.43 at the head, and
+115.18 < 115.5 < 120.43: the tie's own plumb is inside it, so the goal is dropped. (PR-M-KITCH-VENT, 111.8 ..
+118.5, is 0.6" off that column too.) 107.875 is inside W-M-CLN's plate/stud zone (104.7 .. 108.6), so it is
+dropped too; **96** is inside nothing.
+
+**Rungs, not goals.** A lattice node has one invert, and the stack is one plan point, so the three heights
+cannot be goals at once: each is a *rung*, tried highest first, and a branch ties at the first height where
+it routes. The invert is the rung's (`_main_line` collapses the stack to one vertex there). The branch
+wyes in at its own height, `arrival = min(top, max(rung, start - fall))` with `top` = 115.5
+(`Branches.drop_top`, line 0), never a plumb drop through the stack.
+
+**Numbers a test may assert.** Ties (115.5, 107.875, 96); rungs {(150, 216): [115.5, 107.875, 96]};
+`_main_line` at rung 0 -> z [115.5], at rung 2 -> [96]; `drop_top(0, (150, 216))` = 115.5.
+(A router probe of the lavatory arrives at 114.38 on rung 1: a probe figure, not an input.)

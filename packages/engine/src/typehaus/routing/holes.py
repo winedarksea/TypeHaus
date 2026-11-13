@@ -13,14 +13,21 @@ A run the search may occupy (``touch``) is no neighbour. A run laid earlier in t
 campaign is not in the model yet, so its caller hands it in (``laid_lines``): two branches
 laid 2.7" apart through one TJI, or a branch through the trunk's pocket, is otherwise
 invisible until the network is graded. ``framing_bore_limits.md`` §10.
+
+A sibling laid LATER in one search group is not in the space built for it (and the space's memos
+must not be mutated): a falling run reads it per search (``gravity_webs.spacing_obstacles``), a
+supply lattice drops the edges it closes (``drop_close_edges``). ``framing_bore_limits.md`` §14.
 """
 
 from __future__ import annotations
 
+from bisect import bisect_left, bisect_right
 from collections.abc import Callable, Iterable
 from typing import Any
 
 from typehaus.quantities import M_PER_IN
+
+_ON_LINE_M = 1e-6
 
 #: ``(tag, plan path, per-vertex centreline z, outside radius)``.
 Line = tuple[str, tuple[tuple[float, float], ...], tuple[float, ...], float]
@@ -148,9 +155,11 @@ def web_refused(floor: Any, crossed: list[int], along: float, z: float,
     return False
 
 
-def ijoist_bores_ok(floor: Any, crossed: list[int], along: float, diameter_m: float) -> bool:
+def ijoist_bores_ok(floor: Any, crossed: list[int], along: float, diameter_m: float,
+                    extra: list[list[tuple[float, ...]]] | None = None) -> bool:
     """Every hole at ``along`` inside the I-joist chart's zone and clear of the other holes
-    in the same joist: the check's own verdict, read the check's way."""
+    in the same joist: the check's own verdict, read the check's way. ``extra`` is per joist
+    line more holes (``sibling_holes``) beside ``floor.holes``."""
     from typehaus.resolve.mep_bores import joist_bore
     from typehaus.resolve.mep_hole_chart import DRILLED_HOLE_CLEARANCE_IN
 
@@ -162,7 +171,7 @@ def ijoist_bores_ok(floor: Any, crossed: list[int], along: float, diameter_m: fl
             return False
         centre_in = min(along - lo, hi - along) / M_PER_IN
         nearest = nearest_d = None
-        for station, other_r in floor.holes[i]:
+        for station, other_r, *_ in [*floor.holes[i], *(extra[i] if extra else ())]:
             clear = (abs(station - along) - diameter_m / 2.0 - other_r - 2 * half) / M_PER_IN
             if nearest is None or clear < nearest:
                 nearest, nearest_d = clear, 2 * (other_r + half) / M_PER_IN
@@ -172,3 +181,60 @@ def ijoist_bores_ok(floor: Any, crossed: list[int], along: float, diameter_m: fl
         if verdict.ok is not True:
             return False
     return True
+
+
+def member_lines_crossed(floor: Any, along: float, lo: float, hi: float,
+                         band: tuple[float, float]) -> list[int]:
+    """The member lines an edge meets, ends included: ``leg_crossings`` is strict, so a lane
+    through a node standing on a truss line would otherwise cross it on neither edge."""
+    return [i for i in range(bisect_left(floor.stations, lo - _ON_LINE_M),
+                             bisect_right(floor.stations, hi + _ON_LINE_M))
+            if floor.joists[i][1] - _ON_LINE_M <= along <= floor.joists[i][2] + _ON_LINE_M
+            and band[1] >= floor.joists[i][3] and band[0] <= floor.joists[i][4]]
+
+
+def sibling_holes(lines: Iterable[Line], floor: Any) -> list[list[tuple[float, float, str]]]:
+    """Per joist line of a built I-joist floor, ``(station, outside radius, tag)`` of ``lines``'
+    holes; ``[]`` when it has no chart or none of them bores it."""
+    lines = list(lines)
+    if not lines or getattr(floor, "chart", None) is None:
+        return []
+    index = {m.child_key: i for i, m in enumerate(floor.parts)}
+    out: list[list[tuple[float, float, str]]] = [[] for _ in floor.parts]
+    for tag, radius, crossing in crossings(lines, floor.source):
+        i = index.get(crossing.member_key)
+        if i is not None:
+            out[i].append((crossing.station_m, radius, tag))
+    return out if any(out) else []
+
+
+def drop_close_edges(graph: Any, space: Any, lines: Iterable[Line]) -> int:
+    """Remove the level lattice edges an I-joist hole of ``lines`` (a branch just laid) now
+    closes, the way ``members.cuts`` refuses one at build; the count of edges dropped. The
+    graph is one supply group's, so a later sibling's search never sees them."""
+    members = getattr(space, "members", None)
+    lines = list(lines)
+    if members is None or not lines:
+        return 0
+    live = [(floor, extra) for floor in members.floors if (extra := sibling_holes(lines, floor))]
+    if not live:
+        return 0
+    size = 2.0 * members.radius_m
+    dropped = 0
+    for a, b in list(graph.weights):
+        if a > b:
+            continue
+        p, q = graph.nodes[a], graph.nodes[b]
+        if abs(p.z - q.z) > 1e-9 or (abs(p.x - q.x) < 1e-9 and abs(p.y - q.y) < 1e-9):
+            continue  # a riser is graded off the member lines, not by hole spacing
+        axis = "x" if abs(p.x - q.x) > abs(p.y - q.y) else "y"
+        lo, hi, along = ((min(p.x, q.x), max(p.x, q.x), p.y) if axis == "x"
+                         else (min(p.y, q.y), max(p.y, q.y), p.x))
+        if any(floor.across == axis and any(
+                extra[i] and not ijoist_bores_ok(floor, [i], along, size, extra)
+                for i in member_lines_crossed(floor, along, lo, hi, (p.z, p.z)))
+               for floor, extra in live):
+            graph.weights.pop((a, b), None)
+            graph.weights.pop((b, a), None)
+            dropped += 1
+    return dropped

@@ -271,6 +271,7 @@ def _search(model, tree, opts, net, group, members, routes, clock, loads, built,
     from typehaus.cli.route_diagnose import refuse
     from typehaus.cli.route_proposal import one_proposal
     from typehaus.cli.route_support import _nearest
+    from typehaus.routing.holes import drop_close_edges, laid_lines
     from typehaus.routing.search import shortest_route
     from typehaus.routing.supply_tree import nodes_on
     from typehaus.routing.terminal_block import column_block
@@ -332,6 +333,9 @@ def _search(model, tree, opts, net, group, members, routes, clock, loads, built,
             host = _host(routes, loads, made.points[0], weight)
             routes.append(Laid(tag, made, net.own.get(tag, ()), group, tag,
                                host=host.proposal.tag if host else None, limit_m=limit))
+            # A sibling laid now is no hole in the space built before it: the lattice loses
+            # the edges its I-joist holes close (``framing_bore_limits.md`` §14).
+            drop_close_edges(graph, space, laid_lines([made]))
     return failed
 
 

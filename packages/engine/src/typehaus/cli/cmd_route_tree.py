@@ -5,6 +5,7 @@ Workflow: docs/routing.md."""
 
 from __future__ import annotations
 
+import math
 from typing import TYPE_CHECKING, Any
 
 from typehaus.cli.route_support import (
@@ -102,16 +103,14 @@ def _propose_tree(model: ResolvedModel, target: str, *, slope: float | None,
     # into the basement leg of its own stack — the plan polyline says the two lines cross,
     # and only the invert says they are twelve feet apart.
     band = (floor_m - 2.0 * 0.3048, floor_m + 0.5 * 0.3048)
-    reachable = [((x, y), z) for (x, y), z in zip(main.path, main.z_m, strict=False)
-                 if band[0] <= z <= band[1]]
+    reachable = _tie_points(main.path, main.z_m, band)
     if not reachable:
         problems.append(
             f"{target}: no vertex of it passes within 2 ft below and 6 in above the "
             f"{storeys[next(iter(points))]} floor, so nothing on that floor can tie into "
             "it — the same band mep.fixture_drain_reach grades against")
         return [], problems, [], []
-    root_z = max(z for _p, z in reachable)
-    tie_path = [p for p, _z in reachable]
+    rungs = _stack_rungs(reachable)
 
     replaced = {run.tag for run in model.pipe_runs  # drains: never the basins' supplies
                 if run.system == "drain" and any(tag in run.serves for tag in points)}
@@ -129,7 +128,7 @@ def _propose_tree(model: ResolvedModel, target: str, *, slope: float | None,
     # may NOT do is tie onto a branch of its own size routed in a later group, because
     # there is no later group — the sizes run widest first for exactly that reason.
     accepted: list[tuple[list[tuple[float, float]], list[float]]] = [
-        (tie_path, [z for _p, z in reachable])]
+        _main_line(reachable, rungs, 0)]
     from typehaus.cli.route_tree_branches import Branches
     from typehaus.cli.route_tree_group import _route_group as route_group
     from typehaus.routing.trades import pipe as pipe_trade
@@ -147,17 +146,46 @@ def _propose_tree(model: ResolvedModel, target: str, *, slope: float | None,
                        "never the other way round")
 
     for size in sizes:
-        group = sorted(tag for tag in points if diameters[tag] == size)
-        made, group_problems, group_notices = route_group(
-            model, target, group, points=points, floors=floors, storeys=storeys,
-            size=size, root_z=root_z, accepted=accepted, branches=branches, via=via,
-            slope=slope,
-            margin_ft=margin_ft, level=level, avoid=avoid,
-            touch=frozenset({target, *replaced, *lift}), explain=explain, cost=cost,
-            clock=clock, stats=stats)
-        proposals.extend(made)
-        problems.extend(group_problems)
-        notices.extend(group_notices)
+        group = remaining = sorted(tag for tag in points if diameters[tag] == size)
+        # A fixture standing on a stack's own column drops INTO it: a lower rung would only
+        # duplicate the stack, so it keeps the head's verdict (its shortfall, in inches).
+        overlap = branches.main_radius_m + pipe_trade.radius_m(size)
+        on_column = {tag for tag in remaining for key in rungs
+                     if math.hypot(points[tag][0] - key[0], points[tag][1] - key[1]) < overlap}
+        last: dict[str, list[str]] = {}
+        general: list[str] = []
+        # A stack takes a wye at any height, but a lattice node has ONE invert, so the rungs
+        # are tried in turn, highest first: a branch ties as high as the world lets it.
+        for rung in range(max((len(r) for r in rungs.values()), default=1)):
+            if rung:
+                remaining = [tag for tag in remaining if tag not in on_column]
+            if not remaining:
+                break
+            accepted[0] = _main_line(reachable, rungs, rung)
+            made, group_problems, group_notices = route_group(
+                model, target, remaining, points=points, floors=floors, storeys=storeys,
+                size=size, root_z=min(accepted[0][1]) if rung else max(accepted[0][1]),
+                accepted=accepted, branches=branches, via=via, slope=slope,
+                margin_ft=margin_ft, level=level, avoid=avoid,
+                touch=frozenset({target, *replaced, *lift}), explain=explain, cost=cost,
+                clock=clock, stats=stats)
+            proposals.extend(made)
+            notices.extend(group_notices)
+            served = {tag for proposal, _s in made for tag in proposal.serves}
+            remaining = [tag for tag in remaining if tag not in served]
+            # Each fixture's latest refusal stands: an earlier rung's is for a tie since lowered.
+            general = [t for t in group_problems if t.split(":", 1)[0] not in points]
+            for tag in points:
+                said = [t for t in group_problems if t.startswith(f"{tag}:")]
+                if said:
+                    last[tag] = said
+        tried = max(rungs.values(), key=len, default=[])
+        spelled = ", ".join("%.2f" % (z / 0.0254) for z in tried)
+        done = {tag for proposal, _s in proposals for tag in proposal.serves}
+        for text in general + [t for tag in group if tag not in done for t in last.get(tag, [])]:
+            lowered = len(tried) > 1 and "no route to" in text \
+                and text.split(":", 1)[0] not in on_column
+            problems.append(f'{text} (stack ties tried: {spelled}")' if lowered else text)
     if timing is not None:
         timing.extend(clock.lines())
     # No refusals channel yet: a tree refusal is reported per-terminal inside the RSPH
@@ -165,6 +193,58 @@ def _propose_tree(model: ResolvedModel, target: str, *, slope: float | None,
     # so the caller does not branch on which proposer it called.
     return proposals, problems, notices, []
 
+
+
+#: Tie heights within this are one rung.
+_RUNG_M = 0.0127
+
+
+def _tie_points(path: Any, z_m: Any, band: tuple[float, float]) -> list[tuple[Any, float]]:
+    """The main's vertices inside the tie band, plus where a plumb leg leaves it downward.
+
+    A stack runs through the band between its vertices, and a branch may wye into it
+    anywhere on that stretch, so the leg's crossing of the band's floor is a tie too."""
+    out: list[tuple[Any, float]] = []
+    for i, (p, z) in enumerate(zip(path, z_m, strict=False)):
+        if band[0] <= z <= band[1]:
+            out.append((p, z))
+        if i + 1 < len(path) and z_m[i + 1] < band[0] < z and (
+                abs(path[i + 1][0] - p[0]) + abs(path[i + 1][1] - p[1]) < 1e-9):
+            out.append((p, band[0]))
+    return out
+
+
+def _stack_rungs(ties: list[tuple[Any, float]]) -> dict[Any, list[float]]:
+    """Per plan point where the main stands plumb, its tie heights, highest first."""
+    heights: dict[Any, list[float]] = {}
+    for p, z in ties:
+        heights.setdefault((round(p[0], 6), round(p[1], 6)), []).append(z)
+    out: dict[Any, list[float]] = {}
+    for key, zs in heights.items():
+        kept: list[float] = []
+        for z in sorted(zs, reverse=True):
+            if not kept or kept[-1] - z > _RUNG_M:
+                kept.append(z)
+        if len(kept) > 1:
+            out[key] = kept
+    return out
+
+
+def _main_line(ties: list[tuple[Any, float]], rungs: dict[Any, list[float]],
+               rung: int) -> tuple[list[Any], list[float]]:
+    """The main as the goal line at ``rung``: each stack one vertex, at that rung's height
+    (the lowest it has, past its last), so ``_invert_of`` reads the invert it means."""
+    path: list[Any] = []
+    zs: list[float] = []
+    for p, z in ties:
+        key = (round(p[0], 6), round(p[1], 6))
+        if key in rungs:
+            if path and path[-1] == p:
+                continue
+            z = rungs[key][min(rung, len(rungs[key]) - 1)]
+        path.append(p)
+        zs.append(z)
+    return path, zs
 
 
 #: A tie is ON a laid line: each group's lattice has lines through every accepted vertex,
@@ -180,9 +260,8 @@ def _line_nodes(graph: Graph, path: Any, tolerance: float = 0.05,
     A supply feeder requires per-vertex z and z_tolerance: plan-only arrival could land below
     its horizontal leg. Gravity plan searches need no z gate."""
     out: set[int] = set()
-    # A stack's reachable part is ONE vertex — its head — so the degenerate polyline is the
-    # common case here rather than an edge case, and zipping it against its own tail would
-    # silently produce no goals at all.
+    # A stack's tie is ONE plan point, so the degenerate polyline is the common case here
+    # rather than an edge case, and zipping it against its own tail would produce no goals.
     segments = (list(zip(path, path[1:], strict=False)) if len(path) > 1
                 else [(path[0], path[0])])
     for node in graph.nodes:

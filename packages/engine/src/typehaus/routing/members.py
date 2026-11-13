@@ -30,6 +30,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
 from typehaus.quantities import M_PER_IN
+from typehaus.routing.floor_bars import bore_ok, floor_bars
 from typehaus.routing.holes import ijoist_bores_ok, web_refused
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
@@ -67,6 +68,7 @@ class _Floor:
     #: Trimmers, sisters, headers of ANY profile (an LVL edge) as ``(x0, y0, x1, y1, z0, z1)``.
     blocks: list[tuple[float, float, float, float, float, float]] = field(default_factory=list)
     parts: list[Any] = field(default_factory=list)  #: the FramedMember of each joist line
+    bars: Any = None  #: ``floor_bars.FloorBars``: strongbacks, blocking, ledgers across the joists
     #: Per joist line, its D web pockets another run passes, and who (``holes.taken_pockets``).
     pockets: list[dict[str, str]] = field(default_factory=list)
     source: Any = None  #: the resolved floor, for a per-search ``taken_pockets``
@@ -139,7 +141,8 @@ class Penetrations:
                         kind = "plate_tie" if 2 * r > 0.5 * width else "plate"
                         out[kind] = out.get(kind, 0) + 1
             for floor in self.floors:
-                if _riser_on_member(floor, a, low, high, r):
+                if _riser_on_member(floor, a, low, high, r) or (
+                        floor.bars is not None and floor.bars.riser_on(a[0], a[1], low, high, r)):
                     return None  # through a joist or chord: not a hole, the member's removal
             if self.riser_cover is not None and self.riser_cover.exposed(a[0], a[1], low,
                                                                          high, r):
@@ -179,6 +182,17 @@ class Penetrations:
                     and _hits_a_stud(wall, station, z, r):
                 return None
         for floor in self.floors:
+            if floor.bars is not None:
+                bars = floor.bars.crossed(axis, station, lo, hi, None if band else z, band, r)
+                if bars is None:
+                    return None  # an edge ending in a bar's face: the member's notch
+                for bar in bars:
+                    ok = bore_ok(bar.profile, 2 * r)
+                    if ok is False:
+                        if band is None:
+                            return None  # over D/3 (``mep.run_through_floor_member``)
+                    elif ok:
+                        out["joist"] = out.get("joist", 0) + 1
             if floor.across != axis:
                 continue
             crossed = _floor_crossings(floor, station, lo, hi, z, band)
@@ -392,6 +406,7 @@ def _floor(floor: Any, library: Any = None, model: Any = None,
     out.holes = (hole_index(lines)(floor, keys)  # type: ignore[attr-defined]
                  if out.chart is not None and lines is not None else [[] for _ in joists])
     out.parts = [j[6] for j in joists]
+    out.bars = floor_bars(floor)
     webbed = lines is not None and any(j[6].web is not None for j in joists)
     out.pockets = taken_pockets(lines, floor, out.parts) if webbed else []
     return out

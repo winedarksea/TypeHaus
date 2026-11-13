@@ -83,3 +83,69 @@ def test_a_riser_through_a_floor_misses_every_member_line(y_in, legal) -> None:
     floor.half_widths = [0.75 * M_PER_IN] * len(floor.joists)
     cuts = _cuts(0.83, floors=[floor]).cuts(_p(0, y_in, -12), _p(0, y_in, 24), "z")
     assert (cuts is not None) is legal
+
+
+def _tji() -> _Floor:
+    """An 11 7/8" TJI (2 1/2" x 1 3/8" flanges): web window 1.375 .. 10.5 above its bottom."""
+    floor = _Floor(tag="FS-TJI", across="y", kind="i_joist",
+                   window=(1.375 * M_PER_IN, 10.5 * M_PER_IN))
+    floor.joists = [(y * M_PER_IN, -10.0, 10.0, 0.0, 11.875 * M_PER_IN) for y in (16, 32)]
+    floor.stations = [j[0] for j in floor.joists]
+    floor.half_widths = [1.25 * M_PER_IN] * 2
+    return floor
+
+
+@pytest.mark.parametrize(("z_in", "expected"),
+                         [(5.9, {"unpublished": 2}), (1.5, None), (10.4, None)])
+def test_an_ijoist_is_bored_through_its_web_and_never_its_flanges(z_in, expected) -> None:
+    """A 1/2" PEX envelope (r 0.3125") crosses at mid-web; its edge in a flange is refused.
+    No lattice prism stands in the web: a body prism would hard-block every web bore."""
+    cuts = _cuts(0.3125, floors=[_tji()]).cuts(_p(0, 8, z_in), _p(0, 40, z_in), "y")
+    assert cuts == expected
+
+
+@pytest.mark.parametrize(("y_in", "legal"), [(17.5, False), (17.6, True)])
+def test_a_riser_clears_an_ijoist_by_its_flange_half_width(y_in, legal) -> None:
+    """1.25 + 0.3125 = 1.5625" off the line: 1.5" is through the flange, 1.6" clear."""
+    cuts = _cuts(0.3125, floors=[_tji()]).cuts(_p(0, y_in, -12), _p(0, y_in, 24), "z")
+    assert (cuts is not None) is legal
+
+
+def _strongback_floor() -> _Floor:
+    """§15: a 2x6 on edge (plan 1 1/2", D 5 1/2") along y at x = 100", y 0..108", z 0..5 1/2"."""
+    from typehaus.routing.floor_bars import Bar, FloorBars
+
+    floor = _floor()
+    floor.bars = FloorBars([Bar("y", 100 * M_PER_IN, 0.0, 108 * M_PER_IN, 0.75 * M_PER_IN,
+                                0.0, 5.5 * M_PER_IN, "2x6", "FS-ORACLE strongback-1-1")])
+    return floor
+
+
+@pytest.mark.parametrize(("radius_in", "expected"),
+                         [(0.83, {"joist": 1}), (0.95, None), (1.1875, None)])
+def test_a_strongback_is_bored_to_d_over_three_across_the_joists(radius_in, expected) -> None:
+    """§15: D/3 = 5.5/3 = 1.833". 1 1/4" PVC (1.660" OD) passes, 1 1/2" (1.900") and 2"
+    (2.375") are refused, as ``mep.run_through_floor_member`` FAILs them."""
+    cuts = _cuts(radius_in, floors=[_strongback_floor()])
+    assert cuts.cuts(_p(60, 54, 2.75), _p(140, 54, 2.75), "x") == expected
+
+
+def test_a_lane_over_a_strongback_or_a_riser_through_it() -> None:
+    floor = _strongback_floor()
+    assert _cuts(1.1875, floors=[floor]).cuts(_p(60, 54, 9), _p(140, 54, 9), "x") == {}
+    assert _cuts(0.83, floors=[floor]).cuts(_p(101.5, 54, -4), _p(101.5, 54, 12), "z") is None
+    assert _cuts(0.83, floors=[floor]).cuts(_p(102, 54, -4), _p(102, 54, 12), "z") == {}
+
+
+def test_a_falling_run_passes_over_an_illegal_strongback_in_its_band() -> None:
+    from types import SimpleNamespace
+
+    from typehaus.routing.floor_bars import bar_prisms
+
+    cut = _cuts(1.1875, floors=[_strongback_floor()])
+    assert cut.cuts(_p(60, 54, 0), _p(140, 54, 0), "x", band=(0.0, 9 * M_PER_IN)) == {}
+    space = SimpleNamespace(members=cut, radius_m=1.1875 * M_PER_IN, clearance_m=0.0)
+    (prism,) = bar_prisms(space)
+    assert prism.z1_m == pytest.approx((5.5 + 1.1875) * M_PER_IN)  # a lane over it is clear
+    space.radius_m = 0.83 * M_PER_IN
+    assert bar_prisms(space) == []

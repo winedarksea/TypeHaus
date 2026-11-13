@@ -99,7 +99,9 @@ exterior wall. Every rule has a hand-worked note (`routing/oracle.py`).
 | Rip-up P8: a branch refused on size is re-laid one DWV size up in a world round its own lane, to the tie it had; the rest of the tree stands | `cli/route_tree_upsize`, `routing/tree_ripup` | `mep_tree_ripup_basis.md` §4.3 |
 | A falling profile is snapped to 1/16" from the arrival up, each leg's fall rounded up; the search and the proposal read one rule | `routing/gravity_grid` (`on_grid`, `grid_start`) | drain basis §13 |
 | A refusal names what stopped the furthest-reaching label (its path), not the tightest miss anywhere in the search | `GravityRefusal.front`, `settle` | drain basis §13 |
-| A floor crossing keeps clear of the holes already there, authored or laid earlier in the campaign: I-joist "2 x the larger hole" (ESR-1153 Table A fn1); an open-web crossing lands in an opening it fits, one run per D pocket | `routing/holes`, `resolve/mep_hole_chart`, `resolve/open_web` | `framing_bore_limits.md` §10-11 |
+| A floor crossing keeps clear of the holes already there, authored or laid earlier in the campaign: I-joist "2 x the larger hole" (ESR-1153 Table A fn1); an open-web crossing lands in an opening it fits, one run per D pocket | `routing/holes`, `resolve/mep_hole_chart`, `resolve/open_web` | `framing_bore_limits.md` §10-11, §14 |
+| A floor's solid cross members (strongback, blocking, ledger, a solid-sawn sister) are bored only within D/3 (IRC R502.8.1, `joist_bore`, the check's own call): a legal crossing is priced as a joist bore, an illegal one is refused, and a falling run gets banded prisms to pass over or under | `routing/floor_bars`, `resolve/mep_crossings.is_solid_floor_member` | `framing_bore_limits.md` §15 |
+| A tree's stack takes a wye anywhere down its plumb leg inside the tie band: its tie heights are rungs, tried highest first, each fixture tying at the first rung that routes; a fixture on the stack's own column keeps the head's verdict | `cli/cmd_route_tree` (`_stack_rungs`), `Branches.drop_top` | `mep_tree_ripup_basis.md` §6 |
 | A level edge through a blocked bearing-line bay stays inside its 2x6 box (crown under the top rail, sides in the bay); risers pass | `routing/bearing_bays`, `resolve/floor_blocking.bearing_bays` | `mep.run_through_blocking` |
 | A falling run crosses a truss only at a height a free opening leaves it there: the complement of each station's bands is forbidden, a station with none is an all-z block naming the pocket's holder | `routing/gravity_webs`, `resolve/open_web.station_bands` | `framing_bore_limits.md` §13 |
 | Open-web chords are flange prisms along each truss: a run crosses a truss through its web window, never rides inside a chord | `routing/obstacles` | drain basis §13 |
@@ -266,10 +268,14 @@ then run `haus fmt`, `haus trial`, inspect the drawing, and run repository verif
 - Laid-run holes reach supply and drain campaigns: a
   house campaign and a `--lift` re-lay pass what is laid so far (`holes.laid_lines`), a tree its
   `Branches.laid_lines()` (the main it ties into included, hidden from the space by `touch`), and a
-  drain keeps its tie target's own holes (`holes.kept_lines`). Known gap: same-size I-joist siblings
-  of one tree group, since `ijoist_bores_ok` reads the space built per size group (the D pockets are
-  per search and exact); `mep.run_member_crossing` grades two branches bored too close, the search
-  does not. A P8 re-lay's world is built without `laid` for the same reason.
+  drain keeps its tie target's own holes (`holes.kept_lines`). A sibling laid later in the same
+  group is not in the space built for it, so it is read per search: a falling run's
+  `gravity_webs.spacing_obstacles` (D pockets likewise, `web_obstacles`) and a supply lattice's
+  `holes.drop_close_edges` (framing_bore_limits.md §14); the P8 re-lay searches through the same.
+- A stack rung is a goal at ONE height (a lattice node holds one invert), so a still-refused group
+  is searched once per rung: `--tree PR-M-S-SUITE-DRAIN` takes ~3x longer to refuse its tub and WC.
+  Both refusals are real holds (framing_bore_limits.md §13: D13/D14 held by PR-B-CW-SUITE, D12 by
+  PR-A-HW-STUBATH); the authored tub lane stands.
 - A full scorecard run takes about 7 minutes: rows run in forked workers (`HAUS_SCORECARD_JOBS`,
   default min(4, cores/2)) and the longest row (`tree:main`, minutes now its 2" group lays) sets the floor.
 

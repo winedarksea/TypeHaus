@@ -162,6 +162,19 @@ def test_a_riser_clear_of_the_flange_and_a_crossing_through_the_web_pass(
     assert [f.result.value for f in findings] == ["pass"]
 
 
+def test_a_jacket_under_the_joist_that_reaches_the_flange_fails(monkeypatch) -> None:
+    """Centreline 1/2" under the bottom flange (z -12.375"): a bare 7/8" pipe is clear, its
+    1 1/4"-radius jacket bites 3/4" into the flange; a web-window bore is not this rule's."""
+    across = lambda z, dia: _level((60, 260), (60, 290), z, dia)  # noqa: E731
+    [bare] = _run(joist_flange, monkeypatch, [_JOIST], [across(-12.375, 0.875)])
+    assert bare.result.value == "pass"
+    [web] = _run(joist_flange, monkeypatch, [_JOIST], [across(-6.0, 0.875)])
+    assert web.result.value == "pass"
+    jacket = _run(joist_flange, monkeypatch, [_JOIST], [across(-12.375, 2.5)])
+    [finding] = [f for f in jacket if f.result.value == "fail"]
+    assert "bottom flange" in finding.message and '0.750" into a flange' in finding.message
+
+
 def test_a_leg_along_the_web_fails_and_under_the_flange_or_across_passes(
         monkeypatch) -> None:
     """``PR-B-CW-TRUNK`` in FS-M-WEST joist 012's web (TODO); a bore stays the window's."""

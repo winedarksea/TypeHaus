@@ -14,10 +14,13 @@ Its bearing bay ``bearing-block-0-009`` is clear y = 301.75 .. 314.25", the bloc
 
 from __future__ import annotations
 
+from types import SimpleNamespace
+
 from typehaus.quantities import M_PER_IN
 from typehaus.routing.bearing_bays import BearingBays
+from typehaus.routing.gravity_webs import spacing_obstacles
+from typehaus.routing.holes import drop_close_edges, kept_lines, run_lines, sibling_holes
 from typehaus.routing.holes import ijoist_bores_ok as _ijoist_bores_ok
-from typehaus.routing.holes import kept_lines, run_lines
 from typehaus.routing.members import Penetrations
 
 PEX_HALF_OD_M = 0.625 * M_PER_IN
@@ -96,3 +99,44 @@ def test_a_bearing_box_passes_only_its_window(catlin_model_ro):
     assert along(306, -1.75) is not None  # its crown over the top rail
     assert bays.refusal("y", 215 * M_PER_IN, 290 * M_PER_IN, 320 * M_PER_IN,
                         -6 * M_PER_IN) is not None  # riding the line through the block
+
+
+def _sibling_edges(model):
+    """Two 1/2" PEX lanes across the sauna joist, 2.5" and 2.7" off its x = 206.5" hole
+    (§14: 2.625" centres needed); the sibling is ``PR-B-CW-SAUNA`` as a laid line."""
+    laid = [line for line in run_lines(model, frozenset()) if line[0] == "PR-B-CW-SAUNA"]
+    pen = Penetrations(model, (190 * M_PER_IN, 0.0, 215 * M_PER_IN, 430 * M_PER_IN),
+                       PEX_HALF_OD_M / 2.0, touch=frozenset({"PR-B-CW-SAUNA"}))
+    floor = next(f for f in pen.floors if f.tag == "FS-M-WEST")
+    # The sibling's hole is NOT in the space: it was laid after the group's space was built.
+    assert not any(abs(s / M_PER_IN - 206.5) < 0.1 for hs in floor.holes for s, _r in hs)
+    at, _s, _e, z0, z1 = next(j for j in floor.joists
+                              if any(abs(s / M_PER_IN - 206.5) < 0.1 for s, _r in
+                                     _holes_on(laid, floor, j)))
+    z = (z0 + z1) / 2.0
+    nodes = [SimpleNamespace(x=x * M_PER_IN, y=at + dy, z=z)
+             for x in (204.0, 203.8) for dy in (-4 * M_PER_IN, 4 * M_PER_IN)]
+    return pen, laid, SimpleNamespace(nodes=nodes), (z0, z1)
+
+
+def _holes_on(laid, floor, joist):
+    extra = sibling_holes(laid, floor)
+    i = floor.joists.index(joist)
+    return [(s, r) for s, r, _t in extra[i]] if extra else []
+
+
+def test_a_sibling_laid_later_in_the_group_is_a_neighbour_per_search(catlin_model_ro):
+    pen, laid, graph, band = _sibling_edges(catlin_model_ro)
+    obstacles = spacing_obstacles(SimpleNamespace(members=pen, plan_band=band), graph, laid)
+    near, far = obstacles(0, 1), obstacles(2, 3)
+    assert len(near) == 1 and "PR-B-CW-SAUNA" in near[0][4]  # 1.625" clear < 1.75"
+    assert near[0][2:4] == band and far == []  # 1.825" clear passes
+    assert obstacles(1, 0)[0][:2] == near[0][:2]  # t = 1/2 either way
+    assert spacing_obstacles(SimpleNamespace(members=pen, plan_band=band), graph, [])(0, 1) == []
+
+
+def test_a_supply_lattice_loses_the_edges_a_new_sibling_closes(catlin_model_ro):
+    pen, laid, graph, _band = _sibling_edges(catlin_model_ro)
+    graph.weights = {k: 1.0 for k in ((0, 1), (1, 0), (2, 3), (3, 2))}
+    assert drop_close_edges(graph, SimpleNamespace(members=pen), laid) == 1
+    assert set(graph.weights) == {(2, 3), (3, 2)}
