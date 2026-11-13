@@ -131,6 +131,10 @@ keepout followed, adding 0.24 ft² of heated floor (26.79 -> 27.03 ft² as resol
 keepout's front notch followed, 0.75" x 19.5" = 0.10 ft² (27.03 -> 26.93 ft² as resolved;
 still over the cable's 26.7).
 
+**\*\* 2026-11-08: pass B 580 -> 570 on `RM-S-BATH1`. \*\*** The 4 1/2" deeper plumbing end
+(5c44d4336) furs the tub ends and takes finish-face volume out of the room, so its air-side
+share falls: infiltration 81.8 -> 80.7, ventilation 102.9 -> 101.6 Btu/h. 614 covers it by 44.
+
 **\*\* 2026-09-24: 567 -> 556 and 619 -> 606. \*\*** The room areas became finish-face
 areas, which shrinks the conditioned volume and each bath's share of the air-side terms; pass A is conduction
 through the same exterior wall and window and does not move.

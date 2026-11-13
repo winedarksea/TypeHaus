@@ -140,7 +140,9 @@ def test_bath1_carries_its_room_and_bath2_does_not(catlin_model_ro) -> None:
     rows = _by_room(catlin_model_ro)
     assert rows["RM-S-BATH1"].result is Result.PASS
     # 616 -> 614 on 2026-11-06: the WC's tank came 3/4" off the wall; its keepout followed.
-    assert "delivers 614 Btu/h against a 580 Btu/h design load" in rows["RM-S-BATH1"].message
+    # Load 580 -> 570 on 2026-11-08 (5c44d4336): the furred tub ends cut the room's volume,
+    # so its infiltration/ventilation share fell.
+    assert "delivers 614 Btu/h against a 570 Btu/h design load" in rows["RM-S-BATH1"].message
 
     bath2 = rows["RM-M-BATH2"]
     assert "delivers 399 Btu/h against a 501 Btu/h design load" in bath2.message
