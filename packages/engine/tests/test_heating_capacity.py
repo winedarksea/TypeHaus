@@ -442,7 +442,9 @@ def test_catlin_zone_loads_do_not_exceed_the_whole_house_load(catlin_model) -> N
     # under the door. That is true about AIR, not about the HEATING ZONE: a 50 sf
     # conditioned room off a conditioned bedroom is inside System 1's zone whether or not
     # it has a boot of its own, and its load belongs in that zone's block load.
-    assert set(unclaimed) == set()
+    # RM-S-PLANT (2026-11-12) is heated by its own space heater; mep.heating_capacity defers
+    # it to mep.room_heat_source rather than calling it unclaimed.
+    assert set(unclaimed) == {"RM-S-PLANT"}
 
 
 # --- supplemental resistance heat ------------------------------------------------------
@@ -494,7 +496,8 @@ def test_supplemental_heat_never_opens_a_zone_of_its_own() -> None:
 
 def test_supplemental_heat_in_an_unclaimed_room_is_not_counted() -> None:
     """The fireplace heats the *upper* room, which the heat pump's zone does not include, so
-    it must not pad the lower zone's margin — and the upper room stays honestly unclaimed."""
+    it must not pad the lower zone's margin. A room heated only by resistance equipment in it
+    is graded by mep.room_heat_source, so it is not reported unclaimed here either."""
     ctx = _context(_plan(
         (_heater("EQ-T-HP", "Heat pump", at_design=90000),
          _heater("EQ-T-FP", "Electric fireplace", supplemental_heat=True,
@@ -504,8 +507,7 @@ def test_supplemental_heat_in_an_unclaimed_room_is_not_counted() -> None:
     findings = heating_capacity(ctx)
     zone = next(f for f in findings if f.element_tags[0] == "EQ-HP")
     assert "supplemental" not in zone.message
-    assert any("in no equipment zone_rooms" in f.message and _UPPER_ROOM in f.message
-               for f in findings)
+    assert not any("in no equipment zone_rooms" in f.message for f in findings)
 
 
 def test_a_zone_without_supplemental_heat_says_nothing_about_it() -> None:

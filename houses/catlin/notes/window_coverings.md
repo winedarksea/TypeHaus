@@ -88,9 +88,14 @@ covers the living-room blinds.
 
 ## Exclusions
 
-- **Plant room: no shades.** Its glass sits only 1.9 °F above the room's dew point at the
-  centre of glass (`notes/plant_room.md`). A shade traps still, humid air against it and
-  turns that margin into condensation.
+- **Plant room: motorized rollers, closed only by rule** (reversed 2026-11-12). Its glass sits
+  only 1.9 °F above the room's dew point at the centre of glass, and a closed shade traps humid
+  air against colder glass. So `FURN-S-PLANT-SHADE-1..4` (SmartWings roller, Matter/Thread,
+  white/reflective back, mould-resistant fabric, inside the Corian reveals) close **only** when
+  sun is on the glass, the room is over setpoint and outdoors is >= 63 °F (the frame-edge dew
+  point check, `plant_room_moisture_budget.md` §7); otherwise HA forces them open, and always
+  open on heating-season nights. Roller, not cellular: a cell holds damp. Gate: the motor's
+  humidity rating.
 - **Living east row**: the existing blinds, untouched.
 
 ## Home Assistant

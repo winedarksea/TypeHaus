@@ -53,7 +53,7 @@ def test_study_matches_the_neighbor_jamb_and_keeps_its_glazed_outswing(
     swing_center = tuple(sum(point[axis] for point in ring) / len(ring) for axis in (0, 1))
     assert room_owning(catlin_model_ro, wall.storey, swing_center).tag == "RM-M-LIVING"
     plant = next(op for op in catlin_model_ro.openings if op.tag == "D-S-PLANT")
-    assert plant.type_ref == "DT-INT-SWING30-GLAZED"
+    assert plant.type_ref == "DT-INT-STEEL30-SEALED"
 
 
 def test_study_glass_is_open_between_wood_stiles_and_above_the_undercut(study_door):

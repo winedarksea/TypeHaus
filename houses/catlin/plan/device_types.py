@@ -77,7 +77,7 @@ RECEPTACLE_TYPES = (
     _dev("ED-T-LEV-GFCI-WR",
          "WR GFCI 20 A TR (GFWT2-W), 5980-UCL in-use cover, non-metallic gasketed box",
          GFWT2, footprint=(inch(4.5), inch(3)), height=inch(3), nema="5-20R",
-         device_box=False),
+         device_box=True),
     # On a 15 A branch (NEC 210.21(B)(3)): the radon fan's outlet on CKT-RC-ATTIC.
     _dev("ED-T-LEV-GFCI-WR-15",
          "WR GFCI 15 A TR (GFWT1-W), 5980-UCL in-use cover, non-metallic gasketed box",

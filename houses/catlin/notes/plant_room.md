@@ -7,8 +7,10 @@ applied_to:
   - assembly: PLANT_INT_2X4_HUMID
   - transition: TR-CATLIN-PLANT-OPENING
   - transition: TR-CATLIN-PLANT-RIM
-  - register: REG-S-ERV-PLANT-EXH
-  - duct: DU-S-PLANT-EXH
+  - register: REG-S-XFER-PLANT-HI
+  - register: REG-S-XFER-PLANT-LO
+  - door: D-S-PLANT
+  - equipment: EQ-S-PLANT-HEATER
 tags:
   - building-science
   - vapour-control
@@ -40,7 +42,7 @@ source:
 - Floor: SurePly + seamless sheet; 4" rubber base, silicone toe. No drain.
 - Glazing: fixed units only, U-0.14, warm-edge spacer, thermally broken frame.
 - No suspended ceiling. No roofing membrane under the vinyl.
-- Ventilation: 25 cfm in, 25 cfm out, both dampered. Extract high, far end.
+- Sealed; vents to Study 2. 1500 W heater.
 - Damp location throughout; wet location wherever misted or hosed.
 
 ### Keyed
@@ -50,7 +52,7 @@ source:
 - [K4 @ host#layer:liner-furring:out] Keep the 3/4" furring gap open behind the panel; it is the drying path.
 - {opening_perimeter:PLANT_EXT_*} [K9] 12 mm Corian frame glued to the stool; membrane returned behind it.
 - {!storey_stack:*} [K5] Wet-location listed luminaires, gasketed, corrosion-resistant housings.
-- {!storey_stack:*} [K6] Receptacles WR-listed and GFCI, in non-metallic gasketed boxes with in-use covers.
+- {!storey_stack:*} [K6] Air-sealed boxes taped to the membrane; WR GFCI, in-use covers.
 - {!storey_stack:*} [K7] Grow tubes listed to UL 8800 per NEC Article 410 Part XVI.
 - {storey_stack:*} [K8] Rim bay: 3" ccSPF in both floor bands; lap the membrane onto it.
 
@@ -65,9 +67,8 @@ source:
 - One sheet, no seam; the base toe is a maintained sealant joint. Nothing impermeable under it.
 
 ### Spec 23 00 00
-- Plant HP supply: [sidewall grille over the door, 6in RH damper behind it](plant_supply_connection.md).
-- Hold the room neutral to slightly negative, -0.05 to -0.15 in. w.g. against adjacent spaces.
-- A humidifier is required: an 84%-latent ERV still loses 1.5 to 2 gal/day at design.
+- No supply or extract. Two lined 10x6 sleeves to Study 2; the plant-face damper is the humidity control.
+- Open it above 75% RH, close below 60% ([budget](plant_room_moisture_budget.md)).
 
 # Notes
 
@@ -383,11 +384,10 @@ over TPO/EPDM. The sheet plus the sealed base toe is the waterproofing.
   package in a casement lands nearer U-0.18–0.20 — back inside the condensing band this whole
   retype exists to escape. It is also the right answer for the liner. An openable sash is an
   owner-operable hole in a Class I vapour barrier and a way to put the room at outdoor
-  humidity with the humidifier still running; the room is ventilated mechanically by design
-  (`REG-S-HP-PLANT` in, `REG-S-ERV-PLANT-EXH` out, both dampered), never by opening a window.
-  R303.1's openable-area half is therefore carried by Exception 1, which the room passes on
-  its grow tubes and its supply terminal (42.5 fc against the 6 fc the exception asks for),
-  and no room on this storey's SW corner carries an egress duty.
+  humidity; the room is sealed by design and vents only to Study 2 through its transfer pair.
+  R303.1's openable-area half is carried by Exception 1 (2018 IRC as adopted): no R310 opening
+  is required here and the whole-house ventilation system is installed (M1505). Neither
+  exception asks for a supply terminal in the room.
 - **Drained sill pan** under each unit: sloped, flashed into the wall membrane, draining to
   the room, never into framing. Drawn by `TR-CATLIN-PLANT-OPENING`.
 - **Window stools are Corian Glacier White, not oak or quartz** (owner, 2026-10-22; 3 cm
@@ -402,8 +402,17 @@ over TPO/EPDM. The sheet plus the sealed base toe is the waterproofing.
   The membrane is returned onto the buck behind the frame. Authored as
   `WindowStool.return_material_ref` on `PLANT_STOOLS`; the pieces are in `haus countertops`
   and bill with the stools, about 35 SF for the four windows.
-- **Keep the glass-wash airflow.** `REG-S-HP-PLANT` (now a sidewall over the door, 2026-11-12) throws west down the room past the south glass; that
-  function survives the damper retype below.
+- **Motorized roller shades** (`FURN-S-PLANT-SHADE-1..4`, SmartWings Matter-over-Thread,
+  white/reflective back, mould-resistant fabric) inside the Corian reveals. Home Assistant
+  closes them only with sun on the glass, the room over setpoint and outdoors >= 63 F;
+  otherwise open, and always open on heating-season nights (budget §7). Gate: the motor's
+  humidity rating. Grow lights run at night in summer.
+- **`D-S-PLANT` is a sealed steel prehung** (`DT-INT-STEEL30-SEALED`, 2026-11-12): Menards
+  Mastercraft class, full tempered lite, compression/magnetic weatherstrip, adjustable sill, no
+  undercut, <= $500. The plant room is the weather side; the leaf swings into Study 2 on a
+  closer with a hold-open, because the door held open is the summer fallback (budget §6).
+  Jamb extended to the 7.43" wall; the membrane returns at the jambs. The 0.38" Corian reducer
+  stays under the sill as the spill dam's base. Not a storm door.
 - **`D-S-DECK-W` IS DELETED (2026-09-03), and `WIN-S-PLANT4` stands on its centre.** A 60"
   exterior French door was the one hole in the six-sided liner that no detail closes: it is
   mostly frame, and frame and edge-of-glass run 5–8 °F below centre of glass, so its threshold
@@ -453,45 +462,27 @@ Every hole is a hole in the only barrier.
 
 ## Ventilation, pressure and humidity control
 
-`DU-S-HP-SOUTH` ties the room's air to the whole-house air handler and every other room on
-that branch, so an unbalanced plant room drives moist air into every crack in its envelope.
-`mep.humid_room_pressure` grades exactly this.
+**The room is sealed, and its humidity comes from watering alone** (owner, 2026-11-12). It
+takes no System 1 supply and no ERV extract; both, with the humidifier they needed, are
+retired. The arithmetic is [plant_room_moisture_budget.md](plant_room_moisture_budget.md).
 
-What is built now:
+1. **Exchange is the control.** Irrigation (capped 0.7 gal/day) evapotranspires ~0.2 lb/h.
+   Holding 70% against Study 2 affords **5-7 cfm in winter, 10-13 in summer**, door leakage
+   included. More dries the room; less condenses the glass, which is only 1.8 F above dew
+   point at design.
+2. **A high/low transfer pair through `W-S-C1`** (`REG-S-XFER-PLANT-HI`/`-LO`, Study 2 faces
+   `REG-S-XFER-STUDY2-HI`/`-LO`): two 10x6 lined sleeves in the y 64 3/4".."79 1/4" bay,
+   ~13.7 cfm fully open by buoyancy at 5 F. The plant face's opposed-blade damper holds its
+   setting; the working winter range is about half open.
+3. **Pressure is neutral by construction.** Transfer openings cannot pressurise a room, so it
+   sits at Study 2's pressure; `mep.humid_room_pressure` passes on that.
+4. **A room T/RH sensor with alerts is part of the design.** RH > 75%: open the vent. RH < 60%:
+   close it or add pebble trays. Below +10 F outdoors, reset to 55-60% by opening it.
+5. **Summer:** shades, grow lights at night, and the door held open to Study 2 (150 cfm) when
+   the room floats past ~85 F. An open hour costs ~2.5 lb of vapour.
 
-1. **Neutral-to-slightly-negative pressure**, per natatorium practice (−0.05 to −0.15 in.
-   w.g. relative to adjacent spaces). Slightly negative means house air leaks *in* —
-   harmless — and plant-room air never leaks into a wall cavity.
-2. **Matched extract**: `REG-S-ERV-PLANT-EXH` (25 cfm), at the far end of the room from the
-   supply, **high**, because humid air stratifies and the wettest air in the room is the air
-   overhead. See the addendum at the end for the terminal's routing.
-3. **Motorised isolation damper** on the System 1 terminal (`REG-T-HP-SUP-DAMPERED`), so
-   System 1 can neither dry the room nor carry its moisture house-wide.
-4. **RH-driven control** — none of this self-regulates humidity.
-5. **A humidifier is required regardless.** Even an 84 %-latent ERV loses ~16 % of the
-   moisture in every air change. At this flow against −15 °F outdoor air, unrecovered loss is
-   on the order of **1.5–2 gal/day**. An ERV is damage limitation, not humidity control.
-
-### Why a dampered branch and not a through-wall unit
-
-A dedicated ERV was considered and rejected. The Pioneer ECOasis 50 (`ERV050AHRMCO2L`) is
-**out of spec for this house**: minimum ambient −4 °F against a −15 °F design temperature; a
-stated design limit of "relative humidity below 80 %", which puts the target at the edge;
-6–15 CFM in actual recovery mode (the 29–35 CFM figures are one-way, no-recovery modes); no
-published latent recovery, no humidity sensor, no condensate drain. Worst of all a single
-unit is **unbalanced** — it alternates supply and exhaust on 75-second half-cycles,
-pressurising and depressurising the room, which is precisely the thing that destroys the
-envelope. Balanced operation needs two units, i.e. two more holes through the exterior wall.
-
-The house already owns a proper ERV in a mechanical room with a condensate drain and real
-frost control. "Separate from the house ERV" is best achieved with an independent *damper*,
-not an independent *machine* — the pattern the sauna already establishes with
-`REG-T-ERV-SAUNA-SUP`/`-EXH`.
-
-*If true isolation is still wanted*, the right product is the **Panasonic WhisperComfort 60
-(FV-06VE1)** — the only US-available unit in this class publishing latent performance (net
-moisture transfer 0.7 @ 20 CFM, ASRE 73 %) — accepting that it closes its supply damper below
-14 °F and reverts to exhaust-only.
+The single-room ERV survey that used to sit here (Pioneer, Panasonic, Lunos, Zehnder: none
+runs balanced at -15 F) is history in `DESIGN-LOG.md`.
 
 ## Electrical
 
@@ -505,10 +496,21 @@ misted or hosed.
   requires horticultural lighting equipment to be listed, and UL 8800 admits only damp- or
   wet-rated horticultural luminaires. `ED-T-LT-GROW-BAR` (mark F, two Barron Varius AG90
   bars, damp, ETL to UL 8800) states it.
-- `ED-S-PLANT-RC1..RC5`: **WR-listed, GFCI, in-use ("bubble") covers**, non-metallic gasketed
-  boxes — `ED-T-RECEPTACLE-WR-GFCI`. In-use covers everywhere, because pumps, heat mats and
-  the humidifier stay plugged in permanently and a flip lid is only weather-tight with
-  nothing in it.
+- `ED-S-PLANT-RC1..RC6`: **WR-listed, GFCI, in-use ("bubble") covers** (`ED-T-LEV-GFCI-WR`).
+  In-use covers everywhere, because pumps and heat mats stay plugged in permanently.
+- **Every box is air-sealed (K6)**: switches, the timer, the spot and receptacles take
+  `BOX-STANDARD`'s air-sealed rows (Lessco/Airfoil class, gasketed flange taped to the
+  membrane, gasketed cable entries, extension ring to the PVC face), derived wherever a box
+  crosses an air-control membrane and graded by `electrical.box_fill`.
+- **Heat** (2026-11-12): `EQ-S-PLANT-HEATER`, a Lasko CD08210-class 1500 W bathroom-rated fan
+  heater (ALCI plug) on a shelf 36" AFF on `W-S-PS2`, blowing south over the open floor, ~2'
+  clear of the stands and pots. Dedicated 20 A AFCI `CKT-PLANT-HEAT` (12.5 A does not belong on
+  `CKT-RC-SECOND`) to `ED-S-PLANT-HEAT-RC`, switched by the `ED-S-PLANT-HEAT-SW` Matter relay
+  (D315S, 15 A resistive) from Home Assistant's room sensor. The heater's own thermostat,
+  overheat and tip-over cutoffs are the safety loop (`smart_home.md` rule 3). The 52" fan
+  mixes. **Gate before purchase:** the manual must allow unattended thermostat operation and
+  the unit must resume heating after power loss; else a fixed damp-listed fan-forced heater
+  with its own thermostat on the same circuit.
 - **Lighting stays on a separate, non-GFCI circuit** (`CKT-LT-UPPER`) from the receptacles
   (`CKT-RC-SECOND`, GFCI at the device per the house convention). Both halves of that matter:
   grow-light drivers have leakage currents that nuisance-trip GFCIs, and a trip on the pumps
@@ -531,7 +533,10 @@ misted or hosed.
 - `building_science.glazing_dew_point` passes all four windows by 1.9 °F **at the centre of
   glass**, and says in the finding that the frame and edge run 5–8 °F colder. That margin is
   the whole reason the frame spec, the sill pans and the glass wash are not optional.
-- `mep.humid_room_pressure` passes now and FAILed before the extract existed.
+- `mep.humid_room_pressure` passes: transfer openings only, so the room sits at Study 2's pressure.
+- `mep.room_heat_source` passes on the heater: 5,118 Btu/h against a 1,309 Btu/h room load.
+- `mep.ventilation_distribution` reads the room as unserved, which is true and deliberate; the
+  finding is suppressed in `preferences.toml` with that reason.
 
 ## Open items
 
@@ -608,53 +613,6 @@ misted or hosed.
    and guessing in either direction would be worse than the blank. The reasons are written
    into the file beside the blanks.
 
-## Addendum, 2026-08-29 — the extract moved, and the terminal with it
-
-`DU-S-PLANT-EXH` is **`DU-M-ERV-R-PLANT` on the LEVEL-2 manifold** (`EQ-M-ERV-MAN-EXH`, which
-this fills to 10 of 10). The run goes south through
-**`FS-S-WEST`'s open-web trusses** at x=2'-10", east along the y=4'-8" bay, and **up inside
-`W-S-C1`** to a high sidewall grille at 8'-6".
-
-**Why the trusses and not the attic joists.** Both floors span x, so a north-south run crosses
-every joist in either. `FS-S-WEST` is 11 7/8" open-web truss, chosen in `params/second_deck.py`
-precisely so crossings go through the webs; `FS-ATTIC` is I-joist, where the same crossing at
-x=1'-0" means ~16 bored webs, every one of them within a foot of the joists' west bearing —
-which is the one place the hole chart does not allow.
-
-**Why `W-S-C1` and not `W-S-PS1`.** The riser needs a cavity that takes a 75 mm duct *and* a
-vapour-tight boot through the Class I liner. `W-S-C1` is `PLANT_INT_2X6_BRG_HUMID`, 7.43" with a
-5 1/2" cavity. The room's north wall `W-S-PS1` is `PLANT_INT_2X4_HUMID` at 5.42" — the duct
-would fit and the boot would not, and a boot that cannot be sealed is exactly the penetration
-this whole note exists to prevent.
-
-**High sidewall does not give up the stratification argument**, which is about
-*height*, not about which direction the boot arrives from. 8'-6" is six inches under the 9'-0"
-ceiling. Separation from `REG-S-HP-PLANT` is 6'-9".
-
-**Length is 55'-8"**, of which 9'-4" is the rise. **The machine's rating point is 0.4" w.g., not the 0.2" that
-several comments in `plan/mep_erv_l1.py` still quote.** HVI certifies the Broan B210E75RT at 206
-cfm net supply at 0.4" (HVI ID 2004940); 210 cfm at 0.2" is the model-name point off the
-manufacturer's fan curve.
-
-**Two corrections to "Why a dampered branch and not a through-wall unit" above,** both
-*strengthening* that section's conclusion:
-
-- The Panasonic WhisperComfort 60 fallback should not be used. The
-  FV-04VE1 is discontinued and no longer in the HVI directory; the current FV-06VE1 closes its
-  supply damper below 20 °F and runs exhaust-only roughly 75% of the heating season here.
-- The **Lunos e2** is not the escape hatch either. Its own installation manual gives −15 °C to
-  +40 °C — **+5 °F**, 18 °F above this site's design temperature — and instructs that on
-  exceeding the range you shut the unit off and close the indoor blind. The "−32 °F" figure is
-  distributor marketing with no test report behind it. Lunos is also not in the HVI directory.
-
-The general finding: **every single-room unit in this class either cannot run at −15 °F or
-defends against frost by unbalancing itself** (Panasonic below 20 °F, Zehnder ComfoSpot 50 below
-+8.6 °F, and every reversing ceramic regenerator by design, on a 70–75 second beat — both
-Blauberg and VENTS specify pairwise reverse-phase installation as the fix). For a room whose
-entire envelope strategy depends on never being pressurised, that is disqualifying, and none of
-them carries an HVI 916 rating Minnesota would credit anyway.
-
-
 ## Reservoir irrigation revision — 2026-11-11
 
 The room supply is an attended manual-fill service, with no permanent reservoir connection,
@@ -665,37 +623,10 @@ Disconnect the potable fill tube afterward; ordinary dry power recovery resumes 
 water budget, service geometry and commissioning; earlier hose-thread advice does not
 replace the plumber-qualified above-rim removable fill arrangement.
 
-## Addendum, 2026-11-11 — the extract is a NW high sidewall on W-S-PS1
+## History (superseded)
 
-Supersedes the 2026-08-29 addendum's W-S-C1 route. `DU-M-ERV-R-PLANT` (5 cfm) now leaves the
-level-2 flat trunk's end at W-S-PS1's axis and rises inside PS1's 2x4 cavity as a 3 1/4" x 8"
-galvanized stack (`DUCT-T-GALV-RECT-10`, 10.3 ft against 24.9 ft) to
-`REG-S-ERV-PLANT-EXH` at x=3'-6 1/2", 8'-3" to its centre — 3" under the 8'-6" first aimed
-at, because a higher stack end reads as a bore through PS1's top plates. It stays high and
-6" clear of `FURN-S-PLANT-HANG-NW`. The deck opening is `FO-S-ERV-PLANT`.
-
-- **Vapour-tight boot**: flanged boot taped with butyl to the room's Class I membrane, mastic
-  round the stack, mineral wool in the deck opening (`plan/mep_erv_l2.py`).
-- **The RH damper** (`PROD-AIR-DAMPER-4-24V`, 4" round) sits in the boot's 4" collar behind
-  the valve and is reached by pulling the valve; it can no longer go at the run's start.
-- Open: PS1's 1x4 furring at the boot is cut or jogged by the shop, and the bottom plate is
-  cut 8" at the stack. Nothing grades either.
-
-## Addendum, 2026-11-12 — the supply is a sidewall over the door
-
-Supersedes the ceiling boot, damper box and hatch of [plant_supply_connection.md](plant_supply_connection.md)'s
-first version. `REG-S-HP-PLANT` is a high sidewall grille on W-S-C1's plant face above D-S-PLANT
-(y=41", centre 99 1/8" storey), fed by a 6" take-off off the soffit riser, with the RH damper
-in its box collar. The service hatch is retired.
-
-- **Air and vapour separation improves.** The ceiling lost a 12x6 grille collar and a 10x6 hatch
-  through its liner; the wall gains one 12x6 box through the Class I membrane (flange taped as
-  at the extract boot). The duct stays on the dry side.
-- **Pressure is unchanged**, which is to say not what this note says. Supply 75 cfm, ERV extract
-  5 cfm (`erv_balance.py`; the 25 above is stale): the room is about 70 cfm positive when the
-  damper is open and leaves under the 1/2" door undercut at 19 Pa (`system1_return_path.md`). The
-  damper closing on the RH call is what brings it toward neutral. Nothing moved the balance.
-- **Cooling season:** cold supply across a 75 F / 64 F-dew-point room can sweat the grille face
-  and drip toward the door sill (no drain). Same exposure as the ceiling grille, now above the
-  threshold; the damper's RH closure is the defence.
-
+The room was ventilated mechanically until 2026-11-12: a 75 cfm System 1 supply behind an RH
+damper (ceiling boot, then a sidewall over the door, `notes/plant_supply_connection.md`), a 5
+cfm ERV extract (`DU-M-ERV-R-PLANT`, routed through W-S-C1, then up W-S-PS1), and a humidifier.
+It ran ~70 cfm positive through a 1/2" undercut. The owner sealed it instead; see
+`DESIGN-LOG.md`, 2026-11-12.

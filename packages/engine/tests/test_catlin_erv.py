@@ -85,10 +85,10 @@ def test_every_rectangular_erv_trunk_is_gone(catlin_plan) -> None:
 
 
 def test_the_play_rooms_fresh_supply_survives_and_moved(catlin_plan) -> None:
-    """Deleting REG-B-SUP2 is a hard ``code.R303_1_light_and_ventilation`` FAIL: RM-B-PLAY-N
-    is 324 sf of windowless MEDIA space legal only under R303.1 Exception 1, whose second
-    half requires a fresh-air supply *to that room*. It was re-sited, not dropped: a sidewall
-    valve on W-B-CN2's theater face at y=20'-6" since 2026-11-10."""
+    """RM-B-PLAY-N is windowless MEDIA space, legal under R303.1 Exception 2. The code asks
+    only for an installed whole-house system, not a terminal in the room — the engine no
+    longer FAILs a deletion — but a windowless theatre with no outdoor air is a bad room.
+    Re-sited, not dropped: a sidewall valve on W-B-CN2's theater face at y=20'-6"."""
     reg = next(e for e in catlin_plan.all_elements() if e.tag == "REG-B-SUP2")
     attachment = reg.location.attachment
     assert attachment.wall_ref == "W-B-CN2"
@@ -396,7 +396,7 @@ def test_the_fresh_feed_ends_in_the_mixing_box_on_the_attic_deck(catlin_model) -
 
 # --- the 2026-09-12 standard-parts redesign (plans/buildability.md BLD-08) -----------------
 
-def test_every_radial_is_four_inch_galvanized_and_there_are_twenty_three(catlin_model) -> None:
+def test_every_radial_is_four_inch_galvanized_and_there_are_twenty_two(catlin_model) -> None:
     """The whole BLD-08 distribution decision, in one assertion.
 
     The 75 mm semi-rigid tube had three US sellers and no Minnesota dealer, so it is gone;
@@ -405,12 +405,10 @@ def test_every_radial_is_four_inch_galvanized_and_there_are_twenty_three(catlin_
     """
     radials = [d for d in catlin_model.ducts
                if d.tag.startswith(("DU-B-ERV-R-", "DU-M-ERV-R-", "DU-A-ERV-R-"))]
-    # 22 home runs plus REG-M-RET3's branch off LAUNDRY (2026-11-10); BED3's left 2026-11-11.
-    assert len(radials) == 23, sorted(d.tag for d in radials)
-    # The plant room's extract is a 3 1/4 x 8 wall stack up W-S-PS1 (2026-11-11).
-    plant = next(d for d in radials if d.tag == "DU-M-ERV-R-PLANT")
-    assert (plant.width_m, plant.depth_m) == pytest.approx((3.25 * M_PER_IN, 8 * M_PER_IN))
-    for duct in (d for d in radials if d is not plant):
+    # 21 home runs plus REG-M-RET3's branch off LAUNDRY (2026-11-10); BED3's left 2026-11-11,
+    # the sealed plant room's 2026-11-12.
+    assert len(radials) == 22, sorted(d.tag for d in radials)
+    for duct in radials:
         assert duct.diameter_m == pytest.approx(4 * M_PER_IN), duct.tag
         assert duct.material == "galvanized", duct.tag
 

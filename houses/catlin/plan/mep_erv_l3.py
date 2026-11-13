@@ -80,11 +80,7 @@ EQUIPMENT_ERV_SECOND = []
 # ** THE x=1'-0" CHASE RUNS THE LENGTH OF A FINISHED BEDROOM, AND THE KNEE WALL AT ITS FOOT
 # IS BARE. ** DU-S-ERV-HP-FEED turns east at y=22'-0" and reaches SF-S-HP1 up
 # RM-A-EAST-UNFIN's deck instead of running the knee wall's length; DU-A-ERV-R-STUBATH's
-# east leg rides the y=21'-8 1/2" bay, ALONG the joists, boring nothing; DU-A-ERV-R-PLANT feeds
-# from FS-S-WEST's trusses (DU-M-ERV-R-PLANT in DUCTS_ERV_LEVEL2), rising inside W-S-C1's
-# 5 1/2" cavity to a HIGH SIDEWALL grille at 8'-6" — still in the warm wet air at the top of
-# the room, so the stratification argument is unaffected; only the direction the boot
-# arrives from changed. The west-eave floor receptacles have since been removed;
+# east leg rides the y=21'-8 1/2" bay, ALONG the joists, boring nothing. The west-eave floor receptacles have since been removed;
 # electrical_attic.py records the rafter plate's unresolved electrical wall-space status.
 #
 # The remaining rejected alternative is unchanged: bore the FS-ATTIC I-joists and run

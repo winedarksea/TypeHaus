@@ -8202,3 +8202,29 @@ pending a stock-colour quote, with no specified tint surcharge or third coat.
 
 Basis: [Styro Industries colour sheet](https://images.thdstatic.com/catalog/pdfImages/9e/9ecc5d27-5094-4503-b1f4-d88cefa6b450.pdf),
 read 2026-11-12; other swatches are labelled special order.
+
+## Plant room sealed: watered, not ventilated (2026-11-12, owner)
+
+**Why sealed.** The room was held at 75 F / 70% by working against itself: 75 cfm of System 1
+supply behind an RH damper, a 5 cfm ERV extract, and a humidifier that the old note called
+"required regardless". It also ran ~70 cfm positive through a 1/2" undercut (19 Pa). Its real
+moisture source is the watering: ~0.2 lb/h evapotranspired from a 0.7 gal/day cap. Holding 70%
+against Study 2 then affords only 5-7 cfm in winter (`notes/plant_room_moisture_budget.md` §2).
+Every supply cfm past that dries the room, and the humidifier was there to put back what the
+ventilation took out. So: no ERV, no System 1, no humidifier. A hand-set high/low transfer pair
+to Study 2 is the humidity control, a room T/RH sensor tells the owner when to move it, the
+door is a sealed steel prehung, and the boxes are air-sealed. R303.1 holds on Exception 1 as the
+2018 IRC actually reads: the engine had been asking for a supply register in the room, which
+the code text does not.
+
+**Why no mini-split.** ~400 W of design loss (§5) does not justify a head and line set, and a
+head's coil would wring out the water the room is trying to keep. A 1500 W fan heater on its own
+circuit covers it 3.7x.
+
+**Why no radiant floor.** The floor is the spill pan: a sheet vinyl with a raised dam and no
+drain. A heated mat under it adds a failure mode to the one surface that must stay simple, for
+heat a $50 heater supplies.
+
+The 75 cfm went to Study 2's second grille on SF-S-DUCT's south face, a glass wash whose jet runs
+past `D-S-PLANT`. Held open on its closer, the door is the summer fallback when the shades
+(closed only above 63 F outdoors) are not enough (§6, §7).

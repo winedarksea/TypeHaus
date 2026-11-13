@@ -3,7 +3,7 @@
 Not editable, because the legs are arithmetic. The registers (``plan/mep_registers_*.py``)
 and the ducts (``plan/mep_erv_*.py``) name these constants and never a number, so a
 terminal and its radial cannot disagree again: before 2026-11-06 eight legs did, BENCH and
-PLANT 12 at the grille against 6/5 on the duct the static budget grades (C4 E4). The owner
+the plant extract 12 at the grille against 6/5 on the duct the static budget grades (C4 E4). The owner
 took the duct split. Constant names are the element tags.
 
 EQ-B-ERV is a BALANCED machine authored at 210 cfm, HVI-certified at 206 at 0.4" w.g.
@@ -24,12 +24,13 @@ Extract is 210 on the dampers, holding every code minimum:
 
 * The seven bathroom terminals and the sauna at 20 cfm each (IRC M1505.4.4's continuous
   local-exhaust rate): 160 cfm, untouchable, 76% of the machine.
-* The other nine share 50: RM-S-PLANT 5, the workshop bench hood 6, the study return 5,
-  mudroom 5, kitchen 11, laundry 3, the BED1/BED2 pickups 5 each, the attic return 5.
+* The other eight share 50: the workshop bench hood 6, the study return 5, mudroom 10,
+  kitchen 11, laundry 3, the BED1/BED2 pickups 5 each, the attic return 5. The mudroom took
+  RM-S-PLANT's 5 on 2026-11-12, when the plant room was sealed (notes/plant_room.md).
   BED3's 5 went to the kitchen on 2026-11-11, when BED3 took a ducted System 1 return
   (REG-S-HP-BED3-RET) instead of a long attic radial.
 
-PLANT and the bench hood are token flows. The honest fix is a LARGER ERV, not a
+The bench hood is a token flow. The honest fix is a LARGER ERV, not a
 redistribution; this arithmetic is true against the machine the house has.
 """
 
@@ -51,13 +52,12 @@ REG_M_EXH2 = 20        # RM-M-BATH2
 REG_M_RET_STUDY = 5    # RM-M-STUDY-CLOSET
 REG_M_RET3 = 3         # RM-M-LAUNDRY
 REG_M_RET5 = 11        # the kitchen, in RM-M-LIVING
-REG_M_RET_MUD = 5      # RM-M-MUDROOM
+REG_M_RET_MUD = 10     # RM-M-MUDROOM (took RM-S-PLANT's 5, 2026-11-12)
 REG_S_RET_BED1 = 5     # RM-S-BED1
 REG_S_RET_BED2 = 5     # RM-S-BED2
 REG_S_EXH1 = 20        # RM-S-BATH1
 REG_S_EXH3 = 20        # RM-S-SUITEBATH
 REG_S_EXH4 = 20        # RM-S-VANITY
-REG_S_ERV_PLANT_EXH = 5  # RM-S-PLANT
 REG_A_RET1 = 5         # RM-A-STUDIO
 REG_A_STUBATH_EXH = 20  # RM-A-STUBATH
 
@@ -82,7 +82,6 @@ DU_M_ERV_R_BED1 = REG_S_RET_BED1
 DU_M_ERV_R_BED2 = REG_S_RET_BED2 + REG_S_RET_BED1  # carries the BED1 branch
 DU_M_ERV_R_SUITEBATH = REG_S_EXH3
 DU_M_ERV_R_VANITY = REG_S_EXH4
-DU_M_ERV_R_PLANT = REG_S_ERV_PLANT_EXH
 
 DU_A_ERV_R_BATH1 = REG_S_EXH1
 DU_A_ERV_R_ATTIC = REG_A_RET1
@@ -95,8 +94,7 @@ _LEVEL2_SUPPLY = DU_M_ERV_R_BED + DU_M_ERV_R_STUDY  # BED carries LIVING
 DU_M_ERV_SUP_FEED = _LEVEL2_SUPPLY  # the riser's basement tee up to EQ-M-ERV-MAN-SUP
 DU_M_ERV_EXH_TRUNK = (DU_M_ERV_R_BATH1 + DU_M_ERV_R_BATH2 + DU_M_ERV_R_LAUNDRY
                       + DU_M_ERV_R_KITCH + DU_M_ERV_R_MUD + DU_M_ERV_R_BED2
-                      + DU_M_ERV_R_SUITEBATH + DU_M_ERV_R_VANITY
-                      + DU_M_ERV_R_PLANT)  # BED2 carries BED1
+                      + DU_M_ERV_R_SUITEBATH + DU_M_ERV_R_VANITY)  # BED2 carries BED1
 DU_M_ERV_EXH_FEED = DU_M_ERV_EXH_TRUNK
 # The attic plenum: the 115 System 1 feed out, 45 extract in.
 _ATTIC_EXTRACT = DU_A_ERV_R_BATH1 + DU_A_ERV_R_ATTIC + DU_A_ERV_R_STUBATH

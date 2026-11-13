@@ -1,4 +1,4 @@
-"""Can a room whose only heat is a radiant floor actually carry that room at design?
+"""Can a room whose only heat is a radiant floor or a space heater carry it at design?
 
 IRC R303.10, adopted unamended in Minnesota, wants heating capable of 68 F three feet above
 the floor at the design temperature. Nothing in the engine asked that of a single room, and
@@ -40,8 +40,12 @@ sentence excludes bathrooms and toilet rooms. Both of Catlin's sole-heat radiant
 bathrooms, so neither is actually a code subject — which is worth saying out loud rather
 than quietly citing a section that does not reach them.
 
-Oracled by ``houses/catlin/notes/room_heat_loss_baths.md``, reproduced by
-``tests/test_room_heat_source.py``.
+**A room heated only by resistance equipment in it** (a ``supplemental_heat`` space heater,
+nothing reaching it with air) is graded the same way: its rating against the room's load.
+``mep.heating_capacity`` defers such a room here rather than calling it unclaimed.
+
+Oracled by ``houses/catlin/notes/room_heat_loss_baths.md`` and
+``notes/plant_room_moisture_budget.md``, reproduced by ``tests/test_room_heat_source.py``.
 """
 
 from __future__ import annotations
@@ -57,24 +61,29 @@ from typehaus.model.enums import Occupancy
 _NOT_HABITABLE = frozenset({Occupancy.BATHROOM})
 
 
+def self_heated(row) -> bool:
+    """Graded here: a radiant floor, or resistance heat in a room no air reaches."""
+    return bool(row.radiant_tags) or (not row.reached_by and bool(row.supplemental_tags))
+
+
 @check(Tier.ADVISORY, "mep.room_heat_source")
 def room_heat_source(ctx: CheckContext) -> list[Finding]:
-    """Radiant output against the room's own design load, where the floor is the only heat."""
+    """Radiant or space-heater output against the room's own design load."""
     from typehaus.energy import estimate_block_load
     from typehaus.takeoff.hvac import room_heat_sources
 
     cid = "mep.room_heat_source"
     rooms = [row for row in room_heat_sources(ctx.model, ctx.preferences)
-             if row.radiant_tags]
+             if self_heated(row)]
     if not rooms:
-        # Earned: every conditioned room was walked and not one carries a FloorHeat zone,
-        # so no room in this building is heated by a floor at all.
+        # Earned: every conditioned room was walked and none carries a FloorHeat zone or
+        # is heated only by resistance equipment standing in it.
         return [not_applicable(cid, "no conditioned room in this plan carries a radiant "
-                                    "floor zone, so no room is heated by one", ())]
+                                    "floor zone or relies on a space heater alone", ())]
 
     out: list[Finding] = []
     for row in rooms:
-        zones = ", ".join(row.radiant_tags)
+        zones = ", ".join(row.radiant_tags or row.supplemental_tags)
         if row.reached_by:
             out.append(passed(
                 cid, f"{row.room}: {zones} supplements a room the conditioned-air system "
@@ -126,7 +135,8 @@ def room_heat_source(ctx: CheckContext) -> list[Finding]:
 
         load = report.heating_load_btu_per_hour
         supplement = (f" + {row.supplemental_btuh:.0f} Btu/h from "
-                      f"{', '.join(row.supplemental_tags)}" if row.supplemental_tags else "")
+                      f"{', '.join(row.supplemental_tags)}"
+                      if row.supplemental_tags and row.radiant_tags else "")
         if delivered + 1e-9 >= load:
             out.append(passed(
                 cid, f"{row.room}: {zones}{supplement} delivers {delivered:.0f} Btu/h "

@@ -12,7 +12,9 @@ host face over the device's own band, read outermost layer first:
 * cladding outermost (an exterior face) → no box: the type carries its own weatherproof one.
 
 A row may name a ``use``: a light takes the ``"luminaire"`` row, and a type may ask for its
-own (``box_use="recessed"``); with none, the general row serves.
+own (``box_use="recessed"``); with none, the general row serves. A flush box whose host stack
+crosses an air-control membrane takes the ``"air-sealed"`` row (flange taped to the
+membrane) ahead of any other; ``electrical.box_fill`` reports one the standard lacks.
 
 Wall-hosted receptacles, switches and wall lights take one; data outlets, enclosures,
 panels, disconnects, meters and junction boxes do not unless their type says
@@ -44,6 +46,7 @@ _TWO_GANG_SYMBOLS = frozenset({"receptacle-combined", "receptacle-quad"})
 _MASONRY_HATCHES = frozenset({"concrete", "masonry"})
 _SKIN_FUNCTIONS = frozenset({"finish", "membrane"})
 _CID = "integrity.box_standard"
+AIR_SEALED = "air-sealed"
 
 
 @dataclass(frozen=True)
@@ -56,6 +59,7 @@ class BoxPlan:
     projection_m: float  # surface: box depth + cover rise; flush: 0
     cavity_m: float | None  # flush: depth of the cavity behind the finish
     host_layer: str
+    air_barrier: bool = False  # the box breaches an air-control membrane
 
 
 @dataclass(frozen=True)
@@ -92,6 +96,9 @@ class ResolvedDeviceBox:
     #: The derived block's child key on ``wall_tag``, or None (no row block, or none fits).
     block_key: str | None = None
     shape: str = "rectangular"
+    #: The box breaches an air-control membrane; ``box_use`` is the row it took.
+    air_barrier: bool = False
+    box_use: str | None = None
 
 
 _CACHE: dict[int, tuple[Any, BoxStandard | None, frozenset[str]]] = {}
@@ -196,30 +203,46 @@ def _face_layers(wall: Any, frame: tuple, band: Band) -> list[Any]:
     return out
 
 
-def _host(model: ResolvedModel, layers: list[Any]) -> tuple[str, float | None, str] | None:
-    """(``surface``|``flush``, cavity depth, host layer) off the face, or None for no box.
+def _host(model: ResolvedModel,
+          layers: list[Any]) -> tuple[str, float | None, str, bool] | None:
+    """(``surface``|``flush``, cavity depth, host layer, air barrier crossed), or None.
 
     A flush box reaches through any furring or channel behind the finish, and through a
     membrane (sealed to an airtight box's flange), into the first framed layer, so its
     cavity is all of them together.
     """
+    found = _host_layers(model, layers)
+    if found is None:
+        return None
+    mounting, cavity, host, crossed = found
+    air = mounting != "surface" and any(
+        layer.function == "membrane" and "air" in layer.control for layer in crossed)
+    return mounting, cavity, host, air
+
+
+def _host_layers(model: ResolvedModel, layers: list[Any]):
     materials = {material.tag: material for material in model.plan.library.materials}
-    cavity, host = 0.0, None
+    cavity, host, crossed = 0.0, None, []
     for layer in layers:
+        crossed.append(layer)
         hatch = getattr(materials.get(layer.material_ref), "hatch", None)
         if hatch in _MASONRY_HATCHES:
-            return ("flush", cavity, host) if host else ("surface", None, layer.name)
+            return (("flush", cavity, host, crossed) if host
+                    else ("surface", None, layer.name, crossed))
         if layer.function in _SKIN_FUNCTIONS and not host:
             continue
-        if layer.function in ("furring", "airgap", "membrane"):
+        # Behind furring, a second finish (the plant liner's gypsum) is cut through too.
+        if layer.function in ("furring", "airgap", "membrane") or (
+                host and layer.function == "finish"):
             cavity, host = cavity + layer.thickness_m, layer.name
             continue
         if layer.function == "structure":
-            return "flush", cavity + layer.thickness_m, layer.name
+            return "flush", cavity + layer.thickness_m, layer.name, crossed
         if host or layer.function == "insulation":
-            return ("flush", cavity, host) if host else ("flush", layer.thickness_m, layer.name)
+            return ((("flush", cavity, host) if host
+                     else ("flush", layer.thickness_m, layer.name)) + (crossed,))
         return None  # cladding: an exterior face
-    return ("flush", cavity, host) if host else None
+    return ("flush", cavity, host, crossed) if host else None
 
 
 def plan_box(model: ResolvedModel, item: Any, product_type: Any | None,
@@ -237,16 +260,21 @@ def plan_box(model: ResolvedModel, item: Any, product_type: Any | None,
     host = _host(model, _face_layers(wall, face_frame(wall, attachment, band), band))
     if host is None:
         return None
-    mounting, cavity, layer = host
+    mounting, cavity, layer, air = host
     if mounting == "flush" and item.tag in reached:
         mounting = "flush_raceway"
     gangs = gang_count(product_type)
-    row = standard.row_for(mounting, gangs, box_use(item, product_type))
+    use = box_use(item, product_type)
+    # An air-sealed row for the device's own use ("air-sealed-luminaire-round"), else the plain one.
+    sealed = air and next((r for want in (f"{AIR_SEALED}-{use}" if use else None, AIR_SEALED)
+                           for r in standard.rows if want and r.mounting == mounting
+                           and r.gangs == gangs and r.use == want), None)
+    row = sealed or standard.row_for(mounting, gangs, use)
     if row is None:
         return None
     width, _height, depth = (part.meters for part in row.box_size)
     projection = depth + row.cover_rise.meters if mounting == "surface" else 0.0
-    return BoxPlan(mounting, gangs, row, projection, cavity, layer)
+    return BoxPlan(mounting, gangs, row, projection, cavity, layer, air)
 
 
 def place_box(model: ResolvedModel, item: Any, plan: BoxPlan, storey: str, room: str | None,
@@ -274,7 +302,7 @@ def place_box(model: ResolvedModel, item: Any, plan: BoxPlan, storey: str, room:
         cavity_m=plan.cavity_m, wall_tag=wall.tag, host_layer=plan.host_layer,
         footprint=tuple(ring), z0_m=z0, z1_m=z1, face_point=point, normal=normal,
         device_footprint=tuple(device_footprint), uid=f"{item.uid}-box", block_key=block_key,
-        shape=plan.row.shape))
+        shape=plan.row.shape, air_barrier=plan.air_barrier, box_use=plan.row.use))
     model.solids.append(ResolvedSolid(
         uid=f"{item.uid}-box", tag=f"{item.tag}-BOX", storey=storey, category="electrical_box",
         outline=list(ring), z0_m=z0, z1_m=z1, product=plan.row.box_product_ref,

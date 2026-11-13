@@ -1016,12 +1016,6 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     bores nothing. The two VENTS run that axis end to end at 3'-5"..3'-9" above the attic
     floor, so the grille (`REG-A-STUBATH-EXH`) sits at 3'-0" and the riser stops under them
     (2026-09-26). Raising it again re-opens the crossing.
-  - `DU-M-ERV-R-PLANT` (was `-A-`, 2026-11-11): the flat trunk's end continues as a
-    3 1/4"x8" rectangular stack, 15 1/2" east then up `W-S-PS1`'s 2x4 bay at x=3'-6 1/2" to a
-    high sidewall grille, 8'-3" to centre (humid air stratifies; higher reads as a bore through
-    PS1's top plates). 10.3 ft; `FO-S-ERV-PLANT` is its deck opening, the RH damper sits in
-    the boot collar behind the valve (`notes/plant_room.md`, 2026-11-11 addendum). It must stay
-    END-TO-END with the trunk: a rectangle joins the static budget only by chaining.
   - **Level-2 extract is a FLAT trunk in J12's D pockets** (owner 2026-11-07, routed 2026-11-08):
     an 8x4 at x=27" (the one x where every truss's 9x4 R2 lines up) off a 6x4 neck from
     `EQ-M-ERV-MAN-EXH`'s top collar, ending at PS1's axis; seven 4" takeoffs on shop-made side
@@ -1922,10 +1916,15 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       does not fit: 12.5" clear in y); static budget and change-out drop in
       `notes/air_distribution_products.md` §5. `RM-A-EAST-UNFIN` returns through
       `REG-A-HP-EAST-RET` on `EQ-S-ERV-MIX`'s south face, damper-locked at 35 cfm.
-    - **RM-S-PLANT's supply is `REG-S-HP-PLANT`, a high sidewall on W-S-C1's plant face above
-      D-S-PLANT** (y=41", the cripple bay between y=33" and 49"), fed by `DU-S-HP-PLANT`, a 6"
-      take-off off `DU-S-HP-SOUTH-RISE`; its 24 VAC RH damper is behind the grille. No hatch, no
-      ceiling penetration. The riser's 250 = STUDY2 75 + plant 75 + `DU-S-HP-SOUTH` 100 (a stub).
+    - **RM-S-PLANT is SEALED and takes no System 1 or ERV air** (owner, 2026-11-12;
+      `notes/plant_room.md`, oracle `notes/plant_room_moisture_budget.md`). Its humidity is the
+      watering; a hand-set high/low transfer pair through W-S-C1 (`REG-S-XFER-PLANT-HI`/`-LO`) to
+      Study 2 is the humidity control, the door `D-S-PLANT` a sealed steel prehung on a hold-open
+      closer, heat a 1500 W fan heater on `CKT-PLANT-HEAT`, four motorized rollers. Every box
+      through its membrane is air-sealed (derived). `mep.ventilation_distribution` is
+      suppressed for it with that reason. Study 2 takes the 75 cfm: `REG-S-HP-STUDY2-S` on
+      SF-S-DUCT's south face, a glass wash past D-S-PLANT. The riser's 250 = STUDY2 75 + 75 +
+      `DU-S-HP-SOUTH` 100.
     - **BED1-3 use straight 6" side collars.** BED3 is at y=27'-6", centreline 100 1/8"
       above the second-storey datum, through W-S-BW3 above D-S-BED3's header; its collar
       clears the south king by 1/2". Close the shadow gap and cut the local resilient

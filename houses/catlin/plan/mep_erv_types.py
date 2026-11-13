@@ -119,8 +119,8 @@ EQUIPMENT_TYPES_ERV = (
     # Not a manufacturer's test curve — there is no manufacturer. It is the abrupt-expansion
     # loss into the box plus the contraction and damper loss out of one start collar, worked
     # term by term in notes/erv_static_budget.md §4 from ASHRAE fitting coefficients on the
-    # collar velocity pressure. It is worked at the house's LARGEST port flow (25 cfm,
-    # DU-M-ERV-R-PLANT) and is therefore conservative at every other port. A submitted
+    # collar velocity pressure. It is worked at the house's LARGEST port flow (25 cfm, the
+    # plant extract before it was retired) and is therefore conservative at every other port. A submitted
     # shop drawing with a measured curve replaces these three points and nothing else.
     # The same six-port manifold, cast for the EXTRACT side. Identical part, identical
     # price, one field different: the trunk carries stale air away from the house, so the

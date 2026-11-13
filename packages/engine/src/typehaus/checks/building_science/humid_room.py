@@ -381,6 +381,13 @@ def humid_room_pressure(ctx: CheckContext) -> list[Finding]:
                 f"{room_tag} is continuously humid and extract-only — it cannot "
                 "pressurise itself", tags,
             ))
+        elif present == {"transfer"}:
+            out.append(passed(
+                PRESSURE_CHECK_ID,
+                f"{room_tag} is continuously humid and ventilated only by transfer "
+                "openings — it cannot pressurise itself and sits at its neighbour's "
+                "pressure", tags,
+            ))
         else:
             out.append(unknown(
                 PRESSURE_CHECK_ID,

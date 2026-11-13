@@ -445,6 +445,7 @@ PLAN = (
                                 *placeables.SECOND_PLACEABLES,
                                 *window_coverings.SECOND_WINDOW_COVERINGS,
                                 *plant_room.PLANT_ROOM_PLACEABLES, *plant_room.PLANT_ROOM_BACKING,
+                                *plant_room.PLANT_ROOM_HEAT,
                                 *plant_reservoir.PLANT_RESERVOIR_PLACED,
                                 *bedroom_wardrobes.BEDROOM_WARDROBES,
                                 *bath1_storage.BATH1_STORAGE,

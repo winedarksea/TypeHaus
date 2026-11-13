@@ -16,7 +16,7 @@ from typehaus import DoorHardwareItem, DoorType
 from typehaus.library.doors import DT_POCKET_INT_36
 from typehaus.quantities import ft, inch
 
-from plan.opening_products import HALIFAX_KEYED, STEEL_PREHUNG_HINGE
+from plan.opening_products import HALIFAX_KEYED, HOLD_OPEN_CLOSER, STEEL_PREHUNG_HINGE
 
 # Every commodity leaf is a stock 6'-8" prehung cut down on site (owner, 2026-11-06): jamb
 # legs trimmed, the 80" slab cut to its undercut in the 81.51" RO over the finished floor
@@ -83,6 +83,28 @@ INTERIOR_DOOR_TYPES = (
                "jamb, ordered without a sill: compression weatherstrip at jambs and head plus a "
                "door-bottom sweep across its 1/2in undercut, no threshold. The workshop makes up "
                "through D-B-FURN's undercut, which must stay."),
+    # D-S-PLANT (2026-11-12): the plant room is sealed and holds its own humidity, so its door
+    # is a stock exterior-grade steel prehung, the plant room the weather side, swinging into
+    # Study 2. Not a storm door: those are built to sit in front of a primary door.
+    DoorType(
+        tag="DT-INT-STEEL30-SEALED", width=ft(2, 6), height=ft(6, 8), function="passage",
+        glazed=True, tempered=True, leaf_thickness=inch(1.75), bottom_seal=True,
+        self_closing=True,
+        hardware=(
+            DoorHardwareItem(role="closer", product_ref=HOLD_OPEN_CLOSER.tag, height=inch(78),
+                             installation="Study 2 face; hold-open arm for the open-door "
+                                          "summer fallback."),
+            *(DoorHardwareItem(role="hinge", product_ref=STEEL_PREHUNG_HINGE.tag,
+                               height=inch(height),
+                               installation="Coordination height; order the prehung with US15 "
+                                            "hinges.")
+              for height in (10, 40, 70)),
+        ),
+        source="Stock 30x80 insulated steel prehung, full tempered lite (Menards Mastercraft "
+               "class, <= $500): composite frame, compression/magnetic weatherstrip, "
+               "adjustable sill, no undercut. Halifax Square passage. Jamb extended to the "
+               "7.43in wall. The membrane returns at the jambs; the reducer under the sill "
+               "stays the spill dam's base. notes/plant_room.md."),
     DoorType(
         tag="DT-INT-SAUNA24", width=ft(2), height=ft(6, 8),
         leaf_material_ref="cedar-sauna-trim", leaf_thickness=inch(1.75), bottom_seal=True,

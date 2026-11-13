@@ -148,6 +148,8 @@ def test_a_penetration_is_exempt_only_for_the_run_it_exists_for(catlin_model) ->
         "AO-S-ERV-EA": ("DU-ERV-EA",),
         "AO-M-PORCH-HYD": ("PR-M-CW-PORCH-HYD-CU", "PR-M-CW-PORCH-HYD"),
         "AO-S-BALCONY-HYD": ("PR-S-CW-BALCONY-HYD-CU", "PR-M-CW-BALCONY-HYD"),
+        "AO-S-XFER-PLANT-HI": ("REG-S-XFER-PLANT-HI", "REG-S-XFER-STUDY2-HI"),
+        "AO-S-XFER-PLANT-LO": ("REG-S-XFER-PLANT-LO", "REG-S-XFER-STUDY2-LO"),
     }
 
     # Still one-to-one the other way: no run is exempted at more than one hole, so a duct

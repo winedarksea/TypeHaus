@@ -14,7 +14,7 @@ HARDWARE_BLOCKING_ANCHOR_ROLES = frozenset({
 
 class DoorHardwareItem(HausModel):
     role: Literal["hinge", "passage", "deadbolt", "multipoint", "strike_reinforcement",
-                  "viewer", "astragal", "fastener"]
+                  "viewer", "astragal", "fastener", "closer"]
     product_ref: str = Field(min_length=1)
     quantity: int = Field(default=1, gt=0)
     height: Length | None = None

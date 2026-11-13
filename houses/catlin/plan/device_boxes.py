@@ -69,8 +69,21 @@ CARLON_B520A = Product(tag="PROD-CARLON-B520A", brand="Carlon", model="B520A-UPC
                        url="https://www.gexpro.com/p/17618/carlon/4-round-ceiling-box-nail-on-2-1-4-deep-non-metallic/034481006213/b520a-upc",
                        source="Round box for the WAC Sprig sconces, 2026-11-08.")
 
+# RM-S-PLANT's sealed liner (2026-11-12): every box through the Class I membrane is an
+# air-sealed one, flange taped to the membrane, gasketed cable entries, an extension ring
+# out to the PVC face. Volumes are the published class figure; confirm on the submittal.
+AIRFOIL_1G = Product(tag="PROD-LESSCO-AIRFOIL-1G", brand="Lessco / Airfoil", model="Airfoil 1-gang",
+                     name="Air-sealing 1-gang box, gasketed flange and cable entries, 20 cu. in.",
+                     url="https://www.airfoilinc.com/",
+                     source="Basis of design, or equal (Allied Moulded air-seal box). notes/plant_room.md, K6.")
+AIRFOIL_ROUND = Product(tag="PROD-LESSCO-AIRFOIL-ROUND", brand="Lessco / Airfoil",
+                        model="Airfoil 4 in. round",
+                        name="Air-sealing 4 in. round ceiling/wall box, gasketed flange, 20 cu. in.",
+                        url="https://www.airfoilinc.com/",
+                        source="Basis of design, or equal: ED-S-PLANT-SPOT's sconce box. notes/plant_room.md, K6.")
+
 BOX_PRODUCTS = (RACO_232, RACO_808C, RACO_809C, RACO_768, CARLON_B122A, CARLON_BH235A,
-                CARLON_B520A, RACO_192, RACO_753, ARLINGTON_DVFR1W)
+                CARLON_B520A, RACO_192, RACO_753, ARLINGTON_DVFR1W, AIRFOIL_1G, AIRFOIL_ROUND)
 
 BOX_STANDARD = [
     BoxStandard(
@@ -103,6 +116,12 @@ BOX_STANDARD = [
                    box_product_ref="PROD-ARLINGTON-DVFR1W",
                    box_size=(inch(4.2), inch(6.698), inch(3.875)), box_volume_in3=21.0,
                    block_profile="2x4"),
+            BoxRow(mounting="flush", gangs=1, use="air-sealed",
+                   box_product_ref="PROD-LESSCO-AIRFOIL-1G",
+                   box_size=(inch(2.5), inch(4), inch(3.5)), box_volume_in3=20.0),
+            BoxRow(mounting="flush", gangs=1, use="air-sealed-luminaire-round",
+                   box_product_ref="PROD-LESSCO-AIRFOIL-ROUND", shape="round",
+                   box_size=(inch(4), inch(4), inch(2.25)), box_volume_in3=20.0),
         ),
     ),
 ]

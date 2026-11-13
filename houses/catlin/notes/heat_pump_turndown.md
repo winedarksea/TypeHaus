@@ -456,3 +456,12 @@ Factors hold (HP1 14,000 / 14,632 = **0.96**, HP2 8,800 / 14,337 = **0.61**); Ma
 0.80 × 14,632 = **11,705** (HP1), 0.80 × 14,337 = **11,470** (HP2); HP1's crossover
 −9.4 -> **−9.5 °F**, HP2's stays **25.8 °F**. Magnitudes are the engine's own, not a fresh
 hand pass: the change is geometric and small. No verdict moves.
+
+## Addendum 2026-11-12 — RM-S-PLANT leaves System 1's zone (HP1 only)
+
+The plant room is sealed and heated by its own 1500 W heater (`plant_room_moisture_budget.md`),
+so it is out of `EQ-S-HP1-AH.zone_rooms`. HP1's design load 14,637 -> **13,431** Btu/h (the
+room's ~1,200 Btu/h share). Factor 14,000 / 13,431 = **1.04**; Manual S cap 0.80 x 13,431 =
+**10,745** (the engine prints 10,744 off the unrounded load). The crossover falls past the
+design temperature, −9.4 -> **−15.7 °F** (engine figure): HP1 now cycles at every hour the
+house sees, which sharpens the existing ADVISORY rather than changing its verdict.

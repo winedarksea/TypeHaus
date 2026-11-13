@@ -801,6 +801,7 @@ PROD-ENDURA-FLA = { low = 0, high = 0 }
 # prehung's finish upcharge).
 PROD-KWIKSET-740HFLSQT-15-SMT = { low = 56, high = 90 }
 PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
+PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 
 # Added diaphragm framing, 2026-10-06: material-only per-nail budget bands. Driving labour
 # stays in framing. Retail package benchmarks (confirm quantities with the supplier):
@@ -3116,6 +3117,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # factory cord and remote; its dedicated GFCI branch and receptacle bill separately.
 # https://www.homedepot.com/p/303985873
 "EQ-T-GARAGE-HEATER" = { material = { low = 110, high = 110 }, labour = { low = 40, high = 100 } }  # 1 ea
+"EQ-T-PLANT-HEATER" = { material = { low = 40, high = 80 }, labour = { low = 0, high = 20 } }  # 1 ea, Lasko CD08210 class (estimate)
 # The seven Gree rows: dealer-direct, no published component prices. Scaled off the one
 # figure that is public (Vireo+ 2-head system, $2,499+) with outdoor units carrying ~70% of
 # a system and heads the rest. Softest numbers in this file — get a dealer quote.
@@ -3361,6 +3363,8 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "FT-CELLULAR-SHADE-3048-MOTOR" = { material = { low = 250, high = 420 }, labour = { low = 40, high = 100 } }  # 2 ea — WIN-S-STUDY1/-2
 "FT-CELLULAR-SHADE-2748-MOTOR" = { material = { low = 230, high = 400 }, labour = { low = 40, high = 100 } }  # 1 ea — WIN-S-STUDY3
 "FT-CELLULAR-SHADE-2754-MOTOR" = { material = { low = 240, high = 420 }, labour = { low = 40, high = 100 } }  # 1 ea — WIN-A-S-JUL-E
+"FT-ROLLER-SHADE-3048-MOTOR" = { material = { low = 200, high = 380 }, labour = { low = 40, high = 100 } }  # 3 ea — WIN-S-PLANT1/2/4 (estimate)
+"FT-ROLLER-SHADE-2754-MOTOR" = { material = { low = 200, high = 380 }, labour = { low = 40, high = 100 } }  # 1 ea — WIN-S-PLANT3 (estimate)
 "FT-CELLULAR-SHADE-3048-CORDLESS" = { material = { low = 70, high = 160 }, labour = { low = 30, high = 80 } }  # 2 ea — WIN-M-BED-S1/-S2
 "FT-CELLULAR-SHADE-1424-CORDLESS" = { material = { low = 50, high = 120 }, labour = { low = 30, high = 80 } }  # 1 ea — WIN-A-S3
 # --- the porch enclosure track (2026-09-03) ---------------------------------------------
@@ -3721,7 +3725,6 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # RM-S-PLANT's extract: the valve plus an EWC 4RSD 24 VAC spring-return damper at the level-2
 # plenum ($176.72, SupplyHouse listing, 2026-10-31). The RH controller is not modelled and so is
 # not in this file.
-"REG-T-ERV-PLANT-EXH" = { material = { low = 195, high = 260 }, labour = { low = 180, high = 420 } }  # 1 ea
 # The sauna's closeable wood vents (2026-10-29): ProSaunas aspen air hatch, US$73.10 (thermo-aspen
 # ~US$88) plus US$22.95 shipping and a 4" round-to-rectangular boot - ESTIMATES. Labour is the
 # boot, the cutout and the trim. A shop-built sliding hatch from aspen offcuts is the DIY fallback.
@@ -3739,7 +3742,6 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # damper (EWC 6RSD class; the 4RSD is ~$177, the 6RSD price NOT READ) in the box collar behind it.
 # The stock 6x12x6 end boot bills in [duct_parts]. Allowance, not a quote; labour includes the
 # membrane flange seal, the 24 VAC pull and the RH interlock. Included once.
-"REG-T-HP-PLANT-SIDE" = { material = { low = 250, high = 380 }, labour = { low = 90, high = 200 } }  # 1 ea
 # 24x12 hinged filter-back return (H&C 673 class). The stock 12x24x1 MERV 13 filters are an
 # owner consumable, not in the build.
 "REG-T-HP-RET-FILTER" = { material = { low = 60, high = 130 }, labour = { low = 18, high = 45 } }  # 1 ea
@@ -3751,6 +3753,9 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "REG-T-TRANSFER-MUD-1210" = { material = { low = 30, high = 55 }, labour = { low = 30, high = 70 } }  # 1 grille, panel cut; no sleeve
 # D-S-BATH1's offset pair (2026-11-03): one 6x6 grille plus half the bay's sheet-metal liner.
 "REG-T-TRANSFER-0606" = { material = { low = 30, high = 60 }, labour = { low = 30, high = 70 } }  # 2 ea
+"REG-T-XFER-PLANT-1006" = { material = { low = 25, high = 55 }, labour = { low = 30, high = 70 } }  # 2 ea, RM-S-PLANT transfer pair, 10x6 with OBD (estimate)
+"REG-T-XFER-STUDY-1006" = { material = { low = 12, high = 30 }, labour = { low = 15, high = 40 } }  # 2 ea, Study 2 face, plain 10x6 (estimate)
+"PROD-AIR-XFER-SLEEVE-10X6" = { material = { low = 20, high = 50 }, labour = { low = 40, high = 90 } }  # 2 ea, shop sleeve + membrane taping (estimate)
 "REG-T-HPWH-STAIR-1210" = { material = { low = 45, high = 85 }, labour = { low = 30, high = 70 } }  # 2 ea; grille + boot, estimate (2026-11-09)
 
 [floor_finishes]
@@ -5998,7 +6003,7 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 # D-B-SAUNA: stock insulated all-wood sauna door with its own handle, catch and hinges.
 # ESTIMATE, not quoted. Hung on the cedar flat jamb billed in [interior_trim].
 "DT-INT-SAUNA24" = { material = { low = 600, high = 1300 }, labour = { low = 150, high = 320 } }  # 1 ea
-"DT-INT-SWING30-GLAZED" = { material = { low = 350, high = 900 }, labour = { low = 165, high = 350 } }  # 1 ea, D-S-PLANT; D-M-STUDY uses its own kerfed-jamb type since 2026-10-09
+"DT-INT-STEEL30-SEALED" = { material = { low = 380, high = 500 }, labour = { low = 180, high = 380 } }  # 1 ea, D-S-PLANT (estimate, Menards class prehung + jamb extension)
 "DT-INT-DOUBLE60" = { material = { low = 460, high = 1150 }, labour = { low = 255, high = 500 } }  # 1 ea — flush solid-core pair plus jamb/head gaskets and an astragal ($60-150), 2026-11-03
 # 56" needs a FOUR-panel bifold, not a two-panel — doornmore prices a 4-door at $302.40 against
 # $103.50-206.50 for a 2-door, which is why the old $150 floor was wrong.
@@ -6545,6 +6550,8 @@ PROD-HINGE-4IN-US15 = { low = 0, high = 8 }
 "PROD-CARLON-B122A" = { material = { low = 1.2, high = 2.5 }, labour = { low = 0, high = 0 } }
 "PROD-CARLON-BH235A" = { material = { low = 7, high = 11 }, labour = { low = 0, high = 0 } }
 "PROD-CARLON-B520A" = { material = { low = 3, high = 6 }, labour = { low = 0, high = 0 } }  # WAC Sprig sconces; ~$3.82 Platt listing (2026-11-08), estimate
+"PROD-LESSCO-AIRFOIL-1G" = { material = { low = 4, high = 10 }, labour = { low = 5, high = 15 } }  # plant air-sealed boxes; labour is the membrane taping (estimate)
+"PROD-LESSCO-AIRFOIL-ROUND" = { material = { low = 5, high = 12 }, labour = { low = 5, high = 15 } }  # ED-S-PLANT-SPOT (estimate)
 
 [grounding]
 # NEW 2026-11-10 (decision #123) — [low, high] $ EACH, split material/labour: electrode

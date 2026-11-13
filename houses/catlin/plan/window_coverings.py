@@ -54,6 +54,33 @@ SECOND_WINDOW_COVERINGS = [
               position=pt(inch(255.25), inch(9.5625)), rotation=deg(180),
               mount=Mount(kind=MountKind.CEILING, elevation=inch(0.5))),
     # Motorized: WIN-S-STUDY1/-2 (south), WIN-S-STUDY3 (east, 36" sill).
+    # RM-S-PLANT (2026-11-12): motorized roller shades inside the Corian reveals, the summer
+    # sun control. Closed only with sun on the glass, the room over setpoint and outdoors
+    # >= ~60 F; otherwise open, and always open on heating-season nights (notes/window_coverings.md).
+    Furniture(uid="QF6JM42JX2", tag="FURN-S-PLANT-SHADE-1", type_ref="FT-ROLLER-SHADE-3048-MOTOR",
+              room="RM-S-PLANT",
+              mount=Mount(kind=MountKind.WALL, elevation=inch(30.88)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-S-S1", face="left", distance_from_start=inch(48),
+                  normal_gap=inch(0), rotation_offset=deg(-180)))),
+    Furniture(uid="Q4QSDRF3W9", tag="FURN-S-PLANT-SHADE-2", type_ref="FT-ROLLER-SHADE-3048-MOTOR",
+              room="RM-S-PLANT",
+              mount=Mount(kind=MountKind.WALL, elevation=inch(30.88)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-S-S1", face="left", distance_from_start=inch(112),
+                  normal_gap=inch(0), rotation_offset=deg(-180)))),
+    Furniture(uid="626R0XDN4F", tag="FURN-S-PLANT-SHADE-4", type_ref="FT-ROLLER-SHADE-3048-MOTOR",
+              room="RM-S-PLANT",
+              mount=Mount(kind=MountKind.WALL, elevation=inch(30.88)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-S-S1", face="left", distance_from_start=inch(176),
+                  normal_gap=inch(0), rotation_offset=deg(-180)))),
+    Furniture(uid="YAZPRPS446", tag="FURN-S-PLANT-SHADE-3", type_ref="FT-ROLLER-SHADE-2754-MOTOR",
+              room="RM-S-PLANT",
+              mount=Mount(kind=MountKind.WALL, elevation=inch(26.38)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-S-W4", face="left", distance_from_start=inch(60),
+                  normal_gap=inch(0), rotation_offset=deg(-180)))),
     Furniture(uid="NM0D2S1S3R", tag="FURN-S-STUDY2-SHADE-S1", type_ref="FT-CELLULAR-SHADE-3048-MOTOR",
               room="RM-S-STUDY2",
               mount=Mount(kind=MountKind.WALL, elevation=inch(30.5)),

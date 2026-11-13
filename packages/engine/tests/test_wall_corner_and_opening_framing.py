@@ -682,7 +682,8 @@ def test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs(catli
     # buck, jamb post or course — `resolve/framing/furring.frames_the_cladding`). The rule
     # this test states is why: it is about width against the module and says nothing about
     # what fills the hole. The cladding rule is about a board being wider than the hole.
-    assert len(framed) == 17, [o.tag for o in framed]
+    # 19 since 2026-11-12: RM-S-PLANT's two 10x6 transfer sleeves, each inside one W-S-C1 bay.
+    assert len(framed) == 19, [o.tag for o in framed]
     for opening in framed:
         wall = walls[opening.host_wall]
         start, end = _framing_axis(wall)

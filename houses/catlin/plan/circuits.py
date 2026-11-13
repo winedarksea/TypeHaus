@@ -302,6 +302,13 @@ CIRCUITS = (
             load_va=1500, gfci=True,
             description="Garage DR-238 carbon radiant heater, 1500 W / 120 V (EQ-G-HEATER), dedicated GFCI-protected ED-G-HEATER-RC; retain factory cord and plug"),
 
+    # RM-S-PLANT's fan heater (2026-11-12): 12.5 A does not belong on CKT-RC-SECOND.
+    Circuit(tag="CKT-PLANT-HEAT", slot=41, panel_ref=_PANEL, breaker_amps=20, poles=1,
+            load_va=1500, afci=True,
+            description="Plant room 1500 W / 120 V fan heater (EQ-S-PLANT-HEATER), dedicated, "
+                        "on ED-S-PLANT-HEAT-RC (WR GFCI) switched by the ED-S-PLANT-HEAT-SW "
+                        "Matter relay from Home Assistant"),
+
     *BACKUP_CIRCUITS,
 
     # --- general-use 120V ------------------------------------------------------------

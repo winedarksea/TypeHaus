@@ -31,7 +31,7 @@ from typehaus.findings import (
 from typehaus.model.electrical import METAL_BOX_VOLUME_IN3
 from typehaus.model.nec import NEC, cite
 from typehaus.quantities import M_PER_IN
-from typehaus.resolve.device_boxes import takes_box
+from typehaus.resolve.device_boxes import AIR_SEALED, takes_box
 
 _CID = "electrical.box_fill"
 _CODE = cite(NEC.BOX_FILL)
@@ -82,6 +82,12 @@ def _grade(box: Any, circuits: dict[str, Any], types: dict[str, Any],
                             f"{box.cavity_m / M_PER_IN:.2f}\" cavity", tags,
                       code=cite(NEC.BOX_SUPPORT),
                       fix="a shallower box row in the BoxStandard, or a deeper cavity")
+    if box.air_barrier and not (box.box_use or "").startswith(AIR_SEALED):
+        return failed(_CID, f"{where} breaches an air-control membrane on {box.wall_tag}, and "
+                            f"the BoxStandard has no {AIR_SEALED!r} {box.mounting} "
+                            f"{box.gangs}-gang row", tags,
+                      fix="add an air-sealed row: a flanged, gasketed box whose flange is "
+                          "taped to the membrane")
     circuit = circuits.get(box.circuit or "")
     if circuit is None:
         return unknown(_CID, f"{where} names no circuit, so its conductors are unknown",

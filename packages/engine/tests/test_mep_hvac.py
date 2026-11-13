@@ -295,9 +295,9 @@ def test_study_sidewall_boot_connects_and_clears_soffit_framing(catlin_plan, cat
     assert register.mount.kind.value == "wall"
     assert register.design_cfm == 75
     assert branch.design_cfm == 75
-    plant = next(d for d in model.ducts if d.tag == "DU-S-HP-PLANT")
-    assert bay.design_cfm == 100  # the attic desk only; the plant room leaves west
-    assert riser.design_cfm == branch.design_cfm + plant.design_cfm + bay.design_cfm
+    south = next(d for d in model.ducts if d.tag == "DU-S-HP-STUDY2-S")
+    assert bay.design_cfm == 100  # the attic desk only; the study's two grilles leave below
+    assert riser.design_cfm == branch.design_cfm + south.design_cfm + bay.design_cfm
     assert branch.diameter_m == pytest.approx(inch(6).meters)
     assert branch.path[-1] == pytest.approx(grille.position)
     assert branch.z_m[0] == pytest.approx(riser.z_m[0])

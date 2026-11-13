@@ -48,8 +48,20 @@ SMARTWINGS_CELLULAR_CORDLESS = Product(
     url="https://www.smartwingshome.com/",
     source="Made to measure; the motorized line's fabric with a cordless lift. Read 2026-10-29.",
 )
+# RM-S-PLANT's summer sun control (2026-11-12): roller, not cellular, because a cell holds
+# damp and the room runs 70% RH.
+SMARTWINGS_ROLLER_MOTORIZED = Product(
+    tag="PROD-SMARTWINGS-ROLLER-MATTER", brand="SmartWings",
+    model="Roller shade, white/reflective back, Matter-over-Thread motor",
+    name="SmartWings motorized roller shade, inside mount, mould-resistant fabric",
+    url="https://www.smartwingshome.com/",
+    source=("Made to measure, inside the Corian reveal. GATE: the motor's humidity rating "
+            "against a 70% RH room; mould-resistant (PVC-coated or treated polyester) fabric, "
+            "white or reflective glass face. Home Assistant closes it only with sun on the "
+            "glass, the room over setpoint and outdoors >= ~60 F (notes/window_coverings.md)."),
+)
 WINDOW_COVERING_PRODUCTS = (VIDGA_RAIL, SMARTWINGS_CELLULAR_MOTORIZED,
-                            SMARTWINGS_CELLULAR_CORDLESS)
+                            SMARTWINGS_CELLULAR_CORDLESS, SMARTWINGS_ROLLER_MOTORIZED)
 
 _TRACK_SOURCE = ("IKEA VIDGA single track, white, cut to the run, fittings at <= 140 cm "
                  "(2 minimum); IKEA block-out curtain panels on multi-heading tape at ~1.8-2x "
@@ -112,6 +124,14 @@ SHADE_3048_CORDLESS = _shade("FT-CELLULAR-SHADE-3048-CORDLESS", 30, 48,
 SHADE_1424_CORDLESS = _shade("FT-CELLULAR-SHADE-1424-CORDLESS", 14, 24,
                              SMARTWINGS_CELLULAR_CORDLESS)
 
+ROLLER_3048_MOTOR = _shade("FT-ROLLER-SHADE-3048-MOTOR", 30, 48,
+                           SMARTWINGS_ROLLER_MOTORIZED).model_copy(update=dict(
+    name='Roller shade, motorized, 30 x 48" opening'))
+ROLLER_2754_MOTOR = _shade("FT-ROLLER-SHADE-2754-MOTOR", 27, 54,
+                           SMARTWINGS_ROLLER_MOTORIZED).model_copy(update=dict(
+    name='Roller shade, motorized, 27 x 54" opening'))
+
 WINDOW_COVERING_TYPES = (TRACK_LIV_S, TRACK_LIV_PORCH, TRACK_BED_W, TRACK_STUDY_BALCONY,
                          SHADE_3048_MOTOR, SHADE_2748_MOTOR, SHADE_2754_MOTOR,
-                         SHADE_3048_CORDLESS, SHADE_1424_CORDLESS)
+                         SHADE_3048_CORDLESS, SHADE_1424_CORDLESS,
+                         ROLLER_3048_MOTOR, ROLLER_2754_MOTOR)

@@ -40,7 +40,7 @@ sweep or automatic bottom closes its undercut (`DoorType.bottom_seal`).
 | D-S-SUITEBATH | suite bath / suite | DT-INT-SWING30-PRIV | privacy | hollow | 3/4" | - |
 | D-S-BATH1 | bath1 / hall | DT-INT-SWING30-PRIV-SOLID | privacy | solid | kerf seal + sweep across a 1/2" undercut | REG-S-XFER-VANITY -> lined bay -> REG-S-XFER-BATH1 |
 | D-S-NCLOSET | closet / hall | DT-INT-SWING30 | passage | hollow | 1/2" | - |
-| D-S-PLANT | plant / study2 | DT-INT-SWING30-GLAZED | passage | glazed | 1/2" (deliberately no more) | - |
+| D-S-PLANT | plant / study2 | DT-INT-STEEL30-SEALED | passage | insulated steel, full tempered lite | none: compression seal + adjustable sill (2026-11-12) | closer with hold-open; the room vents through its own transfer pair (`plant_room.md`) |
 | O-S-CLOSET | suite closet | DT-INT-BIFOLD56 | closet | - | - | - |
 | D-A-HALVES | studio / study | DT-INT-SWING32-PRIV | privacy | hollow | 3/4" (3.8 Pa: see return note) | System 1 return |
 | D-A-STUBATH | studio bath / studio | DT-INT-SWING24-PRIV | privacy | hollow | 3/4" | - |

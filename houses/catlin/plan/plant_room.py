@@ -6,7 +6,18 @@
 # The hanging assemblies include their cords: drop=46 inches, the body, so the eye plate
 # meets the finished PVC ceiling (a no-elevation ceiling mount hangs off the resolved board).
 
-from typehaus import Furniture, Location, Mount, MountKind, WallAttachment, WallBacking
+from typehaus import (
+    DeviceKind,
+    ElectricalDevice,
+    Equipment,
+    EquipmentKind,
+    Furniture,
+    Location,
+    Mount,
+    MountKind,
+    WallAttachment,
+    WallBacking,
+)
 from typehaus.model import deg, inch, pt
 
 PLANT_ROOM_PLACEABLES = [
@@ -158,4 +169,37 @@ PLANT_ROOM_BACKING = [
                 length=inch(14.5), elevation=inch(72), height=inch(7.25),
                 profile="2x8", material_ref="spf",
                 purpose="SKUGGRONA stand 4 upper bracket; sealed spacer to stud-bay block"),
+    WallBacking(uid="KYYB62SZEG", tag="BK-S-PLANT-HEATER",
+                wall_ref="W-S-PS2", face="right", start=inch(48.75),
+                length=inch(14.5), elevation=inch(30), height=inch(7.25),
+                profile="2x8", material_ref="spf",
+                purpose="EQ-S-PLANT-HEATER shelf brackets; sealed spacer to stud-bay block"),
+]
+
+# The room's heat (2026-11-12): the fan heater on a shelf 36" AFF on W-S-PS2's plant face,
+# above spill height, blowing south over the open floor, ~2' clear of the stands and hanging
+# pots either side; the 52" fan ED-S-PLANT-LT mixes it. Its own receptacle and Matter relay
+# on dedicated CKT-PLANT-HEAT. notes/plant_room.md, "Heat".
+PLANT_ROOM_HEAT = [
+    Equipment(uid="2C6CPGQAE1", tag="EQ-S-PLANT-HEATER", kind=EquipmentKind.SPACE_HEATER,
+              footprint=(inch(7), inch(7)), room="RM-S-PLANT", type_ref="EQ-T-PLANT-HEATER",
+              circuit="CKT-PLANT-HEAT",
+              mount=Mount(kind=MountKind.WALL, elevation=inch(36)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-S-PS2", face="right", distance_from_start=inch(56.5),
+                  normal_gap=inch(0), rotation_offset=deg(0)))),
+    ElectricalDevice(uid="38WQ21WJ9N", tag="ED-S-PLANT-HEAT-RC", kind=DeviceKind.RECEPTACLE_GFCI,
+                     type_ref="ED-T-LEV-GFCI-WR", circuit="CKT-PLANT-HEAT", room="RM-S-PLANT",
+                     controlled_by=("ED-S-PLANT-HEAT-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-S-PS2", face="right", distance_from_start=inch(66),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
+    # D315S: 15 A resistive, 1800 W; HA drives it off the room T/RH sensor.
+    ElectricalDevice(uid="EXAVCXTJC1", tag="ED-S-PLANT-HEAT-SW", kind=DeviceKind.SWITCH,
+                     type_ref="ED-T-LEV-MATTER", circuit="CKT-PLANT-HEAT", room="RM-S-PLANT",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-S-PS2", face="right", distance_from_start=inch(74),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
 ]

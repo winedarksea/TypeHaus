@@ -277,7 +277,8 @@ def heating_capacity(ctx: CheckContext) -> list[Finding]:
     Nothing here is a Manual J: it reuses ``estimate_block_load`` with a room filter (whose
     room attribution is approximate — see its docstring), and missing inputs stay UNKNOWN,
     never estimated. A conditioned room that no unit claims is reported as unclaimed rather
-    than assigned to the nearest zone.
+    than assigned to the nearest zone — unless its own floor or space heater heats it, which
+    ``mep.room_heat_source`` grades.
     """
     from typehaus.takeoff.hvac import heating_zones
 
@@ -336,6 +337,14 @@ def heating_capacity(ctx: CheckContext) -> list[Finding]:
         else:
             out.append(_advisory_fail(cid, detail + " — undersized at design temp",
                                       (zone.equipment_tag,)))
+    if unclaimed:
+        # A room heated only by its own floor or space heater is mep.room_heat_source's.
+        from typehaus.checks.mep.room_heat import self_heated
+        from typehaus.takeoff.hvac import room_heat_sources
+
+        own = {row.room for row in room_heat_sources(ctx.model, ctx.preferences)
+               if self_heated(row)}
+        unclaimed = frozenset(unclaimed) - own
     if unclaimed:
         out.append(_unknown(
             cid, "conditioned room(s) in no equipment zone_rooms: "

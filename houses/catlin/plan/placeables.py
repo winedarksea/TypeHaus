@@ -636,9 +636,9 @@ SECOND_PLACEABLES = [
     # 2'-3" below ceiling, on a photoperiod timer) and under WIN-S-PLANT1/2 (same x, the
     # WT-3048-HP/-HP-T pair — same 30" of glass, better U) so each gets daylight plus the
     # tube.
-    # Chairs face south from y 4'-0"..7'-0", 1'-3" clear of the plants' north edge. The room's
-    # supply is a high sidewall grille over D-S-PLANT (REG-S-HP-PLANT, plan/mep_registers_second.py), so
-    # nothing on the floor needs keeping clear between the chairs. Chair x is
+    # Chairs face south from y 4'-0"..7'-0", 1'-3" clear of the plants' north edge. The room has
+    # no supply (sealed, notes/plant_room.md), so nothing on the floor needs keeping clear
+    # between the chairs. Chair x is
     # clear of D-S-PLANT's 2'-6" swing (y=1'-5"..3'-11", reaching to x=15'-6").
     Furniture(uid="PLT701AAAA", tag="FURN-S-PLANT-POT1", type_ref="FURN-PLANT-18",
               room="RM-S-PLANT", position=pt(m(1.28957), m(0.606871))),

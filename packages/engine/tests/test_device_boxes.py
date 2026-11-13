@@ -152,3 +152,15 @@ def test_canopy_spans_a_round_box_diameter_but_a_square_box_diagonal():
 def test_the_sprig_sconces_take_the_round_box(catlin_model_ro):
     box = _box(catlin_model_ro, "ED-S-STUDY2-SPOT1")
     assert (box.shape, box.box_product) == ("round", "PROD-CARLON-B520A")
+
+
+def test_a_box_through_the_humid_liners_membrane_is_air_sealed(catlin_model_ro):
+    """RM-S-PLANT's Class I membrane is an air control: every box through it takes the
+    standard's air-sealed row, reaching past the liner's gypsum into the stud bay."""
+    rc = _box(catlin_model_ro, "ED-S-PLANT-RC1")  # exterior liner wall: PVC, furring, membrane, gwb
+    assert rc.air_barrier and rc.box_use == "air-sealed"
+    assert rc.box_product == "PROD-LESSCO-AIRFOIL-1G" and rc.depth_m <= rc.cavity_m
+    spot = _box(catlin_model_ro, "ED-S-PLANT-SPOT")
+    assert spot.box_use == "air-sealed-luminaire-round" and spot.shape == "round"
+    study = _box(catlin_model_ro, "ED-S-STUDY2-RC1")  # the other face of no liner
+    assert not study.air_barrier and study.box_use is None

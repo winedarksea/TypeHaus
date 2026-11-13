@@ -95,7 +95,8 @@ def test_unconditioned_room_needs_no_supply():
 # (houses/catlin/plan/mep_registers_second.py, mep_hvac.py). The set is empty now and stays named
 # rather than the assertion being loosened to "mostly pass", so ANY room falling out of
 # coverage fails this test.
-_EXPECTED_UNSERVED: set[str] = set()
+# RM-S-PLANT is sealed on purpose since 2026-11-12 (preferences.toml suppresses it, reasoned).
+_EXPECTED_UNSERVED: set[str] = {"RM-S-PLANT"}
 
 
 def test_catlin_distribution_has_no_unserved_rooms(catlin_model):

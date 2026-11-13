@@ -131,6 +131,8 @@ def test_catlin_door_catalog_tags_state_operation_and_width(catlin_plan):
         "DT-INT-CLOSET32": (32.0, DoorOperation.SWING, False, False),
         # D-B-ESS (2026-10-30): unrated steel leaf with a small tempered vision lite.
         "DT-INT-STEEL24-LITE": (24.0, DoorOperation.SWING, False, True),
+        # D-S-PLANT (2026-11-12): sealed exterior-grade steel prehung, full tempered lite.
+        "DT-INT-STEEL30-SEALED": (30.0, DoorOperation.SWING, False, True),
     }
     # The catalog carries the pocket sizes the house hangs, not the library's whole ladder:
     # the 36" Eclisse pocket in its passage and privacy functions (2026-11-03), and no other

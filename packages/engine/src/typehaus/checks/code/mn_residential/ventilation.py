@@ -40,19 +40,20 @@ _SF_PER_M2 = SF_PER_M2
 # mechanical room is not a violation and a windowless bedroom is.
 _HABITABLE = HABITABLE_OCCUPANCIES
 
-# R303.1 Exception 1 — the way a below-grade room or an interior room is legally lit and
-# ventilated at all. The glazing is not required where BOTH halves are replaced:
+# R303.1's exceptions, 2018 IRC as Minnesota adopts it (Minn. R. 1309.0303 amends R303.4 only):
 #
-#   * artificial light "capable of producing an average illumination of 6 footcandles over
-#     the area of the room at a height of 30 inches above the floor", and
-#   * a whole-house mechanical ventilation system supplying outdoor air to the room.
+#   1. "The glazed areas need not be openable where the opening is not required by Section
+#      R310 and a whole-house mechanical ventilation system is installed in accordance with
+#      Section M1505."
+#   2. "The glazed areas need not be installed in rooms where Exception 1 is satisfied and
+#      artificial light is provided that is capable of producing an average illumination of
+#      6 footcandles (65 lux) over the area of the room at a height of 30 inches (762 mm)
+#      above the floor level."
 #
-# Both halves are read off what the plan already states, and neither is assumed. The
-# footcandle number is an estimate and says so in the message: lamp lumens are a product
-# fact, but what reaches the work plane depends on the room's surfaces, so the two planning
-# factors below are applied and named rather than hidden. They are ordinary residential
-# values (a light-coloured room with recessed cans); a room that only clears 6 fc by
-# rounding is a room to light better, not a number to argue with.
+# So a room short only of OPENABLE area needs Exception 1 alone: no R310 opening, and an
+# installed whole-house system whose rate passes. Neither exception asks for a supply
+# terminal in the room. A room short of GLAZING needs Exception 2: Exception 1 plus the light.
+# The footcandles are an estimate (CU x LLF, named in the message), not a photometric run.
 _EXCEPTION_MIN_FOOTCANDLES = 6.0
 COEFFICIENT_OF_UTILIZATION = 0.60
 LIGHT_LOSS_FACTOR = 0.80
@@ -144,56 +145,80 @@ def _room_lumens(ctx: CheckContext, room) -> tuple[float | None, list[str]]:
     return (total if found else None), sorted(unrated)
 
 
-def _has_fresh_air_supply(ctx: CheckContext, room) -> bool:
-    """Does a mechanical fresh-air supply terminal land in this room?"""
-    return any(element.element_kind == "Register"
-               and element.kind is DuctSystem.SUPPLY
-               and getattr(element, "room", None) == room.tag
-               for element in ctx.plan.all_elements())
+def _r310_requires_opening(ctx: CheckContext, room) -> bool | None:
+    """Does R310 require this room's opening? ``None`` when the room's escape window is the
+    R310 opening and the rest of its glazing therefore is not.
 
-
-def _exception_1(ctx: CheckContext, room, area_sf: float):
-    """Adjudicate R303.1 Exception 1 for a room short of glazing.
-
-    Returns ``(verdict, message)`` where verdict is "pass", "fail" or "unknown". Both halves
-    have to land: 6 fc of artificial light *and* mechanical outdoor air to this room from a
-    whole-house system that meets its own rate. Missing inputs are UNKNOWN — an unlit room
-    and a room whose fixtures forgot to state their lumens are not the same finding.
+    R310.1 binds every sleeping room (the basement-storey half is satisfied per storey, not
+    per room, and ``code.R310_1_storey_egress`` grades it). A sleeping room with a compliant
+    escape window has its R310 opening; R303.1's openable area is then the rest's business.
     """
-    lumens, unrated = _room_lumens(ctx, room)
-    if lumens is None:
-        return "fail", "no luminaire is assigned to it, so R303.1 Exception 1 is not available"
-    if not _has_fresh_air_supply(ctx, room):
-        return "fail", ("it has no mechanical fresh-air supply register, so R303.1 "
-                        "Exception 1 is not available")
+    from typehaus.checks.code.mn_residential.egress import egress_window_rooms
+    from typehaus.model.enums import SLEEPING_OCCUPANCIES
+
+    if room.occupancy not in {o.value for o in SLEEPING_OCCUPANCIES}:
+        return False
+    # Operable only: ``egress_window_rooms`` sizes the frame and does not ask if it opens.
+    escapes = [tag for tag, owner in egress_window_rooms(ctx).items() if owner == room.tag]
+    openings = {o.tag: o for o in ctx.model.openings}
+    return None if any(_openable(ctx, openings[tag]) for tag in escapes if tag in openings) \
+        else True
+
+
+def _exception_1(ctx: CheckContext, room):
+    """R303.1 Exception 1: ``(verdict, why)`` with verdict "pass", "fail" or "unknown"."""
+    r310 = _r310_requires_opening(ctx, room)
+    if r310:
+        return "fail", ("R310 requires its escape opening and it has no compliant one, so "
+                        "R303.1 Exception 1 is not available")
     summary = whole_house_summary(ctx.model, ctx.plan, ctx)
-    verdict = "unstated" if summary is None else summary.verdict()
+    if summary is None or not summary.unit_tags:
+        return "fail", ("no whole-house mechanical ventilation system is installed, so "
+                        "R303.1 Exception 1 is not available")
+    verdict = summary.verdict()
     if verdict in ("unstated", "unknown"):
         return "unknown", ("R303.1 Exception 1 would apply, but the whole-house ventilation "
-                           "rate is not stated or not yet settled, so its outdoor-air half "
-                           "cannot be decided")
+                           "rate is not stated or not yet settled")
     provided, required = summary.graded_cfm, summary.total_rate_cfm
     if verdict == "fail":
         return "fail", (f"the whole-house ventilation system is short ({provided:.0f} cfm vs "
                         f"{required:.0f} cfm), so R303.1 Exception 1 does not carry it")
+    escape = ("its R310 escape window is provided" if r310 is None
+              else "no R310 opening is required")
+    return "pass", (f"R303.1 Exception 1 applies: {escape} and the "
+                    f"whole-house system is installed ({provided:.0f} cfm vs "
+                    f"{required:.0f} cfm, M1505)")
+
+
+def _exception_2(ctx: CheckContext, room, area_sf: float):
+    """R303.1 Exception 2 — Exception 1 plus 6 fc of artificial light.
+
+    Missing inputs are UNKNOWN: an unlit room and a room whose fixtures forgot to state
+    their lumens are not the same finding.
+    """
+    lumens, unrated = _room_lumens(ctx, room)
+    if lumens is None:
+        return "fail", "no luminaire is assigned to it, so R303.1 Exception 2 is not available"
+    verdict, why = _exception_1(ctx, room)
+    if verdict != "pass":
+        return verdict, why
     delivered = (lumens * COEFFICIENT_OF_UTILIZATION * LIGHT_LOSS_FACTOR / area_sf
                  if area_sf > 1e-9 else 0.0)
     numbers = (f"{lumens:.0f} lm at CU {COEFFICIENT_OF_UTILIZATION:.2f} x LLF "
-               f"{LIGHT_LOSS_FACTOR:.2f} over {area_sf:.0f} sf = {delivered:.1f} fc, "
-               f"and {provided:.0f} cfm of whole-house outdoor air reaches it")
+               f"{LIGHT_LOSS_FACTOR:.2f} over {area_sf:.0f} sf = {delivered:.1f} fc")
     # An unrated fixture only adds light, so the rated total is a lower bound: it can
     # carry the exception on its own, but cannot sink it.
     if unrated:
         numbers += f" (counting only rated fixtures; {', '.join(unrated)} state no lumens)"
         if delivered + 1e-6 < _EXCEPTION_MIN_FOOTCANDLES:
-            return "unknown", (f"R303.1 Exception 1 would apply, but {', '.join(unrated)} "
+            return "unknown", (f"R303.1 Exception 2 would apply, but {', '.join(unrated)} "
                                "state no lumens on their type, and the rated fixtures alone "
                                f"give {delivered:.1f} fc, short of the "
                                f"{_EXCEPTION_MIN_FOOTCANDLES:.0f} fc average")
     if delivered + 1e-6 < _EXCEPTION_MIN_FOOTCANDLES:
-        return "fail", (f"R303.1 Exception 1 does not carry it either: {numbers}, short of "
+        return "fail", (f"R303.1 Exception 2 does not carry it: {numbers}, short of "
                         f"the {_EXCEPTION_MIN_FOOTCANDLES:.0f} fc the exception requires")
-    return "pass", f"lit and ventilated under R303.1 Exception 1 — {numbers}"
+    return "pass", f"lit under R303.1 Exception 2 ({numbers}), and {why}"
 
 
 @check(Tier.CODE, "code.R303_1_light_and_ventilation")
@@ -207,10 +232,9 @@ def habitable_light_and_ventilation(ctx: CheckContext) -> list[Finding]:
     operable units at half throughout, the conservative reading, and says so in the message
     so the number is arguable rather than mysterious.
 
-    A room that misses either half then gets Exception 1 (``_exception_1``), which is what
-    makes a below-grade media room or an interior study legal rather than a violation. The
-    exception is adjudicated, never assumed: it takes installed lumens and an authored
-    fresh-air terminal, and reports UNKNOWN where those inputs are missing.
+    A room short of openable area gets Exception 1; one short of glazing, Exception 2
+    (Exception 1 plus 6 fc), which is what makes a windowless media room legal. Both are
+    adjudicated, never assumed, and report UNKNOWN where their inputs are missing.
     """
     cid, code = "code.R303_1_light_and_ventilation", "R303.1"
     out: list[Finding] = []
@@ -255,13 +279,12 @@ def habitable_light_and_ventilation(ctx: CheckContext) -> list[Finding]:
                 short = (f"{room.tag} has {openable_sf:.1f} sf openable (operable units "
                          f"counted at half) for a {floor_phrase}; R303.1 requires "
                          f"{need_openable:.1f} sf (4%)")
-            verdict, why = _exception_1(ctx, room, area_sf)
+            # Short of glazing needs Exception 2; short only of openable area, Exception 1
+            # (RM-S-PLANT: 36.7 sf glazed against 12.7 required, not one operable sash).
+            verdict, why = (_exception_2(ctx, room, area_sf) if glazed_sf + 1e-6 < need_glazed
+                            else _exception_1(ctx, room))
             if verdict == "pass":
-                # ``short``, not a glazing sentence of its own: a room can reach here on the
-                # *openable* half alone (RM-S-PLANT is 36.7 sf glazed against 12.7 required
-                # and has not one operable sash), and saying it was "short of glazing" then
-                # printed a false number.
-                out.append(_pass(cid, f"{short}, and it is {why}", code))
+                out.append(_pass(cid, f"{short}; {why}", code))
             elif verdict == "unknown":
                 out.append(_unknown(cid, f"{short} — {why}", (room.tag,), code))
             else:

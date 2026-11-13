@@ -163,6 +163,9 @@ def test_zone_glass_is_not_scaled_by_volume_share(catlin_model_ro) -> None:
     parts = sum(estimate_block_load(catlin_model_ro, preferences,
                                     rooms=frozenset(zone.rooms)).solar_btu_per_hour
                 for zone in zones if zone.rooms)
+    # RM-S-PLANT is in no zone since 2026-11-12 (its own heater), and has the most glass.
+    parts += estimate_block_load(catlin_model_ro, preferences,
+                                 rooms=frozenset({"RM-S-PLANT"})).solar_btu_per_hour
     assert parts == pytest.approx(_report(catlin_model_ro).solar_btu_per_hour, rel=0.02)
 
 

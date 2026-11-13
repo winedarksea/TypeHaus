@@ -30,7 +30,6 @@ from .erv_balance import (
     DU_M_ERV_R_LAUNDRY,
     DU_M_ERV_R_LIVING,
     DU_M_ERV_R_MUD,
-    DU_M_ERV_R_PLANT,
     DU_M_ERV_R_RET3,
     DU_M_ERV_R_STUDY,
     DU_M_ERV_R_SUITEBATH,
@@ -157,8 +156,9 @@ DUCTS_ERV_LEVEL2 = [
             width=inch(6), depth=inch(4), routing=DuctRouting.JOIST_BAY,
             floor_ref="FS-S-WEST", material="galvanized", design_cfm=DU_M_ERV_EXH_TRUNK),
     DuctRun(uid="Y3G88SKSRG", tag="DU-M-ERV-EXH-TRUNK", system=DuctSystem.EXHAUST,
+            # Capped 6" past BED2's take-off since the plant extract went (2026-11-12).
             path=(pt(inch(51.5), inch(360)), pt(inch(46), inch(360)), pt(inch(27), inch(360)),
-                  pt(inch(27), ft(9))),
+                  pt(inch(27), ft(13, 6))),
             elevations=(_NECK_Z, _TRUNK_Z, _TRUNK_Z, _TRUNK_Z),
             width=inch(8), depth=inch(4), routing=DuctRouting.JOIST_BAY,
             floor_ref="FS-S-WEST", material="galvanized", design_cfm=DU_M_ERV_EXH_TRUNK),
@@ -297,27 +297,4 @@ DUCTS_ERV_LEVEL2 = [
             elevations=(_KITCH_Z, _KITCH_Z, _DROP_Z, _DROP_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=DU_M_ERV_R_KITCH),
-    # THE PLANT EXTRACT IS THE FLAT TRUNK'S LAST PIECE (owner, 2026-11-11). It left the trunk
-    # at y=7'-4" and ran 25 ft east under the plant room to W-S-C1; now the trunk stops at
-    # y=9'-0" (W-S-PS1's axis, in the 8'-0".."9'-4" bay) and this runs 15 1/2" east to x=3'-6 1/2" and
-    # up inside PS1's 3 1/2" cavity as a 3 1/4 x 8 wall stack (width through the wall, depth
-    # along it, so the 8" lies in the stud bay x 32 3/4".."47 1/4", 3/4" off the east stud, and
-    # its grille stands 6" east of FURN-S-PLANT-HANG-NW, the test's "clear exhaust" gap). One RECTANGULAR run end-to-end with the trunk, so
-    # `mep.erv_static_budget` grades it (a rectangle joins only a rectangle); the flat leg is
-    # the stack on edge, 8" tall, and turns up on its own plane. A 4" round take-off off the trunk
-    # would be the old part count, but the stack beyond it would be outside the budget.
-    # The 24 V RH damper (PROD-AIR-DAMPER-4-24V, REG-T-ERV-PLANT-EXH's part) goes in the stack
-    # boot's 4" collar behind the valve, reached by pulling the valve, not in the bay.
-    # VAPOUR-TIGHT BOOT (plant room 70% RH, notes/plant_room.md): a flanged boot, flange
-    # sealed to the Class I membrane with butyl tape and the hole's edge to the stack with
-    # mastic, the 3/4" furring and PVC panel cut to it; the deck opening FO-S-ERV-PLANT
-    # is packed with mineral wool and sealed to the stack. W-S-PS1's bottom plate is notched
-    # 8" at x=3'-6 1/2" (a non-bearing 2x4 partition). The stack ends at 100 1/4" (the register's
-    # centre): the engine's section is isotropic, so its 8" depth puts 4" more over that end
-    # and anything higher reads as bored through PS1's top plates (underside 104 3/8").
-    DuctRun(uid="X05VC14PBH", tag="DU-M-ERV-R-PLANT", system=DuctSystem.EXHAUST,
-            path=(pt(inch(27), ft(9)), pt(inch(42.5), ft(9)), pt(inch(42.5), ft(9))),
-            elevations=(_TRUNK_Z, _TRUNK_Z, inch(100.25)),
-            width=inch(3.25), depth=inch(8), routing=DuctRouting.JOIST_BAY,
-            floor_ref="FS-S-WEST", material="galvanized", design_cfm=DU_M_ERV_R_PLANT),
 ]

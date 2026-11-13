@@ -43,9 +43,6 @@ _VALVE_PA = ((5.0, 0.45), (10.0, 1.8), (21.2, 8.0), (31.8, 19.0), (42.4, 33.0))
 # lowest points are its own K below the published range.
 _VALVE_125_PA = ((10.0, 0.9), (20.0, 3.6), (31.8, 9.0), (42.4, 15.0), (53.0, 24.0),
                  (63.6, 35.0))
-# Valve plus an open single-blade damper, C 0.20 on the 4in velocity pressure (ASHRAE
-# Fundamentals Ch. 21, CD9-1 at 0 deg): 0.04 Pa at 10 cfm.
-_PLANT_PA = ((5.0, 0.46), (10.0, 1.84), (21.2, 8.2), (31.8, 19.4), (42.4, 33.7))
 # A floor grille on a boot publishes no curve: the derived K 5 of the note's §5.
 _FLOOR_GRILLE_PA = ((10.0, 1.0), (20.0, 4.0), (30.0, 9.0))
 # Same conservative K=5 allowance as the floor boot; no measured curve for this box.
@@ -156,24 +153,6 @@ AIR_REGISTER_TYPES = (
                         f"the boot's 5in height is unpublished, an estimate. Loss: derived K 5 "
                         f"(erv_static_budget §5). {_NOTE} §3.",
                  ports=(_port("return", Service.RETURN_AIR),)),
-    # RM-S-PLANT is held at 75 F / 70% RH and slightly negative (notes/plant_room.md): its
-    # extract is RH-controlled. Since 2026-11-11 the run is a rectangular stack up W-S-PS1,
-    # so the 4in 24 VAC damper sits in the stack boot's 4in collar behind the valve,
-    # reached by pulling the valve.
-    RegisterType(tag="REG-T-ERV-PLANT-EXH",
-                 face_style="disc_valve",
-                 name="Plant-room extract disc valve, 100 mm, RH-controlled 4in damper at "
-                      "the plenum",
-                 footprint=(inch(5.0625), inch(1.75)), height=inch(5.0625),
-                 plan_symbol="register", ventilation_terminal=True,
-                 product_ref="PROD-AIR-DISC-VALVE-100",
-                 parts=(ProductPart(role="fitting", product_ref="PROD-AIR-DAMPER-4-24V"),),
-                 static_loss_pa_at_cfm=_PLANT_PA, neck=_VALVE_NECK,
-                 source=f"notes/plant_room.md — dedicated dampered extract off EQ-B-ERV; "
-                        f"damper PROD-AIR-DAMPER-4-24V in the boot collar behind the valve. A stainless "
-                        f"valve was looked for and not found retail; the powder-coated steel "
-                        f"valve is cleaned yearly. {_NOTE} §7.",
-                 ports=(_port("return", Service.RETURN_AIR),)),
     RegisterType(tag="REG-T-HP-SIDE-1206",
                  face_opening=(inch(12), inch(6)),
                  face_style="rectangular_grille", double_deflection=True,
@@ -219,24 +198,6 @@ AIR_REGISTER_TYPES = (
                                    part="multi-shutter damper below the flange"),
                  source=f"Face 7 3/8 x 13 3/8in and 2in damper depth are planning figures, "
                         f"not published at this size. {_NOTE} §4.",
-                 ports=(_port("supply", Service.SUPPLY_AIR),)),
-    # RM-S-PLANT's supply (2026-11-12): A220V 12x6 (no OBD: the take-off's locked collar
-    # damper balances, the motorised one isolates) on the stock 6x12x6 end boot, with the 6" 24 VAC
-    # RH damper in the boot's collar behind the grille, reached by pulling it, as at
-    # REG-T-ERV-PLANT-EXH. One allowance buys the grille, the damper and the labour.
-    RegisterType(tag="REG-T-HP-PLANT-SIDE",
-                 face_opening=(inch(12), inch(6)),
-                 face_style="rectangular_grille", double_deflection=True,
-                 name="Plant supply, A220V 12x6 aluminium double-deflection sidewall with "
-                      "RH-interlocked 6in damper",
-                 footprint=(inch(13.75), inch(1)), height=inch(7.75), plan_symbol="register",
-                 product_ref="PROD-AIR-PLANT-GRILLE-12X6",
-                 parts=(ProductPart(role="fitting", product_ref="PROD-AIR-DAMPER-6-24V"),),
-                 neck=TerminalNeck(section="rectangular",
-                                   width=inch(12), height=inch(6), depth=inch(2.6875),
-                                   part="register box on the stock 6x12x6 end boot"),
-                 source=f"75 cfm, RH interlocked, throws west. A220V 12X06 face 13 3/4 x 7 3/4in. "
-                        f"{_NOTE} §4, §7; notes/plant_supply_connection.md.",
                  ports=(_port("supply", Service.SUPPLY_AIR),)),
     # The hall filter, 455 cfm (750 - ERV 100 - suite 80 - BED3 80 - east room 35). Stock
     # 12x24x1 MERV 13 (owner, 2026-11-12): 288 in2, 228 fpm. 14x25x1 is the larger stock size
@@ -317,6 +278,32 @@ AIR_REGISTER_TYPES = (
     # D-S-BATH1's sealed door (2026-11-03): one grille per face of W-S-BD-N's west bay,
     # offset in height on a lined bay. The bath face's only clear patch is 7 1/4 x 7 1/8 in.
     # between the SEKTION rail backing and the top plate, so 6x6 is the size.
+    # RM-S-PLANT's transfer pair (2026-11-12): two lined 10x6 sleeves through W-S-C1, high and
+    # low in one bay. The plant face carries the damper, the study face a plain grille. ~42 in2
+    # free each, ~13 cfm wide open by buoyancy at 5 F (notes/plant_room_moisture_budget.md §4).
+    RegisterType(tag="REG-T-XFER-PLANT-1006",
+                 face_opening=(inch(10), inch(6)),
+                 face_style="rectangular_grille",
+                 name="Plant transfer, 10x6 steel return grille with OBD on a lined sleeve",
+                 footprint=(inch(11.75), inch(0.75)), height=inch(7.75), plan_symbol="register",
+                 product_ref="PROD-AIR-RETURN-GRILLE-10X6-OBD",
+                 parts=(ProductPart(role="fitting", product_ref="PROD-AIR-XFER-SLEEVE-10X6"),),
+                 neck=TerminalNeck(section="rectangular",
+                                   width=inch(10), height=inch(6), depth=inch(3.625),
+                                   part="10x6 lined sleeve, flange taped to the membrane"),
+                 source=f"Face estimated at +1 3/4in. {_NOTE} §6; notes/plant_room.md.",
+                 ports=(_port("return", Service.RETURN_AIR),)),
+    RegisterType(tag="REG-T-XFER-STUDY-1006",
+                 face_opening=(inch(10), inch(6)),
+                 face_style="rectangular_grille",
+                 name="Plant transfer, 10x6 steel return grille, Study 2 face of the sleeve",
+                 footprint=(inch(11.75), inch(0.75)), height=inch(7.75), plan_symbol="register",
+                 product_ref="PROD-AIR-RETURN-GRILLE-10X6",
+                 neck=TerminalNeck(section="rectangular",
+                                   width=inch(10), height=inch(6), depth=inch(3.625),
+                                   part="the plant face's sleeve, from the study side"),
+                 source=f"Face estimated at +1 3/4in. {_NOTE} §6.",
+                 ports=(_port("return", Service.RETURN_AIR),)),
     RegisterType(tag="REG-T-TRANSFER-0606",
                  face_opening=(inch(6), inch(6)),
                  face_style="rectangular_grille",

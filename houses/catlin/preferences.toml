@@ -313,6 +313,11 @@ suppress = [
   # test covers it, so it is UNKNOWN by construction. Accepted 2026-10-23 (DESIGN-LOG,
   # "Wall board policy"); a cited rating would need a tested liner wall.
   "advisory.acoustic_adjacency:W-S-PS1",
+  # RM-S-PLANT, 2026-11-12: sealed on purpose. Its humidity comes from watering alone and
+  # outdoor air would dry it out; it vents to Study 2 through a manually set transfer pair
+  # (REG-S-XFER-PLANT-HI/-LO). R303.1 holds on Exception 1 (whole-house system installed).
+  # notes/plant_room_moisture_budget.md.
+  "mep.ventilation_distribution:RM-S-PLANT",
   # mep.run_through_plate: nothing suppressed since 2026-10-29. The last three entries
   # (DU-S-HP-SUP/-SUITE/-SOUTH) were rectangular ducts read at their wider side both ways;
   # at their real 8"/6" depth they pass over the plates (resolve/mep_bore_geometry).

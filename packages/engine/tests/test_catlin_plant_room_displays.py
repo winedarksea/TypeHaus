@@ -96,7 +96,7 @@ def test_both_brackets_have_blocks_flush_to_studs_with_two_supported_ends(
             assert member.length_m == pytest.approx(inch(14.5).meters)
 
 
-def test_baskets_meet_finished_ceiling_over_existing_joist_and_clear_exhaust(catlin_model_ro):
+def test_baskets_meet_finished_ceiling_over_existing_joist(catlin_model_ro):
     model = catlin_model_ro
     room = next(room for room in model.rooms if room.tag == "RM-S-PLANT")
     room_bounds = Polygon(room.clear_face).bounds
@@ -115,17 +115,13 @@ def test_baskets_meet_finished_ceiling_over_existing_joist_and_clear_exhaust(cat
         assert Polygon(room.clear_face).covers(Polygon(basket.footprint))
         assert basket.z_m + inch(24).meters - floor == pytest.approx(
             inch(84).meters, abs=inch(0.5).meters)
-    # The grille is on W-S-PS1 by the NW basket since 2026-11-11, 6" clear of its east edge.
-    nw_east_edge = Polygon(baskets[0].footprint).bounds[2]
-    grille_edge = Polygon(objects["REG-S-ERV-PLANT-EXH"].footprint).bounds[0]
-    assert grille_edge - nw_east_edge >= inch(6).meters
 
 
 def test_displays_clear_existing_bodies_in_three_dimensions(catlin_model_ro):
     objects = catlin_model_ro.canvas_objects
     displays = [obj for obj in objects if obj.type_ref in {STAND_TYPE, POT_TYPE, BASKET_TYPE}]
     existing_tags = {"FURN-S-PLANT-CHAIR", "FURN-S-PLANT-ROCKER", "FURN-S-PLANT-DESK",
-                     "ED-S-PLANT-LT", "ED-S-PLANT-SPOT", "REG-S-ERV-PLANT-EXH"}
+                     "ED-S-PLANT-LT", "ED-S-PLANT-SPOT", "EQ-S-PLANT-HEATER"}
     for display in displays:
         for existing in (obj for obj in objects if obj.tag in existing_tags):
             overlaps_z = (display.body_z0_m < existing.body_z1_m

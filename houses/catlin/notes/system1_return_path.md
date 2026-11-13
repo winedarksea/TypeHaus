@@ -59,7 +59,7 @@ room it opens from, and treats the zone a stair reaches as the house:
 | `RM-S-BED3` | 0 (75 cfm out until its ducted return, 2026-11-11, below) | `D-S-BED3` 30" x 1/2" | - | balanced | - |
 | `RM-S-SUITE` (+ suite bath, closet) | 0 (80 cfm out until its ducted return, 2026-11-09, below) | `D-S-SUITE` 32" x 1/2", sealed | - | balanced (9.7 Pa before) | - |
 | `RM-A-STUDIO` (+ studio bath, ERV closet) | 50 cfm out | `D-A-HALVES` 32" x 3/4" | 24.0 in^2 | **3.8 Pa** | 27 in^2 |
-| `RM-S-PLANT` | 70 cfm out | `D-S-PLANT` 30" x 1/2" | 15.0 in^2 | **19.0 Pa** (8.5 at 3/4") | 38 in^2 |
+| `RM-S-PLANT` | 0 (70 cfm out until sealed, 2026-11-12) | `D-S-PLANT`, sealed steel | - | no System 1 air | - |
 | `RM-A-EAST-UNFIN` | 0 (35 cfm out until its ducted return, 2026-11-12, below) | `D-A-STUDY`, sealed | - | balanced (4.8 Pa before) | - |
 | `RM-A-STUDY` | 100 cfm | open to the stair well | - | pass | - |
 
@@ -83,11 +83,10 @@ all; the fan sees the extra external static and the balance moves elsewhere.
 
 ## What is deliberately NOT on the list
 
-* **`D-S-PLANT` (`RM-S-PLANT`, 75 cfm).** Its supply is `REG-T-HP-SUP-DAMPERED`, interlocked
-  with `REG-S-ERV-PLANT-EXH`; the room is meant to sit neutral-to-slightly-negative and the
-  damper is what makes that true (`notes/plant_room.md`). A large undercut works *against*
-  that — it is a leak path in the one room whose pressure is a design output. Leave it
-  conventional.
+* **`D-S-PLANT` (`RM-S-PLANT`).** Sealed since 2026-11-12: no System 1 supply, no ERV extract;
+  the room vents to Study 2 through its own transfer pair (`notes/plant_room.md`). Study 2's
+  supply is now two 75 cfm grilles (`REG-S-HP-STUDY2`, `-S`) and leaves through the cased
+  `D-S-STUDY2`.
 * **`D-S-STUDY2`.** `is_door=False` — a cased opening with no leaf. `RM-S-STUDY2`'s 75 cfm
   has a permanently open path.
 * **`RM-A-EAST-UNFIN` (35 cfm).** Returns through its own grille at the air handler (below);
@@ -97,7 +96,7 @@ all; the fan sees the extra external static and the balance moves elsewhere.
 
 ## Sealed doors (owner, 2026-11-03)
 
-Four leaves are sealed at the bottom; each needs a named path for the air it would have
+Five leaves are sealed at the bottom; each needs a named path for the air it would have
 passed. Per-door detail: `notes/interior_door_schedule.md`.
 
 | Door | Seal | Air that must move | Path | A at 3 Pa |
@@ -106,6 +105,7 @@ passed. Per-door detail: `notes/interior_door_schedule.md`.
 | `D-M-BED2` | kerf seal + automatic bottom | `REG-M-SUP3` 15 cfm out | under `D-M-BATH2` (32" x 3/4" = 24 in^2) to `REG-M-EXH2`; **keep that undercut** | 8.1 in^2 |
 | `D-B-SHOP` | weatherstrip + sweep, no undercut | `REG-B-RET1` 6 cfm in | under `D-B-FURN` (36" x 3/4" = 27 in^2) from the furnace room; **keep that undercut** | 3.2 in^2 |
 | `D-B-SAUNA` | insulated sauna door | none | supply and exhaust balanced 20/20 (`notes/erv_static_budget.md` §10.8) | - |
+| `D-S-PLANT` | steel prehung, compression seal + sill (2026-11-12) | none from System 1 | the room's own high/low transfer pair to Study 2, hand-set 5-13 cfm (`plant_room_moisture_budget.md`) | - |
 
 **Re-graded 2026-11-06:** `RM-M-BED` supplies 15 cfm and its bath draws 20, so the pair nets
 5 cfm *in*, and with `D-M-BED2` sealed and the closet a dead end nothing feeds it
@@ -183,8 +183,7 @@ from the blower. Lining the 12x6 is an open item.
 * **`RM-S-BED1/2`: 9.7 Pa accepted.** 75 cfm out through a 30" x 3/4" door, no new returns. The
   `mep.door_transfer_air` ADVISORYs stand as decided.
 * **`RM-A-STUDIO`: 3.8 Pa accepted** (`D-A-HALVES` 32" x 3/4", 50 cfm net out).
-* **`RM-S-PLANT`: deferred.** Its 19.0 Pa advisory (8.5 at 3/4") stays open; `notes/plant_room.md`
-  owns the room.
+* **`RM-S-PLANT`: closed 2026-11-12.** Sealed; its supply moved to Study 2's south grille.
 * **`D-A-STUDY` is sealed** (`DT-INT-BOOKCASE30.bottom_seal`): a bookcase door passes no air.
   `RM-A-STUDY` stays PASS because it is open to the stair.
 * **`RM-A-EAST-UNFIN` gets a return at the air handler.** `REG-A-HP-EAST-RET` is the stock

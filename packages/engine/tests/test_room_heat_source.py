@@ -183,7 +183,16 @@ def test_a_room_the_system_reaches_passes_without_any_temperature_arithmetic(
 def test_catlin_reports_no_fail_from_this_check(catlin_model_ro) -> None:
     findings = _findings(catlin_model_ro)
     assert [f.message for f in findings if f.result is Result.FAIL] == []
-    assert len(findings) == 2, "two radiant zones, two findings"
+    assert len(findings) == 3, "two radiant zones and the plant heater, three findings"
+
+
+def test_the_plant_heater_carries_the_sealed_room(catlin_model_ro) -> None:
+    """notes/plant_room_moisture_budget.md §5: 1500 W = 5,118 Btu/h against the engine's
+    room-scoped load; the hand note's UA estimate sits between them (see its §5)."""
+    plant = _by_room(catlin_model_ro)["RM-S-PLANT"]
+    assert plant.result is Result.PASS
+    assert "EQ-S-PLANT-HEATER delivers 5118 Btu/h" in plant.message
+    assert plant.code_ref == "R303.10"
 
 
 # --- 3. the FAIL and UNKNOWN branches, synthetically ----------------------------------------
@@ -235,7 +244,8 @@ def test_a_plan_with_no_radiant_zone_earns_not_applicable(catlin_plan) -> None:
     never an empty list."""
     from typehaus.model.floors import FloorHeat
 
-    elements = {storey: tuple(e for e in group if not isinstance(e, FloorHeat))
+    elements = {storey: tuple(e for e in group if not isinstance(e, FloorHeat)
+                              and getattr(e, "tag", None) != "EQ-S-PLANT-HEATER")
                 for storey, group in catlin_plan.elements.items()}
     plan = catlin_plan.model_copy(update={"elements": elements})
     findings = _findings(plan, plan=True)

@@ -1516,6 +1516,21 @@ governing stretch (19.7 ft), so its extra turn costs the extract side nothing.
 0.0213861, f 0.02504): 0.029519 + 1.10 x VP 0.023525 = 0.053044 (was 0.060164), so supply via
 HP-FEED reads 0.485167 - 0.007120 = 0.478047. The supply side stays under the extract.
 
+### 10.27 The plant extract retired; the trunk capped short (2026-11-12)
+
+RM-S-PLANT is sealed (`notes/plant_room_moisture_budget.md`): `DU-M-ERV-R-PLANT`, its grille and
+deck opening are gone, and its 5 cfm went to `REG-M-RET-MUD` (5 -> 10, on the neck), so the
+neck and trunk still carry 119 and the machine stays 210/210. With the plant stack no longer
+chained to its end, the trunk is capped 6" past BED2's take-off: y=9'-0" -> 13'-6", 54" shorter.
+
+    trunk 8x4 at 119 cfm (§10.26's slope): 8.805e-5 in./in. x -54" = -0.004755 in.
+      0.0348519 -> 0.0300972 in.
+    governing extract (SUITEBATH): 0.550966 - 0.004755 = 0.546211 in.
+    delivered: 201 - 2 x (0.546211 - 0.5) / 0.1 = 200.076 cfm   (R403.5: 188.0, +12.1)
+
+Engine: 0.546, 200.1 cfm. MUD's radial at 10 cfm is a 4" stub on the neck, far off the
+governing path.
+
 ### 10.5 The thermal penalty of the legs (hand-worked)
 
 Both legs run through conditioned space in 2" of closed-cell elastomeric (two 1" layers of

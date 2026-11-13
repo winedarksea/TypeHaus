@@ -1,5 +1,9 @@
 # Plant-room heat-pump supply connection
 
+> **SUPERSEDED 2026-11-12.** RM-S-PLANT is sealed and takes no System 1 air; `REG-S-HP-PLANT`,
+> `DU-S-HP-PLANT` and the RH damper are deleted and the 75 cfm went to Study 2's south grille
+> (`system1_study_supply.md`). Kept as a record; see `plant_room.md`.
+
 Revised 2026-11-12 (owner: sidewall supply over the door, no service hatch). Replaces the
 ceiling boot at x=14'8", y=3'3" with its 12x6 ZD damper, fabricated boot and PVC hatch.
 

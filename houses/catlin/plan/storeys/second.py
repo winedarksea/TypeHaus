@@ -580,12 +580,12 @@ OPENINGS = [
                  height=ft(6, 8)),                                       # x 20'-3 5/8"
     # Doors through the centre bearing line. Each takes a
     # header exactly like O-M-HALL / O-M-DRESS one storey down; the wall itself is unbroken.
-    # Full-lite glass leaf admits daylight from the south-facing plant room into
-    # RM-S-STUDY2 — this door opens on the study, not the hall (corrected 2026-08-18).
+    # Full-lite sealed steel leaf (2026-11-12) admits daylight from the south-facing plant
+    # room into RM-S-STUDY2 and swings into the study.
     # Owner, 2026-10-02: southernmost feasible 16" module station, centre y=2'-8".
     # RO y=17"..47" leaves the south junction and king/jack pack clear; centre 16" would not.
-    Door(uid="CSD212AAAA", tag="D-S-PLANT", host="W-S-C1", type_ref="DT-INT-SWING30-GLAZED",
-         position=from_node("N-S-S1", ft(1, 5)), doorway=D_S_PLANT_REDUCER,
+    Door(uid="CSD212AAAA", tag="D-S-PLANT", host="W-S-C1", type_ref="DT-INT-STEEL30-SEALED",
+         position=from_node("N-S-S1", ft(1, 5)), flip_swing=True, doorway=D_S_PLANT_REDUCER,
          header_spec='2-ply 9.5" LVL',
          published_span=PublishedSpan(
              source="Boise Cascade EWP, VERSA-LAM 1.7 2650 Header Guide (Eastern), 06/2009 r 07/21/2011, p.5, 3-1/2\" VERSA-LAM 1.7 2650 Header Look Up Tables",
@@ -1272,14 +1272,6 @@ FLOOR_OPENINGS = [
                  outline=(pt(inch(113.375), inch(193.875)), pt(inch(117.625), inch(193.875)),
                           pt(inch(117.625), inch(198.125)), pt(inch(113.375), inch(198.125))),
                  penetration_for=("DU-M-ERV-R-SUITEBATH",), cuts_ceiling_below=False),
-    # DU-M-ERV-R-PLANT's 3 1/4 x 8 stack rising from FS-S-WEST's 8'-0".."9'-4" bay into
-    # W-S-PS1's stud bay at x=3'-6 1/2" (2026-11-11): 9" x 4" over the stack, clear of the
-    # y=9'-4" truss's chord. Cuts the deck and the wall's bottom plate, never the ceiling
-    # below. Pack with mineral wool and seal to the stack (humid room).
-    FloorOpening(uid="7WFC3ZX7N1", tag="FO-S-ERV-PLANT", purpose=FloorOpeningPurpose.CHASE,
-                 outline=(pt(inch(38), inch(106)), pt(inch(47), inch(106)),
-                          pt(inch(47), inch(110)), pt(inch(38), inch(110))),
-                 penetration_for=("DU-M-ERV-R-PLANT",), cuts_ceiling_below=False),
     # ** THE NW CHASE, FRAMED THROUGH FS-S-WEST (2026-09-23). ** Two ERV risers, DU-ERV-EA,
     # the radon/vent bundle and three conduits stand in W-S-CH-W/-CH-S's 2'-0" x 2'-2"
     # chase; the y=34'-5.8" truss was running straight through it. The fabricator shortens

@@ -79,7 +79,9 @@ session at setup is allowed. Instances: `plan/smart_home.py`; types and products
 | Water heater | `EQ-B-WH` | Rheem ProTerra Plug-in, EcoNet Wi-Fi + CTA-2045 port | none needed: power is switched by `CKT-WH`'s relay | Wi-Fi module never registered | tank controls | whether `esphome-econet` reaches the plug-in; not needed for backup |
 | Inverter/battery | `EQ-B-ESS-INV` | EG4 12kPV | EG4 web monitor, local Modbus (HACS) | none | inverter runs itself | firmware support for local mode |
 | Lighting (11) | `ED-T-LEV-MATTER`: exterior (entry, garage doors, porch, flood), plant photoperiod, gym x2, lounge A/B/C and peninsula | Leviton D315S-1BW, no companions | Matter (local push), ready out of the box | none | paddles; returns to its last state after an outage (Leviton DI-000-D315S-20A-M, read 2026-11-07) | none |
-| Shades | `plan/window_coverings.py` | SmartWings, Matter/Thread | Matter via ZBT-2 | none | wand and remote | none |
+| Shades | `plan/window_coverings.py` | SmartWings, Matter/Thread (study cellular; plant rollers since 2026-11-12) | Matter via ZBT-2 | none | wand and remote | plant motors' humidity rating |
+| Plant heater relay | `ED-S-PLANT-HEAT-SW` on `CKT-PLANT-HEAT` | Leviton D315S-1BW switching `ED-S-PLANT-HEAT-RC` | Matter (local push) | none | paddle; the heater's own thermostat and cutoffs | 1500 W resistive on a 15 A relay (continuous: confirm the listing) |
+| Plant T/RH sensor | room sensor, not modelled | any Matter/Thread or Zigbee T/RH sensor | Matter or ZHA | none | none: alerts need HA | placement away from the heater's jet and the glass |
 | Scene keypad | `ED-M-LIVING-KEYPAD` | Zooz ZEN32 | Z-Wave JS on the 800 LR stick (local push) | none | does nothing | set scene-only (relay unwired) |
 | Indoor tape controllers (6) | `ED-M-LIVING-LT-CTRL`/`-E`, `ED-M-DINING-LT-CTRL`/`-E`, `ED-S-HALL-LT-CTRL`/`-CTRL2` | Gledopto GL-C-001P | Zigbee, ZHA on the second ZBT-2 (local push) | none | its power-on state (lit by default) | set power-on to "previous" |
 | Garage tape controllers (6) | `ED-G-EAVE-W/-W2/-E/-E2-CTRL`, `ED-G-GABLE-N/-N2-CTRL` | Gledopto GL-C-208M (Matter 1.3, CSA256C5MAT46615-24), each in a gasketed PVC NEMA 4X box with a breather vent plug in its bottom wall (owner, 2026-11-07: moisture, Matter preferred) | Matter over Wi-Fi, HA Matter server on the IoT VLAN (local push); color_temp pinned at the warmest kelvin (the tape's W on the warm terminal, C unused) | none | its power-on state | set power-on to "previous"; garage Wi-Fi coverage at 96" on three walls; electrical and temperature ratings unconfirmed (below) |
@@ -262,7 +264,8 @@ receptacles. Nothing battery-only, nothing for HA to run.
 - **Entry and garage door lights**: `ED-M-ENTRY-SW` and `ED-G-EXT-SW` come on at dusk and on arrival (the entry lock, the opener), then time out.
 - **Porch and garden flood**: `ED-M-PORCH-SW` (fan-light + landing sconce) at dusk, off at the curfew; leave the fan off at its own control so a dusk "on" lights only the lamp. `ED-M-PORCH-FLOOD-SW` on arrival from the garden side and by hand, timing out.
 - **Gym**: `ED-B-GYM-SW` (cans) and `-SW2` (T8 strips) for workout routines: strips on at a routine's start, all off after the gym is idle.
-- **Plant room photoperiod**: `ED-S-PLANT-SW-TIMER` (grow bars + spot, 185 W) on a fixed daily window the owner sets.
+- **Plant room photoperiod**: `ED-S-PLANT-SW-TIMER` (grow bars + spot, 185 W) on a fixed daily window the owner sets; in summer the window moves to night.
+- **Plant room climate** (2026-11-12, `plant_room_moisture_budget.md`): the room T/RH sensor drives `ED-S-PLANT-HEAT-SW` (heater on below setpoint) and alerts at RH > 75% (open the transfer damper) and < 60% (close it). The heater's own thermostat, overheat and tip-over cutoffs stay the safety loop (rule 3). Shades `FURN-S-PLANT-SHADE-*` close only with sun on the glass, the room over setpoint and outdoors >= 63 F; otherwise open, and always open on heating-season nights.
 - **Basement stair at night**: no night lights (owner, 2026-10-31); the railing tape on the stair 3-way and the landing guide-light receptacles light it.
 
 

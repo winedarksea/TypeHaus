@@ -133,9 +133,17 @@ HALIFAX_KEYED = Product(tag='PROD-KWIKSET-740HFLSQT-15-SMT', brand='Kwikset', mo
 STEEL_PREHUNG_HINGE = Product(tag='PROD-HINGE-4IN-US15', brand='Prehanger supplied', model='4 x 4 in. butt, US15',
     name='4in residential butt hinge, satin nickel 15', url='https://www.kwikset.com',
     source='D-B-SHOP: three per leaf, ordered in US15 to match the lever (US15A is antique nickel).')
+HOLD_OPEN_CLOSER = Product(tag='PROD-CLOSER-HOLD-OPEN', brand='Tell Manufacturing',
+    model='1000 Series DC100082',
+    name='Residential hydraulic door closer, size 1, hold-open arm, reversible',
+    url='https://paulbhardware.com/tell-manufacturing-1000-series-dc100082-door-closer-stainless-steel-dc100082',
+    source='D-S-PLANT (2026-11-12): closes the sealed plant door; the hold-open is the summer '
+           'fallback cooling from Study 2. Listed for 24-30in doors of 30-65 lb (retailer, read '
+           '2026-11-12): weigh the delivered steel leaf; over 65 lb take the 2000 Series. '
+           'notes/plant_room.md.')
 
 OPENING_PRODUCTS = (
-    HALIFAX_KEYED, STEEL_PREHUNG_HINGE,
+    HALIFAX_KEYED, STEEL_PREHUNG_HINGE, HOLD_OPEN_CLOSER,
     SENSE_PRO, PASSAGE_LEVER, STRIKE_REINFORCEMENT, DOORSCOPE, DOOR_SCREWS, DOOR_HINGE, PANOLOCK, BE365, FLA_ASTRAGAL, SECURITY_STRIKE,
     DRUTEX_ALUCOVER_TT, DRUTEX_ALUCOVER_FIX, ALIPLAST_MAXLIGHT_TT, ANDERSEN_400_CASEMENT,
     THERMATRU_SMOOTHSTAR_FULLLITE, THERMATRU_SMOOTHSTAR, MMI_STEEL_SIX_PANEL, CLOPAY_CLASSIC_STEEL,

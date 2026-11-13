@@ -404,6 +404,24 @@ EQUIPMENT_TYPES = (
                          "DR-238_User_Manual_v250108.pdf",
                   ports=(ServicePort(tag="power", service=Service.POWER_120,
                                      position=(ft(0), ft(0), ft(0))),)),
+    # RM-S-PLANT's only heat besides its grow lights (2026-11-12): a plug-in fan heater on a
+    # shelf, its own thermostat, overheat and tip-over cutoffs the safety loop; Home Assistant
+    # switches its outlet off the room sensor (notes/smart_home.md rule 3). Sized against the
+    # room's ~510 W design loss in notes/plant_room_moisture_budget.md §5.
+    EquipmentType(tag="EQ-T-PLANT-HEATER", name="Lasko CD08210-class ceramic heater, 1500 W, 120 V, bathroom-rated",
+                  footprint=(inch(7), inch(7)), height=inch(9),
+                  plan_symbol="heater",
+                  resistance_heating_btuh=5118,
+                  supplemental_heat=True,
+                  source="Lasko CD08210 class (or equal): 1500 W / 12.5 A, bathroom-rated "
+                         "with an ALCI plug, adjustable thermostat, overheat and tip-over "
+                         "cutoffs. Envelope is a planning figure; confirm. GATE BEFORE "
+                         "PURCHASE: the manual must allow thermostat operation unattended and "
+                         "the unit must resume heating after a power loss; else a fixed "
+                         "damp-listed fan-forced heater with its own thermostat on the same "
+                         "circuit. notes/plant_room.md.",
+                  ports=(ServicePort(tag="power", service=Service.POWER_120,
+                                     position=(ft(0), ft(0), ft(0))),)),
     # Retained library option; the BATH2 installation was removed 2026-11-02.
     # BATH2's stall-drying fan (2026-10-12, notes/bath2_shower.md §7). A remote inline fan
     # in RM-M-BED's ceiling, not a ventilator: it moves bedroom air through the stall and

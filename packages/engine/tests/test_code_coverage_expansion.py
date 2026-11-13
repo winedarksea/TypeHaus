@@ -244,13 +244,14 @@ def test_co_alarm_passes_outside_the_sleeping_area_and_fails_inside_it():
 # --- R303.1 light and ventilation ---------------------------------------------------------
 
 def _light_ctx(glazed_w: float, glazed_h: float, *, operation: str = "casement",
-               area_m2: float = 20.0, lumens: float | None = None, supply: bool = False,
-               erv_cfm: float | None = None, window_type_resolves: bool = True):
-    """A room with one window, and optionally the three things R303.1 Exception 1 needs.
+               area_m2: float = 20.0, lumens: float | None = None,
+               erv_cfm: float | None = None, window_type_resolves: bool = True,
+               occupancy: str = "bedroom"):
+    """A room with one window, and optionally what R303.1's exceptions need.
 
     The exception's inputs default to absent, which is the state that matters most: a room
     short of glazing and with no artificial light stated has no lawful path and must FAIL.
-    Pass ``lumens``/``supply``/``erv_cfm`` to build the room that does.
+    Pass ``lumens``/``erv_cfm`` to build the room that does.
 
     The room's glazing totals are computed here with ``resolve.room_openings``, the same
     call ``resolve_rooms`` makes, rather than being hand-set: the check reads the totals off
@@ -259,14 +260,14 @@ def _light_ctx(glazed_w: float, glazed_h: float, *, operation: str = "casement",
     to be set BEFORE the totals are taken, exactly as it would be in a real model — emptying
     the library afterwards would leave a room that had already been given its numbers.
     """
-    from typehaus.model.enums import DeviceKind, DuctSystem, EquipmentKind
+    from typehaus.model.enums import DeviceKind, EquipmentKind
     from typehaus.resolve.room_openings import room_glazing_areas
 
     ring = ((0.0, 0.0), (5.0, 0.0), (5.0, area_m2 / 5.0), (0.0, area_m2 / 5.0))
-    room = SimpleNamespace(tag="RM-BED", storey="main", occupancy="bedroom",
+    room = SimpleNamespace(tag="RM-BED", storey="main", occupancy=occupancy,
                            clear_face=ring, area_m2=area_m2, conditioned=True)
     wall = SimpleNamespace(tag="W-S", storey="main", axis=((0.0, 0.0), (5.0, 0.0)),
-                           thickness_m=0.3)
+                           thickness_m=0.3, is_foundation=False)
     opening = SimpleNamespace(tag="WIN-1", host_wall="W-S", is_door=False, type_ref="WT",
                               width_m=glazed_w, height_m=glazed_h, sill_m=0.9,
                               center_along_m=2.5)
@@ -280,9 +281,6 @@ def _light_ctx(glazed_w: float, glazed_h: float, *, operation: str = "casement",
         elements.append(SimpleNamespace(element_kind="ElectricalDevice", tag="ED-LT",
                                         kind=DeviceKind.LIGHT, room="RM-BED",
                                         type_ref="LT-T"))
-    if supply:
-        elements.append(SimpleNamespace(element_kind="Register", tag="REG-SUP",
-                                        kind=DuctSystem.SUPPLY, room="RM-BED"))
     if erv_cfm is not None:
         equipment_types.append(SimpleNamespace(tag="ERV-T", ventilation_cfm=erv_cfm))
         elements.append(SimpleNamespace(element_kind="Equipment", tag="EQ-ERV",
@@ -319,7 +317,7 @@ def test_habitable_light_fails_when_the_glazing_drops_under_eight_percent():
     assert _results(findings) == [Result.FAIL]
     assert "8%" in findings[0].message
     # ...and says why the lawful alternative is not open to it, rather than only the shortfall.
-    assert "Exception 1 is not available" in findings[0].message
+    assert "Exception 2 is not available" in findings[0].message
 
 
 def test_habitable_light_fails_on_fixed_glass_that_passes_the_light_test():
@@ -330,8 +328,21 @@ def test_habitable_light_fails_on_fixed_glass_that_passes_the_light_test():
     assert "openable" in findings[0].message
 
 
+def test_r303_exception_1_waives_openable_area_without_a_room_supply_terminal():
+    """Exception 1 asks for no R310 opening and an installed whole-house system — not a
+    supply register in the room. A sleeping room keeps its R310 opening and gets no waiver."""
+    findings = habitable_light_and_ventilation(
+        _light_ctx(1.5, 1.5, operation="fixed", erv_cfm=60.0, occupancy="office"))
+    assert _results(findings) == [Result.PASS]
+    assert "Exception 1 applies" in findings[0].message
+    findings = habitable_light_and_ventilation(
+        _light_ctx(1.5, 1.5, operation="fixed", erv_cfm=60.0))
+    assert _results(findings) == [Result.FAIL]
+    assert "R310" in findings[0].message
+
+
 def test_r303_exception_1_carries_a_windowless_room_that_is_lit_and_ventilated():
-    """R303.1 Exception 1 — 6 fc of artificial light plus mechanical outdoor air.
+    """R303.1 Exception 2 — Exception 1 plus 6 fc of artificial light.
 
     A 215 sf room at CU 0.60 x LLF 0.80 needs 6 x 215 / 0.48 = 2,688 lm to reach 6 fc, and
     the whole-house rate for one 215 sf conditioned room with one bedroom is 6.5 + 15 = 22
@@ -339,16 +350,16 @@ def test_r303_exception_1_carries_a_windowless_room_that_is_lit_and_ventilated()
     that names the exception.
     """
     findings = habitable_light_and_ventilation(
-        _light_ctx(0.6, 0.6, lumens=3000.0, supply=True, erv_cfm=60.0))
+        _light_ctx(0.6, 0.6, lumens=3000.0, erv_cfm=60.0, occupancy="office"))
     assert _results(findings) == [Result.PASS]
-    assert "Exception 1" in findings[0].message
+    assert "Exception 2" in findings[0].message
 
 
 def test_r303_exception_1_fails_a_room_the_lighting_cannot_carry():
     """Lit, ventilated, and still short: the exception is adjudicated, not granted on
     presence. 1,000 lm over 215 sf is 2.2 fc against the 6 fc required."""
     findings = habitable_light_and_ventilation(
-        _light_ctx(0.6, 0.6, lumens=1000.0, supply=True, erv_cfm=60.0))
+        _light_ctx(0.6, 0.6, lumens=1000.0, erv_cfm=60.0, occupancy="office"))
     assert _results(findings) == [Result.FAIL]
     assert "short of the 6 fc" in findings[0].message
 
@@ -357,9 +368,9 @@ def test_r303_exception_1_is_unknown_when_a_fixture_states_no_lumens():
     """A fixture with no photometrics is a gap in the model, not a dark room — UNKNOWN,
     never a PASS and never a FAIL."""
     findings = habitable_light_and_ventilation(
-        _light_ctx(0.6, 0.6, lumens=None, supply=True, erv_cfm=60.0))
+        _light_ctx(0.6, 0.6, lumens=None, erv_cfm=60.0, occupancy="office"))
     assert _results(findings) == [Result.FAIL]  # no luminaire at all: exception unavailable
-    ctx = _light_ctx(0.6, 0.6, lumens=900.0, supply=True, erv_cfm=60.0)
+    ctx = _light_ctx(0.6, 0.6, lumens=900.0, erv_cfm=60.0, occupancy="office")
     ctx.plan.library.electrical_device_types[0].lumens = None
     findings = habitable_light_and_ventilation(ctx)
     assert _results(findings) == [Result.UNKNOWN]
@@ -370,7 +381,7 @@ def test_r303_exception_1_passes_on_rated_fixtures_alone_beside_an_unrated_one()
     """An unrated fixture only adds light: rated lumens that clear 6 fc carry the room."""
     from typehaus.model.enums import DeviceKind
 
-    ctx = _light_ctx(0.6, 0.6, lumens=3000.0, supply=True, erv_cfm=60.0)
+    ctx = _light_ctx(0.6, 0.6, lumens=3000.0, erv_cfm=60.0, occupancy="office")
     ctx.plan.library.electrical_device_types.append(SimpleNamespace(tag="LT-U", lumens=None))
     ctx.plan.all_elements().append(SimpleNamespace(
         element_kind="ElectricalDevice", tag="ED-LT-U", kind=DeviceKind.LIGHT,

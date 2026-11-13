@@ -55,13 +55,6 @@ is the unsuppressed score. `mep.run_interference` (2026-11-08) and `mep.riser_th
 
 **Owner decisions**
 
-- [ ] **Plant-room pressure** (`notes/system1_return_path.md`; the rest of System 1's return
-  relief was settled by the owner 2026-11-12). RM-S-PLANT shows 19.0 Pa on
-  `mep.door_transfer_air` and runs ~70 cfm positive (75 in, 5 extract) against its "neutral
-  to slightly negative" design: decide the extract, the undercut or the target. Then fix the
-  stale 25 cfm prose in `notes/plant_room.md` (:43, :465), `plan/mep_hvac.py` :330 and
-  `mep_erv_types.py` :122.
-
 **System 1 air handler in the attic** (`RM-A-EAST-UNFIN`, 2026-11-11,
 `notes/flexx_ultra_geometry.md`). The room stays conditioned while it holds the unit; only its
 finished area drops out.

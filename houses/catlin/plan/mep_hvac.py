@@ -251,7 +251,7 @@ DUCTS_HVAC_SECOND = [
             width=inch(10), depth=inch(8), routing=DuctRouting.EXPOSED,
             start_elevation=inch(100.125), end_elevation=inch(100.125), design_cfm=175, material="galvanized"),
     # The attic study's feed: the last 100 cfm of the riser, in FS-ATTIC's y=3'-3" I-joist bay.
-    # RM-S-STUDY2 (75, east) and RM-S-PLANT (75, west, DU-S-HP-PLANT) leave the riser inside
+    # RM-S-STUDY2's two grilles (75 east, 75 south) leave the riser inside
     # SF-S-DUCT before it rises; this stub carries 100 cfm to DU-S-HP-STUDY-BOOT's take-off at
     # x=18'-10" and is capped 4" past it (2026-11-12: it used to run on 4'-4" west across the
     # x=18' bearing line to a ceiling boot over the plant room, 175 cfm). It no longer crosses
@@ -313,22 +313,16 @@ DUCTS_HVAC_SECOND = [
             elevations=(inch(99.125), inch(99.125), inch(111.125)),
             width=inch(10), depth=inch(6), routing=DuctRouting.SOFFIT,
             soffit_ref="SF-S-DUCT", design_cfm=250, material="galvanized"),
-    # RM-S-PLANT's supply (2026-11-12): a 6" round branch west off the riser's last 2" at the
-    # riser's own centreline (99 1/8"), through SF-S-DUCT's west lining and W-S-C1 above D-S-PLANT's
-    # header, into REG-S-HP-PLANT's box at y=41", the middle of the 14 1/2" clear bay between
-    # the head cripples at y=33" and 49" (header top 92 1/2", the 6" duct spans 96 1/8"..102 1/8",
-    # plate underside 105 1/8"). 382 fpm at 75 cfm. EXPOSED like DU-S-HP-STUDY2, its mirror.
-    DuctRun(uid="7HJXQ8KR61", tag="DU-S-HP-PLANT", system=DuctSystem.SUPPLY,
-            path=(pt(ft(19, 6), inch(41)), pt(inch(212), inch(41))),
+    # Study 2's south grille (2026-11-12): a 6" round east off the riser's last bay, just
+    # south of DU-S-HP-STUDY2, ending in the 6"-to-8x6 boot that turns onto SF-S-DUCT's end face.
+    # 382 fpm at 75 cfm. EXPOSED like DU-S-HP-STUDY2.
+    DuctRun(uid="8RHR9QCJJS", tag="DU-S-HP-STUDY2-S", system=DuctSystem.SUPPLY,
+            path=(pt(ft(19, 6), inch(37.25)), pt(inch(249), inch(37.25))),
             elevations=(inch(99.125), inch(99.125)),
             diameter=inch(6), routing=DuctRouting.EXPOSED,
             material="galvanized", design_cfm=75),
     # DU-S-ERV-HP-FEED is in plan/mep_erv_l3.py: it comes off the attic sub-manifold and
-    # ends in EQ-S-ERV-MIX on the attic deck; it never enters SF-S-DUCT. DU-S-PLANT-EXH is DU-M-ERV-R-PLANT there,
-    # on the LEVEL-2 manifold, running in FS-S-WEST's open-web trusses and rising inside
-    # W-S-C1 to a high sidewall grille — it is not System 1's, it is the ERV's stale pull
-    # out of RM-S-PLANT: 25 cfm against ~20 of makeup, extract-biased on purpose, and an ERV
-    # is damage limitation rather than humidity control (notes/plant_room.md).
+    # ends in EQ-S-ERV-MIX on the attic deck; it never enters SF-S-DUCT.
 ]
 
 # THE AIR HANDLER IN THE ATTIC (2026-11-11). Horizontal-left on the deck of RM-A-EAST-UNFIN
@@ -360,7 +354,7 @@ EQUIPMENT_HVAC_ATTIC = [
               outdoor_ref="EQ-M-HP1-OD", circuit="CKT-HP1-AH",
               secondary_drain_pan=True, float_switch_ref="EQ-M-HP1-OD",
               mount=Mount(kind=MountKind.FLOOR, elevation=inch(4.25)),
-              zone_rooms=("RM-S-STUDY2", "RM-S-PLANT", "RM-S-BED1", "RM-S-BED2",
+              zone_rooms=("RM-S-STUDY2", "RM-S-BED1", "RM-S-BED2",
                           "RM-S-BED3", "RM-S-SUITE", "RM-S-SUITEBATH", "RM-S-VANITY",
                           "RM-S-BATH1", "RM-S-HALL", "RM-S-CLOSET", "RM-S-NCLOSET",
                           "RM-A-EAST-UNFIN", "RM-A-STUDY", "RM-A-STUDIO",

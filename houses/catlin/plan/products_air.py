@@ -76,12 +76,26 @@ RETURN_GRILLE_0606 = Product(
     source=f"Basis of design, or equal: Hart & Cooley A650. The steel 170 6x6 lists 0.17 sf "
            f"effective area. {_SPEC} §6.",
 )
-ROUND_DAMPER_4_24V = Product(
-    tag="PROD-AIR-DAMPER-4-24V", brand="EWC", model="4RSD",
-    name="4in round 24 VAC spring-return motorised damper, galvanized",
-    url="https://www.supplyhouse.com/EWC-4RSD-4-RSD-Spring-Return-Motorized-Damper",
-    source=f"Basis of design, or equal: Duro Dyne NSPRD024-4, Zonefirst RDSC. RH-controlled "
-           f"locally. Body length and actuator size unpublished online. {_SPEC} §7.",
+# RM-S-PLANT's high/low transfer pair to Study 2 (2026-11-12, notes/plant_room_moisture_budget.md §4).
+RETURN_GRILLE_1006 = Product(
+    tag="PROD-AIR-RETURN-GRILLE-10X6", brand="TRUaire", model="170 10X06",
+    name="10x6 steel fixed-bar return grille, white (Study 2 face of the plant transfer pair)",
+    source=f"Basis of design, or equal. ~0.29 sf (42 in2) free area, scaled from the 170 6x6's "
+           f"0.17 sf listing; confirm on the submittal. {_SPEC} §6.",
+)
+RETURN_GRILLE_1006_OBD = Product(
+    tag="PROD-AIR-RETURN-GRILLE-10X6-OBD", brand="TRUaire", model="170VO 10X06",
+    name="10x6 steel return grille with face-operated opposed-blade damper, white",
+    source=f"Basis of design, or equal. The OBD is the plant room's humidity control: set by "
+           f"hand from the room RH sensor and held by its friction lever. {_SPEC} §6.",
+)
+XFER_SLEEVE_1006 = Product(
+    tag="PROD-AIR-XFER-SLEEVE-10X6", brand="Project fabrication",
+    model="TH-XFER-SLEEVE-1006",
+    name="10x6 galvanized through-wall sleeve, 7 1/4in, 1in flange on the plant face",
+    source="Shop-made. Flange taped to the plant room's Class I membrane (butyl), sleeve "
+           "sealed to the gypsum on the study face, so plant air never enters the stud bay. "
+           "notes/plant_room.md.",
 )
 ROUND_DAMPER_4_MANUAL = Product(
     tag="PROD-AIR-DAMPER-4-MANUAL", brand="Imperial",
@@ -104,19 +118,6 @@ SUITEBATH_EXTRACT_BOOT = Product(
            "into wall. 4in bottom inlet axis 3 1/4in behind front plane; 100 mm removable "
            "disc valve centred on front. Includes collar and mounting tabs within envelope. "
            "Fabrication specification, not a manufacturer submittal; notes/suitebath_extract.md.",
-)
-PLANT_CEILING_GRILLE = Product(
-    tag="PROD-AIR-PLANT-GRILLE-12X6", brand="TRUaire", model="A220V 12X06",
-    name="12x6 aluminium double-deflection grille, white, without OBD",
-    url="https://rectorseal.com/hvac/a220-adjustable-double-deflection/",
-    source=f"Plain A220V, not A220VO: motorized damper provides isolation and balancing. {_SPEC} §7.",
-)
-PLANT_DAMPER_6_24V = Product(
-    tag="PROD-AIR-DAMPER-6-24V", brand="EWC", model="6RSD",
-    name="6in round 24 VAC spring-return motorised damper, galvanized",
-    source=f"Basis of design, or equal: the 4RSD's family at 6in (PROD-AIR-DAMPER-4-24V); NOT READ, "
-           f"body length and actuator size to confirm on the submittal before the wall is closed. "
-           f"Spring-return closes on loss of power and on the RH call. {_SPEC} §7.",
 )
 WALL_HOOD_8 = Product(
     tag="PROD-AIR-HOOD-8", brand="RenewAire", model="FA8-P (102409)",
@@ -156,6 +157,6 @@ SPOT_NOZZLE_4 = Product(
 AIR_PRODUCTS = (
     SUITEBATH_EXTRACT_BOOT,
     DISC_VALVE_100, FLOOR_GRILLE_ERV, SIDEWALL_DD_OBD, FLOOR_REGISTER_HP,
-    FILTER_RETURN_GRILLE, FILTER_RETURN_GRILLE_1212, RETURN_GRILLE_1210, RETURN_GRILLE_0606, ROUND_DAMPER_4_24V, ROUND_DAMPER_4_MANUAL, STAIR_REGISTER_BOX, PLANT_CEILING_GRILLE, PLANT_DAMPER_6_24V,
+    FILTER_RETURN_GRILLE, FILTER_RETURN_GRILLE_1212, RETURN_GRILLE_1210, RETURN_GRILLE_0606, ROUND_DAMPER_4_MANUAL, STAIR_REGISTER_BOX, RETURN_GRILLE_1006, RETURN_GRILLE_1006_OBD, XFER_SLEEVE_1006,
     WALL_HOOD_8, WALL_SEAL_FOAM, ELASTOMERIC_SHEET, SPOT_NOZZLE_4,
 )

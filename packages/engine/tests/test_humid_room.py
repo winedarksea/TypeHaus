@@ -293,6 +293,13 @@ def test_extract_only_passes_because_it_cannot_pressurise_itself():
     assert [f.result for f in humid_room_pressure(ctx)] == [Result.PASS]
 
 
+def test_transfer_only_passes_at_its_neighbours_pressure():
+    ctx = _ctx(registers=(_register("REG-XFER", DuctSystem.TRANSFER),))
+    findings = humid_room_pressure(ctx)
+    assert [f.result for f in findings] == [Result.PASS]
+    assert "transfer" in findings[0].message
+
+
 def test_no_terminal_at_all_is_unknown():
     assert [f.result for f in humid_room_pressure(_ctx())] == [Result.UNKNOWN]
 

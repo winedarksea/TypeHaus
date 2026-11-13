@@ -17,8 +17,8 @@
 # machine UNDER ITS DOOR. Since 2026-11-06 an undercut stays in 1/2"-3/4" (owner: stock
 # prehungs cut on site), so the relief doors hang at 3/4" and still fall short: a bedroom's
 # 75 cfm net through 22.5 in2 is 9.7 Pa against Manual D's 3 Pa. mep.door_transfer_air grades
-# it; relief for the bedrooms is open. D-S-PLANT keeps 1/2": its room's pressure is a design
-# output held by an interlocked damper.
+# it; relief for the bedrooms is open. D-S-PLANT is a sealed steel door since 2026-11-12:
+# RM-S-PLANT takes no System 1 air and vents to Study 2 through its own transfer pair.
 # Arithmetic and history: notes/system1_return_path.md.
 
 from typehaus import (
@@ -26,6 +26,8 @@ from typehaus import (
     Mount,
     MountKind,
     Register,
+    RoughOpening,
+    from_node,
     deg,
     ft,
     inch,
@@ -34,7 +36,6 @@ from typehaus import (
 from typehaus.model import Location, WallAttachment
 
 from .erv_balance import (
-    REG_S_ERV_PLANT_EXH,
     REG_S_EXH1,
     REG_S_EXH3,
     REG_S_EXH4,
@@ -114,46 +115,16 @@ REGISTERS_HVAC_SECOND = [
              position=pt(inch(261.25), inch(43.5)), rotation=deg(90),
              duct_ref="DU-S-HP-STUDY2", type_ref="REG-T-HP-STUDY-SIDE", design_cfm=75,
              mount=Mount(kind=MountKind.WALL, elevation=inch(93.75))),
-    # RM-S-PLANT's 75 cfm supply (2026-11-12): a HIGH SIDEWALL grille on W-S-C1's plant face,
-    # in the clear cripple bay above D-S-PLANT's header (cripples at y=33" and 49", 14 1/2"
-    # between), throwing west down the room's 17' length. It was a ceiling boot at x=14'-8"
-    # with a service hatch in the humid liner. The RH-interlocked 6" 24 VAC damper rides in the
-    # type's collar behind the grille, reached by pulling it; nothing is opened in the liner.
-    # DU-S-HP-PLANT feeds it off DU-S-HP-SOUTH-RISE inside SF-S-DUCT; the wall's Class I
-    # membrane is taped to the box flange as at REG-S-ERV-PLANT-EXH. notes/plant_supply_connection.md.
-    Register(uid="CXDCYN7YQ2", tag="REG-S-HP-PLANT", kind=DuctSystem.SUPPLY, room="RM-S-PLANT",
-             duct_ref="DU-S-HP-PLANT", type_ref="REG-T-HP-PLANT-SIDE", design_cfm=75,
-             mount=Mount(kind=MountKind.WALL, elevation=inch(94.125)),
-             location=Location(attachment=WallAttachment(
-                 wall_ref="W-S-C1", face="left", distance_from_start=inch(41),
-                 normal_gap=inch(0), rotation_offset=deg(0)))),
-    # The plant room's extract. RM-S-PLANT was supply-only, so its own ventilation pushed
-    # 70%-RH air into every crack in the envelope it is now lined to protect; slightly
-    # negative is the only pressure a continuously humid room may be held at, which takes an
-    # extract, not a better barrier. The ERV's stale pull, not System 1's.
-    #
-    # HIGH SIDEWALL, 8'-3" to its centre (face bottom 96 1/2" over the carpet), because humid air
-    # stratifies: the wettest air is the air at the ceiling. 3" under the 8'-6" of the W-S-C1
-    # version so the stack boot clears PS1's top plates (underside 104 3/8"). In W-S-PS1's plant
-    # face at x=3'-6 1/2" (2026-11-11; it was W-S-C1 at x=18'-0", 25 ft of duct away), at the
-    # end of DU-M-ERV-R-PLANT's 3 1/4 x 8 stack in the stud bay x 32 3/4".."47 1/4" (studs at 32"
-    # and 48"). It is across the room from REG-S-HP-PLANT at (14'-8", 3'-3"), and its face stands 6"
-    # east of FURN-S-PLANT-HANG-NW (edge x 33.8"), so the hung pot is not in the throw.
-    #
-    # PS1 is the 2x4 PLANT_INT_2X4_HUMID wall, 3 1/2" cavity: the stack fits (3 1/4"), a round
-    # riser plus boot did not, which is why the first design used W-S-C1's 5 1/2". The boot is
-    # a flanged rectangular stack boot with a 4" collar, its flange sealed to the Class I
-    # membrane (butyl tape) and mastic round the stack: the vapour-tight detail is in
-    # plan/mep_erv_l2.py above DU-M-ERV-R-PLANT, and the opening cut through the furring and
-    # panel is the boot's own size. The valve sits on the liner, as before, 2026-10-31: the
-    # collar crosses the liner, the face does not.
-    Register(uid="C7LM4KAP2X", tag="REG-S-ERV-PLANT-EXH", kind=DuctSystem.EXHAUST,
-             room="RM-S-PLANT", duct_ref="DU-M-ERV-R-PLANT",
-             type_ref="REG-T-ERV-PLANT-EXH", design_cfm=REG_S_ERV_PLANT_EXH,
-             mount=Mount(kind=MountKind.WALL, elevation=inch(96.5)),
-             location=Location(attachment=WallAttachment(
-                 wall_ref="W-S-PS1", face="right", distance_from_start=inch(42.5),
-                 normal_gap=inch(0), rotation_offset=deg(0)))),
+    # Study 2's second 75 cfm grille (2026-11-12, replacing the plant room's supply): the
+    # SOUTH end face of SF-S-DUCT (y=2'-10"), same 8x6 double-deflection type as the east
+    # one, ~34" off the south wall. A glass wash: vanes spread east-west and aimed up, never
+    # straight at D-S-BALCONY's glass; its jet runs parallel to W-S-C1 past D-S-PLANT, which
+    # is what makes the plant room's open-door fallback work. Body centred 1/2" off the
+    # lining as at REG-S-HP-STUDY2. notes/system1_study_supply.md.
+    Register(uid="QWCKXAS4SM", tag="REG-S-HP-STUDY2-S", kind=DuctSystem.SUPPLY, room="RM-S-STUDY2",
+             position=pt(inch(249), inch(33.5)), rotation=deg(0),
+             duct_ref="DU-S-HP-STUDY2-S", type_ref="REG-T-HP-STUDY-SIDE", design_cfm=75,
+             mount=Mount(kind=MountKind.WALL, elevation=inch(93.75))),
     # THE HALL RETURN: a 24 x 12 filter-back grille (stock 12x24x1) in SF-S-DUCT's underside at
     # the hall's north end (AO-S-DUCT-RET), its boot rising through the soffit's open top into
     # DU-S-HP-RET in FS-ATTIC's y 352-368 bay (2026-11-11; it was in SF-S-HP1's underside,
@@ -201,9 +172,8 @@ REGISTERS_HVAC_SECOND = [
 # REG-S-HP-BED1/2/3 and REG-S-HP-SUITE (REGISTERS_HVAC_SECOND above), so extracting here is
 # what moves the storey's air: in at the hall soffit, out at the far wall of each room.
 #
-# RM-S-PLANT and RM-S-STUDY2 are served as System 1 terminals — REG-S-HP-PLANT and
-# REG-S-HP-STUDY2 in REGISTERS_HVAC_SECOND above. Both take sidewall boots straight off
-# DU-S-HP-SOUTH-RISE: the plant's through W-S-C1 above its door, the study's through SF-S-DUCT's east lining.
+# RM-S-STUDY2 is served by two System 1 grilles on SF-S-DUCT (east and south faces), both
+# off DU-S-HP-SOUTH-RISE. RM-S-PLANT is sealed: no supply, no extract (notes/plant_room.md).
 REGISTERS = [
     # BED1 y 9'-18', BED2 y 18'-27'. BED3 has no ERV pickup since 2026-11-11: it returns
     # to System 1 through REG-S-HP-BED3-RET instead, and its old 5 cfm went to the kitchen.
@@ -269,4 +239,48 @@ REGISTERS_SECOND = [
             location=Location(attachment=WallAttachment(
                 wall_ref="W-S-BD-N", face="right", distance_from_start=inch(11.625),
                 normal_gap=inch(0), rotation_offset=deg(0)))),
+]
+
+
+# RM-S-PLANT's only ventilation (2026-11-12): a manually set high/low transfer pair into
+# Study 2 through W-S-C1, both in the clear bay y 64 3/4".."79 1/4" (studs at 64"/80", no
+# stud cut). The study face is under SF-S-DUCT from y=2'-10" (94" underside), so the high
+# sleeve tops out at 90 1/2"; the low one's grille bottom is 8 1/4" over the plant floor,
+# above the base and any spill. The plant face's OBD is the humidity control: open on RH
+# over 75%, close under 60% (notes/plant_room_moisture_budget.md §4, notes/plant_room.md).
+# Mount is the face bottom above each room's finished floor (plant +1 1/8", study +1 1/2").
+PLANT_TRANSFER_SECOND = [
+    Register(uid="1GPW7J2XP7", tag="REG-S-XFER-PLANT-HI", kind=DuctSystem.TRANSFER, room="RM-S-PLANT",
+             type_ref="REG-T-XFER-PLANT-1006",
+             mount=Mount(kind=MountKind.WALL, elevation=inch(82.255)),
+             location=Location(attachment=WallAttachment(
+                 wall_ref="W-S-C1", face="left", distance_from_start=inch(72),
+                 normal_gap=inch(0), rotation_offset=deg(0)))),
+    Register(uid="QCWNT36HQ0", tag="REG-S-XFER-PLANT-LO", kind=DuctSystem.TRANSFER, room="RM-S-PLANT",
+             type_ref="REG-T-XFER-PLANT-1006",
+             mount=Mount(kind=MountKind.WALL, elevation=inch(8.255)),
+             location=Location(attachment=WallAttachment(
+                 wall_ref="W-S-C1", face="left", distance_from_start=inch(72),
+                 normal_gap=inch(0), rotation_offset=deg(0)))),
+    Register(uid="KTJPQ98QXP", tag="REG-S-XFER-STUDY2-HI", kind=DuctSystem.TRANSFER, room="RM-S-STUDY2",
+             type_ref="REG-T-XFER-STUDY-1006",
+             mount=Mount(kind=MountKind.WALL, elevation=inch(81.875)),
+             location=Location(attachment=WallAttachment(
+                 wall_ref="W-S-C1", face="right", distance_from_start=inch(72),
+                 normal_gap=inch(0), rotation_offset=deg(0)))),
+    Register(uid="DWMQCYY0SS", tag="REG-S-XFER-STUDY2-LO", kind=DuctSystem.TRANSFER, room="RM-S-STUDY2",
+             type_ref="REG-T-XFER-STUDY-1006",
+             mount=Mount(kind=MountKind.WALL, elevation=inch(7.875)),
+             location=Location(attachment=WallAttachment(
+                 wall_ref="W-S-C1", face="right", distance_from_start=inch(72),
+                 normal_gap=inch(0), rotation_offset=deg(0)))),
+    # The sleeves' holes: 10 1/2 x 6 1/2 through the whole wall, sills off the storey datum.
+    RoughOpening(uid="Q99PR2TFVP", tag="AO-S-XFER-PLANT-HI", host="W-S-C1",
+                 position=from_node("N-S-S1", inch(66.75)),
+                 width=inch(10.5), height=inch(6.5), sill_height=inch(84),
+                 penetration_for=("REG-S-XFER-PLANT-HI", "REG-S-XFER-STUDY2-HI")),
+    RoughOpening(uid="JC23SF4360", tag="AO-S-XFER-PLANT-LO", host="W-S-C1",
+                 position=from_node("N-S-S1", inch(66.75)),
+                 width=inch(10.5), height=inch(6.5), sill_height=inch(10),
+                 penetration_for=("REG-S-XFER-PLANT-LO", "REG-S-XFER-STUDY2-LO")),
 ]
