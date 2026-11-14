@@ -96,20 +96,23 @@ def test_ceiling_height_alone_cannot_create_an_exemption(project):
         assert [f.result.value for f in _room_findings(model)] == ["fail"]
 
 
-def test_plate_only_edge_passes_when_covered_either_way(project):
-    """Full coverage counting the plate as wall space: both readings pass, so no UNKNOWN."""
+def test_plate_under_five_feet_of_head_is_not_wall_space(project):
+    """Owner's reading: a plate edge under 5'-0" (R304.3) is a break, not wall space."""
     devices = tuple(_outlet(f"RC-{i}", x, y) for i, (x, y) in enumerate(
-        [(5, 0), (15, 0), (20, 4), (20, 10), (15, 14), (5, 14), (0, 10), (0, 4)]))
-    findings = _room_findings(_sloped_room(project, plate=True, devices=devices))
+        [(20, 4), (20, 10), (15, 14), (5, 14), (0, 10), (0, 4)]))  # nothing along W-1
+    model = _sloped_room(project, plate=True, devices=devices)
+    uncertainty = uncertain_wall_space(model, model.rooms[0], list(model.rooms[0].clear_face))
+    assert not uncertainty.intervals and uncertainty.low_head_hosts == ("W-1",)
+    findings = _room_findings(model)
     assert [f.result.value for f in findings] == ["pass"]
-    assert "whether or not W-1 counts" in findings[0].message
+    assert "owner's reading" in findings[0].message and "AHJ" in findings[0].message
 
 
-def test_definite_failure_and_plate_uncertainty_are_both_reported(project):
+def test_definite_failure_beside_an_excluded_plate_still_fails(project):
     model = _sloped_room(project, plate=True, devices=(_outlet("RC", 10, 7),))
     findings = _room_findings(model)
-    assert {f.result.value for f in findings} == {"fail", "unknown"}
-    assert next(f for f in findings if f.result.value == "fail").severity.value == "warn"
+    assert [f.result.value for f in findings] == ["fail"]
+    assert findings[0].severity.value == "warn"
 
 
 def test_unresolved_roof_does_not_pass_or_invent_definite_failures(project):

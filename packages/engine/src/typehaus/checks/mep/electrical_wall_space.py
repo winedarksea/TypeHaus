@@ -1,7 +1,9 @@
 """Electrical wall-space interpretation and coverage on a room's perimeter.
 
 A roof bearing plate closes the room graph without establishing that NEC wall space
-exists there. Keep that uncertainty local to electrical checks, not room/trim geometry.
+exists there. Where the roof there is under 5'-0" of head, the owner's reading (2026-11-14)
+excludes it: that floor is not habitable floor area (R304.3), so its edge is not 210.52(A)
+wall space. An AHJ confirmation item. Kept local to electrical checks, not room geometry.
 All returned intervals are linear metres in [0, perimeter], split at the ring seam.
 """
 
@@ -12,6 +14,7 @@ from dataclasses import dataclass
 from typehaus.model.refs import FollowRoof
 from typehaus.resolve.intervals import Interval, merge, subtract
 from typehaus.resolve.model import ResolvedModel, ResolvedRoom
+from typehaus.resolve.roof_geometry import MIN_COUNTABLE_HEAD_M, room_countable_polygon
 from typehaus.resolve.room_perimeter import merged_intervals, perimeter_length
 from typehaus.resolve.room_walls import bounding_wall_arcs
 
@@ -25,6 +28,8 @@ DEVICE_STATION_TOLERANCE_M = 0.05
 #: A wall must stand this far into the room's clear face to be traced (excludes slivers
 #: where a bounding wall's face meets the ring).
 _INSIDE_WALL_MIN_M2 = 1e-4
+#: A plate edge this far outside R304.3's 5'-0" floor is under 5'-0" of head along its length.
+_LOW_HEAD_CLEARANCE_M = 0.01
 
 
 def floor_line_ring(model: ResolvedModel, room: ResolvedRoom) -> list:
@@ -115,11 +120,38 @@ class UncertainWallSpace:
     intervals: tuple[Interval, ...]
     hosts: tuple[str, ...]
     reasons: tuple[str, ...]
+    # Plate edges under 5'-0" of head: excluded from wall space on the owner's reading.
+    low_head: tuple[Interval, ...] = ()
+    low_head_hosts: tuple[str, ...] = ()
+
+
+def _under_low_head(model: ResolvedModel, room: ResolvedRoom, ring: list,
+                    interval: Interval) -> bool:
+    """Every point of the ring along ``interval`` lies outside R304.3's 5'-0" floor."""
+    from shapely.geometry import Point
+
+    from typehaus.resolve.room_perimeter import point_at
+
+    storey = next((s for s in model.plan.storeys if s.tag == room.storey), None)
+    if storey is None:
+        return False
+    countable = room_countable_polygon(model, ring, storey.elevation.meters,
+                                       MIN_COUNTABLE_HEAD_M)
+    if countable.is_empty:
+        return True  # the whole room is under 5'-0"
+    lo, hi = interval
+    samples = [lo + (hi - lo) * k / 8 for k in range(9)]
+    return all(countable.distance(Point(point_at(ring, s))) > _LOW_HEAD_CLEARANCE_M
+               for s in samples)
 
 
 def uncertain_wall_space(model: ResolvedModel, room: ResolvedRoom,
                          ring: list) -> UncertainWallSpace:
-    """Plate-only roof edges and unresolvable boundary runs, never a height exemption."""
+    """Plate-only roof edges and unresolvable boundary runs.
+
+    A plate edge wholly under 5'-0" of head goes to ``low_head`` (not wall space, the
+    owner's reading); a plate edge with head over it stays uncertain.
+    """
     perimeter = perimeter_length(ring)
     authored = model.plan.by_tag(room.tag)
     ceiling = getattr(authored, "ceiling", None)
@@ -131,6 +163,8 @@ def uncertain_wall_space(model: ResolvedModel, room: ResolvedRoom,
 
     required: list[Interval] = []
     uncertain: list[Interval] = []
+    low_head: list[Interval] = []
+    low_head_hosts: set[str] = set()
     hosts: set[str] = set()
     reasons: set[str] = set()
     for wall, interval in bounding_wall_arcs(model, room, ring):
@@ -142,6 +176,10 @@ def uncertain_wall_space(model: ResolvedModel, room: ResolvedRoom,
             uncertain.append(interval)
             hosts.add(wall.tag)
             reasons.add("boundary assembly is unresolved")
+        elif isinstance(ceiling, FollowRoof) and plate_only and _under_low_head(
+                model, room, ring, interval):
+            low_head.append(interval)
+            low_head_hosts.add(wall.tag)
         elif isinstance(ceiling, FollowRoof) and plate_only:
             uncertain.append(interval)
             hosts.add(wall.tag)
@@ -153,12 +191,14 @@ def uncertain_wall_space(model: ResolvedModel, room: ResolvedRoom,
     # Shared-run touch bands overlap at corners. A plate is uncertain only where no
     # actual wall supports the same boundary; the overlap must not erase gable coverage.
     uncertain = [piece for lo, hi in uncertain for piece in subtract(lo, hi, required)]
-    missing = subtract(0.0, perimeter, required + uncertain)
+    low_head = [piece for lo, hi in low_head for piece in subtract(lo, hi, required)]
+    missing = subtract(0.0, perimeter, required + uncertain + low_head)
     if missing:
         uncertain.extend(missing)
         reasons.add("room boundary has no resolved wall host")
     return UncertainWallSpace(tuple(merge(uncertain)), tuple(sorted(hosts)),
-                              tuple(sorted(reasons)))
+                              tuple(sorted(reasons)), tuple(merge(low_head)),
+                              tuple(sorted(low_head_hosts)))
 
 
 def _split_at_seam(lo: float, hi: float, perimeter: float) -> list[Interval]:

@@ -118,8 +118,9 @@ def receptacle_spacing(ctx: CheckContext) -> list[Finding]:
     ``clear_face`` ring is unrolled into an arc-length coordinate (so corners measure
     correctly), doorways, floor openings and fixed cabinets break it into wall
     spaces, spaces under 2' are exempt, and every remaining point must be within 6' of a
-    receptacle projected onto the boundary. Roof-to-floor plate boundaries are evaluated
-    both as wall space and as breaks, with their interpretation explicitly UNKNOWN.
+    receptacle projected onto the boundary. A roof-to-floor plate under 5'-0" of head is
+    not wall space (the owner's reading: R304.3 floor, AHJ to confirm); one with head over
+    it is evaluated both ways, UNKNOWN where the readings differ.
     Kitchen counters (210.52(C)) are graded off the resolved countertops by
     ``electrical_counters.counter_findings``.
     """
@@ -170,19 +171,26 @@ def receptacle_spacing(ctx: CheckContext) -> list[Finding]:
                   + _fixed_cabinet_intervals(ctx, ring, room.storey)
                   + _stationary_intervals(ctx, ring, room))
         uncertainty = uncertain_wall_space(ctx.model, room, ring)
+        breaks += list(uncertainty.low_head)
+        low_head_note = (
+            f"; {', '.join(uncertainty.low_head_hosts)} (roof plate under 5'-0\" of head) "
+            f"is not {NEC.WALL_SPACE} wall space on the owner's reading — the floor under "
+            "5'-0\" is not habitable floor area (R304.3) — AHJ to confirm"
+            if uncertainty.low_head else "")
         gaps = definite_coverage_gaps(perimeter, positions, breaks, uncertainty.intervals)
         if gaps:
             worst = _point_at(ring, sum(gaps[0]) / 2.0)
             out.append(_warn_fail(
                 cid, f"room {room.tag}: wall space > 6' from a receptacle near "
                      f"({worst[0] / 0.3048:.1f}', {worst[1] / 0.3048:.1f}') "
-                     f"[{len(gaps)} gap(s)]", (room.tag,)))
+                     f"[{len(gaps)} gap(s)]{low_head_note}", (room.tag,)))
         included = (uncovered_wall_intervals(perimeter, positions, breaks)
                     if uncertainty.intervals else [])
         hosts = ", ".join(uncertainty.hosts) or "unresolved boundary"
         if uncertainty.intervals and not included and not gaps:
             out.append(_pass(cid, f"room {room.tag} meets the 6' receptacle rule whether or "
-                                  f"not {hosts} counts as wall space", (room.tag,)))
+                                  f"not {hosts} counts as wall space{low_head_note}",
+                             (room.tag,)))
         elif uncertainty.intervals:
             reasons = "; ".join(uncertainty.reasons)
             open_ft = sum(hi - lo for lo, hi in included) / 0.3048
@@ -191,11 +199,13 @@ def receptacle_spacing(ctx: CheckContext) -> list[Finding]:
                      f"{open_ft:.1f} ft of the room's wall line is more than 6' from a "
                      "receptacle; not counted,"
                      + (" gaps remain" if gaps else " the room passes")
-                     + f" — whether {NEC.WALL_SPACE} wall space includes it is unresolved",
+                     + f" — whether {NEC.WALL_SPACE} wall space includes it is unresolved"
+                     + low_head_note,
                 (room.tag, *uncertainty.hosts),
                 fix="a floor receptacle within 18\" of it (210.52(A)(3)) settles both readings"))
         elif not gaps:
-            out.append(_pass(cid, f"room {room.tag} meets the 6' receptacle rule",
-                             (room.tag,)))
+            out.append(_pass(cid, f"room {room.tag} meets the 6' receptacle rule"
+                                  f"{low_head_note}",
+                             (room.tag, *uncertainty.low_head_hosts)))
     out.extend(counter_findings(ctx, cid))
     return out
