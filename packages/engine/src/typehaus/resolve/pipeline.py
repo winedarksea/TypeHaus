@@ -350,6 +350,11 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         from typehaus.resolve.grounding import resolve_grounding
 
         findings.extend(resolve_grounding(model))
+    with _stage("electrical_labels"):
+        # After conduits, solar and the service root: records only, no solids.
+        from typehaus.resolve.electrical_labels import resolve_electrical_labels
+
+        resolve_electrical_labels(model)
     with _stage("geometry"):
         # Last: every earlier stage's records are inputs to it. The emitters read this
         # instead of re-deriving solids from the records themselves.

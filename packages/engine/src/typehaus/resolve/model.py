@@ -1766,6 +1766,8 @@ class ResolvedModel:
     conduits: list[ResolvedConduitRun] = field(default_factory=list)
     # Derived device boxes, one per boxed wall device (→ resolve/device_boxes.py, #93).
     device_boxes: list[Any] = field(default_factory=list)
+    # Derived NEC labels, one record per label (→ resolve/electrical_labels.py).
+    electrical_labels: list[Any] = field(default_factory=list)
     light_runs: list[ResolvedLightRun] = field(default_factory=list)
     solar_panels: list[ResolvedSolarPanel] = field(default_factory=list)
     footing_beddings: list[ResolvedFootingBedding] = field(default_factory=list)

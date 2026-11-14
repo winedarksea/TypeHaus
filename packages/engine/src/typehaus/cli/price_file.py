@@ -55,7 +55,8 @@ _SECTIONS = ("framing", "sheet_goods", "hardware", "concrete", "site", "solids",
              "equipment_hangers", "sleeves", "conduit",
              # Raceway parts and device boxes by the piece (→ takeoff/raceways.py,
              # takeoff/device_boxes.py).
-             "conduit_fittings", "electrical_boxes", "grounding", "grounding_conductors",
+             "conduit_fittings", "electrical_boxes", "electrical_labels", "grounding",
+             "grounding_conductors",
              # The three electrical tables the model resolves and nothing else prices:
              # branch-circuit wire by the foot, the PV array by the watt, and the low-voltage
              # raceways [conduit] deliberately excludes. Each replaces a lump sum — see
@@ -314,6 +315,8 @@ class Prices:
     conduit_fittings: Mapping[str, PriceRange] = field(default_factory=dict)
     # Device boxes and their covers/rings each, keyed on the Product tag.
     electrical_boxes: Mapping[str, PriceRange] = field(default_factory=dict)
+    # NEC labels and plaques each, keyed on the NEC row ("690.31(D)(2)").
+    electrical_labels: Mapping[str, PriceRange] = field(default_factory=dict)
     # Grounding hardware each, keyed on the Product tag; bonds $/LF keyed "<size> <material>"
     # ("6 copper", "1/0 aluminum"). The IBT and SPDs price in [placeables] as ED-T-* types.
     grounding: Mapping[str, PriceRange] = field(default_factory=dict)

@@ -35,6 +35,7 @@ from typehaus.takeoff.electrical import (
     service_load_summary,
     solar_takeoff,
 )
+from typehaus.takeoff.electrical_labels import electrical_label_takeoff
 from typehaus.takeoff.envelope import bug_screen_takeoff, envelope_layer_takeoff
 from typehaus.takeoff.equipment_hangers import equipment_hanger_takeoff
 from typehaus.takeoff.excavation import excavation_takeoff
@@ -260,6 +261,8 @@ def bill_of_materials(
         # resolve/device_boxes.py).
         "conduit_fittings": conduit_fitting_takeoff(model),
         "electrical_boxes": device_box_takeoff(model),
+        # NEC field labels and plaques, each (→ resolve/electrical_labels.py).
+        "electrical_labels": electrical_label_takeoff(model),
         # Rods, clamps, transitions and the bonds between them (#123, → takeoff/grounding.py).
         "grounding": grounding_takeoff(model),
         "grounding_conductors": grounding_conductor_takeoff(model),

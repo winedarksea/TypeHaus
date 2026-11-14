@@ -244,6 +244,7 @@ SECTION_CODES: dict[str, CostCode] = {
     "conduit": CostCode("3300", "26 05 33", "electrical"),
     "conduit_fittings": CostCode("3300", "26 05 33", "electrical"),
     "electrical_boxes": CostCode("3300", "26 05 33", "electrical"),
+    "electrical_labels": CostCode("3300", "26 05 53", "electrical"),
     "grounding": CostCode("3300", "26 05 26", "electrical"),
     "grounding_conductors": CostCode("3300", "26 05 26", "electrical"),
     "conductors": CostCode("3300", "26 05 19", "electrical"),
