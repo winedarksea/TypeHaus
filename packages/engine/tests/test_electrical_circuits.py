@@ -1000,7 +1000,7 @@ def test_wall_space_stops_at_a_run_of_counterless_fixed_cabinet():
     from typehaus.checks.code.mn_residential.profile import MN_2020
     from shapely.geometry import LineString
 
-    from typehaus.checks.mep.electrical import _fixed_cabinet_intervals, _merged_intervals
+    from typehaus.checks.mep.electrical_spacing import _fixed_cabinet_intervals, _merged_intervals
     from typehaus.checks.registry import CheckContext, Preferences
 
     plan = load_plan(CATLIN_DIR).plan
@@ -1055,7 +1055,7 @@ def test_a_cabinet_behind_the_wall_does_not_break_this_rooms_wall_space(catlin_p
     from shapely.geometry import LineString, Point
 
     from typehaus.checks.code.mn_residential.profile import MN_2020
-    from typehaus.checks.mep.electrical import _fixed_cabinet_intervals
+    from typehaus.checks.mep.electrical_spacing import _fixed_cabinet_intervals
     from typehaus.checks.registry import CheckContext, Preferences
 
     plan, model = catlin_plan, catlin_model_ro

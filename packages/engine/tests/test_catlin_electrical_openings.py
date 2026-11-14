@@ -6,8 +6,9 @@ from math import dist
 import pytest
 
 from typehaus.checks.code.mn_residential.ventilation import habitable_light_and_ventilation
-from typehaus.checks.mep.electrical import receptacle_spacing, room_lighting
 from typehaus.checks.mep.electrical_openings import wall_device_opening
+from typehaus.checks.mep.electrical_room_lighting import room_lighting
+from typehaus.checks.mep.electrical_spacing import receptacle_spacing
 from typehaus.findings import Result
 from typehaus.model import inch
 

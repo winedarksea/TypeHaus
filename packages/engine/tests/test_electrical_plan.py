@@ -488,7 +488,7 @@ def test_an_island_with_no_receptacle_is_reported(catlin_model):
     from dataclasses import replace
 
     from typehaus.checks.code.mn_residential.profile import MN_2020
-    from typehaus.checks.mep.electrical import island_receptacle
+    from typehaus.checks.mep.electrical_island import island_receptacle
     from typehaus.checks.registry import CheckContext, Preferences
 
     shift_x = -4 * 0.3048

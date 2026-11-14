@@ -77,7 +77,7 @@ def test_every_alarm_names_an_unswitched_circuit(catlin_model):
 def test_the_alarms_reconcile_against_the_panel_schedule(catlin_model):
     """``electrical.circuit_refs`` walks alarms too: an alarm naming a nonexistent circuit
     is a finding."""
-    from typehaus.checks.mep.electrical import circuit_refs
+    from typehaus.checks.mep.electrical_circuit_refs import circuit_refs
 
     findings = circuit_refs(_context(catlin_model))
     assert not [f for f in findings if f.result is Result.FAIL]

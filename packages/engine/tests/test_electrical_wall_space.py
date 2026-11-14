@@ -6,7 +6,7 @@ import pytest
 from _electrical_helpers import room_plan
 
 from typehaus.checks import build_context_from_model
-from typehaus.checks.mep.electrical import receptacle_spacing
+from typehaus.checks.mep.electrical_spacing import receptacle_spacing
 from typehaus.checks.mep.electrical_wall_space import (
     definite_coverage_gaps,
     facing_well_intervals,
