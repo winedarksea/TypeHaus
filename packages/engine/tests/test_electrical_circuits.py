@@ -270,7 +270,8 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     # And it fits UNMANAGED — no software anywhere in the calculation.
     assert load["unmanaged_demand_va"] / 240 <= 320
     # 220.82(C) selects, it does not sum: five separately controlled resistance heaters
-    # (two mats, the fireplace, the garage and plant-room heaters; the dining mat went 2026-11-02) are taken at 40% and lose to the three
+    # (two mats, the fireplace, the garage and plant-room heaters; the dining mat went
+    # 2026-11-02) are taken at 40% and lose to the three
     # heat-pump systems at 100%, so the heating term is the heat pumps' and the resistance
     # heat costs the service nothing. The heat-pump circuits are identified by the typed
     # Equipment on them, not by a word in the description (takeoff/electrical._is_heat_pump).
