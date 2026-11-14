@@ -37,6 +37,7 @@ SECTION_LABELS: dict[str, str] = {
     "equipment_hangers": "Equipment hangers",
     "sleeves": "Cast-in sleeves", "conduit": "Conduit", "conductors": "Conductors",
     "conduit_fittings": "Conduit fittings", "electrical_boxes": "Device boxes",
+    "electrical_labels": "Electrical labels",
     "grounding": "Grounding hardware", "grounding_conductors": "Grounding conductors",
     "solar_modules": "PV modules", "data_raceways": "Data raceways",
     "plumbing_specialties": "Plumbing specialties", "install_parts": "Installation kits",

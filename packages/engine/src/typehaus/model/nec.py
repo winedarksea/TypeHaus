@@ -172,6 +172,9 @@ class NEC:
     SERVICE_SPD: Final = "230.67"
     SERVICE_DISCONNECT_OUTDOOR: Final = "230.70(A)(1)"
     SERVICE_DISCONNECT_BATHROOM: Final = "230.70(A)(3)"  # never in a bathroom
+    SERVICE_DISCONNECT_MARKING: Final = "230.70(B)(1)"  # "SERVICE DISCONNECT"
+    SERVICE_EMERGENCY_MARKING: Final = "230.70(B)(2)"  # dwelling: "EMERGENCY DISCONNECT"
+    SERVICE_OTHER_SOURCES: Final = "230.70(D)"  # plaque locating other-source disconnects
     SERVICE_DISCONNECT_MIN_RATING: Final = "230.79(C)"  # one-family dwelling: 100 A at least
     SMALL_CONDUCTOR_OCPD: Final = "240.4(D)"
     OCPD_HEIGHT: Final = "240.24(A)"
@@ -371,8 +374,10 @@ class NEC:
     ESS_LISTING: Final = "706.2"
     ESS_DISCONNECT: Final = "706.15"
     ESS_EMERGENCY_SHUTDOWN: Final = "706.15(B)"  # dwellings: outdoor initiation device
+    ESS_DISCONNECT_MARKING: Final = "706.15(C)"  # dwelling: the words and the voltage only
     BATTERY_DISCONNECT: Final = "480.7(A)"  # over 60 V dc
     BATTERY_EMERGENCY_DISCONNECT: Final = "480.7(B)"  # dwellings: outdoors, EMERGENCY DISCONNECT
+    BATTERY_VOLTAGE_LABEL: Final = "480.7(F)"  # dwelling under 150 V dc: nominal voltage only
     INTERCONNECTION: Final = "705.12"
     INTERCONNECTION_100PCT: Final = "705.12(B)(1)"
     INTERCONNECTION_120PCT: Final = "705.12(B)(2)(a)"

@@ -117,6 +117,7 @@ ESTIMATE_PLANS = (
     ("conduit", "conduit", "size", "length_ft", "LF"),
     ("conduit_fittings", "conduit_fittings", "fitting", "count", "ea"),
     ("electrical_boxes", "electrical_boxes", "product", "count", "ea"),
+    ("electrical_labels", "electrical_labels", "section", "count", "ea"),
     # Rods, clamps, transitions and seam clips each; bonds by the LF on "<size> <material>".
     ("grounding", "grounding", "product", "count", "ea"),
     ("grounding_conductors", "grounding_conductors", "conductor", "length_ft", "LF"),

@@ -37,6 +37,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     electrical_grounding_bonds,
     electrical_hvac_disconnect,
     electrical_hvac_receptacle,
+    electrical_labels,
     electrical_openings,
     electrical_outdoor,
     electrical_outdoor_wiring,
