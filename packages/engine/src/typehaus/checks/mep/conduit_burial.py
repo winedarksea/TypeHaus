@@ -9,8 +9,9 @@ carry, so the finding says it is assumed. Columns: the method's (EMT and PVC are
 plus Column 4 where the run's circuit is 120 V, 20 A or less, with GFCI (Note 4, shallowest).
 
 ``electrical.underground_raceway`` reads the rest of 300.7 and 300.8(A)(3) where the model
-holds the data, and says UNKNOWN where it does not (conductor insulation, seal products, EMT
-corrosion protection, PVC schedule).
+holds the data (``Circuit.conductor_insulation`` and ``ConduitRun.cables`` for 310.10(C),
+``ConduitRun.sealed_ends``/``sealant`` for (G), ``pvc_schedule`` for (D)(4)), and says
+UNKNOWN where it does not (EMT corrosion protection).
 
 **ADVISORY tier, never a permit gate.** Grade is a design elevation, not a survey, so a
 shortfall reports as ``Result.ADVISORY`` with the numbers, for the owner to decide.
@@ -31,6 +32,7 @@ from typehaus.model.burial import (
     shallowest_in,
 )
 from typehaus.model.nec import NEC, cite
+from typehaus.model.raceway_cables import wet_rated
 from typehaus.resolve.conduit_reaches import Sample, build_site, samples
 
 BURIAL_CID = "mep.conduit_burial"
@@ -204,29 +206,48 @@ def underground_raceway(ctx: CheckContext) -> list[Finding]:
         return [not_applicable(UNDERGROUND_CID, "no elevation-placed raceway is in earth, under "
                                "a slab or in a foundation wall", code=cite(NEC.UNDERGROUND))]
     out: list[Finding] = []
+    circuits = {c.tag: c for c in ctx.plan.library.circuits}
     for tag, group in sorted(buried.items()):
         run = runs[tag]
-        out.extend(_wet(run))
-        out.extend(_seal(run))
-        out.extend(_emergence(run, group))
+        authored = ctx.plan.by_tag(tag)
+        out.extend(_wet(run, authored, circuits))
+        out.extend(_seal(run, authored))
+        out.extend(_emergence(run, group, authored))
     for tag in sorted(set(buried) | set(cast)):
         out.extend(_corrosion(runs[tag], tag in buried))
     return out
 
 
-def _wet(run) -> list[Finding]:
+def _wet(run, authored, circuits) -> list[Finding]:
     code = cite(NEC.UNDERGROUND_WET, "310.10(C)")
     if run.service is None:
         return [not_applicable(UNDERGROUND_CID, f"{run.tag} is a spare with no conductors, so "
                                "no wet-rating applies", (run.tag,), code=code)]
+    named = [circuits[t] for t in run.circuits if t in circuits]
+    cables = authored.cables if authored is not None else ()
+    marks = [(c.tag, c.conductor_insulation) for c in named]
+    dry = [tag for tag, mark in marks if not wet_rated(mark)]
+    dry += [c.role or c.cable_type or "cable" for c in cables
+            if not (c.wet_location or wet_rated(c.insulation))]
+    if (named or cables) and len(named) == len(run.circuits) and not dry:
+        what = ", ".join([f"{tag} {mark}" for tag, mark in marks]
+                         + [f"{c.role or 'cable'} wet-rated" for c in cables])
+        return [passed(UNDERGROUND_CID, f"{run.tag}: the inside of an underground raceway is a "
+                       f"wet location and every conductor is a 310.10(C) type ({what})",
+                       (run.tag,), code=code)]
+    missing = ", ".join(dry) if dry else "the conductors"
     return [unknown(UNDERGROUND_CID, f"{run.tag}: the inside of an underground raceway is a wet "
-                    "location; the conductor insulation type is not modelled (wet-rated, e.g. "
-                    "THWN-2, is required)", (run.tag,), code=code,
-                    fix="specify the conductor type on the circuit schedule")]
+                    f"location; {missing} author no wet-rated insulation type (310.10(C), e.g. "
+                    "THWN-2)", (run.tag,), code=code,
+                    fix="author Circuit.conductor_insulation or the run's cables")]
 
 
-def _seal(run) -> list[Finding]:
+def _seal(run, authored) -> list[Finding]:
     code = cite(NEC.RACEWAY_SEALS)
+    sealed = authored.sealed_ends if authored is not None else ()
+    if sealed:
+        return [passed(UNDERGROUND_CID, f"{run.tag}: sealed at its {' and '.join(sealed)} with "
+                       f"{authored.sealant}", (run.tag,), code=code)]
     if run.service is None:
         return [passed(UNDERGROUND_CID, f"{run.tag} is a spare, capped by the model's own "
                        "convention (service None), so it is plugged as 300.7(G) asks for spare "
@@ -234,10 +255,10 @@ def _seal(run) -> list[Finding]:
                        (run.tag,), code=code)]
     return [unknown(UNDERGROUND_CID, f"{run.tag}: moisture could reach live parts through this "
                     "buried raceway; no seal at either end is modelled", (run.tag,), code=code,
-                    fix="specify a sealant identified for the conductors at the building end")]
+                    fix="author ConduitRun.sealed_ends and sealant")]
 
 
-def _emergence(run, group: list[Sample]) -> list[Finding]:
+def _emergence(run, group: list[Sample], authored) -> list[Finding]:
     rises = _emerges(group)
     if not rises:
         return []
@@ -250,10 +271,16 @@ def _emergence(run, group: list[Sample]) -> list[Finding]:
     if run.material == "emt":
         return [passed(UNDERGROUND_CID, base + ": EMT is on its list", (run.tag,), code=code)]
     if run.material == "pvc":
-        return [unknown(UNDERGROUND_CID, base + ": PVC must be Schedule 80 there (352.10(K)) and "
-                        "the model holds only 'pvc' (Schedule 40)", (run.tag,), code=code,
-                        fix="author the PVC schedule")]
-    return [advisory(UNDERGROUND_CID, "ADVISORY - " + base + f": {run.material} is not listed",
+        schedule = authored.pvc_schedule if authored is not None else None
+        if schedule == 80:
+            return [passed(UNDERGROUND_CID, base + ": Schedule 80 PVC is on its list "
+                           "(352.10(K))", (run.tag,), code=code)]
+        if schedule is None:
+            return [unknown(UNDERGROUND_CID, base + ": PVC must be Schedule 80 there (352.10(K)) "
+                            "and no schedule is authored", (run.tag,), code=code,
+                            fix="author ConduitRun.pvc_schedule")]
+    return [advisory(UNDERGROUND_CID, "ADVISORY - " + base + f": {run.material}"
+                     f"{' Schedule 40' if run.material == 'pvc' else ''} is not listed",
                      (run.tag,), Result.ADVISORY, code=code)]
 
 

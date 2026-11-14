@@ -101,6 +101,8 @@ class Circuit(Element):
     conductor_awg: str | None = None
     conductor_material: ConductorMaterial = "cu"  # "al" also covers copper-clad aluminum
     egc_awg: str | None = None  # wire EGC, same material; None: none authored
+    # Conductor type marking, e.g. "THHN/THWN-2" (310.10(C) in wet locations; Table 5 family).
+    conductor_insulation: str | None = None
     # 110.14(C)(1) termination column. None: 60 °C at 100 A or less with 14-1 AWG, else 75 °C.
     # 75 is authored only where both ends are listed and identified for it.
     termination_temp_c: Literal[60, 75] | None = None

@@ -31,6 +31,7 @@ from typehaus.model.enums import (
 )
 from typehaus.model.equipment_hangers import EquipmentHangers
 from typehaus.model.placeables import Location, Mount, require_placed_or_hosted
+from typehaus.model.raceway_cables import RacewayCable
 from typehaus.model.registry import register_constructor, register_element
 from typehaus.quantities import Length, Point2D
 
@@ -575,6 +576,23 @@ class ConduitRun(Element):
     #: Circuit tags pulled through this run. Named, ``conductor_takeoff`` bills each one's
     #: conductors over this run's length; empty, the run keeps the per-raceway estimate.
     circuits: tuple[str, ...] = ()
+    #: Conductors and cables no ``Circuit`` names (PV wire, Class 2, data), for
+    #: ``mep.raceway_fill`` and the wet-location reads (→ model/raceway_cables.py).
+    cables: tuple[RacewayCable, ...] = ()
+    #: PVC only: Schedule 40 or 80 (352.10(K), Table 4). None: not stated.
+    pvc_schedule: Literal[40, 80] | None = None
+    #: Ends sealed against moisture (300.7(G)) and warm air (300.9(A)(1)), and the sealant
+    #: identified for the insulation and metals. A seal is at an accessible fitting at that end.
+    sealed_ends: tuple[Literal["start", "end"], ...] = ()
+    sealant: str | None = None
+
+    @model_validator(mode="after")
+    def _raceway_options(self):
+        if self.pvc_schedule is not None and self.material is not RacewayMaterial.PVC:
+            raise ValueError(f"{self.tag}: pvc_schedule on a {self.material.value} run")
+        if self.sealed_ends and not self.sealant:
+            raise ValueError(f"{self.tag}: sealed_ends needs a sealant")
+        return self
 
 
 @register_element
@@ -663,6 +681,7 @@ for _name, _obj in (
     ("Equipment", Equipment),
     ("ElectricalDevice", ElectricalDevice),
     ("ConduitRun", ConduitRun),
+    ("RacewayCable", RacewayCable),
     ("LightRun", LightRun),
     ("Sump", Sump),
     ("SumpPump", SumpPump),

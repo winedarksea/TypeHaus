@@ -486,8 +486,9 @@ def test_bill_of_materials_carries_the_electrical_sections(catlin_model):
         if element.element_kind == "ElectricalDevice")
     # Rows are trade-size groups, not runs: the three 1" microgrid runs join the group the
     # 1" trunk already made.
-    # Laundry adds its own 1/2" group; the floor-heat leads add 1/2" ENT.
-    assert len(bom["conduit"]) == 6
+    # Laundry adds its own 1/2" group; the floor-heat leads add 1/2" ENT; the buried EV
+    # leg (Sch 80 PVC since Q9b) adds 1 1/4" PVC.
+    assert len(bom["conduit"]) == 7
     # The microgrid section is derived twice over: the placed ESS hardware, then the
     # surplus-tier switching gear. The first row is the inverter because equipment leads.
     components = bom["backup_power"]["components"]

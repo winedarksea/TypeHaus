@@ -77,5 +77,22 @@ def test_catlins_raceway_fill_grades_named_runs_and_says_what_is_missing(catlin_
     gap = found["CD-B-V2H-GAP"].message
     assert "Schedule 80" in gap and "1.150" in gap
     assert found["ED-B-UTIL-RC1-DROP"].result.value == "not_applicable"
-    assert found["CD-B-ATTIC-RISER"].result.value == "unknown"
-    assert found["CD-B-DATA-CHASE"].result.value == "unknown"
+    # Cables no circuit names (PV wire, Cat 6A) grade at their datasheet diameters.
+    assert found["CD-B-ATTIC-RISER"].result.value == "pass"
+    assert found["CD-B-DATA-CHASE"].result.value == "pass"
+    assert "6 conductors/cables" in found["CD-B-DATA-CHASE"].message
+    assert "PVC Schedule 80:" in found["CD-B-GAP-EV"].message  # authored, not assumed
+    assert found["CD-B-INV-BACKUP"].result.value == "unknown"
+
+
+def test_raceway_cable_types_and_310_10_c_wet_list():
+    import pytest
+
+    from typehaus.model.raceway_cables import RacewayCable, table_5_family, wet_rated
+    from typehaus.quantities import inch
+
+    assert wet_rated("THHN/THWN-2") and not wet_rated("THHN") and not wet_rated(None)
+    assert table_5_family("THHN/THWN-2") == "thhn" and table_5_family("PV") is None
+    RacewayCable(outside_diameter=inch(0.287), cable_type="CMR")
+    with pytest.raises(ValueError):
+        RacewayCable(size_awg="10", insulation="PV")  # no Table 5 row, no diameter

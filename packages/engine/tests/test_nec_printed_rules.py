@@ -458,12 +458,13 @@ def test_article_300_numbers_and_table_300_7_a_cells():
     assert cover_in(-1.2, -0.85) == pytest.approx(0.35 / 0.0254)
 
 
-def test_catlins_buried_ev_and_v2h_legs_miss_18_in_under_the_walk(catlin_model_ro):
+def test_catlins_buried_ev_and_v2h_legs_clear_18_in_at_minus_5_ft(catlin_model_ro):
     report = run_from_model(catlin_model_ro, [], tier=Tier.ADVISORY, only="mep.conduit_burial")
     found = {f.element_tags[0]: f for f in report.findings
              if f.check_id == "mep.conduit_burial" and f.element_tags}
-    for tag, cover in (("CD-B-GAP-EV", "14.2"), ("CD-B-V2H-GAP", "13.8")):
-        assert found[tag].result.value == "advisory" and f"cover {cover} in." in found[tag].message
+    # The walk's edge still misses 6 in., so 18 in. governs; the gravel strip is the low point.
+    for tag, cover in (("CD-B-GAP-EV", "19.2"), ("CD-B-V2H-GAP", "18.8")):
+        assert found[tag].result.value == "pass" and f"cover {cover} in." in found[tag].message
         assert "Column 3" in found[tag].message and "6 in. the slab row needs" in found[tag].message
     assert found["CD-B-SPA"].result.value == "unknown"
 

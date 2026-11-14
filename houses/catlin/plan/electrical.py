@@ -67,7 +67,7 @@ from typehaus import (
     inch,
     pt,
 )
-from typehaus.model import Location, WallAttachment, m
+from typehaus.model import Location, RacewayCable, WallAttachment, m
 
 DEVICE_TYPES = (
     # `service_amps` is the service size as data: it's what 120.82 demand is compared
@@ -176,7 +176,8 @@ SERVICE_DEVICES = [
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # Stub through the wall into the stud bay behind the box (y=28'-6"); the Class 2 pair
     # (16 AWG) to the inverter's RSD terminals is fished from there, the electrician's route.
-    ConduitRun(uid="NT48FAA2B8", tag="CD-M-RSD-INIT", trade_size=inch(0.5),
+    ConduitRun(uid="NT48FAA2B8", tag="CD-M-RSD-INIT", cables=(RacewayCable(outside_diameter=inch(0.328), cable_type="CL3", wet_location=True, role="RSD initiator loop, 16/2", source="Belden 5200F2 techdata: 16-2c shielded, CL3/FPL/PLTC, Wet Location, Direct Burial, 300 V, 90 C, nom. dia. 0.328 in"),),
+               trade_size=inch(0.5),
                service=Service.POWER_24, from_ref="ED-M-RSD-INIT", to_ref="EQ-B-ESS-INV",
                path=(pt(inch(-9.375), inch(342)), pt(inch(3), inch(342))),
                elevations=(inch(15.5), inch(15.5))),
@@ -1117,7 +1118,9 @@ CONDUIT_TRUNKS = [
     # reason VR-M-STACK jogs in the attic instead of relocating (mep_venting.py). A
     # ConduitRun travels flat at `start_elevation` and rises only at its LAST point, so
     # "up, then over" is two runs, not one polyline.
-    ConduitRun(uid="CDT001AAAA", tag="CD-B-ATTIC-RISER", trade_size=inch(1.5),
+    ConduitRun(uid="CDT001AAAA", tag="CD-B-ATTIC-RISER", cables=(RacewayCable(count=4, outside_diameter=inch(0.263), cable_type="PV", wet_location=True, role="PV wire, two strings + and -", source="Southwire 10 AWG CU PV XLP 2000V, stock 57996211 (UL 4703, UL 44; 90 C wet and dry): approx. OD 0.263 in; size is the engine proposal inside EG4 12kPV 10-6 AWG, pending electrician review"),
+                       RacewayCable(size_awg="10", insulation="THHN/THWN-2", role="PV EGC (proposal pending electrician review)")),
+               trade_size=inch(1.5),
                # Stations re-packed 2026-09-23 with the NW chase: the three chase conduits
                # stand in its south band between the ERV supply and exhaust risers, each on
                # its own -4'-0" basement lane.
@@ -1144,7 +1147,9 @@ CONDUIT_TRUNKS = [
     #
     # The riser follows ED-A-PV-JB to x=10'-2" and 21'-11 3/4"; the box's own note
     # carries why that station.
-    ConduitRun(uid="XJR4KE400J", tag="CD-A-PV-EAST", trade_size=inch(1.5),
+    ConduitRun(uid="XJR4KE400J", tag="CD-A-PV-EAST", cables=(RacewayCable(count=4, outside_diameter=inch(0.263), cable_type="PV", wet_location=True, role="PV wire, two strings + and -", source="Southwire 10 AWG CU PV XLP 2000V, stock 57996211 (UL 4703, UL 44; 90 C wet and dry): approx. OD 0.263 in; size is the engine proposal inside EG4 12kPV 10-6 AWG, pending electrician review"),
+                       RacewayCable(size_awg="10", insulation="THHN/THWN-2", role="PV EGC (proposal pending electrician review)")),
+               trade_size=inch(1.5),
                # Up 3" off the riser head first: DU-ERV-RISER-EXH's top leg runs east at 20'-4",
                # and 20'-9" clears it under the roof, whose underside at x=1'-8" is 20'-10.8"
                # since the heel-anchored plane (decision #109; 21'-1" stood 3.3" through it).
@@ -1173,13 +1178,17 @@ CONDUIT_TRUNKS = [
     # north of CZ-B-DRYFIRE's y=411.6" end, and the two panel runs turn south either side of
     # PR-B-KITCH-DRAIN's x=32.5" drop, short of the NW corner's VR-M-STACK and sump risers,
     # to reach W-B-W1 at y~400" under its boxes. One conduit body each splits the bends. PV comes from the attic riser's chase station (1'-8", 33'-8").
-    ConduitRun(uid="CDT005AAAA", tag="CD-B-PV-INV", trade_size=inch(1),
-               path=(pt(_PV_CHASE_X, inch(404)), pt(_PV_CHASE_X, inch(404)),
-                     pt(_PV_CHASE_X, inch(416)), pt(inch(45), inch(416)),
-                     pt(inch(45), inch(416))),
-               start_elevation=inch(-29.4375), end_elevation=inch(-76.4375),
-               elevations=(inch(-29.4375), inch(-79.4375), inch(-79.4375), inch(-79.4375),
-                           inch(-76.4375)),
+    ConduitRun(uid="CDT005AAAA", tag="CD-B-PV-INV", cables=(RacewayCable(count=4, outside_diameter=inch(0.263), cable_type="PV", wet_location=True, role="PV wire, two strings + and -", source="Southwire 10 AWG CU PV XLP 2000V, stock 57996211 (UL 4703, UL 44; 90 C wet and dry): approx. OD 0.263 in; size is the engine proposal inside EG4 12kPV 10-6 AWG, pending electrician review"),
+                       RacewayCable(size_awg="10", insulation="THHN/THWN-2", role="PV EGC (proposal pending electrician review)")),
+               trade_size=inch(1),
+               # Drawn inverter -> chase (2026-11-14) so its end meets CD-B-ATTIC-RISER's start
+               # and conduit_pulls chains the PV raceway as one: inverter, riser, attic leg.
+               path=(pt(inch(45), inch(416)), pt(inch(45), inch(416)),
+                     pt(_PV_CHASE_X, inch(416)), pt(_PV_CHASE_X, inch(404)),
+                     pt(_PV_CHASE_X, inch(404))),
+               start_elevation=inch(-76.4375), end_elevation=inch(-29.4375),
+               elevations=(inch(-76.4375), inch(-79.4375), inch(-79.4375), inch(-79.4375),
+                           inch(-29.4375)),
                service=Service.POWER_DC,  # PV source circuits (decision #123)
                from_ref="ED-A-PV-JB", to_ref="EQ-B-ESS-INV"),
     # Grid port to ED-B-PANEL's CKT-ESS-GRID breaker: the run that carries the backfeed.
@@ -1244,17 +1253,25 @@ CONDUIT_TRUNKS = [
                      pt(inch(54.5), inch(334)), pt(inch(54.5), ft(35, 3)),
                      pt(ft(16), ft(35, 3)),
                      pt(ft(16), ft(35, 5)), pt(ft(16), ft(35, 5))),
-               start_elevation=inch(-31.4375), end_elevation=ft(-4), elevations=(inch(-31.4375), inch(-17.6), inch(-17.6), inch(-17.6), inch(-17.6), inch(-17.6), inch(-17.6), ft(-4)),
+               start_elevation=inch(-31.4375), end_elevation=ft(-5), elevations=(inch(-31.4375), inch(-17.6), inch(-17.6), inch(-17.6), inch(-17.6), inch(-17.6), inch(-17.6), ft(-5)),
                # Low-profile LB at 4 (16'-0", 35'-3"), RM-B-STAIR ceiling: ~7/16" under the drain.
                pull_points=(5,),
                circuits=("CKT-EV-1450",),
                from_ref="ED-B-PANEL-2", to_ref="ED-G-EV-1450"),
-    # The buried leg: out through SP-B-N2-CD-GAR2 at -4'-0", north under the house/garage
-    # gap, and up through the garage slab to ED-G-EV-1450. Same station the whole feeder
-    # always used — none of its three sleeves moved.
-    ConduitRun(uid="5PEMG38MHJ", tag="CD-B-GAP-EV", trade_size=inch(1.25),
+    # The buried leg: out through SP-B-N2-CD-GAR2, north under the house/garage gap, and up
+    # through the garage slab to ED-G-EV-1450. Same station the whole feeder always used.
+    # ** -5'-0" AND SCHEDULE 80 PVC SINCE 2026-11-14 (TODO-nec Q9a/b). ** At -4'-0" it had 14.2"
+    # under SL-WK-C (whose west edge misses the 6" the slab row needs) and 7.2" in the gravel
+    # strip between the cladding and the walk (grade -3'-4"): Table 300.7(A) Column 3 wants 18"
+    # everywhere, and -5'-0" gives 19.2" at the strip. Buried EMT would need approved corrosion
+    # protection (358.10(B)(1)); Sch 80 PVC needs none and is a (D)(4) method where it rises.
+    # EMT-to-PVC adapter at the wall; duct seal at CD-B-GARAGE's LB (its pull point 5), the
+    # first accessible fitting on the warm side of this start.
+    ConduitRun(uid="5PEMG38MHJ", tag="CD-B-GAP-EV", trade_size=inch(1.25), material="pvc",
+               pvc_schedule=80, sealed_ends=("start",),
+               sealant="Polywater FST foam duct sealant (TDS: compatible with common cable jacket materials; complies with NEC raceway-seal articles; UL Classified R39313)",
                path=(pt(ft(16), ft(35, 5)), pt(ft(16), ft(44, 3.375)), pt(ft(16), ft(44, 3.375))),
-               start_elevation=ft(-4), end_elevation=ft(5, 10), elevations=(ft(-4), ft(-4), ft(5, 10)),
+               start_elevation=ft(-5), end_elevation=ft(5, 10), elevations=(ft(-5), ft(-5), ft(5, 10)),
                circuits=("CKT-EV-1450",),
                from_ref="ED-B-PANEL-2", to_ref="ED-G-EV-1450"),
     # ** V2H SPARE, ROUTED (backup_power.md section 10). ** One empty 2" Sch 80 PVC, pull string
@@ -1265,23 +1282,26 @@ CONDUIT_TRUNKS = [
     # it, so the two never meet. It turns north at x=16'-2 7/16", 2 7/16" east of CD-B-GARAGE's
     # drop, and CD-B-V2H-GAP below carries it down, through the three CD-GAR sleeves and up.
     ConduitRun(uid="37TTJ40QC7", tag="CD-B-V2H-SPARE", trade_size=inch(2), material="pvc",
-               service=None,
+               pvc_schedule=80, service=None,
                path=(pt(ft(5, 2), ft(34, 9)), pt(ft(5, 6.3125), ft(34, 9)),
                      pt(ft(5, 6.3125), ft(34, 9)), pt(_V2H_X, ft(34, 9)),
                      pt(_V2H_X, ft(35))),
                start_elevation=inch(-41.4375), end_elevation=inch(-23),
                elevations=(inch(-41.4375), inch(-41.4375), inch(-23), inch(-23), inch(-23)),
                from_ref="EQ-B-ESS-INV", to_ref="ED-G-EV-1450"),
-    # The V2H buried leg, beside CD-B-GAP-EV: down at y=35'-0" to -4'-0" (a pull body at the foot
+    # The V2H buried leg, beside CD-B-GAP-EV: down at y=35'-0" to -5'-0" (a pull body at the foot
     # of the drop splits the 540 deg of bends the two runs carry), north through the sleeves
     # SP-B-N2-CD-GAR2 / SP-GF-CD-GAR at x=16'-2 7/16" (the EMT is 2 7/16" west of it), and up
     # through SP-G-CD-GAR to a capped stub 2'-0" over the slab beside ED-G-EV-1450, clear of
     # the box (48" AFF). A bidirectional charger would stand here and extend it.
+    # Duct seal in that indoor pull body (300.9(A)(1)); the stub's cap plugs the cold end.
     ConduitRun(uid="EY0KXSAK8Q", tag="CD-B-V2H-GAP", trade_size=inch(2), material="pvc", service=None,
+               pvc_schedule=80, sealed_ends=("start",),
+               sealant="Polywater FST foam duct sealant (TDS: compatible with common cable jacket materials; complies with NEC raceway-seal articles; UL Classified R39313)",
                path=(pt(_V2H_X, ft(35)), pt(_V2H_X, ft(35)),
                      pt(_V2H_X, ft(44, 3.375)), pt(_V2H_X, ft(44, 3.375))),
                start_elevation=inch(-23), end_elevation=inch(-10),
-               elevations=(inch(-23), ft(-4), ft(-4), inch(-10)),
+               elevations=(inch(-23), ft(-5), ft(-5), inch(-10)),
                pull_points=(1,),
                from_ref="EQ-B-ESS-INV", to_ref="ED-G-EV-1450"),
     # Across the basement ceiling to the kitchen's east counter wall, where KGF3 (the device
@@ -1360,6 +1380,9 @@ CONDUIT_TRUNKS = [
                # Pull box at the south-west corner (1'-5", 1'-0"), outside the dry-fire
                # lane's x 40.5"..68" band. Splits the bends (NEC 358.26).
                pull_points=(4,),
+               # Duct seal in that indoor pull box, the warm side of the wall (300.9(A)(1)).
+               sealed_ends=("start",),
+               sealant="Polywater FST foam duct sealant (TDS: compatible with common cable jacket materials; complies with NEC raceway-seal articles; UL Classified R39313)",
                circuits=("CKT-SPA",),
                from_ref="ED-B-PANEL-2", to_ref="ED-B-SPA-DISC"),
 ]
@@ -1391,7 +1414,9 @@ DATA_HEAD_END = [
 DATA_TRUNKS = [
     # The spine riser: basement mechanical room to the attic floor, 6" east of the
     # radon/vent bundle. Every upstairs pull goes through this one pipe.
-    ConduitRun(uid="CDT008AAAA", tag="CD-B-DATA-CHASE", trade_size=inch(1.25),
+    ConduitRun(uid="CDT008AAAA", tag="CD-B-DATA-CHASE", cables=(RacewayCable(count=3, outside_diameter=inch(0.287), cable_type="CMR", role="indoor Cat 6A: kitchen AP, doorbell, studio AP", source="trueCABLE Cat6A Riser U/UTP 23AWG CMR spec sheet rev 3: OD 7.30 mm"),
+                       RacewayCable(count=3, outside_diameter=inch(0.26), cable_type="CMP", wet_location=True, role="outdoor Cat 6A: porch AP, backyard camera, canopy camera", source="Prysmian GenSPEED 10 UTP Indoor/Outdoor Plenum Cat 6A 7141007, REV 09/25: OD 0.260 in, CMP, Wet Location rated per UL 83, SUN RES")),
+               trade_size=inch(1.25),
                service=Service.DATA,
                # Out of the patch's north side at 85" AFF, north on the wall strip over
                # ED-B-BACKUP-ENCL (clear of its working space) and under DU-ERV-RISER-SUP.
@@ -1442,7 +1467,9 @@ MAIN_DATA_TRUNKS = [
     # 1" EMT from the data riser to the pull box, where `CD-M-DATA-DOORBELL` leaves: three
     # Cat 6A (AP, doorbell, canopy camera) are 25% full at 0.30" OD, 33% at 0.35" (Table 4:
     # 0.864 in^2, 40%). Two go on in the 3/4" `CD-M-DATA-KITCH`.
-    ConduitRun(uid="0KME23GB35", tag="CD-M-DATA-KITCH-TRUNK", trade_size=inch(1),
+    ConduitRun(uid="0KME23GB35", tag="CD-M-DATA-KITCH-TRUNK", cables=(RacewayCable(count=2, outside_diameter=inch(0.287), cable_type="CMR", role="indoor Cat 6A: kitchen AP, doorbell", source="trueCABLE Cat6A Riser U/UTP 23AWG CMR spec sheet rev 3: OD 7.30 mm"),
+                       RacewayCable(count=1, outside_diameter=inch(0.26), cable_type="CMP", wet_location=True, role="outdoor Cat 6A: canopy camera", source="Prysmian GenSPEED 10 UTP Indoor/Outdoor Plenum Cat 6A 7141007, REV 09/25: OD 0.260 in, CMP, Wet Location rated per UL 83, SUN RES")),
+               trade_size=inch(1),
                service=Service.DATA,
                path=(pt(inch(22), inch(406.2)), pt(inch(22), inch(410.6)),
                      pt(inch(32), inch(410.6)), pt(inch(32), inch(411.5)),
@@ -1454,7 +1481,9 @@ MAIN_DATA_TRUNKS = [
                # run ends where the doorbell and the 3/4" continuation start, 4" above it.
                pull_points=(4,),
                from_ref="ED-B-NET-PATCH"),
-    ConduitRun(uid="CDT010AAAA", tag="CD-M-DATA-KITCH", trade_size=inch(0.75),
+    ConduitRun(uid="CDT010AAAA", tag="CD-M-DATA-KITCH", cables=(RacewayCable(count=1, outside_diameter=inch(0.287), cable_type="CMR", role="indoor Cat 6A: kitchen AP", source="trueCABLE Cat6A Riser U/UTP 23AWG CMR spec sheet rev 3: OD 7.30 mm"),
+                       RacewayCable(count=1, outside_diameter=inch(0.26), cable_type="CMP", wet_location=True, role="outdoor Cat 6A: canopy camera", source="Prysmian GenSPEED 10 UTP Indoor/Outdoor Plenum Cat 6A 7141007, REV 09/25: OD 0.260 in, CMP, Wet Location rated per UL 83, SUN RES")),
+               trade_size=inch(0.75),
                service=Service.DATA,
                # ** IT CROSSES DU-M-ERV-EXH-TRUNK'S LINE UNDER THE BAND SINCE 2026-09-24. ** The
                # 8" trunk fills FS-S-WEST's web window from y=7'-4" to 35'-0", with the chase
@@ -1497,7 +1526,8 @@ MAIN_DATA_TRUNKS = [
     # the trunk's own error, and invisible for the same reason. The fourth point at y=-2"
     # holds the elevation through the rim and turns down OUTSIDE the deck, which is also how
     # it gets built.
-    ConduitRun(uid="CDT011AAAA", tag="CD-M-DATA-PORCH", trade_size=inch(0.75),
+    ConduitRun(uid="CDT011AAAA", tag="CD-M-DATA-PORCH", cables=(RacewayCable(count=2, outside_diameter=inch(0.26), cable_type="CMP", wet_location=True, role="outdoor Cat 6A: porch AP, backyard camera", source="Prysmian GenSPEED 10 UTP Indoor/Outdoor Plenum Cat 6A 7141007, REV 09/25: OD 0.260 in, CMP, Wet Location rated per UL 83, SUN RES"),),
+               trade_size=inch(0.75),
                service=Service.DATA,
                # Out of the chase along its south trimmer and south in the 1'-4 1/2" truss
                # opening on the upper tier, over PR-M-S-BATH1-TUB-DRAIN and DU-M-ERV-R-BATH1, to
@@ -1540,7 +1570,8 @@ ATTIC_DATA_TRUNKS = [
     # either way, and the cavity is mineral wool with no other service in it.
     # The deck leg runs at 22'-6 7/8", clear of the wall's pocket-side face (on 22'-6" it
     # stood 0.21" in the stud plane), and steps 2 7/8" south into the cavity to rise.
-    ConduitRun(uid="CDT012AAAA", tag="CD-A-DATA-NE", trade_size=inch(0.75),
+    ConduitRun(uid="CDT012AAAA", tag="CD-A-DATA-NE", cables=(RacewayCable(count=1, outside_diameter=inch(0.287), cable_type="CMR", role="indoor Cat 6A: studio AP", source="trueCABLE Cat6A Riser U/UTP 23AWG CMR spec sheet rev 3: OD 7.30 mm"),),
+               trade_size=inch(0.75),
                service=Service.DATA,
                # Up 1" off the chase riser's head first: at +20'-6" the deck leg sat in the
                # crowns of the three radials it crosses (2026-09-24).
@@ -1623,7 +1654,8 @@ BASEMENT_DATA_TRUNKS = [
     # Workshop: south beside the west wall at x=10", clear of the spa feed and the two
     # north risers at x=1'-7 3/5" and x=2'-6". The last inch turns into the jack before
     # dropping to 42" over the slab. Stays inside the basement box — no sleeve.
-    ConduitRun(uid="F2D3CT89ZV", tag="CD-B-DATA-SHOP", trade_size=inch(0.75), service=Service.DATA,
+    ConduitRun(uid="F2D3CT89ZV", tag="CD-B-DATA-SHOP", cables=(RacewayCable(count=1, outside_diameter=inch(0.287), cable_type="CMR", role="indoor Cat 6A: workshop jack", source="trueCABLE Cat6A Riser U/UTP 23AWG CMR spec sheet rev 3: OD 7.30 mm"),),
+               trade_size=inch(0.75), service=Service.DATA,
                # Since 2026-10-31 under the panels: out of the patch bottom down to 32" AFF on
                # x=11" (it ran through their bodies at 61"), back up to 61" at y=23'-8".
                path=(pt(inch(11), ft(31)), pt(inch(11), ft(31)), pt(inch(11), inch(284)),
@@ -1643,7 +1675,8 @@ BASEMENT_DATA_TRUNKS = [
     # truss to y=35'-3" under PR-B-KITCH-DRAIN's y=31'-6" leg, and drops against the wall
     # (1" off the face, as RC1's drop did) through the ceiling's 1/4" caulked gap to the jack.
     # Data and power never share a raceway, so this is its own lane.
-    ConduitRun(uid="D606MFGTEG", tag="CD-B-DATA-MEDIA", trade_size=inch(0.75), service=Service.DATA,
+    ConduitRun(uid="D606MFGTEG", tag="CD-B-DATA-MEDIA", cables=(RacewayCable(count=1, outside_diameter=inch(0.287), cable_type="CMR", role="indoor Cat 6A: media jack", source="trueCABLE Cat6A Riser U/UTP 23AWG CMR spec sheet rev 3: OD 7.30 mm"),),
+               trade_size=inch(0.75), service=Service.DATA,
                path=(pt(inch(10), ft(31)), pt(ft(2), ft(30)), pt(ft(9, 7.75), ft(30)),
                      pt(ft(9, 7.75), ft(20, 0.5)), pt(ft(13, 4.75), ft(20, 0.5)),
                      pt(ft(13, 4.75), ft(19, 1.25)), pt(ft(16, 4.25), ft(19, 1.25)),
@@ -1682,7 +1715,8 @@ BASEMENT_DATA_TRUNKS = [
     # and y=21'-0" hit PR-B-HW-WASH and PR-B-WC2-DRAIN, so the 3 1/2" step SOUTH is the one that
     # clears. Same elevation; it clears the drain by 2 1/8" in plan.
     # West leg shifts 4 in. west to clear the relocated WC drop without adding bends.
-    ConduitRun(uid="Z9TXYSYKWG", tag="CD-B-DATA-STUDY", trade_size=inch(0.75), service=Service.DATA,
+    ConduitRun(uid="Z9TXYSYKWG", tag="CD-B-DATA-STUDY", cables=(RacewayCable(count=1, outside_diameter=inch(0.287), cable_type="CMR", role="indoor Cat 6A: study jack", source="trueCABLE Cat6A Riser U/UTP 23AWG CMR spec sheet rev 3: OD 7.30 mm"),),
+               trade_size=inch(0.75), service=Service.DATA,
                path=(pt(inch(10), ft(31)), pt(inch(20), ft(31)),
                      pt(inch(20), ft(18, 8.5)), pt(ft(16), ft(18, 8.5)),
                      pt(ft(16), ft(18, 5)), pt(ft(16), ft(18, 5))),
@@ -1747,6 +1781,7 @@ CONDUIT_SLEEVES = [
     # (SP-B-N2-CD-GAR2) is a hole in concrete.
     #
     # ** ALL THREE ARE 6" SINCE 2026-11-07 (V2H spare). ** Each carries CD-B-GAP-EV's 1.510" EMT
+    # (1.660" Sch 80 PVC since 2026-11-14: 0.42" between the pair, still inside the 6" ID)
     # at x=16'-0" and CD-B-V2H-GAP's 2.375" PVC 2 7/16" east of it: 3.885" side by side, 0.495"
     # apart, spanning x 191.245"..195.625". A 4" ID (4.026") leaves 0.14"; a 6" ID (6.065") holds
     # the pair centred on x=16'-1 7/16" with 0.84" each side. (At the EMT's axis the PVC's far
@@ -1754,10 +1789,10 @@ CONDUIT_SLEEVES = [
     SleevePenetration(uid="CNS008AAAA", tag="SP-B-N2-CD-GAR2", host_ref="W-B-N2",
                       position=pt(_V2H_SLEEVE_X, ft(35, 6)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(6), purpose=Service.POWER_240,
-                      axis="horizontal", center_elevation=ft(-4)),
-    # Through the ICF *stem*, not the footing under it. The run holds -4'-0" the whole way
-    # (it is pinned to the basement it leaves), and the garage foundation followed grade
-    # down with the soil: FT-GF-S2 bears at -6'-8" and its top is -6'-0", two feet clear
+                      axis="horizontal", center_elevation=ft(-5)),
+    # Through the ICF *stem*, not the footing under it. The run holds -5'-0" the whole way
+    # (Table 300.7(A) cover, 2026-11-14), and the garage foundation followed grade
+    # down with the soil: FT-GF-S2 bears at -6'-8" and its top is -6'-0", a foot clear
     # below this crossing, while W-GF-S2 spans -6'-0" to -0'-8" and is what the conduit
     # actually passes through.
     #
@@ -1769,7 +1804,7 @@ CONDUIT_SLEEVES = [
     SleevePenetration(uid="CNS009AAAA", tag="SP-GF-CD-GAR", host_ref="W-GF-S2",
                       position=pt(_V2H_SLEEVE_X, ft(43, 8.125)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(6), purpose=Service.POWER_240,
-                      axis="horizontal", center_elevation=ft(-4)),
+                      axis="horizontal", center_elevation=ft(-5)),
     # The stub-up, 3 3/8" north of the stem's inside face, at 41'-9" — 2 3/8" of concrete
     # around the bore. `integrity.sleeve_in_opening` tests the sleeve's CENTRE, so the full
     # 2 3/8" margin is what protects it, not half the bore's clearance to the slab edge. The

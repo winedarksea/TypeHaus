@@ -22,7 +22,7 @@ from typehaus import (
     inch,
     pt,
 )
-from typehaus.model import Location, WallAttachment
+from typehaus.model import Location, RacewayCable, WallAttachment
 
 # --- basement: the interconnect relays beside the backup enclosure ---------------------------
 # Under ED-B-BACKUP-ENCL on W-B-W1, on the alarms' own circuit (Kidde wants every
@@ -72,7 +72,8 @@ MAIN_ELEMENTS = [
     # truss), so: a second Cat 6A in CD-M-DATA-KITCH-TRUNK to its pull box in RM-M-MECH's ceiling,
     # then north and east in FS-S-WEST's last truss bay, down W-M-STRW's cavity, and north
     # through the corner into W-M-N2's first bay at the doorbell.
-    ConduitRun(uid="REEA36N7AS", tag="CD-M-DATA-DOORBELL", trade_size=inch(0.75), service=Service.DATA,
+    ConduitRun(uid="REEA36N7AS", tag="CD-M-DATA-DOORBELL", cables=(RacewayCable(count=1, outside_diameter=inch(0.287), cable_type="CMR", role="indoor Cat 6A: doorbell", source="trueCABLE Cat6A Riser U/UTP 23AWG CMR spec sheet rev 3: OD 7.30 mm"),),
+               trade_size=inch(0.75), service=Service.DATA,
                # 2026-11-06: lifted to 111" so it crosses the 413.75" truss inside its R1 chase.
                path=(pt(ft(6), inch(411.5)), pt(ft(6), ft(35, 1.5)), pt(ft(10), ft(35, 1.5)),
                      pt(ft(10), ft(35, 1.5)), pt(ft(10), ft(35, 9)), pt(ft(10, 3.5), ft(35, 9))),
@@ -87,7 +88,8 @@ MAIN_ELEMENTS = [
     # A second Cat 6A in CD-M-DATA-PORCH, then this extension: up into the balcony joists
     # beside the AP and south through them (bored at mid-depth) so nothing crosses under
     # the screen track, then down to the camera.
-    ConduitRun(uid="ASN1XG0FEK", tag="CD-M-DATA-CAM-PORCH", trade_size=inch(0.75), service=Service.DATA,
+    ConduitRun(uid="ASN1XG0FEK", tag="CD-M-DATA-CAM-PORCH", cables=(RacewayCable(count=1, outside_diameter=inch(0.26), cable_type="CMP", wet_location=True, role="outdoor Cat 6A: backyard camera", source="Prysmian GenSPEED 10 UTP Indoor/Outdoor Plenum Cat 6A 7141007, REV 09/25: OD 0.260 in, CMP, Wet Location rated per UL 83, SUN RES"),),
+               trade_size=inch(0.75), service=Service.DATA,
                path=(pt(ft(17, 6), ft(-4.833)), pt(ft(17, 6), ft(-5)), pt(ft(17, 6), ft(-5)),
                      pt(ft(17, 6), ft(-9, -2.5)), pt(ft(17, 6), ft(-9, -2.5))),
                start_elevation=ft(8, 10.25), end_elevation=inch(105.75),
@@ -97,7 +99,8 @@ MAIN_ELEMENTS = [
     # in the last bay, under PR-M-KITCH-LOCAL-VENT's top leg (1/2" clear) and down W-M-N1's
     # bay east of WIN-M-KITCH and its vent riser; out between girts at 5'-9" and across to
     # the camera under BM-BW-RE's soffit. Exterior leg is EMT from a sealed LB.
-    ConduitRun(uid="JWWQ53ZA3Z", tag="CD-M-DATA-CAM-CANOPY", trade_size=inch(0.75), service=Service.DATA,
+    ConduitRun(uid="JWWQ53ZA3Z", tag="CD-M-DATA-CAM-CANOPY", cables=(RacewayCable(count=1, outside_diameter=inch(0.26), cable_type="CMP", wet_location=True, role="outdoor Cat 6A: canopy camera", source="Prysmian GenSPEED 10 UTP Indoor/Outdoor Plenum Cat 6A 7141007, REV 09/25: OD 0.260 in, CMP, Wet Location rated per UL 83, SUN RES"),),
+               trade_size=inch(0.75), service=Service.DATA,
                path=(pt(ft(19), ft(29)), pt(ft(19), ft(35, 3.5)), pt(ft(31, 7.25), ft(35, 3.5)),
                      pt(ft(31, 7.25), ft(35, 9.75)), pt(ft(31, 7.25), ft(35, 9.75)),
                      pt(ft(31, 7.25), ft(36, 9)), pt(ft(30, 1.125), ft(36, 9)),

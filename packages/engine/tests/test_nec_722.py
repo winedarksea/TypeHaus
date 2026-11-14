@@ -30,7 +30,9 @@ def test_catlins_limited_energy_runs_share_no_raceway_and_name_their_wet_gaps(ca
     # Every data and Class 2 raceway, the RSD initiator pair and the laundry track included.
     assert {"CD-M-RSD-INIT", "CR-M-LAUNDRY-24V", "CD-B-DATA-SHOP", "CD-M-DATA-PORCH"} <= passed
     unknown = {t for f in found if f.result is Result.UNKNOWN for t in f.element_tags}
-    # Outdoor stretches need wet-listed or metal-sheathed cable (722.2(B)); no cable is authored.
+    # Outdoor stretches carry wet-listed cable (722.2(B)); the schematic entry run is a gap.
+    wet = next(f for f in found if f.result is Result.PASS and "wet locations" in f.message)
     assert {"CD-M-RSD-INIT", "CD-M-DATA-PORCH", "CD-M-DATA-CAM-PORCH",
-            "CD-M-DATA-CAM-CANOPY", "CD-M-DATA-ENTRY"} <= unknown
+            "CD-M-DATA-CAM-CANOPY"} <= set(wet.element_tags)
+    assert unknown == {"CD-M-DATA-ENTRY"}
     assert "CD-B-DATA-SHOP" not in unknown  # wholly indoors
