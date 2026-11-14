@@ -40,13 +40,13 @@ class GroundingStandard(Element):
     #: Fastener holding an exposed conductor to the cladding, and its spacing.
     conductor_fastener_product_ref: str | None = None
     conductor_fastener_spacing: Length | None = None
-    #: Counterpoise / down-lead conductor (NFPA 780 Class I sizes; advisory only).
+    #: Counterpoise / down-lead conductor (NFPA 780 Table 4.1.1.1.1 Class I; advisory only).
     counterpoise_size: str = "2"
     counterpoise_material: ConductorMaterial = "copper"
     counterpoise_depth: Length | None = None
     down_lead_size: str = "1/0"
     down_lead_material: ConductorMaterial = "aluminum"
-    #: Minimum above-grade height of an Al-to-Cu transition (NFPA 780; UNCONFIRMED).
+    #: Minimum above-grade height of an Al-to-Cu transition (NFPA 780 4.2.2.3.1: 18 in).
     transition_min_height: Length | None = None
     #: NEC 250.53(A)(3): rods at least this far apart.
     min_rod_spacing: Length

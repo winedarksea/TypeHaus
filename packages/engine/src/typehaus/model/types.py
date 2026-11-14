@@ -838,6 +838,10 @@ class EquipmentType(FurnitureType, AirHandlingProductFacts):
     inverter_kw_surge: float | None = None
     # Maximum PV array the inverter accepts, kW DC.
     pv_input_kw: float | None = None
+    # --- Spa (SPA kind) ----------------------------------------------------------------
+    # Listed, labeled and identified as a self-contained spa or hot tub (NEC 680.41(B)'s
+    # exception). Declared, never inferred; None is not stated.
+    spa_self_contained: bool | None = None
     # Self-consumption while islanded, W — drawn from the battery on top of the loads.
     # House-authored from the datasheet; absent, the backup calc reports an unknown
     # contributor, never zero.

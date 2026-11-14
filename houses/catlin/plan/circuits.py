@@ -84,7 +84,7 @@ CIRCUITS = (
             nema="5-20R/6-20R",
             description="Workshop electronics, 120/240 V receptacle (capacity allowance)"),
     Circuit(uid="CKT005AAAA", tag="CKT-SPA", slot=1, panel_ref=_PANEL_2, breaker_amps=50, poles=2,
-            gfci=True, load_va=11500, description="Hot tub (sunken garden)"),
+            gfci=True, spa=True, load_va=11500, description="Hot tub (sunken garden)"),
     # 50A/2p GFCI per notes/sauna_shower_basement_detail.md (max 10.5 kW). EQ-B-SAUNA-HTR
     # is 9 kW = 37.5A, 46.9A at the 125% continuous factor, so 50A is the breaker.
     # ** 50 A / 9000 VA -> 60 A / 10500 VA, 2026-09-06, and the driver is the heater, not

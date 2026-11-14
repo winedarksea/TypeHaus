@@ -36,6 +36,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     electrical_panel_space,
     electrical_receptacles,
     electrical_service,
+    electrical_spa,
     erv_interlock,
     erv_manifold_ports,
     erv_static,

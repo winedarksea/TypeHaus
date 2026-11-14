@@ -83,14 +83,17 @@ class Penetrations:
 
     def __init__(self, model: ResolvedModel, bbox: tuple[float, float, float, float],
                  radius_m: float, *, cavity_radius_m: float | None = None,
-                 touch: frozenset[str] = frozenset(), laid: Any = ()) -> None:
+                 touch: frozenset[str] = frozenset(), laid: Any = (),
+                 z_radius_m: float | None = None) -> None:
         """``laid``: runs laid earlier in this campaign (``holes.laid_lines``), whose holes
-        a new crossing keeps clear of just as it does an authored run's."""
+        a new crossing keeps clear of just as it does an authored run's. ``z_radius_m`` is a
+        flat duct's half-height: every elevation test of a level edge reads it, not ``r``."""
         from typehaus.resolve.mep_bore_scope import r602_6_roles
         from typehaus.routing.bearing_bays import BearingBays
         from typehaus.routing.holes import run_lines
 
         self.radius_m = radius_m
+        self.z_r = radius_m if z_radius_m is None else z_radius_m
         self.cavity_radius_m = cavity_radius_m if cavity_radius_m is not None else radius_m
         roles = r602_6_roles(model)
         self.walls: dict[tuple[str, int], list[_Wall]] = {}
@@ -110,7 +113,7 @@ class Penetrations:
             built = _floor(floor, library, model, lines)
             if built is not None:
                 self.floors.append(built)
-        self.bays = BearingBays(model, bbox, radius_m)
+        self.bays = BearingBays(model, bbox, radius_m, self.z_r)
 
     def cuts(self, a: tuple[float, float, float], b: tuple[float, float, float], axis: str,
              band: tuple[float, float] | None = None) -> dict[str, int] | None:
@@ -121,7 +124,7 @@ class Penetrations:
         windows are ``gravity_search``'s to grade.
         """
         out: dict[str, int] = {}
-        r = self.radius_m
+        r, zr = self.radius_m, self.z_r
         if axis == "z":
             low, high = sorted((a[2], b[2]))
             cav = self.cavity_radius_m
@@ -167,7 +170,7 @@ class Penetrations:
                 continue
             if not (wall.perp[0] + r - 1e-6 <= station <= wall.perp[1] - r + 1e-6):
                 return None  # proud of the stud plane: in the cavity or clear of it
-            if any(z0 - r < z < z1 + r for z0, z1, _p, _w in wall.plates):
+            if any(z0 - zr < z < z1 + zr for z0, z1, _p, _w in wall.plates):
                 return None  # running along inside a plate
             verdict = self._along(wall, station, lo, hi, z)
             if verdict is None:
@@ -183,7 +186,7 @@ class Penetrations:
                 return None
         for floor in self.floors:
             if floor.bars is not None:
-                bars = floor.bars.crossed(axis, station, lo, hi, None if band else z, band, r)
+                bars = floor.bars.crossed(axis, station, lo, hi, None if band else z, band, r, zr)
                 if bars is None:
                     return None  # an edge ending in a bar's face: the member's notch
                 for bar in bars:
@@ -199,7 +202,7 @@ class Penetrations:
             count = len(crossed)
             if not count:
                 continue
-            if band is None and not (floor.window[0] + r <= z <= floor.window[1] - r):
+            if band is None and not (floor.window[0] + zr <= z <= floor.window[1] - zr):
                 return None  # through a chord, a flange or a solid joist's 2" edge
             if band is None and floor.pockets and web_refused(floor, crossed, station, z, r):
                 return None  # on a web, or in a D pocket another run passes (one run each)

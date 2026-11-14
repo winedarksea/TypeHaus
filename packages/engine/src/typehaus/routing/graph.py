@@ -138,7 +138,7 @@ def _merged_levels(space: RoutingSpace, anchors: list[float]) -> list[float]:
     kept = list(anchors)
     midpoints: list[tuple[float, tuple[float, float]]] = []
     for corridor in space.corridors:
-        window = corridor.z_window(space.radius_m)
+        window = corridor.z_window(space.z_r)
         if window is None or corridor.kind == "wall":
             continue
         planes = _corridor_levels(corridor, window, space)
@@ -185,7 +185,7 @@ def _corridor_levels(corridor, window: tuple[float, float],
     low, high = window
     if corridor.occupied_z is None:
         return [(low + high) / 2.0]
-    if high - low < 2.0 * space.radius_m + space.clearance_m - 1e-9:
+    if high - low < 2.0 * space.z_r + space.clearance_m - 1e-9:
         return [(low + high) / 2.0]
     return [low, high]
 
@@ -231,15 +231,14 @@ def candidate_lines_at(space: RoutingSpace,
     ys = [t[1] for t in terminals]
 
     for corridor in space.corridors:
-        window = corridor.z_window(space.radius_m)
+        window = corridor.z_window(space.z_r)
         if window is None:
             continue
-        if not plan_search and not (window[0] - space.radius_m <= z
-                                    <= window[1] + space.radius_m):
+        if not plan_search and not (window[0] - space.z_r <= z <= window[1] + space.z_r):
             continue
         (ys if corridor.axis == "x" else xs).append(corridor.station)
 
-    reach = (z - space.radius_m, z + space.radius_m)
+    reach = (z - space.z_r, z + space.z_r)
     # A falling run's banded prisms are lines on its one plane: it may pass beside them. An
     # existing run's segment it passes over or under (its banded interval), so only one at
     # the nominal plane nominates lines — catlin's 221 segments took the main tree past the

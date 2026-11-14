@@ -465,6 +465,9 @@ class EquipmentKind(Enum):
     # transfer fan, not a ventilator. It earns no ventilation credit: its run is filed under
     # the duct system it serves (often ``DuctSystem.TRANSFER``), and only ERV is counted.
     FAN = "fan"
+    # A spa or hot tub body (NEC Art. 680 Part IV): the footprint its inside walls are measured
+    # from. ``Equipment.circuit`` is its supply; ``EquipmentType.spa_self_contained`` its listing.
+    SPA = "spa"
 
 
 class BackupTier(Enum):

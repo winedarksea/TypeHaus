@@ -1,6 +1,6 @@
 """ADVISORY grounding reads (decision #123): coordinated SPDs, single-point entry and the
 lightning-ready hooks. Owner design goals, not code: results never carry ERROR severity.
-NFPA 780 numbers are cited UNCONFIRMED (``model/nec.py`` ``NFPA780``).
+NFPA 780 rules: ``docs/nfpa-780-paraphrase.md`` (``model/nec.py`` ``NFPA780``).
 """
 
 from __future__ import annotations
@@ -33,7 +33,7 @@ _IN = 0.0254
 _BESIDE_M = 2.0
 #: Power and data enter within this distance of the IBT (owner's stated goal).
 ENTRY_REACH_M = 10 * _FT
-_TRANSITION_M = 18 * _IN  # NFPA 780 Al-Cu transition height; UNCONFIRMED
+_TRANSITION_M = 18 * _IN  # NFPA 780 4.2.2.3.1: no Al within 18 in of earth
 
 
 def _f(cid: str, result: Result, msg: str, tags=(), code=None, fix=None) -> Finding:
@@ -43,7 +43,7 @@ def _f(cid: str, result: Result, msg: str, tags=(), code=None, fix=None) -> Find
 @check(Tier.ADVISORY, SPD_CID)
 def spd_coordination(ctx: CheckContext) -> list[Finding]:
     """SPDs at the service, at each box on the PV DC run, and in each fed outbuilding."""
-    code = f"{cite(NEC.SERVICE_SPD)}; {NFPA780.SURGE} [unconfirmed]"
+    code = f"{cite(NEC.SERVICE_SPD)}; {NFPA780.SURGE}"
     g = grounding(ctx)
     out: list[Finding] = []
     if g.root is None:
@@ -161,7 +161,7 @@ def single_point_entry(ctx: CheckContext) -> list[Finding]:
 def lightning_ready(ctx: CheckContext) -> list[Finding]:
     """Two terminals at opposite corners on one counterpoise with the GES; Al down-leads."""
     code = (f"{NFPA780.GROUND_RING} / {NFPA780.COMMON_GROUNDING} / "
-            f"{NFPA780.DISSIMILAR_METALS} [unconfirmed]")
+            f"{NFPA780.DISSIMILAR_METALS}")
     g = grounding(ctx)
     terms = [e for e in g.electrodes if e.use == "lps_terminal"]
     leads = [b for b in g.bonds if b.role == "down_lead"]

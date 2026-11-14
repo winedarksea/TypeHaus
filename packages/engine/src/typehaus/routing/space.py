@@ -195,6 +195,14 @@ class RoutingSpace:
     #: A bendable tube's minimum bend radius (``trades.pipe.bend_radius_m``); 0 is fitted at
     #: every turn. A turn whose arc clears pays ``pex_bend_in`` (``search.bend_price``).
     bend_radius_m: float = 0.0
+    #: A flat rectangular duct's half-height, where it is not ``radius_m`` (see ``z_r``).
+    z_radius_m: float | None = None
+
+    @property
+    def z_r(self) -> float:
+        """The mover's reach in elevation: corridor z windows and levels read this, not the
+        plan radius."""
+        return self.radius_m if self.z_radius_m is None else self.z_radius_m
 
     def admits(self, corridor: Corridor) -> bool:
         """Whether this run fits ``corridor`` — at its hub, when the corridor is a cavity."""
@@ -312,6 +320,7 @@ class RoutingSpace:
         if not self.rails:
             return None
         grow = self.radius_m + self.clearance_m  # the index boxes too: a bbox query
+        zgrow = self.z_r + self.clearance_m
         if self._rail_index is None:
             self._rail_index = STRtree([
                 box(lo, station - half - grow, hi, station + half + grow) if axis == "x"
@@ -323,7 +332,7 @@ class RoutingSpace:
             rail_axis, rail_station, lo, hi, half, z0, z1, tag = self.rails[int(i)]
             if rail_axis != axis or abs(station - rail_station) >= half + grow - _GRID_M:
                 continue
-            if not z0 - grow < z < z1 + grow:
+            if not z0 - zgrow < z < z1 + zgrow:
                 continue
             start, end = sorted((a[0], b[0]) if axis == "x" else (a[1], b[1]))
             if min(end, hi) - max(start, lo) > _GRID_M:
@@ -390,7 +399,7 @@ class RoutingSpace:
         for corridor in bucket:
             if abs(corridor.station - station) > self.radius_m + self.clearance_m:
                 continue
-            window = corridor.z_window(self.radius_m)
+            window = corridor.z_window(self.z_r)
             if window is None or not (window[0] <= z <= window[1]):
                 continue
             if lo < corridor.lo_m - 1e-6 or hi > corridor.hi_m + 1e-6:
@@ -473,10 +482,10 @@ def build_space(model: ResolvedModel, *, radius_m: float,
                         corridors=corridors, bbox=(minx, miny, maxx, maxy),
                         storeys=storeys, crossings=crossings, z_band=z_band,
                         rails=floor_rails(model, (minx, miny, maxx, maxy)),
-                        cavity_radius_m=cavity_radius_m,
+                        cavity_radius_m=cavity_radius_m, z_radius_m=z_radius_m,
                         members=Penetrations(model, (minx, miny, maxx, maxy), radius_m,
                                              cavity_radius_m=cavity_radius_m, touch=touch,
-                                             laid=laid))
+                                             laid=laid, z_radius_m=z_radius_m))
 
 
 def _corridor_in(corridor: Corridor, minx: float, miny: float,

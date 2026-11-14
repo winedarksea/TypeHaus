@@ -68,6 +68,7 @@ def test_the_gate_is_the_two_windows_less_the_pipe_radius() -> None:
     assert gate is not None
     assert abs(gate.lo_m / IN - (-9.6875)) < 1e-9 and abs(gate.hi_m / IN - (-2.1875)) < 1e-9
     assert abs(gate.planes[0] / IN - (-5.9375)) < 1e-9  # mid of [-9.6875, -2.1875]
+    assert gate.planes[1:] == (gate.lo_m, gate.hi_m)  # and both tiers, to pass a run on the mid
     assert st.gate_for([(-3 * IN, -2 * IN)], radius) is None  # narrower than the pipe
     assert st.gate_for([], radius) is None
 

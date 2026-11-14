@@ -60,6 +60,10 @@ _PRINTED = {
     "INTERCONNECTION_LABEL": "705.12(B)(2)(b)", "LIMITED_ENERGY_SEPARATION": "722.15(A)",
     "RAPID_SHUTDOWN_INITIATION": "690.12(C)", "PCS_CONTROL_SETTING": "120.7(B)",
     "EVSE_LOAD": "120.57", "SERVICE_SPD": "230.67", "SERVICE_DISCONNECT_OUTDOOR": "230.70(A)(1)",
+    "OUTBUILDING_SUPPLIES": "225.30", "OUTBUILDING_DISCONNECT": "225.31",
+    "EMERGENCY_DISCONNECT": "225.41", "SLEEVE_BONDING": "250.86 Ex. 2",
+    "AMPACITY_TABLE": "Table 310.16",
+    "DWELLING_SERVICE_CONDUCTORS": "310.12(A)", "DWELLING_FEEDER_CONDUCTORS": "310.12(B)",
     "BOX_FILL": "314.16(B)", "CONDUCTOR_VOLUME_TABLE": "Table 314.16(B)(4)",
     "BOX_DEPTH": "314.24(B)", "BOX_FLUSH_SETBACK": "314.20", "BOX_COVER": "314.25",
 }
@@ -204,3 +208,54 @@ def test_705_12_b2a_120_percent_with_opposite_end_and_label():
 def test_705_12_uses_125_percent_of_inverter_output_not_the_breaker():
     f = _interconnection(main=200, bus=225, breaker=60, inverter_kw=8.0)  # 33.3 A out
     assert "41.7A source" in f.message and f.result.value == "pass"
+
+
+# --- Table 310.16 / 310.12(A) (printed 2026-11-14) ---------------------------------------
+
+# Table 310.12(A), service rating -> (copper, aluminum), read from the printed table.
+_T310_12A = {100: ("4", "2"), 110: ("3", "1"), 125: ("2", "1/0"), 150: ("1", "2/0"),
+             175: ("1/0", "3/0"), 200: ("2/0", "4/0"), 225: ("3/0", "250"),
+             250: ("4/0", "300"), 300: ("250", "350"), 350: ("350", "500"),
+             400: ("400", "600")}
+
+
+def test_table_310_16_spot_values():
+    from typehaus.model.ampacity import ampacity
+
+    assert [ampacity("cu", s, 60) for s in ("14", "12", "10", "6")] == [15, 20, 30, 55]
+    assert (ampacity("cu", "4/0", 75), ampacity("cu", "300", 75)) == (230, 285)
+    assert (ampacity("al", "4/0", 75), ampacity("al", "400", 75)) == (180, 270)
+    assert (ampacity("cu", "12", 90), ampacity("al", "600", 90)) == (30, 385)
+
+
+@pytest.mark.parametrize(("rating", "conductors"), sorted(_T310_12A.items()))
+def test_310_12a_is_the_83_percent_rule_over_table_310_16(rating, conductors):
+    """Two printed tables agree: Table 310.12(A) is the smallest 75 degC conductor at 83%."""
+    from typehaus.model.ampacity import dwelling_service_conductor
+
+    assert (dwelling_service_conductor(rating, "cu"),
+            dwelling_service_conductor(rating, "al")) == conductors
+
+
+def test_catlins_320a_service_sits_between_rows():
+    from typehaus.model.ampacity import dwelling_service_conductor
+
+    assert dwelling_service_conductor(320, "cu") == "300"   # 285 A vs 265.6 A needed
+    assert dwelling_service_conductor(320, "al") == "400"   # 270 A
+
+
+def test_nm_ampacity_adjusts_from_90c_and_caps_at_60c():
+    """334.80(A) with Table 310.15(C)(1): 12 AWG x 4 conductors is 30 x 0.8 = 24, capped at 20."""
+    from typehaus.model.ampacity import adjustment_factor, nm_ampacity
+
+    assert [adjustment_factor(n) for n in (3, 4, 7, 10, 21, 31, 41)] == [
+        1.0, 0.8, 0.7, 0.5, 0.45, 0.4, 0.35]
+    assert (nm_ampacity("12", 4), nm_ampacity("14", 4), nm_ampacity("12", 10)) == (20, 15, 15)
+
+
+def test_nm_sleeves_still_cover_their_breakers(catlin_model_ro):
+    report = run_from_model(catlin_model_ro, [], tier=Tier.ADVISORY,
+                            only="electrical.nm_sleeve_ampacity")
+    found = [f for f in report.findings if f.check_id == "electrical.nm_sleeve_ampacity"]
+    assert len(found) == 12 and all(f.result.value == "pass" for f in found)
+    assert any("80%" in f.message and "20 A" in f.message for f in found)

@@ -42,6 +42,9 @@ class Circuit(Element):
     # "Warning: Class C SPGFCI Protection Provided for HVAC Unit". No schedule prints that
     # label; the GFCI check's finding states the marking.
     gfci_class: Literal["A", "C"] = "A"
+    # Supplies a spa or hot tub: ``code.NEC_680_spa`` grades it (NEC 680.44) even where the
+    # tub itself is not modeled. Authored; a circuit an ``EquipmentKind.SPA`` names counts too.
+    spa: bool = False
     # AFCI protection at the breaker. NEC 210.12 requires it on the 120V branch circuits
     # serving nearly every habitable room, and unlike GFCI there is no device-level
     # alternative in common use — the breaker is where it lives, so the flag lives here and

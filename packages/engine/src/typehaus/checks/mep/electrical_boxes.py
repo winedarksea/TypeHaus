@@ -28,6 +28,7 @@ from typehaus.findings import (
     passed,
     unknown,
 )
+from typehaus.model.ampacity import adjustment_factor, nm_ampacity
 from typehaus.model.electrical import METAL_BOX_VOLUME_IN3
 from typehaus.model.nec import NEC, cite
 from typehaus.quantities import M_PER_IN
@@ -35,7 +36,8 @@ from typehaus.resolve.device_boxes import AIR_SEALED, takes_box
 
 _CID = "electrical.box_fill"
 _CODE = cite(NEC.BOX_FILL)
-#: Copper branch-circuit gauge by breaker rating (NEC 240.4(D), 310.16 at 60 °C).
+#: Copper branch-circuit gauge by breaker rating (NEC 240.4(D), 310.16 at 60 °C; checked
+#: against the printed 2026 Table 310.16, whose 14-8 AWG values are 15/20/30/40 A).
 GAUGE_BY_BREAKER_A = {15: 14, 20: 12, 30: 10, 40: 8, 50: 6}
 _RECEPTACLES = frozenset({"receptacle", "gfci", "receptacle_240"})
 #: Table 314.16(B)(4), in³ per conductor by AWG (printed 2026-11-14; 18 and 16 AWG omitted).
@@ -134,13 +136,18 @@ def box_fill(ctx: CheckContext) -> list[Finding]:
                         fix="declare one BoxStandard (decision #93)")]
     circuits = {circuit.tag: circuit for circuit in ctx.plan.library.circuits}
     type_refs = {obj.tag: obj.type_ref for obj in ctx.model.canvas_objects}
+    loads = _circuit_loads(ctx)
+    return [_grade(box, circuits, types, type_refs.get(box.device_tag), loads)
+            for box in boxes]
+
+
+def _circuit_loads(ctx: CheckContext) -> dict[str, int]:
     loads: dict[str, int] = {}
     for element in ctx.plan.all_elements():
         circuit = getattr(element, "circuit", None)
         if circuit and element.element_kind in ("ElectricalDevice", "Equipment"):
             loads[circuit] = loads.get(circuit, 0) + 1
-    return [_grade(box, circuits, types, type_refs.get(box.device_tag), loads)
-            for box in boxes]
+    return loads
 
 
 _REACH = "electrical.nm_sleeve_reach"
@@ -172,4 +179,60 @@ def nm_sleeve_reach(ctx: CheckContext) -> list[Finding]:
                     "off the sleeve", (*tags, run.stops_under), Result.ADVISORY,
             code=_REACH_CODE, fix=f"offset the sleeve around {run.stops_under}, or confirm on "
                                   "site that the run shields the NM"))
+    return out
+
+
+_AMPS = "electrical.nm_sleeve_ampacity"
+_AMPS_CODE = cite(NEC.ADJUSTMENT_FACTORS, NEC.NM_AMPACITY)
+_EXEMPT_M = 24 * M_PER_IN
+
+
+@check(Tier.ADVISORY, _AMPS)
+def nm_sleeve_ampacity(ctx: CheckContext) -> list[Finding]:
+    """310.15(C)(1) / 334.80(A): NM in a derived sleeve, adjusted, against its breaker.
+
+    Cables per sleeve follow ``box_fill`` (two through-fed, one end-fed); each 2-wire or
+    single-phase 3-wire cable carries two current-carrying conductors (310.15(E): the hot-
+    neutral pair counts, a single-phase neutral carrying only the unbalance does not; the EGC
+    never does). A sleeve of 24 in. or less is exempt (310.15(C)(1)(b)). Otherwise the 90 °C
+    value times the Table 310.15(C)(1) factor, capped at the 60 °C value, must cover the
+    breaker. Only the sleeve is counted: overhead NM bundles are not modelled.
+    """
+    sleeves = [run for run in ctx.model.conduits if run.derived == "nm_sleeve"]
+    if not sleeves:
+        return [not_applicable(_AMPS, "no surface box takes a derived NM sleeve",
+                               code=_AMPS_CODE)]
+    boxes = {box.device_tag: box for box in ctx.model.device_boxes}
+    circuits = {circuit.tag: circuit for circuit in ctx.plan.library.circuits}
+    loads = _circuit_loads(ctx)
+    out = []
+    for run in sleeves:
+        box = boxes.get(run.to_ref or "")
+        circuit = circuits.get(box.circuit or "") if box is not None else None
+        tags = (run.tag, run.to_ref) if run.to_ref else (run.tag,)
+        gauge = GAUGE_BY_BREAKER_A.get(circuit.breaker_amps) if circuit else None
+        if circuit is None or gauge is None:
+            out.append(unknown(_AMPS, f"{run.tag}: no circuit or no copper gauge for its "
+                                      "breaker", tags, code=_AMPS_CODE))
+            continue
+        end_fed = box.device_kind in _RECEPTACLES and loads.get(circuit.tag, 0) <= 1
+        ccc = 2 * (1 if end_fed else 2)
+        where = (f"{run.tag}: {run.length_m / M_PER_IN:.0f}\" sleeve, {ccc} current-carrying "
+                 f"{gauge} AWG conductors on {circuit.tag} ({circuit.breaker_amps} A)")
+        factor = adjustment_factor(ccc)
+        if ccc <= 3 or run.length_m <= _EXEMPT_M:
+            why = "three or fewer conductors" if ccc <= 3 else "a sleeve of 24 in. or less"
+            out.append(passed(_AMPS, f"{where}: no adjustment applies ({why})", tags,
+                              code=_AMPS_CODE))
+            continue
+        rating = nm_ampacity(str(gauge), ccc)
+        if rating >= circuit.breaker_amps:
+            out.append(passed(_AMPS, f"{where}: {factor:.0%} gives {rating} A "
+                                     f"(90 °C value, capped at 60 °C), covers the breaker",
+                              tags, code=_AMPS_CODE))
+        else:
+            out.append(failed(_AMPS, f"{where}: {factor:.0%} gives {rating} A, under the "
+                                     "breaker", tags, code=_AMPS_CODE,
+                              fix="a larger conductor, a smaller breaker, or fewer cables in "
+                                  "the sleeve"))
     return out

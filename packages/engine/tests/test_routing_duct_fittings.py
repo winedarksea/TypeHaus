@@ -226,3 +226,30 @@ def test_a_flat_rectangular_mover_grows_obstacles_by_its_half_depth_in_z():
                         inflate_z_m=_in(5)).prisms[0]
     assert both.z0_m == pytest.approx(-_in(15)) and flat.z0_m == pytest.approx(-_in(10))
     assert flat.footprint.equals(both.footprint)
+
+
+def test_a_flat_duct_reads_its_half_height_in_z_and_its_run_ends_are_square():
+    """An 18x8 trunk (r 9") clears a bar 1" over its crown by its 4" half-height, not its 9"
+    radius, and passes 3.5" past a run's end, not past the end plus the body's radius."""
+    from typehaus.resolve.mep_envelopes import run_envelope
+    from typehaus.routing.floor_bars import Bar, FloorBars
+
+    def _in(value: float) -> float:
+        return value * M_PER_IN
+
+    bar = Bar("x", 0.0, -1.0, 1.0, _in(0.75), _in(14), _in(19.5), "2x6", "F bar")
+    bars = FloorBars([bar])
+    args = ("y", 0.0, -_in(30), _in(30), _in(9), None, _in(9))
+    assert bars.crossed(*args) and bars.crossed(*args, _in(4)) == []
+    space = RoutingSpace(radius_m=_in(9), clearance_m=_in(0.5), cost=RouteCost(), hard=[],
+                         soft=[], corridors=[], bbox=(0, 0, 1, 1), storeys=(),
+                         z_radius_m=_in(4))
+    assert space.z_r == pytest.approx(_in(4))
+    section = (_in(4), _in(4), None)
+    path, z = [(0.0, 0.0), (1.0, 0.0)], [0.0, 0.0]
+    round_cap = run_envelope("duct", "R", path, z, section, inflate_m=_in(3.5)).prisms[0]
+    square = run_envelope("duct", "R", path, z, section, inflate_m=_in(3.5),
+                          flat_ends=True).prisms[0]
+    assert round_cap.footprint.bounds[2] == pytest.approx(1.0 + _in(7.5))
+    assert square.footprint.bounds[2] == pytest.approx(1.0 + _in(3.5))
+    assert square.footprint.bounds[3] == pytest.approx(_in(7.5))  # the sides are unchanged

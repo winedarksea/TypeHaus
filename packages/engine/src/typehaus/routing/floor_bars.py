@@ -65,12 +65,15 @@ class FloorBars:
                          for axis, found in self.by_axis.items()}
 
     def crossed(self, axis: str, station: float, lo: float, hi: float, z: float | None,
-                band: tuple[float, float] | None, r: float) -> list[Bar] | None:
+                band: tuple[float, float] | None, r: float,
+                zr: float | None = None) -> list[Bar] | None:
         """Bars a level edge along ``axis`` crosses, or None when it runs into one's face.
 
         An edge ending within a bar's half width + r short of its centreline is the member
-        notched (the check's "runs along inside"), refused whole. ``band`` replaces ``z``.
+        notched (the check's "runs along inside"), refused whole. ``band`` replaces ``z``; ``zr``
+        is the run's half-height where it is not ``r``.
         """
+        zr = r if zr is None else zr
         other = "y" if axis == "x" else "x"
         found = self.by_axis[other]
         out: list[Bar] = []
@@ -80,7 +83,7 @@ class FloorBars:
             if not bar.lo - _TOL_M <= station <= bar.hi + _TOL_M:
                 continue
             low, high = band if band is not None else (z, z)
-            if not (high + r > bar.z0 + _TOL_M and low - r < bar.z1 - _TOL_M):
+            if not (high + zr > bar.z0 + _TOL_M and low - zr < bar.z1 - _TOL_M):
                 continue
             if lo + _TOL_M < bar.station < hi - _TOL_M:
                 out.append(bar)

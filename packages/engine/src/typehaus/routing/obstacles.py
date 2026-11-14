@@ -329,13 +329,20 @@ def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] 
     # says so.
     from typehaus.resolve.mep_envelopes import envelopes
 
-    for envelope in envelopes(model, inflate_m=inflate,
-                              inflate_z_m=zi):
+    for envelope in envelopes(model, inflate_m=inflate, inflate_z_m=zi, flat_ends=True):
         if envelope.tag in avoid or envelope.tag in touch:
             continue
         for prism in envelope.prisms:
             out.append(HardPrism(tag=envelope.tag, kind="run", footprint=prism.footprint,
                                  z0_m=prism.z0_m, z1_m=prism.z1_m))
+
+    # A recessed can's housing (``electrical.ceiling_can_framing`` grades it against runs).
+    from typehaus.resolve.can_housings import can_housings
+
+    for tag, ring, z0, z1 in can_housings(model):
+        if (poly := _polygon(ring)) is not None and tag not in avoid:
+            out.append(HardPrism(tag=tag, kind="can", footprint=poly.buffer(inflate),
+                                 z0_m=z0 - zi, z1_m=z1 + zi))
 
     # A reservation keeps its finite band even when also named by --avoid.
     zone_tags = {zone.tag for zone in model.clear_zones}

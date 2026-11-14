@@ -22,7 +22,8 @@ def service_disconnect_location(ctx: CheckContext) -> list[Finding]:
     """230.70(A)(1): a dwelling's service disconnect is outdoors, readily accessible.
 
     Outdoors means the device's plan point lies in no room. The 225.41 emergency-disconnect
-    exception is not modelled, so an indoor one is UNKNOWN rather than FAIL.
+    exception needs an outdoor disconnect marked EMERGENCY DISCONNECT, rated to the available
+    fault current; the model holds none of those facts, so an indoor one is UNKNOWN, not FAIL.
     """
     from typehaus.checks.mep.electrical_grounding import grounding, objects
     from typehaus.resolve.room_lookup import room_owning
@@ -36,7 +37,9 @@ def service_disconnect_location(ctx: CheckContext) -> list[Finding]:
     if room_owning(ctx.model, obj.storey, obj.position) is None:
         return [_pass(cid, f"{root} is outdoors", (root,), code)]
     return [_unknown(cid, f"{root} is inside the building; {code} allows that only with a "
-                          "225.41 emergency disconnect, which is not modeled", (root,), code)]
+                          f"{cite(NEC.EMERGENCY_DISCONNECT)} emergency disconnect (outdoors, "
+                          "marked, short-circuit rated), whose marking and rating are not "
+                          "modeled", (root,), code)]
 
 
 # WARN severity + FAIL result, deliberately: the permit integrity gate only blocks on ERROR

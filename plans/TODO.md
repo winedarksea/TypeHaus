@@ -228,9 +228,18 @@ That would let subagents compare candidates without repeatedly reading geometry 
 - **2026 NEC residue (decision #120).** The rows in `docs/nec-2026-paraphrase.md` are read in
   the printed code (2026-11-13/14); its **Engine** lines list the rules no check grades. The
   rest of `model/nec.py` is still unread (below), though `UNCONFIRMED` is empty.
-  - Catlin, owner to decide: the 250.104(A) water bond BC-B-WATER is #4 Cu where Table
-    250.102(C)(1) wants 1/0 Cu for a 320 A service (3/0 cap); the garage, fed by branch
-    circuits, has no 250.94 IBT or disconnect modelled.
+  - Catlin, owner to decide: the 250.104(A) water bond BC-B-WATER is #4 Cu, under Table
+    250.102(C)(1) on every basis (printed table read): **#2 Cu** for a 320 A service (310.12(A)
+    at 83%: 300 Cu / 400 Al; also 2 x 4/0 Al summed), **#1/0 Cu** only if the service counts as
+    400 A (400 Cu / 600 Al); a larger utility lateral raises it (3/0 Cu cap). The GECs (#6 rods,
+    #4 Ufer) meet 250.66(A)/(B) on every basis. Open: the lateral's size (Xcel/electrician).
+  - The 4/0 Al SER feeders (180 A at 75 degC, 110.14(C)(1)(b)) behind the 200 A mains: 310.12(B)
+    cannot size them (each carries part of the load), and 240.4(B) allows the 200 A main only
+    if 240.6(A) lists 200 A as the next standard rating above 180 A and 180 A is not itself one.
+    **240.6(A) is unread and relied on.** The estimated loads (136 A, 121 A) are under 180 A.
+  - 310.15(C)(1) / 334.80(A): `electrical.nm_sleeve_ampacity` passes all 12 derived EMT NM
+    sleeves (77 in. worst, four conductors at 80%: 24 A capped at 20 A on a 20 A breaker, no
+    margin). Overhead NM bundles are not modelled.
   - Revisit Class C SPGFCI for CKT-HP1-3 after the NFPA Standards Council (2026-12-15/16,
     ACCA/AHRI appeals); they are Class A breakers meanwhile.
   - Not modelled: 120.11(A) motor treatment inside 120.6, 120.7(C)(2) minimum operating
@@ -248,7 +257,10 @@ That would let subagents compare candidates without repeatedly reading geometry 
     no terminal count, external mount or building-disconnect IBT; `gec_size` grades only the
     250.66(A)/(B) caps; the water bond is graded for connection, not size; no field states
     250.24(B) neutral isolation; 705.12 tries (B)(1)/(B)(2)(a) only and cannot see the
-    opposite-end placement or label.
+    opposite-end placement or label; `code.NEC_250_32_separate_buildings` traces circuits, not
+    feeders (a garage subpanel reads N/A) and not the EGC; `rod_electrodes` skips 250.53(A)(4)
+    drive and (B)/(D); 250.64 protection is unread; no service conductor size, so Table 250.66's
+    general rows and 250.64(D) stay ungraded.
   - Cheap checks still missing: 210.52(F) laundry, 210.52(H) hallways, 210.11(C)(4) garage
     circuit.
   - **Still to read in print.** For each one: paraphrase it, and either confirm the
@@ -258,19 +270,21 @@ That would let subagents compare candidates without repeatedly reading geometry 
       240.24(A), 404.8(A) (`electrical_panel_height`); 300.24 and 352/358/362.26
       (`conduit_bends`); 334.15(B)/(C); 690.12 and (B)(2)
       (`power_sources`); 210.70(A)(3); 130.2 (PCS listing).
-    - Cited, read only in post-publication sources: 250.32, 250.50, 250.52(A)(3), 250.53,
-      250.64, 690.47.
+    - Cited, read only in post-publication sources: 690.47.
     - Cited but used by nothing (read them, or drop the constant): 110.26(C), 120.5(C),
-      120.41, 240.4(D), 250.86 Ex. 2, Table 310.16, 334.80,
-      342.26, 344.26, Table 352.30, 358.30, 362.30, Art. 408, 410.10(D), 424.5, Ch. 9
+      120.41, 342.26, 344.26, Table 352.30, 358.30, 362.30, Art. 408, 410.10(D), 424.5, Ch. 9
       Table 4 and Note 2.
     - Not cited, but Catlin triggers them:
-      - Spa, Art. 680 Part IV: GFCI, the disconnect within sight, and bonding (`CKT-SPA`,
-        `ED-B-SPA-DISC`).
-      - 225.41 (unread): the emergency disconnect, the 230.70(A)(1) exception. Also
-        ungraded: 230.70(B) marking and (D) plaque for the PV/ESS disconnects, 230.71 count,
-        230.82 supply-side list, 230.90 Ex. 5.
-      - 225.31/225.32: the garage disconnect.
+      - Art. 680 Parts I/II (680.5, 680.7, 680.12 disconnect within sight and 5 ft off,
+        680.21/.22, 680.23/.33, 680.26 bonding): unread. Part IV (680.34-680.54) is read and
+        `code.NEC_680_spa` grades it: `CKT-SPA` GFCI PASS, 680.41(A) N/A, but the tub is not
+        modeled (no `EquipmentKind.SPA`), so 680.41(B), indoor/outdoor and receptacle/switch
+        distances are UNKNOWN. Author the tub's footprint to grade them; the 680.12 disconnect
+        (`ED-B-SPA-DISC`) and 680.26 bonding stay ungraded until Parts I/II are read.
+      - 225.41, 230.70: no field marks an emergency disconnect, its marking or a
+        short-circuit rating, so an indoor service disconnect stays UNKNOWN. Also ungraded:
+        230.70(B) marking and (D) plaque for the PV/ESS disconnects, 230.71 count, 230.82
+        supply-side list, 230.90 Ex. 5, and 225.30/225.31/225.33-225.39 (see the garage bullet).
       - Art. 706 and 480: the ESS.
       - 625.40/.41/.54: EVSE circuit, sizing and GFCI.
       - Art. 424: GFPE for floor-heating cables (`FloorHeat`).
@@ -279,8 +293,6 @@ That would let subagents compare candidates without repeatedly reading geometry 
       - 422.13 and 422.31: water heater and fastened appliances.
       - 406.12 tamper-resistant and 406.9(B) weather-resistant/in-use covers.
       - 300.4 (framing setback, nail plates) and 300.5 (burial depth).
-      - 310.12: dwelling service conductors, which unblocks the Table 250.66 rows and the
-        water-bond size.
       - 210.70(A)(2) stair switching, 408.4 circuit directory, 210.19/210.20 continuous
         loads.
 - **Rapid-shutdown initiator** (`ED-M-RSD-INIT`, `backup_power.md` §8): confirm the IMO

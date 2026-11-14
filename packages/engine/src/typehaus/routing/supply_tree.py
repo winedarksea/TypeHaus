@@ -45,8 +45,10 @@ def gate_for(windows: Sequence[tuple[float, float]], radius_m: float) -> Gate | 
     low, high = max(w[0] for w in windows), min(w[1] for w in windows)
     if high - low < 2.0 * radius_m:
         return None
-    return Gate(lo_m=low + radius_m, hi_m=high - radius_m,
-                planes=(((low + radius_m) + (high - radius_m)) / 2.0,))
+    lo, hi = low + radius_m, high - radius_m
+    # The middle plane first, then the two extremes a run presses to: an authored run (catlin's
+    # PR-B-HW-BATH2) may sit across the middle one, and only a lower or upper tier passes it.
+    return Gate(lo_m=lo, hi_m=hi, planes=((lo + hi) / 2.0, *((lo, hi) if hi > lo else ())))
 
 
 @dataclass(frozen=True)
