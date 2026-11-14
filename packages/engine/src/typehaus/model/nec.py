@@ -169,7 +169,9 @@ class NEC:
     SERVICE_DISCONNECT_OUTDOOR: Final = "230.70(A)(1)"
     SERVICE_DISCONNECT_BATHROOM: Final = "230.70(A)(3)"  # never in a bathroom
     SERVICE_DISCONNECT_MIN_RATING: Final = "230.79(C)"  # one-family dwelling: 100 A at least
+    CONDUCTOR_PROTECTION: Final = "240.4"  # at the 310.14 ampacity unless (A)-(H)
     SMALL_CONDUCTOR_OCPD: Final = "240.4(D)"
+    SPECIFIC_CONDUCTORS: Final = "240.4(G)"  # Table 240.4(G): A/C to Art. 440, motors to 430
     OCPD_HEIGHT: Final = "240.24(A)"
     SLEEVE_BONDING: Final = "250.86 Ex. 2"
 

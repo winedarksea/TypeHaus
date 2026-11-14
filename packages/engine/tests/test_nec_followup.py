@@ -62,6 +62,6 @@ def test_table_210_21_b_3():
 def test_catlins_multi_receptacle_circuits_fit_the_table(catlin_model_ro):
     found = _findings(catlin_model_ro, "electrical.multi_receptacle_rating")
     assert not [f for f in found if f.result.value == "fail"]
-    assert {f.element_tags[0] for f in found if f.result.value == "unknown"} == {
-        "CKT-KITCH-SA1", "CKT-LT-MAIN"}  # generic receptacle types state no NEMA
-    assert sum(f.result.value == "pass" for f in found) == 10
+    # Every type names its NEMA (Q14); the GDO's blank-face GFCI holds no receptacle.
+    assert not [f for f in found if f.result.value == "unknown"]
+    assert sum(f.result.value == "pass" for f in found) == 12

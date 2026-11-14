@@ -340,6 +340,7 @@ EQUIPMENT_TYPES = (
                   # is its nameplate. 1,500 W x 3.412.
                   resistance_heating_btuh=5118,
                   supplemental_heat=True,
+                  utilization_connection="cord_and_plug",  # Safer Plug, never hardwired
                   source="ClassicFlame 28II042FGL 28 in infrared-quartz built-in electric fireplace (Twin-Star International), basis of design 2026-09-20: body 29.1 x 23.1 x 9.5 in (W x H x D), 120 V / 1500 W / 12.5 A, infrared quartz element, ~$390. footprint/height authored here are the ROUGH OPENING (29 1/4 x 23 1/4 x 9 3/4 in) per this file's convention — the hole in the framing is the thing that can interfere with something — struck at the published body plus a nominal tolerance; ** CONFIRM THE PUBLISHED CUTOUT AGAINST THE DELIVERED UNIT BEFORE THE MASON LAYS THE JAMB PIERS. ** Chosen over the Innoflame on LOOKS and on PROVENANCE, in that order: it is the better-made appliance (Twin-Star's own flame effect and ember bed, not a contract-factory log tray) and it carries a GENUINE CSA certification rather than the word CSA in a listing, which is the one thing in this selection that could have failed at plan review. ** CORD-ONLY, AND DELIBERATELY SO: ** its safety story is the Safer Plug thermal-sensing plug, so it plugs into ED-M-FIRE-RC and must NEVER be hardwired — converting it removes the listed device. That is affordable only because the cavity carries both a receptacle and a J-box (owner, 2026-09-20). Named alternate, and the route back if a hardwire connection is ever required: Innoflame 28 in (Dongguan Cambridge Electrical Mfg.), 29 1/2 x 23 3/8 x 8 3/16 in, ~$286, THE ONLY unit in this field with a manual-grade hardwire procedure (an L/N/earth junction block citing ANSI/NFPA 70) — but its listing says \"CSA\" with no file number, and it publishes a cutout 2 in NARROWER than its own body, which cannot both be true. Others that fit the same 29 1/2 x 24 x 11 1/2 in pocket: Napoleon NEFB26H/30H (UL 2021, hardwire kit in the box), Modern Flames RS-2621/3021, Dimplex DFI2310, Real Flame 4199, PuraFlame Western 23/26, SimpliFire SF-INS25 (lost if a 1/2 in back liner is required), and the Amantii BI-30-XTRASLIM it replaced. NOT a second supplier: the Clihome/Latitude Run/Dimakai 28 in tier is ~14 rebadges of one OEM firebox. Replaced the Amantii BI-30-XTRASLIM (fan-forced, sole-source at the old 4 1/2 in recess) on 2026-09-20; replaced a generic 48 x 7 in 1.5 kW big-box insert on 2026-09-06",
                   ports=(ServicePort(tag="power", service=Service.POWER_120,
                                      position=(ft(0), ft(0), ft(0))),)),
@@ -387,6 +388,7 @@ EQUIPMENT_TYPES = (
                                       (inch(5.4), inch(4)), (inch(6.5), inch(4))),
                   resistance_heating_btuh=5118,
                   supplemental_heat=True,
+                  utilization_connection="cord_and_plug",  # factory cord, manual v250108
                   source="Dr Infrared Heater DR-238, owner-selected 2026-11-06 at $110. "
                          "1500 W / 120 V / 12.5 A, carbon element, black aluminium housing, "
                          "remote, 900/1200/1500 W settings. Current manufacturer manual "
@@ -413,6 +415,7 @@ EQUIPMENT_TYPES = (
                   plan_symbol="heater",
                   resistance_heating_btuh=5118,
                   supplemental_heat=True,
+                  utilization_connection="cord_and_plug",  # ALCI plug
                   source="Lasko CD08210 class (or equal): 1500 W / 12.5 A, bathroom-rated "
                          "with an ALCI plug, adjustable thermostat, overheat and tip-over "
                          "cutoffs. Envelope is a planning figure; confirm. GATE BEFORE "

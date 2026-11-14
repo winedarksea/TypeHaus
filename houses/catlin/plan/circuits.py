@@ -21,6 +21,8 @@ Conventions:
 - ``load_va`` is authored where the devices carry no typed load (equipment, lighting
   allowances); circuits whose receptacle types carry ``load_va`` leave it None and the
   panel-schedule takeoff sums the device types.
+- ``conductor_awg``/``egc_awg`` (copper, 60 °C column unless ``termination_temp_c``) are the
+  engine's proposal pending electrician review (2026-11-14), sized to the breaker by 240.4(D).
 - ``slot`` is the physical breaker position: odd numbers run down the left column, even
   down the right, and a 2-pole breaker takes ``slot`` and ``slot + 2`` (same column).
   The ESS grid port backfeeds at the bottom of the bus (40/42), opposite the main (120%
@@ -55,6 +57,7 @@ CIRCUITS = (
     # 2-pole GFCI breaker (owner, 2026-11-07): 2026 NEC 210.8(D)(8) lists electric ranges,
     # and the 14-50R is a 125-250 V kitchen receptacle under 210.8(A)(7) besides.
     Circuit(uid="CKT001AAAA", tag="CKT-RANGE", slot=1, panel_ref=_PANEL, breaker_amps=40, poles=2,
+            conductor_awg="8", egc_awg="10",
             nema="14-50R", gfci=True, load_va=11900, description="Kitchen range"),
     # LG's WKHC252HBA spec sheet gives the dryer as 830 W at 240 V and requires a 15 A
     # circuit. Keep the 14-30R for its specified four-wire dryer cord, but protect this
@@ -64,26 +67,31 @@ CIRCUITS = (
     # 2-pole GFCI breaker (owner, 2026-11-07): 2026 NEC 210.8(D)(11) lists clothes dryers,
     # and the 14-30R is a 125-250 V laundry-area receptacle under 210.8(A)(12).
     Circuit(uid="CKT002AAAA", tag="CKT-DRYER", slot=5, panel_ref=_PANEL, breaker_amps=15, poles=2,
+            conductor_awg="10", egc_awg="10",
             nema="14-30R", gfci=True, load_va=830, description="Dryer"),
     # load_va is explicit so the schedule reads the figure the conductors are sized for.
     # CKT-EV-1450 feeds a HARDWIRED Grizzl-E (owner, 2026-10-30): no receptacle, so 210.8(A)(2)
     # and 625.54 do not apply and the charger's CCID protects; 40 A charge, 125% = 50 A plain.
     Circuit(uid="CKT003AAAA", tag="CKT-EV-1450", slot=9, panel_ref=_PANEL_2, breaker_amps=50, poles=2,
+            conductor_awg="6", egc_awg="10", continuous_va=9600,  # EV: continuous in full (owner)
             load_va=9600, description="EV charging, hardwired Grizzl-E 40 A (garage)"),
     # The garage's 240 V point (backup EV charging, tools): one 6-20R, two hots + ground, no
     # neutral. 2-pole GFCI (210.8(A)(2) reaches 125-250 V garage receptacles); no AFCI.
     # Not a 210.52(G)(1) outlet, so the 120 V bay receptacles are on CKT-RC-GARAGE instead.
     Circuit(uid="CKT004AAAA", tag="CKT-GAR-240", slot=13, panel_ref=_PANEL_2, breaker_amps=20,
+            conductor_awg="12", egc_awg="12",
             poles=2, nema="6-20R", gfci=True, load_va=3840,
             description="Garage 240 V receptacle (6-20R; backup EV charging, tools)"),
-    # Budget the full 20 A at 240 V until the electronics load is known; this is an
-    # allowance, not a nameplate or a claim that continuous loads can draw 20 A.
+    # 2,500 VA (owner, 2026-11-14; was the breaker's 4,800, which is capacity, not load): the
+    # computers, at most 1,000 W continuous, plus one 1,500 W bench tool at a time (a heat
+    # gun or shop vac, 12.5 A on the 5-20R, under its 16 A 210.21(B)(2) cap). 125%: 11.5 A.
     # Common-trip 2-pole GFCI protects both voltages; supply two hots, neutral and ground.
     Circuit(uid="CKT039AAAA", tag="CKT-WORKSHOP-240", slot=17, panel_ref=_PANEL_2,
-            breaker_amps=20, poles=2, gfci=True, load_va=4800,
-            nema="5-20R/6-20R",
-            description="Workshop electronics, 120/240 V receptacle (capacity allowance)"),
+            breaker_amps=20, poles=2, gfci=True, load_va=2500, continuous_va=1000,
+            conductor_awg="12", egc_awg="12", nema="5-20R/6-20R",
+            description="Workshop electronics, 120/240 V receptacle (computers + bench tools)"),
     Circuit(uid="CKT005AAAA", tag="CKT-SPA", slot=1, panel_ref=_PANEL_2, breaker_amps=50, poles=2,
+            conductor_awg="6", egc_awg="10", continuous_va=0,  # not continuous (owner)
             gfci=True, spa=True, load_va=11500, description="Hot tub (sunken garden)"),
     # 50A/2p GFCI per notes/sauna_shower_basement_detail.md (max 10.5 kW). EQ-B-SAUNA-HTR
     # is 9 kW = 37.5A, 46.9A at the 125% continuous factor, so 50A is the breaker.
@@ -110,10 +118,12 @@ CIRCUITS = (
     # on a separate circuit (CKT-LT-BSMT); 2026 210.8(A)(6) (basements) reaches receptacles,
     # not them, so their protection follows the luminaire listing.
     Circuit(uid="CKT006AAAA", tag="CKT-SAUNA", slot=5, panel_ref=_PANEL_2, breaker_amps=60, poles=2,
+            conductor_awg="6", egc_awg="10", continuous_va=0,  # not continuous (owner)
             gfci=False, load_va=10500, description="Sauna heater (EQ-B-SAUNA-HTR), 10.5 kW"),
     # CKT-WH (was CKT-WH-240) is on the backup subpanel — see the SURPLUS tier below. Slot 25
     # is a spare on the main panel now.
     Circuit(uid="CKT008AAAA", tag="CKT-ERV", slot=2, panel_ref=_PANEL, breaker_amps=15, poles=2,
+            conductor_awg="14", egc_awg="14",
             load_va=200, description="ERV"),
     # The three Gree heat-pump systems (plan/electrical.py). A multi's indoor heads are fed
     # from the outdoor unit, so System 2's three heads add no circuits; System 1's ducted
@@ -133,6 +143,7 @@ CIRCUITS = (
     # no disconnect label: QO225GFI / QO230GFI (Class A 6 mA; rexelusa.com, 2026-11-07).
     # Swap to gfci_class="C" + the ED-M-HPn-DISC label the day one is listed.
     Circuit(uid="CKT009AAAA", tag="CKT-HP1", slot=6, panel_ref=_PANEL, breaker_amps=25, poles=2,
+            conductor_awg="10", egc_awg="10",
             gfci=True, load_va=5040,
             description="Heat pump 1 outdoor, FLEXX Ultra 24k (EQ-M-HP1-OD)"),
     # uids CKT036/037, not CKT031/032: those were already spent on the radiant-floor
@@ -156,9 +167,11 @@ CIRCUITS = (
     # (`Equipment.compressor_lockout_ref`), but a reconfigurable thermostat lockout is a weak
     # "prevented" and 320 A doesn't need it: not claimed (owner, 2026-11-13).
     Circuit(uid="CKT036AAAA", tag="CKT-HP1-AH", slot=50, panel_ref=_PANEL, breaker_amps=35, poles=2,
+            conductor_awg="8", egc_awg="10",
             load_va=5300,
             description="Heat pump 1 indoor, ducted air handler + 4.6 kW heat kit (EQ-S-HP1-AH, EQ-S-HP1-STRIP)"),
     Circuit(uid="CKT037AAAA", tag="CKT-HP2", slot=49, panel_ref=_PANEL, breaker_amps=30, poles=2,
+            conductor_awg="10", egc_awg="10",
             gfci=True, load_va=6000,
             description="Heat pump 2 outdoor, Multi Ultra 4-port (EQ-M-HP2-OD; feeds 3 heads, one port unused)"),
     # System 3 (below, backup microgrid) is a true-VFD compressor that soft-starts, which
@@ -170,6 +183,7 @@ CIRCUITS = (
     # The old 3,840 was the breaker (20 A x 240 V), not a load. Run time (~5 min/day)
     # earns nothing in 120.82; only a 120 V kettle on a small-appliance circuit leaves the count.
     Circuit(uid="CKT011AAAA", tag="CKT-KETTLE", slot=14, panel_ref=_PANEL, breaker_amps=20, poles=2,
+            conductor_awg="12", egc_awg="12", continuous_va=0,  # not continuous (owner)
             nema="6-20R", gfci=True, load_va=3000,
             description="SEVERIN WK 3422 tea maker via UK adapter (6-20R half)"),
     # The EG4 12kPV's grid port, at the opposite end of the bus from the main (120% rule
@@ -185,6 +199,8 @@ CIRCUITS = (
     # source=True excludes it from the 120.82 load summary and includes it in the 705.12
     # busbar check.
     Circuit(uid="CKT012AAAA", tag="CKT-ESS-GRID", slot=40, panel_ref=_PANEL, breaker_amps=50,
+            # #8 Cu at 75 °C (50 A): EG4's and the breaker's terminals must be listed 75 °C.
+            conductor_awg="8", egc_awg="10", termination_temp_c=75,
             poles=2, source=True, load_va=0,
             description="EG4 12kPV grid port — PV + battery interconnection (EQ-B-ESS-INV)"),
     # CKT-HP1-STRIP IS DELETED, AND SLOT 18 IS A SPARE 2-POLE AGAIN: the aux heat is now a
@@ -241,11 +257,13 @@ CIRCUITS = (
     # mandatory; this mat is the ONLY heat in RM-M-BATH2 (no supply register), so the
     # circuit is not optional comfort.
     Circuit(uid="CKT031AAAA", tag="CKT-FH-BATH2", slot=29, panel_ref=_PANEL, breaker_amps=15, poles=1,
+            conductor_awg="14", egc_awg="14",
             gfci=True, load_va=203,
             description="Radiant floor heat — main bath, sole heat source "
                         "(FH-M-BATH2, 17.85 ft2, Schluter DHEHK12016)"),
     # (The dining mat and its slot-31 circuit are retired: no slab left to embed it in, decision #112.)
     Circuit(uid="CKT033AAAA", tag="CKT-FH-BATH1", slot=33, panel_ref=_PANEL, breaker_amps=15, poles=1,
+            conductor_awg="14", egc_awg="14",
             # 338 VA: the wattage is a purchased nameplate (Schluter DHEHK12027, 26.7 ft2 /
             # 338 W / 2.8 A) rather than a stale area times 12. NEC 120.51 counts fixed
             # electric space heating at 100%, so this comes straight off the service demand.
@@ -277,6 +295,7 @@ CIRCUITS = (
     # for both until 2026-09-20, which mattered the moment the fireplace cavity gained a
     # receptacle beside its J-box — that outlet is not a GFCI outlet.
     Circuit(uid="CKT034AAAA", tag="CKT-FIREPLACE", slot=35, panel_ref=_PANEL, breaker_amps=20, poles=1,
+            conductor_awg="12", egc_awg="12",
             afci=True, load_va=1500,
             # ** IT LEFT THE SE CORNER 2026-09-06. ** EQ-M-FIREPLACE is now in the brick
             # surround in the pier between WIN-M-LIV-E1 and WIN-M-LIV-E2 (W-M-FIRE-*,
@@ -300,11 +319,13 @@ CIRCUITS = (
                         "cavity J-box and ED-M-FIRE-RC, so a hardwire or a cord-and-plug "
                         "appliance can be set in the pocket without a rewire"),
     Circuit(uid="CKT035AAAA", tag="CKT-GAR-HEAT", slot=37, panel_ref=_PANEL, breaker_amps=20, poles=1,
+            conductor_awg="12", egc_awg="12",
             load_va=1500, gfci=True,
             description="Garage DR-238 carbon radiant heater, 1500 W / 120 V (EQ-G-HEATER), dedicated GFCI-protected ED-G-HEATER-RC; retain factory cord and plug"),
 
     # RM-S-PLANT's fan heater (2026-11-12): 12.5 A does not belong on CKT-RC-SECOND.
     Circuit(tag="CKT-PLANT-HEAT", slot=41, panel_ref=_PANEL, breaker_amps=20, poles=1,
+            conductor_awg="12", egc_awg="12",
             load_va=1500, afci=True,
             description="Plant room 1500 W / 120 V fan heater (EQ-S-PLANT-HEATER), dedicated, "
                         "on ED-S-PLANT-HEAT-RC (WR GFCI) switched by the ED-S-PLANT-HEAT-SW "
@@ -320,14 +341,17 @@ CIRCUITS = (
     # 210.52(B)(1) puts every dining wall and counter receptacle on these two as well:
     # RC15/RC16/RC18 (ash counter) on SA1, RC2/RC3/RC7 (dining walls) on SA2 (2026-11-13).
     Circuit(uid="CKT020AAAA", tag="CKT-KITCH-SA1", slot=30, panel_ref=_PANEL, breaker_amps=20, poles=1,
+            conductor_awg="12", egc_awg="12",
             gfci=True, afci=True, load_va=1500,
             description="Kitchen small-appliance 1 (counter west + dining counter)"),
     Circuit(uid="CKT021AAAA", tag="CKT-KITCH-SA2", slot=32, panel_ref=_PANEL, breaker_amps=20, poles=1,
+            conductor_awg="12", egc_awg="12",
             gfci=True, afci=True, load_va=1500,
             description="Kitchen small-appliance 2 (counter east + pantry + dining walls)"),
     # GFCI here too: ED-M-LIVING-KDW1 is ~11" from the kitchen sink (210.8(A)(9); was 2.7'
     # before the 2026-08-26 sink/dishwasher re-composition moved both into the same base).
     Circuit(uid="CKT022AAAA", tag="CKT-DISHWASHER", slot=34, panel_ref=_PANEL, breaker_amps=20, poles=1,
+            conductor_awg="12", egc_awg="12",
             gfci=True, afci=True, load_va=1200,
             description="Dishwasher (sink base)"),
     # The disposer came off CKT-DISHWASHER (2026-08-07): a shared 20A branch is legal, but
@@ -338,10 +362,12 @@ CIRCUITS = (
     # The 120V branch feeds the motor; the wall control is a 24V loop through a
     # contactor — see APPL-M-DISP's `install_parts` in plan/placeables.py.
     Circuit(uid="CKT038AAAA", tag="CKT-DISPOSAL", slot=39, panel_ref=_PANEL, breaker_amps=20, poles=1,
+            conductor_awg="12", egc_awg="12",
             gfci=True, afci=True, load_va=1000,
             description="Food waste disposer (sink base)"),
     # 210.8(A)(12) puts the laundry-area receptacle on GFCI outright, no distance test.
     Circuit(uid="CKT023AAAA", tag="CKT-LAUNDRY", slot=36, panel_ref=_PANEL, breaker_amps=20, poles=1,
+            conductor_awg="12", egc_awg="12",
             gfci=True, afci=True, load_va=1500,
             description="Laundry receptacle (washer)"),
     # No `load_va`: the panel schedule sums the fixtures on the circuit, and an authored value
@@ -351,6 +377,7 @@ CIRCUITS = (
     # The kitchen cans and the pantry PSU joined from CKT-LT-BACKUP on 2026-11-02:
     # ~1,277 VA of 1,920 continuous.
     Circuit(uid="CKT024AAAA", tag="CKT-LT-MAIN", slot=38, panel_ref=_PANEL, breaker_amps=20, poles=1,
+            conductor_awg="12", egc_awg="12",
             afci=True,
             description="General lighting — main storey incl. kitchen, porch, + the garage opener outlet"),
     # The garage's lighting (2026-10-31): five shop lights, the door-pair sconces and the six
@@ -358,30 +385,38 @@ CIRCUITS = (
     # 96 VA rating). Its own breaker rather than CKT-RC-GARAGE so a tool tripping a garage GFCI
     # does not take the lights with it; no AFCI (a garage is not on 210.12's list). Spare slot.
     Circuit(uid="GWECBY2WVZ", tag="CKT-LT-GARAGE", slot=24, panel_ref=_PANEL, breaker_amps=15,
+            conductor_awg="14", egc_awg="14",
             poles=1, description="Garage lighting — shop lights, door sconces, eave + gable linear drivers"),
     Circuit(uid="CKT025AAAA", tag="CKT-LT-UPPER", slot=43, panel_ref=_PANEL, breaker_amps=15, poles=1,
+            conductor_awg="14", egc_awg="14",
             afci=True, description="General lighting — second + attic"),
     # The basement's lighting off the backup tier: the T8 strips and gym fan (2026-10-31), then
     # (2026-11-02) the gym, stair, bath and Play-N cans, sconces and PSUs, the sauna PSU and the
     # under-stair closet light, and the stair-head can its 3-way shares. ~802 VA of 1,440. Only the furnace-room cans and the
     # ESS closet light stay on CKT-LT-BACKUP. Slot 26 was spare.
     Circuit(uid="J3RFM1RVCW", tag="CKT-LT-BSMT", slot=26, panel_ref=_PANEL, breaker_amps=15,
+            conductor_awg="14", egc_awg="14",
             poles=1, afci=True, description="Basement lighting (all but the furnace room), gym fan"),
     # The two storey receptacle circuits stay non-GFCI at the breaker on purpose: each
     # reaches a whole floor, and thirty outlets behind one 5 mA trip is not buildable.
     # The handful in a 210.8(A) location (mudroom sink, wet bar) are GFCI *devices* instead
     # (plan/electrical.py, plan/mep.py). Bathroom receptacles are on CKT-BATH-RC below.
     Circuit(uid="CKT026AAAA", tag="CKT-RC-MAIN", slot=44, panel_ref=_PANEL, breaker_amps=20, poles=1,
+            conductor_awg="12", egc_awg="12",
             afci=True, load_va=1500, description="General receptacles — main storey"),
     Circuit(uid="CKT027AAAA", tag="CKT-RC-SECOND", slot=45, panel_ref=_PANEL, breaker_amps=20, poles=1,
+            conductor_awg="12", egc_awg="12",
             afci=True, load_va=1500, description="General receptacles — second storey"),
     Circuit(uid="CKT028AAAA", tag="CKT-RC-BSMT", slot=46, panel_ref=_PANEL, breaker_amps=20, poles=1,
+            conductor_awg="12", egc_awg="12",
             gfci=True, afci=True, load_va=1500,
             description="General receptacles — basement + spa convenience"),
     Circuit(uid="CKT029AAAA", tag="CKT-RC-ATTIC", slot=47, panel_ref=_PANEL, breaker_amps=15, poles=1,
+            conductor_awg="14", egc_awg="14",
             afci=True, load_va=1000,
             description="General receptacles — attic rooms + radon fan box, MN 1303.2402 subp. 6"),
     Circuit(uid="CKT030AAAA", tag="CKT-RC-GARAGE", slot=48, panel_ref=_PANEL, breaker_amps=20, poles=1,
+            conductor_awg="12", egc_awg="12",
             gfci=True, load_va=1500, description="Garage general receptacles"),
     # ^ The 210.11(C)(4) garage circuit: 120 V, 20 A, "no other outlets" than the two bay
     # receptacles ED-G-RC-W/-E. The opener's outlet is on CKT-LT-MAIN behind ED-G-GDO-GFCI.
@@ -401,6 +436,7 @@ CIRCUITS = (
     # load_va 116 is the MHAP4236; receptacles are in 120.82(B)(1)'s VA/ft2 term, and
     # load_va overrides device summation, so never add 116 twice.
     Circuit(tag="CKT-BATH-RC", slot=31, panel_ref=_PANEL, breaker_amps=20, poles=1,
+            conductor_awg="12", egc_awg="12",
             load_va=116,
             description="Bathroom vanity receptacles, every bathroom (receptacles only, "
                         "NEC 210.11(C)(3))"),
@@ -425,6 +461,7 @@ CIRCUITS = (
     # Slot 27 is one of the ten spare 1-pole spaces; count from the loaded plan
     # (`electrical.panel_spaces`), never by hand.
     Circuit(tag="CKT-BATH2-TUB", slot=27, panel_ref=_PANEL, breaker_amps=15, poles=1,
+            conductor_awg="14", egc_awg="14",
             gfci=True, load_va=65,
             description="Bask heated surface — RM-M-BATH2 drop-in bath (FX-M-BATH2-TUB)"),
     # ------------------------------------------------------------------------------------
@@ -454,28 +491,17 @@ CIRCUITS = (
     # because its outlet is sealed inside the tub deck. No AFCI: 210.12(B) does not list
     # bathrooms.
     #
-    # ** load_va IS 0, AND THE NAMEPLATE IS RECORDED HERE SO THE ZERO IS A DECISION AND NOT
-    # AN OMISSION. ** Each seat is ~1,400 VA at the top of the researched 1.2-1.4 kW band,
-    # but only while the instantaneous heater is running — seconds per use, a few times a
-    # day, and never a load the house sits at. Two readings of 120.82 are available and this
-    # is the one taken (owner's call, 2026-09-06): a bathroom RECEPTACLE circuit is not in
-    # 120.82(B)(1)'s list and 120.82(B)(1)'s own VA/ft2 term is deemed to cover general
-    # receptacle outlets already, which is exactly the reasoning CKT-BATH-RC above is
-    # authored on. The other reading is 120.82(B)(3)'s "located on a specific circuit" limb,
-    # which would take the nameplate — the same limb that put 65 VA on CKT-BATH2-TUB, though
-    # that one is a fixed appliance rather than something plugged into a bathroom outlet.
-    #
-    # ** WHAT THE OTHER READING COSTS, MEASURED: ** at load_va=1400 on both,
-    # `electrical.service_load` goes 250.4 A -> 255.1 A against 320 A (2026-11-07) — 4.7 A of
-    # a 69.6 A margin. It still PASSES: a coincidence judgement, not load-hiding, and the
-    # revert is two numbers. ** Revisit it if anything with a
-    # real duty cycle ever joins these circuits ** — they are 20 A and they feed one outlet
-    # each today, and that is the assumption the zero rests on.
+    # ** load_va IS THE PUBLISHED NAMEPLATE, 1,271 VA (2026-11-14; was 0). ** TOTO spec sheet
+    # SS-02276 v.02 (WASHLET S5, SW3445; the elongated SW3446 is the same seat): AC 120 V
+    # 60 Hz, 1,271 W power consumption, 1,425 W maximum, 3.9 ft cord. The old 0 was the
+    # owner's 2026-09-06 coincidence reading of 120.82(B)(1); the nameplate reading of
+    # 120.82(B)(3) was measured then at +4.7 A of 320 A. Not continuous: the heater runs
+    # seconds per use. Revisit if anything with a real duty cycle joins these circuits.
     Circuit(tag="CKT-WASHLET-BATH1", slot=25, panel_ref=_PANEL, breaker_amps=20, poles=1,
-            load_va=0,
+            conductor_awg="12", egc_awg="12", load_va=1271, continuous_va=0,
             description="Bidet seat — RM-M-BATH1 water closet (FX-M-BATH1-WC, WASHLET S5)"),
     Circuit(tag="CKT-WASHLET-BATH2", slot=28, panel_ref=_PANEL, breaker_amps=20, poles=1,
-            load_va=0,
+            conductor_awg="12", egc_awg="12", load_va=1271, continuous_va=0,
             description="Bidet seat — RM-M-BATH2 water closet (FX-M-BATH2-WC, WASHLET S5)"),
 )
 

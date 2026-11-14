@@ -64,6 +64,7 @@ EQUIPMENT_TYPES = (
     # HydroBoost riser at the product's front-right, no top nipples.
     EquipmentType(tag="EQ-T-WATER-HEATER", name="Water heater, Rheem ProTerra Plug-in HydroBoost 80 gal heat pump, 120 V",
                   product_ref="PROD-RHEEM-PROPH80",
+                  utilization_connection="cord_and_plug",  # factory cord to ED-B-WH-RC
                   # Height = A 74 3/16", the tank top with its filter grille. H 91" is the
                   # ducted inlet elbow (plan/mep_hpwh_air.py); the filter wants 6" over the top.
                   footprint=(inch(24.25), inch(24.25)), height=inch(74.1875),

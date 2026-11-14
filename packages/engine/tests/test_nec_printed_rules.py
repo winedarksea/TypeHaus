@@ -381,8 +381,9 @@ def test_catlins_storage_water_heater_is_a_continuous_load(catlin_model_ro):
     found = [f for f in report.findings if f.check_id == "electrical.continuous_load_circuit"]
     assert not any(f.result.value == "fail" for f in found)
     assert any("422.13" in f.message and "15.0 A against a 15 A" in f.message for f in found)
-    unknown = {t for f in found if f.result.value == "unknown" for t in f.element_tags}
-    assert {"CKT-SPA", "CKT-WORKSHOP-240"} <= unknown   # continuity is not stated
+    assert not any(f.result.value == "unknown" for f in found)
+    # Authored splits (owner, 2026-11-14): the workshop's 1,000 VA of computers, a spa that is not.
+    assert any("CKT-WORKSHOP-240: 6.2 A noncontinuous + 125% of 4.2 A" in f.message for f in found)
 
 
 def test_catlins_single_receptacles_meet_their_circuits(catlin_model_ro):

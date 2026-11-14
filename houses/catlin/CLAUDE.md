@@ -305,7 +305,7 @@ not instruction: when it disagrees with this file or the model, it is the one th
   only). `CKT-WASHLET-BATH1`/`-BATH2` at slots 25 and 28 feed `ED-M-BATH1-WC-RC` /
   `ED-M-BATH2-WC-RC`, one outlet each, GFCI at the DEVICE (a washlet trips a Class A GFCI
   now and then and a reset in the basement for a toilet seat is the failure mode the
-  convention avoids), no AFCI (2026 210.12(B) does not list bathrooms), `load_va=0`.
+  convention avoids), no AFCI (2026 210.12(B) does not list bathrooms), `load_va=1271`.
   - **Both boxes are in ONE stud bay and there is no second candidate.** `W-M-HS1` is the
     wet wall between the two baths and carries both bowls; the resolved framing leaves
     exactly one clear 2x6 cavity beside them, x 8 1/8"..15" between `stud-000` and the
@@ -316,11 +316,9 @@ not instruction: when it disagrees with this file or the model, it is the one th
     anything else in it**: today no pipe, conduit, duct, sleeve or accessory has a vertex in
     x 4"..22", y 258"..278", and the west end of a wet wall is exactly where a plumber
     reaches for a spare bay.
-  - **`load_va=0` IS A COINCIDENCE JUDGEMENT, NOT AN OMISSION** (owner's call). Each seat is
-    ~1,400 VA and only while its instantaneous heater runs — seconds per use. At the other
-    reading of 120.82 (nameplate under (B)(3)) `electrical.service_load` rises ~4.7 A
-    against the 320 A service and still passes, so this is not load-hiding to make a
-    check green. **Revisit it if anything with a real duty cycle joins these circuits.**
+  - **`load_va=1271` is the published nameplate** (TOTO SS-02276 v.02, S5: 1,271 W, 1,425 W
+    max), not continuous (2026-11-14; it was 0, the owner's 120.82(B)(1) coincidence reading).
+    **Revisit it if anything with a real duty cycle joins these circuits.**
   - **THE WARM WATER IS THE ELECTRICITY.** An S5 heats from the COLD supply instantaneously.
     No WC in this house takes a hot run and none should — `needs` is `WATER_COLD` on all six
     and every `PR-*-HW-*` deliberately omits the WC. The heated SEAT is switched off by

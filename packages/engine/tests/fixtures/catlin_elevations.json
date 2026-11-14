@@ -2582,12 +2582,12 @@
 "conduits/CD-A-PV-EAST/z_start_m": 6.2484,
 "conduits/CD-B-ATTIC-RISER/z_end_m": 6.2484,
 "conduits/CD-B-ATTIC-RISER/z_m": [
--0.7985125,
+-0.7477125,
 6.2484,
-5,
-"e3735824efe8"
+2,
+"ac28122bdb10"
 ],
-"conduits/CD-B-ATTIC-RISER/z_start_m": -0.7985125,
+"conduits/CD-B-ATTIC-RISER/z_start_m": -0.7477125,
 "conduits/CD-B-DATA-CHASE/z_end_m": 6.2484,
 "conduits/CD-B-DATA-CHASE/z_m": [
 -0.6207125,
@@ -21535,10 +21535,10 @@
 "dd1ac9e70802"
 ],
 "geometry/CDT001AAAA-run/body": [
--0.7985125,
+-0.7477125,
 6.2484,
-96,
-"bc428f13c66f"
+24,
+"6e56c09c404a"
 ],
 "geometry/CDT002AAAA-run/body": [
 -1.2192,
@@ -117148,7 +117148,7 @@
 "solids/CD-A-DATA-NE-RUN/z1_m": 7.0104,
 "solids/CD-A-PV-EAST-RUN/z0_m": 6.2484,
 "solids/CD-A-PV-EAST-RUN/z1_m": 6.69925,
-"solids/CD-B-ATTIC-RISER-RUN/z0_m": -0.7985125,
+"solids/CD-B-ATTIC-RISER-RUN/z0_m": -0.7477125,
 "solids/CD-B-ATTIC-RISER-RUN/z1_m": 6.2484,
 "solids/CD-B-DATA-CHASE-RUN/z0_m": -0.6398895,
 "solids/CD-B-DATA-CHASE-RUN/z1_m": 6.2484,
