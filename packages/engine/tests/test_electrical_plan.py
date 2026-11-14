@@ -516,18 +516,22 @@ def test_every_condenser_disconnect_is_reachable_under_NEC_404_8_A(catlin_model)
 
     The CENSUS is asserted with the heights, deliberately: a fourth system joining the house
     with its disconnect at a comfortable-looking ft(5) would otherwise pass silently.
+    ED-A-HP1-AH-DISC (the attic air handler's, 2026-11-14) stands on the attic floor, so it
+    is measured off its own storey datum, not grade.
     """
     devices = {element.tag: element for storey in catlin_model.plan.storeys
                for element in catlin_model.plan.storey_elements(storey.tag)
                if element.element_kind == "ElectricalDevice"}
     grade_ft = catlin_model.plan.project.site.grade.meters / 0.3048
-    condenser_discs = sorted(tag for tag, d in devices.items()
-                             if d.kind.value == "disconnect" and "-HP" in tag)
-    assert condenser_discs == ["ED-M-HP1-DISC", "ED-M-HP2-DISC", "ED-M-HP3-DISC"]
-    for tag in condenser_discs:
+    hp_discs = sorted(tag for tag, d in devices.items()
+                      if d.kind.value == "disconnect" and "-HP" in tag)
+    assert hp_discs == ["ED-A-HP1-AH-DISC", "ED-M-HP1-DISC", "ED-M-HP2-DISC",
+                        "ED-M-HP3-DISC"]
+    for tag in hp_discs:
         device = devices[tag]
-        reach_in = (device.mount.elevation.inches / 12.0 - grade_ft) * 12.0
-        assert 0.0 < reach_in <= 79.0, f"{tag} at {reach_in:.1f}in above grade"
+        floor_ft = grade_ft if tag.startswith("ED-M-") else 0.0
+        reach_in = (device.mount.elevation.inches / 12.0 - floor_ft) * 12.0
+        assert 0.0 < reach_in <= 79.0, f"{tag} at {reach_in:.1f}in above its standing surface"
     # And the two that are hung at standing height rather than in the plough line are the
     # two on the house's north face, which is dry ground.
     assert devices["ED-M-HP1-DISC"].mount.elevation.inches == pytest.approx(42.0)

@@ -207,8 +207,8 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     # backup, and the garage's lighting off CKT-LT-MAIN.
     # Then MINUS CKT-FH-DINING (2026-11-02): the dining mat went with SL-M-DECK (decision #112).
     # Then PLUS CKT-BATH-RC (210.11(C)(3)), absorbing CKT-BATH-ATTIC, and CKT-SPD-2/-BACKUP
-    # (230.67(B) Ex., 215.18), 2026-11-07.
-    assert len(rows) == 44  # plus the workshop's two-pole receptacle branch
+    # (230.67(B) Ex., 215.18), 2026-11-07. Then PLUS CKT-PLANT-HEAT (2026-11-12).
+    assert len(rows) == 45  # plus the workshop's two-pole receptacle branch
     # Each radiant floor zone is its own 120V circuit with breaker-level GFCI, controlled
     # by one thermostat (NEC 424.44(G) — heating cable in a bathroom or kitchen floor).
     assert "CKT-FH-DINING" not in rows
@@ -269,8 +269,8 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     assert load["panel_rating_amps"] == 225 and load["service_amps"] == 320
     # And it fits UNMANAGED — no software anywhere in the calculation.
     assert load["unmanaged_demand_va"] / 240 <= 320
-    # 220.82(C) selects, it does not sum: four separately controlled resistance heaters
-    # (two mats, the fireplace and the garage heater; the dining mat went 2026-11-02) are taken at 40% and lose to the three
+    # 220.82(C) selects, it does not sum: five separately controlled resistance heaters
+    # (two mats, the fireplace, the garage and plant-room heaters; the dining mat went 2026-11-02) are taken at 40% and lose to the three
     # heat-pump systems at 100%, so the heating term is the heat pumps' and the resistance
     # heat costs the service nothing. The heat-pump circuits are identified by the typed
     # Equipment on them, not by a word in the description (takeoff/electrical._is_heat_pump).
@@ -281,7 +281,7 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     # DUCTED_AIR_HANDLER — so `_bucket` files the pair as heat_pump, not resistance_heat.
     # This is the right answer and not a lost load: the kit's 4,600 W is counted at 100% in
     # the heat-pump term instead of at 40% in the resistance one.
-    assert load["resistance_heat_units"] == 4 and load["resistance_heat_factor"] == 0.40
+    assert load["resistance_heat_units"] == 5 and load["resistance_heat_factor"] == 0.40
     assert load["hvac_va"] == load["heat_pump_va"] > load["resistance_heat_va"] * 0.40
     # The kit's 4,600 W is counted at 100% in the heat-pump term and NOTHING credits it
     # back: catlin retired every LoadManagement on 2026-09-12 with the Class 320 service.
@@ -308,13 +308,15 @@ def test_catlin_receptacle_spacing_separates_known_coverage_and_eave_review(catl
     assert not fails, [f.message for f in fails]
     passes = [f for f in findings if f.result.value == "pass"
               and f.element_tags[0].startswith("RM-")]  # counter spaces are CT-*
-    assert len(passes) == 11  # RM-B-PLAY-N joined as a 210.52(A) recreation room, 2026-11-13
-    unknown_rooms = {f.element_tags[0]: f for f in findings
-                     if f.result.value == "unknown" and f.element_tags}
-    assert set(unknown_rooms) == {"RM-A-STUDIO", "RM-A-STUDY"}
-    for finding in unknown_rooms.values():
-        assert "rafter plate" in finding.message
-        assert "counted as wall space" in finding.message
+    # RM-B-PLAY-N joined 2026-11-13; the two attic rooms pass on the owner's reading
+    # (2026-11-14): a roof plate under 5'-0" of head is not wall space.
+    assert len(passes) == 13
+    assert not [f for f in findings if f.result.value == "unknown" and f.element_tags]
+    attic = {f.element_tags[0]: f for f in passes
+             if f.element_tags[0] in {"RM-A-STUDIO", "RM-A-STUDY"}}
+    assert set(attic) == {"RM-A-STUDIO", "RM-A-STUDY"}
+    for finding in attic.values():
+        assert "owner's reading" in finding.message and "AHJ" in finding.message
         assert len(finding.element_tags) > 1
     # 210.52(C) is graded off the countertops now, no longer a standing UNKNOWN.
     assert not any(f.result.value == "unknown" and not f.element_tags for f in findings)
@@ -598,8 +600,9 @@ def test_catlin_panel_spaces_fits_the_54_space_enclosure(catlin_model):
     # eight spaces) moved to ED-B-PANEL-2, feeder 2 of the Class 320 service. Fifteen spare
     # here, twelve there. 41 since CKT-LT-BSMT and CKT-LT-GARAGE took slots 26/24 (2026-10-31); 40 once
     # CKT-FH-DINING (slot 31) went with the dining mat (2026-11-02). 2026-11-07: CKT-BATH-RC
-    # took 31 and CKT-BATH-ATTIC left 41, and each panel gained a 2-pole SPD.
-    assert main == (40, 54)
+    # took 31 and CKT-BATH-ATTIC left 41, and each panel gained a 2-pole SPD. 41 once
+    # CKT-PLANT-HEAT took slot 41 (2026-11-12).
+    assert main == (41, 54)
     assert spaces("ED-B-PANEL-2", "ED-T-PANEL-2") == (12, 20)
     assert backup == (9, 12)  # 8 until CKT-WH went 1-pole (120 V HPWH, 2026-11-02)
     required = sum(circuit.poles for circuit in circuits)
@@ -890,7 +893,7 @@ def test_model_json_carries_the_electrical_takeoff(catlin_model):
     # 40: the 36 that survived the microgrid refactor plus CKT-DISPOSAL, minus CKT-WH-HP
     # folded into CKT-WH, plus CKT-BATH2-TUB for the drop-in bath's Bask heated surface,
     # plus the two washlet circuits, plus CKT-SPD (the NEC 230.67 service surge device).
-    assert len(payload["panel_schedule"]) == 44  # includes the workshop branch
+    assert len(payload["panel_schedule"]) == 45  # includes the workshop branch
 
 
 def test_model_json_canvas_objects_carry_their_circuit(catlin_model):

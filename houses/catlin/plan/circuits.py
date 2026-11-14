@@ -25,8 +25,8 @@ Conventions:
   engine's proposal pending electrician review (2026-11-14), sized to the breaker by 240.4(D).
 - ``slot`` is the physical breaker position: odd numbers run down the left column, even
   down the right, and a 2-pole breaker takes ``slot`` and ``slot + 2`` (same column).
-  The ESS grid port backfeeds at the bottom of the bus (40/42), opposite the main (120%
-  rule); ``code.NEC_705_12_interconnection`` grades that arithmetic.
+  The ESS grid port backfeeds at the bottom of the bus (51/53, the last row of the top-fed
+  can), opposite the main (120% rule); ``code.NEC_705_12_interconnection`` grades it.
   ED-B-PANEL is feeder 1 of the Class 320 service and ED-B-PANEL-2 is feeder 2
   (plan/mep_electrical.py). Slots 1/5/9/13/17 of ED-B-PANEL-2 carry CKT-SPA, CKT-SAUNA,
   CKT-EV-1450, CKT-GAR-240 and CKT-WORKSHOP-240, respectively, and slot 2 its SPD. The
