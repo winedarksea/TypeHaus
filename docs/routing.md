@@ -95,7 +95,7 @@ exterior wall. Every rule has a hand-worked note (`routing/oracle.py`).
 | Short level jogs as a pair of 1/8 bends, re-checked against obstacles | `routing/compaction.py` | drain basis §10 |
 | Trap arm within Table 1002.2, no S-trap, vent taken off inside the arm and plumb to 6" over the rim | `routing/trap_vent.py`, `cli/route_fixture_vent.py` | drain basis §9 |
 | Branch ties on a level main keep the catalogued inlet pitch | `cli/route_roots._spaced_goals`, `resolve/mep_inlet_spacing` | drain basis §10 |
-| Cleanouts (UPC 707.4) placed with 707.9 clearance on the plug axis; priced `cleanout_in` each, + `cleanout_concealed_in` behind a panel, + `cleanout_floor_finished_in` for a floor cap in a priced room; a buried station may rise in a partition cavity instead; cheapest station wins | `cli/route_cleanouts.py`, `resolve/cleanout_rules.py` | `mep.drain_cleanouts` |
+| Cleanouts (UPC 707.4) placed with 707.9 clearance on the plug axis; priced `cleanout_in` each, + `cleanout_concealed_in` behind a panel, + `cleanout_floor_finished_in` for a floor cap in a priced room; a buried station may rise in a partition cavity instead; cheapest station wins. `--tree`/`--lift` place them once the whole tree is laid (`place_tree_cleanouts`): requirements read off the network as the check reads it, one on an authored run only noted; a floor cap hidden only by the served fixture's own cabinet is a `cabinet` cleanout (cap 12" up, priced concealed) | `cli/route_cleanouts.py`, `resolve/cleanout_rules.py` | `mep.drain_cleanouts` |
 | PEX bends where its 6 x OD arc clears; copper and CPVC take a fitting | `search.bend_price`, `trades/pipe.bend_radius_m` | drain basis §11 |
 | Supply and drain in an exterior insulated bay pay by the side they run on: the cold side (where `mep.supply_freeze_exposure` puts the pipe face under 42 F, or any bay with no continuous insulation outboard) `exterior_wall_per_ft` per foot plus `exterior_cold_edge_in` per edge, the warm side `exterior_warm_per_ft`; vents, ducts, conduit exempt | `routing/freeze_bay`, `graph_batch.room_lengths`, `RouteCost.for_run` | `supply_freeze_basis.md` §4-§5 |
 | A room charges by the length of an edge inside it (a riser by its z overlap), summed over overlapping rooms | `graph_batch.room_lengths`, `RouteCost.segment_cost(rooms=)` | — |
@@ -254,8 +254,31 @@ then run `haus fmt`, `haus trial`, inspect the drawing, and run repository verif
   footing (UPC 314.1).
 - **Cleanouts** (UPC 707.4) are placed on sanitary runs only.
 
+Evaluation follows replaced runs: a valve or stop on a replaced run moves to the proposal piece
+within 3" of its station (else `<run>-PROPOSED`); a bond end, `Register.duct_ref` or any
+`from_ref`/`to_ref` naming a replaced run is re-pointed at its `<run>-PROPOSED`. A drain proposal
+ties in only at its arrival end. A branch never tees within r1+r2+clearance of a bend of its host,
+and a supply end on a shower-assembly inlet leaves on a straight stub along the valve axis
+(`cli/route_fixture_inlet.py`, applied in `_endpoints`).
+
 ## Limitations
 
+- The supply trunk search carries the house's outside as space prisms
+  (`gravity_band.outside_prisms`, 12" holes at run ends) and retries free of the outline, with a
+  notice, only when no interior lane crosses the floor system. On catlin it still leaves the house
+  past W-M-W2/3/4: the main-floor seam near y=208" has no lattice crossing though the authored trunk
+  crosses at x=57" (3 freeze FAILs and a hydrant bury reading on `trunk:CW`). Branches do not get
+  the prisms (row budget).
+- Supply branches teeing beside a sibling or the trunk can still overlap by 0.3-1"; there is no
+  no-collinear-approach rule in the search.
+- A tree branch starts at its fixture's drain port (`mep.fixture_port_connection`), its profile at
+  the storey datum with a plumb drop between, and lands on its collector's final snapped invert
+  when within 1/4". A wall-hung fixture's port sits on the wall axis, so its drop stands in the
+  stud plane (`mep.run_through_stud`, as with `--fixture`); the cavity stub is open.
+- A recessed can's housing is not a routing obstacle (`mep.ceiling_can_framing` FAILs
+  ED-B-STAIR-CAN1 against the kitchen sink drain on `tree:main`).
+- A 3" WC arm the authored route makes with a 1/8 bend can exceed 72" on the Manhattan
+  lattice (basement WC: 73.8"); trees have no diagonal jogs and no vent-aware arm.
 - `--lift` still refuses a supply whose unlifted branch tees on its first leg ("loses N"), and
   grades each re-laid line on its own, against the authored runs.
 - `--group` offers at most four tie stations (`cli/group_ties`): two authored, then the main's

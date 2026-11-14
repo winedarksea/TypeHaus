@@ -370,7 +370,9 @@ def _tied_into(model: ResolvedModel, proposal: RouteProposal, replaced: set[str]
     ancestors = {up for tag in replaced for up in _chain(parents, tag)} & replaced
     if not ancestors or not proposal.points:
         return set()
-    ends = (proposal.points[0], proposal.points[-1])
+    # A drain ties in at its arrival end; its start is the fixture, not a tie.
+    ends = ((proposal.points[-1],) if proposal.system == "drain"
+            else (proposal.points[0], proposal.points[-1]))
     out = set()
     for run in model.pipe_runs:
         if run.tag not in ancestors or not run.z_m or len(run.z_m) != len(run.path):
