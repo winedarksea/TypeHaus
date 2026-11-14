@@ -58,6 +58,7 @@ from typehaus.resolve.blocking_parts import (
     clip,
     crossing_runs,
     pass_through_box,
+    riser_cuts,
     run_bands,
     solid_block_profile,
 )
@@ -223,8 +224,9 @@ def _floor_blocking(
             members.append(block_member(floor, bay.key, member, bay.along_x, bay.block_centre,
                                         bay.gap, bay.z0, bay.z1))
             continue
-        box, box_conflicts = pass_through_box(floor, bay.key, bay.along_x, bay.box_centre,
-                                              bay.gap, bay.z0, bay.z1, crossing)
+        box, box_conflicts = pass_through_box(
+            floor, bay.key, bay.along_x, bay.box_centre, bay.gap, bay.z0, bay.z1, crossing,
+            riser_cuts(runs, bay.along_x, bay.box_centre, bay.gap, bay.z0, bay.z1))
         members.extend(box)
         conflicts.extend(box_conflicts)
     return members, conflicts
@@ -324,7 +326,8 @@ def _partition_top_blocking(
             # a rail centred on an end block reached into the next deck's joist ends.
             at = min(max(centre, tip_lo + RAIL_W_M / 2.0), tip_hi - RAIL_W_M / 2.0)
             box, box_conflicts = pass_through_box(floor, key, along_x, at, gap, z0, z1,
-                                                  crossing)
+                                                  crossing,
+                                                  riser_cuts(runs, along_x, at, gap, z0, z1))
             if box_conflicts:
                 unframed.append(joint.wall_tag)
                 continue

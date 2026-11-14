@@ -78,7 +78,7 @@ def wall_lanes(model: Any, gates: Sequence[Gate],
     """For each ``(end, stations)``: the layers of walls standing at the end's height, within a
     bay of the end and its plan's riser stations, opened over :func:`lane_band`. Storey-banded
     and local: a branch rides the walls its own plan rides, never every wall at every height."""
-    from shapely.geometry import MultiPoint, Polygon
+    from shapely.geometry import LineString, MultiPoint, Polygon
 
     from typehaus.resolve.overlay import union_all
 
@@ -102,6 +102,10 @@ def wall_lanes(model: Any, gates: Sequence[Gate],
         polys = [Polygon(layer.polygon) for wall in model.walls if own(wall)
                  for layer in wall.layers if len(layer.polygon) >= 3]
         polys = [q for q in polys if q.is_valid and not q.is_empty and q.intersects(near)]
+        # The end's own stub to a riser station beside it (the plan's short leg at its height): a
+        # 1" slot joins the two pins, else a sliver of gate between them cuts the end off.
+        polys += [LineString([tuple(end[:2]), st]).buffer(PIN_M, cap_style="square")
+                  for st in stations if math.dist(end[:2], st) <= 2.0 * TIGHT_M]
         if polys:
             out.append(Lane(union_all(polys).intersection(near), *band))
     return out

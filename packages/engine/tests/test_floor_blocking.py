@@ -165,3 +165,22 @@ def test_a_rectangular_run_is_boxed_by_its_width_and_depth() -> None:
     (tag, p_lo, p_hi, z_lo, z_hi), = crossing_runs(
         runs, False, 5.0, 0.04, (4.0, 6.0), z - 1.0, z + 1.0)
     assert (p_hi - p_lo, z_hi - z_lo) == pytest.approx((2 * w, 2 * h))
+
+
+def test_a_riser_in_the_rails_opens_them_and_a_cheek_holds_the_rest() -> None:
+    from typehaus.resolve.blocking_parts import riser_cuts
+
+    z = 5 * _IN
+    runs = [("R", ((1.0 * _IN, 6.0 * _IN), (1.0 * _IN, 6.0 * _IN)), (z, 20 * _IN),
+             0.4 * _IN, 0.4 * _IN),
+            ("far", ((9.0 * _IN, 6.0 * _IN), (9.0 * _IN, 6.0 * _IN)), (z, 20 * _IN),
+             0.4 * _IN, 0.4 * _IN)]
+    cuts = riser_cuts(runs, True, 0.0, _GAP, _Z0, _Z1)  # only the riser inside 5 1/2" counts
+    assert len(cuts) == 1
+    box, _ = pass_through_box(_FLOOR, "k", True, 0.0, _GAP, _Z0, _Z1,
+                              [_crossing("DU", 9.0, 11.0, 2.0, 6.0)], cuts)
+    top = [m for m in box if m.child_key.endswith("rail-top")]
+    assert len(top) == 2  # a rail piece each side of the hole
+    assert sorted(m.p0[1] for m in top) == pytest.approx([0.0, cuts[0][1]])
+    assert sorted(m.p1[1] for m in top) == pytest.approx([cuts[0][0], _GAP[1]])
+    assert any("-cheek-r" in m.child_key for m in box)
