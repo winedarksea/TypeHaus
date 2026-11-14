@@ -170,6 +170,9 @@ class RoutingSpace:
         default_factory=dict, repr=False, compare=False)
     _soft_memo: dict[tuple[int, int, int], list[SoftPrism]] = field(
         default_factory=dict, repr=False, compare=False)
+    #: Same memo for the soft prisms along an edge (``edge_soft.soft_along``), keyed by ends.
+    _soft_edge_memo: dict[tuple, list[SoftPrism]] = field(
+        default_factory=dict, repr=False, compare=False)
     #: Floor members a run may CROSS but not ride: ``(axis, station, lo, hi, half breadth,
     #: z0, z1, tag)`` per level joist, rim, trimmer or header in the window — see
     #: :func:`floor_rails`. Not hard prisms, so they add no lattice lines.

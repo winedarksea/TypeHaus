@@ -167,6 +167,12 @@ class RouteProposal:
         lines[-1] = lines[-1].rstrip(",") + "),"
         return "\n".join(lines)
 
+    def full_source(self, *, storey_datum_m: float = 0.0) -> str:
+        """The run plus its cleanouts: everything pasting this proposal adds, and exactly what
+        ``route_eval`` grades. Console, ``report.json`` and ``proposed.py`` all print this."""
+        return "\n".join([self.source(storey_datum_m=storey_datum_m),
+                          *(c.source(self.tag, storey_datum_m) for c in self.cleanouts)])
+
     def _conduit_source(self) -> str:
         """One ConduitRun with an absolute elevation at every vertex.
 
@@ -189,7 +195,7 @@ class RouteProposal:
         return "\n".join(lines)
 
     def as_dict(self, *, storey_datum_m: float = 0.0) -> dict:
-        """Full proposal: absolute geometry, storey-correct source, costs and fitting gaps."""
+        """Full proposal: absolute geometry, source (run + cleanouts), costs, gaps."""
         return {
             "tag": self.tag, "kind": self.kind, "system": self.system,
             "points_m": [list(p) for p in self.points],
@@ -204,6 +210,10 @@ class RouteProposal:
             "terms_in": {k: round(v, 4) for k, v in sorted(self.terms.items())},
             "notes": list(self.notes),
             "after_paste": list(self.after),
+            "cleanouts": [
+                {"tag": c.tag, "reason": c.reason, "access": c.access, "wall_ref": c.wall_ref,
+                 "point_m": list(c.point), "cap_m": list(c.cap), "clear_in": c.clear_in,
+                 "concealed": c.concealed} for c in self.cleanouts],
             **({"wet_vent": self.wet_vent} if self.wet_vent is not None else {}),
             **({"pull_points": list(self.pull_points),
                 "pull_point_assignment": self.pull_assignment.as_dict()}
@@ -216,7 +226,8 @@ class RouteProposal:
                  "catalog": record.spec.tag if record.spec is not None else None,
                  "gap": record.gap}
                 for record in self.fittings()],
-            "source": self.source(storey_datum_m=storey_datum_m),
+            # The run AND its cleanouts: the one paste-ready text (see ``full_source``).
+            "source": self.full_source(storey_datum_m=storey_datum_m),
         }
 
     def fittings(self) -> list:
@@ -363,8 +374,7 @@ def render(proposals: Sequence[RouteProposal], *, storey_datum_m: float = 0.0,
             # Printed even without ``--explain``: a corner no catalogued pattern makes is
             # not a cost breakdown, it is something the person pasting has to decide about.
             lines.extend(f"# {line}" for line in proposal.fitting_lines())
-        lines.append(proposal.source(storey_datum_m=storey_datum_m))
-        lines.extend(c.source(proposal.tag, storey_datum_m) for c in proposal.cleanouts)
+        lines.append(proposal.full_source(storey_datum_m=storey_datum_m))
         lines.extend(f"# AFTER PASTING: {line}" for line in proposal.after)
         lines.append("")
     return "\n".join(lines)

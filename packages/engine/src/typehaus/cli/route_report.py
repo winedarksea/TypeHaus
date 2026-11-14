@@ -10,46 +10,27 @@ from typing import Any
 import typer
 
 from typehaus.cli._shared import console
+from typehaus.cli.route_decision import bore_counts, decision_view
 from typehaus.cli.route_support import _storey_datum
 from typehaus.routing.proposal import render
-
-_DECISION_FIELDS = (
-    "tag", "storey", "kind", "system", "developed_ft", "bends", "cost_in_equivalent",
-    "notes", "after_paste",
-)
 
 
 def proposal_rows(model: Any, proposals: list[tuple[Any, str]]) -> list[dict]:
     """Project coordinates stay absolute; printed pipe/duct elevations use their storey."""
     return [dict(proposal.as_dict(storey_datum_m=(
-        0.0 if proposal.kind == "conduit" else _storey_datum(model, storey))), storey=storey)
+        0.0 if proposal.kind == "conduit" else _storey_datum(model, storey))), storey=storey,
+        bores=bore_counts(model, proposal))
         for proposal, storey in proposals]
 
 
 def decision_summary(report: dict, out_dir: Path) -> dict:
-    """Keep all diagnostics and evaluation changes; leave geometry and source on disk."""
-    key = "accepted" if "accepted" in report else "proposals"
-    rows = report[key]
-    summary = dict(report)
-    summary[key] = [
-        {**{name: row[name] for name in _DECISION_FIELDS},
-         "fitting_gaps": [fitting for fitting in row["fittings"]
-                          if fitting["catalog"] is None or fitting["gap"]],
-         **({"wet_vent": row["wet_vent"]} if "wet_vent" in row else {}),
-         **({"pull_point_assignment": row["pull_point_assignment"]}
-            if "pull_point_assignment" in row else {})}
-        for row in rows
-    ]
-    # A take-off row's station stays in report.json; the summary keeps what decides.
-    summary["refusals"] = [
-        {**item, "takeoffs": [{k: v for k, v in row.items() if k != "station_in"}
-                              for row in item["takeoffs"]]} if "takeoffs" in item else item
-        for item in report.get("refusals", ())]
-    summary["artifacts"] = {
-        "report": str(out_dir / "report.json"),
-        "source": str(out_dir / "proposed.py"),
+    """The bounded decision view (``route_decision``); everything else stays in report.json."""
+    return {
+        "house": report.get("house"), "storey": report.get("storey"),
+        "decision": decision_view(report),
+        "artifacts": {"report": str(out_dir / "report.json"),
+                      "source": str(out_dir / "proposed.py")},
     }
-    return summary
 
 
 def source_artifact(rows: list[dict]) -> str:

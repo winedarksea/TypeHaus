@@ -16,7 +16,7 @@ from typehaus.quantities import ft
 from typehaus.routing.campaign import CampaignTarget
 from typehaus.routing.cost import RouteCost
 from typehaus.routing.diagnostics import Blocker, Mobility, Refusal
-from typehaus.routing.proposal import RouteProposal
+from typehaus.routing.proposal import ProposedCleanout, RouteProposal, render
 
 
 @pytest.fixture
@@ -107,11 +107,13 @@ def test_empty_unconnected_scope_returns_json_without_evaluating(routing_cli, tm
     routing_cli.problems = []
     result = routing_cli.invoke("--unconnected", "--json", "--summary", "--out", str(tmp_path))
     assert result.exit_code == 0, result.output
-    report = json.loads(result.stdout)
+    view = json.loads(result.stdout)["decision"]
+    assert view["candidates"]["count"] == 0 and view["network"] is None
+    assert view["completion"]["notices"] >= 1
+    assert not routing_cli.evaluated
+    report = json.loads((tmp_path / "report.json").read_text())
     assert report["proposals"] == report["evaluations"] == []
     assert any("Nothing to propose" in line for line in report["notices"])
-    assert not routing_cli.evaluated
-    assert json.loads((tmp_path / "report.json").read_text())["proposals"] == []
 
 
 def test_partial_proposals_keep_refusals_and_existing_success_exit(routing_cli):
@@ -131,22 +133,34 @@ def test_summary_preserves_decisions_and_full_artifacts(routing_cli, tmp_path, m
     assert result.exit_code == 0, result.output
     summary = json.loads(result.stdout)
     full = json.loads((tmp_path / "report.json").read_text())
-    assert summary["evaluations"] == full["evaluations"]
-    for key in ("problems", "notices"):
-        assert summary[key] == full[key]
-    # A take-off row's station stays in report.json; the summary keeps what decides.
+    assert len(result.stdout.strip().splitlines()) == 1
+    assert set(summary) == {"house", "storey", "decision", "artifacts"}
+    assert summary["artifacts"]["report"] == str(tmp_path / "report.json")
+    # report.json keeps everything, including a take-off row's station.
     rows = full["refusals"][0]["takeoffs"]
     assert rows[0]["station_in"] == [98.0, 216.0] and rows[0]["blocker"] == "DUCT"
-    assert summary["refusals"][0]["takeoffs"] == [
-        {k: v for k, v in r.items() if k != "station_in"} for r in rows]
-    assert len(result.stdout.strip().splitlines()) == 1
-    row = summary["proposals"][0]
-    assert row["notes"] and row["after_paste"] and row["fitting_gaps"]
-    assert row["storey"] == "main" and row["cost_in_equivalent"] == 36.0
-    assert not {"points_m", "source", "terms_in"} & row.keys()
     assert all(key in full["proposals"][0] for key in ("points_m", "source", "terms_in"))
     assert "confirm the port" in (tmp_path / "proposed.py").read_text()
-    assert summary["artifacts"]["report"] == str(tmp_path / "report.json")
+
+    view = summary["decision"]
+    assert view["mode"] == "candidates" and view["network"] is None
+    candidate, = view["candidates"]["items"]
+    assert candidate["report_ptr"] == "/proposals/0" and candidate["cost_in_equivalent"] == 36.0
+    assert candidate["fittings"] == {"count": 1, "gaps": 1} and candidate["notes"] == 1
+    assert candidate["cleanouts"] == {"placed": 0, "required": 0}
+    assert candidate["after_paste"]["items"] == ["reroute the child"]
+    grade = candidate["grade"]
+    assert (grade["status"], grade["fail"], grade["unknown"]) == ("evaluated", {}, {"other": 1})
+    assert grade["resolved"] == 1 and grade["coverage_gaps"]["count"] == 1
+    found, = grade["findings"]
+    assert found["ptr"] == "/evaluations/0/introduced/0"
+    assert full["evaluations"][0]["introduced"][0]["check_id"] == found["check_id"]
+    # Refusals: blockers grouped by tag and mobility; the take-off table stays in report.json.
+    refusal, = view["completion"]["refusals"]["items"]
+    assert refusal["by_mobility"] == {"movable": 1}
+    assert refusal["blockers"] == [{"tag": "DUCT", "kind": "run", "mobility": "movable",
+                                    "count": 1}]
+    assert "takeoffs" not in json.dumps(summary)
 
 
 @pytest.mark.parametrize("selector", [
@@ -181,12 +195,17 @@ def test_artifacts_cannot_overwrite_the_house_plan(routing_cli):
 
 def test_mixed_storeys_and_absolute_conduit_source_round_trip(routing_cli, tmp_path):
     from typehaus.model.enums import DuctSystem, PipeSystem, Service
-    from typehaus.model.mep import ConduitRun, DuctRun, PipeRun
+    from typehaus.model.mep import ConduitRun, DrainCleanout, DuctRun, PipeRun
     from typehaus.quantities import Point2D, inch, pt
 
+    cleanout = ProposedCleanout(
+        tag="CO-R-PROPOSED-A-1", point=(0.5, 0.0, ft(11).meters), reason="upper terminal",
+        access="wall", wall_ref="W-1", clear_in=18.0, concealed=True,
+        cap=(0.5, 0.1, ft(11).meters + 0.1))
     proposals = [
-        RouteProposal(tag="R-PROPOSED-A", kind="pipe", system="water_cold", diameter_m=0.0254,
-                      points=[(0.0, 0.0, ft(11).meters), (1.0, 0.0, ft(11).meters)]),
+        RouteProposal(tag="R-PROPOSED-A", kind="pipe", system="drain", diameter_m=0.0508,
+                      points=[(0.0, 0.0, ft(11).meters), (1.0, 0.0, ft(11).meters)],
+                      cleanouts=(cleanout,)),
         RouteProposal(tag="R-PROPOSED-B", kind="pipe", system="water_cold", diameter_m=0.0254,
                       points=[(0.0, 0.0, ft(12).meters), (1.0, 0.0, ft(12).meters)]),
         RouteProposal(tag="D-PROPOSED", kind="duct", system="supply", diameter_m=0.1,
@@ -199,14 +218,24 @@ def test_mixed_storeys_and_absolute_conduit_source_round_trip(routing_cli, tmp_p
     assert result.exit_code == 0, result.output
     report = json.loads(result.stdout)
     namespace = dict(PipeRun=PipeRun, DuctRun=DuctRun, ConduitRun=ConduitRun, ft=ft, inch=inch,
+                     DrainCleanout=DrainCleanout,
                      PipeSystem=PipeSystem, DuctSystem=DuctSystem, Service=Service,
                      Point2D=Point2D, pt=pt)
     for row, expected in zip(report["proposals"], [(1, 1), (2, 2), (2, 2), (21, 22)], strict=True):
-        element, = eval(row["source"], {"__builtins__": {}, **namespace})
+        element, *extra = eval(f"[{row['source']}\n]", {"__builtins__": {}, **namespace})
+        assert len(extra) == len(row["cleanouts"])
         assert [e.meters for e in element.elevations] == pytest.approx(
             [ft(value).meters for value in expected])
     source = (tmp_path / "proposed.py").read_text()
     ast.parse(source)
+    # The pasted cleanout is the one graded: saved source, console and eval all agree.
+    _run, pasted = eval(f"[{report['proposals'][0]['source']}\n]",
+                        {"__builtins__": {}, **namespace})
+    (graded,) = route_eval._cleanout_elements(routing_cli.model, "main", proposals[0])
+    assert pasted.model_dump() == graded.model_dump()
+    assert f'DrainCleanout(tag="{pasted.tag}"' in source
+    assert proposals[0].full_source(storey_datum_m=ft(10).meters) in render(
+        [proposals[0]], storey_datum_m=ft(10).meters)
     assert "ALTERNATIVES for R: paste exactly ONE" in source
     assert "STOREY: upper; elevations are storey-relative" in source
     assert "STOREY: upper; elevations are project-frame absolute" in source
@@ -246,7 +275,14 @@ def test_campaign_json_and_artifacts_include_network_evaluation(
     summary = json.loads(result.stdout) if "--json" in flags else report
     if flags == ["--json"]:
         assert summary == report
-    assert report["evaluations"] == summary["evaluations"]
+    if "--summary" in flags:
+        view = summary["decision"]
+        assert view["mode"] == "network" and len(view["orders_tried"]) == 3
+        assert view["network"]["report_ptr"] == "/evaluations/0"
+        assert view["network"]["status"] == ("refused" if scope == "empty" else "evaluated")
+        assert view["candidates"]["count"] == (0 if scope == "empty" else 1)
+    else:
+        assert report["evaluations"] == summary["evaluations"]
     assert report["evaluations"][0]["tag"] == "campaign"
     assert len(report["orders_tried"]) == 3
     if scope == "empty":
@@ -257,6 +293,14 @@ def test_campaign_json_and_artifacts_include_network_evaluation(
         assert "ft(1)" in report["accepted"][0]["source"]
         assert report["evaluations"][0]["introduced"]
         assert report["evaluations"][0]["coverage"]
+        if "--summary" in flags:
+            assert view["network"]["unknown"] == {"other": 1}
+            assert view["network"]["findings"][0]["ptr"] == "/evaluations/0/introduced/0"
     if scope == "partial":
-        assert summary["refused"]
-        assert summary["refusals"][0]["blockers"][0]["tag"] == "DUCT"
+        if "--summary" in flags:
+            refusal, = view["completion"]["refusals"]["items"]
+            assert view["completion"]["refused"]["count"] == 1
+            assert refusal["blockers"][0]["tag"] == "DUCT"
+        else:
+            assert summary["refused"]
+            assert summary["refusals"][0]["blockers"][0]["tag"] == "DUCT"

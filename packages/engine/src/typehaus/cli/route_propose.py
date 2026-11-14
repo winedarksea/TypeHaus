@@ -238,8 +238,9 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
             search, report = _search_for(model, graph, ends, slope)
             with clock.stage("search"):
                 if alternatives > 1:
-                    found_all = alternative_routes(search, graph, space, start, goals,
-                                                   alternatives)
+                    found_all = alternative_routes(
+                        search, graph, space, start, goals, alternatives,
+                        service="drain" if ends.falls else "")
                 else:
                     one = search(graph, space, start, goals)
                     found_all = [] if one is None else [one]

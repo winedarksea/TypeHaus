@@ -14,7 +14,7 @@ from typehaus.quantities import M_PER_IN
 from typehaus.routing.alternatives import alternative_routes, corridor_tolerance_m
 from typehaus.routing.cost import RouteCost
 from typehaus.routing.graph import Graph, Node
-from typehaus.routing.search import shortest_route
+from typehaus.routing.search import price_route, shortest_route
 from typehaus.routing.space import RoutingSpace
 
 
@@ -122,3 +122,21 @@ def test_an_unreachable_goal_returns_nothing_rather_than_raising() -> None:
     graph, space = _lattice()
     graph.nodes.append(Node(index=8, x=99.0, y=99.0, z=0.0))  # no edges at all
     assert alternative_routes(shortest_route, graph, space, 0, {8}, 3) == []
+
+
+def test_a_gravity_alternative_keeps_its_metadata_and_its_drain_turn_price() -> None:
+    """B is priced like A (`turn_price`, not `bend_price`) and keeps what price_route drops."""
+    graph, space = _lattice()
+
+    def drain_search(g, sp, start, goals):
+        found = shortest_route(g, sp, start, goals)
+        assert found is not None
+        found = price_route(g, sp, found.nodes, "drain")
+        found.start_m, found.vent, found.grade_in_per_ft = 1.5, "vent", 0.25
+        return found
+
+    first, second = alternative_routes(drain_search, graph, space, 0, {7}, 3,
+                                       service="drain")
+    assert first.terms["bend_in"] == pytest.approx(30.0)  # the sweep, not the 24" bend
+    assert second.cost == pytest.approx(first.cost)
+    assert (second.start_m, second.vent, second.grade_in_per_ft) == (1.5, "vent", 0.25)

@@ -61,7 +61,8 @@ Search = Callable[[Graph, RoutingSpace, int, set[int]], "Route | None"]
 
 def alternative_routes(search: Search, graph: Graph, space: RoutingSpace, start: int,
                        goals: set[int], k: int, *, factor: float = DEFAULT_FACTOR,
-                       max_shared: float = DEFAULT_MAX_SHARED) -> list[Route]:
+                       max_shared: float = DEFAULT_MAX_SHARED,
+                       service: str = "") -> list[Route]:
     """Up to ``k`` distinct routes, cheapest first, each priced on the original graph.
 
     ``search`` is a parameter rather than an import so a gravity-aware search slots in
@@ -70,6 +71,8 @@ def alternative_routes(search: Search, graph: Graph, space: RoutingSpace, start:
     Returns fewer than ``k`` rather than padding: a lane that is the only lane is a fact
     about the building, and a second "alternative" that is 96% the first route is a worse
     answer than saying there is only one.
+
+    ``service`` prices turns as route A's search did (``"drain"`` for a gravity search).
     """
     from typehaus.routing.search import price_route
 
@@ -91,7 +94,7 @@ def alternative_routes(search: Search, graph: Graph, space: RoutingSpace, start:
         found = search(weighted, space, start, goals)
         if found is None:
             break
-        priced = _repriced(found, price_route(graph, space, found.nodes))
+        priced = _repriced(found, price_route(graph, space, found.nodes, service))
         if any(_shared_fraction(graph, priced, other) >= max_shared
                for other in accepted):
             continue
@@ -103,9 +106,10 @@ def _repriced(found: Route, priced: Route) -> Route:
     """``found`` at the real graph's price. Where its geometry is not its lattice nodes' (a
     duct's offset leg, ``duct_search.FittedRoute``) the found route is kept and only its
     price replaced, with the premiums the search added on top of the lattice's."""
-    if found.points == priced.points:
-        return priced
-    premium = {key: found.terms[key] for key in _PREMIUMS if found.terms.get(key)}
+    # Always ``replace`` the found route: price_route knows nothing of start_m, takeoff,
+    # wet, vent, grade or expansions, which a gravity search sets.
+    premium = ({} if found.points == priced.points else
+               {key: found.terms[key] for key in _PREMIUMS if found.terms.get(key)})
     return replace(found, cost=priced.cost + sum(premium.values()),
                    terms={**priced.terms, **premium}, bends=priced.bends,
                    corridor_tags=priced.corridor_tags)

@@ -12,6 +12,7 @@ catlin's, and each states its basis the way ``max_run_developed_over_straight`` 
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass, field, replace
 from typing import Any
 
@@ -110,16 +111,16 @@ class RouteCost:
 
     def segment_cost(self, length_ft: float, *, vertical: bool = False,
                      corridor: bool = False, rack: bool = False,
-                     room_ft: float = 0.0, occupancy: str | None = None) -> float:
+                     rooms: Sequence[tuple[float, str | None]] = ()) -> float:
         """One edge's travel and open-air cost, in inches of equivalent travel.
 
-        ``room_ft`` is the portion of this edge inside a finished room — a length, not a
-        flag, because an edge that clips a room's corner should not pay a whole segment's
+        ``rooms`` is ``(feet inside, occupancy)`` per room the edge crosses — lengths, not
+        a flag, because an edge that clips a room's corner should not pay a whole segment's
         penalty. Member cuts and exterior walls are priced by the caller.
         """
         travel = self.travel(length_ft, vertical=vertical)
         return (travel - self.discount(length_ft, travel, corridor=corridor, rack=rack)
-                + room_ft * self.room_penalty(occupancy))
+                + sum(ft * self.room_penalty(occupancy) for ft, occupancy in rooms))
 
     def travel(self, length_ft: float, *, vertical: bool = False) -> float:
         return length_ft * 12.0 * (self.riser_per_ft if vertical else 1.0)

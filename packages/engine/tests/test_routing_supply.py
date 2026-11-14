@@ -79,3 +79,20 @@ def test_a_laid_supply_leg_offers_a_rack_lane_either_side_and_a_drain_offers_non
     # 24" of travel less 2 ft x 4"/ft of rack discount.
     assert priced is not None and abs(priced[0] - 16.0) < 1e-9
     assert abs(priced[1]["rack_in"] + 8.0) < 1e-9
+
+
+def test_a_room_charges_the_length_inside_it_and_rooms_sum() -> None:
+    def room(x1: float, occupancy: str) -> SoftPrism:
+        return SoftPrism(tag="R", kind="room", footprint=box(0.0, -0.1, x1, 0.1),
+                         z0_m=-1.0, z1_m=1.0, occupancy=occupancy)
+
+    a, b = Node(index=0, x=0.0, y=0.0, z=0.0), Node(index=1, x=2 * FT, y=0.0, z=0.0)
+    cost = RouteCost()
+    half, whole = room(FT, "living"), room(2 * FT, "bedroom")
+    # 24" of travel; the straddled room bills 1 ft of it, an enclosing second room 2 ft more.
+    for rooms, billed in (([half], cost.room_penalty("living")),
+                          ([half, whole], cost.room_penalty("living")
+                           + 2 * cost.room_penalty("bedroom"))):
+        priced = _finish(_space(soft=rooms), a, b, "x", rooms)
+        assert priced is not None and abs(priced[1]["room_in"] - billed) < 1e-9
+        assert abs(priced[0] - (24.0 + billed)) < 1e-9

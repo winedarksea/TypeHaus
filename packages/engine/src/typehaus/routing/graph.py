@@ -14,7 +14,12 @@ from dataclasses import dataclass, field
 
 import numpy as np
 
-from typehaus.routing.graph_batch import edges_state, points_blocked
+from typehaus.routing.graph_batch import (
+    edges_state,
+    points_blocked,
+    room_lengths,
+    soft_along,
+)
 from typehaus.routing.space import (
     MAX_CANDIDATE_LINES,
     MAX_LATTICE_NODES,
@@ -428,13 +433,13 @@ def _price(space: RoutingSpace, a: Node, b: Node, axis: str, *,
     """
     if space.edge_blocked(a.plan, b.plan, a.z, b.z, ignore=ignore) is not None:
         return None
-    mid = ((a.x + b.x) / 2.0, (a.y + b.y) / 2.0)
-    return _finish(space, a, b, axis, space.soft_at(mid, (a.z + b.z) / 2.0))
+    return _finish(space, a, b, axis,
+                   soft_along(space, (a.x, a.y, a.z), (b.x, b.y, b.z)))
 
 
 def _finish(space: RoutingSpace, a: Node, b: Node, axis: str, soft: list
             ) -> tuple[float, dict[str, float], str | None] | None:
-    """The pricing half of :func:`_price`, given what the soft prisms at the midpoint are."""
+    """The pricing half of :func:`_price`, given the soft prisms the edge meets."""
     midz = (a.z + b.z) / 2.0
     length_m = abs(b.x - a.x) + abs(b.y - a.y) + abs(b.z - a.z)
     if length_m <= 0:
@@ -457,23 +462,18 @@ def _finish(space: RoutingSpace, a: Node, b: Node, axis: str, soft: list
             return None  # an illegal bore, notch or plate cut: not a lane
         cuts = found
 
-    room_ft, occupancy, exterior = 0.0, None, False
-    for prism in soft:
-        if prism.kind == "room":
-            room_ft, occupancy = length_ft, prism.occupancy
-        elif prism.kind == "wall" and prism.occupancy == "exterior":
-            exterior = True
+    rooms, exterior = room_lengths(soft, a, b)
 
     rack = corridor is not None and corridor.kind == "rack"
     cost = space.cost.segment_cost(
         length_ft, vertical=vertical, corridor=corridor is not None and not rack,
-        rack=rack, room_ft=room_ft, occupancy=occupancy)
+        rack=rack, rooms=rooms)
     terms = {"travel_in": space.cost.travel(length_ft, vertical=vertical)}
     if corridor is not None:
         terms["rack_in" if rack else "corridor_in"] = -space.cost.discount(
             length_ft, terms["travel_in"], corridor=not rack, rack=rack)
-    if room_ft:
-        terms["room_in"] = room_ft * space.cost.room_penalty(occupancy)
+    if rooms:
+        terms["room_in"] = sum(ft * space.cost.room_penalty(occ) for ft, occ in rooms)
     if exterior and space.cost.exterior_wall_per_ft:
         terms["exterior_wall_in"] = length_ft * space.cost.exterior_wall_per_ft
         cost += terms["exterior_wall_in"]

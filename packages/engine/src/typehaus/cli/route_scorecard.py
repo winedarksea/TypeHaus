@@ -14,6 +14,16 @@ from collections import Counter
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+from typehaus.cli.route_check_groups import (
+    BORE_CHECKS,
+    CLEANOUT_CHECKS,
+    DUCT_CHECKS,
+    FITTING_PATTERN_CHECKS,
+    TRAP_ARM_CHECKS,
+    VENT_CHECKS,
+    bores,
+    segments,
+)
 from typehaus.cli.route_scorecard_modes import Found, propose_target
 from typehaus.cli.route_scorecard_targets import TARGETS, ScoreTarget
 
@@ -21,29 +31,11 @@ __all__ = ["TARGETS", "ScoreTarget", "run_scorecard", "write_scorecard", "regres
            "markdown"]
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
+    from collections.abc import Sequence
+
     from typehaus.resolve.model import ResolvedModel
     from typehaus.routing.cost import RouteCost
     from typehaus.routing.proposal import RouteProposal
-
-#: ``--evaluate`` check ids each metric reads, by what they grade.
-BORE_CHECKS = frozenset({
-    "mep.run_through_stud", "mep.run_through_plate", "mep.run_through_header",
-    "mep.run_member_crossing", "mep.run_through_floor_member", "mep.run_in_joist_flange",
-    "mep.run_in_joist_web",
-    "mep.run_through_blocking", "mep.run_through_beam"})
-TRAP_ARM_CHECKS = frozenset({"mep.trap_arm_length"})
-VENT_CHECKS = frozenset({"mep.vent_reachability", "mep.vent_grade",
-                         "mep.vent_termination_height"})
-CLEANOUT_CHECKS = frozenset({"mep.drain_cleanouts"})
-FITTING_PATTERN_CHECKS = frozenset({"mep.fitting_pattern"})
-#: What grades a duct's ROUTE, not its sizing or parts: the bay or soffit it rides, the truss
-#: panel it crosses, its hangers and penetrations, whether it lands, and the ERV static
-#: budget its length and elbows spend.
-DUCT_CHECKS = frozenset({
-    "mep.duct_joist_bay", "mep.duct_joist_bay_occupancy", "mep.duct_soffit_occupancy",
-    "mep.open_web_panel", "mep.duct_supports", "mep.duct_penetration_fit",
-    "mep.duct_connectivity", "mep.erv_static_budget"})
-
 
 #: Per-metric slack before a rise counts as a regression. Everything absent is an integer
 #: count compared exactly. Search time is a wall clock and wanders with the machine.
@@ -114,14 +106,20 @@ def _row(name: str) -> tuple[str, dict[str, Any]]:
     found = propose_target(card["directory"], card["model"], card["targets"][name],
                            card["cost"])
     seconds = time.perf_counter() - start
-    graded = (evaluate_network(card["directory"], card["model"], found.proposals,
-                               baseline=card["baseline"]).introduced
-              if found.proposals else [])
-    return name, _metrics(card["model"], found, seconds, graded, card["cost"])
+    evaluation = (evaluate_network(card["directory"], card["model"], found.proposals,
+                                   baseline=card["baseline"])
+                  if found.proposals else None)
+    return name, _metrics(card["model"], found, seconds,
+                          evaluation.introduced if evaluation else [], card["cost"],
+                          refused=evaluation.refused if evaluation else None,
+                          coverage=evaluation.coverage if evaluation else ())
 
 
 def _metrics(model: ResolvedModel, found: Found, seconds: float, introduced: list[Any],
-             cost: RouteCost) -> dict[str, Any]:
+             cost: RouteCost, refused: str | None = None,
+             coverage: Sequence[str] = ()) -> dict[str, Any]:
+    """``refused``/``coverage`` come from the evaluation: a refused or uncovered grade is
+    ungraded, not clean, so it is counted rather than folded into 0 FAIL."""
     from typehaus.resolve.mep_fitting_direction import forbidden_turns
     from typehaus.resolve.mep_fittings import SERVICE_BY_SYSTEM
     from typehaus.routing.rack import rack_shared
@@ -148,7 +146,7 @@ def _metrics(model: ResolvedModel, found: Found, seconds: float, introduced: lis
                                   if found.ft_tag in (None, p.tag)), 2),
         "fittings": dict(sorted(fittings.items())),
         "forbidden_fittings": forbidden,
-        "bores": dict(sorted(_bores(model, proposals).items())),
+        "bores": dict(sorted(bores(model, proposals).items())),
         "illegal_bores": count(BORE_CHECKS, ("fail",)),
         "trap_arm_gaps": count(TRAP_ARM_CHECKS),
         "vent_gaps": count(VENT_CHECKS),
@@ -161,48 +159,10 @@ def _metrics(model: ResolvedModel, found: Found, seconds: float, introduced: lis
         "rack_shared": rack_shared(proposals, spacing_m=cost.rack_spacing_in * 0.0254),
         "eval_fail": sum(1 for f in introduced if f.result.value == "fail"),
         "eval_unknown": sum(1 for f in introduced if f.result.value == "unknown"),
+        "eval_refused": int(bool(refused)),
+        "eval_coverage_gaps": len(coverage),
         "search_s": round(seconds, 2),
     }
-
-
-def _segments(proposal: RouteProposal):
-    for a, b in zip(proposal.points, proposal.points[1:], strict=False):
-        yield (a[0], a[1]), (b[0], b[1]), a[2], b[2]
-
-
-def _bores(model: ResolvedModel, proposals: list[RouteProposal]) -> Counter[str]:
-    """Members each proposal passes through, by kind: stud/plate/header, joist, truss pass."""
-    from shapely.geometry import LineString, box
-
-    from typehaus.resolve.mep_bore_geometry import leg_crossings as wall_crossings
-    from typehaus.resolve.mep_crossings import leg_crossings as floor_crossings
-    from typehaus.resolve.mep_crossings import member_window
-    from typehaus.resolve.pipe_sections import pipe_outside_diameter_m
-
-    out: Counter[str] = Counter()
-    kinds = {f.tag: getattr(member_window(f), "kind", None) for f in model.floors}
-    for proposal in proposals:
-        radius = pipe_outside_diameter_m(proposal.diameter_m,
-                                         proposal.echo.get("material")) / 2.0
-        for a, b, za, zb in _segments(proposal):
-            reach = (LineString([a, b]) if a != b else LineString([a, (a[0] + 1e-6, a[1])])
-                     ).buffer(radius + 0.01)
-            for wall in model.walls:
-                if not wall.members or not reach.intersects(box(*_wall_bounds(wall))):
-                    continue
-                for cut in wall_crossings(wall, a, b, za, zb, radius):
-                    out[cut.category] += 1
-            for floor in model.floors:
-                kind = {"open_web": "truss_pass", "i_joist": "i_joist"}.get(
-                    kinds[floor.tag], "joist")
-                out[kind] += len(floor_crossings(floor, a, b, za, zb))
-    return out
-
-
-def _wall_bounds(wall: Any) -> tuple[float, float, float, float]:
-    xs = [p[0] for layer in wall.layers for p in layer.polygon] or [wall.axis[0][0]]
-    ys = [p[1] for layer in wall.layers for p in layer.polygon] or [wall.axis[0][1]]
-    return (min(xs), min(ys), max(xs), max(ys))
 
 
 def _exterior_ft(model: ResolvedModel, proposal: RouteProposal) -> float:
@@ -212,7 +172,7 @@ def _exterior_ft(model: ResolvedModel, proposal: RouteProposal) -> float:
     from typehaus.routing.obstacles import exterior_cavities
 
     total = 0.0
-    for a, b, za, zb in _segments(proposal):
+    for a, b, za, zb in segments(proposal):
         segment = LineString([a, b]) if a != b else None
         for _tag, ring, z0, z1 in exterior_cavities(model):
             if not (z0 <= (za + zb) / 2.0 <= z1):
@@ -250,7 +210,12 @@ def regressions(baseline: dict[str, Any], current: dict[str, Any]) -> list[str]:
         if after is None:
             out.append(f"{name}: missing from the current scorecard")
             continue
-        for key, old in before.items():
+        if after.get("proposals", 0) > 0 and after.get("eval_refused", 0) > 0:
+            out.append(f"{name}: evaluation refused (candidate would not resolve), ungraded")
+        # New keys absent from an older baseline compare against 0.
+        for key, old in {"eval_refused": 0, "eval_coverage_gaps": 0, **before}.items():
+            if key == "eval_refused":
+                continue  # reported above, whatever the baseline says
             new = after.get(key)
             if isinstance(old, dict):
                 old, new = sum(old.values()), sum((new or {}).values())

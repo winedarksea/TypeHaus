@@ -207,14 +207,16 @@ def fitted_route(graph: Graph, space: RoutingSpace, start: int, goals: set[int],
     push(start, _Label(0.0, 0.0, problem.start_axis,
                        start=(origin.x, origin.y, origin.z)), None)
     clock = time.monotonic()
+    expanded = 0  # this search's own count: `report` may be shared across alternatives
     while open_heap:
         _f, index, _key, lid = heapq.heappop(open_heap)
         if lid not in alive:
             continue  # dominated after it was pushed
         label = alive[lid][1]
         report.reached += 1
-        stopped = ("labels" if report.reached > problem.max_labels else
-                   "seconds" if report.reached % 4096 == 0
+        expanded += 1
+        stopped = ("labels" if expanded > problem.max_labels else
+                   "seconds" if expanded % 4096 == 0
                    and time.monotonic() - clock > problem.max_seconds else None)
         if stopped is not None:
             report.stopped = stopped
@@ -231,7 +233,7 @@ def fitted_route(graph: Graph, space: RoutingSpace, start: int, goals: set[int],
                 _tight(report, "the arrival across a port lead", 0.0)
             else:
                 return _rebuild(graph, space, came, node_of, slid, lid, problem,
-                                report.reached)
+                                expanded)
         incoming = label.heading
         for other, axis in graph.neighbours(index):
             step = graph.weights.get((index, other))
