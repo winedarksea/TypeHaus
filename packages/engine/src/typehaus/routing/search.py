@@ -19,6 +19,14 @@ lattice, one blocked node, ``BEND = 24``, eight pops, and the winning path's cos
 tie-break stated there — ``(f, node id, axis)`` ascending with ``+x`` before ``+y`` — is
 implemented here and is not an implementation detail: without it A* is non-deterministic
 and no oracle can pin it.
+
+**A bendable tube searches labels, not states** (``_bent_route``). Its turn is a field bend
+only where the straight either side holds the bend's tangent ``R tan(45°) = R`` — the
+take-off's own rule (``resolve/mep_fittings._bend``: all of an end leg, half of a leg between
+two turns) — so a label carries its SIGNED heading, the straight since the last turn and what
+began that leg, Pareto-pruned per ``(node, heading)``. A reversal is refused: a 180 in place
+is two coincident legs, and the lattice draws any real U as two 90s with a leg between.
+With no radius the ``(node, axis)`` search below is unchanged, so §4 stays pinned.
 """
 
 from __future__ import annotations
@@ -27,7 +35,7 @@ import heapq
 import math
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, NamedTuple
 
 import numpy as np
 
@@ -40,6 +48,9 @@ _AXIS_ORDER = {"x": 0, "y": 1, "z": 2}
 
 #: A step losing less than this is level: the 1/16" grid the repo authors on.
 _RISE_TOL_M = 0.0015875
+
+_INDEX = {"x": 0, "y": 1, "z": 2}
+_EPS_M = 1e-9
 
 
 @dataclass
@@ -121,6 +132,8 @@ def shortest_route(graph: Graph, space: RoutingSpace, start: int,
     if not goals:  # nothing to reach: the heuristic is a min over goals
         return None
     heuristic = _heuristic(graph, space, goals)
+    if space.bend_radius_m > 0.0:
+        return _bent_route(graph, space, start, goals, heuristic, rising)
     # The heap entry carries ``g`` as its LAST element, after the unique ``counter``, so it
     # takes no part in the ordering and the tie-break stays exactly ``(f, node id, axis)``
     # — which is what §4 of the oracle note pins.
@@ -170,6 +183,108 @@ def shortest_route(graph: Graph, space: RoutingSpace, start: int,
     return None
 
 
+class _Label(NamedTuple):
+    cost: float
+    straight: float  # laid since the last turn, capped at the most any rule asks (2R)
+    heading: str     # signed ("+x", "-z"); "" at the start
+    kind: int        # what began the leg: 0 the run's start, 1 a fitting, 2 a bend
+
+
+def _bent_route(graph: Graph, space: RoutingSpace, start: int, goals: set[int],
+                heuristic: Callable[[int], float], rising: bool) -> Route | None:
+    """``shortest_route`` for a bendable tube: every bend's tangent fits its straights."""
+    tangent = space.bend_radius_m  # every lattice turn is 90 degrees
+    cap = 2.0 * tangent
+    # Straight a leg begun by kind 0/1/2 must hold before a bend, a fitting, the goal.
+    bend_need, fit_need, goal_need = (tangent, cap, cap), (0.0, 0.0, cap), (0.0, 0.0, tangent)
+    fitting, bent = space.cost.bend_in, space.cost.pex_bend_in
+    frontier: dict[tuple[int, str], list[tuple[_Label, int]]] = {}
+    alive: dict[int, tuple[int, _Label]] = {}
+    came: dict[int, int] = {}
+    node_of: dict[int, int] = {}
+    open_heap: list[tuple[float, int, int, int]] = []
+    arcs: dict[tuple[int, int, str], bool] = {}  # whether a turn's arc clears
+    counter = 0
+
+    def push(node: int, label: _Label, parent: int | None) -> None:
+        nonlocal counter
+        kept = frontier.setdefault((node, label.heading), [])
+        pruned = False
+        for other, lid in kept:
+            if _dominates(other, label):
+                return
+            if _dominates(label, other):
+                alive.pop(lid, None)
+                pruned = True
+        if pruned:
+            kept[:] = [entry for entry in kept if entry[1] in alive]
+        counter += 1
+        kept.append((label, counter))
+        alive[counter] = (node, label)
+        node_of[counter] = node
+        if parent is not None:
+            came[counter] = parent
+        heapq.heappush(open_heap, (label.cost + heuristic(node), node,
+                                   _AXIS_ORDER.get(label.heading[-1:], 0), counter))
+
+    push(start, _Label(0.0, 0.0, "", 0), None)
+    expansions = 0
+    while open_heap:
+        _f, index, _key, lid = heapq.heappop(open_heap)
+        entry = alive.get(lid)
+        if entry is None:
+            continue  # dominated after it was pushed
+        label = entry[1]
+        expansions += 1
+        if index in goals and label.straight >= goal_need[label.kind] - _EPS_M:
+            chain = [lid]
+            while chain[-1] in came:
+                chain.append(came[chain[-1]])
+            nodes = [node_of[i] for i in reversed(chain)]
+            route = price_route(graph, space, nodes)
+            route.expansions = expansions
+            return route
+        incoming, a = label.heading, graph.nodes[index]
+        for other, axis in graph.neighbours(index):
+            step = graph.weights.get((index, other))
+            if step is None:
+                continue
+            b = graph.nodes[other]
+            if rising and b.z < a.z - _RISE_TOL_M:
+                continue
+            delta = (b.x - a.x, b.y - a.y, b.z - a.z)[_INDEX[axis]]
+            heading = ("+" if delta > 0 else "-") + axis
+            leg = min(abs(delta), cap)
+            if not incoming or heading == incoming:
+                push(other, _Label(label.cost + step, min(label.straight + leg, cap),
+                                   heading, label.kind), lid)
+                continue
+            if incoming[1] == axis:
+                continue  # a reversal
+            have, cost = label.straight, label.cost + step
+            if have >= fit_need[label.kind] - _EPS_M:
+                push(other, _Label(cost + fitting, leg, heading, 1), lid)
+            if have >= bend_need[label.kind] - _EPS_M and bent < fitting:
+                made = _Label(cost + bent, leg, heading, 2)
+                if any(_dominates(kept, made) for kept, _lid
+                       in frontier.get((other, heading), ())):
+                    continue  # the arc test is the search's dearest call: skip it
+                turn = (index, other, incoming)
+                clears = arcs.get(turn)
+                if clears is None:
+                    clears = arcs[turn] = bend_price(graph, space, None, index, other,
+                                                     heading=incoming) < fitting
+                if clears:
+                    push(other, made, lid)
+    return None
+
+
+def _dominates(first: _Label, second: _Label) -> bool:
+    """No dearer, no less straight, and begun by nothing stricter (start < fitting < bend)."""
+    return (first.cost <= second.cost + 1e-12 and first.straight >= second.straight - _EPS_M
+            and first.kind <= second.kind)
+
+
 def _heuristic(graph: Graph, space: RoutingSpace,
                goals: set[int]) -> Callable[[int], float]:
     """Manhattan plan + ``|Δz| × riser_per_ft``, scaled by the cost's own cheapest inch.
@@ -213,17 +328,24 @@ def _rebuild(graph: Graph, space: RoutingSpace,
 
 
 def bend_price(graph: Graph, space: RoutingSpace, before: int | None, at: int,
-               after: int) -> float:
+               after: int, *, heading: str = "") -> float:
     """A pressure turn at ``at``: ``pex_bend_in`` where the tube bends, else ``bend_in``.
 
     A bendable tube (``space.bend_radius_m``) bends where the quarter arc of that radius
-    between the two legs clears every hard prism; anything else is a fitting.
+    between the two legs clears every hard prism; anything else is a fitting. The way in is
+    the signed ``heading`` when given (the label's leg), else ``before`` -> ``at``. Whether
+    the straights hold the tangents is the caller's rule, not this one's.
     """
     radius = space.bend_radius_m
-    if radius <= 0.0 or before is None:
+    if radius <= 0.0 or (before is None and not heading):
         return space.cost.bend_in
-    a, b, c = graph.nodes[before], graph.nodes[at], graph.nodes[after]
-    u = _unit((b.x - a.x, b.y - a.y, b.z - a.z))
+    b, c = graph.nodes[at], graph.nodes[after]
+    if heading:
+        u = tuple((1.0 if heading[0] == "+" else -1.0) if k == _INDEX[heading[1]] else 0.0
+                  for k in range(3))
+    else:
+        a = graph.nodes[before]
+        u = _unit((b.x - a.x, b.y - a.y, b.z - a.z))
     v = _unit((c.x - b.x, c.y - b.y, c.z - b.z))
     # Centre one radius back along the way in and one out along the way out.
     centre = tuple(p - radius * ui + radius * vi
@@ -278,6 +400,8 @@ def price_route(graph: Graph, space: RoutingSpace, nodes: list[int],
     bends = 0
     total = 0.0
     bend_total = 0.0
+    bent = space.bend_radius_m > 0.0 and not service
+    turns = (_tube_turns(graph, space, nodes, points, axes) if bent else {})
     for step, (a, b) in enumerate(zip(nodes, nodes[1:], strict=False)):
         total += graph.weights.get((a, b), 0.0)
         for key, value in graph.terms.get((a, b), {}).items():
@@ -285,7 +409,12 @@ def price_route(graph: Graph, space: RoutingSpace, nodes: list[int],
         tag = graph.corridors.get((a, b))
         if tag is not None and tag not in corridors:
             corridors.append(tag)
-        if step and axes[step] != axes[step - 1]:
+        if bent:
+            if step in turns:
+                price, count = turns[step]
+                bends += count
+                bend_total += price
+        elif step and axes[step] != axes[step - 1]:
             bends += 1
             price = (turn_price(space, axes[step - 1], axes[step], service) if service
                      else bend_price(graph, space, nodes[step - 1], nodes[step],
@@ -296,6 +425,33 @@ def price_route(graph: Graph, space: RoutingSpace, nodes: list[int],
         terms["bend_in"] = bend_total
     return Route(nodes=list(nodes), points=points, cost=total, terms=terms,
                  bends=bends, corridor_tags=tuple(corridors))
+
+
+def _tube_turns(graph: Graph, space: RoutingSpace, nodes: list[int],
+                points: list[tuple[float, float, float]],
+                axes: list[str]) -> dict[int, tuple[float, int]]:
+    """``step -> (price, bends)`` for a bendable tube, by ``mep_fittings._bend``'s rule.
+
+    A turn bends where its arc clears and ``R`` fits all of an end leg and half of a leg
+    between two turns; else it is a fitting. A reversal is two fittings.
+    """
+    at = [s for s in range(1, len(axes))
+          if axes[s] != axes[s - 1] or _reverses(points[s - 1], points[s], points[s + 1])]
+    ends = [0, *at, len(points) - 1]
+    fitting, radius = space.cost.bend_in, space.bend_radius_m
+    out: dict[int, tuple[float, int]] = {}
+    for k, s in enumerate(at, start=1):
+        if _reverses(points[s - 1], points[s], points[s + 1]):
+            out[s] = (2.0 * fitting, 2)
+            continue
+        legs = []
+        for lo, hi in ((ends[k - 1], s), (s, ends[k + 1])):
+            shared = lo > 0 and hi < len(points) - 1
+            legs.append(math.dist(points[lo], points[hi]) / (2.0 if shared else 1.0))
+        price = (bend_price(graph, space, nodes[s - 1], nodes[s], nodes[s + 1])
+                 if radius <= min(legs) + _EPS_M else fitting)
+        out[s] = (price, 1)
+    return out
 
 
 def _reverses(a: tuple[float, float, float], b: tuple[float, float, float],

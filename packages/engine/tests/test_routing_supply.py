@@ -13,7 +13,7 @@ from typehaus.quantities import M_PER_IN
 from typehaus.routing.cost import RouteCost
 from typehaus.routing.graph import Graph, Node, _finish
 from typehaus.routing.obstacles import HardPrism, SoftPrism
-from typehaus.routing.search import bend_price
+from typehaus.routing.search import bend_price, price_route, shortest_route
 from typehaus.routing.space import RoutingSpace
 from typehaus.routing.trades.pipe import bend_radius_m
 
@@ -43,6 +43,38 @@ def test_a_pex_corner_bends_where_its_arc_clears_and_is_fitted_where_it_does_not
     blocked = _space(hard=[post])
     blocked.bend_radius_m = radius
     assert bend_price(graph, blocked, 0, 1, 2) == blocked.cost.bend_in
+
+
+def _line_graph(points: list[tuple[float, float]], links: list[tuple[int, int]]) -> Graph:
+    """Nodes at plan points in inches, each link one edge priced at its length."""
+    graph = Graph(nodes=[Node(index=i, x=x * M_PER_IN, y=y * M_PER_IN, z=0.0)
+                         for i, (x, y) in enumerate(points)])
+    for a, b in links:
+        axis = "x" if points[a][1] == points[b][1] else "y"
+        length = abs(points[a][0] - points[b][0]) + abs(points[a][1] - points[b][1])
+        for u, v in ((a, b), (b, a)):
+            graph.edges.setdefault(u, {}).setdefault(axis, []).append(v)
+            graph.weights[(u, v)] = length
+    return graph
+
+
+def test_pex_bends_hold_their_tangents_and_a_back_step_is_never_a_bend() -> None:
+    """R = 3.75": two bends 1" apart need 7.5" between them, so the jog is two fittings;
+    a 1/2" back-step along x is refused, not priced as a 4" bend."""
+    space = _space()
+    space.bend_radius_m = 3.75 * M_PER_IN
+    jog = _line_graph([(0, 0), (24, 0), (24, 1), (48, 1)], [(0, 1), (1, 2), (2, 3)])
+    route = shortest_route(jog, space, 0, {3})
+    assert route is not None and route.bends == 2
+    assert route.cost == 49.0 + 2 * space.cost.bend_in
+    assert price_route(jog, space, route.nodes).cost == route.cost
+    # A(0,0) B(24,0) C(23.5,0) G(23.5,24) D(24,24): C hangs off B, so A-B-C-G back-steps.
+    back = _line_graph([(0, 0), (24, 0), (23.5, 0), (23.5, 24), (24, 24)],
+                       [(0, 1), (1, 2), (2, 3), (1, 4), (4, 3)])
+    route = shortest_route(back, space, 0, {3})
+    assert route is not None and route.nodes == [0, 1, 4, 3]
+    assert route.cost == 48.5 + space.cost.pex_bend_in + space.cost.bend_in
+    assert price_route(back, space, [0, 1, 2, 3]).cost == 48.5 + 3 * space.cost.bend_in
 
 
 def test_an_exterior_cavity_pays_per_foot_and_a_vent_is_exempt() -> None:

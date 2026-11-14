@@ -261,8 +261,8 @@ def fitted_route(graph: Graph, space: RoutingSpace, start: int, goals: set[int],
                 report.loops += 1
                 continue
             legs = (*label.legs, _box(label.start, here))
-            turn = (bend_price(graph, space, node_of[came[lid]] if lid in came else None,
-                               index, other) + problem.fabricated_in)
+            turn = (bend_price(graph, space, None, index, other, heading=incoming)
+                    + problem.fabricated_in)
             cost = label.cost + step + turn
             if label.corner >= 0 and heading == label.before:
                 made = _offset(graph, space, problem, label, index, heading, clear)
