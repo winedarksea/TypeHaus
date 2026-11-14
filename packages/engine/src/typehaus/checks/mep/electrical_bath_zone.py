@@ -128,9 +128,10 @@ def bath_luminaire_zone(ctx: CheckContext) -> list[Finding]:
     """410.10(D) and 422.18(B): luminaires and paddle fans in and over a tub or shower.
 
     (D)(1)/422.18(B): no track, pendant, chain/cable/cord-hung luminaire or paddle fan within
-    3 ft (plan) and 8 ft above the rim or threshold, in the tub's own room: a luminaire in
-    another room (``room_owning``) is behind a wall and out of the zone (PASS), one whose room
-    is unresolved stays UNKNOWN. (D)(2): a
+    3 ft (plan) and 8 ft above the rim or threshold. The zone is the tub's own room: a
+    luminaire in another room (``room_owning``) is behind its wall and outside the zone, a PASS
+    on the engine's reading (owner, 2026-11-14), however near in plan. One whose room is
+    unresolved stays UNKNOWN. (D)(2): a
     luminaire inside the tub or shower outline up to 8 ft is marked damp, or wet where spray
     reaches it, which the model cannot say, so a damp-only one is UNKNOWN. The rim is the body
     top for a ``-TUB``, the pan floor for a shower (conservative). A luminaire's reach is its
@@ -182,8 +183,10 @@ def bath_luminaire_zone(ctx: CheckContext) -> list[Finding]:
             if here is not None and there is not None and here.tag != there.tag:
                 if gap <= _ZONE_M and form in _ZONE_FORMS:
                     out.append(passed(
-                        _LUM_CID, f"{light.tag} is in {here.tag}, separated from the tub's room "
-                                  f"{there.tag}: outside the {fixture.tag} zone",
+                        _LUM_CID, f"{light.tag} is in {here.tag}, a separate room behind "
+                                  f"{there.tag}'s wall, {gap / 0.3048:.1f} ft away in plan: the "
+                                  f"zone is the tub's own room, so it is outside the "
+                                  f"{fixture.tag} zone",
                         (light.tag, fixture.tag), code=code))
                 continue  # another room is behind a wall: not in the zone
             if gap <= _ZONE_M and form in _ZONE_FORMS and product.voltage <= 30:
