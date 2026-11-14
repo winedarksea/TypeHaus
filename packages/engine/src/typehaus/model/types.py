@@ -18,7 +18,11 @@ from typehaus.model.built_in_bench import BENCH_ENVELOPE_TOLERANCE_M, BuiltInBen
 from typehaus.model.curtain_track import CurtainTrackSpec
 from typehaus.model.door_hardware import DoorHardwareItem, JambFraming
 from typehaus.model.doorway import DoorwayTreatment
-from typehaus.model.electrical_facts import DeviceElectricalFacts, EquipmentElectricalFacts
+from typehaus.model.electrical_facts import (
+    DeviceElectricalFacts,
+    EquipmentElectricalFacts,
+    EvseElectricalFacts,
+)
 from typehaus.model.enums import (
     DoorOperation,
     LuminaireForm,
@@ -623,7 +627,7 @@ class FixtureType(HausModel):
     basin: bool | None = None
 
 
-class ApplianceType(FurnitureType):
+class ApplianceType(FurnitureType, EvseElectricalFacts):
     """A product requiring services but not a plumbing fixture (for example a washer)."""
 
     needs: frozenset[Service] = frozenset()

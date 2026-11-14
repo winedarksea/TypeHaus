@@ -19,6 +19,7 @@ _PRINTED = {
     "MICROGRID_CONTROL": "705.76", "ISLAND_CAPACITY": "705.80", "ISLAND_VOLTAGE": "705.81",
     "EVSE_LOSS_OF_PRIMARY": "625.46", "EVSE_INTERACTIVE": "625.48", "EVSE_ISLAND": "625.49",
     "EVSE_COUPLING_HEIGHT": "625.50", "EVSE_VENTILATION": "625.52",
+    "INTERCONNECTION_CENTER_FED": "705.12(B)(4)",
 }
 
 
@@ -34,9 +35,10 @@ def _with_inverter(plan, **update):
         "library": plan.library.model_copy(update={"equipment_types": types})})
 
 
-def test_the_inverter_covers_the_backup_panel_but_pcs_status_is_unknown(catlin_plan, catlin_model):
+def test_the_inverter_covers_the_backup_panel_and_pcs_is_export_only(catlin_plan, catlin_model):
     findings = standby_capacity(check_context(catlin_plan, catlin_model))
-    assert [f.result for f in findings] == [Result.PASS, Result.UNKNOWN]
+    assert [f.result for f in findings] == [Result.PASS, Result.NOT_APPLICABLE]
+    assert "include no overload control" in findings[1].message  # EG4's published PCS list
     assert "5,649 VA" in findings[0].message and "CKT-HP3" in findings[0].message
 
 
@@ -58,4 +60,38 @@ def test_a_small_inverter_is_unknown_then_fails(catlin_plan, catlin_model):
     assert low[0].result is Result.FAIL
     # Declared not PCS-listed: (A)(3) falls away, the capacity finding stands alone.
     off = _run(_with_inverter(catlin_plan, pcs_listed=False), catlin_model)
-    assert [f.result for f in off] == [Result.PASS]
+    assert [f.result for f in off] == [Result.PASS, Result.NOT_APPLICABLE]
+    on = _run(_with_inverter(catlin_plan, pcs_functions=("overload_control",)), catlin_model)
+    assert [f.result for f in on] == [Result.PASS, Result.UNKNOWN]  # setting, reconnection
+
+
+# --- lane F: EG4's published facts (ESS User Manual v1.0, 12kPV QSG v1.3.2) ---------------
+
+def test_ess_shutdown_reads_the_inverters_rsd_scope(catlin_plan, catlin_model):
+    from typehaus.checks.mep.ess_shutdown import ess_emergency_shutdown
+
+    results = [f.result for f in ess_emergency_shutdown(check_context(catlin_plan, catlin_model))]
+    assert results == [Result.PASS, Result.NOT_APPLICABLE, Result.PASS]  # 706.15(B), 480.7(A)/(B)
+    pv_only = _with_inverter(catlin_plan, rsd_shutdown_scope=("pv_array",))
+    assert ess_emergency_shutdown(check_context(pv_only, catlin_model))[0].result is Result.FAIL
+
+
+def test_source_breaker_over_the_inverters_maximum_fails(catlin_plan, catlin_model):
+    from typehaus.checks.mep.power_sources import source_ocpd
+
+    small = _with_inverter(catlin_plan, max_overcurrent_a=45)  # under CKT-ESS-GRID's 50 A
+    ceiling = source_ocpd(check_context(small, catlin_model))[1]
+    assert ceiling.result is Result.FAIL and "45A maximum OCPD" in ceiling.message
+
+
+def test_evse_connector_under_18_in_indoors_fails(catlin_plan, catlin_model):
+    from typehaus.checks.mep.electrical_evse import evse_circuit
+    from typehaus.quantities import inch
+
+    types = tuple(t.model_copy(update={"connector_holster_height": inch(12)})
+                  if t.connector_holster_height is not None else t
+                  for t in catlin_plan.library.appliance_types)
+    low = catlin_plan.model_copy(update={
+        "library": catlin_plan.library.model_copy(update={"appliance_types": types})})
+    [found] = [f for f in evse_circuit(check_context(low, catlin_model)) if "625.50" in f.code_ref]
+    assert found.result is Result.FAIL and "12 in." in found.message

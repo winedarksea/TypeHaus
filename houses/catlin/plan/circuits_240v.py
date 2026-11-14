@@ -137,7 +137,8 @@ DEDICATED_240V_CIRCUITS = (
             conductor_awg="8", egc_awg="10",
             load_va=5300,
             description="Heat pump 1 indoor, ducted air handler + 4.6 kW heat kit (EQ-S-HP1-AH, EQ-S-HP1-STRIP)"),
-    Circuit(uid="CKT037AAAA", tag="CKT-HP2", slot=49, panel_ref=_PANEL, breaker_amps=30, poles=2,
+    # Slot 40 since 2026-11-14: it gave 49/51 to CKT-ESS-GRID, the bus's last row (705.12(B)(2)).
+    Circuit(uid="CKT037AAAA", tag="CKT-HP2", slot=40, panel_ref=_PANEL, breaker_amps=30, poles=2,
             conductor_awg="10", egc_awg="10",
             gfci=True, load_va=6000,
             description="Heat pump 2 outdoor, Multi Ultra 4-port (EQ-M-HP2-OD; feeds 3 heads, one port unused)"),
@@ -154,7 +155,8 @@ DEDICATED_240V_CIRCUITS = (
             nema="6-20R", gfci=True, load_va=3000,
             description="SEVERIN WK 3422 tea maker via UK adapter (6-20R half)"),
     # The EG4 12kPV's grid port, at the opposite end of the bus from the main (120% rule
-    # headroom is why the panel is a 225A bus on a 200A main). Both PV and battery reach the
+    # headroom is why the panel is a 225A bus on a 200A main). Slots 51/53 are the last row
+    # of a top-fed 54-space can, nothing beyond it; at 40/42 rows 22-26 held breakers below. Both PV and battery reach the
     # service through this one breaker — the array lands on the inverter's MPPTs
     # (EQ-B-ESS-INV) rather than backfeeding on its own.
     #
@@ -165,9 +167,10 @@ DEDICATED_240V_CIRCUITS = (
     #
     # source=True excludes it from the 120.82 load summary and includes it in the 705.12
     # busbar check.
-    Circuit(uid="CKT012AAAA", tag="CKT-ESS-GRID", slot=40, panel_ref=_PANEL, breaker_amps=50,
-            # #8 Cu at 75 °C (50 A): EG4's and the breaker's terminals must be listed 75 °C.
-            conductor_awg="8", egc_awg="10", termination_temp_c=75,
+    Circuit(uid="CKT012AAAA", tag="CKT-ESS-GRID", slot=51, panel_ref=_PANEL, breaker_amps=50,
+            # #6 Cu: EG4 publishes no terminal temperature (ESS User Manual v1.0 §10.2: GRID
+            # takes up to 4 AWG), so 110.14(C)(1)(a)'s 60 °C column: 55 A >= 50 A.
+            conductor_awg="6", egc_awg="10",
             poles=2, source=True, load_va=0,
             description="EG4 12kPV grid port — PV + battery interconnection (EQ-B-ESS-INV)"),
     # CKT-HP1-STRIP IS DELETED, AND SLOT 18 IS A SPARE 2-POLE AGAIN: the aux heat is now a

@@ -77,7 +77,8 @@ def resolve_electrical_labels(model: Any) -> None:
     out.extend(_source_labels(model, elements, devices, dev_types, eq_types, circuits, root,
                               rooms))
     out.extend(_service_labels(plan, devices, dev_types, root))
-    out.extend(_storage_labels(elements, circuits))
+    out.extend(_storage_labels(elements, circuits, eq_types))
+    out.extend(_battery_emergency_labels(elements, devices, dev_types, eq_types))
     out.extend(_heat_labels(elements, devices, circuits))
     out.extend(_evse_labels(devices, circuits, rooms))
 
@@ -237,7 +238,24 @@ def _service_labels(plan, devices, dev_types, root):
     ]
 
 
-def _storage_labels(elements, circuits):
+def _battery_emergency_labels(elements, devices, dev_types, eq_types):
+    """480.7(B): an outdoor initiator whose loop the inverter's maker says also opens the ESS
+    is the battery's remote control; the label is owed only if the AHJ applies (B) below 60 V."""
+    batteries = [e for e in elements if e.element_kind == "Equipment"
+                 and getattr(e.kind, "value", "") == "battery"]
+    scoped = [e for e in _inverters(elements, eq_types)
+              if "ess" in (getattr(eq_types[e.type_ref], "rsd_shutdown_scope", None) or ())]
+    if not batteries or not scoped:
+        return []
+    return [_label(NEC.BATTERY_EMERGENCY_DISCONNECT, tag, "EMERGENCY DISCONNECT",
+                   "on the outdoor initiator, beside the 690.12(D)(2) wording",
+                   f"{tag} initiates {scoped[0].tag}'s ESS disconnect (rsd_shutdown_scope)",
+                   condition="the AHJ reads 480.7(B) as standing apart from (A)'s 60 V")
+            for tag in sorted(t for t, d in devices.items()
+                              if getattr(dev_types.get(d.type_ref or ""), "rsd_initiator", False))]
+
+
+def _storage_labels(elements, circuits, eq_types):
     out = []
     by_tag = {c.tag: c for c in circuits}
     for battery in sorted((e for e in elements if e.element_kind == "Equipment"
@@ -250,12 +268,14 @@ def _storage_labels(elements, circuits):
                               f"on the disconnect ({circuit.tag} breaker, slot {circuit.slot}), "
                               "which shows open or closed; a dwelling needs only the voltage",
                               f"{battery.tag} disconnects at {circuit.tag}", key=circuit.tag))
+        nominal = getattr(eq_types.get(battery.type_ref or ""), "battery_nominal_voltage_v", None)
         out.append(_label(NEC.BATTERY_VOLTAGE_LABEL, battery.tag,
-                          "states the nominal battery voltage",
+                          f"states the nominal battery voltage: {nominal:g} V dc" if nominal
+                          else "states the nominal battery voltage",
                           "near the battery, where no dc disconnect is provided (a dwelling "
                           "under 150 V dc needs only the voltage)",
                           f"{battery.tag} is a stationary battery", literal=False,
-                          missing=("battery nominal voltage",)))
+                          missing=() if nominal else ("battery nominal voltage",)))
         if circuit is not None and circuit.source:
             out.append(_label(NEC.SWITCH_BACKFEED_SIGN, circuit.panel_ref,
                               "WARNING - LOAD SIDE TERMINALS MAY BE ENERGIZED BY BACKFEED",

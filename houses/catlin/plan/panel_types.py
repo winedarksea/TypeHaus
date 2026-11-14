@@ -21,7 +21,9 @@ PANEL_TYPES = (
     # ``sccr_a``: the QO154M200P sheet (Jul 2023) "Max Short Circuit Current Rating 22 kA"; the
     # HOM2040M200PC sheet (Oct 2020) "Short Circuit Current Rating 22 kA". NEC 408.6.
     panel_type("ED-T-PANEL-225A", tag="ED-T-PANEL",
-               name="225A bus, 200A main (feeder 1 of the 320A service)", sccr_a=22000),
+               name="225A bus, 200A main (feeder 1 of the 320A service)", sccr_a=22000,
+               # The QO154M200P sheet's photo: main breaker at the top of the interior.
+               main_feed_end="top"),
     # Feeder 2 of the Class 320 service: the wellness and EV loads, which are what made the
     # 120.82 total need a service upgrade in the first place. 20 spaces for the 5 two-pole
     # circuits in use, including the workshop. ``bus_amps=200`` equals the main:
