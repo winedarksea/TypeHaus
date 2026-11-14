@@ -19,8 +19,9 @@ Frisco TX 2026 NEC amendments (210.52(C)(2) Island and Peninsular Countertops).
 ``UNCONFIRMED`` names the rows still read only in drafts or trade press, kept by the owner
 until someone reads them in the printed code; ``cite``/``mark`` print them with a caveat, so
 the doubt reaches the finding, the permit checklist and the sheet.
-120.82(C): (3) heat pump + 65% supplemental is quoted (Holt, EC&M Nov 2025). The resistance
-heat items are contested (Holt: (4) 65%, (5) 40%; Annex D2 draft: 5, 6), so cite 120.82(C).
+120.6 and 120.82 (with Part III as the standard method it stands beside) were read in the
+printed code by the owner 2026-11-13. The engine paraphrases the code and never quotes it;
+``tests/test_nec_120_82.py`` pins the arithmetic.
 """
 
 from __future__ import annotations
@@ -43,14 +44,22 @@ class NEC:
     FEEDER_SERVICE_STANDARD: Final = "Article 120 Part III"
     FLOOR_AREA: Final = "120.5(C)"
     NONCOINCIDENT: Final = "120.6"
+    NONCOINCIDENT_UNLIKELY: Final = "120.6(1)"  # feeders/services only
+    NONCOINCIDENT_LISTED: Final = "120.6(2)"  # prevented by listed equipment
     PCS_SETPOINT: Final = "120.7"
     GENERAL_LIGHTING_STANDARD: Final = "120.41"
     DRYER_STANDARD: Final = "120.54"
     OPTIONAL_DWELLING: Final = "120.82"
+    OPTIONAL_APPLICABILITY: Final = "120.82(A)"
     OPTIONAL_GENERAL_LOADS: Final = "120.82(B)"
+    OPTIONAL_SMALL_APPLIANCE: Final = "120.82(B)(2)"
     OPTIONAL_FIXED_APPLIANCES: Final = "120.82(B)(3)"
     OPTIONAL_HVAC: Final = "120.82(C)"
+    OPTIONAL_COOLING: Final = "120.82(C)(1)"
+    OPTIONAL_HEAT_PUMP: Final = "120.82(C)(2)"
     OPTIONAL_HEAT_PUMP_SUPPLEMENTAL: Final = "120.82(C)(3)"
+    OPTIONAL_RESISTANCE_FEW: Final = "120.82(C)(4)"
+    OPTIONAL_RESISTANCE_MANY: Final = "120.82(C)(5)"
     OPTIONAL_EVSE: Final = "120.82(D)"
 
     # Art. 130 (was Art. 750) — energy management.
@@ -164,8 +173,7 @@ class NEC:
 #: Rows not yet read in the printed 2026 text: each is the best-supported location.
 #: TODO: confirm every one against NFPA 70-2026 before a permit set relies on it.
 UNCONFIRMED: Final = frozenset({
-    NEC.NONCOINCIDENT, NEC.FEEDER_SERVICE_STANDARD, NEC.GFCI_SINK, NEC.AFCI_DWELLING,
-    NEC.FLOOR_BOX, NEC.INTERCONNECTION_120PCT, NEC.LIMITED_ENERGY_SEPARATION,
+    NEC.GFCI_SINK, NEC.AFCI_DWELLING, NEC.FLOOR_BOX, NEC.INTERCONNECTION_120PCT, NEC.LIMITED_ENERGY_SEPARATION,
     NEC.COUNTERTOP_RECEPTACLE_LOCATION, NEC.WALL_COUNTERTOP, NEC.BALCONY_RECEPTACLE,
     NEC.SERVICE_GROUNDING, NEC.GEC_SIZE, NEC.INTERSYSTEM_BONDING, NEC.WATER_PIPE_BOND,
     NEC.LIGHTNING_BOND,

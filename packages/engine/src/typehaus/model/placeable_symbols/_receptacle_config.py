@@ -19,6 +19,7 @@ class ReceptacleGeometryConfig:
     quad_socket_width_fraction: float = 0.36
     socket_height_fraction: float = 0.26
     single_socket_height_fraction: float = 0.52
+    duplex_face_aspect_ratio: float = 2.75 / 4.5
     quad_column_offset_fraction: float = 0.23
     blade_spacing_fraction: float = 0.19
     blade_width_fraction: float = 0.055

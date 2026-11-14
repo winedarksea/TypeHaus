@@ -83,6 +83,27 @@ def _socket_face(center_x, center_z, width, height, front, back):
         front, back, "electrical-orange")
 
 
+def _orient_face_detail(part, face_height, housing_height, horizontal):
+    """Rotate the complete socket pattern, preserving its relief and mesh normals."""
+    def position(point):
+        x, y, z = point
+        return ((z - face_height / 2, y, housing_height / 2 - x) if horizontal
+                else (x, y, z + (housing_height - face_height) / 2))
+
+    result = {**part, "center": position(part["center"])}
+    if horizontal:
+        width, depth, height = part["size"]
+        result["size"] = (height, depth, width)
+    if "mesh" in part:
+        mesh = part["mesh"]
+        result["mesh"] = {
+            **mesh, "positions": tuple(position(point) for point in mesh["positions"]),
+            "normals": (tuple((z, y, -x) for x, y, z in mesh["normals"])
+                        if horizontal else mesh["normals"]),
+        }
+    return result
+
+
 def _receptacle(width, depth, height, configurations):
     plate_depth = min(depth * CFG.plate_depth_fraction, CFG.maximum_plate_depth_m)
     socket_depth = min(depth * CFG.socket_depth_fraction, CFG.maximum_socket_depth_m)
@@ -95,19 +116,27 @@ def _receptacle(width, depth, height, configurations):
              _plate(width, height, plate_front, housing_front)]
     count = len(configurations)
     quad = count == 4
-    socket_width = width * (CFG.quad_socket_width_fraction if quad
+    horizontal = count == 2 and width > height
+    face_width, face_height = (height, width) if horizontal else (width, height)
+    if count == 2:
+        # A wide cover changes the installation orientation, not the socket proportions.
+        face_width = min(face_width, face_height * CFG.duplex_face_aspect_ratio)
+        face_height = face_width / CFG.duplex_face_aspect_ratio
+    socket_width = face_width * (CFG.quad_socket_width_fraction if quad
                             else CFG.socket_width_fraction)
-    socket_height = height * (CFG.single_socket_height_fraction if count == 1
+    socket_height = face_height * (CFG.single_socket_height_fraction if count == 1
                               else CFG.socket_height_fraction)
+    details = []
     for index, configuration in enumerate(configurations):
-        center_x = (width * CFG.quad_column_offset_fraction * (-1 if index % 2 == 0 else 1)
+        center_x = (face_width * CFG.quad_column_offset_fraction * (-1 if index % 2 == 0 else 1)
                     if quad else 0)
-        center_z = (height * (2 if index < 2 else 1) / 3 if quad
-                    else height * (count - index) / (count + 1))
-        parts.append(_socket_face(center_x, center_z, socket_width, socket_height,
+        center_z = (face_height * (2 if index < 2 else 1) / 3 if quad
+                    else face_height * (count - index) / (count + 1))
+        details.append(_socket_face(center_x, center_z, socket_width, socket_height,
                                   socket_front, plate_front))
-        parts.extend(_slot_marks(center_x, center_z, socket_width, socket_height,
+        details.extend(_slot_marks(center_x, center_z, socket_width, socket_height,
                                  mark_front, socket_front, configuration))
+    parts.extend(_orient_face_detail(part, face_height, height, horizontal) for part in details)
     return (rect(0, 0, width, depth),), tuple(parts)
 
 

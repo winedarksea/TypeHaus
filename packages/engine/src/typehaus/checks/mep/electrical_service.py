@@ -27,8 +27,10 @@ def _warn_fail(cid: str, msg: str, tags: tuple[str, ...]) -> Finding:
 # the strategy word.
 def _basis(credit: dict) -> str:
     strategy = str(credit["strategy"])
+    if strategy == "noncoincident" and credit["listing"]:
+        return f"{NEC.NONCOINCIDENT_LISTED} noncoincident by listed equipment, {credit['listing']}"
     if strategy == "noncoincident":
-        return f"{mark(NEC.NONCOINCIDENT)} noncoincident, AHJ judgement"
+        return f"{NEC.NONCOINCIDENT_UNLIKELY} noncoincident, AHJ judgement"
     return f"PCS, {credit['listing'] or 'listed'}"
 
 
@@ -39,17 +41,24 @@ def service_load(ctx: CheckContext) -> list[Finding]:
     A ``LoadManagement`` caps what its managed circuits can draw together, so the group's
     connected excess over ``max_simultaneous_va`` comes off the demand — *in the 120.82
     term the load was counted in*. It comes off only where the basis holds: a 120.6
-    noncoincident pair with a stated source, or a PCS listed
+    noncoincident group (counted at its largest member) with a source or listing, or a PCS listed
     under 2026 NEC Article 130 Part II. A group that earns none of those is a FAIL naming
     what it is missing, and its excess stays in the demand.
     """
     from typehaus.takeoff.electrical import service_load_summary
+    from typehaus.takeoff.service_load import OPTIONAL_METHOD_MIN_AMPS
 
     cid = "electrical.service_load"
     if not ctx.plan.library.circuits:
         return [_unknown(cid, "no circuits authored")]
 
     summary = service_load_summary(ctx.model)
+    if not summary["optional_method_applies"]:
+        return [_unknown(cid, f"{cite(NEC.OPTIONAL_APPLICABILITY)} permits the optional method "
+                              f"only on service conductors of {OPTIONAL_METHOD_MIN_AMPS:.0f} A "
+                              f"or more; this service is {summary['service_amps']:.0f} A and "
+                              f"the {NEC.FEEDER_SERVICE_STANDARD} standard method is not "
+                              "implemented")]
     demand_va = float(summary["demand_va"])  # type: ignore[arg-type]
     service_amps = float(summary["service_amps"])  # type: ignore[arg-type]
     credit_va = float(summary["load_management_credit_va"])  # type: ignore[arg-type]
@@ -89,8 +98,9 @@ def service_load(ctx: CheckContext) -> list[Finding]:
         out.append(_warn_fail(
             cid, f"estimated demand {managed_amps:.1f}A exceeds the {service_amps:.0f}A "
                  f"service{where} — options: a listed PCS ({NEC.EDITION} {NEC.PCS_SETPOINT}/"
-                 f"{NEC.PCS}), a {mark(NEC.NONCOINCIDENT)} noncoincident pair, or a service "
-                 "upgrade", ()))
+                 f"{NEC.PCS}), a {mark(NEC.NONCOINCIDENT)} noncoincident pair, a "
+                 f"{NEC.OPTIONAL_HEAT_PUMP_SUPPLEMENTAL} compressor/heat-kit interlock "
+                 "(``compressor_lockout_ref``), or a service upgrade", ()))
     return out
 
 

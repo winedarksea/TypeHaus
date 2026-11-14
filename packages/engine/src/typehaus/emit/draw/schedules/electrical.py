@@ -77,7 +77,7 @@ def _write_panel_schedule(pdf, model: ResolvedModel, number: str, name: str) -> 
             ("Fixed appliances", f"{load['fixed_appliance_va']:,.0f} VA"),
             (f"{NEC.OPTIONAL_GENERAL_LOADS} demand on the two above",
              f"first {FIRST_8KVA:,.0f} VA at 100%, rest at {REMAINDER_DEMAND_FACTOR:.0%}"),
-            ("Heating/cooling (heat pump 100%, its heat kit 65%)",
+            (f"Heating/cooling, largest selection: {load['hvac_selection']}",
              f"{load['hvac_va']:,.0f} VA"),
             ("EV charging (continuous)", f"{load['ev_va']:,.0f} VA"),
             ("DEMAND", f"{load['demand_va']:,.0f} VA = {load['demand_amps']:.1f} A"),

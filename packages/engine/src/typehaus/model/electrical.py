@@ -93,8 +93,8 @@ register_constructor("Circuit", Circuit)
 # The two bases a load-management credit can rest on, and nothing else. Free text used
 # to be allowed here, which let a controller with no listing and no code section behind it
 # take a credit off the service calculation just by naming itself an "ems". The old
-# ``hvac_interlock`` is gone: 2026 NEC 120.82(C)(3) counts a heat-pump compressor at 100%
-# plus its supplemental heat at 65%, and carries no interlock credit.
+# ``hvac_interlock`` is gone: 2026 NEC 120.82(C)(3)'s compressor/supplemental interlock is a
+# term of the selection, authored as ``Equipment.compressor_lockout_ref``, not a group cap.
 LoadManagementStrategy = Literal["noncoincident", "pcs"]
 
 
@@ -107,9 +107,10 @@ class LoadManagement(Element):
     service. ``electrical.service_load`` credits that excess only where ``strategy`` names
     a basis the credit actually earns:
 
-    - ``noncoincident`` — 2026 NEC 120.6(1): feeder or service loads unlikely to be in
-      use together are counted once, at the largest. Needs a ``source`` saying what makes
-      them exclusive, and is an AHJ judgement, not an arithmetic fact.
+    - ``noncoincident`` — 2026 NEC 120.6: the group counts at its single largest load
+      (an authored ceiling below that is raised to it). (1) feeder/service loads unlikely to
+      run together, an AHJ judgement on a ``source``; or (2) loads listed equipment prevents
+      from running together, on a ``listing``.
     - ``pcs`` — a power control system under 2026 NEC Article 130 Part II (120.7(B) sets the
       setpoint at <= 80% of the monitored OCPD; 130.2 requires the listing; 625.42(A)
       points EV supply equipment at the same Part II). Credited only with a ``listing``:

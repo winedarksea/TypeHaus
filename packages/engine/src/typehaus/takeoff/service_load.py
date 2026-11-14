@@ -7,24 +7,31 @@ the demand estimate ``electrical.service_load`` / ``panel_feeder_load`` and E-60
 
 from __future__ import annotations
 
+from collections import Counter
+
 from typehaus.model.nec import NEC, cite
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff.lighting import line_voltage_run_va, nec_floor_area_ft2
 
-# 2026 NEC 120.82 (optional method, was 220.82) constants for the service-load summary.
-# 120.82(B): 2 VA/ft2 general lighting (was 3) and the first 8,000 VA at 100% (was 10 kVA),
-# per NFPA 70 A2025 CMP-2 second draft, Annex D2(a)/(b), SR-7961/7964; EC&M (Austin,
-# 2026-05-19) gives the same 2 VA/ft2 for 120.41. Read 2026-11-07, not the printed text.
+# 2026 NEC 120.82 (optional method, was 220.82), read in the printed code 2026-11-13.
+# (A): the sum of (B), (C) and (D); permitted only where the service conductors are >= 100 A.
+OPTIONAL_METHOD_MIN_AMPS = 100.0
+# (B): (1) 2 VA/ft2 of 120.5(C) floor area; (2) 1,500 VA per 20 A small-appliance and
+# laundry circuit; (3)/(4) nameplates. First 8,000 VA of the sum at 100%, the rest at 40%.
 GENERAL_LIGHTING_VA_PER_FT2 = 2.0
-SMALL_APPLIANCE_AND_LAUNDRY_VA = 4500.0  # 2 x 1500 small-appliance + 1500 laundry
+SMALL_APPLIANCE_OR_LAUNDRY_VA = 1500.0
+# 210.11(C)(1)/(2) minimums: required whether or not the plan authors them.
+MIN_SMALL_APPLIANCE_CIRCUITS = 2
+MIN_LAUNDRY_CIRCUITS = 1
 FIRST_8KVA = 8000.0
 REMAINDER_DEMAND_FACTOR = 0.4
-# 120.82(C), item numbers contested: electric space heating is taken at 65% of nameplate
-# with fewer than four separately controlled units, 40% at four or more.
+# (C): the largest of six. (1) cooling 100%; (2) heat pump without supplemental 100%;
+# (3) compressor 100% + supplemental 65%, the compressor left out where it is prevented from
+# running with the supplemental heat; (4) space heating 65% under four separately controlled
+# units, (5) 40% at four or more; (6) thermal storage at 100% (not modelled).
 SEPARATELY_CONTROLLED_UNIT_THRESHOLD = 4
 RESISTANCE_HEAT_FACTOR_FEW = 0.65
 RESISTANCE_HEAT_FACTOR_MANY = 0.40
-# 120.82(C)(3): a heat pump's compressor at 100% and its supplemental electric heat at 65%.
 SUPPLEMENTAL_HEAT_FACTOR = 0.65
 _BTUH_PER_W = 3.412
 
@@ -66,18 +73,22 @@ _HEAT_PUMP_KINDS = frozenset({"heat_pump", "indoor_head", "ducted_air_handler"})
 
 
 def _is_heat_pump(circuit, consumers: list) -> bool:
-    """A circuit feeding the heat-pump system NEC 120.82(C)(2) takes at 100%.
+    """A circuit feeding the heat-pump system NEC 120.82(C)(1)-(3) selects among.
 
     Typed, not name-matched: an ``Equipment`` of an HVAC kind on the circuit is the modeled
-    answer. A name match on the description is fragile — a renamed unit would silently drop
-    the heating term to zero and land it in the fixed-appliance bucket (B)(3), which (B)
-    explicitly excludes heating loads from.
+    answer. A renamed unit must not drop out of (C) into (B)(3)'s fixed appliances, which
+    would count it at 40% instead of selecting it whole. A heat kit staged with an air
+    handler's blower (``blower_interlock_ref``) is (C)(3)'s supplemental heat even on a
+    circuit of its own.
     """
-    return any(
-        element.element_kind == "Equipment"
-        and getattr(getattr(element, "kind", None), "value", None) in _HEAT_PUMP_KINDS
-        for element in consumers
-    )
+    for element in consumers:
+        if element.element_kind != "Equipment":
+            continue
+        kind = getattr(getattr(element, "kind", None), "value", None)
+        if kind in _HEAT_PUMP_KINDS or (
+                kind == "space_heater" and getattr(element, "blower_interlock_ref", None)):
+            return True
+    return False
 
 
 def _supplemental_va(model: ResolvedModel, consumers: list) -> float:
@@ -90,6 +101,19 @@ def _supplemental_va(model: ResolvedModel, consumers: list) -> float:
         float(getattr(types.get(element.type_ref), "resistance_heating_btuh", None) or 0.0)
         for element in consumers if element.element_kind == "Equipment"
     ) / _BTUH_PER_W
+
+
+def _locked_out_compressors(model: ResolvedModel) -> frozenset[str]:
+    """Compressor tags some resistance heat names in ``compressor_lockout_ref``."""
+    return frozenset(
+        ref for storey in model.plan.storeys
+        for element in model.plan.storey_elements(storey.tag)
+        if (ref := getattr(element, "compressor_lockout_ref", None)))
+
+
+def _is_compressor(element, locked: frozenset[str]) -> bool:
+    return (element.element_kind == "Equipment" and element.tag in locked
+            and getattr(getattr(element, "kind", None), "value", None) == "heat_pump")
 
 
 def _is_resistance_heat(circuit, consumers: list) -> bool:
@@ -132,10 +156,17 @@ def _bucket(model: ResolvedModel, circuit, consumers: list) -> str:
         return "resistance_heat"
     if "ev charging" in description:
         return "ev"
-    if ("lighting" in description or "general receptacles" in description
-            or "small-appliance" in description or "laundry" in description):
+    if "small-appliance" in description:
+        return "small_appliance"
+    if "laundry" in description:
+        return "laundry"
+    if "lighting" in description or "general receptacles" in description:
         return "general"
     return "appliance"
+
+
+# Buckets (B)(1)/(B)(2) price per square foot or per circuit, not by connected VA.
+_ALLOWANCE_BUCKETS = frozenset({"source", "general", "small_appliance", "laundry"})
 
 
 def _service_amps(model: ResolvedModel) -> tuple[float, str]:
@@ -173,12 +204,13 @@ def _credit_refusal(model: ResolvedModel, management, members, consumers) -> str
 
     The rules are the bases ``LoadManagement`` names, and each is refused on its own terms
     rather than on a blanket "unlisted" — a reader has to be able to see which requirement
-    was missed. (2026 120.82(C)(3) carries no compressor/supplemental-heat interlock credit.)
+    was missed. (120.82(C)(3)'s compressor interlock is not a group: ``compressor_lockout_ref``.)
     """
     if management.strategy == "noncoincident":
-        if not management.source.strip():
+        if not (management.source.strip() or management.listing.strip()):
             return (f"{cite(NEC.NONCOINCIDENT)} counts noncoincident loads once only where "
-                    "something makes them exclusive; no source recorded")
+                    "they are unlikely to run together (1) or listed equipment prevents it "
+                    "(2); neither a source nor a listing recorded")
         return ""
     if management.strategy == "pcs":
         if not management.listing.strip():
@@ -203,6 +235,9 @@ def load_management_credits(
     ``credited`` is the gate: a group whose basis does not hold reports its excess and a
     ``refusal``, and ``service_load_summary`` leaves that excess in the demand. A credit
     the code does not name and no listing backs is not a credit.
+
+    A ``noncoincident`` group never counts below its single largest member (120.6): an
+    authored ceiling under that is raised to it, one above it is kept.
     """
     consumers = _circuit_consumers(model)
     circuits = {c.tag: c for c in model.plan.library.circuits
@@ -214,8 +249,12 @@ def load_management_credits(
         members = [circuits[tag] for tag in management.managed_circuits if tag in circuits]
         if circuit_tags is not None and not members:
             continue  # this group reaches no circuit in the subset
-        group_va = sum(_connected_va(model, c, consumers.get(c.tag, [])) for c in members)
-        excess = max(0.0, group_va - management.max_simultaneous_va)
+        member_va = [_connected_va(model, c, consumers.get(c.tag, [])) for c in members]
+        group_va = sum(member_va)
+        cap_va = management.max_simultaneous_va
+        if management.strategy == "noncoincident":
+            cap_va = max(cap_va, max(member_va, default=0.0))
+        excess = max(0.0, group_va - cap_va)
         refusal = _credit_refusal(model, management, members, consumers)
         by_bucket: dict[str, float] = {}
         if excess > 0 and group_va > 0 and not refusal:
@@ -230,11 +269,34 @@ def load_management_credits(
             "listing": management.listing, "source": management.source,
             "managed_circuits": list(management.managed_circuits),
             "missing_circuits": missing,
-            "group_va": group_va, "cap_va": management.max_simultaneous_va,
+            "group_va": group_va, "cap_va": cap_va,
             "excess_va": excess, "by_bucket": by_bucket,
             "credited": not refusal, "refusal": refusal,
         })
     return out
+
+
+def general_demand_va(general_va: float) -> float:
+    """120.82(B): the first 8 kVA of the general loads at 100%, the remainder at 40%."""
+    return (min(general_va, FIRST_8KVA)
+            + max(general_va - FIRST_8KVA, 0.0) * REMAINDER_DEMAND_FACTOR)
+
+
+def hvac_selection(*, cooling_va: float, heat_pump_va: float, supplemental: bool,
+                   resistance_va: float, resistance_units: int) -> tuple[float, str]:
+    """120.82(C): the largest selection, and the item it is. A tie goes to the earlier entry.
+
+    ``heat_pump_va`` already holds supplemental heat at 65% and no locked-out compressor.
+    """
+    few = resistance_units < SEPARATELY_CONTROLLED_UNIT_THRESHOLD
+    options = (
+        (heat_pump_va, NEC.OPTIONAL_HEAT_PUMP_SUPPLEMENTAL if supplemental
+         else NEC.OPTIONAL_HEAT_PUMP),
+        (cooling_va, NEC.OPTIONAL_COOLING),
+        (resistance_va * (RESISTANCE_HEAT_FACTOR_FEW if few else RESISTANCE_HEAT_FACTOR_MANY),
+         NEC.OPTIONAL_RESISTANCE_FEW if few else NEC.OPTIONAL_RESISTANCE_MANY),
+    )
+    return max(options, key=lambda option: option[0])
 
 
 def service_load_summary(
@@ -242,16 +304,15 @@ def service_load_summary(
 ) -> dict[str, object]:
     """NEC 120.82 optional-method estimate against the authored service and panel bus.
 
-    Labeled an estimate on the sheet: general lighting from resolved conditioned floor
-    area, fixed appliances from the authored circuits, EV already at its continuous
-    rating (the device types carry 80% of breaker), PV excluded (a source, not a load).
+    Labeled an estimate on the sheet: (B)(1) from resolved floor area, (B)(2) per counted
+    circuit (never fewer than 210.11(C)'s two small-appliance and one laundry for the whole
+    house), fixed appliances from the authored circuits, EV at 100% (D), PV excluded (a
+    source, not a load).
 
-    The heating/cooling term is 120.82(C)'s *selection*, not a sum: heat pumps at 100%
-    (C)(2), their supplemental heat kit at 65% (C)(3), against electric resistance space
-    heating at 65%/40% (C)(5)/(6), largest wins.
-    Adding them would be double-counting a house that cannot run both flat out — and
-    would also mean a 1.5 kW bench heater in an unconditioned garage landing in the
-    fixed-appliance bucket (B)(3), which (B) explicitly excludes heating loads from.
+    (C) is a *selection*, not a sum (``hvac_selection``): cooling, the heat pumps with
+    their supplemental heat at 65%, or resistance space heating at 65%/40%, largest wins.
+    A compressor some heat kit names in ``compressor_lockout_ref`` is left out of the
+    heating selection, never the cooling one.
 
     Only a *credited* ``LoadManagement`` is applied, and in the bucket each managed circuit
     was counted in: an interlock over two fixed appliances saves 40% of its connected
@@ -259,33 +320,43 @@ def service_load_summary(
     the demand. A refused group's excess stays in the demand.
 
     ``circuit_tags`` narrows the whole calculation to a subset — the per-panel feeder
-    estimate. The general-lighting allowance follows the subset's ``general`` circuits, so
-    a panel hosting none of them carries none of it.
+    estimate. (B)(1) follows the subset's ``general`` circuits and (B)(2) counts only the
+    subset's own, with no minimum.
     """
     floor_area_ft2 = nec_floor_area_ft2(model)
-    general_va = GENERAL_LIGHTING_VA_PER_FT2 * floor_area_ft2 + SMALL_APPLIANCE_AND_LAUNDRY_VA
-
     consumers = _circuit_consumers(model)
     scope = [c for c in model.plan.library.circuits
              if circuit_tags is None or c.tag in circuit_tags]
-    if circuit_tags is not None and not any(
-            _bucket(model, c, consumers.get(c.tag, [])) == "general" for c in scope):
-        general_va = 0.0
+    buckets = {c.tag: _bucket(model, c, consumers.get(c.tag, [])) for c in scope}
+    counts = Counter(buckets.values())
+    small_appliance, laundry = counts["small_appliance"], counts["laundry"]
+    lighting_va = GENERAL_LIGHTING_VA_PER_FT2 * floor_area_ft2
+    if circuit_tags is None:
+        small_appliance = max(small_appliance, MIN_SMALL_APPLIANCE_CIRCUITS)
+        laundry = max(laundry, MIN_LAUNDRY_CIRCUITS)
+    elif not counts["general"]:
+        lighting_va = 0.0
+    general_va = lighting_va + SMALL_APPLIANCE_OR_LAUNDRY_VA * (small_appliance + laundry)
+
+    locked = _locked_out_compressors(model)
     connected: dict[str, float] = {}
     resistance_heat_units = 0
     supplemental_va = 0.0
+    locked_compressor_va = 0.0
     for circuit in scope:
-        bucket = _bucket(model, circuit, consumers.get(circuit.tag, []))
-        if bucket in ("source", "general"):
-            continue  # a source is not a load; general is the 2 VA/ft2 allowance above
-        va = _connected_va(model, circuit, consumers.get(circuit.tag, []))
+        bucket = buckets[circuit.tag]
+        if bucket in _ALLOWANCE_BUCKETS:
+            continue
+        on = consumers.get(circuit.tag, [])
+        va = _connected_va(model, circuit, on)
         connected[bucket] = connected.get(bucket, 0.0) + va
         if bucket == "resistance_heat":
             resistance_heat_units += 1
         elif bucket == "heat_pump":
-            supplemental_va += min(va, _supplemental_va(model, consumers.get(circuit.tag, [])))
-    # The part of the heat-pump bucket that is supplemental heat counts at 65%, not 100%.
-    supplemental_relief = supplemental_va * (1.0 - SUPPLEMENTAL_HEAT_FACTOR)
+            kit = min(va, _supplemental_va(model, on))
+            supplemental_va += kit
+            if any(_is_compressor(element, locked) for element in on):
+                locked_compressor_va += va - kit
 
     credits = load_management_credits(model, circuit_tags=circuit_tags)
     managed: dict[str, float] = {}
@@ -293,29 +364,33 @@ def service_load_summary(
         for bucket, va in credit["by_bucket"].items():  # type: ignore[union-attr]
             managed[bucket] = managed.get(bucket, 0.0) + va
 
-    def available(bucket: str) -> float:
-        return max(0.0, connected.get(bucket, 0.0) - managed.get(bucket, 0.0))
+    def available(bucket: str, managed_applied: bool) -> float:
+        credit = managed.get(bucket, 0.0) if managed_applied else 0.0
+        return max(0.0, connected.get(bucket, 0.0) - credit)
 
-    heat_pump_va = max(0.0, connected.get("heat_pump", 0.0) - supplemental_relief)
+    def hvac(managed_applied: bool) -> tuple[float, str]:
+        heat_pump = available("heat_pump", managed_applied)
+        return hvac_selection(
+            cooling_va=max(0.0, heat_pump - supplemental_va),
+            heat_pump_va=max(0.0, heat_pump - supplemental_va * (1 - SUPPLEMENTAL_HEAT_FACTOR)
+                             - locked_compressor_va),
+            supplemental=supplemental_va > 0,
+            resistance_va=available("resistance_heat", managed_applied),
+            resistance_units=resistance_heat_units)
+
+    def demand(managed_applied: bool) -> float:
+        return (general_demand_va(general_va + available("appliance", managed_applied))
+                + hvac(managed_applied)[0] + available("ev", managed_applied))
+
+    heat_pump_total = connected.get("heat_pump", 0.0)
+    cooling_va = max(0.0, heat_pump_total - supplemental_va)
+    heat_pump_va = max(0.0, heat_pump_total - supplemental_va * (1 - SUPPLEMENTAL_HEAT_FACTOR)
+                       - locked_compressor_va)
     resistance_heat_va = connected.get("resistance_heat", 0.0)
-    appliance_va = connected.get("appliance", 0.0)
-    ev_va = connected.get("ev", 0.0)
-
     resistance_factor = (RESISTANCE_HEAT_FACTOR_MANY
                          if resistance_heat_units >= SEPARATELY_CONTROLLED_UNIT_THRESHOLD
                          else RESISTANCE_HEAT_FACTOR_FEW)
-
-    def demand(managed_applied: bool) -> float:
-        appliance = available("appliance") if managed_applied else appliance_va
-        heat_pump = (max(0.0, available("heat_pump") - supplemental_relief)
-                     if managed_applied else heat_pump_va)
-        resistance = available("resistance_heat") if managed_applied else resistance_heat_va
-        ev = available("ev") if managed_applied else ev_va
-        base = general_va + appliance
-        return (min(base, FIRST_8KVA)
-                + max(base - FIRST_8KVA, 0.0) * REMAINDER_DEMAND_FACTOR
-                + max(heat_pump, resistance * resistance_factor) + ev)
-
+    hvac_va, hvac_item = hvac(False)
     unmanaged_demand_va = demand(False)
     demand_va = demand(True)
     service_amps, service_source = _service_amps(model)
@@ -329,15 +404,20 @@ def service_load_summary(
     amps = demand_va / 240.0
     return {
         "method": f"{NEC.EDITION} {NEC.OPTIONAL_DWELLING} optional method (estimate)",
+        "optional_method_applies": service_amps >= OPTIONAL_METHOD_MIN_AMPS,
         "floor_area_ft2": round(floor_area_ft2, 0),
         "general_lighting_va": round(general_va, 0),
-        "fixed_appliance_va": round(appliance_va, 0),
+        "small_appliance_circuits": small_appliance,
+        "laundry_circuits": laundry,
+        "fixed_appliance_va": round(connected.get("appliance", 0.0), 0),
         "heat_pump_va": round(heat_pump_va, 0),
+        "cooling_va": round(cooling_va, 0),
         "resistance_heat_va": round(resistance_heat_va, 0),
         "resistance_heat_units": resistance_heat_units,
         "resistance_heat_factor": resistance_factor,
-        "hvac_va": round(max(heat_pump_va, resistance_heat_va * resistance_factor), 0),
-        "ev_va": round(ev_va, 0),
+        "hvac_va": round(hvac_va, 0),
+        "hvac_selection": hvac_item,
+        "ev_va": round(connected.get("ev", 0.0), 0),
         "unmanaged_demand_va": round(unmanaged_demand_va, 0),
         "load_management_credit_va": round(unmanaged_demand_va - demand_va, 0),
         "load_management": credits,

@@ -225,11 +225,12 @@ That would let subagents compare candidates without repeatedly reading geometry 
 - Upgrade fasteners still uncounted (decision #105 covers panel screws, connector schedules, treated framing, roof/screen sheathing): wall sheathing and subfloor nailing, fascia/trim screws, window-install screws, and the HL angles' site-length through-bolts.
 - Backup battery, still open (`houses/catlin/notes/backup_power.md` §11-§12): EG4's UL 9540 certificate naming 12kPV + WallMount Indoor; how the 12kPV's load port behaves on its "No Battery" setting (ask EG4); its GEN port rating; declare future storage and V2H on the Xcel application; DSI's position on a UL 9540 3rd-ed. DC ESS battery; a freeze drain-down plan; a small LFP UPS for Home Assistant, the router and the leak valve. After the 2026-11-02 trim the always-on tier passes summer's 48 h and the bridge (0.28 kWh margin) and still fails December's cycle (§6).
 - V2H spare raceway (routed 2026-11-07, `backup_power.md` §10): add PVC 2" rows to `prices.toml [conduit_fittings]`; the ICF supplier/engineer details rebar round the three 6" CD-GAR sleeve boxouts in W-B-N2 and W-GF-S2. `CD-B-GAP-EV` ends at +5'10" abs while `ED-G-EV-1450` is at 48" AFF (+14" abs): an existing over-rise to check.
-- **2026 NEC residue (decision #120).** 15 `typehaus.model.nec.UNCONFIRMED` rows await the
-  printed NFPA 70-2026 text (owner to read): 120.6, Art. 120 Part III, 210.8(A)(9), 210.12(B),
-  210.52(C)(1), 210.52(C)(3), 210.52(E)(3), 314.27(C), 705.12(B)(2)(a), 722.15(A), 250.24,
-  250.66, 250.94, 250.104(A), 250.106; and 120.82(C)'s resistance-heat item numbers (prose
-  cites 120.82(C)). Revisit Class C SPGFCI for CKT-HP1-3 after the NFPA Standards Council
+- **2026 NEC residue (decision #120).** 13 `typehaus.model.nec.UNCONFIRMED` rows await the
+  printed NFPA 70-2026 text (owner to read): 210.8(A)(9), 210.12(B), 210.52(C)(1),
+  210.52(C)(3), 210.52(E)(3), 314.27(C), 705.12(B)(2)(a), 722.15(A), 250.24, 250.66, 250.94,
+  250.104(A), 250.106. Also unread, not yet cited: 120.57 (EVSE at the larger of 7,200 W or
+  nameplate in 2023; the engine takes the authored load at 100%) and 120.11(A) (motor
+  treatment inside 120.6). Revisit Class C SPGFCI for CKT-HP1-3 after the NFPA Standards Council
   (2026-12-15/16, ACCA/AHRI appeals); they are Class A breakers meanwhile.
 - `haus print3d --colour-groups`: per-piece colour components bucketed from `Material.color`, matched to a sample exported from Bambu Studio before shipping.
 - Promote the leafless passage's drywall wrap (#122) to a `ResolvedModel.passage_wraps` record so emitters can draw the returns.
@@ -246,7 +247,7 @@ That would let subagents compare candidates without repeatedly reading geometry 
 - Camera in ESS Room and Plant Room (for keeping an eye on them while on vacation). Something cheap, effective, and works well with the rest of the camera system
 - [ ] Final canopy ColorGard sizing: check the drift-loaded tributary wedge including garage snowpack, rail/end reactions and panel attachments. Four clamps total 3,452 lbf allowable, below the 3,839 lbf wedge screening demand even with ideal sharing; one modeled row remains provisional.
 - [ ] Roof N Mini wind-clamp design: check applicable product revision/design basis, corner-zone uplift demand and panel/fastener load path using the published Image II 24 ga test data. Test-data lookup is complete; clamp count and omission at the ColorGard corner still need wind justification.
-- The house has four grounding rods, which might be overkill?
+- The house has four grounding rods, which might be overkill? Also the grounding junctions may be in the wrong spots.
 - Eave and gutter hardware: Select the gutter bracket and outlet, and finish the splice, fastener, and sealant details. The eave sealant product and its compatibility with the roof and membrane also need confirmation. [Eave detail (line 153)](/Users/colincatlin/Documents-NoCloud/TypeHaus/houses/catlin/notes/roof_wall_eave_detail.md:153)
 - Interior selections: Remaining checks include the Aquia IV height suffix, SP bowl projection, Delta stainless-stock availability, the neo-angle shower’s door opening, and whether the studio wet bar needs a stainless bowl. Bath 2’s selected surface colors still need physical-chip checks. [Interior selections (line 336)](/Users/colincatlin/Documents-NoCloud/TypeHaus/houses/catlin/notes/interior_selections.md:336)
 - Titanium handrail fittings: the tube is 42.0 mm, stock fittings are 42.4 mm. Measure each against the tube and buy fittings rated >= 0.9 kN before ordering. `notes/titanium_handrail_backsplash.md` §2.
@@ -254,6 +255,9 @@ That would let subagents compare candidates without repeatedly reading geometry 
 - Try to keep most interior doors as 1/2" factory undercut or privacy doors where decided
 - Door residue: the steel and sauna slabs are modelled cut down 1/8" (the steel may need ordering to size); the library interior types and the plan door symbol still use the 45 mm schematic leaf.
 - Shower in sauna?
+- ED-B-CLOSET-LT has a more expensive reading light than that utility closet needs for lighting
+- Improve the 3d model of the sump
+- Improve the 3d model of the french drains
 
 # Project Management
 

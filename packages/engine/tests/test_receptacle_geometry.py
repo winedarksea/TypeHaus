@@ -28,6 +28,11 @@ CATALOG = {product.tag: product for product in ALL_ELECTRICAL_DEVICE_TYPES}
 WALL_TYPES = [product for product in CATALOG.values()
               if product.model_representation and product.model_representation.symbol
               and product.model_representation.symbol.startswith("receptacle-")]
+HORIZONTAL_TYPES = [ElectricalDeviceType(
+    tag=f"HORIZONTAL-{width}-{height}", name="Horizontal duplex",
+    footprint=(m(width * .0254), m(.0508)), height=m(height * .0254),
+    model_representation=ModelRepresentation(symbol="receptacle-duplex"))
+    for width, height in ((4, 2), (4.5, 3))]
 FLOOR_TYPE = ElectricalDeviceType(
     tag="FLOOR", name="Floor receptacle", footprint=(m(.168), m(.168)), height=m(.166),
     model_representation=ModelRepresentation(symbol="receptacle-floor"))
@@ -46,7 +51,8 @@ def test_single_gang_catalog_is_vertical(tag):
     assert product.height.inches == pytest.approx(4.5)
 
 
-@pytest.mark.parametrize("product", [*WALL_TYPES, FLOOR_TYPE], ids=lambda p: p.tag)
+@pytest.mark.parametrize("product", [*WALL_TYPES, *HORIZONTAL_TYPES, FLOOR_TYPE],
+                         ids=lambda p: p.tag)
 def test_geometry_is_bounded_closed_and_in_budget(product):
     parts = _parts(product)
     width, depth = (dimension.meters for dimension in product.footprint)
@@ -100,6 +106,27 @@ def test_faces_project_in_front_of_plate_and_grounds_below_blades(tag, socket_co
     assert len({face["center"][2] for face in faces}) == (2 if socket_count > 1 else 1)
 
 
+@pytest.mark.parametrize("product", HORIZONTAL_TYPES, ids=lambda p: p.tag)
+def test_horizontal_duplex_rotates_sockets_and_slots_without_squashing(product):
+    vertical_details = _parts(CATALOG["ED-T-RECEPTACLE"])[2:]
+    horizontal_details = _parts(product)[2:]
+    vertical_face = vertical_details[0]
+    horizontal_face = horizontal_details[0]
+    scale = horizontal_face["size"][0] / vertical_face["size"][2]
+    for vertical, horizontal in zip(vertical_details, horizontal_details, strict=True):
+        assert horizontal["size"][0] == pytest.approx(vertical["size"][2] * scale)
+        assert horizontal["size"][2] == pytest.approx(vertical["size"][0] * scale)
+        assert horizontal["color"] == vertical["color"]
+    faces = [part for part in horizontal_details if part["color"] == "electrical-orange"]
+    grounds = [part for part in horizontal_details
+               if part["color"] == "electrical-recess" and "mesh" in part]
+    assert faces[0]["center"][0] > faces[1]["center"][0]
+    for face, ground in zip(faces, grounds, strict=True):
+        assert face["center"][2] == pytest.approx(product.height.meters / 2)
+        assert ground["center"][0] < face["center"][0]
+        assert ground["center"][2] == pytest.approx(face["center"][2])
+
+
 @pytest.mark.parametrize("angle", [0, 90, 37])
 @pytest.mark.parametrize("side,offset", [("right", 0), ("left", 180)])
 def test_wall_attachment_keeps_socket_front_facing_room(angle, side, offset):
@@ -121,7 +148,8 @@ def test_wall_attachment_keeps_socket_front_facing_room(angle, side, offset):
     assert rotation == pytest.approx(angle + offset)
 
 
-@pytest.mark.parametrize("product", [*WALL_TYPES, FLOOR_TYPE], ids=lambda p: p.tag)
+@pytest.mark.parametrize("product", [*WALL_TYPES, *HORIZONTAL_TYPES, FLOOR_TYPE],
+                         ids=lambda p: p.tag)
 def test_viewer_gltf_and_ifc_keep_shared_relief_and_colors(product):
     parts = _parts(product)
     viewer = _symbol_geometry(product, product.footprint)["model_parts"]

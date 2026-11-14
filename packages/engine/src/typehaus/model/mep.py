@@ -397,6 +397,10 @@ class Equipment(Element):
     # shared plenum: two machines can share a plenum and run on independent schedules.
     # ``mep.erv_blower_interlock`` derives the coupling from the ducts and reads this.
     blower_interlock_ref: str | None = None
+    # On resistance heat: the heat-pump compressor (Equipment tag) it is prevented from running
+    # with. Authored, never inferred from lockout temperatures; NEC 120.82(C)(3) then leaves
+    # that compressor out of the heating selection (``takeoff/service_load.py``).
+    compressor_lockout_ref: str | None = None
     # The modeled ``Soffit`` this unit is installed inside, mirroring ``DuctRun.soffit_ref``.
     # Two things follow from it and neither could be said before: the placeable hangs off the
     # soffit's underside instead of the storey's default ceiling plane (an air handler in a

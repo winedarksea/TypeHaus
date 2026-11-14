@@ -151,9 +151,10 @@ CIRCUITS = (
     # Btu/h block load, so the kit is backup for the hours the compressor is off), and
     # defrost therefore runs unheated — two to four minutes of cool discharge, the standard
     # cold-climate arrangement. It used to be authored as LM-HP1-AUX and credited 4,600 VA
-    # as an interlock, which is what kept the house inside a 200 A service. 2026 NEC
-    # 120.82(C)(3) has no interlock credit (compressor 100% + supplemental 65%), and the
-    # engine no longer offers one; it is just how the unit is set up.
+    # as an interlock, which is what kept the house inside a 200 A service. The printed 2026
+    # 120.82(C)(3) does drop a compressor prevented from running with the supplemental heat
+    # (`Equipment.compressor_lockout_ref`), but a reconfigurable thermostat lockout is a weak
+    # "prevented" and 320 A doesn't need it: not claimed (owner, 2026-11-13).
     Circuit(uid="CKT036AAAA", tag="CKT-HP1-AH", slot=50, panel_ref=_PANEL, breaker_amps=35, poles=2,
             load_va=5300,
             description="Heat pump 1 indoor, ducted air handler + 4.6 kW heat kit (EQ-S-HP1-AH, EQ-S-HP1-STRIP)"),
@@ -487,8 +488,8 @@ CIRCUITS = (
 # CONTROL SYSTEM: 130.2 requires the listing, 120.7 sets the setpoint at <= 80% of the
 # monitored OCPD, and 625.42(A) points EV supply equipment at the same Part II. Emporia's
 # gear carries UL 61010-2-030 / 2808 / 2594 / 2231 / 991 and no UL 3141, so none of those
-# three credits was ever earnable. (The fourth, LM-HP1-AUX, was a 2023 compressor/supplemental
-# interlock credit; 2026 120.82(C)(3) carries none, and the engine dropped the strategy.)
+# three credits was ever earnable. (The fourth, LM-HP1-AUX, was the compressor/supplemental
+# interlock; 2026 120.82(C)(3) keeps it as `compressor_lockout_ref`, and catlin doesn't claim it.)
 #
 # The answer was the service, not a $2-3k listed PCS: a Class 320 HDLB meter-main with two
 # 200 A mains. ** 250.4 A of unmanaged 120.82 demand against 320 A ** (2026-11-07; feeders
