@@ -165,6 +165,21 @@ SERVICE_DEVICES = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-W1", face="right", distance_from_start=inch(42.875),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
+    # PV rapid-shutdown initiator (NEC 690.12(C)(1)(b), outdoors), 3" south of the meter-main
+    # where first responders look; handle ~grade + 4'-2". Opening the meter-main does NOT
+    # shut the array down: the 12kPV islands and keeps PV on (plan/device_types.py RSD_INIT).
+    ElectricalDevice(uid="DNVG0ZFWXE", tag="ED-M-RSD-INIT", kind=DeviceKind.JUNCTION_BOX,
+                     type_ref="ED-T-RSD-INIT",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(12)), room=None,
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-W1C", face="right", distance_from_start=inch(13.5),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
+    # Stub through the wall into the stud bay behind the box (y=28'-6"); the Class 2 pair
+    # (16 AWG) to the inverter's RSD terminals is fished from there, the electrician's route.
+    ConduitRun(uid="NT48FAA2B8", tag="CD-M-RSD-INIT", trade_size=inch(0.5),
+               service=Service.POWER_24, from_ref="ED-M-RSD-INIT", to_ref="EQ-B-ESS-INV",
+               path=(pt(inch(-9.375), inch(342)), pt(inch(3), inch(342))),
+               elevations=(inch(15.5), inch(15.5))),
 ]
 
 # --- the backup microgrid (notes/backup_power.md) -------------------------------------

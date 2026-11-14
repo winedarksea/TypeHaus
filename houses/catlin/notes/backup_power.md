@@ -319,6 +319,21 @@ The Aptos bifacial 410 W module (DNA-108-BF10-410W, datasheet 06/2025) is Voc 37
 its own SunSpec receiver; the 12kPV's built-in APsmart transmitter signals them. `code.NEC_690_12_rapid_shutdown` computes that from `voc_cold`; rated Voc
 would say 75.3 V for a pair and pass, which is why `voc_cold` is the only voltage it reads.
 
+**Initiation (2026-11-13).** NEC 690.12(C)(1)(b) (TIA 26-2, in the printed 2026 text): on a
+dwelling the initiator is outdoors, and it is one the RSD equipment's instructions name. The
+12kPV islands and keeps PV on its load port when the grid drops (QSG v1.3.2 §11.2, §12), so
+opening the CL320 meter-main backs the house up and does **not** shut the array down. Only a
+switch in the master inverter's RSD loop does: it stops the transmitter's keep-alive, the
+module receivers open, and the inverter drops its AC output (EG4 18kPV External RSD Initiator
+v1.0.0 §1.3). `ED-M-RSD-INIT` is an IMO ESS-RSD01 (2-pole rotary, NEMA 4X, cULus, lockable,
+-40 °C; also sold as Fronius 42,0440,0338) on `W-M-W1C`, 3" south of the meter-main, handle
+~grade + 4'-2". ON is closed; one pole in the loop, OFF initiates. That is the normally-closed
+logic of EG4's Hybrid RSD Wiring Guide v1.0.3 and the factory RSD jumper; the older QSG text
+says normally-open, so wire to the board on the delivered unit. With supported EG4 batteries
+in closed loop the same switch also opens the ESS (706.15). `CD-M-RSD-INIT` is a 1/2" EMT stub
+into the stud bay behind the box; the Class 2 pair is fished from there to the inverter.
+Label it as the PV rapid-shutdown switch.
+
 **String fit on the 12kPV** (2 MPPTs, 120-500 V operating, 600 V max, 25 A usable, 31 A Isc per
 MPPT; spec sheet v1.0.9). One 9-module string per roof side, one per MPPT: cold Voc
 9 x 42.64 = **383.8 V** (under 500, and the 550 V trip); Vmp at a 70 °C cell

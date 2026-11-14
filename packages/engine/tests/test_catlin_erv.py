@@ -8,6 +8,8 @@ quietly undo.
 
 from __future__ import annotations
 
+import math
+
 import pytest
 from _helpers import check_context
 
@@ -57,7 +59,7 @@ def test_the_erv_names_a_condensate_drain(catlin_plan) -> None:
 # --- the terminal set ----------------------------------------------------------------------
 
 
-def test_outdoor_terminals_use_the_specified_renewaire_hood_geometry(catlin_plan):
+def test_outdoor_terminals_use_the_specified_renewaire_hood_geometry(catlin_plan, catlin_model_ro):
     types = {item.tag: item for item in catlin_plan.library.equipment_types}
     for tag in ("EQ-M-ERV-HOOD-OA", "EQ-S-ERV-HOOD-EA"):
         terminal = next(item for item in catlin_plan.all_elements() if item.tag == tag)
@@ -65,6 +67,11 @@ def test_outdoor_terminals_use_the_specified_renewaire_hood_geometry(catlin_plan
         assert product_type.plan_symbol == "renewaire-fa8-wall-hood"
         assert product_type.product_ref == "PROD-AIR-HOOD-8"
         assert product_type.port_diameter == inch(8)
+        placed = next(item for item in catlin_model_ro.canvas_objects if item.tag == tag)
+        angle = math.radians(placed.rotation_degrees)
+        # The hood projects along local -y; the north facade's exterior is world +y.
+        outward_direction = (math.sin(angle), -math.cos(angle))
+        assert outward_direction == pytest.approx((0, 1)), tag
 
 
 def test_the_two_deleted_terminals_stay_deleted(catlin_plan) -> None:

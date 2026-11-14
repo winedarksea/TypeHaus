@@ -18,7 +18,8 @@ from typehaus import (
     inch,
     pt,
 )
-from typehaus.model import Location, WallAttachment, deg
+from typehaus.model import Location, WallAttachment
+
 # THE TWO EXTERIOR HOODS — NORTH facade, stacked, exhaust over intake.
 #
 # ** THEY MOVED OFF THE WEST FACADE ON 2026-09-15, AND THE CLASHES ARE WHY. ** Each run had
@@ -101,6 +102,8 @@ from typehaus.model import Location, WallAttachment, deg
 #
 # The hoods are 8" since 2026-10-31 (RenewAire FA8-P basis, 1/4" screen), matching the legs;
 # they were typed 6" behind 8" ducts from 2026-09-15 and `mep.duct_connectivity` now says so.
+# The north walls run west: their default rotation puts the hood's local +y mounting
+# plate against the cladding and its local -y rain cover outward toward world +y.
 EQUIPMENT_ERV_HOODS_MAIN = [
     Equipment(uid="0NF97ZR9Z3", tag="EQ-M-ERV-HOOD-OA", kind=EquipmentKind.DUCT_MANIFOLD,
               footprint=(inch(12), inch(12)),
@@ -124,7 +127,7 @@ EQUIPMENT_ERV_HOODS_MAIN = [
               mount=Mount(kind=MountKind.WALL, elevation=ft(4, 6)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-N3B", face="right", distance_from_start=inch(32),
-                  normal_gap=inch(0), rotation_offset=deg(-180)))),
+                  normal_gap=inch(0)))),
 ]
 EQUIPMENT_ERV_HOODS_SECOND = [
     Equipment(uid="38M0D2FNXH", tag="EQ-S-ERV-HOOD-EA", kind=EquipmentKind.DUCT_MANIFOLD,
@@ -148,7 +151,7 @@ EQUIPMENT_ERV_HOODS_SECOND = [
               mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-S-N3B", face="right", distance_from_start=inch(12.875),
-                  normal_gap=inch(0), rotation_offset=deg(-180)))),
+                  normal_gap=inch(0)))),
 ]
 # =============================== THE TWO WALL PENETRATIONS =============================
 #

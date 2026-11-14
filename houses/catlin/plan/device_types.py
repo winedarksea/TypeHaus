@@ -144,12 +144,29 @@ MAT51 = _prod("MA-T51", "Maestro countdown timer, 5-60 min", brand="Lutron",
 ZEN32 = _prod("ZEN32", "ZEN32 800LR scene controller, 5 buttons, Z-Wave", brand="Zooz",
               url="https://www.getzooz.com/zooz-zen32-scene-controller/")
 
+# PV rapid-shutdown initiator (NEC 690.12(C)(1)(b): outdoors on a dwelling). The 12kPV keeps
+# PV on its backup output when the grid drops, so the CL320 main does not initiate it; a switch
+# on the inverter's RSD terminals does. EG4 Hybrid RSD Wiring Guide v1.0.3: normally closed,
+# opening shuts down (the 12kPV QSG v1.3.2 still says NO; the factory RSD jumper says NC).
+# ON = closed: one pole in the RSD loop, OFF initiates. 98 x 180 x 107 mm, -40 C.
+RSD_INIT = Product(tag="PROD-IMO-ESS-RSD01", brand="IMO", model="ESS-RSD01",
+                   name="Rapid shutdown initiator, 2-pole rotary, 48 VDC 10 A, NEMA 4X, "
+                        "lockable, cULus",
+                   url="https://www.solar-electric.com/lib/wind-sun/ESS-RSD01_Datasheet.pdf",
+                   source="IMO datasheet ESS-RSD01 0426; also Fronius 42,0440,0338 ($93.40, "
+                          "solar-electric.com, read 2026-11-13).")
+
 SWITCH_TYPES = (
     # No power port and no box: a companion draws nothing from a circuit (device_box=False).
     ElectricalDeviceType(
         tag="ED-T-LEV-RF-COMPANION", name="Wire-free RF companion (DAWSC-1BW)",
         footprint=(inch(1.75), inch(0.6)), height=inch(2.9), needs=frozenset(), ports=(),
         device_box=False, control="smart", product_ref=DAWSC.tag, source=DAWSC.source),
+    # Surface NEMA 4X enclosure: its own box (device_box=False), no power port (Class 2 loop).
+    ElectricalDeviceType(
+        tag="ED-T-RSD-INIT", name="PV rapid-shutdown initiator, NEMA 4X rotary (IMO ESS-RSD01)",
+        footprint=(inch(3.875), inch(4.25)), height=inch(7.125), needs=frozenset(), ports=(),
+        device_box=False, product_ref=RSD_INIT.tag, source=RSD_INIT.source),
     _dev("ED-T-LEV-SW1", "Lever Edge single-pole switch (E5601-W)", E5601, symbol=None),
     _dev("ED-T-LEV-SW3", "Lever Edge 3-way switch (E5603-W)", E5603, symbol=None),
     _dev("ED-T-LUT-DIVA", "Lutron Diva dimmer (DVCL-153P), Claro plate", DIVA, symbol=None,
@@ -174,4 +191,5 @@ DEVICE_TYPES = (*RECEPTACLE_TYPES, *SWITCH_TYPES)
 DEVICE_PRODUCTS = (
     E5825, E5325, GFTR2, GFTR1, GFTA2, GFWT2, GFWT1, GFRBF, T5836, T5380, T6525, GFNL2, T5020,
     T5461, R278, IN_USE, E5601, E5603, DIVA, DIVA_ELV, D315S, DAWSC, DOS02, ODS10, MAT51, ZEN32,
+    RSD_INIT,
 )

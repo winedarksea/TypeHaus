@@ -11,10 +11,14 @@ Sources (read 2026-11-07): NFPA 70 second-draft reports (docinfofiles.nfpa.org, 
 P03, P10, P17), the NEC Handbook 2026 errata page for Table 120.54, MN DLI "2026 NEC FAQ"
 (rev. 2026-10-05), EC&M 2026 change summaries (Holt, Jackson, Austin); re-read 2026-11-09 with
 NFPA's first- and second-draft reports and the Aug 2025 Standards Council minutes (210.12(B)'s
-bathroom-lighting item was not issued). None was checked against the printed 2026 text.
-``UNCONFIRMED`` names the rows read only in those drafts or secondary sources, kept by the
-owner until someone reads them in the printed code; ``cite``/``mark`` print them with a
-caveat, so the doubt reaches the finding, the permit checklist and the sheet.
+bathroom-lighting item was not issued). Re-read 2026-11-13 against post-publication sources
+written to the published code: TIA 26-2 (690.12(C), incorporated before printing), TIA 26-8 /
+Log 1875 (270.50 vs 250.50, 250.52(A) not renumbered), MN DLI BOE minutes 2025-10-14 Att. B
+(250.53(A)(4), 250.64, 690.47), MN DLI NEC FAQ (250.32(B)(1)), WA L&I Elc2604 (250.53(A)(2)),
+Frisco TX 2026 NEC amendments (210.52(C)(2) Island and Peninsular Countertops).
+``UNCONFIRMED`` names the rows still read only in drafts or trade press, kept by the owner
+until someone reads them in the printed code; ``cite``/``mark`` print them with a caveat, so
+the doubt reaches the finding, the permit checklist and the sheet.
 120.82(C): (3) heat pump + 65% supplemental is quoted (Holt, EC&M Nov 2025). The resistance
 heat items are contested (Holt: (4) 65%, (5) 40%; Annex D2 draft: 5, 6), so cite 120.82(C).
 """
@@ -98,7 +102,7 @@ class NEC:
     OCPD_HEIGHT: Final = "240.24(A)"
     SLEEVE_BONDING: Final = "250.86 Ex. 2"
 
-    # Art. 250 — grounding and bonding (decision #123). Every row is UNCONFIRMED.
+    # Art. 250 — grounding and bonding (decision #123); >1000 V moved to Art. 270.
     SERVICE_GROUNDING: Final = "250.24"
     SEPARATE_BUILDING: Final = "250.32"
     ELECTRODE_SYSTEM: Final = "250.50"
@@ -161,11 +165,10 @@ class NEC:
 #: TODO: confirm every one against NFPA 70-2026 before a permit set relies on it.
 UNCONFIRMED: Final = frozenset({
     NEC.NONCOINCIDENT, NEC.FEEDER_SERVICE_STANDARD, NEC.GFCI_SINK, NEC.AFCI_DWELLING,
-    NEC.FLOOR_BOX, NEC.INTERCONNECTION_120PCT, NEC.LIMITED_ENERGY_SEPARATION, NEC.ISLAND_PROVISION,
+    NEC.FLOOR_BOX, NEC.INTERCONNECTION_120PCT, NEC.LIMITED_ENERGY_SEPARATION,
     NEC.COUNTERTOP_RECEPTACLE_LOCATION, NEC.WALL_COUNTERTOP, NEC.BALCONY_RECEPTACLE,
-    NEC.SERVICE_GROUNDING, NEC.SEPARATE_BUILDING, NEC.ELECTRODE_SYSTEM, NEC.CONCRETE_ENCASED,
-    NEC.ROD_INSTALLATION, NEC.GEC_INSTALLATION, NEC.GEC_SIZE, NEC.INTERSYSTEM_BONDING,
-    NEC.WATER_PIPE_BOND, NEC.LIGHTNING_BOND, NEC.PV_GROUNDING,
+    NEC.SERVICE_GROUNDING, NEC.GEC_SIZE, NEC.INTERSYSTEM_BONDING, NEC.WATER_PIPE_BOND,
+    NEC.LIGHTNING_BOND,
 })
 
 

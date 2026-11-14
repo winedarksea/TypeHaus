@@ -114,6 +114,23 @@ items have details that are recorded only here:
   y 262/271 on PR-B-MAIN-DRAIN block y 254-279). The partial lay grades 2 FAIL and 1 illegal
   bore. The authored three-vent design stands; vent-free 908.2 groups are an AHJ question.
 
+  The strongest findings, in priority order:
+1. High: PEX bends can overlap despite each passing clearance checks. The search checks each bend independently, without tracking straight length between bends. A small reproduction priced two 4″-radius bends separated by only 1″ as valid field bends; their tangent lengths require 8″. Track distance since the previous turn and enforce combined take-offs, including room for fittings when field bends cannot fit. [search.py (line 215)](/Users/colincatlin/Documents-NoCloud/TypeHaus/packages/engine/src/typehaus/routing/search.py:215)
+2. High: later alternatives lose gravity metadata. Repricing returns a fresh Route when coordinates match, dropping the searched start elevation, vent take-off, vent context, and condensate grade. Those values affect proposal geometry and vent construction. I reproduced the metadata loss. Preserve the original route and replace only its pricing fields. [alternatives.py (line 102)](/Users/colincatlin/Documents-NoCloud/TypeHaus/packages/engine/src/typehaus/routing/alternatives.py:102)
+3. High: saved proposals omit cleanouts included in evaluation. Console rendering and candidate grading include DrainCleanout elements, but JSON serialization and saved proposed.py omit them. I reproduced this discrepancy: accepting the saved source produces a different design from the one graded. Serialize all proposed elements through one shared path. [route_report.py (line 55)](/Users/colincatlin/Documents-NoCloud/TypeHaus/packages/engine/src/typehaus/cli/route_report.py:55)
+4. High: the scorecard discards evaluation refusals. It extracts only .introduced from the evaluation. A candidate that cannot resolve consequently supplies an empty finding list, allowing zero evaluation FAILs/UNKNOWNs to conceal an ungradable result. I confirmed this with a mocked resolver refusal. Preserve evaluation status and coverage, and make an evaluation refusal fail regression checks. [route_scorecard.py (line 108)](/Users/colincatlin/Documents-NoCloud/TypeHaus/packages/engine/src/typehaus/cli/route_scorecard.py:108)
+5. Major selection improvement: grading cannot change the campaign winner. Campaigns rank by refusals, skips, and cost, then evaluate only the winner. A cheaper network with construction failures can therefore win without a cleaner alternative being graded. Evaluate a bounded shortlist and distinguish complete, constructible networks from provisional ones before comparing cost. [cmd_route_house.py (line 127)](/Users/colincatlin/Documents-NoCloud/TypeHaus/packages/engine/src/typehaus/cli/cmd_route_house.py:127)
+6. Medium: room penalties depend on midpoint sampling. An entire edge is charged—or exempted—according to whether its midpoint lies inside a room. This can misprice substantial travel through finished space and change the preferred lane. Charge the actual intersection length with each room’s volume. [graph.py (line 432)](/Users/colincatlin/Documents-NoCloud/TypeHaus/packages/engine/src/typehaus/routing/graph.py:432)
+7. Medium: duct alternatives share a cumulative label cutoff. Separate alternative searches reuse one refusal report, whose cumulative reached count controls termination. Earlier searches consume later searches’ budgets, while elapsed-time budgets restart independently. Separate per-search limits from aggregate diagnostic counts. [duct_search.py (line 215)](/Users/colincatlin/Documents-NoCloud/TypeHaus/packages/engine/src/typehaus/routing/duct_search.py:215)
+For your real-world objective, I would fix those correctness issues before tuning weights. Then prioritize the documented U-turn problem and finished-volume/freeze failures. Construction violations should determine candidate eligibility; fitting, penetration, access-panel, and support costs should distinguish the eligible routes.
+
+For token efficiency, --summary is a useful foundation, but it retains all evaluation messages and most refusal details. Add a bounded decision view containing:
+- Completion and grading status.
+- FAIL/UNKNOWN counts grouped by check and blocker.
+- A few representative findings, with references into the full artifact.
+- Length, fittings, penetrations, cleanouts, and unresolved construction obligations.
+That would let subagents compare candidates without repeatedly reading geometry or duplicated diagnostic prose.
+
 ### Performance / energy follow-ups
 
 - **PV residue after the R324.6 re-lay** (18 x Aptos DNA-108-BF10-410W bifacial, portrait, one
@@ -208,13 +225,12 @@ items have details that are recorded only here:
 - Upgrade fasteners still uncounted (decision #105 covers panel screws, connector schedules, treated framing, roof/screen sheathing): wall sheathing and subfloor nailing, fascia/trim screws, window-install screws, and the HL angles' site-length through-bolts.
 - Backup battery, still open (`houses/catlin/notes/backup_power.md` §11-§12): EG4's UL 9540 certificate naming 12kPV + WallMount Indoor; how the 12kPV's load port behaves on its "No Battery" setting (ask EG4); its GEN port rating; declare future storage and V2H on the Xcel application; DSI's position on a UL 9540 3rd-ed. DC ESS battery; a freeze drain-down plan; a small LFP UPS for Home Assistant, the router and the leak valve. After the 2026-11-02 trim the always-on tier passes summer's 48 h and the bridge (0.28 kWh margin) and still fails December's cycle (§6).
 - V2H spare raceway (routed 2026-11-07, `backup_power.md` §10): add PVC 2" rows to `prices.toml [conduit_fittings]`; the ICF supplier/engineer details rebar round the three 6" CD-GAR sleeve boxouts in W-B-N2 and W-GF-S2. `CD-B-GAP-EV` ends at +5'10" abs while `ED-G-EV-1450` is at 48" AFF (+14" abs): an existing over-rise to check.
-- **2026 NEC residue (decision #120).** Confirm the 11 `typehaus.model.nec.UNCONFIRMED` rows
-  against the printed NFPA 70-2026 (read so far only in NFPA drafts or secondary sources; the
-  caveat stays until then). 120.82(C)'s resistance-heat item numbers are contested, so prose cites 120.82(C).
-  690.12(C)(1)(b): the rapid-shutdown initiation device must be outdoors. Catlin models none; confirm with EG4
-  what initiates shutdown on the 12kPV (does opening the CL320 meter-main do it while backing
-  up the house?), then place the device. Revisit Class C SPGFCI for CKT-HP1-3 after the
-  NFPA Standards Council (2026-12-15/16, ACCA/AHRI appeals); they are Class A breakers meanwhile.
+- **2026 NEC residue (decision #120).** 15 `typehaus.model.nec.UNCONFIRMED` rows await the
+  printed NFPA 70-2026 text (owner to read): 120.6, Art. 120 Part III, 210.8(A)(9), 210.12(B),
+  210.52(C)(1), 210.52(C)(3), 210.52(E)(3), 314.27(C), 705.12(B)(2)(a), 722.15(A), 250.24,
+  250.66, 250.94, 250.104(A), 250.106; and 120.82(C)'s resistance-heat item numbers (prose
+  cites 120.82(C)). Revisit Class C SPGFCI for CKT-HP1-3 after the NFPA Standards Council
+  (2026-12-15/16, ACCA/AHRI appeals); they are Class A breakers meanwhile.
 - `haus print3d --colour-groups`: per-piece colour components bucketed from `Material.color`, matched to a sample exported from Bambu Studio before shipping.
 - Promote the leafless passage's drywall wrap (#122) to a `ResolvedModel.passage_wraps` record so emitters can draw the returns.
 - **W-B-N2 wall-top restraint (Minn. R. 1309.0404).** `FO-M-STAIR` fills the first three joist spaces against W-B-N2 for x 10'-3"..17'-8 3/4", so no footnote f blocking can stand there and `code.MN_1309_0404_wall_top` reports UNKNOWN. 400 plf x 8' = 3,200 lb goes into the well's edge framing spanning flat between the headers: get the EOR's approved-equivalent detail (a flat strongback or a landing strut) and author it. Basis note `houses/catlin/notes/main_floor_truss_basis.md` §4.
