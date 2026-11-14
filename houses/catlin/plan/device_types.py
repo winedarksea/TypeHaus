@@ -158,6 +158,23 @@ RSD_INIT = Product(tag="PROD-IMO-ESS-RSD01", brand="IMO", model="ESS-RSD01",
                    source="IMO datasheet ESS-RSD01 0426; also Fronius 42,0440,0338 ($93.40, "
                           "solar-electric.com, read 2026-11-13).")
 
+# HVAC / spa disconnect (owner 2026-11-14: 60 A non-fused, NEMA 3R, lockable). Square D
+# DU222RB data sheet (Jun 28 2026): general duty, non-fusible, 2 pole, 240 V AC, 60 A, NEMA 3R,
+# 10 hp 1-phase, 7.75 W x 3.75 D x 9.63 H in, UL E2875. Lock OFF: Schneider FAQ FA95934,
+# "Provision to padlock the operating handle in the OFF position is standard on all general
+# duty safety switches." Check the date code against PRB-207512 (codes 1401-1803).
+DU222RB = Product(tag="PROD-SQUARED-DU222RB", brand="Square D", model="DU222RB",
+                  name="General duty safety switch, non-fusible, 2-pole, 60 A 240 V AC, NEMA 3R",
+                  url="https://www.se.com/us/en/product/DU222RB/",
+                  source="Schneider Electric product data sheet DU222RB, Jun 28 2026; "
+                         "se.com FAQ FA95934 (padlock OFF)")
+
+DISCONNECT_TYPES = (
+    _dev("ED-T-SQD-DU222RB", "60 A non-fused NEMA 3R disconnect, lockable (DU222RB)", DU222RB,
+         ports=_P240, symbol=None, footprint=(inch(7.75), inch(3.75)), height=inch(9.63),
+         plan_symbol="disconnect", disconnect_rating_a=60, lockable=True),
+)
+
 SWITCH_TYPES = (
     # No power port and no box: a companion draws nothing from a circuit (device_box=False).
     ElectricalDeviceType(
@@ -189,9 +206,9 @@ SWITCH_TYPES = (
          control="smart"),
 )
 
-DEVICE_TYPES = (*RECEPTACLE_TYPES, *SWITCH_TYPES)
+DEVICE_TYPES = (*RECEPTACLE_TYPES, *SWITCH_TYPES, *DISCONNECT_TYPES)
 DEVICE_PRODUCTS = (
     E5825, E5325, GFTR2, GFTR1, GFTA2, GFWT2, GFWT1, GFRBF, T5836, T5380, T6525, GFNL2, T5020,
     T5461, R278, IN_USE, E5601, E5603, DIVA, DIVA_ELV, D315S, DAWSC, DOS02, ODS10, MAT51, ZEN32,
-    RSD_INIT,
+    RSD_INIT, DU222RB,
 )

@@ -198,9 +198,9 @@ def test_the_pocket_condenser_disconnect_clears_the_stair_and_reaches_from_grade
                if element.element_kind == "ElectricalDevice"}
     grade_ft = catlin_model.plan.project.site.grade.meters / 0.3048
     # W-SG-E1's east face is x 27'-6" (axis 27'-0" since the court narrowed to 17'-0" clear,
-    # 2026-09-22; it was 28'-6"); ED-T-DISCONNECT-3R is a 3 1/4" can, so its centre belongs
-    # 1 5/8" off it. A footprint is CENTRED on the authored point.
-    want_x = 27.5 + 1.625 / 12.0
+    # 2026-09-22; it was 28'-6"); ED-T-SQD-DU222RB is a 3 3/4" can, so its centre belongs
+    # 1 7/8" off it. A footprint is CENTRED on the authored point.
+    want_x = 27.5 + 1.875 / 12.0
     for tag, want_y in (("ED-M-HP2-DISC", -4.5),):
         device = devices[tag]
         x_ft, y_ft = (c / 0.3048 for c in placed_xy(catlin_model, device))

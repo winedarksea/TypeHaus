@@ -297,12 +297,12 @@ BASEMENT_DEVICES = [
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # Hot tub in the sunken garden: disconnect on the west porch wall, 7' from its north
     # end, under the porch deck (see header). NEC 680.22 convenience receptacle beside it.
-    # x is 1 5/8" off W-SG-W1's east face (x=9'-6" since the court narrowed, 2026-09-22), not
-    # 2": the can is 3 1/4" deep, and the 2" standoff the four DISCONNECT-3R boxes were
+    # x is 1 7/8" off W-SG-W1's east face (x=9'-6" since the court narrowed, 2026-09-22), not
+    # 2": the DU222RB can is 3 3/4" deep, and the 2" standoff the four disconnect boxes were
     # authored with dates from when the type carried a placeholder 4" depth. Its back now sits
     # on the concrete.
     ElectricalDevice(uid="CEE010AAAA", tag="ED-B-SPA-DISC", kind=DeviceKind.DISCONNECT,
-                     type_ref="ED-T-DISCONNECT-3R", circuit="CKT-SPA",
+                     type_ref="ED-T-SQD-DU222RB", circuit="CKT-SPA",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-SG-W1", face="left", distance_from_start=inch(87.3125),
@@ -463,9 +463,9 @@ MAIN_DEVICES = [
     #     because the mount elevation is storey-relative. 3'-6" reads 6'-4" from grade.
     #
     # ** AND THEY LEFT THE HOUSE ALTOGETHER ON 2026-09-04. ** They went to W-SG-E1's EAST
-    # face, at (28'-7 5/8", -3'-6") and (28'-7 5/8", -4'-6") — HP2's is at (27'-7 5/8", -4'-6")
-    # since the court narrowed (2026-09-22) — 1 5/8" off the concrete for
-    # the can's 3 1/4" depth and turned `deg(90)` so the depth runs in x against an east face
+    # face, at (28'-7 5/8", -3'-6") and (28'-7 5/8", -4'-6") — HP2's is at (27'-7 7/8", -4'-6")
+    # since the court narrowed (2026-09-22) — 1 7/8" off the concrete for
+    # the can's 3 3/4" depth and turned `deg(90)` so the depth runs in x against an east face
     # (the ED-M-LIVING-KFZ1 convention). HP1's can then followed its unit to the north face
     # later the same day (see its own block below); ED-M-HP2-DISC is the one that stayed,
     # and everything argued here is now argued for it alone.
@@ -499,7 +499,7 @@ MAIN_DEVICES = [
     # stainless-hinged and gasketed, and take the knockouts on the BOTTOM so nothing drains
     # into the enclosure.
     #
-    # ED-T-DISCONNECT-3R is a 3 1/4"-deep can, so its centre belongs 1 5/8" off the
+    # ED-T-SQD-DU222RB is a 3 3/4"-deep can, so its centre belongs 1 7/8" off the
     # cladding face. Same correction on ED-M-HP3-DISC below and on ED-B-SPA-DISC.
     #
     # These were on the SECOND storey until 2026-09-02, beside condensers that stood on the
@@ -509,7 +509,7 @@ MAIN_DEVICES = [
     # ** ED-M-HP1-DISC LEFT THIS WALL WITH ITS UNIT (2026-09-04, later the same day). **
     # Everything above is now HP2's story alone; only ED-M-HP2-DISC stays on W-SG-E1.
     # HP1's can remains on the house's NORTH face, east of its relocated cabinet, at (32'-5",
-    # 36'-8 7/8") — 1 5/8" off the cladding for the can's 3 1/4" depth, and with NO
+    # 36'-8 7/8") — 1 7/8" off the cladding for the can's 3 3/4" depth, and with NO
     # `rotation`, because a north face wants the depth in y where the pocket's east face
     # wanted it in x.
     # elevation 3'-6" reads 6'-4" above the -2'-10" grade it is operated from — inside NEC
@@ -520,14 +520,14 @@ MAIN_DEVICES = [
     # and both canopy piers; the unit remains in sight about 7'-8" west of the can.
     # Its wall attachment stays between the two kitchen windows' framing bumpers.
     ElectricalDevice(uid="CEE012AAAA", tag="ED-M-HP1-DISC", kind=DeviceKind.DISCONNECT,
-                     type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP1", room=None,
+                     type_ref="ED-T-SQD-DU222RB", circuit="CKT-HP1", room=None,
                      mount=Mount(kind=MountKind.WALL, elevation=ft(3, 6)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-N1", face="right", distance_from_start=inch(43),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # -0'-10": at -0'-8" the 9 1/2" can stood 1 1/2" above W-SG-E1's cap.
     ElectricalDevice(uid="CEE013AAAA", tag="ED-M-HP2-DISC", kind=DeviceKind.DISCONNECT,
-                     type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP2", room=None,
+                     type_ref="ED-T-SQD-DU222RB", circuit="CKT-HP2", room=None,
                      mount=Mount(kind=MountKind.WALL, elevation=ft(0, -10)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-SG-E1", face="right", distance_from_start=inch(78),
@@ -536,7 +536,7 @@ MAIN_DEVICES = [
     # working band x=3'-1"..5'-7" between its pad and the connector screen. The 3'-6"
     # main-relative mount is 6'-4" above grade. CKT-HP3 remains on the backup supply.
     ElectricalDevice(uid="CEE026AAAA", tag="ED-M-HP3-DISC", kind=DeviceKind.DISCONNECT,
-                     type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP3",
+                     type_ref="ED-T-SQD-DU222RB", circuit="CKT-HP3",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(3, 6)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-N3B", face="right", distance_from_start=inch(20),
