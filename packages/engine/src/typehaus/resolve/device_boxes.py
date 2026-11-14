@@ -99,6 +99,9 @@ class ResolvedDeviceBox:
     #: The box breaches an air-control membrane; ``box_use`` is the row it took.
     air_barrier: bool = False
     box_use: str | None = None
+    #: The row's 314.16(B)(2)/(3) facts: clamps (None = not stated) and support fittings.
+    internal_clamps: bool | None = None
+    support_fittings: int = 0
 
 
 _CACHE: dict[int, tuple[Any, BoxStandard | None, frozenset[str]]] = {}
@@ -302,7 +305,8 @@ def place_box(model: ResolvedModel, item: Any, plan: BoxPlan, storey: str, room:
         cavity_m=plan.cavity_m, wall_tag=wall.tag, host_layer=plan.host_layer,
         footprint=tuple(ring), z0_m=z0, z1_m=z1, face_point=point, normal=normal,
         device_footprint=tuple(device_footprint), uid=f"{item.uid}-box", block_key=block_key,
-        shape=plan.row.shape, air_barrier=plan.air_barrier, box_use=plan.row.use))
+        shape=plan.row.shape, air_barrier=plan.air_barrier, box_use=plan.row.use,
+        internal_clamps=plan.row.internal_clamps, support_fittings=plan.row.support_fittings))
     model.solids.append(ResolvedSolid(
         uid=f"{item.uid}-box", tag=f"{item.tag}-BOX", storey=storey, category="electrical_box",
         outline=list(ring), z0_m=z0, z1_m=z1, product=plan.row.box_product_ref,

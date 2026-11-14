@@ -122,7 +122,6 @@ def service_load(ctx: CheckContext) -> list[Finding]:
                               f"or more; this service is {summary['service_amps']:.0f} A and "
                               f"the {NEC.FEEDER_SERVICE_STANDARD} standard method is not "
                               "implemented")]
-    demand_va = float(summary["demand_va"])  # type: ignore[arg-type]
     service_amps = float(summary["service_amps"])  # type: ignore[arg-type]
     credit_va = float(summary["load_management_credit_va"])  # type: ignore[arg-type]
 
@@ -141,14 +140,20 @@ def service_load(ctx: CheckContext) -> list[Finding]:
                      f"VA off {managed_tags} but earns no credit — {credit['refusal']}",
                 (tag,)))
             continue
-        if float(credit["excess_va"]):  # type: ignore[arg-type]
+        if float(credit["excess_va"]) < 0:  # type: ignore[arg-type]
+            out.append(_pass(
+                cid, f"{tag} ({_basis(credit)}) counts {managed_tags} at "  # type: ignore[arg-type]
+                     f"{float(credit['cap_va']):.0f} VA, its largest motor at 125% "
+                     f"({cite(NEC.MOTOR_LOADS)}): {-float(credit['excess_va']):.0f} VA over "
+                     "the connected sum", (tag,)))
+        elif float(credit["excess_va"]):  # type: ignore[arg-type]
             out.append(_pass(
                 cid, f"{tag} ({_basis(credit)}) caps {managed_tags} at "  # type: ignore[arg-type]
                      f"{float(credit['cap_va']):.0f} VA — "
                      f"{float(credit['excess_va']):.0f} VA of connected load never reaches "
                      "the service", (tag,)))
 
-    managed_amps = demand_va / 240.0
+    managed_amps = float(summary["demand_amps"])  # type: ignore[arg-type]  # 120.5(B)
     where = ("" if summary["service_amps_source"] == "default"
              else f" ({summary['service_amps_source']})")
     ev_default = list(summary.get("ev_default_circuits") or ())
@@ -159,11 +164,11 @@ def service_load(ctx: CheckContext) -> list[Finding]:
                    else f"after a {credit_va:.0f} VA load-management credit")
     if managed_amps <= service_amps:
         out.append(_pass(
-            cid, f"demand {managed_amps:.1f}A ({credit_text}) fits the "
+            cid, f"demand {managed_amps:.0f}A ({credit_text}) fits the "
                  f"{service_amps:.0f}A service{where}"))
     else:
         out.append(_warn_fail(
-            cid, f"estimated demand {managed_amps:.1f}A exceeds the {service_amps:.0f}A "
+            cid, f"estimated demand {managed_amps:.0f}A exceeds the {service_amps:.0f}A "
                  f"service{where} — options: a listed PCS ({NEC.EDITION} {NEC.PCS_SETPOINT}/"
                  f"{NEC.PCS}), a {mark(NEC.NONCOINCIDENT)} noncoincident pair, a "
                  f"{NEC.OPTIONAL_HEAT_PUMP_SUPPLEMENTAL} compressor/heat-kit interlock "
@@ -210,16 +215,16 @@ def panel_feeder_load(ctx: CheckContext) -> list[Finding]:
         main = float(types[panels[panel_ref].type_ref].service_amps)
         tags = frozenset(c.tag for c in by_panel[panel_ref])
         summary = service_load_summary(ctx.model, circuit_tags=tags)
-        amps = float(summary["demand_va"]) / 240.0  # type: ignore[arg-type]
+        amps = float(summary["demand_amps"])  # type: ignore[arg-type]  # 120.5(B)
         if amps > main:
             out.append(_warn_fail(
-                cid, f"panel {panel_ref}: {amps:.1f}A of {NEC.OPTIONAL_DWELLING} feeder "
+                cid, f"panel {panel_ref}: {amps:.0f}A of {NEC.OPTIONAL_DWELLING} feeder "
                      f"demand over {len(tags)} circuits exceeds its {main:.0f}A main — move "
                      "load to another feeder or raise the main (estimate: a subpanel feeder "
                      f"is properly {cite(NEC.FEEDER_SERVICE_STANDARD)})", (panel_ref,)))
         else:
             out.append(_pass(
-                cid, f"panel {panel_ref}: {amps:.1f}A of {NEC.OPTIONAL_DWELLING} feeder "
+                cid, f"panel {panel_ref}: {amps:.0f}A of {NEC.OPTIONAL_DWELLING} feeder "
                      f"demand over {len(tags)} circuits fits its {main:.0f}A main (estimate)",
                 (panel_ref,)))
     return out

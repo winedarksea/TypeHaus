@@ -80,12 +80,16 @@ class NEC:
     # Art. 120 (was Art. 220) — load calculations.
     LOAD_CALC: Final = "Article 120"
     FEEDER_SERVICE_STANDARD: Final = "Article 120 Part III"
+    LOAD_ROUNDING: Final = "120.5(B)"  # nearest whole ampere, under 0.5 dropped
     FLOOR_AREA: Final = "120.5(C)"
     NONCOINCIDENT: Final = "120.6"
     NONCOINCIDENT_UNLIKELY: Final = "120.6(1)"  # feeders/services only
     NONCOINCIDENT_LISTED: Final = "120.6(2)"  # prevented by listed equipment
     PCS_SETPOINT: Final = "120.7"
     PCS_CONTROL_SETTING: Final = "120.7(B)"
+    PCS_CONTROLLED_ONLY: Final = "120.7(C)(1)"  # the control setting stands in
+    PCS_MIXED: Final = "120.7(C)(2)"  # the controlled loads' minimum operating current
+    MOTOR_LOADS: Final = "120.11(A)"  # 125% of the largest motor plus the rest
     EVSE_LOAD: Final = "120.57"
     EVSE_CIRCUIT: Final = "625.40"  # an individual branch circuit
     EVSE_CONTINUOUS: Final = "625.41"  # continuous load: breaker at 125%
@@ -234,6 +238,10 @@ class NEC:
     DWELLING_FEEDER_CONDUCTORS: Final = "310.12(B)"  # only a feeder carrying the entire load
     BOX_FILL_AND_VOLUME: Final = "314.16"
     BOX_FILL: Final = "314.16(B)"
+    BOX_FILL_CLAMPS: Final = "314.16(B)(2)"
+    BOX_FILL_SUPPORT_FITTINGS: Final = "314.16(B)(3)"
+    BOX_FILL_EGC: Final = "314.16(B)(5)"
+    BOX_FILL_TERMINAL_BLOCKS: Final = "314.16(B)(6)"
     BOX_VOLUME_TABLE: Final = "Table 314.16(A)"
     BOX_MARKED_VOLUME: Final = "314.16(A)(2)"
     CONDUCTOR_VOLUME_TABLE: Final = "Table 314.16(B)(4)"

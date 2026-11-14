@@ -5,10 +5,14 @@ circuit's only load, which is end-fed (one cable); a switch or thermostat always
 and a load cable. Counted: cables of the
 insulated conductors (a 1-pole circuit's hot and neutral; a 2-pole's two hots, plus a neutral
 where the device has a 120 V half or a 14- configuration), two volumes per yoke
-(314.16(B)(4)), and one for all the equipment grounds together (314.16(B)(5)). The unit
+(314.16(B)(4)), one for up to four equipment grounds and a quarter per ground past four
+(314.16(B)(5)), one for internal clamps unless the row states none (B)(2), and one per kind
+of support fitting (B)(3). Terminal blocks (B)(6) are not modelled. The unit
 volume is Table 314.16(B)(4)'s, at the gauge the breaker implies — 15 A 14 AWG, 20 A 12 AWG,
 30 A 10 AWG. Box volume is the standard's row: Table 314.16(A) or the marked volume, plus a
-marked raised cover or ring. A FAIL names the next box up. Hand-worked oracle:
+marked raised cover or ring. Depth is 314.24(B)'s by gauge, or a device's datasheet
+``rear_projection`` plus 1/4 in. past 1-7/8 in. (1 in. on 12/10 AWG). A FAIL names the next
+box up. Hand-worked oracle:
 ``houses/catlin/notes/basement_surface_wiring.md`` §Box fill.
 
 ``electrical.nm_sleeve_reach`` reports a derived NM sleeve that stops short of the ceiling.
@@ -30,7 +34,7 @@ from typehaus.findings import (
 )
 from typehaus.model.ampacity import adjustment_factor, nm_ampacity
 from typehaus.model.electrical import METAL_BOX_VOLUME_IN3
-from typehaus.model.nec import NEC, cite
+from typehaus.model.nec import NEC, cite, mark
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.device_boxes import AIR_SEALED, takes_box
 
@@ -42,20 +46,43 @@ GAUGE_BY_BREAKER_A = {15: 14, 20: 12, 30: 10, 40: 8, 50: 6}
 _RECEPTACLES = frozenset({"receptacle", "gfci", "receptacle_240"})
 #: Table 314.16(B)(4), in³ per conductor by AWG (printed 2026-11-14; 18 and 16 AWG omitted).
 VOLUME_PER_CONDUCTOR_IN3 = {14: 2.0, 12: 2.25, 10: 2.5, 8: 3.0, 6: 5.0}
-#: 314.24(B)(3)-(5) minimum internal depth with a device, in, by conductor size. The 1"
-#: rearward-projection add-on of (B)(4) and the listed-with-box exception are not read.
+#: 314.24(B) minimum internal depth with a device, in, by conductor size. The listed-with-box
+#: exception and the 1/2 in. rear-entry clearance are not read.
 MIN_DEPTH_IN = {14: 15 / 16, 12: 1 + 3 / 16, 10: 1 + 3 / 16, 8: 2 + 1 / 16, 6: 2 + 1 / 16}
+_PROJECTION_ADDER_IN = 0.25
+_DEEP_PROJECTION_IN = 1 + 7 / 8  # any gauge
+_SMALL_GAUGE_PROJECTION_IN = 1.0  # 12 and 10 AWG
 
 
 def insulated_per_cable(poles: int, has_neutral: bool) -> int:
     return 2 if poles == 1 else (3 if has_neutral else 2)
 
 
+def egc_allowance(egcs: int) -> float:
+    """314.16(B)(5): one allowance covers up to four EGCs, each past four a quarter more."""
+    return 0.0 if egcs <= 0 else 1.0 + 0.25 * max(0, egcs - 4)
+
+
 def required_volume_in3(gauge: int, poles: int, has_neutral: bool, gangs: int,
-                        cables: int = 2) -> float:
-    """Cables × insulated conductors + 2 per yoke + 1 for all grounds."""
-    count = cables * insulated_per_cable(poles, has_neutral) + 2 * gangs + 1
+                        cables: int = 2, *, clamps: bool = False,
+                        support_fittings: int = 0) -> float:
+    """Cables × insulated conductors + 2 per yoke + the grounds (one per cable), clamps and
+    support fittings, all at the circuit's gauge (the largest conductor in the box)."""
+    count = (cables * insulated_per_cable(poles, has_neutral) + 2 * gangs
+             + egc_allowance(cables) + (1 if clamps else 0) + support_fittings)
     return count * VOLUME_PER_CONDUCTOR_IN3[gauge]
+
+
+def min_depth_in(gauge: int, rear_projection_in: float | None) -> float:
+    """314.24(B): the gauge's depth, or the device's rear projection plus 1/4 in. past the
+    threshold (1-7/8 in., or 1 in. for 12 and 10 AWG)."""
+    base = MIN_DEPTH_IN[gauge]
+    if rear_projection_in is None:
+        return base
+    limit = _SMALL_GAUGE_PROJECTION_IN if gauge in (12, 10) else _DEEP_PROJECTION_IN
+    if rear_projection_in > min(limit, _DEEP_PROJECTION_IN) + 1e-9:
+        return max(base, rear_projection_in + _PROJECTION_ADDER_IN)
+    return base
 
 
 def next_box_up(required_in3: float) -> str:
@@ -101,22 +128,31 @@ def _grade(box: Any, circuits: dict[str, Any], types: dict[str, Any],
     if gauge is None or box.volume_in3 is None:
         return unknown(_CID, f"{where}: no gauge for a {circuit.breaker_amps} A breaker or no "
                              "box volume", tags, code=_CODE)
-    min_depth = MIN_DEPTH_IN[gauge]
+    product_type = types.get(type_ref or "")
+    projection = getattr(product_type, "rear_projection", None)
+    projection_in = None if projection is None else projection.meters / M_PER_IN
+    min_depth = min_depth_in(gauge, projection_in)
     if box.depth_m / M_PER_IN < min_depth - 1e-4:
-        return failed(_CID, f"{where} is {box.depth_m / M_PER_IN:.2f}\" deep; {gauge} AWG to a "
-                            f"device needs {min_depth:.3f}\" internal depth", tags,
+        why = (f"a device projecting {projection_in:.2f}\" needs"
+               if min_depth > MIN_DEPTH_IN[gauge] else f"{gauge} AWG to a device needs")
+        return failed(_CID, f"{where} is {box.depth_m / M_PER_IN:.2f}\" deep; {why} "
+                            f"{min_depth:.3f}\" internal depth", tags,
                       code=cite(NEC.BOX_DEPTH), fix="a deeper box row in the BoxStandard")
     end_fed = box.device_kind in _RECEPTACLES and loads.get(circuit.tag, 0) <= 1
     cables = 1 if end_fed else 2
     feed = "through-fed" if cables == 2 else "end-fed"
-    required = required_volume_in3(gauge, circuit.poles,
-                                   _has_neutral(types.get(type_ref or "")), box.gangs, cables)
+    clamps = box.internal_clamps is not False
+    required = required_volume_in3(gauge, circuit.poles, _has_neutral(product_type), box.gangs,
+                                   cables, clamps=clamps,
+                                   support_fittings=box.support_fittings)
+    note = (f" ({mark(NEC.BOX_FILL_CLAMPS)} clamps not stated, so counted)"
+            if box.internal_clamps is None else "")
     if required > box.volume_in3 + 1e-6:
         return failed(_CID, f"{where} holds {box.volume_in3:g} in³; {feed} {gauge} AWG "
-                            f"needs {required:.2f} in³", tags, code=_CODE,
+                            f"needs {required:.2f} in³{note}", tags, code=_CODE,
                       fix=f"step up to {next_box_up(required)}")
     return passed(_CID, f"{where}: {required:.2f} in³ of {feed} {gauge} AWG in "
-                        f"{box.volume_in3:g} in³", tags, code=_CODE)
+                        f"{box.volume_in3:g} in³{note}", tags, code=_CODE)
 
 
 @check(Tier.ADVISORY, _CID)

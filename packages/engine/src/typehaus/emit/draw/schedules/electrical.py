@@ -80,7 +80,7 @@ def _write_panel_schedule(pdf, model: ResolvedModel, number: str, name: str) -> 
             (f"Heating/cooling, largest selection: {load['hvac_selection']}",
              f"{load['hvac_va']:,.0f} VA"),
             ("EV charging (continuous)", f"{load['ev_va']:,.0f} VA"),
-            ("DEMAND", f"{load['demand_va']:,.0f} VA = {load['demand_amps']:.1f} A"),
+            ("DEMAND", f"{load['demand_va']:,.0f} VA = {load['demand_amps']:.0f} A"),
             ("Service / panel rating", f"{load['service_amps']}A service, "
                                        f"{load['panel_rating_amps']}A panel — "
                                        + ("OK" if load["within_service"] else "OVER")),
@@ -89,7 +89,7 @@ def _write_panel_schedule(pdf, model: ResolvedModel, number: str, name: str) -> 
         # service total no longer says whether either feeder fits.
         load_rows.extend(
             (f"{row['panel']} feeder (estimate)",
-             f"{row['demand_amps']:.1f} A of {row['main_amps']:.0f} A main")
+             f"{row['demand_amps']:.0f} A of {row['main_amps']:.0f} A main")
             for row in _panel_feeder_rows(model))
         _add_table(fig, load_rows, ("Line", "Value"), bbox=(_LEFT_X, 0.29, _LEFT_W, 0.13))
 
@@ -376,5 +376,5 @@ def _panel_feeder_rows(model) -> list[dict[str, object]]:
             continue
         summary = service_load_summary(model, circuit_tags=frozenset(by_panel[panel_ref]))
         rows.append({"panel": panel_ref, "main_amps": float(main),
-                     "demand_amps": float(summary["demand_va"]) / 240.0})
+                     "demand_amps": float(summary["demand_amps"])})
     return rows

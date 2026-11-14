@@ -118,8 +118,12 @@ class LoadManagement(Element):
       setpoint at <= 80% of the monitored OCPD; 130.2 requires the listing; 625.42(A)
       points EV supply equipment at the same Part II). Credited only with a ``listing``:
       an unlisted controller running proprietary throttling software earns nothing.
-      ``max_simultaneous_va`` is read as the 120.7(C)(1) setting; the (C)(2) minimum operating
-      current for a PCS that also monitors noncontrolled loads is not modelled.
+      ``max_simultaneous_va`` is the control setting, and the 120.7(C)(1) load where the PCS
+      monitors only controlled loads. One that also monitors noncontrolled loads
+      (``monitors_noncontrolled``) counts the group at ``min_operating_amps`` (120.7(C)(2)).
+
+    A noncoincident member's motor counts at 125% (120.11(A)): its equipment type's
+    ``largest_motor_va``.
 
     Schedule data like ``Circuit``: no geometry, lives in ``Library.load_managements``.
     """
@@ -134,6 +138,11 @@ class LoadManagement(Element):
     # ``pcs`` only: the rating of the OCPD the PCS monitors. When set, a setting above 80% of it
     # (120.7(B), at 240 V) refuses the credit. Unset: the setting is not graded.
     monitored_ocpd_amps: float | None = None
+    # ``pcs`` only, 120.7(C)(2): the PCS also monitors noncontrolled loads, so the controlled
+    # group counts at its minimum operating current (amps at 240 V, zero or more). Unset with
+    # ``monitors_noncontrolled``: no credit.
+    monitors_noncontrolled: bool = False
+    min_operating_amps: float | None = None
 
 
 register_constructor("LoadManagement", LoadManagement)
@@ -180,6 +189,9 @@ class BoxRow(HausModel):
     ``box_use`` a device type asks for, e.g. ``"recessed"``); None is the general row.
     ``block_profile`` derives a flat block of that lumber behind each such box, between the
     bay's studs, for a box that screws to wood wherever it lands (geometry review M3-107).
+    ``internal_clamps`` (314.16(B)(2)): None is "not stated" and box fill counts the
+    allowance; False is a datasheet showing none. ``support_fittings`` (314.16(B)(3)) counts
+    the kinds of fixture stud or hickey inside.
     """
 
     mounting: BoxMounting
@@ -195,6 +207,8 @@ class BoxRow(HausModel):
     cover_volume_in3: float = 0.0
     cover_rise: Length = inch(0)
     block_profile: str | None = None
+    internal_clamps: bool | None = None
+    support_fittings: int = 0
 
     @property
     def volume_in3(self) -> float | None:

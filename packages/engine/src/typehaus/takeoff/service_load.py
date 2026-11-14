@@ -38,6 +38,8 @@ _BTUH_PER_W = 3.412
 EVSE_DEFAULT_VA = 7200.0
 # 120.7(B): a PCS control setting is at most 80% of the monitored OCPD's rating.
 PCS_MAX_SETTING_FRACTION = 0.8
+# 120.11(A): the largest motor at 125%, so 25% of it on top of its connected VA.
+MOTOR_ADDER = 0.25
 SERVICE_VOLTS = 240.0
 
 
@@ -78,6 +80,19 @@ def _listed_va(model: ResolvedModel, consumers: list) -> float:
         for element in consumers
         if element.element_kind == "LightRun"
     )
+
+
+def _motor_adder_va(model: ResolvedModel, consumers: list) -> float:
+    """120.11(A)'s extra 25% of the largest motor on a circuit, from its equipment types."""
+    types = {t.tag: t for t in model.plan.library.equipment_types}
+    motors = [float(getattr(types.get(element.type_ref), "largest_motor_va", None) or 0.0)
+              for element in consumers if element.element_kind == "Equipment"]
+    return MOTOR_ADDER * max(motors, default=0.0)
+
+
+def round_amps(amps: float) -> float:
+    """120.5(B): the nearest whole ampere, a fraction under 0.5 dropped."""
+    return float(int(amps + 0.5))
 
 
 def _evse_unrated(model: ResolvedModel, circuit, consumers: list) -> bool:
@@ -233,6 +248,10 @@ def _credit_refusal(model: ResolvedModel, management, members, consumers) -> str
         if not management.listing.strip():
             return (f"{NEC.EDITION} {NEC.PCS_LISTING} / {NEC.PCS_SETPOINT}: a PCS in a load "
                     "calculation must be listed (UL 3141); none recorded")
+        if management.monitors_noncontrolled and management.min_operating_amps is None:
+            return (f"{NEC.EDITION} {NEC.PCS_MIXED}: a PCS that also monitors noncontrolled "
+                    "loads counts the controlled loads at their minimum operating current; "
+                    "none recorded")
         amps = management.monitored_ocpd_amps
         if amps is not None and management.max_simultaneous_va > (
                 PCS_MAX_SETTING_FRACTION * amps * SERVICE_VOLTS):
@@ -260,8 +279,10 @@ def load_management_credits(
     ``refusal``, and ``service_load_summary`` leaves that excess in the demand. A credit
     the code does not name and no listing backs is not a credit.
 
-    A ``noncoincident`` group never counts below its single largest member (120.6): an
-    authored ceiling under that is raised to it, one above it is kept.
+    A ``noncoincident`` group never counts below its single largest member (120.6), that
+    member's largest motor at 125% (120.11(A)): an authored ceiling under that is raised to
+    it, one above it is kept. A ``pcs`` that also monitors noncontrolled loads counts the
+    group at its minimum operating current (120.7(C)(2)), not the setting.
     """
     consumers = _circuit_consumers(model)
     circuits = {c.tag: c for c in model.plan.library.circuits
@@ -277,11 +298,19 @@ def load_management_credits(
         group_va = sum(member_va)
         cap_va = management.max_simultaneous_va
         if management.strategy == "noncoincident":
-            cap_va = max(cap_va, max(member_va, default=0.0))
-        excess = max(0.0, group_va - cap_va)
+            largest = [va + _motor_adder_va(model, consumers.get(c.tag, []))
+                       for c, va in zip(members, member_va, strict=True)]
+            cap_va = max(cap_va, max(largest, default=0.0))
+        elif management.strategy == "pcs" and management.monitors_noncontrolled:
+            cap_va = (management.min_operating_amps or 0.0) * SERVICE_VOLTS
+        # A noncoincident count is the code's, not a ceiling: a motor's 25% may lift it past
+        # the group's connected sum, and the negative excess adds that to the demand.
+        excess = group_va - cap_va
+        if management.strategy != "noncoincident":
+            excess = max(0.0, excess)
         refusal = _credit_refusal(model, management, members, consumers)
         by_bucket: dict[str, float] = {}
-        if excess > 0 and group_va > 0 and not refusal:
+        if excess and group_va > 0 and not refusal:
             for circuit in members:
                 va = _connected_va(model, circuit, consumers.get(circuit.tag, []))
                 share = excess * (va / group_va)
@@ -428,7 +457,7 @@ def service_load_summary(
            if e.element_kind == "ElectricalDevice"
            and getattr(e.kind, "value", None) == "panel"]
     panel_rating = max([b for b in bus if b is not None], default=None)
-    amps = demand_va / 240.0
+    amps = round_amps(demand_va / 240.0)  # 120.5(B)
     return {
         "method": f"{NEC.EDITION} {NEC.OPTIONAL_DWELLING} optional method (estimate)",
         "optional_method_applies": service_amps >= OPTIONAL_METHOD_MIN_AMPS,
@@ -450,7 +479,7 @@ def service_load_summary(
         "load_management_credit_va": round(unmanaged_demand_va - demand_va, 0),
         "load_management": credits,
         "demand_va": round(demand_va, 0),
-        "demand_amps": round(amps, 1),
+        "demand_amps": amps,
         "service_amps": service_amps,
         "service_amps_source": service_source,
         "panel_rating_amps": panel_rating,

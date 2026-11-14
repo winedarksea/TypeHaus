@@ -39,6 +39,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     electrical_hvac_receptacle,
     electrical_openings,
     electrical_outdoor,
+    electrical_outdoor_wiring,
     electrical_panel_height,
     electrical_panel_space,
     electrical_receptacles,
