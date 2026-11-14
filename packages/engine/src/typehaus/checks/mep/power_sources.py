@@ -5,10 +5,9 @@ split out of ``electrical.py``: these are not questions about the branch-circuit
 they are questions about back-feeding a busbar and about de-energizing a roof. They fail
 differently and they are read by different people.
 
-Two rules:
+Rules here: **705.30(B)** (the source OCPD) and **690.12** (rapid shutdown). The 705.12(B)
+busbar paths live in ``interconnection.py``, which reads ``source_term`` from here.
 
-- **705.12(B)** — busbar sizing: 125% of each source's output current plus the busbar's
-  OCPD, against 100% of the bus ((B)(1)) or, source at the far end, 120% ((B)(2)(a)).
 - **690.12** — rapid shutdown. Inside the array boundary, conductors must drop to a limited
   voltage; a module either carries its own shutdown device or belongs to a group whose
   summed cold Voc stays under the limit.
@@ -27,10 +26,7 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.nec import NEC, cite
 
-# NEC 705.12(B): 125% of source output current + busbar OCPD <= bus x 1.0 ((B)(1)) or x 1.2
-# with the source at the opposite end ((B)(2)(a)).
-_BUS_ALLOWANCE = 1.2
-_OUTPUT_FACTOR = 1.25
+_OUTPUT_FACTOR = 1.25  # 705.12(B), 705.28(B)(1), 705.30(B): 125% of the 705.28(A) current
 
 
 def _inverter_output(ctx: CheckContext, circuit) -> tuple[float, float] | None:
@@ -47,7 +43,7 @@ def _inverter_output(ctx: CheckContext, circuit) -> tuple[float, float] | None:
     return exact, float(math.floor(exact + 0.5))
 
 
-def _source_term(ctx: CheckContext, circuit) -> tuple[float, str]:
+def source_term(ctx: CheckContext, circuit) -> tuple[float, str]:
     """(amps, how) for one source circuit: 125% of the inverter's rated output current, or
     the breaker rating where no inverter on it declares ``inverter_kw_continuous``."""
     found = _inverter_output(ctx, circuit)
@@ -65,124 +61,15 @@ def _source_term(ctx: CheckContext, circuit) -> tuple[float, str]:
 _RAPID_SHUTDOWN_LIMIT_V = 80.0
 
 
-@check(Tier.CODE, "code.NEC_705_12_interconnection")
-def interconnection_busbar(ctx: CheckContext) -> list[Finding]:
-    """NEC 705.12(B) — busbar sizing per panel that carries a source.
-
-    The source term is 125% of each source's rated output current (705.12(B)), read off the
-    inverter on the circuit; a circuit with none falls back to its breaker rating, which
-    240.4 sizing keeps at or above that 125%. (B)(1) is tried first and has no placement
-    condition; (B)(2)(a)'s 120% needs the source at the far end of the bus from the main
-    and the (B)(2)(b) label, neither of which the model can show, so the PASS says so.
-    (B)(3) (sum of all OCPDs), (B)(4)-(6) and (A) feeders are not tried. Printed text read
-    2026-11-14: the arithmetic here is (B)(1)/(B)(2)(a) as printed.
-
-    The main breaker term is the panel's OWN ``service_amps`` where its type states one —
-    705.12 measures a backfeed against the main ahead of the bus, and on a Class 320
-    service the meter-main's 320 A is not any one panel's main. The service size the load
-    summary reports is the fallback for a panel that states none. Source breakers are the
-    circuits flagged ``source=True`` on that panel — typed, so a renamed PV circuit cannot
-    silently stop counting.
-
-    One documented limit: the model carries no feeder element, so a source landing on a
-    *subpanel* has no modeled main OCPD of its own. This check applies the service main to
-    every panel carrying a source, which is right for the service panel and conservative
-    nowhere else. Putting a second source (V2H) on the backup subpanel is the case that
-    makes it wrong, and is called out in notes/backup_power.md as needing a feeder element
-    first.
-
-    A source breaker at the *opposite end* of the bus from the main is the other half of
-    705.12(B)(2)(a), and it is authored rather than derived: the check reports the slot the
-    source circuit occupies so a reviewer can see it, but it does not claim to know which
-    physical end of a busbar a slot number lands on.
-    """
-    cid, code = "code.NEC_705_12_interconnection", cite(NEC.INTERCONNECTION_120PCT)
-    sources = [c for c in ctx.plan.library.circuits if c.source]
-    if not sources:
-        # N/A, not silence: the circuit schedule was read and declares no source circuit,
-        # so there is no interconnection for the 120% rule to size. Returning nothing left
-        # the permit item with no matched findings, which resolves to UNKNOWN — the same
-        # answer as "nobody looked" — and kept the line out of the gate for it.
-        return [not_applicable(cid, "no circuit in the schedule is a power source, so this "
-                                    "house has no interconnected PV or generator for "
-                                    f"{NEC.INTERCONNECTION} to size", (), code)]
-
-    types = {t.tag: t for t in ctx.plan.library.electrical_device_types}
-    panels = {element.tag: element for element in ctx.plan.all_elements()
-              if element.element_kind == "ElectricalDevice"
-              and element.kind.value == "panel"}
-    from typehaus.takeoff.electrical import service_load_summary
-    service_amps = (service_load_summary(ctx.model)["service_amps"]
-                    if ctx.plan.library.circuits else None)
-
-    by_panel: dict[str, list] = {}
-    for circuit in sources:
-        by_panel.setdefault(circuit.panel_ref, []).append(circuit)
-
-    out: list[Finding] = []
-    for panel_ref, group in sorted(by_panel.items()):
-        product = types.get(getattr(panels.get(panel_ref), "type_ref", None) or "")
-        bus_amps = getattr(product, "bus_amps", None)
-        # The panel's own main outranks the service size: see the docstring.
-        main_amps = float(getattr(product, "service_amps", None) or service_amps or 0.0) or None
-        terms = [_source_term(ctx, c) for c in group]
-        source_amps = round(sum(amps for amps, _ in terms), 2)
-        basis = "; ".join(how for _, how in terms)
-        tags = tuple([panel_ref] + sorted(c.tag for c in group))
-        if bus_amps is None:
-            out.append(by_result(
-                cid, Result.UNKNOWN,
-                f"panel {panel_ref} carries {source_amps}A of source breakers "
-                f"({', '.join(sorted(c.tag for c in group))}) but its type declares no "
-                "``bus_amps``, so the 120% allowance cannot be computed", tags, code,
-                "declare bus_amps on the panel's ElectricalDeviceType"))
-            continue
-        if main_amps is None:
-            out.append(by_result(
-                cid, Result.UNKNOWN,
-                f"panel {panel_ref} has a {bus_amps}A bus but neither its type nor the "
-                f"service states a main breaker, so the main term of {NEC.INTERCONNECTION} "
-                "is unknown",
-                tags, code))
-            continue
-        allowance = bus_amps * _BUS_ALLOWANCE
-        spaces = getattr(product, "spaces", None)
-        slots = ", ".join(str(c.slot) for c in sorted(group, key=lambda c: c.tag) if c.slot)
-        where = f" (slot {slots} of {spaces} spaces)" \
-            if slots and spaces else ""
-        total = round(float(main_amps) + source_amps, 2)
-        head = f"panel {panel_ref}: {main_amps:g}A main + {source_amps:g}A source ({basis})"
-        if total <= bus_amps + 1e-9:
-            out.append(by_result(
-                cid, Result.PASS,
-                f"{head} = {total:g}A within the {bus_amps}A bus "
-                f"({NEC.INTERCONNECTION_100PCT}, any position)", tags, code))
-        elif total <= allowance + 1e-9:
-            out.append(by_result(
-                cid, Result.PASS,
-                f"{head} = {total:g}A of the {allowance:g}A allowed on a {bus_amps}A bus "
-                f"({NEC.INTERCONNECTION_120PCT}) — {allowance - total:g}A spare; holds only "
-                f"with the source breaker at the opposite end from the main{where} and the "
-                f"{NEC.INTERCONNECTION_LABEL} label, neither modeled", tags, code))
-        else:
-            out.append(by_result(
-                cid, Result.FAIL,
-                f"{head} = {total:g}A exceeds {_BUS_ALLOWANCE:g} x {bus_amps}A bus = "
-                f"{allowance:g}A", tags, code,
-                f"reduce the source by {total - allowance:g}A, or use a supply-side "
-                "connection"))
-    return out
-
-
 @check(Tier.CODE, "code.NEC_705_30_source_ocpd")
 def source_ocpd(ctx: CheckContext) -> list[Finding]:
     """NEC 705.30(B) — a source circuit's OCPD is at least 125% of its 705.28(A) current.
 
     The floor is graded: 125% of the inverter's rated output, rounded to the ampere first
-    (705.28(A)), may be set to the next standard size (240.4(B)). The ceiling, that the
-    breaker does not exceed the conductor's ampacity or the inverter's maximum OCPD, needs a
-    conductor size on the circuit and a maximum on the equipment type; neither is authored,
-    so a second finding says UNKNOWN. 705.30(D) and (E) (breaker marking, the 408.36(D)
+    (705.28(A)), may be set to the next standard size (240.4(B)). The ceiling is a second
+    finding: the conductor (``Circuit.conductor_awg`` at its 110.14(C)(1) column) carries
+    705.28(B)(1)'s 125% and protects under 240.4, and the breaker is no larger than the
+    inverter type's ``max_overcurrent_a``. 705.30(D) and (E) (breaker marking, the 408.36(D)
     hold-down) are not modeled.
     """
     cid, code = "code.NEC_705_30_source_ocpd", cite(NEC.SOURCE_OCPD)
@@ -211,12 +98,46 @@ def source_ocpd(ctx: CheckContext) -> list[Finding]:
                                  tags, code, f"use at least a {standard}A breaker"))
         else:
             out.append(by_result(cid, Result.PASS, f"{head}; meets the floor", tags, code))
-        out.append(by_result(
-            cid, Result.UNKNOWN, f"{circuit.tag}'s {circuit.breaker_amps}A breaker is not "
-            "checked against the conductor's ampacity (240.4) or the inverter's maximum OCPD: "
-            "no conductor size or maximum OCPD is authored", tags, code,
-            "author the circuit's conductor size and the inverter type's maximum OCPD"))
+        out.append(_source_ceiling(ctx, circuit, floor))
     return out
+
+
+def _source_ceiling(ctx: CheckContext, circuit, floor: float) -> Finding:
+    """240.4 / 705.28(B)(1) on the authored conductor, and the inverter's maximum OCPD."""
+    from typehaus.model.ampacity import ampacity, max_ocpd, termination_column
+    cid, code = "code.NEC_705_30_source_ocpd", cite(NEC.SOURCE_OCPD, NEC.SOURCE_CONDUCTOR)
+    types = {t.tag: t for t in ctx.plan.library.equipment_types}
+    maxima = [(e.tag, getattr(types.get(e.type_ref or ""), "max_overcurrent_a", None))
+              for e in ctx.plan.all_elements()
+              if e.element_kind == "Equipment" and getattr(e, "circuit", None) == circuit.tag
+              and getattr(types.get(e.type_ref or ""), "inverter_kw_continuous", None)]
+    tags = (circuit.tag, *(tag for tag, _ in maxima))
+    size, metal = circuit.conductor_awg, circuit.conductor_material
+    gaps = [] if size else ["no conductor size"]
+    gaps += [f"{tag} states no maximum OCPD" for tag, top in maxima if top is None]
+    if gaps:
+        return by_result(cid, Result.UNKNOWN, f"{circuit.tag}'s {circuit.breaker_amps}A breaker's "
+                         f"ceiling is not checked: {'; '.join(gaps)}", tags, code,
+                         "author the circuit's conductor_awg and the inverter's max_overcurrent_a")
+    column = termination_column(circuit.breaker_amps, size, circuit.termination_temp_c)
+    amps = ampacity(metal, size, column)
+    protect = max_ocpd(metal, size, column, next_size_up=circuit.breaker_amps <= 800)
+    unit = min(top for _, top in maxima) if maxima else None
+    faults = []
+    if amps + 1e-9 < floor:
+        faults.append(f"{amps}A is under 705.28(B)(1)'s {floor:g}A")
+    if protect is not None and circuit.breaker_amps > protect:
+        faults.append(f"the breaker exceeds the {protect}A this conductor may take (240.4)")
+    if unit is not None and circuit.breaker_amps > unit:
+        faults.append(f"the breaker exceeds the inverter's {unit}A maximum OCPD")
+    head = (f"{circuit.tag}: #{size} {metal.capitalize()} at {column} °C = {amps}A against "
+            f"125% = {floor:g}A, a {circuit.breaker_amps}A breaker"
+            + (f", inverter maximum OCPD {unit}A" if unit is not None else ""))
+    if faults:
+        return by_result(cid, Result.FAIL, f"{head}: {'; '.join(faults)}", tags, code,
+                         "upsize the conductor or use a smaller breaker within both limits")
+    return by_result(cid, Result.PASS, f"{head}: the conductor carries 125% and the breaker "
+                     "is within both the conductor's and the inverter's limits", tags, code)
 
 
 @check(Tier.CODE, "code.NEC_690_12_rapid_shutdown")

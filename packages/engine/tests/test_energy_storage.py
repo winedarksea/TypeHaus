@@ -19,7 +19,8 @@ from _helpers import check_context
 from typehaus.checks.advisory.energy_storage import ess_clearance, ess_enclosure
 from typehaus.checks.advisory.energy_storage_anticipated import ess_capacity, ess_detection
 from typehaus.checks.code.mn_residential.energy_storage import ess_listing, ess_location
-from typehaus.checks.mep.power_sources import interconnection_busbar, rapid_shutdown
+from typehaus.checks.mep.interconnection import interconnection_busbar
+from typehaus.checks.mep.power_sources import rapid_shutdown
 from typehaus.checks.registry import CheckContext
 from typehaus.findings import Result
 from typehaus.model.enums import AlarmKind
@@ -148,6 +149,7 @@ def test_the_backfeed_fits_the_120_percent_allowance(catlin_plan, catlin_model):
     findings = interconnection_busbar(_context(catlin_plan, catlin_model))
     assert len(findings) == 1 and findings[0].result is Result.PASS
     assert "41.25A source" in findings[0].message and "28.75A spare" in findings[0].message
+    assert "met by 705.12(B)(2)(a)" in findings[0].message  # slots 51/53: the last row
 
 
 def test_an_oversized_source_fails(catlin_plan):
@@ -159,7 +161,7 @@ def test_an_oversized_source_fails(catlin_plan):
     library = catlin_plan.library.model_copy(update={"equipment_types": types})
     plan = catlin_plan.model_copy(update={"library": library})
     fails = _fails(interconnection_busbar(_context(plan)))
-    assert len(fails) == 1 and "293.75A exceeds" in fails[0].message
+    assert len(fails) == 1 and "293.75A over 1.2 x 225A" in fails[0].message
 
 
 def test_a_panel_without_a_bus_rating_is_unknown(catlin_plan):
@@ -352,7 +354,7 @@ def test_the_source_breaker_meets_the_705_30_floor(catlin_plan, catlin_model):
     from typehaus.checks.mep.power_sources import source_ocpd
 
     results = [f.result for f in source_ocpd(_context(catlin_plan, catlin_model))]
-    assert results == [Result.PASS, Result.UNKNOWN]  # floor met; the ceiling is not authored
+    assert results == [Result.PASS, Result.PASS]  # floor; #6 Cu at 60 C and EG4's 63 A max
     circuits = tuple(c.model_copy(update={"breaker_amps": 40}) if c.source else c
                      for c in catlin_plan.library.circuits)
     plan = catlin_plan.model_copy(update={

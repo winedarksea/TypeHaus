@@ -210,12 +210,12 @@ def test_230_70_a1_catlins_meter_main_is_outdoors(catlin_model_ro):
 _PORT = ServicePort(tag="p", service=Service.POWER_240, position=(m(0), m(0), m(0)))
 
 
-def _interconnection(main, bus, breaker, inverter_kw=None):
+def _interconnection(main, bus, breaker, inverter_kw=None, source_slot=None):
     from typehaus.model import Equipment, EquipmentKind, EquipmentType
 
     panel_type = ElectricalDeviceType(tag="ED-T-PNL", name="Panel", footprint=(m(.5), m(.1)),
                                       height=m(1), spaces=42, bus_amps=bus,
-                                      service_amps=main, ports=(_PORT,))
+                                      service_amps=main, ports=(_PORT,), main_feed_end="top")
     devices = [ElectricalDevice(tag="ED-M-PANEL", kind=DeviceKind.PANEL,
                                 position=pt(m(0), m(0)), type_ref="ED-T-PNL")]
     eq_types = ()
@@ -226,7 +226,10 @@ def _interconnection(main, bus, breaker, inverter_kw=None):
                                  position=pt(m(3), m(3)), footprint=(m(.5), m(.2)),
                                  type_ref="EQ-T-INV", circuit="CKT-PV"))
     circuits = (Circuit(tag="CKT-PV", panel_ref="ED-M-PANEL", breaker_amps=breaker, poles=2,
-                        source=True, description="source"),)
+                        source=True, description="source", slot=source_slot),)
+    if source_slot:  # loads past 225 A of OCPD, so (B)(3) cannot carry the panel
+        circuits += (Circuit(tag="CKT-L", panel_ref="ED-M-PANEL", breaker_amps=250, poles=2,
+                             slot=5, description="load"),)
     plan = PlanModel(
         project=Project(name="t", project_uuid="00000000-0000-0000-0000-000000000705",
                         building=Building(name="t"), site=Site(lat=0, lon=0, elevation=m(0))),
@@ -246,10 +249,11 @@ def test_705_12_b1_needs_no_placement():
 
 
 def test_705_12_b2a_120_percent_with_opposite_end_and_label():
-    f = _interconnection(main=200, bus=225, breaker=50)
-    assert f.result.value == "pass" and NEC.INTERCONNECTION_120PCT in f.message
-    assert "opposite end" in f.message and NEC.INTERCONNECTION_LABEL in f.message
-    assert _interconnection(main=225, bus=225, breaker=60).result.value == "fail"
+    f = _interconnection(main=200, bus=225, breaker=50, source_slot=39)  # rows 20-21 of 21
+    assert f.result.value == "pass" and f"met by {NEC.INTERCONNECTION_120PCT}" in f.message
+    assert "end opposite the top feed" in f.message and "(b) label" in f.message
+    assert _interconnection(main=200, bus=225, breaker=50, source_slot=1).result.value == "fail"
+    assert _interconnection(main=225, bus=225, breaker=60, source_slot=39).result.value == "fail"
 
 
 def test_705_12_uses_125_percent_of_inverter_output_not_the_breaker():

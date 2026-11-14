@@ -165,5 +165,8 @@ APPLIANCE_TYPES = (
         tag="APPL-GRIZZLE-SMART-40", name="EVSE, 40 A hardwired (Grizzl-E Smart, plug removed)",
         product_ref=GRIZZLE_SMART.tag, footprint=(inch(6.25), inch(3.75)),
         height=inch(10.25), needs=frozenset({Service.POWER_240}), ports=_P240,
+        # 625.50: the EasyEvPlug holster ships loose, "any location near the charging
+        # station" (manual v9 §7); placed beside the unit at its 42 in. AFF (a default).
+        connector_holster_height=inch(42),
         source=GRIZZLE_SMART.source),
 )

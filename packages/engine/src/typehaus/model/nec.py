@@ -397,6 +397,7 @@ class NEC:
     INTERCONNECTION_LABEL: Final = "705.12(B)(2)(b)"
     INTERCONNECTION_FEEDER: Final = "705.12(A)"  # feeder at 125% of the source's current
     INTERCONNECTION_SUM: Final = "705.12(B)(3)"  # sum of OCPDs within the bus; label
+    INTERCONNECTION_CENTER_FED: Final = "705.12(B)(4)"  # dwelling: either end, (2) rules
     SOURCE_PLAQUE: Final = "705.10"  # at the service equipment; also 690.56, 710.10, 480.7(G)
     SUPPLY_SIDE_OCPD: Final = "705.11(C)(1)"  # dwelling: OCPD within 10 ft of conductor
     SOURCE_DISCONNECT: Final = "705.20"

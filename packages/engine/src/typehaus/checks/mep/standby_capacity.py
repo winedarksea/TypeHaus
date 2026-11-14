@@ -5,7 +5,8 @@ inverter's load port) and Article 705 (the grid-interactive and island-mode side
 sends parallel operation to 705. See ``docs/nec-2026-paraphrase-702-705-island.md``.
 Graded: the inverter's continuous output against all backup circuits at once (702.4(A)(2)(a))
 and against the largest single one ((A)(3)). UNKNOWN: whether the inverter is listed as a PCS
-(``EquipmentType.pcs_listed``), the PCS control setting and nonautomatic reconnection.
+(``pcs_listed``, else the published ``pcs_functions``), the PCS control setting and
+nonautomatic reconnection. A PCS listing for export/import limiting alone does not bring (A)(3).
 """
 
 from __future__ import annotations
@@ -50,19 +51,39 @@ def standby_capacity(ctx: CheckContext) -> list[Finding]:
     else:
         out.append(failed(CID, head + ": cannot carry the largest single load", tags, code,
                           fix="a larger inverter, or move that load off the backup panel"))
-    types = {t.tag: t for t in ctx.plan.library.equipment_types}
-    listed = [getattr(t, "pcs_listed", None) for t in types.values()
-              if getattr(t, "inverter_kw_continuous", None)]
-    if True in listed:
-        what = ("the inverter is declared PCS-listed, but its control setting and "
-                "nonautomatic reconnection after an overload shutdown are not authored")
-    elif False in listed:
-        what = "the inverter is declared not PCS-listed, so 702.4(A)(2) alone applies"
-    else:
-        what = ("whether the inverter is listed as a PCS, its control setting (capacity must "
-                "be at least that) and nonautomatic reconnection after an overload shutdown "
-                "are not authored")
-    if False not in listed:
-        out.append(unknown(CID, f"702.4(A)(3): {what}", tags, cite(NEC.STANDBY_MULTIMODE),
-                           "author pcs_listed on the inverter type from its listing"))
+    inverters = [t for t in ctx.plan.library.equipment_types
+                 if getattr(t, "inverter_kw_continuous", None)]
+    out.append(_multimode(inverters, tags))
     return out
+
+
+def _overload_listed(inverter) -> bool | None:
+    """Whether the inverter is a PCS listed for overload control: ``pcs_listed`` where
+    declared, else read off the published ``pcs_functions`` (absent from that list is no)."""
+    declared = getattr(inverter, "pcs_listed", None)
+    if declared is not None:
+        return declared
+    functions = getattr(inverter, "pcs_functions", None)
+    return None if functions is None else "overload_control" in functions
+
+
+def _multimode(inverters, tags) -> Finding:
+    """702.4(A)(3): applies only to a multimode inverter listed as a PCS for overload control."""
+    code = cite(NEC.STANDBY_MULTIMODE)
+    listed = [_overload_listed(t) for t in inverters]
+    if listed and all(v is False for v in listed):
+        named = "; ".join(f"{t.tag}: {', '.join(t.pcs_functions)}" for t in inverters
+                          if getattr(t, "pcs_functions", None))
+        why = (f"its published PCS functions ({named}) include no overload control"
+               if named else "it is declared not PCS-listed for overload control")
+        return not_applicable(CID, f"702.4(A)(3) does not reach the inverter: {why}, so "
+                                   "702.4(A)(2) alone applies", tags, code)
+    if True in listed:
+        what = ("the inverter is a PCS listed for overload control, but its control setting "
+                "and nonautomatic reconnection after an overload shutdown are not authored")
+    else:
+        what = ("whether the inverter is listed as a PCS for overload control, its control "
+                "setting (capacity must be at least that) and nonautomatic reconnection after "
+                "an overload shutdown are not authored")
+    return unknown(CID, f"702.4(A)(3): {what}", tags, code,
+                   "author pcs_listed or pcs_functions on the inverter type from its listing")

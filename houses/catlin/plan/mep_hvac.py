@@ -135,6 +135,15 @@ EQUIPMENT_TYPES = (
                   footprint=(inch(27), inch(12)), height=inch(35),
                   inverter_kw_continuous=8.0, inverter_kw_surge=16.0, pv_input_kw=12.0,
                   inverter_idle_w=55.0, inverter_efficiency=0.94,
+                  # NEC lane F, from EG4's 12kPV + WallMount Indoor 280Ah ESS User Manual v1.0
+                  # (2026) and the 12kPV QSG v1.3.2. Grid-port max OCPD: the manual's "63A or
+                  # 80A per inverter", the lesser taken. PCS: QSG §16-17 lists export limiting,
+                  # import limiting and the ESS modes under "PCS CRD"; no overload control.
+                  # RSD: manual §10.3 (AC output cut, PV under 30 V in 30 s; ESS disconnect
+                  # too with supported EG4 batteries in closed loop, which the WallMount is).
+                  max_overcurrent_a=63,
+                  pcs_functions=("export_limiting", "import_limiting", "ess_operating_modes"),
+                  rsd_shutdown_scope=("pv_array", "ac_output", "ess"),
                   ports=(ServicePort(tag="grid", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),
                          ServicePort(tag="load", service=Service.POWER_240,
@@ -150,6 +159,8 @@ EQUIPMENT_TYPES = (
                   model_representation=ModelRepresentation(symbol="eg4-wallmount-indoor-280ah"),
                   footprint=(inch(18.125), inch(9.625)), height=inch(36.375),
                   storage_kwh=14.3, ul_9540_listed=True,
+                  # ESS User Manual v1.0 §1.2: 51.2 V dc nominal (44.8-56 V), so under 480.7(A)'s 60 V.
+                  battery_nominal_voltage_v=51.2,
                   clearances=(ClearanceZone(
                       footprint=Footprint2D(points=(
                           pt(inch(-48), inch(-41)), pt(inch(48), inch(-41)),

@@ -329,8 +329,11 @@ v1.0.0 §1.3). `ED-M-RSD-INIT` is an IMO ESS-RSD01 (2-pole rotary, NEMA 4X, cULu
 -40 °C; also sold as Fronius 42,0440,0338) on `W-M-W1C`, 3" south of the meter-main, handle
 ~grade + 4'-2". ON is closed; one pole in the loop, OFF initiates. That is the normally-closed
 logic of EG4's Hybrid RSD Wiring Guide v1.0.3 and the factory RSD jumper; the older QSG text
-says normally-open, so wire to the board on the delivered unit. With supported EG4 batteries
-in closed loop the same switch also opens the ESS (706.15). `CD-M-RSD-INIT` is a 1/2" EMT stub
+says normally-open (so do the ESS User Manual v1.0 §10.3 and QSG v1.3.2 §11.2 for an
+"External E-Stop"), so wire to the board on the delivered unit. The ESS manual §10.3 settles
+the scope: opening the loop cuts the inverter's AC output and drops the PV conductors under
+30 V in 30 s, and with supported EG4 batteries in closed loop (the WallMount is one) it also
+initiates the ESS disconnect (`rsd_shutdown_scope`; `electrical.ess_emergency_shutdown`, 706.15(B)). `CD-M-RSD-INIT` is a 1/2" EMT stub
 into the stud bay behind the box; the Class 2 pair is fished from there to the inverter.
 Label it with the 690.12(D)(2) wording, "RAPID SHUTDOWN SWITCH FOR SOLAR PV SYSTEM", on or within 3 ft of the switch.
 
@@ -343,7 +346,8 @@ MPPT; spec sheet v1.0.9). One 9-module string per roof side, one per MPPT: cold 
 
 ## 9. Wiring as built
 
-`CKT-ESS-GRID` (50 A 2-pole, slot 40 of `ED-B-PANEL`) is the 12kPV's grid port; its load
+`CKT-ESS-GRID` (50 A 2-pole, #6 Cu, slots 51/53 of `ED-B-PANEL`, the last row of the
+top-fed can; `CKT-HP2` took 40/42) is the 12kPV's grid port; its load
 port feeds the 12-space `ED-B-BACKUP-PANEL`. The three raceways (`CD-B-PV-INV`,
 `CD-B-INV-PANEL`, `CD-B-INV-BACKUP`) were re-laid 2026-10-30 onto the inverter where it
 hangs, on `W-B-N4` west of the closet: each rises into the case bottom at its own height
@@ -409,6 +413,14 @@ a 48 V hybrid inverter. Three futures:
 
 Xcel's TIIR footnote 6: an outage-only, break-before-make feed is treated like a generator.
 
+**What a future V2H must meet** (2026 NEC, `docs/nec-2026-paraphrase-702-705-island.md`):
+listed and marked for power export (625.48; UL 9741 / UL 1741 SB, SAE J3072 in the note); as
+standby, Art. 702; as a source, Art. 705 (705.12/.28/.30/.40 again); beside the 12kPV on the
+backup side, a second source brings 705.76 coordination, and island capacity sums both outputs
+(705.80); a receptacle export point follows 625.60; the connector stored 18 in. above the floor
+(625.50, graded for the Grizzl-E at 42 in.). 625.47 (more than one feeder or branch circuit)
+applies only to equipment identified for it: no charger is chosen, so it is open, not N/A.
+
 **Moving the ESS to the garage** was rejected: unheated, -20 F.
 
 ## 11. Deferring the battery
@@ -419,9 +431,46 @@ backup. With zero storage the calc reports no usable storage rather than "sustai
 small LFP UPS (separate from the ESS) should carry Home Assistant, the router and the leak
 valve regardless.
 
-## 12. Open
+## 12. What EG4's documents settle (lane F, 2026-11-14)
+
+Read: 12kPV spec sheet v1.0.9, 12kPV QSG v1.3.2, and the *18kPV & 12kPV + WallMount Indoor
+280Ah ESS User Manual* v1.0 (eg4electronics.com/wp-content/uploads/2026/06/).
+
+- **(a) Grid-breaker maximum: 63 A** ("MAX. OUTPUT OVER CURRENT PROTECTION 63A or 80A per
+  inverter", ESS manual §1.2; the lesser is authored as `max_overcurrent_a`). The QSG's ESS
+  mode table puts the 125% floor at 41.667 A (48.077 A at 208 V). 50 A sits between.
+- **Grid/load terminals** take up to 4 AWG (17.7 in-lb); **no terminal temperature is
+  published**, so `CKT-ESS-GRID` went to #6 Cu on the 60 °C column (55 A).
+- **(b) RSD scope**: §8 above. **(e) PCS**: "UL1741, SA, SB, PCS CRD"; the published PCS
+  functions are export limiting, import limiting and the ESS modes (QSG §16-17): no overload
+  control, so 702.4(A)(3) does not reach it and the full-load route stands.
+- **Battery**: 51.2 V dc nominal (44.8-56 V), 140 A max discharge for one pack; under 480.7(A)'s
+  60 V, and the 480.7(F) label prints 51.2 V. Battery cable 4/0 AWG to 10 ft (250 kcmil to
+  20 ft); PV wire 10-6 AWG, 600 V insulation minimum (§10.2) — for lane G's `ConduitRun`
+  conductor list on the three PV dc runs and the battery leg.
+- **480.7(B)**: `ED-M-RSD-INIT` already opens the ESS, so if the AHJ applies (B) below 60 V,
+  an EMERGENCY DISCONNECT label beside the 690.12(D)(2) wording meets it (derived, E-605).
+
+**Ask EG4** (none of these is published):
+1. Is the 12kPV's grid-port maximum OCPD 63 A or 80 A for a single unit, and on what does it depend?
+2. Terminal temperature rating (60 or 75 °C) of the GRID, LOAD and GEN terminals?
+3. With the grid breaker open, can the GRID terminals be energized (705.20(F) warning)?
+4. Does the load port (island mode) bond neutral to ground, i.e. is it a separately derived
+   system (250.30; 702.7(B) sign)? Is open-phase protection provided in island mode (705.30(E),
+   the 408.36(D) hold-down)?
+5. Does the LOAD port have its own overcurrent protection rated for the load-port conductors
+   (705.60/705.30), or should `ED-B-BACKUP-PANEL` take a 50 A main?
+6. After an off-grid overload shutdown, is restart automatic or manual (702.4(A)(3))?
+7. External RSD switch: normally open (ESS manual, QSG) or normally closed (Hybrid RSD Wiring
+   Guide v1.0.3, factory jumper) on the current board?
+8. Does the WallMount's breaker open both + and - (706.15(D)(1): both are ungrounded)?
+9. The UL 9540 certificate naming 12kPV + one WallMount Indoor by model and count.
+
+## 13. Open
 
 - EG4's ETL/UL 9540 certificate naming **12kPV + WallMount Indoor** by model and count.
+- `ED-T-PANEL`'s 225 A bus: the QO154M200P sheet publishes only "Rated Current 200 A". At
+  200 A, 705.12(B)(2) allows 240 A < 241.25 A. Read the bus rating off the label.
 - What EG4 means by the WallMount's "fire arrestors".
 - Declare future storage on the Xcel interconnection application now.
 - St Paul DSI's position on a UL 9540 3rd-ed. DC ESS listing.

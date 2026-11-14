@@ -7,7 +7,9 @@ charger's continuous output (625.41: EVSE is a continuous load, so the breaker i
 installed for EV charging; a circuit with none (hardwired) earns N/A. 625.43(C): a permanently
 connected EVSE has a readily accessible disconnect, and a plaque on it where that is remote.
 No plaque is modelled, so a hardwired unit's breaker, the only disconnect, is reported, not
-graded; a cord-and-plug unit's plug is its disconnect (60 A or less).
+graded; a cord-and-plug unit's plug is its disconnect (60 A or less). 625.50: an appliance
+whose type states ``connector_holster_height`` stores its connector at least 18 in. above an
+indoor floor (a room holds it) or 24 in. above outdoor grade.
 """
 
 from __future__ import annotations
@@ -19,6 +21,8 @@ from typehaus.model.nec import NEC, cite
 
 _CID = "electrical.evse_circuit"
 _RECEPTACLES = frozenset({"receptacle", "gfci", "receptacle_240"})
+_HOLSTER_MIN_INDOORS_IN = 18.0  # 625.50
+_HOLSTER_MIN_OUTDOORS_IN = 24.0
 
 
 @check(Tier.ADVISORY, _CID)
@@ -71,4 +75,24 @@ def evse_circuit(ctx: CheckContext) -> list[Finding]:
                       "disconnect modelled; if it is remote from the EVSE, a plaque on the "
                       "unit must say where", tags, Result.ADVISORY,
                 code=cite(NEC.EVSE_DISCONNECT)))
+    out.extend(_coupling_height(ctx))
+    return out
+
+
+def _coupling_height(ctx: CheckContext) -> list[Finding]:
+    """625.50 for each placed EVSE whose type states where its connector is stored."""
+    types = {t.tag: t for t in ctx.plan.library.appliance_types}
+    out: list[Finding] = []
+    for unit in sorted((e for e in ctx.plan.all_elements() if e.element_kind == "Appliance"),
+                       key=lambda e: e.tag):
+        height = getattr(types.get(unit.type_ref or ""), "connector_holster_height", None)
+        if height is None:
+            continue
+        inches = height.inches
+        indoors = bool(getattr(unit, "room", None))
+        need = _HOLSTER_MIN_INDOORS_IN if indoors else _HOLSTER_MIN_OUTDOORS_IN
+        where = f"above the floor of {unit.room}" if indoors else "above grade"
+        verb = passed if inches + 1e-6 >= need else failed
+        out.append(verb(_CID, f"{unit.tag}: connector stored {inches:g} in. {where}, against "
+                              f"{need:g} in.", (unit.tag,), code=cite(NEC.EVSE_COUPLING_HEIGHT)))
     return out

@@ -828,7 +828,8 @@ def test_705_12_reads_the_panels_own_main_not_a_320a_service():
                 if f.check_id == "code.NEC_705_12_interconnection"]
     assert findings and findings[0].result.value == "pass", [f.message for f in findings]
     assert "200A main + 50A source" in findings[0].message
-    assert "705.12(B)(2)(a)" in findings[0].message and "opposite end" in findings[0].message
+    assert "met by 705.12(B)(3)" in findings[0].message  # 70 A of OCPDs on a 225 A bus
+    assert "states no main_feed_end" in findings[0].message  # (B)(2)'s placement unknown
 
 
 def test_load_management_flags_unknown_circuits():

@@ -33,6 +33,18 @@ class EquipmentElectricalFacts(HausModel):
     # (Art. 440). A noncoincident group takes it at 125% (120.11(A)). Unset: no motor stated.
     largest_motor_va: float | None = None
 
+    # --- lane F: sources (Arts. 480, 702, 705, 706) ---
+    # An inverter's grid-port maximum OCPD rides on ``max_overcurrent_a`` above.
+    # PCS functions the maker publishes for its UL 1741 PCS listing, e.g. "export_limiting",
+    # "import_limiting", "ess_operating_modes", "overload_control" (702.4(A)(3) reads the last).
+    # None: no PCS function stated.
+    pcs_functions: tuple[str, ...] | None = None
+    # BATTERY kinds: nominal voltage, V dc (480.7(A)'s 60 V, 480.7(F)/706.15(D) label).
+    battery_nominal_voltage_v: float | None = None
+    # INVERTER kinds: what opening the RSD initiation loop stops, per the maker's manual:
+    # "pv_array" (690.12), "ac_output" (export to premises wiring), "ess" (battery disconnect).
+    rsd_shutdown_scope: tuple[Literal["pv_array", "ac_output", "ess"], ...] | None = None
+
 
 class DeviceElectricalFacts(HausModel):
     """Listing and rating facts of a wiring device or panel (``ElectricalDeviceType``)."""
@@ -68,3 +80,16 @@ class DeviceElectricalFacts(HausModel):
     # --- lane H: grounding (Art. 250) ---
     # IBT kinds: terminals for bonding conductors, off the sheet (250.94(A): at least three).
     bonding_terminals: int | None = None
+
+    # --- lane F: panel feed position (705.12(B)(2)/(4)) ---
+    # Panel kinds: where the primary feed (main or main lugs) enters the bus, read off the
+    # product's sheet. "center": a center-fed panelboard. None: not stated.
+    main_feed_end: Literal["top", "bottom", "center"] | None = None
+
+
+class EvseElectricalFacts(HausModel):
+    """EV supply equipment facts (``ApplianceType``) — lane F, 625.50."""
+
+    # Where the connector is stored, above the floor (indoors) or grade (outdoors). A holster
+    # sold loose (Grizzl-E EasyEvPlug) is placed by the house, so the house's type states it.
+    connector_holster_height: Length | None = None
