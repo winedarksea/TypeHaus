@@ -96,13 +96,13 @@ def test_ceiling_height_alone_cannot_create_an_exemption(project):
         assert [f.result.value for f in _room_findings(model)] == ["fail"]
 
 
-def test_plate_only_edge_is_unknown_even_with_full_coverage(project):
+def test_plate_only_edge_passes_when_covered_either_way(project):
+    """Full coverage counting the plate as wall space: both readings pass, so no UNKNOWN."""
     devices = tuple(_outlet(f"RC-{i}", x, y) for i, (x, y) in enumerate(
         [(5, 0), (15, 0), (20, 4), (20, 10), (15, 14), (5, 14), (0, 10), (0, 4)]))
     findings = _room_findings(_sloped_room(project, plate=True, devices=devices))
-    assert [f.result.value for f in findings] == ["unknown"]
-    assert findings[0].element_tags == ("RM-1", "W-1")
-    assert "rafter plate" in findings[0].message
+    assert [f.result.value for f in findings] == ["pass"]
+    assert "whether or not W-1 counts" in findings[0].message
 
 
 def test_definite_failure_and_plate_uncertainty_are_both_reported(project):

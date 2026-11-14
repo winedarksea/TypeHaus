@@ -30,6 +30,7 @@ from typehaus.model.nec import NEC, cite
 from typehaus.resolve.room_lookup import axis_polygon, axis_ring
 from typehaus.resolve.solid_categories import in_slab_family
 
+_FREE_STANDING = "free-standing, clear of every wall and of the cabinet"
 # 210.52(D)'s reach, measured to the OUTSIDE EDGE of the basin.
 _BASIN_REACH_M = 36 * 0.0254
 # 210.52 item (4): a receptacle more than 5 1/2 ft above the floor is not counted as a
@@ -56,27 +57,25 @@ _NOT_BASIN_SYMBOLS = {"toilet", "toilet-wall-hung", "toto-ap-duofit", "bidet", "
 def bathroom_basin_receptacle(ctx: CheckContext) -> list[Finding]:
     """NEC 210.52(D) — each lavatory basin has a countable receptacle within 36" of its edge.
 
-    **Basin geometry is the whole vanity carcass, not the bowl.** The model carries no
-    basin extent, so ``ResolvedCanvasObject.footprint`` — the case — is what the distance
-    is measured to. The carcass is larger than the basin it holds, so a carcass-edge
-    distance is a *lower* bound on the real 210.52(D) distance and this rule is permissive
-    in exactly the direction the GFCI rule's old centroid bug was. ``FixtureType.basin`` says
-    only THAT there is a basin, not where its edge is; tightening this means an extent.
-    Until then, a PASS here means "passes at least as easily as the code asks", never the
-    reverse.
+    **Each bowl is measured on its own.** A bowl is the basin's countertop cutout
+    (``ResolvedCountertop.cutouts``, from ``FixtureType.countertop_cutout``), so a two-bowl
+    vanity needs a receptacle within 36" of each. A basin with no cutout (a vessel or wall-hung
+    lavatory with no countertop) falls back to its carcass footprint, a lower bound on the
+    real distance, and the finding says so.
 
     **Which fixtures are basins is declared, not drawn.** ``FixtureType.basin`` decides it;
     the plan symbol is only the fallback for a type that states nothing, and a symbol in
     neither vocabulary reports UNKNOWN against that type.
 
-    Four things disqualify a receptacle that is otherwise close enough, each citable:
+    Five things disqualify a receptacle that is otherwise close enough, each citable:
 
     * it is in a different room — a cord does not reach through a wall (210.52(D) says
       "adjacent to", and ``_pierces_a_wall`` is the second, geometric half of that);
     * it is enclosed under a horizontal solid — a tub deck, a countertop overhang, a bench
       — which is 210.52 item (3), "within cabinets or cupboards";
     * it is mounted more than 5 1/2 ft above the floor — 210.52 item (4);
-    * it is a floor outlet, which 210.52(D) does not list among the three locations.
+    * it is a floor outlet, which 210.52(D) does not list among the three locations;
+    * it stands free of every wall and of the cabinet, which is not one of them either.
 
     The enclosure test is *geometric* on purpose: nobody can forget to author it, and
     nobody can author it away. Its honest limit is that it sees an enclosure modelled as a
@@ -84,7 +83,7 @@ def bathroom_basin_receptacle(ctx: CheckContext) -> list[Finding]:
     with nothing above it, is invisible to it; if that case ever appears in a plan, the
     answer is an authored ``ElectricalDevice.enclosed`` flag OR-ed with this one.
     """
-    from shapely.geometry import Point, Polygon
+    from shapely.geometry import Polygon
 
     cid, code = "code.E3901_6_bathroom_receptacle", cite(NEC.BATHROOM_RECEPTACLE)
     bathrooms = {room.tag: room for room in ctx.model.rooms
@@ -117,45 +116,71 @@ def bathroom_basin_receptacle(ctx: CheckContext) -> list[Finding]:
     wall_bands = _wall_bands(ctx)
     floors = _floor_datums(ctx)
 
+    bowls: dict[str, list] = {}
+    for top in ctx.model.countertops:
+        for ring, ref in zip(top.cutouts, top.cutout_refs, strict=False):
+            if len(ring) >= 3:
+                bowls.setdefault(ref, []).append(Polygon(ring))
     out: list[Finding] = list(unstated)
     for basin, basin_room in basins:
         carcass = Polygon(basin.footprint)
-        best: tuple[float, Any, str] | None = None
-        rejected: list[tuple[float, str, str]] = []
-        for obj, room in devices:
-            if obj.storey != basin.storey:
-                continue
-            distance = carcass.distance(Point(obj.position))
-            if distance > _BASIN_REACH_M:
-                continue
-            why = _disqualified(obj, room, basin_room, carcass, enclosures,
-                                floors, barriers.get(obj.storey))
-            if why is not None:
-                rejected.append((distance, obj.tag, why))
-                continue
-            where = _location_branch(obj, carcass, wall_bands.get(obj.storey, ()))
-            if where is None:
-                out.append(by_result(
-                    cid, Result.UNKNOWN,
-                    f"{obj.tag} is {_inches(distance)} from {basin.tag} and stands over "
-                    f"neither a wall nor open floor, so {NEC.BATHROOM_RECEPTACLE}'s cabinet-face "
-                    "branch governs — and the basin countertop height it is measured from is not "
-                    "modeled", (basin.tag, obj.tag), code,
-                    f"state the countertop height of {basin.tag}"))
-                best = best or (distance, obj, "")
-                break
-            if best is None or distance < best[0]:
-                best = (distance, obj, where)
-        if best is not None and best[2]:
+        targets = bowls.get(basin.tag) or [None]
+        for index, bowl in enumerate(targets):
+            label = (basin.tag if bowl is None or len(targets) == 1
+                     else f"{basin.tag} bowl {index + 1}")
+            out.extend(_grade_basin(cid, code, basin, label, bowl, carcass, basin_room,
+                                    devices, enclosures, floors, barriers, wall_bands))
+    return out
+
+
+def _grade_basin(cid, code, basin, label, bowl, carcass, basin_room, devices, enclosures,
+                 floors, barriers, wall_bands) -> list[Finding]:
+    """One bowl (its countertop cutout), or the carcass where no cutout is modelled."""
+    from shapely.geometry import Point
+
+    reach_from = bowl if bowl is not None else carcass
+    out: list[Finding] = []
+    best: tuple[float, Any, str] | None = None
+    rejected: list[tuple[float, str, str]] = []
+    for obj, room in devices:
+        if obj.storey != basin.storey:
+            continue
+        distance = reach_from.distance(Point(obj.position))
+        if distance > _BASIN_REACH_M:
+            continue
+        why = _disqualified(obj, room, basin_room, carcass, enclosures,
+                            floors, barriers.get(obj.storey))
+        if why is not None:
+            rejected.append((distance, obj.tag, why))
+            continue
+        where = _location_branch(obj, carcass, wall_bands.get(obj.storey, ()))
+        if where == _FREE_STANDING:
+            rejected.append((distance, obj.tag, f"({_FREE_STANDING}: not one of "
+                             f"{NEC.BATHROOM_RECEPTACLE}'s locations)"))
+            continue
+        if where is None:
             out.append(by_result(
-                cid, Result.PASS,
-                f"{basin.tag} is served by {best[1].tag} at {_inches(best[0])} "
-                f"({best[2]})", (), code))
-        elif best is None:
-            out.append(by_result(cid, Result.FAIL, _fail_message(basin, rejected),
-                                 (basin.tag, basin_room.tag), code,
-                                 "add a 125V receptacle on the wall beside "
-                                 f"{basin.tag}, within 36\" of its edge"))
+                cid, Result.UNKNOWN,
+                f"{obj.tag} is {_inches(distance)} from {basin.tag} and stands over "
+                f"neither a wall nor open floor, so {NEC.BATHROOM_RECEPTACLE}'s cabinet-face "
+                "branch governs — and the basin countertop height it is measured from is not "
+                "modeled", (basin.tag, obj.tag), code,
+                f"state the countertop height of {basin.tag}"))
+            best = best or (distance, obj, "")
+            break
+        if best is None or distance < best[0]:
+            best = (distance, obj, where)
+    edge = "" if bowl is not None else ", to the vanity carcass (no bowl cutout modelled)"
+    if best is not None and best[2]:
+        out.append(by_result(
+            cid, Result.PASS,
+            f"{label} is served by {best[1].tag} at {_inches(best[0])}{edge} "
+            f"({best[2]})", (), code))
+    elif best is None:
+        out.append(by_result(cid, Result.FAIL, _fail_message(label, rejected),
+                             (basin.tag, basin_room.tag), code,
+                             "add a 125V receptacle on the wall beside "
+                             f"{basin.tag}, within 36\" of its bowl"))
     return out
 
 
@@ -163,8 +188,8 @@ def _inches(metres: float) -> str:
     return f'{metres / 0.0254:.1f}"'
 
 
-def _fail_message(basin: Any, rejected: list[tuple[float, str, str]]) -> str:
-    head = (f"{basin.tag} has no receptacle within 36\" of its edge that counts toward "
+def _fail_message(label: str, rejected: list[tuple[float, str, str]]) -> str:
+    head = (f"{label} has no receptacle within 36\" of its edge that counts toward "
             f"{NEC.BATHROOM_RECEPTACLE}")
     if not rejected:
         return f"{head} — no 125V receptacle is within reach at all"
@@ -342,7 +367,6 @@ def _location_branch(obj: Any, carcass: Any, bands: tuple) -> str | None:
             return "on the wall adjacent to the basin"
     if carcass.covers(point):
         return None
-    # Neither against a wall solid nor inside the cabinet: a receptacle standing free in
-    # the bathroom, which is adjacent to the basin in every sense 210.52(D) asks about.
-    # Say what was actually observed rather than naming a wall no geometry found.
-    return "in the basin's own room, clear of its cabinet"
+    # Neither against a wall solid nor inside the cabinet: free-standing, which is none of
+    # (D)(2)'s three locations.
+    return _FREE_STANDING

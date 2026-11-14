@@ -41,7 +41,7 @@ MAIN_KITCHEN_CASEWORK = [
     # the handle projection, so the *real* proudness is 3 7/8" plus a handle nobody has measured
     # — a tape on a floor sample before the cabinet order, not a number to invent here.
     Appliance(uid="A1Y5Q0RDXV", tag="APPL-M-FRIDGE", type_ref="APPL-FRIG-PRO-ALLFRIDGE",
-              room="RM-M-LIVING",
+              room="RM-M-LIVING", plugs_into=("ED-M-LIVING-KRF1",),
               position=pt(ft(19, 5.75), ft(31, 6)), rotation=deg(90),
               # TWINSPAIRKIT rides on the refrigerator rather than the freezer arbitrarily —
               # it is one kit for the pair, and billing it twice would be wrong. It is what
@@ -55,7 +55,7 @@ MAIN_KITCHEN_CASEWORK = [
               install_parts=("Frigidaire TWINSPAIRKIT twin pairing kit (anti-condensation heater, power supply, cord, clips)",
                              "Frigidaire TTDRRVFRKIT Pro door reversal kit, refrigerator to left hinge (door, hinges, covers, stopper)")),
     Appliance(uid="ZH6G4SNPWT", tag="APPL-M-FREEZER", type_ref="APPL-FRIG-PRO-ALLFREEZER",
-              room="RM-M-LIVING",
+              room="RM-M-LIVING", plugs_into=("ED-M-LIVING-KFZ1",),
               position=pt(ft(19, 5.75), ft(28, 9)), rotation=deg(90)),
     # One 90-inch frame on 3 1/2-inch supports aligns with the cold uppers at 93 1/2.
     # Retain the 18-inch width: 1/2" south for the cold bay, its south end 3/8" inside W-M-C5's end.
@@ -144,7 +144,7 @@ MAIN_KITCHEN_CASEWORK = [
                   normal_gap=inch(5.34375), rotation_offset=deg(-180)))),
     # Door face flush with the AXSTAD fronts at y=400 5/8: the 24 5/8" body ends 1/4" off the wall.
     Appliance(uid="XPA5ZCQM5Q", tag="APPL-M-DW", type_ref="APPL-LG-DISHWASHER", room="RM-M-LIVING",
-              position=pt(inch(321.375), inch(412.9375))),
+              position=pt(inch(321.375), inch(412.9375)), plugs_into=("ED-M-LIVING-KDW1",)),
     # Trash + recycling, emptied to the garage carts; compost is a counter caddy.
     Furniture(uid="3QTQ2NFWYD", tag="FURN-M-KIT-E2", type_ref="SEKT-B18-WASTE", room="RM-M-LIVING",
               position=pt(inch(378.375), inch(413.375))),
@@ -182,7 +182,7 @@ MAIN_KITCHEN_CASEWORK = [
               room="RM-M-LIVING",
               position=pt(ft(33, 10.375), ft(33, 10.375)), rotation=deg(0)),
     Appliance(uid="417H1EH5C3", tag="APPL-M-RANGE", type_ref="APPL-LG-INDUCTION-RANGE",
-              room="RM-M-LIVING",
+              room="RM-M-LIVING", plugs_into=("ED-M-LIVING-KRG1",),
               position=pt(ft(34, 2.375), ft(31, 0.375)), rotation=deg(-90)),
     Furniture(uid="5PZ7SPZYDT", tag="FURN-M-KIT-CORNER-PEN", type_ref="SEKT-CORNER-B38",
               room="RM-M-LIVING",
@@ -300,6 +300,7 @@ MAIN_KITCHEN_CASEWORK = [
     # landing edge (343 3/8). Plugs into ED-M-LIVING-KGF4 (SA2) at 42".
     Appliance(uid="72YP0N77T2", tag="APPL-M-MICROWAVE", type_ref="APPL-MICROWAVE-NN-SN686S", room="RM-M-LIVING",
               position=pt(inch(415.6), inch(332.72)), rotation=deg(-90),
+              plugs_into=("ED-M-LIVING-KGF4",),
               mount=Mount(kind=MountKind.FLOOR, elevation=inch(36))),
 
     # Ply ladder, 18" deep and 1/4" off the north wall (the oak's movement), 8" of floor

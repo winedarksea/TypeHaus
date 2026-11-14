@@ -397,9 +397,11 @@ def _sink_points(ctx: CheckContext) -> dict[str, list]:
 _AFCI_OCCUPANCIES = frozenset({
     Occupancy.KITCHEN.value, Occupancy.LIVING.value, Occupancy.DINING.value,
     Occupancy.BEDROOM.value, Occupancy.HALLWAY.value, Occupancy.LAUNDRY.value,
-    Occupancy.MEDIA.value, Occupancy.OFFICE.value, Occupancy.HOBBY.value, Occupancy.STORAGE.value,
-    Occupancy.STUDY_CLOSET.value,  # "similar rooms or areas"
+    Occupancy.MEDIA.value, Occupancy.OFFICE.value, Occupancy.HOBBY.value,
+    # "Similar": STORAGE for closets (no occupancy splits them), a stair as a hallway.
+    Occupancy.STORAGE.value, Occupancy.STAIR.value, Occupancy.STUDY_CLOSET.value,
 })
+_LAUNDRY_SYMBOLS = frozenset({"washer", "dryer", "washer-dryer-stacked"})
 
 # ...and only on the circuits the section actually reaches. NEC 210.12 is written
 # for "120-volt, single-phase, 15- and 20-ampere branch circuits", which is the ordinary
@@ -441,6 +443,10 @@ def afci_branch_circuits(ctx: CheckContext) -> list[Finding]:
         if len(axis_ring(room)) >= 3:
             rooms.setdefault(room.storey, []).append((room, axis_polygon(room)))
     by_tag = {room.tag: room for room in ctx.model.rooms}
+    appliance_types = getattr(ctx.plan.library, "appliance_types", ())
+    symbols = {t.tag: getattr(t, "plan_symbol", None) for t in appliance_types}
+    laundry = {obj.room for obj in ctx.model.canvas_objects if obj.kind == "Appliance"
+               and symbols.get(obj.type_ref or "") in _LAUNDRY_SYMBOLS}
 
     # Which rooms each circuit reaches, via every consumer that names it.
     served: dict[str, set[str]] = {}
@@ -459,7 +465,8 @@ def afci_branch_circuits(ctx: CheckContext) -> list[Finding]:
                 if _host_of(ctx.model, element) is None:
                     unplaced.setdefault(circuit_tag, set()).add(element.tag)
             else:
-                served.setdefault(circuit_tag, set()).add(room.occupancy)
+                served.setdefault(circuit_tag, set()).add(
+                    Occupancy.LAUNDRY.value if room.tag in laundry else room.occupancy)
 
     out: list[Finding] = []
     for tag, circuit in sorted(circuits.items()):

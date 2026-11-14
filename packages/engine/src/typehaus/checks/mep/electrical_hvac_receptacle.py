@@ -15,11 +15,11 @@ receptacle (``_counts_as_a_125v_receptacle``, unswitched) that is:
   no wiring order, so such a unit with no other receptacle is UNKNOWN, never PASS.
 
 Refrigeration equipment is graded too: an appliance whose type draws the engine's
-``refrigerator`` symbol. A plugged-in unit's outlet within 2 ft is taken as its own, so a
-second receptacle is what passes (an appliance names no circuit). "Accessible" is not graded.
-Left out: the ERV (ventilation; 210.63(A) names heating, air-conditioning and refrigeration
-only, an AHJ question), the water heater, and 210.63(B), which is for buildings other than
-dwellings. 210.63's exception for evaporative coolers does not apply.
+``refrigerator`` symbol. Its own outlet (``Appliance.plugs_into``, else the one within 2 ft)
+is excluded, so a second receptacle is what passes (an appliance names no circuit).
+"Accessible" is not graded. Left out: the ERV (ventilation; 210.63(A) names heating,
+air-conditioning and refrigeration only, an AHJ question), the water heater, and 210.63(B),
+which is for buildings other than dwellings. The evaporative-cooler exception does not apply.
 """
 
 from __future__ import annotations
@@ -88,8 +88,12 @@ def hvac_service_receptacle(ctx: CheckContext) -> list[Finding]:
             (same_circuit if own and rc.circuit == own else ok).append((gap, rc.tag))
         where = "indoors" if inside else "outdoors"
         plugged = ""
-        if unit.element_kind == "Appliance" and ok and min(ok)[0] <= _OWN_OUTLET_M:
-            # A plugged-in unit's nearest outlet is its own: a second one services it.
+        named = set(getattr(unit, "plugs_into", ()) or ())
+        if named:
+            plugged = f", beside its own outlet {', '.join(sorted(named))}"
+            ok = [pair for pair in ok if pair[1] not in named]
+        elif unit.element_kind == "Appliance" and ok and min(ok)[0] <= _OWN_OUTLET_M:
+            # A plugged-in unit's nearest outlet is taken as its own: a second one services it.
             plugged = f", beside its own outlet {min(ok)[1]}"
             ok.remove(min(ok))
         circ = " and another circuit" if getattr(unit, "circuit", None) else ""

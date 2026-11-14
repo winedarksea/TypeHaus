@@ -463,6 +463,9 @@ class Appliance(Element):
     install_parts: tuple[str, ...] = ()  # loose kit billed with this installation
     # Door hinge side as installed, seen from the front; None keeps the type's factory side.
     door_hinge: Literal["left", "right"] | None = None
+    # The ElectricalDevice(s) its cords plug into, or the box it is hardwired at: the outlet
+    # NEC 210.8(D) traces. Empty falls back to a receptacle within reach.
+    plugs_into: tuple[str, ...] = ()
 
     @model_validator(mode="after")
     def _placed_or_hosted(self):

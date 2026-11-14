@@ -6,7 +6,8 @@ of them: an electric range or other cooking unit (``ApplianceType.cooking`` with
 need), a clothes dryer (the population text ``code.M1502_dryer_exhaust`` reads), a
 dishwasher and a microwave (the same, by name) and a sump pump (``Sump.pump``). An outlet is
 traced through the circuit the item names, else to a receptacle within reach; one that cannot
-be traced is UNKNOWN. Disposers and water heaters are not on (D)'s list, so are not graded.
+be traced is UNKNOWN; an appliance naming its outlet (``Appliance.plugs_into``) is traced to
+that outlet only. Disposers and water heaters are not on (D)'s list, so are not graded.
 (F) is every outdoor outlet: a Class A GFCI passes, a Class C SPGFCI (``Circuit.gfci_class``)
 passes only where every outlet is HVAC (Ex. 3), and an unprotected one fails.
 """
@@ -40,6 +41,7 @@ class _Item(NamedTuple):
     reason: str
     circuit: str | None  # the branch the item names, where it names one
     volts: str  # "240" or "120": which receptacles can be its outlet
+    outlets: tuple[str, ...] = ()  # ``Appliance.plugs_into``: the outlet it names
 
 
 def _items(ctx: CheckContext) -> list[_Item]:
@@ -56,6 +58,7 @@ def _items(ctx: CheckContext) -> list[_Item]:
         words = " ".join((obj.tag, obj.type_ref or "",
                           getattr(product, "name", "") or "")).lower()
         body = Polygon(obj.footprint)
+        named = tuple(getattr(ctx.plan.by_tag(obj.tag), "plugs_into", ()) or ())
         if Service.POWER_240.value in needs and getattr(product, "cooking", False):
             # (8) range, (9) wall-mounted oven, (10) counter-mounted cooking unit.
             symbol = getattr(product, "plan_symbol", "") or ""
@@ -64,17 +67,21 @@ def _items(ctx: CheckContext) -> list[_Item]:
                     else NEC.GFCI_COOKTOP if "cooktop" in symbol or "cooktop" in words
                     else NEC.GFCI_APPLIANCES)
             out.append(_Item(obj.tag, obj.storey, body,
-                             f"{item} (electric cooking appliance {obj.tag})", None, "240"))
+                             f"{item} (electric cooking appliance {obj.tag})", None, "240",
+                             named))
         elif "dryer" in words:  # (D)(11) names no voltage: a 120 V gas dryer counts too
             volts = "240" if Service.POWER_240.value in needs else "120"
             out.append(_Item(obj.tag, obj.storey, body,
-                             f"{NEC.GFCI_DRYER} (clothes dryer {obj.tag})", None, volts))
+                             f"{NEC.GFCI_DRYER} (clothes dryer {obj.tag})", None, volts,
+                             named))
         if "dishwasher" in words:
             out.append(_Item(obj.tag, obj.storey, body,
-                             f"{NEC.GFCI_DISHWASHER} (dishwasher {obj.tag})", None, "120"))
+                             f"{NEC.GFCI_DISHWASHER} (dishwasher {obj.tag})", None, "120",
+                             named))
         if "microwave" in words:
             out.append(_Item(obj.tag, obj.storey, body,
-                             f"{NEC.GFCI_MICROWAVE} (microwave oven {obj.tag})", None, "120"))
+                             f"{NEC.GFCI_MICROWAVE} (microwave oven {obj.tag})", None, "120",
+                             named))
     for storey in ctx.plan.storeys:
         for element in ctx.plan.storey_elements(storey.tag):
             pump = getattr(element, "pump", None) if element.element_kind == "Sump" else None
@@ -114,7 +121,15 @@ def appliance_receptacles(ctx: CheckContext, receptacles: list[tuple[object, str
     findings: list[Finding] = []
     for item in _items(ctx):
         here = by_storey.get(item.storey, ())
-        if item.circuit:
+        if item.outlets:
+            # Named outlets: only those, of its voltage. A named box that is no receptacle is
+            # a hardwired connection, graded on that box's circuit.
+            near = [d for d, _ in here if d.tag in item.outlets and item.volts in volts(d)]
+            if not near:
+                boxes = [ctx.plan.by_tag(tag) for tag in item.outlets]
+                item = item._replace(circuit=next((getattr(b, "circuit", None) for b in boxes
+                                                   if getattr(b, "circuit", None)), None))
+        elif item.circuit:
             near = [d for d, _ in here if d.circuit == item.circuit]
         else:
             near = [d for d, p in here if item.volts in volts(d)

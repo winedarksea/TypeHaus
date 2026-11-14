@@ -1,6 +1,8 @@
-"""NEC 210.52(C)(2)-(C)(4): receptacles at a freestanding island."""
+"""NEC 210.52(C)(2)-(C)(4): receptacles at islands and peninsulas."""
 
 from __future__ import annotations
+
+import warnings
 
 from typehaus.checks._authoring import not_applicable as _na
 from typehaus.checks._authoring import passed as _pass
@@ -12,35 +14,39 @@ from typehaus.model.nec import NEC, mark
 from typehaus.resolve import room_perimeter
 from typehaus.resolve.placeables import placed_xy
 
+_IN = 0.0254
 _NEAR_WALL_M = room_perimeter.NEAR_WALL_M
 _FIXED_CABINET_FLOOR_CONTACT_M = room_perimeter.FLOOR_CONTACT_M
 
-# How far past an island's carcass a receptacle may sit and still be serving it: an end-
-# or side-mounted device projects an inch or two off the face, and anything much farther
-# out is a wall receptacle that happens to be nearby. Kept well under _NEAR_WALL_M so a
+# How far past a run's carcass a receptacle may sit and still be serving it: an end- or
+# side-mounted device projects an inch or two off the face, and anything much farther out
+# is a wall receptacle that happens to be nearby. Kept well under _NEAR_WALL_M so a
 # freestanding island (> _NEAR_WALL_M from every boundary) can never borrow one.
-_ISLAND_RECEPTACLE_MARGIN_M = 12 * 0.0254
+_ISLAND_RECEPTACLE_MARGIN_M = 12 * _IN
+# A peninsula touches a boundary within this, and only along its end: the touching length
+# is at most its short side (plus this), where a wall run touches along its long side.
+_ATTACHED_M = 2 * _IN
+_BELOW_COUNTER_M = 24 * _IN  # NEC 210.52(C)(4)
+_ABOVE_COUNTER_M = 20 * _IN  # NEC 210.52(C)(3)
+_ON_CARCASS_M = 2 * _IN  # a box on an end panel projects about this far
+_PROVISION_KINDS = frozenset({"junction_box"})
 
 
 @check(Tier.ADVISORY, "electrical.island_receptacle")
 def island_receptacle(ctx: CheckContext) -> list[Finding]:
-    """Every freestanding work-surface island has a receptacle at its footprint.
+    """Every island and peninsula has a countertop receptacle, or provisions for one.
 
-    NEC 210.52(C)(2) stopped *requiring* an island or peninsular countertop receptacle in
-    2023, but where none is installed it requires provisions for adding one, and
-    210.52(C)(3) confines any receptacle that serves the countertop to on/above/in the
-    counter surface. An island with nothing at all — no receptacle, no provision — is the
-    thing worth flagging: the appliance ends up on an extension cord across the aisle.
-    2026 210.52(C)(4) forbids a receptacle less than 24" below the countertop, so an end-
-    panel device that high is refused, not counted.
+    NEC 210.52(C)(2): islands and peninsulas need no receptacle, but any installed follows
+    (C)(3) and (C)(4), and without one provisions for adding one are required. A receptacle
+    counts only inside (C)(3)'s window (on or above the counter, box top at most 20" above
+    it); a box less than 24" below the counter is refused under (C)(4). With none, a junction
+    box at the run is read as the provision; with neither, the provision is not modelled,
+    so UNKNOWN.
 
-    Population: ``FurnitureType.work_surface is True`` (the same type attribute
-    ``_fixed_cabinet_intervals`` reads for the opposite purpose), sitting on the floor,
-    standing free of every room boundary by more than ``_NEAR_WALL_M`` — a base run
-    against a wall is the wall receptacles' problem and ``receptacle_spacing``'s beat. A
-    peninsula (attached to a wall at one end) reads as near-wall here and is not graded.
-    The unit graded is the RUN — carcasses chained within the filler tolerance — so a
-    peninsula of several boxes is attached when any box of it is.
+    Population: floor-standing runs of ``FurnitureType.work_surface is True`` carcasses
+    (chained within the filler tolerance). An island stands more than ``_NEAR_WALL_M`` from
+    every room boundary; a peninsula touches one only along its end (``_ATTACHED_M``). A
+    peninsula leg joined to a wall run reads as part of the wall run and is not graded here.
     """
     from shapely.geometry import LineString, Point, Polygon
 
@@ -55,18 +61,17 @@ def island_receptacle(ctx: CheckContext) -> list[Finding]:
         if len(ring) >= 3:
             boundaries_by_storey.setdefault(room.storey, []).append(
                 LineString(ring + [ring[0]]))
-    receptacles_by_storey: dict[str, list] = {}
+    devices_by_storey: dict[str, list] = {}
     for storey in ctx.plan.storeys:
-        receptacles_by_storey[storey.tag] = [
+        devices_by_storey[storey.tag] = [
             element for element in ctx.plan.storey_elements(storey.tag)
-            if element.element_kind == "ElectricalDevice"
-            and _counts_toward_210_52(ctx, element)]
+            if element.element_kind == "ElectricalDevice"]
 
     floor_z = {s.tag: s.elevation.meters for s in ctx.plan.storeys}
-    # Absolute body tops: a carcass's is the counter, a device's is its box.
-    tops = {obj.tag: obj.body_z1_m for obj in ctx.model.canvas_objects}
+    # Absolute body bottoms and tops: a carcass's top is the counter, a device's its box.
+    objects = {obj.tag: obj for obj in ctx.model.canvas_objects}
     out: list[Finding] = []
-    islands = 0
+    graded = 0
     work_surfaces = 0
     carcasses: dict[str, list[tuple[str, Polygon]]] = {}
     for item in ctx.model.canvas_objects:
@@ -81,49 +86,90 @@ def island_receptacle(ctx: CheckContext) -> list[Finding]:
             carcasses.setdefault(item.storey, []).append((item.tag, carcass))
     for storey, items in carcasses.items():
         for tags, run in _work_surface_runs(items):
-            if any(run.distance(boundary) <= _NEAR_WALL_M
-                   for boundary in boundaries_by_storey.get(storey, [])):
+            shape = _shape(run, boundaries_by_storey.get(storey, []))
+            if shape is None:
                 continue
-            islands += 1
-            label = " + ".join(tags)
+            graded += 1
+            label = f"{shape} {' + '.join(tags)}"
+            top = max((_top(objects, tag) or 0.0 for tag in tags), default=0.0)
             reach = run.buffer(_ISLAND_RECEPTACLE_MARGIN_M)
-            near = [device for device in receptacles_by_storey.get(storey, [])
-                    if reach.contains(Point(placed_xy(ctx.model, device)))]
-            top = max((tops.get(tag) or 0.0 for tag in tags), default=0.0)
-            face = run.buffer(_ON_CARCASS_M)  # (C)(4) bans a box on the island, not near it
-            banned = [d.tag for d in near if _below_counter_band(tops.get(d.tag), top)
+            face = run.buffer(_ON_CARCASS_M)  # (C)(4) bans a box on the run, not near it
+            near = [d for d in devices_by_storey.get(storey, [])
+                    if reach.contains(Point(placed_xy(ctx.model, d)))]
+            counting = [d for d in near if _counts_toward_210_52(ctx, d)]
+            banned = [d.tag for d in counting
+                      if _below_counter_band(_top(objects, d.tag), top)
                       and face.contains(Point(placed_xy(ctx.model, d)))]
+            serving = [d.tag for d in counting if d.tag not in banned
+                       and _in_window(objects.get(d.tag), top)]
+            provisions = [d.tag for d in near if d.kind.value in _PROVISION_KINDS]
             if banned:
                 out.append(_warn_fail(
-                    cid, f"island {label}: {', '.join(banned)} sits less than 24\" below "
-                         f"the countertop, which NEC {NEC.BELOW_COUNTERTOP} forbids",
+                    cid, f"{label}: {', '.join(banned)} sits less than 24\" below the "
+                         f"countertop, which NEC {NEC.BELOW_COUNTERTOP} forbids",
                     (*tags, *banned)))
-            if [d for d in near if d.tag not in banned]:
-                out.append(_pass(cid, f"island {label} has a receptacle at its footprint",
-                                 tags))
+            if serving:
+                out.append(_pass(cid, f"{label} has a countertop receptacle "
+                                      f"({', '.join(sorted(serving))})", tags))
+            elif provisions:
+                out.append(_pass(cid, f"{label} has no countertop receptacle; "
+                                      f"{', '.join(sorted(provisions))} is the provision "
+                                      f"{mark(NEC.ISLAND_PROVISION)} asks for", tags))
             elif not banned:
-                out.append(_warn_fail(
-                    cid, f"island {label} has no receptacle within its footprint — "
-                         f"NEC {mark(NEC.ISLAND_PROVISION)} wants one (or provisions for one), and "
-                         f"{mark(NEC.COUNTERTOP_RECEPTACLE_LOCATION)} wants any that serves the "
-                         f"countertop on/above/in the counter surface", tags))
-    if not islands:
+                window = mark(NEC.COUNTERTOP_RECEPTACLE_LOCATION)
+                out.append(_unknown(
+                    cid, f"{label} has no receptacle within {window}'s window (on or above "
+                         f"the counter, at most 20\" above); {mark(NEC.ISLAND_PROVISION)} "
+                         "then wants provisions for one, and none (a junction box at the "
+                         "run) is modelled", tags,
+                    fix="add a countertop receptacle, or a capped box at the run as the "
+                        "provision"))
+    if not graded:
         if work_surfaces:
-            # Positive absence, not a missing input: the house's work-surface casework was
-            # read and every piece of it stands against a room boundary. There is no island
-            # here, so there is no 210.52(C)(2) island receptacle to want.
+            # Positive absence: every piece of work-surface casework stands along a wall.
             return [_na(cid, f"{work_surfaces} work-surface unit(s) modeled and every one "
-                             f"stands against a room boundary — this house has no "
-                             f"freestanding island for {mark(NEC.ISLAND_PROVISION)} to govern")]
-        # No work surfaces at all is a *gap*: a dwelling has counters, so their absence
-        # means the casework is unmodeled rather than absent from the design.
+                             f"stands along a room boundary — this house has no island or "
+                             f"peninsula for {mark(NEC.ISLAND_PROVISION)} to govern")]
+        # No work surfaces at all is a *gap*: a dwelling has counters.
         return [_unknown(cid, "no work-surface casework is modeled at all, so whether this "
                               "house has an island cannot be answered")]
     return out
 
 
-_BELOW_COUNTER_M = 24 * 0.0254  # NEC 210.52(C)(4)
-_ON_CARCASS_M = 2 * 0.0254  # a box on an end panel projects about this far
+def _shape(run, boundaries: list) -> str | None:
+    """"island", "peninsula", or None for a run along a wall."""
+    from typehaus.resolve.overlay import union_all
+
+    if all(run.distance(boundary) > _NEAR_WALL_M for boundary in boundaries):
+        return "island"
+    touching = [boundary.buffer(_ATTACHED_M) for boundary in boundaries
+                if run.distance(boundary) <= _ATTACHED_M]
+    if not touching:
+        return None
+    contact = run.exterior.intersection(union_all(touching)).length
+    if contact <= 0.0:
+        return None
+    with warnings.catch_warnings():  # GEOS divides by zero on a collinear hull edge
+        warnings.simplefilter("ignore", RuntimeWarning)
+        corners = list(run.minimum_rotated_rectangle.exterior.coords)[:3]
+    short, long = sorted(((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2) ** 0.5
+                         for a, b in zip(corners, corners[1:], strict=False))
+    if long > short and contact <= short + 2 * _ATTACHED_M:
+        return "peninsula"
+    return None
+
+
+def _top(objects: dict, tag: str) -> float | None:
+    obj = objects.get(tag)
+    return None if obj is None else (obj.body_z1_m or obj.z_m)
+
+
+def _in_window(obj, counter_top: float) -> bool:
+    """(C)(3): on or above the counter and the box top at most 20" over it."""
+    if obj is None or counter_top <= 0.0:
+        return False
+    return obj.z_m >= counter_top - 1e-3 and (obj.body_z1_m or obj.z_m) <= (
+        counter_top + _ABOVE_COUNTER_M + 1e-6)
 
 
 def _below_counter_band(device_top: float | None, counter_top: float) -> bool:

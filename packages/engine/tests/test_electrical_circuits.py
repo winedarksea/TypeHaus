@@ -314,7 +314,7 @@ def test_catlin_receptacle_spacing_separates_known_coverage_and_eave_review(catl
     assert set(unknown_rooms) == {"RM-A-STUDIO", "RM-A-STUDY"}
     for finding in unknown_rooms.values():
         assert "rafter plate" in finding.message
-        assert "both included and excluded" in finding.message
+        assert "counted as wall space" in finding.message
         assert len(finding.element_tags) > 1
     # 210.52(C) is graded off the countertops now, no longer a standing UNKNOWN.
     assert not any(f.result.value == "unknown" and not f.element_tags for f in findings)
