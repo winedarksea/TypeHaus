@@ -21,7 +21,8 @@ def _device(tag: str, name: str, footprint, height, ports, **facts) -> Electrica
 
 
 ALL_ELECTRICAL_DEVICE_TYPES = (
-    _device("ED-T-SWITCH", "Wall switch", (inch(4), inch(2)), inch(2), _P120),
+    _device("ED-T-SWITCH", "Wall switch", (inch(2.75), inch(2)), inch(4.5), _P120,
+            model_representation=ModelRepresentation(symbol="wall-switch-toggle")),
     _device("ED-T-RECEPTACLE", "Receptacle", (inch(2.75), inch(2)), inch(4.5), _P120,
             model_representation=ModelRepresentation(symbol="receptacle-duplex")),
     _device(
@@ -191,18 +192,20 @@ ALL_ELECTRICAL_DEVICE_TYPES = (
     _device(
         "ED-T-SWITCH-DIM",
         "Wall dimmer, 120V LED-rated",
-        (inch(4), inch(2)),
-        inch(2),
+        (inch(2.75), inch(2)),
+        inch(4.5),
         _P120,
         control="dimmer",
+        model_representation=ModelRepresentation(symbol="wall-switch-rocker"),
     ),
     _device(
         "ED-T-SWITCH-TIMER",
         "Wall timer switch, smart, 120V",
-        (inch(4), inch(2)),
-        inch(2),
+        (inch(2.75), inch(2)),
+        inch(4.5),
         _P120,
         control="timer",
+        model_representation=ModelRepresentation(symbol="wall-switch-rocker"),
     ),
 )
 

@@ -530,10 +530,12 @@ def _emit_equipment(f: Any, body: Any, equipment: Any, storey: Any, storeys: dic
 
 def _uses_device_parts(product_type: Any | None) -> bool:
     from typehaus.model.placeable_symbols.receptacles import RECEPTACLE_SYMBOLS
+    from typehaus.model.placeable_symbols.switches import SWITCH_SYMBOLS
 
     model = getattr(product_type, "model_representation", None)
     return (getattr(product_type, "plan_symbol", None) == "flood-light"
-            or getattr(model, "symbol", None) in RECEPTACLE_SYMBOLS)
+            or getattr(model, "symbol", None) in RECEPTACLE_SYMBOLS
+            or getattr(model, "symbol", None) in SWITCH_SYMBOLS)
 
 
 def _emit_device(f: Any, body: Any, device: Any, storey: Any, storeys: dict[str, Any],

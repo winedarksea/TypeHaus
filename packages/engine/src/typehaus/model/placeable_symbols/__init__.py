@@ -51,6 +51,7 @@ from typehaus.model.placeable_symbols.furniture import FURNITURE_SYMBOLS
 from typehaus.model.placeable_symbols.lighting import LIGHTING_SYMBOLS
 from typehaus.model.placeable_symbols.plumbing import PLUMBING_SYMBOLS
 from typehaus.model.placeable_symbols.receptacles import RECEPTACLE_SYMBOLS
+from typehaus.model.placeable_symbols.switches import SWITCH_SYMBOLS
 
 __all__ = ["SYMBOL_NAMES", "PART_COLORS", "Part", "Stroke", "lamp_role", "model_parts",
            "part_hex", "place_local", "plan_symbol_strokes", "symbol_geometry"]
@@ -61,7 +62,7 @@ Builder = Callable[[float, float, float], tuple[tuple[Stroke, ...], tuple[Part, 
 
 _REGISTRY: dict[str, Builder] = {**FURNITURE_SYMBOLS, **APPLIANCE_SYMBOLS, **PLUMBING_SYMBOLS,
                                  **LIGHTING_SYMBOLS, **KITCHEN_SEKTION_SYMBOLS,
-                                 **RECEPTACLE_SYMBOLS,
+                                 **RECEPTACLE_SYMBOLS, **SWITCH_SYMBOLS,
                                  "eg4-12kpv": eg4_12kpv,
                                  "eg4-wallmount-indoor-280ah": eg4_wallmount_indoor,
                                  "renewaire-fa8-wall-hood": erv_wall_hood,
@@ -74,7 +75,8 @@ _REGISTRY: dict[str, Builder] = {**FURNITURE_SYMBOLS, **APPLIANCE_SYMBOLS, **PLU
 
 # The frozen vocabulary. A catalog entry may only name a symbol listed here; the contract test
 # holds the registry to it in both directions.
-SYMBOL_NAMES = frozenset(KITCHEN_SEKTION_SYMBOLS) | frozenset(RECEPTACLE_SYMBOLS) | frozenset({
+SYMBOL_NAMES = (frozenset(KITCHEN_SEKTION_SYMBOLS) | frozenset(RECEPTACLE_SYMBOLS)
+                | frozenset(SWITCH_SYMBOLS)) | frozenset({
     "plant-reservoir", "plant-irrigation-rack", "plant-leak-sensors",
     "plain-round-mirror-nickel", "plain-arch-mirror-nickel", "plain-arch-mirror-chrome",
     "plain-arch-mirror-black",
