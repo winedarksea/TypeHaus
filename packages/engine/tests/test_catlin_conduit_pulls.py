@@ -88,4 +88,5 @@ def test_catlin_pv_riser_chains_to_the_attic_run_with_its_three_sections(catlin_
     assert ["CD-B-ATTIC-RISER", "CD-A-PV-EAST"] in chains and ["CD-B-PV-INV"] in chains
     sections = [s for s in pull_sections(list(catlin_model_ro.conduits))
                 if s.run_tags[0] in ("CD-B-ATTIC-RISER", "CD-A-PV-EAST")]
-    assert [round(s.total_deg) for s in sections] == [270, 90, 180]
+    # The riser is one straight rise since its panel leg went (TODO Q6, 2026-11-14).
+    assert [round(s.total_deg) for s in sections] == [0, 90, 180]

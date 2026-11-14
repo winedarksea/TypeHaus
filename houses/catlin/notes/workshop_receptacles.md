@@ -85,8 +85,8 @@ RC1 and RC2 stay at their stations, 42" AFF over the 34" benches, surface-mounte
 
 - **RC1** (`CKT-WORKSHOP-240`, panel 2 positions 17/19, two-pole common-trip GFCI): a 2-gang box
   with a 6-20R ([`T5461-W`](https://leviton.com/products/t5461-w), probable) beside a 5-20R
-  duplex. Bring both hots, neutral and ground. Both voltages share the 20 A breaker; 4,800 VA is
-  a planning allowance, not a nameplate. Its schematic envelope gets replaced with the real box
+  duplex. Bring both hots, neutral and ground. Both voltages share the 20 A breaker; its load is
+  2,500 VA, 1,000 of it continuous (computers, owner 2026-11-14), plus one bench tool at a time. Its schematic envelope gets replaced with the real box
   projection once the hardware is chosen.
 - **RC2** (`CKT-RC-BSMT`): quad, as a 2-gang box with two TR 5-20R duplexes. Four sockets add
   no capacity.

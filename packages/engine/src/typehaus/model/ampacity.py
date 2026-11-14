@@ -9,7 +9,9 @@ check reads them. A leaf under ``model``.
 
 from __future__ import annotations
 
-from typing import Final
+from typing import Final, Literal
+
+ConductorMaterial = Literal["cu", "al"]
 
 SIZES: Final = ("16", "14", "12", "10", "8", "6", "4", "3", "2", "1", "1/0", "2/0", "3/0",
                 "4/0", "250", "300", "350", "400", "500", "600")
@@ -109,3 +111,52 @@ def egc_minimum(ocpd_a: float, material: str) -> str:
 def size_at_least(size: str, minimum: str) -> bool:
     """Whether conductor ``size`` is no smaller than ``minimum`` (same material)."""
     return _ORDER.index(size) >= _ORDER.index(minimum)
+
+
+def is_size(size: str) -> bool:
+    """Whether ``size`` is a conductor size this module knows (AWG or kcmil string)."""
+    return size in _ORDER
+
+
+#: 240.4(D) small conductors: (material, size) -> the largest OCPD, after correction.
+#: 18/16 Cu and 14 CCA carry load and OCPD-type conditions, so they are not rows here.
+SMALL_CONDUCTOR_MAX_OCPD: Final = {("cu", "14"): 15, ("cu", "12"): 20, ("cu", "10"): 30,
+                                   ("al", "12"): 15, ("al", "10"): 25}
+_CONDITIONAL_SMALL: Final = frozenset({("cu", "18"), ("cu", "16"), ("al", "14")})
+_SIXTY_C_MAX_SIZE: Final = "1"  # 110.14(C)(1)(a): conductors 14-1 AWG
+_SIXTY_C_MAX_OCPD_A: Final = 100
+
+
+def termination_column(ocpd_a: float, size: str, authored: int | None = None) -> int:
+    """110.14(C)(1): 60 °C for circuits of 100 A or less (14-1 AWG), else 75 °C; an authored
+    column (equipment listed and identified for it) overrides."""
+    if authored is not None:
+        return authored
+    small = _ORDER.index(size) <= _ORDER.index(_SIXTY_C_MAX_SIZE)
+    return 60 if ocpd_a <= _SIXTY_C_MAX_OCPD_A and small else 75
+
+
+def max_ocpd(material: str, size: str, temp_c: int, *, next_size_up: bool) -> int | None:
+    """The largest OCPD 240.4 lets protect this conductor: its Table 310.16 ampacity, the next
+    standard rating above a nonstandard one where 240.4(B) is allowed, capped by 240.4(D).
+    None where the conductor is a conditional 240.4(D) row or outside the table."""
+    rows = COPPER if material == "cu" else ALUMINUM
+    if (material, size) in _CONDITIONAL_SMALL or size not in rows:
+        return None
+    amps = ampacity(material, size, temp_c)
+    limit = amps
+    if next_size_up and amps not in STANDARD_OCPD_A and next_standard_rating(amps) <= 800:
+        limit = next_standard_rating(amps)
+    cap = SMALL_CONDUCTOR_MAX_OCPD.get((material, size))
+    return min(limit, cap) if cap is not None else limit
+
+
+def smallest_size_for(ocpd_a: float, material: str, temp_c: int | None = None) -> str | None:
+    """The smallest conductor 240.4 lets an ``ocpd_a`` breaker protect (no 240.4(B)); the
+    reference size for 250.122(D)'s "enlarged". ``temp_c`` None reads 110.14(C)(1)."""
+    for size in SIZES:
+        column = termination_column(ocpd_a, size, temp_c)
+        top = max_ocpd(material, size, column, next_size_up=False)
+        if top is not None and top >= ocpd_a:
+            return size
+    return None

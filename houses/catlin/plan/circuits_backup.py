@@ -34,6 +34,7 @@ BACKUP_CIRCUITS = (
     # = 0.13, still the largest always-on term and the one most worth metering.
     Circuit(uid="CKT016AAAA", tag="CKT-FRIDGE", slot=2, panel_ref=_BACKUP_PANEL,
             breaker_amps=20, poles=1, backup_tier=BackupTier.ALWAYS_ON, afci=True,
+            conductor_awg="12", egc_awg="12",
             load_va=800, duty_cycle=0.13,
             description="Kitchen outlet 1: fridge + freezer"),
     # 300 VA is an outlet allowance; the real load is a router (~12W), an always-on HA server
@@ -46,6 +47,7 @@ BACKUP_CIRCUITS = (
     # this circuit is the outage charging point (plan/electrical.py).
     Circuit(uid="CKT017AAAA", tag="CKT-HA", slot=4, panel_ref=_BACKUP_PANEL,
             breaker_amps=15, poles=1, backup_tier=BackupTier.ALWAYS_ON, gfci=True,
+            conductor_awg="14", egc_awg="14",
             load_va=300, duty_cycle=0.44,
             backup_shed_poe=("ED-M-DOORBELL", "ED-M-CAM-PORCH", "ED-BW-CAM-CANOPY",
                              "ED-M-PORCH-AP", "ED-A-STUDIO-AP"),
@@ -63,6 +65,7 @@ BACKUP_CIRCUITS = (
     #   80 mA maximum. Meter it.
     Circuit(uid="CKT018AAAA", tag="CKT-LT-BACKUP", slot=6, panel_ref=_BACKUP_PANEL,
             breaker_amps=15, poles=1, backup_tier=BackupTier.ALWAYS_ON, afci=True,
+            conductor_awg="14", egc_awg="14",
             duty_cycle=0.40,
             description="Furnace-room + kitchen task light + interconnected alarms"),
 
@@ -77,6 +80,7 @@ BACKUP_CIRCUITS = (
     # is not GFCI.
     Circuit(uid="CKT015AAAA", tag="CKT-SUMP", slot=7, panel_ref=_BACKUP_PANEL,
             breaker_amps=20, poles=1, backup_tier=BackupTier.ALWAYS_ON,
+            conductor_awg="12", egc_awg="12",
             load_va=1164, start_va=3500, duty_cycle=0.025,
             description="Sump pump (SM-B-RADON)"),
 
@@ -93,6 +97,7 @@ BACKUP_CIRCUITS = (
     # Class A 2-pole GFCI for 210.8(F), as CKT-HP1 says; in the backup panel's own line.
     Circuit(uid="CKT010AAAA", tag="CKT-HP3", slot=1, panel_ref=_BACKUP_PANEL,
             breaker_amps=15, poles=2, gfci=True, backup_tier=BackupTier.SURPLUS, load_va=1850,
+            conductor_awg="14", egc_awg="14",
             start_va=1850, duty_cycle=0.4,
             description="Heat pump 3 outdoor, Sapphire R32 VFD (EQ-M-HP3-OD; surplus tier)"),
     # The element-free 120 V plug-in HPWH (EQ-B-WH, Rheem PROPH80 T0 RH120-M, owner
@@ -103,6 +108,7 @@ BACKUP_CIRCUITS = (
     # no second load to share with. Slot 9, 1-pole; 11 is spare.
     Circuit(uid="CKT007AAAA", tag="CKT-WH", slot=9, panel_ref=_BACKUP_PANEL,
             breaker_amps=15, poles=1, backup_tier=BackupTier.SURPLUS, load_va=1440,
+            conductor_awg="14", egc_awg="14",
             duty_cycle=0.05,
             description="Water heater, Rheem ProTerra Plug-in 80 gal HPWH, 120 V, no element "
                         "(EQ-B-WH; surplus tier)"),

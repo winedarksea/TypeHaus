@@ -1,10 +1,11 @@
 """``mep.raceway_fill`` — conductor fill against Chapter 9 Tables 1, 4 and 5 (2026 NEC).
 
-The model authors no conductor, so a run that names ``circuits`` is graded on the SMALLEST
-copper THHN/THWN-2 each breaker allows (``GAUGE_BY_BREAKER_A``, 240.4(D)): the circuit's
-current-carrying conductors (hot and neutral: 2 on a 1-pole, 3 on a 2-pole, the takeoff's
-convention) plus one insulated EGC per circuit at its Table 250.122 size (Note 3). That is a
-lower bound: an over-limit result is real, a PASS holds only while nothing is upsized.
+A run that names ``circuits`` is graded on each circuit's authored ``conductor_awg`` /
+``egc_awg`` (as THHN/THWN-2); a circuit without one falls back to the SMALLEST copper THHN its
+breaker allows (``GAUGE_BY_BREAKER_A``, 240.4(D)), a lower bound that holds only while nothing
+is upsized. Each circuit counts its current-carrying conductors (hot and neutral: 2 on a
+1-pole, 3 on a 2-pole, the takeoff's convention; conservative where a 240 V load has no
+neutral) plus one insulated EGC (Note 3; Table 250.122 where none is authored).
 Everything else says what is missing. PVC grades at Schedule 80 (the model holds ``pvc``
 only; 300.7(D) already wants Schedule 80 where it rises). N/A is earned: a protection
 sleeve (Note 2) and a run authored with no conductors (a capped spare).
@@ -36,30 +37,41 @@ _TABLE = {"emt": ("emt", "EMT"), "ent": ("ent", "ENT"),
 _CONDUCTORS_PER_POLE_COUNT = {1: 2, 2: 3}  # hot + neutral, as takeoff/raceways.py
 
 
-def _circuit_conductors(circuit) -> list[float] | None:
-    """Areas (in.2) of one circuit's conductors, or None where the breaker has no known gauge."""
-    gauge = GAUGE_BY_BREAKER_A.get(circuit.breaker_amps)
+def _circuit_conductors(circuit) -> tuple[list[float], bool] | None:
+    """(areas in.2 of one circuit's conductors, authored?), or None where neither the circuit
+    nor its breaker gives a size. Authored sizes are used as THHN/THWN-2 (Table 5 is by
+    insulation, not metal); a circuit authoring no EGC is assumed to carry a Table 250.122 one."""
     ccc = _CONDUCTORS_PER_POLE_COUNT.get(circuit.poles)
-    if gauge is None or ccc is None or circuit.source or circuit.spd:
+    if ccc is None or circuit.spd:
+        return None
+    if circuit.conductor_awg is not None:
+        egc = circuit.egc_awg or egc_minimum(circuit.breaker_amps, circuit.conductor_material)
+        return ([conductor_area_in2("thhn", circuit.conductor_awg)] * ccc
+                + [conductor_area_in2("thhn", egc)], True)
+    gauge = GAUGE_BY_BREAKER_A.get(circuit.breaker_amps)
+    if gauge is None or circuit.source:
         return None
     area = conductor_area_in2("thhn", str(gauge))
     egc = conductor_area_in2("thhn", egc_minimum(circuit.breaker_amps, "cu"))
-    return [area] * ccc + [egc]
+    return [area] * ccc + [egc], False
 
 
 def _grade_named(run, circuits: dict) -> Finding:
     table, label = _TABLE[run.material]
     size_in = round(run.trade_size_m / M_PER_IN, 3)
     areas: list[float] = []
+    assumed: list[str] = []
     for tag in run.circuits:
         circuit = circuits.get(tag)
         one = _circuit_conductors(circuit) if circuit else None
         if one is None:
             return unknown(
-                _CID, f"{run.tag} carries {tag}, whose conductor size no table can derive "
-                      "(not a 15/20/30/40/50 A branch breaker); author the conductors",
+                _CID, f"{run.tag} carries {tag}, which authors no conductor size and whose "
+                      "breaker no table maps to one; author Circuit.conductor_awg",
                 (run.tag,), code=_CODE)
-        areas += one
+        areas += one[0]
+        if not one[1]:
+            assumed.append(tag)
     try:
         row = table_4_row(table, size_in)
     except KeyError:
@@ -67,15 +79,16 @@ def _grade_named(run, circuits: dict) -> Finding:
                        (run.tag,), code=_CODE)
     percent = fill_percent(len(areas))
     limit, full, total = row.area_in2(percent), row.a100, sum(areas)
+    basis = (f"{', '.join(assumed)} at the smallest THHN each breaker allows, so upsizing "
+             "could change it" if assumed else "authored sizes as THHN/THWN-2")
     msg = (f"{run.tag} {size_in:g}\" {label}: {len(areas)} conductors "
-           f"({', '.join(run.circuits)} at the smallest THHN each breaker allows, EGC counted "
-           f"per Note 3) total {total:.4f} in.2 = {100 * total / full:.0f}% of {full:.3f} in.2; "
-           f"Table 1 allows {percent}% = {limit:.3f} in.2. Sizes are assumed, so upsizing "
-           "(voltage drop) could change it")
+           f"({', '.join(run.circuits)}; EGC counted per Note 3) total {total:.4f} in.2 = "
+           f"{100 * total / full:.0f}% of {full:.3f} in.2; Table 1 allows {percent}% = "
+           f"{limit:.3f} in.2 ({basis})")
     if total <= limit + 1e-9:
         return passed(_CID, msg, (run.tag,), code=_CODE)
-    return advisory(_CID, "ADVISORY — " + msg + " — over the limit even at minimum size; "
-                    "go up a trade size or split the circuits", (run.tag,), Result.ADVISORY,
+    return advisory(_CID, "ADVISORY — " + msg + " — over the limit; go up a trade size or "
+                    "split the circuits", (run.tag,), Result.ADVISORY,
                     code=_CODE)
 
 

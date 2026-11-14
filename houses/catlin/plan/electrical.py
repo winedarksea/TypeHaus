@@ -1121,14 +1121,14 @@ CONDUIT_TRUNKS = [
                # Stations re-packed 2026-09-23 with the NW chase: the three chase conduits
                # stand in its south band between the ERV supply and exhaust risers, each on
                # its own -4'-0" basement lane.
-               # Up out of the panel top to 80" AFF, under DU-B-ERV-R-SAUNA-SUP (86 1/2").
-               path=(pt(inch(10), inch(354)), pt(inch(10), inch(354)), pt(_PV_CHASE_X, inch(354)),
-                     pt(_PV_CHASE_X, inch(404)), pt(_PV_CHASE_X, inch(404))),
-               start_elevation=inch(-31.4375), end_elevation=ft(20, 6),
-               elevations=(inch(-31.4375), inch(-29.4375), inch(-29.4375), inch(-29.4375),
-                           ft(20, 6)),
+               # PV dc runs to the inverter, never into ED-B-PANEL (2026-11-14, TODO Q6): the
+               # riser starts where CD-B-PV-INV leaves the chase foot, 80" AFF, under
+               # DU-B-ERV-R-SAUNA-SUP (86 1/2"); its old leg from the panel top is gone.
+               path=(pt(_PV_CHASE_X, inch(404)), pt(_PV_CHASE_X, inch(404))),
+               start_elevation=inch(-29.4375), end_elevation=ft(20, 6),
+               elevations=(inch(-29.4375), ft(20, 6)),
                service=Service.POWER_DC,  # PV source circuits (decision #123)
-               from_ref="ED-B-PANEL", to_ref="ED-A-PV-JB"),
+               from_ref="CD-B-PV-INV", to_ref="ED-A-PV-JB"),
     # The over-and-up leg: east along the attic deck under the north rake, into the north
     # gable wall, and up it to ED-A-PV-JB at 21'-11 3/4". 6" above the deck for the flat part,
     # which is what CD-A-DATA-NE does on the same storey and for the same reason.
@@ -1194,6 +1194,7 @@ CONDUIT_TRUNKS = [
                elevations=(inch(-76.4375), inch(-83.4375), inch(-83.4375), inch(-83.4375),
                            inch(-83.4375), inch(-83.4375), inch(-70.8075)),
                pull_points=(3,),
+               circuits=("CKT-ESS-GRID",),
                from_ref="EQ-B-ESS-INV", to_ref="ED-B-PANEL"),
     # Load output to ED-B-BACKUP-PANEL — the conductors that stay live when the grid does not.
     ConduitRun(uid="CDT007AAAA", tag="CD-B-INV-BACKUP", trade_size=inch(1),
@@ -1246,6 +1247,7 @@ CONDUIT_TRUNKS = [
                start_elevation=inch(-31.4375), end_elevation=ft(-4), elevations=(inch(-31.4375), inch(-17.6), inch(-17.6), inch(-17.6), inch(-17.6), inch(-17.6), inch(-17.6), ft(-4)),
                # Low-profile LB at 4 (16'-0", 35'-3"), RM-B-STAIR ceiling: ~7/16" under the drain.
                pull_points=(5,),
+               circuits=("CKT-EV-1450",),
                from_ref="ED-B-PANEL-2", to_ref="ED-G-EV-1450"),
     # The buried leg: out through SP-B-N2-CD-GAR2 at -4'-0", north under the house/garage
     # gap, and up through the garage slab to ED-G-EV-1450. Same station the whole feeder
@@ -1253,6 +1255,7 @@ CONDUIT_TRUNKS = [
     ConduitRun(uid="5PEMG38MHJ", tag="CD-B-GAP-EV", trade_size=inch(1.25),
                path=(pt(ft(16), ft(35, 5)), pt(ft(16), ft(44, 3.375)), pt(ft(16), ft(44, 3.375))),
                start_elevation=ft(-4), end_elevation=ft(5, 10), elevations=(ft(-4), ft(-4), ft(5, 10)),
+               circuits=("CKT-EV-1450",),
                from_ref="ED-B-PANEL-2", to_ref="ED-G-EV-1450"),
     # ** V2H SPARE, ROUTED (backup_power.md section 10). ** One empty 2" Sch 80 PVC, pull string
     # in, capped: the owner's "see how the tech develops". It leaves EQ-B-ESS-INV's case top
@@ -1313,6 +1316,7 @@ CONDUIT_TRUNKS = [
                # NEC 358.26 conduit bodies, covers down: 3 = RM-B-FURNACE (9'-6 5/8", 19'-11");
                # 7 = the hall, at the foot of the ramp (16'-5 1/2", 23'-4").
                pull_points=(3, 7),
+               circuits=("CKT-KITCH-SA2",),
                from_ref="ED-B-PANEL", to_ref="ED-M-LIVING-KGF3"),
     # South out of the basement to the hot tub disconnect under the porch. The east leg runs
     # 1' north of the y=0 sheathing line, so it crosses W-B-S1 once rather than running
@@ -1356,6 +1360,7 @@ CONDUIT_TRUNKS = [
                # Pull box at the south-west corner (1'-5", 1'-0"), outside the dry-fire
                # lane's x 40.5"..68" band. Splits the bends (NEC 358.26).
                pull_points=(4,),
+               circuits=("CKT-SPA",),
                from_ref="ED-B-PANEL-2", to_ref="ED-B-SPA-DISC"),
 ]
 

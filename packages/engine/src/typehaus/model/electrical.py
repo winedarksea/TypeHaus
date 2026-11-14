@@ -11,6 +11,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Literal, cast
 
+from pydantic import model_validator
+
+from typehaus.model.ampacity import ConductorMaterial, is_size
 from typehaus.model.base import Element, HausModel
 from typehaus.model.enums import BackupTier
 from typehaus.model.registry import register_constructor, register_element
@@ -87,12 +90,36 @@ class Circuit(Element):
     # running maximum.
     start_va: float | None = None
     load_va: float | None = None
+    # The part of the load that runs 3 h or more (210.19(A)(1), 210.20(A)). None: not stated;
+    # 0: stated noncontinuous. Never more than the circuit's load.
+    continuous_va: float | None = None
+    # --- conductors (lane A). Sizes are ``model/ampacity.SIZES`` strings: "12", "1/0",
+    # "250" (kcmil). None: not authored, and readers fall back to what the breaker implies.
+    conductor_awg: str | None = None
+    conductor_material: ConductorMaterial = "cu"  # "al" also covers copper-clad aluminum
+    egc_awg: str | None = None  # wire EGC, same material; None: none authored
+    # 110.14(C)(1) termination column. None: 60 °C at 100 A or less with 14-1 AWG, else 75 °C.
+    # 75 is authored only where both ends are listed and identified for it.
+    termination_temp_c: Literal[60, 75] | None = None
     description: str = ""
     # Physical breaker position in the enclosure. Real panel numbering: odd slots run down
     # the left column, even slots the right; a 2-pole breaker occupies ``slot`` and
     # ``slot + 2`` (the next space in the SAME column). ``electrical.panel_spaces``
     # reconciles slots against the panel type's ``spaces``.
     slot: int | None = None
+
+    @model_validator(mode="after")
+    def _conductors_are_table_sizes(self) -> Circuit:
+        for name in ("conductor_awg", "egc_awg"):
+            size = getattr(self, name)
+            if size is not None and not is_size(size):
+                raise ValueError(f"{self.tag}: {name}={size!r} is not an AWG/kcmil size")
+        if self.egc_awg is not None and self.conductor_awg is None:
+            raise ValueError(f"{self.tag}: egc_awg needs conductor_awg")
+        if (self.continuous_va is not None and self.load_va is not None
+                and self.continuous_va > self.load_va + 1e-9):
+            raise ValueError(f"{self.tag}: continuous_va exceeds load_va")
+        return self
 
 
 register_constructor("Circuit", Circuit)

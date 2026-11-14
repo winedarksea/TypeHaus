@@ -29,6 +29,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     electrical_ceiling,
     electrical_circuit_sizing,
     electrical_code,
+    electrical_conductors,
     electrical_evse,
     electrical_floor,
     electrical_garage,

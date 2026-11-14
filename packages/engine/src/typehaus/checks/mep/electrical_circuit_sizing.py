@@ -1,15 +1,14 @@
-"""Branch-circuit sizing — 2026 NEC 210.19(A)(1) / 210.20(A) with 422.13, 210.19(C), 210.21(B)(1).
+"""Branch-circuit sizing — 2026 NEC 210.19(A)(1), 210.19(C), 210.20(A), 210.21(B), 210.23(B).
 
 ``electrical.continuous_load_circuit``: a circuit with a continuous load takes a breaker (and
-conductors) of at least the noncontinuous load plus 125% of the continuous load. The model does
-not split a circuit's load, so the arithmetic runs on the whole of it: breaker >= 125% of the
-connected VA (``_connected_va``, the panel-schedule figure) passes whatever the split; a circuit
-short of that is FAIL only where the load is known continuous (a fixed storage water heater of
-120 gal or less, 422.13, off ``EquipmentType.storage_gallons``), else UNKNOWN. Conductors are
-taken to follow the breaker (240.4(D)); no conductor is modelled, so 210.19(A)(1) is graded
-through 210.20(A). Left to their own checks: heat pumps (Art. 440), fixed space heat (424.5,
-``electrical.space_heat_circuit``) and EVSE (625.41, ``electrical.evse_circuit``). A range is
-graded by 210.19(C) (>= 8 3/4 kW takes 40 A) and not by 125%, which is a demand-load matter.
+conductors) of at least the noncontinuous load plus 125% of the continuous load. Where the
+circuit authors ``continuous_va`` the split is exact, and authored conductors are held to the
+same figure at their 110.14(C)(1) column (210.19(A)(1)). Otherwise the arithmetic runs on the
+whole connected VA (``_connected_va``): breaker >= 125% passes whatever the split; short of it
+is FAIL only for a known-continuous load (a fixed storage water heater of 120 gal or less,
+422.13, off ``EquipmentType.storage_gallons``), else UNKNOWN. Left to their own checks: heat
+pumps (Art. 440), fixed space heat (424.5, ``electrical.space_heat_circuit``) and EVSE (625.41,
+``electrical.evse_circuit``). A range is graded by 210.19(C) (>= 8 3/4 kW takes 40 A).
 
 ``electrical.single_receptacle_rating``: 210.21(B)(1), the one receptacle on an individual
 circuit is rated at least the circuit, read off ``ElectricalDeviceType.nema``. A combination
@@ -18,8 +17,12 @@ device (two receptacles) is not a single receptacle and is skipped; no NEMA is U
 ``electrical.multi_receptacle_rating``: 210.21(B)(3), on a circuit serving two or more receptacles
 each is rated per Table 210.21(B)(3) (15 A circuit: 15; 20: 15 or 20; 30: 30; 40: 40 or 50; 50:
 50; above 50 A: at least the circuit), and 210.22 lets no 10 A circuit serve receptacles. A device
-with no NEMA gives UNKNOWN. 210.23(B)(2) (fastened equipment at most 50% on a mixed circuit) is
-not graded: the model does not say whether equipment is fastened in place or cord-and-plug.
+with no NEMA gives UNKNOWN. A deadfront (blank-face GFCI) holds no receptacle and is skipped.
+
+``electrical.permissible_loads``: 210.23(B) on 15/20 A circuits, off
+``EquipmentType.utilization_connection``: (1) a cord-and-plug item at most 80% of the rating;
+(2) fastened-in-place equipment at most 50% where the circuit also serves receptacles or
+lighting. Equipment on a circuit with no receptacle cannot be cord-and-plug connected there.
 """
 
 from __future__ import annotations
@@ -29,6 +32,7 @@ import re
 from typehaus.checks._authoring import failed, not_applicable, passed, unknown
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
+from typehaus.model.ampacity import ampacity, termination_column
 from typehaus.model.nec import NEC, cite
 
 _CID = "electrical.continuous_load_circuit"
@@ -39,6 +43,12 @@ RANGE_MIN_VA = 8750.0  # 210.19(C): ranges of 8 3/4 kW or more
 RANGE_MIN_AMPS = 40
 _OWN_CHECK = frozenset({"source", "heat_pump", "resistance_heat", "ev"})
 _RECEPTACLES = frozenset({"receptacle", "gfci", "receptacle_240"})
+
+
+def _holds_receptacle(e, device_types: dict) -> bool:
+    """A receptacle device, not a deadfront (blank-face GFCI) that shares its kind."""
+    return (e.element_kind == "ElectricalDevice" and e.kind.value in _RECEPTACLES
+            and not getattr(device_types.get(e.type_ref), "deadfront", False))
 
 
 def _consumers(ctx: CheckContext) -> dict[str, list]:
@@ -89,7 +99,9 @@ def continuous_load_circuit(ctx: CheckContext) -> list[Finding]:
             continue
         has_wh, gallons = _storage_gallons(ctx, on)
         ok = circuit.breaker_amps + 1e-9 >= need
-        if has_wh and gallons is not None and gallons <= STORAGE_HEATER_CONTINUOUS_MAX_GAL:
+        if circuit.continuous_va is not None and not (has_wh and gallons is not None):
+            out.append(_split_finding(circuit, va, tags, code))
+        elif has_wh and gallons is not None and gallons <= STORAGE_HEATER_CONTINUOUS_MAX_GAL:
             out.append((passed if ok else failed)(
                 _CID, f"{circuit.tag}: {gallons:.0f} gal storage water heater is continuous "
                       f"(422.13): {amps:.1f} A x 125% = {need:.1f} A against a "
@@ -117,6 +129,24 @@ def continuous_load_circuit(ctx: CheckContext) -> list[Finding]:
     return out
 
 
+def _split_finding(circuit, va: float, tags: tuple[str, ...], code: str) -> Finding:
+    """210.20(A) / 210.19(A)(1) on an authored continuous/noncontinuous split."""
+    volts = 240.0 if circuit.poles == 2 else 120.0
+    cont = min(circuit.continuous_va, va)
+    need = (va - cont) / volts + CONTINUOUS_FACTOR * cont / volts
+    msg = (f"{circuit.tag}: {(va - cont) / volts:.1f} A noncontinuous + 125% of "
+           f"{cont / volts:.1f} A continuous = {need:.1f} A against the "
+           f"{circuit.breaker_amps} A breaker")
+    ok = circuit.breaker_amps + 1e-9 >= need
+    if circuit.conductor_awg is not None:
+        column = termination_column(circuit.breaker_amps, circuit.conductor_awg,
+                                    circuit.termination_temp_c)
+        amps = ampacity(circuit.conductor_material, circuit.conductor_awg, column)
+        msg += f" and #{circuit.conductor_awg}'s {amps} A at {column} °C"
+        ok = ok and amps + 1e-9 >= need
+    return (passed if ok else failed)(_CID, msg, tags, code=code)
+
+
 def _receptacle_amps(nema: str | None) -> int | None:
     match = re.fullmatch(r"L?\d+-(\d+)R", nema or "")
     return int(match.group(1)) if match else None
@@ -132,7 +162,8 @@ def single_receptacle_rating(ctx: CheckContext) -> list[Finding]:
     consumers = _consumers(ctx)
     for circuit in ctx.plan.library.circuits:
         devices = [e for e in consumers.get(circuit.tag, [])
-                   if e.element_kind == "ElectricalDevice"]
+                   if e.element_kind == "ElectricalDevice"
+                   and not getattr(types.get(e.type_ref), "deadfront", False)]
         if len(devices) != 1 or devices[0].kind.value not in _RECEPTACLES:
             continue
         device = devices[0]
@@ -179,8 +210,7 @@ def multi_receptacle_rating(ctx: CheckContext) -> list[Finding]:
     consumers = _consumers(ctx)
     out: list[Finding] = []
     for circuit in ctx.plan.library.circuits:
-        devices = [e for e in consumers.get(circuit.tag, [])
-                   if e.element_kind == "ElectricalDevice" and e.kind.value in _RECEPTACLES]
+        devices = [e for e in consumers.get(circuit.tag, []) if _holds_receptacle(e, types)]
         ratings: list[int | None] = []
         for device in devices:
             nema = getattr(types.get(device.type_ref), "nema", None)
@@ -213,5 +243,66 @@ def multi_receptacle_rating(ctx: CheckContext) -> list[Finding]:
                                   tags, code=code))
     if not out:
         return [not_applicable(_MULTI_CID, "no circuit serves two or more receptacles",
+                               code=code)]
+    return out
+
+
+_LOADS_CID = "electrical.permissible_loads"
+CORD_AND_PLUG_MAX = 0.80  # 210.23(B)(1)
+FASTENED_MIXED_MAX = 0.50  # 210.23(B)(2)
+_SMALL_CIRCUITS = (15, 20)
+
+
+@check(Tier.ADVISORY, _LOADS_CID)
+def permissible_loads(ctx: CheckContext) -> list[Finding]:
+    """210.23(B): cord-and-plug equipment <= 80%, fastened <= 50% on a mixed 15/20 A circuit."""
+    from typehaus.takeoff.service_load import _connected_va
+
+    code = cite(NEC.BRANCH_LOAD_LIMITS)
+    types = {t.tag: t for t in ctx.plan.library.equipment_types}
+    device_types = {t.tag: t for t in ctx.plan.library.electrical_device_types}
+    consumers = _consumers(ctx)
+    out: list[Finding] = []
+    for circuit in ctx.plan.library.circuits:
+        on = consumers.get(circuit.tag, [])
+        equipment = [e for e in on if e.element_kind == "Equipment"]
+        if circuit.breaker_amps not in _SMALL_CIRCUITS or not equipment:
+            continue
+        receptacles = [e for e in on if _holds_receptacle(e, device_types)]
+        lights = [e for e in on if e.element_kind == "LightRun" or (
+            e.element_kind == "ElectricalDevice" and e.kind.value == "light")]
+        rating_va = circuit.breaker_amps * (240.0 if circuit.poles == 2 else 120.0)
+        tags = (circuit.tag, *(e.tag for e in equipment))
+        if len(equipment) > 1:
+            out.append(unknown(_LOADS_CID, f"{circuit.tag}: {len(equipment)} pieces of "
+                                           "equipment share the circuit's one load figure",
+                               tags, code=code))
+            continue
+        item = equipment[0]
+        how = getattr(types.get(item.type_ref), "utilization_connection", None)
+        if how is None and not receptacles:
+            how = "fastened"  # nothing on the circuit to plug into
+        share = _connected_va(ctx.model, circuit, on) / rating_va
+        if how is None:
+            out.append(unknown(_LOADS_CID, f"{circuit.tag}: {item.tag}'s type does not say "
+                                           "cord-and-plug or fastened in place", tags,
+                               code=code, fix="author EquipmentType.utilization_connection"))
+        elif how == "cord_and_plug":
+            verb = passed if share <= CORD_AND_PLUG_MAX + 1e-9 else failed
+            out.append(verb(_LOADS_CID, f"{circuit.tag}: cord-and-plug {item.tag} is "
+                                        f"{share:.1%} of {circuit.breaker_amps} A (80% at "
+                                        "most, 210.23(B)(1))", tags, code=code))
+        elif receptacles or lights:
+            verb = passed if share <= FASTENED_MIXED_MAX + 1e-9 else failed
+            out.append(verb(_LOADS_CID, f"{circuit.tag}: fastened {item.tag} is {share:.1%} "
+                                        f"of {circuit.breaker_amps} A beside "
+                                        f"{len(receptacles) + len(lights)} other outlets (50% "
+                                        "at most, 210.23(B)(2))", tags, code=code))
+        else:
+            out.append(passed(_LOADS_CID, f"{circuit.tag}: fastened {item.tag} alone on the "
+                                          "circuit; 210.23(B)(2)'s 50% applies only beside "
+                                          "lighting or cord-and-plug loads", tags, code=code))
+    if not out:
+        return [not_applicable(_LOADS_CID, "no 15 or 20 A circuit supplies equipment",
                                code=code)]
     return out

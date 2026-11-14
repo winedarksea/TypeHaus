@@ -431,6 +431,7 @@ def test_catlin_conduit_trunks(catlin_model):
     # elbow, the conduit simply turns.
     assert {run.from_ref for run in authored} == {
         "ED-B-PANEL", "ED-A-PV-JB", "EQ-B-ESS-INV", "ED-B-NET-PATCH", "CD-B-ATTIC-RISER",
+        "CD-B-PV-INV",
         "ED-M-LAUNDRY-PSU", "ED-B-PANEL-2", "ED-B-WORKSHOP-JB", "ED-B-PLAY-N-JB",
         "ED-M-KITCH-AP", "ED-M-PORCH-AP", "ED-M-DATA-ENTRY", "ED-M-RSD-INIT"}
     rows = conduit_takeoff(catlin_model)
@@ -623,7 +624,7 @@ def test_workshop_receptacles_and_their_supplies(catlin_model_ro):
         Service.POWER_120, Service.POWER_240}
     assert (branch.panel_ref, branch.slot, branch.poles, branch.breaker_amps, branch.gfci) == (
         "ED-B-PANEL-2", 17, 2, 20, True)
-    assert branch.load_va == 4800
+    assert (branch.load_va, branch.continuous_va) == (2500, 1000)  # owner, 2026-11-14
     assert quad.type_ref == "ED-T-LEV-QUAD-520"
     assert quad.circuit == "CKT-RC-BSMT"
     assert types[quad.type_ref].load_va is None
@@ -632,7 +633,7 @@ def test_workshop_receptacles_and_their_supplies(catlin_model_ro):
     assert quad_row["count"] == 1 and quad_row["nema"] == "5-20R"
     branch_row = next(row for row in panel_schedule(catlin_model_ro)
                       if row["circuit"] == branch.tag)
-    assert branch_row["connected_va"] == 4800
+    assert branch_row["connected_va"] == 2500
     assert branch_row["devices"] == [combo.tag]
     for device, station in ((combo, 144), (quad, 84)):
         assert device.mount.elevation.inches == pytest.approx(42)
