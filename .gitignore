@@ -232,3 +232,6 @@ __pycache__/
 
 # Personal documents (property purchase agreements) dropped into the checkout — never commit.
 *[Pp]urchase*[Aa]greement*
+
+# Ungraded code-rule summaries and whole code tables (NFPA copyright caution): local only.
+docs/local-code-notes/
