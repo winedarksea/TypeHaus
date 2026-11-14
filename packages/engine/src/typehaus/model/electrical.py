@@ -68,6 +68,9 @@ class Circuit(Element):
     source: bool = False
     # This position holds a plug-on surge protective device: no load, no source.
     spd: bool = False
+    # ``spd`` only: the plug-on's catalog ``ElectricalDeviceType`` (never placed), whose
+    # ``spd_class``, ``spd_nominal_discharge_ka`` and ``spd_listing`` 215.18(C)/(E) read.
+    spd_type_ref: str | None = None
     # Authored average-draw fraction of ``load_va`` over a backup event, 0..1. ESTIMATE
     # ONLY, and only meaningful on backup circuits — it exists so the autonomy calc can
     # say "the fridge is not drawing 700 VA for 24 hours". Never defaulted: a circuit

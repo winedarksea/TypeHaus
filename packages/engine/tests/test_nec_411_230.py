@@ -33,9 +33,9 @@ def test_catlins_service_disconnect_is_outdoors_and_over_100_a(catlin_model_ro):
 def test_catlins_equipment_rooms_are_graded_for_210_70_c(catlin_model_ro):
     found = _findings(catlin_model_ro, "electrical.equipment_space_lighting")
     by_room = {f.element_tags[0]: f.result.value for f in found}
+    # The 3-way pairs at D-B-FURN (2026-11-14); D-B-ESS is a closet door, not an entry.
     assert by_room == {"RM-A-EAST-UNFIN": "pass", "RM-B-ESS": "pass",
-                       "RM-B-FURNACE": "unknown", "RM-B-WORKSHOP": "unknown"}
-    assert all("D-B-FURN" in f.message for f in found if f.result.value == "unknown")
+                       "RM-B-FURNACE": "pass", "RM-B-WORKSHOP": "pass"}
 
 
 def test_laundry_track_is_in_another_room_than_the_tub(catlin_model_ro):

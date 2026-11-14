@@ -47,6 +47,12 @@ def _serviced(ctx: CheckContext, objects: dict, room_of) -> dict[str, list[str]]
     return held
 
 
+def _closet_door(door, room: str, doors_of: dict[str, set[str]]) -> bool:
+    """The door leads to another room that has no other door: a dead end off ``room``."""
+    beyond = [tag for tag, doors in doors_of.items() if tag != room and door.tag in doors]
+    return bool(beyond) and all(doors_of[tag] == {door.tag} for tag in beyond)
+
+
 @check(Tier.ADVISORY, _CID)
 def equipment_space_lighting(ctx: CheckContext) -> list[Finding]:
     """Each room with serviced equipment has a switched light, a control per door, a light near."""
@@ -72,6 +78,7 @@ def equipment_space_lighting(ctx: CheckContext) -> list[Finding]:
                 and e.kind is DeviceKind.SWITCH and e.tag in objects}
     types = {t.tag: t for t in ctx.plan.library.electrical_device_types}
     rooms = {r.tag: r for r in ctx.model.rooms}
+    doors_of = {r.tag: {d.tag for d in room_doors(ctx.model, r)} for r in ctx.model.rooms}
     out: list[Finding] = []
     for tag in sorted(held):
         room = rooms[tag]
@@ -92,7 +99,7 @@ def equipment_space_lighting(ctx: CheckContext) -> list[Finding]:
             continue
         controls = [objects[s].position for e in mine for s in e.controlled_by if s in switches]
         gaps: list[str] = []
-        doors = room_doors(ctx.model, room)
+        doors = [d for d in room_doors(ctx.model, room) if not _closet_door(d, tag, doors_of)]
         if not doors:
             gaps.append("no entry door is modelled (a stair or open entry?)")
         for door in doors:
