@@ -36,9 +36,7 @@ GROUNDING_STANDARD = [
                       conductor_fastener_spacing=inch(36), counterpoise_size="2",
                       counterpoise_material="copper", counterpoise_depth=inch(24),
                       down_lead_size="1/0", down_lead_material="aluminum",
-                      transition_min_height=inch(18), min_rod_spacing=ft(6),
-                      # Owner 2026-11-14: no garage SPD (230.67 and 215.18 do not ask for one).
-                      outbuilding_spds=False),
+                      transition_min_height=inch(18), min_rod_spacing=ft(6)),
 ]
 
 # --- house electrode system: the Ufer, two rods, the counterpoise and its terminals ------
