@@ -233,7 +233,8 @@ with no idle or efficiency.
 `CKT-LT-BACKUP`'s 95 VA: two cans 13, the closet light 9, the two kitchen TRADFRIs 30 each
 (the tape draws 25 W; the second driver was added 2026-11-08), the relays 3.6 + 9.6. Its 0.40
 is a blend: (13 + 60) x 5 h / 24 = 15.2 W of light, ~0.2 W closet, 13.2 W of relays at their
-rating, 13 x 0.75 = 9.8 W of alarms; 38.4 W / 95.2 VA = 0.40.
+rating, 12 x 0.75 = 9.0 W of alarms (AL-G-HEAT moved to the garage subpanel 2026-11-14);
+37.6 W / 95.2 VA = 0.39, kept at 0.40.
 
 **Battery-side draw** = AC / 0.94 + 55 W idle:
 

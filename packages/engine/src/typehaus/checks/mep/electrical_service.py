@@ -189,7 +189,8 @@ def panel_feeder_load(ctx: CheckContext) -> list[Finding]:
     calculation; applying 120.82(B)'s first-8-kVA-at-100% step to each panel separately
     over-counts, because the step is a whole-dwelling one. The general-lighting allowance
     goes only to the panel(s) hosting ``general`` circuits — it is not split by area,
-    which the model has no basis to do.
+    which the model has no basis to do. A subpanel whose PANEL device names its feeder
+    (``circuit=``) rolls its circuits up into the panel that feeder is homed in.
     """
     from typehaus.takeoff.electrical import service_load_summary
 
@@ -200,6 +201,19 @@ def panel_feeder_load(ctx: CheckContext) -> list[Finding]:
     by_panel: dict[str, list] = {}
     for circuit in ctx.plan.library.circuits:
         by_panel.setdefault(circuit.panel_ref, []).append(circuit)
+    home = {c.tag: c.panel_ref for c in ctx.plan.library.circuits}
+    feeders = {tag: c for c in ctx.plan.library.circuits for tag, e in panels.items()
+               if getattr(e, "circuit", None) == c.tag}
+    fed_from = {tag: home[e.circuit] for tag, e in panels.items()
+                if getattr(e, "circuit", None) in home}
+
+    def served(panel_ref: str, seen: frozenset = frozenset()) -> frozenset:
+        """The panel's own circuits plus those of every subpanel its feeders supply."""
+        tags = frozenset(c.tag for c in by_panel.get(panel_ref, ()))
+        for sub, parent in fed_from.items():
+            if parent == panel_ref and sub not in seen:
+                tags |= served(sub, seen | {panel_ref})
+        return tags
 
     graded = [tag for tag in sorted(by_panel)
               if getattr(types.get(getattr(panels.get(tag), "type_ref", "") or ""),
@@ -213,18 +227,21 @@ def panel_feeder_load(ctx: CheckContext) -> list[Finding]:
     out: list[Finding] = []
     for panel_ref in graded:
         main = float(types[panels[panel_ref].type_ref].service_amps)
-        tags = frozenset(c.tag for c in by_panel[panel_ref])
+        feeder, rating = feeders.get(panel_ref), "main"
+        if feeder is not None and feeder.breaker_amps < main:  # the tighter rating
+            main, rating = float(feeder.breaker_amps), f"feeder breaker ({feeder.tag})"
+        tags = served(panel_ref)
         summary = service_load_summary(ctx.model, circuit_tags=tags)
         amps = float(summary["demand_amps"])  # type: ignore[arg-type]  # 120.5(B)
         if amps > main:
             out.append(_warn_fail(
                 cid, f"panel {panel_ref}: {amps:.0f}A of {NEC.OPTIONAL_DWELLING} feeder "
-                     f"demand over {len(tags)} circuits exceeds its {main:.0f}A main — move "
+                     f"demand over {len(tags)} circuits exceeds its {main:.0f}A {rating} — move "
                      "load to another feeder or raise the main (estimate: a subpanel feeder "
                      f"is properly {cite(NEC.FEEDER_SERVICE_STANDARD)})", (panel_ref,)))
         else:
             out.append(_pass(
                 cid, f"panel {panel_ref}: {amps:.0f}A of {NEC.OPTIONAL_DWELLING} feeder "
-                     f"demand over {len(tags)} circuits fits its {main:.0f}A main (estimate)",
+                     f"demand over {len(tags)} circuits fits its {main:.0f}A {rating} (estimate)",
                 (panel_ref,)))
     return out

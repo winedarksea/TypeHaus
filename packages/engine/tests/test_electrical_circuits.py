@@ -207,8 +207,9 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     # backup, and the garage's lighting off CKT-LT-MAIN.
     # Then MINUS CKT-FH-DINING (2026-11-02): the dining mat went with SL-M-DECK (decision #112).
     # Then PLUS CKT-BATH-RC (210.11(C)(3)), absorbing CKT-BATH-ATTIC, and CKT-SPD-2/-BACKUP
-    # (230.67(B) Ex., 215.18), 2026-11-07. Then PLUS CKT-PLANT-HEAT (2026-11-12).
-    assert len(rows) == 45  # plus the workshop's two-pole receptacle branch
+    # (230.67(B) Ex., 215.18), 2026-11-07. Then PLUS CKT-PLANT-HEAT (2026-11-12). Then PLUS
+    # CKT-GAR-FEEDER and CKT-SPD-GAR, the garage subpanel's feeder and SPD (2026-11-14).
+    assert len(rows) == 47  # plus the workshop's two-pole receptacle branch
     # Each radiant floor zone is its own 120V circuit with breaker-level GFCI, controlled
     # by one thermostat (NEC 424.44(G) — heating cable in a bathroom or kitchen floor).
     assert "CKT-FH-DINING" not in rows
@@ -561,7 +562,7 @@ def test_catlin_slot_map_is_complete_and_unique(catlin_model):
     circuits = catlin_model.plan.library.circuits
     assert all(circuit.slot is not None for circuit in circuits)
     assert {c.panel_ref for c in circuits} == {
-        "ED-B-PANEL", "ED-B-PANEL-2", "ED-B-BACKUP-PANEL"}
+        "ED-B-PANEL", "ED-B-PANEL-2", "ED-B-BACKUP-PANEL", "ED-G-PANEL"}
     occupied: dict = {}
     for circuit in circuits:
         positions = (circuit.slot,) if circuit.poles == 1 else (circuit.slot,
@@ -602,9 +603,11 @@ def test_catlin_panel_spaces_fits_the_54_space_enclosure(catlin_model):
     # here, twelve there. 41 since CKT-LT-BSMT and CKT-LT-GARAGE took slots 26/24 (2026-10-31); 40 once
     # CKT-FH-DINING (slot 31) went with the dining mat (2026-11-02). 2026-11-07: CKT-BATH-RC
     # took 31 and CKT-BATH-ATTIC left 41, and each panel gained a 2-pole SPD. 41 once
-    # CKT-PLANT-HEAT took slot 41 (2026-11-12).
-    assert main == (41, 54)
-    assert spaces("ED-B-PANEL-2", "ED-T-PANEL-2") == (12, 20)
+    # CKT-PLANT-HEAT took slot 41 (2026-11-12). 38 once the garage's three 1-pole circuits
+    # left for its subpanel (2026-11-14); PANEL-2 traded EV + 6-20R for the feeder.
+    assert main == (38, 54)
+    assert spaces("ED-B-PANEL-2", "ED-T-PANEL-2") == (10, 20)
+    assert spaces("ED-G-PANEL", "ED-T-PANEL-GARAGE") == (9, 12)
     assert backup == (9, 12)  # 8 until CKT-WH went 1-pole (120 V HPWH, 2026-11-02)
     required = sum(circuit.poles for circuit in circuits)
     declared = main[1]
@@ -894,7 +897,7 @@ def test_model_json_carries_the_electrical_takeoff(catlin_model):
     # 40: the 36 that survived the microgrid refactor plus CKT-DISPOSAL, minus CKT-WH-HP
     # folded into CKT-WH, plus CKT-BATH2-TUB for the drop-in bath's Bask heated surface,
     # plus the two washlet circuits, plus CKT-SPD (the NEC 230.67 service surge device).
-    assert len(payload["panel_schedule"]) == 45  # includes the workshop branch
+    assert len(payload["panel_schedule"]) == 47  # includes the workshop branch
 
 
 def test_model_json_canvas_objects_carry_their_circuit(catlin_model):

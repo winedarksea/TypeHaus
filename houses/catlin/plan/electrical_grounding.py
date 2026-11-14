@@ -100,7 +100,8 @@ SERVICE_GROUNDING = [
     ServiceEntrance(uid="9QPW6E02RJ", tag="SE-M-SERVICE", service_ref="ED-M-METER",
                     disconnect_conductors=("4/0", "4/0"), disconnect_material="al",
                     main_bonding_jumper_ref="ED-M-METER",
-                    neutral_isolated_refs=("ED-B-PANEL", "ED-B-PANEL-2", "ED-B-BACKUP-PANEL")),
+                    neutral_isolated_refs=("ED-B-PANEL", "ED-B-PANEL-2", "ED-B-BACKUP-PANEL",
+                                           "ED-G-PANEL")),
     # Meter-main is the service disconnect: the GECs and the main bonding jumper land here.
     BondingConductor(uid="PM0JNEJBC4", tag="BC-M-GEC-ROD", role="gec", from_ref="ED-M-METER", to_ref="GE-B-ROD-1",
                      size="6", path=(pt(inch(-11.2), inch(357.1)), pt(inch(-11.2), inch(357.1)),
@@ -164,33 +165,27 @@ PV_GROUNDING = [
                      elevations=(inch(-16), inch(-58), inch(-58))),
 ]
 
-# --- garage: a separate building fed by seven branch circuits (250.32) ------------------
-# Stone footings, so no Ufer: a rod pair west of W-G-W, bonded to the EGC bar in ED-G-GND-JB
-# where the circuits' EGCs are joined.
+# --- garage: a separate building fed by one feeder (250.32) ------------------------------
+# Stone footings, so no Ufer: a rod pair west of W-G-W, its GEC on the ground bar of the
+# subpanel ED-G-PANEL, where the feeder's EGC lands (250.32(B)(1); neutral isolated there).
 GARAGE_GROUNDING = [
     GroundingElectrode(uid="ZXWN35CW68", tag="GE-G-ROD-1", kind="rod", position=pt(inch(40), inch(600)),
                        top_elevation=inch(-58)),
     GroundingElectrode(uid="809R3NTWXK", tag="GE-G-ROD-2", kind="rod", position=pt(inch(40), inch(792)),
                        top_elevation=inch(-58)),
-    BondingConductor(uid="E3V16RT8WC", tag="BC-G-GEC", role="gec", from_ref="ED-G-GND-JB", to_ref="GE-G-ROD-1",
+    BondingConductor(uid="E3V16RT8WC", tag="BC-G-GEC", role="gec", from_ref="ED-G-PANEL", to_ref="GE-G-ROD-1",
                      size="6"),
     BondingConductor(uid="Q1GM2C34KQ", tag="BC-G-ROD-JUMPER", role="gec", from_ref="GE-G-ROD-1",
                      to_ref="GE-G-ROD-2", size="6",
                      path=(pt(inch(40), inch(600)), pt(inch(40), inch(792))),
                      elevations=(inch(-58), inch(-58))),
-    ElectricalDevice(uid="RMVDMF1Q8Y", tag="ED-G-GND-JB", kind=DeviceKind.JUNCTION_BOX,
-                     type_ref="ED-T-GND-JB", room="RM-GARAGE",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(30)),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-G-W", face="left", distance_from_start=inch(196),
-                         normal_gap=inch(0), rotation_offset=deg(-180)))),
-    # 250.94(A): an IBT at a building a branch circuit supplies, beside the EGC bar.
+    # 250.94(A): an IBT at the building, bonded to the subpanel's ground bar.
     ElectricalDevice(uid="592BENDBNY", tag="ED-G-IBT", kind=DeviceKind.JUNCTION_BOX, type_ref="ED-T-IBT",
                      room="RM-GARAGE", mount=Mount(kind=MountKind.WALL, elevation=inch(30)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-G-W", face="left", distance_from_start=inch(206),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
-    BondingConductor(uid="F9N78H7JJQ", tag="BC-G-IBT", role="ibt", from_ref="ED-G-IBT", to_ref="ED-G-GND-JB",
+    BondingConductor(uid="F9N78H7JJQ", tag="BC-G-IBT", role="ibt", from_ref="ED-G-IBT", to_ref="ED-G-PANEL",
                      size="6"),
     # Type 2 SPD beside the EV outlet, landed on its CKT-EV-1450 junction.
     ElectricalDevice(uid="GH0TMES07M", tag="ED-G-SPD", kind=DeviceKind.SPD, type_ref="ED-T-SPD-T2",

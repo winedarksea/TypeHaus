@@ -1,11 +1,13 @@
 """``electrical.outdoor_branch_wiring`` -- 2026 NEC 225.10 on circuits that leave their building.
 
 A branch circuit with a consumer in a building other than its panel's runs outside between
-them, and 225.10 lists the wiring methods it may use on a building. The circuit is graded on
-what the model draws: a ``ConduitRun`` naming it in ``circuits``, or running from its panel to
-one of its consumers there. EMT and PVC are on the list; ENT was not on the list as read (the
-transcription trailed off), so an ENT route stays UNKNOWN. An undrawn circuit is UNKNOWN, one
-finding per building. N/A only when every circuit's consumers stand in its panel's building.
+them, and 225.10 lists the wiring methods it may use on a building. A feeder is the same
+case: the subpanel names it (``circuit=``), so the subpanel is its consumer. The circuit is
+graded on what the model draws: a ``ConduitRun`` naming it in ``circuits``, or running from
+its panel to one of its consumers there. EMT and PVC are on the list; ENT was not on the
+list as read (the transcription trailed off), so an ENT route stays UNKNOWN. An undrawn
+circuit is UNKNOWN, one finding per building. N/A only when every circuit's consumers stand
+in its panel's building.
 ``mep.raceway_use`` grades the drawn exterior runs themselves.
 """
 

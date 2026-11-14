@@ -373,14 +373,20 @@ def service_load_summary(
     the demand. A refused group's excess stays in the demand.
 
     ``circuit_tags`` narrows the whole calculation to a subset — the per-panel feeder
-    estimate. (B)(1) follows the subset's ``general`` circuits and (B)(2) counts only the
-    subset's own, with no minimum.
+    estimate. (B)(1) follows the subset's ``general`` circuits that reach a conditioned room
+    (the rest count at connected VA) and (B)(2) counts only the subset's own, with no minimum.
     """
     floor_area_ft2 = nec_floor_area_ft2(model)
     consumers = _circuit_consumers(model)
     scope = [c for c in model.plan.library.circuits
              if circuit_tags is None or c.tag in circuit_tags]
     buckets = {c.tag: _bucket(model, c, consumers.get(c.tag, [])) for c in scope}
+    if circuit_tags is not None:  # (B)(1)'s VA/ft2 covers only circuits in the floor area
+        conditioned = {r.tag for r in model.rooms if r.conditioned}
+        for c in scope:
+            if buckets[c.tag] == "general" and not any(
+                    getattr(e, "room", None) in conditioned for e in consumers.get(c.tag, [])):
+                buckets[c.tag] = "appliance"  # e.g. a garage subpanel: its connected VA
     counts = Counter(buckets.values())
     small_appliance, laundry = counts["small_appliance"], counts["laundry"]
     lighting_va = GENERAL_LIGHTING_VA_PER_FT2 * floor_area_ft2

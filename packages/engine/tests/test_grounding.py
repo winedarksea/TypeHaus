@@ -190,3 +190,18 @@ def test_a_feeder_panel_must_state_its_neutral_isolated():
     isolated = plain.model_copy(update={"neutral_isolated_refs": ("ED-PANEL",)})
     found = _results(neutral_bond, _plan(_METER, panel, isolated, circuits=circuits))
     assert [f.result.value for f in found] == ["pass", "pass"]
+
+
+def test_catlin_garage_is_one_feeder_to_a_traced_subpanel(catlin_model_ro):
+    """One feeder (225.30): 250.32 traces its EGC through the panel's ``circuit=``, 225.10
+    sees one drawn route, and the feeder estimate rolls the subpanel into ED-B-PANEL-2."""
+    from typehaus.checks.mep.electrical_outdoor_wiring import outdoor_branch_wiring
+    from typehaus.checks.mep.electrical_service import panel_feeder_load
+
+    ctx = check_context(model=catlin_model_ro)
+    graded = separate_buildings(ctx) + outdoor_branch_wiring(ctx)
+    assert all(f.result.value == "pass" for f in graded), [f.message for f in graded]
+    assert [f.element_tags[0] for f in outdoor_branch_wiring(ctx)] == ["CKT-GAR-FEEDER"]
+    load = {f.element_tags: f.message for f in panel_feeder_load(ctx)}
+    assert "over 11 circuits" in load[("ED-B-PANEL-2",)]
+    assert "90A feeder breaker (CKT-GAR-FEEDER)" in load[("ED-G-PANEL",)]

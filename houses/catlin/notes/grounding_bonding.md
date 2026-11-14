@@ -47,7 +47,8 @@ Table 250.66 and Table 250.102(C)(1) both give **#2 Cu** there. A lateral over 5
 - `BC-M-GEC-UFER` is **#2 Cu**, 10.4 ft, over the #4 cap: the water bond lands on its stub, and
   250.104(A)(1) lets it land on an electrode only if that GEC is as large as the bond. It is
   insulated through the rim and inside the wall.
-- Garage (250.32(E)): largest supply conductor #6 Cu (`CKT-EV-1450`) gives #8 Cu; `BC-G-GEC` is #6.
+- Garage (250.32(E)): the one feeder `CKT-GAR-FEEDER`'s #2 Cu gives #8 Cu; `BC-G-GEC` is #6, landed
+  on the ground bar of the subpanel `ED-G-PANEL` (neutral isolated there, 250.32(B)(1)).
 
 **Water bonds (250.104(A)(1)).** Table 250.102(C)(1) on the basis above: **#2 Cu** for
 `BC-B-WATER`, `BC-B-WATER-WH` and `BC-B-WATER-BATH` (each is the only bond path for the
@@ -132,8 +133,8 @@ by the coordinated SPDs and single-point entry with an IBT.
   are continuous EMT.
 - **Single-point entry:** power and data enter on W-M-W1 within 3 ft. `ED-M-DATA-ENTRY` feeds
   `CD-M-DATA-ENTRY` to the patch panel, and the IBT (`ED-M-IBT`) is bonded to the meter-main (250.94).
-- **IBTs (250.94(A)):** `ED-M-IBT` at the service and `ED-G-IBT` beside `ED-G-GND-JB` in the
-  garage (a building branch circuits supply needs one at its disconnect). The nVent ERICO IBTB
+- **IBTs (250.94(A)):** `ED-M-IBT` at the service and `ED-G-IBT` in the garage, bonded to
+  the subpanel `ED-G-PANEL` (a building a feeder supplies needs one at its disconnect). The nVent ERICO IBTB
   sheet: five bonding connectors (#14-#6) plus a #6-#2 GEC lay-in.
 - **Neutral (250.24):** the main bonding jumper is in the meter-main; `ED-B-PANEL`,
   `ED-B-PANEL-2` and `ED-B-BACKUP-PANEL` keep their neutral bars isolated (bonding screw out).

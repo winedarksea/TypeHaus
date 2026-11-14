@@ -106,8 +106,9 @@ near the feeder's stub-up at x 16'-0".
   (single 6-20R, 48" AFF, 204"), mid-bay either side of it.
 - **West bay: `ED-G-RC-W`**, **east bay: `ED-G-RC-E`** (`W-G-S`, x 25'-0", 48" AFF). Both are on
   `CKT-RC-GARAGE`, the 120 V 20 A GFCI circuit 210.11(C)(4) asks for, and nothing else is: "no
-  other outlets". Lights and the heater are elsewhere (`CKT-LT-MAIN`, `CKT-GAR-HEAT`).
-- **Opener outlet `ED-G-GDO-RC`** (ceiling, 9'-11 1/4") is on `CKT-LT-MAIN` (owner, 2026-10-30),
+  other outlets". Lights and the heater are elsewhere (`CKT-LT-GARAGE`, `CKT-GAR-HEAT`). Since
+  2026-11-14 every garage circuit is in the subpanel `ED-G-PANEL` (plan/circuits_garage.py).
+- **Opener outlet `ED-G-GDO-RC`** (ceiling, 9'-11 1/4") is on `CKT-LT-GARAGE` (2026-11-14),
   on the load side of `ED-G-GDO-GFCI`, a Leviton GFRBF-W blank-face GFCI beside `ED-G-SW`.
   210.8(A)(2) wants it GFCI with a reset in reach; the blank face protects only the opener, so a
   trip never takes the lights.
@@ -117,7 +118,8 @@ near the feeder's stub-up at x 16'-0".
   needed a neutral.
 - **EVSE hardwired.** The Grizzl-E Smart manual documents removing the 14-50P. `ED-G-EV-1450`
   (kept tag, centre of the south wall's EV station) is now the 240 V junction box
-  `ED-T-EVSE-JB` behind the unit; `CD-B-GARAGE`/`CD-B-GAP-EV` still end on it. With no
+  `ED-T-EVSE-JB` behind the unit, fed from `ED-G-PANEL` beside it (`CD-B-GARAGE`/`CD-B-GAP-EV`
+  carry the garage feeder now). With no
   receptacle, 210.8(A)(2) and 625.54 do not apply; the charger's own CCID protects. 625.43 wants
   no disconnect (240 V split-phase is 120 V to ground, under 60 A). `CKT-EV-1450` stays a plain
   50 A 2-pole, 40 A charge.

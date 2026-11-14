@@ -62,14 +62,15 @@ def test_the_garage_carries_a_heat_detector(catlin_model):
 
 
 def test_every_alarm_names_an_unswitched_circuit(catlin_model):
-    """R314.4 wants alarms on an unswitched circuit. CKT-LT-BACKUP is the only thing here
-    that survives an outage — CKT-RC-GARAGE is GFCI, which is wrong for a life-safety
-    device, and there is no spare 1-pole."""
+    """R314.4 wants alarms on an unswitched circuit. The house's ride CKT-LT-BACKUP, which
+    survives an outage; the detached garage's is on its own subpanel's lighting circuit (a
+    backup circuit there would be a second supply, 225.30), never the GFCI CKT-RC-GARAGE."""
     circuits = {circuit.tag: circuit for circuit in catlin_model.plan.library.circuits}
     # Leak sensors are battery Zigbee probes (notes/leak_detectors.md): no circuit.
     for alarm in _alarms(catlin_model):
         if alarm.kind is not AlarmKind.LEAK:
-            assert alarm.circuit == "CKT-LT-BACKUP", alarm.tag
+            want = "CKT-LT-GARAGE" if alarm.tag == "AL-G-HEAT" else "CKT-LT-BACKUP"
+            assert alarm.circuit == want, alarm.tag
     backup = circuits["CKT-LT-BACKUP"]
     assert backup.backup_tier is not None and backup.poles == 1
 

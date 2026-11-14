@@ -16,6 +16,7 @@ from typehaus.checks._authoring import failed, not_applicable, passed, unknown
 from typehaus.checks.mep.electrical_grounding import (
     building_of_tag,
     grounding,
+    panel_feeders,
     storey_of,
     supplied_buildings,
 )
@@ -89,7 +90,7 @@ def service_basis(ctx: CheckContext) -> tuple[Basis | None, str]:
 def _outbuilding_basis(ctx: CheckContext, bldg: str) -> tuple[Basis | None, str]:
     """250.32(E): the largest ungrounded supply conductor into ``bldg``."""
     supply = supplied_buildings(ctx).get(bldg)
-    if supply is None or supply["panels"]:
+    if supply is None or set(supply["panels"]) - set(panel_feeders(ctx)):
         return None, f"the feeder into {bldg} is not modeled"
     circuits = [c for c in ctx.plan.library.circuits if c.tag in supply["circuits"]]
     unsized = sorted(c.tag for c in circuits if not c.conductor_awg)

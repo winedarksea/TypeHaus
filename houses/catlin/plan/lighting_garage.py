@@ -22,7 +22,7 @@ from typehaus.model import Location, WallAttachment
 
 # --- Garage ---------------------------------------------------------------------------
 # Five Q shop lights on one switch by the service door, on CKT-LT-GARAGE (since 2026-10-31;
-# CKT-LT-MAIN before), the garage's own lighting circuit from ED-B-PANEL, not the GFCI
+# CKT-LT-MAIN before), the garage's own lighting circuit in ED-G-PANEL, not the GFCI
 # receptacle circuit, which would drop the lights every time a tool trips one. Surface mounted at 8' —
 # nothing above the garage ceiling to recess a can into.
 GARAGE_LIGHTING = [
@@ -86,7 +86,7 @@ GARAGE_LIGHTING = [
     # load side, so its reset is in reach (NEC 210.8) and a tripped opener leaves the lights on.
     ElectricalDevice(uid="T2P1VW9FJE", tag="ED-G-GDO-GFCI", kind=DeviceKind.RECEPTACLE_GFCI,
                      type_ref="ED-T-LEV-GFCI-DF",
-                     circuit="CKT-LT-MAIN", room="RM-GARAGE",
+                     circuit="CKT-LT-GARAGE", room="RM-GARAGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(76)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-G-S", face="left", distance_from_start=inch(59),

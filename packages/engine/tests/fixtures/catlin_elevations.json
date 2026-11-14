@@ -518,9 +518,6 @@
 "canvas_objects/ED-G-GDO-RC/body_z0_m": 2.16535,
 "canvas_objects/ED-G-GDO-RC/body_z1_m": 2.21615,
 "canvas_objects/ED-G-GDO-RC/z_m": 2.16535,
-"canvas_objects/ED-G-GND-JB/body_z0_m": -0.1016,
-"canvas_objects/ED-G-GND-JB/body_z1_m": -0.0,
-"canvas_objects/ED-G-GND-JB/z_m": -0.1016,
 "canvas_objects/ED-G-HEATER-RC/body_z0_m": 1.4224,
 "canvas_objects/ED-G-HEATER-RC/body_z1_m": 1.4732,
 "canvas_objects/ED-G-HEATER-RC/z_m": 1.4224,
@@ -542,6 +539,9 @@
 "canvas_objects/ED-G-LT5/body_z0_m": 1.5748,
 "canvas_objects/ED-G-LT5/body_z1_m": 1.651,
 "canvas_objects/ED-G-LT5/z_m": 1.5748,
+"canvas_objects/ED-G-PANEL/body_z0_m": 0.3556,
+"canvas_objects/ED-G-PANEL/body_z1_m": 0.83566,
+"canvas_objects/ED-G-PANEL/z_m": 0.3556,
 "canvas_objects/ED-G-RC-240/body_z0_m": 0.3556,
 "canvas_objects/ED-G-RC-240/body_z1_m": 0.4699,
 "canvas_objects/ED-G-RC-240/z_m": 0.3556,
@@ -24638,6 +24638,12 @@
 0.47625,
 8,
 "e88814bf800f"
+],
+"geometry/CGW101AAAA::framing/member:backing-1-000": [
+0.3048,
+0.59055,
+8,
+"0a7bb081387b"
 ],
 "geometry/CGW101AAAA::framing/member:corner-start": [
 -0.2667,
@@ -87856,6 +87862,12 @@
 0.47625,
 2,
 "fbab0d4f2a24"
+],
+"member/CGW101AAAA/backing-1-000": [
+0.3048,
+0.59055,
+2,
+"12107200265a"
 ],
 "member/CGW101AAAA/corner-start": [
 -0.2667,

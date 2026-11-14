@@ -403,6 +403,12 @@ GARAGE_BACKING = [
                 start=ft(14, 0.75), length=inch(22.5),
                 elevation=inch(19.5), height=inch(11.25), profile="2x12",
                 material_ref="spf", purpose="EVSE wall mount (APPL-G-EVSE)"),
+    # The garage subpanel ED-G-PANEL's backboard screws (48"..66.9" AFF), the bay between the
+    # studs at 14' and 16'. 24" here is 46" AFF, under the board's bottom screws.
+    WallBacking(uid="0C23C6K1H7", tag="BK-G-S-PANEL", wall_ref="W-G-S",
+                start=inch(96.75), length=inch(22.5),
+                elevation=inch(24), height=inch(11.25), profile="2x12",
+                material_ref="spf", purpose="garage subpanel backboard (ED-G-PANEL)"),
     # DR-238's four holes at stations 173.5/174.6/185.4/186.5in, 100in AFF.
     # Fill the stud-007..008 bay; slab is 22in below this wall's sill datum.
     # Fit the 2x6 flush to the inside stud face and fasten both ends to the studs.

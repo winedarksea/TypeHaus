@@ -88,7 +88,4 @@ GROUNDING_DEVICE_TYPES = (
     ElectricalDeviceType(tag="ED-T-DATA-ENTRY", name="NEMA 3R comms entrance box, blank cover",
                          footprint=(inch(8), inch(4)), height=inch(8), needs=frozenset(),
                          ports=(), source=_SRC),
-    ElectricalDeviceType(tag="ED-T-GND-JB", name="Grounding junction: EGC bar bonded to the "
-                         "building's electrodes (NEC 250.32)", footprint=(inch(6), inch(4)),
-                         height=inch(4), needs=frozenset(), ports=(), source=_SRC),
 )

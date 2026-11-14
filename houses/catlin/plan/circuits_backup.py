@@ -61,8 +61,8 @@ BACKUP_CIRCUITS = (
     #   draws 25 W, split over two drivers 2026-11-08) for ~5 h of 24 = 15.2 W; the closet
     #   light ~0.2 W;
     # - the two interconnect relays at their 13.2 VA rating, always energised;
-    # - 13 alarms' standby, ~0.75 W each = 9.8 W. AN ESTIMATE: Kidde publishes only a 120 V /
-    #   80 mA maximum. Meter it.
+    # - 12 alarms' standby, ~0.75 W each = 9.0 W. AN ESTIMATE: Kidde publishes only a 120 V /
+    #   80 mA maximum. Meter it. (AL-G-HEAT left for the garage subpanel, 2026-11-14.)
     Circuit(uid="CKT018AAAA", tag="CKT-LT-BACKUP", slot=6, panel_ref=_BACKUP_PANEL,
             breaker_amps=15, poles=1, backup_tier=BackupTier.ALWAYS_ON, afci=True,
             conductor_awg="14", egc_awg="14",

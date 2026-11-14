@@ -37,7 +37,7 @@ def test_the_opener_outlet_rides_a_blank_face_gfci_off_the_garage_circuit(catlin
                if e.element_kind == "ElectricalDevice"]
     assert {d.tag for d in devices if d.circuit == "CKT-RC-GARAGE"} == {"ED-G-RC-E", "ED-G-RC-W"}
     gdo = next(d for d in devices if d.tag == "ED-G-GDO-RC")
-    assert (gdo.circuit, gdo.gfci_ref) == ("CKT-LT-MAIN", "ED-G-GDO-GFCI")
+    assert (gdo.circuit, gdo.gfci_ref) == ("CKT-LT-GARAGE", "ED-G-GDO-GFCI")
     gfci = [f for f in run_from_model(catlin_model_ro, [], only=["code.E3902_gfci_locations"])
             .findings if "ED-G-GDO-RC" in f.message]
     assert [f.result.value for f in gfci] == ["pass"]

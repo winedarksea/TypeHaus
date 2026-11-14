@@ -744,10 +744,13 @@ ROOFS = [
 ALARMS = [
     # A garage gets a *heat* detector, not smoke: exhaust, dust and outdoor-swing temps would
     # nuisance-trip a smoke head, which is why R315 asks for CO coverage adjacent to the
-    # garage rather than a smoke alarm inside it. On CKT-LT-BACKUP because R314.4 wants an
-    # unswitched circuit and CKT-RC-GARAGE (GFCI) is wrong for a life-safety device.
+    # garage rather than a smoke alarm inside it. On CKT-LT-GARAGE's unswitched hot (the garage
+    # subpanel, 2026-11-14; CKT-LT-BACKUP before, which would have been a second supply under
+    # 225.30): R314.4 wants an unswitched circuit and the GFCI CKT-RC-GARAGE is wrong for it.
+    # In an outage it rides its own battery; a wired interconnect to the house would cross
+    # buildings, so it stands alone unless a wireless interconnect is chosen.
     Alarm(uid="CGA701AAAA", tag="AL-G-HEAT", kind=AlarmKind.HEAT, room="RM-GARAGE",
-          circuit="CKT-LT-BACKUP"),
+          circuit="CKT-LT-GARAGE"),
 ]
 
 # --- service-door stair (ST-G-SERVICE) --------------------------------------------------

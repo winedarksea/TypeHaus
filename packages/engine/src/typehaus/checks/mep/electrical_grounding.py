@@ -109,6 +109,13 @@ def crossing_circuits(ctx: CheckContext) -> dict[str, set[str]]:
     return out
 
 
+def panel_feeders(ctx: CheckContext) -> dict[str, str]:
+    """PANEL device -> the feeder circuit it names (``circuit=``, homed in another panel)."""
+    known = {c.tag for c in ctx.plan.library.circuits}
+    return {el.tag: el.circuit for el in ctx.plan.elements_of_kind("ElectricalDevice")
+            if getattr(el.kind, "value", None) == "panel" and getattr(el, "circuit", None) in known}
+
+
 def supplied_buildings(ctx: CheckContext) -> dict[str, dict[str, set[str]]]:
     """Building -> {"circuits": crossing circuits, "panels": its PANEL devices} for every
     building other than the service's that a branch circuit or a feeder (to a panel) reaches."""
@@ -341,10 +348,11 @@ def separate_buildings(ctx: CheckContext) -> list[Finding]:
     for bldg, supply in sorted(supplied.items()):
         names = ", ".join(sorted(supply["circuits"]))
         no_egc = sorted(t for t in supply["circuits"] if not circuits[t].egc_awg)
-        for panel in sorted(supply["panels"]):
-            out.append(unknown(SEPARATE_CID, f"{bldg} is fed by a feeder to {panel}; feeders are "
-                               "not modeled, so its EGC (250.32(B)(1)) is not traced",
-                               (panel,), code))
+        feeders = panel_feeders(ctx)
+        for panel in sorted(p for p in supply["panels"] if p not in feeders):
+            out.append(unknown(SEPARATE_CID, f"{bldg} is fed by a feeder to {panel}, which names "
+                               "no feeder circuit, so its EGC (250.32(B)(1)) is not traced",
+                               (panel,), code, fix=f"set circuit= on {panel} to its feeder"))
         if no_egc:
             out.append(unknown(SEPARATE_CID, f"{', '.join(no_egc)} into {bldg} states no EGC "
                                "(250.32(A) Ex., (B)(1))", tuple(no_egc), code,

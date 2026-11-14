@@ -32,22 +32,7 @@ DEDICATED_240V_CIRCUITS = (
     Circuit(uid="CKT002AAAA", tag="CKT-DRYER", slot=5, panel_ref=_PANEL, breaker_amps=15, poles=2,
             conductor_awg="10", egc_awg="10",
             nema="14-30R", gfci=True, load_va=830, description="Dryer"),
-    # load_va is explicit so the schedule reads the figure the conductors are sized for.
-    # CKT-EV-1450 feeds a HARDWIRED Grizzl-E (owner, 2026-10-30): no receptacle, so 210.8(A)(2)
-    # and 625.54 do not apply and the charger's CCID protects; 40 A charge, 125% = 50 A plain.
-    Circuit(uid="CKT003AAAA", tag="CKT-EV-1450", slot=9, panel_ref=_PANEL_2, breaker_amps=50, poles=2,
-            conductor_awg="6", egc_awg="10", continuous_va=9600,  # EV: continuous in full (owner)
-            # Buried leg CD-B-GAP-EV is a wet location (300.7(B), 310.10(C)): dual-rated wire,
-            # Southwire SIMpull THHN/THWN-2 (SPEC 10000: "THWN-2: Wet locations not to exceed 90° C").
-            conductor_insulation="THHN/THWN-2",
-            load_va=9600, description="EV charging, hardwired Grizzl-E 40 A (garage)"),
-    # The garage's 240 V point (backup EV charging, tools): one 6-20R, two hots + ground, no
-    # neutral. 2-pole GFCI (210.8(A)(2) reaches 125-250 V garage receptacles); no AFCI.
-    # Not a 210.52(G)(1) outlet, so the 120 V bay receptacles are on CKT-RC-GARAGE instead.
-    Circuit(uid="CKT004AAAA", tag="CKT-GAR-240", slot=13, panel_ref=_PANEL_2, breaker_amps=20,
-            conductor_awg="12", egc_awg="12",
-            poles=2, nema="6-20R", gfci=True, load_va=3840,
-            description="Garage 240 V receptacle (6-20R; backup EV charging, tools)"),
+    # CKT-EV-1450 and CKT-GAR-240 moved to the garage subpanel (plan/circuits_garage.py).
     # 2,500 VA (owner, 2026-11-14; was the breaker's 4,800, which is capacity, not load): the
     # computers, at most 1,000 W continuous, plus one 1,500 W bench tool at a time (a heat
     # gun or shop vac, 12.5 A on the 5-20R, under its 16 A 210.21(B)(2) cap). 125%: 11.5 A.

@@ -3158,8 +3158,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   at y=25'-0" — **south** of `ED-B-BACKUP-PANEL`, because the bays north of `ED-B-PANEL` are
   full (`ED-B-NET-PATCH`, the ERV duct crossing at 31'-4", `ED-B-BACKUP-ENCL`) and the one
   gap between them is 6 1/2" wide. **Nothing grades a device-on-device overlap or NEC 110.26
-  working space**; both are held by the measurements in `plan/mep_electrical.py`. Feeder 2 carries `CKT-SPA`, `CKT-SAUNA`, `CKT-EV-1450`, `CKT-GAR-240` and nothing
-  else. `electrical.panel_feeder_load` grades each panel's own 120.82 demand against its own
+  working space**; both are held by the measurements in `plan/mep_electrical.py`. Feeder 2 carries `CKT-SPA`, `CKT-SAUNA`, `CKT-WORKSHOP-240` and `CKT-GAR-FEEDER`, the
+  garage's one feeder (2026-11-14: 90 A, #2 Cu, to the subpanel `ED-G-PANEL`, which holds the EV,
+  6-20R, heater, bay-receptacle and lighting circuits; plan/circuits_garage.py; a subpanel's
+  circuits roll up into its feeding panel's estimate). `electrical.panel_feeder_load` grades each panel's own 120.82 demand against its own
   main (135.7 A and 120.7 A of 200 A, 2026-11-07); `electrical.service_load` grades the house against the
   meter (250.4 A of 320 A, **69.6 A of margin**, 2026-11-07: 2026 NEC 2 VA/ft2, first 8 kVA, heat kit at 65%). `CKT-RANGE` is 40 A / 11,900 VA (the LG
   nameplate) and `CKT-KETTLE` 3,000 VA (a typical nameplate, not the breaker) — replace the

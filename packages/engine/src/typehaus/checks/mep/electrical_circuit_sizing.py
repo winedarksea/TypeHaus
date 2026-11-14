@@ -83,6 +83,8 @@ def continuous_load_circuit(ctx: CheckContext) -> list[Finding]:
         on = consumers.get(circuit.tag, [])
         if circuit.source or circuit.spd or _bucket(ctx.model, circuit, on) in _OWN_CHECK:
             continue
+        if any(getattr(e.kind, "value", None) == "panel" for e in on if hasattr(e, "kind")):
+            continue  # a feeder: `electrical.panel_feeder_load` grades what its panel serves
         va = _connected_va(ctx.model, circuit, on)
         if va <= 0:
             ungraded.append(circuit.tag)

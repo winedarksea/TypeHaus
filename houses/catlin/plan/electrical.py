@@ -986,13 +986,15 @@ SECOND_EQUIPMENT = []
 # ** EVSE HARDWIRED. ** The Grizzl-E Smart's manual documents removing the 14-50P for a
 # hardwired install. With no receptacle, NEC 210.8(A)(2) and 625.54 do not reach it and the
 # charger's own CCID protects: CKT-EV-1450 is a plain 50 A 2-pole (125% of 40 A). ED-G-EV-1450
-# keeps its tag (CD-B-GARAGE / CD-B-GAP-EV end on it) but is now the surface box behind the
-# unit, not an outlet.
+# is the surface box behind the unit, not an outlet, fed from ED-G-PANEL beside it.
 #
 # ** NEC 210.52(G)(1) / 210.11(C)(4). ** One counting receptacle per bay (door width 16' =
 # two): ED-G-RC-W on the bench (west bay), ED-G-RC-E on the south wall (east bay), both on
-# CKT-RC-GARAGE (120 V, 20 A, GFCI, receptacle outlets only: these two and the opener's).
+# CKT-RC-GARAGE (120 V, 20 A, GFCI, receptacle outlets only: these two).
 # The 6-20R is alone on the 2-pole CKT-GAR-240: no neutral, no 120 V device, not counted.
+#
+# ** ONE FEEDER, ONE SUBPANEL (owner, 2026-11-14). ** Every garage circuit, the EV's too, is
+# in ED-G-PANEL (plan/circuits_garage.py), fed by CKT-GAR-FEEDER up through the slab beside it.
 GARAGE_DEVICES = [
     # Bench group, W-G-W, 48" AFF over the 34" bench, mid-bay either side of the heater.
     ElectricalDevice(uid="RKGTAV787W", tag="ED-G-RC-W", kind=DeviceKind.RECEPTACLE,
@@ -1013,6 +1015,19 @@ GARAGE_DEVICES = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-G-S", face="left", distance_from_start=inch(167.375),
                          normal_gap=inch(0), rotation_offset=deg(180)))),
+    # The garage subpanel (Square D HOM1224M100PRB), centred at x=15'-0", 1'-0" west of the
+    # feeder's stub-up at x=16'-0" (CD-B-GAP-EV) so its 110.26(A) space can slide west clear of
+    # that stub and the V2H one. Its 100 A main is the 225.31 disconnect: inside, beside where
+    # the conductors enter. Neutral isolated; the EGC bar takes BC-G-GEC (250.32(B)(1)).
+    # On a 3/4" plywood backboard (BK-G-S-PANEL behind): the ICF stem's face stands 5" proud of
+    # this wall's gypsum, and the can's 4.5" would otherwise stop short of it.
+    # 48" AFF puts the top at 5'-6.9", under 240.24(A)'s 6'-7" handle cap.
+    ElectricalDevice(uid="3XQM2WFSBM", tag="ED-G-PANEL", kind=DeviceKind.PANEL,
+                     type_ref="ED-T-PANEL-GARAGE", circuit="CKT-GAR-FEEDER",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)), room="RM-GARAGE",
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-G-S", face="left", distance_from_start=inch(108),
+                         normal_gap=inch(0.75), rotation_offset=deg(180)))),
     # East bay, mid-bay of the stud bay at x 25'-0".
     ElectricalDevice(uid="D8QHKRB3HB", tag="ED-G-RC-E", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20", circuit="CKT-RC-GARAGE",
@@ -1225,8 +1240,10 @@ CONDUIT_TRUNKS = [
     # elevation only at its LAST vertex, so a run that has to be high indoors and low
     # outdoors cannot be one run. CD-B-GARAGE is now the indoor leg, held at the basement
     # ceiling and turning DOWN at the wall it leaves through; CD-B-GAP-EV below is the
-    # buried leg. Both name the same panel and the same receptacle, because that is what
-    # they are — the conduit schedule and the BOM read one feeder in two rows.
+    # buried leg. Both name the same panel and the same end, because that is what they are —
+    # the conduit schedule and the BOM read one feeder in two rows. Since 2026-11-14 that is
+    # literally the garage feeder CKT-GAR-FEEDER to ED-G-PANEL, the EV circuit having moved
+    # into the subpanel (plan/circuits_garage.py): the trench and sleeves are unchanged.
     #
     # THE INDOOR LEG'S TWO NUMBERS. -1'-1 3/4" is 1.9" under RM-B-STAIR's -1'-0 1/2"
     # ceiling, inside the 3" the check allows, and it is chosen against the two runs this
@@ -1245,7 +1262,7 @@ CONDUIT_TRUNKS = [
                # 27'-10" (under the kitchen drain, which has fallen far enough there), north
                # under CD-B-KITCHEN and the sauna vent, north between the cold trunk's dip and the supply plenum, and
                # east along the north wall under the kitchen drain and the cold riser.
-               # Since 2026-10-31 from ED-B-PANEL-2 (CKT-EV-1450's panel): up its top at x=9",
+               # Since 2026-10-31 from ED-B-PANEL-2 (the feeder's panel): up its top at x=9",
                # north on the wall strip to y=27'-10", then east as before. x=4'-6 1/2" since
                # 2026-11-12 (was 4'-11 1/2"), west of the cold trunk: DU-M-ERV-SUP-FEED takes
                # the lane between the trunk and the kitchen drain (erv_static_budget.md §10.25).
@@ -1256,10 +1273,10 @@ CONDUIT_TRUNKS = [
                start_elevation=inch(-31.4375), end_elevation=ft(-5), elevations=(inch(-31.4375), inch(-17.6), inch(-17.6), inch(-17.6), inch(-17.6), inch(-17.6), inch(-17.6), ft(-5)),
                # Low-profile LB at 4 (16'-0", 35'-3"), RM-B-STAIR ceiling: ~7/16" under the drain.
                pull_points=(5,),
-               circuits=("CKT-EV-1450",),
-               from_ref="ED-B-PANEL-2", to_ref="ED-G-EV-1450"),
+               circuits=("CKT-GAR-FEEDER",),
+               from_ref="ED-B-PANEL-2", to_ref="ED-G-PANEL"),
     # The buried leg: out through SP-B-N2-CD-GAR2, north under the house/garage gap, and up
-    # through the garage slab to ED-G-EV-1450. Same station the whole feeder always used.
+    # through the garage slab 1'-0" east of ED-G-PANEL. Same station the feeder always used.
     # ** -5'-0" AND SCHEDULE 80 PVC SINCE 2026-11-14 (TODO-nec Q9a/b). ** At -4'-0" it had 14.2"
     # under SL-WK-C (whose west edge misses the 6" the slab row needs) and 7.2" in the gravel
     # strip between the cladding and the walk (grade -3'-4"): Table 300.7(A) Column 3 wants 18"
@@ -1272,8 +1289,8 @@ CONDUIT_TRUNKS = [
                sealant="Polywater FST foam duct sealant (TDS: compatible with common cable jacket materials; complies with NEC raceway-seal articles; UL Classified R39313)",
                path=(pt(ft(16), ft(35, 5)), pt(ft(16), ft(44, 3.375)), pt(ft(16), ft(44, 3.375))),
                start_elevation=ft(-5), end_elevation=ft(5, 10), elevations=(ft(-5), ft(-5), ft(5, 10)),
-               circuits=("CKT-EV-1450",),
-               from_ref="ED-B-PANEL-2", to_ref="ED-G-EV-1450"),
+               circuits=("CKT-GAR-FEEDER",),
+               from_ref="ED-B-PANEL-2", to_ref="ED-G-PANEL"),
     # ** V2H SPARE, ROUTED (backup_power.md section 10). ** One empty 2" Sch 80 PVC, pull string
     # in, capped: the owner's "see how the tech develops". It leaves EQ-B-ESS-INV's case top
     # (-3'-5 7/16") and rises 1'-6" to the ceiling lane, then runs straight east on y=34'-9" at

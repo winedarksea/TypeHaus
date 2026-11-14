@@ -28,11 +28,10 @@ Conventions:
   The ESS grid port backfeeds at the bottom of the bus (51/53, the last row of the top-fed
   can), opposite the main (120% rule); ``code.NEC_705_12_interconnection`` grades it.
   ED-B-PANEL is feeder 1 of the Class 320 service and ED-B-PANEL-2 is feeder 2
-  (plan/mep_electrical.py). Slots 1/5/9/13/17 of ED-B-PANEL-2 carry CKT-SPA, CKT-SAUNA,
-  CKT-EV-1450, CKT-GAR-240 and CKT-WORKSHOP-240, respectively, and slot 2 its SPD. The
-  first four moved off ED-B-PANEL on 2026-09-12 — their old slots
-  9, 13, 17 and 21 there are spares now. ED-B-BACKUP-PANEL carries 2 two-pole + 5 one-pole
-  = 9 of its 12. Counts per panel come from `electrical.panel_spaces`, not from here.
+  (plan/mep_electrical.py). Slots 1/5/9/17 of ED-B-PANEL-2 carry CKT-SPA, CKT-SAUNA,
+  CKT-GAR-FEEDER (the garage subpanel ED-G-PANEL, plan/circuits_garage.py) and
+  CKT-WORKSHOP-240, respectively, and slot 2 its SPD. ED-B-BACKUP-PANEL carries 2 two-pole
+  + 5 one-pole = 9 of its 12. Counts per panel come from `electrical.panel_spaces`, not from here.
   ``electrical.panel_spaces`` reconciles both against
   ``test_catlin_panel_spaces_fits_the_54_space_enclosure``. Count from the loaded plan,
   not by hand — a hand count has been wrong here before.
@@ -42,6 +41,7 @@ from __future__ import annotations
 
 from plan.circuits_240v import DEDICATED_240V_CIRCUITS
 from plan.circuits_backup import BACKUP_CIRCUITS
+from plan.circuits_garage import GARAGE_CIRCUITS
 from typehaus import Circuit
 
 _PANEL = "ED-B-PANEL"
@@ -164,11 +164,7 @@ CIRCUITS = (
                         "load at 15.6 A and 210.23(B)(2) forbids sharing. Feeds BOTH the "
                         "cavity J-box and ED-M-FIRE-RC, so a hardwire or a cord-and-plug "
                         "appliance can be set in the pocket without a rewire"),
-    Circuit(uid="CKT035AAAA", tag="CKT-GAR-HEAT", slot=37, panel_ref=_PANEL, breaker_amps=20, poles=1,
-            conductor_awg="12", egc_awg="12",
-            load_va=1500, gfci=True,
-            description="Garage DR-238 carbon radiant heater, 1500 W / 120 V (EQ-G-HEATER), dedicated GFCI-protected ED-G-HEATER-RC; retain factory cord and plug"),
-
+    # CKT-GAR-HEAT, CKT-LT-GARAGE and CKT-RC-GARAGE: plan/circuits_garage.py (2026-11-14).
     # RM-S-PLANT's fan heater (2026-11-12): 12.5 A does not belong on CKT-RC-SECOND.
     Circuit(tag="CKT-PLANT-HEAT", slot=41, panel_ref=_PANEL, breaker_amps=20, poles=1,
             conductor_awg="12", egc_awg="12",
@@ -178,6 +174,7 @@ CIRCUITS = (
                         "Matter relay from Home Assistant"),
 
     *BACKUP_CIRCUITS,
+    *GARAGE_CIRCUITS,
 
     # --- general-use 120V ------------------------------------------------------------
     # ``afci=True`` on every circuit below (2026-08-01, code.E3902_16_afci): each reaches
@@ -219,20 +216,13 @@ CIRCUITS = (
     # No `load_va`: the panel schedule sums the fixtures on the circuit, and an authored value
     # would freeze them against a number nobody re-adds when a can moves.
     # ** 20 A SINCE 2026-10-28 (12 AWG). ** The garage's lights left for CKT-LT-GARAGE on
-    # 2026-10-31; only the opener's outlet (ED-G-GDO-GFCI / ED-G-GDO-RC) is still out there.
+    # 2026-10-31 and its opener outlet on 2026-11-14 (the garage subpanel).
     # The kitchen cans and the pantry PSU joined from CKT-LT-BACKUP on 2026-11-02:
     # ~1,277 VA of 1,920 continuous.
     Circuit(uid="CKT024AAAA", tag="CKT-LT-MAIN", slot=38, panel_ref=_PANEL, breaker_amps=20, poles=1,
             conductor_awg="12", egc_awg="12",
             afci=True,
-            description="General lighting — main storey incl. kitchen, porch, + the garage opener outlet"),
-    # The garage's lighting (2026-10-31): five shop lights, the door-pair sconces and the six
-    # Class 2 drivers for the RGBW eave and gable tape (ED-T-LT-PSU-96-WE, summed at their
-    # 96 VA rating). Its own breaker rather than CKT-RC-GARAGE so a tool tripping a garage GFCI
-    # does not take the lights with it; no AFCI (a garage is not on 210.12's list). Spare slot.
-    Circuit(uid="GWECBY2WVZ", tag="CKT-LT-GARAGE", slot=24, panel_ref=_PANEL, breaker_amps=15,
-            conductor_awg="14", egc_awg="14",
-            poles=1, description="Garage lighting — shop lights, door sconces, eave + gable linear drivers"),
+            description="General lighting — main storey incl. kitchen and porch"),
     Circuit(uid="CKT025AAAA", tag="CKT-LT-UPPER", slot=43, panel_ref=_PANEL, breaker_amps=15, poles=1,
             conductor_awg="14", egc_awg="14",
             afci=True, description="General lighting — second + attic"),
@@ -261,11 +251,6 @@ CIRCUITS = (
             conductor_awg="14", egc_awg="14",
             afci=True, load_va=1000,
             description="General receptacles — attic rooms + radon fan box, MN 1303.2402 subp. 6"),
-    Circuit(uid="CKT030AAAA", tag="CKT-RC-GARAGE", slot=48, panel_ref=_PANEL, breaker_amps=20, poles=1,
-            conductor_awg="12", egc_awg="12",
-            gfci=True, load_va=1500, description="Garage general receptacles"),
-    # ^ The 210.11(C)(4) garage circuit: 120 V, 20 A, "no other outlets" than the two bay
-    # receptacles ED-G-RC-W/-E. The opener's outlet is on CKT-LT-MAIN behind ED-G-GDO-GFCI.
     # ** EVERY BATHROOM VANITY RECEPTACLE, ONE CIRCUIT (owner, 2026-11-07). ** NEC
     # 210.11(C)(3): a 20 A circuit for bathroom receptacles feeding no other outlets
     # (210.23(B) Ex.), which may serve several bathrooms; `code.NEC_210_11_C3_bathroom_circuit`
