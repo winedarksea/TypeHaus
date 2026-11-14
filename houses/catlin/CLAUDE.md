@@ -111,6 +111,16 @@
 > in `notes/interior_door_schedule.md` (types in `plan/interior_door_types.py`). Halifax Square
 > US15 house-wide; hardware bills by `DoorType.function` in `[allowances]`.
 
+> **Exterior door approaches rest; nothing cantilevers (owner, 2026-11-13):** every exterior
+> door's `ExteriorDoorInstallation.approach_bearing` rests its approach on the truss wall's girt
+> sill course and on the landing (`resolve/exterior_door_bridge.py`). D-S-BALCONY is a
+> ZAI5625FN + full XXXXW extender, its nose 1" short of FS-SG-BALCONY's continuous north sister
+> (the planks carry a tab to it). The main doors' plates rest on a UHMW pad over the landing's
+> member. A door's buck sill and girt sill course sit flush with its rough sill. D-B-SUNKEN's
+> slot drains down W-SG-BRKBM's isolation joint (a drainage board onto FB-SG-BRKBM's stone).
+> The girt course's block screws are an open engineered connection (TODO). The band header's
+> stacked jambs cross FS-S-EAST on squash plies (`band_header/D-B-SUNKEN`, note §5).
+
 > **Exterior door hardening, 2026-10-25:** `plan/door_types.py` owns hardware, doubled
 > jamb packs, local ccSPF and entry field finish. `notes/exterior_door_hardening.md`
 > records installation, the W-M-N3 fit and open dealer items. A-601 prints the HW sets.

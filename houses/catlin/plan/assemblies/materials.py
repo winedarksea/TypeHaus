@@ -30,7 +30,7 @@ MATERIALS = [
     Material(tag="impermeable-door-flashing", name="Impermeable door pan/apron membrane",
              color="#444444", source="opening_flashing_spec.md hybrid; exact PVC-pan bond remains unconfirmed."),
     Material(tag="pvc-door-water-sheet", name="PVC sheet membrane under D-B-SUNKEN's tread",
-             color="#dddddd", source="Owner 2026-11-03: a PVC sheet lapped under the SureSill pan's front lip, over the foam bed and turned onto W-SG-BRKBM's top; product and laps need an installed section."),
+             color="#dddddd", source="Owner 2026-11-03/13: a PVC sheet run back under the SureSill pan (the pan laps over it), over the foam bed, stopping at the tread's outer face over the drain slot; product not selected."),
     *ALL_MATERIALS,
     Material(tag="pax-frame-white", name="White PAX frame and shelf panels",
              color="#f0f0ed",

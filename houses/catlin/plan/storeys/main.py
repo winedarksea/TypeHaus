@@ -12,6 +12,7 @@
 from library.doors import DT_INT_ACCESS24, DT_INT_CLOSET24
 from ..doorway_transitions import BEDROOM_ZBAR, D_M_BED2_SADDLE
 from typehaus import (
+    ApproachBearing,
     Alarm,
     AlarmKind,
     Beam,
@@ -1100,6 +1101,10 @@ OPENINGS = [
          egress=True,
          position=from_node("N-M-N2", ft(0, 6)),
          exterior_installation=ExteriorDoorInstallation(interior_material_ref="pine-fj-base",
+             # No cantilever (owner, 2026-11-13): the plate rests on its landing over
+             # the nearest member, on a slip pad; the strips stop at the girt sill course.
+             approach_bearing=ApproachBearing(landing_ref="FS-BW-FLOOR", landing="slip_pad",
+                 slip_pad_material_ref="uhmw-slip-pad"),
              exterior_wrap_material_ref="metal-dark-exterior",
              sill_design=ExteriorDoorSillDesign(
                  source_url="https://outdoorsandsecurity.widen.net/content/6ybzlyty7g/original/2026-Arch-Comp-BOOK---COMP-7-Sills.pdf",
@@ -1117,6 +1122,10 @@ OPENINGS = [
          # 63" glazed pair: a 2-2x8 on edge, not the derived flat nailer (owner, #116).
          header_spec="2-2x8",
          exterior_installation=ExteriorDoorInstallation(interior_material_ref="pine-fj-base",
+             # No cantilever (owner, 2026-11-13): the plate rests on its landing over
+             # the nearest member, on a slip pad; the strips stop at the girt sill course.
+             approach_bearing=ApproachBearing(landing_ref="FS-SG-PORCH", landing="slip_pad",
+                 slip_pad_material_ref="uhmw-slip-pad"),
              exterior_wrap_material_ref="metal-dark-exterior",
              sill_design=ExteriorDoorSillDesign(
                  source_url="https://marketing.poweredbyendura.com/hubfs/Sills_TechnicalDocuments/Z-Series%20Sills%20-%20Line%20Drawings.pdf",

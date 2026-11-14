@@ -129,8 +129,11 @@ class BandFrame:
         p_a, p_b = self.point(lo, centre), self.point(hi, centre)
         out: list[FramedMember] = []
         # Head and sill line the RO from *inside* it, so the flashing above and the blocking
-        # below land on the buck's back rather than clashing through it.
-        for name, z0 in (("head", z_head - thickness), ("sill", z_sill)):
+        # below land on the buck's back rather than clashing through it. A DOOR's sill board
+        # lies flush with the rough sill instead: its pan runs level out over it, and a buck
+        # standing 3/8" proud would dam the pan's front (``door_sill_drop``).
+        for name, z0 in (("head", z_head - thickness),
+                         ("sill", z_sill - door_sill_drop(opening, thickness))):
             out.append(FramedMember(
                 self.wall.uid, f"buck-{name}-{index:03d}", BUCK_CATEGORY, profile,
                 p_a, p_b, z0, z0 + thickness, hi - lo, material="struct-1-plywood"))
@@ -144,6 +147,12 @@ class BandFrame:
                     point, point, z0, z1, z1 - z0,
                     orient=self.across, material="struct-1-plywood"))
         return out
+
+
+def door_sill_drop(opening: ResolvedOpening, thickness: float) -> float:
+    """How far a door's buck sill and girt sill course sit below a window's: the buck's
+    own thickness, so its top is the rough sill the door and its pan stand on."""
+    return thickness if opening.kind == "door" else 0.0
 
 
 def outward_across(wall: ResolvedWall, across: Vec) -> Vec | None:

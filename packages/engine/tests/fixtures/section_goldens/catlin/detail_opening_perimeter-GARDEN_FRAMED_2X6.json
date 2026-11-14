@@ -786,62 +786,6 @@
       "node": "polyline",
       "points": [
         [
-          -6.000000000000001,
-          -120.1875
-        ],
-        [
-          -4.0,
-          -120.1875
-        ],
-        [
-          -4.0,
-          -104.9375
-        ],
-        [
-          -6.000000000000001,
-          -104.9375
-        ]
-      ],
-      "layer": "A-WALL-INSU",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "SGW108AAAA",
-      "tag": "W-SG-BRKBM/xps-break"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          -6.000000000000001,
-          -120.1875
-        ],
-        [
-          -4.0,
-          -120.1875
-        ],
-        [
-          -4.0,
-          -104.9375
-        ],
-        [
-          -6.000000000000001,
-          -104.9375
-        ]
-      ],
-      "pattern": "none",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "xps"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           0.5,
           -13.437499999999998
         ],
@@ -2146,7 +2090,7 @@
       },
       "at": [
         -14.90251968503937,
-        -117.0583333333334
+        -113.06250000000004
       ],
       "to": [
         -1.06,
@@ -2171,7 +2115,7 @@
       },
       "at": [
         -14.90251968503937,
-        -121.05416666666675
+        -117.0583333333334
       ],
       "to": [
         -0.03,
@@ -2196,7 +2140,7 @@
       },
       "at": [
         -14.90251968503937,
-        -125.0500000000001
+        -121.05416666666675
       ],
       "to": [
         3.0000000000000004,
@@ -2428,31 +2372,6 @@
         -105.07083333333334
       ],
       "text": "concrete 12\"",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          -5.0,
-          -113.06250000000004
-        ],
-        "name": ""
-      },
-      "at": [
-        -14.90251968503937,
-        -113.06250000000004
-      ],
-      "to": [
-        -5.0,
-        -113.06250000000004
-      ],
-      "text": "xps-break 2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -3642,6 +3561,118 @@
     },
     {
       "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -0.021338582677165388,
+          -103.93749999999999
+        ],
+        [
+          -0.021338582677165388,
+          -103.91749999999999
+        ],
+        [
+          1.9786614173228345,
+          -103.91749999999999
+        ],
+        [
+          1.9786614173228345,
+          -103.93749999999999
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "metal-dark"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -0.021338582677165388,
+          -103.93749999999999
+        ],
+        [
+          -0.021338582677165388,
+          -103.91749999999999
+        ],
+        [
+          1.9786614173228345,
+          -103.91749999999999
+        ],
+        [
+          1.9786614173228345,
+          -103.93749999999999
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": "detail-component:opening-unit-installation"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -6.000000000000001,
+          -120.1875
+        ],
+        [
+          -6.000000000000001,
+          -104.91398884514435
+        ],
+        [
+          -4.0,
+          -104.91398884514435
+        ],
+        [
+          -4.0,
+          -120.1875
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "metal-dark"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -6.000000000000001,
+          -120.1875
+        ],
+        [
+          -6.000000000000001,
+          -104.91398884514435
+        ],
+        [
+          -4.0,
+          -104.91398884514435
+        ],
+        [
+          -4.0,
+          -120.1875
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": "detail-component:opening-unit-installation"
+    },
+    {
+      "space": "model",
       "node": "dimension",
       "kind": "linear",
       "ends": [
@@ -3756,7 +3787,7 @@
       "node": "text",
       "anchor": [
         -13.90251968503937,
-        -135.65403543307087
+        -131.65403543307087
       ],
       "content": "THRESHOLD CREST 7 3/8\" ABOVE LANDING, 6 5/8\" ABOVE FIN. FLOOR",
       "height": 3.0,
@@ -3797,7 +3828,7 @@
       "node": "text",
       "anchor": [
         -13.90251968503937,
-        -129.65403543307087
+        -125.65403543307086
       ],
       "content": "TR-CATLIN-GARDEN-FRAMED-OPENING  ·  window-head-jamb-sill",
       "height": 3.0,

@@ -2475,13 +2475,26 @@ _BALCONY_END_POST_HOUSE_CLEARANCE_IN = 3.9375
 # 1 1/2" past the plank, so the end post's rear screws hold 4D (1 1/4") to the rim's cut end;
 # the movement gap to the cladding is then 1 3/4" (was 2 3/4").
 _BALCONY_REAR_RIM_OVERSAIL_IN = 1.5
-# The rear runs break beyond D-S-BALCONY's wrapped 3 1/2" casing: the door's own threshold
-# outriggers cross the gap there.
+# The rear FLASHING runs break beyond D-S-BALCONY's wrapped 3 1/2" casing, where the door's
+# own flashing ends take over. Its outriggers are gone (2026-11-13: its XXXXW extender rests
+# on the house's girt sill course), so the doubled north joist now runs through the door
+# (`_REAR_DOOR_SPAN_FT`) and the planks reach its face there (`_DECK_PLANK_OUTLINE`).
 _REAR_DOOR_RO_W_FT = 18.0 + 8.34375 / 12.0
 _REAR_DOOR_RO_E_FT = 23.0 + 11.65625 / 12.0
 _REAR_CASING_CLEARANCE_IN = 3.5 + 0.5
 _REAR_BREAKS_FT = ((_deck_x_w, _REAR_DOOR_RO_W_FT - _REAR_CASING_CLEARANCE_IN / 12.0),
                    (_REAR_DOOR_RO_E_FT + _REAR_CASING_CLEARANCE_IN / 12.0, _deck_x_e))
+_REAR_DOOR_SPAN_FT = (_REAR_BREAKS_FT[0][1], _REAR_BREAKS_FT[1][0])
+# The plank sheet with a tab across the door out to the north sister's face, so the plank
+# ends there bear on it and the extender's nose sees one open gap.
+_DECK_PLANK_OUTLINE = (
+    *_DECK_OUTLINE[:3],
+    pt(ft(_REAR_DOOR_SPAN_FT[1]), ft(_y_in_n)),
+    pt(ft(_REAR_DOOR_SPAN_FT[1]), ft(_y_in_n + _BALCONY_REAR_RIM_OVERSAIL_IN / 12.0)),
+    pt(ft(_REAR_DOOR_SPAN_FT[0]), ft(_y_in_n + _BALCONY_REAR_RIM_OVERSAIL_IN / 12.0)),
+    pt(ft(_REAR_DOOR_SPAN_FT[0]), ft(_y_in_n)),
+    _DECK_OUTLINE[3],
+)
 _BALCONY_HOUSE_GAP_IN = -SPEC.house_ext_layers_in - _y_in_n*12
 _BALCONY_END_POST_INSET = inch(_BALCONY_END_POST_HOUSE_CLEARANCE_IN
     + RAILING_EXT_ALUMINUM_FASCIA.post_width.inches/2 - _BALCONY_HOUSE_GAP_IN)
@@ -2694,14 +2707,15 @@ BALCONY_JOISTS = FloorSystem(
                    "SD04964 5/16\" x 6\" screws cross the edge joist into these two sisters")
           for _gx in _BALCONY_FRONT_POSTS_FT),
         # The rear end posts' upper screws land in the rim's 1 1/2" oversail, north of the
-        # last joist: one ply outboard of it, flush with the rim ends, under each rear base
-        # flashing run and stopping where it does, clear of D-S-BALCONY's outriggers.
-        *(JoistReinforcement(
-            at=pt(ft((_x0 + _x1) / 2), ft(_bal_y1 + 1.0 / 12.0)), plies=2,
-            blocking=False, extent=(ft(_x0), ft(_x1)),
+        # last joist: one ply outboard of it, flush with the rim ends, under both rear base
+        # flashing runs and, since 2026-11-13, through D-S-BALCONY too, where the planks'
+        # tab ends bear on it (the door's outriggers that it once stopped short of are gone).
+        JoistReinforcement(
+            at=pt(ft((_deck_x_w + _deck_x_e) / 2), ft(_bal_y1 + 1.0 / 12.0)), plies=2,
+            blocking=False, extent=(ft(_deck_x_w), ft(_deck_x_e)),
             source="north edge joist doubled into the rim oversail — backing for RL-SG-BALCONY's "
-                   "end-post screws and the bed for TR-SG-BASE-FLASH")
-          for _x0, _x1 in _REAR_BREAKS_FT),
+                   "end-post screws, the bed for TR-SG-BASE-FLASH and the plank ends at "
+                   "D-S-BALCONY"),
         *(JoistReinforcement(
             at=pt(ft(_gx), ft(_gy)), plies=1, blocking=True,
             source="screw backing behind an RL-SG-BALCONY flank fascia bracket — one of two "
@@ -2714,7 +2728,7 @@ BALCONY_JOISTS = FloorSystem(
                    "the bay is open inside<->outside above a sealed curtain")
           for _ex in _ENCLOSURE_TRACK_X for _ey in _ENCLOSURE_BLOCK_LINES)),
     outline=_DECK_JOIST_OUTLINE,
-    subfloor_outline=_DECK_OUTLINE,
+    subfloor_outline=_DECK_PLANK_OUTLINE,
     subfloor=DeckLayer(material_ref="aluminum-deck",
                        thickness=inch(SPEC.balcony_deck_thickness_in)),
     # Butyl here is doing the SECOND job in ``FloorSystem.top_protection``'s docstring more
@@ -3189,12 +3203,15 @@ SEQUENCE_NOTES = [
 # SGSP01AAAA, PR-SG-ARCH-OVERFLOW SGPR01AAAA. **
 # D-B-SUNKEN's tread bed through W-SG-BRKBM's board (2026-11-04): the 2" XPS is cut down
 # under the Trex tread and the 40 psi course, the twin of AO-B-SUNKEN-TREAD-BED in the curb's
-# tail (plan/storeys/basement.py). Same width and floor (z -104 15/16"); its near jamb is
-# the door's, x 224 11/32" (D-B-SUNKEN centred at x 256"), 116 11/32" from N-SG-BMW.
+# tail (plan/storeys/basement.py). Its near jamb is the door's, x 224 11/32" (D-B-SUNKEN
+# centred at x 256"), 116 11/32" from N-SG-BMW.
+# ** And down the whole joint since 2026-11-13 (owner): ** the tread's drain slot lets go into
+# this cut, which the installation refills below the bed course with an XPS drainage board,
+# foot on FB-SG-BRKBM's stone (`plan/french_door_installations.py`, `joint-drain`).
 BRKBM_OPENINGS = [
     RoughOpening(uid="F8CP1XGJ8Q", tag="AO-SG-BRKBM-TREAD-BED", host="W-SG-BRKBM",
                  position=from_node("N-SG-BMW", inch(116.34375)),
-                 width=inch(63.3125), height=inch(2.5), sill_height=inch(15.25),
+                 width=inch(63.3125), height=inch(17.75), sill_height=inch(0),
                  depth=inch(VENEER_BEAM_BREAK_IN), depth_from="exterior",
                  framing_required=False),
 ]

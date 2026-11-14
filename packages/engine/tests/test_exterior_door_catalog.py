@@ -103,12 +103,13 @@ def test_catalog_installation_keeps_evidence_separate(catlin_model_ro, tag):
     )
     names = {s.name for s in placement.sections}
     assert "catalog-sill-outline" in names
-    assert not any(n.startswith("catalog-sill-extender") for n in names)
+    # The study's XXXXW extender is the approach (2026-11-13); the sunken door has none.
+    assert any(n.startswith("catalog-sill-extender") for n in names) == (tag == "D-S-BALCONY")
     if tag == "D-B-SUNKEN":
         from typehaus.takeoff.doors import door_installation_rows
 
         assert not [row for row in door_installation_rows(model)
-                    if row["kind"] == "exterior door sill accessory"]
+                    if row["kind"] == "exterior door sill accessory" and tag in row["tags"]]
         from typehaus.takeoff.openings import opening_takeoff
 
         schedule_rows = opening_takeoff(model)
@@ -120,10 +121,11 @@ def test_catalog_installation_keeps_evidence_separate(catlin_model_ro, tag):
     assert "approach-walking-plate" not in names
     assert all(Polygon(s.polygon_m).is_valid for s in placement.sections)
     report = placement.installation_report
-    # The sunken-garden door's tread lies on its foam (owner, 2026-11-03): no root connection to document.
-    assert report["support"]["connection_status"] == (
-        "NOT_APPLICABLE" if tag == "D-B-SUNKEN" else "UNKNOWN")
-    assert report["support"]["member_status"] == "PASS"
+    # The sunken-garden door's tread lies on its foam (owner, 2026-11-03) and the study's
+    # extender on the girt course (2026-11-13): neither has a root connection to document.
+    assert report["support"]["connection_status"] == "NOT_APPLICABLE"
+    assert report["support"]["member_status"] == ("PASS" if tag == "D-B-SUNKEN"
+                                                  else "NOT_APPLICABLE")
     assert report["approach_slope"] == pytest.approx(1 / 48)
     if tag == "D-S-BALCONY":
         assert report["drainage_clearance_in"] > 0
@@ -239,7 +241,7 @@ def test_receiver_and_movement_conflicts_are_measured(catlin_model_ro):
     wall = model.wall(opening.host_wall)
     original = opening.doorway.exterior_placement
     catalog = original.specification.catalog_installation.model_copy(
-        update={"receiver_depth": inch(2), "movement_horizontal": inch(1)}
+        update={"receiver_depth": inch(2), "movement_horizontal": inch(1.25)}
     )
     specification = original.specification.model_copy(update={"catalog_installation": catalog})
     assembly = replace(

@@ -1,5 +1,27 @@
 # Exterior doors: structural-wall mounting
 
+**Approaches rest; nothing cantilevers (owner, 2026-11-13).** Every exterior door's approach
+now rests at both ends (`ExteriorDoorInstallation.approach_bearing`,
+`resolve/exterior_door_bridge.py`):
+
+- **D-M-PORCH, D-M-ENTRY, D-G-SERVICE** keep their schematic sills. Their draining strips stop
+  at the truss wall's girt sill course (the garage wall has none, so at the frame), and the
+  walking plate runs on to rest on a UHMW slip pad over the landing's nearest member. The deck
+  is cut back only clear of the pan's drip: where what's left still covers the member by 1",
+  the pad sits on the deck (D-M-PORCH on FS-SG-PORCH's last joist; D-M-ENTRY on 1.46" of deck
+  over FS-BW-FLOOR's rim, which runs under ~80% of the plate). Otherwise the pad sits on the
+  member itself with the deck cut back over it (D-G-SERVICE, 1 1/2" on the rim, pad 1.43").
+  The cuts rip planks that run along the wall, so there are no board ends to block.
+- **D-S-BALCONY**: see `french_door_catalog_installation.md` §2 (XXXXW extender on the girt
+  course, with an open gap to the court).
+- A door's 3/8" buck sill and girt sill course now sit flush with its rough sill, so the pan
+  never steps up outboard of the sheathing.
+
+The girt course's block screws carry these approaches in shear with no published lateral
+value: an engineered connection (TODO). The plates' published load awaits each supplier's
+section. Earlier paragraphs below describe the cantilevered strips and the cutback this
+replaces.
+
 **Current study/sunken-garden coordination (2026-10-26):**
 [french_door_catalog_installation.md](french_door_catalog_installation.md) supersedes
 D-S-BALCONY's schematic steel-wrapped/aluminum-plate installation below. Those two doors

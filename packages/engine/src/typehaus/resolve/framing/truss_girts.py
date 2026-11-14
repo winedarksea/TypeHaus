@@ -101,6 +101,7 @@ from typehaus.resolve.framing.truss_common import (
     LADDER_CATEGORY,
     BandFrame,
     Vec,
+    door_sill_drop,
     mean_offset,
     outward_across,
 )
@@ -648,7 +649,8 @@ class GirtFrame(BandFrame):
         z_head = z_sill + opening.height_m
         # The three elevations an opening adds to its own frame: the sill course under the
         # RO, the head course over it, and — for the posts — every field course between.
-        sill_z, head_z = z_sill - self.stock_face, z_head
+        sill_z = z_sill - self.stock_face - door_sill_drop(opening, self.buck_thickness)
+        head_z = z_head
         out: list[FramedMember] = []
         for tier in self.tiers:
             band = self.band_names[tier]

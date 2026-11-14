@@ -85,7 +85,11 @@ def test_catlin_porch_north_line_did_not_move(catlin_model):
     """
     def north(tag):
         floor = catlin_model.plan.by_tag(tag)
-        return max(p.xy_m[1] for p in (floor.subfloor_outline or floor.outline))
+        ring = [p.xy_m for p in (floor.subfloor_outline or floor.outline)]
+        # The line is the edge's ends; the balcony's planks carry a tab out to its north
+        # sister across D-S-BALCONY alone (2026-11-13).
+        xs = (min(x for x, _ in ring), max(x for x, _ in ring))
+        return max(y for x, y in ring if x in xs)
 
     # The balcony still reads the line; the porch deck follows W-B-BRICK's south face, 3/8"
     # north of it, since the brick moved onto W-SG-BRKBM's new face (2026-11-04).

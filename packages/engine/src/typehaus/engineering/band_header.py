@@ -15,13 +15,16 @@ record goes INCOMPLETE naming it; on a seat it bypasses the span and is listed, 
 Fb 2,600 psi at 12" x (12/d)^0.136, Fv 285 psi, E 2.0e6 psi, 100% duration (floor live) — and
 its p.5 deflection equation with the shear term, at IRC Table R301.7's L/360 live.
 
-**Not graded here:** bearing (Fc_perp) under the stacked jamb loads at the seats, the ply
-connection, and lateral support (the subfloor sheathes the top edge). Oracle:
-``houses/catlin/notes/sunken_door_band_header.md``.
+**The seats (BASIS_VERSION 2):** the stacked jambs are taken down (``jamb_takedown``) and
+graded in bearing at every interface they cross, squash blocks found where they cross a TJI
+band; the ply fastening and the filler are published reads (``band_header_seats``).
+**Not graded here:** lateral support (the subfloor sheathes the top edge). Oracle:
+``houses/catlin/notes/sunken_door_band_header.md`` §3 and §5.
 """
 
 from __future__ import annotations
 
+from typehaus.engineering.band_header_seats import connection_states, seat_states
 from typehaus.engineering.item import (
     EngineeringRecord,
     LimitState,
@@ -36,9 +39,11 @@ from typehaus.resolve.band_headers import _frame, band_header, band_header_doors
 from typehaus.resolve.framing.profiles import cross_section
 
 KIND = "band_header"
-BASIS_VERSION = "1"
+BASIS_VERSION = "2"
 BASIS = ("AWC NDS 2018 §3.3-3.4 on Weyerhaeuser TJ-9000 (July 2026) p.5 Microllam LVL 2.0E "
-         "design stresses; IRC R301.5 floor loads, Table R301.7 L/360")
+         "design stresses; IRC R301.5 floor loads, Table R301.7 L/360; the stacked jambs' "
+         "takedown in bearing (NDS §3.10.2); TJ-9000 p.30 ply fastening; TJ-4000 p.27 CS, "
+         "p.28 filler")
 _SOURCE = "Weyerhaeuser TJ-9000 Specifier's Guide (July 2026)"
 
 _IN = 0.0254
@@ -152,11 +157,22 @@ def _one(ctx: EngineeringContext, door) -> EngineeringRecord:
                    citation=(f"IRC Table R301.7 L/{_DEFLECTION_DENOMINATOR:.0f} live; "
                              f"{_SOURCE} p.5 bending + shear deflection, E {_E_PSI:,.0f}")),
     )
-    governing = max(states, key=lambda state: state.ratio)
+    (ux, uy), along, across = _frame(wall.axis)
+    x0, y0 = wall.axis[0]
+    seat_ls, seat_inputs, missing, seat_notes = seat_states(
+        ctx, header, wall, floor, seated, shear, along, lambda s: (x0 + ux * s, y0 + uy * s))
+    connection_ls, connection_missing = connection_states(ctx, header, floor, across)
+    missing += connection_missing
+    if missing:
+        return _incomplete(door.tag, tags + (header.wall,), "; ".join(missing),
+                           f"{door.tag}: " + "; ".join(missing))
+    states = (*states, *seat_ls, *connection_ls)
+    governing = max((st for st in states if not st.is_detailing), key=lambda st: st.ratio)
+    over = any(st.ratio > 1.0 for st in states)
     return EngineeringRecord(
         item_id=item_id(KIND, door.tag), kind=KIND, key=door.tag,
         basis_version=BASIS_VERSION, basis=BASIS,
-        status=Status.OK if governing.ratio <= 1.0 else Status.OVER,
+        status=Status.OVER if over else Status.OK,
         summary=(f"{door.tag}: {plies}-ply {width_in:g}x{depth_in:g} LVL in {header.floor}'s "
                  f"band over {clear_ft:.2f} ft clear ({span_ft:.2f} ft seat to seat), "
                  f"{trib_ft * 12:.1f}\" of floor — d/c {governing.ratio:.3f} on "
@@ -176,15 +192,16 @@ def _one(ctx: EngineeringContext, door) -> EngineeringRecord:
             Quantity("fv", _FV_PSI, "psi", 1.0),
             Quantity("e", _E_PSI, "psi", 1000.0),
             Quantity("loads_inside_span", 0.0, "members", 1.0),
+            *seat_inputs,
         ),
         limit_states=states,
-        notes=(("framing seated on the packs, bypassing the span: " + ", ".join(seated))
-               if seated else "no framing above stands on the seats",),
+        notes=((("framing seated on the packs, bypassing the span: " + ", ".join(seated))
+                if seated else "no framing above stands on the seats"), *seat_notes),
         element_tags=tags + (header.wall,),
     )
 
 
-oracled_by(KIND, Oracle(note="sunken_door_band_header.md", section="§3",
+oracled_by(KIND, Oracle(note="sunken_door_band_header.md", section="§3, §5",
                         test="tests/test_band_header.py"))
 
 

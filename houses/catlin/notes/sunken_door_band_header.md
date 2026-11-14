@@ -51,15 +51,79 @@ not by this span.
 
 ## 4. Not graded here
 
-- **Bearing under the stacked jambs** (Fc⊥: LVL 750 psi, the SPF plates under it ~425 psi):
-  the `D-S-BALCONY`/`D-M-PORCH` jamb loads reach the seats through the plies. No load takedown
-  exists in this engine; the same stack bore on the old I-joist edge and plates.
-- The two-ply nailing, the plies' connection to the edge I-joist, and dry-use service (the
-  band is inside the envelope; TJ-9000 p.5: Microllam is for dry use).
+- Dry-use service (the band is inside the envelope; TJ-9000 p.5: Microllam is for dry use).
 - Lateral support: the subfloor sheathes the top edge.
+- The squash plies and filler are not billed as separate lines (the plies bill as LVL with
+  the band's own).
+
+## 5. The stacked jambs, by hand (2026-11-13; graded since BASIS_VERSION 2)
+
+**Takedown, per seat.** One tributary length along the wall line, the same on every storey
+the stack climbs: half the RO plus the seat (the seated pack is 4 x 1 1/2" = 6", and the
+openings above share this RO and centre):
+
+    L = 63.3125 / 2 + 6.0 = 37.65625" = 3.13802 ft
+
+Wall dead load is a stated **15 psf** on the framed height at the pack's outer face (the
+truss wall: 1/2" gypsum 2.2, 2x6 at 16" 1.6, 1/2" CDX 1.5, 4" ccSPF at 2 pcf 0.7, blocks and
+girts 1.5, 24 ga panel 1.3, batts 0.4, trim/fasteners 0.8 = 10.0 psf, carried at 15). Glass
+in the openings is lighter and is not deducted. Floors at 40 + 10 psf over half the way to
+the next joist line (FS-S-EAST and FS-ATTIC both carry an extra line at y = 9 1/2", so their
+edge strips are **4.75" = 0.39583 ft**). The gable carries half of RF-HOUSE's 24" rafter
+spacing at 15 dead + 35 snow (`loads.ROOF_TOTAL_LOAD_PSF`, Pg 50 psf).
+
+West seat (the gable is tallest there; W-A-S3 frames 362.355 - 240.75 = 121.605" at x =
+218.34"):
+
+| Term | Working | lb |
+|---|---|---|
+| W-A-S3 gable | 15 x (121.605 / 12) x 3.13802 | 477.00 |
+| RF-HOUSE gable strip | 50 x 1.0 x 3.13802 | 156.90 |
+| FS-ATTIC edge strip | 50 x 0.39583 x 3.13802 | 62.11 |
+| W-S-S2 | 15 x (119.25 / 12) x 3.13802 | 467.76 |
+| FS-S-EAST edge strip | 50 x 0.39583 x 3.13802 | 62.11 |
+| W-M-S2 | 15 x (119.25 / 12) x 3.13802 | 467.76 |
+| **On the seat** | | **1,693.64** |
+| of which above FS-S-EAST | the first four | 1,163.77 |
+
+The east seat's gable frames 83.95": 1,545.9 lb on that seat. The west governs.
+
+**Bearing, NDS §3.10.2** (no C_D; C_b taken as 1.0). Sawn plates are SPF at Fc-perp
+**425 psi**, dry (TJ-9000's own bearing tables use 425 for sawn plates); Microllam is 750 psi
+(TJ-9000 p.5, not increased for duration). A plate on an LVL is governed by the plate.
+
+| Interface | Demand | Area | Stress | Capacity | d/c |
+|---|---|---|---|---|---|
+| D-M-PORCH pack on W-M-S2's plate | 1,693.64 | 6.0 x 5.5 = 33.0 | 51.32 | 425 | 0.121 |
+| W-M-S2's plate on the two plies | 1,693.64 | 6.0 x 3.5 = 21.0 | 80.65 | 425 | 0.190 |
+| plies on W-B-S3-FR's plates | 1,693.64 + 131.5 = 1,825.14 | 21.0 | 86.91 | 425 | **0.204** |
+| D-S-BALCONY pack on FS-S-EAST's squash plies | 1,163.77 | 6.0 x 3.5 = 21.0 | 55.42 | 425 | 0.130 |
+
+131.5 lb is the band's own end reaction (§3). **Governs: the plies on W-B-S3-FR's plates,
+d/c 0.204.**
+
+**The load crosses FS-S-EAST on squash plies.** D-S-BALCONY's packs stand on W-S-S2's plate
+over FS-S-EAST's edge TJI, which TJ-4000 (July 2025) detail CS forbids loading from above
+without squash blocks matching the column's bearing area. Two 1 3/4" x 11 7/8" Microllam plies
+(`params/second_deck.py`, one per pack, 3" past each face) are those blocks.
+
+**Published reads, not calculations:**
+
+- Ply fastening, TJ-9000 (July 2026) p.30, *multiple-member connections for top-loaded
+  beams*, 1 3/4" pieces, 2 plies: 10d (0.128-0.131 x 3") nails in **3 rows at 12" o.c.** from
+  one face (an extra row only at depths of 14" or more), or 12d-16d in 2 rows at 12", or
+  SDS/WS screws in 2 rows at 24". The load enters evenly across the plies' width through the
+  subfloor and the wall plate, which is the table's condition. Authored: 10d, 3 rows at 12".
+- Filler block, TJ-4000 (July 2025) p.28, *Filler and Backer Block Sizes*, TJI 230 at
+  9 1/2"-11 7/8": **2x6 + 1/2" sheathing**, (15) 0.131" x 3" nails driven from alternating
+  sides, 24" suggested minimum length.
 
 ## Sources
 
 - Weyerhaeuser **TJ-9000** *Trus Joist Beam, Header and Column Specifier's Guide*, July 2026,
-  pp.4-5 (Allowable Design Properties; Design Stresses).
+  pp.4-5 (Allowable Design Properties; Design Stresses), p.30 (multiple-member connections
+  for top-loaded beams).
+- Weyerhaeuser **TJ-4000** *TJI Joist Specifier's Guide*, July 2025, p.27 detail CS (squash
+  blocks), p.28 (filler and backer block sizes).
+- AWC NDS 2018 §3.10.2 (compression perpendicular to grain).
 - IRC 2018 R301.5 (floor loads), Table R301.7 (L/360).

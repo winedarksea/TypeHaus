@@ -85,6 +85,7 @@ from typehaus.model.enums import (
 from typehaus.model.equipment_hangers import EquipmentHangers
 from typehaus.model.excavation import Excavation, SideSlope, SoilFactor
 from typehaus.model.exterior_door import (
+    ApproachBearing,
     ExteriorDoorCatalogInstallation,
     ExteriorDoorInstallation,
     ExteriorDoorSillDesign,
@@ -92,6 +93,7 @@ from typehaus.model.exterior_door import (
 from typehaus.model.flashing import FormedFlashingSection
 from typehaus.model.floors import (
     DeckLayer,
+    FillerBlock,
     FinishZone,
     FloorHeat,
     FloorOpening,
@@ -101,6 +103,7 @@ from typehaus.model.floors import (
     FloorSystem,
     JoistReinforcement,
     JoistSpec,
+    PlyFastening,
     Slab,
     SlabThermalBreak,
     Soffit,
@@ -392,6 +395,7 @@ __all__ = [
     "DoorHardwareItem", "JambFraming",
     "DoorwayProductSpec", "DoorwaySectionPart", "DoorwayTreatment", "ExteriorDoorInstallation",
     "ExteriorDoorSillDesign", "ExteriorDoorCatalogInstallation", "DoorCatalogDimensions",
+    "ApproachBearing", "PlyFastening", "FillerBlock",
     "WinderTurnSpec", "WinderFramingSpec",
     "ReinforcementSpec",
     "BarSpec",

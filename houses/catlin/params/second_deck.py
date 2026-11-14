@@ -223,6 +223,15 @@ EAST_FLOOR = FloorSystem(
     reinforcements=(
         JoistReinforcement(at=pt(inch(374.375), inch(66.875)), plies=3, blocking=True,
                            source="ST-S2A departing-rim reactions: sister the supporting I-joist and block both adjacent bays to the main-storey bearing walls"),
+        # ** SQUASH PLIES UNDER D-S-BALCONY'S JAMB PACKS (2026-11-13). ** Its packs stand on
+        # this deck's y=0 edge TJI, which TJ-4000 p.27 detail CS will not load from above:
+        # two 1 3/4" Microllam plies beside it under each pack (3" past both faces) carry the
+        # stack down onto D-M-PORCH's packs (band_header/D-B-SUNKEN; note §5).
+        *(JoistReinforcement(at=pt(inch((_lo + _hi) / 2), inch(3.25)), plies=3,
+                             member="1.75x11.875 LVL", blocking=False,
+                             extent=(inch(_lo - 3), inch(_hi + 3)),
+                             source="squash plies under a D-S-BALCONY jamb pack (TJ-4000 CS)")
+          for _lo, _hi in ((218.34375, 224.34375), (287.65625, 293.65625))),
     ),
     source="catlin second floor, east half — 11 7/8\" TJI 230 joists at 16\" o.c. spanning "
            "18'-0\" from the x=18' bearing line to W-M-E1, unchanged from the old "

@@ -212,7 +212,8 @@ def test_catlins_balcony_door_is_shaded_by_the_balcony_and_the_window_beside_it_
     shaded, head_m = planes_over("D-M-PORCH")
     assert "FS-SG-BALCONY" in {plane.tag for plane in shaded}
     balcony = next(plane for plane in shaded if plane.tag == "FS-SG-BALCONY")
-    assert balcony.near_ft == pytest.approx(0.23, abs=0.05)
+    # 0.23 until the planks' tab carried the deck to the north sister (2026-11-13).
+    assert balcony.near_ft == pytest.approx(0.15, abs=0.05)
     assert balcony.far_ft == pytest.approx(9.9, abs=0.2)
     # 1.05 m until the balcony came down 3" (2026-09-23); a lower plane only shades more.
     # 0.905 since the door's published 82 7/8" RO replaced the held 80" (2026-10-29).

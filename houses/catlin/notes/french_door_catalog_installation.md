@@ -5,15 +5,13 @@ fitting; no inquiries, custom metal fabrication or purchases. Keep the nominal
 60 × 80 pairs and their centerlines. Exterior finish is composite/PVC/aluminum,
 with no exposed wood. Main-floor door installations and WIN-B-SAUNA are unchanged.
 
-**Status: coordinated, NOT construction-ready.** Both modeled approach sections clear
-their host wall and landing geometry. Door installation status remains UNKNOWN until the
-support connections, product interfaces and bonds have evidence.
-The exterior boundaries,
-formed sunken-garden door seat, catalog sill outline, approach boards, support envelopes and
-flashing-end envelopes are modeled. Member feasibility and installed-height checks
-are calculated. Root connections, concrete bar development, cross-bearer bearing and
-several installed product interfaces remain UNKNOWN. Do not close these as purchase-only
-questions: the two installation TODOs remain open until these design issues close.
+**Status: coordinated, NOT construction-ready.** Both approaches now rest without
+cantilevers: the sunken door's tread on rated foam with its slot draining down the
+isolation joint (§6), and the study's extender on the girt sill course (§2). Door
+installation stays UNKNOWN on supplier evidence (installed pan/sweep/hinge sections, the
+XXXXW and the 5-5/8 inch sill on this jamb, assembly label and warranty) and on one
+engineered connection, the girt course's blocks under the study approach (§2,
+"Calculations and limits").
 
 ## 1. Catalog assembly and evidence
 
@@ -22,14 +20,14 @@ questions: the two installation TODOs remain open until these design issues clos
 | Leaves | Therma-Tru Smooth-Star full-lite, nominal pair 60 × 80 | Laminated triple, exact assembled pair NFRC/NAFS and performance label remain unconfirmed; the existing U/SHGC/VT row is provisional |
 | Frame | Therma-Tru composite 4-9/16 inch jamb; 2026 Comp 6.4 | Factory machining, hinge axis and hinge locations of an assembled Endura pair |
 | Returns / casing | AZEK Captivate Graphite Gray, 3/4 × 48 × 96 smooth sheet; PaintPro substrate AS03448096. Field-rip the deep returns and 3-1/2 inch flat casings from two sheets | Catalog product/color selection; no exact color match to the steel or purchase/finish warranty confirmation claimed |
-| Sill | Endura ZAI4565FN, 4-9/16 inch width and 1-3/8 inch rear fin; no sill extender (XMN5 dropped 2026-11-01) | Adjustment limits, actual installed cap setting and bearing contacts; the ZAI outline crest remains digitized |
+| Sill | D-B-SUNKEN: Endura ZAI4565FN, 4-9/16 inch, no extender (XMN5 dropped 2026-11-01). D-S-BALCONY (2026-11-13): ZAI5625FN, 5-5/8 inch on the 4-9/16 inch jamb (1-1/16 inch proud), with the resizable XXXXW extender at its full 6-3/8 inch, the only Z-Series extender long enough to reach the girt sill course and published for the 5-5/8 inch sill only | Adjustment limits, cap setting and bearing contacts; both outlines are digitized; the XXXXW nose's support past the girt course (1.46 inch) and a prehung 4-9/16 inch jamb on a 5-5/8 inch sill are supplier holds |
 | Sweep / pads | Endura DBK-R double-bulb kerfed bottom and compatible corner-pad family are catalog candidates | Therma-Tru leaf kerf fit, installed compression and selected pad variant; no substitute sweep geometry is invented |
 | Passive leaf | Ultimate Flip Lever Astragal; field instructions include the lower receiver | Receiver is drilled 5/8 inch diameter, at least 1-3/8 inch deep; delivered assembly setting and cap/screw clearances remain unconfirmed |
 | Active leaf | PanoLock+ and Schlage BE365 | Endura explicitly lists BE365 CAM/PLY with **adapter F**; selected passage-handle adapter and exact assembly prep still need documentation |
 | Fasteners | Factory hinges and installation kit, structural screws into framing at hinge/strike locations | Actual screw gauge, length, count, hinge machining and substrate-specific anchorage; the inherited generic three-inch kit is not an approved shop schedule |
 | Pan | SureSill 4-9/16 inch sloped pan, 80 inch complete pack | Manufacturer FAQ gives 1/4–3/8 inch rise depending on pan; **3/8 inch is the conservative coordination allowance**, not a traced installed pan section |
 | Apron | Impermeable self-adhered membrane under the approach, with raised jamb ends | Exact sheet/primer/sealant combination, PVC-pan bond and water-plane tie; no implicit approval of an unidentified waterproofing material or ccSPF |
-| Approach | AridDek standard boards, nominal 6 inch module and modeled 1-1/2 inch depth, 1:48 outward slope, stock profile trim | Board/rib section, minimum cut length, end support, isolation and fastener details for this short approach |
+| Approach | D-S-BALCONY: none. The extender is the approach. It rests on draining KDAT strips over the truss wall's buck sill and girt sill course, and its nose stops ~1 inch short of FS-SG-BALCONY's north sister, which the court's planks now reach (2026-11-13). D-B-SUNKEN: the foam-bed Trex tread (§6) | The girt course's blocks carry the load on TimberLOK screws in shear: no published lateral value at that penetration (ESR-1078 Table 4), an engineered connection |
 | Head (D-S-BALCONY only) | SureSill HeadFlash 1-3/8 × 84 complete pack, stock end caps | Upstand, thickness and end-dam geometry are labeled coordination envelopes; they are not traced product sections |
 | Balcony ends | Proglaze ETA System 1, standard 6 inch extrusion, molded corners, aluminum adaptors and Spectrem 1 | A candidate application: its published instructions assume engineering review and require substrate adhesion/compatibility verification. No such review or approval has been obtained |
 
@@ -67,6 +65,12 @@ thicknesses are omitted. The traced cap crest is approximately **1.522 inches** 
 its base, rather than the 1.375 inch fin callout. This is a clearance estimate, not an
 additional manufacturer dimension or an approved installed cap setting. The raw PDF
 and reference image are in `out/exterior-door-review/sources/`.
+
+`notes/assets/endura-zai5625fn-outline.json` is the study's 5-5/8 inch sill, digitized the
+same way from Endura's ZAI5625FN drawing (horizontal 468.3 px/in off the 5-5/8 inch line,
+vertical 436.4 px/in off the 1-3/8 inch line, at 300 dpi). Crest about **1.517 inches**. The
+XXXXW extender is modeled from Endura's 2018 release: 17/32 inch at its attach end, a 5 degree
+top falling to a 1/16 inch nose at 6-3/8 inches.
 
 The ordered nominal leaves, assembled unit and framed void are separate model fields.
 The working catalog envelope is **62-9/16 × 82 inches**, with a **63-5/16 × 82-1/2 inch
@@ -106,33 +110,42 @@ weeps and the isolation from the separately supported brick open.
 
 ### Study
 
-The composite factory jamb anchors at the structural wall. At the sunken-garden door the composite
-returns stop at the host wall face; the brick reveal is the trim and has no casing. The supported factory sill is level.
-The short AridDek boards run outward and are supported by two cross bearers over the
-concealed 2×6 outrigger envelopes. Their root connection to FS-S-EAST must be designed
-against actual joist/rim geometry; a 24 inch drawn backspan is not proof of anchorage.
-The cross-bearer-to-outrigger bearing/isolation detail also remains unresolved.
+**Nothing cantilevers (owner, 2026-11-13).** The 2x6 outriggers this door had would have run 24
+inches back into FS-S-EAST across its edge TJI and the next joist line, which run parallel to
+the wall: they could not be built. They, both cross bearers and the AridDek boards are retired.
+The composite factory jamb still anchors at the structural wall; a ZAI5625FN sill on it takes
+Endura's XXXXW extender at 6-3/8 inches. Outboard of the sheathing the pan runs level over the
+buck sill to its drip 1/2 inch past the cladding, and nine draining KDAT strips (1-1/2 inches at
+8 inches) on it carry the sill's overhang and the extender out to the girt sill course's face
+(`ladder-sill-*`, 6 inches out). The extender's nose runs 1.46 inches past that face, over the
+cladding, and stops 1.04 inches short of the court: FS-SG-BALCONY's doubled north joist now runs
+through the door, and a tab in the plank sheet carries the planks out to its face, so the plank
+ends bear on it and one open gap stays between the house and the court. Nothing is fastened
+across it. `resolve/exterior_door_bridge.py` measures the girt course, the buck sill, the
+landing member, the plank bearing and the gap.
 
-The approach reaches to the actual balcony edge minus the specified drainage gap.
-The two structures are not fastened together. Flashing-end envelopes show separate
-house/deck aluminum adaptors and a flexible corner, adjacent to both interrupted rear
-flashing runs. Their actual positions follow the deck edge. These are not verified
-Tremco application sections. Nominal movement checks reserve 1/4 inch horizontal and
-1/4 inch vertical displacement, a 1/2 inch approach gap and 2 inch flashing overlap.
-The whole balcony movement basis remains `balcony_differential_movement.md`; local
-clearance arithmetic does not establish a flexible product's movement rating or bonds.
+**A door's buck sill is flush with its rough sill (2026-11-13).** The truss wall's 3/8 inch buck
+sill and its girt sill course sat 3/8 inch above a door's rough sill, so the pan would have
+stepped up outboard of the sheathing. At a door both now drop by the buck's thickness
+(`framing/truss_common.door_sill_drop`). Windows keep the buck inside their RO.
+
+The flashing ends (house and deck adaptors, flexible corner) still close the two interrupted
+rear flashing runs, now on the planks' tab edge. They are not verified Tremco application
+sections. The whole balcony movement basis remains `balcony_differential_movement.md`; the
+1/4 inch reserved each way leaves 0.79 inch of the gap.
 
 ### Calculations and limits
 
-The report assigns a **300 lb point load entirely to one support**, combined
-conservatively with **60 psf live + 10 psf dead load**. Timber checks use declared
-conservative adjusted stresses (Fb 575 psi, Fv 135 psi, E 1.2 million psi), with no
-short-duration increase. The 2×4 cross bearers are checked on edge. These declared
-material properties require the purchased species/grade/treatment to meet them.
-The concrete strip feasibility uses 4,000 psi concrete, Grade 60 #4 top steel and
-2 inch top cover. Root connection capacity is **not supplied** for either system;
-member PASS therefore leaves installation fit **UNKNOWN**. Full-path capacity,
-including concrete development and cross-bearer bearing, is still a design deliverable.
+The sunken-garden tread's foam bearing is §6. The study's approach has no root connection and
+no member of its own to grade: it rests on the girt sill course and its strips. The girt course
+is the truss wall's own: its blocks hang on one TimberLOK each, in shear through the 6 inch
+block stack into the band. ESR-1078 Table 4 needs 5 inches of main-member penetration (this
+leaves 1-1/2 inches) and puts NDS lateral design of the screw outside its scope, so no
+published value grades it. A first NDS 12.3 pass (root D 0.172 inch, Fyb 190,600 psi, SPF
+both members, mode IIIm) gives about 175 lb reference, 120 lb at wet service, against a
+300 lb concentrated load. **The girt course carries the uniform load but not the 300 lb
+point load on one screw. That is an engineered connection, and installation stays UNKNOWN on
+it** (TODO).
 
 ## 3. Height and geometry review
 
@@ -188,21 +201,21 @@ unit label, order confirmation or warranty extension was obtained.
 ## 5. Construction sequence after the evidence holds close
 
 1. Confirm the exact catalog unit/hinge/sweep/pan sections and adjust the RO/head allowance.
-2. Detail the support root connections, concrete development and actual cross-bearer bearing;
-   coordinate reinforcement and independently moving structures before forming/framing.
-3. Form the sunken-garden door recess and support; frame both enlarged openings and the study approach
-   supports. Check the resulting clear openings, concrete edge and landing elevations.
-4. Install the supported sloping apron and catalog pan, with their prescribed end caps,
-   corners, bonds and sealant. Join the jamb/head bands to the actual water plane.
-5. Set and anchor the
-   composite frame on continuous level bearing. Install/adjust the
-   matched sweep, corner seals and FLA receiver without drilling through the pan.
-6. Install the supported approach boards and stock trim with metal isolation and the
-   required movement gaps. Keep outlets, cavity drainage and veneer weeps open.
-7. Complete and inspect the two flexible flashing ends, install composite returns/casing
-   and the stock head kit, and verify both leaf swings, bolt operation and weather seals.
-8. Measure finished crest/landing heights and clear headroom; water-test drainage and
-   adhesion in the completed detail before concealing inaccessible joints.
+2. Engineer the girt sill course's block connection under the approach load (study); detail
+   the tread bed, joint drain and sealant (sunken garden, §6).
+3. Form the sunken-garden door recess, cut its joint board and set the drainage board; frame
+   the study's opening with the door's buck sill flush with its rough sill.
+4. Install the pans with their end dams, the sunken door's water sheet under its pan, and the
+   study pan level over the buck to its drip past the cladding.
+5. Set and anchor the composite frames on continuous level bearing; the study's draining
+   strips and XXXXW extender; adjust the sweep, corner seals and FLA receiver without drilling
+   through a pan.
+6. Lay the sunken tread on its foam; extend the court planks to the north sister; keep the
+   1 inch gap at the study's extender nose, the slot and the veneer weeps open.
+7. Complete the flashing ends, returns/casing and head kit; verify both leaf swings, bolt
+   operation and weather seals.
+8. Measure finished crest/landing heights and clear headroom; water-test drainage before
+   concealing inaccessible joints.
 
 ## 6. The sunken-garden door's foam-bed tread (owner, 2026-11-03; modelled 2026-11-04)
 
@@ -213,10 +226,13 @@ crest **7.4"** (R311.3.2 reads 7.6" with the 1/4" tolerance, ≤ 7.75").
   laid continuously on the curb's foam, whose top course is cut down and refilled in 40 psi
   XPS (`foam-bed-course`, ASTM C578 Type VI). Not fastened to the beam: nothing metal crosses
   from the house into the court, and the tread is free for the 1/4" each way reserved.
-- **Water layer:** a PVC sheet under the board, lapped under the SureSill pan's front lip,
-  over the foam, turned onto the beam top.
+- **Water layer:** a PVC sheet under the board, run 2" back under the SureSill pan on the
+  seat (the pan's outlet drop laps over it: shingled, no bond claimed), over the foam, and
+  stopped at the tread's outer face. It is not turned onto the beam.
 - **Box sides:** Trex Tide Pool fascia, 0.56 × 7 1/4", ripped ~6" for the jambs and head,
-  frame to the brick's back, sealed to the brick. Replaces the sunken-garden door's Captivate returns
+  frame to the brick's back, sealed to the brick with a 1/2" silicone joint on backer rod
+  (ASTM C920 Class 50: 1/4" reserved movement / 0.50 = 1/2"; the brick is the court's, the
+  box sides the house's). Replaces the sunken-garden door's Captivate returns
   (the study keeps Captivate). Three 12' boards: no two of the 6.8' jambs and 5.3' head share one.
 - **Accepted (owner):** Trex publishes its boards on joists at 16" with air under them; laid
   continuously on foam is outside that install — a warranty exposure, not a code one.
@@ -239,7 +255,14 @@ honest one.** The tread's back is set at the sill's NOSE (`approach_back = max(s
 nose)`), so the sill drains onto it: 6.60" above the court at the sill, 6.49" at its outer
 edge (1:48 over 5 1/2"). The sketch had 7 1/4" → 7 1/8", which is above the sill nose (6.60")
 and would dam it. So the tread's outer edge stands ~1/2" BELOW the beam top, not 1/8" above
-it, and its 1/2" slot at the beam's arris drains down onto the sheet rather than over the
-beam. **Open:** where that slot's water goes once the sheet is turned up onto the beam — an
-installed section has to give it an outlet (a sheet that stops at the board face and lets go
-into the drained bed, or a lower beam top). `integrity.doorway_assembly` carries it as UNKNOWN.
+it, and its 1/2" slot at the beam's arris lets go past the sheet's edge rather than over the
+beam. It drains into the isolation joint below. **Outlet (owner, 2026-11-13): down the isolation joint.** The slot (0.479", tread face to
+W-SG-BRKBM's concrete) stands over the beam's 2" XPS break. `AO-SG-BRKBM-TREAD-BED` now cuts
+that board across the reveal down the whole joint, and the installation refills it from the
+bed course's underside (-104 29/32") to the beam's foot (-120 3/16") with a grooved,
+filter-faced XPS drainage board (`joint-drain`, isolation kept), its foot on FB-SG-BRKBM's
+stone, which lets go into FB-SG-W2's course as the court's own water does. The doorway is
+under the porch roof: this is a weep for wind-driven and tracked water, not a gutter, so no
+flow is sized. `resolve/exterior_door_foam_bed.py` grades the lap, the shingle order, the slot
+width, the board's reach onto the stone and the box-side joint; only the products' mutual
+compatibility stays a supplier hold.

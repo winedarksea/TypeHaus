@@ -160,6 +160,8 @@ def write_catalog_review(model):
                          "conservative_crest_above_exterior_in",
                          "support_member", "root_connection", "fit"))
         for tag, report in reports.items():
+            if "nominal_crest_z_m" not in report:
+                continue  # a schematic sill's approach-bearing report has no catalog crest
             allowance = (report["conservative_crest_z_m"] - report["nominal_crest_z_m"]) / .0254
             writer.writerow((tag, report["crest_above_interior_in"],
                              report["crest_above_exterior_in"],

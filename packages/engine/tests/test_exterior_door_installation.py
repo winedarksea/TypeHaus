@@ -255,7 +255,10 @@ def test_sill_design_conceals_pan_without_claiming_factory_approval(catlin_model
     assert placement.sill_design_status == "SCHEMATIC"
     assert assembly.section_status == "UNKNOWN" and assembly.supplier_status == "PENDING"
     assert assembly.status == "UNKNOWN" and not assembly.conflicts
-    assert any("structural support/anchorage" in message for message in assembly.unknown)
+    # No cantilever (2026-11-13): the plate rests on its landing, on a pad over its member.
+    report = placement.installation_report
+    assert report["kind"] == "approach_bearing"
+    assert report["pad_bearing_in"] >= 1.0 - 1e-6
     frame = opening_flashing_frame(model, wall, opening)
     outlet = _pan_outlet(opening, frame, FLASHING)
     base = assembly.rough_opening_z_m
@@ -295,12 +298,11 @@ def test_sill_design_conceals_pan_without_claiming_factory_approval(catlin_model
         return (sum(delta[i] * tangent[i] for i in (0, 1)),
                 sign * sum(delta[i] * normal[i] for i in (0, 1)))
     deck_footprint = Polygon([local(p) for p in deck.deck_outline])
-    nose = polygons["approach-drip-nosing"]
     from shapely.geometry import box
 
-    nose_footprint = box(-opening.width_m / 2, nose.bounds[0],
-                         opening.width_m / 2, nose.bounds[2])
-    assert nose_footprint.intersection(deck_footprint).area < 1e-10
+    # The deck stays clear of the pan's drip: nothing of it under the pan's outlet.
+    drip = box(-opening.width_m / 2, outlet - 1e-3, opening.width_m / 2, outlet)
+    assert drip.intersection(deck_footprint).area < 1e-10
     pan = next(mesh for key, _, _, mesh in opening_flashing_meshes(wall, opening, frame)
                if key == "sill")
     origin = wall.axis[0]

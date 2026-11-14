@@ -595,7 +595,9 @@ def test_head_and_sill_courses_span_the_rough_opening(catlin_model):
             z_sill = wall.base_ref_z_m + opening.sill_m
             z_head = z_sill + opening.height_m
             for band, _tier_id in _tiers(catlin_model, wall):
-                for name, z0 in (("head", z_head), ("sill", z_sill - _STOCK_FACE)):
+                # A door's sill course sits a buck's thickness lower: flush buck, level pan.
+                drop = 0.375 * IN if opening.kind == "door" else 0.0
+                for name, z0 in (("head", z_head), ("sill", z_sill - _STOCK_FACE - drop)):
                     key = f"ladder-{name}-{band}-{index:03d}"
                     piece = next((m for m in wall.members if m.child_key == key), None)
                     assert piece is not None, f"{wall.tag}: no {key}"

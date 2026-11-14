@@ -22,6 +22,30 @@ class DoorCatalogDimensions(HausModel):
     assembly_confirmed: bool = False
 
 
+class ApproachBearing(HausModel):
+    """The approach rests at both ends; nothing cantilevers, nothing crosses the joint fixed.
+
+    House end: the threshold, and past the sheathing draining strips on the truss wall's
+    buck sill over its girt sill course (``girt_course``). Outer end: ``landing="gap"``
+    stops short of the landing by an open movement gap, the landing's plank ends on its own
+    member; ``"slip_pad"`` rests on the landing deck over its nearest member on a pad.
+    """
+    landing_ref: str = Field(min_length=1)
+    landing: Literal["gap", "slip_pad"] = "gap"
+    girt_course: bool = True
+    minimum_bearing: Length = inch(1)
+    slip_pad_material_ref: str | None = None
+    maximum_pad_thickness: Length = inch(1.5)
+    # Plank ends at the door must sit this far onto the landing's member.
+    plank_bearing: Length = inch(0.75)
+
+    @model_validator(mode="after")
+    def slip_pad_named(self):
+        if self.landing == "slip_pad" and not self.slip_pad_material_ref:
+            raise ValueError("a slip-pad landing names its pad material")
+        return self
+
+
 class ExteriorDoorCatalogInstallation(HausModel):
     """Sourced product outline and separately declared project installation dimensions.
 
@@ -70,7 +94,9 @@ class ExteriorDoorCatalogInstallation(HausModel):
     # ``foam_bed``: one tread laid continuously on rated foam, not fastened to anything; its
     # bearing is graded at ``foam_rated_psi / foam_creep_divisor`` and it has no root
     # connection or bar development to document.
-    support_kind: Literal["timber_outriggers", "concrete_cantilever", "foam_bed"]
+    # ``girt_bridge``: a catalog extender on draining strips over the truss wall's buck sill
+    # and girt sill course (``ExteriorDoorInstallation.approach_bearing``); no approach boards.
+    support_kind: Literal["timber_outriggers", "concrete_cantilever", "foam_bed", "girt_bridge"]
     support_spacing: Length = inch(12)
     support_width: Length = inch(1.5)
     support_depth: Length = inch(5.5)
@@ -81,6 +107,20 @@ class ExteriorDoorCatalogInstallation(HausModel):
     foam_course_depth: Length = inch(1)
     # The water layer under the approach; the pan's own membrane when not stated.
     apron_material_ref: str | None = None
+    # foam_bed: the sheet runs this far back under the pan, which laps over it (shingled, no
+    # bond claimed), and stops at the tread's outer face.
+    sheet_lap_under_pan: Length = inch(2)
+    # foam_bed: the slot lets go down an isolation joint. ``joint_drain_wall_ref``'s joint
+    # layer is cut across the reveal (a blind opening) and filled with
+    # ``joint_drain_material_ref`` down to ``joint_drain_bed_ref``'s stone.
+    joint_drain_wall_ref: str | None = None
+    joint_drain_material_ref: str | None = None
+    joint_drain_bed_ref: str | None = None
+    # Box sides sealed to separately supported masonry: the joint must take the reserved
+    # house/court movement at the sealant's ASTM C920 class (0.5 = Class 50).
+    box_side_sealant_ref: str | None = None
+    box_side_joint_width: Length = inch(0.5)
+    box_side_sealant_class: float = Field(default=0.5, gt=0, le=1)
     support_connection_capacity_lb: float | None = Field(default=None, gt=0)
     support_connection_source: str | None = None
     live_load_psf: float = Field(default=60, gt=0)
@@ -138,6 +178,12 @@ class ExteriorDoorCatalogInstallation(HausModel):
             raise ValueError("a connection capacity requires published/design evidence")
         if self.support_kind == "foam_bed" and self.foam_rated_psi is None:
             raise ValueError("a foam-bed approach needs the foam's rated compressive psi")
+        drain = (self.joint_drain_wall_ref, self.joint_drain_material_ref,
+                 self.joint_drain_bed_ref)
+        if any(drain) and not all(drain):
+            raise ValueError("a joint drain names its wall, its material and its stone bed")
+        if self.sheet_lap_under_pan.meters <= 0 or self.box_side_joint_width.meters <= 0:
+            raise ValueError("sheet lap and box-side joint must be positive")
         if (self.support_kind == "concrete_cantilever" and self.support_depth.meters
                 <= self.concrete_cover.meters + self.reinforcement_diameter.meters / 2):
             raise ValueError("concrete support depth must exceed cover plus bar radius")
@@ -216,6 +262,8 @@ class ExteriorDoorInstallation(HausModel):
     seat_opening_ref: str | None = None
     approach_opening_refs: tuple[str, ...] = ()
     interior_material_ref: str = Field(min_length=1)
+    # The no-cantilever approach (``girt_bridge`` catalog doors, and schematic sills).
+    approach_bearing: ApproachBearing | None = None
     drainage_gap: Length = inch(0.5)
     # Limit the search across an intentional drainage gap, never across a missing landing.
     landing_search: Length = inch(6)
@@ -225,6 +273,14 @@ class ExteriorDoorInstallation(HausModel):
     def positive_dimensions(self):
         if self.sill_design and self.catalog_installation:
             raise ValueError("catalog installation replaces the schematic sill design")
+        bridge = (self.catalog_installation is not None
+                  and self.catalog_installation.support_kind == "girt_bridge")
+        if bridge and (self.approach_bearing is None
+                       or not self.catalog_installation.sill_extender_ref):
+            raise ValueError("a girt-bridge catalog door needs its approach bearing and extender")
+        if (self.approach_bearing is not None and self.catalog_installation is not None
+                and not bridge):
+            raise ValueError("an approach bearing replaces the catalog door's own supports")
         dimensions = (self.return_thickness, self.casing_width, self.casing_thickness,
                       self.drainage_gap, self.landing_search, self.maximum_landing_drop,
                       self.exterior_wrap_thickness, self.wrap_isolation_thickness)
@@ -240,3 +296,4 @@ register_constructor("ExteriorDoorSillDesign", ExteriorDoorSillDesign)
 register_constructor("ExteriorDoorCatalogInstallation", ExteriorDoorCatalogInstallation)
 
 register_constructor("DoorCatalogDimensions", DoorCatalogDimensions)
+register_constructor("ApproachBearing", ApproachBearing)

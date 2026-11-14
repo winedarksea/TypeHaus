@@ -8278,3 +8278,25 @@ and the frame was vinyl.
 - Energy unchanged (30,212 / 16,296 Btu/h). The four price rows sit on the size-matched
   operable band, with no quote implied. `ANDERSEN_400_CASEMENT`, `andersen-400-exterior` and the
   palette's `ANDERSEN` are deleted.
+
+
+## Exterior door approaches rest at both ends (2026-11-13)
+
+Owner: nothing cantilevers. D-S-BALCONY's seven 2x6 outriggers would have run 24" back
+into FS-S-EAST across its edge TJI and the next joist line (the joists run parallel to the
+wall), so they could not be built. Endura's extenders for the ZAI 4-9/16" sill stop at XWN
+(+2"), 2 1/2" short of the girt sill course; the only part that reaches is the resizable XXXXW,
+published for the 5-5/8" ZAI5625FN, so the study takes that sill on its 4-9/16" jamb (owner).
+The main doors keep their schematic sills, with strips to the girt course and plates resting
+on a slip pad over the landing's member. A door's buck sill and girt sill course were 3/8"
+above its rough sill, which would have dammed the pan; they now sit flush. Rejected: carrying
+the study approach off the court balcony on new framing (that framing itself cantilevers off
+the balcony beams).
+
+D-B-SUNKEN's tread slot drains down W-SG-BRKBM's isolation joint onto FB-SG-BRKBM's stone
+(owner; the doorway is under the porch roof, so this is a weep). The water sheet now stops at
+the tread's face instead of turning onto the beam, where it made a trough with no outlet.
+
+Left open: the girt course's block screws carry these approaches in shear with no published
+value (ESR-1078 Table 4 needs 5" of penetration). This is an engineered connection, and a
+first NDS pass is short of the notes' 300 lb point load.

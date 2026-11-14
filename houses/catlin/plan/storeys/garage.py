@@ -12,6 +12,7 @@ from library import (
     TREX_ENHANCE_BASICS_STAIR_SUPPORT_SPACING,
 )
 from typehaus import (
+    ApproachBearing,
     Alarm,
     Annotation,
     AlarmKind,
@@ -346,6 +347,10 @@ OPENINGS = [
          header_spec="flat 2x6 nonbearing",
          # The MMI listing's 6-9/16" composite frame, set flush with the sheathing.
          exterior_installation=ExteriorDoorInstallation(interior_material_ref="pine-fj-base",
+             # No cantilever (owner, 2026-11-13): the plate rests on its landing over
+             # the nearest member, on a slip pad; the garage wall has no girt course.
+             approach_bearing=ApproachBearing(landing_ref="FS-BW-FLOOR", landing="slip_pad",
+                 slip_pad_material_ref="uhmw-slip-pad", girt_course=False),
              factory_frame_depth=inch(6.5625),
              exterior_wrap_material_ref="metal-dark-exterior",
              # MMI publishes no sill section: this is a coordination envelope (frame depth, a

@@ -138,7 +138,9 @@ def test_balcony_mounts_follow_deck_and_preserve_order_quantities(catlin_model_r
     spec = PRODUCT.fascia_mount
     counter = model.plan.by_tag("TR-SG-COUNTER-FLASH-W")
     house_face_y = counter.path[0].y.meters + counter.thickness.meters/2
-    north_edge = max(y for _x, y in deck.deck_outline)
+    # The edge at its ends: the planks' tab across D-S-BALCONY reaches the sister's face.
+    xs = (min(x for x, _y in deck.deck_outline), max(x for x, _y in deck.deck_outline))
+    north_edge = max(y for x, y in deck.deck_outline if x in xs)
     assert all(member.p1[1] == pytest.approx(north_edge + inch(1.5).meters)
                for member in deck.members if member.category == "rim")
     for index in (1, 9):

@@ -78,10 +78,15 @@ def catalog_installation_layout(model, wall, opening, assembly, clad):
                 outlet = max(outlet, edge - installation.drainage_gap.meters)
                 landing_gap = edge - outlet
     foam_bed = spec.support_kind == "foam_bed"
+    bridge = spec.support_kind == "girt_bridge"
     if foam_bed:
         # One tread, its own width out from the sill: what lies past it is not the door's.
         outlet = end + spec.approach_board_width.meters
         landing_gap = landing_edge = None
+    elif bridge:
+        # The extender is the approach: it ends at its own nose, short of the landing.
+        outlet = end
+        landing_gap = landing_edge - end if landing_edge is not None else None
     crest = seat + max(z for _, z in spec.sill_outline_m)
     returns = installation.exterior_return_thickness or installation.return_thickness
     width = opening.width_m - 2 * returns.meters
@@ -97,16 +102,19 @@ def catalog_installation_layout(model, wall, opening, assembly, clad):
         extension_drop = spec.sill_extender_depth.meters * tan(
             radians(spec.sill_extender_slope_degrees)
         )
-        extension_top = spec.sill_extender_height.meters - extension_drop
+        # A 5-degree extender falls nearly to a feather edge; keep its 1/16" nose wall.
+        extension_top = max(spec.sill_extender_height.meters - extension_drop, _IN / 16)
         nose = seat + extension_top
     slope = spec.approach_slope_ratio
-    approach_back = max(seat + 0.5 * _IN, nose)
+    approach_back = nose if bridge else max(seat + 0.5 * _IN, nose)
     approach_front = approach_back - (outlet - end) * slope
-    thickness = spec.approach_thickness.meters
-    board_count = 1 if foam_bed else ceil(width / spec.approach_board_width.meters)
+    thickness = 0.0 if bridge else spec.approach_thickness.meters
+    board_count = (1 if foam_bed else 0 if bridge
+                   else ceil(width / spec.approach_board_width.meters))
     # Drop the apron below the approach/bearers without burying the sill's level bearing.
     # On a foam bed the water sheet lies directly under the tread.
     apron_back = (
+        base if bridge else
         approach_back - thickness - membrane if foam_bed else
         approach_front
         - thickness
@@ -114,10 +122,10 @@ def catalog_installation_layout(model, wall, opening, assembly, clad):
         - spec.minimum_drainage_clearance.meters
         - membrane
     )
-    pan_front = apron_back - (outlet - end) * slope
+    pan_front = base if bridge else apron_back - (outlet - end) * slope
     pan_back = base + spec.pan_height.meters - membrane
-    count = 1 if foam_bed else max(2, ceil(width / spec.support_spacing.meters) + 1)
-    spacing = width if foam_bed else (width - spec.support_width.meters) / (count - 1)
+    count = 1 if foam_bed or bridge else max(2, ceil(width / spec.support_spacing.meters) + 1)
+    spacing = width if foam_bed or bridge else (width - spec.support_width.meters) / (count - 1)
     projection = outlet - sign * placement.frame_outer_m
     support_top = pan_front - membrane
     return CatalogInstallationLayout(

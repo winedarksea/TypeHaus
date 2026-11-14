@@ -100,6 +100,25 @@ class JoistSpec(HausModel):
             raise ValueError("rim end extensions must be nonnegative")
         return self
 
+class PlyFastening(HausModel):
+    """How a multi-ply beam's plies are fastened together, read against the maker's
+    top-loaded schedule (``band_header``: Weyerhaeuser TJ-9000 p.30)."""
+
+    fastener: Literal["10d", "12d-16d", "screw"]
+    rows: int
+    spacing: Length
+    faces: Literal["one", "both"] = "one"
+
+
+class FillerBlock(HausModel):
+    """The block filling an I-joist's web recess where a member is fastened to its side,
+    read against the maker's table (TJ-4000 p.28 *Filler and Backer Block Sizes*)."""
+
+    stock: str
+    nails: int
+    nail: str = "0.131 x 3"
+
+
 class JoistReinforcement(HausModel):
     """Extra joist plies sistered under a concentrated load, plus solid blocking.
 
@@ -122,6 +141,9 @@ class JoistReinforcement(HausModel):
     # A flush header in the band over a wall opening is the case (``Door.header_in_band``).
     extent: tuple[Length, Length] | None = None
     source: str | None = None
+    # A flush band header's ply fastening and its filler to the I-joist beside it.
+    fastening: PlyFastening | None = None
+    filler: FillerBlock | None = None
 
 
 class Strongback(HausModel):
@@ -477,6 +499,8 @@ class FinishZone(HausModel):
 for _name, _obj in (
     ("JoistSpec", JoistSpec),
     ("JoistReinforcement", JoistReinforcement),
+    ("PlyFastening", PlyFastening),
+    ("FillerBlock", FillerBlock),
     ("DeckLayer", DeckLayer),
     ("FloorOpening", FloorOpening),
     ("FloorOpeningLid", FloorOpeningLid),

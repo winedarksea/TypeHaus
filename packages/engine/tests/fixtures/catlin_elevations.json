@@ -18865,6 +18865,12 @@
 2,
 "d55440f4b0b8"
 ],
+"geometry/CBD206AAAA/installation:joint-drain": [
+-3.0527625,
+-2.6648153,
+8,
+"f5ac4f3fcbf4"
+],
 "geometry/CBD206AAAA/installation:pan-back-dam": [
 -2.6309955,
 -2.5923875,
@@ -18894,6 +18900,12 @@
 -2.6304875,
 8,
 "1dc7ffa2dfc3"
+],
+"geometry/CBD206AAAA/installation:water-sheet-lap-under-pan": [
+-2.6400125,
+-2.6395045,
+8,
+"0cbc6e1a71cc"
 ],
 "geometry/CBD206AAAA/leaf": [
 -2.5886438,
@@ -22885,47 +22897,47 @@
 12,
 "cc227fd26d3b"
 ],
-"geometry/CGD202AAAA/installation:approach-drip-nosing": [
--0.01905,
-0.01905,
-12,
-"70846ee9e772"
+"geometry/CGD202AAAA/installation:approach-slip-pad": [
+-0.023876,
+0.0131863,
+8,
+"aa86348c8244"
 ],
 "geometry/CGD202AAAA/installation:approach-walking-plate": [
-0.0127,
+0.0123926,
 0.0199014,
 8,
-"2ce1b827dff0"
+"32dfec23f36f"
 ],
 "geometry/CGD202AAAA/installation:bearing-isolation-approach-0": [
-0.012192,
+0.0129006,
 0.0135514,
 8,
-"be5305f56df0"
+"08f11512f5bd"
 ],
 "geometry/CGD202AAAA/installation:bearing-isolation-approach-1": [
-0.012192,
+0.0129006,
 0.0135514,
 8,
-"be5305f56df0"
+"08f11512f5bd"
 ],
 "geometry/CGD202AAAA/installation:bearing-isolation-approach-2": [
-0.012192,
+0.0129006,
 0.0135514,
 8,
-"be5305f56df0"
+"08f11512f5bd"
 ],
 "geometry/CGD202AAAA/installation:bearing-isolation-approach-3": [
-0.012192,
+0.0129006,
 0.0135514,
 8,
-"be5305f56df0"
+"08f11512f5bd"
 ],
 "geometry/CGD202AAAA/installation:bearing-isolation-approach-4": [
-0.012192,
+0.0129006,
 0.0135514,
 8,
-"be5305f56df0"
+"08f11512f5bd"
 ],
 "geometry/CGD202AAAA/installation:bearing-isolation-sill-0": [
 0.0066934,
@@ -22988,34 +23000,34 @@
 "2ea3e9ac6406"
 ],
 "geometry/CGD202AAAA/installation:draining-bearing-strip-0": [
-0.001524,
+0.0022326,
 0.0130328,
 12,
-"e38f826a8af3"
+"6e3accd1807e"
 ],
 "geometry/CGD202AAAA/installation:draining-bearing-strip-1": [
-0.001524,
+0.0022326,
 0.0130328,
 12,
-"e38f826a8af3"
+"6e3accd1807e"
 ],
 "geometry/CGD202AAAA/installation:draining-bearing-strip-2": [
-0.001524,
+0.0022326,
 0.0130328,
 12,
-"e38f826a8af3"
+"6e3accd1807e"
 ],
 "geometry/CGD202AAAA/installation:draining-bearing-strip-3": [
-0.001524,
+0.0022326,
 0.0130328,
 12,
-"e38f826a8af3"
+"6e3accd1807e"
 ],
 "geometry/CGD202AAAA/installation:draining-bearing-strip-4": [
-0.001524,
+0.0022326,
 0.0130328,
 12,
-"e38f826a8af3"
+"6e3accd1807e"
 ],
 "geometry/CGD202AAAA/installation:exterior-casing-head": [
 2.0701,
@@ -28699,53 +28711,53 @@
 2,
 "5f92c2e1acab"
 ],
-"geometry/CMD201AAAA/installation:approach-drip-nosing": [
+"geometry/CMD201AAAA/installation:approach-slip-pad": [
 0.0,
-0.034925,
-12,
-"ae5ce4ea3827"
+0.0285089,
+8,
+"ed3a0e1234bf"
 ],
 "geometry/CMD201AAAA/installation:approach-walking-plate": [
-0.028575,
+0.0277384,
 0.0379592,
 8,
-"2b4375c0087d"
+"ba661a441830"
 ],
 "geometry/CMD201AAAA/installation:bearing-isolation-approach-0": [
-0.028067,
+0.0289502,
 0.0316092,
 8,
-"20e8e4ec3a03"
+"f915b43dc08a"
 ],
 "geometry/CMD201AAAA/installation:bearing-isolation-approach-1": [
-0.028067,
+0.0289502,
 0.0316092,
 8,
-"20e8e4ec3a03"
+"f915b43dc08a"
 ],
 "geometry/CMD201AAAA/installation:bearing-isolation-approach-2": [
-0.028067,
+0.0289502,
 0.0316092,
 8,
-"20e8e4ec3a03"
+"f915b43dc08a"
 ],
 "geometry/CMD201AAAA/installation:bearing-isolation-approach-3": [
-0.028067,
+0.0289502,
 0.0316092,
 8,
-"20e8e4ec3a03"
+"f915b43dc08a"
 ],
 "geometry/CMD201AAAA/installation:bearing-isolation-approach-4": [
-0.028067,
+0.0289502,
 0.0316092,
 8,
-"20e8e4ec3a03"
+"f915b43dc08a"
 ],
 "geometry/CMD201AAAA/installation:bearing-isolation-approach-5": [
-0.028067,
+0.0289502,
 0.0316092,
 8,
-"20e8e4ec3a03"
+"f915b43dc08a"
 ],
 "geometry/CMD201AAAA/installation:bearing-isolation-sill-0": [
 0.024892,
@@ -28823,37 +28835,37 @@
 0.020574,
 0.0310907,
 12,
-"51b1d4609936"
+"80d72bed385c"
 ],
 "geometry/CMD201AAAA/installation:draining-bearing-strip-1": [
 0.020574,
 0.0310907,
 12,
-"51b1d4609936"
+"80d72bed385c"
 ],
 "geometry/CMD201AAAA/installation:draining-bearing-strip-2": [
 0.020574,
 0.0310907,
 12,
-"51b1d4609936"
+"80d72bed385c"
 ],
 "geometry/CMD201AAAA/installation:draining-bearing-strip-3": [
 0.020574,
 0.0310907,
 12,
-"51b1d4609936"
+"80d72bed385c"
 ],
 "geometry/CMD201AAAA/installation:draining-bearing-strip-4": [
 0.020574,
 0.0310907,
 12,
-"51b1d4609936"
+"80d72bed385c"
 ],
 "geometry/CMD201AAAA/installation:draining-bearing-strip-5": [
 0.020574,
 0.0310907,
 12,
-"51b1d4609936"
+"80d72bed385c"
 ],
 "geometry/CMD201AAAA/installation:exterior-casing-head": [
 2.124075,
@@ -29125,71 +29137,71 @@
 2,
 "0b62bda93466"
 ],
-"geometry/CMD202AAAA/installation:approach-drip-nosing": [
-0.0,
-0.034925,
-12,
-"ae5ce4ea3827"
+"geometry/CMD202AAAA/installation:approach-slip-pad": [
+0.023876,
+0.0275399,
+8,
+"e3d108fbdefe"
 ],
 "geometry/CMD202AAAA/installation:approach-walking-plate": [
-0.028575,
+0.0267462,
 0.039646,
 8,
-"23d9b737ce8b"
+"8d9a482b6797"
 ],
 "geometry/CMD202AAAA/installation:bearing-isolation-approach-0": [
-0.028067,
+0.0289502,
 0.033296,
 8,
-"a5a647578669"
+"7f79d213e43d"
 ],
 "geometry/CMD202AAAA/installation:bearing-isolation-approach-1": [
-0.028067,
+0.0289502,
 0.033296,
 8,
-"a5a647578669"
+"7f79d213e43d"
 ],
 "geometry/CMD202AAAA/installation:bearing-isolation-approach-2": [
-0.028067,
+0.0289502,
 0.033296,
 8,
-"a5a647578669"
+"7f79d213e43d"
 ],
 "geometry/CMD202AAAA/installation:bearing-isolation-approach-3": [
-0.028067,
+0.0289502,
 0.033296,
 8,
-"a5a647578669"
+"7f79d213e43d"
 ],
 "geometry/CMD202AAAA/installation:bearing-isolation-approach-4": [
-0.028067,
+0.0289502,
 0.033296,
 8,
-"a5a647578669"
+"7f79d213e43d"
 ],
 "geometry/CMD202AAAA/installation:bearing-isolation-approach-5": [
-0.028067,
+0.0289502,
 0.033296,
 8,
-"a5a647578669"
+"7f79d213e43d"
 ],
 "geometry/CMD202AAAA/installation:bearing-isolation-approach-6": [
-0.028067,
+0.0289502,
 0.033296,
 8,
-"a5a647578669"
+"7f79d213e43d"
 ],
 "geometry/CMD202AAAA/installation:bearing-isolation-approach-7": [
-0.028067,
+0.0289502,
 0.033296,
 8,
-"a5a647578669"
+"7f79d213e43d"
 ],
 "geometry/CMD202AAAA/installation:bearing-isolation-approach-8": [
-0.028067,
+0.0289502,
 0.033296,
 8,
-"a5a647578669"
+"7f79d213e43d"
 ],
 "geometry/CMD202AAAA/installation:bearing-isolation-sill-0": [
 0.028067,
@@ -29300,58 +29312,58 @@
 "99282408e45c"
 ],
 "geometry/CMD202AAAA/installation:draining-bearing-strip-0": [
-0.020574,
+0.0214572,
 0.0327774,
 12,
-"ca7c87498b37"
+"ef345c4ed9b9"
 ],
 "geometry/CMD202AAAA/installation:draining-bearing-strip-1": [
-0.020574,
+0.0214572,
 0.0327774,
 12,
-"ca7c87498b37"
+"ef345c4ed9b9"
 ],
 "geometry/CMD202AAAA/installation:draining-bearing-strip-2": [
-0.020574,
+0.0214572,
 0.0327774,
 12,
-"ca7c87498b37"
+"ef345c4ed9b9"
 ],
 "geometry/CMD202AAAA/installation:draining-bearing-strip-3": [
-0.020574,
+0.0214572,
 0.0327774,
 12,
-"ca7c87498b37"
+"ef345c4ed9b9"
 ],
 "geometry/CMD202AAAA/installation:draining-bearing-strip-4": [
-0.020574,
+0.0214572,
 0.0327774,
 12,
-"ca7c87498b37"
+"ef345c4ed9b9"
 ],
 "geometry/CMD202AAAA/installation:draining-bearing-strip-5": [
-0.020574,
+0.0214572,
 0.0327774,
 12,
-"ca7c87498b37"
+"ef345c4ed9b9"
 ],
 "geometry/CMD202AAAA/installation:draining-bearing-strip-6": [
-0.020574,
+0.0214572,
 0.0327774,
 12,
-"ca7c87498b37"
+"ef345c4ed9b9"
 ],
 "geometry/CMD202AAAA/installation:draining-bearing-strip-7": [
-0.020574,
+0.0214572,
 0.0327774,
 12,
-"ca7c87498b37"
+"ef345c4ed9b9"
 ],
 "geometry/CMD202AAAA/installation:draining-bearing-strip-8": [
-0.020574,
+0.0214572,
 0.0327774,
 12,
-"ca7c87498b37"
+"ef345c4ed9b9"
 ],
 "geometry/CMD202AAAA/installation:exterior-casing-head": [
 2.124075,
@@ -33068,10 +33080,10 @@
 "1d3e00337e5a"
 ],
 "geometry/CMW102AAAA::framing/member:block-2-jamb-000-0-00": [
--0.06985,
-0.01905,
+-0.079375,
+0.009525,
 8,
-"792bb36c93b3"
+"b7e9126d83c2"
 ],
 "geometry/CMW102AAAA::framing/member:block-2-jamb-000-0-01": [
 0.0,
@@ -33104,10 +33116,10 @@
 "6a27196525e7"
 ],
 "geometry/CMW102AAAA::framing/member:block-2-jamb-000-1-00": [
--0.06985,
-0.01905,
+-0.079375,
+0.009525,
 8,
-"792bb36c93b3"
+"b7e9126d83c2"
 ],
 "geometry/CMW102AAAA::framing/member:block-2-jamb-000-1-01": [
 0.0,
@@ -33236,10 +33248,10 @@
 "1d3e00337e5a"
 ],
 "geometry/CMW102AAAA::framing/member:block-2-sill-000-00": [
--0.06985,
-0.01905,
+-0.079375,
+0.009525,
 8,
-"792bb36c93b3"
+"b7e9126d83c2"
 ],
 "geometry/CMW102AAAA::framing/member:block-2-sill-001-00": [
 0.7239,
@@ -33344,10 +33356,10 @@
 "493984f27483"
 ],
 "geometry/CMW102AAAA::framing/member:buck-sill-000": [
+0.009525,
 0.01905,
-0.028575,
 8,
-"99ab37abf064"
+"a208e72dc592"
 ],
 "geometry/CMW102AAAA::framing/member:buck-sill-001": [
 0.8128,
@@ -33584,10 +33596,10 @@
 "1d3e00337e5a"
 ],
 "geometry/CMW102AAAA::framing/member:ladder-sill-outer-girt-000": [
--0.06985,
-0.01905,
+-0.079375,
+0.009525,
 8,
-"792bb36c93b3"
+"b7e9126d83c2"
 ],
 "geometry/CMW102AAAA::framing/member:ladder-sill-outer-girt-001": [
 0.7239,
@@ -33638,16 +33650,16 @@
 "3fd66d906a7f"
 ],
 "geometry/CMW102AAAA::framing/member:strapping-jamb-outer-girt-000-0": [
--0.06985,
+-0.079375,
 2.212975,
 8,
-"aead2057ef80"
+"b0a71461f373"
 ],
 "geometry/CMW102AAAA::framing/member:strapping-jamb-outer-girt-000-1": [
--0.06985,
+-0.079375,
 2.212975,
 8,
-"aead2057ef80"
+"b0a71461f373"
 ],
 "geometry/CMW102AAAA::framing/member:strapping-jamb-outer-girt-001-0": [
 0.7239,
@@ -37166,10 +37178,10 @@
 "6a27196525e7"
 ],
 "geometry/CMW107AAAA::framing/member:block-2-jamb-000-0-00": [
--0.06985,
-0.01905,
+-0.079375,
+0.009525,
 8,
-"792bb36c93b3"
+"b7e9126d83c2"
 ],
 "geometry/CMW107AAAA::framing/member:block-2-jamb-000-0-01": [
 0.0,
@@ -37202,10 +37214,10 @@
 "6a27196525e7"
 ],
 "geometry/CMW107AAAA::framing/member:block-2-jamb-000-1-00": [
--0.06985,
-0.01905,
+-0.079375,
+0.009525,
 8,
-"792bb36c93b3"
+"b7e9126d83c2"
 ],
 "geometry/CMW107AAAA::framing/member:block-2-jamb-000-1-01": [
 0.0,
@@ -37238,10 +37250,10 @@
 "6a27196525e7"
 ],
 "geometry/CMW107AAAA::framing/member:block-2-sill-000-00": [
--0.06985,
-0.01905,
+-0.079375,
+0.009525,
 8,
-"792bb36c93b3"
+"b7e9126d83c2"
 ],
 "geometry/CMW107AAAA::framing/member:buck-head-000": [
 2.11455,
@@ -37262,10 +37274,10 @@
 "efd112bd24fd"
 ],
 "geometry/CMW107AAAA::framing/member:buck-sill-000": [
+0.009525,
 0.01905,
-0.028575,
 8,
-"99ab37abf064"
+"a208e72dc592"
 ],
 "geometry/CMW107AAAA::framing/member:header-0": [
 2.124075,
@@ -37328,10 +37340,10 @@
 "6a27196525e7"
 ],
 "geometry/CMW107AAAA::framing/member:ladder-sill-outer-girt-000": [
--0.06985,
-0.01905,
+-0.079375,
+0.009525,
 8,
-"792bb36c93b3"
+"b7e9126d83c2"
 ],
 "geometry/CMW107AAAA::framing/member:plate-bottom-passage-0": [
 0.01905,
@@ -37358,16 +37370,16 @@
 "25758397f9ce"
 ],
 "geometry/CMW107AAAA::framing/member:strapping-jamb-outer-girt-000-0": [
--0.06985,
+-0.079375,
 2.212975,
 8,
-"aead2057ef80"
+"b0a71461f373"
 ],
 "geometry/CMW107AAAA::framing/member:strapping-jamb-outer-girt-000-1": [
--0.06985,
+-0.079375,
 2.212975,
 8,
-"aead2057ef80"
+"b0a71461f373"
 ],
 "geometry/CMW107AAAA::framing/member:strapping-outer-girt-000": [
 -0.2841625,
@@ -45098,46 +45110,46 @@
 "5312db575426"
 ],
 "geometry/CSD211AAAA/hardware:0": [
-3.3216187,
-3.4232187,
+3.3214818,
+3.4230818,
 4,
-"8db1d71a7d40"
+"d9e54a6bcd64"
 ],
 "geometry/CSD211AAAA/hardware:1": [
-4.0836187,
-4.1852187,
+4.0834818,
+4.1850818,
 4,
-"cf6e51b7785b"
+"48005bced198"
 ],
 "geometry/CSD211AAAA/hardware:2": [
-4.8456187,
-4.9472187,
+4.8454818,
+4.9470818,
 4,
-"e731fb11cfc0"
+"0e93a84288bd"
 ],
 "geometry/CSD211AAAA/hardware:3": [
-4.0008187,
-4.0648187,
+4.0006818,
+4.0646818,
 12,
-"20edc8f7fefc"
+"25132e0a12d8"
 ],
 "geometry/CSD211AAAA/hardware:4": [
-4.1026687,
-4.2423687,
+4.1025318,
+4.2422318,
 4,
-"4db023f78502"
+"4dd8d665e1a2"
 ],
 "geometry/CSD211AAAA/hardware:5": [
-4.0836187,
-4.1852187,
+4.0834818,
+4.1850818,
 2,
-"cef0b1f442f2"
+"087bc2fb2d48"
 ],
 "geometry/CSD211AAAA/hardware:6": [
-3.1184187,
-5.1300063,
+3.1182818,
+5.1300062,
 2,
-"bad5d0a406a2"
+"0156730c1031"
 ],
 "geometry/CSD211AAAA/hardware:7": [
 5.1270062,
@@ -45145,137 +45157,125 @@
 2,
 "d40c92fee865"
 ],
-"geometry/CSD211AAAA/installation:approach-cross-bearer-0.0005": [
-2.9629258,
-3.0518258,
+"geometry/CSD211AAAA/installation:bridge-bearing-isolation-0": [
+3.076067,
+3.076575,
 8,
-"c1c4ea30453e"
+"eadad932c0b4"
 ],
-"geometry/CSD211AAAA/installation:approach-cross-bearer-0.2032": [
-2.9629258,
-3.0518258,
+"geometry/CSD211AAAA/installation:bridge-bearing-isolation-1": [
+3.076067,
+3.076575,
 8,
-"c1c4ea30453e"
+"eadad932c0b4"
 ],
-"geometry/CSD211AAAA/installation:approach-support-0": [
-2.814019,
-2.953719,
+"geometry/CSD211AAAA/installation:bridge-bearing-isolation-2": [
+3.076067,
+3.076575,
 8,
-"460f31eb6dea"
+"eadad932c0b4"
 ],
-"geometry/CSD211AAAA/installation:approach-support-1": [
-2.814019,
-2.953719,
+"geometry/CSD211AAAA/installation:bridge-bearing-isolation-3": [
+3.076067,
+3.076575,
 8,
-"460f31eb6dea"
+"eadad932c0b4"
 ],
-"geometry/CSD211AAAA/installation:approach-support-2": [
-2.814019,
-2.953719,
+"geometry/CSD211AAAA/installation:bridge-bearing-isolation-4": [
+3.076067,
+3.076575,
 8,
-"460f31eb6dea"
+"eadad932c0b4"
 ],
-"geometry/CSD211AAAA/installation:approach-support-3": [
-2.814019,
-2.953719,
+"geometry/CSD211AAAA/installation:bridge-bearing-isolation-5": [
+3.076067,
+3.076575,
 8,
-"460f31eb6dea"
+"eadad932c0b4"
 ],
-"geometry/CSD211AAAA/installation:approach-support-4": [
-2.814019,
-2.953719,
+"geometry/CSD211AAAA/installation:bridge-bearing-isolation-6": [
+3.076067,
+3.076575,
 8,
-"460f31eb6dea"
+"eadad932c0b4"
 ],
-"geometry/CSD211AAAA/installation:approach-support-5": [
-2.814019,
-2.953719,
+"geometry/CSD211AAAA/installation:bridge-bearing-isolation-7": [
+3.076067,
+3.076575,
 8,
-"460f31eb6dea"
+"eadad932c0b4"
 ],
-"geometry/CSD211AAAA/installation:approach-support-6": [
-2.814019,
-2.953719,
+"geometry/CSD211AAAA/installation:bridge-bearing-isolation-8": [
+3.076067,
+3.076575,
 8,
-"460f31eb6dea"
+"eadad932c0b4"
 ],
-"geometry/CSD211AAAA/installation:ariddek-approach-board-envelope-0": [
-3.0518258,
-3.0949416,
+"geometry/CSD211AAAA/installation:bridge-bearing-strip-0": [
+3.067558,
+3.076067,
 8,
-"af51b9649eb4"
+"5f139bf6f88c"
 ],
-"geometry/CSD211AAAA/installation:ariddek-approach-board-envelope-1": [
-3.0518258,
-3.0949416,
+"geometry/CSD211AAAA/installation:bridge-bearing-strip-1": [
+3.067558,
+3.076067,
 8,
-"af51b9649eb4"
+"5f139bf6f88c"
 ],
-"geometry/CSD211AAAA/installation:ariddek-approach-board-envelope-10": [
-3.0518258,
-3.0949416,
+"geometry/CSD211AAAA/installation:bridge-bearing-strip-2": [
+3.067558,
+3.076067,
 8,
-"af51b9649eb4"
+"5f139bf6f88c"
 ],
-"geometry/CSD211AAAA/installation:ariddek-approach-board-envelope-2": [
-3.0518258,
-3.0949416,
+"geometry/CSD211AAAA/installation:bridge-bearing-strip-3": [
+3.067558,
+3.076067,
 8,
-"af51b9649eb4"
+"5f139bf6f88c"
 ],
-"geometry/CSD211AAAA/installation:ariddek-approach-board-envelope-3": [
-3.0518258,
-3.0949416,
+"geometry/CSD211AAAA/installation:bridge-bearing-strip-4": [
+3.067558,
+3.076067,
 8,
-"af51b9649eb4"
+"5f139bf6f88c"
 ],
-"geometry/CSD211AAAA/installation:ariddek-approach-board-envelope-4": [
-3.0518258,
-3.0949416,
+"geometry/CSD211AAAA/installation:bridge-bearing-strip-5": [
+3.067558,
+3.076067,
 8,
-"af51b9649eb4"
+"5f139bf6f88c"
 ],
-"geometry/CSD211AAAA/installation:ariddek-approach-board-envelope-5": [
-3.0518258,
-3.0949416,
+"geometry/CSD211AAAA/installation:bridge-bearing-strip-6": [
+3.067558,
+3.076067,
 8,
-"af51b9649eb4"
+"5f139bf6f88c"
 ],
-"geometry/CSD211AAAA/installation:ariddek-approach-board-envelope-6": [
-3.0518258,
-3.0949416,
+"geometry/CSD211AAAA/installation:bridge-bearing-strip-7": [
+3.067558,
+3.076067,
 8,
-"af51b9649eb4"
+"5f139bf6f88c"
 ],
-"geometry/CSD211AAAA/installation:ariddek-approach-board-envelope-7": [
-3.0518258,
-3.0949416,
+"geometry/CSD211AAAA/installation:bridge-bearing-strip-8": [
+3.067558,
+3.076067,
 8,
-"af51b9649eb4"
+"5f139bf6f88c"
 ],
-"geometry/CSD211AAAA/installation:ariddek-approach-board-envelope-8": [
-3.0518258,
-3.0949416,
+"geometry/CSD211AAAA/installation:catalog-sill-extender-XXXXW": [
+3.076575,
+3.0900687,
 8,
-"af51b9649eb4"
-],
-"geometry/CSD211AAAA/installation:ariddek-approach-board-envelope-9": [
-3.0518258,
-3.0949416,
-8,
-"af51b9649eb4"
-],
-"geometry/CSD211AAAA/installation:ariddek-stock-profile-trim": [
-3.0518258,
-3.0899258,
-8,
-"5bcfc1166911"
+"8a70ac3992cf"
 ],
 "geometry/CSD211AAAA/installation:catalog-sill-outline": [
-3.076557,
-3.1152437,
-112,
-"26e5ca920139"
+3.076575,
+3.1151068,
+34,
+"c9a76dd4162d"
 ],
 "geometry/CSD211AAAA/installation:exterior-casing-head": [
 5.172075,
@@ -45314,46 +45314,46 @@
 "ff05561ac13d"
 ],
 "geometry/CSD211AAAA/installation:flashing-end-deck-adapter--1": [
-3.0711031,
-3.1219031,
+3.0718969,
+3.1226969,
 8,
-"ecc55382ca82"
+"4c1f45ad5890"
 ],
 "geometry/CSD211AAAA/installation:flashing-end-deck-adapter-1": [
-3.0711031,
-3.1219031,
+3.0718969,
+3.1226969,
 8,
-"ecc55382ca82"
+"4c1f45ad5890"
 ],
 "geometry/CSD211AAAA/installation:flashing-end-house-adapter--1": [
-3.0711031,
-3.1282531,
+3.0718969,
+3.1290469,
 8,
-"fcf70435fd10"
+"7496e3a0758b"
 ],
 "geometry/CSD211AAAA/installation:flashing-end-house-adapter-1": [
-3.0711031,
-3.1282531,
+3.0718969,
+3.1290469,
 8,
-"fcf70435fd10"
+"7496e3a0758b"
 ],
 "geometry/CSD211AAAA/installation:flashing-end-silicone-corner-envelope--1": [
-3.0806281,
-3.1224111,
+3.1004719,
+3.1232049,
 12,
-"10b6f8f8a180"
+"5617cdae2752"
 ],
 "geometry/CSD211AAAA/installation:flashing-end-silicone-corner-envelope-1": [
-3.0806281,
-3.1224111,
+3.1004719,
+3.1232049,
 12,
-"10b6f8f8a180"
+"5617cdae2752"
 ],
 "geometry/CSD211AAAA/installation:impermeable-pan-apron": [
-2.954227,
-2.9597508,
+3.06705,
+3.067558,
 8,
-"283a20a95666"
+"78a7b9d3b2a1"
 ],
 "geometry/CSD211AAAA/installation:interior-extension-head": [
 5.153025,
@@ -45392,10 +45392,10 @@
 "ecf289ba3571"
 ],
 "geometry/CSD211AAAA/installation:pan-outlet-drop": [
-2.9592428,
-3.076067,
+2.99085,
+3.067558,
 8,
-"a2a044eaca1e"
+"b3b3af9d2fb7"
 ],
 "geometry/CSD211AAAA/installation:stock-headflash-cap-envelope": [
 5.260975,
@@ -45428,10 +45428,10 @@
 "0c863d417fca"
 ],
 "geometry/CSD211AAAA/leaf": [
-3.1184187,
+3.1182818,
 5.1300063,
 4,
-"3fcca351a501"
+"d06598b2d805"
 ],
 "geometry/CSD211AAAA/mullion": [
 3.076575,
@@ -46147,18 +46147,6 @@
 2,
 "dbdc4f7bae24"
 ],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-000": [
-2.746375,
-3.048,
-8,
-"3c4d41a19688"
-],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-001": [
-2.746375,
-3.048,
-8,
-"3c4d41a19688"
-],
 "geometry/CSF603AAAA::framing/member:bearing-block-0-002": [
 2.746375,
 3.048,
@@ -46177,13 +46165,13 @@
 8,
 "3c4d41a19688"
 ],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-007": [
+"geometry/CSF603AAAA::framing/member:bearing-block-0-005": [
 2.746375,
 3.048,
 8,
 "3c4d41a19688"
 ],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-008": [
+"geometry/CSF603AAAA::framing/member:bearing-block-0-006": [
 2.746375,
 3.048,
 8,
@@ -46207,29 +46195,11 @@
 8,
 "3c4d41a19688"
 ],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-012-cheek-hi": [
-2.784475,
-3.0099,
-8,
-"8445039a1102"
-],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-012-cheek-lo": [
-2.784475,
-3.0099,
-8,
-"8445039a1102"
-],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-012-rail-bottom": [
+"geometry/CSF603AAAA::framing/member:bearing-block-0-012": [
 2.746375,
-2.784475,
-8,
-"c4d4967e8585"
-],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-012-rail-top": [
-3.0099,
 3.048,
 8,
-"a10a5d0008e8"
+"3c4d41a19688"
 ],
 "geometry/CSF603AAAA::framing/member:bearing-block-0-013": [
 2.746375,
@@ -46237,53 +46207,41 @@
 8,
 "3c4d41a19688"
 ],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-014": [
+"geometry/CSF603AAAA::framing/member:bearing-block-0-014-cheek-hi": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-014-cheek-lo": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-014-rail-bottom": [
+2.746375,
+2.784475,
+8,
+"c4d4967e8585"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-014-rail-top": [
+3.0099,
+3.048,
+8,
+"a10a5d0008e8"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-015": [
 2.746375,
 3.048,
 8,
 "3c4d41a19688"
 ],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-015-cheek-hi": [
-2.784475,
-3.0099,
-8,
-"8445039a1102"
-],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-015-cheek-lo": [
-2.784475,
-3.0099,
-8,
-"8445039a1102"
-],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-015-rail-bottom": [
+"geometry/CSF603AAAA::framing/member:bearing-block-0-016": [
 2.746375,
-2.784475,
-8,
-"c4d4967e8585"
-],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-015-rail-top": [
-3.0099,
 3.048,
 8,
-"a10a5d0008e8"
-],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-016-cheek-lo": [
-2.784475,
-3.0099,
-8,
-"8445039a1102"
-],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-016-rail-bottom": [
-2.746375,
-2.784475,
-8,
-"c4d4967e8585"
-],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-016-rail-top": [
-3.0099,
-3.048,
-8,
-"a10a5d0008e8"
+"3c4d41a19688"
 ],
 "geometry/CSF603AAAA::framing/member:bearing-block-0-017-cheek-hi": [
 2.784475,
@@ -46309,11 +46267,29 @@
 8,
 "a10a5d0008e8"
 ],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-018": [
+"geometry/CSF603AAAA::framing/member:bearing-block-0-018-cheek-lo": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-018-rail-bottom": [
 2.746375,
+2.784475,
+8,
+"c4d4967e8585"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-018-rail-top": [
+3.0099,
 3.048,
 8,
-"3c4d41a19688"
+"a10a5d0008e8"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-019-cheek-hi": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
 ],
 "geometry/CSF603AAAA::framing/member:bearing-block-0-019-cheek-lo": [
 2.784475,
@@ -46333,17 +46309,29 @@
 8,
 "a10a5d0008e8"
 ],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-026": [
+"geometry/CSF603AAAA::framing/member:bearing-block-0-020": [
 2.746375,
 3.048,
 8,
 "3c4d41a19688"
 ],
-"geometry/CSF603AAAA::framing/member:bearing-block-0-027": [
+"geometry/CSF603AAAA::framing/member:bearing-block-0-021-cheek-lo": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-021-rail-bottom": [
 2.746375,
+2.784475,
+8,
+"c4d4967e8585"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-021-rail-top": [
+3.0099,
 3.048,
 8,
-"3c4d41a19688"
+"a10a5d0008e8"
 ],
 "geometry/CSF603AAAA::framing/member:bearing-block-0-028": [
 2.746375,
@@ -46352,6 +46340,18 @@
 "3c4d41a19688"
 ],
 "geometry/CSF603AAAA::framing/member:bearing-block-0-029": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-030": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-031": [
 2.746375,
 3.048,
 8,
@@ -46556,6 +46556,30 @@
 "3c4d41a19688"
 ],
 "geometry/CSF603AAAA::framing/member:sister-0-block-lo": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/CSF603AAAA::framing/member:sister-1-0": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/CSF603AAAA::framing/member:sister-1-1": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/CSF603AAAA::framing/member:sister-2-0": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/CSF603AAAA::framing/member:sister-2-1": [
 2.746375,
 3.048,
 8,
@@ -50462,10 +50486,10 @@
 "841980b3de84"
 ],
 "geometry/CSW102AAAA::framing/member:block-2-jamb-000-0-00": [
-2.97815,
-3.06705,
+2.968625,
+3.057525,
 8,
-"981b7deac435"
+"84cb64d05bdf"
 ],
 "geometry/CSW102AAAA::framing/member:block-2-jamb-000-0-01": [
 3.048,
@@ -50498,10 +50522,10 @@
 "b1abecda41d6"
 ],
 "geometry/CSW102AAAA::framing/member:block-2-jamb-000-1-00": [
-2.97815,
-3.06705,
+2.968625,
+3.057525,
 8,
-"981b7deac435"
+"84cb64d05bdf"
 ],
 "geometry/CSW102AAAA::framing/member:block-2-jamb-000-1-01": [
 3.048,
@@ -50630,10 +50654,10 @@
 "841980b3de84"
 ],
 "geometry/CSW102AAAA::framing/member:block-2-sill-000-00": [
-2.97815,
-3.06705,
+2.968625,
+3.057525,
 8,
-"981b7deac435"
+"84cb64d05bdf"
 ],
 "geometry/CSW102AAAA::framing/member:block-2-sill-001-00": [
 3.7719,
@@ -50738,10 +50762,10 @@
 "fe726c66b48a"
 ],
 "geometry/CSW102AAAA::framing/member:buck-sill-000": [
+3.057525,
 3.06705,
-3.076575,
 8,
-"52c5f2343c0f"
+"3a448aea838b"
 ],
 "geometry/CSW102AAAA::framing/member:buck-sill-001": [
 3.8608,
@@ -50978,10 +51002,10 @@
 "841980b3de84"
 ],
 "geometry/CSW102AAAA::framing/member:ladder-sill-outer-girt-000": [
-2.97815,
-3.06705,
+2.968625,
+3.057525,
 8,
-"981b7deac435"
+"84cb64d05bdf"
 ],
 "geometry/CSW102AAAA::framing/member:ladder-sill-outer-girt-001": [
 3.7719,
@@ -51032,16 +51056,16 @@
 "35ec0e5edaf2"
 ],
 "geometry/CSW102AAAA::framing/member:strapping-jamb-outer-girt-000-0": [
-2.97815,
+2.968625,
 5.260975,
 8,
-"715215150769"
+"1b62d66fcada"
 ],
 "geometry/CSW102AAAA::framing/member:strapping-jamb-outer-girt-000-1": [
-2.97815,
+2.968625,
 5.260975,
 8,
-"715215150769"
+"1b62d66fcada"
 ],
 "geometry/CSW102AAAA::framing/member:strapping-jamb-outer-girt-001-0": [
 3.7719,
@@ -71235,9 +71259,9 @@
 ],
 "geometry/SGFS02AAAA/deck": [
 2.9718,
-3.0712833,
+3.0720771,
 36,
-"854e07b192c9"
+"1d7359aa05a6"
 ],
 "geometry/SGFS02AAAA::framing/member:joist-0-000-0": [
 2.6864469,
@@ -71359,17 +71383,11 @@
 8,
 "aef8bb9edde2"
 ],
-"geometry/SGFS02AAAA::framing/member:sister-10-block-hi": [
-2.7185937,
-3.0099,
-8,
-"bc4a59fcb214"
-],
 "geometry/SGFS02AAAA::framing/member:sister-10-block-lo": [
-2.7122437,
-3.00355,
+2.7439938,
+3.0323896,
 8,
-"42ea4ae773ad"
+"82afe09de821"
 ],
 "geometry/SGFS02AAAA::framing/member:sister-11-block-lo": [
 2.7439938,
@@ -71377,95 +71395,101 @@
 8,
 "82afe09de821"
 ],
-"geometry/SGFS02AAAA::framing/member:sister-12-block-lo": [
-2.7439938,
-3.0323896,
-8,
-"82afe09de821"
-],
-"geometry/SGFS02AAAA::framing/member:sister-13-block-hi": [
+"geometry/SGFS02AAAA::framing/member:sister-12-block-hi": [
 2.6963687,
 2.9845,
 8,
 "b707b7594708"
 ],
-"geometry/SGFS02AAAA::framing/member:sister-13-block-lo": [
+"geometry/SGFS02AAAA::framing/member:sister-12-block-lo": [
 2.6931937,
 2.981325,
 8,
 "69d7ed0b8226"
 ],
-"geometry/SGFS02AAAA::framing/member:sister-14-block-hi": [
+"geometry/SGFS02AAAA::framing/member:sister-13-block-hi": [
 2.7058937,
 2.9972,
 8,
 "7dc434afbc44"
 ],
-"geometry/SGFS02AAAA::framing/member:sister-14-block-lo": [
+"geometry/SGFS02AAAA::framing/member:sister-13-block-lo": [
 2.6995437,
 2.99085,
 8,
 "90dedf64140c"
 ],
-"geometry/SGFS02AAAA::framing/member:sister-15-block-hi": [
+"geometry/SGFS02AAAA::framing/member:sister-14-block-hi": [
 2.7185937,
 3.0099,
 8,
 "bc4a59fcb214"
 ],
-"geometry/SGFS02AAAA::framing/member:sister-15-block-lo": [
+"geometry/SGFS02AAAA::framing/member:sister-14-block-lo": [
 2.7122437,
 3.00355,
 8,
 "42ea4ae773ad"
 ],
-"geometry/SGFS02AAAA::framing/member:sister-16-block-hi": [
+"geometry/SGFS02AAAA::framing/member:sister-15-block-hi": [
 2.7312937,
 3.0226,
 8,
 "52e2f945ab07"
 ],
-"geometry/SGFS02AAAA::framing/member:sister-16-block-lo": [
+"geometry/SGFS02AAAA::framing/member:sister-15-block-lo": [
 2.7249437,
 3.01625,
 8,
 "777abc37290d"
 ],
-"geometry/SGFS02AAAA::framing/member:sister-17-block-hi": [
+"geometry/SGFS02AAAA::framing/member:sister-16-block-hi": [
 2.7439938,
 3.0323896,
 8,
 "82afe09de821"
 ],
-"geometry/SGFS02AAAA::framing/member:sister-17-block-lo": [
+"geometry/SGFS02AAAA::framing/member:sister-16-block-lo": [
 2.7376437,
 3.02895,
 8,
 "23bf98a5f949"
 ],
-"geometry/SGFS02AAAA::framing/member:sister-18-block-hi": [
+"geometry/SGFS02AAAA::framing/member:sister-17-block-hi": [
 2.6963687,
 2.9845,
 8,
 "b707b7594708"
 ],
-"geometry/SGFS02AAAA::framing/member:sister-18-block-lo": [
+"geometry/SGFS02AAAA::framing/member:sister-17-block-lo": [
 2.6931937,
 2.981325,
 8,
 "69d7ed0b8226"
 ],
-"geometry/SGFS02AAAA::framing/member:sister-19-block-hi": [
+"geometry/SGFS02AAAA::framing/member:sister-18-block-hi": [
 2.7058937,
 2.9972,
 8,
 "7dc434afbc44"
 ],
-"geometry/SGFS02AAAA::framing/member:sister-19-block-lo": [
+"geometry/SGFS02AAAA::framing/member:sister-18-block-lo": [
 2.6995437,
 2.99085,
 8,
 "90dedf64140c"
+],
+"geometry/SGFS02AAAA::framing/member:sister-19-block-hi": [
+2.7185937,
+3.0099,
+8,
+"bc4a59fcb214"
+],
+"geometry/SGFS02AAAA::framing/member:sister-19-block-lo": [
+2.7122437,
+3.00355,
+8,
+"42ea4ae773ad"
 ],
 "geometry/SGFS02AAAA::framing/member:sister-2-0": [
 2.6864469,
@@ -71486,36 +71510,24 @@
 "aef8bb9edde2"
 ],
 "geometry/SGFS02AAAA::framing/member:sister-20-block-hi": [
-2.7185937,
-3.0099,
-8,
-"bc4a59fcb214"
-],
-"geometry/SGFS02AAAA::framing/member:sister-20-block-lo": [
-2.7122437,
-3.00355,
-8,
-"42ea4ae773ad"
-],
-"geometry/SGFS02AAAA::framing/member:sister-21-block-hi": [
 2.7312937,
 3.0226,
 8,
 "52e2f945ab07"
 ],
-"geometry/SGFS02AAAA::framing/member:sister-21-block-lo": [
+"geometry/SGFS02AAAA::framing/member:sister-20-block-lo": [
 2.7249437,
 3.01625,
 8,
 "777abc37290d"
 ],
-"geometry/SGFS02AAAA::framing/member:sister-22-block-hi": [
+"geometry/SGFS02AAAA::framing/member:sister-21-block-hi": [
 2.7439938,
 3.0323896,
 8,
 "82afe09de821"
 ],
-"geometry/SGFS02AAAA::framing/member:sister-22-block-lo": [
+"geometry/SGFS02AAAA::framing/member:sister-21-block-lo": [
 2.7376437,
 3.02895,
 8,
@@ -71527,11 +71539,11 @@
 8,
 "a24639509d10"
 ],
-"geometry/SGFS02AAAA::framing/member:sister-4-0": [
-2.7470365,
-3.0327865,
+"geometry/SGFS02AAAA::framing/member:sister-4-block-lo": [
+2.7439938,
+3.0323896,
 8,
-"a24639509d10"
+"82afe09de821"
 ],
 "geometry/SGFS02AAAA::framing/member:sister-5-block-lo": [
 2.7439938,
@@ -71539,11 +71551,17 @@
 8,
 "82afe09de821"
 ],
-"geometry/SGFS02AAAA::framing/member:sister-6-block-lo": [
-2.7439938,
-3.0323896,
+"geometry/SGFS02AAAA::framing/member:sister-6-block-hi": [
+2.7185937,
+3.0099,
 8,
-"82afe09de821"
+"bc4a59fcb214"
+],
+"geometry/SGFS02AAAA::framing/member:sister-6-block-lo": [
+2.7122437,
+3.00355,
+8,
+"42ea4ae773ad"
 ],
 "geometry/SGFS02AAAA::framing/member:sister-7-block-hi": [
 2.7185937,
@@ -73708,8 +73726,8 @@
 "geometry/SGW108AAAA/layer:xps-break": [
 -3.0527625,
 -2.6019125,
-6,
-"f3ba4189af49"
+4,
+"e46183df0235"
 ],
 "geometry/SH0353BNAG-ENDS0/body": [
 3.06705,
@@ -90352,10 +90370,10 @@
 "2e338a8a2966"
 ],
 "member/CMW102AAAA/block-2-jamb-000-0-00": [
--0.06985,
-0.01905,
+-0.079375,
+0.009525,
 2,
-"fbb658015aa9"
+"56afcd521a68"
 ],
 "member/CMW102AAAA/block-2-jamb-000-0-01": [
 0.0,
@@ -90388,10 +90406,10 @@
 "a26592700eb9"
 ],
 "member/CMW102AAAA/block-2-jamb-000-1-00": [
--0.06985,
-0.01905,
+-0.079375,
+0.009525,
 2,
-"fbb658015aa9"
+"56afcd521a68"
 ],
 "member/CMW102AAAA/block-2-jamb-000-1-01": [
 0.0,
@@ -90520,10 +90538,10 @@
 "2e338a8a2966"
 ],
 "member/CMW102AAAA/block-2-sill-000-00": [
--0.06985,
-0.01905,
+-0.079375,
+0.009525,
 2,
-"fbb658015aa9"
+"56afcd521a68"
 ],
 "member/CMW102AAAA/block-2-sill-001-00": [
 0.7239,
@@ -90628,10 +90646,10 @@
 "5fbe38e8103c"
 ],
 "member/CMW102AAAA/buck-sill-000": [
+0.009525,
 0.01905,
-0.028575,
 2,
-"a75000c9796f"
+"4df23ad8095c"
 ],
 "member/CMW102AAAA/buck-sill-001": [
 0.8128,
@@ -90868,10 +90886,10 @@
 "2e338a8a2966"
 ],
 "member/CMW102AAAA/ladder-sill-outer-girt-000": [
--0.06985,
-0.01905,
+-0.079375,
+0.009525,
 2,
-"fbb658015aa9"
+"56afcd521a68"
 ],
 "member/CMW102AAAA/ladder-sill-outer-girt-001": [
 0.7239,
@@ -90922,16 +90940,16 @@
 "6522a14fd200"
 ],
 "member/CMW102AAAA/strapping-jamb-outer-girt-000-0": [
--0.06985,
+-0.079375,
 2.212975,
 2,
-"313e1eb16af7"
+"534568a0d7e2"
 ],
 "member/CMW102AAAA/strapping-jamb-outer-girt-000-1": [
--0.06985,
+-0.079375,
 2.212975,
 2,
-"313e1eb16af7"
+"534568a0d7e2"
 ],
 "member/CMW102AAAA/strapping-jamb-outer-girt-001-0": [
 0.7239,
@@ -94042,10 +94060,10 @@
 "a26592700eb9"
 ],
 "member/CMW107AAAA/block-2-jamb-000-0-00": [
--0.06985,
-0.01905,
+-0.079375,
+0.009525,
 2,
-"fbb658015aa9"
+"56afcd521a68"
 ],
 "member/CMW107AAAA/block-2-jamb-000-0-01": [
 0.0,
@@ -94078,10 +94096,10 @@
 "a26592700eb9"
 ],
 "member/CMW107AAAA/block-2-jamb-000-1-00": [
--0.06985,
-0.01905,
+-0.079375,
+0.009525,
 2,
-"fbb658015aa9"
+"56afcd521a68"
 ],
 "member/CMW107AAAA/block-2-jamb-000-1-01": [
 0.0,
@@ -94114,10 +94132,10 @@
 "a26592700eb9"
 ],
 "member/CMW107AAAA/block-2-sill-000-00": [
--0.06985,
-0.01905,
+-0.079375,
+0.009525,
 2,
-"fbb658015aa9"
+"56afcd521a68"
 ],
 "member/CMW107AAAA/buck-head-000": [
 2.11455,
@@ -94138,10 +94156,10 @@
 "c82f50261d1c"
 ],
 "member/CMW107AAAA/buck-sill-000": [
+0.009525,
 0.01905,
-0.028575,
 2,
-"a75000c9796f"
+"4df23ad8095c"
 ],
 "member/CMW107AAAA/header-0": [
 2.124075,
@@ -94204,10 +94222,10 @@
 "a26592700eb9"
 ],
 "member/CMW107AAAA/ladder-sill-outer-girt-000": [
--0.06985,
-0.01905,
+-0.079375,
+0.009525,
 2,
-"fbb658015aa9"
+"56afcd521a68"
 ],
 "member/CMW107AAAA/plate-bottom-passage-0": [
 0.01905,
@@ -94234,16 +94252,16 @@
 "7dfccb8ef641"
 ],
 "member/CMW107AAAA/strapping-jamb-outer-girt-000-0": [
--0.06985,
+-0.079375,
 2.212975,
 2,
-"313e1eb16af7"
+"534568a0d7e2"
 ],
 "member/CMW107AAAA/strapping-jamb-outer-girt-000-1": [
--0.06985,
+-0.079375,
 2.212975,
 2,
-"313e1eb16af7"
+"534568a0d7e2"
 ],
 "member/CMW107AAAA/strapping-outer-girt-000": [
 -0.2841625,
@@ -99435,18 +99453,6 @@
 2,
 "b1883d40a2ee"
 ],
-"member/CSF603AAAA/bearing-block-0-000": [
-2.746375,
-3.048,
-2,
-"e76b7cb538bf"
-],
-"member/CSF603AAAA/bearing-block-0-001": [
-2.746375,
-3.048,
-2,
-"e76b7cb538bf"
-],
 "member/CSF603AAAA/bearing-block-0-002": [
 2.746375,
 3.048,
@@ -99465,13 +99471,13 @@
 2,
 "e76b7cb538bf"
 ],
-"member/CSF603AAAA/bearing-block-0-007": [
+"member/CSF603AAAA/bearing-block-0-005": [
 2.746375,
 3.048,
 2,
 "e76b7cb538bf"
 ],
-"member/CSF603AAAA/bearing-block-0-008": [
+"member/CSF603AAAA/bearing-block-0-006": [
 2.746375,
 3.048,
 2,
@@ -99495,29 +99501,11 @@
 2,
 "e76b7cb538bf"
 ],
-"member/CSF603AAAA/bearing-block-0-012-cheek-hi": [
-2.784475,
-3.0099,
-2,
-"7033f5ae779f"
-],
-"member/CSF603AAAA/bearing-block-0-012-cheek-lo": [
-2.784475,
-3.0099,
-2,
-"7033f5ae779f"
-],
-"member/CSF603AAAA/bearing-block-0-012-rail-bottom": [
+"member/CSF603AAAA/bearing-block-0-012": [
 2.746375,
-2.784475,
-2,
-"a34fd765ec76"
-],
-"member/CSF603AAAA/bearing-block-0-012-rail-top": [
-3.0099,
 3.048,
 2,
-"4f5bebcd882e"
+"e76b7cb538bf"
 ],
 "member/CSF603AAAA/bearing-block-0-013": [
 2.746375,
@@ -99525,53 +99513,41 @@
 2,
 "e76b7cb538bf"
 ],
-"member/CSF603AAAA/bearing-block-0-014": [
+"member/CSF603AAAA/bearing-block-0-014-cheek-hi": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/CSF603AAAA/bearing-block-0-014-cheek-lo": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/CSF603AAAA/bearing-block-0-014-rail-bottom": [
+2.746375,
+2.784475,
+2,
+"a34fd765ec76"
+],
+"member/CSF603AAAA/bearing-block-0-014-rail-top": [
+3.0099,
+3.048,
+2,
+"4f5bebcd882e"
+],
+"member/CSF603AAAA/bearing-block-0-015": [
 2.746375,
 3.048,
 2,
 "e76b7cb538bf"
 ],
-"member/CSF603AAAA/bearing-block-0-015-cheek-hi": [
-2.784475,
-3.0099,
-2,
-"7033f5ae779f"
-],
-"member/CSF603AAAA/bearing-block-0-015-cheek-lo": [
-2.784475,
-3.0099,
-2,
-"7033f5ae779f"
-],
-"member/CSF603AAAA/bearing-block-0-015-rail-bottom": [
+"member/CSF603AAAA/bearing-block-0-016": [
 2.746375,
-2.784475,
-2,
-"a34fd765ec76"
-],
-"member/CSF603AAAA/bearing-block-0-015-rail-top": [
-3.0099,
 3.048,
 2,
-"4f5bebcd882e"
-],
-"member/CSF603AAAA/bearing-block-0-016-cheek-lo": [
-2.784475,
-3.0099,
-2,
-"7033f5ae779f"
-],
-"member/CSF603AAAA/bearing-block-0-016-rail-bottom": [
-2.746375,
-2.784475,
-2,
-"a34fd765ec76"
-],
-"member/CSF603AAAA/bearing-block-0-016-rail-top": [
-3.0099,
-3.048,
-2,
-"4f5bebcd882e"
+"e76b7cb538bf"
 ],
 "member/CSF603AAAA/bearing-block-0-017-cheek-hi": [
 2.784475,
@@ -99597,11 +99573,29 @@
 2,
 "4f5bebcd882e"
 ],
-"member/CSF603AAAA/bearing-block-0-018": [
+"member/CSF603AAAA/bearing-block-0-018-cheek-lo": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/CSF603AAAA/bearing-block-0-018-rail-bottom": [
 2.746375,
+2.784475,
+2,
+"a34fd765ec76"
+],
+"member/CSF603AAAA/bearing-block-0-018-rail-top": [
+3.0099,
 3.048,
 2,
-"e76b7cb538bf"
+"4f5bebcd882e"
+],
+"member/CSF603AAAA/bearing-block-0-019-cheek-hi": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
 ],
 "member/CSF603AAAA/bearing-block-0-019-cheek-lo": [
 2.784475,
@@ -99621,17 +99615,29 @@
 2,
 "4f5bebcd882e"
 ],
-"member/CSF603AAAA/bearing-block-0-026": [
+"member/CSF603AAAA/bearing-block-0-020": [
 2.746375,
 3.048,
 2,
 "e76b7cb538bf"
 ],
-"member/CSF603AAAA/bearing-block-0-027": [
+"member/CSF603AAAA/bearing-block-0-021-cheek-lo": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/CSF603AAAA/bearing-block-0-021-rail-bottom": [
 2.746375,
+2.784475,
+2,
+"a34fd765ec76"
+],
+"member/CSF603AAAA/bearing-block-0-021-rail-top": [
+3.0099,
 3.048,
 2,
-"e76b7cb538bf"
+"4f5bebcd882e"
 ],
 "member/CSF603AAAA/bearing-block-0-028": [
 2.746375,
@@ -99640,6 +99646,18 @@
 "e76b7cb538bf"
 ],
 "member/CSF603AAAA/bearing-block-0-029": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/CSF603AAAA/bearing-block-0-030": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/CSF603AAAA/bearing-block-0-031": [
 2.746375,
 3.048,
 2,
@@ -99844,6 +99862,30 @@
 "e76b7cb538bf"
 ],
 "member/CSF603AAAA/sister-0-block-lo": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/CSF603AAAA/sister-1-0": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/CSF603AAAA/sister-1-1": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/CSF603AAAA/sister-2-0": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/CSF603AAAA/sister-2-1": [
 2.746375,
 3.048,
 2,
@@ -102322,10 +102364,10 @@
 "127c90fed5de"
 ],
 "member/CSW102AAAA/block-2-jamb-000-0-00": [
-2.97815,
-3.06705,
+2.968625,
+3.057525,
 2,
-"78132438e3c1"
+"ba077650f4f9"
 ],
 "member/CSW102AAAA/block-2-jamb-000-0-01": [
 3.048,
@@ -102358,10 +102400,10 @@
 "938759bee999"
 ],
 "member/CSW102AAAA/block-2-jamb-000-1-00": [
-2.97815,
-3.06705,
+2.968625,
+3.057525,
 2,
-"78132438e3c1"
+"ba077650f4f9"
 ],
 "member/CSW102AAAA/block-2-jamb-000-1-01": [
 3.048,
@@ -102490,10 +102532,10 @@
 "127c90fed5de"
 ],
 "member/CSW102AAAA/block-2-sill-000-00": [
-2.97815,
-3.06705,
+2.968625,
+3.057525,
 2,
-"78132438e3c1"
+"ba077650f4f9"
 ],
 "member/CSW102AAAA/block-2-sill-001-00": [
 3.7719,
@@ -102598,10 +102640,10 @@
 "f336c335bd91"
 ],
 "member/CSW102AAAA/buck-sill-000": [
+3.057525,
 3.06705,
-3.076575,
 2,
-"8327ad8a80d4"
+"ca20329b22ca"
 ],
 "member/CSW102AAAA/buck-sill-001": [
 3.8608,
@@ -102838,10 +102880,10 @@
 "127c90fed5de"
 ],
 "member/CSW102AAAA/ladder-sill-outer-girt-000": [
-2.97815,
-3.06705,
+2.968625,
+3.057525,
 2,
-"78132438e3c1"
+"ba077650f4f9"
 ],
 "member/CSW102AAAA/ladder-sill-outer-girt-001": [
 3.7719,
@@ -102892,16 +102934,16 @@
 "f0831c4a35e5"
 ],
 "member/CSW102AAAA/strapping-jamb-outer-girt-000-0": [
-2.97815,
+2.968625,
 5.260975,
 2,
-"d0b994aaf0c9"
+"14d8a394508d"
 ],
 "member/CSW102AAAA/strapping-jamb-outer-girt-000-1": [
-2.97815,
+2.968625,
 5.260975,
 2,
-"d0b994aaf0c9"
+"14d8a394508d"
 ],
 "member/CSW102AAAA/strapping-jamb-outer-girt-001-0": [
 3.7719,
@@ -113379,17 +113421,11 @@
 4,
 "484d792b15fd"
 ],
-"member/SGFS02AAAA/sister-10-block-hi": [
-2.7185937,
-3.0099,
-4,
-"e9782f69290f"
-],
 "member/SGFS02AAAA/sister-10-block-lo": [
-2.7122437,
-3.00355,
+2.7439938,
+3.0323896,
 4,
-"d82b164599db"
+"49fef0498802"
 ],
 "member/SGFS02AAAA/sister-11-block-lo": [
 2.7439938,
@@ -113397,95 +113433,101 @@
 4,
 "49fef0498802"
 ],
-"member/SGFS02AAAA/sister-12-block-lo": [
-2.7439938,
-3.0323896,
-4,
-"49fef0498802"
-],
-"member/SGFS02AAAA/sister-13-block-hi": [
+"member/SGFS02AAAA/sister-12-block-hi": [
 2.6963687,
 2.9845,
 4,
 "43c2922bd599"
 ],
-"member/SGFS02AAAA/sister-13-block-lo": [
+"member/SGFS02AAAA/sister-12-block-lo": [
 2.6931937,
 2.981325,
 4,
 "1263e96349b0"
 ],
-"member/SGFS02AAAA/sister-14-block-hi": [
+"member/SGFS02AAAA/sister-13-block-hi": [
 2.7058937,
 2.9972,
 4,
 "468498e0584e"
 ],
-"member/SGFS02AAAA/sister-14-block-lo": [
+"member/SGFS02AAAA/sister-13-block-lo": [
 2.6995437,
 2.99085,
 4,
 "759694dcde8c"
 ],
-"member/SGFS02AAAA/sister-15-block-hi": [
+"member/SGFS02AAAA/sister-14-block-hi": [
 2.7185937,
 3.0099,
 4,
 "e9782f69290f"
 ],
-"member/SGFS02AAAA/sister-15-block-lo": [
+"member/SGFS02AAAA/sister-14-block-lo": [
 2.7122437,
 3.00355,
 4,
 "d82b164599db"
 ],
-"member/SGFS02AAAA/sister-16-block-hi": [
+"member/SGFS02AAAA/sister-15-block-hi": [
 2.7312937,
 3.0226,
 4,
 "316684953d32"
 ],
-"member/SGFS02AAAA/sister-16-block-lo": [
+"member/SGFS02AAAA/sister-15-block-lo": [
 2.7249437,
 3.01625,
 4,
 "65bbbf47ab39"
 ],
-"member/SGFS02AAAA/sister-17-block-hi": [
+"member/SGFS02AAAA/sister-16-block-hi": [
 2.7439938,
 3.0323896,
 4,
 "49fef0498802"
 ],
-"member/SGFS02AAAA/sister-17-block-lo": [
+"member/SGFS02AAAA/sister-16-block-lo": [
 2.7376437,
 3.02895,
 4,
 "da31a2418411"
 ],
-"member/SGFS02AAAA/sister-18-block-hi": [
+"member/SGFS02AAAA/sister-17-block-hi": [
 2.6963687,
 2.9845,
 4,
 "43c2922bd599"
 ],
-"member/SGFS02AAAA/sister-18-block-lo": [
+"member/SGFS02AAAA/sister-17-block-lo": [
 2.6931937,
 2.981325,
 4,
 "1263e96349b0"
 ],
-"member/SGFS02AAAA/sister-19-block-hi": [
+"member/SGFS02AAAA/sister-18-block-hi": [
 2.7058937,
 2.9972,
 4,
 "468498e0584e"
 ],
-"member/SGFS02AAAA/sister-19-block-lo": [
+"member/SGFS02AAAA/sister-18-block-lo": [
 2.6995437,
 2.99085,
 4,
 "759694dcde8c"
+],
+"member/SGFS02AAAA/sister-19-block-hi": [
+2.7185937,
+3.0099,
+4,
+"e9782f69290f"
+],
+"member/SGFS02AAAA/sister-19-block-lo": [
+2.7122437,
+3.00355,
+4,
+"d82b164599db"
 ],
 "member/SGFS02AAAA/sister-2-0": [
 2.6864469,
@@ -113506,36 +113548,24 @@
 "484d792b15fd"
 ],
 "member/SGFS02AAAA/sister-20-block-hi": [
-2.7185937,
-3.0099,
-4,
-"e9782f69290f"
-],
-"member/SGFS02AAAA/sister-20-block-lo": [
-2.7122437,
-3.00355,
-4,
-"d82b164599db"
-],
-"member/SGFS02AAAA/sister-21-block-hi": [
 2.7312937,
 3.0226,
 4,
 "316684953d32"
 ],
-"member/SGFS02AAAA/sister-21-block-lo": [
+"member/SGFS02AAAA/sister-20-block-lo": [
 2.7249437,
 3.01625,
 4,
 "65bbbf47ab39"
 ],
-"member/SGFS02AAAA/sister-22-block-hi": [
+"member/SGFS02AAAA/sister-21-block-hi": [
 2.7439938,
 3.0323896,
 4,
 "49fef0498802"
 ],
-"member/SGFS02AAAA/sister-22-block-lo": [
+"member/SGFS02AAAA/sister-21-block-lo": [
 2.7376437,
 3.02895,
 4,
@@ -113547,11 +113577,11 @@
 2,
 "fa952c5c243c"
 ],
-"member/SGFS02AAAA/sister-4-0": [
-2.7470365,
-3.0327865,
-2,
-"fa952c5c243c"
+"member/SGFS02AAAA/sister-4-block-lo": [
+2.7439938,
+3.0323896,
+4,
+"49fef0498802"
 ],
 "member/SGFS02AAAA/sister-5-block-lo": [
 2.7439938,
@@ -113559,11 +113589,17 @@
 4,
 "49fef0498802"
 ],
-"member/SGFS02AAAA/sister-6-block-lo": [
-2.7439938,
-3.0323896,
+"member/SGFS02AAAA/sister-6-block-hi": [
+2.7185937,
+3.0099,
 4,
-"49fef0498802"
+"e9782f69290f"
+],
+"member/SGFS02AAAA/sister-6-block-lo": [
+2.7122437,
+3.00355,
+4,
+"d82b164599db"
 ],
 "member/SGFS02AAAA/sister-7-block-hi": [
 2.7185937,

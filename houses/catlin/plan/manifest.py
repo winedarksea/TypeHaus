@@ -67,7 +67,8 @@ _library = Library(
                            decking_selection.with_selected_decking(assemblies.MATERIALS),
                            {"waterproofing": products.GCP_BITUTHENE_3000.tag}))),
                *plant_types.FOLIAGE_MATERIALS, *bath_finish.FAUCET_MATERIALS,
-               *drywall.DRYWALL_MATERIALS, *products_paint.PAINT_MATERIALS),
+               *drywall.DRYWALL_MATERIALS, *products_paint.PAINT_MATERIALS,
+               *french_door_installations.DOOR_INSTALLATION_MATERIALS),
     assemblies=tuple(assemblies.ASSEMBLIES),
     # Brand and model for the products this house has actually chosen — identity only,
     # never a price (#28). The types above point at these by ``product_ref``.

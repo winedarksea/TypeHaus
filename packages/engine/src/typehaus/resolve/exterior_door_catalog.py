@@ -20,8 +20,18 @@ def add_catalog_installation(model, wall, opening, assembly, clad):
     sections = catalog_sill_sections(spec, installation, placement, opening, layout)
     unknown, conflicts = (list(assembly.unknown), list(assembly.conflicts))
     foam_bed = spec.support_kind == "foam_bed"
-    support = (foam_bed_support_report(spec) if foam_bed
-               else cantilever_support_report(spec, layout.projection, layout.spacing))
+    bridge = spec.support_kind == "girt_bridge"
+    if bridge:
+        from typehaus.resolve.exterior_door_bridge import bridge_installation
+
+        support, bridge_sections, bridge_conflicts, bridge_unknown = bridge_installation(
+            model, wall, opening, placement, layout, clad)
+        sections = (*sections, *bridge_sections)
+        conflicts.extend(bridge_conflicts)
+        unknown.extend(bridge_unknown)
+    else:
+        support = (foam_bed_support_report(spec) if foam_bed
+                   else cantilever_support_report(spec, layout.projection, layout.spacing))
     if not any(item.tag == spec.support_ref for item in (*model.walls, *model.floors)):
         conflicts.append(f"approach support reference {spec.support_ref} does not resolve")
     if support["member_status"] == "FAIL":
@@ -33,10 +43,10 @@ def add_catalog_installation(model, wall, opening, assembly, clad):
         )
     elif support["connection_status"] == "FAIL":
         conflicts.append("approach support connection exceeds its documented capacity")
-    if layout.end >= layout.outlet:
+    if layout.end >= layout.outlet and not bridge:
         conflicts.append("catalog sill leaves no exterior approach")
     # A foam-bed tread lies ON its water sheet by design, with no bearers in its path.
-    if (not foam_bed
+    if (not foam_bed and not bridge
             and layout.approach_front - layout.thickness <= layout.pan_front + layout.membrane):
         conflicts.append("catalog approach blocks the membrane drainage path")
     if layout.crest - spec.receiver_depth.meters < layout.seat + spec.receiver_pan_clearance.meters:
@@ -48,15 +58,24 @@ def add_catalog_installation(model, wall, opening, assembly, clad):
         conflicts.append("house/deck movement closes the approach gap")
     if spec.flashing_overlap.meters <= spec.movement_vertical.meters:
         conflicts.append("house/deck movement exhausts flashing overlap")
+    if foam_bed:
+        from typehaus.resolve.exterior_door_foam_bed import foam_bed_water_path
+
+        water, water_conflicts, water_unknown, water_report = foam_bed_water_path(
+            model, wall, opening, placement, layout)
+        sections = (*sections, *water)
+        conflicts.extend(water_conflicts)
+        unknown.extend(water_unknown)
+        report.update(water_report)
+    elif not bridge:
+        unknown.append("AridDek approach is an outer envelope; board/rib and cross-bearer "
+                       "drainage detailing needs installed sections")
     unknown.extend(
         (
-            "foam-bed tread: the outlet of its drain slot, the water sheet's laps (under "
-            "the pan lip, onto the next solid) and the box sides' seal need installed "
-            "sections"
-            if foam_bed else
-            "AridDek approach is an outer envelope; board/rib and cross-bearer drainage "
-            "detailing needs installed sections",
             "catalog outline does not establish installed sweep compression or hinge datum",
+            # A foam-bed sheet is shingled under the pan, so no apron bond is claimed.
+            "SureSill installed section and pan-to-sill sealant remain unconfirmed"
+            if foam_bed else
             "SureSill installed section, compatible apron bond and pan-to-sill sealant "
             "remain unconfirmed",
         )

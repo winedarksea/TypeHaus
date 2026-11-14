@@ -169,8 +169,13 @@ def place_exterior_door(model, wall, opening, assembly, specification):
     if factory is None:
         unknown.append("factory jamb depth/hinge datum is undocumented; frame remains schematic")
     if not any(c.specification.role == "sill" for c in assembly.components):
-        unknown.append("exact sill bearing, finish stops and exterior approach support "
-                       "await section")
+        catalog = specification.catalog_installation
+        designed = (specification.approach_bearing is not None
+                    or (catalog is not None and catalog.support_kind == "foam_bed"))
+        # A designed approach is graded where it is built; only the factory sill remains.
+        unknown.append("exact sill bearing and finish stops await section" if designed
+                       else "exact sill bearing, finish stops and exterior approach support "
+                            "await section")
     # Section offsets on this installation are measured from the factory frame's
     # inside face; leaf-mounted seals instead follow the leaf. Transition offsets
     # were already located at the former floor joint by resolve_doorway.
@@ -186,7 +191,7 @@ def place_exterior_door(model, wall, opening, assembly, specification):
 
         assembly = add_catalog_installation(model, wall, opening, assembly, clad)
     else:
-        assembly = add_sill_design(assembly, opening, clad)
+        assembly = add_sill_design(assembly, opening, clad, model, wall)
     if specification.exterior_wrap_material_ref:
         from typehaus.resolve.exterior_door_wrap import wrapped_installation_boards
 

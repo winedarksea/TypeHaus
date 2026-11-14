@@ -10,12 +10,16 @@ _IN = 0.0254
 def catalog_sill_sections(spec, installation, placement, opening, layout):
     builder = DoorSectionBuilder(placement.outward_sign, layout.width)
     _add_factory_sill(builder, spec, layout)
+    # A girt bridge has no boards and no supports of its own; its apron, drip and draining
+    # strips come from ``exterior_door_bridge.add_bridge_sections``.
+    bridge = spec.support_kind == "girt_bridge"
     if spec.support_kind == "foam_bed":
         _add_foam_bed_tread(builder, spec, layout)
-    else:
+    elif not bridge:
         _add_approach_boards(builder, spec, layout)
-    _add_pan_and_apron(builder, spec, opening, layout)
-    if spec.support_kind != "foam_bed":
+    pan_end = placement.outward_sign * placement.frame_outer_m if bridge else layout.end
+    _add_pan_and_apron(builder, spec, opening, layout, apron=not bridge, pan_end=pan_end)
+    if spec.support_kind not in ("foam_bed", "girt_bridge"):
         _add_approach_supports(builder, spec, placement, layout)
     return tuple(builder.sections)
 
@@ -67,7 +71,8 @@ def _add_factory_sill(builder, spec, layout):
         extension_drop = spec.sill_extender_depth.meters * tan(
             radians(spec.sill_extender_slope_degrees)
         )
-        extension_top = spec.sill_extender_height.meters - extension_drop
+        # A 5-degree extender falls nearly to a feather edge; keep its 1/16" nose wall.
+        extension_top = max(spec.sill_extender_height.meters - extension_drop, _IN / 16)
         section(
             f"catalog-sill-extender-{spec.sill_extender_ref}",
             (
@@ -119,9 +124,48 @@ def _add_approach_boards(builder, spec, layout):
     )
 
 
-def _add_pan_and_apron(builder, spec, opening, layout):
-    section = builder.section
+def _add_pan_and_apron(builder, spec, opening, layout, apron=True, pan_end=None):
     rectangle = builder.rectangle
+    pan_end = layout.end if pan_end is None else pan_end
+    if apron:
+        _add_apron(builder, spec, layout)
+    rectangle(
+        "pan-back-dam",
+        layout.start - layout.membrane,
+        layout.start,
+        layout.pan_back,
+        layout.seat + 1.5 * _IN,
+        spec.pan_material_ref,
+        "membrane",
+    )
+    rectangle(
+        "stock-pan-coordination-envelope",
+        layout.start,
+        pan_end,
+        layout.base,
+        layout.seat,
+        spec.frame_material_ref,
+        "door_frame",
+        span=opening.width_m - 2 * layout.membrane,
+        purchase="kit_included",
+        source_url=spec.pan_source_url,
+    )
+    for side in (-1, 1):
+        rectangle(
+            f"pan-jamb-end-dam-{side}",
+            layout.start,
+            pan_end,
+            layout.pan_back,
+            layout.seat + 6 * _IN,
+            spec.pan_material_ref,
+            "membrane",
+            span=layout.membrane,
+            along=side * (layout.width / 2 + layout.membrane / 2),
+        )
+
+
+def _add_apron(builder, spec, layout):
+    section = builder.section
     section(
         "impermeable-pan-apron",
         (
@@ -144,39 +188,6 @@ def _add_pan_and_apron(builder, spec, opening, layout):
         spec.pan_material_ref,
         "membrane",
     )
-    rectangle(
-        "pan-back-dam",
-        layout.start - layout.membrane,
-        layout.start,
-        layout.pan_back,
-        layout.seat + 1.5 * _IN,
-        spec.pan_material_ref,
-        "membrane",
-    )
-    rectangle(
-        "stock-pan-coordination-envelope",
-        layout.start,
-        layout.end,
-        layout.base,
-        layout.seat,
-        spec.frame_material_ref,
-        "door_frame",
-        span=opening.width_m - 2 * layout.membrane,
-        purchase="kit_included",
-        source_url=spec.pan_source_url,
-    )
-    for side in (-1, 1):
-        rectangle(
-            f"pan-jamb-end-dam-{side}",
-            layout.start,
-            layout.end,
-            layout.pan_back,
-            layout.seat + 6 * _IN,
-            spec.pan_material_ref,
-            "membrane",
-            span=layout.membrane,
-            along=side * (layout.width / 2 + layout.membrane / 2),
-        )
 
 
 def _add_approach_supports(builder, spec, placement, layout):

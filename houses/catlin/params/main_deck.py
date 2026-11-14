@@ -40,11 +40,13 @@ from typehaus.quantities import M_PER_IN
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus import (
     DeckLayer,
+    FillerBlock,
     FloorSystem,
     JoistReinforcement,
     JoistSpec,
     Layer,
     LayerFunction,
+    PlyFastening,
     Strongback,
     ft,
     inch,
@@ -396,7 +398,10 @@ EAST_FLOOR = FloorSystem(
         at=pt(inch(256), inch(3.25)), plies=3, member="1.75x11.875 LVL", blocking=False,
         extent=(inch(218.34375), inch(293.65625)),
         source="flush band header over D-B-SUNKEN (Door.header_in_band) — 2-ply Microllam "
-               "LVL 2.0E, Weyerhaeuser TJ-9000 (July 2026)"),
+               "LVL 2.0E, Weyerhaeuser TJ-9000 (July 2026)",
+        # TJ-9000 p.30 (top-loaded, 2 plies of 1 3/4"); TJ-4000 p.28 filler to the edge TJI 230.
+        fastening=PlyFastening(fastener="10d", rows=3, spacing=inch(12), faces="one"),
+        filler=FillerBlock(stock="2x6 + 1/2\" sheathing", nails=15)),
         *_wall_top_blocks("W-B-S4", (inch(350), inch(398)), _S_WALL_LINES)),
     # RM-M-LIVING's fireplace piers pass through this deck in the pockets between joists
     # 005/006; the joists run continuous and the subfloor cut is DERIVED
