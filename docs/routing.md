@@ -131,6 +131,9 @@ exterior wall. Every rule has a hand-worked note (`routing/oracle.py`).
 | A duct proposal carries its `DuctStandard`; an elbow snaps within 10 degrees of the stamped angles, the one snap the catalog and the bill share | `RouteProposal.duct_standard`, `resolve/duct_standard.ELBOW_SNAP_DEG` | duct basis §7.5 |
 | Condensate (`sanitary=False`) is laid at 1/4"/ft and goes to 3/16 or the IMC 307.2.1 floor of 1/8 only when that beats the 768 in-per-in/ft penalty (or 1/4 refuses); `mep.drain_slope` FAILs below 1/8 and ADVISES below 1/4; cleanouts only on sanitary runs | `routing/gravity.graded_route`, `resolve/mep_slope`, `cli/route_cleanouts` | `mep_condensate_routing_basis.md` §4, §5, §8 |
 | A tree tie is ON its collector (1/8"); the step into it may cross the collector, never ride or leave it; a branch ties into a plumb drop's side at its own height; a refusal is reported per fixture | `cmd_route_tree.TIE_TOLERANCE_M`, `gravity_band.band_obstacles`, `route_tree_branches.Branches` | drain basis §13 |
+| A flat rectangular duct reads its half-height in z, not its plan radius: corridor windows and tiers, floor-member and bar windows, bearing-bay boxes, rails | `RoutingSpace.z_r`, `Penetrations.z_r`, `floor_bars.crossed` | duct basis §5 |
+| A recessed can's housing is a hard prism (kind `can`) over its body; it nominates no lattice line and its edges are tested exactly, as a round prism's are | `resolve/can_housings`, `routing/obstacles`, `graph._NO_TURN` | `mep.ceiling_can_framing` |
+| A trunk's gate offers its middle plane and both extremes, so a run on the middle plane (catlin's PR-B-HW-BATH2) is passed on a tier | `supply_tree.gate_for` | `mep_supply_trunk_basis.md` §5 |
 
 **A fixture's arm and vent.** `--fixture` on a drain fixture searches the arm and its vent
 together: the arm's reachable take-offs (`arm_reach`) seed the gravity search at their arm
@@ -268,20 +271,32 @@ and a supply end on a shower-assembly inlet leaves on a straight stub along the 
   stay authored by owner decision.
 - The supply trunk search carries the house's outside as space prisms
   (`gravity_band.outside_prisms`, 12" holes at run ends) and retries free of the outline, with a
-  notice, only when no interior lane crosses the floor system. On catlin it still leaves the house
-  past W-M-W2/3/4: the main-floor seam near y=208" has no lattice crossing though the authored trunk
-  crosses at x=57" (3 freeze FAILs and a hydrant bury reading on `trunk:CW`). Branches do not get
-  the prisms (row budget).
+  notice, only when no interior lane crosses the floor system. The main-floor seam was never
+  missing a crossing: PR-B-HW-BATH2 (z -7.7 to -4.7") sat across the gate's one middle plane at
+  y 187-191", so every column stopped there. The gate now offers both tiers and the trunk lays
+  inside the house (`trunk:CW` freeze FAIL 3 to 1, hydrant 1 to 0). What is left: the trunk's
+  `-END` riser runs 0.9 ft in W-M-E1's bay, and PR-B-FILLER-CW and PR-S-SUITE-LAV-CW are no longer
+  laid (the filler's end stands in SUPPLY-GATE). Branches do not get the outside prisms (row
+  budget).
 - Supply branches teeing beside a sibling or the trunk can still overlap by 0.3-1"; there is no
   no-collinear-approach rule in the search.
 - A tree branch starts at its fixture's drain port (`mep.fixture_port_connection`), its profile at
   the storey datum with a plumb drop between, and lands on its collector's final snapped invert
   when within 1/4". A wall-hung fixture's port sits on the wall axis, so its drop stands in the
   stud plane (`mep.run_through_stud`, as with `--fixture`); the cavity stub is open.
-- A recessed can's housing is not a routing obstacle (`mep.ceiling_can_framing` FAILs
-  ED-B-STAIR-CAN1 against the kitchen sink drain on `tree:main`).
 - A 3" WC arm the authored route makes with a 1/8 bend can exceed 72" on the Manhattan
   lattice (basement WC: 73.8"); trees have no diagonal jogs and no vent-aware arm.
+- DU-B-ERV-RET-TRUNK and DU-B-ERV-SUP-TRUNK stay refused for what is authored, not for a prism's
+  shape: SUP's 12" kit lead ends at z -35.4", 1.5" into DU-ERV-EA's underside (its first turn needs
+  a tip at -36.9" or lower), and RET's tip stands 0.37" inside DU-ERV-OA's riser prism (0.13" gap
+  authored, 0.5" clearance routed). Squaring a run prism's ends (the body stops at its vertex) is
+  right but adds a second offset per bend and takes `tree:main`'s 2" lattice past
+  `MAX_CANDIDATE_LINES` (492 y-lines), so it is not applied.
+- A riser at a bearing line: `mep.riser_through_deck` reads the box's flat 2x6 rails as 1.5" ribbons
+  about `box_centre`, the box is 5.5" wide, and `floor_blocking.crossing_runs` frames it only
+  round a run inside the block's footprint, so a riser 1.6" off the block stands on a rail the box
+  was never framed round. The router lets risers pass bearing bays on purpose (`bearing_bays`);
+  refusing the block and rail footprint lays 0 of 28 on `trunk:CW`. The fix is the resolver's.
 - `--lift` still refuses a supply whose unlifted branch tees on its first leg ("loses N"), and
   grades each re-laid line on its own, against the authored runs.
 - `--group` offers at most four tie stations (`cli/group_ties`): two authored, then the main's

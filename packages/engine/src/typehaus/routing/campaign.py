@@ -179,7 +179,7 @@ def proposal_prisms(proposal: RouteProposal, *, inflate_m: float) -> list[HardPr
     envelope = run_envelope(proposal.kind, proposal.tag,
                             [(x, y) for x, y, _z in proposal.points],
                             [z for _x, _y, z in proposal.points],
-                            section, inflate_m=inflate_m, flat_ends=True)
+                            section, inflate_m=inflate_m)
     return [HardPrism(tag=envelope.tag, kind="run", footprint=prism.footprint,
                       z0_m=prism.z0_m, z1_m=prism.z1_m)
             for prism in envelope.prisms]

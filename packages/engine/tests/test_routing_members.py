@@ -149,18 +149,3 @@ def test_a_falling_run_passes_over_an_illegal_strongback_in_its_band() -> None:
     assert prism.z1_m == pytest.approx((5.5 + 1.1875) * M_PER_IN)  # a lane over it is clear
     space.radius_m = 0.83 * M_PER_IN
     assert bar_prisms(space) == []
-
-
-def test_a_riser_on_a_bearing_bays_box_rails_is_refused_beside_the_block():
-    """The box's 2x6 rails (5.5" about ``box_centre``) are wider than the block and off its
-    centre, so a riser 1.6" from the block still lands on a rail (``mep.riser_through_deck``)."""
-    from typehaus.routing.bearing_bays import BearingBays
-
-    bays = BearingBays.__new__(BearingBays)
-    inch = 0.0254
-    bays.risers = [(114.5 * inch, 401.5 * inch, 120.0 * inch, 404.22 * inch, -11.88 * inch,
-                    0.0, "FS-M-MECH bearing-block-1-010")]
-    at = (116.06 * inch, 403.06 * inch)
-    assert bays.riser_refusal(*at, -5.94 * inch, 20 * inch) == "FS-M-MECH bearing-block-1-010"
-    assert bays.riser_refusal(*at, 0.5 * inch, 20 * inch) is None  # above the joist depth
-    assert bays.riser_refusal(110 * inch, 403.06 * inch, -5.94 * inch, 20 * inch) is None

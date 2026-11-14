@@ -30,6 +30,7 @@ from typehaus.routing.space import (
 #: Two coordinates closer than this are one line. A sixteenth of an inch: finer than any
 #: dimension this engine authors and coarser than any float noise it produces.
 _LINE_TOL_M = 0.0015875
+_NO_TURN = ("flange", "outside", "exterior", "can")  # nominate no lines; a can is tested exactly
 
 
 @dataclass(frozen=True)
@@ -244,14 +245,14 @@ def candidate_lines_at(space: RoutingSpace,
     # the nominal plane nominates lines — catlin's 221 segments took the main tree past the
     # cap. A rail it only crosses: the bays between rails are corridors already (§13).
     for prism in space.banded if plan_search else ():
-        if prism.kind in ("rail", "flange", "outside", "exterior") or (prism.kind == "run" and (
+        if prism.kind in ("rail", *_NO_TURN) or (prism.kind == "run" and (
                 prism.z1_m < reach[0] or prism.z0_m > reach[1])):
             continue
         px0, py0, px1, py1 = prism.footprint.bounds
         xs.extend((px0, px1))
         ys.extend((py0, py1))
     for prism in space.hard:
-        if prism.footprint.is_empty or prism.kind in ("flange", "outside", "exterior"):
+        if prism.footprint.is_empty or prism.kind in _NO_TURN:
             continue  # never turned at
         if prism.z1_m < reach[0] or prism.z0_m > reach[1]:
             continue

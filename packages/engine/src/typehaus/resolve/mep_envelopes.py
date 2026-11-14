@@ -283,16 +283,14 @@ def run_sections(model: ResolvedModel) -> dict[str, tuple[float, float, str | No
 
 def run_envelope(kind: str, tag: str, path: Any, z: Any,
                  section: tuple[float, float, str | None], *,
-                 inflate_m: float = 0.0, inflate_z_m: float | None = None,
-                 flat_ends: bool = False) -> Envelope:
+                 inflate_m: float = 0.0, inflate_z_m: float | None = None) -> Envelope:
     """One prism per segment, banded over that segment's own z range.
 
     ``inflate_m`` is the caller's clearance and is applied in plan and in elevation alike.
     A router passes ``radius + clearance``; a check comparing two runs passes the gap it is
     grading against, or zero and compares the prisms. ``inflate_z_m`` (default: the same)
     grows the elevation by the mover's half-DEPTH, which a flat rectangular duct's is not
-    its half-width. ``flat_ends`` (the router's) squares a segment's ends: the body stops at
-    its vertex, so the mover reaches ``inflate_m`` past it, not the body's half-width too.
+    its half-width.
 
     A **riser** — a repeated plan point at two elevations — has no plan length, so its
     footprint is the point buffered. It is still a prism: a vertical standing in a doorway
@@ -320,12 +318,8 @@ def run_envelope(kind: str, tag: str, path: Any, z: Any,
     for index in range(len(path) - 1):
         a, b = path[index], path[index + 1]
         za, zb = z[index], z[index + 1]
-        if a == b:
-            footprint = Point(a).buffer(grow_plan)
-        elif flat_ends and inflate_m > 0.0:
-            footprint = _flat_buffer(a, b, grow_plan, inflate_m)
-        else:
-            footprint = LineString([a, b]).buffer(grow_plan)
+        geometry = (Point(a) if a == b else LineString([a, b]))
+        footprint = geometry.buffer(grow_plan)
         if footprint.is_empty:
             continue
         prisms.append(Prism(tag=tag, kind=kind, footprint=footprint,
@@ -334,24 +328,12 @@ def run_envelope(kind: str, tag: str, path: Any, z: Any,
     return Envelope(tag=tag, kind=kind, prisms=tuple(prisms), gaps=tuple(gaps))
 
 
-def _flat_buffer(a: Any, b: Any, side_m: float, reach_m: float) -> Any:
-    """A segment's strip: ``side_m`` each side, square ends ``reach_m`` past each end."""
-    import math
-
-    from shapely.geometry import LineString
-
-    k = reach_m / math.dist(a, b)
-    dx, dy = (b[0] - a[0]) * k, (b[1] - a[1]) * k
-    return LineString([(a[0] - dx, a[1] - dy), (b[0] + dx, b[1] + dy)]).buffer(
-        side_m, cap_style="flat")
-
-
 def envelopes(model: ResolvedModel, *, inflate_m: float = 0.0,
-              inflate_z_m: float | None = None, flat_ends: bool = False) -> list[Envelope]:
+              inflate_z_m: float | None = None) -> list[Envelope]:
     """Every run's envelope, in ``run_polylines`` order."""
     sections = run_sections(model)
     return [run_envelope(kind, tag, path, z, sections.get(tag, (0.0, 0.0, None)),
-                         inflate_m=inflate_m, inflate_z_m=inflate_z_m, flat_ends=flat_ends)
+                         inflate_m=inflate_m, inflate_z_m=inflate_z_m)
             for kind, tag, path, z in run_polylines(model)]
 
 

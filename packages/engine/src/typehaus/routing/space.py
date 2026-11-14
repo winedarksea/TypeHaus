@@ -341,14 +341,15 @@ class RoutingSpace:
 
     def _exact_footprints(self) -> list[Any]:
         """See :attr:`_exact`. A footprint filling under 90% of its bounding box is one the
-        midpoint can miss — a buffered riser is 79%, an oblique run far less."""
+        midpoint can miss — a buffered riser is 79%, an oblique run far less — and a recessed can,
+        whose edges nominate no lattice lines."""
         from shapely import prepared
 
         if self._exact is None:
             out: list[Any] = []
             for prism in self.hard:
                 bounds = prism.footprint.envelope.area
-                boxy = bounds <= 0 or prism.footprint.area / bounds >= 0.9
+                boxy = prism.kind != "can" and (bounds <= 0 or prism.footprint.area / bounds >= 0.9)
                 out.append(None if boxy
                            else prepared.prep(prism.footprint.buffer(-_GRID_M)))
             self._exact = out

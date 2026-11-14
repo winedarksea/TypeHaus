@@ -329,7 +329,7 @@ def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] 
     # says so.
     from typehaus.resolve.mep_envelopes import envelopes
 
-    for envelope in envelopes(model, inflate_m=inflate, inflate_z_m=zi, flat_ends=True):
+    for envelope in envelopes(model, inflate_m=inflate, inflate_z_m=zi):
         if envelope.tag in avoid or envelope.tag in touch:
             continue
         for prism in envelope.prisms:
