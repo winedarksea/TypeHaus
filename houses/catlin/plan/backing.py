@@ -428,4 +428,9 @@ ATTIC_BACKING = [
                 start=inch(16.75), length=inch(30.5),
                 elevation=inch(25), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="bar sink hanger (27 in.)"),
+    # ED-A-HP1-AH-DISC (plan/electrical_attic.py) straddles the stud at 36"; two bays, face to face.
+    WallBacking(uid="NSYWSTQN8A", tag="BK-A-C2B-HP1-DISC", wall_ref="W-A-C2B", face="right",
+                start=inch(20.75), length=inch(30.5),
+                elevation=inch(45), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="ED-A-HP1-AH-DISC enclosure"),
 ]

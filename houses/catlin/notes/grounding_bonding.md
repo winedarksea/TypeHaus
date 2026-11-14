@@ -133,3 +133,35 @@ The items to check, all UNCONFIRMED:
 - common grounding (4.14);
 - surge protection (4.20);
 - whether the 24 ga panels may serve as strike termination devices.
+
+## 10. Spa rough-in: what a future tub must meet (owner, 2026-11-14)
+
+No hot tub is set at construction. `CKT-SPA` (50 A 2-pole Class A GFCI, `ED-B-PANEL-2`) is
+built to `ED-B-SPA-DISC` on `W-SG-W1` through `CD-B-SPA` and carries `rough_in_only=True`; its
+11.5 kW stays in the service load calc. `code.NEC_680_spa` reads 680.13, the distances and
+680.26 as N/A from that statement, and still grades the circuit (680.44(A)/680.5(B) GFCI;
+680.7/680.14 UNKNOWN until conductors and EGC are authored). Before a tub is set, model it as an
+`Equipment` of kind `SPA` (footprint, `spa_self_contained`), clear `rough_in_only`, and meet
+(2026 NEC, paraphrases in `docs/nec-2026-paraphrase-680.md`, `-411-230.md`, `-722.md`):
+
+- **680.13:** `ED-B-SPA-DISC` at least 5 ft horizontally from the water's edge (or a permanent
+  barrier giving a 5 ft reach), within sight of the tub, readily accessible. Site the tub so
+  the existing can qualifies, or move the can.
+- **680.22(A)/680.41(B):** no receptacle within 6 ft; at least one general receptacle 6-20 ft,
+  under 6 ft 6 in. up (`ED-B-SPA-RC` qualifies only if it lands in that band); every
+  receptacle within 20 ft GFCI. Other equipment over the low-voltage limit (disconnects,
+  panels, boxes) 5 ft away unless walled off or the tub is listed self-contained. Indoors,
+  680.43 stands in.
+- **680.22(B)-(F), 411.6(B):** luminaires within 5 ft at least 12 ft over the water; GFCI in the
+  5-10 ft band unless 5 ft up and rigidly fixed; low-voltage lighting 10 ft from the water;
+  switches 5 ft; data and signal outlets 10 ft by cord path.
+- **680.26:** equipotential bonding of the shell, the perimeter surface 3 ft out, and fixed metal
+  within 5 ft horizontally or 12 ft above the water (`W-SG-W1` rebar, door frames, railings,
+  `CD-B-SPA`, the disconnect enclosure), 8 AWG solid Cu. **680.42(B)** waives the perimeter only
+  for a listed self-contained aboveground tub, not indoor-only, on or above grade, rim at least
+  28 in. over every perimeter surface within 30 in.
+- **680.11, 722.135(B):** wiring within 5 ft of the inside wall is RMC, IMC, rigid PVC, RTRC,
+  burial-listed jacketed MC, or burial-listed LFNC/LFMC; nothing under the tub unless it serves
+  it. **680.42(A):** a packaged or self-contained unit may take liquidtight flex or a 15 ft GFCI
+  cord. **680.7/680.14:** insulated Cu EGC per 250.122 (12 AWG minimum); EMT is not on the
+  corrosive-location list, so the whip from the can is liquidtight or PVC.

@@ -21,8 +21,10 @@ def test_catlins_spa_circuit_is_graded_and_its_tub_is_not(catlin_model_ro):
     assert verdicts == {"pass", "not_applicable", "unknown"}  # no FAIL
     passed = [f for f in found if f.result.value == "pass"]
     assert len(passed) == 1 and "Class A" in passed[0].message  # 680.44(A) / 680.5(B)
-    unknown = " ".join(f.message for f in found if f.result.value == "unknown")
-    assert "ED-B-SPA-DISC" in unknown and "680.13" in unknown  # waits on the tub footprint
+    unknown = [f.message for f in found if f.result.value == "unknown"]
+    assert len(unknown) == 1 and "680.7" in unknown[0]  # the roughed-in circuit still grades
+    na = " ".join(f.message for f in found if f.result.value == "not_applicable")
+    assert "ED-B-SPA-DISC" in na and "680.26" in na  # rough_in_only: no tub to govern
 
 
 def _ctx(extra_elements, walls=(), indoors=True):

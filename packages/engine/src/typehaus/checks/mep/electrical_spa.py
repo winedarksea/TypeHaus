@@ -5,9 +5,12 @@ Circuit rules (a circuit flagged ``Circuit.spa`` or named by an ``EquipmentKind.
 with 680.5(B)/(C) GFCI class, and 680.41(A) (N/A in a one-family dwelling). Distance rules need
 the tub's footprint (``electrical_spa_geometry``): 680.13 maintenance disconnect, 680.22 and
 680.43 receptacles, switches, outlets, luminaires, 680.41(B). Without a footprint each is one
-UNKNOWN naming what to author. Not graded for want of data: 680.7 and 680.14 (no conductor or
-wiring-method data), 680.26 bonding, 680.44(B)/(C), 680.42(A). Pools and Part V fountains: the
-model has no such element, so absence is not evidence and nothing is emitted.
+UNKNOWN naming what to author, or N/A where every spa circuit is ``rough_in_only`` (no tub
+is installed: the distance and bonding rules govern a tub; the GFCI and 680.7/680.14 circuit
+rules still grade the circuit as roughed in). Not graded for want of data: 680.7 and 680.14
+(no conductor or wiring-method data), 680.26 bonding, 680.44(B)/(C), 680.42(A). Pools and
+Part V fountains: the model has no such element, so absence is not evidence and nothing is
+emitted.
 """
 
 from __future__ import annotations
@@ -91,7 +94,9 @@ def spa_and_hot_tub(ctx: CheckContext) -> list[Finding]:
         disconnects = sorted(e.tag for e in ctx.plan.all_elements()
                              if e.element_kind == "ElectricalDevice"
                              and e.kind is DeviceKind.DISCONNECT and e.circuit in circuits)
-        out += _unmodeled(sorted(circuits), disconnects)
+        rough = sorted(c.tag for c in circuits.values() if c.rough_in_only)
+        out += _rough_in(rough, disconnects) if len(rough) == len(circuits) else \
+            _unmodeled(sorted(circuits), disconnects)
     for spa in spas:
         obj = placed.get(spa.tag)
         if obj is None or len(obj.footprint or ()) < 3:
@@ -123,5 +128,24 @@ def _unmodeled(circuits: list[str], disconnects: list[str]) -> list[Finding]:
                   "listing, rim height, perimeter paving, and any fixed metal within 5 ft "
                   "horizontally or 12 ft above the water; the 680.42(B) waiver of perimeter "
                   "bonding needs a listed self-contained aboveground tub on or above grade",
+                  tuple(circuits), cite(NEC.POOL_EQUIPOTENTIAL, NEC.SPA_BONDING_WAIVER)),
+    ]
+
+
+def _rough_in(circuits: list[str], disconnects: list[str]) -> list[Finding]:
+    """N/A, earned from ``Circuit.rough_in_only``: no tub stands for these rules to govern."""
+    what = ", ".join(circuits)
+    why = f"{what} is roughed in only and states that no tub is installed"
+    return [
+        by_result(_CID, Result.NOT_APPLICABLE,
+                  f"680.13 maintenance disconnect: {why}; "
+                  f"{', '.join(disconnects) or 'its disconnect'} is graded when a tub is set",
+                  tuple(circuits) + tuple(disconnects), cite(NEC.SPA_MAINT_DISCONNECT)),
+        by_result(_CID, Result.NOT_APPLICABLE,
+                  f"680.22/680.43 receptacle, switch, outlet and luminaire distances and "
+                  f"680.41(B)/680.22(F) equipment separation: {why}", tuple(circuits),
+                  cite(NEC.POOL_RECEPTACLES, NEC.SPA_EQUIPMENT_DISTANCE)),
+        by_result(_CID, Result.NOT_APPLICABLE,
+                  f"680.26 equipotential bonding and the 680.42(B) waiver: {why}",
                   tuple(circuits), cite(NEC.POOL_EQUIPOTENTIAL, NEC.SPA_BONDING_WAIVER)),
     ]

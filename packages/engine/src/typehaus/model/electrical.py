@@ -45,6 +45,11 @@ class Circuit(Element):
     # Supplies a spa or hot tub: ``code.NEC_680_spa`` grades it (NEC 680.44) even where the
     # tub itself is not modeled. Authored; a circuit an ``EquipmentKind.SPA`` names counts too.
     spa: bool = False
+    # The circuit is roughed in only: it ends at its disconnect or outlet and the equipment it
+    # is sized for is not installed. Rules that govern only installed equipment read N/A.
+    rough_in_only: bool = False
+    # The breaker carries a lock-off fixed in place with or without the lock (110.25).
+    breaker_lock_off: bool = False
     # AFCI protection at the breaker. NEC 210.12 requires it on the 120V branch circuits
     # serving nearly every habitable room, and unlike GFCI there is no device-level
     # alternative in common use — the breaker is where it lives, so the flag lives here and

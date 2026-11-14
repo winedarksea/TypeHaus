@@ -82,6 +82,9 @@ GREE_FLEXX_ULTRA_24_AH = EquipmentType(
         policy=ClearancePolicy.REQUIRED,
         source="Gree FXU24 submittal 2026-01-27 p.6; indoor installation manual section 4.2",
     ),),
+    # No heat kit (FXU24 submittal 01272026, Indoor Unit); a fitted kit's row governs.
+    min_circuit_ampacity_a=4.7,
+    max_overcurrent_a=15,
     cooling_capacity_btuh=24000,
     hspf2=10.0,
     seer2=18.0,
@@ -194,6 +197,8 @@ GREE_FLEXX_ULTRA_24_OD = EquipmentType(
             citation="NEEP ccASHP id 504980, AHRI 215213329, 70 F return, read 2026-09-18.",
         ),
     ),
+    min_circuit_ampacity_a=21.0,  # FXU24 submittal 01272026, Outdoor Unit
+    max_overcurrent_a=25,
     cooling_capacity_btuh=24000,
     min_operating_temp_f=-22.0,
     hspf2=10.0,
@@ -292,6 +297,9 @@ GREE_MULTI_U30 = EquipmentType(
             citation="NEEP ccASHP id 392050, AHRI 215218915, 70 F return, read 2026-09-18.",
         ),
     ),
+    # GREE_MUL30HP_230V_R32_SUB_04022026, Electrical; the 03142025 revision printed MOCP 35.
+    min_circuit_ampacity_a=23.0,
+    max_overcurrent_a=30,
     cooling_capacity_btuh=28400,
     min_operating_temp_f=-22.0,
     hspf2=10.0,
@@ -400,6 +408,8 @@ GREE_SAPPHIRE_9_OD = EquipmentType(
             citation="NEEP ccASHP id 393164, AHRI 214802444, 70 F return, read 2026-09-18.",
         ),
     ),
+    min_circuit_ampacity_a=11.0,  # GREE_SAP09HP_230V_R32_AH_AO_SUB_07302025, Electrical
+    max_overcurrent_a=15,
     cooling_capacity_btuh=9100,
     min_operating_temp_f=-22.0,
     hspf2=11.2,

@@ -14,9 +14,18 @@ class EquipmentElectricalFacts(HausModel):
     """Nameplate facts of a piece of equipment (``EquipmentType``)."""
 
     # --- lane I: HVAC (Art. 440) and space heat (Art. 424) ---
+    # 440.4(B) nameplate of multimotor/combination equipment, from the published submittal.
+    # A field-installed accessory (a heat kit) whose row marks the whole unit carries the
+    # combination's values; the circuit is graded against the largest MCA on it.
+    min_circuit_ampacity_a: float | None = None  # MCA
+    max_overcurrent_a: int | None = None  # MOCP: maximum fuse or breaker
 
 
 class DeviceElectricalFacts(HausModel):
     """Listing and rating facts of a wiring device or panel (``ElectricalDeviceType``)."""
 
     # --- lane E: devices, panels, working space (Arts. 404/406/408, 110.26) ---
+
+    # --- lane I (shared with E): disconnect facts read by 440.11 / 440.12(A)(1) ---
+    disconnect_rating_a: int | None = None
+    lockable: bool | None = None  # locks, or needs a tool to open (440.11)
