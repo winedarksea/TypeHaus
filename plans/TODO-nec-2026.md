@@ -1,9 +1,9 @@
 # TODO: 2026 NEC residue (decision #120)
 
 Open items only (delete done ones). Moved out of `plans/TODO.md` 2026-11-14 to keep it under 500
-lines. The rows in `docs/nec-2026-paraphrase.md` (index) are read in the printed code
+lines. The rows in `docs/code-notes/nec-2026-paraphrase.md` (index) are read in the printed code
 (2026-11-13/14); each doc's **Engine** lines list the rules no check grades. `UNCONFIRMED` in
-`model/nec.py` is empty. Latest batch: `docs/nec-2026-paraphrase-followup.md`.
+`model/nec.py` is empty. Latest batch: `docs/code-notes/nec-2026-paraphrase-followup.md`.
 
 ## Owner questions (Catlin)
 

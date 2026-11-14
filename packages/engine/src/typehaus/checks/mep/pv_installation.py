@@ -5,7 +5,7 @@
 - **690.31(D)(1)** PV dc over 30 V or 8 A inside a building runs in a metal raceway.
 - **690.45** the array EGC is no smaller than Table 250.122 gives for the (assumed) OCPD.
 
-Paraphrase and what is not graded: ``docs/nec-2026-paraphrase-690-705-710.md``.
+Paraphrase and what is not graded: ``docs/code-notes/nec-2026-paraphrase-690-705-710.md``.
 """
 
 from __future__ import annotations

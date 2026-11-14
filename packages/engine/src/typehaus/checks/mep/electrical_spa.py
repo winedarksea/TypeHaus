@@ -1,5 +1,5 @@
 """2026 NEC Article 680 as it reaches a spa or hot tub: Parts I and II through 680.42/.43/.45
-and Part IV (680.40-680.44), graded from the model. ``docs/nec-2026-paraphrase-680.md``.
+and Part IV (680.40-680.44), graded from the model. ``docs/code-notes/nec-2026-paraphrase-680.md``.
 
 Circuit rules (a circuit flagged ``Circuit.spa`` or named by an ``EquipmentKind.SPA``): 680.44(A)
 with 680.5(B)/(C) GFCI class, and 680.41(A) (N/A in a one-family dwelling). Distance rules need

@@ -8,7 +8,7 @@ values; a known actual diameter and area may be used instead.
 
 **Read, not coded:** the RH*/SF/TF/XF/fluoropolymer/Z/KF types, Table 5A (compact conductors)
 and Table 8 (conductor properties, area and dc resistance). Nothing in the engine sizes a
-conductor by area or voltage drop, so those stay in ``docs/nec-2026-paraphrase-300.md``.
+conductor by area or voltage drop, so those stay in ``docs/code-notes/nec-2026-paraphrase-300.md``.
 A leaf, sized like ``model/ampacity.SIZES`` (AWG strings, kcmil as bare numbers).
 """
 

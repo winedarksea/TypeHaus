@@ -2,7 +2,7 @@
 
 Read in print by the owner 2026-11-14 (Notes to Tables (1)-(10), Tables 1, 2, 4, 5, 5A, 8).
 The data is in ``raceway_areas`` (Table 4) and ``conductor_areas`` (Table 5); rules are
-paraphrased in ``docs/nec-2026-paraphrase-300.md`` and ``checks/mep/raceway_fill.py`` grades a
+paraphrased in ``docs/code-notes/nec-2026-paraphrase-300.md`` and ``checks/mep/raceway_fill.py`` grades a
 model against them. A leaf: no resolved model here. Areas are in.2, lengths in inches.
 
 Notes carried as code: (3) the EGC counts (``total_area_in2``); (4) a nipple of 24 in. or

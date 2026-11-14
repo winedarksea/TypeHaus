@@ -5,7 +5,7 @@ width) wide and floor to max(6'-6", panel top) high, clear of everything. The pa
 not be centred in that width, so the window slides along the face in 1" steps; any clear
 position passes. Door swings are not graded. The printed 2026 110.26 intro does count them: access
 is impeded if the doors, all open at 90 degrees, leave under 24" wide by 6'-6" high. Not
-modelled (``docs/nec-2026-paraphrase-110-240-625.md``); 110.26(D) lighting and the (E)(2)
+modelled (``docs/code-notes/nec-2026-paraphrase-110-240-625.md``); 110.26(D) lighting and the (E)(2)
 outdoor zone are not graded either.
 
 110.26(E)(1): ``resolve/panel_space.dedicated_spaces`` (the router's hard prism too). A pipe

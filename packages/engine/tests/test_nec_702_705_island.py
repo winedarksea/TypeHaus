@@ -1,5 +1,5 @@
 """Articles 702, 705 Parts I-III and 625.46-625.52 as printed 2026 (see
-docs/nec-2026-paraphrase-702-705-island.md): numbering pins and the standby-capacity advisory."""
+docs/code-notes/nec-2026-paraphrase-702-705-island.md): numbering pins and the standby-capacity advisory."""
 
 from __future__ import annotations
 

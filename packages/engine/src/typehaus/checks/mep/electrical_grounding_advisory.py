@@ -1,6 +1,6 @@
 """ADVISORY grounding reads (decision #123): coordinated SPDs, single-point entry and the
 lightning-ready hooks. Owner design goals, not code: results never carry ERROR severity.
-NFPA 780 rules: ``docs/nfpa-780-paraphrase.md`` (``model/nec.py`` ``NFPA780``).
+NFPA 780 rules: ``docs/code-notes/nfpa-780-paraphrase.md`` (``model/nec.py`` ``NFPA780``).
 """
 
 from __future__ import annotations

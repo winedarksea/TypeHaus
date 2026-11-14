@@ -243,7 +243,7 @@ def rapid_shutdown(ctx: CheckContext) -> list[Finding]:
 
     Read against the printed 690.12(B)(2): the 80 V limit is right. Not graded: (B)(1)'s 30 V
     within 30 s outside the array boundary (no field for a shut-down module's output), the
-    PVHCS alternative and (A)(2) inverter outputs. See ``docs/nec-2026-paraphrase-690-705-710.md``.
+    PVHCS alternative and (A)(2) inverter outputs. See ``docs/code-notes/nec-2026-paraphrase-690-705-710.md``.
     """
     cid, code = "code.NEC_690_12_rapid_shutdown", cite(NEC.RAPID_SHUTDOWN_ARRAY)
     panels = list(ctx.model.solar_panels)
