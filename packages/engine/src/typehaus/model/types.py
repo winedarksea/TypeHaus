@@ -18,6 +18,7 @@ from typehaus.model.built_in_bench import BENCH_ENVELOPE_TOLERANCE_M, BuiltInBen
 from typehaus.model.curtain_track import CurtainTrackSpec
 from typehaus.model.door_hardware import DoorHardwareItem, JambFraming
 from typehaus.model.doorway import DoorwayTreatment
+from typehaus.model.electrical_facts import DeviceElectricalFacts, EquipmentElectricalFacts
 from typehaus.model.enums import (
     DoorOperation,
     LuminaireForm,
@@ -736,7 +737,7 @@ class HeatPumpRating(HausModel):
     citation: str
 
 
-class EquipmentType(FurnitureType, AirHandlingProductFacts):
+class EquipmentType(FurnitureType, AirHandlingProductFacts, EquipmentElectricalFacts):
     needs: frozenset[Service] = frozenset()
     #: The published heating-capacity table, ascending in ``outdoor_db_f`` (→
     #: :class:`HeatPumpRating`). This REPLACES the two scalars that were here —
@@ -1025,7 +1026,7 @@ class RegisterType(FurnitureType, AirHandlingProductFacts):
     neck: TerminalNeck | None = None
 
 
-class ElectricalDeviceType(FurnitureType):
+class ElectricalDeviceType(FurnitureType, DeviceElectricalFacts):
     needs: frozenset[Service] = frozenset({Service.POWER_120})
     # NEC 314.27 (floor boxes; (B) before 2026): floor receptacles need a box listed for it.
     # A general receptacle listing alone does not establish that application.
