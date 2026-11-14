@@ -372,6 +372,8 @@ EQUIPMENT_TYPES = (
                   # `Site.design_temp_heating` (decision #76).
                   resistance_heating_btuh=15695,
                   aux_lockout_above_f=-22.0,
+                  # The FXU24 + kit row at 230 V (submittal 01272026, Accessory Heater table).
+                  min_circuit_ampacity_a=29.9, max_overcurrent_a=35,
                   supplemental_heat=True,
                   source="Gree FLEXA2LHTR05KWD factory electric heat kit for the FLEXX Ultra air handler: 4.6 kW at 240 V (4.6 x 3,412 = 15,695 Btu/h, no cold-weather derate), MCA 29.9 A, maximum overcurrent device 35 A. It mounts INSIDE the EQ-T-GREE-FLEXX-ULTRA-24-AH cabinet on the discharge side of the coil and is staged by the air handler's own 24 VAC control, which is the whole point of the retype: the EQ-T-DUCT-HEATER-2KW it replaces was a generic inline element in the supply plenum, and the DUC24 it was drawn against had no aux-heat terminal to interlock it with. Its job also changed. It is no longer covering a design-temperature shortfall — the outdoor unit makes 21,000 Btu/h at -15 F against a 15,164 Btu/h zone load unaided — but is true backup for defrost recovery and for the hours below the -22 F compressor lockout. `supplemental_heat` like the fireplace: it counts toward its room's zone and opens none of its own.",
                   # Internal to the cabinet (2026-11-11): the air handler's own ports are the

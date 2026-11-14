@@ -250,6 +250,16 @@ NEC_FILL_ATTIC = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-A-BA-E", face="right", distance_from_start=inch(36),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
+    # EQ-S-HP1-AH's 440.14 disconnect. Gree's FXU24 submittal and the R32 heat-kit manual
+    # show a kit breaker behind the service panels but never call it a disconnect, so a
+    # service switch stands in sight: W-A-C2B's east face, ~3' west of the cabinet's SW
+    # corner, its 30" x 36" working space south of the cabinet and supply box.
+    ElectricalDevice(uid="5PNH1D91XX", tag="ED-A-HP1-AH-DISC", kind=DeviceKind.DISCONNECT,
+                     type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP1-AH",
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(4)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-C2B", face="right", distance_from_start=inch(37),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     # Leak sensors (notes/leak_detectors.md): SONOFF SNZB-05P on the floor at each risk point,
     # Zigbee to ZHA, battery (no circuit). HA notifies; nothing depends on them. `position`
     # is the floor point (an Alarm has no wall host or elevation).

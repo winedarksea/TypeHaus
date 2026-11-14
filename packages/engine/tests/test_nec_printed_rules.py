@@ -333,17 +333,26 @@ def test_catlins_heat_pump_disconnects_are_in_plan_sight(catlin_model_ro):
     report = run_from_model(catlin_model_ro, [], tier=Tier.ADVISORY,
                             only="electrical.hvac_disconnect")
     found = [f for f in report.findings if f.check_id == "electrical.hvac_disconnect"]
-    by = {f.element_tags[0]: f.result.value for f in found}
-    assert by == {"EQ-M-HP1-OD": "pass", "EQ-M-HP2-OD": "pass", "EQ-M-HP3-OD": "pass",
-                  "EQ-S-HP1-AH": "unknown"}
+    sight = {f.element_tags[0]: f.result.value for f in found
+             if f.element_tags and f.element_tags[0].startswith("EQ-")}
+    assert sight == {"EQ-M-HP1-OD": "pass", "EQ-M-HP2-OD": "pass", "EQ-M-HP3-OD": "pass",
+                     "EQ-S-HP1-AH": "pass"}
+    ocpd = {f.element_tags[0]: f.result.value for f in found
+            if f.element_tags and f.element_tags[0].startswith("CKT-")}
+    assert ocpd == {"CKT-HP1": "pass", "CKT-HP1-AH": "pass", "CKT-HP2": "pass",
+                    "CKT-HP3": "pass"}  # 440.22 against the Gree submittals' MOCP
 
 
 def test_catlins_space_heat_circuits_carry_125_percent_and_gfci(catlin_model_ro):
     report = run_from_model(catlin_model_ro, [], tier=Tier.ADVISORY,
                             only="electrical.space_heat_circuit")
     found = [f for f in report.findings if f.check_id == "electrical.space_heat_circuit"]
-    assert len(found) == 8 and all(f.result.value == "pass" for f in found)
-    assert sum("GFCI" in f.message for f in found) == 2   # both floor-heat cables
+    graded = [f for f in found if "424.19" not in (f.code_ref or "")]
+    assert len(graded) == 8 and all(f.result.value == "pass" for f in graded)
+    assert sum("GFCI" in f.message for f in graded) == 2   # both floor-heat cables
+    lock = {f.element_tags[0]: f.result.value for f in found if "424.19" in (f.code_ref or "")}
+    assert lock["CKT-HP1-AH"] == "pass"  # ED-A-HP1-AH-DISC in sight of the kit
+    assert set(lock.values()) == {"pass", "unknown"}  # the rest wait on a lock-off
 
 
 def test_bath_zone_reports_the_bask_outlet_and_never_fails(catlin_model_ro):

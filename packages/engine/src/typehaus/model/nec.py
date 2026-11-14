@@ -307,6 +307,7 @@ class NEC:
     SPACE_HEAT_OUTLETS: Final = "424.4(B)"  # two or more heater outlets: 30 A at most
     SPACE_HEAT_GFCI: Final = "424.45(E)"  # under a floor covering; 424.44(E), 424.99(C)(5)
     SPACE_HEAT_DISCONNECT: Final = "424.19"
+    SPACE_HEAT_THERMOSTAT: Final = "424.20(A)"  # marked off, opens all ungrounded, no auto-on
     SPACE_HEAT_LABEL: Final = "424.47"
     SPACE_HEAT_WALLS: Final = "424.48"  # cables and panels in walls: up to 4 ft, GFCI and AFCI
 
