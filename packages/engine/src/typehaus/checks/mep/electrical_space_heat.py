@@ -7,7 +7,8 @@ for two or more heater outlets is 30 A or less; and for a heating-cable zone, GF
 bathrooms and kitchens, 424.45(E) any cable under a floor covering, 424.99(C)(5) panels), read
 from ``Circuit.gfci``. 424.19: a ``DeviceKind.DISCONNECT`` on the circuit in plan sight of every
 heater (no wall between, the 440.14 reading), or a breaker stated lockable open
-(``Circuit.breaker_lock_off``, 110.25); else UNKNOWN. A thermostat is never credited as the
+(``Circuit.breaker_lock_off``, 110.25), or a heater whose type is ``cord_and_plug`` (its factory
+plug, 422.33(A), owner 2026-11-14); else UNKNOWN. A thermostat is never credited as the
 disconnect: 424.20(A) needs a marked off position that directly opens every ungrounded conductor
 and cannot re-energize by itself, which no field states. Not graded: the motor-over-1/8-hp
 split, the panel label (424.47) and the placement rules. A sauna heater is not in Article 424.
@@ -105,10 +106,21 @@ def _disconnect(ctx: CheckContext, circuit, heaters: list[str], stat: bool) -> F
         return next((d.tag for d in discs if d.storey == obj.storey and not _separated(
             body, Point(d.position), _walls(ctx, obj.storey))), None)
 
+    types = {t.tag: t for t in ctx.plan.library.equipment_types}
+    kinds = {e.tag: types.get(e.type_ref) for e in ctx.plan.all_elements()
+             if e.element_kind == "Equipment" and e.tag in heaters}
+
+    def plugged(heater: str) -> bool:
+        return getattr(kinds.get(heater), "utilization_connection", None) == "cord_and_plug"
+
     seen = [in_sight(h) for h in heaters] if discs else []
     if seen and all(seen):
         return passed(_CID, f"{circuit.tag}: {', '.join(sorted(set(seen)))} is in plan sight "
                             f"of {', '.join(heaters)} (no wall between)", tags, code=code)
+    if all(plugged(h) for h in heaters):
+        return passed(_CID, f"{circuit.tag}: {', '.join(heaters)} is cord-and-plug connected, so "
+                            "its factory plug is the disconnect (422.33(A))", tags,
+                      code=cite(NEC.SPACE_HEAT_DISCONNECT, NEC.CORD_PLUG_DISCONNECT))
     if circuit.breaker_lock_off:
         return passed(_CID, f"{circuit.tag}: the breaker locks open (110.25), the 424.19(B)(1) "
                             f"disconnect for {', '.join(heaters)} out of sight", tags, code=code)
@@ -117,5 +129,5 @@ def _disconnect(ctx: CheckContext, circuit, heaters: list[str], stat: bool) -> F
                          f"breaker is not stated lockable open{note}", tags,
                    code=cite(NEC.SPACE_HEAT_DISCONNECT, NEC.SPACE_HEAT_THERMOSTAT),
                    fix="a breaker lock-off fixed in place (breaker_lock_off=True), a "
-                       "disconnect within sight, or for a cord-connected heater its plug "
-                       "(422.33(A)), which no field states")
+                       "disconnect within sight, or for a cord-connected heater "
+                       "utilization_connection='cord_and_plug' (422.33(A))")

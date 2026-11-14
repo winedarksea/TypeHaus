@@ -313,6 +313,7 @@ class NEC:
     LOW_VOLTAGE_LIGHTING_VOLTAGE: Final = "411.4(B)"  # 30 V ac / 60 V dc; wet contact 15 / 30
     BATH_LUMINAIRE_DAMP: Final = "410.10(D)(2)"  # over the tub/shower to 8 ft: damp or wet
     PADDLE_FAN_BATH_ZONE: Final = "422.18(B)"  # no paddle-fan part in the 3 ft x 8 ft zone
+    CORD_PLUG_DISCONNECT: Final = "422.33(A)"  # an accessible factory plug is the disconnect
     STORAGE_WATER_HEATER: Final = "422.13"  # fixed, 120 gal or less: a continuous load
     SPACE_HEAT_CONTINUOUS: Final = "424.5"
     SPACE_HEAT_OUTLETS: Final = "424.4(B)"  # two or more heater outlets: 30 A at most

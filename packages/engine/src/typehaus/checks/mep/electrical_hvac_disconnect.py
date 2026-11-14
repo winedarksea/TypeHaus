@@ -11,8 +11,8 @@ skipped. A unit with no disconnect device on its circuit is UNKNOWN.
 440.4(B)/440.22(C): the breaker is at most the marked maximum OCPD, read from the equipment
 type (``max_overcurrent_a``). A circuit feeding several pieces (an air handler and its heat
 kit) is graded against the one with the largest MCA: a kit's published row marks the unit with
-the kit fitted. 440.35 (conductors at least the MCA) waits on a conductor size, which no circuit
-carries. 440.11 (lock or tool) and 440.12(A)(1) (115% rating) read the disconnect type's
+the kit fitted. 440.35 (conductors at least the MCA) reads ``Circuit.conductor_awg`` at its
+110.14(C)(1) column. 440.11 (lock or tool) and 440.12(A)(1) (115% rating) read the disconnect type's
 ``lockable`` and ``disconnect_rating_a``; 115% of the MCA bounds 115% of the summed rated-load
 currents from above, so a rating at or over it passes and one under it is UNKNOWN.
 Not graded: 440.10 (needs the available fault current at the service), readily accessible,
@@ -25,6 +25,7 @@ from typehaus.checks._authoring import failed, not_applicable, passed, unknown
 from typehaus.checks.mep.electrical_spa_geometry import _separated, _walls
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
+from typehaus.model.ampacity import ampacity, termination_column
 from typehaus.model.enums import DeviceKind
 from typehaus.model.nec import NEC, cite
 
@@ -104,6 +105,17 @@ def _nameplates(ctx: CheckContext, circuits: set[str]) -> dict[str, tuple[str, o
     return out
 
 
+
+def conductor_ampacity(circuit) -> int | None:
+    """The authored conductor's ampacity at its 110.14(C)(1) column; None off the table."""
+    size = circuit.conductor_awg
+    try:
+        column = termination_column(circuit.breaker_amps, size, circuit.termination_temp_c)
+        return ampacity(circuit.conductor_material, size, column)
+    except (KeyError, ValueError):
+        return None
+
+
 def _max_ocpd(ctx: CheckContext, nameplates) -> list[Finding]:
     code = cite(NEC.HVAC_NAMEPLATE, NEC.HVAC_MAX_OCPD)
     circuits = {c.tag: c for c in ctx.plan.library.circuits}
@@ -126,12 +138,22 @@ def _max_ocpd(ctx: CheckContext, nameplates) -> list[Finding]:
         out.append(verb(_CID, f"{name}: {circuit.breaker_amps} A breaker against {tag}'s "
                               f"marked maximum OCPD {mocp} A (MCA {mca} A)", (name, tag),
                         code=code))
-        if mca is not None:
+        if mca is None:
+            continue
+        if circuit.conductor_awg is None:
             awaiting_conductors.append(f"{name} {mca:g} A")
+            continue
+        amp = conductor_ampacity(circuit)
+        verb = passed if amp is not None and amp + 1e-9 >= mca else (
+            failed if amp is not None else unknown)
+        shown = "?" if amp is None else amp
+        out.append(verb(_CID, f"{name}: #{circuit.conductor_awg} {circuit.conductor_material} "
+                              f"at {shown} A against {tag}'s marked MCA {mca:g} A", (name, tag),
+                        code=cite(NEC.HVAC_COMBINATION_CONDUCTORS)))
     if awaiting_conductors:
         out.append(unknown(_CID, "440.35 conductors at least the marked MCA ("
-                                 + ", ".join(awaiting_conductors) + "): no circuit carries a "
-                                 "conductor size", code=cite(NEC.HVAC_COMBINATION_CONDUCTORS)))
+                                 + ", ".join(awaiting_conductors) + "): no conductor size is "
+                                 "authored", code=cite(NEC.HVAC_COMBINATION_CONDUCTORS)))
     return out
 
 

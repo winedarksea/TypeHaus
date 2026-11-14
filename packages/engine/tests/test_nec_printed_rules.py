@@ -352,7 +352,7 @@ def test_catlins_space_heat_circuits_carry_125_percent_and_gfci(catlin_model_ro)
     assert sum("GFCI" in f.message for f in graded) == 2   # both floor-heat cables
     lock = {f.element_tags[0]: f.result.value for f in found if "424.19" in (f.code_ref or "")}
     assert lock["CKT-HP1-AH"] == "pass"  # ED-A-HP1-AH-DISC in sight of the kit
-    assert set(lock.values()) == {"pass", "unknown"}  # the rest wait on a lock-off
+    assert set(lock.values()) == {"pass"}  # floor heat locks off; the plug-in heaters' plugs
 
 
 def test_bath_zone_reports_the_bask_outlet_and_never_fails(catlin_model_ro):
