@@ -37,6 +37,9 @@ DEDICATED_240V_CIRCUITS = (
     # and 625.54 do not apply and the charger's CCID protects; 40 A charge, 125% = 50 A plain.
     Circuit(uid="CKT003AAAA", tag="CKT-EV-1450", slot=9, panel_ref=_PANEL_2, breaker_amps=50, poles=2,
             conductor_awg="6", egc_awg="10", continuous_va=9600,  # EV: continuous in full (owner)
+            # Buried leg CD-B-GAP-EV is a wet location (300.7(B), 310.10(C)): dual-rated wire,
+            # Southwire SIMpull THHN/THWN-2 (SPEC 10000: "THWN-2: Wet locations not to exceed 90° C").
+            conductor_insulation="THHN/THWN-2",
             load_va=9600, description="EV charging, hardwired Grizzl-E 40 A (garage)"),
     # The garage's 240 V point (backup EV charging, tools): one 6-20R, two hots + ground, no
     # neutral. 2-pole GFCI (210.8(A)(2) reaches 125-250 V garage receptacles); no AFCI.

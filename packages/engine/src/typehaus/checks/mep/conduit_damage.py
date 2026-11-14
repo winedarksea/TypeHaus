@@ -9,9 +9,11 @@ from it, measured here to the roof plane (the decking underside is a little lowe
 holds and a shortfall is conservative).
 
 ``mep.raceway_condensation``: 300.9(A) asks a raceway that runs from the interior to the
-exterior of a building to be sealed against warm air circulating to the cold end. No seal is
-modelled, so each such POWER raceway is UNKNOWN (data, Class 2 and the like are outside
-Article 300 by 300.1(B)). 300.9(A)(2) onward is unread.
+exterior of a building to be sealed against warm air circulating to the cold end. A run that
+authors ``sealed_ends`` passes where a sealed end lies in a building (the warm side; which of
+two buildings is warmer is not modelled, so the finding names the host), is ADVISORY where the
+only seal is outdoors, and is UNKNOWN unsealed. POWER raceways only (data, Class 2 and the like
+are outside Article 300 by 300.1(B)). 300.9(A)(2) onward is unread.
 """
 
 from __future__ import annotations
@@ -113,11 +115,38 @@ def raceway_condensation(ctx: CheckContext) -> list[Finding]:
         return [not_applicable(CONDENSATION_CID, "no elevation-placed power raceway passes "
                                "between the interior of a building and the exterior or another "
                                "building", code=code)]
-    return [unknown(
-        CONDENSATION_CID,
-        f"{run.tag} passes from {', '.join(hosts)} "
-        f"{'through the weather' if outdoors else 'into another building'}; the conduit "
-        "or sleeve is not modelled with a seal against warm air reaching its cold end "
-        "(300.9(A)(1))", (run.tag,), code=code,
-        fix="specify a sealant or seal fitting at the warm end") for run, hosts, outdoors
-        in crossing]
+    out = []
+    for run, hosts, outdoors in crossing:
+        group = by_tag[run.tag]
+        authored = ctx.plan.by_tag(run.tag)
+        sealed = authored.sealed_ends if authored is not None else ()
+        crossing_text = (f"{run.tag} passes from {', '.join(hosts)} "
+                         f"{'through the weather' if outdoors else 'into another building'}")
+        if not sealed:
+            out.append(unknown(
+                CONDENSATION_CID, crossing_text + "; the conduit or sleeve is not modelled with "
+                "a seal against warm air reaching its cold end (300.9(A)(1))", (run.tag,),
+                code=code, fix="author ConduitRun.sealed_ends and sealant at the warm end"))
+            continue
+        inside = {end: _building_of(group[0 if end == "start" else -1]) for end in sealed}
+        warm = {end: host for end, host in inside.items() if host}
+        if warm:
+            where = ", ".join(f"{end} (in {host})" for end, host in warm.items())
+            out.append(passed(CONDENSATION_CID, crossing_text + f"; sealed at its {where} with "
+                              f"{authored.sealant}", (run.tag,), code=code))
+        else:
+            out.append(advisory(
+                CONDENSATION_CID, "ADVISORY - " + crossing_text + f"; sealed only at its "
+                f"{' and '.join(sealed)}, which lies outside every building: warm air still "
+                "reaches the cold section", (run.tag,), Result.ADVISORY, code=code,
+                fix="seal the end inside the building"))
+    return out
+
+
+def _building_of(sample) -> str | None:
+    """The building an end sample lies in, or None outdoors."""
+    if sample.kind in ("indoor", "under_building"):
+        return sample.host
+    if sample.kind == "in_wall":
+        return sample.building
+    return None

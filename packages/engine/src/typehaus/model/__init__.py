@@ -180,6 +180,7 @@ from typehaus.model.product import Product
 from typehaus.model.project import Building, Project, Site, Storey
 from typehaus.model.published_cladding import PublishedCladdingLoad
 from typehaus.model.published_web import PublishedWebOpenings
+from typehaus.model.raceway_cables import RacewayCable
 from typehaus.model.rebar import BarSpec, HookConfinement, ReinforcementSpec, RibLayout
 from typehaus.model.refs import (
     Arch,
@@ -470,6 +471,7 @@ __all__ = [
     "Register", "Equipment",
     "ElectricalDevice",
     "Circuit", "LoadManagement", "BoxStandard", "BoxRow", "ConduitRun", "LightRun",
+    "RacewayCable",
     "GroundingStandard", "GroundingElectrode", "BondingConductor", "LabelStandard",
     "DuctStandard", "RoundGaugeRow", "DuctElbowRow", "DuctPartRow", "DuctSupportRow", "PortKit",
     "RectElbowRow",
