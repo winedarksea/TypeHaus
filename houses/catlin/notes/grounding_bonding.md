@@ -127,7 +127,8 @@ by the coordinated SPDs and single-point entry with an IBT.
   - Type 1 `ED-M-SPD` beside the meter-main (230.67).
   - PV DC SPDs at `ED-A-PV-JB` (`ED-A-PV-SPD`) and at the EG4 inverter (`ED-B-INV-SPD`), because
     the EG4's DC surge rating is unpublished.
-  - Type 2 `ED-G-SPD` beside the garage EV outlet.
+  - No garage SPD: `ED-G-SPD` (Leviton 51120-1, discontinued, 3 kA) was dropped 2026-11-14;
+    neither 230.67 nor 215.18 requires one there.
 - The PV DC runs (`CD-B-ATTIC-RISER`, `CD-A-PV-EAST`, `CD-B-PV-INV`) carry `Service.POWER_DC` and
   are continuous EMT.
 - **Single-point entry:** power and data enter on W-M-W1 within 3 ft. `ED-M-DATA-ENTRY` feeds

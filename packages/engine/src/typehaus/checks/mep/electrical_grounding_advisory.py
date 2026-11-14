@@ -54,7 +54,7 @@ def spd_coordination(ctx: CheckContext) -> list[Finding]:
     else:
         out.append(_f(SPD_CID, Result.FAIL, f"no SPD at the service {g.root}", (g.root,), code))
     out.extend(_dc_chain(ctx, code))
-    out.extend(_outbuildings(ctx, code))
+    out.extend(_outbuildings(ctx, code, g.standard))
     return out
 
 
@@ -104,11 +104,17 @@ def _dc_chain(ctx: CheckContext, code: str) -> list[Finding]:
     return out
 
 
-def _outbuildings(ctx: CheckContext, code: str) -> list[Finding]:
+def _outbuildings(ctx: CheckContext, code: str, standard) -> list[Finding]:
     types = device_types(ctx)
     out = []
+    wanted = getattr(standard, "outbuilding_spds", True)
     for bldg, circuits in sorted(crossing_circuits(ctx).items()):
         if len(circuits) <= 1:
+            continue
+        if not wanted:
+            out.append(_f(SPD_CID, Result.PASS, f"{bldg} (fed by {len(circuits)} circuits): the "
+                          "owner declines an outbuilding SPD (GroundingStandard.outbuilding_spds"
+                          f"=False), a goal and not a {NEC.SERVICE_SPD} requirement", (), code))
             continue
         found = sorted(o.tag for o in ctx.model.canvas_objects
                        if ctx.plan.building_of(o.storey) == bldg
