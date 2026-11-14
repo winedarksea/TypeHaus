@@ -2,7 +2,10 @@
 
 215.18(B) / 230.67(B) Ex.: an SPD in each panel holding branch breakers, read from
 ``Circuit.spd``. A panel with none is UNKNOWN, since an SPD in an adjacent enclosure is not
-modeled. 210.11(C)(3): the circuit feeding a 210.52(D) receptacle is 120 V, 20 A and has no
+modeled. 215.18(C) (Type 1 or 2) and (E) (In of 10 kA or more) are not graded: ``Circuit``
+carries no listing or In. A panel fed from an inverter's load port is a feeder panel too
+(feeder: source to final branch OCPD), so the backup panel is held to the same rule.
+210.11(C)(3): the circuit feeding a 210.52(D) receptacle is 120 V, 20 A and has no
 other outlets, unless it serves one bathroom, where that bathroom's other outlets may share it.
 """
 

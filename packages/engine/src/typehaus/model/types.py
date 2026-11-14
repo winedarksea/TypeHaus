@@ -763,6 +763,9 @@ class EquipmentType(FurnitureType, AirHandlingProductFacts):
     # Rated sensible cooling output (Btu/h at the AHRI 95 °F point), graded against the
     # block load's SENSIBLE cooling; the latent is reported beside it.
     cooling_capacity_btuh: float | None = None
+    # Water heaters: rated storage volume, gal. A fixed storage-type heater of 120 gal or less is
+    # a continuous load (NEC 422.13), so its circuit is sized at 125%. None: not stated.
+    storage_gallons: float | None = None
     # Ventilation equipment (ERV/HRV) only: the continuous balanced airflow it moves, and
     # the datasheet sensible recovery effectiveness (0..1) at that flow. Both feed the
     # ventilation term of the block load — never defaulted, because a guessed SRE moves
@@ -833,6 +836,9 @@ class EquipmentType(FurnitureType, AirHandlingProductFacts):
     # against. Note this is NOT the product's name plate PV number (the EG4 "12kPV" puts
     # 8 kW out and takes 12 kW of PV in).
     inverter_kw_continuous: float | None = None
+    # Listed as a power control system for overload control (UL 3141; NEC 130.2, 702.4(A)(3)).
+    # Declared, never inferred; None is "not stated".
+    pcs_listed: bool | None = None
     # Short-duration output ceiling, kW, for motor starting (the datasheet's largest surge
     # step). The autonomy calc compares a compressor's locked-rotor start against it.
     inverter_kw_surge: float | None = None

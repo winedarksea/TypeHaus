@@ -358,6 +358,13 @@ MN_2020 = JurisdictionProfile(
                         cite(NEC.LIGHTNING_BOND))),
         PermitItemSpec("PV system grounding", ("code.NEC_690_47_pv_grounding",),
                        (cite(NEC.PV_GROUNDING),)),
+        PermitItemSpec("PV installation",
+                       ("code.NEC_690_4_pv_bathroom", "code.NEC_690_7_max_voltage",
+                        "code.NEC_690_31_dc_wiring", "code.NEC_690_45_pv_egc_size",
+                        "code.NEC_690_12_initiation"),
+                       (cite(NEC.PV_BATHROOM), cite(NEC.PV_MAX_VOLTAGE_DWELLING),
+                        cite(NEC.PV_DC_WIRING_BUILDING), cite(NEC.PV_EGC_SIZE),
+                        cite(NEC.RAPID_SHUTDOWN_DWELLING))),
         PermitItemSpec("Service surge protection", ("code.NEC_230_67_service_spd",),
                        (cite(NEC.SERVICE_SPD),)),
         PermitItemSpec("Dryer exhaust", ("code.M1502_dryer_exhaust",), ("IRC M1502",),
@@ -764,6 +771,11 @@ MN_2020 = JurisdictionProfile(
          "no stud to fasten to and no depth to recess into, so nothing may be hosted in it. "
          "No IRC section states that and no plan reviewer checks it; it stays in the full "
          "check report, where the framer and the electrician both read it"),
+        ("code.NEC_705_30_source_ocpd",
+         "staged: the breaker's ceiling needs conductor sizes, which no circuit authors yet; "
+         "joins a permit item when they do"),
+        ("code.NEC_680_spa",
+         "staged: 680.13/.22/.26 need the tub modelled; joins a permit item when it is"),
     ),
 )
 

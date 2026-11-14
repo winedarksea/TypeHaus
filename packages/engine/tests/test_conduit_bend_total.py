@@ -1,4 +1,4 @@
-"""``mep.conduit_bend_total`` — NEC 358.26's 360° between pull points, on synthetic runs.
+"""``mep.conduit_bend_total`` — NEC 358.24's 360° between pull points, on synthetic runs.
 
 Every raceway here is flat at 9' and turns 90° in plan at each interior vertex, so a
 section's total is 90° times the bends it holds and nothing is left to a tolerance.

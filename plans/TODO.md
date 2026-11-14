@@ -100,36 +100,19 @@ finished area drops out.
   room declares `exposed_services` (found 2026-11-13: `PR-B-HW-SUITE`'s old y=204" leg sat in the
   stair hall's board). Decide whether exposed services pardon a run inside the board itself.
 
-**Autorouter.** `docs/routing.md` Limitations covers the open supply-trunk finished-volume and
-freeze FAILs, search U-turns, stack-rung refusal cost, and `--lift` on a first-leg tee. Two
-items have details that are recorded only here:
+**Autorouter.** `docs/routing.md` Limitations covers the rest (trunk `-END` riser in W-M-E1's bay,
+branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm, search U-turns,
+`--lift` on a first-leg tee). Open items needing a decision or a resolver change:
 
-- [ ] `--tree PR-M-S-SUITE-DRAIN` lays the LAV on the stack (rung 107.875, `mep_tree_ripup_basis.md`
-  §6) but refuses TUBSH and WC at every rung. Both are real holds: trusses y=224/240 leave only D13,
-  held by PR-B-CW-SUITE (§13), D14 likewise, and the WC's D12 is PR-A-HW-STUBATH's. The authored tub
-  lane (west in the 241.75..254.25 bay, north through the y=256 truss's D13) is never reached: the stack
-  column is bracketed by PR-M-KITCH-VENT and W-M-CLN's plates, and no single blocking prism is pinned.
-  The LAV proposal still starts at the fixture floor (120") rather than its port (141.5").
-- [ ] `--group BATH2` refuses TUB (held to its own vent) and WC (no tie: the wye inlets at
-  y 262/271 on PR-B-MAIN-DRAIN block y 254-279). The partial lay grades 2 FAIL and 1 illegal
-  bore. The authored three-vent design stands; vent-free 908.2 groups are an AHJ question.
-
-  The strongest findings, in priority order:
-1. High: PEX bends can overlap despite each passing clearance checks. The search checks each bend independently, without tracking straight length between bends. A small reproduction priced two 4″-radius bends separated by only 1″ as valid field bends; their tangent lengths require 8″. Track distance since the previous turn and enforce combined take-offs, including room for fittings when field bends cannot fit. [search.py (line 215)](/Users/colincatlin/Documents-NoCloud/TypeHaus/packages/engine/src/typehaus/routing/search.py:215)
-2. High: later alternatives lose gravity metadata. Repricing returns a fresh Route when coordinates match, dropping the searched start elevation, vent take-off, vent context, and condensate grade. Those values affect proposal geometry and vent construction. I reproduced the metadata loss. Preserve the original route and replace only its pricing fields. [alternatives.py (line 102)](/Users/colincatlin/Documents-NoCloud/TypeHaus/packages/engine/src/typehaus/routing/alternatives.py:102)
-3. High: saved proposals omit cleanouts included in evaluation. Console rendering and candidate grading include DrainCleanout elements, but JSON serialization and saved proposed.py omit them. I reproduced this discrepancy: accepting the saved source produces a different design from the one graded. Serialize all proposed elements through one shared path. [route_report.py (line 55)](/Users/colincatlin/Documents-NoCloud/TypeHaus/packages/engine/src/typehaus/cli/route_report.py:55)
-4. High: the scorecard discards evaluation refusals. It extracts only .introduced from the evaluation. A candidate that cannot resolve consequently supplies an empty finding list, allowing zero evaluation FAILs/UNKNOWNs to conceal an ungradable result. I confirmed this with a mocked resolver refusal. Preserve evaluation status and coverage, and make an evaluation refusal fail regression checks. [route_scorecard.py (line 108)](/Users/colincatlin/Documents-NoCloud/TypeHaus/packages/engine/src/typehaus/cli/route_scorecard.py:108)
-5. Major selection improvement: grading cannot change the campaign winner. Campaigns rank by refusals, skips, and cost, then evaluate only the winner. A cheaper network with construction failures can therefore win without a cleaner alternative being graded. Evaluate a bounded shortlist and distinguish complete, constructible networks from provisional ones before comparing cost. [cmd_route_house.py (line 127)](/Users/colincatlin/Documents-NoCloud/TypeHaus/packages/engine/src/typehaus/cli/cmd_route_house.py:127)
-6. Medium: room penalties depend on midpoint sampling. An entire edge is charged—or exempted—according to whether its midpoint lies inside a room. This can misprice substantial travel through finished space and change the preferred lane. Charge the actual intersection length with each room’s volume. [graph.py (line 432)](/Users/colincatlin/Documents-NoCloud/TypeHaus/packages/engine/src/typehaus/routing/graph.py:432)
-7. Medium: duct alternatives share a cumulative label cutoff. Separate alternative searches reuse one refusal report, whose cumulative reached count controls termination. Earlier searches consume later searches’ budgets, while elapsed-time budgets restart independently. Separate per-search limits from aggregate diagnostic counts. [duct_search.py (line 215)](/Users/colincatlin/Documents-NoCloud/TypeHaus/packages/engine/src/typehaus/routing/duct_search.py:215)
-For your real-world objective, I would fix those correctness issues before tuning weights. Then prioritize the documented U-turn problem and finished-volume/freeze failures. Construction violations should determine candidate eligibility; fitting, penetration, access-panel, and support costs should distinguish the eligible routes.
-
-For token efficiency, --summary is a useful foundation, but it retains all evaluation messages and most refusal details. Add a bounded decision view containing:
-- Completion and grading status.
-- FAIL/UNKNOWN counts grouped by check and blocker.
-- A few representative findings, with references into the full artifact.
-- Length, fittings, penetrations, cleanouts, and unresolved construction obligations.
-That would let subagents compare candidates without repeatedly reading geometry or duplicated diagnostic prose.
+- [ ] `--tree PR-M-S-SUITE-DRAIN` refuses TUBSH and WC at every rung: real holds (trusses y=224/240
+  leave only D13, held by PR-B-CW-SUITE; D14 likewise; the WC's D12 is PR-A-HW-STUBATH's).
+- [ ] `--group BATH2` refuses TUB (held to its own vent) and WC (the wye inlets at y 262/271 on
+  PR-B-MAIN-DRAIN block y 254-279). The authored three-vent design stands; 908.2 is an AHJ question.
+- [ ] `mep.riser_through_deck` on a proposed riser beside a bearing-bay box: `floor_blocking.crossing_runs`
+  frames the box only round runs inside the block's footprint, and the check reads the flat 2x6 rail
+  1.5" wide. Fix in the resolver: use the box footprint and drop the top rail where a riser passes.
+- [ ] Since the three-plane trunk gate, `trunk:CW` no longer lays PR-B-FILLER-CW (end inside
+  SUPPLY-GATE, 9 nodes reachable) or PR-S-SUITE-LAV-CW; cause not found.
 
 ### Performance / energy follow-ups
 
@@ -225,148 +208,7 @@ That would let subagents compare candidates without repeatedly reading geometry 
 - Upgrade fasteners still uncounted (decision #105 covers panel screws, connector schedules, treated framing, roof/screen sheathing): wall sheathing and subfloor nailing, fascia/trim screws, window-install screws, and the HL angles' site-length through-bolts.
 - Backup battery, still open (`houses/catlin/notes/backup_power.md` §11-§12): EG4's UL 9540 certificate naming 12kPV + WallMount Indoor; how the 12kPV's load port behaves on its "No Battery" setting (ask EG4); its GEN port rating; declare future storage and V2H on the Xcel application; DSI's position on a UL 9540 3rd-ed. DC ESS battery; a freeze drain-down plan; a small LFP UPS for Home Assistant, the router and the leak valve. After the 2026-11-02 trim the always-on tier passes summer's 48 h and the bridge (0.28 kWh margin) and still fails December's cycle (§6).
 - V2H spare raceway (routed 2026-11-07, `backup_power.md` §10): add PVC 2" rows to `prices.toml [conduit_fittings]`; the ICF supplier/engineer details rebar round the three 6" CD-GAR sleeve boxouts in W-B-N2 and W-GF-S2. `CD-B-GAP-EV` ends at +5'10" abs while `ED-G-EV-1450` is at 48" AFF (+14" abs): an existing over-rise to check.
-- **2026 NEC residue (decision #120).** The rows in `docs/nec-2026-paraphrase.md` are read in
-  the printed code (2026-11-13/14); its **Engine** lines list the rules no check grades. The
-  rest of `model/nec.py` is still unread (below), though `UNCONFIRMED` is empty.
-  - Catlin, owner to decide: the 250.104(A) water bond BC-B-WATER is #4 Cu, under Table
-    250.102(C)(1) on every basis (printed table read): **#2 Cu** for a 320 A service (310.12(A)
-    at 83%: 300 Cu / 400 Al; also 2 x 4/0 Al summed), **#1/0 Cu** only if the service counts as
-    400 A (400 Cu / 600 Al); a larger utility lateral raises it (3/0 Cu cap). The GECs (#6 rods,
-    #4 Ufer) meet 250.66(A)/(B) on every basis. Open: the lateral's size (Xcel/electrician).
-  - The 4/0 Al SER feeders (180 A at 75 degC) behind the 200 A mains are permitted by 240.4(B)
-    (Table 240.6(A): no 180 A, 200 A next); 310.12(B) cannot size them. Loads 136 A, 121 A.
-  - **ESS, Articles 706/480 (read; `docs/nec-2026-paraphrase-480-706.md`), owner questions:**
-    (1) 706.15(B) wants an outdoor initiation device that stops all ESS export; `ED-M-RSD-INIT`
-    is the candidate, but `backup_power.md` section 8 says it opens the ESS only "with supported
-    EG4 batteries in closed loop", unverified, and not whether the load port (backup panel) and
-    battery contactor drop too: ask EG4. (2) 480.7(B) reads, for a dwelling, as an outdoor
-    battery disconnect or remote control labelled EMERGENCY DISCONNECT with no 60 V condition
-    (the ~51 V WallMount is under 60 V, so (A) asks for no dc disconnect): AHJ question; if
-    it applies, `ED-M-RSD-INIT` could be the remote control (it must open the battery) and
-    must then carry the EMERGENCY DISCONNECT label, not only "PV rapid shutdown". (3) 706.15(D)
-    wants a disconnect within sight of the separate, field-serviced battery: none is modelled;
-    is the WallMount's own breaker it (EG4's listing)? Also unmodelled: 706.15(C) "ENERGY
-    STORAGE SYSTEM DISCONNECT" label, 480.7(F) nominal-voltage label near the battery,
-    480.10(E) door hardware if the AHJ calls `RM-B-ESS` a battery room. Battery voltage is not
-    authored (14.3 kWh / 280 Ah is about 51 V). **Printed 690/705 (2026-11-14) does not settle
-    (1) or (2):** 690.12(C)(2)(a) makes "off" shut down the PV systems only; if a remote-operated
-    disconnect is ever put under that switch, 705.20(C)(3) wants one that opens by itself on loss
-    of control power (not a shunt trip); 705.20(F) and 404.8(C) are the backfeed warnings;
-    705.10/480.7(G) put any battery disconnect's location on the service plaque.
-  - **Art. 440 (read; `docs/nec-2026-paraphrase-440.md`):** `electrical.hvac_disconnect` passes
-    the three outdoor units' disconnects (in plan sight) and is UNKNOWN for `EQ-S-HP1-AH`
-    (no disconnect on `CKT-HP1-AH`: integral, or a service switch in the attic?). HP2's and
-    HP3's nameplate MCA and maximum OCPD (30 A, 15 A breakers) are not authored: add
-    `min_circuit_ampacity_a` and `max_overcurrent_a` to the equipment types from the Gree
-    submittals to grade 440.4(B)/440.22/440.35. 440.8 bath zone: `electrical.bath_hvac_zone`
-    passes (nearest unit 6.1 ft). Owner questions: lockable or tool-opened enclosures for the
-    outdoor `ED-M-HP1/2/3-DISC` (440.11); give `ED-T-DISCONNECT-3R` an ampere rating for
-    440.12(A)(1) (115% of the MCA/RLA); available fault current for 440.10 (440.4(B) Ex. 3
-    exempts dwellings from marking a rating). No room A/C or generator exists (Part VII, 445).
-  - **Art. 424 (read; `docs/nec-2026-paraphrase-424.md`):** `electrical.space_heat_circuit`
-    passes all eight heating circuits (125% and GFCI on both floor-heat cables). Owner
-    questions: lock-off or service-disconnect reading for the heating breakers (424.19), the
-    Schluter thermostat as disconnect (424.20(A)), and a 424.47 label on `ED-B-PANEL` slots 29
-    and 33. The GFPE floor-heat item is closed (2026 asks for GFCI).
-  - **Arts. 404/406/408 (partial; `docs/nec-2026-paraphrase-404-408.md`):**
-    `electrical.bath_receptacle_zone` is UNKNOWN for `ED-M-BATH2-TUB-RC` (the Bask outlet,
-    inside the 3 ft zone, 406.9(C)(1): AHJ question) and `ED-A-STUBATH-GFCI` (is the shower
-    glass a fixed barrier?). `ED-S-PLANT-HEAT-RC` is on a D315S relay: mark it "controlled"
-    (406.11(D)). Receptacle types need `weather_resistant`/`in_use_cover` fields for
-    406.9(B)(1). 408.6 needs an available fault current at the service and SCCRs for the
-    panels (none authored); 404.8(C) backfeed signs (ESS/V2H) are unmodelled.
-  - 625.43(C): `CKT-EV-1450`'s only disconnect is its breaker in the basement, remote from the
-    EVSE; a plaque on the unit locating it is not modelled (`electrical.evse_circuit`
-    advisory). 625.40/.41/.54 pass or are N/A. A V2H charger (`CD-B-V2H-SPARE`) needs 625.48
-    (listed and marked; Article 702 or 705; 625.47 if it takes its own feeder).
-  - 110.26 not graded: the door-swing sentence (doors open to 90 degrees leave 24 in. x 6 1/2
-    ft), (D) lighting (the panels' room `RM-B-FURNACE` has four luminaires on plain switches;
-    no typed marker for an automatic-only control) and the (E)(2) outdoor zone of the
-    meter-main (nothing foreign authored within 6 ft).
-  - 310.15(C)(1) / 334.80(A): `electrical.nm_sleeve_ampacity` passes all 12 derived EMT NM
-    sleeves (77 in. worst, four conductors at 80%: 24 A capped at 20 A on a 20 A breaker, no
-    margin). Overhead NM bundles are not modelled.
-  - Revisit Class C SPGFCI for CKT-HP1-3 after the NFPA Standards Council (2026-12-15/16,
-    ACCA/AHRI appeals); they are Class A breakers meanwhile.
-  - Not modelled: 120.11(A) motor treatment inside 120.6, 120.7(C)(2) minimum operating
-    current for a PCS that also monitors noncontrolled loads, 314.16(B)(2)/(3)/(6) box-fill
-    allowances (clamps, support fittings, terminal blocks), 314.24(B) projection add-ons.
-  - Engine checks that read the printed rule loosely (audit 2026-11-13):
-    `receptacle_spacing` credits a receptacle on the other face of a wall and breaks wall space
-    at a stationary appliance only beside a cabinet (no fireplace break); (C)(1) Ex. 1 breaks
-    the wall line only where the appliance touches it, not at 12"/18"; `island_receptacle`
-    skips peninsulas, has no (C)(3) 20" window and FAILs where (C)(2) provisions would do;
-    (D) measures to the vanity, not each bowl, and accepts a free-standing receptacle;
-    `appliance_receptacles` never traces an appliance's own circuit; the AFCI occupancy table
-    reads STORAGE as closets and omits STAIR and a UTILITY room holding laundry; (G)(1) treats
-    an unset mount as the floor; `code.NEC_250_94_ibt` is N/A without a data entry and models
-    no terminal count, external mount or building-disconnect IBT; `gec_size` grades only the
-    250.66(A)/(B) caps; the water bond is graded for connection, not size; no field states
-    250.24(B) neutral isolation; 705.12 tries (B)(1)/(B)(2)(a) only and cannot see the
-    opposite-end placement or label; `code.NEC_250_32_separate_buildings` traces circuits, not
-    feeders (a garage subpanel reads N/A) and not the EGC; `rod_electrodes` skips 250.53(A)(4)
-    drive and (B)/(D); 250.64 protection is unread; no service conductor size, so Table 250.66's
-    general rows and 250.64(D) stay ungraded.
-  - Cheap checks still missing: 210.52(F) laundry, 210.52(H) hallways, 210.11(C)(4) garage
-    circuit.
-  - **Still to read in print.** For each one: paraphrase it, and either confirm the
-    `model/nec.py` row or put it in `UNCONFIRMED`. Numbers not yet in `nec.py` are 2023
-    numbers, to be confirmed.
-    - Cited and graded: 110.26(A)/(E)(1) (`electrical_panel_space`); 215.18 (SPD);
-      240.24(A), 404.10(A)(2) (`electrical_panel_height`); 300.24 and 352/358/362.26
-      (`conduit_bends`); 300.6, 300.7(A)-(G), 300.8(A)(3), 300.9(A) (`conduit_burial`, `conduit_damage`); 334.15(B)/(C); 210.70(A)(3); 130.2 (PCS listing).
-      (690.12, 690.47, 705.10, 705.20 and 710.10 are read: `docs/nec-2026-paraphrase-690-705-710.md`.)
-    - PV, interconnection and stand-alone, **still to read in print**: 690.1-690.9(A)
-      (incl. 690.7 voltage, 690.8 circuit current), 690.13-690.43 apart from what is read
-      (690.15(B) onward, 690.31, 690.41, the start of 690.43), 705.1-705.4, the end of
-      705.25(C), 705.28 (circuit sizing), 705.30 (overcurrent), 705.40 onward, 710.12 onward.
-    - **Owner questions, Articles 690/705 (2026-11-14):** (1) EG4: does opening the 12kPV RSD
-      loop stop the load port and the battery contactor too (706.15(B))? (2) 480.7(B): AHJ
-      reading, and can `ED-M-RSD-INIT` be the emergency disconnect's remote control? (3) EG4:
-      with `CKT-ESS-GRID` open, can the grid-port terminals stay energized (705.20(F) warning)?
-      (4) 705.12(B)(2)(a): `CKT-ESS-GRID` is at slot 40 of 54 with ten spaces below it; is that
-      "the opposite end" to the AHJ, or move it (the last row cannot take a 2-pole)? 241.7 A
-      of 270 A. (5) Author the labels (690.12(D) building label at `ED-M-METER`, the (D)(2)
-      switch wording, the 705.10 plaque with its emergency phone, the 705.12(B)(2)(b) warning
-      at `ED-B-PANEL`)? None is modelled. (6) Which device is the 690.13 PV system disconnect
-      (the 12kPV's DC switch: lockable, marked)? Does the 12kPV carry a listed PV arc-fault
-      interrupter (690.11, strings 383.8 V cold)? What is each module receiver's listed
-      shutdown voltage (690.12(B)(1) wants 30 V in 30 s outside the array boundary)?
-    - Cited but used by nothing (read them, or drop the constant): 120.5(C),
-      120.41, 342.26, 344.26, Table 352.30, 358.30, 362.30, 410.10(D), Ch. 9
-      Table 4 and Note 2.
-    - Not cited, but Catlin triggers them:
-      - Art. 680 spa (read 680.1-680.27(A), 680.34-680.54; 680.27(B)-680.33 unread):
-        `code.NEC_680_spa` grades `CKT-SPA` (Class A GFCI PASS, 680.41(A) N/A). The tub is not
-        modeled, so 680.13 (`ED-B-SPA-DISC`), 680.22/.41(B) distances and 680.26 bonding are
-        UNKNOWN. Catlin must author: an `EquipmentKind.SPA` with footprint and
-        `spa_self_contained`; in-ground vs listed aboveground (the 680.42(B) waiver), rim
-        height, perimeter paving; metal within 5 ft (`W-SG-W1`, railings); `CKT-SPA`'s EGC and
-        wiring method (680.7, 680.14; today EMT). See `docs/nec-2026-paraphrase-680.md`.
-      - 225.41, 230.70: no field marks an emergency disconnect, its marking or a
-        short-circuit rating, so an indoor service disconnect stays UNKNOWN. Also ungraded:
-        230.70(B) marking and (D) plaque for the PV/ESS disconnects, 230.71 count, 230.82
-        supply-side list, 230.90 Ex. 5, and 225.30/225.31/225.33-225.39 (see the garage bullet).
-      - The sauna heater's article and listing rule: not in Article 424 as printed, still
-        unlocated.
-      - 210.63 (service receptacle). Art. 440 is read in full; Article 445 only to 445.12(B).
-      - 422.13 and 422.31: water heater and fastened appliances.
-      - The opening of 406.9(B), the rest of 406.14 and 408.4, and the 406.30(C) Ex.
-        electronic-switch rule: unread. A page prints switch marking and electronic switches as
-        406.48/406.50 while 404.20 prints the same marking text: the numbering is unresolved.
-      - Article 300 (read 2026-11-14, `docs/nec-2026-paraphrase-300.md`; renumbered: damage is
-        300.6, underground 300.7, firestop 300.23): **still to read** 300.2-300.3; 300.9(A)(2)
-        through 300.21 (support, boxes at splices, free conductor length, securing, raceway
-        fill); 300.25(C) onward; 358.10 (Table 300.7(A) Note 6) and the per-raceway
-        bend sections. **Owner questions:** (1) `SL-WK-C` carries no vehicles? With its west edge
-        3-3.5 in. short of the 6 in. the walk row needs, the buried EV (`CD-B-GAP-EV`, 14.2 in.
-        under the walk) and V2H (`CD-B-V2H-GAP`, 13.8 in.) legs read 18 in. required: widen the
-        walk, move the runs east, or bury 4 in. deeper? (2) buried EMT: which corrosion
-        protection, which conductor type (wet-rated), and is the V2H pipe Schedule 80 throughout
-        (the model holds only `pvc`)? (3) is `CD-B-SPA`, cast into `W-SG-W1`, acceptable to the
-        inspector? (4) a seal at the warm end of each raceway leaving the house (300.9(A)(1))?
-        (5) a modelled fire-resistance-rated assembly for 300.23 (ESS closet is an owner standard).
-      - 210.70(A)(2) stair switching, 210.19/210.20 continuous loads.
+- **2026 NEC residue (decision #120): moved to `plans/TODO-nec-2026.md`** (owner questions for the Catlin electrical, engine gaps, and the list still to read in print).
 - **Rapid-shutdown initiator** (`ED-M-RSD-INIT`, `backup_power.md` §8): confirm the IMO
   ESS-RSD01's UL 508i listing and file number, and its rating (IMO 48 VDC vs the Fronius
   42,0440,0338 listing's 96 VDC) before buying; confirm with EG4 what initiates shutdown on the

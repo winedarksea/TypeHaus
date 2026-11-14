@@ -53,7 +53,8 @@ TUBE_OD_IN: dict[float, float] = {
 
 #: Raceway outside diameters, inches, by material then trade size. A trade size is a nominal
 #: BORE, so the error runs the other way from a pipe's: 3/4" EMT measures 0.922" across.
-#: EMT: NEC ch. 9 Table 4 / ANSI C80.3. ENT: NEC ch. 9 Table 4 (Article 362). PVC: Schedule
+#: EMT: ANSI C80.3 (Table 4's IDs fit: 0.04-0.08 in. walls). ENT: the IPS series, UNCONFIRMED:
+#: Table 4 prints only the ID (0.602 at 1/2 in.), which makes a 0.12 in. wall. PVC: Schedule
 #: 40, which is IPS (ASTM D1785 / NEMA TC-2).
 RACEWAY_OD_IN: dict[str, dict[float, float]] = {
     "emt": {0.5: 0.706, 0.75: 0.922, 1.0: 1.163, 1.25: 1.510, 1.5: 1.740,

@@ -1,4 +1,4 @@
-"""Catlin's raceways hold NEC 358.26 between authored pull points, and every conditioned room
+"""Catlin's raceways hold NEC 358.24 between authored pull points, and every conditioned room
 has a heating zone.
 
 The pull points in ``plan/electrical.py`` are the accessible boxes (NEC 314.29), each at an

@@ -76,6 +76,11 @@ _PRINTED = {
     "SPACE_HEAT_CONTINUOUS": "424.5", "SPACE_HEAT_OUTLETS": "424.4(B)",
     "SPACE_HEAT_GFCI": "424.45(E)", "SPACE_HEAT_DISCONNECT": "424.19",
     "SPACE_HEAT_LABEL": "424.47", "SPACE_HEAT_WALLS": "424.48",
+    "BRANCH_CONDUCTOR_LOAD": "210.19(A)(1)", "BRANCH_RANGE": "210.19(C)",
+    "BRANCH_OCPD_LOAD": "210.20(A)", "SINGLE_RECEPTACLE": "210.21(B)(1)",
+    "HVAC_RECEPTACLE": "210.63(A)", "BATH_LUMINAIRE_ZONE": "410.10(D)(1)",
+    "BATH_LUMINAIRE_DAMP": "410.10(D)(2)", "PADDLE_FAN_BATH_ZONE": "422.18(B)",
+    "STORAGE_WATER_HEATER": "422.13",
     "SWITCH_HEIGHT": "404.10(A)(2)", "SWITCH_BACKFEED_SIGN": "404.8(C)",
     "SWITCH_TUB_SHOWER": "404.6(C)",
     "BATH_ZONE": "406.9(C)(1)", "WET_RECEPTACLE": "406.9(B)(1)",
@@ -96,7 +101,18 @@ _PRINTED = {
     "SOURCE_PLAQUE": "705.10", "SUPPLY_SIDE_OCPD": "705.11(C)(1)",
     "SOURCE_DISCONNECT": "705.20", "SOURCE_DISCONNECT_TYPE": "705.20(C)",
     "SOURCE_DISCONNECT_WARNING": "705.20(F)", "DC_POLARITY_MARKING": "705.25(B)",
-    "STANDALONE_PLAQUE": "710.10",
+    "STANDALONE_PLAQUE": "710.10", "PV_BATHROOM": "690.4(D)",
+    "PV_MAX_VOLTAGE_DWELLING": "690.7(2)", "PV_VOLTAGE_COEFFICIENT": "690.7(A)(1)",
+    "PV_VOLTAGE_TABLE": "Table 690.7(A)", "PV_VOLTAGE_LABEL": "690.7(D)",
+    "PV_SOURCE_CURRENT": "690.8(A)(1)(a)", "PV_OCPD_RATING": "690.9(B)",
+    "PV_OCPD_MARKING": "690.9(D)", "PV_ISOLATING_DEVICE": "690.15(B)",
+    "PV_EQUIPMENT_DISCONNECT": "690.15(C)", "PV_DISCONNECT_LOCATION": "690.15(D)",
+    "PV_DC_WIRING_BUILDING": "690.31(D)(1)", "PV_DC_MARKING": "690.31(D)(2)",
+    "PV_CONNECTORS": "690.33(C)", "PV_GFDI": "690.41(B)", "SOURCE_OUTPUT_CURRENT": "705.28(A)",
+    "SOURCE_CONDUCTOR": "705.28(B)", "SOURCE_OCPD": "705.30(B)",
+    "SOURCE_BACKFEED_BREAKER": "705.30(D)", "SOURCE_HOLD_DOWN": "705.30(E)",
+    "EGC_SIZE": "250.122", "EGC_TABLE": "Table 250.122", "EGC_UPSIZED": "250.122(D)",
+    "EGC_ALUMINUM": "250.120(B)",
 }
 
 
@@ -238,7 +254,7 @@ def test_705_12_b2a_120_percent_with_opposite_end_and_label():
 
 def test_705_12_uses_125_percent_of_inverter_output_not_the_breaker():
     f = _interconnection(main=200, bus=225, breaker=60, inverter_kw=8.0)  # 33.3 A out
-    assert "41.7A source" in f.message and f.result.value == "pass"
+    assert "41.25A source" in f.message and f.result.value == "pass"  # 33.3 A rounds to 33
 
 
 # --- Table 310.16 / 310.12(A) (printed 2026-11-14) ---------------------------------------
@@ -345,6 +361,53 @@ def test_no_heat_pump_unit_is_in_a_bath_zone(catlin_model_ro):
     assert [f.result.value for f in found] == ["pass"]
 
 
+# --- 210.19-210.21, 210.63, 410.10(D), 422.13, 422.18(B) (docs/nec-2026-paraphrase-210-422-410.md)
+
+def test_210_20_a_125_percent_constants_and_the_range_floor():
+    from typehaus.checks.mep import electrical_circuit_sizing as sizing
+    from typehaus.checks.mep.electrical_hvac_receptacle import HVAC_RECEPTACLE_REACH_M
+
+    assert sizing.CONTINUOUS_FACTOR == 1.25
+    assert (sizing.RANGE_MIN_VA, sizing.RANGE_MIN_AMPS) == (8750.0, 40)   # 210.19(C)
+    assert sizing.STORAGE_HEATER_CONTINUOUS_MAX_GAL == 120.0   # 422.13: 450 L
+    assert abs(HVAC_RECEPTACLE_REACH_M - 7.62) < 1e-9   # 210.63: 25 ft = 7.5 m printed
+    assert [sizing._receptacle_amps(n) for n in ("5-15R", "14-30R", "L5-30R", None)] \
+        == [15, 30, 30, None]
+
+
+def test_catlins_storage_water_heater_is_a_continuous_load(catlin_model_ro):
+    report = run_from_model(catlin_model_ro, [], tier=Tier.ADVISORY,
+                            only="electrical.continuous_load_circuit")
+    found = [f for f in report.findings if f.check_id == "electrical.continuous_load_circuit"]
+    assert not any(f.result.value == "fail" for f in found)
+    assert any("422.13" in f.message and "15.0 A against a 15 A" in f.message for f in found)
+    unknown = {t for f in found if f.result.value == "unknown" for t in f.element_tags}
+    assert {"CKT-SPA", "CKT-WORKSHOP-240"} <= unknown   # continuity is not stated
+
+
+def test_catlins_single_receptacles_meet_their_circuits(catlin_model_ro):
+    report = run_from_model(catlin_model_ro, [], tier=Tier.ADVISORY,
+                            only="electrical.single_receptacle_rating")
+    found = [f for f in report.findings if f.check_id == "electrical.single_receptacle_rating"]
+    assert found and {f.result.value for f in found} == {"pass"}
+
+
+def test_catlins_hvac_units_each_have_a_servicing_receptacle(catlin_model_ro):
+    report = run_from_model(catlin_model_ro, [], tier=Tier.ADVISORY,
+                            only="electrical.hvac_service_receptacle")
+    found = [f for f in report.findings if f.check_id == "electrical.hvac_service_receptacle"]
+    assert len(found) == 8 and {f.result.value for f in found} == {"pass"}
+    assert all("outdoors" in f.message for f in found if f.element_tags[0].endswith("-OD"))
+
+
+def test_catlins_laundry_track_is_behind_a_wall_from_the_hall_bath_tub(catlin_model_ro):
+    report = run_from_model(catlin_model_ro, [], tier=Tier.ADVISORY,
+                            only="electrical.bath_luminaire_zone")
+    found = [f for f in report.findings if f.check_id == "electrical.bath_luminaire_zone"]
+    assert [(f.result.value, f.element_tags) for f in found] == [
+        ("pass", ("ED-M-LAUNDRY-TRACK", "FX-M-BATH2-TUB"))]   # another room: out of the zone
+
+
 # --- Article 300 (renumbered in 2026; docs/nec-2026-paraphrase-300.md) -------------------------
 
 
@@ -389,3 +452,24 @@ def test_catlins_buried_ev_and_v2h_legs_miss_18_in_under_the_walk(catlin_model_r
         assert found[tag].result.value == "advisory" and f"cover {cover} in." in found[tag].message
         assert "Column 3" in found[tag].message and "6 in. the slab row needs" in found[tag].message
     assert found["CD-B-SPA"].result.value == "unknown"
+
+
+# --- Table 250.122 and Table 690.7(A), as printed 2026-11-14 ---------------------------
+
+def test_table_250_122_cells():
+    from typehaus.model.ampacity import egc_minimum, size_at_least
+
+    assert [egc_minimum(a, "cu") for a in (15, 20, 25, 60, 61, 200, 400, 6000)] == [
+        "14", "12", "10", "10", "8", "6", "3", "800"]
+    assert [egc_minimum(a, "al") for a in (15, 25, 100, 600, 3000)] == [
+        "12", "8", "6", "2/0", "600"]
+    assert size_at_least("1/0", "8") and not size_at_least("12", "10")
+
+
+def test_table_690_7_a_cells_and_the_catlin_cross_check():
+    from typehaus.model.pv_voltage import max_source_voltage, voc_factor
+
+    assert [voc_factor(t) for t in (24, 20, 19, 0, -1, -26, -30, -31, -40)] == [
+        1.02, 1.02, 1.04, 1.10, 1.12, 1.21, 1.21, 1.23, 1.25]
+    # Nine 37.67 V modules at -30 degC: 410.2 V by the table, 383.8 V by the coefficient.
+    assert round(max_source_voltage(37.67, 9, -30), 1) == 410.2

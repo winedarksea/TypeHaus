@@ -33,15 +33,31 @@ and 334.100-334.116; 110.22-110.28, 240.4(G)-(H), 240.5, 240.6 with Table 240.6(
 all of Article 440 and 445.1-445.12(B);
 all of Article 424 and the end of 422.62; 404.1-404.9, 406.9(B)-406.14(B), 408.1-408.6;
 314.15-314.27 with Tables 314.16(A) and 314.16(B)(4); and 680.1-680.27(A) and 680.34-680.54
-(680.27(B)-680.33 unread); 690.9(A)(d)-690.13, 690.15(A), the end of 690.43 with 690.45-690.72
-(690.1-690.9(A) and 690.15(B)-690.43's opening unread); 705.5-705.25 (705.1-705.4,
-705.28, 705.30, 705.40 on unread); and 710.1-710.15 (710.12 on unread); see
-``docs/nec-2026-paraphrase-690-705-710.md``; 300.1, 300.4-300.9 and 300.21(tail)-300.25
+(680.27(B)-680.33 unread); 690.1-690.2, 690.4-690.9, 690.11-690.13, 690.15, 690.31-690.34,
+690.41-690.43 and 690.45-690.72 (690.3, 690.5, 690.10, 690.14, 690.35-690.40 and 690.46 unread);
+705.1-705.2, 705.5-705.80 (705.3-705.4 and 705.81 on unread), all of 710 and 702,
+625.44-625.52(B)(1)
+(its tables unread; ``docs/nec-2026-paraphrase-702-705-island.md``), and 250.119(B)
+tail-250.122 with Table 250.122 (coded in ``model/ampacity.py``), with Table 690.7(A) (coded in
+``model/pv_voltage.py``); see ``docs/nec-2026-paraphrase-690-705-710.md``; 300.1, 300.4-300.9
+and 300.21(tail)-300.25
 (renumbered in 2026: 300.4 is Limitations, physical damage is 300.6, underground 300.7;
 300.2-300.3, 300.9(A)(2)-300.21 and 300.25(C) on unread), with Table 300.7(A) (coded in
-``model/burial.py``), in ``docs/nec-2026-paraphrase-300.md``. The
-engine never quotes the code: ``docs/nec-2026-paraphrase*.md`` restate each rule and say
-what grades it; ``tests/test_nec_120_82.py`` and ``test_nec_printed_rules.py`` pin them.
+``model/burial.py``), in ``docs/nec-2026-paraphrase-300.md``; Chapter 9 Notes to Tables,
+Tables 1, 2, 4, 5, 5A and 8 (Table 4 for LFMC, LFNC and PVC Types A and EB, Table 5 beyond
+building wire, 5A and 8 read, not coded), same file; 210.13-210.21, 210.52(C)(4)-210.70,
+410.1-410.11, 410.138-410.154 (Part XIII lighting track) and 422.11(F)-422.33 in
+``docs/nec-2026-paraphrase-210-422-410.md``;
+210.63(tail)-210.70(C), 215.1-215.10(A), 225.39-225.41, 230.1-230.4(A), 230.67-230.93 (opening),
+410.196(D)-410.197, all of Article 411 and 422.1-422.2 in
+``docs/nec-2026-paraphrase-411-230.md``; 720.32, 721.1, 721.30 and 721.50-723.22 (all of
+Article 722) in ``docs/nec-2026-paraphrase-722.md``; and (a transcribed read) the Article 100
+terms lighting track, feeder, limited-energy system, laundry area and kitchen, 120.1-120.5 and
+120.41, 210.19(C)-210.25 with Tables 210.21(B)(3) and 210.24(1), 215.10(B)-215.18, 225.1-225.10,
+and the raceway articles 342, 344, 352, 356 (tail), 358, 362 and 366 (bends are .24, support
+.30), in ``docs/nec-2026-paraphrase-followup.md``. The engine never quotes the code:
+``docs/nec-2026-paraphrase*.md`` restate each rule and say what grades it;
+``tests/test_nec_120_82.py`` and ``test_nec_printed_rules.py`` pin them.
 """
 
 from __future__ import annotations
@@ -134,6 +150,15 @@ class NEC:
     BALCONY_RECEPTACLE: Final = "210.52(E)(3)"
     GARAGE_RECEPTACLE: Final = "210.52(G)(1)"
     STORAGE_EQUIPMENT_LIGHTING: Final = "210.70(A)(3)"
+    EQUIPMENT_SPACE_LIGHTING: Final = "210.70(C)"  # attic, underfloor, utility room, basement
+    BRANCH_CONDUCTOR_LOAD: Final = "210.19(A)(1)"  # noncontinuous + 125% of continuous
+    BRANCH_RANGE: Final = "210.19(C)"  # ranges of 8 3/4 kW or more: 40 A circuit at least
+    BRANCH_OCPD_LOAD: Final = "210.20(A)"  # the OCPD takes the same 125% arithmetic
+    SINGLE_RECEPTACLE: Final = "210.21(B)(1)"  # on an individual circuit: rated >= the circuit
+    MULTI_RECEPTACLE: Final = "210.21(B)(3)"  # Table 210.21(B)(3): circuit -> receptacle rating
+    INDIVIDUAL_CIRCUIT: Final = "210.22"  # any load it is rated for; a 10 A circuit: no receptacles
+    BRANCH_LOAD_LIMITS: Final = "210.23"  # (B)(1) cord-and-plug 80%; (B)(2) fastened 50% if mixed
+    HVAC_RECEPTACLE: Final = "210.63(A)"  # 125 V 15/20 A within 25 ft, same level, not load side
 
     # Art. 215/225/230/240 — feeders, outside supplies, service and overcurrent.
     FEEDER_SPD: Final = "215.18"
@@ -142,6 +167,8 @@ class NEC:
     EMERGENCY_DISCONNECT: Final = "225.41"
     SERVICE_SPD: Final = "230.67"
     SERVICE_DISCONNECT_OUTDOOR: Final = "230.70(A)(1)"
+    SERVICE_DISCONNECT_BATHROOM: Final = "230.70(A)(3)"  # never in a bathroom
+    SERVICE_DISCONNECT_MIN_RATING: Final = "230.79(C)"  # one-family dwelling: 100 A at least
     SMALL_CONDUCTOR_OCPD: Final = "240.4(D)"
     OCPD_HEIGHT: Final = "240.24(A)"
     SLEEVE_BONDING: Final = "250.86 Ex. 2"
@@ -221,14 +248,27 @@ class NEC:
     TERMINATION_TEMP: Final = "110.14(C)(1)"
     NEXT_SIZE_UP: Final = "240.4(B)"  # next standard OCPD above the ampacity
     STANDARD_OCPD: Final = "240.6(A)"  # Table 240.6(A), coded in model/ampacity.py
-    IMC_BENDS: Final = "342.26"
-    RMC_BENDS: Final = "344.26"
-    PVC_BENDS: Final = "352.26"
-    PVC_SUPPORT: Final = "Table 352.30"
-    EMT_BENDS: Final = "358.26"
-    EMT_SUPPORT: Final = "358.30"
-    ENT_BENDS: Final = "362.26"
-    ENT_SUPPORT: Final = "362.30"
+    # Raceway articles as printed 2026: bends are .24, support .30 (not the older .26).
+    IMC_BENDS: Final = "342.24"
+    IMC_SUPPORT: Final = "342.30"  # 10 ft, within 3 ft of a box; Table 344.30(B) with couplings
+    RMC_BENDS: Final = "344.24"
+    RMC_SUPPORT: Final = "Table 344.30(B)"  # 10/12/14/16/20 ft by trade size
+    PVC_BENDS: Final = "352.24"
+    PVC_SUPPORT: Final = "Table 352.30(B)"  # 3/5/6/7/8 ft by trade size; 352.30(A) 3 ft of a box
+    PVC_USES: Final = "352.10"  # (H) direct burial and encased; (K) damage: Schedule 80
+    PVC_AMBIENT: Final = "352.12(D)"  # not above 50 degC unless listed
+    PVC_EXPANSION: Final = "352.44"  # fitting where Table 352.44 growth is 1/4 in. or more
+    EMT_BENDS: Final = "358.24"
+    EMT_SUPPORT: Final = "358.30"  # 10 ft and within 3 ft of a box (5 ft where structure bars it)
+    EMT_USES: Final = "358.10"
+    EMT_CORROSION: Final = "358.10(B)(1)"  # in concrete or earth: corrosion protection, approved
+    EMT_ALUMINUM_EARTH: Final = "358.10(B)(2)"  # aluminium EMT: supplementary protection
+    ENT_BENDS: Final = "362.24"
+    ENT_SUPPORT: Final = "362.30"  # 3 ft and within 3 ft of a box
+    ENT_USES: Final = "362.10"
+    ENT_NOT_PERMITTED: Final = "362.12"  # (4) earth burial; exposed outside 362.10(1),(5),(8)
+    EXTERIOR_INSULATION: Final = "225.4"  # conductors within 10 ft of a building: insulated
+    EXTERIOR_WIRING_METHODS: Final = "225.10"  # wiring on buildings: the listed methods
     PVC: Final = "Article 352"
     EMT: Final = "Article 358"
     ENT: Final = "Article 362"
@@ -245,7 +285,13 @@ class NEC:
     CIRCUIT_DIRECTORY: Final = "408.4(A)"
     SWITCHBOARD_SCCR: Final = "408.6"
     PANELBOARDS: Final = "Article 408"
+    BATH_LUMINAIRE_ZONE: Final = "410.10(D)(1)"  # no track, pendant, cord/chain-hung, paddle fan
     WET_LUMINAIRE_ZONE: Final = "410.10(D)"
+    LIGHTING_TRACK_LOCATIONS: Final = "410.150(C)"  # (C)(9): not where 410.10(D) bars it
+    LOW_VOLTAGE_LIGHTING_VOLTAGE: Final = "411.4(B)"  # 30 V ac / 60 V dc; wet contact 15 / 30
+    BATH_LUMINAIRE_DAMP: Final = "410.10(D)(2)"  # over the tub/shower to 8 ft: damp or wet
+    PADDLE_FAN_BATH_ZONE: Final = "422.18(B)"  # no paddle-fan part in the 3 ft x 8 ft zone
+    STORAGE_WATER_HEATER: Final = "422.13"  # fixed, 120 gal or less: a continuous load
     SPACE_HEAT_CONTINUOUS: Final = "424.5"
     SPACE_HEAT_OUTLETS: Final = "424.4(B)"  # two or more heater outlets: 30 A at most
     SPACE_HEAT_GFCI: Final = "424.45(E)"  # under a floor covering; 424.44(E), 424.99(C)(5)
@@ -340,13 +386,54 @@ class NEC:
     EGC_TABLE: Final = "Table 250.122"  # coded in model/ampacity.py
     EGC_UPSIZED: Final = "250.122(D)"  # upsized phase conductors: EGC by circular mils
     EGC_ALUMINUM: Final = "250.120(B)"  # no Al EGC in contact with masonry, concrete or earth
+    # Art. 702 optional standby, 705 Parts I-III as they reach a multimode inverter's backup.
+    STANDBY_FULL_LOAD: Final = "702.4(A)(2)(a)"  # source covers the load connected automatically
+    STANDBY_MULTIMODE: Final = "702.4(A)(3)"  # PCS-listed multimode: >= setting and largest load
+    STANDBY_TRANSFER: Final = "702.5(A)"  # interconnection equipment prevents paralleling
+    STANDBY_PARALLEL: Final = "702.5(D)"  # parallel with the normal source: Art. 705
+    STANDBY_SIGNALS: Final = "702.6"  # malfunction, carrying load
+    STANDBY_SIGN: Final = "702.7(A)(1)"  # dwelling placard at the 225.41 / 230.70(A)(2) disconnect
+    STANDBY_GROUNDING_SIGN: Final = "702.7(B)"
+    INTERACTIVE_LISTING: Final = "705.2"
+    GFPE_SOURCES: Final = "705.32"
+    LOSS_OF_PRIMARY: Final = "705.40"  # a listed interactive inverter may just cease to export
+    UNBALANCED: Final = "705.45"
+    MICROGRID_CONNECTIONS: Final = "705.60"  # source output conductors incl. those to equipment
+    MICROGRID_INTERCONNECT: Final = "705.70"  # MID: listed or field labelled; OCPD vs all sources
+    MICROGRID_CONTROL: Final = "705.76"
+    ISLAND_CAPACITY: Final = "705.80"  # sum of the sources' output maximum currents
+    ISLAND_VOLTAGE: Final = "705.81"
+    EVSE_LOSS_OF_PRIMARY: Final = "625.46"
+    EVSE_INTERACTIVE: Final = "625.48"  # listed and marked; 702 standby, 705 source
+    EVSE_ISLAND: Final = "625.49"
+    EVSE_COUPLING_HEIGHT: Final = "625.50"  # 18 in. indoors, 24 in. outdoors
+    EVSE_VENTILATION: Final = "625.52"
     STANDALONE_PLAQUE: Final = "710.10"
     # Was 800.133 / 725.136; Arts. 805 and 725.136 are gone, limited energy is Arts. 720-723.
     LIMITED_ENERGY_SEPARATION: Final = "722.15(A)"
+    # Art. 722 (printed 2026-11-14): docs/nec-2026-paraphrase-722.md; checks/mep/limited_energy.py.
+    LIMITED_ENERGY_IN_RACEWAY: Final = "722.15(G)"  # power or the cable in a raceway/MC/NM/UF
+    LIMITED_ENERGY_WET: Final = "722.2(B)"  # wet-listed and marked, or metal sheath
+    LIMITED_ENERGY_MIXING: Final = "722.13"  # Table 722.13(A) types in one raceway
+    CLASS_2_INSTALL: Final = "722.140(A)(2)"  # per 722.15, 722.140(B) and 723.20
+    CLASS_2_RATING: Final = "722.140(A)(3)"  # Class 2: 150 V and 60 degC at least
+    POE_AMPACITY: Final = "Table 722.140(B)(2)"  # 4-pair Class 2/3, 30 degC; not coded
+    COMMS_SUPPORT: Final = "722.133(C)"  # no cable strapped to a raceway's outside
+    BROADBAND_SUPPORT: Final = "722.135(B)"
+    BROADBAND_COVER: Final = "Table 722.135(A)"  # network-powered broadband only; not coded
+    COMMS_DWELLING: Final = "722.131(L)"
+    LIMITED_ENERGY_TEMPERATURE: Final = "722.27"
 
-    # Ch. 9.
+    # Ch. 9 (read in print 2026-11-14): model/raceway_fill.py, raceway_areas.py, conductor_areas.py.
+    FILL_PERCENT: Final = "Chapter 9 Table 1"
+    BEND_RADIUS: Final = "Chapter 9 Table 2"
     CONDUIT_DIMENSIONS: Final = "Chapter 9 Table 4"
-    SLEEVE_FILL: Final = "Chapter 9 Note 2"
+    CONDUCTOR_DIMENSIONS: Final = "Chapter 9 Table 5"
+    SLEEVE_FILL: Final = "Chapter 9 Note 2"  # Notes to Tables (2): protection sleeves
+    FILL_EGC: Final = "Chapter 9 Note 3"
+    FILL_NIPPLE: Final = "Chapter 9 Note 4"
+    FILL_ROUNDING: Final = "Chapter 9 Note 7"
+    FILL_CABLE: Final = "Chapter 9 Note 9"
 
 
 #: Rows not yet read in the printed 2026 text; ``mark``/``cite`` caveat them. Empty since

@@ -377,7 +377,7 @@ y=34'-9" (2 ft south of `CD-B-GARAGE`, 5 3/8" below it) and turns north at x=16'
 2 7/16" east of `CD-B-GARAGE`'s drop. `CD-B-V2H-GAP` drops to -4'-0", crosses `W-B-N2`,
 the gap and `W-GF-S2` beside `CD-B-GAP-EV`, and rises through the slab to a capped stub 2'-0"
 over it, beside `ED-G-EV-1450` where a charger would stand. The two runs carry 540 deg of
-bends, so a pull body sits at the foot of the drop (NEC 352.26: 360 deg between pulls).
+bends, so a pull body sits at the foot of the drop (NEC 352.24: 360 deg between pulls).
 
 **The three sleeves** (`SP-B-N2-CD-GAR2`, `SP-GF-CD-GAR`, `SP-G-CD-GAR`) were 2" for the
 1 1/4" EMT (OD 1.510") alone. No check grades a conduit annulus, so by hand, with the 2" PVC

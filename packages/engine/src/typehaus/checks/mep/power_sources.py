@@ -53,8 +53,9 @@ def _source_term(ctx: CheckContext, circuit) -> tuple[float, str]:
     found = _inverter_output(ctx, circuit)
     if found:
         exact, output = found
-        return _OUTPUT_FACTOR * output, (f"125% of {output:g}A output on {circuit.tag}, "
-                                         f"{exact:.1f}A rounded per {NEC.SOURCE_OUTPUT_CURRENT}")
+        note = (f", {exact:.1f}A rounded per {NEC.SOURCE_OUTPUT_CURRENT}"
+                if abs(exact - output) > 1e-9 else "")
+        return _OUTPUT_FACTOR * output, f"125% of {output:g}A output on {circuit.tag}{note}"
     return float(circuit.breaker_amps), f"{circuit.tag}'s breaker for 125% of output"
 
 

@@ -42,6 +42,44 @@ def service_disconnect_location(ctx: CheckContext) -> list[Finding]:
                           "modeled", (root,), code)]
 
 
+@check(Tier.ADVISORY, "electrical.service_disconnect_rules")
+def service_disconnect_rules(ctx: CheckContext) -> list[Finding]:
+    """230.70(A)(3): the service disconnect is not in a bathroom; 230.79(C): 100 A at least.
+
+    The service device is the one the grounding root names. Only an outdoor device (in no room)
+    earns the bathroom PASS; the rating is its type's ``service_amps``, the meter-main's
+    continuous rating (two 200 A mains inside it each clear 100 A too, 230.80 sums them).
+    """
+    from typehaus.checks.mep.electrical_grounding import device_types, grounding, objects
+    from typehaus.resolve.room_lookup import room_owning
+
+    cid = "electrical.service_disconnect_rules"
+    root = grounding(ctx).root
+    obj = objects(ctx).get(root or "")
+    if obj is None:
+        return [_unknown(cid, "no service disconnect is modeled")]
+    out: list[Finding] = []
+    bath_code = cite(NEC.SERVICE_DISCONNECT_BATHROOM)
+    room = room_owning(ctx.model, obj.storey, obj.position)
+    if room is None:
+        out.append(_pass(cid, f"{root} is outdoors, so not in a bathroom", (root,), bath_code))
+    elif room.occupancy == "bathroom":
+        out.append(_warn_fail(cid, f"{root} stands in bathroom {room.tag} ({bath_code})", (root,)))
+    else:
+        out.append(_pass(cid, f"{root} is in {room.tag}, not a bathroom", (root,), bath_code))
+    rating_code = cite(NEC.SERVICE_DISCONNECT_MIN_RATING)
+    amps = getattr(device_types(ctx).get(obj.type_ref or ""), "service_amps", None)
+    if not amps:
+        out.append(_unknown(cid, f"{root}'s type states no service rating", (root,), rating_code))
+    elif amps < 100:
+        out.append(_warn_fail(cid, f"{root} is rated {amps:.0f} A, under the {rating_code} "
+                                   "100 A minimum for a one-family dwelling", (root,)))
+    else:
+        out.append(_pass(cid, f"{root} is rated {amps:.0f} A, at least the {rating_code} 100 A "
+                              "minimum (one-family dwelling assumed)", (root,), rating_code))
+    return out
+
+
 # WARN severity + FAIL result, deliberately: the permit integrity gate only blocks on ERROR
 # severity, and these findings are advisory estimates, not hard blockers.
 def _warn_fail(cid: str, msg: str, tags: tuple[str, ...]) -> Finding:

@@ -1,4 +1,5 @@
 """``electrical.bath_receptacle_zone`` — 2026 NEC 406.9(C)(1): no receptacle in a tub/shower zone.
+Also ``bath_hvac_zone`` (440.8) and ``bath_luminaire_zone`` (410.10(D), 422.18(B)).
 
 The zone is 3 ft in plan from the tub or shower stall's outside edge, up to 8 ft above its
 rim, and stops at a floor, wall, ceiling, room door, window or fixed barrier. Here a tub or
@@ -113,4 +114,106 @@ def bath_hvac_zone(ctx: CheckContext) -> list[Finding]:
         out.append(passed(_AC_CID, f"none of {len(units)} heat-pump units stands within 3 ft of "
                                    f"any of {len(wet)} tubs or showers",
                           tuple(e.tag for e in units), code=code))
+    return out
+
+
+_LUM_CID = "electrical.bath_luminaire_zone"
+_ZONE_FORMS = {"track": "lighting track", "pendant": "a pendant",
+               "chandelier": "a cord-, chain- or cable-hung luminaire",
+               "ceiling_fan_light": "a ceiling-suspended (paddle) fan"}
+
+
+@check(Tier.ADVISORY, _LUM_CID)
+def bath_luminaire_zone(ctx: CheckContext) -> list[Finding]:
+    """410.10(D) and 422.18(B): luminaires and paddle fans in and over a tub or shower.
+
+    (D)(1)/422.18(B): no track, pendant, chain/cable/cord-hung luminaire or paddle fan within
+    3 ft (plan) and 8 ft above the rim or threshold, in the tub's own room: a luminaire in
+    another room (``room_owning``) is behind a wall and out of the zone (PASS), one whose room
+    is unresolved stays UNKNOWN. (D)(2): a
+    luminaire inside the tub or shower outline up to 8 ft is marked damp, or wet where spray
+    reaches it, which the model cannot say, so a damp-only one is UNKNOWN. The rim is the body
+    top for a ``-TUB``, the pan floor for a shower (conservative). A luminaire's reach is its
+    footprint; a ``LightRun`` strip is not lighting track and is not graded.
+    """
+    from shapely.geometry import Point, Polygon
+
+    from typehaus.checks._authoring import advisory
+    from typehaus.findings import Result
+    from typehaus.model.electrical import luminaire_types
+    from typehaus.resolve.room_lookup import room_owning
+
+    code = cite(NEC.BATH_LUMINAIRE_ZONE, NEC.PADDLE_FAN_BATH_ZONE)
+    objects = {o.tag: o for o in ctx.model.canvas_objects}
+    types = luminaire_types(ctx.plan.library)
+    wet = [e for e in ctx.plan.all_elements() if e.element_kind == "Fixture"
+           and e.tag.rsplit("-", 1)[-1] in _WET and e.tag in objects]
+    lights = [e for e in ctx.plan.all_elements() if e.element_kind == "ElectricalDevice"
+              and e.kind is DeviceKind.LIGHT and e.tag in objects and e.type_ref in types]
+    if not wet or not lights:
+        return [not_applicable(_LUM_CID, "no tub or shower, or no luminaire, is authored",
+                               code=code)]
+    out: list[Finding] = []
+    for fixture in sorted(wet, key=lambda e: e.tag):
+        fobj = objects[fixture.tag]
+        body = Polygon(fobj.footprint)
+        rim = fobj.body_z1_m if fixture.tag.endswith("-TUB") else fobj.body_z0_m
+        there = room_owning(ctx.model, fobj.storey,
+                            tuple(body.representative_point().coords)[0])
+        for light in sorted(lights, key=lambda e: e.tag):
+            lobj = objects[light.tag]
+            if lobj.storey != fobj.storey or lobj.body_z0_m >= rim + _VERTICAL_M \
+                    or lobj.body_z1_m <= rim:
+                continue
+            shape = (Polygon(lobj.footprint) if len(lobj.footprint) >= 3
+                     else Point(lobj.position))
+            gap = body.distance(shape)
+            product = types[light.type_ref]
+            form = product.form.value
+            here = room_owning(ctx.model, lobj.storey, lobj.position)
+            if gap <= _ZONE_M and form in _ZONE_FORMS and (here is None or there is None):
+                out.append(unknown(
+                    _LUM_CID, f"{light.tag} is {_ZONE_FORMS[form]} {gap / 0.3048:.1f} ft from "
+                              f"{fixture.tag} in plan; the model cannot resolve whose room "
+                              "each stands in, so it cannot say a wall separates them",
+                    (light.tag, fixture.tag), code=code,
+                    fix="place the luminaire and the tub in rooms"))
+                continue
+            if here is not None and there is not None and here.tag != there.tag:
+                if gap <= _ZONE_M and form in _ZONE_FORMS:
+                    out.append(passed(
+                        _LUM_CID, f"{light.tag} is in {here.tag}, separated from the tub's room "
+                                  f"{there.tag}: outside the {fixture.tag} zone",
+                        (light.tag, fixture.tag), code=code))
+                continue  # another room is behind a wall: not in the zone
+            if gap <= _ZONE_M and form in _ZONE_FORMS and product.voltage <= 30:
+                out.append(unknown(
+                    _LUM_CID, f"{light.tag} is {_ZONE_FORMS[form]} {gap / 0.3048:.1f} ft from "
+                              f"{fixture.tag} in the same room and reaches below 8 ft over its "
+                              f"rim; it runs at {product.voltage} V. 410.10(D)(1) bars it with "
+                              "no voltage limit, and 410.150(C)(9) bars track there (the "
+                              "(C)(8) 30 V carve-out is for mounting height only). Held "
+                              "UNKNOWN only because FAIL stops the catlin gate (verify.sh)",
+                    (light.tag, fixture.tag), code=cite(NEC.BATH_LUMINAIRE_ZONE,
+                                                        NEC.LIGHTING_TRACK_LOCATIONS),
+                    fix="move it out of the 3 ft x 8 ft zone, or use a fixed luminaire"))
+            elif gap <= _ZONE_M and form in _ZONE_FORMS:
+                out.append(advisory(
+                    _LUM_CID, f"{light.tag} is {_ZONE_FORMS[form]} {gap / 0.3048:.1f} ft from "
+                              f"{fixture.tag} in plan, in the tub's room, and reaches below 8 ft "
+                              "over its rim; the zone is all-encompassing within the room",
+                    (light.tag, fixture.tag), Result.FAIL, code=code,
+                    fix="use a fixed, non-suspended luminaire, or move it out of the zone"))
+            elif body.intersects(shape) and not product.wet_rated:
+                what = "damp only; wet if shower spray reaches it" if product.damp_rated \
+                    else "neither damp nor wet rated"
+                out.append(unknown(
+                    _LUM_CID, f"{light.tag} is within {fixture.tag}'s outline up to 8 ft "
+                              f"({what}); the model cannot say whether spray reaches it",
+                    (light.tag, fixture.tag), code=cite(NEC.BATH_LUMINAIRE_DAMP),
+                    fix="specify a wet-rated type, or state the spray exposure"))
+    if not out:
+        out.append(passed(_LUM_CID, f"no suspended luminaire or fan stands in the zone of "
+                                    f"{len(wet)} tubs and showers, and every luminaire over "
+                                    "one is wet rated", tuple(e.tag for e in wet), code=code))
     return out

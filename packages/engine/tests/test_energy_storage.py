@@ -144,10 +144,10 @@ def test_removing_either_alarm_fails(catlin_plan, tag, missing):
 
 def test_the_backfeed_fits_the_120_percent_allowance(catlin_plan, catlin_model):
     """225A bus x 1.2 = 270A allowed; 200A main + 125% of the 8 kW inverter's 33.3A output
-    (41.7A, 705.12(B)(3)(2)) = 241.7A, 28.3A spare."""
+    (33.3A rounds to 33A, 41.25A, 705.28(A)) = 241.25A, 28.75A spare."""
     findings = interconnection_busbar(_context(catlin_plan, catlin_model))
     assert len(findings) == 1 and findings[0].result is Result.PASS
-    assert "41.7A source" in findings[0].message and "28.3A spare" in findings[0].message
+    assert "41.25A source" in findings[0].message and "28.75A spare" in findings[0].message
 
 
 def test_an_oversized_source_fails(catlin_plan):
@@ -159,7 +159,7 @@ def test_an_oversized_source_fails(catlin_plan):
     library = catlin_plan.library.model_copy(update={"equipment_types": types})
     plan = catlin_plan.model_copy(update={"library": library})
     fails = _fails(interconnection_busbar(_context(plan)))
-    assert len(fails) == 1 and "293.8A exceeds" in fails[0].message
+    assert len(fails) == 1 and "293.75A exceeds" in fails[0].message
 
 
 def test_a_panel_without_a_bus_rating_is_unknown(catlin_plan):
@@ -344,3 +344,60 @@ def test_an_indoor_initiator_fails_and_an_untyped_one_is_unknown(
         "library": catlin_plan.library.model_copy(update={"electrical_device_types": types})})
     assert [f.result for f in mod.rsd_initiation_outdoors(
         _context(plan, catlin_model))] == [Result.UNKNOWN]
+
+
+# --- NEC 705.30(B), 690.7, 690.4(D), 690.31(D)(1), 690.45 ------------------------------
+
+def test_the_source_breaker_meets_the_705_30_floor(catlin_plan, catlin_model):
+    from typehaus.checks.mep.power_sources import source_ocpd
+
+    results = [f.result for f in source_ocpd(_context(catlin_plan, catlin_model))]
+    assert results == [Result.PASS, Result.UNKNOWN]  # floor met; the ceiling is not authored
+    circuits = tuple(c.model_copy(update={"breaker_amps": 40}) if c.source else c
+                     for c in catlin_plan.library.circuits)
+    plan = catlin_plan.model_copy(update={
+        "library": catlin_plan.library.model_copy(update={"circuits": circuits})})
+    assert source_ocpd(_context(plan, catlin_model))[0].result is Result.FAIL  # 40 < 41.25
+
+
+def test_pv_installation_rules_pass_on_catlin_and_fail_when_spliced(catlin_plan, catlin_model):
+    from dataclasses import replace
+
+    from typehaus.checks.mep import pv_installation as mod
+
+    ctx = _context(catlin_plan, catlin_model)
+    for rule in (mod.pv_not_in_bathroom, mod.pv_max_voltage, mod.pv_dc_in_metal,
+                 mod.pv_egc_size):
+        assert _passes(rule(ctx)) and not _fails(rule(ctx)), rule.__name__
+    panels, conduits = list(catlin_model.solar_panels), list(catlin_model.conduits)
+    try:
+        catlin_model.solar_panels[:] = [replace(p, voc_cold=70.0) for p in panels]
+        assert _fails(mod.pv_max_voltage(ctx))  # 9 x 70 = 630 V over 600
+        catlin_model.solar_panels[:] = [replace(p, isc=None) for p in panels]
+        assert [f.result for f in mod.pv_egc_size(ctx)] == [Result.UNKNOWN]
+        catlin_model.conduits[:] = [replace(c, material="pvc") if c.service == "power_dc" else c
+                                    for c in conduits]
+        assert _fails(mod.pv_dc_in_metal(ctx))
+    finally:
+        catlin_model.solar_panels[:] = panels
+        catlin_model.conduits[:] = conduits
+
+
+def test_a_small_pv_egc_fails_and_a_bathroom_inverter_fails(catlin_plan, catlin_model,
+                                                             monkeypatch):
+    from dataclasses import replace
+
+    from typehaus.checks.mep import pv_installation as mod
+
+    g = catlin_model.grounding
+    bonds = list(g.bonds)
+    try:
+        g.bonds[:] = [replace(b, size="12", material="copper") if b.tag == "BC-B-PV-TAIL" else b
+                      for b in bonds]
+        assert [f.element_tags for f in _fails(mod.pv_egc_size(_context(catlin_plan,
+                catlin_model)))] == [("BC-B-PV-TAIL",)]  # #12 Cu under #10 for 25 A
+    finally:
+        g.bonds[:] = bonds
+    room = type("R", (), {"tag": "RM-X", "occupancy": "bathroom"})()
+    monkeypatch.setattr(mod, "room_owning", lambda *args: room)
+    assert _fails(mod.pv_not_in_bathroom(_context(catlin_plan, catlin_model)))

@@ -250,8 +250,8 @@ def _emergence(run, group: list[Sample]) -> list[Finding]:
     if run.material == "emt":
         return [passed(UNDERGROUND_CID, base + ": EMT is on its list", (run.tag,), code=code)]
     if run.material == "pvc":
-        return [unknown(UNDERGROUND_CID, base + ": PVC must be Schedule 80 there and the model "
-                        "holds only 'pvc' (Schedule 40)", (run.tag,), code=code,
+        return [unknown(UNDERGROUND_CID, base + ": PVC must be Schedule 80 there (352.10(K)) and "
+                        "the model holds only 'pvc' (Schedule 40)", (run.tag,), code=code,
                         fix="author the PVC schedule")]
     return [advisory(UNDERGROUND_CID, "ADVISORY - " + base + f": {run.material} is not listed",
                      (run.tag,), Result.ADVISORY, code=code)]
@@ -260,9 +260,11 @@ def _emergence(run, group: list[Sample]) -> list[Finding]:
 def _corrosion(run, buried: bool) -> list[Finding]:
     if run.material != "emt":
         return []
-    code = cite(NEC.CORROSION_IN_EARTH)
+    code = cite(NEC.CORROSION_IN_EARTH, NEC.EMT_CORROSION)
     how = "in earth" if buried else "cast into a foundation wall"
-    return [unknown(UNDERGROUND_CID, f"{run.tag}: EMT {how}; its corrosion protection is not "
-                    "modelled, and Table 300.7(A) Note 6 sends buried EMT to 358.10 (unread)",
+    return [unknown(UNDERGROUND_CID, f"{run.tag}: EMT {how}; 358.10(B)(1) allows galvanized or "
+                    "stainless EMT there only with corrosion protection that is also approved "
+                    "for the condition, and none is modelled (aluminium EMT needs approved "
+                    "supplementary protection, 358.10(B)(2))",
                     (run.tag,), code=code,
-                    fix="state the EMT's corrosion protection, or use IMC, RMC or PVC")]
+                    fix="state the EMT's approved corrosion protection, or use IMC, RMC or PVC")]

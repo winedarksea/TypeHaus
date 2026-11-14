@@ -562,7 +562,7 @@ class ConduitRun(Element):
     #: the model does not place in z").
     elevations: tuple[Length, ...] | None = None
     #: Interior ``path`` indices that are pull boxes / conduit bodies, ascending. NEC
-    #: 300.24 (and 358.26 et al.) count bends between pull points (→ resolve/conduit_pulls.py).
+    #: 300.24 (and 358.24 et al.) count bends between pull points (→ resolve/conduit_pulls.py).
     pull_points: tuple[int, ...] = ()
     from_ref: str | None = None  # feeding device, e.g. "ED-B-PANEL"
     to_ref: str | None = None  # served device/area, e.g. "ED-A-PV-JB"

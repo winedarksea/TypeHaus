@@ -1,6 +1,6 @@
 """``mep.conduit_bend_total`` — bend degrees between pull points, against NEC's 360°.
 
-Every raceway article (358.26 EMT, 352.26 PVC, 344.26 RMC, 342.26 IMC, 362.26 ENT) caps
+Every raceway article (358.24 EMT, 352.24 PVC, 344.24 RMC, 342.24 IMC, 362.24 ENT) caps
 the bends between pull points at the equivalent of four quarter bends, and 2026 300.24 (the
 general rule, read in print 2026-11-14) holds any combination of raceways in a single run to
 the same 360°; it is cited with the article on every finding. The measurement is

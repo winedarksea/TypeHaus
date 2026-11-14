@@ -81,7 +81,7 @@ EQUIPMENT_TYPES = (
                       pt(inch(7.824), inch(-9.324)), pt(inch(9.642), inch(-11.491)),
                       pt(inch(12.287), inch(-8.604)), pt(inch(14.489), inch(-3.882)),
                       pt(inch(11.813), inch(-3.165)), pt(inch(12.125), inch(-2.412)))),
-                  plan_symbol="water-heater",
+                  plan_symbol="water-heater", storage_gallons=80.0,
                   model_representation=ModelRepresentation(symbol="rheem-proterra-plugin-80"),
                   source="Rheem spec sheet RH-PIHP-SC-NO-SO-SS Rev. 1 (04/26), PROPH80 T0 RH120-M: 80 gal (72 rated), 15 A minimum breaker, 395 W average, UEF 3.46, 4,200 Btu/h compressor, FHR 84 gal at a 132 F tank, 12 GPH recovery (60 F rise), 74 3/16 x 24 1/4 in, 244 lb; modes Heat Pump and Vacation/Away only; factory cord to a standard outlet. ENERGY STAR (PD 3555363): 12.0 A maximum, 120 V. Port geometry: RH-PIHP-SC-SO Rev. 7 (03/25) p.2 and Use & Care p.11; heights published, plan positions scaled (+-1in).",
                   # Product frame: -y front, +x right, z off the floor. Heights published (E, K,
