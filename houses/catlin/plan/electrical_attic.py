@@ -137,9 +137,9 @@ NEC_FILL_ATTIC = [
     # after moving onto the north partition. Neither change alters the circuit.
     # ** RC10 EXISTS BECAUSE ED-A-STUBATH-GFCI STOPPED COVERING FOR IT. **
     # W-A-STU-W is the bath's west wall and the studio's east wall at once, only 6 3/4" of
-    # staggered partition apart — `electrical.receptacle_spacing` accepts any device within
-    # 0.5 m of a room's boundary, so the bathroom receptacle used to silently answer
-    # 210.52(A) for both rooms. Moved to serve 210.52(D) instead, it exposed the studio's
+    # staggered partition apart — `electrical.receptacle_spacing` once took any device within
+    # 0.5 m of a room's boundary, either side, so the bathroom receptacle silently answered
+    # 210.52(A) for both rooms; it now counts a device only for the room it faces. Moved to serve 210.52(D) instead, it exposed the studio's
     # real gap: 5'-0" of wall from the jog at (9'-7 1/2", 17'-3 3/8") north to W-A-HALL-S
     # with nothing on it.
     # x 9'-3 1/8" is one inch proud of that face (the wall's layers band x 112.115"..

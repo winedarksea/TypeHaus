@@ -902,9 +902,9 @@ MAIN_EQUIPMENT = [
     # RECEPTACLE, not RECEPTACLE_GFCI, and not on a GFCI breaker either: NEC 210.8(A) does not
     # list living rooms and 210.8(D)'s appliance list does not name room heaters. ** It is also
     # NOT a 210.52 wall-space outlet ** — a box inside a firebox pocket behind a brick panel is
-    # not readily accessible — and `electrical.receptacle_spacing` cannot tell, because it
-    # accepts any device within 0.5 m of a room's clear face regardless of side. RM-M-LIVING's
-    # ring does not depend on it; check by hand if the ring ever changes.
+    # not readily accessible — and `electrical.receptacle_spacing` cannot tell: it counts any
+    # receptacle on the room's side within 0.5 m of its clear face, accessible or not.
+    # RM-M-LIVING's ring does not depend on it; check by hand if the ring ever changes.
     ElectricalDevice(uid="XT154MCCPT", tag="ED-M-FIRE-RC", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20",
                      circuit="CKT-FIREPLACE", room="RM-M-LIVING",
