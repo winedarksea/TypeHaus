@@ -35,6 +35,7 @@ from typehaus.model.placeable_symbols._laundry_sink import laundry_tub
 from typehaus.model.placeable_symbols._roman_tub_filler import roman_tub_filler
 from typehaus.model.placeable_symbols._solid_surface_vanity import solid_surface_vanity
 from typehaus.model.placeable_symbols._sunnersta import sunnersta_sink
+from typehaus.model.placeable_symbols._toto_ap import toto_ap
 from typehaus.model.placeable_symbols._undermount_sink import single_bowl_undermount
 
 __all__ = ["NEO_ANGLE_CUT_FRACTION", "PLUMBING_SYMBOLS", "neo_angle_points"]
@@ -466,6 +467,7 @@ PLUMBING_SYMBOLS: dict[str, Builder] = {
     "laundry-sink": laundry_tub(),
     "toilet": toilet(),
     "toilet-wall-hung": toilet_wall_hung(),
+    "toto-ap-duofit": toto_ap,
     "lavatory": lavatory(pedestal=True),
     "lavatory-wall-hung": lavatory(faucet_height_m=FAUCET_HEIGHT_M),
     "vanity": vanity(),

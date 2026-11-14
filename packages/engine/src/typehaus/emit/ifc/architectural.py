@@ -59,7 +59,7 @@ def is_parts_fixture(model_symbol: str | None) -> bool:
         "kohler-underscore-6036", "kohler-underscore-6032", "roman-tub-filler",
         "solid-surface-vanity", "sektion-vanity", "sektion-vanity-indy",
         "drawer-vanity", "drawer-vanity-indy", "door-drawer-vanity",
-        "sunnersta-sink", "swanstone-flex-3636"}
+        "sunnersta-sink", "swanstone-flex-3636", "toto-ap-duofit"}
 
 
 def _full_height_layers(wall: ResolvedWall) -> tuple[ResolvedLayer, ...]:

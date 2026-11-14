@@ -65,6 +65,9 @@ from typehaus.model.placeables import ModelRepresentation
 # carrier services' wall-relative setback when replacing the library's shorter bowl.
 TOTO_AP_WALL_HUNG = TOILET_WALL_HUNG.model_copy(update={
     "tag": "FX-TOTO-AP-WH",
+    "model_representation": ModelRepresentation(symbol="toto-ap-duofit"),
+    # WT173M frame opening, SS-02352 p.3; the generic Duofix bay is narrower.
+    "carrier_bay_width": inch(22.8125),
     "name": "AP wall-hung water closet on a DuoFit carrier",
     "product_ref": "PROD-TOTO-CT426CFGT40",
     "footprint": (inch(14.9375), inch(21.25)),

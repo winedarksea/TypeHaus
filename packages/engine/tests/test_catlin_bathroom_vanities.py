@@ -287,7 +287,9 @@ def test_the_hall_bath_mat_gave_way_to_the_cabinet_and_is_a_real_cable(
     assert 26.7 <= area <= 28.0, f"{area:.2f} sq ft no longer suits a 26.7 sq ft cable"
 
 
-def test_powder_room_has_real_toilet_front_clearance_and_an_open_entry(catlin_model_ro):
+def test_powder_room_has_real_toilet_front_clearance_and_an_open_entry(
+    catlin_model_ro, catlin_plan,
+):
     model = catlin_model_ro
     room = Polygon(next(r.clear_face for r in model.rooms if r.tag == "RM-M-BATH1"))
     toilet = _obj(model, "FX-M-BATH1-WC")
@@ -297,6 +299,13 @@ def test_powder_room_has_real_toilet_front_clearance_and_an_open_entry(catlin_mo
     # TOTO SS-02352 p.2: overall projection, not the shorter underside dimension.
     assert (tx1 - tx0, ty1 - ty0) == pytest.approx((14.9375, 21.25))
     assert toilet.type_ref == "FX-TOTO-AP-WH"
+    from typehaus.model.canvas import canvas_object_types
+
+    toilet_type = next(t for t in canvas_object_types(catlin_plan, parts_for={toilet.type_ref})
+                       if t["tag"] == toilet.type_ref)
+    assert any(part["center"][1] - part["size"][1] / 2 > 21.25 * IN / 2
+               and part["center"][2] > 13.125 * IN
+               for part in toilet_type["model_parts"])
     assert room.bounds[3] / IN - ty1 >= 24.25
     assert room.covers(Polygon(toilet.required_clearances[0]))
     assert room.bounds[3] / IN - by1 >= 32.25

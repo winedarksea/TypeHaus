@@ -126,9 +126,9 @@ SYMBOL_NAMES = frozenset(KITCHEN_SEKTION_SYMBOLS) | frozenset(RECEPTACLE_SYMBOLS
     # than a basin. "floor-drain" is the other one: it is the opening itself, so its glyph is
     # a strainer flange with a grate, and it is the only plumbing symbol with no supply side.
     # "toilet-wall-hung" is a THIRD odd one out: no tank, so the china takes the whole
-    # footprint and the only in-wall part that shows is the actuator plate. Its carrier is
-    # framing, not a glyph — see ``resolve/framing/carriers.py``.
-    "toilet", "toilet-wall-hung", "lavatory", "lavatory-wall-hung", "vanity",
+    # footprint. The product-specific "toto-ap-duofit" also models its concealed assembly;
+    # surrounding wood bay framing remains in ``resolve/framing/carriers.py``.
+    "toilet", "toilet-wall-hung", "toto-ap-duofit", "lavatory", "lavatory-wall-hung", "vanity",
     "solid-surface-vanity", "sektion-vanity", "drawer-vanity",
     "door-drawer-vanity", "drawer-vanity-indy", "sektion-vanity-indy",
     "sunnersta-sink", "sunnersta-frame", "solid-surface-access-leaf", "tub",

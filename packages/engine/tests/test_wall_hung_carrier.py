@@ -49,9 +49,9 @@ def test_the_carrier_is_located_on_the_wall_it_stands_in_not_its_wet_wall(catlin
     fixture = catlin_plan.by_tag(CARRIER_FIXTURE)
     assert fixture.wall_ref == "W-M-BAE"
     assert bay.wall_tag == CARRIER_WALL
-    # 19 3/4" of clear bay, centred on the bowl at x = 24.5".
+    # WT173M requires 22 13/16" clear (SS-02352 p.3), centred on the bowl at x = 24.5".
     assert bay.center_m / IN == pytest.approx(24.5, abs=0.01)
-    assert bay.half_m * 2 / IN == pytest.approx(19.75, abs=1e-6)
+    assert bay.half_m * 2 / IN == pytest.approx(22.8125, abs=1e-6)
 
 
 def test_a_floor_mounted_fixture_claims_no_bay(catlin_plan, catlin_model_ro):
@@ -118,7 +118,7 @@ def test_the_bay_is_framed_rather_than_merely_empty(catlin_model_ro, bay):
     # (test_opening_framing_registers_with_the_opening_it_frames), and nothing passes
     # through a carrier bay.
     assert (base.category, head.category) == ("blocking", "blocking")
-    assert base.length_m / IN == pytest.approx(19.75)
+    assert base.length_m / IN == pytest.approx(22.8125)
     assert (head.z0_m - base.z0_m) == pytest.approx(CARRIER_FRAME_HEIGHT_M)
 
 

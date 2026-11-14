@@ -15,9 +15,16 @@ import math
 
 import pytest
 
-from typehaus.model.placeable_symbols import (PART_COLORS, PENDING_SYMBOLS, SYMBOL_NAMES,
-                                              _REGISTRY, model_parts, part_hex, place_local,
-                                              plan_symbol_strokes)
+from typehaus.model.placeable_symbols import (
+    _REGISTRY,
+    PART_COLORS,
+    PENDING_SYMBOLS,
+    SYMBOL_NAMES,
+    model_parts,
+    part_hex,
+    place_local,
+    plan_symbol_strokes,
+)
 
 TOLERANCE = 1e-9
 
@@ -112,6 +119,27 @@ def test_parts_stay_inside_the_declared_box_and_name_a_real_colour(
     if symbol == "gree-flexx-ultra-24-outdoor":
         # Gree's B dimension includes feet; catalog depth is its cabinet F dimension.
         projection = depth * (16.8125 - 14.5625) / 2 / 14.5625
+    if symbol == "toto-ap-duofit":
+        # W/D/H describe the china, not its concealed carrier or the S5 seat above it.
+        from typehaus.model.placeable_symbols._toto_ap import (
+            BOWL_BASE_AFF_IN,
+            BOWL_DEPTH_IN,
+            BOWL_HEIGHT_IN,
+            BOWL_WIDTH_IN,
+            FRAME_TOP_AFF_IN,
+            FRAME_WIDTH_IN,
+        )
+        for part in parts:
+            (cx, cy, cz), (sx, sy, sz) = part["center"], part["size"]
+            assert part["color"] in PART_COLORS
+            assert min(sx, sy, sz) > 0
+            assert abs(cx) + sx / 2 <= width * FRAME_WIDTH_IN / BOWL_WIDTH_IN / 2 + TOLERANCE
+            assert cy - sy / 2 >= -depth / 2 - TOLERANCE
+            assert cy + sy / 2 <= depth / 2 + 6 * depth / BOWL_DEPTH_IN + TOLERANCE
+            assert cz - sz / 2 >= -BOWL_BASE_AFF_IN * height / BOWL_HEIGHT_IN - TOLERANCE
+            frame_top = (FRAME_TOP_AFF_IN - BOWL_BASE_AFF_IN) * height / BOWL_HEIGHT_IN
+            assert cz + sz / 2 <= frame_top + TOLERANCE
+        return
     for part in parts:
         (cx, cy, cz), (sx, sy, sz) = part["center"], part["size"]
         assert part["color"] in PART_COLORS
@@ -287,8 +315,7 @@ def test_a_neo_angle_shower_draws_and_masses_its_pentagon_not_its_bounding_box()
     Both halves come off ``neo_angle_points``, so the assertion is that the glyph outline, the
     pan's swept ring and the catalog outline are one polygon.
     """
-    from typehaus.model.placeable_symbols.plumbing import (NEO_ANGLE_CUT_FRACTION,
-                                                           neo_angle_points)
+    from typehaus.model.placeable_symbols.plumbing import NEO_ANGLE_CUT_FRACTION, neo_angle_points
 
     size = 0.9144  # 36"
     ring = neo_angle_points(size, size, size * NEO_ANGLE_CUT_FRACTION)
