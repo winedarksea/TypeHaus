@@ -266,6 +266,10 @@ and a supply end on a shower-assembly inlet leaves on a straight stub along the 
 
 ## Limitations
 
+- `manifold:HW-HEADER` refuses PR-B-BATH2-SH-HW: the valve's straight 2.63" inlet lead runs into
+  PR-M-BATH2-SH-VENT. The authored run stands, so its ghost reads one `run_interference` on that row.
+- Tree rows carry one illegal bore each: a wall-hung lav's plumb drop from its port stands in the
+  stud plane (the cavity stub above).
 - Flex transfers that need a free-angle bend (DU-B-WH-OUT/IN) are refused: the duct lattice is
   axis-aligned. DU-B-ERV-R-BATH is refused 0.4" short of its clearance to PR-M-COND-HP3. Both
   stay authored by owner decision.
