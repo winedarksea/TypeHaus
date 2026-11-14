@@ -148,11 +148,30 @@ lines. The rows in `docs/nec-2026-paraphrase.md` (index) are read in the printed
 
 ## Still to read in print
 
-410.154 past "two supports" (the rest of the clause); 300.2-300.3; 300.9(A)(2)-300.21 (support, boxes
-at splices, free conductor length, securing, fill); 300.25(C) onward; 680.27(B)-680.33; 250.64
-(GEC protection); 250.53(A)(4) (rod drive); the opening of 406.9(B), the rest of 406.14, 408.4 and
-the 406.30(C) Ex., with 406.48-406.50 vs 404.20 numbering (switch marking and electronic
-switches); the sauna heater's article and listing rule (not in 424 as printed); 705.3-705.4;
-705.81 onward; Table 625.52(B)(1); 230.4(B)-(D); 230.93 onward; minor PV (690.3, .5, .10, .14,
-.35-.40, .46, .48-.55); 725.127 (411.8(A)); Article 445 beyond 445.12; Table 723.20's body; 724.46
-(722.15(K)).
+Each entry names what the printed text decides for Catlin or the engine.
+
+- **410.154** past "two supports": how the PureEdge rail is supported (410.150(B) question in Q11d).
+- **300.2-300.3**: conductors of one circuit in one raceway; mixed-system separation for the data
+  and RSD runs (Q11).
+- **300.9(A)(2)-300.21**: support, boxes at splices, free conductor length, securing and fill;
+  what lane G's `ConduitRun` seal field and the raceway checks must grade.
+- **300.25(C)** onward: plenum/air-handling spaces, for runs through the soffit plenums.
+- **Tables 344.30(B), 352.30(B), 358.30**: raceway supports and strap points (an engine gap; no
+  rows in any paraphrase doc).
+- **680.27(B)-680.33**: covers and other pool equipment; whether any applies to a future tub.
+- **250.64**: GEC protection and routing, for `gec_size` and the meter-main GEC path.
+- **250.53(A)(4)**: rod drive (depth, angle), for `rod_electrodes`.
+- **406.9(B)** opening, rest of **406.14**, **408.4**, **406.30(C) Ex.**, and the **406.48-406.50 vs
+  404.20** numbering: weather-resistant/in-use scope, panel circuit directory, switch marking and
+  electronic switches (lane E's device fields).
+- **The sauna heater's article and listing rule** (not in 424 as printed): what grades the sauna
+  circuit and its controls.
+- **705.3-705.4**: other-article scope and listing, for the PCS/inverter questions (Q3e).
+- **705.81** onward: microgrid rules, whether island mode makes Catlin a microgrid.
+- **Table 625.52(B)(1)**: ventilation for indoor charging, if the garage EVSE needs it.
+- **230.4(B)-(D)** and **230.93** onward: service conductor sizing and service-equipment
+  protection; unblocks Table 250.66's general rows and 250.64(D).
+- **Minor PV** (690.3, .5, .10, .14, .35-.40, .46, .48-.55): no known Catlin question; confirm.
+- **725.127** (411.8(A)): Class 2 lighting circuit wiring.
+- **Article 445** beyond 445.12: if a portable generator inlet is ever added.
+- **Table 723.20**'s body and **724.46** (722.15(K)): limited-energy cable substitutions (Q11).
