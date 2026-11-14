@@ -102,17 +102,12 @@ finished area drops out.
 
 **Autorouter.** `docs/routing.md` Limitations covers the rest (trunk `-END` riser in W-M-E1's bay,
 branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm, search U-turns,
-`--lift` on a first-leg tee). Open items needing a decision or a resolver change:
+`--lift` on a first-leg tee). Open holds:
 
 - [ ] `--tree PR-M-S-SUITE-DRAIN` refuses TUBSH and WC at every rung: real holds (trusses y=224/240
   leave only D13, held by PR-B-CW-SUITE; D14 likewise; the WC's D12 is PR-A-HW-STUBATH's).
 - [ ] `--group BATH2` refuses TUB (held to its own vent) and WC (the wye inlets at y 262/271 on
   PR-B-MAIN-DRAIN block y 254-279). The authored three-vent design stands; 908.2 is an AHJ question.
-- [ ] `mep.riser_through_deck` on a proposed riser beside a bearing-bay box: `floor_blocking.crossing_runs`
-  frames the box only round runs inside the block's footprint, and the check reads the flat 2x6 rail
-  1.5" wide. Fix in the resolver: use the box footprint and drop the top rail where a riser passes.
-- [ ] Since the three-plane trunk gate, `trunk:CW` no longer lays PR-B-FILLER-CW (end inside
-  SUPPLY-GATE, 9 nodes reachable) or PR-S-SUITE-LAV-CW; cause not found.
 
 ### Performance / energy follow-ups
 
