@@ -447,19 +447,13 @@ def test_an_unshielded_cool_exterior_luminaire_is_reported(catlin_model):
     assert any("4000" in f.message for f in failures)
 
 
-def test_a_wall_attached_peninsula_is_not_graded_as_an_island(catlin_model):
-    """``electrical.island_receptacle`` returns NOT_APPLICABLE on catlin, and that is correct.
+def test_the_wall_attached_peninsula_is_graded_as_a_peninsula(catlin_model):
+    """``electrical.island_receptacle`` grades catlin's SEKTION peninsula under 210.52(C)(2).
 
-    The check's population rule is "freestanding by more than ``_NEAR_WALL_M`` from every
-    room boundary", judged per RUN of carcasses chained within the filler tolerance. The
-    SEKTION peninsula is four boxes (end panel, B36, B24, B24) that do not touch a wall on
-    their own; they abut FURN-M-KIT-CORNER-PEN, whose east leg stands on the east wall, so
-    the run is attached and is ``receptacle_spacing``'s beat. Graded box by box, all three
-    bases read as islands — the scope bug this test pins shut.
-
-    ** THIS IS AN HONEST REGRESSION IN COVERAGE, NOT A FIX. ** The peninsula's countertop
-    receptacles are ED-M-LIVING-KGF4 and KMX1, under FURN-M-KIT-E-HUNG at 42", which
-    is "above the counter surface" under 210.52(C)(3) — but nothing grades 210.52(C).
+    Four boxes (end panel, B36, B24, B24) abut FURN-M-KIT-CORNER-PEN, whose east leg stands
+    on the east wall: one run, touching a boundary only along its end, so a peninsula. Its
+    countertop receptacles are ED-M-LIVING-KGF4 and KMX1 at 42", above the counter and
+    within (C)(3)'s 20". Graded box by box, all three bases would read as islands.
     """
     from typehaus.checks import run_from_model
     from typehaus.checks.registry import Tier
@@ -467,10 +461,10 @@ def test_a_wall_attached_peninsula_is_not_graded_as_an_island(catlin_model):
     report = run_from_model(catlin_model, [], tier=Tier.ADVISORY,
                             only="electrical.island_receptacle")
     findings = [f for f in report.findings if f.check_id == "electrical.island_receptacle"]
-    assert [f.result.value for f in findings] == ["not_applicable"]
-    assert "no freestanding island" in findings[0].message
-    tags = {item.tag for item in catlin_model.canvas_objects}
-    assert {"FURN-M-KIT-PEN-B36", "FURN-M-KIT-CORNER-PEN"} <= tags
+    assert [f.result.value for f in findings] == ["pass"]
+    assert findings[0].message.startswith("peninsula ")
+    assert "FURN-M-KIT-CORNER-PEN" in findings[0].element_tags
+    assert "ED-M-LIVING-KMX1" in findings[0].message
 
 
 _PENINSULA = ("FURN-M-KIT-PEN-END", "FURN-M-KIT-PEN-B36", "FURN-M-KIT-PEN-B24-W",
@@ -478,7 +472,8 @@ _PENINSULA = ("FURN-M-KIT-PEN-END", "FURN-M-KIT-PEN-B36", "FURN-M-KIT-PEN-B24-W"
 
 
 def test_an_island_with_no_receptacle_is_reported(catlin_model):
-    """Pull the peninsula's bases off the corner and strip its receptacles: one run fails.
+    """Pull the peninsula's bases off the corner and strip its receptacles: one run is
+    UNKNOWN (210.52(C)(2) then wants provisions, which nothing models).
 
     The check populates off ``model.canvas_objects``, not off the plan, so the fixture moves
     the bases' resolved footprints 4'-0" west — clear of the carousel and of every
@@ -488,7 +483,7 @@ def test_an_island_with_no_receptacle_is_reported(catlin_model):
     from dataclasses import replace
 
     from typehaus.checks.code.mn_residential.profile import MN_2020
-    from typehaus.checks.mep.electrical import island_receptacle
+    from typehaus.checks.mep.electrical_island import island_receptacle
     from typehaus.checks.registry import CheckContext, Preferences
 
     shift_x = -4 * 0.3048
@@ -503,10 +498,10 @@ def test_an_island_with_no_receptacle_is_reported(catlin_model):
                  if element.element_kind != "ElectricalDevice"])
     context = CheckContext(plan=patched, model=model, preferences=Preferences(),
                            profile=MN_2020)
-    failures = [f for f in island_receptacle(context) if f.result.value == "fail"]
+    open_ = [f for f in island_receptacle(context) if f.result.value == "unknown"]
     work_surface = tuple(tag for tag in _PENINSULA if tag != "FURN-M-KIT-PEN-END")
-    assert [f.element_tags for f in failures] == [work_surface]
-    assert "210.52(C)" in failures[0].message
+    assert [f.element_tags for f in open_] == [work_surface]
+    assert "210.52(C)(2)" in open_[0].message
 
 
 def test_every_condenser_disconnect_is_reachable_under_NEC_404_8_A(catlin_model):

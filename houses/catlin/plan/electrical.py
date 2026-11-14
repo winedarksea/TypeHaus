@@ -1948,6 +1948,22 @@ NEC_FILL_BASEMENT = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-E2", face="left", distance_from_start=inch(192),
                          normal_gap=inch(0), rotation_offset=deg(180)))),
+    # The south wall's two spaces either side of D-B-PLAY (2026-11-14): ED-B-GYM-RC3/RC4 are
+    # on W-B-CE's gym face and serve the gym, not this room (210.52(A)(1)).
+    ElectricalDevice(uid="9N2GS8A8VT", tag="ED-B-PLAY-N-RC6", kind=DeviceKind.RECEPTACLE,
+                     type_ref="ED-T-LEV-DUPLEX-20",
+                     circuit="CKT-RC-BSMT", room="RM-B-PLAY-N",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-B-CE", face="left", distance_from_start=inch(38),
+                         normal_gap=inch(0), rotation_offset=deg(180)))),
+    ElectricalDevice(uid="358QVY1D6R", tag="ED-B-PLAY-N-RC7", kind=DeviceKind.RECEPTACLE,
+                     type_ref="ED-T-LEV-DUPLEX-20",
+                     circuit="CKT-RC-BSMT", room="RM-B-PLAY-N",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-B-CE", face="left", distance_from_start=inch(173),
+                         normal_gap=inch(0), rotation_offset=deg(180)))),
 
     # ** THE HALL, AND NOTHING IN THIS ENGINE ASKED FOR IT (2026-09-07). ** The basement
     # hall runs 15'-6" from the stair foot to the sauna wall now, which is NEC 210.52(H)
@@ -1984,7 +2000,7 @@ NEC_FILL_MAIN = [
                      circuit="CKT-KITCH-SA2",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-C2", face="right", distance_from_start=inch(34.125),
+                         wall_ref="W-M-C2", face="right", distance_from_start=inch(29),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # ** THE EAST WALL'S RECEPTACLES (2026-10-20). ** South of the slat partition (y 154 1/4")
     # is open wall space, split by the fireplace brick (65 1/4"..110 3/4"); RC13 (22") and RC3
@@ -2285,6 +2301,15 @@ NEC_FILL_MAIN = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-C1", face="left", distance_from_start=inch(13.5),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
+    # The 2'-7" wall space between the two built-ins on W-M-C1 (2026-11-14): ED-M-LIVING-RC1,
+    # on the wall's living-room face, had been read as serving it (210.52(A)(1)).
+    ElectricalDevice(uid="NZH6KSPMNF", tag="ED-M-BED-RC10", kind=DeviceKind.RECEPTACLE,
+                     type_ref="ED-T-LEV-DUPLEX-20",
+                     circuit="CKT-RC-MAIN",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-C1", face="left", distance_from_start=inch(37.5),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="NEC016AAAA", tag="ED-M-BED-RC5", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20",
                      circuit="CKT-RC-MAIN",
@@ -2431,7 +2456,7 @@ NEC_FILL_SECOND = [
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-PS2", face="right", distance_from_start=inch(76.125),
+                         wall_ref="W-S-PS2", face="right", distance_from_start=inch(84.125),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="NEC026AAAA", tag="ED-S-STUDY2-RC1", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20",
@@ -2440,6 +2465,15 @@ NEC_FILL_SECOND = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-C1", face="right", distance_from_start=inch(10.4375),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
+    # NEC 210.52(H): RM-S-HALL is far over 10 ft, so it takes a receptacle (a vacuum's).
+    # The hall face of W-S-BW1, between ED-S-HALL-SW and D-S-BED1.
+    ElectricalDevice(uid="0R6RFYHNZY", tag="ED-S-HALL-RC1", kind=DeviceKind.RECEPTACLE,
+                     type_ref="ED-T-LEV-DUPLEX-20",
+                     circuit="CKT-RC-SECOND", room="RM-S-HALL",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-S-BW1", face="left", distance_from_start=inch(49.875),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="NEC027AAAA", tag="ED-S-STUDY2-RC2", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20",
                      circuit="CKT-RC-SECOND",
@@ -2483,7 +2517,7 @@ NEC_FILL_SECOND = [
                      type_ref="ED-T-LEV-DUPLEX-20",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
-                     location=Location(attachment=WallAttachment(wall_ref="W-S-E2", face="left", distance_from_start=m(1.83264), normal_gap=inch(0), rotation_offset=deg(-180)))),
+                     location=Location(attachment=WallAttachment(wall_ref="W-S-E2", face="left", distance_from_start=inch(75.5), normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="NEC031AAAA", tag="ED-S-BED1-RC3", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20",
                      circuit="CKT-RC-SECOND",

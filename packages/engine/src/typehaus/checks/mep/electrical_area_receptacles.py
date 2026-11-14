@@ -1,0 +1,196 @@
+"""2026 NEC 210.52(E)(1), (F) and (H): outdoor, laundry and hallway receptacle outlets.
+
+* (E)(1) ``electrical.outdoor_front_back_receptacles``: a one- or two-family dwelling has a
+  receptacle at the front and one at the back, readily accessible from grade and at most
+  6 1/2 ft above it. The front faces the authored street frontage (``Site.streets``);
+  "at the front" is read as the frontmost quarter of the dwelling's depth along that
+  direction, or beyond it, and "at the back" the rearmost quarter. Height is measured to
+  the box bottom from the lowest exterior grade beside it (``local_grade_elevation_m``);
+  "readily accessible" is not graded beyond that.
+* (F) ``electrical.laundry_receptacle``: a receptacle in every area set aside for laundry —
+  a laundry room, or a room holding a washer or dryer (by the engine's plan symbols).
+* (H) ``electrical.hallway_receptacle``: a hallway 10 ft or longer down its centreline gets
+  one. The centreline is the long side of the rectangle with the room's area and perimeter,
+  which is exact for a straight hall and close for an L.
+
+Each counts a 210.52 receptacle (``_counts_toward_210_52``: unswitched, 125 V, at most
+5 1/2 ft for (F)/(H); (E) keeps its own 6 1/2 ft). (I) foyers is not graded: no occupancy
+names a foyer.
+"""
+
+from __future__ import annotations
+
+import math
+
+from typehaus.checks._authoring import advisory, not_applicable, passed, unknown
+from typehaus.checks.mep.electrical import _counts_toward_210_52
+from typehaus.checks.mep.electrical_code import _room_of
+from typehaus.checks.registry import CheckContext, Tier, check
+from typehaus.findings import Finding, Result
+from typehaus.model.enums import Occupancy
+from typehaus.model.nec import NEC, cite
+from typehaus.resolve.placeables import placed_xy
+from typehaus.resolve.room_lookup import axis_polygon, axis_ring
+
+_FT = 0.3048
+_OUTDOOR_MAX_M = 6.5 * _FT  # (E)(1)
+_HALLWAY_MIN_M = 10 * _FT  # (H)
+_END_BAND = 0.25  # (E)(1): the frontmost / rearmost quarter of the dwelling's depth
+_GRADE_PROBE_M = 0.3  # the ground beside a wall receptacle
+_LAUNDRY_SYMBOLS = frozenset({"washer", "dryer", "washer-dryer-stacked"})
+
+
+def _receptacles(ctx: CheckContext, *, height_limit: bool = True):
+    """(element, storey, plan point, room or None) for every counting receptacle."""
+    from shapely.geometry import Point
+
+    rooms: dict[str, list] = {}
+    for room in ctx.model.rooms:
+        if len(axis_ring(room)) >= 3:
+            rooms.setdefault(room.storey, []).append((room, axis_polygon(room)))
+    by_tag = {room.tag: room for room in ctx.model.rooms}
+    out = []
+    for storey in ctx.plan.storeys:
+        for element in ctx.plan.storey_elements(storey.tag):
+            if (element.element_kind != "ElectricalDevice"
+                    or not _counts_toward_210_52(ctx, element, height_limit=height_limit)):
+                continue
+            xy = placed_xy(ctx.model, element)
+            if xy is None:
+                continue
+            room = _room_of(ctx.model, element, Point(xy), rooms.get(storey.tag, ()), by_tag)
+            out.append((element, storey.tag, xy, room))
+    return out
+
+
+@check(Tier.ADVISORY, "electrical.laundry_receptacle")
+def laundry_receptacle(ctx: CheckContext) -> list[Finding]:
+    """210.52(F): each laundry area has a receptacle."""
+    cid, code = "electrical.laundry_receptacle", cite(NEC.LAUNDRY_RECEPTACLE)
+    symbols = {t.tag: getattr(t, "plan_symbol", None) for t in ctx.plan.library.appliance_types}
+    areas: dict[str, list[str]] = {r.tag: [] for r in ctx.model.rooms
+                                   if r.occupancy == Occupancy.LAUNDRY.value}
+    for obj in ctx.model.canvas_objects:
+        if obj.kind == "Appliance" and symbols.get(obj.type_ref or "") in _LAUNDRY_SYMBOLS:
+            if obj.room is None:
+                return [unknown(cid, f"laundry appliance {obj.tag} resolves to no room",
+                                (obj.tag,), code=code)]
+            areas.setdefault(obj.room, []).append(obj.tag)
+    if not areas:
+        return [not_applicable(cid, "no laundry room and no washer or dryer is modelled",
+                               code=code)]
+    found: dict[str, list[str]] = {}
+    for element, _storey, _xy, room in _receptacles(ctx):
+        if room is not None and room.tag in areas:
+            found.setdefault(room.tag, []).append(element.tag)
+    out: list[Finding] = []
+    for tag, appliances in sorted(areas.items()):
+        held = f" (holds {', '.join(sorted(appliances))})" if appliances else ""
+        if found.get(tag):
+            out.append(passed(cid, f"laundry area {tag}{held}: "
+                                   f"{', '.join(sorted(found[tag]))}", (tag,), code=code))
+        else:
+            out.append(advisory(cid, f"laundry area {tag}{held} has no 125 V receptacle",
+                                (tag, *appliances), Result.FAIL, code=code,
+                                fix="add a receptacle in the laundry area"))
+    return out
+
+
+def _centreline_m(polygon) -> float:
+    """Long side of the rectangle with this polygon's area and perimeter."""
+    quarter = polygon.length / 4.0
+    return quarter + math.sqrt(max(quarter * quarter - polygon.area, 0.0))
+
+
+@check(Tier.ADVISORY, "electrical.hallway_receptacle")
+def hallway_receptacle(ctx: CheckContext) -> list[Finding]:
+    """210.52(H): a hallway 10 ft or longer has a receptacle."""
+    cid, code = "electrical.hallway_receptacle", cite(NEC.HALLWAY_RECEPTACLE)
+    halls = [r for r in ctx.model.rooms if r.occupancy == Occupancy.HALLWAY.value]
+    if not halls:
+        return [not_applicable(cid, "no room is a hallway", code=code)]
+    found: dict[str, list[str]] = {}
+    for element, _storey, _xy, room in _receptacles(ctx):
+        if room is not None:
+            found.setdefault(room.tag, []).append(element.tag)
+    out: list[Finding] = []
+    for hall in halls:
+        if len(axis_ring(hall)) < 3:
+            out.append(unknown(cid, f"{hall.tag}: boundary is unresolved", (hall.tag,),
+                               code=code))
+            continue
+        length = _centreline_m(axis_polygon(hall))
+        label = f"{hall.tag} ({length / _FT:.1f} ft down its centreline)"
+        if found.get(hall.tag):
+            out.append(passed(cid, f"{label}: {', '.join(sorted(found[hall.tag]))}",
+                              (hall.tag,), code=code))
+        elif length < _HALLWAY_MIN_M:
+            out.append(not_applicable(cid, f"{label} is under 10 ft", (hall.tag,),
+                                      code=code))
+        else:
+            out.append(advisory(cid, f"{label} has no receptacle", (hall.tag,),
+                                Result.FAIL, code=code, fix="add a receptacle in the hall"))
+    return out
+
+
+@check(Tier.ADVISORY, "electrical.outdoor_front_back_receptacles")
+def outdoor_front_back_receptacles(ctx: CheckContext) -> list[Finding]:
+    """210.52(E)(1): a receptacle at the front and back, at most 6 1/2 ft above grade."""
+    from typehaus.checks.mep.electrical_outdoor import _dwelling_storeys
+    from typehaus.resolve.overlay import union_all
+    from typehaus.resolve.site_earth import local_grade_elevation_m
+
+    cid, code = "electrical.outdoor_front_back_receptacles", cite(NEC.OUTDOOR_FRONT_BACK)
+    dwelling = _dwelling_storeys(ctx)
+    footprint = union_all([axis_polygon(r) for r in ctx.model.rooms
+                           if r.storey in dwelling and len(axis_ring(r)) >= 3])
+    front = _front_direction(ctx, footprint)
+    if footprint.is_empty or front is None:
+        return [unknown(cid, "no street frontage is authored (Site.streets), so the "
+                             "dwelling's front and back cannot be told apart", code=code)]
+    cx, cy = footprint.centroid.x, footprint.centroid.y
+    depth = [(x - cx) * front[0] + (y - cy) * front[1]
+             for x, y in footprint.convex_hull.exterior.coords]
+    ahead, behind = max(depth) * (1 - 2 * _END_BAND), min(depth) * (1 - 2 * _END_BAND)
+    objects = {o.tag: o for o in ctx.model.canvas_objects}
+    sides: dict[str, list[str]] = {"front": [], "back": []}
+    high: dict[str, list[str]] = {"front": [], "back": []}
+    for element, storey, (x, y), room in _receptacles(ctx, height_limit=False):
+        obj = objects.get(element.tag)
+        if room is not None or storey not in dwelling or obj is None:
+            continue
+        along = (x - cx) * front[0] + (y - cy) * front[1]
+        side = "front" if along >= ahead else "back" if along <= behind else None
+        if side is None:
+            continue
+        probe = [(x - _GRADE_PROBE_M, y - _GRADE_PROBE_M), (x + _GRADE_PROBE_M, y - _GRADE_PROBE_M),
+                 (x + _GRADE_PROBE_M, y + _GRADE_PROBE_M), (x - _GRADE_PROBE_M, y + _GRADE_PROBE_M)]
+        grade, _ = local_grade_elevation_m(ctx.model, probe)
+        above = obj.z_m - grade
+        (sides if above <= _OUTDOOR_MAX_M else high)[side].append(
+            f"{element.tag} {above / _FT:.1f} ft above grade")
+    out: list[Finding] = []
+    for side in ("front", "back"):
+        if sides[side]:
+            out.append(passed(cid, f"{side}: {'; '.join(sorted(sides[side]))}", code=code))
+        else:
+            seen = f" (only {'; '.join(sorted(high[side]))})" if high[side] else ""
+            out.append(advisory(cid, f"no outdoor receptacle at the dwelling's {side} within "
+                                     f"6 1/2 ft of grade{seen}", (), Result.FAIL, code=code,
+                                fix=f"add a GFCI receptacle on the {side} wall"))
+    return out
+
+
+def _front_direction(ctx: CheckContext, footprint) -> tuple[float, float] | None:
+    """Unit vector from the dwelling toward its first street frontage's parcel edge."""
+    site = ctx.plan.project.site
+    streets = site.streets
+    parcel = [point.xy_m for point in site.parcel]
+    if not streets or len(parcel) < 3 or footprint.is_empty:
+        return None
+    edge = streets[0].edge
+    (ax, ay), (bx, by) = parcel[edge % len(parcel)], parcel[(edge + 1) % len(parcel)]
+    mx, my = (ax + bx) / 2.0, (ay + by) / 2.0
+    dx, dy = mx - footprint.centroid.x, my - footprint.centroid.y
+    length = math.hypot(dx, dy)
+    return None if length < 1e-9 else (dx / length, dy / length)

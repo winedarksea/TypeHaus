@@ -406,7 +406,7 @@ def test_catlins_hvac_units_each_have_a_servicing_receptacle(catlin_model_ro):
     report = run_from_model(catlin_model_ro, [], tier=Tier.ADVISORY,
                             only="electrical.hvac_service_receptacle")
     found = [f for f in report.findings if f.check_id == "electrical.hvac_service_receptacle"]
-    assert len(found) == 8 and {f.result.value for f in found} == {"pass"}
+    assert len(found) == 11 and {f.result.value for f in found} == {"pass"}  # 8 HVAC, 3 fridges
     assert all("outdoors" in f.message for f in found if f.element_tags[0].endswith("-OD"))
 
 

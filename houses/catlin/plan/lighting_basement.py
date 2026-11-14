@@ -434,7 +434,7 @@ BASEMENT_LIGHTING = [
     # for guards).
     LightRun(uid="QRB0001AAA", tag="LR-B-STAIR-RAIL", type_ref="ED-T-LT-STRIP24",
              path=(pt(ft(10, 4.375), ft(25, 8)), pt(ft(10, 4.375), ft(34, 10))),
-             room="RM-B-STAIR", psu_ref="ED-B-STAIR-LT-PSU",
+             room="RM-B-STAIR", psu_ref="ED-B-STAIR-LT-PSU", serves_stair="ST-B2M",
              controlled_by=("ED-B-STAIR-SW", "ED-M-STAIR-SW"),
              mount=Mount(kind=MountKind.WALL, elevation=inch(34))),
     # The AC/DC supply in a ceiling box, at the head of the run it feeds (notes: "Box in

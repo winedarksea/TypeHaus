@@ -314,7 +314,7 @@ def test_catlin_receptacle_spacing_separates_known_coverage_and_eave_review(catl
     assert set(unknown_rooms) == {"RM-A-STUDIO", "RM-A-STUDY"}
     for finding in unknown_rooms.values():
         assert "rafter plate" in finding.message
-        assert "both included and excluded" in finding.message
+        assert "counted as wall space" in finding.message
         assert len(finding.element_tags) > 1
     # 210.52(C) is graded off the countertops now, no longer a standing UNKNOWN.
     assert not any(f.result.value == "unknown" and not f.element_tags for f in findings)
@@ -1001,7 +1001,7 @@ def test_wall_space_stops_at_a_run_of_counterless_fixed_cabinet():
     from typehaus.checks.code.mn_residential.profile import MN_2020
     from shapely.geometry import LineString
 
-    from typehaus.checks.mep.electrical import _fixed_cabinet_intervals, _merged_intervals
+    from typehaus.checks.mep.electrical_spacing import _fixed_cabinet_intervals, _merged_intervals
     from typehaus.checks.registry import CheckContext, Preferences
 
     plan = load_plan(CATLIN_DIR).plan
@@ -1056,7 +1056,7 @@ def test_a_cabinet_behind_the_wall_does_not_break_this_rooms_wall_space(catlin_p
     from shapely.geometry import LineString, Point
 
     from typehaus.checks.code.mn_residential.profile import MN_2020
-    from typehaus.checks.mep.electrical import _fixed_cabinet_intervals
+    from typehaus.checks.mep.electrical_spacing import _fixed_cabinet_intervals
     from typehaus.checks.registry import CheckContext, Preferences
 
     plan, model = catlin_plan, catlin_model_ro

@@ -196,7 +196,7 @@ ENTRY_LIGHTING = [
     # 3-way.
     ElectricalDevice(uid="QTM0015AAA", tag="ED-M-STAIR-CAN1", kind=DeviceKind.LIGHT,
                      position=pt(ft(13, 7), ft(24, 8)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-BSMT", room="RM-M-LIVING",
+                     circuit="CKT-LT-BSMT", room="RM-M-LIVING", serves_stair="ST-M2S",
                      controlled_by=("ED-M-STAIR-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM0016AAA", tag="ED-M-STAIR-SW", kind=DeviceKind.SWITCH,
@@ -205,5 +205,15 @@ ENTRY_LIGHTING = [
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-STRW", face="left", distance_from_start=inch(96),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+    # ST-M2S's foot end of the chandelier's 3-way (ED-S-STAIR-SW is the head end), in a
+    # two-gang box with ED-M-STAIR-SW: NEC 210.70(A)(2)(3) wants the stair's lighting
+    # controlled at each floor level, and the chandelier was switched upstairs only.
+    ElectricalDevice(uid="4ZFNP9EKM1", tag="ED-M-STAIR-SW2", kind=DeviceKind.SWITCH,
+                     type_ref="ED-T-LEV-SW3",
+                     circuit="CKT-LT-UPPER", room="RM-M-LIVING",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-STRW", face="left", distance_from_start=inch(102.125),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 ]

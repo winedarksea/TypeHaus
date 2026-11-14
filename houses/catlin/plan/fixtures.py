@@ -203,7 +203,7 @@ MAIN_FIXTURES = (
     # leaving 12 5/8" of clear floor to the door plane.
     Appliance(uid="CMQ804AAAA", tag="FX-M-LAUNDRY", type_ref="APPL-LG-WASHTOWER",
               room="RM-M-LAUNDRY", position=pt(m(3.63855), m(6.01059)), rotation=deg(180),
-              wall_ref="W-M-BA2E"),
+              wall_ref="W-M-BA2E", plugs_into=("ED-M-LAUNDRY-DR1", "ED-M-LAUNDRY-RC1")),
     # Utility tub, 4 1/4" west of the stack, 1/4" off W-M-BA2E. Its faucet's hose adapter is not used here
     # (owner, 2026-10-24), so no vacuum breaker or hose-bibb tee is carried.
     #

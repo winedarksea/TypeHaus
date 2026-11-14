@@ -18,7 +18,9 @@ Graded rules (printed 2026 NEC, read 2026-11-13; paraphrased in docs/nec-2026-pa
 
 The wall line is the room's floor-line ring where a counter's back touches it, read as an
 arc length so it turns inside corners. A counter's end face on a perpendicular wall (one
-counter depth, <= ``_END_FACE_M``) is not wall line. Sinks and cooking units break it.
+counter depth, <= ``_END_FACE_M``) is not wall line. Sinks and cooking units break it where
+(C)(1) Ex 1 says no receptacle is needed behind them: under 12" off a straight run, 18" in a
+corner.
 """
 
 from __future__ import annotations
@@ -51,6 +53,8 @@ _END_FACE_M = 30 * _IN
 _PLATE_M = 4.5 * _IN  # a single-gang plate: glass nearer the top than this leaves no room
 _BESIDE_M = 12 * _IN  # "as close as practicable": an outlet this near the glass edge
 _KIND_ALL = {"receptacle", "gfci", "receptacle_240"}
+_STRAIGHT_SETBACK_M = 12 * _IN  # (C)(1) Ex 1, a straight run
+_CORNER_SETBACK_M = 18 * _IN  # (C)(1) Ex 1, a corner
 
 
 def space_gaps(spaces: list[Interval], stations: list[float]) -> list[Interval]:
@@ -111,6 +115,30 @@ def _contacts(ring: list, area, perimeter: float) -> list[Interval]:
             if hi > lo:
                 out.append((start + lo, start + hi))
         start += length
+    return merge(out)
+
+
+def _behind(ring: list, body) -> list[Interval]:
+    """(C)(1) Ex 1: wall line behind a sink or cooking unit set under 12" off it, 18" in a
+    corner (within 18" of two meeting edges). Each such edge loses the unit's projection."""
+    from shapely.geometry import LineString, Point
+
+    edges, start = [], 0.0
+    for index in range(len(ring)):
+        edge = LineString([ring[index], ring[(index + 1) % len(ring)]])
+        edges.append((start, edge, body.distance(edge)))
+        start += edge.length
+    count = len(edges)
+    corner = {i for i in range(count) for j in ((i - 1) % count, (i + 1) % count)
+              if edges[i][2] <= _CORNER_SETBACK_M and edges[j][2] <= _CORNER_SETBACK_M}
+    out: list[Interval] = []
+    for index, (offset, edge, gap) in enumerate(edges):
+        if gap > _STRAIGHT_SETBACK_M and index not in corner:
+            continue
+        along = [edge.project(Point(c)) for c in body.exterior.coords]
+        lo, hi = max(min(along), 0.0), min(max(along), edge.length)
+        if hi > lo:
+            out.append((offset + lo, offset + hi))
     return merge(out)
 
 
@@ -204,7 +232,7 @@ def counter_findings(ctx: CheckContext, cid: str) -> list[Finding]:
         for obj in model.canvas_objects:
             kind = kinds.get(obj.type_ref or "")
             if obj.room == room.tag and kind and len(obj.footprint) >= 3:
-                breaks += _contacts(ring, Polygon(obj.footprint), perimeter)
+                breaks += _behind(ring, Polygon(obj.footprint))
         spaces = [s for lo, hi in line for s in subtract(lo, hi, breaks)]
         glass: list[tuple[Interval, str]] = []  # windows standing at a counter
         walls = {w.tag: w for w in model.walls if w.storey == room.storey}

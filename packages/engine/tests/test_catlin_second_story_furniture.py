@@ -287,7 +287,7 @@ def test_east_pax_frames_are_counted_and_have_rail_backing(catlin_plan, catlin_m
 
 @pytest.mark.parametrize("bedroom", ("BED1", "BED2"))
 def test_expanded_pax_run_preserves_receptacle_spacing(catlin_ctx, bedroom):
-    from typehaus.checks.mep.electrical import receptacle_spacing
+    from typehaus.checks.mep.electrical_spacing import receptacle_spacing
     from typehaus.findings import Result
 
     findings = [finding for finding in receptacle_spacing(catlin_ctx)
