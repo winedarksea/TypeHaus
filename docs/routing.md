@@ -263,6 +263,9 @@ and a supply end on a shower-assembly inlet leaves on a straight stub along the 
 
 ## Limitations
 
+- Flex transfers that need a free-angle bend (DU-B-WH-OUT/IN) are refused: the duct lattice is
+  axis-aligned. DU-B-ERV-R-BATH is refused 0.4" short of its clearance to PR-M-COND-HP3. Both
+  stay authored by owner decision.
 - The supply trunk search carries the house's outside as space prisms
   (`gravity_band.outside_prisms`, 12" holes at run ends) and retries free of the outline, with a
   notice, only when no interior lane crosses the floor system. On catlin it still leaves the house
