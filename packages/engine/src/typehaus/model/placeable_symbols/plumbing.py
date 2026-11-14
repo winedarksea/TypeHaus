@@ -37,6 +37,7 @@ from typehaus.model.placeable_symbols._solid_surface_vanity import solid_surface
 from typehaus.model.placeable_symbols._sunnersta import sunnersta_sink
 from typehaus.model.placeable_symbols._toto_ap import toto_ap
 from typehaus.model.placeable_symbols._undermount_sink import single_bowl_undermount
+from typehaus.model.placeable_symbols._wall_hydrant import wall_hydrant
 from typehaus.model.placeable_symbols._yard_hydrant import yard_hydrant
 
 __all__ = ["NEO_ANGLE_CUT_FRACTION", "PLUMBING_SYMBOLS", "neo_angle_points"]
@@ -394,77 +395,10 @@ def kitchen_sink(*, bowls: int = 2) -> Builder:
     return build
 
 
-def hydrant() -> Builder:
-    """A wall hydrant: standpipe in plan, with its handle and the hose outlet off one side.
-
-    Not a basin and not a faucet on a deck — the whole fixture is a vertical pipe whose only
-    plan presence is its own diameter, so the glyph is a filled circle for the riser with the
-    operating handle drawn as a bar across it and the outlet nipple projecting into the room
-    (``-y``, the side away from the wall). That reads as a hydrant on a plan rather than as
-    the anonymous rectangle a symbol-less type falls back to.
-
-    In 3D it is the standpipe itself: the catalog height is the head height above the floor,
-    and the massing stands the full height rather than sitting on a deck plane, because there
-    is no deck.
-    """
-
-    def build(width: float, depth: float, height: float) -> Geometry:
-        riser_r = clamp(min(width, depth) * 0.22, 0.02, min(width, depth) * 0.3)
-        handle_len = clamp(width * 0.9, riser_r * 2, width)
-        # Strokes are height-independent by contract, so nothing the plan glyph uses may
-        # depend on `height` — only the 3D parts below clamp against it.
-        handle_t = clamp(riser_r * 0.5, 0.008, riser_r)
-        outlet_t = clamp(riser_r * 0.8, 0.012, riser_r * 1.2)
-        # The outlet reaches from the riser into the room and the vacuum breaker screws onto
-        # its tip, so the *breaker* is what has to land on the footprint edge — everything is
-        # measured back from there. A non-square type (the escutcheon is square, but the
-        # symbol has to hold for any size) would otherwise push the nipple out of the box.
-        breaker_r = clamp(outlet_t * 0.8, 0.006, min(outlet_t, depth * 0.12))
-        outlet_far = depth / 2.0 - breaker_r
-        outlet_near = riser_r * 0.4
-        outlet_len = max(outlet_far - outlet_near, 0.0)
-        outlet_cy = -(outlet_near + outlet_len / 2.0)
-        strokes = [circle(0, 0, riser_r, fill="metal"),
-                   rect(0, 0, handle_len, handle_t, fill="metal")]
-        if outlet_len > 0:
-            strokes.append(rect(0, outlet_cy, outlet_t, outlet_len, fill="metal"))
-            strokes.append(circle(0, -outlet_far, breaker_r, weight=DETAIL_WEIGHT))
-        # 3D massing, Woodford-W34-style pieces in the box-only vocabulary: an escutcheon
-        # flange at the floor, a slim standpipe, a wider head casting at the top, the
-        # lever handle above the head, and the outlet nipple capped by its hose-bib
-        # vacuum breaker. Round sections are honest squares — the parts vocabulary has
-        # no cylinder — but the proportions are the fixture's, which is what makes it
-        # read as a hydrant instead of as three anonymous blocks.
-        head_h = clamp(height * 0.14, riser_r * 2, height * 0.2)
-        head_w = riser_r * 3.2
-        head_z0 = height - head_h
-        handle_h = min(handle_t, height * 0.06)
-        pipe_w = riser_r * 1.6  # the galvanized standpipe, slimmer than the head casting
-        flange_w = min(riser_r * 4.0, min(width, depth) * 0.96)
-        flange_h = min(0.012, height * 0.02)
-        outlet_z1 = head_z0  # the nipple leaves the casting's underside
-        outlet_z0 = max(outlet_z1 - outlet_t, 0.0)
-        parts = [
-            box(0, 0, 0.0, flange_h, flange_w, flange_w, "metal"),  # escutcheon
-            box(0, 0, flange_h, head_z0, pipe_w, pipe_w, "metal"),  # standpipe
-            box(0, 0, head_z0, height, head_w, head_w, "metal"),  # head casting
-            # Lever handle: the bar across the head top.
-            box(0, 0, height - handle_h, height, handle_len, handle_t, "metal"),
-        ]
-        if outlet_len > 0:
-            parts.append(box(0, outlet_cy, outlet_z0, outlet_z1,
-                             outlet_t, outlet_len, "metal"))
-            # Hose-bib vacuum breaker: the fatter cap screwed onto the nipple's tip.
-            parts.append(box(0, -outlet_far, outlet_z0 - breaker_r * 0.5,
-                             min(outlet_z1 + breaker_r * 0.5, height),
-                             breaker_r * 2.0, breaker_r * 2.0, "metal"))
-        return tuple(strokes), tuple(parts)
-
-    return build
 
 
 PLUMBING_SYMBOLS: dict[str, Builder] = {
-    "hydrant": hydrant(),
+    "hydrant": wall_hydrant,
     "woodford-y34ss": yard_hydrant,
     "laundry-sink": laundry_tub(),
     "toilet": toilet(),

@@ -123,10 +123,8 @@ SYMBOL_NAMES = (frozenset(KITCHEN_SEKTION_SYMBOLS) | frozenset(RECEPTACLE_SYMBOL
     "gree-flexx-ultra-24-outdoor",
     "infrared-heater", "fireplace-insert",
     "disconnect", "meter", "junction-box", "spd",
-    # plumbing fixtures. "hydrant" is the odd one out: it is a standpipe, not a vessel, so
-    # its glyph is the riser's own diameter with a handle bar and an outlet nipple rather
-    # than a basin. "floor-drain" is the other one: it is the opening itself, so its glyph is
-    # a strainer flange with a grate, and it is the only plumbing symbol with no supply side.
+    # Plumbing fixtures: "hydrant" is the Model 19 wall faucet; the Y34SS has its own
+    # yard-hydrant geometry. Neither has a drain. "floor-drain" has no supply side.
     # "toilet-wall-hung" is a THIRD odd one out: no tank, so the china takes the whole
     # footprint. The product-specific "toto-ap-duofit" also models its concealed assembly;
     # surrounding wood bay framing remains in ``resolve/framing/carriers.py``.

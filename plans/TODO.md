@@ -291,7 +291,6 @@ That would let subagents compare candidates without repeatedly reading geometry 
 - Improve the 3d model of the EQ-S-PLANT-HEATER
 - Improve the 3d model of the AD-SG-COURT area drains (may need a product search)
 - Improve the 3d model of the EQ-T-SAUNA-HEATER
-- Improve the 3d model of the outdoor hydrants FX-HYDRANT-SD34
 
 # Project Management
 

@@ -549,14 +549,18 @@ ATTIC_FIXTURES = (
 # The fix is not a resolver-wide "fall back to the type when the element is silent", because
 # a non-optional field cannot tell "the author said FLOOR" from "the author said nothing" —
 # such a fallback would silently overrule every deliberate floor mount in every house. The
-# convention is to re-state it on the element, as FURN-M-LAUNDRY-RACK already does. Written
-# out at each element rather than shared through a module constant: this file is
+# convention is to re-state it on the element, as FURN-M-LAUNDRY-RACK already does.
+# Model 19 trim has a 2.25" body-base-to-barrel offset. The porch's assigned
+# room floor adds 1.75", so mount at 20" to meet the 24" supply/bore datum.
+# The balcony floor adds 1.12": 21.459" + 2.25" + 1.12" meets its authored
+# 24.829" supply datum. Both offsets are measured from the assigned indoor room.
+# Values are written at each element rather than shared through a constant: this file is
 # `# haus: editable` and a UI drag rewrites these calls, so every argument stays a literal
 # the writer can round-trip.
 PORCH_HYDRANT = (
     Fixture(uid="7QK2M4XR0B", tag="FX-M-PORCH-HYD", type_ref="FX-HYDRANT-SD34",
             room="RM-M-BED", wall_ref="W-M-S1",
-            mount=Mount(kind=MountKind.WALL, elevation=inch(24), recessed_into_host_surface=True),
+            mount=Mount(kind=MountKind.WALL, elevation=inch(20), recessed_into_host_surface=True),
             location=Location(attachment=WallAttachment(
                 wall_ref="W-M-S1", face="right", distance_from_start=inch(152),
                 normal_gap=inch(-10.25), rotation_offset=deg(0)))),
@@ -564,7 +568,7 @@ PORCH_HYDRANT = (
 BALCONY_HYDRANT = (
     Fixture(uid="D3NLW8VC5T", tag="FX-S-BALCONY-HYD", type_ref="FX-HYDRANT-SD34",
             room="RM-S-PLANT", wall_ref="W-S-S1",
-            mount=Mount(kind=MountKind.WALL, elevation=inch(24), recessed_into_host_surface=True),
+            mount=Mount(kind=MountKind.WALL, elevation=inch(21.459), recessed_into_host_surface=True),
             location=Location(attachment=WallAttachment(
                 wall_ref="W-S-S1", face="right", distance_from_start=inch(152),
                 normal_gap=inch(-10.25), rotation_offset=deg(0)))),

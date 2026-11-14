@@ -25,6 +25,7 @@ from typehaus.model import (
     m,
     pt,
 )
+from typehaus.model.placeable_symbols._wall_hydrant_config import MODEL_19
 from typehaus.model.placeable_symbols._yard_hydrant_config import Y34SS
 
 REFERENCE = "Residential planning allowance; final fixture selection by owner."
@@ -289,23 +290,26 @@ WALL_HYDRANT = FixtureType(
 # ``PipeAccessory(PENETRATION_SEAL)`` at each hydrant, not this type — the same hydrant
 # through a different wall takes a different kit.
 #
-# ``mount`` is WALL at 24": the handle stands two feet over whatever deck the hydrant serves,
-# which is the height you can get a hose fitting onto without kneeling.
+# The barrel axis stays at 24" above the deck; the body base is lower by the
+# modeled axis offset. The rear footprint edge is the inlet, 10.25" behind the flange.
 WALL_HYDRANT_SELF_DRAINING = FixtureType(
     tag="FX-HYDRANT-SD34", name='Self-draining frost-free wall hydrant, 3/4", anti-siphon',
-    footprint=(inch(6), inch(6)), height=inch(8), plan_symbol="hydrant",
+    footprint=(inch(MODEL_19.width), inch(MODEL_19.depth)),
+    height=inch(MODEL_19.height), plan_symbol="hydrant",
     basin=False,
     needs=frozenset({Service.WATER_COLD}),
-    mount=Mount(kind=MountKind.WALL, elevation=inch(24)),
+    mount=Mount(kind=MountKind.WALL, elevation=inch(24 - MODEL_19.barrel_axis_height)),
     integral_vacuum_breaker=True,
     # The seat is one barrel length inboard, and the barrel is chosen per wall stack.
     ports=(ServicePort(tag="inlet", service=Service.WATER_COLD,
-                       position=(inch(0), inch(0), inch(0)), connection_size=inch(0.75),
+                       position=(inch(0), inch(MODEL_19.depth / 2),
+                                 inch(MODEL_19.barrel_axis_height)),
+                       connection_size=inch(0.75),
                        direction=(0, 1, 0),
                        notes="3/4\" NPT seat at the inboard end of the barrel; its depth "
                              "behind the escutcheon is the barrel length the wall takes"),),
     source="Woodford Model 19 self-draining frost-free wall faucet, 3/4\" NPT inlet, MHT "
-           "outlet, integral anti-siphon vacuum breaker (ASSE 1052), barrel length chosen "
+           "outlet, integral anti-siphon vacuum breaker (ASSE 1019 Type C), barrel length chosen "
            "for the wall stack it passes (here 2x6 + 4\" continuous exterior insulation + "
            "rainscreen ~= 10\"). The breaker ships on the faucet body — do not schedule a "
            "second, screw-on one. The seat sits inside the conditioned envelope and the "

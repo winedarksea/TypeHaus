@@ -11,7 +11,7 @@ from typehaus.emit.gltf.mesh import _MeshBuilder
 from typehaus.emit.ifc.mep import _emit_pipe_accessories
 from typehaus.emit.ifc.placeable_parts import parts_representation
 from typehaus.emit.ifc.structural import _solid_body
-from typehaus.library.placeables.fixtures import WALL_HYDRANT
+from typehaus.library.placeables.fixtures import WALL_HYDRANT, WALL_HYDRANT_SELF_DRAINING
 from typehaus.model import PipeAccessory, PipeAccessoryKind, inch, pt
 from typehaus.model.canvas import _symbol_geometry
 from typehaus.model.placeable_symbols import model_parts, place_local
@@ -117,14 +117,16 @@ def _bounds(points):
     return tuple((min(p[i] for p in points), max(p[i] for p in points)) for i in range(3))
 
 
-def test_hydrant_viewer_gltf_and_ifc_use_the_same_product_geometry():
-    parts = _parts()
-    viewer = _symbol_geometry(WALL_HYDRANT, WALL_HYDRANT.footprint)["model_parts"]
+@pytest.mark.parametrize("product", [WALL_HYDRANT, WALL_HYDRANT_SELF_DRAINING])
+def test_hydrant_viewer_gltf_and_ifc_use_the_same_product_geometry(product):
+    parts = model_parts(product.plan_symbol, *(v.meters for v in product.footprint),
+                        product.height.meters)
+    viewer = _symbol_geometry(product, product.footprint)["model_parts"]
     assert [p["mesh"] for p in viewer] == [p["mesh"] for p in parts]
     model, _ = _assembly(rotation=37)
     fixture = model.canvas_objects[0]
     builder = _MeshBuilder()
-    assert _add_canvas_parts(builder, fixture, WALL_HYDRANT, {})
+    assert _add_canvas_parts(builder, fixture, product, {})
     gltf = [p for points, _ in builder._buckets.values() for p in points]
     file = ifcopenshell.file(schema="IFC4")
     context = file.create_entity("IfcGeometricRepresentationContext")
@@ -178,3 +180,34 @@ def test_catlin_has_one_attached_breaker_with_retained_identity(catlin_model_ro)
     assert accessory.z_m == pytest.approx(fixture.z_m + local[2])
     assert solid.body_mesh is not None
     assert solid.z1_m - solid.z0_m < 3 * M_PER_IN
+
+
+def test_catlin_wall_hydrant_flange_meets_exterior_face_and_barrel_meets_feed(catlin_model_ro):
+    from typehaus.model.placeable_symbols._wall_hydrant_config import MODEL_19
+    from typehaus.resolve.mep_sleeves import placed_port_point
+    from typehaus.resolve.wall_hosting import _finish_offset
+
+    model = catlin_model_ro
+    product = WALL_HYDRANT_SELF_DRAINING
+    parts = model_parts(product.plan_symbol, *(v.meters for v in product.footprint),
+                        product.height.meters)
+    barrel, _, flange = parts[:3]
+    for tag in ("FX-M-PORCH-HYD", "FX-S-BALCONY-HYD"):
+        fixture = next(o for o in model.canvas_objects if o.tag == tag)
+        wall = model.wall(model.plan.by_tag(tag).wall_ref)
+        (x0, y0), (x1, y1) = wall.axis
+        length = ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** .5
+        left = (-(y1 - y0) / length, (x1 - x0) / length)
+        face = _finish_offset(wall, wall.axis[0], left, -1,
+                              (fixture.body_z0_m, fixture.body_z1_m))
+        flange_back = (0, flange["center"][1] + flange["size"][1] / 2)
+        flange_xy, = place_local([flange_back], fixture.position, fixture.rotation_degrees)
+        assert sum((v - o) * n for v, o, n in zip(flange_xy, wall.axis[0], left, strict=True)
+                   ) == pytest.approx(face)
+        axis_z = fixture.z_m + barrel["center"][2]
+        port_point = placed_port_point(model, tag, product.ports[0])
+        storey = next(s for s in model.plan.storeys if s.tag == fixture.storey)
+        assert port_point[2] + storey.elevation.meters == pytest.approx(axis_z)
+        feed = next(r for r in model.pipe_runs if tag in r.serves and r.tag.endswith("CU"))
+        assert feed.z_m[-1] == pytest.approx(axis_z)
+        assert axis_z - fixture.body_z0_m == pytest.approx(MODEL_19.barrel_axis_height * M_PER_IN)
