@@ -408,7 +408,8 @@ def build_space(model: ResolvedModel, *, radius_m: float,
                 z_band: tuple[float, float] | None = None,
                 clearance_m: float = CLEARANCE_M,
                 cavity_radius_m: float | None = None,
-                panel_space: bool = True, laid: Any = ()) -> RoutingSpace:
+                panel_space: bool = True, laid: Any = (),
+                z_radius_m: float | None = None) -> RoutingSpace:
     """Inflate the world once for a run of this radius, bounded around its terminals.
 
     ``terminals`` is any iterable of ``(x, y)`` or ``(x, y, z)`` — the points the route has
@@ -433,7 +434,8 @@ def build_space(model: ResolvedModel, *, radius_m: float,
 
     window = box(minx, miny, maxx, maxy)
     hard = [prism for prism in hard_prisms(model, radius_m, avoid=avoid, touch=touch,
-                                           clearance_m=clearance_m, panel_space=panel_space)
+                                           clearance_m=clearance_m, panel_space=panel_space,
+                                           z_radius_m=z_radius_m)
             if prism.footprint.intersects(window)]
     soft = [prism for prism in soft_prisms(model)
             if prism.footprint.intersects(window)]

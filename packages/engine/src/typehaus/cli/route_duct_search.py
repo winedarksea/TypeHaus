@@ -37,6 +37,14 @@ def duct_search(model: Any, graph: Any, ends: Any, slope: float | None):
     return search, report
 
 
+def z_radius_m(ends: Any) -> float | None:
+    """The half-height a flat rectangular duct sweeps, where it is not ``radius_m`` (half the
+    larger side, which a turn's diagonal needs in plan but a level run does not in z)."""
+    if ends.kind != "duct" or not (ends.width_m and ends.depth_m):
+        return None
+    return ends.radius_m - (max(ends.width_m, ends.depth_m) - ends.depth_m) / 2.0
+
+
 def fitting_problem(model: Any, ends: Any):
     """The take-off of this duct's 90-degree elbow, its fabrication premium, the 45 and 30
     an offset may be made with (round, and only where bought: a gored offset is no offset),

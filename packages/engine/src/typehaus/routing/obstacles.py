@@ -87,16 +87,19 @@ def _polygon(ring: Any) -> Any:
 def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] = frozenset(),
                 touch: frozenset[str] = frozenset(),
                 clearance_m: float = CLEARANCE_M,
-                panel_space: bool = True) -> list[HardPrism]:
+                panel_space: bool = True, z_radius_m: float | None = None) -> list[HardPrism]:
     """Forbidden prisms, inflated by radius + clearance.
 
     ``avoid`` adds hard element tags. ``touch`` exempts runs being replaced or joined so a
     branch can reach its parent. Shared envelopes come from resolve.mep_envelopes.
     ``panel_space`` closes each panel's NEC 110.26(E)(1) space; a raceway, which is the
-    electrical installation, passes False."""
+    electrical installation, passes False. ``z_radius_m`` is the mover's half-height where it
+    is not ``radius_m`` (a flat rectangular duct): it grows every prism's elevation but
+    a chord's."""
     from typehaus.resolve.mep_envelopes import opening_prisms
 
     inflate = radius_m + clearance_m
+    zi = inflate if z_radius_m is None else z_radius_m + clearance_m  # elevation growth
     out: list[HardPrism] = []
 
     # **Un-eroded, and that is the whole difference from the check's reading.** A raceway
@@ -112,14 +115,14 @@ def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] 
         if grown.is_empty:
             continue
         out.append(HardPrism(tag=tag, kind="opening", footprint=grown,
-                             z0_m=low - inflate, z1_m=high + inflate))
+                             z0_m=low - zi, z1_m=high + zi))
 
     # A swinging leaf's quadrant, below the head (``mep.run_through_opening`` grades it too).
     from typehaus.resolve.mep_door_swing import door_swing_prisms
 
     for tag, _host, sector, low, high, _for in door_swing_prisms(model):
         out.append(HardPrism(tag=tag, kind="opening", footprint=sector.buffer(inflate),
-                             z0_m=low - inflate, z1_m=high + inflate))
+                             z0_m=low - zi, z1_m=high + zi))
 
     if panel_space:
         from shapely.geometry import Polygon
@@ -130,7 +133,7 @@ def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] 
             out.append(HardPrism(tag=f"{space.panel} ({cite(NEC.DEDICATED_SPACE)})",
                                  kind="clear_zone",
                                  footprint=Polygon(space.footprint).buffer(inflate),
-                                 z0_m=space.floor_m, z1_m=space.z1_m + inflate))
+                                 z0_m=space.floor_m, z1_m=space.z1_m + zi))
 
     # Deck voids, less the walls that cross them: a run over a void has nothing to strap
     # to unless a wall carries it, which is exactly ``mep.run_over_void``'s reading.
@@ -148,8 +151,8 @@ def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] 
             if poly.is_empty:
                 continue
             out.append(HardPrism(tag=floor.tag, kind="void", footprint=poly,
-                                 z0_m=low - inflate,
-                                 z1_m=floor.deck_top_range(ring)[1] + inflate))
+                                 z0_m=low - zi,
+                                 z1_m=floor.deck_top_range(ring)[1] + zi))
 
     # A flight's R311.7.2 headroom and its own structure (``resolve/stair_headroom``, the
     # volume the check grades). Fixed: nobody moves a stair to make room for a duct. Goings
@@ -165,8 +168,8 @@ def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] 
             pair = goings[start:start + _GOINGS_PER_PRISM]
             out.append(HardPrism(tag=pair[0].stair_tag, kind="stair",
                                  footprint=_going_footprint(pair, inflate),
-                                 z0_m=min(g.z0_m for g in pair) - inflate,
-                                 z1_m=max(g.z1_m for g in pair) + inflate))
+                                 z0_m=min(g.z0_m for g in pair) - zi,
+                                 z1_m=max(g.z1_m for g in pair) + zi))
 
     # Open-web truss WEBS, where the deck quotes the maker's openings: each truss's
     # ``OpenWebShape`` (``resolve/open_web.py``) gives the solid bands (TrimEnds, chase posts,
@@ -202,8 +205,8 @@ def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] 
                     continue
                 out.append(HardPrism(tag=floor.tag, kind="member",
                                      footprint=poly.buffer(inflate),
-                                     z0_m=window.z0_m - inflate,
-                                     z1_m=window.z1_m + inflate))
+                                     z0_m=window.z0_m - zi,
+                                     z1_m=window.z1_m + zi))
 
     # Open-web CHORDS, along each whole truss. The web prisms above leave the chord bands
     # open, so a run travelling along a truss could ride "over" the webs inside its top
@@ -273,8 +276,8 @@ def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] 
             for z0, z1_band in ((member.z0_m, member.z0_m + t), (z1 - t, z1)):
                 out.append(HardPrism(tag=f"{floor.tag} flange@{ax:.3f},{ay:.3f}",
                                      kind="flange",
-                                     footprint=poly.buffer(inflate), z0_m=z0 - inflate,
-                                     z1_m=z1_band + inflate, applies=across))
+                                     footprint=poly.buffer(inflate), z0_m=z0 - zi,
+                                     z1_m=z1_band + zi, applies=across))
 
     # Beams: a carrier is not bored for a run, and ``mep.run_through_beam`` reads the same
     # sections (``resolve/beam_sections``).
@@ -282,7 +285,7 @@ def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] 
 
     for tag, footprint, z0, z1 in beam_sections(model):
         out.append(HardPrism(tag=tag, kind="beam", footprint=footprint.buffer(inflate),
-                             z0_m=z0 - inflate, z1_m=z1 + inflate))
+                             z0_m=z0 - zi, z1_m=z1 + zi))
 
     # Concrete. Only the bands that are actually concrete — a stay-in-place foam deck form
     # is not a pour, and ``resolve/mep_queries.concrete_bands`` is the one place that
@@ -298,14 +301,14 @@ def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] 
         grown = poly.buffer(inflate)
         for z0, z1 in concrete_bands(model, solid):
             out.append(HardPrism(tag=solid.tag, kind="concrete", footprint=grown,
-                                 z0_m=z0 - inflate, z1_m=z1 + inflate))
+                                 z0_m=z0 - zi, z1_m=z1 + zi))
     # A foundation wall's structure layer: ``mep.run_in_slab``'s host, the same list.
     from typehaus.resolve.mep_concrete import concrete_hosts
 
     for tag, category, footprint, z0, z1 in concrete_hosts(model):
         if category == "wall":
             out.append(HardPrism(tag=tag, kind="concrete", footprint=footprint.buffer(inflate),
-                                 z0_m=z0 - inflate, z1_m=z1 + inflate))
+                                 z0_m=z0 - zi, z1_m=z1 + zi))
 
     # Existing runs. A proposal that occupies a lane something else already has is not a
     # proposal, and this is the only obstacle class whose membership the caller edits by
@@ -326,7 +329,8 @@ def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] 
     # says so.
     from typehaus.resolve.mep_envelopes import envelopes
 
-    for envelope in envelopes(model, inflate_m=inflate):
+    for envelope in envelopes(model, inflate_m=inflate,
+                              inflate_z_m=zi):
         if envelope.tag in avoid or envelope.tag in touch:
             continue
         for prism in envelope.prisms:
@@ -340,7 +344,7 @@ def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] 
         if poly is not None:
             out.append(HardPrism(tag=zone.tag, kind="clear_zone",
                                  footprint=poly.buffer(inflate),
-                                 z0_m=zone.z0_m - inflate, z1_m=zone.z1_m + inflate))
+                                 z0_m=zone.z0_m - zi, z1_m=zone.z1_m + zi))
 
     for tag in sorted(avoid - zone_tags):
         element = model.plan.by_tag(tag)

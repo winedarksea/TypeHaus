@@ -283,12 +283,14 @@ def run_sections(model: ResolvedModel) -> dict[str, tuple[float, float, str | No
 
 def run_envelope(kind: str, tag: str, path: Any, z: Any,
                  section: tuple[float, float, str | None], *,
-                 inflate_m: float = 0.0) -> Envelope:
+                 inflate_m: float = 0.0, inflate_z_m: float | None = None) -> Envelope:
     """One prism per segment, banded over that segment's own z range.
 
     ``inflate_m`` is the caller's clearance and is applied in plan and in elevation alike.
     A router passes ``radius + clearance``; a check comparing two runs passes the gap it is
-    grading against, or zero and compares the prisms.
+    grading against, or zero and compares the prisms. ``inflate_z_m`` (default: the same)
+    grows the elevation by the mover's half-DEPTH, which a flat rectangular duct's is not
+    its half-width.
 
     A **riser** — a repeated plan point at two elevations — has no plan length, so its
     footprint is the point buffered. It is still a prism: a vertical standing in a doorway
@@ -311,7 +313,7 @@ def run_envelope(kind: str, tag: str, path: Any, z: Any,
                    "no envelope — it is a schematic profile, not a placed run"))
 
     grow_plan = half_w + lagging + inflate_m
-    grow_z = half_d + lagging + inflate_m
+    grow_z = half_d + lagging + (inflate_m if inflate_z_m is None else inflate_z_m)
     prisms = []
     for index in range(len(path) - 1):
         a, b = path[index], path[index + 1]
@@ -326,11 +328,12 @@ def run_envelope(kind: str, tag: str, path: Any, z: Any,
     return Envelope(tag=tag, kind=kind, prisms=tuple(prisms), gaps=tuple(gaps))
 
 
-def envelopes(model: ResolvedModel, *, inflate_m: float = 0.0) -> list[Envelope]:
+def envelopes(model: ResolvedModel, *, inflate_m: float = 0.0,
+              inflate_z_m: float | None = None) -> list[Envelope]:
     """Every run's envelope, in ``run_polylines`` order."""
     sections = run_sections(model)
-    return [run_envelope(kind, tag, path, z,
-                         sections.get(tag, (0.0, 0.0, None)), inflate_m=inflate_m)
+    return [run_envelope(kind, tag, path, z, sections.get(tag, (0.0, 0.0, None)),
+                         inflate_m=inflate_m, inflate_z_m=inflate_z_m)
             for kind, tag, path, z in run_polylines(model)]
 
 

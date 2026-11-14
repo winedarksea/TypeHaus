@@ -203,3 +203,26 @@ def test_a_search_out_of_budget_refuses_and_says_which_budget():
     assert fitted_route(graph, space, 0, {5}, DuctFittingProblem(
         takeoff_m=6.0 * M_PER_IN, max_labels=2), refusal=report) is None
     assert report.stopped == "labels" and "a budget, not a proof" in report.sentence()
+
+
+def test_a_flat_rectangular_mover_grows_obstacles_by_its_half_depth_in_z():
+    """An 18x8 trunk sweeps 9" in plan (its turn's diagonal) but only 4" up: the run it passes
+    under is grown by half the DEPTH in elevation, so 5" of air under a return is clear."""
+    from typehaus.cli.route_duct_search import z_radius_m
+
+    def _in(value: float) -> float:
+        return value * M_PER_IN
+
+    from typehaus.resolve.mep_envelopes import run_envelope
+
+    ends = SimpleNamespace(kind="duct", width_m=_in(18), depth_m=_in(8), radius_m=_in(9.5))
+    assert z_radius_m(ends) == pytest.approx(_in(4.5))
+    assert z_radius_m(SimpleNamespace(kind="duct", width_m=0.0, depth_m=0.0,
+                                      radius_m=_in(3))) is None
+    section = (_in(6), _in(5), None)
+    path, z = [(0.0, 0.0), (1.0, 0.0)], [0.0, 0.0]
+    both = run_envelope("duct", "R", path, z, section, inflate_m=_in(10)).prisms[0]
+    flat = run_envelope("duct", "R", path, z, section, inflate_m=_in(10),
+                        inflate_z_m=_in(5)).prisms[0]
+    assert both.z0_m == pytest.approx(-_in(15)) and flat.z0_m == pytest.approx(-_in(10))
+    assert flat.footprint.equals(both.footprint)

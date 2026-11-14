@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING, Any
 
 from typehaus.cli.cmd_route_tree import _line_nodes
 from typehaus.cli.route_duct_search import search_for as _search_for
+from typehaus.cli.route_duct_search import z_radius_m
 from typehaus.cli.route_fixture_wet import wet_terminals
 from typehaus.cli.route_miss import Miss, MissLog
 from typehaus.cli.route_ports import terminal_refusal
@@ -152,6 +153,7 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
                                         cost=cost.for_run(ends.kind, ends.system),
                                         cavity_radius_m=ends.cavity_radius_m or None,
                                         panel_space=ends.kind != "conduit",
+                                        z_radius_m=z_radius_m(ends),
                                         laid=_holes(model, ends, target, lifted, laid))
                     space.bend_radius_m = ends.bend_radius_m
                     if ends.kind == "pipe" and not ends.falls and space.members is not None:
