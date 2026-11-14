@@ -21,7 +21,7 @@ from typehaus.routing.graph import _corridor_levels
 
 class _Space:
     def __init__(self, radius_m: float, clearance_m: float) -> None:
-        self.radius_m = radius_m
+        self.radius_m = self.z_r = radius_m  # round: half-height is the radius
         self.clearance_m = clearance_m
 
 
