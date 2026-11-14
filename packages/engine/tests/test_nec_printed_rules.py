@@ -58,7 +58,10 @@ _PRINTED = {
     "LIGHTNING_BOND": "250.106", "FLOOR_BOX": "314.27(C)",
     "INTERCONNECTION_100PCT": "705.12(B)(1)", "INTERCONNECTION_120PCT": "705.12(B)(2)(a)",
     "INTERCONNECTION_LABEL": "705.12(B)(2)(b)", "LIMITED_ENERGY_SEPARATION": "722.15(A)",
-    "RAPID_SHUTDOWN_INITIATION": "690.12(C)",
+    "RAPID_SHUTDOWN_INITIATION": "690.12(C)", "PCS_CONTROL_SETTING": "120.7(B)",
+    "EVSE_LOAD": "120.57", "SERVICE_SPD": "230.67", "SERVICE_DISCONNECT_OUTDOOR": "230.70(A)(1)",
+    "BOX_FILL": "314.16(B)", "CONDUCTOR_VOLUME_TABLE": "Table 314.16(B)(4)",
+    "BOX_DEPTH": "314.24(B)", "BOX_FLUSH_SETBACK": "314.20", "BOX_COVER": "314.25",
 }
 
 
@@ -141,6 +144,14 @@ def test_210_52_e3_reaches_decks_within_4_in_of_the_dwelling(catlin_model_ro):
     # The court stands 5 in. off the house, but its decks reach within 4 in.
     assert {"FS-SG-PORCH", "FS-SG-BALCONY"} <= set(graded)
     assert all(f.result.value == "pass" for f in graded.values())
+
+
+def test_230_70_a1_catlins_meter_main_is_outdoors(catlin_model_ro):
+    report = run_from_model(catlin_model_ro, [], tier=Tier.ADVISORY,
+                            only="electrical.service_disconnect_location")
+    [finding] = [f for f in report.findings
+                 if f.check_id == "electrical.service_disconnect_location"]
+    assert finding.result.value == "pass" and "ED-M-METER" in finding.message
 
 
 # --- 705.12(B) ------------------------------------------------------------------------

@@ -330,8 +330,8 @@ def service_load_summary(
 
     Labeled an estimate on the sheet: (B)(1) from resolved floor area, (B)(2) per counted
     circuit (never fewer than 210.11(C)'s two small-appliance and one laundry for the whole
-    house), fixed appliances from the authored circuits, EV at 100% (D; nameplate, else 7,200 VA), PV excluded
-    (a source, not a load).
+    house), fixed appliances from the authored circuits, EV at 100% (D; nameplate, else 7,200 VA),
+    PV excluded (a source, not a load).
 
     (C) is a *selection*, not a sum (``hvac_selection``): cooling, the heat pumps with
     their supplemental heat at 65%, or resistance space heating at 65%/40%, largest wins.

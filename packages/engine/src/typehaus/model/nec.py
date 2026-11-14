@@ -20,8 +20,9 @@ Frisco TX 2026 NEC amendments (210.52(C)(2) Island and Peninsular Countertops).
 until someone reads them in the printed code; ``cite``/``mark`` print them with a caveat, so
 the doubt reaches the finding, the permit checklist and the sheet.
 120.6, 120.82 (with Part III beside it), 210.7-210.12, 210.50-210.63, 250.24-250.112,
-314.24-314.27, 705.12 and 722.15 were read in the printed code by the owner 2026-11-13; 120.4,
-120.6, 120.7, 120.10-120.16, 120.40, 120.54-120.57, 120.61, 120.80 and 120.82(A) on 2026-11-14. The
+314.24-314.27, 705.12 and 722.15 were read in the printed code by the owner 2026-11-13. On
+2026-11-14 the owner read 120.4-120.16, 120.40, 120.54-120.57, 120.61, 120.80, 120.82(A);
+230.67-230.93; and 314.15-314.27 with Tables 314.16(A) and 314.16(B)(4). The
 engine never quotes the code: ``docs/nec-2026-paraphrase.md`` restates each rule and says
 what grades it; ``tests/test_nec_120_82.py`` and ``test_nec_printed_rules.py`` pin them.
 """
@@ -138,8 +139,9 @@ class NEC:
     BOX_FILL: Final = "314.16(B)"
     BOX_VOLUME_TABLE: Final = "Table 314.16(A)"
     BOX_MARKED_VOLUME: Final = "314.16(A)(2)"
-    CONDUCTOR_VOLUME_TABLE: Final = "Table 314.16(B)"
-    BOX_SUPPORT: Final = "314.20 / 314.23"
+    CONDUCTOR_VOLUME_TABLE: Final = "Table 314.16(B)(4)"
+    BOX_DEPTH: Final = "314.24(B)"
+    BOX_FLUSH_SETBACK: Final = "314.20"
     BOX_COVER: Final = "314.25"
     FLOOR_BOX: Final = "314.27(C)"
     NM_PROTECTION: Final = "334.15(B)"

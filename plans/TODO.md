@@ -233,8 +233,9 @@ That would let subagents compare candidates without repeatedly reading geometry 
     circuits, has no 250.94 IBT or disconnect modelled.
   - Revisit Class C SPGFCI for CKT-HP1-3 after the NFPA Standards Council (2026-12-15/16,
     ACCA/AHRI appeals); they are Class A breakers meanwhile.
-  - Unread and not yet cited: 120.57 (EVSE at the larger of 7,200 W or nameplate in 2023; the
-    engine takes the authored load at 100%) and 120.11(A) (motor treatment inside 120.6).
+  - Not modelled: 120.11(A) motor treatment inside 120.6, 120.7(C)(2) minimum operating
+    current for a PCS that also monitors noncontrolled loads, 314.16(B)(2)/(3)/(6) box-fill
+    allowances (clamps, support fittings, terminal blocks), 314.24(B) projection add-ons.
   - Engine checks that read the printed rule loosely (audit 2026-11-13):
     `receptacle_spacing` credits a receptacle on the other face of a wall and breaks wall space
     at a stationary appliance only beside a cabinet (no fireplace break); (C)(1) Ex. 1 breaks
@@ -253,21 +254,22 @@ That would let subagents compare candidates without repeatedly reading geometry 
   - **Still to read in print.** For each one: paraphrase it, and either confirm the
     `model/nec.py` row or put it in `UNCONFIRMED`. Numbers not yet in `nec.py` are 2023
     numbers, to be confirmed.
-    - Cited and graded: 110.26(A)/(E)(1) (`electrical_panel_space`); 215.18, 230.67 (SPD);
+    - Cited and graded: 110.26(A)/(E)(1) (`electrical_panel_space`); 215.18 (SPD);
       240.24(A), 404.8(A) (`electrical_panel_height`); 300.24 and 352/358/362.26
-      (`conduit_bends`); 314.16 and Tables 314.16(A)/(B), 314.20/314.23, 314.25
-      (`electrical_boxes`, `electrical_canopy`); 334.15(B)/(C); 690.12 and (B)(2)
+      (`conduit_bends`); 334.15(B)/(C); 690.12 and (B)(2)
       (`power_sources`); 210.70(A)(3); 130.2 (PCS listing).
     - Cited, read only in post-publication sources: 250.32, 250.50, 250.52(A)(3), 250.53,
       250.64, 690.47.
     - Cited but used by nothing (read them, or drop the constant): 110.26(C), 120.5(C),
-      120.41, 230.70(A)(1), 240.4(D), 250.86 Ex. 2, Table 310.16, 314.16(A)(2), 334.80,
+      120.41, 240.4(D), 250.86 Ex. 2, Table 310.16, 334.80,
       342.26, 344.26, Table 352.30, 358.30, 362.30, Art. 408, 410.10(D), 424.5, Ch. 9
       Table 4 and Note 2.
     - Not cited, but Catlin triggers them:
       - Spa, Art. 680 Part IV: GFCI, the disconnect within sight, and bonding (`CKT-SPA`,
         `ED-B-SPA-DISC`).
-      - 230.70(A)(1) and 230.85: outdoor and emergency service disconnect.
+      - 225.41 (unread): the emergency disconnect, the 230.70(A)(1) exception. Also
+        ungraded: 230.70(B) marking and (D) plaque for the PV/ESS disconnects, 230.71 count,
+        230.82 supply-side list, 230.90 Ex. 5.
       - 225.31/225.32: the garage disconnect.
       - Art. 706 and 480: the ESS.
       - 625.40/.41/.54: EVSE circuit, sizing and GFCI.

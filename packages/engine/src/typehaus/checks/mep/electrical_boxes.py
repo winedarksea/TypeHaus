@@ -1,4 +1,4 @@
-"""``electrical.box_fill`` — NEC 314.16(B) fill, and a flush box's depth against its cavity.
+"""``electrical.box_fill`` — NEC 314.16(B) fill, 314.24(B) depth, a flush box against its cavity.
 
 A box is graded **through-fed** — the worst ordinary case — except a receptacle that is its
 circuit's only load, which is end-fed (one cable); a switch or thermostat always has a line
@@ -6,7 +6,7 @@ and a load cable. Counted: cables of the
 insulated conductors (a 1-pole circuit's hot and neutral; a 2-pole's two hots, plus a neutral
 where the device has a 120 V half or a 14- configuration), two volumes per yoke
 (314.16(B)(4)), and one for all the equipment grounds together (314.16(B)(5)). The unit
-volume is Table 314.16(B)'s, at the gauge the breaker implies — 15 A 14 AWG, 20 A 12 AWG,
+volume is Table 314.16(B)(4)'s, at the gauge the breaker implies — 15 A 14 AWG, 20 A 12 AWG,
 30 A 10 AWG. Box volume is the standard's row: Table 314.16(A) or the marked volume, plus a
 marked raised cover or ring. A FAIL names the next box up. Hand-worked oracle:
 ``houses/catlin/notes/basement_surface_wiring.md`` §Box fill.
@@ -38,8 +38,11 @@ _CODE = cite(NEC.BOX_FILL)
 #: Copper branch-circuit gauge by breaker rating (NEC 240.4(D), 310.16 at 60 °C).
 GAUGE_BY_BREAKER_A = {15: 14, 20: 12, 30: 10, 40: 8, 50: 6}
 _RECEPTACLES = frozenset({"receptacle", "gfci", "receptacle_240"})
-#: Table 314.16(B), in³ per conductor by AWG.
+#: Table 314.16(B)(4), in³ per conductor by AWG (printed 2026-11-14; 18 and 16 AWG omitted).
 VOLUME_PER_CONDUCTOR_IN3 = {14: 2.0, 12: 2.25, 10: 2.5, 8: 3.0, 6: 5.0}
+#: 314.24(B)(3)-(5) minimum internal depth with a device, in, by conductor size. The 1"
+#: rearward-projection add-on of (B)(4) and the listed-with-box exception are not read.
+MIN_DEPTH_IN = {14: 15 / 16, 12: 1 + 3 / 16, 10: 1 + 3 / 16, 8: 2 + 1 / 16, 6: 2 + 1 / 16}
 
 
 def insulated_per_cable(poles: int, has_neutral: bool) -> int:
@@ -80,7 +83,7 @@ def _grade(box: Any, circuits: dict[str, Any], types: dict[str, Any],
     if box.cavity_m is not None and box.depth_m > box.cavity_m + 1e-4:
         return failed(_CID, f"{where} is {box.depth_m / M_PER_IN:.2f}\" deep in a "
                             f"{box.cavity_m / M_PER_IN:.2f}\" cavity", tags,
-                      code=cite(NEC.BOX_SUPPORT),
+                      code=cite(NEC.BOX_FLUSH_SETBACK),
                       fix="a shallower box row in the BoxStandard, or a deeper cavity")
     if box.air_barrier and not (box.box_use or "").startswith(AIR_SEALED):
         return failed(_CID, f"{where} breaches an air-control membrane on {box.wall_tag}, and "
@@ -96,6 +99,11 @@ def _grade(box: Any, circuits: dict[str, Any], types: dict[str, Any],
     if gauge is None or box.volume_in3 is None:
         return unknown(_CID, f"{where}: no gauge for a {circuit.breaker_amps} A breaker or no "
                              "box volume", tags, code=_CODE)
+    min_depth = MIN_DEPTH_IN[gauge]
+    if box.depth_m / M_PER_IN < min_depth - 1e-4:
+        return failed(_CID, f"{where} is {box.depth_m / M_PER_IN:.2f}\" deep; {gauge} AWG to a "
+                            f"device needs {min_depth:.3f}\" internal depth", tags,
+                      code=cite(NEC.BOX_DEPTH), fix="a deeper box row in the BoxStandard")
     end_fed = box.device_kind in _RECEPTACLES and loads.get(circuit.tag, 0) <= 1
     cables = 1 if end_fed else 2
     feed = "through-fed" if cables == 2 else "end-fed"

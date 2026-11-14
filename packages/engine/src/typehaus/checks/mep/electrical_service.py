@@ -17,6 +17,28 @@ from typehaus.findings import Finding, Result
 from typehaus.model.nec import NEC, cite, mark
 
 
+@check(Tier.ADVISORY, "electrical.service_disconnect_location")
+def service_disconnect_location(ctx: CheckContext) -> list[Finding]:
+    """230.70(A)(1): a dwelling's service disconnect is outdoors, readily accessible.
+
+    Outdoors means the device's plan point lies in no room. The 225.41 emergency-disconnect
+    exception is not modelled, so an indoor one is UNKNOWN rather than FAIL.
+    """
+    from typehaus.checks.mep.electrical_grounding import grounding, objects
+    from typehaus.resolve.room_lookup import room_owning
+
+    cid = "electrical.service_disconnect_location"
+    code = cite(NEC.SERVICE_DISCONNECT_OUTDOOR)
+    root = grounding(ctx).root
+    obj = objects(ctx).get(root or "")
+    if obj is None:
+        return [_unknown(cid, "no service disconnect is modeled", code=code)]
+    if room_owning(ctx.model, obj.storey, obj.position) is None:
+        return [_pass(cid, f"{root} is outdoors", (root,), code)]
+    return [_unknown(cid, f"{root} is inside the building; {code} allows that only with a "
+                          "225.41 emergency disconnect, which is not modeled", (root,), code)]
+
+
 # WARN severity + FAIL result, deliberately: the permit integrity gate only blocks on ERROR
 # severity, and these findings are advisory estimates, not hard blockers.
 def _warn_fail(cid: str, msg: str, tags: tuple[str, ...]) -> Finding:
