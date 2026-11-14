@@ -9,7 +9,10 @@ Each sample is classed from the model, never from a name:
 * ``under_building``: inside a roof's bearing footprint, below a slab on grade;
 * ``indoor``: inside that footprint otherwise;
 * ``earth``: outside every building and under the surface, which is the top of the highest
-  slab over the run, else the local grade (``site_earth.local_grade_elevation_m``);
+  slab over the run (the concrete and its base both cover), else the local grade
+  (``site_earth.local_grade_elevation_m``). A grade station sets that grade only where it
+  is nearer the run than every building is: a building's finished grade meets the site
+  plane at its wall, so a drip strip against the cladding is not the yard bench 18 ft off;
 * ``open``: outside, above the surface.
 
 Cover is NEC Note 1: top of the run to the top of the surface. Grade is a design elevation,
@@ -59,6 +62,7 @@ class Site:
     floors: list
     heated: Any
     grade_m: float
+    stations: tuple[Point, ...] = ()  # grade stations below the site plane
 
 
 def build_site(model: ResolvedModel) -> Site:
@@ -88,8 +92,11 @@ def build_site(model: ResolvedModel) -> Site:
             shape = Polygon(solid.outline)
             if shape.is_valid and shape.area > 0:
                 slabs.append((solid, shape))
+    grade = site_grade_elevation_m(model)
+    stations = tuple(Point(spot.position.xy_m) for spot in model.plan.project.site.spot_elevations
+                     if spot.kind == "grade" and spot.elevation.meters < grade)
     return Site(tuple(walls), tuple(buildings), tuple(slabs), open_excavation_floors(model),
-                heated_floor_footprint(model), site_grade_elevation_m(model))
+                heated_floor_footprint(model), grade, stations)
 
 
 def _z_at(run: ResolvedConduitRun, index: int, t: float) -> float:
@@ -144,7 +151,10 @@ def _classify(model, site: Site, x, y, z, radius, heading, local_grade) -> Sampl
         return Sample(x, y, z, top, "earth", slab.z1_m, slab.tag,
                       (slab.z1_m - slab.z0_m) / 0.0254, edge, vertical=vertical)
     ring = [(x - .05, y - .05), (x + .05, y - .05), (x + .05, y + .05), (x - .05, y + .05)]
-    grade, _ = local_grade(model, ring, floors=site.floors, sheltered_by=site.heated)
+    station_m = min((point.distance(p) for p in site.stations), default=math.inf)
+    building_m = min((point.distance(b) for _t, b in site.buildings), default=math.inf)
+    grade, _ = local_grade(model, ring, floors=site.floors, sheltered_by=site.heated,
+                           stations=station_m < building_m)
     if top < grade:
         return Sample(x, y, z, top, "earth", grade, None, vertical=vertical)
     return Sample(x, y, z, top, "open", vertical=vertical)

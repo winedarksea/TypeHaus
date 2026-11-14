@@ -2793,10 +2793,9 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "ED-T-AP-OUTDOOR" = { material = { low = 150, high = 450 }, labour = { low = 90, high = 200 } }  # 1 ea
 "ED-T-BACKUP-ENCL" = { material = { low = 250, high = 800 }, labour = { low = 150, high = 400 } }  # 1 ea
 "ED-T-BACKUP-PANEL" = { material = { low = 90, high = 260 }, labour = { low = 250, high = 600 } }  # 1 ea
-"ED-T-DISCONNECT-3R" = { material = { low = 30, high = 90 }, labour = { low = 90, high = 220 } }  # 4 ea
+"ED-T-SQD-DU222RB" = { material = { low = 30, high = 90 }, labour = { low = 90, high = 220 } }  # 4 ea
 # Grounding devices (decision #123): SPDs and the IBT bar, ESTIMATES (2026 retail).
 "ED-T-SPD-T1" = { material = { low = 130, high = 230 }, labour = { low = 90, high = 200 } }  # 1 ea, meter-adjacent Type 1
-"ED-T-SPD-T2" = { material = { low = 60, high = 120 }, labour = { low = 60, high = 140 } }  # 1 ea, garage subpanel Type 2
 "ED-T-SPD-PV" = { material = { low = 80, high = 160 }, labour = { low = 60, high = 140 } }  # 2 ea, PV DC combiner and inverter
 "ED-T-IBT" = { material = { low = 15, high = 35 }, labour = { low = 30, high = 70 } }  # 1 ea, intersystem bonding bar
 # The EVSE is the hardwired Grizzl-E Smart (APPL-GRIZZLE-SMART-40 in [placeables], 2026-10-30),

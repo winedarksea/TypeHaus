@@ -41,7 +41,7 @@ from typehaus.resolve.roof_geometry import roof_headroom_region, roof_underside_
 #: reach it. A closet, a workshop, a pantry and a mechanical room are none of the five
 #: things the sentence names, and grading one here is a category error, not strict reading.
 _R305_SUBJECT = HABITABLE_OCCUPANCIES | frozenset({
-    Occupancy.HALLWAY, Occupancy.BATHROOM, Occupancy.LAUNDRY,
+    Occupancy.HALLWAY, Occupancy.FOYER, Occupancy.BATHROOM, Occupancy.LAUNDRY,
 })
 
 #: The rooms outside that subject are not simply ungraded: Minn. R. 1309.0305 R305.1.1 gives

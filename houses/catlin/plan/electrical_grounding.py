@@ -36,7 +36,9 @@ GROUNDING_STANDARD = [
                       conductor_fastener_spacing=inch(36), counterpoise_size="2",
                       counterpoise_material="copper", counterpoise_depth=inch(24),
                       down_lead_size="1/0", down_lead_material="aluminum",
-                      transition_min_height=inch(18), min_rod_spacing=ft(6)),
+                      transition_min_height=inch(18), min_rod_spacing=ft(6),
+                      # Owner 2026-11-14: no garage SPD (230.67 and 215.18 do not ask for one).
+                      outbuilding_spds=False),
 ]
 
 # --- house electrode system: the Ufer, two rods, the counterpoise and its terminals ------
@@ -187,10 +189,6 @@ GARAGE_GROUNDING = [
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     BondingConductor(uid="F9N78H7JJQ", tag="BC-G-IBT", role="ibt", from_ref="ED-G-IBT", to_ref="ED-G-PANEL",
                      size="6"),
-    # Type 2 SPD beside the EV outlet, landed on its CKT-EV-1450 junction.
-    ElectricalDevice(uid="GH0TMES07M", tag="ED-G-SPD", kind=DeviceKind.SPD, type_ref="ED-T-SPD-T2",
-                     room="RM-GARAGE", mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-G-S", face="left", distance_from_start=inch(180),
-                         normal_gap=inch(0), rotation_offset=deg(180)))),
+    # ED-G-SPD (Leviton 51120-1) dropped 2026-11-14 (owner): discontinued, 3 kA, and neither
+    # 230.67 nor 215.18 asks for one at the garage.
 ]

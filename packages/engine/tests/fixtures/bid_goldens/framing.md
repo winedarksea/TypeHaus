@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 4ea4c279ed12ad73  
-**Lines:** 257
+**Model hash:** 096f2c904f1f4dc2  
+**Lines:** 256
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
 
@@ -26,7 +26,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 1 1/2" x 14" LSL, 8' (1.5x14 LSL) | 5 | pc | blocking | 40 LF | building |
 | 1 3/4" x 11 7/8" LSL 1.55E, 16' (1.75x11.875 LSL) | 2 | pc | rim board | 32 LF | building |
 | 1 3/4" x 11 7/8" LSL 1.55E, 20' (1.75x11.875 LSL) | 2 | pc | rim board | 40 LF | building |
-| 1 3/4" x 11 7/8" LVL 2.0E, 8' (1.75x11.875 LVL) | 10 | pc | sister joist, trimmer | 80 LF | building |
+| 1 3/4" x 11 7/8" LVL 2.0E, 8' (1.75x11.875 LVL) | 11 | pc | sister joist, trimmer | 88 LF | building |
 | 1 3/4" x 11 7/8" LVL 2.0E, 10' (1.75x11.875 LVL) | 4 | pc | trimmer | 40 LF | building |
 | 1 3/4" x 11 7/8" LVL 2.0E, 20' (1.75x11.875 LVL) | 4 | pc | trimmer | 80 LF | building |
 | 11 7/8" TJI 230, 8' (11.875 TJI 230) | 22 | pc | blocking, joist | 176 LF | building |
@@ -58,11 +58,10 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x10 SPF No. 2 & Btr framing lumber, 10' (2x10) | 1 | pc | hanger board | 10 LF | building |
 | 2x10 SPF No. 2 & Btr framing lumber, 8' (2x10:spf) | 10 | pc | blocking, ceiling furring | 80 LF | building |
 | 2x12 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (2x12:kdat) | 7 | pc | blocking, sister joist | 56 LF | building |
-| 2x12 KDAT southern yellow pine No. 2 (treated exterior framing), 12' (2x12:kdat) | 1 | pc | sister joist | 12 LF | building |
-| 2x12 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (2x12:kdat) | 20 | pc | joist | 400 LF | building |
+| 2x12 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (2x12:kdat) | 21 | pc | joist, sister joist | 420 LF | building |
 | 2x12 White-painted PT lumber, 10' (2x12:kdat:post-paint-white) | 2 | pc | rim board | 20 LF | building |
 | 2x12 SPF No. 2 & Btr framing lumber, 8' (2x12:spf) | 2 | pc | blocking | 16 LF | building |
-| 2x2 SPF No. 2 & Btr framing lumber, 8' (2x2) | 24 | pc | blocking, plate, stud | 192 LF | building |
+| 2x2 SPF No. 2 & Btr framing lumber, 8' (2x2) | 27 | pc | blocking, plate, stud | 216 LF | building |
 | 2x2 SPF No. 2 & Btr framing lumber, 10' (2x2) | 2 | pc | plate | 20 LF | building |
 | 2x3 SPF No. 2 & Btr framing lumber, 8' (2x3) | 6 | pc | corner stud, plate, stud | 48 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 92 5/8" PET (2x4) | 81 | pc | corner stud, king stud, stud | 625.2 LF | building |
@@ -78,7 +77,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (2x4:kdat) | 23 | pc | girt strapping | 460 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4:spf) | 16 | pc | blocking, ceiling furring, girt strapping | 128 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 92 5/8" PET (2x6) | 110 | pc | corner stud, king stud, stud | 849.1 LF | building |
-| 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6) | 372 | pc | blocking, corner stud, cripple stud, door blocking, header, jack stud, king stud, plate, raked top plate, sill, strongback, stud | 2976 LF | building |
+| 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6) | 373 | pc | blocking, corner stud, cripple stud, door blocking, header, jack stud, king stud, plate, raked top plate, sill, strongback, stud | 2984 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 104 5/8" PET (2x6) | 203 | pc | corner stud, king stud, stud | 1769.9 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 116 5/8" PET (2x6) | 6 | pc | king stud, stud | 58.3 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 10' (2x6) | 50 | pc | plate, raked top plate, strongback | 500 LF | building |
@@ -112,7 +111,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| Aluminum deck board (Wahoo AridDek, Granite), 1 1/2" subfloor (aluminum-deck:subfloor) | 188.5 | SF | 6 sheets 4x8 over 188.5 SF net; 6.0 sheets in the takeoff | building |
+| Aluminum deck board (Wahoo AridDek, Granite), 1 1/2" subfloor (aluminum-deck:subfloor) | 189.2 | SF | 6 sheets 4x8 over 189.2 SF net; 6.0 sheets in the takeoff | building |
 | CDX sheathing plywood, 4- or 5-ply, Exposure 1, 1/2" exterior wall (cdx-plywood:exterior wall) | 77 | sheets 4x10 | 77 sheets 4x10 over 3071.5 SF net | building |
 | CDX sheathing plywood, 4- or 5-ply, Exposure 1, 5/8" exterior wall (cdx-plywood:exterior wall) | 1 | sheets 4x8 | 1 sheets 4x8 over 26.7 SF net | building |
 | CDX sheathing plywood, 4- or 5-ply, Exposure 1, 5/8" exterior wall (cdx-plywood:exterior wall) | 19 | sheets 4x9 | 19 sheets 4x9 over 662.4 SF net | building |
@@ -123,9 +122,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 3/4" plywood subfloor, 3/4" stair subdeck (plywood-subfloor:stair subdeck) | 1 | sheets 4x8 | 1 sheets 4x8 over 29.6 SF net | building |
 | 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | 112 | sheets 4x8 | 112 sheets 4x8 over 3560.4 SF net | building |
 | Structural 1 plywood, 7/8" bearing stiffener rip (struct-1-plywood:bearing stiffener rip) | 3 | sheets 4x8 | 3 sheets 4x8 over 71.0 SF net | building |
-| Structural 1 plywood, 3/8" buck rip (struct-1-plywood:buck rip) | 16 | sheets 4x8 | 16 sheets 4x8 over 407.5 SF net | building |
+| Structural 1 plywood, 3/8" buck rip (struct-1-plywood:buck rip) | 16 | sheets 4x8 | 16 sheets 4x8 over 407.3 SF net | building |
 | Structural 1 plywood, 19/32" roof (struct-1-plywood:roof) | 28 | sheets 4x8 | 28 sheets 4x8 over 882.8 SF net | building |
-| Trex Enhance Basics composite decking, Tide Pool (square edge), 15/16" subfloor (trex-enhance-basics:subfloor) | 6 | sheets 4x8 | 6 sheets 4x8 over 168.8 SF net | building |
+| Trex Enhance Basics composite decking, Tide Pool (square edge), 15/16" subfloor (trex-enhance-basics:subfloor) | 6 | sheets 4x8 | 6 sheets 4x8 over 168.9 SF net | building |
 
 ## Connectors and fasteners, by part
 
@@ -208,7 +207,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | PROD-SCHLUTER-SCHIENE — aluminium, height to the tile (PROD-SCHLUTER-SCHIENE:doorway transition / hardware) | 3 | ea |  | second |
 | RSRS-01 roof sheathing ring-shank nail, 0.113in x 2-3/8in, full round head (RSRS-01 0.113x2.375:sheathing nails) | 3,138 | ea |  | building |
 | S-5-N Mini nail-strip seam clamp (S-5-N Mini:modeled connector) | 21 | ea |  | building |
-| 10d common ring-shank nail, 0.148in x 3in, Type 304 (S10ACN:treated framing nails (allowance)) | 770 | ea |  | building |
+| 10d common ring-shank nail, 0.148in x 3in, Type 304 (S10ACN:treated framing nails (allowance)) | 764 | ea |  | building |
 | 8d common ring-shank nail, 0.131in x 2.5in, Type 304 (S8ACN:sheathing nails) | 72 | ea |  | building |
 | HDG steel U-saddle on a 4 1/2 in (3-ply 2x) joist line, two 5/8 in through-bolts (SADDLE-4.5-2x58-HDG:suspension anchor) | 4 | ea |  | basement |
 | Strong-Drive SD connector screw, #9 x 1-1/2in (SD9112:connector fasteners) | 1,380 | ea |  | building |
@@ -324,8 +323,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | rough opening, 34" x 25" (no type) (None) | 1 | ea | 34" x 25" | main |
 | rough opening, 36" x 80" (no type) (None) | 1 | ea | 36" x 80" | basement |
 | rough opening, 63.31" x 1.75" (no type) (None) | 1 | ea | 63 5/16" x 1 3/4" | basement |
-| rough opening, 63.31" x 2.5" (no type) (None) | 1 | ea | 63 5/16" x 2 1/2" | basement |
 | rough opening, 63.31" x 2.75" (no type) (None) | 1 | ea | 63 5/16" x 2 3/4" | basement |
+| rough opening, 63.31" x 17.75" (no type) (None) | 1 | ea | 63 5/16" x 17 3/4" | basement |
 | rough opening, 63.31" x 80" arched (no type) (None) | 1 | ea | 63 5/16" x 80" | basement |
 
 ## Steel members
@@ -380,7 +379,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x10 SPF No. 2 & Btr framing lumber, 10' (2x10) | — |
 | 2x10 SPF No. 2 & Btr framing lumber, 8' (2x10:spf) | — |
 | 2x12 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (2x12:kdat) | — |
-| 2x12 KDAT southern yellow pine No. 2 (treated exterior framing), 12' (2x12:kdat) | — |
 | 2x12 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (2x12:kdat) | — |
 | 2x12 White-painted PT lumber, 10' (2x12:kdat:post-paint-white) | — |
 | 2x12 SPF No. 2 & Btr framing lumber, 8' (2x12:spf) | — |
@@ -591,8 +589,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | rough opening, 34" x 25" (no type) (None) | AO-M-FIRE-NICHE |
 | rough opening, 36" x 80" (no type) (None) | D-B-GYM |
 | rough opening, 63.31" x 1.75" (no type) (None) | AO-B-SUNKEN-SEAT |
-| rough opening, 63.31" x 2.5" (no type) (None) | AO-SG-BRKBM-TREAD-BED |
 | rough opening, 63.31" x 2.75" (no type) (None) | AO-B-SUNKEN-TREAD-BED |
+| rough opening, 63.31" x 17.75" (no type) (None) | AO-SG-BRKBM-TREAD-BED |
 | rough opening, 63.31" x 80" arched (no type) (None) | AO-B-BRICK-DOOR |
 | L3 1/2" x 3 1/2" x 1/4" steel angle (L3.5x3.5x0.25) | BM-M-FIRE-LINTEL |
 

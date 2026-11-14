@@ -170,8 +170,8 @@ CIRCUITS = (
             conductor_awg="12", egc_awg="12",
             load_va=1500, afci=True,
             description="Plant room 1500 W / 120 V fan heater (EQ-S-PLANT-HEATER), dedicated, "
-                        "on ED-S-PLANT-HEAT-RC (WR GFCI) switched by the ED-S-PLANT-HEAT-SW "
-                        "Matter relay from Home Assistant"),
+                        "on always-on ED-S-PLANT-HEAT-RC (WR GFCI); Home Assistant switches the "
+                        "heater through its plug-in Eve Energy (Matter)"),
 
     *BACKUP_CIRCUITS,
     *GARAGE_CIRCUITS,

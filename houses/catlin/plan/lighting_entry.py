@@ -89,7 +89,7 @@ ENTRY_LIGHTING = [
     # ** THE MUDROOM ITSELF HAD NO LIGHT AT ALL UNTIL 2026-09-15. ** It is the front door,
     # and both devices standing in it switched lights somewhere else: ED-M-STORAGE-SW the
     # two closet cans, ED-M-ENTRY-SW the exterior sconce above. Nothing reported it —
-    # `electrical.room_lighting` walks habitable rooms and this one is Occupancy.STORAGE,
+    # `electrical.room_lighting` walks habitable rooms and this one was Occupancy.STORAGE,
     # so a windowlit vestibule with a 32" door at the far end read as fine.
     #
     # ** ONLY HALF THIS CEILING IS USABLE, AND IT IS NOT THE HALF THE BENCH IS UNDER. **

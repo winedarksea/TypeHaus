@@ -181,6 +181,7 @@ MN_INSPECTIONS: tuple[InspectionSpec, ...] = (
                    "code.NEC_230_67_service_spd",
                    "electrical.outdoor_front_back_receptacles",
                    "electrical.laundry_receptacle", "electrical.hallway_receptacle",
+                   "electrical.foyer_receptacle",
                    "electrical.garage_branch_circuit", "electrical.stair_lighting_control"),
         on_site=("electrical permit filed with the authority named in [authorities]",
                  "boxes set and secured", "cable stapled and protected at plates"),

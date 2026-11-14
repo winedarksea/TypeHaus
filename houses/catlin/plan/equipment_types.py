@@ -410,7 +410,9 @@ EQUIPMENT_TYPES = (
                                      position=(ft(0), ft(0), ft(0))),)),
     # RM-S-PLANT's only heat besides its grow lights (2026-11-12): a plug-in fan heater on a
     # shelf, its own thermostat, overheat and tip-over cutoffs the safety loop; Home Assistant
-    # switches its outlet off the room sensor (notes/smart_home.md rule 3). Sized against the
+    # switches it off the room sensor through a plug-in Eve Energy (Matter over Thread, local;
+    # Eve spec sheet: 120 V 60 Hz, max 15 A / 1800 W), not a relay in the wall
+    # (notes/smart_home.md rule 3). Sized against the
     # room's ~510 W design loss in notes/plant_room_moisture_budget.md §5.
     EquipmentType(tag="EQ-T-PLANT-HEATER", name="Lasko CD08210-class ceramic heater, 1500 W, 120 V, bathroom-rated",
                   footprint=(inch(7), inch(7)), height=inch(9),
@@ -424,7 +426,10 @@ EQUIPMENT_TYPES = (
                          "PURCHASE: the manual must allow thermostat operation unattended and "
                          "the unit must resume heating after a power loss; else a fixed "
                          "damp-listed fan-forced heater with its own thermostat on the same "
-                         "circuit. notes/plant_room.md.",
+                         "circuit. Control: plugs into an Eve Energy (US, Matter over Thread; "
+                         "max 15 A / 1800 W) in the always-on WR GFCI ED-S-PLANT-HEAT-RC; "
+                         "HA's thermostat helper on the room T/RH sensor drives it. "
+                         "notes/plant_room.md.",
                   ports=(ServicePort(tag="power", service=Service.POWER_120,
                                      position=(ft(0), ft(0), ft(0))),)),
     # Retained library option; the BATH2 installation was removed 2026-11-02.

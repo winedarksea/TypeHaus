@@ -87,7 +87,8 @@ _LANDING_RIM = ft(1)
 # Rooms that are enclosed usable space rather than circulation. R302.7's subject is the
 # closet or store under the flight, not the stair hall the flight stands in.
 _UNDER_STAIR_OCCUPANCIES = frozenset({
-    Occupancy.STORAGE, Occupancy.UTILITY, Occupancy.MECHANICAL, Occupancy.BATHROOM,
+    Occupancy.STORAGE, Occupancy.CLOSET, Occupancy.UTILITY, Occupancy.MECHANICAL,
+    Occupancy.BATHROOM,
 })
 
 

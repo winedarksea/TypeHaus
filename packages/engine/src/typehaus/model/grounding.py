@@ -51,6 +51,9 @@ class GroundingStandard(Element):
     transition_min_height: Length | None = None
     #: NEC 250.53(A)(3): rods at least this far apart.
     min_rod_spacing: Length
+    #: Owner surge goal (#123), not code: a Type 1/2 SPD in each building fed by two or more
+    #: circuits. False records the owner declining it (``grounding.spd_coordination`` says so).
+    outbuilding_spds: bool = True
 
     def product_refs(self) -> tuple[str, ...]:
         refs = (self.rod_product_ref, self.rod_clamp_product_ref,

@@ -398,8 +398,10 @@ _AFCI_OCCUPANCIES = frozenset({
     Occupancy.KITCHEN.value, Occupancy.LIVING.value, Occupancy.DINING.value,
     Occupancy.BEDROOM.value, Occupancy.HALLWAY.value, Occupancy.LAUNDRY.value,
     Occupancy.MEDIA.value, Occupancy.OFFICE.value, Occupancy.HOBBY.value,
-    # "Similar": STORAGE for closets (no occupancy splits them), a stair as a hallway.
-    Occupancy.STORAGE.value, Occupancy.STAIR.value, Occupancy.STUDY_CLOSET.value,
+    Occupancy.CLOSET.value,
+    # "Similar rooms": a foyer and a stair as a hallway, a study closet, a store room.
+    Occupancy.FOYER.value, Occupancy.STAIR.value, Occupancy.STUDY_CLOSET.value,
+    Occupancy.STORAGE.value,
 })
 _LAUNDRY_SYMBOLS = frozenset({"washer", "dryer", "washer-dryer-stacked"})
 

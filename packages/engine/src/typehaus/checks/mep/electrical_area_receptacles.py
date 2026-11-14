@@ -1,4 +1,4 @@
-"""2026 NEC 210.52(E)(1), (F) and (H): outdoor, laundry and hallway receptacle outlets.
+"""2026 NEC 210.52(E)(1), (F), (H) and (I): outdoor, laundry, hallway, foyer receptacles.
 
 * (E)(1) ``electrical.outdoor_front_back_receptacles``: a one- or two-family dwelling has a
   receptacle at the front and one at the back, readily accessible from grade and at most
@@ -14,8 +14,12 @@
   which is exact for a straight hall and close for an L.
 
 Each counts a 210.52 receptacle (``_counts_toward_210_52``: unswitched, 125 V, at most
-5 1/2 ft for (F)/(H); (E) keeps its own 6 1/2 ft). (I) foyers is not graded: no occupancy
-names a foyer.
+5 1/2 ft for (F)/(H)/(I); (E) keeps its own 6 1/2 ft).
+
+* (I) ``electrical.foyer_receptacle``: a FOYER room over 60 sq ft (its clear-face area) has
+  a receptacle on every wall space of 3 ft or more. Doorways, wells you could step into and
+  windows reaching the floor break the wall line; nothing else does (the paraphrase names
+  only "the like" of those).
 """
 
 from __future__ import annotations
@@ -35,6 +39,10 @@ from typehaus.resolve.room_lookup import axis_polygon, axis_ring
 _FT = 0.3048
 _OUTDOOR_MAX_M = 6.5 * _FT  # (E)(1)
 _HALLWAY_MIN_M = 10 * _FT  # (H)
+_FOYER_MIN_M2 = 60 * _FT * _FT  # (I)
+_FOYER_WALL_SPACE_M = 3 * _FT  # (I)
+_WINDOW_TO_FLOOR_M = 6 * 0.0254  # (I): a sidelight sill this low reaches the floor
+_FOYER_WELL_LEDGE_M = 12 * 0.0254  # the receptacle_spacing ledge: no floor line past a well
 _END_BAND = 0.25  # (E)(1): the frontmost / rearmost quarter of the dwelling's depth
 _GRADE_PROBE_M = 0.3  # the ground beside a wall receptacle
 _LAUNDRY_SYMBOLS = frozenset({"washer", "dryer", "washer-dryer-stacked"})
@@ -130,6 +138,84 @@ def hallway_receptacle(ctx: CheckContext) -> list[Finding]:
         else:
             out.append(failed(cid, f"{label} has no receptacle", (hall.tag,),
                               code=code, fix="add a receptacle in the hall"))
+    return out
+
+
+def _foyer_breaks(ctx: CheckContext, ring: list, room) -> list[tuple[float, float]]:
+    """Doorways, wells and floor-length windows: (I)'s "not wall space"."""
+    from typehaus.resolve import room_perimeter
+    from typehaus.resolve.geometry import opening_center
+
+    walls = {w.tag: w for w in ctx.model.walls if w.storey == room.storey}
+    hosts = {o.host_wall for o in ctx.model.openings if o.host_wall in walls
+             and (o.is_passage or o.sill_m <= _WINDOW_TO_FLOOR_M)}
+    windows = [o for o in ctx.model.openings if o.host_wall in hosts and not o.is_passage
+               and o.sill_m <= _WINDOW_TO_FLOOR_M]
+    out = room_perimeter.door_intervals(ctx.model, ring, room.storey, hosts=hosts)
+    for opening in windows:
+        center = opening_center(walls[opening.host_wall], opening)
+        if center is None:
+            continue
+        s, d = room_perimeter.perimeter_position(ring, center)
+        if d <= room_perimeter.NEAR_WALL_M:
+            out.append((s - opening.width_m / 2.0, s + opening.width_m / 2.0))
+    out += room_perimeter.floor_opening_intervals(ctx.plan, ring, room.storey,
+                                                  _FOYER_WELL_LEDGE_M)
+    return room_perimeter.merged_intervals(out, room_perimeter.perimeter_length(ring))
+
+
+@check(Tier.CODE, "electrical.foyer_receptacle")
+def foyer_receptacle(ctx: CheckContext) -> list[Finding]:
+    """210.52(I): a foyer over 60 sq ft has a receptacle on each wall space of 3 ft or more."""
+    from typehaus.checks.mep.electrical_wall_space import floor_line_ring
+    from typehaus.resolve import room_perimeter
+
+    cid, code = "electrical.foyer_receptacle", cite(NEC.FOYER_RECEPTACLE)
+    foyers = [r for r in ctx.model.rooms if r.occupancy == Occupancy.FOYER.value]
+    if not foyers:
+        return [not_applicable(cid, "no room is a foyer", code=code)]
+    stations: dict[str, list[tuple[str, tuple]]] = {}
+    for element, _storey, xy, room in _receptacles(ctx):
+        if room is not None:
+            stations.setdefault(room.tag, []).append((element.tag, xy))
+    out: list[Finding] = []
+    for foyer in foyers:
+        area_sf = foyer.area_m2 / (_FT * _FT)
+        if foyer.area_m2 <= _FOYER_MIN_M2:
+            out.append(not_applicable(cid, f"{foyer.tag} is {area_sf:.1f} sq ft, not over 60",
+                                      (foyer.tag,), code=code))
+            continue
+        ring = floor_line_ring(ctx.model, foyer)
+        if len(ring) < 3:
+            out.append(unknown(cid, f"{foyer.tag}: boundary is unresolved", (foyer.tag,),
+                               code=code))
+            continue
+        perimeter = room_perimeter.perimeter_length(ring)
+        breaks = _foyer_breaks(ctx, ring, foyer)
+        placed = []
+        for tag, xy in stations.get(foyer.tag, ()):
+            s, d = room_perimeter.perimeter_position(ring, xy)
+            if d <= room_perimeter.NEAR_WALL_M:
+                placed.append((tag, s))
+        spaces = ([(hi, (breaks[(i + 1) % len(breaks)][0]
+                         + (perimeter if i + 1 == len(breaks) else 0.0)))
+                   for i, (_lo, hi) in enumerate(breaks)] if breaks else [(0.0, perimeter)])
+        bare = []
+        for lo, hi in spaces:
+            if hi - lo < _FOYER_WALL_SPACE_M:
+                continue
+            if not any(lo <= s <= hi or lo <= s + perimeter <= hi for _t, s in placed):
+                mid = room_perimeter.point_at(ring, ((lo + hi) / 2.0) % perimeter)
+                bare.append(f"{(hi - lo) / _FT:.1f} ft near ({mid[0] / _FT:.1f}', "
+                            f"{mid[1] / _FT:.1f}')")
+        label = f"{foyer.tag} ({area_sf:.1f} sq ft)"
+        if bare:
+            out.append(failed(cid, f"{label}: wall space with no receptacle: "
+                                   f"{'; '.join(bare)}", (foyer.tag,), code=code,
+                              fix="add a receptacle on each wall space of 3 ft or more"))
+        else:
+            held = ", ".join(sorted(t for t, _s in placed)) or "no wall space of 3 ft"
+            out.append(passed(cid, f"{label}: {held}", (foyer.tag,), code=code))
     return out
 
 

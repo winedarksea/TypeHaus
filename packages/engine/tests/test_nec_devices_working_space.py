@@ -23,8 +23,9 @@ def test_catlins_device_facts(catlin_model_ro):
         "ED-M-SPD": "unknown", "CKT-SPD": "pass", "CKT-SPD-2": "pass",
         "CKT-SPD-BACKUP": "unknown"}   # FS140 and the backup plug-on publish no In
     assert set(_by_tag(catlin_model_ro, "electrical.outdoor_receptacle_wr").values()) == {"pass"}
+    # The plant heater's control moved to its plug (2026-11-14): no relay-fed receptacle.
     assert _by_tag(catlin_model_ro, "electrical.controlled_receptacle", Tier.ADVISORY) == {
-        "ED-S-PLANT-HEAT-RC": "unknown"}
+        "": "not_applicable"}
     assert set(_by_tag(catlin_model_ro, "electrical.panel_sccr").values()) == {"unknown"}
 
 

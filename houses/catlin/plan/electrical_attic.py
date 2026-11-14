@@ -255,7 +255,7 @@ NEC_FILL_ATTIC = [
     # service switch stands in sight: W-A-C2B's east face, ~3' west of the cabinet's SW
     # corner, its 30" x 36" working space south of the cabinet and supply box.
     ElectricalDevice(uid="5PNH1D91XX", tag="ED-A-HP1-AH-DISC", kind=DeviceKind.DISCONNECT,
-                     type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP1-AH",
+                     type_ref="ED-T-SQD-DU222RB", circuit="CKT-HP1-AH",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(4)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-A-C2B", face="right", distance_from_start=inch(37),

@@ -136,7 +136,7 @@ def test_210_8_a_occupancies_and_210_12_b_rooms():
     assert gfci == {O.BATHROOM.value: NEC.GFCI_BATHROOM, O.GARAGE.value: NEC.GFCI_GARAGE,
                     O.KITCHEN.value: NEC.GFCI_KITCHEN, O.LAUNDRY.value: NEC.GFCI_LAUNDRY}
     listed = {O.KITCHEN, O.LIVING, O.DINING, O.BEDROOM, O.HALLWAY, O.LAUNDRY, O.MEDIA,
-              O.STORAGE}  # STORAGE stands in for closets
+              O.CLOSET}
     assert {o.value for o in listed} <= _AFCI_OCCUPANCIES
     assert not {O.BATHROOM.value, O.GARAGE.value} & _AFCI_OCCUPANCIES
 
@@ -458,12 +458,14 @@ def test_article_300_numbers_and_table_300_7_a_cells():
     assert cover_in(-1.2, -0.85) == pytest.approx(0.35 / 0.0254)
 
 
-def test_catlins_buried_ev_and_v2h_legs_clear_18_in_at_minus_5_ft(catlin_model_ro):
+def test_catlins_buried_ev_and_v2h_legs_clear_18_in(catlin_model_ro):
     report = run_from_model(catlin_model_ro, [], tier=Tier.ADVISORY, only="mep.conduit_burial")
     found = {f.element_tags[0]: f for f in report.findings
              if f.check_id == "mep.conduit_burial" and f.element_tags}
-    # The walk's edge still misses 6 in., so 18 in. governs; the gravel strip is the low point.
-    for tag, cover in (("CD-B-GAP-EV", "19.2"), ("CD-B-V2H-GAP", "18.8")):
+    # The walk's edge still misses 6 in., so 18 in. governs; the gravel strip against the
+    # cladding is the low point, at the site plane (-2'-10"), not the yard station 18 ft off
+    # (-3'-4", which read 6 in. less).
+    for tag, cover in (("CD-B-GAP-EV", "18.4"), ("CD-B-V2H-GAP", "18.1")):
         assert found[tag].result.value == "pass" and f"cover {cover} in." in found[tag].message
         assert "Column 3" in found[tag].message and "6 in. the slab row needs" in found[tag].message
     assert found["CD-B-SPA"].result.value == "unknown"

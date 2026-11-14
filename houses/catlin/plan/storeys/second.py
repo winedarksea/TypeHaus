@@ -1054,7 +1054,7 @@ ROOMS = [
          occupancy=Occupancy.BEDROOM, floor_finish="oak-floor-custom",
          exposed_services="owner accepts exposed duct in the primary suite: the supply branch runs on the face of the ceiling rather than inside it"),
     Room(uid="CSR407AAAA", tag="RM-S-CLOSET", seed=pt(ft(14), ft(10, 8)),
-         occupancy=Occupancy.STORAGE, floor_finish="oak-floor-custom"),
+         occupancy=Occupancy.CLOSET, floor_finish="oak-floor-custom"),
     # The nonheated suite bath uses DITRA-XL; Jume vanity porcelain uses the thinner
     # 1/8-inch membrane. Both assemblies target the adjacent 3/4-inch oak plane.
     Room(uid="CSR412AAAA", tag="RM-S-SUITEBATH", seed=pt(ft(14), ft(19)),
@@ -1140,7 +1140,7 @@ ROOMS = [
          )),
     # The linen closet continues the hall oak through D-S-NCLOSET.
     Room(uid="CSR415AAAA", tag="RM-S-NCLOSET", seed=pt(ft(20), ft(33)),
-         occupancy=Occupancy.STORAGE, floor_finish="oak-floor-custom"),
+         occupancy=Occupancy.CLOSET, floor_finish="oak-floor-custom"),
 ]
 
 ALARMS = [

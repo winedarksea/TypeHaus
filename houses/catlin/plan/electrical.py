@@ -297,12 +297,12 @@ BASEMENT_DEVICES = [
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # Hot tub in the sunken garden: disconnect on the west porch wall, 7' from its north
     # end, under the porch deck (see header). NEC 680.22 convenience receptacle beside it.
-    # x is 1 5/8" off W-SG-W1's east face (x=9'-6" since the court narrowed, 2026-09-22), not
-    # 2": the can is 3 1/4" deep, and the 2" standoff the four DISCONNECT-3R boxes were
+    # x is 1 7/8" off W-SG-W1's east face (x=9'-6" since the court narrowed, 2026-09-22), not
+    # 2": the DU222RB can is 3 3/4" deep, and the 2" standoff the four disconnect boxes were
     # authored with dates from when the type carried a placeholder 4" depth. Its back now sits
     # on the concrete.
     ElectricalDevice(uid="CEE010AAAA", tag="ED-B-SPA-DISC", kind=DeviceKind.DISCONNECT,
-                     type_ref="ED-T-DISCONNECT-3R", circuit="CKT-SPA",
+                     type_ref="ED-T-SQD-DU222RB", circuit="CKT-SPA",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-SG-W1", face="left", distance_from_start=inch(87.3125),
@@ -463,9 +463,9 @@ MAIN_DEVICES = [
     #     because the mount elevation is storey-relative. 3'-6" reads 6'-4" from grade.
     #
     # ** AND THEY LEFT THE HOUSE ALTOGETHER ON 2026-09-04. ** They went to W-SG-E1's EAST
-    # face, at (28'-7 5/8", -3'-6") and (28'-7 5/8", -4'-6") — HP2's is at (27'-7 5/8", -4'-6")
-    # since the court narrowed (2026-09-22) — 1 5/8" off the concrete for
-    # the can's 3 1/4" depth and turned `deg(90)` so the depth runs in x against an east face
+    # face, at (28'-7 5/8", -3'-6") and (28'-7 5/8", -4'-6") — HP2's is at (27'-7 7/8", -4'-6")
+    # since the court narrowed (2026-09-22) — 1 7/8" off the concrete for
+    # the can's 3 3/4" depth and turned `deg(90)` so the depth runs in x against an east face
     # (the ED-M-LIVING-KFZ1 convention). HP1's can then followed its unit to the north face
     # later the same day (see its own block below); ED-M-HP2-DISC is the one that stayed,
     # and everything argued here is now argued for it alone.
@@ -499,7 +499,7 @@ MAIN_DEVICES = [
     # stainless-hinged and gasketed, and take the knockouts on the BOTTOM so nothing drains
     # into the enclosure.
     #
-    # ED-T-DISCONNECT-3R is a 3 1/4"-deep can, so its centre belongs 1 5/8" off the
+    # ED-T-SQD-DU222RB is a 3 3/4"-deep can, so its centre belongs 1 7/8" off the
     # cladding face. Same correction on ED-M-HP3-DISC below and on ED-B-SPA-DISC.
     #
     # These were on the SECOND storey until 2026-09-02, beside condensers that stood on the
@@ -509,7 +509,7 @@ MAIN_DEVICES = [
     # ** ED-M-HP1-DISC LEFT THIS WALL WITH ITS UNIT (2026-09-04, later the same day). **
     # Everything above is now HP2's story alone; only ED-M-HP2-DISC stays on W-SG-E1.
     # HP1's can remains on the house's NORTH face, east of its relocated cabinet, at (32'-5",
-    # 36'-8 7/8") — 1 5/8" off the cladding for the can's 3 1/4" depth, and with NO
+    # 36'-8 7/8") — 1 7/8" off the cladding for the can's 3 3/4" depth, and with NO
     # `rotation`, because a north face wants the depth in y where the pocket's east face
     # wanted it in x.
     # elevation 3'-6" reads 6'-4" above the -2'-10" grade it is operated from — inside NEC
@@ -520,14 +520,14 @@ MAIN_DEVICES = [
     # and both canopy piers; the unit remains in sight about 7'-8" west of the can.
     # Its wall attachment stays between the two kitchen windows' framing bumpers.
     ElectricalDevice(uid="CEE012AAAA", tag="ED-M-HP1-DISC", kind=DeviceKind.DISCONNECT,
-                     type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP1", room=None,
+                     type_ref="ED-T-SQD-DU222RB", circuit="CKT-HP1", room=None,
                      mount=Mount(kind=MountKind.WALL, elevation=ft(3, 6)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-N1", face="right", distance_from_start=inch(43),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # -0'-10": at -0'-8" the 9 1/2" can stood 1 1/2" above W-SG-E1's cap.
     ElectricalDevice(uid="CEE013AAAA", tag="ED-M-HP2-DISC", kind=DeviceKind.DISCONNECT,
-                     type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP2", room=None,
+                     type_ref="ED-T-SQD-DU222RB", circuit="CKT-HP2", room=None,
                      mount=Mount(kind=MountKind.WALL, elevation=ft(0, -10)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-SG-E1", face="right", distance_from_start=inch(78),
@@ -536,7 +536,7 @@ MAIN_DEVICES = [
     # working band x=3'-1"..5'-7" between its pad and the connector screen. The 3'-6"
     # main-relative mount is 6'-4" above grade. CKT-HP3 remains on the backup supply.
     ElectricalDevice(uid="CEE026AAAA", tag="ED-M-HP3-DISC", kind=DeviceKind.DISCONNECT,
-                     type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP3",
+                     type_ref="ED-T-SQD-DU222RB", circuit="CKT-HP3",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(3, 6)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-N3B", face="right", distance_from_start=inch(20),
@@ -1270,17 +1270,19 @@ CONDUIT_TRUNKS = [
                      pt(inch(54.5), inch(334)), pt(inch(54.5), ft(35, 3)),
                      pt(ft(16), ft(35, 3)),
                      pt(ft(16), ft(35, 5)), pt(ft(16), ft(35, 5))),
-               start_elevation=inch(-31.4375), end_elevation=ft(-5), elevations=(inch(-31.4375), inch(-17.6), inch(-17.6), inch(-17.6), inch(-17.6), inch(-17.6), inch(-17.6), ft(-5)),
+               start_elevation=inch(-31.4375), end_elevation=inch(-53.25), elevations=(inch(-31.4375), inch(-17.6), inch(-17.6), inch(-17.6), inch(-17.6), inch(-17.6), inch(-17.6), inch(-53.25)),
                # Low-profile LB at 4 (16'-0", 35'-3"), RM-B-STAIR ceiling: ~7/16" under the drain.
                pull_points=(5,),
                circuits=("CKT-GAR-FEEDER",),
                from_ref="ED-B-PANEL-2", to_ref="ED-G-PANEL"),
     # The buried leg: out through SP-B-N2-CD-GAR2, north under the house/garage gap, and up
     # through the garage slab 1'-0" east of ED-G-PANEL. Same station the feeder always used.
-    # ** -5'-0" AND SCHEDULE 80 PVC SINCE 2026-11-14 (TODO-nec Q9a/b). ** At -4'-0" it had 14.2"
-    # under SL-WK-C (whose west edge misses the 6" the slab row needs) and 7.2" in the gravel
-    # strip between the cladding and the walk (grade -3'-4"): Table 300.7(A) Column 3 wants 18"
-    # everywhere, and -5'-0" gives 19.2" at the strip. Buried EMT would need approved corrosion
+    # ** -4'-5 1/4" AND SCHEDULE 80 PVC SINCE 2026-11-14 (TODO-nec Q9a/b). ** Table 300.7(A)
+    # Column 3 wants 18" everywhere; SL-WK-C's west edge misses the 6" the slab row needs.
+    # Cover is to the walk's top (-2'-9") and to the gravel drip strip between it and the
+    # cladding, which meets the site plane (-2'-10") at the house: 18.4" there at -4'-5 1/4",
+    # the shallowest depth CD-B-V2H-GAP's 2" also clears (18.1"; the owner's -4'-4" leaves
+    # 17.2" and 16.9"). Buried EMT would need approved corrosion
     # protection (358.10(B)(1)); Sch 80 PVC needs none and is a (D)(4) method where it rises.
     # EMT-to-PVC adapter at the wall; duct seal at CD-B-GARAGE's LB (its pull point 5), the
     # first accessible fitting on the warm side of this start.
@@ -1288,7 +1290,7 @@ CONDUIT_TRUNKS = [
                pvc_schedule=80, sealed_ends=("start",),
                sealant="Polywater FST foam duct sealant (TDS: compatible with common cable jacket materials; complies with NEC raceway-seal articles; UL Classified R39313)",
                path=(pt(ft(16), ft(35, 5)), pt(ft(16), ft(44, 3.375)), pt(ft(16), ft(44, 3.375))),
-               start_elevation=ft(-5), end_elevation=ft(5, 10), elevations=(ft(-5), ft(-5), ft(5, 10)),
+               start_elevation=inch(-53.25), end_elevation=ft(5, 10), elevations=(inch(-53.25), inch(-53.25), ft(5, 10)),
                circuits=("CKT-GAR-FEEDER",),
                from_ref="ED-B-PANEL-2", to_ref="ED-G-PANEL"),
     # ** V2H SPARE, ROUTED (backup_power.md section 10). ** One empty 2" Sch 80 PVC, pull string
@@ -1306,7 +1308,7 @@ CONDUIT_TRUNKS = [
                start_elevation=inch(-41.4375), end_elevation=inch(-23),
                elevations=(inch(-41.4375), inch(-41.4375), inch(-23), inch(-23), inch(-23)),
                from_ref="EQ-B-ESS-INV", to_ref="ED-G-EV-1450"),
-    # The V2H buried leg, beside CD-B-GAP-EV: down at y=35'-0" to -5'-0" (a pull body at the foot
+    # The V2H buried leg, beside CD-B-GAP-EV: down at y=35'-0" to -4'-5 1/4" (a pull body at the foot
     # of the drop splits the 540 deg of bends the two runs carry), north through the sleeves
     # SP-B-N2-CD-GAR2 / SP-GF-CD-GAR at x=16'-2 7/16" (the EMT is 2 7/16" west of it), and up
     # through SP-G-CD-GAR to a capped stub 2'-0" over the slab beside ED-G-EV-1450, clear of
@@ -1318,7 +1320,7 @@ CONDUIT_TRUNKS = [
                path=(pt(_V2H_X, ft(35)), pt(_V2H_X, ft(35)),
                      pt(_V2H_X, ft(44, 3.375)), pt(_V2H_X, ft(44, 3.375))),
                start_elevation=inch(-23), end_elevation=inch(-10),
-               elevations=(inch(-23), ft(-5), ft(-5), inch(-10)),
+               elevations=(inch(-23), inch(-53.25), inch(-53.25), inch(-10)),
                pull_points=(1,),
                from_ref="EQ-B-ESS-INV", to_ref="ED-G-EV-1450"),
     # Across the basement ceiling to the kitchen's east counter wall, where KGF3 (the device
@@ -1806,10 +1808,10 @@ CONDUIT_SLEEVES = [
     SleevePenetration(uid="CNS008AAAA", tag="SP-B-N2-CD-GAR2", host_ref="W-B-N2",
                       position=pt(_V2H_SLEEVE_X, ft(35, 6)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(6), purpose=Service.POWER_240,
-                      axis="horizontal", center_elevation=ft(-5)),
-    # Through the ICF *stem*, not the footing under it. The run holds -5'-0" the whole way
+                      axis="horizontal", center_elevation=inch(-53.25)),
+    # Through the ICF *stem*, not the footing under it. The run holds -4'-5 1/4" the whole way
     # (Table 300.7(A) cover, 2026-11-14), and the garage foundation followed grade
-    # down with the soil: FT-GF-S2 bears at -6'-8" and its top is -6'-0", a foot clear
+    # down with the soil: FT-GF-S2 bears at -6'-8" and its top is -6'-0", 18 3/4" clear
     # below this crossing, while W-GF-S2 spans -6'-0" to -0'-8" and is what the conduit
     # actually passes through.
     #
@@ -1821,7 +1823,7 @@ CONDUIT_SLEEVES = [
     SleevePenetration(uid="CNS009AAAA", tag="SP-GF-CD-GAR", host_ref="W-GF-S2",
                       position=pt(_V2H_SLEEVE_X, ft(43, 8.125)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(6), purpose=Service.POWER_240,
-                      axis="horizontal", center_elevation=ft(-5)),
+                      axis="horizontal", center_elevation=inch(-53.25)),
     # The stub-up, 3 3/8" north of the stem's inside face, at 41'-9" — 2 3/8" of concrete
     # around the bore. `integrity.sleeve_in_opening` tests the sleeve's CENTRE, so the full
     # 2 3/8" margin is what protects it, not half the bore's clearance to the slab edge. The
@@ -2276,7 +2278,7 @@ NEC_FILL_MAIN = [
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # y is on W-M-STOS's north face. It's inside RM-M-MUD-CLOSET, kept on purpose: NEC
     # 410.16 restricts closet luminaires, not receptacles, and RM-M-MUDROOM is
-    # Occupancy.STORAGE so `electrical.receptacle_spacing` never walks it anyway. Stays GFCI
+    # Occupancy.FOYER so `electrical.receptacle_spacing` never walks it anyway. Stays GFCI
     # for its 210.8(A)(9) sink-reach location (RM-M-BATH1's lav, through W-M-STOS).
     ElectricalDevice(uid="NEC067AAAA", tag="ED-M-LIVING-RC9", kind=DeviceKind.RECEPTACLE_GFCI,
                      type_ref="ED-T-LEV-GFCI-20",

@@ -42,4 +42,4 @@ def test_laundry_track_is_in_another_room_than_the_tub(catlin_model_ro):
     found = _findings(catlin_model_ro, "electrical.bath_luminaire_zone")
     assert [(f.result.value, f.element_tags) for f in found] == [
         ("pass", ("ED-M-LAUNDRY-TRACK", "FX-M-BATH2-TUB"))]
-    assert "separated from the tub's room" in found[0].message
+    assert "the zone is the tub's own room" in found[0].message
