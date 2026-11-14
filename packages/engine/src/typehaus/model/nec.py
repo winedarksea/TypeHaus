@@ -27,8 +27,9 @@ the doubt reaches the finding, the permit checklist and the sheet.
 post-publication ones above); 310.1-310.6, 310.10, 310.12, 310.14 and 310.15 with the
 310.16-310.21 conditions, with Tables 310.16 (coded in ``model/ampacity.py``) and 310.17;
 110.14-110.16; 240.2-240.4; 250.102-250.104(A)(2) with Table 250.102(C)(1); 334.40, 334.80
-and 334.100-334.116;
-314.15-314.27 with Tables 314.16(A) and 314.16(B)(4); and 680.34-680.54 (Parts I/II unread). The
+and 334.100-334.116; 110.22-110.28, 240.4(G)-(H), 240.5, 240.6 with Table 240.6(A) (coded in
+``model/ampacity.py``), and 625.17-625.102; 314.15-314.27 with Tables 314.16(A) and
+314.16(B)(4); and 680.1-680.27(A) and 680.34-680.54 (680.27(B)-680.33 unread). The
 engine never quotes the code: ``docs/nec-2026-paraphrase*.md`` restate each rule and say
 what grades it; ``tests/test_nec_120_82.py`` and ``test_nec_printed_rules.py`` pin them.
 """
@@ -47,6 +48,8 @@ class NEC:
     WORKING_SPACE: Final = "110.26(A)"
     WORKING_SPACE_EGRESS: Final = "110.26(C)"
     DEDICATED_SPACE: Final = "110.26(E)(1)"
+    WORKING_ILLUMINATION: Final = "110.26(D)"
+    DEDICATED_SPACE_OUTDOOR: Final = "110.26(E)(2)"
 
     # Art. 120 (was Art. 220) — load calculations.
     LOAD_CALC: Final = "Article 120"
@@ -58,6 +61,10 @@ class NEC:
     PCS_SETPOINT: Final = "120.7"
     PCS_CONTROL_SETTING: Final = "120.7(B)"
     EVSE_LOAD: Final = "120.57"
+    EVSE_CIRCUIT: Final = "625.40"  # an individual branch circuit
+    EVSE_CONTINUOUS: Final = "625.41"  # continuous load: breaker at 125%
+    EVSE_DISCONNECT: Final = "625.43(C)"
+    EVSE_RECEPTACLE_GFCI: Final = "625.54"
     GENERAL_LIGHTING_STANDARD: Final = "120.41"
     DRYER_STANDARD: Final = "120.54"
     OPTIONAL_DWELLING: Final = "120.82"
@@ -160,7 +167,8 @@ class NEC:
     NM_AMPACITY: Final = "334.80(A)"  # 60 °C ceiling; 90 °C only to adjust and correct
     ADJUSTMENT_FACTORS: Final = "310.15(C)(1)"
     TERMINATION_TEMP: Final = "110.14(C)(1)"
-    NEXT_SIZE_UP: Final = "240.4(B)"  # next standard OCPD above the ampacity (240.6(A) unread)
+    NEXT_SIZE_UP: Final = "240.4(B)"  # next standard OCPD above the ampacity
+    STANDARD_OCPD: Final = "240.6(A)"  # Table 240.6(A), coded in model/ampacity.py
     IMC_BENDS: Final = "342.26"
     RMC_BENDS: Final = "344.26"
     PVC_BENDS: Final = "352.26"
@@ -179,7 +187,20 @@ class NEC:
     WET_LUMINAIRE_ZONE: Final = "410.10(D)"
     SPACE_HEAT_CONTINUOUS: Final = "424.5"
 
-    # Ch. 6 — Art. 680 Part IV, spas and hot tubs (Parts I/II unread).
+    # Ch. 6 — Art. 680 Parts I, II and IV as they reach a spa or hot tub (via 680.42/.43).
+    GFCI_150V: Final = "680.5(B)"  # Class A, <=150 V to ground, <=60 A single-phase
+    SPGFCI_OVER_150V: Final = "680.5(C)"
+    POOL_GROUNDING: Final = "680.7"
+    POOL_CORROSIVE: Final = "680.14"
+    SPA_MAINT_DISCONNECT: Final = "680.13"
+    POOL_RECEPTACLES: Final = "680.22(A)"
+    POOL_RECEPTACLE_REQUIRED: Final = "680.22(A)(1)"
+    POOL_LUMINAIRES: Final = "680.22(B)"
+    POOL_SWITCHES: Final = "680.22(C)"
+    POOL_OTHER_OUTLETS: Final = "680.22(E)"
+    POOL_OTHER_EQUIPMENT: Final = "680.22(F)"
+    POOL_EQUIPOTENTIAL: Final = "680.26"
+    POOL_EQUIPOTENTIAL_PERIMETER: Final = "680.26(B)(2)"
     SPA_SCOPE: Final = "680.40"
     SPA_EMERGENCY_SWITCH: Final = "680.41(A)"
     SPA_EQUIPMENT_DISTANCE: Final = "680.41(B)"

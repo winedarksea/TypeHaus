@@ -233,10 +233,16 @@ That would let subagents compare candidates without repeatedly reading geometry 
     at 83%: 300 Cu / 400 Al; also 2 x 4/0 Al summed), **#1/0 Cu** only if the service counts as
     400 A (400 Cu / 600 Al); a larger utility lateral raises it (3/0 Cu cap). The GECs (#6 rods,
     #4 Ufer) meet 250.66(A)/(B) on every basis. Open: the lateral's size (Xcel/electrician).
-  - The 4/0 Al SER feeders (180 A at 75 degC, 110.14(C)(1)(b)) behind the 200 A mains: 310.12(B)
-    cannot size them (each carries part of the load), and 240.4(B) allows the 200 A main only
-    if 240.6(A) lists 200 A as the next standard rating above 180 A and 180 A is not itself one.
-    **240.6(A) is unread and relied on.** The estimated loads (136 A, 121 A) are under 180 A.
+  - The 4/0 Al SER feeders (180 A at 75 degC) behind the 200 A mains are permitted by 240.4(B)
+    (Table 240.6(A): no 180 A, 200 A next); 310.12(B) cannot size them. Loads 136 A, 121 A.
+  - 625.43(C): `CKT-EV-1450`'s only disconnect is its breaker in the basement, remote from the
+    EVSE; a plaque on the unit locating it is not modelled (`electrical.evse_circuit`
+    advisory). 625.40/.41/.54 pass or are N/A. A V2H charger (`CD-B-V2H-SPARE`) needs 625.48
+    (listed and marked; Article 702 or 705; 625.47 if it takes its own feeder).
+  - 110.26 not graded: the door-swing sentence (doors open to 90 degrees leave 24 in. x 6 1/2
+    ft), (D) lighting (the panels' room `RM-B-FURNACE` has four luminaires on plain switches;
+    no typed marker for an automatic-only control) and the (E)(2) outdoor zone of the
+    meter-main (nothing foreign authored within 6 ft).
   - 310.15(C)(1) / 334.80(A): `electrical.nm_sleeve_ampacity` passes all 12 derived EMT NM
     sleeves (77 in. worst, four conductors at 80%: 24 A capped at 20 A on a 20 A breaker, no
     margin). Overhead NM bundles are not modelled.
@@ -271,22 +277,22 @@ That would let subagents compare candidates without repeatedly reading geometry 
       (`conduit_bends`); 334.15(B)/(C); 690.12 and (B)(2)
       (`power_sources`); 210.70(A)(3); 130.2 (PCS listing).
     - Cited, read only in post-publication sources: 690.47.
-    - Cited but used by nothing (read them, or drop the constant): 110.26(C), 120.5(C),
+    - Cited but used by nothing (read them, or drop the constant): 120.5(C),
       120.41, 342.26, 344.26, Table 352.30, 358.30, 362.30, Art. 408, 410.10(D), 424.5, Ch. 9
       Table 4 and Note 2.
     - Not cited, but Catlin triggers them:
-      - Art. 680 Parts I/II (680.5, 680.7, 680.12 disconnect within sight and 5 ft off,
-        680.21/.22, 680.23/.33, 680.26 bonding): unread. Part IV (680.34-680.54) is read and
-        `code.NEC_680_spa` grades it: `CKT-SPA` GFCI PASS, 680.41(A) N/A, but the tub is not
-        modeled (no `EquipmentKind.SPA`), so 680.41(B), indoor/outdoor and receptacle/switch
-        distances are UNKNOWN. Author the tub's footprint to grade them; the 680.12 disconnect
-        (`ED-B-SPA-DISC`) and 680.26 bonding stay ungraded until Parts I/II are read.
+      - Art. 680 spa (read 680.1-680.27(A), 680.34-680.54; 680.27(B)-680.33 unread):
+        `code.NEC_680_spa` grades `CKT-SPA` (Class A GFCI PASS, 680.41(A) N/A). The tub is not
+        modeled, so 680.13 (`ED-B-SPA-DISC`), 680.22/.41(B) distances and 680.26 bonding are
+        UNKNOWN. Catlin must author: an `EquipmentKind.SPA` with footprint and
+        `spa_self_contained`; in-ground vs listed aboveground (the 680.42(B) waiver), rim
+        height, perimeter paving; metal within 5 ft (`W-SG-W1`, railings); `CKT-SPA`'s EGC and
+        wiring method (680.7, 680.14; today EMT). See `docs/nec-2026-paraphrase-680.md`.
       - 225.41, 230.70: no field marks an emergency disconnect, its marking or a
         short-circuit rating, so an indoor service disconnect stays UNKNOWN. Also ungraded:
         230.70(B) marking and (D) plaque for the PV/ESS disconnects, 230.71 count, 230.82
         supply-side list, 230.90 Ex. 5, and 225.30/225.31/225.33-225.39 (see the garage bullet).
       - Art. 706 and 480: the ESS.
-      - 625.40/.41/.54: EVSE circuit, sizing and GFCI.
       - Art. 424: GFPE for floor-heating cables (`FloorHeat`).
       - The sauna heater's article and listing rule.
       - 440.14 and the nameplate MOCP for heat pumps and heads; 210.63 (service receptacle).

@@ -62,7 +62,9 @@ _PRINTED = {
     "EVSE_LOAD": "120.57", "SERVICE_SPD": "230.67", "SERVICE_DISCONNECT_OUTDOOR": "230.70(A)(1)",
     "OUTBUILDING_SUPPLIES": "225.30", "OUTBUILDING_DISCONNECT": "225.31",
     "EMERGENCY_DISCONNECT": "225.41", "SLEEVE_BONDING": "250.86 Ex. 2",
-    "AMPACITY_TABLE": "Table 310.16",
+    "AMPACITY_TABLE": "Table 310.16", "EVSE_CIRCUIT": "625.40", "EVSE_CONTINUOUS": "625.41",
+    "EVSE_DISCONNECT": "625.43(C)", "EVSE_RECEPTACLE_GFCI": "625.54",
+    "STANDARD_OCPD": "240.6(A)", "WORKING_ILLUMINATION": "110.26(D)",
     "DWELLING_SERVICE_CONDUCTORS": "310.12(A)", "DWELLING_FEEDER_CONDUCTORS": "310.12(B)",
     "BOX_FILL": "314.16(B)", "CONDUCTOR_VOLUME_TABLE": "Table 314.16(B)(4)",
     "BOX_DEPTH": "314.24(B)", "BOX_FLUSH_SETBACK": "314.20", "BOX_COVER": "314.25",
@@ -259,3 +261,24 @@ def test_nm_sleeves_still_cover_their_breakers(catlin_model_ro):
     found = [f for f in report.findings if f.check_id == "electrical.nm_sleeve_ampacity"]
     assert len(found) == 12 and all(f.result.value == "pass" for f in found)
     assert any("80%" in f.message and "20 A" in f.message for f in found)
+
+
+def test_feeder_behind_a_200a_main_is_240_4b_permitted():
+    """4/0 Al is 180 A at 75 degC; Table 240.6(A) has no 180 A and 200 A next, under 800 A."""
+    from typehaus.model.ampacity import STANDARD_OCPD_A, ampacity, next_standard_rating
+
+    amps = ampacity("al", "4/0", 75)
+    assert amps == 180 and amps not in STANDARD_OCPD_A
+    assert next_standard_rating(amps) == 200 <= 800
+    assert STANDARD_OCPD_A[0] == 10 and STANDARD_OCPD_A[-1] == 6000
+
+
+def test_catlins_ev_circuit_is_individual_and_at_125_percent(catlin_model_ro):
+    report = run_from_model(catlin_model_ro, [], tier=Tier.ADVISORY,
+                            only="electrical.evse_circuit")
+    found = [f for f in report.findings if f.check_id == "electrical.evse_circuit"
+             and "CKT-EV-1450" in f.message]
+    by = {f.result.value for f in found}
+    assert "fail" not in by and "pass" in by
+    assert any("50.0 A against a 50 A breaker" in f.message for f in found)
+    assert any(f.result.value == "not_applicable" for f in found)   # 625.54: hardwired

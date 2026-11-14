@@ -25,6 +25,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     electrical_canopy,
     electrical_ceiling,
     electrical_code,
+    electrical_evse,
     electrical_floor,
     electrical_garage,
     electrical_grounding,

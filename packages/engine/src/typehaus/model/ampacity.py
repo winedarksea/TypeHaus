@@ -1,5 +1,5 @@
 """Table 310.16 (2026 NEC) ampacities, the 310.12(A) dwelling-service rule, Table 310.15(C)(1)
-and the NM cap of 334.80(A).
+the NM cap of 334.80(A) and the standard OCPD ratings of Table 240.6(A).
 
 Transcribed from the printed table the owner sent 2026-11-14, rows 16 AWG (Cu) / 14 AWG (Al)
 through 600 kcmil, 30 °C ambient, at most three current-carrying conductors. Table 310.17
@@ -71,3 +71,16 @@ def nm_ampacity(size: str, current_carrying: int = 3) -> int:
     """334.80(A), copper NM: the 90 °C value adjusted, never above the 60 °C value."""
     return min(int(ampacity("cu", size, 90) * adjustment_factor(current_carrying) + 1e-9),
                ampacity("cu", size, 60))
+
+
+#: Table 240.6(A), standard ampere ratings of fuses and inverse-time breakers (fuses add
+#: 1, 3, 6 and 601, which no breaker takes). Nonstandard ratings are permitted.
+STANDARD_OCPD_A: Final = (10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 110, 125, 150,
+                          175, 200, 225, 250, 300, 350, 400, 450, 500, 600, 700, 800, 1000,
+                          1200, 1600, 2000, 2500, 3000, 4000, 5000, 6000)
+
+
+def next_standard_rating(amps: float) -> int:
+    """240.4(B): the next standard rating above ``amps`` (above, so a standard value is itself
+    not eligible: 240.4(B)(2) wants an ampacity that is not a standard rating)."""
+    return next(a for a in STANDARD_OCPD_A if a > amps)

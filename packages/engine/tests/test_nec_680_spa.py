@@ -16,14 +16,16 @@ _FT = 0.3048
 
 def test_catlins_spa_circuit_is_graded_and_its_tub_is_not(catlin_model_ro):
     report = run_from_model(catlin_model_ro, [], tier=Tier.CODE, only=_CID)
-    by_result = {f.result.value: f for f in report.findings if f.check_id == _CID}
-    assert "CKT-SPA" in by_result["pass"].message  # 680.44(A): GFCI breaker
-    assert "680.41(A)" in by_result["not_applicable"].message
-    assert "not modeled" in by_result["unknown"].message
-    assert "fail" not in by_result
+    found = [f for f in report.findings if f.check_id == _CID]
+    verdicts = {f.result.value for f in found}
+    assert verdicts == {"pass", "not_applicable", "unknown"}  # no FAIL
+    passed = [f for f in found if f.result.value == "pass"]
+    assert len(passed) == 1 and "Class A" in passed[0].message  # 680.44(A) / 680.5(B)
+    unknown = " ".join(f.message for f in found if f.result.value == "unknown")
+    assert "ED-B-SPA-DISC" in unknown and "680.13" in unknown  # waits on the tub footprint
 
 
-def _ctx(extra_elements, walls=()):
+def _ctx(extra_elements, walls=(), indoors=True):
     def box(x0, y0, x1, y1):
         return [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
 
@@ -36,12 +38,14 @@ def _ctx(extra_elements, walls=()):
     objects = [obj("EQ-SPA", 1, 1, box(0, 0, 2, 2)), *(obj(e.tag, x, y)
                                                           for e, x, y in extra_elements)]
     room = SimpleNamespace(storey="s", axis_face=box(-20, -20, 20, 20), clear_face=[])
-    circuit = SimpleNamespace(tag="CKT-SPA", spa=True, gfci=True, gfci_class="A")
+    rooms = [room] if indoors else []
+    circuit = SimpleNamespace(tag="CKT-SPA", spa=True, gfci=True, gfci_class="A", poles=2,
+                              breaker_amps=50)
     plan = SimpleNamespace(
         all_elements=lambda: elements,
         library=SimpleNamespace(circuits=[circuit], equipment_types=[]),
         project=SimpleNamespace(buildings=[SimpleNamespace(kind="dwelling")]))
-    model = SimpleNamespace(canvas_objects=objects, rooms=[room], walls=list(walls))
+    model = SimpleNamespace(canvas_objects=objects, rooms=rooms, walls=list(walls))
     return SimpleNamespace(plan=plan, model=model)
 
 
@@ -75,3 +79,18 @@ def test_a_wall_between_clears_the_equipment_distance():
     ctx = _ctx([(disc, 2 + 4 * _FT, 1)], walls=[wall])
     [(result, _)] = [v for v in _verdicts(ctx) if "ED-DISC" in v[1]]
     assert result is Result.PASS
+
+
+def test_outdoor_spa_takes_the_20_ft_receptacle_and_the_680_13_disconnect():
+    gfci_rc = _device("ED-RC", DeviceKind.RECEPTACLE_GFCI)
+    gfci_rc.mount = SimpleNamespace(elevation=SimpleNamespace(meters=4 * _FT))
+    disc = _device("ED-DISC", DeviceKind.DISCONNECT, circuit="CKT-SPA")
+    near_disc = _device("ED-DISC2", DeviceKind.DISCONNECT, circuit="CKT-SPA")
+    objects = [(gfci_rc, 2 + 15 * _FT, 1), (disc, 2 + 6 * _FT, 1), (near_disc, 2 + 2 * _FT, 1)]
+    outdoor = {tag: result for result, msg in _verdicts(_ctx(objects, indoors=False))
+               for tag in ("ED-RC", "ED-DISC2", "ED-DISC ") if tag in msg}
+    assert outdoor["ED-RC"] is Result.PASS and outdoor["ED-DISC "] is Result.PASS
+    assert outdoor["ED-DISC2"] is Result.FAIL  # 680.13: under 5 ft, no barrier
+    # the same receptacle indoors is past 10 ft, so 680.43(A) finds none in 6-10 ft
+    indoor = [(r, m) for r, m in _verdicts(_ctx(objects)) if "general-purpose" in m]
+    assert indoor and indoor[0][0] is Result.FAIL
