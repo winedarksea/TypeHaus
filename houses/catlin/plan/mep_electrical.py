@@ -70,7 +70,7 @@ ELECTRICAL_DEVICE_TYPES = (
 
 
 # --- Electrical: symbols-only (decision 1 — panel/circuit schedule deferred) -------
-# ** ALL FOUR PANEL TOPS ON ONE LINE, 6'-6" AFF (2026-10-31). ** NEC 240.24(A)/404.8(A) cap
+# ** ALL FOUR PANEL TOPS ON ONE LINE, 6'-6" AFF (2026-10-31). ** NEC 240.24(A)/404.10(A)(2) cap
 # the top handle at 6'-7"; `electrical.panel_handle_height` grades the body top. Bottoms:
 # ED-B-PANEL 38.63" (QO154M200P, 39.37" can), PANEL-2 48.16" (HOM2040M200PC, 29.84" can),
 # BACKUP-PANEL/-ENCL 58" (plan/electrical.py). Both panels are 14.25" wide (Square D sheets).

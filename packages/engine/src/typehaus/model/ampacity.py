@@ -84,3 +84,28 @@ def next_standard_rating(amps: float) -> int:
     """240.4(B): the next standard rating above ``amps`` (above, so a standard value is itself
     not eligible: 240.4(B)(2) wants an ampacity that is not a standard rating)."""
     return next(a for a in STANDARD_OCPD_A if a > amps)
+
+
+#: Table 250.122 (printed 2026-11-14): OCPD rating not exceeding -> (copper, aluminum or
+#: copper-clad aluminum) wire EGC. Sizes above 600 kcmil are in the table, not in SIZES.
+EGC_TABLE: Final = (
+    (15, "14", "12"), (20, "12", "10"), (60, "10", "8"), (100, "8", "6"), (200, "6", "4"),
+    (300, "4", "2"), (400, "3", "1"), (500, "2", "1/0"), (600, "1", "2/0"),
+    (800, "1/0", "3/0"), (1000, "2/0", "4/0"), (1200, "3/0", "250"), (1600, "4/0", "350"),
+    (2000, "250", "400"), (2500, "350", "600"), (3000, "400", "600"), (4000, "500", "750"),
+    (5000, "700", "1250"), (6000, "800", "1250"))
+_ORDER: Final = (*SIZES, "700", "750", "800", "1250")
+
+
+def egc_minimum(ocpd_a: float, material: str) -> str:
+    """250.122: the smallest wire EGC for an OCPD of ``ocpd_a`` amperes; ``material`` is
+    ``"cu"`` or ``"al"`` (copper-clad aluminum shares the aluminum column)."""
+    for rating, cu, al in EGC_TABLE:
+        if ocpd_a <= rating:
+            return cu if material == "cu" else al
+    raise ValueError(f"no Table 250.122 row above {EGC_TABLE[-1][0]} A")
+
+
+def size_at_least(size: str, minimum: str) -> bool:
+    """Whether conductor ``size`` is no smaller than ``minimum`` (same material)."""
+    return _ORDER.index(size) >= _ORDER.index(minimum)

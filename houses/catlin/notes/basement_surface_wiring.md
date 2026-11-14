@@ -79,7 +79,7 @@ which `resolve/device_boxes.py` reads as a framed cavity (Carlon B122A nail-on b
 | A protective sleeve is outside the Chapter 9 fill tables | Chapter 9, Note 2 to the tables |
 | The sleeve needs no bonding of its own: the box is bonded by the NM's ground | 250.86 Ex. 2 |
 | Power and data never share a raceway | Art. 722 (722.15 in the second draft; was 800.133, 725.136) |
-| Bends between pull points ≤ 360° | 358.26 (EMT), 362.26 (ENT), 352.26 (PVC) |
+| Bends between pull points ≤ 360° | 300.24; 358.26 (EMT), 362.26 (ENT), 352.26 (PVC) |
 | EMT support: within 3 ft of each termination, then every 10 ft | 358.30 |
 | ENT support: within 3 ft of each box, then every 3 ft | 362.30 |
 | Box fill | 314.16(A), (B) |

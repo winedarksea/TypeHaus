@@ -332,7 +332,7 @@ logic of EG4's Hybrid RSD Wiring Guide v1.0.3 and the factory RSD jumper; the ol
 says normally-open, so wire to the board on the delivered unit. With supported EG4 batteries
 in closed loop the same switch also opens the ESS (706.15). `CD-M-RSD-INIT` is a 1/2" EMT stub
 into the stud bay behind the box; the Class 2 pair is fished from there to the inverter.
-Label it as the PV rapid-shutdown switch.
+Label it with the 690.12(D)(2) wording, "RAPID SHUTDOWN SWITCH FOR SOLAR PV SYSTEM", on or within 3 ft of the switch.
 
 **String fit on the 12kPV** (2 MPPTs, 120-500 V operating, 600 V max, 25 A usable, 31 A Isc per
 MPPT; spec sheet v1.0.9). One 9-module string per roof side, one per MPPT: cold Voc

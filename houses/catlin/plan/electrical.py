@@ -456,7 +456,7 @@ MAIN_DEVICES = [
     #
     #   * NEC 110.26(A) working space cannot be a stairway, and ST-SG-PORCH ran straight
     #     under the old x=30' station while the flight was in the pocket's north strip.
-    #   * NEC 404.8(A) caps an operating handle at 6'-7" above the standing surface. These
+    #   * NEC 404.10(A)(2) caps an operating handle at 6'-7" above the standing surface. These
     #     are on a MAIN-floor wall but are operated from grade at -2'-10", so ft(5) put the
     #     handles 7'-10" up — nearly a foot past the limit, and nothing was measuring it
     #     because the mount elevation is storey-relative. 3'-6" reads 6'-4" from grade.
@@ -488,7 +488,7 @@ MAIN_DEVICES = [
     #
     # ** THE MOUNT DROPS TO -0'-8", AND ACCESS IS FINE. ** This wall tops out at 0'-0", so
     # there is no 3'-6" to hang from; -0'-8" puts the handles 2'-2" above grade, against
-    # 404.8(A)'s 6'-7" ceiling and well inside it. Readily accessible standing on the pocket
+    # 404.10(A)(2)'s 6'-7" ceiling and well inside it. Readily accessible standing on the pocket
     # grade beside the units, which is the access 440.14 turns on, and reachable a second way
     # over the porch guard from the deck 8" above them (owner, 2026-09-04) — a convenience,
     # not the compliance path.
@@ -512,7 +512,7 @@ MAIN_DEVICES = [
     # `rotation`, because a north face wants the depth in y where the pocket's east face
     # wanted it in x.
     # elevation 3'-6" reads 6'-4" above the -2'-10" grade it is operated from — inside NEC
-    # 404.8(A)'s 6'-7" — and it is dry, at standing height, not in the plough line.
+    # 404.10(A)(2)'s 6'-7" — and it is dry, at standing height, not in the plough line.
     #
     # The 2026-10-02 west move clears its former 14" slot. A 30" wide working strip
     # x 31'-2"..33'-8", extending 36" north from the can, is clear of the relocated pad

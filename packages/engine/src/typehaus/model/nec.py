@@ -14,7 +14,8 @@ NFPA's first- and second-draft reports and the Aug 2025 Standards Council minute
 bathroom-lighting item was not issued). Re-read 2026-11-13 against post-publication sources
 written to the published code: TIA 26-2 (690.12(C), incorporated before printing), TIA 26-8 /
 Log 1875 (270.50 vs 250.50, 250.52(A) not renumbered), MN DLI BOE minutes 2025-10-14 Att. B
-(250.53(A)(4), 250.64, 690.47), MN DLI NEC FAQ (250.32(B)(1)), WA L&I Elc2604 (250.53(A)(2)),
+(250.53(A)(4), 250.64; its 690.47 is now a printed read, below), MN DLI NEC FAQ (250.32(B)(1)),
+WA L&I Elc2604 (250.53(A)(2)),
 Frisco TX 2026 NEC amendments (210.52(C)(2) Island and Peninsular Countertops).
 ``UNCONFIRMED`` names the rows still read only in drafts or trade press, kept by the owner
 until someone reads them in the printed code; ``cite``/``mark`` print them with a caveat, so
@@ -28,8 +29,17 @@ post-publication ones above); 310.1-310.6, 310.10, 310.12, 310.14 and 310.15 wit
 310.16-310.21 conditions, with Tables 310.16 (coded in ``model/ampacity.py``) and 310.17;
 110.14-110.16; 240.2-240.4; 250.102-250.104(A)(2) with Table 250.102(C)(1); 334.40, 334.80
 and 334.100-334.116; 110.22-110.28, 240.4(G)-(H), 240.5, 240.6 with Table 240.6(A) (coded in
-``model/ampacity.py``), and 625.17-625.102; 314.15-314.27 with Tables 314.16(A) and
-314.16(B)(4); and 680.1-680.27(A) and 680.34-680.54 (680.27(B)-680.33 unread). The
+``model/ampacity.py``), and 625.17-625.102; 706.1-706.30(A)(2) and 480.2-480.14;
+all of Article 440 and 445.1-445.12(B);
+all of Article 424 and the end of 422.62; 404.1-404.9, 406.9(B)-406.14(B), 408.1-408.6;
+314.15-314.27 with Tables 314.16(A) and 314.16(B)(4); and 680.1-680.27(A) and 680.34-680.54
+(680.27(B)-680.33 unread); 690.9(A)(d)-690.13, 690.15(A), the end of 690.43 with 690.45-690.72
+(690.1-690.9(A) and 690.15(B)-690.43's opening unread); 705.5-705.25 (705.1-705.4,
+705.28, 705.30, 705.40 on unread); and 710.1-710.15 (710.12 on unread); see
+``docs/nec-2026-paraphrase-690-705-710.md``; 300.1, 300.4-300.9 and 300.21(tail)-300.25
+(renumbered in 2026: 300.4 is Limitations, physical damage is 300.6, underground 300.7;
+300.2-300.3, 300.9(A)(2)-300.21 and 300.25(C) on unread), with Table 300.7(A) (coded in
+``model/burial.py``), in ``docs/nec-2026-paraphrase-300.md``. The
 engine never quotes the code: ``docs/nec-2026-paraphrase*.md`` restate each rule and say
 what grades it; ``tests/test_nec_120_82.py`` and ``test_nec_printed_rules.py`` pin them.
 """
@@ -150,6 +160,48 @@ class NEC:
 
     # Ch. 3 — wiring methods, boxes, raceways.
     RACEWAY_BENDS_MIXED: Final = "300.24"
+    RACEWAY_BENDS: Final = "300.24"  # 360 deg between pull points, any combination of raceways
+    # Art. 300 as printed 2026 (was 300.4 physical damage, 300.5 underground, 300.21 firestop).
+    WIRING_LIMITATIONS: Final = "300.4"  # voltage, 310.14(A)(3) temperature, damaged conductors
+    SAME_CIRCUIT_TOGETHER: Final = "300.5(B)"  # all conductors of a circuit, one raceway
+    DIFFERENT_SYSTEMS: Final = "300.5(C)"
+    PHYSICAL_DAMAGE: Final = "300.6"
+    DAMAGE_BORED_HOLES: Final = "300.6(A)(1)"  # 1 1/4 in. from the edge, else 1/16 in. steel
+    DAMAGE_NOTCHES: Final = "300.6(A)(2)"
+    DAMAGE_NM_METAL_FRAMING: Final = "300.6(B)"
+    DAMAGE_PARALLEL_FRAMING: Final = "300.6(D)"
+    DAMAGE_ROOF_DECKING: Final = "300.6(E)"  # 1 1/2 in. under roof decking
+    DAMAGE_SHALLOW_GROOVES: Final = "300.6(F)"
+    DAMAGE_FITTINGS_4AWG: Final = "300.6(G)"
+    STRUCTURAL_JOINTS: Final = "300.6(H)"
+    UNDERGROUND: Final = "300.7"
+    BURIAL_COVER: Final = "300.7(A)"  # Table 300.7(A), coded in model/burial.py
+    BURIAL_TABLE: Final = "Table 300.7(A)"
+    UNDERGROUND_WET: Final = "300.7(B)"  # inside an underground raceway is a wet location
+    UNDER_BUILDING: Final = "300.7(C)"  # in a raceway
+    UNDERGROUND_PROTECTION: Final = "300.7(D)"
+    EMERGING_FROM_GRADE: Final = "300.7(D)(1)"  # protected to 8 ft above grade
+    UNDERGROUND_DAMAGE: Final = "300.7(D)(4)"
+    UNDERGROUND_SPLICES: Final = "300.7(E)"
+    BACKFILL: Final = "300.7(F)"
+    RACEWAY_SEALS: Final = "300.7(G)"  # spare or unused raceways are sealed too
+    UNDERGROUND_BUSHING: Final = "300.7(H)"
+    SAME_TRENCH: Final = "300.7(I)"
+    EARTH_MOVEMENT: Final = "300.7(J)"
+    DIRECTIONAL_BORING: Final = "300.7(K)"
+    CORROSION: Final = "300.8"
+    CORROSION_FERROUS: Final = "300.8(A)"
+    CORROSION_IN_EARTH: Final = "300.8(A)(3)"  # ferrous raceways in concrete or earth
+    CORROSION_ALUMINUM: Final = "300.8(B)"
+    CORROSION_NONMETALLIC: Final = "300.8(C)"
+    CORROSION_INDOOR_WET: Final = "300.8(D)"  # 1/4 in. airspace
+    RACEWAY_CONDENSATION: Final = "300.9(A)"
+    INDUCED_CURRENTS: Final = "300.22"
+    FIRESTOPPING: Final = "300.23"  # was 300.21
+    PLENUM_WIRING: Final = "300.25"
+    DUCT_DUST_VAPOR: Final = "300.25(A)"
+    DUCT_ENVIRONMENTAL_AIR: Final = "300.25(B)"
+    OTHER_PLENUMS: Final = "300.25(C)"
     AMPACITY_TABLE: Final = "Table 310.16"  # coded in model/ampacity.py
     DWELLING_SERVICE_CONDUCTORS: Final = "310.12(A)"  # 83% of the rating, Table 310.12(A)
     DWELLING_FEEDER_CONDUCTORS: Final = "310.12(B)"  # only a feeder carrying the entire load
@@ -182,10 +234,24 @@ class NEC:
     ENT: Final = "Article 362"
 
     # Ch. 4 — equipment.
-    SWITCH_HEIGHT: Final = "404.8(A)"
+    SWITCH_HEIGHT: Final = "404.10(A)(2)"  # was 404.8(A); read 2026-11-14
+    SWITCH_BACKFEED_SIGN: Final = "404.8(C)"  # load terminals energizable by a backfeed
+    SWITCH_TUB_SHOWER: Final = "404.6(C)"
+    BATH_ZONE: Final = "406.9(C)(1)"  # no receptacle within 3 ft of a tub or shower
+    WET_RECEPTACLE: Final = "406.9(B)(1)"  # weather-resistant type, extra-duty hood
+    CONTROLLED_RECEPTACLE: Final = "406.11(D)"  # automatic control: "controlled" symbol
+    PUSH_IN_TERMINALS: Final = "406.10(3)"  # 15 A and 14 AWG solid copper only
+    RECEPTACLE_REPLACEMENT: Final = "406.12(D)"
+    CIRCUIT_DIRECTORY: Final = "408.4(A)"
+    SWITCHBOARD_SCCR: Final = "408.6"
     PANELBOARDS: Final = "Article 408"
     WET_LUMINAIRE_ZONE: Final = "410.10(D)"
     SPACE_HEAT_CONTINUOUS: Final = "424.5"
+    SPACE_HEAT_OUTLETS: Final = "424.4(B)"  # two or more heater outlets: 30 A at most
+    SPACE_HEAT_GFCI: Final = "424.45(E)"  # under a floor covering; 424.44(E), 424.99(C)(5)
+    SPACE_HEAT_DISCONNECT: Final = "424.19"
+    SPACE_HEAT_LABEL: Final = "424.47"
+    SPACE_HEAT_WALLS: Final = "424.48"  # cables and panels in walls: up to 4 ft, GFCI and AFCI
 
     # Ch. 6 — Art. 680 Parts I, II and IV as they reach a spa or hot tub (via 680.42/.43).
     GFCI_150V: Final = "680.5(B)"  # Class A, <=150 V to ground, <=60 A single-phase
@@ -212,13 +278,69 @@ class NEC:
 
     # Ch. 6-7 — sources; limited energy.
     RAPID_SHUTDOWN: Final = "690.12"
-    PV_GROUNDING: Final = "690.47"
+    PV_GROUNDING: Final = "690.47(A)"  # array EGCs reach the building's electrode system
+    PV_EGC_SIZE: Final = "690.45"  # 250.122, on an assumed OCPD per 690.9(B) if none
+    PV_ARC_FAULT: Final = "690.11"  # dc circuits at 80 V or more
+    PV_DISCONNECT: Final = "690.13"  # per 705.20; lockable open; "PV SYSTEM DISCONNECT"
+    PV_ISOLATING: Final = "690.15"
+    RAPID_SHUTDOWN_OUTSIDE: Final = "690.12(B)(1)"  # 30 V in 30 s outside the boundary
     RAPID_SHUTDOWN_ARRAY: Final = "690.12(B)(2)"
     RAPID_SHUTDOWN_INITIATION: Final = "690.12(C)"
+    RAPID_SHUTDOWN_DWELLING: Final = "690.12(C)(1)(b)"  # a dwelling's initiator is outdoors
+    RAPID_SHUTDOWN_BUILDING_LABEL: Final = "690.12(D)"  # at the service equipment
+    RAPID_SHUTDOWN_SWITCH_LABEL: Final = "690.12(D)(2)"  # on or within 3 ft of the switch
+    PV_BATHROOM: Final = "690.4(D)"  # no PV equipment or disconnect in a bathroom
+    PV_MAX_VOLTAGE_DWELLING: Final = "690.7(2)"  # 600 V on or in a one- or two-family dwelling
+    PV_VOLTAGE_COEFFICIENT: Final = "690.7(A)(1)"  # Voc at the lowest ambient, listed coefficient
+    PV_VOLTAGE_TABLE: Final = "Table 690.7(A)"  # coded in model/pv_voltage.py
+    PV_VOLTAGE_LABEL: Final = "690.7(D)"  # maximum dc voltage label
+    PV_SOURCE_CURRENT: Final = "690.8(A)(1)(a)"  # 125% of the parallel modules' Isc
+    PV_OCPD_RATING: Final = "690.9(B)"  # 125% of 690.8(A), next size up; assumed for 690.45
+    PV_OCPD_MARKING: Final = "690.9(D)"
+    PV_ISOLATING_DEVICE: Final = "690.15(B)"
+    PV_EQUIPMENT_DISCONNECT: Final = "690.15(C)"
+    PV_DISCONNECT_LOCATION: Final = "690.15(D)"
+    PV_DC_WIRING_BUILDING: Final = "690.31(D)(1)"  # over 30 V or 8 A inside: metal raceway
+    PV_DC_MARKING: Final = "690.31(D)(2)"  # "PHOTOVOLTAIC POWER SOURCE", every 10 ft
+    PV_CONNECTORS: Final = "690.33(C)"
+    PV_GFDI: Final = "690.41(B)"  # dc ground-fault detection over 30 V or 8 A
+    # Art. 440 — air-conditioning and refrigeration (hermetic motor-compressors).
+    HVAC_LISTING: Final = "440.2(A)"
+    HVAC_BATH_ZONE: Final = "440.8"  # no A/C within 3 ft x 8 ft of a tub or shower
+    HVAC_DISCONNECT_ENCLOSURE: Final = "440.11"  # lock or tool where unqualified persons reach
+    HVAC_DISCONNECT_RATING: Final = "440.12(A)(1)"  # 115% of RLA or branch selection current
+    HVAC_NAMEPLATE: Final = "440.4(B)"  # MCA and maximum OCPD marked on the equipment
+    HVAC_DISCONNECT: Final = "440.14"  # in sight, readily accessible, 110.26(A)
+    HVAC_MAX_OCPD: Final = "440.22"  # branch-circuit protection, nameplate maximum governs
+    HVAC_CONDUCTORS: Final = "440.32"  # single compressor: 125% of rated-load current
+    HVAC_COMBINATION_CONDUCTORS: Final = "440.35"  # multimotor: at least the marked MCA
+    ESS_LISTING: Final = "706.2"
+    ESS_DISCONNECT: Final = "706.15"
+    ESS_EMERGENCY_SHUTDOWN: Final = "706.15(B)"  # dwellings: outdoor initiation device
+    BATTERY_DISCONNECT: Final = "480.7(A)"  # over 60 V dc
+    BATTERY_EMERGENCY_DISCONNECT: Final = "480.7(B)"  # dwellings: outdoors, EMERGENCY DISCONNECT
     INTERCONNECTION: Final = "705.12"
     INTERCONNECTION_100PCT: Final = "705.12(B)(1)"
     INTERCONNECTION_120PCT: Final = "705.12(B)(2)(a)"
     INTERCONNECTION_LABEL: Final = "705.12(B)(2)(b)"
+    INTERCONNECTION_FEEDER: Final = "705.12(A)"  # feeder at 125% of the source's current
+    INTERCONNECTION_SUM: Final = "705.12(B)(3)"  # sum of OCPDs within the bus; label
+    SOURCE_PLAQUE: Final = "705.10"  # at the service equipment; also 690.56, 710.10, 480.7(G)
+    SUPPLY_SIDE_OCPD: Final = "705.11(C)(1)"  # dwelling: OCPD within 10 ft of conductor
+    SOURCE_DISCONNECT: Final = "705.20"
+    SOURCE_DISCONNECT_TYPE: Final = "705.20(C)"  # (3): remote-controlled opens on power loss
+    SOURCE_DISCONNECT_WARNING: Final = "705.20(F)"  # line and load both energizable open
+    DC_POLARITY_MARKING: Final = "705.25(B)"
+    SOURCE_OUTPUT_CURRENT: Final = "705.28(A)"  # rounds to the nearest ampere
+    SOURCE_CONDUCTOR: Final = "705.28(B)"  # larger of 125% and the adjusted-and-corrected value
+    SOURCE_OCPD: Final = "705.30(B)"  # at least 125% of 705.28(A)
+    SOURCE_BACKFEED_BREAKER: Final = "705.30(D)"  # not one marked line and load
+    SOURCE_HOLD_DOWN: Final = "705.30(E)"  # plug-in backfed breaker: 408.36(D) fastener
+    EGC_SIZE: Final = "250.122"
+    EGC_TABLE: Final = "Table 250.122"  # coded in model/ampacity.py
+    EGC_UPSIZED: Final = "250.122(D)"  # upsized phase conductors: EGC by circular mils
+    EGC_ALUMINUM: Final = "250.120(B)"  # no Al EGC in contact with masonry, concrete or earth
+    STANDALONE_PLAQUE: Final = "710.10"
     # Was 800.133 / 725.136; Arts. 805 and 725.136 are gone, limited energy is Arts. 720-723.
     LIMITED_ENERGY_SEPARATION: Final = "722.15(A)"
 

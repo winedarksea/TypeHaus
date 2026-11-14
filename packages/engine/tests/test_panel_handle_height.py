@@ -1,4 +1,4 @@
-"""NEC 240.24(A) / 404.8(A): no panel's highest handle above 6'-7" (body top, conservatively)."""
+"""NEC 240.24(A) / 404.10(A)(2): no panel handle above 6'-7" (body top, conservatively)."""
 
 from __future__ import annotations
 

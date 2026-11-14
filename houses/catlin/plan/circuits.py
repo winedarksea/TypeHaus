@@ -225,7 +225,7 @@ CIRCUITS = (
     # VA is zone area x 12. 15A (not 20A) since these are 4-6A loads, each zone on its own
     # circuit (not shared, to avoid two rooms behind one 5 mA GFCI trip).
     #
-    # GFCI on all three: NEC 424.44(G) requires it for bath/kitchen floor heating cable
+    # GFCI on all three: 2026 NEC 424.44(E) and 424.45(E) require it for floor heating cable
     # (CKT-FH-BATH2/BATH1 outright); the dining zone (RM-M-LIVING) is outside the letter
     # of that rule but mat manufacturers require Class A protection regardless.
     #
@@ -237,7 +237,7 @@ CIRCUITS = (
     # 120.51 (was 220.51) counts fixed electric space heating at 100% of load, so VA = W
     # here. 15 A stays despite a 1.7 A load — the
     # thermostat is a 15 A device with an integral Class A GFCI and its own box, and a
-    # dedicated home run is what Schluter recommends. NEC 424.44(G) is what makes the GFCI
+    # dedicated home run is what Schluter recommends. NEC 424.45(E) is what makes the GFCI
     # mandatory; this mat is the ONLY heat in RM-M-BATH2 (no supply register), so the
     # circuit is not optional comfort.
     Circuit(uid="CKT031AAAA", tag="CKT-FH-BATH2", slot=29, panel_ref=_PANEL, breaker_amps=15, poles=1,

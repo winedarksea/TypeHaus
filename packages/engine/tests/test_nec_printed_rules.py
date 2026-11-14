@@ -56,6 +56,9 @@ _PRINTED = {
     "GARAGE_RECEPTACLE": "210.52(G)(1)", "SERVICE_GROUNDING": "250.24",
     "GEC_SIZE": "250.66", "INTERSYSTEM_BONDING": "250.94", "WATER_PIPE_BOND": "250.104(A)",
     "LIGHTNING_BOND": "250.106", "FLOOR_BOX": "314.27(C)",
+    "BURIAL_COVER": "300.7(A)", "EMERGING_FROM_GRADE": "300.7(D)(1)",
+    "CORROSION_IN_EARTH": "300.8(A)(3)", "DAMAGE_ROOF_DECKING": "300.6(E)",
+    "RACEWAY_CONDENSATION": "300.9(A)", "OTHER_PLENUMS": "300.25(C)",
     "INTERCONNECTION_100PCT": "705.12(B)(1)", "INTERCONNECTION_120PCT": "705.12(B)(2)(a)",
     "INTERCONNECTION_LABEL": "705.12(B)(2)(b)", "LIMITED_ENERGY_SEPARATION": "722.15(A)",
     "RAPID_SHUTDOWN_INITIATION": "690.12(C)", "PCS_CONTROL_SETTING": "120.7(B)",
@@ -65,9 +68,35 @@ _PRINTED = {
     "AMPACITY_TABLE": "Table 310.16", "EVSE_CIRCUIT": "625.40", "EVSE_CONTINUOUS": "625.41",
     "EVSE_DISCONNECT": "625.43(C)", "EVSE_RECEPTACLE_GFCI": "625.54",
     "STANDARD_OCPD": "240.6(A)", "WORKING_ILLUMINATION": "110.26(D)",
+    "HVAC_LISTING": "440.2(A)", "HVAC_NAMEPLATE": "440.4(B)",
+    "HVAC_BATH_ZONE": "440.8", "HVAC_DISCONNECT_ENCLOSURE": "440.11",
+    "HVAC_DISCONNECT_RATING": "440.12(A)(1)", "HVAC_DISCONNECT": "440.14",
+    "HVAC_MAX_OCPD": "440.22", "HVAC_CONDUCTORS": "440.32",
+    "HVAC_COMBINATION_CONDUCTORS": "440.35",
+    "SPACE_HEAT_CONTINUOUS": "424.5", "SPACE_HEAT_OUTLETS": "424.4(B)",
+    "SPACE_HEAT_GFCI": "424.45(E)", "SPACE_HEAT_DISCONNECT": "424.19",
+    "SPACE_HEAT_LABEL": "424.47", "SPACE_HEAT_WALLS": "424.48",
+    "SWITCH_HEIGHT": "404.10(A)(2)", "SWITCH_BACKFEED_SIGN": "404.8(C)",
+    "SWITCH_TUB_SHOWER": "404.6(C)",
+    "BATH_ZONE": "406.9(C)(1)", "WET_RECEPTACLE": "406.9(B)(1)",
+    "CONTROLLED_RECEPTACLE": "406.11(D)", "PUSH_IN_TERMINALS": "406.10(3)",
+    "RECEPTACLE_REPLACEMENT": "406.12(D)", "CIRCUIT_DIRECTORY": "408.4(A)",
+    "SWITCHBOARD_SCCR": "408.6",
+    "ESS_LISTING": "706.2", "ESS_DISCONNECT": "706.15", "ESS_EMERGENCY_SHUTDOWN": "706.15(B)",
+    "BATTERY_DISCONNECT": "480.7(A)", "BATTERY_EMERGENCY_DISCONNECT": "480.7(B)",
     "DWELLING_SERVICE_CONDUCTORS": "310.12(A)", "DWELLING_FEEDER_CONDUCTORS": "310.12(B)",
     "BOX_FILL": "314.16(B)", "CONDUCTOR_VOLUME_TABLE": "Table 314.16(B)(4)",
     "BOX_DEPTH": "314.24(B)", "BOX_FLUSH_SETBACK": "314.20", "BOX_COVER": "314.25",
+    "PV_GROUNDING": "690.47(A)", "PV_EGC_SIZE": "690.45", "PV_ARC_FAULT": "690.11",
+    "PV_DISCONNECT": "690.13", "PV_ISOLATING": "690.15", "RAPID_SHUTDOWN": "690.12",
+    "RAPID_SHUTDOWN_OUTSIDE": "690.12(B)(1)", "RAPID_SHUTDOWN_ARRAY": "690.12(B)(2)",
+    "RAPID_SHUTDOWN_DWELLING": "690.12(C)(1)(b)", "RAPID_SHUTDOWN_BUILDING_LABEL": "690.12(D)",
+    "RAPID_SHUTDOWN_SWITCH_LABEL": "690.12(D)(2)", "INTERCONNECTION": "705.12",
+    "INTERCONNECTION_FEEDER": "705.12(A)", "INTERCONNECTION_SUM": "705.12(B)(3)",
+    "SOURCE_PLAQUE": "705.10", "SUPPLY_SIDE_OCPD": "705.11(C)(1)",
+    "SOURCE_DISCONNECT": "705.20", "SOURCE_DISCONNECT_TYPE": "705.20(C)",
+    "SOURCE_DISCONNECT_WARNING": "705.20(F)", "DC_POLARITY_MARKING": "705.25(B)",
+    "STANDALONE_PLAQUE": "710.10",
 }
 
 
@@ -282,3 +311,81 @@ def test_catlins_ev_circuit_is_individual_and_at_125_percent(catlin_model_ro):
     assert "fail" not in by and "pass" in by
     assert any("50.0 A against a 50 A breaker" in f.message for f in found)
     assert any(f.result.value == "not_applicable" for f in found)   # 625.54: hardwired
+
+
+def test_catlins_heat_pump_disconnects_are_in_plan_sight(catlin_model_ro):
+    report = run_from_model(catlin_model_ro, [], tier=Tier.ADVISORY,
+                            only="electrical.hvac_disconnect")
+    found = [f for f in report.findings if f.check_id == "electrical.hvac_disconnect"]
+    by = {f.element_tags[0]: f.result.value for f in found}
+    assert by == {"EQ-M-HP1-OD": "pass", "EQ-M-HP2-OD": "pass", "EQ-M-HP3-OD": "pass",
+                  "EQ-S-HP1-AH": "unknown"}
+
+
+def test_catlins_space_heat_circuits_carry_125_percent_and_gfci(catlin_model_ro):
+    report = run_from_model(catlin_model_ro, [], tier=Tier.ADVISORY,
+                            only="electrical.space_heat_circuit")
+    found = [f for f in report.findings if f.check_id == "electrical.space_heat_circuit"]
+    assert len(found) == 8 and all(f.result.value == "pass" for f in found)
+    assert sum("GFCI" in f.message for f in found) == 2   # both floor-heat cables
+
+
+def test_bath_zone_reports_the_bask_outlet_and_never_fails(catlin_model_ro):
+    report = run_from_model(catlin_model_ro, [], tier=Tier.ADVISORY,
+                            only="electrical.bath_receptacle_zone")
+    found = [f for f in report.findings if f.check_id == "electrical.bath_receptacle_zone"]
+    assert found and all(f.result.value == "unknown" for f in found)
+    assert any("ED-M-BATH2-TUB-RC" in f.message for f in found)
+
+
+def test_no_heat_pump_unit_is_in_a_bath_zone(catlin_model_ro):
+    report = run_from_model(catlin_model_ro, [], tier=Tier.ADVISORY,
+                            only="electrical.bath_hvac_zone")
+    found = [f for f in report.findings if f.check_id == "electrical.bath_hvac_zone"]
+    assert [f.result.value for f in found] == ["pass"]
+
+
+# --- Article 300 (renumbered in 2026; docs/nec-2026-paraphrase-300.md) -------------------------
+
+
+def test_article_300_numbers_and_table_300_7_a_cells():
+    from typehaus.model import burial
+    from typehaus.model.burial import (
+        TABLE_300_7_A,
+        circuit_columns,
+        cover_in,
+        min_cover_in,
+        shallowest_in,
+    )
+    from typehaus.model.nec import NEC
+
+    assert (NEC.PHYSICAL_DAMAGE, NEC.UNDERGROUND, NEC.FIRESTOPPING, NEC.RACEWAY_BENDS) == (
+        "300.6", "300.7", "300.23", "300.24")
+    C, L = burial.BurialColumn, burial.BurialLocation
+    assert NEC.BURIAL_TABLE == "Table 300.7(A)" and NEC.RACEWAY_SEALS == "300.7(G)"
+    assert [min_cover_in(L.ALL_OTHER, c) for c in C] == [24, 6, 18, 12, 6]
+    assert [min_cover_in(L.TRENCH_UNDER_CONCRETE, c) for c in C] == [18, 6, 12, 6, 6]
+    assert [min_cover_in(L.UNDER_BUILDING, c) for c in C] == [0] * 5
+    assert [min_cover_in(L.UNDER_SLAB, c, in_raceway=False) for c in C] == [18, 4, 4, 6, 6]
+    assert [min_cover_in(L.UNDER_SLAB, c) for c in C] == [18, 4, 4, 4, 4]
+    assert [min_cover_in(L.UNDER_ROAD, c) for c in C] == [24] * 5
+    assert [min_cover_in(L.DWELLING_DRIVEWAY, c) for c in C] == [18, 18, 18, 12, 18]
+    assert [min_cover_in(L.AIRPORT, c) for c in C] == [18] * 5
+    assert len(TABLE_300_7_A) == 7 and all(len(row) == 5 for row in TABLE_300_7_A.values())
+    # Note 4: a 120 V, 20 A GFCI circuit in EMT takes Column 4's 12 in.; 240 V stays at 18.
+    gfci = circuit_columns("emt", volts=120, amps=20, gfci=True)
+    assert shallowest_in(L.ALL_OTHER, gfci) == (12, C.RESIDENTIAL_GFCI)
+    assert shallowest_in(L.ALL_OTHER, circuit_columns("emt", volts=240, amps=50, gfci=True)) \
+        == (18, C.RACEWAY)
+    # Note 1: from the top of the run to the top of the cover.
+    assert cover_in(-1.2, -0.85) == pytest.approx(0.35 / 0.0254)
+
+
+def test_catlins_buried_ev_and_v2h_legs_miss_18_in_under_the_walk(catlin_model_ro):
+    report = run_from_model(catlin_model_ro, [], tier=Tier.ADVISORY, only="mep.conduit_burial")
+    found = {f.element_tags[0]: f for f in report.findings
+             if f.check_id == "mep.conduit_burial" and f.element_tags}
+    for tag, cover in (("CD-B-GAP-EV", "14.2"), ("CD-B-V2H-GAP", "13.8")):
+        assert found[tag].result.value == "advisory" and f"cover {cover} in." in found[tag].message
+        assert "Column 3" in found[tag].message and "6 in. the slab row needs" in found[tag].message
+    assert found["CD-B-SPA"].result.value == "unknown"

@@ -20,6 +20,8 @@ rules.
 
 from __future__ import annotations
 
+import math
+
 from typehaus.checks._authoring import by_result, not_applicable
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
@@ -31,18 +33,30 @@ _BUS_ALLOWANCE = 1.2
 _OUTPUT_FACTOR = 1.25
 
 
-def _source_term(ctx: CheckContext, circuit) -> tuple[float, str]:
-    """(amps, how) for one source circuit: 125% of the inverter's rated output current, or
-    the breaker rating where no inverter on it declares ``inverter_kw_continuous``."""
+def _inverter_output(ctx: CheckContext, circuit) -> tuple[float, float] | None:
+    """(exact, rounded) rated output current of the inverter on ``circuit``, or ``None``.
+    705.28(A) rounds a source current to the nearest ampere, dropping fractions under 0.5."""
     types = {t.tag: t for t in ctx.plan.library.equipment_types}
     volts = 240.0 if circuit.poles >= 2 else 120.0
     kw = sum(float(getattr(types.get(e.type_ref or ""), "inverter_kw_continuous", None) or 0.0)
              for e in ctx.plan.all_elements()
              if e.element_kind == "Equipment" and getattr(e, "circuit", None) == circuit.tag)
-    if kw > 0:
-        output = kw * 1000.0 / volts
-        return _OUTPUT_FACTOR * output, f"125% of {output:.1f}A output on {circuit.tag}"
+    if kw <= 0:
+        return None
+    exact = kw * 1000.0 / volts
+    return exact, float(math.floor(exact + 0.5))
+
+
+def _source_term(ctx: CheckContext, circuit) -> tuple[float, str]:
+    """(amps, how) for one source circuit: 125% of the inverter's rated output current, or
+    the breaker rating where no inverter on it declares ``inverter_kw_continuous``."""
+    found = _inverter_output(ctx, circuit)
+    if found:
+        exact, output = found
+        return _OUTPUT_FACTOR * output, (f"125% of {output:g}A output on {circuit.tag}, "
+                                         f"{exact:.1f}A rounded per {NEC.SOURCE_OUTPUT_CURRENT}")
     return float(circuit.breaker_amps), f"{circuit.tag}'s breaker for 125% of output"
+
 
 # NEC 690.12(B)(2) — the controlled-conductor limit inside the array boundary. A module
 # group whose summed cold Voc stays under this needs no per-module shutdown device; a group
@@ -59,7 +73,8 @@ def interconnection_busbar(ctx: CheckContext) -> list[Finding]:
     240.4 sizing keeps at or above that 125%. (B)(1) is tried first and has no placement
     condition; (B)(2)(a)'s 120% needs the source at the far end of the bus from the main
     and the (B)(2)(b) label, neither of which the model can show, so the PASS says so.
-    (B)(3) (sum of all OCPDs) is not tried.
+    (B)(3) (sum of all OCPDs), (B)(4)-(6) and (A) feeders are not tried. Printed text read
+    2026-11-14: the arithmetic here is (B)(1)/(B)(2)(a) as printed.
 
     The main breaker term is the panel's OWN ``service_amps`` where its type states one —
     705.12 measures a backfeed against the main ahead of the bus, and on a Class 320
@@ -110,7 +125,7 @@ def interconnection_busbar(ctx: CheckContext) -> list[Finding]:
         # The panel's own main outranks the service size: see the docstring.
         main_amps = float(getattr(product, "service_amps", None) or service_amps or 0.0) or None
         terms = [_source_term(ctx, c) for c in group]
-        source_amps = round(sum(amps for amps, _ in terms), 1)
+        source_amps = round(sum(amps for amps, _ in terms), 2)
         basis = "; ".join(how for _, how in terms)
         tags = tuple([panel_ref] + sorted(c.tag for c in group))
         if bus_amps is None:
@@ -130,7 +145,11 @@ def interconnection_busbar(ctx: CheckContext) -> list[Finding]:
                 tags, code))
             continue
         allowance = bus_amps * _BUS_ALLOWANCE
-        total = round(float(main_amps) + source_amps, 1)
+        spaces = getattr(product, "spaces", None)
+        slots = ", ".join(str(c.slot) for c in sorted(group, key=lambda c: c.tag) if c.slot)
+        where = f" (slot {slots} of {spaces} spaces)" \
+            if slots and spaces else ""
+        total = round(float(main_amps) + source_amps, 2)
         head = f"panel {panel_ref}: {main_amps:g}A main + {source_amps:g}A source ({basis})"
         if total <= bus_amps + 1e-9:
             out.append(by_result(
@@ -142,7 +161,7 @@ def interconnection_busbar(ctx: CheckContext) -> list[Finding]:
                 cid, Result.PASS,
                 f"{head} = {total:g}A of the {allowance:g}A allowed on a {bus_amps}A bus "
                 f"({NEC.INTERCONNECTION_120PCT}) — {allowance - total:g}A spare; holds only "
-                f"with the source breaker at the opposite end from the main and the "
+                f"with the source breaker at the opposite end from the main{where} and the "
                 f"{NEC.INTERCONNECTION_LABEL} label, neither modeled", tags, code))
         else:
             out.append(by_result(
@@ -151,6 +170,51 @@ def interconnection_busbar(ctx: CheckContext) -> list[Finding]:
                 f"{allowance:g}A", tags, code,
                 f"reduce the source by {total - allowance:g}A, or use a supply-side "
                 "connection"))
+    return out
+
+
+@check(Tier.CODE, "code.NEC_705_30_source_ocpd")
+def source_ocpd(ctx: CheckContext) -> list[Finding]:
+    """NEC 705.30(B) — a source circuit's OCPD is at least 125% of its 705.28(A) current.
+
+    The floor is graded: 125% of the inverter's rated output, rounded to the ampere first
+    (705.28(A)), may be set to the next standard size (240.4(B)). The ceiling, that the
+    breaker does not exceed the conductor's ampacity or the inverter's maximum OCPD, needs a
+    conductor size on the circuit and a maximum on the equipment type; neither is authored,
+    so a second finding says UNKNOWN. 705.30(D) and (E) (breaker marking, the 408.36(D)
+    hold-down) are not modeled.
+    """
+    cid, code = "code.NEC_705_30_source_ocpd", cite(NEC.SOURCE_OCPD)
+    sources = sorted((c for c in ctx.plan.library.circuits if c.source), key=lambda c: c.tag)
+    if not sources:
+        return [not_applicable(cid, "no circuit in the schedule is a power source, so there "
+                                    "is no source OCPD to size", (), code)]
+    from typehaus.model.ampacity import next_standard_rating
+    out: list[Finding] = []
+    for circuit in sources:
+        found = _inverter_output(ctx, circuit)
+        tags = (circuit.tag,)
+        if found is None:
+            out.append(by_result(
+                cid, Result.UNKNOWN, f"{circuit.tag} is a source but no inverter on it declares "
+                f"inverter_kw_continuous, so its {NEC.SOURCE_OUTPUT_CURRENT} current is unknown",
+                tags, code, "declare inverter_kw_continuous on the inverter's type"))
+            continue
+        exact, rounded = found
+        floor = _OUTPUT_FACTOR * rounded
+        standard = next_standard_rating(floor)
+        head = (f"{circuit.tag}: {circuit.breaker_amps}A breaker against 125% x {rounded:g}A "
+                f"({exact:.1f}A rounded) = {floor:g}A, standard size {standard}A")
+        if circuit.breaker_amps + 1e-9 < floor:
+            out.append(by_result(cid, Result.FAIL, f"{head}; the breaker is under the floor",
+                                 tags, code, f"use at least a {standard}A breaker"))
+        else:
+            out.append(by_result(cid, Result.PASS, f"{head}; meets the floor", tags, code))
+        out.append(by_result(
+            cid, Result.UNKNOWN, f"{circuit.tag}'s {circuit.breaker_amps}A breaker is not "
+            "checked against the conductor's ampacity (240.4) or the inverter's maximum OCPD: "
+            "no conductor size or maximum OCPD is authored", tags, code,
+            "author the circuit's conductor size and the inverter type's maximum OCPD"))
     return out
 
 
@@ -175,6 +239,10 @@ def rapid_shutdown(ctx: CheckContext) -> list[Finding]:
     are both outcomes the model can produce, not postures the check is written around. A
     module reached before any device on its string is in no group at all and reports as
     uncontrolled.
+
+    Read against the printed 690.12(B)(2): the 80 V limit is right. Not graded: (B)(1)'s 30 V
+    within 30 s outside the array boundary (no field for a shut-down module's output), the
+    PVHCS alternative and (A)(2) inverter outputs. See ``docs/nec-2026-paraphrase-690-705-710.md``.
     """
     cid, code = "code.NEC_690_12_rapid_shutdown", cite(NEC.RAPID_SHUTDOWN_ARRAY)
     panels = list(ctx.model.solar_panels)

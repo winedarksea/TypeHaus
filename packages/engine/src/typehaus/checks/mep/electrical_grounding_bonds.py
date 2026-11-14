@@ -167,8 +167,9 @@ def lightning_bond(ctx: CheckContext) -> list[Finding]:
 
 @check(Tier.CODE, PV_CID)
 def pv_grounding(ctx: CheckContext) -> list[Finding]:
-    """690.47 -- the array's bond reaches the service's system; a down-lead lands on an
-    electrode in it."""
+    """690.47(A) -- the array's bond reaches the service's system; a down-lead lands on an
+    electrode in it. Printed text read 2026-11-14: the array EGCs join the building's
+    electrode system (Art. 250 Part VII) on top of 690.43(C); size is not graded (690.45)."""
     code = cite(NEC.PV_GROUNDING)
     panels = {el.tag for el in ctx.plan.elements_of_kind("SolarPanel")}
     if not panels:

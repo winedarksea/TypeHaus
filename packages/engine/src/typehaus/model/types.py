@@ -1089,6 +1089,8 @@ class ElectricalDeviceType(FurnitureType):
     surge_ka: float | None = None
     # A JUNCTION_BOX type that is the intersystem bonding termination (NEC 250.94).
     ibt: bool = False
+    # A switch that initiates PV rapid shutdown (NEC 690.12(C)); a dwelling's is outdoors.
+    rsd_initiator: bool = False
 
 
 class LuminaireType(ElectricalDeviceType):

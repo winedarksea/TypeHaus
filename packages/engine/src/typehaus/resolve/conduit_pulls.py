@@ -1,7 +1,7 @@
-"""Bend degrees between pull points — NEC 358.26 / 352.26 / 344.26 / 342.26 / 362.26.
+"""Bend degrees between pull points — NEC 300.24 and 358.26 / 352.26 / 344.26 / 342.26 / 362.26.
 
 Every raceway article says the same thing: no more than the equivalent of four quarter
-bends (360° total) between pull points, and 2026 300.24 holds a mixed run to it too. This
+bends (360° total) between pull points, and 2026 300.24 states it for any combination. This
 module measures it; ``checks/mep/conduit_bends.py`` grades it, and it lives in ``resolve``
 so a router may read it too.
 

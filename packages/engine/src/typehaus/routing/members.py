@@ -80,6 +80,12 @@ class Penetrations:
     riser_cover: Any = None
     #: Blocked bearing-line bays (``routing/bearing_bays``); None grades none.
     bays: Any = None
+    #: A flat duct's half-height where it is not ``radius_m``.
+    z_radius_m: float | None = None
+
+    @property
+    def z_r(self) -> float:
+        return self.radius_m if self.z_radius_m is None else self.z_radius_m
 
     def __init__(self, model: ResolvedModel, bbox: tuple[float, float, float, float],
                  radius_m: float, *, cavity_radius_m: float | None = None,
@@ -93,7 +99,7 @@ class Penetrations:
         from typehaus.routing.holes import run_lines
 
         self.radius_m = radius_m
-        self.z_r = radius_m if z_radius_m is None else z_radius_m
+        self.z_radius_m = z_radius_m
         self.cavity_radius_m = cavity_radius_m if cavity_radius_m is not None else radius_m
         roles = r602_6_roles(model)
         self.walls: dict[tuple[str, int], list[_Wall]] = {}

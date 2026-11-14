@@ -1,8 +1,8 @@
-"""CODE-tier electrical rule — the highest breaker handle of a panel, NEC 240.24(A) / 404.8(A).
+"""CODE-tier electrical rule — the highest breaker handle of a panel, NEC 240.24(A) / 404.10(A)(2).
 
 NEC 240.24(A): overcurrent devices readily accessible, installed so the centre of the grip
 of the operating handle, in its highest position, is not more than 2.0 m (6 ft 7 in.)
-above the floor or working platform; 404.8(A) says the same of switches, including a
+above the floor or working platform; 404.10(A)(2) says the same of switches, including a
 panel's main. https://www.ecmweb.com/national-electrical-code/code-basics/article/20897104/
 and https://www.ecmweb.com/national-electrical-code/article/55125351/ (2017 NEC text; no
 2026 change to (A) reported — MN DLI 2026 NEC FAQ adds only a 240.24(E) exception).

@@ -47,6 +47,7 @@ PRODUCT = "Aptos DNA-108-BF10-410W (datasheet 06/2025), 67.7 x 44.6 x 1.3 in"
 
 # --- module electrical identity -----------------------------------------------------
 PANEL_VOC = 37.67
+PANEL_ISC = 13.11  # datasheet 06/2025, STC
 VOC_TEMP_COEFF_PER_C = -0.0024
 # Site design low. -30 degC is the cold-side design temperature used for the array's
 # voltage correction — colder than the ASHRAE extreme annual mean minimum for the Twin
@@ -112,7 +113,7 @@ def _build():
                 origin=pt(ft(origin_x), ft(origin_y)),
                 width=inch(PANEL_ALONG_IN), length=inch(PANEL_DEPTH_IN),
                 thickness=inch(PANEL_T_IN), watts=PANEL_WATTS, product=PRODUCT,
-                string=f"STR-{side}", voc=PANEL_VOC, voc_cold=PANEL_VOC_COLD,
+                string=f"STR-{side}", voc=PANEL_VOC, voc_cold=PANEL_VOC_COLD, isc=PANEL_ISC,
                 rsd=PANEL_RSD,
             ))
             # Both clamp columns sit on seams at least six inches inside the module ends;

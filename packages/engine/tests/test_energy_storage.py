@@ -320,3 +320,27 @@ def test_the_alarm_kinds_the_detection_rule_looks_for_exist():
     """A guard on the enum this rule reads: renaming either member would turn the R328.7
     check into one that can never pass, silently."""
     assert AlarmKind.SMOKE and AlarmKind.HEAT and AlarmKind.COMBO
+
+
+# --- NEC 690.12(C)(1)(b): a dwelling's initiation device is outdoors -------------------
+
+def test_the_initiator_is_outdoors(catlin_plan, catlin_model):
+    from typehaus.checks.mep.rapid_shutdown_initiation import rsd_initiation_outdoors
+
+    [f] = rsd_initiation_outdoors(_context(catlin_plan, catlin_model))
+    assert f.result is Result.PASS and f.element_tags == ("ED-M-RSD-INIT",)
+
+
+def test_an_indoor_initiator_fails_and_an_untyped_one_is_unknown(
+        catlin_plan, catlin_model, monkeypatch):
+    from typehaus.checks.mep import rapid_shutdown_initiation as mod
+
+    monkeypatch.setattr(mod, "room_owning", lambda *args: object())
+    assert [f.result for f in mod.rsd_initiation_outdoors(
+        _context(catlin_plan, catlin_model))] == [Result.FAIL]
+    types = tuple(t.model_copy(update={"rsd_initiator": False}) for t in
+                  catlin_plan.library.electrical_device_types)
+    plan = catlin_plan.model_copy(update={
+        "library": catlin_plan.library.model_copy(update={"electrical_device_types": types})})
+    assert [f.result for f in mod.rsd_initiation_outdoors(
+        _context(plan, catlin_model))] == [Result.UNKNOWN]

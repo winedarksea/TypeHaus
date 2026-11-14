@@ -1404,6 +1404,7 @@ class ResolvedSolarPanel:
     string: str = ""
     voc: float | None = None
     voc_cold: float | None = None
+    isc: float | None = None
     rsd: bool = False
 
 

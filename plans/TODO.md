@@ -235,6 +235,46 @@ That would let subagents compare candidates without repeatedly reading geometry 
     #4 Ufer) meet 250.66(A)/(B) on every basis. Open: the lateral's size (Xcel/electrician).
   - The 4/0 Al SER feeders (180 A at 75 degC) behind the 200 A mains are permitted by 240.4(B)
     (Table 240.6(A): no 180 A, 200 A next); 310.12(B) cannot size them. Loads 136 A, 121 A.
+  - **ESS, Articles 706/480 (read; `docs/nec-2026-paraphrase-480-706.md`), owner questions:**
+    (1) 706.15(B) wants an outdoor initiation device that stops all ESS export; `ED-M-RSD-INIT`
+    is the candidate, but `backup_power.md` section 8 says it opens the ESS only "with supported
+    EG4 batteries in closed loop", unverified, and not whether the load port (backup panel) and
+    battery contactor drop too: ask EG4. (2) 480.7(B) reads, for a dwelling, as an outdoor
+    battery disconnect or remote control labelled EMERGENCY DISCONNECT with no 60 V condition
+    (the ~51 V WallMount is under 60 V, so (A) asks for no dc disconnect): AHJ question; if
+    it applies, `ED-M-RSD-INIT` could be the remote control (it must open the battery) and
+    must then carry the EMERGENCY DISCONNECT label, not only "PV rapid shutdown". (3) 706.15(D)
+    wants a disconnect within sight of the separate, field-serviced battery: none is modelled;
+    is the WallMount's own breaker it (EG4's listing)? Also unmodelled: 706.15(C) "ENERGY
+    STORAGE SYSTEM DISCONNECT" label, 480.7(F) nominal-voltage label near the battery,
+    480.10(E) door hardware if the AHJ calls `RM-B-ESS` a battery room. Battery voltage is not
+    authored (14.3 kWh / 280 Ah is about 51 V). **Printed 690/705 (2026-11-14) does not settle
+    (1) or (2):** 690.12(C)(2)(a) makes "off" shut down the PV systems only; if a remote-operated
+    disconnect is ever put under that switch, 705.20(C)(3) wants one that opens by itself on loss
+    of control power (not a shunt trip); 705.20(F) and 404.8(C) are the backfeed warnings;
+    705.10/480.7(G) put any battery disconnect's location on the service plaque.
+  - **Art. 440 (read; `docs/nec-2026-paraphrase-440.md`):** `electrical.hvac_disconnect` passes
+    the three outdoor units' disconnects (in plan sight) and is UNKNOWN for `EQ-S-HP1-AH`
+    (no disconnect on `CKT-HP1-AH`: integral, or a service switch in the attic?). HP2's and
+    HP3's nameplate MCA and maximum OCPD (30 A, 15 A breakers) are not authored: add
+    `min_circuit_ampacity_a` and `max_overcurrent_a` to the equipment types from the Gree
+    submittals to grade 440.4(B)/440.22/440.35. 440.8 bath zone: `electrical.bath_hvac_zone`
+    passes (nearest unit 6.1 ft). Owner questions: lockable or tool-opened enclosures for the
+    outdoor `ED-M-HP1/2/3-DISC` (440.11); give `ED-T-DISCONNECT-3R` an ampere rating for
+    440.12(A)(1) (115% of the MCA/RLA); available fault current for 440.10 (440.4(B) Ex. 3
+    exempts dwellings from marking a rating). No room A/C or generator exists (Part VII, 445).
+  - **Art. 424 (read; `docs/nec-2026-paraphrase-424.md`):** `electrical.space_heat_circuit`
+    passes all eight heating circuits (125% and GFCI on both floor-heat cables). Owner
+    questions: lock-off or service-disconnect reading for the heating breakers (424.19), the
+    Schluter thermostat as disconnect (424.20(A)), and a 424.47 label on `ED-B-PANEL` slots 29
+    and 33. The GFPE floor-heat item is closed (2026 asks for GFCI).
+  - **Arts. 404/406/408 (partial; `docs/nec-2026-paraphrase-404-408.md`):**
+    `electrical.bath_receptacle_zone` is UNKNOWN for `ED-M-BATH2-TUB-RC` (the Bask outlet,
+    inside the 3 ft zone, 406.9(C)(1): AHJ question) and `ED-A-STUBATH-GFCI` (is the shower
+    glass a fixed barrier?). `ED-S-PLANT-HEAT-RC` is on a D315S relay: mark it "controlled"
+    (406.11(D)). Receptacle types need `weather_resistant`/`in_use_cover` fields for
+    406.9(B)(1). 408.6 needs an available fault current at the service and SCCRs for the
+    panels (none authored); 404.8(C) backfeed signs (ESS/V2H) are unmodelled.
   - 625.43(C): `CKT-EV-1450`'s only disconnect is its breaker in the basement, remote from the
     EVSE; a plaque on the unit locating it is not modelled (`electrical.evse_circuit`
     advisory). 625.40/.41/.54 pass or are N/A. A V2H charger (`CD-B-V2H-SPARE`) needs 625.48
@@ -273,12 +313,27 @@ That would let subagents compare candidates without repeatedly reading geometry 
     `model/nec.py` row or put it in `UNCONFIRMED`. Numbers not yet in `nec.py` are 2023
     numbers, to be confirmed.
     - Cited and graded: 110.26(A)/(E)(1) (`electrical_panel_space`); 215.18 (SPD);
-      240.24(A), 404.8(A) (`electrical_panel_height`); 300.24 and 352/358/362.26
-      (`conduit_bends`); 334.15(B)/(C); 690.12 and (B)(2)
-      (`power_sources`); 210.70(A)(3); 130.2 (PCS listing).
-    - Cited, read only in post-publication sources: 690.47.
+      240.24(A), 404.10(A)(2) (`electrical_panel_height`); 300.24 and 352/358/362.26
+      (`conduit_bends`); 300.6, 300.7(A)-(G), 300.8(A)(3), 300.9(A) (`conduit_burial`, `conduit_damage`); 334.15(B)/(C); 210.70(A)(3); 130.2 (PCS listing).
+      (690.12, 690.47, 705.10, 705.20 and 710.10 are read: `docs/nec-2026-paraphrase-690-705-710.md`.)
+    - PV, interconnection and stand-alone, **still to read in print**: 690.1-690.9(A)
+      (incl. 690.7 voltage, 690.8 circuit current), 690.13-690.43 apart from what is read
+      (690.15(B) onward, 690.31, 690.41, the start of 690.43), 705.1-705.4, the end of
+      705.25(C), 705.28 (circuit sizing), 705.30 (overcurrent), 705.40 onward, 710.12 onward.
+    - **Owner questions, Articles 690/705 (2026-11-14):** (1) EG4: does opening the 12kPV RSD
+      loop stop the load port and the battery contactor too (706.15(B))? (2) 480.7(B): AHJ
+      reading, and can `ED-M-RSD-INIT` be the emergency disconnect's remote control? (3) EG4:
+      with `CKT-ESS-GRID` open, can the grid-port terminals stay energized (705.20(F) warning)?
+      (4) 705.12(B)(2)(a): `CKT-ESS-GRID` is at slot 40 of 54 with ten spaces below it; is that
+      "the opposite end" to the AHJ, or move it (the last row cannot take a 2-pole)? 241.7 A
+      of 270 A. (5) Author the labels (690.12(D) building label at `ED-M-METER`, the (D)(2)
+      switch wording, the 705.10 plaque with its emergency phone, the 705.12(B)(2)(b) warning
+      at `ED-B-PANEL`)? None is modelled. (6) Which device is the 690.13 PV system disconnect
+      (the 12kPV's DC switch: lockable, marked)? Does the 12kPV carry a listed PV arc-fault
+      interrupter (690.11, strings 383.8 V cold)? What is each module receiver's listed
+      shutdown voltage (690.12(B)(1) wants 30 V in 30 s outside the array boundary)?
     - Cited but used by nothing (read them, or drop the constant): 120.5(C),
-      120.41, 342.26, 344.26, Table 352.30, 358.30, 362.30, Art. 408, 410.10(D), 424.5, Ch. 9
+      120.41, 342.26, 344.26, Table 352.30, 358.30, 362.30, 410.10(D), Ch. 9
       Table 4 and Note 2.
     - Not cited, but Catlin triggers them:
       - Art. 680 spa (read 680.1-680.27(A), 680.34-680.54; 680.27(B)-680.33 unread):
@@ -292,21 +347,35 @@ That would let subagents compare candidates without repeatedly reading geometry 
         short-circuit rating, so an indoor service disconnect stays UNKNOWN. Also ungraded:
         230.70(B) marking and (D) plaque for the PV/ESS disconnects, 230.71 count, 230.82
         supply-side list, 230.90 Ex. 5, and 225.30/225.31/225.33-225.39 (see the garage bullet).
-      - Art. 706 and 480: the ESS.
-      - Art. 424: GFPE for floor-heating cables (`FloorHeat`).
-      - The sauna heater's article and listing rule.
-      - 440.14 and the nameplate MOCP for heat pumps and heads; 210.63 (service receptacle).
+      - The sauna heater's article and listing rule: not in Article 424 as printed, still
+        unlocated.
+      - 210.63 (service receptacle). Art. 440 is read in full; Article 445 only to 445.12(B).
       - 422.13 and 422.31: water heater and fastened appliances.
-      - 406.12 tamper-resistant and 406.9(B) weather-resistant/in-use covers.
-      - 300.4 (framing setback, nail plates) and 300.5 (burial depth).
-      - 210.70(A)(2) stair switching, 408.4 circuit directory, 210.19/210.20 continuous
-        loads.
+      - The opening of 406.9(B), the rest of 406.14 and 408.4, and the 406.30(C) Ex.
+        electronic-switch rule: unread. A page prints switch marking and electronic switches as
+        406.48/406.50 while 404.20 prints the same marking text: the numbering is unresolved.
+      - Article 300 (read 2026-11-14, `docs/nec-2026-paraphrase-300.md`; renumbered: damage is
+        300.6, underground 300.7, firestop 300.23): **still to read** 300.2-300.3; 300.9(A)(2)
+        through 300.21 (support, boxes at splices, free conductor length, securing, raceway
+        fill); 300.25(C) onward; 358.10 (Table 300.7(A) Note 6) and the per-raceway
+        bend sections. **Owner questions:** (1) `SL-WK-C` carries no vehicles? With its west edge
+        3-3.5 in. short of the 6 in. the walk row needs, the buried EV (`CD-B-GAP-EV`, 14.2 in.
+        under the walk) and V2H (`CD-B-V2H-GAP`, 13.8 in.) legs read 18 in. required: widen the
+        walk, move the runs east, or bury 4 in. deeper? (2) buried EMT: which corrosion
+        protection, which conductor type (wet-rated), and is the V2H pipe Schedule 80 throughout
+        (the model holds only `pvc`)? (3) is `CD-B-SPA`, cast into `W-SG-W1`, acceptable to the
+        inspector? (4) a seal at the warm end of each raceway leaving the house (300.9(A)(1))?
+        (5) a modelled fire-resistance-rated assembly for 300.23 (ESS closet is an owner standard).
+      - 210.70(A)(2) stair switching, 210.19/210.20 continuous loads.
 - **Rapid-shutdown initiator** (`ED-M-RSD-INIT`, `backup_power.md` §8): confirm the IMO
   ESS-RSD01's UL 508i listing and file number, and its rating (IMO 48 VDC vs the Fronius
   42,0440,0338 listing's 96 VDC) before buying; confirm with EG4 what initiates shutdown on the
   12kPV and whether the RSD loop is normally closed (wiring guide) or open (QSG v1.3.2), then
   wire to the delivered board; route the Class 2 pair from the `CD-M-RSD-INIT` stub to
-  `EQ-B-ESS-INV` (fished by the electrician; `haus route` found no lane); label the switch.
+  `EQ-B-ESS-INV` (fished by the electrician; `haus route` found no lane); label the switch
+  with the printed 690.12(D)(2) wording, on or within 3 ft of it. Printed 690.12(C)(1)(b) is
+  read and graded (`code.NEC_690_12_initiation`, PASS: outdoors); (C)(1)(a) wants a kind the
+  12kPV instructions name, and the 690.12(D) building label at `ED-M-METER` is also owed.
 - `ED-B-PLAY-N-RC2`..`RC5` (theater, 2026-11-13) were placed to close the 210.52(A) gaps
   between the sconces and tapestries; confirm against the AV and seating layout.
 - `test_electrical_circuits.py`: `test_catlin_panel_schedule_is_derived`,

@@ -174,3 +174,16 @@ def test_rail_blocks_with_no_hard_prisms():
     b = np.array([[3.0, 5.0, 0.1], [3.0, 7.0, 0.1]])
     blocked, _ = edges_state(space, a, b, np.array([0, 0]))
     assert blocked.tolist() == [True, False]
+
+
+def test_a_recessed_can_housing_is_a_hard_prism_over_its_body(catlin_model_ro):
+    """``electrical.ceiling_can_framing`` grades the housing against runs; the router keeps out."""
+    from typehaus.resolve.can_housings import can_housings
+    from typehaus.routing.obstacles import hard_prisms
+
+    tag, ring, z0, z1 = next(h for h in can_housings(catlin_model_ro) if h[0] == "ED-B-STAIR-CAN1")
+    prism = next(p for p in hard_prisms(catlin_model_ro, 0.02) if p.tag == tag)
+    cx = sum(x for x, _ in ring) / len(ring)
+    cy = sum(y for _, y in ring) / len(ring)
+    assert prism.kind == "can" and prism.blocks((cx, cy), (z0 + z1) / 2.0)
+    assert prism.z0_m < z0 and prism.z1_m > z1

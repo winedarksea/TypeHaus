@@ -1128,6 +1128,9 @@ class SolarPanel(Element):
     # rapid-shutdown grouping may be computed from (rated Voc understates it badly in MN).
     voc: float | None = None
     voc_cold: float | None = None
+    # Short-circuit current at STC (datasheet); 690.8(A)(1)(a) takes 125% of it, 690.45 sizes
+    # the array EGC from the assumed OCPD that gives.
+    isc: float | None = None
     # A SunSpec rapid-shutdown receiver is fitted to this module. False on a
     # module means it must be covered by a group whose summed ``voc_cold`` stays under the
     # 690.12 limit.
