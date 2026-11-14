@@ -452,7 +452,8 @@ SECOND_BRANCH_DRAINS = [
     # 10 1/2" arm west in the 400"..412.9" truss bay to a sanitary tee at x=38", inside
     # W-S-CH-W's cavity (moved 4 1/2" east 2026-11-08 for exactly this) and 1 1/2" east of
     # FO-S-ERV-CHASE's LVL header, which nothing bores now. Straight down through
-    # FO-S-BATH1-TUB-DRAIN into RM-M-MECH's ceiling, south under it and the mud closet's, east
+    # FO-S-BATH1-TUB-DRAIN into RM-M-MECH's ceiling, south under it (boxed across the foyer by
+    # SF-M-MUD-DRAIN) and the mud closet's, east
     # to x=5'-0" and onto the water closet's last drop at (5'-0", 27'-1 1/2"), a side entry.
     # The tee is the TOP of the drop, so PR-S-BATH1-SH-VENT rises plumb from it (UPC 905.2,
     # MN 905.3), 0.25" under the weir (905.5). 2" past a 1 1/2" trap, for Table 703.2

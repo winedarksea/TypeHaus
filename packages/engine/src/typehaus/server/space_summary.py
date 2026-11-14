@@ -38,7 +38,7 @@ def build_space_summary(model: ResolvedModel) -> dict[str, object]:
         row["usable_sf"] += usable
         row["low_head_sf"] += max(area - usable, 0.0)
         row["conditioned_sf" if room.conditioned else "unconditioned_sf"] += area
-        if room.occupancy == "storage":
+        if room.occupancy in ("storage", "closet"):
             row["storage_sf"] += usable
     furniture_types = {item.tag: item for item in model.plan.library.furniture_types}
     for storey in model.plan.storeys:

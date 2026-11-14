@@ -24,8 +24,8 @@ from typing import Any
 _ROOM_PENALTY_PER_FT: dict[str, float] = {
     "bedroom": 96.0, "media": 96.0, "living": 72.0, "dining": 72.0, "office": 72.0, "hobby": 72.0,
     "study_closet": 72.0, "kitchen": 48.0, "bathroom": 48.0, "laundry": 36.0,
-    "hallway": 24.0, "stair": 24.0,
-    "utility": 0.0, "mechanical": 0.0, "garage": 0.0, "storage": 0.0,
+    "hallway": 24.0, "foyer": 24.0, "stair": 24.0,
+    "utility": 0.0, "mechanical": 0.0, "garage": 0.0, "storage": 0.0, "closet": 0.0,
     "unconditioned": 0.0,
 }
 

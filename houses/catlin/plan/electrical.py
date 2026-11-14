@@ -2259,7 +2259,7 @@ NEC_FILL_MAIN = [
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # y is on W-M-STOS's north face. It's inside RM-M-MUD-CLOSET, kept on purpose: NEC
     # 410.16 restricts closet luminaires, not receptacles, and RM-M-MUDROOM is
-    # Occupancy.STORAGE so `electrical.receptacle_spacing` never walks it anyway. Stays GFCI
+    # Occupancy.FOYER so `electrical.receptacle_spacing` never walks it anyway. Stays GFCI
     # for its 210.8(A)(9) sink-reach location (RM-M-BATH1's lav, through W-M-STOS).
     ElectricalDevice(uid="NEC067AAAA", tag="ED-M-LIVING-RC9", kind=DeviceKind.RECEPTACLE_GFCI,
                      type_ref="ED-T-LEV-GFCI-20",

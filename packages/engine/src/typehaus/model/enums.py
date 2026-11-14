@@ -89,7 +89,11 @@ class Occupancy(Enum):
     MECHANICAL = "mechanical"
     GARAGE = "garage"
     STORAGE = "storage"
+    #: A closet (reach-in or walk-in, a pantry): NEC 210.12(B) names closets outright.
+    CLOSET = "closet"
     HALLWAY = "hallway"
+    #: An entry foyer, not part of a hallway: NEC 210.52(I) grades it by its own rule.
+    FOYER = "foyer"
     STAIR = "stair"
     MEDIA = "media"
     OFFICE = "office"
@@ -129,7 +133,7 @@ SLEEPING_OCCUPANCIES = frozenset({Occupancy.BEDROOM})
 #: head height. Both stay graded.
 EXPOSED_SERVICE_OCCUPANCIES = frozenset({
     Occupancy.UTILITY, Occupancy.MECHANICAL, Occupancy.GARAGE,
-    Occupancy.STORAGE, Occupancy.UNCONDITIONED,
+    Occupancy.STORAGE, Occupancy.CLOSET, Occupancy.UNCONDITIONED,
 })
 
 

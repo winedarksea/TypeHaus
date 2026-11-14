@@ -22,6 +22,7 @@ from typehaus import (
     ControlLayer,
     Door,
     DoorType,
+    FramingSpec,
     ExteriorDoorInstallation,
     ExteriorDoorSillDesign,
     FloorHeat,
@@ -47,6 +48,7 @@ from typehaus import (
     Stair,
     StructuralRole,
     Wall,
+    Soffit,
     WallLiningException,
     WallPaneling,
     Window,
@@ -1634,12 +1636,11 @@ ROOMS = [
     Room(uid="CMR406AAAA", tag="RM-M-STUDY-CLOSET", seed=pt(ft(15, 8), ft(20)),
          occupancy=Occupancy.STUDY_CLOSET, floor_finish="lvp"),
     Room(uid="CMR407AAAA", tag="RM-M-CLOSET", seed=pt(ft(13), ft(15, 4)),
-         occupancy=Occupancy.STORAGE, floor_finish="catlin-carpet-raised",
+         occupancy=Occupancy.CLOSET, floor_finish="catlin-carpet-raised",
          closed_to_services="the master suite's walk-in closet is dressed in, not a store room: no pipe or duct stands or hangs in it"),
-    # Retagged from RM-M-STORAGE with the mudroom conversion: entry vestibule
-    # now, not bulk storage, but still Occupancy.STORAGE — there is no MUDROOM occupancy in
-    # the closed enum and STORAGE is the closer fit of what exists (unheated-adjacent,
-    # hard-finish floor) than LIVING or HALLWAY would be.
+    # Retagged from RM-M-STORAGE with the mudroom conversion: the front-door entry
+    # vestibule, Occupancy.FOYER since 2026-11-14 (owner). 210.52(I) grades it only over
+    # 60 sq ft, and its clear floor is under that.
     #
     # 2026-08-21, the floor: this and the two closets below read "sealed-concrete" until the
     # basement-ceiling overhaul put I-joists and 3/4" plywood under all three — FS-M-MECH's
@@ -1651,7 +1652,7 @@ ROOMS = [
     # LVP matches the hall and both closets. The exterior sill is a separate
     # weather detail; keep boot water away from plank edges at D-M-ENTRY.
     Room(uid="CMR409AAAA", tag="RM-M-MUDROOM", seed=pt(ft(5), ft(31)),
-         occupancy=Occupancy.STORAGE, floor_finish="lvp",
+         occupancy=Occupancy.FOYER, floor_finish="lvp",
          wall_lining_exceptions=(
              WallLiningException(
                  uid="7P4Y8EG912", tag="LX-M-MUDROOM-N3", wall_ref="W-M-N3",
@@ -1673,8 +1674,8 @@ ROOMS = [
                  )),
          )),
     # Framed MEP shaft closet, replacing FURN-M-MUD-CLOSET-N: the
-    # radon+plumbing riser rides its SW corner. STORAGE is the closed enum's closest fit
-    # for a mechanical closet, same reasoning as RM-M-MUDROOM above.
+    # radon+plumbing riser rides its SW corner. STORAGE, not CLOSET: a service shaft, not a
+    # place anything is hung or dressed in.
     #
     # The utility closet follows the mudroom LVP at D-M-MECH.
     Room(uid="CMR411AAAA", tag="RM-M-MECH", seed=pt(ft(3), ft(34, 6)),
@@ -1682,17 +1683,15 @@ ROOMS = [
     # Framed south mudroom closet, replacing FURN-M-MUD-CLOSET-S: the last
     # furniture closet becomes a real reach-in — 31 1/4" deep clear after the 2026-10-21 wall move
     # north on 2026-08-29 (34 3/4" before), bypass slider in its north partition. Tagged RM-M-MUD-CLOSET because RM-M-CLOSET (CMR407AAAA) already
-    # names the dressing corridor. STORAGE, the same closed-enum reasoning as
-    # RM-M-MUDROOM/RM-M-MECH above — and the same wood deck under it (FS-M-MECH, the same
+    # names the dressing corridor. Occupancy.CLOSET — and the same wood deck under it (FS-M-MECH, the same
     # 10'-0" span beneath the mudroom).
     #
     # The boot closet follows the mudroom LVP. Its bypass bottom guide
     # is mounted on one flat plane at D-M-MUDC.
     Room(uid="G01HFSH967", tag="RM-M-MUD-CLOSET", seed=pt(ft(3), ft(28)),
-         occupancy=Occupancy.STORAGE, floor_finish="lvp", short_label="MUD CL."),
+         occupancy=Occupancy.CLOSET, floor_finish="lvp", short_label="MUD CL."),
     # The kitchen's framed reach-in pantry, replacing FURN-M-KIT-PANTRY-E,
-    # -TALL-N and -TALL-S. STORAGE for the same closed-enum reason as RM-M-MECH and
-    # RM-M-MUD-CLOSET above; 14.6 SF clear, 5'-10 1/4" x 2'-6".
+    # -TALL-N and -TALL-S: a reach-in closet; 14.6 SF clear, 5'-10 1/4" x 2'-6".
     #
     # ** ``floor_finish`` IS INERT HERE AND THAT IS NOT AN OVERSIGHT. ** This room stands
     # entirely on SL-M-DECK (params/main_deck.py outlines it x 18'-36', y 13'-36'), and the
@@ -1701,7 +1700,7 @@ ROOMS = [
     # wood-bay field finish only. Plank in here is an SL-M-DECK outline change, not a
     # string change. "lvp" is written so the intent survives if that outline ever moves.
     Room(uid="M3YNPA0YPJ", tag="RM-M-PANTRY", seed=pt(ft(21, 3), ft(34, 2)),
-         occupancy=Occupancy.STORAGE, floor_finish="lvp"),
+         occupancy=Occupancy.CLOSET, floor_finish="lvp"),
 ]
 
 ALARMS = [
@@ -2480,6 +2479,18 @@ POSTS = [
     # W-M-C5 / W-M-C5B split (`resolve/stairs/bearing.py`), so that rim end needs no post.
 ]
 
+# PR-M-S-BATH1-TUB-DRAIN crosses the foyer's west arm at x=38", 6.7" under its 107 1/2"
+# ceiling, between RM-M-MECH and RM-M-MUD-CLOSET (both exposed-service closets). Boxed
+# 2026-11-14 when RM-M-MUDROOM became Occupancy.FOYER: the truss bays over this arm hold the
+# ERV radials. Face 8'-2" clears the pipe's 100 3/4" low end by the 2x2 rung and board.
+SOFFITS = [
+    Soffit(uid="2V9SRQK19X", tag="SF-M-MUD-DRAIN",
+           outline=(pt(inch(34), inch(357.75)), pt(inch(42), inch(357.75)),
+                    pt(inch(42), inch(397.75)), pt(inch(34), inch(397.75))),
+           underside_elevation=inch(98),
+           framing=FramingSpec(member="2x2", spacing=inch(16))),
+]
+
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *FLOOR_HEAT,
             *FLOOR_OPENINGS, *SLABS, *STAIRS, *STAIR_HANDRAILS, *BEAMS, *PANELING,
-            *POSTS, *CONNECTORS]
+            *POSTS, *CONNECTORS, *SOFFITS]

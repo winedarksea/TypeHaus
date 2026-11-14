@@ -136,7 +136,7 @@ def test_210_8_a_occupancies_and_210_12_b_rooms():
     assert gfci == {O.BATHROOM.value: NEC.GFCI_BATHROOM, O.GARAGE.value: NEC.GFCI_GARAGE,
                     O.KITCHEN.value: NEC.GFCI_KITCHEN, O.LAUNDRY.value: NEC.GFCI_LAUNDRY}
     listed = {O.KITCHEN, O.LIVING, O.DINING, O.BEDROOM, O.HALLWAY, O.LAUNDRY, O.MEDIA,
-              O.STORAGE}  # STORAGE stands in for closets
+              O.CLOSET}
     assert {o.value for o in listed} <= _AFCI_OCCUPANCIES
     assert not {O.BATHROOM.value, O.GARAGE.value} & _AFCI_OCCUPANCIES
 

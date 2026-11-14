@@ -29,7 +29,7 @@ _DOOR_COLUMNS = ("Mark", "Tag", "Type", "Operation", "Hand", "Nominal", "Unit", 
 _DOORWAY_WRAP = 46
 #: Secure-side rank (A115.1G "outside"): outdoors, then a garage or unconditioned space,
 #: then circulation. Lower is outside; a tie goes to the larger room.
-_OUTSIDE_RANK = {"garage": 1, "unconditioned": 1, "hallway": 2, "stair": 2}
+_OUTSIDE_RANK = {"garage": 1, "unconditioned": 1, "hallway": 2, "foyer": 2, "stair": 2}
 
 
 #: G-003's key to the A-601/A-602 columns, kept beside ``door_hand`` so the two cannot drift.
