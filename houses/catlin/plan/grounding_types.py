@@ -14,11 +14,12 @@ GND_ROD = Product(tag="GND-ROD-58X8", brand="nVent ERICO", model="615880",
 GND_ACORN = Product(tag="GND-ACORN-58", brand="nVent ERICO", model="CP58",
                     name="5/8 in acorn ground rod clamp, direct burial, UL 467", source=_SRC)
 GND_UFER_CLAMP = Product(tag="GND-UFER-CLAMP", brand="TBD",
-                         name="Rebar-to-conductor clamp, #4 bar to #4 Cu, listed for concrete "
+                         name="Rebar-to-conductor clamp, #4 bar to #2 Cu, listed for concrete "
                               "encasement (UL 467)", source=_PENDING)
+# nVent ERICO IBTB spec sheet (2024): five connectors #14 solid-#6 str, one lay-in #6-#2 GEC.
 GND_IBT = Product(tag="GND-IBT", brand="nVent ERICO", model="IBTB",
-                  name="Intersystem bonding termination bar, 3 terminations, UL 467",
-                  source=_SRC)
+                  name="Intersystem bonding termination bar, 5 bonding terminations + #6-#2 "
+                       "GEC lay-in", source="nVent ERICO IBTB specification sheet (2024)")
 GND_TRANSITION = Product(tag="GND-AL-CU-TRANS", brand="TBD",
                          name="Bimetallic Al-Cu parallel connector, 1/0 Al to #2 Cu, UL 96 / "
                               "UL 486A-B", source=_PENDING)
@@ -81,7 +82,8 @@ GROUNDING_DEVICE_TYPES = (
                          footprint=(inch(2), inch(2.6)), height=inch(3.7), needs=frozenset(),
                          ports=(), source=SPD_HOM.source),
     ElectricalDeviceType(tag="ED-T-IBT", name="Intersystem bonding termination (NEC 250.94)",
-                         product_ref=GND_IBT.tag, ibt=True, footprint=(inch(6), inch(2)),
+                         product_ref=GND_IBT.tag, ibt=True, bonding_terminals=5,
+                         footprint=(inch(6), inch(2)),
                          height=inch(3), needs=frozenset(), ports=(), source=_SRC),
     ElectricalDeviceType(tag="ED-T-DATA-ENTRY", name="NEMA 3R comms entrance box, blank cover",
                          footprint=(inch(8), inch(4)), height=inch(8), needs=frozenset(),

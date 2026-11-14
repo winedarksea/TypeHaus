@@ -175,6 +175,7 @@ MN_INSPECTIONS: tuple[InspectionSpec, ...] = (
                    "electrical.panel_spaces", "electrical.wet_location",
                    "electrical.panel_handle_height", "code.NEC_250_53_rods",
                    "code.NEC_250_66_gec_size", "code.NEC_250_32_separate_buildings",
+                   "code.NEC_250_24_neutral_bond",
                    "code.NEC_250_94_ibt", "code.NEC_250_104_water_bond",
                    "code.NEC_250_106_lps_bond", "code.NEC_690_47_pv_grounding",
                    "code.NEC_230_67_service_spd"),

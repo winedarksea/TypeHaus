@@ -342,9 +342,9 @@ MN_2020 = JurisdictionProfile(
         # Grounding and bonding (decision #123), read off model.grounding.
         PermitItemSpec("Grounding electrode system",
                        ("code.NEC_250_50_electrode_system", "code.NEC_250_53_rods",
-                        "code.NEC_250_66_gec_size"),
+                        "code.NEC_250_66_gec_size", "code.NEC_250_24_neutral_bond"),
                        (cite(NEC.ELECTRODE_SYSTEM), cite(NEC.ROD_INSTALLATION),
-                        cite(NEC.GEC_SIZE))),
+                        cite(NEC.GEC_SIZE), cite(NEC.SERVICE_GROUNDING))),
         # Staged: whether a footing on a drained, foam-sided bed is "in direct contact with
         # the earth" is the inspector's reading, so it answers UNKNOWN until they make it.
         PermitItemSpec("Concrete-encased electrode", ("code.NEC_250_52_ufer",),

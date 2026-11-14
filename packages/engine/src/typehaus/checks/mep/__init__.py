@@ -39,6 +39,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     electrical_grounding,
     electrical_grounding_advisory,
     electrical_grounding_bonds,
+    electrical_grounding_service,
     electrical_hvac_disconnect,
     electrical_hvac_receptacle,
     electrical_island,

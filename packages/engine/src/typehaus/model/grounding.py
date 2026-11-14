@@ -3,6 +3,7 @@
 ``GroundingStandard`` names the parts (one per plan; a second is an
 ``integrity.grounding_standard`` error). ``GroundingElectrode`` is a rod, a concrete-encased
 electrode (the "Ufer", whose qualifying bar is read off ``model.rebar``) or a ring.
+``ServiceEntrance`` holds the service's conductor size and neutral-bond facts (250.24).
 ``BondingConductor`` is a solid bond between two tagged things: there is no resistive,
 diode or capacitive variant, because NEC 250.106 and NFPA 780 require a solid bond and
 the checks grade it by graph connectivity (``resolve/grounding.py``).
@@ -95,7 +96,32 @@ class BondingConductor(Element):
     description: str = ""
 
 
+@register_element
+class ServiceEntrance(Element):
+    """House-authored facts at one service disconnect that no product sheet carries.
+
+    ``conductor_size`` is the largest ungrounded service conductor per set (the utility
+    lateral where it lands directly on a meter-main); unset, the checks take the 310.12(A)
+    size for the service rating (Table 250.102(C)(1) Note 4). ``disconnect_conductors`` is
+    each service disconnect's largest supply conductor where one service has several: their
+    summed area is the 250.64(D)(1) basis. 250.24: ``main_bonding_jumper_ref`` is the
+    enclosure holding the main bonding jumper; ``neutral_isolated_refs`` the panels whose
+    grounded-conductor bar is isolated from the enclosure and the EGCs.
+    """
+
+    service_ref: str
+    conductor_size: str | None = None
+    conductor_material: Literal["cu", "al"] | None = None
+    conductor_sets: int = 1
+    disconnect_conductors: tuple[str, ...] = ()
+    disconnect_material: Literal["cu", "al"] | None = None
+    main_bonding_jumper_ref: str | None = None
+    neutral_isolated_refs: tuple[str, ...] = ()
+    description: str = ""
+
+
 for _name, _obj in (("GroundingStandard", GroundingStandard),
+                    ("ServiceEntrance", ServiceEntrance),
                     ("GroundingElectrode", GroundingElectrode),
                     ("BondingConductor", BondingConductor)):
     register_constructor(_name, _obj)

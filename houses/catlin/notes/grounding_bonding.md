@@ -34,11 +34,24 @@ Qualifying = 210 + 210 = **420" = 35'-0"**, which passes. W1 alone (17'-6") woul
 the bar continues into W2.
 Rebar added: 210 + 210 + 50.1 = 470.1" = 39.2 ft x 0.668 lb/ft = **26.2 lb #4 HDG**.
 
-**GEC sizes (250.66).** A sole connection to rods needs no more than #6 Cu (250.66(A)). A sole
-connection to a concrete-encased electrode needs no more than #4 Cu (250.66(B)).
+**Service basis (`SE-M-SERVICE`, 2026-11-14).** The Xcel lateral lands on the meter-main's
+lugs and its size is unknown, so the basis is 310.12(A) on 320 A: 0.83 x 320 = 266 A, 300 kcmil
+Cu (285 A) or 400 kcmil Al (270 A) at 75 C. Both sit in the "over 3/0-350 Cu / over 250-500 Al"
+row. The 250.64(D)(1) summed basis, 2 x 4/0 Al = 2 x 211.6 = 423 kcmil, is the same row.
+Table 250.66 and Table 250.102(C)(1) both give **#2 Cu** there. A lateral over 500 kcmil Al
+(350 Cu) would move the water bond to 1/0 Cu (3/0 cap): ask Xcel for the lateral size.
+
+**GEC sizes (250.66).** The row gives #2 Cu, but a sole connection to rods needs no more than
+#6 Cu (250.66(A)) and to a concrete-encased electrode no more than #4 Cu (250.66(B)).
 - `BC-M-GEC-ROD` is #6 Cu, 9.7 ft.
-- `BC-M-GEC-UFER` is #4 Cu, 10.4 ft. It is insulated through the rim and inside the wall.
-- The service conductor size is not modelled, so the general Table 250.66 row is not graded.
+- `BC-M-GEC-UFER` is **#2 Cu**, 10.4 ft, over the #4 cap: the water bond lands on its stub, and
+  250.104(A)(1) lets it land on an electrode only if that GEC is as large as the bond. It is
+  insulated through the rim and inside the wall.
+- Garage (250.32(E)): largest supply conductor #6 Cu (`CKT-EV-1450`) gives #8 Cu; `BC-G-GEC` is #6.
+
+**Water bonds (250.104(A)(1)).** Table 250.102(C)(1) on the basis above: **#2 Cu** for
+`BC-B-WATER`, `BC-B-WATER-WH` and `BC-B-WATER-BATH` (each is the only bond path for the
+copper it reaches).
 
 **Rods (250.53).**
 - Both rods are 8 ft. House rods are at (-31", 20'-0") and (-31", 34'-4"): 172" = 14'-4" apart, at
@@ -49,9 +62,8 @@ connection to a concrete-encased electrode needs no more than #4 Cu (250.66(B)).
 
 **Conductors billed.**
 - 1/0 Al: 41.5 LF.
-- #2 Cu: 90.1 LF (counterpoise 83.6 + PV tail 6.5).
-- #4 Cu: 36.2 LF.
-- #6 Cu: 32.9 LF.
+- #2 Cu: 130.7 LF (counterpoise, PV tail, `BC-M-GEC-UFER` and the three water bonds).
+- #6 Cu: 35.0 LF (with the garage IBT bond).
 - No slack is added. Water bonds, the IBT bond and the garage GEC are straight-line (the
   electrician routes them).
 
@@ -120,7 +132,13 @@ by the coordinated SPDs and single-point entry with an IBT.
   are continuous EMT.
 - **Single-point entry:** power and data enter on W-M-W1 within 3 ft. `ED-M-DATA-ENTRY` feeds
   `CD-M-DATA-ENTRY` to the patch panel, and the IBT (`ED-M-IBT`) is bonded to the meter-main (250.94).
-- **Water bonds:** #4 Cu from the Ufer stub to the copper cold at the heater, with jumpers to the
+- **IBTs (250.94(A)):** `ED-M-IBT` at the service and `ED-G-IBT` beside `ED-G-GND-JB` in the
+  garage (a building branch circuits supply needs one at its disconnect). The nVent ERICO IBTB
+  sheet: five bonding connectors (#14-#6) plus a #6-#2 GEC lay-in.
+- **Neutral (250.24):** the main bonding jumper is in the meter-main; `ED-B-PANEL`,
+  `ED-B-PANEL-2` and `ED-B-BACKUP-PANEL` keep their neutral bars isolated (bonding screw out).
+  Whether the EG4 bonds N-G in island mode is the inverter's question (702.7(B)/250.30).
+- **Water bonds:** #2 Cu from the Ufer stub to the copper cold at the heater, with jumpers to the
   copper HW trunk and the bath branch (250.104(A)). The PEX service (`PR-G-SERVICE-CW`) is not an
   electrode.
 

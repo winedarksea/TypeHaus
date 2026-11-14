@@ -113,7 +113,12 @@ from typehaus.model.floors import (
 )
 from typehaus.model.framing_standards import HeaderStandard
 from typehaus.model.furniture_cut import FurnitureCut
-from typehaus.model.grounding import BondingConductor, GroundingElectrode, GroundingStandard
+from typehaus.model.grounding import (
+    BondingConductor,
+    GroundingElectrode,
+    GroundingStandard,
+    ServiceEntrance,
+)
 from typehaus.model.joist_flange import JoistFlangeAllowance
 from typehaus.model.joist_holes import JoistHoleChart
 from typehaus.model.landscape import (
@@ -470,7 +475,8 @@ __all__ = [
     "Register", "Equipment",
     "ElectricalDevice",
     "Circuit", "LoadManagement", "BoxStandard", "BoxRow", "ConduitRun", "LightRun",
-    "GroundingStandard", "GroundingElectrode", "BondingConductor", "LabelStandard",
+    "GroundingStandard", "GroundingElectrode", "BondingConductor", "ServiceEntrance",
+    "LabelStandard",
     "DuctStandard", "RoundGaugeRow", "DuctElbowRow", "DuctPartRow", "DuctSupportRow", "PortKit",
     "RectElbowRow",
     "Sump", "SumpPump", "VentRun",

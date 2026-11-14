@@ -1,4 +1,5 @@
-"""CODE-tier bonding checks (decision #123): 250.94 IBT, 250.104(A) water pipe, 250.106
+"""CODE-tier bonding checks (decision #123): 250.94 IBT, 250.104(A) water pipe (its size in
+``electrical_grounding_service``), 250.106
 lightning, 690.47 PV and 230.67 the service SPD. Each is graph connectivity on
 ``model.grounding``: a conductor is a solid bond, so "isolated" is simply "another system".
 """
@@ -14,9 +15,12 @@ from typehaus.checks.mep.electrical_grounding import (
     device_types,
     grounding,
     objects,
+    root_building,
+    supplied_buildings,
 )
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
+from typehaus.model.grounding_tables import larger
 from typehaus.model.nec import NEC, cite
 
 IBT_CID = "code.NEC_250_94_ibt"
@@ -66,24 +70,55 @@ def service_spds(ctx: CheckContext, root: str) -> list[str]:
 
 @check(Tier.CODE, IBT_CID)
 def intersystem_bonding(ctx: CheckContext) -> list[Finding]:
-    """250.94 -- a communications entry needs an IBT bonded to the service's system."""
+    """250.94(A) -- an IBT at the service, and at the disconnect of every building a feeder or
+    branch circuit supplies, whether or not a communications raceway is modeled: bonded into
+    that building's system, mounted outside the enclosures, three or more terminals."""
     code = cite(NEC.INTERSYSTEM_BONDING)
-    entries = entering_data(ctx)
-    if not entries:
-        return [not_applicable(IBT_CID, "no data raceway enters from outside", code=code)]
     g = grounding(ctx)
-    tags = tuple(run.tag for run, _ in entries)
-    found = ibts(ctx)
+    if g.root is None:
+        if not ctx.plan.library.circuits:
+            return [not_applicable(IBT_CID, "no service and no circuit in the plan", code=code)]
+        return [unknown(IBT_CID, "no service disconnect is modeled", code=code)]
+    entries = ", ".join(run.tag for run, _ in entering_data(ctx))
+    out = [_ibt_at(ctx, g, root_building(ctx, g), g.root_system, f"the service {g.root}",
+                   entries, code)]
+    for bldg in sorted(supplied_buildings(ctx)):
+        system = frozenset().union(*(g.system_of(e.tag) for e in g.electrodes
+                                     if e.building == bldg and e.use == "ges"))
+        out.append(_ibt_at(ctx, g, bldg, system, f"{bldg}'s disconnect", "", code))
+    return out
+
+
+def _ibt_at(ctx: CheckContext, g, bldg: str | None, system: frozenset[str], what: str,
+            entries: str, code: str) -> Finding:
+    types, objs = device_types(ctx), objects(ctx)
+    found = [t for t in ibts(ctx) if t in objs and ctx.plan.building_of(objs[t].storey) == bldg]
+    serving = f" (serving {entries})" if entries else ""
     if not found:
-        return [failed(IBT_CID, f"{', '.join(tags)} enters and no IBT is modeled", tags, code,
-                       fix="place an ibt=True junction box at the service, bonded to it")]
-    bonded = [t for t in found if t in g.root_system]
+        return failed(IBT_CID, f"no IBT at {what}{serving}", (), code,
+                      fix="place an ibt=True device outside the enclosures, bonded to its GEC "
+                          "or the building's electrode system")
+    bonded = [t for t in found if t in system]
     if not bonded:
-        return [failed(IBT_CID, f"IBT {', '.join(found)} is not bonded to {g.root}",
-                       tuple(found), code, fix="run the IBT's bonding conductor to the "
-                                               "service disconnect")]
-    return [passed(IBT_CID, f"IBT {', '.join(bonded)} is bonded to {g.root} for "
-                   f"{', '.join(tags)}", tuple(bonded), code)]
+        return failed(IBT_CID, f"IBT {', '.join(found)} is not bonded into {what}'s electrode "
+                      "system", tuple(found), code,
+                      fix="run the IBT's bonding conductor to the GEC or the disconnect")
+    tag = bonded[0]
+    terminals = getattr(types.get(objs[tag].type_ref or ""), "bonding_terminals", None)
+    gec6 = any(b.role == "gec" and b.material == "copper" and b.tag in system
+               and larger(b.size, "6") for b in g.bonds)
+    if terminals is not None and terminals < 3:
+        return failed(IBT_CID, f"IBT {tag} has {terminals} bonding terminals, under three",
+                      (tag,), code, fix="use an IBT with three or more terminals")
+    if not gec6:
+        return failed(IBT_CID, f"IBT {tag}: no #6 Cu or larger GEC in {what}'s system to mount "
+                      "it by", (tag,), code)
+    if terminals is None:
+        return unknown(IBT_CID, f"IBT {tag} is bonded at {what}, but its type states no "
+                       "bonding_terminals (250.94(A): three or more)", (tag,), code)
+    return passed(IBT_CID, f"IBT {tag} at {what}{serving}: its own device outside the "
+                  f"enclosures, {terminals} terminals, bonded to a system with a #6 Cu or larger "
+                  "GEC", (tag,), code)
 
 
 @check(Tier.CODE, WATER_CID)
@@ -118,7 +153,9 @@ def water_pipe_bond(ctx: CheckContext) -> list[Finding]:
                               "with no bond to the service", (run.tag,), code,
                               fix=f"add a water_bond BondingConductor from {service} to "
                                   f"{run.tag}"))
-    return out
+    from typehaus.checks.mep.electrical_grounding_service import water_bond_sizes
+
+    return out + water_bond_sizes(ctx, code)
 
 
 def _spread(metal: list, reached: set[str]) -> set[str]:

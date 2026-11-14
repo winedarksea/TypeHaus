@@ -11,7 +11,12 @@ from typehaus.checks.mep.electrical_grounding import (
     rod_electrodes,
     separate_buildings,
 )
-from typehaus.checks.mep.electrical_grounding_bonds import lightning_bond
+from typehaus.checks.mep.electrical_grounding_bonds import (
+    intersystem_bonding,
+    lightning_bond,
+    water_pipe_bond,
+)
+from typehaus.checks.mep.electrical_grounding_service import gec_size, neutral_bond
 from typehaus.checks.structural.footing_size import footing_size
 from typehaus.model import (
     Assembly,
@@ -27,6 +32,7 @@ from typehaus.model import (
     Library,
     Material,
     Node,
+    PipeRun,
     PlanModel,
     Project,
     Site,
@@ -35,7 +41,7 @@ from typehaus.model import (
     inch,
     pt,
 )
-from typehaus.model.grounding import BondingConductor, GroundingElectrode
+from typehaus.model.grounding import BondingConductor, GroundingElectrode, ServiceEntrance
 from typehaus.model.rebar import BarSpec, ReinforcementSpec
 
 _METER_T = ElectricalDeviceType(tag="ED-T-MTR", name="Meter-main", footprint=(inch(14), inch(6)),
@@ -129,10 +135,58 @@ def test_a_garage_fed_by_two_circuits_needs_its_own_electrodes():
     loads = [ElectricalDevice(tag=f"ED-G-R{i}", kind=DeviceKind.RECEPTACLE,
                               position=pt(ft(40 + 4 * i), ft(1)), circuit=f"CKT-{i}")
              for i in (1, 2)]
-    circuits = tuple(Circuit(tag=f"CKT-{i}", panel_ref="ED-H-PANEL", breaker_amps=20)
-                     for i in (1, 2))
+    circuits = tuple(Circuit(tag=f"CKT-{i}", panel_ref="ED-H-PANEL", breaker_amps=20,
+                             conductor_awg="12", egc_awg="12") for i in (1, 2))
     plan = _plan(_METER, panel, circuits=circuits, storeys=storeys, project=project)
     plan = plan.with_elements("g", loads)
     found = _results(separate_buildings, plan)
-    assert [f.result.value for f in found] == ["fail"]
-    assert "GARAGE" in found[0].message
+    assert [f.result.value for f in found] == ["pass", "fail"]  # EGCs ride; no electrodes
+    assert "GARAGE" in found[1].message
+
+
+def test_a_feeder_to_an_outbuilding_panel_needs_electrodes_and_an_ibt():
+    project = _project(Building(tag="HOUSE", name="House"), Building(tag="SHOP", name="Shop"))
+    storeys = (Storey(tag="h", elevation=ft(0), default_ceiling_height=ft(8), building="HOUSE"),
+               Storey(tag="s", elevation=ft(0), default_ceiling_height=ft(8), building="SHOP"))
+    sub = ElectricalDevice(tag="ED-S-PANEL", kind=DeviceKind.PANEL, position=pt(ft(40), ft(1)))
+    plan = _plan(_METER, storeys=storeys, project=project).with_elements("s", [sub])
+    found = _results(separate_buildings, plan)
+    assert [f.result.value for f in found] == ["unknown", "fail"], [f.message for f in found]
+    ibt = _results(intersystem_bonding, plan)  # no data run: still the service's and the shop's
+    assert [f.result.value for f in ibt] == ["fail", "fail"]
+    assert "SHOP" in ibt[1].message
+
+
+def test_water_bond_sizes_off_the_service_and_its_gec():
+    service = ServiceEntrance(tag="SE", service_ref="ED-M-METER",
+                              main_bonding_jumper_ref="ED-M-METER")
+    pipe = PipeRun(tag="PR-CW", system="water_cold", material="copper", diameter=inch(0.75),
+                   path=(pt(ft(2), ft(2)), pt(ft(6), ft(2))))
+    rods = (_rod("GE-1", 0), _rod("GE-2", 7), _gec("BC-1", "GE-1"), _gec("BC-2", "GE-2"))
+
+    def water(size: str) -> list:
+        bond = BondingConductor(tag="BC-W", from_ref="GE-1", to_ref="PR-CW", role="water_bond",
+                                size=size)
+        plan = _plan(_METER, service, pipe, bond, *rods)
+        return [f for f in _results(water_pipe_bond, plan) if f.element_tags == ("BC-W",)]
+
+    # 320 A -> 310.12(A) 300 Cu / 400 Al -> Table 250.102(C)(1) #2 Cu.
+    assert [f.result.value for f in water("4")] == ["fail"]
+    two = water("2")
+    assert [f.result.value for f in two] == ["fail"]  # lands on a rod whose GEC is #6
+    assert "BC-1 (#6)" in two[0].message
+    gec = _results(gec_size, _plan(_METER, service, *rods))
+    assert [f.result.value for f in gec] == ["pass", "pass"]
+    assert "Table 250.66 gives #2 Cu" in gec[0].message
+
+
+def test_a_feeder_panel_must_state_its_neutral_isolated():
+    panel = ElectricalDevice(tag="ED-PANEL", kind=DeviceKind.PANEL, position=pt(ft(1), ft(1)))
+    circuits = (Circuit(tag="CKT-1", panel_ref="ED-PANEL", breaker_amps=20),)
+    plain = ServiceEntrance(tag="SE", service_ref="ED-M-METER",
+                            main_bonding_jumper_ref="ED-M-METER")
+    found = _results(neutral_bond, _plan(_METER, panel, plain, circuits=circuits))
+    assert [f.result.value for f in found] == ["pass", "unknown"]
+    isolated = plain.model_copy(update={"neutral_isolated_refs": ("ED-PANEL",)})
+    found = _results(neutral_bond, _plan(_METER, panel, isolated, circuits=circuits))
+    assert [f.result.value for f in found] == ["pass", "pass"]

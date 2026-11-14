@@ -18,6 +18,7 @@ from typehaus import (
     MountKind,
     RacewayMaterial,
     Service,
+    ServiceEntrance,
     deg,
     ft,
     inch,
@@ -73,13 +74,15 @@ HOUSE_GROUNDING = [
                            pt(inch(463), inch(478))),
                      elevations=(inch(-58), inch(-58), inch(-58))),
     # Water bonds (250.104(A)): the copper cold at the heater, a jumper across the heater,
-    # and the copper bath branch.
+    # and the copper bath branch. #2 Cu: Table 250.102(C)(1) on the 320 A service (310.12(A):
+    # 300 Cu / 400 Al) and on the summed 2 x 4/0 Al feeders alike. Landing on the Ufer stub
+    # needs its GEC as large, so BC-M-GEC-UFER is #2 too. A lateral over 500 kcmil Al raises it.
     BondingConductor(uid="BT7H76Q8K7", tag="BC-B-WATER", role="water_bond", from_ref="GE-B-UFER",
-                     to_ref="PR-B-CW-WH", size="4"),
+                     to_ref="PR-B-CW-WH", size="2"),
     BondingConductor(uid="GKHKD20YQH", tag="BC-B-WATER-WH", role="water_bond", from_ref="PR-B-CW-WH",
-                     to_ref="PR-B-HW-TRUNK", size="4"),
+                     to_ref="PR-B-HW-TRUNK", size="2"),
     BondingConductor(uid="75ZF8AVPS6", tag="BC-B-WATER-BATH", role="water_bond", from_ref="PR-B-CW-WH",
-                     to_ref="PR-B-CW-BATH", size="4"),
+                     to_ref="PR-B-CW-BATH", size="2"),
     # PV DC SPD at the inverter's DC input (the EG4's own DC surge rating is unpublished).
     ElectricalDevice(uid="EJH2340ANK", tag="ED-B-INV-SPD", kind=DeviceKind.SPD, type_ref="ED-T-SPD-PV",
                      room="RM-B-FURNACE", mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
@@ -90,14 +93,23 @@ HOUSE_GROUNDING = [
 
 # --- service: GECs, SPD, IBT and the single-point comms entry, all on W-M-W1 -------------
 SERVICE_GROUNDING = [
+    # The service's sizing basis and neutral bond (250.24). No conductor_size: the Xcel lateral
+    # lands on the meter-main's lugs and its size is not known, so the checks take 310.12(A)
+    # on 320 A. The two 200 A mains feed 4/0 Al SER each (250.64(D)(1) summed basis). The
+    # main bonding jumper is in the meter-main; every panel past it keeps its neutral isolated.
+    ServiceEntrance(uid="9QPW6E02RJ", tag="SE-M-SERVICE", service_ref="ED-M-METER",
+                    disconnect_conductors=("4/0", "4/0"), disconnect_material="al",
+                    main_bonding_jumper_ref="ED-M-METER",
+                    neutral_isolated_refs=("ED-B-PANEL", "ED-B-PANEL-2", "ED-B-BACKUP-PANEL")),
     # Meter-main is the service disconnect: the GECs and the main bonding jumper land here.
     BondingConductor(uid="PM0JNEJBC4", tag="BC-M-GEC-ROD", role="gec", from_ref="ED-M-METER", to_ref="GE-B-ROD-1",
                      size="6", path=(pt(inch(-11.2), inch(357.1)), pt(inch(-11.2), inch(357.1)),
                                      pt(inch(-31), inch(412))),
                      elevations=(inch(0), inch(-58), inch(-58))),
     # Through the rim over the working spaces (their tops are -31 7/16"), down to the stub.
+    # #2, over 250.66(B)'s #4 cap: BC-B-WATER lands on this stub (250.104(A)(1)).
     BondingConductor(uid="A81HH8CV8V", tag="BC-M-GEC-UFER", role="gec", from_ref="ED-M-METER",
-                     to_ref="GE-B-UFER", size="4", bare=False,
+                     to_ref="GE-B-UFER", size="2", bare=False,
                      path=(pt(inch(-11.2), inch(357.1)), pt(inch(-11.2), inch(357.1)),
                            pt(inch(13), inch(357.1)), pt(inch(13), inch(336)),
                            pt(inch(13), inch(336))),
@@ -172,6 +184,14 @@ GARAGE_GROUNDING = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-G-W", face="left", distance_from_start=inch(196),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
+    # 250.94(A): an IBT at a building a branch circuit supplies, beside the EGC bar.
+    ElectricalDevice(uid="592BENDBNY", tag="ED-G-IBT", kind=DeviceKind.JUNCTION_BOX, type_ref="ED-T-IBT",
+                     room="RM-GARAGE", mount=Mount(kind=MountKind.WALL, elevation=inch(30)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-G-W", face="left", distance_from_start=inch(206),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+    BondingConductor(uid="F9N78H7JJQ", tag="BC-G-IBT", role="ibt", from_ref="ED-G-IBT", to_ref="ED-G-GND-JB",
+                     size="6"),
     # Type 2 SPD beside the EV outlet, landed on its CKT-EV-1450 junction.
     ElectricalDevice(uid="GH0TMES07M", tag="ED-G-SPD", kind=DeviceKind.SPD, type_ref="ED-T-SPD-T2",
                      room="RM-GARAGE", mount=Mount(kind=MountKind.WALL, elevation=inch(48)),

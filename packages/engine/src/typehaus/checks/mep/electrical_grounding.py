@@ -1,7 +1,8 @@
 """CODE-tier NEC Art. 250 electrode checks, read off ``model.grounding`` (decision #123).
 
-250.52(A)(3) the Ufer, 250.50 every electrode present bonded to the service, 250.53 rods,
-250.66 GEC size and 250.32 a separate building's own electrode system. Geometry is never
+250.52(A)(3) the Ufer, 250.50 every electrode present bonded to the service, 250.53 rods
+and 250.32 a separate building's own electrode system (250.66 GEC size and 250.24 are in
+``electrical_grounding_service``). Geometry is never
 re-derived here: ``resolve/grounding.py`` owns lengths, bar qualification and bonding systems.
 Bonds, the service SPD and the advisories are in the sibling ``electrical_grounding_*``.
 """
@@ -18,6 +19,7 @@ from typehaus.model.nec import NEC, cite
 from typehaus.resolve.grounding import ResolvedGrounding
 
 _FT = 0.3048
+_IN = 0.0254
 UFER_MIN_M = 20 * _FT
 ROD_MIN_M = 8 * _FT
 ROD_SPACING_M = 6 * _FT  # 250.53(A)(3), when no standard states one
@@ -29,7 +31,6 @@ _SERVICE_REACH_M = 0.5
 UFER_CID = "code.NEC_250_52_ufer"
 SYSTEM_CID = "code.NEC_250_50_electrode_system"
 ROD_CID = "code.NEC_250_53_rods"
-GEC_CID = "code.NEC_250_66_gec_size"
 SEPARATE_CID = "code.NEC_250_32_separate_buildings"
 
 
@@ -105,6 +106,23 @@ def crossing_circuits(ctx: CheckContext) -> dict[str, set[str]]:
             ref = getattr(element, "circuit", None)
             if ref in panel_bldg and panel_bldg[ref] not in (None, here):
                 out.setdefault(here, set()).add(ref)
+    return out
+
+
+def supplied_buildings(ctx: CheckContext) -> dict[str, dict[str, set[str]]]:
+    """Building -> {"circuits": crossing circuits, "panels": its PANEL devices} for every
+    building other than the service's that a branch circuit or a feeder (to a panel) reaches."""
+    g = grounding(ctx)
+    storeys = storey_of(ctx)
+    home = building_of_tag(ctx, g.root, storeys) if g.root else None
+    out: dict[str, dict[str, set[str]]] = {
+        b: {"circuits": set(c), "panels": set()} for b, c in crossing_circuits(ctx).items()}
+    if home is None:
+        return out
+    for el in ctx.plan.elements_of_kind("ElectricalDevice"):
+        bldg = building_of_tag(ctx, el.tag, storeys)
+        if getattr(el.kind, "value", None) == "panel" and bldg not in (None, home):
+            out.setdefault(bldg, {"circuits": set(), "panels": set()})["panels"].add(el.tag)
     return out
 
 
@@ -191,17 +209,23 @@ def electrode_system(ctx: CheckContext) -> list[Finding]:
     return out
 
 
-def _water_service(ctx: CheckContext, root_sys: frozenset[str], code: str) -> Finding:
-    """250.52(A)(1): a metal underground water service is an electrode; plastic earns none."""
+def water_service(ctx: CheckContext) -> tuple[list, list[str], list[str]]:
+    """Cold-water runs leaving the building, and the metal and unstated ones among them."""
     polys = ground_rooms(ctx)
     runs = [r for r in ctx.model.pipe_runs if r.system == "water_cold"
             and any(outside_by(polys, p[:2]) > _SERVICE_REACH_M for p in r.path)]
+    unstated = sorted(r.tag for r in runs if not r.material)
+    metal = sorted(r.tag for r in runs if (r.material or "").lower() in METALS)
+    return runs, metal, unstated
+
+
+def _water_service(ctx: CheckContext, root_sys: frozenset[str], code: str) -> Finding:
+    """250.52(A)(1): a metal underground water service is an electrode; plastic earns none."""
+    runs, metal, unstated = water_service(ctx)
     if not runs:
         return unknown(SYSTEM_CID, "no cold-water run leaves the building, so whether a metal "
                        "underground water pipe electrode is present is not known", code=code,
                        fix="model the water service run")
-    unstated = sorted(r.tag for r in runs if not r.material)
-    metal = sorted(r.tag for r in runs if (r.material or "").lower() in METALS)
     if metal:
         loose = [t for t in metal if t not in root_sys]
         if loose:
@@ -221,20 +245,31 @@ def _water_service(ctx: CheckContext, root_sys: frozenset[str], code: str) -> Fi
 
 @check(Tier.CODE, ROD_CID)
 def rod_electrodes(ctx: CheckContext) -> list[Finding]:
-    """250.53 -- 8 ft rods, 6 ft apart, a supplemental electrode, outside the footprint."""
+    """250.53 -- 8 ft rods in the soil, top at or below grade (A)(4), 6 ft apart within a
+    system (A)(3) and from another system's rods (B), supplemented (A)(2), outside the
+    footprint; and a water-pipe electrode's supplement (D)."""
     code = cite(NEC.ROD_INSTALLATION)
     g = grounding(ctx)
+    out = [f for f in (_water_supplement(ctx, g, code),) if f is not None]
     rods = [e for e in g.electrodes if e.kind == "rod" and e.use == "ges"]
     if not rods:
-        return [not_applicable(ROD_CID, "no rod electrode is authored", code=code)]
+        return [*out, not_applicable(ROD_CID, "no rod electrode is authored", code=code)]
+    from typehaus.resolve.site_earth import site_grade_elevation_m
+
     std = g.standard
     spacing = std.min_rod_spacing.meters if std is not None else ROD_SPACING_M
+    grade = site_grade_elevation_m(ctx.model)
     polys = ground_rooms(ctx)
-    out: list[Finding] = []
     for rod in rods:
         problems = []
+        soil = rod.length_m - max(0.0, rod.z_top_m - grade)
         if rod.length_m + 1e-6 < ROD_MIN_M:
             problems.append(f"{rod.length_m / _FT:.1f} ft long, under 8 ft")
+        elif soil + 1e-6 < ROD_MIN_M:
+            problems.append(f"{soil / _FT:.1f} ft in the soil, under 8 ft (250.53(A)(4))")
+        if rod.z_top_m > grade + 1e-3:
+            problems.append(f"top {(rod.z_top_m - grade) / _IN:.0f} in above grade "
+                            "(250.53(A)(4) wants it flush or below unless protected)")
         if outside_by(polys, rod.xy) <= 0.0:
             problems.append("driven inside a building footprint")
         system = g.system_of(rod.tag)
@@ -249,77 +284,88 @@ def rod_electrodes(ctx: CheckContext) -> list[Finding]:
                 if gap + 1e-6 < spacing:
                     problems.append(f"{gap / _FT:.1f} ft from {other.tag}, under "
                                     f"{spacing / _FT:.0f} ft")
+        for other in g.electrodes:
+            if other.kind == "rod" and (other.building, other.use) != (rod.building, rod.use):
+                gap = math.dist(rod.xy, other.xy)
+                if gap + 1e-6 < ROD_SPACING_M:
+                    problems.append(f"{gap / _FT:.1f} ft from {other.tag} of another grounding "
+                                    "system, under 6 ft (250.53(B))")
         if problems:
             out.append(failed(ROD_CID, f"{rod.tag}: {'; '.join(problems)}", (rod.tag,), code,
                               fix="drive a second rod at least 6 ft away, bonded, outside "
-                                  "the foundation"))
+                                  "the foundation, its top at or below grade"))
         else:
-            out.append(passed(ROD_CID, f"{rod.tag}: {rod.length_m / _FT:.0f} ft rod outside the "
-                              "footprint, supplemented in its system", (rod.tag,), code))
+            out.append(passed(ROD_CID, f"{rod.tag}: {rod.length_m / _FT:.0f} ft rod in the soil, "
+                              "top at or below grade, outside the footprint, supplemented, 6 ft "
+                              "from every other system's rods", (rod.tag,), code))
     return out
 
 
-# -- 250.66 ---------------------------------------------------------------------------------
-
-@check(Tier.CODE, GEC_CID)
-def gec_size(ctx: CheckContext) -> list[Finding]:
-    """250.66(A)/(B) -- the sole-connection caps: #6 Cu to a rod, #4 Cu to concrete."""
-    code = cite(NEC.GEC_SIZE)
-    g = grounding(ctx)
-    gecs = [b for b in g.bonds if b.role == "gec"]
-    if not gecs:
-        if not g.electrodes:
-            return [not_applicable(GEC_CID, "no electrode, so no GEC to size", code=code)]
-        return [unknown(GEC_CID, "electrodes are authored but no conductor has role 'gec'",
-                        code=code)]
-    out = []
-    for bond in gecs:
-        ends = [g.electrode(bond.from_ref), g.electrode(bond.to_ref)]
-        e = next((x for x in ends if x is not None), None)
-        need = {"rod": 6, "concrete_encased": 4}.get(e.kind if e else "")
-        rank = awg_rank(bond.size)
-        tags = (bond.tag,)
-        if need is None or bond.material != "copper" or rank is None:
-            out.append(unknown(GEC_CID, f"{bond.tag} (#{bond.size} {bond.material}): only the "
-                               "copper sole-connection caps are graded and the service "
-                               "conductor size is not modeled", tags, code))
-        elif rank <= need:
-            out.append(passed(GEC_CID, f"{bond.tag}: #{bond.size} Cu to {e.kind} {e.tag} meets "
-                              f"the #{need} Cu cap", tags, code))
-        else:
-            out.append(unknown(GEC_CID, f"{bond.tag}: #{bond.size} Cu to {e.tag} is under the "
-                               f"#{need} cap; Table 250.66 needs the service conductor size, "
-                               "which is not modeled", tags, code,
-                               fix=f"use #{need} Cu, which no table row exceeds"))
-    return out
+def _water_supplement(ctx: CheckContext, g: ResolvedGrounding, code: str) -> Finding | None:
+    """250.53(D): a metal water-pipe electrode is supplemented by another electrode. With no
+    water service modeled, 250.50's finding already asks for it."""
+    runs, metal, unstated = water_service(ctx)
+    if not runs:
+        return None
+    if metal:
+        others = sorted(e.tag for e in g.electrodes if e.use == "ges" and e.tag in g.root_system)
+        if others:
+            return passed(ROD_CID, f"water-pipe electrode {', '.join(metal)} is supplemented by "
+                          f"{', '.join(others)} (250.53(D))", tuple(metal), code)
+        return failed(ROD_CID, f"water-pipe electrode {', '.join(metal)} has no supplemental "
+                      "electrode (250.53(D))", tuple(metal), code,
+                      fix="add a rod or concrete-encased electrode bonded to the service")
+    if unstated:
+        return unknown(ROD_CID, f"water service {', '.join(unstated)} states no material, so "
+                       "250.53(D) is not known", tuple(unstated), code)
+    said = ", ".join(f"{r.tag} is {r.material}" for r in runs)
+    return not_applicable(ROD_CID, f"250.53(D): no metal water-pipe electrode ({said})",
+                          code=code)
 
 
 # -- 250.32 ---------------------------------------------------------------------------------
 
 @check(Tier.CODE, SEPARATE_CID)
 def separate_buildings(ctx: CheckContext) -> list[Finding]:
-    """250.32 -- a building fed by more than one circuit has its own electrode system."""
+    """250.32 -- a building fed by a feeder or several circuits has its own electrode system,
+    and every supply circuit carries an EGC ((A) Ex., (B)(1))."""
     code = cite(NEC.SEPARATE_BUILDING)
     g = grounding(ctx)
-    crossing = crossing_circuits(ctx)
-    if not crossing:
-        return [not_applicable(SEPARATE_CID, "no circuit leaves its panel's building",
-                               code=code)]
+    supplied = supplied_buildings(ctx)
+    if not supplied:
+        return [not_applicable(SEPARATE_CID, "no circuit or panel stands in another building "
+                               "than the service's", code=code)]
     storeys = storey_of(ctx)
+    circuits = {c.tag: c for c in ctx.plan.library.circuits}
     out = []
-    for bldg, circuits in sorted(crossing.items()):
-        names = ", ".join(sorted(circuits))
-        if len(circuits) <= 1:
-            out.append(not_applicable(SEPARATE_CID, f"{bldg} is fed by one circuit ({names}): "
-                                      "250.32(A) Ex.", code=code))
+    for bldg, supply in sorted(supplied.items()):
+        names = ", ".join(sorted(supply["circuits"]))
+        no_egc = sorted(t for t in supply["circuits"] if not circuits[t].egc_awg)
+        for panel in sorted(supply["panels"]):
+            out.append(unknown(SEPARATE_CID, f"{bldg} is fed by a feeder to {panel}; feeders are "
+                               "not modeled, so its EGC (250.32(B)(1)) is not traced",
+                               (panel,), code))
+        if no_egc:
+            out.append(unknown(SEPARATE_CID, f"{', '.join(no_egc)} into {bldg} states no EGC "
+                               "(250.32(A) Ex., (B)(1))", tuple(no_egc), code,
+                               fix="author egc_awg on each supply circuit"))
+        elif supply["circuits"]:
+            out.append(passed(SEPARATE_CID, f"every circuit into {bldg} ({names}) carries an "
+                              "EGC", tuple(sorted(supply["circuits"])), code))
+        if len(supply["circuits"]) <= 1 and not supply["panels"]:
+            if not no_egc:
+                out.append(not_applicable(SEPARATE_CID, f"{bldg} is fed by one circuit "
+                                          f"({names}) with an EGC: 250.32(A) Ex.", code=code))
             continue
         mine = [e for e in g.electrodes if e.building == bldg and e.use == "ges"]
         bonded = [e.tag for e in mine
                   if any(building_of_tag(ctx, t, storeys) == bldg and g.electrode(t) is None
                          and t not in {b.tag for b in g.bonds}
                          for t in g.system_of(e.tag))]
+        fed = (f"{len(supply['circuits'])} circuits ({names})" if supply["circuits"] else "")
+        fed = " and ".join(x for x in (fed, ", ".join(sorted(supply["panels"]))) if x)
         if bonded:
-            out.append(passed(SEPARATE_CID, f"{bldg} ({names}) has its own electrode system "
+            out.append(passed(SEPARATE_CID, f"{bldg} ({fed}) has its own electrode system "
                               f"({', '.join(sorted(bonded))}) bonded to its equipment",
                               tuple(sorted(bonded)), code))
         elif mine:
@@ -327,8 +373,8 @@ def separate_buildings(ctx: CheckContext) -> list[Finding]:
                               tuple(e.tag for e in mine), code,
                               fix="bond the electrodes to the building's EGC junction box"))
         else:
-            out.append(failed(SEPARATE_CID, f"{bldg} is fed by {len(circuits)} circuits "
-                              f"({names}) and has no grounding electrode system", (), code,
-                              fix=f"drive electrodes at {bldg} and bond them to the circuits' "
+            out.append(failed(SEPARATE_CID, f"{bldg} is fed by {fed} and has no grounding "
+                              "electrode system", (), code,
+                              fix=f"drive electrodes at {bldg} and bond them to the supply "
                                   "EGCs"))
     return out
