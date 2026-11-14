@@ -189,8 +189,12 @@ def local_grade_elevation_m(
     reach_m: float = DEFAULT_EXCAVATION_REACH_M,
     floors: list[tuple[str, Any, float]] | None = None,
     sheltered_by: Any | None = None,
+    stations: bool = True,
 ) -> tuple[float, str | None]:
     """The lowest exterior ground surface over or beside ``outline``, and what set it.
+
+    ``stations=False`` skips the grade stations: a caller that knows the point is nearer a
+    building than any station (where finished grade meets the site plane) passes it.
 
     ``(site grade, None)`` where nothing has been dug beside it, which is every footing in
     a house with no sunken court, walkout or window well — so this is a strict refinement of
@@ -229,7 +233,7 @@ def local_grade_elevation_m(
             continue
         if here.distance(polygon) <= reach_m + 1e-9:
             lowest, governing = top_m, tag
-    station = nearest_grade_station(model, here)
+    station = nearest_grade_station(model, here) if stations else None
     if station is not None and station[1] < lowest:
         governing, lowest = station
     return lowest, governing

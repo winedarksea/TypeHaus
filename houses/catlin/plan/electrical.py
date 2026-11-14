@@ -1253,17 +1253,19 @@ CONDUIT_TRUNKS = [
                      pt(inch(54.5), inch(334)), pt(inch(54.5), ft(35, 3)),
                      pt(ft(16), ft(35, 3)),
                      pt(ft(16), ft(35, 5)), pt(ft(16), ft(35, 5))),
-               start_elevation=inch(-31.4375), end_elevation=ft(-5), elevations=(inch(-31.4375), inch(-17.6), inch(-17.6), inch(-17.6), inch(-17.6), inch(-17.6), inch(-17.6), ft(-5)),
+               start_elevation=inch(-31.4375), end_elevation=inch(-53.25), elevations=(inch(-31.4375), inch(-17.6), inch(-17.6), inch(-17.6), inch(-17.6), inch(-17.6), inch(-17.6), inch(-53.25)),
                # Low-profile LB at 4 (16'-0", 35'-3"), RM-B-STAIR ceiling: ~7/16" under the drain.
                pull_points=(5,),
                circuits=("CKT-EV-1450",),
                from_ref="ED-B-PANEL-2", to_ref="ED-G-EV-1450"),
     # The buried leg: out through SP-B-N2-CD-GAR2, north under the house/garage gap, and up
     # through the garage slab to ED-G-EV-1450. Same station the whole feeder always used.
-    # ** -5'-0" AND SCHEDULE 80 PVC SINCE 2026-11-14 (TODO-nec Q9a/b). ** At -4'-0" it had 14.2"
-    # under SL-WK-C (whose west edge misses the 6" the slab row needs) and 7.2" in the gravel
-    # strip between the cladding and the walk (grade -3'-4"): Table 300.7(A) Column 3 wants 18"
-    # everywhere, and -5'-0" gives 19.2" at the strip. Buried EMT would need approved corrosion
+    # ** -4'-5 1/4" AND SCHEDULE 80 PVC SINCE 2026-11-14 (TODO-nec Q9a/b). ** Table 300.7(A)
+    # Column 3 wants 18" everywhere; SL-WK-C's west edge misses the 6" the slab row needs.
+    # Cover is to the walk's top (-2'-9") and to the gravel drip strip between it and the
+    # cladding, which meets the site plane (-2'-10") at the house: 18.4" there at -4'-5 1/4",
+    # the shallowest depth CD-B-V2H-GAP's 2" also clears (18.1"; the owner's -4'-4" leaves
+    # 17.2" and 16.9"). Buried EMT would need approved corrosion
     # protection (358.10(B)(1)); Sch 80 PVC needs none and is a (D)(4) method where it rises.
     # EMT-to-PVC adapter at the wall; duct seal at CD-B-GARAGE's LB (its pull point 5), the
     # first accessible fitting on the warm side of this start.
@@ -1271,7 +1273,7 @@ CONDUIT_TRUNKS = [
                pvc_schedule=80, sealed_ends=("start",),
                sealant="Polywater FST foam duct sealant (TDS: compatible with common cable jacket materials; complies with NEC raceway-seal articles; UL Classified R39313)",
                path=(pt(ft(16), ft(35, 5)), pt(ft(16), ft(44, 3.375)), pt(ft(16), ft(44, 3.375))),
-               start_elevation=ft(-5), end_elevation=ft(5, 10), elevations=(ft(-5), ft(-5), ft(5, 10)),
+               start_elevation=inch(-53.25), end_elevation=ft(5, 10), elevations=(inch(-53.25), inch(-53.25), ft(5, 10)),
                circuits=("CKT-EV-1450",),
                from_ref="ED-B-PANEL-2", to_ref="ED-G-EV-1450"),
     # ** V2H SPARE, ROUTED (backup_power.md section 10). ** One empty 2" Sch 80 PVC, pull string
@@ -1289,7 +1291,7 @@ CONDUIT_TRUNKS = [
                start_elevation=inch(-41.4375), end_elevation=inch(-23),
                elevations=(inch(-41.4375), inch(-41.4375), inch(-23), inch(-23), inch(-23)),
                from_ref="EQ-B-ESS-INV", to_ref="ED-G-EV-1450"),
-    # The V2H buried leg, beside CD-B-GAP-EV: down at y=35'-0" to -5'-0" (a pull body at the foot
+    # The V2H buried leg, beside CD-B-GAP-EV: down at y=35'-0" to -4'-5 1/4" (a pull body at the foot
     # of the drop splits the 540 deg of bends the two runs carry), north through the sleeves
     # SP-B-N2-CD-GAR2 / SP-GF-CD-GAR at x=16'-2 7/16" (the EMT is 2 7/16" west of it), and up
     # through SP-G-CD-GAR to a capped stub 2'-0" over the slab beside ED-G-EV-1450, clear of
@@ -1301,7 +1303,7 @@ CONDUIT_TRUNKS = [
                path=(pt(_V2H_X, ft(35)), pt(_V2H_X, ft(35)),
                      pt(_V2H_X, ft(44, 3.375)), pt(_V2H_X, ft(44, 3.375))),
                start_elevation=inch(-23), end_elevation=inch(-10),
-               elevations=(inch(-23), ft(-5), ft(-5), inch(-10)),
+               elevations=(inch(-23), inch(-53.25), inch(-53.25), inch(-10)),
                pull_points=(1,),
                from_ref="EQ-B-ESS-INV", to_ref="ED-G-EV-1450"),
     # Across the basement ceiling to the kitchen's east counter wall, where KGF3 (the device
@@ -1789,10 +1791,10 @@ CONDUIT_SLEEVES = [
     SleevePenetration(uid="CNS008AAAA", tag="SP-B-N2-CD-GAR2", host_ref="W-B-N2",
                       position=pt(_V2H_SLEEVE_X, ft(35, 6)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(6), purpose=Service.POWER_240,
-                      axis="horizontal", center_elevation=ft(-5)),
-    # Through the ICF *stem*, not the footing under it. The run holds -5'-0" the whole way
+                      axis="horizontal", center_elevation=inch(-53.25)),
+    # Through the ICF *stem*, not the footing under it. The run holds -4'-5 1/4" the whole way
     # (Table 300.7(A) cover, 2026-11-14), and the garage foundation followed grade
-    # down with the soil: FT-GF-S2 bears at -6'-8" and its top is -6'-0", a foot clear
+    # down with the soil: FT-GF-S2 bears at -6'-8" and its top is -6'-0", 18 3/4" clear
     # below this crossing, while W-GF-S2 spans -6'-0" to -0'-8" and is what the conduit
     # actually passes through.
     #
@@ -1804,7 +1806,7 @@ CONDUIT_SLEEVES = [
     SleevePenetration(uid="CNS009AAAA", tag="SP-GF-CD-GAR", host_ref="W-GF-S2",
                       position=pt(_V2H_SLEEVE_X, ft(43, 8.125)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(6), purpose=Service.POWER_240,
-                      axis="horizontal", center_elevation=ft(-5)),
+                      axis="horizontal", center_elevation=inch(-53.25)),
     # The stub-up, 3 3/8" north of the stem's inside face, at 41'-9" — 2 3/8" of concrete
     # around the bore. `integrity.sleeve_in_opening` tests the sleeve's CENTRE, so the full
     # 2 3/8" margin is what protects it, not half the bore's clearance to the slab edge. The
