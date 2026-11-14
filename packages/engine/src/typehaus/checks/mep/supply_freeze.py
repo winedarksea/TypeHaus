@@ -37,6 +37,7 @@ from typehaus.checks.mep.supply_freeze_walk import (
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.model.enums import PipeSystem
+from typehaus.model.placeable_symbols._yard_hydrant_config import HYDRANT_SYMBOLS
 from typehaus.quantities import M_PER_IN
 
 _CID = "mep.supply_freeze_exposure"
@@ -59,7 +60,7 @@ def _hydrant_tags(ctx: CheckContext) -> set[str]:
     types = {t.tag: t for t in ctx.plan.library.fixture_types}
     return {e.tag for s in ctx.plan.storeys for e in ctx.plan.storey_elements(s.tag)
             if e.element_kind == "Fixture" and types.get(e.type_ref) is not None
-            and types[e.type_ref].plan_symbol == "hydrant"}
+            and types[e.type_ref].plan_symbol in HYDRANT_SYMBOLS}
 
 
 def _exterior_framed_walls(ctx: CheckContext) -> list:

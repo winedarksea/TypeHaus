@@ -170,6 +170,10 @@ class PipeAccessory(Element):
     vertex, which is nearly always what is meant (a valve is *on* the pipe) and is the one
     number an author would otherwise have to copy by hand and keep in step.
 
+    ``fixture_ref`` attaches a vacuum breaker to a supported fixture's hose outlet.
+    It replaces authored position/elevation; ``pipe_ref`` still identifies the supply.
+    ``product_ref`` selects its dimensioned geometry. ``serves`` is not a mounting claim.
+
     ``install_parts`` is the kit that comes with the device and is billed with it: the
     balcony hydrant's silicone gasket, plastic mounting bracket and closed-cell foam are
     three line items nobody stocks as a "hydrant", and they are properties of *this*
@@ -183,7 +187,9 @@ class PipeAccessory(Element):
     """
 
     kind: PipeAccessoryKind
-    position: Point2D
+    position: Point2D | None = None
+    fixture_ref: str | None = None  # mount on the fixture's hose_outlet, resolved after placeables
+    product_ref: str | None = None  # dimensioned accessory catalog key
     pipe_ref: str | None = None  # host PipeRun tag
     elevation: Length | None = None  # storey-relative; None -> host run z at nearest vertex
     serves: tuple[str, ...] = ()  # Fixture/Equipment/PipeRun tags downstream of it

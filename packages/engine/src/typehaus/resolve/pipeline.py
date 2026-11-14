@@ -219,6 +219,9 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         findings.extend(resolve_floor_opening_pockets(plan, model))
     with _stage("placeables"):
         findings.extend(resolve_placeables(plan, model))
+        from typehaus.resolve.fixture_accessories import resolve_fixture_accessories
+
+        findings.extend(resolve_fixture_accessories(model))
         # After floors, roofs, soffits and ceilings: a hung fixture's cable runs to them.
         resolve_suspensions(model)
         from typehaus.resolve.terminal_necks import emit_terminal_necks

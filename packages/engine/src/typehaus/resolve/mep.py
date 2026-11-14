@@ -103,7 +103,8 @@ def resolve_mep(model: ResolvedModel) -> list[Finding]:
     for storey in model.plan.storeys:
         for element in model.plan.storey_elements(storey.tag):
             if isinstance(element, PipeAccessory):
-                findings.extend(_resolve_pipe_accessory(model, element, storey))
+                if element.fixture_ref is None:
+                    findings.extend(_resolve_pipe_accessory(model, element, storey))
             elif isinstance(element, DrainCleanout):
                 findings.extend(resolve_drain_cleanout(model, element, storey))
     return findings
@@ -394,6 +395,12 @@ def _resolve_pipe_accessory(model: ResolvedModel, el: PipeAccessory,
             severity=Severity.ERROR, check_id="integrity.pipe_accessory_host",
             message=(f"pipe accessory {el.tag} references pipe_ref={el.pipe_ref!r}, "
                      "which is not a resolved PipeRun"),
+            element_tags=(el.tag,), result=Result.FAIL)]
+    if el.position is None or el.product_ref is not None:
+        return [Finding(
+            severity=Severity.ERROR, check_id="integrity.pipe_accessory_placement",
+            message=f"{el.tag}: run-mounted accessory requires position and no product_ref; "
+                    "dimensioned hose accessories require fixture_ref",
             element_tags=(el.tag,), result=Result.FAIL)]
     cx, cy = el.position.xy_m
     if el.elevation is not None:

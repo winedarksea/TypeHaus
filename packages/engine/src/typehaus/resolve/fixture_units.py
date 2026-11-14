@@ -36,7 +36,8 @@ WSFU_BY_SYMBOL: dict[str, tuple[float, float, float]] = {
     "washer-dryer-stacked": (4.0, 3.0, 3.0),  # the dryer half takes no water
     "dishwasher": (1.5, 1.5, 0.0),
     "laundry-sink": (1.5, 1.0, 1.0),
-    "hydrant": (2.5, 0.0, 2.5),  # hose bibb
+    "hydrant": (2.5, 0.0, 2.5),
+    "woodford-y34ss": (2.5, 0.0, 2.5),  # hose bibb
 }
 
 # Trim mounted on a fixture that carries the row (a Roman tub filler on its bath): the

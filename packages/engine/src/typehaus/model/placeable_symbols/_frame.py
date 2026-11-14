@@ -80,6 +80,7 @@ def is_counter_part(part: Part) -> bool:
 # numbers feed a glTF baseColorFactor and (via ``part_hex``) a three.js material, so viewer
 # and export cannot disagree about what a cushion looks like.
 PART_COLORS: dict[str, tuple[float, float, float, float]] = {
+    "hydrant-orange": (0.88, 0.24, 0.055, 1.0),
     "electrical-orange": (214 / 255, 158 / 255, 46 / 255, 1.0),
     "electrical-plate": (0.94, 0.71, 0.25, 1.0),
     "electrical-recess": (0.22, 0.12, 0.03, 1.0),

@@ -367,7 +367,7 @@ SECOND_FIXTURES = (
 # (resolve/room_floor.py), not the storey datum — off the datum this (and everything else
 # in the room) would float 22" in the air.
 #
-# Handle height (2'-6") is the type's own; everything below the slab (barrel, shutoff,
+# Closed lever height (36 1/2") is the type's own; everything below the slab (barrel, shutoff,
 # supply, sleeve) is authored in params/foundations.py and plan/mep.py, none UI-movable.
 # This instance is, which is why it lives here rather than in fixture_types.py.
 GARAGE_FIXTURES = (

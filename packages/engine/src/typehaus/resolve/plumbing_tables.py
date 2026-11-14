@@ -59,6 +59,7 @@ FIXTURE_CLASS_BY_SYMBOL: dict[str, str] = {
     "washer": "clothes washer", "washer-dryer-stacked": "clothes washer",
     "dishwasher": "dishwasher", "laundry-sink": "laundry sink",
     "floor-drain": "floor drain", "hydrant": "hose bibb / wall hydrant",
+    "woodford-y34ss": "yard hydrant",
     "roman-tub-filler": "tub filler (trim on its bath)",
 }
 

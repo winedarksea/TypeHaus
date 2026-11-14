@@ -38,7 +38,7 @@ def test_the_hydrant_type_needs_water_and_nothing_else(catlin_model):
                         if t.tag == "FX-HYDRANT-Y34SS")
     assert fixture_type.needs == frozenset({Service.WATER_COLD})
     assert Service.DRAIN not in fixture_type.needs
-    assert fixture_type.plan_symbol == "hydrant"
+    assert fixture_type.plan_symbol == "woodford-y34ss"
     # The two things that are specified but unmodellable live in `source`, which is what
     # mep.hydrant_freeze_depth's UNKNOWN points the reader at.
     assert "vacuum breaker" in fixture_type.source
@@ -249,7 +249,7 @@ def test_the_gravel_pit_is_the_only_drainage_path(catlin_model):
     assert y_ft == pytest.approx(48 + 1.3125 / 12, abs=1e-6)
     position = _hydrant(catlin_model).position.xy_m
     assert pit.position.xy_m == pytest.approx(position)
-    for tag in ("SP-G-HYDRANT", "PA-G-HYD-SEAT", "PA-G-HYD-VB"):
+    for tag in ("SP-G-HYDRANT", "PA-G-HYD-SEAT"):
         assert catlin_model.plan.by_tag(tag).position.xy_m == pytest.approx(position), tag
     run = _supply(catlin_model)
     assert run.path[-2] == run.path[-1] == pytest.approx(position)

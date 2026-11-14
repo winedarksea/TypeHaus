@@ -11,12 +11,23 @@ import pytest
 
 from typehaus.checks import run_from_model
 from typehaus.checks.registry import Tier
-from typehaus.model import (Building, Circuit, DeviceKind, ElectricalDevice, ElectricalDeviceType,
-                            Library, PlanModel, Project, Site, Storey, m, pt)
+from typehaus.model import (
+    Building,
+    Circuit,
+    DeviceKind,
+    ElectricalDevice,
+    ElectricalDeviceType,
+    Library,
+    PlanModel,
+    Project,
+    Site,
+    Storey,
+    m,
+    pt,
+)
 from typehaus.model.nec import NEC
 from typehaus.resolve import resolve
-from typehaus.takeoff.service_load import (general_demand_va, hvac_selection,
-                                           service_load_summary)
+from typehaus.takeoff.service_load import general_demand_va, hvac_selection, service_load_summary
 
 _PANEL = ElectricalDevice(tag="ED-M-PANEL", kind=DeviceKind.PANEL, position=pt(m(0), m(0)))
 

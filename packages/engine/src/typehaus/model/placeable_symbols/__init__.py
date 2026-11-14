@@ -145,7 +145,7 @@ SYMBOL_NAMES = (frozenset(KITCHEN_SEKTION_SYMBOLS) | frozenset(RECEPTACLE_SYMBOL
     "shower-neo-angle",
     "kitchen-sink",
     "kitchen-sink-undermount-single",
-    "hydrant", "floor-drain", "laundry-sink",
+    "hydrant", "woodford-y34ss", "floor-drain", "laundry-sink",
     # luminaires — one name per LuminaireForm that has a point instance. STRIP has none:
     # a cove strip is a LightRun polyline, drawn by the lighting plan, not a placeable.
     # "linear-light" covers ordinary compact linear fixtures. The plant tube has the

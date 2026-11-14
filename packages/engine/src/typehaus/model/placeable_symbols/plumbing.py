@@ -37,6 +37,7 @@ from typehaus.model.placeable_symbols._solid_surface_vanity import solid_surface
 from typehaus.model.placeable_symbols._sunnersta import sunnersta_sink
 from typehaus.model.placeable_symbols._toto_ap import toto_ap
 from typehaus.model.placeable_symbols._undermount_sink import single_bowl_undermount
+from typehaus.model.placeable_symbols._yard_hydrant import yard_hydrant
 
 __all__ = ["NEO_ANGLE_CUT_FRACTION", "PLUMBING_SYMBOLS", "neo_angle_points"]
 
@@ -464,6 +465,7 @@ def hydrant() -> Builder:
 
 PLUMBING_SYMBOLS: dict[str, Builder] = {
     "hydrant": hydrant(),
+    "woodford-y34ss": yard_hydrant,
     "laundry-sink": laundry_tub(),
     "toilet": toilet(),
     "toilet-wall-hung": toilet_wall_hung(),

@@ -238,8 +238,7 @@ SUPPLY_STOPS = [
 # stands on the service ENTRY itself (plan/site.py) — the first thing the lateral reaches,
 # not the last. The seat takes the run's elevation, its own buried valve
 # at -8'-10" (the 72" bury `mep.hydrant_freeze_depth` grades, measured from the -2'-10"
-# grade); the vacuum breaker screws onto the outlet, 2'-6" above the garage slab, which puts
-# it at 0'-0".
+# grade); the vacuum breaker follows the Y34SS's downward hose outlet after placement.
 SUPPLY_DEVICES_GARAGE = [
     PipeAccessory(uid="C9GW5PXV2R", tag="PA-G-HYD-SEAT", kind=PipeAccessoryKind.SHUTOFF,
                   pipe_ref="PR-G-HYDRANT-CW", position=pt(ft(11), ft(48, 1.3125)),
@@ -247,8 +246,8 @@ SUPPLY_DEVICES_GARAGE = [
                   serves=("FX-G-HYDRANT",)),
     PipeAccessory(uid="J1DS4RQZ8X", tag="PA-G-HYD-VB",
                   kind=PipeAccessoryKind.VACUUM_BREAKER, pipe_ref="PR-G-HYDRANT-CW",
-                  position=pt(ft(11), ft(48, 1.3125)), elevation=ft(0), room="RM-GARAGE",
-                  model="screw-on hose-bib vacuum breaker, ASSE 1011",
+                  fixture_ref="FX-G-HYDRANT", product_ref="Woodford-34HD-BR", room="RM-GARAGE",
+                  model="Woodford NIDEL 34HD-BR screw-on hose-bib vacuum breaker, ASSE 1011",
                   serves=("FX-G-HYDRANT",)),
     # The weep. PA-G-HYD-VB above protects the hose thread (the only
     # opening P2902.3.1 names); a self-draining yard hydrant has a second opening, the weep

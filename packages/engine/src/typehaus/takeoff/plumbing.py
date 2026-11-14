@@ -16,6 +16,7 @@ the house's.
 
 from __future__ import annotations
 
+from typehaus.model.placeable_symbols._yard_hydrant_config import HYDRANT_SYMBOLS
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.mep_fittings import (
     FAMILY_PIPE,
@@ -166,7 +167,7 @@ def hydrant_rows(model: ResolvedModel) -> list[dict[str, object]]:
             if element.element_kind != "Fixture":
                 continue
             fixture_type = types.get(element.type_ref)
-            if (fixture_type is None or fixture_type.plan_symbol != "hydrant"
+            if (fixture_type is None or fixture_type.plan_symbol not in HYDRANT_SYMBOLS
                     or Service.WATER_COLD not in fixture_type.needs):
                 continue
             feeds = [r.tag for r in model.pipe_runs

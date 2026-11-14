@@ -26,6 +26,7 @@ from typehaus.checks._authoring import passed as _pass
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.model.enums import PipeAccessoryKind, PipeSystem, Service
+from typehaus.model.placeable_symbols._yard_hydrant_config import HYDRANT_SYMBOLS
 
 _SUPPLY_SYSTEMS = (PipeSystem.WATER_COLD.value, PipeSystem.WATER_HOT.value)
 
@@ -129,7 +130,7 @@ def backflow_prevention(ctx: CheckContext) -> list[Finding]:
         for element in ctx.plan.storey_elements(storey.tag)
         if element.element_kind == "Fixture"
         and types.get(element.type_ref) is not None
-        and types[element.type_ref].plan_symbol == "hydrant"
+        and types[element.type_ref].plan_symbol in HYDRANT_SYMBOLS
         and Service.WATER_COLD in types[element.type_ref].needs
     ]
     guards = [a for a in ctx.model.pipe_accessories if a.kind in _GUARD_KINDS]

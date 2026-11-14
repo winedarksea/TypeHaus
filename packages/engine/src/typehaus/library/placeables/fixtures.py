@@ -25,6 +25,7 @@ from typehaus.model import (
     m,
     pt,
 )
+from typehaus.model.placeable_symbols._yard_hydrant_config import Y34SS
 
 REFERENCE = "Residential planning allowance; final fixture selection by owner."
 
@@ -249,11 +250,12 @@ LAVATORY_COMPACT = FixtureType(
 )
 # The point of this type is what is *not* in ``needs``: only WATER_COLD. A frost-free
 # hydrant drains through its own weep at the buried shutoff, not into the sanitary system,
-# so the sleeve check correctly declines to demand a drain sleeve for it. Footprint is the
-# escutcheon (what a plan can draw), height the handle above the slab.
+# so the sleeve check correctly declines to demand a drain sleeve for it. The envelope
+# is the closed product above grade, including its lever and bare hose nozzle.
 WALL_HYDRANT = FixtureType(
-    tag="FX-HYDRANT-Y34SS", name='Frost-free wall hydrant, 3/4" stainless',
-    footprint=(inch(6), inch(6)), height=ft(2, 6), plan_symbol="hydrant",
+    tag="FX-HYDRANT-Y34SS", name='Woodford Y34-6-SS frost-free yard hydrant, 3/4" inlet',
+    footprint=(inch(Y34SS.width), inch(Y34SS.depth)),
+    height=inch(Y34SS.height), plan_symbol="woodford-y34ss",
     basin=False,
     needs=frozenset({Service.WATER_COLD}),
     # The inlet is the buried valve foot, one bury length under the head. APPROXIMATE because
@@ -263,7 +265,9 @@ WALL_HYDRANT = FixtureType(
                        position=(inch(0), inch(0), ft(-6)), connection_size=inch(0.75),
                        direction=(0, 0, -1),
                        notes="3/4\" inlet at the valve foot, 6' bury"),),
-    source='Y34SS-class frost-free wall hydrant, 3/4" stainless, 6\' bury. Specify the '
+    source='Woodford Y34-6-SS yard hydrant: 1-inch 304 stainless casing, 3/4-inch inlet '
+           'and brass hose nozzle; 6-foot bury. Nozzle 27 1/2 inches above grade, closed '
+           'lever 36 1/2 inches above grade (Woodford Y34.111 Rev. 9/25). Specify the '
            "manufacturer's supplemental epoxy coating over the buried barrel where the "
            "floor runs salt slush (the standard finish is not rated for chloride "
            "immersion), and a screw-on hose-bib vacuum breaker on the outlet — required "

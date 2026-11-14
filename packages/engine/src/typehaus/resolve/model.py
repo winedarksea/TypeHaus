@@ -1373,6 +1373,9 @@ class ResolvedPipeAccessory:
     wall_ref: str | None = None
     model: str = ""
     install_parts: tuple[str, ...] = ()
+    fixture_ref: str | None = None
+    product_ref: str | None = None
+    direction: tuple[float, float, float] | None = None
 
 
 @dataclass(frozen=True)

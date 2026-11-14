@@ -18,7 +18,7 @@ from typehaus.model.placeable_symbols.plumbing import PLUMBING_SYMBOLS
 from typehaus.takeoff.plumbing_calc import DFU_BY_SYMBOL, HOST_COUNTED_SYMBOLS, WSFU_BY_SYMBOL
 
 # A hose bibb discharges to grade, so it is a demand with no drainage fixture unit.
-_NO_DRAIN = {"hydrant"}
+_NO_DRAIN = {"hydrant", "woodford-y34ss"}
 # A floor drain is the opening itself — it receives, it is never supplied.
 _NO_SUPPLY = {"floor-drain"}
 # Deck trim on a bath: the bath's own row counts it, so a second row would count it twice.

@@ -268,7 +268,7 @@ UNCOVERED: dict[str, tuple[str, ...]] = {
     "BracedWallPanel": ("wall_ref",),
     "WallPaneling": ("walls",),
     "PipeRun": ("wall_ref", "wall_refs", "serves"),
-    "PipeAccessory": ("wall_ref", "serves"),
+    "PipeAccessory": ("wall_ref", "serves", "fixture_ref"),
     "VentRun": ("wall_ref",),
     "SleevePenetration": ("serves_fixture", "serves_duct"),
     "ShelfBank": ("host",),

@@ -15,6 +15,7 @@ from typehaus.checks.mep.plumbing_common import _M_TO_FT, _advisory_fail
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.model.enums import PipeAccessoryKind, PipeSystem, Service
+from typehaus.model.placeable_symbols._yard_hydrant_config import HYDRANT_SYMBOLS
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.slab_clip import floor_outline
 from typehaus.resolve.solid_categories import in_slab_family, is_pour_slab
@@ -65,7 +66,7 @@ def hydrant_freeze_depth(ctx: CheckContext) -> list[Finding]:
         if element.element_kind == "Fixture"
         and (types.get(element.type_ref) is not None
              and Service.WATER_COLD in types[element.type_ref].needs
-             and (types[element.type_ref].plan_symbol == "hydrant"))
+             and (types[element.type_ref].plan_symbol in HYDRANT_SYMBOLS))
     ]
     if not hydrants:
         return []

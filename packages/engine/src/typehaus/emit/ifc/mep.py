@@ -160,8 +160,9 @@ def _emit_pipe_accessories(f: Any, body: Any, model: ResolvedModel,
                       if s.tag == accessory.tag
                       and s.category in PIPE_ACCESSORY_CATEGORIES), None)
         if solid is not None and solid.outline:
-            ll.assign_representation(f, element, ll.add_prism_from_profile(
-                f, body, solid.outline, solid.z1_m - solid.z0_m, solid.z0_m))
+            from typehaus.emit.ifc.structural import _solid_body
+
+            ll.assign_representation(f, element, _solid_body(f, body, solid))
         # The category is per-device (``emit/trades.py``), so it carries into the file as the
         # device rather than as the family — a downstream reader filtering PSET_SOURCE gets
         # "vacuum_breaker", the same string every other consumer of this solid sees.
@@ -169,6 +170,7 @@ def _emit_pipe_accessories(f: Any, body: Any, model: ResolvedModel,
             "uid": accessory.uid, "tag": accessory.tag, "category": accessory.kind})
         ll.ensure_pset(f, element, "TypeHaus_PipeAccessory", {
             "kind": accessory.kind, "model": accessory.model,
+            "fixture_ref": accessory.fixture_ref or "", "product_ref": accessory.product_ref or "",
             "pipe_ref": accessory.pipe_ref or "", "system": accessory.system or "",
             "accessible": accessory.accessible, "room": accessory.room or "",
             "serves": ", ".join(accessory.serves),
