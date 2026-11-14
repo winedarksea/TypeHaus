@@ -231,6 +231,59 @@ def rank(results: Sequence[CampaignResult]) -> list[CampaignResult]:
                                           r.settings.get("order_strategy", "")))
 
 
+@dataclass(frozen=True)
+class NetworkGrade:
+    """What grading one order's whole network found (``haus route --house --evaluate``)."""
+
+    refused: bool = False  #: the candidate would not build or resolve: ungraded, not clean
+    fail: int = 0  #: introduced FAILs, any check
+    unknown: int = 0  #: introduced UNKNOWNs, any check
+    construction_fail: int = 0  #: introduced FAILs in ``route_check_groups.CONSTRUCTION_CHECKS``
+    forbidden: int = 0  #: fittings ``forbidden_turns`` refuses
+
+    @property
+    def constructible(self) -> bool:
+        return not self.refused and not self.construction_fail and not self.forbidden
+
+    def as_dict(self) -> dict:
+        return {"class": "constructible" if self.constructible else "provisional",
+                "refused": self.refused, "fail": self.fail, "unknown": self.unknown,
+                "construction_fail": self.construction_fail,
+                "forbidden_fittings": self.forbidden}
+
+
+#: Most networks a campaign grades to choose between orders: each costs one check run.
+SHORTLIST = 3
+
+
+def select(results: Sequence[CampaignResult],
+           grade: Callable[[CampaignResult], NetworkGrade] | None, *, limit: int,
+           ) -> tuple[list[CampaignResult], dict[str, NetworkGrade]]:
+    """:func:`rank`, then grade a shortlist and let the grade reorder it.
+
+    Only orders tied with the best on (refused, skipped) are graded — a grade never outranks
+    a refusal — at most ``min(limit, SHORTLIST)`` of them, and only when there are two to
+    choose between. Within it: constructible first, then introduced FAILs, UNKNOWNs, cost.
+    Grades are keyed by order strategy."""
+    ranked = rank(results)
+    if grade is None or not ranked:
+        return ranked, {}
+    tier = (len(ranked[0].refused), len(ranked[0].skipped))
+    shortlist = [r for r in ranked if (len(r.refused), len(r.skipped)) == tier]
+    shortlist = shortlist[:max(1, min(limit, SHORTLIST))]
+    if len(shortlist) < 2:
+        return ranked, {}
+    grades = {r.settings.get("order_strategy", ""): grade(r) for r in shortlist}
+
+    def key(r: CampaignResult) -> tuple:
+        g = grades[r.settings.get("order_strategy", "")]
+        return (not g.constructible, g.fail, g.unknown, sum(p.cost for p in r.accepted),
+                r.settings.get("order_strategy", ""))
+
+    rest = [r for r in ranked if not any(r is s for s in shortlist)]
+    return sorted(shortlist, key=key) + rest, grades
+
+
 def run_campaign(targets: Sequence[CampaignTarget],
                  propose: Callable[[CampaignTarget, list], Outcome],
                  *, inflate_m: float,

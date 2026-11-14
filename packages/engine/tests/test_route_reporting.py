@@ -259,7 +259,7 @@ def test_campaign_json_and_artifacts_include_network_evaluation(
             return [], ["terminal blocked"], [], [_blocked()]
         return routing_cli.proposals, routing_cli.problems, routing_cli.notices, []
 
-    def evaluate(_directory, _model, proposals):
+    def evaluate(_directory, _model, proposals, **_kwargs):
         if not proposals:
             return route_eval.Evaluation(tag="campaign", refused="nothing was laid")
         return route_eval.Evaluation(
@@ -268,6 +268,7 @@ def test_campaign_json_and_artifacts_include_network_evaluation(
 
     monkeypatch.setattr(cmd_route, "_propose", propose)
     monkeypatch.setattr(route_eval, "evaluate_network", evaluate)
+    monkeypatch.setattr(route_eval, "baseline_findings", lambda *_args: {})
     result = routing_cli.invoke("--house", "--orders", "3", *flags,
                                 "--out", str(tmp_path))
     assert result.exit_code == (1 if scope == "partial" else 0), result.output
@@ -285,6 +286,11 @@ def test_campaign_json_and_artifacts_include_network_evaluation(
         assert report["evaluations"] == summary["evaluations"]
     assert report["evaluations"][0]["tag"] == "campaign"
     assert len(report["orders_tried"]) == 3
+    # Evaluating (--json implies it) grades every order tied on refusals, up to three.
+    grades = [row["grade"] for row in report["orders_tried"]]
+    assert {g["class"] for g in grades} == {"provisional" if scope == "empty"
+                                             else "constructible"}
+    assert all(g["refused"] == (scope == "empty") for g in grades)
     if scope == "empty":
         assert report["accepted"] == []
         assert report["evaluations"][0]["refused"]

@@ -222,7 +222,7 @@ def _group_terminals(model: ResolvedModel, room: str) -> set[str]:
 
 
 def _campaign(directory, model, target, cost) -> Found:
-    from typehaus.cli.cmd_route_house import campaign_result, manifold_branches
+    from typehaus.cli.cmd_route_house import campaign_result, manifold_branches, network_grader
 
     only = None
     if target.mode == "manifold":
@@ -233,7 +233,7 @@ def _campaign(directory, model, target, cost) -> Found:
         model, trades=["supply"] if only is not None else list(target.trades) or None,
         storey=target.storey, locked=frozenset(), margin_ft=_MARGIN_FT, band=None,
         avoid=frozenset(), cost=cost, slope=None, alternatives=1, rip_up_budget=4,
-        only=only)
+        only=only, grade=network_grader(directory, model)[0])  # one order: grades nothing
     notes = [f"{tag}: {reason}" for tag, reason in run.result.refused]
     return Found(list(run.result.accepted), len(run.result.refused),
                  len(run.result.lifts), notes)

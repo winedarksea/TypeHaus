@@ -278,3 +278,32 @@ def test_the_result_records_which_ordering_produced_it() -> None:
                           lambda t, o: Outcome(proposal=_proposal(t.tag)),
                           inflate_m=0.0127, strategy="biggest_first")
     assert result.settings["order_strategy"] == "biggest_first"
+
+
+def test_grading_reorders_the_shortlist_but_never_outranks_a_refusal() -> None:
+    """Constructible beats cheaper; then FAILs, UNKNOWNs, cost; refusals stay primary."""
+    from typehaus.routing.campaign import CampaignResult, NetworkGrade, select
+
+    def result(name: str, cost: float, refused: int = 0) -> CampaignResult:
+        r = CampaignResult(settings={"order_strategy": name})
+        r.accepted = [_proposal(name)]
+        r.accepted[0].cost = cost
+        r.refused = [("X", "no route")] * refused
+        return r
+
+    grades = {"cheap": NetworkGrade(construction_fail=1), "dear": NetworkGrade(fail=2),
+              "fewer_fail": NetworkGrade(fail=1, unknown=5),
+              "fewer_unknown": NetworkGrade(fail=1, unknown=1),
+              "refused": NetworkGrade()}
+    results = [result("cheap", 10), result("dear", 900), result("fewer_fail", 950),
+               result("refused", 1, refused=1)]
+    ranked, graded = select(results, lambda r: grades[r.settings["order_strategy"]], limit=3)
+    assert [r.settings["order_strategy"] for r in ranked] == [
+        "fewer_fail", "dear", "cheap", "refused"]
+    assert set(graded) == {"cheap", "dear", "fewer_fail"} and not graded["cheap"].constructible
+    ranked, _ = select([result("fewer_fail", 10), result("fewer_unknown", 20)],
+                       lambda r: grades[r.settings["order_strategy"]], limit=3)
+    assert ranked[0].settings["order_strategy"] == "fewer_unknown"
+    one, none = select([result("cheap", 10), result("dear", 900)],
+                       lambda r: grades[r.settings["order_strategy"]], limit=1)
+    assert one[0].settings["order_strategy"] == "cheap" and none == {}

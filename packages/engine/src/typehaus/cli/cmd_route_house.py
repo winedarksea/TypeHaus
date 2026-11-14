@@ -6,7 +6,7 @@ accepted network. See docs/routing.md for reports and acceptance."""
 from __future__ import annotations
 
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -60,6 +60,7 @@ class CampaignRun:
     diagnostics: dict[str, Any]  #: the best order's per-target (problems, notices, refusals)
     diagnostics_by_strategy: dict[str, Any]
     unassigned: list[str]  #: scoped runs with no trade
+    grades: dict[str, Any] = field(default_factory=dict)  #: NetworkGrade by order strategy
 
 
 def campaign_result(model: Any, *, trades: list[str] | None, storey: str | None,
@@ -68,20 +69,22 @@ def campaign_result(model: Any, *, trades: list[str] | None, storey: str | None,
                     slope: float | None, alternatives: int, rip_up_budget: int,
                     details: bool = False, orders: int = 1,
                     only: frozenset[str] | None = None,
+                    grade: Callable[[Any], Any] | None = None,
                     announce: Callable[[list, list[str]], None] | None = None
                     ) -> CampaignRun:
     """Lay every target in scope and return the result without printing anything.
 
     ``announce(targets, unassigned)`` is called once, before the searches, so a caller can
-    say what it is about to do. ``details`` collects per-proposal explanations."""
+    say what it is about to do. ``details`` collects per-proposal explanations. ``grade``
+    (:func:`network_grader`) lets grading choose among the orders (``campaign.select``)."""
     from typehaus.cli.cmd_route import _propose
     from typehaus.routing.campaign import (
         ORDER_STRATEGIES,
         Outcome,
         order_targets,
-        rank,
         reorder,
         run_campaign,
+        select,
     )
     from typehaus.routing.obstacles import CLEARANCE_M
 
@@ -132,7 +135,7 @@ def campaign_result(model: Any, *, trades: list[str] | None, storey: str | None,
         results.append(run_campaign(reorder(targets, name), propose, inflate_m=CLEARANCE_M,
                                     rip_up_budget=rip_up_budget, strategy=name))
         diagnostics_by_strategy[name] = diagnostics
-    ranked = rank(results)
+    ranked, grades = select(results, grade, limit=orders)
     result = ranked[0]
     result.settings.update({
         "storey": storey, "trades": trades, "margin_ft": margin_ft,
@@ -146,7 +149,42 @@ def campaign_result(model: Any, *, trades: list[str] | None, storey: str | None,
             for tag in unassigned)
     return CampaignRun(result, ranked, targets,
                        diagnostics_by_strategy[result.settings["order_strategy"]],
-                       diagnostics_by_strategy, unassigned)
+                       diagnostics_by_strategy, unassigned, grades)
+
+
+def network_grader(directory: Path, model: Any) -> tuple[Callable[[Any], Any], dict]:
+    """A ``grade`` for :func:`campaign_result` over one shared baseline, and the cache of
+    each graded order's Evaluation (by strategy) so the winner is not graded twice."""
+    from typehaus.cli import route_eval
+
+    held: dict[str, Any] = {}
+    baseline: list = []  # computed on first use, once: nothing is graded with one order
+
+    def grade(result: Any) -> Any:
+        if not baseline:
+            baseline.append(route_eval.baseline_findings(model, directory))
+        evaluation = route_eval.evaluate_network(directory, model, result.accepted,
+                                                 baseline=baseline[0])
+        held[result.settings["order_strategy"]] = evaluation
+        return network_grade(evaluation, result.accepted)
+
+    return grade, held
+
+
+def network_grade(evaluation: Any, proposals: list) -> Any:
+    """Eligibility: CONSTRUCTIBLE = graded, no CONSTRUCTION_CHECKS FAIL, no forbidden turn."""
+    from typehaus.cli.route_check_groups import CONSTRUCTION_CHECKS
+    from typehaus.resolve.mep_fitting_direction import forbidden_turns
+    from typehaus.resolve.mep_fittings import SERVICE_BY_SYSTEM
+    from typehaus.routing.campaign import NetworkGrade
+
+    fails = [f for f in evaluation.introduced if f.result.value == "fail"]
+    return NetworkGrade(
+        refused=bool(evaluation.refused), fail=len(fails),
+        unknown=sum(f.result.value == "unknown" for f in evaluation.introduced),
+        construction_fail=sum(f.check_id in CONSTRUCTION_CHECKS for f in fails),
+        forbidden=sum(len(forbidden_turns(SERVICE_BY_SYSTEM.get(p.system, p.system), p.points,
+                                          getattr(p, "patterns", None))) for p in proposals))
 
 
 def run_house_campaign(model: Any, *, directory: Path, trades: list[str] | None,
@@ -171,24 +209,28 @@ def run_house_campaign(model: Any, *, directory: Path, trades: list[str] | None,
         if not as_json and targets:
             console.print(f"[bold]{len(targets)} target(s)[/bold] in campaign order")
 
+    grade, held = network_grader(directory, model) if evaluate else (None, {})
     run = campaign_result(
         model, trades=trades, storey=storey, locked=locked, margin_ft=margin_ft, band=band,
         avoid=avoid, cost=cost, slope=slope, alternatives=alternatives,
         rip_up_budget=rip_up_budget, details=explain or as_json or out_dir is not None,
-        orders=orders, only=only, announce=announce)
+        orders=orders, only=only, grade=grade, announce=announce)
     result, ranked = run.result, run.ranked
     if len(ranked) > 1 and not as_json:
         console.print("[bold]orders tried, best first[/bold] — fewest refusals outranks "
-                      "cheapest, always: those are not two points on one scale")
+                      "cheapest, always; among graded orders constructible outranks cheaper")
         for candidate in ranked:
+            graded = run.grades.get(candidate.settings["order_strategy"])
             console.print(f"  {candidate.settings['order_strategy']:>14}: "
                           f"{len(candidate.accepted)} laid, {len(candidate.refused)} "
                           f"refused, {sum(p.cost for p in candidate.accepted):.0f}\" "
-                          "equivalent")
+                          "equivalent" + (f", {graded.as_dict()['class']} ({graded.fail} "
+                                          f"FAIL, {graded.unknown} UNKNOWN)" if graded else ""))
 
     evaluations = []
     if evaluate or as_json:
-        evaluation = evaluate_network(directory, model, result.accepted)
+        evaluation = (held.get(result.settings["order_strategy"])
+                      or evaluate_network(directory, model, result.accepted))
         evaluations.append(evaluation)
         result.settings["evaluated"] = True
         if not as_json:
@@ -212,7 +254,9 @@ def run_house_campaign(model: Any, *, directory: Path, trades: list[str] | None,
                               for item in refusals]
         report["orders_tried"] = [
             {"strategy": item.settings["order_strategy"], "accepted": len(item.accepted),
-             "refused": len(item.refused), "cost_in_equivalent": sum(p.cost for p in item.accepted)}
+             "refused": len(item.refused), "cost_in_equivalent": sum(p.cost for p in item.accepted),
+             "grade": (run.grades[item.settings["order_strategy"]].as_dict()
+                       if item.settings["order_strategy"] in run.grades else None)}
             for item in ranked]
         emit_report(report, as_json=as_json, summary=summary, out_dir=out_dir)
     return 1 if result.refused else 0
