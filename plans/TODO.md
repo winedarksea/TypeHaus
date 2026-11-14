@@ -225,13 +225,43 @@ That would let subagents compare candidates without repeatedly reading geometry 
 - Upgrade fasteners still uncounted (decision #105 covers panel screws, connector schedules, treated framing, roof/screen sheathing): wall sheathing and subfloor nailing, fascia/trim screws, window-install screws, and the HL angles' site-length through-bolts.
 - Backup battery, still open (`houses/catlin/notes/backup_power.md` §11-§12): EG4's UL 9540 certificate naming 12kPV + WallMount Indoor; how the 12kPV's load port behaves on its "No Battery" setting (ask EG4); its GEN port rating; declare future storage and V2H on the Xcel application; DSI's position on a UL 9540 3rd-ed. DC ESS battery; a freeze drain-down plan; a small LFP UPS for Home Assistant, the router and the leak valve. After the 2026-11-02 trim the always-on tier passes summer's 48 h and the bridge (0.28 kWh margin) and still fails December's cycle (§6).
 - V2H spare raceway (routed 2026-11-07, `backup_power.md` §10): add PVC 2" rows to `prices.toml [conduit_fittings]`; the ICF supplier/engineer details rebar round the three 6" CD-GAR sleeve boxouts in W-B-N2 and W-GF-S2. `CD-B-GAP-EV` ends at +5'10" abs while `ED-G-EV-1450` is at 48" AFF (+14" abs): an existing over-rise to check.
-- **2026 NEC residue (decision #120).** 13 `typehaus.model.nec.UNCONFIRMED` rows await the
-  printed NFPA 70-2026 text (owner to read): 210.8(A)(9), 210.12(B), 210.52(C)(1),
-  210.52(C)(3), 210.52(E)(3), 314.27(C), 705.12(B)(2)(a), 722.15(A), 250.24, 250.66, 250.94,
-  250.104(A), 250.106. Also unread, not yet cited: 120.57 (EVSE at the larger of 7,200 W or
-  nameplate in 2023; the engine takes the authored load at 100%) and 120.11(A) (motor
-  treatment inside 120.6). Revisit Class C SPGFCI for CKT-HP1-3 after the NFPA Standards Council
-  (2026-12-15/16, ACCA/AHRI appeals); they are Class A breakers meanwhile.
+- **2026 NEC residue (decision #120).** Every cited row is read in the printed code
+  (2026-11-13) and paraphrased in `docs/nec-2026-paraphrase.md`; its **Engine** lines list the
+  rules no check grades.
+  - Catlin, owner to decide: the 250.104(A) water bond BC-B-WATER is #4 Cu where Table
+    250.102(C)(1) wants 1/0 Cu for a 320 A service (3/0 cap); the garage, fed by branch
+    circuits, has no 250.94 IBT or disconnect modelled.
+  - Revisit Class C SPGFCI for CKT-HP1-3 after the NFPA Standards Council (2026-12-15/16,
+    ACCA/AHRI appeals); they are Class A breakers meanwhile.
+  - Unread and not yet cited: 120.57 (EVSE at the larger of 7,200 W or nameplate in 2023; the
+    engine takes the authored load at 100%) and 120.11(A) (motor treatment inside 120.6).
+  - Engine checks that read the printed rule loosely (audit 2026-11-13):
+    `receptacle_spacing` credits a receptacle on the other face of a wall and breaks wall space
+    at a stationary appliance only beside a cabinet (no fireplace break); (C)(1) Ex. 1 breaks
+    the wall line only where the appliance touches it, not at 12"/18"; `island_receptacle`
+    skips peninsulas, has no (C)(3) 20" window and FAILs where (C)(2) provisions would do;
+    (D) measures to the vanity, not each bowl, and accepts a free-standing receptacle;
+    `appliance_receptacles` never traces an appliance's own circuit; the AFCI occupancy table
+    reads STORAGE as closets and omits STAIR and a UTILITY room holding laundry; (G)(1) treats
+    an unset mount as the floor; `code.NEC_250_94_ibt` is N/A without a data entry and models
+    no terminal count, external mount or building-disconnect IBT; `gec_size` grades only the
+    250.66(A)/(B) caps; the water bond is graded for connection, not size; no field states
+    250.24(B) neutral isolation; 705.12 tries (B)(1)/(B)(2)(a) only and cannot see the
+    opposite-end placement or label.
+  - Cheap checks still missing: 210.52(F) laundry, 210.52(H) hallways, 210.11(C)(4) garage
+    circuit.
+- **Rapid-shutdown initiator** (`ED-M-RSD-INIT`, `backup_power.md` §8): confirm the IMO
+  ESS-RSD01's UL 508i listing and file number, and its rating (IMO 48 VDC vs the Fronius
+  42,0440,0338 listing's 96 VDC) before buying; confirm with EG4 what initiates shutdown on the
+  12kPV and whether the RSD loop is normally closed (wiring guide) or open (QSG v1.3.2), then
+  wire to the delivered board; route the Class 2 pair from the `CD-M-RSD-INIT` stub to
+  `EQ-B-ESS-INV` (fished by the electrician; `haus route` found no lane); label the switch.
+- `ED-B-PLAY-N-RC2`..`RC5` (theater, 2026-11-13) were placed to close the 210.52(A) gaps
+  between the sconces and tapestries; confirm against the AV and seating layout.
+- `test_electrical_circuits.py`: `test_catlin_panel_schedule_is_derived`,
+  `test_catlin_panel_spaces_fits_the_54_space_enclosure` and
+  `test_model_json_carries_the_electrical_takeoff` expect 44 circuits / 40 slots; catlin has
+  45 / 41 since a recent circuit was added. Update the counts with that circuit's reason.
 - `haus print3d --colour-groups`: per-piece colour components bucketed from `Material.color`, matched to a sample exported from Bambu Studio before shipping.
 - Promote the leafless passage's drywall wrap (#122) to a `ResolvedModel.passage_wraps` record so emitters can draw the returns.
 - **W-B-N2 wall-top restraint (Minn. R. 1309.0404).** `FO-M-STAIR` fills the first three joist spaces against W-B-N2 for x 10'-3"..17'-8 3/4", so no footnote f blocking can stand there and `code.MN_1309_0404_wall_top` reports UNKNOWN. 400 plf x 8' = 3,200 lb goes into the well's edge framing spanning flat between the headers: get the EOR's approved-equivalent detail (a flat strongback or a landing strut) and author it. Basis note `houses/catlin/notes/main_floor_truss_basis.md` §4.

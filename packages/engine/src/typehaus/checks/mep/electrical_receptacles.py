@@ -45,7 +45,8 @@ _MAX_COUNTING_HEIGHT_M = 5.5 * 0.3048
 _BASIN_SYMBOLS = {"lavatory", "vanity"}
 _NOT_BASIN_SYMBOLS = {"toilet", "toilet-wall-hung", "bidet", "urinal", "tub", "tub-shower",
                       "kohler-underscore-6036", "kohler-underscore-6032",
-                      "shower", "floor-drain", "kitchen-sink", "laundry-sink", "hydrant", "woodford-y34ss",
+                      "shower", "floor-drain", "kitchen-sink", "laundry-sink",
+                      "hydrant", "woodford-y34ss",
                       "kitchen-sink-undermount-single",
                       "sauna-heater", "water-heater"}
 
@@ -232,7 +233,7 @@ def _receptacles(ctx: CheckContext, rooms: dict[str, list],
     """
     from shapely.geometry import Point
 
-    from typehaus.checks.mep.electrical import _counts_as_a_125v_receptacle
+    from typehaus.checks.mep.electrical import _counts_toward_210_52
 
     resolved = {obj.tag: obj for obj in ctx.model.canvas_objects
                 if obj.kind == "ElectricalDevice"}
@@ -241,7 +242,7 @@ def _receptacles(ctx: CheckContext, rooms: dict[str, list],
         for element in ctx.plan.storey_elements(storey.tag):
             if element.element_kind != "ElectricalDevice":
                 continue
-            if not _counts_as_a_125v_receptacle(ctx, element):
+            if not _counts_toward_210_52(ctx, element):
                 continue
             obj = resolved.get(element.tag)
             if obj is None:

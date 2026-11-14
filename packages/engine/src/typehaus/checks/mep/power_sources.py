@@ -7,8 +7,8 @@ differently and they are read by different people.
 
 Two rules:
 
-- **705.12(B)(2)(a)** — the busbar's 120% allowance. The sum of the main breaker and every
-  source breaker may not exceed 1.2 x the bus rating.
+- **705.12(B)** — busbar sizing: 125% of each source's output current plus the busbar's
+  OCPD, against 100% of the bus ((B)(1)) or, source at the far end, 120% ((B)(2)(a)).
 - **690.12** — rapid shutdown. Inside the array boundary, conductors must drop to a limited
   voltage; a module either carries its own shutdown device or belongs to a group whose
   summed cold Voc stays under the limit.
@@ -25,8 +25,24 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.nec import NEC, cite
 
-# NEC 705.12(B)(2)(a), the "120% rule": bus rating x 1.2 >= main OCPD + Σ source breakers.
+# NEC 705.12(B): 125% of source output current + busbar OCPD <= bus x 1.0 ((B)(1)) or x 1.2
+# with the source at the opposite end ((B)(2)(a)).
 _BUS_ALLOWANCE = 1.2
+_OUTPUT_FACTOR = 1.25
+
+
+def _source_term(ctx: CheckContext, circuit) -> tuple[float, str]:
+    """(amps, how) for one source circuit: 125% of the inverter's rated output current, or
+    the breaker rating where no inverter on it declares ``inverter_kw_continuous``."""
+    types = {t.tag: t for t in ctx.plan.library.equipment_types}
+    volts = 240.0 if circuit.poles >= 2 else 120.0
+    kw = sum(float(getattr(types.get(e.type_ref or ""), "inverter_kw_continuous", None) or 0.0)
+             for e in ctx.plan.all_elements()
+             if e.element_kind == "Equipment" and getattr(e, "circuit", None) == circuit.tag)
+    if kw > 0:
+        output = kw * 1000.0 / volts
+        return _OUTPUT_FACTOR * output, f"125% of {output:.1f}A output on {circuit.tag}"
+    return float(circuit.breaker_amps), f"{circuit.tag}'s breaker for 125% of output"
 
 # NEC 690.12(B)(2) — the controlled-conductor limit inside the array boundary. A module
 # group whose summed cold Voc stays under this needs no per-module shutdown device; a group
@@ -36,7 +52,14 @@ _RAPID_SHUTDOWN_LIMIT_V = 80.0
 
 @check(Tier.CODE, "code.NEC_705_12_interconnection")
 def interconnection_busbar(ctx: CheckContext) -> list[Finding]:
-    """NEC 705.12(B)(2)(a) — the 120% busbar allowance, per panel that carries a source.
+    """NEC 705.12(B) — busbar sizing per panel that carries a source.
+
+    The source term is 125% of each source's rated output current (705.12(B)), read off the
+    inverter on the circuit; a circuit with none falls back to its breaker rating, which
+    240.4 sizing keeps at or above that 125%. (B)(1) is tried first and has no placement
+    condition; (B)(2)(a)'s 120% needs the source at the far end of the bus from the main
+    and the (B)(2)(b) label, neither of which the model can show, so the PASS says so.
+    (B)(3) (sum of all OCPDs) is not tried.
 
     The main breaker term is the panel's OWN ``service_amps`` where its type states one —
     705.12 measures a backfeed against the main ahead of the bus, and on a Class 320
@@ -86,7 +109,9 @@ def interconnection_busbar(ctx: CheckContext) -> list[Finding]:
         bus_amps = getattr(product, "bus_amps", None)
         # The panel's own main outranks the service size: see the docstring.
         main_amps = float(getattr(product, "service_amps", None) or service_amps or 0.0) or None
-        source_amps = sum(c.breaker_amps for c in group)
+        terms = [_source_term(ctx, c) for c in group]
+        source_amps = round(sum(amps for amps, _ in terms), 1)
+        basis = "; ".join(how for _, how in terms)
         tags = tuple([panel_ref] + sorted(c.tag for c in group))
         if bus_amps is None:
             out.append(by_result(
@@ -105,23 +130,27 @@ def interconnection_busbar(ctx: CheckContext) -> list[Finding]:
                 tags, code))
             continue
         allowance = bus_amps * _BUS_ALLOWANCE
-        total = float(main_amps) + source_amps
-        headroom = allowance - total
-        if total > allowance + 1e-9:
-            out.append(by_result(
-                cid, Result.FAIL,
-                f"panel {panel_ref}: {main_amps:g}A main + {source_amps}A of source "
-                f"breakers = {total:g}A exceeds {_BUS_ALLOWANCE:g} x {bus_amps}A bus = "
-                f"{allowance:g}A", tags, code,
-                f"reduce the source breaker(s) by {total - allowance:g}A, or use a "
-                "supply-side connection"))
-        else:
+        total = round(float(main_amps) + source_amps, 1)
+        head = f"panel {panel_ref}: {main_amps:g}A main + {source_amps:g}A source ({basis})"
+        if total <= bus_amps + 1e-9:
             out.append(by_result(
                 cid, Result.PASS,
-                f"panel {panel_ref}: {main_amps:g}A main + {source_amps}A source "
-                f"({', '.join(sorted(c.tag for c in group))}) = {total:g}A of the "
-                f"{allowance:g}A allowed on a {bus_amps}A bus — {headroom:g}A spare",
-                tags, code))
+                f"{head} = {total:g}A within the {bus_amps}A bus "
+                f"({NEC.INTERCONNECTION_100PCT}, any position)", tags, code))
+        elif total <= allowance + 1e-9:
+            out.append(by_result(
+                cid, Result.PASS,
+                f"{head} = {total:g}A of the {allowance:g}A allowed on a {bus_amps}A bus "
+                f"({NEC.INTERCONNECTION_120PCT}) — {allowance - total:g}A spare; holds only "
+                f"with the source breaker at the opposite end from the main and the "
+                f"{NEC.INTERCONNECTION_LABEL} label, neither modeled", tags, code))
+        else:
+            out.append(by_result(
+                cid, Result.FAIL,
+                f"{head} = {total:g}A exceeds {_BUS_ALLOWANCE:g} x {bus_amps}A bus = "
+                f"{allowance:g}A", tags, code,
+                f"reduce the source by {total - allowance:g}A, or use a supply-side "
+                "connection"))
     return out
 
 

@@ -22,8 +22,9 @@ from typehaus.resolve import room_perimeter
 from typehaus.resolve.placeables import placed_xy
 from typehaus.resolve.room_lookup import axis_polygon, axis_ring, owns
 
+# 210.52(A)'s rooms; MEDIA is the family/recreation room.
 _HABITABLE = {Occupancy.BEDROOM, Occupancy.LIVING, Occupancy.KITCHEN, Occupancy.DINING,
-             Occupancy.OFFICE, Occupancy.HOBBY, Occupancy.STUDY_CLOSET}
+             Occupancy.OFFICE, Occupancy.HOBBY, Occupancy.STUDY_CLOSET, Occupancy.MEDIA}
 
 
 # WARN severity + FAIL result, deliberately: the permit integrity gate only blocks on ERROR
@@ -145,6 +146,21 @@ def _counts_as_a_125v_receptacle(ctx: CheckContext, device) -> bool:
         port.service.value == "power_120" for port in device_type.ports)
 
 
+_REQUIRED_MAX_HEIGHT_M = 5.5 * 0.3048
+
+
+def _counts_toward_210_52(ctx: CheckContext, device, *, height_limit: bool = True) -> bool:
+    """A 125 V receptacle 210.52 may count as REQUIRED: not switched (``controlled_by``) and,
+    with ``height_limit``, not more than 5 1/2 ft above the floor (the lead-in). (E) sets its
+    own 6 1/2 ft and passes ``height_limit=False``. 210.8 GFCI scope uses the plain test."""
+    if not _counts_as_a_125v_receptacle(ctx, device) or getattr(device, "controlled_by", ()):
+        return False
+    mount = getattr(device, "mount", None)
+    elevation = getattr(mount, "elevation", None)
+    return not (height_limit and elevation is not None
+                and elevation.meters > _REQUIRED_MAX_HEIGHT_M + 1e-9)
+
+
 _perimeter_position = room_perimeter.perimeter_position
 _point_at = room_perimeter.point_at
 _cyclic_span = room_perimeter.cyclic_span
@@ -217,7 +233,7 @@ def receptacle_spacing(ctx: CheckContext) -> list[Finding]:
         perimeter = room_perimeter.perimeter_length(ring)
         positions = []
         for device in devices_by_storey.get(room.storey, []):
-            if not _counts_as_a_125v_receptacle(ctx, device):
+            if not _counts_toward_210_52(ctx, device):
                 continue
             s, d = _perimeter_position(ring, placed_xy(ctx.model, device))
             floor_mounted = device.mount is not None and device.mount.kind.value == "floor"
@@ -295,7 +311,7 @@ def island_receptacle(ctx: CheckContext) -> list[Finding]:
         receptacles_by_storey[storey.tag] = [
             element for element in ctx.plan.storey_elements(storey.tag)
             if element.element_kind == "ElectricalDevice"
-            and _counts_as_a_125v_receptacle(ctx, element)]
+            and _counts_toward_210_52(ctx, element)]
 
     floor_z = {s.tag: s.elevation.meters for s in ctx.plan.storeys}
     # Absolute body tops: a carcass's is the counter, a device's is its box.

@@ -1,17 +1,18 @@
 """NEC 210.52(C) wall countertop spaces and 210.52(C)(4), read off resolved countertops.
 
-Graded text (2026 NEC; (C)(1)/(C)(3) carried from 2023 with no reported change, (C)(4) is
-new in 2026: "Receptacle outlets are not permitted within 24 in. of the countertop", below it):
+Graded rules (printed 2026 NEC, read 2026-11-13; paraphrased in docs/nec-2026-paraphrase.md):
 
 * (C)(1): a receptacle at each wall countertop space 12" or wider, none of its wall line more
   than 24", measured horizontally, from a receptacle in that space; none directly behind a
   range, counter-mounted cooking unit or sink; those and a refrigerator separate spaces.
 * (C)(3): on or above, and not more than 20" above, the countertop.
-* (C)(1) Ex 2 (2023 numbering; no 2026 text found): where a required outlet cannot be installed
-  in the wall areas, it may go as close as practicable to the countertop area served, the
-  total not fewer than (C)(1) needs, each per (C)(3). It never names a window: reading it to
-  cover glass standing at the counter is an interpretation that needs the AHJ's agreement
-  (sources disagree), so the finding says so. Only a stretch of 12" or more whose glass
+* (C)(4): below the counter, none on adjacent walls within 24" of the base cabinets and none
+  within 24" beneath the countertop; a drawer receptacle is excepted.
+* (C)(1) Ex 2: where a required outlet cannot go in the Figure 210.52(C)(1) wall areas (behind
+  a range, cooktop or sink), it may go as close as practicable, the count unchanged, each per
+  (C)(3). The printed text names no window; the owner keeps reading glass at the counter as
+  "cannot be installed" (2026-11-13), and the finding says it needs the AHJ's agreement.
+  Only a stretch of 12" or more whose glass
   occupies the whole band a box could use (sill within a plate height of the top) qualifies;
   there the 24" reach is waived for the count rule and outlets beside the glass.
 
@@ -166,7 +167,7 @@ def counter_findings(ctx: CheckContext, cid: str) -> list[Finding]:
     """NEC 210.52(C)(1), (C)(3) and (C)(4) over every kitchen-area countertop."""
     from shapely.geometry import Point, Polygon
 
-    from typehaus.checks.mep.electrical import _counts_as_a_125v_receptacle
+    from typehaus.checks.mep.electrical import _counts_toward_210_52
     from typehaus.resolve.geometry_countertops import countertop_top_z
     from typehaus.resolve.overlay import union_all
 
@@ -235,7 +236,7 @@ def counter_findings(ctx: CheckContext, cid: str) -> list[Finding]:
         stations: list[float] = []
         reasons: list[tuple[float, str]] = []
         for element, obj, s, top, _ in nearby:
-            if not _counts_as_a_125v_receptacle(ctx, element):
+            if not _counts_toward_210_52(ctx, element):
                 continue
             if obj.z_m < top - 1e-3:
                 reasons.append((s, f"{obj.tag} is below the counter"))

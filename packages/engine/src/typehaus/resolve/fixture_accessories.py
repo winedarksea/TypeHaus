@@ -45,7 +45,7 @@ def resolve_fixture_accessory(model: ResolvedModel, accessory: PipeAccessory,
         return error(f"fixture {fixture.tag} has no supported hose_outlet")
     if fixture.tag not in host_pipe.serves:
         return error(f"pipe_ref={host_pipe.tag!r} does not serve fixture {fixture.tag}")
-    origin, direction = hose_outlet(product.height.meters)
+    origin, direction = hose_outlet(product.height.meters, product.footprint[1].meters)
     (cx, cy), = place_local([origin[:2]], fixture.position, fixture.rotation_degrees)
     z = fixture.body_z0_m + origin[2]
     positions, triangles, normals = [], [], []

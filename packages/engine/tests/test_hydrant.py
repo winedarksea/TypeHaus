@@ -30,34 +30,36 @@ def _supply(model):
 
 # --- 1. the type -------------------------------------------------------------------------
 
-def test_the_hydrant_type_needs_water_and_nothing_else(catlin_model):
+def test_the_hydrant_type_needs_water_and_nothing_else(catlin_plan):
     """The absence is the design. A hydrant drains through its own weep at the buried
     shutoff, not into the sanitary system — and because `needs` carries no Service.DRAIN,
     `_missing_sleeve_findings` will not fire a false "no sleeve" FAIL against it."""
-    fixture_type = next(t for t in catlin_model.plan.library.fixture_types
+    fixture_type = next(t for t in catlin_plan.library.fixture_types
                         if t.tag == "FX-HYDRANT-Y34SS")
     assert fixture_type.needs == frozenset({Service.WATER_COLD})
     assert Service.DRAIN not in fixture_type.needs
     assert fixture_type.plan_symbol == "woodford-y34ss"
-    # The two things that are specified but unmodellable live in `source`, which is what
-    # mep.hydrant_freeze_depth's UNKNOWN points the reader at.
+    # The installation requirements stay on the schedule even with a modeled breaker.
     assert "vacuum breaker" in fixture_type.source
     assert "coating" in fixture_type.source
 
 
-def test_the_hydrant_draws_its_own_symbol(catlin_model):
+def test_the_hydrant_draws_its_own_symbol(catlin_plan):
     """An unlisted plan_symbol raises at load; a *missing* one silently falls back to the
     anonymous rectangle every symbol-less type gets. Neither is what this wants."""
     from typehaus.model.placeable_symbols import SYMBOL_NAMES, plan_symbol_strokes
 
-    assert "hydrant" in SYMBOL_NAMES
-    strokes = plan_symbol_strokes("hydrant", 0.1524, 0.1524)  # the 6" escutcheon
+    product = next(t for t in catlin_plan.library.fixture_types if t.tag == "FX-HYDRANT-Y34SS")
+    symbol = product.plan_symbol
+    width, depth = (v.meters for v in product.footprint)
+    assert symbol in SYMBOL_NAMES
+    strokes = plan_symbol_strokes(symbol, width, depth)
     assert len(strokes) >= 3, "riser, handle and outlet at minimum"
     # Every stroke stays inside the type's own footprint, like every other symbol.
     for stroke in strokes:
         for x, y in stroke["points"]:
-            assert abs(x) <= 0.1524, stroke
-            assert abs(y) <= 0.1524, stroke
+            assert abs(x) <= width / 2, stroke
+            assert abs(y) <= depth / 2, stroke
 
 
 # --- 2. the instance, and where it lives --------------------------------------------------
@@ -106,7 +108,8 @@ def test_the_hydrant_stands_clear_of_everything_else_in_the_garage(catlin_model)
     hand on the handle, from whatever else the corner is asked to hold.
 
     12" is the number. The bench came back beside ST-G-SERVICE on 2026-10-30 and is now the
-    nearest placeable, 24.0" away (ED-G-LT3 is 24.3").
+    nearest placeable with the old 6-inch marker. The narrower product envelope makes
+    ED-G-LT3 the nearest peer; both remain over 24 inches clear.
     """
     from shapely.geometry import Polygon
 
@@ -118,8 +121,8 @@ def test_the_hydrant_stands_clear_of_everything_else_in_the_garage(catlin_model)
     assert tight, "the garage resolves no other placeable to grade against"
     assert min(tight.values()) >= 12, sorted(tight.items(), key=lambda kv: kv[1])[:3]
     # Named so a future move reads as a decision.
-    assert min(tight, key=tight.get) == "FURN-G-WORKBENCH"
-    assert tight["FURN-G-WORKBENCH"] == pytest.approx(24.0, abs=0.5)
+    assert min(tight, key=tight.get) == "ED-G-LT3"
+    assert tight["FURN-G-WORKBENCH"] >= 24.0
 
 
 # --- 3. the supply run --------------------------------------------------------------------

@@ -56,10 +56,10 @@ def lighting_controls(ctx: CheckContext) -> list[Finding]:
     a fact. A fixture whose type sets ``integral_switch`` names none by design and is
     exempt — there is no wall device to point at.
 
-    The cross-circuit case is reported separately and is not the same defect: a switch fed
-    from a different branch than the fixture it controls puts two circuits in one box,
-    which NEC 210.7 permits only with a means to disconnect both simultaneously. Worth
-    seeing on a drawing; not worth calling a failure.
+    The cross-circuit case is reported separately and is not the same defect: a switch and
+    the fixture it controls naming different branches. Where both circuits reach the one
+    switch's yoke, NEC 210.7 wants a simultaneous disconnect at the panel (a box shared by
+    two circuits on separate devices is not 210.7's case). Worth seeing; not a failure.
     """
     cid = "electrical.lighting_controls"
     lit = _lit_elements(ctx)
@@ -101,9 +101,9 @@ def lighting_controls(ctx: CheckContext) -> list[Finding]:
         if crossed:
             out.append(_warn_fail(
                 cid, "luminaire " + element.tag + " on " + circuit + " is switched by "
-                     + ", ".join(crossed) + " on another circuit — NEC "
-                     + NEC.MULTIWIRE_DISCONNECT + " wants a simultaneous disconnect where "
-                     "two circuits share a box",
+                     + ", ".join(crossed) + " on another circuit — if both circuits "
+                     "reach that switch's yoke, NEC " + NEC.MULTIWIRE_DISCONNECT
+                     + " wants a simultaneous disconnect where they originate",
                 (element.tag,) + tuple(crossed)))
     if not out:
         out.append(_pass(cid, str(controlled) + " luminaires resolve every switch they name"))

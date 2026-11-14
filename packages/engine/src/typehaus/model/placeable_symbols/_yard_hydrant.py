@@ -4,17 +4,18 @@ import math
 
 from typehaus.model.placeable_symbols._families import Geometry
 from typehaus.model.placeable_symbols._frame import Part, circle, line, rect
+from typehaus.model.placeable_symbols._hose_hardware import hose_thread
 from typehaus.model.placeable_symbols._round_hardware import round_cylinder
 from typehaus.model.placeable_symbols._yard_hydrant_config import BREAKER_34HD, Y34SS
 from typehaus.quantities import M_PER_IN
 from typehaus.triangulation import planar_ring_triangles
 
 
-def hose_outlet(height_m: float) -> tuple[tuple[float, float, float],
-                                         tuple[float, float, float]]:
+def hose_outlet(height_m: float, depth_m: float = Y34SS.depth * M_PER_IN
+                ) -> tuple[tuple[float, float, float], tuple[float, float, float]]:
     """Connection at the nozzle thread tip, directed down toward the hose."""
-    return ((0.0, -Y34SS.nozzle_forward * M_PER_IN,
-             height_m - (Y34SS.height - Y34SS.nozzle_height) * M_PER_IN), (0.0, 0.0, -1.0))
+    return ((0.0, -Y34SS.nozzle_forward * depth_m / Y34SS.depth,
+             height_m * Y34SS.nozzle_height / Y34SS.height), (0.0, 0.0, -1.0))
 
 
 def _side_profile(profile, width, color, z_shift=0.0) -> Part:
@@ -81,9 +82,11 @@ def _handle_bar(start, end, diameter) -> Part:
 
 
 def yard_hydrant(width: float, depth: float, height: float) -> Geometry:
-    """Fixed product dimensions: height changes extend only the straight casing."""
+    """Catalog geometry; scale only for the symbol API's alternate-size previews."""
     d = Y34SS
-    shift = height / M_PER_IN - d.height
+    scale = (width / (d.width * M_PER_IN), depth / (d.depth * M_PER_IN),
+             height / (d.height * M_PER_IN))
+    shift = 0.0
     parts = [
         _cylinder((0, 0, (d.casing_top + shift) / 2), d.casing_outside_diameter,
                   d.casing_top + shift, color="metal"),
@@ -99,17 +102,33 @@ def yard_hydrant(width: float, depth: float, height: float) -> Geometry:
     for a, b in zip(d.handle_loop, d.handle_loop[1:], strict=False):
         parts.append(_handle_bar((a[0], a[1] + shift), (b[0], b[1] + shift),
                                  d.handle_bar_diameter))
-    outlet, _ = hose_outlet(height)
-    parts.append(round_cylinder((outlet[0], outlet[1],
-                                 outlet[2] + d.nozzle_thread_length * M_PER_IN / 2),
-                                d.hose_thread_diameter * M_PER_IN / 2,
-                                d.nozzle_thread_length * M_PER_IN, axis=2, color="brass"))
+    outlet, _ = hose_outlet(d.height * M_PER_IN)
+    parts.append(hose_thread((0, -d.nozzle_forward, d.nozzle_height + d.nozzle_thread_length / 2),
+                             d.hose_thread_diameter, d.hose_bore_diameter,
+                             d.nozzle_thread_length))
     strokes = (circle(0, 0, d.casing_outside_diameter * M_PER_IN / 2, fill="metal"),
                rect(0, -d.nozzle_forward * M_PER_IN / 2, d.casting_width * M_PER_IN,
                     d.nozzle_forward * M_PER_IN, fill="hydrant-orange"),
                line((0, 0), (0, d.handle_loop[4][0] * M_PER_IN)),
                circle(0, outlet[1], d.hose_thread_diameter * M_PER_IN / 2))
-    return strokes, tuple(parts)
+    scaled_parts = []
+    for part in parts:
+        mesh = part["mesh"]
+        positions = tuple(tuple(v * s for v, s in zip(p, scale, strict=True))
+                          for p in mesh["positions"])
+        normals = []
+        for normal in mesh["normals"]:
+            inverse_scaled = tuple(v / s for v, s in zip(normal, scale, strict=True))
+            magnitude = math.sqrt(sum(v * v for v in inverse_scaled))
+            normals.append(tuple(v / magnitude for v in inverse_scaled))
+        scaled_parts.append({**part,
+            "center": tuple(v * s for v, s in zip(part["center"], scale, strict=True)),
+            "size": tuple(v * s for v, s in zip(part["size"], scale, strict=True)),
+            "mesh": {**mesh, "positions": positions, "normals": tuple(normals)}})
+    scaled_strokes = tuple({**stroke, "points": tuple((x * scale[0], y * scale[1])
+                                                      for x, y in stroke["points"])}
+                           for stroke in strokes)
+    return scaled_strokes, tuple(scaled_parts)
 
 
 def vacuum_breaker_parts() -> tuple[Part, ...]:
@@ -120,11 +139,12 @@ def vacuum_breaker_parts() -> tuple[Part, ...]:
     vent_bottom = vent_top - d.vent_band_length
     body_bottom = bottom + d.thread_length
     parts = [
-        _cylinder((0, 0, top - d.collar_length / 2), d.diameter, d.collar_length, color="brass"),
+        hose_thread((0, 0, top - d.collar_length / 2), d.diameter, d.thread_diameter,
+                    d.collar_length),
         _cylinder((0, 0, (vent_bottom + body_bottom) / 2), d.body_radius * 2,
                   vent_bottom - body_bottom, color="brass"),
-        _cylinder((0, 0, bottom + d.thread_length / 2), d.thread_diameter,
-                  d.thread_length, color="brass"),
+        hose_thread((0, 0, bottom + d.thread_length / 2), d.thread_diameter,
+                    d.bore_diameter, d.thread_length),
         _cylinder((0, 0, (vent_top + vent_bottom) / 2), d.vent_radius * 2,
                   d.vent_band_length, color="metal-black"),
         _cylinder((d.diameter / 2, 0, top - d.collar_length / 2), d.stop_screw_radius * 2,

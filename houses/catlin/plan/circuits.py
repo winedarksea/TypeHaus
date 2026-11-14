@@ -317,12 +317,14 @@ CIRCUITS = (
     # a room on NEC 210.12(B)'s list as a 120V 15/20A branch circuit. The 240V loads (range,
     # dryer, heat pumps, kettle, PV backfeed) are outside the section's scope.
     # GFCI+AFCI on one circuit is a single dual-function breaker, costing one panel space.
+    # 210.52(B)(1) puts every dining wall and counter receptacle on these two as well:
+    # RC15/RC16/RC18 (ash counter) on SA1, RC2/RC3/RC7 (dining walls) on SA2 (2026-11-13).
     Circuit(uid="CKT020AAAA", tag="CKT-KITCH-SA1", slot=30, panel_ref=_PANEL, breaker_amps=20, poles=1,
             gfci=True, afci=True, load_va=1500,
-            description="Kitchen small-appliance 1 (counter west)"),
+            description="Kitchen small-appliance 1 (counter west + dining counter)"),
     Circuit(uid="CKT021AAAA", tag="CKT-KITCH-SA2", slot=32, panel_ref=_PANEL, breaker_amps=20, poles=1,
             gfci=True, afci=True, load_va=1500,
-            description="Kitchen small-appliance 2 (counter east + pantry)"),
+            description="Kitchen small-appliance 2 (counter east + pantry + dining walls)"),
     # GFCI here too: ED-M-LIVING-KDW1 is ~11" from the kitchen sink (210.8(A)(9); was 2.7'
     # before the 2026-08-26 sink/dishwasher re-composition moved both into the same base).
     Circuit(uid="CKT022AAAA", tag="CKT-DISHWASHER", slot=34, panel_ref=_PANEL, breaker_amps=20, poles=1,

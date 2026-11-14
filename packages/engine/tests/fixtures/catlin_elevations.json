@@ -2214,7 +2214,7 @@
 "canvas_objects/FX-B-UTIL-SINK/body_z1_m": -1.6875125,
 "canvas_objects/FX-B-UTIL-SINK/z_m": -2.7797125,
 "canvas_objects/FX-G-HYDRANT/body_z0_m": -0.8636,
-"canvas_objects/FX-G-HYDRANT/body_z1_m": -0.1016,
+"canvas_objects/FX-G-HYDRANT/body_z1_m": 0.0635,
 "canvas_objects/FX-G-HYDRANT/z_m": -0.8636,
 "canvas_objects/FX-M-BATH1-LAV/body_z0_m": 0.74465,
 "canvas_objects/FX-M-BATH1-LAV/body_z1_m": 1.02965,
@@ -66842,10 +66842,10 @@
 "7fa2d4b3f886"
 ],
 "geometry/J1DS4RQZ8X/body": [
--0.0762,
-0.0762,
-2,
-"9cda49579abe"
+-0.20828,
+-0.15621,
+1942,
+"1434159cbc68"
 ],
 "geometry/J34E2ZM4GG-box/body": [
 1.070625,
@@ -115083,7 +115083,7 @@
 "pipe_accessories/PA-B-WH-STOP-CW/z_m": -1.5605125,
 "pipe_accessories/PA-G-HYD-BFP/z_m": -1.8653125,
 "pipe_accessories/PA-G-HYD-SEAT/z_m": -2.6924,
-"pipe_accessories/PA-G-HYD-VB/z_m": 0.0,
+"pipe_accessories/PA-G-HYD-VB/z_m": -0.1651,
 "pipe_accessories/PA-M-BATH1-STOP-CW/z_m": 0.63565,
 "pipe_accessories/PA-M-BATH1-STOP-HW/z_m": 0.63565,
 "pipe_accessories/PA-M-BATH1-WC-STOP/z_m": 0.32258,
@@ -120579,8 +120579,8 @@
 "solids/PA-G-HYD-BFP/z1_m": -1.7891125,
 "solids/PA-G-HYD-SEAT/z0_m": -2.7686,
 "solids/PA-G-HYD-SEAT/z1_m": -2.6162,
-"solids/PA-G-HYD-VB/z0_m": -0.0762,
-"solids/PA-G-HYD-VB/z1_m": 0.0762,
+"solids/PA-G-HYD-VB/z0_m": -0.20828,
+"solids/PA-G-HYD-VB/z1_m": -0.15621,
 "solids/PA-M-BATH1-STOP-CW/z0_m": 0.55945,
 "solids/PA-M-BATH1-STOP-CW/z1_m": 0.71185,
 "solids/PA-M-BATH1-STOP-HW/z0_m": 0.55945,

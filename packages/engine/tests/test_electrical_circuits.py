@@ -308,7 +308,7 @@ def test_catlin_receptacle_spacing_separates_known_coverage_and_eave_review(catl
     assert not fails, [f.message for f in fails]
     passes = [f for f in findings if f.result.value == "pass"
               and f.element_tags[0].startswith("RM-")]  # counter spaces are CT-*
-    assert len(passes) == 10
+    assert len(passes) == 11  # RM-B-PLAY-N joined as a 210.52(A) recreation room, 2026-11-13
     unknown_rooms = {f.element_tags[0]: f for f in findings
                      if f.result.value == "unknown" and f.element_tags}
     assert set(unknown_rooms) == {"RM-A-STUDIO", "RM-A-STUDY"}
@@ -420,8 +420,9 @@ def test_catlin_conduit_trunks(catlin_model):
     # and CD-M-DATA-KITCH-TRUNK, the 1" first legs split off CD-M-DATA-KITCH.
     # 2026-11-07: + the V2H spare, CD-B-V2H-SPARE and its buried leg CD-B-V2H-GAP.
     # 2026-11-10: + CD-M-DATA-ENTRY, the grounding entry's data run from its own outlet.
+    # 2026-11-13: + CD-M-RSD-INIT, the rapid-shutdown initiator's stub into the stud bay.
     authored = [run for run in catlin_model.conduits if run.derived is None]
-    assert len(authored) == 30  # includes the laundry's Class 2 surface feed
+    assert len(authored) == 31  # the laundry's Class 2 feed and the RSD initiator stub
     # Not all from the panel: the three microgrid runs start at the PV junction box and at
     # the inverter, and every data run starts at the patch enclosure — except the two camera
     # extensions, which continue from the AP whose raceway carries their Cat 6A.
@@ -431,7 +432,7 @@ def test_catlin_conduit_trunks(catlin_model):
     assert {run.from_ref for run in authored} == {
         "ED-B-PANEL", "ED-A-PV-JB", "EQ-B-ESS-INV", "ED-B-NET-PATCH", "CD-B-ATTIC-RISER",
         "ED-M-LAUNDRY-PSU", "ED-B-PANEL-2", "ED-B-WORKSHOP-JB", "ED-B-PLAY-N-JB",
-        "ED-M-KITCH-AP", "ED-M-PORCH-AP", "ED-M-DATA-ENTRY"}
+        "ED-M-KITCH-AP", "ED-M-PORCH-AP", "ED-M-DATA-ENTRY", "ED-M-RSD-INIT"}
     rows = conduit_takeoff(catlin_model)
     # Power only — data and the capped spare are billed by takeoff/data.py, because comms
     # and power are separate orders pulled by separate trades and may not share a raceway.
@@ -444,7 +445,8 @@ def test_catlin_conduit_trunks(catlin_model):
     # house twice. 3/4" also carries the derived NM sleeves.
     assert all(20 < row["length_ft"] < 130 for row in emt if row["trade_size_in"] > 0.5)
     feed = next(row for row in emt if row["trade_size_in"] == 0.5)
-    assert feed["tags"] == ["CR-M-LAUNDRY-24V"] and feed["length_ft"] < 3
+    # Two short Class 2 stubs: the laundry feed and the RSD initiator's (2026-11-13).
+    assert feed["tags"] == ["CD-M-RSD-INIT", "CR-M-LAUNDRY-24V"] and feed["length_ft"] < 4
     assert not [run.tag for row in rows for run in catlin_model.conduits
                 if run.tag in row["tags"] and run.derived is None
                 and run.service in ("data", None)]
@@ -825,6 +827,7 @@ def test_705_12_reads_the_panels_own_main_not_a_320a_service():
                 if f.check_id == "code.NEC_705_12_interconnection"]
     assert findings and findings[0].result.value == "pass", [f.message for f in findings]
     assert "200A main + 50A source" in findings[0].message
+    assert "705.12(B)(2)(a)" in findings[0].message and "opposite end" in findings[0].message
 
 
 def test_load_management_flags_unknown_circuits():

@@ -258,9 +258,9 @@ WALL_HYDRANT = FixtureType(
     height=inch(Y34SS.height), plan_symbol="woodford-y34ss",
     basin=False,
     needs=frozenset({Service.WATER_COLD}),
-    # The inlet is the buried valve foot, one bury length under the head. APPROXIMATE because
+    # The inlet is the buried valve foot, one bury length below grade. APPROXIMATE because
     # a plan may draw the barrel as its supply's terminal standpipe (catlin does, and
-    # `mep.hydrant_freeze_depth` exempts it), so the run's end is the head, not this point.
+    # `mep.hydrant_freeze_depth` exempts it), so the run ends on the upper barrel, not here.
     ports=(ServicePort(tag="inlet", service=Service.WATER_COLD,
                        position=(inch(0), inch(0), ft(-6)), connection_size=inch(0.75),
                        direction=(0, 0, -1),

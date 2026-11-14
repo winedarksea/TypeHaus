@@ -100,7 +100,9 @@ def fan_power_finding(ctx: CheckContext, riser: VentRun,
                                "forbids the fan's box in any conditioned space, basement or "
                                "crawl space", (ref, riser.tag), _CODE)
     # An outdoor fan outlet, hardwired or not, needs GFCI protection (NEC 210.8(F)).
-    guarded = (getattr(box, "kind", None) is DeviceKind.RECEPTACLE_GFCI or circuit.gfci
+    # A Class C SPGFCI answers 210.8(F) only for listed HVAC equipment (Ex. 3); a fan is not.
+    guarded = (getattr(box, "kind", None) is DeviceKind.RECEPTACLE_GFCI
+               or (circuit.gfci and getattr(circuit, "gfci_class", "A") == "A")
                or bool(getattr(box, "gfci_ref", None)))
     if outdoors and not guarded:
         return _fail(_CID, f"{ref} is the fan's outlet outdoors on {circuit.tag}, and neither "

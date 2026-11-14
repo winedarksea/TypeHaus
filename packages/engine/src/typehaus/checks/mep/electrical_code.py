@@ -14,13 +14,13 @@ from typehaus.checks._authoring import by_result
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.enums import Occupancy, Service
-from typehaus.model.nec import NEC, cite, mark
+from typehaus.model.nec import NEC, cite
 from typehaus.resolve.placeables import placed_xy
 from typehaus.resolve.room_lookup import axis_polygon, axis_ring
 
 # 2026 NEC 210.8(A): the locations where a 125-250 V receptacle, at any amperage, must be
 # GFCI-protected. Bathrooms, garages, accessory buildings, outdoors, crawl spaces, basements
-# (finished or not), kitchens, laundry areas, and anything within 6' of a sink.
+# (finished or not), kitchens, laundry areas, 6' of a sink (9) or a tub/shower (11).
 _GFCI_OCCUPANCIES = {
     Occupancy.BATHROOM.value: f"{NEC.GFCI_BATHROOM} (bathroom)",
     Occupancy.GARAGE.value: f"{NEC.GFCI_GARAGE} (garage)",
@@ -93,6 +93,12 @@ def gfci_locations(ctx: CheckContext) -> list[Finding]:
                                                   barriers.get(storey_tag)),
                                appliance.get(device.tag)) if r]
         if not reasons:
+            if room is not None and below_grade.get(room.storey) is None:
+                out.append(by_result(cid, Result.UNKNOWN,
+                                     f"{device.tag}: storey {room.storey} has no grade datum, so "
+                                     f"{NEC.GFCI_BASEMENT} (basement) cannot be ruled out",
+                                     (device.tag, room.tag), code,
+                                     "author the site grade the storey is measured against"))
             continue
         reason = "; ".join(reasons)
         tags = (device.tag,) + ((room.tag,) if room is not None else ())
@@ -253,10 +259,13 @@ def _why_gfci_required(ctx, device, room, point, sinks, below_grade, barrier) ->
     # Every basement room, finished or not, since the 2020 NEC.
     if below_grade.get(room.storey) is True:
         return f"{NEC.GFCI_BASEMENT} (basement)"
-    reach = [sink for sink in sinks if not _pierces_a_wall(point, sink, barrier)]
-    near = min((point.distance(sink) for sink in reach), default=None)
-    if near is not None and near <= _SINK_REACH_M:
-        return f"{mark(NEC.GFCI_SINK)} (within 6' of a sink — {near / .3048:.1f}')"
+    for kind, item, what in (("sink", NEC.GFCI_SINK, "a sink"),
+                             ("bathing", NEC.GFCI_TUB_SHOWER, "a bathtub or shower")):
+        reach = [poly for poly, k in sinks if k == kind
+                 and not _pierces_a_wall(point, poly, barrier)]
+        near = min((point.distance(poly) for poly in reach), default=None)
+        if near is not None and near <= _SINK_REACH_M:
+            return f"{item} (within 6' of {what} — {near / .3048:.1f}')"
     return None
 
 
@@ -269,9 +278,9 @@ def _pierces_a_wall(point: Any, sink: Any, barrier: Any) -> bool:
     fixed barrier." A receptacle in a bedroom 5'-4" from a vanity on the far side of the
     bathroom wall was being written up for a sink it cannot reach with a cord at all.
 
-    Doors and windows are deliberately NOT barriers here: the 2023 NEC removed them from
-    the exclusion precisely so a measurement through an opening still counts, so
-    ``_wall_barrier`` punches every opening out of the wall it hosts.
+    Doors, doorways and windows are deliberately NOT barriers: the printed 2026 list is floor,
+    wall, ceiling and fixed barrier only (the opening clause left the code before 2026), so
+    ``_wall_barrier`` punches every through opening out of its wall; a blind niche stays wall.
 
     The honest limit: when the straight line IS blocked, the real cord path is some longer
     way round, and this returns True rather than computing it. So the check can under-report
@@ -320,7 +329,7 @@ def _wall_barrier(ctx: CheckContext) -> dict[str, Any]:
         axis, thickness, storey = entry
         centre = getattr(opening, "center_along_m", None)
         width = getattr(opening, "width_m", None)
-        if centre is None or not width:
+        if centre is None or not width or getattr(opening, "depth_m", None) is not None:
             continue
         lo = max(0.0, centre - width / 2.0)
         hi = min(axis.length, centre + width / 2.0)
@@ -340,8 +349,23 @@ def _wall_barrier(ctx: CheckContext) -> dict[str, Any]:
     return out
 
 
+def _fixture_reach_kind(fixture_type: Any) -> str | None:
+    """210.8(A)(9) "sink", (A)(11) "bathing" (tub or shower), or None (toilet, floor drain).
+
+    A draining type nothing classifies counts as a sink, the conservative reading.
+    """
+    if getattr(fixture_type, "basin", None):
+        return "sink"
+    symbol = getattr(fixture_type, "plan_symbol", None) or ""
+    if "tub" in symbol or "shower" in symbol or symbol.startswith("kohler-underscore"):
+        return "bathing"
+    if any(word in symbol for word in ("sink", "lavatory", "vanity")) or not symbol:
+        return "sink"
+    return None
+
+
 def _sink_points(ctx: CheckContext) -> dict[str, list]:
-    """Per storey, the plan FOOTPRINTS of every fixture that drains.
+    """Per storey, (footprint, kind) for every sink and bathtub/shower (``_fixture_reach_kind``).
 
     Keyed by storey for the same reason the room lookup is: the 6' sink reach is a
     reach across a countertop, not through a floor assembly.
@@ -352,18 +376,18 @@ def _sink_points(ctx: CheckContext) -> dict[str, list]:
     """
     from shapely.geometry import Polygon
 
-    drains = {
-        t.tag for t in ctx.plan.library.fixture_types
+    kinds = {
+        t.tag: _fixture_reach_kind(t) for t in ctx.plan.library.fixture_types
         if any(getattr(need, "value", need) == Service.DRAIN.value
                for need in getattr(t, "needs", ()))
     }
     out: dict[str, list] = {}
     for obj in ctx.model.canvas_objects:
-        if obj.kind != "Fixture" or obj.type_ref not in drains:
+        if obj.kind != "Fixture" or not kinds.get(obj.type_ref):
             continue
         if len(obj.footprint) < 3:
             continue
-        out.setdefault(obj.storey, []).append(Polygon(obj.footprint))
+        out.setdefault(obj.storey, []).append((Polygon(obj.footprint), kinds[obj.type_ref]))
     return out
 
 

@@ -1349,12 +1349,14 @@ class ResolvedDrainCleanout:
 
 @dataclass(frozen=True)
 class ResolvedPipeAccessory:
-    """One in-line supply device located on its host run.
+    """A supply device located on its run or a fixture's physical connection.
 
     ``z_m`` is absolute project-frame like every other resolved z: authored elevations are
     storey-relative, and where none was authored the resolver has already substituted the
     host run's invert at the nearest path vertex, so a consumer never has to know which of
-    the two it got."""
+    the two it got. A fixture-mounted device uses its connection origin for ``position`` /
+    ``z_m`` and carries the outward connection axis in ``direction``; its solid owns the
+    full body bounds, which need not be centred on that origin."""
 
     uid: str
     tag: str

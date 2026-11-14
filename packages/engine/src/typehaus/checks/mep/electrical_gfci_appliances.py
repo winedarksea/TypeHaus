@@ -57,17 +57,21 @@ def _items(ctx: CheckContext) -> list[_Item]:
                           getattr(product, "name", "") or "")).lower()
         body = Polygon(obj.footprint)
         if Service.POWER_240.value in needs and getattr(product, "cooking", False):
-            # A range is item (8); a wall oven or cooktop is another (D) item.
-            item = NEC.GFCI_RANGE if getattr(product, "plan_symbol", "") == "range" \
-                else NEC.GFCI_APPLIANCES
+            # (8) range, (9) wall-mounted oven, (10) counter-mounted cooking unit.
+            symbol = getattr(product, "plan_symbol", "") or ""
+            item = (NEC.GFCI_RANGE if symbol == "range"
+                    else NEC.GFCI_WALL_OVEN if "oven" in symbol or "oven" in words
+                    else NEC.GFCI_COOKTOP if "cooktop" in symbol or "cooktop" in words
+                    else NEC.GFCI_APPLIANCES)
             out.append(_Item(obj.tag, obj.storey, body,
                              f"{item} (electric cooking appliance {obj.tag})", None, "240"))
-        elif Service.POWER_240.value in needs and "dryer" in words:
+        elif "dryer" in words:  # (D)(11) names no voltage: a 120 V gas dryer counts too
+            volts = "240" if Service.POWER_240.value in needs else "120"
             out.append(_Item(obj.tag, obj.storey, body,
-                             f"{NEC.GFCI_DRYER} (clothes dryer {obj.tag})", None, "240"))
+                             f"{NEC.GFCI_DRYER} (clothes dryer {obj.tag})", None, volts))
         if "dishwasher" in words:
             out.append(_Item(obj.tag, obj.storey, body,
-                             f"{NEC.GFCI_APPLIANCES} (dishwasher {obj.tag})", None, "120"))
+                             f"{NEC.GFCI_DISHWASHER} (dishwasher {obj.tag})", None, "120"))
         if "microwave" in words:
             out.append(_Item(obj.tag, obj.storey, body,
                              f"{NEC.GFCI_MICROWAVE} (microwave oven {obj.tag})", None, "120"))
@@ -167,8 +171,8 @@ def outdoor_outlets(ctx: CheckContext, outdoor: dict[str, tuple[str, str]],
                                  "Class C only for listed HVAC", (circuit_tag, *sorted(tags)),
                                  code, f"make {circuit_tag} a Class A GFCI"))
         elif getattr(circuit, "gfci", False):
-            how = ("a Class C SPGFCI on HVAC (Ex. 3); its disconnect is marked \"Warning: "
-                   "Class C SPGFCI Protection Provided for HVAC Unit\"" if class_c
+            how = ("a Class C SPGFCI on HVAC (Ex. 3); its disconnect must carry the Class C "
+                   "SPGFCI warning marking, which the model does not show" if class_c
                    else "GFCI-protected")
             out.append(by_result(_CID, Result.PASS, f"{circuit_tag} is {how} — "
                                  f"{NEC.GFCI_OUTDOOR_OUTLETS} outdoor outlet ({fed})", (), code))

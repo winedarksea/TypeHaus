@@ -34,7 +34,7 @@ def garage_bay_receptacles(ctx: CheckContext) -> list[Finding]:
     """Each vehicle bay of each powered garage has a counting receptacle."""
     from shapely.geometry import Point
 
-    from typehaus.checks.mep.electrical import _counts_as_a_125v_receptacle
+    from typehaus.checks.mep.electrical import _counts_toward_210_52
 
     garages = [room for room in ctx.model.rooms
                if room.occupancy == Occupancy.GARAGE.value and len(axis_ring(room)) >= 3]
@@ -83,7 +83,7 @@ def garage_bay_receptacles(ctx: CheckContext) -> list[Finding]:
         served: dict[int, list[str]] = {}
         for element in ctx.plan.storey_elements(garage.storey):
             if (element.element_kind != "ElectricalDevice"
-                    or not _counts_as_a_125v_receptacle(ctx, element)):
+                    or not _counts_toward_210_52(ctx, element)):
                 continue
             xy = placed_xy(ctx.model, element)
             if xy is None:

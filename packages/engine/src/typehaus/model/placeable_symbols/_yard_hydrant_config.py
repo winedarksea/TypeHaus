@@ -25,6 +25,7 @@ class YardHydrantDimensions:
     depth: float = 9.6
     nozzle_forward: float = 4.25
     hose_thread_diameter: float = 1.0625
+    hose_bore_diameter: float = 0.75
     nozzle_thread_length: float = 0.55
     casting_width: float = 1.45
     lever_width: float = 0.55
@@ -59,6 +60,7 @@ class VacuumBreakerDimensions:
     diameter: float = 1.45
     length: float = 2.05
     thread_diameter: float = 1.0625
+    bore_diameter: float = 0.75
     thread_length: float = 0.5
     engagement: float = 0.35
     collar_length: float = 0.45

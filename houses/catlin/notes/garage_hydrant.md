@@ -20,7 +20,7 @@ source:
 
 ## What this is
 
-A frost-free **yard** hydrant standing on the garage slab at (x 5'-0", y 60'-0"), for
+A frost-free **yard** hydrant standing on the garage slab at (x 11'-0", y 48'-1 5/16"), for
 washing a vehicle down and for anything else a hose reaches. It is the project's first
 `PipeSystem.WATER_COLD` run — everything authored before it is drain or vent.
 
@@ -140,15 +140,30 @@ placeable is in, via `resolve/room_floor.py`, and for `RM-GARAGE` that resolves 
 
 ## Specified with the fixture
 
+The above-grade product is Woodford Y34-6-SS: a 1-inch nominal 304 stainless casing
+(1.315-inch OD), 3/4-inch NPT inlet and brass hose nozzle, with a six-foot bury.
+Woodford Y34.111 (Rev. 9/25) places the nozzle datum 27 1/2 inches above grade and the
+closed lever top 9 inches higher (36 1/2 inches total). The garage slab is the installation
+surface; the buried supply and weep remain their separately modeled elements. Orange
+casting/lever and breaker details follow the manufacturer illustrations; undimensioned
+profiles are visual approximations, not fabrication drawings.
+
+References: [Y34/Y1 specification](https://www.woodfordmfg.com/woodford/Yard_Hyd_PDF/Y34_Y1CATALOG.pdf),
+[Y34SS](https://www.woodfordmfg.com/woodford/Woodford%20Brochure%20Pages/Woodford%20Y34%20Stainless%20Steel%20Sell%20Sheet.pdf),
+[34HD specification](https://www.woodfordmfg.com/woodford/Vacuum_Brkr_PDF/VACUUM%20BREAKERS.pdf).
+
 The coating is recorded on `FX-HYDRANT-Y34SS`'s `source` and belongs on the plumbing
 schedule. `PipeAccessory` is the element, `PA-G-HYD-SEAT` and `PA-G-HYD-VB` are the
 instances, and `mep.hydrant_freeze_depth` grades them as a PASS.
 
 - **Supplemental epoxy coating** over the buried barrel. The standard finish is not rated for
   chloride immersion and this barrel passes through the salt layer twice a year.
-- **Hose-bib vacuum breaker** screwed onto the outlet (`PA-G-HYD-VB`, ASSE 1011) — required
-  backflow protection for a hose connection, and the cheapest part of the whole assembly.
-  It answers the *hose thread*, and only that; see below.
+- **Woodford NIDEL 34HD-BR hose-bib vacuum breaker** screwed onto the downward-facing
+  outlet (`PA-G-HYD-VB`, ASSE 1011, 3/4-inch female/male hose threads). Its model follows
+  `FX-G-HYDRANT` through `fixture_ref`; its position is not a separately authored station.
+  This model is intended for freezing conditions but requires **manual draining**: after
+  use remove the hose and turn the device to open its drain vents, per Woodford VB.105
+  (Rev. 08/22). It answers the *hose thread*, and only that; see below.
 - **Interior shutoff** downstream of the slab penetration (`PA-G-HYD-SEAT`), so the run can
   be isolated without digging.
 
@@ -161,7 +176,7 @@ dual check on its branch closes the one gap it has.
 wants a vacuum breaker at every hose connection on a potable line and there is one. A
 self-draining yard hydrant has a second opening: the weep at the buried shutoff, which
 empties the barrel into `DRW-G-HYDRANT`'s stone every time the handle closes and then sits
-in wet stone at -6'-0". A breaker 2'-6" above the slab is nowhere near that path.
+in wet stone at -6'-0". A breaker at the nozzle, 27 1/2" above grade, is nowhere near that path.
 
 **That is a real opening, and it is not a code violation.** Two reasons:
 

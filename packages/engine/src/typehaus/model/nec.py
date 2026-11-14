@@ -19,9 +19,10 @@ Frisco TX 2026 NEC amendments (210.52(C)(2) Island and Peninsular Countertops).
 ``UNCONFIRMED`` names the rows still read only in drafts or trade press, kept by the owner
 until someone reads them in the printed code; ``cite``/``mark`` print them with a caveat, so
 the doubt reaches the finding, the permit checklist and the sheet.
-120.6 and 120.82 (with Part III as the standard method it stands beside) were read in the
-printed code by the owner 2026-11-13. The engine paraphrases the code and never quotes it;
-``tests/test_nec_120_82.py`` pins the arithmetic.
+120.6, 120.82 (with Part III beside it), 210.7-210.12, 210.50-210.63, 250.24-250.112,
+314.24-314.27, 705.12 and 722.15 were read in the printed code by the owner 2026-11-13. The
+engine never quotes the code: ``docs/nec-2026-paraphrase.md`` restates each rule and says
+what grades it; ``tests/test_nec_120_82.py`` and ``test_nec_printed_rules.py`` pin them.
 """
 
 from __future__ import annotations
@@ -77,10 +78,14 @@ class NEC:
     GFCI_BASEMENT: Final = "210.8(A)(6)"
     GFCI_KITCHEN: Final = "210.8(A)(7)"
     GFCI_SINK: Final = "210.8(A)(9)"
+    GFCI_TUB_SHOWER: Final = "210.8(A)(11)"
     GFCI_LAUNDRY: Final = "210.8(A)(12)"
     GFCI_APPLIANCES: Final = "210.8(D)"
     GFCI_SUMP: Final = "210.8(D)(6)"
+    GFCI_DISHWASHER: Final = "210.8(D)(7)"
     GFCI_RANGE: Final = "210.8(D)(8)"
+    GFCI_WALL_OVEN: Final = "210.8(D)(9)"
+    GFCI_COOKTOP: Final = "210.8(D)(10)"
     GFCI_DRYER: Final = "210.8(D)(11)"
     GFCI_MICROWAVE: Final = "210.8(D)(12)"
     GFCI_OUTDOOR_OUTLETS: Final = "210.8(F)"
@@ -161,7 +166,9 @@ class NEC:
     RAPID_SHUTDOWN_ARRAY: Final = "690.12(B)(2)"
     RAPID_SHUTDOWN_INITIATION: Final = "690.12(C)"
     INTERCONNECTION: Final = "705.12"
+    INTERCONNECTION_100PCT: Final = "705.12(B)(1)"
     INTERCONNECTION_120PCT: Final = "705.12(B)(2)(a)"
+    INTERCONNECTION_LABEL: Final = "705.12(B)(2)(b)"
     # Was 800.133 / 725.136; Arts. 805 and 725.136 are gone, limited energy is Arts. 720-723.
     LIMITED_ENERGY_SEPARATION: Final = "722.15(A)"
 
@@ -170,15 +177,9 @@ class NEC:
     SLEEVE_FILL: Final = "Chapter 9 Note 2"
 
 
-#: Rows not yet read in the printed 2026 text: each is the best-supported location.
-#: TODO: confirm every one against NFPA 70-2026 before a permit set relies on it.
-UNCONFIRMED: Final = frozenset({
-    NEC.GFCI_SINK, NEC.AFCI_DWELLING, NEC.FLOOR_BOX, NEC.INTERCONNECTION_120PCT,
-    NEC.LIMITED_ENERGY_SEPARATION,
-    NEC.COUNTERTOP_RECEPTACLE_LOCATION, NEC.WALL_COUNTERTOP, NEC.BALCONY_RECEPTACLE,
-    NEC.SERVICE_GROUNDING, NEC.GEC_SIZE, NEC.INTERSYSTEM_BONDING, NEC.WATER_PIPE_BOND,
-    NEC.LIGHTNING_BOND,
-})
+#: Rows not yet read in the printed 2026 text; ``mark``/``cite`` caveat them. Empty since
+#: 2026-11-13: a new row read only in drafts or trade press goes here until confirmed.
+UNCONFIRMED: Final = frozenset()
 
 
 class NFPA780:

@@ -2,8 +2,9 @@
 
 Model: `plan/electrical_grounding.py` (elements), `plan/grounding_types.py` (parts),
 `params/foundations.py` (`_ELECTRODE`, the Ufer bar). Engine: `resolve/grounding.py`,
-`checks/mep/electrical_grounding*.py`, `takeoff/grounding.py`. Article 250 numbers are
-UNCONFIRMED against the printed 2026 NEC; every NFPA 780 number here is unread first-hand.
+`checks/mep/electrical_grounding*.py`, `takeoff/grounding.py`. Article 250 numbers were read
+in the printed 2026 NEC (2026-11-13; `docs/nec-2026-paraphrase.md`); every NFPA 780 number
+here is unread first-hand.
 
 ## 1. Owner decisions (2026-11-10)
 
