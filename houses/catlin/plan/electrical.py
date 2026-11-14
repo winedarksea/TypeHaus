@@ -2435,6 +2435,15 @@ NEC_FILL_SECOND = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-C1", face="right", distance_from_start=inch(10.4375),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
+    # NEC 210.52(H): RM-S-HALL is far over 10 ft, so it takes a receptacle (a vacuum's).
+    # The hall face of W-S-BW1, between ED-S-HALL-SW and D-S-BED1.
+    ElectricalDevice(uid="0R6RFYHNZY", tag="ED-S-HALL-RC1", kind=DeviceKind.RECEPTACLE,
+                     type_ref="ED-T-LEV-DUPLEX-20",
+                     circuit="CKT-RC-SECOND", room="RM-S-HALL",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-S-BW1", face="left", distance_from_start=inch(49.875),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="NEC027AAAA", tag="ED-S-STUDY2-RC2", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20",
                      circuit="CKT-RC-SECOND",

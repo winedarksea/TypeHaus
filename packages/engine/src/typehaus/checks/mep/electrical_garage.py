@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import math
 
-from typehaus.checks._authoring import by_result
+from typehaus.checks._authoring import advisory, by_result
 from typehaus.checks.mep.electrical_code import _room_of
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
@@ -51,36 +51,15 @@ def garage_bay_receptacles(ctx: CheckContext) -> list[Finding]:
 
     out: list[Finding] = []
     for garage in garages:
-        poly = axis_polygon(garage)
-        doors = []
-        for opening in ctx.model.openings:
-            door_type = door_types.get(opening.type_ref or "")
-            wall = walls.get(opening.host_wall)
-            if (door_type is None or wall is None or wall.storey != garage.storey
-                    or getattr(door_type.operation, "value", door_type.operation) != "overhead"):
-                continue
-            (x0, y0), (x1, y1) = wall.axis
-            length = math.hypot(x1 - x0, y1 - y0)
-            u = ((x1 - x0) / length, (y1 - y0) / length)
-            centre = Point(x0 + u[0] * opening.center_along_m, y0 + u[1] * opening.center_along_m)
-            if poly.distance(centre) <= _DOOR_TO_ROOM_M:
-                doors.append((opening, u))
-        if not doors:
-            out.append(by_result(_CID, Result.UNKNOWN,
-                                 f"{garage.tag} has no overhead door, so its vehicle bays "
-                                 "cannot be counted", (garage.tag,), _CODE))
+        bays, u = garage_bays(ctx, garage, door_types, walls)
+        if bays is None:
+            out.append(by_result(_CID, Result.UNKNOWN, f"{garage.tag} {u}", (garage.tag,),
+                                 _CODE))
             continue
-        axes = {(round(abs(u[0]), 3), round(abs(u[1]), 3)) for _, u in doors}
-        if len(axes) > 1:
-            out.append(by_result(_CID, Result.UNKNOWN,
-                                 f"{garage.tag} has overhead doors on crossing walls; bays "
-                                 "are not derived for that layout", (garage.tag,), _CODE))
-            continue
-        u = doors[0][1]
-        bays = sum(max(1, int(opening.width_m // _SINGLE_BAY_DOOR_M)) for opening, _ in doors)
         along = [x * u[0] + y * u[1] for x, y in axis_ring(garage)]
         lo, hi = min(along), max(along)
         served: dict[int, list[str]] = {}
+        unset: dict[int, list[str]] = {}
         for element in ctx.plan.storey_elements(garage.storey):
             if (element.element_kind != "ElectricalDevice"
                     or not _counts_toward_210_52(ctx, element)):
@@ -91,22 +70,146 @@ def garage_bay_receptacles(ctx: CheckContext) -> list[Finding]:
             room = _room_of(ctx.model, element, Point(xy),
                             storey_rooms.get(garage.storey, ()), by_tag)
             mount = element.mount
-            height = mount.elevation.meters if mount.elevation is not None else 0.0
-            if (room is None or room.tag != garage.tag or height > _MAX_COUNTING_HEIGHT_M
-                    or getattr(mount.kind, "value", mount.kind) == "ceiling"):
+            kind = getattr(mount.kind, "value", mount.kind)
+            # An unset elevation is unknown, not the floor; a floor box is at the floor.
+            height = (mount.elevation.meters if mount.elevation is not None
+                      else 0.0 if kind == "floor" else None)
+            if (room is None or room.tag != garage.tag or kind == "ceiling"
+                    or (height is not None and height > _MAX_COUNTING_HEIGHT_M)):
                 continue
             s = xy[0] * u[0] + xy[1] * u[1]
             bay = min(bays - 1, max(0, int((s - lo) / (hi - lo) * bays)))
-            served.setdefault(bay, []).append(element.tag)
+            (served if height is not None else unset).setdefault(bay, []).append(element.tag)
         for bay in range(bays):
             tags = served.get(bay)
             label = f"{garage.tag} bay {bay + 1} of {bays}"
             if tags:
                 out.append(by_result(_CID, Result.PASS,
                                      f"{label}: {', '.join(sorted(tags))}", (), _CODE))
+            elif unset.get(bay):
+                out.append(by_result(_CID, Result.UNKNOWN,
+                                     f"{label}: {', '.join(sorted(unset[bay]))} state no mount "
+                                     "elevation, so the 5 1/2 ft limit cannot be read",
+                                     (garage.tag, *unset[bay]), _CODE,
+                                     "author the receptacle's mount elevation"))
             else:
                 out.append(by_result(_CID, Result.FAIL,
                                      f"{label} has no receptacle at or below 5 1/2 ft",
                                      (garage.tag,), _CODE,
                                      "add a 125 V receptacle in that bay, <= 5'-6\" AFF"))
+    return out
+
+
+def garage_bays(ctx: CheckContext, garage, door_types: dict, walls: dict):
+    """(bay count, unit vector along the door wall), or (None, why not)."""
+    from shapely.geometry import Point
+
+    poly = axis_polygon(garage)
+    doors = []
+    for opening in ctx.model.openings:
+        door_type = door_types.get(opening.type_ref or "")
+        wall = walls.get(opening.host_wall)
+        if (door_type is None or wall is None or wall.storey != garage.storey
+                or getattr(door_type.operation, "value", door_type.operation) != "overhead"):
+            continue
+        (x0, y0), (x1, y1) = wall.axis
+        length = math.hypot(x1 - x0, y1 - y0)
+        u = ((x1 - x0) / length, (y1 - y0) / length)
+        centre = Point(x0 + u[0] * opening.center_along_m, y0 + u[1] * opening.center_along_m)
+        if poly.distance(centre) <= _DOOR_TO_ROOM_M:
+            doors.append((opening, u))
+    if not doors:
+        return None, "has no overhead door, so its vehicle bays cannot be counted"
+    if len({(round(abs(u[0]), 3), round(abs(u[1]), 3)) for _, u in doors}) > 1:
+        return None, "has overhead doors on crossing walls; bays are not derived for that layout"
+    bays = sum(max(1, int(opening.width_m // _SINGLE_BAY_DOOR_M)) for opening, _ in doors)
+    return bays, doors[0][1]
+
+
+_BRANCH_CID = "electrical.garage_branch_circuit"
+_GARAGE_CIRCUIT_AMPS = 20
+
+
+@check(Tier.ADVISORY, _BRANCH_CID)
+def garage_branch_circuit(ctx: CheckContext) -> list[Finding]:
+    """210.11(C)(4): a 120 V 20 A circuit for the garage receptacles, serving nothing else.
+
+    Ex. 1 lets it also feed outdoor receptacles; Ex. 2 lets a single-bay garage put other
+    outlets on it. A qualifying circuit must feed at least one receptacle that counts toward
+    210.52(G)(1); which bay each serves is ``garage_bay_receptacles``' question.
+    """
+    from shapely.geometry import Point
+
+    from typehaus.checks.mep.electrical import _counts_as_a_125v_receptacle, _counts_toward_210_52
+
+    code = cite(NEC.GARAGE_BRANCH)
+    garages = [room for room in ctx.model.rooms
+               if room.occupancy == Occupancy.GARAGE.value and len(axis_ring(room)) >= 3]
+    if not garages:
+        return [by_result(_BRANCH_CID, Result.NOT_APPLICABLE, "no garage room in the plan",
+                          (), code)]
+    by_tag = {room.tag: room for room in ctx.model.rooms}
+    storey_rooms: dict[str, list] = {}
+    for room in ctx.model.rooms:
+        if len(axis_ring(room)) >= 3:
+            storey_rooms.setdefault(room.storey, []).append((room, axis_polygon(room)))
+    where: dict[str, object] = {}  # consumer tag -> its room (None outdoors)
+    consumers: dict[str, list] = {}
+    for storey in ctx.plan.storeys:
+        for element in ctx.plan.storey_elements(storey.tag):
+            circuit = getattr(element, "circuit", None)
+            if not circuit:
+                continue
+            consumers.setdefault(circuit, []).append(element)
+            xy = placed_xy(ctx.model, element) if element.element_kind != "LightRun" else None
+            where[element.tag] = (None if xy is None else _room_of(
+                ctx.model, element, Point(xy), storey_rooms.get(storey.tag, ()), by_tag))
+    circuits = {c.tag: c for c in ctx.plan.library.circuits}
+    door_types = {t.tag: t for t in ctx.plan.library.door_types}
+    walls = {wall.tag: wall for wall in ctx.model.walls}
+    out: list[Finding] = []
+    for garage in garages:
+        def receptacle(e) -> bool:
+            return (e.element_kind == "ElectricalDevice"
+                    and _counts_as_a_125v_receptacle(ctx, e))
+
+        feeding = sorted({e.circuit for es in consumers.values() for e in es
+                          if receptacle(e) and getattr(where.get(e.tag), "tag", None)
+                          == garage.tag})
+        if not feeding:
+            out.append(advisory(_BRANCH_CID, f"{garage.tag} has no 125 V receptacle on any "
+                                "circuit", (garage.tag,), Result.FAIL, code=code))
+            continue
+        bays, _ = garage_bays(ctx, garage, door_types, walls)
+        verdicts = []
+        for tag in feeding:
+            circuit = circuits.get(tag)
+            if (circuit is None or circuit.poles != 1
+                    or circuit.breaker_amps != _GARAGE_CIRCUIT_AMPS):
+                verdicts.append((tag, "not a 120 V 20 A circuit"))
+                continue
+            others = [e.tag for e in consumers[tag] if not (receptacle(e) and (
+                where.get(e.tag) is None or getattr(where.get(e.tag), "tag", None)
+                == garage.tag))]
+            required = [e.tag for e in consumers[tag] if receptacle(e)
+                        and getattr(where.get(e.tag), "tag", None) == garage.tag
+                        and _counts_toward_210_52(ctx, e)]
+            if not required:
+                verdicts.append((tag, "feeds no receptacle that counts toward "
+                                      f"{NEC.GARAGE_RECEPTACLE}"))
+            elif others and bays != 1:
+                verdicts.append((tag, f"also serves {', '.join(sorted(others)[:4])}"))
+            else:
+                ex = " (Ex. 2, single bay)" if others else ""
+                verdicts.append((tag, None))
+                out.append(by_result(_BRANCH_CID, Result.PASS,
+                                     f"{garage.tag}: {tag} is a 120 V 20 A circuit serving "
+                                     f"only garage and outdoor receptacles{ex} "
+                                     f"({', '.join(sorted(required))})", (), code))
+                break
+        if all(why is not None for _, why in verdicts):
+            detail = "; ".join(f"{tag} {why}" for tag, why in verdicts)
+            out.append(advisory(_BRANCH_CID, f"{garage.tag} has no 120 V 20 A circuit serving "
+                                f"only its receptacles ({detail})", (garage.tag,), Result.FAIL,
+                                code=code, fix="give the garage receptacles a 20 A circuit"))
     return out

@@ -293,18 +293,29 @@ SECOND_LIGHTING = [
     # the engine compares a wall-mount elevation against the stair it lights.
     ElectricalDevice(uid="QTS000WAAA", tag="ED-S-STUDY2-STAIR-SC1", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-SCONCE-STAIR",
-                     circuit="CKT-LT-UPPER", room="RM-S-STUDY2", controlled_by=("ED-S-STUDY2-SW",),
+                     circuit="CKT-LT-UPPER", room="RM-S-STUDY2", serves_stair="ST-S2A",
+                     controlled_by=("ED-S-STUDY2-STAIR-SW", "ED-A-STUDY-STAIR-SW"),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(7, 6)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-SS2", face="right", distance_from_start=inch(85),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="QTS000XAAA", tag="ED-S-STUDY2-STAIR-SC2", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-SCONCE-STAIR",
-                     circuit="CKT-LT-UPPER", room="RM-S-STUDY2", controlled_by=("ED-S-STUDY2-SW",),
+                     circuit="CKT-LT-UPPER", room="RM-S-STUDY2", serves_stair="ST-S2A",
+                     controlled_by=("ED-S-STUDY2-STAIR-SW", "ED-A-STUDY-STAIR-SW"),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-SS2", face="right", distance_from_start=inch(121),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
+    # ST-S2A's foot end of the stair sconces' 3-way (ED-A-STUDY-STAIR-SW is the head end), on
+    # W-S-E1 beside the bottom step, south of WIN-S-STUDY3: NEC 210.70(A)(2)(3) wants the
+    # stair's lighting controlled at each floor level; ED-S-STUDY2-SW is 15 ft away at the door.
+    ElectricalDevice(uid="0V2B6HV409", tag="ED-S-STUDY2-STAIR-SW", kind=DeviceKind.SWITCH,
+                     type_ref="ED-T-LEV-SW3", circuit="CKT-LT-UPPER", room="RM-S-STUDY2",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-S-E1", face="left", distance_from_start=inch(21),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # RM-S-BED1/2/3, one template laid off the furniture (2026-10-31): ED-S-BED*-LT in front
     # of the PAX fronts, CAN2 over the open floor beside or past the bed foot, CAN3 over the
@@ -385,8 +396,8 @@ SECOND_LIGHTING = [
     # only, block a level plinth between the rafters.
     ElectricalDevice(uid="QTS001AAAA", tag="ED-S-STAIR-CHAND", kind=DeviceKind.LIGHT,
                      position=pt(m(4.26405), m(9.3355)), type_ref="ED-T-LT-CHANDELIER",
-                     circuit="CKT-LT-UPPER", room="RM-S-HALL",
-                     controlled_by=("ED-S-STAIR-SW", "ED-S-LANDING-SW"),
+                     circuit="CKT-LT-UPPER", room="RM-S-HALL", serves_stair="ST-M2S",
+                     controlled_by=("ED-M-STAIR-SW2", "ED-S-STAIR-SW"),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(5, 6))),
     # On W-S-SN3's north face at y=22'-6 1/4", the wall you walk straight at off the
     # flight — a two-gang box with ED-S-LANDING-SW. x=12' is inside the well's west lane

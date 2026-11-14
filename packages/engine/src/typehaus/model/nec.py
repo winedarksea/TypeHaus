@@ -133,6 +133,7 @@ class NEC:
     GFCI_MICROWAVE: Final = "210.8(D)(12)"
     GFCI_OUTDOOR_OUTLETS: Final = "210.8(F)"
     BATHROOM_BRANCH: Final = "210.11(C)(3)"
+    GARAGE_BRANCH: Final = "210.11(C)(4)"  # one 120 V 20 A circuit for garage receptacles
     AFCI_DWELLING: Final = "210.12(B)"
     RECEPTACLE_OUTLETS: Final = "210.52"
     WALL_SPACE_SPACING: Final = "210.52(A)(1)"
@@ -147,9 +148,14 @@ class NEC:
     BELOW_COUNTERTOP: Final = "210.52(C)(4)"
     BATHROOM_RECEPTACLE: Final = "210.52(D)"
     LAUNDRY_RECEPTACLE: Final = "210.52(F)"
+    OUTDOOR_FRONT_BACK: Final = "210.52(E)(1)"  # one front, one back, <= 6 1/2 ft above grade
     BALCONY_RECEPTACLE: Final = "210.52(E)(3)"
     GARAGE_RECEPTACLE: Final = "210.52(G)(1)"
+    HALLWAY_RECEPTACLE: Final = "210.52(H)"  # a hallway of 10 ft or more
+    FOYER_RECEPTACLE: Final = "210.52(I)"  # a foyer over 60 sq ft: each wall space of 3 ft
     STORAGE_EQUIPMENT_LIGHTING: Final = "210.70(A)(3)"
+    STAIR_SWITCHES: Final = "210.70(A)(2)(3)"  # 6+ risers: a control at each floor level
+    STAIR_DIMMER: Final = "210.70(A)(2)(4)"  # full brightness from every control location
     EQUIPMENT_SPACE_LIGHTING: Final = "210.70(C)"  # attic, underfloor, utility room, basement
     BRANCH_CONDUCTOR_LOAD: Final = "210.19(A)(1)"  # noncontinuous + 125% of continuous
     BRANCH_RANGE: Final = "210.19(C)"  # ranges of 8 3/4 kW or more: 40 A circuit at least

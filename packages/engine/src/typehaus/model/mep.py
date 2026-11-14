@@ -608,6 +608,8 @@ class ElectricalDevice(Element):
     gfci_ref: str | None = None
     # The receptacle a cord-and-plug device plugs into (same circuit): a load, not an outlet.
     plugs_into: str | None = None
+    # The Stair tag a luminaire lights (NEC 210.70(A)(2)(3)), as ``Railing.serves_stair``.
+    serves_stair: str | None = None
 
     @model_validator(mode="after")
     def _placed_or_hosted(self):
@@ -647,6 +649,7 @@ class LightRun(Element):
     soffit_ref: str | None = None
     soffit_edge_offset: Length | None = None
     emission_side: Literal["left", "right"] = "left"
+    serves_stair: str | None = None  # Stair tag this run lights (NEC 210.70(A)(2)(3))
 
 
 for _name, _obj in (

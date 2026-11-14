@@ -14,9 +14,12 @@ receptacle (``_counts_as_a_125v_receptacle``, unswitched) that is:
   (422.12 Ex. 2 lets the 210.63(A) receptacle share that circuit) or behind it; the model has
   no wiring order, so such a unit with no other receptacle is UNKNOWN, never PASS.
 
-"Accessible" is not graded. Left out: refrigeration equipment (a household unit is plugged in),
-the ERV and the water heater (neither is 210.63(A) equipment), and 210.63(B), which is for
-buildings other than dwellings. 210.63's exception for evaporative coolers does not apply.
+Refrigeration equipment is graded too: an appliance whose type draws the engine's
+``refrigerator`` symbol. A plugged-in unit's outlet within 2 ft is taken as its own, so a
+second receptacle is what passes (an appliance names no circuit). "Accessible" is not graded.
+Left out: the ERV (ventilation; 210.63(A) names heating, air-conditioning and refrigeration
+only, an AHJ question), the water heater, and 210.63(B), which is for buildings other than
+dwellings. 210.63's exception for evaporative coolers does not apply.
 """
 
 from __future__ import annotations
@@ -32,19 +35,24 @@ from typehaus.resolve.room_lookup import axis_polygon, axis_ring
 _CID = "electrical.hvac_service_receptacle"
 HVAC_RECEPTACLE_REACH_M = 25 * 0.3048
 _KINDS = frozenset({"heat_pump", "ducted_air_handler", "indoor_head"})
+_REFRIGERATION_SYMBOLS = frozenset({"refrigerator"})
+_OWN_OUTLET_M = 24 * 0.0254  # the outlet behind a refrigerator is the one it plugs into
 
 
 @check(Tier.ADVISORY, _CID)
 def hvac_service_receptacle(ctx: CheckContext) -> list[Finding]:
-    """Each heat pump, air handler and indoor head has a servicing receptacle within 25 ft."""
+    """Each heat pump, air handler, indoor head and refrigerator has a receptacle within 25 ft."""
     from shapely.geometry import Point, Polygon
 
     code = cite(NEC.HVAC_RECEPTACLE)
-    units = [e for e in ctx.plan.all_elements() if e.element_kind == "Equipment"
-             and getattr(getattr(e, "kind", None), "value", None) in _KINDS]
+    fridges = {t.tag for t in ctx.plan.library.appliance_types
+               if getattr(t, "plan_symbol", None) in _REFRIGERATION_SYMBOLS}
+    units = [e for e in ctx.plan.all_elements() if (e.element_kind == "Equipment"
+             and getattr(getattr(e, "kind", None), "value", None) in _KINDS)
+             or (e.element_kind == "Appliance" and e.type_ref in fridges)]
     if not units:
-        return [not_applicable(_CID, "no heating or air-conditioning equipment is authored",
-                               code=code)]
+        return [not_applicable(_CID, "no heating, air-conditioning or refrigeration "
+                                     "equipment is authored", code=code)]
     objects = {o.tag: o for o in ctx.model.canvas_objects}
     rooms: dict[str, list] = {}
     for room in ctx.model.rooms:
@@ -76,14 +84,20 @@ def hvac_service_receptacle(ctx: CheckContext) -> list[Finding]:
                     or indoors(robj.storey, point) != inside
                     or (inside and _separated(body, point, walls))):
                 continue
-            (same_circuit if unit.circuit and rc.circuit == unit.circuit else ok).append(
-                (gap, rc.tag))
+            own = getattr(unit, "circuit", None)
+            (same_circuit if own and rc.circuit == own else ok).append((gap, rc.tag))
         where = "indoors" if inside else "outdoors"
+        plugged = ""
+        if unit.element_kind == "Appliance" and ok and min(ok)[0] <= _OWN_OUTLET_M:
+            # A plugged-in unit's nearest outlet is its own: a second one services it.
+            plugged = f", beside its own outlet {min(ok)[1]}"
+            ok.remove(min(ok))
+        circ = " and another circuit" if getattr(unit, "circuit", None) else ""
         if ok:
             gap, tag = min(ok)
             out.append(passed(_CID, f"{unit.tag}: {tag} is {gap / 0.3048:.1f} ft away {where} "
-                                    "on the same level and another circuit (accessibility not "
-                                    "graded)", (unit.tag, tag), code=code))
+                                    f"on the same level{circ}{plugged} "
+                                    "(accessibility not graded)", (unit.tag, tag), code=code))
         elif same_circuit:
             gap, tag = min(same_circuit)
             out.append(unknown(

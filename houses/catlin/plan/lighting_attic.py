@@ -192,12 +192,20 @@ ATTIC_LIGHTING = [
     # the rafters' true plumb depth (decision #109), and 3'-9" stood 1 5/8" through it; 3'-7"
     # clears it by 3/8". This fitting lights ST-S2A's landing, drawn against the flight.
     ElectricalDevice(uid="QTA0007AAA", tag="ED-A-STUDY-STAIR-SC", kind=DeviceKind.LIGHT,
-                     type_ref="ED-T-LT-SCONCE-STAIR",
-                     circuit="CKT-LT-UPPER", room="RM-A-STUDY", controlled_by=("ED-A-STUDY-SW",),
+                     type_ref="ED-T-LT-SCONCE-STAIR", serves_stair="ST-S2A",
+                     circuit="CKT-LT-UPPER", room="RM-A-STUDY",
+                     controlled_by=("ED-S-STUDY2-STAIR-SW", "ED-A-STUDY-STAIR-SW"),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(3, 7)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-A-S3", face="left", distance_from_start=inch(111.75),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
+    # ST-S2A's head end of the stair sconces' 3-way, two-gang with ED-A-STUDY-SW.
+    ElectricalDevice(uid="13MM2P47TQ", tag="ED-A-STUDY-STAIR-SW", kind=DeviceKind.SWITCH,
+                     type_ref="ED-T-LEV-SW3", circuit="CKT-LT-UPPER", room="RM-A-STUDY",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-A-C1", face="right", distance_from_start=inch(53.625),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # Every tag in this block is ED-A-STUDIO-*, not ED-A-WEST-*: `electrical.room_lighting`
     # matches devices to a room by NAME — `ED-{room.tag[3:]}-*` — so a fitting must carry its
