@@ -80,6 +80,9 @@
 "canvas_objects/ED-A-EAST-SW2/body_z0_m": 7.33425,
 "canvas_objects/ED-A-EAST-SW2/body_z1_m": 7.38505,
 "canvas_objects/ED-A-EAST-SW2/z_m": 7.33425,
+"canvas_objects/ED-A-HP1-AH-DISC/body_z0_m": 7.33425,
+"canvas_objects/ED-A-HP1-AH-DISC/body_z1_m": 7.57555,
+"canvas_objects/ED-A-HP1-AH-DISC/z_m": 7.33425,
 "canvas_objects/ED-A-HP1-RC1/body_z0_m": 6.52145,
 "canvas_objects/ED-A-HP1-RC1/body_z1_m": 6.57225,
 "canvas_objects/ED-A-HP1-RC1/z_m": 6.52145,
@@ -188,6 +191,9 @@
 "canvas_objects/ED-A-STUDY-STAIR-SC/body_z0_m": 7.2263,
 "canvas_objects/ED-A-STUDY-STAIR-SC/body_z1_m": 7.4295,
 "canvas_objects/ED-A-STUDY-STAIR-SC/z_m": 7.2263,
+"canvas_objects/ED-A-STUDY-STAIR-SW/body_z0_m": 7.3533,
+"canvas_objects/ED-A-STUDY-STAIR-SW/body_z1_m": 7.4041,
+"canvas_objects/ED-A-STUDY-STAIR-SW/z_m": 7.3533,
 "canvas_objects/ED-A-STUDY-SW/body_z0_m": 7.3533,
 "canvas_objects/ED-A-STUDY-SW/body_z1_m": 7.4041,
 "canvas_objects/ED-A-STUDY-SW/z_m": 7.3533,
@@ -242,6 +248,9 @@
 "canvas_objects/ED-B-FURNACE-SW2/body_z0_m": -1.6113125,
 "canvas_objects/ED-B-FURNACE-SW2/body_z1_m": -1.5605125,
 "canvas_objects/ED-B-FURNACE-SW2/z_m": -1.6113125,
+"canvas_objects/ED-B-FURNACE-SW3/body_z0_m": -1.6113125,
+"canvas_objects/ED-B-FURNACE-SW3/body_z1_m": -1.5605125,
+"canvas_objects/ED-B-FURNACE-SW3/z_m": -1.6113125,
 "canvas_objects/ED-B-GYM-CAN1/body_z0_m": -0.3175,
 "canvas_objects/ED-B-GYM-CAN1/body_z1_m": -0.1651,
 "canvas_objects/ED-B-GYM-CAN1/z_m": -0.3175,
@@ -335,6 +344,12 @@
 "canvas_objects/ED-B-PLAY-N-RC5/body_z0_m": -2.3800435,
 "canvas_objects/ED-B-PLAY-N-RC5/body_z1_m": -2.2784435,
 "canvas_objects/ED-B-PLAY-N-RC5/z_m": -2.3546435,
+"canvas_objects/ED-B-PLAY-N-RC6/body_z0_m": -2.3546435,
+"canvas_objects/ED-B-PLAY-N-RC6/body_z1_m": -2.3038435,
+"canvas_objects/ED-B-PLAY-N-RC6/z_m": -2.3546435,
+"canvas_objects/ED-B-PLAY-N-RC7/body_z0_m": -2.3546435,
+"canvas_objects/ED-B-PLAY-N-RC7/body_z1_m": -2.3038435,
+"canvas_objects/ED-B-PLAY-N-RC7/z_m": -2.3546435,
 "canvas_objects/ED-B-PLAY-N-SCONCE1/body_z0_m": -0.7798435,
 "canvas_objects/ED-B-PLAY-N-SCONCE1/body_z1_m": -0.4750435,
 "canvas_objects/ED-B-PLAY-N-SCONCE1/z_m": -0.7798435,
@@ -443,6 +458,9 @@
 "canvas_objects/ED-B-WORKSHOP-SW2/body_z0_m": -1.6113125,
 "canvas_objects/ED-B-WORKSHOP-SW2/body_z1_m": -1.5605125,
 "canvas_objects/ED-B-WORKSHOP-SW2/z_m": -1.6113125,
+"canvas_objects/ED-B-WORKSHOP-SW3/body_z0_m": -1.6113125,
+"canvas_objects/ED-B-WORKSHOP-SW3/body_z1_m": -1.5605125,
+"canvas_objects/ED-B-WORKSHOP-SW3/z_m": -1.6113125,
 "canvas_objects/ED-BW-CAM-CANOPY/body_z0_m": 1.82245,
 "canvas_objects/ED-BW-CAM-CANOPY/body_z1_m": 1.9304,
 "canvas_objects/ED-BW-CAM-CANOPY/z_m": 1.82245,
@@ -506,6 +524,9 @@
 "canvas_objects/ED-G-HEATER-RC/body_z0_m": 1.4224,
 "canvas_objects/ED-G-HEATER-RC/body_z1_m": 1.4732,
 "canvas_objects/ED-G-HEATER-RC/z_m": 1.4224,
+"canvas_objects/ED-G-IBT/body_z0_m": -0.1016,
+"canvas_objects/ED-G-IBT/body_z1_m": -0.0254,
+"canvas_objects/ED-G-IBT/z_m": -0.1016,
 "canvas_objects/ED-G-LT1/body_z0_m": 1.5748,
 "canvas_objects/ED-G-LT1/body_z1_m": 1.651,
 "canvas_objects/ED-G-LT1/z_m": 1.5748,
@@ -620,6 +641,9 @@
 "canvas_objects/ED-M-BED-RC1/body_z0_m": 0.45085,
 "canvas_objects/ED-M-BED-RC1/body_z1_m": 0.50165,
 "canvas_objects/ED-M-BED-RC1/z_m": 0.45085,
+"canvas_objects/ED-M-BED-RC10/body_z0_m": 0.45085,
+"canvas_objects/ED-M-BED-RC10/body_z1_m": 0.50165,
+"canvas_objects/ED-M-BED-RC10/z_m": 0.45085,
 "canvas_objects/ED-M-BED-RC2/body_z0_m": 0.45085,
 "canvas_objects/ED-M-BED-RC2/body_z1_m": 0.50165,
 "canvas_objects/ED-M-BED-RC2/z_m": 0.45085,
@@ -1007,6 +1031,9 @@
 "canvas_objects/ED-M-STAIR-SW/body_z0_m": 1.19445,
 "canvas_objects/ED-M-STAIR-SW/body_z1_m": 1.24525,
 "canvas_objects/ED-M-STAIR-SW/z_m": 1.19445,
+"canvas_objects/ED-M-STAIR-SW2/body_z0_m": 1.19445,
+"canvas_objects/ED-M-STAIR-SW2/body_z1_m": 1.24525,
+"canvas_objects/ED-M-STAIR-SW2/z_m": 1.19445,
 "canvas_objects/ED-M-STORAGE-CAN1/body_z0_m": 2.7305,
 "canvas_objects/ED-M-STORAGE-CAN1/body_z1_m": 2.8829,
 "canvas_objects/ED-M-STORAGE-CAN1/z_m": 2.7305,
@@ -1175,6 +1202,9 @@
 "canvas_objects/ED-S-HALL-LT-PSU2/body_z0_m": 4.4069,
 "canvas_objects/ED-S-HALL-LT-PSU2/body_z1_m": 4.4457,
 "canvas_objects/ED-S-HALL-LT-PSU2/z_m": 4.4069,
+"canvas_objects/ED-S-HALL-RC1/body_z0_m": 3.4925,
+"canvas_objects/ED-S-HALL-RC1/body_z1_m": 3.5433,
+"canvas_objects/ED-S-HALL-RC1/z_m": 3.4925,
 "canvas_objects/ED-S-HALL-SW/body_z0_m": 4.2545,
 "canvas_objects/ED-S-HALL-SW/body_z1_m": 4.3053,
 "canvas_objects/ED-S-HALL-SW/z_m": 4.2545,
@@ -1292,6 +1322,9 @@
 "canvas_objects/ED-S-STUDY2-STAIR-SC2/body_z0_m": 5.0673,
 "canvas_objects/ED-S-STUDY2-STAIR-SC2/body_z1_m": 5.2705,
 "canvas_objects/ED-S-STUDY2-STAIR-SC2/z_m": 5.0673,
+"canvas_objects/ED-S-STUDY2-STAIR-SW/body_z0_m": 4.3053,
+"canvas_objects/ED-S-STUDY2-STAIR-SW/body_z1_m": 4.3561,
+"canvas_objects/ED-S-STUDY2-STAIR-SW/z_m": 4.3053,
 "canvas_objects/ED-S-STUDY2-SW-BALCONY/body_z0_m": 4.2545,
 "canvas_objects/ED-S-STUDY2-SW-BALCONY/body_z1_m": 4.3053,
 "canvas_objects/ED-S-STUDY2-SW-BALCONY/z_m": 4.2545,
@@ -2950,8 +2983,14 @@
 "construction_returns/CR-SAUNA-LINER-RETURN/z1_m": -0.3413125,
 "device_boxes/08SZS6SKK5-box/z0_m": 1.241425,
 "device_boxes/08SZS6SKK5-box/z1_m": 1.336675,
+"device_boxes/0R6RFYHNZY-box/z0_m": 3.470275,
+"device_boxes/0R6RFYHNZY-box/z1_m": 3.565525,
+"device_boxes/0V2B6HV409-box/z0_m": 4.283075,
+"device_boxes/0V2B6HV409-box/z1_m": 4.378325,
 "device_boxes/0ZZNRE9AV0-box/z0_m": 1.172225,
 "device_boxes/0ZZNRE9AV0-box/z1_m": 1.267475,
+"device_boxes/13MM2P47TQ-box/z0_m": 7.331075,
+"device_boxes/13MM2P47TQ-box/z1_m": 7.426325,
 "device_boxes/17M93C11P3-box/z0_m": -1.7065625,
 "device_boxes/17M93C11P3-box/z1_m": -1.6049625,
 "device_boxes/17T7VZK2WG-box/z0_m": 3.927475,
@@ -2970,6 +3009,8 @@
 "device_boxes/1XT4G5S2XX-box/z1_m": 1.267475,
 "device_boxes/2455867868-box/z0_m": -0.793877,
 "device_boxes/2455867868-box/z1_m": -0.698627,
+"device_boxes/358QVY1D6R-box/z0_m": -2.3768685,
+"device_boxes/358QVY1D6R-box/z1_m": -2.2816185,
 "device_boxes/38WQ21WJ9N-box/z0_m": 4.282948,
 "device_boxes/38WQ21WJ9N-box/z1_m": 4.384548,
 "device_boxes/3RQFN92MPQ-box/z0_m": 4.238625,
@@ -2984,6 +3025,8 @@
 "device_boxes/4KWVWZGFP6-box/z1_m": -0.7254875,
 "device_boxes/4XZRS7P3VR-box/z0_m": -0.6750685,
 "device_boxes/4XZRS7P3VR-box/z1_m": -0.5798185,
+"device_boxes/4ZFNP9EKM1-box/z0_m": 1.172225,
+"device_boxes/4ZFNP9EKM1-box/z1_m": 1.267475,
 "device_boxes/5DG7KH9CA2-box/z0_m": 4.238625,
 "device_boxes/5DG7KH9CA2-box/z1_m": 4.333875,
 "device_boxes/65D56B3E59-box/z0_m": 1.121425,
@@ -3012,6 +3055,8 @@
 "device_boxes/9BNPRT11G5-box/z1_m": 1.958355,
 "device_boxes/9DC7AGX2V8-box/z0_m": 1.121425,
 "device_boxes/9DC7AGX2V8-box/z1_m": 1.216675,
+"device_boxes/9N2GS8A8VT-box/z0_m": -2.3768685,
+"device_boxes/9N2GS8A8VT-box/z1_m": -2.2816185,
 "device_boxes/9WYCKYE6FK-box/z0_m": 7.312025,
 "device_boxes/9WYCKYE6FK-box/z1_m": 7.407275,
 "device_boxes/AN95ADVNCZ-box/z0_m": 6.502273,
@@ -3128,6 +3173,8 @@
 "device_boxes/G5RDBXPZVD-box/z1_m": 7.105523,
 "device_boxes/GQCPVT59F6-box/z0_m": -2.0244435,
 "device_boxes/GQCPVT59F6-box/z1_m": -1.9228435,
+"device_boxes/GTXS39HE9Z-box/z0_m": -1.6335375,
+"device_boxes/GTXS39HE9Z-box/z1_m": -1.5382875,
 "device_boxes/H26W7D1G7P-box/z0_m": 8.220075,
 "device_boxes/H26W7D1G7P-box/z1_m": 8.315325,
 "device_boxes/HGFDJH852Y-box/z0_m": 1.070625,
@@ -3138,6 +3185,8 @@
 "device_boxes/J9JPM7DWDS-box/z1_m": 4.276725,
 "device_boxes/JBZ1PYPYF0-box/z0_m": -0.6750685,
 "device_boxes/JBZ1PYPYF0-box/z1_m": -0.5798185,
+"device_boxes/JJ2EMNAQQ0-box/z0_m": -1.6335375,
+"device_boxes/JJ2EMNAQQ0-box/z1_m": -1.5382875,
 "device_boxes/JYMY6WGGP3-box/z0_m": -1.3573125,
 "device_boxes/JYMY6WGGP3-box/z1_m": -1.2557125,
 "device_boxes/K18FY9C6C0-box/z0_m": 1.33985,
@@ -3286,6 +3335,8 @@
 "device_boxes/NXKCFS9YGV-box/z1_m": 1.165875,
 "device_boxes/NYEVZE2RN5-box/z0_m": -0.6750685,
 "device_boxes/NYEVZE2RN5-box/z1_m": -0.5798185,
+"device_boxes/NZH6KSPMNF-box/z0_m": 0.428625,
+"device_boxes/NZH6KSPMNF-box/z1_m": 0.523875,
 "device_boxes/NZQNA1VMKW-box/z0_m": 6.502273,
 "device_boxes/NZQNA1VMKW-box/z1_m": 6.597523,
 "device_boxes/PEHTPE0R62-box/z0_m": 3.470148,
@@ -4452,6 +4503,12 @@
 32,
 "773eb900eb87"
 ],
+"geometry/0R6RFYHNZY-box/body": [
+3.470275,
+3.565525,
+2,
+"ffc615e1b955"
+],
 "geometry/0R90J0KW4T-00/body": [
 2.746375,
 2.9337,
@@ -4469,6 +4526,12 @@
 1.031875,
 24,
 "36e10a0e0c28"
+],
+"geometry/0V2B6HV409-box/body": [
+4.283075,
+4.378325,
+2,
+"9ed1359e7ea0"
 ],
 "geometry/0W45BR6619-run/body": [
 2.527325,
@@ -4493,6 +4556,12 @@
 2.009775,
 56,
 "5818111edb92"
+],
+"geometry/13MM2P47TQ-box/body": [
+7.331075,
+7.426325,
+2,
+"352a6fa714c0"
 ],
 "geometry/17M93C11P3-box/body": [
 -1.7065625,
@@ -5682,6 +5751,12 @@
 2,
 "27e8eda8b034"
 ],
+"geometry/358QVY1D6R-box/body": [
+-2.3768685,
+-2.2816185,
+2,
+"18a84f7791d0"
+],
 "geometry/37TTJ40QC7-run/body": [
 -1.082675,
 -0.5540375,
@@ -6227,6 +6302,12 @@
 -0.254,
 32,
 "ac68d55c0b2b"
+],
+"geometry/4ZFNP9EKM1-box/body": [
+1.172225,
+1.267475,
+2,
+"0e0630e71a3b"
 ],
 "geometry/50BHWST132/body": [
 -0.4699,
@@ -8339,6 +8420,12 @@
 0.4699,
 8,
 "e31fe242ec18"
+],
+"geometry/9N2GS8A8VT-box/body": [
+-2.3768685,
+-2.2816185,
+2,
+"18a84f7791d0"
 ],
 "geometry/9R0AYJMJZ4-run/body": [
 3.4183066,
@@ -66552,6 +66639,12 @@
 2,
 "27451ade3bd7"
 ],
+"geometry/GTXS39HE9Z-box/body": [
+-1.6335375,
+-1.5382875,
+2,
+"95985e380616"
+],
 "geometry/GV6JQNDH5D-FB0/body": [
 3.048,
 3.06705,
@@ -66983,6 +67076,12 @@
 -1.4732,
 16,
 "7f95efe976e4"
+],
+"geometry/JJ2EMNAQQ0-box/body": [
+-1.6335375,
+-1.5382875,
+2,
+"95985e380616"
 ],
 "geometry/JPDKG1PY16/body": [
 -0.2794,
@@ -68369,6 +68468,12 @@
 -0.1651,
 32,
 "773eb900eb87"
+],
+"geometry/NZH6KSPMNF-box/body": [
+0.428625,
+0.523875,
+2,
+"5a00f5623997"
 ],
 "geometry/NZQNA1VMKW-box/body": [
 6.502273,
@@ -70889,6 +70994,18 @@
 8.80745,
 2,
 "67d2728dda2d"
+],
+"geometry/S9N320V34H::framing/member:backing-0-000": [
+7.239,
+7.42315,
+8,
+"ee77a8b9d02e"
+],
+"geometry/S9N320V34H::framing/member:backing-0-001": [
+7.239,
+7.42315,
+8,
+"ee77a8b9d02e"
 ],
 "geometry/S9N320V34H::framing/member:plate-bottom": [
 6.11505,
@@ -113222,6 +113339,18 @@
 2,
 "cf42d778eab8"
 ],
+"member/S9N320V34H/backing-0-000": [
+7.239,
+7.42315,
+2,
+"26aaeeaf1e14"
+],
+"member/S9N320V34H/backing-0-001": [
+7.239,
+7.42315,
+2,
+"26aaeeaf1e14"
+],
 "member/S9N320V34H/plate-bottom": [
 6.11505,
 6.15315,
@@ -119632,6 +119761,8 @@
 "solids/ED-A-STUDY-SPOT-BOX/z1_m": 7.5057,
 "solids/ED-A-STUDY-STAIR-SC-BOX/z0_m": 7.280275,
 "solids/ED-A-STUDY-STAIR-SC-BOX/z1_m": 7.375525,
+"solids/ED-A-STUDY-STAIR-SW-BOX/z0_m": 7.331075,
+"solids/ED-A-STUDY-STAIR-SW-BOX/z1_m": 7.426325,
 "solids/ED-A-STUDY-SW-BOX/z0_m": 7.331075,
 "solids/ED-A-STUDY-SW-BOX/z1_m": 7.426325,
 "solids/ED-B-BATH-MIRROR-BOX/z0_m": -0.793877,
@@ -119648,6 +119779,8 @@
 "solids/ED-B-FURNACE-SW-BOX/z1_m": -1.5382875,
 "solids/ED-B-FURNACE-SW2-BOX/z0_m": -1.6335375,
 "solids/ED-B-FURNACE-SW2-BOX/z1_m": -1.5382875,
+"solids/ED-B-FURNACE-SW3-BOX/z0_m": -1.6335375,
+"solids/ED-B-FURNACE-SW3-BOX/z1_m": -1.5382875,
 "solids/ED-B-GYM-RC1-BOX/z0_m": -2.3764875,
 "solids/ED-B-GYM-RC1-BOX/z1_m": -2.2812375,
 "solids/ED-B-GYM-RC2-BOX/z0_m": -2.3764875,
@@ -119692,6 +119825,10 @@
 "solids/ED-B-PLAY-N-RC5-BOX/z1_m": -2.2784435,
 "solids/ED-B-PLAY-N-RC5-DROP-RUN/z0_m": -2.2784435,
 "solids/ED-B-PLAY-N-RC5-DROP-RUN/z1_m": -0.3302,
+"solids/ED-B-PLAY-N-RC6-BOX/z0_m": -2.3768685,
+"solids/ED-B-PLAY-N-RC6-BOX/z1_m": -2.2816185,
+"solids/ED-B-PLAY-N-RC7-BOX/z0_m": -2.3768685,
+"solids/ED-B-PLAY-N-RC7-BOX/z1_m": -2.2816185,
 "solids/ED-B-PLAY-N-SCONCE1-BOX/z0_m": -0.6782435,
 "solids/ED-B-PLAY-N-SCONCE1-BOX/z1_m": -0.5766435,
 "solids/ED-B-PLAY-N-SCONCE1-DROP-RUN/z0_m": -0.5766435,
@@ -119746,6 +119883,8 @@
 "solids/ED-B-WORKSHOP-SW-BOX/z1_m": -1.5382875,
 "solids/ED-B-WORKSHOP-SW2-BOX/z0_m": -1.6335375,
 "solids/ED-B-WORKSHOP-SW2-BOX/z1_m": -1.5382875,
+"solids/ED-B-WORKSHOP-SW3-BOX/z0_m": -1.6335375,
+"solids/ED-B-WORKSHOP-SW3-BOX/z1_m": -1.5382875,
 "solids/ED-G-EXT-SW-BOX/z0_m": 1.044575,
 "solids/ED-G-EXT-SW-BOX/z1_m": 1.139825,
 "solids/ED-G-GDO-GFCI-BOX/z0_m": 1.044575,
@@ -119790,6 +119929,8 @@
 "solids/ED-M-BED-FAN-SW-BOX/z1_m": 1.336675,
 "solids/ED-M-BED-RC1-BOX/z0_m": 0.428625,
 "solids/ED-M-BED-RC1-BOX/z1_m": 0.523875,
+"solids/ED-M-BED-RC10-BOX/z0_m": 0.428625,
+"solids/ED-M-BED-RC10-BOX/z1_m": 0.523875,
 "solids/ED-M-BED-RC2-BOX/z0_m": 0.428625,
 "solids/ED-M-BED-RC2-BOX/z1_m": 0.523875,
 "solids/ED-M-BED-RC3-BOX/z0_m": 0.428625,
@@ -119918,6 +120059,8 @@
 "solids/ED-M-STAIR-RC1-BOX/z1_m": 1.958355,
 "solids/ED-M-STAIR-SW-BOX/z0_m": 1.172225,
 "solids/ED-M-STAIR-SW-BOX/z1_m": 1.267475,
+"solids/ED-M-STAIR-SW2-BOX/z0_m": 1.172225,
+"solids/ED-M-STAIR-SW2-BOX/z1_m": 1.267475,
 "solids/ED-M-STORAGE-SW-BOX/z0_m": 1.172225,
 "solids/ED-M-STORAGE-SW-BOX/z1_m": 1.267475,
 "solids/ED-M-STUDY-DATA1-BOX/z0_m": 0.8452,
@@ -119980,6 +120123,8 @@
 "solids/ED-S-BED3-SW-READ-BOX/z1_m": 4.333875,
 "solids/ED-S-CLOSET-SW-BOX/z0_m": 4.232275,
 "solids/ED-S-CLOSET-SW-BOX/z1_m": 4.327525,
+"solids/ED-S-HALL-RC1-BOX/z0_m": 3.470275,
+"solids/ED-S-HALL-RC1-BOX/z1_m": 3.565525,
 "solids/ED-S-HALL-SW-BOX/z0_m": 4.232275,
 "solids/ED-S-HALL-SW-BOX/z1_m": 4.327525,
 "solids/ED-S-HALL-SW2-BOX/z0_m": 4.232275,
@@ -120036,6 +120181,8 @@
 "solids/ED-S-STUDY2-STAIR-SC1-BOX/z1_m": 5.521325,
 "solids/ED-S-STUDY2-STAIR-SC2-BOX/z0_m": 5.121275,
 "solids/ED-S-STUDY2-STAIR-SC2-BOX/z1_m": 5.216525,
+"solids/ED-S-STUDY2-STAIR-SW-BOX/z0_m": 4.283075,
+"solids/ED-S-STUDY2-STAIR-SW-BOX/z1_m": 4.378325,
 "solids/ED-S-STUDY2-SW-BALCONY-BOX/z0_m": 4.232275,
 "solids/ED-S-STUDY2-SW-BALCONY-BOX/z1_m": 4.327525,
 "solids/ED-S-STUDY2-SW-BOX/z0_m": 4.283075,
