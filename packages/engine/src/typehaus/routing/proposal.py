@@ -300,7 +300,7 @@ class ProposedCleanout:
     tag: str
     point: tuple[float, float, float]
     reason: str
-    access: str  # wall | ceiling | floor
+    access: str  # wall | cabinet | ceiling | floor
     wall_ref: str | None
     clear_in: float
     concealed: bool

@@ -275,8 +275,9 @@ def _search(model, tree, opts, net, group, members, routes, clock, loads, built,
     from typehaus.cli.route_proposal import one_proposal
     from typehaus.cli.route_support import _nearest
     from typehaus.routing.holes import drop_close_edges, laid_lines
+    from typehaus.routing.obstacles import CLEARANCE_M
     from typehaus.routing.search import shortest_route
-    from typehaus.routing.supply_tree import nodes_on
+    from typehaus.routing.supply_tree import bend_nodes, cut_nodes, nodes_on
     from typehaus.routing.terminal_block import column_block
 
     ends, listed, space, graph, xyz, limit = built
@@ -295,12 +296,22 @@ def _search(model, tree, opts, net, group, members, routes, clock, loads, built,
             problems.append(refusals[-1].render())
             failed.append(tag)
             continue
+        start = _nearest(graph, (*block.moved_to, ends_t.origin[2]) if block
+                         else ends_t.origin)
         goals: set[int] = set()
         for r in routes:
             if (listed(r) and r.proposal.diameter_m + 1e-9 >= ends_t.diameter_m
                     and loads.fits(r, weight)):
-                goals |= nodes_on(xyz, r.proposal.points)
-        start = _nearest(graph, (*block.moved_to, ends_t.origin[2]) if block else ends_t.origin)
+                on = nodes_on(xyz, r.proposal.points)
+                # Not at a bend of the host: the branch would run beside its next leg, or down
+                # its riser. Those nodes leave the lattice, so nothing slides along the host to
+                # a legal tee either.
+                reach = ends_t.radius_m + r.proposal.diameter_m / 2.0 + CLEARANCE_M
+                bends = bend_nodes(xyz, r.proposal.points, reach, on)
+                if start not in bends:
+                    cut_nodes(graph, bends)
+                    on -= bends
+                goals |= on
         if start is None or not goals:
             problems.append(f"{tag}: {label}: no lattice node at its end, or no laid run "
                             "within reach that can carry it")

@@ -34,6 +34,11 @@ RESISTANCE_HEAT_FACTOR_FEW = 0.65
 RESISTANCE_HEAT_FACTOR_MANY = 0.40
 SUPPLEMENTAL_HEAT_FACTOR = 0.65
 _BTUH_PER_W = 3.412
+# (D) EVSE at its nameplate (120.57), 7,200 VA only where no nameplate is authored.
+EVSE_DEFAULT_VA = 7200.0
+# 120.7(B): a PCS control setting is at most 80% of the monitored OCPD's rating.
+PCS_MAX_SETTING_FRACTION = 0.8
+SERVICE_VOLTS = 240.0
 
 
 def _circuit_consumers(model: ResolvedModel) -> dict[str, list]:
@@ -56,6 +61,12 @@ def _connected_va(model: ResolvedModel, circuit, consumers: list) -> float:
     """
     if circuit.load_va is not None:
         return float(circuit.load_va)
+    if _evse_unrated(model, circuit, consumers):
+        return EVSE_DEFAULT_VA
+    return _listed_va(model, consumers)
+
+
+def _listed_va(model: ResolvedModel, consumers: list) -> float:
     types = {t.tag: t for t in model.plan.library.electrical_device_types}
     run_va = line_voltage_run_va(model)
     return sum(
@@ -67,6 +78,12 @@ def _connected_va(model: ResolvedModel, circuit, consumers: list) -> float:
         for element in consumers
         if element.element_kind == "LightRun"
     )
+
+
+def _evse_unrated(model: ResolvedModel, circuit, consumers: list) -> bool:
+    """An EV circuit with no authored nameplate load: 120.57 takes 7,200 VA."""
+    return (circuit.load_va is None and _bucket(model, circuit, consumers) == "ev"
+            and not _listed_va(model, consumers))
 
 
 _HEAT_PUMP_KINDS = frozenset({"heat_pump", "indoor_head", "ducted_air_handler"})
@@ -216,6 +233,13 @@ def _credit_refusal(model: ResolvedModel, management, members, consumers) -> str
         if not management.listing.strip():
             return (f"{NEC.EDITION} {NEC.PCS_LISTING} / {NEC.PCS_SETPOINT}: a PCS in a load "
                     "calculation must be listed (UL 3141); none recorded")
+        amps = management.monitored_ocpd_amps
+        if amps is not None and management.max_simultaneous_va > (
+                PCS_MAX_SETTING_FRACTION * amps * SERVICE_VOLTS):
+            return (f"{NEC.EDITION} {NEC.PCS_CONTROL_SETTING}: the PCS setting must not exceed "
+                    f"{PCS_MAX_SETTING_FRACTION:.0%} of the monitored {amps:.0f} A OCPD "
+                    f"({PCS_MAX_SETTING_FRACTION * amps * SERVICE_VOLTS:.0f} VA at "
+                    f"{SERVICE_VOLTS:.0f} V); {management.max_simultaneous_va:.0f} VA is set")
         return ""
     return f"unknown strategy {management.strategy!r}"
 
@@ -306,8 +330,8 @@ def service_load_summary(
 
     Labeled an estimate on the sheet: (B)(1) from resolved floor area, (B)(2) per counted
     circuit (never fewer than 210.11(C)'s two small-appliance and one laundry for the whole
-    house), fixed appliances from the authored circuits, EV at 100% (D), PV excluded (a
-    source, not a load).
+    house), fixed appliances from the authored circuits, EV at 100% (D; nameplate, else 7,200 VA), PV excluded
+    (a source, not a load).
 
     (C) is a *selection*, not a sum (``hvac_selection``): cooling, the heat pumps with
     their supplemental heat at 65%, or resistance space heating at 65%/40%, largest wins.
@@ -340,6 +364,7 @@ def service_load_summary(
 
     locked = _locked_out_compressors(model)
     connected: dict[str, float] = {}
+    ev_default: list[str] = []  # EV circuits counted at the 120.57 default, no nameplate
     resistance_heat_units = 0
     supplemental_va = 0.0
     locked_compressor_va = 0.0
@@ -350,6 +375,8 @@ def service_load_summary(
         on = consumers.get(circuit.tag, [])
         va = _connected_va(model, circuit, on)
         connected[bucket] = connected.get(bucket, 0.0) + va
+        if bucket == "ev" and _evse_unrated(model, circuit, on):
+            ev_default.append(circuit.tag)
         if bucket == "resistance_heat":
             resistance_heat_units += 1
         elif bucket == "heat_pump":
@@ -418,6 +445,7 @@ def service_load_summary(
         "hvac_va": round(hvac_va, 0),
         "hvac_selection": hvac_item,
         "ev_va": round(connected.get("ev", 0.0), 0),
+        "ev_default_circuits": ev_default,
         "unmanaged_demand_va": round(unmanaged_demand_va, 0),
         "load_management_credit_va": round(unmanaged_demand_va - demand_va, 0),
         "load_management": credits,

@@ -115,6 +115,8 @@ class LoadManagement(Element):
       setpoint at <= 80% of the monitored OCPD; 130.2 requires the listing; 625.42(A)
       points EV supply equipment at the same Part II). Credited only with a ``listing``:
       an unlisted controller running proprietary throttling software earns nothing.
+      ``max_simultaneous_va`` is read as the 120.7(C)(1) setting; the (C)(2) minimum operating
+      current for a PCS that also monitors noncontrolled loads is not modelled.
 
     Schedule data like ``Circuit``: no geometry, lives in ``Library.load_managements``.
     """
@@ -126,6 +128,9 @@ class LoadManagement(Element):
     # recorded", which is what a refusal reports — never assumed present.
     listing: str = ""
     source: str = ""  # where the arrangement came from (product, note, code section)
+    # ``pcs`` only: the rating of the OCPD the PCS monitors. When set, a setting above 80% of it
+    # (120.7(B), at 240 V) refuses the credit. Unset: the setting is not graded.
+    monitored_ocpd_amps: float | None = None
 
 
 register_constructor("LoadManagement", LoadManagement)

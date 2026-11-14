@@ -26,42 +26,124 @@ _EXTENSION_M = 2 * M_PER_IN
 
 def place_cleanouts(model: Any, space: Any, proposal: Any
                     ) -> tuple[tuple[Any, ...], float, list[str]]:
-    """``(cleanouts, cost in, notes)`` for one proposed drain.
+    """``(cleanouts, cost in, notes)`` for one proposed drain, read alone.
 
     A ``sanitary=False`` run (condensate, indirect waste) is outside UPC 707.4: none."""
-    sanitary = bool(proposal.echo.get("sanitary", True))
-    if not sanitary:
+    if not bool(proposal.echo.get("sanitary", True)):
         return (), 0.0, []
-    from typehaus.resolve.cleanout_rules import (
-        _LOCATION_TOLERANCE_M,
-        _TERMINAL_TOLERANCE_M,
-        run_requirements,
-    )
-    from typehaus.routing.proposal import ProposedCleanout
+    from typehaus.resolve.cleanout_rules import run_requirements
 
     pts = proposal.points
-    run = SimpleNamespace(tag=proposal.tag, path=[p[:2] for p in pts], z_m=[p[2] for p in pts],
-                          serves=proposal.serves, sanitary=sanitary, system="drain",
-                          diameter_m=proposal.diameter_m)
+    run = _as_run(proposal)
     building = next((r for r in model.pipe_runs if r.system == "drain"
                      and r.tag.endswith("MAIN-DRAIN")), None)
     # Only whether it ties onto the building drain matters (707.4 exception 3).
     ties = ({run.tag: building.tag} if building is not None and _ends_on(pts[-1], building)
             else {})
     lowest = min(s.elevation.meters for s in model.plan.storeys)
+    return place_required(model, space, proposal,
+                          run_requirements(run, {run.tag: run}, ties, building, lowest))
+
+
+def place_tree_cleanouts(model: Any, placed: list[tuple[Any, Any]]) -> list[Any]:
+    """A drain tree's proposals with the cleanouts the check reads off the whole network.
+
+    ``placed`` is ``(space, proposal)`` in lay order, each space the one its proposal was
+    searched in. A branch that ties onto another is walked through it, so a requirement
+    lands on whichever proposal's run it falls on; one that falls on an authored run (the
+    main it ties into) is noted on the branch that raised it, never placed there."""
+    from dataclasses import replace
+
+    from typehaus.resolve.cleanout_rules import run_requirements
+
+    live = {p.tag for _sp, p in placed if p.echo.get("sanitary", True)}
+    drains, ties, building, lowest = network_view(
+        model, [p for _sp, p in placed if p.tag in live])
+    wanted: dict[str, list[Any]] = {}  # requirement -> the run it falls on
+    raised: dict[Any, str] = {}  # requirement -> the proposal whose walk found it
+    for _sp, p in placed:
+        for req in run_requirements(drains[p.tag], drains, ties, building,
+                                    lowest) if p.tag in live else ():
+            if req not in raised:
+                raised[req] = p.tag
+                wanted.setdefault(req.pipe_ref, []).append(req)
+    out = []
+    for space, p in placed:
+        if p.tag not in live:
+            out.append(p)
+            continue
+        cleanouts, cost, notes = place_required(model, space, p, wanted.get(p.tag, []))
+        notes += [f"cleanout ({r.reason}) falls on authored {ref} at "
+                  f"({r.point[0] / M_PER_IN:.2f}\", {r.point[1] / M_PER_IN:.2f}\"): "
+                  "its own cleanout, not this branch's" for ref, reqs in wanted.items()
+                  if ref not in live for r in reqs if raised[r] == p.tag]
+        terms = dict(p.terms)
+        if cost and terms:
+            terms["cleanouts_in"] = cost
+        out.append(replace(p, cleanouts=cleanouts, cost=p.cost + cost, terms=terms,
+                           notes=[*p.notes, *notes]))
+    return out
+
+
+def _as_run(p: Any) -> SimpleNamespace:
+    return SimpleNamespace(
+        tag=p.tag, path=[q[:2] for q in p.points], z_m=[q[2] for q in p.points],
+        serves=p.serves, sanitary=bool(p.echo.get("sanitary", True)), system="drain",
+        diameter_m=p.diameter_m)
+
+
+def network_view(model: Any, proposals: list[Any]) -> tuple[dict, dict, Any, float]:
+    """``(drains, ties, building, lowest floor)`` as the check reads them: the authored
+    sanitary drains the proposals do not replace, plus the proposals as runs. A branch
+    that ties onto another proposal is walked through it (UPC 707.4's 100 ft and 135 degrees
+    run to the building drain)."""
+    from typehaus.cli.route_eval import _replaced_tags
+    from typehaus.resolve.mep_tie_ins import drain_tie_ins
+
+    replaced: set[str] = set()
+    for p in proposals:
+        replaced |= _replaced_tags(model, p)
+    drains = {r.tag: r for r in model.pipe_runs
+              if r.system == "drain" and r.sanitary and r.tag not in replaced}
+    drains.update({p.tag: _as_run(p) for p in proposals})
+    building = next((r for r in drains.values() if r.tag.endswith("MAIN-DRAIN")), None)
+    return (drains, drain_tie_ins(list(drains.values())), building,
+            min(s.elevation.meters for s in model.plan.storeys))
+
+
+def place_required(model: Any, space: Any, proposal: Any, required: list[Any]
+                   ) -> tuple[tuple[Any, ...], float, list[str]]:
+    """Station each of ``required`` (this proposal's own requirements) on it."""
+    from shapely.geometry import Point, Polygon
+
+    from typehaus.resolve.cleanout_rules import _LOCATION_TOLERANCE_M, _TERMINAL_TOLERANCE_M
+    from typehaus.routing.proposal import ProposedCleanout
+
+    pts = proposal.points
     clear_in = 18.0 if proposal.diameter_m <= 2 * M_PER_IN + 1e-9 else 24.0
     from typehaus.cli.route_eval import _storey_for
 
     storey = _storey_for(model, proposal)
     datum = next((s.elevation.meters for s in model.plan.storeys if s.tag == storey), 0.0)
     out, cost, notes = [], 0.0, []
-    for k, req in enumerate(run_requirements(run, {run.tag: run}, ties, building, lowest)):
+    for k, req in enumerate(required):
         reach = (_TERMINAL_TOLERANCE_M if req.reason == "upper terminal"
                  else _LOCATION_TOLERANCE_M)
-        station = _cheapest(space, [
-            *(st for st in _clear_stations(space, pts, req, reach, clear_in * M_PER_IN)
-              if st[0][2] >= datum - M_PER_IN or _floor_cap_open(model, st[0], storey, datum)),
-            *_wall_stations(space, pts, req, reach, clear_in * M_PER_IN, datum)], datum)
+        cabinet: set[int] = set()
+        found = [*_clear_stations(space, pts, req, reach, clear_in * M_PER_IN),
+                 *_wall_stations(space, pts, req, reach, clear_in * M_PER_IN, datum)]
+        stations = []
+        for st in found:
+            if st[0][2] >= datum - M_PER_IN or st[3] is not None:
+                stations.append(st)
+                continue
+            hiding = _hiders(model, st[0], storey, datum)
+            if not hiding:
+                stations.append(st)
+            elif all(Polygon(h.footprint).covers(Point(pts[0][:2])) for h in hiding):
+                stations.append(st)  # its cap comes up inside the fixture's own cabinet
+                cabinet.add(id(st))
+        station = _cheapest(space, stations, datum, cabinet)
         if station is None:
             notes.append(f"cleanout ({req.reason}) near ({req.point[0] / M_PER_IN:.2f}\", "
                          f"{req.point[1] / M_PER_IN:.2f}\"): no station within "
@@ -70,9 +152,11 @@ def place_cleanouts(model: Any, space: Any, proposal: Any
         point, corridor, (ux, uy), wall_cap = station
         wall = corridor is not None and corridor.kind == "wall"
         # Below its storey's floor the plug comes up flush in it; overhead it is a panel.
-        access = "wall" if wall else ("floor" if point[2] < datum - M_PER_IN else "ceiling")
+        access = ("cabinet" if id(station) in cabinet else "wall" if wall else
+                  "floor" if point[2] < datum - M_PER_IN else "ceiling")
         concealed = access != "floor"
-        cap = (wall_cap or ((point[0], point[1], datum) if access == "floor"
+        cap = (wall_cap or ((point[0], point[1], datum) if access == "floor" else
+                            (point[0], point[1], datum + 12 * M_PER_IN) if access == "cabinet"
                             else _cap(space, point, (ux, uy), wall)))
         out.append(ProposedCleanout(
             tag=f"CO-{proposal.tag}-{k + 1}", point=point, reason=req.reason, access=access,
@@ -172,9 +256,12 @@ def _price(space: Any, access: str, point: tuple, datum: float) -> float:
     return cost.cleanout_in + cost.cleanout_concealed_in
 
 
-def _cheapest(space: Any, stations: list, datum: float) -> tuple | None:
+def _cheapest(space: Any, stations: list, datum: float, cabinet: set[int] = frozenset()
+              ) -> tuple | None:
     """The cheapest station; ``min`` keeps the earlier (nearer) one on a tie."""
     def access(st: tuple) -> str:
+        if id(st) in cabinet:
+            return "cabinet"
         if st[1] is not None and st[1].kind == "wall":
             return "wall"
         return "floor" if st[0][2] < datum - M_PER_IN else "ceiling"
@@ -183,14 +270,14 @@ def _cheapest(space: Any, stations: list, datum: float) -> tuple | None:
                default=None)
 
 
-def _floor_cap_open(model: Any, p: tuple, storey: str, datum: float) -> bool:
-    """A floor cap no fixture, appliance or furniture stands over (``mep.drain_cleanouts``)."""
+def _hiders(model: Any, p: tuple, storey: str, datum: float) -> list:
+    """What stands over a floor cap: fixture, appliance or furniture (``mep.drain_cleanouts``)."""
     from shapely.geometry import Point, Polygon
 
-    return not any(item.storey == storey and item.body_z1_m >= datum
-                   and item.domain in {"plumbing", "appliance", "furniture"} and item.footprint
-                   and Polygon(item.footprint).covers(Point(p[:2]))
-                   for item in getattr(model, "canvas_objects", ()))
+    return [item for item in getattr(model, "canvas_objects", ())
+            if item.storey == storey and item.body_z1_m >= datum
+            and item.domain in {"plumbing", "appliance", "furniture"} and item.footprint
+            and Polygon(item.footprint).covers(Point(p[:2]))]
 
 
 def _cap(space: Any, p: tuple, u: tuple[float, float], wall: bool) -> tuple:

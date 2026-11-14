@@ -169,10 +169,12 @@ def branch_diameter_m(model: ResolvedModel, fixtures: tuple[str, ...],
 
 def _endpoints(model: ResolvedModel, target: str, mode: str,
                problems: list[str]) -> Endpoints | None:
-    """:func:`_target_endpoints` with exact ports' direction leads applied."""
+    """:func:`_target_endpoints` with exact ports' and shower inlets' direction leads applied."""
+    from typehaus.cli.route_fixture_inlet import with_inlet_lead
     from typehaus.cli.route_ports import with_port_leads
 
-    return with_port_leads(model, _target_endpoints(model, target, mode, problems))
+    ends = with_port_leads(model, _target_endpoints(model, target, mode, problems))
+    return with_inlet_lead(model, ends)
 
 
 def _target_endpoints(model: ResolvedModel, target: str, mode: str,

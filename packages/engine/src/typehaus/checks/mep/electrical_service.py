@@ -88,6 +88,10 @@ def service_load(ctx: CheckContext) -> list[Finding]:
     managed_amps = demand_va / 240.0
     where = ("" if summary["service_amps_source"] == "default"
              else f" ({summary['service_amps_source']})")
+    ev_default = list(summary.get("ev_default_circuits") or ())
+    if ev_default:
+        where += (f"; {cite(NEC.EVSE_LOAD)} default of 7,200 VA used for {', '.join(ev_default)} "
+                  "(no nameplate authored)")
     credit_text = ("no load-management credit" if credit_va <= 0
                    else f"after a {credit_va:.0f} VA load-management credit")
     if managed_amps <= service_amps:

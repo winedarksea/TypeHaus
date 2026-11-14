@@ -27,16 +27,20 @@ if TYPE_CHECKING:  # pragma: no cover - typing only
 PROBE_LABELS = 200_000
 #: P8 re-proves a lane in a world this far round it: the lane, its neighbours, its tie.
 _LANE_MARGIN_FT = 2.0
+#: A collector's snapped invert may differ from the one its branches were laid at by this much.
+_SNAP_M = 0.25 * 0.0254
 
 
 def _route_group(model: ResolvedModel, target: str, group: list[str], *,
                  points: dict[str, tuple[float, float]], floors: dict[str, float],
+                 origins: dict[str, float],
                  storeys: dict[str, str], size: float, root_z: float,
                  accepted: list[tuple[list[tuple[float, float]], list[float]]],
                  branches: Any, via: list[tuple[float, float]], slope: float | None,
                  margin_ft: float,
                  level: str | None, avoid: frozenset[str], touch: frozenset[str],
-                 explain: bool, cost: Any, clock: Any, stats: dict | None = None
+                 explain: bool, cost: Any, clock: Any, stats: dict | None = None,
+                 spaces: list | None = None
                  ) -> tuple[list[tuple[RouteProposal, str]], list[str], list[str]]:
     """One RSPH tree over the branches of a single size. Appends what it routes to
     ``accepted``, so the next (narrower) group can tie onto it."""
@@ -203,7 +207,7 @@ def _route_group(model: ResolvedModel, target: str, group: list[str], *,
         # On the grid now, not after the tree: a branch that cannot be proposed must not
         # stand in the tree for later branches to dodge or tie onto.
         legs, said = found.polyline(), []
-        if _fall(legs, (legs[0][0], legs[0][1], floors[tag]),
+        if _fall(legs, (legs[0][0], legs[0][1], origins[tag]),
                  HeadBudget(ceiling_m=floors[tag], required_m=arrival,
                             developed_ft=lengths[-1], diameter_m=size),
                  problem.grade_in_per_ft, tag, said, start_m=found.start_m) is None:
@@ -299,12 +303,24 @@ def _route_group(model: ResolvedModel, target: str, group: list[str], *,
                             "first with --fixture")
             continue
         own = ledger.size_of.get(tag, size)  # P8 may have re-laid it one size up
-        budget = HeadBudget(ceiling_m=floors[tag], required_m=arrival,
-                            developed_ft=lengths[-1], diameter_m=own)
+        origin = (legs[0][0], legs[0][1], origins[tag])
+        end = graph.nodes[route_found.nodes[-1]]
+        # The collector's own profile has since been snapped to the grid (its fall rounded up),
+        # so land on its FINAL invert where that is within a snap: a wye must not arrive
+        # below its collector's centreline (mep.drain_tie_in).
+        final = _invert_of(accepted, (end.x, end.y))
+        tries = ([final] if tag not in ledger.arrivals and abs(final - arrival) <= _SNAP_M
+                 and final != arrival else []) + [arrival]
+        for want in tries:
+            budget = HeadBudget(ceiling_m=floors[tag], required_m=want,
+                                developed_ft=lengths[-1], diameter_m=own)
+            said: list[str] = []
+            fallen = _fall(legs, origin, budget, grade_of(own), tag, said,
+                           start_m=route_found.start_m)
+            if fallen is not None:
+                break
+        problems.extend(said)
         profile = profile_for(budget, grade_in_per_ft=grade_of(own))
-        origin = (legs[0][0], legs[0][1], floors[tag])
-        fallen = _fall(legs, origin, budget, grade_of(own), tag, problems,
-                       start_m=route_found.start_m)
         if fallen is None:
             continue
         fell, note = fallen
@@ -319,6 +335,8 @@ def _route_group(model: ResolvedModel, target: str, group: list[str], *,
         made.append((proposal, storeys[tag]))
         accepted.append(([(x, y) for x, y, _z in proposal.points],
                          [z for _x, _y, z in proposal.points]))
+    if spaces is not None:  # the cleanouts are placed once the whole tree is known
+        spaces.extend((space, proposal) for proposal, _s in made)
     return made, problems, notices
 
 

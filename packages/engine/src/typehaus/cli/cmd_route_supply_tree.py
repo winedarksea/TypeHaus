@@ -183,7 +183,7 @@ def _lay_trunk(model, tree, opts, net, order, clock, problems, notices, refusals
     from typehaus.cli.route_support import _nearest, _root_nodes
     from typehaus.routing.search import shortest_route
     from typehaus.routing.space import RoutingSpaceTooLarge
-    from typehaus.routing.supply_tree import HOLE_M, gate_prisms
+    from typehaus.routing.supply_tree import HOLE_M, gate_prisms, outside_prisms_holed
 
     base = net.ends.get(tree) or next(iter(net.ends.values()))
     trunk_ends = replace(resized(base, net.trunk, net.trunk.diameter_m),
@@ -196,7 +196,12 @@ def _lay_trunk(model, tree, opts, net, order, clock, problems, notices, refusals
         return None
     rx, ry, rz = net.root
     tries = order[:_TRUNK_TRIES]
-    for far in tries:
+    # Inside the house first: a trunk that leaves it freezes (outside prisms). Only when no
+    # interior lane crosses the floor system does it retry free, and says so.
+    for far, inside in [(tries[0], True)] + [(f, False) for f in tries]:
+        if not inside and far == tries[0]:
+            notices.append(f"{tree}: no trunk to the farthest end stays inside the house; "
+                           "retried free of its outline")
         fx, fy, fz = net.ends[far].origin
         seeds = [(rx, ry, rz), (fx, fy, fz),
                  *[(x, y, z) for x, y in ((rx, ry), (fx, fy)) for z in gate.planes]]
@@ -204,7 +209,9 @@ def _lay_trunk(model, tree, opts, net, order, clock, problems, notices, refusals
         try:
             space, graph = space_for(
                 model, opts, net, trunk_ends, seeds, clock, f"trunk to {far}",
-                extra=lambda sp, hole=(fx, fy): gate_prisms(sp.bbox, gate, [(rx, ry), hole]),
+                extra=lambda sp, hole=(fx, fy), inside=inside: [
+                    *(outside_prisms_holed(model, sp, [(rx, ry), hole]) if inside else []),
+                    *gate_prisms(sp.bbox, gate, [(rx, ry), hole])],
                 leads=(ends,), serves=net.ends[far].serves)
         except RoutingSpaceTooLarge as exc:
             notices.append(f"{tree}: trunk to {far}: {exc}")
@@ -220,7 +227,7 @@ def _lay_trunk(model, tree, opts, net, order, clock, problems, notices, refusals
             refused = refuse(space, graph, start, goals, target=tree, ends=trunk_ends,
                              report=None, alternatives=1, margin_ft=opts.margin_ft, band=None)
             notices.append(f"{tree}: no gated trunk to {far}: {refused.render()}")
-            if far == tries[-1]:
+            if far == tries[-1] and not inside:
                 refusals.append(refused)
             continue
         scratch: list[str] = []

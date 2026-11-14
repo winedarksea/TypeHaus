@@ -214,3 +214,57 @@ def test_replaces_overrides_the_serves_rule_and_never_takes_the_tied_into_run(
                              diameter_m=0.05, serves=("A",), system="drain",
                              replaces=("ARM", "GONE"))
     assert _replaced_tags(model, explicit) == {"ARM"}
+
+
+def test_eval_elements_follow_the_run_that_replaces_theirs() -> None:
+    """A valve follows the piece of a split run its station is on; a bond follows its run."""
+    from typehaus.cli.route_eval import _follow
+    from typehaus.model.grounding import BondingConductor
+    from typehaus.model.mep import PipeAccessory, PipeAccessoryKind
+    from typehaus.quantities import Point2D, m
+    from typehaus.routing.proposal import RouteProposal
+
+    def prop(tag, pts):
+        return RouteProposal(tag=tag, kind="pipe", points=pts, diameter_m=0.02,
+                             serves=(), system="water_cold", replaces=("R",))
+
+    near, far = [(0, 0, 0), (1, 0, 0)], [(5, 0, 0), (6, 0, 0)]
+    props = [prop("R-PROPOSED", near), prop("R-PROPOSED-END", far)]
+    valve = PipeAccessory(tag="V", kind=PipeAccessoryKind.SHUTOFF, pipe_ref="R",
+                          position=Point2D(m(5.5), m(0)))
+    assert _follow(valve, {"R"}, props).pipe_ref == "R-PROPOSED-END"
+    bond = BondingConductor(tag="B", from_ref="E", to_ref="R", role="water_bond", size="4")
+    assert _follow(bond, {"R"}, props).to_ref == "R-PROPOSED"
+
+
+def test_outside_prisms_are_holed_where_a_run_ends_and_goals_clear_the_bends() -> None:
+    from shapely.geometry import Point, box
+
+    from typehaus.routing.obstacles import HardPrism
+
+    xyz = np.array([(0, 0, 0), (0.01, 0, 0), (0.5, 0, 0)], dtype=float)
+    assert st.bend_nodes(xyz, [(-1, 0, 0), (0, 0, 0), (0, 1, 0)], 0.1) == {0, 1}
+
+    class Model:  # one storey whose deck hull is the 0..10 box
+        floors = [type("F", (), {"storey": "s", "deck_outline": [(0, 0), (10, 0), (10, 10),
+                                                                  (0, 10)], "deck_z1_m": 1.0,
+                                 "members": [type("M", (), {"z0_m": 0.0})()]})()]
+
+    space = type("S", (), {"radius_m": 0.01, "clearance_m": 0.01, "bbox": (-5, -5, 15, 15)})
+    (prism,) = st.outside_prisms_holed(Model, space, [(-1.0, 5.0)])
+    assert isinstance(prism, HardPrism)
+    assert not prism.footprint.contains(Point(-1.0, 5.0))  # the end's hole
+    assert prism.footprint.contains(Point(-1.0, 8.0))  # the rest of the outside
+    assert not prism.footprint.intersects(box(1, 1, 9, 9))
+
+
+def test_a_shower_inlet_end_leaves_along_the_valve_axis(request) -> None:
+    """``mep.shower_assembly_alignment``: FX-M-BATH2-SH's cold inlet faces -y, so the fixture end
+    moves to a straight stub out along it."""
+    from typehaus.cli.route_support import _endpoints
+
+    model = request.getfixturevalue("catlin_model_ro")
+    ends = _endpoints(model, "PR-B-BATH2-SH-CW", "run", [])
+    lead = ends.origin_lead
+    assert lead is not None and lead.direction == "-y" and lead.label.endswith("VALVE-COLD")
+    assert ends.origin[1] < lead.port[1] - 0.04 and ends.origin[0] == lead.port[0]

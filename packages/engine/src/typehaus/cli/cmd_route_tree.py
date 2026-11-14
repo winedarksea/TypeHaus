@@ -35,7 +35,9 @@ def _propose_tree(model: ResolvedModel, target: str, *, slope: float | None,
 
     The whole main is the goal line, so branches may join at different stations. This is one
     coordinated tree; independent fixture searches cannot share the resulting branches."""
+    from typehaus.model.enums import Service
     from typehaus.resolve.mep import _expected_drain_point  # type: ignore[attr-defined]
+    from typehaus.resolve.mep_sleeves import expected_port_point
     from typehaus.routing.timing import Timer
 
     problems: list[str] = []
@@ -68,6 +70,7 @@ def _propose_tree(model: ResolvedModel, target: str, *, slope: float | None,
     points: dict[str, tuple[float, float]] = {}
     storeys: dict[str, str] = {}
     floors: dict[str, float] = {}
+    origins: dict[str, float] = {}  # each drain port's elevation
     diameters: dict[str, float] = {}
     for tag in fixtures:
         point = _expected_drain_point(model, tag)
@@ -82,6 +85,10 @@ def _propose_tree(model: ResolvedModel, target: str, *, slope: float | None,
         diameters[tag] = size
         storeys[tag] = _storey_of(model, tag)
         floors[tag] = _storey_datum(model, storeys[tag])
+        # The run's first vertex is the port (mep.fixture_port_connection), as `--fixture`
+        # takes it; the profile still starts at the storey datum, the plumb drop between.
+        port = expected_port_point(model, tag, Service.DRAIN)
+        origins[tag] = floors[tag] + (port[2] if port is not None else 0.0)
     if not points:
         return [], problems, [], []
 
@@ -137,6 +144,7 @@ def _propose_tree(model: ResolvedModel, target: str, *, slope: float | None,
         target, [(x, y, z) for (x, y), z in reachable],
         pipe_trade.radius_m(main.diameter_m, main.material, main.insulation))
     proposals: list[tuple[RouteProposal, str]] = []
+    spaces: list[tuple[Any, RouteProposal]] = []  # each proposal's search space, for cleanouts
     notices: list[str] = []
     sizes = sorted({diameters[tag] for tag in points}, reverse=True)
     if len(sizes) > 1 and explain:
@@ -163,12 +171,13 @@ def _propose_tree(model: ResolvedModel, target: str, *, slope: float | None,
                 break
             accepted[0] = _main_line(reachable, rungs, rung)
             made, group_problems, group_notices = route_group(
-                model, target, remaining, points=points, floors=floors, storeys=storeys,
-                size=size, root_z=min(accepted[0][1]) if rung else max(accepted[0][1]),
+                model, target, remaining, points=points, floors=floors, origins=origins,
+                storeys=storeys, size=size,
+                root_z=min(accepted[0][1]) if rung else max(accepted[0][1]),
                 accepted=accepted, branches=branches, via=via, slope=slope,
                 margin_ft=margin_ft, level=level, avoid=avoid,
                 touch=frozenset({target, *replaced, *lift}), explain=explain, cost=cost,
-                clock=clock, stats=stats)
+                clock=clock, stats=stats, spaces=spaces)
             proposals.extend(made)
             notices.extend(group_notices)
             served = {tag for proposal, _s in made for tag in proposal.serves}
@@ -186,6 +195,12 @@ def _propose_tree(model: ResolvedModel, target: str, *, slope: float | None,
             lowered = len(tried) > 1 and "no route to" in text \
                 and text.split(":", 1)[0] not in on_column
             problems.append(f'{text} (stack ties tried: {spelled}")' if lowered else text)
+    if spaces:  # UPC 707.4 reads the whole tree: a branch is walked through the one it ties onto
+        from typehaus.cli.route_cleanouts import place_tree_cleanouts
+
+        with clock.stage("cleanouts"):
+            placed = {p.tag: p for p in place_tree_cleanouts(model, spaces)}
+        proposals = [(placed.get(p.tag, p), s) for p, s in proposals]
     if timing is not None:
         timing.extend(clock.lines())
     # No refusals channel yet: a tree refusal is reported per-terminal inside the RSPH

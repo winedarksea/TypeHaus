@@ -225,9 +225,9 @@ That would let subagents compare candidates without repeatedly reading geometry 
 - Upgrade fasteners still uncounted (decision #105 covers panel screws, connector schedules, treated framing, roof/screen sheathing): wall sheathing and subfloor nailing, fascia/trim screws, window-install screws, and the HL angles' site-length through-bolts.
 - Backup battery, still open (`houses/catlin/notes/backup_power.md` §11-§12): EG4's UL 9540 certificate naming 12kPV + WallMount Indoor; how the 12kPV's load port behaves on its "No Battery" setting (ask EG4); its GEN port rating; declare future storage and V2H on the Xcel application; DSI's position on a UL 9540 3rd-ed. DC ESS battery; a freeze drain-down plan; a small LFP UPS for Home Assistant, the router and the leak valve. After the 2026-11-02 trim the always-on tier passes summer's 48 h and the bridge (0.28 kWh margin) and still fails December's cycle (§6).
 - V2H spare raceway (routed 2026-11-07, `backup_power.md` §10): add PVC 2" rows to `prices.toml [conduit_fittings]`; the ICF supplier/engineer details rebar round the three 6" CD-GAR sleeve boxouts in W-B-N2 and W-GF-S2. `CD-B-GAP-EV` ends at +5'10" abs while `ED-G-EV-1450` is at 48" AFF (+14" abs): an existing over-rise to check.
-- **2026 NEC residue (decision #120).** Every cited row is read in the printed code
-  (2026-11-13) and paraphrased in `docs/nec-2026-paraphrase.md`; its **Engine** lines list the
-  rules no check grades.
+- **2026 NEC residue (decision #120).** The rows in `docs/nec-2026-paraphrase.md` are read in
+  the printed code (2026-11-13/14); its **Engine** lines list the rules no check grades. The
+  rest of `model/nec.py` is still unread (below), though `UNCONFIRMED` is empty.
   - Catlin, owner to decide: the 250.104(A) water bond BC-B-WATER is #4 Cu where Table
     250.102(C)(1) wants 1/0 Cu for a 320 A service (3/0 cap); the garage, fed by branch
     circuits, has no 250.94 IBT or disconnect modelled.
@@ -250,6 +250,37 @@ That would let subagents compare candidates without repeatedly reading geometry 
     opposite-end placement or label.
   - Cheap checks still missing: 210.52(F) laundry, 210.52(H) hallways, 210.11(C)(4) garage
     circuit.
+  - **Still to read in print.** For each one: paraphrase it, and either confirm the
+    `model/nec.py` row or put it in `UNCONFIRMED`. Numbers not yet in `nec.py` are 2023
+    numbers, to be confirmed.
+    - Cited and graded: 110.26(A)/(E)(1) (`electrical_panel_space`); 215.18, 230.67 (SPD);
+      240.24(A), 404.8(A) (`electrical_panel_height`); 300.24 and 352/358/362.26
+      (`conduit_bends`); 314.16 and Tables 314.16(A)/(B), 314.20/314.23, 314.25
+      (`electrical_boxes`, `electrical_canopy`); 334.15(B)/(C); 690.12 and (B)(2)
+      (`power_sources`); 210.70(A)(3); 130.2 (PCS listing).
+    - Cited, read only in post-publication sources: 250.32, 250.50, 250.52(A)(3), 250.53,
+      250.64, 690.47.
+    - Cited but used by nothing (read them, or drop the constant): 110.26(C), 120.5(C),
+      120.41, 230.70(A)(1), 240.4(D), 250.86 Ex. 2, Table 310.16, 314.16(A)(2), 334.80,
+      342.26, 344.26, Table 352.30, 358.30, 362.30, Art. 408, 410.10(D), 424.5, Ch. 9
+      Table 4 and Note 2.
+    - Not cited, but Catlin triggers them:
+      - Spa, Art. 680 Part IV: GFCI, the disconnect within sight, and bonding (`CKT-SPA`,
+        `ED-B-SPA-DISC`).
+      - 230.70(A)(1) and 230.85: outdoor and emergency service disconnect.
+      - 225.31/225.32: the garage disconnect.
+      - Art. 706 and 480: the ESS.
+      - 625.40/.41/.54: EVSE circuit, sizing and GFCI.
+      - Art. 424: GFPE for floor-heating cables (`FloorHeat`).
+      - The sauna heater's article and listing rule.
+      - 440.14 and the nameplate MOCP for heat pumps and heads; 210.63 (service receptacle).
+      - 422.13 and 422.31: water heater and fastened appliances.
+      - 406.12 tamper-resistant and 406.9(B) weather-resistant/in-use covers.
+      - 300.4 (framing setback, nail plates) and 300.5 (burial depth).
+      - 310.12: dwelling service conductors, which unblocks the Table 250.66 rows and the
+        water-bond size.
+      - 210.70(A)(2) stair switching, 408.4 circuit directory, 210.19/210.20 continuous
+        loads.
 - **Rapid-shutdown initiator** (`ED-M-RSD-INIT`, `backup_power.md` §8): confirm the IMO
   ESS-RSD01's UL 508i listing and file number, and its rating (IMO 48 VDC vs the Fronius
   42,0440,0338 listing's 96 VDC) before buying; confirm with EG4 what initiates shutdown on the

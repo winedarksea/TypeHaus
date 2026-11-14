@@ -133,6 +133,15 @@ def test_d_evse_at_100_percent_outside_the_40_percent_remainder():
     assert s["demand_va"] == 4500 + 9600
 
 
+def test_120_57_evse_without_a_nameplate_counts_7200():
+    s = service_load_summary(_model([Circuit(tag="CKT-EV", panel_ref="ED-M-PANEL", poles=2,
+                                             breaker_amps=40, description="EV charging")]))
+    assert s["ev_va"] == 7200 and s["ev_default_circuits"] == ["CKT-EV"]
+    # An authored nameplate below 7,200 is kept: the printed rule is no "larger of".
+    s = service_load_summary(_model([_ckt("CKT-EV", 3800, "EV charging")]))
+    assert s["ev_va"] == 3800 and not s["ev_default_circuits"]
+
+
 def test_a_optional_method_needs_100_amp_service_conductors():
     meter_type = ElectricalDeviceType(tag="ED-T-MTR", name="meter", footprint=(m(.3), m(.1)),
                                       height=m(.4), service_amps=60, ports=())
@@ -172,3 +181,21 @@ def test_120_6_item_by_basis():
                                 tier=Tier.ADVISORY, only="electrical.service_load")
         assert any(item in f.message for f in report.findings), [
             f.message for f in report.findings]
+
+
+def test_120_7b_pcs_setting_over_80_percent_of_the_monitored_ocpd_earns_nothing():
+    from typehaus.model import LoadManagement
+
+    circuits = (_ckt("CKT-A", 9000, "Kiln"), _ckt("CKT-B", 9000, "Welder"))
+
+    def credit(setting):
+        lm = LoadManagement(tag="LM-PCS", managed_circuits=("CKT-A", "CKT-B"), strategy="pcs",
+                            max_simultaneous_va=setting, listing="UL 3141 (synthetic)",
+                            monitored_ocpd_amps=60)
+        [c] = service_load_summary(_model(library=Library(
+            circuits=circuits, load_managements=(lm,))))["load_management"]
+        return c
+
+    assert credit(11520)["credited"]  # 80% of 60 A at 240 V
+    refused = credit(11600)
+    assert not refused["credited"] and "120.7(B)" in refused["refusal"]

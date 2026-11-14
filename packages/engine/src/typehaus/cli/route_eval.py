@@ -127,9 +127,7 @@ def candidate_element(model: ResolvedModel, proposal: RouteProposal) -> tuple[st
     from typehaus.model.mep import ConduitRun, DuctRun, PipeRun
     from typehaus.quantities import Point2D
     from typehaus.routing.proposal import length_source as _len  # noqa: I001
-    # `_len` is the SAME literal the proposal prints, so the candidate graded here and the
-    # source a person pastes describe one run. Building a `Length` from raw metres instead
-    # would grade geometry a sixteenth of an inch off the one that was offered.
+    # `_len` is the literal the proposal prints: the graded run is the one a person pastes.
 
     storey = _storey_for(model, proposal)
     datum = next((s.elevation.meters for s in model.plan.storeys if s.tag == storey), 0.0)
@@ -153,17 +151,9 @@ def candidate_element(model: ResolvedModel, proposal: RouteProposal) -> tuple[st
             elevations=tuple(_len(z - datum) for _x, _y, z in proposal.points),
             **proposal.echo)
     else:
-        # **The WHOLE raceway, with a z at every vertex** (2026-09-19). This used to grade
-        # the legalised FIRST LEG only — a raceway was a plan polyline plus two end
-        # elevations, so a route with two changes of height was not one element and the
-        # evaluation could only speak for part of it. ``ConduitRun.elevations`` retired
-        # that: the candidate is the route as found, and an evaluation that grades a
-        # fraction of a proposal is worse than no evaluation, because it reads as one.
-        #
-        # **No datum subtraction.** A raceway's elevations are project-frame ABSOLUTE,
-        # because a trunk crosses storeys and a panel-to-attic riser has no one storey to
-        # be relative to. The duct branch above subtracts because a DuctRun's are
-        # storey-relative; doing it here would grade a run a storey out of place.
+        # The WHOLE raceway, a z at every vertex, never a fraction of the proposal. No datum
+        # subtraction: a raceway's elevations are project-frame absolute (a duct's are
+        # storey-relative).
         element = ConduitRun(
             tag=proposal.tag,
             path=tuple(Point2D(_len(x), _len(y)) for x, y, _z in proposal.points),
@@ -209,8 +199,6 @@ def candidate_plan_for_all(model: ResolvedModel,
     a storey's whole list, so the proposals are grouped and applied once per storey — applying
     them one at a time would have each call overwrite the last.
     """
-    from typehaus.model.mep import PipeAccessory
-
     by_storey: dict[str, list[Any]] = {}
     replaced: set[str] = set()
     for proposal in proposals:
@@ -223,26 +211,62 @@ def candidate_plan_for_all(model: ResolvedModel,
     # storey below it (PR-M-S-SUITE-LAV-DRAIN), and leaving it graded the proposal against
     # its own ghost.
     plan = model.plan
-    proposed = {p.tag for p in proposals}
     for storey in model.plan.storeys:
         current = plan.storey_elements(storey.tag)
         # A replaced run's own cleanouts go with it. A valve, stop or shutoff on it follows it
-        # to the proposal named for it (pasting that under the old tag does the same) and goes
-        # only where no proposal is: it has no pipe left to sit on.
+        # to the proposal that now carries its station (see ``_host_proposal``), and goes only
+        # where none does: it has no pipe left to sit on.
         keep = []
         for e in current:
-            ref = getattr(e, "pipe_ref", None)
             if getattr(e, "tag", None) in replaced:
                 continue
-            if ref in replaced:
-                if not isinstance(e, PipeAccessory) or f"{ref}-PROPOSED" not in proposed:
-                    continue
-                e = e.model_copy(update={"pipe_ref": f"{ref}-PROPOSED"})
-            keep.append(e)
+            e = _follow(e, replaced, proposals)
+            if e is not None:
+                keep.append(e)
         added = by_storey.get(storey.tag, [])
         if added or len(keep) != len(current):
             plan = plan.with_elements(storey.tag, (*keep, *added))
     return plan
+
+
+#: Fields that name a run by tag: a bond's ends and a register's duct.
+_RUN_REFS = ("from_ref", "to_ref", "duct_ref")
+
+
+def _follow(e: Any, replaced: set[str], proposals: list[RouteProposal]) -> Any:
+    """``e`` re-pointed at the proposal standing in for the run it names, or ``None`` when it
+    must go with it: a valve follows its station, a bond's ends or a register's ``duct_ref`` the
+    ``<run>-PROPOSED`` of the run they name, as the proposal's pasted source would carry them."""
+    from typehaus.model.mep import PipeAccessory
+
+    proposed = {p.tag for p in proposals}
+    ref = getattr(e, "pipe_ref", None)
+    if ref in replaced:
+        if not isinstance(e, PipeAccessory):
+            return None
+        host = _host_proposal(e, ref, proposals) or (
+            f"{ref}-PROPOSED" if f"{ref}-PROPOSED" in proposed else None)
+        return None if host is None else e.model_copy(update={"pipe_ref": host})
+    named = {k: f"{getattr(e, k)}-PROPOSED" for k in _RUN_REFS
+             if getattr(e, k, None) in replaced and f"{getattr(e, k)}-PROPOSED" in proposed}
+    return e.model_copy(update=named) if named else e
+
+
+def _host_proposal(acc: Any, ref: str, proposals: list[RouteProposal]) -> str | None:
+    """The proposal standing in for ``ref`` that passes within 3" of ``acc``'s plan station.
+    A run split in two (a trunk and its fixture end) leaves the valve on the piece it sits on."""
+    if acc.position is None:
+        return None
+    x, y = acc.position.x, acc.position.y
+    best: tuple[float, str] | None = None
+    for p in proposals:
+        if ref not in getattr(p, "replaces", ()) and p.tag != f"{ref}-PROPOSED":
+            continue
+        gap = min((_gap((x.meters, y.meters, 0.0), [(a[0], a[1], 0.0), (b[0], b[1], 0.0)])
+                   for a, b in zip(p.points, p.points[1:], strict=False)), default=9.0)
+        if gap <= 0.0762 and (best is None or gap < best[0]):
+            best = (gap, p.tag)
+    return None if best is None else best[1]
 
 
 def baseline_findings(model: ResolvedModel, directory: Path) -> dict[tuple, Finding]:

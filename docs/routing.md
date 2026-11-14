@@ -11,11 +11,30 @@ artifacts outside `plan/`; it never applies a route.
     --alternatives 3 --json --summary --out out/route/kitchen
 ```
 
-`--json` implies evaluation. `--summary` requires `--json --out DIR` and retains candidate
-tags, storeys, lengths, bends, costs, evaluation changes, blocker diagnostics, coverage
-gaps, fitting gaps, and follow-up work. Coordinates, constructor source, and detailed cost
-terms remain in `DIR/report.json`. `DIR/proposed.py` groups source by storey and labels
-alternatives: paste exactly one per target.
+`--json` implies evaluation. `--summary` requires `--json --out DIR` and prints one line of
+bounded **decision view** `{house, storey, decision, artifacts}` (`cli/route_decision.py`),
+built from the report dict alone so `proposals` and `accepted` runs read the same:
+
+- `decision.completion`: termination, refused/skipped targets, refusals with blockers grouped
+  by tag and mobility, problems.
+- `decision.candidates.items[]`: each proposal's developed ft, bends, cost, fittings
+  (count/gaps), bores by member kind, cleanouts placed/required, `after_paste`, and a `grade`.
+- `grade`: evaluated / refused (reason) / ungraded, FAIL and UNKNOWN counts per check group
+  (`route_check_groups.GROUPS`), clash tags with mobility, coverage gaps, and at most three
+  representative findings, each with a JSON pointer into `report.json`
+  (`/evaluations/<i>/introduced/<j>`). A campaign's network grade is `decision.network`.
+
+Lists are capped (3 to 20 items) and each `{count, items}` reports the true count. Full
+messages, coordinates, source and cost terms stay in `DIR/report.json`; open it by pointer.
+`DIR/proposed.py` groups source by storey and labels alternatives: paste exactly one per
+target. `proposed.py`, `report.json`'s `source` and the console all print
+`RouteProposal.full_source` — the run followed by its `DrainCleanout`s, exactly the elements
+`--evaluate` grades; paste the whole block.
+
+Alternatives are the found route repriced on the original graph: cost, terms, bends and
+corridor tags are replaced, and gravity metadata (start elevation, take-off, wet/vent, grade)
+is kept. A gravity search's alternatives price turns with the drain table, like route A. Each
+duct search counts its own labels against its budget; `reached` is a cumulative diagnostic.
 
 For example, read one candidate's full details without searching again:
 
@@ -78,7 +97,8 @@ exterior wall. Every rule has a hand-worked note (`routing/oracle.py`).
 | Branch ties on a level main keep the catalogued inlet pitch | `cli/route_roots._spaced_goals`, `resolve/mep_inlet_spacing` | drain basis §10 |
 | Cleanouts (UPC 707.4) placed with 707.9 clearance on the plug axis; priced `cleanout_in` each, + `cleanout_concealed_in` behind a panel, + `cleanout_floor_finished_in` for a floor cap in a priced room; a buried station may rise in a partition cavity instead; cheapest station wins | `cli/route_cleanouts.py`, `resolve/cleanout_rules.py` | `mep.drain_cleanouts` |
 | PEX bends where its 6 x OD arc clears; copper and CPVC take a fitting | `search.bend_price`, `trades/pipe.bend_radius_m` | drain basis §11 |
-| Supply and drain in an exterior insulated cavity pay per foot; vents, ducts, conduit exempt | `graph._finish`, `RouteCost.for_run` | drain basis §11 |
+| Supply and drain in an exterior insulated bay pay by the side they run on: the cold side (where `mep.supply_freeze_exposure` puts the pipe face under 42 F, or any bay with no continuous insulation outboard) `exterior_wall_per_ft` per foot plus `exterior_cold_edge_in` per edge, the warm side `exterior_warm_per_ft`; vents, ducts, conduit exempt | `routing/freeze_bay`, `graph_batch.room_lengths`, `RouteCost.for_run` | `supply_freeze_basis.md` §4-§5 |
+| A room charges by the length of an edge inside it (a riser by its z overlap), summed over overlapping rooms | `graph_batch.room_lengths`, `RouteCost.segment_cost(rooms=)` | — |
 | NEC 110.26(E)(1) dedicated space is hard for pipe and duct | `resolve/panel_space.py`, `routing/obstacles` | drain basis §11 |
 | A campaign's laid level legs offer rack lanes to the same trade | `routing/rack.py` | drain basis §12 |
 | A 3-D lattice adds a corridor's plane only where no kept plane lies inside its window | `graph._merged_levels` | duct basis §5 |
@@ -192,6 +212,19 @@ over it). Each search ends at its port's stub tip, and the branches share one oc
 `--orders`, `--rip-up`, exit codes and `--json --summary` are the campaign's.
 `mep.water_manifold_ports` grades that every outlet carries exactly one run.
 
+**Choosing among orders.** `--orders N` lays the campaign in up to N conflict orders, ranked
+by refusals, then skips. When the network is evaluated (`--evaluate`, or `--json`), the orders
+tied with the best on refusals and skips form a shortlist of at most `min(N, 3)` (only when
+there are two or more), each graded against one shared baseline and classed **constructible**
+— the evaluation resolved, no introduced FAIL in `route_check_groups.CONSTRUCTION_CHECKS`
+(bores, run interference, finished volume, freeze exposure) and no fitting `forbidden_turns`
+refuses — or **provisional**. The shortlist ranks constructible first, then introduced FAILs,
+UNKNOWNs, then cost. Fittings, penetrations and supports are in cost; an unplaced required
+cleanout is not, but its `mep.drain_cleanouts` FAIL counts in the FAIL tiebreak. A grade never
+outranks a refusal. `orders_tried` rows carry `grade` (`class`, `refused`, `fail`, `unknown`,
+`construction_fail`, `forbidden_fittings`), null when ungraded; the scorecard's campaign rows
+use the same selection.
+
 Campaigns normally lay drains deepest first, then vents, ducts largest first, supply, and
 conduit. Accepted proposals occupy space for later searches. Rip-up only lifts proposals
 accepted by that campaign; authored geometry remains an obstacle.
@@ -247,24 +280,28 @@ then run `haus fmt`, `haus trial`, inspect the drawing, and run repository verif
   rooms and rooms with `exposed_services` are not zones. `SUPPLY-GATE` holes confine supply
   risers regardless of cover (the lattice never reads a prism's `applies`): a group's holes are
   its fixture ends, laid branch ends, and the riser stations of each member's authored run and
-  its feeders (each also a lattice line, `supply_tree.riser_stations`, trunk basis §5a). Level
-  legs the plan runs outside every floor gate (catlin's attic bar and shower supplies, z 262-270)
-  stay shut, and the gate does not read a room's finished ceiling, so the trunk's three open-air
-  members still fall to cover-off (the stations still pay: without them `trunk:CW` reads 30
-  eval FAILs and 7.21 exterior ft, not 27 and 6.75). Opening the gate over every wall's plan area, full height,
-  was tried and not adopted: it cut the trunk's eval FAILs 27 to 20 but moved two into
-  RM-A-STUBATH and took the search 98 s to 180 s; a storey-banded opening is the open item.
-- `shortest_route` charges no turn for reversing along one axis (its state is the axis, not the
-  signed heading), and `bend_price` reads the arc off the previous node, so a sub-inch back-step
-  can buy a 4" PEX bend for a 24" fitting: catlin's `trunk:CW` proposals carry 9 such
-  180-degree vertices (`mep.fitting_pattern` UNKNOWN), none at a port. Unchanged: drain basis §4
-  pins the search's expansions.
+  its feeders (each also a lattice line, `supply_tree.riser_stations`, trunk basis §5a). Each
+  member also gets a storey-banded **lane** (`supply_tree.wall_lanes`): the layers of the walls
+  standing at its end's height on its own storey, within a bay of the end and its riser stations,
+  are opened from the nearest gate edge to the end's height (below the gate for a basement end),
+  and inside that band a tight hole shrinks to its own 1" riser column (`PIN_M`), so a branch
+  climbs in walls rather than through a hole's square of air (`trunk:CW` finished-volume FAILs
+  7 to 1). The one left is `PR-A-STUBATH-SH-CW` in RM-A-STUBATH, a FollowRoof room the router
+  does not zone.
+- A bendable tube (`bend_radius_m` > 0) is searched over labels (`search._bent_route`): signed
+  heading, straight laid since the last turn, and what began the leg (start, fitting, bend). Each
+  turn branches into a fitting or a field bend admitted by `mep_fittings._bend`'s tangent rule
+  (R fits all of an end leg and half of a leg between turns; conservative beside a fitting);
+  `price_route` applies the same rule and prices a foreign reversal as two fittings. Reversals are
+  refused. Fitted services (copper, vents) keep the `(node, axis)` search, where reversing along
+  one axis is still free; drain basis §4 pins its expansions.
 - The router excuses a riser in a served fixture's body when the body holds one of the route's
   ends, in the body's own room; the check excuses only the legs walked in from a run's end, so
   a mid-run riser through that body would still be graded.
-- Exterior insulated bays are priced per foot, not refused, and the router does not know where
-  in the bay a pipe sits; `mep.supply_freeze_exposure` (a house advisory) grades that depth, so a
-  supply proposal through an exterior bay may carry its FAIL (`trunk:CW`: 12).
+- Exterior insulated bays are priced by depth, not refused. `routing/freeze_bay` restates the
+  check's steady-state walk (routing may not import checks), so the two must change together;
+  continuous exterior insulation is in the outboard R (catlin's R-26 leaves only the outer ~1.5"
+  of a 5.5" bay cold at -15 F). An edge is graded at the deepest point it reaches.
 - Laid-run holes reach supply and drain campaigns: a
   house campaign and a `--lift` re-lay pass what is laid so far (`holes.laid_lines`), a tree its
   `Branches.laid_lines()` (the main it ties into included, hidden from the space by `touch`), and a
@@ -276,6 +313,8 @@ then run `haus fmt`, `haus trial`, inspect the drawing, and run repository verif
   is searched once per rung: `--tree PR-M-S-SUITE-DRAIN` takes ~3x longer to refuse its tub and WC.
   Both refusals are real holds (framing_bore_limits.md §13: D13/D14 held by PR-B-CW-SUITE, D12 by
   PR-A-HW-STUBATH); the authored tub lane stands.
+- The scorecard records `eval_refused` and `eval_coverage_gaps` per row; a row with proposals
+  whose evaluation refused is always a regression, never 0 FAIL.
 - A full scorecard run takes about 7 minutes: rows run in forked workers (`HAUS_SCORECARD_JOBS`,
   default min(4, cores/2)) and the longest row (`tree:main`, minutes now its 2" group lays) sets the floor.
 

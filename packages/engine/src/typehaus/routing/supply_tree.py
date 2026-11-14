@@ -147,6 +147,21 @@ def gate_prisms(bbox: tuple[float, float, float, float], gates: Gate | Sequence[
     return out
 
 
+def outside_prisms_holed(model: Any, space: Any, ends: Iterable[Sequence[float]]) -> list[Any]:
+    """The house's outside as hard prisms for a pressure run: a pipe may leave only where a run
+    ends (a wall hydrant stands on the face), a foot round each ``ends`` plan point. Drains get the
+    same prisms unholed (``gravity_band.outside_prisms``); hydrant runs are no obstacle here."""
+    from dataclasses import replace
+
+    from shapely.geometry import MultiPoint
+
+    from typehaus.routing.gravity_band import outside_prisms
+
+    holes = MultiPoint([tuple(p[:2]) for p in ends]).buffer(TIGHT_M, cap_style="square")
+    return [replace(p, footprint=p.footprint.difference(holes))
+            for p in outside_prisms(model, space)]
+
+
 def riser_stations(path: Sequence[Sequence[float]], z: Sequence[float]
                    ) -> list[tuple[float, float]]:
     """Plan points where an authored run rises (consecutive vertices on one plan point, at
@@ -338,6 +353,31 @@ def nodes_on(xyz: Any, points: Sequence[tuple[float, ...]], *, tol_m: float = ON
         gap = np.linalg.norm(rel - t[:, None] * d, axis=1)
         out.update(int(i) for i in np.nonzero(gap <= tol_m)[0])
     return out
+
+
+def bend_nodes(xyz: Any, points: Sequence[Sequence[float]], reach_m: float,
+               among: Iterable[int] | None = None) -> set[int]:
+    """Lattice nodes (of ``among``, else all) within ``reach_m`` (3-D) of a bend of ``points``.
+    A branch teeing there runs its first leg beside the host's next leg (or down its own riser):
+    ``mep.run_interference``."""
+    import numpy as np
+
+    ids = np.fromiter(range(len(xyz)) if among is None else among, dtype=int)
+    if not len(ids) or len(points) < 3:
+        return set()
+    near = np.zeros(len(ids), dtype=bool)
+    for corner in points[1:-1]:
+        near |= np.linalg.norm(xyz[ids] - np.array(corner[:3]), axis=1) <= reach_m
+    return {int(i) for i in ids[near]}
+
+
+def cut_nodes(graph: Any, nodes: Iterable[int]) -> None:
+    """Drop every lattice edge at ``nodes``: no route passes or stops there."""
+    for node in nodes:
+        for axis, others in graph.edges.get(node, {}).items():
+            for other in others:
+                graph.edges[other][axis].remove(node)
+            others.clear()
 
 
 def capacity_wsfu(diameter_m: float, table: Iterable[tuple[float, float]]) -> float:
