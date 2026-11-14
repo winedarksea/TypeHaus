@@ -187,7 +187,7 @@ def _build(model, tree, mode, reach_m, opts, net, group, members, routes, clock,
     from typehaus.routing.campaign import proposal_prisms
     from typehaus.routing.holes import laid_lines
     from typehaus.routing.obstacles import CLEARANCE_M
-    from typehaus.routing.supply_tree import clip_polyline, gate_prisms
+    from typehaus.routing.supply_tree import clip_polyline, gate_prisms, wall_lanes
 
     label = f"group {group or 'END'}"
     ends = {t: net.ends[t] for t in members}
@@ -235,6 +235,8 @@ def _build(model, tree, mode, reach_m, opts, net, group, members, routes, clock,
     stations = [(*p, ends[t].origin[2]) for t in ends for p in _plan_risers(net, t)]
     tight += [p[:2] for p in stations]
     seeds += stations
+    lanes = wall_lanes(model, flight,
+                       [(e.origin, _plan_risers(net, t)) for t, e in ends.items()])
     stands = [routes[0].proposal.points[0], routes[0].proposal.points[-1],
               *(e.origin for e in ends.values()),
               *(r.proposal.points[-1] for r in routes[1:] if listed(r))]
@@ -244,7 +246,8 @@ def _build(model, tree, mode, reach_m, opts, net, group, members, routes, clock,
         laid=laid_lines(r.proposal for r in routes),
         leads=tuple(replace(e, root_lead=None) for e in ends.values()),
         serves={f for e in ends.values() for f in e.serves},
-        extra=lambda sp: [*walls, *(gate_prisms(sp.bbox, flight, holes, tight) if flight else [])])
+        extra=lambda sp: [*walls, *(gate_prisms(sp.bbox, flight, holes, tight, lanes)
+                                    if flight else [])])
     xyz = np.array([(n.x, n.y, n.z) for n in graph.nodes]).reshape(-1, 3)
     space.reuse = True
     return ends, listed, space, graph, xyz, template.diameter_m
