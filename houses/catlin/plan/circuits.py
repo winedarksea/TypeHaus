@@ -208,13 +208,13 @@ CIRCUITS = (
     # `spd=True` is what `code.NEC_215_18_spd` and the price row read. If an SPD is ever
     # value-engineered out, it comes out of a code article, not out of a nice-to-have.
     Circuit(tag="CKT-SPD", slot=10, panel_ref=_PANEL, breaker_amps=20, poles=2,
-            load_va=0, spd=True,
+            load_va=0, spd=True, spd_type_ref="ED-T-SPD-QO2175SB",
             description="Type 2 surge protective device, feeder panel 1 "
                         "(NEC 230.67(B) Ex., 215.18)"),
     # Feeder 2's SPD: slot 2 is the top of ED-B-PANEL-2's empty right column, beside the
     # main, for the short lead. A Homeline plug-on, as CKT-SPD is a QO one.
     Circuit(tag="CKT-SPD-2", slot=2, panel_ref=_PANEL_2, breaker_amps=20, poles=2,
-            load_va=0, spd=True,
+            load_va=0, spd=True, spd_type_ref="ED-T-SPD-HOM2175SB",
             description="Type 2 surge protective device, feeder panel 2 "
                         "(NEC 230.67(B) Ex., 215.18)"),
 

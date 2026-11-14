@@ -3,13 +3,13 @@
 110.26(A): in front of the panel, 36" deep (Condition 1, 120/240 V), max(30", panel
 width) wide and floor to max(6'-6", panel top) high, clear of everything. The panel need
 not be centred in that width, so the window slides along the face in 1" steps; any clear
-position passes. Door swings are not graded. The printed 2026 110.26 intro does count them: access
-is impeded if the doors, all open at 90 degrees, leave under 24" wide by 6'-6" high. Not
-modelled (``docs/nec-2026-paraphrase-110-240-625.md``); 110.26(D) lighting and the (E)(2)
-outdoor zone are not graded either.
+position passes. Door swings are not graded: the 2026 intro counts them (all doors open at 90
+degrees must leave 24" x 6'-6" for access and egress), but the model carries no enclosure door
+leaf, hinge side or egress path to measure that against.
 
 110.26(E)(1): ``resolve/panel_space.dedicated_spaces`` (the router's hard prism too). A pipe
-or duct in it fails; conduit is the installation and is allowed.
+or duct in it fails; conduit is the installation and is allowed. (D) lighting and the (E)(2)
+outdoor rules are in ``electrical_working_space.py``.
 """
 
 from __future__ import annotations

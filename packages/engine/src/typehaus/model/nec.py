@@ -162,10 +162,12 @@ class NEC:
 
     # Art. 215/225/230/240 — feeders, outside supplies, service and overcurrent.
     FEEDER_SPD: Final = "215.18"
+    FEEDER_SPD_RATING: Final = "215.18(E)"  # In of 10 kA or more
     OUTBUILDING_SUPPLIES: Final = "225.30"  # one feeder or branch circuit per building
     OUTBUILDING_DISCONNECT: Final = "225.31"
     EMERGENCY_DISCONNECT: Final = "225.41"
     SERVICE_SPD: Final = "230.67"
+    SERVICE_SPD_RATING: Final = "230.67(E)"  # In of 10 kA or more
     SERVICE_DISCONNECT_OUTDOOR: Final = "230.70(A)(1)"
     SERVICE_DISCONNECT_BATHROOM: Final = "230.70(A)(3)"  # never in a bathroom
     SERVICE_DISCONNECT_MIN_RATING: Final = "230.79(C)"  # one-family dwelling: 100 A at least
@@ -279,6 +281,7 @@ class NEC:
     SWITCH_TUB_SHOWER: Final = "404.6(C)"
     BATH_ZONE: Final = "406.9(C)(1)"  # no receptacle within 3 ft of a tub or shower
     WET_RECEPTACLE: Final = "406.9(B)(1)"  # weather-resistant type, extra-duty hood
+    DAMP_RECEPTACLE: Final = "406.9(A)(1)(c)"  # weather-resistant type
     CONTROLLED_RECEPTACLE: Final = "406.11(D)"  # automatic control: "controlled" symbol
     PUSH_IN_TERMINALS: Final = "406.10(3)"  # 15 A and 14 AWG solid copper only
     RECEPTACLE_REPLACEMENT: Final = "406.12(D)"

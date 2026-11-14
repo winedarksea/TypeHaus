@@ -18,14 +18,16 @@ PANEL_TYPES = (
     # service is a Class 320 meter-main (plan/electrical.py, ED-T-METER): without it the
     # 705.12 check borrows the service size and would grade a 320A main against a 225A
     # bus, silently loosening the backfeed allowance on a panel that never sees 320A.
+    # ``sccr_a``: the QO154M200P sheet (Jul 2023) "Max Short Circuit Current Rating 22 kA"; the
+    # HOM2040M200PC sheet (Oct 2020) "Short Circuit Current Rating 22 kA". NEC 408.6.
     panel_type("ED-T-PANEL-225A", tag="ED-T-PANEL",
-               name="225A bus, 200A main (feeder 1 of the 320A service)"),
+               name="225A bus, 200A main (feeder 1 of the 320A service)", sccr_a=22000),
     # Feeder 2 of the Class 320 service: the wellness and EV loads, which are what made the
     # 120.82 total need a service upgrade in the first place. 20 spaces for the 5 two-pole
     # circuits in use, including the workshop. ``bus_amps=200`` equals the main:
     # nothing backfeeds this bus, and a 225A bus here would buy headroom nobody needs.
     panel_type("ED-T-PANEL-200A", tag="ED-T-PANEL-2",
-               name="200A main (feeder 2 of the 320A service)",
+               name="200A main (feeder 2 of the 320A service)", sccr_a=22000,
                ports=(ServicePort(tag="feed", service=Service.POWER_240,
                                   position=(ft(0), ft(0), ft(0))),)),
 )

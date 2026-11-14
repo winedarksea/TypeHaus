@@ -74,15 +74,17 @@ RECEPTACLE_TYPES = (
     _dev("ED-T-LEV-GFCI-20", "GFCI 20 A TR at the device (GFTR2-W)", GFTR2, nema="5-20R"),
     _dev("ED-T-LEV-GFCI-15", "GFCI 15 A TR at the device (GFTR1-W)", GFTR1, nema="5-15R"),
     _dev("ED-T-LEV-GFCI-ALARM", "GFCI 20 A TR, audible alarm (GFTA2-W)", GFTA2, nema="5-20R"),
+    # NEC 406.9: leviton.com GFWT2-W / GFWT1-W "Weather Resistant" (read 2026-11-14); 5980-UCL
+    # "Extra Duty Weatherproof While-In-Use Cover", NEMA 3R. No 'controlled' marking on either.
     _dev("ED-T-LEV-GFCI-WR",
          "WR GFCI 20 A TR (GFWT2-W), 5980-UCL in-use cover, non-metallic gasketed box",
          GFWT2, footprint=(inch(4.5), inch(3)), height=inch(3), nema="5-20R",
-         device_box=True),
+         device_box=True, weather_resistant=True, in_use_cover=True),
     # On a 15 A branch (NEC 210.21(B)(3)): the radon fan's outlet on CKT-RC-ATTIC.
     _dev("ED-T-LEV-GFCI-WR-15",
          "WR GFCI 15 A TR (GFWT1-W), 5980-UCL in-use cover, non-metallic gasketed box",
          GFWT1, footprint=(inch(4.5), inch(3)), height=inch(3), nema="5-15R",
-         device_box=False),
+         device_box=False, weather_resistant=True, in_use_cover=True),
     _dev("ED-T-LEV-GFCI-DF", "Blank-face GFCI 20 A, feed-through (GFRBF-W)", GFRBF,
          symbol=None, deadfront=True),
     _dev("ED-T-LEV-USBC", "Duplex with 60 W USB-C PD (T5836-W), deep box", T5836,

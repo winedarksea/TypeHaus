@@ -187,15 +187,14 @@ def bath_luminaire_zone(ctx: CheckContext) -> list[Finding]:
                         (light.tag, fixture.tag), code=code))
                 continue  # another room is behind a wall: not in the zone
             if gap <= _ZONE_M and form in _ZONE_FORMS and product.voltage <= 30:
-                out.append(unknown(
+                out.append(advisory(
                     _LUM_CID, f"{light.tag} is {_ZONE_FORMS[form]} {gap / 0.3048:.1f} ft from "
                               f"{fixture.tag} in the same room and reaches below 8 ft over its "
                               f"rim; it runs at {product.voltage} V. 410.10(D)(1) bars it with "
                               "no voltage limit, and 410.150(C)(9) bars track there (the "
-                              "(C)(8) 30 V carve-out is for mounting height only). Held "
-                              "UNKNOWN only because FAIL stops the catlin gate (verify.sh)",
-                    (light.tag, fixture.tag), code=cite(NEC.BATH_LUMINAIRE_ZONE,
-                                                        NEC.LIGHTING_TRACK_LOCATIONS),
+                              "(C)(8) 30 V carve-out is for mounting height only)",
+                    (light.tag, fixture.tag), Result.FAIL,
+                    code=cite(NEC.BATH_LUMINAIRE_ZONE, NEC.LIGHTING_TRACK_LOCATIONS),
                     fix="move it out of the 3 ft x 8 ft zone, or use a fixed luminaire"))
             elif gap <= _ZONE_M and form in _ZONE_FORMS:
                 out.append(advisory(
