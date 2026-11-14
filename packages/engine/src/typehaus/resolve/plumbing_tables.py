@@ -16,6 +16,7 @@ DFU_BY_SYMBOL: dict[str, float] = {
     "toilet": 3.0,          # water closet, 1.6 gpf gravity tank
     # A wall-hung WC is the same 3 DFU: Table 702.1 values the fixture, not its mounting.
     "toilet-wall-hung": 3.0,
+    "toto-ap-duofit": 3.0,  # concealed-tank wall-hung WC
     "lavatory": 1.0,
     "lavatory-wall-hung": 1.0,
     "drawer-vanity": 1.0,
@@ -48,6 +49,7 @@ DFU_BY_SYMBOL: dict[str, float] = {
 #: ``DFU_BY_SYMBOL`` / ``WSFU_BY_SYMBOL`` (a test holds the three in step).
 FIXTURE_CLASS_BY_SYMBOL: dict[str, str] = {
     "toilet": "water closet", "toilet-wall-hung": "water closet (wall-hung, carrier)",
+    "toto-ap-duofit": "water closet (wall-hung, carrier)",
     **dict.fromkeys(("lavatory", "lavatory-wall-hung", "drawer-vanity", "drawer-vanity-indy",
                      "sektion-vanity-indy", "door-drawer-vanity", "sektion-vanity", "vanity",
                      "solid-surface-vanity"), "lavatory"),
@@ -70,6 +72,7 @@ FIXTURE_CLASS_BY_SYMBOL: dict[str, str] = {
 MINIMUM_DRAIN_IN_BY_SYMBOL: dict[str, float] = {
     "toilet": 3.0,
     "toilet-wall-hung": 3.0,
+    "toto-ap-duofit": 3.0,  # concealed-tank wall-hung WC
     "kitchen-sink": 2.0,
     "kitchen-sink-undermount-single": 2.0,
     "dishwasher": 2.0,

@@ -1226,6 +1226,62 @@
       "points": [
         [
           265.25,
+          98.34645669291339
+        ],
+        [
+          270.75,
+          98.34645669291339
+        ],
+        [
+          270.75,
+          104.375
+        ],
+        [
+          265.25,
+          104.375
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW122AAAA",
+      "tag": "carrier-0-stud-1"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          265.25,
+          98.34645669291339
+        ],
+        [
+          270.75,
+          98.34645669291339
+        ],
+        [
+          270.75,
+          104.375
+        ],
+        [
+          265.25,
+          104.375
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          265.25,
           120.75
         ],
         [

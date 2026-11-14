@@ -43,7 +43,8 @@ _MAX_COUNTING_HEIGHT_M = 5.5 * 0.3048
 # a type that states nothing, is an UNKNOWN — a drawing vocabulary cannot be extended
 # without silently moving a code rule's scope.
 _BASIN_SYMBOLS = {"lavatory", "vanity"}
-_NOT_BASIN_SYMBOLS = {"toilet", "toilet-wall-hung", "bidet", "urinal", "tub", "tub-shower",
+_NOT_BASIN_SYMBOLS = {"toilet", "toilet-wall-hung", "toto-ap-duofit", "bidet", "urinal",
+                      "tub", "tub-shower",
                       "kohler-underscore-6036", "kohler-underscore-6032",
                       "shower", "floor-drain", "kitchen-sink", "laundry-sink",
                       "hydrant", "woodford-y34ss",

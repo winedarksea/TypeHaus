@@ -14,6 +14,7 @@ from typehaus.resolve.plumbing_tables import DFU_BY_SYMBOL
 WSFU_BY_SYMBOL: dict[str, tuple[float, float, float]] = {
     "toilet": (2.5, 0.0, 2.5),   # flush tank
     "toilet-wall-hung": (2.5, 0.0, 2.5),  # concealed flush tank, same demand
+    "toto-ap-duofit": (2.5, 0.0, 2.5),
     "lavatory": (1.0, 0.75, 0.75),
     "lavatory-wall-hung": (1.0, 0.75, 0.75),
     "drawer-vanity": (1.0, 0.75, 0.75),

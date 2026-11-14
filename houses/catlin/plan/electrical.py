@@ -1935,14 +1935,14 @@ NEC_FILL_BASEMENT = [
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-E2", face="left", distance_from_start=inch(78),
-                         normal_gap=inch(0), rotation_offset=deg(0)))),
+                         normal_gap=inch(0), rotation_offset=deg(180)))),
     ElectricalDevice(uid="XS61VWV0BH", tag="ED-B-PLAY-N-RC5", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20",
                      circuit="CKT-RC-BSMT", room="RM-B-PLAY-N",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-E2", face="left", distance_from_start=inch(192),
-                         normal_gap=inch(0), rotation_offset=deg(0)))),
+                         normal_gap=inch(0), rotation_offset=deg(180)))),
 
     # ** THE HALL, AND NOTHING IN THIS ENGINE ASKED FOR IT (2026-09-07). ** The basement
     # hall runs 15'-6" from the stair foot to the sauna wall now, which is NEC 210.52(H)

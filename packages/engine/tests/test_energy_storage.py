@@ -143,22 +143,23 @@ def test_removing_either_alarm_fails(catlin_plan, tag, missing):
 # --- NEC 705.12 interconnection -------------------------------------------------------
 
 def test_the_backfeed_fits_the_120_percent_allowance(catlin_plan, catlin_model):
-    """225A bus x 1.2 = 270A allowed; 200A main + 50A source = 250A, 20A spare."""
+    """225A bus x 1.2 = 270A allowed; 200A main + 125% of the 8 kW inverter's 33.3A output
+    (41.7A, 705.12(B)(3)(2)) = 241.7A, 28.3A spare."""
     findings = interconnection_busbar(_context(catlin_plan, catlin_model))
     assert len(findings) == 1 and findings[0].result is Result.PASS
-    assert "20A spare" in findings[0].message
+    assert "41.7A source" in findings[0].message and "28.3A spare" in findings[0].message
 
 
-def test_an_oversized_source_breaker_fails(catlin_plan):
-    """The ceiling on this bus is 70A of source. 90A is over it, and the check says by how
-    much rather than only that it is."""
-    circuits = tuple(
-        c.model_copy(update={"breaker_amps": 90}) if c.source else c
-        for c in catlin_plan.library.circuits)
-    library = catlin_plan.library.model_copy(update={"circuits": circuits})
+def test_an_oversized_source_fails(catlin_plan):
+    """The ceiling on this bus is 70A of source. An 18 kW inverter puts 125% of 75A = 93.75A
+    on it, and the check says by how much rather than only that it is over."""
+    types = tuple(t.model_copy(update={"inverter_kw_continuous": 18.0})
+                  if getattr(t, "inverter_kw_continuous", None) else t
+                  for t in catlin_plan.library.equipment_types)
+    library = catlin_plan.library.model_copy(update={"equipment_types": types})
     plan = catlin_plan.model_copy(update={"library": library})
     fails = _fails(interconnection_busbar(_context(plan)))
-    assert len(fails) == 1 and "290A exceeds" in fails[0].message
+    assert len(fails) == 1 and "293.8A exceeds" in fails[0].message
 
 
 def test_a_panel_without_a_bus_rating_is_unknown(catlin_plan):
