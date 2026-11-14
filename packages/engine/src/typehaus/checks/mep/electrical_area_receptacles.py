@@ -22,11 +22,11 @@ from __future__ import annotations
 
 import math
 
-from typehaus.checks._authoring import advisory, not_applicable, passed, unknown
+from typehaus.checks._authoring import failed, not_applicable, passed, unknown
 from typehaus.checks.mep.electrical import _counts_toward_210_52
 from typehaus.checks.mep.electrical_code import _room_of
 from typehaus.checks.registry import CheckContext, Tier, check
-from typehaus.findings import Finding, Result
+from typehaus.findings import Finding
 from typehaus.model.enums import Occupancy
 from typehaus.model.nec import NEC, cite
 from typehaus.resolve.placeables import placed_xy
@@ -63,7 +63,7 @@ def _receptacles(ctx: CheckContext, *, height_limit: bool = True):
     return out
 
 
-@check(Tier.ADVISORY, "electrical.laundry_receptacle")
+@check(Tier.CODE, "electrical.laundry_receptacle")
 def laundry_receptacle(ctx: CheckContext) -> list[Finding]:
     """210.52(F): each laundry area has a receptacle."""
     cid, code = "electrical.laundry_receptacle", cite(NEC.LAUNDRY_RECEPTACLE)
@@ -90,9 +90,9 @@ def laundry_receptacle(ctx: CheckContext) -> list[Finding]:
             out.append(passed(cid, f"laundry area {tag}{held}: "
                                    f"{', '.join(sorted(found[tag]))}", (tag,), code=code))
         else:
-            out.append(advisory(cid, f"laundry area {tag}{held} has no 125 V receptacle",
-                                (tag, *appliances), Result.FAIL, code=code,
-                                fix="add a receptacle in the laundry area"))
+            out.append(failed(cid, f"laundry area {tag}{held} has no 125 V receptacle",
+                              (tag, *appliances), code=code,
+                              fix="add a receptacle in the laundry area"))
     return out
 
 
@@ -102,7 +102,7 @@ def _centreline_m(polygon) -> float:
     return quarter + math.sqrt(max(quarter * quarter - polygon.area, 0.0))
 
 
-@check(Tier.ADVISORY, "electrical.hallway_receptacle")
+@check(Tier.CODE, "electrical.hallway_receptacle")
 def hallway_receptacle(ctx: CheckContext) -> list[Finding]:
     """210.52(H): a hallway 10 ft or longer has a receptacle."""
     cid, code = "electrical.hallway_receptacle", cite(NEC.HALLWAY_RECEPTACLE)
@@ -128,12 +128,12 @@ def hallway_receptacle(ctx: CheckContext) -> list[Finding]:
             out.append(not_applicable(cid, f"{label} is under 10 ft", (hall.tag,),
                                       code=code))
         else:
-            out.append(advisory(cid, f"{label} has no receptacle", (hall.tag,),
-                                Result.FAIL, code=code, fix="add a receptacle in the hall"))
+            out.append(failed(cid, f"{label} has no receptacle", (hall.tag,),
+                              code=code, fix="add a receptacle in the hall"))
     return out
 
 
-@check(Tier.ADVISORY, "electrical.outdoor_front_back_receptacles")
+@check(Tier.CODE, "electrical.outdoor_front_back_receptacles")
 def outdoor_front_back_receptacles(ctx: CheckContext) -> list[Finding]:
     """210.52(E)(1): a receptacle at the front and back, at most 6 1/2 ft above grade."""
     from typehaus.checks.mep.electrical_outdoor import _dwelling_storeys
@@ -175,9 +175,9 @@ def outdoor_front_back_receptacles(ctx: CheckContext) -> list[Finding]:
             out.append(passed(cid, f"{side}: {'; '.join(sorted(sides[side]))}", code=code))
         else:
             seen = f" (only {'; '.join(sorted(high[side]))})" if high[side] else ""
-            out.append(advisory(cid, f"no outdoor receptacle at the dwelling's {side} within "
-                                     f"6 1/2 ft of grade{seen}", (), Result.FAIL, code=code,
-                                fix=f"add a GFCI receptacle on the {side} wall"))
+            out.append(failed(cid, f"no outdoor receptacle at the dwelling's {side} within "
+                                   f"6 1/2 ft of grade{seen}", (), code=code,
+                              fix=f"add a GFCI receptacle on the {side} wall"))
     return out
 
 

@@ -18,9 +18,9 @@ from __future__ import annotations
 
 import math
 
-from typehaus.checks._authoring import advisory, not_applicable, passed, unknown
+from typehaus.checks._authoring import failed, not_applicable, passed, unknown
 from typehaus.checks.registry import CheckContext, Tier, check
-from typehaus.findings import Finding, Result
+from typehaus.findings import Finding
 from typehaus.model.nec import NEC, cite
 from typehaus.resolve.placeables import placed_xy
 from typehaus.resolve.room_lookup import axis_polygon, axis_ring
@@ -41,7 +41,7 @@ def _ends(stair) -> list[tuple[str, tuple[float, float]]]:
     return [(stair.storey, mid[0]), (stair.to_storey, mid[1])]
 
 
-@check(Tier.ADVISORY, _CID)
+@check(Tier.CODE, _CID)
 def stair_lighting_control(ctx: CheckContext) -> list[Finding]:
     """Each interior stair of 6+ risers has its lighting switched at every floor level."""
     from shapely.geometry import Point
@@ -95,11 +95,11 @@ def stair_lighting_control(ctx: CheckContext) -> list[Finding]:
                                      f"level but more than {_SWITCH_REACH_M / 0.3048:.0f} ft "
                                      f"from the stair end ({detail})", (stair.tag,), code=code))
         else:
-            out.append(advisory(
+            out.append(failed(
                 _CID, f"{stair.tag} ({stair.riser_count} risers): no luminaire that lights it "
                       f"is switched at every floor level ({detail}); "
                       f"{NEC.STAIR_SWITCHES} wants a control at each", (stair.tag,),
-                Result.FAIL, code=code,
+                code=code,
                 fix="add a 3-way so one of its lights is switched at both ends"))
     if not out:
         out.append(not_applicable(_CID, "no interior stair has six or more risers", code=code))

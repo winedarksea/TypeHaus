@@ -312,6 +312,18 @@ MN_2020 = JurisdictionProfile(
         # Blocking, unlike the two beside it: the staging lane exists for a rule the
         # reference house cannot answer yet, and this one it can — every basin in the plan
         # resolves, and the receptacle serving it either exists or does not.
+        # Lane D's 210 outlets and stair switching (owner, 2026-11-14: promoted to CODE).
+        PermitItemSpec("Required outlets, garage branch and stair switching",
+                       ("electrical.outdoor_front_back_receptacles",
+                        "electrical.laundry_receptacle", "electrical.hallway_receptacle",
+                        "electrical.garage_branch_circuit",
+                        "electrical.stair_lighting_control"),
+                       (cite(NEC.OUTDOOR_FRONT_BACK), cite(NEC.LAUNDRY_RECEPTACLE),
+                        cite(NEC.HALLWAY_RECEPTACLE), cite(NEC.GARAGE_BRANCH),
+                        cite(NEC.STAIR_SWITCHES))),
+        PermitItemSpec("Outdoor receptacles weather-resistant",
+                       ("electrical.outdoor_receptacle_wr",),
+                       (cite(NEC.DAMP_RECEPTACLE, NEC.WET_RECEPTACLE),)),
         PermitItemSpec("Bathroom basin receptacle",
                        ("code.E3901_6_bathroom_receptacle",),
                        (cite(NEC.BATHROOM_RECEPTACLE),)),
@@ -324,8 +336,11 @@ MN_2020 = JurisdictionProfile(
         PermitItemSpec("Panelboard handle height", ("electrical.panel_handle_height",),
                        (cite(NEC.OCPD_HEIGHT), cite(NEC.SWITCH_HEIGHT))),
         PermitItemSpec("Panelboard working and dedicated space",
-                       ("electrical.panel_working_space", "electrical.panel_dedicated_space"),
-                       (cite(NEC.WORKING_SPACE), cite(NEC.DEDICATED_SPACE))),
+                       ("electrical.panel_working_space", "electrical.panel_dedicated_space",
+                        "electrical.working_space_lighting",
+                        "electrical.outdoor_working_space"),
+                       (cite(NEC.WORKING_SPACE), cite(NEC.DEDICATED_SPACE),
+                        cite(NEC.WORKING_ILLUMINATION), cite(NEC.DEDICATED_SPACE_OUTDOOR))),
         # The energy storage system, as the adopted 2018 IRC R327 has it. The kWh caps and
         # detection are 2021 R328 and grade as advisories (energy_storage_anticipated.py).
         PermitItemSpec("Energy storage system",
@@ -337,8 +352,9 @@ MN_2020 = JurisdictionProfile(
         # on a backfeed breaker and a roof shutdown at a different moment than on a battery.
         PermitItemSpec("PV interconnection and rapid shutdown",
                        ("code.NEC_705_12_interconnection",
-                        "code.NEC_690_12_rapid_shutdown"),
-                       (cite(NEC.INTERCONNECTION_120PCT), cite(NEC.RAPID_SHUTDOWN_ARRAY))),
+                        "code.NEC_690_12_rapid_shutdown", "code.NEC_705_30_source_ocpd"),
+                       (cite(NEC.INTERCONNECTION_120PCT), cite(NEC.RAPID_SHUTDOWN_ARRAY),
+                        cite(NEC.SOURCE_OCPD))),
         # Grounding and bonding (decision #123), read off model.grounding.
         PermitItemSpec("Grounding electrode system",
                        ("code.NEC_250_50_electrode_system", "code.NEC_250_53_rods",
@@ -771,9 +787,12 @@ MN_2020 = JurisdictionProfile(
          "no stud to fasten to and no depth to recess into, so nothing may be hosted in it. "
          "No IRC section states that and no plan reviewer checks it; it stays in the full "
          "check report, where the framer and the electrician both read it"),
-        ("code.NEC_705_30_source_ocpd",
-         "staged: the breaker's ceiling needs conductor sizes, which no circuit authors yet; "
-         "joins a permit item when they do"),
+        ("electrical.panel_sccr",
+         "staged: 408.6 needs the utility's available fault current, and the backup panel "
+         "and enclosure have no published SCCR yet; joins the panelboard item when they do"),
+        ("electrical.spd_nominal_discharge",
+         "staged: ED-M-SPD's In is not published and CKT-SPD-BACKUP names no product; joins "
+         "the surge item when both are read off a label"),
         ("code.NEC_680_spa",
          "staged: 680.13/.22/.26 need the tub modelled; joins a permit item when it is"),
     ),

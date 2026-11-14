@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import math
 
-from typehaus.checks._authoring import advisory, by_result
+from typehaus.checks._authoring import by_result, failed
 from typehaus.checks.mep.electrical_code import _room_of
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
@@ -130,7 +130,7 @@ _BRANCH_CID = "electrical.garage_branch_circuit"
 _GARAGE_CIRCUIT_AMPS = 20
 
 
-@check(Tier.ADVISORY, _BRANCH_CID)
+@check(Tier.CODE, _BRANCH_CID)
 def garage_branch_circuit(ctx: CheckContext) -> list[Finding]:
     """210.11(C)(4): a 120 V 20 A circuit for the garage receptacles, serving nothing else.
 
@@ -177,8 +177,8 @@ def garage_branch_circuit(ctx: CheckContext) -> list[Finding]:
                           if receptacle(e) and getattr(where.get(e.tag), "tag", None)
                           == garage.tag})
         if not feeding:
-            out.append(advisory(_BRANCH_CID, f"{garage.tag} has no 125 V receptacle on any "
-                                "circuit", (garage.tag,), Result.FAIL, code=code))
+            out.append(failed(_BRANCH_CID, f"{garage.tag} has no 125 V receptacle on any "
+                              "circuit", (garage.tag,), code=code))
             continue
         bays, _ = garage_bays(ctx, garage, door_types, walls)
         verdicts = []
@@ -209,7 +209,7 @@ def garage_branch_circuit(ctx: CheckContext) -> list[Finding]:
                 break
         if all(why is not None for _, why in verdicts):
             detail = "; ".join(f"{tag} {why}" for tag, why in verdicts)
-            out.append(advisory(_BRANCH_CID, f"{garage.tag} has no 120 V 20 A circuit serving "
-                                f"only its receptacles ({detail})", (garage.tag,), Result.FAIL,
-                                code=code, fix="give the garage receptacles a 20 A circuit"))
+            out.append(failed(_BRANCH_CID, f"{garage.tag} has no 120 V 20 A circuit serving "
+                              f"only its receptacles ({detail})", (garage.tag,),
+                              code=code, fix="give the garage receptacles a 20 A circuit"))
     return out
