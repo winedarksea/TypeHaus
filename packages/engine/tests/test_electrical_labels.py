@@ -34,8 +34,9 @@ def test_each_label_follows_its_trigger(catlin_model_ro) -> None:
     assert labels["label/705.10/ED-M-METER"].also == ("702.7(A)(1)",)
 
 
-def test_unauthored_house_inputs_are_unknown_never_defaulted(catlin_model_ro) -> None:
+def test_catlin_authors_no_offsite_servicer(catlin_model_ro) -> None:
+    # () (owner, 2026-11-14): self-maintained PV/ESS. None would be UNKNOWN, never a default.
     findings = label_inputs(SimpleNamespace(model=catlin_model_ro))  # type: ignore[arg-type]
-    unknown = sorted(f.code_ref for f in findings if f.result is Result.UNKNOWN)
-    assert unknown == ["NEC 705.10 / 702.7(A)(1)"]
-    assert "not authored" in _by_uid(catlin_model_ro)["label/705.10/ED-M-METER"].wording
+    assert not [f for f in findings if f.result is Result.UNKNOWN]
+    assert "no off-site entity services the sources" in \
+        _by_uid(catlin_model_ro)["label/705.10/ED-M-METER"].wording
