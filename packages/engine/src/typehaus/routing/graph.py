@@ -462,7 +462,7 @@ def _finish(space: RoutingSpace, a: Node, b: Node, axis: str, soft: list
             return None  # an illegal bore, notch or plate cut: not a lane
         cuts = found
 
-    rooms, exterior = room_lengths(soft, a, b)
+    rooms, bay = room_lengths(soft, a, b, space.radius_m)
 
     rack = corridor is not None and corridor.kind == "rack"
     cost = space.cost.segment_cost(
@@ -474,9 +474,9 @@ def _finish(space: RoutingSpace, a: Node, b: Node, axis: str, soft: list
             length_ft, terms["travel_in"], corridor=not rack, rack=rack)
     if rooms:
         terms["room_in"] = sum(ft * space.cost.room_penalty(occ) for ft, occ in rooms)
-    if exterior and space.cost.exterior_wall_per_ft:
-        terms["exterior_wall_in"] = length_ft * space.cost.exterior_wall_per_ft
-        cost += terms["exterior_wall_in"]
+    if bay is not None and space.cost.exterior_bay_in(bay, length_ft):
+        terms[f"exterior_{bay}_in"] = space.cost.exterior_bay_in(bay, length_ft)
+        cost += terms[f"exterior_{bay}_in"]
     for kind, count in cuts.items():
         price = count * space.cost.cut_cost(kind)
         name = _CUT_TERMS[kind]

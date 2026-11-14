@@ -112,6 +112,8 @@ ORACLES: dict[str, tuple[Oracle, ...]] = {
                            test="tests/test_routing_riser_terminal.py"),),
     # -- /E4 --
     # -- E5 --
+    "freeze_bay": (Oracle(note="supply_freeze_basis.md", section="§4, §5",
+                          test="tests/test_routing_supply.py"),),
     # -- /E5 --
 }
 

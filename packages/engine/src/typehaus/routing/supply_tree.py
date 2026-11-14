@@ -23,6 +23,8 @@ HOLE_M = 24.0 * M_PER_IN
 TIGHT_M = 12.0 * M_PER_IN
 #: ONE tolerance for "on a laid line", in 3-D: 1/4", past the 1/16" snap of every coordinate.
 ON_M = 0.0064
+#: A tight hole inside a lane's band: the end's own riser column, no wider.
+PIN_M = 1.0 * M_PER_IN
 
 
 @dataclass(frozen=True)
@@ -47,13 +49,71 @@ def gate_for(windows: Sequence[tuple[float, float]], radius_m: float) -> Gate | 
                 planes=(((low + radius_m) + (high - radius_m)) / 2.0,))
 
 
+@dataclass(frozen=True)
+class Lane:
+    """Wall cover a branch may ride outside the gate: a plan area over one z band (§5b)."""
+
+    footprint: Any
+    lo_m: float
+    hi_m: float
+
+
+def lane_band(gates: Sequence[Gate], z: float) -> tuple[float, float] | None:
+    """From a fixture end's height ``z`` to the nearest gate edge below it (else above it):
+    the storey band its branch climbs or drops through. None inside a gate, or no gate."""
+    if any(g.lo_m <= z <= g.hi_m for g in gates):
+        return None
+    below = [g.hi_m for g in gates if g.hi_m < z]
+    if below:
+        return max(below), z + ON_M
+    above = [g.lo_m for g in gates if g.lo_m > z]
+    return (z - ON_M, min(above)) if above else None
+
+
+def wall_lanes(model: Any, gates: Sequence[Gate],
+               ends: Iterable[tuple[Sequence[float], Sequence[tuple[float, float]]]]
+               ) -> list[Lane]:
+    """For each ``(end, stations)``: the layers of walls standing at the end's height, within a
+    bay of the end and its plan's riser stations, opened over :func:`lane_band`. Storey-banded
+    and local: a branch rides the walls its own plan rides, never every wall at every height."""
+    from shapely.geometry import MultiPoint, Polygon
+
+    from typehaus.resolve.overlay import union_all
+
+    floor = {s.tag: s.elevation.meters for s in model.plan.storeys}
+    out: list[Lane] = []
+    for end, stations in ends:
+        z = end[2]
+        band = lane_band(gates, z)
+        if band is None:
+            continue
+        near = MultiPoint([tuple(end[:2]), *stations]).envelope.buffer(
+            HOLE_M, cap_style="square")
+
+        def own(wall: Any, z: float = z) -> bool:
+            """Stands at ``z`` on the end's own storey: no gate between its floor and z (the
+            check's cover is per storey; a wall from below reaching up is not it)."""
+            base = floor.get(wall.storey, wall.z0_m)
+            return (wall.z0_m <= z <= wall.z1_m and base <= z
+                    and not any(base < g.lo_m and g.hi_m < z for g in gates))
+
+        polys = [Polygon(layer.polygon) for wall in model.walls if own(wall)
+                 for layer in wall.layers if len(layer.polygon) >= 3]
+        polys = [q for q in polys if q.is_valid and not q.is_empty and q.intersects(near)]
+        if polys:
+            out.append(Lane(union_all(polys).intersection(near), *band))
+    return out
+
+
 def gate_prisms(bbox: tuple[float, float, float, float], gates: Gate | Sequence[Gate],
                 holes: Iterable[tuple[float, float]],
-                tight: Iterable[tuple[float, float]] = ()) -> list[Any]:
-    """Hard prisms over everything outside the gate(s), holed where a riser may stand.
+                tight: Iterable[tuple[float, float]] = (),
+                lanes: Sequence[Lane] = ()) -> list[Any]:
+    """Hard prisms over everything outside the gate(s), holed where a riser may stand and,
+    over each lane's band, over its walls.
 
     Several gates (one per floor system) leave every height between them blocked too: a
-    branch hangs from a floor system or rises in a hole, and flies nowhere else."""
+    branch hangs from a floor system, rises in a hole or rides a lane, and flies nowhere else."""
     from shapely.geometry import MultiPoint, box
 
     from typehaus.routing.obstacles import HardPrism
@@ -64,15 +124,27 @@ def gate_prisms(bbox: tuple[float, float, float, float], gates: Gate | Sequence[
             bands[-1][1] = max(bands[-1][1], gate.hi_m)
         else:
             bands.append([gate.lo_m, gate.hi_m])
-    opening = [shape for pts, size in ((list(holes), HOLE_M), (list(tight), TIGHT_M)) if pts
-               for shape in (MultiPoint(pts).buffer(size, cap_style="square"),)]
+    tight = list(tight)
     footprint = box(*bbox)
-    for shape in opening:
-        footprint = footprint.difference(shape)
+    if holes := list(holes):
+        footprint = footprint.difference(MultiPoint(holes).buffer(HOLE_M, cap_style="square"))
+    # In a lane's band a tight hole shrinks to its own point: the riser stands in the walls or
+    # on the end, and the hole's square is no room's air to ride level through.
+    wide, narrow = (footprint.difference(MultiPoint(tight).buffer(size, cap_style="square"))
+                    if tight else footprint for size in (TIGHT_M, PIN_M))
     edges = [-1.0e3, *[z for band in bands for z in band], 1.0e3]
-    return [HardPrism(tag="SUPPLY-GATE", kind="avoid", footprint=footprint,
-                      z0_m=lo + (1e-4 if i else 0.0), z1_m=hi - (1e-4 if i < len(bands) else 0.0))
-            for i, (lo, hi) in enumerate(zip(edges[0::2], edges[1::2], strict=True))]
+    out = []
+    for i, (lo, hi) in enumerate(zip(edges[0::2], edges[1::2], strict=True)):
+        lo, hi = lo + (1e-4 if i else 0.0), hi - (1e-4 if i < len(bands) else 0.0)
+        cuts = sorted({lo, hi, *(z for ln in lanes for z in (ln.lo_m, ln.hi_m) if lo < z < hi)})
+        for z0, z1 in zip(cuts, cuts[1:], strict=False):
+            mine = [ln.footprint for ln in lanes if ln.lo_m <= z0 and z1 <= ln.hi_m]
+            shape = narrow if mine else wide
+            for lane in mine:
+                shape = shape.difference(lane)
+            out.append(HardPrism(tag="SUPPLY-GATE", kind="avoid", footprint=shape,
+                                 z0_m=z0, z1_m=z1))
+    return out
 
 
 def riser_stations(path: Sequence[Sequence[float]], z: Sequence[float]

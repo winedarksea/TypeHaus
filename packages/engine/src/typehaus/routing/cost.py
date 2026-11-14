@@ -72,9 +72,16 @@ class RouteCost:
     bore_joist_in: float = 36.0
     bore_engineered_in: float = 36.0
     bore_unpublished_in: float = 96.0
-    #: Per foot of supply or drain inside an exterior insulated wall's cavity (vents are
-    #: exempt): freeze risk and a hole in the insulation.
+    #: Per foot of supply or drain on the COLD side of an exterior insulated bay, or in one
+    #: with no continuous insulation outboard (vents exempt): what ``mep.supply_freeze_exposure``
+    #: fails, plus a hole in the insulation (``routing/freeze_bay``).
     exterior_wall_per_ft: float = 96.0
+    #: Per foot on the warm side of that bay, which the check passes: the hole in the fill
+    #: only. A quarter of the cold price, so a warm lane always wins a cold one.
+    exterior_warm_per_ft: float = 24.0
+    #: Once per edge reaching that cold side: the check fails a (run, wall) pair whatever
+    #: its length, so a 5 1/2" crossing is priced as a cavity, like a cut, not by the foot.
+    exterior_cold_edge_in: float = 480.0
     #: A cleanout whose access face is concealed needs an access panel (UPC 707.9).
     cleanout_concealed_in: float = 48.0
     #: Base price of ANY cleanout: a wye or tee, extension and plug, over a bend's 24" since
@@ -108,6 +115,15 @@ class RouteCost:
         if occupancy is None:
             return 0.0
         return self.room_per_ft.get(occupancy, self.room_per_ft.get("living", 72.0))
+
+    def exterior_bay_per_ft(self, bay: str) -> float:
+        """Per-foot price of an exterior bay side (``"cold"`` or ``"warm"``)."""
+        return self.exterior_wall_per_ft if bay == "cold" else self.exterior_warm_per_ft
+
+    def exterior_bay_in(self, bay: str, length_ft: float) -> float:
+        """An edge's price in that side: per foot, plus the cold side's per-edge price."""
+        cold = self.exterior_cold_edge_in if bay == "cold" else 0.0
+        return length_ft * self.exterior_bay_per_ft(bay) + cold
 
     def segment_cost(self, length_ft: float, *, vertical: bool = False,
                      corridor: bool = False, rack: bool = False,
@@ -175,8 +191,9 @@ class RouteCost:
             f'  DWV sweep {self.dwv_sweep_in:.0f}", PEX bend {self.pex_bend_in:.0f}"; '
             f'cuts: stud {self.bore_stud_in:.0f}", plate {self.plate_cut_in:.0f}", joist '
             f'{self.bore_joist_in:.0f}", I-joist {self.bore_engineered_in:.0f}" '
-            f'({self.bore_unpublished_in:.0f}" with no published hole); exterior wall '
-            f'+{self.exterior_wall_per_ft:.0f}"/ft; cleanout '
+            f'({self.bore_unpublished_in:.0f}" with no published hole); exterior bay '
+            f'+{self.exterior_wall_per_ft:.0f}"/ft cold, +{self.exterior_warm_per_ft:.0f}"/ft '
+            f'warm, +{self.exterior_cold_edge_in:.0f}" a cold edge; cleanout '
             f'{self.cleanout_in:.0f}" (+{self.cleanout_concealed_in:.0f}" concealed, '
             f'+{self.cleanout_floor_finished_in:.0f}" in a finished floor)',
         ]
@@ -199,7 +216,8 @@ class RouteCost:
         """
         if kind == "pipe" and getattr(system, "value", system) not in ("vent", "radon"):
             return self
-        return replace(self, exterior_wall_per_ft=0.0)
+        return replace(self, exterior_wall_per_ft=0.0, exterior_warm_per_ft=0.0,
+                       exterior_cold_edge_in=0.0)
 
     def heuristic_floor(self, *, rack: bool = False) -> float:
         """The cheapest an inch of plan travel can ever be — the heuristic's scale factor.
@@ -228,6 +246,7 @@ _FLOAT_KEYS = (
     "rack_spacing_in",
     "dwv_sweep_in", "pex_bend_in", "bore_stud_in", "plate_cut_in", "bore_joist_in",
     "bore_engineered_in", "bore_unpublished_in", "exterior_wall_per_ft",
+    "exterior_warm_per_ft", "exterior_cold_edge_in",
     "cleanout_concealed_in", "cleanout_in", "cleanout_floor_finished_in",
     "solvent_weld_tool_in", "propress_tool_in",
     "pex_expansion_tool_in", "offset_jog_max_in",

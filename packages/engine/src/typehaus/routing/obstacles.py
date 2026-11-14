@@ -61,6 +61,8 @@ class SoftPrism:
     z0_m: float
     z1_m: float
     occupancy: str | None = None
+    #: An exterior wall's ``routing/freeze_bay.FreezeBay``: which depth of its bay is cold.
+    bay: Any = None
 
 
 def _polygon(ring: Any) -> Any:
@@ -416,8 +418,11 @@ def soft_prisms(model: ResolvedModel) -> list[SoftPrism]:
                              z0_m=storey_z.get(ceiling.storey, 0.0),
                              z1_m=ceiling.z0_m,
                              occupancy=occupancies.get(ceiling.room_ref)))
-    # An exterior insulated wall's cavity carries ``occupancy="exterior"``: the graph
-    # prices it at ``exterior_wall_per_ft``.
+    # An exterior insulated wall's cavity carries ``occupancy="exterior"`` and its bay
+    # reading: the graph prices the cold side at ``exterior_wall_per_ft``, the warm side at
+    # ``exterior_warm_per_ft`` (``routing/freeze_bay``).
+    from typehaus.routing.freeze_bay import freeze_bay
+
     exterior = {tag for tag, *_ in exterior_cavities(model)}
     for wall in model.walls:
         structure = next((ly for ly in wall.layers if ly.function == "structure"), None)
@@ -426,7 +431,8 @@ def soft_prisms(model: ResolvedModel) -> list[SoftPrism]:
             continue
         out.append(SoftPrism(tag=wall.tag, kind="wall", footprint=poly,
                              z0_m=wall.z0_m, z1_m=wall.z1_m,
-                             occupancy="exterior" if wall.tag in exterior else None))
+                             occupancy="exterior" if wall.tag in exterior else None,
+                             bay=freeze_bay(model, wall) if wall.tag in exterior else None))
     return out
 
 

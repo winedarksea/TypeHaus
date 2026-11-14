@@ -2,7 +2,11 @@
 
 1/2" PEX is 0.625" OD, so Uponor's 6 x OD gives a 3.75" radius. A corner from +x to +y
 bends through a quarter arc whose midpoint stands R(1 - 1/sqrt 2) = 1.098" back along x and
-out along y from the corner. A 2 ft edge in an exterior cavity pays 2 x 96 = 192".
+out along y from the corner. A 2 ft edge on an exterior bay's cold side pays 2 x 96 + 480 = 672"
+(the per-edge cavity price), on its warm side 2 x 24 = 48". The bay: films R 1.42 in /
+R 0.23 out, R 3.7/in fill over 5.5", R 10 continuous outboard, 70 F in, -15 F out. The pipe
+face is 42 F where R_in = 28 x 32.0 / 85 = 10.54, i.e. 2.47" into the fill: a lane at 1" is
+warm, at 4" cold; with no continuous insulation, or no reading, the whole bay is cold.
 """
 
 from __future__ import annotations
@@ -77,13 +81,24 @@ def test_pex_bends_hold_their_tangents_and_a_back_step_is_never_a_bend() -> None
     assert price_route(back, space, [0, 1, 2, 3]).cost == 48.5 + 3 * space.cost.bend_in
 
 
-def test_an_exterior_cavity_pays_per_foot_and_a_vent_is_exempt() -> None:
-    wall = SoftPrism(tag="W-EXT", kind="wall", footprint=box(0.0, -0.1, 2 * FT, 0.1),
-                     z0_m=-1.0, z1_m=1.0, occupancy="exterior")
-    a, b = Node(index=0, x=0.0, y=0.0, z=0.0), Node(index=1, x=2 * FT, y=0.0, z=0.0)
-    priced = _finish(_space(soft=[wall]), a, b, "x", [wall])
-    assert priced is not None and abs(priced[1]["exterior_wall_in"] - 192.0) < 1e-9
-    assert RouteCost().for_run("pipe", "vent").exterior_wall_per_ft == 0.0
+def test_an_exterior_bay_pays_by_the_side_it_runs_on_and_a_vent_is_exempt() -> None:
+    from typehaus.routing.freeze_bay import FreezeBay
+
+    rows = ((-1.0, 1.0, 0, 3.7 / M_PER_IN, False), (-1.0, 1.0, 1, 10.0, True))
+    bay = FreezeBay((0.0, 1.0), 0.0, 5.5 * M_PER_IN, rows, -15.0)
+    bare = FreezeBay((0.0, 1.0), 0.0, 5.5 * M_PER_IN, rows[:1], -15.0)
+    priced = {}
+    for name, depth_in, reading in (("warm", 1.0, bay), ("cold", 4.0, bay),
+                                    ("bare", 1.0, bare), ("unread", 1.0, None)):
+        wall = SoftPrism(tag="W-EXT", kind="wall", footprint=box(0.0, 0.0, 2 * FT, 0.14),
+                         z0_m=-1.0, z1_m=1.0, occupancy="exterior", bay=reading)
+        y = depth_in * M_PER_IN
+        a, b = Node(index=0, x=0.0, y=y, z=0.0), Node(index=1, x=2 * FT, y=y, z=0.0)
+        priced[name] = _finish(_space(soft=[wall]), a, b, "x", [wall])[1]
+    assert abs(priced["warm"]["exterior_warm_in"] - 48.0) < 1e-9
+    for name in ("cold", "bare", "unread"):
+        assert abs(priced[name]["exterior_cold_in"] - 672.0) < 1e-9, name
+    assert RouteCost().for_run("pipe", "vent").exterior_bay_per_ft("warm") == 0.0
     assert RouteCost().for_run("duct", "supply").exterior_wall_per_ft == 0.0
     assert RouteCost().for_run("pipe", "water_cold").exterior_wall_per_ft == 96.0
 

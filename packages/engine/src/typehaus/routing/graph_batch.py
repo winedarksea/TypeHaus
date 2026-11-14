@@ -22,6 +22,7 @@ if TYPE_CHECKING:  # pragma: no cover - typing only
 
 _GRID_M = 0.0015875
 _FT = 0.3048
+_MIN_PIECE_M = 0.003175  # the check's 1/8": less is a vertex clipping the ring
 
 
 def _flags(tree: STRtree, geoms: np.ndarray, z: np.ndarray, z0: np.ndarray,
@@ -135,24 +136,26 @@ def soft_along(space: RoutingSpace, a: tuple[float, float, float],
     return found
 
 
-def room_lengths(soft: list[SoftPrism], a, b) -> tuple[list[tuple[float, str | None]], bool]:
-    """``([(ft inside, occupancy) per room], exterior)`` for the edge ``a``-``b``.
+def room_lengths(soft: list[SoftPrism], a, b, radius_m: float = 0.0
+                 ) -> tuple[list[tuple[float, str | None]], str | None]:
+    """``([(ft inside, occupancy) per room], bay)`` for the edge ``a``-``b``.
 
-    A wall's exterior flag stays a midpoint test: it prices a cavity, not a length.
+    ``bay`` is ``"cold"`` when the edge reaches the cold side of an exterior bay (or a bay
+    with no reading), ``"warm"`` when it stays in the warm lane, else None. It prices a
+    cavity, not a length: the caller bills the whole edge.
     """
     if not soft:
-        return [], False
+        return [], None
     mid = Point((a.x + b.x) / 2.0, (a.y + b.y) / 2.0)
-    midz = (a.z + b.z) / 2.0
     vertical = a.x == b.x and a.y == b.y
     line = None if vertical else LineString([(a.x, a.y), (b.x, b.y)])
     lo, hi = min(a.z, b.z), max(a.z, b.z)
     rooms: list[tuple[float, str | None]] = []
-    exterior = False
+    bay: str | None = None
     for prism in soft:
         if prism.kind == "wall":
-            exterior |= (prism.occupancy == "exterior" and prism.z0_m <= midz <= prism.z1_m
-                         and prism.footprint.covers(mid))
+            if prism.occupancy == "exterior" and bay != "cold":
+                bay = _bay(prism, a, b, mid, line, lo, hi, radius_m) or bay
         elif prism.kind == "room":
             if vertical:
                 inside = (min(hi, prism.z1_m) - max(lo, prism.z0_m)) / _FT
@@ -164,4 +167,31 @@ def room_lengths(soft: list[SoftPrism], a, b) -> tuple[list[tuple[float, str | N
                           else prism.footprint.intersection(line).length / _FT)
                 if inside > 0:
                     rooms.append((inside, prism.occupancy))
-    return rooms, exterior
+    return rooms, bay
+
+
+def _bay(prism: SoftPrism, a, b, mid, line, lo: float, hi: float,
+         radius_m: float) -> str | None:
+    """``"cold"``/``"warm"`` for an edge with 1/8" or more in an exterior bay, else None.
+
+    Graded at the deepest point the edge reaches, where ``mep.supply_freeze_exposure``
+    grades a piece's worst end. A bay with no reading (no design temp) is all cold.
+    """
+    z0, z1 = max(lo, prism.z0_m), min(hi, prism.z1_m)
+    if line is None:
+        if z1 - z0 < _MIN_PIECE_M or not prism.footprint.covers(mid):
+            return None
+        points, zs = [(a.x, a.y)], (z0, z1)
+    else:
+        if not prism.z0_m <= a.z <= prism.z1_m:
+            return None
+        inside = prism.footprint.intersection(line)
+        if inside.length < _MIN_PIECE_M:
+            return None
+        points = [p for part in getattr(inside, "geoms", [inside])
+                  for p in getattr(part, "coords", ())]
+        zs = (a.z,)
+    if prism.bay is None:
+        return "cold"
+    deepest = max(prism.bay.depth_t(x, y) for x, y in points)
+    return "cold" if any(prism.bay.cold(deepest, z, radius_m) for z in zs) else "warm"

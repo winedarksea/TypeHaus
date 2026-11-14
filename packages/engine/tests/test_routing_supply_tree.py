@@ -91,6 +91,26 @@ def test_two_floor_systems_leave_only_their_bands_open() -> None:
     assert all(any(p.blocks((5.0, 5.0), z) for p in prisms) for z in blocked)
 
 
+def test_a_lane_opens_its_walls_only_between_the_end_and_its_gate() -> None:
+    """§5b: an end above the gate opens its walls from the gate's top to the end, no higher."""
+    from shapely.geometry import box
+
+    gates = [st.Gate(-0.5, -0.1, (-0.3,)), st.Gate(2.5, 2.9, (2.7,))]
+    assert st.lane_band(gates, 3.4) == (2.9, 3.4 + st.ON_M)
+    assert st.lane_band(gates, -1.0) == (-1.0 - st.ON_M, -0.5)  # under every gate: up to it
+    assert st.lane_band(gates, 2.7) is None
+    lane = st.Lane(box(4.0, 4.0, 4.2, 6.0), *st.lane_band(gates, 3.4))
+    prisms = st.gate_prisms((0.0, 0.0, 10.0, 10.0), gates, [], [(2.0, 2.0)], lanes=[lane])
+    assert not any(p.blocks((4.1, 5.0), 3.4) for p in prisms)  # in the wall, at the end
+    assert any(p.blocks((5.0, 5.0), 3.4) for p in prisms)  # the room's air beside it
+    assert any(p.blocks((4.1, 5.0), 3.5) for p in prisms)  # above the end
+    assert any(p.blocks((4.1, 5.0), 1.0) for p in prisms)  # the storey below
+    # In the lane's band a tight hole is its own riser column; outside it, its square.
+    assert not any(p.blocks((2.0, 2.0), 3.2) for p in prisms)
+    assert any(p.blocks((2.2, 2.0), 3.2) for p in prisms)
+    assert not any(p.blocks((2.2, 2.0), 1.0) for p in prisms)
+
+
 def test_a_run_carries_what_the_sizing_table_says() -> None:
     table = ((0.5, 4.0), (0.75, 14.0), (1.0, 32.0), (1.25, 64.0))
     assert [st.capacity_wsfu(d * IN, table) for d in (0.375, 0.5, 0.75, 1.25)] == [
