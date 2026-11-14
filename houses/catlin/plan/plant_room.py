@@ -178,8 +178,10 @@ PLANT_ROOM_BACKING = [
 
 # The room's heat (2026-11-12): the fan heater on a shelf 36" AFF on W-S-PS2's plant face,
 # above spill height, blowing south over the open floor, ~2' clear of the stands and hanging
-# pots either side; the 52" fan ED-S-PLANT-LT mixes it. Its own receptacle and Matter relay
-# on dedicated CKT-PLANT-HEAT. notes/plant_room.md, "Heat".
+# pots either side; the 52" fan ED-S-PLANT-LT mixes it. Its own always-on receptacle on
+# dedicated CKT-PLANT-HEAT; HA switches the HEATER through a plug-in Eve Energy (Matter over
+# Thread) since 2026-11-14 (owner), so no premises receptacle is automatically controlled
+# (406.11(D)). notes/plant_room.md, "Heat".
 PLANT_ROOM_HEAT = [
     Equipment(uid="2C6CPGQAE1", tag="EQ-S-PLANT-HEATER", kind=EquipmentKind.SPACE_HEATER,
               footprint=(inch(7), inch(7)), room="RM-S-PLANT", type_ref="EQ-T-PLANT-HEATER",
@@ -190,16 +192,9 @@ PLANT_ROOM_HEAT = [
                   normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="38WQ21WJ9N", tag="ED-S-PLANT-HEAT-RC", kind=DeviceKind.RECEPTACLE_GFCI,
                      type_ref="ED-T-LEV-GFCI-WR", circuit="CKT-PLANT-HEAT", room="RM-S-PLANT",
-                     controlled_by=("ED-S-PLANT-HEAT-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-PS2", face="right", distance_from_start=inch(66),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    # D315S: 15 A resistive, 1800 W; HA drives it off the room T/RH sensor.
-    ElectricalDevice(uid="EXAVCXTJC1", tag="ED-S-PLANT-HEAT-SW", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-MATTER", circuit="CKT-PLANT-HEAT", room="RM-S-PLANT",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-PS2", face="right", distance_from_start=inch(74),
-                         normal_gap=inch(0), rotation_offset=deg(0)))),
+    # ED-S-PLANT-HEAT-SW (D315S relay) retired 2026-11-14: the heater's plug carries the control.
 ]

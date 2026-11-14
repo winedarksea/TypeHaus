@@ -505,8 +505,12 @@ misted or hosed.
 - **Heat** (2026-11-12): `EQ-S-PLANT-HEATER`, a Lasko CD08210-class 1500 W bathroom-rated fan
   heater (ALCI plug) on a shelf 36" AFF on `W-S-PS2`, blowing south over the open floor, ~2'
   clear of the stands and pots. Dedicated 20 A AFCI `CKT-PLANT-HEAT` (12.5 A does not belong on
-  `CKT-RC-SECOND`) to `ED-S-PLANT-HEAT-RC`, switched by the `ED-S-PLANT-HEAT-SW` Matter relay
-  (D315S, 15 A resistive) from Home Assistant's room sensor. The heater's own thermostat,
+  `CKT-RC-SECOND`) to an always-on `ED-S-PLANT-HEAT-RC`. Since 2026-11-14 (owner) Home
+  Assistant switches the heater through a plug-in Eve Energy (US, Matter over Thread, local;
+  spec sheet: max 15 A / 1800 W) driven by a thermostat helper on the room sensor; the D315S
+  relay `ED-S-PLANT-HEAT-SW` is gone, so no receptacle is "controlled" (406.11(D)). The heater
+  draws 12.5 A continuously: use its 900/1200 W setting where it has one (the room's design
+  loss is ~510 W), or confirm continuous duty with Eve. The heater's own thermostat,
   overheat and tip-over cutoffs are the safety loop (`smart_home.md` rule 3). The 52" fan
   mixes. **Gate before purchase:** the manual must allow unattended thermostat operation and
   the unit must resume heating after power loss; else a fixed damp-listed fan-forced heater
