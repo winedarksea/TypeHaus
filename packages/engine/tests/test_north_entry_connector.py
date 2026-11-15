@@ -98,8 +98,9 @@ def test_service_door_narrowing_retains_stair_and_clears_exterior_guard(catlin_p
     stair = catlin_plan.by_tag("ST-G-SERVICE")
     assert stair.width.meters / inch(1).meters == pytest.approx(36)
     assert stair.start.x.meters / inch(1).meters == pytest.approx(83.625)
-    guard = catlin_plan.by_tag("RL-BW-ENTRY")
-    assert min(point.x.meters for point in guard.path) / inch(1).meters == pytest.approx(116.5)
+    # The entry rail's head return clears the casing and the leaf's swing (>= 116.5").
+    rail = catlin_plan.by_tag("RL-BW-ENTRY")
+    assert min(point.x.meters for point in rail.path) / inch(1).meters == pytest.approx(120.25)
     door = catlin_plan.by_tag("D-G-SERVICE")
     assert door.header_spec == "flat 2x6 nonbearing"
 

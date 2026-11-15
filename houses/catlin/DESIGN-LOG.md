@@ -8348,8 +8348,10 @@ first NDS pass is short of the notes' 300 lb point load.
   still need R311.7.8's rail. It is now a postless wall rail on W-G-S, the same EZ Handrail kit
   as RL-G-SERVICE (`RAILING-EXT-ALUM-HANDRAIL`; the listing covers outdoor use). The centre is
   2 1/2" off the corrugated face (1.55" clear). The foot return lands on `BK-G-S-RAIL-FOOT`, the
-  bracket on the x=12' stud, and the head return on D-G-SERVICE's east king at 9'-9 1/4". That
-  is past the leaf's swing (x >= 116.5") and spans 45.8" against the type's 54".
+  bracket on the x=12' stud, and the head return on `BK-G-S-RAIL-HEAD` at 10'-0 1/4". That is
+  past the leaf's swing (x >= 116.5"), and the end plate clears D-G-SERVICE's exterior casing
+  (to 9'-10 9/16"). On the east king at 9'-9 1/4" the plate cut into the casing. Widest span
+  45.8" against the type's 54".
 - RL-A-FLIGHT-SKIRT was a 2x2-post "guard" for a 20 3/8" raked filler. It is a painted 3/4"
   poplar board (`RAILING-INT-SKIRT-PANEL`, `mount="panel"`, `rail_count=0`), screwed to
   stringer-0 and the guard's newel. It names no `start_post_ref`: that field means the other

@@ -140,11 +140,11 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     # 2026-10-22: the dark-steel handrails carry RAILING-INT-ALUM-HANDRAIL; the
     # untyped bucket keeps the rest. Their sum is the same 40.8 LF.
     # 41.8 since 2026-11-08: RL-A-HANDRAIL's return moved south of WIN-S-STUDY3's new jamb.
-    # 2026-11-15: nothing is untyped. RL-BW-ENTRY is a wall rail (5.8) and RL-A-FLIGHT-SKIRT
+    # 2026-11-15: nothing is untyped. RL-BW-ENTRY is a wall rail (5.6) and RL-A-FLIGHT-SKIRT
     # a panel (1.7); the interior handrails keep 34.2.
     assert "(untyped railing)" not in by_type
     assert by_type["RAILING-INT-ALUM-HANDRAIL"] == pytest.approx(34.2, abs=0.1)
-    assert by_type["RAILING-EXT-ALUM-HANDRAIL"] == pytest.approx(5.8, abs=0.1)
+    assert by_type["RAILING-EXT-ALUM-HANDRAIL"] == pytest.approx(5.6, abs=0.1)
     assert by_type["RAILING-INT-SKIRT-PANEL"] == pytest.approx(1.7, abs=0.1)
     assert by_type["RAILING-INT-TI-HANDRAIL-42"] == pytest.approx(9.5, abs=0.1)
 

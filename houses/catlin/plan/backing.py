@@ -411,6 +411,12 @@ GARAGE_BACKING = [
                 start=inch(96.75), length=inch(22.5),
                 elevation=inch(24), height=inch(11.25), profile="2x12",
                 material_ref="spf", purpose="garage subpanel backboard (ED-G-PANEL)"),
+    # RL-BW-ENTRY's head return (rail centre ~47" over the sill datum), the bay between
+    # D-G-SERVICE's east king pack and the stud at 12'-0", let in from the outdoor face.
+    WallBacking(uid="HBQ556725H", tag="BK-G-S-RAIL-HEAD", wall_ref="W-G-S", face="right",
+                start=inch(47.5), length=inch(23.75),
+                elevation=inch(41.5), height=inch(11.25), profile="2x12",
+                material_ref="spf", purpose="handrail return (RL-BW-ENTRY, head of flight)"),
     # RL-BW-ENTRY's foot return (rail centre ~22" over the sill datum), same bay as the
     # panel's band but let in from the outdoor face, under the cdx.
     WallBacking(uid="VDB9SEX087", tag="BK-G-S-RAIL-FOOT", wall_ref="W-G-S", face="right",

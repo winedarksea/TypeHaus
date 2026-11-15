@@ -136,11 +136,12 @@ TIER_SLABS = [
 # R311.7.8 wants a handrail (5 risers), so this is a postless wall rail on W-G-S's corrugated
 # face, centre 2 1/2" off it (RL-G-SERVICE's convention: 1.55" clear of the 1.9" bar). One
 # vertex per support: the foot return lands on BK-G-S-RAIL-FOOT, the bracket on the stud at
-# x=12'-0", and the head return on D-G-SERVICE's east king at 9'-9 1/4", past the leaf's swing
-# (x >= 116.5", DESIGN-LOG 2026-10-25).
+# x=12'-0", and the head return on BK-G-S-RAIL-HEAD at 10'-0 1/4": its end plate clears
+# D-G-SERVICE's exterior casing (to 9'-10 9/16") and the leaf's swing (x >= 116.5",
+# DESIGN-LOG 2026-10-25).
 ENTRY_RAIL_Y_FT = GARAGE_CLADDING_Y_FT - 2.5 / 12
 ENTRY_RAIL_STUD_X_IN = 144
-ENTRY_RAIL_HEAD_X_IN = 117.25
+ENTRY_RAIL_HEAD_X_IN = 120.25
 RAILINGS = [
     Railing(uid="BWRHE1AAAA", tag="RL-BW-ENTRY", type_ref="RAILING-EXT-ALUM-HANDRAIL",
             path=(pt(ft(STAIR_FOOT_X_FT), ft(ENTRY_RAIL_Y_FT)),
