@@ -78,6 +78,8 @@ def service_basis(ctx: CheckContext) -> tuple[Basis | None, str]:
                            "conductor is authored, so the size the load calls for)"))
     else:
         return None, "neither a service conductor size nor a service rating is stated"
+    if se is not None and len(se.disconnect_conductors) > 1 and not se.disconnect_material:
+        return None, f"{se.tag} states parallel disconnect conductors but no material"
     if se is not None and len(se.disconnect_conductors) > 1 and se.disconnect_material:
         area = sum(kcmil(s) for s in se.disconnect_conductors)
         bases.append(Basis(band(area, se.disconnect_material),

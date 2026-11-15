@@ -14,6 +14,7 @@ the rail's bending and end reactions, and the panel's attachment to the deck.
 from __future__ import annotations
 
 import math
+import re
 from dataclasses import dataclass
 
 from typehaus.checks._authoring import structural_advisory as _advisory
@@ -155,6 +156,11 @@ def _grade(ctx: CheckContext, connector: Connector) -> Finding | None:
         (roof.ridge_z_m - roof.eave_z_m) / run_m)
     demand, vertical = wedge_drag_lbf(wedge, drift)
     datum = S5_N_IMAGE_II_24GA_DRAG
+    gauge = _panel_gauge(ctx, roof)
+    if gauge != datum.gauge:
+        said = f"is {gauge} ga" if gauge else "states no gauge in its cladding Material's name"
+        return _unknown(CHECK_ID, f"{connector.tag}: {roof.tag} {said}; the only drag datum "
+                                  f"is {datum.panel}", tags)
     count = len(layout.supports)
     capacity = count * datum.allowable_lbf
     ratio = demand / capacity
@@ -170,6 +176,16 @@ def _grade(ctx: CheckContext, connector: Connector) -> Finding | None:
         fix_hint=None if ratio <= 1.0 else
         "lengthen the rail onto more seams or add a second row upslope",
         code=datum.citation)
+
+
+def _panel_gauge(ctx: CheckContext, roof) -> int | None:
+    """The roof cladding's sheet gauge, as its Material's name spells it ("24 ga")."""
+    assembly = ctx.plan.library.resolve_assembly(roof.assembly)
+    cladding = [layer for layer in (assembly.layers if assembly else ())
+                if layer.function.value == "cladding"]
+    material = cladding and ctx.plan.library.material(cladding[-1].material_ref)
+    found = re.search(r"\b(\d{2})\s*ga\b", material.name) if material else None
+    return int(found.group(1)) if found else None
 
 
 @check(Tier.STRUCTURAL, CHECK_ID)

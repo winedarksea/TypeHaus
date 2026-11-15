@@ -65,7 +65,7 @@ _EQUIPMENT_SPACES = {Occupancy.UTILITY, Occupancy.LAUNDRY, Occupancy.MECHANICAL}
 def _is_equipment_space(ctx: CheckContext, storey_tag: str, room) -> bool:
     if room.occupancy in _EQUIPMENT_SPACES:
         return True
-    if room.occupancy is not Occupancy.STORAGE:
+    if room.occupancy not in (Occupancy.STORAGE, Occupancy.CLOSET):
         return False
     resolved = next((r for r in ctx.model.rooms if r.tag == room.tag), None)
     for element in ctx.plan.storey_elements(storey_tag):

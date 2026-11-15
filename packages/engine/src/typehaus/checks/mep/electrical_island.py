@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 import warnings
 
 from typehaus.checks._authoring import not_applicable as _na
@@ -23,9 +24,10 @@ _FIXED_CABINET_FLOOR_CONTACT_M = room_perimeter.FLOOR_CONTACT_M
 # is a wall receptacle that happens to be nearby. Kept well under _NEAR_WALL_M so a
 # freestanding island (> _NEAR_WALL_M from every boundary) can never borrow one.
 _ISLAND_RECEPTACLE_MARGIN_M = 12 * _IN
-# A peninsula touches a boundary within this, and only along its end: the touching length
-# is at most its short side (plus this), where a wall run touches along its long side.
+# A peninsula touches a boundary within this, and only with an end panel (contact parallel to
+# its carcasses' depth axis); a wall run touches with its back (parallel to their width).
 _ATTACHED_M = 2 * _IN
+_MIN_CONTACT_M = 2 * _ATTACHED_M  # an edge meeting the wall picks up the buffer's width
 _BELOW_COUNTER_M = 24 * _IN  # NEC 210.52(C)(4)
 _ABOVE_COUNTER_M = 20 * _IN  # NEC 210.52(C)(3)
 _ON_CARCASS_M = 2 * _IN  # a box on an end panel projects about this far
@@ -74,6 +76,7 @@ def island_receptacle(ctx: CheckContext) -> list[Finding]:
     graded = 0
     work_surfaces = 0
     carcasses: dict[str, list[tuple[str, Polygon]]] = {}
+    rotations = {obj.tag: obj.rotation_degrees for obj in ctx.model.canvas_objects}
     for item in ctx.model.canvas_objects:
         item_type = furniture_types.get(item.type_ref or "")
         if item_type is None or item_type.work_surface is not True:
@@ -86,7 +89,8 @@ def island_receptacle(ctx: CheckContext) -> list[Finding]:
             carcasses.setdefault(item.storey, []).append((item.tag, carcass))
     for storey, items in carcasses.items():
         for tags, run in _work_surface_runs(items):
-            shape = _shape(run, boundaries_by_storey.get(storey, []))
+            members = [(tag, polygon, rotations[tag]) for tag, polygon in items if tag in tags]
+            shape = _shape(run, boundaries_by_storey.get(storey, []), members)
             if shape is None:
                 continue
             graded += 1
@@ -102,7 +106,9 @@ def island_receptacle(ctx: CheckContext) -> list[Finding]:
                       and face.contains(Point(placed_xy(ctx.model, d)))]
             serving = [d.tag for d in counting if d.tag not in banned
                        and _in_window(objects.get(d.tag), top)]
-            provisions = [d.tag for d in near if d.kind.value in _PROVISION_KINDS]
+            # A provision is at the run: a ceiling box overhead in plan is not one.
+            provisions = [d.tag for d in near if d.kind.value in _PROVISION_KINDS
+                          and (_top(objects, d.tag) or math.inf) <= top + _ABOVE_COUNTER_M]
             if banned:
                 out.append(_warn_fail(
                     cid, f"{label}: {', '.join(banned)} sits less than 24\" below the "
@@ -136,27 +142,53 @@ def island_receptacle(ctx: CheckContext) -> list[Finding]:
     return out
 
 
-def _shape(run, boundaries: list) -> str | None:
-    """"island", "peninsula", or None for a run along a wall."""
+def _shape(run, boundaries: list, members: list) -> str | None:
+    """"island", "peninsula", or None for a run along a wall.
+
+    Reads which face meets the boundary, not the run's aspect: a lone B18's back is its
+    short side too. The width axis is the run's rectangular carcasses' (an L corner unit has
+    none); any contact along it is a back, so a wall run.
+    """
+    from shapely.geometry import LineString
+
     from typehaus.resolve.overlay import union_all
 
     if all(run.distance(boundary) > _NEAR_WALL_M for boundary in boundaries):
         return "island"
     touching = [boundary.buffer(_ATTACHED_M) for boundary in boundaries
                 if run.distance(boundary) <= _ATTACHED_M]
-    if not touching:
+    axis = _width_axis(members)
+    if not touching or axis is None:
         return None
-    contact = run.exterior.intersection(union_all(touching)).length
-    if contact <= 0.0:
+    zone = union_all(touching)
+    coords = list(run.exterior.coords)
+    end_contact = False
+    for a, b in zip(coords, coords[1:], strict=False):
+        dx, dy = b[0] - a[0], b[1] - a[1]
+        edge = math.hypot(dx, dy)
+        if edge < _MIN_CONTACT_M or zone.intersection(LineString([a, b])).length < _MIN_CONTACT_M:
+            continue
+        if abs(dx * axis[0] + dy * axis[1]) / edge > math.cos(math.radians(45)):
+            return None  # a back on the boundary: a wall run
+        end_contact = True
+    return "peninsula" if end_contact else None
+
+
+def _width_axis(members: list) -> tuple[float, float] | None:
+    """The width direction most of the run's rectangular carcass area shares."""
+    weight: dict[int, float] = {}
+    for _, polygon, rotation in members:
+        with warnings.catch_warnings():  # GEOS divides by zero on a collinear hull edge
+            warnings.simplefilter("ignore", RuntimeWarning)
+            hull = polygon.minimum_rotated_rectangle.area
+        if polygon.area < 0.99 * hull:
+            continue  # an L corner unit: no single width axis
+        key = round(rotation) % 180
+        weight[key] = weight.get(key, 0.0) + polygon.area
+    if not weight:
         return None
-    with warnings.catch_warnings():  # GEOS divides by zero on a collinear hull edge
-        warnings.simplefilter("ignore", RuntimeWarning)
-        corners = list(run.minimum_rotated_rectangle.exterior.coords)[:3]
-    short, long = sorted(((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2) ** 0.5
-                         for a, b in zip(corners, corners[1:], strict=False))
-    if long > short and contact <= short + 2 * _ATTACHED_M:
-        return "peninsula"
-    return None
+    angle = math.radians(max(weight, key=weight.__getitem__))
+    return math.cos(angle), math.sin(angle)
 
 
 def _top(objects: dict, tag: str) -> float | None:

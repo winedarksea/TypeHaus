@@ -281,8 +281,9 @@ def load_management_credits(
 
     A ``noncoincident`` group never counts below its single largest member (120.6), that
     member's largest motor at 125% (120.11(A)): an authored ceiling under that is raised to
-    it, one above the group's connected sum is moot. A ``pcs`` that also monitors noncontrolled loads counts the
-    group at its minimum operating current (120.7(C)(2)), not the setting.
+    it, one above the group's connected sum is moot. A ``pcs`` that also monitors
+    noncontrolled loads counts the group at its minimum operating current (120.7(C)(2)),
+    not the setting.
     """
     consumers = _circuit_consumers(model)
     circuits = {c.tag: c for c in model.plan.library.circuits

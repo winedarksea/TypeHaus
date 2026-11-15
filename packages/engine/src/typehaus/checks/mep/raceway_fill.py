@@ -81,6 +81,11 @@ def _table(run, authored) -> tuple[str, str]:
     return _TABLE[run.material]
 
 
+def _no_table_5_row(run, exc: KeyError) -> Finding:
+    return unknown(_CID, f"{run.tag}: Table 5 has no row for {exc.args[0]}, so its fill "
+                         "cannot be summed", (run.tag,), code=_CODE)
+
+
 def _grade_named(run, circuits: dict, authored, neutral: dict[str, bool]) -> Finding:
     table, label = _table(run, authored)
     size_in = round(run.trade_size_m / M_PER_IN, 3)
@@ -88,7 +93,10 @@ def _grade_named(run, circuits: dict, authored, neutral: dict[str, bool]) -> Fin
     assumed: list[str] = []
     for tag in run.circuits:
         circuit = circuits.get(tag)
-        one = _circuit_conductors(circuit, neutral.get(tag, True)) if circuit else None
+        try:
+            one = _circuit_conductors(circuit, neutral.get(tag, True)) if circuit else None
+        except KeyError as exc:
+            return _no_table_5_row(run, exc)
         if one is None:
             return unknown(
                 _CID, f"{run.tag} carries {tag}, which authors no conductor size and whose "
@@ -98,7 +106,10 @@ def _grade_named(run, circuits: dict, authored, neutral: dict[str, bool]) -> Fin
         if not one[1]:
             assumed.append(tag)
     cables = authored.cables if authored is not None else ()
-    areas += _cable_areas(cables)
+    try:
+        areas += _cable_areas(cables)
+    except KeyError as exc:
+        return _no_table_5_row(run, exc)
     try:
         row = table_4_row(table, size_in)
     except KeyError:

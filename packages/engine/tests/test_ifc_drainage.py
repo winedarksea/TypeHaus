@@ -10,7 +10,6 @@ system rather than as a naming convention.
 
 from __future__ import annotations
 
-
 import pytest
 
 from typehaus.emit.trades import DRAINAGE_CATEGORIES

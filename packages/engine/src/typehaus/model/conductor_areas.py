@@ -58,8 +58,11 @@ TABLE_5: Final = {"thhn": THHN, "xhhw": XHHW, "thw": THW}
 
 
 def conductor_area_in2(insulation: str, size: str) -> float:
-    """Table 5 area in.2; ``KeyError`` for a family or size not coded."""
-    return TABLE_5[insulation][size][0]
+    """Table 5 area in.2; ``KeyError`` (naming family and size) for one not coded."""
+    try:
+        return TABLE_5[insulation][size][0]
+    except KeyError:
+        raise KeyError(f"{str(insulation).upper()} {size}") from None
 
 
 def conductor_diameter_in(insulation: str, size: str) -> float:

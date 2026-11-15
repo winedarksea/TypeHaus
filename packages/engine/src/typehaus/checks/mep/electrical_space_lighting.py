@@ -30,7 +30,8 @@ from typehaus.model.nec import NEC, cite
 _CID = "electrical.equipment_space_lighting"
 _NEAR_M = 6 * 0.3048
 _SPACES = frozenset(o.value for o in (Occupancy.UTILITY, Occupancy.MECHANICAL,
-                                      Occupancy.STORAGE, Occupancy.UNCONDITIONED))
+                                      Occupancy.STORAGE, Occupancy.CLOSET,
+                                      Occupancy.UNCONDITIONED))
 _NOT_SERVICED = frozenset({"duct_manifold", "plenum"})
 
 

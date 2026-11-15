@@ -77,6 +77,7 @@ class SeamClampDragAllowable:
 
     clamp_model: str
     panel: str
+    gauge: int  # the tested sheet; another gauge is another datum
     ultimate_lbf: float
     safety_factor: float
     allowable_lbf: float
@@ -84,7 +85,7 @@ class SeamClampDragAllowable:
 
 
 S5_N_IMAGE_II_24GA_DRAG = SeamClampDragAllowable(
-    clamp_model="S-5-N", panel="Metal Sales Image II, 24 ga",
+    clamp_model="S-5-N", panel="Metal Sales Image II, 24 ga", gauge=24,
     ultimate_lbf=1726.0, safety_factor=2.0, allowable_lbf=863.0,
     citation="S-5! load-test table (calculators.s-5.com/load-tests), Metal Sales Image II, "
              "parallel, S-5-N 24 ga: 1,726 lbf ultimate, SF 2, 863 lbf allowable, failure "

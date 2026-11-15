@@ -172,6 +172,9 @@ def test_120_6_counts_the_group_at_its_single_largest_load():
     # An authored ceiling above the largest is kept.
     [credit] = service_load_summary(_noncoincident(cap=6000))["load_management"]
     assert credit["excess_va"] == 2000
+    # A ceiling above the connected sum is moot: it never adds demand.
+    [credit] = service_load_summary(_noncoincident(cap=20000))["load_management"]
+    assert credit["excess_va"] == 0
 
 
 def test_120_6_item_by_basis():

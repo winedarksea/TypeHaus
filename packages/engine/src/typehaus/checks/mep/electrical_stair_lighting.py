@@ -67,9 +67,14 @@ def stair_lighting_control(ctx: CheckContext) -> list[Finding]:
         if stair.riser_count < _MIN_RISERS:
             continue
         ends = _ends(stair)
-        if not ends or not any(poly.contains(Point(xy)) for storey, xy in ends
+        if not ends:
+            out.append(unknown(_CID, f"{stair.tag} ({stair.riser_count} risers): no walk "
+                                     "line resolves, so whether it is interior and where its "
+                                     "ends are cannot be told", (stair.tag,), code=code))
+            continue
+        if not any(poly.contains(Point(xy)) for storey, xy in ends
                                for poly in rooms.get(storey, ())):
-            continue  # exterior, or no resolved walk line
+            continue  # both ends outside every room: an exterior stair
         served = lights.get(stair.tag, [])
         if not served:
             out.append(unknown(_CID, f"{stair.tag} ({stair.riser_count} risers): no luminaire "

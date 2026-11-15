@@ -237,7 +237,8 @@ def outdoor_front_back_receptacles(ctx: CheckContext) -> list[Finding]:
     cx, cy = footprint.centroid.x, footprint.centroid.y
     depth = [(x - cx) * front[0] + (y - cy) * front[1]
              for x, y in footprint.convex_hull.exterior.coords]
-    ahead, behind = max(depth) * (1 - 2 * _END_BAND), min(depth) * (1 - 2 * _END_BAND)
+    lo, hi = min(depth), max(depth)  # band off the depth range: the centroid can sit off-centre
+    ahead, behind = hi - (hi - lo) * _END_BAND, lo + (hi - lo) * _END_BAND
     objects = {o.tag: o for o in ctx.model.canvas_objects}
     sides: dict[str, list[str]] = {"front": [], "back": []}
     high: dict[str, list[str]] = {"front": [], "back": []}
