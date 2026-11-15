@@ -36,6 +36,7 @@ from typehaus.engineering.diaphragm_basis import (
     round_inertia_in4,
     shear_wall_deflection_in,
 )
+from typehaus.engineering.retaining_basis import PRESUMPTIVE_FC_PSI
 
 _M_PER_FT = 0.3048
 
@@ -71,7 +72,7 @@ def column_lines(ctx, posts: dict, columns: list[str], axis: str,
         size = _round_size(post.size)
         if size is None:
             continue
-        strength = fc_psi(concrete_spec_for(ctx.plan, post)) or 3000.0
+        strength = fc_psi(concrete_spec_for(ctx.plan, post)) or PRESUMPTIVE_FC_PSI
         modulus = 57_000.0 * strength ** 0.5
         inertia = round_inertia_in4(size[0])
         if cracked:

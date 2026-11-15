@@ -18,6 +18,7 @@ from typehaus.engineering.item import (
     item_id,
 )
 from typehaus.engineering.registry import EngineeringContext, calc, keys, oracled_by
+from typehaus.engineering.retaining_basis import PRESUMPTIVE_FC_PSI
 
 KIND = "wood_roof_post"
 #: 2: head and base lateral rows in both directions; the panel chords join (2026-09-30).
@@ -67,11 +68,13 @@ class _Case:
 
 
 def _posts(ctx: EngineeringContext) -> list[_Case]:
-    """Every KDAT post a roof's bearing beam names — pinned posts, and the chords a shear
+    """Every KDAT post a roof's bearing beam names (by its assembly's STRUCTURE material,
+    never by assembly tag) — pinned posts, and the chords a shear
     panel is framed around (``within_wall``), which the roof's demand leaves out but which
     carry the panel's out-of-plane load and their own ends' reactions all the same."""
     from typehaus.engineering.roof_lateral import bearing_beams, roof_winds
     from typehaus.model.structure import Post
+    from typehaus.resolve.assembly_material import assembly_structure_material
     from typehaus.resolve.framing.profiles import cross_section
 
     out: dict[str, _Case] = {}
@@ -81,7 +84,7 @@ def _posts(ctx: EngineeringContext) -> list[_Case]:
             for ref in beam.bearing_refs or ():
                 post = ctx.plan.by_tag(ref)
                 if not isinstance(post, Post) or post.height is None or ref in out \
-                        or post.assembly not in _KDAT:
+                        or assembly_structure_material(ctx.plan, post.assembly) != _KDAT:
                     continue
                 wall = ctx.plan.by_tag(post.within_wall) if post.within_wall else None
                 out[ref] = _Case(ref, (cross_section(post.size).width_m or 0.0) / 0.3048,
@@ -90,7 +93,14 @@ def _posts(ctx: EngineeringContext) -> list[_Case]:
     return sorted(out.values(), key=lambda c: c.tag)
 
 
-_KDAT = {"POST_KDAT", "POST_KDAT_WRAPPED_PVC"}
+#: The library material the Table 4D wet-service values above are read for.
+_KDAT = "kdat"
+
+
+def _wrapped(ctx: EngineeringContext, assembly_tag: str | None) -> bool:
+    """Whether the post's assembly carries a layer besides its structural core."""
+    assembly = ctx.plan.library.resolve_assembly(assembly_tag) if assembly_tag else None
+    return assembly is not None and len(assembly.layers) > 1
 
 
 @keys(KIND)
@@ -137,8 +147,8 @@ def _one(ctx: EngineeringContext, case: _Case) -> EngineeringRecord:
     from typehaus.engineering.lateral_band_slats import band_for_wall
     from typehaus.engineering.lateral_lines import panel_chords_ft, panel_runs_along
     from typehaus.engineering.pier_basis import (
-        DECK_DEAD_LOAD_PSF,
         _round_size,
+        design_roof_dead_psf,
         design_roof_snow_psf,
         roof_tributaries,
     )
@@ -176,7 +186,8 @@ def _one(ctx: EngineeringContext, case: _Case) -> EngineeringRecord:
     section_modulus = SIDE_IN ** 3 / 6.0
     # The KDAT material is 600 kg/m³ in the catalog; the actual 5.5-inch square is 7.87 plf.
     weight_plf = 600.0 * (SIDE_IN * 0.0254) ** 2 * 0.3048 * 2.20462262185
-    axial = trib * (DECK_DEAD_LOAD_PSF + snow) + weight_plf * case.length_ft
+    roof_dead = design_roof_dead_psf(ctx)
+    axial = trib * (roof_dead + snow) + weight_plf * case.length_ft
     fc_star = FC_WET_PSI * CD_SNOW
     fce, cp = column_stability(length_in, fc_star)
     fc_prime = fc_star * cp
@@ -189,7 +200,7 @@ def _one(ctx: EngineeringContext, case: _Case) -> EngineeringRecord:
     moment_lb_ft = drag_plf * case.length_ft ** 2 / 8.0
     if plate:
         moment_lb_ft += plate * a_ft * b_ft / case.length_ft
-    uplift = max(trib * (case.pressure_psf - 0.6 * DECK_DEAD_LOAD_PSF), 0.0)
+    uplift = max(trib * (case.pressure_psf - 0.6 * roof_dead), 0.0)
     head_uplift = uplift
     couple_note = ""
     push = push_head = push_base = push_height_ft = 0.0
@@ -251,7 +262,7 @@ def _one(ctx: EngineeringContext, case: _Case) -> EngineeringRecord:
     ]
     states += joint_rows(ctx, case.tag, beam_axis, demands, missing)
     base_item = hardware_by_model(base.size or "")
-    pier_fc = fc_psi(concrete_spec_for(ctx.plan, pier)) or 3000.0
+    pier_fc = fc_psi(concrete_spec_for(ctx.plan, pier)) or PRESUMPTIVE_FC_PSI
     if not getattr(base_item, "anchorage_in_rating", False):
         anchor = round_pier_anchor(f"{case.tag} base", pier_size[0], pier_fc)
         states += anchor_states(anchor, uplift, own_half,
@@ -277,9 +288,9 @@ def _one(ctx: EngineeringContext, case: _Case) -> EngineeringRecord:
                 Quantity("band_push_lb", push, "lb", 1.0),
                 Quantity("band_push_height_ft", push_height_ft, "ft", 0.001)),
         limit_states=tuple(states), element_tags=tags,
-        notes=(("The PVC wrap is a nonstructural finish. It needs an open, drained base and "
+        notes=(("The wrap is a nonstructural finish. It needs an open, drained base and "
                 "an inspectable/removable panel; it contributes no column capacity."
-                if element.assembly == "POST_KDAT_WRAPPED_PVC" else
+                if _wrapped(ctx, element.assembly) else
                 f"{case.tag} is a chord of {case.wall.tag}; its IN-PLANE hold-down and base "
                 f"shear are graded on the lateral_system record, and this one grades its "
                 f"out-of-plane (E-W) ends and any band push across it (N-S)."

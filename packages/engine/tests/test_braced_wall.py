@@ -293,3 +293,19 @@ def test_the_sheet_labels_a_line_that_owes_no_length(catlin_model_ro):
                        if isinstance(n, Text))
     assert "GABLE END" in printed
     assert "RAFTER PLATE" in printed
+
+
+def test_a_shear_panel_schedule_must_name_a_nailed_sheathing_layer(catlin_model_ro):
+    """`ShearPanelSpec.sheathing_layer` is the drift guard for a re-layered assembly."""
+    from typehaus.checks.integrity.shear_panel_layer import shear_panel_layer
+
+    plan = catlin_model_ro.plan
+    assert shear_panel_layer(_ctx(catlin_model_ro))[0].result is Result.PASS
+    wall = plan.by_tag("W-BW-SCREEN")
+    drifted = wall.model_copy(update={"shear_panel": wall.shear_panel.model_copy(
+        update={"sheathing_layer": "mdo-in-1"})})
+    moved = plan.with_elements("entry-low", [drifted if e is wall else e
+                                             for e in plan.storey_elements("entry-low")])
+    finding = shear_panel_layer(CheckContext(plan=moved, model=catlin_model_ro,
+                                             preferences=Preferences(), profile=MN_2020))[0]
+    assert finding.result is Result.FAIL and "not a SHEATHING layer" in finding.message

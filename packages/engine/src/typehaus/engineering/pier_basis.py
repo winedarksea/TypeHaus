@@ -99,6 +99,8 @@ class _Pier:
     #: 50 psf and therefore the LARGER of the two. Summing the roof into the deck tributary
     #: would quietly grade it at 40 and understate the pier by a fifth of its live load.
     roof_tributary_ft2: float = 0.0
+    #: The roof's dead load, psf — see :func:`design_roof_dead_psf`.
+    roof_dead_psf: float = DECK_DEAD_LOAD_PSF
     #: The DESIGN roof snow, psf — see :func:`design_roof_snow_psf`. Where the house
     #: authors ``preferences.toml [structural] roof_beam_snow_psf`` that number governs,
     #: because it is the drifted case the beam overhead was designed for and a pier under
@@ -189,7 +191,8 @@ class _Pier:
         # than converted into an area and multiplied by a psf. A wall's weight is a fact
         # about its own layer stack, and turning it into equivalent deck area to run it back
         # through DECK_DEAD_LOAD_PSF would replace the number with a guess.
-        return ((self.tributary_ft2 + self.roof_tributary_ft2) * DECK_DEAD_LOAD_PSF
+        return (self.tributary_ft2 * DECK_DEAD_LOAD_PSF
+                + self.roof_tributary_ft2 * self.roof_dead_psf
                 + self.self_weight_lb + self.carried_dead_lb + self.wall_dead_lb)
 
     @property
@@ -487,6 +490,13 @@ def design_roof_snow_psf(ctx: EngineeringContext) -> tuple[float, str]:
         return float(ground), ("Site.ground_snow_load_psf, flat — no design snow is "
                                "authored, so the ground snow is taken as the roof load")
     return 0.0, "no snow load is authored on this site"
+
+
+def design_roof_dead_psf(ctx: EngineeringContext) -> float:
+    """The roof dead load a member under a roof is designed for: the house's
+    ``roof_beam_dead_psf``, the figure ``roof_beam`` reads, so one roof has one dead load."""
+    structural = getattr(getattr(ctx, "preferences", None), "structural", None)
+    return float(getattr(structural, "roof_beam_dead_psf", None) or DECK_DEAD_LOAD_PSF)
 
 
 def roof_tributaries(ctx: EngineeringContext) -> tuple[dict[str, float], set[str]]:
@@ -1171,6 +1181,7 @@ def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
                             + handed_roof.get(post.tag, 0.0)),
             roof_snow_psf=snow_psf,
             roof_snow_basis=snow_basis,
+            roof_dead_psf=design_roof_dead_psf(ctx),
             carried_dead_lb=handed_dead.get(post.tag, 0.0),
             wall_dead_lb=wall_lb.get(post.tag, 0.0) + handed_wall.get(post.tag, 0.0),
             wall_load_basis="; ".join(filter(None, (

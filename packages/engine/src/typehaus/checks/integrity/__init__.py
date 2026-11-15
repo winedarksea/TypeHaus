@@ -26,6 +26,7 @@ from typehaus.checks.integrity import (  # noqa: F401 - registers checks
     reinforcement_layout,
     reveal_alignment,
     roof_clearance,
+    shear_panel_layer,
     sheet_notes,
     slab_kind,
     transition_binding,

@@ -587,32 +587,16 @@ ROOFS = [
              collector_refs=("W-G-E", "W-G-W"),
          ),
          eave_trim=_GARAGE_EAVE_TRIM),
-    # ** THE PASSAGE CANOPY, AND IT IS ITS OWN `Roof` FOR A TAKEOFF REASON, NOT A FRAMING ONE. **
-    # `roof_ceiling_area_m2` bills off the BEARING footprint, so extending RF-GARAGE over the
-    # passage would have ordered 144 sf of R-38 blown fiberglass and 5/8" gypsum ceiling over
-    # an open outdoor bay. CANOPY_ROOF is GARAGE_ROOF's structure with neither.
+    # The passage canopy is its own `Roof` for a takeoff reason: `roof_ceiling_area_m2` bills off
+    # the bearing footprint, so extending RF-GARAGE would order R-38 and a gypsum ceiling over
+    # an open bay. CANOPY_ROOF is GARAGE_ROOF's structure with neither.
     #
-    # ** THE SHEATHING IS STILL CONTINUOUS ACROSS THE GARAGE SOUTH WALL LINE, AND SINCE
-    # 2026-09-10 THAT IS A TIE AND NOT THE CANOPY'S LATERAL SYSTEM. ** This comment used to
-    # say the opposite -- that east-west wind spanned 6 feet north into the garage roof
-    # diaphragm and north-south wind ran axially into the garage's corner posts -- and it
-    # was indefensible on its own terms: the same joint is required to MOVE (two separately
-    # founded structures), no chords or collector were ever drawn, and four standoff bases
-    # with two pinned caps gave the frame zero lateral stiffness either way.
+    # Lateral: the deck is continuous across the garage's south wall line and delivers into
+    # RF-GARAGE (six LSTA24, `DiaphragmSpec.delivers_to`); W-BW-SCREEN is also graded at 100%
+    # of N-S (the double envelope, notes/canopy_garage_diaphragm.md §4). All four posts are
+    # pinned KDAT under `EAST_POST_SYSTEM = "kdat"`; they resist no storey shear.
     #
-    # The canopy braces itself now. EAST is PT-BW-RE and PT-BW-RNE, one continuous cast pour
-    # each from footing to header soffit, FIXED at the base and graded in bending by
-    # `engineering/roof_moment.roof_base_moments` (d/c 0.71 and 0.55 -- notes/
-    # north_entry_piers.md §8). WEST is W-BW-SCREEN, a sheathed 2x4 shear panel. The two
-    # WEST columns keep their standoff bases, which are uplift ties and not moment
-    # connections; nothing asks them to be. Two `Roof` ELEMENTS, one plane, and six LSTA24
-    # straps make the continuity a counted connection -- the drawings have to say so
-    # (AN-BW-ROOF does). A KBS1Z knee brace at each column stays the cheap fallback and is a
-    # live row in this house; `pier_basis.knee_braced` is scoped per structure since
-    # 2026-09-11, so authoring one here no longer switches the balcony's moment grading off.
-    #
-    # It bears on BEAMS, which `Roof.bearing_refs` could not name until 2026-09-10 --
-    # see resolve/roof_bearing.py. BM-BW-RW/RE top out at +7'-4", the same plate elevation as
+    # It bears on BEAMS (resolve/roof_bearing.py). BM-BW-RW/RE top out at +7'-4", the same plate elevation as
     # W-G-W/W-G-E, so the two roof planes are one plane.
     # The eave overhang is RF-GARAGE's 1'-4" plus 3 3/8": the headers' axes are their
     # centrelines on the garage's truss bearing lines (2026-10-31), 3 3/8" inboard of the
@@ -651,7 +635,7 @@ ROOFS = [
              # `chord_splice_slip`, a plated joint and not a continuous member. E-W wind:
              # BM-BW-RW and BM-BW-RE themselves, 5-1/2x11-7/8 glulam each, many times this section;
              # quoting the 2x4 for both axes is the conservative half of that pair.
-             chords="N-S: the end trusses' 2x4 top chords, continuous 24ft with one plated splice at the peak. E-W: the 5-1/2x11-7/8 glulam headers BM-BW-RW/-RE, whose chord force (the open front's 2,094 lb-ft couple over 24ft) is graded on lateral_system/RF-BW-CANOPY. The 2x4 is quoted for both. TRUSS ORDER: the design assumes the peak splice slips 0.03in at most, 30% of the deck's N-S deflection and the rigid/flexible call at 0.68x of the 2.0 threshold; the fabricator confirms 0.03in or supplies its value",
+             chords="N-S: the end trusses' 2x4 top chords, continuous 24ft with one plated splice at the peak. E-W: the 5-1/2x11-7/8 glulam headers BM-BW-RW/-RE, whose chord force (the open front's 2,064 lb-ft couple over the headers' 23ft 5-1/4in) is graded on lateral_system/RF-BW-CANOPY. The 2x4 is quoted for both. TRUSS ORDER: the design assumes the peak splice slips 0.03in at most, 30% of the deck's N-S deflection and the rigid/flexible call at 0.68x of the 2.0 threshold; the fabricator confirms 0.03in or supplies its value",
              chord_member="2x4", chord_plies=1,
              chord_splice_slip=inch(0.03),
              collector_refs=("BM-BW-RW", "BM-BW-RE"),

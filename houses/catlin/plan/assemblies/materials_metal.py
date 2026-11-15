@@ -119,7 +119,7 @@ MATERIALS_METAL = [
              source="Metal Sales Image II Striated, 16 inch coverage, 24 ga PVDF; vented peak per Residential Design Manual 5/2024 p. 41 (Profile Vent 6441899, Image II Profile Vent Clip 6540000) under the 7 in Ridge/Hip Cover 52131XX on both slopes"),
     # `corrugated-panel-24` (a library row since 2026-09-24, as are `pbr-panel-24/-26` and
     # the three seam profiles) — `corrugated-panel-26` one gauge heavier, ordered here in
-    # Linen White, on GARAGE_WALL_2X6 and both ENTRY_SCREEN faces. Same gauge reasoning as
+    # Linen White, on GARAGE_WALL_2X6, ENTRY_SCREEN_WALL's west face and its skirt. Same gauge reasoning as
     # `pbr-panel-24` above, and the entry screen moves WITH the garage
     # because CLAUDE.md records that its west face must stay in the same plane and the same
     # reading as the garage panel.

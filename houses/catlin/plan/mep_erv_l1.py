@@ -253,10 +253,14 @@ DUCTS_ERV_BASEMENT = [
     # hole drilled IN a cripple; this is air between two). ** IT ENDS IN THAT BAY (2026-11-10):
     # REG-B-SUP1 is a sidewall valve on the gym face, centred on the duct. ** Nothing of it is
     # exposed in the gym any more.
+    # (2026-11-14) The collar leg turns east at y=29'-5 1/2", not 29'-8": EQ-B-ERV's trapeze
+    # rod 1 stood 0.16" off that row's centreline. 2.34" clear now
+    # (structural.equipment_hanger_clearance).
     DuctRun(uid="CND5TE40W0", tag="DU-B-ERV-R-GYM", system=DuctSystem.SUPPLY,
             # Stock turns only: a 45 degree ramp and a 45 degree offset.
-            path=(pt(ft(6, 10), ft(30, 2)), pt(ft(6, 10), ft(29, 8)), pt(inch(92.375), ft(29, 8)),
-                  pt(inch(98.375), ft(29, 8)), pt(ft(9), ft(29, 8)),
+            path=(pt(ft(6, 10), ft(30, 2)), pt(ft(6, 10), inch(353.5)),
+                  pt(inch(92.375), inch(353.5)), pt(inch(98.375), inch(353.5)),
+                  pt(ft(9), inch(353.5)),
                   pt(ft(9), inch(224.5)), pt(ft(9), inch(218.375)), pt(ft(9), inch(212)),
                   pt(inch(112), inch(208)),
                   pt(inch(112), ft(13, 4)), pt(ft(18), ft(13, 4))),

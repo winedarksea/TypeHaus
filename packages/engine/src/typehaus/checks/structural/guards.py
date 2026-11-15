@@ -82,9 +82,7 @@ def _grade(ctx: CheckContext, tag: str, wall, allowance_plf: float) -> Finding:
     # The allowance is asked FIRST, and the ordering is the docstring's own "whatever it
     # stands on". A guard light enough that ordinary wood framing carries it does not raise a
     # question about its bearing line, so failing to identify that line is not missing data —
-    # it is an answer nobody needed. Asked the other way round, a 67 plf framed screen panel
-    # standing partly over open deck reported UNKNOWN, which is this check demanding an input
-    # its own threshold had already made irrelevant.
+    # it is an answer nobody needed.
     if load_plf <= allowance_plf + 1e-9:
         return _advisory(_CHECK_ID, f"guard wall {tag} weighs {load_plf:.0f} plf, at or "
                          f"under the {allowance_plf:.0f} plf ordinary wood framing carries; "

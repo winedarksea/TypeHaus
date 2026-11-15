@@ -1,4 +1,4 @@
-> Historical study: the 2026-11-02 direction is Bone White aluminum infill throughout.
+> Historical study (2026-10-14 to 10-25), not the design. Today: the east face of `W-BW-SCREEN` is white painted 3/4" MDO, finish only (`houses/catlin/notes/entry_screen_mdo.md`); no aluminium infill, thin brick or cassettes.
 
 # W-BW-SCREEN — east-face finish comparison
 

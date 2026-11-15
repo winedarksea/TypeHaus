@@ -73,10 +73,10 @@ $1.50-3.50/SF to glue it down.
 - **Where:** one wall of each parallel pair, because the flutter is between parallel hard
   faces:
   - E-W pair: the bare-concrete east wall (W-B-E1/E2) against the west centre wall.
-    Panels go on the **east** wall (4-5), the hardest surface in the room.
+    Panels go on the **east** wall (4-5), the hardest surface in the room. EQ-B-HP2-GYM is
+    on the west wall (W-B-CS, over D-B-SAUNA, 6'-10" to 7'-9" AFF) since 2026-11-14.
   - N-S pair: W-B-CE against the south walkout. Panels go on **W-B-CE** (3-4), clear of
-    D-B-PLAY's swing and the switch at 66 1/2". The south wall has the sunken-garden door glass and
-    EQ-B-HP2-GYM.
+    D-B-PLAY's swing and the switch at 66 1/2". The south wall has the sunken-garden door glass.
   - Floor-ceiling pair: **ceiling** (4-6), hung flat on Z-clips or cleats into the joists.
 - **Wall band:** panels long-side vertical, spanning about 2'-0" to 7'-0" AFF. That is the
   ear zone standing and on the floor, and above what a dropped bar or a swung kettlebell

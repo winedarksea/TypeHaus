@@ -69,10 +69,6 @@ finished area drops out.
 - [ ] **`DU-ERV-EA`'s drain tee is capped** (`notes/erv_static_budget.md` §10.28): no gravity
   line reaches a receptor. Choose: the radon sump (~2 ft, gas-tight trap entry), a condensate
   pump over the lane to `PR-B-ERV-COND`, or keep emptying it by hand.
-- [ ] **EQ-B-ERV's trapeze rods graze three runs** by under 1/4" in the solids audit: rod 1
-  `DU-B-ERV-R-GYM`, rod 2 `DU-ERV-EA`'s wrap, rod 3 / strut 2 `PR-B-ERV-COND`. No check grades
-  `equipment_hangers` against runs; add one (or route them through `run_interference`) and
-  nudge the rods, rather than leave it to the crew.
 
 **Plumbing**
 
@@ -80,14 +76,10 @@ finished area drops out.
   manhole-cover elevation is known (construction holds), compare it with the basement fixture
   floors under UPC 710.1 and protect only the affected low branches.
   [UPC 710.1 guidance](https://forms.iapmo.org/email_marketing/codespotlight/2019/Oct17.htm)
-- [ ] **Water-heater thermal expansion.** After the SPRWS answer (construction holds), model a
-  listed expansion tank on the heater's cold inlet downstream of `PA-B-WH-STOP-CW`, plus a PRV
-  if static pressure is over 80 psi. `PipeAccessoryKind` has neither kind yet.
-  `PA-G-HYD-BFP` serves only the hydrant, so the meter set is the only possible check valve
-  (`notes/water_service.md` §4).
-- [ ] **Condensate pump.** There is no element for one (`PipeAccessoryKind` has no pump).
-  `PR-B-COND-HP2-GYM` is pumped from the head's lineset cover. Pick a UL 778 unit, give it
-  power and a float cut-out, and add a `CONDENSATE_PUMP` kind.
+- [ ] **Water-heater PRV, pending SPRWS pressure.** `PA-B-WH-XTANK` (Amtrol ST-12 class) is
+  modelled. After SPRWS's static-pressure answer (construction holds), author a
+  `PipeAccessoryKind.PRV` ahead of the meter set if static pressure is over 80 psi (UPC 608.2),
+  and re-check the tank row (`notes/water_service.md` §4).
 
 **Engine**
 
@@ -155,8 +147,8 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
 - Make sure all handrail brackets are stock, avoid custom needs. Remaining: titanium railing brackets (aim to use standard as much as possible).
 - Wall W-A-GC-S and it's matching south pair should have bookshelves against them, likely custom to fix the short triangle present there. In between them a linen floor mattress on tatami mats.
 - Perhaps mount the espalier posts on sonotubes to increase the lifespan of the posts.
-- W-BW-SCREEN's shear role is already redundant with the garage path (graded 100%). Relaxing its 4″ edge nailing needs the reviewer to accept `canopy_garage_diaphragm.md`'s 'garage takes the whole load'.
-- [ ] Complete W-BW-SCREEN metal cassette engineering, support/trim details, complete loads and fabrication estimate; rerun structural and 87° door checks including all hardware. See houses/catlin/notes/entry_screen_metal_cassettes.md.
+- [ ] Canopy header species is stated three ways: `roof_beam_glulam` grades `BM-BW-RW`/`-RE` as 24F-V4 DF, `BEAM_GLULAM_TREATED`'s source says southern pine 24F-V5M1, and `steel_post.HEADER_G` is 0.55 (SP). Pick what is ordered. Only the unbuilt `steel` variant's saddle bolts move (0.126 at SP, 0.134 at DF; `canopy_garage_diaphragm.md` §5 carries DF, `test_steel_post_calcs.py` pins SP).
+- [ ] W-BW-SCREEN MDO screen: the lower 6x6 timber (`TR-BW-MDO-TIMBER`) has no accepted end connection (`entry_screen_mdo_calculations.json` is `blocked`: bent A35Z do not fit the 1/8" gaps; plate/sill/hanger effects and the installed-hardware door sweep at 87° are unchecked). Also the two HL33 garage ties sit on the north end pack under MDO panel 4, which is relieved only at the tie block (+22 1/8"..+25 7/8"), not at the angles (+10 3/4"..+13 1/4", +34 3/4"..+37 1/4"). See `houses/catlin/notes/entry_screen_mdo.md`.
 - Plan limited mobility bathroom use on the main floor. Looks like full wheelchair clearance won't work, but look what we can add to make limited mobility practical there. Perhaps a vertical grab bar between the toilet and the tub, serving both.
 - Plant-room reservoir (2026-11-11): manual-fill tank, two independently timed shelf-pot circuits, one packaged wired WaterWatcher cutoff and automatic M8000-NO/RIBU1C low-water permission; shared geometry/BOM and 11.75-gal spill budget updated. Itemized provisional hardware $1,026.61 against $1,200 target/$1,500 ceiling. Still open: WaterWatcher revision/humidity/load/recovery qualification, commodity supplier SKUs/quotes and NPT/NPSM sealing interface, plumber-approved removable fill, supply-sizing basis, physical containment, electrical/hydraulic commissioning and ten-day trial. See `houses/catlin/notes/plant_reservoir.md` and its procurement CSV.
 - Plant-room reservoir: close WaterWatcher qualification, exact supplier SKUs/quotes and NPT/NPSM adapter seals before purchasing. Itemized estimate $1,026.61; target $1,200 plus $300 contingency under $1,500. Confirm attended removable potable filling and complete commissioning/ten-day trial. [Reservoir note](../houses/catlin/notes/plant_reservoir.md).
@@ -227,7 +219,7 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
 - ED-B-BATH-CAN1 is placed inside the soffit
 - Robot training (light switches correspond, doors open)
 - Camera in ESS Room and Plant Room (for keeping an eye on them while on vacation). Something cheap, effective, and works well with the rest of the camera system
-- [ ] Final canopy ColorGard sizing: check the drift-loaded tributary wedge including garage snowpack, rail/end reactions and panel attachments. Four clamps total 3,452 lbf allowable, below the 3,839 lbf wedge screening demand even with ideal sharing; one modeled row remains provisional.
+- [ ] Canopy ColorGard: clamps graded (3,182 lbf drift wedge vs 4 x 863, d/c 0.922, `structural.snow_retention_capacity`, ideal sharing). Open: ColorGard 2.0 rail bending/end reactions and the Image II panel attachment drag (need S-5! rail allowables and Metal Sales clip/fastener values).
 - [ ] Roof N Mini wind-clamp design: check applicable product revision/design basis, corner-zone uplift demand and panel/fastener load path using the published Image II 24 ga test data. Test-data lookup is complete; clamp count and omission at the ColorGard corner still need wind justification.
 - The house has four grounding rods, which might be overkill? Also the grounding junctions may be in the wrong spots.
 - Eave and gutter hardware: Select the gutter bracket and outlet, and finish the splice, fastener, and sealant details. The eave sealant product and its compatibility with the roof and membrane also need confirmation. [Eave detail (line 153)](/Users/colincatlin/Documents-NoCloud/TypeHaus/houses/catlin/notes/roof_wall_eave_detail.md:153)

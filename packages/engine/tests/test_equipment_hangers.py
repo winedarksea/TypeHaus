@@ -52,3 +52,36 @@ def test_check_passes_and_names_what_is_unread(catlin_model_ro, catlin_plan) -> 
     messages = [f.message for f in findings if f.result is Result.UNKNOWN]
     assert any("nothing overhead" in m for m in messages)
     assert any("PROD-BLINE-ATR-3-8 has no published rated_load_lb" in m for m in messages)
+
+
+class _Hung:
+    """The model with its trapeze rods swapped, read-only."""
+
+    def __init__(self, model, rods) -> None:
+        self._model, self.equipment_hangers = model, rods
+
+    def __getattr__(self, name):
+        return getattr(self._model, name)
+
+
+def test_clearance_grades_a_rod_against_a_wrapped_run(catlin_model_ro) -> None:
+    """A rod on DU-ERV-EA's centreline is inside its 1" wrap; 1/32" of contact is a touch."""
+    from typehaus.checks.structural.equipment_hanger_clearance import (
+        equipment_hanger_clearance,
+    )
+
+    duct = next(d for d in catlin_model_ro.ducts if d.tag == "DU-ERV-EA")
+    (x0, y), (x1, _) = duct.path[1], duct.path[2]  # an east-west leg
+    # 8" duct + 1" wrap + 3/16" rod radius.
+    reach = (4.0 + 1.0 + 0.1875) * _IN
+
+    def grade(offset_m):
+        rod = replace(_rods(catlin_model_ro)[0], point=((x0 + x1) / 2.0, y + offset_m),
+                      bridge=(), bridge_ends=())
+        model = _Hung(catlin_model_ro, [rod])
+        return [f for f in equipment_hanger_clearance(SimpleNamespace(model=model))
+                if "DU-ERV-EA" in f.element_tags]
+
+    hit = grade(0.0)
+    assert [f.result for f in hit] == [Result.FAIL] and "rod 1 is 5.19\"" in hit[0].message
+    assert grade(reach - _IN / 32.0) == []

@@ -592,9 +592,15 @@ there is no framed-wall equivalent, so a fake sleeve would put a cast-in item on
 schedule that nobody pours. It is recorded here instead.
 
 - **HP2** (four-port unit, three used, 1/4–3/8): west inside the band bay to x 20'-0" and
-  x 16'-0", then 7'-6" up the wall cavity behind `EQ-M-HP2-LIVING` and `EQ-M-HP2-BED`; the gym
-  head's set reaches `EQ-B-HP2-GYM` on `W-B-S3-FR` (x about 25'-7 3/8" since 2026-11-09). About 25–30 ft each against an 82 ft
-  per-port limit and 263 ft total. Inside the 131 ft precharge — no added charge.
+  x 16'-0", then 7'-6" up the wall cavity behind `EQ-M-HP2-LIVING` and `EQ-M-HP2-BED`. About
+  25–30 ft each against an 82 ft per-port limit and 263 ft total. Inside the 131 ft precharge —
+  no added charge.
+  - **Gym head on `W-B-CS` since 2026-11-14** (the sauna wall, over `D-B-SAUNA`, y
+    0'-10 1/2"..3'-7 3/8", top 93 9/16" over the slab). Hand length, not modelled (the engine
+    has no lineset element): ~3 ft unit to the band, 12'-0" west in `FS-M-EAST`'s south bay
+    (x 30'-6" to 18'-6", along the joists, nothing bored), ~6" north to the head's south end,
+    ~2 ft down into it: **~18 ft**, ~20 ft with a service loop. Still far inside 82 ft per
+    port, 263 ft total and the 131 ft precharge.
 **The SE-corner stud bay is a dead entry now, kept for the record.** East of
 `WIN-M-LIV-S1`'s jamb pack both `W-M-S2` and `W-S-S2` frame a king at x 33'-5 1/4" and a stud
 at x 34'-8", leaving a **13 1/4" clear bay at x 33'-6 3/4"..34'-8"** that lines up floor to

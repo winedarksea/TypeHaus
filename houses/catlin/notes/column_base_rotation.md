@@ -589,28 +589,8 @@ det 4,651.4`; `u0 = (1,205.63 + 192.901 x 9.11458)/(14,000 x 4,651.4) x 12 = 5.4
 = **0.80**, OK (was 0.81). The garden rows move in their fourth figure (R 6.609 → 6.556 front).
 
 
-## Addendum 2026-11-02 — direct-mounted white MDO
+## The screen's weight
 
-The owner replaced the metal cassette proposal with [white painted exterior MDO](entry_screen_mdo.md).
-The wall weighs 34.23 plf including five new vertical 2x4 edge nailers and a 2 lb
-hardware/paint reserve. Including SB-BW-BAND the line is 52.33 plf, delivering 154.12 lb
-to each west chord. Existing brick arithmetic above is historical. See the reproducible
-[current load-path results](entry_screen_mdo_calculations.json). The west shear layer,
-structural guard, posts and active pinned canopy system remain unchanged.
-
-The retired cast-column spring arithmetic now gives W stiff/soft magnifiers
-1.0781/1.3210 and GW 1.3277/32.5351. These are test oracles for the retired
-variant, not verdicts on the active pinned canopy posts. GW remains over.
-
-
-## Addendum 2026-11-02 — lower three-ply timber coordination
-
-The current screen wall is 38.39 plf, or 56.48 plf including the unchanged upper band.
-The six nailers, three 2x6 plies and 4.6 lb hardware/paint reserve are counted once;
-reduced MDO area offsets part of the additional support weight. Each west chord receives
-167.84 lb (previously 154.13), an increase of 13.72 lb, delivered to the same piers.
-The retired GW spring example gains about 1.2 x 13.72 = 16.46 lb factored axial load.
-Using its existing soft-end critical load of about 9.27 kip, the reciprocal magnifier
-falls from 1/32.5351 by 16.46/(0.75 x 9270), giving delta about 35.25. It remains OVER;
-this retired arithmetic gives no roof-support role to the lower timber. Local member,
-connection and concentrated plate/sill checks remain blocked in entry_screen_mdo.md.
+The screen weighs 39.23 plf and each west chord receives 169.20 lb: `north_entry_piers.md` §2a. At that load the
+retired cast-column spring example reads W stiff/soft magnifiers 1.0781/1.3210 and GW 1.3277/34.76 (GW still OVER):
+test oracles for the retired variant, not verdicts on the active pinned canopy posts.

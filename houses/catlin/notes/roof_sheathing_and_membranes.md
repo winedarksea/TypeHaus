@@ -43,7 +43,7 @@ NDS 2018 single-shear nail yield with D=0.131, L=2.5, F_yb=100,000 psi, deck G=0
 SPF G=0.42, l_s=0.59375 and l_m=1.90625 inches gives **Z=74.957994 lb (IIIs)**.
 At wind C_D=1.6 this is **119.932791 lb/nail**, versus 135.002177 for the old 3/4 inch
 panel. Crediting one row gives canopy 9 nails = **1,079.395 lb**, garage 8 nails =
-**959.462 lb**. Current joint-2 demand 260.142 lb (2026-10-29) gives ratios 0.241 and 0.271.
+**959.462 lb**. Current joint-2 demand 261.28 lb (2026-10-31) gives ratios 0.242 and 0.272.
 The older cast-column variant demand 303.37 lb remains below 959.462 lb (0.316).
 See [the full lateral calculation](canopy_garage_diaphragm.md).
 

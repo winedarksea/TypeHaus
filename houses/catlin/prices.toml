@@ -428,8 +428,6 @@
 "3-2x12:kdat" = { material = { low = 7.2, high = 10.8 }, labour = { low = 4.2, high = 7.8 } }  # 40 LF ordered — FS-SG-PORCH lines 003 and 006
 "2x2" = { material = { low = 0.35, high = 0.6 }, labour = { low = 0.5, high = 1 } }  # 260 LF
 # 2"x2" rigid-insulation strip: 1/6 SF of 2" board per LF, at the [envelope_layers]
-# W-BW-SCREEN WRB. Cassette allowance is in [envelope_layers]; obtain a fabricator quote.
-"entry-screen-wrb" = { material = { low = 0.2, high = 0.45 }, labour = { low = 0.5, high = 1 } }
 # polyiso rate of $1.20-2.20/SF.
 "2x2 panel" = { low = 0.2, high = 0.45 }  # 316 LF
 # RE-SCOPED AGAIN 2026-09-01, back to what it was before the truss: ordinary framing and
@@ -739,12 +737,9 @@
 # underlayment row and a thickness above the 1/2" the struct-1-plywood row is basised on;
 # labour is that row's, unchanged, because hanging a sheet is hanging a sheet.
 "cdx-plywood" = { material = { low = 30, high = 52 }, labour = { low = 16, high = 34 } }  # 1 sheet (sheathing rip); wall sheathing bills in [envelope_layers]
-# ENTRY_SCREEN_WALL's east ply — one sheet, 26.8 SF net. 5/8" APA Rated Siding 303 with an
-# MDO face at $70-120 the 4x8 sheet: roughly double the CDX row above it, which is the whole
-# point of the tag (a bonded resin-fibre paint substrate, not a C/D sheathing face). RETAIL
-# SHELF PRICING, not a quoted yard price. Labour is a touch over the CDX row's — same hang,
-# but a finish face gets its joints laid out and its screws set to a line.
-"siding-303-mdo" = { material = { low = 70, high = 120 }, labour = { low = 20, high = 40 } }  # 1 sheet
+# Named revert, 0 sheets since 2026-11-02: ENTRY_SCREEN_WALL's old east ply (5/8" Rated
+# Siding 303, MDO face). The east face is `entry-screen-white-mdo` in [envelope_layers].
+"siding-303-mdo" = { material = { low = 70, high = 120 }, labour = { low = 20, high = 40 } }  # 0 sheets
 # --- QUALIFIED BY SCOPE (2026-09-11) ---------------------------------------------------
 # A sheet_goods key may now carry the takeoff's `scope` — `material:scope` falls back to
 # `material`, so every row above is untouched and only the key authored here moves.
@@ -1167,7 +1162,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # end" — and the F1 the code report publishes is measured through that pair). Net material
 # effect is a SAVING: 16 KBS1Z at $3.50-6.50 is $56-104 against the 8 APVKB45-6 at
 # $22-45 they replace, $176-360. The stronger, rated part is the cheaper one here.
-"KBS1Z" = { low = 3.5, high = 6.5 }  # 24 ea — on SB-BW-BAND's 12 braced slats (2026-10-09: the two corner slats are screwed infill; 28 on 14 from 2026-10-08; 36 on 18 from 2026-10-04 until the 2-1/4" gap cleared their overlap). It was 30 while the balcony carried eight knee braces at two straps each; those braces were deleted 2026-09-03 when four fixed concrete columns became the lateral system. The row stays: the part is a live engine feature and the breezeway uses it
+"KBS1Z" = { low = 3.5, high = 6.5 }  # 8 ea — SB-BW-BAND's two 6x6 knee braces, two per end (2026-10-26)
 # Lateral tie plate at the bottom plate of a framed wall standing on a framed floor
 # band. NOT on a wall standing on concrete: that plate is a sill and its MASA anchors
 # already make the connection, so the takeoff excludes it rather than paying twice.
@@ -1509,7 +1504,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "TLOK08" = { low = 0.81, high = 1.10 }  # 1235 ea — the catlin truss's one girt screw
 # RF-HOUSE eave blocking toe screws (notes/eave_gutter_girt.md §4): 2 per end into the
 # stiffener pair (3") and 2 per block down into the rafter plate (4").
-"SDWS22300DB" = { low = 0.55, high = 0.85 }  # 152 ea — 8 toe-screw SB-BW-BAND's two corner infill slats
+"SDWS22300DB" = { low = 0.55, high = 0.85 }  # 144 ea — RF-HOUSE eave blocking
 "SDWS22400DB" = { low = 0.6, high = 0.95 }  # 88 ea — 72 eave blocking, 16 through SB-BW-BAND's plates
 # ST-M2S's two skirted wall stringers, through the flat 2x4 spacer into each stud it crosses
 # (notes/stair_skirt_basis.md §6). ESTIMATE between the 4" row and the 8" carton rate above.
@@ -4964,17 +4959,8 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # same basis the [sheet_goods] row below carries. Labour is a touch under the Structural 1
 # row's: it is the same hang-and-nail operation, on a one-storey box, off a 6' ladder.
 "cdx-plywood" = { material = { low = 1.1, high = 1.9 }, labour = { low = 0.95, high = 1.8 } }  # 631.3 SF
-# ENTRY_SCREEN_WALL's east ply, and only that — the one panel doing shear AND the finished
-# face of the screen under the canopy (plan/assemblies.py::siding-303-mdo). Dearer than the
-# `cdx-plywood` row above it for the reason it exists: an MDO overlay is a bonded resin-fibre
-# paint substrate, not a C/D sheathing face. Material $2.20-3.80/SF is 5/8" Rated Siding 303
-# with an MDO face at roughly $70-120 the 32 SF sheet — RETAIL SHEET PRICING, not a quoted
-# yard price, and the widest range in this table for that reason. Labour is above the CDX
-# row's: it is the same hang-and-screw operation, but it is a finish face, so the joints are
-# laid out, the panel is not cut short and the screws are set to a line.
-# NOTE: this row must stay PRICED. An unpriced material is silently dropped from the BOM and
-# the total FALLS, which reads like a saving and is an artifact.
-"siding-303-mdo" = { material = { low = 2.2, high = 3.8 }, labour = { low = 1.2, high = 2.2 } }  # 26.8 SF
+# Named revert, 0 SF since 2026-11-02 (see the [sheet_goods] row of the same tag).
+"siding-303-mdo" = { material = { low = 2.2, high = 3.8 }, labour = { low = 1.2, high = 2.2 } }  # 0 SF
 
 [wall_structure]
 # RESEARCHED 2026-08-08 — [low, high] $/cy PLACED, by wall assembly. Keyed on assembly, not
@@ -8603,6 +8589,7 @@ railings             = 0.05
 drainage             = 0.05
 
 [contingency]
+# Owner kept 10% and general conditions as they are (pricing review closed 2026-11-14).
 # 10% on the ordered subtotal. Design contingency, not a slush fund: this house is modelled to
 # a level of detail most estimates never reach, and it is EXACTLY that detail which makes 10%
 # the right number rather than the 15-20% a schematic-design estimate needs. What it covers is

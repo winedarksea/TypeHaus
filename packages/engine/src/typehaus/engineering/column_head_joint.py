@@ -256,9 +256,12 @@ def _credit(connector: Any) -> str:
 
 def _net_uplift(ctx: EngineeringContext, pier: Any, notes: list[str]) -> float | None:
     """0.6D + 0.6W on the roof this column carries, ASD lb up; ``None`` with no roof."""
-    from typehaus.engineering.pier_basis import DECK_DEAD_LOAD_PSF
-    from typehaus.wind import ASD_WIND_FACTOR
-    from typehaus.wind_tables import GUST_EFFECT_RIGID, MAX_VERIFIED_CASE_AB
+    from typehaus.engineering.pier_basis import design_roof_dead_psf
+    from typehaus.wind_tables import (
+        GUST_EFFECT_RIGID,
+        MAX_VERIFIED_CASE_AB,
+        asd_solid_band_psf,
+    )
 
     if pier.roof_tributary_ft2 <= 0.0:
         notes.append(
@@ -268,12 +271,13 @@ def _net_uplift(ctx: EngineeringContext, pier: Any, notes: list[str]) -> float |
     q_h = _roof_q_h(ctx, pier.tag)
     if q_h is None:
         return None
-    up = ASD_WIND_FACTOR * q_h * GUST_EFFECT_RIGID * MAX_VERIFIED_CASE_AB
+    up = asd_solid_band_psf(q_h)
+    roof_dead = design_roof_dead_psf(ctx)
     notes.append(
         f"UPLIFT is the roof_moment surrogate spent on plan area: 0.6 x {q_h:.3f} x "
         f"{GUST_EFFECT_RIGID} x {MAX_VERIFIED_CASE_AB} = {up:.3f} psf, a bound on any "
-        f"published free-roof C_N, less 0.6 x {DECK_DEAD_LOAD_PSF:g} psf of roof dead.")
-    return (up - 0.6 * DECK_DEAD_LOAD_PSF) * pier.roof_tributary_ft2
+        f"published free-roof C_N, less 0.6 x {roof_dead:g} psf of roof dead.")
+    return (up - 0.6 * roof_dead) * pier.roof_tributary_ft2
 
 
 def _roof_q_h(ctx: EngineeringContext, tag: str) -> float | None:

@@ -5,6 +5,8 @@ Split out of the former ``library/hardware.py``; see the package docstring.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from typehaus.hardware.catalog import (
     ROLE_NAIL_STRIP_MINI_SEAM_CLAMP,
     ROLE_NAIL_STRIP_SEAM_CLAMP,
@@ -63,6 +65,31 @@ S5_N_NAIL_STRIP_CLAMP = StructuralHardware(
            "for 1\" nail-strip / bulb-and-lip seam profiles (Metal Sales Image II); "
            "carries the PV kit and the snow rail; 2.00\" L x 1.57\" W x 1.77\" H",
 )
+
+
+@dataclass(frozen=True)
+class SeamClampDragAllowable:
+    """One clamp's published ASD drag (parallel to the seam) on one tested panel.
+
+    A panel-and-gauge datum, not a clamp property: the same S-5-N reads 413 lbf on 26 ga.
+    Kept off ``StructuralHardware.allowable`` because no NDS duration factor applies.
+    """
+
+    clamp_model: str
+    panel: str
+    ultimate_lbf: float
+    safety_factor: float
+    allowable_lbf: float
+    citation: str
+
+
+S5_N_IMAGE_II_24GA_DRAG = SeamClampDragAllowable(
+    clamp_model="S-5-N", panel="Metal Sales Image II, 24 ga",
+    ultimate_lbf=1726.0, safety_factor=2.0, allowable_lbf=863.0,
+    citation="S-5! load-test table (calculators.s-5.com/load-tests), Metal Sales Image II, "
+             "parallel, S-5-N 24 ga: 1,726 lbf ultimate, SF 2, 863 lbf allowable, failure "
+             "mode F, 115 in-lb test screw tension; owner-supplied screenshots 2026-11-10, "
+             "transcribed in houses/catlin/notes/s5_snow_retention_review.md")
 
 # Uplift-only wind clamp on the same 1" nail-strip seam: one setscrew, 1.18" long, the
 # economical S-5! answer where nothing hangs off the clamp. Never a carrier.

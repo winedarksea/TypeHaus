@@ -559,9 +559,8 @@ SECOND_BRANCH_DRAINS = [
 # continuously to a receptor, never tied into the sanitary system. PR-M-COND-HEADS drops
 # the two main-storey wall heads (master bed + living room, south centre line) through
 # the floor to PR-B-COND. The two north units are in plan/mep_condensate.py, and so is
-# EQ-B-HP2-GYM's PUMPED line (PR-B-COND-HP2-GYM, tied onto PR-B-COND's y=10'-11"
-# leg): on the south wall since 2026-11-09 its drain sits below PR-B-COND's head, and
-# D-B-SUNKEN blocks every gravity lane west to the sauna drain.
+# EQ-B-HP2-GYM's gravity line (PR-B-COND-HP2-GYM, in the sauna's walls onto PR-B-COND's
+# drop at x=13'-6": its drain sits below this service void, 2026-11-14).
 #
 # ** IT NO LONGER CUTS THE GYM DIAGONALLY (2026-09-09). ** The old leg ran from the drop at
 # (17'-6", 1'-0") north-east to a collector at (27'-0", 9'-0"), which put 11'-5" of it in
@@ -596,18 +595,20 @@ CONDENSATE_MAIN = [
 # (50.8" AFF, 1 1/2" under the case bottom at 52.3") is the highest the line can ever be.
 # ** EXPOSED THROUGH THE MECH ROOM, STRAIGHT TO THE SINK (2026-11-11, notes/erv_static_budget.md
 # §10.22). ** A mechanical room may show a 3/4" pipe. Off the 90-degree machine's pan (front centre,
-# now its east side) east under the case, south on x=91 1/2" (west of D-B-CLOSET's swing) and east
-# onto the front of FX-B-UTIL-SINK: 116" of plan, 9.7 ft, every leg >= 0.26"/ft. It ends 2.3" over the
+# now its east side) east under the case, south on x=7'-9" (west of D-B-CLOSET's swing) and east
+# onto the front of FX-B-UTIL-SINK: 116" of plan, 9.7 ft, every leg >= 1/4"/ft. x=7'-9" since
+# 2026-11-14: at 91 1/2" it ran under the trapeze's south strut and its rod; now it passes 1/2"
+# east of the strut end (structural.equipment_hanger_clearance). It ends 2.3" over the
 # 34" rim, below the faucet's 43" box: UPC 801.3 / Minn. R. 4714 want an air gap of twice the pipe
 # diameter and >= 1" (1 1/2" here). The sink's own trap seals it, so the line takes none (no trap
 # to a non-sewer receptor). Nothing crosses the dry-fire lane (x 40..68") or a door swing. The
 # water heater moved to RM-B-WORKSHOP; PR-B-WH-COND reaches the sink on its own.
 ERV_CONDENSATE = [
     PipeRun(uid="3XVTM6HD5T", tag="PR-B-ERV-COND", system=PipeSystem.DRAIN, sanitary=False,
-            path=(pt(inch(86.4375), inch(344.9125)), pt(inch(91.5), inch(344.9125)),
-                  pt(inch(91.5), inch(240)), pt(inch(97.5), inch(240))),
+            path=(pt(inch(86.4375), inch(344.9125)), pt(inch(93), inch(344.9125)),
+                  pt(inch(93), inch(240)), pt(inch(97.5), inch(240))),
             diameter=inch(0.75), material="pvc",
-            elevations=(inch(38.9), inch(38.78), inch(36.5), inch(36.3))),
+            elevations=(inch(38.9), inch(38.76), inch(36.5), inch(36.3))),
     # EQ-B-WH's primary condensate (3/4" NPT, 59" AFF, Rheem sheet C), 2026-11-09: off the
     # port's axis, west along the tank's side, north at x=9'-8" through W-B-CW3 into the
     # furnace room, and down to its own 13" air gap over FX-B-UTIL-SINK's rim, beside

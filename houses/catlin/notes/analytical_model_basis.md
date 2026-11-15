@@ -220,7 +220,7 @@ The §3c "Finding" of a gravity base moment on the fixed columns was the rigid k
 withdrawn. The pair still sums to the records' 6,960 / 1,740; each column is now 14 % off
 the record's equal split, inside the test's 15 %.
 
-**Breezeway canopy (re-worked 2026-10-28).** BM-BW-RE now ends flush on both posts' outer
+**North-entry canopy (re-worked 2026-10-28).** BM-BW-RE now ends flush on both posts' outer
 faces: 0.229' past each post on a 4.979' span, 5.4375' long, symmetric. It carries the
 record's line load, 80 sf over the 5.375' bearing run (snow 1,096.9 plf, dead 148.8 plf),
 along its whole length, so R_RE = R_RNE = w × 5.4375 / 2: snow **2,982 lb**, dead

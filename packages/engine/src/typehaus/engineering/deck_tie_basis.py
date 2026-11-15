@@ -281,8 +281,8 @@ def loads_on(ctx: EngineeringContext, deck: Any, wind: DeckWind
     from typehaus.engineering.roof_lateral import panel_forces
     from typehaus.engineering.roof_moment import roof_base_moments
     from typehaus.model.spatial import Roof
-    from typehaus.wind import ASD_WIND_FACTOR, velocity_pressure_psf, wind_basis
-    from typehaus.wind_tables import GUST_EFFECT_RIGID, MAX_VERIFIED_CASE_AB
+    from typehaus.wind import velocity_pressure_psf, wind_basis
+    from typehaus.wind_tables import asd_solid_band_psf
 
     cx, cy = sheet_centroid_ft(deck)
     wind_loads: dict[str, list[Load]] = {
@@ -317,8 +317,7 @@ def loads_on(ctx: EngineeringContext, deck: Any, wind: DeckWind
         face_axis = "x" if abs(y1 - y0) > abs(x1 - x0) else "y"
         if basis is not None:
             q = velocity_pressure_psf(basis, resolved.z1_m / _FT - wind.ground_ft)
-            force = ASD_WIND_FACTOR * q * GUST_EFFECT_RIGID * MAX_VERIFIED_CASE_AB \
-                * length * height
+            force = asd_solid_band_psf(q) * length * height
             wind_loads[face_axis].append(Load(
                 f"{wall.tag} face wind ({length:.3f}' x {height:.3f}', q {q:.2f} psf)",
                 force if face_axis == "x" else 0.0, force if face_axis == "y" else 0.0,

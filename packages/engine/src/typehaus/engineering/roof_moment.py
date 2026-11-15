@@ -162,6 +162,8 @@ def roof_base_moments(ctx: EngineeringContext) -> dict[str, tuple[float, float, 
     from typehaus.resolve.assembly_material import assembly_structure_material
 
     _FRAMES.clear()
+    _SHEARS.clear()
+    _AXES.clear()
     posts = {e.tag: e for e in ctx.plan.all_elements() if isinstance(e, Post)}
     winds = roof_winds(ctx)
 

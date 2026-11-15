@@ -851,14 +851,12 @@ def _moment_column(pier: _Pier, area: float, ratio: float, shape: str, demand: f
          f"`column_base/{pier.tag}` (IBC 1807.3.2.1), the base's stiffness and the sway it "
          f"adds `base_rotation/{pier.tag}`, the head joint with the column's shear and "
          f"torsion `column_head_joint/{pier.tag}`, and a wall top `column_support/<wall>`."),
-        (f"SCREENING: the whole frame shear is taken on the {shear_takers} cast column(s) "
-         f"that reach this calculation, and NOTHING is claimed for any other lateral "
-         f"element on the same structure. Where the other line is a sheathed shear panel "
-         f"— the canopy's W-BW-SCREEN is — the split between it and a 12\" cast column is "
-         f"a relative-rigidity judgement this engine has no standing to make, so it makes "
-         f"none and spends the whole demand here. That is the same reasoning the guard "
-         f"load above is loaded WHOLLY onto one column rather than halved across the pair "
-         f"that bounds its bay."
+        (f"SCREENING: the frame shear stated in LATERAL above is taken on the "
+         f"{shear_takers} cast column(s) that reach this calculation. Another lateral "
+         f"line shares it only where the structure DECLARES one (a roof diaphragm and a "
+         f"shear-panel schedule, split by rigidity); with none declared nothing is "
+         f"claimed for it and the whole demand is spent here, the same reasoning the "
+         f"guard load is loaded WHOLLY onto one column rather than halved across its bay."
          if pier.moment_basis else ""),
     )
     notes = tuple(note for note in notes if note)

@@ -1,10 +1,8 @@
 """The band between a shear panel's top and its collector — ``lateral_system``'s band rows.
 
 ** A PANEL SELECTED BY PLAN FOOTPRINT IS NOT A PANEL THE DECK REACHES. ** ``lateral_lines``
-finds a panel under a roof by where it stands in plan, and until 2026-09-30 nothing asked how
-tall it was. ``W-BW-SCREEN`` tops out at +4'-0" and its collector's soffit is at +6'-4 1/8":
-the N-S shear had to cross that band through two pinned 6x6s and caps with no lateral row, and
-the record said it landed "directly on the panel's top plate". So, generically:
+finds a panel under a roof by where it stands in plan, not by how tall it is. A panel that
+tops out below its collector's soffit leaves a band the shear must cross. So:
 
 * where the panel's top is below the collector's soffit and nothing AUTHORED bridges the band
   (a ``SlatBrace``, or ``StrapBrace`` legs, on the wall's line reaching from the panel top

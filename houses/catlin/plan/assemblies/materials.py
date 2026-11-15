@@ -191,18 +191,8 @@ MATERIALS = [
     # (owner, 2026-11-04; EXT_2X6 says why not Structural I or OSB), 5/8" on the garage's
     # 24" o.c. studs. It carries NO `control` set: the ccSPF is the air/water plane, and a
     # bare CDX sheet is not a WRB and must not be authored as one.
-    # `ENTRY_SCREEN_WALL`'s EAST ply, and only that. One panel does two jobs there: it is a
-    # rated wood structural panel (SDPWS Table 4.3B publishes shear values for Rated Siding
-    # exactly as for Rated Sheathing) AND it is the finished, paint-ready face of the screen
-    # under the canopy. That is why it is not `cdx-plywood`: a CDX C/D face is a sheathing
-    # face, and nothing on this wall covers it.
-    #
-    # MDO (medium density overlay): a resin-treated fibre overlay bonded to the face, which
-    # is the standard paint substrate and what stops the veneer's grain telegraphing through
-    # a coating. Exterior bond, because the wall is outdoors even where it is sheltered.
-    # Thermal/vapour numbers are the plywood series' (cdx-plywood, struct-1-plywood,
-    # plywood-subfloor) — the overlay is not modelled as a separate retarder, which is
-    # conservative for drying to the east and is the only side that can dry here.
+    # `siding-303-mdo` (library) was ENTRY_SCREEN_WALL's east ply until 2026-11-02; the east
+    # face is now `entry-screen-white-mdo` (materials_entry_screen.py), finish only.
     # FS-ATTIC's deck sheet, and only FS-ATTIC's. The two unfinished lofts
     # RM-A-WEST-UNFIN / RM-A-EAST-UNFIN take no floor covering at all, so this panel IS the
     # walking surface — it is walked on, swept and stacked on with nothing over it. A

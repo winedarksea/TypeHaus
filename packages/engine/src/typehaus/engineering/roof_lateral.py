@@ -137,7 +137,7 @@ def roof_wind(ctx: EngineeringContext, element: Any, roof: Any) -> RoofWind | No
     """The wind on one roof on beams, or ``None`` where no demand can be formed."""
     from typehaus.engineering.balcony_wind import Demand, ground_below_ft, solid_bands
     from typehaus.wind import velocity_pressure_psf, wind_basis
-    from typehaus.wind_tables import GUST_EFFECT_RIGID, MAX_VERIFIED_CASE_AB
+    from typehaus.wind_tables import MAX_VERIFIED_CASE_AB, asd_solid_band_psf
 
     beams = bearing_beams(ctx, element)
     basis = wind_basis(ctx.plan.project.site)
@@ -151,9 +151,7 @@ def roof_wind(ctx: EngineeringContext, element: Any, roof: Any) -> RoofWind | No
     grade = getattr(ctx.plan.project.site, "grade", None)
     grade_ft = float(grade.inches) / 12.0 if grade is not None else ground_ft
     q_h = velocity_pressure_psf(basis, top_ft - ground_ft)
-    from typehaus.wind import ASD_WIND_FACTOR
-
-    pressure = ASD_WIND_FACTOR * q_h * GUST_EFFECT_RIGID * MAX_VERIFIED_CASE_AB
+    pressure = asd_solid_band_psf(q_h)
     member_tags = {b.tag for b in beams}
     top: dict[str, float] = {}
     members: dict[str, tuple[float, float]] = {}

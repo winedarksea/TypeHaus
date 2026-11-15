@@ -164,7 +164,7 @@ ENTRY_SCREEN_SKIRT = Assembly(
         Layer(name="skirt-panel", material_ref="corrugated-panel-24", thickness=inch(0.875),
               function=LayerFunction.STRUCTURE),
     ),
-    source="north entry west screen, SKIRT — one 7/8\" 26ga corrugated sheet, the same panel and the same plane as ENTRY_SCREEN_WALL's west face, carried from the deck joist plane at -0'-1\" down to 1\" above the pier tops. Closes the sill/rim, the two seat beams and the column standoff bases. Self-supporting single skin: the one layer IS the element, per BASEMENT_BRICK_VENEER and RETAINING_BLOCK_12. Open at the bottom edge so the flutes drain",
+    source="north entry west screen, SKIRT — one 7/8\" 24 ga corrugated sheet, the same panel and the same plane as ENTRY_SCREEN_WALL's west face, carried from the deck joist plane at -0'-1\" down to 1\" above the pier tops. Closes the sill/rim, the two seat beams and the column standoff bases. Self-supporting single skin: the one layer IS the element, per BASEMENT_BRICK_VENEER and RETAINING_BLOCK_12. Open at the bottom edge so the flutes drain",
 )
 
 RAILING_DARK_METAL = Assembly(

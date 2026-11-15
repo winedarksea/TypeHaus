@@ -1,98 +1,83 @@
 # North entry canopy — §8, the rest of the lateral path, hand-worked
 
-**This is §8 of `north_entry_structure.md`**, split out because that note was 429 lines and
-this section is 200 more. It is the **oracle for the collector, anchorage and torsion rows of
-`engineering/lateral_system.py`** (with `engineering/holdown_anchor.py` and
-`engineering/torsion.py`), reproduced by `tests/test_lateral_system_calcs.py`.
+**House:** catlin
+**Basis:** the built canopy as of 2026-11-14 (`EAST_POST_SYSTEM = "kdat"`, wind of 2026-10-31: delivered E-W
+670.77 lb, N-S 1,034.49 lb, from `canopy_garage_diaphragm.md` §2). §8f and §8g are generic arithmetic for the
+`steel`/`cast` alternatives and are worked on the frame `tests/test_lateral_system_calcs.py` reproduces (stated
+in each section); the current alternatives' own shears are in `canopy_garage_diaphragm.md`.
+**Oracle for:** the collector, anchorage and torsion rows of `engineering/lateral_system.py` and
+`lateral_collectors.py`, with `engineering/holdown_anchor.py` (§8f) and `engineering/torsion.py` (§8g/§8h);
+reproduced by `tests/test_lateral_system_calcs.py`.
+**Companions:** `entry_column_base_fixity.md` §7 (the cast variant's wind, propped shafts, stiffnesses, the
+rigid/flexible test, the shares and the deck's and panel's limit states: this note starts from its numbers and
+adds nothing to them); `canopy_west_band.md` (the built west line); `canopy_garage_diaphragm.md` (the delivery).
 
-`entry_column_base_fixity.md` §7 is the other half and comes first: it works the wind, the
-propped shafts, the three stiffnesses, the rigid/flexible test, the shares, and the deck and
-panel limit states. Everything below starts from §7's own numbers and adds nothing to them.
+## §8a. What §8 grades, and where each stands on the built canopy
 
-Geometry, read off the model (feet, house coordinates):
+1. **The chord force.** N-S: the end trusses' top chords (§8b). E-W: the glulam headers, 88.07 lb
+   (`canopy_west_band.md` §6).
+2. **The collectors.** `DiaphragmSpec.collector_refs` names `BM-BW-RW` and `BM-BW-RE`; what is graded is the
+   connection at each end, not the member (§8c-§8e).
+3. **The concrete under a hold-down.** The built chord bases are cast-in `CBSTQ66Z-SDS2`, whose cracked uplift row
+   (ESR-3050 Table 2, 3,060 lb) is measured through the concrete: no ACI Ch. 17 row stands in for it
+   (`canopy_west_band.md` §4b, 0.729). §8f is the anchor calculation for a hold-down that does not carry its own.
+4. **Torsion.** A rigid deck split by stiffness alone is in moment equilibrium only if the load passes through the
+   centre of rigidity (§8g). The built canopy's east posts are pinned and resist no storey shear, so it has no
+   column lines and no torsion couple; its record carries only the delivery's stability row.
 
-| | |
-|---|---|
-| roof footprint | x 4.667 → 31.333 (26.667' wide), y 37.219 → 43.219 (6.000' deep) |
-| N-S lines | `W-BW-SCREEN` at x = 6.000; `PT-BW-RE` + `PT-BW-RNE` at x = 30.000 |
-| E-W lines | `PT-BW-RE` at y = 37.500, `PT-BW-RNE` at y = 42.479 |
-| stiffnesses | columns 1,567.7 lb/in each (gross) / 1,097.4 (0.70 I_g); panel 9,970.5 lb/in at its settled N-S share, 10,315.3 at the cracked-column share |
-| shears at the deck | E-W 821.3 lb, N-S 1,189.4 lb ASD, of which 192.0 lb is the two columns' propped head reactions (96.0 lb each, at x = 30 / at their own y) |
+## §8b. The chord — delegated to the truss fabricator, not computed
 
-## 8a. What §7 left ungraded, and why each of these is a row
+The N-S chords are the **top chords of the two end trusses**: 24 feet of 2x4, one plated splice at the peak,
+carrying `V L / (8 W)` of axial force, tension in one chord and compression in the other, **in addition to the
+gravity and drift case the chord is already designed for**:
 
-§7 graded the deck and the panel. Four things it named and did not grade:
+```
+N-S, built canopy      1,034.49 x 24.0 / (8 x 6.0) = 517.2 lb
+unit test (§7f of the cast frame's V 1,189.4 lb)         = 594.7 lb
+```
 
-1. the **chord force**, 594.7 lb N-S / 19.2 lb E-W, printed as an input;
-2. the **collectors** — `DiaphragmSpec.collector_refs` names two headers and nothing grades
-   the member or, more to the point, the **connection at each end of it**;
-3. the **concrete under the hold-down** — ESR-1622 §5.6 puts the anchor bolt and its footing
-   outside its own scope, so the `ABU66SS` row stops at the stirrup;
-4. **torsion** — §7d decided the deck is RIGID in both directions (0.68× N-S, 0.12× E-W), and
-   a rigid deck distributed by rigidity alone is only in equilibrium if the load resultant
-   passes through the stiffness centroid. It does not (§8g), and the note in
-   `diaphragm_basis.rigidity_shares` saying two lines "cannot resist a torsional moment at
-   all" is wrong: two parallel lines resist a torsional moment as a **couple**. What they
-   cannot resist is translation across themselves, which is a different sentence.
+The E-W chords are the glulam headers, 88.07 lb, which is nothing.
 
-## 8b. The chord — delegated to the truss fabricator, not computed
+A truss chord is not a member this engine may size: its axial capacity comes out of the fabricator's own plate,
+web and lateral-brace layout at the same section, and the combined axial + bending interaction is the
+fabricator's chart. So the chord force goes on the **truss order** (S-001) through the existing
+`rafter/RF-BW-CANOPY` deferral rather than into a limit state here. Two things ride with it and are stated on the
+order, not assumed:
 
-The N-S chords are the **top chords of the two end trusses**: 24 feet of 2x4, one plated
-splice at the peak, carrying `V L / (8 W)` = 1,189.4 × 24.0 / (8 × 6.0) = **594.7 lb** of
-axial force, tension in one chord and compression in the other, **in addition to the gravity
-and drift case the chord is already designed for**. The E-W chords are the 3-ply 2x12 headers
-at 821.3 × 4.979 / (8 × 26.667) = **19.2 lb**, which is nothing.
+* **the splice.** One plated splice at the peak has to carry the full chord force in tension.
+* **0.03" of splice slip is an ASSUMPTION and it is load-bearing.** It is the third term of SDPWS 4.2.2
+  (`DiaphragmSpec.chord_splice_slip`) and a share of the deck's N-S deflection; the fabricator confirms it or
+  supplies its own value, and a larger slip moves the deck deflection the rigid/flexible call rests on.
 
-A truss chord is not a member this engine may size: its axial capacity comes out of the
-fabricator's own plate, web and lateral-brace layout at the same section, and the combined
-axial + bending interaction is the fabricator's chart. So the 595 lb goes on the **truss
-order** (S-001) through the existing `rafter/RF-BW-CANOPY` deferral rather than into a limit
-state here — the fabricator who seals the component design is the same person who answers it.
+## §8c. The west collector — the header, fed by the eave clips
 
-Two things ride with it and are stated on the order, not assumed:
+The west line's collector is `BM-BW-RW` itself: the deck's boundary shear reaches it through the trusses' heel
+blocking and six `LTP4Z` plates, 1,034.49 / 6 = 172.42 lb each against 450 (0.383), and the band between the
+header and the panel is braced by the corner-to-corner 6x6 knees. All of it is `canopy_west_band.md` §2-§4;
+`engineering/lateral_band.py` makes an unbridged band INCOMPLETE rather than zero.
 
-* **the splice.** One plated splice at the peak has to carry the full 595 lb in tension.
-* **0.03" of splice slip is an ASSUMPTION and it is load-bearing.** It is the third term of
-  SDPWS 4.2.2 (`ShearPanelSpec`/`DiaphragmSpec.chord_splice_slip`), it is 30% of the deck's
-  N-S deflection (0.030" of 0.099"), and the deflection is what decides the rigid/flexible
-  call at 0.68× of the 2.0× threshold. A fabricator's splice detail that slips materially
-  more moves §7d, and §7d moves the shares. It cannot be quietly relaxed.
+The panel stops on `W-G-S`'s cladding face, 7/8" short of the deck edge drawn to that wall's outer face. The strip
+between is the garage wall, not a drag length: `lateral_collectors._skin_gaps_ft` counts a gap another wall's own
+layers fill, so the panel-collector row on a line with column cases still reads 1.00.
 
-## 8c. The west collector — WRONG as written, corrected 2026-09-30
+## §8d. The east collector — the connection, not the member (cast variant)
 
-This section said the west line's drag was zero because "every foot of the deck's west boundary
-lands directly on the panel's top plate". It does not: the top plate is at +4'-0" and the deck
-bears on the header at +7'-4". The 2'-4 1/8" band between held only slats and two pinned 6x6s,
-and the shear had to bend them to reach the panel. The collector is the header itself, fed by
-the eave clips; the band is braced by CS16 X-straps and the panel is read over its chords. All
-of it is `canopy_west_band.md` §2-§4; `engineering/lateral_band.py` makes an unbridged band
-INCOMPLETE rather than zero.
+The east header is a collector in the N-S case only where its posts are fixed columns: it gathers the deck's east
+boundary shear over 6.000' of depth and delivers it to two columns. The glulam carries a few hundred pounds of
+axial force, which is not a question; the connection is. On the built canopy the east header is no collector
+(its chord rows are `canopy_west_band.md` §6).
 
-2026-11-06 (E2-101): the panel stops on `W-G-S`'s cladding face, 7/8" short of the deck
-edge drawn to that wall's outer face. The strip between is the garage wall, not a drag
-length: `lateral_collectors._skin_gaps_ft` counts a gap another wall's own layers fill, so
-the west line row stays 1.00.
-
-## 8d. The east collector — the connection, not the member
-
-The east line is `BM-BW-RE`, a 3-ply 2x12 spanning 4.979' between the two cast columns and
-running 8 7/8" past the north one. In the **N-S** case it is the collector: it gathers the
-deck's east boundary shear over 6.000' of depth and delivers it to two columns. The member
-itself is a 4.5" x 11.25" section carrying a few hundred pounds of axial force — 0.007 ksi,
-not a question. The connection is.
-
-Each column's head takes its own share, **with torsion (§8g)**:
+For the cast columns each head takes its own share, **with torsion (§8g)**, on the frame of §8g's table:
 
 ```
 N-S, per column   direct 0.1196 x 1,189.4 = 142.3 lb  +  torsion 200.2 lb  =  342.5 lb
 E-W, per column   direct 0.500  x   821.3 = 410.7 lb  +  torsion   0.4 lb  =  411.1 lb
 ```
 
-The head is an `SS316-SHIM-35` pack and a **cast-in `HETA20Z` pair** (`params/column_heads.py`,
-Simpson FL11473 Table 3, double HETA into concrete, 2- or 3-ply SP: uplift 2,560, F1 1,350,
-F2 1,430 lb, the +60% wind increase already in them). FL11473-R4 §9 Limitations item 4 states
-the interaction directly, and it is the interaction that has to be graded rather than the
-lateral alone, because the same connector is carrying uplift in the same wind:
+The head is an `SS316-SHIM-35` pack and a **cast-in `HETA20Z` pair** (`params/column_heads.py`, Simpson FL11473
+Table 3, double HETA into concrete, 2- or 3-ply SP: uplift 2,560, F1 1,350, F2 1,430 lb, the +60% wind
+increase already in them). FL11473 §9 Limitations item 4 states the interaction directly, and it is the
+interaction that is graded, because the same connector carries uplift in the same wind:
 
 ```
 uplift    0.6D + 0.6W on 40.0 ft2 of roof             433.2 lb  / 2,560 = 0.169
@@ -101,73 +86,48 @@ F2  (perpendicular, the torsional couple's own share)   27.3 lb  / 1,430 = 0.019
                                                                unity  =  0.442
 ```
 
-0.44 against 1.0. The **E-W** case, where the same connector sees 411 lb perpendicular to the
-header and the same uplift, reads 0.169 + 411/1,430 = 0.456 on the true F2 and 0.169 +
-411/1,350 = **0.473** as `column_head_joint/PT-BW-RE` grades it — that record takes the lower
-of F1/F2 so no direction needs knowing. E-W is the governing direction for the connector and
-is already on that record, which is why this row is written for the N-S case the collector is
-about.
+The **E-W** case, where the same connector sees 411 lb perpendicular to the header and the same uplift, reads
+0.169 + 411/1,430 = 0.456 on the true F2 and 0.169 + 411/1,350 = **0.473** as `column_head_joint/PT-BW-RE` grades
+it: that record takes the lower of F1/F2 so no direction needs knowing.
 
-## 8e. The north line — no canopy member, so the collector is the strap line
+## §8e. The north line — the strap line is the delivery
 
-> ⛔ **2026-09-29:** superseded for the pinned east variants (`EAST_POST_SYSTEM = "kdat"` or `"steel"`). With pinned
-> east posts the strap line is not the collector of one column's reaction — it carries the
-> canopy's WHOLE E-W shear (664.3 lb, 94.9 lb per strap, 0.077) and its whole N-S shear
-> across the joint (147.5 lb, 0.119), plus the rotation couple, graded in
-> `notes/canopy_garage_diaphragm.md` §3b; `diaphragm_delivery` owns those rows and this
-> section's row is no longer emitted where a `delivers_to` is declared.
+On the built canopy the canopy's E-W shear (670.77 lb) crosses the garage joint through continuous deck panels
+nailed to the garage gable's top chord (28.88 plf along the joint vs 190, 0.152), and the six `LSTA24` straps
+`CN-BW-JOINT-1..3, -5..7` at 4'-0" o.c. take the N-S shear across it (172.4 lb vs 823.3, 0.209) and the rotation
+couple (56.8 lb, 0.069). `diaphragm_delivery` owns those rows, graded at 100% (`canopy_garage_diaphragm.md` §3b);
+the strap-line row of `lateral_collectors._strap_line` is not emitted where a `delivers_to` is declared. The
+straps are otherwise ordinary: nominal continuity, sized as the delivery asks.
 
-The **E-W** case's support line at the north is y = 42.479 (the north columns), and the load
-has to reach `PT-BW-RNE` along it. There is no canopy member on that line: the fourth truss
-was dropped in 2026-09-11 (§1), so what carries in-plane force across the north edge is the
-**six `LSTA24` straps `CN-BW-JOINT-1..3, -5..7`** at 4'-0" o.c. (seven until 2026-10-06; none at the ridge since, `canopy_garage_diaphragm.md` §3b) into `RF-GARAGE`'s gable truss,
-which is the E-W member that collects it.
+For a roof with no declared delivery the row is the generic one: the E-W line reaction R over the strap line
+(first strap to last) gives R/L plf, and each strap takes R/n against `allowable_for_model("LSTA24")`, **ICC-ES
+ESR-2105 (reissued January 2026) Table 3**: 20 ga, 18-10d x 2 1/2 common, 1,235 lb at C_D 1.6, footnote 5 (steel
+strength, no duration increase), footnote 2 (SG >= 0.50); installed on 12 of 18 nails it is 823.3 lb. Three things
+the row states rather than hides:
 
-```
-E-W reaction at the north line        411 lb (0.500 x 821.3, torsion +0.4)
-strap line, first strap to last       24.0'
-                                      411 / 24.0 = 17.1 plf   (the JOINT_TIES comment's
-                                                               "near 18 plf", now computed)
-per strap                             411 / 7    = 58.7 lb   vs 1,235 lb allowable
-```
+* **The force is ALONG the joint, not across it, and ESR-2105 publishes tension.** For a 0.148" nail (d < 1/4")
+  NDS dowel bearing is independent of the angle to grain (footnote 4 derives the table as nail count times the
+  NDS yield-mode value), so the group is no weaker this way; the tabulated value is itself the steel value.
+* **The E-W north-line path crosses into `RF-GARAGE`.** The canopy is freestanding for gravity; this reaction is
+  collected by the garage's gable truss and returned across the strap line.
+* **`H2.5ASS` is not a collector.** Those are truss-to-header uplift ties (110 lb F1/F2 in the stainless parity
+  letter) and nothing here asks them to drag anything.
 
-`allowable_for_model("LSTA24")` is **ICC-ES ESR-2105 (reissued January 2026) Table 3**:
-20 ga, 18–10d×2½ common, 1,235 lb at C_D 1.6, footnote 5 (the value is governed by steel
-strength and carries no duration increase), footnote 2 (wood of assigned SG ≥ 0.50 — these
-land in southern pine). d/c **0.048**: nominal continuity, exactly as it was sized to be.
+## §8f — hold-down anchorage (oracle for holdown_anchor.py; not on the current house, whose CBSTQ66Z-SDS2 carries its own rated anchorage)
 
-Three things this row states rather than hides:
+`engineering/holdown_anchor.py` grades the concrete under a hold-down whose report declines to: ICC-ES ESR-1622
+§5.6, "The design of anchor bolts and the concrete footings is outside the scope of this report", for an
+`ABU66SS` base on a cast-in **`AB-058-10-SS`, 5/8" x 10", 304 stainless**, on the top of a 12" round pier. It is
+the oracle for that function and for the single centred bolt `steel_post.py` uses to bound a steel post's pair
+from below. The arithmetic is worked on a 12" round pier (`PIER_CONCRETE_12`, f'c 5,000 psi).
 
-* **The force is ALONG the joint, not across it, and ESR-2105 publishes tension.** A strap
-  laid across a joint and loaded parallel to it works through the same nail group: footnote 4
-  derives the tabulated connection strength as the nail count times the NDS yield-mode value,
-  and for a 0.148" nail (d < 1/4") NDS dowel bearing is independent of the angle to grain, so
-  the group is no weaker this way. The tabulated 1,235 lb is itself the **steel** value, below
-  that group. At 58.7 lb per strap none of this is close.
-* **The E-W north-line path crosses into `RF-GARAGE`.** The canopy is freestanding for
-  gravity and for the N-S case; this one E-W reaction is collected by the garage's gable
-  truss and returned across the strap line. `houses/catlin/CLAUDE.md`'s "freestanding" is
-  amended to say so.
-* **`H2.5ASS` is not a collector.** Those are truss-to-header uplift ties (110 lb F1/F2 in
-  the stainless parity letter) and nothing here asks them to drag anything.
+**The embedment, derived rather than assumed.** 10" of bolt, less the projection above the pour (7 ga base plate
+0.179" + washer 0.134" + heavy hex nut 0.609" + two threads 0.18", call it 1 1/2" with the adjustment the ABU
+wants), less the embedded nut's own thickness 0.609": **h_ef = 7.891"**. f'c = 5,000 psi, **cracked**, condition B
+(no supplementary reinforcement credited: the cage is not developed as anchor reinforcement), λ = 1.0.
 
-## 8f. The concrete under the hold-down — ACI 318-19 Ch. 17
-
-`W-BW-SCREEN`'s hold-downs are the two `ABU66SS` bases `CN-BW-BASE-W`/`-NW` under
-`PT-BW-CW`/`-CNW`, standing on the tops of the 12" round piers `PT-BW-W` and `PT-BW-GW`, each
-on one cast-in **`AB-058-10-SS`, 5/8" x 10", 304 stainless**. ESR-1622 §5.6: "The design of
-anchor bolts and the concrete footings is outside the scope of this report." So it is a
-design, and this is it.
-
-**The embedment, derived rather than assumed.** 10" of bolt, less the projection above the
-pour (7 ga base plate 0.179" + washer 0.134" + heavy hex nut 0.609" + two threads 0.18", call
-it 1½" with the adjustment the ABU wants), less the embedded nut's own thickness 0.609":
-**h_ef = 7.891"**. f'c = 5,000 psi (`PIER_CONCRETE_12`), **cracked**, condition B (no
-supplementary reinforcement credited — the (4) #5 cage is not developed as anchor
-reinforcement), λ = 1.0.
-
-**The edge distance is the whole calculation.** A 12" round pier with the bolt at its centre
-gives **c_a = 6" in every direction**, on all sides at once.
+**The edge distance is the whole calculation.** A 12" round pier with the bolt at its centre gives **c_a = 6" in
+every direction**, on all sides at once.
 
 ```
 17.6.2.1.2   three or more edges under 1.5 h_ef, so h_ef' = max(c_a,max/1.5) = 4.000"
@@ -178,11 +138,10 @@ unreduced    A_Nc / A_Nco = 113.1 / 9(7.891)^2 = 0.202   psi_ed,N = 0.852
              N_b = 37,452 lb         phi N_cb = 4,528 lb
 ```
 
-**The unreduced reading is the one graded, and that is a deliberate choice.** §17.6.2.1.2
-exists because the 1.5h_ef projection over-predicts the loss of capacity in a narrow member,
-and applying it is correct and gives 7,464 lb. Taking the **lower** of the two is a bound
-rather than a reading, in the same spirit as the solid-sign wind surrogate this canopy's whole
-demand is built on, and 4,528 lb is still four times the demand — so the conservatism costs
+**The unreduced reading is the one graded, and that is a deliberate choice.** §17.6.2.1.2 exists because the
+1.5h_ef projection over-predicts the loss of capacity in a narrow member, and applying it is correct and gives
+7,464 lb. Taking the **lower** of the two is a bound rather than a reading, in the same spirit as the solid-sign
+wind surrogate in `roof_moment`, and 4,528 lb is still four times the demand below, so the conservatism costs
 nothing and the record prints both terms.
 
 ```
@@ -198,18 +157,17 @@ pryout      k_cp 2.0 x the GRADED N_cb              phi V_cp = 9,056 lb
 steel, V    0.6 x 0.226 x 57,000                     phi V_sa = 5,024 lb
 ```
 
-**f_uta = 57 ksi is the conservative read of "304 stainless".** ASTM A193 Gr. B8 Cl. 1 is
-75 ksi tensile / 30 ksi yield, and ACI 17.6.1.2 caps f_uta at 1.9 f_ya = 57 ksi. An ASTM F593
-CW1 bolt at this diameter is 100 ksi and would nearly double the steel rows; neither steel row
-governs either way, so the submittal's bolt spec does not change the answer — it is recorded
-because it is the kind of assumption that would matter on a bigger anchor.
+**f_uta = 57 ksi is the conservative read of "304 stainless".** ASTM A193 Gr. B8 Cl. 1 is 75 ksi tensile / 30 ksi
+yield, and ACI 17.6.1.2 caps f_uta at 1.9 f_ya = 57 ksi. An ASTM F593 CW1 bolt at this diameter is 100 ksi and
+would nearly double the steel rows; neither steel row governs either way, so the submittal's bolt spec does not
+change the answer.
 
-**The demand, strength level, no dead-load credit.**
+**The demand, strength level, no dead-load credit** (the original ABU66SS frame: panel base shear 980.7 lb, the
+overturning couple 981 lb x 4.083' / 6.573', and 40.0 ft² of roof at the frame's wind):
 
 ```
-tension   overturning couple      609.3 lb ASD  (981 lb x 4.083' / 6.573', §7f)
-        + net roof uplift         433.2 lb ASD  (0.6D + 0.6W on 40.0 ft2, the same
-                                                 surrogate column_head_joint spends)
+tension   overturning couple      609.3 lb ASD
+        + net roof uplift         433.2 lb ASD  (0.6D + 0.6W on 40.0 ft2)
                                 1,042.5 / 0.6 = 1,737.5 lb
 shear     half the panel's base shear, 980.7 / 2 = 490.4 / 0.6 =  817.3 lb
 ```
@@ -219,26 +177,24 @@ tension  1,737.5 / 4,528 = 0.384        shear  817.3 / 3,661 = 0.223
 17.8.3   both over 0.2, so (0.384 + 0.223) / 1.2 = 0.506
 ```
 
-**0.506, governed by concrete breakout in tension.** Three cautions on the page:
+**0.506, governed by concrete breakout in tension.** The shear is split evenly between the two bases, which is an
+assumption about a sill: `BM-BW-SCSILL` spans between the columns and both ends are nailed, so a wildly uneven
+split would need one end much stiffer than the other. Put the whole 980.7 lb on one anchor and the shear row reads
+0.446 and the interaction 0.692, still under 1.0.
 
-* **The shear is split evenly between the two bases and that is an assumption about a sill.**
-  `BM-BW-SCSILL` spans between the two columns and both ends are nailed; a wildly uneven split
-  would need one end to be much stiffer than the other, which the detail does not offer. Put
-  the whole 980.7 lb on one anchor and the shear row reads 0.446 and the interaction 0.692 —
-  still under 1.0, which is the reason this is a caution and not a second row.
-* **The panel's own N-S share is taken at the cracked-column distribution (0.825), not at the
-  torsion-corrected one.** §8g shows torsion RELIEVES the panel to about 0.42 of the deck's
-  shear. The relief is not credited anywhere, here or in §7f.
-* **The anchor and the stirrup are graded against different tensions**, and deliberately:
-  §7f's `ABU66SS` row is the overturning couple alone (609 lb / 2,190 = 0.28), because that is
-  the panel's own limit state; the anchor carries the column's roof uplift through the same
-  bolt in the same gust, which is why the roof's 433 lb is added here. Both tensions on the
-  stirrup would read 1,042.5 / 2,190 = 0.48 — worth knowing, still not governing.
+## §8g. Torsion — the centre of rigidity is not under the load
 
-## 8g. Torsion — the centre of rigidity is not under the load
+`rigidity_shares` splits in proportion to stiffness, which is only in equilibrium if the load resultant passes
+through the stiffness centroid. Worked on the cast alternative's frame, the one the unit tests reproduce
+(feet, house coordinates):
 
-`rigidity_shares` splits in proportion to stiffness, which is only in equilibrium if the load
-resultant passes through the stiffness centroid. On this deck it does not.
+| | |
+|---|---|
+| roof footprint | x 4.667 to 31.333 (26.667' wide), y 37.219 to 43.219 (6.000' deep) |
+| N-S lines | `W-BW-SCREEN` at x = 6.000; `PT-BW-RE` + `PT-BW-RNE` at x = 30.000 |
+| E-W lines | `PT-BW-RE` at y = 37.500, `PT-BW-RNE` at y = 42.479 |
+| stiffnesses | columns 1,567.7 lb/in each (gross); panel 9,970.5 lb/in |
+| shears at the deck | E-W 821.3 lb, N-S 1,189.4 lb ASD, of which 192.0 lb is the two columns' propped head reactions (96.0 lb each, at x = 30) |
 
 **The N-S case, at the gross-column stiffnesses.**
 
@@ -265,52 +221,35 @@ each column, E-W                +27.3 lb                     (the couple that cl
                                sum N-S = 1,189.4 lb  ✓
 ```
 
-**98.6% of J is the two N-S lines' own couple.** The E-W columns' 4.979' lever contributes
-1.4%, so the "correction" is not a correction at all — it is the arithmetic putting the
-distribution back where statics wanted it. With a load resultant at 19.94' between lines at
-6.00' and 30.00', the lever rule gives the panel (30.00 − 19.94)/24 = 42% and the columns 58%;
-the torsion-corrected split is 42.4% / 57.6%. **The uncorrected rigidity split (76.1% / 23.9%)
-was not in equilibrium**, and the moment it left over is exactly the M_t above.
+**98.6% of J is the two N-S lines' own couple.** Two parallel lines at different stations resist a torsional
+moment as a **couple**; what they cannot resist is translation across themselves. The E-W columns' 4.979' lever
+contributes 1.4%, so the "correction" is the arithmetic putting the distribution back where statics wanted it.
+With a load resultant at 19.94' between lines at 6.00' and 30.00', the lever rule gives the panel
+(30.00 - 19.94)/24 = 42% and the columns 58%; the torsion-corrected split is 42.4% / 57.6%. **The uncorrected
+rigidity split (76.1% / 23.9%) is not in equilibrium**, and the moment it leaves over is exactly M_t.
 
-Run at the cracked-column stiffnesses the same arithmetic gives x_r = 10.211', e = 9.727',
-M_t = 11,569 lb-ft, J = 1,055,990, and the panel lands at **504.9 lb** and each column at
-**342.3 lb** — within a pound of the gross case, because once torsion is in, the answer is
-statics and the stiffnesses have almost nothing left to decide. That is the strongest evidence
-that the correction is right.
+At the cracked-column stiffnesses the same arithmetic gives x_r = 10.211', e = 9.727', M_t = 11,569 lb-ft,
+J = 1,055,990, and the panel lands at **504.9 lb** and each column at **342.3 lb**: within a pound of the gross
+case, because once torsion is in, the answer is statics and the stiffnesses have almost nothing left to decide.
 
-**The E-W case, for completeness.** The two column lines sit at y = 37.500 and 42.479, so
-y_r = 39.990; the load (629.3 lb on the roof and headers at the footprint centre y = 40.219,
-plus 192.0 lb of head reactions at the columns) resolves at y_V = 40.165, e = 0.176',
-M_t = 144.2 lb-ft and **±0.4 lb per column** on a 410.7 lb direct share. The headers' own
-projection bands sit 0.14' north of the footprint centre and are not tracked separately; doing
-so moves M_t by about 25 lb-ft and the per-line force by under 0.1 lb.
+**The E-W case.** The two column lines sit at y = 37.500 and 42.479, so y_r = 39.990; the load (629.3 lb on the
+roof and headers at the footprint centre y = 40.219, plus 192.0 lb of head reactions at the columns) resolves at
+y_V = 40.165, e = 0.176', M_t = 144.2 lb-ft and **±0.4 lb per column** on a 410.7 lb direct share.
 
-**Stability.** Two N-S lines and two E-W lines at four distinct stations: the system resists
-translation both ways and rotation, and J > 0. A canopy with its two columns on ONE station
-and no second E-W line would be a mechanism about the vertical axis, and that is what the
-torsion row is for — it is a stability statement first and a magnitude second.
+**Stability.** Two N-S lines and two E-W lines at four distinct stations: the system resists translation both
+ways and rotation, and J > 0. Two columns on ONE station with no second E-W line would be a mechanism about the
+vertical axis, and that is what the torsion row is for: a stability statement first and a magnitude second
+(`test_two_lines_on_one_station_with_nothing_across_are_a_mechanism`).
 
-## 8h. What §8 moves, and what it does not
+## §8h. An increment is added and a relief is not credited
 
-**Nothing governing moves.** The canopy record is still governed by `diaphragm span-to-depth`
-at **4.00 / 4.00 = 1.00** (§7f), and every row added here is well under it:
+Torsion relieves the panel to about 0.42 of the deck's shear, and crediting that would take a graded member's
+demand down on the strength of an arithmetic refinement. Relief is never credited; only the increment is
+(`Torsion.multipliers` floors at 1.0). The column force is ONE function, `torsion.column_forces_lb` (direct
+share + `max(torsion, 0)`), which `roof_moment`, `lateral_system.column_head_reactions` and the collector rows
+all read, so no two modules pin different forces for one column.
 
-| new row | d/c |
-|---|---|
-| west line collector (zero drag, detailing) | 1.00 (6.000' of deck edge over 6.573' of panel) |
-| east collector end connection, HETA20Z interaction, N-S | 0.443 (E-W 0.476) |
-| north line LSTA24 strap | 0.048 |
-| hold-down anchorage, tension (breakout) | 0.384 |
-| hold-down anchorage, shear (breakout) | 0.223 |
-| hold-down anchorage, interaction §17.8.3 | 0.506 |
-
-**Propagated into `roof_moment` 2026-09-22 (register A7).** The columns' N-S share goes from
-142.3 lb to 342.5 lb once torsion is in, and until today `engineering/roof_moment.py` graded
-the bases on the bare `k/Σk` split — 2,908 lb-ft N-S — while this note's collector rows used
-342.5 lb for the same column. Both now read ONE function, `torsion.column_forces_lb` (direct
-share + `max(torsion, 0)`), and `lateral_system.column_head_reactions` reads the same number.
-
-*Equilibrium check, N-S, signed forces (the torsion row's own values):*
+*Equilibrium check, N-S, signed forces (§8g's own values):*
 
 ```
                     k/Σk alone                      with torsion
@@ -325,46 +264,26 @@ E-W couple          —                               27.31 x (42.479 - 37.500) 
 residual            21,719.5 - 11,968.8 = 9,750.7   12,104.9 - 136.0 - 11,968.8 = 0.1   ✓
 ```
 
-The k/Σk residual is exactly M_t = 1,189.41 x 8.198 = 9,750.7 lb-ft (§8g). With torsion it
-closes to rounding. The graded column demand then floors the relief: E-W gives `PT-BW-RE`
--0.40 lb and `PT-BW-RNE` +0.40 lb, so RE keeps 410.66 and RNE takes 411.06 — ΣF over by
-0.40 lb, the price of never crediting a relief, not an equilibrium error.
+The k/Σk residual is exactly M_t = 1,189.41 x 8.198 = 9,750.7 lb-ft (§8g); with torsion it closes to rounding.
+The graded column demand floors the relief: E-W gives `PT-BW-RE` -0.40 lb and `PT-BW-RNE` +0.40 lb, so RE keeps
+410.66 and RNE takes 411.06, ΣF over by 0.40 lb: the price of never crediting a relief, not an equilibrium error.
+The N-S column demand is 342.5 lb at the roof plane; `north_entry_piers.md` §9e takes it as its lever's load
+(342.52 / 0.6 x 2.25" / 12 = 107.04 lb-ft of column torsion).
 
-```
-per column          N-S (was)                 N-S (now)                  E-W (governs)
-roof-plane force    142.3 lb                  342.5 lb                   410.66 / 411.06 lb
-base moment         142.3 x 16.563 + 552.6    342.5 x 16.563 + 552.6     7,354.2 / 7,360.9
-                    = 2,908 lb-ft             = 6,225.7 lb-ft            lb-ft (RE / RNE)
-base shear          227.8 lb                  428.0 lb at 14.55'         496.17 / 496.58 lb
-```
+## Not graded here / still open
 
-E-W still governs both columns, now by 15% rather than 2.5x. **Measured, not assumed**, every
-record before/after:
-
-| record | before | after |
-|---|---|---|
-| `column_base/PT-BW-RE` embedment | 0.8467 | 0.8467 (governs; unchanged) |
-| `column_base/PT-BW-RNE` embedment | 0.8447 | 0.8450 |
-| `base_rotation/PT-BW-RE`/`-RNE` second-order increment | 0.8116 | 0.8116 |
-| `deck_post/PT-BW-RE`/`-RNE` dowel anchorage | 0.7589 | 0.7589 |
-| `column_head_joint/PT-BW-RNE` HETA interaction | 0.4734 | 0.4737 |
-| `column_head_joint/*` column torsion T_u | 44.46 lb-ft | 107.04 lb-ft (0.071 of φT_th) |
-
-No printed two-figure d/c moves. The torsion row moves because `north_entry_piers.md` §9e
-takes the N-S head force as its lever's load: 342.52 / 0.6 x 2.25" / 12 = 107.04 lb-ft.
-
-**And the panel's rows stay where §7f put them.** Torsion relieves the panel by nearly half,
-and crediting that relief would take a graded member's demand down on the strength of an
-arithmetic refinement. Relief is not credited; only the increment is.
+* The truss end chords and the peak splice's slip (§8b): the truss fabricator's sealed design, an external
+  deliverable.
+* The cast and steel variants' current shears and base moments: `canopy_garage_diaphragm.md`.
+* The soils report: the soil class is presumed, and every record that reads it says so.
 
 ## Sources
 
 * AWC SDPWS-2015 §4.2, §4.3 and Tables 4.2A / 4.2.4 / 4.3A / 4.3.4.
 * IBC 2018 §1604.4 (distribution in proportion to rigidity); ASCE 7-16 §26.2.
-* ACI 318-19 Ch. 17: §17.5.3 (φ), §17.6.2 (breakout in tension, incl. §17.6.2.1.2),
-  §17.6.3 (pullout), §17.6.4 (side-face blowout), §17.7.2 (breakout in shear), §17.7.3
-  (pryout), §17.8.3 (interaction).
-* ICC-ES ESR-2105, reissued January 2026, Table 3 and footnotes 1–5 (LSTA straps).
-* ICC-ES ESR-1622 §5.6 and Table 2 footnote 3 (the ABU's anchor is out of scope).
+* ACI 318-19 Ch. 17: §17.5.3 (φ), §17.6.2 (breakout in tension, incl. §17.6.2.1.2), §17.6.3 (pullout), §17.6.4
+  (side-face blowout), §17.7.2 (breakout in shear), §17.7.3 (pryout), §17.8.3 (interaction).
+* ICC-ES ESR-2105, reissued January 2026, Table 3 and footnotes 1-5 (LSTA straps); ICC-ES ESR-1622 §5.6 (the
+  ABU's anchor is out of scope).
 * Simpson Strong-Tie FL11473 Table 3 and §9 Limitations item 4 (the HETA pair).
 * ASTM A193 Gr. B8 Cl. 1 / ASTM F593 CW1 (the stainless anchor's strength).

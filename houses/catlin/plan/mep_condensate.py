@@ -9,7 +9,7 @@
 # the room where exposed pipe is accepted beats a spout in the laundry. Hoses inside a head's
 # own body are drawn as its first leg; the AH's trap (Gree IOM) sits at the second vertex,
 # off the front of SL-A-HP1-PLATFORM, and is not drawn. Its emergency pan takes a float switch,
-# not a second line. EQ-B-HP2-GYM is the exception: a PUMPED line (PR-B-COND-HP2-GYM, below).
+# not a second line. EQ-B-HP2-GYM falls inside the sauna's walls onto PR-B-COND's drop (below).
 
 from typehaus import (
     PipeRun,
@@ -56,19 +56,20 @@ CONDENSATE_NORTH = [
                         inch(232.2), inch(232.15), inch(-6), inch(-6.08), inch(-6.5),
                         inch(-14), inch(-14.22), inch(-62), inch(-62.13))),
     # EQ-B-HP2-GYM (basement storey, filed here at the main datum so elevations are absolute;
-    # rel = abs + 109 7/16"). NOT GRAVITY (2026-11-12): the head's drain is ~79" AFF, 4" under
-    # D-B-SUNKEN's 83" head, and PR-B-COND is 87 3/4"..92" AFF from the head east to the sauna
-    # riser; the only pipe lower than the drain is that riser, 12 ft away behind the door, and
-    # a 79" line across the gym breaks the 80" headroom line. A listed condensate mini pump
-    # (UL 778) rides the head's lineset cover at its east end; its 3/8" outlet tube adapts
-    # to 3/4" PVC (drawn 3/4" throughout) that climbs to 95" beside the head, runs the open
-    # ceiling band (97" soffit) north on x=326" and west, and drops onto PR-B-COND's y=131" leg
-    # at x=312" (91.7"), falling 0.26"/ft after the rise (so the grade checks read it like the
-    # others). The pump itself is not an engine element: spec and power are in the design log.
+    # rel = abs + 109 7/16"). GRAVITY (owner, 2026-11-14). The sauna's ceiling void is out of
+    # reach: its floor (the foil, 87 5/16" rel) stands above any drain a head under the gym's
+    # 96 15/16" gypsum can have. So the hose leaves the head's north end at 83 1/4" rel and
+    # runs 28" north on the gym face over D-B-SAUNA (clipped 3/4" off the board, bottom at the
+    # RO head, 1" over the leaf), into W-B-CS's stud core (x=18'-0") in the bay past the
+    # door's king, north through its studs to the sauna's north wall, west in W-B-SA-N2/-N's
+    # 2x4 cores (y=10'-1 7/16") and tees onto PR-B-COND's drop at x=13'-6", 79 7/8" rel, 7 7/8"
+    # under the drop's head; the drop's 9" air gap over FX-B-SAUNA-FD is its receptor.
+    # 135 15/16" (11.3 ft) at 0.3"/ft, no rise. Stud bores 1 1/4": 23% of a 2x6, 36% of a 2x4.
     PipeRun(uid="1TFJSE4NC5", tag="PR-B-COND-HP2-GYM", system=PipeSystem.DRAIN, sanitary=False,
-            path=(pt(inch(326), inch(12)), pt(inch(326), inch(12)), pt(inch(326), inch(135)),
-                  pt(inch(312), inch(135)), pt(inch(312), inch(131))),
+            path=(pt(inch(220.5), inch(44)), pt(inch(220.5), inch(72)), pt(inch(216), inch(72)),
+                  pt(inch(216), inch(121.4375)), pt(inch(162), inch(121.4375))),
             diameter=inch(0.75), material="pvc",
-            elevations=(inch(-29.4375), inch(-14.4375), None, None, None),
-            slope_in_per_ft=0.26),
+            elevations=(inch(-26.1875), inch(-26.8875), inch(-27.0), inch(-28.2359375),
+                        inch(-29.5859375)),
+            slope_in_per_ft=0.3),
 ]

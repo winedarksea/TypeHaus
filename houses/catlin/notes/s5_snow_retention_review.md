@@ -1,9 +1,9 @@
 # S-5! canopy review — online resources and owner-supplied load tables, 2026-11-10
 
 Owner direction: use online resources only; no supplier contact. The model and
-component budget are resolved below. **The single row remains provisional:** public
-resources and the owner-supplied load tables do not establish a complete capacity
-check for this short, drift-loaded run.
+component budget are resolved below. **The clamps now pass** on the triangular drift
+integral (2026-11-14, last section: 3,182 lbf against 4 × 863, d/c 0.922, ideal
+sharing). Rail/end reactions and the panel attachment remain ungraded.
 
 ## Modeled installation
 
@@ -122,14 +122,62 @@ is below the sum but excludes the adjacent garage tributary area. Dividing the
 wedge demand by 863 gives 4.45, or at least five fully effective clamps for this
 screen alone. That is not a five-clamp layout or a row-count design: the current
 rail has four seam supports, and adding rows changes load distribution and must
-also satisfy rail, panel and attachment limits.
+also satisfy rail, panel and attachment limits. **Superseded by the triangular
+integral below**, which the uniform 73.7 psf overstated.
 
 The [S-5! snow calculator](https://calculators.s-5.com/snow-project) requires login.
-The exact clamp datum is now recorded, but **no defensible final row count follows
-from the available inputs**. Retain one row as provisional geometry; resolve the
-complete drift/tributary check, ColorGard 2.0 rail/end reactions and panel
-attachments before ordering or treating the installation as designed. No supplier
-was contacted.
+No supplier was contacted.
+
+## Final clamp check — the triangular drift integral (2026-11-14)
+
+Oracle for `structural.snow_retention_capacity`. Same 45° wedge as above; the load is
+now the real ASCE 7 §7.7 triangle of `north_entry_piers.md` §3, not its canopy average.
+
+**Load.** Balanced B = 42 psf on the whole wedge, garage included (§3's C_t 1.2; the
+garage heater is intermittent, and a heated C_t of 1.0 would only lower it). Drift surcharge P = 50.3 psf at its peak, falling linearly
+to zero over w = 9.8 ft northward. The peak is laid on the canopy's **south footprint
+edge**, y_d = 37.21875 ft, as `snow_drift.drift_reach` and §3a lay it: 0.615 ft north
+of the cladding face, so the triangle is shifted onto the wedge — conservative. With
+z = y − y_d:
+
+    p(z) = B + P(1 − z/w)   for 0 ≤ z ≤ w;      p = B   beyond.
+
+**Geometry** (resolved model). Clamp line x = 31.0 ft, ridge x = 18.0 ft, so T = 13.0 ft
+of horizontal run. Rail a = 37.85417 to b = 43.05208 ft (L = 62.375" = 5.19792 ft); the
+rake is the drift origin, so the south clip is c = a − y_d = 7.625" = 0.63542 ft. The
+north side runs on onto `RF-GARAGE` (coplanar, to y = 68.55 ft, never reached).
+k = √(1 + (4/12)²) = 1.054093; sin θ = 1/√10 = 0.316228. At horizontal distance t
+upslope the wedge spans ℓ(t) = a − min(kt, c) to u(t) = b + kt.
+
+**Plan area** (checks the screen): A = LT + kT²/2 + cT − c²/(2k)
+= 67.5729 + 89.0708 + 8.2604 − 0.1915 = **164.713 sf**, as above.
+
+**Balanced:** V_b = 42 × 164.713 = **6,917.93 lb**.
+
+**Drift.** Let D(z) = ∫₀ᶻ(1 − ζ/w)dζ = z − z²/(2w) for 0 ≤ z ≤ w, and w/2 beyond. Then
+∫∫(1 − z/w)⁺ dy dt = ∫₀ᵀ [D(z_u) − D(z_ℓ)] dt.
+
+- North edge: z_u = z₀ + kt, z₀ = b − y_d = 5.83333 ft. It reaches w at
+  t₁ = (9.8 − 5.83333)/k = 3.76311 ft.
+  ∫₀^t₁ D dt = [(w² − z₀²)/2 − (w³ − z₀³)/(6w)]/k = (31.00611 − 12.63090)/k = 17.43226.
+  ∫_t₁^T D dt = (w/2)(T − t₁) = 4.9 × 9.23689 = 45.26076.
+- South edge: z_ℓ = c − kt until t = c/k, then 0.
+  ∫ D dt = (c²/2 − c³/(6w))/k = (0.201877 − 0.004363)/k = 0.18738.
+- Net 17.43226 + 45.26076 − 0.18738 = 62.50564 ft²; V_d = 50.3 × 62.50564 = **3,144.03 lb**.
+
+**Drag.** V = 10,061.96 lb; W·sin θ = 10,061.96 × 0.316228 = **3,181.87 lbf**. Of that,
+4,140 lb vertical (1,309 lbf drag, 41%) lies on the garage north of y = 43.146 ft
+(numerical split, not an oracle figure).
+
+**Clamps.** Four S-5-N on the rail (`snow_retention_layout`), 863 lbf each (table
+above): 3,452 lbf. **d/c = 3,181.87 / 3,452 = 0.922, PASS**, 270 lbf to spare,
+assuming the four share equally. No layout change.
+
+**Still ungraded — missing inputs, named in the finding:** the ColorGard 2.0 rail's
+bending and support/end reactions (a continuous rail on four supports with
+cantilevers does not share equally, and the garage share arrives at the north end),
+and the Image II panel's attachment to the deck carrying the drag. Both need S-5!'s
+rail section/allowables and Metal Sales' clip/fastener drag values, neither public.
 
 ## Online component budget
 

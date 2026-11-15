@@ -89,12 +89,9 @@ _EXCUSED: dict[str, set[str]] = {
     "routing/oracle.py": {"engineering"},
     # ** A PUBLISHED ALLOWABLE HAS ONE HOME AND IT IS `hardware/catalog`. **
     # ``lateral_system`` grades a shear panel's overturning against the uplift its hold-down
-    # actually publishes — on catlin the ABU66SS standoff base already under each 6x6, 2,190
-    # lb per ICC-ES ESR-1622 as extended by Simpson's stainless letter. The alternative was
-    # to have the house author that number on ``ShearPanelSpec`` beside the product name,
-    # which is two places for one fact and the exact drift ``hardware/catalog`` exists to
-    # stop: a spec quoting 2,190 would keep quoting it after the catalog's own row was
-    # re-read. ``hardware`` is itself a leaf (``library`` and nothing else), so this is a
+    # actually publishes (on catlin the cast-in CBSTQ66Z-SDS2 under each 6x6 chord). Authoring
+    # that number on ``ShearPanelSpec`` beside the product name would be two places for one
+    # fact, the drift ``hardware/catalog`` exists to stop. ``hardware`` is itself a leaf (``library`` and nothing else), so this is a
     # leaf reaching a leaf — the same shape ``joints`` and ``schedule`` already have, and it
     # cannot become a cycle.
     "engineering/lateral_system.py": {"hardware"},

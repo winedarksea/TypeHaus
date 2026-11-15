@@ -7,8 +7,7 @@ import ``checks`` (``tests/test_package_leaves.py`` walks the AST for exactly th
 -local imports included). ``resolve`` is where a router, a check and a calculation may all
 reach the same reading — the same argument ``resolve/mep_envelopes.py`` carries for what a
 pipe occupies. A check that weighed a different wall from the one the pier calc loaded would
-make the two impossible to reconcile, and `haus check` was already printing "guard wall
-W-BW-SCREEN weighs 31 plf" in the same run that called that wall's load unknown.
+make the two impossible to reconcile.
 
 **The load is derived from the assembly, never from a constant.** Every layer's thickness
 times its material's density, times the height; a framed layer at its cavity fill's own
@@ -18,8 +17,8 @@ a partial stack is not a load — and ``None`` is the honest verdict a record th
 not a zero.
 
 **And what STANDS on the line counts too.** :func:`wall_line_plf` adds what bears on the
-wall through ``supported_by`` — catlin's ``SC-BW-WEST``, a slat clerestory on
-``W-BW-SCREEN``'s top plate, is a third of that line's weight. An element standing there
+wall through ``supported_by`` — a brace band on a screen wall's top plate can be a third
+of that line's weight. An element standing there
 that nothing here knows how to weigh returns ``None`` naming it, for the same reason a
 material with no density does.
 """
@@ -122,10 +121,10 @@ def wall_line_plf(ctx: Any, wall: Any) -> tuple[float | None, str]:
     an answer anyone can act on.
 
     ** A LINE, NOT A WALL, AND THAT IS WHAT THE CONSUMER ACTUALLY WANTS. ** A beam under a
-    wall carries everything above that wall too. catlin's ``BM-BW-SCSILL`` sits under
-    ``W-BW-SCREEN``, and ``SC-BW-WEST`` — a 2'-4 3/4" slat clerestory — stands on that wall's
-    top plate through ``supported_by``. Weighing the wall alone understates the sill's load
-    by 30%, which is the same partial-stack failure ``dead_load_plf`` refuses one layer down.
+    wall carries everything above that wall too: a sill beam under a screen wall also
+    carries the brace band standing on that wall's top plate through ``supported_by``.
+    Weighing the wall alone understates the sill's load, the same partial-stack failure
+    ``dead_load_plf`` refuses one layer down.
     """
     height_m = wall.z1_m - wall.z0_m
     own = dead_load_plf(ctx, wall, height_m)
@@ -238,7 +237,9 @@ def _slat_brace_plf(ctx: Any, band: Any) -> tuple[str, float | None, str]:
     for member in brace.members:
         section = cross_section(member.profile)
         volume_m3 += (section.width_m or 0.0) * (section.depth_m or 0.0) * member.length_m
-    sill = next(m for m in brace.members if m.child_key == "plate-sill")
+    sill = next((m for m in brace.members if m.child_key == "plate-sill"), None)
+    if sill is None:
+        return (band.tag, None, "resolved no sill plate to measure its run along")
     length_m = sill.length_m
     plf = volume_m3 * density / length_m * KG_PER_M_TO_PLF
     return (band.tag, plf,

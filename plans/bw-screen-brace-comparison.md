@@ -1,4 +1,4 @@
-> Historical study: the 2026-11-02 direction is Bone White aluminum infill throughout.
+> Historical study (2026-10-25), not the design. Today: the band is braced by one corner-to-corner 6x6 knee per bay (`houses/catlin/notes/canopy_west_band.md` §3); the east face is white painted 3/4" MDO, finish only.
 
 # W-BW-SCREEN — thin brick and single knee braces
 

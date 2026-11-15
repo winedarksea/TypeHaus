@@ -16,8 +16,8 @@ under the carriers, a Titen HD each into the ICF core), which went with the carr
 interior landing did; uids ARD33PDHYR, AJ70HT0M2D, 0TW5SE2NX5, VNT251FTF3, B0FS509J9R and
 QT6E9ZZ2W8 are retired.
 
-**Line 2, the screen's own line (x = 6'-3 3/8") into `W-G-W`, wood to wood.** Two HL33HDG
-stacked on the screen's north end post (east face), heel vertical, the other leg on the
+**Line 2, the screen's own line (`SCREEN_AXIS_X_FT`, 1" west of the column line) into
+`W-G-W`, wood to wood.** Two HL33HDG stacked on the screen's north end post (east face), heel vertical, the other leg on the
 garage's south face at its SW corner: lag screws >= 5" (HL fn 7) through a KDAT filler cut
 flush with the corrugated into the corner pack. A 4x KDAT filler in the end stud pack gives
 the post leg a 3 1/2" face (two 2x plies give 3"; HL fn 3). Collinear with the screen, so its
@@ -41,8 +41,8 @@ from typehaus import Connector, ConnectorKind, InServiceMoisture, ft, inch, pt
 _FE_EAST_FACE_FT = EDGE_BEAM_X_FT + EDGE_BEAM_WIDTH_IN / 24
 _FE_TIE_Z_FT = (DECK_JOIST_TOP_FT - (JOIST_DEPTH_IN - 1.75) / 12,
                 DECK_JOIST_TOP_FT - 1.75 / 12)
-#: Line 2: the end post's east face (a half stud, then the 5/8" 303 ply), and two heights.
-_SCREEN_EAST_FACE_FT = SCREEN_AXIS_X_FT + (1.75 + 0.625) / 12
+#: Line 2: the end stud pack's east face (a half stud off the axis), and two heights.
+_SCREEN_EAST_FACE_FT = SCREEN_AXIS_X_FT + 1.75 / 12
 _GARAGE_TIE_Z_FT = (1.0, 3.0)
 #: Line 2's service condition: an owner judgement (2026-09-21) the EOR confirms.
 _W_SERVICE = InServiceMoisture(

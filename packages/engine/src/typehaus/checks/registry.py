@@ -215,6 +215,10 @@ class StructuralPreferences:
     #: beyond it inside the width are drift trusses too (``structural.truss_reactions``).
     #: ``None``: the reach is unknown and a neighbouring trussed roof is held to it whole.
     roof_beam_drift_width_ft: float | None = None
+    #: The drift triangle ``roof_beam_snow_psf`` averages: balanced snow and peak surcharge,
+    #: psf. Read by ``structural.snow_retention_capacity``.
+    roof_beam_balanced_snow_psf: float | None = None
+    roof_beam_drift_surcharge_psf: float | None = None
     #: Dynamic factor on a hung seat's rated load (``structural.suspension_anchor``): a
     #: swing, a drop into the seat. ``None`` is an UNKNOWN naming this key, never a default.
     hanging_seat_impact_factor: float | None = None

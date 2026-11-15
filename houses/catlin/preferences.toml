@@ -72,8 +72,8 @@ deck_snow_psf = 35.0
 # which is what a deck rim designed to R507's 40 psf live + 10 psf dead was drawn expecting.
 # The porch's grouted-CMU-and-white-brick parapet is ~420 plf against it — which is the point:
 # it lands on the concrete sunken-garden walls, and it could not land on a wood deck.
-# W-BW-SCREEN (75 plf with its thin brick) is over this, and passes on scope instead: it
-# stands on BM-BW-SCSILL, which the pier calcs load with its line (north_entry_piers.md §2).
+# W-BW-SCREEN (39.2 plf in MDO) is under this; it stands on BM-BW-SCSILL, which the pier
+# calcs load with its line, band included (north_entry_piers.md §2).
 max_guard_dead_load_on_wood_plf = 50
 
 # Dynamic factor on a hung seat's rated load (structural.suspension_anchor; owner, 2026-10-05):
@@ -125,6 +125,9 @@ roof_beam_dead_psf = 10.0
 # into RF-GARAGE, over truss-000 and truss-001: structural.truss_reactions holds rows for
 # those two to the drift and no others (notes/north_entry_piers.md §3a).
 roof_beam_drift_width_ft = 9.8
+# The triangle 73.7 averages (notes/north_entry_piers.md §3): p_f and p_d at the wall.
+roof_beam_balanced_snow_psf = 42.0
+roof_beam_drift_surcharge_psf = 50.3
 
 [plumbing]
 drain_stack_required_structure_in = 5.5

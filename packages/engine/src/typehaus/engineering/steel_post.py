@@ -43,6 +43,7 @@ from typehaus.engineering.item import (
     item_id,
 )
 from typehaus.engineering.registry import EngineeringContext, calc, keys, oracled_by
+from typehaus.engineering.retaining_basis import PRESUMPTIVE_FC_PSI
 
 KIND = "steel_post"
 BASIS = ("AISC 360-16 §B4.1, §E2, §E3, §E7, §H1.1 (ASD, Ω_c 1.67, Ω_b 1.67); AWC NDS 2018 "
@@ -151,8 +152,8 @@ def _one(ctx: EngineeringContext, post, wind) -> EngineeringRecord:  # type: ign
     from typehaus.engineering.holdown_anchor import round_pier_anchor
     from typehaus.engineering.holdown_anchor import states as anchor_states
     from typehaus.engineering.pier_basis import (
-        DECK_DEAD_LOAD_PSF,
         _round_size,
+        design_roof_dead_psf,
         design_roof_snow_psf,
         roof_tributaries,
     )
@@ -185,14 +186,15 @@ def _one(ctx: EngineeringContext, post, wind) -> EngineeringRecord:  # type: ign
     fe, fcr = flexural_buckling_ksi(fy, klr)
     allowable_kip = fcr * section.area_in2 / OMEGA_C
     snow, snow_basis = design_roof_snow_psf(ctx)
-    axial_lb = trib * (DECK_DEAD_LOAD_PSF + snow) + section.weight_plf * post.length_ft
+    roof_dead = design_roof_dead_psf(ctx)
+    axial_lb = trib * (roof_dead + snow) + section.weight_plf * post.length_ft
     drag_plf = wind.pressure_psf * post.width_ft
     moment_lb_ft = drag_plf * post.length_ft ** 2 / 8.0
     mc_kip_ft = fy * section.plastic_in3 / OMEGA_B / 12.0
     p_ratio = axial_lb / 1000.0 / allowable_kip
     m_ratio = moment_lb_ft / 1000.0 / mc_kip_ft
     interaction = p_ratio / 2.0 + m_ratio if p_ratio < 0.2 else p_ratio + 8.0 / 9.0 * m_ratio
-    uplift = trib * (wind.pressure_psf - 0.6 * DECK_DEAD_LOAD_PSF)
+    uplift = trib * (wind.pressure_psf - 0.6 * roof_dead)
     z, modes = bolt_double_shear_lb(SADDLE_BOLT_IN, _header_width_in(ctx, header),
                                     SADDLE_PLATE_IN, HEADER_G, perpendicular=True)
     z_adj = z * C_D_WIND * C_M_WET
@@ -208,7 +210,7 @@ def _one(ctx: EngineeringContext, post, wind) -> EngineeringRecord:  # type: ign
                    f"K 1.0 (pinned-pinned) x {length_in:.2f}\" / r {section.radius_in:.2f}\""),
         LimitState("axial, flexural buckling §E3", axial_lb, allowable_kip * 1000.0, "lb",
                    f"F_e {fe:.2f} ksi, F_cr {fcr:.3f} ksi, P_n {fcr * section.area_in2:.2f} "
-                   f"kip / Ω_c {OMEGA_C}; D + S: {trib:.1f} ft2 x ({DECK_DEAD_LOAD_PSF:g} + "
+                   f"kip / Ω_c {OMEGA_C}; D + S: {trib:.1f} ft2 x ({roof_dead:g} + "
                    f"{snow:.1f}) psf plus the post's {section.weight_plf:.2f} plf"),
         LimitState("combined axial and drag, §H1.1", interaction, 1.0, "",
                    f"H1-1{'b' if p_ratio < 0.2 else 'a'}: {p_ratio:.4f} axial with the post's "
@@ -240,7 +242,7 @@ def _one(ctx: EngineeringContext, post, wind) -> EngineeringRecord:  # type: ign
     pier_size = _round_size(getattr(pier, "size", "") or "") if pier is not None else None
     if pier_size is not None:
         anchor = round_pier_anchor(f"{post.tag} base", pier_size[0],
-                                   fc_psi(concrete_spec_for(ctx.plan, pier)) or 3000.0)
+                                   fc_psi(concrete_spec_for(ctx.plan, pier)) or PRESUMPTIVE_FC_PSI)
         states += anchor_states(
             anchor, max(uplift, 0.0), post.base_lb,
             f"the post's net roof uplift {uplift:,.1f} lb (0.6D + 0.6W)",

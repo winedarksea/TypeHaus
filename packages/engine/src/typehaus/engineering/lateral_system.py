@@ -51,6 +51,7 @@ from typehaus.engineering.item import (
 from typehaus.engineering.lateral_collectors import collector_rows, torsion_rows
 from typehaus.engineering.lateral_lines import panel_geometry_ft
 from typehaus.engineering.registry import EngineeringContext, calc, keys, oracled_by
+from typehaus.engineering.retaining_basis import PRESUMPTIVE_FC_PSI
 from typehaus.engineering.roof_lateral import panel_forces, wind_of
 from typehaus.engineering.roof_moment import FrameCase, frame_cases_of, roof_base_moments
 from typehaus.engineering.torsion import Torsion, torsion_for
@@ -200,8 +201,7 @@ def _one(ctx: EngineeringContext, tag: str) -> EngineeringRecord:
                     f"to {p.below or 'its base'}" for p in wind.pinned)
                 + ". They resist no storey shear.")
 
-    # ** THE LOAD PATH BETWEEN THE DECK AND THE LINES, AND THE MOMENT THE SPLIT LEFT OVER. **
-    resolved_roof = next((r for r in ctx.model.roofs if r.tag == tag), None)
+    # The load path between the deck and the lines, and the moment the split left over.
     torsions: dict[str, Torsion] = {}
     if resolved_roof is not None and cases:
         for case in cases:
@@ -217,11 +217,7 @@ def _one(ctx: EngineeringContext, tag: str) -> EngineeringRecord:
         missing.append(f"a resolved roof for {tag}: the collector and torsion rows read its "
                        "plan footprint to place the load resultant")
 
-    # ** A COLLECTOR THAT IS NOT IN THE MODEL IS A LOAD PATH THAT IS NOT DRAWN. ** The whole
-    # reduction this declaration buys rests on the deck's shear reaching each resisting
-    # line, and what carries it there is a real member with a real connection at each end.
-    # Naming one that does not resolve is the failure this type exists to prevent, so it is
-    # `missing` — the record could not finish — rather than a note somebody might read.
+    # A collector that does not resolve is a load path that is not drawn: `missing`, not a note.
     unresolved = sorted(t for t in spec.collector_refs if ctx.plan.by_tag(t) is None)
     if unresolved:
         missing.append(
@@ -270,7 +266,9 @@ def _one(ctx: EngineeringContext, tag: str) -> EngineeringRecord:
             notes=tuple(notes), element_tags=_tags(tag, cases, forces, extra))
 
     over = any(not state.ok for state in states)
-    worst = max(states, key=lambda s: s.demand / s.capacity if s.capacity else 0.0)
+    # The same rule as ``EngineeringRecord.governing``: a detailing row never "governs".
+    graded = [state for state in states if not state.is_detailing] or states
+    worst = max(graded, key=lambda s: s.demand / s.capacity if s.capacity else 0.0)
     return EngineeringRecord(
         item_id=ident, kind=KIND, key=tag,
         basis_version=BASIS_VERSION, basis=BASIS,
@@ -321,11 +319,7 @@ def _panel(ctx: EngineeringContext, roof_tag: str, wall_tag: str,
                      states, notes, missing, inputs)
     if band.handled:
         return
-    # ** NO DEAD LOAD IS CREDITED AGAINST UPLIFT, AND THAT IS THE WHOLE COUPLE. ** The
-    # resisting moment of a panel's own weight would reduce this, and deriving it needs the
-    # layer-by-layer walk that lives in `checks/` where this package may not reach. Taking
-    # zero is the bound rather than an approximation, and on a panel whose hold-down is a
-    # published post base it clears by a wide enough margin that refining it changes nothing.
+    # No dead load is credited against uplift: zero is the bound, and it clears as it stands.
     tension = worst * height_ft / length_ft
     inputs.append(Quantity(f"panel_uplift_{wall_tag}", tension, "lb", 1.0))
     allowable = allowable_for_model(spec.holdown) if spec.holdown else None
@@ -386,9 +380,9 @@ def _anchorage(ctx: EngineeringContext, wall: object, tension_lb: float, shear_l
     if ranked:
         pier, size = ranked[0]
         inputs.append(Quantity(f"panel_anchor_fc_{wall.tag}",
-                               pier.specified_fc_psi or 3000.0, "psi", 1.0))
+                               pier.specified_fc_psi or PRESUMPTIVE_FC_PSI, "psi", 1.0))
         uplift = _net_uplift(ctx, pier, notes=[]) or 0.0
-        anchor = round_pier_anchor(pier.tag, size[0], pier.specified_fc_psi or 3000.0)
+        anchor = round_pier_anchor(pier.tag, size[0], pier.specified_fc_psi or PRESUMPTIVE_FC_PSI)
         states.extend(anchor_states(
             anchor, tension_lb + uplift, shear_lb / max(len(piers), 1),
             f"the panel's overturning couple {tension_lb:,.0f} lb plus the column's net "

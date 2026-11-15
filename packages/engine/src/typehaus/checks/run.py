@@ -116,6 +116,8 @@ def load_preferences(house_dir: Path) -> Preferences:
             roof_beam_dead_psf=structural.get("roof_beam_dead_psf", 10.0),
             deck_snow_psf=structural.get("deck_snow_psf"),
             roof_beam_drift_width_ft=structural.get("roof_beam_drift_width_ft"),
+            roof_beam_balanced_snow_psf=structural.get("roof_beam_balanced_snow_psf"),
+            roof_beam_drift_surcharge_psf=structural.get("roof_beam_drift_surcharge_psf"),
             hanging_seat_impact_factor=structural.get("hanging_seat_impact_factor"),
         ),
         underlays=underlays,

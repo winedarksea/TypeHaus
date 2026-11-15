@@ -78,6 +78,17 @@ VERIFIED_CASE_AB: tuple[Cell, ...] = (
 #: Fig. 29.3-1 can exceed for Cases A and B, so a joint that clears it is clear outright.
 MAX_VERIFIED_CASE_AB = 1.80
 
+
+def asd_solid_band_psf(q_psf: float) -> float:
+    """ASD pressure on any band taken as a §29.3 solid sign at the Case A/B bound: 0.6 q G C_f.
+
+    The one place the product is written; the roof, a wall face on a deck and a column head's
+    uplift surrogate all read it, each at the velocity pressure of its own height.
+    """
+    from typehaus.wind import ASD_WIND_FACTOR
+
+    return ASD_WIND_FACTOR * q_psf * GUST_EFFECT_RIGID * MAX_VERIFIED_CASE_AB
+
 #: Case C is the near-windward-edge zone breakdown, required when B/s >= 2, and its leading
 #: strip carries a much larger coefficient than the A/B average — published examples show
 #: 2.25 (Meca, B/s = 2) and 4.07 (an eng-tips worked case). It applies to the leading strip

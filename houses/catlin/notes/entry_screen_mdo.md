@@ -78,6 +78,17 @@ trim solids; they are not roof columns. Their modeled volume is not charged a se
   treatment limits apply (ACQ-D <=0.40 pcf or less corrosive treatment). Delivered treatment,
   exposure and coating compatibility remain procurement prerequisites.
 
+- **Screws into the timber's end grain are outside ER-192** (rev. 09/08/2026, read
+  2026-11-14): every SDWS/SDWH table requires the screw "installed straight into the side
+  grain of the wood main member with the screw axis at a 90-degree angle to the wood
+  fibers", and the report publishes no toe-screw value. Driving SDWS22400DB through the
+  plates into the timber's ends is therefore not a published connection.
+- **North end, open (2026-11-14):** the two HL33 garage ties (`CN-BW-GWTIE-LO`/`-HI`, at
+  +10 3/4"..+13 1/4" and +34 3/4"..+37 1/4") seat on the end stud pack's east face, under
+  panel 4. The panel is relieved only at the tie block (+22 1/8"..+25 7/8"); it cannot lie
+  flat over a 7 ga angle leg and its bolt. Relieve it at both angles or stop the MDO at the
+  chord post.
+
 Local calculations apply the full 200 lb concentrated guard load, the 50 psf / 1 sf infill
 case and the house's out-of-plane ASD wind pressure to the solid 6x6. NDS Table 4D, SP No.2
 timbers, wet row: Fb **850 psi**, Fv 165 psi, E=1.2e6 psi. 200 lb x 44.44 in / 4 / 27.729 in3

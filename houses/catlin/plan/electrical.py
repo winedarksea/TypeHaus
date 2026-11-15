@@ -377,23 +377,23 @@ BASEMENT_EQUIPMENT = [
     # Sauna heater: back to the SOUTH liner at x 8'-6"..10'-0", 2" off the face, diagonally
     # opposite the shower pan in the room's north-east corner and 2'-1" west of
     # WIN-B-SAUNA's west jamb. It moved onto the garden wall with the room on 2026-09-05.
-    # EQ-B-HP2-GYM (System 2's basement head). On W-B-S3-FR, straddling its jog onto W-B-S4
-    # (owner, 2026-11-09): the mounting plate lands on the framed run, BK-B-S3FR-HP2-GYM,
-    # not concrete. `normal_gap` 1 1/2" puts its back on the concrete plane, which stands
-    # 1.48" proud of the gypsum; a hidden 1 1/2" pad closes the gap on the gypsum.
-    # FIELD HOLD: Gree's wall-plate width is unpublished; confirm it against the framed run.
-    # Backs south, throws north across the room's 18' depth. Top at 88 13/16" over the 3/4"
-    # mats, 7 3/8" under the gypsum. zone_rooms is the whole conditioned basement;
-    # RM-B-ESS is claimed for its load only and takes no register.
+    # EQ-B-HP2-GYM (System 2's basement head). On W-B-CS's gym face, the wall shared with
+    # RM-B-SAUNA (owner, 2026-11-14: no condensate pump), high and south: 4" off the south
+    # wall, over D-B-SAUNA (y 10 1/2".."43 3/8"). Bottom 1/2" over the door's RO head; top
+    # 92 13/16" over the 3/4" mats, 3 3/8" under the gypsum (Gree's top and side clearances
+    # are not in the repo: FIELD HOLD). Any further north is inside 440.8's 3 ft of
+    # FX-B-SAUNA-SH (here 3'-2"). Backs west, throws east across the gym's 16'-10 3/4".
+    # Plate on BK-B-CS-HP2-GYM; drain PR-B-COND-HP2-GYM. zone_rooms is the whole conditioned
+    # basement; RM-B-ESS is claimed for its load only and takes no register.
     Equipment(uid="CEE031AAAA", tag="EQ-B-HP2-GYM", kind=EquipmentKind.INDOOR_HEAD,
               footprint=(inch(32), inch(8)),
               room="RM-B-GYM", type_ref="EQ-T-GREE-HEAD-9", outdoor_ref="EQ-M-HP2-OD",
-              mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(82)),
               zone_rooms=("RM-B-GYM", "RM-B-PLAY-N", "RM-B-STAIR", "RM-B-WORKSHOP",
                           "RM-B-SAUNA", "RM-B-FURNACE", "RM-B-BATH", "RM-B-ESS"),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-B-S3-FR", face="left", distance_from_start=inch(91.4),
-                  normal_gap=inch(1.5), rotation_offset=deg(0)))),
+                  wall_ref="W-B-CS", face="left", distance_from_start=inch(93.0625),
+                  normal_gap=inch(0), rotation_offset=deg(0)))),
     # Existing US PC110E remains on the east liner. Resolved body (type dimensions govern):
     # x192.25..207.25, y12.5..28.5, 45" tall. Reading deck ends at x181.75: 10.5" gap.
     # US manual Figure 5 and the fence/service requirements: notes/sauna_seating.md.

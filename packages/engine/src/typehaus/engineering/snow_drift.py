@@ -71,6 +71,41 @@ def drift_reach(model, preferences: object, records: Mapping[str, EngineeringRec
     return None
 
 
+@dataclass(frozen=True)
+class DriftAxis:
+    """Where the drift triangle peaks and which way it decays, in plan feet.
+
+    The peak is the drifted roof's FAR edge, as :func:`drift_reach` lays the width:
+    ``sign * coordinate[axis] - origin_ft`` is the distance downwind of the peak.
+    """
+
+    axis: int
+    sign: float
+    origin_ft: float
+    source: str
+
+
+def drift_axis(model, records: Mapping[str, EngineeringRecord], roof) -> DriftAxis | None:
+    """The drift's peak line on or into ``roof``, or ``None`` where no drift reaches it.
+
+    A whole-drifted roof decays toward the undrifted roof it abuts; a neighbour takes the
+    axis of the drifted roof it abuts. ``None`` too when the direction is not determined.
+    """
+    drifted = {tag for r in records.values() if r.kind == "roof_beam" for tag in r.element_tags}
+    roofs = sorted(model.roofs, key=lambda r: r.tag)
+    if roof.tag in drifted:
+        pairs = [(roof, other) for other in roofs if other.tag not in drifted]
+    else:
+        pairs = [(other, roof) for other in roofs if other.tag in drifted]
+    for source, toward in pairs:
+        axis = abutting(source.footprint, toward.footprint)
+        if axis is not None:
+            i, sign = axis
+            return DriftAxis(i, sign, min(sign * p[i] for p in source.footprint) / _FT,
+                             source.tag)
+    return None
+
+
 def abutting(first, second) -> tuple[int, float] | None:
     """``(axis, sign)`` pointing from ``first`` to ``second`` where their plan boxes share an
     edge (within ``_ADJACENT_FT``) and overlap along it, else ``None``."""

@@ -39,6 +39,7 @@ from typehaus.checks.structural import (
     sill_bearing,  # noqa: F401 - registers checks
     slab_span,  # noqa: F401 - registers checks
     snow,  # noqa: F401 - registers checks
+    snow_retention,  # noqa: F401 - registers checks
     soffit,  # noqa: F401 - registers checks
     stacked_ladder,  # noqa: F401 - registers checks
     stair_stringers,  # noqa: F401 - registers checks

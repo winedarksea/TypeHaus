@@ -151,12 +151,13 @@ DUCTS_ERV_OUTDOOR_LEGS = [
             # (2026-11-11, §10.22) It lands EXACT on the 90-degree machine's south-east port:
             # down x=3'-4" to y=28'-5" and east on that row at 84 1/2", over the return
             # trunk's leg (top 73"), then down the port's kit lead (12" flex + the 90). The row
-            # is 11/32" south of the port centre (the flex takes it, under 1 degree) so the two
-            # 10" wraps clear by 0.09" where Broan's ports stand 9 3/4" apart.
+            # is 27/32" south of the port centre (the flex takes it, about 4 degrees) so the two
+            # 10" wraps clear by 1/16" where Broan's ports stand 9 3/4" apart. (2026-11-14) Both
+            # rows moved south for EQ-B-ERV's trapeze rod 2: DU-ERV-EA by 0.74", this one 1/2".
             path=(pt(ft(3, 4), ft(36, 8)), pt(ft(3, 4), ft(34, 1)),
                   pt(ft(3, 4), ft(34, 1)), pt(ft(3, 4), ft(31, 8)),
-                  pt(ft(3, 4), inch(373.2)), pt(ft(3, 4), inch(341)),
-                  pt(inch(83.6875), inch(341)), pt(inch(83.6875), inch(341.34375))),
+                  pt(ft(3, 4), inch(373.2)), pt(ft(3, 4), inch(340.5)),
+                  pt(inch(83.6875), inch(340.5)), pt(inch(83.6875), inch(341.34375))),
             elevations=(inch(60), inch(60), inch(-21), inch(-21),
                         inch(-24.9375), inch(-24.9375), inch(-24.9375), inch(-47.4375)),
             # ** 8", AND THE MOVE IS WHAT PAID FOR IT. ** notes/erv_static_budget.md §7's
@@ -196,13 +197,15 @@ DUCTS_ERV_OUTDOOR_LEGS = [
             # stand in the jog's lane, and the north strip it exits through is empty. At
             # 35'-0" its 12" wrapped section stood an inch inside W-B-N4.
             # (2026-11-11, §10.22) Off the 90-degree machine's north-east port, EXACT: up the
-            # kit lead to 81" (port + 12" flex + the 90), west on y=29'-3 5/16" over the supply
+            # kit lead to 81" (port + 12" flex + the 90), west on y=29'-2 9/16" over the supply
             # trunk's leg (top 73"), down to 78" on 30 degree bends before the lane, and north
             # on x=58.5" under EQ-B-ERV-MAN-SUP's west end as before. Its row is north of
-            # DU-ERV-OA's, which is why the two never cross.
-            path=(pt(inch(83.6875), inch(351.09375)), pt(inch(83.6875), inch(351.3)),
-                  pt(inch(72.87), inch(351.3)), pt(inch(67.74), inch(351.3)),
-                  pt(inch(58.5), inch(351.3)), pt(inch(58.5), inch(418.5)),
+            # DU-ERV-OA's, which is why the two never cross. (2026-11-14) The row is 17/32" south
+            # of the port, 0.74" further than before: EQ-B-ERV's trapeze rod 2 stood 0.65" inside
+            # the wrap; 1/16" clear now (structural.equipment_hanger_clearance).
+            path=(pt(inch(83.6875), inch(351.09375)), pt(inch(83.6875), inch(350.5625)),
+                  pt(inch(72.87), inch(350.5625)), pt(inch(67.74), inch(350.5625)),
+                  pt(inch(58.5), inch(350.5625)), pt(inch(58.5), inch(418.5)),
                   pt(inch(49.5), inch(418.5)),
                   pt(inch(44.37), inch(418.5)), pt(inch(24.625), inch(418.5)),
                   pt(inch(24.625), inch(418.5)), pt(inch(24.625), ft(36, 8))),

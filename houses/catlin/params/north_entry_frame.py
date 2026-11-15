@@ -18,11 +18,11 @@ lateral load crosses the tied joint into `RF-GARAGE` and the garage's walls
 (`RF-BW-CANOPY.diaphragm.delivers_to`, notes/canopy_garage_diaphragm.md). What stands
 under the east header is `EAST_POST_SYSTEM` below.
 
-**Two pier depths, on purpose.** The house-side three reach -9'-9 7/16" because the basement
-excavation is already open to it, so the shaft is the only cost -- and they must be cast
-WHILE it is open or they undermine the house footing ten inches away. The garage-side three
-stop at -7'-0", the garage strip footing's own plane, and are cast with the garage
-foundation. There is no excavation out there to make depth cheap.
+**Two pier depths, on purpose.** The house-side pads bear at -9'-11 7/16", the house footing
+underside, because the basement excavation is already open to it -- and they must be cast
+WHILE it is open or they undermine the house footing ten inches away. The garage-side pads
+bear at -7'-4", their tops level with the garage strip footings' tops, and are cast with the
+garage foundation. There is no excavation out there to make depth cheap.
 
 **KDAT longevity, house-wide (owner, 2026-09-10).** Every treated member here and in
 `breezeway.py` carries the same four-part detail, stated once rather than per element:
@@ -38,13 +38,11 @@ from typehaus import (
     JoistSpec, Node, Pad, Post, Railing, RailingKind, ReinforcementSpec, SlatScreen, Stair,
     ft, inch, pt,
 )
-
 from typehaus.library import TREX_ENHANCE_BASICS_DECK_LAYER
 from typehaus.resolve.connector_geometry.bases_caps import (
     COLUMN_BASE_DIMENSIONS,
     STEEL_GAUGE_THICKNESS_IN,
 )
-
 from params.cladding import HOUSE_NS_OUTBOARD_IN
 from params.column_heads import CBSTQ66Z_HEAD, HETA20Z_PAIR_HEAD, STANDOFF_PACK_IN
 from params.east_posts import east_supports, full_height_columns, moment_piers, pier_assembly
@@ -52,38 +50,30 @@ from plan.storeys.garage import (
     GARAGE_X_EAST, GARAGE_X_WEST, GARAGE_Y_SOUTH, SERVICE_DOOR_OFFSET, SERVICE_DOOR_WIDTH,
 )
 
-# ** THE ONE SWITCH (owner, 2026-09-29): what stands under BM-BW-RE. ** "steel" | "kdat" |
-# "cast" — see params/east_posts.py and notes/canopy_garage_diaphragm.md. All three are
-# graded at 0 FAIL by tests/test_catlin_east_post_variants.py; change the word, `haus fmt`,
-# `haus check`.
+# What stands under BM-BW-RE: "steel" | "kdat" | "cast" (params/east_posts.py,
+# notes/canopy_garage_diaphragm.md). All three are graded by
+# tests/test_catlin_east_post_variants.py.
 EAST_POST_SYSTEM = "kdat"
 
 HOUSE_CLADDING_Y_FT = 36 + HOUSE_NS_OUTBOARD_IN / 12
 GARAGE_CLADDING_Y_FT = GARAGE_Y_SOUTH.feet - 0.875 / 12
-# ** THE SERVICE DOOR SETS THE EAST EDGE OF EVERYTHING HERE (2026-09-11). ** D-G-SERVICE's
-# rough opening is 6'-11"..9'-7" with the 32in door in the garage's SW corner
-# (plan/storeys/garage.py::SERVICE_DOOR_OFFSET), and the whole landing derives from it:
-# the exterior deck ends on its east jamb and the east edge beam sits just inside it. The
-# west edge is the canopy column line.
+# D-G-SERVICE's rough opening (garage SW corner, plan/storeys/garage.py::SERVICE_DOOR_OFFSET) sets
+# the east edge of the landing: the deck ends on its east jamb and the east edge beam sits just
+# inside it. The west edge is the canopy column line.
 SERVICE_RO_WEST_FT = GARAGE_X_WEST.feet + SERVICE_DOOR_OFFSET.feet
 SERVICE_RO_EAST_FT = SERVICE_RO_WEST_FT + SERVICE_DOOR_WIDTH.feet
-# ** THE COLUMN LINES ARE THE GARAGE'S TRUSS BEARING LINES (owner, 2026-10-31). ** Each header
-# centres on the 2x6 plate of the garage wall it extends (sheathing plane + 5/8" CDX + half the
-# 5 1/2" plate), so its 5 1/2" faces are the plate's faces and one 23'-10 3/4" truss, with
-# its standard heel at the outside face and its bottom chord across the full 5 1/2", bears the
-# same on both roofs (decision #108; geometry review C3-E6/E7). They were on the garage's
-# SHEATHING planes, 3 3/8" outboard, where a truss reached 2 3/4" onto each header.
+# The column lines are the garage's truss bearing lines (decision #108): each header centres on
+# the 2x6 garage plate it extends, so one truss, heel at the outside face and bottom chord across
+# the full 5 1/2", bears the same on both roofs.
 GARAGE_PLATE_INSET_FT = (0.625 + 5.5 / 2) / 12
-# The column line; also the screen panel and the west door patch's edge. 6'-3 3/8".
+# The column line, 6'-3 3/8"; also the screen panel's reference.
 LANDING_WEST_FT = GARAGE_X_WEST.feet + GARAGE_PLATE_INSET_FT
-# The deck used to reach 11'-6" to cover two offset door patches (`D-M-ENTRY` at 8'-0",
-# `D-G-SERVICE` at 10'-0"); with the door centres three inches apart the RO's east jamb covers both.
+# East edge: the RO's east jamb covers both the D-M-ENTRY and D-G-SERVICE patches.
 LANDING_EAST_FT = SERVICE_RO_EAST_FT
-# ** THE WEST CORRUGATED PLANE, PUBLISHED SO NOTHING RE-DERIVES IT. ** `W-BW-SCREEN` carries
-# `alignment=face("stud-ext", offset=inch(-1.75))` (params/breezeway.py). Its 2x4s stand flush
-# with the 6x6s' west faces, 1" west of the column line, so the CDX laps and nails to its
-# chords and both west planes are the garage's own.
-# `W-BW-SCREEN-SKIRT` READS THIS: a drifted skirt is a step in steel, graded by nothing.
+# The west corrugated plane, published so nothing re-derives it: W-BW-SCREEN's
+# `alignment=face("stud-ext", offset=inch(-1.75))` (params/breezeway.py) puts its 2x4s flush with
+# the 6x6s' west faces, 1" west of the column line, so both west planes are the garage's own.
+# W-BW-SCREEN-SKIRT reads this: a drifted skirt is a step in steel, graded by nothing.
 SCREEN_AXIS_X_FT = LANDING_WEST_FT - (5.5 - 3.5) / 24
 SCREEN_CLADDING_WEST_X_FT = SCREEN_AXIS_X_FT - (1.75 + 0.625 + 0.875) / 12
 assert abs(SCREEN_CLADDING_WEST_X_FT - (GARAGE_X_WEST.feet - 0.875 / 12)) < 1e-9
@@ -91,130 +81,59 @@ DECK_FINISH_FT = 0.0
 DECK_JOIST_TOP_FT = DECK_FINISH_FT - TREX_ENHANCE_BASICS_DECK_LAYER.thickness.feet
 JOIST_DEPTH_IN = 7.25
 
-# ** THE PIER LINE IS AT y=37'-6", AND THE 3 3/8" IT MOVED NORTH IS NOT COSMETIC. **
-# W-B-N2/N3 is BASEMENT_8 on an axis at y=36'-0", so its concrete face is y=36'-4" and its
-# cladding face y=36'-7 1/4". At the first-drafted y=37'-2 5/8" a 12" round leaves 1 3/8"
-# to the cladding and 4 5/8" to the concrete: not formable, and it means excavating hard
-# against the house foam. At 37'-6" those clears become 6 3/4" and 10 3/4".
-#
-# ** AND IT IS A SEQUENCING NOTE BEFORE IT IS A DETAIL NOTE. ** These piers bottom at the
-# same elevation as the house footing, about 10" away. Cast in the open basement
-# excavation -- the owner's premise, and why reaching this depth is cheap -- that is a
-# non-issue. Cast AFTER the house footing is in and backfilled, a shaft 10" away bearing at
-# the same depth is undermining, and the answer becomes benching the excavation or bearing
-# the pier higher and lengthening the column. It belongs on the drawings.
+# Pier line y=37'-6" leaves room to form a pier off the house concrete face (W-B-N2/N3, y=36'-4")
+# and cladding face (36'-7 1/4"). These piers bottom on the house footing's plane about 10" away:
+# cast them in the open basement excavation, never after backfill (AN-BW-STRUCTURE).
 PIER_LINE_Y_FT = 37.5
-# Half of the 6x6 canopy columns that stand on this line and on the garage seat line.
-# BM-BW-SCSILL's ends are set off the column CENTRES by this, because a 6x6 is wider
-# than the 3" seat beam it shares a centreline with -- see that beam for the arithmetic.
+# Half of a 6x6 canopy column. BM-BW-SCSILL's ends are set off the column centres by this (the 6x6
+# is wider than the 3" seat beam on the same centreline).
 COLUMN_HALF_FT = 2.75 / 12
-# ** THE SEAT BEAMS STOP 1/8" OFF THE BASE STRAP'S SCREW HEADS (C2 E9, 2026-11-06). ** With
-# `axis="y"` the CBSTQ's strap leaves sit on the column's E/W faces, so a beam cut to the face
-# ran into the 10 ga strap and its SDS heads. Strap 0.1345 + head 0.190 (ESR-2236, Jan 2026,
-# Fig. 1: 0.172-0.190, the max) + 1/8" fit-up = 0.4495". ** THE LUS26-2Z HANGS ON AN 11/32"
-# FILLER NOTCHED ROUND THE STRAP (owner, 2026-11-06), so the end gap to the hanger is 0.1055",
-# inside Simpson's 1/8" (C-C-2026 p. 22 note m). A longer beam cannot get there: the 3" strap
-# is as wide as the 3" beam, so its heads stand behind the whole end (canopy_west_band.md
-# 2026-11-06 amendment (b)). Gravity bears on the pack (3 1/2" on the pier). **
-# Rotating the base instead puts F1 along the screen (2.14, canopy_west_band.md §4c); moving
-# the columns 3 1/8" north is the least that clears a 3" beam off a 3" strap, and the beam
-# then overhangs the 5 1/2" face.
+# Seat beams start SEAT_END_GAP_IN past the west column's face: with `axis="y"` the CBSTQ strap
+# leaves sit on the column's E/W faces, so the beam stops 1/8" off the SDS heads (strap 0.1345 +
+# head 0.190, ESR-2236 max, + 1/8" fit-up = 0.4495"). The LUS26-2Z hangs on an 11/32" filler
+# notched round the strap, end gap 0.1055" vs Simpson's 1/8" (C-C-2026 p. 22 note m); a longer
+# beam cannot get there (canopy_west_band.md, 2026-11-06 amendment (b)). Rotating the base would
+# put F1 along the screen (canopy_west_band.md §4c).
 SDS_HEAD_IN = 0.190
 SEAT_END_GAP_IN = STEEL_GAUGE_THICKNESS_IN[COLUMN_BASE_DIMENSIONS.strap_gauge] + SDS_HEAD_IN + 0.125
 SEAT_START_X_FT = LANDING_WEST_FT + COLUMN_HALF_FT + SEAT_END_GAP_IN / 12
-PIER_BOTTOM_FT = -(9 + 9.4375 / 12)   # the house footing underside, -9'-9 7/16"
-# 10", not 12". The garage hydrant line runs at -8'-10"; a 12" pad tops out at -8'-9 7/16"
-# and swallows it, and a water line cast through a spread footing is a sleeve detail nobody
-# should need here. At 10" the pad tops out at -8'-11 7/16" and the pipe passes 1 7/16" clear
-# above it. 10" is still ample for a 2'-0" pad at these loads.
+PIER_BOTTOM_FT = -(9 + 9.4375 / 12)   # nominal; pads resolve 2" lower, at the footing underside
+# 10" pad, not 12": a 12" pad would top at -8'-9 7/16" and swallow the garage hydrant line
+# (-8'-10"); at 10" it passes 1 7/16" clear above.
 FOOTING_DEPTH_FT = 10 / 12
 FOOTING_TOP_FT = PIER_BOTTOM_FT + FOOTING_DEPTH_FT
-# Every landing bearing is cast concrete up to -15.44" on BOTH sides, so no treated
-# member lies below the deck framing. Site.grade is -2'-10", so this is 18.56" ABOVE
-# finished grade -- the post bases are already clear of snow, splash and de-icer, and the
-# once-proposed "carry the pier a foot higher" line item was based on a wrong picture of
-# the site and is deleted.
-# ** THE SEATS ARE DROPPED, NOT FLUSH, AND THE MODEL SETTLES THAT. ** Flush framing -- every
-# beam soffit on one plane, floor beams hung off the seats -- is real construction and reads
-# in the engine as fifteen `structural.member_interference` FAILs, because two beams crossing
-# at one elevation DO occupy the same space in a model that has no hanger. So the floor beams
-# sit ON the seats: seat top -8.19" (the floor beams' soffit), seat soffit -15.44".
+# Every landing bearing is cast concrete (pier tops about 18" above grade, Site.grade -2'-10"), so
+# no treated member lies below the deck framing. The seats are dropped, not flush: floor beams sit
+# ON them, since flush framing reads as `structural.member_interference` FAILs without a hanger.
 SEAT_TOP_FT = DECK_JOIST_TOP_FT - JOIST_DEPTH_IN / 12      # -8.19"
 BEARING_TOP_FT = SEAT_TOP_FT - JOIST_DEPTH_IN / 12         # -15.44", the seat-beam SOFFIT
-# ** THE PIERS ARE CAST ONE PACK BELOW THE SOFFITS (C3-E13, 2026-10-31). ** Until then the pier
-# tops were the soffits, so the SS316 pack between them had no height. Cast 3/4" low, it is a
-# solid: -16.19", 17.81" above grade. The CBSTQ bases under PT-BW-CW/-CNW drop with it.
+# Piers are cast one pack (STANDOFF_PACK_IN) below the soffits so the SS316 pack is a solid; the
+# CBSTQ bases under PT-BW-CW/-CNW drop with them.
 PIER_TOP_FT = BEARING_TOP_FT - STANDOFF_PACK_IN / 12       # -16.19"
 
-# The headers top out at the GARAGE PLATE, +7'-4" (W-G-E/W-G-W z1). That is what makes
-# RF-BW-CANOPY one plane with RF-GARAGE rather than a roof stepping off it. The 5-1/2" x
-# 11-7/8" glulam (2026-09-30) puts the soffit at +6'-4 1/8" -- where SB-BW-BAND's top plate stops.
+# Headers top out at the GARAGE PLATE, +7'-4" (W-G-E/W-G-W z1), so RF-BW-CANOPY is one plane with
+# RF-GARAGE. The soffit (+6'-4 1/8") is where SB-BW-BAND's top plate stops.
 HEADER_TOP_FT = 7 + 4 / 12
 HEADER_DEPTH_IN = 11.875
 HEADER_SIZE = "5.5x11.875"
 HEADER_SOFFIT_FT = HEADER_TOP_FT - HEADER_DEPTH_IN / 12
 ROOF_COLUMN_EAST_X_FT = GARAGE_X_EAST.feet - GARAGE_PLATE_INSET_FT  # 29'-8 5/8"
 
-# ** THE SLAT CLERESTORY'S SILL IS THE PANEL'S TOP PLATE, AND THERE ARE NO RAILS. **
-# An earlier pass at this put two 2x6 cross rails on the column line at +1'-0" and +3'-0" to
-# carry the guard load into PT-BW-CW and PT-BW-CNW, because the screen was then open slats
-# for its whole height and a 2x4 slat cantilevered off the deck cannot take IRC Table
-# R301.5's 200 lb (resolving that base moment over a 5 1/4" arm wants ~1,700 lb of tension
-# per slat, against the 178 lb ultimate the Virginia Tech tests behind DCA 6 measured for a
-# 1/2" lag). The solid panel superseded both: at +4'-0" it covers the guard zone outright,
-# and two rails at +1'-0" and +3'-0" were left buried inside its own studs doing nothing the
-# wall was not already doing. They are deleted, and the slats sit on the panel's top plate.
-#
-# They also cost something while they existed, which is worth recording: bearing on the two
-# columns, they gave `engineering/pier_basis.py` two beams carrying no modelled plan area, so
-# PT-BW-W and PT-BW-GW could not publish an axial demand and `structural.lateral_racking`
-# went UNKNOWN on both.
-#
-# ** AND THE LAST SENTENCE HERE USED TO READ "this design no longer walks into it", WHICH WAS
-# FALSE FOR FIVE DAYS. ** It was written about the two deleted rails. `BM-BW-SCSILL` is still
-# there, still carrying this wall, and it walked straight into the same gap on 2026-09-15
-# when it was shortened and hung off the columns. A member with a LINE load and no area was a
-# real gap in that module, and what closed it on 2026-09-20 is that a wall's dead load never
-# needed an area: `pier_basis.wall_line_loads` derives it as a plf (this wall's own layer
-# stack, 30.54, plus `SB-BW-BAND` standing on its plate, 15.71) times the run it shares with
-# the beam in plan. See notes/north_entry_piers.md §2 — and what the UNKNOWN had been
-# concealing is why `PT-BW-W`/`-GW` are in `_MOMENT_PIERS` below.
+# W-BW-SCREEN's top: it covers the guard zone outright and is SB-BW-BAND's sill. No cross rails.
 SCREEN_PANEL_TOP_FT = 4.0
 
 
-# ** ONE TIER OF BEAMS, NOT TWO, AND THE JOISTS SIT STRAIGHT ON IT (owner, 2026-09-10). **
-# This landing was framed pier -> seat beam (east-west) -> floor beam (north-south) -> joist
-# (east-west) -> board. Three tiers of framing under a 5'-6" x 4'-11 3/4" square, with beams
-# running BOTH ways, which is what the owner saw and it was right: the middle tier does
-# nothing. The seat beams already span pier to pier, and a joist can land on them directly.
+# One tier of beams: the joists run N-S straight on the two seat beams. The seats, not N-S beams
+# on the piers, are the tier that fits: x=6'-3 3/8" is occupied at both y stations by a canopy
+# column on the same pier, so a beam there would interpenetrate it.
 #
-# So the joists run NORTH-SOUTH now, on the two seat beams, and `BM-BW-FW` is deleted outright
-# along with `WEST_BEAM_X_FT` and the 6" west cantilever that existed only to dodge PT-BW-CW.
+# BM-BW-FE is the deck's east edge beam, seat to seat in the joist plane; nothing crosses the stem
+# or W-G-S. Its tip is what line 1 of the deck tie lands on (params/landing_tie.py), wood to wood
+# into W-G-S's east jamb pack. It is 3-ply because the tie's HL43HDG is published only into wood
+# >= 5 1/8" thick (C-C-2024 p. 303 fn 5): the bolt passes through FE (4 1/2") and the rim (1 1/2").
 #
-# ** WHY THE SEATS ARE THE TIER THAT SURVIVES, AND NOT THE OTHER WAY ROUND. ** Putting the
-# north-south beams straight on the piers instead is the obvious alternative and it does not
-# fit: the pier lines are x=6'-3 3/8" and x=9'-7", and x=6'-3 3/8" is already occupied at BOTH y
-# stations by a canopy column (PT-BW-CW, PT-BW-CNW) standing on that same pier and rising
-# through the deck band to the header. A beam on that line interpenetrates the column
-# outright. The columns own x=6'-3 3/8"; the seats get the piers.
-#
-# ** BM-BW-FE IS THE DECK'S EAST EDGE BEAM, SEAT TO SEAT (2026-10-13). ** It runs north-south
-# in the joist plane on the same two seats, so it adds no depth, and it ends where the joist
-# field ends: nothing crosses the stem or `W-G-S` any more. Until 2026-10-13 it and BM-BW-FC
-# ran on under D-G-SERVICE's sill to carry the interior landing; that landing is gone (the door
-# swings OUT, IRC R311.7.6 exception, notes/garage_service_door_outswing.md), and BM-BW-FC went
-# with it -- it was sistered to the deck's second joist and had no other errand. Uids
-# BWB004AAAA, BWNB04SAAA/BWNB04NAAA (FC) and BWB011AAAA, BWNB11SAAA/BWNB11NAAA (LAND-HDR) are
-# retired. FE stays because its tip is what line 1 of the deck tie lands on
-# (params/landing_tie.py), wood to wood into W-G-S's east jamb pack.
-#
-# The joist field's own two edges, each a joist CENTRELINE so the rim lands where it is told.
-# West: clear of the two 6x6 canopy columns on x=6'-3 3/8", whose east face is at 6'-6 1/8".
-# East: clear of BM-BW-FE, whose west face is at 9'-2 1/2" -- the rim's east face touches it.
-#
-# ** FE IS 3-PLY, AND THE TIE IS WHY (2026-10-13). ** Line 1 of the deck tie is a pair of 3 ga
-# HL43HDG on FE's east face, and Simpson publishes the "4" series only into wood >= 5 1/8"
-# thick (C-C-2024 p. 303 fn 5): the bolt passes through FE and the rim beside it, 4 1/2" + 1 1/2".
+# The joist field's edges are joist centrelines: west clear of the 6x6 columns (east face 6'-6
+# 1/8"), east clear of BM-BW-FE (west face 9'-2 1/2").
 BEAM_WIDTH_IN = 3.0
 EDGE_BEAM_WIDTH_IN = 4.5
 JOIST_MEMBER_WIDTH_IN = 1.5
@@ -223,37 +142,24 @@ FIELD_EAST_X_FT = LANDING_EAST_FT - EDGE_BEAM_WIDTH_IN / 12 - JOIST_MEMBER_WIDTH
 # FE's east face is ON the RO's east jamb line; the deck's east edge is the same jamb.
 EDGE_BEAM_X_FT = SERVICE_RO_EAST_FT - EDGE_BEAM_WIDTH_IN / 24
 HOUSE_SEAT_Y_FT = PIER_LINE_Y_FT
-# ** THE GARAGE SEAT MOVED 6" SOUTH, OFF THE STEM. ** A pedestal under it at the old
-# y=42'-11 3/4" overlapped W-G-S's bottom plate and its corner post outright, and the stem's
-# concrete core is north of the beam line anyway -- which is why the retired design reached it
-# with brackets standing off the concrete FACE. At 42'-7 3/4" the seat and its two piers stand
-# clear of the garage wall entirely, and the floor beams cantilever 5 1/4" north to the
-# framing edge, inside R507.5.1's quarter of the 5'-1 3/4" back span (15 3/8").
+# The garage seat stands 8" south of the cladding face, clear of the stem (W-G-S's bottom plate
+# and corner post; the concrete core is north of this line). The joists cantilever north to the
+# framing edge, inside R507.5.1's quarter of the back span.
 GARAGE_SEAT_Y_FT = GARAGE_CLADDING_Y_FT - 8 / 12
 
-# ** MOVING THE SEAT NORTH FORCES A SOUTH FRAMING EDGE, AND SKIPPING IT SETS OFF A CASCADE. **
-# With the seat beam at y=37'-6" the deck sheet would run 12 1/4" to the cladding over air.
-# That is past `structural.subfloor_oversail`'s 8" bound -- which is not that check's own
-# number but `preferences.toml [framing] bearing_plan_tolerance_in`, the same allowance
-# `takeoff/uplift.py` uses to decide whether a member's end lands on a support. Past it the
-# uplift pass finds neither a derived tie nor a hanger and FAILs every member under the
-# deck, reported nowhere near its cause. No composite board allows a 12" overhang either;
-# 1" to 4" past the last joist is the usual limit.
-#
-# So the joist field itself runs south to y=36'-8 1/2" on the three floor beams, which
-# cantilever 9 1/2" past the seat -- inside R507.5.1's quarter of the 5'-5 3/4" back span
-# (16 3/8"). The southernmost joist IS the rim; the joists run in x, so a separate rim
-# member on this edge would be a second joist in the same place.
+# The joist field runs south to y=36'-8 1/2", cantilevering 9 1/2" past the seat. A deck sheet
+# running 12 1/4" to the cladding over air is past `structural.subfloor_oversail`'s 8" bound
+# (`preferences.toml [framing] bearing_plan_tolerance_in`, also used by takeoff/uplift.py): the
+# uplift pass then finds neither a tie nor a hanger and FAILs every member under the deck, far from
+# its cause. The southernmost joist IS the rim.
 FRAME_Y0_FT = 36 + 8.5 / 12
 FRAME_Y1_FT = GARAGE_CLADDING_Y_FT - 0.75 / 12
-# ** HOLD THE BOARDS OFF THE HOUSE AND LET THE GAP DRAIN. ** Boards run tight to a
-# rainscreened wall dam the drainage plane and hold water against the cladding. Abutting is
-# not bearing, so this does not compromise "the landing touches nothing on the house" -- but
-# it has to be DRAWN, because a carpenter will otherwise close it.
+# Boards stay 1/2" off the house cladding so the rainscreen gap drains. Abutting is not bearing,
+# but it has to be DRAWN or a carpenter will close it.
 DECK_SHEET_SOUTH_Y_FT = HOUSE_CLADDING_Y_FT + 0.5 / 12
 DECK_SHEET_NORTH_Y_FT = GARAGE_CLADDING_Y_FT - 0.5 / 12
-# A-508's cut, 55 1/2" north of the deck sheet: mid-panel 3 of the MDO screen (43 1/2".. 67 5/8"),
-# clear of the 6x6 timber's 1/8" gaps (37 3/4".. 43 1/2"), so the MDO layer is in the cut.
+# A-508's cut, 55 1/2" north of the deck sheet: mid-panel of the MDO screen, so the MDO layer is
+# in the cut.
 DETAIL_CUT_Y_FT = DECK_SHEET_SOUTH_Y_FT + 55.5 / 12
 
 
@@ -280,78 +186,35 @@ def beam(number, tag, x0, y0, x1, y1, bearings, top=DECK_JOIST_TOP_FT, size="2-2
     return result
 
 
-# The two seat beams, both on cast concrete at -15.44" and both spanning 3'-7" between
-# two bearings (5'-6" until 2026-09-11, when the deck's east edge came in to the door jamb).
-# They grade the same way as a result: `structural.deck_beam_span` reads a real 3'-7" span
-# off two Posts on each, rather than one falling back to a length.
-# Nothing could bear these before: the garage stem tops out at -1'-0", ABOVE this soffit
-# and north of the beam line, which is exactly why six invented stand-off brackets existed.
-# Both now land on two cast piers each, at the same elevation and on the same span, so
-# `structural.deck_beam_span` grades them identically.
-# ** THE WEST END HANGS OFF THE COLUMN, IT DOES NOT RUN INTO IT (2026-09-15). ** Both seat
-# beams are authored to the column LINE, so each ran 2 3/4" into the 6x6 standing there and
-# shared 6 1/16" of height with it. That was invisible until this revision only because
-# `_butt_joint` cleared any pair with a column in it — a column degenerates to a POINT in
-# that test, so "an endpoint lands on its axis" was satisfied by a beam driven halfway in.
-# The geometry is unchanged and cannot be: a hanger's flange has no representation, so the
-# beam is carried to the joint it was authored at either way. What changed is that the joint
-# is now AUTHORED (CN-BW-HGR-* below, LUS26-2Z), and only an authored pair is cleared.
-#
-# ** bearing_refs STAYS ON THE PIERS, AND THAT IS A MEASURED DECISION. ** Re-pointing the
-# west end at the column reads well -- it is the immediate support -- but it was tried and
-# reverted: it takes `deck_post/PT-BW-W` and `/PT-BW-GW` from "dowel lap, class B"
-# (d/c 0.30 and 0.46) to "axial, tied column" (0.024, 0.023), which is not a capacity gain,
-# it is the dowel-lap limit state LEAVING the register for both piers. The column still
-# stands on the pier (`supported_by`), so the load still arrives there; naming the pier is
-# naming the end of that path, and it is the naming the pier_basis tributary is built on.
-# The clash is cleared by the authored hanger, not by this field -- bearing_refs is a
-# statement about load path, not about where the wood stops.
-# ** BOTH SEAT BEAMS START AT THE COLUMN'S EAST FACE (2026-09-23). ** Authored from the
-# column line, their west 2 3/4" sat in the post base's standoff under PT-BW-CW/-CNW (then an
-# ABU66SS, now a CBSTQ66Z-SDS2 at 1.105")
-# (`structural.post_base_interference`). Since 2026-11-06 they stop SEAT_END_GAP_IN past it,
-# off the strap (C2 E9): 3.64" left on the 14" pier at the beam's faces (R507.5.2: 3").
+# Seat beams on cast piers (`structural.deck_beam_span` reads two Posts each). `bearing_refs` stays
+# on the PIERS, the end of the load path that `pier_basis`'s tributary is built on; naming the
+# columns drops PT-BW-W/-GW's dowel-lap limit state from the register. The west ends hang off the
+# column (CN-BW-HGR-*, LUS26-2Z): authored to the column line, inside the 6x6, and only an authored
+# hanger pair is cleared by `_butt_joint`. They start SEAT_END_GAP_IN past the column face, off the
+# base strap (`structural.post_base_interference`); R507.5.2 needs 3" of bearing on the pier.
 beam(1, "BM-BW-HOUSE-SEAT", SEAT_START_X_FT, HOUSE_SEAT_Y_FT,
      LANDING_EAST_FT, HOUSE_SEAT_Y_FT, ("PT-BW-W", "PT-BW-E"), SEAT_TOP_FT)
 beam(2, "BM-BW-GARAGE-SEAT", SEAT_START_X_FT, GARAGE_SEAT_Y_FT,
      LANDING_EAST_FT, GARAGE_SEAT_Y_FT, ("PT-BW-GW", "PT-BW-GE"), SEAT_TOP_FT)
-# The east edge beam, seat to seat with the joist field. Uid number stays 5 -- 3 (BM-BW-FW),
-# 4 (BM-BW-FC) and 11 (BM-BW-LAND-HDR) are retired and not reused.
-# Its tip runs 3/4" past the joist ends to the garage's cladding face, so the deck tie's bolt
-# stands 2" (4D) off the end grain rather than 1 1/4" (params/landing_tie.py).
+# The east edge beam, seat to seat with the joist field. Uid number stays 5: 3 (BM-BW-FW), 4
+# (BM-BW-FC) and 11 are retired. Its tip runs 3/4" past the joist ends to the garage's cladding
+# face, so the deck tie's bolt stands 2" (4D) off the end grain (params/landing_tie.py).
 beam(5, "BM-BW-FE", EDGE_BEAM_X_FT, FRAME_Y0_FT, EDGE_BEAM_X_FT, GARAGE_CLADDING_Y_FT,
      ("BM-BW-HOUSE-SEAT", "BM-BW-GARAGE-SEAT"), size="3-2x8")
 
-# ** THE TWO ROOF HEADERS, AND THE CANOPY THEY CARRY TOUCHES THE GARAGE FOR NOTHING. **
-# These used to bear north on `W-G-W` / `W-G-E`, on the premise that a header landing on the
-# garage's own southwest and southeast corners was a southward EXTENSION of a bearing line
-# already sized for truss reactions. It is not a detail. A ~3,130 lb point reaction on the
-# END of a stud wall wants a real bearing post through the plate, the stud bay, the sill and
-# the ICF stem, and no such post was authored, drawn or billed -- `bearing_refs` naming a wall
-# is the engine's idiom for a beam landing ALONG a wall, and it grades nothing about a beam
-# landing on a wall's terminus.
+# The canopy is freestanding on four 6x6 posts of its own for gravity (PT-BW-CW/-CNW west,
+# PT-BW-RE/-RNE east); nothing bears on a garage wall terminus. x=6'-3 3/8" and x=29'-8 5/8" are
+# the garage's truss bearing lines, so the roofs are one plane with sheathing continuous across the
+# tied joint (the canopy's lateral system, AN-BW-ROOF), which carries no gravity.
 #
-# So the canopy is freestanding on four columns of its own (owner, 2026-09-10): PT-BW-CW/CE
-# at the pier line and PT-BW-CNW/CNE at the garage-side line, each on cast concrete to
-# -15.44". x=6'-3 3/8" and x=29'-8 5/8" are the garage's own truss bearing lines (2026-10-31),
-# so the canopy reads as one plane with RF-GARAGE and the sheathing runs continuous across the joint -- and
-# THAT continuity is the only thing the two structures share. It is the canopy's lateral
-# system (AN-BW-ROOF says so) and it carries no gravity load in either direction.
+# Headers end flush on the outer faces of their end posts (65 1/4", no tails) on ACE6Z caps. The
+# deck reaches the garage on its own north overhang (plan/storeys/garage.py); the header does not.
 #
-# Both headers end flush on the outer faces of their end posts (owner, 2026-10-28): an ACE6Z
-# end cap at all four heads, open air at both ends, no tails. The deck still reaches the
-# garage on its own north overhang (plan/storeys/garage.py); the header does not.
-#
-# ** 5-1/2" x 11-7/8" GLULAM, FLUSH WITH THE 6x6 FACES (owner, 2026-09-30). ** It replaced a
-# 3-ply 2x12 for the joints, not for bending: an AC6/ACE6 cap is published for a 5-1/2" beam
-# on a 6x6 (ESR-2604 Table 3), it is the only post cap with a lateral row along the beam, and a
-# flush face is what the band brace's KBS1Z connectors lie on (params/entry_band_brace.py). The
-# 2026-09-12 refusal rested on `roof_beam` reading only sawn sections; it grades a glulam now
-# (24F-V4 DF, wet, snow C_D -- notes/canopy_west_band.md §7). The retired ply-seam argument
-# is moot: one member, no seam.
-#
-# Post face to post face, 65 1/4". The roof-bearing run starts 3/4" in, so truss 1 (centred
-# on that start by `build_truss_layout`) bears its full 1 1/2" on the beam end, not 3/4".
+# 5-1/2" x 11-7/8" glulam, flush with the 6x6 faces: the joints chose it, not bending. An AC6/ACE6
+# cap is published for a 5-1/2" beam on a 6x6 (ESR-2604 Table 3, the only post cap with a lateral
+# row along the beam), and the flush face takes the band brace's KBS1Z (params/entry_band_brace.py).
+# `roof_beam` grades it as 24F-V4 DF, wet (notes/canopy_west_band.md §7). The roof-bearing run
+# starts 3/4" in (`TRUSS_DATUM_INSET_FT`), so truss 1 bears its full 1 1/2" on the beam end.
 HEADER_SOUTH_Y_FT = PIER_LINE_Y_FT - COLUMN_HALF_FT
 HEADER_NORTH_Y_FT = GARAGE_SEAT_Y_FT + COLUMN_HALF_FT
 TRUSS_DATUM_INSET_FT = 0.75 / 12
@@ -360,122 +223,54 @@ beam(6, "BM-BW-RW", LANDING_WEST_FT, HEADER_SOUTH_Y_FT,
      LANDING_WEST_FT, HEADER_NORTH_Y_FT, ("PT-BW-CW", "PT-BW-CNW"), HEADER_TOP_FT,
      HEADER_SIZE, "BEAM_GLULAM_TREATED",
      roof_bearing_insets=(ft(TRUSS_DATUM_INSET_FT), ft(0)))
-# ** WHAT THE EAST HEADER LANDS ON IS EAST_POST_SYSTEM (2026-09-29). ** Pinned 6x6 KDAT on
-# 3'-0" piers by default; steel HSS or the 2026-09-10 full-height cast columns are one word
-# away (params/east_posts.py). The tag and uid it names never change.
+# What the east header lands on is EAST_POST_SYSTEM (params/east_posts.py); its tag and uid
+# never change.
 beam(7, "BM-BW-RE", ROOF_COLUMN_EAST_X_FT, HEADER_SOUTH_Y_FT,
      ROOF_COLUMN_EAST_X_FT, HEADER_NORTH_Y_FT, ("PT-BW-RE", "PT-BW-RNE"), HEADER_TOP_FT,
      HEADER_SIZE, "BEAM_GLULAM_TREATED",
      roof_bearing_insets=(ft(TRUSS_DATUM_INSET_FT), ft(0)))
 
-# ** THE SCREEN PANEL'S SILL, WHICH IT CANNOT DO WITHOUT AND NEARLY DID. **
-# W-BW-SCREEN stands on the column line at x=6'-3 3/8" and weighs 77 plf. Nothing was under it
-# between the two seat beams -- the deck's westmost joist is 3 3/4" east of this line -- so
-# its sill plate spanned 4'-11 3/4" carrying ~385 lb, which a flat 2x4 plate does not do
-# (f_b ~2,200 psi). `structural.masonry_guard_bearing` is what said so, and it was right:
-# a guard over the house's 50 plf allowance has to name its bearing line.
+# BM-BW-SCSILL carries W-BW-SCREEN (no joist under it) between the two columns: 39.2 plf, 57.3
+# with the band (notes/north_entry_piers.md §2). It sits in the joist plane, not the seat plane,
+# which would cross the seats' west ends at one elevation (`structural.member_interference`), and
+# doubles as the deck's west rim since the joist field starts 3 3/4" east of this line.
 #
-# A 2x8 between the two columns is the whole fix. Span 4'-6 1/4", w 77 plf, M 197 lb-ft,
-# S 13.14 in3, f_b 180 psi -- d/c ~0.21 wet-service.
+# It hangs off both columns (LUS28Z, CN-BW-HGR-SCS-* in params/breezeway.py): the 6x6 (5 1/2")
+# fully shadows the 3" seat beam on the same centreline, so authored to the column centres it
+# buried 2 3/4" in each 6x6, and shortened to the faces it stops 1 1/4" clear of its own bearing
+# (`test_analytical_graph`). Both columns carry `within_wall`, so the panel's plates are cut at the
+# same faces.
 #
-# ** IT SITS IN THE JOIST PLANE, NOT IN THE SEAT PLANE, AND THAT IS FORCED. ** At the seat
-# top it would be at the same elevation as BM-BW-HOUSE-SEAT and BM-BW-GARAGE-SEAT, whose
-# west ends are on this same line, and two beams crossing at one elevation is a clash in a
-# model with no hanger (`structural.member_interference` reported it). Topped with the
-# joists instead it clears both seats and doubles as the deck's west rim -- the joist field
-# starts 3 3/4" east of this line to clear the columns, so without it that strip of board
-# had nothing under it either.
-#
-# ** IT HANGS OFF BOTH COLUMNS, AND THAT IS THE ONLY BUILDABLE END (owner, 2026-09-15). **
-# The 6x6 fully shadows the seat beam this sill would otherwise land on. Both are centred on
-# this line, the column 5 1/2" wide and the seat beam 3", so the column faces stand at
-# y 37.7292 / 42.2500 and the beam faces 1 1/4" further in at 37.625 / 42.354. No end
-# condition reaches the beam without passing through the column: authored to the column
-# CENTRES the sill buried 2 3/4" in each 6x6 over its full 7 1/4" depth, and shortened to the
-# column FACES it stops 1 1/4" clear of its own bearing -- `test_analytical_graph` catches
-# that second one as "a run of members hangs on no support". Measured both ways.
-#
-# So it stops at the faces and hangs there, on an LUS28Z apiece (CN-BW-HGR-SCS-* in
-# params/breezeway.py). This revises the owner's earlier "shorten, do not hang" -- that call
-# assumed shortening alone left it bearing, and the arithmetic above is why it does not. It
-# also puts the sill where everything else on this wall already stops: both columns carry
-# `within_wall="W-BW-SCREEN"`, so the panel's three plate courses are cut at these same two
-# faces, and the sill now dies into them on the same plane as the studs above it.
-#
-# ** bearing_refs FOLLOWS THE HANGER TO THE COLUMNS, WHICH IS THE OPPOSITE OF THE SEAT BEAMS
-# ABOVE, AND DELIBERATELY. ** A seat beam's refs stay on its PIER because the pier is where
-# its path ends and `pier_basis`'s tributary is built on that naming. This sill is different:
-# its load is taken by the column itself, which stands on its own pier through `supported_by`,
-# and the seat beams it used to name are members it no longer touches at all.
+# `bearing_refs` follows the hanger to the columns, the opposite of the seat beams: this sill's
+# load is taken by the column, which stands on its own pier through `supported_by`.
 beam(10, "BM-BW-SCSILL", SCREEN_AXIS_X_FT, PIER_LINE_Y_FT + COLUMN_HALF_FT,
      SCREEN_AXIS_X_FT, GARAGE_SEAT_Y_FT - COLUMN_HALF_FT,
      ("PT-BW-CW", "PT-BW-CNW"), DECK_JOIST_TOP_FT, "2x8")
 
 # --- piers, pedestals and columns -------------------------------------------------------
 #
-# ** SLENDERNESS IS A FALSE ALARM AND THE FOOTING IS THE REAL CHANGE. ** k*lu/r on the 12"
-# shaft does exceed ACI 318-19 Sec 6.2.5's non-sway floor of 22, so it is COMPUTED rather than
-# neglected -- but P_c = pi^2*EI/(k*lu)^2 is ~851 kip against a factored demand near 6.5 kip,
-# so delta_ns is ~1.01 and e_min stays under Sec R22.4.2's 0.10h. Axial d/c is ~0.023. What
-# does move is the pad: service load per roof pier is ~4,600 lb against the retired PR-BW-*'s
-# 1,240, so on 1,500 psf presumptive soil the required area is 3.1 ft2 and the retired
-# 1.78 ft2 pad no longer covers it. 2'-0" square = 4.0 ft2. See notes/north_entry_piers.md.
+# Shaft slenderness exceeds ACI 318-19 §6.2.5's non-sway floor of 22 and is computed, not
+# neglected; it is a false alarm. The pad area is what governs (notes/north_entry_piers.md).
 #
-# ** THESE BECAME `Pad` ON 2026-09-14, AND THE ARGUMENT THEY WERE `Footing` FOR IS ANSWERED
-# RATHER THAN DROPPED. ** It ran: a Pad is graded prescriptively by
-# `structural.deck_footing_size` against an IRC DECK table that knows nothing about roof
-# load, and these carry roof snow — so `engineering/spread_footing.py` graded a Footing
-# instead, and six `spread_footing/` items went to the seal register for a flat square pad
-# on presumptive soil, which is a lookup and not a design.
+# These are `Pad`, not `Footing`: `structural.deck_footing_size` (R507.3.1) reads a post's roof
+# share as deck currency, `(DECK_DEAD_LOAD_PSF + design snow) / DECK_TOTAL_LOAD_PSF` (1.674 here;
+# `engineering/pier_basis.design_roof_snow_psf`), via `checks/structural/deck.py::
+# _roof_borne_posts`. PT-BW-RE/-RNE carry only a roof header, so no deck's post list held them.
+# The pour is a SQUARE of side `width` either way (`_pad_outline`); `bottom_elevation` sets depth.
 #
-# What changed is that the check learned the roof. `checks/structural/deck.py::_roof_borne_posts`
-# converts a post's roof-footprint share into the DECK currency R507.3.1 is written in —
-# `(DECK_DEAD_LOAD_PSF + design snow) / DECK_TOTAL_LOAD_PSF`, **1.674** here — so the
-# snow arrives at the table as equivalent area rather than being dropped. **PT-BW-RE and
-# PT-BW-RNE are why that had to be built first**: they carry only `BM-BW-RE`, a roof header,
-# so they were not in any deck's post list at all — not graded at zero, not graded — and
-# deleting their Footing without it would have removed an item and put nothing in its place.
-#
-# ** THE SNOW IN THAT FACTOR IS THE DESIGN SNOW, NOT THE GROUND SNOW, SINCE 2026-09-18. **
-# It read `Site.ground_snow_load_psf` (50) while `BM-BW-RE` overhead was designed at
-# `preferences.toml [structural] roof_beam_snow_psf` (73.7, the ASCE 7 §7.7 roof-step drift
-# off the house gable) — two answers about one roof, one storey apart, with the lighter of
-# them under the heavier. The factor rose 1.2 -> 1.674 and the canopy share with it, 48 ->
-# 67 ft² of equivalent deck. See `engineering/pier_basis.design_roof_snow_psf`.
-#
-# **The pour does not change.** `resolve/envelope.py` already drew a post-hosted Footing as a
-# SQUARE of side `width`, so the same concrete is in the same place; see `_pad_outline`.
-# Credited bearing area RISES 3.14 -> 4.00 ft² on a 24", because grading stops reading an
-# inscribed circle that nothing was ever going to form.
-#
-# `bottom_elevation` is what makes these bear at depth rather than pin to the storey datum
-# (-> Pad.bottom_elevation), and the shaft above each grows to suit.
-# ** THE CAGE MUST BE STRUCTURED, NOT ONLY PROSE, OR ITS STEEL BILLS ZERO. **
-# `vertical_reinforcement` is a free-text string for the drawings; `reinforcement_takeoff`
-# reads `reinforcement` and nothing else. Authoring only the string added 3.18 cy of concrete
-# to this house and exactly no pounds of steel, which `notes/rebar_backout.md`'s lb/cy ratio
-# is what noticed. Both spellings, always, and keep them saying the same thing.
-#
-# ** THE SAME 8" CAGE THE COURT COLUMNS CARRY — ONE CROSS-SECTION, TEN POURS HOUSE-WIDE
-# (six here, four in `params/sunken_garden.py`), LENGTHS PER POUR. ** That is the procurement
-# fact: it is a fabricated part, not a field-bent detail.
-#
-# The durability goal is long-term performance in F3 + C2 — these stand up to 18 1/2" out of
-# the ground at a salted entry. `PIER_CONCRETE_12` names EXPOSED_MIX, whose `bar_coating`
-# carries the ladder (galvanized either ASTM A767 after fabrication or ASTM A1094 stock, the
-# fabricator's choice named on the order; black bar at this cover and mix only as a written
-# exception). NO per-bar coating here: the coating belongs to the pour, and stating it twice
-# was the duplication struck on 2026-09-12. Epoxy and stainless stay refused.
+# A cage is authored twice and the two must agree: `vertical_reinforcement` is drawing text,
+# `reinforcement` is what `reinforcement_takeoff` bills (the string alone bills no steel).
+# ENTRY_PIER_CAGE is the court columns' 8" cage, a fabricated part. Coating belongs to the pour
+# (EXPOSED_MIX `bar_coating`), so none is stated per bar.
 ENTRY_PIER_CAGE = ReinforcementSpec(
     bars=(
         BarSpec(role="vertical", bar=5, count=4),
         BarSpec(role="ties", bar=3, spacing=inch(10.0)),
     ),
-    # ** 2", NOT THE OWNER'S 3" AIM (2026-09-23), AND THE PAD DOWELS ARE WHY. ** The dowels lap
-    # one bar inside the verticals; at 3" cover they stand 2.39" apart (2 1/2": 3.09"), under
-    # ACI 318-19 Table 25.4.3.2's 6 db = 3.75", so psi_r goes 1.0 -> 1.6 and ldh 7.11 -> 11.38"
-    # against the 9" a 12" pad holds. 2" gives 3.80". Back to 3" = 15" pads or hook ties
-    # through the pad (balcony_moment_columns.md §14, north_entry_piers.md §6).
+    # 2" cover, not 3": the pad dowels lap one bar inside the verticals, and at 3" cover they stand
+    # 2.39" apart, under ACI 318-19 Table 25.4.3.2's 6 db, so psi_r goes 1.0 -> 1.6 and ldh
+    # 7.11 -> 11.38" against the 9" a 12" pad holds (balcony_moment_columns.md §14,
+    # north_entry_piers.md §6).
     cover=inch(2.0),
     lap_class="B",
     source='8" cage, (4) #5 + #3 rings @ 10", one of ten house-wide; notes/north_entry_piers.md §6 — the ACI 318-19 §10.6.1.1 1% floor, four bars per §10.7.3.1(b)',
@@ -494,11 +289,9 @@ ENTRY_MOMENT_CAGE = ReinforcementSpec(
     source="ENTRY_PIER_CAGE plus its base dowels; notes/north_entry_piers.md §6",
 )
 
-#: ** (6) #5 IN THE 14" ROUND (2026-11-05, F5-106). ** (4) #5 is 0.806% of the 14" gross,
-#: under ACI 318-19 §10.6.1.1's 1% (1.539 in2); six give 1.86 in2, 1.21%, with no reliance on
-#: §10.3.1.2's reduced area. A 10" cage at the same 2" cover: verticals 4.31" c-c. Each dowel
-#: laps BESIDE its vertical on the bar circle, not inside it, so the hooks keep 4.31" >= 6 db
-#: (inside, 3.69" would take psi_r to 1.6). notes/north_entry_piers.md §13b.
+#: (6) #5 in the 14" round: (4) #5 is 0.806% of the gross, under ACI 318-19 §10.6.1.1's 1%; six
+#: give 1.21%. Each dowel laps BESIDE its vertical on the bar circle, so the hooks keep
+#: 4.31" >= 6 db (inside, 3.69" would take psi_r to 1.6). notes/north_entry_piers.md §13b.
 ENTRY_PIER_CAGE_14 = ReinforcementSpec(
     bars=(
         BarSpec(role="vertical", bar=5, count=6),
@@ -525,61 +318,27 @@ PIER_CAGES = {
     "12 round": (ENTRY_PIER_CAGE, ENTRY_MOMENT_CAGE, '(4) #5 vertical, #3 ties @ 10" o.c.'),
     "14 round": (ENTRY_PIER_CAGE_14, ENTRY_MOMENT_CAGE_14, '(6) #5 vertical, #3 ties @ 10" o.c.'),
 }
-#: ** THE WEST PAIR JOINED ON 2026-09-20, AND THEY HAD BEEN MISSING ALL ALONG. ** This set
-#: covered `FS-BW-FLOOR`'s EAST fixed column and the two canopy columns, and `PT-BW-W` /
-#: `PT-BW-GW` — the deck's west line — were left on the plain cage with 8"/10" pads. That was
-#: never a decision. `pier_basis._base_moments` splits the landing's lateral case "over 4
-#: fixed column(s)" and `structural.lateral_racking` names all four as that deck's lateral
-#: system, so the west pair carries the same base moment as its east twins, and it carried it
-#: with NO base dowels and pads too shallow to develop any.
-#:
-#: Nobody saw it because their records never got that far: `BM-BW-SCSILL`, the screen wall's
-#: sill, hangs off `PT-BW-CW`/`-CNW` and thence onto these two, and a WALL is neither a
-#: `FloorSystem` nor a `Roof` — so `pier_basis._unmodelled_beams` reported an unpriced beam,
-#: `deck_post` declined to publish an axial ratio, and both piers fell to `_detailing_only`,
-#: which prints six load-independent states and never reaches dowel anchorage at all. Closing
-#: that gap (`pier_basis.wall_line_loads`, the same commit) routes them into `_moment_column`
-#: and the missing question lands: `PT-BW-GW` wanted ACI 318-19 §25.4.3.1's 7.115" of ldh
-#: against the 5.375" an 8" pad gives, d/c 1.32.
-#:
-#: The fix is the one its east twin already has. Tops are UNCHANGED — `PT-BW-W` keeps
-#: `FOOTING_TOP_FT`, `PT-BW-GW` the garage strip's plane — and only the bottoms drop, 2" and
-#: 4" respectively, for **0.073 cy of concrete and 8 more #5 dowels**. Both then land at
-#: 0.759 governed by dowel anchorage: `PT-BW-GE`'s own number, the twin they should always
-#: have matched. Because the tops hold, `column_base`'s embedment (measured from grade to the
-#: PAD TOP) does not move and the §1806.3.4 claim above is undisturbed.
+#: Moment piers (fixed-base columns: `pier_basis._base_moments`, `structural.lateral_racking`) take
+#: the moment cage and a 12" pad: the four landing piers plus the east posts' set. Tops are
+#: unchanged and only bottoms drop, so `column_base`'s embedment (grade to PAD TOP) holds.
 _MOMENT_PIERS = frozenset({"PT-BW-W", "PT-BW-E", "PT-BW-GW", "PT-BW-GE"}
                           | moment_piers(EAST_POST_SYSTEM))
-#: ** 12" UNDER EVERY MOMENT PIER, AND THE BOTTOM GOES DOWN (owner, 2026-09-17). ** The #5 dowel
-#: foot rests at 3" bottom cover, so embedment is thickness - 3": 10" gave 7.00", 8" gave 5.00",
-#: against ACI 318-19 §25.4.3.1 ldh 7.11". 12" gives 9.00". Tops stay put -- pier heights, the
-#: hydrant's 1 7/16" over the house-side tops, and the garage strip's aligned top all hold.
-#: notes/north_entry_piers.md, 2026-09-17 addendum.
+#: 12" under every moment pier: the #5 dowel foot rests at 3" bottom cover, so embedment is
+#: thickness - 3" (9" at 12" vs ldh 7.11", ACI 318-19 §25.4.3.1). Tops stay put: pier heights, the
+#: hydrant's 1 7/16" over the house-side tops, the garage strip's aligned top.
 MOMENT_PAD_DEPTH_FT = 1.0
 
-#: ** THE EAST SUPPORTS ARE A SWITCH NOW, AND THE −10'-2" PLANE LIVES IN ONE VARIANT OF IT
-#: (2026-09-29). ** `ROOF_COLUMN_BASE_FT` and `_DEEP_BASE_COLUMNS` put `PT-BW-RE`/`-RNE` on a
-#: common −10'-2" plane because, as the canopy's only E-W lateral system, each needed 7.07'
-#: of embedment (entry_column_base_fixity.md §6a). With the canopy braced off the garage
-#: (notes/canopy_garage_diaphragm.md) the default east posts are PINNED KDAT on 3'-0" piers
-#: whose pads sit on the plane each side already has: `PD-BW-RE` on the house-side
-#: `FOOTING_TOP_FT` beside `FT-B-N1`..`-N4` (no undermining step, and no lateral capacity
-#: resting on the overdig's backfill), `PD-BW-RNE` on the garage strip's own plane (no 3'-2"
-#: drop under the stone). The deep plane survives only as `_EAST_VARIANTS["cast"]`, with its
-#: two sequencing notes, because that variant is the 2026-09-20 design unchanged:
-#:
-#: * House side: the pad bears 1'-4 9/16" below `FT-B-N1`..`-N4` about 7/8" away in plan —
-#:   dig the pocket and cast the pad BEFORE the strip bears beside it.
-#: * Garage side: `PD-BW-RNE` laps ~7 1/2" under `FT-GF-S1`/`-S3` and sits 3'-2" below them;
-#:   the pad goes in first and the stone is compacted round it in R403.4.1's 8" lifts.
+#: The east supports are a switch (`EAST_POST_SYSTEM`). Default pinned KDAT piers have pads on the
+#: plane each side already has: PD-BW-RE on the house-side `FOOTING_TOP_FT` beside FT-B-N1..-N4,
+#: PD-BW-RNE on the garage strip's own plane. The deep -10'-2" plane survives only in
+#: `_EAST_VARIANTS["cast"]` (params/east_posts.py), with two sequencing notes: house side, the pad
+#: bears below FT-B-N1..-N4 close beside them (dig and cast it BEFORE the strip bears); garage
+#: side, PD-BW-RNE laps under FT-GF-S1/-S3 and sits well below (pad first, stone compacted
+#: round it).
 
-#: ** NO COLUMN HERE CLAIMS IBC §1806.3.4, AND THE LANDING PAIR USED TO. ** `PT-BW-GW`/`-GE`
-#: carried the owner's isolated-pole judgement (2026-09-20) while their embedment was measured
-#: to the pad TOP, 3.50', straddling 4.45'/3.39'. `column_base` basis 4 counts the doweled,
-#: monolithic pad as part of the pole — 4.50' to the pad bottom — and both now pass at both
-#: ends of Eq. 18-1's pivot band on Table 1806.2's own S1 (4.33'/4.39' needed). A claim that
-#: buys nothing is a stale declaration, so it was withdrawn in the same commit
-#: (`notes/entry_column_base_fixity.md` 6e).
+#: No column here claims IBC §1806.3.4: `column_base` basis 4 counts the doweled, monolithic pad as
+#: part of the pole (embedment to the pad bottom), and all pass Eq. 18-1 on Table 1806.2's S1
+#: (notes/entry_column_base_fixity.md 6e).
 
 PIERS = []
 def _pad_outline(x_ft, y_ft, side_in, along_in=None):
@@ -610,9 +369,8 @@ def _pad_outline(x_ft, y_ft, side_in, along_in=None):
 _HEAD_CONNECTORS = {"PT-BW-W": CBSTQ66Z_HEAD, "PT-BW-GW": CBSTQ66Z_HEAD,
                     "PT-BW-E": HETA20Z_PAIR_HEAD, "PT-BW-GE": HETA20Z_PAIR_HEAD}
 
-#: ** 14" UNDER A CAST-IN CBSTQ (2026-09-30). ** ESR-3050 Table 2 fn. 4 wants 3" of side cover
-#: to the embedded straps, and on a 12" round their corners get 2 3/4" (3.25" off the axis).
-#: 14" gives 3 3/4" and gives the seat beam 4 1/4" of bearing on the pier instead of 3 1/4"
+#: 14" under a cast-in CBSTQ: ESR-3050 Table 2 fn. 4 wants 3" of side cover to the embedded straps
+#: (a 12" round gives 2 3/4"), and the seat beam gets 4 1/4" of bearing instead of 3 1/4"
 #: (notes/canopy_west_band.md §5). Its cage is (6) #5 (`ENTRY_PIER_CAGE_14`).
 _PIER_SIZE = {"PT-BW-W": "14 round", "PT-BW-GW": "14 round"}
 
@@ -621,22 +379,11 @@ def _cage(tag):
     return PIER_CAGES[_PIER_SIZE.get(tag, "12 round")]
 
 FOOTINGS = []
-#: The house-side pads run 18" north-south rather than the 24" their square drew, because
-#: `FT-B-N1`..`-N4` — the basement's own north strip footing, on this same -9'-9 7/16" plane —
-#: reach to y = 36'-8 1/8" and a 24" square centred on the pier line reached 2 1/8" into them.
-#: That lap was there while these were Footings and was invisible: `concrete_interference`
-#: scopes every `Pad` and only a wall-less `Footing`. 18" clears it by 1 1/16".
-#:
-#: The width makes the area back up, which is the whole reason a `Pad` is authored as an
-#: outline instead of a width: 30" x 18" = 3.75 ft² carries PT-BW-W's 2.48 ft² requirement
-#: with room, where a 24" square that cleared in y would have been 24 x 18 = 3.00 ft².
-#:
-#: ** ONE SIZE FOR ALL THREE, AND THE SHEET IS WHY. ** PT-BW-E and PT-BW-RE need 1.00 and
-#: 1.60 ft² and would take a 24" x 18" pad, but three pad sizes are three rows in S-100's
-#: FOUNDATION SCHEDULE and that sheet is fitted to its PLAN — one table row from the schedule
-#: governing the sheet height again, which `test_schedule_columns.py` exists to catch. One
-#: size is also one form, poured three times. The 0.75 ft² of concrete that buys back is
-#: about $12.
+#: House-side pads are 30" x 18" (E-W x N-S). `FT-B-N1`..`-N4`, the basement's north strip footing
+#: on this plane, reach y=36'-8 1/8", and a 24" square reached 2 1/8" into them
+#: (`concrete_interference` scopes every `Pad`); 18" clears by 1 1/16" and 30" keeps the area
+#: (3.75 ft² against PT-BW-W's 2.48 required). One size for all three: three pad sizes are three
+#: rows in S-100's FOUNDATION SCHEDULE (`test_schedule_columns.py`), and one size is one form.
 _PAD_WIDE_IN = 30.0
 _PAD_DEPTH_IN = 18.0
 
@@ -651,13 +398,9 @@ for _uid, _tag, _x, _height in (
         # resolve/framing/profiles.py, misses LUMBER_ACTUAL and silently resolves to 1.5x5.5.
         size=_PIER_SIZE.get(_tag, "12 round"), height=ft(_height),
         assembly=pier_assembly(_PIER_SIZE.get(_tag, "12 round")),
-        # A_g = 113.10 in2, so ACI 318-19 Sec 10.6.1.1's 1% floor is 1.131 in2; (4) #5 =
-        # 1.24 in2 (rho 1.096%) clears it and is the Code's own four-bar minimum for a
-        # circular tie (Sec 10.7.3.1(b)). Ties are #3 at the Sec 25.7.2.2 maximum, the least
-        # of 16db = 10.0", 48dt = 18.0", h = 12.0". The column is at d/c ~0.023 and NONE of
-        # that is why these bars are here -- the 1% floor is a creep/shrinkage/accidental-
-        # moment rule, indifferent to load. Galvanized, house-wide (EXPOSED_MIX, A767).
-        # The 14" rounds take (6) #5 (`PIER_CAGES`).
+        # (4) #5 clears ACI 318-19 §10.6.1.1's 1% floor on A_g=113.10 in2 and is §10.7.3.1(b)'s
+        # four-bar minimum; #3 ties at the §25.7.2.2 maximum, 10". The floor is load-independent.
+        # Galvanized house-wide (EXPOSED_MIX, A767). The 14" rounds take (6) #5 (`PIER_CAGES`).
         vertical_reinforcement=_cage(_tag)[2],
         reinforcement=_cage(_tag)[1 if _tag in _MOMENT_PIERS else 0],
         supported_by=f"PD-BW-{_tag.split('-')[-1]}"))
@@ -666,62 +409,27 @@ for _uid, _tag, _x, _height in (
         outline=_pad_outline(_x, PIER_LINE_Y_FT, _PAD_WIDE_IN, _PAD_DEPTH_IN),
         thickness=ft(MOMENT_PAD_DEPTH_FT if _tag in _MOMENT_PIERS else FOOTING_DEPTH_FT),
         assembly="PIER_BASE_12",
-        # PT-BW-W/-E keep FOOTING_TOP_FT: their 0.73 d/c is fine and the hydrant clearance
-        # argument at PIER_BOTTOM_FT is written against that plane. Only the roof column moves.
+        # PT-BW-W/-E keep FOOTING_TOP_FT: the hydrant clearance at PIER_BOTTOM_FT is written
+        # against that plane. Only the moment pads' bottoms move.
         bottom_elevation=ft(FOOTING_TOP_FT - MOMENT_PAD_DEPTH_FT if _tag in _MOMENT_PIERS
                             else PIER_BOTTOM_FT)))
 
-# ** THE GARAGE SIDE IS THE MIRROR: TWO PIERS OF ITS OWN, NOT A PLATE ON THE STEM. **
-# BM-BW-GARAGE-SEAT used to bear through brackets standing off the GARAGE_ICF_6 stem's face,
-# with a continuous treated plate in the snow line -- the worst detail in the assembly. It
-# collects water, it is the part that rots first, and it is unreachable once the deck is down.
-# Two piers instead, at the same elevation and on the same 5'-6" span as the house side, so
-# `structural.deck_beam_span` grades both seat beams identically off two Posts each.
+# Garage side: two piers of their own, at the same elevation and span as the house side, so
+# `structural.deck_beam_span` grades both seat beams alike. Pad width is per pier: PT-BW-GE carries
+# landing load only (18"); PT-BW-GW and PT-BW-RNE also carry a canopy column and take 2'-0".
 #
-# ** PAD WIDTH IS PER PIER NOW, BECAUSE THEY NO LONGER CARRY THE SAME THING. **
-# PT-BW-GE carries landing load only and stays at 18" (d/c 0.86 on 2,000 psf presumptive
-# soil, the tightest bearing ratio in this assembly and the first number to revisit if a
-# soils report comes back lower). PT-BW-GW and PT-BW-RNE each carry a canopy column as well
-# and take the roof piers' 2'-0".
-#
-# ** THE 2'-0" PADS LAP THE GARAGE'S OWN STRIP FOOTING, AND THAT IS A SEQUENCING NOTE. **
-# `FT-GF-S1`/`-S3` run along y=43'-2 5/8" and bottom at -6'-4"; these pads reach ~8" under
-# them in plan and bear 3'-5" deeper. Cast in the open excavation, deep pours first -- which
-# is the same premise the house-side three already stand on -- that is a pour sequence. Cast
-# after the garage foundation is backfilled it is undermining, and the answer becomes
-# benching. It belongs on the drawings, and AN-BW-STRUCTURE carries it.
-#
-# ** THESE STOP AT THE GARAGE'S OWN FOOTING, AND THAT IS THE WHOLE REASON THEY ARE CHEAP. **
-# The house-side three reach -9'-9 7/16" for one reason and it is not bearing: the basement
-# excavation is already open to that depth, so the extra 2'-9" of shaft costs shaft and
-# nothing else. There is no such excavation out here. The garage's own strip footings bottom
-# at -7'-0" and top at -6'-4", which is 50" of cover against Minn. R. 1303.1600 Zone II's
-# 42", so these are cast with the garage foundation on the same bearing plane, in the same
-# excavation and the same visit (owner, 2026-09-10). NOT out of the same pour any more: the
-# strip is consolidated crushed stone as of 2026-09-15 (R403.5), so the shared thing is the
-# hole and the bearing plane, and these three pads are the only concrete in it.
-#
-# ** COPLANAR IS ALSO WHAT SETTLES THE LAP. ** PT-BW-GW's and PT-BW-RNE's 2'-0" pads reach
-# about 8" under `FT-GF-S1`/`-S3` in plan. At the house-side depth that was undermining and
-# a sequencing note; at the garage's own depth the two pads simply meet the strip footing
-# edge to edge on one plane, which is an ordinary detail and needs no note at all.
-#
-# ** AND THE HYDRANT PASSES UNDER, NOT THROUGH. ** `PR-G-HYDRANT-CW` runs north at x=11'-0"
-# with its invert at -8'-10", so at this depth it clears the underside of FT-BW-GE by 1'-10"
-# rather than threading between a shaft and a pad. `mep.footing_clearance` grades it.
-#: ** THE GARAGE PIERS DECLARE NO POUR, AND THAT IS THE POINT. ** Each garage-side pier base
-#: laps a strip footing on its own -7'-0" plane, and until 2026-09-20 it said so with
-#: `Pad.cast_with`. Every `FT-GF-*` it named went to consolidated crushed stone on 2026-09-15
-#: (2024 IRC R403.5, `params/foundations.py`), and nothing is cast monolithically with stone.
-#: A concrete pad standing in a stone bed is not a pour in someone else's formwork: the stone
-#: is placed around it in the 8" lifts R403.4.1 already requires, so there is no cold joint to
-#: key and no interface steel to detail. `structural.concrete_interference` now drops a
-#: footing whose `Footing.material` is not concrete before it picks its bodies, so the lap is
-#: no longer a finding to declare away, and the three pads report as isolated pours instead.
-#: The dangerous reading — crediting the strip's area to the pad as a combined footing — was
-#: always closed elsewhere: `engineering/spread_base.pours_for` and `engineering/column_base`
-#: both refuse a named pour that is not concrete, by name
-#: (`notes/entry_column_base_fixity.md` 6f).
+# These stop at the garage strip footing's plane (-7'-0"), cast with the garage foundation in the
+# same excavation and visit; the house-side piers reach deeper only because the basement
+# excavation is already open. The 2'-0" pads reach under `FT-GF-S1`/`-S3` in plan on that same
+# plane and meet them edge to edge. The strips are consolidated crushed stone (R403.5), so these
+# pads are the only concrete in the hole. `PR-G-HYDRANT-CW` (invert -8'-10") passes beneath;
+# `mep.footing_clearance` grades it.
+#: The garage piers declare no pour (`Pad.cast_with`): the `FT-GF-*` strips are consolidated crushed
+#: stone (R403.5, params/foundations.py) and nothing is cast monolithically with stone. The stone
+#: is placed round the pad in R403.4.1's 8" lifts, so there is no cold joint or interface steel.
+#: `concrete_interference` drops non-concrete footings by material, and
+#: `engineering/spread_base.pours_for` and `column_base` refuse a named pour that is not concrete
+#: (notes/entry_column_base_fixity.md 6f).
 GARAGE_FOOTING_THICKNESS_FT = 8 / 12   # the garage strip's own 8", so the two tops align
 GARAGE_PIER_BOTTOM_FT = -7.0
 GARAGE_FOOTING_TOP_FT = GARAGE_PIER_BOTTOM_FT + GARAGE_FOOTING_THICKNESS_FT
@@ -739,59 +447,27 @@ for _uid, _tag, _x, _pad_in, _top in (
         vertical_reinforcement=_cage(_tag)[2],
         reinforcement=_cage(_tag)[1 if _tag in _MOMENT_PIERS else 0],
         supported_by=f"PD-BW-{_tag.split('-')[-1]}"))
-    # ** THESE THREE LAP THE GARAGE STRIP FOOTING, AND THE LAP IS A DISPLACEMENT. ** They are
-    # cast at -7'-0" on `FT-GF-S1`/`-S3`'s own plane, in the same excavation and at the same
-    # time, and reach about 7 1/2" into it — which the comment above has always described as
-    # meeting "edge to edge on one plane". Since 2026-09-15 the thing they reach into is
-    # CONSOLIDATED STONE, not a pour: the pads go in first and the stone is compacted around
-    # them, so the sequencing obligation this comment used to carry (continuous bottom steel
-    # or dowels through a cold joint) is retired with the concrete that needed it.
-    #
-    # **They cannot be pulled clear**, and that has not changed: the pier line
-    # stands 4 1/2" south of that footing's south face and the shaft is a 12" round, so the
-    # COLUMN itself overhangs any pad stopping at the face. Clearing it in plan would need a
-    # pad about 9" deep — 1 1/2" either side of the shaft — and making the area back up in
-    # width turns it into a 40" grade beam. There is no rectangle here, and there does not
-    # need to be one: monolithic is how it is built.
-    #
-    # The lap needs no declaration now that the strips are stone. Before `Pad.cast_with`
-    # existed the only way to model it was a
-    # `Footing` with an `under`, which took the base out of
-    # `structural.concrete_interference`'s scope by pretending it carried a wall — and out of
-    # `structural.deck_footing_size`'s prescriptive reach with it, which is what put three
-    # `spread_footing/` items in the seal register for three flat square bases on presumptive
-    # soil. Declared, the lap is reported by name with its numbers rather than passed over in
-    # silence — and what the report now names is a pad bearing in stone, which needs no
-    # interface steel because there is no cold joint to key. `concrete_interference` reaches
-    # the same answer by material, so the pads are reported as isolated pours.
-    #
-    # **No widening was needed.** The areas were already there — 4.00 ft² under GW and RNE
-    # and 2.25 under GE, against 2.48 / 1.60 / 1.00 required on the mn-2020 profile's
-    # 1,500 psf — so the sizes are the sizes the Footings drew and the pour is unchanged.
+    # These lap the garage strip footing `FT-GF-S1`/`-S3` and cannot be pulled clear: the pier line
+    # is south of that footing's face and the column overhangs any pad that stops at it. The strip
+    # is stone, so the lap needs no declaration (see above).
     FOOTINGS.append(Pad(
         uid=f"BWFG{_uid[4:6]}AAAA"[:10], tag=f"PD-BW-{_tag.split('-')[-1]}",
         outline=_pad_outline(_x, GARAGE_SEAT_Y_FT, _pad_in),
         thickness=ft(MOMENT_PAD_DEPTH_FT if _tag in _MOMENT_PIERS
                      else GARAGE_FOOTING_THICKNESS_FT),
         assembly="PIER_BASE_12",
-        # PT-GE's moment pad keeps the strip's top and drops its bottom 4" below its plane.
+        # Moment pads keep the strip's top; their bottom is 4" below its plane (-7'-4").
         bottom_elevation=ft(GARAGE_FOOTING_TOP_FT - MOMENT_PAD_DEPTH_FT
                             if _tag in _MOMENT_PIERS else GARAGE_PIER_BOTTOM_FT)))
 
-# The two west roof columns. Pier top -16.19" to header soffit +6'-4 1/8" = 7'-8.315".
-# k*lu/d under 17, nowhere near NDS Sec 3.7.1.4's limit of 50. A cast-in CBSTQ66Z-SDS2 base
-# (no separate bolt) and an ACE6Z end cap at the header, all live rows in prices.toml;
-# `engineering/wood_roof_post` grades both posts, `lateral_system` their chord role.
-#
-# ** UPLIFT IS NOT A GOVERNING CASE, AND THIS IS THE NUMBER THAT SAYS SO. ** At 115 mph
-# Exposure B, q_h ~ 16.4 psf; a free-roof coefficient near 1.3 gives ~1,500 lb of uplift per
-# header against 720 lb of dead. Under 0.6D + 0.6W the net is ~230 lb per column, well inside
-# the standoff-base-plus-cast-in-bolt detail. Stated, not left open.
+# The two west roof columns: 6x6 KDAT on cast-in CBSTQ66Z-SDS2 bases, with ACE6Z end caps at the
+# header (k*lu/d under 17; NDS §3.7.1.4's limit is 50). `engineering/wood_roof_post` grades them,
+# `lateral_system` their chord role. Uplift does not govern (notes/north_entry_piers.md §4).
 COLUMN_HEIGHT_FT = HEADER_SOFFIT_FT - PIER_TOP_FT
 FULL_HEIGHT_COLUMNS = full_height_columns(EAST_POST_SYSTEM)
 
-# ** THE EAST LINE, FROM THE ONE FACTORY. ** params/east_posts.py; the pads keep their tags
-# and uids in every variant, on the house-side and garage planes their neighbours use.
+# East line from one factory (params/east_posts.py); the pads keep their tags and uids in every
+# variant, on the house-side and garage planes their neighbours use.
 _EAST_POSTS, _EAST_PIERS, _EAST_PADS = east_supports(
     EAST_POST_SYSTEM, x_ft=ROOF_COLUMN_EAST_X_FT,
     stations={"RE": ("BWPT03AAAA", PIER_LINE_Y_FT), "RNE": ("BWPT04AAAA", GARAGE_SEAT_Y_FT)},
@@ -804,10 +480,9 @@ _EAST_POSTS, _EAST_PIERS, _EAST_PADS = east_supports(
                 GARAGE_FOOTING_TOP_FT, MOMENT_PAD_DEPTH_FT))
 FOOTINGS.extend(_EAST_PADS)
 ROOF_COLUMNS = [
-    # Both stand ON the screen panel's line, interior to its run, so the panel's plates and
-    # studs are cut around them and the 2x4 infill butts the column faces (``Post
-    # .within_wall``). The field is geometric only: these two still stand on their own
-    # authored cast-in CBSTQ66Z-SDS2 bases over cast piers (no separate bolt).
+    # Both stand ON the screen panel's line, so its plates and studs are cut round them and the 2x4
+    # infill butts the column faces (`Post.within_wall`). Geometry only: each still stands on its
+    # own cast-in CBSTQ66Z-SDS2 base over a cast pier.
     Post(uid=_uid, tag=_tag, position=pt(ft(_x), ft(_y)),
          size="6x6", height=ft(COLUMN_HEIGHT_FT), assembly="POST_KDAT", supported_by=_pier,
          within_wall="W-BW-SCREEN")
@@ -816,10 +491,6 @@ ROOF_COLUMNS = [
         ("BWPT11AAAA", "PT-BW-CNW", LANDING_WEST_FT, GARAGE_SEAT_Y_FT, "PT-BW-GW"),
     )
 ]
-
-# PT-BW-IC/-IE (uids BWPT09AAAA/BWPT10AAAA) are retired with the interior landing they
-# stood under (2026-10-13); they are not reused.
-
 
 FRAME_ELEMENTS = [*NODES, *BEAMS, *PIERS, *FOOTINGS, *PEDESTALS, *ROOF_COLUMNS,
                   *_EAST_PIERS, *_EAST_POSTS]

@@ -51,7 +51,7 @@ were strapped (CS16), and the *hung* member ends carried hangers (LSSR at the ri
 and HUCQ in the sunken garden). Between those, every joint where a member **bears** on
 something was gravity and nails: 56 roof rafters birdsmouthed onto the attic top plate, ~290
 floor-joist bearings across five floors, 34 garage truss heels, and every beam landing on a
-post outside the breezeway.
+post outside the north entry.
 
 The target is a continuous path with commodity parts — roughly FORTIFIED-Home detailing, not
 an engineered wind design. Cost-effectiveness was the constraint that picked the parts.
@@ -198,19 +198,18 @@ second product for one role.
 ## What is still authored by hand
 
 The derived rules skip any joint an authored `Connector` already names — that guard is what
-keeps the sunken garden's and the breezeway's twenty connectors from being bought twice.
+keeps the sunken garden's and the north entry's twenty connectors from being bought twice.
 
-- 4 × ABU66SS under the breezeway posts (`params/`). It was 6 until 2026-09-03, when the
-  four balcony corner pillars became 12" cast concrete columns doweled into the wall tops
-  under them — concrete on concrete is a lapped splice made in the pour, not a connector
-  (see `notes/balcony_moment_columns.md`) — and it fell to 4 later the same day when the two
-  WOOD centre pillars lost theirs: an ABU has no published value bearing on framing.
+- 4 × CBSTQ66Z-SDS2 cast-in bases under the north-entry posts (`params/north_entry_frame.py`), each
+  with its own rated anchorage in the pier (no ABU66SS and no anchor bolt at the north entry).
 - 2 × MSTA12Z straps and 3 × L50Z angles at those two centre pillars, `CN-SG-BASE-*2-W/-N/-S`
   (ESR-2105 Table 3 / ESR-3096 Table 4, both wet-derated at C_M 0.70). The mix is per FACE,
   not per pillar: a strap on the flush west pair at each, an angle wherever there is joist
   pack beside the post. `notes/centre_pillar_bearing.md` §6 is the inventory and the ~285 lb
   hand-worked demand it is sized against.
-- 4 × KBS1Z at the breezeway **roof** beams (its floor beams are derived)
+- 8 × KBS1Z in the north entry's `SB-BW-BAND`: two open-knee connectors per brace end, one
+  corner-to-corner 6x6 per bay (`params/entry_band_brace.py`). Its roof beams take ACE6Z end
+  caps instead (`notes/canopy_west_band.md` §5); the landing's floor beams are derived
 - 4 × HUCQ410-SDS into the sunken garden's concrete beam pockets
 - *2026-09-21: the column-head ties are now 16 cast-in HETA20Z (eight joints, a pair each), for
   Simpson's Titen Turbo exposure rule — `column_head_connector_options.md`. The history follows.*
