@@ -14,6 +14,7 @@ from typehaus.checks.advisory import (  # noqa: F401 - registers checks
     energy_storage,
     energy_storage_anticipated,
     floor_finish,
+    garage_heat,
     guards,
     held_rough_opening,
     interior_trim,

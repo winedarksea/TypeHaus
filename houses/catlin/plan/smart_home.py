@@ -181,4 +181,8 @@ GARAGE_ELEMENTS = [
               location=Location(attachment=WallAttachment(
                   wall_ref="W-G-S", face="left", distance_from_start=inch(186),
                   normal_gap=inch(0), rotation_offset=deg(180)))),
+    # Freeze alert for the unheated garage (owner, 2026-11-14): arre Thread sensor
+    # (PROD-ARRE-TEMP-SENSOR, rated -40 F), battery, notify only; notes/smart_home.md.
+    Alarm(uid="3ZXAD8PCNW", tag="AL-G-FREEZE", kind=AlarmKind.FREEZE, room="RM-GARAGE",
+          position=pt(ft(20), ft(62, 6))),
 ]

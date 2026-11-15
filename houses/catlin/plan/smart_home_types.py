@@ -105,9 +105,18 @@ SONOFF_SNZB_05P = Product(
            "-10..60 C, Zigbee 3.0, probe contacts on the underside plus an optional cable "
            "probe. Pairs to ZHA on the Zigbee ZBT-2 with no SONOFF app or cloud; reports "
            "water_leak and battery. Retail, no quote." + _NOTE)
+ARRE_TEMP = Product(
+    tag="PROD-ARRE-TEMP-SENSOR", brand="arre", model="Temperature Sensor (Matter over Thread)",
+    name="Thread temperature sensor, -40 to 185 F",
+    url="https://arrehome.com/pages/arre-temp-sensor",
+    source="arre product page, read 2026-11-14: operating range -40 to 85 C (-40 to 185 F), "
+           "Matter certified, Thread, 1 x CR2032 (about a year), not waterproof, 'designed "
+           "primarily for indoor use'. Matter over Thread to HA through the house's border "
+           "router, no cloud. A coin cell sags in the cold: check it each autumn." + _NOTE)
+
 SMART_HOME_PRODUCTS = (REOLINK_DOORBELL, REOLINK_OMVI_3I, REOLINK_DUO3, LIFTMASTER_87504,
                        GRIZZLE_SMART, KIDDE_SM120X, KIDDE_CO120X, AQARA_W200, WARMUP_7IE,
-                       SONOFF_SNZB_05P)
+                       SONOFF_SNZB_05P, ARRE_TEMP)
 
 # --- low-voltage endpoints (DATA_OUTLET kind; PoE from the switch in ED-B-NET-PATCH) ----------
 # 12.95 W is the 802.3af PD ceiling, used where the maker publishes no draw; the Duo 3

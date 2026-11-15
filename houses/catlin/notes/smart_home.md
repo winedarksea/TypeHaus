@@ -176,6 +176,7 @@ WaterWatcher cutoff and automatic M8000-NO/RIBU1C low-water permission protect b
 ZAC36 and YoLink remain retired. See [plant_reservoir.md](plant_reservoir.md).
 **Court flood, inside the basement door** (2026-11-09): `ED-B-SUNKEN-SW-FLOOD`, a Leviton DAWSC-1BW wire-free RF companion of `ED-M-PORCH-FLOOD-SW`'s D315S (Leviton lists it compatible; no hub; 50 ft published). No circuit, no box; `ED-M-PORCH-FLOOD` names both in `controlled_by`. Bench-pair it before the board goes up.
 **Leak sensors** (2026-11-08): 16 SONOFF SNZB-05P Zigbee probes on the floor at the wet points, ZHA on the second ZBT-2, notify only; locations and automation in [leak_detectors.md](leak_detectors.md).
+**Garage freeze alert** (2026-11-14): `AL-G-FREEZE`, an arre Matter-over-Thread temperature sensor (published -40 to 185 F, CR2032, indoor, not waterproof; `PROD-ARRE-TEMP-SENSOR`) in `RM-GARAGE`, notify only below a set point. It replaces no code device: the hardwired `AL-G-HEAT` is a house standard (`advisory.garage_heat_alarm`), since Minn. R. 1309 R314/R315 ask for no garage heat alarm (UpCodes, 2026-11-14).
 
 **Recording, alarms, UPS.** No cloud recording plans. The HA host, router and PoE switch share
 `CKT-HA` (ALWAYS_ON); a small UPS for them is the separate backup-battery TODO. On battery the

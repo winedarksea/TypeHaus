@@ -160,24 +160,23 @@ def co_alarm_outside_sleeping_areas(ctx: CheckContext) -> list[Finding]:
     return out
 
 
-# How close a habitable room has to be to a garage before R315.2.2's garage-adjacency CO rule
-# is in play. A garage sharing a wall is the obvious case; this house's is *freestanding*, 4'
-# north, joined door-to-door by an enclosed breezeway — which is the same exposure path a
-# common wall gives you, so the rule has to reach it. Beyond this band the garage is genuinely
-# detached and the rule reports UNKNOWN rather than passing on a technicality.
+# How close a habitable room has to be to a garage before R315.2.1's garage CO trigger is
+# graded. R315.2.1 names an attached garage with an opening into the dwelling; this house's is
+# freestanding, 4' north, joined door-to-door by an enclosed breezeway, which is the same
+# exposure path, so the rule reaches it. Beyond this band the garage is genuinely detached
+# and the rule reports UNKNOWN rather than passing on a technicality.
 _GARAGE_ADJACENCY = ft(12)
+_GARAGE_CO = "R315.2.1"
 
 
 @check(Tier.CODE, "code.R315_garage_alarms")
 def garage_heat_and_co_alarms(ctx: CheckContext) -> list[Finding]:
-    """A garage wants a heat detector, and the dwelling beside it wants CO coverage.
+    """The dwelling beside a garage wants CO coverage (R315.2.1).
 
-    Neither half was covered. ``code.R314_R315_alarms`` filters on (SMOKE, COMBO) and only
-    looks at storeys with bedrooms on them, so the garage storey was invisible to it.
-
-    A garage gets a *heat* detector rather than a smoke alarm: exhaust, dust and a space that
-    runs to outdoor temperature would nuisance-trip a smoke head, which is why the code asks
-    for CO coverage on the dwelling side instead of a smoke alarm inside the garage.
+    ``code.R314_R315_alarms`` filters on (SMOKE, COMBO) and only looks at storeys with
+    bedrooms on them, so the garage was invisible to it. The garage heat detector this rule
+    once demanded under "R315.2.2" (that section is alterations and repairs) is no code line:
+    it is the owner's standard, ``advisory.garage_heat_alarm``.
     """
     from shapely.geometry import Polygon
 
@@ -187,17 +186,7 @@ def garage_heat_and_co_alarms(ctx: CheckContext) -> list[Finding]:
               if element.element_kind == "Alarm"]
     garages = [room for room in ctx.model.rooms if room.occupancy == Occupancy.GARAGE.value]
     if not garages:
-        return [_unknown(cid, "no garage modelled", (), "R315.2.2")]
-
-    for garage in garages:
-        detector = next((item for item in alarms
-                         if item.room == garage.tag and item.kind is AlarmKind.HEAT), None)
-        if detector is None:
-            out.append(_fail(cid, f"garage {garage.tag} has no heat detector", (garage.tag,),
-                             "R315.2.2"))
-        else:
-            out.append(_pass(cid, f"{garage.tag} has heat detector {detector.tag}",
-                             "R315.2.2"))
+        return [_unknown(cid, "no garage modelled", (), _GARAGE_CO)]
 
     # CO coverage on the dwelling side. Adjacency is measured between the resolved room
     # faces, so a breezeway-connected garage counts the same as a shared-wall one.
@@ -211,15 +200,15 @@ def garage_heat_and_co_alarms(ctx: CheckContext) -> list[Finding]:
         out.append(_unknown(cid, "no habitable room within "
                                  f"{_GARAGE_ADJACENCY.feet:g}' of a garage — detached, so the "
                                  "garage-adjacency CO rule does not apply",
-                            tuple(sorted(garage_tags)), "R315.2.2"))
+                            tuple(sorted(garage_tags)), _GARAGE_CO))
         return out
     covered = [item for item in alarms
                if item.kind in _CO_KINDS
                and item.room in {room.tag for room in neighbours}]
     if not covered:
         out.append(_fail(cid, "no CO alarm in any room adjacent to the garage",
-                         tuple(sorted(room.tag for room in neighbours)), "R315.2.2"))
+                         tuple(sorted(room.tag for room in neighbours)), _GARAGE_CO))
     else:
         out.append(_pass(cid, f"{len(covered)} CO alarm(s) cover the rooms adjacent to the "
-                              f"garage ({covered[0].tag})", "R315.2.2"))
+                              f"garage ({covered[0].tag})", _GARAGE_CO))
     return out
