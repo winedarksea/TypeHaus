@@ -2,7 +2,8 @@
 
 Read in print by the owner 2026-11-14. A leaf: no resolved model here, only the table and the
 two notes that change how it is read. Rule text is paraphrased in
-``docs/code-notes/nec-2026-paraphrase-300.md``; ``checks/mep/conduit_burial.py`` grades a model against it.
+``docs/code-notes/nec-2026-paraphrase-300.md``; ``checks/mep/conduit_burial.py`` grades a model
+against it.
 
 Cells are inches (the printed millimetres are the same cells at 25 mm per inch). A column is
 the wiring method, a row the place it is buried. **Note 4**: where a Column 1-3 method serves

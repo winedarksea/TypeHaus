@@ -39,7 +39,8 @@ all of Article 424 and the end of 422.62; 404.1-404.9, 406.9(B)-406.14(B), 408.1
 625.44-625.52(B)(1)
 (its tables unread; ``docs/code-notes/nec-2026-paraphrase-702-705-island.md``), and 250.119(B)
 tail-250.122 with Table 250.122 (coded in ``model/ampacity.py``), with Table 690.7(A) (coded in
-``model/pv_voltage.py``); see ``docs/code-notes/nec-2026-paraphrase-690-705-710.md``; 300.1, 300.4-300.9
+``model/pv_voltage.py``); see
+``docs/code-notes/nec-2026-paraphrase-690-705-710.md``; 300.1, 300.4-300.9
 and 300.21(tail)-300.25
 (renumbered in 2026: 300.4 is Limitations, physical damage is 300.6, underground 300.7;
 300.2-300.3, 300.9(A)(2)-300.21 and 300.25(C) on unread), with Table 300.7(A) (coded in
@@ -51,7 +52,8 @@ building wire, 5A and 8 read, not coded), same file; 210.13-210.21, 210.52(C)(4)
 210.63(tail)-210.70(C), 215.1-215.10(A), 225.39-225.41, 230.1-230.4(A), 230.67-230.93 (opening),
 410.196(D)-410.197, all of Article 411 and 422.1-422.2 in
 ``docs/code-notes/nec-2026-paraphrase-411-230.md``; 720.32, 721.1, 721.30 and 721.50-723.22 (all of
-Article 722) in ``docs/code-notes/nec-2026-paraphrase-722.md``; and (a transcribed read) the Article 100
+Article 722) in
+``docs/code-notes/nec-2026-paraphrase-722.md``; and (a transcribed read) the Article 100
 terms lighting track, feeder, limited-energy system, laundry area and kitchen, 120.1-120.5 and
 120.41, 210.19(C)-210.25 with Tables 210.21(B)(3) and 210.24(1), 215.10(B)-215.18, 225.1-225.10,
 and the raceway articles 342, 344, 352, 356 (tail), 358, 362 and 366 (bends are .24, support
@@ -439,7 +441,8 @@ class NEC:
     STANDALONE_PLAQUE: Final = "710.10"
     # Was 800.133 / 725.136; Arts. 805 and 725.136 are gone, limited energy is Arts. 720-723.
     LIMITED_ENERGY_SEPARATION: Final = "722.15(A)"
-    # Art. 722 (printed 2026-11-14): docs/code-notes/nec-2026-paraphrase-722.md; checks/mep/limited_energy.py.
+    # Art. 722 (printed 2026-11-14):
+    # docs/code-notes/nec-2026-paraphrase-722.md; checks/mep/limited_energy.py.
     LIMITED_ENERGY_IN_RACEWAY: Final = "722.15(G)"  # power or the cable in a raceway/MC/NM/UF
     LIMITED_ENERGY_WET: Final = "722.2(B)"  # wet-listed and marked, or metal sheath
     LIMITED_ENERGY_MIXING: Final = "722.13"  # Table 722.13(A) types in one raceway
@@ -472,7 +475,8 @@ UNCONFIRMED: Final = frozenset()
 class NFPA780:
     """NFPA 780 (lightning protection), not NEC: cited by advisories only. The owner read
     4.1-4.5, 4.12.8-4.15 and 4.19 in print on 2026-11-14 (2026 ed.); paraphrase and what
-    grades each in ``docs/code-notes/nfpa-780-paraphrase.md``. GROUND_RING is a cross-reference only."""
+    grades each in
+    ``docs/code-notes/nfpa-780-paraphrase.md``. GROUND_RING is a cross-reference only."""
 
     EDITION: Final = "NFPA 780-2026"
     CONDUCTORS: Final = "NFPA 780 4.1.1.1 / Table 4.1.1.1.1"

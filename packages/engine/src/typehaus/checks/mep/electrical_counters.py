@@ -1,6 +1,7 @@
 """NEC 210.52(C) wall countertop spaces and 210.52(C)(4), read off resolved countertops.
 
-Graded rules (printed 2026 NEC, read 2026-11-13; paraphrased in docs/code-notes/nec-2026-paraphrase.md):
+Graded rules (printed 2026 NEC, read 2026-11-13; paraphrased in
+docs/code-notes/nec-2026-paraphrase.md):
 
 * (C)(1): a receptacle at each wall countertop space 12" or wider, none of its wall line more
   than 24", measured horizontally, from a receptacle in that space; none directly behind a

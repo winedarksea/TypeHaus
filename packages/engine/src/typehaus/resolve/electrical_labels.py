@@ -9,7 +9,8 @@ breakers are not at the service, and the 705.12(B)(2)(b) warning when (B)(1) doe
 battery brings 706.15(C) at its disconnect and 480.7(F) beside it; a heating-cable circuit
 424.47 at its panel; an EV circuit whose breaker is in another room 625.43(C) on the unit.
 
-Wording comes only from ``docs/code-notes/nec-2026-paraphrase*.md``: ``literal`` words are the code's
+Wording comes only from
+``docs/code-notes/nec-2026-paraphrase*.md``: ``literal`` words are the code's
 own; otherwise ``wording`` states the content the code requires. A house input the label
 prints and the model lacks (705.10's phone, the battery's voltage) is named in ``missing``
 and ``electrical.label_inputs`` reports it UNKNOWN; nothing is defaulted. Billed by the each
