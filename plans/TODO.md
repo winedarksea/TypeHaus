@@ -222,8 +222,6 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
 - Door residue: the steel and sauna slabs are modelled cut down 1/8" (the steel may need ordering to size); the library interior types and the plan door symbol still use the 45 mm schematic leaf.
 - Shower in sauna?
 - ED-B-CLOSET-LT has a more expensive reading light than that utility closet needs for lighting
-- Improve the 3d model of the sump
-- Improve the 3d model of the french drains
 - Improve the 3d model of the EQ-S-PLANT-HEATER
 - Improve the 3d model of the AD-SG-COURT area drains (may need a product search)
 - Improve the 3d model of the EQ-T-SAUNA-HEATER

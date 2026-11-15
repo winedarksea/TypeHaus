@@ -449,14 +449,14 @@ class SumpPump(HausModel):
 class Sump(Element):
     """A sump pit (basement slab low point) with an optional radon-vent takeoff.
 
-    The pit is cast below the slab; when ``radon_vent`` is set it is a sealed radon sump
+    The basin is set below the slab; when ``radon_vent`` is set it is a sealed radon sump
     whose passive vent leaves the sealed cover and rises through the mechanical chase —
     the ``vent_ref`` names the shared ``VentRun`` it feeds."""
 
     position: Point2D
     diameter: Length  # pit inside diameter
     depth: Length  # pit depth below the slab underside
-    host_ref: str | None = None  # slab the pit is cast into
+    host_ref: str | None = None  # slab surrounding the basin
     sealed_cover: bool = True  # gasketed/sealed cover (required for a radon sump)
     radon_vent: bool = True
     vent_ref: str | None = None  # VentRun tag the radon takeoff joins

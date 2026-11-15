@@ -10,7 +10,6 @@ invents a position or a route.
 from __future__ import annotations
 
 import math
-from dataclasses import replace
 
 from typehaus.findings import Finding, Result, Severity, element_error
 from typehaus.model.braces import SlatBrace, StrapBrace
@@ -53,8 +52,8 @@ from typehaus.resolve.model import (
 from typehaus.resolve.railings import resolve_railing
 from typehaus.resolve.rainscreen_closures import resolve_bug_screens
 from typehaus.resolve.slat_braces import resolve_slat_brace
-from typehaus.resolve.solid_categories import in_slab_family
 from typehaus.resolve.strap_braces import resolve_strap_brace
+from typehaus.resolve.sump import resolve_sump
 
 # Round-section faceting lives in resolve/round_solids.py, shared with pipe runs.
 # ``_PIPE_SWEEP_BANDS`` is re-exported rather than used here: ``test_accessories.py`` imports
@@ -119,7 +118,7 @@ def resolve_accessories(model: ResolvedModel) -> list[Finding]:
             elif isinstance(el, Railing):
                 findings.extend(resolve_railing(model, el, storey.tag))
             elif isinstance(el, Sump):
-                _resolve_sump(model, el, storey)
+                resolve_sump(model, el, storey)
             elif isinstance(el, VentRun):
                 findings.extend(_resolve_vent(model, el, storey.tag))
             elif isinstance(el, Downspout):
@@ -442,32 +441,6 @@ def _resolve_wedge(model: ResolvedModel, el: Wedge, storey: str) -> None:
             material=assembly_structure_material(model.plan, el.assembly),
         ),),
     ))
-
-
-def _resolve_sump(model: ResolvedModel, el: Sump, storey) -> None:
-    """The pit, and the round hole it makes in its slab.
-
-    The basin voids its host the way an area drain does (``resolve/drainage.py``): what rises
-    out of the lid crosses no concrete, and the pour is billed net of the hole. Slab layers
-    resolve later and inherit the void."""
-    cx, cy = el.position.xy_m
-    index = next((i for i, s in enumerate(model.solids)
-                  if s.tag == el.host_ref and in_slab_family(s.category)),
-                 None) if el.host_ref else None
-    host = model.solids[index] if index is not None else None
-    z1 = host.z1_m if host is not None else storey.elevation.meters
-    z0 = (host.z0_m if host is not None else z1) - el.depth.meters
-    ring = circle_outline((cx, cy), el.diameter.meters / 2.0, _PIPE_FACETS)
-    model.solids.append(ResolvedSolid(
-        uid=el.uid or f"{el.tag}-sump", tag=el.tag, storey=storey.tag,
-        category="sump", outline=ring, z0_m=z0, z1_m=z1,
-        # A radon sump is a moulded basin set in the slab, not a second pour inside it: the
-        # solid is the pit, and without a ref it fell to ``solid_material_ref``'s concrete
-        # default and hatched as the flatwork it interrupts.
-        material="polyethylene",
-    ))
-    if host is not None:
-        model.solids[index] = replace(host, voids=(*host.voids, tuple(tuple(p) for p in ring)))
 
 
 def _resolve_vent(model: ResolvedModel, el: VentRun, storey: str) -> list[Finding]:

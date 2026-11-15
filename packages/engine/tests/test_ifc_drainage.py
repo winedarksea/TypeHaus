@@ -79,6 +79,17 @@ def test_each_drainage_category_exports_as_its_own_ifc_entity(
         assert by_name[tag].PredefinedType == predefined_type
 
 
+def test_sump_ifc_preserves_the_hollow_basin_and_cover_mesh(catlin_model_ro, catlin_ifc):
+    basin = next(s for s in catlin_model_ro.solids if s.tag == "SM-B-RADON")
+    chamber = next(e for e in catlin_ifc.by_type("IfcDistributionChamberElement")
+                   if e.Name == basin.tag)
+    faces, = chamber.Representation.Representations[0].Items
+    assert faces.is_a("IfcTriangulatedFaceSet")
+    assert faces.Coordinates.CoordList == basin.body_mesh.positions
+    assert faces.CoordIndex == tuple(tuple(i + 1 for i in face)
+                                    for face in basin.body_mesh.triangles)
+
+
 def test_no_drainage_element_lands_on_the_footing_fallback(catlin_model_ro, catlin_ifc):
     """The unmapped-category fallback is ``IfcFooting``, so a category the table forgets is
     silently exported as a pour. That is how the drain tile would have arrived."""
