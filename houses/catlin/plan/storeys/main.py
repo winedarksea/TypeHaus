@@ -194,7 +194,7 @@ NODES = [
     # (both 12" mod 16") lets four windows column between storeys (WIN-M-BED-W1/W2/BATH2
     # below). Every node on each partition line must move together or it kinks — including
     # boxes/risers that hang on them, checked only by
-    # test_wall_mounted_devices_resolve_against_a_wall_face. Cost: RM-M-BED loses 4" depth,
+    # integrity.wall_mount_on_face. Cost: RM-M-BED loses 4" depth,
     # RM-M-BATH2 gains 6", hall goes 3'-8" -> 3'-6" (still clear of R311.6).
     Node(uid="CMN010AAAA", tag="N-M-W2", position=pt(ft(0), ft(22, 4))),
     Node(uid="CMN011AAAA", tag="N-M-W3", position=pt(ft(0), ft(13))),
@@ -1551,40 +1551,11 @@ ROOMS = [
     # Main-floor finishes revised 2026-08-02 (plans/TODO.md §Hardwood): solid oak is the
     # studies' floor (RM-A-STUDY + RM-S-STUDY2) — living/study here go LVP, bed/closet carpet.
     #
-    # 2026-09-05, the main-floor finishes: ONE plane over the wood deck, one over the
-    # concrete, and they meet flush. The hall band's `vinyl-sheet` FinishZone is GONE — the
-    # corridor simply takes the room's own field `lvp`, and so do the two rooms that open
-    # off it, RM-M-BATH1 and RM-M-LAUNDRY. The spine from the hall to the laundry is one
-    # plank floor with no zone and no threshold, and `vinyl-sheet` leaves the main storey.
-    #
-    # The entry and both closets now take the hall's LVP at one interior height.
-    # D-M-ENTRY retains its own weather sill and flashing detail (notes/floor_heights.md).
-    # The mud-closet bypass guide bears on a flat floor without a reducer.
-    #
-    # ** THE SOUTH BAY IS LVP, AND THAT IS THE POINT. ** It carried 3/4" solid oak for part
-    # of 2026-09-05 and was reverted the same day, to remove a height difference rather
-    # than detail around it. Oak tops out at +1.500" against the polished cap's +0.9375":
-    # a 9/16" REDUCER, on the one leg of this room that also has to break for differential
-    # deflection. The concrete cannot be raised to meet it —
-    # ``structural.mixed_deck_bearing_seat`` holds DECK_TOP within 1/4" of the subfloor —
-    # so the step was not designable-out, only acceptable or not. It is not. LVP at +1.0255906"
-    # meets the same cap nominally 0.0094" proud, which is flush, and the room reads as one floor.
-    # Oak is still the two studies' floor (RM-A-STUDY, RM-S-STUDY2); it is this room that
-    # does not want it.
-    #
-    # The LVP/coated-cap boundary remains flush on both legs; only the y=13' leg
-    # needs the movement break between structures that deflect differently.
-    # Doorway heights and profiles are scheduled in notes/floor_heights.md.
-    #
-    # ** NO FinishZone IS AUTHORED HERE, and prefer to keep it that way. ** The polished band
-    # is DERIVED — SL-M-DECK carries its own ``floor_finish`` and ``resolve/rooms.py`` claims
-    # the slab's footprint back out of the room — so it cannot go stale when the deck
-    # boundary moves. An authored ring has to be chased by hand, and nothing grades whether
-    # it still sits inside its room. The oak zone made that concrete: its outline ran to
-    # x=37' and y=-1', over-extended on purpose so that only its north edge was a real
-    # number, and until the engine was fixed on 2026-09-05 an authored zone BILLED clipped
-    # but DREW its raw ring — so this floor rendered a foot past the east and south walls
-    # while the takeoff said 231.7 sf. 0 FAIL, green tests, correct dollars, wrong drawing.
+    # Since 2026-11-01 (decision #112) the whole main floor is wood (FS-M-NE replaced the
+    # SL-M-DECK concrete band); the hard floors are LVP on the subfloor: one plane, no
+    # polished band, no FinishZone. The hall, entry, closets, RM-M-BATH1 and RM-M-LAUNDRY
+    # share it without thresholds; D-M-ENTRY keeps its own weather sill. Oak stays the two
+    # studies' floor (RM-A-STUDY, RM-S-STUDY2). Doorway heights: notes/floor_heights.md.
     Room(uid="CMR401AAAA", tag="RM-M-LIVING", seed=pt(ft(27), ft(12)),
          occupancy=Occupancy.LIVING, floor_finish="lvp"),
     Room(uid="CMR402AAAA", tag="RM-M-BED", seed=pt(ft(9), ft(6)),
@@ -1693,12 +1664,7 @@ ROOMS = [
     # The kitchen's framed reach-in pantry, replacing FURN-M-KIT-PANTRY-E,
     # -TALL-N and -TALL-S: a reach-in closet; 14.6 SF clear, 5'-10 1/4" x 2'-6".
     #
-    # ** ``floor_finish`` IS INERT HERE AND THAT IS NOT AN OVERSIGHT. ** This room stands
-    # entirely on SL-M-DECK (params/main_deck.py outlines it x 18'-36', y 13'-36'), and the
-    # cast cap's top IS the finished floor, so the whole 14.6 SF derives POLISHED-CONCRETE
-    # regardless of the string below — the same rule that makes RM-M-LIVING's "lvp" the
-    # wood-bay field finish only. Plank in here is an SL-M-DECK outline change, not a
-    # string change. "lvp" is written so the intent survives if that outline ever moves.
+    # LVP like the rest of the wood main floor (SL-M-DECK's cast cap is retired).
     Room(uid="M3YNPA0YPJ", tag="RM-M-PANTRY", seed=pt(ft(21, 3), ft(34, 2)),
          occupancy=Occupancy.CLOSET, floor_finish="lvp"),
 ]

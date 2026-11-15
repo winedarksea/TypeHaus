@@ -105,10 +105,9 @@ SECOND_LIGHTING = [
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # No hall cans since 2026-10-31: the three that recessed into SF-S-DUCT sat inside
     # DU-S-HP-SUP. The LR-S-HALL-GAP shadow-gap cove lights the hall on these switches.
-    # Both x's follow the hall face of W-S-BW1/BW2, INT_2X4_RC (plan/storeys/second.py) —
-    # the resilient channel faces the hall, because the hall is what the bedrooms are being
-    # protected from. Authored x is the face LESS 1" (box back on the face, 2" box):
-    # 21'-8 1/8" - 1" = 21'-7 1/8".
+    # Both x's follow the hall face of W-S-BW1/BW2, plain half-board partitions since
+    # 2026-10-23 (plan/storeys/second.py). Authored x is the face LESS 1" (box back on the
+    # face, 2" box): 21'-8 1/8" - 1" = 21'-7 1/8".
     ElectricalDevice(uid="QTS0005AAA", tag="ED-S-HALL-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW3",
                      circuit="CKT-LT-UPPER", room="RM-S-HALL",

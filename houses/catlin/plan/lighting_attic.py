@@ -366,7 +366,7 @@ ATTIC_LIGHTING = [
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(6, 9.6875),
                                  recessed_into_host_surface=True)),
     # On W-A-BATH-S's north face — the wall you reach for on the way in. It was first put on
-    # W-A-STU-W beside the lavatory, and `test_wall_mounted_devices_resolve_against_a_wall_face`
+    # W-A-STU-W beside the lavatory, and `integrity.wall_mount_on_face`
     # reported it floating 1.6" off that face; the door wall is both the better station and the
     # one whose finish face the house's standard 1" box offset lands on cleanly.
     #

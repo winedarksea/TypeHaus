@@ -199,7 +199,7 @@ NEC_FILL_ATTIC = [
     # that is neither behind the unit's rail nor inside the door. `code.E3902_gfci_locations` measures it at
     # 0.7' against 210.8(A)(9)'s 6'-0". `rotation=deg(180)` faces it south into the studio, off
     # the wall's south face at y 17'-0 5/8" — the same line RC6 stands on, and the number
-    # `test_wall_mounted_devices_resolve_against_a_wall_face` settles.
+    # `integrity.wall_mount_on_face` settles.
     ElectricalDevice(uid="K9XVXZ9XZ3", tag="ED-A-STUDIO-BAR-GFCI", kind=DeviceKind.RECEPTACLE_GFCI,
                      # ** MOVED 1" OUT WITH W-A-BATH-S'S RETYPE, 2026-09-20 (H8). ** The wall went
                      # INT_2X4_PARTITION -> INT_2X6_PLUMBING so PR-A-BAR-VENT's 2" vent could bore

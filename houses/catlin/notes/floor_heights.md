@@ -25,13 +25,14 @@ no cap), so no doorway spends the 1/32 in. The model keeps the nominal.
 | --- | --- | ---: |
 | `oak-floor-custom`, second hall/linen/suite/study | 3/4-in site-milled oak | +1.5000 |
 | `catlin-carpet-raised`, east bedrooms and main bedroom/closet | Sweet Spot I Romano (0.56-in pile + 1/16-in backing allowance) over 3/8-in rebond cushion; no plywood | +1.7500 |
-| `catlin-tile-oak-height`, suite bath/vanity | 5/16-in nominal DITRA-XL + 5/16-in Marazzi Modern Formation MF01 24x24 matte porcelain + nominal 1/8-in combined mortar beds | +1.5000 |
-| `catlin-tile-heated`, both heated baths | 1/4-in nominal DITRA-HEAT + same 5/16-in MF01 porcelain + nominal 3/16-in combined mortar beds, cable in studs | +1.5000 |
+| `catlin-tile-kaleo-brick`, suite bath | 5/16-in nominal DITRA-XL + provisional 5/16-in Kaleo Brick + nominal 1/8-in combined mortar beds | +1.5000 |
+| `catlin-tile-jume-onyx-blue`, vanity | 1/8-in uncoupling membrane + 10.5 mm Jume Onyx Blue porcelain + ~0.212-in combined mortar beds | +1.5000 |
+| `catlin-tile-limestone`, both heated baths (RM-M-BATH2, RM-S-BATH1) | 1/4-in nominal DITRA-HEAT + 8 mm Lifeproof Limestone 12x24 + ~0.185-in combined mortar beds, cable in studs | +1.5000 |
 | `catlin-plant-vinyl-raised`, second plant | Nominal 1/4-in SurePly underlayment + 0.120-in fully adhered sheet; no floor drain or slope | +1.1200 at doorway |
 | `lvp`, whole main floor | Karndean Cotton Oak AKP-RL38, 7.0 mm (0.27559 in) rigid core incl. backing, floating on the subfloor; no mat | +1.0255906 |
 
-The Marazzi [product page](https://www.marazziusa.com/products/stone-look/modern-formation/peak-white)
-specifies 5/16 in for the 24x24 matte tile. Schluter lists
+Each tile's thickness and its source are on its `Material` (`plan/assemblies/materials_flooring.py`);
+all three are provisional until the delivered lot is measured. Schluter lists
 [DITRA-XL at nominal 5/16 in](https://www.schluter.com/schluter-us/en_US/Membranes/Uncoupling-%28DITRA%29/Schluter-DITRA-%26-DITRA-XL/p/DITRA30M)
 and [DITRA-HEAT at nominal 1/4 in](https://www.schluter.com/schluter-us/en_US/Membranes/Uncoupling-%28DITRA%29/Schluter-DITRA-HEAT/p/DITRA_HEAT).
 The combined mortar depths above are project allowances, not manufacturer dimensions.
@@ -117,7 +118,7 @@ check fails if the floors move.
 | `D-M-BED2` | LVP up 0.7244 in to carpet | 5/4 site-milled oak saddle |
 | `D-S-SUITEBATH`, `D-S-BATH1` | oak = tile | Schluter-SCHIENE |
 | `D-S-PLANT` | oak down 0.38 in to vinyl | 12 mm solid-surface reducer over the water stop |
-| `D-B-PLAY` | stall mat down 1/4 in to carpet | bevelled rubber reducer |
+| `D-B-PLAY` | stall mat flush with theater carpet | carpet Z-bar, no reducer |
 | `D-B-SAUNA` | stall mat down 3/4 in to the sealed slab | bevelled rubber reducer |
 | `D-B-BATH` | sheet vinyl down 0.12 in to the slab | rubber reducer for 1/8-in sheet |
 | `D-A-HALVES` | oak down 0.63 in to vinyl | site-milled 3/4-in oak reducer |

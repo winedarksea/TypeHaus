@@ -441,7 +441,7 @@ WALLS = [
     # 0.125" inward from the formerly documented 6.77" faces; check attached fixtures and
     # devices against this current geometry. Only the vanity is caught by a test. The four
     # devices were found by
-    # `test_wall_mounted_devices_resolve_against_a_wall_face`, which grades the resolved body
+    # `integrity.wall_mount_on_face`, which grades the resolved body
     # against the wall solid, and a fixture other than a vanity is graded by nothing at all —
     # which is how FX-S-SUITEBATH-WC turned out to have been standing 1.92" off this wall
     # since long before any of this. It is flush now.

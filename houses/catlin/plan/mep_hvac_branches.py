@@ -9,11 +9,9 @@
 # 100 1/8" centreline, across SF-S-DUCT's empty east lane, through W-S-BW1/2/3 (under
 # the plates at 104 3/8") to a high sidewall grille on the bedroom face — the REG-S-HP-STAIR
 # idiom with a wall in the way. BED1/2 are on clean 14 1/2" bay centres south of their doors:
-# BED1 12'-4" (studs 11'-8"/13'-0"), BED2 19'-8" (studs 19'-0"/20'-4"). Two field items:
+# BED1 12'-4" (studs 11'-8"/13'-0"), BED2 19'-8" (studs 19'-0"/20'-4"). One field item:
 # - the 2 5/8" shadow gap between the box's east face (21'-5 1/2") and the wall's hall face
 #   (21'-8 1/8") is open to the hall below; close it across the stub with a lining return.
-# - the hall face's resilient channel at 96"..98 1/2" is cut in that one bay; no height
-#   between the trunk and the plates clears it.
 # They are EXPOSED with an authored centreline, as DU-S-HP-SUITE is: a run naming SF-S-DUCT is
 # graded across the box's width, and these leave it through its side.
 #

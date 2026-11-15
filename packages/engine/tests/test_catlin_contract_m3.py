@@ -1910,7 +1910,7 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     # ** AND THE COURT WALLS ARE TWO TAGS. ** All five carry dimpleboard outboard (2026-09-16).
     # W-SG-W2/E2/S are buried their whole height and take it full height; W-SG-W1/E1 are
     # exposed above the yard, carry ED-M-HP2-DISC and ED-M-STAIR-LT there, and take it below
-    # grade only. `test_wall_mounted_devices_resolve_against_a_wall_face` holds the devices.
+    # grade only. `integrity.wall_mount_on_face` holds the devices.
     assert {w.tag: w.assembly for w in walls if w.tag != "W-SG-BRKBM"} == {
         "W-SG-W1": "SUNKEN_GARDEN_WALL", "W-SG-E1": "SUNKEN_GARDEN_WALL",
         "W-SG-W2": "SUNKEN_GARDEN_WALL_DRAINED",
