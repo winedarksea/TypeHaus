@@ -195,8 +195,10 @@ goldens commit). Gated `haus print`: 83 → **95** permit sheets. Only the resid
       cut and billed with the countertops. O4-104 (1/4" rounding) was already fixed.
 
     Residue:
-    - C1 E2: `RAILING-INT-STAIR-GUARD` has no fascia mount spec (6 posts print "NOT
-      MODELLED"), and RL-BW-ENTRY / RL-A-FLIGHT-SKIRT have no type;
+    - ~~C1 E2: `RAILING-INT-STAIR-GUARD` has no fascia mount spec (6 posts print "NOT
+      MODELLED"), and RL-BW-ENTRY / RL-A-FLIGHT-SKIRT have no type~~ — closed 2026-11-15:
+      the guard carries `fascia_mount`; the entry rail is a typed wall handrail and the skirt
+      a typed postless panel, so no "NOT MODELLED" row remains;
     - the surface-mount screw has no product row;
     - the plant membrane return is unbilled;
     - A-527 reads the B&B plant key's notes;

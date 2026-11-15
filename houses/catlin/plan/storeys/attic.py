@@ -971,7 +971,7 @@ FLIGHT_SKIRT = Railing(
     ),
     height=inch(18.75),
     base_elevation=ft(10), post_spacing=inch(48), rail_count=0,
-    mount="panel", start_post_ref="RL-A-FLIGHT-GUARD",
+    mount="panel",
     role="guard", serves_stair="ST-S2A", infill="panel",
 )
 

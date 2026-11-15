@@ -208,6 +208,22 @@ def _handrail_panel(b: SceneBuilder, model, key, railings, ox: float) -> None:
     _notes(b, ox - 10, -12, lines)
 
 
+def _board_panel(b: SceneBuilder, model, key, railings, ox: float) -> None:
+    """A ``mount="panel"`` board: its section and height, no posts, no rail."""
+    from typehaus.resolve.railings.parts import resolve_parts
+
+    rep = railings[0]
+    thick = resolve_parts(model, rep).panel_thickness_m / M_PER_IN
+    height = _rail_faces(model, rep)[2] / M_PER_IN
+    b.add(Polyline(points=((ox - 10, 0), (ox + 14, 0)), layer=_STRUCT, lineweight=CUT))
+    _box(b, ox, 0, ox + thick, height, weight=PROFILE)
+    _dim(b, (ox, 0), (ox, height), -6, inch_text(round(height * 16) / 16))
+    _notes(b, ox - 10, -12, [f"{key[0].removeprefix('RAILING-')} / PANEL",
+                             ", ".join(r.tag for r in railings),
+                             f"{_in(thick * M_PER_IN)} BOARD, {inch_text(height)} ABOVE NOSINGS",
+                             "NO POSTS OR RAIL: FIXED AT ITS ENDS"])
+
+
 def _notes(b, x: float, y: float, lines: list[str]) -> None:
     """The panel's title (larger) and its notes, each wrapped to ``_WRAP``."""
     from textwrap import wrap
@@ -231,7 +247,8 @@ def build_guard_detail(model: ResolvedModel) -> Scene:
                      (index % 3) * _COL_IN)
     y = -((len(guards) + 2) // 3) * _ROW_IN
     for index, (key, railings) in enumerate(rails.items()):
-        _handrail_panel(_Row(b, y), model, key, railings, index * _COL_IN)
+        draw = _board_panel if railings[0].mount == "panel" else _handrail_panel
+        draw(_Row(b, y), model, key, railings, index * _COL_IN)
     scene = b.build()
     return scene.model_copy(update={"notes": (
         "Heights: guards above the walking surface they stand on (R312.1.2); handrails "

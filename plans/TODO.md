@@ -221,7 +221,6 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
 - Try to keep most interior doors as 1/2" factory undercut or privacy doors where decided
 - Door residue: the steel and sauna slabs are modelled cut down 1/8" (the steel may need ordering to size); the library interior types and the plan door symbol still use the 45 mm schematic leaf.
 - Shower in sauna?
-- ED-B-CLOSET-LT has a more expensive reading light than that utility closet needs for lighting
 - [x] Improve the 3d model of the EQ-S-PLANT-HEATER (CD08210-style housing, bowed grille, top controls and rear intake).
 - [x] Improve the 3d model of AD-SG-COURT (hollow basin, open slotted grate, round hollow riser).
 - AD-SG-COURT connection: resolve the bottom-drop adapter/product; the named [NDS 1200](https://www.adspipe.com/nds/products/drainage/catch-basins-and-grates/square-catch-basins/1200-12-in-square-catch-basin-drain-with-2-openings) has lateral outlets. Geometry remains representative, within the authored nominal envelope.

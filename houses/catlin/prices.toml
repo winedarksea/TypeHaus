@@ -2812,7 +2812,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "ED-T-EVSE-JB" = { material = { low = 12, high = 40 }, labour = { low = 45, high = 95 } }  # 1 ea, ED-G-EV-1450 hardwire box
 "ED-T-LEV-GFCI-15" = { material = { low = 18, high = 45 }, labour = { low = 48, high = 92 } }  # 8 ea
 "ED-T-LEV-GFCI-20" = { material = { low = 18, high = 45 }, labour = { low = 48, high = 92 } }  # 16 ea since 2026-11-03 (bath vanities to GFCI-GUIDE)
-"ED-T-LEV-GFCI-DF" = { material = { low = 30, high = 45 }, labour = { low = 48, high = 92 } }  # 1 ea, ED-G-GDO-GFCI (GFRBF-W ~$42, McNaughton-McKay 2026-10-30)
+"ED-T-LEV-GFCI-DF" = { material = { low = 30, high = 45 }, labour = { low = 48, high = 92 } }  # 2 ea, ED-G-GDO-GFCI, ED-B-CLOSET-GFCI (GFRBF-W ~$42, McNaughton-McKay 2026-10-30)
 "ED-T-LEV-GFCI-ALARM" = { material = { low = 30, high = 70 }, labour = { low = 48, high = 92 } }  # 1 ea
 "ED-T-LEV-GFCI-WR" = { material = { low = 38, high = 85 }, labour = { low = 65, high = 135 } }  # 8 ea
 "ED-T-LEV-GFCI-WR-15" = { material = { low = 38, high = 85 }, labour = { low = 65, high = 135 } }  # 1 ea, the radon fan outlet (GFWT1-W, priced as the 20 A sibling)
@@ -2827,7 +2827,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "ED-T-LEV-RANGE-1450" = { material = { low = 15, high = 45 }, labour = { low = 45, high = 95 } }  # 1 ea
 "ED-T-LEV-SINGLE-520" = { material = { low = 4, high = 14 }, labour = { low = 38, high = 78 } }  # 1 ea
 "ED-T-LEV-SURGE" = { material = { low = 25, high = 50 }, labour = { low = 40, high = 80 } }  # 2 ea
-"ED-T-LEV-SW1" = { material = { low = 3, high = 10 }, labour = { low = 32, high = 68 } }  # 41 ea since 2026-11-03
+"ED-T-LEV-SW1" = { material = { low = 3, high = 10 }, labour = { low = 32, high = 68 } }  # 42 ea since 2026-11-15 (ED-B-CLOSET-SW)
 "ED-T-LEV-SW3" = { material = { low = 4, high = 12 }, labour = { low = 32, high = 68 } }  # 10 ea since 2026-11-03 (hall and stair 3-ways went plain)
 "ED-T-LEV-USBC" = { material = { low = 30, high = 55 }, labour = { low = 40, high = 80 } }  # 2 ea
 "ED-T-LUT-COUNTDOWN" = { material = { low = 30, high = 80 }, labour = { low = 60, high = 130 } }  # 1 ea
@@ -2965,7 +2965,8 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "PROD-WAVEFORM-T8-95-50K" = { material = { low = 15, high = 25 }, labour = 0 }  # 24 ea
 # Q2 keyless lampholder (Leviton 9880) with an A19 LED.
 "ED-T-LT-KEYLESS" = { material = { low = 8, high = 18 }, labour = { low = 40, high = 90 } }  # 4 ea
-"ED-T-LT-SPOT-SW" = { material = { low = 99, high = 130 }, labour = { low = 60, high = 140 } }  # 4 ea — same WAC Sprig as mark J; canopy toggle is the switch (2026-10-29); RM-M-BED's pair since 2026-11-02
+"ED-T-LT-PULLCHAIN" = { material = { low = 8, high = 18 }, labour = { low = 40, high = 90 } }  # 2 ea, Q3 — Leviton 9726-C (~$6, owner) + A19 LED, the under-stair storage (2026-11-15)
+"ED-T-LT-SPOT-SW" = { material = { low = 99, high = 130 }, labour = { low = 60, high = 140 } }  # 3 ea — same WAC Sprig as mark J; canopy toggle is the switch (2026-10-29); RM-M-BED's pair since 2026-11-02; the under-stair one went to Q3 2026-11-15
 "ED-T-LT-GROW-BAR" = { material = { low = 230, high = 290 }, labour = { low = 45, high = 100 } }  # 2 ea — Barron AG90-W-001 $220-261 + cable hangers (researched 2026-10-28)
 "ED-T-LT-WALL-LINEAR" = { material = { low = 480, high = 552 }, labour = { low = 45, high = 100 } }  # 1 ea — WAC WS-6724-30-BK $480-552 (researched 2026-10-28)
 # RM-M-PANTRY's jamb channels: per channel 6 ft of generic 90-CRI COB (mark E's tape, since
@@ -7012,7 +7013,12 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # Williams rail and post pricing, Ultralox fascia-mount installation instructions,
 # fortressbp.com Al13 Home component pricing, homeadvisor.com 2026 deck railing replacement.
 # $/LF of guard line, by railing product type
-"(untyped railing)" = { material = { low = 25, high = 60 }, labour = { low = 18, high = 35 } }  # 42.9 LF (2026-10-09) — the four dark-steel handrails plus the flight skirt and guard stubs, placeholder. DOUBLE-COUNT CHECK: if one of these is top-mounted on the stair guard, its labour is already inside RAILING-INT-STAIR-GUARD
+# RAILING-EXT-ALUM-HANDRAIL (2026-11-15): RL-BW-ENTRY, the interior kit on W-G-S outdoors;
+# stainless screws and sealed bearing pads on the corrugated add a little to each. Estimate.
+"RAILING-EXT-ALUM-HANDRAIL" = { material = { low = 22, high = 34 }, labour = { low = 12, high = 25 } }
+# RAILING-INT-SKIRT-PANEL (2026-11-15): RL-A-FLIGHT-SKIRT, 1.7 LF of painted poplar board cut to
+# the rake; mostly a scribe-and-paint hour. Estimate, $/LF of run.
+"RAILING-INT-SKIRT-PANEL" = { material = { low = 10, high = 20 }, labour = { low = 35, high = 60 } }
 # RAILING-INT-TI-HANDRAIL-42 (2026-10-09): ST-B2M's two titanium wall rails, ~9.9 LF plan.
 # The tube is OWNER-FURNISHED (Waltly, already paid — costs.toml), so material is only the
 # stock 316 fittings for 42.4 mm tube: 2 brackets, 4 wall-return elbows, 4 end plates, 2

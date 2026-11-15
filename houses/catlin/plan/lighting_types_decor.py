@@ -306,6 +306,20 @@ DECORATIVE_LUMINAIRE_TYPES = (
                   lumens=800.0, cct_k=3000, cri=90, load_va=9.0, ports=_POWER_120,
                   product_ref="PROD-LEVITON-9880",
                   source="Leviton 9880 keyless porcelain lampholder on a 4 in. box, A19 LED."),
+    # Q3 (2026-11-15): a porcelain lampholder with a receptacle, for storage you reach into
+    # (the under-stair space). Wall-switched at the door; the chain is a local off only. The
+    # receptacle is a basement outlet (NEC 210.8(A)(5)): feed it from a GFCI's load side.
+    LuminaireType(tag="ED-T-LT-PULLCHAIN",
+                  replaceable_lamp=True,
+                  lamp_base="E26", name="Porcelain lampholder with receptacle, A19 LED",
+                  form=LuminaireForm.PANEL, type_mark="Q3",
+                  footprint=(inch(4.5), inch(4.5)), height=inch(5.5), plan_symbol="light",
+                  canopy_diameter=inch(4.5), box_use="luminaire-round",
+                  lamp="E26 A19 LED, 800 lm, 3000K, 90 CRI, replaceable", watts=9.0,
+                  lumens=800.0, cct_k=3000, cri=90, load_va=9.0, ports=_POWER_120,
+                  product_ref="PROD-LEVITON-9726-C",
+                  source="Leviton 9726-C pull-chain porcelain lampholder with a 15 A grounding "
+                         "receptacle, on a 4 in. box, A19 LED."),
 
     # --- R/S: exterior fixtures, both full cutoff ------------------------------------
     # Both are dark-sky fixtures by specification, not accident: `full_cutoff=True` says

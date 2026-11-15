@@ -315,6 +315,14 @@ LEVITON_9880 = Product(
     source=_REVIEW + "Utility light for storage and equipment spaces (NEC 210.70(C)); takes "
            "an ordinary A19 LED.",
 )
+LEVITON_9726_C = Product(
+    tag="PROD-LEVITON-9726-C", brand="Leviton", model="9726-C",
+    name="Pull-chain porcelain lampholder, E26, 15 A 125 V grounding receptacle, 4 in. box",
+    url="https://leviton.com/products/9726-c",
+    source="Read 2026-11-15. Leviton product page: one-piece glazed porcelain, twist-lock to a "
+           "3 1/4 or 4 in. box, two screws top wired, pull-chain on/off, grounding outlet "
+           "(one feature line says non-grounding: CONFIRM on the box). ~$6 retail (owner).",
+)
 WAVEFORM_A19_95 = Product(
     tag="PROD-WAVEFORM-CENTRICHOME-A19-30K", brand="Waveform Lighting", model="CentricHOME A19 3000K",
     name="A19 LED bulb, E26, 800 lm, 3000 K, 95 CRI, R9 80+ (typ. 91), 10 W, not dimmable",
@@ -358,6 +366,6 @@ SELECTED_LIGHTING_PRODUCTS = (
     SLL_COB_RGBCCT, SLL_COB_RGBW_IP67, COB_TUNABLE_24V,
     GLEDOPTO_GL_C_001P, GLEDOPTO_GL_C_208M, NEMA_4X_BOX_GENERIC, ENCLOSURE_VENT_GENERIC,
     HALCO_LED_READY_STRIP, WAVEFORM_T8_95,
-    LEVITON_9880, CHANNEL_45_GENERIC, WAVEFORM_A19_95, HINKLEY_SOREN_50910BK,
+    LEVITON_9880, LEVITON_9726_C, CHANNEL_45_GENERIC, WAVEFORM_A19_95, HINKLEY_SOREN_50910BK,
     WAVEFORM_MODERNVINTAGE_A19_30K,
 )

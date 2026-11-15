@@ -425,7 +425,8 @@ def test_catlin_guards_pass_the_four_inch_sphere_rule(catlin_ctx):
     # interior landing moved into the garage's SW corner and W-G-W closes that edge, and
     # RL-BW-GARAGE-E on 2026-10-13 with the landing itself.
     # The flight guard stops at the newel; RL-A-FLIGHT-SKIRT closes the band under it.
-    assert tags == ["RL-A-FLIGHT-GUARD", "RL-A-FLIGHT-SKIRT", "RL-A-STAIR", "RL-BW-ENTRY",
+    # RL-BW-ENTRY left on 2026-11-15: a wall handrail, the walled tiers need no guard.
+    assert tags == ["RL-A-FLIGHT-GUARD", "RL-A-FLIGHT-SKIRT", "RL-A-STAIR",
                     "RL-S-STAIR", "RL-S-STAIRHEAD",
                     "RL-SG-BALCONY", *_PORCH_PIECES,
                     "RL-SG-PSTAIR-N", "RL-SG-PSTAIR-S", "W-BW-SCREEN"], \
@@ -445,7 +446,7 @@ def test_the_sphere_rule_is_measured_off_the_drawn_infill_not_only_the_field(cat
     # RL-BW-SCREEN left with the metal guard it named; W-BW-SCREEN, which closed that edge
     # instead, is a solid wall and has no drawn gap to quote.
     assert sorted(f.message.split()[0] for f in drawn) == [
-        "RL-A-FLIGHT-GUARD", "RL-A-STAIR", "RL-BW-ENTRY",
+        "RL-A-FLIGHT-GUARD", "RL-A-STAIR",
         "RL-S-STAIR", "RL-S-STAIRHEAD",
         "RL-SG-BALCONY", *_PORCH_PIECES, "RL-SG-PSTAIR-N", "RL-SG-PSTAIR-S"]
 

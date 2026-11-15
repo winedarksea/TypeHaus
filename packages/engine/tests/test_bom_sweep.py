@@ -139,21 +139,26 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     # The attic handrail's 10 3/8" lead-in clears WIN-S-STUDY3's lower jamb.
     # 2026-10-22: the dark-steel handrails carry RAILING-INT-ALUM-HANDRAIL; the
     # untyped bucket keeps the rest. Their sum is the same 40.8 LF.
-    dark_steel = by_type.get("RAILING-INT-ALUM-HANDRAIL", 0.0)
     # 41.8 since 2026-11-08: RL-A-HANDRAIL's return moved south of WIN-S-STUDY3's new jamb.
-    assert dark_steel + by_type["(untyped railing)"] == pytest.approx(41.8, abs=0.1)
-    assert dark_steel > 0
+    # 2026-11-15: nothing is untyped. RL-BW-ENTRY is a wall rail (5.8) and RL-A-FLIGHT-SKIRT
+    # a panel (1.7); the interior handrails keep 34.2.
+    assert "(untyped railing)" not in by_type
+    assert by_type["RAILING-INT-ALUM-HANDRAIL"] == pytest.approx(34.2, abs=0.1)
+    assert by_type["RAILING-EXT-ALUM-HANDRAIL"] == pytest.approx(5.8, abs=0.1)
+    assert by_type["RAILING-INT-SKIRT-PANEL"] == pytest.approx(1.7, abs=0.1)
     assert by_type["RAILING-INT-TI-HANDRAIL-42"] == pytest.approx(9.5, abs=0.1)
 
 
-def test_the_untyped_group_key_is_also_what_gets_emitted(bom):
+def test_the_untyped_group_key_is_also_what_gets_emitted():
     """The defect: the group *key* was ``"(untyped railing)"`` and the emitted ``type`` was
-    a raw ``None``, so the estimator matched on ``"None"`` and prices.toml carried a
-    placeholder rate to work around it. The reader's key and the estimator's key are now
-    the same string."""
-    untyped = [row for row in bom["railings"] if row["type"] == "(untyped railing)"]
-    assert untyped, "the handrails carry no type_ref and must still group"
-    assert not [row for row in bom["railings"] if row["type"] is None]
+    a raw ``None``, so the estimator matched on ``"None"``. The reader's key and the
+    estimator's key are now the same string."""
+    from _railing_fixtures import railing, resolve_railings
+
+    from typehaus.takeoff.railings import UNTYPED_RAILING, railing_takeoff
+
+    [row] = railing_takeoff(resolve_railings([railing("RL-UNTYPED")]))
+    assert row["type"] == UNTYPED_RAILING
 
 
 def test_railing_infill_counts_reconcile_against_the_models_own_solids(catlin_model, bom):
@@ -189,8 +194,8 @@ def test_panel_infill_is_billed_by_its_lite_not_as_a_picket(catlin_model_ro):
     model = resolve_railings([railing("RL-PANEL", path=path, height=inch(18.75),
                                      serves_stair=stair.tag, infill="panel")], stairs=[stair])
     [row] = railing_takeoff(model)
-    # A rake is subdivided into horizontal solids; every modeled band bills once.
-    assert row["panel_count"] == len(infill_of(model, "RL-PANEL")) > 0
+    # A rake draws each bay as stepped bands, but a bay is one sheet.
+    assert len(infill_of(model, "RL-PANEL")) > row["panel_count"] == 2
     assert row["panel_area_sqft"] > 0
     assert not row.get("baluster_count")
 
@@ -216,15 +221,14 @@ def test_a_wall_mounted_rail_bills_brackets_rather_than_posts(catlin_model, bom)
 
 def test_a_raking_guards_top_rail_is_longer_than_its_plan_run(bom):
     """``length_ft`` is a plan projection by design; the cap stock a rake consumes is not.
-    The untyped handrails are the five ``serves_stair`` railings, so every one of their rows
-    must show the slope.
+    The aluminium handrails all serve stairs, so every one of their rows must show the slope.
 
-    All five are ``mount="wall"``, so the station walk this is read off is their *brackets*.
+    All are ``mount="wall"``, so the station walk this is read off is their *brackets*.
     It was their posts until the resolver stopped drawing posts under a rail that is screwed
     to a wall, at which point this quantity silently went to zero — a rake's worth of cap
     stock dropping out of the order."""
     for row in bom["railings"]:
-        if row["type"] != "(untyped railing)":
+        if row["type"] not in ("RAILING-INT-ALUM-HANDRAIL", "RAILING-EXT-ALUM-HANDRAIL"):
             continue
         assert float(row["top_rail_length_ft"]) > float(row["length_ft"]), row
 

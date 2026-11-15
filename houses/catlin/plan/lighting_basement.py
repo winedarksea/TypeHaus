@@ -174,24 +174,44 @@ BASEMENT_LIGHTING = [
                          wall_ref="W-B-CW", face="right", distance_from_start=inch(24),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 
-    # The under-stair storage (new 2026-09-05). ED-T-LT-SPOT-SW is the
-    # house's integral-switch down-spot — the same article ED-A-STUDIO-SCONCE uses — which
-    # is the right fixture for a low space you reach into rather than stand in: NEC 210.70
-    # wants a lighting outlet with a switch you can reach, and `integral_switch=True` is
-    # what exempts it from `electrical.lighting_controls` (lighting_types.py says so on the
-    # type). `room` is RM-B-STAIR since the closet stopped being a `Room` of its own the
-    # same day (storeys/basement.py ROOMS) — the fixture did not move an inch.
-    #
-    # On W-B-STR3's Type X face (x=10'-3 1/4") 2" proud of it, 18" along, north of D-B-CLOSET's
-    # 32" door and its king (2026-11-09), at 4'-6" AFF. The elevation is set by the RAKE, not by habit: the flight
-    # overhead is 6'-1 5/8" up at this y, and a 9" fixture at 54" tops out 10 5/8" under it.
+    # The under-stair storage (RM-B-STAIR's volume behind D-B-CLOSET): two Q3 lampholders,
+    # one per bay (2026-11-15), on ED-B-CLOSET-SW at the door and on the load side of the
+    # blank-face GFCI beside it (each lampholder's receptacle is a basement outlet). WEST: on
+    # W-B-STR3, 18" along, 54" AFF; the upper flight is ~68" up here. EAST: on W-B-CN under the
+    # lower landing (joists 43" AFF, ledger 41"), 33" AFF, lighting that landing and the void
+    # under the lower flight; reached by crouching north under the upper landing (50").
     ElectricalDevice(uid="JYMY6WGGP3", tag="ED-B-CLOSET-LT", kind=DeviceKind.LIGHT,
-                     type_ref="ED-T-LT-SPOT-SW",
+                     type_ref="ED-T-LT-PULLCHAIN",
                      circuit="CKT-LT-BSMT", room="RM-B-STAIR",
+                     controlled_by=("ED-B-CLOSET-SW",), gfci_ref="ED-B-CLOSET-GFCI",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(54)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-STR3", face="left", distance_from_start=inch(18),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
+    ElectricalDevice(uid="ZHF5VAJD6P", tag="ED-B-CLOSET-LT2", kind=DeviceKind.LIGHT,
+                     type_ref="ED-T-LT-PULLCHAIN",
+                     circuit="CKT-LT-BSMT", room="RM-B-STAIR",
+                     controlled_by=("ED-B-CLOSET-SW",), gfci_ref="ED-B-CLOSET-GFCI",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(33)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-B-CN", face="left", distance_from_start=inch(131),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+    # In the furnace room, on W-B-STR3 north of D-B-CLOSET (the 6 3/4" south of it is too
+    # narrow): the switch, then the GFCI that protects both lampholders' receptacles.
+    ElectricalDevice(uid="VTEDWAW1V7", tag="ED-B-CLOSET-SW", kind=DeviceKind.SWITCH,
+                     type_ref="ED-T-LEV-SW1",
+                     circuit="CKT-LT-BSMT", room="RM-B-FURNACE",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-B-STR3", face="right", distance_from_start=inch(9.5),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
+    ElectricalDevice(uid="X2K9AK59ZE", tag="ED-B-CLOSET-GFCI", kind=DeviceKind.RECEPTACLE_GFCI,
+                     type_ref="ED-T-LEV-GFCI-DF",
+                     circuit="CKT-LT-BSMT", room="RM-B-FURNACE",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-B-STR3", face="right", distance_from_start=inch(6.5),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
 
 
     # ** RM-B-SAUNA IS LIT FROM UNDER THE BENCHES SINCE 2026-09-13; NOTHING ELECTRICAL IS

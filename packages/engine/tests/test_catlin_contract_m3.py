@@ -1817,8 +1817,8 @@ def test_garage_wood_framing_uses_its_structure_layer_centerline(catlin_model):
             ) / len(layer.polygon)
 
         # Studs follow the structure centreline; strapping follows the furring layer.
-        # The garage's authored handrail backing is let in flush with the left stud face,
-        # so its narrow thickness has a different centreline from the studs it attaches to.
+        # The garage's authored backing is let in flush with one stud face (left inside,
+        # right for RL-BW-ENTRY's outdoor foot), so its centreline sits off the studs'.
         #
         # GARAGE_WALL_2X6 has no furring layer (nail strip face-fastens straight to the
         # Zip-R), so on this house the strapping branch is currently dead. It stays coded
@@ -1832,9 +1832,11 @@ def test_garage_wood_framing_uses_its_structure_layer_centerline(catlin_model):
         assert has_furring == any(member.category == "strapping" for member in wall.members)
         for member in wall.members:
             center_offset = expected.get(member.category, default_offset)
+            backing_shift = None
             if member.child_key.startswith("backing-"):
                 structure = next(ly for ly in wall.layers if ly.function == "structure")
-                center_offset += (structure.thickness_m - cross_section(member.profile).width_m) / 2
+                backing_shift = (structure.thickness_m
+                                 - cross_section(member.profile).width_m) / 2
             structure = next(ly for ly in wall.layers if ly.function == "structure")
             # The 2x8 sill (FramingSpec.sill_member, C3-E8) is flush with the stud band's
             # OUTSIDE face, so its centre sits half its extra width off the stud line.
@@ -1842,7 +1844,9 @@ def test_garage_wood_framing_uses_its_structure_layer_centerline(catlin_model):
                      and cross_section(member.profile).depth_m > structure.thickness_m + 1e-6)
             for point in (member.p0, member.p1):
                 offset = (point[0] - start[0]) * normal_x + (point[1] - start[1]) * normal_y
-                if wider:
+                if backing_shift is not None:
+                    assert abs(offset - center_offset) == pytest.approx(backing_shift, abs=1e-9)
+                elif wider:
                     assert abs(offset - center_offset) == pytest.approx(
                         (cross_section(member.profile).depth_m - structure.thickness_m) / 2,
                         abs=1e-9)

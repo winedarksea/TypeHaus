@@ -122,6 +122,17 @@ def test_a_panel_is_one_prism_per_bay_spanning_post_face_to_post_face():
                             inch(42).meters - parts.rail_section_m, abs_tol=1e-9)
 
 
+def test_a_panel_mount_draws_the_board_alone_end_to_end():
+    """``mount="panel"``, ``rail_count=0``: no posts, no rail, the sheet the full height."""
+    model = resolve_railings([railing("RL-BOARD", infill="panel", mount="panel",
+                                      rail_count=0, height=inch(18), post_spacing=ft(10))])
+    assert not solids_of(model, "RL-BOARD", "railing")
+    [panel] = infill_of(model, "RL-BOARD")
+    xs = [x for x, _y in panel.outline]
+    assert math.isclose(max(xs) - min(xs), ft(10).meters, abs_tol=1e-9)
+    assert math.isclose(_z_span(panel), inch(18).meters, abs_tol=1e-9)
+
+
 def test_mesh_draws_as_a_sheet_exactly_as_a_panel_does():
     """Drawing the wire is thousands of solids for a feature invisible past about a metre,
     so mesh IS a sheet and its material is what says mesh."""

@@ -478,6 +478,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **Garage storey datum is not the garage floor.** Walls bear on the ICF stem at `GARAGE_STEM_REVEAL` (1'-10") above grade → `garage` storey at -1'-0"; the slab pours at grade (1'-10" lower), absolute `Slab.top_elevation`.
 - Sitting on the garage floor must be explicit: `D-G-OVERHEAD` carries the plan's only negative `sill_height`; the ICF stem gaps there (open-ended `N-GF-N-DRE`/`-DRW`) and `SL-G-FLOOR` runs out to the door line. **No grade beam since 2026-09-23** — nothing bears on the opening, the header carries the roof to the piers. The open U is why every `W-GF-*` names `interior_room="RM-GARAGE"`: without a closed loop the winding falls to +1 and the stem builds inside out.
 - `D-G-SERVICE` threshold stays 0'-0" with the bridge deck (`+1'-0"` sill); the 2'-10" drop is five 7.06" risers inside, topping at the +1.2835" threshold crest (unit seated on the pan, 1/2" head gap after the 3/4" seat, 2026-11-06; MMI crest still a supplier hold) (`ST-G-SERVICE` KDAT, flush to the stem's finished face at x=6'-11 5/8"; `RL-G-SERVICE` wall-mounted on `W-G-W` on `BK-G-W-RAIL-TOP`/`-FOOT`). The flight rises straight to the threshold with no top landing (the door swings OUT; R311.7.6 exception, `code.R311_7_6_door_at_stair_head`), its stringer heads seated on the `W-G-S` stem (`STAIR_SEATS`); `SL-G-STEP-0` and `FS-BW-GARAGE` are both retired. **The stem does NOT gap under this door** (since 2026-09-11): `W-GF-S-DR` is full stem with its nodes pinned at x 8'-3"/11'-9" as a fossil, so `SP-GF-S-HYD` keeps its host.
+- **No guard on ST-BW-ENTRY; no posts on RL-A-FLIGHT-SKIRT (2026-11-15).** The tiers are walled and under 30", so `RL-BW-ENTRY` is only R311.7.8's rail: a postless EZ Handrail wall rail on `W-G-S` (`RAILING-EXT-ALUM-HANDRAIL`, returns on `BK-G-S-RAIL-FOOT` and D-G-SERVICE's east king, past the leaf). `RL-A-FLIGHT-SKIRT` is a painted 3/4" poplar board, `mount="panel"`, `rail_count=0` (`RAILING-INT-SKIRT-PANEL`). DESIGN-LOG, same date.
 - `Stair.floor_opening` is optional (a rise states directly via `base_elevation`/`top_elevation`) — but `structural.stair_riser_uniformity` and `code.R311_7_8_handrail` iterate `model.stairs`, so slabs instead of a `Stair` draw NO riser/handrail finding.
 - Garage plates are 8'-4", not 8'-0" — the door climbed 4" when the storey dropped, and the plate height is set by `D-G-SERVICE`'s rough head and the truss heels alone: its head is an R602.7.4 flat 2x6 nonbearing nailer since 2026-10-31 (the old 3-ply LVL ran 2" into the plates; `integrity.header_under_plate`). `D-G-OVERHEAD` is the garage's one beam, a 2-ply 14" LVL (K7).
 - Emitters/placeable resolver read `resolve/room_floor.py::room_floor_elevation` for garage heights, not storey elevation — enforced by `test_catlin_contract_m3.py::test_garage_overhead_door_opens_from_the_slab_at_grade`.
@@ -2225,8 +2226,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **Under-stair space.** No `RM-B-UNDERSTAIR` room exists; the storage under the arriving
   stair flight (and on under the landing deck) is part of `RM-B-STAIR`'s single polygon.
   `D-B-CLOSET` (32" leaf, 6'-0" head, 55-degree stop, standard 1/2" undercut) is its only way in,
-  from the furnace room, and the full-height way to `PA-B-MAIN-SHUTOFF`; `ED-B-CLOSET-LT`
-  (`room=RM-B-STAIR`) lights it. Plain storage: `EQ-B-WH` left it for the workshop the day it
+  from the furnace room, and the full-height way to `PA-B-MAIN-SHUTOFF`. Two Q3 lampholders
+  (Leviton 9726-C, with a receptacle) light it, one per bay (2026-11-15): `ED-B-CLOSET-LT` on
+  `W-B-STR3` (west), `ED-B-CLOSET-LT2` on `W-B-CN` under the lower landing (east). Both are on
+  `ED-B-CLOSET-SW` outside the door and the blank-face `ED-B-CLOSET-GFCI` beside it, whose load
+  side covers the receptacles (210.8(A)(5)); no check sees a lampholder's receptacle. Plain storage: `EQ-B-WH` left it for the workshop the day it
   arrived (2026-11-09). R302.7 gypsum under the flight is a `prices.toml` allowance:
   no `Stair` field models it.
   `LR-B-STAIR-RAIL` lies under the flight rather than along it — one `Mount` elevation for

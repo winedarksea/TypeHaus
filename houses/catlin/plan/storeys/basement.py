@@ -1282,7 +1282,7 @@ ROOMS = [
     # land in ONE face and RM-B-STAIR and RM-B-UNDERSTAIR each resolved the same 114.8 sf
     # polygon — the whole shaft counted twice, in every area, finish and load that walks
     # rooms, at 0 FAIL. So the closet gives up its label and keeps its use: D-B-CLOSET in
-    # W-B-STR3 still opens it to the furnace room, ED-B-CLOSET-LT still lights it, and
+    # W-B-STR3 still opens it to the furnace room, ED-B-CLOSET-LT/-LT2 light it, and
     # W-B-STR3 keeps its Type X leaf.
     #
     # ** W-B-STR3 IS NOT RETYPED BACK. ** `code.R302_7_understair` now passes on "no

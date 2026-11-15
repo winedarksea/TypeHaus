@@ -8338,3 +8338,22 @@ the tread's face instead of turning onto the beam, where it made a trough with n
 Left open: the girt course's block screws carry these approaches in shear with no published
 value (ESR-1078 Table 4 needs 5" of penetration). This is an engineered connection, and a
 first NDS pass is short of the notes' 300 lb point load.
+
+## RL-BW-ENTRY and RL-A-FLIGHT-SKIRT lose their posts (2026-11-15, owner)
+
+- RL-BW-ENTRY was a 36" baluster guard on ST-BW-ENTRY's north edge. The flight needs no
+  guard: it has walls 3" off both sides and the top tier is 26.4" over the walk, under
+  R312.1.1's 30" (`code.R312_1_1_stair_open_side` already passed it). Its 2x2 posts stood
+  centred on the tier edge, so a real base would have hung half off the concrete. Five risers
+  still need R311.7.8's rail. It is now a postless wall rail on W-G-S, the same EZ Handrail kit
+  as RL-G-SERVICE (`RAILING-EXT-ALUM-HANDRAIL`; the listing covers outdoor use). The centre is
+  2 1/2" off the corrugated face (1.55" clear). The foot return lands on `BK-G-S-RAIL-FOOT`, the
+  bracket on the x=12' stud, and the head return on D-G-SERVICE's east king at 9'-9 1/4". That
+  is past the leaf's swing (x >= 116.5") and spans 45.8" against the type's 54".
+- RL-A-FLIGHT-SKIRT was a 2x2-post "guard" for a 20 3/8" raked filler. It is a painted 3/4"
+  poplar board (`RAILING-INT-SKIRT-PANEL`, `mount="panel"`, `rail_count=0`), screwed to
+  stringer-0 and the guard's newel. It names no `start_post_ref`: that field means the other
+  guard's post stands on this end's station, and the newel's fascia post is outboard of the
+  stringer face, so the ref only drew a false shared-post warning.
+- Engine: `mount="panel"` draws no posts or brackets, and no rail when `rail_count=0`. Its infill
+  runs end to end and full height. The takeoff bills a panel once per bay, not once per rake band.

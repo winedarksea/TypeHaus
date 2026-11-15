@@ -20,6 +20,7 @@ from typehaus.model.elements import Wall
 from typehaus.model.structure import Railing
 from typehaus.resolve.model import ResolvedModel, ResolvedSolid
 from typehaus.resolve.ownership import children_of
+from typehaus.resolve.railings.guard_line import guard_post_stations
 from typehaus.resolve.railings.infill import derived_infill_count
 from typehaus.resolve.railings.parts import (
     RAILING_GLASS_CATEGORY,
@@ -161,8 +162,10 @@ def _infill_quantities(model: ResolvedModel, element: Railing) -> dict[str, obje
         return {"cable_count": count,
                 "cable_length_ft": round(_path_length_ft(element) * count, 1)}
     if element.infill in ("panel", "mesh"):
+        # One sheet per bay: a rake draws a bay as several stepped bands.
         area = sum(_plan_run_m(s.outline) * (s.z1_m - s.z0_m) for s in solids)
-        return {"panel_count": len(solids),
+        bays = max(len(guard_post_stations(model.plan.library, element)) - 1, 0)
+        return {"panel_count": bays if solids else 0,
                 "panel_area_sqft": round(area * _M2_TO_SQFT, 1)}
     return {}
 
