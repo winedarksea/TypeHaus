@@ -9,6 +9,7 @@ from typehaus import (
     Layer,
     LayerFunction,
     RainscreenBaseFlashing,
+    SillCourseFastening,
     inch,
 )
 from library import (
@@ -177,6 +178,15 @@ EXT_2X6 = Assembly(
               framing=FramingSpec(member="2x4", direction="horizontal", laid="flat",
                                   spacing=inch(24), layout_origin="line",
                                   course_datum="framing-base", course_offset=inch(0),
+                                  # A door's sill course carries its approach (owner, 2026-11-14):
+                                  # 3-screw end blocks, 6" interior blocks, TLOK10 through an SPF
+                                  # backer pair in the edge TJI's web recess.
+                                  sill_course=SillCourseFastening(
+                                      block_spacing=inch(6), end_screws=3,
+                                      end_screw_pitch=inch(0.75), fastener_part="TLOK10",
+                                      fastener_length_in=10.0, backer_stock="2x4",
+                                      backer_material_ref="spf", course_modulus_psi=1400000.0,
+                                      source="notes/exterior_door_structural_mount.md, Girt sill course connection; E per notes/catlin_truss_engineering.md section 4"),
                                   standoff="block",
                                   standoff_fastener="FastenMaster TimberLOK 8\" TLOK08, ESR-1078",
                                   standoff_fastener_part="TLOK08",
@@ -185,6 +195,8 @@ EXT_2X6 = Assembly(
                                   standoff_fastener_thread_in=2.0,
                                   standoff_fastener_withdrawal_lb_per_in=170.0,
                                   standoff_fastener_pull_through_lb=200.0,
+                                  standoff_fastener_wet_lateral_lb=120.0,
+                                  standoff_fastener_wet_lateral_source="house NDS 2018 12.3 calc, mode IIIm 175.0 lb x C_M 0.70 = 122.5, authored 120: notes/french_door_catalog_installation.md section 2, notes/exterior_door_structural_mount.md",
                                   standoff_fastener_source="ICC-ES ESR-1078 (reissued 2026-01), Tables 1A (2 in thread), 2 (withdrawal, SPF G 0.42) and 3 (head pull-through, 1-1/2 in side member at SG 0.55); coating for ACQ-D <= 0.40 pcf per 4.1.7 / Table 6")),
         Layer(name="cladding", material_ref="pbr-panel-24", thickness=inch(1.25),
               function=LayerFunction.CLADDING),

@@ -24,6 +24,7 @@ from typehaus.hardware.config import (
     ExteriorInsulationFastenerRules,
 )
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.framing.girt_sill_course import sill_block_screws
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.framing.truss_girts import INNER
 from typehaus.resolve.framing.truss_wall import (
@@ -223,8 +224,10 @@ def exterior_insulation_screw_rows(model: ResolvedModel,
             int(math.ceil(roof.surface_area_m2 / cell_m2)))
 
     from typehaus.takeoff.eave_fasteners import eave_screw_rows
+    from typehaus.takeoff.girt_sill_fasteners import girt_sill_screw_rows
 
-    rows = [*truss_wall_block_screw_rows(model, rules), *eave_screw_rows(model, rules)]
+    rows = [*truss_wall_block_screw_rows(model, rules), *eave_screw_rows(model, rules),
+            *girt_sill_screw_rows(model)]
     for (scope, part_number), group in sorted(groups.items()):
         fastening = group["fastening"]
         rows.append(hardware_row(
@@ -279,8 +282,8 @@ def truss_wall_block_screw_rows(model: ResolvedModel,
         bands = truss_girt_bands(model.plan, wall.assembly)
         one_tier = bands is not None and bands[0] is None
         for member in wall.members:
-            if member.category != BLOCK_CATEGORY:
-                continue
+            if member.category != BLOCK_CATEGORY or sill_block_screws(member) is not None:
+                continue  # a door sill course's blocks: takeoff/girt_sill_fasteners.py
             # The block's own depth through the wall, ply count included: a three-ply
             # ``3-2x4`` reads 4-1/2" here, which is exactly what the screw crosses.
             block_m = cross_section(member.profile).width_m

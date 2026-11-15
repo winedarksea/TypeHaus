@@ -25,18 +25,10 @@ _LANDING_REACH = 18 * _IN
 _MIN_COVER = 0.75
 
 
-#: The girt sill course's blocks hang on one TimberLOK each, in shear through a 6" stack:
-#: ESR-1078 Table 4 needs 5" of main-member penetration (this gets 1 1/2") and puts NDS
-#: lateral design of the screw outside its scope, so no published value grades it.
-GIRT_COURSE_UNKNOWN = ("girt sill course: its blocks carry the approach on TimberLOK screws "
-                       "in shear through the block stack; ESR-1078 publishes no lateral value "
-                       "at this penetration, so the load path into the band is an engineered "
-                       "connection")
-
-
 @dataclass(frozen=True)
 class BridgeSupport:
     sheathing: float
+    girt_key: str | None = None
     girt_inner: float | None = None
     girt_face: float | None = None
     girt_bottom: float | None = None
@@ -67,8 +59,8 @@ def bridge_support(model, wall, opening, placement, base, half_width):
     girt = _covering(wall.members, local, ("ladder-sill-",), -half_width, half_width)
     if girt is not None:
         depth, across = _across_faces(girt, local)
-        support.update(girt_inner=depth - across, girt_face=depth + across,
-                       girt_bottom=girt.z0_m)
+        support.update(girt_key=girt.child_key, girt_inner=depth - across,
+                       girt_face=depth + across, girt_bottom=girt.z0_m)
     elif bearing.girt_course:
         conflicts.append("no girt sill course under the approach")
     buck = _covering(wall.members, local, ("buck-sill-",), -half_width, half_width)
@@ -106,6 +98,17 @@ def bridge_support(model, wall, opening, placement, base, half_width):
     if depths:
         support["deck_edge"] = min(depths)
     return BridgeSupport(**support, conflicts=tuple(conflicts))
+
+
+def girt_course_connection(model, wall, opening, placement, support):
+    """``(report fields, unknown, conflicts)`` of the girt sill course's screws."""
+    course = next((m for m in wall.members if m.child_key == support.girt_key), None)
+    if course is None:
+        return dict(connection_status="NOT_APPLICABLE", connection_demand_lb=0.0,
+                    connection_capacity_lb=None, connection_dcr=None), [], []
+    from typehaus.resolve.girt_sill_connection import girt_sill_connection
+
+    return girt_sill_connection(model, wall, opening, placement, course)
 
 
 def gap_landing_conflicts(support, bearing, nose, movement):
@@ -231,14 +234,15 @@ def bridge_installation(model, wall, opening, placement, layout, clad):
             conflicts.append("the pan's drip stands past the extender's nose")
     gap = (min(support.deck_edge, support.member_inner) - layout.end
            if support.deck_edge is not None and support.member_inner is not None else None)
-    unknown = [GIRT_COURSE_UNKNOWN] if support.girt_face is not None else []
+    connection, unknown, connection_conflicts = girt_course_connection(
+        model, wall, opening, placement, support)
+    conflicts.extend(connection_conflicts)
     unknown += [f"{spec.sill_extender_ref}: its support under the nose past the girt course"
                + (f" ({overhang / _IN:.2f}\")" if overhang is not None else "")
                + " and the prehung assembly on this sill are supplier holds"]
     report = dict(
-        member_status="NOT_APPLICABLE", connection_status="NOT_APPLICABLE",
-        connection_demand_lb=0.0, connection_capacity_lb=None, connection_dcr=None,
-        kind="girt_bridge", girt_face_in=_inch(support.girt_face),
+        member_status="NOT_APPLICABLE", **connection, kind="girt_bridge",
+        girt_face_in=_inch(support.girt_face),
         buck_top_z_m=support.buck_top, extender_overhang_in=_inch(overhang),
         landing_member=support.member, landing_member_cover=support.member_cover,
         landing_member_inner_in=_inch(support.member_inner),

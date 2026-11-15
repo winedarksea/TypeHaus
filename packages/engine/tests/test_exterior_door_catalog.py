@@ -121,9 +121,10 @@ def test_catalog_installation_keeps_evidence_separate(catlin_model_ro, tag):
     assert "approach-walking-plate" not in names
     assert all(Polygon(s.polygon_m).is_valid for s in placement.sections)
     report = placement.installation_report
-    # The sunken-garden door's tread lies on its foam (owner, 2026-11-03) and the study's
-    # extender on the girt course (2026-11-13): neither has a root connection to document.
-    assert report["support"]["connection_status"] == "NOT_APPLICABLE"
+    # The sunken-garden door's tread lies on its foam (owner, 2026-11-03): no root connection.
+    # The study's extender rests on the girt course, whose screws are graded (2026-11-14).
+    assert report["support"]["connection_status"] == ("NOT_APPLICABLE" if tag == "D-B-SUNKEN"
+                                                      else "PASS")
     assert report["support"]["member_status"] == ("PASS" if tag == "D-B-SUNKEN"
                                                   else "NOT_APPLICABLE")
     assert report["approach_slope"] == pytest.approx(1 / 48)

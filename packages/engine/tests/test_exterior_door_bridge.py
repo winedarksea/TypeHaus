@@ -39,6 +39,23 @@ def test_schematic_plates_rest_on_their_landings(catlin_model_ro, tag):
     assert not opening.doorway.conflicts
 
 
+@pytest.mark.parametrize("tag, demand", (("D-S-BALCONY", 116.09), ("D-M-PORCH", 116.09),
+                                         ("D-M-ENTRY", 115.84)))
+def test_girt_sill_course_screws_carry_the_point_load(catlin_model_ro, tag, demand):
+    """notes/exterior_door_structural_mount.md, "Girt sill course connection": the worst
+    screw share with 300 lb at a free end, against the house's 120 lb wet lateral value."""
+    opening = _door(catlin_model_ro, tag)
+    report = opening.doorway.exterior_placement.installation_report
+    report = report.get("support", report)
+    assert report["connection_status"] == "PASS"
+    assert report["connection_demand_lb"] == pytest.approx(demand, abs=0.01)
+    assert report["connection_dcr"] == pytest.approx(demand / 120.0, abs=1e-4)
+    assert report["girt_course_fastener"] == "TLOK10"
+    backers = [m for f in catlin_model_ro.floors for m in f.members
+               if m.child_key.startswith(f"girt-sill-backer-{tag}-")]
+    assert len(backers) == 2 and {m.stock_profile for m in backers} == {"2x4"}
+
+
 def test_landing_conflicts_are_measured():
     bearing = ApproachBearing(landing_ref="deck")
     support = BridgeSupport(sheathing=0.0, member_inner=8.5 * _IN, member_outer=10 * _IN,

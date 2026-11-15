@@ -183,7 +183,8 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     # The girt crossing screw has its OWN role since 2026-09-12: it is selected on thread
     # length, which the length-ordered exterior-insulation ladder cannot see.
     girt_rows = [row for row in all_rows if row["role"] == ROLE_GIRT_STANDOFF_SCREW
-                 and row["scope"] != "eave gutter girt standoffs"]
+                 and row["scope"] not in ("eave gutter girt standoffs",
+                                          "girt door sill course blocks")]
     # ONE "exterior wall furring" row, and it is the garage ICF stem's protection band.
     # `GARAGE_ICF_6`'s stem walls are filed on `g-foundation` — the GARAGE's own frost-depth
     # storey since 2026-09-13, `basement` before that — which is what separates them from the
@@ -232,8 +233,10 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     assert row["count"] == sum(row["by_storey"].values())
 
     # Counted off the resolved blocks, not off a grid — exactly one screw per block.
+    # A door's sill course blocks bill their own row (takeoff/girt_sill_fasteners.py).
     blocks = sum(1 for w in catlin_model.walls for m in w.members
-                 if m.category == "truss_block" and girt_block_tier(m.child_key) is not None)
+                 if m.category == "truss_block" and girt_block_tier(m.child_key) is not None
+                 and not (m.connection or "").startswith("girt-sill-screws:"))
     assert row["count"] == blocks > 0
     # The two roles between them bill every structural screw through anything on this house
     # — the roof's 581 came out with the nailbase, and the inner tier's took the second wall
@@ -329,7 +332,8 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     # NJ 3, and the wider packs take one more jamb station on W-M-E1, -W3 and -W4 each.
     # 1156 on 2026-11-08: WIN-S-STUDY3's 16" south move drops its four packed stations.
     # 1164 on 2026-11-10: the 1-1/2" roof rise lifts the gable girts past one more course.
-    assert row["count"] == 1164 and furring[0]["count"] == 198
+    # 1161 on 2026-11-14: the three door sill courses' blocks bill their own TLOK10 row.
+    assert row["count"] == 1161 and furring[0]["count"] == 198
 
 
 # --- hangers -------------------------------------------------------------------------

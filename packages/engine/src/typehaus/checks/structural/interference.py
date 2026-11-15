@@ -169,8 +169,12 @@ def _intended_framing_joint(a: _Candidate, b: _Candidate) -> bool:
     if a.kind in _PLATE_KINDS and b.kind in _PLATE_KINDS and not same_parent:
         return True
     # blocking fastened into studs/plates (its own wall, or the intersecting wall a T-backing
-    # ladder exists to back). Blocking is minor nailer/backing stock, never a structural clash.
+    # ladder backs), or a backer wholly inside its own I-joist's flanges, in the web recess.
     if "blocking" in kinds and (kinds - {"blocking"}) <= (_STUD_KINDS | _PLATE_KINDS):
+        return True
+    block, host = (a, b) if a.kind == "blocking" else (b, a)
+    if kinds == {"blocking", "joist"} and same_parent and host.poly.buffer(1e-6).contains(
+            block.poly):
         return True
     # Stair joinery: treads/winders are housed in / land on the stair frame, and a stringer
     # (or landing) bears on the plates, joists, and studs that carry the flight. All are
@@ -193,13 +197,9 @@ def _intended_framing_joint(a: _Candidate, b: _Candidate) -> bool:
     # landing left too tall against a trimmer is still reported, by the rules above.
     if "hanger" in kinds and (kinds - {"hanger"}) <= {"trimmer", "header", "joist", "rim"}:
         return True
-    # A beam passing THROUGH a deck's rim, which is the rim being field-cut and not the beam
-    # being in the wrong place. A rim closes the ends of a joist field; where a beam runs on
-    # past that line — the north entry's two garage-landing carriers leaving the landing
-    # through a door's rough opening is the worked example — the rim is built in pieces
-    # butted either side of it, and the beam runs through unbroken. The IR emits the rim as
-    # one member, so it reads as a crossing.
-    #
+    # A beam passing THROUGH a deck's rim: the rim is built in pieces butted either side of
+    # it (the north entry's garage-landing carriers through a door's RO), but the IR emits
+    # one rim member, so it reads as a crossing.
     # Scoped so it cannot mask an elevation bug: only these two kinds, only across different
     # parents, and only where the beam genuinely passes through rather than dying into the
     # rim (a beam ENDING on a rim is already ``_butt_joint``'s clause, and a beam left too

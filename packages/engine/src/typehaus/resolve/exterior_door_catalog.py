@@ -36,12 +36,14 @@ def add_catalog_installation(model, wall, opening, assembly, clad):
         conflicts.append(f"approach support reference {spec.support_ref} does not resolve")
     if support["member_status"] == "FAIL":
         conflicts.append("catalog approach support member exceeds strength or deflection limit")
-    if support["connection_status"] == "UNKNOWN":
+    # A girt bridge's connection reports its own findings (resolve/girt_sill_connection.py).
+    status = None if bridge else support["connection_status"]
+    if status == "UNKNOWN":
         unknown.append(
             "approach root connection capacity/development is undocumented; "
             "member calculations do not verify the load path"
         )
-    elif support["connection_status"] == "FAIL":
+    elif status == "FAIL":
         conflicts.append("approach support connection exceeds its documented capacity")
     if layout.end >= layout.outlet and not bridge:
         conflicts.append("catalog sill leaves no exterior approach")

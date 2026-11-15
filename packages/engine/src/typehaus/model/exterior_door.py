@@ -38,6 +38,8 @@ class ApproachBearing(HausModel):
     maximum_pad_thickness: Length = inch(1.5)
     # Plank ends at the door must sit this far onto the landing's member.
     plank_bearing: Length = inch(0.75)
+    # The point load the girt sill course's screws are graded for, anywhere along it.
+    concentrated_load_lb: float = Field(default=300, gt=0)
 
     @model_validator(mode="after")
     def slip_pad_named(self):

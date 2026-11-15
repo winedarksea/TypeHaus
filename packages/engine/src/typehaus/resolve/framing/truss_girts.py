@@ -88,6 +88,7 @@ from typehaus.resolve.framing.furring import (  # noqa: F401 - re-exported by tr
     course_elevations,
     opening_margin,
 )
+from typehaus.resolve.framing.girt_sill_course import sill_course_blocks
 from typehaus.resolve.framing.girt_support_spacing import (
     complete_support_stations,
     land_free_ends,
@@ -242,6 +243,7 @@ class GirtFrame(BandFrame):
         # differed storey to storey while every block was still faithfully on a stud.
         self.block_phase = block_phase
         self.continuations = continuations
+        self.sill_course = None  # FramingSpec.sill_course, set by build()
 
         section = cross_section(GIRT_MEMBER)
         #: 1-1/2" — a girt's thickness through the wall, and one block ply's depth.
@@ -339,12 +341,15 @@ class GirtFrame(BandFrame):
             # not a thing this house builds, but the fallback frames one ply of block
             # rather than refusing outright.
             sheathing_face = band_in - cross_section(GIRT_MEMBER).width_m
-        return cls(wall, start, direction, turned, first, last, inner, outer,
-                   sheathing_face, assembly_structure_material(plan, wall.assembly),
-                   spacing,
-                   layout_phase(spec, cast("ResolvedLayoutLine | None", line),
-                                wall.tag, spacing),
-                   block_phase, continuations, run)
+        frame = cls(wall, start, direction, turned, first, last, inner, outer,
+                    sheathing_face, assembly_structure_material(plan, wall.assembly),
+                    spacing,
+                    layout_phase(spec, cast("ResolvedLayoutLine | None", line),
+                                 wall.tag, spacing),
+                    block_phase, continuations, run)
+        bands = truss_girt_bands(plan, wall.assembly)
+        frame.sill_course = bands[1].framing.sill_course if bands else None
+        return frame
 
     # --- the field ---------------------------------------------------------------
     def blocks(self, field: dict[str, list[FramedMember]],
@@ -698,6 +703,9 @@ class GirtFrame(BandFrame):
                 spacing, phase = self._module(tier)
                 half = self.stock_face / 2.0
                 span = (jambs[0] + half, jambs[1] - half)
+                if name == "sill" and opening.kind == "door" and self.sill_course is not None:
+                    out.extend(sill_course_blocks(self, tier, index, span, z0))
+                    continue
                 for count, station in enumerate(
                         st for st in _module_stations(
                             span[0], span[1], spacing, self.stock_face,

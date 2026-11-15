@@ -228,6 +228,7 @@ from typehaus.model.shower_assembly import (
     ShowerValveDimensions,
     ShowerValvePocket,
 )
+from typehaus.model.sill_course import SillCourseFastening
 from typehaus.model.site import (
     Basemap,
     Benchmark,
@@ -402,7 +403,7 @@ __all__ = [
     "DoorHardwareItem", "JambFraming",
     "DoorwayProductSpec", "DoorwaySectionPart", "DoorwayTreatment", "ExteriorDoorInstallation",
     "ExteriorDoorSillDesign", "ExteriorDoorCatalogInstallation", "DoorCatalogDimensions",
-    "ApproachBearing", "PlyFastening", "FillerBlock",
+    "ApproachBearing", "PlyFastening", "FillerBlock", "SillCourseFastening",
     "WinderTurnSpec", "WinderFramingSpec",
     "ReinforcementSpec",
     "BarSpec",

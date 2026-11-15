@@ -1721,6 +1721,118 @@
       "node": "polyline",
       "points": [
         [
+          -1.15625,
+          -4.75
+        ],
+        [
+          -0.18750000000000003,
+          -4.75
+        ],
+        [
+          -0.18750000000000003,
+          -3.3459645669291227
+        ],
+        [
+          -1.15625,
+          -3.3459645669291227
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMFS02AAAA",
+      "tag": "girt-sill-backer-D-M-PORCH-out"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -1.15625,
+          -4.75
+        ],
+        [
+          -0.18750000000000003,
+          -4.75
+        ],
+        [
+          -0.18750000000000003,
+          -3.3459645669291227
+        ],
+        [
+          -1.15625,
+          -3.3459645669291227
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          0.18750000000000003,
+          -4.75
+        ],
+        [
+          1.15625,
+          -4.75
+        ],
+        [
+          1.15625,
+          -3.3459645669291227
+        ],
+        [
+          0.18750000000000003,
+          -3.3459645669291227
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMFS02AAAA",
+      "tag": "girt-sill-backer-D-M-PORCH-in"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          0.18750000000000003,
+          -4.75
+        ],
+        [
+          1.15625,
+          -4.75
+        ],
+        [
+          1.15625,
+          -3.3459645669291227
+        ],
+        [
+          0.18750000000000003,
+          -3.3459645669291227
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           -11.125000000000002,
           -11.25
         ],

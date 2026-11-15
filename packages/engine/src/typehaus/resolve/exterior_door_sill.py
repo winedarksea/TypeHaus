@@ -238,13 +238,14 @@ def add_sill_design(assembly, opening, clad, model=None, wall=None):
                                                    installation.drainage_gap.meters / 2))
         if support.buck_top is not None and plate_bottom(reach) < support.buck_top - 1e-6:
             conflicts.append("approach plate sinks into the buck sill")
-        from typehaus.resolve.exterior_door_bridge import GIRT_COURSE_UNKNOWN
+        from typehaus.resolve.exterior_door_bridge import girt_course_connection
 
+        connection, connection_unknown, connection_conflicts = girt_course_connection(
+            model, wall, opening, placement, support)
+        conflicts.extend(connection_conflicts)
         unknown = (*unknown, "approach plate span and section are schematic; the plate's "
-                   "published load awaits the supplier's section")
-        if support.girt_face is not None:
-            unknown = (*unknown, GIRT_COURSE_UNKNOWN)
-        report = dict(kind="approach_bearing", landing_member=support.member,
+                   "published load awaits the supplier's section", *connection_unknown)
+        report = dict(kind="approach_bearing", **connection, landing_member=support.member,
                       landing_member_cover=support.member_cover,
                       strip_reach_in=reach / 0.0254,
                       plate_span_in=(outlet - reach) / 0.0254,

@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 3bf81b857ce315a8  
+**Model hash:** 70973f959092ee75  
 **Lines:** 256
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
@@ -75,7 +75,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 14' (2x4:kdat) | 11 | pc | girt strapping | 154 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 16' (2x4:kdat) | 12 | pc | girt strapping | 192 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (2x4:kdat) | 23 | pc | girt strapping | 460 LF | building |
-| 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4:spf) | 16 | pc | blocking, ceiling furring, girt strapping | 128 LF | building |
+| 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4:spf) | 21 | pc | blocking, ceiling furring, girt strapping | 168 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 92 5/8" PET (2x6) | 110 | pc | corner stud, king stud, stud | 849.1 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6) | 373 | pc | blocking, corner stud, cripple stud, door blocking, header, jack stud, king stud, plate, raked top plate, sill, strongback, stud | 2984 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 104 5/8" PET (2x6) | 203 | pc | corner stud, king stud, stud | 1769.9 LF | building |
@@ -98,9 +98,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6:spf) | 10 | pc | blocking | 80 LF | building |
 | 2x8 SPF No. 2 & Btr framing lumber, 8' (2x8) | 34 | pc | joist, landing framing, plate, rim board | 272 LF | building |
 | 2x8 SPF No. 2 & Btr framing lumber, 16' (2x8) | 3 | pc | plate | 48 LF | building |
-| 2x8 SPF No. 2 & Btr framing lumber, 8' (2x8:spf) | 39 | pc | blocking | 312 LF | building |
+| 2x8 SPF No. 2 & Btr framing lumber, 8' (2x8:spf) | 40 | pc | blocking | 320 LF | building |
 | 2x12 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (3-2x12:kdat) | 6 | pc | joist (3-ply) | 120 LF | building |
-| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (3-2x4:kdat) | 135 | pc | truss girt block (3-ply) | 1080 LF | building |
+| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (3-2x4:kdat) | 138 | pc | truss girt block (3-ply) | 1104 LF | building |
 | 2x6 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (3-2x6:kdat) | 9 | pc | truss girt block (3-ply) | 72 LF | building |
 | 5 1/4" x 7" LVL 2.0E, 8' (5.25x7 LVL) | 1 | pc | header | 8 LF | building |
 | 5 1/2" x 3 1/2" LSL, 12' (5.5x3.5 LSL) | 3 | pc | ridge beam | 36 LF | building |
@@ -229,7 +229,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Titen HD 1/2 in x 6 in Type 316 stainless screw anchor, deck ledger to concrete (THD50600H6SS:modeled connector) | 18 | ea |  | building |
 | KDAT 4x4 tie block, 3-1/2" long, screwed to the tied member (TIE-BLOCK-4X4-KDAT:modeled connector) | 1 | ea |  | building |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:eave gutter girt standoffs) | 72 | ea |  | building |
-| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:girt wall blocks) | 1,164 | ea |  | building |
+| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:girt wall blocks) | 1,161 | ea |  | building |
+| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK10:girt door sill course blocks) | 41 | ea |  | building |
 
 ## Other structural solids
 
@@ -311,7 +312,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| rough opening, 1.88" x 3.75" (no type) (None) | 1 | ea | 1 7/8" x 3 3/4" | main |
 | rough opening, 2.5" x 2.5" (no type) (None) | 1 | ea | 2 1/2" x 2 1/2" | main |
 | rough opening, 2.5" x 2.5" (no type) (None) | 1 | ea | 2 1/2" x 2 1/2" | second |
 | rough opening, 9" x 9" (no type) (None) | 2 | ea | 9" x 9" | main, second |
@@ -541,6 +541,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | KDAT 4x4 tie block, 3-1/2" long, screwed to the tied member (TIE-BLOCK-4X4-KDAT:modeled connector) | — |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:eave gutter girt standoffs) | — |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:girt wall blocks) | — |
+| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK10:girt door sill course blocks) | — |
 | Beam — EQUIP_STAND_ALUM (beam:EQUIP_STAND_ALUM) | BM-M-HP3-R1, BM-M-HP3-R2 |
 | Column (column) | P-S-SN3-SQUASH |
 | Column — ELM_TIMBER (column:ELM_TIMBER) | P-S-TUDOR1, P-S-TUDOR2 |
@@ -577,7 +578,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Structural 1 plywood sheathing, 3/4" — slab_deck (struct-1-plywood:0.75) | — |
 | Structural 1 plywood sheathing, 3/4" — slab_platform (struct-1-plywood:0.75) | — |
 | STAIRWELL_PARTITION_4H, SPF No. 2 & Btr framing lumber (STAIRWELL_PARTITION_4H:spf) | W-B-WELL, W-B-WELL-HEAD, W-M-WELL |
-| rough opening, 1.88" x 3.75" (no type) (None) | AO-BW-MDO-TIE-RELIEF |
 | rough opening, 2.5" x 2.5" (no type) (None) | AO-M-PORCH-HYD |
 | rough opening, 2.5" x 2.5" (no type) (None) | AO-S-BALCONY-HYD |
 | rough opening, 9" x 9" (no type) (None) | AO-M-ERV-OA, AO-S-ERV-EA |

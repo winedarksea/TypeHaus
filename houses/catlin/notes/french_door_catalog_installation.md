@@ -27,7 +27,7 @@ engineered connection, the girt course's blocks under the study approach (§2,
 | Fasteners | Factory hinges and installation kit, structural screws into framing at hinge/strike locations | Actual screw gauge, length, count, hinge machining and substrate-specific anchorage; the inherited generic three-inch kit is not an approved shop schedule |
 | Pan | SureSill 4-9/16 inch sloped pan, 80 inch complete pack | Manufacturer FAQ gives 1/4–3/8 inch rise depending on pan; **3/8 inch is the conservative coordination allowance**, not a traced installed pan section |
 | Apron | Impermeable self-adhered membrane under the approach, with raised jamb ends | Exact sheet/primer/sealant combination, PVC-pan bond and water-plane tie; no implicit approval of an unidentified waterproofing material or ccSPF |
-| Approach | D-S-BALCONY: none. The extender is the approach. It rests on draining KDAT strips over the truss wall's buck sill and girt sill course, and its nose stops ~1 inch short of FS-SG-BALCONY's north sister, which the court's planks now reach (2026-11-13). D-B-SUNKEN: the foam-bed Trex tread (§6) | The girt course's blocks carry the load on TimberLOK screws in shear: no published lateral value at that penetration (ESR-1078 Table 4), an engineered connection |
+| Approach | D-S-BALCONY: none. The extender is the approach. It rests on draining KDAT strips over the truss wall's buck sill and girt sill course, and its nose stops ~1 inch short of FS-SG-BALCONY's north sister, which the court's planks now reach (2026-11-13). D-B-SUNKEN: the foam-bed Trex tread (§6) | The girt course's blocks carry the load on TimberLOK screws in shear, graded on the house's NDS 12.3 value (`exterior_door_structural_mount.md`, "Girt sill course connection") |
 | Head (D-S-BALCONY only) | SureSill HeadFlash 1-3/8 × 84 complete pack, stock end caps | Upstand, thickness and end-dam geometry are labeled coordination envelopes; they are not traced product sections |
 | Balcony ends | Proglaze ETA System 1, standard 6 inch extrusion, molded corners, aluminum adaptors and Spectrem 1 | A candidate application: its published instructions assume engineering review and require substrate adhesion/compatibility verification. No such review or approval has been obtained |
 
@@ -138,14 +138,14 @@ sections. The whole balcony movement basis remains `balcony_differential_movemen
 
 The sunken-garden tread's foam bearing is §6. The study's approach has no root connection and
 no member of its own to grade: it rests on the girt sill course and its strips. The girt course
-is the truss wall's own: its blocks hang on one TimberLOK each, in shear through the 6 inch
-block stack into the band. ESR-1078 Table 4 needs 5 inches of main-member penetration (this
-leaves 1-1/2 inches) and puts NDS lateral design of the screw outside its scope, so no
-published value grades it. A first NDS 12.3 pass (root D 0.172 inch, Fyb 190,600 psi, SPF
-both members, mode IIIm) gives about 175 lb reference, 120 lb at wet service, against a
-300 lb concentrated load. **The girt course carries the uniform load but not the 300 lb
-point load on one screw. That is an engineered connection, and installation stays UNKNOWN on
-it** (TODO).
+is the truss wall's own, hung on blocks whose TimberLOKs cross the sheathing into the floor's
+edge TJI. ESR-1078 Table 4 needs 5 inches of main-member penetration and puts NDS lateral
+design of the screw outside its scope, so no published value grades it. An NDS 12.3 pass
+(root D 0.172 inch, Fyb 190,600 psi, SPF both members, 1-1/2 inch main member, mode IIIm)
+gives 175.0 lb reference, 122.5 lb at wet service, authored as 120 lb. **Since 2026-11-14
+(owner) the course has 3-screw end blocks, 6 inch interior blocks, TLOK10s and an SPF backer
+pair in the TJI's web recess, and the worst screw share of the 300 lb point is 116.09 lb,
+d/c 0.967** (`exterior_door_structural_mount.md`, "Girt sill course connection").
 
 ## 3. Height and geometry review
 

@@ -118,7 +118,9 @@
 > (the planks carry a tab to it). The main doors' plates rest on a UHMW pad over the landing's
 > member. A door's buck sill and girt sill course sit flush with its rough sill. D-B-SUNKEN's
 > slot drains down W-SG-BRKBM's isolation joint (a drainage board onto FB-SG-BRKBM's stone).
-> The girt course's block screws are an open engineered connection (TODO). The band header's
+> A door's girt sill course hangs on 3-screw end blocks and 6" single-screw blocks, TLOK10s
+> into an SPF backer pair in the edge TJI's web recess (derived, `resolve/girt_sill_connection.py`):
+> worst screw 116.09 lb vs the house's 120 lb, d/c 0.967 (note "Girt sill course connection"). The band header's
 > stacked jambs cross FS-S-EAST on squash plies (`band_header/D-B-SUNKEN`, note §5).
 
 > **Exterior door hardening, 2026-10-25:** `plan/door_types.py` owns hardware, doubled
@@ -527,7 +529,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   horizontal KDAT 2x4 girts at 24" o.c. in free air, then the panel. Each crossing: three
   loose 3-1/2"x3-1/2"x1-1/2" KDAT offcuts stacked to 4-1/2" over every OTHER stud, clamped
   by one 8" FASTENMASTER TIMBERLOK (TLOK08) through girt + block + sheathing, 1-1/2" into
-  the stud. There is only ONE tier — do not add a second inner one; the foam needs no
+  the stud (a door's sill course: TLOK10 into the floor edge's backer pair). There is only ONE tier — do not add a second inner one; the foam needs no
   backing (ER-859 §3.3.4.2.2, 7-1/2" vertical) (→ DESIGN-LOG.md, "Shell: framing module and envelope").
 - **AN INTERIOR PARTITION'S FRAMING STOPS 3/4" CLEAR OF WHATEVER IS OVER IT** (2026-09-19) —
   the rafter soffit in the attic, the joist or SIP soffit everywhere else — and a Simpson

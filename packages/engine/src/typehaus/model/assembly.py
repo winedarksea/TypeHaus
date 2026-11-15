@@ -19,6 +19,7 @@ from typehaus.model.enums import (
 from typehaus.model.refs import LayerSpan
 from typehaus.model.registry import register_constructor
 from typehaus.model.sheathing_nailing import SheathingNailing
+from typehaus.model.sill_course import SillCourseFastening
 from typehaus.quantities import Length, inch
 
 
@@ -154,6 +155,12 @@ class FramingSpec(HausModel):
     standoff_fastener_pull_through_lb: float | None = None
     #: The report, table and revision the numbers were read from. Required with them.
     standoff_fastener_source: str | None = None
+    #: The screw's lateral design value at wet service, per screw. A house NDS §12.3 calc
+    #: (no report publishes one at this penetration), so it carries its own source.
+    standoff_fastener_wet_lateral_lb: float | None = None
+    standoff_fastener_wet_lateral_source: str | None = None
+    #: A door sill course's blocks, screws and backer (``standoff="block"`` only).
+    sill_course: SillCourseFastening | None = None
     # "california" is the drywall-backer corner: the same stick count as "3-stud", but the
     # supplemental stud is laid FLAT, leaving the corner cavity open to insulation.
     corner_style: Literal["3-stud", "4-stud", "california"] = "3-stud"
@@ -216,6 +223,9 @@ class FramingSpec(HausModel):
                 "standoff_fastener_diameter_in, _length_in, _thread_in, "
                 "_withdrawal_lb_per_in, _pull_through_lb and _source must be authored "
                 "together or left unset")
+        if ((self.standoff_fastener_wet_lateral_lb is None)
+                != (self.standoff_fastener_wet_lateral_source is None)):
+            raise ValueError("FramingSpec standoff_fastener_wet_lateral_lb needs its _source")
         return self
 
 

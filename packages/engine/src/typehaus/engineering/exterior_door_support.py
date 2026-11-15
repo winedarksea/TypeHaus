@@ -1,6 +1,75 @@
 """Door-approach free bodies; member checks never stand in for connection evidence."""
 
-from math import sqrt
+from math import ceil, sqrt
+
+import numpy as np
+
+#: NDS 2018 §11.3.6 load/slip modulus, wood-to-metal: γ = 270,000 D^1.5 lb/in. Stiffer than
+#: this wood-to-wood joint, which concentrates a point load on the nearest screw: a bound.
+_SLIP_MODULUS_COEFFICIENT = 270_000.0
+#: Point-load scan step along a girt sill course, plus every screw station and both ends.
+_SCAN_STEP_IN = 0.25
+
+
+def girt_course_screw_shares(length_in, screws_in, diameter_in, modulus_psi, inertia_in4,
+                             load_lb):
+    """``(worst screw lb, load station in, screw station in)`` for a point load anywhere.
+
+    A free-ended Euler-Bernoulli course on one vertical spring per screw
+    (``notes/exterior_door_structural_mount.md``, "Girt sill course connection"). ``None``
+    when fewer than two distinct screw stations leave the course unstable.
+    """
+    stations = sorted({round(x, 6) for x in screws_in})
+    if len(stations) < 2:
+        return None
+    steps = max(1, ceil(length_in / _SCAN_STEP_IN))
+    nodes = sorted({0.0, round(length_in, 6), *stations,
+                    *(round(length_in * i / steps, 6) for i in range(steps + 1))})
+    index = {x: i for i, x in enumerate(nodes)}
+    k = _slip_modulus_lb_per_in(diameter_in)
+    ei = modulus_psi * inertia_in4
+    dof = 2 * len(nodes)
+    stiffness = np.zeros((dof, dof))
+    for i in range(len(nodes) - 1):
+        span = nodes[i + 1] - nodes[i]
+        block = ei / span**3 * np.array([
+            [12, 6 * span, -12, 6 * span], [6 * span, 4 * span**2, -6 * span, 2 * span**2],
+            [-12, -6 * span, 12, -6 * span], [6 * span, 2 * span**2, -6 * span, 4 * span**2]])
+        stiffness[2 * i:2 * i + 4, 2 * i:2 * i + 4] += block
+    rows = [2 * index[round(x, 6)] for x in screws_in]
+    for row in rows:
+        stiffness[row, row] += k
+    loads = np.zeros((dof, len(nodes)))
+    loads[[2 * i for i in range(len(nodes))], range(len(nodes))] = load_lb
+    try:
+        displacement = np.linalg.solve(stiffness, loads)
+    except np.linalg.LinAlgError:
+        return None
+    forces = k * displacement[rows, :]
+    screw, load = np.unravel_index(int(np.argmax(forces)), forces.shape)
+    return float(forces[screw, load]), nodes[load], float(screws_in[screw])
+
+
+def _slip_modulus_lb_per_in(diameter_in):
+    return _SLIP_MODULUS_COEFFICIENT * diameter_in**1.5
+
+
+def girt_course_connection_report(length_in, screws_in, diameter_in, modulus_psi,
+                                  inertia_in4, load_lb, capacity_lb, source):
+    """The worst screw share against the screw's lateral capacity, as report fields."""
+    shares = girt_course_screw_shares(length_in, screws_in, diameter_in, modulus_psi,
+                                      inertia_in4, load_lb)
+    if shares is None:
+        return dict(connection_status="UNKNOWN", connection_demand_lb=None,
+                    connection_capacity_lb=capacity_lb, connection_dcr=None,
+                    connection_source=source)
+    worst, load_at, screw_at = shares
+    dcr = worst / capacity_lb
+    return dict(connection_status="PASS" if dcr <= 1 else "FAIL",
+                connection_demand_lb=worst, connection_capacity_lb=capacity_lb,
+                connection_dcr=dcr, connection_source=source,
+                girt_course_length_in=length_in, girt_course_screws=len(screws_in),
+                girt_course_load_at_in=load_at, girt_course_worst_screw_at_in=screw_at)
 
 
 def foam_bed_support_report(specification):

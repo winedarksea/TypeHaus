@@ -2392,6 +2392,118 @@
       "node": "polyline",
       "points": [
         [
+          432.1875,
+          -4.75
+        ],
+        [
+          433.15625,
+          -4.75
+        ],
+        [
+          433.15625,
+          -1.25
+        ],
+        [
+          432.1875,
+          -1.25
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMFS03AAAA",
+      "tag": "girt-sill-backer-D-M-ENTRY-out"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          432.1875,
+          -4.75
+        ],
+        [
+          433.15625,
+          -4.75
+        ],
+        [
+          433.15625,
+          -1.25
+        ],
+        [
+          432.1875,
+          -1.25
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          430.84375,
+          -4.75
+        ],
+        [
+          431.8125,
+          -4.75
+        ],
+        [
+          431.8125,
+          -1.25
+        ],
+        [
+          430.84375,
+          -1.25
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMFS03AAAA",
+      "tag": "girt-sill-backer-D-M-ENTRY-in"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          430.84375,
+          -4.75
+        ],
+        [
+          431.8125,
+          -4.75
+        ],
+        [
+          431.8125,
+          -1.25
+        ],
+        [
+          430.84375,
+          -1.25
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           439.75000000000006,
           -8.19
         ],
@@ -3029,7 +3141,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CMW107AAAA",
-      "tag": "block-2-sill-000-00"
+      "tag": "block-2-sill-000-03"
     },
     {
       "space": "model",
