@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 096f2c904f1f4dc2  
+**Model hash:** 3bf81b857ce315a8  
 **Lines:** 256
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
@@ -60,7 +60,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x12 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (2x12:kdat) | 7 | pc | blocking, sister joist | 56 LF | building |
 | 2x12 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (2x12:kdat) | 21 | pc | joist, sister joist | 420 LF | building |
 | 2x12 White-painted PT lumber, 10' (2x12:kdat:post-paint-white) | 2 | pc | rim board | 20 LF | building |
-| 2x12 SPF No. 2 & Btr framing lumber, 8' (2x12:spf) | 2 | pc | blocking | 16 LF | building |
+| 2x12 SPF No. 2 & Btr framing lumber, 8' (2x12:spf) | 3 | pc | blocking | 24 LF | building |
 | 2x2 SPF No. 2 & Btr framing lumber, 8' (2x2) | 27 | pc | blocking, plate, stud | 216 LF | building |
 | 2x2 SPF No. 2 & Btr framing lumber, 10' (2x2) | 2 | pc | plate | 20 LF | building |
 | 2x3 SPF No. 2 & Btr framing lumber, 8' (2x3) | 6 | pc | corner stud, plate, stud | 48 LF | building |
