@@ -64,6 +64,7 @@ EQUIPMENT_TYPES = (
     EquipmentType(tag="EQ-T-SAUNA-HEATER", name="Electric sauna heater, 10.5 kW",
                   footprint=(inch(16), inch(15)), height=inch(45),
                   plan_symbol="sauna-heater",
+                  model_representation=ModelRepresentation(symbol="harvia-cilindro-pc110e"),
                   product_ref="PROD-HARVIA-PC110E",
                   source="Harvia Cilindro PC110E, 10.5 kW at 240 V 1-phase, 43.75 A nominal, rated 141-636 cf, ETL listed, 16 x 15 x 45 in., 264 lb of stone. The Xenio CX170 control (PROD-HARVIA-CX170) is MANDATORY and mounts outside the hot room - there is no built-in-control variant of this heater.",
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
@@ -417,6 +418,7 @@ EQUIPMENT_TYPES = (
     EquipmentType(tag="EQ-T-PLANT-HEATER", name="Lasko CD08210-class ceramic heater, 1500 W, 120 V, bathroom-rated",
                   footprint=(inch(7), inch(7)), height=inch(9),
                   plan_symbol="heater",
+                  model_representation=ModelRepresentation(symbol="ceramic-fan-heater"),
                   resistance_heating_btuh=5118,
                   supplemental_heat=True,
                   utilization_connection="cord_and_plug",  # ALCI plug

@@ -28,6 +28,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typehaus.model.shower_assembly import ShowerAssemblySpec
 
+from typehaus.model.placeable_symbols._ceramic_fan_heater import ceramic_fan_heater
 from typehaus.model.placeable_symbols._eg4_storage import eg4_12kpv, eg4_wallmount_indoor
 from typehaus.model.placeable_symbols._erv_wall_hood import erv_wall_hood
 from typehaus.model.placeable_symbols._fireplace_insert import fireplace_insert
@@ -68,6 +69,7 @@ _REGISTRY: dict[str, Builder] = {**FURNITURE_SYMBOLS, **APPLIANCE_SYMBOLS, **PLU
                                  "renewaire-fa8-wall-hood": erv_wall_hood,
                                  "swanstone-flex-3636": swanstone_flex,
                                  "infrared-heater": infrared_heater,
+                                 "ceramic-fan-heater": ceramic_fan_heater,
                                  "fireplace-insert": fireplace_insert,
                                  "gree-flexx-ultra-24-horizontal": gree_flexx_horizontal,
                                  "gree-flexx-ultra-24-outdoor": gree_flexx_outdoor,
@@ -116,12 +118,12 @@ SYMBOL_NAMES = (frozenset(KITCHEN_SEKTION_SYMBOLS) | frozenset(RECEPTACLE_SYMBOL
     "refrigerator", "range", "dishwasher", "washer", "dryer", "washer-dryer-stacked",
     "microwave", "countertop-microwave", "hood", "tea-kettle", "espresso-machine",
     "furnace", "erv", "renewaire-fa8-wall-hood", "heat-pump-outdoor", "heat-pump-indoor",
-    "water-heater", "sauna-heater", "panel", "register",
+    "water-heater", "sauna-heater", "harvia-cilindro-pc110e", "panel", "register",
     "rheem-proterra-plugin-80",
     "eg4-12kpv", "eg4-wallmount-indoor-280ah",
     "gree-flexx-ultra-24-horizontal",
     "gree-flexx-ultra-24-outdoor",
-    "infrared-heater", "fireplace-insert",
+    "infrared-heater", "fireplace-insert", "ceramic-fan-heater",
     "disconnect", "meter", "junction-box", "spd",
     # Plumbing fixtures: "hydrant" is the Model 19 wall faucet; the Y34SS has its own
     # yard-hydrant geometry. Neither has a drain. "floor-drain" has no supply side.

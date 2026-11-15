@@ -20,6 +20,7 @@ from typehaus.model.placeable_symbols._frame import (
     prism,
     rect,
 )
+from typehaus.model.placeable_symbols._harvia_cilindro import harvia_cilindro_pc110e
 from typehaus.model.placeable_symbols._laundry_tower import laundry_tower
 from typehaus.model.placeable_symbols._mini_split_head import mini_split_head
 from typehaus.model.placeable_symbols._plant_reservoir import (
@@ -363,6 +364,7 @@ APPLIANCE_SYMBOLS: dict[str, Builder] = {
     "water-heater": tank(),
     "rheem-proterra-plugin-80": rheem_proterra_plugin_80,
     "sauna-heater": sauna_heater(),
+    "harvia-cilindro-pc110e": harvia_cilindro_pc110e,
     "panel": panel_board(),
     "meter": meter_socket(),
     "disconnect": safety_switch(),
