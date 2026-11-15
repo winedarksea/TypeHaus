@@ -17,7 +17,8 @@ def _results(model) -> dict[str, str]:
 
 def test_catlin_panel_tops_hold_79_inches_and_a_raised_one_fails(catlin_model_ro):
     assert _results(catlin_model_ro) == dict.fromkeys(
-        ("ED-B-BACKUP-ENCL", "ED-B-BACKUP-PANEL", "ED-B-PANEL", "ED-B-PANEL-2"), "pass")
+        ("ED-B-BACKUP-ENCL", "ED-B-BACKUP-PANEL", "ED-B-PANEL", "ED-B-PANEL-2",
+         "ED-G-PANEL"), "pass")  # ED-G-PANEL: the garage subpanel
     plan = catlin_model_ro.plan
     raised = [e.model_copy(update={"mount": Mount(kind=MountKind.WALL, elevation=inch(60))})
               if e.tag == "ED-B-PANEL" else e for e in plan.storey_elements("basement")]

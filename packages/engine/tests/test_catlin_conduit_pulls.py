@@ -32,10 +32,11 @@ def test_no_raceway_section_is_over_360_degrees(catlin_model_ro) -> None:
 def test_each_authored_pull_point_is_graded(catlin_model_ro) -> None:
     """Every raceway that carries a box splits where the plan says, each section in limit.
 
-    Keyed on the raceway's first run: the two attic runs chain off their basement risers.
+    Keyed on the raceway's first run: the PV raceway is inverter, riser, attic leg, so its
+    first section (to CD-A-PV-EAST's first box) keys on CD-B-PV-INV.
     """
     expected = {"CD-B-KITCHEN": 3, "CD-B-DATA-MEDIA": 3, "CD-B-GARAGE": 2,
-                "CD-M-DATA-PORCH": 3, "CD-B-ATTIC-RISER": 1, "CD-A-PV-EAST": 2,
+                "CD-M-DATA-PORCH": 3, "CD-B-PV-INV": 1, "CD-A-PV-EAST": 2,
                 "CD-B-DATA-CHASE": 1, "CD-A-DATA-NE": 1}
     sections = pull_sections(list(catlin_model_ro.conduits))
     for tag, count in expected.items():
@@ -83,10 +84,11 @@ def test_shared_boxes_and_branches_keep_their_rules() -> None:
 
 
 def test_catlin_pv_riser_chains_to_the_attic_run_with_its_three_sections(catlin_model_ro) -> None:
-    """The riser and CD-A-PV-EAST share one exact chase station; CD-B-PV-INV is not chained."""
+    """CD-B-PV-INV ends, the riser starts and CD-A-PV-EAST starts on one exact chase station:
+    since CD-B-PV-INV was drawn inverter -> chase (2026-11-14) the three are one raceway."""
     chains = raceway_chains(list(catlin_model_ro.conduits))
-    assert ["CD-B-ATTIC-RISER", "CD-A-PV-EAST"] in chains and ["CD-B-PV-INV"] in chains
+    assert ["CD-B-PV-INV", "CD-B-ATTIC-RISER", "CD-A-PV-EAST"] in chains
     sections = [s for s in pull_sections(list(catlin_model_ro.conduits))
-                if s.run_tags[0] in ("CD-B-ATTIC-RISER", "CD-A-PV-EAST")]
-    # The riser is one straight rise since its panel leg went (TODO Q6, 2026-11-14).
-    assert [round(s.total_deg) for s in sections] == [0, 90, 180]
+                if s.run_tags[0] in ("CD-B-PV-INV", "CD-A-PV-EAST")]
+    # Inverter leg's bends + the straight riser (TODO Q6) + the attic leg to its first box.
+    assert [round(s.total_deg) for s in sections] == [270, 90, 180]

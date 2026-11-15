@@ -21,7 +21,8 @@ def _by_tag(model, check_id, tier=Tier.CODE):
 def test_catlins_device_facts(catlin_model_ro):
     assert _by_tag(catlin_model_ro, "electrical.spd_nominal_discharge") == {
         "ED-M-SPD": "unknown", "CKT-SPD": "pass", "CKT-SPD-2": "pass",
-        "CKT-SPD-BACKUP": "unknown"}   # FS140 and the backup plug-on publish no In
+        "CKT-SPD-BACKUP": "unknown",   # FS140 and the backup plug-on publish no In
+        "CKT-SPD-GAR": "pass"}         # the garage subpanel's HOM2175SB, In 10 kA
     assert set(_by_tag(catlin_model_ro, "electrical.outdoor_receptacle_wr").values()) == {"pass"}
     # The plant heater's control moved to its plug (2026-11-14): no relay-fed receptacle.
     assert _by_tag(catlin_model_ro, "electrical.controlled_receptacle", Tier.ADVISORY) == {

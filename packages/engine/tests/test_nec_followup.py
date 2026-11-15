@@ -38,8 +38,8 @@ def test_pvc_growth_matches_table_352_44():
 def test_every_feeder_panel_holds_an_spd(catlin_model_ro):
     found = _findings(catlin_model_ro, "code.NEC_215_18_spd", Tier.CODE)
     assert {f.message.split()[0] for f in found if f.result.value == "pass"} == {
-        "ED-B-PANEL", "ED-B-PANEL-2", "ED-B-BACKUP-PANEL"}
-    assert len(found) == 3
+        "ED-B-PANEL", "ED-B-PANEL-2", "ED-B-BACKUP-PANEL", "ED-G-PANEL"}
+    assert len(found) == 4
 
 
 def test_catlins_raceways_are_in_use_the_code_allows(catlin_model_ro):
@@ -64,4 +64,5 @@ def test_catlins_multi_receptacle_circuits_fit_the_table(catlin_model_ro):
     assert not [f for f in found if f.result.value == "fail"]
     # Every type names its NEMA (Q14); the GDO's blank-face GFCI holds no receptacle.
     assert not [f for f in found if f.result.value == "unknown"]
-    assert sum(f.result.value == "pass" for f in found) == 12
+    # 11: the opener outlet left CKT-LT-MAIN for CKT-LT-GARAGE, so neither holds two.
+    assert sum(f.result.value == "pass" for f in found) == 11
