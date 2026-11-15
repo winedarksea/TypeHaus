@@ -6,7 +6,15 @@ catalog data, not geometry. The backup subpanel stays in plan/mep_electrical.py.
 
 from library.electrical import panel_type
 
-from typehaus import ElectricalDeviceType, Service, ServicePort, ft, inch
+from typehaus import ElectricalDeviceType, Product, Service, ServicePort, ft, inch
+
+# The backup subpanel's type lives in plan/mep_electrical.py (editable); its product here.
+PANEL_PRODUCTS = (
+    Product(tag="PROD-SQUARED-QO112L125PG", brand="Square D", model="QO112L125PG",
+            name="QO load centre, 125 A main lugs, 12 spaces, NEMA 1",
+            source="Schneider Electric product data sheet QO112L125PG, read 2026-11-14 "
+                   "(https://www.se.com/us/en/product/QO112L125PG/)"),
+)
 
 PANEL_TYPES = (
     # ``bus_amps=225`` is what `code.NEC_705_12_interconnection` computes the 120% rule

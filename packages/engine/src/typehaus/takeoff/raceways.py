@@ -6,6 +6,7 @@ raceway gained a material, fittings and named circuits.
 
 from __future__ import annotations
 
+from typehaus.model.circuit_neutral import conductors_per_circuit, neutral_by_circuit
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.conduit_fittings import conduit_parts
 from typehaus.resolve.model import ResolvedConduitRun, ResolvedModel
@@ -74,10 +75,14 @@ def conduit_fitting_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             for row in (groups[key] for key in sorted(groups))]
 
 
-# Conductors per circuit, by poles: a 1-pole branch pulls two current-carrying conductors
-# plus a ground; a 2-pole three plus a ground. Counted singly, because that is how THHN is
-# bought — by the foot, per colour.
-_CONDUCTORS_PER_CIRCUIT = {1: 3, 2: 4}
+# Conductors per circuit: the hots, a neutral where ``model/circuit_neutral`` finds one, and
+# a ground. Counted singly, because that is how THHN is bought — by the foot, per colour.
+def _per_circuit(circuit, neutral: dict[str, bool]) -> int | None:
+    if circuit is None or circuit.poles not in (1, 2):
+        return None
+    return conductors_per_circuit(circuit, neutral.get(circuit.tag, True)) + 1
+
+
 # Make-up at each end, in the panel and at the device: the conventional residential figure.
 _MAKEUP_ALLOWANCE_FT = 10.0
 
@@ -91,8 +96,10 @@ def _terminations(runs: list[ResolvedConduitRun]) -> int:
             + sum(1 for ref in starts if ref is None or ref not in ends))
 
 
-def _named_rows(model: ResolvedModel, runs: list[ResolvedConduitRun]) -> list[dict]:
-    """Exact rows: each named circuit over its runs, plus make-up at each termination."""
+def _named_rows(model: ResolvedModel, runs: list[ResolvedConduitRun],
+                neutral: dict[str, bool]) -> list[dict]:
+    """Exact rows: each named circuit over its runs, plus make-up at each termination.
+    ``conductors_per_circuit`` is the largest count in the row (a 2-pole may lack a neutral)."""
     circuits = {circuit.tag: circuit for circuit in model.plan.library.circuits}
     by_circuit: dict[str, list[ResolvedConduitRun]] = {}
     for run in runs:
@@ -101,7 +108,7 @@ def _named_rows(model: ResolvedModel, runs: list[ResolvedConduitRun]) -> list[di
     groups: dict[int, dict[str, object]] = {}
     for tag, carrying in by_circuit.items():
         circuit = circuits.get(tag)
-        per = _CONDUCTORS_PER_CIRCUIT.get(circuit.poles) if circuit else None
+        per = _per_circuit(circuit, neutral)
         if per is None:
             continue
         # A circuit pulled panel -> box -> device is one pull: 10 ft of make-up, not 20.
@@ -111,6 +118,7 @@ def _named_rows(model: ResolvedModel, runs: list[ResolvedConduitRun]) -> list[di
             "poles": circuit.poles, "circuits": 0, "conductors_per_circuit": per,
             "length_ft": 0.0, "tags": []})
         row["circuits"] = int(row["circuits"]) + 1
+        row["conductors_per_circuit"] = max(int(row["conductors_per_circuit"]), per)
         row["length_ft"] = float(row["length_ft"]) + pull_ft * per
         tags = row["tags"]
         assert isinstance(tags, list)
@@ -135,7 +143,8 @@ def conductor_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
               and run.service in ("power_120", "power_240")]
     named = [run for run in trunks if run.circuits]
     estimated = [run for run in trunks if not run.circuits]
-    rows = _named_rows(model, named)
+    neutral = neutral_by_circuit(model.plan)
+    rows = _named_rows(model, named, neutral)
     total_ft = sum(run.length_m * _FT_PER_M for run in estimated)
     if total_ft <= 0.0:
         return rows
@@ -143,19 +152,18 @@ def conductor_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     named_tags = {tag for run in named for tag in run.circuits}
     # A circuit nothing names (a panel-mounted SPD) has no home run to pull.
     served = {getattr(element, "circuit", None) for element in model.plan.all_elements()}
-    by_poles: dict[int, int] = {}
+    by_poles: dict[int, list[int]] = {}
     for circuit in model.plan.library.circuits:
-        if circuit.tag not in named_tags and circuit.tag in served:
-            by_poles[circuit.poles] = by_poles.get(circuit.poles, 0) + 1
+        per = _per_circuit(circuit, neutral)
+        if per is not None and circuit.tag not in named_tags and circuit.tag in served:
+            by_poles.setdefault(circuit.poles, []).append(per)
     for poles in sorted(by_poles):
-        per = _CONDUCTORS_PER_CIRCUIT.get(poles)
-        if per is None:
-            continue
+        counts = by_poles[poles]
         pull_ft = total_ft / len(estimated) + _MAKEUP_ALLOWANCE_FT
         estimate = {
-            "poles": poles, "circuits": by_poles[poles], "conductors_per_circuit": per,
+            "poles": poles, "circuits": len(counts), "conductors_per_circuit": max(counts),
             "mean_pull_ft": round(pull_ft, 1),
-            "length_ft": round(pull_ft * per * by_poles[poles], 1),
+            "length_ft": round(pull_ft * sum(counts), 1),
             "basis": "estimate: mean raceway run + 10 ft make-up, per conductor",
         }
         exact = next((row for row in rows if row["poles"] == poles), None)
@@ -166,6 +174,8 @@ def conductor_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         exact["length_ft"] = round(float(exact["length_ft"]) + float(estimate["length_ft"]), 1)
         exact["named_circuits"] = exact["circuits"]
         exact["circuits"] = int(exact["circuits"]) + int(estimate["circuits"])
+        exact["conductors_per_circuit"] = max(int(exact["conductors_per_circuit"]),
+                                              int(estimate["conductors_per_circuit"]))
         exact["mean_pull_ft"] = estimate["mean_pull_ft"]
         exact["basis"] = f"{exact['basis']}; plus {estimate['basis']}"
     return sorted(rows, key=lambda row: row["poles"])

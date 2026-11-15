@@ -144,6 +144,9 @@ EQUIPMENT_TYPES = (
                   max_overcurrent_a=63,
                   pcs_functions=("export_limiting", "import_limiting", "ess_operating_modes"),
                   rsd_shutdown_scope=("pv_array", "ac_output", "ess"),
+                  # 702.6: ESS manual §16.1 / QSG §11.3, red LED "Fault, inverter will stop
+                  # working"; no buzzer and no off-grid indicator is published.
+                  standby_signals=("malfunction_visual",),
                   ports=(ServicePort(tag="grid", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),
                          ServicePort(tag="load", service=Service.POWER_240,

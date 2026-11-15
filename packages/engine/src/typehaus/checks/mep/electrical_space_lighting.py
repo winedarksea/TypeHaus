@@ -10,8 +10,9 @@ a point of control at each entry, and a light at or near the equipment. Equipmen
   luminaire within 6 ft, or no modelled door (a stair or open entry): UNKNOWN, since "entry
   that permits access" and "near" are judgement the plan cannot settle.
 
-(C)(3), automatic control without a manual bypass, is not graded: no device in the model is an
-occupancy sensor, so every control reads as a manual switch only by absence of evidence.
+(C)(3): where every switched light in the room answers only to automatic controls (a
+switch type whose ``control`` is ``occupancy`` or ``timer``) and none has an integral switch,
+the room is UNKNOWN, since a manual bypass is not modelled.
 Finished basement rooms (a gym) are 210.70(A)(1)/(A)(3) rooms and are outside this scope.
 """
 
@@ -20,6 +21,7 @@ from __future__ import annotations
 import math
 
 from typehaus.checks._authoring import advisory, not_applicable, passed, unknown
+from typehaus.checks.mep.electrical_working_space import AUTOMATIC_ONLY_CONTROLS
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.enums import DeviceKind, Occupancy
@@ -45,6 +47,15 @@ def _serviced(ctx: CheckContext, objects: dict, room_of) -> dict[str, list[str]]
         if room is not None and room.occupancy in _SPACES:
             held.setdefault(room.tag, []).append(el.tag)
     return held
+
+
+def _manual(light, switches: dict, types: dict) -> bool:
+    """A light with an integral switch or at least one switch that is not automatic-only."""
+    if getattr(types.get(light.type_ref), "integral_switch", False):
+        return True
+    kinds = [getattr(types.get(switches[s].type_ref or ""), "control", None)
+             for s in light.controlled_by if s in switches]
+    return any(kind not in AUTOMATIC_ONLY_CONTROLS for kind in kinds)
 
 
 def _closet_door(door, room: str, doors_of: dict[str, set[str]]) -> bool:
@@ -99,6 +110,10 @@ def equipment_space_lighting(ctx: CheckContext) -> list[Finding]:
             continue
         controls = [objects[s].position for e in mine for s in e.controlled_by if s in switches]
         gaps: list[str] = []
+        if not any(_manual(e, switches, types) for e in switched):
+            gaps.append(f"every switched light answers only to automatic control, and "
+                        f"{NEC.EQUIPMENT_SPACE_AUTOMATIC} wants a manual bypass the model does "
+                        "not hold")
         doors = [d for d in room_doors(ctx.model, room) if not _closet_door(d, tag, doors_of)]
         if not doors:
             gaps.append("no entry door is modelled (a stair or open entry?)")

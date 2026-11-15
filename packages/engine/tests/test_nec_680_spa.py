@@ -20,9 +20,10 @@ def test_catlins_spa_circuit_is_graded_and_its_tub_is_not(catlin_model_ro):
     verdicts = {f.result.value for f in found}
     assert verdicts == {"pass", "not_applicable", "unknown"}  # no FAIL
     passed = [f for f in found if f.result.value == "pass"]
-    assert len(passed) == 1 and "Class A" in passed[0].message  # 680.44(A) / 680.5(B)
+    assert len(passed) == 2 and "Class A" in passed[0].message  # 680.44(A) / 680.5(B)
+    assert "#10 cu EGC against #10 Cu" in passed[1].message  # 680.7(A), Table 250.122 at 50 A
     unknown = [f.message for f in found if f.result.value == "unknown"]
-    assert len(unknown) == 1 and "680.7" in unknown[0]  # the roughed-in circuit still grades
+    assert len(unknown) == 1 and "680.7(B)" in unknown[0] and "whip" in unknown[0]
     na = " ".join(f.message for f in found if f.result.value == "not_applicable")
     assert "ED-B-SPA-DISC" in na and "680.26" in na  # rough_in_only: no tub to govern
 
@@ -42,7 +43,7 @@ def _ctx(extra_elements, walls=(), indoors=True):
     room = SimpleNamespace(storey="s", axis_face=box(-20, -20, 20, 20), clear_face=[])
     rooms = [room] if indoors else []
     circuit = SimpleNamespace(tag="CKT-SPA", spa=True, gfci=True, gfci_class="A", poles=2,
-                              breaker_amps=50)
+                              breaker_amps=50, egc_awg="10", conductor_material="cu")
     plan = SimpleNamespace(
         all_elements=lambda: elements,
         library=SimpleNamespace(circuits=[circuit], equipment_types=[]),

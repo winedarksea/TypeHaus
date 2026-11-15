@@ -12,6 +12,9 @@ from typing import Literal
 from typehaus.model.base import HausModel
 from typehaus.quantities import Length
 
+StandbySignal = Literal["malfunction_visual", "malfunction_audible", "carrying_load_visual",
+                        "carrying_load_audible"]
+
 
 class EquipmentElectricalFacts(HausModel):
     """Nameplate facts of a piece of equipment (``EquipmentType``)."""
@@ -44,6 +47,14 @@ class EquipmentElectricalFacts(HausModel):
     # INVERTER kinds: what opening the RSD initiation loop stops, per the maker's manual:
     # "pv_array" (690.12), "ac_output" (export to premises wiring), "ess" (battery disconnect).
     rsd_shutdown_scope: tuple[Literal["pv_array", "ac_output", "ess"], ...] | None = None
+    # BATTERY kinds: the pack's own breaker opens every ungrounded conductor, as the manual
+    # states it (706.15(D)(1)). None: not stated, so an authored disconnect must be in sight.
+    battery_disconnect_all_ungrounded: bool | None = None
+    # INVERTER kinds: the 702.6 signals the manual publishes. None: none stated.
+    standby_signals: tuple[StandbySignal, ...] | None = None
+    # Multimotor/combination equipment: the nameplate SCCR, A (440.10, 440.4(B)). 440.4(B)
+    # Ex. 3 lets a dwelling unit omit the marking, so unset is common.
+    sccr_a: int | None = None
 
 
 class DeviceElectricalFacts(HausModel):
@@ -85,6 +96,17 @@ class DeviceElectricalFacts(HausModel):
     # Panel kinds: where the primary feed (main or main lugs) enters the bus, read off the
     # product's sheet. "center": a center-fed panelboard. None: not stated.
     main_feed_end: Literal["top", "bottom", "center"] | None = None
+    # Panel kinds: the enclosure door's hinge side, facing it (110.26 intro). The leaf is
+    # taken as the enclosure's width. None: not stated, so both swings are tried.
+    door_hinge: Literal["left", "right"] | None = None
+
+    # --- Art. 411: low-voltage lighting supplies ---
+    # The supply's listing as the sheet states it, e.g. "UL 8750, UL 1310" (411.2(B)).
+    supply_listing: str | None = None
+    # Listed Class 2 output (411.6(A): concealed wiring needs no Chapter 3 method).
+    class_2: bool | None = None
+    # Output isolated from the branch circuit, as the sheet states it (411.7(B)).
+    isolating_secondary: bool | None = None
 
 
 class EvseElectricalFacts(HausModel):

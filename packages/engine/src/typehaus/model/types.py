@@ -1065,10 +1065,10 @@ class ElectricalDeviceType(FurnitureType, DeviceElectricalFacts):
     # Panel kinds: highest breaker handle-grip centre below the body top, read off the
     # product's sheet. Unset, `electrical.panel_handle_height` grades the body top instead.
     top_handle_from_top: Length | None = None
-    # How a SWITCH device controls what it feeds: "dimmer" | "timer" | "smart" | None
+    # How a SWITCH device controls what it feeds: dimmer, timer, smart, occupancy or None
     # (a plain toggle). Read by the lighting-controls check and printed in the E-602
     # control schedule; a product attribute, not a kind, for the same reason NEMA is.
-    control: str | None = None
+    control: Literal["dimmer", "timer", "smart", "occupancy"] | None = None
     # IFC export class for this product, overriding the ``DeviceKind`` map in
     # emit/ifc/mep.py::_device_ifc_classes. ``DeviceKind`` is the symbol axis and is
     # deliberately coarse — one ``DATA_OUTLET`` covers a patch enclosure, an access point and

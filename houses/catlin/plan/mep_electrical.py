@@ -37,14 +37,19 @@ ELECTRICAL_DEVICE_TYPES = (
                           source="Standard single-gang wallplate envelope: https://leviton.com/content/dam/leviton/commercial-industrial/product_documents/solution_sheets/Wallplate%20Size%20Guide%20-%20Q-1289.pdf . Ordinary duplex on CKT-RC-MAIN, no special counter hardware.",
                           ports=(ServicePort(tag="power", service=Service.POWER_120,
                                              position=(ft(0), ft(0), ft(0))),)),
-    # Backup subpanel on the EG4's dedicated load output. 12 spaces for the 7
-    # in use — the spare six are room for a second always-on circuit. No ``bus_amps``:
-    # nothing backfeeds this bus, and a stated rating would wrongly get graded by the
-    # 705.12 check against a service main it doesn't have (see checks/mep/power_sources.py).
+    # Backup subpanel on the EG4's dedicated load output: Square D QO112L125PG (2026-11-14),
+    # the QO family of ED-B-PANEL, so CKT-SPD-BACKUP takes the same QO2175SB. Main lugs: a
+    # main breaker waits on EG4's load-port answer (notes/backup_power.md Q5; QO112M100P is
+    # the 22 kA main-breaker sibling). No ``bus_amps``: nothing backfeeds this bus, and a
+    # stated rating would be graded by 705.12 against a main it doesn't have.
     ElectricalDeviceType(tag="ED-T-BACKUP-PANEL",
-                          name="12-space backup subpanel (EG4 load output)",
-                          footprint=(inch(14), inch(4)), height=ft(1, 8),
-                          plan_symbol="panel", spaces=12,
+                          name="Square D QO112L125PG, 125A main lugs, 12 spaces (EG4 load output)",
+                          # Depth 4 in: the sheet's 3.7 in box plus its surface cover (not
+                          # dimensioned on the sheet); the box alone sits behind PANEL-2's front.
+                          footprint=(inch(14.3), inch(4)), height=inch(17.9),
+                          plan_symbol="panel", spaces=12, sccr_a=65000,
+                          product_ref="PROD-SQUARED-QO112L125PG",
+                          source="Schneider Electric product data sheet QO112L125PG (se.com, read 2026-11-14): 12 spaces / 24 circuits, 125 A main lugs, Max Short Circuit Current Rating 65 kA, NEMA 1, 17.9 x 14.3 x 3.7 in; cover ordered separately. https://www.se.com/us/en/product/QO112L125PG/",
                           ports=(ServicePort(tag="feed", service=Service.POWER_240,
                                              position=(ft(0), ft(0), ft(0))),)),
     # Every light in the house is a real product from plan/lighting_types.py carrying a
@@ -74,7 +79,7 @@ ELECTRICAL_DEVICE_TYPES = (
 # ** ALL FOUR PANEL TOPS ON ONE LINE, 6'-6" AFF (2026-10-31). ** NEC 240.24(A)/404.10(A)(2) cap
 # the top handle at 6'-7"; `electrical.panel_handle_height` grades the body top. Bottoms:
 # ED-B-PANEL 38.63" (QO154M200P, 39.37" can), PANEL-2 48.16" (HOM2040M200PC, 29.84" can),
-# BACKUP-PANEL/-ENCL 58" (plan/electrical.py). Both panels are 14.25" wide (Square D sheets).
+# BACKUP-PANEL 60.1" (QO112L125PG, 17.9" can), -ENCL 58" (plan/electrical.py). Both panels are 14.25" wide (Square D sheets).
 # Each panel's 110.26(A) working space is a ClearZone in plan/panel_working_space.py.
 PANEL = [
     ElectricalDevice(uid="CEP901AAAA", tag="ED-B-PANEL", kind=DeviceKind.PANEL,

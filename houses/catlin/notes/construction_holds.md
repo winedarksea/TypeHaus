@@ -114,8 +114,11 @@ the model goes back to `plans/TODO.md` as a design item.
 - **Unpublished datasheet facts** (the fields stay unset): `internal_clamps` on RACO 232/192
   and Carlon B122A/BH235A/B520A; `rear_projection` on the GFCI and smart-switch types;
   PureEdge `CR-M-LAUNDRY-24V` cable OD and TS24M-2C rail amperes; Schluter floor-heat lead ODs;
-  Class 2 marking on the Mean Well HLG-100H-24A and IKEA TRADFRI 30 W drivers, and any
-  LED-driver output-cable listing (722.140(A)(3)).
+  Class 2 marking on the Mean Well HLG-100H-24A and IKEA TRADFRI 30 W drivers (the Diode
+  200 W is "Class 2: No" on its sheet), the TRADFRI's listing, an isolated-output statement
+  for the Diode OMNIDRIVE X and TRADFRI (411.7(B)), any LED-driver output-cable listing
+  (722.140(A)(3)); the Gree units' nameplate SCCR on delivery (440.10, none published); the
+  Square D enclosure doors' hinge sides and leaf widths (110.26 access, `door_hinge`).
 - **Electrician review:** every proposed conductor size in `plan/circuits*.py` ("engine's
   proposal"), with voltage drop on long runs (it would trigger 250.122(D)); `CD-B-INV-BACKUP`'s
   conductors; the PV wire and EGC (10 AWG PV 2000 V proposed); the short stub-up into

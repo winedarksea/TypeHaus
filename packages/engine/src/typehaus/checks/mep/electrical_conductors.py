@@ -11,16 +11,16 @@ ambient correction or 310.15(C)(1) adjustment is applied (the model holds no con
 
 ``electrical.egc_size``: Table 250.122 by the breaker, never larger than the circuit conductors
 (250.122(A)). Where the conductors are larger than the smallest the breaker allows, 250.122(D)
-wants the EGC enlarged by circular mils; Chapter 9 Table 8 is not coded, so an EGC smaller than
-its circuit conductors there is ADVISORY. An EGC the size of its conductors meets (D) by (A).
+enlarges the table EGC by the same circular-mil ratio (AWG areas from ``grounding_tables.kcmil``),
+still capped by (A). The engine applies no 310.15(B)/(C) derating, so every enlargement counts.
 """
 
 from __future__ import annotations
 
-from typehaus.checks._authoring import advisory, advisory_fail, failed, passed, unknown
+from typehaus.checks._authoring import advisory_fail, failed, passed, unknown
 from typehaus.checks.mep.electrical_circuit_sizing import _holds_receptacle
 from typehaus.checks.registry import CheckContext, Tier, check
-from typehaus.findings import Finding, Result
+from typehaus.findings import Finding
 from typehaus.model.ampacity import (
     SMALL_CONDUCTOR_MAX_OCPD,
     ampacity,
@@ -30,11 +30,13 @@ from typehaus.model.ampacity import (
     smallest_size_for,
     termination_column,
 )
+from typehaus.model.grounding_tables import kcmil
 from typehaus.model.nec import NEC, cite
 
 _PROTECT_CID = "electrical.conductor_protection"
 _EGC_CID = "electrical.egc_size"
 _METAL = {"cu": "Cu", "al": "Al"}
+_KCMIL_TOLERANCE = 0.9995  # AWG areas are rounded; matches grounding_tables.larger
 
 
 def _receptacle_count(ctx: CheckContext) -> dict[str, int]:
@@ -134,15 +136,19 @@ def egc_size(ctx: CheckContext) -> list[Finding]:
             continue
         base = smallest_size_for(circuit.breaker_amps, metal, circuit.termination_temp_c)
         enlarged = base is not None and size != base and size_at_least(size, base)
-        if enlarged and not size_at_least(egc, size):
-            out.append(advisory(
-                _EGC_CID, "ADVISORY — " + what + f"; the conductors are enlarged past #{base}, "
-                          "so 250.122(D) wants the EGC enlarged by circular mils (Chapter 9 "
-                          "Table 8 is not coded): confirm, or match the conductors", tags,
-                Result.ADVISORY, code=cite(NEC.EGC_UPSIZED)))
+        if not enlarged:
+            out.append(passed(_EGC_CID, what, tags, code=code))
+            continue
+        ratio = kcmil(size) / kcmil(base)
+        required = min(kcmil(table) * ratio, kcmil(size))
+        what += (f"; conductors enlarged past #{base} (x{ratio:.2f} by area), so 250.122(D) "
+                 f"wants {required:.2f} kcmil against #{egc}'s {kcmil(egc):.2f}")
+        code_d = cite(NEC.EGC_UPSIZED)
+        if kcmil(egc) >= required * _KCMIL_TOLERANCE:
+            out.append(passed(_EGC_CID, what, tags, code=code_d))
         else:
-            note = "; equal to the conductors, so 250.122(D) holds" if enlarged else ""
-            out.append(passed(_EGC_CID, what + note, tags, code=code))
+            out.append(advisory_fail(_EGC_CID, what, tags, code=code_d,
+                                     fix="enlarge the EGC in proportion, or match the conductors"))
     if missing:
         out.append(unknown(_EGC_CID, f"{len(missing)} sized circuits author no wire EGC",
                            tuple(missing), code=code, fix="author Circuit.egc_awg"))

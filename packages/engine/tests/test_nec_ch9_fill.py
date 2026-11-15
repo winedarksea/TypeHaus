@@ -96,3 +96,25 @@ def test_raceway_cable_types_and_310_10_c_wet_list():
     RacewayCable(outside_diameter=inch(0.287), cable_type="CMR")
     with pytest.raises(ValueError):
         RacewayCable(size_awg="10", insulation="PV")  # no Table 5 row, no diameter
+
+
+def test_a_two_pole_circuit_counts_a_neutral_only_with_evidence(catlin_plan):
+    """``model/circuit_neutral``: authored wins; 6- receptacles alone drop it; else counted."""
+    from types import SimpleNamespace
+
+    from typehaus.checks.mep.raceway_fill import _circuit_conductors
+    from typehaus.model.circuit_neutral import circuit_has_neutral, neutral_by_circuit
+
+    def ckt(poles=2, neutral=None):
+        return SimpleNamespace(poles=poles, neutral=neutral)
+
+    six, fourteen = SimpleNamespace(nema="6-20R", ports=()), SimpleNamespace(nema="14-50R")
+    assert circuit_has_neutral(ckt(), [six]) is False
+    assert circuit_has_neutral(ckt(), [six, fourteen]) is True
+    assert circuit_has_neutral(ckt(), []) is True  # equipment ports prove nothing
+    assert circuit_has_neutral(ckt(neutral=False), [fourteen]) is False
+    assert circuit_has_neutral(ckt(poles=1, neutral=None), []) is True
+    found = neutral_by_circuit(catlin_plan)
+    assert found["CKT-GAR-240"] is False and found["CKT-RANGE"] is True
+    garage = next(c for c in catlin_plan.library.circuits if c.tag == "CKT-GAR-240")
+    assert len(_circuit_conductors(garage, False)[0]) == 3  # two hots and the EGC

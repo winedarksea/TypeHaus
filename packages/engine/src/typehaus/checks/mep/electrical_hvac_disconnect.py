@@ -15,7 +15,10 @@ the kit fitted. 440.35 (conductors at least the MCA) reads ``Circuit.conductor_a
 110.14(C)(1) column. 440.11 (lock or tool) and 440.12(A)(1) (115% rating) read the disconnect type's
 ``lockable`` and ``disconnect_rating_a``; 115% of the MCA bounds 115% of the summed rated-load
 currents from above, so a rating at or over it passes and one under it is UNKNOWN.
-Not graded: 440.10 (needs the available fault current at the service), readily accessible,
+440.10: one grouped row sets each unit's nameplate ``sccr_a`` against the meter's
+``available_fault_current_a``. The service figure bounds the fault at the unit from above, so a
+rating at or over it passes and one under it is UNKNOWN (a calculation decides). An unmarked
+unit (440.4(B) Ex. 3) or no utility figure is UNKNOWN. Not graded: readily accessible,
 110.26(A) working space, panels that obscure the nameplate.
 """
 
@@ -48,7 +51,34 @@ def hvac_disconnect(ctx: CheckContext) -> list[Finding]:
                    if e.element_kind == "ElectricalDevice" and e.kind is DeviceKind.DISCONNECT]
     nameplates = _nameplates(ctx, {u.circuit for u in units})
     return (_in_sight(ctx, units, disconnects) + _max_ocpd(ctx, nameplates)
-            + _disconnect_ratings(ctx, nameplates, disconnects))
+            + _disconnect_ratings(ctx, nameplates, disconnects) + _sccr(ctx, nameplates))
+
+
+def _sccr(ctx: CheckContext, nameplates) -> list[Finding]:
+    """440.10, grouped: every unit's marked SCCR against the service's available fault current."""
+    code = cite(NEC.HVAC_SCCR)
+    dev_types = {t.tag: t for t in ctx.plan.library.electrical_device_types}
+    fault = max((a for e in ctx.plan.all_elements()
+                 if e.element_kind == "ElectricalDevice" and e.kind is DeviceKind.METER
+                 for a in [getattr(dev_types.get(e.type_ref or ""), "available_fault_current_a",
+                                   None)] if a is not None), default=None)
+    rated = {tag: getattr(kind, "sccr_a", None) for tag, kind in nameplates.values()}
+    tags = tuple(sorted(rated))
+    unmarked = sorted(tag for tag, a in rated.items() if a is None)
+    if unmarked or fault is None:
+        why = ([f"{', '.join(unmarked)} state no nameplate SCCR (440.4(B) Ex. 3 lets a "
+                "dwelling's unit omit it)"] if unmarked else [])
+        why += ["no available fault current is authored at the service"] if fault is None else []
+        return [unknown(_CID, "440.10 controller SCCR: " + "; ".join(why), tags, code=code,
+                        fix="author sccr_a from the nameplate and available_fault_current_a "
+                            "from the utility")]
+    low = sorted(tag for tag, a in rated.items() if a < fault)
+    if low:
+        return [unknown(_CID, f"440.10: {', '.join(low)} rated under the {fault:,} A available at "
+                              "the service; the fault current at the unit decides", tags,
+                        code=code)]
+    return [passed(_CID, f"440.10: every unit's SCCR is at least the {fault:,} A available at "
+                         "the service", tags, code=code)]
 
 
 def _in_sight(ctx: CheckContext, units, disconnects) -> list[Finding]:

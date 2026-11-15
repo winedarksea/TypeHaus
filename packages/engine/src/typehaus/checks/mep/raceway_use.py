@@ -3,14 +3,16 @@
 * **ENT** (362.12): never in direct earth burial (a slab on or below grade is 362.10's own
   case and is not earth here), and exposed only where 362.10(1), (5) or (8) allows.
 * **PVC** (352.44): an exposed run grows with temperature; where Table 352.44's growth over
-  the exposed length reaches 1/4 in. an expansion fitting is needed. No strap points are
-  modelled, so the whole exposed length is read as one straight run (conservative). The swing
-  is an assumption, ``PVC_SWING_F``: Minnesota's roughly -20 degF winter to a sun-warmed
+  the exposed length reaches 1/4 in. an expansion fitting is needed. Straps are counted at
+  table spacing, not placed, so the whole exposed length is read as one run (conservative).
+  The swing is an assumption, ``PVC_SWING_F``: Minnesota's roughly -20 degF winter to a sun-warmed
   110 degF summer surface, 130 degF.
 * **225.10**: a power branch circuit or feeder run on the outside of a building uses a
   listed method. EMT and PVC are on the list; ENT is not.
 
-Support spacing (Tables 344.30(B), 352.30(B), 358.30) is a gap: the model has no strap points.
+Support spacing (Tables 344.30(B), 352.30(B), 358.30) is a standing limit, not a gap: straps
+are counted and billed at table spacing (``resolve/conduit_fittings.straps_for``), so nothing
+is left to grade until a strap is placed by hand.
 **ADVISORY**: the drawn run is a trunk, not the electrician's final routing.
 """
 
@@ -76,7 +78,7 @@ def raceway_use(ctx: CheckContext) -> list[Finding]:
                     _CID, f"ADVISORY - {run.tag} (PVC) is {open_ft:.1f} ft exposed: "
                           f"{growth:.2f} in. of growth over a {PVC_SWING_F:.0f} degF swing "
                           "reaches the 1/4 in. that calls for an expansion fitting "
-                          "(strap points not modelled)", (run.tag,), Result.ADVISORY,
+                          "(read as one run)", (run.tag,), Result.ADVISORY,
                     code=cite(NEC.PVC_EXPANSION), fix="add an expansion fitting"))
         if run.service in _POWER_BRANCH and open_ft:
             exposed_power += 1

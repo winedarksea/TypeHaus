@@ -88,6 +88,8 @@ _PRINTED = {
     "RECEPTACLE_REPLACEMENT": "406.12(D)", "CIRCUIT_DIRECTORY": "408.4(A)",
     "SWITCHBOARD_SCCR": "408.6",
     "ESS_LISTING": "706.2", "ESS_DISCONNECT": "706.15", "ESS_EMERGENCY_SHUTDOWN": "706.15(B)",
+    "ESS_BATTERY_DISCONNECT": "706.15(D)", "HVAC_SCCR": "440.10",
+    "WORKING_SPACE_ACCESS": "110.26", "WORKING_SPACE_DOOR": "110.26(A)(2)",
     "BATTERY_DISCONNECT": "480.7(A)", "BATTERY_EMERGENCY_DISCONNECT": "480.7(B)",
     "DWELLING_SERVICE_CONDUCTORS": "310.12(A)", "DWELLING_FEEDER_CONDUCTORS": "310.12(B)",
     "BOX_FILL": "314.16(B)", "CONDUCTOR_VOLUME_TABLE": "Table 314.16(B)(4)",
@@ -239,7 +241,8 @@ def _interconnection(main, bus, breaker, inverter_kw=None, source_slot=None):
         elements={"main": tuple(devices)})
     model, _ = resolve(plan)
     report = run_from_model(model, [], tier=Tier.CODE, only="code.NEC_705_12_interconnection")
-    [finding] = [f for f in report.findings if f.check_id == "code.NEC_705_12_interconnection"]
+    [finding] = [f for f in report.findings if f.check_id == "code.NEC_705_12_interconnection"
+                 and f.result.value != "not_applicable"]  # (A)/(B)(5) N/A rows ride along
     return finding
 
 
@@ -253,7 +256,8 @@ def test_705_12_b2a_120_percent_with_opposite_end_and_label():
     assert f.result.value == "pass" and f"met by {NEC.INTERCONNECTION_120PCT}" in f.message
     assert "end opposite the top feed" in f.message and "(b) label" in f.message
     assert _interconnection(main=200, bus=225, breaker=50, source_slot=1).result.value == "fail"
-    assert _interconnection(main=225, bus=225, breaker=60, source_slot=39).result.value == "fail"
+    failed = _interconnection(main=225, bus=225, breaker=60, source_slot=39)
+    assert failed.result.value == "fail" and NEC.INTERCONNECTION_ENGINEERED in failed.message
 
 
 def test_705_12_uses_125_percent_of_inverter_output_not_the_breaker():
@@ -337,6 +341,10 @@ def test_catlins_heat_pump_disconnects_are_in_plan_sight(catlin_model_ro):
     report = run_from_model(catlin_model_ro, [], tier=Tier.ADVISORY,
                             only="electrical.hvac_disconnect")
     found = [f for f in report.findings if f.check_id == "electrical.hvac_disconnect"]
+    # 440.10: no Gree sheet publishes an SCCR and no utility figure is authored.
+    [sccr] = [f for f in found if NEC.HVAC_SCCR in (f.code_ref or "")]
+    assert sccr.result.value == "unknown" and "440.4(B) Ex. 3" in sccr.message
+    found = [f for f in found if f is not sccr]
     sight = {f.element_tags[0]: f.result.value for f in found
              if f.element_tags and f.element_tags[0].startswith("EQ-")}
     assert sight == {"EQ-M-HP1-OD": "pass", "EQ-M-HP2-OD": "pass", "EQ-M-HP3-OD": "pass",
@@ -345,6 +353,28 @@ def test_catlins_heat_pump_disconnects_are_in_plan_sight(catlin_model_ro):
             if f.element_tags and f.element_tags[0].startswith("CKT-")}
     assert ocpd == {"CKT-HP1": "pass", "CKT-HP1-AH": "pass", "CKT-HP2": "pass",
                     "CKT-HP3": "pass"}  # 440.22 against the Gree submittals' MOCP
+
+
+def test_440_10_grades_a_stated_sccr_against_the_service(catlin_plan, catlin_model):
+    from _helpers import check_context
+
+    from typehaus.checks.mep.electrical_hvac_disconnect import hvac_disconnect
+
+    lib = catlin_plan.library
+    eq = tuple(t.model_copy(update={"sccr_a": 5000}) if t.min_circuit_ampacity_a else t
+               for t in lib.equipment_types)
+    dev = tuple(t.model_copy(update={"available_fault_current_a": 10000})
+                if t.tag == "ED-T-METER" else t for t in lib.electrical_device_types)
+
+    def sccr(**update):
+        plan = catlin_plan.model_copy(update={"library": lib.model_copy(update=update)})
+        return [f for f in hvac_disconnect(check_context(plan, catlin_model))
+                if NEC.HVAC_SCCR in (f.code_ref or "")][0]
+
+    assert sccr(equipment_types=eq, electrical_device_types=dev).result.value == "unknown"
+    eq = tuple(t.model_copy(update={"sccr_a": 22000}) if t.min_circuit_ampacity_a else t
+               for t in lib.equipment_types)
+    assert sccr(equipment_types=eq, electrical_device_types=dev).result.value == "pass"
 
 
 def test_catlins_space_heat_circuits_carry_125_percent_and_gfci(catlin_model_ro):

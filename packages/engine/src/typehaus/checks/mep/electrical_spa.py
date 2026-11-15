@@ -7,8 +7,10 @@ the tub's footprint (``electrical_spa_geometry``): 680.13 maintenance disconnect
 680.43 receptacles, switches, outlets, luminaires, 680.41(B). Without a footprint each is one
 UNKNOWN naming what to author, or N/A where every spa circuit is ``rough_in_only`` (no tub
 is installed: the distance and bonding rules govern a tub; the GFCI and 680.7/680.14 circuit
-rules still grade the circuit as roughed in). Not graded for want of data: 680.7 and 680.14
-(no conductor or wiring-method data), 680.26 bonding, 680.44(B)/(C), 680.42(A). Pools and
+rules still grade the circuit as roughed in). 680.7(A)'s EGC size and metal are graded from the
+circuit's ``egc_awg`` / ``conductor_material`` (Table 250.122, at least 12 AWG, copper). Not
+graded for want of data: the EGC's insulation, the whip and its cord (680.7(B)), the terminals
+(680.7(C)), 680.14's wiring method, 680.26 bonding, 680.44(B)/(C), 680.42(A). Pools and
 Part V fountains: the model has no such element, so absence is not evidence and nothing is
 emitted.
 """
@@ -19,6 +21,7 @@ from typehaus.checks._authoring import by_result
 from typehaus.checks.mep.electrical_spa_geometry import spa_geometry
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
+from typehaus.model.ampacity import egc_minimum, size_at_least
 from typehaus.model.enums import DeviceKind, EquipmentKind
 from typehaus.model.nec import NEC, cite
 from typehaus.resolve.room_lookup import axis_polygon, axis_ring
@@ -27,6 +30,7 @@ _CID = "code.NEC_680_spa"
 # 680.5(B): Class A GFCI on <=150 V to ground circuits of <=60 A single-phase. A 1- or 2-pole
 # circuit off this house's 120/240 V single-phase service is 120 V to ground.
 _CLASS_A_MAX_AMPS = 60
+_SPA_EGC_MIN = "12"  # 680.7(A)
 
 
 def _is_indoors(ctx: CheckContext, obj) -> bool:
@@ -62,11 +66,30 @@ def _circuit_findings(circuit) -> list[Finding]:
                          (circuit.tag,), code)
     wiring = by_result(
         _CID, Result.UNKNOWN,
-        f"{circuit.tag} 680.7 (insulated copper EGC of at least 12 AWG, sized per 250.122, in a "
-        "wet or corrosive place; cords the same, wet-rated terminals) and 680.14 (no aluminum "
-        "wiring method) are ungraded: the model carries no conductor, EGC or terminal data",
+        f"{circuit.tag}: the EGC's insulation, the whip from the disconnect to the tub and its "
+        "cord (680.7(B)), wet-location bonding terminals (680.7(C)) and 680.14's wiring method "
+        "are ungraded until a tub is chosen and its connection detailed",
         (circuit.tag,), cite(NEC.POOL_GROUNDING, NEC.POOL_CORROSIVE))
-    return [gfci, wiring]
+    return [gfci, _egc(circuit), wiring]
+
+
+def _egc(circuit) -> Finding:
+    """680.7(A): a copper EGC, Table 250.122 by the breaker and at least 12 AWG."""
+    code = cite(NEC.POOL_GROUNDING, NEC.EGC_TABLE)
+    tags = (circuit.tag,)
+    if circuit.egc_awg is None:
+        return by_result(_CID, Result.UNKNOWN, f"{circuit.tag} (spa) authors no EGC, so 680.7(A)'s "
+                         "size is ungraded", tags, code, "author Circuit.egc_awg")
+    table = egc_minimum(circuit.breaker_amps, "cu")
+    need = table if size_at_least(table, _SPA_EGC_MIN) else _SPA_EGC_MIN
+    what = (f"{circuit.tag} (spa): #{circuit.egc_awg} {circuit.conductor_material} EGC against "
+            f"#{need} Cu (Table 250.122 at {circuit.breaker_amps} A, 12 AWG at least)")
+    if circuit.conductor_material != "cu":
+        return by_result(_CID, Result.FAIL, what + ": 680.7(A) wants copper", tags, code,
+                         "a copper EGC")
+    if not size_at_least(circuit.egc_awg, need):
+        return by_result(_CID, Result.FAIL, what, tags, code, f"at least #{need} Cu")
+    return by_result(_CID, Result.PASS, what, tags, code)
 
 
 @check(Tier.CODE, _CID)

@@ -75,7 +75,7 @@ _library = Library(
     products=(*products.PRODUCTS, *mirror_types.MIRROR_PRODUCTS, *bed_frame_types.BED_FRAME_PRODUCTS,
               *opening_products.OPENING_PRODUCTS, *bath_accessory_types.BATH_ACCESSORY_PRODUCTS,
               *towel_accessory_types.TOWEL_PRODUCTS, *handrail_types.HANDRAIL_PRODUCTS, *products_bath_lavs.BATH_LAV_PRODUCTS,
-              *device_types.DEVICE_PRODUCTS, *grounding_types.GROUNDING_PRODUCTS, *device_boxes.BOX_PRODUCTS, *ducts.DUCT_PRODUCTS, *drywall.DRYWALL_PRODUCTS, *products_paint.PAINT_PRODUCTS,
+              *device_types.DEVICE_PRODUCTS, *grounding_types.GROUNDING_PRODUCTS, *panel_types.PANEL_PRODUCTS, *device_boxes.BOX_PRODUCTS, *ducts.DUCT_PRODUCTS, *drywall.DRYWALL_PRODUCTS, *products_paint.PAINT_PRODUCTS,
               *window_covering_types.WINDOW_COVERING_PRODUCTS, *smart_home_types.SMART_HOME_PRODUCTS,
               *media_types.MEDIA_PRODUCTS, *plant_reservoir_types.PLANT_RESERVOIR_PRODUCTS,
               *RAILING_PRODUCTS),

@@ -163,8 +163,9 @@ def pv_egc_size(ctx: CheckContext) -> list[Finding]:
 
     The OCPD is the assumed one of 690.9(B): 125% of 690.8(A)(1)(a)'s 125% of module Isc (one
     module in parallel per string), to the next standard size. The bonds are those touching a
-    module and any bond hanging off them. No module ``isc`` is UNKNOWN. Not graded: 250.122(D)
-    upsizing, the 250.120 aluminium limits, and the 250.66 electrode-conductor cap.
+    module and any bond hanging off them. No module ``isc`` is UNKNOWN. 250.122(D) needs sized
+    source-circuit conductors, which the model does not hold; the 250.120 aluminium limits and
+    the 250.66 electrode-conductor cap are not graded.
     """
     code = cite(NEC.PV_EGC_SIZE, NEC.EGC_TABLE)
     panels = ctx.model.solar_panels

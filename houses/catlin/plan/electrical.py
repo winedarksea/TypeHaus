@@ -205,7 +205,7 @@ BACKUP_ENCLOSURE = [
     # run to two enclosures a person can stand between.
     ElectricalDevice(uid="CEE060AAAA", tag="ED-B-BACKUP-PANEL", kind=DeviceKind.PANEL,
                      type_ref="ED-T-BACKUP-PANEL",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(58)), room="RM-B-FURNACE",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(60.1)), room="RM-B-FURNACE",
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-W1", face="left", distance_from_start=inch(108),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),

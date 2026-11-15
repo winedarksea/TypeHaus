@@ -14,7 +14,11 @@ each one and whether it holds; the panel passes on any one:
   than the bus (its label is not derived, so a pass says it is owed).
 - **(B)(4)** a center-fed dwelling panel: either end, by the (2) arithmetic and label.
 
-Not tried: (A) feeders, (B)(5) feed-through, (B)(6) engineering supervision. One documented
+(A) earns N/A when every source circuit lands on a panel bus (``panel_ref`` and ``slot``), so
+no source connects to a feeder. (B)(5) earns N/A for the panels the schedule feeds from a
+source panel through a breaker (their ``circuit=``); a panel naming no feeder may sit on
+lugs, so it earns nothing.
+(B)(6), engineering supervision, is named only when (B)(1)-(4) all fail. One documented
 limit: the model has no feeder element, so a subpanel without its own ``service_amps`` takes
 the service size as its main term (conservative for a subpanel). See
 ``docs/code-notes/nec-2026-paraphrase-690-705-710.md``.
@@ -96,6 +100,27 @@ def _paths(ctx, panel_ref, product, group, main_amps, source_amps) -> list[_Path
     return out
 
 
+def _feeder_and_feed_through(ctx, sources, panels, by_panel) -> list[Finding]:
+    """(A) and (B)(5) N/A, each earned from the schedule; otherwise nothing is claimed."""
+    out: list[Finding] = []
+    if all(c.slot is not None for c in sources):
+        out.append(not_applicable(
+            _CID, f"every source circuit ({', '.join(sorted(c.tag for c in sources))}) lands "
+                  "on a panel bus at an authored slot, so none connects to a feeder",
+            tuple(sorted(c.tag for c in sources)), cite(NEC.INTERCONNECTION_FEEDER)))
+    home = {c.tag: c.panel_ref for c in ctx.plan.library.circuits}
+    downstream = sorted(tag for tag, panel in panels.items()
+                        if home.get(getattr(panel, "circuit", None) or "") in by_panel)
+    if downstream:  # a panel with no feeder circuit may be on lugs, so silence is no claim
+        feeds = ", ".join(f"{tag} by {panels[tag].circuit}" for tag in downstream)
+        out.append(not_applicable(
+            _CID, f"every panel the schedule feeds from a source panel is fed through a breaker "
+                  f"there ({feeds}), so no feed-through lugs carry the source: "
+                  f"{NEC.INTERCONNECTION_FEED_THROUGH} does not arise for them",
+            tuple(downstream), cite(NEC.INTERCONNECTION_FEED_THROUGH)))
+    return out
+
+
 @check(Tier.CODE, _CID)
 def interconnection_busbar(ctx: CheckContext) -> list[Finding]:
     """NEC 705.12(B) per panel carrying a ``source=True`` circuit: which paths hold."""
@@ -113,7 +138,7 @@ def interconnection_busbar(ctx: CheckContext) -> list[Finding]:
     by_panel: dict[str, list] = {}
     for circuit in sources:
         by_panel.setdefault(circuit.panel_ref, []).append(circuit)
-    out: list[Finding] = []
+    out = _feeder_and_feed_through(ctx, sources, panels, by_panel)
     for panel_ref, group in sorted(by_panel.items()):
         product = types.get(getattr(panels.get(panel_ref), "type_ref", None) or "")
         main_amps = float(getattr(product, "service_amps", None) or service_amps or 0.0) or None
@@ -141,7 +166,9 @@ def interconnection_busbar(ctx: CheckContext) -> list[Finding]:
             out.append(by_result(_CID, Result.UNKNOWN, f"{head} — no path shown. {detail}",
                                  tags, code, "state the panel type's main_feed_end and slots"))
         else:
-            out.append(by_result(_CID, Result.FAIL, f"{head} — no path holds. {detail}", tags,
+            out.append(by_result(_CID, Result.FAIL, f"{head} — no path holds. {detail}; "
+                                 f"{NEC.INTERCONNECTION_ENGINEERED} (engineering supervision) "
+                                 "is the remaining path", tags,
                                  code, "move the source breaker to the bus end opposite the "
                                        "feed, reduce the source, or connect supply side"))
     return out

@@ -1,6 +1,6 @@
 """ADVISORY grounding reads (decision #123): coordinated SPDs, single-point entry and the
 lightning-ready hooks. Owner design goals, not code: results never carry ERROR severity.
-NFPA 780 rules: ``docs/code-notes/nfpa-780-paraphrase.md`` (``model/nec.py`` ``NFPA780``).
+NFPA 780 rules: ``docs/code-notes/nfpa-780-paraphrase.md`` (``model/nfpa780.py``).
 """
 
 from __future__ import annotations
@@ -22,7 +22,8 @@ from typehaus.checks.mep.electrical_grounding_bonds import (
 )
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
-from typehaus.model.nec import NEC, NFPA780, cite
+from typehaus.model.nec import NEC, cite
+from typehaus.model.nfpa780 import NFPA780
 
 SPD_CID = "grounding.spd_coordination"
 ENTRY_CID = "grounding.single_point_entry"

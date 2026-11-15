@@ -10,6 +10,7 @@ from __future__ import annotations
 import pytest
 
 from typehaus.checks.mep.electrical_boxes import required_volume_in3
+from typehaus.model.circuit_neutral import neutral_by_circuit
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.conduit_fittings import conduit_parts, couplings_for, straps_for
 from typehaus.resolve.pipe_sections import raceway_outside_diameter_m
@@ -79,7 +80,8 @@ def test_parts_and_conductors_on_known_runs(catlin_model_ro):
     # Trunk -> bench box -> RC1 is one pull of CKT-WORKSHOP-240: one 10 ft make-up, not two.
     runs = {r.tag: r for r in catlin_model_ro.conduits}
     pull_ft = (runs["CD-B-WORKSHOP"].length_m + runs["CD-B-WORKSHOP-RC1"].length_m) / 0.3048
-    named = _named_rows(catlin_model_ro, [runs["CD-B-WORKSHOP"], runs["CD-B-WORKSHOP-RC1"]])
+    named = _named_rows(catlin_model_ro, [runs["CD-B-WORKSHOP"], runs["CD-B-WORKSHOP-RC1"]],
+                        neutral_by_circuit(catlin_model_ro.plan))
     assert named[0]["length_ft"] == pytest.approx((pull_ft + 10.0) * 4, abs=0.1)
     two_pole = next(row for row in conductor_takeoff(catlin_model_ro) if row["poles"] == 2)
     assert "CD-B-WORKSHOP:CKT-WORKSHOP-240" in two_pole["tags"]

@@ -87,6 +87,8 @@ def test_314_16b_clamps_support_fittings_and_egcs_past_four():
     assert required_volume_in3(12, 1, False, 1, clamps=True, support_fittings=1) == (
         pytest.approx(base + 2 * 2.25))
     assert (egc_allowance(4), egc_allowance(6)) == (1.0, 1.5)
+    # 314.16(B)(6): one allowance per terminal-block assembly.
+    assert required_volume_in3(12, 1, False, 1, terminal_blocks=2) == pytest.approx(base + 4.5)
 
 
 @pytest.mark.parametrize(("gauge", "projection", "depth"), [

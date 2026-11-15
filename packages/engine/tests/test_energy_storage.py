@@ -147,6 +147,10 @@ def test_the_backfeed_fits_the_120_percent_allowance(catlin_plan, catlin_model):
     """225A bus x 1.2 = 270A allowed; 200A main + 125% of the 8 kW inverter's 33.3A output
     (33.3A rounds to 33A, 41.25A, 705.28(A)) = 241.25A, 28.75A spare."""
     findings = interconnection_busbar(_context(catlin_plan, catlin_model))
+    # 705.12(A) earns N/A: CKT-ESS-GRID lands on a bus at slot 51.
+    assert [f.result for f in findings if f.result is Result.NOT_APPLICABLE] == [
+        Result.NOT_APPLICABLE] and "705.12(A)" in (findings[0].code_ref or "")
+    findings = [f for f in findings if f.result is not Result.NOT_APPLICABLE]
     assert len(findings) == 1 and findings[0].result is Result.PASS
     assert "41.25A source" in findings[0].message and "28.75A spare" in findings[0].message
     assert "met by 705.12(B)(2)(a)" in findings[0].message  # slots 51/53: the last row
@@ -172,7 +176,8 @@ def test_a_panel_without_a_bus_rating_is_unknown(catlin_plan):
     library = catlin_plan.library.model_copy(update={"electrical_device_types": types})
     plan = catlin_plan.model_copy(update={"library": library})
     findings = interconnection_busbar(_context(plan))
-    assert [f.result for f in findings] == [Result.UNKNOWN]
+    assert [f.result for f in findings if f.result is not Result.NOT_APPLICABLE] == [
+        Result.UNKNOWN]
 
 
 # --- NEC 690.12 rapid shutdown --------------------------------------------------------

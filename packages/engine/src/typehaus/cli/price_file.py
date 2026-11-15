@@ -322,7 +322,8 @@ class Prices:
     grounding: Mapping[str, PriceRange] = field(default_factory=dict)
     grounding_conductors: Mapping[str, PriceRange] = field(default_factory=dict)
     # Branch-circuit conductors by the lineal foot, keyed on ``poles`` — "1" for a 120 V
-    # circuit (3 conductors: hot, neutral, ground), "2" for a 240 V one (4). The route is
+    # circuit (3 conductors: hot, neutral, ground), "2" for a 240 V one (4, or 3 where it
+    # carries no neutral, ``model/circuit_neutral``). The route is
     # [conduit] and this is the wire in it. Mind the mirror: the two are separate purchases
     # at separate rates, and neither includes the other.
     conductors: Mapping[str, PriceRange] = field(default_factory=dict)

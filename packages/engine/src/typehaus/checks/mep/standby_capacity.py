@@ -7,6 +7,9 @@ Graded: the inverter's continuous output against all backup circuits at once (70
 and against the largest single one ((A)(3)). UNKNOWN: whether the inverter is listed as a PCS
 (``pcs_listed``, else the published ``pcs_functions``), the PCS control setting and
 nonautomatic reconnection. A PCS listing for export/import limiting alone does not bring (A)(3).
+702.6: the inverters' published ``standby_signals`` against the four the section names
+(malfunction and carrying load, each audible and visual). All four is PASS; fewer, or none
+stated, is UNKNOWN, since "where practicable" and an added annunciator are the AHJ's.
 """
 
 from __future__ import annotations
@@ -54,7 +57,29 @@ def standby_capacity(ctx: CheckContext) -> list[Finding]:
     inverters = [t for t in ctx.plan.library.equipment_types
                  if getattr(t, "inverter_kw_continuous", None)]
     out.append(_multimode(inverters, tags))
+    out.append(_signals(inverters, tags))
     return out
+
+
+_SIGNALS = ("malfunction_visual", "malfunction_audible", "carrying_load_visual",
+            "carrying_load_audible")
+
+
+def _signals(inverters, tags) -> Finding:
+    """702.6: which of the malfunction and carrying-load signals the inverter publishes."""
+    code = cite(NEC.STANDBY_SIGNALS)
+    stated = [getattr(t, "standby_signals", None) for t in inverters]
+    if not inverters or any(s is None for s in stated):
+        return unknown(CID, "702.6: the inverter's malfunction and carrying-load signals are "
+                            "not authored", tags, code,
+                       "author standby_signals from the inverter's manual")
+    have = {sig for s in stated for sig in s}
+    missing = [sig.replace("_", " ") for sig in _SIGNALS if sig not in have]
+    if not missing:
+        return passed(CID, "702.6: the inverter signals a malfunction and that it carries load, "
+                           "audibly and visually", tags, code)
+    return unknown(CID, f"702.6: the inverter publishes no {', '.join(missing)} signal; where "
+                        "practicable one is wanted (a monitoring alert may serve)", tags, code)
 
 
 def _overload_listed(inverter) -> bool | None:

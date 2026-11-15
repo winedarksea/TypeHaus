@@ -31,7 +31,7 @@ _IN = 0.0254
 _ABOVE_M = 72 * _IN
 _HEIGHT_M = 78 * _IN
 _SHRINK_M = 0.001
-_AUTOMATIC_ONLY = frozenset({"occupancy", "timer"})
+AUTOMATIC_ONLY_CONTROLS = frozenset({"occupancy", "timer"})
 
 
 def _room_tag(ctx: CheckContext, obj) -> str | None:
@@ -68,7 +68,7 @@ def working_space_lighting(ctx: CheckContext) -> list[Finding]:
             return True
         controls = [getattr(types.get(getattr(by_tag.get(s), "type_ref", None) or ""),
                             "control", None) for s in light.controlled_by]
-        return not controls or any(c not in _AUTOMATIC_ONLY for c in controls)
+        return not controls or any(c not in AUTOMATIC_ONLY_CONTROLS for c in controls)
 
     out: list[Finding] = []
     for panel, room in indoor:

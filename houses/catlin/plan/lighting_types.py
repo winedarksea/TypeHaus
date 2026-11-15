@@ -409,6 +409,10 @@ LIGHTING_DEVICE_TYPES = (
                          footprint=(inch(7.4), inch(3.7)), height=inch(1.36),
                          load_va=60.0, output_voltage=24, ports=_POWER_120,
                          product_ref="PROD-DIODE-OMNIDRIVE-X",
+                         # Diode DI-ODX spec sheet (diodeled.com, read 2026-11-14): "Class 2 ...
+                         # Yes" for ODX24V60W, cULus E499308, UL 1310 / UL 8750; isolation not stated.
+                         supply_listing="cULus E499308, ANSI/UL 1310 power unit, UL 8750",
+                         class_2=True,
                          source="Diode LED DI-ODX-24V60W-J (the -J version: driver in its own listed "
                                 "junction box, 7.40 x 3.70 x 1.36 in, retailer listings read 2026-11-08; "
                                 "the driver-only DI-ODX-24V60W would need a box of its own) — "
@@ -421,6 +425,9 @@ LIGHTING_DEVICE_TYPES = (
                          footprint=(inch(12), inch(8)), height=inch(4),
                          load_va=200.0, output_voltage=24, ports=_POWER_120,
                          product_ref="PROD-DIODE-OMNIDRIVE-X",
+                         # Same sheet: "Class 2 ... No" for ODX24V200WJ (only 30/60/96 W are).
+                         supply_listing="cULus E499308, ANSI/UL 1310 power unit",
+                         class_2=False,
                          source="Diode LED OMNIDRIVE X, 200 W. Same family as the 60 W; see "
                                 "that entry for the no-minimum-load argument."),
     ElectricalDeviceType(tag="ED-T-LT-PSU-96-WE", name="24V LED driver, 96 W, IP65",
@@ -433,8 +440,12 @@ LIGHTING_DEVICE_TYPES = (
                          parts=(ProductPart(role="fitting", product_ref="PROD-RACO-232"),
                                 ProductPart(role="fitting", product_ref="PROD-RACO-752"),
                                 ProductPart(role="fitting", product_ref="PROD-CORD-GRIP-GENERIC")),
-                         source="Mean Well HLG-100H-24A (HLG-100H-SPEC 2026-07-24): Class 2 "
-                                "power unit, 96 W, 24 V / 4 A, IP65, UL 8750, 220 x 68 x "
+                         # The sheet states no Class 2 (its "class I" is the earthed housing);
+                         # I/P-O/P 3.75 kVAC withstand and 100 Mohm isolation are its isolation.
+                         supply_listing="UL 8750 (type HL), CSA C22.2 No. 250.0-08",
+                         isolating_secondary=True,
+                         source="Mean Well HLG-100H-24A (HLG-100H-SPEC 2026-07-24): no Class 2 "
+                                "stated, 96 W, 24 V / 4 A, IP65, UL 8750, 220 x 68 x "
                                 "38.8 mm, not dimmable. A-type: SJOW 17 AWG cable leads (AC "
                                 "and DC), nothing encloses the AC side (the junction-box option "
                                 "is a Mean Well special): the splice box above is ours."),

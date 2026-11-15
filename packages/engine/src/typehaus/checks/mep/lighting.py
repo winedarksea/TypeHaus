@@ -13,6 +13,7 @@ from __future__ import annotations
 from typehaus.checks._authoring import advisory
 from typehaus.checks._authoring import passed as _pass
 from typehaus.checks._authoring import unknown as _unknown
+from typehaus.checks.mep.low_voltage_listing import listing_rows
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.electrical import luminaire_types
@@ -268,6 +269,7 @@ def light_run_psu(ctx: CheckContext) -> list[Finding]:
     A 24V run carries no branch circuit — its PSU does — so an unresolvable ``psu_ref`` is
     not a naming slip, it is a fixture with no source. Where several runs share one supply
     their loads are summed before it is sized, because that is what the supply sees.
+    Article 411's listing rows follow (``low_voltage_listing``).
     """
     cid = "electrical.light_run_psu"
     runs = ctx.model.light_runs
@@ -315,4 +317,4 @@ def light_run_psu(ctx: CheckContext) -> list[Finding]:
     if not out:
         out.append(_pass(cid, str(len(runs)) + " light runs resolve to a supply sized for "
                               "125% of the tape they drive"))
-    return out
+    return out + listing_rows(cid, ctx, devices, types)

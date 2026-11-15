@@ -106,6 +106,9 @@ class Circuit(Element):
     # 110.14(C)(1) termination column. None: 60 °C at 100 A or less with 14-1 AWG, else 75 °C.
     # 75 is authored only where both ends are listed and identified for it.
     termination_temp_c: Literal[60, 75] | None = None
+    # Whether a neutral runs with the circuit. None: 120 V circuits carry one, a 2-pole one
+    # is read from its devices (``circuit_neutral.circuit_has_neutral``).
+    neutral: bool | None = None
     description: str = ""
     # Physical breaker position in the enclosure. Real panel numbering: odd slots run down
     # the left column, even slots the right; a 2-pole breaker occupies ``slot`` and
@@ -228,7 +231,8 @@ class BoxRow(HausModel):
     bay's studs, for a box that screws to wood wherever it lands (geometry review M3-107).
     ``internal_clamps`` (314.16(B)(2)): None is "not stated" and box fill counts the
     allowance; False is a datasheet showing none. ``support_fittings`` (314.16(B)(3)) counts
-    the kinds of fixture stud or hickey inside.
+    the kinds of fixture stud or hickey inside; ``terminal_blocks`` (314.16(B)(6)) the
+    terminal-block assemblies, one allowance each.
     """
 
     mounting: BoxMounting
@@ -246,6 +250,7 @@ class BoxRow(HausModel):
     block_profile: str | None = None
     internal_clamps: bool | None = None
     support_fittings: int = 0
+    terminal_blocks: int = 0
 
     @property
     def volume_in3(self) -> float | None:

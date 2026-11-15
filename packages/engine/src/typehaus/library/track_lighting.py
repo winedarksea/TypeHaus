@@ -140,6 +140,10 @@ PUREEDGE_SUPPLY = ElectricalDeviceType(
     tag="ED-T-LT-PSU-PUREEDGE-40", name="PureEdge accessible 40W 24V supply enclosure",
     footprint=(inch(15.65), inch(3.43)), height=inch(6.37), plan_symbol="junction-box",
     load_va=40, output_voltage=24, ports=POWER_120,
+    # PureEdge TS24M spec, Uni TRIM supply page: "CLASSIFICATION CLASS 2", "Isolated output
+    # power", "UL & ETL recognized/ listed, meets UL 8750, 1310 requirements".
+    supply_listing="UL & ETL recognized/listed, UL 8750, UL 1310", class_2=True,
+    isolating_secondary=True,
     product_ref="PROD-PUREEDGE-PSB-40W-UNI-24VDC-T", source=PUREEDGE_RAIL_SOURCE)
 
 

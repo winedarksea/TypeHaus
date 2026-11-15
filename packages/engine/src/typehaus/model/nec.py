@@ -75,6 +75,8 @@ class NEC:
 
     # Art. 110 — working space.
     WORKING_SPACE: Final = "110.26(A)"
+    WORKING_SPACE_ACCESS: Final = "110.26"  # intro: doors open at 90 deg leave 24 in. x 6 1/2 ft
+    WORKING_SPACE_DOOR: Final = "110.26(A)(2)"  # width always allows a 90-degree door opening
     WORKING_SPACE_EGRESS: Final = "110.26(C)"
     DEDICATED_SPACE: Final = "110.26(E)(1)"
     WORKING_ILLUMINATION: Final = "110.26(D)"
@@ -164,6 +166,7 @@ class NEC:
     STAIR_SWITCHES: Final = "210.70(A)(2)(3)"  # 6+ risers: a control at each floor level
     STAIR_DIMMER: Final = "210.70(A)(2)(4)"  # full brightness from every control location
     EQUIPMENT_SPACE_LIGHTING: Final = "210.70(C)"  # attic, underfloor, utility room, basement
+    EQUIPMENT_SPACE_AUTOMATIC: Final = "210.70(C)(3)"  # automatic control needs a manual bypass
     BRANCH_CONDUCTOR_LOAD: Final = "210.19(A)(1)"  # noncontinuous + 125% of continuous
     BRANCH_RANGE: Final = "210.19(C)"  # ranges of 8 3/4 kW or more: 40 A circuit at least
     BRANCH_OCPD_LOAD: Final = "210.20(A)"  # the OCPD takes the same 125% arithmetic
@@ -314,6 +317,9 @@ class NEC:
     WET_LUMINAIRE_ZONE: Final = "410.10(D)"
     LIGHTING_TRACK_LOCATIONS: Final = "410.150(C)"  # (C)(9): not where 410.10(D) bars it
     LOW_VOLTAGE_LIGHTING_VOLTAGE: Final = "411.4(B)"  # 30 V ac / 60 V dc; wet contact 15 / 30
+    LOW_VOLTAGE_LIGHTING_LISTING: Final = "411.2"  # one listed system or listed parts
+    LOW_VOLTAGE_LIGHTING_CONCEALED: Final = "411.6(A)"  # Chapter 3 method or listed Class 2
+    LOW_VOLTAGE_LIGHTING_ISOLATION: Final = "411.7(B)"  # isolating transformer
     BATH_LUMINAIRE_DAMP: Final = "410.10(D)(2)"  # over the tub/shower to 8 ft: damp or wet
     PADDLE_FAN_BATH_ZONE: Final = "422.18(B)"  # no paddle-fan part in the 3 ft x 8 ft zone
     CORD_PLUG_DISCONNECT: Final = "422.33(A)"  # an accessible factory plug is the disconnect
@@ -383,6 +389,7 @@ class NEC:
     HVAC_DISCONNECT_ENCLOSURE: Final = "440.11"  # lock or tool where unqualified persons reach
     HVAC_DISCONNECT_RATING: Final = "440.12(A)(1)"  # 115% of RLA or branch selection current
     HVAC_NAMEPLATE: Final = "440.4(B)"  # MCA and maximum OCPD marked on the equipment
+    HVAC_SCCR: Final = "440.10"  # controllers: available fault current within the marked SCCR
     HVAC_DISCONNECT: Final = "440.14"  # in sight, readily accessible, 110.26(A)
     HVAC_MAX_OCPD: Final = "440.22"  # branch-circuit protection, nameplate maximum governs
     HVAC_CONDUCTORS: Final = "440.32"  # single compressor: 125% of rated-load current
@@ -391,6 +398,7 @@ class NEC:
     ESS_DISCONNECT: Final = "706.15"
     ESS_EMERGENCY_SHUTDOWN: Final = "706.15(B)"  # dwellings: outdoor initiation device
     ESS_DISCONNECT_MARKING: Final = "706.15(C)"  # dwelling: the words and the voltage only
+    ESS_BATTERY_DISCONNECT: Final = "706.15(D)"  # field-serviced battery: disconnect in sight
     BATTERY_DISCONNECT: Final = "480.7(A)"  # over 60 V dc
     BATTERY_EMERGENCY_DISCONNECT: Final = "480.7(B)"  # dwellings: outdoors, EMERGENCY DISCONNECT
     BATTERY_VOLTAGE_LABEL: Final = "480.7(F)"  # dwelling under 150 V dc: nominal voltage only
@@ -401,6 +409,8 @@ class NEC:
     INTERCONNECTION_FEEDER: Final = "705.12(A)"  # feeder at 125% of the source's current
     INTERCONNECTION_SUM: Final = "705.12(B)(3)"  # sum of OCPDs within the bus; label
     INTERCONNECTION_CENTER_FED: Final = "705.12(B)(4)"  # dwelling: either end, (2) rules
+    INTERCONNECTION_FEED_THROUGH: Final = "705.12(B)(5)"  # sized by (A); OCPD at either end
+    INTERCONNECTION_ENGINEERED: Final = "705.12(B)(6)"  # other layouts, engineering supervision
     SOURCE_PLAQUE: Final = "705.10"  # at the service equipment; also 690.56, 710.10, 480.7(G)
     SUPPLY_SIDE_OCPD: Final = "705.11(C)(1)"  # dwelling: OCPD within 10 ft of conductor
     SOURCE_DISCONNECT: Final = "705.20"
@@ -470,20 +480,6 @@ class NEC:
 #: Rows not yet read in the printed 2026 text; ``mark``/``cite`` caveat them. Empty since
 #: 2026-11-13: a new row read only in drafts or trade press goes here until confirmed.
 UNCONFIRMED: Final = frozenset()
-
-
-class NFPA780:
-    """NFPA 780 (lightning protection), not NEC: cited by advisories only. The owner read
-    4.1-4.5, 4.12.8-4.15 and 4.19 in print on 2026-11-14 (2026 ed.); paraphrase and what
-    grades each in
-    ``docs/code-notes/nfpa-780-paraphrase.md``. GROUND_RING is a cross-reference only."""
-
-    EDITION: Final = "NFPA 780-2026"
-    CONDUCTORS: Final = "NFPA 780 4.1.1.1 / Table 4.1.1.1.1"
-    GROUND_RING: Final = "NFPA 780 4.12.4"
-    DISSIMILAR_METALS: Final = "NFPA 780 4.2.2.3.1 / 4.3.4.3 (no Al within 18 in of earth)"
-    COMMON_GROUNDING: Final = "NFPA 780 4.13"
-    SURGE: Final = "NFPA 780 4.19.2"
 
 
 _CAVEAT = " [2026 number unconfirmed]"

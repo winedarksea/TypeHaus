@@ -3,9 +3,9 @@
 110.26(A): in front of the panel, 36" deep (Condition 1, 120/240 V), max(30", panel
 width) wide and floor to max(6'-6", panel top) high, clear of everything. The panel need
 not be centred in that width, so the window slides along the face in 1" steps; any clear
-position passes. Door swings are not graded: the 2026 intro counts them (all doors open at 90
-degrees must leave 24" x 6'-6" for access and egress), but the model carries no enclosure door
-leaf, hinge side or egress path to measure that against.
+position passes. (A)(2)'s 90-degree door opening is graded on the clear windows by
+``electrical_panel_doors.py``, under this check id; its intro access test is written there
+and not yet wired (see its docstring).
 
 110.26(E)(1): ``resolve/panel_space.dedicated_spaces`` (the router's hard prism too). A pipe
 or duct in it fails; conduit is the installation and is allowed. (D) lighting and the (E)(2)
@@ -19,6 +19,7 @@ import math
 from shapely.geometry import Polygon
 
 from typehaus.checks.integrity.clear_zones import obstruction_prisms, potential_run_footprints
+from typehaus.checks.mep.electrical_panel_doors import door_findings
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, by_result
 from typehaus.model.nec import NEC, cite
@@ -86,6 +87,7 @@ def panel_working_space(ctx: CheckContext) -> list[Finding]:
     potential = potential_run_footprints(ctx.model)
     gap_runs = [env.tag for env in run_envelopes if env.gaps and not env.prisms]
     out: list[Finding] = []
+    clear_windows: dict[str, list] = {}
     for panel in panels:
         body = bodies.get(panel.tag)
         band = None if body is None else floor_and_top(panel, body)
@@ -110,7 +112,8 @@ def panel_working_space(ctx: CheckContext) -> list[Finding]:
                            if potential.get(tag) is None or zone.intersects(potential[tag]))
             if not maybe:
                 clear = True
-                break
+                clear_windows.setdefault(panel.tag, []).append(zone)
+                continue
             gaps = gaps or maybe
         if clear:
             out.append(by_result(_WORK, Result.PASS, f"{panel.tag}: 36\" x 30\" working "
@@ -126,7 +129,7 @@ def panel_working_space(ctx: CheckContext) -> list[Finding]:
                                  f"{', '.join(best)}", (panel.tag, *best), code,
                                  fix="Move the obstruction out of the 36\"-deep space in "
                                  "front of the panel, or move the panel."))
-    return out
+    return out + door_findings(panels, bodies, clear_windows)
 
 
 @check(Tier.CODE, _DEDICATED)

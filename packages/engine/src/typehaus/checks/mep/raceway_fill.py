@@ -4,9 +4,10 @@ A run that names ``circuits`` is graded on each circuit's authored ``conductor_a
 ``egc_awg`` (in its ``conductor_insulation``'s Table 5 family, else THHN/THWN-2); a circuit
 without one falls back to the SMALLEST copper THHN its breaker allows
 (``GAUGE_BY_BREAKER_A``, 240.4(D)), a lower bound that holds only while nothing is upsized.
-Each circuit counts its current-carrying conductors (hot and neutral: 2 on a 1-pole, 3 on a
-2-pole, the takeoff's convention; conservative where a 240 V load has no neutral) plus one
-insulated EGC (Note 3; Table 250.122 where none is authored).
+Each circuit counts its current-carrying conductors (the hots, plus a neutral where
+``model/circuit_neutral`` finds one: always on a 1-pole, on a 2-pole unless it authors
+``neutral=False`` or feeds only straight-240 receptacles) plus one insulated EGC (Note 3;
+Table 250.122 where none is authored).
 A run's ``cables`` (PV wire, Class 2, data) add their own areas: a cable at its datasheet
 diameter as one conductor (Notes (5), (9)), a single conductor at its Table 5 area. Data cable
 is held to Table 1 too, conservatively (Table 723.20's body is unread). Everything else says
@@ -26,6 +27,7 @@ from typehaus.checks.mep.electrical_boxes import GAUGE_BY_BREAKER_A
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.ampacity import egc_minimum
+from typehaus.model.circuit_neutral import conductors_per_circuit, neutral_by_circuit
 from typehaus.model.conductor_areas import conductor_area_in2
 from typehaus.model.nec import NEC, cite
 from typehaus.model.raceway_areas import table_4_row
@@ -39,16 +41,15 @@ _CODE = cite(NEC.FILL_PERCENT, NEC.CONDUIT_DIMENSIONS, NEC.CONDUCTOR_DIMENSIONS,
 _TABLE = {"emt": ("emt", "EMT"), "ent": ("ent", "ENT"),
           "pvc": ("pvc80", "PVC Schedule 80 (assumed: no schedule authored)")}
 _PVC = {40: ("pvc40", "PVC Schedule 40"), 80: ("pvc80", "PVC Schedule 80")}
-_CONDUCTORS_PER_POLE_COUNT = {1: 2, 2: 3}  # hot + neutral, as takeoff/raceways.py
 
 
-def _circuit_conductors(circuit) -> tuple[list[float], bool] | None:
+def _circuit_conductors(circuit, has_neutral: bool = True) -> tuple[list[float], bool] | None:
     """(areas in.2 of one circuit's conductors, authored?), or None where neither the circuit
     nor its breaker gives a size. Authored sizes take the circuit's Table 5 family (THHN/THWN-2
     where none is authored); a circuit authoring no EGC is assumed to carry a Table 250.122 one."""
-    ccc = _CONDUCTORS_PER_POLE_COUNT.get(circuit.poles)
-    if ccc is None or circuit.spd:
+    if circuit.poles not in (1, 2) or circuit.spd:
         return None
+    ccc = conductors_per_circuit(circuit, has_neutral)
     if circuit.conductor_awg is not None:
         family = table_5_family(circuit.conductor_insulation) or "thhn"
         egc = circuit.egc_awg or egc_minimum(circuit.breaker_amps, circuit.conductor_material)
@@ -80,14 +81,14 @@ def _table(run, authored) -> tuple[str, str]:
     return _TABLE[run.material]
 
 
-def _grade_named(run, circuits: dict, authored) -> Finding:
+def _grade_named(run, circuits: dict, authored, neutral: dict[str, bool]) -> Finding:
     table, label = _table(run, authored)
     size_in = round(run.trade_size_m / M_PER_IN, 3)
     areas: list[float] = []
     assumed: list[str] = []
     for tag in run.circuits:
         circuit = circuits.get(tag)
-        one = _circuit_conductors(circuit) if circuit else None
+        one = _circuit_conductors(circuit, neutral.get(tag, True)) if circuit else None
         if one is None:
             return unknown(
                 _CID, f"{run.tag} carries {tag}, which authors no conductor size and whose "
@@ -159,7 +160,8 @@ def raceway_fill(ctx: CheckContext) -> list[Finding]:
         out.append(not_applicable(
             _CID, f"{run.tag} is a capped spare authored with no conductors, so it holds "
                   f"0% fill{room} ({size_in:g}\" {label})", (run.tag,), code=_CODE))
-    out += [_grade_named(r, circuits, authored.get(r.tag)) for r in named]
+    neutral = neutral_by_circuit(ctx.plan)
+    out += [_grade_named(r, circuits, authored.get(r.tag), neutral) for r in named]
     if unnamed:
         out.append(unknown(
             _CID, f"{len(unnamed)} power runs name no circuit and author no cables, so their "

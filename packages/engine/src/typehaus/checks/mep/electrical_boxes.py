@@ -4,10 +4,11 @@ A box is graded **through-fed** — the worst ordinary case — except a recepta
 circuit's only load, which is end-fed (one cable); a switch or thermostat always has a line
 and a load cable. Counted: cables of the
 insulated conductors (a 1-pole circuit's hot and neutral; a 2-pole's two hots, plus a neutral
-where the device has a 120 V half or a 14- configuration), two volumes per yoke
+where ``Circuit.neutral`` says so, else where the device has a 120 V half or a 14-
+configuration), two volumes per yoke
 (314.16(B)(4)), one for up to four equipment grounds and a quarter per ground past four
 (314.16(B)(5)), one for internal clamps unless the row states none (B)(2), and one per kind
-of support fitting (B)(3). Terminal blocks (B)(6) are not modelled. The unit
+of support fitting (B)(3), and one per terminal block (B)(6) the row states. The unit
 volume is Table 314.16(B)(4)'s, at the gauge the breaker implies — 15 A 14 AWG, 20 A 12 AWG,
 30 A 10 AWG. Box volume is the standard's row: Table 314.16(A) or the marked volume, plus a
 marked raised cover or ring. Depth is 314.24(B)'s by gauge, or a device's datasheet
@@ -33,6 +34,7 @@ from typehaus.findings import (
     unknown,
 )
 from typehaus.model.ampacity import adjustment_factor, nm_ampacity
+from typehaus.model.circuit_neutral import device_has_neutral
 from typehaus.model.electrical import METAL_BOX_VOLUME_IN3
 from typehaus.model.nec import NEC, cite, mark
 from typehaus.quantities import M_PER_IN
@@ -65,11 +67,13 @@ def egc_allowance(egcs: int) -> float:
 
 def required_volume_in3(gauge: int, poles: int, has_neutral: bool, gangs: int,
                         cables: int = 2, *, clamps: bool = False,
-                        support_fittings: int = 0) -> float:
-    """Cables × insulated conductors + 2 per yoke + the grounds (one per cable), clamps and
-    support fittings, all at the circuit's gauge (the largest conductor in the box)."""
+                        support_fittings: int = 0, terminal_blocks: int = 0) -> float:
+    """Cables × insulated conductors + 2 per yoke + the grounds (one per cable), clamps,
+    support fittings and terminal blocks (314.16(B)(6), one each), all at the circuit's gauge
+    (the largest conductor in the box)."""
     count = (cables * insulated_per_cable(poles, has_neutral) + 2 * gangs
-             + egc_allowance(cables) + (1 if clamps else 0) + support_fittings)
+             + egc_allowance(cables) + (1 if clamps else 0) + support_fittings
+             + terminal_blocks)
     return count * VOLUME_PER_CONDUCTOR_IN3[gauge]
 
 
@@ -92,13 +96,6 @@ def next_box_up(required_in3: float) -> str:
         return f"no {NEC.BOX_VOLUME_TABLE} box holds {required_in3:.1f} in³ — split the splice"
     volume, name = fits[0]
     return f"a {name} box ({volume:g} in³) or a listed box marked ≥ {required_in3:.1f} in³"
-
-
-def _has_neutral(product_type: Any | None) -> bool:
-    nema = getattr(product_type, "nema", None) or ""
-    services = {getattr(port.service, "value", None)
-                for port in getattr(product_type, "ports", ())}
-    return nema.startswith("14-") or {"power_120", "power_240"} <= services
 
 
 def _grade(box: Any, circuits: dict[str, Any], types: dict[str, Any],
@@ -142,9 +139,12 @@ def _grade(box: Any, circuits: dict[str, Any], types: dict[str, Any],
     cables = 1 if end_fed else 2
     feed = "through-fed" if cables == 2 else "end-fed"
     clamps = box.internal_clamps is not False
-    required = required_volume_in3(gauge, circuit.poles, _has_neutral(product_type), box.gangs,
+    neutral = (circuit.neutral if circuit.neutral is not None
+               else device_has_neutral(product_type))
+    required = required_volume_in3(gauge, circuit.poles, neutral, box.gangs,
                                    cables, clamps=clamps,
-                                   support_fittings=box.support_fittings)
+                                   support_fittings=box.support_fittings,
+                                   terminal_blocks=box.terminal_blocks)
     note = (f" ({mark(NEC.BOX_FILL_CLAMPS)} clamps not stated, so counted)"
             if box.internal_clamps is None else "")
     if required > box.volume_in3 + 1e-6:

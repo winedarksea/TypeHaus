@@ -6,7 +6,11 @@ inverter type's ``rsd_shutdown_scope`` (what the maker's manual says opening its
 stops) and the outdoor ``rsd_initiator`` device. 480.7(A) wants a dc disconnect only over
 60 V (``battery_nominal_voltage_v``); 480.7(B)'s outdoor EMERGENCY DISCONNECT is graded as
 met by that initiator and its derived label, the AHJ's reading of (B) staying open.
-Not graded: readily accessible, the off/on indication (a product fact), 706.15(D).
+706.15(D)(1): a separate, field-serviced battery has a disconnect for every ungrounded
+conductor within sight of it: met by the pack's own breaker where its type states
+``battery_disconnect_all_ungrounded``, else by a ``DISCONNECT`` device on the battery's circuit
+in sight (a plan line with no wall across, as ``electrical.hvac_disconnect`` reads it), else
+UNKNOWN. Not graded: readily accessible, the off/on indication (a product fact).
 See ``docs/code-notes/nec-2026-paraphrase-480-706.md``.
 """
 
@@ -46,7 +50,37 @@ def ess_emergency_shutdown(ctx: CheckContext) -> list[Finding]:
     out = [_shutdown(inverters, eq_types, outdoor)]
     for battery in batteries:
         out.extend(_battery(ctx, battery, eq_types, inverters, outdoor))
+        out.append(_battery_disconnect(ctx, battery, eq_types))
     return out
+
+
+def _battery_disconnect(ctx, battery, eq_types) -> Finding:
+    """706.15(D)(1): the pack's own breaker, or an authored disconnect within sight."""
+    from shapely.geometry import Point, Polygon
+
+    from typehaus.checks.mep.electrical_spa_geometry import _separated, _walls
+    from typehaus.model.enums import DeviceKind
+
+    code = cite(NEC.ESS_BATTERY_DISCONNECT)
+    if getattr(eq_types.get(battery.type_ref or ""), "battery_disconnect_all_ungrounded", None):
+        return passed(CID, f"{battery.tag}: its own breaker opens every ungrounded conductor "
+                           "(the maker's manual), on the battery, so within sight",
+                      (battery.tag,), code)
+    objects = {o.tag: o for o in ctx.model.canvas_objects}
+    body = objects.get(battery.tag)
+    seen = [d.tag for d in ctx.plan.all_elements()
+            if d.element_kind == "ElectricalDevice" and d.kind is DeviceKind.DISCONNECT
+            and battery.circuit and d.circuit == battery.circuit and body is not None
+            and d.tag in objects and objects[d.tag].storey == body.storey
+            and not _separated(Polygon(body.footprint), Point(objects[d.tag].position),
+                               _walls(ctx, body.storey))]
+    if seen:
+        return passed(CID, f"{battery.tag}: {', '.join(sorted(seen))} on its circuit is in "
+                           "sight of it", (battery.tag, *sorted(seen)), code)
+    return unknown(CID, f"{battery.tag}: the type does not state that its breaker opens every "
+                        "ungrounded conductor, and no disconnect on its circuit is in sight",
+                   (battery.tag,), code,
+                   "author battery_disconnect_all_ungrounded from the manual, or a disconnect")
 
 
 def _scope(inverter, eq_types) -> tuple[str, ...] | None:
