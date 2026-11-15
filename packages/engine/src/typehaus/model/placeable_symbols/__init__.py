@@ -26,6 +26,7 @@ from collections.abc import Callable, Mapping, Sequence
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from typehaus.model.placeables import ServicePort
     from typehaus.model.shower_assembly import ShowerAssemblySpec
 
 from typehaus.model.placeable_symbols._ceramic_fan_heater import ceramic_fan_heater
@@ -45,6 +46,7 @@ from typehaus.model.placeable_symbols._gree_flexx import gree_flexx_horizontal
 from typehaus.model.placeable_symbols._gree_flexx_outdoor import gree_flexx_outdoor
 from typehaus.model.placeable_symbols._infrared_heater import infrared_heater
 from typehaus.model.placeable_symbols._sektion_kitchen import KITCHEN_SEKTION_SYMBOLS
+from typehaus.model.placeable_symbols._sheet_metal_plenum import plenum_parts, sheet_metal_plenum
 from typehaus.model.placeable_symbols._sunnersta import sunnersta_frame
 from typehaus.model.placeable_symbols._swanstone_flex import swanstone_flex
 from typehaus.model.placeable_symbols.appliances import APPLIANCE_SYMBOLS
@@ -73,7 +75,8 @@ _REGISTRY: dict[str, Builder] = {**FURNITURE_SYMBOLS, **APPLIANCE_SYMBOLS, **PLU
                                  "fireplace-insert": fireplace_insert,
                                  "gree-flexx-ultra-24-horizontal": gree_flexx_horizontal,
                                  "gree-flexx-ultra-24-outdoor": gree_flexx_outdoor,
-                                 "sunnersta-frame": sunnersta_frame}
+                                 "sunnersta-frame": sunnersta_frame,
+                                 "sheet-metal-plenum": sheet_metal_plenum}
 
 # The frozen vocabulary. A catalog entry may only name a symbol listed here; the contract test
 # holds the registry to it in both directions.
@@ -117,7 +120,8 @@ SYMBOL_NAMES = (frozenset(KITCHEN_SEKTION_SYMBOLS) | frozenset(RECEPTACLE_SYMBOL
     # appliances + mechanical/electrical equipment
     "refrigerator", "range", "dishwasher", "washer", "dryer", "washer-dryer-stacked",
     "microwave", "countertop-microwave", "hood", "tea-kettle", "espresso-machine",
-    "furnace", "erv", "renewaire-fa8-wall-hood", "heat-pump-outdoor", "heat-pump-indoor",
+    "furnace", "erv", "sheet-metal-plenum", "renewaire-fa8-wall-hood",
+    "heat-pump-outdoor", "heat-pump-indoor",
     "water-heater", "sauna-heater", "harvia-cilindro-pc110e", "panel", "register",
     "rheem-proterra-plugin-80",
     "eg4-12kpv", "eg4-wallmount-indoor-280ah",
@@ -185,10 +189,13 @@ def plan_symbol_strokes(symbol: str | None, width_m: float,
 
 def model_parts(symbol: str | None, width_m: float, depth_m: float,
                 height_m: float, *, shower_assembly: ShowerAssemblySpec | None = None,
-                material_refs: Mapping[str, str] | None = None
+                material_refs: Mapping[str, str] | None = None,
+                ports: Sequence[ServicePort] = (),
                 ) -> tuple[Part, ...]:
     """The generated 3D parts for ``symbol`` at a W×D×H size, in the local frame."""
-    parts = symbol_geometry(symbol, width_m, depth_m, height_m)[1]
+    parts = (plenum_parts(width_m, depth_m, height_m, ports)
+             if symbol == "sheet-metal-plenum"
+             else symbol_geometry(symbol, width_m, depth_m, height_m)[1])
     if shower_assembly is not None:
         from typehaus.model.placeable_symbols._shower_hardware import shower_hardware_parts
 

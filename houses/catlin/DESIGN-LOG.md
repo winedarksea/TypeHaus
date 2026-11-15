@@ -8359,3 +8359,23 @@ first NDS pass is short of the notes' 300 lb point load.
   stringer face, so the ref only drew a false shared-post warning.
 - Engine: `mount="panel"` draws no posts or brackets, and no rail when `rail_count=0`. Its infill
   runs end to end and full height. The takeoff bills a panel once per bay, not once per rake band.
+
+## HP1 attic plenum opening review (2026-11-15)
+
+The supply and return boxes now render sheet-metal shells cut by their declared ports,
+replacing generic ERV massing. The supply bottom port moved 2 1/4 inches west onto the
+actual 12x12 drop. The return box has six openings, including the horizontal ERV feed
+through its south face (previous notes incorrectly said floor). It grew south one inch,
+39 -> 40 inches deep, to leave 1 3/16 inches of connection land beside the provisional
+20x16 cabinet neck, previously only 3/16 inch. North face and duct stations stay fixed.
+`mep.plenum_openings` verifies all eight duct crossings, sections and services; matches
+stay UNKNOWN pending shop dimensions. Viewer, GLB and IFC share the cut sheets.
+
+Visual inspection of the manufacturer's merged dimension table withdraws the alleged
+FXU24 cabinet conflict: the manual and submittal agree. This review also withdraws the
+claim that the existing platform verifies trap clearance. The pan, rails, float and
+primary trap are still absent from geometry; the ERV backdraft damper and lineset lack
+verified envelopes/routes. The supply fabric connector's first-six-inches metal condition
+and heat-kit duct clearances remain manufacturer holds. Full findings and opening table:
+`notes/flexx_ultra_geometry.md`. This is an improved coordination model, not an installation
+release.

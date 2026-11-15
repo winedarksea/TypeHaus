@@ -177,12 +177,17 @@ EQUIPMENT_TYPES = (
     # EQ-S-HP1-AH's supply box (2026-11-11), filed PLENUM (passive shop box).
     EquipmentType(tag="EQ-T-HP1-SUP-BOX",
                   name="System 1 supply box, 22 1/2 x 14 x 23 in, shop-fabricated",
-                  footprint=(inch(22.5), inch(14)), height=inch(23), plan_symbol="erv",
+                  footprint=(inch(22.5), inch(14)), height=inch(23),
+                  model_representation=ModelRepresentation(symbol="sheet-metal-plenum"),
                   source="Shop-fabricated galvanized plenum, 22 1/2 x 14 x 23 in, on the attic deck at EQ-S-HP1-AH's discharge: the cabinet's 11 5/8 x 16 3/4 in opening (4 1/4 in up on its platform) enters its east face through the unit's 3 in canvas connector, and DU-S-HP-SUP-DROP (12x12) leaves through its floor down FS-ATTIC's y 336-352 bay onto the 18x8 trunk. It is the transition between the two sections. Gree's IOM asks for a solid sheet-metal bottom for the first 6 in after the unit; that reads as the downflow-over-combustible-floor case, but the drop here starts at the inlet wall, so confirm with Gree before fabrication. Mastic-sealed, 26 ga, set on the deck.",
                   ports=(ServicePort(tag="inlet", service=Service.SUPPLY_AIR,
-                                     position=(inch(11.25), ft(0), inch(13.3125))),
+                                     position=(inch(11.25), ft(0), inch(13.3125)),
+                                     width=inch(11.625), depth=inch(16.75), direction=(1, 0, 0),
+                                     notes="Design opening; cabinet setback awaits field measurement."),
                          ServicePort(tag="drop", service=Service.SUPPLY_AIR,
-                                     position=(ft(0), ft(0), ft(0))))),
+                                     position=(inch(-2.25), ft(0), ft(0)),
+                                     width=inch(12), depth=inch(12), direction=(0, 0, -1),
+                                     notes="Design outlet centred on DU-S-HP-SUP-DROP."))),
 )
 
 # --- Ventilation: ERV fresh-air / stale-air trunks ------------------------------------
@@ -343,19 +348,10 @@ DUCTS_HVAC_SECOND = [
 
 # THE AIR HANDLER IN THE ATTIC (2026-11-11). Horizontal-left on the deck of RM-A-EAST-UNFIN
 # (conditioned, under the hot roof), over the north hall. It stands on SL-A-HP1-PLATFORM, 4 1/4"
-# up, which is what gives the primary condensate port room for Gree's trap above the deck
-# (PR-A-COND-HP1, plan/mep_condensate.py). The emergency pan (min 1 1/2" deep, 3" oversize,
-# tasks.toml) sits on the platform under the cabinet; `secondary_drain_pan` and
-# `float_switch_ref` say it is there: a UL 508 switch in it opens the cooling call, which
-# stops the outdoor unit (EQ-M-HP1-OD) before the pan overflows (IMC 307.2.3 item 3; owner,
-# 2026-11-11: the attic is conditioned, but an overflow still wets the second-storey ceiling).
-# The pan is not drawn and the model keeps the cabinet at 4 1/4": its rails stand it ~1"
-# higher on site, and nothing needs to move (re-checked 2026-11-12). Both air connections are
-# 3" canvas connectors into shop boxes cut to the delivered cabinet; at +1" the supply
-# neck's top (263.4") still clears the 23" box (263.75") and the return neck's the plenum's;
-# the primary port only gains fall and trap height. Drawing the pan means a 1" layer in
-# AH_PLATFORM_PLY (the support check wants a surface at the cabinet's base) and 1" on both
-# necks, the box inlet and PR-A-COND-HP1's start. Rotation 0
+# up. The trap, emergency pan and rails are not modeled: the 2026-11-15 review withdrew
+# the earlier claim that this height proves trap clearance. Resolve their actual envelope,
+# cabinet pitch and both neck elevations together (notes/flexx_ultra_geometry.md).
+# Pan + float shutdown remains the owner's choice; no second drain line. Rotation 0
 # puts the discharge west, the return east and the service front SOUTH, where Gree's 24" zone
 # (x 20'-10 1/2"..24'-6", y 25'-4 9/16"..27'-4 9/16") is open deck at the end of the walk
 # from D-A-STUDY: ~20' at
@@ -413,7 +409,7 @@ DUCTS_HVAC_ATTIC = [
             width=inch(20), depth=inch(16), routing=DuctRouting.EXPOSED,
             design_cfm=750, material="galvanized"),
     # RM-A-EAST-UNFIN's return stub (2026-11-12): REG-A-HP-EAST-RET's 12x12 neck, 6" long, into
-    # EQ-S-ERV-MIX's south face (y=329") at 14" AFF. Its locked balancing damper holds 35 cfm:
+    # EQ-S-ERV-MIX's south face (y=328") at 14" AFF. Its locked balancing damper holds 35 cfm:
     # the plenum's returns are parallel, so an open grille would short-circuit the others.
     DuctRun(uid="MZW8P3P49V", tag="DU-A-HP1-EAST-RET", system=DuctSystem.RETURN,
             path=(pt(inch(311.75), inch(323)), pt(inch(311.75), inch(329))),

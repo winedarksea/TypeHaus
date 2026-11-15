@@ -1,7 +1,7 @@
 """FXU24 horizontal-left coordination geometry, from Gree's 2026-01-27 submittal.
 
-Local -x is discharge, +x return, -y the removable service panels. At Catlin's
-90 degree placement those become south, north and east. Only the cabinet and
+Local -x is discharge, +x return, -y the removable service panels. Catlin's
+rotation 0 places these west, east and south. Only the cabinet and
 supply opening sizes are dimensioned; fitting stations are schematic, not templates.
 """
 

@@ -128,6 +128,7 @@ def test_other_air_handlers_do_not_inherit_gree_installation_assumptions(catlin_
     ("EQ-S-HP1-AH", PRODUCT, 0), ("EQ-S-HP1-AH", PRODUCT, 90),
     ("EQ-M-HP1-OD", GREE_FLEXX_ULTRA_24_OD, 0),
     ("EQ-M-HP1-OD", GREE_FLEXX_ULTRA_24_OD, 180),
+    ("EQ-A-HP1-SUP-BOX", None, 0), ("EQ-S-ERV-MIX", None, 90),
 ])
 def test_viewer_glb_and_ifc_share_the_open_shell_and_connection_markers(
     catlin_model_ro, tmp_path, equipment_tag, product, rotation,
@@ -141,6 +142,9 @@ def test_viewer_glb_and_ifc_share_the_open_shell_and_connection_markers(
     from typehaus.resolve import resolve
 
     original = next(obj for obj in catlin_model_ro.canvas_objects if obj.tag == equipment_tag)
+    if product is None:
+        product = next(p for p in catlin_model_ro.plan.library.equipment_types
+                       if p.tag == original.type_ref)
     item = dataclasses.replace(original, rotation_degrees=rotation)
     mesh = _MeshBuilder()
     assert _add_canvas_parts(mesh, item, product, {})
@@ -169,7 +173,7 @@ def test_viewer_glb_and_ifc_share_the_open_shell_and_connection_markers(
     assert representation.RepresentationType == "Tessellation"
     assert len(representation.Items) == len(model_parts(
         model_symbol_for(product),
-        *(value.meters for value in (*product.footprint, product.height))))
+        *(value.meters for value in (*product.footprint, product.height)), ports=product.ports))
     ifc_points = {tuple(round(value, 9) for value in point)
                   for part in representation.Items for point in part.Coordinates.CoordList}
     assert ifc_points == glb_points

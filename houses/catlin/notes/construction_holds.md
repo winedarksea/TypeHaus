@@ -20,11 +20,15 @@ the model goes back to `plans/TODO.md` as a design item.
 ## Supplier and manufacturer confirmations
 
 - **Gree FXU24HP230V1R32AH:** obtain the dimensioned drawing for the ordered cabinet
-  revision. The 2026-01-27 model-specific submittal and current generic indoor manual
-  disagree on cabinet dimensions. Need the return aperture, supply setback, refrigerant
+  revision. The submittal and indoor manual §2.3 agree (merged table visually checked
+  2026-11-15). Need the return aperture, supply setback, refrigerant
   and condensate fitting stations/projections, electrical/control knockouts, and the
   internal heat-kit envelope. `notes/flexx_ultra_geometry.md` records the model basis;
   do not fabricate transitions or drain rough-ins from its schematic port stations.
+  Confirm the first-six-inches metal requirement against the supply canvas connector,
+  and the heat-kit duct clearance wording in indoor manual §4.6 against the floor drop.
+  Obtain the pan/float-switch and ERV backdraft-damper submittals, including flange and
+  service envelopes, before releasing the two fabricated plenums.
 
 - **Sconce J/J1 (WAC Sprig BL-23210-BK):** confirm it can be hardwired. Output drops from
   623 lm to 287 lm compared with the Stretch it replaced.

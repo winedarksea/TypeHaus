@@ -97,8 +97,9 @@ GREE_FLEXX_ULTRA_24_AH = EquipmentType(
             "Local -x discharge, +x return, -y service front (east at rotation 90). "
             "Supply aperture 11 5/8 deep x 16 3/4 wide as shipped; horizontal section "
             "11 5/8 across x 16 3/4 high. Return clear aperture and all connection "
-            "setbacks are not dimensioned. Current generic indoor manual section 2.3 "
-            "assigns a conflicting 48 3/16 high cabinet to FXU24; verify delivered revision. "
+            "setbacks are not dimensioned. Indoor manual section 2.3 agrees with the FXU24 "
+            "cabinet dimensions "
+            "(merged table cells visually verified 2026-11-15); verify delivered revision. "
             "https://www.greecomfort.com/assets/our-products/flexx-ultra-r32/documents/"
             "flexx-ultra-r32-submittal-24mbh-a.pdf"),
     ports=(

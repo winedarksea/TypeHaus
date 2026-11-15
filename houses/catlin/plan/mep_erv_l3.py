@@ -44,7 +44,7 @@ EQUIPMENT_ERV_ATTIC = [
               room="RM-A-POCKET", type_ref="EQ-T-ERV-MANIFOLD-6-EXH",
               mount=Mount(kind=MountKind.FLOOR)),
     Equipment(uid="8PE9E87JX5", tag="EQ-S-ERV-MIX", kind=EquipmentKind.MIXING_BOX,
-              position=pt(inch(311.75), inch(348.5)), footprint=(inch(27.5), inch(39)),
+              position=pt(inch(311.75), inch(348)), footprint=(inch(27.5), inch(40)),
               room="RM-A-EAST-UNFIN", type_ref="EQ-T-ERV-MIXING-BOX",
               mount=Mount(kind=MountKind.FLOOR)),
 ]
@@ -65,7 +65,8 @@ EQUIPMENT_ERV_ATTIC = [
 # cabinet (its connector and a 1" collar): it takes the
 # hall return riser (DU-S-HP-RET, from the y 352-368 bay), RM-S-SUITE's (y 336-352 bay),
 # RM-S-BED3's deck leg on its north face, RM-A-EAST-UNFIN's 12x12 stub (DU-A-HP1-EAST-RET,
-# damper-locked at 35 cfm) on its south face and the ERV feed (DU-S-ERV-HP-FEED) on its floor, and
+# damper-locked at 35 cfm) on its south face and the ERV feed (DU-S-ERV-HP-FEED)
+# low on that same face, and
 # gives the cabinet DU-A-HP1-RET-NECK on its west face. The tag keeps its `-S-`.
 EQUIPMENT_ERV_SECOND = []
 # ============================== LEVEL 3 — ATTIC RADIALS ==============================
@@ -243,10 +244,10 @@ DUCTS_ERV_MIX_FEED = [
             # I-joists span x — so nothing is bored; the north-south leg that follows stays
             # on the deck for the same reason.
             #
-            # ** IT ENDS IN EQ-S-ERV-MIX's FLOOR ON THE ATTIC DECK (2026-11-11). ** The bay leg
+            # ** IT ENTERS EQ-S-ERV-MIX's SOUTH FACE HORIZONTALLY. ** The bay leg
             # runs on east to x=25'-10" (short of ED-S-BED2-LT's can), stands up there and
             # runs north on the deck, east of the walk to EQ-S-HP1-AH and of its service
-            # zone, into the box's floor at y=27'-7".
+            # zone, through the south face at y=328" (the end at y=331" is inside).
             #
             # -8 1/2" is a 6" duct strapped low in an FS-ATTIC bay, invert 228 1/2", 3/8"
             # off the ceiling board (2026-11-07; -8 7/8" laid it ON the board at 228 1/8":

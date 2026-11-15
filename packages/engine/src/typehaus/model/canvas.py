@@ -181,6 +181,7 @@ def _symbol_geometry(item: Any, footprint: Any, wood: Any | None = None,
         strokes = plan_symbol_strokes(symbol, width_m, depth_m)
         parts = model_parts(model_symbol, width_m, depth_m, height_m,
                 shower_assembly=getattr(item, "shower_assembly", None),
+                            ports=getattr(item, "ports", ()),
                             material_refs=getattr(getattr(item, "model_representation", None),
                                                   "material_refs", None)) if with_parts else ()
     return {
