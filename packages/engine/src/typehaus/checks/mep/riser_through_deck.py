@@ -252,7 +252,7 @@ def _verdict(rules, deck, tag: str, station, footprint, below: bool, radius: flo
 
 
 def _member_rect(member):
-    """A member's plan footprint: its ``p0 -> p1`` axis buffered by half its breadth.
+    """A member's plan footprint: its ``p0 -> p1`` axis buffered by half its plan breadth.
 
     A ``FramedMember`` is a segment and a profile, not a rectangle — the same reading
     ``resolve/mep_queries.clear_bay_width_m`` takes, and for the same reason: two readers
@@ -260,10 +260,13 @@ def _member_rect(member):
     """
     from shapely.geometry import LineString
 
-    from typehaus.resolve.framing.profiles import cross_section
+    from typehaus.resolve.framing.profiles import cross_section, plan_cross_section_m
 
     if member.p0 == member.p1:
         return None  # a stud is not something a deck riser lands ON
     section = cross_section(member.profile)
-    breadth = getattr(section, "width_m", None) or _FALLBACK_BREADTH_M
+    # The plan section: a flat 2x6 rail shows its 5 1/2" face, a joist on edge its web's width.
+    breadth = (plan_cross_section_m(section, member.z1_m - member.z0_m)
+               if section is not None and member.z0_m is not None and member.z1_m is not None
+               else None) or _FALLBACK_BREADTH_M
     return LineString((member.p0, member.p1)).buffer(breadth / 2.0, cap_style=2)

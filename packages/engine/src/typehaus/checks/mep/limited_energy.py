@@ -16,7 +16,7 @@ Two readings, both ADVISORY (the model authors no cable, so neither is a permit 
 Class 2 cable rating (722.140(A)(3)) and source marking (721.30, unread), PoE ampacity
 (Table 722.140(B)(2)), strapping to a raceway
 (722.133(C), 722.135(B)) and the 5 ft pool zone (722.135(B), 680.11) are not graded: no cable,
-bundle, support or spa shell is modelled (``docs/nec-2026-paraphrase-722.md``).
+bundle, support or spa shell is modelled (``docs/code-notes/nec-2026-paraphrase-722.md``).
 """
 
 from __future__ import annotations

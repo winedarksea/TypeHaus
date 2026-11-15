@@ -41,7 +41,9 @@ def one_proposal(model: ResolvedModel, ends: Endpoints, found: Any, target: str,
     # vent merge is about: PR-S-BATH1-VENT's origin sits 0.9" from PR-S-SUITEBATH-VENT's
     # north leg. But "paste this" is the wrong thing to say about it, and printing a 1-tuple
     # of points emits dialect that will not even parse. So it is reported, never proposed.
-    if len({(round(x, 6), round(y, 6)) for x, y, _z in points}) < 2:
+    # A supply end under its host is a plumb tee stub (a lav 5" below a branch), not that finding.
+    plumb = ends.tie_is_the_goal and len({round(z, 3) for _x, _y, z in points}) > 1
+    if len({(round(x, 6), round(y, 6)) for x, y, _z in points}) < 2 and not plumb:
         problems.append(
             f"{target + suffix}: its origin already stands on what it is being routed to, "
             "so the shortest route is no route at all. That is not a lane to paste — it is "

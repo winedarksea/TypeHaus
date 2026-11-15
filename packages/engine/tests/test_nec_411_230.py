@@ -1,6 +1,6 @@
 """2026 NEC 411, 210.70(C), 230.70(A)(3), 230.79(C): printed numbers and Catlin's readings.
 
-Paraphrase: docs/nec-2026-paraphrase-411-230.md.
+Paraphrase: docs/code-notes/nec-2026-paraphrase-411-230.md.
 """
 
 from __future__ import annotations

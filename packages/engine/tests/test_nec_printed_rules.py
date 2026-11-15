@@ -1,4 +1,4 @@
-"""The printed 2026 NEC as paraphrased in docs/nec-2026-paraphrase.md: numbering, 210, 705.
+"""The printed 2026 NEC as paraphrased in docs/code-notes/nec-2026-paraphrase.md: numbering, 210, 705.
 
 One test per graded rule. The load calculation (120.6, 120.82) is in test_nec_120_82.py.
 """
@@ -374,7 +374,7 @@ def test_no_heat_pump_unit_is_in_a_bath_zone(catlin_model_ro):
     assert [f.result.value for f in found] == ["pass"]
 
 
-# --- 210.19-210.21, 210.63, 410.10(D), 422.13, 422.18(B) (docs/nec-2026-paraphrase-210-422-410.md)
+# --- 210.19-210.21, 210.63, 410.10(D), 422.13, 422.18(B) (docs/code-notes/nec-2026-paraphrase-210-422-410.md)
 
 def test_210_20_a_125_percent_constants_and_the_range_floor():
     from typehaus.checks.mep import electrical_circuit_sizing as sizing
@@ -422,7 +422,7 @@ def test_catlins_laundry_track_is_behind_a_wall_from_the_hall_bath_tub(catlin_mo
         ("pass", ("ED-M-LAUNDRY-TRACK", "FX-M-BATH2-TUB"))]   # another room: out of the zone
 
 
-# --- Article 300 (renumbered in 2026; docs/nec-2026-paraphrase-300.md) -------------------------
+# --- Article 300 (renumbered in 2026; docs/code-notes/nec-2026-paraphrase-300.md) -------------------------
 
 
 def test_article_300_numbers_and_table_300_7_a_cells():

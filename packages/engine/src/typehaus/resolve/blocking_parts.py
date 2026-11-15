@@ -90,13 +90,18 @@ def clip(gap: Span, blocked: Sequence[Span]) -> Span | None:
     """The longest part of ``gap`` clear of every blocked span, or ``None``."""
     if gap[1] - gap[0] < MIN_BAY_M:
         return None  # plies face to face
-    pieces = [gap]
-    for b_lo, b_hi in blocked:
-        pieces = [piece for lo, hi in pieces
-                  for piece in ((lo, min(hi, b_lo)), (max(lo, b_hi), hi))
-                  if piece[1] > piece[0]]
-    pieces = [piece for piece in pieces if piece[1] - piece[0] >= MIN_BAY_M]
+    pieces = _pieces(gap, blocked)
     return max(pieces, key=lambda piece: piece[1] - piece[0]) if pieces else None
+
+
+def _pieces(gap: Span, cuts: Sequence[Span]) -> list[Span]:
+    """What is left of ``gap`` outside ``cuts``, each piece at least ``MIN_BAY_M`` long."""
+    pieces = [gap]
+    for c_lo, c_hi in cuts:
+        pieces = [piece for lo, hi in pieces
+                  for piece in ((lo, min(hi, c_lo)), (max(lo, c_hi), hi))
+                  if piece[1] > piece[0]]
+    return [piece for piece in pieces if piece[1] - piece[0] >= MIN_BAY_M]
 
 
 def solid_block_profile(member: str) -> str:
@@ -134,8 +139,12 @@ def pass_through_box(
     z0: float,
     z1: float,
     crossing: Sequence[Crossing],
+    risers: Sequence[Span] = (),
 ) -> tuple[list[FramedMember], list[BlockingConflict]]:
     """A 2x6 box around every run crossing this bay, and a conflict for each misfit.
+
+    ``risers``: perp spans a plumb run opens in the rails (``riser_cuts``). Rail pieces too short
+    to bear are dropped, and a cheek stands where a piece ends at the hole.
 
     The bottom rail is drawn only when every run clears it: a run resting on the plate takes
     the plate as the box's bottom, and the cheeks bear straight on it. A run may touch the
@@ -156,22 +165,54 @@ def pass_through_box(
         elif p_lo < gap[0] - FIT_TOL_M or p_hi > gap[1] + FIT_TOL_M:
             conflicts[tag] = BlockingConflict(
                 tag, key, "runs into the joist or beam face that closes the bay")
-    box_members = [
-        block_member(floor, f"{key}-rail-top", BOX_PROFILE, along_x, centre, gap, rail_top, z1)
-    ]
-    if bottom_rail:
-        box_members.append(block_member(floor, f"{key}-rail-bottom", BOX_PROFILE, along_x, centre,
-                                   gap, z0, base))
+    pieces = _pieces(gap, sorted(risers))
+    box_members = []
+    for n, (lo, hi) in enumerate(pieces):
+        tag = "" if n == 0 else f"-p{n}"
+        box_members.append(block_member(floor, f"{key}{tag}-rail-top", BOX_PROFILE, along_x,
+                                        centre, (lo, hi), rail_top, z1))
+        if bottom_rail:
+            box_members.append(block_member(floor, f"{key}{tag}-rail-bottom", BOX_PROFILE,
+                                            along_x, centre, (lo, hi), z0, base))
     orient = (0.0, 1.0) if along_x else (1.0, 0.0)
-    for side, perp in (("lo", open_lo - BOX_T_M / 2.0), ("hi", open_hi + BOX_T_M / 2.0)):
+    posts = [(f"-cheek-{side}", perp) for side, perp in
+             (("lo", open_lo - BOX_T_M / 2.0), ("hi", open_hi + BOX_T_M / 2.0))]
+    # A piece ending at a riser's hole rests on a cheek there, so the rail never cantilevers.
+    posts += [(f"-cheek-r{n}{end}", edge) for n, (lo, hi) in enumerate(pieces)
+              for end, edge, cut in (("l", lo + BOX_T_M / 2.0, lo > gap[0] + FIT_TOL_M),
+                                     ("h", hi - BOX_T_M / 2.0, hi < gap[1] - FIT_TOL_M)) if cut]
+    for name, perp in posts:
         if not gap[0] + BOX_T_M / 2.0 <= perp <= gap[1] - BOX_T_M / 2.0:
             continue  # the joist or beam face is that side of the box
         point = (centre, perp) if along_x else (perp, centre)
         box_members.append(
-            FramedMember(floor.uid, f"{key}-cheek-{side}", "blocking", BOX_PROFILE,
+            FramedMember(floor.uid, f"{key}{name}", "blocking", BOX_PROFILE,
                          point, point, base, rail_top, rail_top - base, orient=orient)
         )
     return box_members, list(conflicts.values())
+
+
+def riser_cuts(runs: Sequence[RunBand], along_x: bool, centre: float, gap: Span,
+               z0: float, z1: float) -> list[Span]:
+    """Perp spans a plumb leg (a riser) opens in a box's rails: each one standing in the
+    rails' ``RAIL_W_M`` footprint about ``centre`` over the joist depth, its section plus the
+    box's clearance. ``crossing_runs`` skips risers (they pass the plate), so without this a
+    riser beside the block stands on a rail the box was never framed round."""
+    out: list[Span] = []
+    for _tag, path, z, half_w, half_h in runs:
+        for i in range(len(path) - 1):
+            pa, pb = path[i], path[i + 1]
+            if abs(pa[0] - pb[0]) > 1e-9 or abs(pa[1] - pb[1]) > 1e-9:
+                continue
+            along, perp = (pa[0], pa[1]) if along_x else (pa[1], pa[0])
+            low, high = sorted((z[i], z[i + 1]))
+            if (abs(along - centre) > RAIL_W_M / 2.0 + half_w
+                    or high + half_h < z0 + GRAZE_M or low - half_h > z1 - GRAZE_M):
+                continue
+            lo, hi = perp - half_w - BOX_CLEARANCE_M, perp + half_w + BOX_CLEARANCE_M
+            if hi > gap[0] and lo < gap[1]:
+                out.append((lo, hi))
+    return sorted(out)
 
 
 def run_bands(model: ResolvedModel) -> list[RunBand]:

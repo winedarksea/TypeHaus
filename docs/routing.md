@@ -266,6 +266,10 @@ and a supply end on a shower-assembly inlet leaves on a straight stub along the 
 
 ## Limitations
 
+- `manifold:HW-HEADER` refuses PR-B-BATH2-SH-HW: the valve's straight 2.63" inlet lead runs into
+  PR-M-BATH2-SH-VENT. The authored run stands, so its ghost reads one `run_interference` on that row.
+- Tree rows carry one illegal bore each: a wall-hung lav's plumb drop from its port stands in the
+  stud plane (the cavity stub above).
 - Flex transfers that need a free-angle bend (DU-B-WH-OUT/IN) are refused: the duct lattice is
   axis-aligned. DU-B-ERV-R-BATH is refused 0.4" short of its clearance to PR-M-COND-HP3. Both
   stay authored by owner decision.
@@ -275,9 +279,13 @@ and a supply end on a shower-assembly inlet leaves on a straight stub along the 
   missing a crossing: PR-B-HW-BATH2 (z -7.7 to -4.7") sat across the gate's one middle plane at
   y 187-191", so every column stopped there. The gate now offers both tiers and the trunk lays
   inside the house (`trunk:CW` freeze FAIL 3 to 1, hydrant 1 to 0). What is left: the trunk's
-  `-END` riser runs 0.9 ft in W-M-E1's bay, and PR-B-FILLER-CW and PR-S-SUITE-LAV-CW are no longer
-  laid (the filler's end stands in SUPPLY-GATE). Branches do not get the outside prisms (row
-  budget).
+  `-END` riser runs 0.9 ft in W-M-E1's bay. Branches do not get the outside prisms (row budget).
+  PR-B-FILLER-CW and PR-S-SUITE-LAV-CW were lost to two older flaws the new trunk exposed, not to
+  the tiers: a lane's two 1" pins (an end and its own riser station, 2.2" apart) left a 0.24"
+  sliver of gate between them, which a midpoint test had passed only by luck of a trunk-seeded line
+  (`supply_tree.wall_lanes` now joins them with a 1" slot); and a supply end plumb under its host
+  (a lav 5" below a branch) was dropped as "origin already on the goal" (`route_proposal`: a
+  supply tie keeps a plumb stub).
 - Supply branches teeing beside a sibling or the trunk can still overlap by 0.3-1"; there is no
   no-collinear-approach rule in the search.
 - A tree branch starts at its fixture's drain port (`mep.fixture_port_connection`), its profile at
@@ -292,11 +300,13 @@ and a supply end on a shower-assembly inlet leaves on a straight stub along the 
   authored, 0.5" clearance routed). Squaring a run prism's ends (the body stops at its vertex) is
   right but adds a second offset per bend and takes `tree:main`'s 2" lattice past
   `MAX_CANDIDATE_LINES` (492 y-lines), so it is not applied.
-- A riser at a bearing line: `mep.riser_through_deck` reads the box's flat 2x6 rails as 1.5" ribbons
-  about `box_centre`, the box is 5.5" wide, and `floor_blocking.crossing_runs` frames it only
-  round a run inside the block's footprint, so a riser 1.6" off the block stands on a rail the box
-  was never framed round. The router lets risers pass bearing bays on purpose (`bearing_bays`);
-  refusing the block and rail footprint lays 0 of 28 on `trunk:CW`. The fix is the resolver's.
+- A riser at a bearing line: `crossing_runs` skips risers (they pass the plate), so a riser near a
+  blocked bay's block stood on a 5 1/2" box rail nothing was framed round, and the check read the
+  flat 2x6 as a 1.5" ribbon. `blocking_parts.riser_cuts` now opens the box's rails (and
+  `pass_through_box` adds a cheek at each cut; pieces under 2" are dropped) where a plumb leg
+  stands in the rail footprint, and `mep.riser_through_deck` reads a member's plan section
+  (`plan_cross_section_m`). A riser in a solid block (no run crossing) still FAILs. The router
+  lets risers pass bearing bays on purpose (`bearing_bays`).
 - `--lift` still refuses a supply whose unlifted branch tees on its first leg ("loses N"), and
   grades each re-laid line on its own, against the authored runs.
 - `--group` offers at most four tie stations (`cli/group_ties`): two authored, then the main's

@@ -1,6 +1,6 @@
 """NEC 690.12(C)(1)(b) — a dwelling's rapid-shutdown initiation device is outdoors.
 
-Paraphrase and what else the printed 690.12 asks: ``docs/nec-2026-paraphrase-690-705-710.md``.
+Paraphrase and what else the printed 690.12 asks: ``docs/code-notes/nec-2026-paraphrase-690-705-710.md``.
 The device is the ``ElectricalDeviceType.rsd_initiator`` one; "outdoors" is the position
 covered by no room's axis cell, the same test ``code.NEC_250_94_ibt`` uses for entering data.
 Not graded here: readily accessible, the (C)(1)(a) device kinds and the (D) labels.

@@ -2,7 +2,7 @@
 
 Catlin's EG4 backup is read as both Article 702 (optional standby: the backup panel on the
 inverter's load port) and Article 705 (the grid-interactive and island-mode side): 702.5(D)
-sends parallel operation to 705. See ``docs/nec-2026-paraphrase-702-705-island.md``.
+sends parallel operation to 705. See ``docs/code-notes/nec-2026-paraphrase-702-705-island.md``.
 Graded: the inverter's continuous output against all backup circuits at once (702.4(A)(2)(a))
 and against the largest single one ((A)(3)). UNKNOWN: whether the inverter is listed as a PCS
 (``pcs_listed``, else the published ``pcs_functions``), the PCS control setting and
