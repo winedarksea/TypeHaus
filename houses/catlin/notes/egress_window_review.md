@@ -15,12 +15,12 @@ casements, and the Juliets open inward.
 
 | Window | Type | Wall | Role | Unit (Max Light) | Est. clear W×H | Clear area |
 |---|---|---|---|---|---|---|
-| WIN-S-BED1 | WT-2748-T | W-S-E2 | BEARING | 26.21×46.805 | 20.15×44.05 | 6.16 sf |
-| WIN-S-BED2 | WT-2748 | W-S-E3 | BEARING | 26.21×46.805 | 20.15×44.05 | 6.16 sf |
-| WIN-S-HALL-N | WT-2748 | W-S-N1 | nonbearing | 26.21×46.805 | 20.15×44.05 | 6.16 sf |
-| WIN-S-SUITE1/2 | WT-2754 | W-S-W3 | BEARING | 26.21×52.805 | 20.15×50.05 | 7.00 sf |
-| WIN-A-S-JUL-W/E | WT-2754 | W-A-S2/S3 | nonbearing | 26.21×52.805 | 20.15×50.05 | 7.00 sf |
-| WIN-M-BED-S1/S2 | WT-3048 | W-M-S1 | — | 28.71×46.805 | 22.65×44.05 | 6.93 sf |
+| WIN-S-BED1 | WT-2748-T | W-S-E2 | BEARING | 26.21×46.805 | 20.15×42.87 | 6.00 sf |
+| WIN-S-BED2 | WT-2748 | W-S-E3 | BEARING | 26.21×46.805 | 20.15×42.87 | 6.00 sf |
+| WIN-S-HALL-N | WT-2748 | W-S-N1 | nonbearing | 26.21×46.805 | 20.15×42.87 | 6.00 sf |
+| WIN-S-SUITE1/2 | WT-2754 | W-S-W3 | BEARING | 26.21×52.805 | 20.15×48.87 | 6.84 sf |
+| WIN-A-S-JUL-W/E | WT-2754 | W-A-S2/S3 | nonbearing | 26.21×52.805 | 20.15×48.87 | 6.84 sf |
+| WIN-M-BED-S1/S2 | WT-3048 | W-M-S1 | — | 28.71×46.805 | 22.65×42.87 | 6.74 sf |
 
 ### The clear opening is an estimate, not a credit
 
@@ -29,7 +29,7 @@ No published figure was found. A web search on 2026-11-13 read Aliplast's fiche:
 68 mm, a concealed-hinge option on the Invisible variant, and **no opening angle**.
 
 The model authors `net_clear_width_deduction` = 2×35 + 84 = **154 mm** (two frames plus the 84 mm
-sash standing at 90° on the hinge side) and `net_clear_height_deduction` = 2×35 = **70 mm** on the
+sash standing at 90° on the hinge side) and `net_clear_height_deduction` = 2×35 + 30 = **100 mm** (the provisional sill adaptor) on the
 resolved unit (`plan/window_types.py`, `_MAXLIGHT_CLEAR_W/H`). Width margin is **0.15"** over
 R310's 20".
 

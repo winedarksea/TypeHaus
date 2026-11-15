@@ -49,7 +49,7 @@ the retained adaptor number and height, whether the quoted unit height includes 
 and a dimensioned operable sill section showing the stool-bearing rail and lowest inward
 sash edge from the same installed bottom datum. Specify the required running clearance.
 **2026-11-07, adaptor modelled on operable units.** On the bare frame the operable stool
-(top at 38 mm, 1.18" thick) sat 1.1" into the sill pan's 1 1/2" back dam
+(top at 38 mm, 1" thick) sat 1.1" into the sill pan's 1 1/2" back dam
 (`FlashingConfig.back_dam_m`; 56 stool/pan solid overlaps). A PVC unit on a backdammed pan
 needs the adaptor, and DAKAM's brochure lists an under-sill trim as standard, so operable
 types now carry the 30 mm 54123 adaptor in the unit envelope: **68 mm** stool limit
@@ -59,6 +59,13 @@ split from an exterior face. Fixed units retain an explicit **75 mm provisional 
 rail** so the exterior face correction does not disturb the dining counter alignment;
 the 73 mm fixed glazing detail is not evidence of a stool-bearing rail. Once selected,
 include the retained adaptor in the unit envelope before adding its height to the stool.
+
+**2026-11-15, Max Light adaptor (PROVISIONAL).** The 12 Max Light units had the same fault:
+the 1" stool on the 35 mm rail stood in the pan's back dam (dam top RO + 1.875", rail bottom
+RO + 0.55"; the stool top needs 59.1 mm). They now carry a 30 mm sill adaptor
+(`_MAXLIGHT_SILL_ADAPTOR`, borrowed from Drutex's 54123) in `frame_sill_face_width`, so the
+rail reads 65 mm, about 6 mm clear, and the sash is drawn above it. No Max Light figure
+exists; Słowińscy's sill section replaces it.
 Profile and adaptor identities are also recorded on the house's `Product` records.
 
 ## 2. Andersen 400 operating casement (retired 2026-11-13; kept as the egress revert)

@@ -43,11 +43,14 @@ _DRUTEX_FACES = ("Alucover frame 70001, 74 mm exterior face. "
                  "Sources: notes/window_profile_measurements.md.")
 _MAXLIGHT_DEPTH = inch(75 / 25.4)  # frame ML010 depth; sash 84 mm
 _MAXLIGHT_FACE = inch(35 / 25.4)   # 35 mm frame, 35 mm sash (Aliplast Max Light Modern)
+# PROVISIONAL: Drutex's 54123 figure, pending Slowinscy's sill section. Lifts the stool clear
+# of the sill pan's 1 1/2" back dam; the sash is drawn above it, so the inward swing clears.
+_MAXLIGHT_SILL_ADAPTOR = mm(30)
 # Turn-sash clear opening, ESTIMATED (no published figure; Slowinscy's written one replaces
 # it): width = unit - two 35 mm frames - the 84 mm sash standing at 90 deg on the hinge side;
-# height = unit - two 35 mm frames. 26.21" unit -> 20.15" clear.
+# height = unit - two 35 mm frames - the 30 mm sill adaptor. 26.21" unit -> 20.15" clear.
 _MAXLIGHT_CLEAR_W = mm(2 * 35 + 84)
-_MAXLIGHT_CLEAR_H = mm(2 * 35)
+_MAXLIGHT_CLEAR_H = mm(2 * 35 + 30)
 
 _TT = ("NFRC DRU-K-24-00001: CGPrem2/ARG90/ExtraClr/ARG90/CGPrem2 (4/4/4) 48mm IG, "
        "U 0.16, SHGC 0.33, VT 0.47.")
@@ -58,7 +61,8 @@ _FIX_HP = ("NFRC DRU-K-23-00010: CGPrem2/ARG90/ExtraClr/ARG90/CGPrem2Lami (152PV
 _MAXLIGHT = ("NFRC STO-M-20 (Slowinscy, MAXLIGHT Tilt Turn, frame ML010 / sash ML020): "
              "CGPrem2/Arg/Clr/Arg/CGPrem2 48 mm triple, U 0.20, SHGC 0.40, VT 0.58, CR 69; "
              "Plastixal PLX-K-17 carries the same row (CR 66). Faces 35 mm frame + 35 mm sash "
-             "(Aliplast Max Light Modern fiche). Inward tilt-turn.")
+             "(Aliplast Max Light Modern fiche). Inward tilt-turn. "
+             "Sill adaptor 30 mm PROVISIONAL (supplier section pending).")
 _SIZE = "Frame size follows the resolved flashed opening; supplier confirmation pending."
 
 
@@ -83,13 +87,14 @@ def _drutex(tag, width, height, operation, row, product, *, tempered=False,
 def _maxlight(tag, width, height, *, tempered=False, egress=False) -> WindowType:
     clear = ({"net_clear_width_deduction": _MAXLIGHT_CLEAR_W,
               "net_clear_height_deduction": _MAXLIGHT_CLEAR_H} if egress else {})
-    note = (" R310 escape: turn-sash clear opening ESTIMATED (unit - 154 mm W, - 70 mm H); "
+    note = (" R310 escape: turn-sash clear opening ESTIMATED (unit - 154 mm W, - 100 mm H); "
             "fabricator's written figure pending (notes/egress_window_review.md)."
             if egress else "")
     return WindowType(
         tag=tag, width=width, height=height, operation="tilt_turn", tempered=tempered,
         u_factor=u_us(0.20), shgc=0.40, vt=0.58, frame_depth=_MAXLIGHT_DEPTH,
         frame_face_width=_MAXLIGHT_FACE, sash_face_width=_MAXLIGHT_FACE,
+        frame_sill_face_width=_MAXLIGHT_FACE + _MAXLIGHT_SILL_ADAPTOR,
         frame_material_ref="aliplast-maxlight-powder", **clear,
         product_ref=ALIPLAST_MAXLIGHT_TT.tag, source=f"{_MAXLIGHT}{note} {_SIZE}")
 

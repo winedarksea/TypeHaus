@@ -227,7 +227,9 @@ than ±20% without it.
    now dimension the inward sash bottom 38 mm above the bare PVC frame bottom, and
    adaptors 54123/54113 at 30 mm (50114 at 50 mm). A retained 30 mm adaptor puts the sash
    bottom 68 mm above its bottom, before clearance. The model uses a **bare-frame unit**,
-   so `inward_sash_bottom_height=38 mm` now limits operable stool tops; no adaptor is added.
+   so `inward_sash_bottom_height=38 mm` now limits operable stool tops. (Superseded the same
+   day: operable Alucover units carry the 30 mm adaptor, and since 2026-11-15 the Max Light
+   units carry a provisional 30 mm one too; see §6.)
    DAKAM still confirms the ordered adaptor, unit-height datum and stool-bearing rail;
    include a retained adaptor in the unit envelope before raising the rail. Fixed stools
    retain the explicit provisional 75 mm rail, independently of the 74 mm exterior face.
@@ -270,10 +272,12 @@ than ±20% without it.
 
 11. **Max Light (2026-10-31).** Fabricator Słowińscy (settled 2026-11-13; STO-M-20); its US import
     route; nail fin (Debesto quotes +15%); NAFS DP ≥ 20; the 16 CFR 1201 mark on the `-T` units;
-    RAL and gloss match to the Drutex caps. Item 12 adds the escape-unit gate.
+    RAL and gloss match to the Drutex caps; a dimensioned sill section with the adaptor (or
+    under-sill trim) that lifts the stool over a 1 1/2" pan back dam, its height and the
+    lowest inward sash edge (the model assumes 30 mm, §6). Item 12 adds the escape-unit gate.
 12. **Egress gate (a construction hold).** Ask Słowińscy for a **written** net clear opening,
     W × H, for the turn sash at 26.21×46.805, 26.21×52.805 and 28.71×46.805, and the hinge's
-    maximum opening angle (none is published; the model's 154 mm / 70 mm deductions are an
+    maximum opening angle (none is published; the model's 154 mm / 100 mm deductions are an
     estimate, 0.15" over R310's 20"). Confirm also the NAFS DP ≥ 20 with a nail fin, the 1201
     mark on WIN-S-BED1 (-T), RAL/gloss, and an **exterior screen that releases from inside
     without tools** on all 9 (R310.4; an inward sash cannot take an interior screen):
@@ -389,8 +393,12 @@ trim kit is ordered**.
 - **Stool vs inward sweep (2026-11-07).** Alucover operable stools now sit at the measured
   **38 mm above the bare frame bottom**, a 37 mm drop from the previous 75 mm basis.
   Fixed Alucover stools retain the provisional 75 mm rail, preserving the dining counter
-  plane. The Max Light units (the 14s and the 9 escape units) remain on the drawn 35 mm sill (sash 84 mm deep
-  against a 75 mm frame); ask Aliplast/Debesto for their inward clearance. DAKAM confirms
+  plane. All 12 Max Light units (the 14s and the 9 escape units) carry a **PROVISIONAL 30 mm sill
+  adaptor** (2026-11-15, Drutex's 54123 figure): on the bare 35 mm rail the 1" stool stood in
+  the pan's 1 1/2" back dam. The stool now sits 65 mm above the rail bottom, about 6 mm clear
+  of the dam, and the sash is drawn above the adaptor. It costs the escape units 30 mm of
+  estimated clear height (smallest 6.00 sf vs 5.7). Ask Słowińscy for their sill adaptor
+  and inward clearance (§2.6 item 11). DAKAM confirms
   the retained adaptor and rail datum; all elevations start at the resolved seated unit,
   not the RO. Where a stool is coordinated with the counter (`WIN-M-LIV-E1`/
   `E2`, and `WIN-M-KITCH` over the counter), turn mode needs a clear counter. Tilt is the

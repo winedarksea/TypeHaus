@@ -190,12 +190,12 @@ def test_catlin_escape_windows_are_graded_on_the_flashed_frame(catlin_model_ro):
 
     window_types = {wt.tag: wt for wt in catlin_model_ro.plan.library.window_types}
     windows = {e.tag: e for e in catlin_model_ro.openings}
-    # Max Light units follow the flashed opening; clear = unit - 154 mm W, - 70 mm H (ESTIMATED,
+    # Max Light units follow the flashed opening; clear = unit - 154 mm W, - 100 mm H (ESTIMATED,
     # notes/egress_window_review.md). Replace with the fabricator's written figures.
-    expected = {"WT-2748": (26.21, 46.805, 20.147, 44.05),
-                "WT-2748-T": (26.21, 46.805, 20.147, 44.05),
-                "WT-2754": (26.21, 52.805, 20.147, 50.05),
-                "WT-3048": (28.71, 46.805, 22.647, 44.05)}
+    expected = {"WT-2748": (26.21, 46.805, 20.147, 42.868),
+                "WT-2748-T": (26.21, 46.805, 20.147, 42.868),
+                "WT-2754": (26.21, 52.805, 20.147, 48.868),
+                "WT-3048": (28.71, 46.805, 22.647, 42.868)}
     for tag in EGRESS_WINDOWS:
         opening = windows[tag]
         window_type = window_types[opening.type_ref]

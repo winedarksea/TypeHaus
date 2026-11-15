@@ -64,7 +64,8 @@ the model goes back to `plans/TODO.md` as a design item.
   - Windows (`notes/window_profile_measurements.md`): DAKAM confirms the ordered adaptor
     (54123/54113 add 30 mm; 50114 adds 50 mm), unit-height datum and stool-bearing rail; fixed
     stools keep the provisional 75 mm rail. Max Light fabricator (Słowińscy): §2.6 item 11 of
-    `notes/window_and_door_procurement.md`, and the nine escape units' WRITTEN turn-sash net
+    `notes/window_and_door_procurement.md` (with the sill section and adaptor lifting the
+    stool over the back dam; 30 mm assumed), and the nine escape units' WRITTEN turn-sash net
     clear opening, hinge angle and tool-free exterior screen (`notes/egress_window_review.md`;
     R310 rests on an estimate until then). MMI: Z0364688R sill crest
     (ST-G-SERVICE tops at the +1.5" envelope).

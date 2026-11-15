@@ -19,8 +19,9 @@ def _projected_width(ring, tangent):
     return max(coordinates) - min(coordinates)
 
 
-def test_max_light_units_draw_35_mm_faces_all_round(catlin_model_ro):
+def test_max_light_units_draw_35_mm_faces_and_a_65_mm_sill_rail(catlin_model_ro):
     # The three 14x24s and, since 2026-11-13, the nine escape units (Andersen retired).
+    # The sill rail carries the provisional 30 mm adaptor over the pan's back dam.
     model = catlin_model_ro
     types = {kind.tag: kind for kind in model.plan.library.window_types}
     count = 0
@@ -37,7 +38,7 @@ def test_max_light_units_draw_35_mm_faces_all_round(catlin_model_ro):
         _, tangent, _, _ = wall_frame(wall)
         assert _projected_width(jamb.ring, tangent) == pytest.approx(mm(35).meters)
         assert head.z1_m - head.z0_m == pytest.approx(mm(35).meters)
-        assert rail.z1_m - rail.z0_m == pytest.approx(mm(35).meters)
+        assert rail.z1_m - rail.z0_m == pytest.approx(mm(65).meters)
         viewer = {part["key"]: part for part in opening_parts_json(model, opening)}
         assert viewer["frame"]["solids"][2]["z0_m"] == pytest.approx(head.z0_m, abs=1e-6)
     assert count == 12
