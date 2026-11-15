@@ -57,17 +57,10 @@ is the unsuppressed score. `mep.run_interference` (2026-11-08) and `mep.riser_th
 `notes/flexx_ultra_geometry.md`). The room stays conditioned while it holds the unit; only its
 finished area drops out.
 
-- **HP1 attic assembly (2026-11-15):** plenums now have real port-driven sheet openings;
-  `mep.plenum_openings` checks all eight duct crossings/sections. Still model the emergency
-  pan, support rails and float-switch envelope; replace the primary drain's straight start
-  with the manufacturer-sized trap, vent and cleanout, then coordinate cabinet elevation,
-  pitch, both necks and service access together. The existing 4 1/4" platform has not been
-  verified for that trap. Add the ERV feed's backdraft-damper product/envelope and refrigerant
-  pair/control route. Review the supply connector's first 6" metal requirement and heat-kit
-  duct clearances. See `houses/catlin/notes/flexx_ultra_geometry.md`; supplier measurements
-  and approvals are in `notes/construction_holds.md`. Do not read the new opening matches
-  as a complete installation or a verified fan/static-pressure budget.
-
+- [ ] The emergency pan is declared (`secondary_drain_pan`, float switch stopping `EQ-M-HP1-OD`)
+  but not drawn. Its rails raise the cabinet about 1", which the connectors take up.
+- [ ] The lineset and control cable from `EQ-M-HP1-OD` are not routed, because refrigerant
+  piping is not an engine element.
 - [ ] No check grades the passageway from `D-A-STUDY` or the level service space; they exist
   only in `mep_hvac.py` prose.
 
@@ -232,6 +225,9 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
 - [x] Improve the 3d model of AD-SG-COURT (hollow basin, open slotted grate, round hollow riser).
 - AD-SG-COURT connection: resolve the bottom-drop adapter/product; the named [NDS 1200](https://www.adspipe.com/nds/products/drainage/catch-basins-and-grates/square-catch-basins/1200-12-in-square-catch-basin-drain-with-2-openings) has lateral outlets. Geometry remains representative, within the authored nominal envelope.
 - [x] Improve the 3d model of the EQ-T-SAUNA-HEATER (US Cilindro PC110E stone tower, front grille, rear shroud, raised top guard and feet).
+- 3d model of the garbage disposal
+- 3d model of the wall sconces
+- 3d model of the recessed cans
 
 # Project Management
 

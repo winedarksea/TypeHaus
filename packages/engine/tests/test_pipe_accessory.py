@@ -95,10 +95,11 @@ def test_an_accessory_draws_a_solid_named_for_the_device_not_the_family(catlin_p
     assert solid.category == "main_shutoff"
     assert solid.category in PIPE_ACCESSORY_CATEGORIES
     assert solid_trade(solid.category) == "plumbing"
-    # Centred on the pipe, not sitting on top of it: half the box is above the invert.
+    # The body surrounds the pipe and the raised stem/lever belongs to the same device.
     resolved = next(a for a in model.pipe_accessories if a.tag == "PA-TEST-SOLID")
     assert solid.z0_m < resolved.z_m < solid.z1_m
-    assert (solid.z1_m - solid.z0_m) == pytest.approx(inch(6).meters)
+    assert solid.body_mesh is not None
+    assert len(solid.body_mesh.triangles) > 12
 
 
 def test_the_install_kit_rides_the_accessory_not_the_catalog(catlin_plan):

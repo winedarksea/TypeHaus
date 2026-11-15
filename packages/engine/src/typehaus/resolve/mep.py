@@ -30,6 +30,7 @@ from typehaus.model.mep import (
 from typehaus.quantities import inch
 from typehaus.resolve.cleanouts import resolve_drain_cleanout
 from typehaus.resolve.geometry import length, sub
+from typehaus.resolve.isolation_valve_geometry import isolation_valve_solid
 from typehaus.resolve.mep_ducts import resolve_duct_run
 from typehaus.resolve.mep_queries import (  # noqa: F401 - re-exported query API
     _CONCRETE_SOLID_CATEGORIES,
@@ -366,8 +367,7 @@ def _resolve_pipe_run(model: ResolvedModel, run: PipeRun, storey) -> list[Findin
     return findings
 
 
-#: The accessory box, in metres. A valve body is not a pipe and is not to scale with one —
-#: it is drawn as a marker you can find in the 3D view and click, the way a sump pit is.
+#: Marker dimensions for devices that do not yet have physical geometry.
 _ACCESSORY_BOX = (inch(4).meters, inch(4).meters, inch(6).meters)
 
 #: A solid's category is what every consumer *labels* it with — the 3D inspector's heading,
@@ -421,6 +421,11 @@ def _resolve_pipe_accessory(model: ResolvedModel, el: PipeAccessory,
         room=el.room, wall_ref=el.wall_ref, model=el.model,
         install_parts=tuple(el.install_parts),
     ))
+    if el.kind in (PipeAccessoryKind.SHUTOFF, PipeAccessoryKind.MAIN_SHUTOFF):
+        model.solids.append(isolation_valve_solid(
+            uid=el.uid or f"{el.tag}-acc", tag=el.tag, storey=storey.tag,
+            category=_accessory_category(el.kind), center=(cx, cy, z), host=host))
+        return []
     model.solids.append(ResolvedSolid(
         uid=el.uid or f"{el.tag}-acc", tag=el.tag, storey=storey.tag,
         category=_accessory_category(el.kind),
