@@ -281,7 +281,7 @@ def load_management_credits(
 
     A ``noncoincident`` group never counts below its single largest member (120.6), that
     member's largest motor at 125% (120.11(A)): an authored ceiling under that is raised to
-    it, one above it is kept. A ``pcs`` that also monitors noncontrolled loads counts the
+    it, one above the group's connected sum is moot. A ``pcs`` that also monitors noncontrolled loads counts the
     group at its minimum operating current (120.7(C)(2)), not the setting.
     """
     consumers = _circuit_consumers(model)
@@ -300,11 +300,11 @@ def load_management_credits(
         if management.strategy == "noncoincident":
             largest = [va + _motor_adder_va(model, consumers.get(c.tag, []))
                        for c, va in zip(members, member_va, strict=True)]
-            cap_va = max(cap_va, max(largest, default=0.0))
+            cap_va = max(min(cap_va, group_va), max(largest, default=0.0))
         elif management.strategy == "pcs" and management.monitors_noncontrolled:
             cap_va = (management.min_operating_amps or 0.0) * SERVICE_VOLTS
-        # A noncoincident count is the code's, not a ceiling: a motor's 25% may lift it past
-        # the group's connected sum, and the negative excess adds that to the demand.
+        # A noncoincident count is the code's, not a ceiling: only a motor's 25% may lift it
+        # past the group's connected sum, and that negative excess adds to the demand.
         excess = group_va - cap_va
         if management.strategy != "noncoincident":
             excess = max(0.0, excess)
