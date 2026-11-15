@@ -40,6 +40,9 @@ MIN_POST_SPACING_M = 0.3
 _WALL_MOUNTS = frozenset({"wall"})
 #: Carried on brackets off another railing's posts (the ADA rail inside a stair guard).
 _POST_MOUNT = "post"
+#: A board or sheet fixed to the structure at its ends: no posts, no brackets, and no rail
+#: when ``rail_count`` is 0. Its infill runs end to end.
+PANEL_MOUNT = "panel"
 #: Bracket stock: the drop from the rail centreline to the arm, and the arm's section.
 _BRACKET_DROP_M = inch(2.5).meters
 _BRACKET_SECTION_M = inch(1.0).meters
@@ -87,6 +90,8 @@ def emit_posts(model: ResolvedModel, el: Railing, storey: str, stations: list[Ve
     guard's post (:func:`~.guard_line.shared_post_ends`) and draws nothing here. A fascia
     post runs down into its bracket, to the bracket's bottom.
     """
+    if el.mount == PANEL_MOUNT:
+        return []
     if el.mount in _WALL_MOUNTS:
         return emit_brackets(model, el, storey, stations, surface, parts, rail_h)
     if el.mount == _POST_MOUNT:
@@ -245,6 +250,8 @@ def emit_rails(model: ResolvedModel, el: Railing, storey: str, path: list[Vec],
 
     Posts, brackets and infill are untouched: those are genuinely discrete pieces.
     """
+    if el.mount == PANEL_MOUNT and el.rail_count == 0:
+        return
     radius = parts.rail_round_radius_m
     profile = (round_profile(radius, RAILING_FACETS) if radius is not None
                else rect_profile(parts.rail_section_m, parts.rail_section_m))

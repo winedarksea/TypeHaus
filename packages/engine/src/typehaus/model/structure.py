@@ -993,8 +993,9 @@ class Railing(Element):
     post_spacing: Length  # posts o.c. along the path
     post_size: str = "2x2"  # nominal post cross-section
     rail_count: int = 2  # horizontal rails (top + bottom)
-    # "fascia" | "surface" | "wall" | "post" — "post" hangs the rail on brackets off another
-    # railing's nearest posts and draws no posts of its own.
+    # "fascia" | "surface" | "wall" | "post" | "panel" — "post" hangs the rail on brackets off
+    # another railing's nearest posts and draws no posts of its own; "panel" is a board fixed
+    # at its ends: no posts, and no rail when ``rail_count`` is 0.
     mount: str = "fascia"
     # Fascia brackets (``RailingType.fascia_bracket_*``): the fascia's outer face stands this
     # far outboard of ``path``, and the bracket top this far below ``base_elevation``.

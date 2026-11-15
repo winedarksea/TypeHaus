@@ -62,7 +62,8 @@ def emit_infill(model: ResolvedModel, el: Railing, storey: str, stations: list[V
 
     gap = el.baluster_spacing.meters if el.baluster_spacing is not None else 0.0
     post_spacing = max(el.post_spacing.meters, 0.3)
-    rail_half = parts.rail_section_m / 2.0
+    # A railless panel runs the full height: no rail to tuck under.
+    rail_half = 0.0 if el.rail_count == 0 and el.mount == "panel" else parts.rail_section_m / 2.0
     solids: list[ResolvedSolid] = []
     oversize: list[str] = []
     truncated = False

@@ -17,7 +17,7 @@ from typehaus.resolve.geometry import Vec, length, sub
 from typehaus.resolve.railings.parts import railing_type
 
 #: Mounts whose guard draws its own posts (the others hang on a wall or another guard).
-_POSTLESS_MOUNTS = frozenset({"wall", "post"})
+_POSTLESS_MOUNTS = frozenset({"wall", "post", "panel"})
 #: A shared end must land on the other guard's station to this.
 _SHARED_POST_TOL_M = inch(1 / 16).meters
 

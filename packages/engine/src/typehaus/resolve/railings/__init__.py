@@ -21,6 +21,7 @@ from typehaus.resolve.railings.fascia_assembly import emit_fascia_assembly
 from typehaus.resolve.railings.fascia_layout import fascia_deck
 from typehaus.resolve.railings.frame import (
     MIN_POST_SPACING_M,
+    PANEL_MOUNT,
     emit_posts,
     emit_rails,
     rail_rises,
@@ -133,7 +134,9 @@ def resolve_railing(model: ResolvedModel, el: Railing, storey: str) -> list[Find
     findings += emit_infill(model, el, storey, stations, surface, parts, rail_h,
                             bottom_clearance_m=bottom_clearance,
                             face_height=detailed_mount is not None,
-                            postless=frozenset(i % len(stations) for i in columns))
+                            postless=(frozenset(range(len(stations)))
+                                      if el.mount == PANEL_MOUNT else
+                                      frozenset(i % len(stations) for i in columns)))
     # Every part of the guard is addressable as the railing it belongs to.
     for i in range(first, len(model.solids)):
         model.solids[i] = replace(model.solids[i], host_ref=el.tag, group=el.tag)
