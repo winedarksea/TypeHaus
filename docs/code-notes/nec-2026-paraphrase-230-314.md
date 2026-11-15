@@ -18,16 +18,10 @@ Continues `nec-2026-paraphrase.md` (same conventions; the owner read these pages
 
 ## Article 225: outside branch circuits and feeders (Parts I-II)
 
-Catlin's garage is a separate building (4 ft gap) supplied from the house panels by branch
-circuits, so Part II is the live part. **Facts read from the plan (2026-11-14):** seven
-circuits have a consumer in the garage and a panel elsewhere: `CKT-EV-1450` (50 A 2-pole,
-hardwired EVSE) and `CKT-GAR-240` (20 A 2-pole, 6-20R, no neutral) from `ED-B-PANEL-2`;
-`CKT-LT-GARAGE` (15 A), `CKT-RC-GARAGE` (20 A GFCI), `CKT-GAR-HEAT` (20 A GFCI heater) and
-`CKT-LT-MAIN` (20 A, the opener outlet) from `ED-B-PANEL`; `CKT-LT-BACKUP` (15 A, the CO
-relay) from the backup panel. Each is its own circuit with its own neutral; the model holds
-no multiwire circuit, and none is authored anywhere in the house. Only the EVSE feeder's
-raceway is drawn (`CD-B-GARAGE`/`CD-B-GAP-EV`, 1-1/4 in. EMT, up through the slab); the other
-six have no modelled route. The garage has no panel, no disconnect and no 225.37 plaque.
+Catlin's garage is a separate building (4 ft gap), supplied since 2026-11-14 by one feeder,
+`CKT-GAR-FEEDER` (90 A, `ED-B-PANEL-2` to `ED-G-PANEL`, drawn EMT/PVC up through the slab via
+`CD-B-GARAGE`/`CD-B-GAP-EV`). `ED-G-PANEL` has a 100 A main, inside beside the feeder's slab
+entry; the garage's branch circuits, the EV circuit included, are in that subpanel.
 
 **225.19(D)-(E) Overhead conductors.** *(summary kept local)*
 - **Engine:** not graded. Catlin has no overhead outside conductors.
@@ -44,21 +38,16 @@ six have no modelled route. The garage has no panel, no disconnect and no 225.37
   into the garage and where they leave the house through their basement sleeves.
 
 **225.30 Number of supplies.** *(summary kept local)*
-- **Engine:** not graded. `code.NEC_250_32_separate_buildings` already traces circuits to a
-  building away from its panel, but 225.30's exceptions (uses, listings, management) are not
-  authorable, so a count alone would FAIL on facts the model cannot hold. **Catlin: seven
-  circuits to one building, no exception evident; an apparent 225.30 violation.** The honest
-  fixes are one feeder to a garage subpanel (which then needs 225.31, 225.39(C)/(D) and
-  250.32 as a feeder) or a documented (E) reading. Owner decision; the house is not changed.
+- **Engine:** not graded. Catlin's garage is fed by one feeder, `CKT-GAR-FEEDER` (90 A,
+  `ED-B-PANEL-2` to `ED-G-PANEL`), since 2026-11-14; the EV circuit is in the subpanel. One
+  supply. Not graded.
 
 **225.31 Disconnect.** *(summary kept local)*
-- **Engine:** not graded. **Catlin: no disconnect is modelled at the garage**; the circuit
-  breakers sit in the basement panels, neither inside nearest the entrance nor outside in
-  sight of the garage. Consequence of the 225.30 finding: seven supplies would also need
-  seven disconnects.
+- **Engine:** not graded. Catlin: `ED-G-PANEL`'s 100 A main, inside beside the feeder's slab
+  entry. Not graded.
 
 **225.33-225.34 Number and grouping.** *(summary kept local)*
-- **Engine:** not graded. Seven circuits would exceed six if they were one supply.
+- **Engine:** not graded. Catlin: one disconnect.
 
 **225.35 Occupant access.** *(summary kept local)*
 - **Engine:** not graded; Catlin is single-occupancy.
@@ -67,14 +56,13 @@ six have no modelled route. The garage has no panel, no disconnect and no 225.37
 - **Engine:** not graded.
 
 **225.37 Identification.** *(summary kept local)*
-- **Engine:** not graded. Catlin's garage circuits come from the dwelling, so Ex. 2 applies.
+- **Engine:** not graded. Catlin: one feeder supply; no other supply.
 
 **225.38 Construction.** *(summary kept local)*
 - **Engine:** not graded.
 
 **225.39 Rating.** *(summary kept local)*
-- **Engine:** not graded. The garage is not a dwelling, so (D) would govern a feeder: its
-  seven breakers total 160 A, over 60 A.
+- **Engine:** not graded. Catlin, (D): 100 A main >= 60 A.
 
 **225.40 OCPD access.** *(summary kept local)*
 - **Engine:** not graded; Catlin's breakers are in basement panels reached from the stair.
@@ -104,7 +92,8 @@ instead. (C) Type 1 or Type 2. (D) Replacing service equipment brings all of thi
 Nominal discharge current (In) of at least 10 kA.
 - **Engine:** `code.NEC_230_67_service_spd` passes a Type 1/2 `spd_class` device within 1.5 m
   of the service device, or an `spd` circuit in it; an SPD only downstream is UNKNOWN (the Ex.
-  needs feeder topology). `code.NEC_215_18_spd` asks for one per panel. (E) is graded by `electrical.spd_nominal_discharge`; the FS140 is
+  needs feeder topology). `code.NEC_215_18_spd` asks for one per panel. (E) is graded by `electrical.spd_nominal_discharge`, a staged permit
+  exclusion (waiting on Xcel's fault current and the unpublished In); the FS140 is
   UL 1449 Type 2 per Siemens and publishes no In, so it is UNKNOWN. Not graded: the Type of an
   `spd` circuit, (D).
 

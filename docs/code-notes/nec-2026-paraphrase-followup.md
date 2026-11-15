@@ -54,9 +54,8 @@ Tests: `test_nec_followup.py`. Constants: `typehaus.model.nec.NEC`.
   - **Graded:** 215.18(C) Type 1 or 2 and (E) In of 10 kA or more, via `Circuit.spd_type_ref`
     (`CKT-SPD-BACKUP` UNKNOWN, no product). Owner question: confirm each plug-on's marked In
     (and the FS140's, 230.67(E)).
-- **225.10 wiring on buildings.** `electrical.outdoor_branch_wiring`: `CKT-EV-1450` PASS (EMT/PVC
-  drawn); six undrawn garage circuits UNKNOWN (`CKT-GAR-240`, `CKT-GAR-HEAT`, `CKT-LT-BACKUP`,
-  `CKT-LT-GARAGE`, `CKT-LT-MAIN`, `CKT-RC-GARAGE`). The exposed Class 2 and data runs
+- **225.10 wiring on buildings.** `electrical.outdoor_branch_wiring`: `CKT-GAR-FEEDER` PASS
+  (EMT/PVC); the garage's branch circuits stay in their own building. The exposed Class 2 and data runs
   (`CD-M-RSD-INIT`, `CD-M-DATA-PORCH`, `CD-M-DATA-CAM-PORCH`, `CD-M-DATA-CAM-CANOPY`) fall under
   Article 722, not 225.10. `mep.raceway_use` grades 225.10 on any run that appears (EMT and PVC
   pass, ENT is flagged).

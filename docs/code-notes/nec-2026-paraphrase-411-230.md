@@ -84,7 +84,7 @@ conditions). 210.63-210.70(B) matches `nec-2026-paraphrase-210-422-410.md`.
   indoor head is a 210.70(A) room). `RM-M-MECH` holds only duct manifolds.
 - **Article 215 feeders (not graded).** Catlin's feeders: the meter-main's two 200 A mains to
   `ED-B-PANEL` (225 A bus) and `ED-B-PANEL-2`; the inverter's load port to `ED-B-BACKUP-PANEL`
-  (`CD-B-INV-PANEL`); the garage's seven branch circuits (Article 225); the EV and V2H lines.
+  (`CD-B-INV-PANEL`); the garage's one feeder `CKT-GAR-FEEDER` (Article 225); the EV and V2H lines.
   `electrical.panel_feeder_load` estimates 135.7 A and 120.7 A of 120.82 demand on the two
   200 A mains; even at 125% of all of it (the 215.5 and 215.4(A)(1) worst case with every load
   continuous) that is 169.6 A and 150.9 A, under 200 A, so 215.5 is met by hand. It is not a

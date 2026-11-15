@@ -48,16 +48,10 @@ the Sapphire carry no circuit; the outdoor unit feeds them.
   the sauna-gym head 8.6 ft from the sauna shower; `EQ-M-HP3-STAIR` 13 ft from the main tub.
   The ERV and its mixing box carry no compressor and are not A/C equipment under this rule
   (the box is 8.9 ft from the studio-bath shower anyway).
-- **440.11 disconnect enclosure.** The three 3R disconnects are outdoors, on the house or court
-  walls at about 6 ft 4 in. above grade, readily accessible to anyone: their enclosures must
-  lock or need a tool to open. A standard hooded safety switch needs a tool or a padlock hasp
-  only if so specified; not modelled. **Owner question:** specify a lockable or tool-opened
-  3R enclosure (or a padlock) for `ED-M-HP1/2/3-DISC`.
-- **440.12(A)(1) disconnect rating.** The 3R type (`ED-T-DISCONNECT-3R`) carries no ampere
-  rating (a plan comment calls it 60 A). 115% of HP1's 21 A MCA is 24 A, of the air handler's
-  29.9 A is 34 A; a 60 A switch covers both. HP2 and HP3 need their nameplate rated-load
-  currents (not authored). Field needed: an ampere rating (and horsepower or unfused rating)
-  on the disconnect type.
+- **440.11 / 440.12(A)(1) disconnects.** PASS on all four HVAC disconnects: `ED-T-SQD-DU222RB`
+  (Square D DU222RB, 60 A non-fused, NEMA 3R, padlockable OFF per Schneider FAQ FA95934);
+  largest 115% x MCA is 34.4 A (`CKT-HP1-AH`). HP2 and HP3's nameplate rated-load currents are
+  not authored.
 - **440.10 short-circuit rating.** Applies to the motor controllers of multimotor and
   combination-load equipment (the heat pumps and air handler): they are not installed where the
   available fault current exceeds the marked rating, and the calculation and date are kept.
@@ -134,7 +128,7 @@ disconnect of a split system is marked with the location of every indoor unit it
   pump or ducted air handler on a circuit, a DISCONNECT device on that circuit in plan sight
   (no wall between) passes; a wall between or another level is UNKNOWN; none is UNKNOWN.
   440.11/440.12(A)(1) graded from `ElectricalDeviceType.lockable`/`disconnect_rating_a` (115%
-  of the MCA as the bound); UNKNOWN while unset.
+  of the MCA as the bound); UNKNOWN while unset. Catlin: PASS on all four (see above).
   Not graded: the within-sight distance limit (Article 100, unread), readily accessible, 110.26(A)
   working space, nameplate obstruction, or the indoor heads.
 

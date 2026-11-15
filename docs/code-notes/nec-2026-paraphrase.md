@@ -235,8 +235,8 @@ being a combination AFCI where the circuit starts.
   in metal raceway or armored cable. Ex. 2: a dedicated arc-welder outlet circuit.
 - **(E)** Extending or modifying wiring in those rooms requires AFCI, unless the extension
   is no longer than 6 ft and adds no outlets or devices.
-- **Engine:** `code.E3902_16_afci` (occupancy table `_AFCI_OCCUPANCIES`; STORAGE stands in
-  for closets; STAIR is in scope; a room with a washer or dryer is a laundry area). `Circuit.afci` is one flag, so (A) is not distinguished. The exceptions and
+- **Engine:** `code.E3902_16_afci` (occupancy table `_AFCI_OCCUPANCIES`; CLOSET reads
+  closets; FOYER and STAIR read as hallways, STORAGE and STUDY_CLOSET as similar rooms; a room with a washer or dryer is a laundry area). `Circuit.afci` is one flag, so (A) is not distinguished. The exceptions and
   (E) are not graded.
 
 **210.52 Dwelling receptacle outlets.** Covers 125 V 15 and 20 A receptacles. A receptacle
@@ -309,15 +309,24 @@ can't be on the heater's circuit.
     rejected.
   - `electrical.outdoor_front_back_receptacles`: (E)(1). `electrical.laundry_receptacle`: (F).
     `electrical.hallway_receptacle`: (H).
+  - `electrical.foyer_receptacle`: (I), CODE tier (FOYER rooms over 60 sq ft of clear-face area;
+    doorways, wells and windows within 6 in. of the floor break wall space; each space >= 3 ft
+    needs a receptacle). Catlin: RM-M-MUDROOM 49.4 sq ft, N/A.
   - `code.NEC_210_52_E3_balcony_receptacles`: (E)(3), qualifying by the 4 in. distance
     with no door test.
   - `code.NEC_210_52_G_garage_receptacles`: (G)(1).
   - `_counts_toward_210_52` applies the switched and 5½ ft exclusions; (E) keeps its own
     6½ ft.
+  - (A)(2): a roof-to-floor rafter plate under 5'-0" of head is not wall space (owner's reading
+    2026-11-14: that floor is not habitable floor area per IRC R304.3); AHJ confirmation item. A
+    plate with head over it is graded both ways. Catlin: RM-A-STUDY and RM-A-STUDIO PASS
+    (`receptacle_spacing` 0 UNKNOWN).
+  - Lane D's 210.52(E)(1)/(F)/(H)/(I), 210.11(C)(4) and 210.70(A)(2)(3) checks are CODE tier now
+    (blocking permit item "Required outlets, garage branch and stair switching", rough_electrical).
   - Owner's reading of (C)(1) Ex. 2 (2026-11-13): window glass at the dining counter counts
     as "can't be installed", and the check passes it with an AHJ note.
   - Known gaps, not graded:
-    - (A)(2)(iii), (A)(5), multioutlet counting, (B), (G)(2)/(3), (I) (no foyer occupancy).
+    - (A)(2)(iii), (A)(5), multioutlet counting, (B), (G)(2)/(3).
 
 **210.63 Equipment needing service.** A 125 V 15 or 20 A receptacle, accessible, within
 25 ft of the equipment. For HVAC and refrigeration equipment it must be on the same level

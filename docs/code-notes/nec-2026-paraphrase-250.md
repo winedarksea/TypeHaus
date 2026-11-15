@@ -42,10 +42,11 @@ Continues `nec-2026-paraphrase.md` (same conventions). The owner read 250.30-250
   `BC-M-GEC-UFER` are now #2 Cu. A lateral over 500 kcmil Al / 350 Cu would raise the water
   bond to 1/0. Both Cu-jumper cells were read from the printed table.
 - **Garage:** a separate building with its own pair of 8 ft rods (`GE-G-ROD-1`/`-2`, 16 ft
-  apart) and #6 Cu GEC to `ED-G-GND-JB`, where the circuits' EGCs join. Seven branch circuits
-  supply it (see 225.30 in `nec-2026-paraphrase-230-314.md`), so the 250.32(A) exception does
-  not apply and the electrodes are required. #6 meets 250.32(E): the largest supply conductor
-  (a 50 A circuit) calls for #8 Cu. The garage has its own IBT, `ED-G-IBT`.
+  apart). Fed by one feeder (`CKT-GAR-FEEDER`, see 225.30 in `nec-2026-paraphrase-230-314.md`);
+  GEC #6 on `ED-G-PANEL`'s ground bar (250.32(E): #2 Cu gives #8); neutral isolated there;
+  `ED-G-IBT` bonded to the panel; plug-on SPD `CKT-SPD-GAR` (HOM2175SB, house standard, not
+  required by 215.18). The old garage SPD (Leviton 51120-1, discontinued, 3 kA) is removed; the
+  garage's SPD is now the subpanel's plug-on.
 
 ## Separately derived systems and separate buildings
 
@@ -71,10 +72,10 @@ Continues `nec-2026-paraphrase.md` (same conventions). The owner read 250.30-250
   with the circuit conductors, and EGC-to-GEC joints are made in a box or enclosure at the
   building.
 - **(E) GEC size:** per 250.66 on the largest ungrounded supply conductor, with Part III.
-- **Engine:** traces crossing circuits and feeders (a PANEL in a non-service building). A
+- **Engine:** traces crossing circuits and feeders (a PANEL in a non-service building); a
+  PANEL naming its feeder (`circuit=`) is traced and the feeder's EGC is graded. A
   feeder or more than one circuit requires a bonded electrode system. Each supply circuit must
-  carry `egc_awg` (UNKNOWN if not); the single-circuit exception requires that EGC. A feeder's
-  EGC is UNKNOWN because feeders are not modelled. The (B)(1) no-neutral-bond rule is read by
+  carry `egc_awg` (UNKNOWN if not); the single-circuit exception requires that EGC. The (B)(1) no-neutral-bond rule is read by
   `code.NEC_250_24_neutral_bond`. A multiwire circuit is still counted per circuit.
   Catlin's garage passes on its rod pair.
 
@@ -158,8 +159,8 @@ reached without breaking the concrete.
 - **Engine:** not graded; no electrode is authored as auxiliary.
 
 **250.58 Common electrode.** *(summary kept local)*
-- **Engine:** not graded as such. The garage's seven circuits all land on `ED-G-GND-JB` and
-  its one rod pair.
+- **Engine:** not graded as such. The garage's one feeder lands on `ED-G-PANEL`'s ground bar
+  and its one rod pair.
 
 **250.60 Strike-termination devices.** Their conductors and driven electrodes do not stand
 in for the 250.50 electrodes, but separate electrodes must still be bonded together (see

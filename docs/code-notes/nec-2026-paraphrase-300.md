@@ -36,7 +36,7 @@ numbers, never FAIL, and never a permit gate.
 
 | Run | Depth found (top of run to top of cover) | Required | Table row, column | Verdict |
 |---|---|---|---|---|
-| `CD-B-GAP-EV` (now 1 1/4" Sch 80 PVC) and `CD-B-V2H-GAP`, at -5'-0" | 19.2 / 18.8 in. at the gravel strip; 26.2 / 25.8 in. under `SL-WK-C` | 18 in. | "all locations", Col. 3 | PASS (both) |
+| `CD-B-GAP-EV` (now 1 1/4" Sch 80 PVC) and `CD-B-V2H-GAP`, at -4'-5 1/4" | 18.4 / 18.1 in. at the drip strip; 19.4 / 19.1 in. under `SL-WK-C` | 18 in. | "all locations", Col. 3 | PASS (both) |
 | both, last 1.5 ft under the garage slab | under a building, in a raceway | 0 | "under a building", Col. 3 | PASS |
 | `CD-B-SPA` 1" EMT | inside concrete wall `W-SG-W1` (1/8 in. in from the court face), -4'-0" | n/a | cast into a retaining wall, not buried | UNKNOWN: reviewer's call whether the table reaches it |
 | `CD-B-SPARE-CHASE` 2" EMT | indoors and in basement walls | n/a | not underground | not graded |
@@ -46,8 +46,7 @@ Columns 2 and 3) needs three things: slab at least 4 in. thick (`SL-WK-C` is 4 i
 vehicles (the model has no field; assumed for a sidewalk), and the slab extending 6 in. past
 the run on each side. `SL-WK-C`'s west edge is at x=15'-7 1/2"; the EV run (x=16'-0") clears
 it by 3.7 in. and the V2H run (x=16'-2 7/16") by 5.8 in. Both miss 6 in., so the row falls
-to "all locations" and 18 in. Widening the slab 2-3 in. west (or sliding both runs east
-3 in.) buys the row, and both would pass at 4 in. The EV run's circuit is 240 V, so Column 4
+to "all locations" and 18 in., which both now meet. The EV run's circuit is 240 V, so Column 4
 (120 V, 20 A, GFCI) does not apply.
 
 **Other 2026 Article 300 hooks (UNKNOWN or exempt, never invented):**
@@ -176,6 +175,10 @@ depth is permitted (`burial.shallowest_in`). 5: where solid rock prevents the de
 metal raceway or a direct-burial nonmetallic raceway under 2 in. of concrete down to the
 rock. 6: directly buried EMT meets 358.10.
 
+**Engine (cover):** cover is to the slab top over the run (concrete and its base both count),
+else to grade at the run: a grade station sets grade only where it is nearer the run than every
+building (finished grade meets the site plane at the wall).
+
 ## 300.8 Corrosion and deterioration
 
 Raceways, trays, cablebus, gutters, cable armour, boxes, cable sheathing, cabinets,
@@ -301,10 +304,9 @@ applied.
 
 ## Open questions for the owner
 
-1. Is `SL-WK-C` vehicle-free (no pickup parked on the entry walk)? That plus 6 in. of slab edge
-   buys the 4 in. row for the EV and V2H runs, which are at 14.2 and 13.8 in. otherwise short
-   of 18.
-2. (Closed: the runs are buried to -5'-0", so the 18 in. row is met.)
+1. (Closed: the runs are at -4'-5 1/4" and meet the 18 in. row without the walk row, so the
+   vehicle-free question no longer matters.)
+2. (Closed: the runs are buried to -4'-5 1/4", so the 18 in. row is met.)
 3. (Closed: the conductor type is authored (THHN/THWN-2) and the V2H pipe is Sch 80; buried-EMT
    corrosion protection is question 4.)
 4. Is a retaining-wall-embedded EMT (`CD-B-SPA`) acceptable to the inspector, or should it

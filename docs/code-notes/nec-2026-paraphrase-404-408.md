@@ -42,16 +42,15 @@ switches were seen only on that page. Both numbers are cited as printed. Tests:
   tub or shower space" geometry beyond the fixture footprint; no switch is authored on a shower
   face (switches stand 1-2 ft off the tub or shower in plan beside doors, on the room wall).
 - **406.9(B)(1) outdoor receptacles.** Graded by `electrical.outdoor_receptacle_wr`: five PASS
-  (GFWT2-W/GFWT1-W WR, 5980-UCL extra-duty in-use). Indoor damp rooms are not graded; the order
+  (GFWT2-W/GFWT1-W WR, 5980-UCL extra-duty in-use); the check is CODE tier with its own blocking
+  permit item. Indoor damp rooms are not graded; the order
   list must name WR and extra-duty hood covers.
-- **406.11(D) controlled receptacles.** One receptacle is on a smart relay: `ED-S-PLANT-HEAT-RC`
-  on `ED-S-PLANT-HEAT-SW` (a Leviton D315S Matter relay, `ED-T-LEV-MATTER`), which brings the
-  permanent "controlled" symbol and word onto the receptacle face (visible after installation).
-  `ED-M-KITCH-UC-RC` and `ED-M-CLOSET-RC1` are on plain switches (not automatic control; the
-  exception covers a wall switch providing required lighting outlets under 210.70). The garage
-  opener outlet is on a GFCI, not a relay. Graded (advisory): `ED-S-PLANT-HEAT-RC` is UNKNOWN
-  (GFWT2-W unmarked). Owner chose (2026-11-14, owner question 3): a blank-face GFCI upstream
-  feeding a WR receptacle factory-marked controlled (being implemented).
+- **406.11(D) controlled receptacles.** No receptacle is automatically controlled
+  (`electrical.controlled_receptacle` N/A): the plant heater is switched by a plug-in Eve Energy
+  (Matter over Thread); `ED-S-PLANT-HEAT-RC` is always on. `ED-M-KITCH-UC-RC` and
+  `ED-M-CLOSET-RC1` are on plain switches (not automatic control; the exception covers a wall
+  switch providing required lighting outlets under 210.70). The garage opener outlet is on a
+  GFCI, not a relay.
 - **406.10(3)** push-in terminals are for 15 A circuits with 14 AWG solid copper only: a spec
   note for the electrician (the 20 A receptacle circuits are 12 AWG and need side-wire or
   back-wire terminals). Not graded.
@@ -66,7 +65,8 @@ switches were seen only on that page. Both numbers are cited as printed. Tests:
   the print set carries it; no check reads it. 408.4(B) is for other than dwellings.
 - **408.6 short-circuit rating.** Every panelboard's SCCR at least the available fault
   current. Graded by `electrical.panel_sccr`: label `sccr_a` vs `available_fault_current_a` on
-  the meter-main type; QO/Homeline 22 kA authored; UNKNOWN until Xcel's figure. For one- and two-family dwellings 408.6(1)-(5) apply: the available fault current and
+  the meter-main type; QO/Homeline 22 kA authored; UNKNOWN until Xcel's figure; a staged permit
+  exclusion (waiting on Xcel's fault current). For one- and two-family dwellings 408.6(1)-(5) apply: the available fault current and
   calculation date are field-marked at the point of supply, and the panelboards' SCCR (from
   their OCPDs) is field-marked. **Owner question 4:** `sccr_a` is authored (22 kA on
   `ED-T-PANEL`/`-2`); only Xcel's available fault current (`available_fault_current_a`) at the
@@ -163,7 +163,7 @@ that seals to the surface.
   `electrical.outdoor_receptacle_wr` - outdoor (in no room) receptacles WR per
   (A)(1)(c)/(B)(1)(d); an in-use cover per (B)(1)(a)-(b) or UNKNOWN (damp vs wet not modelled);
   indoor damp rooms not graded. Catlin: five PASS (GFWT2-W/GFWT1-W WR, 5980-UCL extra-duty
-  in-use).
+  in-use); CODE tier, with its own blocking permit item.
 
 **406.10 Terminations.** *(summary kept local)*
 - **Engine:** not graded (`NEC.PUSH_IN_TERMINALS`).
@@ -182,7 +182,8 @@ required room lighting outlets under 210.70. (E) A receptacle with a USB charger
 built with the Class 2 circuitry integral.
 - **Engine:** `NEC.CONTROLLED_RECEPTACLE`. Graded: `electrical.controlled_receptacle`
   (advisory) - receptacles switched by a smart/occupancy/timer control need
-  `controlled_marking`; `ED-S-PLANT-HEAT-RC` UNKNOWN (GFWT2-W unmarked; owner question).
+  `controlled_marking`. Catlin: N/A; none is automatically controlled (the plant heater is
+  switched by a plug-in Eve Energy; its receptacle is always on).
 
 **406.12 General installation.** **406.14 Mounting (partial).** *(summary kept local)*
 - **Engine:** not graded; a new house builds to these without replacements.
@@ -211,4 +212,4 @@ modifications affecting the fault current, it is verified or recalculated so rat
 - **Engine:** `NEC.CIRCUIT_DIRECTORY` (408.4(A)), `NEC.SWITCHBOARD_SCCR` (408.6), `NEC.PANELBOARDS`
   (Article 408) name these. 408.6 is graded by `electrical.panel_sccr` (label `sccr_a` vs
   `available_fault_current_a` on the meter-main type; QO/Homeline 22 kA authored; UNKNOWN until
-  Xcel's figure); the rest is not graded.
+  Xcel's figure; a staged permit exclusion); the rest is not graded.
