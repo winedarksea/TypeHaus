@@ -82,13 +82,14 @@ export const SECTION_GROUPS: readonly BomSectionGroup[] = [
   },
   {
     id: "electrical",
-    note: "Devices and their boxes, the panel schedule and service load, raceway and its fittings, conductors, PV and backup.",
+    note: "Devices and their boxes, the panel schedule and service load, raceway and its fittings, conductors, NEC labels, PV and backup.",
     title: "Electrical",
     // `solar_modules` is the priced by-product view of the `solar` dict beside it — a list,
     // because every price plan reads a list. Both are shown: the dict carries the per-string
     // cold-Voc check, the list carries the order line.
     sections: ["electrical_devices", "electrical_boxes", "panel_schedule", "service_load",
-      "conduit", "conduit_fittings", "grounding", "grounding_conductors", "conductors", "solar", "solar_modules", "backup_power"],
+      "conduit", "conduit_fittings", "grounding", "grounding_conductors", "conductors", "electrical_labels",
+      "solar", "solar_modules", "backup_power"],
   },
   {
     id: "lighting",
