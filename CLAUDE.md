@@ -93,6 +93,11 @@ a release or for exhaustive local verification.
   plain ceiling neck, round or rectangular, takes a drop from above and must match the arriving
   section (`resolve/terminal_drops.py`, #129). A passive shop box is `EquipmentKind.PLENUM`, one
   with a damper `MIXING_BOX` (#125); a blocking `RunBand` is boxed by half-width and half-height.
+- **NEC labels are derived, never authored** (decision #134): `resolve/electrical_labels.py` reads each
+  label's trigger (PV, a source circuit, the service, an ESS, a heating cable, a remote EVSE breaker) into
+  `ResolvedModel.electrical_labels`, wording from the paraphrase docs only. House inputs go on the one
+  `LabelStandard`; an unauthored one is UNKNOWN in `electrical.label_inputs`. Billed in
+  `[electrical_labels]`, printed on E-605.
 - **Condensate overflow is authored on the unit** (decision #127): `Equipment.secondary_drain_pan`
   / `overflow_drain_ref` / `float_switch_ref`, graded by `mep.condensate_overflow` (IMC 307.2.3).
 - **A hung machine's trapeze is derived from `Equipment.hangers`** (decision #131):
