@@ -1502,6 +1502,8 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # is silent on. Also rejected: Rothoblaas HBS/TBS 8 mm (3-1/8" thread at every length;
 # ESR-4645 is dry service only) and HECO TOPIX-plus (no US evaluation report).
 "TLOK08" = { low = 0.81, high = 1.10 }  # 1235 ea — the catlin truss's one girt screw
+# TimberLOK 10" (FMTLOK10-50): Home Depot $41.69 per 50 = $0.83 ea; high is Zoro's 50-pack (~$1.38-1.68).
+"TLOK10" = { low = 0.83, high = 1.40 }  # 41 ea — door sill-course blocks into the TJI backer pair
 # RF-HOUSE eave blocking toe screws (notes/eave_gutter_girt.md §4): 2 per end into the
 # stiffener pair (3") and 2 per block down into the rafter plate (4").
 "SDWS22300DB" = { low = 0.55, high = 0.85 }  # 144 ea — RF-HOUSE eave blocking
