@@ -99,6 +99,7 @@ def test_the_basin_voids_its_host_slab(drained):
     # Half the grate off the slab's west edge (x=70').
     (_drain(position=pt(ft(70), ft(12))), "integrity.area_drain_host"),
     (_drain(grate_size=inch(0)), "integrity.area_drain_geometry"),
+    (_drain(outlet_diameter=inch(12)), "integrity.area_drain_geometry"),
     (_drain(outlet_invert=ft(_SLAB_TOP_FT)), "integrity.area_drain_geometry"),
 ])
 def test_a_drain_that_cannot_be_built_is_an_error(catlin_plan, drain, cid):
@@ -160,3 +161,42 @@ def test_takeoff_trade_and_ifc(drained):
         for t in row["tags"]), abs=0.1)
     assert {"area_drain", "area_drain_riser"} <= set(DRAINAGE_CATEGORIES)
     assert _SOLID_IFC_CLASS["area_drain"] == ("IfcWasteTerminal", "GULLYSUMP")
+
+
+def test_basin_and_riser_are_hollow_and_grate_has_real_openings(drained):
+    from shapely.geometry import Point, Polygon
+    from shapely.ops import unary_union
+
+    from typehaus.resolve.area_drain_geometry import VISUALIZATION
+    from typehaus.resolve.geometry_ir import signed_volume
+
+    basin = next(s for s in drained[1].solids if s.tag == "AD-TEST")
+    riser = next(s for s in drained[1].solids if s.tag == "AD-TEST-RISER")
+    centre = drained[0].by_tag("AD-TEST").position.xy_m
+    for solid in (basin, riser):
+        mesh = solid.body_mesh
+        assert mesh is not None
+        volume = signed_volume(mesh.positions, mesh.triangles)
+        envelope_volume = Polygon(solid.outline).area * (solid.z1_m - solid.z0_m)
+        assert 0 < volume < .3 * envelope_volume
+        assert min(p[2] for p in mesh.positions) == pytest.approx(solid.z0_m)
+        assert max(p[2] for p in mesh.positions) == pytest.approx(solid.z1_m)
+    # Top faces must leave open slots, not merely draw dark lines on a closed lid.
+    mesh = basin.body_mesh
+    grate_faces = unary_union([
+        Polygon([mesh.positions[i][:2] for i in triangle]) for triangle in mesh.triangles
+        if all(abs(mesh.positions[i][2] - basin.z1_m) < 1e-9 for i in triangle)])
+    opening = Polygon(basin.outline).difference(grate_faces)
+    assert len(opening.geoms) == 2 * VISUALIZATION.slots_per_bank
+    assert opening.area / Polygon(basin.outline).area > .3
+    # The floor and riser have aligned open bores: no disk caps the downpipe.
+    for solid, elevation in ((basin, basin.z0_m), (riser, riser.z0_m),
+                             (riser, riser.z1_m)):
+        mesh = solid.body_mesh
+        assert not any(Polygon([mesh.positions[i][:2] for i in triangle]).covers(Point(centre))
+                       for triangle in mesh.triangles
+                       if all(abs(mesh.positions[i][2] - elevation) < 1e-9 for i in triangle))
+    assert len(riser.outline) > 4
+    radii = [((x - centre[0]) ** 2 + (y - centre[1]) ** 2) ** .5
+             for x, y in riser.outline]
+    assert radii == pytest.approx([2 * _IN] * len(radii))

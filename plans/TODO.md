@@ -223,7 +223,8 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
 - Shower in sauna?
 - ED-B-CLOSET-LT has a more expensive reading light than that utility closet needs for lighting
 - [x] Improve the 3d model of the EQ-S-PLANT-HEATER (CD08210-style housing, bowed grille, top controls and rear intake).
-- Improve the 3d model of the AD-SG-COURT area drains (may need a product search)
+- [x] Improve the 3d model of AD-SG-COURT (hollow basin, open slotted grate, round hollow riser).
+- AD-SG-COURT connection: resolve the bottom-drop adapter/product; the named [NDS 1200](https://www.adspipe.com/nds/products/drainage/catch-basins-and-grates/square-catch-basins/1200-12-in-square-catch-basin-drain-with-2-openings) has lateral outlets. Geometry remains representative, within the authored nominal envelope.
 - [x] Improve the 3d model of the EQ-T-SAUNA-HEATER (US Cilindro PC110E stone tower, front grille, rear shroud, raised top guard and feet).
 
 # Project Management

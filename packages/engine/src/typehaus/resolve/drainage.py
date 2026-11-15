@@ -16,6 +16,7 @@ from typehaus.model.landscape import RainGarden
 from typehaus.model.stormwater import AreaDrain
 from typehaus.model.structure import Drywell, FrenchDrain
 from typehaus.model.trim import Downspout
+from typehaus.resolve.area_drain_geometry import basin_mesh, riser_geometry
 from typehaus.resolve.french_drain_geometry import french_drain_solids
 from typehaus.resolve.geometry import circle_outline, rect_between
 from typehaus.resolve.model import ResolvedModel, ResolvedSolid, SolidSweep
@@ -75,10 +76,12 @@ def _resolve_area_drain(model: ResolvedModel, el: AreaDrain, storey: str) -> lis
     rim = el.rim_elevation.meters if el.rim_elevation is not None else host.z1_m
     floor = rim - el.basin_depth.meters
     sizes = (el.grate_size.meters, el.basin_depth.meters, el.outlet_diameter.meters)
-    if min(sizes) <= 0.0 or el.outlet_invert.meters > floor + 1e-9:
+    if min(sizes) <= 0.0 or el.outlet_diameter.meters >= el.grate_size.meters \
+            or el.outlet_invert.meters > floor + 1e-9:
         return [element_error("integrity.area_drain_geometry",
                               f"area drain {el.tag} needs a positive grate, basin and "
-                              f"outlet, and an outlet invert at or below its basin floor",
+                              f"outlet smaller than the basin, and an outlet invert at or below "
+                              f"its basin floor",
                               el.tag)]
     x, y = el.position.xy_m
     half = el.grate_size.meters / 2.0
@@ -91,13 +94,16 @@ def _resolve_area_drain(model: ResolvedModel, el: AreaDrain, storey: str) -> lis
         host, voids=(*host.voids, tuple(tuple(p) for p in ring)))
     model.solids.append(ResolvedSolid(
         uid=f"{el.uid}-00", tag=el.tag, storey=storey, category="area_drain",
-        outline=ring, z0_m=floor, z1_m=rim, material="polyethylene"))
+        outline=ring, z0_m=floor, z1_m=rim, material="polyethylene",
+        product=el.product, body_mesh=basin_mesh(
+            (x, y), *sizes, floor, rim)))
     if floor > el.outlet_invert.meters:
-        r = el.outlet_diameter.meters / 2.0
+        outline, mesh = riser_geometry(
+            (x, y), el.outlet_diameter.meters, el.outlet_invert.meters, floor)
         model.solids.append(ResolvedSolid(
             uid=f"{el.uid}-RS", tag=f"{el.tag}-RISER", storey=storey,
             category="area_drain_riser",
-            outline=rect_between((x - r, y), (x + r, y), -r, r),
+            outline=outline, body_mesh=mesh,
             z0_m=el.outlet_invert.meters, z1_m=floor, material=el.outlet_material))
     return []
 
