@@ -411,6 +411,12 @@ GARAGE_BACKING = [
                 start=inch(96.75), length=inch(22.5),
                 elevation=inch(24), height=inch(11.25), profile="2x12",
                 material_ref="spf", purpose="garage subpanel backboard (ED-G-PANEL)"),
+    # RL-BW-ENTRY's foot return (rail centre ~22" over the sill datum), same bay as the
+    # panel's band but let in from the outdoor face, under the cdx.
+    WallBacking(uid="VDB9SEX087", tag="BK-G-S-RAIL-FOOT", wall_ref="W-G-S", face="right",
+                start=inch(96.75), length=inch(22.5),
+                elevation=inch(16), height=inch(11.25), profile="2x12",
+                material_ref="spf", purpose="handrail return (RL-BW-ENTRY, foot of flight)"),
     # DR-238's four holes at stations 173.5/174.6/185.4/186.5in, 100in AFF.
     # Fill the stud-007..008 bay; slab is 22in below this wall's sill datum.
     # Fit the 2x6 flush to the inside stud face and fasten both ends to the studs.

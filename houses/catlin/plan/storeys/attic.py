@@ -960,18 +960,19 @@ FLIGHT_GUARD = Railing(
 )
 
 # The raked skirt under the newel transition: west of RL-A-FLIGHT-GUARD the flight is guarded
-# by RL-A-STAIR on the deck above, and between the nosings and the underside of FS-ATTIC's
-# trimmer pack (228 1/8") a band up to ~22" stays open. A finish board fastened under the pack,
-# raked with the flight; 18 3/4" over the nosings reaches within 4" of the pack at the newel and
-# the deck line at its west end. Billed by run with the untyped rails.
+# by RL-A-STAIR on the deck above, and between the nosings and FS-ATTIC's trimmer pack
+# (228 1/8") a band up to ~22" stays open. A painted 3/4" board, raked with the flight, screwed
+# to stringer-0's study face and the guard's newel: no posts, no rail. 18 3/4" over the nosings
+# reaches within 4" of the pack at the newel and the deck line at its west end.
 FLIGHT_SKIRT = Railing(
-    uid="CEF7HWWGNP", tag="RL-A-FLIGHT-SKIRT", path=(
+    uid="CEF7HWWGNP", tag="RL-A-FLIGHT-SKIRT", type_ref="RAILING-INT-SKIRT-PANEL", path=(
         pt(inch(305.125), inch(69.625)),
         pt(inch(284.75), inch(69.625)),
     ),
-    kind=RailingKind.METAL_FASCIA_MOUNT, height=inch(18.75),
-    base_elevation=ft(10), post_spacing=inch(48), post_size="2x2", rail_count=1,
-    mount="fascia", role="guard", serves_stair="ST-S2A", infill="panel",
+    height=inch(18.75),
+    base_elevation=ft(10), post_spacing=inch(48), rail_count=0,
+    mount="panel", start_post_ref="RL-A-FLIGHT-GUARD",
+    role="guard", serves_stair="ST-S2A", infill="panel",
 )
 
 # Continuous wall rail wraps the outer faces of the turn and follows the straight run,

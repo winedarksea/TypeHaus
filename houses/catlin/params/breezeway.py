@@ -132,27 +132,26 @@ TIER_SLABS = [
 ]
 
 
-def guard(uid, tag, path):
-    return Railing(uid=uid, tag=tag, path=tuple(pt(ft(x), ft(y)) for x, y in path),
-                   height=inch(36), base_elevation=ft(DECK_FINISH_FT),
-                   post_spacing=inch(36), post_size="2x2", rail_count=2,
-                   kind=RailingKind.METAL_SURFACE_MOUNT, mount="surface",
-                   assembly="RAILING_DARK_METAL", infill="balusters", baluster_spacing=inch(3.5))
-
-
-# The entry guard's head post stays beyond the service leaf sweep; the tier supports it without
-# moving the deck edge or narrowing the 36in stair.
-ENTRY_GUARD_HEAD_OFFSET_IN = 1.5
+# The tiers need no guard: walled 3" off both sides and 26.4" at the top, under R312.1.1's 30".
+# R311.7.8 wants a handrail (5 risers), so this is a postless wall rail on W-G-S's corrugated
+# face, centre 2 1/2" off it (RL-G-SERVICE's convention: 1.55" clear of the 1.9" bar). One
+# vertex per support: the foot return lands on BK-G-S-RAIL-FOOT, the bracket on the stud at
+# x=12'-0", and the head return on D-G-SERVICE's east king at 9'-9 1/4", past the leaf's swing
+# (x >= 116.5", DESIGN-LOG 2026-10-25).
+ENTRY_RAIL_Y_FT = GARAGE_CLADDING_Y_FT - 2.5 / 12
+ENTRY_RAIL_STUD_X_IN = 144
+ENTRY_RAIL_HEAD_X_IN = 117.25
 RAILINGS = [
-    Railing(uid="BWRHE1AAAA", tag="RL-BW-ENTRY",
-            path=(pt(ft(STAIR_FOOT_X_FT), ft(STAIR_Y1_FT)),
-                  pt(ft(LANDING_EAST_FT + ENTRY_GUARD_HEAD_OFFSET_IN / 12), ft(STAIR_Y1_FT))),
+    Railing(uid="BWRHE1AAAA", tag="RL-BW-ENTRY", type_ref="RAILING-EXT-ALUM-HANDRAIL",
+            path=(pt(ft(STAIR_FOOT_X_FT), ft(ENTRY_RAIL_Y_FT)),
+                  pt(inch(ENTRY_RAIL_STUD_X_IN), ft(ENTRY_RAIL_Y_FT)),
+                  pt(inch(ENTRY_RAIL_HEAD_X_IN), ft(ENTRY_RAIL_Y_FT))),
             kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),
-            base_elevation=ft(STAIR_BASE_FT), post_spacing=inch(36), post_size="2x2",
-            rail_count=1, mount="surface", assembly="RAILING_DARK_METAL",
-            role="guard_and_handrail", serves_stair="ST-BW-ENTRY", top_height=inch(36),
-            graspable_profile="1.5in round — Type I", infill="balusters",
-            baluster_spacing=inch(3.5)),
+            base_elevation=ft(STAIR_BASE_FT), post_spacing=inch(54),
+            rail_count=1, mount="wall", assembly="RAILING_DARK_METAL",
+            role="handrail", serves_stair="ST-BW-ENTRY", top_height=inch(36),
+            graspable_profile="1.9in round — Type I",
+            start_termination="wall_return", end_termination="wall_return"),
 ]
 
 NOTES = [
