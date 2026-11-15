@@ -17,7 +17,7 @@ each one and whether it holds; the panel passes on any one:
 Not tried: (A) feeders, (B)(5) feed-through, (B)(6) engineering supervision. One documented
 limit: the model has no feeder element, so a subpanel without its own ``service_amps`` takes
 the service size as its main term (conservative for a subpanel). See
-``docs/nec-2026-paraphrase-690-705-710.md``.
+``docs/code-notes/nec-2026-paraphrase-690-705-710.md``.
 """
 
 from __future__ import annotations

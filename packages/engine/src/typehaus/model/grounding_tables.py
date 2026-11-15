@@ -1,4 +1,4 @@
-"""Table 250.66 and Table 250.102(C)(1) (2026 NEC), as held in ``docs/nec-2026-paraphrase-250.md``.
+"""Table 250.66 and Table 250.102(C)(1) (2026 NEC), as held in ``docs/code-notes/nec-2026-paraphrase-250.md``.
 
 Both tables row by the largest ungrounded conductor (or the summed area of parallel sets),
 in identical bands; they differ only in the top row. A leaf under ``model``.

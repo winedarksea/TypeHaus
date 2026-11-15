@@ -162,7 +162,7 @@ built to `ED-B-SPA-DISC` on `W-SG-W1` through `CD-B-SPA` and carries `rough_in_o
 680.26 as N/A from that statement, and still grades the circuit (680.44(A)/680.5(B) GFCI;
 680.7/680.14 UNKNOWN until conductors and EGC are authored). Before a tub is set, model it as an
 `Equipment` of kind `SPA` (footprint, `spa_self_contained`), clear `rough_in_only`, and meet
-(2026 NEC, paraphrases in `docs/nec-2026-paraphrase-680.md`, `-411-230.md`, `-722.md`):
+(2026 NEC, paraphrases in `docs/code-notes/nec-2026-paraphrase-680.md`, `-411-230.md`, `-722.md`):
 
 - **680.13:** `ED-B-SPA-DISC` at least 5 ft horizontally from the water's edge (or a permanent
   barrier giving a 5 ft reach), within sight of the tub, readily accessible. Site the tub so

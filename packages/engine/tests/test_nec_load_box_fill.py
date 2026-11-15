@@ -1,5 +1,5 @@
 """2026 NEC 120.5(B), 120.7(C)(2), 120.11(A) in 120.6, and 314.16(B)/314.24(B) allowances
-as `docs/nec-2026-paraphrase*.md` paraphrase them. Each test pins one rule's arithmetic."""
+as `docs/code-notes/nec-2026-paraphrase*.md` paraphrase them. Each test pins one rule's arithmetic."""
 
 from __future__ import annotations
 

@@ -1,5 +1,5 @@
 """Lane E of the 2026 NEC residue: device listing facts (230.67(E), 215.18(E), 406.9, 406.11(D),
-408.6) and 110.26(D)/(E)(2). Paraphrase: docs/nec-2026-paraphrase-404-408.md, -110-240-625.md."""
+408.6) and 110.26(D)/(E)(2). Paraphrase: docs/code-notes/nec-2026-paraphrase-404-408.md, -110-240-625.md."""
 
 from __future__ import annotations
 

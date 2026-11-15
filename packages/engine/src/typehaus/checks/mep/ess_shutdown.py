@@ -7,7 +7,7 @@ stops) and the outdoor ``rsd_initiator`` device. 480.7(A) wants a dc disconnect 
 60 V (``battery_nominal_voltage_v``); 480.7(B)'s outdoor EMERGENCY DISCONNECT is graded as
 met by that initiator and its derived label, the AHJ's reading of (B) staying open.
 Not graded: readily accessible, the off/on indication (a product fact), 706.15(D).
-See ``docs/nec-2026-paraphrase-480-706.md``.
+See ``docs/code-notes/nec-2026-paraphrase-480-706.md``.
 """
 
 from __future__ import annotations

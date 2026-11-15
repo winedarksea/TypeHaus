@@ -414,7 +414,7 @@ a 48 V hybrid inverter. Three futures:
 
 Xcel's TIIR footnote 6: an outage-only, break-before-make feed is treated like a generator.
 
-**What a future V2H must meet** (2026 NEC, `docs/nec-2026-paraphrase-702-705-island.md`):
+**What a future V2H must meet** (2026 NEC, `docs/code-notes/nec-2026-paraphrase-702-705-island.md`):
 listed and marked for power export (625.48; UL 9741 / UL 1741 SB, SAE J3072 in the note); as
 standby, Art. 702; as a source, Art. 705 (705.12/.28/.30/.40 again); beside the 12kPV on the
 backup side, a second source brings 705.76 coordination, and island capacity sums both outputs

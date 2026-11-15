@@ -1,4 +1,4 @@
-"""NEC 210.52 and 210.70(A)(2)(3) readings (docs/nec-2026-paraphrase-210-422-410.md)."""
+"""NEC 210.52 and 210.70(A)(2)(3) readings (docs/code-notes/nec-2026-paraphrase-210-422-410.md)."""
 
 from __future__ import annotations
 
