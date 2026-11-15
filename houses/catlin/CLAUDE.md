@@ -1225,7 +1225,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   its NFRC CPD row, and `plan/manifest.py` drops the library preset of that tag; catalog-only
   sizes stay presets. **Edit the house file, never `library/windows.py`.** The escape types
   author a turn-sash `net_clear_width_deduction` (154 mm: two 35 mm frames + the 84 mm sash at
-  90°) and `net_clear_height_deduction` (70 mm) on the resolved unit: at 27½" a 26.21" unit
+  90°) and `net_clear_height_deduction` (100 mm: two frames + the PROVISIONAL 30 mm sill
+  adaptor that lifts the stool over the pan's back dam, 2026-11-15) on the resolved unit: at 27½" a 26.21" unit
   nets **20.15" clear, an ESTIMATE** (0.15" margin) until Słowińscy's written figure replaces
   it. Before retyping an escape window, read `notes/egress_window_review.md` and
   `notes/window_and_door_procurement.md` §2; open quote items are §2.6.
