@@ -306,8 +306,10 @@ is enlarged in proportion by circular mils** (a qualified person may instead siz
 effective fault path). (E) One EGC may serve several circuits in a raceway, sized for the largest
 OCPD.
 - **Engine:** `electrical.egc_size` grades every circuit's `egc_awg` against the table, capped
-  by (A); (D) is ADVISORY where the conductors exceed the breaker's minimum and the EGC is
-  smaller than them (Chapter 9 Table 8 not coded). All 41 Catlin circuits PASS.
+  by (A); (D) where the conductors exceed the breaker's minimum: the table EGC times their
+  circular-mil ratio (AWG areas from `model/grounding_tables.kcmil`, 0.9995 tolerance), still
+  capped by (A), an advisory FAIL when short. No Table 8 read is needed. All Catlin circuits
+  PASS (`CKT-DRYER`'s #10 EGC equals its #10 conductors).
   `code.NEC_690_45_pv_egc_size` also reads the table for the array's bonds (see
   `nec-2026-paraphrase-690-705-710.md`). The 250.120(B) aluminium rule for the 4/0 Al SER
   feeders' EGC is not graded.

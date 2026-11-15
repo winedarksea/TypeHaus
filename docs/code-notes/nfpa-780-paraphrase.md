@@ -18,7 +18,7 @@ are ADVISORY and never carry ERROR severity. NEC 250.106, which *is* law, is in
 
 The owner read pages 780-11, -12, -24, -25, -28 and -29 on 2026-11-14 (§4.1–4.5.3,
 4.12.8–4.15.2.5, 4.19–5.3). The cross-references to NFPA 660 place this as the 2026
-edition. Section strings live in `typehaus.model.nec.NFPA780`. Sections cited only by
+edition. Section strings live in `typehaus.model.nfpa780.NFPA780`. Sections cited only by
 cross-reference (such as 4.12.4) were not read.
 
 ## 4.1 Material class

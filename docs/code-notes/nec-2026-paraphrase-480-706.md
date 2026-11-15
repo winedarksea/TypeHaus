@@ -44,7 +44,8 @@ The battery voltage is now authored (`battery_nominal_voltage_v`, 51.2 V).
 - **706.15(D) battery disconnect.** The battery is separate from the inverter electronics
   and field-serviced, so a disconnect for its ungrounded conductors is wanted within sight of
   it. None is modelled (the DC run is only "flagged" on the battery); whether the WallMount's
-  own breaker is that disconnect is **owner question 3**, for EG4's listing.
+  own breaker is that disconnect is **owner question 3**, for EG4's listing. Graded since
+  2026-11-14 (UNKNOWN until EG4 answers).
 - **706.15(A)-(C) at the inverter.** Not modelled: a lockable AC disconnect (the 50 A
   breaker `CKT-ESS-GRID` is lockable only if a lock-off is fitted), or within sight, and the
   "ENERGY STORAGE SYSTEM DISCONNECT" marking with nominal voltage (the other three items are
@@ -87,7 +88,10 @@ The battery voltage is now authored (`battery_nominal_voltage_v`, 51.2 V).
   current, arc-flash label and date (a dwelling needs only the voltage).
 - **Engine:** (B) graded by `electrical.ess_emergency_shutdown` from the inverter's
   `rsd_shutdown_scope` and the outdoor `rsd_initiator`. (C) marking derived at the battery's
-  circuit breaker (words plus nominal output voltage). The rest is not graded;
+  circuit breaker (words plus nominal output voltage). (D)(1): the same check passes a battery
+  whose type states `battery_disconnect_all_ungrounded`, or a `DISCONNECT` on its circuit in
+  plan sight; else UNKNOWN. Catlin: UNKNOWN, EG4's manual names "the battery breaker" on the
+  cabinet front but not what it opens. The rest is not graded;
   `electrical.service_disconnect_location` and 705.12 do not reach it.
 
 **706.20 Installation.** **706.30 Circuit current.** *(summary kept local)*

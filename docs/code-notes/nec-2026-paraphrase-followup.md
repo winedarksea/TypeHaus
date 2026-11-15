@@ -65,16 +65,17 @@ Tests: `test_nec_followup.py`. Constants: `typehaus.model.nec.NEC`.
 - **PVC expansion (352.44): none exposed.** The two PVC runs (`CD-B-V2H-SPARE`, `CD-B-V2H-GAP`)
   are indoors, in a wall or in earth. A future exposed run longer than about 5 ft needs an
   expansion fitting at the assumed 130 degF swing (Minnesota roughly -20 to 110 degF surface).
-  The check reads the whole exposed length as one straight run, because strap points are not
-  modelled: conservative, ADVISORY only.
+  The check reads the whole exposed length as one straight run (straps are counted at table
+  spacing, not placed): conservative, ADVISORY only.
 - **Buried EMT (358.10(B)(1)).** `CD-B-GAP-EV` is EMT in earth and under the slab. Galvanized EMT
   there needs corrosion protection that is also approved as suitable for the condition; nothing
   is authored. `electrical.underground_raceway` (UNKNOWN) now cites 358.10(B)(1) instead of "358.10
   unread" (Article 300 owner question 2 in `plans/TODO-nec-2026.md`). The V2H PVC is allowed
   buried by 352.10(H) and needs Schedule 80 where it rises through a damage-prone spot
   (352.10(K)); the model holds only `pvc`, still UNKNOWN.
-- **Support spacing is a gap.** Tables 344.30(B), 352.30(B) and 358.30 and 342.30, 362.30 need
-  strap points and the model has none: not graded, not invented.
+- **Support spacing is a standing limit.** Tables 344.30(B), 352.30(B), 358.30, 342.30 and
+  362.30: `resolve/conduit_fittings.straps_for` counts and bills straps at table spacing, so the
+  bill meets them by construction; no strap is placed, so there is nothing further to grade.
 - **120.5(C) floor area.** `nec_floor_area_ft2` returns the conditioned floor area, 4,898 ft2,
   measured to the sheathing with the basement in. 120.5(C) reads the OUTSIDE dimensions of each
   floor (cladding side) and leaves out detached garages, open porches and unfinished areas that
@@ -259,9 +260,10 @@ sets the radius by Chapter 9 Table 2.
   0.04056 times the temperature change in degF (50 degF 2.03 in.; 100 degF 4.06; 150 degF 6.08; 200
   degF 8.11). A 130 degF swing grows 1/4 in. in about 4.7 ft; 100 degF in 6.2 ft.
 - **Engine:** bends `mep.conduit_bend_total`; use and expansion `mep.raceway_use`; buried EMT
-  `electrical.underground_raceway`; fill `mep.raceway_fill` (Ch. 9). Supports, bushings, joints,
-  couplings and wet-location fittings are not modelled (no strap points or fittings on a
-  `ConduitRun`). Constants: `NEC.EMT_SUPPORT`, `PVC_SUPPORT` and the rows above.
+  `electrical.underground_raceway`; fill `mep.raceway_fill` (Ch. 9). Straps, couplings and
+  connectors are derived and billed at table spacing (`resolve/conduit_fittings`), never placed,
+  so support spacing is a standing limit; bushings, joints and wet-location fittings are not
+  graded. Constants: `NEC.EMT_SUPPORT`, `PVC_SUPPORT` and the rows above.
 
 ## Still unread
 

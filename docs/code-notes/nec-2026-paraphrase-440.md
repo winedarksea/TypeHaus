@@ -97,8 +97,18 @@ a branch-circuit selection current.
   or A/C equipment is authored. A wall does not end the zone (unlike 406.9(C)).
   `EquipmentType.min_circuit_ampacity_a`/`max_overcurrent_a` hold the nameplate.
 
-**440.5 Controllers** **440.6 Ampacity and rating.** **440.7** **440.8** **440.9** **440.10** *(summary kept local)*
+**440.5 Controllers** **440.6 Ampacity and rating.** **440.7** **440.8** **440.9** *(summary kept local)*
 - **Engine:** not graded.
+
+**440.10 Short-circuit current rating.** (A) Controllers and industrial control panels of
+multimotor and combination-load equipment are not installed where the available fault current
+exceeds their marked SCCR (440.4(B)). (B) Where marked, the available fault current and its
+calculation date are documented and available to the inspector.
+- **Engine:** one grouped row in `electrical.hvac_disconnect`: each unit's nameplate
+  `EquipmentType.sccr_a` against the meter's `available_fault_current_a`. At or over the service
+  figure passes; under it is UNKNOWN (the fault at the unit is lower); an unmarked unit
+  (440.4(B) Ex. 3) or no utility figure is UNKNOWN. Catlin: UNKNOWN, no Gree submittal, IOM or
+  manual publishes an SCCR (read 2026-11-14) and Xcel's figure is not in hand.
 
 **440.11 General.** A disconnect is provided for the A/C equipment, motor-compressors and
 controllers. If it is readily accessible to unqualified persons, any enclosure door or cover

@@ -147,9 +147,15 @@ equipment fed from a 680.23(A)(2) transformer or supply. (C) Above 150 V to grou
 phase to phase, a Class C-style SPGFCI tripping at 20 mA or less.
 - **Engine:** `code.NEC_680_spa` reads the class from the circuit (see 680.44). Catlin PASS.
 
-**680.7 Grounding and bonding.** *(summary kept local)*
-- **Engine:** not graded: no conductor, EGC or terminal data. One UNKNOWN per spa circuit.
-  `CD-B-SPA`'s conductors are not authored; its raceway is the default EMT.
+**680.7 Grounding and bonding.** (A) Feeders and branch circuits in a corrosive or wet place
+carry an insulated copper EGC sized by Table 250.122, at least 12 AWG. (B) A flexible cord's
+EGC is insulated copper sized the same way. (C) Bonding and grounding terminals are identified
+for wet locations; field-installed ones in damp, wet or corrosive places are copper, copper
+alloy or stainless and listed for direct burial.
+- **Engine:** `code.NEC_680_spa` grades (A)'s size and metal from the circuit's `egc_awg` and
+  `conductor_material`: Catlin's `CKT-SPA` #10 Cu against #10 (Table 250.122 at 50 A) PASS. One
+  UNKNOWN per spa circuit remains for the EGC's insulation, the whip and its cord ((B)), the
+  terminals ((C)) and 680.14, until a tub is chosen.
 
 **680.8 Cord-and-plug equipment.** *(summary kept local)*
 - **Engine:** not graded. **680.9 Overhead conductors.** Power conductors and open wiring clear
@@ -244,5 +250,5 @@ cord path. (F) Other equipment over the low-voltage limit is 5 ft away unless wa
 | --- | --- |
 | 680.13, 680.22, 680.41(B), 680.43 | An `Equipment` of kind `SPA` with footprint and position (the sunken garden); its `EquipmentType.spa_self_contained`. |
 | 680.26, 680.42(B) waiver | Tub type: in-ground (no waiver) or listed self-contained aboveground; rim height over every perimeter surface within 30 in.; the perimeter paving and its bonding; metal within 5 ft horizontally or 12 ft up: `W-SG-W1` rebar and door frames, railings, `CD-B-SPA` and the disconnect's enclosure. |
-| 680.7, 680.14 | `CKT-SPA`'s EGC size and wiring method (today an EMT run, unlisted for corrosion). |
+| 680.7, 680.14 | The whip, its cord and terminals, the EGC's insulation and the wiring method (today an EMT run, unlisted for corrosion); the EGC's size PASSes. |
 | 680.22(B) | Luminaires near the court: mount height over the water, GFCI and rigid attachment. |

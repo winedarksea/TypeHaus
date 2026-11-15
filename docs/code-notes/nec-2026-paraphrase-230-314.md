@@ -173,8 +173,8 @@ volumes; locknuts, wire connectors and bushings are free.
   receptacle alone on its circuit), two allowances per gang at the circuit's gauge and one
   allowance for all EGCs (never more than four). (2) is one allowance unless the `BoxRow`
   states `internal_clamps=False` (unset is counted); (3) is `BoxRow.support_fittings`; (5) is
-  one allowance up to four EGCs, a quarter for each past four. Not modelled: (6) terminal
-  blocks, barriers, loops, 18 and 16 AWG. Adding a clamp allowance to every Catlin box would still pass.
+  one allowance up to four EGCs, a quarter for each past four. (6) is one allowance per
+  `BoxRow.terminal_blocks` (none on Catlin). Not modelled: barriers, loops, 18 and 16 AWG. Adding a clamp allowance to every Catlin box would still pass.
 
 **314.17 Entries.** *(summary kept local)*
 - **Engine:** not graded.

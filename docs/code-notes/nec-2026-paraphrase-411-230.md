@@ -65,10 +65,15 @@ conditions). 210.63-210.70(B) matches `nec-2026-paraphrase-210-422-410.md`.
   Type 1); PV and ESS connect to a panel's load side (705.12). Not graded.
 - **Article 411, Catlin's 24 V runs.** The four drivers are 24 V (`ED-T-LT-PSU-60`, `-200`,
   `-96-WE`, `PUREEDGE-40`; 40 to 200 W, so 1.7 to 8.3 A, under 411.4(A)'s 25 A) and the rails,
-  covers, shadow gaps and tape runs sit on them: 411.4(B) is met. Not graded: whether each is
-  listed as one system or from listed parts (411.2), concealed wiring by a Chapter 3 method or a
-  listed Class 2 source per 722.140 (411.6(A); 722.140 is read in `nec-2026-paraphrase-722.md`), and the isolating
-  secondary (411.7(B)). **411.6(B) spa:** lighting 10 ft from the water. Catlin has a rough-in
+  covers, shadow gaps and tape runs sit on them: 411.4(B) is met. 411.2, 411.6(A) and
+  411.7(B) are graded as three grouped rows under `electrical.light_run_psu`
+  (`checks/mep/low_voltage_listing.py`) from each supply type's `supply_listing`, `class_2` and
+  `isolating_secondary`, read off published sheets (2026-11-14). Catlin: 411.2 UNKNOWN (the IKEA
+  TRADFRI driver publishes no listing); 411.6(A) UNKNOWN, since the Diode 200 W
+  (`ED-T-LT-PSU-200`) is "Class 2: No" on its sheet and the HLG-100H-24A sheet states no
+  Class 2, so their concealed secondaries need a Chapter 3 method the model does not hold;
+  411.7(B) UNKNOWN (Diode and TRADFRI state no isolated output; HLG and PureEdge do). A 411.2
+  PASS speaks for the supplies only: luminaire and fitting listings are not modelled. **411.6(B) spa:** lighting 10 ft from the water. Catlin has a rough-in
   only (`CKT-SPA`, `ED-B-SPA-DISC`; conditions in `notes/grounding_bonding.md` §10), so no
   distance can be read. It is a gap, not a check. Reading it needs an `EquipmentKind.SPA` with a footprint
   (`nec-2026-paraphrase-680.md`).
@@ -78,9 +83,9 @@ conditions). 210.63-210.70(B) matches `nec-2026-paraphrase-210-422-410.md`.
   strip) and `RM-B-ESS` PASS: switched light, a switch within 6 ft of each door, a light within
   6 ft of each machine. `RM-B-FURNACE` (four panels, inverter, ERV) and `RM-B-WORKSHOP` (water
   heater, manifold) PASS too: 3-way pairs at `D-B-FURN` (between them at (4.8, 18.0) ft); a
-  door into a room with no other door (the ESS closet's `D-B-ESS`) is not an entry. Not graded: (C)(3), automatic
-  control (no occupancy sensor is modelled, so every control reads as manual by absence of
-  evidence); an attic or crawl reached by a stair (no door); finished basement rooms (a gym with an
+  door into a room with no other door (the ESS closet's `D-B-ESS`) is not an entry. (C)(3): a room whose
+  every switched light answers only to an `occupancy` or `timer` switch type is UNKNOWN (no
+  manual bypass is modelled); Catlin has none. Not graded: an attic or crawl reached by a stair (no door); finished basement rooms (a gym with an
   indoor head is a 210.70(A) room). `RM-M-MECH` holds only duct manifolds.
 - **Article 215 feeders (not graded).** Catlin's feeders: the meter-main's two 200 A mains to
   `ED-B-PANEL` (225 A bus) and `ED-B-PANEL-2`; the inverter's load port to `ED-B-BACKUP-PANEL`
@@ -144,8 +149,8 @@ a manual bypass exists.
   lower.
 - **411.8(A)** A Class 2 supply's conductors and equipment follow 725.127 (unread).
   **(B)** Any other supply is on a 20 A branch circuit at most.
-- **Engine:** `electrical.bath_luminaire_zone` cites 411.4(B) beside 410.10(D)(1). Nothing else
-  grades Article 411 (above). Unread and referenced: 725.127 (722.140 is read in `nec-2026-paraphrase-722.md`).
+- **Engine:** `electrical.bath_luminaire_zone` cites 411.4(B) beside 410.10(D)(1);
+  `electrical.light_run_psu` grades 411.2, 411.6(A) and 411.7(B) (above). Unread and referenced: 725.127 (722.140 is read in `nec-2026-paraphrase-722.md`).
 
 ## 410.196(D)-410.197, 422.1-422.2
 

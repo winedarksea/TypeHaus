@@ -389,3 +389,17 @@ outdoors.
 - **Engine:** `code.NEC_690_12_initiation` (2026-11-14): the `rsd_initiator` device lies in no
   room. Catlin's `ED-M-RSD-INIT` stands outdoors beside the meter: PASS. The rest of 690.12
   and 705.10-705.25 are in `nec-2026-paraphrase-690-705-710.md`.
+
+## Standing limits (2026-11-14)
+
+What the engine deliberately does not grade, with the reason, so it is not mistaken for a gap:
+
+- **Raceway support spacing** (Tables 344.30(B), 352.30(B), 358.30): straps are counted and
+  billed at table spacing (`resolve/conduit_fittings.straps_for`), never placed by hand, so the
+  bill meets the tables by construction.
+- **120.61 / 215.2(A)(1) feeder neutral reduction**: the feeder neutral is taken full size; no
+  feeder conductor is modelled to reduce.
+- **Table 250.66 aluminium column**: an Al GEC is graded against 250.66(A) only until the column
+  is read; Catlin has no Al GEC.
+- **705.12(B)(6)** (engineering supervision): named in a busbar FAIL as the remaining path,
+  never graded.

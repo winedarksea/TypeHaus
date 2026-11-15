@@ -60,7 +60,7 @@ through 625.52(B)(1). Article 710 is now fully read (710.1-710.15 is all of it).
   source), and a control system coordinating different sources if there are several. One
   inverter needs no coordination; **a V2H charger on the same backup would be a second source
   and brings 705.76**, which is why `backup_power.md` section 10 keeps V2H as a separate system.
-- **702.5 transfer, 702.6 signals, 702.7 signs: not modelled.** The 12kPV's internal transfer
+- **702.5 transfer and 702.7 signs: not modelled; 702.6 signals graded (below).** The 12kPV's internal transfer
   relay is the interconnection equipment (702.5(A): listed, preventing any inadvertent
   interconnection; ties to the earlier 705.20(F) owner question). No meter-mounted transfer
   switch is used (702.5(B) n/a). 702.6 wants an audible and visual signal, where practicable,
@@ -115,8 +115,13 @@ overload; a PCS typically controls loads at branch, feeder or both levels.
 **702.5 Interconnection or transfer equipment.** *(summary kept local)*
 - **Engine:** not graded.
 
-**702.6 Signals.** *(summary kept local)*
-- **Engine:** not graded; no signal is modelled.
+**702.6 Signals.** Where practicable, audible and visual signals show (A) a malfunction of the
+standby source and (B) that it is carrying load (not for portable sources).
+- **Engine:** `electrical.standby_capacity` reads the inverter's published `standby_signals`:
+  all four (each condition, audible and visual) PASS, fewer or none stated UNKNOWN ("where
+  practicable" and an added annunciator are the AHJ's). Catlin: UNKNOWN; the 12kPV manual
+  publishes a red fault LED only (ESS manual §16.1, QSG §11.3), no buzzer and no off-grid
+  indicator, so a Home Assistant alert is the likely answer.
 
 **702.7 Signs.** **(A)(1) At a one- or two-family dwelling,** permanent placards, labels or
 directories at the disconnects required by 225.41 and 230.70(A)(2), or at an approved readily
