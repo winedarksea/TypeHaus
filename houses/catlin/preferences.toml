@@ -72,7 +72,7 @@ deck_snow_psf = 35.0
 # which is what a deck rim designed to R507's 40 psf live + 10 psf dead was drawn expecting.
 # The porch's grouted-CMU-and-white-brick parapet is ~420 plf against it — which is the point:
 # it lands on the concrete sunken-garden walls, and it could not land on a wood deck.
-# W-BW-SCREEN (39.2 plf in MDO) is under this; it stands on BM-BW-SCSILL, which the pier
+# W-BW-SCREEN (37.5 plf in MDO) is under this; it stands on BM-BW-SCSILL, which the pier
 # calcs load with its line, band included (north_entry_piers.md §2).
 max_guard_dead_load_on_wood_plf = 50
 

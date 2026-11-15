@@ -1347,6 +1347,10 @@ now state the current design only. What they used to narrate, in one line each:
   each at 100% of N-S), so relaxing the screen's 4" edge nailing is declined. Joint W of the
   landing tie corrected onto the stud face (it still carried the retired 5/8" ply): 0.800 to
   0.794.
+- 2026-11-14 (owner), the screen detail: the MDO stops at the north chord post (panel 4 and
+  nailer -5 retired; the HL33 garage ties sat under it), and the lower 6x6 timber is framed
+  in like a stud, four S10ACN through each plate into its ends. Bent A35Z did not fit the
+  1/8" gaps; SDWS screws into end grain are outside ER-192. Wall 39.23 to 37.53 plf.
 
 ### North entry, 2026-09-10 record (moved from CLAUDE.md 2026-11-14)
 

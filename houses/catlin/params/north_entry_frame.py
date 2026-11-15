@@ -230,7 +230,7 @@ beam(7, "BM-BW-RE", ROOF_COLUMN_EAST_X_FT, HEADER_SOUTH_Y_FT,
      HEADER_SIZE, "BEAM_GLULAM_TREATED",
      roof_bearing_insets=(ft(TRUSS_DATUM_INSET_FT), ft(0)))
 
-# BM-BW-SCSILL carries W-BW-SCREEN (no joist under it) between the two columns: 39.2 plf, 57.3
+# BM-BW-SCSILL carries W-BW-SCREEN (no joist under it) between the two columns: 37.5 plf, 55.6
 # with the band (notes/north_entry_piers.md §2). It sits in the joist plane, not the seat plane,
 # which would cross the seats' west ends at one elevation (`structural.member_interference`), and
 # doubles as the deck's west rim since the joist field starts 3 3/4" east of this line.

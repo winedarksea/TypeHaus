@@ -1,20 +1,13 @@
-"""Direct-mounted MDO edge supports and accessible garage tie-block relief."""
+"""Direct-mounted MDO edge supports, the lower centre timber and the panel screws."""
 
-from plan.entry_screen_finish_spec import (
-    SCREEN_LENGTH_IN,
-    SUPPORTS,
-    TIE_RELIEF_BOTTOM_IN,
-    TIE_RELIEF_START_IN,
-    TIE_RELIEF_TOP_IN,
-)
+from plan.entry_screen_finish_spec import SCREEN_LENGTH_IN, SUPPORTS
 
 from params.north_entry_frame import (
-    DECK_JOIST_TOP_FT,
     DECK_SHEET_SOUTH_Y_FT,
     GARAGE_CLADDING_Y_FT,
     SCREEN_AXIS_X_FT,
 )
-from typehaus import Flashing, RoughOpening, TrimKind, from_node, ft, inch, pt
+from typehaus import Flashing, TrimKind, ft, inch, pt
 
 STUD_EAST_IN = SCREEN_AXIS_X_FT * 12 + 1.75
 # The panel schedule is in inches off N-BW-SCREEN-S; hold it to the wall it cuts.
@@ -24,7 +17,7 @@ assert abs((GARAGE_CLADDING_Y_FT - DECK_SHEET_SOUTH_Y_FT) * 12 - SCREEN_LENGTH_I
 FINISH_ELEMENTS = [
     Flashing(
         uid=(f"BWMDO{int(support.tag.rsplit('-', 1)[1]):05d}"
-             if "NAILER" in support.tag else f"BWMDT{i:05d}"),
+             if "NAILER" in support.tag else "BWMDT00007"),  # held when nailer -5 went
         tag=support.tag,
         kind=TrimKind.WRB_COUNTERFLASHING,
         path=(
@@ -43,21 +36,6 @@ FINISH_ELEMENTS = [
     for i, support in enumerate(SUPPORTS, 1)
 ]
 
-FINISH_ELEMENTS.append(
-    RoughOpening(
-        uid="BWMTIECUT1",
-        tag="AO-BW-MDO-TIE-RELIEF",
-        host="W-BW-SCREEN",
-        position=from_node("N-BW-SCREEN-S", inch(TIE_RELIEF_START_IN)),
-        width=inch(SCREEN_LENGTH_IN - TIE_RELIEF_START_IN),
-        height=inch(TIE_RELIEF_TOP_IN - TIE_RELIEF_BOTTOM_IN),
-        sill_height=inch(TIE_RELIEF_BOTTOM_IN - DECK_JOIST_TOP_FT * 12),
-        depth=inch(0.750),
-        depth_from="interior",
-        framing_required=False,
-    )
-)
-
 # Conservative 3/8in head diameter and 1/8in projection, included in the door sweep.
 from plan.entry_screen_finish_spec import PANEL_RUNS_IN  # noqa: E402
 
@@ -68,11 +46,6 @@ for panel, (start, end) in enumerate(PANEL_RUNS_IN, 1):
         edge = column < 2
         count = 9 if edge else 5
         heights = [(row, 2.375 + row * (47.125 - 2.375) / (count - 1)) for row in range(count)]
-        if panel == 4 and station > TIE_RELIEF_START_IN:
-            # A row in the relief moves to its edges, 3/8in off, so no edge run skips 6in (E2-104).
-            heights = [(row, z) for row, z in heights
-                       if not TIE_RELIEF_BOTTOM_IN - 0.5625 < z < TIE_RELIEF_TOP_IN + 0.5625]
-            heights += [(9, TIE_RELIEF_BOTTOM_IN - 0.375), (10, TIE_RELIEF_TOP_IN + 0.375)]
         for row, z in heights:
             FINISH_ELEMENTS.append(
                 Flashing(

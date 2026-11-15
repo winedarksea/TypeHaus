@@ -1,140 +1,121 @@
-# W-BW-SCREEN — white MDO and lower centre timber, 2026-11-02 (timber solid since 2026-11-10)
+# W-BW-SCREEN — white MDO east face and the lower centre timber
 
-**Coordination model; lower timber attachment is NOT accepted for construction.**
-The geometry implements one solid 6x6 timber. New checks block acceptance
-until the bent A35Z end connections, local plate/sill/hanger effects,
-and final installed-hardware door sweep are verified. Passing existing canopy checks
-alone does not approve the added detail. See `entry_screen_mdo_calculations.json`.
+Current basis 2026-11-14. The shared source is `plan/entry_screen_finish_spec.py`; cuts,
+support mass, purchasing and the local checks all read it. Run
+`.venv/bin/python scripts/entry_screen_mdo_report.py --output houses/catlin/notes/entry_screen_mdo_calculations.json`
+(exits 1 on any failed check). Acceptance reads **ok**, on the two reads named under
+"Still to read".
 
 ## Sheet notes
 ### General
-- Lower centre timber: coordination geometry only; attachments are not released for construction.
-- One KDAT 6x6, six 2x4 MDO edge nailers; retain west plywood, plates and cap.
-- White 3/4-inch exterior MDO with removable stainless screws; leave 1/8-inch timber gaps.
-- Keep the north tie-access relief and bottom drainage open.
+- East face: three white 3/4-inch exterior MDO panels, removable stainless screws, 1/8-inch gaps at timber.
+- MDO stops at the north chord post; the end pack and both garage ties stay exposed and oiled.
+- Lower centre timber: one KDAT 6x6 framed in like a stud, four S10ACN through each plate into its ends.
+- Nail the timber on the flat, before the wall stands and before the band goes on.
+- Five 2x4 MDO edge nailers; retain west plywood, plates and cap. Keep bottom drainage open.
 
 
-## Installation geometry
+## Geometry
 
-- Retain the west 5/8-inch shear plywood, corrugated skin, field studs, upper brace band,
-  horizontal plates, upper cap and drainage below. No additional roof support or shear chord.
-- Replace `TR-BW-MDO-NAILER-3` with one vertical KDAT Southern Pine No. 2 6x6, actual
-  5.5 x 5.5 inches, cut 44.44 inches long, `TR-BW-MDO-TIMBER`: x=72.625–78.125, stations
-  37.875–43.375, +0.56 to +45. Both faces line up with the upper centre post and the chord
-  posts (owner, 2026-11-10; it replaced three laminated 2x6 plies, which could not reach both
-  faces). Match its pigmented penetrating-oil finish; do not paint the timber white.
-- The original centre nailer is removed; the other four retain their tags and locations.
-  Add KDAT 2x4 edge nailers `-6` and `-7` at stations 37.000 and 44.250. All six nailers
-  are x=72.625–76.125 and +0.56 to +45; retained stations 7.125, 14.375, 66.875, 74.125.
-- White-painted nominal 3/4-inch Roseburg DuraGard Premium exterior MDO, directly screwed
-  to framing, face x=76.875, 1 1/4 inch behind exposed timber. No east WRB or cavity.
-  (2026-11-10: the studs went flush with the posts' west faces; timber faces held at 78.125.)
+- West 5/8-inch CDX (the shear, alone), corrugated skin, field studs, plates, cap and the band
+  above are unchanged. The timber and nailers add no roof support and no shear chord.
+- `TR-BW-MDO-TIMBER`: one KDAT Southern Pine No. 2 6x6, 5.5 x 5.5, cut 44.44 inches,
+  x=72.625–78.125, stations 37.875–43.375, +0.56 to +45. Both faces line up with the band's
+  centre post and the chord posts. Pigmented penetrating oil, not white paint.
+- Five KDAT 2x4 edge nailers, x=72.625–76.125, +0.56 to +45, at stations 7.125, 14.375
+  (`-1`, `-2`), 37.000, 44.250 (`-6`, `-7`) and 66.875 (`-4`). `-3` and `-5` are retired.
+- White-painted 3/4-inch Roseburg DuraGard Premium exterior MDO, screwed to framing, face
+  x=76.875, 1 1/4 inch behind the exposed timber. No east WRB or cavity.
 
 | Panel | Stations from south node, in | Width, in | Height, in |
 |---|---|---|---|
 | 1 | 0.125–7.875 | 7.750 | 45.5 |
 | 2 | 13.625–37.750 | 24.125 | 45.5 |
 | 3 | 43.500–67.625 | 24.125 | 45.5 |
-| 4 | 73.375–78.375 | 5.000 | 45.5 |
 
-Panels run +2 to +47.5. Leave 1/8 inch beside the centre timber; keep joints open.
-The top plates support panel tops. The north panel retains the open-ended 1.750 x
-3.750-inch tie-access relief, stations 76.625–78.375, +22.125 to +25.875. Keep tool
-access and straight-out panel removal possible. Net MDO area is 19.2287 sf (was 21.2598).
-The wall stops at W-G-S's cladding face, station 78.500 (E2-101, 2026-11-06); it ran
-7/8 inch into the garage corrugated. Panel 4's north edge screws flank the relief 3/8 inch
-off its top and bottom, so no edge run skips more than 6 inches (E2-104).
+Panels run +2 to +47.5. Net MDO area 56.0 x 45.5 = 17.694 sf. **Nothing north of the chord
+post** (owner, 2026-11-14): the two HL33 garage ties sit on the end stud pack's east face at
++10 3/4"..+13 1/4" and +34 3/4"..+37 1/4", and a panel cannot lie flat over them. The end
+pack, tie block and ties are finished like the timber and stay inspectable.
 
-Removable No. 8 x 2-1/2-inch 304 stainless pan-head white-head screws: maximum 6 inches
-at vertical edges, 12 inches at intermediate studs; minimum 3/8-inch panel edge distance.
-Pilot drill; seat heads without crushing the overlay and reserve 1/8-inch head projection.
-Retain the six nailers' three stainless 8d toenails per end, staggered against splitting.
-This retained fastening is not a newly verified guard-infill attachment design.
+Removable No. 8 x 2-1/2-inch 304 stainless pan-head white-head screws: maximum 6 inches at
+vertical edges, 12 inches at intermediate studs; minimum 3/8-inch panel edge distance. Pilot
+drill; seat heads without crushing the overlay. The nailers keep three stainless 8d toenails
+per end; they back MDO edges only.
 
-Prime and paint MDO on both faces, cut edges and holes: compatible exterior primer and
-two white exterior acrylic topcoats. Fill edge voids and ease edges. Recoat field cuts.
-No MDF. Field-treat treated timber cuts/holes with 2% copper naphthenate per AWPA M4.
-Keep the existing cap crossing between upper and lower timbers. Do not dam drainage.
+Prime and paint MDO on both faces, cut edges and holes: compatible exterior primer and two
+white exterior acrylic topcoats. Fill edge voids and ease edges. No MDF. Field-treat treated
+cuts and holes with 2% copper naphthenate per AWPA M4. Do not dam drainage.
 
-## Candidate hardware and acceptance blockers
+## The timber's end connection
 
-The shared source is `plan/entry_screen_finish_spec.py`; dimensions, cuts, support mass,
-procurement, hardware reserve and local checks all read it. Supplemental supports remain
-trim solids; they are not roof columns. Their modeled volume is not charged a second time.
+Framed like a stud (owner, 2026-11-14). **Four `S10ACN` (0.148 x 3 inch, 304 stainless
+ring shank) through each 1 1/2-inch plate into the timber's end grain**, driven on the flat
+before the wall stands and before `SB-BW-BAND` goes on. Nothing is proud of the wall, so the
+door sweep is unchanged.
 
-- No ply fastening: the timber is one piece.
-- End candidate allowance: **four A35Z and 48 SD9112**, two angles per end, six screws
-  per member per angle. It has no approved installed configuration. ESR-3096 Table 5
-  bent A2/C2/D directions are 260/260/150 lb at CD=1, rather than the unbent F1/F2
-  695/845 lb. Directions cannot be combined. Do not use the upper band's F1 rating here.
-- Coordinate the actual bent tabs and all holes. The timber bears on the plate's full
-  3.5 x 5.5 inches and overhangs it 2 inches east. West-side angles must
-  preserve the plywood. North/south tabs encounter the adjacent nailers: the 1/8-inch
-  gaps cannot accommodate a 1-7/16-inch leg. No unauthorized plywood/plate cuts are implied.
-- Verify SD9112 penetration after steel thickness, edge/end distances, opposing screw
-  fit and cross-grain tension/bending, and the plate-to-existing-frame load path.
-- Use compatible ZMAX/SD connector and exterior Double-Barrier screw systems with the
-  specified treated wood; no stainless substitution into galvanized connectors. ER-192
-  treatment limits apply (ACQ-D <=0.40 pcf or less corrosive treatment). Delivered treatment,
-  exposure and coating compatibility remain procurement prerequisites.
+What was ruled out:
 
-- **Screws into the timber's end grain are outside ER-192** (rev. 09/08/2026, read
-  2026-11-14): every SDWS/SDWH table requires the screw "installed straight into the side
-  grain of the wood main member with the screw axis at a 90-degree angle to the wood
-  fibers", and the report publishes no toe-screw value. Driving SDWS22400DB through the
-  plates into the timber's ends is therefore not a published connection.
-- **North end, open (2026-11-14):** the two HL33 garage ties (`CN-BW-GWTIE-LO`/`-HI`, at
-  +10 3/4"..+13 1/4" and +34 3/4"..+37 1/4") seat on the end stud pack's east face, under
-  panel 4. The panel is relieved only at the tie block (+22 1/8"..+25 7/8"); it cannot lie
-  flat over a 7 ga angle leg and its bolt. Relieve it at both angles or stop the MDO at the
-  chord post.
+- **Screws into the ends.** IAPMO UES ER-192 (rev. 09/08/2026, read 2026-11-14): every
+  SDWS/SDWH table requires the screw "installed straight into the side grain of the wood main
+  member with the screw axis at a 90-degree angle to the wood fibers", and no toe-screw value
+  is published.
+- **Bent A35Z.** The 1/8-inch gaps beside the timber cannot take a 1 7/16-inch leg.
 
-Local calculations apply the full 200 lb concentrated guard load, the 50 psf / 1 sf infill
-case and the house's out-of-plane ASD wind pressure to the solid 6x6. NDS Table 4D, SP No.2
-timbers, wet row: Fb **850 psi**, Fv 165 psi, E=1.2e6 psi. 200 lb x 44.44 in / 4 / 27.729 in3
-= 80.1 psi, ratio 0.094. The 1/4-inch deflection limit is a project coordination
-criterion, not a claimed statutory guard-deflection provision. Existing structural guard
-and shear systems retain their roles; MDO gains no shear credit.
+Hand pass (the report reproduces it):
 
-The gravity comparison reconstructs the previous finish's total mass within the current
-house, retaining every other house decision. This is a weight-only baseline, not a claim
-that the previous geometry was re-exported. The additional support wood is evaluated as
-point loads on the sill separately from the finish's averaged line load. Total concentrated
-sill stress, plate distribution and hanger checks remain acceptance blockers. The normal
-load consumers still carry revised wall weight into canopy posts and foundations.
+```
+demand    guard 200 lb at midspan -> 100 lb per end (C_D 1.0)
+          wind 16.661 psf x 32/12 ft x 44.44/12 ft / 2 = 82.3 lb per end (C_D 1.6)
+nail      NDS 12.3.1, D 0.148, plate 1.5" side, 1.5" in the timber (10.1 D), G 0.55 both
+          F_e = 16,600 x 0.55^1.84 = 5,526 psi; mode IV governs
+          Z = D²/K_D x sqrt(2 F_em F_yb / (3 (1 + R_e)))
+            = 0.148²/2.2 x sqrt(2 x 5,526 x 60,000 / 6) = 0.009956 x 10,512 = 104.7 lb
+adjust    x C_eg 0.67 (end grain) x C_M 0.70 (wet) = 49.1 lb per nail
+guard     100 / (4 x 49.1) = 100 / 196.4 = 0.51
+wind      82.3 / (4 x 49.1 x 1.6) = 82.3 / 314.2 = 0.26
+```
 
-Run `.venv/bin/python scripts/entry_screen_mdo_report.py --output
-houses/catlin/notes/entry_screen_mdo_calculations.json` on one line. It writes the report
-and exits **1** for any failed or incomplete new check. A clear door sweep of the timber
-does not close the full installed-hardware sweep while end hardware
-is unresolved. Final acceptance requires that sweep at the authored 87-degree stop,
-including installation allowance and stop tolerance, with >=1/4-inch clearance.
+F_yb 60,000 psi is an assumed floor, not a published value. Z goes as its square root: the
+guard row still passes at 16,000 psi, and at the 100,000 psi the engine carries for a common
+steel nail it reads 135.1 lb (0.39).
 
-## Purchasing and budget
+The timber as a member, NDS Supplement Table 4D SP No. 2 timbers, wet row (Fb 850, Fv 165,
+E 1.2e6): 200 lb x 44.44 / 4 / 27.729 in³ = 80.1 psi, **0.094**; shear 0.060; wind bending
+0.039. The 1/4-inch deflection limit is a project criterion, not a statutory one.
 
-Purchase one 48 x 96-inch MDO sheet, **three 8-foot KDAT 2x4s** for six nailers and
-**one 8-foot KDAT 6x6** for the timber. Two 24.125 x 45.5-inch
-panels fit end-to-end in one strip; narrow panels fit alongside. Verify actual thickness,
-framing, finish sample and tie relief before cutting. Attachment hardware is a candidate
-allowance pending verification, not a released installation order.
+**Plates and sill.** A guard load on the timber reaches the plates as it does from any stud;
+the wall's own guard row (`deck_tie/FS-BW-FLOOR`, 0.653) already takes 200 lb anywhere on
+it. `BM-BW-SCSILL` was sized at the thin-brick wall's 77 plf (197 lb-ft); today's 55.62 plf
+line with the timber's point load is under that.
 
-Support wood weighs 59.4837 lb (previously 25.2866). The hardware/paint reserve is 4.36 lb:
-2 lb paint and retained face/nailer fastening reserve, four 0.35 lb angle allowances and
-48 x 0.02 lb connector screws. All counted once through
-net MDO areal density. The finish budget rate includes these materials and the timber
-finish; do not bill a second hardware or lumber allowance. Prices are budget allowances,
-not supplier quotes.
+**Door.** `D-G-SERVICE` clears every screen solid by 0.641 inch at the 87-degree stop
+(1/4 inch required), measured at a 1/2-inch pivot inset: measure the delivered frame's pivot
+before setting the stop (`garage_service_door_outswing.md`).
 
-Sources: [Simpson A angles](https://www.strongtie.com/framinganglesandplates_anglesandplates/a_angle/p/a),
-[ICC-ES ESR-3096 Table 5 and Figure 5](https://icc-es.org/wp-content/uploads/report-directory/ESR-3096.pdf),
-[IAPMO ER-192 Tables 7/8](https://forms.iapmo.org/ues_reports/reports/er_0192.pdf),
-[SFPA dimensional lumber design values, 5–6-inch width](https://www.anthonyforest.com/assets/pdf/dv-2013-visual-grades.pdf),
+## Weight
+
+Support wood 54.43 lb (timber 29.1, five nailers 25.3); hardware and paint reserve 2.16 lb
+(2 lb paint and fastening, eight end nails). Both are charged once through the MDO's areal
+density. The wall is **37.53 plf**, the line with the band **55.62 plf**, **163.65 lb** to
+each west chord: `north_entry_piers.md` §2a.
+
+## Purchasing
+
+One 48 x 96-inch MDO sheet, **three 8-foot KDAT 2x4s** for five nailers and **one 8-foot
+KDAT 6x6**. Two 24.125 x 45.5-inch panels fit end to end in one strip; the narrow panel fits
+alongside. Verify actual thickness, framing and finish sample before cutting. Prices are
+budget allowances.
+
+## Still to read
+
+- The `S10ACN`'s bending yield strength, from Simpson (graded at an assumed 60 ksi floor).
+- C_eg against NDS 2018 §12.5.2 in print. It was read from AWC's summary of the 2015 changes:
+  "For fasteners with D<1/4 inch, Ceg = 0.67 is applicable where the fastener is installed
+  in end grain."
+
+Sources: [IAPMO ER-192](https://forms.iapmo.org/ues_reports/reports/er_0192.pdf),
+[AWC, changes to the 2015 NDS](https://awc.org/publications/changes-to-the-2015-national-design-specification-nds-for-wood-construction),
+[SFPA dimensional lumber design values](https://www.anthonyforest.com/assets/pdf/dv-2013-visual-grades.pdf),
 [Roseburg DuraGard](https://www.roseburg.com/resources/duragard-mdo-premium-flyer/),
 [APA MDO/HDO](https://www.apawood.org/engineered-wood-products/plywood-osb/mdohdo-panels/).
-
-
-## Geometry overlap review
-
-The supplemental wood occupies the wall's continuous stud-cavity proxy; these are not
-intersections with west plywood or existing field studs.
-Reviewed changes are limited to this overlap category.

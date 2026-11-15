@@ -46,7 +46,7 @@ def load_summary(context):
 def previous_weight_plan(plan):
     """A weight-only comparison, keeping all other current house decisions identical.
 
-    The unchanged north tie relief is retained. Adjust effective density over today's
+    Adjust effective density over today's
     net panel area to reproduce yesterday's total panel/support/hardware mass exactly.
     This variant is not a previous-geometry model or an additional door/export test.
     """
@@ -75,11 +75,6 @@ def build_report(context, before):
                    "status": "ok" if clearance_in >= 0.25 else "over",
                    "clearance_in": clearance_in, "minimum_in": 0.25,
                    "obstacle": minimum.obstacle, "ratio": 0.25 / clearance_in})
-    checks.append({"name": "door sweep with installed end angles and SD9112 heads",
-                   "status": "incomplete", "ratio": None,
-                   "basis": "end connection geometry unresolved"})
-    checks.append({"name": "concentrated total sill/hanger effects", "status": "incomplete",
-                   "ratio": None, "basis": concentrated_sill_delta(context.model)["acceptance"]})
     after = load_summary(context)
     for record in after["structural_records"]:
         if record["status"] not in ("ok", "no_calc"):
@@ -94,11 +89,11 @@ def build_report(context, before):
         "net_panel_area_sqft": spec.NET_PANEL_AREA_IN2 / 144,
         "previous_net_panel_area_sqft": spec.panel_net_area_in2(spec.PREVIOUS_PANEL_RUNS_IN) / 144,
         "supports": [asdict(support) for support in spec.SUPPORTS],
-        "purchasing": spec.PURCHASING, "candidate_hardware_quantities": spec.HARDWARE_QUANTITIES,
+        "purchasing": spec.PURCHASING, "hardware_quantities": spec.HARDWARE_QUANTITIES,
         "support_weight_lb": spec.SUPPORT_WEIGHT_LB,
         "hardware_and_paint_reserve_lb": spec.HARDWARE_AND_PAINT_RESERVE_LB,
         "support_weight_delta_lb": spec.SUPPORT_WEIGHT_LB - spec.PREVIOUS_SUPPORT_WEIGHT_LB,
-        "end_connection_missing": spec.END_CONNECTION_MISSING,
+        "end_connection_open": spec.END_CONNECTION_OPEN,
         "wind_pressure_psf": pressure, "local_checks": checks,
         "concentrated_sill_effects": concentrated_sill_delta(context.model),
         "before": before, "after": after,
@@ -106,7 +101,7 @@ def build_report(context, before):
                                    for tag, load in after["wall_reaction_lb"].items()},
         "door_sweep": {"stop_degrees": context.plan.by_tag("D-G-SERVICE").maximum_opening_degrees,
                        "minimum_clearance_in": clearance_in, "obstacle": minimum.obstacle,
-                       "new_hardware_scope": "end A35Z/SD9112 installation unresolved"},
+                       "new_hardware_scope": "none proud of the wall: nails through the plates"},
     }
 
 

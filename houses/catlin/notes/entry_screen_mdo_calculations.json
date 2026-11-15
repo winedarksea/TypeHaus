@@ -1,12 +1,6 @@
 {
-  "acceptance": "blocked",
-  "acceptance_blockers": [
-    "end attachments: installed directions and fit",
-    "local plate load transfer",
-    "end screw penetration, edge distances and cross-grain effects",
-    "door sweep with installed end angles and SD9112 heads",
-    "concentrated total sill/hanger effects"
-  ],
+  "acceptance": "ok",
+  "acceptance_blockers": [],
   "scope": "supplemental lower screen only; existing shear and upper-band model retained",
   "panel_cuts_in": [
     {
@@ -29,16 +23,9 @@
       "width": 24.125,
       "height": 45.5,
       "quantity": 1
-    },
-    {
-      "start": 73.375,
-      "end": 78.375,
-      "width": 5.0,
-      "height": 45.5,
-      "quantity": 1
     }
   ],
-  "net_panel_area_sqft": 19.22873263888889,
+  "net_panel_area_sqft": 17.694444444444443,
   "previous_net_panel_area_sqft": 21.259765625,
   "supports": [
     {
@@ -92,16 +79,6 @@
       "top_in": 45.0
     },
     {
-      "tag": "TR-BW-MDO-NAILER-5",
-      "profile": "2x4",
-      "west_in": 72.625,
-      "east_in": 76.125,
-      "station_start_in": 73.375,
-      "station_end_in": 74.875,
-      "bottom_in": 0.56,
-      "top_in": 45.0
-    },
-    {
       "tag": "TR-BW-MDO-TIMBER",
       "profile": "6x6",
       "west_in": 72.625,
@@ -116,7 +93,7 @@
     {
       "profile": "2x4",
       "cut_length_in": 44.44,
-      "cuts": 6,
+      "cuts": 5,
       "stock_length_in": 96.0,
       "cuts_per_board": 2,
       "boards": 3
@@ -130,17 +107,15 @@
       "boards": 1
     }
   ],
-  "candidate_hardware_quantities": {
-    "A35Z": 4,
-    "SD9112": 48
+  "hardware_quantities": {
+    "S10ACN": 8
   },
-  "support_weight_lb": 59.48365853140576,
-  "hardware_and_paint_reserve_lb": 4.359999999999999,
-  "support_weight_delta_lb": 34.197083042346634,
-  "end_connection_missing": [
-    "Select and verify the bent A35Z stud-to-plate configuration and installed load directions; F1/F2 695/845 lb from the unbent upper-band detail do not establish this connection.",
-    "Verify all SD9112 hole locations, side-grain penetration, wood edge/end distances and plate contact at both ends without cutting west shear plywood or existing plates.",
-    "Resolve A35Z bent-tab interference with the two new edge nailers; the 1/8in gaps are narrower than a 1-7/16in angle leg. Candidate hardware envelopes are not installation approval."
+  "support_weight_lb": 54.42634343359393,
+  "hardware_and_paint_reserve_lb": 2.16,
+  "support_weight_delta_lb": 29.1397679445348,
+  "end_connection_open": [
+    "Read the S10ACN's bending yield strength from Simpson; the end-nail rows are graded at an assumed 60 ksi floor.",
+    "Confirm C_eg against NDS 2018 12.5.2 in print; it was read from AWC's summary of the 2015 changes."
   ],
   "wind_pressure_psf": 16.661038255629844,
   "local_checks": [
@@ -208,22 +183,22 @@
       "basis": "NDS Table 4D Fc-perp375 x CM0.67; actual 3.5x5.5in contact; no roof credit"
     },
     {
-      "name": "end attachments: installed directions and fit",
-      "status": "incomplete",
-      "ratio": null,
-      "basis": "Select and verify the bent A35Z stud-to-plate configuration and installed load directions; F1/F2 695/845 lb from the unbent upper-band detail do not establish this connection.; Verify all SD9112 hole locations, side-grain penetration, wood edge/end distances and plate contact at both ends without cutting west shear plywood or existing plates.; Resolve A35Z bent-tab interference with the two new edge nailers; the 1/8in gaps are narrower than a 1-7/16in angle leg. Candidate hardware envelopes are not installation approval."
+      "name": "end nails: guard reaction",
+      "status": "ok",
+      "demand": 100.0,
+      "capacity": 196.35243897763704,
+      "unit": "lb",
+      "ratio": 0.5092883007752667,
+      "basis": "4 S10ACN through each plate into the timber's end: NDS 12.3.1 mode IV Z 104.7 lb at an ASSUMED Fyb 60,000 psi, x C_eg 0.67 x C_M 0.7; 1.50in in the timber; C_D 1.0"
     },
     {
-      "name": "local plate load transfer",
-      "status": "incomplete",
-      "ratio": null,
-      "basis": "Select and verify the bent A35Z stud-to-plate configuration and installed load directions; F1/F2 695/845 lb from the unbent upper-band detail do not establish this connection.; Verify all SD9112 hole locations, side-grain penetration, wood edge/end distances and plate contact at both ends without cutting west shear plywood or existing plates.; Resolve A35Z bent-tab interference with the two new edge nailers; the 1/8in gaps are narrower than a 1-7/16in angle leg. Candidate hardware envelopes are not installation approval."
-    },
-    {
-      "name": "end screw penetration, edge distances and cross-grain effects",
-      "status": "incomplete",
-      "ratio": null,
-      "basis": "Select and verify the bent A35Z stud-to-plate configuration and installed load directions; F1/F2 695/845 lb from the unbent upper-band detail do not establish this connection.; Verify all SD9112 hole locations, side-grain penetration, wood edge/end distances and plate contact at both ends without cutting west shear plywood or existing plates.; Resolve A35Z bent-tab interference with the two new edge nailers; the 1/8in gaps are narrower than a 1-7/16in angle leg. Candidate hardware envelopes are not installation approval."
+      "name": "end nails: wind reaction",
+      "status": "ok",
+      "demand": 82.26850445335448,
+      "capacity": 314.16390236421927,
+      "unit": "lb",
+      "ratio": 0.261864917752321,
+      "basis": "4 S10ACN through each plate into the timber's end: NDS 12.3.1 mode IV Z 104.7 lb at an ASSUMED Fyb 60,000 psi, x C_eg 0.67 x C_M 0.7; 1.50in in the timber; C_D 1.6"
     },
     {
       "name": "complete service-door sweep at authored stop",
@@ -232,18 +207,6 @@
       "minimum_in": 0.25,
       "obstacle": "TR-BW-SCREEN-CAP",
       "ratio": 0.3901017208805541
-    },
-    {
-      "name": "door sweep with installed end angles and SD9112 heads",
-      "status": "incomplete",
-      "ratio": null,
-      "basis": "end connection geometry unresolved"
-    },
-    {
-      "name": "concentrated total sill/hanger effects",
-      "status": "incomplete",
-      "ratio": null,
-      "basis": "incomplete: total sill stress, local plate distribution and hanger effects under concentrated loading require verification"
     }
   ],
   "concentrated_sill_effects": {
@@ -266,14 +229,14 @@
     "additional_south_reaction_lb": 17.098541521173367,
     "additional_north_reaction_lb": 17.09854152117326,
     "maximum_additional_moment_lb_in": 445.4651715322587,
-    "acceptance": "incomplete: total sill stress, local plate distribution and hanger effects under concentrated loading require verification"
+    "acceptance": "bounded: BM-BW-SCSILL was sized at the thin-brick wall's 77 plf (197 lb-ft); the MDO line with these point loads is under it"
   },
   "before": {
-    "wall_dead_load_plf": 34.35493813012659,
-    "wall_and_upper_band_plf": 52.445656508109714,
+    "wall_dead_load_plf": 34.32702051843039,
+    "wall_and_upper_band_plf": 52.41773889641351,
     "wall_reaction_lb": {
-      "PT-BW-CW": 153.26183813418857,
-      "PT-BW-CNW": 153.26183813418857
+      "PT-BW-CW": 153.17052427926558,
+      "PT-BW-CNW": 153.17052427926558
     },
     "structural_records": [
       {
@@ -299,7 +262,7 @@
       {
         "key": "deck_post/PT-BW-GW",
         "status": "ok",
-        "ratio": 0.01716338578270085
+        "ratio": 0.01716310775726808
       },
       {
         "key": "deck_post/PT-BW-PE",
@@ -314,12 +277,12 @@
       {
         "key": "deck_post/PT-BW-W",
         "status": "ok",
-        "ratio": 0.018497316243137628
+        "ratio": 0.018497038217704858
       },
       {
         "key": "deck_tie/FS-BW-FLOOR",
         "status": "ok",
-        "ratio": 0.800016341861821
+        "ratio": 0.793500001453483
       },
       {
         "key": "lateral_system/RF-BW-CANOPY",
@@ -364,11 +327,11 @@
     ]
   },
   "after": {
-    "wall_dead_load_plf": 39.227963735241154,
-    "wall_and_upper_band_plf": 57.31868211322428,
+    "wall_dead_load_plf": 37.530054108139716,
+    "wall_and_upper_band_plf": 55.62077248612284,
     "wall_reaction_lb": {
-      "PT-BW-CW": 169.20069271758413,
-      "PT-BW-CNW": 169.20069271758413
+      "PT-BW-CW": 163.64711331227318,
+      "PT-BW-CNW": 163.64711331227318
     },
     "structural_records": [
       {
@@ -394,7 +357,7 @@
       {
         "key": "deck_post/PT-BW-GW",
         "status": "ok",
-        "ratio": 0.017211915186558832
+        "ratio": 0.017195006073271703
       },
       {
         "key": "deck_post/PT-BW-PE",
@@ -409,12 +372,12 @@
       {
         "key": "deck_post/PT-BW-W",
         "status": "ok",
-        "ratio": 0.01854584564699561
+        "ratio": 0.018528936533708483
       },
       {
         "key": "deck_tie/FS-BW-FLOOR",
         "status": "ok",
-        "ratio": 0.800016341861821
+        "ratio": 0.793500001453483
       },
       {
         "key": "lateral_system/RF-BW-CANOPY",
@@ -459,13 +422,13 @@
     ]
   },
   "wall_reaction_delta_lb": {
-    "PT-BW-CW": 15.938854583395567,
-    "PT-BW-CNW": 15.938854583395567
+    "PT-BW-CW": 10.476589033007599,
+    "PT-BW-CNW": 10.476589033007599
   },
   "door_sweep": {
     "stop_degrees": 87.0,
     "minimum_clearance_in": 0.6408584905385432,
     "obstacle": "TR-BW-SCREEN-CAP",
-    "new_hardware_scope": "end A35Z/SD9112 installation unresolved"
+    "new_hardware_scope": "none proud of the wall: end nails through the plates"
   }
 }

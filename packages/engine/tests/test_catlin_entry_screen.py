@@ -21,8 +21,9 @@ def test_mdos_keep_posts_exposed_and_west_structure_fixed(catlin_model_ro):
                            "cladding-out": (71.125, 72)}.items():
         xs = [x / INCH for x, _y in layers[name].polygon]
         assert (min(xs), max(xs)) == pytest.approx(expected)
-    expected_runs = ((0.125, 7.875), (13.625, 37.750),
-                     (43.500, 67.625), (73.375, 78.375))
+    # The MDO stops at the north chord post; the end pack and its ties stay exposed.
+    expected_runs = ((0.125, 7.875), (13.625, 37.750), (43.500, 67.625))
+    assert "mdo-in-4" not in layers
     for index, expected in enumerate(expected_runs, 1):
         layer = layers[f"mdo-in-{index}"]
         xs = [x / INCH for x, _ in layer.polygon]
@@ -46,13 +47,13 @@ def test_mdo_area_and_weight_use_the_same_bounded_regions(catlin_model_ro):
     net = wall_net_areas_m2(catlin_model_ro)[wall.tag]
     layers = [layer for layer in wall.layers if layer.name.startswith("mdo-in-")]
     area = sum(wall_layer_net_area_m2(catlin_model_ro, wall, layer, net) for layer in layers)
-    assert area * 10.7639104 == pytest.approx(19.228733, abs=0.001)
+    assert area * 10.7639104 == pytest.approx(17.694444, abs=0.001)
     rows = [row for row in envelope_layer_takeoff(catlin_model_ro)
             if row["material"] == "entry-screen-white-mdo"]
     assert len(rows) == 1
     assert rows[0]["net_area_sqft"] == pytest.approx(area * 10.7639104, abs=0.05)
     weight = dead_load_plf(SimpleNamespace(plan=catlin_model_ro.plan), wall, wall.z1_m - wall.z0_m)
-    assert weight == pytest.approx(39.22796, abs=0.02)
+    assert weight == pytest.approx(37.53005, abs=0.02)
 
 
 def test_normal_swing_reaches_exports_and_preserves_east_jamb(catlin_model_ro):
@@ -187,17 +188,14 @@ def test_mdo_regions_reach_viewer_and_ifc(catlin_model_ro, catlin_ifc_path):
     wall = catlin_model_ro.wall("W-BW-SCREEN")
     exported = next(w for w in model_to_dict(catlin_model_ro)["walls"] if w["tag"] == wall.tag)
     regions = [layer for layer in exported["layers"] if layer["name"].startswith("mdo-in-")]
-    assert len(regions) == 4
+    assert len(regions) == 3
     for region in regions:
         actual = next(layer for layer in wall.layers if layer.name == region["name"])
         assert region["polygon"] == [list(point) for point in actual.polygon]
     ifc = ifcopenshell.open(str(catlin_ifc_path))
     parts = {part.Name for part in ifc.by_type("IfcBuildingElementPart")}
     assert {f"W-BW-SCREEN:mdo-in-{index}" for index in range(1, 4)} <= parts
-    # The end mdo is still one removable part; IFC splits its C-shaped face
-    # into three rectangles around the garage tie-block relief.
-    assert {f"W-BW-SCREEN:mdo-in-4 ({index}/3)" for index in range(1, 4)} <= parts
-    assert "W-BW-SCREEN:mdo-in-4" not in parts
+    assert not any(name.startswith("W-BW-SCREEN:mdo-in-4") for name in parts)
 
 
 def test_run_spans_reject_invalid_or_overlapping_slot_regions():
@@ -217,7 +215,8 @@ def test_run_spans_reject_invalid_or_overlapping_slot_regions():
 
 def test_mdo_has_edge_supports_without_metal_rail_hardware(catlin_model_ro):
     tags = {element.tag for element in catlin_model_ro.plan.all_elements()}
-    assert {f"TR-BW-MDO-NAILER-{i}" for i in (1, 2, 4, 5, 6, 7)} <= tags
+    assert {f"TR-BW-MDO-NAILER-{i}" for i in (1, 2, 4, 6, 7)} <= tags
+    assert "TR-BW-MDO-NAILER-5" not in tags
     assert not any(tag.startswith("TR-BW-METAL-") for tag in tags)
     wall = catlin_model_ro.wall("W-BW-SCREEN")
     assert not {"vent-in", "wrb-in"} & {layer.name for layer in wall.layers}
@@ -259,20 +258,20 @@ def test_timber_schedule_weights_and_stock_nesting_are_derived_once(catlin_plan)
     from scripts.entry_screen_mdo_report import spec
 
     assert [(row["profile"], row["cuts"], row["boards"]) for row in spec.PURCHASING] == [
-        ("2x4", 6, 3), ("6x6", 1, 1)]
+        ("2x4", 5, 3), ("6x6", 1, 1)]
     assert all(row["cuts_per_board"] * (row["cut_length_in"] + spec.SAW_KERF_IN)
                <= row["stock_length_in"] for row in spec.PURCHASING)
-    assert pytest.approx(59.4836585) == spec.SUPPORT_WEIGHT_LB
-    assert spec.HARDWARE_QUANTITIES == {"A35Z": 4, "SD9112": 48}
-    assert pytest.approx(4.36) == spec.HARDWARE_AND_PAINT_RESERVE_LB
+    assert pytest.approx(54.4263434) == spec.SUPPORT_WEIGHT_LB
+    assert spec.HARDWARE_QUANTITIES == {"S10ACN": 8}
+    assert pytest.approx(2.16) == spec.HARDWARE_AND_PAINT_RESERVE_LB
     material = catlin_plan.library.material("entry-screen-white-mdo")
     effective_weight = (material.areal_density_kg_m2 * spec.NET_PANEL_AREA_IN2
                         * INCH**2 * 2.2046226218)
     panel_weight = spec.NET_PANEL_AREA_IN2 * spec.PANEL_THICKNESS_IN * spec.LB_PER_IN3
-    assert effective_weight == pytest.approx(panel_weight + spec.SUPPORT_WEIGHT_LB + 4.36)
+    assert effective_weight == pytest.approx(panel_weight + spec.SUPPORT_WEIGHT_LB + 2.16)
 
 
-def test_local_timber_check_does_not_hide_failed_or_unverified_connections(catlin_ctx):
+def test_local_timber_and_its_end_nails_are_graded(catlin_ctx):
     from scripts.entry_screen_mdo_report import concentrated_sill_delta, local_timber_checks
 
     from typehaus.engineering.roof_lateral import roof_winds
@@ -282,10 +281,11 @@ def test_local_timber_check_does_not_hide_failed_or_unverified_connections(catli
     # 200 lb x 44.44in / 4 / 27.729 in3 = 80.13 psi on Fb 850.
     assert rows["guard concentrated/infill: 6x6 bending"]["ratio"] == pytest.approx(
         0.09427, abs=1e-4)
-    assert rows["end attachments: installed directions and fit"]["status"] == "incomplete"
-    assert all(row["status"] == "ok" for name, row in rows.items() if "6x6" in name)
+    # Four S10ACN through each plate, end grain, wet, at the assumed 60 ksi floor: 196.3 lb.
+    assert rows["end nails: guard reaction"]["ratio"] == pytest.approx(0.5093, abs=1e-3)
+    assert all(row["status"] == "ok" for row in rows.values())
     local = concentrated_sill_delta(catlin_ctx.model)
-    assert sum(row["load_lb"] for row in local["point_loads"]) == pytest.approx(34.1970830)
+    assert sum(row["load_lb"] for row in local["point_loads"]) == pytest.approx(34.197083)
     assert local["maximum_additional_moment_lb_in"] == pytest.approx(445.46517, abs=0.01)
 
 

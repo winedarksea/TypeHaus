@@ -44,7 +44,7 @@ each is kept because the *rule* it established usually outlives the design that 
 | `canopy_garage_diaphragm.md` | garage lateral delivery and all three east-post variants; §5a oracles `engineering/wood_roof_post.py` (`tests/test_wood_roof_post_calcs.py`) | live |
 | `north_entry_canopy_lateral.md` | `engineering/lateral_system.py` §8: the chord's delegation to the truss order, the collectors, §8f ACI 318-19 Ch. 17 hold-down anchorage (`engineering/holdown_anchor.py`; the generic oracle, not on the current house) and §8g/§8h torsion (`engineering/torsion.py`), worked on the cast alternative's frame (`tests/test_lateral_system_calcs.py`) | live |
 | `north_entry_piers.md` | `engineering/roof_beam.py` §5, `engineering/pier_basis.py` / `deck_post.py` / `spread_footing.py` §6 (`tests/test_north_entry_piers.py`) | live |
-| `entry_screen_mdo.md` | `W-BW-SCREEN`'s white MDO east face, its six nailers and the lower 6x6 timber; local checks in `plan/entry_screen_finish_checks.py` (`scripts/entry_screen_mdo_report.py`) | end connection open |
+| `entry_screen_mdo.md` | `W-BW-SCREEN`'s white MDO east face, its five nailers and the lower 6x6 timber; local checks in `plan/entry_screen_finish_checks.py` (`scripts/entry_screen_mdo_report.py`) | current 2026-11-14 |
 | `hp3_north_relocation.md` | cabinet/stand, airflow and services | schematic |
 | `catlin_truss_engineering.md` | `typehaus/wind.py` (`tests/test_wind_loads.py`); the `rafter/RF-{GARAGE,BW-CANOPY}` deferral — the two TRUSSED roofs only | live |
 | `centre_pillar_bearing.md` | `engineering/post_bearing.py` (`tests/test_post_bearing.py`) | live |

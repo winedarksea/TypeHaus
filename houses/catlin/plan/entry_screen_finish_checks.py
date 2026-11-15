@@ -1,6 +1,7 @@
-"""Local screening for the supplemental timber; unresolved attachments block acceptance."""
+"""Local screening for the supplemental timber and its end nails."""
 
 from plan import entry_screen_finish_spec as spec
+from typehaus.engineering.nail_yield import nail_single_shear_lb
 
 
 def _check(name, demand, capacity, unit, basis):
@@ -10,9 +11,7 @@ def _check(name, demand, capacity, unit, basis):
 
 
 def local_timber_checks(wind_pressure_psf):
-    """Screen the solid 6x6. The member calculations are conditional on end restraint;
-    they do not establish the unverified end connection.
-    """
+    """Screen the solid 6x6 as a stud between its plates, and the nails at its ends."""
     length = spec.NAILER_TOP_IN - spec.NAILER_BOTTOM_IN
     side = spec.TIMBER_WIDTH_IN
     inertia = side**4 / 12
@@ -46,10 +45,21 @@ def local_timber_checks(wind_pressure_psf):
                        spec.SOUTHERN_PINE_TIMBER_FC_PERP_PSI * spec.WOOD_FC_PERP_WET_FACTOR,
                        "psi", "NDS Table 4D Fc-perp375 x CM0.67; actual 3.5x5.5in contact; "
                        "no roof credit"))
-    for name in ("end attachments: installed directions and fit", "local plate load transfer",
-                 "end screw penetration, edge distances and cross-grain effects"):
-        rows.append({"name": name, "status": "incomplete", "ratio": None,
-                     "basis": "; ".join(spec.END_CONNECTION_MISSING)})
+    penetration = spec.END_NAIL_LENGTH_IN - spec.PLATE_THICKNESS_IN
+    z, mode = nail_single_shear_lb(
+        spec.END_NAIL_DIAMETER_IN, spec.PLATE_THICKNESS_IN, penetration,
+        spec.SOUTHERN_PINE_G, spec.SOUTHERN_PINE_G, spec.END_NAIL_FYB_PSI)
+    adjusted = z * spec.END_GRAIN_FACTOR * spec.WET_SERVICE_LATERAL
+    basis = (f"{spec.END_NAILS_PER_END} {spec.END_NAIL_PART} through each plate into the "
+             f"timber's end: NDS 12.3.1 mode {mode} Z {z:.1f} lb at an ASSUMED Fyb "
+             f"{spec.END_NAIL_FYB_PSI:,.0f} psi, x C_eg {spec.END_GRAIN_FACTOR} x C_M "
+             f"{spec.WET_SERVICE_LATERAL}; {penetration:.2f}in in the timber")
+    rows += [
+        _check("end nails: guard reaction", point / 2,
+               spec.END_NAILS_PER_END * adjusted, "lb", basis + "; C_D 1.0"),
+        _check("end nails: wind reaction", wind_line * length / 2,
+               spec.END_NAILS_PER_END * adjusted * 1.6, "lb", basis + "; C_D 1.6"),
+    ]
     return rows
 
 
@@ -86,5 +96,5 @@ def concentrated_sill_delta(model):
             "span_in": length, "additional_south_reaction_lb": left,
             "additional_north_reaction_lb": right,
             "maximum_additional_moment_lb_in": max(moment for _, moment in moments),
-            "acceptance": "incomplete: total sill stress, local plate distribution and hanger "
-                          "effects under concentrated loading require verification"}
+            "acceptance": "bounded: BM-BW-SCSILL was sized at the thin-brick wall's 77 plf "
+                          "(197 lb-ft); the MDO line with these point loads is under it"}

@@ -1,4 +1,4 @@
-"""Sheltered east screen cuts, supplemental supports and candidate connections, inches.
+"""Sheltered east screen cuts, supplemental supports and the timber's end nailing, inches.
 
 Supplemental solids are coordination geometry; their mass is charged once through MDO.
 Connection acceptance is evaluated by entry_screen_finish_checks, never implied by a solid.
@@ -14,12 +14,14 @@ PREVIOUS_PANEL_RUNS_IN = ((0.125, 7.875), (13.625, 40.5625),
                           (40.6875, 67.625), (73.375, 79.25))
 # Wall length: south node to W-G-S's cladding face (E2-101); was 79.375 to its node line.
 SCREEN_LENGTH_IN = 78.500
-PANEL_RUNS_IN = ((0.125, 7.875), (13.625, 37.750), (43.500, 67.625),
-                 (73.375, SCREEN_LENGTH_IN - 0.125))
+# The MDO stops at the north chord post: the end pack north of it, its tie block and the two
+# HL33 garage ties stay exposed and oiled like the timber (owner, 2026-11-14).
+PANEL_RUNS_IN = ((0.125, 7.875), (13.625, 37.750), (43.500, 67.625))
+# The retired north panel's tie relief; only the previous-finish baseline still reads it.
 TIE_RELIEF_START_IN = 76.625
 TIE_RELIEF_BOTTOM_IN = 22.125
 TIE_RELIEF_TOP_IN = 25.875
-NAILER_STATIONS_IN = (7.125, 14.375, 37.000, 44.250, 66.875, 74.125)
+NAILER_STATIONS_IN = (7.125, 14.375, 37.000, 44.250, 66.875)
 NAILER_BOTTOM_IN = 0.56
 NAILER_TOP_IN = 45.0
 TIMBER_STATION_IN = 40.625
@@ -51,8 +53,8 @@ class ScreenSupport:
                 * (self.top_in - self.bottom_in))
 
 
-# Preserve the identities of the four retained nailers; -3 is deliberately retired.
-NAILER_IDENTITIES = (1, 2, 6, 7, 4, 5)
+# Preserve the retained nailers' identities; -3 and -5 are deliberately retired.
+NAILER_IDENTITIES = (1, 2, 6, 7, 4)
 SUPPORTS = tuple(
     ScreenSupport(f"TR-BW-MDO-NAILER-{identity}", "2x4", STUD_WEST_IN, STUD_EAST_IN,
                   station - 0.75, station + 0.75)
@@ -63,43 +65,41 @@ SUPPORTS = tuple(
                   TIMBER_STATION_IN + TIMBER_WIDTH_IN / 2),
 )
 
-END_ANGLE_PART = "A35Z"
-END_SCREW_PART = "SD9112"
-END_ANGLES_PER_END = 2
-END_SCREWS_PER_ANGLE = 12  # candidate bent configuration: six per member, ESR-3096 Table 5
-END_ANGLE_LEG_IN = 1.4375
-END_ANGLE_HEIGHT_IN = 4.5
-END_ANGLE_STEEL_IN = 0.0478
-# These remain explicit prerequisites until a bent configuration and its holes are
-# coordinated with the intact plywood, the plate and the adjacent edge nailer.
-END_CONNECTION_MISSING = (
-    "Select and verify the bent A35Z stud-to-plate configuration and installed load directions; "
-    "F1/F2 695/845 lb from the unbent upper-band detail do not establish this connection.",
-    "Verify all SD9112 hole locations, side-grain penetration, wood edge/end distances and "
-    "plate contact at both ends without cutting west shear plywood or existing plates.",
-    "Resolve A35Z bent-tab interference with the two new edge nailers; the 1/8in gaps "
-    "are narrower than a 1-7/16in angle leg. Candidate hardware envelopes are not "
-    "installation approval.",
+# The timber is framed into the wall like a stud (owner, 2026-11-14): nailed through each
+# plate into its end grain on the flat, before the wall stands and the band goes on. Screws
+# into its ends are outside ER-192 (side grain only), and no angle fits the 1/8in gaps.
+END_NAIL_PART = "S10ACN"  # 0.148 x 3in 304 SS ring shank (library/hardware/nails.py)
+END_NAIL_DIAMETER_IN = 0.148
+END_NAIL_LENGTH_IN = 3.0
+END_NAILS_PER_END = 4
+PLATE_THICKNESS_IN = 1.5
+SOUTHERN_PINE_G = 0.55
+# AWC, "Changes to the 2015 NDS": C_eg 0.67 for D < 1/4in installed in end grain (NDS 12.5.2).
+END_GRAIN_FACTOR = 0.67
+WET_SERVICE_LATERAL = 0.70  # NDS Table 11.3.3, dowel-type fasteners, MC > 19%
+# Assumed floor: no bending yield strength was read for the S10ACN. The 100 ksi the engine
+# carries for a common steel nail reads 135 lb where this reads 105.
+END_NAIL_FYB_PSI = 60_000.0
+END_CONNECTION_OPEN = (
+    "Read the S10ACN's bending yield strength from Simpson; the end-nail rows are graded at "
+    "an assumed 60 ksi floor.",
+    "Confirm C_eg against NDS 2018 12.5.2 in print; it was read from AWC's summary of the "
+    "2015 changes.",
 )
 
 # Conservative procurement/dead-load allowances, not additional solid-derived weight.
 PAINT_RESERVE_LB = 2.0
-ANGLE_MASS_ALLOWANCE_LB = 0.35
-CONNECTOR_SCREW_MASS_ALLOWANCE_LB = 0.02
-HARDWARE_QUANTITIES = {
-    END_ANGLE_PART: 2 * END_ANGLES_PER_END,
-    END_SCREW_PART: 2 * END_ANGLES_PER_END * END_SCREWS_PER_ANGLE,
-}
+END_NAIL_MASS_ALLOWANCE_LB = 0.02
+HARDWARE_QUANTITIES = {END_NAIL_PART: 2 * END_NAILS_PER_END}
 HARDWARE_AND_PAINT_RESERVE_LB = (
-    PAINT_RESERVE_LB + HARDWARE_QUANTITIES[END_ANGLE_PART] * ANGLE_MASS_ALLOWANCE_LB
-    + HARDWARE_QUANTITIES[END_SCREW_PART] * CONNECTOR_SCREW_MASS_ALLOWANCE_LB
+    PAINT_RESERVE_LB + HARDWARE_QUANTITIES[END_NAIL_PART] * END_NAIL_MASS_ALLOWANCE_LB
 )
 
 
 def panel_net_area_in2(runs):
-    # The open-ended relief runs to the north panel's own end, so it scales with `runs`.
-    return sum(b - a for a, b in runs) * (FINISH_TOP_IN - FINISH_BOTTOM_IN) - (
-        runs[-1][1] - TIE_RELIEF_START_IN
+    # A run reaching past the tie block was relieved round it, open-ended to its own end.
+    return sum(b - a for a, b in runs) * (FINISH_TOP_IN - FINISH_BOTTOM_IN) - max(
+        0.0, runs[-1][1] - TIE_RELIEF_START_IN
     ) * (TIE_RELIEF_TOP_IN - TIE_RELIEF_BOTTOM_IN)
 
 
@@ -123,8 +123,7 @@ PURCHASING = tuple(
     for profile in ("2x4", "6x6")
 )
 
-# Local member screening of the solid 6x6. End load transfer and attachment still require
-# verified details.
+# Local member screening of the solid 6x6 and its end nails.
 GUARD_CONCENTRATED_LB = 200.0
 GUARD_INFILL_PSF = 50.0
 GUARD_INFILL_AREA_FT2 = 1.0

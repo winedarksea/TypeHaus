@@ -150,9 +150,9 @@ garage wall, on its own 2x8 sill (`BM-BW-SCSILL`). It does three jobs: the canop
 
 **The two faces are not the same.** WEST takes 5/8" CDX under 7/8" `corrugated-panel-24`, the garage's own panel,
 because the two structures already share a roof plane and a different profile on the one wall standing under that
-joint would read as a mistake; it carries the shear. EAST is white painted 3/4" exterior MDO in four removable
+joint would read as a mistake; it carries the shear. EAST is white painted 3/4" exterior MDO in three removable
 panels screwed directly to the framing, 1 1/4" behind the exposed timber, with no WRB or ventilation cavity: a
-finish under the canopy roof, no shear (`notes/entry_screen_mdo.md`). One solid KDAT 6x6 lower centre timber and six
+finish under the canopy roof, no shear (`notes/entry_screen_mdo.md`). One solid KDAT 6x6 lower centre timber and five
 2x4 edge nailers complete it.
 
 The wall carries `alignment=face("stud-ext", offset=inch(-1.75))`, so its 2x4s stand flush with the west faces of

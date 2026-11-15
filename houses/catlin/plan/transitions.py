@@ -32,10 +32,10 @@ AIR_WATER_THERMAL = (
 # sheet, and is it a different drawing from the one next to it?
 TRANSITIONS = (
     Transition(uid="CATBWTIEREL", tag="TR-CATLIN-SCREEN-TIE-RELIEF",
-               title="MDO relief around garage tie",
+               title="W-BW-SCREEN MDO screen notes",
                condition_pattern="opening_perimeter:ENTRY_SCREEN_WALL",
                notes="notes/entry_screen_mdo.md", star=False, suppress=True,
-               suppress_reason="finish-only end relief, not a framed opening; dimensioned in the MDO screen detail"),
+               suppress_reason="carries the MDO screen's sheet notes onto SL-D-NORTH-ENTRY; no opening remains"),
     Transition(uid="CATPATIOSEAT", tag="TR-CATLIN-SUNKEN-SEAT", title="Sunken-garden door seat",
                condition_pattern="opening_perimeter:GARDEN_CURB_6",
                notes="notes/court_opening_detail.md", star=False,

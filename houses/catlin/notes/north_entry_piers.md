@@ -1,4 +1,4 @@
-> Brick load assumptions below are historical. Current white MDO screen: 39.23 plf including the solid 6x6 timber, six nailers and hardware/paint reserve; see [current detail](entry_screen_mdo.md).
+> Current white MDO screen: 37.53 plf, 163.65 lb to each west chord (§2a).
 
 # North entry canopy, piers and headers — hand-worked basis
 
@@ -117,8 +117,8 @@ That is a benefit of this scheme, and it is why the landing is graded at IRC Tab
 nor a `Roof`, so its dead load is a plf times a run, never a tributary area. The screen is the guard, the closure
 over the deck framing and a declared shear panel: WEST face 5/8" CDX under `corrugated-panel-24` (the shear, alone),
 2x4 KDAT studs on axis 74.375" (flush with the chords' west faces), EAST face white painted 3/4" MDO (finish only).
-The lower centre timber is one solid KDAT 6x6, 5.5" x 5.5" x 44.44", with six 2x4 MDO nailers, 3.5" x 1.5" x 44.44"
-(`entry_screen_mdo.md`). The weight is derived from the assembly, never a constant; `checks/structural/guards.py`
+The MDO is three panels and stops at the north chord post (owner, 2026-11-14). The lower centre timber is one solid
+KDAT 6x6, 5.5" x 5.5" x 44.44", with five 2x4 MDO nailers, 3.5" x 1.5" x 44.44" (`entry_screen_mdo.md`). The weight is derived from the assembly, never a constant; `checks/structural/guards.py`
 reads the same plf (`engineering` may not import `checks`).
 
 600 kg/m³ = 37.457 pcf; wall height 48.94" = 4.0783'; a framed layer at the engine's 0.23 field factor; 1 kg/m² =
@@ -129,29 +129,29 @@ reads the same plf (`engineering` may not import `checks`).
 | 2x4 KDAT studs | 3.5/12 x 37.457 x 0.23 | 2.513 | 10.25 |
 | 5/8" CDX (west) | 0.625/12 x 37.457 | 1.951 | 7.96 |
 | corrugated 24 ga | 5.2 kg/m² x 0.20482 | 1.065 | 4.34 |
-| white 3/4" MDO, with timber, nailers, reserve | 2.341 + 3.320, over 61.0" of the 78.5" run, 45.5" high | 5.661 | 16.68 |
-| **wall** | | | **39.23** |
+| white 3/4" MDO, with timber, nailers, reserve | 2.341 + 3.198, over 56.0" of the 78.5" run, 45.5" high | 5.539 | 14.98 |
+| **wall** | | | **37.53** |
 
 ```
 MDO sheet     0.75/12 x 37.457 = 2.341 psf
-accessories   timber 5.5 x 5.5 x 44.44 = 1,344.3 in³ + six nailers 6 x 1.5 x 3.5 x 44.44 = 1,399.9 in³
-              = 2,744.2 in³ x 37.457/1,728 = 59.48 lb;  reserve 2 + 4 x 0.35 + 48 x 0.02 = 4.36 lb;  63.84 lb
-              over the net panel 61.0 x 45.5 = 19.274 sf - 0.046 sf (the 1.75" x 3.75" relief) = 19.229 sf -> 3.320 psf
-MDO row       5.661 x 45.5/12 x 61.0/78.5 = 5.661 x 3.7917 x 0.7771 = 16.68 plf
+accessories   timber 5.5 x 5.5 x 44.44 = 1,344.3 in³ + five nailers 5 x 1.5 x 3.5 x 44.44 = 1,166.6 in³
+              = 2,510.9 in³ x 37.457/1,728 = 54.43 lb;  reserve 2 + 8 x 0.02 (end nails) = 2.16 lb;  56.59 lb
+              over the net panel (7.75 + 24.125 + 24.125) x 45.5 = 56.0 x 45.5 = 17.694 sf -> 3.198 psf
+MDO row       5.539 x 45.5/12 x 56.0/78.5 = 5.539 x 3.7917 x 0.7134 = 14.98 plf
 ```
 
 `SB-BW-BAND` stands on the screen's top plate: two 2x6 plates, the centre 6x6 post and two corner-to-corner 6x6
 diagonals cut 35.0058", 2 x 54.25 x 1.5 x 5.5 + 25.125 x 5.5² + 2 x 35.0058 x 5.5² = 3,773.0 in³ = 2.1835 ft³ x
-37.457 = 81.79 lb over its own 4.5208': **18.09 plf**. The line is 39.23 + 18.09 = **57.32 plf**. The sill is
+37.457 = 81.79 lb over its own 4.5208': **18.09 plf**. The line is 37.53 + 18.09 = **55.62 plf**. The sill is
 54.25" = 4.5208' between the chords; the panel runs 78.5" (6.5417'), 24.25" = 2.0208' past it, where only the panel
 runs (the band stops on the sill):
 
 ```
-on the sill   57.32 x 4.5208 = 259.1 lb          past the sill   39.23 x 2.0208 = 79.3 lb
-total 338.4 lb  ->  169.20 lb to each west chord, `PT-BW-CW` / `-CNW`, and down to `PT-BW-W` / `-GW`
+on the sill   55.62 x 4.5208 = 251.4 lb          past the sill   37.53 x 2.0208 = 75.8 lb
+total 327.3 lb  ->  163.65 lb to each west chord, `PT-BW-CW` / `-CNW`, and down to `PT-BW-W` / `-GW`
 ```
 
-`checks/structural/deck.py` divides the same pounds by R507.3.1's 50 psf: 169.20 / 50 = 3.38 ft² per pier. The screen
+`checks/structural/deck.py` divides the same pounds by R507.3.1's 50 psf: 163.65 / 50 = 3.27 ft² per pier. The screen
 has no roof-support role; its local member, connection and plate checks are `entry_screen_mdo.md`'s.
 
 ## 3. The design snow — ASCE 7-16 §7.7 roof-step drift **(READ THIS ONE)**
@@ -1209,7 +1209,7 @@ deck sheet stops 1/2" south of the garage cladding: y 36.604' -> 43.104', 6.500'
 
 ### 10j. The screen's weight at the sill
 
-See §2a: 169.20 lb to each west chord.
+See §2a: 163.65 lb to each west chord.
 
 ### 10k. The landing and its seat beams
 
@@ -1379,57 +1379,6 @@ The 12" `PT-BW-E` at the same 91.25" reads 30.4 (§6's 92" row predates §12a's 
 gross area against (6) #5's 1.86, `PT-BW-W`/`-GW` k l_u/r 26.1 / 17.1.
 
 
-## Addendum 2026-11-02 — direct-mounted white MDO
-
-The owner replaced the metal cassette proposal with [white painted exterior MDO](entry_screen_mdo.md).
-The wall weighs 34.23 plf including five new vertical 2x4 edge nailers and a 2 lb
-hardware/paint reserve. Including SB-BW-BAND the line is 52.33 plf, delivering 154.12 lb
-to each west chord. Existing brick arithmetic above is historical. See the reproducible
-[current load-path results](entry_screen_mdo_calculations.json). The west shear layer,
-structural guard, posts and active pinned canopy system remain unchanged.
-
-The retired cast-column spring arithmetic now gives W stiff/soft magnifiers
-1.0781/1.3210 and GW 1.3277/32.5351. These are test oracles for the retired
-variant, not verdicts on the active pinned canopy posts. GW remains over.
-
-
-## Addendum 2026-11-02 — lower three-ply timber coordination
-
-The current screen wall is 38.39 plf, or 56.48 plf including the unchanged upper band.
-The six nailers, three 2x6 plies and 4.6 lb hardware/paint reserve are counted once;
-reduced MDO area offsets part of the additional support weight. Each west chord receives
-167.84 lb (previously 154.13), an increase of 13.72 lb, delivered to the same piers.
-The retired GW spring example gains about 1.2 x 13.72 = 16.46 lb factored axial load.
-Using its existing soft-end critical load of about 9.27 kip, the reciprocal magnifier
-falls from 1/32.5351 by 16.46/(0.75 x 9270), giving delta about 35.25. It remains OVER;
-this retired arithmetic gives no roof-support role to the lower timber. Local member,
-connection and concentrated plate/sill checks remain blocked in entry_screen_mdo.md.
-
-
-## Addendum 2026-11-06 — the screen stops on the garage cladding (E2-101)
-
-`W-BW-SCREEN` ran to `W-G-S`'s node line, 7/8" into the garage corrugated (y 517.75–518.625).
-It now ends on the cladding face: the run is 79.375 → **78.5"** (6.6146' → 6.5417'). MDO
-panel 4 is 73.375–78.375 and the tie relief 76.625–78.5 (`entry_screen_mdo.md`). The two
-tie joints sit on y 43.1458' already and do not move.
-
-**Line load (§2, 2026-11-02 addendum).** `dead_load_plf` charges the MDO at its areal
-density over its panels' spans. The accessory mass (supports + reserve, 58.786 lb) is
-unchanged but now spread over 19.2287 sf of net panel (was 19.4824), so the areal density
-is 2.34105 + 58.786/19.2287 = **5.39822** psf (was 5.35841). The panels span
-61.000" of 78.5" (was 61.875" of 79.375"):
-
-```
-MDO   5.39822 x 45.5/12 x 61.000/78.5 = 15.9053 plf   (was 5.35841 x ... x 61.875/79.375 = 15.8379)
-wall  38.3855 + 0.0674 = 38.4529 plf;  with SB-BW-BAND 18.0907: 56.5436 plf (was 56.4763)
-run   56.5436 x 4.52083' (the sill) + 38.4529 x (78.5 - 54.25)/12 = 255.625 + 77.707 = 333.331 lb
-      166.67 lb to each west chord (was 167.84, -1.18)
-```
-
-The retired GW spring example loses 1.2 x 1.179 = 1.415 lb factored: 1/δ rises from
-1/35.25 by 1.415/(0.75 x 9270) = 0.000204, to **0.028572**, δ about **35.00**. Still OVER and
-still arithmetic only.
-
 ## Addendum 2026-11-06 — the seat beams stop off the base strap (C2 E9)
 
 `BM-BW-HOUSE-SEAT`/`-GARAGE-SEAT` start 0.4495" east of the west columns' face, 1/8" past the
@@ -1464,11 +1413,3 @@ header nails keep 3.108" in the post. The demand is unchanged, 268.0 / 721 = **0
 now read inside the gap the row was tested at. The row does not publish a filler installation:
 Simpson's confirmation is the remaining line, and gravity bears on the pack either way. Backing
 is unchanged, because the flange moves out, not up.
-
-## Addendum 2026-11-10 — the lower timber is one solid 6x6
-
-The three 2x6 plies became one 6x6 (`entry_screen_mdo.md`). Wood 1,344.31 in³ against 1,099.9,
-+5.30 lb, less 0.24 lb of ply screws: the screen is 39.23 plf (was 38.45) and each west chord
-receives 169.20 lb (+2.53). With SB-BW-BAND 18.09 the line is 57.32 plf. No roof-support role;
-the local checks stay in that note. The retired GW soft-end example gains 1.2 x 2.53 = 3.04 lb
-factored: 1/δ falls 3.04/(0.75 x 9,270) = 0.00044, from 1/34.24 to 1/34.76. It remains OVER.
