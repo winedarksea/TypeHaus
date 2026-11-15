@@ -100,6 +100,27 @@ the model goes back to `plans/TODO.md` as a design item.
   - 05-001 Metal Sales: PBR jamb sticks, gutter end caps and straps (unpriced joins).
   - 13-002 Installer/AHJ: confirm the APsmart transmitter/receiver pairing for NEC 690.12.
 
+- **EG4 (NEC 2026 residue; the nine questions in `notes/backup_power.md` §12):** grid-port
+  maximum OCPD (63 A authored, or 80 A); GRID/LOAD/GEN terminal rating (`CKT-ESS-GRID` is #6 Cu
+  on the 60 °C column); GRID terminals live with the breaker open (705.20(F), the conditional
+  404.8(C) label); island-mode N-G bond and open-phase protection (`ED-B-BACKUP-PANEL` is
+  authored isolated); a load-port OCPD or a 50 A backup-panel main (705.60); restart after an
+  overload shutdown (702.4(A)(3)); RSD switch NO or NC; WallMount breaker opens + and −
+  (706.15(D)(1)); the UL 9540 certificate; the 702.6 signal means.
+- **Square D / Schneider:** HOM290 terminal temperature (75 °C allows #3 on `CKT-GAR-FEEDER`)
+  and a 90 A plug-on in the HOM2040M200PC; HOM1224M100PRB at the unheated garage (rated
+  23-104 °F); HOM2175SB label wording ("type 1" vs "type II", 10 kA taken as In); QO1PAF
+  lock-off fit on the QO GFCI/AFCI breakers of `CKT-FH-BATH1/2` (424.19).
+- **Unpublished datasheet facts** (the fields stay unset): `internal_clamps` on RACO 232/192
+  and Carlon B122A/BH235A/B520A; `rear_projection` on the GFCI and smart-switch types;
+  PureEdge `CR-M-LAUNDRY-24V` cable OD and TS24M-2C rail amperes; Schluter floor-heat lead ODs;
+  Class 2 marking on the Mean Well HLG-100H-24A and IKEA TRADFRI 30 W drivers, and any
+  LED-driver output-cable listing (722.140(A)(3)).
+- **Electrician review:** every proposed conductor size in `plan/circuits*.py` ("engine's
+  proposal"), with voltage drop on long runs (it would trigger 250.122(D)); `CD-B-INV-BACKUP`'s
+  conductors; the PV wire and EGC (10 AWG PV 2000 V proposed); the short stub-up into
+  `ED-G-PANEL`.
+
 ## Image II eave sealing
 
 See [roof_eave_rib_end_sealing.md](roof_eave_rib_end_sealing.md). The software records and bills
@@ -118,6 +139,24 @@ the treatment; none of these has been done.
   cut weeps or reopen ribs. Photograph finished rib ends and record product and batch. This is
   an installation check, not a certified wind-driven rain, ice-dam or durability test.
 
+## AHJ readings
+
+Questions for the inspector (2026 NEC residue). An answer that changes the model goes back to
+`plans/TODO-nec-2026.md`.
+
+- 406.9(C)(1): the Bask outlet `ED-M-BATH2-TUB-RC` sealed in the tub deck box as a fixed barrier;
+  the studio shower glass as a barrier for `ED-A-STUBATH-GFCI` (2.2 ft).
+- Owner readings to confirm: 210.52(A)(2), a rafter plate under 5'-0" of head is not wall space
+  (R304.3); 210.70(C)(1), a door into a room with no other door is not an entry (D-B-ESS);
+  410.10(D), the tub zone is the tub's own room (`ED-M-LAUNDRY-TRACK`).
+- 210.63(A): does the ERV count as HVAC equipment?
+- 480.7(B) below 60 V (the EMERGENCY DISCONNECT label is conditional); `RM-B-ESS` as a battery
+  room (480.10(E)).
+- `CD-B-SPA`, EMT cast into `W-SG-W1` (300.7(A)(3)); a fire-rated assembly for 300.23.
+- 690.31(D)(2) label count on concealed PV dc lengths.
+- Ufer earth contact: footings on 7 in. washed stone over geotextile (`code.NEC_250_52_ufer`), at
+  the footing inspection.
+
 ## Utilities
 
 - **SPRWS** (Engineering 651-266-6270): does the meter set carry a check valve, and what is the
@@ -126,6 +165,9 @@ the treatment; none of these has been done.
 - **Sewer:** the next upstream manhole-cover elevation on the survey datum (Public Works
   651-266-6234; the `site/sewer-permit` task asks only for invert). This feeds the UPC 710.1
   backwater item in `plans/TODO.md`.
+- **Xcel:** available fault current at the meter (`available_fault_current_a`; grades
+  `electrical.panel_sccr` on five panels and 440.10), and the lateral size (past 500 kcmil Al /
+  350 Cu the water bond goes from #2 to 1/0 Cu).
 
 ## Delivered parts, dry-fits and site measurements
 
@@ -146,6 +188,10 @@ the treatment; none of these has been done.
   actuator can be reached through the grille opening, before W-S-C1's liner is closed. Not read.
   See `notes/plant_supply_connection.md`.
 - Measure Glacier Bay QL033Y and SUNNERSTA on site; confirm the Chulton as one-hole.
+- **Read off the labels on delivery:** `ED-T-PANEL`'s bus rating (the QO154M200P sheet says only
+  200 A; the model assumes 225 A, and at 200 A 705.12's 120% rule fails, 241.25 A against 240 A);
+  the FS140's In (230.67(E)) and where a Type 2 lands at the meter-main (load side of a main);
+  the DU222RB date code (Schneider PRB-207512 lists 1401-1803).
 
 ## Commissioning
 
@@ -153,3 +199,5 @@ the treatment; none of these has been done.
   (<55 W standby) and 94% maximum efficiency; both flatter a ~250 W outage load. Measure
   islanded idle and low-load efficiency at commissioning, with the backup duty cycles and the 13
   alarms' standby, and re-author them. See `notes/backup_power.md` §6.
+- **Plant heater on the Eve Energy plug:** 12.5 A continuous is 83% of its 15 A; set the heater
+  to its 900/1200 W step (design loss about 510 W) or confirm continuous duty with Eve.
