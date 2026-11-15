@@ -83,8 +83,8 @@ Construction, both sets:
 
 ## The north end, and the honest limit
 
-`_y_out_n` (−0'-10") is the porch deck edge; the house cladding face is at −0'-7 1/4"
-(`_WALL_OUTBOARD_IN`; −0'-5" here was stale). The 2 3/4" between them is a deliberate insulation gap, open down to grade for the full 17'. **No
+`_y_out_n` (−0'-10") is the court's north line (the brick face less 3/8"); the house's
+board-and-batten face is at −0'-6 3/4" (`HOUSE_NS_OUTBOARD_IN`). The 3 1/4" between them is a deliberate insulation gap, open down to grade for the full 17'. **No
 fastener in this whole assembly touches the house wall.** Two closures, both landing on the
 garden structure:
 

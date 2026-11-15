@@ -127,22 +127,12 @@ class SunkenGardenSpec:
     clear_width_ft: float = 17.0
     clear_length_ft: float = 26.0  # N-S between wall inner faces
     porch_clear_depth_ft: float = 8.0  # N-S inside the porch box
-    # House cladding face -> the court's north edge: the insulation gap, open to grade.
-    # 2.75", not the 5" this field carried until 2026-09-20. The 5" was never the built
-    # gap: it was paired with `house_ext_layers_in = 5.0`, a cladding stand-off two
-    # generations stale (the CI-board 5.02" stack), while the real face went to 7.25". The
-    # sum `_y_out_n` is what the whole porch is laid out from and it does NOT move, so the
-    # current split of the same -0'-10" is 6.75" of wall + 3.25" of air. Widening the gap
-    # back to 5" is a DESIGN MOVE, not a cleanup: it pushes the court 2.25" south, off
-    # D-B-SUNKEN's landing patch (coverage drops under R311.3's 85% and the check FAILs).
-    gap_to_house_in: float = 10.0 - HOUSE_NS_OUTBOARD_IN  # 3.25 inches to BBD75 crown
     # The house's real BELOW-GRADE outboard face, on the south run: 0.06" waterproofing +
     # 2" + 2" XPS + 0.125" acrylic foundation coating over BASEMENT_8's pour
     # (FOUNDATION_WALL_XPS4_OUTBOARD, plan/assemblies.py). Transcribed, not imported, the
-    # same way `basement_depth_ft` is. `house_ext_layers_in` above is the
-    # ABOVE-GRADE stack (ccSPF + vent + girt + PBR) and is why `_y_ax_n` landed
-    # on -10" rather than on this plane: the porch deck clears the cladding, but the court
-    # wall meets the foundation.
+    # same way `basement_depth_ft` is. `house_ext_layers_in` below is the ABOVE-GRADE
+    # stack. `_y_ax_n` sits off the brick face (-10"), not on this plane: the porch deck
+    # clears the cladding, but the court wall meets the foundation.
     house_below_grade_face_in: float = 4.185
     # The XPS isolation board between the court's side walls and the house — the same
     # Type X 15 psi product as SG_VENEER_BEAM_14's `xps-break` (2"), at 2.5" (basis 6).
@@ -460,17 +450,40 @@ _x_in_e = _cx + SPEC.clear_width_ft / 2.0  # 26.5
 _x_ax_w = _x_in_w - _half  # 9.0
 _x_ax_e = _x_in_e + _half  # 27.0
 
-# N-S: the whole structure's north face sits gap_to_house south of the house cladding face
-# (a 5" insulation gap). With the north wall removed there is no wall thickness to inset —
-# the side-wall north-end nodes, the porch deck edge, and the back-beam/column line all land
-# on that one north-edge line so the deck actually reaches to within 5" of the house.
-_y_out_n = -(SPEC.house_ext_layers_in + SPEC.gap_to_house_in) / 12.0  # -0.833'
+# The veneer grade beam's isolation board, and the axis that places it.
+#
+# ** FLUSH ON THE HOUSE STRIPS SINCE 2026-11-04 (owner). ** The board sits on FT-B-S1..S4's
+# south face (-4", params/foundations._GARDEN_END_TOE_TRIM, transcribed), the concrete on
+# the board (-6"..-18"), and W-B-BRICK's back on the concrete's north face. That puts the
+# brick 6 1/2" off the backup studs: IRC 2024 Table R703.8.4(1)'s W2.8 row (<= 6 5/8"),
+# with 1/8" to spare (notes/sunken_garden_veneer_beam.md §6k). The beam is bedded on
+# stone (FB-SG-BRKBM), so it no longer has to reach the side walls' toes as a span.
+# Derived off the strip face so the strip and the beam can never drift apart.
+_HOUSE_STRIP_FACE_IN = -4.0
+_break_in = 2.0
+_y_brkbm_conc_n = (_HOUSE_STRIP_FACE_IN - _break_in) / 12.0       # -6": brick's back
+_y_ax_brkbm = (_HOUSE_STRIP_FACE_IN - (SPEC.wall_thickness_in + _break_in) / 2.0) / 12.0  # -11"
+_brkbm_half = (SPEC.wall_thickness_in + _break_in) / 24.0  # half the 14" section
+# ** THE PORCH DECK'S NORTH EDGE IS W-B-BRICK'S SOUTH FACE (2026-11-04). **
+# The deck reaches toward the cladding so D-M-PORCH's 36" R311.3 patch is covered. It stood on
+# `_y_in_n` (-10") while the brick was at -10.06..-13.685"; the brick moved north to
+# -6.0..-9.625" with W-SG-BRKBM, so the deck follows it 3/8" north rather than stop short of
+# it. The joists clear the brick VERTICALLY (top -13 1/3", soffit -11 1/4"); nothing grades
+# that gap — `structural.member_interference` ignores wall layers — so hold the two together.
+_VENEER_WYTHE_IN = 3.625                                   # BASEMENT_BRICK_VENEER, transcribed
+_y_porch_deck_n = _y_brkbm_conc_n - _VENEER_WYTHE_IN / 12.0  # -9.625"
+# N-S: the court's north line is W-B-BRICK's south face less a stated 3/8" setback, -10".
+# The house cladding is at -6.75" (`HOUSE_NS_OUTBOARD_IN`), so 3.25" of open air. The side-wall
+# north-end nodes, the porch outline and the back-beam/column line all land on it. Closing
+# the 3/8" is an owner decision, not taken; a brick move now carries the court with it.
+_COURT_SETBACK_IN = 0.375
+_y_out_n = (_y_brkbm_conc_n * 12 - _VENEER_WYTHE_IN - _COURT_SETBACK_IN) / 12.0  # -0.833'
 _y_ax_n = _y_out_n  # side-wall north-end nodes (open ends terminate here → face at the gap)
 _y_in_n = _y_out_n  # porch deck north edge (back beams + column sit a SPEC offset south)
 # ============================================================================
 # ** THE SIDE WALLS RUN NORTH PAST THE DECK EDGE AND CLOSE THE SLOT (2026-09-05). **
 # ============================================================================
-# `_y_ax_n` is the PORCH's north line, set by the above-grade cladding face. The side walls
+# `_y_ax_n` is the PORCH's north line, set off the brick face (above). The side walls
 # used to terminate on it, which left a 5.8" x 12" plan slot, ~9 ft tall, between each wall
 # end and the basement wall behind it — full of the 6'-4" of backfill W-B-S1/W-B-S4 retain,
 # with nothing holding it. It sloughed into the court and carried water with it.
@@ -498,20 +511,6 @@ _y_wall_end = -(SPEC.house_below_grade_face_in + SPEC.closure_break_in) / 12.0  
 # The isolation board's own mid-thickness, which is where each `IsolationBoard` is positioned:
 # the foam block resolves CENTRED on it, so this is 1" north of the concrete end face.
 _y_closure_break = _y_wall_end + SPEC.closure_break_in / 24.0  # -5.435"
-# The veneer grade beam's isolation board, and the axis that places it.
-#
-# ** FLUSH ON THE HOUSE STRIPS SINCE 2026-11-04 (owner). ** The board sits on FT-B-S1..S4's
-# south face (-4", params/foundations._GARDEN_END_TOE_TRIM, transcribed), the concrete on
-# the board (-6"..-18"), and W-B-BRICK's back on the concrete's north face. That puts the
-# brick 6 1/2" off the backup studs: IRC 2024 Table R703.8.4(1)'s W2.8 row (<= 6 5/8"),
-# with 1/8" to spare (notes/sunken_garden_veneer_beam.md §6k). The beam is bedded on
-# stone (FB-SG-BRKBM), so it no longer has to reach the side walls' toes as a span.
-# Derived off the strip face so the strip and the beam can never drift apart.
-_HOUSE_STRIP_FACE_IN = -4.0
-_break_in = 2.0
-_y_brkbm_conc_n = (_HOUSE_STRIP_FACE_IN - _break_in) / 12.0       # -6": brick's back
-_y_ax_brkbm = (_HOUSE_STRIP_FACE_IN - (SPEC.wall_thickness_in + _break_in) / 2.0) / 12.0  # -11"
-_brkbm_half = (SPEC.wall_thickness_in + _break_in) / 24.0  # half the 14" section
 # The porch's front edge: the axis of the two front beams, of RL-SG-PORCH's south run and
 # of the porch deck itself, at -9.5'.
 #
@@ -534,15 +533,6 @@ _y_balcony_front = _y_ax_front - SPEC.balcony_front_overhang_ft
 _y_ax_mid = _y_ax_front - SPEC.side_wall_south_extension_in / 12.0  # -11.0'
 _y_in_s = _y_in_n - SPEC.clear_length_ft
 _y_ax_s = _y_in_s - _half
-
-# ** THE PORCH DECK'S NORTH EDGE IS W-B-BRICK'S SOUTH FACE (2026-11-04). **
-# The deck reaches toward the cladding so D-M-PORCH's 36" R311.3 patch is covered. It stood on
-# `_y_in_n` (-10") while the brick was at -10.06..-13.685"; the brick moved north to
-# -6.0..-9.625" with W-SG-BRKBM, so the deck follows it 3/8" north rather than stop short of
-# it. The joists clear the brick VERTICALLY (top -13 1/3", soffit -11 1/4"); nothing grades
-# that gap — `structural.member_interference` ignores wall layers — so hold the two together.
-_VENEER_WYTHE_IN = 3.625                                   # BASEMENT_BRICK_VENEER, transcribed
-_y_porch_deck_n = _y_brkbm_conc_n - _VENEER_WYTHE_IN / 12.0  # -9.625"
 
 # ** THE COURT SURFACE. ** -109 7/16": the basement floor plane less the flood step,
 # which is now zero.
@@ -3221,8 +3211,8 @@ BASEMENT_ELEMENTS = [*NODES, *WALLS, *GRADE_BEAMS, *FOOTINGS, *BRKBM_OPENINGS,
                      GARDEN_FIELD, *FROST_WINGS, *ISOLATION_BOARDS]
 # --- the porch enclosure's north deck-slot closure (2026-09-03) -----------------------
 # ** THE VERTICAL BUG PATH, AND THE ONE THE CURTAIN CANNOT CLOSE. ** `_y_out_n` (-0'-10")
-# is the porch deck edge; the house cladding face is at -0'-7 1/4" (`HOUSE_NS_OUTBOARD_IN`).
-# The 2 3/4" between them (`SPEC.gap_to_house_in`) is a deliberate insulation gap and it is
+# is the court's north line; the house cladding face is at -0'-6 3/4" (`HOUSE_NS_OUTBOARD_IN`).
+# The 3 1/4" between them is a deliberate insulation gap and it is
 # open down to grade for the whole 17' — an insect route from the garden straight up into
 # the enclosure, past a curtain that seals perfectly. The enclosure's flank panels stop at
 # the deck; this closes the slot they stop over.
@@ -3233,7 +3223,7 @@ BASEMENT_ELEMENTS = [*NODES, *WALLS, *GRADE_BEAMS, *FOOTINGS, *BRKBM_OPENINGS,
 # 2026-09-23), and a compressible foam or brush lip BEARS on the cladding without
 # penetrating it. Sloped south to drain back over the deck. That lip, and the weighted flap
 # on the flank panels' north vertical edge, are what the north end is: **high bug
-# reduction, not hermetic.** With a designed 2 3/4" gap and no permission to fasten into
+# reduction, not hermetic.** With a designed 3 1/4" gap and no permission to fasten into
 # the house wall assembly, a contact sweep is the ceiling of what is achievable — and it
 # is also the right wind-chill answer, since a compressible seal tolerates the
 # differential movement a rigid one would tear itself apart on.

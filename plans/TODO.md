@@ -130,15 +130,7 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
  - **`SF-B-BATH` stays, and not for want of numbers** — its three runs clear the 6'-8"
    headroom line by ~7 1/2" and a declaration on `RM-B-BATH` would pass. Nobody has decided a
    bathroom ceiling should be open. That is a design question, not a cleanup.
-- **OPEN: `_y_in_n` is datumed off the ABOVE-GRADE cladding face, and nothing at the porch
-  deck's own elevation faces cladding.** Below z=0 the house's south face is `W-B-BRICK`,
-  which stands **2.375" south of that line** (cladding -7.25", brick -9.625" since 2026-11-04;
-  the porch deck now stops on the brick's face). The two halves
-  that were closed on 2026-09-20: `house_ext_layers_in` now derives from `_WALL_OUTBOARD_IN`
-  (and `gap_to_house_in` absorbs the difference, so no geometry moved), and
-  `code.R311_3_exterior_landing` can now union two abutting surfaces into one landing. What
-  remains is the datum question itself, and it is an owner decision rather than a nudge:
-  widening the gap back to a nominal 5" pushes the court 2.25" south and FAILs D-B-SUNKEN.
+- Porch datum (2026-11-15): the court's north line is `W-B-BRICK`'s south face less a stated 3/8" (`_COURT_SETBACK_IN`), -10" as before; `gap_to_house_in` is gone and the cladding gap is 3.25". Closing the 3/8" (deck to the brick) is an owner decision, not taken.
 - Figure out a space for a cat litter box. Options: either a cat door on the current vanity planned (no change) or a wall mounted sink leaving space for a self emptying litter box.
 - A reviewer suggested 1/2" drywall as the standard otherwise, with cheaper end 'abuse' resistant drywall 1/2" for major Hallways, Kids' Rooms, Stairwells. Some options: 1/2" Type C, Paper-Faced 1/2" AR (e.g., Gold Bond Hi-Abuse or USG Sheetrock AR), LP SmartSide 38 Series Panel 7/16" (Sidings Used Indoors), 1/2" MDF (4x8 Sheets with V-Groove or Batten Strips), 1/2" MDO (Medium Density Overlay) Plywood
 - Best Cheap STC Upgrade (~+$0.12/sq ft): 1/2" Type C Drywall (also staggered stud framing which we use in some places, cheap low-expansion spray foam or standard elastomeric latex caulk ), Best Seamless Durability Upgrade (~+$0.45/sq ft): 1/2" Paper-Faced Abuse-Resistant (AR) Drywall, Best "Skip-the-Taper" Durable Wall (~$1.30/sq ft material, $0 mudding): 4x8 Pre-Primed MDF Shiplap Panels (or LP SmartSide 38 Series), The Winner for General Bath Walls: 1/2" Mold-Resistant Paper-Faced Drywall ("Purple Board" / USG Mold Tough, although not strictly needed on well ventilated walls with good high-resin paint), The Bathroom Ceiling Secret: 1/2" Interior Soffit Board (Sag-Resistant), Best Value for Speed & Zero-Fail Waterproofing behind tile: 1/2" Polyisocyanurate Foam Board (Johns Manville GoBoard), Places where 5/8" may still make sense: floor to floor ceilings (Type X), garage walls (5/8" AR Type X). Apparently the resonant frequency of 1/2" Type C drywall is one of the more ideal for household noises (being higher than the others)

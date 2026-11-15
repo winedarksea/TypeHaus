@@ -6,8 +6,8 @@ stoop that abuts a deck is one walking surface and failed the check however it w
 ``_landing_surfaces(ctx, union=True)`` now merges the surfaces sharing one plane.
 
 The second half pins the datum the sunken garden is laid out from. ``house_ext_layers_in``
-was a frozen 5.0" against a cladding face that had moved to 7.25"; it is derived now, and
-the porch's north line — which the whole structure reads — did not move.
+was a frozen 5.0"; it is derived now (6.75", board-and-batten), and the porch's north line
+— the brick face less 3/8", which the whole structure reads — did not move.
 """
 
 from __future__ import annotations
@@ -79,9 +79,8 @@ def test_union_is_opt_in_and_keeps_every_individual_surface():
 def test_catlin_porch_north_line_did_not_move(catlin_model):
     """The sunken garden's north edge is -0'-10" off the house's sheathing line, and the
     whole porch — deck, back beams, column line, veneer grade beam — is laid out from it.
-    Deriving ``house_ext_layers_in`` from the live 7.25" cladding stand-off re-split that
-    10" (7.25" of wall + 2.75" of air) and must not have re-cut it: widening the gap back
-    to a nominal 5" pushes the court 2.25" south and off D-B-SUNKEN's landing patch.
+    It is derived off W-B-BRICK's south face less 3/8", so the 6.75" cladding stand-off
+    leaves 3.25" of air and must not re-cut the line.
     """
     def north(tag):
         floor = catlin_model.plan.by_tag(tag)

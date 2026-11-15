@@ -414,8 +414,8 @@ MAIN_PLACEABLES = [
     # crosses every joist bay perpendicular; the bay closures are FS-SG-BALCONY's blocks.
     #
     # ** THE NORTH END RUNS PAST THE DECK EDGE, AND NO FASTENER TOUCHES THE HOUSE. ** The
-    # porch deck edge is -0'-10"; the cladding face is -0'-7 1/4" (`_WALL_OUTBOARD_IN`), not
-    # the -0'-5" this said, which had the track 1 1/4" into the panel (measured 2026-09-23).
+    # court's north line is -0'-10"; the south cladding face is -0'-6 3/4" (`HOUSE_NS_OUTBOARD_IN`);
+    # an older -0'-5" had the track 1 1/4" into the panel (measured 2026-09-23).
     # The track stops at -0'-7 1/2", 1/4" off the face, the last 2 1/2" on a small aluminium
     # outrigger off the balcony's north edge joist (y -0'-10"). The panel's north edge is a
     # weighted flap lying on the cladding: high bug reduction, not hermetic. TR-SG-SLOT
