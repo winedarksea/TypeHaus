@@ -18,8 +18,7 @@ def test_each_label_follows_its_trigger(catlin_model_ro) -> None:
     sections = {label.section for label in labels.values()}
     assert sections == {"690.12(D)", "690.12(D)(2)", "690.7(D)", "690.31(D)(2)", "705.10",
                         "230.70(D)", "705.12(B)(2)(b)", "230.70(B)(1)", "230.70(B)(2)",
-                        "706.15(C)", "480.7(F)", "480.7(B)", "404.8(C)", "424.47",
-                        "625.43(C)"}
+                        "706.15(C)", "480.7(F)", "480.7(B)", "404.8(C)", "424.47"}
     assert labels["label/480.7(F)/EQ-B-ESS-BATT"].wording.endswith("51.2 V dc")
     assert labels["label/480.7(B)/ED-M-RSD-INIT"].condition  # only if the AHJ applies (B)
     assert labels["label/690.12(D)(2)/ED-M-RSD-INIT"].wording == \
@@ -30,7 +29,8 @@ def test_each_label_follows_its_trigger(catlin_model_ro) -> None:
         feet = run.length_m / 0.3048
         assert labels[f"label/690.31(D)(2)/{run.tag}"].quantity == math.ceil(feet / 10)
     assert {lbl.host_ref for lbl in labels.values() if lbl.section == "424.47"} == {"ED-B-PANEL"}
-    assert "ED-B-PANEL-2" in labels["label/625.43(C)/ED-G-EV-1450"].wording
+    # 625.43(C): the EV breaker moved into ED-G-PANEL, in the charger's own room (2026-11-14).
+    assert "label/625.43(C)/ED-G-EV-1450" not in labels
     assert labels["label/705.10/ED-M-METER"].also == ("702.7(A)(1)",)
 
 
