@@ -102,6 +102,29 @@ reaches P1, P2 or P3. The router also proposes WC vents (PROPOSED-A/B) that rise
 Open: the TODO line on "straight in at the finished face" and the file comment ("elbows once along the wall") disagree;
 this note read the file.
 
+## Addendum 2026-11-15: option 2 fails UPC 402.5's front clearance
+
+Re-measured in a sandbox off `main` after the 11-08 tub move, the 11-09 FS-M-WEST joist move and
+`DU-M-ERV-R-BATH2`. Only `FX-M-BATH2-WC` was moved, to the coordinates above (bowl (21.4, 221.25),
+rotation 90, `wall_ref="W-M-W3"`, flange (18.49, 221.0)). The MEP was not re-authored, because the
+gate's first condition is plain geometry that none of those edits touches.
+
+- Resolved footprint: tank back x 7.24" (W-M-W3's room face 6.52" + 3/4"), **bowl front x 35.56"**.
+- Tub deck's finished west face: the 1/2" Corian apron (`FURN-M-BATH2-TUBDK-AP`, the W waterfall) at
+  **x 58.615"**, on `W-M-TUBDK-W`'s ply face at 59.115".
+- **Front clearance 23.06" against UPC 402.5's 24": 0.94" short.** The fixture's own required-clearance
+  polygon runs to x 59.56" and through the apron, but `haus check --only all` raises nothing: the
+  clearance check compares placeables, and the deck is walls and paneling. The only new FAILs were the
+  ones expected from not porting the MEP (drain port, the floor-heat keepout, the CW stub).
+- Fixing it needs a bowl with depth <= 27.34" at a 3/4" tank stand-off. The nearest WASHLET+-ready
+  elongated two-piece found, TOTO Aquia IV, is listed at 27-3/8" (one dealer) and 27-9/16" (another);
+  neither clears it, and neither listing is a TOTO spec sheet. The Bask tub and its deck are fixed by the
+  owner, and the stand-off is TOTO's.
+
+**No-go.** The vent stays ADVISORY pending an engineered chase. Not measured, and owner choices if wanted:
+a wall-hung bowl on a carrier in W-M-W3 (an exterior 2x6 wall; BATH1's TOTO AP/DuoFit is the precedent)
+or a TOTO spec-sheet read of a shorter WASHLET+ bowl.
+
 ## Sandbox branches (delete)
 
 `scratch/h-bath2-wc-west` (#2, plus the tie probe), `scratch/h-bath2-hot-straight` (#1 and P3), `scratch/h-bath2-tie-probe`
