@@ -138,7 +138,7 @@ def test_every_accessory_is_a_typed_device_and_never_a_footing(catlin_model_ro, 
         "fixture regression: the Catlin house lost its supply devices"
     footing_tags = {e.Name for e in catlin_ifc.by_type("IfcFooting")}
     by_tag = {}
-    for cls in ("IfcValve", "IfcPipeFitting"):
+    for cls in ("IfcValve", "IfcPipeFitting", "IfcTank"):  # IfcTank: the expansion tank
         for entity in catlin_ifc.by_type(cls):
             if _pset(entity, "TypeHaus_PipeAccessory"):
                 by_tag[entity.Name] = entity
@@ -152,7 +152,7 @@ def test_each_accessory_kind_gets_the_right_valve_type(catlin_model_ro, catlin_i
     from typehaus.emit.ifc.emitter import _ACCESSORY_IFC_CLASS
 
     entities = {}
-    for cls in ("IfcValve", "IfcPipeFitting"):
+    for cls in ("IfcValve", "IfcPipeFitting", "IfcTank"):
         for entity in catlin_ifc.by_type(cls):
             if _pset(entity, "TypeHaus_PipeAccessory"):
                 entities[entity.Name] = entity

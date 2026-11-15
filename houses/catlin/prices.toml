@@ -6684,6 +6684,9 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "shutoff" = { material = { low = 8, high = 25 }, labour = { low = 25, high = 70 } }  # 45 ea (2026-11-10: PA-B-BATH-STOP-CW/HW dropped, W5)
 "vacuum_breaker" = { material = { low = 10, high = 35 }, labour = { low = 25, high = 70 } }  # 2 ea (PA-B-USINK-VB joined 2026-10-30; Woodford 34HD ~$32)
 "water_hammer_arrestor" = { material = { low = 12, high = 35 }, labour = { low = 25, high = 70 } }  # 3 ea
+# PA-B-WH-XTANK (2026-11-14): Amtrol ST-12 in-stock listings read 2026-11-14, Patriot Supply
+# $84.28 to Zoro $140.99 (F.W. Webb $133.77). Labour as the other specialties.
+"expansion_tank" = { material = { low = 84, high = 141 }, labour = { low = 25, high = 70 } }  # 1 ea
 # Cleanouts (2026-11-04). One-way is an access fitting + cap at 1.5-3" (estimate, no single
 # listing); it bills CO-M-KITCH-ARM too, so [install_parts] carries no separate arm cleanout.
 # Two-way 4": SquarePeg body $30.29, HD $39.97, Zoro $45.35, Tigre $19.99.

@@ -33,7 +33,7 @@ MAX_DROP_M = 120 * M_PER_IN
 #: Plan search for the bridge's far member: a 24" o.c. bay with slop.
 BRIDGE_REACH_M = 30 * M_PER_IN
 #: A strut slides inward (still under the case) this far, in these steps, for its rods to
-#: clear the flanges a bridge bears on.
+#: clear the flanges a bridge bears on and its parts the run envelopes.
 NUDGE_MAX_M, NUDGE_STEP_M = 4.0 * M_PER_IN, 0.25 * M_PER_IN
 #: A rod's clear gap to a flange edge.
 FLANGE_CLEAR_M = 0.125 * M_PER_IN
@@ -89,8 +89,10 @@ def resolve_equipment_hangers(plan: Any, model: Any) -> None:
             if getattr(el, "hangers", None) is not None and el.tag}
     if not hung:
         return
+    from typehaus.resolve.equipment_hanger_clearance import RunEnvelopes
     from typehaus.resolve.equipment_hanger_solids import hanger_solids
 
+    runs = RunEnvelopes(model)
     types = {t.tag: t for t in plan.library.equipment_types}
     index = _MemberIndex(model)
     for item in sorted((o for o in model.canvas_objects if o.tag in hung),
@@ -102,21 +104,25 @@ def resolve_equipment_hangers(plan: Any, model: Any) -> None:
         mid = (sum(c[0] for c in corners) / 4.0, sum(c[1] for c in corners) / 4.0)
         for strut, (axis, half_length) in enumerate(strut_axes(item, spec), start=1):
             model.equipment_hangers.extend(_strut_rods(
-                index, item, spec, strut, axis, half_length, load, mid))
+                index, item, spec, strut, axis, half_length, load, mid, runs))
     hanger_solids(model, [h for h in model.equipment_hangers if h.equipment_tag in hung])
 
 
 def _strut_rods(index: _MemberIndex, item: Any, spec: Any, strut: int, axis: Any,
-                half_length: float, load: float | None,
-                mid: tuple[float, float]) -> list[ResolvedEquipmentHanger]:
+                half_length: float, load: float | None, mid: tuple[float, float],
+                runs: Any = None) -> list[ResolvedEquipmentHanger]:
     """The strut's two rods, the strut slid toward the case centre (``NUDGE_MAX_M`` at most)
-    until neither stands in a flange its bridge bears on; past that, the nominal station."""
+    until neither rod stands in a flange its bridge bears on and no rod, bridge or the strut
+    is inside a run envelope (``runs``). No station clears both: the first clear of the
+    flanges (sliding to shave a run would put a rod through another's metal), else the
+    nominal station; ``structural.equipment_hanger_clearance`` grades what is left."""
     (cx, cy), (ux, uy) = axis
     inward = (mid[0] - cx, mid[1] - cy)
     along = inward[0] * -uy + inward[1] * ux
     nx, ny = (-uy, ux) if along >= 0 else (uy, -ux)
     reach = half_length - spec.overhang.meters / 2.0
     first: list[ResolvedEquipmentHanger] | None = None
+    seated: list[ResolvedEquipmentHanger] | None = None
     for step in range(int(round(NUDGE_MAX_M / NUDGE_STEP_M)) + 1):
         d = step * NUDGE_STEP_M
         rods = [_rod(index, item, spec, strut, 2 * (strut - 1) + end,
@@ -124,9 +130,12 @@ def _strut_rods(index: _MemberIndex, item: Any, spec: Any, strut: int, axis: Any
                      2.0 * half_length, load)
                 for end, side in enumerate((-1.0, 1.0), start=1)]
         first = first or rods
-        if not any(r.gap and THROUGH_FLANGE in r.gap for r in rods):
+        if any(r.gap and THROUGH_FLANGE in r.gap for r in rods):
+            continue
+        seated = seated or rods
+        if runs is None or runs.worst(rods) == 0.0:
             return rods
-    return first
+    return seated or first
 
 
 def strut_axes(item: Any, spec: Any) -> list[tuple[tuple[tuple[float, float],

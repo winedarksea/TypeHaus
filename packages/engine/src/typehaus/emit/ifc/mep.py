@@ -115,7 +115,8 @@ _PIPE_SYSTEM_OBJECT_TYPES = {"radon": "RADON"}
 # What a ``PipeAccessoryKind`` becomes in IFC. The valves are ``IfcValve`` with the
 # PredefinedType that says which valve it is — ISOLATING for a shutoff, DOUBLECHECK for a
 # backflow assembly, ANTIVACUUM for a hose-bib vacuum breaker, DRAWOFFCOCK for the capped RO
-# tee (a draw-off point that is not yet drawn off). The other two are not valves at all: an
+# tee (a draw-off point that is not yet drawn off), PRESSUREREDUCING for a PRV; an expansion
+# tank is ``IfcTank/EXPANSION``. The other two are not valves at all: an
 # arrestor is a sealed chamber in the line and a penetration seal is a fitting around it, so
 # both are ``IfcPipeFitting/USERDEFINED`` with an ObjectType naming what they are — inventing
 # a valve type for either would put a device in a valve schedule that nobody can turn.
@@ -125,6 +126,8 @@ _ACCESSORY_IFC_CLASS: dict[str, tuple[str, str]] = {
     "backflow_preventer": ("IfcValve", "DOUBLECHECK"),
     "vacuum_breaker": ("IfcValve", "ANTIVACUUM"),
     "ro_stub": ("IfcValve", "DRAWOFFCOCK"),
+    "prv": ("IfcValve", "PRESSUREREDUCING"),
+    "expansion_tank": ("IfcTank", "EXPANSION"),
     "water_hammer_arrestor": ("IfcPipeFitting", "USERDEFINED"),
     "penetration_seal": ("IfcPipeFitting", "USERDEFINED"),
 }

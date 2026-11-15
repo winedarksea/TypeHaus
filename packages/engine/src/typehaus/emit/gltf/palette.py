@@ -198,7 +198,9 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "backflow_preventer": (0.72, 0.58, 0.28, 1.0),
     "vacuum_breaker": (0.72, 0.58, 0.28, 1.0),
     "ro_stub": (0.72, 0.58, 0.28, 1.0),
+    "prv": (0.72, 0.58, 0.28, 1.0),
     "water_hammer_arrestor": (0.62, 0.64, 0.66, 1.0),  # sealed steel chamber, not a valve
+    "expansion_tank": (0.62, 0.64, 0.66, 1.0),         # steel vessel, not a valve
     "penetration_seal": (0.95, 0.72, 0.35, 1.0),       # the foam/gasket kit, not plumbing metal
     # Raceways (→ resolve/mep.py _emit_run_solids, one category per side of the NEC
     # 722.15(A) power-vs-comms line). Deliberately *outside* the riser-diagram hues above:

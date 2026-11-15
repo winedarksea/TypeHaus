@@ -12,9 +12,7 @@ the future.
 
 ## Needs your decision
 
-- **Budget policy (pricing review 2026-10-29):** `site-general-conditions` is $35–80k on an
-  owner-GC build (cash items alone look like $15–30k), and `[contingency]` 10% also applies on
-  top of the lump-sum allowances, which already carry wide spreads (~$15–36k at stake).
+(none open)
 
 ## Remaining Work
 
@@ -158,6 +156,7 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
 - Wall W-A-GC-S and it's matching south pair should have bookshelves against them, likely custom to fix the short triangle present there. In between them a linen floor mattress on tatami mats.
 - Perhaps mount the espalier posts on sonotubes to increase the lifespan of the posts.
 - W-BW-SCREEN's shear role is already redundant with the garage path (graded 100%). Relaxing its 4″ edge nailing needs the reviewer to accept `canopy_garage_diaphragm.md`'s 'garage takes the whole load'.
+- [ ] Complete W-BW-SCREEN metal cassette engineering, support/trim details, complete loads and fabrication estimate; rerun structural and 87° door checks including all hardware. See houses/catlin/notes/entry_screen_metal_cassettes.md.
 - Plan limited mobility bathroom use on the main floor. Looks like full wheelchair clearance won't work, but look what we can add to make limited mobility practical there. Perhaps a vertical grab bar between the toilet and the tub, serving both.
 - Plant-room reservoir (2026-11-11): manual-fill tank, two independently timed shelf-pot circuits, one packaged wired WaterWatcher cutoff and automatic M8000-NO/RIBU1C low-water permission; shared geometry/BOM and 11.75-gal spill budget updated. Itemized provisional hardware $1,026.61 against $1,200 target/$1,500 ceiling. Still open: WaterWatcher revision/humidity/load/recovery qualification, commodity supplier SKUs/quotes and NPT/NPSM sealing interface, plumber-approved removable fill, supply-sizing basis, physical containment, electrical/hydraulic commissioning and ten-day trial. See `houses/catlin/notes/plant_reservoir.md` and its procurement CSV.
 - Plant-room reservoir: close WaterWatcher qualification, exact supplier SKUs/quotes and NPT/NPSM adapter seals before purchasing. Itemized estimate $1,026.61; target $1,200 plus $300 contingency under $1,500. Confirm attended removable potable filling and complete commissioning/ten-day trial. [Reservoir note](../houses/catlin/notes/plant_reservoir.md).
@@ -215,10 +214,6 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
   12kPV instructions name, and the 690.12(D) building label at `ED-M-METER` is also owed.
 - `ED-B-PLAY-N-RC2`..`RC5` (theater, 2026-11-13) were placed to close the 210.52(A) gaps
   between the sconces and tapestries; confirm against the AV and seating layout.
-- `test_electrical_circuits.py`: `test_catlin_panel_schedule_is_derived`,
-  `test_catlin_panel_spaces_fits_the_54_space_enclosure` and
-  `test_model_json_carries_the_electrical_takeoff` expect 44 circuits / 40 slots; catlin has
-  45 / 41 since a recent circuit was added. Update the counts with that circuit's reason.
 - `haus print3d --colour-groups`: per-piece colour components bucketed from `Material.color`, matched to a sample exported from Bambu Studio before shipping.
 - Promote the leafless passage's drywall wrap (#122) to a `ResolvedModel.passage_wraps` record so emitters can draw the returns.
 - **W-B-N2 wall-top restraint (Minn. R. 1309.0404).** `FO-M-STAIR` fills the first three joist spaces against W-B-N2 for x 10'-3"..17'-8 3/4", so no footnote f blocking can stand there and `code.MN_1309_0404_wall_top` reports UNKNOWN. 400 plf x 8' = 3,200 lb goes into the well's edge framing spanning flat between the headers: get the EOR's approved-equivalent detail (a flat strongback or a landing strut) and author it. Basis note `houses/catlin/notes/main_floor_truss_basis.md` §4.
@@ -269,6 +264,3 @@ Still deferred, and each for its own reason:
 Firstly design a house (with permit checks, building science review, floorplan editing in the 2d UI, 3d review, cost reduction and BOM review).
 Secondly gather bids, organize the timeline (inspection gates, etc), then track completed progress.
 Thirdly use the house design as a reference (ie for agents understanding live data on home assistant in context), potentially with feedback loop of updating the design or later running a remodel
-
-
-- [ ] Complete W-BW-SCREEN metal cassette engineering, support/trim details, complete loads and fabrication estimate; rerun structural and 87° door checks including all hardware. See houses/catlin/notes/entry_screen_metal_cassettes.md.

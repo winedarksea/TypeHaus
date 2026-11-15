@@ -894,9 +894,7 @@ def test_model_json_carries_the_electrical_takeoff(catlin_model):
     assert payload["conduit_schedule"] == conduit_schedule(catlin_model)
     assert payload["devices"] == electrical_device_takeoff(catlin_model)
     assert payload["solar"] == solar_takeoff(catlin_model)
-    # 40: the 36 that survived the microgrid refactor plus CKT-DISPOSAL, minus CKT-WH-HP
-    # folded into CKT-WH, plus CKT-BATH2-TUB for the drop-in bath's Bask heated surface,
-    # plus the two washlet circuits, plus CKT-SPD (the NEC 230.67 service surge device).
+    # Same count as test_catlin_panel_schedule_is_derived's history above.
     assert len(payload["panel_schedule"]) == 47  # includes the workshop branch
 
 

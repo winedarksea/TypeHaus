@@ -218,6 +218,7 @@
     "eave_soffit": 14737625,
     "electrical_box": 10396584,
     "equipment_hanger": 7041141,
+    "expansion_tank": 10396584,
     "fascia": 15461350,
     "finish": 15131611,
     "fireblock": 13412467,
@@ -272,6 +273,7 @@
     "planting_fill": 6704952,
     "planting_soil": 4008218,
     "plate": 11041356,
+    "prv": 12096583,
     "rafter": 11370319,
     "railing": 13422548,
     "railing_glass": 9418697,
@@ -441,6 +443,7 @@
     "eave_soffit": 14737625,
     "electrical_box": 10396584,
     "equipment_hanger": 7041141,
+    "expansion_tank": 10396584,
     "fascia": 15461350,
     "finish": 15131611,
     "fireblock": 13412467,
@@ -495,6 +498,7 @@
     "planting_fill": 6704952,
     "planting_soil": 4008218,
     "plate": 11041356,
+    "prv": 12096583,
     "rafter": 11370319,
     "railing": 13422548,
     "railing_glass": 9418697,
@@ -675,6 +679,9 @@
     "equipment_hanger": [
       "mechanical"
     ],
+    "expansion_tank": [
+      "plumbing"
+    ],
     "fascia": [
       "siding"
     ],
@@ -773,6 +780,9 @@
     ],
     "planting_soil": [
       "landscaping"
+    ],
+    "prv": [
+      "plumbing"
     ],
     "railing": [
       "stairs"
@@ -912,6 +922,7 @@
     "eave_soffit": "siding",
     "electrical_box": "electrical",
     "equipment_hanger": "mechanical",
+    "expansion_tank": "plumbing",
     "fascia": "siding",
     "fireblock": "framing",
     "flashing": "roofing",
@@ -945,6 +956,7 @@
     "plant": "landscaping",
     "planting_fill": "earth",
     "planting_soil": "landscaping",
+    "prv": "plumbing",
     "railing": "stairs",
     "railing_glass": "stairs",
     "railing_infill": "stairs",

@@ -356,6 +356,10 @@ class PipeAccessoryKind(Enum):
     # no rule reads it yet, deliberately (a "dry room needs a primer" rule needs a notion
     # of which rooms are wetted, which this model does not have).
     TRAP_PRIMER = "trap_primer"
+    # UPC 608.3 — thermal expansion on a closed system (a check or backflow device upstream).
+    EXPANSION_TANK = "expansion_tank"
+    # UPC 608.2 — static pressure over 80 psi.
+    PRV = "prv"
 
 
 class DuctSystem(Enum):

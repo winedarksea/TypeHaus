@@ -8,6 +8,7 @@ applied_to:
   - pipe_run: PR-B-CW-TRUNK
   - equipment: EQ-B-HW-HEADER
   - pipe_run: PR-B-HW-TRUNK
+  - pipe_accessory: PA-B-WH-XTANK
 tags:
   - plumbing
   - water-supply
@@ -17,12 +18,13 @@ source:
   - plan/mep_supply.py
   - plan/mep_drainage.py
   - plan/mep_supply_header.py
+  - plan/mep_supply_devices.py
 ---
 
 # Notes
 
-Written 2026-10-29. Research only where it says so: **no expansion device is modelled and no
-price row exists for one.**
+Written 2026-10-29. Research only where it says so. Since 2026-11-14 the expansion tank
+`PA-B-WH-XTANK` is modelled and priced (§4); the PRV is not.
 
 ## 1. The heater, as Rheem publishes it (PROPH80 T0 RH120-MSO)
 
@@ -134,7 +136,7 @@ WC tee stays at its original chase drop, and the attic elbows move into the hub 
 the vents. [Shower assembly coordination](shower_assemblies.md) records the stations,
 BATH2's retained hot/drain clearance, and the outstanding sauna material qualification.
 
-## 4. Thermal expansion (research; nothing modelled)
+## 4. Thermal expansion (tank modelled 2026-11-14; PRV pending SPRWS)
 
 **What the code says.** Minn. R. 4714.0050 adopts the **2018 UPC**, Chapters 2-11, 16, 17.
 Minn. R. 4714.0608 (the part titled "Water pressure, pressure regulators, pressure relief
@@ -155,7 +157,7 @@ evidence for this parcel. (West St. Paul is a different utility.) **Ask SPRWS En
 651-266-6270 / water service desk 651-266-6350**, two questions: does the meter set include a
 check valve, and what is the static pressure at the (still unchosen) parcel's main.
 
-**Reading of the model.** Today it has no PRV, no meter check and no expansion device. The
+**Reading of the model.** Before 2026-11-14 it had no PRV, no meter check and no expansion device. The
 only checks drawn are dual checks on branches (`PA-B-BFP-BATH`, `-SAUNA`, 1/2";
 `PA-G-HYD-BFP`, 3/4", hydrant only since 2026-10-29), none in series with the heater. So the
 heater is on a closed system only if the meter set has a check: **still to confirm with
@@ -165,10 +167,21 @@ SPRWS.**
 Rheem's own manual (p.10) says to fit an expansion tank where the system is closed. Assume
 closed until SPRWS says otherwise and put a **listed potable expansion tank on the cold feed at
 the tank inlet, downstream of the stop `PA-B-WH-STOP-CW`**, with its air charge set to the
-measured static pressure. An 80 gal tank heated roughly 50 to 130 F expands by about 1.3 gal,
-so a 2 gal class tank at 40-60 psi is the usual size (verify against the maker's table). If
-measured static pressure is over 80 psi add a PRV ahead of the meter set. Add the device to the
-model and to `prices.toml` only after the answer: both are deliberately absent.
+measured static pressure. An 80 gal tank heated roughly 50 to 130 F expands by about 1.3 gal.
+
+**Modelled (2026-11-14, owner).** `PA-B-WH-XTANK` (`PipeAccessoryKind.EXPANSION_TANK`,
+`plan/mep_supply_devices.py`) sits on `PR-B-CW-WH`'s drop at 30" AFF, 18" below the stop, so
+the stop isolates it with the heater. Size is the maker's table, not the "2 gal class" guess
+this section carried: Amtrol Therm-X-Trol brochure MC4090-09/25, sizing table at the lowest
+(140 F) setting, 80 gal row = **ST-12** at 40, 60 and 80 psig (basis: 40 F incoming, 150 psi
+T&P, precharge equal to static). ST-12: 4.4 gal, 11" x 15", 3/4" NPTM, factory precharge
+50 psig. Re-set the precharge to the measured static pressure at install. Priced in
+`prices.toml [plumbing_specialties] "expansion_tank"` (in-stock listings $84-$141, read
+2026-11-14).
+
+**PRV: pending.** `PipeAccessoryKind.PRV` exists in the engine, but no PRV is authored. It
+waits on SPRWS's static-pressure answer: if static pressure is over 80 psi (UPC 608.2), add
+a PRV ahead of the meter set and re-check the tank row against the reduced pressure.
 
 ## 5. The floor under the tank: no plinth
 

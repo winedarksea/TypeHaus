@@ -62,7 +62,7 @@ ROWS: tuple[C, ...] = (
     # and takes the fallback trade (unchanged behaviour).
     *(_accessory(k) for k in ("main_shutoff", "shutoff", "backflow_preventer",
                               "vacuum_breaker", "water_hammer_arrestor", "ro_stub",
-                              "penetration_seal")),
+                              "penetration_seal", "expansion_tank", "prv")),
     _accessory("trap_primer", trade=None),
     # A cast-in block-out, graded by the plumbing rough-in rules.
     C("pipe_sleeve", trade="plumbing", ifc_class=_FOOTING),

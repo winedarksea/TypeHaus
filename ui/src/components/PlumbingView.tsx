@@ -47,6 +47,9 @@ const ACCESSORY_LABEL: Record<string, string> = {
   water_hammer_arrestor: "water-hammer arrestor",
   ro_stub: "RO tap provision (capped)",
   penetration_seal: "envelope penetration seal",
+  trap_primer: "trap primer",
+  expansion_tank: "thermal expansion tank",
+  prv: "pressure-reducing valve",
 };
 
 // True isometric (30° axonometric) — the classic plumbing-riser projection. The authored

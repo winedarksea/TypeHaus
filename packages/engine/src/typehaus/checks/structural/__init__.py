@@ -16,6 +16,7 @@ from typehaus.checks.structural import (
     deck_ledger,  # noqa: F401 - registers checks
     door_module,  # noqa: F401 - registers checks
     engineered_items,  # noqa: F401 - registers checks
+    equipment_hanger_clearance,  # noqa: F401 - registers checks
     equipment_hangers,  # noqa: F401 - registers checks
     footing_size,  # noqa: F401 - registers checks
     fortified_roof,  # noqa: F401 - registers checks

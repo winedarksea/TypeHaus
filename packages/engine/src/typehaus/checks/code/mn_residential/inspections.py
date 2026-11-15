@@ -157,7 +157,7 @@ MN_INSPECTIONS: tuple[InspectionSpec, ...] = (
                    "code.N1103_6_whole_house_ventilation", "code.M1502_dryer_exhaust",
                    "mep.erv_outdoor_terminals", "mep.erv_blower_interlock",
                    "mep.register_reach", "mep.manifold_feed", "mep.condensate_overflow",
-                   "structural.equipment_hangers"),
+                   "structural.equipment_hangers", "structural.equipment_hanger_clearance"),
         on_site=("duct runs complete and supported", "equipment set and level",
                  "combustion and exhaust terminations set"),
         milestone="rough_ins",

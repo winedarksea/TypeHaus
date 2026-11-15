@@ -103,6 +103,9 @@ KEY_GLOSSARY: dict[tuple[str, str], str] = {
     ("plumbing_specialties", "water_hammer_arrestor"): "Water hammer arrestor",
     ("plumbing_specialties", "ro_stub"): "RO stub", ("plumbing_specialties", "penetration_seal"):
     "Penetration seal",
+    ("plumbing_specialties", "expansion_tank"): "Thermal expansion tank",
+    ("plumbing_specialties", "prv"): "Pressure-reducing valve",
+    ("plumbing_specialties", "trap_primer"): "Trap primer",
     ("edge_trim", "beam_cap"): "Beam cap", ("edge_trim", "bug_screen"): "Insect closure strip",
     ("edge_trim", "corner_trim"): "Corner trim", ("edge_trim", "drip_flashing"): "Drip flashing",
     ("edge_trim", "edge_cladding"): "Roof edge cladding", ("edge_trim", "fascia"): "Fascia",
