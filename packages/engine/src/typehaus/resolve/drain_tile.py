@@ -1,14 +1,13 @@
-"""Derived geometry for perforated drain tile.
+"""Derived footing-bedding tile rings and shared drain-tile dimensions.
 
-A ``FootingBedding`` says it runs a tile; a ``FrenchDrain`` says where one runs. Neither
-authors the pipe itself, because nobody draws a perimeter ring by hand — it follows the
-excavation it sits in. So the tile is *derived*, the way ``EaveGutter`` members are derived
-from the eave they hang on, and this module is the one place that derives it: both callers
-would otherwise reinvent the same band-per-edge extrusion and disagree about the invert.
+A ``FootingBedding`` says it runs a tile, whose perimeter follows its excavation.
+The ring is derived here, the way ``EaveGutter`` members follow their eave.
 
 Bands rather than a round pipe because ``ResolvedSolid`` extrudes a plan outline vertically
 — a run along the plan is a rectangular band of the pipe's own diameter, which is what the
 take-off measures and what the 3D drainage toggle needs to show a continuous ring.
+Authored French drains use round, continuously sloping pipes in ``french_drain_geometry``;
+both paths share the pipe bedding allowance here.
 """
 
 from __future__ import annotations

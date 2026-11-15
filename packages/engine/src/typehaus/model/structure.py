@@ -457,9 +457,9 @@ class FrenchDrain(Element):
     where the water goes — across a slope, along a retaining wall, out to daylight. It is
     what the code below grade drains *to* rather than part of a bearing detail.
 
-    ``invert`` is the trench floor at the run's start; the tile inside it is derived from
-    ``tile`` exactly as a bedding's is (``resolve/drain_tile.py``), so both kinds of run bill
-    and draw the same way. ``discharge_ref`` names where it lets go — a ``Drywell``, a
+    ``invert`` is the trench floor at the run's start; the round tile inside follows its
+    fall on the same stone bedding allowance as footing tile. ``discharge_ref`` names
+    where it lets go — a ``Drywell``, a
     ``Sump``, or nothing when it daylights.
     """
 

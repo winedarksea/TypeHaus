@@ -498,8 +498,8 @@ def test_the_overflow_runs_on_the_west_heel(catlin_model):
 
 def test_the_field_lateral_falls_into_the_stone_it_feeds(catlin_model):
     """**D1.** It once discharged 28" above the stone. It now falls 1" over 10' and ends on
-    FB-SG-ARCH's south face with its invert inside that bed's stone band — and resolves as
-    two bands, not the 28-step staircase its dive to the old well needed."""
+    FB-SG-ARCH's south face with its invert inside that bed's stone band. Both the stone
+    envelope and round tile follow the fall continuously."""
     run = catlin_model.plan.by_tag("FD-SG-FIELD")
     arch = next(b for b in catlin_model.footing_beddings if b.tag == "FB-SG-ARCH")
     assert run.end_invert is not None and run.end_invert.meters < run.invert.meters
@@ -507,7 +507,12 @@ def test_the_field_lateral_falls_into_the_stone_it_feeds(catlin_model):
     assert run.path[-1].y.meters == pytest.approx(min(p[1] for p in arch.outline))
     bands = [s for s in catlin_model.solids
              if s.tag.startswith("FD-SG-FIELD-") and s.category == "french_drain"]
-    assert 1 <= len(bands) <= 2, len(bands)
+    assert len(bands) == 1
+    assert bands[0].body_mesh is not None
+    tile = next(s for s in catlin_model.solids if s.tag == "FD-SG-FIELD-DT-1")
+    assert tile.sweep is not None
+    assert tile.sweep.path[0][2] - tile.sweep.path[-1][2] == pytest.approx(
+        run.invert.meters - run.end_invert.meters)
 
 
 def test_every_bedding_that_names_a_receiver_has_a_way_to_reach_it(catlin_model):

@@ -86,3 +86,22 @@ def test_no_drainage_element_lands_on_the_footing_fallback(catlin_model_ro, catl
     drainage_tags = {solid.tag for solid in _drainage_solids(catlin_model_ro)}
     footing_names = {element.Name for element in catlin_ifc.by_type("IfcFooting")}
     assert not (drainage_tags & footing_names)
+
+
+def test_french_drain_tile_exports_its_round_section_and_full_fall(catlin_model_ro, catlin_ifc):
+    """The IFC must preserve the circular section and slope shown in the viewer."""
+    by_name = {element.Name: element for element in catlin_ifc.by_type("IfcPipeSegment")}
+    drains = list(catlin_model_ro.plan.elements_of_kind("FrenchDrain"))
+    assert {drain.tag for drain in drains} == {
+        "FD-SG-FIELD", "FD-SG-OVERFLOW", "FD-B-S-LEAD-W", "FD-B-S-LEAD-E"}
+    for drain in drains:
+        pipe = by_name[f"{drain.tag}-DT-1"]
+        items = [item for representation in pipe.Representation.Representations
+                 for item in representation.Items]
+        body, = items
+        assert body.is_a("IfcSweptDiskSolid"), drain.tag
+        assert body.Radius == pytest.approx(drain.tile.diameter.meters / 2.0)
+        points = body.Directrix.Points
+        expected_end = drain.end_invert if drain.end_invert is not None else drain.invert
+        assert points[0].Coordinates[2] - points[-1].Coordinates[2] == pytest.approx(
+            drain.invert.meters - expected_end.meters), drain.tag
