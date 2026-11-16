@@ -237,7 +237,7 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
 - [x] Switches, junction boxes and receptacles: face-only devices at real projection in true colour, derived wall plates and gang banks (`resolve/device_banks.py`, `houses/catlin/notes/wiring_device_geometry.md`).
 - ED-M-LIVING-KET1 plate: a round 6-20R beside a Decora duplex needs a single + Decora combination plate (`integrity.device_plate` UNKNOWN), or retype it.
 - ED-M-FIRE-RC: no Decora plate fits the 2 3/8" strip beside the fireplace insert (`advisory.wall_plate_clearance`).
-- 3d model of the range hood, recirculating
+- [x] 3d model of the recirculating range hood (Broan BWP1304SS pyramidal canopy, telescopic chimney, side return grilles, paired filters, LEDs and controls).
 - should we leave exposed the bottoms of the stairs, and use perhaps nicer wood for the stair stringers then if they are exposed
 
 # Project Management

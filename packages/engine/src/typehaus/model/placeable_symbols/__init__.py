@@ -30,6 +30,7 @@ if TYPE_CHECKING:
     from typehaus.model.shower_assembly import ShowerAssemblySpec
 
 from typehaus.model.placeable_symbols._badger_disposal import badger_disposal
+from typehaus.model.placeable_symbols._broan_hood import broan_recirculating_hood
 from typehaus.model.placeable_symbols._ceramic_fan_heater import ceramic_fan_heater
 from typehaus.model.placeable_symbols._eg4_storage import eg4_12kpv, eg4_wallmount_indoor
 from typehaus.model.placeable_symbols._erv_wall_hood import erv_wall_hood
@@ -76,6 +77,7 @@ _REGISTRY: dict[str, Builder] = {**FURNITURE_SYMBOLS, **APPLIANCE_SYMBOLS, **PLU
                                  "ceramic-fan-heater": ceramic_fan_heater,
                                  "thermostat": thermostat,
                                  "insinkerator-badger-5": badger_disposal,
+                                 "broan-bwp1304ss-recirculating": broan_recirculating_hood,
                                  "fireplace-insert": fireplace_insert,
                                  "gree-flexx-ultra-24-horizontal": gree_flexx_horizontal,
                                  "gree-flexx-ultra-24-outdoor": gree_flexx_outdoor,
@@ -87,6 +89,7 @@ _REGISTRY: dict[str, Builder] = {**FURNITURE_SYMBOLS, **APPLIANCE_SYMBOLS, **PLU
 SYMBOL_NAMES = (frozenset(KITCHEN_SEKTION_SYMBOLS) | frozenset(RECEPTACLE_SYMBOLS)
                 | frozenset(SWITCH_SYMBOLS)) | frozenset({
     "plant-reservoir", "plant-irrigation-rack", "plant-leak-sensors",
+    "broan-bwp1304ss-recirculating",
     "plain-round-mirror-nickel", "plain-arch-mirror-nickel", "plain-arch-mirror-chrome",
     "plain-arch-mirror-black",
     "plain-soft-rectangle-mirror-nickel", "plain-capsule-mirror-nickel",
