@@ -53,6 +53,7 @@ from typehaus.model.track_lighting import (
     ASSEMBLY_DIMENSION_TOLERANCE_M,
     TrackLightingSpec,
 )
+from typehaus.model.wall_mount import WallMountSpec
 from typehaus.quantities import Length, UFactor, m
 
 
@@ -555,6 +556,8 @@ class RailingType(HausModel):
     fascia_post_offset: Length | None = None
     fascia_mount: FasciaMountSpec | None = None
     surface_mount: SurfaceMountSpec | None = None
+    # A wall handrail's stock fittings: named on the bill, bracket reach graded.
+    wall_mount: WallMountSpec | None = None
     # The chosen product, by ``Product.tag`` — see ``FurnitureType.product_ref``.
     product_ref: str | None = None
     source: str | None = None
@@ -1198,6 +1201,7 @@ for _name, _obj in (
     ("FurnitureType", FurnitureType),
     ("RailingType", RailingType),
     ("FasciaMountSpec", FasciaMountSpec),
+    ("WallMountSpec", WallMountSpec),
     ("SurfaceMountSpec", SurfaceMountSpec),
     ("SurfacePostMount", SurfacePostMount),
     ("FixtureType", FixtureType),

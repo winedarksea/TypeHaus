@@ -46,6 +46,8 @@ PANEL_MOUNT = "panel"
 #: Bracket stock: the drop from the rail centreline to the arm, and the arm's section.
 _BRACKET_DROP_M = inch(2.5).meters
 _BRACKET_SECTION_M = inch(1.0).meters
+#: Slack on a stock bracket's published reach before the arm is called custom.
+_REACH_TOL_M = inch(1.0 / 16.0).meters
 
 #: How far a sampled rail station may sit off the chord between the stations either side of
 #: it before the run keeps it as a real vertex. A straight flight's samples are collinear to
@@ -180,6 +182,8 @@ def emit_brackets(model: ResolvedModel, el: Railing, storey: str, stations: list
             return mounting_wall_face(model, station, z, **kw)
     half = _BRACKET_SECTION_M / 2.0
     findings: list[Finding] = []
+    product = railing_type(model.plan.library, el)
+    spec = product.wall_mount if product is not None else None
     bracket_drops = dict(el.bracket_drop_overrides)
     last = len(stations) - 1
     for index, station in enumerate(stations):
@@ -200,6 +204,7 @@ def emit_brackets(model: ResolvedModel, el: Railing, storey: str, stations: list
                          "face supporting its full footprint within reach; no bracket drawn"),
                 element_tags=(el.tag, *obstructing_tags), result=Result.FAIL))
             continue
+        findings += _reach_findings(el, index, contact.distance_m, spec)
         outline = rect_between(contact.face_point, station, -half, half)
         sweep = None
         z0, z1 = arm_z - half, rail_z
@@ -216,8 +221,24 @@ def emit_brackets(model: ResolvedModel, el: Railing, storey: str, stations: list
             category=RAILING_CATEGORY, outline=outline,
             z0_m=z0, z1_m=z1, assembly=el.assembly,
             material=parts.post_material, sweep=sweep,
+            product=spec.bracket_product if spec is not None else None,
         ))
     return findings
+
+
+def _reach_findings(el: Railing, index: int, arm_m: float, spec) -> list[Finding]:
+    """WARN when the arm falls outside the stock bracket's published projection."""
+    if spec is None or spec.projection_min is None:
+        return []
+    lo, hi, tol = spec.projection_min.meters, spec.projection_max.meters, _REACH_TOL_M
+    if lo - tol <= arm_m <= hi + tol:
+        return []
+    return [Finding(
+        severity=Severity.WARN, check_id="geometry.railing_bracket_reach",
+        message=(f"railing {el.tag} bracket {index + 1}: wall to rail centre "
+                 f"{arm_m / 0.0254:.2f}\" is outside {spec.bracket_product}'s "
+                 f"{lo / 0.0254:.2f}-{hi / 0.0254:.2f}\" reach; a stock bracket will not fit"),
+        element_tags=(el.tag,), result=Result.FAIL)]
 
 
 def _directions_at(stations: list[Vec], index: int) -> tuple[Vec, ...]:

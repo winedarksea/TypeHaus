@@ -930,23 +930,21 @@ STAIR_GUARD = Railing(
 # ** THE FLIGHT'S OWN OPEN SIDE. ** ST-S2A's south side stands open over RM-S-STUDY2, so
 # R312.1.1 wants a guard over the straight run. The winders are under the 30" trigger.
 #
-# ONE LINE ON y=5'-9 5/8" WITH A NEWEL TRANSITION, NO TAPER. This run holds 36" over the
-# nosings from the first straight riser (31'-5 1/8") to the x=25'-5 1/8" newel, where its cap
-# stands 2 1/4" over the deck and RL-A-STAIR takes over; west of that RL-A-STAIR stands >= 36"
-# over every nosing. The two post lines are ~1 1/8" apart (this one in brackets outside the
-# flight, RL-A-STAIR's on the deck behind the well edge). The cap meets the deck at 25'-8 1/8", but the newel sits 3" west of that
-# so the skirt below closes to 3 1/8" of the pack there (5 3/8" at 25'-8 1/8" would pass the
-# 4" sphere). Constant rake height, so a stock adjustable stair panel kit fits.
+# ONE RAKED BAY ON y=5'-9 5/8", 36" over the nosings, newel to the first straight riser
+# (31'-5 1/8"). The newel stands at x=27'-1 1/2", where its top (falling 3/4" per inch) is
+# 1/2" under CEIL-RM-S-STUDY2's gypsum on FO-A-STAIR's trimmer pack (18'-11 1/2"). West of
+# it RL-A-FLIGHT-SKIRT closes up to the ceiling and RL-A-STAIR guards the deck: the two
+# share no station, and the newel stands 1'-9" east of RL-A-STAIR's BASE2.
 #
 # `guard`, not `guard_and_handrail`: RL-A-HANDRAIL on the north wall is the continuous
 # R311.7.8 rail, and one rail leaves 31 1/2" of R311.7.1 clear width on the 36" flight.
 # `base_elevation` is the second storey's 10'-0": the rake comes from `serves_stair`.
 FLIGHT_GUARD = Railing(
     uid="C75VZB9VX8", tag="RL-A-FLIGHT-GUARD", type_ref="RAILING-INT-STAIR-GUARD", path=(
-        pt(inch(305.125), inch(69.625)),
+        pt(inch(325.5), inch(69.625)),
         pt(inch(377.125), inch(69.625)),
     ),
-    # 55" o.c., inside the Williams stair panel's 55.68" raked bay (RAILING-INT-STAIR-GUARD).
+    # One 51 5/8" bay, inside the Williams stair panel's 55.68" raked bay.
     kind=RailingKind.METAL_FASCIA_MOUNT, height=inch(36),
     base_elevation=ft(10), post_spacing=inch(55), post_size="3x3", rail_count=2,
     # Brackets on stringer-0's study face, y=5'-9 3/4" (run east so outboard is south): the
@@ -959,19 +957,18 @@ FLIGHT_GUARD = Railing(
     infill="balusters", baluster_spacing=inch(4),
 )
 
-# The raked skirt under the newel transition: west of RL-A-FLIGHT-GUARD the flight is guarded
-# by RL-A-STAIR on the deck above, and between the nosings and FS-ATTIC's trimmer pack
-# (228 1/8") a band up to ~22" stays open. A painted 3/4" board, raked with the flight, screwed
-# to stringer-0's study face and the guard's newel: no posts, no rail. 18 3/4" over the nosings
-# reaches within 4" of the pack at the newel and the deck line at its west end.
+# The skirt west of the newel: between the nosings and FS-ATTIC's trimmer pack (228 1/8")
+# the flight's side stays open up to ~33". A painted 3/4" board, raked with the flight,
+# screwed to stringer-0's study face and the newel: no posts, no rail. Cut level 1/8" under
+# the study ceiling's gypsum (227 1/2"); its west end is where the nosings come within 4".
 FLIGHT_SKIRT = Railing(
     uid="CEF7HWWGNP", tag="RL-A-FLIGHT-SKIRT", type_ref="RAILING-INT-SKIRT-PANEL", path=(
-        pt(inch(305.125), inch(69.625)),
+        pt(inch(324), inch(69.625)),
         pt(inch(284.75), inch(69.625)),
     ),
-    height=inch(18.75),
+    height=inch(34),
     base_elevation=ft(10), post_spacing=inch(48), rail_count=0,
-    mount="panel",
+    mount="panel", panel_top_elevation=inch(227.375),
     role="guard", serves_stair="ST-S2A", infill="panel",
 )
 

@@ -9,8 +9,8 @@ of its old end so a stock square return lands on W-M-STRW at the W-M-STOS2 L (ow
 (`bracket_spacing_max = 1000 mm`), graded by `code.R301_5_handrail_support_spacing`;
 reproduced by `tests/test_catlin_titanium_handrail.py`.
 **Companions:** `notes/wall_backing.md` — the backing schedule this rail's blocks join.
-**What is asked of the reviewer:** §4's arithmetic, and whether the fittings bought in §2
-seat on a 42.0 x 37.0 mm tube.
+**What is asked of the reviewer:** §4's arithmetic, and §2's fit table against the delivered
+spigots.
 
 > ⚠ **An end cap alone does not meet the code.** IRC R311.7.8.2: "Handrail ends shall be
 > returned or shall terminate in newel posts or safety terminals." Every end of these rails
@@ -18,9 +18,9 @@ seat on a 42.0 x 37.0 mm tube.
 > wall end plate is what closes the tube. `code.R311_7_8_2_handrail_ends` reads the drawn
 > return.
 
-> ⚠ **The tube is 42.0 mm, the fittings are 42.4 mm.** 42.4 is the European stainless
-> handrail standard; nobody stocks 42.0. Measure every fitting against the tube before any
-> epoxy is mixed (§2).
+> ⚠ **The tube is 42.0 x 37.0 mm, the fittings are for 42.4 mm tube.** Nobody stocks 42.0.
+> The 0.4 mm is a field fit with a shim, set screw or tube expander (owner, 2026-11-15).
+> Measure each delivered spigot and pick its row in §2's table before any epoxy is mixed.
 
 ---
 
@@ -47,18 +47,33 @@ the elbow's measured socket, not to these lengths.
 Main to second (ST-M2S) needs ~4.2-4.5 m more and is NOT covered by this stock. It stays
 dark steel unless more tube is ordered (same lot, so the brushed finish matches).
 
-## 2. Fittings (stock 316 stainless, sized for 42.4 mm tube)
+## 2. Fittings (stock 316 stainless for 42.4 mm tube)
 
-| part | count | fit on 42.0 / 37.0 tube |
-|---|---|---|
-| saddle wall bracket, 60-93 mm wall-to-centre, rated >= 0.9 kN | 2 | saddle R21.2 on R21.0: seats; bed in epoxy |
-| 90-degree wall-return elbow | 4 | spigot for 42.4 x 2.6 tube (ID 37.2) is 0.2 mm loose: epoxy fills it. A 42.4 x 2.0 spigot (38.4) will NOT go in |
-| wall end plate (flange), ~70 mm | 4 | closes the return; 3 screws |
-| internal splice sleeve | 2 | catalogue sleeves are ~37.0-38.2 mm: likely too tight. Fallback: machine 316 bar to 36.85 x 100 mm |
+Revised 2026-11-15. One US seller, Stair Warehouse (listings read 2026-11-15). The engine
+carries these parts as `RAILING-INT-TI-HANDRAIL-42.wall_mount` (`plan/titanium_types.py`),
+and S-602 names them.
 
-The 0.2 mm step per side at each elbow (42.0 vs 42.4) is cosmetic. Blend it or accept it.
-Bond with a structural two-part epoxy. Ti and 316 are both passive and sit close in the
-galvanic series, so the pair is benign indoors. Anchors are A4/316.
+| part | count | product | fit on 42.0 / 37.0 tube |
+|---|---|---|---|
+| wall bracket, cupped saddle | 2 | Adjustable Wall Rail Bracket, $52 | saddle R21.2 on R21.0 seats; bed in epoxy, take up the gap with a set screw or tape shim |
+| 90-degree wall-return elbow | 4 | 90 Degree Angle Elbow 1.66", 316, $42.80 | by spigot, below |
+| wall end plate (flange) | 4 | Stainless Steel Wall Termination 1.66", 316, $24 | closes the return; flange size unpublished, drawn at 70 mm |
+| internal splice | 2 | Handrail Connector 1.66", 316, $17.07 | by spigot, below; bonded with their E4584 adhesive |
+
+The seller publishes no dimensions and does not say which tube wall a spigot is made for.
+The fit is set by the spigot OD, read against the Ti bore (ID 37.0):
+
+| spigot made for | spigot OD | on the 37.0 bore | fix |
+|---|---|---|---|
+| 42.4 x 3.2 tube | ~36.0 | 0.5 mm radial, loose | shim plus structural epoxy, or set screws. **Preferred.** |
+| 42.4 x 2.6 tube | ~37.2 | up to 0.2 mm tight | dress the spigot lightly, or open the Ti end with a tube expander |
+| 42.4 x 2.0 tube | ~38.4 | 1.4 mm tight | too much to dress or expand: turn it on a lathe, or return it for a heavier-wall part |
+
+The step at each joint is 0.2 mm a side (42.0 vs 42.4). It is cosmetic: blend it or accept
+it. The stock connector retires the old fallback of a machined 36.85 x 100 mm bar, which was
+the one custom part. Ti and 316 are both passive and sit close in the galvanic series, so the
+pair is benign indoors. Anchors are A4/316. The brackets are accepted at the maker's spacing,
+and no load rating is chased (owner rule, `product-selection-preferences`).
 
 ## 3. Mounting and backing
 
@@ -97,9 +112,9 @@ galvanic series, so the pair is benign indoors. Anchors are A4/316.
 | at the widest drawn span, 947 mm | 890 x 947 / 4 / 2893 | 72.8 MPa |
 
 Bending governs at 0.28 on a 1000 mm span. That span is the type's `bracket_spacing_max`,
-and the drawn spans are 828-947 mm. Each support (bracket or flange) sees at most the full
-890 N when the load lands on it, so buy fittings rated >= 0.9 kN. The splice sits over a
-bracket, so the sleeve carries shear and a small continuity moment, not midspan moment.
+and the drawn spans are 828-947 mm. Each support (bracket or flange) sees at most 890 N.
+The splice sits over a bracket, so the sleeve carries shear and a small continuity moment,
+not midspan moment.
 
 ## 5. Backsplash (WP-M-KIT-BACKSPLASH)
 
@@ -122,7 +137,7 @@ bracket, so the sleeve carries shear and a small continuity moment, not midspan 
 
 ## 6. What is NOT graded here
 
-- **Bracket and anchor capacity:** a product rating, read when the fittings are bought.
+- **Bracket and anchor capacity:** accepted at the maker's spacing (owner rule).
   `advisory.wall_backing_present` does not see railing supports.
 - **The splice bond:** sleeve shear and bond are the epoxy maker's table.
 - **Backsplash fixing:** no check reads `model.panelings`.

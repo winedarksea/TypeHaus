@@ -322,7 +322,7 @@ def test_attic_handrail_supports_clear_the_window_and_door(catlin_model_ro):
             assert z == pytest.approx(inch(165).meters, abs=inch(1 / 16).meters)
     assert all(a[2] <= b[2] for a, b in zip(rail.sweep.path, rail.sweep.path[1:], strict=False))
     lower_plate = _solids(model, tag, 'ENDPLATE1')[0]
-    # On the jack pack, 5/8" off WIN-S-STUDY3's RO: drywall returns, no interior casing.
+    # On the jack pack, 7/8" off WIN-S-STUDY3's RO (EZA400's 2 1/4" flange): drywall returns.
     assert max(y for _x, y in lower_plate.outline) < inch(34.25).meters
     upper_plate = _solids(model, tag, 'ENDPLATE2')[0]
     assert min(x for x, _y in upper_plate.outline) > inch(261.5).meters
@@ -378,3 +378,23 @@ def test_every_attic_handrail_bracket_is_a_stock_arm_screwed_into_wood(catlin_mo
         z = bracket.z0_m + inch(0.5).meters
         assert any(poly.buffer(1e-6).covers(probe) and b <= z <= t for poly, b, t in wood), \
             bracket.tag
+
+
+def test_wall_mount_fittings_are_named_and_reach_is_graded(catlin_model_ro):
+    """WallMountSpec: stock parts land on the solids; an arm past the bracket's reach WARNs.
+    A level panel top cuts the skirt under the ceiling."""
+    from typehaus.model import WallMountSpec
+    from typehaus.resolve.railings.frame import _reach_findings
+
+    model = catlin_model_ro
+    tag = 'RL-A-HANDRAIL'
+    assert {s.product for s in _solids(model, tag, 'BRACKET')} == {'EZA200-HB'}
+    assert {s.product for s in _solids(model, tag, 'RETURN')} == {'EZA575-HB'}
+    spec = WallMountSpec(bracket_product='B', projection_min=inch(2),
+                         projection_max=inch(2.5), source='test')
+    rail = next(e for e in model.plan.all_elements() if e.tag == tag)
+    assert not _reach_findings(rail, 0, inch(2.5).meters, spec)
+    [warn] = _reach_findings(rail, 0, inch(3).meters, spec)
+    assert warn.check_id == 'geometry.railing_bracket_reach'
+    skirt = _solids(model, 'RL-A-FLIGHT-SKIRT', 'PANEL')
+    assert skirt and max(s.z1_m for s in skirt) == pytest.approx(inch(227.375).meters)

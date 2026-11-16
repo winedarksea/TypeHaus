@@ -338,6 +338,7 @@ from typehaus.model.views import (
     SliceDimension,
     Transition,
 )
+from typehaus.model.wall_mount import WallMountSpec
 from typehaus.quantities import (
     Angle,
     Area,
@@ -441,7 +442,8 @@ __all__ = [
     "ApplianceType", "EquipmentType",
     "BuiltInBookcaseBay", "BuiltInBookcaseSpec",
     "HeatPumpRating",
-    "RegisterType", "RailingType", "FasciaMountSpec", "SurfaceMountSpec", "SurfacePostMount",
+    "RegisterType", "RailingType", "FasciaMountSpec", "WallMountSpec", "SurfaceMountSpec",
+    "SurfacePostMount",
     "DuctProductType", "TerminalNeck",
     "TerminalNeckComponent", "TerminalNeckInlet", "ElectricalDeviceType",
     "LuminaireType", "MeshRef", "TrackHeadProduct", "TrackHeadSpec", "TrackLightingSpec",

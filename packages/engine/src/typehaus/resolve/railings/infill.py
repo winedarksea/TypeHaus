@@ -218,12 +218,16 @@ def _panel(el: Railing, storey: str, face_a: Vec, face_b: Vec, surface: RailingS
     and its *material* is what says mesh.
     """
     half = parts.panel_thickness_m / 2.0
+    cap = el.panel_top_elevation.meters if el.panel_top_elevation is not None else math.inf
     out: list[ResolvedSolid] = []
     for pa, pb, surface_z in surface.spans(face_a, face_b):
+        z0, z1 = surface_z + rail_half, min(surface_z + rail_h - rail_half, cap)
+        if z1 - z0 < 1e-4:
+            continue
         out.append(ResolvedSolid(
             uid="", tag="", storey=storey, category=parts.infill_category,
             outline=rect_between(pa, pb, -half, half),
-            z0_m=surface_z + rail_half, z1_m=surface_z + rail_h - rail_half,
+            z0_m=z0, z1_m=z1,
             assembly=el.assembly, material=parts.infill_material,
         ))
     return out

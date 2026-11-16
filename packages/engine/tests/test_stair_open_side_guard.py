@@ -69,10 +69,10 @@ def test_the_defect_this_rule_was_written_for(ctx):
         _with(ctx, lambda e: None if getattr(e, "tag", None) == "RL-A-FLIGHT-GUARD" else e))
     by_stair = _by_stair(findings)
     assert by_stair["ST-S2A"].result is Result.FAIL
-    # West of the newel RL-A-STAIR and RL-A-FLIGHT-SKIRT still guard the flight; the six
-    # ends between the first straight riser and the newel need it.
-    assert "6 nosing end(s)" in by_stair["ST-S2A"].message
-    assert "75\" fall" in by_stair["ST-S2A"].message
+    # West of the newel (27'-1 1/2" since 2026-11-15) RL-A-STAIR and RL-A-FLIGHT-SKIRT still
+    # guard the flight; the four ends between the first straight riser and the newel need it.
+    assert "4 nosing end(s)" in by_stair["ST-S2A"].message
+    assert "60\" fall" in by_stair["ST-S2A"].message
     assert {by_stair[tag].result
             for tag in ("ST-B2M", "ST-M2S", "ST-G-SERVICE", "ST-SG-PORCH")} \
         == {Result.PASS}

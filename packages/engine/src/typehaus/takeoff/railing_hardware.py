@@ -13,6 +13,7 @@ from collections import defaultdict
 from typehaus.model.structure import Railing
 from typehaus.resolve.model import ResolvedModel
 from typehaus.resolve.railings.parts import railing_type
+from typehaus.takeoff.railings import _hardware_quantities
 
 #: ``surface_assembly``: a 2 x 2 hole pattern in every cast base.
 _HOLES_PER_BASE = 4
@@ -70,6 +71,8 @@ def railing_hardware_rows(model: ResolvedModel) -> list[dict[str, object]]:
         product = railing_type(model.plan.library, railing)
         surface = product.surface_mount if product is not None else None
         fascia = product.fascia_mount if product is not None else None
+        wall = product.wall_mount if product is not None else None
+        fit = (wall.fit_note if wall is not None else None) or "—"
         parts = solids.get(railing.tag, ())
         words = {_part(railing, solid)[0] for solid in parts}
         if "POST" in words and not words & {"BASE", "FASCIA-BRACKET"}:
@@ -110,12 +113,16 @@ def railing_hardware_rows(model: ResolvedModel) -> list[dict[str, object]]:
                 add(railing, "post screw, self-drilling", "—",
                     _size(fascia.post_screw_diameter, fascia.post_screw_length), 1)
             elif word == "BRACKET":
-                add(railing, "rail bracket", "—", "—", 1)
+                add(railing, "rail bracket", solid.product or "—", fit, 1)
             elif word == "RETURN":
-                add(railing, "rail return to wall", "—", "—", 1)
+                add(railing, "rail return to wall", solid.product or "—", fit, 1)
             elif word == "ENDPLATE":
-                add(railing, "wall end plate", "—", "—", 1)
+                add(railing, "wall end plate", solid.product or "—", fit, 1)
             elif word == "COLBRK":
                 add(railing, "rail bracket on column", "—", "—", 1)
+        if wall is not None and wall.splice_product is not None:
+            splices = _hardware_quantities(model, railing).get("splice_count", 0)
+            if splices:
+                add(railing, "rail splice sleeve", wall.splice_product, fit, splices)
     return [{**row, "railings": sorted(row["railings"])}
             for _key, row in sorted(rows.items())]

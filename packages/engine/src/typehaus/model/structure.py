@@ -997,6 +997,9 @@ class Railing(Element):
     # another railing's nearest posts and draws no posts of its own; "panel" is a board fixed
     # at its ends: no posts, and no rail when ``rail_count`` is 0.
     mount: str = "fascia"
+    # A ``mount="panel"`` infill stops at this level; the board is cut level under an
+    # obstruction.
+    panel_top_elevation: Length | None = None
     # Fascia brackets (``RailingType.fascia_bracket_*``): the fascia's outer face stands this
     # far outboard of ``path``, and the bracket top this far below ``base_elevation``.
     fascia_face_offset: Length | None = None

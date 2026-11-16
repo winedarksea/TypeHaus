@@ -9,7 +9,7 @@ maker's stated spacing; the choice is the look, a matte black bracket to match t
 from __future__ import annotations
 
 from typehaus import RailingType, ft, inch
-from typehaus.model import Product
+from typehaus.model import Product, WallMountSpec
 
 EZ_HANDRAIL_8_BLACK_KIT = Product(
     tag="PROD-EZ-HANDRAIL-EZA8KIT-HB", brand="EZ Handrail (Madden Manufacturing)",
@@ -21,9 +21,23 @@ EZ_HANDRAIL_8_BLACK_KIT = Product(
            "solid stud. The manual spaces brackets 'every 4' to 6'' (EZ Round Handrail manual, "
            "Madden Mfg., p.8 step 15, images.homedepot-static.com/catalog/pdfImages/09/"
            "09daeb7d-0204-4503-b348-8a0d887be0ec.pdf, read 2026-11-06); the house uses 54 in. "
-           "No load rating is published, and the kit's bracket count is not verified. No "
-           "wall-to-rail standoff is published either: the paths set the rail centre ~2 1/2 in. "
-           "off the finish (1.55-1.61 in. clear, R311.7.8.2 wants 1 1/2); confirm on a bracket.",
+           "Accepted at the manual's spacing (owner rule); the kit's bracket count is not "
+           "verified. No wall-to-rail standoff is published: the paths set the rail centre "
+           "~2 1/2 in. off the finish (1.55-1.61 in. clear, R311.7.8.2 wants 1 1/2); confirm "
+           "on a bracket.",
+)
+
+# Manual p.4-5 parts list (read 2026-11-15): EZA200 wall bracket, EZA400 end bracket,
+# EZA575 wall return, EZA650 5 in. internal splice. EZA400-HB listing: H 2.25 x W 1.5 x
+# D 2.25 in. (Home Depot 205958079; superarbor gives W 2 in.), so the drawn flange is 2 1/4".
+EZ_WALL_MOUNT = WallMountSpec(
+    bracket_product="EZA200-HB",
+    return_product="EZA575-HB",
+    end_plate_product="EZA400-HB",
+    splice_product="EZA650",
+    end_plate_diameter=inch(2.25),
+    source="EZ Round Handrail manual p.4-5 (Madden Mfg.); Home Depot EZA400-HB/EZA575-HB "
+           "listings, read 2026-11-15. EZA200 projection unpublished: not graded.",
 )
 
 RAILING_INT_ALUM_HANDRAIL = RailingType(
@@ -33,6 +47,7 @@ RAILING_INT_ALUM_HANDRAIL = RailingType(
     stock_length=ft(8),
     bracket_spacing_max=inch(54),
     product_ref=EZ_HANDRAIL_8_BLACK_KIT.tag,
+    wall_mount=EZ_WALL_MOUNT,
     source="The rail's colour stays the RAILING_DARK_METAL assembly's. Spacing is the house's "
            "54 in. setting (owner 2026-11-06) within the manual's 4'-6' range, not a published "
            "load rating.",
@@ -45,6 +60,7 @@ RAILING_EXT_ALUM_HANDRAIL = RailingType(
     stock_length=ft(8),
     bracket_spacing_max=inch(54),
     product_ref=EZ_HANDRAIL_8_BLACK_KIT.tag,
+    wall_mount=EZ_WALL_MOUNT,
     source="The interior rail's kit, outdoors: the listing reads 'ideal for both indoor and "
            "outdoor use', powder coat (superarbor.io EZA8KIT-HB listing, read 2026-11-15). "
            "On W-G-S: 304/316 stainless screws into the studs (not the kit's plated ones), and "

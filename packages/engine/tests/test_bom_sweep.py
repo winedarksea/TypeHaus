@@ -110,7 +110,8 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     # corner post, where their fascia bracket lines meet. 26.1 since 2026-10-31: RL-A-STAIR
     # stops 5 1/2" further west under the heel-anchored roof plane (decision #109). 21.5
     # since 2026-11-05: W-S-WELL-KNEE took RL-S-STAIRHEAD-N's 4'-0 1/2" and 6" of the head.
-    assert by_type["RAILING-INT-STAIR-GUARD"] == pytest.approx(21.5, abs=0.1)
+    # 19.8 since 2026-11-15: RL-A-FLIGHT-GUARD's newel moved east, under the study ceiling.
+    assert by_type["RAILING-INT-STAIR-GUARD"] == pytest.approx(19.8, abs=0.1)
     # 45.6 over four storey groups, and this is the catch-all: every guard or handrail that
     # names no `type_ref` lands here. RL-A-HANDRAIL's 13.0 runs beside ST-S2A's winder fan as
     # well as its straight flight (per R311.7.8.2, measured by `code.R311_7_8_handrail`
@@ -141,11 +142,11 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     # untyped bucket keeps the rest. Their sum is the same 40.8 LF.
     # 41.8 since 2026-11-08: RL-A-HANDRAIL's return moved south of WIN-S-STUDY3's new jamb.
     # 2026-11-15: nothing is untyped. RL-BW-ENTRY is a wall rail (5.6) and RL-A-FLIGHT-SKIRT
-    # a panel (1.7); the interior handrails keep 34.2.
+    # a panel (1.7, 3.3 since its newel moved east); the interior handrails keep 34.2.
     assert "(untyped railing)" not in by_type
     assert by_type["RAILING-INT-ALUM-HANDRAIL"] == pytest.approx(34.2, abs=0.1)
     assert by_type["RAILING-EXT-ALUM-HANDRAIL"] == pytest.approx(5.6, abs=0.1)
-    assert by_type["RAILING-INT-SKIRT-PANEL"] == pytest.approx(1.7, abs=0.1)
+    assert by_type["RAILING-INT-SKIRT-PANEL"] == pytest.approx(3.3, abs=0.1)
     assert by_type["RAILING-INT-TI-HANDRAIL-42"] == pytest.approx(9.5, abs=0.1)
 
 
@@ -195,7 +196,7 @@ def test_panel_infill_is_billed_by_its_lite_not_as_a_picket(catlin_model_ro):
                                      serves_stair=stair.tag, infill="panel")], stairs=[stair])
     [row] = railing_takeoff(model)
     # A rake draws each bay as stepped bands, but a bay is one sheet.
-    assert len(infill_of(model, "RL-PANEL")) > row["panel_count"] == 2
+    assert len(infill_of(model, "RL-PANEL")) > row["panel_count"] == 1
     assert row["panel_area_sqft"] > 0
     assert not row.get("baluster_count")
 

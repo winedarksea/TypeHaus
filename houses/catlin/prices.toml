@@ -7023,10 +7023,11 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "RAILING-INT-SKIRT-PANEL" = { material = { low = 10, high = 20 }, labour = { low = 35, high = 60 } }
 # RAILING-INT-TI-HANDRAIL-42 (2026-10-09): ST-B2M's two titanium wall rails, ~9.9 LF plan.
 # The tube is OWNER-FURNISHED (Waltly, already paid — costs.toml), so material is only the
-# stock 316 fittings for 42.4 mm tube: 2 brackets, 4 wall-return elbows, 4 end plates, 2
-# internal splice sleeves, structural epoxy and A4 anchors (~$220-580 the lot). Labour is
+# stock 316 fittings for 42.4 mm tube, Stair Warehouse (read 2026-11-15): 2 adjustable wall
+# brackets $52, 4 90-degree elbows $43, 4 wall terminations $24, 2 connectors $17 = ~$405,
+# plus epoxy and A4 anchors; inside the old ~$220-580 band, so the LF price holds. Labour is
 # above a steel rail's: titanium is cut and deburred slow, and every fitting is dry-fitted
-# then bonded. LOW confidence until the fittings are bought.
+# then bonded (fit per notes/titanium_handrail_backsplash.md §2).
 # RAILING-INT-ALUM-HANDRAIL (2026-10-24): the four matte black handrails, EZ Handrail 8 ft kit
 # at $158 = $19.75/LF, plus 4' bracket spacing and end caps; the attic standoff is still
 # fabricated steel. Labour 2026-10-29: wall-mounted EZ Handrail 8 ft kit, 3 brackets to blocking, ~45-60 min per 8 ft = $10-22/LF

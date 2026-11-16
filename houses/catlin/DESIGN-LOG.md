@@ -1,3 +1,26 @@
+## Handrail fittings named; RL-A-FLIGHT-GUARD's newel moves east (2026-11-15, owner)
+
+- **Newel.** RL-A-FLIGHT-GUARD now starts at x=27'-1 1/2", not 25'-5 1/8". The old newel ran
+  through FO-A-STAIR's trimmer pack to 3/4" over the deck, and its foot lapped RL-A-STAIR's
+  BASE2. It is now one 51 5/8" bay.
+  - What binds is CEIL-RM-S-STUDY2's gypsum at 227 1/2", which sits 5/8" under the pack. The
+    post top falls 3/4" per inch, so x >= 325.46" puts it 1/2" under the board.
+  - RL-A-FLIGHT-SKIRT runs east to the newel's face and is cut level 1/8" under the gypsum
+    (new `Railing.panel_top_elevation`). R312.1.1 credits all three rails.
+  - RL-A-STAIR's BACKING1..3 already block the surface bases, which closes TODO's blocking ask.
+- **Fittings.** New `RailingType.wall_mount` (`WallMountSpec`) names the bracket, return, plate
+  and splice on the solids and S-602. Set a published projection and an arm outside it WARNs
+  `geometry.railing_bracket_reach`.
+  - EZ rails: EZA200 / EZA575 / EZA400 / EZA650. The EZA400's 2 1/4" flange puts RL-A-HANDRAIL's
+    lower plate 7/8" off WIN-S-STUDY3's RO; it was 5/8" at 70 mm.
+  - Titanium rail: Stair Warehouse's 316 line for 1.66" tube. The 42.4-on-42.0 fit is per spigot
+    (note §2, which had the 2.6-wall spigot loose; it is tight).
+  - Neither seller publishes a projection, so nothing is graded yet.
+- **Rejected:**
+  - Keeping the newel and notching the pack.
+  - A custom machined splice bar.
+  - Chasing load ratings: retail brackets are accepted at the maker's spacing (owner rule).
+
 ## The rotation's residue closed: trapeze, lid, EA fall, HP-FEED skew, GV0772 (2026-11-12, owner)
 
 - EA falls 1/8"/ft to its riser foot onto a capped drain tee (owner chose slope + piped tap; no

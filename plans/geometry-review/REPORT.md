@@ -306,8 +306,9 @@ commit; what stays open is listed under its item.
     - E10 · **closed** (`60c010107`), option (a). Stock EZA200 brackets stand at x = 423, 375, 343,
       310 and 267". Each arm lands on wood: studs 010, 007 and 005, the FS-ATTIC trimmer, and the
       W-A-SN corner stud. The widest developed span is 53.7" against 54" (EZ Handrail manual p.8:
-      "every 4' to 6'"). Brackets 4 and 5 were also off their studs before. Open: the titanium
-      fittings (no published load found); the EZA200's projection and load rating are unpublished.
+      "every 4' to 6'"). Brackets 4 and 5 were also off their studs before. Closed 2026-11-15:
+      retail brackets are accepted at the maker's spacing (owner rule), and the EZ and titanium
+      fittings are named products (`RailingType.wall_mount`). The titanium fit is in its note §2.
     - E11 · O5-102/105 closed (`f7ebbb822`); O4-105 is another workstream.
 32. **Other MEP** (C4):
     - E8 runs vs backing, E14 supply items · open (out of scope).
