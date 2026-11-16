@@ -235,6 +235,9 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
 - [x] 3d model of the garbage disposal (Badger 5 housing, sink mount, side inlet and west-facing discharge elbow; axis aligned to sink drain).
 - [x] 3d model of the wall sconces (Roland diffuser blade, Bantam stepped uplight, Soren fluted glass, Tube recessed downlight and Heritage candle/U arm; product dimensions corrected).
 - [x] 3d model of the recessed cans (round beveled white trim, open stepped baffle, regressed lamp and cylindrical housing; shared viewer/GLB/IFC geometry).
+- 3d model of the range hood, recirculating
+- switches, junction boxes, and receptacles. Depth is wrong, and possibly duplicate with the electrical boxes in the wall.
+- should we leave exposed the bottoms of the stairs, and use perhaps nicer wood for the stair stringers then if they are exposed
 
 # Project Management
 

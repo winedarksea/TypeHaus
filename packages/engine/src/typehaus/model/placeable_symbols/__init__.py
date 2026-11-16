@@ -50,6 +50,7 @@ from typehaus.model.placeable_symbols._sektion_kitchen import KITCHEN_SEKTION_SY
 from typehaus.model.placeable_symbols._sheet_metal_plenum import plenum_parts, sheet_metal_plenum
 from typehaus.model.placeable_symbols._sunnersta import sunnersta_frame
 from typehaus.model.placeable_symbols._swanstone_flex import swanstone_flex
+from typehaus.model.placeable_symbols._thermostat import thermostat
 from typehaus.model.placeable_symbols.appliances import APPLIANCE_SYMBOLS
 from typehaus.model.placeable_symbols.furniture import FURNITURE_SYMBOLS
 from typehaus.model.placeable_symbols.lighting import LIGHTING_SYMBOLS
@@ -73,6 +74,7 @@ _REGISTRY: dict[str, Builder] = {**FURNITURE_SYMBOLS, **APPLIANCE_SYMBOLS, **PLU
                                  "swanstone-flex-3636": swanstone_flex,
                                  "infrared-heater": infrared_heater,
                                  "ceramic-fan-heater": ceramic_fan_heater,
+                                 "thermostat": thermostat,
                                  "insinkerator-badger-5": badger_disposal,
                                  "fireplace-insert": fireplace_insert,
                                  "gree-flexx-ultra-24-horizontal": gree_flexx_horizontal,
@@ -131,7 +133,7 @@ SYMBOL_NAMES = (frozenset(KITCHEN_SEKTION_SYMBOLS) | frozenset(RECEPTACLE_SYMBOL
     "gree-flexx-ultra-24-horizontal",
     "gree-flexx-ultra-24-outdoor",
     "infrared-heater", "fireplace-insert", "ceramic-fan-heater",
-    "disconnect", "meter", "junction-box", "spd",
+    "disconnect", "meter", "junction-box", "spd", "thermostat",
     # Plumbing fixtures: "hydrant" is the Model 19 wall faucet; the Y34SS has its own
     # yard-hydrant geometry. Neither has a drain. "floor-drain" has no supply side.
     # "toilet-wall-hung" is a THIRD odd one out: no tank, so the china takes the whole

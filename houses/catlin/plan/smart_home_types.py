@@ -15,6 +15,7 @@ from typehaus import (
     ft,
     inch,
 )
+from typehaus.model import ModelRepresentation
 
 _ORIGIN = (ft(0), ft(0), ft(0))
 _P120 = (ServicePort(tag="power", service=Service.POWER_120, position=_ORIGIN),)
@@ -144,11 +145,13 @@ DEVICE_TYPES = (
     # 24 VAC from EQ-S-HP1-AH's control board, Class 2: no branch circuit, no port, no box.
     ElectricalDeviceType(
         tag="ED-T-HP-STAT", name="Heat-pump thermostat, 24 VAC, Matter (Aqara W200)",
+        model_representation=ModelRepresentation(symbol="thermostat"),
         footprint=(inch(3.94), inch(0.875)), height=inch(3.94), needs=frozenset(), ports=(),
         device_box=False, product_ref=AQARA_W200.tag, source=AQARA_W200.source),
     # Replaces the library ED-T-FLOOR-STAT on all three zones; line voltage, own GFCI.
     ElectricalDeviceType(
         tag="ED-T-FLOOR-STAT-WARMUP", name="Floor-heat thermostat, 120 V, Matter, GFCI (7iE)",
+        model_representation=ModelRepresentation(symbol="thermostat"),
         footprint=(inch(4.5), inch(0.875)), height=inch(3.5), ports=_P120,
         product_ref=WARMUP_7IE.tag, source=WARMUP_7IE.source),
     # The relay rides in its own listed 4" box, so the type is the box: no derived box.

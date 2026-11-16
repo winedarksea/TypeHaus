@@ -2721,6 +2721,9 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # two doors, hinges and rail, 2026-10-05). The scribes' fitting is in this labour.
 "FT-KIT-COLD-SCRIBE-20" = { material = { low = 10, high = 25 }, labour = { low = 0, high = 0 } }  # 2 ea, site-cut 3/4 white strip
 "SEKT-TS30-20" = { material = { low = 95, high = 125 }, labour = { low = 90, high = 220 } }  # 2 ea, 402.655.12 unread: above the 24x24x15's $88
+# PANTRYC's exposed south end. The return's stick is billed by its PROD row below.
+"FT-KIT-PANTRY-COVER-90" = { material = { low = 154, high = 175 }, labour = { low = 20, high = 60 } }  # 1 ea, 005.678.37
+"FT-KIT-PANTRY-TOE-RETURN" = { material = { low = 0, high = 0 }, labour = { low = 10, high = 30 } }  # 1 ea, rip + clips
 
 # --- SEKTION parts, itemized 2026-10-30 (IKEA US list read that day; per UNIT, so a 2-pack
 # hinge at $16 is $8). Labour is on the frame row. `haus order` rounds units to packs.

@@ -135,7 +135,8 @@ ALL_ELECTRICAL_DEVICE_TYPES = (
         plan_symbol="junction-box",
     ),
     _device(
-        "ED-T-FLOOR-STAT", "Radiant floor thermostat, 120V", (inch(4), inch(2)), inch(4), _P120
+        "ED-T-FLOOR-STAT", "Radiant floor thermostat, 120V", (inch(4), inch(2)), inch(4), _P120,
+        model_representation=ModelRepresentation(symbol="thermostat"),
     ),
     _device(
         "ED-T-NET-ENCLOSURE",
