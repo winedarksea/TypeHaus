@@ -134,8 +134,8 @@ are ordinary 42-inch countertop receptacles on its back wall.
 
 **Microwave trial.** A countertop microwave of 12–13 inches tall leaves about 7 inches over
 it, so about 3 inches of top clearance remains even for a manufacturer that asks for more.
-The Panasonic NN-SN686S (20.69 wide) stands at y 332.72, 3.00 inches off PANTRY-S1 on the
-closed side and 5/16 inch short of the open landing edge; no clearance zone is added. Check
+The Panasonic NN-SN686S (20.69 wide) stands at y 332.72, 2.50 inches off S1's nook cover on
+the closed side and 5/16 inch short of the open landing edge; no clearance zone is added. Check
 the actual unit's rear and side requirements before choosing this spot over the pantry
 east bay (notes/pantry_climbable_shelving.md).
 
@@ -173,8 +173,9 @@ installation instructions. The thin fiberboard back is not a bearing member.
 
 The stock bare frame depth is 23 5/8, or 24 with its suspension rail, matching the
 high frames and hung upper. Matching 3/4 fronts project 24 3/4 from the finished wall.
-Coordinate factory reveals and the exposed south side finish within the existing module
-width. The price includes frame, front, hinges, rail and installation. The former shallow
+Exposed sides take FÖRBÄTTRA covers, fronts flush with AXSTAD (2026-11-15): S2's south side
+over the ash slab, 36 3/4 to 101, one piece over frame and top; S1's north side in the cave,
+36 to 56. Both stand outside the module width. The price includes frame, front, hinges, rail and installation. The former shallow
 frames, rear decks, restraint cheeks, rear-bay cover and custom 20-high tops are removed.
 
 Keep the two Rev-A-Shelf 5374-24FL swing-out inserts and their door brackets. Check the

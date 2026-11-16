@@ -63,6 +63,18 @@ MAIN_KITCHEN_CASEWORK = [
     Furniture(uid="XTD1N9A693", tag="FURN-M-KIT-PANTRYC", type_ref="SEKT-HIGH18-90",
               room="RM-M-LIVING",
               position=pt(ft(19, 3.375), ft(26, 7.375)), rotation=deg(90)),
+    # Its exposed south end: cover above the supports, kick return below, both 1/8" past
+    # W-M-C5's framing end (inside its end board).
+    Furniture(uid="BSZ4H7A1PX", tag="FURN-M-KIT-PANTRYC-COVER", type_ref="FT-KIT-PANTRY-COVER-90",
+              room="RM-M-LIVING", mount=Mount(kind=MountKind.FLOOR, elevation=inch(3.5)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-C5", face="right", distance_from_start=inch(0.125),
+                  normal_gap=inch(0.25), rotation_offset=deg(0)))),
+    Furniture(uid="M2CM0M6CN2", tag="FURN-M-KIT-PANTRYC-TOE", type_ref="FT-KIT-PANTRY-TOE-RETURN",
+              room="RM-M-LIVING", mount=Mount(kind=MountKind.FLOOR, elevation=inch(0)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-C5", face="right", distance_from_start=inch(0.0625),
+                  normal_gap=inch(0.25), rotation_offset=deg(0)))),
     # Finish both existing end gaps; these are front strips, not full-depth cabinets.
     Furniture(uid="J7C2SCRB6S", tag="FURN-M-KIT-COLD-SCRIBE-S", type_ref="FT-KIT-COLD-SCRIBE-20",
               room="RM-M-LIVING", mount=Mount(kind=MountKind.WALL, elevation=inch(73.5)),
@@ -210,6 +222,17 @@ MAIN_KITCHEN_CASEWORK = [
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-E1", face="left", distance_from_start=inch(283.375),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
+    # Exposed pantry ends: S2 south over the ash slab, S1 north inside the microwave nook.
+    Furniture(uid="0A737HGZVC", tag="FURN-M-KIT-PANTRY-S2-COVER", type_ref="FT-KIT-PANTRY-S2-COVER",
+              room="RM-M-LIVING", mount=Mount(kind=MountKind.FLOOR, elevation=inch(36.75)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-E1", face="left", distance_from_start=inch(271.125),
+                  normal_gap=inch(0.125), rotation_offset=deg(-180)))),
+    Furniture(uid="7THADY9DDY", tag="FURN-M-KIT-PANTRY-S1-NOOK-COVER", type_ref="FT-KIT-PANTRY-S1-NOOK-COVER",
+              room="RM-M-LIVING", mount=Mount(kind=MountKind.FLOOR, elevation=inch(36)),
+              location=Location(attachment=WallAttachment(
+                  wall_ref="W-M-E1", face="left", distance_from_start=inch(319.625),
+                  normal_gap=inch(0.125), rotation_offset=deg(-180)))),
 
     # Diagonal corner backs are +x/+y, so this glyph stays at rotation 0, unlike straight uppers.
     Furniture(uid="2BF9VM3SFA", tag="FURN-M-KIT-WN1", type_ref="SEKT-CORNER-W26-30",
@@ -296,7 +319,7 @@ MAIN_KITCHEN_CASEWORK = [
                   wall_ref="W-M-E1", face="left", distance_from_start=inch(331.375),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
     # Microwave trial in the cave, front facing west, 2" off the wall so the plug clears. 20.69"
-    # wide: 3.00" off PANTRY-S1 (cave edge y 319 3/8, the closed side), 5/16" short of the open
+    # wide: 2.50" off S1's nook cover (face y 319 7/8, the closed side), 5/16" short of the open
     # landing edge (343 3/8). Plugs into ED-M-LIVING-KGF4 (SA2) at 42".
     Appliance(uid="72YP0N77T2", tag="APPL-M-MICROWAVE", type_ref="APPL-MICROWAVE-NN-SN686S", room="RM-M-LIVING",
               position=pt(inch(415.6), inch(332.72)), rotation=deg(-90),

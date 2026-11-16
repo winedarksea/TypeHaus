@@ -51,22 +51,24 @@ a run is allowed; carrying an offcut from one run to another is not.
 - **Knobs:** 3.
 - **Shelves:** the three doors are one 90 in. stack, so ceil(90/20) − 1 = 4 shelves (bays of 18 in.). Take away the frame's fixed shelf and 3 UTRUSTA 18x24 shelves (202.655.32) remain, which is 2 packs. (Counting per door course gave 1 + 1 + 0 = 2 and left 30 in. bays, because nothing stands at a door split.)
 - **Legs:** 4.
-- **Toe kick and rail:** 18 in. each.
+- **Toe kick and rail:** 18 in. each, plus a 20 7/8 in. return under the exposed south end (`FURN-M-KIT-PANTRYC-TOE`), ripped to 3 1/2 in. from the same stick.
+- **South end cover:** one FÖRBÄTTRA 25x90 (`FURN-M-KIT-PANTRYC-COVER`), 3 1/2 to 93 1/2 in., face flush with the return.
 
 **Cover panel nesting (`takeoff/sheet_nesting.py`).** Every FÖRBÄTTRA panel is 24 5/8 in.
 wide. Each piece stands one side across that width and spends the other along the panel's
 length; a 1/8 in. kerf goes before each piece after the first. Longest first, first panel
 it fits.
-- **25x30 (four pieces).** The bed desk cover is 24 5/8 x 30, which spends a whole panel.
-  The study seat end (16 x 24 5/8) spends 16; the two pantry toe panels (24 x 6, cut per
-  `kitchen_stock_cabinet_details.md`) spend 6 each. 16 + 1/8 + 6 + 1/8 + 6 = 28 1/4, under
-  30. **2 panels**, not 4.
-- **25x80 (five pieces).** The study nook cover (24 5/8 x 80) is a whole panel. The living
+- **25x30 (five pieces).** The bed desk cover is 24 5/8 x 30, which spends a whole panel.
+  PANTRY-S1's nook cover (20 x 24 5/8) and one pantry toe panel (24 x 6, cut per
+  `kitchen_stock_cabinet_details.md`) share one: 20 + 1/8 + 6 = 26 1/8. The study seat end
+  (16) and the other toe panel share the third: 22 1/8. **3 panels**, not 5.
+- **25x80 (six pieces).** The study nook cover (24 5/8 x 80) is a whole panel, and PANTRY-S2's
+  south cover (24 5/8 x 64 1/4) spends another (its 15 5/8 offcut fits nothing). The living
   end panel (24 x 35 1/2) and the peninsula end panel (24 x 34 3/4) share one:
   35 1/2 + 1/8 + 34 3/4 = 70 3/8, under 80 (heights corrected 2026-11-05). The peninsula seating face is authored as two
-  whole panels. **4 panels**, not 5.
-- **25x90.** The hall-bath closet cover, **1 panel**.
-- **Total: 7 panels, not 10.**
+  whole panels. **5 panels**, not 6.
+- **25x90.** The hall-bath closet cover and PANTRYC's south cover, each whole: **2 panels**.
+- **Total: 10 panels, not 13.**
 
 **Rail run check (test).**
 - Two wall frames, 48 in. and 54 in., set touching, make a 102 in. run. That needs ceil(102/84) = **2** rails.

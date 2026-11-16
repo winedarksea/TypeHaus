@@ -2724,6 +2724,8 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # PANTRYC's exposed south end. The return's stick is billed by its PROD row below.
 "FT-KIT-PANTRY-COVER-90" = { material = { low = 154, high = 175 }, labour = { low = 20, high = 60 } }  # 1 ea, 005.678.37
 "FT-KIT-PANTRY-TOE-RETURN" = { material = { low = 0, high = 0 }, labour = { low = 10, high = 30 } }  # 1 ea, rip + clips
+"FT-KIT-PANTRY-S2-COVER" = { material = { low = 127, high = 145 }, labour = { low = 20, high = 60 } }  # 1 ea, 25x80 cut
+"FT-KIT-PANTRY-S1-NOOK-COVER" = { material = { low = 53, high = 65 }, labour = { low = 20, high = 60 } }  # 1 ea, 25x30 cut
 
 # --- SEKTION parts, itemized 2026-10-30 (IKEA US list read that day; per UNIT, so a 2-pack
 # hinge at $16 is $8). Labour is on the frame row. `haus order` rounds units to packs.
