@@ -96,8 +96,9 @@ a release or for exhaustive local verification.
   run (`DuctRun.inline_dampers`), charged its row's fully-open `loss_c` (#128).
 - **A register's joint to its run is derived in 3D; a manifold needs a feed** (decisions #126,
   #136): `resolve/terminal_joints.py` (inlet/drop/through/end/side/unreached; boots and caps read
-  it), `checks/mep/register_reach.py` FAILs a run passing THROUGH its grille, and `manifold_feed.py`. A
-  plain ceiling neck, round or rectangular, takes a drop from above and must match the arriving
+  it), `checks/mep/register_reach.py` FAILs a run passing THROUGH its grille or not reaching it, and
+  `manifold_feed.py`. A run draws as stretches and elbows split at its parts
+  (`resolve/duct_fabrication.py`); a boot's row matches its derived `entry`. A plain ceiling neck, round or rectangular, takes a drop from above and must match the arriving
   section (`resolve/terminal_drops.py`, #129). A passive shop box is `EquipmentKind.PLENUM`, one
   with a damper `MIXING_BOX` (#125); a blocking `RunBand` is boxed by half-width and half-height.
 - **NEC labels are derived, never authored** (decision #134): `resolve/electrical_labels.py` reads each
