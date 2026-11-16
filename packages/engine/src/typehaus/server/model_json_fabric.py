@@ -255,12 +255,12 @@ def shell_json(model: ResolvedModel, provenance: Provenance | None) -> dict[str,
              "product": solid.product,
              "body_mesh": (None if solid.body_mesh is None else mesh_json(
                  solid.body_mesh.positions, solid.body_mesh.triangles)),
-             # A run carried as one swept solid (→ resolve/sweep.py). Null on every prism,
-             # which is every solid that is not a rail, a pipe or a raceway; the viewer
-             # forks on it in ``buildSolid`` and mitres the tube itself.
+             # A run carried as one swept solid (→ resolve/sweep.py), null on every prism;
+             # the viewer forks on it in ``buildSolid`` and mitres the tube itself.
              "sweep": (None if solid.sweep is None else {
                  "path": [list(point) for point in solid.sweep.path],
-                 "profile": [list(point) for point in solid.sweep.profile]}),
+                 "profile": [list(point) for point in solid.sweep.profile],
+                 "vertical_up": solid.sweep.vertical_up and list(solid.sweep.vertical_up)}),
              "provenance": _provenance(provenance, solid.host_ref or solid.tag)}
             for solid in sorted(model.solids, key=lambda item: item.uid)
         ],

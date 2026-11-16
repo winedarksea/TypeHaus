@@ -1816,7 +1816,7 @@ export interface Solid {
   // is every solid that is not one of those; `three/tubeGeometry.ts` mitres it, and
   // outline/z0_m/z1_m still carry the whole run's plan silhouette and Z extents so anything
   // that has not been taught about sweeps degrades honestly rather than breaking.
-  sweep?: { path: Vec3[]; profile: Vec2[] } | null;
+  sweep?: { path: Vec3[]; profile: Vec2[]; vertical_up?: Vec3 | null } | null;
   provenance: Provenance | null;
   // A dropped ceiling keeps its service envelope above, but renders only these boards.
   finish_panels?: { outline: Vec2[]; voids: Vec2[][]; z0_m: number; z1_m: number }[] | null;

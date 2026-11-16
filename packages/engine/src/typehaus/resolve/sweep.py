@@ -17,6 +17,11 @@ no such projection and falls back to world **+Y**. "right" is ``up × d``, which
 ``(right, up, d)`` right-handed — so a profile wound counter-clockwise in ``(u, v)`` comes
 out with its side facets facing outward, exactly as ``GBox`` wants them.
 
+The +Y fallback rolls a rectangular section at a riser. ``SolidSweep.vertical_up`` opts out:
+it is the up of a vertical leg running **+Z** (projected perpendicular to it), and a leg
+running −Z takes its negation, so ``right`` is the same either way — the frame the level
+legs either side carry (:func:`carried_up`). ``None`` keeps +Y, for pipes, rails and rebar.
+
 Stdlib only, like the rest of ``resolve/`` — the whole engine runs in Pyodide.
 """
 
@@ -118,14 +123,44 @@ def clean_path(path: tuple[Vec3, ...] | list[Vec3]) -> tuple[Vec3, ...]:
     return tuple(out)
 
 
-def leg_frame(direction: Vec3) -> tuple[Vec3, Vec3]:
+def leg_frame(direction: Vec3, vertical_up: Vec3 | None = None) -> tuple[Vec3, Vec3]:
     """``(right, up)`` for a leg running along ``direction`` — see the module docstring."""
     d = _unit3(direction)
     up = _sub3((0.0, 0.0, 1.0), (d[0] * d[2], d[1] * d[2], d[2] * d[2]))
     if _norm3(up) < 1e-9:  # a vertical leg: world +Z has no perpendicular component
-        up = _sub3((0.0, 1.0, 0.0), (d[0] * d[1], d[1] * d[1], d[2] * d[1]))
+        up = (0.0, 0.0, 0.0)
+        if vertical_up is not None:
+            k = _dot3(vertical_up, d)
+            up = _sub3(vertical_up, (d[0] * k, d[1] * k, d[2] * k))
+            if d[2] < 0.0:
+                up = (-up[0], -up[1], -up[2])
+        if _norm3(up) < 1e-9:  # no carried up, or one parallel to the leg
+            up = _sub3((0.0, 1.0, 0.0), (d[0] * d[1], d[1] * d[1], d[2] * d[1]))
     up = _unit3(up)
     return _cross3(up, d), up
+
+
+def carried_up(path: tuple[Vec3, ...] | list[Vec3]) -> Vec3 | None:
+    """The ``SolidSweep.vertical_up`` that keeps a riser's section unrolled.
+
+    The first vertical leg carries the frame of the level leg before it (else after it):
+    ``-h`` for that leg's plan direction ``h``, so ``right`` stays ``+Z × h`` through the
+    riser. ``None`` when the path has no vertical leg or no leg with a plan direction. One
+    vector serves every riser of a run only while their neighbours share ``h``.
+    """
+    pts = clean_path(path)
+    dirs = [_unit3(_sub3(pts[i + 1], pts[i])) for i in range(len(pts) - 1)]
+    vertical = [math.hypot(d[0], d[1]) < 1e-9 for d in dirs]
+    for i, is_vertical in enumerate(vertical):
+        if not is_vertical:
+            continue
+        level = [j for j in range(i - 1, -1, -1) if not vertical[j]]
+        level += [j for j in range(i + 1, len(dirs)) if not vertical[j]]
+        if not level:
+            return None
+        h = _unit3((dirs[level[0]][0], dirs[level[0]][1], 0.0))
+        return (-h[0], -h[1], 0.0)
+    return None
 
 
 def _ring_at(vertex: Vec3, direction: Vec3, right: Vec3, up: Vec3,
@@ -202,7 +237,8 @@ def sweep_legs(sweep: SolidSweep) -> list[tuple[Ring3, Ring3]]:
     if len(path) < 2 or len(profile) < 3:
         return []
     dirs = [_unit3(_sub3(path[i + 1], path[i])) for i in range(len(path) - 1)]
-    frames = [leg_frame(d) for d in dirs]
+    vertical_up = getattr(sweep, "vertical_up", None)
+    frames = [leg_frame(d, vertical_up) for d in dirs]
     normals: list[Vec3] = [dirs[0]]
     cos_limit = math.cos(math.radians(MAX_MITER_DEG))
     for i in range(1, len(dirs)):
@@ -260,7 +296,7 @@ def sweep_leg_axes(sweep: SolidSweep) -> list[tuple[Vec3, Vec3, Vec3, float]]:
         if run < _EPS_M:
             continue
         direction = _unit3(delta)
-        right, _up = leg_frame(direction)
+        right, _up = leg_frame(direction, getattr(sweep, "vertical_up", None))
         out.append((path[i], direction, right, run))
     return out
 
@@ -310,6 +346,11 @@ def sweep_plan_silhouette(sweep: SolidSweep) -> list[Vec2]:
         return []
     if len(plan) == 1 or half <= 0.0:
         (x, y) = plan[0]
+        if len(plan) == 1 and getattr(sweep, "vertical_up", None) is not None:
+            r, u = leg_frame((0.0, 0.0, 1.0), sweep.vertical_up)  # right is sign-free
+            return [(x + r[0] * su * half + u[0] * sv * half_v,
+                     y + r[1] * su * half + u[1] * sv * half_v)
+                    for su, sv in ((-1, -1), (1, -1), (1, 1), (-1, 1))]
         if len(plan) == 1:  # a pure vertical run: the section itself, hu x hv
             return [(x - half, y - half_v), (x + half, y - half_v),
                     (x + half, y + half_v), (x - half, y + half_v)]

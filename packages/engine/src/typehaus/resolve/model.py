@@ -619,10 +619,12 @@ class SolidSweep:
     section in the leg's local ``(right, up)`` frame, closed implicitly like every other
     ring in the IR. :mod:`typehaus.resolve.sweep` owns the mitre, the frame convention and
     the developed length, and ``ui/src/three/tubeGeometry.ts`` mirrors it vertex for vertex.
+    ``vertical_up`` is a vertical leg's carried up (→ ``sweep.leg_frame``); ``None`` = +Y.
     """
 
     path: tuple[Vec3, ...]
     profile: tuple[Vec2, ...]
+    vertical_up: Vec3 | None = None
 
 
 @dataclass(frozen=True)

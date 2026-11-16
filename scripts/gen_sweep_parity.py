@@ -19,7 +19,12 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT / "packages" / "engine" / "src"))
 
 from typehaus.resolve.model import SolidSweep  # noqa: E402
-from typehaus.resolve.sweep import rect_profile, round_profile, sweep_legs  # noqa: E402
+from typehaus.resolve.sweep import (  # noqa: E402
+    carried_up,
+    rect_profile,
+    round_profile,
+    sweep_legs,
+)
 
 FIXTURE = REPO_ROOT / "ui" / "src" / "generated" / "sweepParity.json"
 
@@ -42,15 +47,27 @@ CASES = [
      rect_profile(0.0381, 0.0381)),
 ]
 
+#: Rectangular risers on a carried frame (``SolidSweep.vertical_up``): up, and up-then-down.
+RISER = [(0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (1.0, 0.0, 1.5), (2.5, 0.0, 1.5)]
+HAT = [(0.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 1.0, 0.8), (0.0, 2.0, 0.8),
+       (0.0, 2.0, 0.1), (1.0, 2.0, 0.1)]
+CARRIED = [
+    ("riser-rect-carried", RISER, rect_profile(0.254, 0.1524), carried_up(RISER)),
+    ("hat-rect-carried", HAT, rect_profile(0.3048, 0.2032), carried_up(HAT)),
+    ("vertical-up-parallel-falls-back", [(0.0, 0.0, 0.0), (0.0, 0.0, 1.0)],
+     rect_profile(0.1, 0.2), (0.0, 0.0, 1.0)),
+]
+
 
 def payload() -> dict:
     cases = []
-    for name, path, profile in CASES:
-        sweep = SolidSweep(path=tuple(path), profile=profile)
+    for name, path, profile, up in [(*case, None) for case in CASES] + CARRIED:
+        sweep = SolidSweep(path=tuple(path), profile=profile, vertical_up=up)
         cases.append({
             "name": name,
             "path": [list(point) for point in path],
             "profile": [list(point) for point in profile],
+            "vertical_up": None if up is None else list(up),
             "legs": [[[[round(v, 12) for v in point] for point in ring] for ring in leg]
                      for leg in sweep_legs(sweep)],
         })

@@ -14,6 +14,10 @@
 // rake instead of rolling with the slope; a vertical leg has no such projection and falls
 // back to world +Y. "right" is `up × d`, which makes (right, up, d) right-handed, so a
 // profile wound counter-clockwise in (u, v) comes out facing outward.
+//
+// A sweep's `vertical_up` (null on pipes, rails, rebar) replaces the +Y fallback: it is the
+// up of a leg running +Z, negated on a leg running -Z, so a rectangular riser keeps the frame
+// its level legs carry instead of rolling (sweep.py `leg_frame` / `carried_up`).
 import * as THREE from "three";
 import type { Solid, Vec2 } from "../model/types";
 import { projectPointToScene, type PlanCenter } from "./planGeometry";
@@ -51,10 +55,19 @@ export function cleanPath(path: readonly (readonly number[])[]): Vec3[] {
 }
 
 /** `[right, up]` for a leg running along `direction` — see the frame convention above. */
-export function legFrame(direction: Vec3): [Vec3, Vec3] {
+export function legFrame(direction: Vec3, verticalUp?: readonly number[] | null): [Vec3, Vec3] {
   const d = unit(direction);
   let up: Vec3 = [-d[0] * d[2], -d[1] * d[2], 1 - d[2] * d[2]];
-  if (norm(up) < 1e-9) up = [-d[0] * d[1], 1 - d[1] * d[1], -d[2] * d[1]];
+  if (norm(up) < 1e-9) { // a vertical leg: world +Z has no perpendicular component
+    up = [0, 0, 0];
+    if (verticalUp) {
+      const vu: Vec3 = [verticalUp[0], verticalUp[1], verticalUp[2]];
+      const k = dot(vu, d);
+      up = [vu[0] - d[0] * k, vu[1] - d[1] * k, vu[2] - d[2] * k];
+      if (d[2] < 0) up = [-up[0], -up[1], -up[2]];
+    }
+    if (norm(up) < 1e-9) up = [-d[0] * d[1], 1 - d[1] * d[1], -d[2] * d[1]];
+  }
   up = unit(up);
   return [cross(up, d), up];
 }
@@ -79,11 +92,11 @@ function ringAt(vertex: Vec3, direction: Vec3, right: Vec3, up: Vec3,
 
 /** One `[startRing, endRing]` pair per leg — mirrors sweep.py `sweep_legs`. */
 export function sweepLegs(path: readonly (readonly number[])[],
-  profile: readonly Vec2[]): [Vec3[], Vec3[]][] {
+  profile: readonly Vec2[], verticalUp?: readonly number[] | null): [Vec3[], Vec3[]][] {
   const points = cleanPath(path);
   if (points.length < 2 || profile.length < 3) return [];
   const dirs = points.slice(0, -1).map((p, i) => unit(sub(points[i + 1], p)));
-  const frames = dirs.map(legFrame);
+  const frames = dirs.map((d) => legFrame(d, verticalUp));
   const cosLimit = Math.cos((MAX_MITER_DEG * Math.PI) / 180);
   const normals: Vec3[] = [dirs[0]];
   for (let i = 1; i < dirs.length; i++) {
@@ -114,7 +127,7 @@ export function sweepLegs(path: readonly (readonly number[])[],
 export function createSweepGeometry(solid: Solid, center: PlanCenter): THREE.BufferGeometry | null {
   const sweep = solid.sweep;
   if (!sweep) return null;
-  const legs = sweepLegs(sweep.path, sweep.profile as Vec2[]);
+  const legs = sweepLegs(sweep.path, sweep.profile as Vec2[], sweep.vertical_up);
   if (!legs.length) return null;
   const positions: number[] = [];
   const indices: number[] = [];

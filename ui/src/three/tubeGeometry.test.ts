@@ -22,7 +22,8 @@ function close(got: number, want: number, tolerance: number, what: string) {
 // Called by scripts/run-geometry-tests.mjs.
 export function runSweepParityTests() {
   for (const testCase of parity.cases) {
-    const legs = sweepLegs(testCase.path, testCase.profile as Vec2[]);
+    const legs = sweepLegs(testCase.path, testCase.profile as Vec2[],
+      testCase.vertical_up as Vec3 | null);
     if (legs.length !== testCase.legs.length) {
       throw new Error(
         `${testCase.name}: ${legs.length} legs, Python says ${testCase.legs.length}`);
@@ -57,6 +58,11 @@ export function runSweepFrameTests() {
   // A vertical leg has no perpendicular component of +Z and falls back to world +Y.
   const [, verticalUp] = legFrame([0, 0, -1]);
   close(verticalUp[1], 1, 1e-12, "a vertical leg's up");
+  // A carried up: right (up x d) is the same on a riser and a drop.
+  const [riseRight] = legFrame([0, 0, 1], [-1, 0, 0]);
+  const [dropRight] = legFrame([0, 0, -1], [-1, 0, 0]);
+  close(riseRight[1], 1, 1e-12, "a riser's carried right");
+  close(dropRight[1], 1, 1e-12, "a drop's carried right");
 
   if (MAX_MITER_DEG >= 90) throw new Error("a 90 degree turn must butt, not mitre");
   const profile: Vec2[] = [[-0.05, -0.05], [0.05, -0.05], [0.05, 0.05], [-0.05, 0.05]];
