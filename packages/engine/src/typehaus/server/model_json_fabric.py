@@ -242,7 +242,7 @@ def shell_json(model: ResolvedModel, provenance: Provenance | None) -> dict[str,
              "z0_m": solid.z0_m, "z1_m": solid.z1_m, "assembly": solid.assembly,
              "material": solid.material,
              "host_ref": solid.host_ref,
-             "group": solid.group,
+             "group": solid.group, "under_skin": solid.under_skin,
              "finish_panels": ([
                  {"outline": [list(point) for point in panel.prism.ring],
                   "voids": [[list(point) for point in ring] for ring in panel.prism.voids],

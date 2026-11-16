@@ -24,7 +24,7 @@ import { assemblyFaceMaterial } from "../model/solidLabels";
 import type { Trade } from "../state/vocabulary";
 import { solidTrades } from "../model/tradeVisibility";
 import { NORDIC_ROUGHNESS, standardMaterial } from "./surfaces";
-import { metalDepthTier } from "./materials";
+import { metalDepthTier, UNDER_SKIN_TRIM_POLYGON_OFFSET } from "./materials";
 import { createProfiledMetalSkinMaterial } from "./boardBattenMaterial";
 import vocabulary from "../generated/vocabulary.json";
 
@@ -138,15 +138,16 @@ export function solidOpacity(
 }
 
 export function createSolidMaterial(
-  solid: Pick<Solid, "category" | "assembly" | "material">,
+  solid: Pick<Solid, "category" | "assembly" | "material" | "under_skin">,
   catalog: Catalog | undefined,
   mode: "nordic" | "schematic",
   palette: ResolvedNordicPalette,
 ): THREE.MeshStandardMaterial {
-  // Same PVDF surface, shadow bias and schematic fallback as the panel; trim keeps its lap tier.
+  // Same PVDF surface, shadow bias and schematic fallback as the panel; trim keeps its lap
+  // tier, or sits one step behind the skin where the skin laps it.
   if (solid.category === "cladding_trim" && !RUBBER_MATERIALS.has(solid.material ?? "")) {
     return createProfiledMetalSkinMaterial(mode, solidColor(solid, catalog, palette),
-      metalDepthTier("cladding_trim")!);
+      solid.under_skin ? UNDER_SKIN_TRIM_POLYGON_OFFSET : metalDepthTier("cladding_trim")!);
   }
   const metallic = !RUBBER_MATERIALS.has(solid.material ?? "") && METALLIC_SOLID_CATEGORIES.has(solid.category);
   const opacity = solidOpacity(solid, catalog);

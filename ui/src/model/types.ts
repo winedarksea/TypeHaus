@@ -1807,6 +1807,8 @@ export interface Solid {
   host_ref?: string | null;
   // Solids of one physical part (a gutter's boards, a guard's posts) pick and inspect as one.
   group?: string | null;
+  // Formed metal the profiled skin laps over (a base trim); drawn a step behind the skin.
+  under_skin?: boolean;
   // Folded purchased-part geometry in project coordinates, with open fastener holes.
   body_mesh?: PackedMesh | null;
   // A RUN — a handrail, a drain, a raceway — carried as one section swept along a 3D

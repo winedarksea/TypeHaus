@@ -15,7 +15,9 @@ def panel_support_clearance_m(
     Direct-applied panels must seat over these laps at their valleys. Rainscreen
     supports already stand outboard of them. Exposed drips and sill outlets do not
     belong to this concealed stack and must not flatten the panel's relief.
+    A free-bottom base trim's back leg is reserved too, rainscreen or direct-applied.
     """
+    from typehaus.resolve.cladding_trim.base import base_leg_depth_m
     flashed = {solid.host_ref for solid in model.solids
                if solid.category == "opening_flashing_membrane"}
     clearance = 0.0
@@ -34,4 +36,4 @@ def panel_support_clearance_m(
         panel_sheet = SHEET_24_GA_M if metal_trim else 0.0
         clearance = max(clearance, head_plane + cfg.sheet_m + cfg.perimeter_membrane_m
                         + panel_sheet - support)
-    return clearance
+    return max(clearance, base_leg_depth_m(model, wall, layer))

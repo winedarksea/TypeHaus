@@ -330,6 +330,8 @@ const tier = (units: number): PolygonOffset =>
   ({ polygonOffset: true, polygonOffsetFactor: 0, polygonOffsetUnits: units });
 /** Gutter, cladding trim and flashing. */
 export const TRIM_POLYGON_OFFSET = tier(-4);
+/** Trim the skin laps (a base's back leg): loses to the skin (−3), beats wall finish (−1). */
+export const UNDER_SKIN_TRIM_POLYGON_OFFSET = tier(-2);
 /** Eave and rake pieces (`drip_edge` members), which lap the trim and gutter flange. */
 export const EAVE_RAKE_POLYGON_OFFSET = tier(-5);
 /** The pan end, hemmed around the eave's lip. */

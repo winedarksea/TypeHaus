@@ -678,6 +678,9 @@ class ResolvedSolid:
     # body_mesh parts. Consumers that DRAW must not skip them: glTF,
     # model.json and the viewer are the whole point.
     derived: bool = False
+    # Formed metal the profiled skin laps over; the viewer draws it a step behind the skin.
+    # Orthogonal to ``category`` for the reason ``derived`` gives.
+    under_skin: bool = False
     # Flashing keeps its source opening/brace addressable without borrowing its identity.
     host_ref: str | None = None
     # Purchased formed trim uses its catalog key in product; length distinguishes

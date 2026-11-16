@@ -78,3 +78,30 @@ def test_catalog_window_head_clears_membrane_at_mount_plane(panel_model):
         window_seat=WindowSeat(.01, .01, .01, 0, outer_m=.1, mount="metal_trim"))
     assert panel_support_clearance_m(panel_model, wall, wall.layers[-1]) == pytest.approx(
         FLASHING.sheet_m + FLASHING.perimeter_membrane_m + SHEET_24_GA_M)
+
+
+def test_profiled_skin_seats_over_every_base_back_leg(catlin_model_ro):
+    """The skin laps a base trim's back leg: its pan stands at or outboard of the leg."""
+    walls = {wall.tag: wall for wall in catlin_model_ro.walls}
+    checked = 0
+    for solid in catlin_model_ro.solids:
+        tag = solid.tag.rsplit("-BASE-S", 1)
+        if not solid.tag.startswith("TRIM-") or len(tag) != 2 or solid.body_mesh is None:
+            continue
+        assert solid.under_skin
+        wall = walls[tag[0].removeprefix("TRIM-")]
+        (x0, y0), (x1, y1) = wall.axis[0], wall.axis[-1]
+        length = math.hypot(x1 - x0, y1 - y0)
+        n = (-(y1 - y0) / length, (x1 - x0) / length)
+        sign = 1 if wall.layers[-1].polygon[0][0] * n[0] + wall.layers[-1].polygon[0][1] * n[1] \
+            > x0 * n[0] + y0 * n[1] else -1
+        off = sorted(sign * ((x - x0) * n[0] + (y - y0) * n[1]) for x, y, _ in
+                     solid.body_mesh.positions)
+        leg_front = min(v for v in off if v > off[0] + 1e-5)
+        for layer in wall.layers:
+            if layer.surface_mesh is not None:
+                pan_back = min(sign * ((x - x0) * n[0] + (y - y0) * n[1])
+                               for x, y, _ in layer.surface_mesh.positions)
+                assert pan_back >= leg_front - 1e-6, (solid.tag, layer.name)
+                checked += 1
+    assert checked

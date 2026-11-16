@@ -112,7 +112,8 @@ def subtract_spans(lo: float, hi: float, cuts) -> list[tuple[float, float]]:
     return [(a, b) for a, b in spans if b - a > 0.5 * M_PER_IN]
 
 
-def _emit(model, face, profile, key, tag_base, host_ref, index, mesh, length, stock):
+def _emit(model, face, profile, key, tag_base, host_ref, index, mesh, length, stock,
+          under_skin=False):
     xs, ys, zs = zip(*mesh.positions, strict=True)
     model.solids.append(ResolvedSolid(
         uid=f"{face.wall.uid}-{tag_base.lower()}-{index}", tag=f"{tag_base}-{index + 1}",
@@ -120,7 +121,7 @@ def _emit(model, face, profile, key, tag_base, host_ref, index, mesh, length, st
         outline=((min(xs), min(ys)), (max(xs), min(ys)), (max(xs), max(ys)), (min(xs), max(ys))),
         z0_m=min(zs), z1_m=max(zs), material=face.layer.material_ref, product=key,
         body_mesh=mesh, host_ref=host_ref or face.wall.tag, trim_length_m=length,
-        trim_stock_length_in=round(stock / M_PER_IN, 6)))
+        trim_stock_length_in=round(stock / M_PER_IN, 6), under_skin=under_skin))
 
 
 def _pieces(profile, length):
@@ -134,7 +135,8 @@ def _section_m(profile, section_in=None):
 
 def add_horizontal_run(model, face: CladdingFace, profile: TrimProfile, key: str, tag_base: str,
                        lo: float, hi: float, z: float, *, depth: float = 0.0,
-                       host_ref: str | None = None, section_in=None) -> int:
+                       host_ref: str | None = None, section_in=None,
+                       under_skin: bool = False) -> int:
     """Sweep ``profile`` along stations ``lo..hi`` at height ``z``; return pieces added.
 
     The section is (outboard, up) from the cladding back plane + ``depth``.
@@ -146,7 +148,8 @@ def add_horizontal_run(model, face: CladdingFace, profile: TrimProfile, key: str
         mesh = folded_section_mesh(
             section, (x, y, z), n, (0.0, 0.0, 1.0),
             (face.d[0] * (end - start), face.d[1] * (end - start), 0.0), SHEET_24_GA_M)
-        _emit(model, face, profile, key, tag_base, host_ref, index, mesh, end - start, stock)
+        _emit(model, face, profile, key, tag_base, host_ref, index, mesh, end - start, stock,
+              under_skin)
     return len(pieces)
 
 
