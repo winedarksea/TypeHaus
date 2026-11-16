@@ -207,10 +207,13 @@ def test_equipment_body_hosts_a_wall_mount_within_its_standoff(catlin_model_ro):
     """With no stub, EQ-S-ERV-MIX hosts the grille 1/2" off its face; 2" off it floats."""
     from typehaus.checks.integrity.wall_mounts import best_host
 
-    near, obj = _shifted_grille(catlin_model_ro, 5.5)
+    grille = next(o for o in catlin_model_ro.canvas_objects if o.tag == "REG-A-HP-EAST-RET")
+    box = next(o for o in catlin_model_ro.canvas_objects if o.tag == "EQ-S-ERV-MIX")
+    gap_in = Polygon(box.footprint).distance(Polygon(grille.footprint)) / inch(1).meters
+    near, obj = _shifted_grille(catlin_model_ro, gap_in - 0.5)
     assert best_host(near, obj).tag == "EQ-S-ERV-MIX"
     assert not [f for f in wall_mount_on_face(SimpleNamespace(model=near, plan=near.plan))
                 if "REG-A-HP-EAST-RET" in f.element_tags]
-    far, _ = _shifted_grille(catlin_model_ro, 4.0)
+    far, _ = _shifted_grille(catlin_model_ro, gap_in - 2.0)
     findings = wall_mount_on_face(SimpleNamespace(model=far, plan=far.plan))
     assert any("REG-A-HP-EAST-RET floats" in f.message for f in findings)

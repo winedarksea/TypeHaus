@@ -233,7 +233,7 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
 - AD-SG-COURT connection: resolve the bottom-drop adapter/product; the named [NDS 1200](https://www.adspipe.com/nds/products/drainage/catch-basins-and-grates/square-catch-basins/1200-12-in-square-catch-basin-drain-with-2-openings) has lateral outlets. Geometry remains representative, within the authored nominal envelope.
 - [x] Improve the 3d model of the EQ-T-SAUNA-HEATER (US Cilindro PC110E stone tower, front grille, rear shroud, raised top guard and feet).
 - [x] 3d model of the garbage disposal (Badger 5 housing, sink mount, side inlet and west-facing discharge elbow; axis aligned to sink drain).
-- 3d model of the wall sconces
+- [x] 3d model of the wall sconces (Roland diffuser blade, Bantam stepped uplight, Soren fluted glass, Tube recessed downlight and Heritage candle/U arm; product dimensions corrected).
 - [x] 3d model of the recessed cans (round beveled white trim, open stepped baffle, regressed lamp and cylindrical housing; shared viewer/GLB/IFC geometry).
 
 # Project Management

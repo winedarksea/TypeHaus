@@ -10,11 +10,11 @@ from shapely import constrained_delaunay_triangles
 from shapely.geometry import Polygon
 from shapely.geometry import box as rectangle
 from shapely.geometry.polygon import orient
-from shapely.ops import unary_union
 
 from typehaus.model.placeable_symbols._frame import rect
 from typehaus.model.placeable_symbols._mesh import mesh_part, outward
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.overlay import union_all
 
 SHEET_THICKNESS_M = 0.019 * M_PER_IN  # nominal 26 ga galvanized, visual sheet thickness
 ROUND_OPENING_SEGMENTS = 32
@@ -87,7 +87,7 @@ def plenum_parts(width, depth, height, ports):
         (u0, u1), (v0, v1) = [bound for index, bound in enumerate(bounds) if index != axis]
         face = rectangle(u0, v0, u1, v1)
         for side in range(2):
-            holes = unary_union(openings.get((axis, side), []))
+            holes = union_all(openings.get((axis, side), []))
             if not holes.is_empty and not face.buffer(FACE_TOLERANCE_M).covers(holes):
                 raise ValueError("Plenum opening extends beyond its sheet face")
             sheet = face.difference(holes)

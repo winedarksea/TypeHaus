@@ -87,7 +87,7 @@ DECORATIVE_LUMINAIRE_TYPES = (
     LuminaireType(tag="ED-T-LT-SCONCE-STAIR",
                   replaceable_lamp=False, name="Stair wall sconce, ADA projection",
                   form=LuminaireForm.SCONCE, type_mark="K",
-                  footprint=(inch(5), inch(4)), height=inch(8), plan_symbol="sconce",
+                  footprint=(inch(9), inch(4)), height=inch(3.5), plan_symbol="sconce-bantam",
                   lamp="LED integrated", watts=6.0, lumens=400.0, cct_k=3000, cri=90,
                   dimmable=True, load_va=6.0, ports=_POWER_120,
                   product_ref="PROD-MODERNFORMS-WS-38109",
@@ -97,7 +97,8 @@ DECORATIVE_LUMINAIRE_TYPES = (
                          "different product, and J's head stands 9\" tall — which is the "
                          "hazard this row exists to avoid. Ships its own JB-0501 slim box "
                          "(installation sheet p.2); canopy left unset until the engine can "
-                         "derive a fixture-supplied box."),
+                         "derive a fixture-supplied box. Geometry: manufacturer drawing read "
+                         "2026-11-15, 9 W x 4 projection x 3 1/2 H in.; upward lens."),
 
     # Z: a plain black candle sconce (Livex 4451-04, 2026-10-28), replacing the gothic iron
     # one the owner found too ornate. Storage room only (RM-A-EAST-UNFIN): no R303.1 floor.
@@ -105,14 +106,16 @@ DECORATIVE_LUMINAIRE_TYPES = (
                   replaceable_lamp=True,
                   lamp_base="E12", name="Plain black candle wall sconce, E12 LED",
                   form=LuminaireForm.SCONCE, type_mark="Z",
-                  footprint=(inch(4.25), inch(7.75)), height=inch(8.5),
+                  footprint=(inch(4.25), inch(7.75)), height=inch(11.25),
                   plan_symbol="sconce-candle",
                   lamp="E12 LED filament candle, Feit BPCFC40930CAFIL/4, 3000K", watts=3.3,
                   lumens=300.0, cct_k=3000, cri=90, dimmable=True, damp_rated=True,
                   load_va=3.3, ports=_POWER_120, product_ref="PROD-LIVEX-4451-04",
                   source="Livex 4451-04 (retailer pages): plainer than the gothic iron it "
                          "replaces (owner, 2026-10-28). CONFIRM the E12 socket and the UL/ETL "
-                         "mark. No manufacturer backplate dimension published; canopy unset."),
+                         "mark. LNY 4451-04 catalog read 2026-11-15: 11.25 H x 4.25 W x "
+                         "7.75 projection in.; oval plate and U arm. No manufacturer "
+                         "backplate dimension published; canopy unset."),
 
     LuminaireType(tag="ED-T-LT-CHANDELIER",
                   replaceable_lamp=False, name="20-globe cascade over the stairwell",
@@ -349,7 +352,7 @@ DECORATIVE_LUMINAIRE_TYPES = (
                   replaceable_lamp=True,
                   lamp_base="E26", name="Vertical fluted-glass sconce, 1 x E26, black",
                   form=LuminaireForm.SCONCE, type_mark="P6",
-                  footprint=(inch(5), inch(4.75)), height=inch(14.25), plan_symbol="sconce",
+                  footprint=(inch(5), inch(4.8)), height=inch(14.3), plan_symbol="sconce-soren",
                   canopy_diameter=inch(5),
                   lamp="1 x E26 A19 LED filament, 3000K, CRI 95, R9 80+, replaceable",
                   watts=5.0, lumens=None, cct_k=3000, cri=95, dimmable=True, damp_rated=True,
@@ -361,5 +364,7 @@ DECORATIVE_LUMINAIRE_TYPES = (
                          "of the 2 x E26 allowance. Delivered lm unpublished. Centre at 64 in. "
                          "AFF; back plate 5 in. dia., Damp Rated (spec sheet, read "
                          "2026-11-07). The sheet asks for T-style lamps: test-fit one A19 "
-                         "before ordering three; ask Hinkley whether that is fit or look."),
+                         "before ordering three; ask Hinkley whether that is fit or look. "
+                         "Geometry uses the sheet's 5 W x 4.8 projection x 14.3 H in., "
+                         "mounted down with open fluted glass."),
 )

@@ -193,8 +193,9 @@ MEANWELL_HLG_100H_24A = Product(
 LIVEX_4451 = Product(
     tag="PROD-LIVEX-4451-04", brand="Livex Lighting", model="4451-04",
     name="1-light candle wall sconce, black",
-    source=_READ + "Livex (retailer pages): plain black 1-light candle sconce, damp, 8.5 H x "
-           "4.25 W x 7.75 in. projection, backplate 6 x 4.125 in., about $95-102. Lamp: Feit "
+    source=_READ + "Livex (retailer pages): plain black 1-light candle sconce, damp, 11.25 H x "
+           "4.25 W x 7.75 in. projection, backplate 6 x 4 in. (LNY catalog, re-read "
+           "2026-11-15), about $95-102. Lamp: Feit "
            "BPCFC40930CAFIL/4, 3000 K, CRI 90, 300 lm, 3.3 W. CONFIRM the E12 socket and the "
            "UL/ETL mark. Fallback: Kichler 52505BK (dry, 40 W).",
 )

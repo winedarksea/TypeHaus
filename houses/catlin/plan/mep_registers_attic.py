@@ -40,7 +40,7 @@ REGISTERS_HVAC_ATTIC = [
              mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     # RM-A-EAST-UNFIN's return (owner, 2026-11-12): the 35 cfm its supply pushes in goes back
     # to the air handler through the stock 12x12x1 on the SOUTH face of EQ-S-ERV-MIX (x 298-325.5",
-    # y 329-368"), centred 14" AFF (base at 6"), reached from the room. ** THE DAMPER IS THE DESIGN. ** The plenum's
+    # y 328-368"), centred 14" AFF (base at 6"), reached from the room. ** THE DAMPER IS THE DESIGN. ** The plenum's
     # returns are in PARALLEL and an open 12x12 pulls its share of the 750 cfm from the nearest
     # grille, not the 35 it was given; the locked balancing damper in the stub, set to 35 cfm
     # through the hinged face, is what stops the short-circuit. Re-check at filter changes.

@@ -41,13 +41,15 @@ from typehaus.model.placeable_symbols._frame import (
     rect,
 )
 from typehaus.model.placeable_symbols._mirrors import halo_mirror_light, mirror_light
-from typehaus.model.placeable_symbols._product_sconces import (
-    candle_sconce,
-    slim_updown_sconce,
-    swing_arm_sconce,
-    tube_sconce,
-)
+from typehaus.model.placeable_symbols._product_sconces import swing_arm_sconce
 from typehaus.model.placeable_symbols._recessed_can import recessed_can_parts
+from typehaus.model.placeable_symbols._selected_wall_sconces import (
+    bantam_sconce,
+    candle_wall_sconce,
+    roland_sconce,
+    soren_sconce,
+    tube_wall_sconce,
+)
 from typehaus.model.placeable_symbols._sprig_sconce import sprig_sconce
 from typehaus.model.placeable_symbols._track_lighting import track_light
 from typehaus.model.placeable_symbols._vanity_lights import socketed_vanity_light
@@ -432,11 +434,13 @@ LIGHTING_SYMBOLS: dict[str, Builder] = {
     "sconce-updown": sconce(throw="updown"),
     "sconce-spot": sconce(throw="spot"),
     "sconce-gothic": gothic_sconce(),
-    "sconce-tube": tube_sconce(),
-    "sconce-slim-updown": slim_updown_sconce(),
+    "sconce-tube": tube_wall_sconce,
+    "sconce-slim-updown": roland_sconce,
     "sconce-swing-arm": swing_arm_sconce(),
     "sconce-wac-sprig": sprig_sconce,
-    "sconce-candle": candle_sconce(),
+    "sconce-candle": candle_wall_sconce,
+    "sconce-bantam": bantam_sconce,
+    "sconce-soren": soren_sconce,
     "pendant": pendant(),
     "chandelier": chandelier(arms=6),
     "cluster-pendant": cluster_pendant(globes=20),
