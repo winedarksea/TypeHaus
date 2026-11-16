@@ -26,6 +26,8 @@ from typehaus.emit.ifc.architectural import _emit_service_ports, _type_identity
 from typehaus.emit.trades import PIPE_ACCESSORY_CATEGORIES
 from typehaus.model.ids import derive_child_guid, derive_guid
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.box_members import member_footprint
+from typehaus.resolve.device_boxes import boxes_by_device
 from typehaus.resolve.geometry import rect_between
 from typehaus.resolve.model import ResolvedModel
 from typehaus.resolve.placeables import resolved_mount_elevation
@@ -361,7 +363,7 @@ def _emit_registers_equipment_devices(f: Any, body: Any, model: ResolvedModel,
         "ElectricalDevice": {item.tag: item for item in model.plan.library.electrical_device_types},
     }
     resolved = {item.uid: item for item in model.canvas_objects}
-    boxes = {box.device_tag: box for box in model.device_boxes}
+    boxes = boxes_by_device(model)
     type_cache: dict[tuple[str, str], Any] = {}
     for storey in model.plan.storeys:
         for element in model.plan.storey_elements(storey.tag):
@@ -550,7 +552,8 @@ def _emit_device(f: Any, body: Any, device: Any, storey: Any, storeys: dict[str,
     # The box is its own IfcJunctionBox (the ``electrical_box`` solid); the device is only
     # the device: its own footprint from its mount z, not the canvas union with the box.
     half = 0.05  # 4"x4" nominal, for a device that never resolved
-    outline = (list(box.device_footprint) if box is not None and box.device_footprint
+    own = member_footprint(box, device.tag) if box is not None else ()
+    outline = (list(own) if own
                else resolved.footprint if resolved is not None
                else _rectangle(x, y, half * 2, half * 2))
     # The placeable resolver owns the Mount contract, so IFC reads the same elevation as

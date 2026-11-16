@@ -63,6 +63,10 @@ a release or for exhaustive local verification.
   reaches → `flush_raceway`) into `ResolvedModel.device_boxes`; a surface box gets a derived
   3/4" EMT NM sleeve to the ceiling, and a `FloorHeat.thermostat_ref` its two ENT leads — both
   `derived` `ResolvedConduitRun`s. Graded by `electrical.box_fill`, billed in `[electrical_boxes]`.
+  Neighbouring flush devices on one face form a **gang bank** (`resolve/device_banks.py`): one
+  N-gang box, snapped to `gang_pitch`, and a derived `wall_plate` from `BoxStandard.plates`; every
+  box record is a bank (`device_tags`, `boxes_by_device`). A device symbol draws only its face
+  proud of the plate (`footprint` = face width x projection); the body is `rear_projection`.
 - **Drywall accessories are derived from one `DrywallStandard`** (decision #103):
   `resolve/drywall_trims.py` finds outside corners, J-bead terminations, tile-stop reveals,
   trimless-door L-bead and window-return beads off the host faces into

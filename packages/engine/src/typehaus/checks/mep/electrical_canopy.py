@@ -28,6 +28,7 @@ def _in(value_m: float) -> str:
 @check(Tier.ADVISORY, _CID)
 def canopy_covers_box(ctx: CheckContext) -> list[Finding]:
     """Each wall light's canopy against the face of its derived box."""
+    # A luminaire takes its own box, never a bank row, so the lead's kind is the box's.
     boxes = [box for box in ctx.model.device_boxes if box.device_kind == "light"]
     if not boxes:
         return [not_applicable(_CID, "no wall light sits on a derived box", code=_CODE)]

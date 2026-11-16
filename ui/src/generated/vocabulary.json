@@ -335,6 +335,7 @@
     "vent": 14737627,
     "wall_corner": 12567756,
     "wall_end_board": 15592419,
+    "wall_plate": 14408662,
     "water_hammer_arrestor": 10396584,
     "winder": 11699540,
     "window_return": 15592419,
@@ -560,6 +561,7 @@
     "vent": 14737627,
     "wall_corner": 12567756,
     "wall_end_board": 15592419,
+    "wall_plate": 14408662,
     "water_hammer_arrestor": 10396584,
     "winder": 11699540,
     "window_return": 15592419,
@@ -877,6 +879,9 @@
     "wall_end_board": [
       "drywall"
     ],
+    "wall_plate": [
+      "electrical"
+    ],
     "water_hammer_arrestor": [
       "plumbing"
     ],
@@ -988,6 +993,7 @@
     "vent": "mechanical",
     "wall_corner": "siding",
     "wall_end_board": "drywall",
+    "wall_plate": "electrical",
     "water_hammer_arrestor": "plumbing",
     "window_return": "drywall"
   },

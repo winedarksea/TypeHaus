@@ -75,6 +75,10 @@ ROWS: tuple[C, ...] = (
     # A derived device box (resolve/device_boxes.py); its device carries the collision.
     C("electrical_box", trade="electrical", ifc_class="IfcJunctionBox", ifc_predefined="POWER",
       billed_elsewhere=True),
+    # A derived wall plate over a flush bank (resolve/device_banks.py), billed with the boxes.
+    C("wall_plate", trade="electrical", ifc_class=_ACC, ifc_predefined="USERDEFINED",
+      ifc_object_type="WALLPLATE",
+      billed_elsewhere=True),
     # Vent terminals and routed air.
     _trim("vent", "mechanical", ifc="IfcBuildingElementProxy"),
     *(_duct(s) for s in ("supply", "return", "exhaust", "dryer", "transfer", "outdoor_air")),

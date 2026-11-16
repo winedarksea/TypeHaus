@@ -249,7 +249,8 @@ def test_east_pax_frame_meets_corner_and_leaves_outlet_and_erv_access(catlin_mod
 
     outlet = objects[f"ED-S-{bedroom}-RC4"]
     grille = objects[f"REG-S-RET-{bedroom}"]
-    assert Polygon(outlet.footprint).bounds[0] - east == pytest.approx(inch(5.625).meters)
+    # The 1.29" Lever Edge face's edge: 5 5/8" to the old 4" body's, plus half the difference.
+    assert Polygon(outlet.footprint).bounds[0] - east == pytest.approx(inch(6.98).meters)
     # The 12" floor-grille face (REG-T-ERV-EXH-FLOOR, 2026-10-31) is centred where the
     # 7" one was, at x 28'-1", so its west edge now clears the frame by 2 5/8".
     assert grille.position[0] == pytest.approx(ft(28, 1).meters)

@@ -48,7 +48,7 @@ from typehaus.model.ducts import (
     RectElbowRow,
     RoundGaugeRow,
 )
-from typehaus.model.electrical import BoxRow, BoxStandard, Circuit, LoadManagement
+from typehaus.model.electrical import BoxRow, BoxStandard, Circuit, LoadManagement, PlateRow
 from typehaus.model.electrical_labels import LabelStandard
 from typehaus.model.elements import Door, Node, RoughOpening, Wall, Window
 from typehaus.model.enums import (
@@ -478,7 +478,7 @@ __all__ = [
     "PipeRun", "PipeAccessory", "DrainCleanout", "SleevePenetration", "DuctRun", "DuctDrain",
     "Register", "Equipment",
     "ElectricalDevice",
-    "Circuit", "LoadManagement", "BoxStandard", "BoxRow", "ConduitRun", "LightRun",
+    "Circuit", "LoadManagement", "BoxStandard", "BoxRow", "PlateRow", "ConduitRun", "LightRun",
     "RacewayCable",
     "GroundingStandard", "GroundingElectrode", "BondingConductor", "ServiceEntrance",
     "LabelStandard",

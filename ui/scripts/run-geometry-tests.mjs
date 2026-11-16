@@ -51,6 +51,7 @@ try {
   const { runCountertopTests } = await server.ssrLoadModule("/src/three/builders/countertop.test.ts");
   const { runShowerMaterialTests } = await server.ssrLoadModule("/src/three/builders/showerMaterials.test.ts");
   const { runTerminalFaceTests } = await server.ssrLoadModule("/src/three/builders/terminalFaces.test.ts");
+  const { runElectricalHighlightTests } = await server.ssrLoadModule("/src/three/electricalHighlight.test.ts");
   const { runFloorBoxTests } = await server.ssrLoadModule("/src/three/builders/floorBoxes.test.ts");
   const { runArchRingTests } = await server.ssrLoadModule("/src/three/builders/archRing.test.ts");
   const { runPlantBuilderTests } = await server.ssrLoadModule("/src/three/builders/plants.test.ts");
@@ -92,6 +93,7 @@ try {
   runDoorwayTests();
   const { runFloorCoverTests } = await server.ssrLoadModule("/src/three/builders/floorCover.test.ts");
   runFloorCoverTests();
+  runElectricalHighlightTests();
   runPlanGeometryTests();
   runOpeningGeometryTests();
   runArchGeometryTests();

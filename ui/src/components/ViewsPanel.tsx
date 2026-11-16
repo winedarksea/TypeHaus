@@ -24,6 +24,8 @@ const WORKSPACE_HINT: Record<Workspace, string> = {
   document: "Adds D-tag detail markers at documented junctions.",
 };
 
+const ELECTRICAL_HIGHLIGHT_HINT =
+  "Tints devices, device boxes and wall plates bright orange so rough-in is easy to spot.";
 const EARTH_TONE_LABEL: Record<EarthTone, string> = { green: "Green", brown: "Brown" };
 const EARTH_TONE_HINT: Record<EarthTone, string> = {
   green: "Planted: the same sod green as the sunken-garden field (SL-SG-FIELD).",
@@ -61,6 +63,8 @@ interface SavedView {
   // Optional again, and for the same reason: a recipe saved before the tone control existed
   // was captured at the brown default, which is what it restores.
   earthTone?: EarthTone;
+  // Optional: a recipe saved before the highlight existed restores it off.
+  electricalHighlight?: boolean;
   workspace?: Workspace;
   view: ViewTransform;
 }
@@ -99,6 +103,8 @@ export function ViewsPanel() {
   const setEarthOpacity = useStore((s) => s.setEarthOpacity);
   const earthTone = useStore((s) => s.earthTone);
   const setEarthTone = useStore((s) => s.setEarthTone);
+  const electricalHighlight = useStore((s) => s.electricalHighlight);
+  const setElectricalHighlight = useStore((s) => s.setElectricalHighlight);
   const workspace = useStore((s) => s.activeWorkspace);
   const setWorkspace = useStore((s) => s.setActiveWorkspace);
   const viewMode = useStore((s) => s.viewMode);
@@ -127,6 +133,7 @@ export function ViewsPanel() {
       visibleTrades: { ...s.visibleTrades },
       earthOpacity: s.earthOpacity,
       earthTone: s.earthTone,
+      electricalHighlight: s.electricalHighlight,
       labelMode: s.labelMode,
       workspace: s.activeWorkspace,
       view: { ...s.view },
@@ -148,6 +155,7 @@ export function ViewsPanel() {
       Parameters<typeof s.showOnlyTrades>[0]);
     s.setEarthOpacity(v.earthOpacity ?? DEFAULT_EARTH_OPACITY);
     s.setEarthTone(v.earthTone ?? DEFAULT_EARTH_TONE);
+    s.setElectricalHighlight(v.electricalHighlight ?? false);
     // Backward compat: a pre-labelMode recipe only knew "space labels on/off".
     s.setLabelMode(v.labelMode ?? (v.showSpaceLabels === false ? "off" : "all"));
     s.setActiveWorkspace(v.workspace ?? "design");
@@ -273,6 +281,17 @@ export function ViewsPanel() {
         ))}
       </div>
       <div className="muted views-hint">{EARTH_TONE_HINT[earthTone]}</div>
+
+      <h3>Electrical</h3>
+      <div className="seg-row">
+        {([false, true]).map((on) => (
+          <button key={String(on)} className={`seg-btn${electricalHighlight === on ? " active" : ""}`}
+            onClick={() => setElectricalHighlight(on)} title={ELECTRICAL_HIGHLIGHT_HINT}>
+            {on ? "Highlight" : "True colour"}
+          </button>
+        ))}
+      </div>
+      <div className="muted views-hint">{ELECTRICAL_HIGHLIGHT_HINT}</div>
 
       <h3>Labels</h3>
       <div className="seg-row">

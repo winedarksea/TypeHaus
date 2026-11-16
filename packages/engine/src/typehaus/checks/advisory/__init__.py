@@ -10,6 +10,7 @@ from typehaus.checks.advisory import (  # noqa: F401 - registers checks
     carriers,
     checks,
     countertops,
+    device_banks,
     door_undercut,
     energy_storage,
     energy_storage_anticipated,

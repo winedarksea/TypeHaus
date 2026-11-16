@@ -93,6 +93,8 @@ export interface StoreState
   // And what colour it is drawn in — bare-dirt brown by default, sod green when the site
   // rather than the building is the subject. Orthogonal to the opacity above.
   earthTone: EarthTone;
+  // Tints devices, boxes and plates the highlight colour (→ three/electricalHighlight).
+  electricalHighlight: boolean;
   detailView: DetailView; // assembly-details / BOM reader over the canvas
   // The Documents hub's own state. `readerOrigin` is why it is three fields and not one:
   // a reader opened FROM the hub has to go back to the hub, and a reader opened from the
@@ -147,6 +149,7 @@ export interface StoreState
   showAllLevels: () => void;
   setEarthOpacity: (opacity: number) => void;
   setEarthTone: (tone: EarthTone) => void;
+  setElectricalHighlight: (on: boolean) => void;
   showEverything: () => void; // one-tap escape from an over-filtered view
   setDetailView: (v: DetailView) => void;
   // Open the Documents hub, optionally straight onto a tab and a selection (a note's "on
@@ -228,6 +231,7 @@ export const useStore = create<StoreState>((set, get, store) => ({
   setRebarSets: (rebarSets) => set({ rebarSets }),
   earthOpacity: DEFAULT_EARTH_OPACITY,
   earthTone: DEFAULT_EARTH_TONE,
+  electricalHighlight: false,
   detailView: "none",
   documentsTab: "drawings",
   documentsSelection: { sheet: null, note: null },
@@ -390,6 +394,7 @@ export const useStore = create<StoreState>((set, get, store) => ({
   showAllLevels: () => set({ hiddenLevels: [] }),
   setEarthOpacity: (opacity) => set({ earthOpacity: Math.min(1, Math.max(0, opacity)) }),
   setEarthTone: (earthTone) => set({ earthTone }),
+  setElectricalHighlight: (electricalHighlight) => set({ electricalHighlight }),
   showEverything: () => set({ visibleTrades: allVisibleTrades() }),
   // Leaving for the canvas always clears the origin: whatever opened the reader, the user
   // is now back at the plan, and a stale "came from Documents" would send the *next* Back

@@ -15,6 +15,7 @@ import {
   projectPlanRotationToSceneRadians, projectPointToScene, type PlanCenter,
 } from "../planGeometry";
 import { ALL_TRADES, type EarthTone, type Trade } from "../../state/vocabulary";
+import { applyElectricalHighlight, tagElectrical } from "../electricalHighlight";
 import type { RebarLayer } from "./rebar";
 import { tagStorey as tagStoreyChildren, tagTrades } from "./registry";
 import { buildCanvasObject, buildSuspension, type PartGeometries } from "./site";
@@ -50,6 +51,8 @@ export interface PopulateSceneOptions {
   /** The lazily fetched bars already loaded for THIS model, and the layer they draw into.
    *  Absent until the Rebar chip first turns on (→ engine/rebarCache.ts). */
   rebar?: { layer: RebarLayer; sets: readonly RebarSet[] | null };
+  /** Whether the electrical highlight is on, read when an async placeable asset lands. */
+  electricalHighlight?: () => boolean;
 }
 
 /**
@@ -189,6 +192,8 @@ export function buildCanvasObjectItem(options: PopulateSceneOptions, item: Canva
     registry.picks, registry.byUid, model.catalog?.materials, model.catalog?.meshes,
     registry.partGeometries);
   buildSuspension(group, item, center, mode, registry.picks, registry.byUid);
+  const electrical = item.kind === "ElectricalDevice";
+  if (electrical && fallback) tagElectrical(fallback);
   tagNew(tradeGroups, before, trades);
   tagStorey(tradeGroups, before, item.storey ?? null);
   if (!type?.model_glb || !fallback) return;
@@ -205,6 +210,10 @@ export function buildCanvasObjectItem(options: PopulateSceneOptions, item: Canva
     visual.position.copy(projectPointToScene(item.position_m, elevation, center));
     visual.rotation.y = projectPlanRotationToSceneRadians(item.rotation ?? 0);
     visual.userData.trades = [...trades];
+    if (electrical) {
+      tagElectrical(visual);
+      if (options.electricalHighlight?.()) applyElectricalHighlight(visual, true);
+    }
     if (item.storey) visual.userData.storey = item.storey;
     visual.visible = tradeVisible?.(trades, item.storey ?? null) ?? true;
     const materials: THREE.Material[] = [];

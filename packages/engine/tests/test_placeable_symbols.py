@@ -69,16 +69,52 @@ def test_unknown_and_missing_symbols_yield_no_geometry() -> None:
     assert model_parts("sofa", 1.0, 1.0, 0.0) == ()
 
 
-def test_receptacles_show_distinct_faces_and_remain_orange() -> None:
-    combo = model_parts("receptacle-combined", .1, .05, .1)
-    quad = model_parts("receptacle-quad", .1, .05, .1)
-    assert combo[0]["color"] == quad[0]["color"] == "electrical-orange"
-    combo_marks = [part for part in combo if part["color"] == "electrical-recess"]
-    quad_marks = [part for part in quad if part["color"] == "electrical-recess"]
-    assert len(combo_marks) == 8
+def test_receptacles_show_distinct_faces_in_device_colours() -> None:
+    combo = model_parts("receptacle-combined", .07, .005, .067)
+    quad = model_parts("receptacle-quad", .07, .005, .067)
+    assert combo[0]["color"] == quad[0]["color"] == "device-face"
+    combo_marks = [part for part in combo if part["color"] == "device-slot"]
+    quad_marks = [part for part in quad if part["color"] == "device-slot"]
+    assert len(combo_marks) == 7
     assert len(quad_marks) == 16
     assert len({round(part["center"][2], 4) for part in quad_marks}) >= 4
     assert len({round(part["center"][0], 4) for part in quad_marks}) >= 4
+
+
+def test_device_symbols_draw_no_plate_housing_or_legacy_orange() -> None:
+    from typehaus.model.placeable_symbols.receptacles import RECEPTACLE_SYMBOLS
+    from typehaus.model.placeable_symbols.switches import SWITCH_SYMBOLS
+
+    for symbol in (*SWITCH_SYMBOLS, *RECEPTACLE_SYMBOLS):
+        parts = model_parts(symbol, .0333, .0051, .0668)
+        assert {part["color"] for part in parts} <= {"device-face", "device-slot",
+                                                     "device-accent"}, symbol
+        # The back face is the plate face: nothing stands behind it.
+        assert max(p["center"][1] + p["size"][1] / 2 for p in parts) <= .0051 / 2 + 1e-9
+
+
+def test_every_boxed_engine_device_type_has_a_model_symbol() -> None:
+    from types import SimpleNamespace
+
+    from typehaus.library.electrical import ALL_ELECTRICAL_DEVICE_TYPES
+    from typehaus.model import Service
+    from typehaus.model.canvas import model_symbol_for
+    from typehaus.model.enums import DeviceKind
+    from typehaus.resolve.device_boxes import takes_box
+
+    def stand_in(device_type) -> SimpleNamespace:
+        if device_type.ifc_entity or device_type.plan_symbol:
+            return SimpleNamespace(kind=DeviceKind.DATA_OUTLET)
+        services = {port.service for port in device_type.ports}
+        kind = (DeviceKind.SWITCH if "SWITCH" in device_type.tag
+                else DeviceKind.RECEPTACLE_240 if Service.POWER_240 in services
+                else DeviceKind.RECEPTACLE)
+        return SimpleNamespace(kind=kind)
+
+    boxed = [t for t in ALL_ELECTRICAL_DEVICE_TYPES if takes_box(stand_in(t), t)]
+    assert len(boxed) >= 10
+    for device_type in boxed:
+        assert model_symbol_for(device_type) in _REGISTRY, device_type.tag
 
 
 @pytest.mark.parametrize("symbol", sorted(_REGISTRY))

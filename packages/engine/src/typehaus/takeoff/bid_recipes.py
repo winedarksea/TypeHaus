@@ -131,7 +131,7 @@ SHAPES: dict[str, Shape] = {
     "floor_heat": Shape("Radiant floor heat cable"),
     "conduit": Shape("Conduit, by material and trade size", _runs, "LF"),
     "conduit_fittings": Shape("Conduit fittings, by the piece"),
-    "electrical_boxes": Shape("Device boxes and covers, by the piece"),
+    "electrical_boxes": Shape("Device boxes, covers and wall plates, by the piece"),
     "electrical_labels": Shape("NEC labels and plaques, by the piece (E-605)"),
     "grounding": Shape("Grounding rods, clamps and transitions, by the piece"),
     "grounding_conductors": Shape("Grounding and bonding conductors", None, "LF"),

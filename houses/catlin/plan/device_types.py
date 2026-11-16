@@ -30,9 +30,17 @@ def _prod(model: str, name: str, url: str | None = None, brand: str = "Leviton")
                    url=url or _LEV + model.lower(), source=_DECISION)
 
 
+# Geometry (notes/wiring_device_geometry.md): ``footprint`` is (face width, projection past
+# the plate), ``height`` the face height; the plate and box are derived (BoxStandard).
+# ``rear_projection`` is behind the strap, graded against box depth (NEC 314.24(B)).
+_FACE = (inch(1.29), inch(0.05))  # Lever Edge Decora face, 0.30" past strap less a 1/4" plate
+_FACE_H = inch(2.61)
+_WHITE = {"device-face": "device-white"}
+
+
 def _dev(tag: str, name: str, prod: Product, *, ports=_P120, symbol="receptacle-duplex",
-         footprint=(inch(4), inch(2)), height=inch(2), **facts) -> ElectricalDeviceType:
-    rep = ModelRepresentation(symbol=symbol) if symbol else None
+         footprint=_FACE, height=_FACE_H, colour=_WHITE, **facts) -> ElectricalDeviceType:
+    rep = ModelRepresentation(symbol=symbol, material_refs=colour) if symbol else None
     return ElectricalDeviceType(
         tag=tag, name=name, footprint=footprint, height=height, ports=ports,
         product_ref=prod.tag if prod else "PROD-LEVITON-1450R", model_representation=rep, source=_DECISION, **facts)
@@ -58,22 +66,32 @@ R278 = _prod("278", "30 A dryer receptacle 14-30R", _LEV + "278")
 IN_USE = _prod("5980-UCL", "Extra-duty clear in-use cover")
 
 # The in-use cover rides with the WR GFCI: its own product so the schedule prints both.
-_DEEP = dict(footprint=(inch(4), inch(2)), height=inch(3))
+_GFCI20 = dict(symbol="receptacle-gfci", footprint=(inch(1.29), inch(0.10)), height=inch(2.70),
+               rear_projection=inch(1.03))  # SLIM GFCI drawing: 0.35" front, 1.03" rear
+_SINGLE = dict(footprint=(inch(1.4), inch(0.07)), height=inch(1.4), plate="standard",
+               plate_openings=("single",))  # round smooth-face body (not Decora), 80704-W
 
 # Boxes and covers are not on the types: the house's BoxStandard derives them from the face a
 # device lands on (plan/device_boxes.py, decision #93), so one type serves drywall and concrete.
 
 RECEPTACLE_TYPES = (
-    _dev("ED-T-LEV-DUPLEX-20", "Lever Edge duplex 20 A TR (E5825-W)", E5825, nema="5-20R"),
+    # E5825 has no drawing of its own: the E5325's 0.88" rear stands in (verify).
+    _dev("ED-T-LEV-DUPLEX-20", "Lever Edge duplex 20 A TR (E5825-W)", E5825, nema="5-20R",
+         rear_projection=inch(0.88)),
     # Behind the fridge and freezer: the plug sits inside the wall (box row use="recessed").
     # The body is the trim plate; its 1/4" proud of the gypsum is not published.
     _dev("ED-T-LEV-DUPLEX-20-REC", "Lever Edge duplex 20 A TR (E5825-W), recessed IN BOX",
          E5825, footprint=(inch(4.2), inch(0.25)), height=inch(6.698), nema="5-20R",
          box_use="recessed"),
-    _dev("ED-T-LEV-DUPLEX-15", "Lever Edge duplex 15 A TR (E5325-W)", E5325, nema="5-15R"),
-    _dev("ED-T-LEV-GFCI-20", "GFCI 20 A TR at the device (GFTR2-W)", GFTR2, nema="5-20R"),
-    _dev("ED-T-LEV-GFCI-15", "GFCI 15 A TR at the device (GFTR1-W)", GFTR1, nema="5-15R"),
-    _dev("ED-T-LEV-GFCI-ALARM", "GFCI 20 A TR, audible alarm (GFTA2-W)", GFTA2, nema="5-20R"),
+    _dev("ED-T-LEV-DUPLEX-15", "Lever Edge duplex 15 A TR (E5325-W)", E5325, nema="5-15R",
+         rear_projection=inch(0.88)),
+    _dev("ED-T-LEV-GFCI-20", "GFCI 20 A TR at the device (GFTR2-W)", GFTR2, nema="5-20R",
+         **_GFCI20),
+    _dev("ED-T-LEV-GFCI-15", "GFCI 15 A TR at the device (GFTR1-W)", GFTR1, nema="5-15R",
+         **{**_GFCI20, "footprint": (inch(1.29), inch(0.04))}),
+    _dev("ED-T-LEV-GFCI-ALARM", "GFCI 20 A TR, audible alarm (GFTA2-W)", GFTA2, nema="5-20R",
+         **{**_GFCI20, "footprint": (inch(1.29), inch(0.11)), "height": inch(2.71),
+            "rear_projection": inch(1.07)}),
     # NEC 406.9: leviton.com GFWT2-W / GFWT1-W "Weather Resistant" (read 2026-11-14); 5980-UCL
     # "Extra Duty Weatherproof While-In-Use Cover", NEMA 3R. No 'controlled' marking on either.
     _dev("ED-T-LEV-GFCI-WR",
@@ -86,35 +104,46 @@ RECEPTACLE_TYPES = (
          GFWT1, footprint=(inch(4.5), inch(3)), height=inch(3), nema="5-15R",
          device_box=False, weather_resistant=True, in_use_cover=True),
     _dev("ED-T-LEV-GFCI-DF", "Blank-face GFCI 20 A, feed-through (GFRBF-W)", GFRBF,
-         symbol=None, deadfront=True),
+         deadfront=True, **{**_GFCI20, "symbol": "receptacle-blank-gfci"}),
     _dev("ED-T-LEV-USBC", "Duplex with 60 W USB-C PD (T5836-W), deep box", T5836,
-         nema="5-20R", **_DEEP),
-    _dev("ED-T-LEV-SURGE", "Surge duplex 20 A TR (T5380-W)", T5380, nema="5-20R"),
+         nema="5-20R", footprint=(inch(1.29), inch(0.07)), rear_projection=inch(1.50)),
+    _dev("ED-T-LEV-SURGE", "Surge duplex 20 A TR (T5380-W)", T5380, nema="5-20R",
+         footprint=(inch(1.29), inch(0.12)), height=inch(2.72), rear_projection=inch(1.19)),
+    # T6525: no Leviton drawing; face assumed Lever Edge, rear not stated.
     _dev("ED-T-LEV-GUIDE", "Guide-light duplex 15 A TR (T6525-W)", T6525, nema="5-15R"),
     # A bath's night light (owner, 2026-11-03): the vanity GFCI's own ~1 W dusk guide light.
-    _dev("ED-T-LEV-GFCI-GUIDE", "GFCI 20 A TR, dusk guide light (GFNL2-W)", GFNL2, nema="5-20R"),
-    _dev("ED-T-LEV-SINGLE-520", "Single 5-20R TR (T5020-W)", T5020, nema="5-20R",
-         symbol="receptacle-single-120"),
+    _dev("ED-T-LEV-GFCI-GUIDE", "GFCI 20 A TR, dusk guide light (GFNL2-W)", GFNL2, nema="5-20R",
+         **_GFCI20),
+    # Rear scaled off the drawing (0.82"), so not authored.
+    _dev("ED-T-LEV-SINGLE-520", "Single 5-20R TR, smooth face (T5020-W)", T5020, nema="5-20R",
+         symbol="receptacle-single-120", **_SINGLE),
+    # OPEN: a round T5461 beside a Decora E5825 takes a single + Decora plate, and the
+    # BoxStandard has none, so integrity.device_plate is UNKNOWN until one is chosen.
     _dev("ED-T-LEV-620-DUPLEX",
          "2-gang: 6-20R (T5461-W) beside a 5-20R duplex (E5825-W)",
-         T5461, ports=_PBOTH, footprint=(inch(4.5), inch(1)), height=inch(4.5),
-         nema="5-20R/6-20R", symbol="receptacle-combined", gangs=2),
+         T5461, ports=_PBOTH, footprint=(inch(3.10), inch(0.07)), height=_FACE_H,
+         nema="5-20R/6-20R", symbol="receptacle-combined", gangs=2,
+         plate_openings=("single", "decora"), rear_projection=inch(0.88)),
     _dev("ED-T-LEV-620-FLUSH",
          "2-gang: 6-20R (T5461-W) beside a 5-20R duplex (E5825-W), flush in drywall",
-         T5461, ports=_PBOTH, footprint=(inch(4.5), inch(1)), height=inch(4.5),
-         nema="5-20R/6-20R", symbol="receptacle-combined", gangs=2),
+         T5461, ports=_PBOTH, footprint=(inch(3.10), inch(0.07)), height=_FACE_H,
+         nema="5-20R/6-20R", symbol="receptacle-combined", gangs=2,
+         plate_openings=("single", "decora"), rear_projection=inch(0.88)),
     _dev("ED-T-LEV-QUAD-520", "2-gang: two TR 5-20R duplexes (E5825-W)",
-         E5825, footprint=(inch(4.5), inch(1)), height=inch(4.5), nema="5-20R",
-         symbol="receptacle-quad", gangs=2),
+         E5825, footprint=(inch(3.10), inch(0.05)), nema="5-20R",
+         symbol="receptacle-quad", gangs=2, rear_projection=inch(0.88)),
     _dev("ED-T-LEV-620", "Single 6-20R, 240 V only (T5461-W)", T5461, ports=_P240,
-         footprint=(inch(2.75), inch(1)), height=inch(4.5), nema="6-20R", load_va=3840,
-         symbol="receptacle-240"),
+         nema="6-20R", load_va=3840, symbol="receptacle-240", rear_projection=inch(0.79),
+         **_SINGLE),
+    # Black round faces; the strap is the plate. Rears scaled off the drawings (1.80", ~1.9").
     _dev("ED-T-LEV-RANGE-1450", "Range receptacle 14-50R (1450R)", None, ports=_P240,
-         footprint=(inch(4), inch(4)), height=inch(4), nema="14-50R",
-         symbol="receptacle-240-four-wire"),
+         footprint=(inch(2.43), inch(0.45)), height=inch(2.43), nema="14-50R",
+         symbol="receptacle-round-50", colour={"device-face": "device-black"},
+         plate="integral", rear_projection=inch(1.80)),
     _dev("ED-T-LEV-DRYER-1430", "Dryer receptacle 14-30R (278)", R278, ports=_P240,
-         footprint=(inch(4), inch(4)), height=inch(4), nema="14-30R", load_va=5000,
-         symbol="receptacle-240-four-wire"),
+         footprint=(inch(2.10), inch(0.42)), height=inch(2.10), nema="14-30R", load_va=5000,
+         symbol="receptacle-round-30", colour={"device-face": "device-black"},
+         plate="integral", rear_projection=inch(1.90)),
 )
 
 # --- switches and controls ---------------------------------------------------------------
@@ -186,24 +215,32 @@ SWITCH_TYPES = (
         tag="ED-T-RSD-INIT", name="PV rapid-shutdown initiator, NEMA 4X rotary (IMO ESS-RSD01)",
         footprint=(inch(3.875), inch(4.25)), height=inch(7.125), needs=frozenset(), ports=(),
         device_box=False, rsd_initiator=True, product_ref=RSD_INIT.tag, source=RSD_INIT.source),
-    _dev("ED-T-LEV-SW1", "Lever Edge single-pole switch (E5601-W)", E5601, symbol=None),
-    _dev("ED-T-LEV-SW3", "Lever Edge 3-way switch (E5603-W)", E5603, symbol=None),
-    _dev("ED-T-LUT-DIVA", "Lutron Diva dimmer (DVCL-153P), Claro plate", DIVA, symbol=None,
-         control="dimmer"),
+    _dev("ED-T-LEV-SW1", "Lever Edge single-pole switch (E5601-W)", E5601,
+         symbol="wall-switch-rocker", rear_projection=inch(1.01)),
+    _dev("ED-T-LEV-SW3", "Lever Edge 3-way switch (E5603-W)", E5603,
+         symbol="wall-switch-rocker", rear_projection=inch(1.01)),
+    # Diva paddle projection is not published (0.10" assumed); Claro plate is 0.30".
+    _dev("ED-T-LUT-DIVA", "Lutron Diva dimmer (DVCL-153P), Claro plate", DIVA,
+         symbol="wall-switch-dimmer", footprint=(inch(1.29), inch(0.10)), control="dimmer",
+         plate="claro", rear_projection=inch(1.31)),
     _dev("ED-T-LUT-DIVA-ELV", "Lutron Diva ELV dimmer, reverse phase (DVELV-300P)", DIVA_ELV,
-         symbol=None, control="dimmer"),
-    _dev("ED-T-LEV-MATTER", "Matter switch, 15 A relay (D315S-1BW)", D315S, symbol=None,
-         control="smart"),
+         symbol="wall-switch-dimmer", footprint=(inch(1.29), inch(0.10)), control="dimmer"),
+    _dev("ED-T-LEV-MATTER", "Matter switch, 15 A relay (D315S-1BW)", D315S,
+         symbol="wall-switch-rocker", footprint=(inch(1.29), inch(0.04)), control="smart",
+         rear_projection=inch(1.09)),
     _dev("ED-T-LEV-OCC-PIR", "PIR occupancy sensor, same gang as a switch (DOS02-LW)", DOS02,
-         symbol=None, control="occupancy"),
+         symbol="wall-switch-occupancy", footprint=(inch(1.29), inch(0.18)),
+         control="occupancy", rear_projection=inch(0.95)),
     _dev("ED-T-LEV-OCC-PANTRY",
          "PIR-only occupancy sensor, no neutral (ODS10-IDW); lens masked on its south half",
-         ODS10,
-         symbol=None, control="occupancy"),
-    _dev("ED-T-LUT-COUNTDOWN", "Lutron Maestro countdown timer (MA-T51)", MAT51, symbol=None,
-         control="timer"),
-    _dev("ED-T-ZOOZ-ZEN32", "Scene keypad, 5 buttons (Zooz ZEN32)", ZEN32, symbol=None,
-         control="smart"),
+         ODS10, symbol="wall-switch-occupancy", footprint=(inch(1.30), inch(0.23)),
+         control="occupancy", rear_projection=inch(1.35)),
+    # The MA-T51MNB sheet's 1 1/8" rear is not authored until the wired part is confirmed.
+    _dev("ED-T-LUT-COUNTDOWN", "Lutron Maestro countdown timer (MA-T51)", MAT51,
+         symbol="wall-switch-timer", footprint=(inch(1.29), inch(0.06)), control="timer"),
+    # ZEN32 face and projection unpublished (1.16" total depth only).
+    _dev("ED-T-ZOOZ-ZEN32", "Scene keypad, 5 buttons (Zooz ZEN32)", ZEN32,
+         symbol="wall-switch-keypad", footprint=(inch(1.29), inch(0.10)), control="smart"),
 )
 
 DEVICE_TYPES = (*RECEPTACLE_TYPES, *SWITCH_TYPES, *DISCONNECT_TYPES)

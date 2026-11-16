@@ -628,6 +628,8 @@ class ElectricalDevice(Element):
     plugs_into: str | None = None
     # The Stair tag a luminaire lights (NEC 210.70(A)(2)(3)), as ``Railing.serves_stair``.
     serves_stair: str | None = None
+    # Wall-plate family for this device's bank ("standard" where space is tight), over its type's.
+    plate: str | None = None
 
     @model_validator(mode="after")
     def _placed_or_hosted(self):

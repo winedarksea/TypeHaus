@@ -11,7 +11,8 @@ from shapely.geometry import Point, Polygon
 
 from typehaus.findings import Finding, Result, Severity, advisory
 from typehaus.model.plan import PlanModel
-from typehaus.resolve.device_boxes import place_box, plan_box
+from typehaus.resolve.device_banks import PendingBox, place_banks
+from typehaus.resolve.device_boxes import plan_box
 from typehaus.resolve.model import ResolvedCanvasObject, ResolvedModel, Ring
 from typehaus.resolve.placeable_clear_floor_obstruction import (
     CLEAR_FLOOR_SPACE_OBSTRUCTION_THRESHOLDS,
@@ -46,6 +47,7 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     # Objects are collected before they are published: a placeable's furniture group depends
     # on the peers standing in its zone, so no object's record is final until all are placed.
     resolved_objects: list[ResolvedCanvasObject] = []
+    pending_boxes: list[PendingBox] = []  # banked after every device is placed
     anchor_zones: list[PlacementGroupAnchorZone] = []
     # Whether each body actually stands in a clear floor space, keyed by uid. Built here
     # because it needs the product type, which the resolved record deliberately does not carry.
@@ -141,11 +143,8 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                 resolved_room = _containing_room(room_shapes, center) or resolved_room
             footprint = _transformed_polygon(local_footprint, center, rotation)
             if box is not None:
-                footprint = place_box(model, item, box, storey.tag,
-                                      explicit_room or resolved_room, footprint, band)
-                if box.mounting == "surface":  # the device and its box collide as one
-                    body_z0, body_z1 = (min(body_z0, model.device_boxes[-1].z0_m),
-                                        max(body_z1 or body_z0, model.device_boxes[-1].z1_m))
+                pending_boxes.append(PendingBox(len(resolved_objects), item, product_type, box,
+                                                storey.tag, explicit_room or resolved_room, band))
             profiles_by_uid[item.uid] = profile
             obstruction_by_uid[item.uid] = clear_floor_space_obstruction(profile)
             if (explicit_room is not None and explicit_room != resolved_room
@@ -183,6 +182,7 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                                              if zone.occupant_footprint is not None else ring),
                                          occupant_types=frozenset(zone.occupant_types))
                 for zone, ring in zones if zone.occupant_types and not _is_required(zone))
+    findings.extend(place_banks(model, pending_boxes, resolved_objects))
     model.canvas_objects.extend(assign_placement_groups(resolved_objects, anchor_zones))
     # One shape per placed object, shared by both conflict passes: separately, each pass
     # rebuilds the same ~300 footprints, plus ~800 more per-pair rebuilds inside them.

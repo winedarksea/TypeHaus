@@ -49,7 +49,7 @@ KIND_POLICY: dict[str, Treatment] = {
                      "pipe_radon", "pipe_sump_discharge", "pipe_sleeve", "duct_supply",
                      "duct_return", "duct_exhaust", "duct_outdoor_air", "duct_transfer",
                      "conduit_power", "conduit_data", "grounding_electrode",
-                     "grounding_conductor", "electrical_box", "vent",
+                     "grounding_conductor", "electrical_box", "wall_plate", "vent",
                      "terminal_neck", "shutoff", "main_shutoff", "backflow_preventer",
                      "water_hammer_arrestor", "vacuum_breaker", "ro_stub", "cleanout_fitting",
                      "cleanout_extension", "cleanout_cap", "insulation_wrap",

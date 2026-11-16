@@ -24,6 +24,7 @@ from typehaus.checks._authoring import failed, not_applicable, passed
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.quantities import inch
+from typehaus.resolve.device_boxes import boxes_by_device
 from typehaus.resolve.geometry_walls import wall_top_at
 from typehaus.resolve.model import ResolvedCanvasObject, ResolvedModel
 from typehaus.resolve.overhead import OverheadIndex
@@ -186,10 +187,13 @@ def wall_mount_on_face(ctx: CheckContext) -> list[Finding]:
 
 
 def _declared_gap(ctx: CheckContext, obj: ResolvedCanvasObject) -> float:
-    """The stand-off an attachment states on purpose; 0 for a free point."""
+    """The stand-off an attachment states on purpose, plus a bank's wall plate; 0 for a free
+    point."""
     element = ctx.plan.by_tag(obj.tag)
     attachment = getattr(getattr(element, "location", None), "attachment", None)
-    return max(0.0, attachment.normal_gap.meters) if attachment is not None else 0.0
+    gap = max(0.0, attachment.normal_gap.meters) if attachment is not None else 0.0
+    box = boxes_by_device(ctx.model).get(obj.tag)
+    return gap + (box.plate_thickness_m if box is not None else 0.0)
 
 
 @check(Tier.INTEGRITY, _BELOW)

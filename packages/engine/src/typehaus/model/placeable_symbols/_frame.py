@@ -84,6 +84,12 @@ PART_COLORS: dict[str, tuple[float, float, float, float]] = {
     "electrical-orange": (214 / 255, 158 / 255, 46 / 255, 1.0),
     "electrical-plate": (0.94, 0.71, 0.25, 1.0),
     "electrical-recess": (0.22, 0.12, 0.03, 1.0),
+    # Wiring-device faces (switches, receptacles): ``device-face`` is the product colour a
+    # type may override via ``material_refs``; slots are dark, accents (TEST/RESET, lenses,
+    # LEDs) a mid grey.
+    "device-face": (0.86, 0.86, 0.84, 1.0),
+    "device-slot": (0.03, 0.03, 0.03, 1.0),
+    "device-accent": (0.42, 0.43, 0.44, 1.0),
     "solid-surface": (244 / 255, 244 / 255, 242 / 255, 1.0),
     "clear-glass": (0.78, 0.89, 0.92, 0.24),
     "chrome": (0.78, 0.80, 0.82, 1.0),

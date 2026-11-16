@@ -47,8 +47,9 @@ def _parts(product):
                                  "ED-T-RECEPTACLE-520S"])
 def test_single_gang_catalog_is_vertical(tag):
     product = CATALOG[tag]
-    assert [dimension.inches for dimension in product.footprint] == pytest.approx([2.75, 2])
-    assert product.height.inches == pytest.approx(4.5)
+    # Face width and projection past the plate; the plate and box are derived solids.
+    assert [dimension.inches for dimension in product.footprint] == pytest.approx([1.31, 0.2])
+    assert product.height.inches == pytest.approx(2.63)
 
 
 @pytest.mark.parametrize("product", [*WALL_TYPES, *HORIZONTAL_TYPES, FLOOR_TYPE],
@@ -85,31 +86,47 @@ def test_geometry_is_bounded_closed_and_in_budget(product):
         assert all(count == 1 and edges[(end, start)] == 1
                    for (start, end), count in edges.items())
     assert triangle_count <= CFG.maximum_triangles
-    assert parts[0]["color"] == "electrical-orange"
+    assert parts[0]["color"] == "device-face"  # the face slab, standing on the plate
+    assert {part["color"] for part in parts} <= {"device-face", "device-slot", "device-accent"}
 
 
 @pytest.mark.parametrize("tag,socket_count", [
     ("ED-T-RECEPTACLE", 2), ("ED-T-RECEPTACLE-520S", 1),
     ("ED-T-RECEPTACLE-620", 2), ("ED-T-RECEPTACLE-QUAD-520", 4),
-    ("ED-T-EV-620", 1), ("ED-T-EV-1450", 1)])
-def test_faces_project_in_front_of_plate_and_grounds_below_blades(tag, socket_count):
-    housing, plate, *details = _parts(CATALOG[tag])
-    faces = [part for part in details if part["color"] == "electrical-orange"]
-    grounds = [part for part in details if part["color"] == "electrical-recess" and "mesh" in part]
+    ("ED-T-RECEPTACLE-GFCI", 2), ("ED-T-EV-620", 1)])
+def test_sockets_stand_on_the_slab_and_grounds_sit_below_blades(tag, socket_count):
+    slab, *details = _parts(CATALOG[tag])
+    faces = [part for part in details if part["color"] == "device-face"]
+    grounds = [part for part in details if part["color"] == "device-slot" and "mesh" in part]
     assert len(faces) == len(grounds) == socket_count
-    assert plate["center"][1] < housing["center"][1]
+    slab_front = slab["center"][1] - slab["size"][1] / 2
     for face, ground in zip(faces, grounds, strict=True):
-        assert ground["center"][1] < face["center"][1] < plate["center"][1]
+        assert ground["center"][1] < face["center"][1] < slab_front + face["size"][1]
+        assert face["center"][1] + face["size"][1] / 2 == pytest.approx(slab_front)
         assert ground["center"][2] < face["center"][2]
         assert ground["center"][0] == pytest.approx(face["center"][0])
-    assert len({face["center"][0] for face in faces}) == (2 if socket_count == 4 else 1)
-    assert len({face["center"][2] for face in faces}) == (2 if socket_count > 1 else 1)
+    columns, rows = {"ED-T-RECEPTACLE-620": (2, 1), "ED-T-RECEPTACLE-QUAD-520": (2, 2)}.get(
+        tag, (1, socket_count))
+    assert len({face["center"][0] for face in faces}) == columns
+    assert len({face["center"][2] for face in faces}) == rows
+
+
+def test_gfci_buttons_sit_between_sockets_and_blank_gfci_has_only_buttons():
+    details = _parts(CATALOG["ED-T-RECEPTACLE-GFCI"])[1:]
+    buttons = [part for part in details if part["color"] == "device-accent"]
+    sockets = [part for part in details if part["color"] == "device-face"]
+    assert len(buttons) == 2
+    top, bottom = sorted(sockets, key=lambda part: -part["center"][2])
+    assert all(bottom["center"][2] < b["center"][2] < top["center"][2] for b in buttons)
+    blank = model_parts("receptacle-blank-gfci", .0333, .0051, .0668)
+    assert [part["color"] for part in blank].count("device-accent") == 2
+    assert not [part for part in blank if "mesh" in part]
 
 
 @pytest.mark.parametrize("product", HORIZONTAL_TYPES, ids=lambda p: p.tag)
 def test_horizontal_duplex_rotates_sockets_and_slots_without_squashing(product):
-    vertical_details = _parts(CATALOG["ED-T-RECEPTACLE"])[2:]
-    horizontal_details = _parts(product)[2:]
+    vertical_details = _parts(CATALOG["ED-T-RECEPTACLE"])[1:]
+    horizontal_details = _parts(product)[1:]
     vertical_face = vertical_details[0]
     horizontal_face = horizontal_details[0]
     scale = horizontal_face["size"][0] / vertical_face["size"][2]
@@ -117,9 +134,9 @@ def test_horizontal_duplex_rotates_sockets_and_slots_without_squashing(product):
         assert horizontal["size"][0] == pytest.approx(vertical["size"][2] * scale)
         assert horizontal["size"][2] == pytest.approx(vertical["size"][0] * scale)
         assert horizontal["color"] == vertical["color"]
-    faces = [part for part in horizontal_details if part["color"] == "electrical-orange"]
+    faces = [part for part in horizontal_details if part["color"] == "device-face"]
     grounds = [part for part in horizontal_details
-               if part["color"] == "electrical-recess" and "mesh" in part]
+               if part["color"] == "device-slot" and "mesh" in part]
     assert faces[0]["center"][0] > faces[1]["center"][0]
     for face, ground in zip(faces, grounds, strict=True):
         assert face["center"][2] == pytest.approx(product.height.meters / 2)

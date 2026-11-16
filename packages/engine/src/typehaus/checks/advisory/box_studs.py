@@ -73,7 +73,7 @@ def stud_clash(model: object, box: object) -> StudClash | None:
             continue
         o_lo, o_hi = _span(list(other.footprint), box.face_point, box.normal)
         if min(o_hi, n_hi) - max(o_lo, n_lo) > _TOL_M:
-            voids.append((*_span(list(other.footprint), (x0, y0), tangent), other.device_tag))
+            voids.append((*_span(list(other.footprint), (x0, y0), tangent), _names(other)))
     hits = [(a, b, key) for a, b, key in members if min(b, s_hi) - max(a, s_lo) > _TOL_M]
     if not hits:
         return StudClash(0.0, (), 0.0)
@@ -101,6 +101,10 @@ def _clear(obstacles: list[tuple[float, float, str]], lo: float, hi: float,
     return None
 
 
+def _names(box: object) -> str:
+    return "+".join(box.device_tags or (box.device_tag,))
+
+
 @check(Tier.ADVISORY, CHECK_ID)
 def box_on_stud(ctx: CheckContext) -> list[Finding]:
     """Each flush device box against the studs, kings and jacks of its wall."""
@@ -111,8 +115,10 @@ def box_on_stud(ctx: CheckContext) -> list[Finding]:
         clash = stud_clash(ctx.model, box)
         if clash is None:
             continue
-        tags = (box.device_tag, box.wall_tag)
-        what = f"{box.device_tag}'s {box.box_product} box on {box.wall_tag}"
+        members = box.device_tags or (box.device_tag,)
+        tags = (*members, box.wall_tag)
+        gang = f"{box.gangs}-gang " if len(members) > 1 else ""
+        what = f"{_names(box)}'s {gang}{box.box_product} box on {box.wall_tag}"
         if (box.box_product, box.mounting) in blocked and box.block_key is None:
             out.append(advisory(
                 CHECK_ID, f"{what}: its row asks a block behind the box and none fits "

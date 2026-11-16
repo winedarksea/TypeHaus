@@ -251,6 +251,8 @@ class BoxRow(HausModel):
     internal_clamps: bool | None = None
     support_fittings: int = 0
     terminal_blocks: int = 0
+    #: The box ships with its own trim plate (a recessed receptacle box): no wall plate.
+    plate_included: bool = False
 
     @property
     def volume_in3(self) -> float | None:
@@ -258,6 +260,25 @@ class BoxRow(HausModel):
         box = (self.box_volume_in3 if self.box_volume_in3 is not None
                else METAL_BOX_VOLUME_IN3.get(self.designation or ""))
         return None if box is None else box + self.cover_volume_in3
+
+
+class PlateRow(HausModel):
+    """One wall plate: a ``family`` ("midway", "standard", "claro") and an opening per gang.
+
+    ``openings`` reads left to right ("decora", "toggle", "duplex", "blank"); ``size`` is
+    (width, height) and ``thickness`` how far the plate stands off the finish face.
+    """
+
+    family: str
+    openings: tuple[str, ...]
+    product_ref: str
+    size: tuple[Length, Length]
+    thickness: Length
+    material_ref: str | None = None
+
+    @property
+    def gangs(self) -> int:
+        return len(self.openings)
 
 
 @register_element
@@ -269,10 +290,23 @@ class BoxStandard(Element):
     ``surface``, a framed cavity ``flush``, and a flush box an authored raceway reaches
     ``flush_raceway``. ``surface_drop`` is the trade size of the derived EMT sleeve that
     brings NM down to a surface box from overhead (NEC 334.15(B)/(C)).
+
+    ``plates`` are the wall plates a flush bank takes (``default_plate`` names the family
+    unless a device or its type names another). Devices within ``bank_reach`` centre to
+    centre on one face share a bank, snapped to ``gang_pitch`` (``resolve/device_banks.py``).
     """
 
     rows: tuple[BoxRow, ...]
     surface_drop: Length
+    plates: tuple[PlateRow, ...] = ()
+    default_plate: str | None = None
+    gang_pitch: Length = inch(1.8125)
+    bank_reach: Length = inch(4.5)
+
+    def plate_for(self, family: str, openings: tuple[str, ...]) -> PlateRow | None:
+        """The ``family`` plate with exactly these openings, or None."""
+        return next((p for p in self.plates
+                     if p.family == family and p.openings == openings), None)
 
     def row_for(self, mounting: str, gangs: int, use: str | None = None) -> BoxRow | None:
         """The ``use`` row for this mounting and gangs, else the general one."""
@@ -282,9 +316,10 @@ class BoxStandard(Element):
 
     def product_refs(self) -> tuple[str, ...]:
         refs = [ref for row in self.rows for ref in (row.box_product_ref, row.cover_product_ref)
-                if ref]
+                if ref] + [plate.product_ref for plate in self.plates]
         return tuple(dict.fromkeys(refs))
 
 
 register_constructor("BoxStandard", BoxStandard)
 register_constructor("BoxRow", BoxRow)
+register_constructor("PlateRow", PlateRow)

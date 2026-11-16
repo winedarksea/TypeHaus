@@ -54,6 +54,7 @@ import type { SelectionKind } from "../../state/vocabulary";
 import { registerSelectable, tagTrades } from "./registry";
 import { aggregateKindOfSolid, stoneMaterial, uvForAggregate } from "./aggregate";
 import { applyEarthOpacity } from "./site";
+import { tagElectrical } from "../electricalHighlight";
 
 // A resolved solid: a plan prism, or — when it carries a `sweep` — the mitred tube of a run.
 //
@@ -108,6 +109,7 @@ export function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter
   // Holes are a nordic look only; with no canvas the flat metal stays.
   if (perforated && mode === "nordic") applyPerforatedMap(material as THREE.MeshStandardMaterial);
   const mesh = makeSurfaceMesh(geo, woodMaterialsForGeometry(material, geo));
+  if (solid.category === "electrical_box" || solid.category === "wall_plate") tagElectrical(mesh);
   // Backfill rides the site sheet's opacity slider (→ Panel3D setEarthOpacity).
   if (BACKFILL_CATEGORIES.has(solid.category)) {
     mesh.userData.earthBackfill = true;

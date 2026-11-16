@@ -21,6 +21,8 @@ from typehaus.diff.ifc_bounds import (
 )
 from typehaus.diff.model import DiffElem
 from typehaus.model.ids import derive_child_guid
+from typehaus.resolve.box_members import member_footprint
+from typehaus.resolve.device_boxes import boxes_by_device
 from typehaus.resolve.geometry import (
     LIGHT_STRIP_HEIGHT_M,
     light_run_parts,
@@ -146,7 +148,7 @@ def baseline_elems(model: ResolvedModel) -> list[DiffElem]:
 
     hosted_countertops = slab_hosts(model)
     # A derived device box exports as its own IfcJunctionBox; the device is the device alone.
-    boxes = {box.device_tag: box for box in model.device_boxes}
+    boxes = boxes_by_device(model)
     for box in model.device_boxes:
         centroid, bbox = _bounds(list(box.footprint), box.z0_m, box.z1_m)
         elems.append(DiffElem(
@@ -179,8 +181,8 @@ def baseline_elems(model: ResolvedModel) -> list[DiffElem]:
                            and item.body_z0_m != item.z_m)
         body_z0 = item.body_z0_m if recessed_device else item.z_m
         body_z1 = item.body_z1_m if recessed_device else body_z0 + height
-        centroid, bbox = _bounds(list(box.device_footprint) if box is not None
-                                 else item.footprint, body_z0, body_z1)
+        own = member_footprint(box, item.tag) if box is not None else ()
+        centroid, bbox = _bounds(list(own) if own else item.footprint, body_z0, body_z1)
         product_type = device_types.get(item.type_ref or "")
         track = getattr(product_type, "track_lighting", None)
         emitted = _emitted_parts_bounds(model, item, hosted_countertops, body_z0)

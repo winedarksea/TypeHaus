@@ -87,6 +87,11 @@ class DeviceElectricalFacts(HausModel):
     # How far the device reaches behind its mounting strap, off the datasheet. Over 1-7/8 in.
     # (or 1 in. on 12/10 AWG) the box needs it plus 1/4 in. Unset: not stated, not graded.
     rear_projection: Length | None = None
+    # The wall-plate family this type asks for ("claro"), else the BoxStandard default; and
+    # the opening it takes per gang (default "decora" each); "integral" is a device whose own
+    # strap is its plate (a 1450R). ``resolve/device_banks.py``.
+    plate: str | None = None
+    plate_openings: tuple[str, ...] | None = None
 
     # --- lane H: grounding (Art. 250) ---
     # IBT kinds: terminals for bonding conductors, off the sheet (250.94(A): at least three).

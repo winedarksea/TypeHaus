@@ -19,6 +19,7 @@ from __future__ import annotations
 import math
 from typing import Any
 
+from typehaus.resolve.box_members import box_members
 from typehaus.resolve.model import ResolvedConduitRun, ResolvedModel
 from typehaus.resolve.pipe_sections import raceway_outside_diameter_m
 
@@ -50,10 +51,12 @@ def add_derived_run(model: ResolvedModel, *, uid: str, tag: str, storey: str,
 
 
 def _service(model: ResolvedModel, box: Any) -> str:
-    if box.device_kind == "data_outlet":
+    members = box_members(box)
+    if all(m.kind == "data_outlet" for m in members):
         return "data"
-    circuit = next((c for c in model.plan.library.circuits if c.tag == box.circuit), None)
-    return "power_240" if circuit is not None and circuit.poles == 2 else "power_120"
+    wanted = {m.circuit for m in members}
+    poles = [c.poles for c in model.plan.library.circuits if c.tag in wanted]
+    return "power_240" if 2 in poles else "power_120"
 
 
 def _ceiling_plane(model: ResolvedModel, box: Any, xy: tuple[float, float],
@@ -104,7 +107,8 @@ def derive_sleeve_drops(model: ResolvedModel) -> None:
     standard, reached = _house(model.plan)
     # Outside a room there is no ceiling to feed from (an outdoor box is fed otherwise).
     boxes = [box for box in model.device_boxes if box.mounting == "surface"
-             and box.room is not None and box.device_tag not in reached]
+             and box.room is not None
+             and not reached.intersection(box.device_tags or (box.device_tag,))]
     if standard is None or not boxes:
         return
     size = standard.surface_drop.meters

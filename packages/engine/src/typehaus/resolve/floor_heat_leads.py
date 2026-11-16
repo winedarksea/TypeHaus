@@ -22,6 +22,8 @@ from __future__ import annotations
 from shapely.geometry import Point, Polygon
 
 from typehaus.quantities import inch
+from typehaus.resolve.box_members import box_members
+from typehaus.resolve.device_boxes import boxes_by_device
 from typehaus.resolve.device_drops import add_derived_run
 from typehaus.resolve.model import ResolvedModel
 from typehaus.resolve.slab_clip import floor_outline
@@ -71,8 +73,7 @@ def derive_floor_heat_leads(model: ResolvedModel) -> None:
     for element in model.plan.all_elements():
         if element.element_kind != "FloorHeat" or not element.thermostat_ref:
             continue
-        box = next((b for b in model.device_boxes
-                    if b.device_tag == element.thermostat_ref), None)
+        box = boxes_by_device(model).get(element.thermostat_ref)
         wall = model.wall(box.wall_tag) if box is not None else None
         if box is None or wall is None or box.mounting == "surface" or element.stat is None:
             continue
@@ -87,15 +88,17 @@ def derive_floor_heat_leads(model: ResolvedModel) -> None:
         sensor = ([(sx, sy, box.z0_m), (sx, sy, pour - _CAST_DEPTH_M),
                    (stat[0], stat[1], pour - _CAST_DEPTH_M)] if cast_in
                   else [(sx, sy, box.z0_m), (sx, sy, plate_z)])
-        circuit = next((c for c in model.plan.library.circuits if c.tag == box.circuit), None)
+        own = next((m.circuit for m in box_members(box) if m.tag == element.thermostat_ref),
+                   box.circuit)
+        circuit = next((c for c in model.plan.library.circuits if c.tag == own), None)
         power = "power_240" if circuit is not None and circuit.poles == 2 else "power_120"
         add_derived_run(
             model, uid=f"{element.uid}-sensor", tag=f"{element.tag}-SENSOR",
             storey=box.storey, points=sensor,
             trade_size_m=_SLAB_SIZE_M if cast_in else _WALL_SIZE_M, material="ent",
-            service=None, derived="fh_sensor", to_ref=box.device_tag, cast_in=cast_in)
+            service=None, derived="fh_sensor", to_ref=element.thermostat_ref, cast_in=cast_in)
         add_derived_run(
             model, uid=f"{element.uid}-cold-lead", tag=f"{element.tag}-COLD-LEAD",
             storey=box.storey, points=[(cx, cy, box.z0_m), (cx, cy, plate_z + _BOTTOM_PLATE_M)],
             trade_size_m=_WALL_SIZE_M, material="ent", service=power,
-            derived="fh_cold_lead", to_ref=box.device_tag)
+            derived="fh_cold_lead", to_ref=element.thermostat_ref)

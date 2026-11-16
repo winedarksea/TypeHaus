@@ -668,17 +668,17 @@ def test_workshop_receptacles_keep_shared_geometry_in_gltf_and_ifc(
     outlets = {item.Name: item for item in document.by_type("IfcOutlet")}
     for tag, minimum_parts in (("ED-B-WORKSHOP-RC1", 10),
                                ("ED-B-WORKSHOP-RC2", 18),
-                               ("ED-M-LIVING-FLOOR-RC1", 8)):
+                               ("ED-M-LIVING-FLOOR-RC1", 7)):
         obj = objects[tag]
         mesh = _MeshBuilder()
         assert _add_canvas_parts(mesh, obj, types[obj.type_ref], {})
-        assert PART_COLORS["electrical-orange"] in mesh._buckets
-        assert PART_COLORS["electrical-recess"] in mesh._buckets
+        assert PART_COLORS["device-face"] in mesh._buckets
+        assert PART_COLORS["device-slot"] in mesh._buckets
         outlet = outlets[tag]
         parts = outlet.Representation.Representations[0].Items
         assert len(parts) >= minimum_parts
         assert all(part.is_a("IfcTriangulatedFaceSet") for part in parts)
-        assert parts[0].StyledByItem[0].Styles[0].Name == "electrical-orange"
+        assert parts[0].StyledByItem[0].Styles[0].Name == "device-face"
         if tag == "ED-M-LIVING-FLOOR-RC1":
             heights = [point[1] for positions, _ in mesh._buckets.values() for point in positions]
             assert min(heights) == pytest.approx(obj.body_z0_m)

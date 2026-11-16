@@ -68,8 +68,9 @@ def test_a_wall_retype_carries_its_hosted_device(catlin_model_ro, catlin_plan) -
     face_0, edge_0 = _face_distance(before, tag, wall_tag)
     face_1, edge_1 = _face_distance(after, tag, wall_tag)
     assert face_1 < face_0 - 0.02, "the retype should move the finish face"
-    assert edge_0 == pytest.approx(face_0, abs=1e-6)
-    assert edge_1 == pytest.approx(face_1, abs=1e-6), "the device must follow its face"
+    plate = 0.25 * 0.0254  # the device stands on its midway plate
+    assert edge_0 == pytest.approx(face_0 + plate, abs=1e-6)
+    assert edge_1 == pytest.approx(face_1 + plate, abs=1e-6), "the device must follow its face"
     ctx = SimpleNamespace(model=after, plan=after.plan)
     assert not [f for f in wall_mount_on_face(ctx) if tag in f.element_tags]
 

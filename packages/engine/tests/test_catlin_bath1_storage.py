@@ -198,5 +198,6 @@ def test_mirror_and_accessible_gfci_follow_the_smaller_vanity(catlin_model_ro):
     switch = objects["ED-S-BATH1-SW"]
     assert mirror.position[1] == pytest.approx(vanity.position[1])
     assert Polygon(gfci.footprint).bounds[3] < Polygon(mirror.footprint).bounds[1]
-    assert gfci.position == pytest.approx(switch.position)
+    # Stacked: their face projections differ by 0.05", so their centres by half that.
+    assert gfci.position == pytest.approx(switch.position, abs=0.001)
     assert gfci.body_z0_m > switch.body_z1_m

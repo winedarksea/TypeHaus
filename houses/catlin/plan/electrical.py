@@ -117,6 +117,7 @@ DEVICE_TYPES = (
     ElectricalDeviceType(tag="ED-T-SAUNA-JB", name="Sauna heater junction box, 240V",
                           load_va=9000,
                           footprint=(inch(6), inch(6)), height=inch(4),
+                          plan_symbol="junction-box",
                           ports=(ServicePort(tag="power", service=Service.POWER_240,
                                              position=(ft(0), ft(0), ft(0))),)),
     # Radiant-floor thermostat: line-voltage control for the mat's cold lead. `DeviceKind`

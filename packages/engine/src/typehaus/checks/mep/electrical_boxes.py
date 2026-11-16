@@ -13,7 +13,10 @@ volume is Table 314.16(B)(4)'s, at the gauge the breaker implies — 15 A 14 AWG
 30 A 10 AWG. Box volume is the standard's row: Table 314.16(A) or the marked volume, plus a
 marked raised cover or ring. Depth is 314.24(B)'s by gauge, or a device's datasheet
 ``rear_projection`` plus 1/4 in. past 1-7/8 in. (1 in. on 12/10 AWG). A FAIL names the next
-box up. Hand-worked oracle:
+box up. A gang bank is one box: each member counts its own cables and yokes at its own
+circuit's gauge, and the grounds, clamps, fittings and blocks count once, at the largest
+gauge present (314.16(B)(2), (5)); the deepest requirement of any member sets the depth.
+Hand-worked oracle:
 ``houses/catlin/notes/basement_surface_wiring.md`` §Box fill.
 
 ``electrical.nm_sleeve_reach`` reports a derived NM sleeve that stops short of the ceiling.
@@ -21,7 +24,7 @@ box up. Hand-worked oracle:
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, NamedTuple
 
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import (
@@ -38,7 +41,8 @@ from typehaus.model.circuit_neutral import device_has_neutral
 from typehaus.model.electrical import METAL_BOX_VOLUME_IN3
 from typehaus.model.nec import NEC, cite, mark
 from typehaus.quantities import M_PER_IN
-from typehaus.resolve.device_boxes import AIR_SEALED, takes_box
+from typehaus.resolve.box_members import box_members
+from typehaus.resolve.device_boxes import AIR_SEALED, boxes_by_device, gang_count, takes_box
 
 _CID = "electrical.box_fill"
 _CODE = cite(NEC.BOX_FILL)
@@ -65,16 +69,29 @@ def egc_allowance(egcs: int) -> float:
     return 0.0 if egcs <= 0 else 1.0 + 0.25 * max(0, egcs - 4)
 
 
+def conductor_volume_in3(gauge: int, poles: int, has_neutral: bool, gangs: int,
+                         cables: int = 2) -> float:
+    """One device's insulated conductors and two per yoke, at its own circuit's gauge."""
+    return (cables * insulated_per_cable(poles, has_neutral) + 2 * gangs) \
+        * VOLUME_PER_CONDUCTOR_IN3[gauge]
+
+
+def shared_volume_in3(gauge: int, cables: int, *, clamps: bool = False,
+                      support_fittings: int = 0, terminal_blocks: int = 0) -> float:
+    """The once-per-box allowances at the box's largest gauge: one ground allowance for the
+    cables' EGCs (B)(5), clamps (B)(2), support fittings (B)(3), terminal blocks (B)(6)."""
+    count = (egc_allowance(cables) + (1 if clamps else 0) + support_fittings + terminal_blocks)
+    return count * VOLUME_PER_CONDUCTOR_IN3[gauge]
+
+
 def required_volume_in3(gauge: int, poles: int, has_neutral: bool, gangs: int,
                         cables: int = 2, *, clamps: bool = False,
                         support_fittings: int = 0, terminal_blocks: int = 0) -> float:
-    """Cables × insulated conductors + 2 per yoke + the grounds (one per cable), clamps,
-    support fittings and terminal blocks (314.16(B)(6), one each), all at the circuit's gauge
-    (the largest conductor in the box)."""
-    count = (cables * insulated_per_cable(poles, has_neutral) + 2 * gangs
-             + egc_allowance(cables) + (1 if clamps else 0) + support_fittings
-             + terminal_blocks)
-    return count * VOLUME_PER_CONDUCTOR_IN3[gauge]
+    """A one-device box: its conductors and yokes plus the shared allowances, one gauge."""
+    return (conductor_volume_in3(gauge, poles, has_neutral, gangs, cables)
+            + shared_volume_in3(gauge, cables, clamps=clamps,
+                                support_fittings=support_fittings,
+                                terminal_blocks=terminal_blocks))
 
 
 def min_depth_in(gauge: int, rear_projection_in: float | None) -> float:
@@ -98,14 +115,45 @@ def next_box_up(required_in3: float) -> str:
     return f"a {name} box ({volume:g} in³) or a listed box marked ≥ {required_in3:.1f} in³"
 
 
+class _Load(NamedTuple):
+    """One bank member's wiring: its circuit, gauge, type and cables."""
+
+    tag: str
+    circuit: Any
+    gauge: int | None
+    product_type: Any
+    gangs: int
+    cables: int
+
+
+def _loads(box: Any, circuits: dict[str, Any], types: dict[str, Any],
+           type_refs: dict[str, str | None], loads: dict[str, int]
+           ) -> tuple[list[_Load], str | None]:
+    """Each wired member (data outlets are Class 2), and the tag of one with no circuit."""
+    members = [m for m in box_members(box) if m.kind != "data_outlet"]
+    out: list[_Load] = []
+    for member in members:
+        circuit = circuits.get(member.circuit or "")
+        if circuit is None:
+            return out, member.tag
+        product_type = types.get(type_refs.get(member.tag) or "")
+        gangs = box.gangs if len(members) == 1 else gang_count(product_type)
+        end_fed = member.kind in _RECEPTACLES and loads.get(circuit.tag, 0) <= 1
+        out.append(_Load(member.tag, circuit, GAUGE_BY_BREAKER_A.get(circuit.breaker_amps),
+                         product_type, gangs, 1 if end_fed else 2))
+    return out, None
+
+
 def _grade(box: Any, circuits: dict[str, Any], types: dict[str, Any],
-           type_ref: str | None, loads: dict[str, int]) -> Finding:
-    tags = (box.device_tag,)
-    if box.device_kind == "data_outlet":
-        return not_applicable(_CID, f"{box.device_tag} is a data outlet: Class 2 / comms "
+           type_refs: dict[str, str | None], loads: dict[str, int]) -> Finding:
+    tags = tuple(box.device_tags or (box.device_tag,))
+    names = "+".join(tags)
+    if box.device_kind == "data_outlet" and all(
+            m.kind == "data_outlet" for m in box_members(box)):
+        return not_applicable(_CID, f"{names} is a data outlet: Class 2 / comms "
                                     f"cabling is outside {NEC.BOX_FILL_AND_VOLUME}", tags,
                                     code=_CODE)
-    where = f"{box.device_tag}'s {box.mounting} {box.gangs}-gang box ({box.box_product})"
+    where = f"{names}'s {box.mounting} {box.gangs}-gang box ({box.box_product})"
     if box.cavity_m is not None and box.depth_m > box.cavity_m + 1e-4:
         return failed(_CID, f"{where} is {box.depth_m / M_PER_IN:.2f}\" deep in a "
                             f"{box.cavity_m / M_PER_IN:.2f}\" cavity", tags,
@@ -117,41 +165,45 @@ def _grade(box: Any, circuits: dict[str, Any], types: dict[str, Any],
                             f"{box.gangs}-gang row", tags,
                       fix="add an air-sealed row: a flanged, gasketed box whose flange is "
                           "taped to the membrane")
-    circuit = circuits.get(box.circuit or "")
-    if circuit is None:
-        return unknown(_CID, f"{where} names no circuit, so its conductors are unknown",
-                       tags, code=_CODE, fix="name the device's circuit")
-    gauge = GAUGE_BY_BREAKER_A.get(circuit.breaker_amps)
-    if gauge is None or box.volume_in3 is None:
-        return unknown(_CID, f"{where}: no gauge for a {circuit.breaker_amps} A breaker or no "
-                             "box volume", tags, code=_CODE)
-    product_type = types.get(type_ref or "")
-    projection = getattr(product_type, "rear_projection", None)
-    projection_in = None if projection is None else projection.meters / M_PER_IN
-    min_depth = min_depth_in(gauge, projection_in)
+    wired, missing = _loads(box, circuits, types, type_refs, loads)
+    if missing is not None:
+        return unknown(_CID, f"{where} names no circuit for {missing}, so its conductors are "
+                             "unknown", tags, code=_CODE, fix="name the device's circuit")
+    ungauged = next((w for w in wired if w.gauge is None), wired[0])
+    if ungauged.gauge is None or box.volume_in3 is None:
+        return unknown(_CID, f"{where}: no gauge for a {ungauged.circuit.breaker_amps} A "
+                             "breaker or no box volume", tags, code=_CODE)
+    # The deepest member sets the depth (314.24(B)).
+    depths = []
+    for w in wired:
+        projection = getattr(w.product_type, "rear_projection", None)
+        projection_in = None if projection is None else projection.meters / M_PER_IN
+        depths.append((min_depth_in(w.gauge, projection_in), w.gauge, projection_in))
+    min_depth, gauge_d, projection_in = max(depths, key=lambda d: d[0])
     if box.depth_m / M_PER_IN < min_depth - 1e-4:
         why = (f"a device projecting {projection_in:.2f}\" needs"
-               if min_depth > MIN_DEPTH_IN[gauge] else f"{gauge} AWG to a device needs")
+               if min_depth > MIN_DEPTH_IN[gauge_d] else f"{gauge_d} AWG to a device needs")
         return failed(_CID, f"{where} is {box.depth_m / M_PER_IN:.2f}\" deep; {why} "
                             f"{min_depth:.3f}\" internal depth", tags,
                       code=cite(NEC.BOX_DEPTH), fix="a deeper box row in the BoxStandard")
-    end_fed = box.device_kind in _RECEPTACLES and loads.get(circuit.tag, 0) <= 1
-    cables = 1 if end_fed else 2
-    feed = "through-fed" if cables == 2 else "end-fed"
     clamps = box.internal_clamps is not False
-    neutral = (circuit.neutral if circuit.neutral is not None
-               else device_has_neutral(product_type))
-    required = required_volume_in3(gauge, circuit.poles, neutral, box.gangs,
-                                   cables, clamps=clamps,
-                                   support_fittings=box.support_fittings,
-                                   terminal_blocks=box.terminal_blocks)
+    gauge = min(w.gauge for w in wired)  # the largest conductor is the lowest AWG
+    required = shared_volume_in3(gauge, sum(w.cables for w in wired), clamps=clamps,
+                                 support_fittings=box.support_fittings,
+                                 terminal_blocks=box.terminal_blocks)
+    for w in wired:
+        neutral = (w.circuit.neutral if w.circuit.neutral is not None
+                   else device_has_neutral(w.product_type))
+        required += conductor_volume_in3(w.gauge, w.circuit.poles, neutral, w.gangs, w.cables)
+    feed = "+".join(sorted({"through-fed" if w.cables == 2 else "end-fed" for w in wired}))
+    gauges = "/".join(str(g) for g in sorted({w.gauge for w in wired}, reverse=True))
     note = (f" ({mark(NEC.BOX_FILL_CLAMPS)} clamps not stated, so counted)"
             if box.internal_clamps is None else "")
     if required > box.volume_in3 + 1e-6:
-        return failed(_CID, f"{where} holds {box.volume_in3:g} in³; {feed} {gauge} AWG "
+        return failed(_CID, f"{where} holds {box.volume_in3:g} in³; {feed} {gauges} AWG "
                             f"needs {required:.2f} in³{note}", tags, code=_CODE,
                       fix=f"step up to {next_box_up(required)}")
-    return passed(_CID, f"{where}: {required:.2f} in³ of {feed} {gauge} AWG in "
+    return passed(_CID, f"{where}: {required:.2f} in³ of {feed} {gauges} AWG in "
                         f"{box.volume_in3:g} in³{note}", tags, code=_CODE)
 
 
@@ -173,8 +225,7 @@ def box_fill(ctx: CheckContext) -> list[Finding]:
     circuits = {circuit.tag: circuit for circuit in ctx.plan.library.circuits}
     type_refs = {obj.tag: obj.type_ref for obj in ctx.model.canvas_objects}
     loads = _circuit_loads(ctx)
-    return [_grade(box, circuits, types, type_refs.get(box.device_tag), loads)
-            for box in boxes]
+    return [_grade(box, circuits, types, type_refs, loads) for box in boxes]
 
 
 def _circuit_loads(ctx: CheckContext) -> dict[str, int]:
@@ -238,31 +289,40 @@ def nm_sleeve_ampacity(ctx: CheckContext) -> list[Finding]:
     if not sleeves:
         return [not_applicable(_AMPS, "no surface box takes a derived NM sleeve",
                                code=_AMPS_CODE)]
-    boxes = {box.device_tag: box for box in ctx.model.device_boxes}
+    boxes = boxes_by_device(ctx.model)
     circuits = {circuit.tag: circuit for circuit in ctx.plan.library.circuits}
     loads = _circuit_loads(ctx)
     out = []
     for run in sleeves:
         box = boxes.get(run.to_ref or "")
-        circuit = circuits.get(box.circuit or "") if box is not None else None
+        members = box_members(box) if box is not None else []
+        # One sleeve carries every member's cables; each member's breaker is its own.
+        found = [(m, circuits.get(m.circuit or "")) for m in members]
         tags = (run.tag, run.to_ref) if run.to_ref else (run.tag,)
-        gauge = GAUGE_BY_BREAKER_A.get(circuit.breaker_amps) if circuit else None
-        if circuit is None or gauge is None:
+        if not found or any(c is None or GAUGE_BY_BREAKER_A.get(c.breaker_amps) is None
+                            for _m, c in found):
             out.append(unknown(_AMPS, f"{run.tag}: no circuit or no copper gauge for its "
                                       "breaker", tags, code=_AMPS_CODE))
             continue
-        end_fed = box.device_kind in _RECEPTACLES and loads.get(circuit.tag, 0) <= 1
-        ccc = 2 * (1 if end_fed else 2)
+        cables = sum(1 if m.kind in _RECEPTACLES and loads.get(c.tag, 0) <= 1 else 2
+                     for m, c in found)
+        ccc = 2 * cables
+        gauges = [GAUGE_BY_BREAKER_A[c.breaker_amps] for _m, c in found]
+        on = ", ".join(dict.fromkeys(f"{c.tag} ({c.breaker_amps} A)" for _m, c in found))
         where = (f"{run.tag}: {run.length_m / M_PER_IN:.0f}\" sleeve, {ccc} current-carrying "
-                 f"{gauge} AWG conductors on {circuit.tag} ({circuit.breaker_amps} A)")
+                 f"{'/'.join(str(g) for g in sorted(set(gauges), reverse=True))} AWG "
+                 f"conductors on {on}")
         factor = adjustment_factor(ccc)
         if ccc <= 3 or run.length_m <= _EXEMPT_M:
             why = "three or fewer conductors" if ccc <= 3 else "a sleeve of 24 in. or less"
             out.append(passed(_AMPS, f"{where}: no adjustment applies ({why})", tags,
                               code=_AMPS_CODE))
             continue
-        rating = nm_ampacity(str(gauge), ccc)
-        if rating >= circuit.breaker_amps:
+        # The tightest margin governs: each member's gauge against its own breaker.
+        ratings = [nm_ampacity(str(g), ccc) for g in gauges]
+        rating = min(ratings)
+        under = any(r < c.breaker_amps for r, (_m, c) in zip(ratings, found, strict=True))
+        if not under:
             out.append(passed(_AMPS, f"{where}: {factor:.0%} gives {rating} A "
                                      f"(90 °C value, capped at 60 °C), covers the breaker",
                               tags, code=_AMPS_CODE))

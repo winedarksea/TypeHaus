@@ -18,7 +18,7 @@
 #     2x4 block behind it, stud to stud, derived from the row (geometry review M3-107).
 # Covers and rings are not credited a volume: none of these is marked with one.
 
-from typehaus import BoxRow, BoxStandard, Product, inch
+from typehaus import BoxRow, BoxStandard, PlateRow, Product, inch
 
 _SOURCE = "Owner decision 2026-10-28, notes/basement_surface_wiring.md."
 
@@ -82,13 +82,123 @@ AIRFOIL_ROUND = Product(tag="PROD-LESSCO-AIRFOIL-ROUND", brand="Lessco / Airfoil
                         url="https://www.airfoilinc.com/",
                         source="Basis of design, or equal: ED-S-PLANT-SPOT's sconce box. notes/plant_room.md, K6.")
 
-BOX_PRODUCTS = (RACO_232, RACO_808C, RACO_809C, RACO_768, CARLON_B122A, CARLON_BH235A,
+# Gang banks (resolve/device_banks.py): SuperBlue 3- and 4-gang nail-on, same family and depth
+# as BH235A. Carlon SuperBlue catalog (via pdf.lowes.com): BH353A 5 7/8 x 3 3/4 x 3 1/2,
+# BH464A 7 3/4 x 3 7/8 x 3 1/2 (a distributor says 3.18 deep): VERIFY on ABB's catalog.
+CARLON_BH353A = Product(tag="PROD-CARLON-BH353A", brand="Carlon", model="BH353A",
+                        name="3-gang SuperBlue nail-on new-work box, 53 cu. in., 3-1/2 in. deep",
+                        url="https://www.elliottelectric.com/P/Item/TAB/BH353A", source=_SOURCE)
+CARLON_BH464A = Product(tag="PROD-CARLON-BH464A", brand="Carlon", model="BH464A",
+                        name="4-gang SuperBlue nail-on new-work box, 64 cu. in., 3-1/2 in. deep",
+                        url="https://www.elliottelectric.com/P/Item/TAB/BH464A", source=_SOURCE)
+
+# Wall plates (notes/wiring_device_geometry.md §2): Leviton Q-1289 and the product drawings,
+# 1 13/16" per gang. Midway is the default: a Lever Edge strap (1.78") wants it; a standard
+# plate needs the strap's breakaway tab removed. Claro for the Diva (Lutron spec guide).
+_PLATE_SOURCE = "Wiring device geometry pass, 2026-11-15 (notes/wiring_device_geometry.md)."
+PLATE_PJ26_W = Product(tag="PROD-LEVITON-PJ26-W", brand="Leviton", model="PJ26-W",
+    name="Midway Decora wall plate, 1-gang, white",
+    url="https://www.leviton.com/content/dam/leviton/residential/product_documents/none/Document-31144-Dimensional%20Data.JPG",
+    source=_PLATE_SOURCE)
+PLATE_PJ262_W = Product(tag="PROD-LEVITON-PJ262-W", brand="Leviton", model="PJ262-W",
+    name="Midway Decora wall plate, 2-gang, white",
+    url="https://www.leviton.com/content/dam/leviton/residential/product_documents/none/Document-31171-Dimensional%20Data.JPG",
+    source=_PLATE_SOURCE)
+PLATE_PJ263_W = Product(tag="PROD-LEVITON-PJ263-W", brand="Leviton", model="PJ263-W",
+    name="Midway Decora wall plate, 3-gang, white",
+    url="https://www.leviton.com/content/dam/leviton/residential/product_documents/none/Document-31176-Dimensional%20Data.JPG",
+    source=_PLATE_SOURCE)
+PLATE_PJ264_W = Product(tag="PROD-LEVITON-PJ264-W", brand="Leviton", model="PJ264-W",
+    name="Midway Decora wall plate, 4-gang, white",
+    url="https://www.leviton.com/content/dam/leviton/residential/product_documents/none/Document-31181-Dimensional%20Data.JPG",
+    source=_PLATE_SOURCE)
+PLATE_80401_NW = Product(tag="PROD-LEVITON-80401-NW", brand="Leviton", model="80401-NW",
+    name="Standard Decora wall plate, 1-gang, white",
+    url="https://www.leviton.com/content/dam/leviton/residential/product_documents/none/LC_DOC_DDG_PNG_80401.png",
+    source=_PLATE_SOURCE)
+PLATE_80409_NW = Product(tag="PROD-LEVITON-80409-NW", brand="Leviton", model="80409-NW",
+    name="Standard Decora wall plate, 2-gang, white",
+    url="https://www.leviton.com/content/dam/leviton/residential/product_documents/none/80409.png",
+    source=_PLATE_SOURCE)
+PLATE_80411_NW = Product(tag="PROD-LEVITON-80411-NW", brand="Leviton", model="80411-NW",
+    name="Standard Decora wall plate, 3-gang, white",
+    url="https://www.leviton.com/content/dam/leviton/residential/product_documents/none/Document-145705-Dimensional%20Data.gif",
+    source=_PLATE_SOURCE)
+PLATE_80412_NW = Product(tag="PROD-LEVITON-80412-NW", brand="Leviton", model="80412-NW",
+    name="Standard Decora wall plate, 4-gang, white",
+    url="https://www.leviton.com/content/dam/leviton/residential/product_documents/none/Document-29687-Dimensional%20Data.gif",
+    source=_PLATE_SOURCE)
+PLATE_CW_1_WH = Product(tag="PROD-LUTRON-CW-1-WH", brand="Lutron", model="CW-1-WH",
+    name="Claro Decora wall plate, 1-gang, white",
+    url="https://assets.lutron.com/a/documents/369682.pdf",
+    source=_PLATE_SOURCE)
+PLATE_CW_2_WH = Product(tag="PROD-LUTRON-CW-2-WH", brand="Lutron", model="CW-2-WH",
+    name="Claro Decora wall plate, 2-gang, white",
+    url="https://assets.lutron.com/a/documents/369682.pdf",
+    source=_PLATE_SOURCE)
+PLATE_CW_3_WH = Product(tag="PROD-LUTRON-CW-3-WH", brand="Lutron", model="CW-3-WH",
+    name="Claro Decora wall plate, 3-gang, white",
+    url="https://assets.lutron.com/a/documents/369682.pdf",
+    source=_PLATE_SOURCE)
+PLATE_CW_4_WH = Product(tag="PROD-LUTRON-CW-4-WH", brand="Lutron", model="CW-4-WH",
+    name="Claro Decora wall plate, 4-gang, white",
+    url="https://assets.lutron.com/a/documents/369682.pdf",
+    source=_PLATE_SOURCE)
+PLATE_80704_W = Product(tag="PROD-LEVITON-80704-W", brand="Leviton", model="80704-W",
+    name="Standard single-receptacle wall plate (1.406 in. hole), white",
+    url="https://www.leviton.com/products/80704-w",
+    source=_PLATE_SOURCE)
+
+BOX_PRODUCTS = (PLATE_PJ26_W, PLATE_PJ262_W, PLATE_PJ263_W, PLATE_PJ264_W, PLATE_80401_NW, PLATE_80409_NW, PLATE_80411_NW, PLATE_80412_NW, PLATE_CW_1_WH, PLATE_CW_2_WH, PLATE_CW_3_WH, PLATE_CW_4_WH, PLATE_80704_W,
+                RACO_232, CARLON_BH353A, CARLON_BH464A, RACO_808C, RACO_809C, RACO_768, CARLON_B122A, CARLON_BH235A,
                 CARLON_B520A, RACO_192, RACO_753, ARLINGTON_DVFR1W, AIRFOIL_1G, AIRFOIL_ROUND)
 
 BOX_STANDARD = [
     BoxStandard(
         uid="BXDRVSHNW8", tag="BOX-STANDARD",
         surface_drop=inch(0.75),
+        default_plate="midway",
+        plates=(
+            PlateRow(family="midway", openings=("decora",), product_ref="PROD-LEVITON-PJ26-W",
+                     size=(inch(3.13), inch(4.88)), thickness=inch(0.25),
+                     material_ref="device-white"),
+            PlateRow(family="midway", openings=("decora", "decora"), product_ref="PROD-LEVITON-PJ262-W",
+                     size=(inch(4.94), inch(4.88)), thickness=inch(0.25),
+                     material_ref="device-white"),
+            PlateRow(family="midway", openings=("decora", "decora", "decora"), product_ref="PROD-LEVITON-PJ263-W",
+                     size=(inch(6.75), inch(4.88)), thickness=inch(0.25),
+                     material_ref="device-white"),
+            PlateRow(family="midway", openings=("decora", "decora", "decora", "decora"), product_ref="PROD-LEVITON-PJ264-W",
+                     size=(inch(8.56), inch(4.88)), thickness=inch(0.25),
+                     material_ref="device-white"),
+            PlateRow(family="standard", openings=("decora",), product_ref="PROD-LEVITON-80401-NW",
+                     size=(inch(2.75), inch(4.5)), thickness=inch(0.255),
+                     material_ref="device-white"),
+            PlateRow(family="standard", openings=("decora", "decora"), product_ref="PROD-LEVITON-80409-NW",
+                     size=(inch(4.56), inch(4.5)), thickness=inch(0.255),
+                     material_ref="device-white"),
+            PlateRow(family="standard", openings=("decora", "decora", "decora"), product_ref="PROD-LEVITON-80411-NW",
+                     size=(inch(6.375), inch(4.5)), thickness=inch(0.255),
+                     material_ref="device-white"),
+            PlateRow(family="standard", openings=("decora", "decora", "decora", "decora"), product_ref="PROD-LEVITON-80412-NW",
+                     size=(inch(8.19), inch(4.5)), thickness=inch(0.255),
+                     material_ref="device-white"),
+            PlateRow(family="claro", openings=("decora",), product_ref="PROD-LUTRON-CW-1-WH",
+                     size=(inch(2.94), inch(4.69)), thickness=inch(0.3),
+                     material_ref="device-white"),
+            PlateRow(family="claro", openings=("decora", "decora"), product_ref="PROD-LUTRON-CW-2-WH",
+                     size=(inch(4.75), inch(4.69)), thickness=inch(0.3),
+                     material_ref="device-white"),
+            PlateRow(family="claro", openings=("decora", "decora", "decora"), product_ref="PROD-LUTRON-CW-3-WH",
+                     size=(inch(6.56), inch(4.69)), thickness=inch(0.3),
+                     material_ref="device-white"),
+            PlateRow(family="claro", openings=("decora", "decora", "decora", "decora"), product_ref="PROD-LUTRON-CW-4-WH",
+                     size=(inch(8.37), inch(4.69)), thickness=inch(0.3),
+                     material_ref="device-white"),
+            PlateRow(family="standard", openings=("single",),
+                     product_ref="PROD-LEVITON-80704-W", size=(inch(2.75), inch(4.5)),
+                     thickness=inch(0.22), material_ref="device-white"),
+        ),
         rows=(
             BoxRow(mounting="surface", gangs=1, box_product_ref="PROD-RACO-232",
                    cover_product_ref="PROD-RACO-808C",
@@ -102,6 +212,12 @@ BOX_STANDARD = [
                    box_size=(inch(2.25), inch(3.75), inch(3.5)), box_volume_in3=22.0),
             BoxRow(mounting="flush", gangs=2, box_product_ref="PROD-CARLON-BH235A",
                    box_size=(inch(4), inch(3.75), inch(3.5)), box_volume_in3=35.0),
+            BoxRow(mounting="flush", gangs=3, box_product_ref="PROD-CARLON-BH353A",
+                   box_size=(inch(5.875), inch(3.75), inch(3.5)), box_volume_in3=53.0,
+                   internal_clamps=True),
+            BoxRow(mounting="flush", gangs=4, box_product_ref="PROD-CARLON-BH464A",
+                   box_size=(inch(7.75), inch(3.875), inch(3.5)), box_volume_in3=64.0,
+                   internal_clamps=True),
             BoxRow(mounting="flush_raceway", gangs=1, box_product_ref="PROD-RACO-232",
                    cover_product_ref="PROD-RACO-768",
                    box_size=(inch(4), inch(4), inch(2.125)), designation="4 x 2-1/8 square"),
@@ -115,7 +231,7 @@ BOX_STANDARD = [
             BoxRow(mounting="flush", gangs=1, use="recessed",
                    box_product_ref="PROD-ARLINGTON-DVFR1W",
                    box_size=(inch(4.2), inch(6.698), inch(3.875)), box_volume_in3=21.0,
-                   block_profile="2x4"),
+                   block_profile="2x4", plate_included=True),
             BoxRow(mounting="flush", gangs=1, use="air-sealed",
                    box_product_ref="PROD-LESSCO-AIRFOIL-1G",
                    box_size=(inch(2.5), inch(4), inch(3.5)), box_volume_in3=20.0),

@@ -38,7 +38,7 @@ _TYPE_COLLECTIONS = (
 # while generic furniture's ``wood-dark`` remains an intentional shadow approximation.
 MATERIAL_WOOD_ROLES = frozenset({"wood", "sauna-wood", "sauna-wood-dark"})
 # Roles whose ``material_refs`` material, when it states a colour, replaces the palette.
-MATERIAL_COLOR_ROLES = frozenset({"fabric"})
+MATERIAL_COLOR_ROLES = frozenset({"fabric", "device-face"})
 
 
 def wood_material(item: Any, materials: dict[str, Any]) -> Any | None:

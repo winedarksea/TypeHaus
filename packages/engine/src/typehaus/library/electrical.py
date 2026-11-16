@@ -14,6 +14,15 @@ _SOURCE = (
 )
 
 
+# Wiring-device faces: footprint = (face width, projection past the plate), height = face
+# height (placeable_symbols/switches.py). The plate and box are derived, never in the type.
+_DECORA = (inch(1.31), inch(0.2))
+_DECORA_2G = (inch(2.75), inch(0.2))
+_DECORA_H = inch(2.63)
+_ROUND_240 = (inch(2.5), inch(0.25))
+_ROUND_240_H = inch(2.5)
+
+
 def _device(tag: str, name: str, footprint, height, ports, **facts) -> ElectricalDeviceType:
     return ElectricalDeviceType(
         tag=tag, name=name, footprint=footprint, height=height, ports=ports, source=_SOURCE, **facts
@@ -21,9 +30,9 @@ def _device(tag: str, name: str, footprint, height, ports, **facts) -> Electrica
 
 
 ALL_ELECTRICAL_DEVICE_TYPES = (
-    _device("ED-T-SWITCH", "Wall switch", (inch(2.75), inch(2)), inch(4.5), _P120,
+    _device("ED-T-SWITCH", "Wall switch", _DECORA, _DECORA_H, _P120,
             model_representation=ModelRepresentation(symbol="wall-switch-toggle")),
-    _device("ED-T-RECEPTACLE", "Receptacle", (inch(2.75), inch(2)), inch(4.5), _P120,
+    _device("ED-T-RECEPTACLE", "Receptacle", _DECORA, _DECORA_H, _P120,
             model_representation=ModelRepresentation(symbol="receptacle-duplex")),
     _device(
         "ED-T-JBOX",
@@ -33,38 +42,38 @@ ALL_ELECTRICAL_DEVICE_TYPES = (
         _P120,
         plan_symbol="junction-box",
     ),
-    _device("ED-T-RECEPTACLE-GFCI", "GFCI receptacle", (inch(2.75), inch(2)), inch(4.5), _P120,
-            model_representation=ModelRepresentation(symbol="receptacle-duplex")),
+    _device("ED-T-RECEPTACLE-GFCI", "GFCI receptacle", _DECORA, _DECORA_H, _P120,
+            model_representation=ModelRepresentation(symbol="receptacle-gfci")),
     _device(
         "ED-T-RECEPTACLE-WR-GFCI",
         "WR GFCI receptacle, in-use cover, non-metallic gasketed box",
-        (inch(4.5), inch(3)),
-        inch(3),
+        _DECORA,
+        _DECORA_H,
         _P120,
         nema="5-20R",
-        model_representation=ModelRepresentation(symbol="receptacle-duplex"),
+        model_representation=ModelRepresentation(symbol="receptacle-gfci"),
     ),
     _device(
         "ED-T-RECEPTACLE-240",
         "240V appliance receptacle, NEMA 14-50",
-        (inch(4), inch(4)),
-        inch(4),
+        _ROUND_240,
+        _ROUND_240_H,
         _P240,
-        model_representation=ModelRepresentation(symbol="receptacle-240-four-wire"),
+        model_representation=ModelRepresentation(symbol="receptacle-round-50"),
     ),
     _device(
         "ED-T-RECEPTACLE-520S",
         "NEMA 5-20R single receptacle, 20A",
-        (inch(2.75), inch(2)),
-        inch(4.5),
+        _DECORA,
+        _DECORA_H,
         _P120,
         model_representation=ModelRepresentation(symbol="receptacle-single-120"),
     ),
     _device(
         "ED-T-RECEPTACLE-620",
         "NEMA 5-20R/6-20R dual-voltage receptacle",
-        (inch(4), inch(4)),
-        inch(4),
+        _DECORA_2G,
+        _DECORA_H,
         (
             ServicePort(tag="power-120", service=Service.POWER_120, position=(ft(0), ft(0), ft(0))),
             ServicePort(tag="power-240", service=Service.POWER_240, position=(ft(0), ft(0), ft(0))),
@@ -75,7 +84,7 @@ ALL_ELECTRICAL_DEVICE_TYPES = (
     _device(
         "ED-T-RECEPTACLE-QUAD-520",
         "20A NEMA 5-20R quadruplex receptacle, surface box",
-        (inch(4), inch(2.125)), inch(4), _P120,
+        _DECORA_2G, _DECORA_H, _P120,
         nema="5-20R",
         model_representation=ModelRepresentation(symbol="receptacle-quad"),
     ),
@@ -99,8 +108,8 @@ ALL_ELECTRICAL_DEVICE_TYPES = (
     _device(
         "ED-T-EV-620",
         "EV receptacle, NEMA 6-20R",
-        (inch(4), inch(4)),
-        inch(4),
+        _DECORA,
+        _DECORA_H,
         _P240,
         nema="6-20R",
         load_va=3840,
@@ -109,22 +118,22 @@ ALL_ELECTRICAL_DEVICE_TYPES = (
     _device(
         "ED-T-EV-1450",
         "EV receptacle, NEMA 14-50R",
-        (inch(4), inch(4)),
-        inch(4),
+        _ROUND_240,
+        _ROUND_240_H,
         _P240,
         nema="14-50R",
         load_va=9600,
-        model_representation=ModelRepresentation(symbol="receptacle-240-four-wire"),
+        model_representation=ModelRepresentation(symbol="receptacle-round-50"),
     ),
     _device(
         "ED-T-RECEPTACLE-1430",
         "Dryer receptacle, NEMA 14-30R",
-        (inch(4), inch(4)),
-        inch(4),
+        _ROUND_240,
+        _ROUND_240_H,
         _P240,
         nema="14-30R",
         load_va=5000,
-        model_representation=ModelRepresentation(symbol="receptacle-240-four-wire"),
+        model_representation=ModelRepresentation(symbol="receptacle-round-30"),
     ),
     _device(
         "ED-T-PV-JB",
@@ -173,10 +182,11 @@ ALL_ELECTRICAL_DEVICE_TYPES = (
     _device(
         "ED-T-DATA-JACK",
         "Data outlet, single-gang RJ45 (Cat 6A)",
-        (inch(2.75), inch(2)),
-        inch(4.5),
+        _DECORA,
+        _DECORA_H,
         (ServicePort(tag="data", service=Service.DATA, position=(ft(0), ft(0), ft(0))),),
         device_box=True,
+        model_representation=ModelRepresentation(symbol="device-blank"),
         ifc_entity="IfcCommunicationsAppliance",
         ifc_predefined_type="NETWORKAPPLIANCE",
     ),
@@ -193,20 +203,20 @@ ALL_ELECTRICAL_DEVICE_TYPES = (
     _device(
         "ED-T-SWITCH-DIM",
         "Wall dimmer, 120V LED-rated",
-        (inch(2.75), inch(2)),
-        inch(4.5),
+        _DECORA,
+        _DECORA_H,
         _P120,
         control="dimmer",
-        model_representation=ModelRepresentation(symbol="wall-switch-rocker"),
+        model_representation=ModelRepresentation(symbol="wall-switch-dimmer"),
     ),
     _device(
         "ED-T-SWITCH-TIMER",
         "Wall timer switch, smart, 120V",
-        (inch(2.75), inch(2)),
-        inch(4.5),
+        _DECORA,
+        _DECORA_H,
         _P120,
         control="timer",
-        model_representation=ModelRepresentation(symbol="wall-switch-rocker"),
+        model_representation=ModelRepresentation(symbol="wall-switch-timer"),
     ),
 )
 

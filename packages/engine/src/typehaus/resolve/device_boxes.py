@@ -30,15 +30,12 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 from typing import Any
 
-from shapely.geometry import MultiPoint
-from shapely.geometry.polygon import orient
-
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.electrical import BoxRow, BoxStandard
 from typehaus.model.nec import NEC
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry_members import member_box
-from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedSolid
+from typehaus.resolve.model import FramedMember, ResolvedModel
 from typehaus.resolve.wall_hosting import Band, face_frame
 
 _BOXED_KINDS = frozenset({"receptacle", "gfci", "receptacle_240", "switch", "light"})
@@ -103,6 +100,33 @@ class ResolvedDeviceBox:
     internal_clamps: bool | None = None
     support_fittings: int = 0
     terminal_blocks: int = 0
+    # --- the bank (resolve/device_banks.py): every box is one; a lone device is a 1-member
+    # bank. The scalar ``device_*``/``circuit`` fields above are the LEAD's (lowest uid).
+    device_tags: tuple[str, ...] = ()
+    device_uids: tuple[str, ...] = ()
+    device_kinds: tuple[str, ...] = ()
+    circuits: tuple[str | None, ...] = ()
+    #: Each member's own plan footprint after the snap, aligned with ``device_tags``.
+    member_footprints: tuple[tuple[tuple[float, float], ...], ...] = ()
+    #: How far the snap moved each member along the wall (m, + = face tangent).
+    snap_shifts_m: tuple[float, ...] = ()
+    member_gangs: tuple[int, ...] = ()
+    #: The derived wall plate, or None (surface cover, in-use cover, luminaire, plate_included).
+    plate_product: str | None = None
+    plate_family: str | None = None
+    plate_openings: tuple[str, ...] = ()
+    plate_size_m: tuple[float, float] | None = None  # (width, height)
+    plate_thickness_m: float = 0.0
+    plate_footprint: tuple[tuple[float, float], ...] = ()
+
+
+def boxes_by_device(model: ResolvedModel) -> dict[str, ResolvedDeviceBox]:
+    """Each boxed device's tag -> the bank box it sits in."""
+    out: dict[str, ResolvedDeviceBox] = {}
+    for box in model.device_boxes:
+        for tag in box.device_tags or (box.device_tag,):
+            out[tag] = box
+    return out
 
 
 _CACHE: dict[int, tuple[Any, BoxStandard | None, frozenset[str]]] = {}
@@ -279,44 +303,6 @@ def plan_box(model: ResolvedModel, item: Any, product_type: Any | None,
     width, _height, depth = (part.meters for part in row.box_size)
     projection = depth + row.cover_rise.meters if mounting == "surface" else 0.0
     return BoxPlan(mounting, gangs, row, projection, cavity, layer, air)
-
-
-def place_box(model: ResolvedModel, item: Any, plan: BoxPlan, storey: str, room: str | None,
-              device_footprint: list[tuple[float, float]], body: Band) -> list[tuple[float, float]]:
-    """Record the box and its solid; return the device footprint grown to include it."""
-    attachment = item.location.attachment
-    wall = model.wall(attachment.wall_ref)
-    point, tangent, normal = face_frame(wall, attachment, body)
-    width, height, depth = (part.meters for part in plan.row.box_size)
-    near, far = (0.0, plan.projection_m) if plan.mounting == "surface" else (-depth, 0.0)
-    ring = [(point[0] + tangent[0] * s + normal[0] * n, point[1] + tangent[1] * s + normal[1] * n)
-            for s, n in ((-width / 2, near), (width / 2, near), (width / 2, far),
-                         (-width / 2, far))]
-    middle = (body[0] + body[1]) / 2
-    z0, z1 = middle - height / 2, middle + height / 2
-    block_key = (_derive_block(model, wall, item.tag, plan.row.block_profile, point, tangent,
-                               normal, width, depth, middle)
-                 if plan.row.block_profile and plan.mounting != "surface" else None)
-    model.device_boxes.append(ResolvedDeviceBox(
-        device_tag=item.tag, device_uid=item.uid, storey=storey, room=room,
-        device_kind=item.kind.value, circuit=getattr(item, "circuit", None),
-        mounting=plan.mounting, gangs=plan.gangs, box_product=plan.row.box_product_ref,
-        cover_product=plan.row.cover_product_ref, volume_in3=plan.row.volume_in3,
-        width_m=width, height_m=height, depth_m=depth, projection_m=plan.projection_m,
-        cavity_m=plan.cavity_m, wall_tag=wall.tag, host_layer=plan.host_layer,
-        footprint=tuple(ring), z0_m=z0, z1_m=z1, face_point=point, normal=normal,
-        device_footprint=tuple(device_footprint), uid=f"{item.uid}-box", block_key=block_key,
-        shape=plan.row.shape, air_barrier=plan.air_barrier, box_use=plan.row.use,
-        internal_clamps=plan.row.internal_clamps, support_fittings=plan.row.support_fittings,
-        terminal_blocks=plan.row.terminal_blocks))
-    model.solids.append(ResolvedSolid(
-        uid=f"{item.uid}-box", tag=f"{item.tag}-BOX", storey=storey, category="electrical_box",
-        outline=list(ring), z0_m=z0, z1_m=z1, product=plan.row.box_product_ref,
-        derived=True))  # billed in [electrical_boxes]; drawn and exported, not cut or measured
-    if plan.mounting != "surface":
-        return device_footprint
-    hull = orient(MultiPoint([*device_footprint, *ring]).convex_hull, 1.0)
-    return [tuple(p) for p in list(hull.exterior.coords)[:-1]]
 
 
 def _derive_block(model: ResolvedModel, wall: Any, tag: str, profile: str,

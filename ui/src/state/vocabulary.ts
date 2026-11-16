@@ -72,6 +72,10 @@ export const EARTH_TONE_HEX: Record<EarthTone, number> = {
 };
 export const DEFAULT_EARTH_TONE: EarthTone = "brown";
 
+// The electrical-highlight tint: wiring devices, device boxes and wall plates, which are
+// otherwise drawn in true product white. Amber reads against every cladding and finish.
+export const ELECTRICAL_HIGHLIGHT_HEX = 0xff8a00;
+
 // The work surfaces: the assembly / transition reader, the whole-model bill of parts, the
 // panel schedule, and the luminaire schedule. Only one is up at a time — they are full-width
 // readers, not inspectors, so stacking them would just hide the model. "circuits" and

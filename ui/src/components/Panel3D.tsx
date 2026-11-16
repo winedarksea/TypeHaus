@@ -43,6 +43,7 @@ import { fitSunToBox } from "../three/sunFit";
 import { onWoodMapsReady } from "../three/woodMaps";
 import { onTapestryMapReady } from "../three/tapestryMaterial";
 import { onTileMapsReady } from "../three/tileMaps";
+import { applyElectricalHighlight } from "../three/electricalHighlight";
 import { applyEarthOpacity, applyEarthTone, PartGeometries } from "../three/builders/site";
 import {
   geographicBearingToSceneDirection,
@@ -95,6 +96,7 @@ export function Panel3D({ compact = false }: { compact?: boolean }) {
   [model, hiddenLevels]);
   const earthOpacity = useStore((s) => s.earthOpacity);
   const earthTone = useStore((s) => s.earthTone);
+  const electricalHighlight = useStore((s) => s.electricalHighlight);
   const client = useStore((s) => s.client);
   const rebarOn = visibleTrades["concrete:rebar"];
   const setRebarSets = useStore((s) => s.setRebarSets);
@@ -190,6 +192,11 @@ export function Panel3D({ compact = false }: { compact?: boolean }) {
     api.current?.setEarthTone(earthTone);
   }, [earthTone]);
 
+  // Same again: tint or restore the tagged electrical meshes in place, never rebuild.
+  useEffect(() => {
+    api.current?.setElectricalHighlight(electricalHighlight);
+  }, [electricalHighlight]);
+
   return (
     <div style={{ position: "absolute", inset: 0 }}>
       <div
@@ -260,6 +267,7 @@ interface SceneApi {
   setVisibility: (visible: VisibleTrades, hiddenStoreys: ReadonlySet<string>) => void;
   setEarthOpacity: (opacity: number) => void;
   setEarthTone: (tone: EarthTone) => void;
+  setElectricalHighlight: (on: boolean) => void;
   dispose: () => void;
 }
 
@@ -374,6 +382,8 @@ function createScene(
   // rebuild throws away, so populateScene reads this rather than the default.
   let earthOpacity = DEFAULT_EARTH_OPACITY;
   let earthTone: EarthTone = DEFAULT_EARTH_TONE;
+  // Remembered across rebuilds, like the ground: re-applied when a build completes.
+  let electricalHighlight = false;
 
   // Lighting: soft neutral environment (Nordic). Hemisphere + a key light.
   //
@@ -823,6 +833,7 @@ function createScene(
       requestRender: invalidateShadows,
       tradeVisible: (trades, storey) => objectVisible({ trades, storey }, visibleTrades, hiddenStoreys),
       rebar: { layer: rebarLayer, sets: rebar?.sets ?? null },
+      electricalHighlight: () => electricalHighlight,
     });
     publishBuilding(true);
     void buildSceneProgressively(stages, {
@@ -845,6 +856,7 @@ function createScene(
       if (!stageMs) return;
       registry.byPiece = indexPieces(registry.picks);
       applyVisibility(content, visibleTrades, hiddenStoreys);
+      if (electricalHighlight) applyElectricalHighlight(content, true);
       // The registry filled while the build ran; re-apply the selection against all of it.
       highlight(highlighted, highlightedPiece);
       const buildMs = performance.now() - buildStart;
@@ -961,6 +973,12 @@ function createScene(
     eachEarthMaterial((material) => applyEarthTone(material, earthTone));
   };
 
+  const setElectricalHighlight = (on: boolean) => {
+    electricalHighlight = on;
+    applyElectricalHighlight(content, on);
+    invalidateShadows();
+  };
+
   installPickProbe({
     camera, dom: el, picks: () => registry.picks, planCenter: () => highlightPlanCenter,
     frame: (to, distance, angle, draw) => {
@@ -981,6 +999,7 @@ function createScene(
     setVisibility,
     setEarthOpacity,
     setEarthTone,
+    setElectricalHighlight,
     dispose: () => {
       sceneGeneration++; // abandons an in-flight progressive build
       publishBuilding(false);

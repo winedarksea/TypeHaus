@@ -21,6 +21,11 @@ from .materials_exterior_darks import MATERIALS_EXTERIOR_DARKS
 MATERIALS = [
     # Every exterior dark: coloured from plan/exterior_palette.py (METAL, WINDOW).
     *MATERIALS_EXTERIOR_DARKS,
+    # Wiring devices and plates (notes/wiring_device_geometry.md): their faces and nylon plates.
+    Material(tag="device-white", name="Wiring device / nylon wall plate, white",
+             color="#f2f1ec", source="Leviton and Lutron white (-W / -WH) devices and plates."),
+    Material(tag="device-black", name="Wiring device face, black",
+             color="#1c1c1c", source="Leviton 1450R and 278 power receptacles ship black."),
     Material(tag="durock-half-inch", name="USG Durock cement board, 1/2 in.",
              source="USG FAQ 567 permits sauna use; complete waterproofing/tape/sealant heat qualification OPEN"),
     Material(tag="pvc-opening-flashing", name="SureSill PVC opening flashing",
