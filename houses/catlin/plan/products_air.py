@@ -119,6 +119,26 @@ SUITEBATH_EXTRACT_BOOT = Product(
            "disc valve centred on front. Includes collar and mounting tabs within envelope. "
            "Fabrication specification, not a manufacturer submittal; notes/suitebath_extract.md.",
 )
+# The same box turned over (REG-M-RET-STUDY, 2026-11-16): the riser drops onto a top inlet.
+STACK_TOP_EXTRACT_BOOT = Product(
+    tag="PROD-AIR-STACK-TOP-BOOT", brand="Project fabrication",
+    model="TH-ERV-STACK-TOP-BOOT-01",
+    name="26ga sealed galvanized 4x8x5-1/4in top-entry extract valve box",
+    source="TH-ERV-SUITEBATH-BOOT-01 inverted: 4in along wall x 8in tall x 5 1/4in into wall, "
+           "4in top inlet axis 3 1/4in behind front plane, 100 mm disc valve centred on front. "
+           "Fabrication specification; notes/suitebath_extract.md.",
+)
+# The suite-bath box made deep enough to reach a riser in the 2x6 leaf behind a 2x4 furring
+# leaf (REG-A-STUBATH-EXH, W-A-STU-W, 2026-11-16).
+STUBATH_EXTRACT_BOOT = Product(
+    tag="PROD-AIR-STUBATH-BOOT", brand="Project fabrication",
+    model="TH-ERV-STUBATH-BOOT-01",
+    name="26ga sealed galvanized 4x7x9in bottom-entry extract valve box",
+    source="TH-ERV-SUITEBATH-BOOT-01 at 9in deep, 7in tall (clears PR-A-STUBATH-VENT): 4in x 7in x 9in, "
+           "spanning both leaves' stud bay; 4in bottom inlet on the riser (axis 6 3/4in behind "
+           "the front plane), 100 mm disc valve centred on front. Fabrication specification; "
+           "notes/suitebath_extract.md.",
+)
 WALL_HOOD_8 = Product(
     tag="PROD-AIR-HOOD-8", brand="RenewAire", model="FA8-P (102409)",
     name="8in wall hood, 1/4in screen, no damper, paintable galvanneal",
@@ -155,7 +175,7 @@ SPOT_NOZZLE_4 = Product(
 )
 
 AIR_PRODUCTS = (
-    SUITEBATH_EXTRACT_BOOT,
+    SUITEBATH_EXTRACT_BOOT, STACK_TOP_EXTRACT_BOOT, STUBATH_EXTRACT_BOOT,
     DISC_VALVE_100, FLOOR_GRILLE_ERV, SIDEWALL_DD_OBD, FLOOR_REGISTER_HP,
     FILTER_RETURN_GRILLE, FILTER_RETURN_GRILLE_1212, RETURN_GRILLE_1210, RETURN_GRILLE_0606, ROUND_DAMPER_4_MANUAL, STAIR_REGISTER_BOX, RETURN_GRILLE_1006, RETURN_GRILLE_1006_OBD, XFER_SLEEVE_1006,
     WALL_HOOD_8, WALL_SEAL_FOAM, ELASTOMERIC_SHEET, SPOT_NOZZLE_4,

@@ -8500,3 +8500,27 @@ separately.
   back if the base trim reads crowded.
 - `RM-S-SUITE` drops `exposed_services`: nothing hangs in it now. The DuctStandard rows
   `takeoff 18x8->10x8`, `takeoff 10x8->6in` and `boot 10x8->12x6` went with the 10x8.
+
+## Boots match how their run arrives; two wall extracts become stack heads (2026-11-16)
+
+Decision #136's boots are now matched on (duct, neck, entry), the entry derived from the joint
+(straight / end / side / trunk). Every DuctStandard boot row names the entry its product
+physically takes; shop boxes stay wildcards (made to suit).
+- **Straight register box.** The four 12x6 sidewalls (`REG-S-HP-BED1/2/3`, `-SUITE`) and the
+  two attic floor rises (`REG-A-HP-EAST`, `-STUDY`) arrive along the neck normal, but sat on the
+  GV0671 end boot, which takes its run on the short end. They take a **Master Flow RB12X6X6**
+  universal register box (straight, 30 ga, Home Depot 100114412; Zoro $15.95). GV0671 stays on
+  `REG-A-HP-WEST` only. The 8x6 study boxes stay shop-made: no 8x6x6 box is stocked.
+- **Floor extract end boots.** The Snappy P13-204 is a 90 with its collar on the long side.
+  `REG-A-RET1` and `REG-S-RET-BED1/2` are fed along the long side's axis, so they take a
+  **Snappy P17C-204** center end boot (2-1/4x10x4). `REG-S-EXH4` keeps the P13-204.
+- **Stack heads, after TH-ERV-SUITEBATH-BOOT-01.** A wall valve's integral collar cannot take a
+  riser arriving across it, and a 4" elbow cannot turn in the cavity.
+  - `REG-M-RET-STUDY` takes the suite-bath box turned over (`REG-T-ERV-STACK-TOP-WALL`,
+    TH-ERV-STACK-TOP-BOOT-01, 4x8x5 1/4"). `DU-M-ERV-R-LAUNDRY`'s riser already sits on the
+    inlet axis and now stops 7 9/16" higher, on the box top (-100 7/16" second-relative).
+  - `REG-A-STUBATH-EXH`'s riser stands in W-A-STU-W's 2x6 leaf, 6 3/4" behind the valve plane
+    and behind the 2x4 furring leaf. Its box is 9" deep across both leaves' bay and 7" tall
+    (`REG-T-ERV-STUBATH-WALL`, TH-ERV-STUBATH-BOOT-01). That leaves ~5/8" under
+    PR-A-STUBATH-VENT, where 8" would leave 3/16". The riser stops 1 3/32" lower, at 34 29/32".
+  - Both carry the suite-bath box's K=5 allowance; balance on commissioning.

@@ -134,11 +134,47 @@ AIR_REGISTER_TYPES = (
                  neck=TerminalNeck(section="rectangular",
                                    width=inch(4), height=inch(8), depth=inch(5.25),
                      part="TH-ERV-SUITEBATH-BOOT-01 4x8x5-1/4in bottom-entry valve box",
-                     product_ref="PROD-AIR-SUITEBATH-BOOT"),
+                     product_ref="PROD-AIR-SUITEBATH-BOOT", entry="bottom"),
                  parts=(ProductPart(role="fitting", product_ref="PROD-AIR-SUITEBATH-BOOT"),),
                  source="notes/suitebath_extract.md: 26ga sealed box, 4in bottom inlet, "
                         "100 mm front collar. Valve curve plus estimated K=5 boot loss; "
                         "balance to 20 cfm on commissioning.",
+                 ports=(_port("return", Service.RETURN_AIR),)),
+    # The same box turned over: a stack head for a riser dropping in a wall (REG-M-RET-STUDY).
+    RegisterType(tag="REG-T-ERV-STACK-TOP-WALL",
+                 face_style="disc_valve",
+                 name="100 mm extract valve on TH-ERV-STACK-TOP-BOOT-01",
+                 footprint=(inch(5.0625), inch(1.75)), height=inch(5.0625),
+                 plan_symbol="register", ventilation_terminal=True,
+                 product_ref="PROD-AIR-DISC-VALVE-100",
+                 static_loss_pa_at_cfm=tuple(
+                     (cfm, pa + _SUITEBATH_BOOT_REFERENCE_LOSS_PA
+                      * (cfm / _SUITEBATH_BOOT_REFERENCE_CFM) ** 2) for cfm, pa in _VALVE_PA),
+                 neck=TerminalNeck(section="rectangular",
+                                   width=inch(4), height=inch(8), depth=inch(5.25),
+                     part="TH-ERV-STACK-TOP-BOOT-01 4x8x5-1/4in top-entry valve box",
+                     product_ref="PROD-AIR-STACK-TOP-BOOT", entry="top"),
+                 parts=(ProductPart(role="fitting", product_ref="PROD-AIR-STACK-TOP-BOOT"),),
+                 source="TH-ERV-SUITEBATH-BOOT-01 inverted (notes/suitebath_extract.md): valve "
+                        "curve plus the same estimated K=5 box loss.",
+                 ports=(_port("return", Service.RETURN_AIR),)),
+    # The bottom-entry box 9in deep: the riser stands in the 2x6 leaf behind the 2x4 furring.
+    RegisterType(tag="REG-T-ERV-STUBATH-WALL",
+                 face_style="disc_valve",
+                 name="100 mm extract valve on TH-ERV-STUBATH-BOOT-01",
+                 footprint=(inch(5.0625), inch(1.75)), height=inch(5.0625),
+                 plan_symbol="register", ventilation_terminal=True,
+                 product_ref="PROD-AIR-DISC-VALVE-100",
+                 static_loss_pa_at_cfm=tuple(
+                     (cfm, pa + _SUITEBATH_BOOT_REFERENCE_LOSS_PA
+                      * (cfm / _SUITEBATH_BOOT_REFERENCE_CFM) ** 2) for cfm, pa in _VALVE_PA),
+                 neck=TerminalNeck(section="rectangular",
+                                   width=inch(4), height=inch(7), depth=inch(9),
+                     part="TH-ERV-STUBATH-BOOT-01 4x7x9in bottom-entry valve box",
+                     product_ref="PROD-AIR-STUBATH-BOOT", entry="bottom"),
+                 parts=(ProductPart(role="fitting", product_ref="PROD-AIR-STUBATH-BOOT"),),
+                 source="TH-ERV-SUITEBATH-BOOT-01 at 9in deep, 7in tall (notes/suitebath_extract.md): "
+                        "valve curve plus the same estimated K=5 box loss.",
                  ports=(_port("return", Service.RETURN_AIR),)),
     # A disc valve cannot sit in a floor. Long side along the joist bay.
     RegisterType(tag="REG-T-ERV-EXH-FLOOR",

@@ -53,6 +53,8 @@ class ResolvedDuctPart:
     joint: str | None = None
     face: Any = None
     turn: str | None = None
+    #: A boot's derived entry (``terminal_joints.boot_entry``): straight / end / side / trunk.
+    entry: str | None = None
 
     @property
     def billed(self) -> bool:

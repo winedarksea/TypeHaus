@@ -252,7 +252,7 @@ DUCTS_HVAC_SECOND = [
     # its 100 1/8" centreline, the bedroom side-collar idiom (plan/mep_hvac_branches.py). It
     # crosses W-S-C2B over D-S-SUITE in the clear bay between the header cripples (y 169 5/8"-
     # 184 1/8"; z 97 1/8"-103 1/8" between header-0's top at 92 1/2" and the plates at
-    # 105 1/8") and ENDS 1/8" proud of the suite face, on the stock 6x12x6 end boot behind
+    # 105 1/8") and ENDS 1/8" proud of the suite face, on the straight 12x6x6 register box behind
     # REG-S-HP-SUITE. 100 cfm, 509 fpm. The loft is fed separately (DU-S-HP-WEST-BOOT).
     #
     # EXPOSED with an authored centreline like the bedroom collars: a run naming SF-S-DUCT is

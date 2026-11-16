@@ -67,3 +67,17 @@ duct elbow plus the box's internal turn. At 20 cfm the engine calculates
 0.00571 in. w.g. for the duct and elbow and 11.46 Pa for the valve/box
 curve, approximately 0.052 in. w.g. combined before the shared trunk and
 manifold. It does not become the ERV's governing path.
+
+## Two more stack heads (2026-11-16)
+
+The same box, for the other two wall valves whose riser arrives across the valve collar:
+
+- `REG-M-RET-STUDY` (W-M-CLN2, staggered 5 1/2" cavity): TH-ERV-STACK-TOP-BOOT-01 is this box
+  turned over, 4x8x5 1/4" with a top inlet. `DU-M-ERV-R-LAUNDRY` already drops on the inlet
+  axis (3 1/4" behind the valve plane). It stops on the box top at 19 9/16" main-relative.
+- `REG-A-STUBATH-EXH` (W-A-STU-W, a 2x6 leaf behind a 2x4 furring leaf): the riser is on the
+  2x6 leaf's axis, 6 3/4" behind the valve plane. TH-ERV-STUBATH-BOOT-01 is 4x7x9" deep across
+  the shared stud bay, with its bottom inlet on the riser at 34 29/32" attic-relative.
+  At 7" its top clears PR-A-STUBATH-VENT's 2" pipe by about 5/8".
+
+Same 26 ga sealed construction and the same K=5 allowance.

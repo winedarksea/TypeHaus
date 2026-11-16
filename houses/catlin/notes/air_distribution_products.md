@@ -335,9 +335,11 @@ only "(With Damper)": under 603.18.3 the submittal or a sample must show a locki
 the collar is an **M&M 504MSD4** (28 ga, 5.50" overall, "damper with steel hardware & locking
 handle", mmmfg.com 504MSD submittal) (owner, 2026-11-07); the 8" trunk spigot is the plenum's own. Take-offs: GV0979 4" saddle on the 8"
 level-2 extract trunk (9), GV0853 6" spin collar on the System 1 trunks (4). Boots: disc valves,
-the stair box, the suite-bath box and neckless vents take the duct on their own collar; the
-2-1/4x10 floor grilles take a Snappy P13-204 (or Imperial GV0602); 12x6 sidewalls on 6" a GV0671
-end boot; REG-B-SUP2's 125 mm valve a GV0766 4-to-5 increaser (M4-120). The 6x6x6 tee is an
+the stair box, the three valve stack boxes (suite bath, study closet, student bath; notes/suitebath_extract.md) and neckless vents take the duct on their own collar; the
+2-1/4x10 floor grilles take a Snappy P13-204 90 (collar on the long side; or Imperial GV0602) or,
+fed along the long side, a Snappy P17C-204 center end boot; a 6" run on a 12x6 neck's normal
+takes a Master Flow RB12X6X6 straight register box (30 ga), and one arriving across it the GV0671
+end boot (2026-11-16, matched by entry); REG-B-SUP2's 125 mm valve a GV0766 4-to-5 increaser (M4-120). The 6x6x6 tee is an
 **Imperial GV0893** full-flow tee, 30 ga (p.19), the GV0890's sibling. The 4x4x4 tee where
 `DU-M-ERV-R-RET3` leaves `DU-M-ERV-R-LAUNDRY` is a **Master Flow (GAF) T4X4X4** (Home Depot
 100131692, about $16; owner, 2026-11-10): gauge and dimensions unpublished, drawn at its

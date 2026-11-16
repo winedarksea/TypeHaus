@@ -1,5 +1,7 @@
 """Representative air-terminal metal, separate from conservative fit envelopes.
 
+Faces and sheet primitives live here; a neck's closed box is ``resolve/neck_solids``.
+
 Local coordinates are face-across, face-up, and depth into the cavity. Catalog dimensions
 bound the drawing; blade spacing and metal thickness are visualization defaults only.
 """
@@ -43,8 +45,9 @@ def block(x0, y0, z0, x1, y1, z1):
                     tuple(v / M_PER_IN for v in (x1, y1, z1)))
 
 
-def tube(width, height, depth, section):
-    thickness = min(VISUALIZATION.sheet_m, width / 4, height / 4)
+def tube(width, height, depth, section, sheet_m=None):
+    """An open sleeve: a round collar or a rectangular damper box."""
+    thickness = min(sheet_m or VISUALIZATION.sheet_m, width / 4, height / 4)
     outer = circle(width) if section == "round" else rectangle(width, height)
     inner = (circle(width - 2 * thickness) if section == "round"
              else rectangle(width - 2 * thickness, height - 2 * thickness))
@@ -162,19 +165,7 @@ def resolve_terminal_faces(model):
 
 
 def neck_mesh(model, obj, neck):
-    frame = terminal_frame(model, obj)
-    if frame is None or neck.section is None:
-        return None
-    inlet = None
-    if neck.inlet is not None:
-        authored = neck.inlet
-        position = tuple(v.meters for v in authored.position)
-        normal = (*authored.normal, 0)
-        if obj.mount.kind.value == "wall":
-            position = (position[0], position[2], position[1])
-            normal = (authored.normal[0], 0, authored.normal[1])
-        opening = (circle(authored.width.meters) if authored.section == "round"
-                   else rectangle(authored.width.meters, authored.height.meters))
-        inlet = position, normal, opening
-    mesh = shell(neck.width.meters, neck.height.meters, neck.depth.meters, neck.section, inlet)
-    return transform_mesh(mesh, *frame)
+    """A neck's sheet metal: ``resolve/neck_solids``."""
+    from typehaus.resolve.neck_solids import neck_mesh as _neck_mesh
+
+    return _neck_mesh(model, obj, neck)

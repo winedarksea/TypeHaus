@@ -278,7 +278,9 @@ DUCTS_ERV_LEVEL2 = [
             path=(pt(inch(27), inch(244)), pt(inch(152), inch(244)),
                   pt(inch(172.375), inch(244)),
                   pt(inch(172.375), ft(18)), pt(inch(172.375), ft(18))),
-            elevations=(_LAUNDRY_Z, _LAUNDRY_Z, _BAY_Z, _BAY_Z, inch(-108)),
+            # The riser stops on TH-ERV-STACK-TOP-BOOT-01's top inlet (box 11 9/16..19 9/16"
+            # main-relative, centred on REG-M-RET-STUDY's face), not beside the valve.
+            elevations=(_LAUNDRY_Z, _LAUNDRY_Z, _BAY_Z, _BAY_Z, inch(-100.4375)),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=DU_M_ERV_R_LAUNDRY),
     # REG-M-RET3 off LAUNDRY's crown (2026-11-10): a ceiling collar takes a run end, so the

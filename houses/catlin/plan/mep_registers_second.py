@@ -62,7 +62,7 @@ from .erv_balance import (
 # RM-S-SUITE's 100 cfm terminal is a high sidewall grille on W-S-C2B, directly above
 # D-S-SUITE and aimed west into the sleeping room. It matches the bedroom side-collar pattern:
 # a wall attachment, the same 12x6 double-deflection type and mount elevation, and since
-# 2026-11-16 the same 6" round ending on a 6x12x6 end boot behind the grille. The loft's 75
+# 2026-11-16 the same 6" round ending on a straight 12x6x6 register box behind the grille. The loft's 75
 # cfm boot has its own run off the trunk's crown (DU-S-HP-WEST-BOOT).
 REGISTERS_HVAC_SECOND = [
     Register(uid="CSRH01AAAA", tag="REG-S-HP-BED1", kind=DuctSystem.SUPPLY, room="RM-S-BED1",

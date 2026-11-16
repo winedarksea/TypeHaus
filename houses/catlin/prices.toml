@@ -3715,7 +3715,9 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "REG-T-ERV-VALVE-SUP" = { material = { low = 19, high = 60 }, labour = { low = 18, high = 45 } }  # 3 ea
 "REG-T-ERV-VALVE-EXH" = { material = { low = 19, high = 60 }, labour = { low = 18, high = 45 } }  # 8 ea
 # Same valve in a stud bay: the labour premium is cutting and blocking a wall for the collar.
-"REG-T-ERV-VALVE-EXH-WALL" = { material = { low = 19, high = 60 }, labour = { low = 28, high = 65 } }  # 3 ea
+"REG-T-ERV-VALVE-EXH-WALL" = { material = { low = 19, high = 60 }, labour = { low = 28, high = 65 } }  # 1 ea
+"REG-T-ERV-STACK-TOP-WALL" = { material = { low = 19, high = 60 }, labour = { low = 28, high = 65 } }  # 1 ea — the valve; its shop box is unpriced, like the suite bath's
+"REG-T-ERV-STUBATH-WALL" = { material = { low = 19, high = 60 }, labour = { low = 28, high = 65 } }  # 1 ea — the valve; its shop box is unpriced, like the suite bath's
 "REG-T-ERV-VALVE-SUP-WALL" = { material = { low = 19, high = 60 }, labour = { low = 28, high = 65 } }  # 1 ea
 # 125 mm valve on a 4x5 increaser, the one 30 cfm terminal (REG-B-SUP2). Price not read.
 "REG-T-ERV-VALVE-SUP-125-WALL" = { material = { low = 30, high = 75 }, labour = { low = 32, high = 70 } }  # 1 ea
@@ -6393,8 +6395,10 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "PROD-AIR-DAMPER-4-MANUAL" = { low = 10, high = 25 }     # 1 ea — 4" in-line volume damper, locking quadrant (DU-B-ERV-R-BENCH, 2026-11-12; estimate, no listing read)
 "PROD-DUCT-SADDLE-4" = { low = 6, high = 12 }            # 9 ea — 4" wye saddle on the 8" trunk
 "PROD-DUCT-INCREASER-4-5" = { low = 4, high = 10 }       # 1 ea — 4" to 5" increaser at a boot
-"PROD-DUCT-BOOT-2X10X4" = { low = 6, high = 12 }         # 4 ea — 2-1/4 x 10 x 4 floor boot
-"PROD-DUCT-BOOT-12X6X6" = { low = 8, high = 16 }         # 3 ea — 12 x 6 x 6 end boot
+"PROD-DUCT-BOOT-2X10X4" = { low = 6, high = 12 }         # 1 ea — 2-1/4 x 10 x 4 90 floor boot
+"PROD-DUCT-ENDBOOT-2X10X4" = { low = 6, high = 12 }      # 3 ea — 2-1/4 x 10 x 4 center end boot
+"PROD-DUCT-BOOT-12X6X6" = { low = 8, high = 16 }         # 1 ea — 12 x 6 x 6 end boot
+"PROD-DUCT-REGBOX-12X6X6" = { low = 12, high = 20 }      # 6 ea — 12 x 6 to 6 straight register box (Zoro $15.95)
 "PROD-DUCT-FLEX-R8" = { low = 8, high = 20 }             # 1 ea — R-8 flex kit piece (about 1 ft)
 "PROD-DUCT-CONNECTOR" = { low = 25, high = 60 }          # 2 ea — Duro Dyne MFN flexible connector
 # Stock since 2026-11-07 (were shop-made). Retail listings read 2026-11-07 off search results; each

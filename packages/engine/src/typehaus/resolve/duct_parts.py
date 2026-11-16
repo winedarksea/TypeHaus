@@ -31,4 +31,7 @@ def resolve_duct_parts(plan: Any, model: Any) -> list[Finding]:
     model.duct_parts.extend(drain_parts(model, standard))
     model.duct_supports.extend(derive_supports(model, standard))
     part_solids(model)
+    from typehaus.resolve.neck_solids import joint_necks
+
+    joint_necks(model)  # a neck a boot's collar enters from the side: cut, once joints exist
     return findings

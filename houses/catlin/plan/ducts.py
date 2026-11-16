@@ -59,6 +59,8 @@ _RECT = "SMACNA HVAC DCS 1995 Table 4-1, half-perimeter to 30 in."
 _FLEX = "JP Lamborn Installation Guidelines Rev. 11-16 (sylvane.com/cdn/shop/files/installation-guide-jpl-mhp25-25-ft-insulated-flex-duct.pdf, read 2026-11-07): 'supported at 4 ft maximum intervals by means of min 1.5 in. wide straps'; IMC 603.10 sends flex to the manufacturer"
 _RECT_ELBOW = "SMACNA HVAC DCS 1995 rectangular radius elbow, shop-fabricated, r/W 1.0, no vanes; Co 0.25 at r/W 1.0, H/W 0.5 (ASHRAE 'Fitting Loss Coefficients', online supplement to Principles of HVAC 9th ed., 2021, Fitting 3-5 p. 12, after Idelchik Diagram 6-1; read 2026-11-08, notes/erv_static_budget.md)"
 _DAMPER = "In-line single-blade volume damper fully open: no 4 in. maker publishes a loss, so C is read off Greenheck VCDR-53 (Aug 2023) AMCA 500-D Fig. 5.3 fully ducted, 12 in.: 0.19 in. wg at 3000 fpm = 0.34 x VP (0.32-0.36 over the table), above the 0.30 ASHRAE butterfly term notes/erv_static_budget.md s.4 uses; body length unpublished (drawn at its diameter)"
+_REGBOX = "Master Flow (GAF) RB12X6X6 universal register box: a straight, in-line transition from 6 in. round to a 12 x 6 register, 30 ga galvanized (GAF 'Master Flow Register Box - Straight', Home Depot 100114412, Zoro; retailer pages refused automated reads, read through search listings 2026-11-16); depth unpublished, drawn at its envelope"
+_ENDBOOT = "Snappy P17C-204 Center End Register Boot, 2-1/4x10x4, galvanized, stamp-lock, hemmed collar, 2 in. throat (firstsupply.com SNAP17C204 listing, 2026-11-16): the collar on the boot's short end, for a run along the opening's long side; P13-204 is the 90 with the collar on the long side"
 _KIT = "Broan B210E75RT manual pp. 10-11; transition C 0.22 is the sudden 6/8 in. bound"
 
 DUCT_PRODUCTS = (
@@ -120,6 +122,13 @@ DUCT_PRODUCTS = (
             name="2-1/4 x 10 x 4 in. 90 degree floor boot", source=_IMPERIAL),
     Product(tag="PROD-DUCT-BOOT-12X6X6", brand="Imperial", model="GV0671",
             name="6 x 12 x 6 in. end boot", source=_IMPERIAL),
+    # A run on the neck's normal (the sidewalls, the attic floor rises) takes a straight box.
+    Product(tag="PROD-DUCT-REGBOX-12X6X6", brand="Master Flow", model="RB12X6X6",
+            name="12 x 6 to 6 in. universal register box (straight), 30 ga galvanized",
+            url="https://www.homedepot.com/p/Master-Flow-12-in-x-6-in-to-6-in-Universal-Register-Box-RB12X6X6/100114412",
+            source=_REGBOX),
+    Product(tag="PROD-DUCT-ENDBOOT-2X10X4", brand="Snappy", model="P17C-204",
+            name="2-1/4 x 10 x 4 in. center end register boot", source=_ENDBOOT),
     Product(tag="PROD-DUCT-FLEX-R8", brand="JP Lamborn", model="MHP-45R8",
             name="R-8 insulated flexible duct, UL 181 Class 1", source=_READ),
     Product(tag="PROD-DUCT-CONNECTOR", brand="Duro Dyne", model="MFN",
@@ -215,27 +224,36 @@ DUCT_STANDARD = [
                         source="flat-bottomed offset transition, 18in, shop-fabricated"),
             DuctPartRow(kind="cap", fabricated=True,
                         source="end cap past a run's last branch, shop-made and sealed"),
-            DuctPartRow(kind="boot", size="4in", branch="4x4", integral=True,
+            # Entry (how the run meets the part) is what each product physically is: an own
+            # collar or an in-line box is end-on (straight); GV0671/P17C-204 take the run on the
+            # short end, P13-204 on the long side. Shop boxes are made to suit (any entry).
+            DuctPartRow(kind="boot", size="4in", branch="4x4", integral=True, entry="straight",
                         source="the disc valve's own collar (Vents-US AM 100 VRF)"),
-            DuctPartRow(kind="boot", size="4in", branch="4in", integral=True,
+            DuctPartRow(kind="boot", size="4in", branch="4in", integral=True, entry="straight",
                         source="the register box's own collar (PROD-AIR-STAIR-REGISTER-BOX)"),
-            DuctPartRow(kind="boot", size="4in", branch="4x8", integral=True,
-                        source="the valve box's own collar (PROD-AIR-SUITEBATH-BOOT)"),
-            DuctPartRow(kind="boot", size="4in", branch="none", integral=True,
+            DuctPartRow(kind="boot", size="4in", branch="4x8", integral=True, entry="straight",
+                        source="the valve box's own collar (PROD-AIR-SUITEBATH-BOOT, PROD-AIR-STACK-TOP-BOOT)"),
+            DuctPartRow(kind="boot", size="4in", branch="4x7", integral=True, entry="straight",
+                        source="the valve box's own collar (PROD-AIR-STUBATH-BOOT)"),
+            DuctPartRow(kind="boot", size="4in", branch="none", integral=True, entry="straight",
                         source="a vent or hood with no neck takes the duct on its spigot"),
-            DuctPartRow(kind="boot", size="4in", branch="5x5",
+            DuctPartRow(kind="boot", size="4in", branch="5x5", entry="straight",
                         product_ref="PROD-DUCT-INCREASER-4-5", source=_IMPERIAL),
-            DuctPartRow(kind="boot", size="4in", branch="10x2.25",
+            DuctPartRow(kind="boot", size="4in", branch="10x2.25", entry="side",
                         product_ref="PROD-DUCT-BOOT-2X10X4", source=_READ),
-            DuctPartRow(kind="boot", size="8in", branch="8in", fabricated=True,
+            DuctPartRow(kind="boot", size="4in", branch="10x2.25", entry="end",
+                        product_ref="PROD-DUCT-ENDBOOT-2X10X4", source=_ENDBOOT),
+            DuctPartRow(kind="boot", size="8in", branch="8in", fabricated=True, entry="straight",
                         source="REG-T-HPWH-STAIR-1210's shop-fabricated boot includes its rear 8in collar"),
-            DuctPartRow(kind="boot", size="6in", branch="12x6",
+            DuctPartRow(kind="boot", size="6in", branch="12x6", entry="end",
                         product_ref="PROD-DUCT-BOOT-12X6X6", source=_IMPERIAL),
+            DuctPartRow(kind="boot", size="6in", branch="12x6", entry="straight",
+                        product_ref="PROD-DUCT-REGBOX-12X6X6", source=_REGBOX),
             DuctPartRow(kind="boot", size="6in", branch="8x6", fabricated=True,
                         source="no 8 x 6 x 6 boot stocked by Imperial; shop-fabricated"),
-            DuctPartRow(kind="boot", size="10x6", branch="12x6", fabricated=True,
+            DuctPartRow(kind="boot", size="10x6", branch="12x6", fabricated=True, entry="trunk",
                         source="top take-off register boot on the trunk, shop-fabricated"),
-            DuctPartRow(kind="boot", size="18x8", branch="12x6", fabricated=True,
+            DuctPartRow(kind="boot", size="18x8", branch="12x6", fabricated=True, entry="trunk",
                         source="top take-off register boot on the trunk, shop-fabricated"),
             DuctPartRow(kind="boot", size="12x10", branch="24x12", fabricated=True,
                         source="REG-S-HP-RET filter box up into the bay, shop-fabricated"),

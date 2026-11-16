@@ -10,7 +10,7 @@ from typehaus.checks.mep.manifold_feed import manifold_feed
 from typehaus.checks.mep.register_reach import register_reach
 from typehaus.findings import Result
 from typehaus.quantities import inch
-from typehaus.resolve.terminal_joints import END, THROUGH, terminal_joints
+from typehaus.resolve.terminal_joints import END, STRAIGHT, THROUGH, terminal_joints
 
 
 def _by_tag(findings, tag):
@@ -33,6 +33,30 @@ def test_a_run_must_end_on_its_terminal_not_pass_through_it(catlin_model) -> Non
     assert terminal_joints(catlin_model)[tag].kind == THROUGH
     found = _by_tag(register_reach(check_context(model=catlin_model)), tag)
     assert found.result is Result.FAIL and f"{run} passes through {tag}" in found.message
+
+
+def _with_neck_entry(model, register: str, entry):
+    """``model`` with ``register``'s type's neck entry set, the shared plan untouched."""
+    lib = model.plan.library
+    ref = next(o.type_ref for o in model.canvas_objects if o.tag == register)
+    types = tuple(t.model_copy(update={"neck": t.neck.model_copy(update={"entry": entry})})
+                  if t.tag == ref else t for t in lib.register_types)
+    model.plan = model.plan.model_copy(
+        update={"library": lib.model_copy(update={"register_types": types})})
+    return model
+
+
+def test_a_90_across_a_plain_collar_needs_a_stack_head(catlin_model) -> None:
+    # DU-M-ERV-R-SUITEBATH rises in the staggered wall and ends at the valve box's bottom.
+    tag = "REG-S-EXH3"
+    found = _by_tag(register_reach(check_context(model=_with_neck_entry(
+        catlin_model, tag, None))), tag)
+    assert found.result is Result.FAIL and "author a stack head" in found.message
+    model = _with_neck_entry(catlin_model, tag, "bottom")
+    joint = terminal_joints(model)[tag]
+    assert (joint.kind, joint.turn, joint.face.normal) == (END, STRAIGHT, (0.0, 0.0, -1.0))
+    found = _by_tag(register_reach(check_context(model=model)), tag)
+    assert found.result is Result.PASS and "straight entry" in found.message
 
 
 def test_a_boot_must_reach_its_run_in_z_and_a_manifold_needs_a_feed(catlin_model) -> None:

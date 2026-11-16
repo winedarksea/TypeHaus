@@ -189,3 +189,39 @@ def test_side_entry_boot_has_a_closed_back_and_an_open_face():
              if all(abs(mesh.positions[i][2]) < 1e-9 for i in tri)]
     assert any(p.covers(Point(0, 0)) for p in rear)
     assert not any(p.covers(Point(0, 0)) for p in front)
+
+
+@pytest.mark.parametrize("entry", [None, "bottom", "back"])
+def test_neck_is_a_closed_lipped_box_cut_on_its_entry_face(entry):
+    """Wall neck 4x8x5 1/4: open face, lip past the walls, the entry face cut, the rest shut."""
+    import trimesh
+
+    from typehaus.resolve.neck_solids import LIP_M
+
+    i = 0.0254
+    obj = ResolvedCanvasObject(
+        uid="R", tag="R", storey="S", domain="mechanical", kind="Register", type_ref="T",
+        room=None, position=(0, 0), z_m=1, rotation_degrees=0,
+        footprint=((-.05, -.01), (.05, -.01), (.05, .01), (-.05, .01)),
+        body_z0_m=1, body_z1_m=1.2, mount=Mount(kind=MountKind.WALL), attachment_wall="W")
+    model = SimpleNamespace(wall=lambda _: SimpleNamespace(axis=((-1, 1), (1, 1))))
+    neck = TerminalNeck(width=inch(4), height=inch(8), depth=inch(5.25), part="box",
+                        section="rectangular", entry=entry)
+    mesh = neck_mesh(model, obj, neck)
+    metal = trimesh.Trimesh(vertices=mesh.positions, faces=mesh.triangles, process=True)
+    assert metal.is_watertight and metal.volume > 0
+    pts = np.array(mesh.positions)
+    # Local x is world x; the back is +y (the wall's side); the lip reaches 1/2" past x.
+    assert pts[:, 0].max() == pytest.approx(2 * i + LIP_M)
+    back_y, mid_z = pts[:, 1].max(), 1.1
+    bottom_z, mid_y = mid_z - 4 * i, back_y - 2.625 * i
+
+    def covered(axes, at, probe):
+        tris = [t for t in mesh.triangles if all(abs(mesh.positions[k][axes[2]] - at) < 1e-6
+                                                 for k in t)]
+        return any(Polygon([(mesh.positions[k][axes[0]], mesh.positions[k][axes[1]])
+                            for k in t]).covers(Point(probe)) for t in tris)
+
+    # The back: open (None), cut to the run (back), shut (bottom). The bottom: cut or shut.
+    assert covered((0, 2, 1), back_y, (0, mid_z)) is (entry == "bottom")
+    assert covered((0, 1, 2), bottom_z, (0, mid_y)) is (entry != "bottom")

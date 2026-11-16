@@ -15,6 +15,7 @@ from typehaus.resolve.terminal_joints import (
     THROUGH,
     TURN_90,
     UNREACHED,
+    boot_entry,
     classify,
     terminal_joints,
 )
@@ -66,6 +67,18 @@ def test_a_trunk_passing_behind_the_face_is_a_side_joint():
 def test_a_run_past_a_boots_reach_is_unreached():
     duct = _duct([(30.0, -40, 0), (30.0, 40, 0)], diameter=6 * IN)
     assert classify("REG-T", duct, _wall_face()).kind == UNREACHED
+
+
+def test_a_boots_entry_is_derived_from_the_joint():
+    face = _wall_face()  # 12" wide along y, 6" high
+    across_long = classify("REG-T", _duct([(1.0, 40, 0), (1.0, 0, 0)], diameter=4 * IN), face)
+    across_short = classify("REG-T", _duct([(1.0, 0, 40), (1.0, 0, 0)], diameter=4 * IN), face)
+    straight = classify("REG-T", _duct([(28.6, 0, 0), (-2.8, 0, 0)], diameter=6 * IN), face)
+    trunk = classify("REG-T", _duct([(5.0, -40, 0), (5.0, 40, 0)], diameter=10 * IN), face)
+    assert [(j.kind, j.turn) for j in (across_long, across_short)] == [(END, TURN_90)] * 2
+    # Along the 12" side the run meets the box's short end; along the 6" its long side.
+    assert [boot_entry(j) for j in (across_long, across_short, straight, trunk)] == [
+        "end", "side", "straight", "trunk"]
 
 
 def test_catlin_terminals_all_meet_their_runs(catlin_model_ro):

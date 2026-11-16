@@ -99,8 +99,8 @@ DUCTS_HVAC_BRANCHES_SECOND = [
             material="galvanized", design_cfm=80),
     # The three attic floor boots stand 5"-15" over their trunks, so each is fed by a drawn 6" round
     # (2026-11-12; `mep.register_reach` found a boot neck with no duct under it). A stock take-off
-    # collar on the trunk, then the stock 6x12x6 end boot under the register's damper box
-    # (DuctStandard boot 6in -> 12x6). 6" round: 509 fpm at 100 cfm, 178 at 35, 382 at 75, all under
+    # collar on the trunk, then a straight 12x6x6 register box (the risers) or the 6x12x6
+    # end boot (WEST, fed level) under the register's damper box (DuctStandard boot 6in -> 12x6). 6" round: 509 fpm at 100 cfm, 178 at 35, 382 at 75, all under
     # Manual D's 700. Each stands in its FS-ATTIC bay's clear width (13 11/16"), never on a joist.
     #
     # STUDY: straight up off DU-S-HP-SOUTH's top in the soffit (starts 1" under its crown),

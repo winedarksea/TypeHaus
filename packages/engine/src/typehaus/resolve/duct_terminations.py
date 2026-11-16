@@ -2,8 +2,9 @@
 
 * a plenum's branch collar: the collar with its balancing damper (M1-106);
 * an equipment port: the type's ``PortKit`` — transition and flex (Broan, M1-103);
-* a terminal: a boot matched on (duct section, neck face) (M4-103/114/120), one per
-  ``terminal_joints`` end, drop, inlet or side joint (decision #136), at the joint's point.
+* a terminal: a boot matched on (duct section, neck face, entry) (M4-103/114/120), one per
+  ``terminal_joints`` end, drop, inlet or side joint (decision #136), at the joint's point;
+  the entry is derived (``terminal_joints.boot_entry``), and no row for it is a ``gap``.
 
 ``end_landings`` is the reading ``mep.duct_terminations`` grades: an end that is none of
 these, joins no duct and caps no served leg is UNKNOWN there.
@@ -22,7 +23,15 @@ from typehaus.resolve.flex_bend import run_bend
 from typehaus.resolve.mep_ports import placed_ports, port_at
 from typehaus.resolve.mep_soffit import DUCT_JOINT_TOLERANCE_M, duct_joint_index, end_joins
 from typehaus.resolve.model_ducts import Point3, ResolvedDuctPart
-from typehaus.resolve.terminal_joints import DROP, END, INLET, SIDE, TerminalJoint, terminal_joints
+from typehaus.resolve.terminal_joints import (
+    DROP,
+    END,
+    INLET,
+    SIDE,
+    TerminalJoint,
+    boot_entry,
+    terminal_joints,
+)
 
 #: A duct end this close to an exact port or collar lands on it.
 PORT_TOLERANCE_M = 1.0 * M_PER_IN
@@ -251,10 +260,12 @@ def _boots(model: Any, standard: DuctStandard,
             continue
         size = section(duct)
         neck = neck_text(types.get(refs.get(joint.register)))
-        row = standard.part("boot", size, neck)
+        entry = boot_entry(joint)
+        row = standard.part("boot", size, neck, entry)
         out.append(ResolvedDuctPart(
             kind="boot", run_tag=duct.tag, storey=duct.storey, size=size, branch=neck,
             point=joint.point, axis=joint.axis, other=joint.register,
-            gap=None if row else f"no boot row for {size} to {neck}",
-            joint=joint.kind, face=joint.face, turn=joint.turn, **_row_fields(row)))
+            gap=None if row else f"no boot row for {size} to {neck} entered {entry}",
+            joint=joint.kind, face=joint.face, turn=joint.turn, entry=entry,
+            **_row_fields(row)))
     return out

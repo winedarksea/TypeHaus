@@ -224,8 +224,10 @@ def neck_drawn(model: ResolvedModel) -> set[str]:
     types = {t.tag: t for t in getattr(model.plan.library, "register_types", ())}
     necks = {o.tag: getattr(types.get(o.type_ref), "neck", None)
              for o in model.canvas_objects if o.kind == "Register"}
+    from typehaus.resolve.neck_solids import boot_drawn
+
     return {tag for tag, neck in necks.items()
-            if neck is not None and not neck.separate_boot}
+            if neck is not None and not neck.separate_boot} - boot_drawn(model)
 
 
 def part_solids(model: ResolvedModel) -> None:

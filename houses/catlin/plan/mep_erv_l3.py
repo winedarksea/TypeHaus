@@ -185,7 +185,9 @@ DUCTS_ERV_ATTIC = [
                   pt(ft(2), ft(21, 8.5)), pt(ft(9, 7.5), ft(21, 8.5)),
                   pt(ft(9, 7.5), ft(21, 8.5))),
             elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z,
-                        _ATTIC_BAY_HIGH_Z, _ATTIC_BAY_HIGH_Z, inch(36)),
+                        _ATTIC_BAY_HIGH_Z, _ATTIC_BAY_HIGH_Z, inch(34.90125)),
+            # (2026-11-16) The riser stops on TH-ERV-STUBATH-BOOT-01's bottom inlet, the box's
+            # underside under REG-A-STUBATH-EXH's face (plan/air_terminal_types.py).
             # (2026-11-11) The 5 3/4" deck-to-bay drop is a 45 degree ramp (5 3/4" of run) with an
             # adjustable elbow at its foot: two stamped 90s need 12" and an adjustable pair 9 1/2".
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",

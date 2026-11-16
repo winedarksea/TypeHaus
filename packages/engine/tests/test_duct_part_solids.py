@@ -148,6 +148,23 @@ def test_boot_shapes_by_joint_stay_behind_the_face_and_close():
         assert manifold.status() == m3d.Error.NoError and manifold.volume() > 0, joint
         assert min(p[0] for p in mesh.positions) >= -1e-9, joint
         assert boot_inlet_point(part) == pytest.approx(tuple(c * i for c in inlet)), joint
+    # A row's envelope: 14 x 8 along the face's long x short axis, 5" deep behind it.
+    part = NS(joint="end", face=face, turn="90", point=(2 * i, 2 * i, 3 * i), axis=(0, 0, 1),
+              size="4in", length_m=8 * i, width_m=14 * i, height_m=5 * i, entry="side")
+    pts = boot_mesh(None, part, parse_section("4in"), None).positions
+    assert max(p[0] for p in pts) == pytest.approx(5 * i)
+    assert max(p[1] for p in pts) == pytest.approx(7 * i)
+    assert boot_inlet_point(part) == pytest.approx((2 * i, 2 * i, 6 * i))  # 4 + 2" collar
+    # A run in a plain neck's own depth: the collar on its line through its side, no box.
+    from typehaus.resolve.boot_solids import _shaped, neck_side_joint
+
+    part = NS(joint="end", face=face, turn="90", point=(-2.5 * i, 3 * i, 0), axis=(0, 1, 0),
+              size="6in", length_m=None, entry="end")
+    pts = _shaped(part, parse_section("6in"), plain_neck=True)[0].positions
+    assert max(p[0] for p in pts) == pytest.approx(0.5 * i)
+    assert boot_inlet_point(part) == pytest.approx((-2.5 * i, 8 * i, 0))
+    assert neck_side_joint(part)[0] == pytest.approx((-2.5 * i, 6 * i, 0))
+    assert neck_side_joint(part)[3] is False
 
 
 def test_takeoff_is_a_collar_from_the_surface_plus_a_flange_that_hugs_the_main():

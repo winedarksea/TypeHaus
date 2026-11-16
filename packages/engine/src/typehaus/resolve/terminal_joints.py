@@ -19,6 +19,12 @@ field would go stale on every UI drag), tried in this order:
   ends: a take-off collar on the trunk.
 * ``unreached``: none of these; ``detail`` gives the nearest end.
 
+A neck stating ``entry`` (``TerminalNeck.entry``) is read against that face of its box
+(``entry_face``): a wall neck entered ``bottom``/``top`` is a stack head, its run arriving
+vertically in the cavity. ``boot_entry`` derives how the run meets the boot, the key a
+``DuctPartRow.entry`` matches: ``straight`` (a straight end, a drop, an inlet), ``end`` or
+``side`` (a 90 end entering the face's short end or its long side), ``trunk`` (a side joint).
+
 Fields are metres. ``point`` is on the run's centreline where the boot meets it (the end
 vertex, the side hit, the room-face crossing for ``through``); ``axis`` the run's unit
 direction there (into the run for an end); ``face`` the terminal's duct-side face;
@@ -41,6 +47,7 @@ Vec3 = tuple[float, float, float]
 INLET, DROP, THROUGH, END, SIDE, UNREACHED = (
     "inlet", "drop", "through", "end", "side", "unreached")
 STRAIGHT, TURN_90 = "straight", "90"
+ENTRY_STRAIGHT, ENTRY_END, ENTRY_SIDE, ENTRY_TRUNK = "straight", "end", "side", "trunk"
 
 #: The most a boot spans from the terminal face to the run's near surface: a 4" round
 #: take-off collar tall (``mep.register_reach``'s boot drop). Catlin's largest is 3.1".
@@ -158,7 +165,60 @@ def _face(model: Any, obj: Any, register_type: Any, duct: Any) -> TerminalFace |
     mid = ((obj.body_z0_m + obj.body_z1_m) / 2.0
            if obj.body_z0_m is not None and obj.body_z1_m is not None else 0.0)
     toward = min(_points(duct), key=lambda p: math.dist(p, (*obj.position, mid)))
+    neck = getattr(register_type, "neck", None)
+    if neck is not None and getattr(neck, "entry", None) not in (None, "back"):
+        placed = entry_face(model, obj, neck, toward)
+        if placed is not None:
+            return placed
     return terminal_face(model, obj, register_type, toward)
+
+
+def entry_face(model: Any, obj: Any, neck: Any, toward: Vec3 | None = None
+               ) -> TerminalFace | None:
+    """The face of a single-box neck named by ``neck.entry``, normal out of the box.
+
+    ``left``/``right`` are the box's sides along the face's own -x/+x; ``top``/``bottom``
+    its ends along z on a wall neck. On a ceiling or floor neck z is the box's depth, so
+    ``top``/``bottom`` gives None and the caller reads the back. ``room_offset_m`` is the
+    box's extent behind the face, so ``through`` means out of its far side. None too for a
+    components assembly or a box that cannot be placed.
+    """
+    from typehaus.resolve.terminal_faces import neck_back
+
+    if neck.components:
+        return None
+    placed = neck_back(model, obj, neck, toward)
+    if placed is None:
+        return None
+    back, n, across, up = placed
+    w, h, d = neck.width.meters, neck.height.meters, neck.depth.meters
+    centre = _along(back, n, -d / 2.0)
+    if neck.entry in ("left", "right"):
+        sign = -1.0 if neck.entry == "left" else 1.0
+        normal = _along((0.0, 0.0, 0.0), across, sign)
+        return TerminalFace(_along(centre, normal, w / 2.0), normal, n, up, d, h, w, "neck")
+    if abs(n[2]) > 0.5:  # ceiling/floor: z is the depth; top/bottom is the back or the face
+        return None
+    sign = 1.0 if neck.entry == "top" else -1.0
+    normal = (0.0, 0.0, sign)
+    return TerminalFace(_along(centre, normal, h / 2.0), normal, across, n, w, d, h, "neck")
+
+
+def boot_entry(joint: TerminalJoint) -> str | None:
+    """How the run meets its boot (``DuctPartRow.entry``); None off a booted joint."""
+    if joint.kind == SIDE:
+        return ENTRY_TRUNK
+    if joint.kind in (DROP, INLET) or (joint.kind == END and joint.turn == STRAIGHT):
+        return ENTRY_STRAIGHT
+    if joint.kind != END:
+        return None
+    face, a = joint.face, joint.axis
+    if face is None or a is None:
+        return ENTRY_END
+    along_w = abs(_dot(a, face.width_axis)) >= abs(_dot(a, face.height_axis))
+    travel, other = ((face.width_m, face.height_m) if along_w
+                     else (face.height_m, face.width_m))
+    return ENTRY_END if travel >= other - 1e-6 else ENTRY_SIDE
 
 
 def _inlet(model: Any, tag: str, duct: Any) -> TerminalJoint:

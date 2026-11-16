@@ -155,7 +155,9 @@ REGISTERS_MAIN = [
     # which the host codemod could not choose between).
     Register(uid="H6C6RD9NED", tag="REG-M-RET-STUDY", kind=DuctSystem.RETURN, room="RM-M-STUDY-CLOSET",
             duct_ref="DU-M-ERV-R-LAUNDRY",
-            type_ref="REG-T-ERV-VALVE-EXH-WALL", design_cfm=REG_M_RET_STUDY,
+            # A stack head (2026-11-16): the riser drops onto the box's top inlet; a 4"
+            # elbow cannot turn behind the valve in the 5 1/2" staggered cavity.
+            type_ref="REG-T-ERV-STACK-TOP-WALL", design_cfm=REG_M_RET_STUDY,
             mount=Mount(kind=MountKind.WALL, elevation=inch(12)),
             location=Location(attachment=WallAttachment(
                 wall_ref="W-M-CLN2", face="left", distance_from_start=inch(11.5),

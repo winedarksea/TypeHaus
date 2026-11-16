@@ -166,10 +166,14 @@ def _run_plan(model: Any, duct: Any, pts: Sequence[Vec3], records: Sequence[Any]
               standard: Any, parts: Sequence[Any], necked: set[str]
               ) -> tuple[list[ElbowArc], list[Occupied], list[float]]:
     cum = _stations(pts)
-    arcs = _arcs(pts, records, standard)
+    fittings = _part_intervals(model, duct, pts, cum, parts, necked)
+    # An elbow inside a boot or collar is that part's own turn: drawn once, by the part.
+    arcs = [a for a in _arcs(pts, records, standard)
+            if not any(f.start_m - 1e-6 <= cum[a.index] - a.setback_m
+                       and cum[a.index] + a.setback_m <= f.end_m + 1e-6 for f in fittings)]
     occupied = [Occupied(cum[a.index] - a.setback_m, cum[a.index] + a.setback_m, "elbow")
                 for a in arcs]
-    occupied += _part_intervals(model, duct, pts, cum, parts, necked)
+    occupied += fittings
     return arcs, sorted(occupied, key=lambda o: (o.start_m, o.end_m)), cum
 
 

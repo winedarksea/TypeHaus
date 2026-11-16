@@ -1839,7 +1839,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   gym or a service hall, and no owner has said its ceiling should be open.
   `DU-S-HP-SUITE` is `DuctRouting.EXPOSED` with an AUTHORED centreline (100 1/8"
   storey-relative), the bedroom side-collar idiom: without it `_derived_base_z` falls back to
-  the storey datum. Since 2026-11-16 it is a 6" round that ENDS on the end boot behind
+  the storey datum. Since 2026-11-16 it is a 6" round that ENDS on the straight register box behind
   `REG-S-HP-SUITE` in W-S-C2B's cripple bay; the loft boot `REG-A-HP-WEST` (rotation 0) has its
   own run, `DU-S-HP-WEST-BOOT`, off the trunk's crown west along FS-ATTIC's y 160-176 bay.
   A run never passes through its own terminal.
