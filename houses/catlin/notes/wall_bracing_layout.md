@@ -195,16 +195,15 @@ The parts, and what they publish:
 | Device | Part | Published | Report |
 |---|---|---|---|
 | `CN-M-BWHD-NE-E`, `-N` | STHD14RJ cast in the basement wall top | 4,410 lb (endwall, 8" stem, wind/SDC A&B) | ICC-ES ESR-2920 Table 1 |
-| `CN-S-BWHD-NE-E`, `-N` | DTT2Z pair on a 1/2" rod through the floor | 1,825 lb (1-1/2" member) | ICC-ES ESR-2330 Table 4 |
+| `CN-S-BWHD-NE-E`, `-N` (retired 2026-11-16) | DTT2Z pair on a 1/2" rod through the floor | 1,825 lb (1-1/2" member) | ICC-ES ESR-2330 Table 4 |
 | `CN-G-BWHD-SW` | STHD14 cast in the ICF-6 core | 3,065 lb (endwall, 6" stem) | ICC-ES ESR-2920 Table 1 |
 
-All five clear the 800 lb the figure asks for by three times or more. Two caveats belong to
+All of them cleared the 800 lb the figure asks for by three times or more. Two caveats belong to
 the reader and not to the arithmetic: the **RJ** strap is the one long enough to cross the
-main floor's 13-1/2" band (its unnailed clear span limit is 17"), and ESR-2330 publishes the
-DTT2Z for **SG ≥ 0.50 lumber only** — the two second-floor corner posts are specified DF-L
-for that reason, and this house otherwise frames SPF.
+main floor's 13-1/2" band (its unnailed clear span limit is 17"), and ESR-2330 published the
+DTT2Z for **SG ≥ 0.50 lumber only**, which is why the retired second-floor pair wanted DF-L posts.
 
-## 7. The garage SW corner takes a fifth device
+## 7. The garage SW corner takes a third device
 
 `D-G-SERVICE` sits 11" off that corner, so `W-G-S` has no 24" return to give `W-G-W`'s end
 panel, and the 29" panel at that end therefore meets end condition **2** (panel at the end

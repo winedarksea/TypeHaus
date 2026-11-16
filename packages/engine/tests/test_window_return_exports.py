@@ -21,8 +21,8 @@ def return_bom(catlin_model_ro):
 
 def test_catlin_returns_inherit_finishes_and_skip_other_liners(catlin_model_ro):
     model = catlin_model_ro
-    assert len(model.window_returns) == 40
-    assert len({r.uid for r in model.window_returns}) == 40
+    assert len(model.window_returns) == 39
+    assert len({r.uid for r in model.window_returns}) == 39
     walls = {w.tag: w for w in model.walls}
     for reveal in model.window_returns:
         if reveal.fabricated:
@@ -61,8 +61,8 @@ def test_plant_windows_take_the_stools_corian_frame(catlin_model_ro):
 def test_returns_reach_viewer_and_glb_with_material_and_trade(catlin_model_ro):
     model = catlin_model_ro
     solids = {s.uid: s for s in model.solids if s.category == 'window_return'}
-    # 40 returns x jambs + head, plus 3 laps on each of the 38 bucked; paint has no solid.
-    assert len(solids) == 234
+    # 39 returns x jambs + head, plus 3 laps on each of the 37 bucked; paint has no solid.
+    assert len(solids) == 228
     payload = model_to_dict(model)
     rows = [row for row in payload['solids'] if row['category'] == 'window_return']
     assert {row['uid'] for row in rows} == set(solids)
@@ -98,7 +98,7 @@ def test_returns_export_as_ifc_coverings(catlin_model_ro, catlin_ifc_path):
                 if ifcopenshell.util.element.get_psets(p).get(PSET_SOURCE, {}).get(
                     'category') == 'window_return'}
     solids = [s for s in model.solids if s.category == 'window_return']
-    assert len(products) == len(solids) == 234
+    assert len(products) == len(solids) == 228
     for solid in solids:
         product = products[solid.tag]
         assert product.PredefinedType == 'CLADDING'

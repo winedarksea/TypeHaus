@@ -32,7 +32,7 @@
 # standing alternative is to move the two kitchen windows 16" inboard. **Never move them
 # TOWARD the corner** — that is the one direction with no answer.
 #
-# ** THE GARAGE SW CORNER TAKES A FIFTH. ** D-G-SERVICE sits 11" off that corner, so W-G-S has
+# ** THE GARAGE SW CORNER TAKES A THIRD. ** D-G-SERVICE sits 11" off that corner, so W-G-S has
 # no 24" return to give W-G-W's end panel. The alternative is to move the service door 17"
 # east, which `plan/storeys/garage.py` warns drags the landing, the carriers, two backing
 # bands, three lighting stations and a section cut with it; one cast-in strap is cheaper.

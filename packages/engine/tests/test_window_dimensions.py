@@ -37,7 +37,7 @@ def test_escape_formula_tracks_installation_clearances_and_sill_rise():
 
 def test_schedule_frame_dimensions_match_the_rendered_frame(catlin_model_ro):
     windows = [o for o in catlin_model_ro.openings if o.kind == "window"]
-    assert len(windows) == 41
+    assert len(windows) == 40
     unresolved = []
     for opening in windows:
         dimensions = window_frame_dimensions(opening)
@@ -174,7 +174,7 @@ def test_profiled_metal_windows_have_four_terminated_sides(catlin_model_ro):
     windows = [opening for opening in catlin_model_ro.openings
                if opening.kind == "window" and opening.window_seat
                and opening.window_seat.metal_trim]
-    assert len(windows) == 40
+    assert len(windows) == 39
     for opening in windows:
         pieces = [solid for solid in catlin_model_ro.solids
                   if solid.category == "cladding_trim" and solid.host_ref == opening.tag]

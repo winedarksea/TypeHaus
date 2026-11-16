@@ -1215,11 +1215,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   operable 27 1/2x48 (`WIN-S-BED3`) replaces them; `WIN-M-DINING-E` is a fixed triad.
 
 - **Named products; window and door types are HOUSE-LOCAL (2026-10-21).** Drutex IGLO
-  Energy Alucover (aluminium-capped uPVC) for the 11 tilt-turn and 18 fixed units; Aliplast
+  Energy Alucover (aluminium-capped uPVC) for the 11 tilt-turn and 16 fixed units; Aliplast
   Max Light Modern tilt-turns (NFRC STO-M-20, U 0.20, 35 + 35 mm faces) for the three operable
-  14x24s since 2026-10-31 and the 9 R310 escape windows since 2026-11-13 (`WIN-M-BED-S1`/`S2`,
+  14x24s since 2026-10-31, the 9 R310 escape windows since 2026-11-13 (`WIN-M-BED-S1`/`S2`,
   `WIN-S-BED1`/`BED2`, `WIN-S-HALL-N`, `WIN-S-SUITE1`/`2`, `WIN-A-S-JUL-W`/`E`; Andersen 400
-  retired, the documented revert); Therma-Tru Smooth-Star full-lite / Endura
+  retired, the documented revert) and `WIN-S-BED3` (WT-2748, 2026-11-16); Therma-Tru Smooth-Star full-lite / Endura
   for the French pairs (2026-10-25; laminated triple and pair label pending); an OPAQUE Therma-Tru Smooth-Star for
   `D-M-ENTRY` (owner: a solid, insulated front door, at most a tiny lite); MMI Z0364688R
   six-panel insulated steel for `D-G-SERVICE` (`DT-EXT-SWING32-G`); Clopay for the overhead. Charcoal outside until the dealer confirms Black at R-12.9 (open, `notes/exterior_darks.md`), white inside.
@@ -2386,7 +2386,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   an 8'-4" wall). At 3'-0" the piers would still clear by 1"; below that the garage adopts
   Method CS-PF (R602.10.6.4) and its portal-frame straps and anchorage. The door's
   suppression of `structural.door_framing_module` is untouched and unrelated.
-  - **The SW corner takes a fifth hold-down.** `D-G-SERVICE` sits 11" off it, so `W-G-S` has
+  - **The SW corner takes a third hold-down.** `D-G-SERVICE` sits 11" off it, so `W-G-S` has
     no 24" return to give `W-G-W`'s 29" end panel and that end meets R602.10.7's end
     condition **2** instead: `CN-G-BWHD-SW`, an STHD14 cast into the ICF-6 core (ESR-2920's
     6" stem row, 3,065 lb). The alternative is moving the service door another 13" east, which drags

@@ -3,11 +3,11 @@
 2026-10-21. Design reasoning, not a calc oracle. **The owner's selection (updated 2026-10-25):**
 
 - **Drutex IGLO Energy Alucover** (Polish, aluminium-capped uPVC) for the 11 tilt-turn and
-  18 fixed units.
+  16 fixed units.
 - **Aliplast Max Light Modern** (Polish thermally broken aluminium, tilt-turn) for the three
-  operable 14x24s: `WIN-M-KITCH-N`, `WIN-M-KIT-E`, `WIN-M-BATH1-W` (2026-10-31), and the 9 R310
-  escape windows (2026-11-13; one fabricator, Słowińscy, STO-M-20). The clear opening is an
-  estimate with a supplier gate: [egress_window_review.md](egress_window_review.md).
+  operable 14x24s: `WIN-M-KITCH-N`, `WIN-M-KIT-E`, `WIN-M-BATH1-W` (2026-10-31), the 9 R310
+  escape windows (2026-11-13; one fabricator, Słowińscy, STO-M-20), and `WIN-S-BED3`
+  (2026-11-16). The clear opening is an estimate with a supplier gate: [egress_window_review.md](egress_window_review.md).
 - **Andersen 400 retired 2026-11-13** (the documented revert for the escape windows).
 - **Therma-Tru Smooth-Star full-lite** fiberglass / composite frames / Endura hardware
   for all three French pairs; an opaque **Therma-Tru
@@ -21,8 +21,8 @@ carrying its NFRC CPD row. **Every NFRC number below was read from the CPD itsel
 (search.nfrc.org), not from a brochure or a Phius page.** What is still claimed rather than
 in hand is listed in §2.6.
 
-The schedule is 41 units: 23 tilt-turn (12 Max Light), 0 casements, 18 fixed (4 of them the
-`-HP` plant-room units); 23 operable. 11 are tempered. Suppliers: Drutex 29, Max Light 12, both
+The schedule is 40 units: 24 tilt-turn (13 Max Light), 0 casements, 16 fixed (4 of them the
+`-HP` plant-room units); 24 operable. 11 are tempered. Suppliers: Drutex 27, Max Light 13, both
 Polish.
 
 **The import risk is the code gates, more than the U-value.** Without an NFRC label, IECC
