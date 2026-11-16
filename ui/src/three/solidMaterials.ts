@@ -25,6 +25,7 @@ import type { Trade } from "../state/vocabulary";
 import { solidTrades } from "../model/tradeVisibility";
 import { NORDIC_ROUGHNESS, standardMaterial } from "./surfaces";
 import { metalDepthTier } from "./materials";
+import { createProfiledMetalSkinMaterial } from "./boardBattenMaterial";
 import vocabulary from "../generated/vocabulary.json";
 
 // solid category → sRGB hex. Categories with no entry fall back to the theme's concrete
@@ -51,17 +52,20 @@ export function solidTrade(solid: Pick<Solid, "category" | "trades">): Trade {
 }
 
 // Shop-finished metal accessories read as metal, not matte plastic: a gutter, a drip flashing
-// and an aluminium guard all catch the environment light the way the standing-seam wall finish
-// does. Everything else stays fully dielectric.
+// and an aluminium guard all catch the environment light. Everything else stays dielectric.
+// `cladding_trim` is absent: painted coil trim is dielectric PVDF, like the skin it trims.
 // `railing_glass` is deliberately absent: metalness is keyed on category alone, so a glass
 // lite listed here renders as dark metal however its material is authored.
 const METALLIC_SOLID_CATEGORIES = new Set([
   "railing", "railing_infill", "gutter", "downspout", "flashing", "connector",
   "connector_embedded", "connector_hanger",
   "snow_guard", "seam_clamp", "panel_strap",
-  "beam_cap", "wall_corner", "opening_head_flashing", "cladding_trim",
+  "beam_cap", "wall_corner", "opening_head_flashing",
   "bug_screen",
 ]);
+
+// A closure strip filed with the trim it seals is not metal.
+const RUBBER_MATERIALS: ReadonlySet<string> = new Set(["epdm", "rubber"]);
 
 // Painted finishes name their colour in the material ref ("post-paint-white"). The served
 // catalog (server/model_json.py) carries only tag/name/R/perm/density, so the engine's authored
@@ -139,7 +143,12 @@ export function createSolidMaterial(
   mode: "nordic" | "schematic",
   palette: ResolvedNordicPalette,
 ): THREE.MeshStandardMaterial {
-  const metallic = solid.material !== "epdm" && METALLIC_SOLID_CATEGORIES.has(solid.category);
+  // Same PVDF surface, shadow bias and schematic fallback as the panel; trim keeps its lap tier.
+  if (solid.category === "cladding_trim" && !RUBBER_MATERIALS.has(solid.material ?? "")) {
+    return createProfiledMetalSkinMaterial(mode, solidColor(solid, catalog, palette),
+      metalDepthTier("cladding_trim")!);
+  }
+  const metallic = !RUBBER_MATERIALS.has(solid.material ?? "") && METALLIC_SOLID_CATEGORIES.has(solid.category);
   const opacity = solidOpacity(solid, catalog);
   const translucent = opacity < 1;
   const backfill = BACKFILL_CATEGORIES.has(solid.category);

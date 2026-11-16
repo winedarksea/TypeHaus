@@ -177,6 +177,10 @@ function checkTrimDrawsAtItsDepthTier() {
   const solid = createSolidMaterial({ category: "cladding_trim", assembly: null, material: null },
     undefined, "schematic", RESOLVED_NORDIC_PALETTE.light);
   assert(solid.polygonOffsetUnits === TRIM_POLYGON_OFFSET.polygonOffsetUnits, "Solid trim takes its tier");
+  const painted = createSolidMaterial({ category: "cladding_trim", assembly: null, material: null },
+    undefined, "nordic", RESOLVED_NORDIC_PALETTE.light);
+  assert(painted.metalness < 0.1 && painted.polygonOffsetUnits === TRIM_POLYGON_OFFSET.polygonOffsetUnits,
+    "Cladding trim is painted PVDF like its skin, at the trim tier");
   const raked = { p0: [0, 0] as [number, number], p1: [4, 0] as [number, number], z0_m: 3,
     z1_m: 3.05, z0_end_m: 5, z1_end_m: 5.05, orient: null };
   const group = new THREE.Group();

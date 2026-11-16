@@ -118,8 +118,10 @@ function buildFacades(targetGroups: Record<Trade, THREE.Group>, profiled: boolea
         { materials, bookcaseDoor: product?.bookcase_door }, picks, selected);
     }
   }
-  const openingTags = new Set(selectedOpenings.map(opening => opening.tag));
-  for (const flashing of model.solids?.filter(solid => openingTags.has(solid.host_ref ?? "")) ?? []) {
+  const hostTags = new Set(selectedOpenings.map(opening => opening.tag));
+  for (const wall of walls) hostTags.add(wall.tag);
+  for (const flashing of model.solids?.filter(solid => hostTags.has(solid.host_ref ?? "")
+    && (solid.category === "cladding_trim" || !walls.some(wall => wall.tag === solid.host_ref))) ?? []) {
     buildSolid(targetGroups.roofing, flashing, center, "nordic", palette,
       model.catalog, picks, selected, materials);
   }

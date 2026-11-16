@@ -24,7 +24,7 @@ from shapely.geometry import Polygon
 # Re-exported for callers that reach past the entry point (tests pinning palette parity, the
 # arch-soffit tessellation, the wall/roof builders). Import them from their own modules in new
 # code; this list keeps ``from typehaus.emit.gltf.emitter import ...`` working unchanged.
-from typehaus.emit.gltf.board_batten import add_profiled_wall_surfaces
+from typehaus.emit.gltf.board_batten import PAINTED_METAL_SURFACE, add_profiled_wall_surfaces
 from typehaus.emit.gltf.buffers import _deindex_with_normals  # noqa: F401
 from typehaus.emit.gltf.canvas_objects import _add_canvas_objects, _add_countertops
 from typehaus.emit.gltf.geometry import (  # noqa: F401
@@ -257,6 +257,9 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
 
                 surface = COMPONENT_SURFACES.get(solid.material, PAINTED_SURFACE)
                 surfaces = {color: surface}
+            elif solid.category == "cladding_trim" and solid.material not in ("rubber", "epdm"):
+                # painted coil, like the skin it trims; a rubber closure stays generic
+                surfaces = {color: PAINTED_METAL_SURFACE}
             scene.add_object(mb, _solid_trades(model, solid), kind="solid", uid=solid.uid,
                              category=solid.category,
                              material_surfaces=surfaces,
