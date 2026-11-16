@@ -122,6 +122,7 @@ PART_COLORS: dict[str, tuple[float, float, float, float]] = {
     "screen": (0.14, 0.15, 0.17, 1.0),
     "appliance-white": (0.94, 0.94, 0.93, 1.0),
     "plastic-white": (0.91, 0.92, 0.90, 1.0),
+    "unifi-status-blue": (0.025, 0.35, 1.0, 1.0),
     "high-gloss-white": (0.96, 0.96, 0.95, 1.0),
     "solid-surface-white": (244 / 255, 245 / 255, 244 / 255, 1.0),
     "appliance-steel": (0.76, 0.78, 0.80, 1.0),

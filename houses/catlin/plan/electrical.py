@@ -69,6 +69,8 @@ from typehaus import (
 )
 from typehaus.model import Location, RacewayCable, WallAttachment, m
 
+from .access_point_mounts import KITCHEN_ACCESS_POINT_MOUNT, PORCH_ACCESS_POINT_MOUNT
+
 DEVICE_TYPES = (
     # `service_amps` is the service size as data: it's what 120.82 demand is compared
     # against. Distinct from a panel's `bus_amps` (what NEC 705.12 measures a backfeed
@@ -133,14 +135,10 @@ DEVICE_TYPES = (
     # The enclosure (router + PoE switch + patch field, on CKT-HA) is the only one of the
     # three fed from a branch circuit; the APs draw power over their data cables (poe_watts,
     # no `circuit`), so the panel schedule can't see them — E-603 totals them instead.
-    # 15 W is the 802.3af class-4 ceiling a Wi-Fi 6/6E ceiling AP draws under load; the
-    # allowance already carried in plan/circuits.py said the same number before there was
-    # anywhere to put it.
-    # The same radio on a wall bracket, and it exists because ``footprint`` is a PLAN
-    # rectangle: the ceiling type's 8x8 is the disc seen from below, and hung on a wall that
-    # reads as 8" of DEPTH, so ED-A-STUDIO-AP buried 3" of itself in W-A-STU-N's studs at
-    # 0 FAIL. Turned on edge the disc is 8" across the wall and 2" off it, which is what
-    # these numbers are; ``height`` is the 8" diameter now that the diameter stands up.
+    # Library APs use a provisional UniFi U6 Pro envelope: diameter 197 x 35 mm, rotated
+    # upright for the studio wall. The 15 W design allowance stays conservative against
+    # the reference radio's published 13 W maximum. Porch use is sheltered under the soffit
+    # (IP54); final radio selection remains open. See notes/access_points.md.
     # A wall jack. The catalog had an enclosure and two access points and no way to say
     # "a cable ends here at a plate", so a hardwired drop could not be modelled at all —
     # which is why RM-M-STUDY-CLOSET and RM-B-PLAY-N had none. Receptacle-sized because it is a
@@ -1613,13 +1611,14 @@ MAIN_DATA_DEVICES = [
     ElectricalDevice(uid="CND002AAAA", tag="ED-M-KITCH-AP", kind=DeviceKind.DATA_OUTLET,
                      position=pt(ft(19), ft(29)), type_ref="ED-T-AP-CEILING",
                      room="RM-M-LIVING",
-                     mount=Mount(kind=MountKind.CEILING)),
+                     mount=KITCHEN_ACCESS_POINT_MOUNT),
     # No `room=`, deliberately — the same reason ED-M-PORCH-FAN carries none, so the wet/
     # exterior classifiers place it geometrically instead of believing a label. 1' west of
     # the fan, in the same soffit bay and through the same deck penetration.
     ElectricalDevice(uid="CND003AAAA", tag="ED-M-PORCH-AP", kind=DeviceKind.DATA_OUTLET,
                      position=pt(ft(17), ft(-4.833)), type_ref="ED-T-AP-OUTDOOR",
-                     mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 6))),
+                     # Mount elevation is the body base; its back meets the 8'-6" soffit.
+                     mount=PORCH_ACCESS_POINT_MOUNT),
 ]
 
 # --- The three hardwired drops (owner) ----------------------------------------------------

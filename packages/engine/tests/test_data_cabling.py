@@ -73,6 +73,21 @@ def test_poe_load_is_not_on_the_panel_schedule(catlin_model):
     assert aps and all(ap.circuit is None for ap in aps)
 
 
+def test_ceiling_access_points_hang_below_their_mounting_planes(catlin_model_ro):
+    from typehaus import ft
+    from typehaus.resolve.ceilings import ceiling_faces, finished_ceiling_at
+
+    objects = {item.tag: item for item in catlin_model_ro.canvas_objects}
+    kitchen = objects["ED-M-KITCH-AP"]
+    ceiling = finished_ceiling_at(ceiling_faces(catlin_model_ro), "main", "RM-M-LIVING",
+                                  kitchen.position)
+    assert ceiling is not None
+    assert kitchen.body_z1_m == pytest.approx(ceiling)
+    assert kitchen.body_z0_m == pytest.approx(ceiling - .035)
+    porch = objects["ED-M-PORCH-AP"]
+    assert porch.body_z1_m == pytest.approx(ft(8, 6).meters)
+
+
 def test_data_reachability_passes_and_catches_an_orphaned_access_point(catlin_model):
     results = {f.result.value for f in _findings(catlin_model, "electrical.data_reachability")}
     assert results == {"pass"}

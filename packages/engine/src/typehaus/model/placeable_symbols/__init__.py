@@ -52,6 +52,11 @@ from typehaus.model.placeable_symbols._sheet_metal_plenum import plenum_parts, s
 from typehaus.model.placeable_symbols._sunnersta import sunnersta_frame
 from typehaus.model.placeable_symbols._swanstone_flex import swanstone_flex
 from typehaus.model.placeable_symbols._thermostat import thermostat
+from typehaus.model.placeable_symbols._unifi_access_point import (
+    UNIFI_ACCESS_POINT_SYMBOLS,
+    unifi_u6_pro_ceiling,
+    unifi_u6_pro_wall,
+)
 from typehaus.model.placeable_symbols.appliances import APPLIANCE_SYMBOLS
 from typehaus.model.placeable_symbols.furniture import FURNITURE_SYMBOLS
 from typehaus.model.placeable_symbols.lighting import LIGHTING_SYMBOLS
@@ -76,6 +81,8 @@ _REGISTRY: dict[str, Builder] = {**FURNITURE_SYMBOLS, **APPLIANCE_SYMBOLS, **PLU
                                  "infrared-heater": infrared_heater,
                                  "ceramic-fan-heater": ceramic_fan_heater,
                                  "thermostat": thermostat,
+                                 "unifi-u6-pro-ceiling": unifi_u6_pro_ceiling,
+                                 "unifi-u6-pro-wall": unifi_u6_pro_wall,
                                  "insinkerator-badger-5": badger_disposal,
                                  "broan-bwp1304ss-recirculating": broan_recirculating_hood,
                                  "fireplace-insert": fireplace_insert,
@@ -86,7 +93,8 @@ _REGISTRY: dict[str, Builder] = {**FURNITURE_SYMBOLS, **APPLIANCE_SYMBOLS, **PLU
 
 # The frozen vocabulary. A catalog entry may only name a symbol listed here; the contract test
 # holds the registry to it in both directions.
-SYMBOL_NAMES = (frozenset(KITCHEN_SEKTION_SYMBOLS) | frozenset(RECEPTACLE_SYMBOLS)
+SYMBOL_NAMES = (UNIFI_ACCESS_POINT_SYMBOLS
+                | frozenset(KITCHEN_SEKTION_SYMBOLS) | frozenset(RECEPTACLE_SYMBOLS)
                 | frozenset(SWITCH_SYMBOLS)) | frozenset({
     "plant-reservoir", "plant-irrigation-rack", "plant-leak-sensors",
     "broan-bwp1304ss-recirculating",

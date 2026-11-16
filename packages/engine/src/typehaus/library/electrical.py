@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typehaus import ElectricalDeviceType, Service, ServicePort
+from typehaus.library.network_devices import ACCESS_POINT_DEVICE_TYPES
 from typehaus.model import ModelRepresentation
 from typehaus.model.nec import NEC, cite
 from typehaus.quantities import ft, inch
@@ -159,26 +160,7 @@ ALL_ELECTRICAL_DEVICE_TYPES = (
         ifc_entity="IfcCommunicationsAppliance",
         ifc_predefined_type="NETWORKHUB",
     ),
-    _device(
-        "ED-T-AP-CEILING",
-        "Wireless access point, ceiling, PoE 802.3af",
-        (inch(8), inch(8)),
-        inch(2),
-        (ServicePort(tag="data", service=Service.DATA, position=(ft(0), ft(0), ft(0))),),
-        poe_watts=15.0,
-        ifc_entity="IfcCommunicationsAppliance",
-        ifc_predefined_type="NETWORKAPPLIANCE",
-    ),
-    _device(
-        "ED-T-AP-WALL",
-        "Wireless access point, wall, PoE 802.3af",
-        (inch(8), inch(2)),
-        inch(8),
-        (ServicePort(tag="data", service=Service.DATA, position=(ft(0), ft(0), ft(0))),),
-        poe_watts=15.0,
-        ifc_entity="IfcCommunicationsAppliance",
-        ifc_predefined_type="NETWORKAPPLIANCE",
-    ),
+    *ACCESS_POINT_DEVICE_TYPES,
     _device(
         "ED-T-DATA-JACK",
         "Data outlet, single-gang RJ45 (Cat 6A)",
@@ -187,16 +169,6 @@ ALL_ELECTRICAL_DEVICE_TYPES = (
         (ServicePort(tag="data", service=Service.DATA, position=(ft(0), ft(0), ft(0))),),
         device_box=True,
         model_representation=ModelRepresentation(symbol="device-blank"),
-        ifc_entity="IfcCommunicationsAppliance",
-        ifc_predefined_type="NETWORKAPPLIANCE",
-    ),
-    _device(
-        "ED-T-AP-OUTDOOR",
-        "Wireless access point, outdoor wet-rated, PoE 802.3af",
-        (inch(9), inch(9)),
-        inch(3),
-        (ServicePort(tag="data", service=Service.DATA, position=(ft(0), ft(0), ft(0))),),
-        poe_watts=15.0,
         ifc_entity="IfcCommunicationsAppliance",
         ifc_predefined_type="NETWORKAPPLIANCE",
     ),
