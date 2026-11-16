@@ -120,10 +120,18 @@ def test_catlin_ducts_all_resolve_a_z_per_vertex(catlin_model) -> None:
 
 
 def test_catlin_ducts_are_swept_solids(catlin_model) -> None:
-    """A duct is one mitred tube, the way a pipe is."""
+    """A duct is a mitred tube, the way a pipe is — unless its fittings fill it end to end
+    (a collar straight into a boot), when no straight body overdraws them."""
+    from typehaus.resolve.duct_fabrication import (
+        _duct_path, _free, _stations, occupied_intervals)
+
     swept = {s.tag[:-4] for s in catlin_model.solids
              if s.category.startswith("duct_") and s.sweep is not None}
-    assert swept == {d.tag for d in catlin_model.ducts}
+    filled = {"DU-A-HP1-EAST-RET", "DU-M-ERV-R-VANITY", "DU-S-HP-STAIR"}
+    assert swept == {d.tag for d in catlin_model.ducts} - filled
+    for duct in (d for d in catlin_model.ducts if d.tag in filled):
+        total = _stations(_duct_path(duct))[-1]
+        assert not _free(occupied_intervals(catlin_model, duct), total), duct.tag
 
 
 def test_a_drawn_riser_bills_more_than_its_plan_projection(catlin_model) -> None:

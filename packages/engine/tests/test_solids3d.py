@@ -27,7 +27,11 @@ from typehaus.solids3d.convert import mesh_manifold, to_manifold  # noqa: E402
 from typehaus.solids3d.recorder import drawn_placeables  # noqa: E402
 
 # Connected return runs and their boot meet EQ-S-ERV-MIX's equipment envelope;
-# those two kind-pair baselines include the intentional port connections.
+# those two kind-pair baselines include the intentional port connections (DU-A-HP1-EAST-RET
+# is all boot, so its 1" lap into the box is duct_fitting|equipment). duct_fitting|duct_fitting
+# is DU-M-ERV-R-VANITY's take-off collar 1/8" into its boot. The duct_*|floor/fireblock pairs
+# are NOT intended: drawn elbows (2026-11-16) dip into FS-ATTIC's deck, whose holes are cut
+# for the straight runs. Shrink them when the holes are cut round the elbows.
 GOLDEN = Path(__file__).parent / "fixtures" / "solids3d_overlaps.json"
 #: The billed volume may differ from the exact solid by this much (relative, absolute m^3).
 VOLUME_TOLERANCE = (0.01, 1e-7)

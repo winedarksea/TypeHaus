@@ -94,11 +94,14 @@ def _reach(part: Any) -> float | None:
     return None
 
 
-def _straight(part: Any, size: Section, face: Any, point: Vec3, axis: Vec3
-              ) -> tuple[GMesh, Vec3]:
+def _straight(part: Any, size: Section, face: Any, point: Vec3, axis: Vec3,
+              run_m: float | None = None) -> tuple[GMesh, Vec3]:
     n, c = face.normal, face.centre
     along = _dot(tuple(point[i] - c[i] for i in range(3)), n)
-    length = max(_reach(part) or size.larger, along)
+    depth = _reach(part) or size.larger
+    if run_m is not None:  # never past the run's far end (a short stub into a plenum)
+        depth = min(depth, along + run_m)
+    length = max(depth, along)
     k = _dot(axis, n)
     run = axis if k > 0.5 else n  # a straight end leaves within 45 degrees of the normal
     start = _add(point, run, (length - along) / max(k, 0.5) if run is axis else length - along)
@@ -198,8 +201,8 @@ def boot_entry(part: Any) -> str | None:
     return "end" if part.joint == "end" and part.turn == "90" else "straight"
 
 
-def _shaped(part: Any, size: Section, plain_neck: bool = False
-            ) -> tuple[GMesh, Vec3] | None:
+def _shaped(part: Any, size: Section, plain_neck: bool = False,
+            run_m: float | None = None) -> tuple[GMesh, Vec3] | None:
     """(mesh, inlet point), or None for a record with no joint face. ``plain_neck``: the
     face is a neck that is itself the boot (no damper), so a collar may enter its side."""
     entry = boot_entry(part)
@@ -211,7 +214,7 @@ def _shaped(part: Any, size: Section, plain_neck: bool = False
         return _side(part, size, face, point, axis)
     if entry in ("end", "side"):
         return _end_90(part, size, face, point, axis, plain_neck)
-    return _straight(part, size, face, point, axis)
+    return _straight(part, size, face, point, axis, run_m)
 
 
 def boot_inlet_point(part: Any) -> Vec3:
@@ -252,5 +255,7 @@ def _plain_neck(model: Any, tag: str | None) -> bool:
 
 def boot_mesh(model: Any, part: Any, size: Section, neck: Section | None) -> GMesh | None:
     """The boot's solid (see the module docstring)."""
-    shaped = _shaped(part, size, _plain_neck(model, getattr(part, "other", None)))
+    run = next((d for d in getattr(model, "ducts", ()) if d.tag == part.run_tag), None)
+    shaped = _shaped(part, size, _plain_neck(model, getattr(part, "other", None)),
+                     getattr(run, "length_m", None))
     return shaped[0] if shaped is not None else _plain_boot(model, part, size, neck)
