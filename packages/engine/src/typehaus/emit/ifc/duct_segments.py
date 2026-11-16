@@ -6,7 +6,8 @@ exports as the stretch(es) of it that survive: its body stops where an elbow, ta
 damper or end boot takes over, so segments no longer overlap the fittings. Keys stay
 ``seg-{leg:02d}`` (stable GlobalIds); a leg a damper or collar splits in two adds
 ``seg-{leg:02d}-2``, ... after the first. A leg no stretch survives on keeps its element and
-GlobalId bodiless. With no pieces at all (a run the stage skipped) each leg exports whole.
+GlobalId bodiless. On a model the stage never ran on (no run has pieces) each leg exports
+whole.
 
 A round section is an ``IfcSweptDiskSolid``; a rectangular one an extrusion on the stretch's
 own frame (``SolidSweep.vertical_up``), so a riser keeps the section the level legs carry.
@@ -69,12 +70,12 @@ def _legs(duct: Any) -> list[tuple[int, Vec3, Vec3]]:
     return out
 
 
-def _intervals(duct: Any, legs: Sequence[tuple[int, Vec3, Vec3]],
-               pieces: Sequence[Any]) -> dict[int, list[tuple[Vec3, Vec3, Any]]]:
+def _intervals(duct: Any, legs: Sequence[tuple[int, Vec3, Vec3]], pieces: Sequence[Any],
+               fabricated: bool = True) -> dict[int, list[tuple[Vec3, Vec3, Any]]]:
     """Per leg index, the ``(start, end, SolidSweep)`` bodies it exports as, along the leg."""
     out: dict[int, list[tuple[Vec3, Vec3, Any]]] = {index: [] for index, _, _ in legs}
     stretches = [p for p in pieces if not is_elbow_piece(p)]
-    if not stretches or not getattr(duct, "z_m", None):
+    if not fabricated or not getattr(duct, "z_m", None):
         profile = tuple(rect_profile(duct.width_m, duct.depth_m))
         sweep_up = carried_up([a for _, a, _ in legs] + [legs[-1][2]]) if legs else None
         for index, a, b in legs:
@@ -103,10 +104,11 @@ def _representation(f: Any, body: Any, duct: Any, a: Vec3, b: Vec3, sweep: Any) 
 
 
 def emit_duct_run(f: Any, body: Any, duct: Any, storeys: dict[str, Any], project_uuid: Any,
-                  pieces: Sequence[Any] = ()) -> list[Any]:
+                  pieces: Sequence[Any] = (), fabricated: bool | None = None) -> list[Any]:
     """One ``IfcDuctSegment`` per stretch of each path leg (module docstring)."""
     legs = _legs(duct)
-    intervals = _intervals(duct, legs, pieces) if legs else {}
+    fabricated = bool(pieces) if fabricated is None else fabricated
+    intervals = _intervals(duct, legs, pieces, fabricated) if legs else {}
     segments = []
     for index, bodies in intervals.items():
         for n, (a, b, sweep) in enumerate(bodies or [(None, None, None)], start=1):
@@ -138,6 +140,6 @@ def emit_duct_runs(f: Any, body: Any, model: ResolvedModel, storeys: dict[str, A
     out: list[Any] = []
     for duct in sorted(model.ducts, key=lambda item: item.uid):
         out.extend(emit_duct_run(f, body, duct, storeys, project_uuid,
-                                 by_run.get(duct.tag, ())))
+                                 by_run.get(duct.tag, ()), bool(by_run)))
     return out
 

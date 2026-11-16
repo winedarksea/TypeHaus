@@ -13,7 +13,8 @@ split, in place, into straight stretches and elbows:
 
 Pieces keep the run's category, tag (``{tag}-RUN``) and storey; ``host_ref`` is the run's
 tag, as is ``group``; the first stretch, ``{uid}-run``, stays at the run solid's index and
-so leads the pick group. Stretches are ``{uid}-run``, ``{uid}-run-2``, ... and elbows
+so leads the pick group. A run its parts fill end to end (a take-off collar straight into a
+boot) keeps no stretch at all. Stretches are ``{uid}-run``, ``{uid}-run-2``, ... and elbows
 ``{uid}-elbow-01``, ... — run body like the stretches, so not ``derived`` (a section cuts
 it; the bill stays on the run and its fitting records). A piece with a
 vertical leg carries ``vertical_up`` (``sweep.carried_up``: an elbow its own, a riser the
@@ -255,7 +256,8 @@ def _piece(base: Any, uid: str, path: tuple, vertical_up: Vec3 | None, host: str
 def fabricate_run(model: Any, duct: Any, solid: Any, records: Sequence[Any], standard: Any,
                   parts: Sequence[Any], necked: set[str]) -> list[Any]:
     """The pieces replacing ``solid`` (``{uid}-run``), the leader first then along the run.
-    ``[solid]`` re-hosted where nothing splits it or nothing straight survives."""
+    ``[solid]`` re-hosted where it has no path; only the elbows (maybe none) where its parts
+    and elbows fill it end to end, so no straight body overdraws them."""
     base_uid = solid.uid
     group = duct.tag  # like a railing's pieces: group == host_ref
     pts = clean_path(solid.sweep.path)
@@ -264,8 +266,6 @@ def fabricate_run(model: Any, duct: Any, solid: Any, records: Sequence[Any], sta
         return [rehosted]
     arcs, occupied, cum = _run_plan(model, duct, pts, records, standard, parts, necked)
     free = _free(occupied, cum[-1])
-    if not free:
-        return [rehosted]
     stretches = []
     for n, (a, b) in enumerate(free, start=1):
         path = sub_path(pts, cum, a, b)
@@ -277,6 +277,8 @@ def fabricate_run(model: Any, duct: Any, solid: Any, records: Sequence[Any], sta
                _piece(solid, f"{stem}-elbow-{n:02d}", arc.path, carried_up(arc.path),
                       duct.tag, group))
               for n, arc in enumerate(arcs, start=1)]
+    if not stretches:
+        return [piece for _, piece in elbows]
     rest = sorted(stretches[1:] + elbows, key=lambda item: item[0])
     return [stretches[0][1], *(piece for _, piece in rest)]
 

@@ -9769,12 +9769,6 @@
 44,
 "b7da6ff393b7"
 ],
-"geometry/BKE5RKVE8Z-run/body": [
-2.784475,
-2.886075,
-24,
-"0abc3efc5ec6"
-],
 "geometry/BKT25YWMSR-elbow-01/body": [
 -0.5445125,
 -0.3159125,
@@ -69631,12 +69625,6 @@
 10,
 "ed76b082861a"
 ],
-"geometry/MZW8P3P49V-run/body": [
-6.2992,
-6.604,
-8,
-"7793be350af4"
-],
 "geometry/N-G-NE-corrugated-corner-0/body": [
 -0.3048,
 2.2352,
@@ -77058,12 +77046,6 @@
 2.933573,
 914,
 "dd9042192c8f"
-],
-"geometry/STAIRBOOT1-run/body": [
-5.578475,
-5.680075,
-24,
-"ea7d6b1eda49"
 ],
 "geometry/STDYBOOT01-boot-1/body": [
 5.489575,
@@ -122430,8 +122412,6 @@
 "solids/DU-A-ERV-R-STUBATH-RUN/z1_m": 6.9824918,
 "solids/DU-A-HP1-EAST-RET-BOOT-1/z0_m": 6.26745,
 "solids/DU-A-HP1-EAST-RET-BOOT-1/z1_m": 6.638925,
-"solids/DU-A-HP1-EAST-RET-RUN/z0_m": 6.2992,
-"solids/DU-A-HP1-EAST-RET-RUN/z1_m": 6.604,
 "solids/DU-A-HP1-RET-NECK-CONNECTOR-1/z0_m": 6.2499875,
 "solids/DU-A-HP1-RET-NECK-CONNECTOR-1/z1_m": 6.6563875,
 "solids/DU-A-HP1-RET-NECK-RUN/z0_m": 6.2499875,
@@ -122736,8 +122716,6 @@
 "solids/DU-M-ERV-R-SUITEBATH-RUN/z1_m": 5.4808438,
 "solids/DU-M-ERV-R-VANITY-BOOT-1/z0_m": 2.784475,
 "solids/DU-M-ERV-R-VANITY-BOOT-1/z1_m": 2.9591,
-"solids/DU-M-ERV-R-VANITY-RUN/z0_m": 2.784475,
-"solids/DU-M-ERV-R-VANITY-RUN/z1_m": 2.886075,
 "solids/DU-M-ERV-SUP-FEED-HANGER-93/z0_m": -0.5453659,
 "solids/DU-M-ERV-SUP-FEED-HANGER-93/z1_m": -0.3794125,
 "solids/DU-M-ERV-SUP-FEED-RUN/z0_m": -0.3159125,
@@ -122806,8 +122784,6 @@
 "solids/DU-S-HP-SOUTH-TAKEOFF-2/z1_m": 5.654675,
 "solids/DU-S-HP-SOUTH-TAKEOFF-3/z0_m": 5.476875,
 "solids/DU-S-HP-SOUTH-TAKEOFF-3/z1_m": 5.654675,
-"solids/DU-S-HP-STAIR-RUN/z0_m": 5.578475,
-"solids/DU-S-HP-STAIR-RUN/z1_m": 5.680075,
 "solids/DU-S-HP-STUDY-BOOT-BOOT-1/z0_m": 5.9309,
 "solids/DU-S-HP-STUDY-BOOT-BOOT-1/z1_m": 6.0833,
 "solids/DU-S-HP-STUDY-BOOT-RUN/z0_m": 5.743575,
