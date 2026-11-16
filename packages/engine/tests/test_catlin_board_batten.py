@@ -84,6 +84,19 @@ def test_catlin_profiled_export_is_valid_and_has_its_own_painted_material(catlin
                 material = gltf['materials'][primitive['material']]['pbrMetallicRoughness']
                 assert material['roughnessFactor'] == .45
                 assert material['metallicFactor'] == .05
+    # Coil trim shares the skin's PVDF surface (viewer parity); a rubber closure stays generic.
+    trim = {s.uid: s.material for s in catlin_model_ro.solids if s.category == 'cladding_trim'}
+    seen = set()
+    for node in gltf['nodes']:
+        material_ref = trim.get(node.get('extras', {}).get('uid'))
+        if material_ref is None:
+            continue
+        seen.add(material_ref)
+        expected = (.9, 0.) if material_ref == 'rubber' else (.45, .05)
+        for primitive in gltf['meshes'][node['mesh']]['primitives']:
+            material = gltf['materials'][primitive['material']]['pbrMetallicRoughness']
+            assert (material['roughnessFactor'], material['metallicFactor']) == expected
+    assert {'rubber', 'bbd-transition-trim'} <= seen
 
 
 def test_garage_north_valleys_clear_the_head_lap_and_continue_through_the_gable(catlin_model_ro):
