@@ -41,6 +41,8 @@ def test_boards_sit_on_the_stringers_landings_and_steps(catlin_model_ro):
     ceiling = next(c.z0_m for c in catlin_model_ro.ceilings if c.tag == "CEIL-RM-S-STUDY2")
     faces = [m for key, m in _boards(s2a).items() if "-face-" in key]
     assert faces and max(m.z1_m for m in faces) <= ceiling + 1e-4
+    # The head cut stands above the ceiling butting it: concealed, so no return.
+    assert "soffit-flight-head" not in _boards(s2a)
     # The free (south) side's arris is beaded, short of RL-A-FLIGHT-SKIRT's panel.
     [flight] = [u for u in s2a.undersides if u.role == "flight"]
     assert len(flight.free_edges) == 2

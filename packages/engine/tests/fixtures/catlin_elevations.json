@@ -48661,12 +48661,6 @@
 8,
 "63679f1c78fd"
 ],
-"geometry/CST701AAAA::framing/member:soffit-upper-head": [
--0.3111652,
--0.192751,
-8,
-"e2d2d7db34a9"
-],
 "geometry/CST701AAAA::framing/member:stringer-lower-0": [
 -2.779712,
 -1.689157,
@@ -49116,12 +49110,6 @@
 1.436178,
 8,
 "132d578a0ce9"
-],
-"geometry/CST702AAAA::framing/member:soffit-upper-head": [
-2.755078,
-2.869447,
-8,
-"0ac55491ae93"
 ],
 "geometry/CST702AAAA::framing/member:spacer-W-M-C5-stringer-lower-2": [
 0.01905,
@@ -49644,12 +49632,6 @@
 5.7785,
 18,
 "f4b2ead5f63e"
-],
-"geometry/CST703AAAA::framing/member:soffit-flight-head": [
-5.7872313,
-5.9182,
-8,
-"f274ea6e5c81"
 ],
 "geometry/CST703AAAA::framing/member:stair-subdeck-000-0": [
 3.23215,
@@ -101985,12 +101967,6 @@
 2,
 "096e5ef49e6b"
 ],
-"member/CST701AAAA/soffit-upper-head": [
--0.3111652,
--0.192751,
-2,
-"f771eabcc484"
-],
 "member/CST701AAAA/stringer-lower-0": [
 -2.7797125,
 -1.5021067,
@@ -102404,12 +102380,6 @@
 1.436178,
 2,
 "0145e05f38a8"
-],
-"member/CST702AAAA/soffit-upper-head": [
-2.755078,
-2.869447,
-2,
-"a212486ee4d2"
 ],
 "member/CST702AAAA/spacer-W-M-C5-stringer-lower-2": [
 0.01905,
@@ -102926,12 +102896,6 @@
 5.7785,
 2,
 "4ed66ae4a017"
-],
-"member/CST703AAAA/soffit-flight-head": [
-5.7872313,
-5.9182,
-2,
-"bd7a624226ea"
 ],
 "member/CST703AAAA/stair-subdeck-000-0": [
 3.23215,

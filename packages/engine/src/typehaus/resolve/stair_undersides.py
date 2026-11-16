@@ -151,7 +151,8 @@ def _plumb(key, a, b, lo: float, hi: float, bead: float, t: float, ceilings) -> 
         return []
     ux, uy = (b[0] - a[0]) / width, (b[1] - a[1]) / width
     frame = geo.Frame(a, (ux, uy), (-uy, ux))
-    footprint = frame.rect(0.0, width, -t / 2.0, t / 2.0)
+    # Widened: a ceiling butting the board's open face conceals what stands above it.
+    footprint = frame.rect(0.0, width, -t / 2.0, t / 2.0).buffer(geo.LANDING_MEETS_M)
     out = []
     for i, part in enumerate(geo.clip(box(0.0, lo, width, hi),
                                       geo.ceiling_clips(ceilings, footprint))):
