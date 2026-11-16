@@ -473,7 +473,6 @@ PLAN = (
                                 *bath_accessories.SECOND_BATH_ACCESSORIES,
                                 *backing_bath_accessories.SECOND_TP_BACKING,
                                 *braced_walls.SECOND_BRACED_WALLS,
-                                *braced_walls.SECOND_BRACED_CONNECTORS,
                                 *plate_ties.SECOND_PLATE_TIES, *smart_home.SECOND_ELEMENTS])
     .with_elements("attic", [*attic.ELEMENTS, *attic_studio.ATTIC_ELEMENTS,
                              *fixtures.ATTIC_FIXTURES,

@@ -71,12 +71,12 @@ R602.10.3(2): exposure B ×1.00, eave-to-ridge per §3, story height 9'-0" ×0.9
 
 | Storey | Line | Base | Factors | **Required** | **Provided** | Margin |
 |---|---|---|---|---|---|---|
-| main | BWL-W-A-E1 | 11.5 | 1.15 × 0.95 | **12.56'** | 19.25' | 1.53× |
+| main | BWL-W-A-E1 | 11.5 | 1.15 × 0.95 | **12.56'** | 14.75' | 1.17× |
 | main | BWL-W-A-N1 | 11.5 | 1.15 × 0.95 | **12.56'** | 28.17' | 2.24× |
 | main | BWL-W-A-S1 | 11.5 | 1.15 × 0.95 | **12.56'** | 19.42' | 1.55× |
 | main | BWL-W-A-W1 | 11.5 | 1.15 × 0.95 | **12.56'** | 26.92' | 2.14× |
-| second | BWL-W-A-E1 | 6.0 | 1.30 × 0.95 | **7.41'** | 26.67' | 3.60× |
-| second | BWL-W-A-N1 | 6.0 | 1.30 × 0.95 | **7.41'** | 28.92' | 3.90× |
+| second | BWL-W-A-E1 | 6.0 | 1.30 × 0.95 | **7.41'** | 26.83' | 3.62× |
+| second | BWL-W-A-N1 | 6.0 | 1.30 × 0.95 | **7.41'** | 31.42' | 4.24× |
 | second | BWL-W-A-S1 | 6.0 | 1.30 × 0.95 × **1.40** | **10.37'** | 16.92' | 1.63× |
 | second | BWL-W-A-W1 | 6.0 | 1.30 × 0.95 × **1.40** | **10.37'** | 26.92' | 2.60× |
 | garage | BWL-W-G-N | 4.5 | 1.00 × 0.95 | **4.28'** | 8.00' | 1.87× |
@@ -84,11 +84,10 @@ R602.10.3(2): exposure B ×1.00, eave-to-ridge per §3, story height 9'-0" ×0.9
 | garage | BWL-W-G-E | 4.5 | 1.00 × 0.95 | **4.28'** | 24.00' | 5.61× |
 | garage | BWL-W-G-W | 4.5 | 1.00 × 0.95 | **4.28'** | 21.67' | 5.07× |
 
-Since the 2026-10-16 rework (fireplace group 16" south, `WIN-M-DINING-E` replacing E3 and
-EAST-MID) main E1 has three qualifying runs: 34 1/2" from the SE corner to E1's RO, the 43"
-pier between E2 and the dining window, and 153 1/2" from the dining window's north jamb to
-the kitchen window. It is still the smallest margin, at 1.53×. The NE hold-down stays in
-place.
+Since the dining triad (2026-11-16) main E1 has two qualifying runs: 34 1/4" from the SE
+corner to E1's RO, and 142 3/4" from the triad's north jamb to the kitchen window. The 32"
+pier between E2 and the triad is under the 32.2" interpolated minimum, so it is not a panel.
+It is the smallest margin, at 1.17×. The NE hold-down stays in place.
 
 **The ×1.40 on the second storey's south and west lines is real and is the one factor that
 bites.** Table R602.10.3(2) item 6 charges it where interior gypsum board is omitted from
@@ -169,9 +168,15 @@ panels. The sheathing is continuous either way; the designation is not.
 
 ## 6. The NE corner: three options, and the one taken
 
+> **2026-11-16: the second storey no longer needs this.** WIN-S-BED3 moved to 32'-0" and
+> WIN-S-BED3-N was deleted, so both upper lines run sheathed into the corner (a 34 1/4"
+> return on W-S-E4, W-S-N1 from 0). The DTT2Z pair and its DF-L posts are gone. What follows
+> still holds for the main floor's two STHD14RJs.
+
 Both lines at the NE corner end in a 17" sliver — WIN-M-KIT-E and WIN-M-KITCH-N sit 2'-7"
-off the corner on the main floor, WIN-S-BED3 and WIN-S-BED3-N on the second — so **there is
-no 24" return to turn** at that corner on either storey. Figure R602.10.7's options:
+off the corner on the main floor, WIN-S-BED3 and WIN-S-BED3-N on the second (until
+2026-11-16) — so **there was no 24" return to turn** at that corner on either storey.
+Figure R602.10.7's options:
 
 1. **Move the four windows 16" inboard.** Buys the returns on both storeys, deletes all four
    devices, costs nothing in hardware. It moves four windows off the facade grid and out of

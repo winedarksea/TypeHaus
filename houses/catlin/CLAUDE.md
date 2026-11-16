@@ -490,15 +490,15 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 ### Shell: framing module and envelope
 
 - **Wall bracing is prescriptive IRC R602.10, Method CS-WSP on every line** (2026-09-22,
-  decision #79; `plan/braced_walls.py`, `notes/wall_bracing_layout.md`). 66 panels — 26
-  main, 31 second, 9 garage — each one a full-height run between openings, measured off the
+  decision #79; `plan/braced_walls.py`, `notes/wall_bracing_layout.md`). 67 panels — 26
+  main, 32 second, 9 garage — each one a full-height run between openings, measured off the
   resolved model. **The dwelling is TWO STORIES and the count is derived**: the basement is
   an R404 concrete box and the attic is an R325.6 habitable attic whose east and west sides
   are rafter plates, so neither carries a braced wall line. **The attic still costs
   something** — the eave-to-ridge factor is measured from the second storey's top plate to
   the ridge (11'-3", the 15-foot row at x1.15 / x1.30), not from the roof's own 9'-4" eave.
-  After the added east window and E1's move north (2026-10-03), main E1 has 16'-6"
-  provided against 12'-7" required; every line clears.
+  Since the dining triad (2026-11-16), main E1 has 14'-9" provided against 12'-7" required
+  (the smallest margin); every line clears.
   - **Two factors are the ones to watch.** Table R602.10.3(2) item 6's **x1.40** IS taken on
     the second storey's south and west lines, because the plant room's PVC liner is not
     gypsum — line `W-S-S1`/`W-S-W4` in gypsum and both lines drop from 10.37' to 7.41'.
@@ -508,16 +508,13 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     is 4x10 15/32" 4- or 5-ply CDX (not OSB: it dries only inward once foamed), the garage 4x9 5/8" CDX**
     (owner, 2026-09-22; `notes/wall_bracing_layout.md` §4). Item 5's x0.80 hold-down credit cannot be taken at all — it is published for the
     intermittent methods, so the NE corner's devices buy an end condition, never length.
-  - **The NE corner carries four 800-lb devices** (owner, 2026-09-22; R602.10.7 end
-    condition 5): `CN-M-BWHD-NE-N`/`-E` are STHD14RJ cast into the basement wall top, and
-    `CN-S-BWHD-NE-N`/`-E` are DTT2Z pairs on a rod through the floor into the main corner
-    post. All four exist because WIN-M-KIT-E, WIN-M-KITCH-N, WIN-S-BED3 and WIN-S-BED3-N sit
-    2'-7" off the corner and leave a 17" sliver instead of a 24" return. **The standing
-    alternative is to move those four windows 16" INBOARD**, which buys the returns and
-    deletes all four devices at the cost of their facade column. **Never move them toward
-    the corner** — that is the one direction with no answer.
-  - The two second-floor corner posts are specified **DF-L**: ESR-2330 publishes the DTT2Z
-    for SG >= 0.50 only, and this house otherwise frames SPF.
+  - **The main NE corner carries two 800-lb devices** (owner, 2026-09-22; R602.10.7 end
+    condition 5): `CN-M-BWHD-NE-N`/`-E`, STHD14RJ cast into the basement wall top, because
+    WIN-M-KIT-E and WIN-M-KITCH-N sit 2'-7" off the corner and leave a 17" sliver instead of
+    a 24" return. **The standing alternative is to move those two windows 16" INBOARD.**
+    **Never move them toward the corner** — that is the one direction with no answer. The
+    second floor's DTT2Z pair (and its DF-L posts) went with WIN-S-BED3-N on 2026-11-16:
+    both upper lines now run sheathed into the corner.
   - A `RoughOpening` no larger than **24" x 24"** is a service penetration and does not
     split a panel. No code section states that threshold; AO-M-ERV-OA, AO-S-ERV-EA and
     AO-M-PORCH-HYD depend on it.
@@ -1197,8 +1194,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       grades it.
     - **WT-3048** (south glazing): the 30" family's committed 36" height would drop the
       south head off the house's 6'-8" door-head line.
-    - **WT-2748** (`WIN-M-LIV-E1`/`-E2`; `WIN-M-EAST-MID` until 2026-10-16): bearing cap
-      forced 30"→27"; 48" is a pure retype — the cheapest of the six.
+    - **WT-2748** (`WIN-M-LIV-E1`/`-E2`; `WIN-M-EAST-MID` until 2026-10-16; the second
+      storey's east row, `WIN-S-BED3` since 2026-11-16): bearing cap forced 30"→27"; 48" is
+      a pure retype — the cheapest of the six. **WT-8448-FIX** (`WIN-M-DINING-E`) is three
+      of these lites mulled into one RO (`WindowType.lites`), not a new width family.
     - **WT-2754** (`WIN-S-BED1`/`BED2`): 27" cap, single-window bedrooms — 27x48 (9.00 sf)
       fails BED2's 9.945 sf R303.1 requirement; 27x54 (10.125 sf) passes. Code necessity.
     - **WT-2764→WT-2754** (`WIN-A-S-JUL-W`/`-E`, catalog-only, NONBEARING walls W-A-S2/S3):
@@ -1208,11 +1207,12 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 
 - **Fixed picture selection (2026-10-21).** `WIN-S-STAIR-N`, `WIN-A-N1`, `WIN-A-S2`,
   `WIN-A-S3` and `WIN-M-BATH2` are fixed. All 14x24 units outside the kitchen and mudroom
-  are fixed too, including Bedroom 3's two small windows (they stay fixed), the garage pair
+  are fixed too, including the garage pair
   and the tempered wet-room units, except `WIN-M-BATH1-W`, which opens since 2026-10-31 (the
   powder room's second ventilation path, `WT-1424-TT-T`). The kitchen pair opens
   (`WT-1424-TT`); the mudroom stays fixed. Larger bedroom windows, `WIN-S-HALL-N` and
-  `WIN-A-N2` remain operable.
+  `WIN-A-N2` remain operable. Bedroom 3's two fixed 14x24s are gone (2026-11-16): one
+  operable 27 1/2x48 (`WIN-S-BED3`) replaces them; `WIN-M-DINING-E` is a fixed triad.
 
 - **Named products; window and door types are HOUSE-LOCAL (2026-10-21).** Drutex IGLO
   Energy Alucover (aluminium-capped uPVC) for the 11 tilt-turn and 18 fixed units; Aliplast
@@ -1315,11 +1315,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   second WT-2748), so the two stacks are columns of one width and one rough opening rather
   than four squarish 30x36s. `from_node` resolves to the near JAMB, so every one of those
   four offsets grew 1 1/2" to hold its centre — do the same on any future retype here. `WIN-M-KITCH` stands alone below, dead-centred on the sink run.
-  `WIN-S-BED3-N` (WT-1424-FIX, x 34'-0", sill 4'-0") sits over `WIN-M-KITCH-N`, completing a
-  **corner pair** with `WIN-S-BED3` (east wall y=34'-0", each 2'-0" off the corner) — a
-  two-storey column. The pair supplies daylight; `WIN-S-HALL-N` remains operable for
-  `RM-S-BED3`. Bedroom 3 and the attic studio use the existing mechanical ventilation
-  and artificial lighting under R303.1 Exception 1 after the fixed retypes.
+  The NE corner pair (`WIN-S-BED3-N` over `WIN-M-KITCH-N`) is gone (2026-11-16): the north
+  upper storey is the pure 12'/24' mirror, and `RM-S-BED3` is lit by `WIN-S-HALL-N` and its
+  east `WIN-S-BED3` (~18 sf against ~10.3 sf required).
   The current kitchen counter run is B12 + DW24 +
   SINK-36 + B18, without a filler. The 32-inch single bowl sits 5/8 inch east inside its
   base to centre under the fixed window (`notes/kitchen_stock_cabinet_details.md`).
@@ -1327,10 +1325,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   do not merge them, the 128" L fits no quartz slab (`advisory.countertop_fabrication`).
 
 - **Rows.** Where a column is impossible, the storey's rhythm must be centred, not merely
-  even. East second storey: 5'-4"/13'-4"/22'-8"/34'-0". The inner pair mirrors about
-  y=18'-0"; those two and STUDY3 are 27" wide on a 3'-0" sill with 7'-0" heads.
-  STUDY3 columns with WIN-M-LIV-E1; BED3's 14" unit instead columns with WIN-M-KIT-E,
-  on its own 4'-0" sill and 6'-0" head (→ DESIGN-LOG.md).
+  even. East second storey (2026-11-16): 4'-0"/13'-4"/22'-8"/32'-0", an exact mirror about
+  y=18'-0" on a 9'-4" beat, all four 27" wide on a 3'-0" sill with 7'-0" heads. STUDY3
+  columns with WIN-M-LIV-E1 (→ DESIGN-LOG.md, "East facade rebalance").
   East main row (2026-10-16): E1/E2 at 4'-0"/10'-8", `WIN-M-DINING-E` at 18'-0", `WIN-M-KIT-E`
   at 34'-0". All but KIT-E sit on one **2'-10" sill, 6'-10" head** (the stool top sits on the
   ash slab top: RO sill 34 9/32" + 0.55" pan rise + 2.953" frame rail = 37.78" above datum,
@@ -1344,16 +1341,17 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   shelf keeps both south windows. Its catalog is `plan/study_bookcase_types.py`; RC5 moved to
   the east-wall pier at y=3'-4". **Check `out/render/elev_east.png` before touching this
   row.**
-  `WIN-M-DINING-E` (`WT-6348-FIX`, plan/living_window_types.py) is a 63"x48" fixed picture
-  unit replacing `WIN-M-LIV-E3` and `WIN-M-EAST-MID` (uids retired), centred on the dining
-  table and on BED1/BED2's axis. 63" is the width nearest ~60" that centres there (4 studs
-  broken). Untempered (33" AFF sill). It carries the house's one named
-  `structural.window_framing_module` suppression (the 27" bearing cap stays house-wide) and a
-  **2-ply 9 1/2" LVL header read off Boise's VERSA-LAM table** as `header_spec` +
-  `published_span` (`notes/dining_window_header.md`). RC4 is retired (E1's RO took it). RC15 (179"),
-  RC18 (166") and RC16 cover the ash counter. The 63" dining glass leaves ~31" of slab with no
-  wall for a box, so that space is graded under NEC 210.52(C)(1) Ex 2, "as close as practicable"
-  (count met; an outlet beside each glass edge). The exception does not name windows, so the AHJ
+  `WIN-M-DINING-E` (`WT-8448-FIX`, plan/window_types.py, 2026-11-16) is a mulled triad of
+  three fixed 27 1/2" lites in an 84 1/2" RO (173 3/4"..258 1/4"), centred on the dining
+  table at 18'-0"; its outer jambs land on BED1's north and BED2's south jambs. Untempered
+  (33" AFF sill). It carries the house's one named `structural.window_framing_module`
+  suppression (the 27" bearing cap stays house-wide) and a **2-ply 11 7/8" LVL header on
+  double jacks read off Boise's VERSA-LAM table** as `header_spec` + `published_span`
+  (`notes/dining_window_header.md`). Standing alternatives (two 27 1/2x48s at 16'/20', or the
+  priced 63" picture): DESIGN-LOG.md, "Dining window: standing alternatives". RC4 is retired
+  (E1's RO took it). RC15 + RC18 (one 2-gang at 165") and RC16 (267") cover the ash counter.
+  The glass leaves 84 1/2" of slab with no wall for a box, so that space is graded under NEC
+  210.52(C)(1) Ex 2, "as close as practicable" (count met; an outlet beside each glass edge). The exception does not name windows, so the AHJ
   must agree; if it refuses, add a listed countertop pop-up. RC13/RC3 (22"/152", 16" AFF) cover the open
   wall south of the slat partition. The dining thermostat is at 14', 54" AFF.
   The fireplace pier sits between `WIN-M-LIV-E1`/`E2`: a 45 1/2" facebrick surround
@@ -1539,14 +1537,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   of that centre, leaving a deep blank sill under each small unit. **A 14" unit on this face
   is dimensioned from the centre line, never from the head line** — and the 27" units did not
   move. Pinned by `test_the_west_facade_stacks_five_two_storey_window_columns`.
-  South face shares a 2'-8" sill. `WIN-S-BED3-N` is a
-  WT-1424 at a 4'-0" sill (as is `WIN-S-BED3` around the corner), so it heads at 6'-0" —
-  leaving the east face's 3'-0" datum (`WIN-S-BED1`/`WIN-S-BED2` still hold it) when it was
-  retyped down to a 14" unit, the rule working, not an exception.
+  South face shares a 2'-8" sill.
   **The north second storey is a ROW, not a head line**, and this entry claimed otherwise
   until 2026-09-10. `WIN-S-HALL-N`/`WIN-S-STAIR-N` are **WT-2748 at a 3'-4" sill**, heading
-  at 7'-4" — the highest heads on the storey, 4" over the east row and 16" over
-  `WIN-S-BED3-N`. (They were never on the 6'-0" line: commit `5487fd79` had put them at a
+  at 7'-4" — the highest heads on the storey, 4" over the east row. (They were never on the 6'-0" line: commit `5487fd79` had put them at a
   3'-6" sill and a 6'-6" head with no note.) **A 48" unit cannot satisfy either half of the
   NEW-OPENING RULE on a 24" module** — the head half wants a 24" or 48" sill, the sill half
   wants 27 1/2" or 51 1/2", and they never meet, so every exact hit on offer drags a sliver

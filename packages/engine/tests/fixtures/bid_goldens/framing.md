@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 4efdd57e5f3b7b2b  
-**Lines:** 256
+**Model hash:** bb2bf81379a4ec65  
+**Lines:** 255
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
 
@@ -42,9 +42,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 1x4 SPF No. 2 & Btr framing lumber, 20' (1x4:spf) | 5 | pc | girt strapping | 100 LF | building |
 | 1x4 Structural 1 plywood, 8' (1x4:struct-1-plywood) | 24 | pc | ceiling furring, girt strapping | 192 LF | building |
 | 1x4 Structural 1 plywood, 10' (1x4:struct-1-plywood) | 15 | pc | girt strapping | 150 LF | building |
-| 1 3/4" x 11 7/8" LVL 2.0E, 8' (2-1.75x11.875 LVL) | 4 | pc | header (2-ply) | 32 LF | building |
+| 1 3/4" x 11 7/8" LVL 2.0E, 8' (2-1.75x11.875 LVL) | 6 | pc | header (2-ply) | 48 LF | building |
 | 1 3/4" x 14" LVL 2.0E, 20' (2-1.75x14 LVL) | 2 | pc | header (2-ply) | 40 LF | building |
-| 1 3/4" x 9 1/2" LVL 2.0E, 8' (2-1.75x9.5 LVL) | 10 | pc | header (2-ply) | 80 LF | building |
+| 1 3/4" x 9 1/2" LVL 2.0E, 8' (2-1.75x9.5 LVL) | 8 | pc | header (2-ply) | 64 LF | building |
 | 2x10 SPF No. 2 & Btr framing lumber, 8' (2-2x10) | 6 | pc | header (2-ply) | 48 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 8' (2-2x6) | 4 | pc | header (2-ply) | 32 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 8' (2-2x6:spf) | 6 | pc | blocking (2-ply) | 48 LF | building |
@@ -69,16 +69,16 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x4 SPF No. 2 & Btr framing lumber, 104 5/8" PET (2x4) | 252 | pc | corner stud, king stud, stud | 2197.1 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 10' (2x4) | 31 | pc | partition backer, plate, raked top plate | 310 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 14' (2x4) | 12 | pc | plate | 168 LF | building |
-| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (2x4:kdat) | 213 | pc | girt strapping, truss ladder blocking | 1704 LF | building |
+| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (2x4:kdat) | 211 | pc | girt strapping, truss ladder blocking | 1688 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 10' (2x4:kdat) | 30 | pc | girt strapping | 300 LF | building |
-| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 12' (2x4:kdat) | 11 | pc | girt strapping | 132 LF | building |
-| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 14' (2x4:kdat) | 11 | pc | girt strapping | 154 LF | building |
+| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 12' (2x4:kdat) | 14 | pc | girt strapping | 168 LF | building |
+| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 14' (2x4:kdat) | 10 | pc | girt strapping | 140 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 16' (2x4:kdat) | 12 | pc | girt strapping | 192 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (2x4:kdat) | 23 | pc | girt strapping | 460 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4:spf) | 21 | pc | blocking, ceiling furring, girt strapping | 168 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 92 5/8" PET (2x6) | 110 | pc | corner stud, king stud, stud | 849.1 LF | building |
-| 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6) | 373 | pc | blocking, corner stud, cripple stud, door blocking, header, jack stud, king stud, plate, raked top plate, sill, strongback, stud | 2984 LF | building |
-| 2x6 SPF No. 2 & Btr framing lumber, 104 5/8" PET (2x6) | 203 | pc | corner stud, king stud, stud | 1769.9 LF | building |
+| 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6) | 377 | pc | blocking, corner stud, cripple stud, door blocking, header, jack stud, king stud, plate, raked top plate, sill, strongback, stud | 3016 LF | building |
+| 2x6 SPF No. 2 & Btr framing lumber, 104 5/8" PET (2x6) | 202 | pc | corner stud, king stud, stud | 1761.2 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 116 5/8" PET (2x6) | 6 | pc | king stud, stud | 58.3 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 10' (2x6) | 50 | pc | plate, raked top plate, strongback | 500 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 12' (2x6) | 5 | pc | plate | 60 LF | building |
@@ -92,13 +92,13 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x6 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (2x6:kdat) | 7 | pc | cripple stud, plate, sill, girt strapping | 56 LF | building |
 | 2x6 KDAT southern yellow pine No. 2 (treated exterior framing), 10' (2x6:kdat) | 6 | pc | plate, girt strapping | 60 LF | building |
 | 2x6 KDAT southern yellow pine No. 2 (treated exterior framing), 14' (2x6:kdat) | 1 | pc | girt strapping | 14 LF | building |
-| 2x6 Laminated strand lumber, 8' (2x6:lsl) | 66 | pc | cripple stud, door blocking, jack stud | 528 LF | building |
-| 2x6 Laminated strand lumber, 104 5/8" PET (2x6:lsl) | 135 | pc | corner stud, king stud, stud | 1177 LF | building |
+| 2x6 Laminated strand lumber, 8' (2x6:lsl) | 69 | pc | cripple stud, door blocking, jack stud | 552 LF | building |
+| 2x6 Laminated strand lumber, 104 5/8" PET (2x6:lsl) | 133 | pc | corner stud, king stud, stud | 1159.6 LF | building |
 | 2x6 Red oak 8/4, custom-milled S4S to 1 1/2", 8' (2x6:oak-8q) | 4 | pc | blocking | 32 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6:spf) | 10 | pc | blocking | 80 LF | building |
 | 2x8 SPF No. 2 & Btr framing lumber, 8' (2x8) | 34 | pc | joist, landing framing, plate, rim board | 272 LF | building |
 | 2x8 SPF No. 2 & Btr framing lumber, 16' (2x8) | 3 | pc | plate | 48 LF | building |
-| 2x8 SPF No. 2 & Btr framing lumber, 8' (2x8:spf) | 40 | pc | blocking | 320 LF | building |
+| 2x8 SPF No. 2 & Btr framing lumber, 8' (2x8:spf) | 39 | pc | blocking | 312 LF | building |
 | 2x12 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (3-2x12:kdat) | 6 | pc | joist (3-ply) | 120 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (3-2x4:kdat) | 138 | pc | truss girt block (3-ply) | 1104 LF | building |
 | 2x6 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (3-2x6:kdat) | 9 | pc | truss girt block (3-ply) | 72 LF | building |
@@ -112,7 +112,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
 | Aluminum deck board (Wahoo AridDek, Granite), 1 1/2" subfloor (aluminum-deck:subfloor) | 189.2 | SF | 6 sheets 4x8 over 189.2 SF net; 6.0 sheets in the takeoff | building |
-| CDX sheathing plywood, 4- or 5-ply, Exposure 1, 1/2" exterior wall (cdx-plywood:exterior wall) | 77 | sheets 4x10 | 77 sheets 4x10 over 3071.5 SF net | building |
+| CDX sheathing plywood, 4- or 5-ply, Exposure 1, 1/2" exterior wall (cdx-plywood:exterior wall) | 77 | sheets 4x10 | 77 sheets 4x10 over 3059.8 SF net | building |
 | CDX sheathing plywood, 4- or 5-ply, Exposure 1, 5/8" exterior wall (cdx-plywood:exterior wall) | 1 | sheets 4x8 | 1 sheets 4x8 over 26.7 SF net | building |
 | CDX sheathing plywood, 4- or 5-ply, Exposure 1, 5/8" exterior wall (cdx-plywood:exterior wall) | 19 | sheets 4x9 | 19 sheets 4x9 over 662.4 SF net | building |
 | CDX sheathing plywood, 4- or 5-ply, Exposure 1, 19/32" roof (cdx-plywood:roof) | 49 | sheets 4x8 | 49 sheets 4x8 over 1544.4 SF net | building |
@@ -122,7 +122,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 3/4" plywood subfloor, 3/4" stair subdeck (plywood-subfloor:stair subdeck) | 1 | sheets 4x8 | 1 sheets 4x8 over 29.6 SF net | building |
 | 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | 112 | sheets 4x8 | 112 sheets 4x8 over 3560.4 SF net | building |
 | Structural 1 plywood, 7/8" bearing stiffener rip (struct-1-plywood:bearing stiffener rip) | 3 | sheets 4x8 | 3 sheets 4x8 over 71.0 SF net | building |
-| Structural 1 plywood, 3/8" buck rip (struct-1-plywood:buck rip) | 16 | sheets 4x8 | 16 sheets 4x8 over 406.1 SF net | building |
+| Structural 1 plywood, 3/8" buck rip (struct-1-plywood:buck rip) | 16 | sheets 4x8 | 16 sheets 4x8 over 409.1 SF net | building |
 | Structural 1 plywood, 19/32" roof (struct-1-plywood:roof) | 28 | sheets 4x8 | 28 sheets 4x8 over 882.8 SF net | building |
 | Trex Enhance Basics composite decking, Tide Pool (square edge), 15/16" subfloor (trex-enhance-basics:subfloor) | 6 | sheets 4x8 | 6 sheets 4x8 over 168.9 SF net | building |
 
@@ -149,7 +149,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | ACE6Z adjustable end post cap (6x beam end on 6x6), MAX nailing (ACE6Z:modeled connector) | 4 | ea |  | building |
 | CBSTQ66Z-SDS2 cast-in column base (6x6) (CBSTQ66Z-SDS2:modeled connector) | 4 | ea |  | building |
 | CS16 coiled strap, 16 ga (CS16:stacked wall) | 2 | ea |  | building |
-| DTT2Z screw hold-down / tension tie (DTT2Z:modeled connector) | 2 | ea |  | building |
 | Pocket door frame, galvanized steel cassette, 2x4 wall (to 220 lb) (EKC3680:pocket door frame kit) | 2 | ea |  | building |
 | KDAT 4x4 filler, 26-1/2" long, nailed into a stud pack (FILLER-4X4-KDAT:modeled connector) | 1 | ea |  | building |
 | Screw-pin anchor shackle, 1/2 in, galvanized, 2 t (no swivel: a bed must not spin) (G-209-1/2:suspension anchor) | 4 | ea |  | basement |
@@ -218,7 +217,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | SDWS Timber Screw (0.220 in shank), ridge plate to wall top plates (SDWS22600DB:ridge plate) | 36 | ea |  | building |
 | SDWS Timber Screw (0.220 in shank), stringer through spacer to stud (SDWS22600DB:stair stringer spacers) | 8 | ea |  | building |
 | SP4Z stud plate tie (2x4, ZMAX) (SP4Z:framed exterior wall) | 6 | ea |  | building |
-| SP6 stud plate tie (2x6) (SP6:framed exterior wall) | 323 | ea |  | building |
+| SP6 stud plate tie (2x6) (SP6:framed exterior wall) | 320 | ea |  | building |
 | 3/8 in Type 316 stainless through-bolt with nut and washer (SS316-BOLT-38:modeled connector) | 4 | ea |  | building |
 | 3-1/2 in square 316 stainless beam standoff shim pack, 1/2 in to 1 in (SS316-SHIM-35:modeled connector) | 13 | ea |  | building |
 | SCNR ring-shank connector nail, 0.148in x 3in, Type 316 (SSA10D:connector fasteners) | 192 | ea |  | building |
@@ -229,7 +228,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Titen HD 1/2 in x 6 in Type 316 stainless screw anchor, deck ledger to concrete (THD50600H6SS:modeled connector) | 18 | ea |  | building |
 | KDAT 4x4 tie block, 3-1/2" long, screwed to the tied member (TIE-BLOCK-4X4-KDAT:modeled connector) | 1 | ea |  | building |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:eave gutter girt standoffs) | 72 | ea |  | building |
-| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:girt wall blocks) | 1,161 | ea |  | building |
+| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:girt wall blocks) | 1,159 | ea |  | building |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK10:girt door sill course blocks) | 41 | ea |  | building |
 
 ## Other structural solids
@@ -293,7 +292,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| CDX sheathing plywood, 4- or 5-ply, Exposure 1, 1/2" — wall (cdx-plywood:0.5) | 3,153.5 | SF net |  | building |
+| CDX sheathing plywood, 4- or 5-ply, Exposure 1, 1/2" — wall (cdx-plywood:0.5) | 3,141.9 | SF net |  | building |
 | CDX sheathing plywood, 4- or 5-ply, Exposure 1, 19/32" — roof (cdx-plywood:0.594) | 1,544.4 | SF net |  | building |
 | CDX sheathing plywood, 4- or 5-ply, Exposure 1, 5/8" — wall (cdx-plywood:0.625) | 689 | SF net |  | building |
 | 1/2" MDO plywood, two-sided overlay, painted white, 1/2" — wall (mdo-plywood-interior:0.5) | 80.8 | SF net |  | building |
@@ -460,7 +459,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | ACE6Z adjustable end post cap (6x beam end on 6x6), MAX nailing (ACE6Z:modeled connector) | — |
 | CBSTQ66Z-SDS2 cast-in column base (6x6) (CBSTQ66Z-SDS2:modeled connector) | — |
 | CS16 coiled strap, 16 ga (CS16:stacked wall) | — |
-| DTT2Z screw hold-down / tension tie (DTT2Z:modeled connector) | — |
 | Pocket door frame, galvanized steel cassette, 2x4 wall (to 220 lb) (EKC3680:pocket door frame kit) | — |
 | KDAT 4x4 filler, 26-1/2" long, nailed into a stud pack (FILLER-4X4-KDAT:modeled connector) | — |
 | Screw-pin anchor shackle, 1/2 in, galvanized, 2 t (no swivel: a bed must not spin) (G-209-1/2:suspension anchor) | HA-SG-DAYBED-NE, HA-SG-DAYBED-NW, HA-SG-DAYBED-SE, HA-SG-DAYBED-SW |

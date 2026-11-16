@@ -508,15 +508,15 @@ STRW_BENCH = FurnitureType(
            "of the stud faces.",
 )
 
-# WIN-M-DINING-E's blind (2026-10-16): the library 27x48 blind at the picture window's width.
-CELLULAR_BLIND_6348 = CELLULAR_BLIND_2748.model_copy(update=dict(
-    tag="FT-CELLULAR-BLIND-6348", name='Cellular blind, nominal 63 x 48" opening',
-    footprint=(inch(63), inch(2)),
-    source="Generic inside-mount cellular blind for a nominal 63 x 48-inch opening, the "
+# WIN-M-DINING-E's blind (2026-11-16): the library 27x48 blind at the triad's RO width.
+CELLULAR_BLIND_8448 = CELLULAR_BLIND_2748.model_copy(update=dict(
+    tag="FT-CELLULAR-BLIND-8448", name='Cellular blind, nominal 84 1/2 x 48" opening',
+    footprint=(inch(84.5), inch(2)),
+    source="Generic inside-mount cellular blind for a nominal 84 1/2 x 48-inch opening, the "
            "library 27 x 48 blind's construction at this width; product unselected."))
 
 FURNITURE_TYPES = (STUDY_BUILT_IN_BOOKCASE,
-                   CURTAIN_ROD_48, CURTAIN_ROD_84, CELLULAR_BLIND_2748, CELLULAR_BLIND_6348,
+                   CURTAIN_ROD_48, CURTAIN_ROD_84, CELLULAR_BLIND_2748, CELLULAR_BLIND_8448,
                    PORCH_TRACK_176,
                    PORCH_TRACK_102,
                    ACCESS_PANEL_1414, ACCESS_PANEL_1429, ACCESS_PANEL_CLG_3029,

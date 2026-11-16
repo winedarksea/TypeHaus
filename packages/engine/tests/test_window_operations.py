@@ -121,7 +121,7 @@ def test_window_operation_coerces_authored_strings_and_rejects_unmodeled_ones():
 
 # Every window a sleeping room relies on for R310 escape (notes/egress_window_review.md).
 EGRESS_WINDOWS = (
-    "WIN-M-BED-S1", "WIN-M-BED-S2", "WIN-S-BED1", "WIN-S-BED2", "WIN-S-HALL-N",
+    "WIN-M-BED-S1", "WIN-M-BED-S2", "WIN-S-BED1", "WIN-S-BED2", "WIN-S-BED3", "WIN-S-HALL-N",
     "WIN-S-SUITE1", "WIN-S-SUITE2", "WIN-A-S-JUL-W", "WIN-A-S-JUL-E",
 )
 
@@ -135,7 +135,7 @@ def test_catlin_has_no_casements_and_the_escape_units_are_max_light(catlin_plan)
         for element in catlin_plan.all_elements() if isinstance(element, Window)
     }
     assert not any(op is WindowOperation.CASEMENT for op in operations.values())
-    assert sum(op is WindowOperation.TILT_TURN for op in operations.values()) == 23
+    assert sum(op is WindowOperation.TILT_TURN for op in operations.values()) == 24
     products = {e.tag: window_types[e.type_ref].product_ref
                 for e in catlin_plan.all_elements() if isinstance(e, Window)}
     assert {products[tag] for tag in EGRESS_WINDOWS} == {"PROD-ALIPLAST-MAXLIGHT-TT"}

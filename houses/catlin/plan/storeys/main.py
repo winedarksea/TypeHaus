@@ -1431,26 +1431,26 @@ OPENINGS = [
     Window(uid="CMX310AAAA", tag="WIN-M-LIV-E2", host="W-M-E1",
            type_ref="WT-2748-TT", position=from_node("N-M-SE", ft(9, 6.25)),
            sill_height=ft(2, 10.28125)),
-    # ** ONE PICTURE WINDOW ON THE DINING TABLE (2026-10-16). ** Replaces WIN-M-LIV-E3 and
-    # WIN-M-EAST-MID (uids retired). Centre y=18'-0" (216", a bay centre), on the table and on
-    # the BED1/BED2 axis above; RO y 15'-4 1/2"..20'-7 1/2". 63" is the width nearest the
-    # owner's ~60" that centres there: it breaks 4 studs, the minimum for any RO between
-    # 62 1/2" and 78 1/2" at this station, and a 59" RO is only legal 8" off the table.
-    # Same 2'-10 9/32" sill as the row. Not tempered: the sill is 33" AFF.
+    # ** A MULLED TRIAD ON THE DINING TABLE (2026-11-16). ** Three equal 27 1/2" lites in one
+    # 84 1/2" RO (y 173 3/4"..258 1/4"), centred on y=18'-0", the table and the BED1/BED2 axis.
+    # Its outer jambs land on BED1's north and BED2's south jambs above. Same sill as the row;
+    # untempered (33" AFF). Replaced the 63" picture (2026-10-16), itself replacing
+    # WIN-M-LIV-E3 and WIN-M-EAST-MID. Standing alternatives: DESIGN-LOG.md, "Dining window:
+    # standing alternatives".
     #
-    # W-M-E1 is BEARING and the house's 27" cap (`max_window_ro_bearing_in`) stays; this one
-    # window carries a named `structural.window_framing_module` suppression instead. The
-    # header is read off Boise's own table rather than R602.7, see notes/dining_window_header.md.
+    # W-M-E1 is BEARING; the house's 27" cap stays and this window keeps its named
+    # `structural.window_framing_module` suppression. The header is read off Boise's table
+    # (bolded row: double jacks), see notes/dining_window_header.md.
     Window(uid="83YR1VW00D", tag="WIN-M-DINING-E", host="W-M-E1",
-           type_ref="WT-6348-FIX", position=from_node("N-M-SE", ft(15, 4.5)),
-           sill_height=ft(2, 10.28125), header_spec='2-ply 9.5" LVL',
+           type_ref="WT-8448-FIX", position=from_node("N-M-SE", inch(173.75)),
+           sill_height=ft(2, 10.28125), header_spec='2-ply 11.875" LVL', header_jacks=2,
            published_span=PublishedSpan(
                source="Boise Cascade EWP, VERSA-LAM 1.7 2650 Header Guide (Eastern), 06/2009 r 07/21/2011, p.5, 3-1/2\" VERSA-LAM 1.7 2650 Header Look Up Tables",
-               table="Door and window headers, Roof Only + 1 Floor (no mid support), roof load 50 psf snow (115%) + 15 psf dead, 32'-0\" structure width, 5'-8\" clear span: 8-5/8\" (not bolded, single trimmers); double 1-3/4\" substituted per the table note, at the next 1-3/4\" depth, 9-1/2\"",
-               member='2-ply 9.5" LVL',
-               span=ft(5, 8),
+               table="Door and window headers, Roof Only + 1 Floor (no mid support), roof load 50 psf snow (115%) + 15 psf dead, 32'-0\" structure width, 7'-2\" clear span: 11-1/4\" (bolded: double 2x trimmers each end); double 1-3/4\" substituted per the table note, at the next 1-3/4\" depth, 11-7/8\"",
+               member='2-ply 11.875" LVL',
+               span=ft(7, 2),
                load_psf=65.0,
-               condition="the row is for trusses over a 32' width with a full-width floor (18' of roof and 16' of floor on the header); W-M-E1 carries a zero-overhang ridge-beam rafter roof (17'-9 3/4\" run, ~8'-11\" to this wall) and FS-S-EAST's 17'-9 1/2\" I-joists (~8'-11\"), so both tributaries are about half the row's; Ps is 35 psf against the row's 50; the row assumes 80 plf of wall above and the second storey's 10' wall is ~100-120 plf, but the total (~1,030 plf) is under half the row's (~2,080 plf); the 9-1/2\" substitute is deeper than the tabulated 8-5/8\" at the same width; deflection L/360 live and L/240 total; dry use; uniform load only; see notes/dining_window_header.md")),
+               condition="the row is for trusses over a 32' width with a full-width floor (18' of roof and 16' of floor on the header); W-M-E1 carries a zero-overhang ridge-beam rafter roof (17'-9 3/4\" run, ~8'-11\" to this wall) and FS-S-EAST's 17'-9 1/2\" I-joists (~8'-11\"), so both tributaries are about half the row's; Ps is 35 psf against the row's 50; the row assumes 80 plf of wall above and the second storey's 10' wall is ~100-120 plf, but the total (~1,030 plf) is under half the row's (~2,080 plf); the 11-7/8\" substitute is deeper than the tabulated 11-1/4\" at the same width; the bolded depth needs double trimmers, authored as header_jacks=2; deflection L/360 live and L/240 total; dry use; uniform load only; see notes/dining_window_header.md")),
     # Moved to the north wall 2026-07-30 with the sink (plan/placeables.py's kitchen header).
     # The north three-storey column moved 28'-0" -> 29'-4" so the window could
     # land dead-centre on FURN-M-KIT-SINKBASE: the counter run was exactly full and had no

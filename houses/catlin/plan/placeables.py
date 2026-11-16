@@ -309,7 +309,7 @@ MAIN_PLACEABLES = [
     # The seven curtain rods are retired (2026-10-29): plan/window_coverings.py holds the
     # ceiling tracks and the shades. Spent rod uids: RDS2LIV001, EYJ3ZHXFSF, BYYY8GG7E6,
     # R4A47142RN, 320A53KSR4, 9222FS9Q20 (WJTG6V6T09 is the porch door's wall track).
-    # Three cellular blinds cover WIN-M-LIV-E1/E2 (27x48) and WIN-M-DINING-E (63x48), the
+    # Three cellular blinds cover WIN-M-LIV-E1/E2 (27x48) and WIN-M-DINING-E (84 1/2x48), the
     # east-facing living-room windows. Their 34" sill and 82" head match the rough openings.
     # Mount elevations are AFF; the 3/4" finished-floor build-up means 33 1/4" AFF puts
     # each 48" shade envelope exactly between those storey-datum elevations. The 3D symbol
@@ -325,7 +325,7 @@ MAIN_PLACEABLES = [
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-E1", face="left", distance_from_start=inch(128),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
-    Furniture(uid="CZ7XEJYHBQ", tag="FURN-M-LIV-BLIND-DINING", type_ref="FT-CELLULAR-BLIND-6348", room="RM-M-LIVING",
+    Furniture(uid="CZ7XEJYHBQ", tag="FURN-M-LIV-BLIND-DINING", type_ref="FT-CELLULAR-BLIND-8448", room="RM-M-LIVING",
               mount=Mount(kind=MountKind.WALL, elevation=ft(2, 9.25)),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-E1", face="left", distance_from_start=inch(216),

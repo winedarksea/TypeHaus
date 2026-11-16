@@ -2069,16 +2069,16 @@ NEC_FILL_MAIN = [
     # (152") cover its two segments at the room's 16". A box on the brick jambs is gone (RC14,
     # RC17; uids retired): 3/4" of gwb between each window's jamb pack and the brick cannot
     # hold one. RC3 sits in the 144"-160" bay, south of the partition.
-    # North of it the 36" counter (slab 156 3/4"..271 3/8") has RC15 (179") and RC16 (258 1/8")
-    # at 42", 6" over the slab, either side of WIN-M-DINING-E (RO 184 1/2"..247 1/2", sill 34"
-    # AFF, under the counter top), and RC18 (166") south of RC15. RC16 uses a 2 3/4"
-    # single-gang plate north of the window's jamb pack.
+    # North of it the 36" counter (slab 156 3/4"..271 3/8") at 42", 6" over the slab, either
+    # side of WIN-M-DINING-E's triad (RO 173 3/4"..258 1/4", sill 34" AFF, under the counter
+    # top). Its double-jack packs leave two 8 1/2" strips between stud and king: RC15 + RC18,
+    # one 2-gang bank at y=165", south; RC16 (267"), north (2026-11-16).
     # ** THE GLASS TAKES THE WALL, SO THIS SPACE IS GRADED UNDER 210.52(C)(1) EX 2, "AS CLOSE AS
-    # PRACTICABLE". ** The 31" of slab under the glass past 24" has no wall to put a box on. Ex 2
-    # keeps the count (115" at 24" reach is three outlets: RC15, RC16, RC18) and wants each on or
-    # within 20" above the slab, one beside each glass edge. Ex 2 never names windows; reading
-    # "cannot be installed" to cover a picture window is the owner's (2026-11-09) and the AHJ
-    # must agree. If the AHJ refuses, the answer is a listed countertop pop-up in the slab.
+    # PRACTICABLE". ** 84 1/2" of slab has no wall for a box. Ex 2 keeps the count (115" at 24"
+    # reach is three outlets) and wants each on or within 20" above the slab, beside the glass
+    # edges. Ex 2 never names windows; reading "cannot be installed" to cover a picture window
+    # is the owner's (2026-11-09) and the AHJ must agree. If the AHJ refuses, the answer is a
+    # listed countertop pop-up in the slab.
     ElectricalDevice(uid="VHY1DXBHG2", tag="ED-M-LIVING-RC13", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-USBC",
                      circuit="CKT-RC-MAIN",
@@ -2098,21 +2098,21 @@ NEC_FILL_MAIN = [
                      circuit="CKT-KITCH-SA1",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-E1", face="left", distance_from_start=inch(179),
+                         wall_ref="W-M-E1", face="left", distance_from_start=inch(164.09375),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="XGD2FAK54W", tag="ED-M-LIVING-RC18", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20",
                      circuit="CKT-KITCH-SA1",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-E1", face="left", distance_from_start=inch(166),
+                         wall_ref="W-M-E1", face="left", distance_from_start=inch(165.90625),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="RB8M3Y2Q4N", tag="ED-M-LIVING-RC16", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-RECEPTACLE-SINGLE-GANG",
                      circuit="CKT-KITCH-SA1",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-E1", face="left", distance_from_start=inch(258.125),
+                         wall_ref="W-M-E1", face="left", distance_from_start=inch(267),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # RC5 is the only receptacle covering BOTH ends of the south run — D-M-PORCH's east jamb
     # at 23'-10" and the far end near the SE corner, where RC13's coverage comes round the

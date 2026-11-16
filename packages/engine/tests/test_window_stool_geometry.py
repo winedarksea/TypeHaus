@@ -21,8 +21,8 @@ def test_stools_fit_their_windows_and_reverse_with_the_wall(catlin_model_ro):
     openings = {opening.tag: opening for opening in catlin_model_ro.openings}
     stools = catlin_model_ro.window_stools
     # 31 wood stools, three quartz and five Corian.
-    assert len(stools) == 39
-    assert len({stool.uid for stool in stools}) == 39
+    assert len(stools) == 38
+    assert len({stool.uid for stool in stools}) == 38
     for stool in stools:
         opening = openings[stool.window_ref]
         wall = walls[stool.wall_tag]
@@ -75,7 +75,7 @@ def test_stools_fit_their_windows_and_reverse_with_the_wall(catlin_model_ro):
 def test_stool_shape_reaches_the_viewer_and_glb(catlin_model_ro):
     payload = model_to_dict(catlin_model_ro)
     rows = payload["window_stools"]
-    assert len(rows) == 39
+    assert len(rows) == 38
     # Every stool is eased; the five Corian ones build their eased edge up (2026-10-22).
     built_up = {row["tag"] for row in rows if row["material_ref"] == "solid-surface-fabricated"}
     assert built_up == {"STOOL-WIN-M-BATH2", *(f"STOOL-WIN-S-PLANT{n}" for n in range(1, 5))}
@@ -95,7 +95,7 @@ def test_stool_shape_reaches_the_viewer_and_glb(catlin_model_ro):
              if node["extras"].get("trade") == "millwork"
              and node["extras"].get("kind") == "opening"
              and node["extras"].get("uid") in windows]
-    assert len(nodes) == 39
+    assert len(nodes) == 38
     assert {node["extras"]["uid"] for node in nodes} == {
         row["opening_uid"] for row in rows}
     oak_material = next(m for m in catlin_model_ro.plan.library.materials if m.tag == "oak-stool")
@@ -123,7 +123,7 @@ def test_stools_export_as_ifc_moldings(catlin_model_ro, catlin_ifc_path):
     payload = {row["tag"]: row for row in model_to_dict(catlin_model_ro)["window_stools"]}
     stools = {item.Name: item for item in file.by_type("IfcCovering")
               if item.Name.startswith("STOOL-")}
-    assert len(stools) == 39
+    assert len(stools) == 38
     assert set(stools) == {stool.tag for stool in catlin_model_ro.window_stools}
     for stool in catlin_model_ro.window_stools:
         product = stools[stool.tag]

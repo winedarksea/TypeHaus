@@ -717,7 +717,7 @@ def test_bedroom_egress_is_associated_with_its_own_bounding_wall(catlin_check_re
     assert all(finding.result is Result.PASS for finding in findings)
     credited = {finding.message.split()[0]: finding.message.split()[-1] for finding in findings}
     assert credited == {"RM-M-BED": "WIN-M-BED-S1", "RM-S-BED1": "WIN-S-BED1",
-                        "RM-S-BED2": "WIN-S-BED2", "RM-S-BED3": "WIN-S-HALL-N",
+                        "RM-S-BED2": "WIN-S-BED2", "RM-S-BED3": "WIN-S-BED3",
                         "RM-S-SUITE": "WIN-S-SUITE1"}
     assert all("WIN-B-SAUNA" not in finding.message for finding in findings)
 
@@ -741,7 +741,7 @@ def test_every_credited_egress_window_is_in_an_exterior_wall(catlin_ctx,
     credited = {word for finding in findings if finding.result is Result.PASS
                 for word in finding.message.split()
                 if word.startswith("WIN-")}
-    assert credited == {"WIN-M-BED-S1", "WIN-S-BED1", "WIN-S-BED2", "WIN-S-HALL-N",
+    assert credited == {"WIN-M-BED-S1", "WIN-S-BED1", "WIN-S-BED2", "WIN-S-BED3",
                         "WIN-S-SUITE1"}
     rooms_by_storey = _rooms_by_storey(ctx)
     for tag in sorted(credited):
@@ -1012,69 +1012,27 @@ def test_the_west_facade_stacks_five_two_storey_window_columns(catlin_model,
 
 def test_the_east_second_storey_window_row_mirrors_about_the_house_centreline(
         catlin_model, catlin_check_report):
-    """13'-4" / 22'-8" — the inner pair, mirrored about the 36'-0" face exactly.
+    """4'-0" / 13'-4" / 22'-8" / 32'-0" — both pairs mirrored about the 36'-0" face.
 
-    Width and head mirror too, on one 3'-0" sill, so the two halves are the same picture —
-    that is the claim, pinned in all three dimensions because holding only the stations
-    would let a retype break it silently.
-
-    WIN-S-BED3 left the row for a three-storey 14" column with WIN-M-KIT-E below and
-    WIN-A-E-N above, so the outer pair is gone. WIN-S-STUDY3 moved back to 4'-0" on 2026-11-08,
-    over WIN-M-LIV-E1, so FO-A-STAIR's trimmer lands outside its header span. This test asserts both halves of the trade: the
-    inner pair still mirrors, and BED3 really is in the column it left the row for.
-
-    (The east wall is BEARING, so the inner pair takes the 27" rung of the RO ladder, and
-    R303.1's area comes back in height; ``from_node`` is the NEAR jamb, so lost width comes
-    off both offsets symmetrically and holds the centres.)
+    Width, sill and head mirror too, so the two halves are the same picture; pinned in all
+    three dimensions because holding only the stations would let a retype break it silently.
+    WIN-S-BED3 rejoined the row on 2026-11-16 as STUDY3's mirror. STUDY3 columns with
+    WIN-M-LIV-E1 at 4'-0".
     """
     house = ft(36).meters
-
-    # --- the inner pair, still a mirror ------------------------------------------------
-    south_y, south = _opening_plan_y(catlin_model, "WIN-S-BED1")
-    north_y, north = _opening_plan_y(catlin_model, "WIN-S-BED2")
-    assert south_y == pytest.approx(ft(13, 4).meters, abs=1e-6)
-    assert south_y + north_y == pytest.approx(house, abs=1e-6)
-    assert south.width_m == pytest.approx(north.width_m, abs=1e-6)
-    assert south.sill_m == pytest.approx(ft(3).meters, abs=1e-6)
-    assert north.sill_m == pytest.approx(ft(3).meters, abs=1e-6)
-    assert (south.sill_m + south.height_m
-            == pytest.approx(north.sill_m + north.height_m, abs=1e-6))
-
-    # STUDY3 and E1 column at 4'-0" again (2026-11-08).
-    study_y, study = _opening_plan_y(catlin_model, "WIN-S-STUDY3")
+    for south_tag, north_tag, station in (("WIN-S-STUDY3", "WIN-S-BED3", ft(4)),
+                                          ("WIN-S-BED1", "WIN-S-BED2", ft(13, 4))):
+        south_y, south = _opening_plan_y(catlin_model, south_tag)
+        north_y, north = _opening_plan_y(catlin_model, north_tag)
+        assert south_y == pytest.approx(station.meters, abs=1e-6), south_tag
+        assert south_y + north_y == pytest.approx(house, abs=1e-6), north_tag
+        for opening in (south, north):
+            assert opening.width_m == pytest.approx(inch(27.5).meters, abs=1e-6), opening.tag
+            assert opening.sill_m == pytest.approx(ft(3).meters, abs=1e-6), opening.tag
+            assert (opening.sill_m + opening.height_m
+                    == pytest.approx(ft(7).meters, abs=1e-6)), opening.tag
     living_y, _ = _opening_plan_y(catlin_model, "WIN-M-LIV-E1")
-    assert study_y == pytest.approx(ft(4).meters, abs=1e-6)
     assert living_y == pytest.approx(ft(4).meters, abs=1e-6)
-    assert study.sill_m == pytest.approx(ft(3).meters, abs=1e-6)
-
-    # --- and the column BED3 was traded for actually exists ----------------------------
-    # Same station and same width on all three storeys, which is the whole return on
-    # breaking the row. Sills deliberately do NOT column: WIN-M-KIT-E's 3'-6" is a counter
-    # height and does not travel up, so asserting it would pin the wrong thing.
-    # Two storeys, not three: WIN-A-E-N was the attic's half of this column and it hung on
-    # the east knee wall, which is a rafter plate now. The column it was traded for still
-    # exists on the two storeys that have walls to carry it.
-    column = ("WIN-M-KIT-E", "WIN-S-BED3")
-    stations = {}
-    for tag in column:
-        y, opening = _opening_plan_y(catlin_model, tag)
-        stations[tag] = y
-        assert opening.width_m == pytest.approx(inch(14).meters, abs=1e-6), tag
-    for tag, y in stations.items():
-        assert y == pytest.approx(ft(34).meters, abs=1e-6), tag
-
-    # The upstairs east windows still read 7'-0" at the head, on the one 3'-0" sill.
-    # STUDY3 remains level with the row after E1 moves south; BED1/BED2 hold the height that
-    # buys R303.1 without Exception 1. A later retype must not step this row by accident.
-    def head(tag):
-        _, opening = _opening_plan_y(catlin_model, tag)
-        return opening.sill_m + opening.height_m
-
-    for tag in ("WIN-S-STUDY3", "WIN-S-BED1", "WIN-S-BED2"):
-        assert head(tag) == pytest.approx(ft(7).meters, abs=1e-6), tag
-    # BED3 is not on it, and should not be: it left the row for the 14" column, where its
-    # 4'-0" sill is set by WIN-M-KIT-E's counter below rather than by this face.
-    assert head("WIN-S-BED3") == pytest.approx(ft(6).meters, abs=1e-6)
 
     assert not _framing_offenders(catlin_check_report(),
                                  ["WIN-S-STUDY3", "WIN-S-BED1", "WIN-S-BED2", "WIN-S-BED3"])

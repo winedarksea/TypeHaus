@@ -58,18 +58,18 @@ def test_a_window_type_can_carry_a_frame_depth(catlin_plan) -> None:
 # --- the derivation ------------------------------------------------------------------------
 
 def test_stools_derive_only_for_the_assemblies_the_standard_scopes(stools, catlin_model_ro):
-    """13 windows derive white oak; two authored circulation stools use the same stock.
+    """12 windows derive white oak; two authored circulation stools use the same stock.
 
     The kitchen's three are quartz; RM-M-BATH2's and the plant room's four are Corian (2026-10-22);
     the other room overrides select walnut, ash, locust, cherry and cedar.
     """
     derived = [stool for stool in stools if stool.derived]
     assert {stool.assembly for stool in derived} == {"EXT_2X6", "EXT_2X6_BOARD_BATTEN"}
-    # Seven of the 41 are out of scope because of their host wall: the four plant-room
+    # Seven of the 40 are out of scope because of their host wall: the four plant-room
     # windows, sauna, and two garage windows. The sauna's is authored anyway.
-    assert len(derived) == 13
+    assert len(derived) == 12  # 13 until WIN-S-BED3-N went (2026-11-16)
     windows = [o for o in catlin_model_ro.openings if o.kind == "window"]
-    assert len(windows) == 41, "the six out-of-scope windows still exist; they get no oak"
+    assert len(windows) == 40, "the six out-of-scope windows still exist; they get no oak"
     assert all(stool.material_ref == "oak-stool" for stool in derived)
     authored = {stool.window_ref: stool for stool in stools if not stool.derived}
     east = {"WIN-M-LIV-E1", "WIN-M-LIV-E2", "WIN-M-DINING-E"}
@@ -195,12 +195,12 @@ def test_a_stools_length_is_the_opening_plus_two_horns(stools, catlin_model_ro):
 
 
 def test_the_stool_cut_list_collapses_to_the_three_window_widths(stools):
-    """15 bought white-oak stools, three sizes — few setups at the mill."""
+    """14 bought white-oak stools, three sizes — few setups at the mill."""
     oak = [stool for stool in stools if stool.material_ref == "oak-stool"]
     sizes = {round(stool.length_m * M_TO_IN, 2) for stool in oak}
     assert len(sizes) == 3
     counts = _by_assembly(oak)
-    assert sum(len(v) for v in counts.values()) == 15
+    assert sum(len(v) for v in counts.values()) == 14
 
 
 # --- shelf banks --------------------------------------------------------------------------

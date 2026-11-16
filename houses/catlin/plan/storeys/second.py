@@ -677,6 +677,8 @@ OPENINGS = [
     # so the mirrored 4'-0"/13'-4"/22'-8"/32'-0" beat and every offset below are untouched;
     # the head moves 6'-0" -> 7'-0". 2026-10-14: STUDY3 follows WIN-M-LIV-E1's 2026-10-03
     # move to 5'-4", restoring their column and clearing the compact corner bookshelf.
+    # 2026-11-16: WIN-S-BED3 rejoined the row at 32'-0" as STUDY3's mirror (27x48, 3'-0"
+    # sill); BED3 had left it for a 14x24 at 34'-0" on 2026-08-27.
     Window(uid="CSX314AAAA", tag="WIN-S-STUDY3", host="W-S-E1", type_ref="WT-2748-TT-T",
            position=from_node("N-S-SE", ft(2, 10.25)), sill_height=ft(3)),    # y 4'-0", 16" south of FO-A-STAIR's trimmer pack (2026-11-08)
     # BED1/BED2 ARE BACK ON THE 27" BEARING CAP, AND THE 2026-08-01 NOTE THAT
@@ -734,27 +736,14 @@ OPENINGS = [
            position=from_node("N-S-E1", ft(3, 2.25)), sill_height=ft(3)),   # y 13'-4"
     Window(uid="CSX302AAAA", tag="WIN-S-BED2", host="W-S-E3", type_ref="WT-2748",
            position=from_node("N-S-E2", ft(3, 10.25)), sill_height=ft(3)),  # y 22'-8"
-    # BED3 MOVED OFF THE ROW: retyped WT-2736 -> WT-1424 and moved 32'-0" ->
-    # 34'-0" centre, matching WIN-M-KIT-E below in both size and station so the two column.
-    # RM-S-BED3 loses 4.4 sf of glass by it (6.75 -> 2.33 from THIS window) and joined
-    # BED1/BED2 on R303.1 Exception 1; its R310 egress was never this window's job —
-    # WIN-S-HALL-N carries it. 2026-09-06: the ARITHMETIC here was wrong, though the
-    # exception is real. The resolver credits WIN-S-HALL-N (a BED3 window despite the tag)
-    # to the room, so BED3 was never at 2.33 sf but at 9.83 against 10.32 required — 0.49 sf
-    # short, not 8. A fourth north window was added that day to close the 0.49 and then
-    # withdrawn when the facade was solved by moving windows instead (see WIN-S-HALL-N
-    # below), so the room stays on Exception 1 — over it by half a square foot, lit at
-    # 13.4 fc and ventilated on 210 cfm.
-    # WIN-A-E-N moved 32'-8" -> 34'-0" the same day (attic.py) to complete a three-storey
-    # 14" column on the east face. ``from_node`` is the near jamb, so 34'-0" - 7" = 33'-5"
-    # off N-S-E3 at y=26'-8" -> 6'-9". The east second-storey row is now three units, and
-    # the mirror test's north member is gone with it. ** THE SILL WENT TO 4'-0" WITH THE
-    # RETYPE AND THIS NOTE SAID 3'-0" UNTIL 2026-09-06 ** — it left the east face's 3'-0"
-    # datum (BED1/BED2 still hold it) for the 14" family's own 4'-0", which is the rule the
-    # west face keeps and the head line that follows from it. WIN-M-KIT-E's 3'-6" is a
-    # counter height and does not travel up.
-    Window(uid="CSX303AAAA", tag="WIN-S-BED3", host="W-S-E4", type_ref="WT-1424-FIX",
-           position=from_node("N-S-E3", ft(6, 9)), sill_height=ft(4)),      # y 34'-0"
+    # ** BED3 BACK IN THE ROW (2026-11-16), STUDY3's MIRROR. ** A WT-2748 at y=32'-0" (RO
+    # 370 1/4"..397 3/4", a stud line) on the row's 3'-0" sill and 7'-0" head, so the row is
+    # an exact mirror on an even 9'-4" beat: 4'-0"/13'-4"/22'-8"/32'-0". It replaced the
+    # 14x24 at 34'-0" (2026-08-27..2026-11-16) and WIN-S-BED3-N its north twin; BED3 keeps
+    # WIN-S-HALL-N, ~18 sf of glass against ~10.3 sf required. The 40" headboard sits ~5"
+    # over the sill (accepted). History: DESIGN-LOG.md, "East facade rebalance 2026-11-16".
+    Window(uid="CSX303AAAA", tag="WIN-S-BED3", host="W-S-E4", type_ref="WT-2748",
+           position=from_node("N-S-E3", inch(50.25)), sill_height=ft(3)),   # y 32'-0"
     # West suite (bearing wall). SUITE1 moved 13'-0" -> 10'-8" for the third exact
     # main/second west column. Its header crosses W-S-W3's top ladder-backing rung, so the
     # solver omits that nonstructural rung while preserving the header and every other rung.
@@ -879,7 +868,7 @@ OPENINGS = [
     # `sill_m` is measured off the storey datum (the joist tops, `ResolvedWall.base_ref_z_m`)
     # and the finished floor is 15/16" higher — an authored 24" would be 23 1/16" to an
     # inspector's tape. The head follows to 7'-4",
-    # which is 16" over WIN-S-BED3-N's 6'-0" and 4" over the east row's 7'-0"; this pair
+    # which is 4" over the east row's 7'-0"; this pair
     # deliberately heads higher than anything else on the storey.
     #
     # (The prose here and in CLAUDE.md claimed a 3'-0" sill and a 6'-0" head until
@@ -917,55 +906,6 @@ OPENINGS = [
     # Fixed since 2026-10-21, with the tempered glazing retained over the stairwell.
     Window(uid="CSX315AAAA", tag="WIN-S-STAIR-N", host="W-S-N2", type_ref="WT-2748-FIX-T",
            position=from_node("N-S-N1", ft(4, 10.25)), sill_height=ft(3, 4)),  # ctr x 12'-0"
-    # ** THE NE CORNER PAIR, COMPLETED ONE STOREY UP (2026-09-06). ** RM-S-BED3 already had
-    # WIN-S-BED3 on its east wall at y=34'-0"; this is its twin on the north wall at
-    # x=34'-0" — same WT-1424-FIX, plain picture glass. The two now wrap the north-east
-    # corner exactly the way WIN-M-KITCH-N and WIN-M-KIT-E wrap it on the main storey below,
-    # each unit 2'-0" off the corner on its own wall.
-    #
-    # ** SILL 4'-0" — THE SAME AS ITS TWIN, AND THE SAME RULE. ** WIN-S-BED3 is at 4'-0"
-    # too (its own note claimed 3'-0" until 2026-09-06; the authored value was always
-    # ft(4)). That is the rule the west face keeps, per CLAUDE.md's Head lines: 27" units at
-    # a 3'-0" sill, 14" units at 4'-0", every head on one 6'-0" line. So this unit heads at
-    # 6'-0" exactly, on the 72" girt course, and the corner pair is a true twin in plan, in
-    # type AND in section.
-    #
-    # ** IT DOES NOT SHARE A HEAD WITH WIN-S-HALL-N / WIN-S-STAIR-N, AND NEVER DID. ** This
-    # note claimed all four north units headed on the 6'-0" line until 2026-09-10; commit
-    # 5487fd79 had already put those two at 6'-6". Since their 2026-09-10 retype they head
-    # at 6'-3 1/2", so the gap is 3 1/2" rather than 6" — closer, still not one line. The
-    # north face's second storey is a ROW, not a head line: three units on one rectangle
-    # with this 14" corner unit outboard of it.
-    #
-    # It costs one girt sliver and buys one exact hit, and that trade is forced rather than
-    # chosen: a 24"-tall unit holds its sill course bottom and its head 27-1/2" apart, so on
-    # the 24" course module one edge is always exact and the other always 3-1/2" off. At
-    # 4'-0" the head lands on 72" exactly and the sill course sits 3-1/2" under the field
-    # course at 48"; at 3'-0" neither edge is within 8-1/2" of a course, so it would cast no
-    # sliver and hit nothing. test_truss_girt_courses.py was re-swept for this and moved
-    # 13/30 -> 14/31; course_offset stays 0.
-    #
-    # The station is taken from WIN-M-KITCH-N verbatim — `from_node("N-M-NE", ft(1, 5))`
-    # there, `from_node("N-S-NE", ft(1, 5))` here, both walls running west off x=36'-0" —
-    # so this sits DIRECTLY above it and the north face gains a two-storey 14" column at
-    # 34'-0" to set against the one it lost when WIN-S-HALL-N moved to 24'-0". 408" is
-    # 8 mod 16, a BAY CENTRE on the shared layout line, so the 14" RO (33'-5"..34'-7")
-    # falls wholly inside one bay: no header, no jacks, no kings. It leaves 17" to the
-    # corner at N-S-NE and 8'-2" to WIN-S-HALL-N's east jamb, so it crowds neither.
-    #
-    # ** IT TAKES RM-S-BED3 OFF R303.1 EXCEPTION 1. ** The room was 9.83 sf glazed against
-    # 10.32 required — 0.49 sf short — and had been on the exception since 2026-08-27, when
-    # WIN-S-BED3 was retyped to a 14" unit to complete the three-storey east column. 2.33 sf
-    # more increased its daylight. Both small units became fixed on 2026-10-21;
-    # WIN-S-HALL-N remains the room's operable window. Existing ERV supply and lighting
-    # cover the reduced openable area under R303.1 Exception 1.
-    #
-    # The tag had a few hours' prior life the same day on a WT-1436 at x 23'-4", added to
-    # fill the facade's lower-east corner and withdrawn when the four existing windows were
-    # moved onto one rectangle instead (see WIN-S-HALL-N above). Different station,
-    # different type, different argument; the uid is new.
-    Window(uid="A4BAA399PA", tag="WIN-S-BED3-N", host="W-S-N1", type_ref="WT-1424-FIX",
-           position=from_node("N-S-NE", ft(1, 5)), sill_height=ft(4)),        # ctr x 34'-0"
 ]
 
 ROOMS = [

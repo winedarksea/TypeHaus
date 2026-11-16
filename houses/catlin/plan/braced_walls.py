@@ -24,13 +24,13 @@
 # beside the service door). A run that crosses a wall butt is authored once per wall and
 # merged by `resolve/braced_walls.py`.
 #
-# ** THE NE CORNER CARRIES FOUR 800-LB DEVICES (owner, 2026-09-22). ** Both lines at that
-# corner end in a 17" sliver — WIN-M-KIT-E and WIN-M-KITCH-N sit 2'-7" off the corner on the
-# main floor, WIN-S-BED3 and WIN-S-BED3-N on the second — so neither line has a 24" return to
-# turn (Figure R602.10.7 end conditions 1 and 4) and the panel nearest the corner takes an
-# 800 lb hold-down instead (end condition 5). THE STANDING ALTERNATIVE, deliberately not
-# taken: move those four windows 16" inboard, which buys the returns and deletes all four
-# devices. **Never move them TOWARD the corner** — that is the one direction with no answer.
+# ** THE MAIN NE CORNER CARRIES TWO 800-LB DEVICES (owner, 2026-09-22). ** Both main lines
+# end in a 17" sliver — WIN-M-KIT-E and WIN-M-KITCH-N sit 2'-7" off the corner — so neither
+# has a 24" return (Figure R602.10.7 end conditions 1 and 4) and the panel nearest the corner
+# takes an 800 lb hold-down (end condition 5). The second floor's pair went with
+# WIN-S-BED3-N on 2026-11-16: both upper lines now run sheathed into the corner. The
+# standing alternative is to move the two kitchen windows 16" inboard. **Never move them
+# TOWARD the corner** — that is the one direction with no answer.
 #
 # ** THE GARAGE SW CORNER TAKES A FIFTH. ** D-G-SERVICE sits 11" off that corner, so W-G-S has
 # no 24" return to give W-G-W's end panel. The alternative is to move the service door 17"
@@ -47,23 +47,21 @@ from typehaus import BracedWallPanel, Connector, ConnectorKind, ft, inch, pt
 # The hold-down stations: 3 1/4" inboard of the wall axis, the `CN-M-HD-ENTRY-*` convention
 # (plan/storeys/main.py) — the king stud's face at the end of the panel nearest the corner.
 _NE_INBOARD = ft(35, 8.75)          # 36'-0" less 3 1/4"
-_NE_PANEL_END = ft(33, 5)           # where both NE panels stop, on both floors
+_NE_PANEL_END = ft(33, 5)           # where both main NE panels stop
 _MAIN_HD_Z = inch(1)                # sill-plate mid-height, project-frame absolute
-_SECOND_HD_Z = inch(121)            # the same, one floor up (second datum +10'-0")
 
 # ---------------------------------------------------------------------------------------
 # MAIN — first story of two. Table R602.10.3(1) at <=115 mph / 40' spacing / CS-WSP reads
 # 11.5 ft, x1.15 (eave-to-ridge) x0.95 (9'-0" story) = 12.56 ft per line.
 MAIN_BRACED_WALLS = [
-    # BWL-W-A-E1 — 19'-3" provided since the 2026-10-16 rework, above 12.56 ft: the SE corner
-    # to E1's RO (34 1/2"), the 43" pier between E2 and WIN-M-DINING-E, and the dining
-    # window's north jamb to 2'-7" short of the NE corner, where it keeps its hold-down.
+    # BWL-W-A-E1 — 14'-9" provided since the dining triad (2026-11-16), above 12.56 ft: the
+    # SE corner to E1's RO (34 1/2"), and the dining window's north jamb to 2'-7" short of the
+    # NE corner, where it keeps its hold-down. The 32" pier between E2 and the triad is under
+    # Table R602.10.5's interpolated 32.2" and is not authored (its uid CHBX85XNZF retired).
     BracedWallPanel(uid="0BK3XPH9EX", tag="BWP-M-E1-0000", wall_ref="W-M-E1", start=inch(0.0),
                     width=inch(34.25), note="SE corner; return for BWL-W-A-S1's east end"),
-    BracedWallPanel(uid="CHBX85XNZF", tag="BWP-M-E1-0142", wall_ref="W-M-E1", start=inch(141.75),
-                    width=inch(42.75), note="pier between WIN-M-LIV-E2 and WIN-M-DINING-E"),
-    BracedWallPanel(uid="KZ7TYRTJKY", tag="BWP-M-E1-0248", wall_ref="W-M-E1", start=inch(247.5),
-                    width=inch(153.5), hold_down_ref="CN-M-BWHD-NE-E",
+    BracedWallPanel(uid="KZ7TYRTJKY", tag="BWP-M-E1-0258", wall_ref="W-M-E1", start=inch(258.25),
+                    width=inch(142.75), hold_down_ref="CN-M-BWHD-NE-E",
                     note="R602.10.7 end condition 5 at the NE corner"),
     # BWL-W-A-N1 — 27.93 ft provided. The 75 5/8" run crosses the W-M-N3/W-M-N3B butt,
     # starting at D-M-ENTRY's west RO edge (its derived 38 3/8" RO, 2026-10-29). The
@@ -145,6 +143,7 @@ MAIN_BRACED_CONNECTORS = [
 SECOND_BRACED_WALLS = [
     # BWL-W-A-E1 — 26'-8" provided. STUDY3's 16" south move (2026-11-08) hands 16" of full
     # height from the southeast corner return back to its north pier; the total does not move.
+    # BED3's 27" unit at 32'-0" (2026-11-16) leaves a 34 1/4" NE return, the SE's mirror.
     BracedWallPanel(uid="J1DJCJK12V", tag="BWP-S-E1-0000", wall_ref="W-S-E1", start=inch(0.0),
                     width=inch(34.25), note="SE corner return"),
     BracedWallPanel(uid="HD9VHPM55N", tag="BWP-S-E1-0062", wall_ref="W-S-E1", start=inch(61.75),
@@ -158,8 +157,9 @@ SECOND_BRACED_WALLS = [
     BracedWallPanel(uid="DYES49FCSP", tag="BWP-S-E3-0074", wall_ref="W-S-E3", start=inch(73.75),
                     width=inch(34.25)),
     BracedWallPanel(uid="PY14ZH198H", tag="BWP-S-E4-0000", wall_ref="W-S-E4", start=inch(0.0),
-                    width=inch(81.0), hold_down_ref="CN-S-BWHD-NE-E",
-                    note="R602.10.7 end condition 5 at the NE corner"),
+                    width=inch(50.25)),
+    BracedWallPanel(uid="F7590W2VYT", tag="BWP-S-E4-0078", wall_ref="W-S-E4", start=inch(77.75),
+                    width=inch(34.25), note="NE corner return"),
     # BWL-W-A-N1 — 28'-11" provided.
     BracedWallPanel(uid="0BKQ0Y5079", tag="BWP-S-N2-0086", wall_ref="W-S-N2", start=inch(85.75),
                     width=inch(10.25)),
@@ -174,9 +174,8 @@ SECOND_BRACED_WALLS = [
                     width=inch(47.0)),
     BracedWallPanel(uid="GEQAX9CJAC", tag="BWP-S-N2-0000", wall_ref="W-S-N2", start=inch(0.0),
                     width=inch(58.25)),
-    BracedWallPanel(uid="PYYCZERABX", tag="BWP-S-N1-0031", wall_ref="W-S-N1", start=inch(31.0),
-                    width=inch(99.25), hold_down_ref="CN-S-BWHD-NE-N",
-                    note="R602.10.7 end condition 5 at the NE corner"),
+    BracedWallPanel(uid="PYYCZERABX", tag="BWP-S-N1-0000", wall_ref="W-S-N1", start=inch(0.0),
+                    width=inch(130.25), note="NE corner, sheathed through to the corner"),
     # BWL-W-A-S1 — 16'-11" provided against 10.37 ft: W-S-S1 is the plant room, whose PVC
     # liner is not gypsum, so this line pays item 6's x1.40.
     BracedWallPanel(uid="Y9S7CV3A49", tag="BWP-S-S1-0000", wall_ref="W-S-S1", start=inch(0.0),
@@ -215,20 +214,6 @@ SECOND_BRACED_WALLS = [
                     width=inch(13.875)),
     BracedWallPanel(uid="EH38YXY3JD", tag="BWP-S-W1B-0000", wall_ref="W-S-W1B", start=inch(0.0),
                     width=inch(35.125), note="NW corner; 49\" merged is end condition 3"),
-]
-
-# The second-floor pair. A DTT2Z each side of the floor on one 1/2" rod, tying the panel end
-# above to the corner post below (Figure R602.10.7 end condition 5) — there is no concrete
-# up here to cast a strap into. ESR-2330 Table 4 publishes 1,825 lb at a 1 1/2" member
-# against the 800 lb asked for, and it publishes it for SG 0.50 lumber, which is why these
-# two posts are specified DF-L.
-SECOND_BRACED_CONNECTORS = [
-    Connector(uid="YE8NE66A0N", tag="CN-S-BWHD-NE-E", kind=ConnectorKind.HOLD_DOWN,
-              position=pt(_NE_INBOARD, _NE_PANEL_END), elevation=_SECOND_HD_Z,
-              size="DTT2Z", connects=("W-S-E1", "W-M-E1")),
-    Connector(uid="00909G1F6F", tag="CN-S-BWHD-NE-N", kind=ConnectorKind.HOLD_DOWN,
-              position=pt(_NE_PANEL_END, _NE_INBOARD), elevation=_SECOND_HD_Z,
-              size="DTT2Z", connects=("W-S-N1", "W-M-N1")),
 ]
 
 # ---------------------------------------------------------------------------------------

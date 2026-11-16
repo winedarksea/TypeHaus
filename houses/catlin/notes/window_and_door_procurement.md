@@ -53,6 +53,8 @@ width is a = 3.6 ft (0.1 × 36').
 | ≤ 10 sf (every unit up to 30×48) | 14.8 psf | **18.2 psf** | 13.6 psf |
 | 21 sf (`WT-6348-FIX`) | 14.1 psf | 17.1 psf | 13.2 psf |
 
+The triad `WT-8448-FIX` (28 sf, 2026-11-16) was not re-read: C&C pressure falls as area grows, so the 21 sf row bounds it.
+
 Zone 5 governs any unit within 3.6 ft of a corner. Order every unit at one rating, DP ≥ 20.
 
 ## 2. The lines compared, and the selection
@@ -184,12 +186,13 @@ claimed.
 | Type | n | Line | RO → unit | CPD | U/SHGC/VT | Depth |
 |---|---|---|---|---|---|---|
 | WT-1424-TT(-T) | 2+1 | Max Light tilt-turn | 14x24 → 12.71" frame | STO-M-20 | 0.20/0.40/0.58 | 75 mm |
-| WT-1424-FIX(-T) | 7+3 | Drutex fixed | 14x24 → 13½x23½ | DRU-K-23-00001 | 0.15/0.39/0.57 | 93 mm |
+| WT-1424-FIX(-T) | 5+3 | Drutex fixed | 14x24 → 13½x23½ | DRU-K-23-00001 | 0.15/0.39/0.57 | 93 mm |
 | WT-2736-FIX(-T), WT-2748-FIX-T | 1+1+1 | Drutex fixed | — | DRU-K-23-00001 | 0.15/0.39/0.57 | 93 mm |
-| WT-6348-FIX | 1 | Drutex fixed | 63x48 → 62½x47½ | DRU-K-23-00001 | 0.15/0.39/0.57 | 93 mm |
+| WT-8448-FIX | 1 | Drutex fixed, 3 mulled lites | 84½x48 → 84x47½ | DRU-K-23-00001 | 0.15/0.39/0.57 | 93 mm |
+| WT-6348-FIX | 0 (revert) | Drutex fixed | 63x48 → 62½x47½ | DRU-K-23-00001 | 0.15/0.39/0.57 | 93 mm |
 | WT-2736-TT, WT-2748-TT(-T), WT-3048-TT(-T) | 4+2+1+1+3 | Drutex tilt-turn | — | DRU-K-24-00001 | 0.16/0.33/0.47 | 93 mm |
 | WT-2754-HP, WT-3048-HP | 1+3 | Drutex fixed, laminated | — | DRU-K-23-00010 | 0.14/0.39/0.56 | 93 mm |
-| WT-2748(-T), WT-2754, WT-3048 | 2+1+4+2 | Max Light tilt-turn (escape) | 27½x48/54, 30x48 → 26.21/28.71 × 46.805/52.805 | STO-M-20 | 0.20/0.40/0.58 | 75 mm |
+| WT-2748(-T), WT-2754, WT-3048 | 3+1+4+2 | Max Light tilt-turn (escape) | 27½x48/54, 30x48 → 26.21/28.71 × 46.805/52.805 | STO-M-20 | 0.20/0.40/0.58 | 75 mm |
 
 Flange: factory nailing fin on all window lines (Max Light: quoted +15%, to confirm).
 Colour: black exterior (RAL 9017 Traffic black matt on Drutex and Max Light), white interior.

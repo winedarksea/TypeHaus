@@ -404,9 +404,9 @@ suppress = [
   # D-S-BED1/2 (moved 2 1/2" north for the PAX, 2026-10-02) left this list on 2026-10-29:
   # their derived ROs cut no extra stud.
 
-  # Owner accepts (2026-10-16): WIN-M-DINING-E is a 63" picture window centred on the
-  # dining table in BEARING W-M-E1, past the 27" `max_window_ro_bearing_in` cap that stays
-  # house-wide. Its header is a 2-ply 9 1/2" LVL read off Boise's published table
+  # Owner accepts (2026-10-16; triad 2026-11-16): WIN-M-DINING-E is an 84 1/2" mulled triad
+  # centred on the dining table in BEARING W-M-E1, past the 27" `max_window_ro_bearing_in` cap
+  # that stays house-wide. Its header is a 2-ply 11 7/8" LVL read off Boise's published table
   # (notes/dining_window_header.md), not R602.7, so the cap's reason does not reach it.
   "structural.window_framing_module:WIN-M-DINING-E",
 

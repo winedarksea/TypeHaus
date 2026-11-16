@@ -1518,6 +1518,62 @@
     },
     {
       "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          432.0,
+          0.0
+        ],
+        [
+          436.5,
+          0.0
+        ],
+        [
+          436.5,
+          3.5
+        ],
+        [
+          432.0,
+          3.5
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW103AAAA",
+      "tag": "block-2-001-06"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          432.0,
+          0.0
+        ],
+        [
+          436.5,
+          0.0
+        ],
+        [
+          436.5,
+          3.5
+        ],
+        [
+          432.0,
+          3.5
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",

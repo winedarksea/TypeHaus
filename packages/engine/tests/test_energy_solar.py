@@ -116,13 +116,14 @@ def test_the_house_has_one_peak_hour_not_four(catlin_model_ro) -> None:
     # WIN-M-DINING-E replaces E3 and EAST-MID with 21 sf of fixed east glass, adding 3 sf net.
     # French pairs SHGC 0.33 -> 0.12 (2026-10-25; notes/solar_gain_basis.md).
     # Max Light retype (2026-10-31): kitchen SHGC .24 -> .40, BATH1-W .39 -> .40, +80.9.
-    assert result.peak_btu_per_hour == pytest.approx(12_157.0, rel=0.01)
+    # East facade rebalance (2026-11-16): east triad and BED3's 27x48, north BED3-N gone, +964.
+    assert result.peak_btu_per_hour == pytest.approx(13_121.0, rel=0.01)
     assert result.unknown_inputs == ()
-    # Every facade contributes at the peak hour, and south leads it — but at 49% of the
+    # Every facade contributes at the peak hour, and south leads it — but at 46% of the
     # total, not the 100% the weights implied by putting it at 1.00 alone.
     assert set(result.by_facade) == {"N", "E", "S", "W"}
     # Lower-SHGC French pairs reduce south gain and move the coincident peak to 10:00.
-    assert result.by_facade["S"] / result.peak_btu_per_hour == pytest.approx(0.49, abs=0.02)
+    assert result.by_facade["S"] / result.peak_btu_per_hour == pytest.approx(0.46, abs=0.02)
 
 
 def test_a_missing_shgc_is_named_not_assumed(catlin_model_ro) -> None:
@@ -238,7 +239,8 @@ def test_the_glass_load_is_the_daily_average_plus_the_aed_excursion(catlin_model
     assert result.excursion_btu_per_hour == pytest.approx(
         result.peak_btu_per_hour - _AED_DIVERSITY_FACTOR * result.average_btu_per_hour,
         abs=1.0)
-    assert result.excursion_btu_per_hour == pytest.approx(510.5, rel=0.02)
+    # 510.5 -> 929.4 (2026-11-16): the added east glass peaks in the morning.
+    assert result.excursion_btu_per_hour == pytest.approx(929.4, rel=0.02)
     assert result.design_btu_per_hour == pytest.approx(
         result.average_btu_per_hour + result.excursion_btu_per_hour)
 

@@ -1,4 +1,4 @@
-"""The living east row (2026-10-16): E1/E2 flank the brick, one picture window on the table.
+"""The living east row: E1/E2 flank the brick, a mulled triad on the table (2026-11-16).
 
 Every window must leave buildable jamb packs and accessible outlets. Since 2026-10-20 only the
 dining window's stool meets the counter; E1/E2 sit over open wall with the standard stool.
@@ -12,17 +12,18 @@ from typehaus.resolve.geometry_millwork import window_stool_prism
 
 INCH = 0.0254
 # North of AO-M-FIRE-NICHE's north king: E2's two packs, a king and R602.7's three jacks each
-# (two center-bearing floors, decision #116), and the dining window's two, a jack and a king.
-JAMB_MEMBERS_NORTH_OF_NICHE = 12
-PACK_TO_PANTRY_IN = 20.875
+# (two center-bearing floors, decision #116), and the dining triad's two, two jacks (Boise's
+# bolded row) and a king.
+JAMB_MEMBERS_NORTH_OF_NICHE = 14
+PACK_TO_PANTRY_IN = 8.625
 # tag: (centre, width, type, blind, blind type)
 EAST_WINDOWS = {
     "WIN-M-LIV-E1": (48, 27.5, "WT-2748-TT", "FURN-M-LIV-BLIND-E1", "FT-CELLULAR-BLIND-2748"),
     "WIN-M-LIV-E2": (128, 27.5, "WT-2748-TT", "FURN-M-LIV-BLIND-E2", "FT-CELLULAR-BLIND-2748"),
-    "WIN-M-DINING-E": (216, 63, "WT-6348-FIX", "FURN-M-LIV-BLIND-DINING",
-                       "FT-CELLULAR-BLIND-6348"),
+    "WIN-M-DINING-E": (216, 84.5, "WT-8448-FIX", "FURN-M-LIV-BLIND-DINING",
+                       "FT-CELLULAR-BLIND-8448"),
 }
-NORTH_COUNTER_RECEPTACLES = ("ED-M-LIVING-RC15", "ED-M-LIVING-RC16")
+NORTH_COUNTER_RECEPTACLES = ("ED-M-LIVING-RC15", "ED-M-LIVING-RC18", "ED-M-LIVING-RC16")
 # South of the slat partition: wall space at the room's 16".
 WALL_RECEPTACLES = ("ED-M-LIVING-RC13", "ED-M-LIVING-RC3")
 
@@ -42,7 +43,7 @@ def test_matching_windows_leave_independent_jamb_packs_and_clear_the_pantry(catl
 
     jamb_members = sorted(
         (member for member in wall.members if member.category in {"king", "jack"}
-         and 108.0 * INCH < member.p0[1] < 260 * INCH),
+         and 108.0 * INCH < member.p0[1] < 265 * INCH),
         key=lambda member: member.p0[1],
     )
     assert len(jamb_members) == JAMB_MEMBERS_NORTH_OF_NICHE
@@ -139,8 +140,9 @@ def test_counter_devices_clear_windows_framing_and_each_other(catlin_model_ro):
 
 
 def test_receptacles_cover_the_north_counter_outside_the_dining_glass(catlin_model_ro):
-    """WIN-M-DINING-E's glass took RC15's old station (2026-10-16). The slab under the glass
-    is the one stretch past 24" of a receptacle, and it is an open decision, not an oversight."""
+    """WIN-M-DINING-E's glass took the wall between its jamb packs (2026-11-16). The slab
+    under the glass is the one stretch past 24" of a receptacle, and it is an open decision,
+    not an oversight."""
     objects = {obj.tag: obj for obj in catlin_model_ro.canvas_objects}
     openings = {opening.tag: opening for opening in catlin_model_ro.openings}
     counter = next(top for top in catlin_model_ro.countertops if top.tag == "CT-M-LIV-E-N")

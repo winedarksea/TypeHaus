@@ -374,9 +374,9 @@
 # One ply of the row below: floor-opening trimmer packs on the I-joist decks run bearing to
 # bearing in band-deep LVL since 2026-09-16. Half the 2-ply material; labour per ply a bit over half.
 "1.75x11.875 LVL" = { material = { low = 7, high = 13 }, labour = { low = 5, high = 10 } }  # 192 LF
-"2-1.75x11.875 LVL" = { material = { low = 14, high = 26 }, labour = { low = 8, high = 18 } }  # 16 LF
-# WIN-M-DINING-E's header (2026-10-16), read off Boise's header table: scaled from the
-# 11 7/8" row by depth.
+# Also WIN-M-DINING-E's header since the triad (2026-11-16), Boise's 7'-2" row: +8 LF.
+"2-1.75x11.875 LVL" = { material = { low = 14, high = 26 }, labour = { low = 8, high = 18 } }  # 24 LF
+# WIN-M-DINING-E's 63" revert header (2026-10-16), scaled from the 11 7/8" row by depth.
 "2-1.75x9.5 LVL" = { material = { low = 12, high = 22 }, labour = { low = 7, high = 16 } }
 # D-M-LAUN's header (2026-11-07), Boise's Floor - 1 Story row: scaled from 9 1/2" by depth.
 "2-1.75x7.25 LVL" = { material = { low = 9, high = 17 }, labour = { low = 6, high = 13 } }
@@ -1549,7 +1549,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # which ESR-2330 puts outside its own scope and which nothing here bills.
 "STHD14" = { low = 20, high = 36 }  # 3 ea — the garage SW corner (ICF stem) and the two balcony-jamb curb straps
 "STHD14RJ" = { low = 24, high = 42 }  # 2 ea — the main-floor NE corner, across the floor band
-"DTT2Z" = { low = 22, high = 38 }  # 2 ea — the second-floor NE corner, one each side of the deck
+"DTT2Z" = { low = 22, high = 38 }  # 0 ea — the second-floor NE pair went with WIN-S-BED3-N (2026-11-16)
 
 # The court daybed's four ropes (2026-10-13), UNCONFIRMED allowances: a galvanized Crosby
 # G-209 1/2" shackle at rigging-supply retail, and a shop-fabricated U-saddle for a 3-ply
@@ -5862,7 +5862,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # 38 UI band, and the flat tempered adder on the -T. A fabricator quote replaces both.
 "WT-1424-TT" = { material = { low = 520, high = 1000 }, labour = { low = 115, high = 235 } }  # 2 ea — WIN-M-KITCH-N, WIN-M-KIT-E; Max Light TT
 "WT-1424-TT-T" = { material = { low = 670, high = 1250 }, labour = { low = 115, high = 240 } }  # 1 ea — WIN-M-BATH1-W; Max Light TT, +$150/250 tempered
-"WT-1424-FIX" = { material = { low = 400, high = 780 }, labour = { low = 105, high = 215 } }  # 7 ea — Drutex Alucover fixed; fixed runs 75-80% of an operable casement
+"WT-1424-FIX" = { material = { low = 400, high = 780 }, labour = { low = 105, high = 215 } }  # 5 ea — Drutex Alucover fixed; fixed runs 75-80% of an operable casement
 "WT-1424-FIX-T" = { material = { low = 550, high = 1030 }, labour = { low = 105, high = 220 } }  # 3 ea — fixed +$150/250 flat tempered
 "WT-1424-T" = { material = { low = 670, high = 1250 }, labour = { low = 115, high = 240 } }  # 0 ea — catalog-only operable tempered twin
 # 14x36, the south gable's flanker size since 2026-08-29 (WT-1448 shortened for the 6:12
@@ -5900,7 +5900,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # That sheds ~7% of glass and frame and nothing else; 27" is still a one-man set, so labour
 # barely moves. The result brackets correctly against `WT-3048` (30x48, 78 UI, $700-1,320):
 # three inches narrower, four percent under. Tempered is this table's flat $150/$250 adder.
-"WT-2748" = { material = { low = 670, high = 1265 }, labour = { low = 168, high = 358 } }  # 2 ea — WIN-S-BED2, WIN-S-HALL-N, Max Light TT egress (scaled, no quote); 75 UI
+"WT-2748" = { material = { low = 670, high = 1265 }, labour = { low = 168, high = 358 } }  # 3 ea — WIN-S-BED2, WIN-S-BED3, WIN-S-HALL-N, Max Light TT egress (scaled, no quote); 75 UI
 "WT-2748-T" = { material = { low = 820, high = 1515 }, labour = { low = 173, high = 365 } }  # 1 ea — WIN-S-BED1, Max Light TT egress (scaled, no quote)
 "WT-2748-FIX-T" = { material = { low = 660, high = 1240 }, labour = { low = 163, high = 345 } }  # 1 ea — WIN-S-STAIR-N
 "WT-3048" = { material = { low = 700, high = 1320 }, labour = { low = 185, high = 390 } }  # 2 ea — WIN-M-BED-S1/S2, Max Light TT egress (scaled, no quote); 78 UI, over the band; two-man set
@@ -5912,10 +5912,13 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "WT-2748-TT-T" = { material = { low = 820, high = 1515 }, labour = { low = 173, high = 365 } }  # 1 ea
 "WT-3048-TT" = { material = { low = 700, high = 1320 }, labour = { low = 185, high = 390 } }  # 1 ea
 "WT-3048-TT-T" = { material = { low = 850, high = 1570 }, labour = { low = 190, high = 405 } }  # 3 ea
-# WIN-M-DINING-E (2026-10-16): a 63x48 fixed picture unit, 111 UI. Priced as the 27x48
-# casement's material per UI with the fixed-sash discount (75-80% of operable, the WT-1424-FIX
-# reading), and a two-man set like WT-3048.
-"WT-6348-FIX" = { material = { low = 1000, high = 1900 }, labour = { low = 235, high = 470 } }  # 1 ea
+# The 63x48 fixed picture (2026-10-16), 111 UI, kept priced as WIN-M-DINING-E's revert. Priced
+# as the 27x48 casement's material per UI with the fixed-sash discount (75-80% of operable,
+# the WT-1424-FIX reading), and a two-man set like WT-3048.
+"WT-6348-FIX" = { material = { low = 1000, high = 1900 }, labour = { low = 235, high = 470 } }  # 0 ea
+# WIN-M-DINING-E since 2026-11-16: three mulled fixed lites, 132.5 UI. ESTIMATE, the 6348 row
+# scaled by united inches (x1.19); no mulled-unit quote.
+"WT-8448-FIX" = { material = { low = 1190, high = 2270 }, labour = { low = 280, high = 560 } }  # 1 ea
 # The plant room's U-0.14 units, FIXED sash. Same dimensions as their parents, a different
 # MANUFACTURER. Not an upgrade the owner may decline: `building_science.glazing_dew_point`
 # FAILs these at U-0.25 — the glass condenses below about +13 F outdoors. The fixed sash is

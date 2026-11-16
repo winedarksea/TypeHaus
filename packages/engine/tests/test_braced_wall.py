@@ -158,12 +158,13 @@ def test_every_braced_line_on_the_house_and_garage_passes(catlin_model_ro):
     assert braced_wall_panel_rules(_ctx(catlin_model_ro))[0].result is not Result.FAIL
 
 
-def test_the_census_is_twenty_seven_thirty_one_and_nine(catlin_model_ro):
+def test_the_census_is_twenty_six_thirty_two_and_nine(catlin_model_ro):
     counts = {storey: len([e for e in catlin_model_ro.plan.storey_elements(storey)
                            if isinstance(e, BracedWallPanel)])
               for storey in ("main", "second", "garage")}
-    # The 63" dining opening leaves a new braced pier on the main east line.
-    assert counts == {"main": 27, "second": 31, "garage": 9}
+    # 2026-11-16: the dining triad's 32" south pier is under the minimum (main -1); BED3's
+    # move gives W-S-E4 a NE corner return (second +1).
+    assert counts == {"main": 26, "second": 32, "garage": 9}
 
 
 def test_the_garage_door_piers_need_no_portal_frame(catlin_model_ro):
@@ -180,14 +181,14 @@ def test_the_garage_door_piers_need_no_portal_frame(catlin_model_ro):
     assert evaluation.ok
 
 
-def test_the_ne_corner_carries_its_four_devices(catlin_model_ro):
-    """Owner's option (c): both lines at that corner end in a 17" sliver, so the panel
-    nearest the corner takes an 800-lb hold-down on each floor."""
+def test_the_ne_corner_carries_its_two_main_floor_devices(catlin_model_ro):
+    """Owner's option (c): both main lines at that corner end in a 17" sliver, so the panel
+    nearest the corner takes an 800-lb hold-down. The second floor's pair went with
+    WIN-S-BED3-N (2026-11-16): both upper lines run sheathed into the corner."""
     refs = {ref for storey in ("main", "second")
             for panel in resolved_braced_wall_panels(catlin_model_ro, storey)[0]
             for ref in panel.hold_down_refs}
-    assert refs == {"CN-M-BWHD-NE-E", "CN-M-BWHD-NE-N",
-                    "CN-S-BWHD-NE-E", "CN-S-BWHD-NE-N"}
+    assert refs == {"CN-M-BWHD-NE-E", "CN-M-BWHD-NE-N"}
     for ref in refs:
         assert catlin_model_ro.plan.by_tag(ref) is not None
 

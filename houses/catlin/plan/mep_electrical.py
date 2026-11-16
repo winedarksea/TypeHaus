@@ -424,8 +424,8 @@ SECOND_DEVICES = [
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="CED008K3AA", tag="ED-S-BED3-RC1", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20", circuit="CKT-RC-SECOND",
-                     # x=35'-0", just east of WIN-S-BED3-N (center x=34'-0"); 48" lines up
-                     # with its sill and lifts the box above the usual low receptacle band.
+                     # x=35'-0", 12" off the NE corner; 48" keeps the box above the bed's
+                     # corner (WIN-S-BED3-N, whose sill it matched, is gone since 2026-11-16).
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-N1", face="left", distance_from_start=inch(12),

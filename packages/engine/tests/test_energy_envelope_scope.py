@@ -55,7 +55,8 @@ from typehaus.resolve.solid_categories import in_slab_family
 # 29,997.3 before the door holds released (2026-10-29): D-M-PORCH bills its published unit.
 # The court backup's 2" EPS came off (2026-11-04, the brick moved flush onto the strips):
 # heating 30,170.7 -> 30,182.8, cooling 20,231.9 -> 20,337.4.
-_HEATING_BTUH = 30_182.8
+# 2026-11-16 east facade rebalance (dining triad, BED3 27x48, BED3-N gone): +11.7 sf glass.
+_HEATING_BTUH = 30_377.1
 # SENSIBLE, and the tonnage is the TOTAL over 12,000. The Manual-J-shaped cooling pass
 # (hourly glass at one house-wide peak hour + AED excursion, internal gains, occupant
 # latent) moved this from 22,154.4 and the tonnage from 1.8462: the hourly walk took 5.2
@@ -71,9 +72,9 @@ _HEATING_BTUH = 30_182.8
 # latent at 88/72 F against 75 F / 50% (+4,676.4).
 # 2026-11-11: RM-A-STUDIO is a craft room, six occupants not seven (notes/solar_gain_basis.md):
 # exactly -230 sensible and -200 latent off 16,525.7 / 6,077.3.
-_COOLING_SENSIBLE_BTUH = 16_295.7
+_COOLING_SENSIBLE_BTUH = 17_111.4
 _LATENT_BTUH = 5_877.3
-_COOLING_TONS = 1.8478
+_COOLING_TONS = 1.9157
 _INTERNAL_SENSIBLE_BTUH = 2_580.0
 
 # ``(kind, area_ft2, ua_btu_per_hour_f)`` in the order the report emits them.
@@ -86,12 +87,13 @@ _COMPONENTS = (
     # band was counted twice, −25.2 sf.
     # The court backup's EPS off (2026-11-04): the proud walkout loses R-8 (11.677 -> 11.766)
     # and the shell it bounds re-cuts walls, roof and glass by a few sf.
-    ("walls", 3151.6, 72.30),
+    # East facade rebalance (2026-11-16): +11.7 sf from walls to windows.
+    ("walls", 3149.0, 72.24),
     ("foundation_walls", 775.5, 28.604),
     ("foundation_walls_above_grade", 255.7, 11.766),
     ("roof", 1544.4, 29.059),
     ("slab", 1296.0, 25.468),
-    ("windows", 293.65, 49.381),
+    ("windows", 305.31, 51.590),
     # Two revised catalog pairs use assembled unit area, not their wider framed ROs. D-M-PORCH
     # left its held 60x80 void for its 62 9/16 x 82 unit (2026-10-29): +2.29 sf.
     ("doors", 128.30, 25.66),

@@ -333,7 +333,8 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     # 1156 on 2026-11-08: WIN-S-STUDY3's 16" south move drops its four packed stations.
     # 1164 on 2026-11-10: the 1-1/2" roof rise lifts the gable girts past one more course.
     # 1161 on 2026-11-14: the three door sill courses' blocks bill their own TLOK10 row.
-    assert row["count"] == 1161 and furring[0]["count"] == 198
+    # 1159 on 2026-11-16: WIN-S-BED3's move and WIN-S-BED3-N's removal repack the girt blocks.
+    assert row["count"] == 1159 and furring[0]["count"] == 198
 
 
 # --- hangers -------------------------------------------------------------------------

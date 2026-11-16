@@ -109,6 +109,17 @@ def _fix(tag, width, height, *, tempered=False) -> WindowType:
                    u=0.15, shgc=0.39, vt=0.57)
 
 
+# PROVISIONAL: a Drutex fixed mullion's visible face, two frame faces, pending the supplier.
+_DRUTEX_MULLION = mm(2 * 74)
+
+
+def _mulled_fix(tag, width, height, lites) -> WindowType:
+    unit = _fix(tag, width, height)
+    return unit.model_copy(update=dict(
+        lites=lites, mullion_face_width=_DRUTEX_MULLION,
+        source=f"{unit.source} Mulled: {lites} equal fixed lites; mullion face PROVISIONAL."))
+
+
 def _hp(tag, width, height) -> WindowType:
     return _drutex(tag, width, height, "fixed", _FIX_HP, DRUTEX_ALUCOVER_FIX,
                    u=0.14, shgc=0.39, vt=0.56)
@@ -124,7 +135,8 @@ WINDOW_TYPES = (
     _fix("WT-2736-FIX", inch(27.5), ft(3)),
     _fix("WT-2736-FIX-T", inch(27.5), ft(3), tempered=True),
     _fix("WT-2748-FIX-T", inch(27.5), ft(4), tempered=True),
-    _fix("WT-6348-FIX", inch(63), ft(4)),  # WIN-M-DINING-E, untempered at a 33" sill
+    _fix("WT-6348-FIX", inch(63), ft(4)),  # priced revert for WIN-M-DINING-E (DESIGN-LOG)
+    _mulled_fix("WT-8448-FIX", inch(84.5), ft(4), 3),  # WIN-M-DINING-E, untempered, 33" sill
     _tt("WT-2736-TT", inch(27.5), ft(3)),
     _tt("WT-2748-TT", inch(27.5), ft(4)),
     _tt("WT-2748-TT-T", inch(27.5), ft(4), tempered=True),

@@ -1,3 +1,53 @@
+## East facade rebalance (2026-11-16, owner)
+
+- **Why.** The upper row ended in a 14x24 slit (WIN-S-BED3 at 34'-0"). The lower row's 63"
+  picture (WIN-M-DINING-E) missed BED1/BED2's jambs by 10 3/4", and the right half read weak.
+- **Upper row.** WIN-S-BED3 is a WT-2748 at 32'-0" on the row's 3'-0" sill and 7'-0" head.
+  The row is an exact mirror on a 9'-4" beat: 4'-0"/13'-4"/22'-8"/32'-0".
+  - WIN-S-BED3-N is deleted (uid A4BAA399PA retired). The north upper storey is the pure
+    12'/24' mirror. BED3 keeps WIN-S-HALL-N, ~18 sf of glass against ~10.3 sf required.
+  - Both upper NE lines run sheathed into the corner (W-S-E4 34 1/4" return, W-S-N1 from 0),
+    so the second-floor DTT2Z pair (CN-S-BWHD-NE-E/-N) and its DF-L corner posts are gone.
+    The main floor's STHD14RJs stay: the kitchen windows are unchanged.
+  - Accepted: BED3's 40" headboard sits ~5" over the sill, the glass over the south half.
+- **Lower row.** WIN-M-DINING-E is a mulled triad, WT-8448-FIX: three equal 27 1/2" lites
+  in an 84 1/2" RO (173 3/4"..258 1/4"), still centred on 18'-0". Its outer jambs land on
+  BED1's north and BED2's south jambs.
+  - New engine fields: `WindowType.lites` / `mullion_face_width` (the mullion face is
+    PROVISIONAL, two Drutex frame faces, pending the supplier).
+  - Header: 2-ply 11 7/8" LVL off Boise's 7'-2" row (11 1/4", bolded: double jacks,
+    `header_jacks=2`); notes/dining_window_header.md.
+  - Bracing: BWL-W-A-E1 drops 19'-3" -> 14'-9" against 12.56 ft. The 32" pier south of the
+    triad is under the 32.2" interpolated minimum and is no longer a panel.
+  - RC15 + RC18 are one 2-gang bank at 165", RC16 moves to 267"; Ex 2 still carries the slab.
+- **Kitchen left alone.** WIN-M-KIT-E stays 14x24: FURN-M-KIT-WN1 at 73 1/2" blocks its head.
+- **Rejected:**
+  - Stretching the slits.
+  - A pantry swap.
+  - A 56" mulled pair at the dining table.
+  - Moving BED1/BED2 to 16'/20'.
+
+### Dining window: standing alternatives
+
+Both keep the tag `WIN-M-DINING-E`, its uid and its `window_framing_module` suppression.
+
+- **Two separately framed 27 1/2x48 at 16'-0" / 20'-0"** (stud lines 192"/240"; ROs
+  178 1/4"..205 3/4" and 226 1/4"..253 3/4"; a 20 1/2" pier). Add a second tag for the
+  north unit.
+  - For: standard bearing-cap ROs and headers, so the framing suppression and the LVL read
+    both retire. Same unit and blinds as LIV-E1/E2.
+  - Fully compliant 210.52 outlets at about 170" / 216" (the pier) / 262"; the Ex 2 note goes.
+  - Bracing 18'-2"; glass 18.3 sf.
+  - Against: a 4 1/2" jamb miss against BED1/BED2's inner jambs.
+- **The single 63"x48 picture** (`WT-6348-FIX`, still priced). Revert to these values:
+  - `type_ref="WT-6348-FIX"`, `position=from_node("N-M-SE", ft(15, 4.5))` (RO 184 1/2"..247 1/2").
+  - `header_spec='2-ply 9.5" LVL'`, no `header_jacks`, `published_span` on Boise's 5'-8"
+    row (8 5/8", not bolded), `span=ft(5, 8)`; git history of notes/dining_window_header.md.
+  - RC15 at 179", RC18 at 166", RC16 at 258 1/8" (single-gang).
+  - BWP-M-E1-0142 (uid CHBX85XNZF) start 141.75 width 42.75; BWP-M-E1-0248 start 247.5
+    width 153.5 (now BWP-M-E1-0258).
+  - Blind FT-CELLULAR-BLIND-6348 at 63" wide.
+
 ## Handrail fittings named; RL-A-FLIGHT-GUARD's newel moves east (2026-11-15, owner)
 
 - **Newel.** RL-A-FLIGHT-GUARD now starts at x=27'-1 1/2", not 25'-5 1/8". The old newel ran
