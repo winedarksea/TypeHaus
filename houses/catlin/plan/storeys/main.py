@@ -2083,7 +2083,9 @@ STAIRS = [
           # span (structural.stair_tread_span).
           stringer_spacing=inch(22),
           # Closed 3/4" ply risers under the carpet (notes/stair_riser_basis.md).
-          riser_thickness=inch(0.75), riser_material="plywood-subfloor"),
+          riser_thickness=inch(0.75), riser_material="plywood-subfloor",
+          # Type X over the closet, taped, unpainted (notes/stair_underside.md).
+          underside_material="gwb-x", underside_unpainted=True),
 ]
 
 # ST-B2M handrails (R311.7.8): one wall-mounted rail per flight, `serves_stair` rakes each

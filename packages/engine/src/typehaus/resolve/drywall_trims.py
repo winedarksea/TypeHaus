@@ -115,8 +115,18 @@ def resolve_drywall_trims(plan, model: ResolvedModel) -> list[Finding]:
         edges.door_beads(ctx)
         passage_beads(ctx)
         wall_end_boards(ctx)
+        _stair_underside_beads(ctx)
     model.drywall_trims = ctx.records
     return findings
+
+
+def _stair_underside_beads(ctx: TrimContext) -> None:
+    """Corner bead on each outside arris of a stair's gypsum underside."""
+    for stair in ctx.model.stairs:
+        for board in stair.undersides:
+            for a, b in board.free_edges:
+                ctx.add("outside_corner", board.room, stair.storey,
+                        ctx.standard.outside_corner_ref, math.dist(a, b), (stair.tag,))
 
 
 def ceiling_z(model: ResolvedModel, room: ResolvedRoom, xy, fallback: float | None) -> float:

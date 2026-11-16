@@ -250,6 +250,8 @@ MEMBER_CATEGORY_TRADE: dict[str, str] = {
     "stair_subdeck": "framing",
     # A bought trim board, with the base and casing.
     "stair_skirt": "carpentry",
+    # A stair's gypsum underside (resolve/stair_undersides.py).
+    "stair_soffit": "drywall",
     "gutter": "gutters",
     "rebar": "concrete",
     **{k: _TRADE[k] for k in ("insulation", "airgap", "furring", "cladding")},

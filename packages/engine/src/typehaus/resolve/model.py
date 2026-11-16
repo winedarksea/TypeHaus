@@ -799,6 +799,29 @@ class StairFinishPart:
 
 
 @dataclass(frozen=True)
+class StairUnderside:
+    """One gypsum board under a stair (``resolve/stair_undersides.py``); drawn as its member.
+
+    ``role`` is ``flight`` | ``landing`` (the faces ``OverheadIndex`` reads) | ``return`` |
+    ``face``. The board's underside runs ``z_start_m`` at ``run_axis[0]`` to ``z_end_m`` at
+    ``run_axis[1]``. ``free_edges`` are the outside arrises (3D segments) that take bead.
+    """
+
+    key: str
+    role: str
+    material_ref: str
+    thickness_m: float
+    area_m2: float
+    outline: Ring
+    run_axis: tuple[tuple[float, float], tuple[float, float]]
+    z_start_m: float
+    z_end_m: float
+    coating: str | None
+    room: str | None
+    free_edges: tuple[tuple[tuple[float, float, float], tuple[float, float, float]], ...] = ()
+
+
+@dataclass(frozen=True)
 class ResolvedStair:
     """A code-sized stair and its generated framing members."""
 
@@ -835,6 +858,7 @@ class ResolvedStair:
     finish_thickness_m: float = 0.0
     finish_parts: tuple[StairFinishPart, ...] = ()
     winder_turn: WinderLayout | None = None
+    undersides: tuple[StairUnderside, ...] = ()
 
 
 @dataclass(frozen=True)

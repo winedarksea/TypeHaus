@@ -110,7 +110,7 @@ _TRUSS_KINDS = frozenset({"roof_truss"})
 # the elevation-arithmetic bug this check exists to catch.
 _ENVELOPE_SKIN_KINDS = values_where(interference_skin=True) | frozenset({
     "strapping", "fascia", "soffit", "gutter", "ridge_cap", "ridge_closure", "corner_trim",
-    "drip_edge"}) \
+    "drip_edge", "stair_soffit"}) \
     | TRUSS_CATEGORIES
 # Rake framing (roof_gable.py): outlookers run over the dropped gable truss to the barge.
 _RAKE_KINDS = frozenset({"outlooker", "barge_rafter"})

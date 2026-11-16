@@ -394,7 +394,7 @@ class TreatedFramingFastenerRules:
     # wears (finish nailing). Stair spacers are excluded by connection, not category.
     excluded_categories: frozenset = frozenset({
         "strapping", "truss_block", "truss_blocking", "furring",
-        "riser", "tread", "winder", "stair_subdeck", "stair_skirt"})
+        "riser", "tread", "winder", "stair_subdeck", "stair_skirt", "stair_soffit"})
     # The construction-return kind a sill plate is resolved as.
     sill_return_kind: str = "bearing_plate"
 

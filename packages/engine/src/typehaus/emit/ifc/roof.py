@@ -68,6 +68,8 @@ _COVERING_PREDEFINED_TYPE = {
     "truss_corner_cap": "CLADDING",
     # A stair skirt is base raked up the flight, filed as the base runs are.
     "stair_skirt": "SKIRTINGBOARD",
+    # A stair's gypsum underside, inside its IfcStair.
+    "stair_soffit": "CEILING",
 }
 # The gutter is a drainage accessory rather than a member or a finish covering. The vented
 # ridge cap is *not* here: it is formed trim over the roofing and files as an IfcCovering

@@ -707,6 +707,11 @@
 # it was billed over every wall top, and the roof ceilings at the wall rate below). Distinct
 # from the `[envelope_layers]` "gwb" row, which is wall lining priced by the net SF.
 "gwb" = { material = { low = 17, high = 26 }, labour = { low = 48, high = 85 } }  # 140 sheets ceiling + 2 opening lining (2026-11-05)
+# Stair undersides (`Stair.underside_*`, 2026-11-16), by the sheet: raked boards, returns and
+# beaded arrises in small pieces, so labour runs ~1.5x the flat ceiling rate. ESTIMATE.
+# gwb-x material off the [envelope_layers] 5/8" Type X rate ($0.60-1.00/SF x 32).
+"gwb:stair soffit" = { material = { low = 17, high = 26 }, labour = { low = 75, high = 130 } }  # 4 sheets, ST-M2S + ST-S2A
+"gwb-x:stair soffit" = { material = { low = 19, high = 32 }, labour = { low = 75, high = 130 } }  # 3 sheets, ST-B2M, taped unpainted
 "plywood-subfloor" = { material = { low = 42, high = 62 }, labour = { low = 18, high = 32 } }  # 100 sheets — FS-ATTIC's 40 came back off the sanded row below when RM-A-STUDIO took sheet vinyl (2026-09-09)
 # FS-ATTIC only (2026-08-27). Same 23/32 T&G panel as the row above in every structural
 # sense, but ordered sanded-face and plugged because the two unfinished lofts walk on it
@@ -6005,7 +6010,6 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # cassette arrives assembled, so the setting half sits nearer the low end.
 "DT-POCKET-INT-36" = { material = { low = 175, high = 590 }, labour = { low = 260, high = 560 } }  # 2 ea (D-M-PANTRY, D-M-LAUN), slab and installation; frame kits above
 "DT-POCKET-INT-36-PRIV" = { material = { low = 175, high = 590 }, labour = { low = 260, high = 560 } }  # 1 ea, D-B-BATH; its lock bills in [allowances]
-"gwb-under-stair-r302-7" = { low = 300, high = 650 }  # 1/2" gypsum on ST-B2M's underside over the closet (R302.7), ~70 SF taped; no Stair field models it (2026-11-09)
 "DT-INT-BYPASS48" = { material = { low = 200, high = 500 }, labour = { low = 100, high = 220 } }  # 1 ea — stock molded pair + track, to solid-core or mirrored
 # D-M-BED2 since 2026-10-05: a push-set in-swing in a site-built kerfed hardwood jamb (see
 # the type in plan/storeys/main.py). ESTIMATE, built up from parts and not quoted:

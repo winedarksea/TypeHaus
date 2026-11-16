@@ -29,7 +29,7 @@ from typehaus.model.registry import register_constructor, register_element
 from typehaus.model.stair_winders import WinderFramingSpec, WinderTurnSpec
 from typehaus.model.trim import EaveTrim
 from typehaus.model.tub_enclosure import TubEnclosureSpec
-from typehaus.quantities import Length, Pitch, Point2D
+from typehaus.quantities import Length, Pitch, Point2D, inch
 
 
 class WallLiningException(Element):
@@ -187,6 +187,10 @@ class Stair(Element):
     # open riser, graded by ``code.R311_7_5_1_open_risers``.
     riser_thickness: Length | None = None
     riser_material: str | None = None
+    # A gypsum underside (``resolve/stair_undersides.py``); ``None`` leaves the framing exposed.
+    underside_material: str | None = None
+    underside_thickness: Length = inch(5 / 8)
+    underside_unpainted: bool = False  # taped, no coat (``Room.unpainted``'s spelling)
     # The nosing at the arrival floor's edge (R311.7.5.3 counts it): a lip over the head
     # riser, tread-deep, projecting the flight's nosing. ``None`` falls back to the house
     # ``MillworkStandard``'s tread stock for a flight it scopes, else no stairhead nosing.

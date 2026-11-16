@@ -2231,8 +2231,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   `W-B-STR3` (west), `ED-B-CLOSET-LT2` on `W-B-CN` under the lower landing (east). Both are on
   `ED-B-CLOSET-SW` outside the door and the blank-face `ED-B-CLOSET-GFCI` beside it, whose load
   side covers the receptacles (210.8(A)(5)); no check sees a lampholder's receptacle. Plain storage: `EQ-B-WH` left it for the workshop the day it
-  arrived (2026-11-09). R302.7 gypsum under the flight is a `prices.toml` allowance:
-  no `Stair` field models it.
+  arrived (2026-11-09). Its gypsum underside is derived from `ST-B2M.underside_*` (5/8"
+  Type X, taped, unpainted; `notes/stair_underside.md`).
   `LR-B-STAIR-RAIL` lies under the flight rather than along it — one `Mount` elevation for
   the whole `LightRun`, measured off the slab, so it cannot rake.
   - `W-B-WELL` gives the well partition its faces only — `resolve/stairs/u_split.py`

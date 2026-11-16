@@ -125,6 +125,10 @@ a release or for exhaustive local verification.
   cripples bear) at or above `HeaderStandard.min_bearing_header`, with its NJ; a NONBEARING one
   up to 8' takes the R602.7.4 flat 2x within 24" of the plates. No row → the old ladder as a
   placeholder, `structural.header_span` UNKNOWN; `structural.wall_role_load` grades the roles.
+- **A stair underside is derived from `Stair.underside_material`** (`resolve/stair_undersides.py`):
+  `stair_soffit` boards under each flight's rake and landing, plumb returns and free-side faces,
+  clipped at a ceiling over them, coated with the room's ceiling coat; `ResolvedStair.undersides`
+  bills in `[sheet_goods]` "stair soffit", beads in `[drywall_trims]`, and is overhead for R311.7.2.
 - **A pour slab stops at what it is cast against; a rim band has one wall** (decision #107):
   `resolve/slab_clip.py` cuts flush footings and through-walls out of the slab; read the slab
   as a floor through `floor_plan`. A wall dropping to a foundation owns its band outright.

@@ -117,6 +117,11 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
                 areas[("opening lining", layer.material_ref, layer.thickness.meters,
                        layer_sheet_length_in(layer))] += area
 
+    # A stair's gypsum underside, at its true raked area (``resolve/stair_undersides.py``).
+    for stair in model.stairs:
+        for board in stair.undersides:
+            areas[("stair soffit", board.material_ref, board.thickness_m, None)] += board.area_m2
+
     # A free wall end's strip of the face board.
     for end in model.wall_ends:
         areas[("wall end", end.material_ref, end.thickness_m, None)] += end.area_m2

@@ -26,7 +26,8 @@ STAIR_HEADROOM = ft(6, 8)  # R311.7.2
 
 #: Members that are the flight's own walking structure. A partition, a post or a hanger
 #: stands to the floor below and would drag the prism down over the storage under it.
-_STRUCTURE = frozenset({"tread", "winder", "landing", "landing_framing", "stringer"})
+_STRUCTURE = frozenset({"tread", "winder", "landing", "landing_framing", "stringer",
+                        "stair_soffit"})
 
 
 @dataclass(frozen=True)

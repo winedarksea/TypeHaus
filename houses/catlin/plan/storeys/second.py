@@ -1513,7 +1513,9 @@ STAIRS = [
           # span (structural.stair_tread_span).
           stringer_spacing=inch(22),
           # Closed risers, oak-riser via MW-STANDARD (notes/stair_riser_basis.md).
-          riser_thickness=inch(0.75)),
+          riser_thickness=inch(0.75),
+          # Painted gypsum underside (notes/stair_underside.md).
+          underside_material="gwb"),
 ]
 
 # W-S-WELL-KNEE's cap: a 5/4 red oak tread ripped to 5 1/4", 3/8" proud of each gypsum face,

@@ -87,7 +87,8 @@ def test_carpet_is_ifc_covering_under_stair(catlin_ifc_path):
     model = ifcopenshell.open(str(catlin_ifc_path))
     [stair] = [item for item in model.by_type("IfcStair") if item.Name == "ST-B2M"]
     children = [item for relation in stair.IsDecomposedBy for item in relation.RelatedObjects]
-    coverings = [item for item in children if item.is_a("IfcCovering")]
+    coverings = [item for item in children if item.is_a("IfcCovering")
+                 and item.PredefinedType != "CEILING"]  # the gypsum underside is its own
     assert len(coverings) == 44  # 41 carpet faces + two carpet lips + the LVP stairhead nose
     assert any(item.Name == "ST-B2M/riser-landing:face" for item in coverings)
     assert all(item.Representation is not None for item in coverings)

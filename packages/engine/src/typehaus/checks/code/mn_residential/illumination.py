@@ -417,16 +417,11 @@ def under_stair_protection(ctx: CheckContext) -> list[Finding]:
     if not enclosed:
         return [_pass(cid, "no enclosed usable space sits under a stair and opens through a "
                            "door, so R302.7 has nothing to protect", code)]
+    from typehaus.checks.code.mn_residential.under_stair_soffit import grade_enclosed
+
     for stair, room in enclosed:
-        finishes = _gypsum_finishes(ctx, room)
-        if finishes:
-            out.append(_pass(cid, f"{room.tag} under {stair.tag} is lined with "
-                                  f"{', '.join(sorted(finishes))}", code))
-        else:
-            out.append(_fail(cid, f"{room.tag} is enclosed usable space under {stair.tag}, "
-                                  "reached by a door, and its bounding walls carry no gypsum "
-                                  "finish; R302.7 requires 1/2\" gypsum board on the enclosed "
-                                  "side", (room.tag, stair.tag), code))
+        out.append(grade_enclosed(ctx, cid, code, stair, room, _gypsum_finishes(ctx, room),
+                                  _stair_outline(stair)))
     return out
 
 

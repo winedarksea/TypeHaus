@@ -86,8 +86,8 @@ def test_framing_takeoff_reconciles_and_groups(catlin_model) -> None:
     assert kit, "catlin has two pocket doors; this should not be empty"
     # And the eave strip-in, a membrane billed by area in `takeoff/envelope`.
     membrane = [m for m in members if m.category == "membrane"]
-    # And stair skirts, bought trim billed by the LF in `interior_trim`.
-    skirts = [m for m in members if m.category == "stair_skirt"]
+    # And stair skirts (bought trim, `interior_trim`) and gypsum undersides (`sheet_goods`).
+    skirts = [m for m in members if m.category in ("stair_skirt", "stair_soffit")]
     # Plus the framed ceiling linings, derived for the order only (→ takeoff/ceiling_framing).
     ceiling = ceiling_lining_members(catlin_model)
     assert ceiling, "catlin frames the sauna, plant-room and ESS ceilings; this should not be empty"
@@ -326,7 +326,7 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
     hardware = sum(1 for m in members if m.category == "hanger" and m.material == "steel")
     kit = sum(1 for m in members if m.supplied_by)
     membrane = sum(1 for m in members if m.category == "membrane")
-    skirts = sum(1 for m in members if m.category == "stair_skirt")
+    skirts = sum(1 for m in members if m.category in ("stair_skirt", "stair_soffit"))
     ceiling = len(ceiling_lining_members(catlin_model))
     assert sum(int(row["pieces"]) for row in bom["framing"]) == (
         len(members) - ripped - not_lumber - straps - hardware - kit - membrane - skirts

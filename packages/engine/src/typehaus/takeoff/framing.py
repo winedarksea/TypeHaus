@@ -238,7 +238,7 @@ def framing_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     # A framed ceiling lining is billed here as the sticks it is (→ takeoff/ceiling_framing).
     for member in (*model.all_members(), *ceiling_lining_members(model)):
         # A stair skirt is a bought trim board, billed by the LF in ``interior_trim``.
-        if (member.category in ("stair_subdeck", "stair_skirt")
+        if (member.category in ("stair_subdeck", "stair_skirt", "stair_soffit")
                 or (member.category == "hanger" and member.connection
                     and member.connection.startswith("winder-box-rim:"))):
             continue

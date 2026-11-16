@@ -2,7 +2,8 @@
 both read, so the two cannot disagree about what is overhead.
 
 By default it is structure only: floor decks (outside their voids) at their deepest framing,
-roof planes at their structural underside, soffit faces. That is what R311.7.2 measures.
+roof planes at their structural underside, soffit faces, and a stair's gypsum underside (raked
+along its flight, flat under a landing; tagged with the stair). That is what R311.7.2 measures.
 ``finishes=True`` adds each room's flat finished ceiling, which is what a canopy screws to.
 """
 
@@ -11,7 +12,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
-from shapely.geometry import Point, Polygon
+from shapely.geometry import LineString, Point, Polygon
 
 from typehaus.resolve.roof_geometry import roof_underside_at
 
@@ -52,6 +53,15 @@ class OverheadIndex:
                     self._add_flat(Polygon(ceiling.outline), ceiling.z0_m, ceiling.tag)
         self._roofs = [(Polygon(roof.footprint), roof) for roof in model.roofs
                        if roof.footprint]
+        # (cover, run axis, z at its two ends, tag): z interpolates along the axis.
+        self._raked: list[tuple[Any, Any, float, float, str]] = []
+        for stair in model.stairs:
+            for board in stair.undersides:
+                if board.role in ("flight", "landing") and len(board.outline) >= 3:
+                    cover = Polygon(board.outline).buffer(-PLAN_EPS_M)
+                    if not cover.is_empty:
+                        self._raked.append((cover, LineString(board.run_axis),
+                                            board.z_start_m, board.z_end_m, stair.tag))
 
     def _add_flat(self, polygon: Any, z_m: float, tag: str) -> None:
         cover = polygon.buffer(-PLAN_EPS_M)
@@ -66,7 +76,8 @@ class OverheadIndex:
         """Anything at all over this point in plan, at any height."""
         point = Point(x, y)
         return (any(p.contains(point) for p, _, _ in self._flat)
-                or any(p.contains(point) for p, _ in self._roofs))
+                or any(p.contains(point) for p, _ in self._roofs)
+                or any(p.contains(point) for p, *_ in self._raked))
 
     def lowest_above(self, x: float, y: float, z_m: float) -> Overhead | None:
         """The lowest surface over ``(x, y)`` that is higher than ``z_m``."""
@@ -82,4 +93,10 @@ class OverheadIndex:
                 if underside > z_m + OVERHEAD_EPS_M and (
                         lowest is None or underside < lowest.z_m):
                     lowest = Overhead(underside, roof.tag)
+        for polygon, axis, z_start, z_end, tag in self._raked:
+            if polygon.contains(point):
+                underside = z_start + (z_end - z_start) * axis.project(point, normalized=True)
+                if underside > z_m + OVERHEAD_EPS_M and (
+                        lowest is None or underside < lowest.z_m):
+                    lowest = Overhead(underside, tag)
         return lowest
