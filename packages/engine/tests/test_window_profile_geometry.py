@@ -20,7 +20,8 @@ def _projected_width(ring, tangent):
 
 
 def test_max_light_units_draw_35_mm_faces_and_a_65_mm_sill_rail(catlin_model_ro):
-    # The three 14x24s and, since 2026-11-13, the nine escape units (Andersen retired).
+    # The three 14x24s, since 2026-11-13 the nine escape units (Andersen retired), and since
+    # 2026-11-16 WIN-S-BED3.
     # The sill rail carries the provisional 30 mm adaptor over the pan's back dam.
     model = catlin_model_ro
     types = {kind.tag: kind for kind in model.plan.library.window_types}
@@ -41,7 +42,7 @@ def test_max_light_units_draw_35_mm_faces_and_a_65_mm_sill_rail(catlin_model_ro)
         assert rail.z1_m - rail.z0_m == pytest.approx(mm(65).meters)
         viewer = {part["key"]: part for part in opening_parts_json(model, opening)}
         assert viewer["frame"]["solids"][2]["z0_m"] == pytest.approx(head.z0_m, abs=1e-6)
-    assert count == 12
+    assert count == 13
 
 
 def test_alucover_faces_and_stool_use_the_adaptor_sash_bottom(catlin_model_ro):
@@ -83,3 +84,17 @@ def test_alucover_faces_and_stool_use_the_adaptor_sash_bottom(catlin_model_ro):
 def test_profile_dimensions_reject_invalid_measurements(field, value):
     with pytest.raises(ValidationError):
         WindowType(tag="WT", width=inch(27), height=inch(48), **{field: mm(value)})
+
+
+def test_a_mulled_unit_splits_its_glass_into_equal_lites(catlin_model_ro):
+    model = catlin_model_ro
+    opening = next(o for o in model.openings if o.tag == "WIN-M-DINING-E")
+    assert opening.lites == 3
+    wall = model.wall(opening.host_wall)
+    _, tangent, _, _ = wall_frame(wall)
+    parts = {part.key: part for part in opening_parts(wall, opening, None)}
+    assert len(parts["mullion"].solids) == 2
+    lites = [_projected_width(s.ring, tangent) for s in parts["glass"].solids]
+    assert len(lites) == 3 and max(lites) - min(lites) < 1e-9
+    mullion = _projected_width(parts["mullion"].solids[0].ring, tangent)
+    assert mullion == pytest.approx(opening.mullion_face_width_m)

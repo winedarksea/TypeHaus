@@ -250,6 +250,9 @@ class WindowType(HausModel):
     # interior stool-bearing rail height remains a separate dimension below.
     frame_head_face_width: Length | None = None
     frame_sill_face_width: Length | None = None
+    # A mulled unit: equal lites split by fixed mullions. None face = 2 x frame face.
+    lites: int = 1
+    mullion_face_width: Length | None = None
     # The lower rail's top above the frame bottom (sill adaptor included), and how far an
     # inward sash laps below it. The stool sits at rail - overlap; None keeps the drawn
     # frame face and no lap.
@@ -287,7 +290,10 @@ class WindowType(HausModel):
             if deduction is not None and (not math.isfinite(deduction.meters)
                                           or deduction.meters < 0):
                 raise ValueError(f"{self.tag}: net clear {axis} deduction must be nonnegative")
-        for field in ("frame_face_width", "frame_head_face_width", "frame_sill_face_width"):
+        if self.lites < 1:
+            raise ValueError(f"{self.tag}: lites must be at least 1")
+        for field in ("frame_face_width", "frame_head_face_width", "frame_sill_face_width",
+                      "mullion_face_width"):
             face = getattr(self, field)
             if face is not None and not (math.isfinite(face.meters) and face.meters > 0):
                 raise ValueError(f"{self.tag}: {field} must be positive")

@@ -532,7 +532,10 @@ def _window_face_widths(plan: PlanModel, kind: str, type_ref: str | None) -> dic
     return {"frame_face_width_m": frame.meters if frame is not None else None,
             "sash_face_width_m": sash.meters if sash is not None else 0.0,
             "frame_head_face_width_m": head.meters if head is not None else None,
-            "frame_sill_face_width_m": sill.meters if sill is not None else None}
+            "frame_sill_face_width_m": sill.meters if sill is not None else None,
+            "lites": window_type.lites,
+            "mullion_face_width_m": (window_type.mullion_face_width.meters
+                                     if window_type.mullion_face_width is not None else None)}
 
 
 def _blind_depth(el, rw, findings: list[Finding]) -> float | None:

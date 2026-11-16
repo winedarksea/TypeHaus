@@ -528,6 +528,8 @@ class ResolvedOpening:
     sash_face_width_m: float = 0.0
     frame_head_face_width_m: float | None = None
     frame_sill_face_width_m: float | None = None
+    lites: int = 1
+    mullion_face_width_m: float | None = None
     effective_frame_material_ref: str | None = None
     effective_leaf_material_ref: str | None = None
     # A typed door's leaf, unit, RO and clear passage (``resolve/door_sizing``).

@@ -355,9 +355,22 @@ def _opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
     else:
         # A seated unit's glass rides in its frame, wherever the frame landed in depth.
         glass_offset = frame_offset if seat is not None else 0.0
-        parts.append(GPart(key="glass", material_key=_GLASS_KEY, solids=(
-            box(max(_OPENING_MIN_PANEL_DIMENSION_M, clear_width), panel_height,
-                _WINDOW_GLAZING_THICKNESS_M, 0.0, panel_elev, glass_offset),)))
+        lites = getattr(opening, "lites", 1) if opening.kind == "window" else 1
+        if lites > 1:
+            # A mulled unit: equal lites between fixed mullions on the frame's depth.
+            mullion_w = min(getattr(opening, "mullion_face_width_m", None)
+                            or 2.0 * frame_width, clear_width / (2.0 * lites))
+            lite_w = (clear_width - (lites - 1) * mullion_w) / lites
+            centres = [-clear_width / 2.0 + lite_w / 2.0 + i * (lite_w + mullion_w)
+                       for i in range(lites)]
+            parts.append(GPart(key="mullion", material_key=frame_key, solids=tuple(
+                box(mullion_w, panel_height, frame_depth, c + (lite_w + mullion_w) / 2.0,
+                    panel_elev, frame_offset) for c in centres[:-1])))
+        else:
+            lite_w, centres = max(_OPENING_MIN_PANEL_DIMENSION_M, clear_width), [0.0]
+        parts.append(GPart(key="glass", material_key=_GLASS_KEY, solids=tuple(
+            box(lite_w, panel_height, _WINDOW_GLAZING_THICKNESS_M, c, panel_elev,
+                glass_offset) for c in centres)))
         if opening.kind == "door" and operation in (None, DoorOperation.SWING):
             lever_list = lever_solids(box, -hinge_sign * clear_width / 2.0, hinge_sign,
                                       (-_WINDOW_GLAZING_THICKNESS_M / 2.0,
