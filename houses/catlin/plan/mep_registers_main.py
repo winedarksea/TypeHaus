@@ -223,11 +223,13 @@ REGISTERS_MAIN = [
     # storey's low-pressure end by design, so the ERV pulls stair air through this louver.
     #
     # One stair-side plate covers a cut in the painted MDO; the coat nook behind is open.
-    # Keep the hosted station in its existing clear bearing-wall bay. The 42in mount is
-    # the face bottom above finished LVP, not the centre of the nominal 12x10 opening.
+    # Keep the hosted station in its existing clear bearing-wall bay. The 37in mount is
+    # the face bottom above finished LVP, not the centre of the nominal 12x10 opening; at
+    # 42in its top ran 2.9" over ST-M2S's landing underside and into the landing ledger on
+    # W-M-STRW (2026-11-16, found by the stair underside).
     Register(uid="MW7W7SBZ65", tag="REG-M-XFER-MUD", kind=DuctSystem.TRANSFER, room="RM-M-LIVING",
             type_ref="REG-T-TRANSFER-MUD-1210",
-            mount=Mount(kind=MountKind.WALL, elevation=ft(3, 6)),
+            mount=Mount(kind=MountKind.WALL, elevation=ft(3, 1)),
              location=Location(attachment=WallAttachment(
                  wall_ref="W-M-STRW", face="left", distance_from_start=inch(17.125),
                  normal_gap=inch(0), rotation_offset=deg(-180)))),
@@ -235,11 +237,11 @@ REGISTERS_MAIN = [
 
 
 # Cut only the painted 1/2in MDO on the stair side (left/exterior). The sill is off
-# W-M-STRW's wall datum, while the register's 42in mount is its FACE BOTTOM above LVP.
-# Face centre: 42 + 1.02559055 + 11.75/2 = 48.90059055in; nominal hole bottom is 5in lower.
+# W-M-STRW's wall datum, while the register's 37in mount is its FACE BOTTOM above LVP.
+# Face centre: 37 + 1.02559055 + 11.75/2 = 43.90059055in; nominal hole bottom is 5in lower.
 TRANSFER_PANEL_OPENINGS_MAIN = [
     RoughOpening(uid="MUDXFER001", tag="AO-M-XFER-MUD", host="W-M-STRW",
                  position=from_node("N-M-N2", inch(11.125)),
-                 width=inch(12), height=inch(10), sill_height=inch(43.90059055),
+                 width=inch(12), height=inch(10), sill_height=inch(38.90059055),
                  depth=inch(0.5), depth_from="exterior", framing_required=False),
 ]

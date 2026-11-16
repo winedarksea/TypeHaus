@@ -295,7 +295,7 @@ MAIN_BACKING = [
     # W-M-STRW's coat-nook hook rails: painted poplar 1x4 between the exposed studs, flat on
     # the back of the 1/2" MDO (the "left", stair-side, stud face). Bottoms 42"/60" AFF; the
     # LVP stands +1". Visible trim, not concealed backing (reviewer, 2026-10-23). The low rail
-    # starts at the 34'-0" stud: the bay north of it is REG-M-XFER-MUD's louver (42"-52" AFF).
+    # starts at the 34'-0" stud: the bay north of it is REG-M-XFER-MUD's louver (37"-49" AFF).
     WallBacking(uid="D84QQ4FE73", tag="BK-M-STRW-HOOK-LOW", wall_ref="W-M-STRW", face="left",
                 start=inch(24), elevation=inch(43), height=inch(3.5), profile="0.75x3.5",
                 material_ref="poplar-trim-paint", purpose="coat hook rail, low (42 in. AFF)"),

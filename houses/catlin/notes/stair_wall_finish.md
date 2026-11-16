@@ -28,7 +28,7 @@ behind the gypsum edge.
 back of the MDO, with bottoms at 42 and 60 inches above the finished floor
 (`BK-M-STRW-HOOK-LOW`/`-HIGH`). Glue and screw them through to the MDO and toe-screw them to the
 studs; the hooks screw into the rail. The low rail stops at the 34'-0" stud, because the bay
-north of it holds `REG-M-XFER-MUD`'s transfer louver at 42-52 inches. Prime and paint them with
+north of it holds `REG-M-XFER-MUD`'s transfer louver at 37-49 inches. Prime and paint them with
 the MDO.
 
 **Product references:** [APA panel thickness labeling](https://www.apawood.org/guides-tools-training/technical-document-library/technical-topics/panel-thickness-tolerances-and-labeling/),
