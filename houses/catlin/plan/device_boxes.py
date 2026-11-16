@@ -82,9 +82,22 @@ AIRFOIL_ROUND = Product(tag="PROD-LESSCO-AIRFOIL-ROUND", brand="Lessco / Airfoil
                         url="https://www.airfoilinc.com/",
                         source="Basis of design, or equal: ED-S-PLANT-SPOT's sconce box. notes/plant_room.md, K6.")
 
+# ED-M-FIRE-RC (owner, 2026-11-16): the fireplace pocket's 2 3/8" strip takes no wall plate, so a
+# welded handy box screws to the pocket's back under a Decora/GFCI handy-box cover. The cover is
+# the faceplate. Nominal 2 5/16" wide (Hubbell's table reads 2.425"): MEASURE IT ON DELIVERY.
+# Eight 3/4" KOs and no internal clamps (external NM connectors), so 314.16(B)(2) adds nothing.
+_HANDY_SOURCE = "Owner decision 2026-11-16, notes/wiring_device_geometry.md §4."
+RACO_674 = Product(tag="PROD-RACO-674", brand="RACO", model="674",
+                   name="4 x 2 in. handy box, welded, 2-1/8 in. deep, 16.5 cu. in.",
+                   url="https://hubbellcdn.com/specsheet/RACO-674-SPEC-EN.pdf", source=_HANDY_SOURCE)
+RACO_862 = Product(tag="PROD-RACO-862", brand="RACO", model="862",
+                   name="4 x 2 in. handy box cover, Decora/GFCI, nominal 4-3/16 x 2-5/16 in.",
+                   url="https://hubbellcdn.com/specsheet/RACO-862-SPEC-EN.pdf", source=_HANDY_SOURCE)
+
 # Gang banks (resolve/device_banks.py): SuperBlue 3- and 4-gang nail-on, same family and depth
 # as BH235A. Carlon SuperBlue catalog (via pdf.lowes.com): BH353A 5 7/8 x 3 3/4 x 3 1/2,
-# BH464A 7 3/4 x 3 7/8 x 3 1/2 (a distributor says 3.18 deep): VERIFY on ABB's catalog.
+# BH464A 7 3/4 x 3 7/8 x 3 1/2; ABB's eCatalog lists 7.46 x 3.53 x 3.18 (body, not flange).
+# The row keeps the catalog envelope: the deeper figure is the conservative cavity read.
 CARLON_BH353A = Product(tag="PROD-CARLON-BH353A", brand="Carlon", model="BH353A",
                         name="3-gang SuperBlue nail-on new-work box, 53 cu. in., 3-1/2 in. deep",
                         url="https://www.elliottelectric.com/P/Item/TAB/BH353A", source=_SOURCE)
@@ -144,14 +157,20 @@ PLATE_CW_4_WH = Product(tag="PROD-LUTRON-CW-4-WH", brand="Lutron", model="CW-4-W
     name="Claro Decora wall plate, 4-gang, white",
     url="https://assets.lutron.com/a/documents/369682.pdf",
     source=_PLATE_SOURCE)
+# KET1's round 6-20R beside a Decora duplex (owner, 2026-11-16): no Leviton plate pairs them.
+PLATE_MULBERRY_32442 = Product(tag="PROD-MULBERRY-32442", brand="Mulberry", model="32442",
+    name="2-gang thermoplastic wall plate, 1 single receptacle (1.405 in.) + 1 Decora/GFI, white",
+    url="https://mulberrymetal.com/shop/wallplates/thermoplastic/2-gang-thermoplastic/2-gang-with-1-single-receptacle-opening-1-405-in-id-1-gfi-standard-size-thermoplastic-wallplate/",
+    source=_PLATE_SOURCE)
 PLATE_80704_W = Product(tag="PROD-LEVITON-80704-W", brand="Leviton", model="80704-W",
     name="Standard single-receptacle wall plate (1.406 in. hole), white",
     url="https://www.leviton.com/products/80704-w",
     source=_PLATE_SOURCE)
 
-BOX_PRODUCTS = (PLATE_PJ26_W, PLATE_PJ262_W, PLATE_PJ263_W, PLATE_PJ264_W, PLATE_80401_NW, PLATE_80409_NW, PLATE_80411_NW, PLATE_80412_NW, PLATE_CW_1_WH, PLATE_CW_2_WH, PLATE_CW_3_WH, PLATE_CW_4_WH, PLATE_80704_W,
+BOX_PRODUCTS = (PLATE_PJ26_W, PLATE_PJ262_W, PLATE_PJ263_W, PLATE_PJ264_W, PLATE_80401_NW, PLATE_80409_NW, PLATE_80411_NW, PLATE_80412_NW, PLATE_CW_1_WH, PLATE_CW_2_WH, PLATE_CW_3_WH, PLATE_CW_4_WH, PLATE_80704_W, PLATE_MULBERRY_32442,
                 RACO_232, CARLON_BH353A, CARLON_BH464A, RACO_808C, RACO_809C, RACO_768, CARLON_B122A, CARLON_BH235A,
-                CARLON_B520A, RACO_192, RACO_753, ARLINGTON_DVFR1W, AIRFOIL_1G, AIRFOIL_ROUND)
+                CARLON_B520A, RACO_192, RACO_753, ARLINGTON_DVFR1W, AIRFOIL_1G, AIRFOIL_ROUND,
+                RACO_674, RACO_862)
 
 BOX_STANDARD = [
     BoxStandard(
@@ -198,6 +217,9 @@ BOX_STANDARD = [
             PlateRow(family="standard", openings=("single",),
                      product_ref="PROD-LEVITON-80704-W", size=(inch(2.75), inch(4.5)),
                      thickness=inch(0.22), material_ref="device-white"),
+            PlateRow(family="standard", openings=("single", "decora"),
+                     product_ref="PROD-MULBERRY-32442", size=(inch(4.57), inch(4.5)),
+                     thickness=inch(0.07), material_ref="device-white"),
         ),
         rows=(
             BoxRow(mounting="surface", gangs=1, box_product_ref="PROD-RACO-232",
@@ -232,6 +254,10 @@ BOX_STANDARD = [
                    box_product_ref="PROD-ARLINGTON-DVFR1W",
                    box_size=(inch(4.2), inch(6.698), inch(3.875)), box_volume_in3=21.0,
                    block_profile="2x4", plate_included=True),
+            BoxRow(mounting="flush", gangs=1, use="handy", box_product_ref="PROD-RACO-674",
+                   cover_product_ref="PROD-RACO-862",
+                   box_size=(inch(2.125), inch(4), inch(2.125)), box_volume_in3=16.5,
+                   internal_clamps=False, plate_included=True),
             BoxRow(mounting="flush", gangs=1, use="air-sealed",
                    box_product_ref="PROD-LESSCO-AIRFOIL-1G",
                    box_size=(inch(2.5), inch(4), inch(3.5)), box_volume_in3=20.0),

@@ -60,8 +60,8 @@ T5380 = _prod("T5380-W", "Decora surge duplex, 20 A TR, white",
               _LEV + "t5380")
 T6525 = _prod("T6525-W", "Decora guide-light duplex, 15 A TR, white")
 GFNL2 = _prod("GFNL2-W", "SmartlockPro GFCI with dusk-sensing LED guide light, 20 A TR, white")
-T5020 = _prod("T5020-W", "Decora single receptacle 5-20R, TR, white", "https://leviton.com/")
-T5461 = _prod("T5461-W", "Decora 6-20R receptacle, 20 A 250 V, TR, white")
+T5020 = _prod("T5020-W", "Single receptacle 5-20R, smooth face, TR, white", "https://leviton.com/")
+T5461 = _prod("T5461-W", "Single receptacle 6-20R, smooth face, 20 A 250 V, TR, white")
 R278 = _prod("278", "30 A dryer receptacle 14-30R", _LEV + "278")
 IN_USE = _prod("5980-UCL", "Extra-duty clear in-use cover")
 
@@ -83,6 +83,9 @@ RECEPTACLE_TYPES = (
     _dev("ED-T-LEV-DUPLEX-20-REC", "Lever Edge duplex 20 A TR (E5825-W), recessed IN BOX",
          E5825, footprint=(inch(4.2), inch(0.25)), height=inch(6.698), nema="5-20R",
          box_use="recessed"),
+    # The fireplace pocket's 2 3/8" strip: a handy box and its cover (box row use="handy").
+    _dev("ED-T-LEV-DUPLEX-20-HANDY", "Lever Edge duplex 20 A TR (E5825-W), handy box and cover",
+         E5825, nema="5-20R", rear_projection=inch(0.88), box_use="handy"),
     _dev("ED-T-LEV-DUPLEX-15", "Lever Edge duplex 15 A TR (E5325-W)", E5325, nema="5-15R",
          rear_projection=inch(0.88)),
     _dev("ED-T-LEV-GFCI-20", "GFCI 20 A TR at the device (GFTR2-W)", GFTR2, nema="5-20R",
@@ -117,18 +120,19 @@ RECEPTACLE_TYPES = (
     # Rear scaled off the drawing (0.82"), so not authored.
     _dev("ED-T-LEV-SINGLE-520", "Single 5-20R TR, smooth face (T5020-W)", T5020, nema="5-20R",
          symbol="receptacle-single-120", **_SINGLE),
-    # OPEN: a round T5461 beside a Decora E5825 takes a single + Decora plate, and the
-    # BoxStandard has none, so integrity.device_plate is UNKNOWN until one is chosen.
+    # A round T5461 beside a Decora E5825: Mulberry 32442, single + Decora (standard size).
     _dev("ED-T-LEV-620-DUPLEX",
          "2-gang: 6-20R (T5461-W) beside a 5-20R duplex (E5825-W)",
          T5461, ports=_PBOTH, footprint=(inch(3.10), inch(0.07)), height=_FACE_H,
          nema="5-20R/6-20R", symbol="receptacle-combined", gangs=2,
-         plate_openings=("single", "decora"), rear_projection=inch(0.88)),
+         plate="standard", plate_openings=("single", "decora"),
+         rear_projection=inch(0.88)),
     _dev("ED-T-LEV-620-FLUSH",
          "2-gang: 6-20R (T5461-W) beside a 5-20R duplex (E5825-W), flush in drywall",
          T5461, ports=_PBOTH, footprint=(inch(3.10), inch(0.07)), height=_FACE_H,
          nema="5-20R/6-20R", symbol="receptacle-combined", gangs=2,
-         plate_openings=("single", "decora"), rear_projection=inch(0.88)),
+         plate="standard", plate_openings=("single", "decora"),
+         rear_projection=inch(0.88)),
     _dev("ED-T-LEV-QUAD-520", "2-gang: two TR 5-20R duplexes (E5825-W)",
          E5825, footprint=(inch(3.10), inch(0.05)), nema="5-20R",
          symbol="receptacle-quad", gangs=2, rear_projection=inch(0.88)),

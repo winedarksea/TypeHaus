@@ -15,12 +15,21 @@ rows in `plan/device_boxes.py` (`resolve/device_banks.py`).
   - `standard` is the tight-space alternative; it needs the strap's breakaway tab removed.
   - The Diva takes `claro`; the 1450R/278 are `integral`, because the strap is the plate.
   - The single-receptacle devices (T5020, T5461) take `standard` 80704-W.
+  - ED-M-LIVING-KET1's round T5461 beside a Decora E5825 takes Mulberry 32442 (owner, 2026-11-16):
+    2-gang, one 1.405" single and one Decora/GFI opening, standard size 4.57 x 4.5 x 0.07".
+    No tamper-resistant Decora 6-20R was found: Leviton 16441-W is not TR, so it fails NEC 406.12.
+  - ED-M-FIRE-RC is a RACO 674 handy box (16.5 in³) on the pocket's back under a RACO 862
+    Decora/GFCI cover (owner, 2026-11-16). The cover is the faceplate (`plate_included`).
+    Its nominal width, 2 5/16", fits the 2 3/8" strip with 1/32" a side. Hubbell's table
+    reads 2.425", so measure the cover on delivery. The model draws the box flush in the stud
+    layer, not on the pocket's back. The pocket cannot widen: at 34" its kings butt
+    WIN-M-LIV-E1/E2's, and at 36" the header takes FO-A-STAIR's trimmer point.
 - **Banks.**
   - 10 banks snap to 1 13/16" pitch: a 4-gang (BH464A) on W-M-C1, 3-gangs (BH353A) on W-M-C3, W-M-MUDC-E and W-G-S, and six 2-gangs.
   - Box fill is graded on the bank box. The 4-gang carries 60.75 of 64 in³.
-- **Open.**
-  - ED-M-LIVING-KET1 (`ED-T-LEV-620-FLUSH`): a round T5461 beside a Decora E5825 needs a single + Decora combination plate. `integrity.device_plate` stays UNKNOWN until one is chosen.
-  - ED-M-FIRE-RC: no Decora plate fits the 2 3/8" strip beside the insert (`advisory.wall_plate_clearance`).
+- **Moved 2026-11-16.** ED-S-SUITE-RC4: its box and plate stood inside P-S-TUDOR1, so it now sits
+  against the y=12'-1 1/2" stud. ED-B-GYM-RC8: it straddled the W-B-CS/W-B-CS3 seam, so it now
+  sits on W-B-CS against the y=9'-4" stud.
 
 ## 1. Device types (device_types.py)
 
@@ -91,7 +100,7 @@ visible margin round every Lever Edge, GFCI and Decora Smart device.
 | Box | W (gang dir) x H x D | Volume | Clamps | Source |
 | --- | --- | --- | --- | --- |
 | Carlon BH353A 3-gang SuperBlue nail-on | catalog **5 7/8 x 3 3/4 x 3 1/2**; ABB data 5.66 x 3.53 x 3.50 | 53.0 in3 | "integral clamps" | Carlon SuperBlue catalog pages, hosted at `pdf.lowes.com/productdocuments/8d9ea1e1-e68b-48ad-aca9-7601185d9c77/62279009.pdf`; ABB data sheet `media.distributordatasolutions.com/ThomasAndBetts/2018q3/9f657711d84b006ded2f0208da4b800665853082.pdf`. **Verify on ABB catalog** (empower.abb.com timed out). |
-| Carlon BH464A 4-gang SuperBlue nail-on + bracket | catalog **7 3/4 x 3 7/8 x 3 1/2**; ABB-derived dist. data 7.46 x 3.53 x **3.18** deep | 64.0 in3 | "integral clamps" | same catalog; depth conflict 3.50 vs 3.18 (Crescent Electric listing of ABB data). **Verify on ABB catalog.** |
+| Carlon BH464A 4-gang SuperBlue nail-on + bracket | catalog **7 3/4 x 3 7/8 x 3 1/2**; ABB eCatalog 7.46 x 3.53 x **3.18** deep | 64.0 in3 | "integral clamps" | same catalog; ABB eCatalog (empower.abb.com, BH464A). Row keeps 3.50, the conservative cavity read. |
 | Carlon BH235A 2-gang (existing row, 4.0 x 3.75 x 3.5) | catalog 4 1/8 x 3 7/8 x 3 1/2 | 35.0 | integral clamps | same catalog. Row is 1/8" under in both W and H. Distributors list BH235A as 3.55 x 2.11, which is the 1-gang's size: ignore. |
 | Carlon B122A-UPC 1-gang (existing row, 2.25 x 3.75 x 3.5) | dist. 3 3/4 x 2 1/4 x 3 1/2 (matches the row) | 22.0 | none stated | Steiner, Standard Electric (dist.). |
 | Carlon **BH122A-UPC** 1-gang SuperBlue (same family as the 2-4 gang) | catalog 2 3/8 x 3 7/8 x **3 3/4** | 22.0 | none stated | same catalog |
@@ -104,11 +113,8 @@ visible margin round every Lever Edge, GFCI and Decora Smart device.
 
 ## 4. Open / verify
 
-- **T5020-W and T5461-W are not Decora devices.** Leviton lists them as "Single Receptacle
-  Outlet ... Smooth Face" and the drawings show a round body (~1.4"). `device_types.py` calls
-  T5020 "Decora single". They take a single-receptacle plate (80704-W, 1.406" hole), and
-  `ED-T-LEV-620-DUPLEX/-FLUSH` pairs a round T5461 with a Decora E5825 in two gangs: no
-  standard two-gang plate does that. Needs a design decision.
+- **`advisory.wall_plate_clearance` does not read posts or columns.** The 3D overlap check
+  found the problem at ED-S-SUITE-RC4.
 - **E5825 rear projection** is not drawn (only E5325/E5601). 0.88 is provisional.
 - **T6525 (guide light) and DVELV-300P**: no manufacturer dimensions found.
 - **MA-T51**: Lutron's current sheet is the MA-T51MNB (neutral required); no sheet
@@ -120,7 +126,7 @@ visible margin round every Lever Edge, GFCI and Decora Smart device.
 - GFCI face widths and the 2-gang+ Decora opening spacing assume the 1.310 x 2.630 opening on
   1.8125" pitch (80411 drawing); the 3-gang plate is the only multi-gang drawing read in full.
 - Box rows: re-read BH353A/BH464A/BH235A on ABB's catalog; the repo's 1- and 2-gang rows look
-  like the "B" family body size, not the SuperBlue catalog size, and BH464A depth is 3.18
-  vs 3.50.
+  like the "B" family body size, not the SuperBlue catalog size. ABB's eCatalog gives BH464A
+  as 7.46 x 3.53 x 3.18; the row keeps the 3.50 catalog envelope as the conservative depth.
 - Midway 2-4 gang widths are derived (1-gang drawing + 1.81/gang); the 2-4 gang JPGs show the
   1-gang outline.

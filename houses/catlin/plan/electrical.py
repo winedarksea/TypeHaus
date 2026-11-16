@@ -906,8 +906,12 @@ MAIN_EQUIPMENT = [
     # not readily accessible — and `electrical.receptacle_spacing` cannot tell: it counts any
     # receptacle on the room's side within 0.5 m of its clear face, accessible or not.
     # RM-M-LIVING's ring does not depend on it; check by hand if the ring ever changes.
+    # ** NO WALL PLATE FITS THE 2 3/8" STRIP ** (midway 3.13", standard 2.75"), and the pocket
+    # cannot widen: at 34" its kings already butt WIN-M-LIV-E1/E2's, and a wider header takes
+    # FO-A-STAIR's trimmer point. So a RACO 674 handy box screws to the pocket's back under a
+    # RACO 862 cover, nominal 2 5/16" wide (owner, 2026-11-16). Measure the cover on delivery.
     ElectricalDevice(uid="XT154MCCPT", tag="ED-M-FIRE-RC", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-LEV-DUPLEX-20",
+                     type_ref="ED-T-LEV-DUPLEX-20-HANDY",
                      circuit="CKT-FIREPLACE", room="RM-M-LIVING",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(26),
                                  recessed_into_host_surface=True),
@@ -1862,7 +1866,7 @@ NEC_FILL_BASEMENT = [
     # Three, not two, because the line is broken by two doors now: D-B-SAUNA at y 2'-10"..
     # 4'-10" and D-B-GYM at y 9'-11"..12'-7". NEC 210.52(A)(2) measures wall space between
     # doorways, so each of the three stretches needs its own — south of the sauna door,
-    # between the two, and north of D-B-GYM. RC8 sits on W-B-CS3 SOUTH of that door. The
+    # between the two, and north of D-B-GYM. RC8 sits on W-B-CS, SOUTH of that door. The
     # stretch north of it is W-B-CS2, now a framed bearing wall, so
     # RC3 on W-B-CE covers it: 25 7/8" off the corner, not 31", since D-B-GYM became a passage
     # (2026-11-01) and RC8 stopped reaching across the void.
@@ -1880,12 +1884,14 @@ NEC_FILL_BASEMENT = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-CS", face="left", distance_from_start=inch(52.625),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
+    # RC8 is on W-B-CS's north end (2026-11-16), box against the y=9'-4" stud: on W-B-CS3 it
+    # straddled the two walls' seam at y=10'-0" and its plate ran 0.6" past that wall's end.
     ElectricalDevice(uid="WSTK6T5E4K", tag="ED-B-GYM-RC8", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20",
                      circuit="CKT-RC-BSMT", room="RM-B-GYM",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-CS3", face="left", distance_from_start=inch(45.03125),
+                         wall_ref="W-B-CS", face="left", distance_from_start=inch(6.125),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # RC3/RC4 are on the gym side of W-B-CE, a 6 3/4" staggered partition on the y=18'-0"
     # centreline: gym face at 17'-8 5/8", play face at 18'-3 3/8". y=17'-7.615" is the gym
@@ -2683,12 +2689,14 @@ NEC_FILL_SECOND = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-PS1", face="left", distance_from_start=inch(104),
                          normal_gap=inch(0), rotation_offset=deg(180)))),
+    # RC4's box sits against the stud at y=12'-1 1/2" (2026-11-16): at y=12'-11 7/8" box and
+    # plate stood inside P-S-TUDOR1, which the plate-clearance advisory does not read.
     ElectricalDevice(uid="NEC044AAAA", tag="ED-S-SUITE-RC4", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-W3", face="left", distance_from_start=inch(112.125),
+                         wall_ref="W-S-W3", face="left", distance_from_start=inch(120.625),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # y follows W-S-SN1's south face: the suite's north wall is the 8" staggered sound wall,
     # not the 4 3/4" INT_2X4_PARTITION. The receptacle sits in a clear MDF bay:

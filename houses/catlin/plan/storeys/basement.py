@@ -1074,8 +1074,8 @@ OPENINGS = [
     # line at x 17'-9 1/4"..18'-2 3/4". So the run a jamb pack lives in is the wall's full
     # 46", not the hall-side face, and the near edge does not move: the opening grows 4"
     # SOUTH, the south king lands at y=10'-5 3/16" and clears the sauna wall's finished
-    # face by 5/8". Nothing else here moved — ED-B-GYM-RC8 is at y=10'-1", still south of
-    # the RO.
+    # face by 5/8". Nothing else here moved — ED-B-GYM-RC8 is at y=9'-5 7/8" on W-B-CS, south
+    # of the RO.
     # The one cost is `structural.door_framing_module`, now UNKNOWN: W-B-CS3 reaches its
     # 16" grid 6" along itself, so a 36" RO cuts three stud lines where two would do and no
     # station on a 46" wall fixes that. Advisory, no citation, and it does not gate

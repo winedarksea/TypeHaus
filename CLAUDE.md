@@ -167,7 +167,7 @@ a release or for exhaustive local verification.
 .venv/bin/haus order houses/catlin --brand IKEA --md out/ikea.md   # one retailer's shopping list, in packs (docs/order-list-format.md)
 .venv/bin/haus costs import out/estimate.csv --house houses/catlin   # actuals back in
 scripts/verify.sh                        # standard tests, house checks, ruff, UI typecheck/tests
-scripts/verify.sh --full                 # all tests, checks, builds, benchmark, and UI build
+scripts/verify.sh --full                 # all tests, checks, builds, benchmark, Pyodide smoke, UI build
 scripts/ci_local.sh                       # the CI engine job in a THROWAWAY venv, declared deps only
 ```
 
