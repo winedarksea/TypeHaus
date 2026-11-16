@@ -61,9 +61,9 @@ from .erv_balance import (
 #
 # RM-S-SUITE's 100 cfm terminal is a high sidewall grille on W-S-C2B, directly above
 # D-S-SUITE and aimed west into the sleeping room. It matches the bedroom side-collar pattern:
-# a wall attachment and the same 12x6 double-deflection type and mount elevation.
-# The 75 cfm attic boot is at the shortened DU-S-HP-SUITE's west end, 28" from its takeoff.
-# Total branch airflow and the suite's old ERV supply (REG-S-SUP6) are unchanged.
+# a wall attachment, the same 12x6 double-deflection type and mount elevation, and since
+# 2026-11-16 the same 6" round ending on a 6x12x6 end boot behind the grille. The loft's 75
+# cfm boot has its own run off the trunk's crown (DU-S-HP-WEST-BOOT).
 REGISTERS_HVAC_SECOND = [
     Register(uid="CSRH01AAAA", tag="REG-S-HP-BED1", kind=DuctSystem.SUPPLY, room="RM-S-BED1",
              duct_ref="DU-S-HP-BED1", type_ref="REG-T-HP-SIDE-1206", design_cfm=80,
@@ -95,7 +95,7 @@ REGISTERS_HVAC_SECOND = [
              mount=Mount(kind=MountKind.WALL, elevation=inch(96.25))),
     # The suite's high sidewall supply over D-S-SUITE, throwing west into RM-S-SUITE. Its
     # mount elevation matches the bedroom side collars. The W-S-C2B station is y=14'-8 7/8",
-    # 7" north of the door centre, in the clear cripple bay its branch crosses (2026-10-31).
+    # 7" north of the door centre, in the clear cripple bay its branch ends in (2026-10-31).
     # `face="left"` is the suite side of this north-running wall.
     Register(uid="CSRH06AAAA", tag="REG-S-HP-SUITE", kind=DuctSystem.SUPPLY, room="RM-S-SUITE",
              duct_ref="DU-S-HP-SUITE", type_ref="REG-T-HP-SIDE-1206", design_cfm=100,

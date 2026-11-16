@@ -48,10 +48,11 @@ REGISTERS_HVAC_ATTIC = [
              room="RM-A-EAST-UNFIN", position=pt(inch(311.75), inch(322.5)),
              duct_ref="DU-A-HP1-EAST-RET", type_ref="REG-T-HP-RET-FILTER-1212-WALL",
              design_cfm=35, mount=Mount(kind=MountKind.WALL, elevation=inch(6))),
-    # The west loft's supply: a floor boot fed by DU-S-HP-WEST-BOOT, a side take-off off
-    # DU-S-HP-SUITE (which lies under the y=14'-8" joist) that turns south into the bay and
-    # stands up. At (17'-0", 14'-0") since 2026-10-14, rotated 90 degrees; its 6" x-face
-    # clears W-A-C2's gypsum by 5 5/8".
+    # The west loft's supply: a floor boot at (17'-0", 14'-0"), the y 160-176 bay's centre, fed
+    # by DU-S-HP-WEST-BOOT, its own 6" off DU-S-HP-SUP's crown, arriving level along the bay
+    # into the stock end boot's end (2026-11-16). Rotation 0 puts the boot's 12" length with
+    # the bay, the way an end boot is fed; at 90 the run met its long side and the 12" box
+    # left 7/8" to each joist flange. The cost: the 13 3/8" face is 2" off W-A-C2's gypsum.
     # The room gets conditioned air off System 1 like RM-A-STUDY/RM-A-EAST-UNFIN, returning
     # stale air at REG-A-RET1, so the ERV's attic side is extract-only.
     #
@@ -63,7 +64,7 @@ REGISTERS_HVAC_ATTIC = [
     # MINI-SPLIT IS WANTED: reusing this boot is the whole reason the studio costs what it
     # costs.
     Register(uid="CARH03AAAA", tag="REG-A-HP-WEST", kind=DuctSystem.SUPPLY,
-             room="RM-A-STUDIO", position=pt(ft(17), ft(14)), rotation=deg(90),
+             room="RM-A-STUDIO", position=pt(ft(17), ft(14)), rotation=deg(0),
              duct_ref="DU-S-HP-WEST-BOOT", type_ref="REG-T-HP-FLOOR-0612", design_cfm=75,
              mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
 ]

@@ -98,7 +98,7 @@ DUCTS_HVAC_BRANCHES_SECOND = [
             width=inch(12), depth=inch(6), routing=DuctRouting.EXPOSED,
             material="galvanized", design_cfm=80),
     # The three attic floor boots stand 5"-15" over their trunks, so each is fed by a drawn 6" round
-    # rise (2026-11-12; `mep.register_reach` found a boot neck with no duct under it). A stock take-off
+    # (2026-11-12; `mep.register_reach` found a boot neck with no duct under it). A stock take-off
     # collar on the trunk, then the stock 6x12x6 end boot under the register's damper box
     # (DuctStandard boot 6in -> 12x6). 6" round: 509 fpm at 100 cfm, 178 at 35, 382 at 75, all under
     # Manual D's 700. Each stands in its FS-ATTIC bay's clear width (13 11/16"), never on a joist.
@@ -116,14 +116,16 @@ DUCTS_HVAC_BRANCHES_SECOND = [
             elevations=(inch(102), inch(118.75)),
             diameter=inch(6), routing=DuctRouting.EXPOSED,
             material="galvanized", design_cfm=35),
-    # WEST: DU-S-HP-SUITE lies under the y=176 joist, so a straight rise would cut its flange.
-    # A side take-off at the duct's centre turns 10" south (the stamped 6" elbow starts on the
-    # south face) into the y 160-176 bay and stands up there to the boot. The duct's end moved
-    # 6" west to x=16'-6" so the take-off is mid-run (6" in, not a reducer).
+    # WEST (2026-11-16): its own run, no longer a take-off off the suite branch. A crown collar
+    # on DU-S-HP-SUP at the y 160-176 bay's centre, up 13" through the box's open top, a stamped
+    # 90 (R = D) west along the bay, over W-S-C2B's plates and through the 2x6 box the x=216
+    # bearing block becomes, into the end boot's east end under REG-A-HP-WEST (rotation 0: the
+    # boot's 12" length runs with the bay, its 6" width leaves 3 7/8" to each joist flange).
+    # Centre 115": 1/2" under the box's top rail (118 1/2"); the boot is then ~6 7/8" deep
+    # below the damper (Imperial publishes no height; retailers list 6"). 382 fpm at 75 cfm.
     DuctRun(uid="PV9K8DR0T3", tag="DU-S-HP-WEST-BOOT", system=DuctSystem.SUPPLY,
-            path=(pt(ft(17), ft(14, 8.875)), pt(ft(17), ft(13, 9.875)),
-                  pt(ft(17), ft(13, 9.875))),
-            elevations=(inch(100.125), inch(100.125), inch(118.875)),
+            path=(pt(ft(19, 6), ft(14)), pt(ft(19, 6), ft(14)), pt(inch(210), ft(14))),
+            elevations=(inch(102), inch(115), inch(115)),
             diameter=inch(6), routing=DuctRouting.EXPOSED,
             material="galvanized", design_cfm=75),
 ]

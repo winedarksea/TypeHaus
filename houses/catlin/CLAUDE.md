@@ -1830,17 +1830,19 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   north end on `W-S-CLN-S`'s hall face. `SF-S-HP1` (the air-handler box) retired 2026-11-11.
   **Three soffits were retired on 2026-09-13** — `SF-B-HALL`, `SF-B-GYM` and `SF-S-SUITE` —
   each one built only to satisfy `mep.run_in_finished_volume`, each replaced by a
-  `Room.exposed_services` sentence on `RM-B-STAIR`, `RM-B-GYM` and `RM-S-SUITE`. Two soffits
+  `Room.exposed_services` sentence on `RM-B-STAIR`, `RM-B-GYM` and `RM-S-SUITE` (the suite's
+  dropped 2026-11-16: nothing hangs there any more). Two soffits
   and `SF-B-BATH` remain. **`SF-B-BATH` is load-bearing since 2026-09-22**: it carries
   `DU-B-ERV-R-PLAY` and both basement conduits off the stair, and dropped 1 1/2" to 86 15/16"
   (7'-2 7/8" clear) so PLAY can cross `W-B-STR2` under its top plate. It was never a
   candidate for an `exposed_services` declaration anyway: a 92 SF lined bathroom is not a
   gym or a service hall, and no owner has said its ceiling should be open.
-  `DU-S-HP-SUITE` lost its `soffit_ref` with `SF-S-SUITE` and is `DuctRouting.EXPOSED` with
-  an AUTHORED centreline (100 1/8" storey-relative): without it `_derived_base_z` falls back
-  to the storey datum and lays a supply duct on the floor. It now runs 28" west from the
-  trunk to `REG-A-HP-WEST` at x=17'-0"; the 75 cfm loft boot is rotated 90 degrees and the
-  100 cfm suite outlet is a high sidewall grille on W-S-C2B above D-S-SUITE.
+  `DU-S-HP-SUITE` is `DuctRouting.EXPOSED` with an AUTHORED centreline (100 1/8"
+  storey-relative), the bedroom side-collar idiom: without it `_derived_base_z` falls back to
+  the storey datum. Since 2026-11-16 it is a 6" round that ENDS on the end boot behind
+  `REG-S-HP-SUITE` in W-S-C2B's cripple bay; the loft boot `REG-A-HP-WEST` (rotation 0) has its
+  own run, `DU-S-HP-WEST-BOOT`, off the trunk's crown west along FS-ATTIC's y 160-176 bay.
+  A run never passes through its own terminal.
   - **A box's LONG plan dimension is its axis; every occupant is measured ACROSS the other
     one.** Near-square soffits need this ordering chosen deliberately, or
     the check grades the trunk's travel as "width" and never compares lane to machine.

@@ -25,6 +25,7 @@ from typehaus.findings import Finding
 from typehaus.model.enums import AIR_SERVICE_DUCT_SYSTEM
 from typehaus.quantities import inch
 from typehaus.resolve.model import ResolvedCanvasObject, ResolvedModel
+from typehaus.resolve.ownership import run_body_owners
 from typehaus.resolve.placeable_bodies import bodied, body_prism
 from typehaus.resolve.solid_categories import SOLID_CATEGORIES
 from typehaus.resolve.sweep import sweep_legs
@@ -45,11 +46,12 @@ class Obstacle:
     shape: Polygon
     z0_m: float
     z1_m: float
+    owner_tag: str | None = None  # a routed run's tag, for each of its solids
 
     @property
     def owner(self) -> str:
-        """The authored element: a routed run's solid is ``<run tag>-RUN``."""
-        return self.tag.removesuffix("-RUN")
+        """The authored element: the run for a run solid, else the solid's own tag."""
+        return self.owner_tag or self.tag
 
 
 def _hard(kind: str) -> bool:
@@ -71,19 +73,36 @@ def _poly(ring) -> Polygon | None:
     return shape if shape.area > 1e-9 else None
 
 
+_RUN_CATEGORY_PREFIXES = ("pipe_", "duct_", "conduit_")
+
+
+def _owner_tag(solid, owners: dict[str, str]) -> str | None:
+    """The authored element a run-body solid belongs to, else None."""
+    if solid.uid in owners:
+        return owners[solid.uid]
+    if (solid.sweep is None or not solid.category.startswith(_RUN_CATEGORY_PREFIXES)
+            or not _hard(solid.category)):
+        return None
+    # Runs of an authored element (grounding, device drops, heat leads) name it in host_ref;
+    # solids older than that carry it as the tag without its ``-RUN``.
+    return solid.host_ref or solid.tag.removesuffix("-RUN")
+
+
 def _solid_obstacles(model: ResolvedModel) -> Iterator[Obstacle]:
+    owners = run_body_owners(model)
     for solid in model.solids:
+        owner = _owner_tag(solid, owners)
         if solid.sweep is not None:
             for start, end in sweep_legs(solid.sweep):
                 points = [*start, *end]
                 hull = MultiPoint([(x, y) for x, y, _ in points]).convex_hull
                 if hull.area > 1e-9:
                     zs = [z for _, _, z in points]
-                    yield Obstacle(solid.tag, solid.category, hull, min(zs), max(zs))
+                    yield Obstacle(solid.tag, solid.category, hull, min(zs), max(zs), owner)
             continue
         shape = _poly(solid.outline)
         if shape is not None:
-            yield Obstacle(solid.tag, solid.category, shape, solid.z0_m, solid.z1_m)
+            yield Obstacle(solid.tag, solid.category, shape, solid.z0_m, solid.z1_m, owner)
 
 
 def obstacles(model: ResolvedModel) -> list[Obstacle]:

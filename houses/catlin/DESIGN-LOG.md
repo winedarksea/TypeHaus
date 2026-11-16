@@ -8473,3 +8473,30 @@ collars stood 6 1/4" apart, and the south one hung past the end of its leg.
   `mep.takeoff_collar_fit` fails a collar past a run end, into a turn, or over a sibling. A
   corner tee (a branch carrying straight on at a vertex, as at `DU-M-ERV-SUP-FEED`) is one
   fitting and is exempt.
+
+## Suite branch ends at its grille; the loft gets its own run (2026-11-16, owner)
+
+In the viewer `DU-S-HP-SUITE` (10x8) ran straight through `REG-S-HP-SUITE`, the high sidewall
+grille on W-S-C2B's suite face, and on 14" into the suite to the loft take-off. No crew builds
+a duct through its own grille. Owner: the wall grille ENDS its duct, and the loft is fed
+separately.
+
+- `DU-S-HP-SUITE` (uid `CSDH03AAAA`) is a 6" round, the bedroom side-collar idiom: a 6" spin-in
+  on the trunk's west face at 100 1/8" storey, west at y=14'-8 7/8" to 1/8" proud of the suite
+  face, on the stock 6x12x6 end boot (GV0671) behind the grille. 100 cfm, 509 fpm. Through
+  W-S-C2B it sits in the clear bay between the head cripples (y 169 5/8"-184 1/8": 4 1/4" each
+  side of the duct, 1 1/4" each side of the 12" register box), z 97 1/8"-103 1/8" between
+  header-0's top (92 1/2") and the plates (105 1/8").
+- `DU-S-HP-WEST-BOOT` (uid `PV9K8DR0T3`) leaves the trunk's crown at (19'-6", 14'-0"), rises
+  13" through the soffit's open top into FS-ATTIC's y 160-176 bay, turns west on a stamped 90 and
+  runs level at 115" storey over W-S-C2B's plates (underside 3 7/8" above them), through the 2x6
+  pass-through box the x=216 bearing block becomes (1/2" under its top rail, 2 3/8" over its
+  bottom rail, 1/2" to each cheek), into the end boot's east end at x=17'-6". 75 cfm, 382 fpm.
+  Imperial publishes no boot height (retailers list 6"); the drawn boot is 6 7/8" deep below the
+  damper, the most the top rail allows.
+- `REG-A-HP-WEST` turns to rotation 0. An end boot is fed on its end; at 90 the run met its long
+  side and the 12" box left 7/8" to each joist flange. At 0 its 6" width leaves 3 7/8". The cost
+  is the 13 3/8" face 2" off W-A-C2's gypsum (was 5"); sliding the register west 3" would buy it
+  back if the base trim reads crowded.
+- `RM-S-SUITE` drops `exposed_services`: nothing hangs in it now. The DuctStandard rows
+  `takeoff 18x8->10x8`, `takeoff 10x8->6in` and `boot 10x8->12x6` went with the 10x8.

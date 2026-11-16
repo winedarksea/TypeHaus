@@ -94,8 +94,9 @@ a release or for exhaustive local verification.
   rectangular turn is the standard's shop-made `rect_elbow` (r/W × the side in the turn's plane,
   `resolve/rect_elbows.py`), else a coverage gap (#124). An in-line damper is a station on its
   run (`DuctRun.inline_dampers`), charged its row's fully-open `loss_c` (#128).
-- **A register reaches its run in 3D; a manifold needs a feed** (decision #126):
-  `checks/mep/register_reach.py` (36" in plan, 4" in z of the section) and `manifold_feed.py`. A
+- **A register's joint to its run is derived in 3D; a manifold needs a feed** (decisions #126,
+  #136): `resolve/terminal_joints.py` (inlet/drop/through/end/side/unreached; boots and caps read
+  it), `checks/mep/register_reach.py` FAILs a run passing THROUGH its grille, and `manifold_feed.py`. A
   plain ceiling neck, round or rectangular, takes a drop from above and must match the arriving
   section (`resolve/terminal_drops.py`, #129). A passive shop box is `EquipmentKind.PLENUM`, one
   with a damper `MIXING_BOX` (#125); a blocking `RunBand` is boxed by half-width and half-height.

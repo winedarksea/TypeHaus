@@ -199,14 +199,14 @@ def test_each_bedroom_grille_is_fed_by_a_drawn_branch(catlin_plan, catlin_model,
     """REG-S-HP-BED1/2/3 named the trunk until 2026-09-23 and nothing reached them: the check
     tests run ENDS and `register_duct_ref` only that the tag exists. Each is now the boot at
     the end of its own branch: a side collar straight off DU-S-HP-SUP's east face."""
-    from typehaus.checks.mep.duct_connectivity import BOOT_REACH_M
+    from typehaus.resolve.terminal_joints import END, terminal_joints
 
     register = next(e for e in catlin_plan.all_elements() if e.tag == f"REG-S-HP-BED{n}")
     assert register.duct_ref == f"DU-S-HP-BED{n}"
     leg = next(d for d in catlin_model.ducts if d.tag == f"DU-S-HP-BED{n}")
-    at = next(o.position for o in catlin_model.canvas_objects if o.tag == register.tag)
     end = leg.path[-1]
-    assert ((at[0] - end[0]) ** 2 + (at[1] - end[1]) ** 2) ** 0.5 <= BOOT_REACH_M
+    joint = terminal_joints(catlin_model)[register.tag]
+    assert joint.kind == END and joint.run == leg.tag  # ends on its boot, read in 3D
     findings = {f.message for f in _connectivity(catlin_model) if f.result.value == "pass"}
     assert f"duct DU-S-HP-BED{n} start lands on DU-S-HP-SUP" in findings
     assert len(leg.path) == 2

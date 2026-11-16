@@ -237,8 +237,8 @@ the corrosion answer. The intake keeps its filter grille.
   603.4 (Minn. R. 1346.0050) asks 0.013" for round to 14" at 1/2" w.g.
 - **Trunks and risers**: 6"/8" galvanized; every seam UL 181B-M mastic or 181B-FX foil tape
   (IMC 2018 603.9; 181A is the fibrous-glass class). House-air ducts bare; OA/EA per §9.
-- **System 1 rectangular trunks** (`DU-S-HP-SUP` 18x8, `-RET` 10x18, `-SUITE` 10x8,
-  `-SOUTH` 10x6): `material="galvanized"` now, matched to the gauge band rows
+- **System 1 rectangular trunks** (`DU-S-HP-SUP` 18x8, `-RET` 10x18,
+  `-SOUTH` 10x6; `-SUITE` is a 6" round since 2026-11-16): `material="galvanized"` now, matched to the gauge band rows
   `DUCT-T-GALV-RECT-*` (IMC 2018 Table 603.4, 1/2" w.g. column): **26 ga** for the 18"
   sides, **30 ga** for the 10" ones, printed on the duct schedule. Shop-fabricated,
   mastic-sealed, no liner (cleanability), canvas connectors at the air handler.
@@ -345,8 +345,8 @@ estimated envelope. Imperial makes no 8-to-4
 reducer, so it is a stacked **GV0821 8-to-6 (28 ga) + GV0811 6-to-4 (30 ga)** (p.15), one
 billed set (`PROD-DUCT-REDUCER-8-4`), drawn 12.25" long: a stand-in off M&M's 400 round reducer
 (1.75" collar + 2.50-3.50" taper + 1.75" collar, mmmfg.com 400 submittal, no per-size table)
-at its 7.0" maximum, twice, less one engaged 1.75" collar. Every rectangular boot, the 10x8
-branch and the rectangular reducer stay shop-fabricated. Imperial prints SKUs and gauges, no
+at its 7.0" maximum, twice, less one engaged 1.75" collar. Every rectangular boot and the
+rectangular reducer stay shop-fabricated. Imperial prints SKUs and gauges, no
 dimensions, so every part is drawn at its envelope (owner, 2026-11-07, "shop-made duct is a
 last resort").
 

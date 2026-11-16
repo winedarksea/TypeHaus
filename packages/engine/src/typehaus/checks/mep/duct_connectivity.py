@@ -32,21 +32,19 @@ than from a naming convention:
   on" EQ-M-ERV-HOOD-OA 67" above it and DU-S-HP-SUP's capped end "landed on" the fridge, 220"
   below. The case runs from the object's resolved ``z_m`` (its base) up by its type's
   ``height``; a type that states no height falls back to the plan test alone.
-* **a register** at the end itself, but only one that already names this run in ``duct_ref``,
-  and only within
-  ``BOOT_REACH_M``. That is the boot: the flex tail and collar between the end of the hard
-  duct and the grille in the ceiling. This house authors them up to 34" off a run end
-  (``plan/mep_registers_*.py``), so they are the design, not a defect, and a check that called
-  them orphans would be reporting the drawing rather than the building. A round run's
-  ceiling COLLAR earns no plan reach: the run must end on its top, arriving from above
+* **a register** whose boot ENDS this run (``resolve/terminal_joints``, decision #136):
+  a straight or 90 end boot behind the grille, read in 3D from the face the register
+  resolves. No plan reach: a run that passes through a grille, or stops short of it,
+  earns nothing here (``mep.register_reach`` FAILs the register). A round run's ceiling
+  COLLAR earns no reach either: the run must end on its top, arriving from above
   (``resolve/terminal_drops``), and a collar no run end reaches is mid-run.
 
-* **its own take-off**, when the end is the cap past the last boot on a served trunk. A trunk
-  that feeds grilles along its length ends a few inches past the last one and is capped —
-  that is a duct end that lands on nothing and is not a defect. Earned from ``duct_ref``: the
-  run's *final segment* must carry a register naming it within ``BOOT_REACH_M``. Restricted
-  to the final segment on purpose — "this run has a register somewhere" would excuse a riser
-  dangling in a chase at the other end of the house.
+* **a cap**, when the end is the stub past the last take-off on a served trunk: a side
+  boot (a grille on the trunk's flank) or a branch taking off the end leg near the end
+  (``resolve/duct_terminations.capped_by``). A trunk ends a few inches past its last grille
+  and is capped; that end lands on nothing and is not a defect. Restricted to the end leg
+  on purpose: "this run has a register somewhere" would excuse a riser dangling in a chase
+  at the other end of the house.
 And one exempts it: an end **outdoors**, which is a hood — the same
 axis-cell probe ``mep.erv_outdoor_terminals`` and ``code.M1502_dryer_exhaust`` use, and
 a fact about geometry rather than about the tag.
@@ -59,11 +57,10 @@ from typing import TYPE_CHECKING
 from typehaus.checks._authoring import failed, not_applicable, passed
 from typehaus.checks.registry import CheckContext, Tier, check, shared
 from typehaus.findings import Finding
-from typehaus.quantities import M_PER_IN, inch
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.mep_soffit import (
     DUCT_JOINT_TOLERANCE_M,
     end_joins,
-    plan_distance_to_segment,
     segment_meets_box,
 )
 from typehaus.resolve.room_lookup import axis_polygon, axis_ring
@@ -75,13 +72,6 @@ if TYPE_CHECKING:
 #: joint and the occupancy checks that *excuse* one share a single definition of it. Kept
 #: under the local name every message in this module formats.
 JOINT_TOLERANCE_M = DUCT_JOINT_TOLERANCE_M
-
-#: How far a register may sit from the end of the run it names and still be its boot. The
-#: flex tail from a hard-duct take-off to a ceiling grille is a real, ordinary piece of the
-#: system. Past 36" the "boot" is a duct run that should be drawn as one, which is what
-#: REG-S-HP-BED1/2/3's became (``plan/mep_hvac_branches.py``).
-BOOT_REACH_M = inch(36).meters
-
 
 def _ends_outdoors(ctx: CheckContext, point: tuple[float, float]) -> bool:
     """Whether a plan point lands outside every resolved room's clear face."""
@@ -171,64 +161,37 @@ def equipment_at_end(ctx: CheckContext, z: float | None,
     return None
 
 
-def _takeoffs(ctx: CheckContext, duct: ResolvedDuct) -> list[tuple[str, tuple[float, float]]]:
-    """``(tag, plan position)`` for every register naming this run in ``duct_ref``."""
-    positions = {obj.tag: obj.position for obj in ctx.model.canvas_objects}
-    out: list[tuple[str, tuple[float, float]]] = []
-    for element in ctx.plan.all_elements():
-        if element.element_kind != "Register" or element.duct_ref != duct.tag:
-            continue
-        at = positions.get(element.tag)
-        if at is not None:
-            out.append((element.tag, at))
-    return out
+def _end_index(duct: ResolvedDuct, point: tuple[float, float]) -> int:
+    return 0 if tuple(point) == tuple(duct.path[0]) else len(duct.path) - 1
 
 
 def _boot(ctx: CheckContext, duct: ResolvedDuct,
           point: tuple[float, float]) -> str | None:
-    """A register that names this run and is within a boot's reach of the end."""
-    collars = _collar_tags(ctx, duct)
-    for tag, at in _takeoffs(ctx, duct):
-        from typehaus.resolve.terminal_necks import terminal_inlet
+    """A register whose end boot (straight or 90) terminates this run at ``point``."""
+    from typehaus.checks.mep.register_reach import joints
+    from typehaus.resolve.terminal_joints import END
 
-        if tag in collars or terminal_inlet(ctx.model, tag) is not None:
-            continue  # A dimensioned inlet or a ceiling collar earns no plan-only allowance.
-        span = ((at[0] - point[0]) ** 2 + (at[1] - point[1]) ** 2) ** 0.5
-        if span <= BOOT_REACH_M:
+    index = _end_index(duct, point)
+    for tag, joint in joints(ctx).items():
+        if joint.run == duct.tag and joint.kind == END and joint.end_index == index:
             return tag
     return None
 
 
 def _capped_past_a_takeoff(ctx: CheckContext, duct: ResolvedDuct,
                            point: tuple[float, float]) -> str | None:
-    """A cap on a served trunk: the run's final leg carries a boot, and then it stops.
-
-    A trunk that runs past its last grille and stops is capped, which is how a trunk ends
-    (catlin's DU-S-HP-SOUTH, past DU-S-HP-STUDY2-S). The end lands on nothing, so ``_boot`` cannot
-    speak for it; what makes it a cap rather than an orphan is that the leg it ends is the
-    leg a grille comes off.
+    """A cap on a served trunk: a side boot or a branch on the end leg, then it stops.
 
     The leg, not the run: a register anywhere on a run would excuse both of its ends, and the
-    ends this check exists to catch — a riser dangling in a chase — are at the far end of a
+    ends this check exists to catch (a riser dangling in a chase) are at the far end of a
     run whose other end is squarely in a manifold.
     """
-    if len(duct.path) < 2:
-        return None
-    leg = ((duct.path[-2], duct.path[-1]) if point == duct.path[-1]
-           else (duct.path[0], duct.path[1]))
-    collars = _collar_tags(ctx, duct)
-    for tag, at in _takeoffs(ctx, duct):
-        from typehaus.resolve.terminal_necks import terminal_inlet
+    from typehaus.checks.mep.register_reach import joints
+    from typehaus.resolve.duct_terminations import capped_by
 
-        if tag in collars or terminal_inlet(ctx.model, tag) is not None:
-            continue  # A dimensioned inlet or a ceiling collar earns no plan-only allowance.
-        span, _ = plan_distance_to_segment(at, leg[0], leg[1])
-        if span <= BOOT_REACH_M:
-            return tag
-    from typehaus.resolve.duct_terminations import branch_near_end
-
-    z = duct.z_m[-1] if point == duct.path[-1] else duct.z_m[0]
-    return branch_near_end(ctx.model, duct, (*point, z))
+    caps = shared(ctx, "duct_connectivity.capped_by",
+                  lambda: capped_by(ctx.model, joints(ctx)))
+    return caps.get((duct.tag, _end_index(duct, point)))
 
 
 def _collars(ctx: CheckContext, duct: ResolvedDuct) -> list:
@@ -245,23 +208,15 @@ def _collar_tags(ctx: CheckContext, duct: ResolvedDuct) -> set[str]:
 
 def _collar_end(ctx: CheckContext, duct: ResolvedDuct,
                 at_end: bool) -> tuple[str, str | None] | None:
-    """``(register, problem or None)`` for the ceiling collar nearest this end, if one is
-    within a boot's reach in plan."""
-    from typehaus.resolve.terminal_drops import collar_seat_problem
+    """``(register, problem or None)`` for the ceiling collar whose drop joint is this end."""
+    from typehaus.checks.mep.register_reach import joints
+    from typehaus.resolve.terminal_joints import DROP
 
-    point, other = ((duct.path[-1], duct.path[0]) if at_end
-                    else (duct.path[0], duct.path[-1]))
-
-    def span(c, p):
-        return ((c[0] - p[0]) ** 2 + (c[1] - p[1]) ** 2) ** 0.5
-
-    # Each collar is graded at the nearer of its run's two ends only.
-    near = [(tag, c) for tag, c in _collars(ctx, duct)
-            if span(c, point) <= BOOT_REACH_M and span(c, point) <= span(c, other)]
-    if not near:
-        return None
-    tag, collar = min(near, key=lambda item: span(item[1], point))
-    return tag, collar_seat_problem(duct.path, duct.z_m, at_end, tag, collar, duct)
+    index = len(duct.path) - 1 if at_end else 0
+    for tag, joint in joints(ctx).items():
+        if joint.run == duct.tag and joint.kind == DROP and joint.end_index == index:
+            return tag, joint.problem
+    return None
 
 
 def _mid_run_collars(ctx: CheckContext, duct: ResolvedDuct,
@@ -353,8 +308,7 @@ def duct_connectivity(ctx: CheckContext) -> list[Finding]:
                 f"({point[0] / M_PER_IN / 12:.2f}', {point[1] / M_PER_IN / 12:.2f}') lands on "
                 "nothing: no duct meets it within "
                 f"{JOINT_TOLERANCE_M / M_PER_IN:.0f}\", no equipment footprint contains it, "
-                f"no register naming this run is within {BOOT_REACH_M / M_PER_IN:.0f}\" of it "
-                "or of the leg it ends, and "
+                "no register boot ends it, no side boot or branch caps its end leg, and "
                 "it is not outdoors", (duct.tag,)))
         out.extend(_mid_run_collars(ctx, duct, graded))
     return out

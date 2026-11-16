@@ -101,6 +101,11 @@ class RectElbowRow(HausModel):
     source: str | None = None
 
 
+#: How a run meets a part: ``straight`` end on, along the part's axis; ``end`` a 90 at the
+#: run's end; ``side`` a 90 off a run passing the part; ``trunk`` a side joint on a through run.
+DuctPartEntry = Literal["straight", "end", "side", "trunk"]
+
+
 class DuctPartRow(HausModel):
     """One purchased (or shop-fabricated) part for a size pair.
 
@@ -109,7 +114,8 @@ class DuctPartRow(HausModel):
     boot (``none`` for a terminal with no neck), or None where the part fits any.
     ``integral`` means the terminal or equipment's own collar takes the duct: matched,
     nothing bought. ``length``/``width``/``height`` are
-    the published envelope the part is drawn at.
+    the published envelope the part is drawn at. ``entry`` is how the run meets the part
+    (None = any: a wildcard row); ``collar_length`` the published length of its duct collar.
     """
 
     kind: DuctPartKind
@@ -122,6 +128,8 @@ class DuctPartRow(HausModel):
     width: Length | None = None
     height: Length | None = None
     loss_c: float | None = None
+    entry: DuctPartEntry | None = None
+    collar_length: Length | None = None
     source: str | None = None
 
 
@@ -208,14 +216,17 @@ class DuctStandard(Element):
         return next((r for r in self.elbows
                      if abs(r.diameter.meters - diameter_m) < 1e-4), None)
 
-    def part(self, kind: str, size: str | None,
-             branch: str | None = None) -> DuctPartRow | None:
-        """The row for ``kind`` at (size, branch): an exact pair first, then a wildcard."""
+    def part(self, kind: str, size: str | None, branch: str | None = None,
+             entry: str | None = None) -> DuctPartRow | None:
+        """The row for ``kind`` at (size, branch, entry): a row naming ``entry`` first, then
+        an entry-wildcard one; within each, an exact (size, branch) pair before a wildcard."""
         rows = [r for r in self.parts if r.kind == kind]
-        for want in ((size, branch), (size, None), (None, branch), (None, None)):
-            hit = next((r for r in rows if (r.size, r.branch) == want), None)
-            if hit is not None:
-                return hit
+        for want_entry in dict.fromkeys((entry, None)):
+            for want in ((size, branch), (size, None), (None, branch), (None, None)):
+                hit = next((r for r in rows
+                            if (r.size, r.branch, r.entry) == (*want, want_entry)), None)
+                if hit is not None:
+                    return hit
         return None
 
     def support_for(self, section: str, size_m: float,

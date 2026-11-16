@@ -126,3 +126,25 @@ def test_a_collar_past_its_mains_end_or_over_a_sibling_fails():
     assert results(collar("A", 20)) == ["pass"]
     assert results(collar("A", 2)) == ["fail"]  # 3" + 1/2" flange past the end
     assert results(collar("A", 20), collar("B", 26.25)) == ["fail"]  # 6 1/4" c-c
+
+
+def test_boot_shapes_by_joint_stay_behind_the_face_and_close():
+    """Side, 90 and straight boots on a 12x6 wall face: closed, positive, nothing proud."""
+    from types import SimpleNamespace as NS
+
+    from typehaus.resolve.boot_solids import boot_inlet_point, boot_mesh
+    from typehaus.resolve.terminal_faces import TerminalFace
+
+    i = 0.0254
+    face = TerminalFace((0, 0, 0), (1, 0, 0), (0, 1, 0), (0, 0, 1), 12 * i, 6 * i, 3.7 * i, "neck")
+    cases = (("side", None, "10x8", (7 * i, 0, 0), (0, 1, 0), (7, 0, 0)),
+             ("end", "90", "6in", (4 * i, 8 * i, 0), (0, 1, 0), (4, 8, 0)),
+             ("end", "straight", "6in", (1 * i, 0, 0), (1, 0, 0), (6, 0, 0)))
+    for joint, turn, size, point, axis, inlet in cases:
+        part = NS(joint=joint, face=face, turn=turn, point=point, axis=axis, size=size,
+                  length_m=None)
+        mesh = boot_mesh(None, part, parse_section(size), None)
+        manifold = mesh_manifold(mesh.positions, mesh.triangles)
+        assert manifold.status() == m3d.Error.NoError and manifold.volume() > 0, joint
+        assert min(p[0] for p in mesh.positions) >= -1e-9, joint
+        assert boot_inlet_point(part) == pytest.approx(tuple(c * i for c in inlet)), joint

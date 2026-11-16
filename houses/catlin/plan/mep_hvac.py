@@ -217,7 +217,7 @@ DUCTS_ATTIC = []
 # x 18'-2 3/4"..21'-8" clear; the trunk runs at x=19'-6".
 DUCTS_HVAC_SECOND = [
     # 750 cfm through 18x8 is 750 fpm (14x8 was 965, over Manual D's 900 for a trunk in a
-    # finished space). It sheds 3 x 80 (plan/mep_hvac_branches.py) + 50 + 175 + 35 and hands
+    # finished space). It sheds 3 x 80 (plan/mep_hvac_branches.py) + 50 + 100 + 75 + 35 and hands
     # the last 250 to DU-S-HP-SOUTH through an offset reducer at the cap (y=9'-10").
     #
     # Its north cap is at y=29'-2 1/2", 6 1/2" past DU-S-HP-SUP-DROP's top take-off (which
@@ -248,29 +248,21 @@ DUCTS_HVAC_SECOND = [
             elevations=(inch(114.125), inch(114.125), inch(124.125)),
             width=inch(12), depth=inch(10), routing=DuctRouting.JOIST_BAY,
             floor_ref="FS-ATTIC", design_cfm=455, material="galvanized"),
-    # West branch to RM-S-SUITE: tees off DU-S-HP-SUP at y=14'-8 7/8", 7" north of
-    # D-S-SUITE's centreline, and crosses W-S-C2B above the door in the CLEAR bay between
-    # its header cripples (2026-10-31: on the door centre the 10x8 ran through the middle
-    # cripple, which `mep.terminal_neck_fit` found), ending at x=16'-6", 6" past the loft boot's take-off. REG-S-HP-SUITE is
-    # a high sidewall grille on W-S-C2B's suite face; REG-A-HP-WEST is the floor boot in
-    # RM-A-STUDIO, fed by DU-S-HP-WEST-BOOT off this duct's side. 175 cfm feeds both: 100 to
-    # the suite and 75 to the loft.
-    # 315 fpm through 10x8, quiet.
+    # West branch to RM-S-SUITE (2026-11-16): a 6" round spin-in off the trunk's west face at
+    # its 100 1/8" centreline, the bedroom side-collar idiom (plan/mep_hvac_branches.py). It
+    # crosses W-S-C2B over D-S-SUITE in the clear bay between the header cripples (y 169 5/8"-
+    # 184 1/8"; z 97 1/8"-103 1/8" between header-0's top at 92 1/2" and the plates at
+    # 105 1/8") and ENDS 1/8" proud of the suite face, on the stock 6x12x6 end boot behind
+    # REG-S-HP-SUITE. 100 cfm, 509 fpm. The loft is fed separately (DU-S-HP-WEST-BOOT).
     #
-    # ** EXPOSED SINCE 2026-09-13, AND THE ELEVATION IS AUTHORED BECAUSE OF IT. ** SF-S-SUITE
-    # boxed this branch out of the entry arm and is retired; RM-S-SUITE declares its ceiling
-    # open instead. Dropping `soffit_ref` also drops the cavity that DERIVED this run's z —
-    # `_derived_base_z` would fall back to the storey datum and lay a supply duct on the
-    # floor — so the centreline is authored at the height the box had already given it:
-    # 100 1/8" storey-relative, which is DU-S-HP-SUP's own centreline inside SF-S-DUCT.
-    # ** THAT IS THE CEILING ON IT, NOT A PREFERENCE. ** A branch cannot tee above the trunk
-    # it comes off, so 216 1/8"..224 1/8" absolute is where this duct can be, exposed or not.
-    # Underside 8'-0 1/8" over the arm floor, against the 6'-8" headroom line the declaration
-    # does not retire.
+    # EXPOSED with an authored centreline like the bedroom collars: a run naming SF-S-DUCT is
+    # graded across the box's width, and this one leaves it through its side. Nothing hangs
+    # in the suite any more: the 10x8 that ran on into the room to the loft take-off is gone.
     DuctRun(uid="CSDH03AAAA", tag="DU-S-HP-SUITE", system=DuctSystem.SUPPLY,
-            path=(pt(ft(19, 4), ft(14, 8.875)), pt(ft(16, 6), ft(14, 8.875))),
-            width=inch(10), depth=inch(8), routing=DuctRouting.EXPOSED,
-            start_elevation=inch(100.125), end_elevation=inch(100.125), design_cfm=175, material="galvanized"),
+            path=(pt(ft(19, 6), ft(14, 8.875)), pt(inch(212.125), ft(14, 8.875))),
+            elevations=(inch(100.125), inch(100.125)),
+            diameter=inch(6), routing=DuctRouting.EXPOSED,
+            material="galvanized", design_cfm=100),
     # THE STUDY BRANCH (2026-11-15): one straight 10x6 south in SF-S-DUCT, an 18" flat-
     # bottomed offset reducer between the trunk's cap (y=9'-10") and this run's start
     # (centre 7 1/2" west, so the top collar lands under REG-A-HP-STUDY), three collars on

@@ -3,7 +3,7 @@
 * a plenum's branch collar: the collar with its balancing damper (M1-106);
 * an equipment port: the type's ``PortKit`` — transition and flex (Broan, M1-103);
 * a terminal: a boot matched on (duct section, neck face) (M4-103/114/120), one per
-  ``Register`` naming the run, wherever on it the register sits.
+  ``terminal_joints`` end, drop, inlet or side joint (decision #136), at the joint's point.
 
 ``end_landings`` is the reading ``mep.duct_terminations`` grades: an end that is none of
 these, joins no duct and caps no served leg is UNKNOWN there.
@@ -20,19 +20,14 @@ from typehaus.quantities import M_PER_IN
 from typehaus.resolve.duct_branches import duct_ends, section
 from typehaus.resolve.flex_bend import run_bend
 from typehaus.resolve.mep_ports import placed_ports, port_at
-from typehaus.resolve.mep_soffit import (
-    DUCT_JOINT_TOLERANCE_M,
-    duct_joint_index,
-    end_joins,
-    plan_distance_to_segment,
-)
+from typehaus.resolve.mep_soffit import DUCT_JOINT_TOLERANCE_M, duct_joint_index, end_joins
 from typehaus.resolve.model_ducts import Point3, ResolvedDuctPart
-from typehaus.resolve.terminal_drops import collar_seat_problem, collars_by_run, engaged
+from typehaus.resolve.terminal_joints import DROP, END, INLET, SIDE, TerminalJoint, terminal_joints
 
 #: A duct end this close to an exact port or collar lands on it.
 PORT_TOLERANCE_M = 1.0 * M_PER_IN
-#: A register this close (plan) to a run's end is that end's terminal (``BOOT_REACH_M``).
-BOOT_REACH_M = 36.0 * M_PER_IN
+#: A stub past the last take-off this long (along the run) is a capped trunk end.
+CAP_STUB_MAX_M = 12.0 * M_PER_IN
 
 
 @dataclass(frozen=True)
@@ -75,49 +70,75 @@ def _in_case(model: Any, point: Point3) -> Any | None:
     return None
 
 
-def _registers(model: Any) -> dict[str, list[Any]]:
-    out: dict[str, list[Any]] = {}
-    objects = {o.tag: o for o in model.canvas_objects}
-    for el in model.plan.all_elements():
-        if el.element_kind == "Register" and el.duct_ref and el.tag in objects:
-            out.setdefault(el.duct_ref, []).append(objects[el.tag])
-    return out
+def _end_leg(duct: Any, index: int) -> int:
+    return 0 if index == 0 else len(duct.path) - 2
 
 
-def branch_near_end(model: Any, duct: Any, point: Any) -> str | None:
-    """A run taking off this run's end leg within ``BOOT_REACH_M`` of the end: like a boot,
-    it makes the stub past it a cap. The far end of a two-point trunk earns nothing."""
-    end = 0 if tuple(point[:2]) == tuple(duct.path[0][:2]) else len(duct.path) - 2
+def _branch_stub(model: Any, duct: Any, index: int) -> str | None:
+    """The run taking off this run's end leg nearest its end, within ``CAP_STUB_MAX_M``
+    measured along the run: like a boot, it makes the stub past it a cap."""
+    leg, end = _end_leg(duct, index), (*duct.path[index], duct.z_m[index])
+    best: tuple[float, str] | None = None
     for other in model.ducts:
         if other is duct or len(other.path) < 2:
             continue
         for _, p, _ in duct_ends(other):
-            if (math.dist(p[:2], point[:2]) <= BOOT_REACH_M
-                    and duct_joint_index(p[:2], p[2], duct.path, duct.z_m) == end):
-                return other.tag
-    return None
+            stub = math.dist(p, end)
+            if (stub <= CAP_STUB_MAX_M and (best is None or (stub, other.tag) < best)
+                    and duct_joint_index(p[:2], p[2], duct.path, duct.z_m) == leg):
+                best = (stub, other.tag)
+    return best[1] if best else None
 
 
-def end_landings(model: Any) -> list[EndLanding]:
+def _side_caps(model: Any, joints: dict[str, TerminalJoint]) -> dict[tuple[str, int], str]:
+    """``{(run, end index): register}``: a SIDE joint on a run's end leg caps the stub
+    past it (the nearest joint to that end wins)."""
+    by_tag = {d.tag: d for d in model.ducts}
+    best: dict[tuple[str, int], tuple[float, str]] = {}
+    for tag, joint in joints.items():
+        duct = by_tag.get(joint.run)
+        if joint.kind != SIDE or duct is None:
+            continue
+        for index in {0, len(duct.path) - 1}:
+            if joint.leg == _end_leg(duct, index):
+                span = math.dist(joint.point, (*duct.path[index], duct.z_m[index]))
+                if (key := (duct.tag, index)) not in best or (span, tag) < best[key]:
+                    best[key] = (span, tag)
+    return {key: tag for key, (_, tag) in best.items()}
+
+
+def capped_by(model: Any, joints: dict[str, TerminalJoint] | None = None,
+              ) -> dict[tuple[str, int], str]:
+    """``{(run tag, end vertex index): what caps it}``: the register whose SIDE joint stands
+    on the end leg, else the run taking off it within ``CAP_STUB_MAX_M`` along the run. Pure
+    of the end's landing: callers read it for the ends that land on nothing else."""
+    joints = terminal_joints(model) if joints is None else joints
+    out = _side_caps(model, joints)
+    for duct in model.ducts:
+        for index, _, _ in duct_ends(duct):
+            if (duct.tag, index) not in out and (tag := _branch_stub(model, duct, index)):
+                out[(duct.tag, index)] = tag
+    return out
+
+
+def end_landings(model: Any, joints: dict[str, TerminalJoint] | None = None,
+                 ) -> list[EndLanding]:
     """Both ends of every run, classified."""
-    registers = _registers(model)
-    collars = collars_by_run(model)
+    joints = terminal_joints(model) if joints is None else joints
+    by_end = {(j.run, j.end_index): j for j in joints.values()
+              if j.kind in (END, DROP, INLET) and j.end_index is not None}
+    side = _side_caps(model, joints)
     out: list[EndLanding] = []
     for duct in sorted(model.ducts, key=lambda d: d.tag):
         for index, point, axis in duct_ends(duct):
             out.append(EndLanding(duct.tag, index, point, axis, *_classify(
-                model, duct, point, registers, _neck_collars(duct, collars), index != 0)))
+                model, duct, index, point, by_end.get((duct.tag, index)),
+                side.get((duct.tag, index)))))
     return out
 
 
-def _neck_collars(duct: Any, collars: dict[str, list]) -> dict[str, Any]:
-    """``{register tag: Collar}`` for the ceiling necks this run must drop onto."""
-    return dict(engaged(duct, collars.get(duct.tag, ())))
-
-
-def _classify(model: Any, duct: Any, point: Point3, registers: dict[str, list[Any]],
-              collars: dict[str, Any], at_end: bool,
-              ) -> tuple[str | None, str | None, Any]:
+def _classify(model: Any, duct: Any, index: int, point: Point3, joint: TerminalJoint | None,
+              side_cap: str | None) -> tuple[str | None, str | None, Any]:
     port = port_at(model, point[:2], point[2], duct_system=duct.system,
                    tolerance_m=PORT_TOLERANCE_M)
     if port is not None:
@@ -126,13 +147,9 @@ def _classify(model: Any, duct: Any, point: Point3, registers: dict[str, list[An
         if other is not duct and len(other.path) > 1 and end_joins(
                 duct, point[:2], point[2], other):
             return "joined", other.tag, None
-    for obj in registers.get(duct.tag, ()):
-        if obj.tag in collars:  # seated on its top, or nothing: no plan-only reach
-            if collar_seat_problem(duct.path, duct.z_m, at_end, obj.tag,
-                                   collars[obj.tag], duct) is None:
-                return "terminal", obj.tag, None
-        elif math.dist(obj.position, point[:2]) <= BOOT_REACH_M:
-            return "terminal", obj.tag, None
+    # A drop seated badly lands on nothing; an inlet's fit is graded elsewhere.
+    if joint is not None and not (joint.kind == DROP and joint.problem):
+        return "terminal", joint.register, None
     case = _in_case(model, point)
     if case is not None:
         # A plenum stating a collar count and no layout: a branch at its collar size still
@@ -144,20 +161,13 @@ def _classify(model: Any, duct: Any, point: Point3, registers: dict[str, list[An
                 and abs(collar.meters - duct.diameter_m) < 1e-4):
             return "collar", case.tag, None
         return "equipment", case.tag, None
-    leg = duct.path[:2] if point[:2] == tuple(duct.path[0]) else duct.path[-2:]
-    for obj in registers.get(duct.tag, ()):
-        if obj.tag in collars:
-            continue
-        if plan_distance_to_segment(obj.position, leg[0], leg[1])[0] <= BOOT_REACH_M:
-            return "cap", obj.tag, None
-    branch = branch_near_end(model, duct, point)
-    if branch is not None:
-        return "cap", branch, None
-    return None, None, None
+    cap = side_cap or _branch_stub(model, duct, index)
+    return ("cap", cap, None) if cap else (None, None, None)
 
 
-def termination_parts(model: Any, standard: DuctStandard,
-                      landings: list[EndLanding]) -> list[ResolvedDuctPart]:
+def termination_parts(model: Any, standard: DuctStandard, landings: list[EndLanding],
+                      joints: dict[str, TerminalJoint] | None = None,
+                      ) -> list[ResolvedDuctPart]:
     by_tag = {d.tag: d for d in model.ducts}
     types = {o.tag: o.type_ref for o in model.canvas_objects}
     ports = {(p.equipment_tag, p.port_tag): p for p in placed_ports(model)}
@@ -181,7 +191,7 @@ def termination_parts(model: Any, standard: DuctStandard,
             port_tag = end.port.port_tag if end.port is not None else None
             out.extend(_kit(standard, types.get(end.other), port_tag,
                             ports.get((end.other, port_tag)), base, (duct, end.index)))
-    out.extend(_boots(model, standard))
+    out.extend(_boots(model, standard, terminal_joints(model) if joints is None else joints))
     return out
 
 
@@ -227,50 +237,24 @@ def neck_text(register_type: Any) -> str:
     return duct_size_text(None, neck.width.meters, neck.height.meters)
 
 
-def _boots(model: Any, standard: DuctStandard) -> list[ResolvedDuctPart]:
+def _boots(model: Any, standard: DuctStandard,
+           joints: dict[str, TerminalJoint]) -> list[ResolvedDuctPart]:
+    """One boot per END, DROP, INLET or SIDE joint, at the joint; none for THROUGH or
+    UNREACHED (``mep.register_reach`` grades those)."""
     types = {t.tag: t for t in model.plan.library.register_types}
+    refs = {o.tag: o.type_ref for o in model.canvas_objects}
     by_tag = {d.tag: d for d in model.ducts}
     out = []
-    collars = collars_by_run(model)
-    for duct_tag, objects in sorted(_registers(model).items()):
-        duct = by_tag.get(duct_tag)
-        if duct is None or len(duct.path) < 2:
+    for joint in sorted(joints.values(), key=lambda j: (j.run, j.register)):
+        duct = by_tag.get(joint.run)
+        if duct is None or joint.kind not in (END, DROP, INLET, SIDE) or joint.point is None:
             continue
         size = section(duct)
-        seated = _neck_collars(duct, collars)
-        for obj in sorted(objects, key=lambda o: o.tag):
-            neck = neck_text(types.get(obj.type_ref))
-            row = standard.part("boot", size, neck)
-            point, axis = (_end_nearest(duct, seated[obj.tag]) if obj.tag in seated
-                           else _nearest(duct, obj.position))
-            out.append(ResolvedDuctPart(
-                kind="boot", run_tag=duct.tag, storey=duct.storey, size=size, branch=neck,
-                point=point, axis=axis, other=obj.tag,
-                gap=None if row else f"no boot row for {size} to {neck}",
-                **_row_fields(row)))
+        neck = neck_text(types.get(refs.get(joint.register)))
+        row = standard.part("boot", size, neck)
+        out.append(ResolvedDuctPart(
+            kind="boot", run_tag=duct.tag, storey=duct.storey, size=size, branch=neck,
+            point=joint.point, axis=joint.axis, other=joint.register,
+            gap=None if row else f"no boot row for {size} to {neck}",
+            joint=joint.kind, face=joint.face, turn=joint.turn, **_row_fields(row)))
     return out
-
-
-def _end_nearest(duct: Any, collar: tuple[float, ...]) -> tuple[Point3, Point3]:
-    """The run end nearest a ceiling collar's top, and its axis (the drop, not the level
-    leg ``_nearest`` would find first over the same plan point)."""
-    top = (collar[0], collar[1], collar[2])
-    _, point, axis = min(((math.dist(point, top), point, axis)
-                          for _, point, axis in duct_ends(duct)), key=lambda e: e[0])
-    return point, axis
-
-
-def _nearest(duct: Any, at: tuple[float, float]) -> tuple[Point3, Point3]:
-    """The point on the run nearest ``at`` in plan, and the run's axis there."""
-    best = None
-    for i in range(len(duct.path) - 1):
-        span, t = plan_distance_to_segment(at, duct.path[i], duct.path[i + 1])
-        if best is None or span < best[0] - 1e-9:
-            best = (span, i, t)
-    _, i, t = best  # type: ignore[misc]
-    a = (*duct.path[i], duct.z_m[i])
-    b = (*duct.path[i + 1], duct.z_m[i + 1])
-    point = tuple(pa + t * (pb - pa) for pa, pb in zip(a, b, strict=True))
-    d = [pb - pa for pa, pb in zip(a, b, strict=True)]
-    norm = math.sqrt(sum(v * v for v in d)) or 1.0
-    return point, (d[0] / norm, d[1] / norm, d[2] / norm)  # type: ignore[return-value]

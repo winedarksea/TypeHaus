@@ -13,6 +13,7 @@ from typehaus.resolve.geometry_millwork import base_run_prisms
 from typehaus.resolve.geometry_openings import opening_parts
 from typehaus.resolve.mep_envelopes import Prism, envelopes, run_polylines, run_sections
 from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.ownership import run_body_owners
 from typehaus.resolve.placeable_bodies import body_prism
 from typehaus.resolve.sweep import sweep_legs
 
@@ -37,8 +38,7 @@ def _bodies(model: ResolvedModel, run_tags: set[str]) -> Iterator[Prism]:
             yield _solid_prism(item.tag, item.kind, body)
     # Plumbing accessories and derived cleanouts are solids rather than placeables.
     # Runs use their insulated segment envelopes above, never their whole-run z bounds.
-    run_solid_uids = {f"{run.uid}-run" for run in
-                      (*model.pipe_runs, *model.ducts, *model.conduits)}
+    run_solid_uids = run_body_owners(model)
     for solid in model.solids:
         if (solid.tag not in run_tags and solid.uid not in run_solid_uids
                 and len(solid.outline) >= 3):

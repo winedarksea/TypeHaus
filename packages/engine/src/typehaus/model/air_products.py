@@ -161,6 +161,9 @@ class TerminalNeck(HausModel):
     #: The box is only the damper behind the face: the duct's ``boot`` part is drawn
     #: between the run and the box's back (``resolve/duct_part_solids``).
     separate_boot: bool = False
+    #: The face the duct joins the neck on (None = today's: the box's back). A WALL neck
+    #: entered ``bottom`` or ``top`` is a stack head: the run arrives vertically in the cavity.
+    entry: Literal["back", "bottom", "top", "left", "right"] | None = None
 
     @model_validator(mode="after")
     def _unique_components(self) -> TerminalNeck:

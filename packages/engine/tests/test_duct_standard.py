@@ -132,3 +132,14 @@ def test_a_bought_elbows_radius_is_its_centre_to_face_else_its_radius_in_diamete
     assert DuctElbowRow(diameter=inch(4), product_ref="A", center_to_face=inch(4.75),
                         radius_diameters=1.0).radius_m() == inch(4.75).meters
     assert DuctElbowRow(diameter=inch(4), product_ref="S", kind="stamped").radius_m() is None
+
+
+def test_part_lookup_takes_the_entry_row_then_the_wildcard():
+    wild = DuctPartRow(kind="boot", size="6in", branch="12x6", product_ref="ANY")
+    end = DuctPartRow(kind="boot", size="6in", branch="12x6", entry="end",
+                      product_ref="END", collar_length=inch(2))
+    std = _standard(parts=(wild, end))
+    assert std.part("boot", "6in", "12x6").product_ref == "ANY"
+    assert std.part("boot", "6in", "12x6", entry="end").product_ref == "END"
+    assert std.part("boot", "6in", "12x6", entry="side").product_ref == "ANY"
+    assert _standard(parts=(end,)).part("boot", "6in", "12x6") is None

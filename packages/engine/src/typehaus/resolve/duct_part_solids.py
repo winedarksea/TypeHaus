@@ -8,24 +8,32 @@ integral part (the terminal's or machine's own collar) draws nothing. Dimensions
 never read fall back to the envelope of the sections it joins, never to detail the standard
 does not state.
 
-Sections parse from the record text (``4in`` round, ``18x8`` width x depth, inches).
+Sections and mesh primitives live in ``duct_mesh``; a boot's shape in ``boot_solids``.
 """
 
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass
 from typing import Any
 
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.boot_solids import COLLAR_LENGTH_M, boot_mesh
 from typehaus.resolve.connector_geometry.mesh import combine_meshes, plate_mesh, transform_mesh
-from typehaus.resolve.geometry_ir import GMesh, Vec3, signed_volume
+from typehaus.resolve.duct_mesh import (  # noqa: F401 - re-exported for older callers
+    Section,
+    _add,
+    _box,
+    _ring,
+    _unit,
+    loft,
+    parse_section,
+    prism,
+)
+from typehaus.resolve.geometry_ir import GMesh, Vec3
 from typehaus.resolve.model import ResolvedModel, ResolvedSolid
 from typehaus.resolve.model_ducts import ResolvedDuctPart, ResolvedDuctSupport
 from typehaus.resolve.sweep import leg_frame
 
-_FACETS = 16
-COLLAR_LENGTH_M = 2.0 * M_PER_IN
 MIN_DROP_M = 0.5 * M_PER_IN
 STRAP_WIDTH_M, STRAP_THICKNESS_M = 1.0 * M_PER_IN, M_PER_IN / 32.0
 ROD_DIAMETER_M = 0.375 * M_PER_IN
@@ -39,97 +47,6 @@ _CATEGORY = {"takeoff": "duct_fitting", "tee": "duct_fitting", "reducer": "duct_
              "cap": "duct_fitting"}
 #: An end cap drawn as a slip-on lid: this far over the run's end.
 CAP_LENGTH_M = 0.5 * M_PER_IN
-
-
-@dataclass(frozen=True)
-class Section:
-    """A duct section in metres: ``width`` across the run, ``depth`` through it."""
-
-    is_round: bool
-    width: float
-    depth: float
-
-    @property
-    def larger(self) -> float:
-        return max(self.width, self.depth)
-
-
-def parse_section(text: str | None) -> Section | None:
-    """``4in`` -> round, ``18x8`` -> rectangular; anything else (``none``, None) -> None."""
-    if not text:
-        return None
-    try:
-        if text.endswith("in"):
-            d = float(text[:-2]) * M_PER_IN
-            return Section(True, d, d) if d > 0 else None
-        w, _, h = text.partition("x")
-        w, h = float(w) * M_PER_IN, float(h) * M_PER_IN
-        return Section(False, w, h) if w > 0 and h > 0 else None
-    except ValueError:
-        return None
-
-
-def _add(a: Vec3, b: Vec3, k: float = 1.0) -> Vec3:
-    return (a[0] + b[0] * k, a[1] + b[1] * k, a[2] + b[2] * k)
-
-
-def _unit(v: Vec3) -> Vec3 | None:
-    n = math.sqrt(v[0] ** 2 + v[1] ** 2 + v[2] ** 2)
-    return None if n < 1e-9 else (v[0] / n, v[1] / n, v[2] / n)
-
-
-def _ring(section: Section, centre: Vec3, right: Vec3, up: Vec3, count: int) -> list[Vec3]:
-    """The section's outline at ``centre``: ``count`` 4 (rectangle) or ``_FACETS`` points."""
-    hw, hd = section.width / 2.0, section.depth / 2.0
-    if section.is_round:
-        pts = [(hw * math.cos(2 * math.pi * i / count), hd * math.sin(2 * math.pi * i / count))
-               for i in range(count)]
-    elif count == 4:
-        pts = [(-hw, -hd), (hw, -hd), (hw, hd), (-hw, hd)]
-    else:  # a rectangle lofted to a round: sampled on the same angles, never collinear in uv
-        pts = []
-        for i in range(count):
-            c, s = math.cos(2 * math.pi * i / count), math.sin(2 * math.pi * i / count)
-            t = min(hw / abs(c) if abs(c) > 1e-9 else math.inf,
-                    hd / abs(s) if abs(s) > 1e-9 else math.inf)
-            pts.append((t * c, t * s))
-    return [_add(_add(centre, right, u), up, v) for u, v in pts]
-
-
-def prism(a: list[Vec3], b: list[Vec3]) -> GMesh:
-    """A closed solid between two convex rings of equal length, capped from their centres."""
-    n = len(a)
-    ca = tuple(sum(p[i] for p in a) / n for i in range(3))
-    cb = tuple(sum(p[i] for p in b) / n for i in range(3))
-    positions = (*a, *b, ca, cb)
-    tris: list[tuple[int, int, int]] = []
-    for i in range(n):
-        j = (i + 1) % n
-        tris += [(i, j, n + j), (i, n + j, n + i), (2 * n, j, i), (2 * n + 1, n + i, n + j)]
-    if signed_volume(positions, tris) < 0:
-        tris = [(x, z, y) for x, y, z in tris]
-    return GMesh(positions=positions, triangles=tuple(tris))
-
-
-def loft(origin: Vec3, axis: Vec3, start: Section, end: Section, length: float,
-         far: Vec3 | None = None) -> GMesh:
-    """``start`` at ``origin`` to ``end`` ``length`` along ``axis`` (or centred on ``far``,
-    an eccentric fitting: each ring on its own run's centreline)."""
-    right, up = leg_frame(axis)
-    count = 4 if not start.is_round and not end.is_round else _FACETS
-    far = far if far is not None else _add(origin, axis, length)
-    return prism(_ring(start, origin, right, up, count), _ring(end, far, right, up, count))
-
-
-def _box(centre: Vec3, axes: tuple[Vec3, Vec3, Vec3], dims: tuple[float, float, float]) -> GMesh:
-    def corner(sx: float, sy: float, sz: float) -> Vec3:
-        p = centre
-        for sign, axis, dim in zip((sx, sy, sz), axes, dims, strict=True):
-            p = _add(p, axis, sign * dim / 2.0)
-        return p
-
-    return prism([corner(-1, -1, -1), corner(1, -1, -1), corner(1, 1, -1), corner(-1, 1, -1)],
-                 [corner(-1, -1, 1), corner(1, -1, 1), corner(1, 1, 1), corner(-1, 1, 1)])
 
 
 def _run_at(model: ResolvedModel, tag: str, point: Vec3) -> tuple[Any, Vec3 | None]:
@@ -277,7 +194,7 @@ def _part_mesh(model: ResolvedModel, part: ResolvedDuctPart,
         return combine_meshes(collar, _box(_add(mid, right, out), (axis, up, right),
                                            (along, around, thick)))
     if part.kind == "boot":
-        return _boot_mesh(model, part, size, branch)
+        return boot_mesh(model, part, size, branch)
     if part.kind == "cap":  # a lid over the end, its axis pointing into the run
         return loft(_add(part.point, axis, -CAP_LENGTH_M / 2.0), axis, size, size,
                     CAP_LENGTH_M)
@@ -287,98 +204,6 @@ def _part_mesh(model: ResolvedModel, part: ResolvedDuctPart,
                  and s.port == part.port and s.point == part.point)
     return loft(_add(part.point, axis, behind), axis, size, size,
                 part.length_m or size.larger)
-
-
-def _neck_back(model: ResolvedModel, obj: Any, neck: Any
-               ) -> tuple[Vec3, Vec3, Vec3, Vec3] | None:
-    """A neck box's back face: (centre, normal toward the duct, width axis, height axis)."""
-    from typehaus.resolve.terminal_necks import _back, _face_offset, _rotate
-
-    kind = getattr(obj.mount.kind, "value", obj.mount.kind) if obj.mount else None
-    if obj.body_z0_m is None or kind is None:
-        return None
-    across = (*_rotate((1.0, 0.0), obj.rotation_degrees), 0.0)
-    depth = neck.depth.meters
-    top = obj.body_z1_m if obj.body_z1_m is not None else obj.body_z0_m
-    if kind in ("ceiling", "floor"):
-        other = (*_rotate((0.0, 1.0), obj.rotation_degrees), 0.0)
-        if kind == "ceiling":
-            return (*obj.position, obj.body_z0_m + depth), (0.0, 0.0, 1.0), across, other
-        return (*obj.position, top - depth), (0.0, 0.0, -1.0), across, other
-    back = _back(model, obj, _rotate((0.0, 1.0), obj.rotation_degrees))
-    if back is None:
-        return None
-    reach = _face_offset(obj, back) + depth
-    centre = (obj.position[0] + back[0] * reach, obj.position[1] + back[1] * reach,
-              (obj.body_z0_m + top) / 2.0)
-    return centre, (back[0], back[1], 0.0), across, (0.0, 0.0, 1.0)
-
-
-def _plain_boot(model: ResolvedModel, part: ResolvedDuctPart, size: Section,
-                neck: Section | None, target: Any) -> GMesh:
-    """A boot onto a terminal with no neck box: lofted toward its face."""
-    if part.width_m and part.height_m:
-        neck = Section(False, part.width_m, part.height_m)
-    neck = neck or size
-    direction, reach = (0.0, 0.0, 1.0), None
-    if target is not None:
-        z = target.body_z0_m if target.body_z0_m is not None else part.point[2]
-        to = (target.position[0] - part.point[0], target.position[1] - part.point[1],
-              z - part.point[2])
-        direction = _unit(to) or direction
-        reach = math.sqrt(sum(c * c for c in to))
-    length = part.length_m or max(size.larger, neck.larger)
-    if part.length_m is None and reach:
-        length = min(length, reach)
-    return loft(part.point, direction, size, neck, length)
-
-
-def _boot_mesh(model: ResolvedModel, part: ResolvedDuctPart, size: Section,
-               neck: Section | None) -> GMesh | None:
-    """A boot behind a ``separate_boot`` neck: duct section to the neck's back face.
-
-    Straight when the run arrives along the neck's normal; otherwise an end boot that
-    turns: the neck section carried back past the run's far side, with a stub of the run
-    reaching it when the run ends beside it.
-    """
-    target = next((o for o in model.canvas_objects if o.tag == part.other), None)
-    types = {t.tag: t for t in getattr(model.plan.library, "register_types", ())}
-    box = getattr(types.get(getattr(target, "type_ref", None)), "neck", None)
-    if target is None or box is None:
-        return _plain_boot(model, part, size, neck, target)
-    placed = _neck_back(model, target, box)
-    if placed is None:
-        return None
-    centre, normal, right, up = placed
-    face = Section(False, box.width.meters, box.height.meters)
-    count = 4 if not size.is_round else _FACETS
-    point, axis = part.point, _unit(part.axis) or normal
-    length = part.length_m or size.larger
-    # A run ending at the neck (a rise under a floor boot) arrives along its last leg, even
-    # where an earlier leg passes the same plan point.
-    from typehaus.resolve.duct_branches import duct_ends
-
-    duct = next((d for d in model.ducts if d.tag == part.run_tag), None)
-    end = min(((math.dist(e, centre), e, a) for _, e, a in duct_ends(duct)),
-              key=lambda t: t[0], default=None) if duct is not None else None
-    if end is not None and end[0] <= max(length, face.larger):
-        point, axis = end[1], end[2]
-    offset = tuple(point[i] - centre[i] for i in range(3))
-    if abs(sum(axis[i] * normal[i] for i in range(3))) > 0.7:
-        # The run's centreline at the boot's start, one boot length behind the face.
-        along = sum(offset[i] * normal[i] for i in range(3))
-        start = _add(point, normal, length - along)
-        return prism(_ring(size, start, right, up, count), _ring(face, centre, right, up, count))
-    deep = max(length, sum(offset[i] * normal[i] for i in range(3)) + size.larger / 2.0)
-    body = prism(_ring(face, centre, right, up, 4),
-                 _ring(face, _add(centre, normal, deep), right, up, 4))
-    lateral = [offset[i] - normal[i] * sum(offset[j] * normal[j] for j in range(3))
-               for i in range(3)]
-    gap = math.sqrt(sum(c * c for c in lateral)) - face.width / 2.0
-    if gap <= 1e-3:
-        return body
-    toward = _unit(tuple(-c for c in lateral))
-    return combine_meshes(body, loft(point, toward, size, size, gap))
 
 
 def _support_mesh(model: ResolvedModel, hanger: ResolvedDuctSupport) -> GMesh | None:

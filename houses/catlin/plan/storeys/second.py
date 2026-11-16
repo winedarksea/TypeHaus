@@ -1046,13 +1046,11 @@ ROOMS = [
     # carries the mobilisation arithmetic. The walk-in follows the suite for the same reason
     # it followed the walnut: a species change in a 27 SF doorway buys a reducer strip and a
     # second set-up for nothing.
-    # Exposed duct in the suite is the owner's own call — see RM-B-GYM's note for what the
-    # declaration does and does not buy. SF-S-SUITE was still boxing that duct out when this
-    # sentence was written and is RETIRED as of 2026-09-13, which is what makes it true: the
-    # branch hangs on the arm's ceiling now, and this room's PASS names it.
+    # No `exposed_services` since 2026-11-16: the supply branch ends in W-S-C2B behind
+    # REG-S-HP-SUITE, so no run hangs in the suite's open air and the declaration graded
+    # nothing (DESIGN-LOG, "Suite branch ends at its grille").
     Room(uid="CSR406AAAA", tag="RM-S-SUITE", seed=pt(ft(5), ft(16)),
-         occupancy=Occupancy.BEDROOM, floor_finish="oak-floor-custom",
-         exposed_services="owner accepts exposed duct in the primary suite: the supply branch runs on the face of the ceiling rather than inside it"),
+         occupancy=Occupancy.BEDROOM, floor_finish="oak-floor-custom"),
     Room(uid="CSR407AAAA", tag="RM-S-CLOSET", seed=pt(ft(14), ft(10, 8)),
          occupancy=Occupancy.CLOSET, floor_finish="oak-floor-custom"),
     # The nonheated suite bath uses DITRA-XL; Jume vanity porcelain uses the thinner
@@ -1225,32 +1223,10 @@ SOFFITS = [
     # 36" of plan width around a single 10x8 branch. Thirty-five square feet of board and
     # ladder built so one duct would not be seen.
     #
-    # RM-S-SUITE says instead that it should be. `Room.exposed_services` there is the
-    # owner's own sentence — "the supply branch runs on the face of the ceiling rather than
-    # inside it" — and this retirement is what makes that sentence true rather than
-    # decorative. Until today the room's PASS read "nothing currently hangs in its open air:
-    # a Soffit or a wall still covers every run that crosses it", which was the check saying
-    # out loud that the box, not the declaration, was carrying the room.
-    #
-    # ** THE BRANCH KEEPS THE ELEVATION THE BOX GAVE IT, AND THAT IS DERIVED, NOT CHOSEN. **
-    # `DU-S-HP-SUITE` tees off `DU-S-HP-SUP` inside SF-S-DUCT, so its top cannot rise above
-    # that trunk's top; both sit on SF-S-DUCT's own cavity floor at 216 1/8" absolute. The
-    # branch is now `DuctRouting.EXPOSED` with that centreline authored on it (100 1/8"
-    # storey-relative, 8" section), so it resolves exactly where it resolved yesterday
-    # instead of falling back to the storey datum. Nothing about the duct moved; the box
-    # around it went.
-    #
-    # ** THE CLEAR HEIGHT UNDER THE DUCT IS 8'-0 1/8", AND `code.R305_ceiling_height` DOES
-    # NOT SEE IT. ** That check measures the structure overhead and reports 8'-10" for this
-    # room now that no soffit hangs in it; a duct is not a ceiling element. What grades the
-    # duct is `mep.run_in_finished_volume`'s 6'-8" headroom line, which the declaration
-    # explicitly does NOT retire — 16 1/8" of slack, and the room's PASS names the run.
-    # The arm gained 2 1/8" of finished height either side of the duct (7'-10 1/8" to
-    # 8'-0 1/8" under it, the full 8'-10" beside it).
-    #
-    # The duct still passes through W-S-C2B in the cripple zone above D-S-SUITE's header —
-    # the wall runs to the deck at 228 1/8" and the duct crosses at 216 1/8"..224 1/8", so
-    # the crossing is unchanged by the ceiling below it opening up.
+    # That branch then hung exposed in the arm (RM-S-SUITE declared `exposed_services`),
+    # running on into the suite to the loft take-off, until 2026-11-16, when it became a 6" round ending in W-S-C2B's cripple bay behind
+    # REG-S-HP-SUITE and the loft got its own run off the trunk's crown (DU-S-HP-WEST-BOOT).
+    # Nothing crosses the arm now; its ceiling is 8'-10" clear throughout.
 ]
 
 # Drawn to the main floor's *finished* well, the way FO-M-STAIR is drawn to the basement's

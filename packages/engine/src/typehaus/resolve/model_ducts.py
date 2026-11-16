@@ -8,6 +8,7 @@ Elbows stay ``resolve/mep_fittings.FittingRecord``s; these are everything else o
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Any
 
 Point3 = tuple[float, float, float]
 
@@ -19,7 +20,8 @@ class ResolvedDuctPart:
     ``kind`` is a ``DuctPartKind``. ``size`` is the run's section as ordered (``4in``,
     ``18x8``); ``branch`` the branch, outlet or neck face. ``axis`` is the unit direction the
     part lies along, away from ``point`` into the run. ``other`` names what the run meets:
-    the branch run, the plenum, the equipment or the terminal. ``product_ref`` None with
+    the branch run, the plenum, the equipment or the terminal. A ``boot`` stands at its joint's
+    ``point`` on the run, ``axis`` the run's there. ``product_ref`` None with
     ``fabricated`` False and ``integral`` False is a part the standard has no row for:
     ``gap`` says why, and ``mep.duct_terminations`` grades it UNKNOWN.
     """
@@ -46,6 +48,11 @@ class ResolvedDuctPart:
     bend_deg: float | None = None
     bend_vertex: int | None = None
     bend_out_m: float | None = None
+    #: A boot's ``TerminalJoint`` (``resolve/terminal_joints.py``): its kind, the terminal's
+    #: duct-side ``TerminalFace`` and the ``straight`` / ``90`` turn (None off a boot or on a side).
+    joint: str | None = None
+    face: Any = None
+    turn: str | None = None
 
     @property
     def billed(self) -> bool:
