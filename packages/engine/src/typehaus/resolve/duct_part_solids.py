@@ -14,7 +14,6 @@ Sections and mesh primitives live in ``duct_mesh``; a boot's shape in ``boot_sol
 from __future__ import annotations
 
 import math
-from typing import Any
 
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.boot_solids import COLLAR_LENGTH_M, boot_mesh
@@ -33,6 +32,8 @@ from typehaus.resolve.geometry_ir import GMesh, Vec3
 from typehaus.resolve.model import ResolvedModel, ResolvedSolid
 from typehaus.resolve.model_ducts import ResolvedDuctPart, ResolvedDuctSupport
 from typehaus.resolve.sweep import leg_frame
+from typehaus.resolve.takeoff_solids import run_at as _run_at
+from typehaus.resolve.takeoff_solids import takeoff_mesh
 
 MIN_DROP_M = 0.5 * M_PER_IN
 STRAP_WIDTH_M, STRAP_THICKNESS_M = 1.0 * M_PER_IN, M_PER_IN / 32.0
@@ -47,41 +48,6 @@ _CATEGORY = {"takeoff": "duct_fitting", "tee": "duct_fitting", "reducer": "duct_
              "cap": "duct_fitting"}
 #: An end cap drawn as a slip-on lid: this far over the run's end.
 CAP_LENGTH_M = 0.5 * M_PER_IN
-
-
-def _run_at(model: ResolvedModel, tag: str, point: Vec3) -> tuple[Any, Vec3 | None]:
-    """The run and its unit direction at the leg nearest ``point`` (plan, then z)."""
-    duct = next((d for d in model.ducts if d.tag == tag), None)
-    if duct is None or len(duct.path) < 2 or len(duct.z_m) != len(duct.path):
-        return duct, None
-    pts = [(x, y, z) for (x, y), z in zip(duct.path, duct.z_m, strict=True)]
-    best = None
-    for a, b in zip(pts, pts[1:], strict=False):
-        ab = (b[0] - a[0], b[1] - a[1], b[2] - a[2])
-        n2 = sum(c * c for c in ab)
-        if n2 < 1e-12:
-            continue
-        t = max(0.0, min(1.0, sum((point[i] - a[i]) * ab[i] for i in range(3)) / n2))
-        gap = math.dist(point, _add(a, ab, t))
-        if best is None or gap < best[0]:
-            best = (gap, ab)
-    return duct, _unit(best[1]) if best else None
-
-
-def _surface_offset(model: ResolvedModel, part: ResolvedDuctPart, axis: Vec3) -> float:
-    """From the main's centreline out to its surface along ``axis`` (a take-off's start)."""
-    duct, direction = _run_at(model, part.run_tag, part.point)
-    section = parse_section(part.size)
-    if section is None or direction is None:
-        return 0.0
-    if section.is_round:
-        return section.width / 2.0
-    right, up = leg_frame(direction)
-    ar = abs(sum(axis[i] * right[i] for i in range(3)))
-    au = abs(sum(axis[i] * up[i] for i in range(3)))
-    reach = (section.width / 2.0 / ar if ar > 1e-9 else math.inf,
-             section.depth / 2.0 / au if au > 1e-9 else math.inf)
-    return min(reach) if min(reach) < math.inf else 0.0
 
 
 def _into_run(part: ResolvedDuctPart, model: ResolvedModel) -> bool:
@@ -156,9 +122,7 @@ def _part_mesh(model: ResolvedModel, part: ResolvedDuctPart,
     if axis is None or size is None:
         return None
     if part.kind in ("takeoff", "tee", "drain_tee"):
-        stub = branch or size
-        start = _add(part.point, axis, _surface_offset(model, part, axis))
-        return loft(start, axis, stub, stub, part.length_m or COLLAR_LENGTH_M)
+        return takeoff_mesh(model, part, axis, branch or size)
     if part.kind in ("reducer", "transition"):
         small = branch or size
         length = _transition_length(part)

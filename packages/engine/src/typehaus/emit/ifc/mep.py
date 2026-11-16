@@ -1,8 +1,9 @@
 """IFC emission for the mechanical, electrical and plumbing trades — elements *and* systems.
 
 Split out of :mod:`typehaus.emit.ifc.emitter` (→ AGENTS.md §1.1). Two halves live here, and
-the second is why they are kept together: the elements (pipe and duct segments, in-line
-accessories, cast-in sleeves, air terminals, HVAC equipment, electrical devices, sump pumps)
+the second is why they are kept together: the elements (pipe segments, in-line
+accessories, cast-in sleeves, air terminals, HVAC equipment, electrical devices, sump pumps;
+duct segments are in :mod:`typehaus.emit.ifc.duct_segments`)
 and the ``IfcDistributionSystem`` groupings that make them read as *systems* rather than as
 loose proxies that happen to be near each other. Without the grouping tables a BIM tool's
 system browser shows nothing at all under domestic water, sanitary or communications, so the
@@ -28,7 +29,6 @@ from typehaus.model.ids import derive_child_guid, derive_guid
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.box_members import member_footprint
 from typehaus.resolve.device_boxes import boxes_by_device
-from typehaus.resolve.geometry import rect_between
 from typehaus.resolve.model import ResolvedModel
 from typehaus.resolve.placeables import resolved_mount_elevation
 
@@ -285,51 +285,6 @@ def _emit_sleeve(f: Any, body: Any, sleeve: Any, storeys: dict[str, Any],
         "serves_fixture": sleeve.serves_fixture or "",
     })
     ll.assign_container(f, element, storeys[sleeve.storey])
-
-
-def _emit_duct_run(f: Any, body: Any, duct: Any, storeys: dict[str, Any],
-                   project_uuid: Any) -> None:
-    """One ``IfcDuctSegment`` per path segment — a swept disk for round, a prism for rect.
-
-    ``z_m`` per vertex comes from the resolver (→ resolve/mep_ducts.py), so a vertical leg
-    exports as the vertical leg it is, and a round run exports as ``IfcSweptDiskSolid`` the
-    way a pipe does instead of as a square prism pretending to be a pipe.
-    """
-    z_m = getattr(duct, "z_m", None) or ()
-    for index in range(len(duct.path) - 1):
-        p0, p1 = duct.path[index], duct.path[index + 1]
-        seg_len = ((p1[0] - p0[0]) ** 2 + (p1[1] - p0[1]) ** 2) ** 0.5
-        z0, z1 = (z_m[index], z_m[index + 1]) if len(z_m) == len(duct.path) else (0.0, 0.0)
-        if seg_len < 1e-6 and abs(z1 - z0) < 1e-9:
-            continue  # a repeated vertex at one elevation is one point, not a segment
-        child_key = f"seg-{index:02d}"
-        element = ll.create_entity(f, "IfcDuctSegment", name=f"{duct.tag}/{child_key}")
-        element.GlobalId = derive_child_guid(project_uuid, duct.uid, child_key)
-        if duct.diameter_m is not None:
-            representation = ll.add_swept_disk(
-                f, body, points_m=[(p0[0], p0[1], z0), (p1[0], p1[1], z1)],
-                radius_m=duct.diameter_m / 2.0,
-            )
-        else:
-            # A rectangular run stays a prism: IFC has no mitred-rectangle sweep idiom, and
-            # the plan-rectangle-at-the-lower-elevation shape is what every importer reads.
-            # It is placed at the segment's own base now rather than at the whole run's.
-            representation = ll.add_prism_from_profile(
-                f, body, rect_between(p0, p1, -duct.width_m / 2.0, duct.width_m / 2.0),
-                duct.depth_m, min(z0, z1) - duct.depth_m / 2.0,
-            )
-        ll.assign_representation(f, element, representation)
-        ll.ensure_pset(f, element, PSET_SOURCE, {"uid": duct.uid, "tag": duct.tag})
-        ll.ensure_pset(f, element, "TypeHaus_Duct", {
-            "system": duct.system, "width_in": duct.width_m / M_PER_IN,
-            "depth_in": duct.depth_m / M_PER_IN, "routing": duct.routing,
-            # Blank rather than absent where unset: a pset key that comes and goes makes a
-            # schedule column that comes and goes.
-            "diameter_in": (duct.diameter_m / M_PER_IN
-                            if duct.diameter_m is not None else 0.0),
-            "material": duct.material or "", "insulation": duct.insulation or "",
-        })
-        ll.assign_container(f, element, storeys[duct.storey])
 
 
 def _emit_data_system(f: Any, building: Any, raceways: list, devices: list) -> Any:

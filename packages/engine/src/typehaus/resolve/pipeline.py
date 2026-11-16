@@ -264,6 +264,11 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         from typehaus.resolve.duct_parts import resolve_duct_parts
 
         findings.extend(resolve_duct_parts(plan, model))
+    with _stage("duct_fabrication"):
+        # After the parts it trims at: each run split into stretches and elbows.
+        from typehaus.resolve.duct_fabrication import fabricate_runs
+
+        fabricate_runs(model)
     with _stage("equipment_hangers"):
         # A hung machine's trapeze off the framing above (resolve/equipment_hangers.py).
         from typehaus.resolve.equipment_hangers import resolve_equipment_hangers

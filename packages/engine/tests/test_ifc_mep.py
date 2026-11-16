@@ -41,8 +41,13 @@ def test_ifc_has_duct_segments_and_air_terminals(catlin_model_ro, catlin_ifc_pat
     f = ifcopenshell.open(str(catlin_ifc_path))
 
     ducts = f.by_type("IfcDuctSegment")
-    total_segments = sum(len(duct.path) - 1 for duct in catlin_model_ro.ducts)
-    assert len(ducts) == total_segments
+    # One element per path leg (stable ``seg-NN`` GlobalIds), plus one for each extra stretch
+    # a damper or take-off collar splits a leg into (``seg-NN-2``, ...).
+    legs = sum(len(duct.path) - 1 for duct in catlin_model_ro.ducts)
+    names = {d.Name for d in ducts}
+    assert len(ducts) == len(names) >= legs
+    assert all(f"{duct.tag}/seg-{i:02d}" in names
+               for duct in catlin_model_ro.ducts for i in range(len(duct.path) - 1))
     assert all(d.GlobalId for d in ducts)
 
     terminals = f.by_type("IfcAirTerminal")

@@ -148,3 +148,30 @@ def test_boot_shapes_by_joint_stay_behind_the_face_and_close():
         assert manifold.status() == m3d.Error.NoError and manifold.volume() > 0, joint
         assert min(p[0] for p in mesh.positions) >= -1e-9, joint
         assert boot_inlet_point(part) == pytest.approx(tuple(c * i for c in inlet)), joint
+
+
+def test_takeoff_is_a_collar_from_the_surface_plus_a_flange_that_hugs_the_main():
+    from types import SimpleNamespace as NS
+
+    from typehaus.resolve.duct_part_solids import _part_mesh
+    from typehaus.resolve.model_ducts import ResolvedDuctPart
+    from typehaus.resolve.takeoff_solids import takeoff_branch_start
+
+    i = 0.0254
+    for main_size, depth, surface in (("10in", 10 * i, 5 * i), ("18x8", 8 * i, 4 * i)):
+        main = NS(tag="M", path=[(0.0, 0.0), (0.0, 60 * i)], z_m=[0.0, 0.0],
+                  width_m=depth, depth_m=depth, diameter_m=None)
+        model = NS(ducts=[main])  # no plan: the 2" fallback collar
+        part = ResolvedDuctPart(kind="takeoff", run_tag="M", storey="s", size=main_size,
+                                branch="6in", point=(0.0, 30 * i, 0.0), axis=(0.0, 0.0, 1.0))
+        assert takeoff_branch_start(model, part) == pytest.approx(surface + 2 * i)
+        mesh = _part_mesh(model, part, [part])
+        manifold = mesh_manifold(mesh.positions, mesh.triangles)
+        assert manifold.status() == m3d.Error.NoError and manifold.volume() > 0
+        zs = [p[2] for p in mesh.positions]
+        xs = [p[0] for p in mesh.positions]
+        assert max(zs) == pytest.approx(surface + 2 * i)
+        assert max(xs) == pytest.approx(3.5 * i)  # 6" collar + 1/2" flange each side
+        # The flange's lowest point sits on the shell, not above it or deep inside it.
+        sag = 5 * i - (25 - 3.5**2) ** 0.5 * i if main_size == "10in" else 0.0
+        assert min(zs) == pytest.approx(surface - sag, abs=1e-6)

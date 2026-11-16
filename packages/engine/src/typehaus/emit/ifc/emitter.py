@@ -32,6 +32,7 @@ from typehaus.emit.ifc.architectural import (
     _emit_wall_types,
     is_external_wall,
 )
+from typehaus.emit.ifc.duct_segments import emit_duct_runs
 from typehaus.emit.ifc.electrical import emit_conduits, emit_light_runs, emit_solar_panels
 from typehaus.emit.ifc.engineering_pset import attach_engineering_psets
 from typehaus.emit.ifc.lowlevel_guids import (
@@ -49,7 +50,6 @@ from typehaus.emit.ifc.mep import (
     _PIPE_SYSTEM_TYPES,
     STORMWATER_PIPE_SYSTEM,
     _emit_data_system,
-    _emit_duct_run,
     _emit_pipe_accessories,
     _emit_pipe_run,
     _emit_pipe_system,
@@ -281,7 +281,7 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed",
     system_elements["drain"].extend(cleanout_entities)
     # The parts at the corners, filed into the same systems as the segments they sit
     # between. Ducts come back in the same call and are grouped by their own emitter below.
-    fittings_by_system = emit_fittings(f, model, storeys, project_uuid)
+    fittings_by_system = emit_fittings(f, body, model, storeys, project_uuid)
     for system_key, entities in fittings_by_system.items():
         if system_key in system_elements:
             system_elements[system_key].extend(entities)
@@ -299,8 +299,7 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed",
     for sleeve in sorted(model.sleeves, key=lambda item: item.uid):
         _emit_sleeve(f, body, sleeve, storeys, project_uuid)
 
-    for duct in sorted(model.ducts, key=lambda item: item.uid):
-        _emit_duct_run(f, body, duct, storeys, project_uuid)
+    emit_duct_runs(f, body, model, storeys, project_uuid)
 
     raceways_by_service = emit_conduits(f, body, model, storeys, project_uuid,
                                         ll.assign_representation)

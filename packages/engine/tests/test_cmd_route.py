@@ -183,7 +183,7 @@ def test_a_duct_run_is_routed_rather_than_called_not_a_run(runner) -> None:
     multi-level lattice, and prints `routing=`/`floor_ref=` read back out of the corridors
     the winning legs actually rode rather than asserted.
     """
-    result = runner.invoke(app, ["route", str(_CATLIN), "--run", "DU-S-HP-SUITE",
+    result = runner.invoke(app, ["route", str(_CATLIN), "--run", "DU-S-HP-SOUTH",
                                  "--margin", "2"])
     assert result.exit_code == 0, result.output
     assert "DuctRun(tag=" in result.output
