@@ -6,7 +6,7 @@ The same port list drives the shell and coordination metadata in every renderer.
 
 import math
 
-from shapely import constrained_delaunay_triangles
+import shapely
 from shapely.geometry import Polygon
 from shapely.geometry import box as rectangle
 from shapely.geometry.polygon import orient
@@ -25,6 +25,14 @@ def sheet_metal_plenum(width, depth, height):
     return (rect(0, 0, width, depth),), plenum_parts(width, depth, height, ())
 
 
+def _triangles(polygon):
+    if hasattr(shapely, "constrained_delaunay_triangles"):
+        return shapely.constrained_delaunay_triangles(polygon).geoms
+    # Pyodide's Shapely 2.0: unconstrained Delaunay, kept where it lies in the sheet
+    from shapely.ops import triangulate
+    return [t for t in triangulate(polygon) if polygon.contains(t.representative_point())]
+
+
 def _sheet_part(polygon, axis, station, thickness):
     """Extrude a polygon with holes into a closed sheet, in any principal plane."""
     polygon = orient(polygon)
@@ -36,7 +44,7 @@ def _sheet_part(polygon, axis, station, thickness):
         vertices.append(tuple(point))
         return len(vertices) - 1
 
-    for triangle in constrained_delaunay_triangles(polygon).geoms:
+    for triangle in _triangles(polygon):
         coords = list(orient(triangle).exterior.coords)[:3]
         for offset, reverse in ((0, True), (thickness, False)):
             indices = [vertex(u, v, offset) for u, v in coords]
