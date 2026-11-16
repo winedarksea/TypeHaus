@@ -14,7 +14,6 @@ from shapely.geometry.polygon import orient
 from typehaus.model.placeable_symbols._frame import rect
 from typehaus.model.placeable_symbols._mesh import mesh_part, outward
 from typehaus.quantities import M_PER_IN
-from typehaus.resolve.overlay import union_all
 
 SHEET_THICKNESS_M = 0.019 * M_PER_IN  # nominal 26 ga galvanized, visual sheet thickness
 ROUND_OPENING_SEGMENTS = 32
@@ -90,6 +89,8 @@ def plenum_parts(width, depth, height, ports):
         else:
             raise ValueError(f"Plenum opening {port.tag} needs a section")
         openings.setdefault((axis, side), []).append(opening)
+    from typehaus.resolve.overlay import union_all  # deferred: resolve imports model
+
     parts = []
     for axis in range(3):
         (u0, u1), (v0, v1) = [bound for index, bound in enumerate(bounds) if index != axis]
