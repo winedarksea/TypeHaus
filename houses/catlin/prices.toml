@@ -6358,8 +6358,6 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "elbow-adj-90-8in" = { low = 11.01, high = 22 }    # 6 ea — SupplyHouse 26 ga adjustable, $11.01 (2026-11-04)
 "elbow-90-12x10" = { low = 30, high = 80 }         # 1 ea — DU-S-HP-RET up into EQ-S-ERV-MIX, shop-fabricated (estimate)
 "elbow-90-12x6" = { low = 25, high = 70 }          # 1 ea — DU-S-HP-BED3-RET onto the deck, shop-fabricated (estimate)
-"elbow-90-10x6" = { low = 25, high = 70 }          # 1 ea — DU-S-HP-SOUTH-RISE, shop-fabricated (estimate)
-"elbow-45-10x6" = { low = 25, high = 70 }          # 2 ea — DU-S-HP-SOUTH, shop-fabricated (estimate)
 # The OA/EA wall seals (SleevePenetration.serves_duct, 2026-10-31): low-expansion window-and-
 # door foam, Great Stuff Pro W&D $21-26/can (Hemlock Hardware, Walmart 3-pack), half a can
 # each, plus foil tape to the wrap end. ESTIMATES; the labour is the foaming and taping visit.
@@ -6413,8 +6411,11 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "boot-10x6-12x6" = { low = 25, high = 60 }               # 1 ea — shop fabrication, estimate
 "boot-10x8-12x6" = { low = 25, high = 60 }               # 2 ea — shop fabrication, estimate
 "boot-18x8-12x6" = { low = 30, high = 70 }               # 1 ea — shop fabrication, estimate
-"boot-6in-8x6" = { low = 25, high = 60 }                 # 1 ea — shop fabrication, estimate
-"reducer-18x8-10x6" = { low = 30, high = 70 }            # 1 ea — shop fabrication, estimate
+"boot-6in-8x6" = { low = 25, high = 60 }                 # 2 ea — the study grilles, shop fabrication, estimate
+"reducer-18x8-10x6" = { low = 40, high = 90 }            # 1 ea — 18in flat-bottomed offset transition, shop fabrication, estimate
+"cap-18x8" = { low = 10, high = 30 }                     # 1 ea — DU-S-HP-SUP's north end, shop-made, estimate
+"cap-10x6" = { low = 8, high = 25 }                      # 1 ea — DU-S-HP-SOUTH's end past the study collars, shop-made, estimate
+"cap-8x4" = { low = 6, high = 20 }                       # 1 ea — DU-M-ERV-EXH-TRUNK's end, shop-made, estimate
 "takeoff-18x8-10x8" = { low = 30, high = 70 }            # 1 ea — shop fabrication, estimate
 "takeoff-18x8-12x12" = { low = 40, high = 90 }           # 1 ea — DU-S-HP-SUP-DROP onto the trunk's north cap, estimate
 

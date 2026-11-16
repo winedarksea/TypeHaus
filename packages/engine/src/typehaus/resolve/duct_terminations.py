@@ -23,6 +23,7 @@ from typehaus.resolve.mep_ports import placed_ports, port_at
 from typehaus.resolve.mep_soffit import (
     DUCT_JOINT_TOLERANCE_M,
     duct_joint_index,
+    end_joins,
     plan_distance_to_segment,
 )
 from typehaus.resolve.model_ducts import Point3, ResolvedDuctPart
@@ -122,8 +123,8 @@ def _classify(model: Any, duct: Any, point: Point3, registers: dict[str, list[An
     if port is not None:
         return ("collar" if port.collar else "port"), port.equipment_tag, port
     for other in model.ducts:
-        if other is not duct and len(other.path) > 1 and duct_joint_index(
-                point[:2], point[2], other.path, other.z_m) is not None:
+        if other is not duct and len(other.path) > 1 and end_joins(
+                duct, point[:2], point[2], other):
             return "joined", other.tag, None
     for obj in registers.get(duct.tag, ()):
         if obj.tag in collars:  # seated on its top, or nothing: no plan-only reach
@@ -171,6 +172,10 @@ def termination_parts(model: Any, standard: DuctStandard,
             out.append(ResolvedDuctPart(kind="collar_damper",
                                         port=end.port.port_tag if end.port else None,
                                         gap=None if row else f"no collar_damper row at {size}",
+                                        **base, **_row_fields(row)))
+        elif end.landing == "cap":
+            row = standard.part("cap", size)
+            out.append(ResolvedDuctPart(kind="cap", gap=None if row else f"no cap row at {size}",
                                         **base, **_row_fields(row)))
         elif end.landing in ("port", "equipment"):
             port_tag = end.port.port_tag if end.port is not None else None

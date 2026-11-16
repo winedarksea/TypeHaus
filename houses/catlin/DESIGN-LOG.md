@@ -8397,3 +8397,37 @@ the one ducted option that works; the owner chose the simpler one.
   exposed drop to the collar. The 4" damper sits on the drop at ~62". Still 6 cfm; budget unchanged.
 - `APPL-B-WORKSHOP-FUME` is a Hakko FA-400 (`plan/workshop_fume*.py`). It is a recirculating
   carbon unit, effective within ~6-8" of its nozzle, cord to `ED-B-WORKSHOP-RC2`.
+
+## Study duct south end (2026-11-15, owner)
+
+The south end of System 1's hall trunk read clunky in 3D, and that came from the model, not the
+viewer. An 18x8 to 10x6 reducer ran south, then a vertical 10x6 leg rose into FS-ATTIC's y 32-48
+bay, then a separate 10x6 stub ran 12" west to a cap, with a 6" rise off it. The turn between the
+two runs was never drawn (no elbow exists for a turn *between* runs). The reducer was concentric,
+so it hung 1" below the flat trunk. No boot was drawn under any necked grille. The two east-face
+collars stood 6 1/4" apart, and the south one hung past the end of its leg.
+
+- `DU-S-HP-SOUTH` (uid `27B8FKNDPB`, retagged from `-SOUTH-RISE`) is one straight 10x6 in
+  SF-S-DUCT, x=18'-10 1/2", 99 1/8" storey, y=8'-4" south to 2'-11 1/2", ending in a cap. An 18"
+  flat-bottomed offset transition (centre 7 1/2" west) fills y=8'-4"..9'-10" from the trunk's cap.
+  The old attic stub (`NYRX7TBEGH`), its take-off, the vertical leg and the shop 10x6 elbows are
+  gone.
+- Three collars, each on a straight face. `DU-S-HP-STUDY2` (east) is at y=4'-10 5/8", the
+  ladder bay between the 50 5/8" and 66 5/8" studs. `REG-S-HP-STUDY2` moved there, one bay north.
+  `DU-S-HP-STUDY2-S` (east) is at y=3'-3 1/2" and turns onto the end face on its 6"-to-8x6 boot.
+  `DU-S-HP-STUDY-BOOT` (top) rises straight to `REG-A-HP-STUDY` at (18'-10", 3'-4"). That
+  register and the desk do not move.
+- Why it stays in the soffit instead of rising at the trunk's cap: FS-ATTIC's I-joists run in
+  x, so a north-south run above them crosses ~5 joists 15" off the x=18' bearing. That is inside
+  every published no-hole zone, and 250 cfm needs ~8" round, more than any hole the chart allows
+  there (the 2026-11-12 argument, unchanged).
+- The trunk's north cap moved 1/2" to y=29'-2 1/2": the new collar check found
+  `DU-S-HP-SUP-DROP`'s 12x12 collar flange 1/2" past the old cap.
+- Engine: an offset reducer is a joint (`mep_soffit.eccentric_end_joint`, end faces overlapping,
+  a gap up to the larger section that the reducer fills), and each reducer ring is centred on its
+  own run. A `separate_boot` neck draws its boot between the run and the neck's back (straight,
+  or turned where the run arrives across the neck). The OBD and floor-damper necks carry it. A run
+  stopped past its last branch takes a `cap` part (`DuctPartRow(kind="cap")`). The new
+  `mep.takeoff_collar_fit` fails a collar past a run end, into a turn, or over a sibling. A
+  corner tee (a branch carrying straight on at a vertex, as at `DU-M-ERV-SUP-FEED`) is one
+  fitting and is exempt.

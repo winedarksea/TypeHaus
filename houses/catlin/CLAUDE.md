@@ -1943,8 +1943,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       closer, heat a 1500 W fan heater on `CKT-PLANT-HEAT`, four motorized rollers. Every box
       through its membrane is air-sealed (derived). `mep.ventilation_distribution` is
       suppressed for it with that reason. Study 2 takes the 75 cfm: `REG-S-HP-STUDY2-S` on
-      SF-S-DUCT's south face, a glass wash past D-S-PLANT. The riser's 250 = STUDY2 75 + 75 +
-      `DU-S-HP-SOUTH` 100.
+      SF-S-DUCT's south face, a glass wash past D-S-PLANT. `DU-S-HP-SOUTH`'s 250 = STUDY2 75 +
+      75 + the attic desk 100.
     - **BED1-3 use straight 6" side collars.** BED3 is at y=27'-6", centreline 100 1/8"
       above the second-storey datum, through W-S-BW3 above D-S-BED3's header; its collar
       clears the south king by 1/2". Close the shadow gap and cut the local resilient
@@ -1962,17 +1962,16 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       `TerminalNeck` now and `mep.terminal_neck_fit` grades it** — move a register and that
       check says whether its boot or collar still fits.
       `REG-A-HP-STUDY` floor boot sits at (18'-10", 3'-4"), rotated 90° beneath the
-      desk near the centreline wall, clear of its chair. `DU-S-HP-SOUTH` ends east at
-      x=19'-6", its riser station, carrying 175 cfm. `REG-S-HP-STUDY2` is an 8x6
-      east-facing sidewall grille at (21'-6", 3'-7 1/2"), bottom 94 5/8" AFF,
-      fed by a drawn 6" boot off `DU-S-HP-SOUTH-RISE` (250 cfm before its take-off).
-      See `notes/system1_study_supply.md` for selection and aiming.
+      desk near the centreline wall, clear of its chair. **The study branch is one straight
+      10x6, `DU-S-HP-SOUTH`, in SF-S-DUCT (2026-11-15)**: an 18" flat-bottomed offset
+      transition off the trunk's cap, then three collars on straight faces (east y=4'-10 5/8"
+      to `REG-S-HP-STUDY2`, east y=3'-3 1/2" to `REG-S-HP-STUDY2-S`, top straight up to
+      `REG-A-HP-STUDY`) and a cap. `mep.takeoff_collar_fit` holds the spacing. See
+      `notes/system1_study_supply.md` for selection and aiming.
       **Nothing grades a placeable against a register** — check by hand when moving one.
-      `DU-S-HP-SOUTH`'s west terminal is at x=12'-0" (2026-09-23, 2'-8" less duct; 9'-4", the
-      glass centroid, is the fallback). Not further east: the extract and the door are there.
-    - **The riser cannot cut through `FS-ATTIC`'s joists** (they run in x); near x=19'-6"
+    - **The study branch cannot travel in `FS-ATTIC`** (its joists run in x); near x=19'-6"
       every hole lands inside `W-S-C1`'s no-hole zone, and no duct small enough to dodge it
-      still moves 250 cfm.
+      still moves 250 cfm. It stays in SF-S-DUCT.
     - **The return path is door undercuts, held to 1/2"-3/4" (owner, 2026-11-06, #21):**
       interior doors are stock prehungs cut on site; `DoorType.undercut` /
       `TRIM-STANDARD.door_undercut` (1/2" default, 3/4" on the relief doors) feed the leaf,

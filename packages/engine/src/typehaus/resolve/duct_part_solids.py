@@ -35,7 +35,10 @@ HANDLE_STANDOFF_M = 0.125 * M_PER_IN  # the shaft, undrawn
 _CATEGORY = {"takeoff": "duct_fitting", "tee": "duct_fitting", "reducer": "duct_fitting",
              "transition": "duct_fitting", "boot": "duct_fitting",
              "collar_damper": "duct_damper", "damper": "duct_damper", "flex": "duct_connector",
-             "connector": "duct_connector", "drain_tee": "duct_fitting"}
+             "connector": "duct_connector", "drain_tee": "duct_fitting",
+             "cap": "duct_fitting"}
+#: An end cap drawn as a slip-on lid: this far over the run's end.
+CAP_LENGTH_M = 0.5 * M_PER_IN
 
 
 @dataclass(frozen=True)
@@ -108,11 +111,13 @@ def prism(a: list[Vec3], b: list[Vec3]) -> GMesh:
     return GMesh(positions=positions, triangles=tuple(tris))
 
 
-def loft(origin: Vec3, axis: Vec3, start: Section, end: Section, length: float) -> GMesh:
-    """``start`` at ``origin`` to ``end`` ``length`` along ``axis``."""
+def loft(origin: Vec3, axis: Vec3, start: Section, end: Section, length: float,
+         far: Vec3 | None = None) -> GMesh:
+    """``start`` at ``origin`` to ``end`` ``length`` along ``axis`` (or centred on ``far``,
+    an eccentric fitting: each ring on its own run's centreline)."""
     right, up = leg_frame(axis)
     count = 4 if not start.is_round and not end.is_round else _FACETS
-    far = _add(origin, axis, length)
+    far = far if far is not None else _add(origin, axis, length)
     return prism(_ring(start, origin, right, up, count), _ring(end, far, right, up, count))
 
 
@@ -171,6 +176,16 @@ def _into_run(part: ResolvedDuctPart, model: ResolvedModel) -> bool:
         math.dist(end, part.point) < 1e-3 and sum(a * b for a, b in zip(axis, part.axis,
                                                                          strict=True)) > 0.99
         for _, end, axis in duct_ends(duct))
+
+
+def _end_vertex(model: ResolvedModel, tag: str | None, point: Vec3) -> Vec3 | None:
+    """``tag``'s end vertex nearest ``point``, within 30" (an eccentric joint's centre)."""
+    from typehaus.resolve.duct_branches import duct_ends
+
+    duct = next((d for d in model.ducts if d.tag == tag), None)
+    ends = [e for _, e, _ in duct_ends(duct)] if duct is not None else []
+    best = min(ends, key=lambda e: math.dist(e, point), default=None)
+    return best if best is not None and math.dist(best, point) < 30 * M_PER_IN else None
 
 
 def _transition_length(part: ResolvedDuctPart) -> float:
@@ -236,6 +251,17 @@ def _part_mesh(model: ResolvedModel, part: ResolvedDuctPart,
             return turned
         flipped = _into_run(part, model) if part.kind == "reducer" else True
         ends = (small, size) if flipped else (size, small)
+        if part.kind == "reducer":
+            # Each ring on its own run's centreline: a flat-bottomed or offset reducer when
+            # the runs' faces are flush, concentric when their centrelines meet.
+            big_end = _end_vertex(model, part.run_tag, part.point)
+            small_end = _end_vertex(model, part.other, part.point)
+            if big_end is not None and small_end is not None:
+                near, away = (small_end, big_end) if flipped else (big_end, small_end)
+                gap = sum((away[i] - near[i]) * axis[i] for i in range(3))
+                if gap > 0.25 * M_PER_IN:  # the runs stop short: the reducer fills the gap
+                    return loft(near, axis, *ends, gap, far=away)
+                return loft(near, axis, *ends, length, far=_add(away, axis, length))
         return loft(part.point, axis, *ends, length)
     if part.kind in ("collar_damper", "damper"):
         # A collar starts at its plenum; an in-line body is centred on its station.
@@ -252,6 +278,9 @@ def _part_mesh(model: ResolvedModel, part: ResolvedDuctPart,
                                            (along, around, thick)))
     if part.kind == "boot":
         return _boot_mesh(model, part, size, branch)
+    if part.kind == "cap":  # a lid over the end, its axis pointing into the run
+        return loft(_add(part.point, axis, -CAP_LENGTH_M / 2.0), axis, size, size,
+                    CAP_LENGTH_M)
     # flex / connector: a sleeve of the run's section, clear of a transition at the same port
     behind = sum(_transition_length(s) for s in siblings
                  if s.kind == "transition" and s.run_tag == part.run_tag
@@ -260,12 +289,37 @@ def _part_mesh(model: ResolvedModel, part: ResolvedDuctPart,
                 part.length_m or size.larger)
 
 
-def _boot_mesh(model: ResolvedModel, part: ResolvedDuctPart, size: Section,
-               neck: Section | None) -> GMesh | None:
+def _neck_back(model: ResolvedModel, obj: Any, neck: Any
+               ) -> tuple[Vec3, Vec3, Vec3, Vec3] | None:
+    """A neck box's back face: (centre, normal toward the duct, width axis, height axis)."""
+    from typehaus.resolve.terminal_necks import _back, _face_offset, _rotate
+
+    kind = getattr(obj.mount.kind, "value", obj.mount.kind) if obj.mount else None
+    if obj.body_z0_m is None or kind is None:
+        return None
+    across = (*_rotate((1.0, 0.0), obj.rotation_degrees), 0.0)
+    depth = neck.depth.meters
+    top = obj.body_z1_m if obj.body_z1_m is not None else obj.body_z0_m
+    if kind in ("ceiling", "floor"):
+        other = (*_rotate((0.0, 1.0), obj.rotation_degrees), 0.0)
+        if kind == "ceiling":
+            return (*obj.position, obj.body_z0_m + depth), (0.0, 0.0, 1.0), across, other
+        return (*obj.position, top - depth), (0.0, 0.0, -1.0), across, other
+    back = _back(model, obj, _rotate((0.0, 1.0), obj.rotation_degrees))
+    if back is None:
+        return None
+    reach = _face_offset(obj, back) + depth
+    centre = (obj.position[0] + back[0] * reach, obj.position[1] + back[1] * reach,
+              (obj.body_z0_m + top) / 2.0)
+    return centre, (back[0], back[1], 0.0), across, (0.0, 0.0, 1.0)
+
+
+def _plain_boot(model: ResolvedModel, part: ResolvedDuctPart, size: Section,
+                neck: Section | None, target: Any) -> GMesh:
+    """A boot onto a terminal with no neck box: lofted toward its face."""
     if part.width_m and part.height_m:
         neck = Section(False, part.width_m, part.height_m)
     neck = neck or size
-    target = next((o for o in model.canvas_objects if o.tag == part.other), None)
     direction, reach = (0.0, 0.0, 1.0), None
     if target is not None:
         z = target.body_z0_m if target.body_z0_m is not None else part.point[2]
@@ -277,6 +331,54 @@ def _boot_mesh(model: ResolvedModel, part: ResolvedDuctPart, size: Section,
     if part.length_m is None and reach:
         length = min(length, reach)
     return loft(part.point, direction, size, neck, length)
+
+
+def _boot_mesh(model: ResolvedModel, part: ResolvedDuctPart, size: Section,
+               neck: Section | None) -> GMesh | None:
+    """A boot behind a ``separate_boot`` neck: duct section to the neck's back face.
+
+    Straight when the run arrives along the neck's normal; otherwise an end boot that
+    turns: the neck section carried back past the run's far side, with a stub of the run
+    reaching it when the run ends beside it.
+    """
+    target = next((o for o in model.canvas_objects if o.tag == part.other), None)
+    types = {t.tag: t for t in getattr(model.plan.library, "register_types", ())}
+    box = getattr(types.get(getattr(target, "type_ref", None)), "neck", None)
+    if target is None or box is None:
+        return _plain_boot(model, part, size, neck, target)
+    placed = _neck_back(model, target, box)
+    if placed is None:
+        return None
+    centre, normal, right, up = placed
+    face = Section(False, box.width.meters, box.height.meters)
+    count = 4 if not size.is_round else _FACETS
+    point, axis = part.point, _unit(part.axis) or normal
+    length = part.length_m or size.larger
+    # A run ending at the neck (a rise under a floor boot) arrives along its last leg, even
+    # where an earlier leg passes the same plan point.
+    from typehaus.resolve.duct_branches import duct_ends
+
+    duct = next((d for d in model.ducts if d.tag == part.run_tag), None)
+    end = min(((math.dist(e, centre), e, a) for _, e, a in duct_ends(duct)),
+              key=lambda t: t[0], default=None) if duct is not None else None
+    if end is not None and end[0] <= max(length, face.larger):
+        point, axis = end[1], end[2]
+    offset = tuple(point[i] - centre[i] for i in range(3))
+    if abs(sum(axis[i] * normal[i] for i in range(3))) > 0.7:
+        # The run's centreline at the boot's start, one boot length behind the face.
+        along = sum(offset[i] * normal[i] for i in range(3))
+        start = _add(point, normal, length - along)
+        return prism(_ring(size, start, right, up, count), _ring(face, centre, right, up, count))
+    deep = max(length, sum(offset[i] * normal[i] for i in range(3)) + size.larger / 2.0)
+    body = prism(_ring(face, centre, right, up, 4),
+                 _ring(face, _add(centre, normal, deep), right, up, 4))
+    lateral = [offset[i] - normal[i] * sum(offset[j] * normal[j] for j in range(3))
+               for i in range(3)]
+    gap = math.sqrt(sum(c * c for c in lateral)) - face.width / 2.0
+    if gap <= 1e-3:
+        return body
+    toward = _unit(tuple(-c for c in lateral))
+    return combine_meshes(body, loft(point, toward, size, size, gap))
 
 
 def _support_mesh(model: ResolvedModel, hanger: ResolvedDuctSupport) -> GMesh | None:
@@ -328,10 +430,13 @@ def _solid(uid: str, tag: str, storey: str, category: str, mesh: GMesh,
 
 
 def neck_drawn(model: ResolvedModel) -> set[str]:
-    """Registers whose type's ``neck`` already draws the boot (``resolve/terminal_necks``)."""
+    """Registers whose type's ``neck`` already draws the boot (``resolve/terminal_necks``);
+    a ``separate_boot`` neck is only the damper, and its boot is drawn here."""
     types = {t.tag: t for t in getattr(model.plan.library, "register_types", ())}
-    return {o.tag for o in model.canvas_objects if o.kind == "Register"
-            and getattr(types.get(o.type_ref), "neck", None) is not None}
+    necks = {o.tag: getattr(types.get(o.type_ref), "neck", None)
+             for o in model.canvas_objects if o.kind == "Register"}
+    return {tag for tag, neck in necks.items()
+            if neck is not None and not neck.separate_boot}
 
 
 def part_solids(model: ResolvedModel) -> None:

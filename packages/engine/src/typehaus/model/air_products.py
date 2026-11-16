@@ -158,6 +158,9 @@ class TerminalNeck(HausModel):
     #: necks retain their wall, ceiling and floor placement conventions.
     components: tuple[TerminalNeckComponent, ...] = ()
     inlet: TerminalNeckInlet | None = None
+    #: The box is only the damper behind the face: the duct's ``boot`` part is drawn
+    #: between the run and the box's back (``resolve/duct_part_solids``).
+    separate_boot: bool = False
 
     @model_validator(mode="after")
     def _unique_components(self) -> TerminalNeck:

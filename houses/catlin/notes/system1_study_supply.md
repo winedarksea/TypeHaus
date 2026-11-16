@@ -1,16 +1,35 @@
 # Second-storey study: two soffit sidewall supplies
 
 `RM-S-STUDY2` takes two 75 cfm grilles on SF-S-DUCT, both 8x6 double-deflection with an
-opposed-blade damper (`REG-T-HP-STUDY-SIDE`), both off DU-S-HP-SOUTH-RISE (owner, 2026-11-12).
+opposed-blade damper (`REG-T-HP-STUDY-SIDE`), both off DU-S-HP-SOUTH (owner, 2026-11-12;
+redesigned 2026-11-15).
 
-- **`REG-S-HP-STUDY2`, east face** (owner-approved 2026-10-04; wall-width revision 2026-10-23):
-  x=21'-8 3/4", y=3'-7 1/2", throwing east across the study. Its 8x6 face runs 94 5/8" to 100 5/8"
-  AFF on the soffit leg's 99 1/8" centreline (storey datum; the finished floor is 1 1/2" up).
-  A drawn 6" boot `DU-S-HP-STUDY2` leaves the riser through the east lining.
+- **`REG-S-HP-STUDY2`, east face** (owner-approved 2026-10-04; wall-width revision 2026-10-23;
+  moved one ladder bay north 2026-11-15): x=21'-8 3/4", y=4'-10 5/8", the bay between the
+  50 5/8" and 66 5/8" ladder studs, throwing east across the study. Its 8x6 face runs 94 5/8" to
+  100 5/8" AFF on the 10x6's 99 1/8" centreline (storey datum; the finished floor is 1 1/2" up).
+  A 6" round `DU-S-HP-STUDY2` leaves the 10x6's east face through the east lining into a
+  6"-to-8x6 straight boot.
 - **`REG-S-HP-STUDY2-S`, south end face** (2026-11-12, the plant room's former 75 cfm): y=2'-10",
   x=20'-9", ~34" off the south wall and near the line of `D-S-BALCONY` (x=21'-4"). Fed by
-  `DU-S-HP-STUDY2-S`, a 6" round off the riser's last bay just south of the east boot, ending
-  in the 6"-to-8x6 boot that turns onto the face (`mep.register_reach` 3.7" plan / 0" z).
+  `DU-S-HP-STUDY2-S`, a 6" round off the 10x6's east face at y=3'-3 1/2" (19" south of the east
+  collar), ending in the 6"-to-8x6 boot that turns onto the face (`mep.register_reach` 6.0" plan
+  / 0" z).
+
+## Topology (2026-11-15)
+
+```
+18x8 DU-S-HP-SUP cap (x=19'-6", y=9'-10")
+  -> 18" flat-bottomed offset transition (centre 7 1/2" west)
+  -> 10x6 DU-S-HP-SOUTH, x=18'-10 1/2", 99 1/8" storey, y=8'-4" to 2'-11 1/2", cap
+       east collar y=4'-10 5/8"   -> DU-S-HP-STUDY2   -> REG-S-HP-STUDY2   (75)
+       east collar y=3'-3 1/2"    -> DU-S-HP-STUDY2-S -> REG-S-HP-STUDY2-S (75)
+       top collar (18'-10", 3'-4") -> DU-S-HP-STUDY-BOOT, 6" rise -> 6x12x6 boot
+                                      -> REG-A-HP-STUDY (100)
+```
+
+Every collar sits on a straight face (`mep.takeoff_collar_fit`). The rise passes the soffit's
+open top into FS-ATTIC's y 32-48 bay, inside its 13 11/16" clear width.
 
 The soffit remains a lined enclosure, not an air plenum.
 
@@ -39,7 +58,7 @@ seasonal trim: close the south one down first.
 
 ## Branch consequences
 
-DU-S-HP-SOUTH-RISE carries 250 cfm: 75 east + 75 south + 100 on to the attic desk on
-DU-S-HP-SOUTH, a stub capped past the riser. System 1 stays at 750 and the air handler and
+DU-S-HP-SOUTH carries 250 cfm (600 fpm in 10x6): 75 east + 75 south + 100 up to the attic
+desk. System 1 stays at 750 and the air handler and
 its return arithmetic are unchanged. `D-S-STUDY2` is a cased opening with no leaf, so the
 study's 150 cfm leaves to the hall (`mep.door_transfer_air` passes the hall group).

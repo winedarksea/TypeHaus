@@ -163,28 +163,20 @@ def test_a_branch_tees_into_the_side_of_a_trunk(catlin_model):
     assert landed == ["duct DU-S-HP-SUITE start lands on DU-S-HP-SUP"]
 
 
-def test_the_trunk_hands_off_collinearly_at_its_south_cap(catlin_model):
-    """** THIS TEST ASSERTED A CAPPED END UNTIL 2026-09-04, AND THE REVERSAL IS THE POINT. **
-
-    DU-S-HP-SUP used to run NORTH out of a machine at the south end of the chase and simply
-    stop past its last bedroom boot — a cap earned from the take-offs on its final leg.
-    With EQ-S-HP1-AH moved to SF-S-HP1 over RM-S-NCLOSET the trunk runs SOUTH, and its end
-    is no longer a cap at all: DU-S-HP-SOUTH-RISE picks it up COLLINEARLY at x=19'-6",
-    y=9'-10", 18x8 reducing to 10x6, and stands up into the FS-ATTIC bay.
-
-    That reducer replaced an east dogleg with two elbows whose only purpose was to get round
-    the old machine. So the assertion is the handoff, and the check earning it from geometry
-    rather than from a `duct_ref` is what makes it worth pinning.
-    """
+def test_the_trunk_hands_off_through_an_offset_reducer(catlin_model):
+    """DU-S-HP-SUP's south cap hands its last 250 cfm to DU-S-HP-SOUTH through an 18"
+    flat-bottomed offset transition (2026-11-15): the 10x6 starts 18" south and 7 1/2" west,
+    its bottom flush with the trunk's, and the joint is still earned from geometry."""
     ends = [f for f in _connectivity(catlin_model) if "DU-S-HP-SUP end" in f.message]
-    assert len(ends) == 1
-    assert ends[0].result.value == "pass"
-    assert ends[0].message == "duct DU-S-HP-SUP end lands on DU-S-HP-SOUTH-RISE"
-    # And the handoff is collinear: same x, and the riser starts where the trunk stops.
+    assert [(f.result.value, f.message) for f in ends] == [
+        ("pass", "duct DU-S-HP-SUP end lands on DU-S-HP-SOUTH")]
     trunk = next(d for d in catlin_model.ducts if d.tag == "DU-S-HP-SUP")
-    riser = next(d for d in catlin_model.ducts if d.tag == "DU-S-HP-SOUTH-RISE")
-    assert trunk.path[-1] == pytest.approx(riser.path[0])
-    assert {p[0] for p in trunk.path} == {p[0] for p in riser.path}
+    branch = next(d for d in catlin_model.ducts if d.tag == "DU-S-HP-SOUTH")
+    assert trunk.z_m[-1] - trunk.depth_m / 2 == pytest.approx(
+        branch.z_m[0] - branch.depth_m / 2)
+    reducer = next(p for p in catlin_model.duct_parts
+                   if p.kind == "reducer" and p.run_tag == "DU-S-HP-SUP")
+    assert reducer.other == "DU-S-HP-SOUTH" and reducer.gap is None
 
 
 def test_a_machine_67_inches_above_the_end_is_not_a_joint(catlin_model):
@@ -288,29 +280,28 @@ def test_study_sidewall_boot_connects_and_clears_soffit_framing(catlin_plan, cat
     register = next(e for e in catlin_plan.all_elements() if e.tag == "REG-S-HP-STUDY2")
     grille = next(o for o in model.canvas_objects if o.tag == register.tag)
     branch = next(d for d in model.ducts if d.tag == register.duct_ref)
-    riser = next(d for d in model.ducts if d.tag == "DU-S-HP-SOUTH-RISE")
-    bay = next(d for d in model.ducts if d.tag == "DU-S-HP-SOUTH")
+    main = next(d for d in model.ducts if d.tag == "DU-S-HP-SOUTH")
     soffit = next(s for s in model.soffits if s.tag == "SF-S-DUCT")
     room = next(r for r in model.rooms if r.tag == register.room)
     assert register.mount.kind.value == "wall"
     assert register.design_cfm == 75
     assert branch.design_cfm == 75
     south = next(d for d in model.ducts if d.tag == "DU-S-HP-STUDY2-S")
-    assert bay.design_cfm == 100  # the attic desk only; the study's two grilles leave below
-    assert riser.design_cfm == branch.design_cfm + south.design_cfm + bay.design_cfm
+    rise = next(d for d in model.ducts if d.tag == "DU-S-HP-STUDY-BOOT")
+    assert main.design_cfm == branch.design_cfm + south.design_cfm + rise.design_cfm
+    assert len(main.path) == 2 and main.z_m[0] == pytest.approx(main.z_m[1])  # one level run
     assert branch.diameter_m == pytest.approx(inch(6).meters)
     assert branch.path[-1] == pytest.approx(grille.position)
-    assert branch.z_m[0] == pytest.approx(riser.z_m[0])
+    assert branch.z_m[0] == pytest.approx(main.z_m[0])
     assert branch.z_m[0] == pytest.approx((grille.body_z0_m + grille.body_z1_m) / 2)  # face mid
-    assert LineString(riser.path[:2]).distance(Point(branch.path[0])) < 1e-9
-    assert bay.path[0] == pytest.approx(riser.path[-1])
+    assert LineString(main.path).distance(Point(branch.path[0])) < 1e-9
     attic_boot = next(o for o in model.canvas_objects if o.tag == "REG-A-HP-STUDY")
-    # Bay-centred between FS-ATTIC joists since 2026-10-31: 1" off the axis, over the 10" duct.
-    assert LineString(bay.path).distance(Point(attic_boot.position)) < bay.width_m / 2
+    # The rise stands straight up off the main's top, under the attic register.
+    assert rise.path[0] == pytest.approx(attic_boot.position)
+    assert rise.path[-1] == pytest.approx(attic_boot.position)
+    assert LineString(main.path).distance(Point(attic_boot.position)) < main.width_m / 2
     assert Polygon(room.clear_face).covers(Polygon(grille.footprint))
-    # The bay run is a stub capped just past the attic desk's take-off.
-    assert bay.length_m < inch(54).meters
-    assert not bay.conflicts
+    assert not main.conflicts
 
     half_diameter = branch.diameter_m / 2
     boot_body = box(branch.path[0][0], branch.path[0][1] - half_diameter,
@@ -325,5 +316,5 @@ def test_study_sidewall_boot_connects_and_clears_soffit_framing(catlin_plan, cat
         assert not Polygon(grille.footprint).intersects(shape), member.child_key
     findings = _connectivity(model)
     assert not [f.message for f in findings if f.result.value == "fail"]
-    assert any(f.message == "duct DU-S-HP-STUDY2 start lands on DU-S-HP-SOUTH-RISE"
+    assert any(f.message == "duct DU-S-HP-STUDY2 start lands on DU-S-HP-SOUTH"
                for f in findings)

@@ -218,13 +218,13 @@ DUCTS_ATTIC = []
 DUCTS_HVAC_SECOND = [
     # 750 cfm through 18x8 is 750 fpm (14x8 was 965, over Manual D's 900 for a trunk in a
     # finished space). It sheds 3 x 80 (plan/mep_hvac_branches.py) + 50 + 175 + 35 and hands
-    # the last 250 to DU-S-HP-SOUTH-RISE collinearly at the cap (y=9'-10").
+    # the last 250 to DU-S-HP-SOUTH through an offset reducer at the cap (y=9'-10").
     #
-    # Its north cap is at y=29'-2", 6" past DU-S-HP-SUP-DROP's top take-off (which earns the
-    # cap) and north of DU-S-HP-BED3's collar (y=27'-6"). 100 1/8" storey is SF-S-DUCT's
+    # Its north cap is at y=29'-2 1/2", 6 1/2" past DU-S-HP-SUP-DROP's top take-off (which
+    # earns the cap; the collar's flange needs the 1/2", mep.takeoff_collar_fit) and north of DU-S-HP-BED3's collar (y=27'-6"). 100 1/8" storey is SF-S-DUCT's
     # cavity floor.
     DuctRun(uid="CSDH01AAAA", tag="DU-S-HP-SUP", system=DuctSystem.SUPPLY,
-            path=(pt(ft(19, 6), inch(350)), pt(ft(19, 6), ft(9, 10))),
+            path=(pt(ft(19, 6), inch(350.5)), pt(ft(19, 6), ft(9, 10))),
             elevations=(inch(100.125), inch(100.125)),
             width=inch(18), depth=inch(8), routing=DuctRouting.SOFFIT,
             soffit_ref="SF-S-DUCT", design_cfm=750, material="galvanized"),
@@ -271,74 +271,29 @@ DUCTS_HVAC_SECOND = [
             path=(pt(ft(19, 4), ft(14, 8.875)), pt(ft(16, 6), ft(14, 8.875))),
             width=inch(10), depth=inch(8), routing=DuctRouting.EXPOSED,
             start_elevation=inch(100.125), end_elevation=inch(100.125), design_cfm=175, material="galvanized"),
-    # The attic study's feed: the last 100 cfm of the riser, in FS-ATTIC's y=3'-3" I-joist bay.
-    # RM-S-STUDY2's two grilles (75 east, 75 south) leave the riser inside
-    # SF-S-DUCT before it rises; this stub carries 100 cfm to DU-S-HP-STUDY-BOOT's take-off at
-    # x=18'-10" and is capped 4" past it (2026-11-12: it used to run on 4'-4" west across the
-    # x=18' bearing line to a ceiling boot over the plant room, 175 cfm). It no longer crosses
-    # W-A-C1, so mep.duct_joist_bay no longer notes an R302.11 crossing here.
-    # Manual D App. A13 calls a take-off this close to a supply plenum a noise defect; it is
-    # mitigated by turning vanes at the riser, a lined plenum and first 5 ft, and a balancing
-    # damper, and the 18x8 trunk was chosen partly so the take-off could sit further
-    # downstream than a 14x8 would have allowed. 10x6 at 100 cfm is 240 fpm; it fits the
-    # 13 1/2" clear bay and 11 7/8" I-joist depth.
-    DuctRun(uid="NYRX7TBEGH", tag="DU-S-HP-SOUTH", system=DuctSystem.SUPPLY,
-            path=(pt(ft(19, 6), ft(3, 3)), pt(ft(18, 6), ft(3, 3))),
-            width=inch(10), depth=inch(6), routing=DuctRouting.JOIST_BAY,
-            floor_ref="FS-ATTIC", design_cfm=100, material="galvanized"),
-    # THE RISER — a repeated plan point at two elevations is the vertical leg, the idiom
-    # DU-S-ERV-HP-FEED's drop already uses.
+    # THE STUDY BRANCH (2026-11-15): one straight 10x6 south in SF-S-DUCT, an 18" flat-
+    # bottomed offset reducer between the trunk's cap (y=9'-10") and this run's start
+    # (centre 7 1/2" west, so the top collar lands under REG-A-HP-STUDY), three collars on
+    # clean faces and a cap. 250 cfm (600 fpm in 10x6): 75 east
+    # (DU-S-HP-STUDY2), 75 south (DU-S-HP-STUDY2-S), 100 up to the attic desk
+    # (DU-S-HP-STUDY-BOOT, 1/2" west of centre). x 221 1/2"-231 1/2" is the soffit's clear
+    # cavity at its west edge (mep.duct_soffit_occupancy).
     #
-    # It is a separate run from DU-S-HP-SOUTH and not a fourth vertex on it, because the two
-    # live in different cavities and are graded by different checks: this leg is in
-    # SF-S-DUCT under `mep.duct_soffit_occupancy`, the branch is in an FS-ATTIC bay under
-    # `mep.duct_joist_bay`, and a run carries one `routing` and one `soffit_ref`.
+    # It stays in the soffit rather than rising at the cap: FS-ATTIC's I-joists run in x, so
+    # travelling south above them would bore ~5 joists 15" off the x=18' bearing, inside every
+    # published no-hole zone (DESIGN-LOG, "Study duct south end").
     #
-    # ** IT IS A COLLINEAR REDUCER AT THE TRUNK CAP NOW. ** It used to dogleg east from the
-    # discharge to x=23'-0 1/2" and that jog existed for exactly one reason: to get around
-    # the machine, which stood in its way. With the machine at the north end the riser just
-    # continues the trunk's own centreline at x=19'-6" from y=9'-10" to y=3'-4" and stands
-    # up — 18x8 down to 10x6 at the cap, two elbows fewer, and nothing to clash with.
-    # (The east-lane alternative also fits — 18 + 2 + 10 = 30 against SF-S-DUCT's 30 3/4" —
-    # but a jog would overlap the trunk ALONG the box and report. Kept here as the
-    # documented fallback if the cap ever has to move.)
-    #
-    # ** WHY IT TRAVELS SOUTH BELOW THE JOISTS INSTEAD OF RISING AT THE CAP. ** The obvious
-    # saving is to stand this branch up at the trunk cap and let the attic side do the
-    # north-south travel — which would also let SF-S-DUCT stop at y=9'-10" and give
-    # RM-S-STUDY2 back the 7 ft of 14"-deep box that lowers its ceiling to 7'-10". It does not
-    # work, and the reason is the hole chart, not the duct size:
-    #
-    #  * FS-ATTIC's joists run in **x** (11 7/8" I-joist, 16" o.c.), so ANY north-south run in
-    #    that floor crosses them. DU-S-HP-SOUTH avoids this by living in ONE bay for its whole
-    #    length; a riser at the cap would have to cross ~5 joists to reach that bay.
-    #  * Those crossings would land at x=19'-6" — 15 1/4" from the face of W-S-C1, the x=18'
-    #    bearing wall the east span starts on. That is inside every published no-hole zone;
-    #    the chart's permissive band is mid-span, out at x~27'.
-    #  * And "a small enough duct" does not buy it back. 250 cfm wants ~51 in2 to stay under
-    #    Manual D's 700 fpm branch ceiling, i.e. 8" round — a hole this depth of I-joist only
-    #    allows near mid-span. The largest hole the chart would entertain 15" off a bearing is
-    #    about 6 1/2" round: 33 in2, 1,090 fpm, half again over the ceiling and audible in a
-    #    bedroom hallway.
-    #
-    # So the soffit leg is not laziness — it is the only way to travel 6'-6" in y under a
-    # floor whose joists run in x. The 7 ft of box in the study is what that costs.
-    #
-    # 99 1/8" is a 6"-deep duct on SF-S-DUCT's clear underside (the box's 14" drop);
-    # 111 1/8" is the same duct's centreline on FS-ATTIC's bottom chord,
-    # the elevation DU-S-HP-SOUTH derives for itself from the joists. Both storey-relative
-    # to `second`, whose datum is 10'-0" — the same convention every PipeRun here uses.
-    DuctRun(uid="27B8FKNDPB", tag="DU-S-HP-SOUTH-RISE", system=DuctSystem.SUPPLY,
-            path=(pt(ft(19, 6), ft(9, 10)), pt(ft(19, 6), ft(3, 3)),
-                  pt(ft(19, 6), ft(3, 3))),
-            elevations=(inch(99.125), inch(99.125), inch(111.125)),
+    # 99 1/8" storey is a 6"-deep duct on SF-S-DUCT's clear underside, flush with the trunk's.
+    DuctRun(uid="27B8FKNDPB", tag="DU-S-HP-SOUTH", system=DuctSystem.SUPPLY,
+            path=(pt(ft(18, 10.5), ft(8, 4)), pt(ft(18, 10.5), inch(35.5))),
+            elevations=(inch(99.125), inch(99.125)),
             width=inch(10), depth=inch(6), routing=DuctRouting.SOFFIT,
             soffit_ref="SF-S-DUCT", design_cfm=250, material="galvanized"),
-    # Study 2's south grille (2026-11-12): a 6" round east off the riser's last bay, just
-    # south of DU-S-HP-STUDY2, ending in the 6"-to-8x6 boot that turns onto SF-S-DUCT's end face.
+    # Study 2's south grille (2026-11-12): a 6" round off the 10x6's east face, 4" north of
+    # its cap, ending in the 6"-to-8x6 boot that turns onto SF-S-DUCT's end face.
     # 382 fpm at 75 cfm. EXPOSED like DU-S-HP-STUDY2.
     DuctRun(uid="8RHR9QCJJS", tag="DU-S-HP-STUDY2-S", system=DuctSystem.SUPPLY,
-            path=(pt(ft(19, 6), inch(37.25)), pt(inch(249), inch(37.25))),
+            path=(pt(ft(18, 10.5), inch(39.5)), pt(inch(249), inch(39.5))),
             elevations=(inch(99.125), inch(99.125)),
             diameter=inch(6), routing=DuctRouting.EXPOSED,
             material="galvanized", design_cfm=75),

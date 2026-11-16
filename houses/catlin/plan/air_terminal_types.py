@@ -53,10 +53,12 @@ _VALVE_NECK = TerminalNeck(section="round", width=inch(4), height=inch(4), depth
                            part="100 mm valve collar in a 4in snap-lock collar")
 _OBD_NECK_1206 = TerminalNeck(section="rectangular",
                               width=inch(12), height=inch(6), depth=inch(2.6875),
-                              part="opposed-blade damper and register box")
+                              part="opposed-blade damper and register box",
+                              separate_boot=True)
 _OBD_NECK_0806 = TerminalNeck(section="rectangular",
                               width=inch(8), height=inch(6), depth=inch(2.6875),
-                              part="opposed-blade damper and register box")
+                              part="opposed-blade damper and register box",
+                              separate_boot=True)
 
 AIR_REGISTER_TYPES = (
     RegisterType(tag="REG-T-ERV-VALVE-SUP",
@@ -195,7 +197,8 @@ AIR_REGISTER_TYPES = (
                  product_ref="PROD-AIR-FLOOR-REG-6X12",
                  neck=TerminalNeck(section="rectangular",
                                    width=inch(12), height=inch(6), depth=inch(2),
-                                   part="multi-shutter damper below the flange"),
+                                   part="multi-shutter damper below the flange",
+                                   separate_boot=True),
                  source=f"Face 7 3/8 x 13 3/8in and 2in damper depth are planning figures, "
                         f"not published at this size. {_NOTE} §4.",
                  ports=(_port("supply", Service.SUPPLY_AIR),)),

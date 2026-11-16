@@ -52,7 +52,7 @@ DUCTS_HVAC_BRANCHES_SECOND = [
     # EXPOSED follows the bedroom-collar idiom: the soffit occupancy check requires
     # named runs to remain inside the box's clear width. Framing clearance is tested.
     DuctRun(uid="STDYBOOT01", tag="DU-S-HP-STUDY2", system=DuctSystem.SUPPLY,
-            path=(pt(ft(19, 6), inch(43.5)), pt(inch(261.25), inch(43.5))),
+            path=(pt(ft(18, 10.5), inch(58.625)), pt(inch(261.25), inch(58.625))),
             elevations=(inch(99.125), inch(99.125)),
             diameter=inch(6), routing=DuctRouting.EXPOSED,
             material="galvanized", design_cfm=75),
@@ -103,10 +103,11 @@ DUCTS_HVAC_BRANCHES_SECOND = [
     # (DuctStandard boot 6in -> 12x6). 6" round: 509 fpm at 100 cfm, 178 at 35, 382 at 75, all under
     # Manual D's 700. Each stands in its FS-ATTIC bay's clear width (13 11/16"), never on a joist.
     #
-    # STUDY: off DU-S-HP-SOUTH's top (10x6 in the y 32-48 bay), centre 2" under its crown.
+    # STUDY: straight up off DU-S-HP-SOUTH's top in the soffit (starts 1" under its crown),
+    # through the box's open top into FS-ATTIC's y 32-48 bay.
     DuctRun(uid="45ZN1WN7QE", tag="DU-S-HP-STUDY-BOOT", system=DuctSystem.SUPPLY,
             path=(pt(ft(18, 10), ft(3, 4)), pt(ft(18, 10), ft(3, 4))),
-            elevations=(inch(112.125), inch(119.5)),
+            elevations=(inch(101.125), inch(119.5)),
             diameter=inch(6), routing=DuctRouting.EXPOSED,
             material="galvanized", design_cfm=100),
     # EAST: up off DU-S-HP-SUP's crown (18x8; its top is 104 1/8") through the box's open top.

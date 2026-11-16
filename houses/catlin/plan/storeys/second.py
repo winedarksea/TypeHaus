@@ -1190,7 +1190,7 @@ FLOOR_HEAT = [
 #
 # North end on W-S-CLN-S's hall face (30'-7 3/4") since SF-S-HP1 was retired (2026-11-11):
 # DU-S-HP-SUP's drop from the attic air handler lands in it at y=28'-8", and REG-S-HP-RET
-# sits in its underside north of that. South y=2'-10" encloses DU-S-HP-SOUTH-RISE's handoff.
+# sits in its underside north of that. South y=2'-10" encloses DU-S-HP-SOUTH, the study branch.
 # Even at the wider east face, the box clears the stair ledger beginning at x=273 7/8".
 # The 94" face stays pinned. LR-S-HALL-GAP follows its underside perimeter with a 5/8"
 # shadow-gap reveal opening toward the walls, rather than lighting tall gaps beside a narrow box.
@@ -1199,7 +1199,7 @@ SOFFITS = [
            outline=(pt(ft(18, 6.5), ft(2, 10)), pt(ft(21, 5.5), ft(2, 10)),
                     pt(ft(21, 5.5), inch(367.75)), pt(ft(18, 6.5), inch(367.75))),
            # ** THE FACE IS PINNED, NOT DROPPED (2026-09-07). ** 7'-10" AFF is a stated
-           # design elevation — the paragraph above quotes it and DU-S-HP-SOUTH-RISE is sized
+           # design elevation — the paragraph above quotes it and DU-S-HP-SOUTH is sized
            # to the cavity it leaves. `drop` measures from the plane overhead, and that plane
            # stopped being the storey's 9'-0" nominal when soffits started hanging off the
            # deck's real underside (`resolve/envelope.py`): 1/8" of ceiling took 1/8" of

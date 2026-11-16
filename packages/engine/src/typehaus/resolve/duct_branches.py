@@ -13,7 +13,11 @@ from collections.abc import Iterator
 from typing import Any
 
 from typehaus.model.ducts import DuctStandard, duct_size_text
-from typehaus.resolve.mep_soffit import DUCT_JOINT_TOLERANCE_M, duct_joint_index
+from typehaus.resolve.mep_soffit import (
+    DUCT_JOINT_TOLERANCE_M,
+    duct_joint_index,
+    eccentric_end_joint,
+)
 from typehaus.resolve.model_ducts import Point3, ResolvedDuctPart
 
 
@@ -67,12 +71,15 @@ def branch_parts(model: Any, standard: DuctStandard) -> list[ResolvedDuctPart]:
             for main in ducts:
                 if main is duct or len(main.path) < 2:
                     continue
+                eccentric = False
                 if duct_joint_index(point[:2], point[2], main.path, main.z_m) is None:
-                    continue
+                    eccentric = eccentric_end_joint(duct, point[:2], point[2], main)
+                    if not eccentric:
+                        continue
                 pair = tuple(sorted((duct.tag, main.tag)))
                 if pair in seen:
                     continue
-                part = _joint(standard, duct, main, point, axis)
+                part = _joint(standard, duct, main, point, axis, eccentric)
                 if part is not None:
                     seen.add(pair)  # type: ignore[arg-type]
                     out.append(part)
@@ -81,9 +88,9 @@ def branch_parts(model: Any, standard: DuctStandard) -> list[ResolvedDuctPart]:
 
 
 def _joint(standard: DuctStandard, duct: Any, main: Any, point: Point3,
-           axis: Point3) -> ResolvedDuctPart | None:
+           axis: Point3, eccentric: bool = False) -> ResolvedDuctPart | None:
     branch, trunk = section(duct), section(main)
-    if _at_end(point, main):
+    if eccentric or _at_end(point, main):
         if branch == trunk:
             return None
         big, small = ((main, duct) if section_area(main) >= section_area(duct)

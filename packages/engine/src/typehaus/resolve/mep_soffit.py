@@ -18,7 +18,9 @@ A query module, like ``mep_queries``: nothing here appends to the ``ResolvedMode
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
+from typing import Any
 
 from typehaus.quantities import M_PER_IN, inch
 from typehaus.resolve.framing.soffit import SoffitClearSection, soffit_clear_section
@@ -183,8 +185,8 @@ def duct_occupants(model: ResolvedModel, soffit: ResolvedSoffit,
             # A horizontal leg's z-band is its section about its own mid-height. A RISER's
             # is its two endpoints: it is travelling vertically, and `depth_m` describes a
             # plan dimension for it, not a vertical one. Banding a riser as `z_mid +/-
-            # depth/2` put a 19" rise into a 6" band halfway up itself — halfway through the
-            # deck for DU-S-HP-SOUTH-RISE, and nowhere near either end it actually reaches.
+            # depth/2` put a 19" rise into a 6" band halfway up itself, nowhere near either
+            # end it actually reaches.
             z0, z1 = duct.z_m[index], duct.z_m[index + 1]
             if vertical:
                 z_band = (min(z0, z1), max(z0, z1))
@@ -309,6 +311,62 @@ def duct_joint_index(point: tuple[float, float], z: float | None,
     return None
 
 
+_MIN_FACE_OVERLAP_M = inch(2).meters  # two end faces' least share at an eccentric joint
+
+
+def _half_section(duct: Any) -> tuple[float, float]:
+    if getattr(duct, "diameter_m", None):
+        return duct.diameter_m / 2.0, duct.diameter_m / 2.0
+    return duct.width_m / 2.0, duct.depth_m / 2.0
+
+
+def eccentric_end_joint(near: Any, point: tuple[float, float], z: float | None,
+                        far: Any) -> bool:
+    """``near``'s end meets an END of ``far`` off-centre (an offset reducer): level, collinear,
+    faces sharing ``_MIN_FACE_OVERLAP_M``, at most the larger section apart (the gap filled)."""
+    if z is None or len(far.path) < 2 or len(far.z_m) != len(far.path):
+        return False
+    (nw, nd), (fw, fd) = _half_section(near), _half_section(far)
+    for index, step in ((0, 1), (len(far.path) - 1, -1)):
+        ex, ey = far.path[index]
+        nx, ny = far.path[index + step]
+        if abs(far.z_m[index] - far.z_m[index + step]) > 1e-6:
+            continue
+        length = math.hypot(nx - ex, ny - ey)
+        if length < 1e-9:
+            continue
+        ux, uy = (nx - ex) / length, (ny - ey) / length
+        dx, dy = point[0] - ex, point[1] - ey
+        along, across = dx * ux + dy * uy, -dx * uy + dy * ux
+        if (-2.0 * max(fw, fd, nw, nd) - DUCT_JOINT_TOLERANCE_M <= along
+                <= DUCT_JOINT_TOLERANCE_M
+                and abs(across) <= fw + nw - _MIN_FACE_OVERLAP_M
+                and abs(z - far.z_m[index]) <= fd + nd - _MIN_FACE_OVERLAP_M
+                and _near_runs_away(near, point, (ux, uy))):
+            return True
+    return False
+
+
+def _near_runs_away(near: Any, point: tuple[float, float], into_far: tuple[float, float]
+                    ) -> bool:
+    """Whether ``near`` leaves ``point`` level and straight away from the run it meets."""
+    path, z = near.path, near.z_m
+    if len(path) < 2 or len(z) != len(path):
+        return False
+    i, j = (0, 1) if math.dist(path[0], point) <= math.dist(path[-1], point) else (-1, -2)
+    dx, dy = path[j][0] - path[i][0], path[j][1] - path[i][1]
+    length = math.hypot(dx, dy)
+    if length < 1e-9 or abs(z[i] - z[j]) > 1e-6:
+        return False
+    return (dx * into_far[0] + dy * into_far[1]) / length < -0.999
+
+
+def end_joins(near: Any, point: tuple[float, float], z: float | None, far: Any) -> bool:
+    """``near``'s end at ``point`` lands on ``far``: on its path, or end to end off-centre."""
+    return (duct_joint_index(point, z, far.path, far.z_m) is not None
+            or eccentric_end_joint(near, point, z, far))
+
+
 def ducts_are_joined(model: ResolvedModel, first_tag: str, second_tag: str) -> bool:
     """Whether either run *ends on* the other — a tee, an elbow, a riser into a trunk.
 
@@ -325,7 +383,7 @@ def ducts_are_joined(model: ResolvedModel, first_tag: str, second_tag: str) -> b
             continue
         for point, z in ((near.path[0], near.z_m[0] if near.z_m else None),
                          (near.path[-1], near.z_m[-1] if near.z_m else None)):
-            if duct_joint_index(point, z, far.path, far.z_m) is not None:
+            if end_joins(near, point, z, far):
                 return True
     return False
 

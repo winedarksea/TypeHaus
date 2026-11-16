@@ -238,7 +238,7 @@ the corrosion answer. The intake keeps its filter grille.
 - **Trunks and risers**: 6"/8" galvanized; every seam UL 181B-M mastic or 181B-FX foil tape
   (IMC 2018 603.9; 181A is the fibrous-glass class). House-air ducts bare; OA/EA per §9.
 - **System 1 rectangular trunks** (`DU-S-HP-SUP` 18x8, `-RET` 10x18, `-SUITE` 10x8,
-  `-SOUTH`/`-SOUTH-RISE` 10x6): `material="galvanized"` now, matched to the gauge band rows
+  `-SOUTH` 10x6): `material="galvanized"` now, matched to the gauge band rows
   `DUCT-T-GALV-RECT-*` (IMC 2018 Table 603.4, 1/2" w.g. column): **26 ga** for the 18"
   sides, **30 ga** for the 10" ones, printed on the duct schedule. Shop-fabricated,
   mastic-sealed, no liner (cleanability), canvas connectors at the air handler.

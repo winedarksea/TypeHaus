@@ -295,8 +295,8 @@ turn's 6 tan 47.64 = 6.579 plus P8's 90 turn 6.000 = **12.579**. Floor 2.193 + 2
 so UNKNOWN. **Request to E3: one snap (the DuctStandard's 10), so the catalog and the bill cannot
 disagree.** Expected for GYM then: 0 pattern gaps, 1 short straight (6.1" vs 12.6") at 1.5 D.
 
-Rectangular runs are out of scope: `DU-S-HP-RET` (2 turns), `DU-S-HP-SOUTH` (2), `DU-S-HP-SOUTH-RISE`
-(1) stay "fabricated, no throat radius" (5 turns, 3 runs, unchanged). No rectangular throat radius is
+Rectangular runs are out of scope: `DU-S-HP-RET` (2 turns) stays "fabricated, no throat radius".
+`DU-S-HP-SOUTH` is one straight 10x6 since 2026-11-15 and turns nowhere. No rectangular throat radius is
 read in this repo, so a fabricated elbow is last-resort and priced only; nothing here sets its R.
 
 ## 8. Flex and the PortKit lead (wave 0, 2026-11-07)

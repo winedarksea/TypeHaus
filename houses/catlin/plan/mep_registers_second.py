@@ -105,14 +105,13 @@ REGISTERS_HVAC_SECOND = [
                  normal_gap=inch(0), rotation_offset=deg(0)))),
     # East face of the wall-width SF-S-DUCT (260 3/4"), throwing across the study.
     # The 8x6 grille and its 6" boot clear the ladder rails at a 99 1/8" centreline;
-    # y=3'-7 1/2" puts the full face between the end blocking and first side stud.
-    # The boot tees off the soffit leg before it rises, so this room no longer
-    # needs a joist-bay terminal.
+    # y=4'-10 5/8" is the centre of the ladder bay between the 50 5/8" and 66 5/8" studs,
+    # 19" clear of the south grille's collar (2026-11-15).
     # Centre the 1" body 1/2" east of the lining so its back bears on the face.
     # Mount height is above the finished floor: 99 1/8 - 3 - 1 1/2 = 94 5/8".
     # See notes/system1_study_supply.md for grille selection and vane setting.
     Register(uid="DMVENAN0DW", tag="REG-S-HP-STUDY2", kind=DuctSystem.SUPPLY, room="RM-S-STUDY2",
-             position=pt(inch(261.25), inch(43.5)), rotation=deg(90),
+             position=pt(inch(261.25), inch(58.625)), rotation=deg(90),
              duct_ref="DU-S-HP-STUDY2", type_ref="REG-T-HP-STUDY-SIDE", design_cfm=75,
              mount=Mount(kind=MountKind.WALL, elevation=inch(93.75))),
     # Study 2's second 75 cfm grille (2026-11-12, replacing the plant room's supply): the
@@ -173,7 +172,7 @@ REGISTERS_HVAC_SECOND = [
 # what moves the storey's air: in at the hall soffit, out at the far wall of each room.
 #
 # RM-S-STUDY2 is served by two System 1 grilles on SF-S-DUCT (east and south faces), both
-# off DU-S-HP-SOUTH-RISE. RM-S-PLANT is sealed: no supply, no extract (notes/plant_room.md).
+# off DU-S-HP-SOUTH. RM-S-PLANT is sealed: no supply, no extract (notes/plant_room.md).
 REGISTERS = [
     # BED1 y 9'-18', BED2 y 18'-27'. BED3 has no ERV pickup since 2026-11-11: it returns
     # to System 1 through REG-S-HP-BED3-RET instead, and its old 5 cfm went to the kitchen.

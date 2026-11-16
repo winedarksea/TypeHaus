@@ -23,7 +23,7 @@ REGISTERS_HVAC_ATTIC = [
     # Keep the floor boot in FS-ATTIC's y=3'-4" bay, under the desk's open top near the
     # centreline wall. Rotate the 12x6 grille along the desk: x=18'-7"..19'-1" clears the
     # desk chair's west edge (~19'-3") and stays inside the desk footprint. Its 6" rise
-    # (DU-S-HP-STUDY-BOOT) leaves DU-S-HP-SOUTH's crown 5 1/2" below the box.
+    # (DU-S-HP-STUDY-BOOT) stands straight up off DU-S-HP-SOUTH's top in SF-S-DUCT.
     Register(uid="CARH01AAAA", tag="REG-A-HP-STUDY", kind=DuctSystem.SUPPLY,
              room="RM-A-STUDY", position=pt(ft(18, 10), ft(3, 4)), rotation=deg(90),
              duct_ref="DU-S-HP-STUDY-BOOT",

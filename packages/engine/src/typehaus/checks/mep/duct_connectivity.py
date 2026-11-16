@@ -62,7 +62,7 @@ from typehaus.findings import Finding
 from typehaus.quantities import M_PER_IN, inch
 from typehaus.resolve.mep_soffit import (
     DUCT_JOINT_TOLERANCE_M,
-    duct_joint_index,
+    end_joins,
     plan_distance_to_segment,
     segment_meets_box,
 )
@@ -78,9 +78,8 @@ JOINT_TOLERANCE_M = DUCT_JOINT_TOLERANCE_M
 
 #: How far a register may sit from the end of the run it names and still be its boot. The
 #: flex tail from a hard-duct take-off to a ceiling grille is a real, ordinary piece of the
-#: system — this house authors REG-A-HP-WEST 34" back from DU-S-HP-SUITE's end and
-#: REG-S-HP-STUDY2 28" from DU-S-HP-SOUTH's. Past 36" the "boot" is a duct run that should be
-#: drawn as one, which is what REG-S-HP-BED1/2/3's became (``plan/mep_hvac_branches.py``).
+#: system. Past 36" the "boot" is a duct run that should be drawn as one, which is what
+#: REG-S-HP-BED1/2/3's became (``plan/mep_hvac_branches.py``).
 BOOT_REACH_M = inch(36).meters
 
 
@@ -109,7 +108,7 @@ def _meets_another_duct(ctx: CheckContext, duct: ResolvedDuct, z: float | None,
     for other in ctx.model.ducts:
         if other.tag == duct.tag or len(other.path) < 2:
             continue
-        if duct_joint_index(point, z, other.path, other.z_m) is not None:
+        if end_joins(duct, point, z, other):
             return other.tag
     return None
 
@@ -204,9 +203,8 @@ def _capped_past_a_takeoff(ctx: CheckContext, duct: ResolvedDuct,
                            point: tuple[float, float]) -> str | None:
     """A cap on a served trunk: the run's final leg carries a boot, and then it stops.
 
-    A trunk that runs past its last grille and stops is capped, which is how a trunk ends.
-    No catlin run ends this way today (DU-S-HP-SUP did until 2026-09-04; it hands off to
-    DU-S-HP-SOUTH-RISE now). The end lands on nothing and never will, so ``_boot`` cannot
+    A trunk that runs past its last grille and stops is capped, which is how a trunk ends
+    (catlin's DU-S-HP-SOUTH, past DU-S-HP-STUDY2-S). The end lands on nothing, so ``_boot`` cannot
     speak for it; what makes it a cap rather than an orphan is that the leg it ends is the
     leg a grille comes off.
 
