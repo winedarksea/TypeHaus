@@ -69,8 +69,11 @@ def emit_door_hardware(f, body, model, opening, door_type, filling, storey, proj
         accessory = ll.create_entity(f, "IfcDiscreteAccessory",
                                      name=f"{opening.tag}: {item.product_ref}")
         accessory.GlobalId = derive_guid(project_uuid, f"{opening.uid}/hardware/{index}")
-        representation = cased_door_representation(f, body, model, opening, parts=(part,))
-        ll.assign_representation(f, accessory, representation)
+        # Catalog-only hardware still belongs in the order and nesting relationship;
+        # IFC permits no representation, but forbids a Body with zero items.
+        if part.solids:
+            representation = cased_door_representation(f, body, model, opening, parts=(part,))
+            ll.assign_representation(f, accessory, representation)
         ll.assign_container(f, accessory, storey)
         ll.ensure_pset(f, accessory, "TypeHaus_DoorHardware", {
             "ProductRef": item.product_ref, "Role": item.role, "Quantity": item.quantity,

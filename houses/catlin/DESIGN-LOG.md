@@ -8379,3 +8379,21 @@ verified envelopes/routes. The supply fabric connector's first-six-inches metal 
 and heat-kit duct clearances remain manufacturer holds. Full findings and opening table:
 `notes/flexx_ultra_geometry.md`. This is an improved coordination model, not an installation
 release.
+
+## Workshop bench extract: a stock valve plus a benchtop extractor (2026-11-15, owner)
+
+`REG-T-ERV-BENCH-HOOD` was a fabricated 30x12 canopy with no product, and it captured almost
+nothing: 6 cfm over a 2.5 sf face is ~2.4 fpm, and it hung 24" above the work. Ducted capture
+off the ERV was researched and rejected. The B210E75RT already runs near its top (~199 of 210
+cfm), so a boost control adds nothing. Bench arms want 30-65+ cfm at several hundred Pa (Nederman
+FX2 50, Plymovent MiniMan-75). Concentrated flux fume through an enthalpy core can partly cross
+to supply (Drexel 2026, formaldehyde). A separate inline fan and arm with its own wall cap was
+the one ducted option that works; the owner chose the simpler one.
+
+- `REG-B-RET1` is the stock `REG-T-ERV-VALVE-EXH`, face down at 46" AFF (12" over the bench
+  tops), at (11", 7'-9"), 3" off W-B-W2's concrete. It is 9" south of the bench seam because
+  `ED-B-WORKSHOP-DATA1` and `CD-B-DATA-SHOP` come down at y=8'-6".
+- `DU-B-ERV-R-BENCH` side-taps SAUNA-EXH at y=7'-9" and runs 8" west. The resolver derives the
+  exposed drop to the collar. The 4" damper sits on the drop at ~62". Still 6 cfm; budget unchanged.
+- `APPL-B-WORKSHOP-FUME` is a Hakko FA-400 (`plan/workshop_fume*.py`). It is a recirculating
+  carbon unit, effective within ~6-8" of its nozzle, cord to `ED-B-WORKSHOP-RC2`.

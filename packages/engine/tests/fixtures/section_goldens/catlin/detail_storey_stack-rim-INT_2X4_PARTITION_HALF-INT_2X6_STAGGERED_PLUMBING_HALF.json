@@ -819,62 +819,6 @@
       "node": "polyline",
       "points": [
         [
-          262.406,
-          125.5
-        ],
-        [
-          266.406,
-          125.5
-        ],
-        [
-          266.406,
-          131.5
-        ],
-        [
-          262.406,
-          131.5
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "D8WJ6Z924S",
-      "tag": "PA-S-SUITE-WC-STOP"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          262.406,
-          125.5
-        ],
-        [
-          266.406,
-          125.5
-        ],
-        [
-          266.406,
-          131.5
-        ],
-        [
-          262.406,
-          131.5
-        ]
-      ],
-      "pattern": "concrete",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "concrete"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           271.25,
           107.0
         ],

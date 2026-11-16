@@ -135,8 +135,11 @@ SERVICE_GROUNDING = [
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ConduitRun(uid="BDXPZAZE29", tag="CD-M-DATA-ENTRY", trade_size=inch(1), material=RacewayMaterial.EMT,
                service=Service.DATA, from_ref="ED-M-DATA-ENTRY", to_ref="ED-B-NET-PATCH",
-               path=(pt(inch(-11), inch(376)), pt(inch(12), inch(376))),  # one joist bay
-               start_elevation=inch(-6), end_elevation=inch(-45)),  # through the rim
+               # Cross above the foundation top, then drop inside; a diagonal from
+               # -6 to -45 inches passes through the concrete rather than the rim.
+               path=(pt(inch(-11), inch(376)), pt(inch(12), inch(376)),
+                     pt(inch(12), inch(376))),
+               elevations=(inch(-6), inch(-6), inch(-45))),
 ]
 
 # --- PV: DC SPD at the array box and the down-lead ---------------------------------------

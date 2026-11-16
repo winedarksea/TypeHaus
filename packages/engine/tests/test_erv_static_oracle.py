@@ -278,8 +278,9 @@ def test_the_static_and_the_delivered_flow_are_the_notes(catlin_model_ro) -> Non
 
 
 def test_the_bench_dampers_fully_open_charge_is_the_notes(catlin_model_ro) -> None:
-    """Note §10.24: the in-line damper at C 0.34 on 6 cfm through 4" adds 0.00010020 in. to
-    ``DU-B-ERV-R-BENCH``'s 0.00010769 (friction + one stamped 90)."""
+    """Note §10.24 (re-worked 2026-11-15 for the low valve): the in-line damper at C 0.34 on
+    6 cfm through 4" adds 0.00010020 in. to ``DU-B-ERV-R-BENCH``'s 0.00018906 (3.4427 ft of
+    friction + one stamped 90)."""
     from typehaus.checks.mep.erv_static import _duct_drop
 
     ctx = check_context(model=catlin_model_ro)
@@ -287,8 +288,8 @@ def test_the_bench_dampers_fully_open_charge_is_the_notes(catlin_model_ro) -> No
     damper = [p for p in catlin_model_ro.duct_parts
               if p.kind == "damper" and p.run_tag == duct.tag]
     assert len(damper) == 1 and damper[0].product_ref == "PROD-AIR-DAMPER-4-MANUAL"
-    assert damper[0].point[2] - duct.z_m[1] == pytest.approx(-6.25 * 0.0254, abs=1e-6)
-    assert _duct_drop(ctx, duct, 1).drop_in_wg == pytest.approx(0.00020789, abs=2e-8)
+    assert damper[0].point[2] - duct.z_m[1] == pytest.approx(-20.0 * 0.0254, abs=1e-6)
+    assert _duct_drop(ctx, duct, 1).drop_in_wg == pytest.approx(0.00028926, abs=2e-8)
 
 
 def test_the_level2_supply_feed_is_the_notes(catlin_model_ro) -> None:

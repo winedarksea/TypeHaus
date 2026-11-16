@@ -17,20 +17,20 @@ MN R403.5 asks ~188 cfm since RM-A-STUDIO became a craft room (2026-11-11, 5 bed
 machine delivers ~200 off its curve, so the 115 feed stands and the margin is banked.
 
 A shared leg carries every terminal beyond it over its whole length, the LAUNDRY
-precedent: GYM carries the sauna supply, SAUNA-EXH the bench hood, BED the living supply,
+precedent: GYM carries the sauna supply, SAUNA-EXH the bench valve, BED the living supply,
 BED2 the BED1 return. A branch keeps its own terminal's constant; trunks sum the parents.
 
 Extract is 210 on the dampers, holding every code minimum:
 
 * The seven bathroom terminals and the sauna at 20 cfm each (IRC M1505.4.4's continuous
   local-exhaust rate): 160 cfm, untouchable, 76% of the machine.
-* The other eight share 50: the workshop bench hood 6, the study return 5, mudroom 10,
+* The other eight share 50: the workshop bench valve 6, the study return 5, mudroom 10,
   kitchen 11, laundry 3, the BED1/BED2 pickups 5 each, the attic return 5. The mudroom took
   RM-S-PLANT's 5 on 2026-11-12, when the plant room was sealed (notes/plant_room.md).
   BED3's 5 went to the kitchen on 2026-11-11, when BED3 took a ducted System 1 return
   (REG-S-HP-BED3-RET) instead of a long attic radial.
 
-The bench hood is a token flow. The honest fix is a LARGER ERV, not a
+The bench valve is a token flow (solder fume is a benchtop extractor's job). The honest fix is a LARGER ERV, not a
 redistribution; this arithmetic is true against the machine the house has.
 """
 
@@ -44,7 +44,7 @@ REG_M_SUP4 = 10        # RM-M-STUDY-CLOSET
 EQ_S_ERV_MIX = 115     # into System 1's return plenum
 
 # --- extract terminals --------------------------------------------------------------------
-REG_B_RET1 = 6         # RM-B-WORKSHOP bench hood
+REG_B_RET1 = 6         # RM-B-WORKSHOP bench valve
 REG_B_EXH1 = 20        # RM-B-BATH
 REG_B_EXH2 = 20        # RM-B-SAUNA
 REG_M_EXH1 = 20        # RM-M-BATH1
@@ -67,7 +67,7 @@ DU_B_ERV_R_PLAY = REG_B_SUP2
 DU_B_ERV_R_SAUNA_SUP = REG_B_SUP3
 DU_B_ERV_R_BENCH = REG_B_RET1
 DU_B_ERV_R_BATH = REG_B_EXH1
-DU_B_ERV_R_SAUNA_EXH = REG_B_EXH2 + REG_B_RET1  # carries the bench-hood branch
+DU_B_ERV_R_SAUNA_EXH = REG_B_EXH2 + REG_B_RET1  # carries the bench-valve branch
 
 DU_M_ERV_R_LIVING = REG_M_SUP1
 DU_M_ERV_R_BED = REG_M_SUP3 + REG_M_SUP1  # carries the LIVING branch
@@ -104,6 +104,6 @@ DU_ERV_RISER_EXH = DU_M_ERV_EXH_FEED + _ATTIC_EXTRACT
 # The machine's own trunks and outdoor pair: the whole 210 each way.
 DU_B_ERV_SUP_TRUNK = DU_ERV_RISER_SUP + DU_B_ERV_R_GYM + DU_B_ERV_R_PLAY  # GYM: sauna
 DU_B_ERV_RET_TRUNK = (DU_ERV_RISER_EXH + DU_B_ERV_R_BATH
-                      + DU_B_ERV_R_SAUNA_EXH)  # SAUNA-EXH carries the bench hood
+                      + DU_B_ERV_R_SAUNA_EXH)  # SAUNA-EXH carries the bench valve
 DU_ERV_OA = DU_B_ERV_SUP_TRUNK
 DU_ERV_EA = DU_B_ERV_RET_TRUNK

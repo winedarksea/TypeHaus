@@ -2,6 +2,9 @@
 "canvas_objects/APPL-A-STUDIO-FRIDGE/body_z0_m": 6.118098,
 "canvas_objects/APPL-A-STUDIO-FRIDGE/body_z1_m": 6.626098,
 "canvas_objects/APPL-A-STUDIO-FRIDGE/z_m": 6.118098,
+"canvas_objects/APPL-B-WORKSHOP-FUME/body_z0_m": -1.9161125,
+"canvas_objects/APPL-B-WORKSHOP-FUME/body_z1_m": -1.7041125,
+"canvas_objects/APPL-B-WORKSHOP-FUME/z_m": -1.9161125,
 "canvas_objects/APPL-G-EVSE/body_z0_m": 0.2032,
 "canvas_objects/APPL-G-EVSE/body_z1_m": 0.46355,
 "canvas_objects/APPL-G-EVSE/z_m": 0.2032,
@@ -221,9 +224,18 @@
 "canvas_objects/ED-B-BATH-SW/body_z0_m": -1.6082645,
 "canvas_objects/ED-B-BATH-SW/body_z1_m": -1.5574645,
 "canvas_objects/ED-B-BATH-SW/z_m": -1.6082645,
+"canvas_objects/ED-B-CLOSET-GFCI/body_z0_m": -1.6113125,
+"canvas_objects/ED-B-CLOSET-GFCI/body_z1_m": -1.5605125,
+"canvas_objects/ED-B-CLOSET-GFCI/z_m": -1.6113125,
 "canvas_objects/ED-B-CLOSET-LT/body_z0_m": -1.4081125,
-"canvas_objects/ED-B-CLOSET-LT/body_z1_m": -1.2049125,
+"canvas_objects/ED-B-CLOSET-LT/body_z1_m": -1.2684125,
 "canvas_objects/ED-B-CLOSET-LT/z_m": -1.4081125,
+"canvas_objects/ED-B-CLOSET-LT2/body_z0_m": -1.9415125,
+"canvas_objects/ED-B-CLOSET-LT2/body_z1_m": -1.8018125,
+"canvas_objects/ED-B-CLOSET-LT2/z_m": -1.9415125,
+"canvas_objects/ED-B-CLOSET-SW/body_z0_m": -1.6113125,
+"canvas_objects/ED-B-CLOSET-SW/body_z1_m": -1.5605125,
+"canvas_objects/ED-B-CLOSET-SW/z_m": -1.6113125,
 "canvas_objects/ED-B-ESS-LT/body_z0_m": -0.561975,
 "canvas_objects/ED-B-ESS-LT/body_z1_m": -0.422275,
 "canvas_objects/ED-B-ESS-LT/z_m": -0.561975,
@@ -2342,9 +2354,9 @@
 "canvas_objects/REG-B-EXH2/body_z0_m": -2.6781125,
 "canvas_objects/REG-B-EXH2/body_z1_m": -2.5460325,
 "canvas_objects/REG-B-EXH2/z_m": -2.6781125,
-"canvas_objects/REG-B-RET1/body_z0_m": -1.1033125,
-"canvas_objects/REG-B-RET1/body_z1_m": -0.9001125,
-"canvas_objects/REG-B-RET1/z_m": -1.1033125,
+"canvas_objects/REG-B-RET1/body_z0_m": -1.6113125,
+"canvas_objects/REG-B-RET1/body_z1_m": -1.5859125,
+"canvas_objects/REG-B-RET1/z_m": -1.6113125,
 "canvas_objects/REG-B-SUP1/body_z0_m": -0.5548312,
 "canvas_objects/REG-B-SUP1/body_z1_m": -0.4262437,
 "canvas_objects/REG-B-SUP1/z_m": -0.5548312,
@@ -2792,6 +2804,12 @@
 ],
 "conduits/CD-M-DATA-DOORBELL/z_start_m": 2.8067,
 "conduits/CD-M-DATA-ENTRY/z_end_m": -1.143,
+"conduits/CD-M-DATA-ENTRY/z_m": [
+-1.143,
+-0.1524,
+3,
+"671248d20cb6"
+],
 "conduits/CD-M-DATA-ENTRY/z_start_m": -0.1524,
 "conduits/CD-M-DATA-KITCH-TRUNK/z_end_m": 2.8067,
 "conduits/CD-M-DATA-KITCH-TRUNK/z_m": [
@@ -3179,8 +3197,8 @@
 "device_boxes/JBZ1PYPYF0-box/z1_m": -0.5798185,
 "device_boxes/JJ2EMNAQQ0-box/z0_m": -1.6335375,
 "device_boxes/JJ2EMNAQQ0-box/z1_m": -1.5382875,
-"device_boxes/JYMY6WGGP3-box/z0_m": -1.3573125,
-"device_boxes/JYMY6WGGP3-box/z1_m": -1.2557125,
+"device_boxes/JYMY6WGGP3-box/z0_m": -1.3890625,
+"device_boxes/JYMY6WGGP3-box/z1_m": -1.2874625,
 "device_boxes/K18FY9C6C0-box/z0_m": 1.33985,
 "device_boxes/K18FY9C6C0-box/z1_m": 1.44145,
 "device_boxes/K9XVXZ9XZ3-box/z0_m": 7.569073,
@@ -3471,10 +3489,14 @@
 "device_boxes/VDGMBY3YW7-box/z1_m": 1.197625,
 "device_boxes/VHY1DXBHG2-box/z0_m": 0.422925,
 "device_boxes/VHY1DXBHG2-box/z1_m": 0.518175,
+"device_boxes/VTEDWAW1V7-box/z0_m": -1.6335375,
+"device_boxes/VTEDWAW1V7-box/z1_m": -1.5382875,
 "device_boxes/WK41TSMA97-box/z0_m": 0.232425,
 "device_boxes/WK41TSMA97-box/z1_m": 0.327675,
 "device_boxes/WSTK6T5E4K-box/z0_m": -2.3764875,
 "device_boxes/WSTK6T5E4K-box/z1_m": -2.2812375,
+"device_boxes/X2K9AK59ZE-box/z0_m": -1.6335375,
+"device_boxes/X2K9AK59ZE-box/z1_m": -1.5382875,
 "device_boxes/XGD2FAK54W-box/z0_m": 1.070625,
 "device_boxes/XGD2FAK54W-box/z1_m": 1.165875,
 "device_boxes/XS61VWV0BH-box/z0_m": -2.3800435,
@@ -3487,6 +3509,8 @@
 "device_boxes/Z8RBX115XH-box/z1_m": -1.6049625,
 "device_boxes/ZC14VSGCST-box/z0_m": 1.223025,
 "device_boxes/ZC14VSGCST-box/z1_m": 1.318275,
+"device_boxes/ZHF5VAJD6P-box/z0_m": -1.9224625,
+"device_boxes/ZHF5VAJD6P-box/z1_m": -1.8208625,
 "device_boxes/ZKBCK4BT2E-box/z0_m": -2.3768685,
 "device_boxes/ZKBCK4BT2E-box/z1_m": -2.2816185,
 "device_boxes/ZKRPWY85MT-box/z0_m": -1.6335375,
@@ -3562,10 +3586,10 @@
 "cfda64d344c1"
 ],
 "ducts/DU-B-ERV-R-BENCH/z_m": [
--0.9001125,
+-1.5367,
 -0.6905625,
 3,
-"470919e8bfcb"
+"5726ca31ef71"
 ],
 "ducts/DU-B-ERV-R-GYM/z_m": [
 -0.6461125,
@@ -4406,10 +4430,10 @@
 "090c7469648c"
 ],
 "geometry/09MWB7MH7K/body": [
-0.1920875,
-0.3444875,
-2,
-"289028cc0c63"
+0.2413,
+0.32893,
+914,
+"7a43b66b93ff"
 ],
 "geometry/0A22GEE3V6/body": [
 2.181225,
@@ -4454,10 +4478,10 @@
 "c858a8769b39"
 ],
 "geometry/0F21Q8EDD6/body": [
-6.232398,
-6.384798,
-2,
-"0b80f5432c2e"
+6.297803,
+6.332855,
+914,
+"f6b177ea803f"
 ],
 "geometry/0JY6SHV11S-run/body": [
 0.1317752,
@@ -4508,10 +4532,10 @@
 "d06685c1c8a9"
 ],
 "geometry/0RA7PE7K5N/body": [
-0.55945,
-0.71185,
-2,
-"09fb1012f45f"
+0.61939,
+0.6703025,
+914,
+"5e928e21994b"
 ],
 "geometry/0RQCYBMJ89/body": [
 -0.3302,
@@ -5396,10 +5420,10 @@
 "6e84699646c5"
 ],
 "geometry/1YCTZR50YR/body": [
-0.55945,
-0.71185,
-2,
-"09fb1012f45f"
+0.624855,
+0.659907,
+914,
+"8792f53438fd"
 ],
 "geometry/21GE85HJDT/layer:gwb-a-tee-0": [
 0.0,
@@ -5570,10 +5594,10 @@
 "7c0477cc6fab"
 ],
 "geometry/2DZRZ5Y47V/body": [
-0.5715,
-0.7239,
-2,
-"ecf630c385aa"
+0.6269326,
+0.6906651,
+914,
+"db2734967f5e"
 ],
 "geometry/2FGDVK0Y6Y-FILL/body": [
 -1.016,
@@ -5642,10 +5666,10 @@
 "1957fcb14a19"
 ],
 "geometry/2V86ED0NPG/body": [
--2.2432645,
--2.0908645,
-2,
-"62c0e749ff80"
+-2.1863967,
+-2.1436724,
+914,
+"78417fd4fbe3"
 ],
 "geometry/2V9SRQK19X/return-1-0-0": [
 2.505075,
@@ -6062,10 +6086,10 @@
 "1559c023b212"
 ],
 "geometry/3MDHK66AX3/body": [
-3.6195,
-3.7719,
-2,
-"cb4b4456bb9b"
+3.6718929,
+3.7195071,
+914,
+"288cd7337682"
 ],
 "geometry/3N11XJK7M8-sleeve/body": [
 -2.72415,
@@ -6254,10 +6278,10 @@
 "0544e819afdc"
 ],
 "geometry/3YXPF80Z0M/body": [
-0.5715,
-0.7239,
-2,
-"ecf630c385aa"
+0.6284695,
+0.6711293,
+914,
+"1a36cfeca99c"
 ],
 "geometry/41MPFYS8T8-00-back/body": [
 0.0,
@@ -6332,10 +6356,10 @@
 "5864e34ecc5e"
 ],
 "geometry/4FJNG5RD5H/body": [
-3.6195,
-3.7719,
-2,
-"cb4b4456bb9b"
+3.6820945,
+3.7202543,
+914,
+"47ec23f7474b"
 ],
 "geometry/4HVPN3BWQG-run/body": [
 3.592322,
@@ -6944,10 +6968,10 @@
 "773eb900eb87"
 ],
 "geometry/5KSHNN2HVJ/body": [
-6.7818,
-6.9342,
-2,
-"191c8f839253"
+6.817995,
+6.928485,
+914,
+"88fde92c8675"
 ],
 "geometry/5M7GZHHZB7-run/body": [
 -2.2717125,
@@ -7592,10 +7616,10 @@
 "c0fa4924d6c7"
 ],
 "geometry/73W251TGAT/body": [
-3.6195,
-3.7719,
-2,
-"cb4b4456bb9b"
+3.664074,
+3.7230555,
+914,
+"dff719acb33f"
 ],
 "geometry/74FP210445/body": [
 -0.2794,
@@ -8186,10 +8210,10 @@
 "c33d9b3daa1e"
 ],
 "geometry/8C6JYRFZWJ/body": [
-0.0635,
-0.2159,
-2,
-"cd0a583ced07"
+0.1288859,
+0.1639618,
+914,
+"d350870d1ae6"
 ],
 "geometry/8DGT0MJKTR/body": [
 -0.2794,
@@ -8288,10 +8312,10 @@
 "83a21edaf66e"
 ],
 "geometry/8QR20SWNYZ/body": [
--2.3479125,
--2.1955125,
-2,
-"e2ce36d2b204"
+-2.3187025,
+-2.2450425,
+914,
+"9114d3cdcc68"
 ],
 "geometry/8REEX7CC35/body": [
 2.241801,
@@ -8438,10 +8462,10 @@
 "2db07c6b3347"
 ],
 "geometry/9F9VTAPSHG/body": [
-6.651498,
-6.803898,
-2,
-"27451ade3bd7"
+6.6873241,
+6.7555905,
+914,
+"0e11ab5a9bef"
 ],
 "geometry/9HRSYREBH3/body": [
 6.5083029,
@@ -8810,10 +8834,10 @@
 "6be4faac9cfd"
 ],
 "geometry/A5VK7BND3T/body": [
-0.5334,
-0.6858,
-2,
-"6fa2c879a285"
+0.539115,
+0.649605,
+914,
+"e4d51e5c7b51"
 ],
 "geometry/A81HH8CV8V-run/body": [
 -2.4384,
@@ -8822,10 +8846,10 @@
 "45dc1e525e83"
 ],
 "geometry/A82N47N43Z/body": [
-3.1877,
-3.3401,
-2,
-"01f33bc69832"
+3.23723,
+3.31089,
+914,
+"115fd8f45f4c"
 ],
 "geometry/A9J80KK6AE/body": [
 -2.7497583,
@@ -8834,10 +8858,10 @@
 "d4b20d795f42"
 ],
 "geometry/AA9GQMCHNZ/body": [
-3.6195,
-3.7719,
-2,
-"cb4b4456bb9b"
+3.6485642,
+3.7228305,
+914,
+"2b07d49132bf"
 ],
 "geometry/ABVF7VKHZX-run/body": [
 2.87655,
@@ -8990,10 +9014,10 @@
 "b14a7da1c2c1"
 ],
 "geometry/B20MFS2ZH2/body": [
--0.24892,
--0.09652,
-2,
-"ca2aa9969601"
+-0.1889125,
+-0.1363345,
+914,
+"63af3c3ab958"
 ],
 "geometry/B43P8B5Y0T/hardware": [
 -1.8977125,
@@ -9026,10 +9050,10 @@
 "1a8f56744cff"
 ],
 "geometry/B7ZM21V5R3/body": [
-3.6195,
-3.7719,
-2,
-"cb4b4456bb9b"
+3.6749162,
+3.7386906,
+914,
+"54c273227aaf"
 ],
 "geometry/B879Z3S3VC-run/body": [
 0.879475,
@@ -10586,10 +10610,10 @@
 "01895361a898"
 ],
 "geometry/C9GW5PXV2R/body": [
--2.7686,
--2.6162,
-2,
-"ed19e39a5a25"
+-2.7085925,
+-2.6560145,
+914,
+"0c54416f8f7f"
 ],
 "geometry/CAD201AAAA-casing-l/body": [
 6.118098,
@@ -19470,6 +19494,12 @@
 -0.419481,
 960,
 "2c3a19bda206"
+],
+"geometry/CBRV03AAAA-neck/body": [
+-1.6113125,
+-1.5367,
+960,
+"8e087c2ef9f0"
 ],
 "geometry/CBRV05AAAA-neck/body": [
 -0.5978207,
@@ -62936,10 +62966,10 @@
 "9f704519e52b"
 ],
 "geometry/CTBS80A7G5/body": [
-0.4826,
-0.635,
-2,
-"cf74ef61cf17"
+0.488315,
+0.598805,
+914,
+"73357a21afc9"
 ],
 "geometry/CX7KN0MZE0-b01/body": [
 0.5062101,
@@ -62996,10 +63026,10 @@
 "ac68d55c0b2b"
 ],
 "geometry/D0DS71PB2J/body": [
-0.8763,
-1.0287,
-2,
-"33b39a272dd3"
+0.941705,
+0.976757,
+914,
+"a5cd9eadc45e"
 ],
 "geometry/D0QND637F1-box/body": [
 1.934225,
@@ -63026,10 +63056,10 @@
 "8b601634f6b9"
 ],
 "geometry/D8WJ6Z924S/body": [
-3.1877,
-3.3401,
-2,
-"01f33bc69832"
+3.253105,
+3.288157,
+914,
+"82a43e4b53b8"
 ],
 "geometry/D9EBW2FJTX-box/body": [
 1.24525,
@@ -66782,16 +66812,16 @@
 "3e57729e682a"
 ],
 "geometry/GT1SR1TGKY/body": [
--2.6496645,
--2.4972645,
-2,
-"6418d3c2c8e1"
+-2.5842595,
+-2.5492075,
+914,
+"98306228b3df"
 ],
 "geometry/GT39R82HB2/body": [
-6.651498,
-6.803898,
-2,
-"27451ade3bd7"
+6.716903,
+6.751955,
+914,
+"f362f16bd284"
 ],
 "geometry/GTXS39HE9Z-box/body": [
 -1.6335375,
@@ -66830,10 +66860,10 @@
 "49a00e515974"
 ],
 "geometry/H1B07T6XG8/body": [
-3.6195,
-3.7719,
-2,
-"cb4b4456bb9b"
+3.6485799,
+3.7227417,
+914,
+"d208e3c808a7"
 ],
 "geometry/H1GWTPAS9B-00/body": [
 -2.6018998,
@@ -67190,10 +67220,10 @@
 "9a8dc6c51c08"
 ],
 "geometry/J64MHP98ZG/body": [
-3.6195,
-3.7719,
-2,
-"cb4b4456bb9b"
+3.6749162,
+3.7386906,
+914,
+"54c273227aaf"
 ],
 "geometry/J79AT1ZHAV-run/body": [
 0.53405,
@@ -67208,10 +67238,10 @@
 "03cebafecb8b"
 ],
 "geometry/JA7Z7DK4JF/body": [
--2.2432645,
--2.0908645,
-2,
-"62c0e749ff80"
+-2.2064145,
+-2.1391478,
+914,
+"e854e7f9ac2a"
 ],
 "geometry/JBZ1PYPYF0-box/body": [
 -0.6750685,
@@ -67244,10 +67274,10 @@
 "773eb900eb87"
 ],
 "geometry/JPFD6JQM44/body": [
-0.1539875,
-0.3063875,
-2,
-"3d27f78d6467"
+0.2193925,
+0.2544445,
+914,
+"0396656a2d8a"
 ],
 "geometry/JV56ZZP8TZ-run/body": [
 3.8227,
@@ -67262,10 +67292,10 @@
 "948ddba04b4f"
 ],
 "geometry/JYMY6WGGP3-box/body": [
--1.3573125,
--1.2557125,
+-1.3890625,
+-1.2874625,
 2,
-"84ddbdd137d9"
+"b13c65bb6fb8"
 ],
 "geometry/JZD0SXEBN3/body": [
 -0.2794,
@@ -67316,10 +67346,10 @@
 "1fe8e63cd048"
 ],
 "geometry/KAYKFXE7DC/body": [
-6.651498,
-6.803898,
-2,
-"27451ade3bd7"
+6.716903,
+6.751955,
+914,
+"f362f16bd284"
 ],
 "geometry/KBKGY27VPW/body": [
 1.933575,
@@ -67490,10 +67520,10 @@
 "773eb900eb87"
 ],
 "geometry/KX282R48FS/body": [
-3.3484566,
-3.5008566,
-2,
-"e18859eab0f4"
+3.4138616,
+3.4489136,
+914,
+"27f694a1a42d"
 ],
 "geometry/KY9JRBHRRZ-sleeve/body": [
 -2.8686125,
@@ -67568,10 +67598,10 @@
 "b7bd874cf405"
 ],
 "geometry/MA4EXBFW5G/body": [
-6.7818,
-6.9342,
-2,
-"191c8f839253"
+6.817995,
+6.928485,
+914,
+"88fde92c8675"
 ],
 "geometry/MDVC5HGQZ8-box/body": [
 -1.6144875,
@@ -67766,22 +67796,22 @@
 "773eb900eb87"
 ],
 "geometry/MTVYDDP43W-damper-1/body": [
--0.9001125,
--0.7985125,
+-1.2493625,
+-1.1477625,
 44,
-"452a861f561e"
+"fefd3da49e65"
 ],
 "geometry/MTVYDDP43W-run/body": [
--0.9001125,
+-1.5367,
 -0.6397625,
 48,
-"59a76dd4403b"
+"45ad60647c18"
 ],
 "geometry/MV7GG2CP2B/body": [
-0.24638,
-0.39878,
-2,
-"d56251465910"
+0.311785,
+0.346837,
+914,
+"07f6fcab13e3"
 ],
 "geometry/MW0MY7GDME-flex-1/body": [
 -1.0310447,
@@ -67952,10 +67982,10 @@
 "5c4b6657fa53"
 ],
 "geometry/N5PK9WQ2TB/body": [
--1.9415125,
--1.7891125,
-2,
-"9496d3e7e31d"
+-1.9319875,
+-1.7478375,
+914,
+"1ac825df1133"
 ],
 "geometry/N7C4V2M8QK/body": [
 1.118762,
@@ -68660,10 +68690,10 @@
 "1559c023b212"
 ],
 "geometry/P6WSEM39FM/body": [
-2.7178127,
-2.8702127,
-2,
-"4a88e050d110"
+2.7778202,
+2.8303982,
+914,
+"bffd93c0eb51"
 ],
 "geometry/P77WQJ1MFM/body": [
 5.794375,
@@ -70508,10 +70538,10 @@
 "bf2685fe6d33"
 ],
 "geometry/R24SV93Y39/body": [
-2.9210127,
-3.0734127,
-2,
-"c8e899cd21ae"
+2.9806434,
+3.033688,
+914,
+"b19fd75e6a1b"
 ],
 "geometry/R7QB4XKD2M/body": [
 -1.9415125,
@@ -70550,10 +70580,10 @@
 "84db503960ba"
 ],
 "geometry/REJC2RJ9CR/body": [
--2.3479125,
--2.1955125,
-2,
-"e2ce36d2b204"
+-2.2825075,
+-2.2474555,
+914,
+"a511b20f2114"
 ],
 "geometry/REREWJKFAZ/layer:gwb-a": [
 6.096,
@@ -71102,10 +71132,10 @@
 "aa3b6c404915"
 ],
 "geometry/S6BN1JXV7Q/body": [
-3.6024566,
-3.7548566,
-2,
-"95853f6f9fca"
+3.6386516,
+3.7491416,
+914,
+"603b4e85a469"
 ],
 "geometry/S7ANA4Q300-box/body": [
 1.044575,
@@ -71284,14 +71314,14 @@
 "geometry/SGAD01AAAA-00/body": [
 -3.0845125,
 -2.7797125,
-2,
-"71cdd2832da1"
+1724,
+"b63b2e2c1531"
 ],
 "geometry/SGAD01AAAA-RS/body": [
 -4.1513125,
 -3.0845125,
-2,
-"2f1af39a39cf"
+240,
+"b8568fc730c4"
 ],
 "geometry/SGB004AAAA-DC-00/body": [
 -2.7797125,
@@ -74768,10 +74798,10 @@
 "1559c023b212"
 ],
 "geometry/SSSW9XQZZ4/body": [
-2.8209875,
-2.9733875,
-2,
-"88a3d237cd49"
+2.880995,
+2.933573,
+914,
+"dd9042192c8f"
 ],
 "geometry/STAIRBOOT1-run/body": [
 5.578475,
@@ -75290,10 +75320,10 @@
 "5cd5e0b1c5ea"
 ],
 "geometry/VCF71D18GJ/body": [
-0.8128,
-0.9652,
-2,
-"66d2b75ca944"
+0.8728075,
+0.9253855,
+914,
+"0b3c7d34a690"
 ],
 "geometry/VDGMBY3YW7-box/body": [
 1.102375,
@@ -75336,6 +75366,12 @@
 -0.1651,
 32,
 "773eb900eb87"
+],
+"geometry/VTEDWAW1V7-box/body": [
+-1.6335375,
+-1.5382875,
+2,
+"95985e380616"
 ],
 "geometry/VXGA0P0V72-hanger-35/body": [
 -0.4247159,
@@ -75878,10 +75914,10 @@
 "c595ddb09620"
 ],
 "geometry/WRA95ZSZCT/body": [
-0.1651,
-0.3175,
-2,
-"1151fa0eb90a"
+0.21463,
+0.28829,
+914,
+"163aa31a09b2"
 ],
 "geometry/WRHS831M9S-neck/body": [
 5.53085,
@@ -75920,10 +75956,16 @@
 "5818111edb92"
 ],
 "geometry/X1EE9HXVSM/body": [
-3.6195,
-3.7719,
+3.6820945,
+3.7202543,
+914,
+"47ec23f7474b"
+],
+"geometry/X2K9AK59ZE-box/body": [
+-1.6335375,
+-1.5382875,
 2,
-"cb4b4456bb9b"
+"95985e380616"
 ],
 "geometry/X3XQ155X90-run/body": [
 -1.4772,
@@ -76112,10 +76154,10 @@
 "e6a929e8e5ed"
 ],
 "geometry/XQ9VH9VHT0/body": [
-0.4826,
-0.635,
-2,
-"cf74ef61cf17"
+0.51181,
+0.58547,
+914,
+"960b7fc216fc"
 ],
 "geometry/XS61VWV0BH-box/body": [
 -2.3800435,
@@ -76142,10 +76184,10 @@
 "8f3382093dcf"
 ],
 "geometry/XTPXNZ8PRZ/body": [
--1.6367125,
--1.4843125,
-2,
-"4c0c32157368"
+-1.6544925,
+-1.5071725,
+914,
+"92567c4cd972"
 ],
 "geometry/XX9YQFJ8PT-neck/body": [
 5.191125,
@@ -76292,10 +76334,10 @@
 "1e70627a9665"
 ],
 "geometry/Y6MT3HKB1F/body": [
--0.29972,
--0.14732,
-2,
-"fb73e146c3a0"
+-0.2397125,
+-0.1871345,
+914,
+"576bc31f742a"
 ],
 "geometry/Y7NAKBPAZN-00/body": [
 -0.8636,
@@ -77078,10 +77120,10 @@
 "4a0faa23dab3"
 ],
 "geometry/Z2FTXP1AR6/body": [
-6.651498,
-6.803898,
-2,
-"27451ade3bd7"
+6.6822867,
+6.7548989,
+914,
+"74523908ce31"
 ],
 "geometry/Z4NRTGEDY5/layer:gwb-a": [
 -2.5955625,
@@ -77424,6 +77466,12 @@
 0.0238125,
 2,
 "83408aebaec2"
+],
+"geometry/ZHF5VAJD6P-box/body": [
+-1.9224625,
+-1.8208625,
+2,
+"2f38e44cb181"
 ],
 "geometry/ZK49S63X8X-run/body": [
 -0.5761658,
@@ -119788,9 +119836,9 @@
 "solids/DU-B-ERV-R-BATH-HANGER-13/z1_m": -0.4175125,
 "solids/DU-B-ERV-R-BATH-RUN/z0_m": -0.5445125,
 "solids/DU-B-ERV-R-BATH-RUN/z1_m": -0.4429125,
-"solids/DU-B-ERV-R-BENCH-DAMPER-1/z0_m": -0.9001125,
-"solids/DU-B-ERV-R-BENCH-DAMPER-1/z1_m": -0.7985125,
-"solids/DU-B-ERV-R-BENCH-RUN/z0_m": -0.9001125,
+"solids/DU-B-ERV-R-BENCH-DAMPER-1/z0_m": -1.2493625,
+"solids/DU-B-ERV-R-BENCH-DAMPER-1/z1_m": -1.1477625,
+"solids/DU-B-ERV-R-BENCH-RUN/z0_m": -1.5367,
 "solids/DU-B-ERV-R-BENCH-RUN/z1_m": -0.6397625,
 "solids/DU-B-ERV-R-GYM-COLLAR_DAMPER-1/z0_m": -0.5445125,
 "solids/DU-B-ERV-R-GYM-COLLAR_DAMPER-1/z1_m": -0.4429125,
@@ -120282,8 +120330,14 @@
 "solids/ED-B-BATH-RC1-BOX/z1_m": -1.6368395,
 "solids/ED-B-BATH-SW-BOX/z0_m": -1.6304895,
 "solids/ED-B-BATH-SW-BOX/z1_m": -1.5352395,
-"solids/ED-B-CLOSET-LT-BOX/z0_m": -1.3573125,
-"solids/ED-B-CLOSET-LT-BOX/z1_m": -1.2557125,
+"solids/ED-B-CLOSET-GFCI-BOX/z0_m": -1.6335375,
+"solids/ED-B-CLOSET-GFCI-BOX/z1_m": -1.5382875,
+"solids/ED-B-CLOSET-LT-BOX/z0_m": -1.3890625,
+"solids/ED-B-CLOSET-LT-BOX/z1_m": -1.2874625,
+"solids/ED-B-CLOSET-LT2-BOX/z0_m": -1.9224625,
+"solids/ED-B-CLOSET-LT2-BOX/z1_m": -1.8208625,
+"solids/ED-B-CLOSET-SW-BOX/z0_m": -1.6335375,
+"solids/ED-B-CLOSET-SW-BOX/z1_m": -1.5382875,
 "solids/ED-B-ESS-SW-BOX/z0_m": -1.6335375,
 "solids/ED-B-ESS-SW-BOX/z1_m": -1.5382875,
 "solids/ED-B-FURNACE-SW-BOX/z0_m": -1.6335375,
@@ -121322,22 +121376,22 @@
 "solids/P-S-TUDOR1/z1_m": 5.715,
 "solids/P-S-TUDOR2/z0_m": 3.06705,
 "solids/P-S-TUDOR2/z1_m": 5.715,
-"solids/PA-A-BAR-LAV-CW/z0_m": 6.651498,
-"solids/PA-A-BAR-LAV-CW/z1_m": 6.803898,
-"solids/PA-A-BAR-LAV-HW/z0_m": 6.651498,
-"solids/PA-A-BAR-LAV-HW/z1_m": 6.803898,
-"solids/PA-A-STUBATH-LAV-CW/z0_m": 6.651498,
-"solids/PA-A-STUBATH-LAV-CW/z1_m": 6.803898,
-"solids/PA-A-STUBATH-LAV-HW/z0_m": 6.651498,
-"solids/PA-A-STUBATH-LAV-HW/z1_m": 6.803898,
-"solids/PA-A-STUBATH-STOP-CW/z0_m": 6.7818,
-"solids/PA-A-STUBATH-STOP-CW/z1_m": 6.9342,
-"solids/PA-A-STUBATH-STOP-HW/z0_m": 6.7818,
-"solids/PA-A-STUBATH-STOP-HW/z1_m": 6.9342,
-"solids/PA-A-STUBATH-WC-STOP/z0_m": 6.232398,
-"solids/PA-A-STUBATH-WC-STOP/z1_m": 6.384798,
-"solids/PA-B-BATH-WC-STOP/z0_m": -2.6496645,
-"solids/PA-B-BATH-WC-STOP/z1_m": -2.4972645,
+"solids/PA-A-BAR-LAV-CW/z0_m": 6.716903,
+"solids/PA-A-BAR-LAV-CW/z1_m": 6.751955,
+"solids/PA-A-BAR-LAV-HW/z0_m": 6.716903,
+"solids/PA-A-BAR-LAV-HW/z1_m": 6.751955,
+"solids/PA-A-STUBATH-LAV-CW/z0_m": 6.6822867,
+"solids/PA-A-STUBATH-LAV-CW/z1_m": 6.7548989,
+"solids/PA-A-STUBATH-LAV-HW/z0_m": 6.6873241,
+"solids/PA-A-STUBATH-LAV-HW/z1_m": 6.7555905,
+"solids/PA-A-STUBATH-STOP-CW/z0_m": 6.817995,
+"solids/PA-A-STUBATH-STOP-CW/z1_m": 6.928485,
+"solids/PA-A-STUBATH-STOP-HW/z0_m": 6.817995,
+"solids/PA-A-STUBATH-STOP-HW/z1_m": 6.928485,
+"solids/PA-A-STUBATH-WC-STOP/z0_m": 6.297803,
+"solids/PA-A-STUBATH-WC-STOP/z1_m": 6.332855,
+"solids/PA-B-BATH-WC-STOP/z0_m": -2.5842595,
+"solids/PA-B-BATH-WC-STOP/z1_m": -2.5492075,
 "solids/PA-B-BFP-BATH/z0_m": -0.2997073,
 "solids/PA-B-BFP-BATH/z1_m": -0.1473073,
 "solids/PA-B-BFP-SAUNA/z0_m": -0.29972,
@@ -121346,104 +121400,104 @@
 "solids/PA-B-ESS-SEAL-E/z1_m": -0.2600325,
 "solids/PA-B-ESS-SEAL-W/z0_m": -0.4365625,
 "solids/PA-B-ESS-SEAL-W/z1_m": -0.2841625,
-"solids/PA-B-HYD-ISO/z0_m": -0.29972,
-"solids/PA-B-HYD-ISO/z1_m": -0.14732,
-"solids/PA-B-LAV-TERMINAL-CW/z0_m": -2.2432645,
-"solids/PA-B-LAV-TERMINAL-CW/z1_m": -2.0908645,
-"solids/PA-B-LAV-TERMINAL-HW/z0_m": -2.2432645,
-"solids/PA-B-LAV-TERMINAL-HW/z1_m": -2.0908645,
-"solids/PA-B-MAIN-SHUTOFF/z0_m": -1.9415125,
-"solids/PA-B-MAIN-SHUTOFF/z1_m": -1.7891125,
-"solids/PA-B-USINK-TERMINAL-CW/z0_m": -2.3479125,
-"solids/PA-B-USINK-TERMINAL-CW/z1_m": -2.1955125,
-"solids/PA-B-USINK-TERMINAL-HW/z0_m": -2.3479125,
-"solids/PA-B-USINK-TERMINAL-HW/z1_m": -2.1955125,
+"solids/PA-B-HYD-ISO/z0_m": -0.2397125,
+"solids/PA-B-HYD-ISO/z1_m": -0.1871345,
+"solids/PA-B-LAV-TERMINAL-CW/z0_m": -2.1863967,
+"solids/PA-B-LAV-TERMINAL-CW/z1_m": -2.1436724,
+"solids/PA-B-LAV-TERMINAL-HW/z0_m": -2.2064145,
+"solids/PA-B-LAV-TERMINAL-HW/z1_m": -2.1391478,
+"solids/PA-B-MAIN-SHUTOFF/z0_m": -1.9319875,
+"solids/PA-B-MAIN-SHUTOFF/z1_m": -1.7478375,
+"solids/PA-B-USINK-TERMINAL-CW/z0_m": -2.2825075,
+"solids/PA-B-USINK-TERMINAL-CW/z1_m": -2.2474555,
+"solids/PA-B-USINK-TERMINAL-HW/z0_m": -2.3187025,
+"solids/PA-B-USINK-TERMINAL-HW/z1_m": -2.2450425,
 "solids/PA-B-USINK-VB/z0_m": -2.3479125,
 "solids/PA-B-USINK-VB/z1_m": -2.1955125,
-"solids/PA-B-WH-STOP-CW/z0_m": -1.6367125,
-"solids/PA-B-WH-STOP-CW/z1_m": -1.4843125,
+"solids/PA-B-WH-STOP-CW/z0_m": -1.6544925,
+"solids/PA-B-WH-STOP-CW/z1_m": -1.5071725,
 "solids/PA-B-WH-XTANK/z0_m": -2.0939125,
 "solids/PA-B-WH-XTANK/z1_m": -1.9415125,
 "solids/PA-G-HYD-BFP/z0_m": -1.9415125,
 "solids/PA-G-HYD-BFP/z1_m": -1.7891125,
-"solids/PA-G-HYD-SEAT/z0_m": -2.7686,
-"solids/PA-G-HYD-SEAT/z1_m": -2.6162,
+"solids/PA-G-HYD-SEAT/z0_m": -2.7085925,
+"solids/PA-G-HYD-SEAT/z1_m": -2.6560145,
 "solids/PA-G-HYD-VB/z0_m": -0.20828,
 "solids/PA-G-HYD-VB/z1_m": -0.15621,
-"solids/PA-M-BATH1-STOP-CW/z0_m": 0.55945,
-"solids/PA-M-BATH1-STOP-CW/z1_m": 0.71185,
-"solids/PA-M-BATH1-STOP-HW/z0_m": 0.55945,
-"solids/PA-M-BATH1-STOP-HW/z1_m": 0.71185,
-"solids/PA-M-BATH1-WC-STOP/z0_m": 0.24638,
-"solids/PA-M-BATH1-WC-STOP/z1_m": 0.39878,
-"solids/PA-M-BATH2-LAV-CW/z0_m": 0.5715,
-"solids/PA-M-BATH2-LAV-CW/z1_m": 0.7239,
-"solids/PA-M-BATH2-LAV-HW/z0_m": 0.5715,
-"solids/PA-M-BATH2-LAV-HW/z1_m": 0.7239,
-"solids/PA-M-BATH2-WC-STOP/z0_m": 0.1651,
-"solids/PA-M-BATH2-WC-STOP/z1_m": 0.3175,
+"solids/PA-M-BATH1-STOP-CW/z0_m": 0.61939,
+"solids/PA-M-BATH1-STOP-CW/z1_m": 0.6703025,
+"solids/PA-M-BATH1-STOP-HW/z0_m": 0.624855,
+"solids/PA-M-BATH1-STOP-HW/z1_m": 0.659907,
+"solids/PA-M-BATH1-WC-STOP/z0_m": 0.311785,
+"solids/PA-M-BATH1-WC-STOP/z1_m": 0.346837,
+"solids/PA-M-BATH2-LAV-CW/z0_m": 0.6269326,
+"solids/PA-M-BATH2-LAV-CW/z1_m": 0.6906651,
+"solids/PA-M-BATH2-LAV-HW/z0_m": 0.6284695,
+"solids/PA-M-BATH2-LAV-HW/z1_m": 0.6711293,
+"solids/PA-M-BATH2-WC-STOP/z0_m": 0.21463,
+"solids/PA-M-BATH2-WC-STOP/z1_m": 0.28829,
 "solids/PA-M-COLDSTORE-STUB/z0_m": 0.6858,
 "solids/PA-M-COLDSTORE-STUB/z1_m": 0.8382,
-"solids/PA-M-DW-STOP/z0_m": 0.0635,
-"solids/PA-M-DW-STOP/z1_m": 0.2159,
+"solids/PA-M-DW-STOP/z0_m": 0.1288859,
+"solids/PA-M-DW-STOP/z1_m": 0.1639618,
 "solids/PA-M-DW-WHA-HW/z0_m": 0.0619252,
 "solids/PA-M-DW-WHA-HW/z1_m": 0.2143252,
-"solids/PA-M-KITCH-STOP-CW/z0_m": 0.1920875,
-"solids/PA-M-KITCH-STOP-CW/z1_m": 0.3444875,
-"solids/PA-M-KITCH-STOP-HW/z0_m": 0.1539875,
-"solids/PA-M-KITCH-STOP-HW/z1_m": 0.3063875,
-"solids/PA-M-LSINK-STOP-CW/z0_m": 0.4826,
-"solids/PA-M-LSINK-STOP-CW/z1_m": 0.635,
-"solids/PA-M-LSINK-STOP-HW/z0_m": 0.4826,
-"solids/PA-M-LSINK-STOP-HW/z1_m": 0.635,
+"solids/PA-M-KITCH-STOP-CW/z0_m": 0.2413,
+"solids/PA-M-KITCH-STOP-CW/z1_m": 0.32893,
+"solids/PA-M-KITCH-STOP-HW/z0_m": 0.2193925,
+"solids/PA-M-KITCH-STOP-HW/z1_m": 0.2544445,
+"solids/PA-M-LSINK-STOP-CW/z0_m": 0.488315,
+"solids/PA-M-LSINK-STOP-CW/z1_m": 0.598805,
+"solids/PA-M-LSINK-STOP-HW/z0_m": 0.51181,
+"solids/PA-M-LSINK-STOP-HW/z1_m": 0.58547,
 "solids/PA-M-PORCH-HYD-SEAL/z0_m": 0.5334,
 "solids/PA-M-PORCH-HYD-SEAL/z1_m": 0.6858,
-"solids/PA-M-PORCH-HYD-SEAT/z0_m": 0.5334,
-"solids/PA-M-PORCH-HYD-SEAT/z1_m": 0.6858,
+"solids/PA-M-PORCH-HYD-SEAT/z0_m": 0.539115,
+"solids/PA-M-PORCH-HYD-SEAT/z1_m": 0.649605,
 "solids/PA-M-RO-STUB/z0_m": 0.4318,
 "solids/PA-M-RO-STUB/z1_m": 0.5842,
-"solids/PA-M-WASH-STOP-CW/z0_m": 0.8128,
-"solids/PA-M-WASH-STOP-CW/z1_m": 0.9652,
-"solids/PA-M-WASH-STOP-HW/z0_m": 0.8763,
-"solids/PA-M-WASH-STOP-HW/z1_m": 1.0287,
+"solids/PA-M-WASH-STOP-CW/z0_m": 0.8728075,
+"solids/PA-M-WASH-STOP-CW/z1_m": 0.9253855,
+"solids/PA-M-WASH-STOP-HW/z0_m": 0.941705,
+"solids/PA-M-WASH-STOP-HW/z1_m": 0.976757,
 "solids/PA-M-WASH-WHA-CW/z0_m": 0.8128,
 "solids/PA-M-WASH-WHA-CW/z1_m": 0.9652,
 "solids/PA-M-WASH-WHA-HW/z0_m": 0.8763,
 "solids/PA-M-WASH-WHA-HW/z1_m": 1.0287,
 "solids/PA-S-BALCONY-HYD-SEAL/z0_m": 3.6024566,
 "solids/PA-S-BALCONY-HYD-SEAL/z1_m": 3.7548566,
-"solids/PA-S-BALCONY-HYD-SEAT/z0_m": 3.6024566,
-"solids/PA-S-BALCONY-HYD-SEAT/z1_m": 3.7548566,
-"solids/PA-S-BATH1-LAV-CW/z0_m": 3.6195,
-"solids/PA-S-BATH1-LAV-CW/z1_m": 3.7719,
-"solids/PA-S-BATH1-LAV-HW/z0_m": 3.6195,
-"solids/PA-S-BATH1-LAV-HW/z1_m": 3.7719,
-"solids/PA-S-BATH1-STOP-CW/z0_m": -0.24892,
-"solids/PA-S-BATH1-STOP-CW/z1_m": -0.09652,
-"solids/PA-S-BATH1-STOP-HW/z0_m": 2.7178127,
-"solids/PA-S-BATH1-STOP-HW/z1_m": 2.8702127,
-"solids/PA-S-BATH1-WC-STOP/z0_m": 3.1877,
-"solids/PA-S-BATH1-WC-STOP/z1_m": 3.3401,
-"solids/PA-S-PLANT-RESERVOIR-STOP/z0_m": 3.3484566,
-"solids/PA-S-PLANT-RESERVOIR-STOP/z1_m": 3.5008566,
-"solids/PA-S-SUITE-LAV-CW/z0_m": 3.6195,
-"solids/PA-S-SUITE-LAV-CW/z1_m": 3.7719,
-"solids/PA-S-SUITE-LAV-HW/z0_m": 3.6195,
-"solids/PA-S-SUITE-LAV-HW/z1_m": 3.7719,
-"solids/PA-S-SUITE-WC-STOP/z0_m": 3.1877,
-"solids/PA-S-SUITE-WC-STOP/z1_m": 3.3401,
-"solids/PA-S-SUITEBATH-STOP-CW/z0_m": 2.8209875,
-"solids/PA-S-SUITEBATH-STOP-CW/z1_m": 2.9733875,
-"solids/PA-S-SUITEBATH-STOP-HW/z0_m": 2.9210127,
-"solids/PA-S-SUITEBATH-STOP-HW/z1_m": 3.0734127,
-"solids/PA-S-VANITY-LAV1-CW/z0_m": 3.6195,
-"solids/PA-S-VANITY-LAV1-CW/z1_m": 3.7719,
-"solids/PA-S-VANITY-LAV1-HW/z0_m": 3.6195,
-"solids/PA-S-VANITY-LAV1-HW/z1_m": 3.7719,
-"solids/PA-S-VANITY-LAV2-CW/z0_m": 3.6195,
-"solids/PA-S-VANITY-LAV2-CW/z1_m": 3.7719,
-"solids/PA-S-VANITY-LAV2-HW/z0_m": 3.6195,
-"solids/PA-S-VANITY-LAV2-HW/z1_m": 3.7719,
+"solids/PA-S-BALCONY-HYD-SEAT/z0_m": 3.6386516,
+"solids/PA-S-BALCONY-HYD-SEAT/z1_m": 3.7491416,
+"solids/PA-S-BATH1-LAV-CW/z0_m": 3.6485642,
+"solids/PA-S-BATH1-LAV-CW/z1_m": 3.7228305,
+"solids/PA-S-BATH1-LAV-HW/z0_m": 3.6485799,
+"solids/PA-S-BATH1-LAV-HW/z1_m": 3.7227417,
+"solids/PA-S-BATH1-STOP-CW/z0_m": -0.1889125,
+"solids/PA-S-BATH1-STOP-CW/z1_m": -0.1363345,
+"solids/PA-S-BATH1-STOP-HW/z0_m": 2.7778202,
+"solids/PA-S-BATH1-STOP-HW/z1_m": 2.8303982,
+"solids/PA-S-BATH1-WC-STOP/z0_m": 3.23723,
+"solids/PA-S-BATH1-WC-STOP/z1_m": 3.31089,
+"solids/PA-S-PLANT-RESERVOIR-STOP/z0_m": 3.4138616,
+"solids/PA-S-PLANT-RESERVOIR-STOP/z1_m": 3.4489136,
+"solids/PA-S-SUITE-LAV-CW/z0_m": 3.6718929,
+"solids/PA-S-SUITE-LAV-CW/z1_m": 3.7195071,
+"solids/PA-S-SUITE-LAV-HW/z0_m": 3.664074,
+"solids/PA-S-SUITE-LAV-HW/z1_m": 3.7230555,
+"solids/PA-S-SUITE-WC-STOP/z0_m": 3.253105,
+"solids/PA-S-SUITE-WC-STOP/z1_m": 3.288157,
+"solids/PA-S-SUITEBATH-STOP-CW/z0_m": 2.880995,
+"solids/PA-S-SUITEBATH-STOP-CW/z1_m": 2.933573,
+"solids/PA-S-SUITEBATH-STOP-HW/z0_m": 2.9806434,
+"solids/PA-S-SUITEBATH-STOP-HW/z1_m": 3.033688,
+"solids/PA-S-VANITY-LAV1-CW/z0_m": 3.6749162,
+"solids/PA-S-VANITY-LAV1-CW/z1_m": 3.7386906,
+"solids/PA-S-VANITY-LAV1-HW/z0_m": 3.6820945,
+"solids/PA-S-VANITY-LAV1-HW/z1_m": 3.7202543,
+"solids/PA-S-VANITY-LAV2-CW/z0_m": 3.6749162,
+"solids/PA-S-VANITY-LAV2-CW/z1_m": 3.7386906,
+"solids/PA-S-VANITY-LAV2-HW/z0_m": 3.6820945,
+"solids/PA-S-VANITY-LAV2-HW/z1_m": 3.7202543,
 "solids/PB-RG-FLOOR-00-00/z0_m": -1.2446,
 "solids/PB-RG-FLOOR-00-00/z1_m": -0.4826,
 "solids/PB-RG-FLOOR-00-01/z0_m": -1.2446,
@@ -122986,6 +123040,8 @@
 "solids/REG-A-STUBATH-EXH-NECK/z1_m": 7.1221917,
 "solids/REG-B-EXH1-NECK/z0_m": -0.5978207,
 "solids/REG-B-EXH1-NECK/z1_m": -0.4962207,
+"solids/REG-B-RET1-NECK/z0_m": -1.6113125,
+"solids/REG-B-RET1-NECK/z1_m": -1.5367,
 "solids/REG-B-SUP1-NECK/z0_m": -0.5413375,
 "solids/REG-B-SUP1-NECK/z1_m": -0.4397375,
 "solids/REG-B-SUP2-NECK/z0_m": -0.546481,

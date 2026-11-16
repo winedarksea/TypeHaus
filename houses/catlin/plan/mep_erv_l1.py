@@ -193,7 +193,7 @@ EQUIPMENT_ERV_BASEMENT = [
 #          of air (that rake is gone: the drain drops straight on x=5'-0" since 2026-10-08).
 #        * **x=2'-0", -27 15/16"** — under everything, over PR-B-SINK2-DRAIN's -25.4"
 #          at y=15'-9". 79 1/2" of headroom under it, in the workshop, where the ceiling is
-#          open by design and the bench hood it feeds hangs at 5'-6" anyway.
+#          open by design.
 #        * **x=9'-0", x=9'-6" and x=8'-0"** — the furnace room's east strip, for GYM, PLAY
 #          and BATH, stacked by elevation (see each run). The old "east chase" over ST-B2M
 #          is gone (2026-09-22): nothing crosses the stair.
@@ -305,19 +305,16 @@ DUCTS_ERV_BASEMENT = [
             elevations=(inch(90.125), inch(90.125), inch(94.75), inch(94.75), ft(7)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=DU_B_ERV_R_SAUNA_SUP),
-    # ** THE BENCH HOOD IS A BRANCH OFF SAUNA-EXH'S x=1'-7" LEG (2026-11-11). ** It used to leave
-    # its own plenum collar and run 25 ft down x=2'-0" beside it. It now takes off SAUNA-EXH's SIDE
-    # at y=8'-6" (82 1/4"; SAUNA-EXH carries its 6 cfm), east 6" (the hood moved 1" east), then
-    # drops to the hood at 5'-6". Side, never the bottom: the sauna's duct sweats and a bottom
-    # take-off would drain it into the hood. Both are extract (RETURN joins EXHAUST,
-    # `mep_envelopes.systems_join`). Closing the sauna hatches swings flow to the hood, so a 4"
-    # in-line balancing damper sits on the drop, centred 2" over the hood's collar (76"), its
-    # quadrant reached from the workshop floor.
+    # The bench extract is a branch off SAUNA-EXH's x=1'-7" leg (2026-11-11). It takes off the
+    # SIDE at y=7'-9" (82 1/4"), never the bottom: the sauna's duct sweats. West 8" to over
+    # REG-B-RET1, then the derived drop down W-B-W2's concrete face to the valve at 46" AFF
+    # (2026-11-15; exposed, the workshop ceiling is open by design). Closing the sauna hatches
+    # swings flow here, so a 4" balancing damper sits on the drop at ~62", reached from the floor.
     DuctRun(uid="MTVYDDP43W", tag="DU-B-ERV-R-BENCH", system=DuctSystem.RETURN,
-            path=(pt(ft(1, 7), ft(8, 6)), pt(ft(2, 1), ft(8, 6)), pt(ft(2, 1), ft(8, 6))),
-            elevations=(inch(82.25), inch(82.25), ft(6, 2)),
+            path=(pt(ft(1, 7), ft(7, 9)), pt(inch(11), ft(7, 9))),
+            elevations=(inch(82.25), inch(82.25)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
-            design_cfm=DU_B_ERV_R_BENCH, inline_dampers=(inch(12.25),)),
+            design_cfm=DU_B_ERV_R_BENCH, inline_dampers=(inch(28),)),
     # The basement bath's extract leaves the plenum's EAST end straight off its collar (6",
     # one elbow's take-off; it dropped 1 1/4" there until 2026-11-01), then south on x=8'-6"
     # and east on y=24'-0" to a sidewall grille in W-B-STR3B (REG-B-EXH1). At -19 7/16" it

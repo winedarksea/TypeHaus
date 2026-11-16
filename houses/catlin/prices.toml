@@ -2500,6 +2500,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # category spread. The Evolution Excel upgrade would sit above this disposer row.
 # De’Longhi US EXAM44055W listing, read 2026-10-25; owner-placed countertop appliance.
 "APPL-DELONGHI-EXAM44055W" = { material = { low = 1299.95, high = 1299.95 }, labour = { low = 0, high = 0 } }  # 1 ea
+"APPL-HAKKO-FA400-04" = { material = { low = 90, high = 140 }, labour = { low = 0, high = 0 } }  # 1 ea — Hakko FA-400 retail range, estimate (2026-11-15)
 "APPL-ISE-BADGER5" = { material = { low = 90, high = 300 }, labour = { low = 0, high = 0 } }  # 1 ea
 "APPL-MICROWAVE-NN-SN686S" = { material = { low = 260, high = 295 }, labour = { low = 0, high = 0 } }  # 1 ea; countertop plug-in, marketplace $259.95-294.95 (2026-11-04)
 # Smart-home register (notes/smart_home.md), 2026-10-30. Planning allowances from typical
@@ -3066,7 +3067,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "EQ-T-ERV-PLENUM-M-SUP" = { material = { low = 120, high = 300 }, labour = { low = 180, high = 420 } }  # 1 ea — 24 x 8, an 8" inlet and two 4" collars (LIVING tees off BED, 2026-11-11)
 "EQ-T-ERV-PLENUM-M-EXH" = { material = { low = 140, high = 350 }, labour = { low = 180, high = 420 } }  # 1 ea — 34 x 8, a 6" riser inlet and one 8" trunk collar
 "EQ-T-ERV-PLENUM-B-SUP" = { material = { low = 150, high = 370 }, labour = { low = 210, high = 480 } }  # 1 ea — 36 x 8, two 6" ports in the underside and two 4" collars (sauna supply off GYM, 2026-11-11)
-"EQ-T-ERV-PLENUM-B-EXH" = { material = { low = 150, high = 370 }, labour = { low = 210, high = 480 } }  # 1 ea — the same shell, services reversed (bench hood off SAUNA-EXH, 2026-11-11)
+"EQ-T-ERV-PLENUM-B-EXH" = { material = { low = 150, high = 370 }, labour = { low = 210, high = 480 } }  # 1 ea — the same shell, services reversed (bench valve off SAUNA-EXH, 2026-11-11)
 # Fabricated plenum box with a 6" collar and a gravity backdraft damper. Sheet-metal shop
 # work, not a catalogue item: the material range is the metal and the damper, the labour is
 # the fabrication plus fitting it into a 30 3/4" soffit with an air handler already in it.
@@ -3706,7 +3707,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # is an EU or-equal (Lindab/Trox ~EUR 46-54 + frame) landed. Labour is the ceiling cut, the
 # collar, mastic and tape — unchanged from the diffuser rows these replace.
 "REG-T-ERV-VALVE-SUP" = { material = { low = 19, high = 60 }, labour = { low = 18, high = 45 } }  # 3 ea
-"REG-T-ERV-VALVE-EXH" = { material = { low = 19, high = 60 }, labour = { low = 18, high = 45 } }  # 7 ea
+"REG-T-ERV-VALVE-EXH" = { material = { low = 19, high = 60 }, labour = { low = 18, high = 45 } }  # 8 ea
 # Same valve in a stud bay: the labour premium is cutting and blocking a wall for the collar.
 "REG-T-ERV-VALVE-EXH-WALL" = { material = { low = 19, high = 60 }, labour = { low = 28, high = 65 } }  # 3 ea
 "REG-T-ERV-VALVE-SUP-WALL" = { material = { low = 19, high = 60 }, labour = { low = 28, high = 65 } }  # 1 ea
@@ -3718,7 +3719,6 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # The workshop's over-bench capture hood (2026-08-25): a 30" x 12" fabricated capture face on a
 # drop, not a stamped grille: the material is shop sheet metal and the labour is hanging it
 # plumb 24" over a bench top.
-"REG-T-ERV-BENCH-HOOD" = { material = { low = 140, high = 340 }, labour = { low = 90, high = 220 } }  # 1 ea
 # RM-S-PLANT's extract: the valve plus an EWC 4RSD 24 VAC spring-return damper at the level-2
 # plenum ($176.72, SupplyHouse listing, 2026-10-31). The RH controller is not modelled and so is
 # not in this file.

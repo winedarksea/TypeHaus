@@ -103,13 +103,12 @@ def test_the_play_rooms_fresh_supply_survives_and_moved(catlin_plan) -> None:
     assert reg.duct_ref == "DU-B-ERV-R-PLAY"
 
 
-def test_the_workshop_terminal_is_a_bench_hood_at_bench_height(catlin_plan) -> None:
-    """A 7" diffuser at 8'-0" does not capture solder fume, it dilutes it into the room and
-    then extracts the dilution. 5'-6" is 24" over the 34" bench tops."""
+def test_the_workshop_terminal_is_a_stock_valve_low_over_the_bench(catlin_plan) -> None:
+    """A stock extract valve 12" over the 34" bench tops; fume capture is the benchtop unit."""
     reg = next(e for e in catlin_plan.all_elements() if e.tag == "REG-B-RET1")
-    assert reg.type_ref == "REG-T-ERV-BENCH-HOOD"
-    assert reg.mount.elevation.meters / _FT == pytest.approx(5.5, abs=0.01)
-    assert reg.kind is DuctSystem.RETURN  # light fumes, heat worth recovering, not a booth
+    assert reg.type_ref == "REG-T-ERV-VALVE-EXH"
+    assert reg.mount.elevation.meters / _FT == pytest.approx(46 / 12, abs=0.01)
+    assert reg.kind is DuctSystem.RETURN
 
 
 def test_every_ventilation_terminal_states_a_design_cfm(catlin_plan) -> None:

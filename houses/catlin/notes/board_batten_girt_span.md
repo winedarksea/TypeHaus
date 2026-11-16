@@ -153,7 +153,10 @@ heel with the rafters' true plumb depth, decision #109, and dropped 0.973" — e
 > **Re-struck 2026-11-10** for the double eave plate, which lifts the whole roof plane 1-1/2":
 > eave 20.9918 ft, ridge 30.2939 ft, h = 25.6428 ft, K_z = 0.669872, q_h = 19.2773 psf,
 > zone 5 30.4581 psf strength, **18.2749 psf ASD** (d/c 0.315 against 58). The
-> crossing is 97.47 lb. The working below is at the prior plane; the method is unchanged.
+> crossing is 97.47 lb. At this height, §5b gives 22.7472 psf strength / 13.6483 psf ASD
+> inward (d/c 0.317 against 43); §6 gives 36.5498 lb per screw, withdrawal d/c 0.182
+> and head pull-through d/c 0.118. The working below is at the prior plane; the method
+> is unchanged. `test_cladding_read.py` pins the current plane's values.
 
 K_z, Table 26.10-1, Exposure B (z_g = 1200 ft, alpha = 7):
 

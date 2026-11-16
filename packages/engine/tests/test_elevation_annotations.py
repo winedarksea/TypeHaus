@@ -259,7 +259,7 @@ def test_the_four_elevations_share_one_scale(catlin_model):
     from typehaus.emit.draw.sheet_writer import LEDGER
 
     scenes = framed_elevations(catlin_model, LEDGER)
-    assert {scene.frame.scale_label for scene in scenes.values()} == {"3/32\" = 1'-0\""}
+    assert {scene.frame.scale_label for scene in scenes.values()} == {"1/16\" = 1'-0\""}
     for scene in scenes.values():
         spans = [abs(n.p1[1] - n.p0[1]) for n in scene.nodes if isinstance(n, ArchDimension)]
         assert min(spans) * scene.frame.scale / 12.0 >= MIN_RUNG_PAPER_IN

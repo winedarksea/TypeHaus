@@ -26,6 +26,8 @@ from typehaus.solids3d.audit import overlaps  # noqa: E402
 from typehaus.solids3d.convert import mesh_manifold, to_manifold  # noqa: E402
 from typehaus.solids3d.recorder import drawn_placeables  # noqa: E402
 
+# Connected return runs and their boot meet EQ-S-ERV-MIX's equipment envelope;
+# those two kind-pair baselines include the intentional port connections.
 GOLDEN = Path(__file__).parent / "fixtures" / "solids3d_overlaps.json"
 #: The billed volume may differ from the exact solid by this much (relative, absolute m^3).
 VOLUME_TOLERANCE = (0.01, 1e-7)

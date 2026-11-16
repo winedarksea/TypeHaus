@@ -176,7 +176,7 @@ def _findings_for(tracks, sections, systems=None, floors=()):
 
     systems = systems or {}
     model = SimpleNamespace(plan=SimpleNamespace(all_elements=lambda: ()),
-                            walls=[], openings=[], floors=list(floors))
+                            walls=[], openings=[], ducts=[], floors=list(floors))
     ctx = SimpleNamespace(model=model)
     envelopes = [run_envelope(systems.get(tag, ("pipe",))[0], tag, path, z, sections[tag])
                  for tag, (path, z) in tracks.items()]

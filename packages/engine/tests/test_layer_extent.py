@@ -115,8 +115,9 @@ def test_the_sauna_liner_stops_at_the_room_ceiling_not_the_wall_top(catlin_model
         # strip of bare concrete at the bottom of a sauna wall is a hole in the hot side's
         # vapour control (`building_science.humid_room_liner` said so when it was authored
         # without one). The two together are the room's 7'-6".
-        below = next(ly for ly in curb.layers if ly.name == name)
-        assert not below.is_banded
+        below = [ly for ly in curb.layers if (ly.source_layer_name or ly.name) == name]
+        assert below, name
+        assert all(not ly.is_banded for ly in below)
         assert (z1 - z0 + curb.z1_m - curb.z0_m) * _M_TO_FT == pytest.approx(7.5, abs=1e-6)
 
 
@@ -243,7 +244,7 @@ def test_a_banded_layer_exports_as_an_aggregated_ifc_part(catlin_ifc_path):
     # (W-B-S3-FR's ``gwb-a`` exported as parts while the wall was lifted into W-M-S2's band;
     # since #107 W-M-S2 owns that band and W-B-S3-FR stops at its plate, whole.)
     assert not any(name.endswith(f":{_PANEL}") for name in parts)
-    assert {n for n in parts if n.startswith("W-B-S")} == {
+    assert {n for n in parts if n.startswith("W-B-S2-FR:")} == {
         *(f"W-B-S2-FR:{layer} ({index}/4)"
           for layer in ("shiplap-liner", "liner-furring", "foil-polyiso")
           for index in range(1, 5))}

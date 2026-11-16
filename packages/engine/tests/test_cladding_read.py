@@ -21,32 +21,32 @@ import pytest
 
 from typehaus.findings import Result, Severity
 
-#: §2-§6.2 and §5b of the note, hand-worked before the code.
+#: §2-§6.2 and §5b, with §2's 2026-11-10 double-eave-plate height correction.
 _ORACLE = {
-    "mean_roof_height_ft": 25.5178,
-    "q_h_psf": 19.2504,
+    "mean_roof_height_ft": 25.6428,
+    "q_h_psf": 19.2773,
     "effective_wind_area_ft2": 1.3333,
     "gcp_zone5": -1.4,
     "gcp_positive": 1.0,
     "gcpi": 0.18,
-    "strength_zone5_psf": 30.4156,
-    "asd_zone5_psf": 18.2494,
-    "asd_zone4_psf": 14.7843,
-    "outward_ratio": 0.3146,
-    # §5b: q_h (1.0 + 0.18) = 22.7155 strength, 13.6293 ASD, against 43 inward.
-    "strength_inward_psf": 22.7155,
-    "asd_inward_psf": 13.6293,
-    "inward_ratio": 0.3170,
+    "strength_zone5_psf": 30.4581,
+    "asd_zone5_psf": 18.2749,
+    "asd_zone4_psf": 14.8050,
+    "outward_ratio": 0.3151,
+    # §5b's same q_h (1.0 + 0.18), against 43 inward.
+    "strength_inward_psf": 22.7472,
+    "asd_inward_psf": 13.6483,
+    "inward_ratio": 0.3174,
     # §6: NDS 2018 §12.2 at G 0.55, D 0.190", C_D 1.6, C_M 0.7, the 1-1/2" screw (D3).
     "w": 163.80,
     "w_adjusted": 183.46,
     "thread_penetration_in": 1.0961,
     "capacity_lb": 201.09,
-    "demand_lb": 36.4988,
-    "withdrawal_ratio": 0.18151,
+    "demand_lb": 36.5498,
+    "withdrawal_ratio": 0.18176,
     # §6.2: AISI S100 Pnov = 1.5 t d'w Fu / 3.0.
     "pull_through_capacity_lb": 310.7,
-    "pull_through_ratio": 0.1175,
+    "pull_through_ratio": 0.11764,
 }
 
 #: The twenty north/south walls the board & batten lands on (§1 of the note).
@@ -223,7 +223,7 @@ def test_another_coverage_drifts(tmp_path):
 
 
 def test_a_higher_judged_demand_is_required(tmp_path):
-    ctx = _variant(tmp_path, _replace("demand_psf=18.25,", "demand_psf=15.0,"))
+    ctx = _variant(tmp_path, _replace("demand_psf=18.27,", "demand_psf=15.0,"))
     _all_unknown(ctx, "judged against 15.00 psf")
 
 

@@ -106,8 +106,8 @@ def test_the_tree_mode_routes_each_branch_at_its_own_derived_size(runner) -> Non
 
     **A tie down the stack** (`mep_tree_ripup_basis.md` §6): the head alone sits inside
     STUBATH's prism, so a branch may wye in lower on the stack; the lavatory does (rung
-    107.875). The tub and the WC find no lane to the stack at any rung (the tub's is
-    framing_bore_limits.md §13's D13/D14, held by PR-B-CW-SUITE).
+    107.875). The tub and the WC find no lane to the stack at any rung; the tightest
+    refusal now names the member window rather than a movable supply run.
     """
     before = _plan_digest()
     result = runner.invoke(app, ["route", str(_CATLIN),
@@ -115,7 +115,7 @@ def test_the_tree_mode_routes_each_branch_at_its_own_derived_size(runner) -> Non
     assert result.exit_code == 0, result.output  # the lavatory is proposed
     assert '3 branch sizes (3", 2", 1.25")' in result.output
     output = " ".join(result.output.split())
-    for said in ("FX-S-SUITEBATH-TUBSH: no route", "held by PR-B-CW-SUITE",
+    for said in ("FX-S-SUITEBATH-TUBSH: no route", "tightest refusal was a member window",
                  "FX-S-SUITEBATH-WC: no route", "stack ties tried: 115.50, 107.88, 96.00",
                  "FX-S-SUITEBATH-LAV-PROPOSED"):
         assert said in output

@@ -24,7 +24,7 @@ from .erv_balance import (
 )
 
 # Basement ERV terminals are sidewall valves (both supplies and the bath extract), the sauna's
-# two wood vents and the workshop's bench hood.
+# two wood vents and the workshop's bench valve.
 REGISTERS_BASEMENT = [
     # ** BOTH BASEMENT SUPPLIES ARE SIDEWALL VALVES ON THE x=18' LINE (2026-11-10). ** A ceiling
     # collar takes its run from above on a stock 90, and under FS-M-EAST/-NE that meant an
@@ -58,21 +58,16 @@ REGISTERS_BASEMENT = [
             location=Location(attachment=WallAttachment(
                 wall_ref="W-B-CN2", face="right", distance_from_start=inch(30),
                 normal_gap=inch(0), rotation_offset=deg(0)))),
-    # THE WORKSHOP TERMINAL IS A BENCH HOOD, NOT A CEILING DIFFUSER: a diffuser eight feet
-    # up does not capture solder fume, it dilutes it into the room and then extracts the
-    # dilution. REG-T-ERV-BENCH-HOOD is a 30" x 12" capture face hung at 5'-6", i.e. 24"
-    # above FURN-B-WORKSHOP-BENCH-N/S's 34" tops, and it captures at the source.
-    #
-    # It stays `kind=RETURN` rather than becoming a dedicated EXHAUST: the fumes are light,
-    # the heat is worth recovering, and this is not a spray booth.
-    #
-    # HONEST LIMIT: the two benches run ten feet along the west wall (y 3'-6"..13'-6") and
-    # one 30" hood captures a fraction of that. It is a bench hood, not bench-run
-    # coverage. It is a bench hood, not bench-run coverage.
+    # The workshop's bench pickup (2026-11-15): a stock 100 mm extract valve, face down at
+    # 46" AFF (12" over the 34" bench tops), 3" off W-B-W2's concrete, 9" south of the bench
+    # seam where ED-B-WORKSHOP-DATA1 and CD-B-DATA-SHOP come down. It is
+    # a near-source extract, not a fume hood: at 6 cfm it captures nothing beyond a few
+    # inches. Solder fume is APPL-B-WORKSHOP-FUME (benchtop carbon extractor). RETURN, so the
+    # heat is recovered.
     Register(uid="CBRV03AAAA", tag="REG-B-RET1", kind=DuctSystem.RETURN, room="RM-B-WORKSHOP",
-            position=pt(ft(2, 1), ft(8, 6)), duct_ref="DU-B-ERV-R-BENCH",
-            type_ref="REG-T-ERV-BENCH-HOOD", design_cfm=REG_B_RET1,
-            mount=Mount(kind=MountKind.CEILING, elevation=ft(5, 6))),
+            position=pt(inch(11), ft(7, 9)), duct_ref="DU-B-ERV-R-BENCH",
+            type_ref="REG-T-ERV-VALVE-EXH", design_cfm=REG_B_RET1,
+            mount=Mount(kind=MountKind.CEILING, elevation=inch(46))),
     # The sauna's stale pickup is on the wall, 4" above the floor on the WEST liner below
     # FURN-B-SAUNA-UPPER; its inset posts keep the register face clear. The former south
     # face rotated on 2026-09-05 and

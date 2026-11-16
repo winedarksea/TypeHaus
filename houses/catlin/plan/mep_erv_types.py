@@ -306,26 +306,8 @@ EQUIPMENT_TYPES_ERV = (
 
 
 REGISTER_TYPES_ERV = (
-    # The workshop's terminal stops being a 7" ceiling diffuser at 8'-0" and becomes what it
-    # was always described as: an over-bench capture hood. A ceiling diffuser eight feet up
-    # does not capture solder fume, it dilutes it into the room first — a quasi-fume hood
-    # captures at the source, which is 24"-30" above a 34" bench top.
-    #
-    # HONEST LIMIT, and it belongs in the record rather than in an optimistic name:
-    # FURN-B-WORKSHOP-BENCH-N/S run ten feet along the west wall and one 30" hood captures a
-    # fraction of that. It is a bench hood, not bench-run coverage. It stays on the extract
-    # (RETURN) side rather than getting a dedicated exhaust for the reason the old comment
-    # gave and which still holds: light fumes, heat worth recovering, not a spray booth.
-    RegisterType(tag="REG-T-ERV-BENCH-HOOD",
-                 name="Over-bench capture hood, 30\" x 12\" face, 4\" collar",
-                 footprint=(inch(30), inch(12)), height=inch(8),
-                 plan_symbol="register", ventilation_terminal=True,
-                 # K = 6 (a plenum with a collar) on the 4" collar velocity pressure (§5). Its
-                 # balancing damper is DU-B-ERV-R-BENCH's in-line part since 2026-11-12 (§10.24).
-                 static_loss_pa_at_cfm=((10.0, 1.2), (25.0, 7.6), (40.0, 19.4)),
-                 source="Fabricated sheet capture hood over FURN-B-WORKSHOP-BENCH-N/S, hung at 5'-6\" — 24\" above the 34\" bench tops. Captures at the source instead of diluting into the room; 4 in. collar since 2026-09-12, with the radial it hangs off. One hood does not cover ten feet of bench; see the note in plan/mep_erv.py.",
-                 ports=(ServicePort(tag="return", service=Service.RETURN_AIR,
-                                    position=(ft(0), ft(0), ft(0))),)),
+    # The workshop's bench terminal is a stock extract valve (REG-T-ERV-VALVE-EXH) since
+    # 2026-11-15; solder fume is a benchtop extractor's job (APPL-HAKKO-FA400-04).
     # The sauna's pair: a user-closeable wood vent, because the owner shuts them to heat the
     # room up. House-local, since a library type cannot name a house Product. An 11" x 5.2"
     # sliding-panel aspen hatch (owner, 2026-10-29) over a 4"-round-to-rectangular boot on

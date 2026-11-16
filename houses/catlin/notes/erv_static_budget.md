@@ -208,7 +208,7 @@ K on the **collar** velocity pressure (0.81 Pa at 20 cfm through 4"):
 |---|---|---|---|
 | `REG-T-ERV-SUP` / `-EXH` / `-EXH-WALL` | 5 | plain dampered round diffuser | 4.0 Pa |
 | `REG-T-ERV-SAUNA-SUP` / `-SAUNA-EXH` / `-PLANT-EXH` | 8 | face carries a closable or motorised damper of its own | 6.5 Pa |
-| `REG-T-ERV-BENCH-HOOD` | 6 | fabricated hood — a plenum with a collar; its balancing damper is the run's in-line part (§10.24) | 7.6 Pa at 25 cfm |
+| `REG-T-ERV-VALVE-EXH` (`REG-B-RET1`) | 6 | stock 100 mm extract valve at 46" AFF since 2026-11-15 (was the fabricated `REG-T-ERV-BENCH-HOOD`, K 6); damper in-line (§10.24) | Trox LVS 100 curve, ~0.7 Pa at 6 cfm |
 
 Each row is authored as three points scaling Q², so the check interpolates rather than
 re-derives. **A submitted product with a real test curve replaces the three points and
@@ -1403,6 +1403,19 @@ SAUNA-EXH 0.029835 at 26 cfm, `EQ-B-ERV-MAN-EXH`, and the extract chain.
 
 **Governing:** unchanged. Extract via `DU-M-ERV-R-SUITEBATH`, 0.550724 in., **200.0 cfm**
 against R403.5's 188.0 (§10.23, +12.0). Engine: 0.550724, 199.99 cfm; bench leg 0.000208.
+
+**Re-worked 2026-11-15: the hood became a stock valve at 46" AFF.** `REG-B-RET1` is
+`REG-T-ERV-VALVE-EXH` at (11", 7'-9"); the run is 8" west at 82 1/4" plus the derived drop to
+the collar at 48 15/16" (33 5/16"), 3.4427 ft and one stamped 90. The damper sits 20" down the
+drop (`inline_dampers=(28",)`), at 62 1/4".
+
+    friction = 0.04081 x (3.4427 / 0.33333) x 0.00029472 = 0.00012422 in.
+    elbow    = 0.22 x 0.00029472                         = 0.00006484 in.
+    damper   = 0.34 x 0.00029472                         = 0.00010020 in.
+    leg      = 0.00028926 in.   Engine: 0.00028926.
+
+The terminal reads the Trox LVS 100 curve at 6 cfm (~0.7 Pa, under the hood's 1.2). The bench
+path is still far from governing; the delivered 198.9 cfm does not move.
 
 ### 10.25 EQ-M-ERV-MAN-SUP's feed: no lane in the closet; drawn from the basement (2026-11-12)
 

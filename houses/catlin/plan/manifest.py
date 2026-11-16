@@ -49,6 +49,7 @@ from plan import (air_terminal_types, appliance_types, assemblies, bath_finish, 
                   millwork_vanities, placeables,
                   plant_reservoir, plant_reservoir_types, plant_room, plant_room_types, plant_types, plate_ties, porch_lighting,
                   opening_products, paint, products, products_paint, smart_home, smart_home_types,
+                  workshop_fume, workshop_fume_types,
                   sauna, sauna_types, site, study_bridge, titanium_types, transitions, views,
                   wall_top_ties, wind_clamps, window_stools, window_types)
 from plan import framing_charts, french_door_installations
@@ -77,6 +78,7 @@ _library = Library(
               *towel_accessory_types.TOWEL_PRODUCTS, *handrail_types.HANDRAIL_PRODUCTS, *products_bath_lavs.BATH_LAV_PRODUCTS,
               *device_types.DEVICE_PRODUCTS, *grounding_types.GROUNDING_PRODUCTS, *panel_types.PANEL_PRODUCTS, *device_boxes.BOX_PRODUCTS, *ducts.DUCT_PRODUCTS, *drywall.DRYWALL_PRODUCTS, *products_paint.PAINT_PRODUCTS,
               *window_covering_types.WINDOW_COVERING_PRODUCTS, *smart_home_types.SMART_HOME_PRODUCTS,
+              *workshop_fume_types.WORKSHOP_FUME_PRODUCTS,
               *media_types.MEDIA_PRODUCTS, *plant_reservoir_types.PLANT_RESERVOIR_PRODUCTS,
               *RAILING_PRODUCTS),
     # The catalog carries what the house hangs, not the whole library ladder (2026-09-12).
@@ -135,6 +137,7 @@ _library = Library(
     # vs APPL-*), which `integrity.duplicate_catalog_tag` proves rather than assumes.
     appliance_types=(*STARTER_APPLIANCE_TYPES, MICROWAVE_COUNTERTOP_NN_SN686S,
                      *appliance_types.APPLIANCE_TYPES, *smart_home_types.APPLIANCE_TYPES,
+                     *workshop_fume_types.WORKSHOP_FUME_APPLIANCE_TYPES,
                      *plant_reservoir_types.PLANT_RESERVOIR_TYPES),
     register_types=(*ALL_REGISTER_TYPES, *mep.REGISTER_TYPES,
                     *equipment_types.STALL_FAN_REGISTER_TYPES,
@@ -409,7 +412,8 @@ PLAN = (
          *backing.BASEMENT_BACKING, *backing_wet.BASEMENT_WET_BACKING, *towel_accessories.BASEMENT_TOWEL_ACCESSORIES,
          *backing_towel_accessories.BASEMENT_TOWEL_BACKING,
          *bath_accessories.BASEMENT_BATH_ACCESSORIES,
-         *backing_bath_accessories.BASEMENT_TP_BACKING, *smart_home.BASEMENT_ELEMENTS],
+         *backing_bath_accessories.BASEMENT_TP_BACKING, *smart_home.BASEMENT_ELEMENTS,
+         *workshop_fume.WORKSHOP_FUME],
     )
     .with_elements(
         "main",
