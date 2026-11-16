@@ -368,6 +368,10 @@ _IFC_DOOR_OPERATION = {
 }
 
 
+_IFC_WINDOW_PARTITIONING = {1: "SINGLE_PANEL", 2: "DOUBLE_PANEL_VERTICAL",
+                            3: "TRIPLE_PANEL_VERTICAL"}
+
+
 def _emit_opening_types(f: Any, model: ResolvedModel, project_uuid: Any) -> dict[str, Any]:
     """Create one stable IFC type per authored door/window product type."""
     result: dict[str, Any] = {}
@@ -382,6 +386,10 @@ def _emit_opening_types(f: Any, model: ResolvedModel, project_uuid: Any) -> dict
                 # reads as a plain swing in the receiving application.
                 entity.PredefinedType = "DOOR"
                 entity.OperationType = _IFC_DOOR_OPERATION[item.operation]
+            else:
+                # Both are required in IFC4; a mulled unit's lites read as its panels.
+                entity.PredefinedType = "WINDOW"
+                entity.PartitioningType = _IFC_WINDOW_PARTITIONING.get(item.lites, "USERDEFINED")
             ll.ensure_pset(f, entity, "TypeHaus_Identity",
                            {"tag": item.tag, "source_type": item.tag})
             result[item.tag] = entity

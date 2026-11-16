@@ -119,6 +119,15 @@ def passage_symbol(opening, insert: Pt, rotation_deg: float,
                                             host_wall_thickness_in=host_wall_thickness_in))
 
 
+def window_tick_offsets(node: Symbol, width_in: float) -> tuple[float, ...]:
+    """A window mark's ticks along its bar: one at each mullion of a mulled unit, else centre.
+
+    Equal lites with a two-frame-face mullion put the mullions at equal divisions of the unit.
+    """
+    lites = int(node.params.get("lites", 1))
+    return tuple(-width_in / 2 + i * width_in / lites for i in range(1, lites)) or (0.0,)
+
+
 def symbol_is_centre_anchored(name: str) -> bool:
     """True when the insert point is the opening centre, not the hinge jamb."""
     return name in _CENTRE_ANCHORED

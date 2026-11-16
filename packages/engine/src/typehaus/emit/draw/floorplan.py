@@ -179,7 +179,8 @@ def _emit_openings(b: SceneBuilder, model: ResolvedModel, wall_tags: set[str],
             b.add(Symbol(
                 name="window-mark", insert=_in((cx, cy)), rotation=angle,
                 scale=op.width_m / M_PER_IN, layer="A-GLAZ", uid=op.uid,
-                params={"width_in": op.width_m / M_PER_IN},
+                params={"width_in": op.width_m / M_PER_IN,
+                        **({"lites": op.lites} if op.lites > 1 else {})},
             ))
         if mark is not None:
             boxes.append(emit_opening_mark(

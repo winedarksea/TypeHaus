@@ -15,7 +15,11 @@ from pathlib import Path
 
 from typehaus.emit.draw.annotate import DODGE_GAP_PT
 from typehaus.emit.draw.artist_tags import ArtistTagger, NullTagger
-from typehaus.emit.draw.door_symbols import DOOR_SYMBOL_NAMES, door_symbol_geometry
+from typehaus.emit.draw.door_symbols import (
+    DOOR_SYMBOL_NAMES,
+    door_symbol_geometry,
+    window_tick_offsets,
+)
 from typehaus.emit.draw.palette import detail_fill
 from typehaus.emit.draw.review_layers import SHELL, UNDERLAY
 from typehaus.emit.draw.scene import (
@@ -1049,14 +1053,15 @@ def _draw_symbol(ax: object, node: Symbol, Arc: object) -> None:
     elif node.name in _MARKER_STYLE:
         marker, color = _MARKER_STYLE[node.name]
         ax.plot(node.insert[0], node.insert[1], marker=marker, markersize=5, color=color)
-    else:  # window mark: glass bar across the full opening plus a short centre mullion
+    else:  # window mark: glass bar across the full opening plus a tick per mullion
         a = math.radians(node.rotation)
         dx, dy = w * math.cos(a) / 2, w * math.sin(a) / 2
         nx, ny = -math.sin(a) * 2.5, math.cos(a) * 2.5
         ax.plot([node.insert[0] - dx, node.insert[0] + dx],
                 [node.insert[1] - dy, node.insert[1] + dy], color="#3a6a8a", lw=2.2)
-        ax.plot([node.insert[0] - nx, node.insert[0] + nx],
-                [node.insert[1] - ny, node.insert[1] + ny], color="#3a6a8a", lw=0.8)
+        for t in window_tick_offsets(node, w):
+            cx, cy = node.insert[0] + t * math.cos(a), node.insert[1] + t * math.sin(a)
+            ax.plot([cx - nx, cx + nx], [cy - ny, cy + ny], color="#3a6a8a", lw=0.8)
 
 
 #: The one dimension formatter (``typography.feet_inches_8th``), at its old name.

@@ -75,6 +75,9 @@ def test_opening_occurrences_are_assigned_to_stable_product_types(catlin_model, 
     assert expected <= typed_occurrences
     assert len(f.by_type("IfcDoorType")) == len(catlin_model.plan.library.door_types)
     assert len(f.by_type("IfcWindowType")) == len(catlin_model.plan.library.window_types)
+    partitioning = {t.Name: t.PartitioningType for t in f.by_type("IfcWindowType")}
+    assert partitioning["WT-8448-FIX"] == "TRIPLE_PANEL_VERTICAL"  # the mulled dining triad
+    assert partitioning["WT-2748"] == "SINGLE_PANEL"
 
 
 def test_openings_survive_the_self_diff_by_global_id(catlin_model, catlin_ifc):

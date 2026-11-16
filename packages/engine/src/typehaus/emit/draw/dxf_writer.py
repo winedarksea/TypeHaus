@@ -10,7 +10,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from typehaus.emit.draw.door_symbols import DOOR_SYMBOL_NAMES, door_symbol_geometry
+from typehaus.emit.draw.door_symbols import (
+    DOOR_SYMBOL_NAMES,
+    door_symbol_geometry,
+    window_tick_offsets,
+)
 from typehaus.emit.draw.scene import (
     ArchDimension,
     Hatch,
@@ -384,16 +388,17 @@ def _add_symbol(msp: object, node: Symbol) -> None:
     elif node.name in _DEVICE_SYMBOLS:
         msp.add_circle(node.insert, radius=max(w * 0.15, 1.5),  # type: ignore[attr-defined]
                        dxfattribs={"layer": node.layer})
-    else:  # window mark: full glazing bar with a centre mullion tick
+    else:  # window mark: full glazing bar with a tick per mullion
         a = math.radians(node.rotation)
         dx, dy = w * math.cos(a) / 2, w * math.sin(a) / 2
         nx, ny = -math.sin(a) * 2.5, math.cos(a) * 2.5
         msp.add_line((node.insert[0] - dx, node.insert[1] - dy),
                      (node.insert[0] + dx, node.insert[1] + dy),
                      dxfattribs={"layer": node.layer})  # type: ignore[attr-defined]
-        msp.add_line((node.insert[0] - nx, node.insert[1] - ny),
-                     (node.insert[0] + nx, node.insert[1] + ny),
-                     dxfattribs={"layer": node.layer})  # type: ignore[attr-defined]
+        for t in window_tick_offsets(node, w):
+            cx, cy = node.insert[0] + t * math.cos(a), node.insert[1] + t * math.sin(a)
+            msp.add_line((cx - nx, cy - ny), (cx + nx, cy + ny),  # type: ignore[attr-defined]
+                         dxfattribs={"layer": node.layer})
 
 
 def _add_leader(msp: object, node: Leader, scene: Scene) -> None:
