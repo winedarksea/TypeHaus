@@ -35,12 +35,24 @@ those two are Broan and InSinkErator (owner 2026-10-22).
 
 from __future__ import annotations
 
-from typehaus.library.placeables._zones import door_swing_zone
-from typehaus.model import ApplianceType, PortCertainty, Service, ServicePort, ft, inch, mm
-
 from library.placeables import front_zone
 from library.placeables.appliances import (
-    BAR_REFRIGERATOR_24, BAR_REFRIGERATOR_CUBE_19, DISPOSAL, HOOD_RECIRC,
+    BAR_REFRIGERATOR_24,
+    BAR_REFRIGERATOR_CUBE_19,
+    DISPOSAL,
+    HOOD_RECIRC,
+)
+
+from typehaus.library.placeables._zones import door_swing_zone
+from typehaus.model import (
+    ApplianceType,
+    ModelRepresentation,
+    PortCertainty,
+    Service,
+    ServicePort,
+    ft,
+    inch,
+    mm,
 )
 
 # --- laundry ---------------------------------------------------------------------------
@@ -368,6 +380,7 @@ BROAN_HOOD_30 = HOOD_RECIRC.model_copy(update={
 BADGER_5 = DISPOSAL.model_copy(update={
     "tag": "APPL-ISE-BADGER5", "name": "InSinkErator Badger 5 disposer, 1/2 HP",
     "footprint": (inch(6.3125), inch(6.3125)), "height": inch(11.5),
+    "model_representation": ModelRepresentation(symbol="insinkerator-badger-5"),
     "ports": (ServicePort(tag="power", service=Service.POWER_120, position=(ft(0), ft(0), ft(0))),
               # Side discharge, elbow turned west to the Dearborn trap (notes/
               # kitchen_sink_installation.md s3): 6 1/2 in. under a stainless sink bottom.

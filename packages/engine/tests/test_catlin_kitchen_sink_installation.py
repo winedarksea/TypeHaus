@@ -14,6 +14,49 @@ from typehaus.takeoff.plumbing_specialties import install_parts_takeoff
 INCH = 0.0254
 
 
+def test_disposal_has_exportable_geometry_at_the_sink_drain(catlin_model_ro):
+    import ifcopenshell
+
+    from typehaus.emit.gltf.canvas_objects import _add_canvas_parts
+    from typehaus.emit.gltf.mesh import _MeshBuilder
+    from typehaus.emit.ifc.placeable_parts import parts_representation
+    from typehaus.model.canvas import _symbol_geometry, model_symbol_for
+    from typehaus.model.placeable_symbols import model_parts, place_local
+
+    model = catlin_model_ro
+    objects = {item.tag: item for item in model.canvas_objects}
+    disposal = objects["APPL-M-DISP"]
+    sink = model.plan.by_tag("FX-M-KITCH-SINK")
+    product = next(item for item in model.plan.library.appliance_types
+                   if item.tag == disposal.type_ref)
+    assert model_symbol_for(product) == "insinkerator-badger-5"
+    wire = _symbol_geometry(product, product.footprint)
+    assert wire["plan_strokes"] == []  # Concealed appliance keeps its plan convention.
+    assert len(wire["model_parts"]) > 10
+    assert disposal.position == pytest.approx(sink.drain_position.xy_m)
+    assert disposal.body_z1_m == pytest.approx(objects[sink.tag].z_m)
+    # The generated elbow's outlet axis must stay west, matching the authored port.
+    outlet = next(port for port in product.ports if port.tag == "drain")
+    outlet_xy = place_local([tuple(v.meters for v in outlet.position[:2])],
+                            disposal.position, disposal.rotation_degrees)[0]
+    assert outlet_xy == pytest.approx((disposal.position[0] - 5 * INCH,
+                                      disposal.position[1]))
+    parts = model_parts(model_symbol_for(product), *(v.meters for v in product.footprint),
+                        product.height.meters)
+    mesh = _MeshBuilder()
+    assert _add_canvas_parts(mesh, disposal, product, {})
+    file = ifcopenshell.file(schema="IFC4")
+    context = file.create_entity("IfcGeometricRepresentationContext", CoordinateSpaceDimension=3)
+    representation = parts_representation(file, context, parts, disposal.position,
+                                           disposal.rotation_degrees, disposal.z_m)
+    assert len(representation.Items) == len(parts)
+    gltf_points = {(round(x, 9), round(-minus_y, 9), round(z, 9))
+                   for vertices, _ in mesh._buckets.values() for x, z, minus_y in vertices}
+    ifc_points = {tuple(round(value, 9) for value in point)
+                  for item in representation.Items for point in item.Coordinates.CoordList}
+    assert ifc_points == gltf_points
+
+
 def test_faucet_base_hole_and_parked_stream_fit_resolved_counter(catlin_model_ro):
     objects = {item.tag: item for item in catlin_model_ro.canvas_objects}
     sink = objects["FX-M-KITCH-SINK"]

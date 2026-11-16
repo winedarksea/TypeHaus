@@ -29,6 +29,7 @@ if TYPE_CHECKING:
     from typehaus.model.placeables import ServicePort
     from typehaus.model.shower_assembly import ShowerAssemblySpec
 
+from typehaus.model.placeable_symbols._badger_disposal import badger_disposal
 from typehaus.model.placeable_symbols._ceramic_fan_heater import ceramic_fan_heater
 from typehaus.model.placeable_symbols._eg4_storage import eg4_12kpv, eg4_wallmount_indoor
 from typehaus.model.placeable_symbols._erv_wall_hood import erv_wall_hood
@@ -72,6 +73,7 @@ _REGISTRY: dict[str, Builder] = {**FURNITURE_SYMBOLS, **APPLIANCE_SYMBOLS, **PLU
                                  "swanstone-flex-3636": swanstone_flex,
                                  "infrared-heater": infrared_heater,
                                  "ceramic-fan-heater": ceramic_fan_heater,
+                                 "insinkerator-badger-5": badger_disposal,
                                  "fireplace-insert": fireplace_insert,
                                  "gree-flexx-ultra-24-horizontal": gree_flexx_horizontal,
                                  "gree-flexx-ultra-24-outdoor": gree_flexx_outdoor,
@@ -120,6 +122,7 @@ SYMBOL_NAMES = (frozenset(KITCHEN_SEKTION_SYMBOLS) | frozenset(RECEPTACLE_SYMBOL
     # appliances + mechanical/electrical equipment
     "refrigerator", "range", "dishwasher", "washer", "dryer", "washer-dryer-stacked",
     "microwave", "countertop-microwave", "hood", "tea-kettle", "espresso-machine",
+    "insinkerator-badger-5",
     "furnace", "erv", "sheet-metal-plenum", "renewaire-fa8-wall-hood",
     "heat-pump-outdoor", "heat-pump-indoor",
     "water-heater", "sauna-heater", "harvia-cilindro-pc110e", "panel", "register",

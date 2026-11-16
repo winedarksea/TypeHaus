@@ -127,7 +127,7 @@ MAIN_KITCHEN_CASEWORK = [
               room="RM-M-LIVING",
               position=pt(inch(351.375), inch(413.375))),
     # The disposer follows the smaller undermount bowl's rear-centre drain and lower rim.
-    # Its gap is 5 11/32" so the Badger 5's 6 5/16" body keeps its centre on the drain.
+    # The gap plus the Badger's 3.15625" radius puts its axis at the drain's y=416.99".
     Appliance(uid="ADCW7VPPC1", tag="APPL-M-DISP", type_ref="APPL-ISE-BADGER5", room="RM-M-LIVING",
               mount=Mount(kind=MountKind.WALL, elevation=inch(13.319)),
               install_parts=("Dearborn P9703WBG 1-1/2-inch tubular P-trap with PVC adapter",
@@ -141,7 +141,7 @@ MAIN_KITCHEN_CASEWORK = [
                              "18/6 CL2 control cable, 50 ft"),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-M-N1", face="left", distance_from_start=inch(80),
-                  normal_gap=inch(5.34375), rotation_offset=deg(-180)))),
+                  normal_gap=inch(5.35375), rotation_offset=deg(-180)))),
     # Door face flush with the AXSTAD fronts at y=400 5/8: the 24 5/8" body ends 1/4" off the wall.
     Appliance(uid="XPA5ZCQM5Q", tag="APPL-M-DW", type_ref="APPL-LG-DISHWASHER", room="RM-M-LIVING",
               position=pt(inch(321.375), inch(412.9375)), plugs_into=("ED-M-LIVING-KDW1",)),

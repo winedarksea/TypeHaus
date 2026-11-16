@@ -108,6 +108,9 @@ def test_parts_stay_inside_the_declared_box_and_name_a_real_colour(
     # is explicit; all other symbols continue to promise a finished-product envelope.
     projection = 2 * 0.0254 if symbol.startswith("sektion-axstad-kitchen-") else 0.0
     side_projection = projection if symbol.endswith("corner-wall") else 0.0
+    if symbol == "insinkerator-badger-5":
+        # Catalog footprint is the motor body; the supplied discharge elbow projects west.
+        side_projection = width * (5.75 - 6.3125 / 2) / 6.3125
     if symbol == "swanstone-flex-3636":
         # The separately supported return/post sits on the adjacent tub deck.
         side_projection = width * 1.5 / 36
