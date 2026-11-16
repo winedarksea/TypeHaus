@@ -227,7 +227,7 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
 - [x] Improve the 3d model of the EQ-T-SAUNA-HEATER (US Cilindro PC110E stone tower, front grille, rear shroud, raised top guard and feet).
 - [x] 3d model of the garbage disposal (Badger 5 housing, sink mount, side inlet and west-facing discharge elbow; axis aligned to sink drain).
 - 3d model of the wall sconces
-- 3d model of the recessed cans
+- [x] 3d model of the recessed cans (round beveled white trim, open stepped baffle, regressed lamp and cylindrical housing; shared viewer/GLB/IFC geometry).
 
 # Project Management
 

@@ -47,6 +47,7 @@ from typehaus.model.placeable_symbols._product_sconces import (
     swing_arm_sconce,
     tube_sconce,
 )
+from typehaus.model.placeable_symbols._recessed_can import recessed_can_parts
 from typehaus.model.placeable_symbols._sprig_sconce import sprig_sconce
 from typehaus.model.placeable_symbols._track_lighting import track_light
 from typehaus.model.placeable_symbols._vanity_lights import socketed_vanity_light
@@ -85,12 +86,7 @@ def recessed_can() -> Builder:
         strokes = [circle(0, 0, outer_r, fill="luminaire-housing"),
                    circle(0, 0, aperture_r, fill="lamp", weight=DETAIL_WEIGHT),
                    line((-arm, 0), (arm, 0)), line((0, -arm), (0, arm))]
-        # A recessed can is a housing can above the ceiling plane with its lens at the
-        # bottom: the lens is what the room sees, so it gets the bottom of the box.
-        lens_t = min(height * 0.25, height)
-        parts = [box(0, 0, lens_t, height, outer_r * 2, outer_r * 2, "luminaire-housing"),
-                 box(0, 0, 0.0, lens_t, aperture_r * 2, aperture_r * 2, "lamp")]
-        return tuple(strokes), tuple(parts)
+        return tuple(strokes), recessed_can_parts(width, depth, height)
 
     return build
 

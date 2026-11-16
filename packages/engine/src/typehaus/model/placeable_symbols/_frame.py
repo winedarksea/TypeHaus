@@ -147,8 +147,8 @@ PART_COLORS: dict[str, tuple[float, float, float, float]] = {
     # Luminaires. ``lamp`` is the emitting face — the brightest role in the palette, warm
     # rather than white so a 3000K fixture reads as a fixture and not as a skylight; it is
     # deliberately lighter than ``porcelain`` so the two never confuse each other in a bath.
-    # ``luminaire-housing`` is the trim ring, can body or fan motor around it: a dark
-    # neutral, matching the black baffle trim the house actually specifies.
+    # ``luminaire-housing`` is a dark neutral for can bodies and fan motors;
+    # white recessed trims use ``appliance-white`` independently of the housing.
     "lamp": (0.98, 0.95, 0.86, 1.0),
     "luminaire-housing": (0.22, 0.22, 0.23, 1.0),
     # Brushed gold/brass: a decorative fixture body, where ``metal`` would read as steel.
