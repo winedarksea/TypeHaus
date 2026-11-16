@@ -123,6 +123,13 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
 
 ## Questions
 
+- **Radon exhaust vs WIN-A-N1: confirm with the AHJ/MDH.** Minn. R. 1303.2402 subp. 5.A reads
+  10 ft from any window, unqualified. The radon leg is ~1'-2" from WIN-A-N1 in plan;
+  `checks/code/mn_residential/radon.py:170-177` passes it on IRC AF103's 2-ft-above
+  allowance (exhaust 2'-3" over the head). No design change unless they refuse it.
+- **Radon fan power: confirm with the AHJ/MDH.** MDH's post-mitigation checklist wants an
+  exterior fan hardwired with a disconnect in sight; `ED-A-RADON-RC` is a WR GFCI receptacle
+  (cord-and-plug as the disconnect). No design change unless they refuse it.
 - **Is a silt fence required at all?** The owner doubts it on a flat, small residential lot.
   It is drawn on the W/E lot lines for now (`houses/catlin/plan/site.py`); ask St Paul DSI at permit.
 - **Cavity "canary" RH sensors** wanted in a south and west stud bay (no liner redundancy

@@ -189,8 +189,8 @@ ROLE_PV_SEAM_CLAMP = "pv_seam_clamp"
 # same reason: it is a separately purchased part, in fourteen diameters, and a plan that
 # says "clamp" without saying which ring is not orderable.
 ROLE_PIPE_CLAMP = "pipe_clamp"
-# The strap that holds that same round pipe against an *exposed-fastener* panel, by screwing
-# through it into the framing behind. Its own role rather than a second product on
+# The strap that holds that same round pipe against a seamless panel (exposed-fastener, or a
+# concealed-fastener flat), by screwing through it into the framing behind. Its own role rather than a second product on
 # ROLE_PIPE_CLAMP for two reasons: ``hardware_for_role`` holds exactly one product per role,
 # and — like the seam-clamp pair above — the deciding question is HOW THE PART REACHES THE
 # BUILDING. A ring that mounts on a seam and a strap that penetrates a panel are different

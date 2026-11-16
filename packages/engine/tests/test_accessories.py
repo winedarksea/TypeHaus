@@ -390,11 +390,11 @@ def test_catlin_vent_routes_up_out_up_to_above_roof(catlin_model) -> None:
 
     assert len(chases) == len(terms) == 2  # radon + plumbing vent
     assert len(outs) == 2 * _PIPE_SWEEP_BANDS  # each horizontal jog is one swept stack
-    exit_z = ft(23, 10).meters
+    exit_z = ft(23, 8).meters
     jog_z = ft(19, 6).meters
     # ** THE CHASE STOPS AT THE JOG, AND -CHASE2 CARRIES ON ABOVE IT. **
     # The riser rises from below grade at x=1'-0" as it always did, but the attic's 6:12
-    # roof underside there is 20'-8 1/4" — it cannot reach the 23'-10" wall exit at that
+    # roof underside there is 20'-8 1/4" — it cannot reach the 23'-8" wall exit at that
     # station. `VentRun.chase_offset` steps it east inside FS-ATTIC's I-joist band (through
     # the webs) and it stands up again further along. No roof penetration, and the chase
     # itself does not move through any storey below.

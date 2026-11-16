@@ -40,4 +40,4 @@ def test_catlin_passes_both_fan_subparts(catlin_ctx) -> None:
     messages = " ".join(f.message for f in found)
     assert "ED-A-RADON-RC powers VR-M-STACK's future fan on CKT-RC-ATTIC" in messages
     assert "GFCI-protected" in messages
-    assert "clear cylinder from 23'-10.0\"" in messages
+    assert "clear cylinder from 23'-8.0\"" in messages

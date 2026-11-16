@@ -1395,16 +1395,12 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "SL2 #14 Bi-Met 300" = { low = 0.45, high = 0.90 }  # 374 ea sidelap stitch
 # The through-panel pipe straps that replaced the CanDuit rings on the two roof leaders (#13,
 # 4.0" OD) and the north-gable vent riser (#11, 3.5" OD). A commodity 316 stainless two-hole
-# strap on a moulded standoff block, ~$2-4 the pair of holes; the range is per POINT and
-# includes the two T09150HWAM screws it takes, which are NOT separately counted in the panel
-# rows above — those are derived from the panel grid, and a strap point is not on it.
-#
-# Roughly a fifth of the $15-22/point the ring-plus-clamp assembly cost. That saving is the
-# consequence of the cladding change, not its justification: on a wall already penetrated
-# 1,164 times (3,098 when this was written; the north and south elevations went concealed on
-# 2026-08-31), a non-penetrating fixing has nothing left to protect. Both strapped runs are
-# on PBR walls and neither moved.
-"SS316-STANDOFF-STRAP #11" = { low = 2.5, high = 4.5 }  # 3 ea — vent riser
+# strap, ~$2-4. Per POINT the row is meant to cover the strap, a laminated 5" cellular-PVC
+# block, two 6" 316 through-screws and sealant (plan/mep_venting.py VENT_CLAMPS, 2026-11-15).
+# ** UNDERSTATED: ** this range was set for a strap and two T09150HWAM screws; it does not
+# cover the 5" block and two 6" 316 screws as well. Not re-researched — re-price it.
+# The #11 points are on W-A-N2, BBD75 board-and-batten, screwed through a panel flat.
+"SS316-STANDOFF-STRAP #11" = { low = 2.5, high = 4.5 }  # 4 ea — two vent/radon pipes on W-A-N2
 # RESEARCHED 2026-09-02 — the twelve wedge anchors holding the three heat-pump ground stands
 # down to their pads: eight to SL-SG-HPPAD (params/sunken_garden.py::HP_STAND_ANCHORS) and,
 # since 2026-09-04, four to SL-M-HP3PAD (params/hp3_pad.py::HP3_STAND_ANCHORS), the north-

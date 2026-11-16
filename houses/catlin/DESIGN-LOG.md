@@ -8242,6 +8242,25 @@ unfed `ED-A-NEMA-JB` and the PV backfeed box), and 5.D was not graded.
   strap, below the ~26'-1" wall top. It is a tall-ladder or lift job at ~24', which is
   accepted for a fan that may never be fitted.
 
+**Amendment, 2026-11-15: the four straps made buildable.** Checked against the model, the
+2026-11-12 straps could not be built:
+
+- **The top straps hit the rake trim.** Centred on the rake nailer, a level two-hole strap's
+  west screw and its block passed through the 52126XX trim leg; its hem (254.70" + x/2) was
+  0.95" over each strap centre. Now each sits on a **raked-top block**: 5" wide, top cut 6:12
+  and held 1/4" under the hem, two through-screws on a line parallel to the rake 1" over the
+  nailer bottom. Straps move down 2" (302.5" / 309.5").
+- **The lower straps sat on the elbow hub.** 289.75" was 3.75" over the elbow centre; a 3"
+  quarter bend's hub reaches ~4". The exit drops 23'-10" -> **23'-8"**, so the hub top is
+  ~288" and the strap band clears it by ~1.4" (centre-to-hub to confirm on the fitting
+  delivered). Fan space is now 23'-8"..26'-8".
+- **Spec.** W-A-N2 is BBD75 board-and-batten, not PBR: blocks go on a panel flat and are
+  **5"** (laminated cellular PVC) to hold the 4 1/4" off the batten crowns, through-fixed
+  with **6" 316** screws, not T09150HWAM. Strap markers moved to the pipe centre (y 444.7").
+  The library strap record no longer names fixings; the house sizes them.
+- **Paint.** Both exterior PVC legs take exterior water-based latex (IAPMO IS 9 / Charlotte
+  Pipe UV guidance), never oil-based.
+
 ## Foundation coating: darkest stock colour (2026-11-12, owner)
 
 Use Styro Industries Tuff II **Concrete Grey**, the darker of Styro's two stock colours

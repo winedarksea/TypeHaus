@@ -1097,8 +1097,8 @@ PV_JBOX = [
                          wall_ref="W-A-N2B", face="right", distance_from_start=inch(94),
                          normal_gap=inch(0.75), rotation_offset=deg(-180)))),
 ]
-# ** THERE IS NO CN-A-PV-CLAMP. ** W-A-N2 wears `pbr-panel-24`, an exposed-fastener panel
-# with no seam, so a seam clamp there is uninstallable. The box screws to a PVC block that
+# ** THERE IS NO CN-A-PV-CLAMP. ** W-A-N2 is BBD75 board-and-batten, with no seam to
+# clamp, so a seam clamp there is uninstallable. The box screws to a PVC block that
 # is screwed through a panel flat into the 22'-0" girt course, inside the field-grid count.
 #
 # NOT to be confused with the 72 S-5-PVKIT clamps in params/solar.py: those are on the

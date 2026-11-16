@@ -578,7 +578,7 @@ ATTIC_DEVICES = [
 #   * A WR GFCI receptacle under an in-use cover, not a blank box. A radon fan comes with a
 #     cord; the outlet is its GFCI (NEC 210.8(F), outdoors) and its disconnect in one, on a
 #     15 A device to match the 15 A breaker (210.21(B)(3)).
-#   * W-A-N2, centre x=8'-10", below the radon leg's 23'-10" elbow and so below the fan's
+#   * W-A-N2, centre x=8'-10", below the radon leg's 23'-8" elbow and so below the fan's
 #     24" x 3' space (graded, subp. 5.D). East along the same course, 2" apart: ED-A-PV-SPD,
 #     then ED-A-PV-JB.
 #   * GABLE ENCLOSURE MOUNTING (all three): a 3/4" cellular-PVC block, 1" larger than the
@@ -604,9 +604,9 @@ NEMA_CLAMP = []
 # --- Downspout securement: through-panel straps on the PBR siding ---------------------
 # The two roof leaders (params/roof_trim.py, TR-RF-LEADER-W/E) run ~24' down the north end
 # of the west/east faces, steadied — NOT supported — by a two-hole 316 stainless pipe strap
-# on a standoff block, screwed through the panel into the girt behind with two of the same
-# gasketed T09150HWAM screws the panel itself is hung on (library/hardware/,
-# THROUGH_PANEL_PIPE_STRAP; same hardware as CN-M-VENT-CLAMP1..3).
+# on a standoff block, screwed through the panel into the girt behind with 316 screws sized
+# through the block into the girt (library/hardware/, THROUGH_PANEL_PIPE_STRAP; same strap
+# as CN-M-VENT-CLAMP1/2 and CN-M-RADON-CLAMP1/2).
 #
 # ** This is not a downgrade from an S-5! CanDuit #13 ring on a seam clamp — it is the only
 # thing that can work. ** The CanDuit's entire value is

@@ -144,11 +144,12 @@ KBS1Z_KNEE_BRACE_EQUAL_WIDTH = StructuralHardware(
     ),
 )
 
-# The strap that carries a round pipe on an exposed-fastener panel. The CanDuit ring above
-# cannot serve here: it mounts on a seam clamp by its M8 shaft (``requires_role``), and a
-# PBR wall has no seam to clamp. This one reaches the building the other way — two panel
-# screws straight through the panel flat into the girt — so it declares no ``requires_role``
-# and brings its own fixings instead of a bracket.
+# The strap that carries a round pipe on a seamless panel: exposed-fastener (PBR) or the flat
+# of a concealed-fastener board-and-batten. The CanDuit ring above cannot serve here: it
+# mounts on a seam clamp by its M8 shaft (``requires_role``), and neither panel has a seam.
+# This one reaches the building the other way — screws through its block and the panel flat
+# into the girt — so it declares no ``requires_role``. The screws are the house's, sized to
+# its block depth.
 #
 # The standoff block is what makes it legal on a ribbed panel: without it the strap would
 # bear on the rib crowns and either crush them or hold the pipe off the wall unevenly.
@@ -159,11 +160,12 @@ THROUGH_PANEL_PIPE_STRAP = StructuralHardware(
     manufacturer="generic",
     model="SS316-STANDOFF-STRAP",
     source="generic Type 316 stainless two-hole pipe strap on a moulded standoff block, "
-           "sized on pipe OUTER diameter the way the CanDuit ring is; fixed with two "
-           "T09150HWAM gasketed panel screws per point. No single manufacturer system is "
-           "specified, so this record is deliberately generic. The block's depth is not "
-           "part of the record: a house states what its pipe must stand off, and the "
-           "screw length that depth needs",
+           "sized on pipe OUTER diameter the way the CanDuit ring is; screwed through the "
+           "block and an exposed-fastener panel or a concealed-fastener flat into the "
+           "framing. No single manufacturer system is specified, so this record is "
+           "deliberately generic. Neither the block's depth nor its screws are part of the "
+           "record: a house states what its pipe must stand off, and the screws that "
+           "depth needs",
 )
 
 # Multiwall polycarbonate is fastened through oversize holes so the sheet can move: the
