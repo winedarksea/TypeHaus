@@ -190,11 +190,12 @@ ROLE_PV_SEAM_CLAMP = "pv_seam_clamp"
 # says "clamp" without saying which ring is not orderable.
 ROLE_PIPE_CLAMP = "pipe_clamp"
 # The strap that holds that same round pipe against a seamless panel (exposed-fastener, or a
-# concealed-fastener flat), by screwing through it into the framing behind. Its own role rather than a second product on
-# ROLE_PIPE_CLAMP for two reasons: ``hardware_for_role`` holds exactly one product per role,
-# and — like the seam-clamp pair above — the deciding question is HOW THE PART REACHES THE
-# BUILDING. A ring that mounts on a seam and a strap that penetrates a panel are different
-# products for different claddings, and neither one can be substituted for the other on site.
+# concealed-fastener flat), by screwing through it into the framing behind. Its own role rather than
+# a second product on ROLE_PIPE_CLAMP for two reasons: ``hardware_for_role`` holds exactly one
+# product per role, and — like the seam-clamp pair above — the deciding question is HOW THE PART
+# REACHES THE BUILDING. A ring that mounts on a seam and a strap that penetrates a panel are
+# different products for different claddings, and neither one can be substituted for the other on
+# site.
 ROLE_THROUGH_PANEL_PIPE_STRAP = "through_panel_pipe_strap"
 # A beam strapped down to the post it seats on. Its own role, not ROLE_KNEE_BRACE: a role
 # holds exactly one catalogued item (``hardware_for_role`` raises otherwise), and the KBS

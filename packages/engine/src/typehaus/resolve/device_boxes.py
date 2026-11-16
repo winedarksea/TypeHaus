@@ -9,7 +9,10 @@ host face over the device's own band, read outermost layer first:
   may be no deeper than the cavity (``electrical.box_fill`` grades it);
 * a flush box an authored raceway reaches (``ConduitRun.to_ref``/``from_ref``, or a floor
   heat's ``thermostat_ref``) → ``flush_raceway``;
-* cladding outermost (an exterior face) → no box: the type carries its own weatherproof one.
+* cladding outermost (an exterior face) → no box: the type carries its own weatherproof one;
+* a ``recessed_into_host_surface`` device inside a blind ``RoughOpening`` (a pocket) →
+  ``surface`` on the recess plane (finish face + the attachment's ``normal_gap``): the box
+  screws to the pocket's back and the device stands on its cover.
 
 A row may name a ``use``: a light takes the ``"luminaire"`` row, and a type may ask for its
 own (``box_use="recessed"``); with none, the general row serves. A flush box whose host stack
@@ -57,6 +60,7 @@ class BoxPlan:
     cavity_m: float | None  # flush: depth of the cavity behind the finish
     host_layer: str
     air_barrier: bool = False  # the box breaches an air-control membrane
+    recess_m: float = 0.0  # a pocket box: how far behind the finish face its back sits
 
 
 @dataclass(frozen=True)
@@ -118,6 +122,8 @@ class ResolvedDeviceBox:
     plate_size_m: tuple[float, float] | None = None  # (width, height)
     plate_thickness_m: float = 0.0
     plate_footprint: tuple[tuple[float, float], ...] = ()
+    #: A pocket box (``BoxPlan.recess_m``): fed from the framing beside it, so no NM drop.
+    recess_m: float = 0.0
 
 
 def boxes_by_device(model: ResolvedModel) -> dict[str, ResolvedDeviceBox]:
@@ -285,14 +291,22 @@ def plan_box(model: ResolvedModel, item: Any, product_type: Any | None,
     wall = model.wall(attachment.wall_ref)
     if standard is None or wall is None:
         return None
+    gangs = gang_count(product_type)
+    use = box_use(item, product_type)
+    pocket = _pocket(model, wall, item, attachment, band)
+    if pocket is not None:
+        row = standard.row_for("surface", gangs, use)
+        if row is None:
+            return None
+        projection = row.box_size[2].meters + row.cover_rise.meters
+        return BoxPlan("surface", gangs, row, projection, None, pocket,
+                       recess_m=-attachment.normal_gap.meters)
     host = _host(model, _face_layers(wall, face_frame(wall, attachment, band), band))
     if host is None:
         return None
     mounting, cavity, layer, air = host
     if mounting == "flush" and item.tag in reached:
         mounting = "flush_raceway"
-    gangs = gang_count(product_type)
-    use = box_use(item, product_type)
     # An air-sealed row for the device's own use ("air-sealed-luminaire-round"), else the plain one.
     sealed = air and next((r for want in (f"{AIR_SEALED}-{use}" if use else None, AIR_SEALED)
                            for r in standard.rows if want and r.mounting == mounting
@@ -303,6 +317,23 @@ def plan_box(model: ResolvedModel, item: Any, product_type: Any | None,
     width, _height, depth = (part.meters for part in row.box_size)
     projection = depth + row.cover_rise.meters if mounting == "surface" else 0.0
     return BoxPlan(mounting, gangs, row, projection, cavity, layer, air)
+
+
+def _pocket(model: ResolvedModel, wall: Any, item: Any, attachment: Any,
+            band: Band) -> str | None:
+    """The blind rough opening a recessed device stands in, by tag, or None."""
+    if not item.mount.recessed_into_host_surface or attachment.normal_gap.meters >= 0:
+        return None
+    station = attachment.distance_from_start.meters
+    for opening in model.openings:
+        if (opening.host_wall != wall.tag or opening.kind != "rough_opening"
+                or not opening.depth_m):
+            continue
+        z0 = wall.base_ref_z_m + opening.sill_m
+        if (abs(station - opening.center_along_m) <= opening.width_m / 2
+                and z0 <= band[0] and band[1] <= z0 + opening.height_m):
+            return opening.tag
+    return None
 
 
 def _derive_block(model: ResolvedModel, wall: Any, tag: str, profile: str,

@@ -21,8 +21,8 @@ rows in `plan/device_boxes.py` (`resolve/device_banks.py`).
   - ED-M-FIRE-RC is a RACO 674 handy box (16.5 in³) on the pocket's back under a RACO 862
     Decora/GFCI cover (owner, 2026-11-16). The cover is the faceplate (`plate_included`).
     Its nominal width, 2 5/16", fits the 2 3/8" strip with 1/32" a side. Hubbell's table
-    reads 2.425", so measure the cover on delivery. The model draws the box flush in the stud
-    layer, not on the pocket's back. The pocket cannot widen: at 34" its kings butt
+    reads 2.425", so measure the cover on delivery. The box is drawn on the pocket's back
+    (a recessed device in a blind RO takes a surface box there). The pocket cannot widen: at 34" its kings butt
     WIN-M-LIV-E1/E2's, and at 36" the header takes FO-A-STAIR's trimmer point.
 - **Banks.**
   - 10 banks snap to 1 13/16" pitch: a 4-gang (BH464A) on W-M-C1, 3-gangs (BH353A) on W-M-C3, W-M-MUDC-E and W-G-S, and six 2-gangs.
@@ -113,8 +113,6 @@ visible margin round every Lever Edge, GFCI and Decora Smart device.
 
 ## 4. Open / verify
 
-- **`advisory.wall_plate_clearance` does not read posts or columns.** The 3D overlap check
-  found the problem at ED-S-SUITE-RC4.
 - **E5825 rear projection** is not drawn (only E5325/E5601). 0.88 is provisional.
 - **T6525 (guide light) and DVELV-300P**: no manufacturer dimensions found.
 - **MA-T51**: Lutron's current sheet is the MA-T51MNB (neutral required); no sheet

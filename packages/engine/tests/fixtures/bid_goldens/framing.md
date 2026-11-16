@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 70973f959092ee75  
+**Model hash:** 4efdd57e5f3b7b2b  
 **Lines:** 256
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
@@ -122,7 +122,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 3/4" plywood subfloor, 3/4" stair subdeck (plywood-subfloor:stair subdeck) | 1 | sheets 4x8 | 1 sheets 4x8 over 29.6 SF net | building |
 | 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | 112 | sheets 4x8 | 112 sheets 4x8 over 3560.4 SF net | building |
 | Structural 1 plywood, 7/8" bearing stiffener rip (struct-1-plywood:bearing stiffener rip) | 3 | sheets 4x8 | 3 sheets 4x8 over 71.0 SF net | building |
-| Structural 1 plywood, 3/8" buck rip (struct-1-plywood:buck rip) | 16 | sheets 4x8 | 16 sheets 4x8 over 407.3 SF net | building |
+| Structural 1 plywood, 3/8" buck rip (struct-1-plywood:buck rip) | 16 | sheets 4x8 | 16 sheets 4x8 over 406.1 SF net | building |
 | Structural 1 plywood, 19/32" roof (struct-1-plywood:roof) | 28 | sheets 4x8 | 28 sheets 4x8 over 882.8 SF net | building |
 | Trex Enhance Basics composite decking, Tide Pool (square edge), 15/16" subfloor (trex-enhance-basics:subfloor) | 6 | sheets 4x8 | 6 sheets 4x8 over 168.9 SF net | building |
 

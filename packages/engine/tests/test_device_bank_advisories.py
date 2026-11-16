@@ -32,11 +32,11 @@ def _box(tags=("S1", "S2"), **over):
     return NS(**{**base, **over})
 
 
-def _ctx(boxes, objects=(), standard=None, wall_len=3.0):
+def _ctx(boxes, objects=(), standard=None, wall_len=3.0, solids=()):
     wall = NS(axis=((0.0, 0.0), (wall_len, 0.0)))
     elements = [standard] if standard else []
     return NS(model=NS(device_boxes=boxes, canvas_objects=list(objects), door_casings=[],
-                       wall=lambda tag: wall),
+                       solids=list(solids), wall=lambda tag: wall),
               plan=NS(all_elements=lambda: elements))
 
 
@@ -62,6 +62,10 @@ def test_plate_clearance_names_the_cabinet_and_a_standard_plate_that_clears():
     assert clear.result is Result.PASS
     (end,) = wall_plate_clearance(_ctx([_box()], wall_len=1.2))
     assert "end of W" in end.message
+    post = NS(tag="POST", category="column", storey="L1", z0_m=0.0, z1_m=3.0,
+              outline=((1.25, -0.1), (1.4, -0.1), (1.4, 0.01), (1.25, 0.01)))
+    (hit,) = wall_plate_clearance(_ctx([_box()], solids=[post]))
+    assert hit.result is Result.ADVISORY and "POST" in hit.message
 
 
 def test_box_fill_counts_each_member_at_its_gauge_and_the_grounds_once():

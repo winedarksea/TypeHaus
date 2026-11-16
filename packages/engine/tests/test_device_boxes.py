@@ -36,6 +36,15 @@ def test_mounting_follows_the_host_face(catlin_model_ro):
     assert min(reach) == pytest.approx(0.0, abs=1e-6)
 
 
+def test_pocket_box_sits_on_the_recess_back_and_takes_no_drop(catlin_model_ro):
+    fire = _box(catlin_model_ro, "ED-M-FIRE-RC")  # recessed 6" into AO-M-FIRE-NICHE
+    assert (fire.mounting, fire.host_layer) == ("surface", "AO-M-FIRE-NICHE")
+    back = [(x - fire.face_point[0]) * fire.normal[0] + (y - fire.face_point[1]) * fire.normal[1]
+            for x, y in fire.footprint]
+    assert (min(back), max(back)) == pytest.approx((0.0, 2.125 * M_PER_IN))
+    assert "ED-M-FIRE-RC-DROP" not in {run.tag for run in catlin_model_ro.conduits}
+
+
 def test_box_fill_oracle():
     # RC2 quad, surface 2-gang, through-fed 12 AWG: 2x2 + 2x2 + 1 = 9 x 2.25 = 20.25 in3.
     assert required_volume_in3(12, 1, False, 2) == pytest.approx(20.25)

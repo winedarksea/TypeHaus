@@ -93,6 +93,8 @@ def _member(model: ResolvedModel, pending: PendingBox) -> _Member:
     attachment = pending.item.location.attachment
     wall = model.wall(attachment.wall_ref)
     point, tangent, normal = face_frame(wall, attachment, pending.band)
+    recess = pending.plan.recess_m  # a pocket box sits on the recess plane, not the face
+    point = (point[0] - normal[0] * recess, point[1] - normal[1] * recess)
     return _Member(pending, point, tangent, normal, point[0] * tangent[0] + point[1] * tangent[1],
                    (pending.band[0] + pending.band[1]) / 2, gang_count(pending.product_type))
 
@@ -237,7 +239,7 @@ def _place(model: ResolvedModel, bank: list[_Member], plan: BoxPlan, standard: B
         plate_product=plate.product_ref if plate else None,
         plate_family=plate.family if plate else None,
         plate_size_m=tuple(p.meters for p in plate.size) if plate else None,
-        plate_thickness_m=thick, plate_footprint=plate_ring))
+        plate_thickness_m=thick, plate_footprint=plate_ring, recess_m=plan.recess_m))
     model.solids.append(ResolvedSolid(
         uid=f"{item.uid}-box", tag=f"{item.tag}-BOX", storey=lead.pending.storey,
         category="electrical_box", outline=list(ring), z0_m=z0, z1_m=z1,

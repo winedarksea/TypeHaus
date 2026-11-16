@@ -254,7 +254,8 @@ BOX_STANDARD = [
                    box_product_ref="PROD-ARLINGTON-DVFR1W",
                    box_size=(inch(4.2), inch(6.698), inch(3.875)), box_volume_in3=21.0,
                    block_profile="2x4", plate_included=True),
-            BoxRow(mounting="flush", gangs=1, use="handy", box_product_ref="PROD-RACO-674",
+            # A pocket box: surface on the pocket's back (resolve/device_boxes._pocket).
+            BoxRow(mounting="surface", gangs=1, use="handy", box_product_ref="PROD-RACO-674",
                    cover_product_ref="PROD-RACO-862",
                    box_size=(inch(2.125), inch(4), inch(2.125)), box_volume_in3=16.5,
                    internal_clamps=False, plate_included=True),

@@ -2,8 +2,8 @@
 
 ``advisory.device_bank`` lists each bank of two or more devices: members, the snap each
 took, its box and plate. ``advisory.wall_plate_clearance`` reads each derived plate's plan
-ring and z band against the wall's ends, door casings, bodies and other plates; a clash that
-a ``standard`` plate of the same openings would clear says so.
+ring and z band against the wall's ends, door casings, bodies, columns (posts) and other
+plates; a clash that a ``standard`` plate of the same openings would clear says so.
 """
 
 from __future__ import annotations
@@ -18,6 +18,7 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, advisory
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.box_members import box_members
+from typehaus.resolve.solid_categories import SOLID_CATEGORIES
 
 BANK_ID = "advisory.device_bank"
 CLEAR_ID = "advisory.wall_plate_clearance"
@@ -108,6 +109,14 @@ def _clashes(ctx: CheckContext, box: Any, ring: list[tuple[float, float]],
                   and obj.body_z0_m <= band[0] + 1e-4 and obj.body_z1_m >= band[1] - 1e-4)
         if not inside and grown.intersection(body).area > _EPS_M2:
             out.append(obj.tag)
+    # A post or column (a timber standing in the stud line, a steel column) is never meant.
+    for solid in getattr(model, "solids", ()):
+        row = SOLID_CATEGORIES.get(solid.category)
+        if (row is None or row.ifc_class != "IfcColumn" or solid.storey != box.storey
+                or solid.z0_m >= band[1] or solid.z1_m <= band[0] or len(solid.outline) < 3):
+            continue
+        if grown.intersection(Polygon(solid.outline)).area > _EPS_M2:
+            out.append(solid.tag)
     for other, other_poly, other_band in others:
         if (other is not box and other.storey == box.storey
                 and other_band[0] < band[1] and other_band[1] > band[0]
@@ -118,7 +127,7 @@ def _clashes(ctx: CheckContext, box: Any, ring: list[tuple[float, float]],
 
 @check(Tier.ADVISORY, CLEAR_ID)
 def wall_plate_clearance(ctx: CheckContext) -> list[Finding]:
-    """Each wall plate against its wall's ends, door casings, bodies and neighbouring plates."""
+    """Each wall plate against its wall's ends, casings, bodies, columns and neighbouring plates."""
     plated = [b for b in sorted(ctx.model.device_boxes, key=lambda b: b.device_tag)
               if b.plate_product and len(b.plate_footprint) >= 3 and b.plate_size_m]
     if not plated:
@@ -145,4 +154,4 @@ def wall_plate_clearance(ctx: CheckContext) -> list[Finding]:
                       f"{height / M_PER_IN:.2f}\") runs into {', '.join(dict.fromkeys(hits))}; "
                       f"{hint}", (*_tags(box), box.wall_tag), Result.ADVISORY, fix=hint))
     return out or [passed(CLEAR_ID, f"{len(plated)} wall plate(s) clear their wall's ends, "
-                                    "casings, bodies and each other")]
+                                    "casings, bodies, columns and each other")]

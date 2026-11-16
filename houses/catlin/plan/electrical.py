@@ -910,6 +910,8 @@ MAIN_EQUIPMENT = [
     # cannot widen: at 34" its kings already butt WIN-M-LIV-E1/E2's, and a wider header takes
     # FO-A-STAIR's trimmer point. So a RACO 674 handy box screws to the pocket's back under a
     # RACO 862 cover, nominal 2 5/16" wide (owner, 2026-11-16). Measure the cover on delivery.
+    # normal_gap is the pocket's 6" depth (AO-M-FIRE-NICHE), so the box is drawn on its back
+    # and the device on the box's cover, 2 1/8" proud of it.
     ElectricalDevice(uid="XT154MCCPT", tag="ED-M-FIRE-RC", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20-HANDY",
                      circuit="CKT-FIREPLACE", room="RM-M-LIVING",
@@ -917,7 +919,7 @@ MAIN_EQUIPMENT = [
                                  recessed_into_host_surface=True),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-E1", face="left",
-                         distance_from_start=inch(72.25), normal_gap=inch(-6.625),
+                         distance_from_start=inch(72.25), normal_gap=inch(-6),
                          rotation_offset=deg(-180)))),
 ]
 
@@ -2690,7 +2692,7 @@ NEC_FILL_SECOND = [
                          wall_ref="W-S-PS1", face="left", distance_from_start=inch(104),
                          normal_gap=inch(0), rotation_offset=deg(180)))),
     # RC4's box sits against the stud at y=12'-1 1/2" (2026-11-16): at y=12'-11 7/8" box and
-    # plate stood inside P-S-TUDOR1, which the plate-clearance advisory does not read.
+    # plate stood inside P-S-TUDOR1 (advisory.wall_plate_clearance reads columns now).
     ElectricalDevice(uid="NEC044AAAA", tag="ED-S-SUITE-RC4", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20",
                      circuit="CKT-RC-SECOND",

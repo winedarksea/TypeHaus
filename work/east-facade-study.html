@@ -1,0 +1,85 @@
+<div id="east-facade-study">
+  <style>
+    #east-facade-study { display: grid; gap: calc(var(--font-size-base) * .75); color: var(--foreground); }
+    #east-facade-study .facade-drawing { width: 100%; display: block; }
+    #east-facade-study .end-labels { display: flex; justify-content: space-between; }
+    #east-facade-study .study-note { min-height: calc(var(--font-size-base) * 3); }
+  </style>
+  <div class="viz-controls">
+    <label class="form-label" for="east-facade-choice">Elevation option
+      <select class="form-select" id="east-facade-choice">
+        <option value="current">Current layout</option>
+        <option value="north">Larger northeast bedroom window</option>
+        <option value="split">Larger northeast window + divided picture</option>
+        <option value="columns">Dining pair + matching bedroom columns</option>
+      </select>
+    </label>
+  </div>
+  <div class="end-labels text-small"><span>South · balcony end</span><span>North · kitchen end</span></div>
+  <svg class="facade-drawing" role="img" aria-labelledby="east-study-title east-study-description">
+    <title id="east-study-title">East elevation window layout comparison</title>
+    <desc id="east-study-description">Orthographic concept drawing of the 36-foot east wall. Window geometry follows rough openings. Roof, garage, cladding and trim are omitted. Proposed alternatives have not undergone a complete framing or code review.</desc>
+    <g id="east-facade-geometry"></g>
+  </svg>
+  <div class="study-note text-small" id="east-facade-detail" aria-live="polite"></div>
+  <div class="text-small text-muted">36′ wall · rough-opening geometry · concept study</div>
+  <script>
+    (() => {
+      const root = document.getElementById('east-facade-study');
+      const select = root.querySelector('#east-facade-choice');
+      const svg = root.querySelector('.facade-drawing');
+      const geometry = root.querySelector('#east-facade-geometry');
+      const detail = root.querySelector('#east-facade-detail');
+      const notes = {
+        current: 'Current: upper centers 4′, 13′-4″, 22′-8″, 34′. Lower centers 4′, 10′-8″, 18′, 34′.',
+        north: 'Northeast bedroom: 27½ × 36″ at 33′-4″; nominal sill 48″, head 84″. Other openings stay. The kitchen window below is 8″ farther north.',
+        split: 'Same northeast change; dining becomes two fixed lights inside the existing 63 × 48″ opening. The center division is schematic; supplier mull design required.',
+        columns: 'Dining: two 27½ × 48″ openings at 16′ and 20′. Bedroom 1 moves 32″ north; bedroom 2 moves 32″ south. Nominal wall between dining openings: 20½″.'
+      };
+      function valid(value) { return Object.hasOwn(notes, value) ? value : 'current'; }
+      function draw() {
+        const width = Math.max(280, root.clientWidth);
+        const inset = 10;
+        const scale = (width - inset * 2) / 432;
+        const top = 8;
+        const height = 228 * scale + top * 2;
+        svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+        svg.setAttribute('height', height);
+        const shapes = [];
+        const xx = value => inset + value * scale;
+        const yy = value => top + (228 - value) * scale;
+        const rect = (x, y, w, h, attrs) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" ${attrs}/>`;
+        shapes.push(rect(xx(0), yy(228), 432 * scale, 228 * scale, 'fill="var(--background)" stroke="var(--border)" stroke-width="1"'));
+        shapes.push(`<line x1="${xx(0)}" x2="${xx(432)}" y1="${yy(120)}" y2="${yy(120)}" stroke="var(--border)" stroke-width="1" stroke-dasharray="3 5"/>`);
+        let lower = [[48, 27.5, 48, 34.28125], [128, 27.5, 48, 34.28125], [216, 63, 48, 34.28125], [408, 14, 24, 42]];
+        let upper = [[48, 27.5, 48, 156], [160, 27.5, 48, 156], [272, 27.5, 48, 156], [408, 14, 24, 168]];
+        if (select.value === 'north' || select.value === 'split') upper[3] = [400, 27.5, 36, 168];
+        if (select.value === 'columns') {
+          lower = [lower[0], lower[1], [192, 27.5, 48, 34.28125], [240, 27.5, 48, 34.28125], lower[3]];
+          upper[1][0] = 192;
+          upper[2][0] = 240;
+        }
+        if (select.value === 'columns') {
+          for (const axis of [48, 192, 240, 408]) shapes.push(`<line x1="${xx(axis)}" x2="${xx(axis)}" y1="${yy(218)}" y2="${yy(15)}" stroke="var(--muted-foreground)" stroke-width="1" stroke-dasharray="2 5" opacity="0.4"/>`);
+        }
+        for (const [center, w, h, sill] of [...lower, ...upper]) {
+          shapes.push(rect(xx(center-w/2), yy(sill+h), w*scale, h*scale, 'fill="var(--muted)" stroke="var(--foreground)" stroke-width="3"'));
+          if (select.value === 'split' && w === 63) shapes.push(`<line x1="${xx(center)}" x2="${xx(center)}" y1="${yy(sill)}" y2="${yy(sill+h)}" stroke="var(--foreground)" stroke-width="${4*scale}"/>`);
+        }
+        geometry.innerHTML = shapes.join('');
+        detail.textContent = notes[select.value];
+      }
+      select.value = valid(window.openai?.widgetState?.modelContent?.option);
+      select.addEventListener('change', () => {
+        draw();
+        window.openai?.setWidgetState({modelContent: {option: select.value}, privateContent: null}).catch(() => {});
+      });
+      window.addEventListener('openai:set_globals', event => {
+        const saved = event.detail?.globals?.widgetState;
+        if (saved) { select.value = valid(saved.modelContent?.option); draw(); }
+      });
+      new ResizeObserver(draw).observe(root);
+      draw();
+    })();
+  </script>
+</div>

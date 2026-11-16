@@ -366,19 +366,19 @@ BAR_REFRIGERATOR_CUBE = BAR_REFRIGERATOR_CUBE_19
 
 # --- the hood and the disposer (owner 2026-10-22) ---------------------------------------
 # The hood is Broan's BWP1 canopy (spec sheet 99529070D): 29 1/2" W x 19 11/16" D x 9 11/16"
-# body; the 8 3/4" x 6 3/4" chimney cover is modelled at its 40 3/8" maximum extension.
-# At the 66" mount its top is 1 5/8" below the 9' ceiling. The disposer's 11 1/2"
-# body hangs from the same sink flange as the 12 1/2"
-# class did, so its placement rises 1" (plan/kitchen_casework.py).
+# body; the 8 3/4" x 6 3/4" chimney cover telescopes 25 3/8"-40 3/8" overall. At the 66"
+# mount CEIL-RM-M-LIVING's underside is 106" up, so it is drawn at 39 3/4", 1/4" under it.
+# The disposer's 11 1/2" body hangs from the same sink flange as the 12 1/2" class did, so
+# its placement rises 1" (plan/kitchen_casework.py).
 BROAN_HOOD_30 = HOOD_RECIRC.model_copy(update={
     "tag": "APPL-BROAN-BWP1304SS", "name": 'Broan BWP1304SS 30" chimney hood, ductless kit',
     "product_ref": "PROD-BROAN-BWP1304SS",
-    "footprint": (inch(29.5), inch(19.6875)), "height": inch(40.375),
+    "footprint": (inch(29.5), inch(19.6875)), "height": inch(39.75),
     "model_representation": ModelRepresentation(symbol="broan-bwp1304ss-recirculating"),
     "source": ("Broan BWP1304SS with the ARKBWP non-duct kit (plan/products.py). BWP1 series "
                "spec sheet 99529070D: 29 1/2 W x 19 11/16 D, 9 11/16 canopy body; chimney "
-               "8 3/4 x 6 3/4, modelled at 40 3/8 overall with upper side return grilles; "
-               "25 3/8-40 3/8 telescopic range. Controls and filter mesh representative."),
+               "8 3/4 x 6 3/4, drawn at 39 3/4 overall (to the ceiling) with upper side return "
+               "grilles; 25 3/8-40 3/8 telescopic range. Controls and filter mesh representative."),
 })
 BADGER_5 = DISPOSAL.model_copy(update={
     "tag": "APPL-ISE-BADGER5", "name": "InSinkErator Badger 5 disposer, 1/2 HP",

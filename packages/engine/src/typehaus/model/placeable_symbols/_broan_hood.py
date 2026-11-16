@@ -11,6 +11,7 @@ from typehaus.model.placeable_symbols._mesh import mesh_part, outward
 
 WIDTH_IN = 29.5
 DEPTH_IN = 19.6875
+MIN_HEIGHT_IN = 25.375  # chimney fully collapsed
 MAX_HEIGHT_IN = 40.375
 CANOPY_HEIGHT_IN = 9.6875
 FASCIA_HEIGHT_IN = 1.375
@@ -23,9 +24,14 @@ RETURN_SLOT_COUNT = 9
 
 
 def broan_recirculating_hood(width: float, depth: float, height: float) -> Geometry:
-    """Scale the manufacturer's extended-cover configuration to the declared envelope."""
-    canopy_top = height * CANOPY_HEIGHT_IN / MAX_HEIGHT_IN
-    fascia_top = height * FASCIA_HEIGHT_IN / MAX_HEIGHT_IN
+    """The canopy keeps its height; the telescopic chimney takes the rest of ``height``.
+
+    Below the collapsed 25 3/8" the whole body scales down instead.
+    """
+    inch = 0.0254
+    scale = min(1.0, height / (MIN_HEIGHT_IN * inch))
+    canopy_top = CANOPY_HEIGHT_IN * inch * scale
+    fascia_top = FASCIA_HEIGHT_IN * inch * scale
     flue_width = width * FLUE_WIDTH_IN / WIDTH_IN
     flue_depth = depth * FLUE_DEPTH_IN / DEPTH_IN
     flue_center_y = (depth - flue_depth) / 2

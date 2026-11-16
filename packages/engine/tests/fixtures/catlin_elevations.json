@@ -27,7 +27,7 @@
 "canvas_objects/APPL-M-FRIDGE/body_z1_m": 1.86755,
 "canvas_objects/APPL-M-FRIDGE/z_m": 0.02605,
 "canvas_objects/APPL-M-HOOD/body_z0_m": 1.70245,
-"canvas_objects/APPL-M-HOOD/body_z1_m": 1.9485125,
+"canvas_objects/APPL-M-HOOD/body_z1_m": 2.7121,
 "canvas_objects/APPL-M-HOOD/z_m": 1.70245,
 "canvas_objects/APPL-M-KETTLE/body_z0_m": 0.94045,
 "canvas_objects/APPL-M-KETTLE/body_z1_m": 1.21545,
@@ -734,8 +734,8 @@
 "canvas_objects/ED-M-ENTRY-SW/body_z0_m": 1.19445,
 "canvas_objects/ED-M-ENTRY-SW/body_z1_m": 1.260744,
 "canvas_objects/ED-M-ENTRY-SW/z_m": 1.19445,
-"canvas_objects/ED-M-FIRE-RC/body_z0_m": 0.68645,
-"canvas_objects/ED-M-FIRE-RC/body_z1_m": 0.752744,
+"canvas_objects/ED-M-FIRE-RC/body_z0_m": 0.668797,
+"canvas_objects/ED-M-FIRE-RC/body_z1_m": 0.770397,
 "canvas_objects/ED-M-FIRE-RC/z_m": 0.68645,
 "canvas_objects/ED-M-FRONT-RC1/body_z0_m": 0.4572,
 "canvas_objects/ED-M-FRONT-RC1/body_z1_m": 0.5334,
@@ -3483,8 +3483,8 @@
 "device_boxes/XGD2FAK54W-box/z1_m": 1.173622,
 "device_boxes/XS61VWV0BH-box/z0_m": -2.3722965,
 "device_boxes/XS61VWV0BH-box/z1_m": -2.2706965,
-"device_boxes/XT154MCCPT-box/z0_m": 0.671972,
-"device_boxes/XT154MCCPT-box/z1_m": 0.767222,
+"device_boxes/XT154MCCPT-box/z0_m": 0.668797,
+"device_boxes/XT154MCCPT-box/z1_m": 0.770397,
 "device_boxes/YJJ1BVX3AZ-box/z0_m": 4.240022,
 "device_boxes/YJJ1BVX3AZ-box/z1_m": 4.335272,
 "device_boxes/Z8RBX115XH-box/z0_m": -1.7305655,
@@ -76225,6 +76225,12 @@
 2,
 "a2d5c7b1fe3a"
 ],
+"geometry/VDGMBY3YW7-plate/body": [
+1.068847,
+1.183147,
+2,
+"faf68ee851ef"
+],
 "geometry/VHY1DXBHG2-box/body": [
 0.417972,
 0.513222,
@@ -77090,16 +77096,10 @@
 "fb43a168620f"
 ],
 "geometry/XT154MCCPT-box/body": [
-0.671972,
-0.767222,
+0.668797,
+0.770397,
 2,
-"7d29a08d5074"
-],
-"geometry/XT154MCCPT-plate/body": [
-0.657621,
-0.781573,
-2,
-"f034e8e8c5ac"
+"aa2bacd80862"
 ],
 "geometry/XTC3P8T0BG-run/body": [
 3.6894236,
@@ -121646,10 +121646,8 @@
 "solids/ED-M-DINING-SW-BOX/z1_m": 1.275222,
 "solids/ED-M-DINING-SW-PLATE/z0_m": 1.165621,
 "solids/ED-M-DINING-SW-PLATE/z1_m": 1.289573,
-"solids/ED-M-FIRE-RC-BOX/z0_m": 0.671972,
-"solids/ED-M-FIRE-RC-BOX/z1_m": 0.767222,
-"solids/ED-M-FIRE-RC-PLATE/z0_m": 0.657621,
-"solids/ED-M-FIRE-RC-PLATE/z1_m": 0.781573,
+"solids/ED-M-FIRE-RC-BOX/z0_m": 0.668797,
+"solids/ED-M-FIRE-RC-BOX/z1_m": 0.770397,
 "solids/ED-M-HALL-SW-BOX/z0_m": 1.179972,
 "solids/ED-M-HALL-SW-BOX/z1_m": 1.275222,
 "solids/ED-M-HALL-SW-PLATE/z0_m": 1.165621,
@@ -121686,6 +121684,8 @@
 "solids/ED-M-LIVING-KDW1-PLATE/z1_m": 0.349773,
 "solids/ED-M-LIVING-KET1-BOX/z0_m": 1.078372,
 "solids/ED-M-LIVING-KET1-BOX/z1_m": 1.173622,
+"solids/ED-M-LIVING-KET1-PLATE/z0_m": 1.068847,
+"solids/ED-M-LIVING-KET1-PLATE/z1_m": 1.183147,
 "solids/ED-M-LIVING-KEYPAD-BOX/z0_m": 1.129172,
 "solids/ED-M-LIVING-KEYPAD-BOX/z1_m": 1.224422,
 "solids/ED-M-LIVING-KEYPAD-PLATE/z0_m": 1.114821,

@@ -63,6 +63,8 @@ a release or for exhaustive local verification.
   reaches → `flush_raceway`) into `ResolvedModel.device_boxes`; a surface box gets a derived
   3/4" EMT NM sleeve to the ceiling, and a `FloorHeat.thermostat_ref` its two ENT leads — both
   `derived` `ResolvedConduitRun`s. Graded by `electrical.box_fill`, billed in `[electrical_boxes]`.
+  A `recessed_into_host_surface` device inside a blind `RoughOpening` takes a surface box on the
+  recess plane (finish face + `normal_gap`), fed from the framing beside it, so no sleeve.
   Neighbouring flush devices on one face form a **gang bank** (`resolve/device_banks.py`): one
   N-gang box, snapped to `gang_pitch`, and a derived `wall_plate` from `BoxStandard.plates`; every
   box record is a bank (`device_tags`, `boxes_by_device`). A device symbol draws only its face

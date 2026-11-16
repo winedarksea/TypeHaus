@@ -206,9 +206,10 @@ def test_hung_upper_faces_west_over_an_open_appliance_cave(
     x0, y0, x1, y1 = _bounds(hung)
     cave = box(x0 * INCH, y0 * INCH, x1 * INCH, y1 * INCH).buffer(-FINISH_TOLERANCE)
     for tag, obj in kitchen_objects.items():
-        # The microwave is what the cave is for: test_microwave_sits_inside_the_cave.
+        # The microwave is what the cave is for: test_microwave_sits_inside_the_cave. The
+        # pantry's 1/2" end panel lines the cave's side by design (plan/kitchen_casework.py).
         if (not tag.startswith(("FURN-", "APPL-")) or tag.startswith("FURN-M-KIT-E-HUNG")
-                or tag == "APPL-M-MICROWAVE"):
+                or tag in ("APPL-M-MICROWAVE", "FURN-M-KIT-PANTRY-S1-NOOK-COVER")):
             continue
         z0, z1 = obj.body_z0_m / INCH - CAP_IN, obj.body_z1_m / INCH - CAP_IN
         if z1 <= 36 + 1e-6 or z0 >= 56 - 1e-6:
