@@ -18,13 +18,13 @@ def _pieces(model):
 def test_trim_inventory_by_profile(catlin_model_ro):
     counts = Counter(s.product for s in _pieces(catlin_model_ro))
     assert counts == {
-        "PBR_WINDOW_JAMB": 36, "WINDOW_JAMB_CUSTOM": 48, "WINDOW_SILL_CUSTOM": 42,
-        "OPENING_HEAD": 42,
+        "PBR_WINDOW_JAMB": 36, "WINDOW_JAMB_CUSTOM": 46, "WINDOW_SILL_CUSTOM": 41,
+        "OPENING_HEAD": 41,  # 42 until WIN-S-BED3-N went (2026-11-16)
         "PBR_BASE": 11, "BBD_BASE": 10, "CORRUGATED_BASE": 12, "BBD_TRANSITION": 10,
         "BBD_PANEL_STARTER": 6, "CORRUGATED_JAMB": 8, "DOOR_HEAD_CUSTOM": 6,
         "WIDE_OUTSIDE_CORNER": 8, "CORRUGATED_OUTSIDE_CORNER": 4,
         "RAINSCREEN_BASE_Z": 21, "EPDM_BASE_ISOLATION": 14,
-        "OPENING_HEAD_CAP": 38,
+        "OPENING_HEAD_CAP": 37,
         # 6411499: the four gable corner stubs inside the eave skins are gone.
         "6460800": 9, "6411499": 6, "CORRUGATED_SILL_TO_SOFFIT": 6,
         "corrugated-outside-closure": 6,

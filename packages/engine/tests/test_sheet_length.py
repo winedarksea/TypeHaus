@@ -73,10 +73,11 @@ def test_eight_foot_sheets_fail_two_lines(catlin_model_ro):
     dining pier and leaves 19.25' provided on E1; with 4x8 sheets its unblocked horizontal
     joint still doubles the requirement. Two since 2026-10-08: the standard-heel garage roof
     stands under 5' eave to ridge, so its lines take R602.10.3(2) item 2's x0.70 and
-    BWL-W-G-N clears (0.94 -> 1.34)."""
+    BWL-W-G-N clears (0.94 -> 1.34). The 2026-11-16 east facade rebalance (91a920d6e) left
+    E1 14.75' provided, 0.76 -> 0.59."""
     ratios = _ratios(_with_sheets(catlin_model_ro, ft(8)))
     failing = {key: round(r, 2) for key, r in ratios.items() if r < 1.0}
-    assert failing == {("main", "BWL-W-A-E1"): 0.76, ("main", "BWL-W-A-S1"): 0.77}
+    assert failing == {("main", "BWL-W-A-E1"): 0.59, ("main", "BWL-W-A-S1"): 0.77}
     e1 = next(ev for ev in evaluate_storey(_with_sheets(catlin_model_ro, ft(8)), "main")
               if ev.line.tag == "BWL-W-A-E1")
     item8 = [f for f in e1.factors if "item 8" in f.row]
@@ -89,8 +90,9 @@ def test_a_sheet_that_reaches_the_plate_takes_no_factor(catlin_model_ro, length)
     model = _with_sheets(catlin_model_ro, length)
     ratios = _ratios(model)
     assert len(ratios) == 12
-    # The east line binds: 19.25 ft provided against 12.5636 ft required without item 8.
-    assert min(ratios.values()) == pytest.approx(1.5322, rel=0.005)
+    # The east line binds: 14.75 ft provided against 12.5638 ft required without item 8
+    # (19.21 ft before the 2026-11-16 east facade rebalance).
+    assert min(ratios.values()) == pytest.approx(1.1740, rel=0.005)
     e1 = next(ev for ev in evaluate_storey(model, "main") if ev.line.tag == "BWL-W-A-E1")
     assert not [f for f in e1.factors if "item 8" in f.row]
     assert any("item 8" in note and sheet_label(length.inches) in note

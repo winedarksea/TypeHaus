@@ -41,7 +41,7 @@ def test_every_metal_window_head_is_capped_and_every_head_seats_on_a_strip(catli
     assert not [s for s in model.solids if s.tag.endswith("-HEADSCREEN")]
     windows = [o for o in model.openings if o.kind == "window"
                and walls[o.host_wall].assembly in _RAINSCREEN]
-    assert len(windows) >= 38
+    assert len(windows) >= 37  # 38 until WIN-S-BED3-N went (2026-11-16)
     face = inch(3.5).meters
     for opening in windows:
         wall = walls[opening.host_wall]
