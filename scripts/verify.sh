@@ -5,7 +5,8 @@
 #   (default)       short tests, strict house checks, ruff, UI typecheck and geometry tests.
 #                   Target under five minutes.
 #   --fast          alias for the default short gate.
-#   --full          every test, both house check suites, builds, benchmark, and UI build.
+#   --full          every test, both house check suites, builds, benchmark, Pyodide smoke,
+#                   and UI build.
 #                   Run manually and before a release.
 #   --baseline-dir  with --full, diff house model.json files against DIR.
 set -euo pipefail
@@ -158,6 +159,15 @@ $HAUS build houses/catlin --timing
 # is measured after the suite's parallel load is gone.
 echo "== rebuild budget: catlin (serial) =="
 $PY -m pytest -n0 packages/engine/tests/test_resolve_perf_guard.py::test_rebuild_stays_inside_its_order_of_magnitude -q
+
+# The published app runs the engine under Pyodide (Shapely 2.0.2 / GEOS 3.12.1), not .venv's
+# 2.1 / 3.13. CI's pyodide-geos job runs this only on PRs and releases, never on a push to main.
+echo "== pyodide smoke: starter, catlin =="
+if [[ ! -d scripts/pyodide/node_modules/pyodide ]]; then
+  echo "pinned Pyodide missing: run 'npm ci' in scripts/pyodide" >&2
+  exit 1
+fi
+(cd scripts/pyodide && node smoke.mjs houses/starter && node smoke.mjs houses/catlin)
 
 echo "== ui: typecheck, test, build =="
 (cd ui && npm run typecheck && npm test && npm run build)
