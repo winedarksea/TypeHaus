@@ -1,4 +1,4 @@
-"""Wall-mounted electrical bodies need solid wall beside doors and windows."""
+"""Wall-mounted electrical assemblies need solid wall beside through openings."""
 
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ from typehaus.checks._authoring import advisory_fail, not_applicable, passed, un
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.model import ElectricalDevice, MountKind
+from typehaus.resolve.device_boxes import boxes_by_device
 from typehaus.resolve.model import ResolvedOpening
 
 _CHECK_ID = "electrical.wall_device_opening"
@@ -26,6 +27,8 @@ def wall_device_opening(ctx: CheckContext) -> list[Finding]:
 
     A finish-face plate stands outside the wall's thickness, even when it is mounted
     over a doorway. A solid-intersection test therefore misses precisely this defect.
+    Include boxes and plates: their edges can cross a jamb while the device clears it.
+    Blind recesses retain a mounting back and are outside this through-opening check.
     This does not grade casing, framing bays, pocket travel, or door swings.
     """
     devices = [element for element in ctx.plan.all_elements()
@@ -35,9 +38,10 @@ def wall_device_opening(ctx: CheckContext) -> list[Finding]:
         return [not_applicable(_CHECK_ID, "no wall-mounted electrical devices")]
     bodies = {body.tag: body for body in ctx.model.canvas_objects}
     walls = {wall.tag: wall for wall in ctx.model.walls}
+    boxes = boxes_by_device(ctx.model)
     openings_by_wall: dict[str, list[ResolvedOpening]] = {}
     for opening in ctx.model.openings:
-        if opening.kind in {"door", "window"}:
+        if not opening.is_blind:
             openings_by_wall.setdefault(opening.host_wall, []).append(opening)
 
     findings: list[Finding] = []
@@ -66,8 +70,21 @@ def wall_device_opening(ctx: CheckContext) -> list[Finding]:
             continue
         tangent_x = (end_x - start_x) / axis_length
         tangent_y = (end_y - start_y) / axis_length
+        footprints = list(body.footprint)
+        device_bottom, device_top = body.body_z0_m, body.body_z1_m
+        box = boxes.get(device.tag)
+        if box is not None:
+            footprints.extend(box.footprint)
+            footprints.extend(box.plate_footprint)
+            device_bottom = min(device_bottom, box.z0_m)
+            device_top = max(device_top, box.z1_m)
+            if box.plate_size_m is not None:
+                middle = (box.z0_m + box.z1_m) / 2
+                half_height = box.plate_size_m[1] / 2
+                device_bottom = min(device_bottom, middle - half_height)
+                device_top = max(device_top, middle + half_height)
         stations = [(x - start_x) * tangent_x + (y - start_y) * tangent_y
-                    for x, y in body.footprint]
+                    for x, y in footprints]
         device_low, device_high = min(stations), max(stations)
         if device_high - device_low <= _OVERLAP_TOLERANCE_M:
             findings.append(unknown(_CHECK_ID, f"{device.tag}: body has no resolved wall width",
@@ -86,7 +103,7 @@ def wall_device_opening(ctx: CheckContext) -> list[Finding]:
             if (not _overlaps(device_low, device_high,
                               opening.center_along_m - opening.width_m / 2,
                               opening.center_along_m + opening.width_m / 2)
-                    or not _overlaps(body.body_z0_m, body.body_z1_m,
+                    or not _overlaps(device_bottom, device_top,
                                      bottom, bottom + opening.height_m)):
                 continue
             if opening.arch_rise_m != 0:
@@ -98,6 +115,6 @@ def wall_device_opening(ctx: CheckContext) -> list[Finding]:
                 _CHECK_ID, f"{device.tag}'s full body overlaps {opening.kind} "
                 f"{opening.tag} in {wall.tag}; move it onto solid wall", tags))
         findings.extend(device_findings or [passed(
-            _CHECK_ID, f"{device.tag}: body clears host-wall door and window openings",
+            _CHECK_ID, f"{device.tag}: assembly clears host-wall through openings",
             (device.tag, wall.tag))])
     return findings

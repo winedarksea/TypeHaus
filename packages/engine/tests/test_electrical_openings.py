@@ -9,6 +9,7 @@ from typehaus.checks.mep.electrical_openings import wall_device_opening
 from typehaus.checks.registry import CheckContext, JurisdictionProfile, Preferences
 from typehaus.findings import Result, Severity
 from typehaus.model import DeviceKind, ElectricalDevice, Mount, MountKind, PlanModel, m, pt
+from typehaus.resolve.device_boxes import ResolvedDeviceBox
 from typehaus.resolve.model import (
     ResolvedCanvasObject,
     ResolvedModel,
@@ -121,3 +122,36 @@ def test_non_wall_devices_are_not_applicable(context, mount):
 def test_openings_on_other_walls_do_not_conflict(context):
     context.model.openings = [replace(context.model.openings[0], host_wall="OTHER-WALL")]
     assert wall_device_opening(context)[0].result == Result.PASS
+
+
+@pytest.mark.parametrize("penetration_for", [(), ("DUCT",)])
+def test_bare_through_openings_also_need_solid_wall(context, penetration_for):
+    context.model.openings = [replace(context.model.openings[0], kind="rough_opening",
+                                      is_door=False, penetration_for=penetration_for)]
+    assert wall_device_opening(context)[0].result == Result.FAIL
+
+
+def test_blind_recess_retains_a_mounting_back(context):
+    context.model.openings = [replace(context.model.openings[0], kind="rough_opening",
+                                      is_door=False, depth_m=0.1)]
+    assert wall_device_opening(context)[0].result == Result.PASS
+
+
+@pytest.mark.parametrize("envelope", ["box", "plate"])
+def test_box_and_plate_edges_count_when_device_clears(context, envelope):
+    # The switch face ends at 2.2; the opening starts at 2.5.
+    context.model.openings = [replace(context.model.openings[0], center_along_m=3)]
+    assert wall_device_opening(context)[0].result == Result.PASS
+    overlapping_ring = ((1.7, 0.1), (2.6, 0.1), (2.6, 0.3), (1.7, 0.3))
+    box = ResolvedDeviceBox(
+        device_tag="DEVICE", device_uid="device", storey="upper", room=None,
+        device_kind="switch", circuit=None, mounting="flush", gangs=1,
+        box_product="test", cover_product=None, volume_in3=None,
+        width_m=0.9, height_m=0.2, depth_m=0.2, projection_m=0, cavity_m=0.2,
+        wall_tag="WALL", host_layer="stud", z0_m=3.4, z1_m=3.6,
+        face_point=(2, 0.3), normal=(0, 1),
+        footprint=overlapping_ring if envelope == "box" else (),
+        plate_footprint=overlapping_ring if envelope == "plate" else (),
+        plate_size_m=(0.9, 0.2) if envelope == "plate" else None)
+    context.model.device_boxes = [box]
+    assert wall_device_opening(context)[0].result == Result.FAIL

@@ -33,6 +33,10 @@ rows in `plan/device_boxes.py` (`resolve/device_banks.py`).
 - **Moved 2026-11-16.** ED-S-SUITE-RC4: its box and plate stood inside P-S-TUDOR1, so it now sits
   against the y=12'-1 1/2" stud. ED-B-GYM-RC8: it straddled the W-B-CS/W-B-CS3 seam, so it now
   sits on W-B-CS against the y=9'-4" stud.
+  ED-S-STUDY2-SW: station 13 3/4" put it inside D-S-STUDY2's leafless opening. It moved
+  5 1/4" west to station 8 1/2" on W-S-SS1's south face; its box clears the king/jack pack
+  and its midway plate clears the jamb. `electrical.wall_device_opening` now includes
+  through rough openings and the derived boxes and plates, which the old check skipped.
 
 ## 1. Device types (device_types.py)
 

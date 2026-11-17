@@ -343,11 +343,13 @@ SECOND_DEVICES = [
                      position=pt(ft(24), ft(3)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
                      room="RM-S-STUDY2", controlled_by=("ED-S-STUDY2-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    # West of D-S-STUDY2: the 2 1/4" box butts its west king/jack pack;
+    # the midway plate clears the opening, on the study (south) face.
     ElectricalDevice(uid="CED005K2AA", tag="ED-S-STUDY2-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW1", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-SS1", face="right", distance_from_start=inch(13.75),
+                         wall_ref="W-S-SS1", face="right", distance_from_start=inch(8.5),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="CED006K1AA", tag="ED-S-BED1-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(26, 4), ft(14)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",

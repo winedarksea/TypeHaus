@@ -237,6 +237,8 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
 - [x] Switches, junction boxes and receptacles: face-only devices at real projection in true colour, derived wall plates and gang banks (`resolve/device_banks.py`, `houses/catlin/notes/wiring_device_geometry.md`).
 - ED-M-FIRE-RC: measure the delivered RACO 862 handy-box cover. It must be no wider than the pocket's 2 3/8" strip (nominal 2 5/16"; Hubbell's table reads 2.425").
 - [x] 3d model of the recirculating range hood (Broan BWP1304SS pyramidal canopy, telescopic chimney, side return grilles, paired filters, LEDs and controls).
+- 3d model of the SPD devices (or just put them in the circuit box?), PV shutdown initiator
+- Not sure we need REG-S-EXH4 in RM-S-VANITY. And if we do, we need to move it out of the center of the floor
 
 # Project Management
 
