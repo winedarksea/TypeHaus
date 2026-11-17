@@ -6,6 +6,8 @@ from types import SimpleNamespace
 
 import ifcopenshell
 import pytest
+from shapely.geometry import Point, Polygon
+from shapely.ops import unary_union
 
 from typehaus.emit.gltf.canvas_objects import _add_canvas_parts
 from typehaus.emit.gltf.mesh import _MeshBuilder
@@ -21,6 +23,9 @@ from typehaus.model import (
 )
 from typehaus.model.canvas import _symbol_geometry
 from typehaus.model.placeable_symbols import PART_COLORS, model_parts, place_local
+from typehaus.model.placeable_symbols._gfci_in_use_cover import (
+    IN_USE_COVER_GEOMETRY as COVER_CFG,
+)
 from typehaus.model.placeable_symbols._receptacle_config import RECEPTACLE_GEOMETRY as CFG
 from typehaus.resolve.wall_hosting import resolve_location
 
@@ -65,7 +70,9 @@ def test_geometry_is_bounded_closed_and_in_budget(product):
     width, depth = (dimension.meters for dimension in product.footprint)
     height = product.height.meters
     triangle_count = 0
-    assert len(parts) <= CFG.maximum_parts
+    is_cover = product in COVER_TYPES
+    budget = COVER_CFG if is_cover else CFG
+    assert len(parts) <= budget.maximum_parts
     for part in parts:
         center, size = part["center"], part["size"]
         assert all(value > 0 for value in size)
@@ -88,13 +95,14 @@ def test_geometry_is_bounded_closed_and_in_budget(product):
                 normal = mesh["normals"][index]
                 assert math.sqrt(sum(value ** 2 for value in normal)) == pytest.approx(1)
                 displacement = [mesh["positions"][index][axis] - center[axis] for axis in range(3)]
-                assert sum(a * b for a, b in zip(normal, displacement, strict=True)) > 0
+                if part.get("role") != "in-use-cover:cord-exits":
+                    assert sum(a * b for a, b in zip(normal, displacement, strict=True)) > 0
         assert all(count == 1 and edges[(end, start)] == 1
                    for (start, end), count in edges.items())
-    assert triangle_count <= CFG.maximum_triangles
-    assert parts[0]["color"] == "device-face"  # the face slab, standing on the plate
+    assert triangle_count <= budget.maximum_triangles
+    assert parts[0]["color"] == ("weatherproof-cover" if is_cover else "device-face")
     assert {part["color"] for part in parts} <= {
-        "device-face", "device-slot", "device-accent", "clear-glass"}
+        "device-face", "device-slot", "device-accent", "clear-glass", "weatherproof-cover"}
 
 
 @pytest.mark.parametrize("tag,socket_count", [
@@ -206,7 +214,8 @@ def test_viewer_gltf_and_ifc_keep_shared_relief_and_colors(product):
 @pytest.mark.parametrize("product", COVER_TYPES, ids=lambda p: p.tag)
 def test_in_use_cover_keeps_vertical_gfci_at_back_of_clear_plug_cavity(product):
     parts = _parts(product)
-    face_parts = [part for part in parts if part["color"] != "clear-glass"]
+    face_parts = [part for part in parts if part["color"] in {
+        "device-face", "device-slot", "device-accent"}]
     sockets = [part for part in face_parts if "mesh" in part and part["color"] == "device-face"]
     assert len(sockets) == 2
     assert sockets[0]["center"][0] == pytest.approx(sockets[1]["center"][0])
@@ -218,7 +227,35 @@ def test_in_use_cover_keeps_vertical_gfci_at_back_of_clear_plug_cavity(product):
     assert back - front <= .35 * .0254 + 1e-9
     assert sum(p["color"] == "device-accent" for p in parts) == 2
     appearance = _symbol_geometry(product, product.footprint)["model_parts"]
-    assert sum(p.get("opacity", 1) < 1 for p in appearance) == 5
+    assert sum(p.get("opacity", 1) < 1 for p in appearance) == 9
+
+
+@pytest.mark.parametrize("scale", [.5, 1, 2])
+def test_cover_tapers_toward_front_and_has_two_open_cord_ports(scale):
+    unit = .0254 * scale
+    parts = model_parts("receptacle-gfci-in-use-cover", COVER_CFG.width_in * unit,
+                        COVER_CFG.depth_in * unit, COVER_CFG.height_in * unit)
+    hood = [part for part in parts if part["color"] == "clear-glass"]
+    front_pane = hood[0]
+    assert front_pane["size"][0] < parts[0]["size"][0]
+    assert front_pane["size"][2] < parts[0]["size"][2]
+    # Inspect exported triangles, so a solid panel with painted port marks cannot pass.
+    bottom_panel = next(part for part in hood if part.get("role") == "in-use-cover:cord-exits")
+    mesh = bottom_panel["mesh"]
+    bottom = COVER_CFG.body_bottom_in * unit
+    horizontal_faces = []
+    for indices in mesh["triangles"]:
+        triangle = [mesh["positions"][index] for index in indices]
+        if all(abs(z - bottom) < 1e-9 for _, _, z in triangle):
+            horizontal_faces.append(Polygon([(x, y) for x, y, _ in triangle]))
+    sheet = unary_union(horizontal_faces)
+    assert sheet.is_valid
+    assert sheet.geom_type == "Polygon"
+    assert len(sheet.interiors) == 2
+    port_y = (-COVER_CFG.depth_in / 2 + COVER_CFG.cord_exit_front_setback_in) * unit
+    for sign in (-1, 1):
+        assert not sheet.covers(Point(sign * COVER_CFG.cord_exit_spacing_in * unit / 2, port_y))
+    assert sheet.covers(Point(0, port_y))
 
 
 def test_catlin_weather_resistant_gfcis_use_cover_geometry(catlin_plan):

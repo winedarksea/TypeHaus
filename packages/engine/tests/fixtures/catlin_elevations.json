@@ -4655,6 +4655,12 @@
 2,
 "93e2affff8ed"
 ],
+"geometry/17XB5CH977-ceiling/body": [
+6.2116012,
+7.648575,
+16,
+"10c7714d55a0"
+],
 "geometry/1975K7T22B/body": [
 6.5083029,
 6.5619184,
@@ -9395,6 +9401,12 @@
 2,
 "23df52224c1c"
 ],
+"geometry/ACQ0FY2BZD-ceiling/body": [
+7.6435262,
+8.855075,
+22,
+"60681d049670"
+],
 "geometry/AFRBDV5JT6-boot-1/body": [
 5.514975,
 5.680075,
@@ -12029,6 +12041,18 @@
 2,
 "23df52224c1c"
 ],
+"geometry/CAR401AAAA-ceiling/body": [
+6.2116012,
+8.855075,
+32,
+"957951d06175"
+],
+"geometry/CAR402AAAA-ceiling/body": [
+6.2116012,
+8.855075,
+32,
+"c65f4346b2b2"
+],
 "geometry/CAR404AAAA-base-CAW103AAAA-0/body": [
 6.1341,
 6.223,
@@ -12040,6 +12064,30 @@
 6.223,
 2,
 "ff271848e48f"
+],
+"geometry/CAR404AAAA-ceiling/body": [
+6.2116012,
+8.855075,
+32,
+"89ba66aa19ba"
+],
+"geometry/CARF01AAAA-bay-fill-1/body": [
+6.22935,
+9.0820617,
+384,
+"0196f9ce6e13"
+],
+"geometry/CARF01AAAA-bay-fill-2/body": [
+6.4245867,
+9.224052,
+384,
+"86552c74121a"
+],
+"geometry/CARF01AAAA-ceiling-1-1/body": [
+7.6879762,
+8.855075,
+8,
+"a7ffab92a83d"
 ],
 "geometry/CARF01AAAA/layer:membrane": [
 6.4310384,
@@ -120242,6 +120290,18 @@
 "solids/CD-M-DATA-PORCH-RUN/z1_m": 3.0374844,
 "solids/CD-M-RSD-INIT-RUN/z0_m": 0.3847338,
 "solids/CD-M-RSD-INIT-RUN/z1_m": 0.4026662,
+"solids/CEIL-RF-HOUSE-1-1/z0_m": 7.6879762,
+"solids/CEIL-RF-HOUSE-1-1/z1_m": 8.855075,
+"solids/CEIL-RM-A-EAST-UNFIN/z0_m": 6.2116012,
+"solids/CEIL-RM-A-EAST-UNFIN/z1_m": 8.855075,
+"solids/CEIL-RM-A-POCKET/z0_m": 6.2116012,
+"solids/CEIL-RM-A-POCKET/z1_m": 7.648575,
+"solids/CEIL-RM-A-STUBATH/z0_m": 7.6435262,
+"solids/CEIL-RM-A-STUBATH/z1_m": 8.855075,
+"solids/CEIL-RM-A-STUDIO/z0_m": 6.2116012,
+"solids/CEIL-RM-A-STUDIO/z1_m": 8.855075,
+"solids/CEIL-RM-A-STUDY/z0_m": 6.2116012,
+"solids/CEIL-RM-A-STUDY/z1_m": 8.855075,
 "solids/CEIL-RM-B-BATH/z0_m": -0.3175,
 "solids/CEIL-RM-B-BATH/z1_m": -0.301625,
 "solids/CEIL-RM-B-ESS/z0_m": -0.422275,
@@ -124060,6 +124120,10 @@
 "solids/GE-G-ROD-2-RUN/z1_m": -1.4732,
 "solids/INSUL-CEIL-RM-GARAGE-1/z0_m": 2.2352,
 "solids/INSUL-CEIL-RM-GARAGE-1/z1_m": 2.6035,
+"solids/INSUL-RF-HOUSE-1/z0_m": 6.22935,
+"solids/INSUL-RF-HOUSE-1/z1_m": 9.0820617,
+"solids/INSUL-RF-HOUSE-2/z0_m": 6.4245867,
+"solids/INSUL-RF-HOUSE-2/z1_m": 9.224052,
 "solids/MJ-B-BRICK-E-1/z0_m": -2.6018998,
 "solids/MJ-B-BRICK-E-1/z1_m": -0.3386582,
 "solids/MJ-B-BRICK-W-1/z0_m": -2.6018998,

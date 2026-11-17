@@ -90,6 +90,7 @@ PART_COLORS: dict[str, tuple[float, float, float, float]] = {
     "device-face": (0.86, 0.86, 0.84, 1.0),
     "device-slot": (0.03, 0.03, 0.03, 1.0),
     "device-accent": (0.42, 0.43, 0.44, 1.0),
+    "weatherproof-cover": (0.42, 0.43, 0.44, 1.0),
     "solid-surface": (244 / 255, 244 / 255, 242 / 255, 1.0),
     "clear-glass": (0.78, 0.89, 0.92, 0.24),
     "chrome": (0.78, 0.80, 0.82, 1.0),

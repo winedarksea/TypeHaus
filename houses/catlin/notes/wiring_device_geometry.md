@@ -135,3 +135,17 @@ visible margin round every Lever Edge, GFCI and Decora Smart device.
   as 7.46 x 3.53 x 3.18; the row keeps the 3.50 catalog envelope as the conservative depth.
 - Midway 2-4 gang widths are derived (1-gang drawing + 1.81/gang); the 2-4 gang JPGs show the
   1-gang outline.
+
+## 5. In-use cover geometry
+
+The 15 A and 20 A weather-resistant SmartlockPro symbols share a closed **Leviton
+5980-UCL** cover. Its 3.63" W × 6.69" H × 3.08" projection follows the
+[5980 dimensional drawing](https://leviton.com/content/dam/leviton/commercial-industrial/product_documents/dimensional_drawing/5980-dimensional-drawing.jpg).
+The [product photos](https://leviton.com/products/5980-ucl) inform the clipped corners,
+tapered clear hood, gray base, top hinge and lower lock tab. The GFCI stays at the
+back of the empty plug cavity, with the 15 A and 20 A slot patterns retained.
+
+The bottom has two open circular cord ports; the supplied removable port inserts are
+omitted. Shell thickness, taper, hardware and port dimensions are representative,
+not manufacturer fabrication dimensions. Shared closed solids feed the viewer,
+GLB and IFC; the gray cover finish is independent of the device face material.

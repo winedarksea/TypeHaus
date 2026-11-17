@@ -52,6 +52,7 @@
   "ceiling|soffit": [4, 0.002414],
   "ceiling|terminal_neck": [14, 4.5e-05],
   "ceiling|wall": [9, 0.005858],
+  "ceiling|wall_end_board": [1, 3e-06],
   "ceiling|wall_plate": [1, 1e-06],
   "cladding_trim|cladding_trim": [32, 0.000147],
   "cladding_trim|connector": [3, 1.4e-05],

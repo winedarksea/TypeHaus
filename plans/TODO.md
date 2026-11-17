@@ -237,15 +237,20 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
 - [x] Switches, junction boxes and receptacles: face-only devices at real projection in true colour, derived wall plates and gang banks (`resolve/device_banks.py`, `houses/catlin/notes/wiring_device_geometry.md`).
 - ED-M-FIRE-RC: measure the delivered RACO 862 handy-box cover. It must be no wider than the pocket's 2 3/8" strip (nominal 2 5/16"; Hubbell's table reads 2.425").
 - [x] 3d model of the recirculating range hood (Broan BWP1304SS pyramidal canopy, telescopic chimney, side return grilles, paired filters, LEDs and controls).
-- 3d model of the SPD devices (or just put them in the circuit box?), PV shutdown initiator
+- 3d model of the SPD devices (or just put them in the circuit box?), PV shutdown initiator, and device boxes
 - Not sure we need REG-S-EXH4 in RM-S-VANITY. And if we do, we need to move it out of the center of the floor
 - Attic wall assembly seems to have lost its
 - garage wall to standard zip possibly (doesn't need to be taped)
 - The siding to balcony flashing is two pieces, TR-SG-BASE-FLASH-W-1 and TR-SG-COUNTER-FLASH-W. Do we really need both like this? The "counter flash" seems a bit unsupported. A more extreme change might be to have the horizontal band run lower, at this height, and integrate here.
-- 3d model of the in-use cover of the SmartlockPro GFCI outlets
+- [x] 3d model of the in-use cover of the SmartlockPro GFCI outlets (5980-UCL tapered clear hood, gray base, hinge, lock tab and open cord ports).
 - Handrail and guardrail duplicated, RL-SG-PSTAIR-S and RL-SG-PSTAIR-HR, doesn't need the extra handrail, the guard doubles
 - Might need a second SL-S-KNEE-CAP for the partition wall
 - Model the LED junction boxes and power supply LED accurately to the products and dimensions
+- ERV terminals don't come out of the walls/floors/surfaces quite clearly enough, likely they protrude just a bit more
+- Door sills for exterior doors make sense
+- Condensate PR-M-COND-HP3-RUN goes through the studs of W-M-STRW, which is one wall that is exposed and we don't want to run the plumbing through (the data cable is probably fine)
+- 3d model of the DoorScope
+- ERV likely blocks D-B-CLOSET, and its condensate also blocks
 
 # Project Management
 
