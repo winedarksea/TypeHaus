@@ -8574,3 +8574,19 @@ physically takes; shop boxes stay wildcards (made to suit).
     (`REG-T-ERV-STUBATH-WALL`, TH-ERV-STUBATH-BOOT-01). That leaves ~5/8" under
     PR-A-STUBATH-VENT, where 8" would leave 3/16". The riser stops 1 3/32" lower, at 34 29/32".
   - Both carry the suite-bath box's K=5 allowance; balance on commissioning.
+
+
+## Porch track hardware replaces the solid bars (2026-11-16)
+
+`FURN-M-PORCH-TRACK-F/-W/-E` use Mosquito Curtains Outdoor Curtain Tracking in white,
+3/4-inch square, direct-mounted to the balcony soffit. The current manufacturer's
+[product page](https://www.mosquitocurtains.com/plan-screen-porch/outdoor-curtain-tracking)
+lists 7-foot stock, replacing the notes' historic 8-foot anodized allowance.
+
+The generated channel has an open carrier slot, retaining lips, internal splice keys,
+recessed cross-head mounting screws and removable stops. Viewer, GLB and IFC share the
+parts; no curtain/screen or carriers are drawn. Rail bases rise from 104.75 to 105 inches
+so the smaller section keeps the existing 105.75-inch mounting face. Hardware detail
+sizes are illustrative; the published overall section is exact. The three straight runs
+remain separate: the historic corner curves have no resolved tangent layout or published
+bend dimensions. See `notes/porch_enclosure.md` for that remaining connection detail.

@@ -500,6 +500,8 @@ class FurnitureType(HausModel):
     def _curtain_track_fits(self) -> FurnitureType:
         if self.curtain_track is not None:
             self.curtain_track.check_fits(self.footprint[0].meters, self.footprint[1].meters)
+            if self.curtain_track.rail_height.meters > self.height.meters:
+                raise ValueError("curtain track rail is taller than its envelope")
         return self
 
     @model_validator(mode="after")

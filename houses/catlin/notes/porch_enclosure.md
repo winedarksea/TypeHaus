@@ -10,6 +10,28 @@ spare joist at y −8'-11 1/4", and the flanks `-W`/`-E` at x 10'-0" / 26'-0". T
 17'-0" clear. Where a table below disagrees, `plan/placeables.py`'s comments are current.
 **2026-09-23:** all three at `inch(104.75)`, 3" lower with the balcony (z 104.75"…105.75").
 
+## Current 3D hardware (2026-11-16)
+
+Selected basis: [Mosquito Curtains Outdoor Curtain Tracking](https://www.mosquitocurtains.com/plan-screen-porch/outdoor-curtain-tracking),
+white powder-coated aluminium, **3/4 x 3/4 inch, 7-foot stock**. This supersedes the older
+1-inch generic bar and 8-foot anodized-stock descriptions below. All three straight runs
+now start at **105 inches** and end at the unchanged **105.75-inch joist soffit**.
+The 2-inch footprint remains the hardware handling envelope, not the extrusion width.
+
+The shared viewer/GLB/IFC model draws a hollow downward-slotted channel with retaining
+lips, recessed cross-head soffit screws, internal splice keys at 7-foot stock joints, and
+removable end stops. No curtain, mesh or snap carriers are shown. The manufacturer's
+[installation guide](https://static.mosquitocurtains.com/wp-media-folder-mosquito-curtains/wp-content/uploads/2019/09/Mosquito-Curtains-Tracking-Installation.pdf)
+calls for five screws per full stick for vinyl, with end screws 6 inches in; cut pieces
+retain that maximum spacing. Wall thickness, slot width, splice keys, stops and screw
+sizes are illustrative because a dimensioned manufacturer section was not published.
+
+The two corner curves described in the historic layout remain unmodeled: the three
+straight-run placements do not define tangent connections (the front is at y=-107.25",
+while the flanks start at y=-108"). Their stops currently show these as separate runs;
+a continuous corner layout still needs its bend dimensions and mounting route resolved.
+No changes to the seasonal enclosure or north-end outrigger design are implied.
+
 ## Why the rods could not work
 
 A rod at 8'-6" under a joist soffit at 9'-4 3/4" leaves a ~10" open band across the whole

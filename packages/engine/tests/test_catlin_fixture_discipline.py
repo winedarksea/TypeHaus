@@ -44,6 +44,7 @@ _INSTEAD = {
 #: and an entry that no longer corresponds to a real load is a lie about the suite — which
 #: ``test_the_budget_table_is_not_stale`` below is what catches.
 _BUDGET: dict[str, tuple[int, str]] = {
+    "test_outdoor_curtain_track.py": (0, "porch hardware and export checks reuse catlin_model_ro"),
     "test_plant_reservoir.py": (0, "reservoir placement and takeoff reuse read-only plan/model"),
     "test_catlin_shower_assemblies.py": (0, "five shower assemblies reuse read-only model, context and IFC"),
     "test_surface_mount_assembly.py": (0, "surface bases and stair bearings reuse catlin_model_ro"),

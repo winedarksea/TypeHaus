@@ -3372,6 +3372,9 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "FT-CELLULAR-SHADE-3048-CORDLESS" = { material = { low = 70, high = 160 }, labour = { low = 30, high = 80 } }  # 2 ea — WIN-M-BED-S1/-S2
 "FT-CELLULAR-SHADE-1424-CORDLESS" = { material = { low = 50, high = 120 }, labour = { low = 30, high = 80 } }  # 1 ea — WIN-A-S3
 # --- the porch enclosure track (2026-09-03) ---------------------------------------------
+# 2026-11-16 specification: Mosquito Curtains white powder-coated 3/4" square track,
+# 7' stock (manufacturer's current listing). Historic component arithmetic below used
+# 8' anodized stock; per-run prices remain allowances, not a current vendor quote.
 # ** THESE TWO ROWS REPLACE `FT-CURTAIN-ROD-OUTDOOR-114`/`-98`, WHICH ARE DELETED, NOT
 # ZEROED. ** The zero-row convention here is for a product still specified somewhere; these
 # two types cease to exist (plan/furniture_types.py). And note the direction of the trap: an

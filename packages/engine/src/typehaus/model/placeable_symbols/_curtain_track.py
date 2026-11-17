@@ -66,6 +66,10 @@ def curtain_track_geometry(spec: CurtainTrackSpec, width_m: float, depth_m: floa
     strokes: list[Stroke] = [line((-width_m / 2, 0.0), (width_m / 2, 0.0))]
     parts: list[Part] = [box(0.0, 0.0, rail_bottom, height_m, width_m,
                              spec.rail_width.meters, RAIL_COLOR)]
+    if spec.outdoor_hardware:
+        from typehaus.model.placeable_symbols._outdoor_curtain_track import outdoor_track_parts
+
+        parts = list(outdoor_track_parts(spec, width_m, height_m))
     if not spec.show_curtains:
         return tuple(strokes), tuple(parts)
     fabric_top = rail_bottom + spec.heading_rise.meters
@@ -84,4 +88,6 @@ def curtain_track_type_geometry(item: Any) -> tuple[tuple[Stroke, ...], tuple[Pa
     strokes, parts = curtain_track_geometry(item.curtain_track, width_m, depth_m,
                                             item.height.meters)
     refs = getattr(getattr(item, "model_representation", None), "material_refs", None)
+    if item.curtain_track.outdoor_hardware and item.plan_symbol is None:
+        strokes = ()
     return strokes, with_material_refs(parts, refs)

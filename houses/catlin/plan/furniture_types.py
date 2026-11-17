@@ -23,6 +23,7 @@ from library.placeables.allowances import (
 from typehaus.model import (
     BuiltInBookcaseBay,
     BuiltInBookcaseSpec,
+    CurtainTrackSpec,
     Footprint2D,
     FurnitureCut,
     FurnitureType,
@@ -67,39 +68,26 @@ STUDY_BUILT_IN_BOOKCASE = FurnitureType(
 # is 30" (WT-3048), leaving 9" of stackback each side. 84" is D-M-PORCH's french pair (60"
 # RO, 12" each side). Depth is the bracket projection, height the rod and finial.
 # --- the porch enclosure track -------------------------------------------------------
-# NOT A CURTAIN ROD. 2026-09-03: the two 114" rods and the two 98" side rods were replaced
-# by a snap-carrier aluminium curtain TRACK, the hardware a screened-porch enclosure is
-# actually built on (Mosquito Curtains and equivalents: 8' anodized sticks, 90-degree
-# curves, splices and end caps, screwed up through the stick's centre groove).
-#
-# ** THE PRODUCT CHANGED BECAUSE THE ROD COULD NOT SEAL. ** A rod at 8'-6" under a joist
-# soffit at 9'-4 3/4" leaves a ~10" open band across the whole opening, and rings leak at
-# the top by construction — a bug highway with a curtain hanging under it. A track screwed
-# flush to the soffit closes that band, and it is the same hardware for both panel sets:
-# no-see-um mesh in summer, 30-ga marine clear vinyl in spring and fall for wind chill.
-# Zippers were rejected as the primary closure (UV and grit make them the wear item and a
-# replacement means re-sewing a panel); they survive only at the vinyl set's corner joints.
-#
-# ``height=inch(1)`` is the extrusion, not a rod-and-finial: ``Mount.elevation`` is the body
-# BOTTOM, so the track's top lands on the soffit it fastens to. The 2" footprint depth is
-# the stick plus its carriers. ``plan_symbol=None`` as with the rods — scheduled and billed,
-# not drawn.
-#
-# ``MountKind.CEILING``, not WALL. These name no wall, so ``_resolve_location`` returns the
-# authored position untouched either way and the resolved Z is byte-identical; all WALL
-# bought was ``horizontal_projection_from_wall_m`` for A117.1 s307.2, which is moot above
-# 80". CEILING says the true thing: they hang from a soffit.
-#
-# See notes/porch_enclosure.md for the panels, the magnet seam and the north sweep.
-_TRACK_SOURCE = ("notes/porch_enclosure.md — snap-carrier aluminium curtain track, screwed "
-                 "up through the centre groove into the balcony joists/rim above; 5 screws "
-                 "per 8' stick (the VINYL spacing, so one set of hardware carries both "
-                 "panel sets).")
+# Mosquito Curtains Outdoor Curtain Tracking, white powder-coated aluminium, 3/4" square.
+# Direct soffit screws, 7' stock and internal splices; the vinyl set governs screw spacing.
+# Slot, wall and small hardware dimensions are visual approximations (no shop section is
+# published). Keep the 2" handling envelope; no fabric or carriers are shown.
+_TRACK_SOURCE = (
+    "Mosquito Curtains Outdoor Curtain Tracking, white, 3/4 x 3/4 in., 7 ft stock; "
+    "https://www.mosquitocurtains.com/plan-screen-porch/outdoor-curtain-tracking ; "
+    "direct soffit mounting, five screws per full stick for clear vinyl; "
+    "notes/porch_enclosure.md (profile details illustrative)."
+)
+_PORCH_TRACK_SPEC = CurtainTrackSpec(
+    show_curtains=False, outdoor_hardware=True,
+    rail_width=inch(0.75), rail_height=inch(0.75),
+)
 # The FRONT run, one piece since 2026-09-22: x 10'-0"..26'-0" on the -9'-0" spare joist,
 # less ~8" at each end where a 90-degree curve substitutes for the last of the stick.
 PORCH_TRACK_176 = FurnitureType(
     tag="FT-PORCH-TRACK-176", name='Porch enclosure track, 176"',
-    footprint=(inch(176), inch(2)), height=inch(1),
+    footprint=(inch(176), inch(2)), height=inch(0.75),
+    curtain_track=_PORCH_TRACK_SPEC,
     plan_symbol=None, mount=Mount(kind=MountKind.CEILING), source=_TRACK_SOURCE,
 )
 # The two FLANK runs, x = 10'-0" and 26'-0", y -9'-0" to -0'-7 1/2": 2 1/2" past the porch
@@ -107,7 +95,8 @@ PORCH_TRACK_176 = FurnitureType(
 # tag keeps "102" because prices.toml keys the per-each row on it.
 PORCH_TRACK_102 = FurnitureType(
     tag="FT-PORCH-TRACK-102", name='Porch enclosure track, 100 1/2"',
-    footprint=(inch(100.5), inch(2)), height=inch(1),
+    footprint=(inch(100.5), inch(2)), height=inch(0.75),
+    curtain_track=_PORCH_TRACK_SPEC,
     plan_symbol=None, mount=Mount(kind=MountKind.CEILING), source=_TRACK_SOURCE,
 )
 
