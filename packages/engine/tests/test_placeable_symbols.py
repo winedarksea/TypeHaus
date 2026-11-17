@@ -144,9 +144,15 @@ def test_parts_stay_inside_the_declared_box_and_name_a_real_colour(
     # is explicit; all other symbols continue to promise a finished-product envelope.
     projection = 2 * 0.0254 if symbol.startswith("sektion-axstad-kitchen-") else 0.0
     side_projection = projection if symbol.endswith("corner-wall") else 0.0
-    if symbol == "insinkerator-badger-5":
+    base_projection = 0.0
+    if symbol in {"insinkerator-badger-5", "badger-5-with-dearborn-p9703wbg"}:
         # Catalog footprint is the motor body; the supplied discharge elbow projects west.
         side_projection = width * (5.75 - 6.3125 / 2) / 6.3125
+    if symbol == "badger-5-with-dearborn-p9703wbg":
+        # Purchased trap projects beyond the motor envelope and below its base.
+        side_projection = width * (6 - 6.3125 / 2) / 6.3125
+        projection = depth * (3.75 - 6.3125 / 2) / 6.3125
+        base_projection = height * 1.625 / 11.5
     if symbol == "swanstone-flex-3636":
         # The separately supported return/post sits on the adjacent tub deck.
         side_projection = width * 1.5 / 36
@@ -187,7 +193,7 @@ def test_parts_stay_inside_the_declared_box_and_name_a_real_colour(
             f"{symbol} part escapes width")
         assert abs(cy) + sy / 2 <= depth / 2 + projection + TOLERANCE, (
             f"{symbol} part escapes depth")
-        assert cz - sz / 2 >= -TOLERANCE, f"{symbol} part sinks below its base"
+        assert cz - sz / 2 >= -base_projection - TOLERANCE, f"{symbol} part sinks below its base"
         assert cz + sz / 2 <= height + TOLERANCE, f"{symbol} part escapes its height"
 
 

@@ -29,7 +29,10 @@ if TYPE_CHECKING:
     from typehaus.model.placeables import ServicePort
     from typehaus.model.shower_assembly import ShowerAssemblySpec
 
-from typehaus.model.placeable_symbols._badger_disposal import badger_disposal
+from typehaus.model.placeable_symbols._badger_disposal import (
+    badger_disposal,
+    badger_disposal_with_dearborn_trap,
+)
 from typehaus.model.placeable_symbols._broan_hood import broan_recirculating_hood
 from typehaus.model.placeable_symbols._ceramic_fan_heater import ceramic_fan_heater
 from typehaus.model.placeable_symbols._eg4_storage import eg4_12kpv, eg4_wallmount_indoor
@@ -97,6 +100,8 @@ _REGISTRY: dict[str, Builder] = {**FURNITURE_SYMBOLS, **APPLIANCE_SYMBOLS, **PLU
                                  "unifi-u6-pro-ceiling": unifi_u6_pro_ceiling,
                                  "unifi-u6-pro-wall": unifi_u6_pro_wall,
                                  "insinkerator-badger-5": badger_disposal,
+                                 "badger-5-with-dearborn-p9703wbg":
+                                     badger_disposal_with_dearborn_trap,
                                  "broan-bwp1304ss-recirculating": broan_recirculating_hood,
                                  "fireplace-insert": fireplace_insert,
                                  "gree-flexx-ultra-24-horizontal": gree_flexx_horizontal,
@@ -155,6 +160,7 @@ SYMBOL_NAMES = (UNIFI_ACCESS_POINT_SYMBOLS
     "refrigerator", "range", "dishwasher", "washer", "dryer", "washer-dryer-stacked",
     "microwave", "countertop-microwave", "hood", "tea-kettle", "espresso-machine",
     "insinkerator-badger-5",
+    "badger-5-with-dearborn-p9703wbg",
     "furnace", "erv", "sheet-metal-plenum", "renewaire-fa8-wall-hood",
     "heat-pump-outdoor", "heat-pump-indoor",
     "water-heater", "sauna-heater", "harvia-cilindro-pc110e", "panel", "register",

@@ -29,7 +29,7 @@ def test_disposal_has_exportable_geometry_at_the_sink_drain(catlin_model_ro):
     sink = model.plan.by_tag("FX-M-KITCH-SINK")
     product = next(item for item in model.plan.library.appliance_types
                    if item.tag == disposal.type_ref)
-    assert model_symbol_for(product) == "insinkerator-badger-5"
+    assert model_symbol_for(product) == "badger-5-with-dearborn-p9703wbg"
     wire = _symbol_geometry(product, product.footprint)
     assert wire["plan_strokes"] == []  # Concealed appliance keeps its plan convention.
     assert len(wire["model_parts"]) > 10
@@ -43,6 +43,23 @@ def test_disposal_has_exportable_geometry_at_the_sink_drain(catlin_model_ro):
                                       disposal.position[1]))
     parts = model_parts(model_symbol_for(product), *(v.meters for v in product.footprint),
                         product.height.meters)
+    trap_parts = [part for part in parts if part.get("role") == "trap:dearborn-p9703wbg"]
+    assert len(trap_parts) == 4  # J-bend, inlet nut, union nut and outlet adapter.
+    trap = trap_parts[0]["mesh"]
+    arm = next(run for run in model.pipe_runs if run.tag == "PR-M-KITCH-TRAP-ARM")
+    endpoint = (*arm.path[0], arm.z_m[0])
+    trap_xy = place_local([point[:2] for point in trap["positions"]],
+                          disposal.position, disposal.rotation_degrees)
+    trap_world = [(x, y, point[2] + disposal.z_m)
+                  for (x, y), point in zip(trap_xy, trap["positions"], strict=True)]
+    assert min(math.dist(point, endpoint) for point in trap_world) < 1e-8
+    # Inlet overlaps the supplied elbow; the catalog's 4 5/8-inch drop clears the floor.
+    assert (min(point[2] for point in trap_world) - disposal.z_m) / INCH == pytest.approx(-1.625)
+    cabinet = Polygon(objects["FURN-M-KIT-SINKBASE"].footprint).buffer(-0.75 * INCH)
+    for part in trap_parts:
+        for point in place_local([p[:2] for p in part["mesh"]["positions"]],
+                                 disposal.position, disposal.rotation_degrees):
+            assert cabinet.contains(Point(point))
     mesh = _MeshBuilder()
     assert _add_canvas_parts(mesh, disposal, product, {})
     file = ifcopenshell.file(schema="IFC4")

@@ -8,6 +8,7 @@ https://www.insinkerator.com/documents/badger-5-specifications-en-81720.pdf
 
 import math
 
+from typehaus.model.placeable_symbols._dearborn_trap import dearborn_trap_parts
 from typehaus.model.placeable_symbols._frame import box, circle
 from typehaus.model.placeable_symbols._mesh import mesh_part, outward
 from typehaus.model.placeable_symbols._round_hardware import round_cylinder
@@ -68,7 +69,11 @@ def _discharge_elbow():
     return mesh_part(positions, outward(positions, triangles), "metal-black")
 
 
-def badger_disposal(width: float, depth: float, height: float):
+def badger_disposal_with_dearborn_trap(width: float, depth: float, height: float):
+    return badger_disposal(width, depth, height, include_trap=True)
+
+
+def badger_disposal(width: float, depth: float, height: float, *, include_trap: bool = False):
     parts = []
     for bottom, top, radius, color in HOUSING_COURSES_IN:
         parts.append(round_cylinder((0, 0, (bottom + top) / 2), radius,
@@ -90,6 +95,8 @@ def badger_disposal(width: float, depth: float, height: float):
     parts.append(round_cylinder((1.35, -0.7, 0.08), 0.18, 0.16, axis=2,
                                 color="disposal-reset"))
     parts.append(round_cylinder((0, 0, 0.025), 0.23, 0.05, axis=2, color="metal-black"))
+    if include_trap:
+        parts.extend(dearborn_trap_parts())
     scale = (width / BODY_DIAMETER_IN, depth / BODY_DIAMETER_IN,
              height / ASSEMBLY_HEIGHT_IN)
     scaled = []

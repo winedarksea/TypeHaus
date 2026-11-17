@@ -383,7 +383,7 @@ BROAN_HOOD_30 = HOOD_RECIRC.model_copy(update={
 BADGER_5 = DISPOSAL.model_copy(update={
     "tag": "APPL-ISE-BADGER5", "name": "InSinkErator Badger 5 disposer, 1/2 HP",
     "footprint": (inch(6.3125), inch(6.3125)), "height": inch(11.5),
-    "model_representation": ModelRepresentation(symbol="insinkerator-badger-5"),
+    "model_representation": ModelRepresentation(symbol="badger-5-with-dearborn-p9703wbg"),
     "ports": (ServicePort(tag="power", service=Service.POWER_120, position=(ft(0), ft(0), ft(0))),
               # Side discharge, elbow turned west to the Dearborn trap (notes/
               # kitchen_sink_installation.md s3): 6 1/2 in. under a stainless sink bottom.

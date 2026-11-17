@@ -1,7 +1,7 @@
 # haus: editable
 # Kitchen sink connections; set-out and fitting envelopes: notes/kitchen_sink_installation.md.
-# Main room AFF = authored elevation minus 15/16 inch (the resolved concrete-cap finish).
-# The purchased tubular J-bend is in install_parts, not another length of PVC pipe.
+# Pipe elevations use storey Z; current main-room finished floor is +26.05 mm.
+# The purchased tubular J-bend is modeled with the disposer and billed in install_parts.
 
 from typehaus import DrainCleanout, PipeRun, PipeSystem, inch, pt
 

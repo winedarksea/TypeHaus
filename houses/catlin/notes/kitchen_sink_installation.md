@@ -92,6 +92,15 @@ and outlet axes, a 4⅝-inch inlet-top to outside-bottom dimension and approxima
 confirm its actual bottom after trimming the disposer elbow. The cabinet floor's
 top is approximately **5.57 AFF** (30-inch frame beneath the quartz, ¾-inch bottom).
 Keep the cleanout accessible through a sealed service opening in that bottom.
+The generated disposer assembly includes the white J-bend, slip nuts and outlet
+adapter, with its inlet at 16.319 AFF and outside bottom at 11.694 AFF. These are
+coordination geometry using the catalog envelope; the existing physical dry-fit
+checks still determine final trimming and fitting take-outs. The trap remains
+billed once in APPL-M-DISP's installation parts.
+The current resolved floor buildup is 26.05 mm (1.02559 inches), superseding the
+15/16-inch datum used in the legacy pipe table above. The model keeps those
+authored pipe elevations and meets the arm at 17.10417 inches storey-relative,
+or 16.07858 AFF, by adjusting the trap's outlet leg.
 The diagonal waste return also needs a fitted bottom-panel opening; no side cutting.
 
 The 8-inch rigid arm falls ⅙ inch at ¼ inch/foot before reaching the vented tee.
