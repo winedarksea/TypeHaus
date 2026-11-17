@@ -48,6 +48,11 @@ Revised 2026-10-16, after a review measured the built model against the specs:
   over it); a 2″ band covers each jamb post's outer face; and a window pan's drip coat runs
   the sill course face and underside, across the posts' end grain. All are the same
   `opening_flashing_membrane`/`opening_sill_pan` solids, hidden in elevation.
+- **Metal over membrane, never behind it** (2026-11-16). A metal-wall window's jamb, sill and
+  head trim are swept off their bearing face, standing on the membrane under them, and the
+  sill trim's upstand rises to the unit's sill in front of the pan's turn-down. A window pan
+  behind metal trim, garage included, discharges at the mount plane; only a door's pan, or a
+  cased opening's, runs to its own drip.
 - **The pan falls 1/4″/ft on a tapered KDAT shim**, its back dam up a 1/2″ KDAT strip
   (`sill-support`, filed with the pan). A window's outie pan turns down over the buck's
   front edge, at the outer girt face, behind the sill trim. **A door's pan runs past the

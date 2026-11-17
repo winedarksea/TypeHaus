@@ -16,11 +16,15 @@ def folded_section_mesh(
     second_axis: Vec3,
     run: Vec3,
     thickness_m: float,
+    *,
+    back_face: bool = False,
 ) -> GMesh:
     """Sweep a section polyline in an orthonormal frame, including its sheet thickness.
 
     Coordinates and thickness are in metres. The two axes span the section plane;
     ``run`` must be perpendicular to it. Reversing a run does not change the section.
+    The sheet lies right of the polyline's direction; ``back_face`` puts it left, for a
+    polyline traced along the face the sheet bears on.
     """
     if len(section) < 2 or not math.isfinite(thickness_m) or thickness_m <= 0:
         raise ValueError("a folded section needs two points and a positive thickness")
@@ -44,7 +48,7 @@ def folded_section_mesh(
     if any(not all(math.isfinite(value) for value in point) for point in section):
         raise ValueError("section points must be finite")
 
-    inset = _inset_section(section, thickness_m)
+    inset = _inset_section(section, -thickness_m if back_face else thickness_m)
     ring = (*section, *reversed(inset))
     points = tuple(
         tuple(origin[i] + first_axis[i] * u + second_axis[i] * v for i in range(3)) for u, v in ring

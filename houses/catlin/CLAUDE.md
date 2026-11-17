@@ -623,6 +623,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   wall side, front edge and a 4" sheathing band goes on before the posts, and the foam laps it;
   posts take a 2" band on the outer face only; the pan's drip coat runs the sill course face and
   underside (`resolve/opening_raccoon.py`, `notes/opening_flashing_spec.md` §3). Never wrap a girt.
+  Metal stands on the membrane, never behind it: the trim sweeps off its bearing face, the sill
+  upstand rises to the unit, and every window pan (garage too) tucks behind the sill trim (2026-11-16).
 - Cladding faces are derived off sheathing in `params/cladding.py`: E-W (PBR) 7.25"
   (`_WALL_OUTBOARD_IN`), N-S (board-and-batten) 6.75" (`HOUSE_NS_OUTBOARD_IN`, read by
   `HOUSE_CLADDING_Y_FT` and `sunken_garden`'s `house_ext_layers_in`). The court's north line

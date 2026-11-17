@@ -145,6 +145,7 @@ def _head_strips(model) -> None:
     from typehaus.library.trim.generic import HEAD_FLASHING_CLADDING_CLEARANCE_IN
     from typehaus.resolve.cladding_trim.openings import is_window_head
     from typehaus.resolve.flashing_config import FLASHING
+    from typehaus.resolve.metal_skin_profiles import SHEET_24_GA_M
     from typehaus.resolve.opening_flashing import head_flashing_section, opening_flashing_frame
     from typehaus.resolve.opening_head_drip import DRIP_HEAD_PRODUCT
 
@@ -166,7 +167,9 @@ def _head_strips(model) -> None:
                 seat = tuple((b - a) * M_PER_IN for a, b in zip(section[1], section[2],
                                                                 strict=True))
                 start, length = lo, opening.width_m + 2 * M_PER_IN
-                origin = frame.point(lo, frame.mount, z)
+                # The head's sheet stands on its membrane, thickened up from its seat.
+                origin = frame.point(lo, frame.mount + FLASHING.perimeter_membrane_m,
+                                     z + SHEET_24_GA_M)
             else:
                 head = head_flashing_section(wall, opening, frame, FLASHING)
                 (water, bend), (front, seat_z) = head.points[1], head.points[2]

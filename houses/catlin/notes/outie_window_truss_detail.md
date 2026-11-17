@@ -305,7 +305,9 @@ from the sheathing face, and on this wall neither piece is anywhere near it.
   splash-zone exception of `board_batten_girt_span.md` §7.10. It discharges *behind*
   the cladding. An outie pan carried out to a visible drip would put a metal lip under every
   window on the facade, which is not what this house looks like. **Leave the window's sill
-  flange unsealed** over the pan (spec §3).
+  flange unsealed** over the pan (spec §3). The sill trim's upstand stands in FRONT of the
+  turn-down and rises to the unit's sill (2026-11-16; it stopped 1/8" short behind the
+  membrane before), so the membrane never shows.
 
   **Fluid-applied, and the ponding paper a reader will find does not govern it.** RDH's 2017
   study (Wilkinson/Tatara/Finch) ponded seven liquid membranes on wood sills for 42 days and
@@ -335,7 +337,8 @@ from the sheathing face, and on this wall neither piece is anywhere near it.
   down the cavity leaves over the 58114XX and the 1/2" pocket behind the course stays dry.
   The panel ends in the 58114XX channel on a bare perforated strip. Brake-formed
   steel in the house dark, bedded on the membrane over the course top and face, 3/4" end dams,
-  RO + 7" long, its upstand stripped in. Sealant at the cladding-to-frame joint sits at the
+  RO + 7" long, its upstand stripped in. Lap order, outward: course-face membrane, 58114XX
+  back leg, cap face leg (2026-11-16). Sealant at the cladding-to-frame joint sits at the
   mount plane, under the 58114XX. Before this, the cavity above every head exited only down
   the rib voids into a closure taped into the 58114XX throat, and the pocket behind the
   course was sealed in on the membrane: no drain, no exit.

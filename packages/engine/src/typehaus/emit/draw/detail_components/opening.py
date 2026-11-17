@@ -152,8 +152,10 @@ def window_head_jamb_sill(model, wall, opening, crop, direction, station) -> lis
     out past the cladding and drips, so water in the drainage plane is delivered *outside*
     the opening. The sill pan spans from the framing's interior face, turns up a back dam,
     and drips clear of the cladding — the pan is what keeps an eventual frame leak from
-    becoming a rough-sill leak. Gated on the wall actually presenting a weather face: an
-    interior opening gets neither, because there is no water to manage.
+    becoming a rough-sill leak. Behind metal trim (the garage) it instead turns down on the
+    sheathing behind the sill trim: no membrane is an exterior surface. Gated on the wall
+    actually presenting a weather face: an interior opening gets neither, because there is no
+    water to manage.
     """
     if not is_weather_exposed(wall):
         return []
@@ -172,9 +174,19 @@ def window_head_jamb_sill(model, wall, opening, crop, direction, station) -> lis
     cfg = OPENING_DETAIL
     throw = out_sign * _drip_throw_in(opening)
 
+    seat = getattr(opening, "window_seat", None)
+    metal_trim = bool(seat and seat.metal_trim)
+    stud = outermost_with_function(intervals, "structure")
+    back = (face_of(stud, is_outboard_high, outer=False) if stud is not None
+            else sheath_out - out_sign * 4.0)
     profiles = _opening_trim_profiles(model, opening, direction, station)
     nodes: list[IRNode] = _trim_nodes(profiles)
     if _in_crop_z(head_z, crop):
+        if metal_trim:
+            # [K1] across the RO head and lapped up the sheathing, under the trim's back leg.
+            nodes += flashing_nodes([(back, head_z), (sheath_out, head_z),
+                                     (sheath_out, head_z + _in(FLASHING.perimeter_lap_m))],
+                                    tag="opening-perimeter-membrane")
         casing = _in(_WINDOW_TRIM_FACE_WIDTH_M) if opening.kind == "window" else 0.0
         if not _head_is_trimmed(profiles, sill_z, head_z):
             nodes += flashing_nodes(_head_path(sheath_out, head_z + casing,
@@ -186,10 +198,9 @@ def window_head_jamb_sill(model, wall, opening, crop, direction, station) -> lis
                              head_z - cfg.sealant_bead_in, clad_out, head_z,
                              "opening-sealant", "sealant", "metal", lineweight=PROFILE)
     if _in_crop_z(sill_z, crop) and not is_overhead(model, opening):
-        stud = outermost_with_function(intervals, "structure")
-        back = (face_of(stud, is_outboard_high, outer=False) if stud is not None
-                else sheath_out - out_sign * 4.0)
-        nodes += flashing_nodes(_pan_path(back, sill_z, clad_out + throw, out_sign),
+        # Behind metal trim the pan turns down on the sheathing, behind the sill trim upstand.
+        outlet = sheath_out if metal_trim else clad_out + throw
+        nodes += flashing_nodes(_pan_path(back, sill_z, outlet, out_sign),
                                 tag="opening-sill-pan")
     return nodes
 

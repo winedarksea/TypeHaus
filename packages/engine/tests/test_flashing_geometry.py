@@ -432,3 +432,51 @@ def test_the_screen_cap_bears_on_tape(catlin_model_ro):
     # its 3.831" clipped face both sides plus its free 5.5" edge (the chord takes the other).
     assert rows[0]["length_ft"] == pytest.approx((54.25 + 22 + 2 * (2 * 3.83148 + 5.5)) / 12,
                                                  abs=0.05)
+
+
+def test_metal_wall_window_membrane_lies_behind_its_metal(catlin_model_ro):
+    """Metal laid over a membrane stands outboard of it; no flashing membrane shows."""
+    from typehaus.resolve.opening_head_cap import head_trim_back_leg_in
+
+    model, tol = catlin_model_ro, 1e-6
+    trims = {"WINDOW_SILL_CUSTOM", "WINDOW_JAMB_CUSTOM", "PBR_WINDOW_JAMB", "OPENING_HEAD",
+             "OPENING_HEAD_CAP"}
+    checked = set()
+    for opening in model.openings:
+        seat = opening.window_seat
+        if opening.kind != "window" or seat is None or not seat.metal_trim:
+            continue
+        wall = model.wall(opening.host_wall)
+        frame = opening_flashing_frame(model, wall)
+        sill = wall.base_ref_z_m + opening.sill_m
+        top = sill + opening.height_m - seat.head_drop_m
+        # The garage head trim's back leg is stripped in over its metal, under the panel.
+        strip = (top + inch_m(head_trim_back_leg_in()) - FLASHING.head_strip_lap_m,
+                 top + inch_m(head_trim_back_leg_in()) + FLASHING.head_strip_lap_m)
+
+        def local(p, frame=frame):
+            d = (p[0] - frame.origin[0], p[1] - frame.origin[1])
+            return d[0] * frame.outward[0] + d[1] * frame.outward[1] - frame.mount, p[2]
+
+        for solid in model.solids:
+            if solid.host_ref != opening.tag or solid.body_mesh is None:
+                continue
+            points = [local(p) for p in solid.body_mesh.positions]
+            if solid.category in ("opening_flashing_membrane", "opening_sill_pan"):
+                for depth, z in points:
+                    if strip[0] - tol <= z <= strip[1] + tol:
+                        continue
+                    # Behind the trim and the panel: no further out than the pan's turn-down
+                    # on the mount plane (the garage pan once ran 1-1/4" past its panel).
+                    assert depth <= FLASHING.sill_membrane_m + tol, (solid.tag, depth)
+            elif solid.product in trims:
+                # The sheet's mount-plane faces stand on the membrane's front.
+                front = (FLASHING.sill_membrane_m if solid.product == "WINDOW_SILL_CUSTOM"
+                         else FLASHING.perimeter_membrane_m)
+                assert not any(-inch_m(0.25) < depth < front - tol for depth, _z in points), \
+                    solid.tag
+                # The sill trim's upstand reaches the unit.
+                if solid.product == "WINDOW_SILL_CUSTOM":
+                    assert max(z for _depth, z in points) >= sill + seat.sill_rise_m - tol
+                    checked.add(opening.tag)
+    assert {"WIN-M-BED-W1", "WIN-M-BED-S1", "WIN-G-N1"} <= checked

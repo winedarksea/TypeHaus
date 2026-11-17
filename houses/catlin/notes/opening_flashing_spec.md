@@ -161,7 +161,10 @@ Sequence at an opening, step 0 on the flat deck, the rest after the foam:
    stands on something. Back dam up the strip, across the sloped sill, out to the mount
    plane, and turn it **down over the buck's front edge**. The buck spans the 1/2" vent gap,
    so that is the outlet: water runs down past the sill course face and the cladding's back,
-   hidden behind the sill trim (owner, 2026-10-16). No visible drip. **Carry the coat down
+   hidden behind the sill trim (owner, 2026-10-16). No visible drip. **Metal laps over
+   membrane** (2026-11-16): the sill trim's upstand stands in front of the turn-down and rises
+   to the unit's sill, and the jamb and head trim stand on the reveal band, so no membrane is
+   an exterior surface. **Carry the coat down
    the whole sill course face and across its underside to the slot**, including both jamb
    posts' bottom end grain (2026-10-30): the splash-zone exception of
    `board_batten_girt_span.md` §7.10. The underside stays open to the cavity; the course's
@@ -294,8 +297,13 @@ The garage wall is `GARAGE_WALL_2X6`: 2" ccSPF in the bays, 5/8" CDX and the cor
 with **no WRB** and no exterior foam. So the CDX is the substrate and the plane the membrane
 laps onto, and the opening is an innie: no buck projection, no vent gap.
 
-- **Windows and `D-G-SERVICE`**: §3's sequence on CDX. The pan runs out past the panel to a
-  drip, 1/4"/ft on a tapered KDAT shim, back dam on a strip at the studs' inner face. The
+- **Windows and `D-G-SERVICE`**: §3's sequence on CDX, 1/4"/ft on a tapered KDAT shim, back
+  dam on a strip at the studs' inner face. `D-G-SERVICE`'s pan runs out past the panel to a
+  drip (a threshold has no sill trim). **A window's pan tucks behind the sill trim** (owner,
+  2026-11-16): it turns down 3/4" on the CDX behind the trim's upstand and the corrugated, as
+  on the house. FastFlash is rated for ~12 months of UV, so a lip past the panel was a red
+  band under each window that would chalk; the little water a pan releases now lands on bare
+  CDX behind the panel, with no WRB below it, an accepted tradeoff. The
   window heads (`WIN-G-N1`, `WIN-G-S1`) take the stock 1.5" Sill/Head 58114XX, as every
   metal-wall window does (`metal_trim_kit.md`): 24 ga PVDF, 2-1/2" back leg, 1-1/2" throat,
   10'-2" stock (Metal Sales PBR installation guide, April 2024, Flashing Profiles, p. 20).

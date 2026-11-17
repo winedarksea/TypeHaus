@@ -18,12 +18,13 @@ source:
 - Wood wall: 2x6 at 24" o.c., 5/8" CDX, 2" of 2 lb closed-cell foam per bay. No WRB.
 - Innie: the unit sits in the stud plane, outer face on the CDX. No buck projection, no vent gap.
 - Bucks before foam. The bay foam is the air and water plane; the CDX is the membrane substrate.
-- Jamb, sill and head trim are site brakes from 24 ga flat stock.
+- Jamb and sill trim are site brakes from 24 ga flat stock; the head is the stock 58114XX.
+- No membrane shows: every one lies behind metal (owner, 2026-11-16).
 
 ### Keyed
 - [K1 @ host#layer:cdx:out] Fluid-applied membrane round the R.O., lapped 2" onto the CDX.
-- [K2 @ host#layer:cladding:out] Sill pan: 1/4"/ft on a tapered KDAT shim, back dam on a strip at the studs' inner face. Out past the panel to a drip.
-- [K3] Head: 24 ga steel over the casing, end dams, 3" upstand stripped in to the CDX. Sealant under the drip.
+- [K2 @ host#layer:cdx:out] Sill pan: 1/4"/ft on a tapered KDAT shim, back dam at the studs' inner face, turned down 3/4" on the CDX behind the sill trim and panel.
+- [K3] Head: stock 58114XX on the head membrane, its 2-1/2" back leg stripped in 2" onto the CDX. Sealant under its drip.
 - [K4] Steel head and trim never touch aluminium: EPDM or sealant between.
 
 # Notes

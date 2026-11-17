@@ -87,11 +87,13 @@ def _opening_runs(ctx, pieces):
                                            (opening.tag,), code=_FRAME_JOINT_CITE))
                 else:
                     checked["lap"] += 1
+        # The upstand stands outboard of the frame face, over the pan's turn-down, so it
+        # rises to the unit's sill: a gap below the unit would show the membrane.
         bottom = wall.base_ref_z_m + opening.sill_m
         for sill in sills:
             top = max(point[2] for point in sill.body_mesh.positions) - bottom
-            if seat and top > seat.sill_rise_m - _UPSTAND_MARGIN_M:
-                findings.append(failed(FIT, f"{opening.tag} sill upstand reaches the unit",
+            if seat and top + _TOL < seat.sill_rise_m:
+                findings.append(failed(FIT, f"{opening.tag} sill upstand stops below the unit",
                                        (opening.tag,), code="metal_trim_kit.md, Openings"))
             else:
                 checked["upstand"] += 1
@@ -119,7 +121,7 @@ def _opening_runs(ctx, pieces):
                 checked["order"] += 1
     notes = {"throat": "reveal legs and head throats clear the panel depth",
              "lap": "jamb flanges reach the frame face",
-             "upstand": "sill upstands stay under the unit", "order": "heads lap over their jambs",
+             "upstand": "sill upstands reach the unit", "order": "heads lap over their jambs",
              "sill": "jambs land on their sill caps"}
     findings += [passed(FIT, f"{n} {notes[k]}", code=_PBR_CITE if k == "throat" else None)
                  for k, n in checked.items() if n and not any(

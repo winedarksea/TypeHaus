@@ -52,10 +52,16 @@ def head_cap(model, wall, opening, frame, cfg: FlashingConfig = FLASHING) -> Hea
     s0, s1, top = span
     head_trim_top = (wall.base_ref_z_m + opening.sill_m + opening.height_m - seat.head_drop_m
                      + head_trim_back_leg_in() * M_PER_IN)
-    leg = max(CAP_FACE_LEG_IN * M_PER_IN, top - (head_trim_top - CAP_HEAD_LAP_IN * M_PER_IN))
-    fall = (frame.mount - frame.water) * cfg.drainage_slope
-    points = ((frame.mount, top - leg), (frame.mount, top), (frame.water, top + fall),
-              (frame.water, top + fall + CAP_UPSTAND_IN * M_PER_IN))
+    # The face leg laps over the head trim's back leg, itself on the course-face membrane;
+    # the top beds on the course-top membrane. The upstand stands on bare foam, stripped in.
+    from typehaus.resolve.metal_skin_profiles import SHEET_24_GA_M
+
+    face = frame.mount + cfg.perimeter_membrane_m + SHEET_24_GA_M
+    seat = top + cfg.perimeter_membrane_m
+    leg = max(CAP_FACE_LEG_IN * M_PER_IN, seat - (head_trim_top - CAP_HEAD_LAP_IN * M_PER_IN))
+    fall = (face - frame.water) * cfg.drainage_slope
+    points = ((face, seat - leg), (face, seat), (frame.water, seat + fall),
+              (frame.water, seat + fall + CAP_UPSTAND_IN * M_PER_IN))
     return HeadCap(s0, s1 - s0, points, top, head_trim_top)
 
 

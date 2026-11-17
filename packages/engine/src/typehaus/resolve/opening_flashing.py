@@ -144,7 +144,8 @@ def resolve_window_seats(model: ResolvedModel, cfg: FlashingConfig = FLASHING) -
             mount = "veneer" if frame is not None else None
         product = next((t for t in model.plan.library.window_types
                         if t.tag == opening.type_ref), None) if frame is not None else None
-        seat = window_seat(opening, frame, cfg, product) if frame else None
+        seat = window_seat(opening, frame, cfg, product, metal_trim=mount == "metal_trim") \
+            if frame else None
         if seat is not None and mount is not None:
             depth = getattr(product, "frame_depth", None)
             seat = mount_seat(seat, frame, depth.meters if depth is not None else None, mount)
@@ -354,11 +355,11 @@ def opening_flashing_meshes(wall: ResolvedWall, opening: ResolvedOpening,
                                       (frame.mount, head_seat), thickness))
     elif opening.window_seat and opening.window_seat.metal_trim:
         # No cavity (the garage): the catalog head's back leg is tied to the water plane.
-        from typehaus.resolve.metal_skin_profiles import INCH_M
+        from typehaus.resolve.metal_skin_profiles import INCH_M, SHEET_24_GA_M
 
         top = head - opening.window_seat.head_drop_m + 2.5 * INCH_M
         start, span = lo - INCH_M, hi - lo + 2 * INCH_M
-        metal_face = frame.mount + cfg.sheet_m
+        metal_face = frame.mount + thickness + SHEET_24_GA_M  # back leg over its membrane
     membrane += [frame.leg(start, span, a, b, thickness) for a, b in (
         ((metal_face, top - strip), (metal_face, top)),
         ((frame.water, top), (metal_face + thickness, top)),
@@ -378,7 +379,8 @@ def opening_flashing_meshes(wall: ResolvedWall, opening: ResolvedOpening,
         design = placement.specification.sill_design if placement else None
         from typehaus.resolve.exterior_door_sill import door_pan_ro_face
 
-        result += _sill_pan(frame, _pan_outlet(opening, frame, cfg), lo + buck,
+        trimmed = bool(opening.window_seat and opening.window_seat.metal_trim)
+        result += _sill_pan(frame, _pan_outlet(opening, frame, cfg, trimmed), lo + buck,
                             hi - lo - 2 * buck, sill + buck, cfg,
                             end_dam_stop=frame.clad if design else None,
                             outlet_lip=design.drainage_clearance.meters if design else 0.0,
@@ -399,20 +401,20 @@ def _drip_face(opening: ResolvedOpening, frame: OpeningFlashingFrame,
 
 
 def _pan_outlet(opening: ResolvedOpening, frame: OpeningFlashingFrame,
-                cfg: FlashingConfig) -> float:
-    """An outie window's pan discharges at the mount plane; every other pan at the drip."""
+                cfg: FlashingConfig, metal_trim: bool = False) -> float:
+    """A window pan behind metal trim (or on an outie) discharges at the mount plane."""
     placement = opening.doorway.exterior_placement if opening.doorway else None
     if placement and placement.specification.sill_design:
         from typehaus.resolve.exterior_door_sill import sill_outlet_depth
 
         return sill_outlet_depth(frame.clad, placement.specification)
-    # A metal-wall window on an innie wall (the garage) runs past the panel too (C1 E11).
-    return frame.mount if frame.outie and not opening.is_door else _drip_face(opening, frame, cfg)
+    behind = not opening.is_door and (frame.outie or metal_trim)
+    return frame.mount if behind else _drip_face(opening, frame, cfg)
 
 
 def window_seat(opening: ResolvedOpening, frame: OpeningFlashingFrame,
                 cfg: FlashingConfig = FLASHING, product: WindowType | None = None,
-                ) -> WindowSeat:
+                *, metal_trim: bool = False) -> WindowSeat:
     """The unit inside its flashed RO: shimmed off the jambs and head, on the pan's high
     point at the back dam (a level unit bears there on a sloped pan), outboard of the dam.
 
@@ -420,7 +422,7 @@ def window_seat(opening: ResolvedOpening, frame: OpeningFlashingFrame,
     the jambs; the head takes the rest of the vertical slack.
     """
     dam = frame.back + cfg.back_dam_strip_m
-    outlet = _pan_outlet(opening, frame, cfg)
+    outlet = _pan_outlet(opening, frame, cfg, metal_trim)
     fall = (outlet - dam) * cfg.drainage_slope
     lining = frame.buck + cfg.perimeter_membrane_m
     sill_rise = frame.buck + fall + cfg.sill_membrane_m
@@ -446,8 +448,8 @@ def _sill_pan(frame: OpeningFlashingFrame, outlet: float, lo: float, width: floa
               ro_face: float | None = None) -> list[tuple[str, str, str, GMesh]]:
     """A sloped pan on a tapered shim, its back dam turned up a rigid strip.
 
-    A window's outie pan discharges at the mount plane, behind the cladding; a door's, and
-    every pan on a conventional wall, runs past the cladding to a drip. ``drip`` is an
+    A window pan behind metal trim discharges at the mount plane, behind the cladding; a
+    door's, and a cased or trimless window's, runs past the cladding to a drip. ``drip`` is an
     outie window's ``(bottom z, extra legs)``: the down leg coats the sill course to its bottom.
     ``ro_face`` (a ``pan_across_ro`` door) stops the slope there; the pan runs level beyond.
     """

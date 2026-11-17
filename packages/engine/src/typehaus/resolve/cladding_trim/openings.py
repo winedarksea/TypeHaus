@@ -45,19 +45,20 @@ def window_jamb_section(reveal_in: float, jamb_inset_in: float, *,
 
 
 def window_sill_section(reveal_in: float, sill_rise_in: float, *,
-                        upstand_clearance_in: float = 0.125,
+                        upstand_clearance_in: float = 0.0,
                         drip_in: float = 0.5,
                         hem_in: float = 0.25,
                         slope_in_per_ft: float = 0.25) -> WindowTrimSection:
     """Sill section in (outward-depth, height) at the rough sill.
 
-    The pan turn-down laps the back upstand; the cap drains across the panel
-    end and past its rib. Its upstand remains below the unit's sill.
+    The pan turn-down laps behind the back upstand, which stands outboard of the frame face
+    and so rises to the unit's sill; the cap drains across the panel end and past its rib.
     """
-    values = (reveal_in, sill_rise_in, upstand_clearance_in, drip_in, hem_in,
-              slope_in_per_ft)
+    values = (reveal_in, sill_rise_in, drip_in, hem_in, slope_in_per_ft)
     if any(not isfinite(v) or v <= 0 for v in values):
         raise ValueError("sill dimensions must be finite and positive")
+    if not isfinite(upstand_clearance_in) or upstand_clearance_in < 0:
+        raise ValueError("upstand clearance must be finite and non-negative")
     if sill_rise_in <= upstand_clearance_in:
         raise ValueError("sill rise must clear the upstand")
     fall = reveal_in * slope_in_per_ft / 12.0
@@ -125,6 +126,7 @@ def window_trim_solids(model, wall, opening, frame, material, seat=None):
     )
     from typehaus.resolve.cladding_trim.members import split_stock_run
     from typehaus.resolve.cladding_trim.section import folded_section_mesh
+    from typehaus.resolve.flashing_config import FLASHING
     from typehaus.resolve.flashing_solids import flashing_solid
     from typehaus.resolve.metal_skin_profiles import INCH_M, SHEET_24_GA_M
 
@@ -154,22 +156,27 @@ def window_trim_solids(model, wall, opening, frame, material, seat=None):
             point = tuple(origin[i] + direction[i] * start for i in range(3))
             mesh = folded_section_mesh(tuple((a * INCH_M, b * INCH_M) for a, b in section),
                                        point, axis_a, axis_b,
-                                       tuple(v * (end - start) for v in direction), SHEET_24_GA_M)
+                                       tuple(v * (end - start) for v in direction), SHEET_24_GA_M,
+                                       back_face=True)
             solid = flashing_solid(uid=f"{opening.uid}-trim-{key}-{index}",
                 tag=f"{opening.tag}-TRIM-{key.upper()}-{index + 1}", storey=wall.storey,
                 category="cladding_trim", mesh=mesh, material=material, host_ref=opening.tag)
             solids.append(replace(solid, product=profile_key, trim_length_m=end - start,
                                   trim_stock_length_in=stock / INCH_M))
 
+    # Each sheet is traced on its bearing face and stands outboard of the membrane under it:
+    # metal laps over the flashing, never behind it.
+    jamb_face = frame.mount + FLASHING.perimeter_membrane_m
     for key, station, sign in (("jamb-left", lo, 1.0), ("jamb-right", hi, -1.0)):
         add(key, jamb_key, jamb_profile, jamb_points,
-            frame.point(station, frame.mount, jamb_base),
+            frame.point(station, jamb_face, jamb_base),
             tuple(v * sign for v in along), outward, axis_up, head - jamb_base)
     add("sill", "WINDOW_SILL_CUSTOM", WINDOW_SILL_CUSTOM, sill_points,
-        frame.point(lo, frame.mount, sill), outward, axis_up, along, opening.width_m)
-    # 58114XX's one-inch inner upstand folds against its back leg; the centreline sweeps.
+        frame.point(lo, frame.mount + FLASHING.sill_membrane_m, sill), outward, axis_up, along,
+        opening.width_m)
+    # 58114XX's one-inch inner upstand folds against its back leg, so the bearing face sweeps.
     add("head", WINDOW_HEAD_PRODUCT, OPENING_HEAD, OPENING_HEAD.section_in,
-        frame.point(lo - INCH_M, frame.mount, head), outward, axis_up, along,
+        frame.point(lo - INCH_M, jamb_face, head), outward, axis_up, along,
         opening.width_m + 2 * INCH_M)
     return solids
 
