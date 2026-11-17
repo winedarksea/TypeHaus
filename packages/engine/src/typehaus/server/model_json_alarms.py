@@ -49,4 +49,7 @@ def _ceiling_z(model: ResolvedModel, room_el: Any, room_tag: str | None, storey_
         return None
     if room.clear_height_m is not None:
         return room_finished_floor_elevation(model, room) + room.clear_height_m
-    return None
+    # No deck overhead (a trussed roof): the room's flat ceiling board's underside.
+    ceiling = next((c for c in model.ceilings
+                    if c.room_ref == room_tag and c.storey == storey_tag), None)
+    return None if ceiling is None else ceiling.z0_m

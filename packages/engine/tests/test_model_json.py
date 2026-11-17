@@ -506,8 +506,12 @@ def test_alarms_are_served_at_the_shared_alarm_point(catlin_model_ro, catlin_pay
         alarm = catlin_model_ro.plan.by_tag(record["tag"])
         expected = alarm_xy(alarm, catlin_model_ro.plan.by_tag(alarm.room) if alarm.room else None)
         assert (record["x"], record["y"]) == expected
+        assert record["z"] is not None, record["tag"]  # the viewer skips a head with no z
     hall = next(record for record in alarms if record["tag"] == "AL-S-HALL")
-    assert hall["z"] is not None and hall["mount"] == "ceiling"
+    assert hall["mount"] == "ceiling"
+    # No deck over the trussed garage: the head sits on its ceiling board's underside.
+    ceiling = next(c for c in catlin_model_ro.ceilings if c.room_ref == "RM-GARAGE")
+    assert next(r for r in alarms if r["tag"] == "AL-G-HEAT")["z"] == ceiling.z0_m
     # A leak sensor lies on the slab, not at the ceiling over the stair it sits under.
     leak = next(record for record in alarms if record["tag"] == "AL-B-WH-LEAK")
     room = next(room for room in catlin_model_ro.rooms if room.tag == "RM-B-STAIR")
