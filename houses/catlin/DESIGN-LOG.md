@@ -8605,6 +8605,6 @@ bend dimensions. See `notes/porch_enclosure.md` for that remaining connection de
 - **Footing.** Owner asked for as few footings as possible, and for no engineered item. A
   sonotube buys depth that a heated basement floor doesn't need. The bare slab has no
   prescriptive read for a column. One 16"x24"x8" pad cast with the slab
-  (`PD-B-WELL`, `cast_with`) carries both posts: 3,141 lb, 1,178 psf against 2,000
+  (`PD-B-WELL`, `cast_with`) carries both posts: 3,172 lb, 1,189 psf against 2,000
   (`notes/stairwell_post_pad.md`). The slab and its sub-slab layers are clipped round a
   flush pad as they are round a flush footing (`resolve/slab_clip.py`).

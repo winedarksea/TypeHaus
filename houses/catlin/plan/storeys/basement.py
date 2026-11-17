@@ -1452,7 +1452,7 @@ SLABS = [
 # One thickened-slab pad under both stairwell posts (P-M-STRWELL-S/-SS, main.py), poured with
 # SL-B-FLOOR on its capillary stone; the XPS stops at its edge and the ABU44 bolts cast into
 # it. 16" x 24" x 8" from the slab top: projection (6 1/4" / 5 1/2") within the thickness,
-# 3,140 lb on 2.67 sf = 1,180 psf against GM's 2,000 (notes/stairwell_post_pad.md).
+# 3,170 lb on 2.67 sf = 1,190 psf against GM's 2,000 (notes/stairwell_post_pad.md).
 PADS = [
     Pad(uid="NAS34P2Q9F", tag="PD-B-WELL",
         outline=(pt(inch(160), inch(366.375)), pt(inch(176), inch(366.375)),

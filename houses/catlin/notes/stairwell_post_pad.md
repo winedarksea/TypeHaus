@@ -16,8 +16,8 @@ thickened-slab pad under both posts takes them back to a prescriptive bearing re
   (`resolve/slab_clip.py`), so the drawing shows no stone under the pad either.
 - Projection past the posts: 6 1/4" (x), 5 1/2" (y). That is within the 8" thickness
   (IRC R403.1.1: P <= T), and 8" is ACI 318-19 §14.3.1.2's minimum plain-footing thickness.
-- The ABU44 cast-in bolts (AB-058-10-SS, bottom 4" below the slab underside) now land in the
-  pad instead of hanging below a 3 1/2" slab.
+- The ABU44 cast-in bolts (AB-058-10-SS, bottom 1/2" below the slab underside) now land in the
+  pad, 4" above its bottom, instead of hanging out of a 3 1/2" slab.
 
 ## 2. Load takedown
 
@@ -31,22 +31,22 @@ lands at the corner and is conservative against the two-way split.
 | ST-B2M landing corner (post SS) | 2 halves x [(44.75/2 x 49.88/2) + (42.5/2 x 60/2)]/144 = 16.60 sf x 55 | 913 |
 | ST-M2S landing post (on S) | 2 halves x [(44.81/2 x 41.50/2) + (41.06/2 x 70/2)]/144 = 16.44 sf x 55 | 904 |
 | ST-M2S well partition, north end | half its inner-stringer load, 2 x (41.06/2 x 70)/144 = 19.96 sf x 55 / 2 | 549 |
-| ST-M2S partition self-weight, half | 6 psf x 5.2' x 9.0' / 2 | 140 |
+| ST-M2S partition self-weight, half | 6 psf x 5.69' x 10.04' / 2 (plates y 312.38..380.63", z 1.0..121.5") | 171 |
 | ST-B2M well partition, north end | 1' of inner stringers 2 x (21.25 x 12)/144 = 3.54 sf x 55, + 6 psf x 9.2' | 250 |
 | W-B-WELL over the pad | 6 psf x 1.54' x 9.2' | 85 |
 | two posts | 2 x 0.0851 sf x 9.03' x 27 pcf | 42 |
-| **column load P** | | **2,883** |
+| **column load P** | | **2,914** |
 | pad self-weight (gross, no displaced-soil credit) | 16 x 24 x 8 in3 = 1.778 cf x 145 pcf | 258 |
-| **total on soil** | | **3,141** |
+| **total on soil** | | **3,172** |
 
-Both partition ends are counted in full, though `ST-B2M`'s stands on the slab about 2" south
-of the pad (y ~364.5"). Its load reaches the soil through the slab whether or not the pad
-picks it up.
+Both partition ends are counted in full. `ST-B2M`'s end stud (y 370.88") stands on the pad,
+just south of SS; the ST-M2S partition is a line load along `W-B-WELL`, so taking half of it
+here is conservative.
 
 ## 3. Bearing
 
     A = 16 x 24 / 144 = 2.667 sf
-    q = 3,141 / 2.667 = 1,178 psf   <=   2,000 psf (IRC Table R401.4.1, GM; presumed soil)
+    q = 3,172 / 2.667 = 1,189 psf   <=   2,000 psf (IRC Table R401.4.1, GM; presumed soil)
     ratio 0.59
 
 The site class is PRESUMED (`plan/site.py` `SoilBasis`), as for every other bearing figure
