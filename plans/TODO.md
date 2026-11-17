@@ -250,7 +250,7 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
 - Model the LED junction boxes and power supply LED accurately to the products and dimensions
 - ERV terminals don't come out of the walls/floors/surfaces quite clearly enough, likely they protrude just a bit more
 - Door sills for exterior doors make sense
-- Condensate PR-M-COND-HP3-RUN goes through the studs of W-M-STRW, which is one wall that is exposed and we don't want to run the plumbing through (the data cable is probably fine)
+- Condensate PR-M-COND-HP3-RUN goes through the studs of W-M-STRW, which is one wall that is exposed and we don't want to run the plumbing through (the data cable is probably fine there though)
 - [x] 3d model of the DoorScope (round DS2000 trim, recessed interior screen and exterior optics shared by viewer/GLB/IFC).
 - ERV likely blocks D-B-CLOSET, and its condensate also blocks
 - [x] Kitchen Dearborn P9703WBG J-bend and slip nuts modeled with the disposer, connecting to the trap arm; purchased once through install_parts. [Plumbing declaration (line 4)](/Users/colincatlin/Documents-NoCloud/TypeHaus/houses/catlin/plan/kitchen_sink_plumbing.py:4)

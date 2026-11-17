@@ -6,7 +6,7 @@ every element/library constructor, plus the quantity and reference constructors.
 
 from __future__ import annotations
 
-from typehaus.model.air_handler_installation import AirHandlerInstallation
+from typehaus.model.air_handler_installation import AirHandlerInstallation, DrainFittings
 from typehaus.model.assembly import (
     Assembly,
     AssemblyInterface,
@@ -383,7 +383,7 @@ for _name, _obj in (
     ("PublishedHole", PublishedHole), ("SheathingNailing", SheathingNailing),
     ("PublishedWebOpenings", PublishedWebOpenings), ("JoistHoleChart", JoistHoleChart),
     ("JoistFlangeAllowance", JoistFlangeAllowance), ("EquipmentHangers", EquipmentHangers),
-    ("AirHandlerInstallation", AirHandlerInstallation),
+    ("AirHandlerInstallation", AirHandlerInstallation), ("DrainFittings", DrainFittings),
     ("SegmentalWallSpec", SegmentalWallSpec), ("SrwDrainageZone", SrwDrainageZone),
     ("EndRestraint", EndRestraint),
     ("ShearPanelSpec", ShearPanelSpec), ("DiaphragmSpec", DiaphragmSpec),
@@ -470,7 +470,7 @@ __all__ = [
     "OpeningFrameEndSupports", "OpeningPosition", "OpeningSize",
     "PublishedSpan", "PublishedCapacity", "PublishedReaction",
     "PublishedCladdingLoad", "PublishedHole", "PublishedWebOpenings", "JoistHoleChart",
-    "JoistFlangeAllowance", "EquipmentHangers", "AirHandlerInstallation",
+    "JoistFlangeAllowance", "EquipmentHangers", "AirHandlerInstallation", "DrainFittings",
     "SheathingNailing",
     "ShearPanelSpec", "DiaphragmSpec", "DiaphragmDelivery", "ReceivingLine", "HeadConnector",
     "CollectorBlocking", "JointNailing", "PanelEdgeBlocking",

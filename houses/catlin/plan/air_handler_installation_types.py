@@ -6,6 +6,7 @@ from typehaus import (
     AirHandlerInstallation,
     ClearancePolicy,
     ClearanceZone,
+    DrainFittings,
     Footprint2D,
     Product,
     Service,
@@ -41,18 +42,48 @@ RAIL = Product(
 )
 TRAP = Product(
     tag="PROD-HP1-PRIMARY-TRAP", brand="Field-fabricated", model="3/4 in Schedule 40 PVC",
-    name="Primary condensate trap, capped cleanout and downstream open vent assembly",
+    name="Primary condensate feeder, union, trap, capped cleanout and open vent assembly",
     source="Gree indoor IOM section 4.4 printed p.25: 2 in inlet/outlet drop, 3 in seal, "
-           "vent minimum 2 in above inlet. Includes local feeder and fittings, billed here "
-           "once; PR-A-COND-HP1 takeoff starts at the trap outlet. Fitting/socket takeouts "
-           "and cleanout access require installer dry-fit.",
+           "vent minimum 2 in above inlet. Male adapter, 90, union, two tees, two 90s, cap "
+           "and the secondary connection's MPT plug, billed here once; PR-A-COND-HP1 takeoff "
+           "starts at the outlet tee. Drawn at Charlotte Schedule 40 takeoffs.",
 )
 AIR_HANDLER_INSTALLATION_PRODUCTS = (SS3, PAN, RAIL, TRAP)
 
+CHARLOTTE_DC_PR = "Charlotte Pipe DC-PR pressure catalog, Schedule 40"
+FITTINGS = DrainFittings(
+    pipe_outer_diameter=inch(1.05), pipe_wall=inch(0.113),
+    hub_outer_diameter=inch(1.375),
+    adapter_projection=inch(29 / 32), elbow_center_to_hub=inch(1.3125),
+    tee_center_to_hub=inch(1.5), cap_length=inch(1), cap_socket_depth=inch(0.75),
+    plug_projection=inch(0.25), union_length=inch(1.75), union_outer_diameter=inch(2),
+    source=f"{CHARLOTTE_DC_PR}, 3/4 in: pipe 1.050 OD x .113 (p.27); tee 2400 H 1 1/2 "
+           "(p.31); 90 S x S H 1 5/16 (p.36); male adapter 2109 L 1 5/8 less T 23/32 "
+           "(p.46); cap 2116 L 1, S 3/4 (p.50); MPT plug 2113 L 1 less T 3/4 and union "
+           "2710 L 1 3/4 (p.52). Hub and union ODs are unpublished allowances.",
+)
+
 INSTALLATION = AirHandlerInstallation(
+    pan_width=inch(49.5), pan_depth=inch(27.25), pan_height=inch(2), pan_sheet=inch(0.0625),
+    rail_height=inch(3), rail_width=inch(1.5), rail_wall=inch(0.125),
+    rail_centers=(inch(-18), inch(18)),
+    cabinet_slope_in_per_ft=0.125,
+    # The house target, not the 1/8 floor: the feeder is 13 3/4 in of horizontal pipe.
+    feeder_slope_in_per_ft=0.25,
+    # Adapter 29/32 + 90 hub 1 5/16 + a visible 1/4 in of pipe to cement.
+    primary_elbow_offset=inch(2.5),
+    # East of both the cabinet and pan, preserving the front service rectangle.
+    trap_inlet_x=inch(27.25), trap_leg_spacing=inch(3),
+    trap_outlet_drop=inch(2), trap_seal_depth=inch(3),
+    vent_rise_above_inlet=inch(2.5), cleanout_rise_above_inlet=inch(2.5),
+    float_switch_x=inch(-7.25), float_switch_inset=inch(1),
+    float_switch_width=inch(1.6), float_switch_depth=inch(1.58),
+    float_switch_height=inch(3.55), float_trip_depth=inch(1),
+    fittings=FITTINGS,
     float_switch_product_ref=SS3.tag,
     source="Gree indoor IOM section 4.4, printed p.25: pitch >=1/8 in/ft toward drain; "
-           "trap inlet/outlet drop >=2 in, seal >=3 in, downstream vent >=2 in above inlet. "
+           "trap inlet/outlet drop >=2 in, seal >=3 in, downstream vent >=2 in above inlet; "
+           "p.22: reserve easy disconnection of the main drain (the union). "
            "Pan/rails are Catlin shop designs. SS3 envelope remains provisional.",
 )
 
@@ -72,9 +103,10 @@ def _installed_ports():
             "direction": direction,
         }))
     primary = next(port for port in ports if port.tag == "condensate_primary")
+    outlet = INSTALLATION.drain_setout(tuple(v.inches for v in primary.position)).outlet_tee
     ports.append(ServicePort(
         tag="condensate_trap_outlet", service=Service.DRAIN,
-        position=tuple(inch(v) for v in INSTALLATION.trap_outlet_in(primary.position[2].inches)),
+        position=tuple(inch(v) for v in outlet),
         connection_size=inch(0.75), direction=(0, -1, 0),
         notes="Installation trap outlet; datum inherits the schematic cabinet drain station. "
               "PR-A-COND-HP1 continues from here at 1/4 in/ft.",
