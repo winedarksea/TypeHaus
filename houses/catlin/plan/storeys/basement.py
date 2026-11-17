@@ -1419,15 +1419,18 @@ ROOMS = [
 ]
 
 ALARMS = [
-    Alarm(uid="CBA701AAAA", tag="AL-B-COMBO", kind=AlarmKind.COMBO, room="RM-B-PLAY-N",
+    Alarm(uid="CBA701AAAA", tag="AL-B-COMBO", kind=AlarmKind.COMBO,
+          type_ref="ED-T-ALARM-COMBO-KIDDE", room="RM-B-PLAY-N",
           circuit="CKT-LT-BACKUP"),
     # 2021 IRC R328.7 (not the adopted 2018 book; `advisory.ess_detection`) wants the smoke
     # alarm; the heat alarm is the owner's standard (a cell fails as heat first). Both sit
     # INSIDE RM-B-ESS so they sense the cabinet, not the room outside the Type X.
     # CKT-LT-BACKUP so they survive an outage.
-    Alarm(uid="CBA702AAAA", tag="AL-B-ESS-SMOKE", kind=AlarmKind.SMOKE, room="RM-B-ESS",
+    Alarm(uid="CBA702AAAA", tag="AL-B-ESS-SMOKE", kind=AlarmKind.SMOKE,
+          type_ref="ED-T-ALARM-SMOKE-KIDDE", room="RM-B-ESS",
           circuit="CKT-LT-BACKUP"),
-    Alarm(uid="CBA703AAAA", tag="AL-B-ESS-HEAT", kind=AlarmKind.HEAT, room="RM-B-ESS",
+    Alarm(uid="CBA703AAAA", tag="AL-B-ESS-HEAT", kind=AlarmKind.HEAT,
+          type_ref="ED-T-ALARM-HEAT-KIDDE", room="RM-B-ESS",
           circuit="CKT-LT-BACKUP"),
 ]
 

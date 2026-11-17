@@ -66,7 +66,13 @@ from typehaus.emit.gltf.palette import (  # noqa: F401
     _solid_color,
     authored_colors,
 )
-from typehaus.emit.gltf.parts import _add_deck, _add_earth, _add_light_run, _add_solar_panel
+from typehaus.emit.gltf.parts import (
+    _add_alarm_head,
+    _add_deck,
+    _add_earth,
+    _add_light_run,
+    _add_solar_panel,
+)
 from typehaus.emit.gltf.plants import add_plants, plant_instance_uids
 from typehaus.emit.gltf.rebar import add_rebar
 from typehaus.emit.gltf.roofs import _add_roof
@@ -342,6 +348,13 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
         mb = _MeshBuilder()
         _add_light_run(mb, run)
         scene.add_object(mb, ("electrical",), kind="solid", uid=run.uid)
+
+    for head in sorted(model.alarm_heads, key=lambda item: item.uid):
+        if head.body is None:
+            continue
+        mb = _MeshBuilder()
+        _add_alarm_head(mb, head)
+        scene.add_object(mb, ("electrical",), kind="alarm", uid=head.uid)
 
     for floor in sorted(model.floors, key=lambda item: item.uid):
         # Joists are framing, and belong in the framing trade with every other stick in the

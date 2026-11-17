@@ -236,6 +236,9 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         from typehaus.resolve.terminal_geometry import resolve_terminal_faces
 
         resolve_terminal_faces(model)
+        from typehaus.resolve.alarm_heads import resolve_alarm_heads
+
+        findings.extend(resolve_alarm_heads(model))  # after ceilings and roofs
     with _stage("terminal_ducts"):
         # These endpoints depend on the resolved ceiling-mounted terminal, not a copied Z.
         from typehaus.model.mep import DuctRun

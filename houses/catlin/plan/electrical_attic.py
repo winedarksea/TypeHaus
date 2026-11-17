@@ -263,8 +263,10 @@ NEC_FILL_ATTIC = [
     # Leak sensors (notes/leak_detectors.md): SONOFF SNZB-05P on the floor at each risk point,
     # Zigbee to ZHA, battery (no circuit). HA notifies; nothing depends on them. `position`
     # is the floor point (an Alarm has no wall host or elevation).
-    Alarm(uid="7C2XT7S2ZH", tag="AL-A-STUBATH-LEAK", kind=AlarmKind.LEAK, room="RM-A-STUBATH",
+    Alarm(uid="7C2XT7S2ZH", tag="AL-A-STUBATH-LEAK", kind=AlarmKind.LEAK,
+          type_ref="ED-T-LEAK-SNZB05P", room="RM-A-STUBATH",
           position=pt(inch(149.6), inch(247.6))),
-    Alarm(uid="KE08WVTHT8", tag="AL-A-STUDIO-LEAK", kind=AlarmKind.LEAK, room="RM-A-STUDIO",
+    Alarm(uid="KE08WVTHT8", tag="AL-A-STUDIO-LEAK", kind=AlarmKind.LEAK,
+          type_ref="ED-T-LEAK-SNZB05P", room="RM-A-STUDIO",
           position=pt(inch(165.5), inch(187.8))),
 ]

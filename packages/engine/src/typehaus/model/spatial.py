@@ -382,6 +382,9 @@ class Alarm(Element):
 
     kind: AlarmKind
     room: str | None = None
+    # The head's ``ElectricalDeviceType`` (product, size, IFC class). A catalog row, not a
+    # ``DeviceKind``: ``kind`` stays the code axis. ``None`` = a generic 5" disc, unbilled.
+    type_ref: str | None = None
     # The branch circuit the detector's primary power comes off. R314.4 wants alarms on an
     # unswitched circuit; naming it here is what lets `electrical.circuit_refs` reconcile the
     # alarms against the panel schedule the way it already does for every other consumer.

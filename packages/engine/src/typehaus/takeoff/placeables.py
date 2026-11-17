@@ -29,7 +29,8 @@ def placeables_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     back to the element kind for typeless objects), the basis is ``domain · storey``, and
     ``domain == "opening"`` records are skipped because hosted openings are already billed
     as products elsewhere in the BOM. Rows reconcile 1:1 with ``model.canvas_objects``
-    minus that exclusion — nothing placed is silently dropped.
+    minus that exclusion, plus one row per typed alarm head (``model.alarm_heads``) — nothing
+    placed is silently dropped. An untyped alarm names no product and is not billed here.
     """
     Row = dict[str, object]
     groups: dict[tuple[str, str, str], Row] = {}
@@ -82,6 +83,17 @@ def placeables_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             part_row["tags"].append(item.tag)
             if part.role not in part_row["roles"]:
                 part_row["roles"].append(part.role)
+    for head in model.alarm_heads:
+        if head.type_ref is None:
+            continue
+        key = (head.type_ref, "electrical", head.storey)
+        product = types.get(head.type_ref)
+        row = groups.setdefault(key, {
+            "type": head.type_ref, "domain": "electrical", "storey": head.storey, "count": 0,
+            "tags": [], "name": getattr(product, "name", None) or None,
+            "services": _services(product), "equipment_kind": None})
+        row["count"] = int(row["count"]) + 1
+        row["tags"].append(head.tag)
     for key, pieces in linear.items():
         product = model.plan.library.product(key[0])
         stock = getattr(getattr(product, "stock_length", None), "meters", None)

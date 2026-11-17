@@ -115,9 +115,34 @@ ARRE_TEMP = Product(
            "primarily for indoor use'. Matter over Thread to HA through the house's border "
            "router, no cloud. A coin cell sags in the cold: check it each autumn." + _NOTE)
 
+# The hardwired interconnected heads (one Kidde line, 2026-10-30). Retail listings, no quote.
+KIDDE_30CUA10_V = Product(
+    tag="PROD-KIDDE-30CUA10-V", brand="Kidde", model="30CUA10-V",
+    name="Smoke + CO alarm, hardwired, 10-yr sealed backup, voice",
+    url="https://www.supplyhouse.com/Kidde-21032783-30CUA10-V-Hard-Wired-Carbon-Monoxide-and-"
+        "Photoelectric-Smoke-Alarm-120-V-w-10-Year-Backup-Battery",
+    source="Home Depot / SupplyHouse listings, read 2026-11-17: 5 in round x 1.88 in, "
+           "120 VAC with a sealed 10-yr backup, photoelectric + electrochemical, interconnect "
+           "(draw unpublished in the listings)." + _NOTE)
+KIDDE_20SA10 = Product(
+    tag="PROD-KIDDE-20SA10", brand="Kidde", model="20SA10",
+    name="Smoke alarm, hardwired, 10-yr sealed backup",
+    url="https://www.kidde.com/home-safety/en/us/products/fire-safety/detect-products/"
+        "detect-smoke-alarm-hardwired-with-10-year-backup-battery-20SA10",
+    source="Webstaurant listing (Kidde 21031556), read 2026-11-17: 5 in diameter x 2 in deep, "
+           "120 VAC, photoelectric, interconnect." + _NOTE)
+KIDDE_HD135F = Product(
+    tag="PROD-KIDDE-HD135F", brand="Kidde", model="HD135F",
+    name="Heat alarm, 135 F fixed temperature, hardwired, 9 V backup",
+    url="https://kidde.com/home-safety/en/us/products/fire-safety/safety-accessories/"
+        "auxiliary-devices/hd135",
+    source="Kidde HD135F spec sheet, read 2026-11-17: 5 in diameter x 2 in deep, 120 VAC "
+           "60 Hz, 9 V backup, 85 dB, up to 24 interconnected Kidde devices." + _NOTE)
+
 SMART_HOME_PRODUCTS = (REOLINK_DOORBELL, REOLINK_OMVI_3I, REOLINK_DUO3, LIFTMASTER_87504,
                        GRIZZLE_SMART, KIDDE_SM120X, KIDDE_CO120X, AQARA_W200, WARMUP_7IE,
-                       SONOFF_SNZB_05P, ARRE_TEMP)
+                       SONOFF_SNZB_05P, ARRE_TEMP, KIDDE_30CUA10_V, KIDDE_20SA10,
+                       KIDDE_HD135F)
 
 # --- low-voltage endpoints (DATA_OUTLET kind; PoE from the switch in ED-B-NET-PATCH) ----------
 # 12.95 W is the 802.3af PD ceiling, used where the maker publishes no draw; the Duo 3
@@ -165,6 +190,33 @@ DEVICE_TYPES = (
         footprint=(inch(4), inch(2.125)), height=inch(4), ports=_P120, load_va=9.6,
         plan_symbol="junction-box", device_box=False, product_ref=KIDDE_CO120X.tag,
         source=KIDDE_CO120X.source),
+    # Alarm heads: an Alarm's ``type_ref`` (kind stays on the Alarm). Round heads are cylinders.
+    ElectricalDeviceType(
+        tag="ED-T-ALARM-COMBO-KIDDE", name="Smoke/CO alarm, 120 V interconnect (Kidde 30CUA10-V)",
+        footprint=(inch(5), inch(5)), height=inch(1.88), ports=_P120, device_box=False,
+        model_representation=ModelRepresentation(primitive="cylinder"),
+        product_ref=KIDDE_30CUA10_V.tag, source=KIDDE_30CUA10_V.source),
+    ElectricalDeviceType(
+        tag="ED-T-ALARM-SMOKE-KIDDE", name="Smoke alarm, 120 V interconnect (Kidde 20SA10)",
+        footprint=(inch(5), inch(5)), height=inch(2), ports=_P120, device_box=False,
+        model_representation=ModelRepresentation(primitive="cylinder"),
+        product_ref=KIDDE_20SA10.tag, source=KIDDE_20SA10.source),
+    ElectricalDeviceType(
+        tag="ED-T-ALARM-HEAT-KIDDE", name="Heat alarm 135 F, 120 V interconnect (Kidde HD135F)",
+        footprint=(inch(5), inch(5)), height=inch(2), ports=_P120, device_box=False,
+        model_representation=ModelRepresentation(primitive="cylinder"),
+        product_ref=KIDDE_HD135F.tag, source=KIDDE_HD135F.source),
+    ElectricalDeviceType(
+        tag="ED-T-LEAK-SNZB05P", name="Water leak sensor, Zigbee, battery (SONOFF SNZB-05P)",
+        footprint=(inch(48 / 25.4), inch(48 / 25.4)), height=inch(21.6 / 25.4),
+        needs=frozenset(), device_box=False,
+        product_ref=SONOFF_SNZB_05P.tag, source=SONOFF_SNZB_05P.source),
+    ElectricalDeviceType(
+        tag="ED-T-FREEZE-ARRE", name="Temperature sensor, Thread, battery (arre)",
+        footprint=(inch(40 / 25.4), inch(40 / 25.4)), height=inch(10.2 / 25.4),
+        needs=frozenset(), device_box=False,
+        product_ref=ARRE_TEMP.tag,
+        source=ARRE_TEMP.source + " Body 40 x 40 x 10.2 mm (arre page, read 2026-11-17)."),
 )
 
 # --- appliances: equipment the house names but does not wire in --------------

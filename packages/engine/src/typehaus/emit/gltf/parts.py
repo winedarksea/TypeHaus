@@ -1,5 +1,5 @@
-"""Self-contained glTF part builders: the floor deck, the site earth, light runs and PV
-modules. Each writes one source object's triangles into a :class:`_MeshBuilder`."""
+"""Self-contained glTF part builders: the floor deck, the site earth, light runs, PV
+modules and alarm heads. Each writes one source object's triangles into a :class:`_MeshBuilder`."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from typehaus.emit.gltf.geometry import _to_gltf
 from typehaus.emit.gltf.mesh import _MeshBuilder
 from typehaus.emit.gltf.palette import _color, _material_finish_color
 from typehaus.resolve.geometry import light_run_parts, light_run_section_shells
-from typehaus.resolve.geometry_ir import GBox
+from typehaus.resolve.geometry_ir import GBox, GPrism
 from typehaus.resolve.model import ResolvedModel
 
 
@@ -83,3 +83,10 @@ def _add_solar_panel(mb: _MeshBuilder, panel) -> None:
         triangles.append((quad[0], quad[1], quad[2]))
         triangles.append((quad[0], quad[2], quad[3]))
     mb.add_triangles(triangles, color)
+
+
+def _add_alarm_head(mb: _MeshBuilder, head) -> None:
+    """The resolved head body (→ resolve/alarm_heads.py), the prism the viewer and IFC draw."""
+    for prism in head.body.solids:
+        if isinstance(prism, GPrism):
+            mb.add_prism(list(prism.ring), prism.z0_m, prism.z1_m, _color(f"alarm_{head.kind}"))

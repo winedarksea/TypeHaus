@@ -618,7 +618,11 @@ export interface Alarm {
   y: number | null;
   z: number | null;
   /** The face `z` is on: a leak sensor lies on the floor, every other head hangs from the ceiling. */
-  mount: "floor" | "ceiling";
+  mount: "floor" | "ceiling" | null;
+  /** The head's ElectricalDeviceType tag; null = the generic disc. */
+  type?: string | null;
+  /** The resolved body (resolve/alarm_heads.py), the same prism the GLB and IFC carry. */
+  solid?: { ring: Vec2[]; z0_m: number; z1_m: number } | null;
   provenance: Provenance | null;
 }
 

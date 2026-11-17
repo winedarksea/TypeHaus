@@ -234,7 +234,7 @@ from typehaus.emit.trades import TRADES as _ALL_TRADES  # noqa: E402
 # once in the writer, once against the UI contract it is claiming to satisfy.
 _SELECTION_KINDS = {
     "wall", "opening", "room", "solid", "footing_bedding", "floor", "roof", "stair",
-    "canvas_object",
+    "canvas_object", "alarm",
 }
 
 

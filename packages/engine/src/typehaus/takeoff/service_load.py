@@ -74,7 +74,8 @@ def _listed_va(model: ResolvedModel, consumers: list) -> float:
     return sum(
         float(types[element.type_ref].load_va or 0.0)
         for element in consumers
-        if element.element_kind == "ElectricalDevice" and element.type_ref in types
+        # A typed Alarm is a device on its circuit too (a hardwired head's draw).
+        if element.element_kind in ("ElectricalDevice", "Alarm") and element.type_ref in types
     ) + sum(
         run_va.get(element.tag, 0.0)
         for element in consumers

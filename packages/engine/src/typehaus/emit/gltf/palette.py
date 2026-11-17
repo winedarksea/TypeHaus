@@ -302,6 +302,14 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "led_tape": (1.00, 0.92, 0.72, 1.0),      # warm-white tape, bright rather than lit
     "cove_lens": (0.96, 0.96, 0.94, 1.0),     # frosted diffuser
     "cove_flange": (0.93, 0.92, 0.89, 1.0),   # mudded wing, the ceiling's gypsum white
+    # Alarm heads by AlarmKind (→ emit/gltf/parts.py::_add_alarm_head); the viewer's classic
+    # ``palette.alarm`` (ui/src/nordic/palette.ts).
+    "alarm_smoke": (0.75, 0.22, 0.17, 1.0),
+    "alarm_co": (0.85, 0.54, 0.12, 1.0),
+    "alarm_combo": (0.56, 0.23, 0.56, 1.0),
+    "alarm_heat": (0.88, 0.40, 0.10, 1.0),
+    "alarm_leak": (0.18, 0.50, 0.72, 1.0),
+    "alarm_freeze": (0.23, 0.65, 0.69, 1.0),
 }
 _FALLBACK = (0.70, 0.70, 0.70, 1.0)
 

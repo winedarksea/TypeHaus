@@ -733,7 +733,8 @@ ALARMS = [
     # 225.30): R314.4 wants an unswitched circuit and the GFCI CKT-RC-GARAGE is wrong for it.
     # In an outage it rides its own battery; a wired interconnect to the house would cross
     # buildings, so it stands alone unless a wireless interconnect is chosen.
-    Alarm(uid="CGA701AAAA", tag="AL-G-HEAT", kind=AlarmKind.HEAT, room="RM-GARAGE",
+    Alarm(uid="CGA701AAAA", tag="AL-G-HEAT", kind=AlarmKind.HEAT,
+          type_ref="ED-T-ALARM-HEAT-KIDDE", room="RM-GARAGE",
           circuit="CKT-LT-GARAGE"),
 ]
 

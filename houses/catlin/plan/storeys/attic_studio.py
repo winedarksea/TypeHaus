@@ -485,7 +485,8 @@ ROOMS = [
 # COMBO to match AL-S-BED1/2/3, and CKT-LT-BACKUP because every alarm in the house is on that
 # always-on circuit — R314.4 FAILs an alarm naming no circuit.
 ALARMS = [
-    Alarm(uid="PFWCRKMZJZ", tag="AL-A-STUDIO", kind=AlarmKind.COMBO, room="RM-A-STUDIO",
+    Alarm(uid="PFWCRKMZJZ", tag="AL-A-STUDIO", kind=AlarmKind.COMBO,
+          type_ref="ED-T-ALARM-COMBO-KIDDE", room="RM-A-STUDIO",
           circuit="CKT-LT-BACKUP"),
 ]
 

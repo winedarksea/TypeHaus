@@ -307,6 +307,9 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed",
     emit_solar_panels(f, body, model, storeys, project_uuid, ll.assign_representation)
 
     data_devices = _emit_registers_equipment_devices(f, body, model, storeys, project_uuid)
+    from typehaus.emit.ifc.alarms import emit_alarms
+
+    emit_alarms(f, body, model, storeys, project_uuid)
     # Structured cabling as one ``IfcDistributionSystem``, for the same reason the piped
     # systems above are: without it the raceway, the patch enclosure and the access point on
     # the end of it are unrelated elements that happen to be near each other, and a BIM
