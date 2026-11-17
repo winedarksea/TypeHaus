@@ -7,7 +7,7 @@ from _helpers import check_context
 from shapely.geometry import Polygon
 
 from typehaus.checks.mep.air_handler_coordination import air_handler_coordination
-from typehaus.library.hvac_equipment import GREE_FLEXX_ULTRA_24_AH, GREE_FLEXX_ULTRA_24_OD
+from typehaus.library.hvac_equipment import GREE_FLEXX_ULTRA_24_AH
 from typehaus.model.canvas import model_symbol_for
 from typehaus.model.placeable_symbols import model_parts
 from typehaus.quantities import M_PER_IN
@@ -66,11 +66,18 @@ def test_catlin_faces_front_service_space_south_and_supply_west(catlin_model_ro)
     obj = next(obj for obj in catlin_model_ro.canvas_objects if obj.tag == "EQ-S-HP1-AH")
     ports = {port.port_tag: port for port in placed_ports(catlin_model_ro)
              if port.equipment_tag == obj.tag}
-    assert ports["power"].direction == pytest.approx((0, -1, 0))
+    assert ports["power"].direction[1] < -0.99
+    assert ports["power"].direction[2] < 0  # cabinet pitches toward its south drain face
     assert ports["supply"].direction == pytest.approx((-1, 0, 0))
     assert ports["return"].direction == pytest.approx((1, 0, 0))
     zone, = obj.required_clearances
-    case_south = min(y for _, y in obj.footprint)
+    product = next(t for t in catlin_model_ro.plan.library.equipment_types
+                   if t.tag == obj.type_ref)
+    parts = model_parts(SYMBOL, *(v.meters for v in (*product.footprint, product.height)),
+                        air_handler_installation=product.air_handler_installation)
+    case_south = obj.position[1] + min(
+        v[1] for p in parts if p.get("role") in {"flexx:case", "flexx:service-panel"}
+        for v in p["mesh"]["positions"])
     assert max(y for _, y in zone) == pytest.approx(case_south)
     assert (case_south - min(y for _, y in zone)) / M_PER_IN == pytest.approx(24)
     assert ports["supply"].x_m < obj.position[0]
@@ -117,21 +124,20 @@ def test_other_air_handlers_do_not_inherit_gree_installation_assumptions(catlin_
                                                                       catlin_model_ro):
     library = catlin_plan.library.model_copy(update={"equipment_types": tuple(
         product.model_copy(update={"model_representation": None})
-        if product.tag == PRODUCT.tag else product
+        if product.model_representation and product.model_representation.symbol == SYMBOL else product
         for product in catlin_plan.library.equipment_types)})
     plan = catlin_plan.model_copy(update={"library": library})
     findings = air_handler_coordination(check_context(plan, catlin_model_ro))
     assert [finding.result.value for finding in findings] == ["not_applicable"]
 
 
-@pytest.mark.parametrize("equipment_tag, product, rotation", [
-    ("EQ-S-HP1-AH", PRODUCT, 0), ("EQ-S-HP1-AH", PRODUCT, 90),
-    ("EQ-M-HP1-OD", GREE_FLEXX_ULTRA_24_OD, 0),
-    ("EQ-M-HP1-OD", GREE_FLEXX_ULTRA_24_OD, 180),
-    ("EQ-A-HP1-SUP-BOX", None, 0), ("EQ-S-ERV-MIX", None, 90),
+@pytest.mark.parametrize("equipment_tag, rotation", [
+    ("EQ-S-HP1-AH", 0), ("EQ-S-HP1-AH", 90),
+    ("EQ-M-HP1-OD", 0), ("EQ-M-HP1-OD", 180),
+    ("EQ-A-HP1-SUP-BOX", 0), ("EQ-S-ERV-MIX", 90),
 ])
 def test_viewer_glb_and_ifc_share_the_open_shell_and_connection_markers(
-    catlin_model_ro, tmp_path, equipment_tag, product, rotation,
+    catlin_model_ro, tmp_path, equipment_tag, rotation,
 ):
     import ifcopenshell
 
@@ -142,9 +148,8 @@ def test_viewer_glb_and_ifc_share_the_open_shell_and_connection_markers(
     from typehaus.resolve import resolve
 
     original = next(obj for obj in catlin_model_ro.canvas_objects if obj.tag == equipment_tag)
-    if product is None:
-        product = next(p for p in catlin_model_ro.plan.library.equipment_types
-                       if p.tag == original.type_ref)
+    product = next(p for p in catlin_model_ro.plan.library.equipment_types
+                   if p.tag == original.type_ref)
     item = dataclasses.replace(original, rotation_degrees=rotation)
     mesh = _MeshBuilder()
     assert _add_canvas_parts(mesh, item, product, {})
@@ -173,7 +178,8 @@ def test_viewer_glb_and_ifc_share_the_open_shell_and_connection_markers(
     assert representation.RepresentationType == "Tessellation"
     assert len(representation.Items) == len(model_parts(
         model_symbol_for(product),
-        *(value.meters for value in (*product.footprint, product.height)), ports=product.ports))
+        *(value.meters for value in (*product.footprint, product.height)), ports=product.ports,
+        air_handler_installation=product.air_handler_installation))
     ifc_points = {tuple(round(value, 9) for value in point)
                   for part in representation.Items for point in part.Coordinates.CoordList}
     assert ifc_points == glb_points

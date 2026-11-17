@@ -7,9 +7,9 @@
 # primed. The two north units go to FX-B-UTIL-SINK in the furnace room, beside the ERV and
 # water-heater lines: the laundry sink's rim is level with HP3's drain, and one receptor in
 # the room where exposed pipe is accepted beats a spout in the laundry. Hoses inside a head's
-# own body are drawn as its first leg; the AH's trap (Gree IOM) sits at the second vertex,
-# off the front of SL-A-HP1-PLATFORM, and is not drawn. Its emergency pan takes a float switch,
-# not a second line. EQ-B-HP2-GYM falls inside the sauna's walls onto PR-B-COND's drop (below).
+# own body are drawn as its first leg. The AH's feeder, trap, capped cleanout and downstream
+# vent are installation parts on its equipment type; PR-A-COND-HP1 starts at that trap's
+# outlet, east of the service zone. Its emergency pan uses float shutdown, no second line.
 
 from typehaus import (
     PipeRun,
@@ -36,23 +36,22 @@ CONDENSATE_NORTH = [
             diameter=inch(0.75), material="pvc",
             elevations=(inch(37), inch(36.8), inch(35.4), inch(-6), inch(-6.45), inch(-23),
                         inch(-26), inch(-27.4), inch(-62), inch(-62.12))),
-    # EQ-S-HP1-AH: from the primary port south off the platform (the trap), east past the
-    # cabinet's end clear of the service zone, south on the deck at x=24'-11 1/2" (blocked
+    # EQ-S-HP1-AH: from the modeled trap outlet east of the cabinet and service zone,
+    # south on the deck at x=24'-11 1/2" (blocked
     # off the deck at 4' o.c.), down into FS-ATTIC's free y 208-224 bay, west along it over
     # the x=18' bearing, then down W-S-DC2's plumbing cavity beside PR-A-STUBATH-DRAIN and
     # W-M-CLN (the laundry's south wall, 3 1/2" east of the sink's hot stop), west in
     # FS-M-WEST's bay past the laundry sink's drop and PR-B-CW-WASH, out into the furnace
     # room, and over the sink's bowl 13" up.
     PipeRun(uid="31MM8G5WV4", tag="PR-A-COND-HP1", system=PipeSystem.DRAIN, sanitary=False,
-            path=(pt(inch(288.25), inch(328.5625)), pt(inch(288.25), inch(324.5)),
-                  pt(inch(299.5), inch(324.5)), pt(inch(299.5), inch(216)),
+            path=(pt(inch(299.5), inch(321.5)), pt(inch(299.5), inch(216)),
                   pt(inch(299.5), inch(216)), pt(inch(117.5), inch(216)),
                   pt(inch(117.5), inch(218)), pt(inch(117.5), inch(218)),
                   pt(inch(117.5), inch(221.5)), pt(inch(97.5), inch(221.5)),
                   pt(inch(97.5), inch(221.5)), pt(inch(97.5), inch(232)),
                   pt(inch(97.5), inch(232)), pt(inch(103.5), inch(232))),
             diameter=inch(0.75), material="pvc",
-            elevations=(inch(246), inch(245.9), inch(245.6), inch(243.32), inch(236),
+            elevations=(inch(247.062445751), inch(244.864529084), inch(236),
                         inch(232.2), inch(232.15), inch(-6), inch(-6.08), inch(-6.5),
                         inch(-14), inch(-14.22), inch(-62), inch(-62.13))),
     # EQ-B-HP2-GYM (basement storey, filed here at the main datum so elevations are absolute;

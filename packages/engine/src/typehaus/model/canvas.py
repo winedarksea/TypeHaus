@@ -178,8 +178,10 @@ def _symbol_geometry(item: Any, footprint: Any, wood: Any | None = None,
         strokes, parts = curtain_track_type_geometry(item)
     else:
         # Not one build for both halves: some builders' strokes do read the height.
-        strokes = plan_symbol_strokes(symbol, width_m, depth_m)
+        strokes = plan_symbol_strokes(symbol, width_m, depth_m,
+                air_handler_installation=getattr(item, "air_handler_installation", None))
         parts = model_parts(model_symbol, width_m, depth_m, height_m,
+                air_handler_installation=getattr(item, "air_handler_installation", None),
                 shower_assembly=getattr(item, "shower_assembly", None),
                             ports=getattr(item, "ports", ()),
                             material_refs=getattr(getattr(item, "model_representation", None),

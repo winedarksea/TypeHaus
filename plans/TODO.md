@@ -57,8 +57,10 @@ is the unsuppressed score. `mep.run_interference` (2026-11-08) and `mep.riser_th
 `notes/flexx_ultra_geometry.md`). The room stays conditioned while it holds the unit; only its
 finished area drops out.
 
-- [ ] The emergency pan is declared (`secondary_drain_pan`, float switch stopping `EQ-M-HP1-OD`)
-  but not drawn. Its rails raise the cabinet about 1", which the connectors take up.
+- [x] Draw the emergency pan, 3-inch support rails, pitched cabinet, primary trap,
+  vent/cleanout and SS3 float-switch allowance. Cabinet low front is 7 5/16 inches above
+  deck; both necks/plenum openings and drain start follow it. Fabrication and delivered
+  switch/drain-station verification remain in `notes/construction_holds.md`.
 - [ ] The lineset and control cable from `EQ-M-HP1-OD` are not routed, because refrigerant
   piping is not an engine element.
 - [ ] No check grades the passageway from `D-A-STUDY` or the level service space; they exist
@@ -252,8 +254,11 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
 - [x] 3d model of the DoorScope (round DS2000 trim, recessed interior screen and exterior optics shared by viewer/GLB/IFC).
 - ERV likely blocks D-B-CLOSET, and its condensate also blocks
 - [x] Kitchen Dearborn P9703WBG J-bend and slip nuts modeled with the disposer, connecting to the trap arm; purchased once through install_parts. [Plumbing declaration (line 4)](/Users/colincatlin/Documents-NoCloud/TypeHaus/houses/catlin/plan/kitchen_sink_plumbing.py:4)
-- Attic air-handler installation is incomplete. The primary condensate trap, emergency pan, support rails, and float-switch geometry are missing. The notes explicitly withdraw the earlier assumption that the platform height proves sufficient clearance. [Installation gaps (line 69)](/Users/colincatlin/Documents-NoCloud/TypeHaus/houses/catlin/notes/flexx_ultra_geometry.md:69)
-- ERV backdraft damper lacks a selected product and installation envelope. It is required by the mixing-plenum design, but its body, blade, collar, and service clearance remain unresolved. [Design hold (line 89)](/Users/colincatlin/Documents-NoCloud/TypeHaus/houses/catlin/notes/flexx_ultra_geometry.md:89)
+- [x] Attic air-handler installation geometry: primary trap, emergency pan, support rails,
+  cabinet pitch and float-switch allowance now share viewer/GLB/IFC geometry. Check actual
+  stack and trap/deck clearance rather than platform height alone. See
+  [installation geometry](../houses/catlin/notes/flexx_ultra_geometry.md#installation-geometry-now-represented).
+- ERV backdraft damper lacks a selected product and installation envelope. It is required by the mixing-plenum design, but its body, blade, collar, and service clearance remain unresolved. [Design hold](../houses/catlin/notes/flexx_ultra_geometry.md#remaining-design-holds)
 - "Views" button in the UI is the most important and needs some sort of design to be more obvious to the user as the first place they should click (not adding a product tour though)
 
 # Project Management

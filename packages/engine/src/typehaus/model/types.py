@@ -7,6 +7,7 @@ from typing import Literal
 
 from pydantic import Field, model_validator
 
+from typehaus.model.air_handler_installation import AirHandlerInstallation
 from typehaus.model.air_products import (  # noqa: F401 — public authoring exports
     DuctProductType,
     TerminalNeck,
@@ -753,6 +754,7 @@ class HeatPumpRating(HausModel):
 
 
 class EquipmentType(FurnitureType, AirHandlingProductFacts, EquipmentElectricalFacts):
+    air_handler_installation: AirHandlerInstallation | None = None
     needs: frozenset[Service] = frozenset()
     #: The published heating-capacity table, ascending in ``outdoor_db_f`` (→
     #: :class:`HeatPumpRating`). This REPLACES the two scalars that were here —

@@ -26,6 +26,7 @@ from collections.abc import Callable, Mapping, Sequence
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from typehaus.model.air_handler_installation import AirHandlerInstallation
     from typehaus.model.placeables import ServicePort
     from typehaus.model.shower_assembly import ShowerAssemblySpec
 
@@ -230,20 +231,34 @@ def symbol_geometry(symbol: str | None, width_m: float, depth_m: float,
 
 
 def plan_symbol_strokes(symbol: str | None, width_m: float,
-                        depth_m: float) -> tuple[Stroke, ...]:
+                        depth_m: float, *,
+                        air_handler_installation: AirHandlerInstallation | None = None,
+                        ) -> tuple[Stroke, ...]:
     """The drawn plan glyph for ``symbol`` at a W×D footprint, in the local frame."""
-    return symbol_geometry(symbol, width_m, depth_m, _NOMINAL_HEIGHT)[0]
+    strokes = symbol_geometry(symbol, width_m, depth_m, _NOMINAL_HEIGHT)[0]
+    if air_handler_installation is not None and symbol == "gree-flexx-ultra-24-horizontal":
+        from typehaus.model.placeable_symbols._flexx_installation import installation_strokes
+
+        strokes += installation_strokes(air_handler_installation, width_m, depth_m)
+    return strokes
 
 
 def model_parts(symbol: str | None, width_m: float, depth_m: float,
                 height_m: float, *, shower_assembly: ShowerAssemblySpec | None = None,
                 material_refs: Mapping[str, str] | None = None,
                 ports: Sequence[ServicePort] = (),
+                air_handler_installation: AirHandlerInstallation | None = None,
                 ) -> tuple[Part, ...]:
     """The generated 3D parts for ``symbol`` at a W×D×H size, in the local frame."""
     parts = (plenum_parts(width_m, depth_m, height_m, ports)
              if symbol == "sheet-metal-plenum"
              else symbol_geometry(symbol, width_m, depth_m, height_m)[1])
+    if air_handler_installation is not None and symbol == "gree-flexx-ultra-24-horizontal":
+        from typehaus.model.placeable_symbols._flexx_installation import installed_flexx_parts
+        from typehaus.model.placeable_symbols._gree_flexx import CABINET_IN
+
+        parts = installed_flexx_parts(gree_flexx_horizontal(*CABINET_IN)[1],
+                                      air_handler_installation, width_m, depth_m, height_m)
     if shower_assembly is not None:
         from typehaus.model.placeable_symbols._shower_hardware import shower_hardware_parts
 

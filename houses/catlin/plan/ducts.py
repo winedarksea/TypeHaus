@@ -298,7 +298,7 @@ DUCT_STANDARD = [
                     flex_product_ref="PROD-DUCT-FLEX-R8", flex_length=inch(12),
                     flex_bend_loss_c=1.18,
                     source="Broan B210E75RT manual pp. 10-11"),
-            PortKit(type_ref="EQ-T-GREE-FLEXX-ULTRA-24-AH",
+            PortKit(type_ref="EQ-T-HP1-AH-INSTALLED",
                     flex_product_ref="PROD-DUCT-CONNECTOR", flex_length=inch(3),
                     connector=True, source="notes/air_distribution_products.md section 7"),
         ),

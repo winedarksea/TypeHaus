@@ -391,6 +391,7 @@ _BOM_COVERAGE: dict[str, tuple[str, ...]] = {
     # wall whose core is a pour or a masonry course reached no row at all.
     # `test_every_wall_layer_is_billed_or_waived` below is the assertion that says so.
     "walls": ("framing", "envelope_layers", "wall_structure"),
+    "alarm_heads": ("placeables",),  # one row per typed head
     "openings": ("openings",),
     "solids": ("structural_solids",),
     # Laid-out bars (decision #75), billed as counted pieces by `takeoff/reinforcement.py`.
@@ -567,6 +568,7 @@ def test_placeables_takeoff_reconciles_with_canvas_objects(catlin_model) -> None
     rows = placeables_takeoff(catlin_model)
     assert rows, "the catlin house places furniture/appliances/fixtures"
     billable = [item for item in catlin_model.canvas_objects if item.domain != "opening"]
+    billable += [head for head in catlin_model.alarm_heads if head.type_ref is not None]
     primary_rows = [row for row in rows if "roles" not in row]
     assert sum(int(row["count"]) for row in primary_rows) == len(billable)
     parts = [row for row in rows if "roles" in row]

@@ -203,6 +203,7 @@ def _add_canvas_parts(mb: _MeshBuilder, item: ResolvedCanvasObject,
     else:
         width_m, depth_m = (part.meters for part in footprint)
         parts = model_parts(symbol, width_m, depth_m, height.meters,
+                air_handler_installation=getattr(product_type, "air_handler_installation", None),
                 shower_assembly=getattr(product_type, "shower_assembly", None),
                             ports=getattr(product_type, "ports", ()),
                             material_refs=getattr(getattr(product_type, "model_representation",

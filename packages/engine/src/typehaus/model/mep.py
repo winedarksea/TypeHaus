@@ -418,6 +418,9 @@ class Equipment(Element):
     # Loose installation parts billed with it, as ``PipeAccessory.install_parts``.
     install_parts: tuple[str, ...] = ()
 
+    #: An accessory supported inside another equipment cabinet, rather than on the floor.
+    installed_in_ref: str | None = None
+
     @model_validator(mode="after")
     def _placed_or_hosted(self):
         require_placed_or_hosted(self)

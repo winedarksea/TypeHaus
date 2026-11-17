@@ -147,7 +147,7 @@ def test_part_quantity_counts_in_addition_to_primary_fixture():
     )
     objects = [SimpleNamespace(tag=f"FX-{i}", type_ref="DOUBLE", kind="Fixture",
                                domain="plumbing", storey="main") for i in range(3)]
-    model = SimpleNamespace(canvas_objects=objects, plan=SimpleNamespace(
+    model = SimpleNamespace(canvas_objects=objects, alarm_heads=[], plan=SimpleNamespace(
         library=Library(fixture_types=(fixture_type,), products=(Product(tag="MIXER", brand="Test"),))))
     rows = {row["type"]: row for row in placeables_takeoff(model)}
     assert rows["DOUBLE"]["count"] == 3

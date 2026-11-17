@@ -37,6 +37,7 @@ element order — and therefore model.json — is unchanged.
 from __future__ import annotations
 
 from plan import (
+                  air_handler_installation_types,
                   electrical_floor,
                   kitchen_sink_plumbing,
                   mep_cleanouts,
@@ -68,7 +69,9 @@ from plan import (
 
 # Catalogs, re-exported so ``manifest.py``'s Library(...) call is untouched by the split.
 REGISTER_TYPES = mep_erv_types.REGISTER_TYPES_ERV
-EQUIPMENT_TYPES = (*mep_hvac.EQUIPMENT_TYPES, *mep_erv_types.EQUIPMENT_TYPES_ERV,
+EQUIPMENT_TYPES = (*mep_hvac.EQUIPMENT_TYPES,
+                   *air_handler_installation_types.AIR_HANDLER_INSTALLATION_TYPES,
+                   *mep_erv_types.EQUIPMENT_TYPES_ERV,
                    *mep_supply_header.EQUIPMENT_TYPES_HEADER)
 ELECTRICAL_DEVICE_TYPES = mep_electrical.ELECTRICAL_DEVICE_TYPES
 

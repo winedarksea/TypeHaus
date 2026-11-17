@@ -119,9 +119,10 @@ def test_the_attic_machines_bear_on_the_deck_or_the_platform(catlin_model) -> No
     """The bug ``soffit_ref`` once fixed was a CEILING mount falling back to the storey
     ceiling height. On the attic deck the System 1 boxes are FLOOR mounts: the two shop boxes
     sit on the deck top, 240 3/4" (the 3/4" deck over the attic storey's 20'-0" datum), and
-    the cabinet and its heat kit on SL-A-HP1-PLATFORM's top, 4 1/4" higher (2026-11-11)."""
+    the cabinet and its heat kit stand 7 5/16" above deck, including the platform, pan
+    floor and 3" rails (2026-11-17)."""
     heights = {"EQ-S-ERV-MIX": 240.75, "EQ-A-HP1-SUP-BOX": 240.75,
-               "EQ-S-HP1-AH": 245.0, "EQ-S-HP1-STRIP": 245.0}
+               "EQ-S-HP1-AH": 248.0625, "EQ-S-HP1-STRIP": 248.0625}
     for tag, z in heights.items():
         obj = next(o for o in catlin_model.canvas_objects if o.tag == tag)
         assert obj.z_m / M_PER_IN == pytest.approx(z), tag

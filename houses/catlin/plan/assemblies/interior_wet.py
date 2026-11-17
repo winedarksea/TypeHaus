@@ -402,7 +402,8 @@ KNEE_WALL_OAK_CAP = Assembly(
 
 # EQ-S-HP1-AH's attic platform (SL-A-HP1-PLATFORM): 3/4" plywood on 2x4 sleepers on edge,
 # 4 1/4" over RM-A-EAST-UNFIN's deck. The emergency pan sits on it and the cabinet in the
-# pan; the height is what puts the primary condensate port and Gree's trap above the deck.
+# pan on 3" rails. Trap clearance comes from the complete drawn stack and outboard trap,
+# not this platform's height alone (notes/flexx_ultra_geometry.md).
 AH_PLATFORM_PLY = Assembly(
     tag="AH_PLATFORM_PLY",
     layers=(

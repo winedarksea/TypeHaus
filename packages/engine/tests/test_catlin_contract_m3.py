@@ -1322,6 +1322,7 @@ def test_catlin_is_all_electric_with_no_gas_appliance(catlin_model):
     # only its power port) and System 1's shop-built supply box joined, between the cabinet
     # and DU-S-HP-SUP-DROP on the attic deck.
     assert air == {"EQ-T-BROAN-B210E75RT", "EQ-T-GREE-FLEXX-ULTRA-24-AH",
+                   "EQ-T-HP1-AH-INSTALLED",  # same cabinet with the selected pan/rail/trap stack
                    "EQ-T-ERV-MANIFOLD-6", "EQ-T-ERV-MIXING-BOX",
                    "EQ-T-ERV-PLENUM-M-SUP", "EQ-T-ERV-PLENUM-B-SUP",
                    "EQ-T-HP1-SUP-BOX"}

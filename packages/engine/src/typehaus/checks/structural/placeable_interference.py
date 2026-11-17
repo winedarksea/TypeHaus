@@ -25,6 +25,7 @@ from typehaus.findings import Finding
 from typehaus.model.enums import AIR_SERVICE_DUCT_SYSTEM
 from typehaus.quantities import inch
 from typehaus.resolve.model import ResolvedCanvasObject, ResolvedModel
+from typehaus.resolve.overlay import union_all
 from typehaus.resolve.ownership import run_body_owners
 from typehaus.resolve.placeable_bodies import bodied, body_prism
 from typehaus.resolve.solid_categories import SOLID_CATEGORIES
@@ -268,6 +269,36 @@ def _seats(ctx: CheckContext, carriers: list[Obstacle], z0: float) -> list[Polyg
     return seats
 
 
+def _installation_seats(ctx, carriers, obj, product):
+    """Internal support rails carry a case only when the pan itself bears on a surface."""
+    from typehaus.model.placeable_symbols import model_parts, place_local
+
+    if (product is None or product.air_handler_installation is None
+            or getattr(product.model_representation, "symbol", None)
+            != "gree-flexx-ultra-24-horizontal" or obj.body_z0_m is None):
+        return []
+    parts = model_parts(
+        product.model_representation.symbol,
+        *(v.meters for v in (*product.footprint, product.height)),
+        air_handler_installation=product.air_handler_installation)
+
+    def outline(part):
+        x, y, _ = part["center"]
+        w, d, _ = part["size"]
+        return Polygon(place_local(((x - w / 2, y - d / 2), (x + w / 2, y - d / 2),
+                                    (x + w / 2, y + d / 2), (x - w / 2, y + d / 2)),
+                                   obj.position, obj.rotation_degrees))
+
+    pan = next(p for p in parts if p.get("role") == "flexx:emergency-pan-floor")
+    bottom = obj.z_m + pan["center"][2] - pan["size"][2] / 2
+    under = _seats(ctx, carriers, bottom)
+    if not union_all(under).buffer(_SEAT_TOL_M).covers(outline(pan)):
+        return []
+    return [outline(p) for p in parts if p.get("role") == "flexx:pitch-shim"
+            and abs(obj.z_m + p["center"][2] + p["size"][2] / 2
+                    - obj.body_z0_m) <= _SEAT_TOL_M]
+
+
 @check(Tier.STRUCTURAL, _SUPPORT)
 def equipment_support(ctx: CheckContext) -> list[Finding]:
     standing = [obj for obj in bodied(ctx.model)
@@ -275,10 +306,21 @@ def equipment_support(ctx: CheckContext) -> list[Finding]:
     if not standing:
         return [not_applicable(_SUPPORT, "no Equipment is floor-mounted")]
     carriers = [o for o in obstacles(ctx.model) if _carries(o.kind)]
+    products = {p.tag: p for p in ctx.plan.library.equipment_types}
+    equipment = {e.tag: e for e in ctx.plan.all_elements() if e.element_kind == "Equipment"}
+    bodies = {o.tag: o for o in bodied(ctx.model)}
     out: list[Finding] = []
     for obj in standing:
         z0 = obj.body_z0_m if obj.body_z0_m is not None else obj.z_m
+        host = bodies.get(getattr(equipment.get(obj.tag), "installed_in_ref", None))
+        if (host is not None and host.tag != obj.tag and body_prism(host) is not None
+                and Polygon(host.footprint).covers(Polygon(obj.footprint))
+                and host.body_z0_m - _SEAT_TOL_M <= z0
+                and obj.body_z1_m is not None
+                and obj.body_z1_m <= host.body_z1_m + _SEAT_TOL_M):
+            continue
         seats = _seats(ctx, carriers, z0)
+        seats += _installation_seats(ctx, carriers, obj, products.get(obj.type_ref))
         body = Polygon(obj.footprint)
         centre = body.centroid
         carried = sum(1 for q in _quadrants(body)

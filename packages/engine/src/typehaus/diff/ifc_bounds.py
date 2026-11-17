@@ -47,7 +47,9 @@ def _emitted_parts_bounds(model: ResolvedModel, item, hosted_countertops, base_z
     symbol = getattr(getattr(equipment, "model_representation", None), "symbol", None)
     if symbol:
         parts = model_parts(symbol, equipment.footprint[0].meters,
-                                equipment.footprint[1].meters, equipment.height.meters)
+                            equipment.footprint[1].meters, equipment.height.meters,
+                            air_handler_installation=equipment.air_handler_installation,
+                            ports=equipment.ports)
         return _parts_bounds(parts, item.position, item.rotation_degrees, base_z_m)
     fixture = next((t for t in (*model.plan.library.fixture_types,
                                 *model.plan.library.appliance_types)

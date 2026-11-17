@@ -440,6 +440,7 @@ def _emit_equipment(f: Any, body: Any, equipment: Any, storey: Any, storeys: dic
 
         parts = model_parts(symbol, product_type.footprint[0].meters,
                             product_type.footprint[1].meters, height,
+                            air_handler_installation=product_type.air_handler_installation,
                             ports=getattr(product_type, "ports", ()))
         representation = parts_representation(
             f, body, parts, (x, y), float(_rotation_metadata(equipment, resolved)), z0)

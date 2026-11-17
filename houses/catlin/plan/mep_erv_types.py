@@ -137,13 +137,13 @@ EQUIPMENT_TYPES_ERV = (
     # return working when the ERV is off, which is the behaviour the owner asked for and is
     # behaviour, not geometry.
     #
-    # 27 1/2 x 40 x 23 on the attic deck at the air handler's return end since 2026-11-11
+    # 27 1/2 x 40 x 27: raised return opening follows the cabinet's rail/pan stack and pitch.
     # (plan/mep_erv_l3.py). 750 cfm leaves through the 20 x 16 neck at 340 fpm.
     EquipmentType(tag="EQ-T-ERV-MIXING-BOX",
                   name="Return-air mixing plenum, 6\" ERV leg with backdraft damper",
-                  footprint=(inch(27.5), inch(40)), height=inch(23),
+                  footprint=(inch(27.5), inch(40)), height=inch(27),
                   model_representation=ModelRepresentation(symbol="sheet-metal-plenum"),
-                  source="Fabricated plenum box, 27 1/2 x 40 x 23 in, on the attic deck at EQ-S-HP1-AH's return end: System 1's return plenum, taking the hall return riser, RM-S-SUITE's, RM-S-BED3's and RM-A-EAST-UNFIN's returns (the last a 12x12 stub on the south face, damper-locked at 35 cfm: the returns are in parallel) and a 6 in ERV inlet on a gravity backdraft damper, and giving the cabinet a 20 x 16 neck through its canvas connector. The damper is the whole point: the ERV and the air handler run on independent schedules and each must breathe without the other. Mastic-sealed galvanized; the neck size waits on the delivered cabinet's return opening.",
+                  source="Fabricated plenum box, 27 1/2 x 40 x 27 in, on the attic deck at EQ-S-HP1-AH's return end: System 1's return plenum, taking the hall return riser, RM-S-SUITE's, RM-S-BED3's and RM-A-EAST-UNFIN's returns (the last a 12x12 stub on the south face, damper-locked at 35 cfm: the returns are in parallel) and a 6 in ERV inlet on a gravity backdraft damper, and giving the cabinet a 20 x 16 neck through its canvas connector. The raised west-face opening follows the cabinet pan/rails and pitch; all other port stations stay fixed. The damper is the whole point: the ERV and the air handler run on independent schedules and each must breathe without the other. Mastic-sealed galvanized; the neck size waits on the delivered cabinet's return opening.",
                   # Face stations follow the drawn runs. Approximate means a design
                   # opening, still awaiting a coordinated fabricator's shop drawing.
                   ports=(ServicePort(tag="fresh", service=Service.SUPPLY_AIR,
@@ -151,7 +151,7 @@ EQUIPMENT_TYPES_ERV = (
                                      connection_size=inch(6), direction=(0, -1, 0),
                                      notes="ERV feed enters south face horizontally, not the floor; backdraft damper required."),
                          ServicePort(tag="return", service=Service.RETURN_AIR,
-                                     position=(inch(-13.75), inch(-8.8125), inch(13.3125)),
+                                     position=(inch(-13.75), inch(-8.907472317), inch(16.485179447)),
                                      width=inch(20), depth=inch(16), direction=(-1, 0, 0),
                                      notes="Provisional cabinet neck; measure delivered return aperture."),
                          ServicePort(tag="hall", service=Service.RETURN_AIR,

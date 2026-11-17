@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typehaus.checks.mep import (  # noqa: F401 - register
     air_handler_coordination,
+    air_handler_installation,
     bay_packing,
     condensate_overflow,
     conduit_bends,

@@ -176,12 +176,12 @@ EQUIPMENT_TYPES = (
                   source="EG4 WallMount Indoor 280Ah product page (read 2026-10-31): 14.3 kWh LFP, 36.4 x 18.1 x 9.6 in (H x W x D), 282 lb, UL 1973 + UL 9540A; UL 9540 as a system with the 12kPV/18kPV/FlexBOSS21; closed-loop RS485 comms. Capacity is nameplate; the autonomy calc applies its own depth of discharge (takeoff/backup_calc.py)."),
     # EQ-S-HP1-AH's supply box (2026-11-11), filed PLENUM (passive shop box).
     EquipmentType(tag="EQ-T-HP1-SUP-BOX",
-                  name="System 1 supply box, 22 1/2 x 14 x 23 in, shop-fabricated",
-                  footprint=(inch(22.5), inch(14)), height=inch(23),
+                  name="System 1 supply box, 22 1/2 x 14 x 27 in, shop-fabricated",
+                  footprint=(inch(22.5), inch(14)), height=inch(27),
                   model_representation=ModelRepresentation(symbol="sheet-metal-plenum"),
-                  source="Shop-fabricated galvanized plenum, 22 1/2 x 14 x 23 in, on the attic deck at EQ-S-HP1-AH's discharge: the cabinet's 11 5/8 x 16 3/4 in opening (4 1/4 in up on its platform) enters its east face through the unit's 3 in canvas connector, and DU-S-HP-SUP-DROP (12x12) leaves through its floor down FS-ATTIC's y 336-352 bay onto the 18x8 trunk. It is the transition between the two sections. Gree's IOM asks for a solid sheet-metal bottom for the first 6 in after the unit; that reads as the downflow-over-combustible-floor case, but the drop here starts at the inlet wall, so confirm with Gree before fabrication. Mastic-sealed, 26 ga, set on the deck.",
+                  source="Shop-fabricated galvanized plenum, 22 1/2 x 14 x 27 in, on the attic deck at EQ-S-HP1-AH's discharge. Raised inlet follows the cabinet on its 4 1/4 in platform, 1/16 in pan floor and 3 in rails, pitched south at 1/8 in/ft. The 11 5/8 x 16 3/4 in neck uses the specified 3 in fabric connector; confirm its suitability and the first-six-inches sheet-metal requirement with Gree. DU-S-HP-SUP-DROP (12x12) leaves through the floor into FS-ATTIC's y 336-352 bay. Inlet is 10 1/2 in east of the drop's near edge. Mastic-sealed, 26 ga; fabrication remains on hold.",
                   ports=(ServicePort(tag="inlet", service=Service.SUPPLY_AIR,
-                                     position=(inch(11.25), ft(0), inch(13.3125)),
+                                     position=(inch(11.25), inch(-0.09523339), inch(16.535306936)),
                                      width=inch(11.625), depth=inch(16.75), direction=(1, 0, 0),
                                      notes="Design opening; cabinet setback awaits field measurement."),
                          ServicePort(tag="drop", service=Service.SUPPLY_AIR,
@@ -295,24 +295,29 @@ DUCTS_HVAC_SECOND = [
 
 # THE AIR HANDLER IN THE ATTIC (2026-11-11). Horizontal-left on the deck of RM-A-EAST-UNFIN
 # (conditioned, under the hot roof), over the north hall. It stands on SL-A-HP1-PLATFORM, 4 1/4"
-# up. The trap, emergency pan and rails are not modeled: the 2026-11-15 review withdrew
-# the earlier claim that this height proves trap clearance. Resolve their actual envelope,
-# cabinet pitch and both neck elevations together (notes/flexx_ultra_geometry.md).
+# up. The installed type adds a 1/16" pan floor, 3" rails with tapered bearing shims,
+# primary trap, capped cleanout, downstream vent and SS3 float-switch allowance. The
+# cabinet's low front edge is 7 5/16" above deck; its rear rises at 1/8"/ft. Both necks
+# and the taller plenums follow the pitched ports (notes/flexx_ultra_geometry.md).
 # Pan + float shutdown remains the owner's choice; no second drain line. Rotation 0
 # puts the discharge west, the return east and the service front SOUTH, where Gree's 24" zone
-# (x 20'-10 1/2"..24'-6", y 25'-4 9/16"..27'-4 9/16") is open deck at the end of the walk
+# (x 20'-10 1/2"..24'-6", south of the pitched cabinet) is open deck at the end of the walk
 # from D-A-STUDY: ~20' at
 # 6'-9" headroom or more, inside IMC 306.3's 50' passageway. The supply opening's rear-biased
-# centre (y=28'-8") is the drop bay's centre. Tags keep their `-S-` for continuity. The
+# centre remains near the drop bay's centre. Tags keep their `-S-` for continuity. The
 # refrigerant lines are not modelled (notes/flexx_ultra_geometry.md).
 EQUIPMENT_HVAC_ATTIC = [
     Equipment(uid="CEE032AAAA", tag="EQ-S-HP1-AH",
               kind=EquipmentKind.DUCTED_AIR_HANDLER,
               position=pt(inch(272.25), inch(339.1875)), footprint=(inch(43.5), inch(21.25)),
-              room="RM-A-EAST-UNFIN", type_ref="EQ-T-GREE-FLEXX-ULTRA-24-AH",
+              room="RM-A-EAST-UNFIN", type_ref="EQ-T-HP1-AH-INSTALLED",
               outdoor_ref="EQ-M-HP1-OD", circuit="CKT-HP1-AH",
               secondary_drain_pan=True, float_switch_ref="EQ-M-HP1-OD",
-              mount=Mount(kind=MountKind.FLOOR, elevation=inch(4.25)),
+              pan_drain_ref="PR-A-COND-HP1",
+              install_parts=("PROD-HP1-SHOP-PAN", "PROD-HP1-SUPPORT-RAIL",
+                             "PROD-HP1-SUPPORT-RAIL", "PROD-RECTORSEAL-97089",
+                             "PROD-HP1-PRIMARY-TRAP"),
+              mount=Mount(kind=MountKind.FLOOR, elevation=inch(7.3125)),
               zone_rooms=("RM-S-STUDY2", "RM-S-BED1", "RM-S-BED2",
                           "RM-S-BED3", "RM-S-SUITE", "RM-S-SUITEBATH", "RM-S-VANITY",
                           "RM-S-BATH1", "RM-S-HALL", "RM-S-CLOSET", "RM-S-NCLOSET",
@@ -326,7 +331,8 @@ EQUIPMENT_HVAC_ATTIC = [
               rotation=deg(90), room="RM-A-EAST-UNFIN",
               type_ref="EQ-T-GREE-FLEXX-HEATKIT-46KW", circuit="CKT-HP1-AH",
               blower_interlock_ref="EQ-S-HP1-AH",
-              mount=Mount(kind=MountKind.FLOOR, elevation=inch(4.25))),
+              installed_in_ref="EQ-S-HP1-AH",
+              mount=Mount(kind=MountKind.FLOOR, elevation=inch(7.3125))),
     # The cabinet's platform: 3" past the case each way, for the pan.
     Slab(uid="BX4WEB62X5", tag="SL-A-HP1-PLATFORM", kind="deck",
          outline=(pt(inch(247.5), inch(325.5625)), pt(inch(297), inch(325.5625)),
@@ -346,13 +352,13 @@ EQUIPMENT_HVAC_ATTIC = [
 # (plan/mep_hvac_branches.py).
 DUCTS_HVAC_ATTIC = [
     DuctRun(uid="Q3DEES5ZH3", tag="DU-A-HP1-SUP-NECK", system=DuctSystem.SUPPLY,
-            path=(pt(inch(250.5), inch(344)), pt(inch(246.5), inch(344))),
-            elevations=(inch(14.0625), inch(14.0625)),
+            path=(pt(inch(250.5), inch(343.90476661)), pt(inch(246.5), inch(343.90476661))),
+            elevations=(inch(17.285306936), inch(17.285306936)),
             width=inch(11.625), depth=inch(16.75), routing=DuctRouting.EXPOSED,
             design_cfm=750, material="galvanized"),
     DuctRun(uid="XNJFPY0B2F", tag="DU-A-HP1-RET-NECK", system=DuctSystem.RETURN,
-            path=(pt(inch(299), inch(339.1875)), pt(inch(294), inch(339.1875))),
-            elevations=(inch(14.0625), inch(14.0625)),
+            path=(pt(inch(299), inch(339.092527683)), pt(inch(294), inch(339.092527683))),
+            elevations=(inch(17.235179447), inch(17.235179447)),
             width=inch(20), depth=inch(16), routing=DuctRouting.EXPOSED,
             design_cfm=750, material="galvanized"),
     # RM-A-EAST-UNFIN's return stub (2026-11-12): REG-A-HP-EAST-RET's 12x12 neck, 6" long, into
