@@ -22,6 +22,7 @@ from typehaus import (
     LayerMaterial,
     Node,
     Occupancy,
+    Pad,
     PanelingSpan,
     PanelingSubstrate,
     PublishedSpan,
@@ -217,9 +218,10 @@ NODES = [
     #
     # ** THE WELL PARTITION'S CENTRELINE, x=14'-0" SINCE 2026-11-09. ** `inch(168)` is midway
     # between the well's faces (`resolve/stairs/common.py` reserves its 4 1/2" and builds
-    # nothing in it), 1/16" off W-M-WELL above. A bath wall off this line would be a
-    # near-collinear jog that reads as a mistake, so W-B-BA-E, W-B-WELL above it
-    # and W-B-CL-N's east end are one continuous plane from y=18' to y=31' now. Everything
+    # nothing in it), 1/16" off W-M-WELL above. The 6 1/2" bath and hall walls sit 1" west
+    # of it (`alignment`, 2026-11-16) so their hall face, x=14'-2 1/4", is flush with the
+    # 4 1/2" partition's from y=10' to the landing; the 1" step is on the bath side, inside
+    # W-B-BA-N's tee. Nodes stay on the line. Everything
     # that references these two nodes rides along and needed no edit; the wet-wall risers,
     # which are absolute coordinates and not node references, did (mep_venting.py,
     # mep_supply.py, mep_supply_devices.py).
@@ -230,9 +232,8 @@ NODES = [
     # ** THE HALL'S SOUTH END, NEW 2026-09-07. ** The 2026-09-05 hall stopped at the y=18'
     # line and crossed into the workshop through a cased opening, which made the workshop a
     # corridor. The hall runs the rest of the way south now — from N-B-BA-SE to the sauna's
-    # north wall — on the SAME x=14'-0" well-partition centreline the node above
-    # stands on, so W-B-BA-E, W-B-WELL and the new W-B-HALL-W are one plane from y=10' to
-    # y=31'. This node splits W-B-SA-N so the new partition tees into it rather than dying
+    # north wall — on the SAME x=14'-0" node line as the one above, so W-B-BA-E, W-B-WELL
+    # and W-B-HALL-W share one hall face from y=10' to the landing. This node splits W-B-SA-N so the new partition tees into it rather than dying
     # in the middle of a wall.
     Node(uid="XE20Z4ZSS6", tag="N-B-HALL-S", position=pt(inch(168), ft(10))),
     # W-B-CW's east end. Keep the split so the ESS partition tees into the south wall here;
@@ -257,18 +258,15 @@ NODES = [
     Node(uid="CBN018AAAA", tag="N-B-ESS-N", position=pt(ft(6), ft(36))),
     Node(uid="BT88F385N4", tag="N-B-ESS-SW", position=pt(ft(6), ft(31))),
     Node(uid="GXJ9S72CKH", tag="N-B-ESS-SE", position=pt(ft(10), ft(31))),
-    # ** W-B-WELL's north end, and it is an OPEN END since 2026-09-05 (round three). ** It
-    # was the under-stair closet's north-east corner, where the well partition met
-    # W-B-CL-N; that cross wall is gone (see WALLS) and the storage under the flight runs
-    # north past this point to the landing instead of stopping at it. x stays N-B-BA-NE's —
-    # the stair well's partition centreline — and y=31'-0" stays N-B-ESS-SE's, so the
-    # partition still ends on the W-B-STR3/W-B-STR split and needs no second node on the
-    # x=10' line. The landing column closes this end, so it takes no end board.
+    # ** W-B-WELL's north end: an OPEN END (2026-09-05), now at y=32'-0 7/8" (2026-11-16). **
+    # That is P-M-STRWELL-S's north face, so the stud layer wraps both well posts and the
+    # slot between them, slab to main floor. The free end takes its board, coat and beads
+    # (`resolve/wall_ends.py`). The landing decks die into its faces, as the posts did.
     #
     # `open_end=True` is the honest description and not a silencer: a wall that dies in the
     # middle of a stair well has one edge at this node, which is `integrity.wall_loop_open`'s
     # whole subject, and the flag is how the model says "this end is meant to be free".
-    Node(uid="SQZSP1P9DC", tag="N-B-CL-NE", position=pt(inch(168), ft(31)),
+    Node(uid="SQZSP1P9DC", tag="N-B-CL-NE", position=pt(inch(168), ft(32, 0.875)),
          open_end=True),
     # Glazed-brick veneer over the exposed south wall (W-B-BRICK): a freestanding wythe off
     # the concrete, both ends ``open_end`` like the sunken garden's N-SG-NW/NE (not part of
@@ -881,7 +879,8 @@ WALLS = [
          end_node="N-B-SA-NE", assembly="SAUNA_2X4",
          layer_materials=(LayerMaterial(layer="gwb-cold", material="gwb-ar"),), top=ft(7, 6),
          interior_room="RM-B-SAUNA"),
-    # ** THE HALL'S WEST SIDE, NEW 2026-09-07. ** x=13'-10 5/8" from the y=18' line south
+    # ** THE HALL'S WEST SIDE, NEW 2026-09-07. ** Axis x=13'-11" (1" west of the node line,
+    # hall face flush with W-B-WELL's) from the y=18' line south
     # to the sauna's north wall, walling the workshop off the hall and hosting D-B-SHOP.
     #
     # INT_2X6_PLUMBING and not INT_2X6_STAGGERED_PLUMBING — continuous full-depth studs —
@@ -892,13 +891,13 @@ WALLS = [
     # top=ft(8) is the bearing seat like every other partition in this basement.
     Wall(uid="CQRJZCM0R1", tag="W-B-HALL-W", start_node="N-B-BA-SE",
          end_node="N-B-HALL-S", assembly="INT_2X6_PLUMBING_HALF",
+         alignment=face("center", offset=inch(-1)),
          layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), top=ft(8),
          structural_role=StructuralRole.NONBEARING),
     # ** RETYPED AND RE-NODED 2026-09-05, AND IT IS DRY NOW. ** This was the stair-foot
     # bathroom's only framed wall and it carried the whole room's plumbing. What is left
     # here is the bathroom's north end: a plain 2x4 partition running
-    # x 10'-0"..13'-10 5/8" at y=25'-6" — 1 3/8"
-    # shorter since W-B-BA-E slid onto the well-partition line.
+    # x 10'-0"..14'-0" at y=25'-6", teeing into W-B-BA-E.
     # Top=8'-0" is the bearing seat, like every other partition in this basement.
     Wall(uid="CBW120AAAA", tag="W-B-BA-N", start_node="N-B-BA-NW",
          end_node="N-B-BA-NE", assembly="INT_2X4_PARTITION_HALF",
@@ -908,8 +907,10 @@ WALLS = [
     # services moved into W-B-STR2 so the leaf can pass south into W-B-HALL-W. Its north
     # segment keeps the WC grab-bar backing; the cavity has no wall-mounted fixtures.
     # Nonbearing (owner, 2026-10-29), so D-B-BATH heads with R602.7.4's flat 2x.
+    # Axis 1" west of the node line: its hall face is flush with W-B-WELL's (2026-11-16).
     Wall(uid="8BRZAXSW73", tag="W-B-BA-E", start_node="N-B-BA-NE",
          end_node="N-B-BA-SE", assembly="INT_2X6_STAGGERED_PLUMBING_HALF",
+         alignment=face("center", offset=inch(1)),
          layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"), LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(8),
          interior_room="RM-B-BATH", structural_role=StructuralRole.NONBEARING),
     # ESS closet's two framed walls: UL U305 wood studs, 5/8" Type X both faces (owner,
@@ -947,11 +948,9 @@ WALLS = [
     # member, so W-B-WELL fills a RESERVED VOID: it is not colliding with the stair, it is
     # the thing the stair already made room for. STAIRWELL_PARTITION_4H is 4 1/2"
     # exactly for that reason (plan/assemblies.py). It runs from N-B-BA-NE — the bathroom's
-    # north-east corner, slid onto this same centreline in the same edit — north to
-    # N-B-CL-NE, so W-B-BA-E and this wall are ONE PLANE 13 feet long. There is no gap
-    # between them to close: the partition starts ON the bathroom's north-east corner.
-    # Its north end is free now (`open_end` on N-B-CL-NE) — the reserved slot ends where
-    # the two flights stop being two, and nothing north of that is a wall line.
+    # north-east corner — north to N-B-CL-NE. Its hall face is flush with W-B-BA-E's
+    # (that wall is aligned 1" west). Its north end is free (`open_end` on N-B-CL-NE), at
+    # P-M-STRWELL-S's north face: the stud layer wraps both well posts (2026-11-16).
     #
     # It stands in FO-M-STAIR's void, not under joists, so its board runs up to the main
     # floor (+1.0255906", W-M-WELL's base). Nothing lands on it and it is not BEARING.
@@ -1450,6 +1449,18 @@ SLABS = [
              source="Owens Corning FOAMULAR NGX 1000, ASTM C578 Type V: 100 psi min (ASTM D1621), minimum compressive modulus 3,700 psi published (PDS 07 21 13.13.OCC); dead load <= 1/3 of rating; 1.5\" min thickness (Pub. 58307-Q, 06-2025)")),
 ]
 
+# One thickened-slab pad under both stairwell posts (P-M-STRWELL-S/-SS, main.py), poured with
+# SL-B-FLOOR on its capillary stone; the XPS stops at its edge and the ABU44 bolts cast into
+# it. 16" x 24" x 8" from the slab top: projection (6 1/4" / 5 1/2") within the thickness,
+# 3,140 lb on 2.67 sf = 1,180 psf against GM's 2,000 (notes/stairwell_post_pad.md).
+PADS = [
+    Pad(uid="NAS34P2Q9F", tag="PD-B-WELL",
+        outline=(pt(inch(160), inch(366.375)), pt(inch(176), inch(366.375)),
+                 pt(inch(176), inch(390.375)), pt(inch(160), inch(390.375))),
+        thickness=inch(8), bottom_elevation=inch(-117.4375), assembly="SLAB_THICKENED_PAD",
+        cast_with=("SL-B-FLOOR",)),
+]
+
 FLOOR_OPENINGS = [
     # Shower recess is a finish-zone concern; the stair arrives via the slab above.
 ]
@@ -1579,5 +1590,5 @@ SOFFITS = [
     # plan/mep_drainage.py. The soffit only ever covered what that reroute left exposed.
 ]
 
-ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *SLABS, *FLOOR_OPENINGS,
+ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *SLABS, *PADS, *FLOOR_OPENINGS,
             *PANELING, *SOFFITS]

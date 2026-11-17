@@ -91,12 +91,15 @@ def _declared_pours(plan: PlanModel) -> set[frozenset[str]]:
 def _cast_with_non_concrete(plan: PlanModel) -> list[tuple[str, str]]:
     """``(pad, target)`` for every ``cast_with`` naming something that is not a concrete pour.
 
-    Nothing is cast monolithically with stone, or with a tag that is not a footing or pad.
+    Nothing is cast monolithically with stone, or with a tag that is not a footing, pad or
+    pour slab (a thickened-slab pad is cast with its slab).
     """
+    from typehaus.model.floors import Slab
     from typehaus.model.structure import Footing, Pad
 
     pours = {el.tag for el in plan.all_elements()
-             if isinstance(el, Pad) or (isinstance(el, Footing) and el.material == "concrete")}
+             if isinstance(el, Pad) or (isinstance(el, Footing) and el.material == "concrete")
+             or (isinstance(el, Slab) and el.kind == "pour")}
     return sorted((el.tag, other) for el in plan.all_elements() if isinstance(el, Pad)
                   for other in el.cast_with if other not in pours)
 

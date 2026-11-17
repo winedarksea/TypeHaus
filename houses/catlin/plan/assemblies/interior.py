@@ -57,8 +57,8 @@ ACCENT_GWB_LINING = (
 # drive to control — the paint is here purely for the finish takeoff. Deliberately unpainted
 # elsewhere: SAUNA_* (T&G/foil-polyiso is already the vapour/air control, no paint in a
 # löyly room), INT_2X6_BRG_EXPOSED_PLY's stud side (exposed wood, hardwax-oil
-# finished; its plywood stair face IS painted, `paint-stair`), the masonry/concrete/deck/glazing assemblies (no gypsum face), POST_WHITE_PAINT
-# (its own exterior-paint material), and INT_2X4_PARTITION (a tested STC assembly — see
+# finished; its plywood stair face IS painted, `paint-stair`), the masonry/concrete/deck/glazing assemblies (no gypsum face), the post assemblies
+# (no gypsum face either), and INT_2X4_PARTITION (a tested STC assembly — see
 # library/assemblies/ for why it doesn't get layers added). A gypsum face left bare and
 # facing a used room is painted by the room (resolve/room_paint.py); `Room.unpainted` opts out.
 # LAYOUT_ORIGIN, INTERIOR. The five bearing assemblies below join the four

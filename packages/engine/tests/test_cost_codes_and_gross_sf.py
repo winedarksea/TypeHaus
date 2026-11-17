@@ -152,7 +152,7 @@ def test_an_enclosure_with_no_room_in_it_is_not_floor_area(catlin_model) -> None
 
 @pytest.mark.parametrize("key,trade", [
     ("column:ELM_TIMBER", "framing"),
-    ("column:POST_WHITE_PAINT", "framing"),
+    ("column:POST_CONCEALED_SPF", "framing"),
     ("glazing:BREEZEWAY_GLAZED_WALL", "openings"),
     ("glazing:GLAZED_WALL_MULTIWALL_16MM", "openings"),
     ("bug_screen:EXT_2X6", "siding"),
@@ -260,7 +260,7 @@ def test_a_cast_column_is_filed_with_the_concrete_sub(key) -> None:
     assert code.nahb == "1300"
 
 
-@pytest.mark.parametrize("key", ["column:ELM_TIMBER", "column:POST_WHITE_PAINT",
+@pytest.mark.parametrize("key", ["column:ELM_TIMBER", "column:POST_CONCEALED_SPF",
                                  "column:POST_KDAT"])
 def test_a_wood_column_stays_with_the_framer(key) -> None:
     """The other half of the rule, and the one a careless fix would break. ``_IS_A_POUR``

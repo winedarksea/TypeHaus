@@ -190,6 +190,17 @@ SLAB_FLOOR = Assembly(
     source="catlin-house basement slab: 2\" below-slab XPS, R-10 @ >=25 psi compressive (ASTM C578 Type IV), over a 10-mil ASTM E1745 Class A vapour retarder on a 4\" open-graded capillary break (IRC R506.2.2/R506.2.3); 3\" @ 40 psi until 2026-08-31",
 )
 
+# A thickened-slab pad, poured with SL-B-FLOOR on its capillary stone; the XPS stops at its
+# edge. PD-B-WELL under the two stairwell posts (notes/stairwell_post_pad.md).
+SLAB_THICKENED_PAD = Assembly(
+    tag="SLAB_THICKENED_PAD",
+    layers=(
+        Layer(name="concrete", material_ref="concrete", thickness=inch(8.0),
+              function=LayerFunction.STRUCTURE, concrete=INTERIOR_SLAB_MIX),
+    ),
+    source="catlin-house thickened-slab pad, monolithic with SL-B-FLOOR (same mix, same pour), plain concrete (ACI 318-19 §14.1.4)",
+)
+
 # Main-floor structural deck: an EPS stay-in-place form with a cast concrete cap, over the
 # (conditioned) basement — so it is an interior floor, not an envelope slab. The "INT" tag
 # token is the codebase's signal for that (see FOUNDATION_WALL_12_INT, INT_2X6_PLUMBING) — it

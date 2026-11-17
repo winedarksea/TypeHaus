@@ -81,9 +81,10 @@ def test_it_reports_the_pours_it_cleared_by_name(catlin_ctx):
         "PD-BW-W", "PD-BW-E", "PD-BW-RE",
         "PD-BW-GW", "PD-BW-GE", "PD-BW-RNE"}
 
-    # No declared pour survives on catlin: the garage strips are stone, so the three pier
-    # pads that used to declare against them stand clear instead.
-    assert declared == [], [f.message for f in declared]
+    # The garage strips are stone, so the three pier pads that used to declare against them
+    # stand clear. The one declared pour is PD-B-WELL, cast with SL-B-FLOOR (2026-11-16).
+    assert [set(f.element_tags) for f in declared] == [{"PD-B-WELL", "SL-B-FLOOR"}], [
+        f.message for f in declared]
 
 
 def test_continuous_foundation_work_is_never_the_SUBJECT_of_a_finding(catlin_plan,

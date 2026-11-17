@@ -93,7 +93,8 @@ def _walls_through(slab: ResolvedSolid, model: ResolvedModel, plan) -> list:
 
 def clip_pour_slabs(model: ResolvedModel) -> list[Finding]:
     """Replace each pour slab (and its top finish) by its plan less what it is cast against."""
-    footings = [s for s in model.solids if s.category == "footing"]
+    # A thickened-slab pad flush in the pour is the same joint as a flush strip footing.
+    footings = [s for s in model.solids if s.category in ("footing", "pad")]
     findings: list[Finding] = []
     for slab in [s for s in model.solids if is_pour_slab(s.category) and not s.derived]:
         plan = _plan(slab)

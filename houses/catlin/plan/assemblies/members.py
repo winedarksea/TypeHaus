@@ -9,15 +9,15 @@ from typehaus import (
 )
 
 
-# White-painted interior 6x6 posts; no sunken-garden pillar uses this assembly.
-POST_WHITE_PAINT = Assembly(
-    tag="POST_WHITE_PAINT",
+# The two stairwell 4x4s, concealed in W-B-WELL's stud layer since 2026-11-16: plain SPF,
+# no paint. The solid takes its section from `Post.size`; the layer only names the stock.
+POST_CONCEALED_SPF = Assembly(
+    tag="POST_CONCEALED_SPF",
     layers=(
-        Layer(name="post-paint-white", material_ref="post-paint-white", thickness=inch(5.5),
+        Layer(name="post-spf", material_ref="spf", thickness=inch(3.5),
               function=LayerFunction.STRUCTURE),
     ),
-    # (single literal: the editable dialect forbids concatenated strings)
-    source="catlin-house interior white-painted 6x6 posts — P-M-STRWELL-S and P-M-STRWELL-SS, the two stairwell posts standing on SL-B-FLOOR. THE BALCONY PILLARS LEFT THIS ASSEMBLY on 2026-09-03 for POST_WHITE_PAINT_DF: they need Douglas Fir-Larch at specific gravity 0.50 to satisfy ESR-2604 §3.2.2 at their caps and bases, and these two interior posts carry no rated connector and no reason to change stock. Same 5.5\" body and the same white; standard SPF under the paint",
+    source="catlin-house stairwell posts P-M-STRWELL-S and P-M-STRWELL-SS: SPF 4x4, slab to main floor, wrapped by W-B-WELL's gypsum (2026-11-16; was POST_WHITE_PAINT, exposed and painted)",
 )
 
 # The two heat-pump ground stands. Mill-finish extruded aluminium, and the alloy is a
@@ -50,12 +50,12 @@ POST_WHITE_PAINT_DF = Assembly(
     source="Retired balcony centre-pillar trial, PT-SG-BR2/BF2: white-painted Douglas Fir-Larch 6x6, specific gravity 0.50. Both pillars were removed on 2026-09-22; this assembly has no current model instances",
 )
 
-# Guards were split off POST_WHITE_PAINT (they shared it with the balcony's
-# 6x6 pillars/knee braces, which must stay white) — same 5.5" body, only the colour differs.
+# Guards were split off the retired POST_WHITE_PAINT (shared with the balcony's 6x6
+# pillars/knee braces) — same 5.5" body, only the colour differs.
 # Metal, not painted PT: `_solid_color` reads the STRUCTURE layer's material, so
 # metal-dark-exterior here is what darkens the railings in both renderers.
 # The suite bedroom's two elm tudor posts (plans/TODO.md §Hardwood): same pattern as
-# POST_WHITE_PAINT — the STRUCTURE material colours the solid and names the species for the
+# the old POST_WHITE_PAINT — the STRUCTURE material colours the solid and names the species for the
 # wood_surfaces takeoff. 6.25" body = the custom timber, sheathing to 1/8" proud of drywall, a
 # deviation within W-S-W3's stud line, deliberately not a change to EXT_2X6. Stud height:
 # only the sole plate is cut, the double top plate runs over the posts.

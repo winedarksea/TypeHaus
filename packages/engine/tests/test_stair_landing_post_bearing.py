@@ -15,12 +15,10 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
-
 from typehaus.checks.structural.stairs import landing_post_bearing
 from typehaus.findings import Result
 from typehaus.quantities import inch
 from typehaus.resolve.model import FramedMember, ResolvedStair
-
 
 _DECK_Z = 0.0
 _POST_TOP_Z = 1.5
@@ -36,6 +34,15 @@ def test_catlin_landing_posts_all_land_on_something_bearing(catlin_model, catlin
     assert all(finding.result is Result.PASS for finding in findings), [
         finding.message for finding in findings if finding.result is not Result.PASS]
     assert all(finding.severity.value == "warn" for finding in findings)
+
+
+def test_an_authored_post_through_the_corner_replaces_the_derived_one(catlin_model):
+    """P-M-STRWELL-SS rises past ST-B2M's landing corner, so no 4x4 is derived beside it;
+    ST-M2S's corner sits ON P-M-STRWELL-S's top, so its post stays."""
+    posts = {stair.tag: [m for m in stair.members if m.child_key.startswith("landing-post-")]
+             for stair in catlin_model.stairs}
+    assert posts["ST-B2M"] == []
+    assert len(posts["ST-M2S"]) == 1
 
 
 # ------------------------------------------------------------------- synthetic

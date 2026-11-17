@@ -2409,7 +2409,9 @@ CONNECTORS = [
 # These carry them properly: 4x4 columns on the well-partition line, top at the main
 # floor and standing the basement's full height to the slab, inside the 4 1/2" the shaft's
 # 7'-0" has always reserved between the two flights (see plan/storeys/basement.py's header
-# note). They are hidden in the partition and clear both 3'-3 3/4" walking lanes.
+# note). Since 2026-11-16 W-B-WELL runs to P-M-STRWELL-S's north face, so both are wrapped
+# in its gypsum: plain SPF, unpainted (POST_CONCEALED_SPF). They stand on one thickened-slab
+# pad, PD-B-WELL (plan/storeys/basement.py, notes/stairwell_post_pad.md).
 #
 # The y-positions are the landing rims' own ends, which the u-split resolver derives from
 # the stair's start point and going. Moving ST-B2M or ST-M2S moves those ends and these
@@ -2422,27 +2424,26 @@ CONNECTORS = [
 # ST-B2M's extended landing, on the step between its two halves.
 POSTS = [
     # ``supported_by`` authored 2026-08-28, and it corrected the CUT LENGTH as well. Both
-    # stand the basement's full height, so the thing under them is SL-B-FLOOR — the note
-    # above always said so in prose and the field was simply never filled in. With it unset
+    # stand the basement's full height to the slab (PD-B-WELL, flush in SL-B-FLOOR, since
+    # 2026-11-16), and the field was simply never filled in. With it unset
     # the resolver hung each post's TOP at the 0' datum and let its bottom fall where the
     # height put it, and ft(9, 4) put it at -9'-4" — 2 9/16" INSIDE a 3 1/2" slab whose top
     # is at -9'-1 7/16". Nothing reported that, because nothing had been told the post was
     # supposed to reach the slab. It is 9'-1 7/16" of clear height, so that is the post.
     #
     # Now that the bearing is declared, `takeoff/uplift.py::post_base_rows` derives an ABU44
-    # under each — the 4x4 rung of the ABU size ladder, ZMAX
-    # rather than stainless because this is a dry interior slab.
+    # under each — the 4x4 rung of the ABU size ladder, ZMAX rather than stainless because
+    # this is a dry interior slab. Its cast-in bolt lands in PD-B-WELL, the pad under both.
     Post(uid="A9J80KK6AE", tag="P-M-STRWELL-S", position=pt(inch(167.9375), ft(31, 11.124)), size="4x4",
-         height=ft(9, 1.4375), assembly="POST_WHITE_PAINT", supported_by="SL-B-FLOOR"),
+         height=ft(9, 1.4375), assembly="POST_CONCEALED_SPF", supported_by="PD-B-WELL"),
     # A THIRD one on the well centreline, 2026-09-15 (notes/u_stair_split_landing.md), under
     # ST-B2M's half-landings, which start at y=31'-1 5/8": its 60" flights plus the head
     # riser board and carpet (1 1/4") the landing edge stands past (2026-09-28,
-    # notes/stair_nosing_basis.md). That corner is a rim end no host wall reaches,
-    # `bearing.py` stands a 4x4 on it, and it is over FO-M-STAIR's hole — so, like the two
-    # above, it is a full-height column to the basement slab rather
-    # than a squash block in a joist bay.
+    # notes/stair_nosing_basis.md). That corner is a rim end no host wall reaches, and it
+    # is over FO-M-STAIR's hole, so this full-height column carries it. `bearing.py` sees
+    # the post at the corner and derives no 4x4 of its own (2026-11-16).
     Post(uid="H8TV2XS6B2", tag="P-M-STRWELL-SS", position=pt(inch(168), ft(31, 1.625)), size="4x4",
-         height=ft(9, 1.4375), assembly="POST_WHITE_PAINT", supported_by="SL-B-FLOOR"),
+         height=ft(9, 1.4375), assembly="POST_CONCEALED_SPF", supported_by="PD-B-WELL"),
     # P-M-STRLAND-SE retired 2026-11-09: landing-rim-lower-1's ledger now runs through the
     # W-M-C5 / W-M-C5B split (`resolve/stairs/bearing.py`), so that rim end needs no post.
 ]

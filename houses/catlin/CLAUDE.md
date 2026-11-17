@@ -1075,7 +1075,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   (7.05'). The y=5'-4" joist line is moved into the trimmer pack (`line_overrides`). Moving
   the turn or the deck re-opens that check, not `integrity.stair_opening`.
 - **`P-M-STRWELL-SS` is the third well post** (`y=31'-1 5/8"`), under ST-B2M's
-  half-landings, whose corner is a rim end no host wall reaches. **Every landing edge and
+  half-landings, whose corner is a rim end no host wall reaches. Since 2026-11-16 both well
+  posts are concealed SPF 4x4s (`POST_CONCEALED_SPF`) inside `W-B-WELL`, standing on
+  `PD-B-WELL`, one 16x24x8" thickened-slab pad cast with `SL-B-FLOOR`
+  (`notes/stairwell_post_pad.md`; nothing in the engine grades it). `bearing.py` derives no
+  landing post where an authored post rises through the corner, so ST-B2M has none. **Every landing edge and
   stairhead header stands one head riser board past the last riser line** (plus the carpet
   on ST-B2M), so the last tread is a full going; the posts and upper-flight rails follow
   (2026-09-28, `notes/stair_nosing_basis.md`). Over `FO-M-STAIR`'s hole, so
@@ -2159,15 +2163,16 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     `FT-B-CS`/`FT-B-CS2` stop beneath jamb packs, with slab under the opening.
 
 - **Bathroom.** Rotated north-south along the framed stair wall (`W-B-STR3B`/`W-B-STR2`);
-  clear **3'-3 15/16" x 7'-1 1/4"**. The shared vent and supply drops run in `W-B-STR2`
+  clear **3'-4 1/2" x 7'-1 1/2"**. The shared vent and supply drops run in `W-B-STR2`
   at x=10'-0"; `W-B-BA-E` keeps its 2x6 section and now hosts the 36" pocket door. Its
   cavity continues south into the matching 2x6 section of `W-B-HALL-W`. `W-B-BA-N` is a
   dry `INT_2X4_PARTITION`. Wall devices are hosted on
   their face (`location.attachment`) and `integrity.wall_mount_on_face` grades the body.
 
 - **Hall and circulation.** The hall runs from the stair foot south, west of `W-B-CN2`, the
-  full way to the sauna's north wall, on the x=14'-0" well-partition centreline shared
-  with `W-B-BA-E`/`W-B-WELL`; part of `RM-B-STAIR`'s loop (114.8 -> 147.7 sf, one seed, no
+  full way to the sauna's north wall. `W-B-BA-E`/`W-B-HALL-W` (6 1/2") stand on the x=14'-0"
+  node line aligned 1" west, so their hall face (x=14'-2 1/4") is flush with `W-B-WELL`'s
+  4 1/2" (2026-11-16); the 1" step is on the bath side, inside `W-B-BA-N`'s tee; part of `RM-B-STAIR`'s loop (114.8 -> 147.7 sf, one seed, no
   separate `Room`). Circulation is stair -> hall -> gym (`D-B-GYM`) -> `D-B-PLAY`, and
   stair -> hall -> `D-B-SHOP` -> workshop -> `D-B-FURN`. There are now **no doors through a
   concrete pour** — `prices.toml`'s `concrete-window-bucks-and-blockouts` row drives to zero
@@ -2239,7 +2244,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     (it did, twelve times). Its thickness must stay locked to
     `resolve/stairs/common._WELL_PARTITION_THICKNESS_M` (4 1/2"). Its north end is open
     (`open_end=True` on `N-B-CL-NE`) — the only honest way to model a partition dying
-    mid-well; `integrity.wall_loop_open` reads it.
+    mid-well; `integrity.wall_loop_open` reads it. Since 2026-11-16 that end is at y=32'-0 7/8",
+    `P-M-STRWELL-S`'s north face: the stud layer wraps both well posts, the free end takes its
+    board and beads (`resolve/wall_ends.py`), and the landing decks die into its faces.
   - `W-B-STR3` is `STAIRWALL_INT_2X6_BRG_UNDERSTAIR` (5/8" Type X in place of 5/8" painted stair
     plywood, per R302.7) — costs the exposed-plywood stair face on this segment. **Do not
     retype it back**: `code.R302_7_under_stair_protection` now passes on "no enclosed usable
@@ -2509,8 +2516,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   viewer's lighting (0.8 hemisphere + 0.9 key + 0.6 IBL) lifts a dark albedo
   well above itself (→ DESIGN-LOG.md, "Exterior colour, balcony and veneer").
 - Guards are `RAILING_DARK_METAL`, split off `POST_WHITE_PAINT`. The stairwell
-  posts still use `POST_WHITE_PAINT` and must stay white (the balcony's centre
-  pillars that shared it retired on 2026-09-22).
+  posts are concealed `POST_CONCEALED_SPF` since 2026-11-16; `POST_WHITE_PAINT` is gone.
 - **The court is 17'-0" clear and has no centre support line** (2026-09-22). Both decks
   span wall to wall on 2x12 KDAT southern pine at 12" o.c. (IRC Table R507.6, 18'-0"; the
   house states 35 psf deck snow, under the table's 40 live — `preferences.toml [structural]

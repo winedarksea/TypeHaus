@@ -8590,3 +8590,21 @@ so the smaller section keeps the existing 105.75-inch mounting face. Hardware de
 sizes are illustrative; the published overall section is exact. The three straight runs
 remain separate: the historic corner curves have no resolved tangent layout or published
 bend dimensions. See `notes/porch_enclosure.md` for that remaining connection detail.
+
+## W-B-WELL: flush hall face, posts wrapped, one pad (2026-11-16, owner)
+
+- **South end.** `W-B-BA-E`/`W-B-HALL-W` (6 1/2") were centred on the x=14' node line with
+  the 4 1/2" partition, a 1" step each face at y=25'-6". Both now align 1" west, so the hall
+  face runs flush; the step is on the bath side, hidden in `W-B-BA-N`'s tee. Bath clear width
+  is down 1" (40 1/2"). The shared vent stays in the 2x6 cavity. The HPWH boots' duct ends
+  moved 1" west with the face.
+- **North end.** `N-B-CL-NE` moved from y=31'-0" to 32'-0 7/8", so `W-B-WELL` wraps
+  `P-M-STRWELL-SS`/`-S` and the 6" slot between them. The posts were exposed white 4x4s;
+  they are concealed SPF now (`POST_CONCEALED_SPF`). ST-B2M also derived its own 4x4 1/4"
+  off SS; `resolve/stairs/bearing.py` now skips a corner an authored post rises through.
+- **Footing.** Owner asked for as few footings as possible, and for no engineered item. A
+  sonotube buys depth that a heated basement floor doesn't need. The bare slab has no
+  prescriptive read for a column. One 16"x24"x8" pad cast with the slab
+  (`PD-B-WELL`, `cast_with`) carries both posts: 3,141 lb, 1,178 psf against 2,000
+  (`notes/stairwell_post_pad.md`). The slab and its sub-slab layers are clipped round a
+  flush pad as they are round a flush footing (`resolve/slab_clip.py`).

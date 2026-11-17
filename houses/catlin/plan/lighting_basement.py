@@ -468,12 +468,11 @@ BASEMENT_LIGHTING = [
                      mount=Mount(kind=MountKind.CEILING)),
     # The 3-way at the stair foot. It hung on W-B-STR3's east face at (10'-4 3/8", 26'-6")
     # until 2026-09-05, which the under-stair closet then enclosed — so it moved across the
-    # well onto **W-B-WELL-HEAD's east face** (x=14'-0 7/8") at the same height, level with the
+    # well onto **W-B-WELL-HEAD's east face** (x=14'-2 1/4") at the same height, level with the
     # bathroom's north wall. That is the hall side, which is where you reach for it.
-    # y=25'-10" and not 25'-6": at the bathroom's north wall line the box straddles
-    # W-B-BA-E's own end — that wall's gypsum runs to x=14'-2", four inches past this
-    # face — and reads as 0.8" buried. Four inches north is clear of it and still the first
-    # thing your hand finds at the stair foot.
+    # y=25'-10", 4" north of W-B-BA-E's end; that face is flush with this one since
+    # 2026-11-16, so the offset is no longer forced, and it is still the first thing your
+    # hand finds at the stair foot.
     ElectricalDevice(uid="QTB000HAAA", tag="ED-B-STAIR-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW3",
                      circuit="CKT-LT-BSMT", room="RM-B-STAIR",
@@ -533,10 +532,8 @@ BASEMENT_LIGHTING = [
                      circuit="CKT-LT-BSMT", room="RM-B-BATH",
                      controlled_by=("ED-B-BATH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # x follows W-B-BA-E: the wall slid 1 5/16" west on 2026-09-05 and the switch went with
-    # it, back onto the new finish face at 13'-7 5/16". Left where it was it stood 1 5/16"
-    # inside the studs — `integrity.wall_mount_on_face` caught it,
-    # and no `haus check` rule does.
+    # Hosted on W-B-BA-E's bath face (x=13'-7 3/4" since the 2026-11-16 1" alignment), so it
+    # follows the wall.
     ElectricalDevice(uid="QTB000LAAA", tag="ED-B-BATH-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW1",
                      circuit="CKT-LT-BSMT", room="RM-B-BATH",

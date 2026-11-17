@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** bb2bf81379a4ec65  
+**Model hash:** 059efaf87eabf8c5  
 **Lines:** 255
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
@@ -239,7 +239,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Column (column) | 1.2 | bf | 1 placed, 0.1 SF plan | second |
 | Column — ELM_TIMBER (column:ELM_TIMBER) | 56.4 | bf | 2 placed, 0.5 SF plan; 0.17 cy in the takeoff | second |
 | Column — EQUIP_STAND_ALUM (column:EQUIP_STAND_ALUM) | 12 | ea | 12 placed, 0.3 SF plan; 0.02 cy in the takeoff | main |
-| Column — POST_WHITE_PAINT (column:POST_WHITE_PAINT) | 18 | bf | 2 placed, 0.2 SF plan; 0.06 cy in the takeoff | main |
+| Column — POST_CONCEALED_SPF (column:POST_CONCEALED_SPF) | 18 | bf | 2 placed, 0.2 SF plan; 0.06 cy in the takeoff | main |
 | Slab deck — AH_PLATFORM_PLY (slab_deck:AH_PLATFORM_PLY) | 9.4 | SF | 1 placed, 9.4 SF plan; 0.12 cy in the takeoff | attic |
 | Slab platform — KNEE_WALL_OAK_CAP (slab_platform:KNEE_WALL_OAK_CAP) | 1.9 | SF | 1 placed, 1.9 SF plan; 0.01 cy in the takeoff | second |
 | Slab platform — TUBDECK_INT_PLY_CAP (slab_platform:TUBDECK_INT_PLY_CAP) | 4.3 | SF | 1 placed, 4.3 SF plan; 0.03 cy in the takeoff | main |
@@ -279,13 +279,13 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| Treated sill plate, Pressure-treated southern yellow pine No. 2 (sill plate) (pt-sill-plate) | 320.4 | LF |  | building |
+| Treated sill plate, Pressure-treated southern yellow pine No. 2 (sill plate) (pt-sill-plate) | 320.3 | LF |  | building |
 
 ## Sill gaskets
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| Sill seal foam gasket, under the sill plate (sill-seal-foam) | 101.7 | LF |  | building |
+| Sill seal foam gasket, under the sill plate (sill-seal-foam) | 101.6 | LF |  | building |
 | Sill seal peel-and-stick membrane, under the sill plate (sill-seal-peel-stick) | 218.7 | LF |  | building |
 
 ## Assembly layers, by material
@@ -305,7 +305,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| STAIRWELL_PARTITION_4H, SPF No. 2 & Btr framing lumber (STAIRWELL_PARTITION_4H:spf) | 380.4 | bf | 1.17 cy in the takeoff | basement, main |
+| STAIRWELL_PARTITION_4H, SPF No. 2 & Btr framing lumber (STAIRWELL_PARTITION_4H:spf) | 415.2 | bf | 1.28 cy in the takeoff | basement, main |
 
 ## Windows and doors, by product
 
@@ -544,7 +544,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Column (column) | P-S-SN3-SQUASH |
 | Column — ELM_TIMBER (column:ELM_TIMBER) | P-S-TUDOR1, P-S-TUDOR2 |
 | Column — EQUIP_STAND_ALUM (column:EQUIP_STAND_ALUM) | PT-M-HP1-L1, PT-M-HP1-L2, PT-M-HP1-L3, PT-M-HP1-L4, PT-M-HP3-L1, PT-M-HP3-L2, PT-M-HP3-L3, PT-M-HP3-L4, PT-SG-HPB1, PT-SG-HPB2, PT-SG-HPB3, PT-SG-HPB4 |
-| Column — POST_WHITE_PAINT (column:POST_WHITE_PAINT) | P-M-STRWELL-S, P-M-STRWELL-SS |
+| Column — POST_CONCEALED_SPF (column:POST_CONCEALED_SPF) | P-M-STRWELL-S, P-M-STRWELL-SS |
 | Slab deck — AH_PLATFORM_PLY (slab_deck:AH_PLATFORM_PLY) | SL-A-HP1-PLATFORM |
 | Slab platform — KNEE_WALL_OAK_CAP (slab_platform:KNEE_WALL_OAK_CAP) | SL-S-KNEE-CAP |
 | Slab platform — TUBDECK_INT_PLY_CAP (slab_platform:TUBDECK_INT_PLY_CAP) | SL-M-TUBDK |

@@ -232,7 +232,7 @@
 # `JoistSpec.rim_material`: 20 LF of that same stock, WHITE-PAINTED — FS-SG-BALCONY's two
 # rim bands only since 2026-09-22 (the porch hangs on ledgers and has no rim). Qualified
 # key, so the bare band above keeps its own rate. The delta over that rate is primer + 2 coats at $2.00-4.50/SF, the same paint the pillars carry in
-# [solids] "column:POST_WHITE_PAINT", over 0.75 SF of face per LF (the 7 1/4" outer face
+# the retired "column:POST_WHITE_PAINT" row, over 0.75 SF of face per LF (the 7 1/4" outer face
 # plus the 1 1/4" bottom edge) = $1.50-3.38/LF. Painting a narrow band is ~85% labour, as
 # the pillar note says of a 6x6, so that splits $0.25-0.50 material and $1.30-2.90 labour.
 # Re-keyed 2026-09-22 from 1.25x7.25: the balcony joists went 2x12, so the band did, and the
@@ -1789,7 +1789,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # "0.59 cy" in this comment was stale for as long as the house had no `Pad` at all. Kept
 # priced on the glazed-green-brick convention, so a pad authored somewhere with no qualified
 # row does not silently fall out of the bill.
-"pad" = { low = 500, high = 1000 }  # 0.0 cy — the unqualified fallback; every pad catlin has is PIER_BASE_12 below
+"pad" = { low = 500, high = 1000 }  # 0.0 cy — the unqualified fallback; every catlin pad has a qualified row below
 # The north entry's three HOUSE-side piers, which became `Pad` on 2026-09-14 when
 # `deck_footing_size` learned to convert a roof share into its own deck currency and their
 # `spread_footing/` items left the register. 2'-6" x 1'-6" x 1'-0", three of them, 0.35 cy.
@@ -1806,6 +1806,10 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # material band is the OLD footing band, no longer the current one. The bands differ by $8-15/cy,
 # and that is the BURIED_MIX 5,000 psi under-read, not steel.
 "pad:PIER_BASE_12" = { material = { low = 195, high = 240 }, labour = { low = 115, high = 280 } }  # 0.80 cy — all six north-entry pads, PD-BW-W / -E / -RE / -GW / -GE / -RNE
+# PD-B-WELL, the thickened-slab pad under the stairwell posts (2026-11-16): poured with
+# SL-B-FLOOR from the same truck, so the slab's material band; labour is digging the stone
+# and trimming the XPS round a 16" x 24" hole, no form.
+"pad:SLAB_THICKENED_PAD" = { material = { low = 200, high = 250 }, labour = { low = 100, high = 250 } }  # 0.07 cy
 # ** SECOND-LARGEST ERROR. ** $175-280/cy is $2.16-3.46/SF at 4" — bare ready-mix with no
 # labour in it. Minnesota installed slab is $6.60-13.20/SF (CalcShed by-state, Aug 2026);
 # plain slab material+labour $6.50-10.50/SF (Concrete Network, Jul 2026); Midwest $7-11/SF.
@@ -2204,13 +2208,16 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # Hood or Siwek Millwork would collapse the range further than any more desk research.
 "column:ELM_TIMBER" = { material = { low = 3250, high = 9700 }, labour = { low = 2650, high = 7950 } }  # 0.17 cy = 20 LF
 #
+# The two stairwell 4x4s (P-M-STRWELL-S/SS), plain SPF concealed in W-B-WELL since 2026-11-16,
+# ~18 LF / 0.06 cy: stock $1.50-3.00/LF and setting $5-12/LF, no paint. Was POST_WHITE_PAINT.
+"column:POST_CONCEALED_SPF" = { material = { low = 470, high = 950 }, labour = { low = 1580, high = 3790 } }  # 0.06 cy
+#
 # PAINTED 6x6 BALCONY PILLARS — 51.4 LF over six posts. $22-55/LF installed: post material
 # $6-14/LF (PT at the bottom, clear cedar or FJ paint-grade at the top), bases/caps/structural
 # screws $3-9/LF (hardware can exceed the post lumber on an elevated deck), setting $8-18/LF,
 # and primer + 2 coats at $2.00-4.50/SF over 1.833 SF of face per LF. Painting a 6x6 is ~85%
 # labour — four narrow faces with cut-in at cap and base.
-"column:POST_WHITE_PAINT" = { material = { low = 1130, high = 2830 }, labour = { low = 1700, high = 4240 } }  # 0.06 cy — the two interior stairwell posts (P-M-STRWELL-S/SS) ONLY. Was 0.40 cy / 51.4 LF while all six pillars were wood, then 0.19 cy when four went to cast concrete, then 0.06 when the two centre pillars left for POST_WHITE_PAINT_DF below (all 2026-09-03)
-# The two CENTRE balcony pillars, split out of the row above when they were specified DF-L.
+# The two CENTRE balcony pillars, specified DF-L (the retired POST_WHITE_PAINT row's rates).
 # Same rate structure, same paint, same labour — it is the identical stick to hang and coat.
 # Material carries a 25% species premium over the SPF above: a DF-L 6x6 runs roughly a fifth
 # to a third more than SPF, and the reason it is worth paying is not strength, it is that

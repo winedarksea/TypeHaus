@@ -7,6 +7,7 @@ from dataclasses import replace
 
 from typehaus.model.enums import StructuralRole
 from typehaus.model.spatial import Stair
+from typehaus.model.structure import Post
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember, ResolvedModel
 from typehaus.resolve.stairs.common import _MIN_SHARED_RUN_M, _TREAD_THICKNESS_M
@@ -263,6 +264,37 @@ def _spacer_carriage(stair: Stair, host, member: FramedMember,
                          z0_end_m=z_hi, z1_end_m=z_hi + spacer.depth_m, connection=tag))
 
 
+def _authored_post_spans(model: ResolvedModel
+                         ) -> list[tuple[tuple[float, float, float, float], float, float]]:
+    """Each authored ``Post`` as (plan box, z0, z1), read off the plan.
+
+    Posts resolve after the stairs, so their extent is derived here the way
+    ``envelope._resolve_post`` does it, less connector insets. A post whose support has
+    not resolved yet is left out: it claims no corner it cannot be shown to reach.
+    """
+    tops = {solid.tag: solid.z1_m for solid in model.solids}
+    spans = []
+    for storey in model.plan.storeys:
+        for element in model.plan.storey_elements(storey.tag):
+            if not isinstance(element, Post):
+                continue
+            height = (element.height.meters if element.height is not None
+                      else storey.default_ceiling_height.meters)
+            if element.supported_by:
+                if element.supported_by not in tops:
+                    continue
+                z0 = tops[element.supported_by]
+                z1 = z0 + height
+            else:
+                z1 = storey.elevation.meters
+                z0 = z1 - height
+            section = cross_section(element.size)
+            x, y = element.position.xy_m
+            half_w, half_d = section.width_m / 2.0, section.depth_m / 2.0
+            spans.append(((x - half_w, y - half_d, x + half_w, y + half_d), z0, z1))
+    return spans
+
+
 def _bear_stair_on_walls(model: ResolvedModel, stair: Stair,
                          members: tuple[FramedMember, ...], subfloor: float,
                          skirts: dict[str, float] | None = None,
@@ -382,13 +414,23 @@ def _bear_stair_on_walls(model: ResolvedModel, stair: Stair,
     # Any platform corner not on a ledgered edge bears on a 4x4 post to the subfloor.
     # The two rims' endpoints are exactly the platform's four corners; the corner shared
     # by both half-width platforms gets one post, sized to the higher platform.
+    # An authored post the corner stands in, rising past the platform underside, already
+    # carries it: a second 4x4 there would overlap it and bill twice.
+    authored = _authored_post_spans(model) if rims_by_platform else []
+
+    def authored_carries(point: tuple[float, float], z_top: float) -> bool:
+        return any(box[0] - 1e-6 <= point[0] <= box[2] + 1e-6
+                   and box[1] - 1e-6 <= point[1] <= box[3] + 1e-6
+                   and z0 < z_top <= z1 + 1e-6
+                   for box, z0, z1 in authored)
+
     posts: dict[tuple[float, float], float] = {}
     for rims in rims_by_platform.values():
         z_top = min(rim.z0_m for rim in rims)  # underside of the platform framing
         for rim in rims:
             for point in (rim.p0, rim.p1):
                 key = corner_key(point)
-                if key in supported_corners:
+                if key in supported_corners or authored_carries(point, z_top):
                     continue
                 posts[key] = max(posts.get(key, z_top), z_top)
     # A post stands on the structural sheet, never on a floating finish laid round it.

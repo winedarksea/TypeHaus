@@ -2035,7 +2035,7 @@ NEC_FILL_BASEMENT = [
     # ever call this gap. It is authored because the code says so, not because the model
     # noticed.
     #
-    # On W-B-HALL-W's hall face (east face at 14'-2") 1" proud of it — the face
+    # On W-B-HALL-W's hall face (east face at 14'-2 1/4") 1" proud of it — the face
     # convention at the top of this file — at y=16'-0", roughly the hall's midpoint and
     # clear of both doors: D-B-SHOP's north jamb is at 13'-10 9/16" and D-B-GYM is opposite,
     # on the other side. `rotation=deg(90)` turns the plate east into the hall. Elevation

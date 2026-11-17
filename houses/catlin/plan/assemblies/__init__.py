@@ -48,6 +48,7 @@ from .foundation import (
     GARAGE_ICF_CORE,
     GARAGE_ICF_EPS,
     SLAB_FLOOR,
+    SLAB_THICKENED_PAD,
 )
 from .interior import (
     ACCENT_GWB_LINING,
@@ -87,7 +88,7 @@ from .members import (
     BEAM_WHITE_PAINT,
     ELM_TIMBER,
     EQUIP_STAND_ALUM,
-    POST_WHITE_PAINT,
+    POST_CONCEALED_SPF,
     POST_WHITE_PAINT_DF,
 )
 from .mixes import (
@@ -152,6 +153,7 @@ __all__ = [
     "BASEMENT_10",
     "BASEMENT_8",
     "SLAB_FLOOR",
+    "SLAB_THICKENED_PAD",
     "DECK_EPS_INT",
     "GARAGE_ICF_EPS",
     "GARAGE_ICF_CORE",
@@ -178,7 +180,7 @@ __all__ = [
     "MATERIALS",
     "MATERIALS_ISHTAR",
     "MATERIALS_METAL",
-    "POST_WHITE_PAINT",
+    "POST_CONCEALED_SPF",
     "EQUIP_STAND_ALUM",
     "POST_WHITE_PAINT_DF",
     "ELM_TIMBER",

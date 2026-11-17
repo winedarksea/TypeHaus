@@ -42,18 +42,18 @@ BASEMENT_FIXTURES = (
     Fixture(uid="CBQ803AAAA", tag="FX-B-SAUNA-FD", type_ref="FX-FLOOR-DRAIN",
             room="RM-B-SAUNA", position=pt(ft(13, 6), inch(98.1875)),
             wall_ref="W-B-CS"),
-    # **RM-B-BATH rotated north-south on 2026-09-05** and is **3'-4 1/16" x 7'-1 1/4"**
-    # between finish faces (x 10'-3 1/4"..13'-7 5/16" off W-B-STR2/W-B-STR3B and W-B-BA-E,
-    # y 18'-2 3/8"..25'-3 5/8" off W-B-CW2 and W-B-BA-N). It lost 1 5/16" of width later the
-    # same day, when W-B-BA-E slid onto the stair well's partition line so the two would be
-    # one plane; nothing in the room had to move for it. One fixture at each end again, so
+    # **RM-B-BATH rotated north-south on 2026-09-05** and is **3'-4 1/2" x 7'-1 1/2"**
+    # between finish faces (x 10'-3 1/4"..13'-7 3/4" off W-B-STR2/W-B-STR3B and W-B-BA-E,
+    # y 18'-2 1/4"..25'-3 3/4" off W-B-CW2 and W-B-BA-N). It lost 1" of width on 2026-11-16,
+    # when W-B-BA-E was aligned 1" west to flush its hall face with W-B-WELL's; nothing in
+    # the room had to move for it. One fixture at each end again, so
     # each one's depth runs across the room's short dimension and the door lands between
     # them on the long east wall.
     #
     # `wall_ref` on both is **W-B-BA-E**, the room's one wet wall and its only 5 1/2" stud
     # cavity — venting reads `wall_ref`, not geometry, and W-B-BA-N dropped to a dry 2x4
     # when the plumbing moved off it. Their shared 1 1/2" vent rises in it at
-    # (14'-0", 19'-3") — the wall's own x, which moved with it.
+    # (14'-0", 19'-3"), inside the 2x6 cavity (studs x 13'-8 1/4"..14'-1 3/4").
     # Trap arms: lav ~2'-1", WC ~5'-9", both inside Table 1002.2's 3'-6"/6'-0" limits.
     #
     # WC at the NORTH end, backing W-B-BA-N, floor-mounted (a wall-hung carrier wants 6 1/2"
