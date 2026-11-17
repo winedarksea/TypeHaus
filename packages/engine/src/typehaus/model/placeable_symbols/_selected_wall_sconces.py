@@ -9,7 +9,7 @@ wall thicknesses, arms and small hardware are photo estimates, not fabrication d
 
 from __future__ import annotations
 
-from typehaus.model.placeable_symbols._families import Geometry
+from typehaus.model.placeable_symbols._families import Builder, Geometry
 from typehaus.model.placeable_symbols._frame import circle, line, rect
 from typehaus.model.placeable_symbols._sconce_geometry import BLACK, SconceFrame
 
@@ -35,15 +35,24 @@ def roland_sconce(width: float, depth: float, height: float) -> Geometry:
     return strokes, parts
 
 
-def bantam_sconce(width: float, depth: float, height: float) -> Geometry:
-    frame = SconceFrame(width, depth, height, BANTAM_SIZE)
-    # A continuous stepped extrusion; only the horizontal shelf's top is luminous.
-    parts = (frame.block(0, .75, 0, 3.5, 9, 1.5),
-             frame.block(0, 2.75, 0, 1.4, 9, 2.5),
-             frame.block(0, 2.75, 1.4, 1.5, 8.5, 2.1, "lamp"))
-    strokes = (rect(0, 0, width, depth, fill=BLACK),
-               rect(0, -depth * .1875, width * 8.5 / 9, depth * 2.1 / 4, fill="lamp"))
-    return strokes, parts
+def bantam_sconce(*, downward: bool = False) -> Builder:
+    def build(width: float, depth: float, height: float) -> Geometry:
+        frame = SconceFrame(width, depth, height, BANTAM_SIZE)
+        # The tall room-side face shields the lens; the low shelf returns to the wall.
+        parts = (frame.block(0, 3.25, 0, 3.5, 9, 1.5),
+                 frame.block(0, 1.25, 0, 1.4, 9, 2.5),
+                 frame.block(0, 1.25, 1.4, 1.5, 8.5, 2.1, "lamp"))
+        if downward:
+            # Turn about the wall normal, preserving the envelope and wall attachment.
+            parts = tuple({**part, "center": (-part["center"][0], part["center"][1],
+                                               height - part["center"][2])} for part in parts)
+        strokes = (rect(0, 0, width, depth, fill=BLACK),)
+        if not downward:
+            strokes += (rect(0, depth * .1875, width * 8.5 / 9,
+                             depth * 2.1 / 4, fill="lamp"),)
+        return strokes, parts
+
+    return build
 
 
 def soren_sconce(width: float, depth: float, height: float) -> Geometry:

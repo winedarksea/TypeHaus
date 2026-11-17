@@ -28,7 +28,8 @@ the model goes back to `plans/TODO.md` as a design item.
   Confirm the first-six-inches metal requirement against the supply canvas connector,
   and the heat-kit duct clearance wording in indoor manual §4.6 against the floor drop.
   The pan/rails/trap and pitched cabinet are modeled (2026-11-17); confirm shop-pan gauge,
-  seams and rail point loads/bearing, PVC fitting takeouts, and the selected RectorSeal
+  seams and rail point loads/bearing, that the primary port takes a 3/4 MPT adapter (thread
+  unpublished; the secondary keeps its factory plug), and the selected RectorSeal
   SS3 Gen3 97089's delivered body/bracket and wet-tested trip level. Its current drawing
   is undimensioned; the drawn switch envelope is provisional. Preserve Gree's blower
   delay and R32 mitigation in the cooling-shutdown wiring. Obtain the ERV backdraft-damper

@@ -7,8 +7,8 @@
 # The partition clears D-S-STUDY2's east jamb (x~258.6"; a drywall wrap with corner bead, no
 # casing). ED-S-STUDY2-RC3 rose above the top.
 # Cushion: one 3" HR-foam piece on the seat top, 1/2" behind the lift-up fronts.
-# Reading light: a mark-K sconce (<=4" projection) over the west seat, the head end, where the
-# stringers are highest; its plain switch is by the shelves, reachable seated or lying.
+# Reading light: a mark-K1 Bantam (<=4" projection), facing down over the west seat, the
+# head end, where the stringers are highest; its plain switch is reachable seated or lying.
 
 from typehaus import (
                       DeviceKind,
@@ -61,7 +61,7 @@ STUDY_NOOK = [
                   wall_ref="W-S-SS2", face="right", distance_from_start=inch(55.5),
                   normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="PMAV30JY2Q", tag="ED-S-STUDY2-NOOK-SC", kind=DeviceKind.LIGHT,
-                     type_ref="ED-T-LT-SCONCE-STAIR",
+                     type_ref="ED-T-LT-SCONCE-BANTAM-DOWN",
                      circuit="CKT-LT-UPPER", room="RM-S-STUDY2",
                      controlled_by=("ED-S-STUDY2-NOOK-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),

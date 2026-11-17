@@ -1,21 +1,25 @@
 # Wall sconce geometry
 
 The generated models share the viewer, GLB and IFC paths. Product references checked
-2026-11-15; small hardware, curves, wall thicknesses and shade/arm proportions are
-estimates from photos, not fabrication geometry. The existing Sprig BL-23210 model
-already follows its product drawing and is retained.
+2026-11-15 (Bantam orientation corrected 2026-11-17); small hardware, curves, wall
+thicknesses and shade/arm proportions are estimates from photos, not fabrication geometry.
+The existing Sprig BL-23210 model already follows its product drawing and is retained.
 
 | Product / mark | Model changes | Envelope, inches (W × projection × H) |
 | --- | --- | --- |
 | WAC Roland WS-83212-BK / H | Two broad acrylic diffuser faces, black center belt, separate square driver canopy | 4.5 × 2.5 × 12 |
-| Modern Forms Bantam WS-38109-30-BK / K | Stepped shelf with upward glass lens | 9 × 4 × 3.5 |
+| Modern Forms Bantam WS-38109-30-BK / K, K1 | Tall room-side shield conceals the wall-side lens; K shines up, K1 down | 9 × 4 × 3.5 |
 | Hinkley Soren 50910BK / P6 | High round backplate, stem, domed socket cover, hollow fluted glass sleeve, selected A19 lamp | 5 × 4.8 × 14.3 |
 | WAC Tube WS-W2605-BK / R | Round body, square wall plate, lower rim seam and recessed downward lens | Existing nominal 4.5 × 5 × 5 retained |
 | Livex Heritage 4451-04 / Z | Oval plate, U-shaped arm, shallow dish, cream candle sleeve and pointed bulb | 4.25 × 7.75 × 11.25 |
 
 Bantam's former 5 × 4 × 8 envelope was schematic; its drawing shows a 9-inch width,
-3½-inch overall height and 1½-inch shelf height. Soren now uses the 4.8-inch projection
-and 14.3-inch height from the existing manufacturer sheet rather than rounding down.
+3½-inch overall height and 1½-inch shelf height. The tall face is away from the wall,
+with the lens behind it, rather than exposed toward the room. The manufacturer allows
+all wall orientations: stair sconces remain upward (K); the Study 2 window-bench reading
+light is inverted to shine down (K1), retaining its mounting position and envelope.
+Soren now uses the 4.8-inch projection and 14.3-inch height from the existing manufacturer
+sheet rather than rounding down.
 Heritage's height follows the linked current catalog (11.25 inches rather than 8.5).
 The retailer's oval backplate dimensions are used for its silhouette only; this does
 not establish a manufacturer canopy specification for box-coverage checks.

@@ -8,7 +8,7 @@ concatenates the two, so the E-602 schedule and its mark-uniqueness test see one
 
 Marks continue the same sequence and must stay unique across BOTH files —
 ``tests/test_lighting_takeoff.py`` pins that, and it is the reason a variant takes a
-numbered suffix (J1, N1, N3, P1) rather than the next free letter.
+numbered suffix (J1, K1, N1, N3, P1) rather than the next free letter.
 """
 
 from __future__ import annotations
@@ -37,6 +37,23 @@ _SPRIG = LuminaireType(
            "2026-11-10). Retyped from the Stretch BL-1660-BK 2026-10-29 "
            "(plain, cheaper; no touch dimmer). Leave the canopy toggle ON so the wall switch "
            "rules; hardwired to a junction box (installation sheet p.2).")
+
+_BANTAM_UPLIGHT = LuminaireType(
+    tag="ED-T-LT-SCONCE-STAIR", replaceable_lamp=False,
+    name="Stair wall sconce, ADA projection", form=LuminaireForm.SCONCE, type_mark="K",
+    footprint=(inch(9), inch(4)), height=inch(3.5), plan_symbol="sconce-bantam",
+    lamp="LED integrated", watts=6.0, lumens=400.0, cct_k=3000, cri=90,
+    dimmable=True, load_va=6.0, ports=_POWER_120,
+    product_ref="PROD-MODERNFORMS-WS-38109",
+    source="Modern Forms Bantam WS-38109-30-BK, 393 lm, CRI 90, <=4\" "
+           "projection. ** NOT A STYLING DUPLICATE OF MARK J: ** the "
+           "projection limit is a specification, this is a real and "
+           "different product, and J's head stands 9\" tall — which is the "
+           "hazard this row exists to avoid. Ships its own JB-0501 slim box "
+           "(installation sheet p.2); canopy left unset until the engine can "
+           "derive a fixture-supplied box. Geometry: manufacturer drawing and photo read "
+           "2026-11-17, 9 W x 4 projection x 3 1/2 H in.; tall face toward the room "
+           "shields the wall-side upward lens. Manufacturer permits all wall orientations.")
 
 DECORATIVE_LUMINAIRE_TYPES = (
     # --- H/J/K: sconces ---------------------------------------------------------------
@@ -84,21 +101,13 @@ DECORATIVE_LUMINAIRE_TYPES = (
     # hold even where the ADA does not apply. 393 lm against the 400 authored here is within
     # a rounding error, and these three are the stair's REAL light — mark L twelve feet up
     # the void delivers almost nothing to the treads. 2700 K -> 3000 K with the house.
-    LuminaireType(tag="ED-T-LT-SCONCE-STAIR",
-                  replaceable_lamp=False, name="Stair wall sconce, ADA projection",
-                  form=LuminaireForm.SCONCE, type_mark="K",
-                  footprint=(inch(9), inch(4)), height=inch(3.5), plan_symbol="sconce-bantam",
-                  lamp="LED integrated", watts=6.0, lumens=400.0, cct_k=3000, cri=90,
-                  dimmable=True, load_va=6.0, ports=_POWER_120,
-                  product_ref="PROD-MODERNFORMS-WS-38109",
-                  source="Modern Forms Bantam WS-38109-30-BK, 393 lm, CRI 90, <=4\" "
-                         "projection. ** NOT A STYLING DUPLICATE OF MARK J: ** the "
-                         "projection limit above is a specification, this is a real and "
-                         "different product, and J's head stands 9\" tall — which is the "
-                         "hazard this row exists to avoid. Ships its own JB-0501 slim box "
-                         "(installation sheet p.2); canopy left unset until the engine can "
-                         "derive a fixture-supplied box. Geometry: manufacturer drawing read "
-                         "2026-11-15, 9 W x 4 projection x 3 1/2 H in.; upward lens."),
+    _BANTAM_UPLIGHT,
+    _BANTAM_UPLIGHT.model_copy(update={
+        "tag": "ED-T-LT-SCONCE-BANTAM-DOWN", "type_mark": "K1",
+        "name": "Bantam wall sconce, downward reading light",
+        "plan_symbol": "sconce-bantam-down",
+        "source": _BANTAM_UPLIGHT.source + " Mark K1 is inverted for downward light onto "
+                  "the Study 2 window bench under ST-S2A (owner, 2026-11-17)."}),
 
     # Z: a plain black candle sconce (Livex 4451-04, 2026-10-28), replacing the gothic iron
     # one the owner found too ornate. Storage room only (RM-A-EAST-UNFIN): no R303.1 floor.

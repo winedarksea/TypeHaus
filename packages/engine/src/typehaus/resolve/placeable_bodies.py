@@ -42,7 +42,7 @@ def part_outline(part, obj: ResolvedCanvasObject):
                                obj.position, obj.rotation_degrees))
 
 
-def installation_prisms(obj: ResolvedCanvasObject, product) -> list[tuple[str, object, float, float]]:
+def installation_prisms(obj: ResolvedCanvasObject, product) -> list[tuple]:
     """(label, plan shape, z0, z1) for installation parts drawn outside the cabinet body.
 
     The pan is one envelope (sheet walls alone would vanish under a touch tolerance); each
@@ -54,8 +54,6 @@ def installation_prisms(obj: ResolvedCanvasObject, product) -> list[tuple[str, o
         return []
     from typehaus.model.placeable_symbols import model_parts
     from typehaus.model.placeable_symbols._flexx_installation import DRAIN_ROLES, PAN_ROLES
-    from typehaus.resolve.overlay import union_all
-
     parts = model_parts(symbol, *(v.meters for v in (*product.footprint, product.height)),
                         air_handler_installation=spec)
 
@@ -65,9 +63,9 @@ def installation_prisms(obj: ResolvedCanvasObject, product) -> list[tuple[str, o
 
     out = []
     pan = [p for p in parts if p.get("role") in PAN_ROLES]
-    if pan:
-        out.append(("emergency pan", union_all([part_outline(p, obj) for p in pan]).envelope,
-                    *band(pan)))
+    floor = [p for p in pan if p.get("role") == "flexx:emergency-pan-floor"]
+    if floor:
+        out.append(("emergency pan", part_outline(floor[0], obj), *band(pan)))
     for part in parts:
         role = part.get("role")
         if role in DRAIN_ROLES:

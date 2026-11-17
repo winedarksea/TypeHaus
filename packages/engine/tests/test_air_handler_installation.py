@@ -1,4 +1,4 @@
-"""The trap clears real support/deck geometry, with all connected stations coordinated."""
+"""The trap is made up of real fittings, clears support/deck geometry and collides."""
 
 from collections import Counter
 from dataclasses import replace
@@ -8,7 +8,10 @@ from _helpers import check_context
 
 from typehaus import inch
 from typehaus.checks.mep.air_handler_installation import air_handler_installation
-from typehaus.checks.structural.placeable_interference import equipment_support
+from typehaus.checks.structural.placeable_interference import (
+    equipment_support,
+    placeable_interference,
+)
 from typehaus.model.canvas import canvas_object_types
 from typehaus.model.placeable_symbols import model_parts
 from typehaus.quantities import M_PER_IN
@@ -38,7 +41,7 @@ def _with_spec(model, **changes):
 def test_catlin_installation_has_dimensional_clearance_and_retains_product_holds(catlin_model_ro):
     findings = _findings(catlin_model_ro)
     assert [f.result.value for f in findings] == ["pass", "unknown"]
-    assert "2.62 inches above the deck" in findings[0].message
+    assert "2.34 inches above the deck" in findings[0].message
     assert "do not release fabrication" in findings[1].message
     assert all(f.result.value == "pass" for f in equipment_support(
         check_context(catlin_model_ro.plan, catlin_model_ro)))
@@ -52,7 +55,8 @@ def test_installed_parts_are_closed_positive_volume_and_shared_with_viewer(catli
     roles = {p.get("role") for p in parts}
     assert {"flexx:emergency-pan-floor", "flexx:emergency-pan-rim", "flexx:support-rail",
             "flexx:pitch-shim", "flexx:primary-trap", "flexx:float-switch",
-            "flexx:capped-cleanout", "flexx:downstream-vent"} <= roles
+            "flexx:capped-cleanout", "flexx:downstream-vent", "flexx:drain-union",
+            "flexx:secondary-plug"} <= roles
     for part in parts:
         mesh = part["mesh"]
         assert signed_volume(mesh["positions"], mesh["triangles"]) > 0, part.get("role")
@@ -60,7 +64,7 @@ def test_installed_parts_are_closed_positive_volume_and_shared_with_viewer(catli
         edges = Counter()
         for triangle in mesh["triangles"]:
             vertices = [tuple(round(v, 12) for v in mesh["positions"][i]) for i in triangle]
-            edges.update(zip(vertices, (*vertices[1:], vertices[0])))
+            edges.update(zip(vertices, (*vertices[1:], vertices[0]), strict=True))
         assert all(count == edges[(b, a)] for (a, b), count in edges.items()), part.get("role")
     viewer = next(t for t in canvas_object_types(catlin_model_ro.plan) if t["tag"] == product.tag)
     assert [p["mesh"] for p in parts] == [p["mesh"] for p in viewer["model_parts"]]
@@ -87,7 +91,7 @@ def test_necks_and_plenum_openings_follow_the_raised_pitched_cabinet(catlin_mode
     drain = next(p for p in catlin_model_ro.pipe_runs if p.tag == "PR-A-COND-HP1")
     assert (*drain.path[0], drain.z_m[0]) == pytest.approx(
         ports[("EQ-S-HP1-AH", "condensate_trap_outlet")].point)
-    assert all(z1 >= z2 for z1, z2 in zip(drain.z_m, drain.z_m[1:]))
+    assert all(z1 >= z2 for z1, z2 in zip(drain.z_m, drain.z_m[1:], strict=False))
 
 
 def test_the_old_cabinet_height_fails_against_platform_and_deck(catlin_model_ro):
@@ -112,6 +116,8 @@ def test_the_old_cabinet_height_fails_against_platform_and_deck(catlin_model_ro)
     ({"pan_width": inch(44)}, "pan does not extend"),
     ({"rail_centers": (inch(0),)}, "support rails"),
     ({"trap_inlet_x": inch(28)}, "declared trap outlet disagrees"),
+    ({"feeder_slope_in_per_ft": 0}, "feeder slope"),
+    ({"primary_elbow_offset": inch(1.5)}, "adapter to first 90 is 1.5 in"),
 ])
 def test_shortcuts_do_not_pass_installation_checks(catlin_model_ro, changes, message):
     findings = _findings(_with_spec(catlin_model_ro, **changes))
@@ -136,10 +142,23 @@ def test_pan_support_must_exist_in_the_model(catlin_model_ro):
 
 
 def test_moving_the_trap_under_the_platform_fails(catlin_model_ro):
-    model = _with_spec(catlin_model_ro, trap_inlet_x=inch(16), trap_inlet_y=inch(-8))
+    model = _with_spec(catlin_model_ro, trap_inlet_x=inch(20))
     findings = _findings(model)
     assert findings[0].result.value == "fail"
     assert "primary trap intersects SL-A-HP1-PLATFORM" in findings[0].message
+
+
+def test_installed_drain_parts_join_the_collision_set(catlin_model_ro):
+    # The mixing box pushed 4" south crosses the feeder and trap but not the cabinet body.
+    shift = inch(4).meters
+    objects = [replace(o, position=(o.position[0], o.position[1] - shift),
+                       footprint=[(x, y - shift) for x, y in o.footprint])
+               if o.tag == "EQ-S-ERV-MIX" else o for o in catlin_model_ro.canvas_objects]
+    model = replace(catlin_model_ro, canvas_objects=objects)
+    messages = [f.message for f in placeable_interference(check_context(model.plan, model))
+                if f.result.value == "fail" and "EQ-S-HP1-AH" in f.element_tags]
+    assert any("installed primary-trap" in m and "EQ-S-ERV-MIX" in m for m in messages)
+    assert not any("EQ-S-HP1-AH's body" in m for m in messages)
 
 
 def test_an_internal_heat_kit_needs_its_host_body(catlin_model_ro):

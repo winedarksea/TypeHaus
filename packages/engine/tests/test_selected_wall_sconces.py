@@ -3,7 +3,7 @@
 import pytest
 import trimesh
 
-from typehaus.model.placeable_symbols import model_parts
+from typehaus.model.placeable_symbols import model_parts, plan_symbol_strokes
 
 INCH = .0254
 PRODUCTS = (
@@ -12,6 +12,7 @@ PRODUCTS = (
     ("sconce-soren", (5, 4.8, 14.3)),
     ("sconce-tube", (4.5, 5, 5)),
     ("sconce-candle", (4.25, 7.75, 11.25)),
+    ("sconce-bantam-down", (9, 4, 3.5)),
 )
 
 
@@ -41,12 +42,32 @@ def test_roland_has_two_broad_diffusers_and_a_center_belt():
     assert canopy["size"] == pytest.approx((4.5 * INCH, INCH, 4.5 * INCH))
 
 
-def test_bantam_has_a_low_shelf_and_an_upward_lens():
-    parts = _parts(*PRODUCTS[1])
+@pytest.mark.parametrize("symbol,downward", [
+    ("sconce-bantam", False), ("sconce-bantam-down", True),
+])
+def test_bantam_shields_its_wall_side_lens_in_both_orientations(symbol, downward):
+    parts = _parts(symbol, (9, 4, 3.5))
+    shield, shelf = parts[:2]
     lens = next(part for part in parts if part["color"] == "lamp")
-    assert lens["center"][2] + lens["size"][2] / 2 == pytest.approx(1.5 * INCH)
-    assert parts[0]["size"][2] == pytest.approx(3.5 * INCH)
-    assert parts[1]["size"][2] == pytest.approx(1.4 * INCH)
+    # +y is the wall: a room-side sightline must meet the full-height shield first.
+    assert shield["center"][1] - shield["size"][1] / 2 == pytest.approx(-2 * INCH)
+    assert shelf["center"][1] + shelf["size"][1] / 2 == pytest.approx(2 * INCH)
+    assert lens["center"][1] - lens["size"][1] / 2 > (
+        shield["center"][1] + shield["size"][1] / 2)
+    assert lens["size"][0] < shield["size"][0]
+    assert shield["size"][2] == pytest.approx(3.5 * INCH)
+    if downward:
+        assert shelf["center"][2] + shelf["size"][2] / 2 == pytest.approx(3.5 * INCH)
+        assert lens["center"][2] - lens["size"][2] / 2 == pytest.approx(2 * INCH)
+        assert lens["center"][2] + lens["size"][2] / 2 == pytest.approx(
+            shelf["center"][2] - shelf["size"][2] / 2)
+    else:
+        assert shelf["center"][2] - shelf["size"][2] / 2 == pytest.approx(0)
+        assert lens["center"][2] + lens["size"][2] / 2 == pytest.approx(1.5 * INCH)
+        assert lens["center"][2] - lens["size"][2] / 2 == pytest.approx(
+            shelf["center"][2] + shelf["size"][2] / 2)
+    strokes = plan_symbol_strokes(symbol, 9 * INCH, 4 * INCH)
+    assert any(stroke["fill"] == "lamp" for stroke in strokes) is not downward
 
 
 def test_soren_has_a_round_high_canopy_and_open_fluted_glass():
@@ -85,6 +106,7 @@ def test_catlin_uses_the_selected_product_builders(catlin_plan):
     types = {item.tag: item for item in catlin_plan.library.electrical_device_types}
     for tag, symbol, size in (
         ("ED-T-LT-SCONCE-STAIR", "sconce-bantam", (9, 4, 3.5)),
+        ("ED-T-LT-SCONCE-BANTAM-DOWN", "sconce-bantam-down", (9, 4, 3.5)),
         ("ED-T-LT-SCONCE-VANITY", "sconce-soren", (5, 4.8, 14.3)),
         ("ED-T-LT-SCONCE-CANDLE", "sconce-candle", (4.25, 7.75, 11.25)),
     ):
@@ -103,7 +125,8 @@ def test_selected_sconces_reach_viewer_and_both_exporters(catlin_model_ro):
     from typehaus.model.canvas import _symbol_geometry, model_symbol_for
 
     types = {item.tag: item for item in catlin_model_ro.plan.library.electrical_device_types}
-    for tag in ("ED-T-LT-SCONCE-UD", "ED-T-LT-SCONCE-STAIR", "ED-T-LT-SCONCE-VANITY",
+    for tag in ("ED-T-LT-SCONCE-UD", "ED-T-LT-SCONCE-STAIR", "ED-T-LT-SCONCE-BANTAM-DOWN",
+                "ED-T-LT-SCONCE-VANITY",
                 "ED-T-LT-SCONCE-EXT", "ED-T-LT-SCONCE-CANDLE"):
         fixture = next(item for item in catlin_model_ro.canvas_objects if item.type_ref == tag)
         product = types[tag]

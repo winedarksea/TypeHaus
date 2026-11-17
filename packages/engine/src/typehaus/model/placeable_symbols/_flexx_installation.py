@@ -140,7 +140,7 @@ def drain_parts(spec):
                            hub_r, "flexx:cleanout-cap"))
     parts.append(_open_tube(s.outlet_tee, s.vent_top, pipe_r, fit.pipe_wall.inches,
                             "flexx:downstream-vent"))
-    # No second line: the cabinet's secondary connection takes its MPT plug.
+    # No second line: the secondary connection keeps its plug (envelope: plug_projection).
     x, z = FRONT_CONNECTIONS_IN["condensate_secondary"][:2]
     plug = spec.pitched_point_in((x, -CABINET_IN[1] / 2, z))
     parts.append(_cylinder(plug, _toward(plug, south, fit.plug_projection.inches), hub_r,
@@ -154,7 +154,7 @@ def installation_strokes(spec, width, depth):
     route = (s.port, s.elbow, s.inlet_tee, s.outlet_tee)
     return (rect(0, 0, spec.pan_width.inches * sx, spec.pan_depth.inches * sy),
             *(line((a[0] * sx, a[1] * sy), (b[0] * sx, b[1] * sy))
-              for a, b in zip(route, route[1:])))
+              for a, b in zip(route, route[1:], strict=False)))
 
 
 def installed_flexx_parts(cabinet_parts, spec, width, depth, height):

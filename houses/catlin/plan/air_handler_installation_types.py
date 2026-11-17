@@ -44,9 +44,10 @@ TRAP = Product(
     tag="PROD-HP1-PRIMARY-TRAP", brand="Field-fabricated", model="3/4 in Schedule 40 PVC",
     name="Primary condensate feeder, union, trap, capped cleanout and open vent assembly",
     source="Gree indoor IOM section 4.4 printed p.25: 2 in inlet/outlet drop, 3 in seal, "
-           "vent minimum 2 in above inlet. Male adapter, 90, union, two tees, two 90s, cap "
-           "and the secondary connection's MPT plug, billed here once; PR-A-COND-HP1 takeoff "
-           "starts at the outlet tee. Drawn at Charlotte Schedule 40 takeoffs.",
+           "vent minimum 2 in above inlet. Male adapter, 90, union, two tees, two 90s and "
+           "cap, billed here once; the secondary keeps Gree's factory choke plug (parts list "
+           "76718209). PR-A-COND-HP1 takeoff starts at the outlet tee. Drawn at Charlotte "
+           "Schedule 40 takeoffs.",
 )
 AIR_HANDLER_INSTALLATION_PRODUCTS = (SS3, PAN, RAIL, TRAP)
 
@@ -60,7 +61,10 @@ FITTINGS = DrainFittings(
     source=f"{CHARLOTTE_DC_PR}, 3/4 in: pipe 1.050 OD x .113 (p.27); tee 2400 H 1 1/2 "
            "(p.31); 90 S x S H 1 5/16 (p.36); male adapter 2109 L 1 5/8 less T 23/32 "
            "(p.46); cap 2116 L 1, S 3/4 (p.50); MPT plug 2113 L 1 less T 3/4 and union "
-           "2710 L 1 3/4 (p.52). Hub and union ODs are unpublished allowances.",
+           "2710 L 1 3/4 (p.52). Charlotte publishes no ODs: Spears 3/4 in sheets give hub "
+           "M 1 5/16 +-1/16 (406-007, 447-007, 497-007), adapter hex 1 11/32 (436-007), "
+           "union nut 1 31/32 (497-007), inside these 1 3/8 / 2 in allowances. The plug "
+           "envelope stands in for Gree's factory choke plug 76718209.",
 )
 
 INSTALLATION = AirHandlerInstallation(

@@ -19,6 +19,10 @@ These are design openings, not approved shop drawings or drilling templates.
   **Correction:** the supposed cabinet-dimension conflict was a merged-table misreading.
   Visual inspection of PDF page 14 confirms FXU12/18/24 share the smaller cabinet;
   48 3/16 inches belongs to FXU36. The submittal and manual agree.
+  Printed p.22 says a unit installed as its Fig. B (horizontal, on a floor) needs "the
+  height between the air handler and ground above 2500mm". Read as a translation error
+  (owner, 2026-11-17), most likely the 2.2 m minimum room height of p.11's R32 charge
+  table; it is not treated as an installation height.
 
 The horizontal product frame is 43 1/2 along x, 21 1/4 along y and 18 1/8 high.
 Local -x discharges, +x returns and -y services. Catlin uses rotation 0: west, east,
@@ -70,10 +74,12 @@ This check does not grade pressure loss, flange fit, installation access or omit
 
 ## Installation geometry now represented
 
-The installed type carries the cabinet, pan, two rails, tapered bearing shims, primary
-feeder and U-trap, capped upstream cleanout, open downstream vent and float-switch allowance.
-Viewer, GLB and IFC share these parts. The loose installation parts are billed once on
-`EQ-S-HP1-AH`; the routed drain takeoff begins at the trap outlet.
+The installed type carries the cabinet, pan, two rails, tapered bearing shims, the primary
+drain as its fittings, the secondary connection's plug and the float-switch allowance.
+Viewer, GLB and IFC share these parts, and `structural.placeable_interference` grades each
+drain part and the pan envelope against every hard solid (only the unit and
+`PR-A-COND-HP1` are pardoned; the cabinet's connector relations do not reach them). The
+loose parts are billed once on `EQ-S-HP1-AH`; the routed takeoff begins at the outlet tee.
 
 | Component | Design setout (inches) |
 | --- | --- |
@@ -82,19 +88,40 @@ Viewer, GLB and IFC share these parts. The loose installation parts are billed o
 | Two galvanized tube rails | 3 high × 1 1/2 wide × 1/8 wall; 21 1/4 long; x254.25 / 290.25 |
 | Cabinet low front bearing | z248.0625, **7 5/16 above deck** |
 | Cabinet pitch | 1/8 inch/ft toward south drain face; rear about 0.221 inch higher |
-| Primary inlet | x288.25 / y328.55208 / z249.06245; inherited schematic station |
-| Trap inlet / outlet | x299.5, y324.5 / 321.5; outlet z247.06245 |
-| Trap | 2 inlet-to-outlet drop, 3 seal; 1.05 pipe OD / 1.375 fitting allowance; bottom z243.37495 |
-| Cleanout / downstream vent top | z251.56245 before cleanout cap; 2 1/2 above inlet |
+| Primary connection | x288.25 / y328.55208 / z249.06245; inherited schematic station; male adapter |
+| Secondary connection | Gree's factory choke plug stays in (owner, 2026-11-17); drawn 1/4 proud, MPT-plug envelope; no second line |
+| First 90 | 2 1/2 off the face (adapter 29/32 + hub 1 5/16 + 1/4 pipe); y326.05208 |
+| Feeder | east at **1/4 in/ft** (IMC 307.2.1 floor 1/8) through a union to the inlet tee |
+| Inlet tee | x299.5 / y326.05208 / z248.77599; cleanout up, trap leg down |
+| Trap | two 90s on a nipple, 3 c-c; seal 3 (centrelines); 2 drop tee to outlet; bottom exterior z243.08849 |
+| Outlet tee | x299.5 / y323.05208 / z246.77599; vent up, `PR-A-COND-HP1` south |
+| Cleanout cap / vent top | z251.52599 / z251.27599 (2.21 above the cabinet connection) |
 | Supply neck centre | y343.90477 / z257.28531 |
 | Return neck centre | y339.09253 / z257.23518 |
 
-The reserved trap/fitting exterior is **2.62495 inches above the attic deck** (z240.75), east of the
-platform and the 24-inch front service rectangle. Its feeder turns east close to the
-cabinet face before dropping outside the platform. The former 3 1/2-inch trap allowance
-remains withdrawn: the drawn trap/fitting envelope extends 5.6875 inches below the inlet. Returning the
-cabinet to its former 4 1/4-inch elevation puts that exterior below the deck and puts the
-pan inside the platform; the installation check fails both conditions.
+Fittings read Charlotte Pipe's DC-PR Schedule 40 catalog at 3/4 inch: tee 2400 H 1 1/2,
+90 S×S H 1 5/16, male adapter 2109 L 1 5/8 less T 23/32, cap 2116 L 1 / S 3/4, MPT plug
+2113 L 1 less T 3/4, union 2710 L 1 3/4; pipe 1.050 OD × 0.113. Charlotte publishes no
+outside diameters; Spears's 3/4-inch sheets do (hub M 1 5/16 ± 1/16 on the 90, cap and
+union; male-adapter hex 1 11/32; union nut 1 31/32), and the drawn 1 3/8 hub and 2-inch
+union allowances cover them. Spears's 90 is longer (H 1 1/2 against 1 5/16): it still
+makes up at the 2 1/2 offset, with 3/32 of visible pipe instead of 1/4.
+
+The cabinet ports are threaded: the manual warns against over-tightening the drain
+connection, and Gree's parts list ships the FXU24's two water trays with eight factory
+"choke plugs" (76718209), which reads as female ports. Neither document gives the thread;
+the drawn male adapter assumes 3/4 NPT female. `mep.air_handler_installation` FAILs any leg
+shorter than the two fittings at its ends, so a setout that cannot be made up does not pass.
+Gree's figure measures the 3-inch seal from the outlet's top of pipe to the trap's outside
+bottom; the centreline 3 drawn here is about 1 inch deeper than that minimum.
+
+The trap exterior is **2.34 inches above the attic deck** (z240.75), east of the platform
+and the 24-inch front service rectangle; the feeder's first 5 3/4 inches cross the bottom
+of that rectangle, as any front drain connection does (accepted, owner, 2026-11-17). The former 3 1/2-inch allowance
+stays withdrawn: the drawn assembly reaches 5.97 inches below the cabinet connection.
+Returning the cabinet to its former 4 1/4-inch elevation puts the trap below the deck and
+the pan inside the platform; the installation check fails both. The union answers Gree's
+p.22 "reserve easy disconnection of the main drain pipe".
 
 Both deck-mounted plenums grew from 23 to 27 inches high; only their cabinet-neck
 openings moved. Their other openings and associated risers remain fixed. The flat necks
@@ -113,11 +140,12 @@ there is no second line. Final wiring must stop cooling at `EQ-M-HP1-OD` while p
 Gree’s blower delay and R32 mitigation controls; the wire route is not modeled.
 
 `mep.air_handler_installation` checks the drawn stack, platform seating, trap/deck and
-platform clearance, service-zone location, drain start and float level. Missing geometry
-is UNKNOWN; dimensional violations fail. Successful geometry retains a separate UNKNOWN
-for schematic drain stations, pan/rail fabrication and the float-switch allowance. It
-does not certify the delivered installation. Rail bearing stations, pan sheet/seams and
-point loads, PVC socket takeouts and access for cap removal require installer review.
+platform clearance, service-zone location, feeder slope, fitting make-up, drain start and
+float level. Missing geometry is UNKNOWN; dimensional violations fail. Successful geometry
+retains a separate UNKNOWN for schematic drain stations, pan/rail fabrication and the
+float-switch allowance. It does not certify the delivered installation: the cabinet's
+drain thread (assumed female, taking a male adapter), rail bearing stations, pan
+sheet/seams and point loads, and access for cap removal require installer review.
 
 ## Remaining design holds
 

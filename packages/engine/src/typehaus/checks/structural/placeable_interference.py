@@ -27,7 +27,12 @@ from typehaus.quantities import inch
 from typehaus.resolve.model import ResolvedCanvasObject, ResolvedModel
 from typehaus.resolve.overlay import union_all
 from typehaus.resolve.ownership import run_body_owners
-from typehaus.resolve.placeable_bodies import bodied, body_prism
+from typehaus.resolve.placeable_bodies import (
+    bodied,
+    body_prism,
+    installation_prisms,
+    part_outline,
+)
 from typehaus.resolve.solid_categories import SOLID_CATEGORIES
 from typehaus.resolve.sweep import sweep_legs
 
@@ -36,6 +41,8 @@ _SUPPORT = "structural.equipment_support"
 _TOL_M = inch(0.25).meters
 _SEAT_TOL_M = inch(0.5).meters
 _MIN_AREA_M2 = inch(1).meters ** 2
+# A 3/4" pipe shrunk by the touch tolerance is 0.55" wide: a square inch would hide it.
+_PART_MIN_AREA_M2 = inch(0.125).meters ** 2
 _SEAT_MIN_M2 = inch(0.25).meters ** 2
 _EXACT_PORT_TOLERANCE_M = inch(0.125).meters
 
@@ -215,6 +222,8 @@ def placeable_interference(ctx: CheckContext) -> list[Finding]:
         return [not_applicable(_CLASH, "the plan has no Equipment")]
     hard = [o for o in obstacles(ctx.model) if _hard(o.kind)]
     related = relations(ctx, {obj.tag for obj in bodies})
+    products = {p.tag: p for p in ctx.plan.library.equipment_types}
+    units = {e.tag: e for e in ctx.plan.all_elements() if e.element_kind == "Equipment"}
     out: list[Finding] = []
     graded = 0
     for obj in bodies:
@@ -225,27 +234,42 @@ def placeable_interference(ctx: CheckContext) -> list[Finding]:
                                fix="author a height on its EquipmentType"))
             continue
         graded += 1
-        core = Polygon(prism.ring).buffer(-_TOL_M, join_style="mitre")
-        z0, z1 = prism.z0_m + _TOL_M, prism.z1_m - _TOL_M
         pardoned = related[obj.tag] | _hosts(obj) | {obj.tag}
         air = _air_systems(ctx, obj)
-        hits: dict[str, float] = {}
-        for other in hard:
-            if (other.owner in pardoned or other.z1_m <= z0 or other.z0_m >= z1
-                    or (other.kind.startswith("duct_") and other.kind[5:] in air)):
+        # A relation pardons the cabinet's contact (a connector, a neck); installed parts
+        # outside it answer only to their own unit and the drain leaving the outlet tee.
+        drain = getattr(units.get(obj.tag), "pan_drain_ref", None)
+        pieces = [("body", Polygon(prism.ring), prism.z0_m, prism.z1_m),
+                  *installation_prisms(obj, products.get(obj.type_ref))]
+        hits: dict[tuple[str, str], float] = {}
+        for label, shape, bottom, top in pieces:
+            core = shape.buffer(-_TOL_M, join_style="mitre")
+            z0, z1 = bottom + _TOL_M, top - _TOL_M
+            if core.is_empty or z1 <= z0:
                 continue
-            if not core.intersects(other.shape):
-                continue
-            area = core.intersection(other.shape).area
-            if area > _MIN_AREA_M2:
-                hits[other.tag] = max(hits.get(other.tag, 0.0), area)
-        for tag, area in sorted(hits.items()):
+            excused = pardoned if label == "body" else {obj.tag, drain}
+            for other in hard:
+                if (other.owner in excused or other.z1_m <= z0 or other.z0_m >= z1
+                        or (label == "body" and other.kind.startswith("duct_")
+                            and other.kind[5:] in air)):
+                    continue
+                if not core.intersects(other.shape):
+                    continue
+                area = core.intersection(other.shape).area
+                if area > (_MIN_AREA_M2 if label == "body" else _PART_MIN_AREA_M2):
+                    key = (label, other.tag)
+                    hits[key] = max(hits.get(key, 0.0), area)
+        for (label, tag), area in sorted(hits.items()):
+            what = "body" if label == "body" else f"installed {label}"
+            sq_in = area / _MIN_AREA_M2
+            shown = f"{sq_in:.0f}" if sq_in >= 1 else f"{sq_in:.2f}"
             out.append(advisory_fail(
-                _CLASH, f"{obj.tag}'s body shares {area / _MIN_AREA_M2:.0f} sq in of plan "
+                _CLASH, f"{obj.tag}'s {what} shares {shown} sq in of plan "
                         f"with {tag} over their common height", tags=(obj.tag, tag),
                 fix="move the unit, or author the relation that makes the contact intended"))
     if not any(f.result.value == "fail" for f in out):
-        out.append(passed(_CLASH, f"{graded} Equipment bodies clear every hard solid"))
+        out.append(passed(_CLASH, f"{graded} Equipment bodies and their installed parts clear "
+                                  "every hard solid"))
     return out
 
 
@@ -271,30 +295,21 @@ def _seats(ctx: CheckContext, carriers: list[Obstacle], z0: float) -> list[Polyg
 
 def _installation_seats(ctx, carriers, obj, product):
     """Internal support rails carry a case only when the pan itself bears on a surface."""
-    from typehaus.model.placeable_symbols import model_parts, place_local
+    from typehaus.model.placeable_symbols import model_parts
 
     if (product is None or product.air_handler_installation is None
-            or getattr(product.model_representation, "symbol", None)
-            != "gree-flexx-ultra-24-horizontal" or obj.body_z0_m is None):
+            or obj.body_z0_m is None or product.model_representation is None):
         return []
     parts = model_parts(
         product.model_representation.symbol,
         *(v.meters for v in (*product.footprint, product.height)),
         air_handler_installation=product.air_handler_installation)
-
-    def outline(part):
-        x, y, _ = part["center"]
-        w, d, _ = part["size"]
-        return Polygon(place_local(((x - w / 2, y - d / 2), (x + w / 2, y - d / 2),
-                                    (x + w / 2, y + d / 2), (x - w / 2, y + d / 2)),
-                                   obj.position, obj.rotation_degrees))
-
     pan = next(p for p in parts if p.get("role") == "flexx:emergency-pan-floor")
     bottom = obj.z_m + pan["center"][2] - pan["size"][2] / 2
     under = _seats(ctx, carriers, bottom)
-    if not union_all(under).buffer(_SEAT_TOL_M).covers(outline(pan)):
+    if not union_all(under).buffer(_SEAT_TOL_M).covers(part_outline(pan, obj)):
         return []
-    return [outline(p) for p in parts if p.get("role") == "flexx:pitch-shim"
+    return [part_outline(p, obj) for p in parts if p.get("role") == "flexx:pitch-shim"
             and abs(obj.z_m + p["center"][2] + p["size"][2] / 2
                     - obj.body_z0_m) <= _SEAT_TOL_M]
 

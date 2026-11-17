@@ -103,6 +103,13 @@ def test_reading_sconce_and_its_dimmer_are_in_reach_of_the_seat(catlin_model_ro)
     assert sconce.body_z1_m < _stringer_underside(catlin_model_ro, x1)
     authored = next(e for e in catlin_model_ro.plan.all_elements() if e.tag == sconce.tag)
     assert authored.controlled_by == (switch.tag,)
+    types = {item.tag: item for item in catlin_model_ro.plan.library.electrical_device_types}
+    reading_light = types[sconce.type_ref]
+    stair_light = types["ED-T-LT-SCONCE-STAIR"]
+    assert reading_light.plan_symbol == "sconce-bantam-down"
+    assert reading_light.type_mark == "K1"
+    assert reading_light.product_ref == stair_light.product_ref
+    assert stair_light.plan_symbol == "sconce-bantam"
 
 
 def test_cushion_rests_on_the_seat_and_clears_the_lift_up_fronts(catlin_model_ro):

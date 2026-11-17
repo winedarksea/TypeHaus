@@ -204,7 +204,7 @@ SYMBOL_NAMES = (UNIFI_ACCESS_POINT_SYMBOLS
     # same plan glyph but its own 3D cable-suspension massing.
     "track-light", "flood-light", "recessed-can", "panel-light",
     "sconce", "sconce-updown", "sconce-spot", "sconce-gothic",
-    "sconce-bantam", "sconce-soren", "sconce-tube", "sconce-slim-updown",
+    "sconce-bantam", "sconce-bantam-down", "sconce-soren", "sconce-tube", "sconce-slim-updown",
     "sconce-swing-arm", "sconce-wac-sprig", "sconce-candle",
     "ceiling-fan-light-3", "suspended-flat-bar",
     "mirror-light",
