@@ -15,6 +15,7 @@ from typehaus.model import (
     FurnitureType,
     LuminaireForm,
     LuminaireType,
+    ModelRepresentation,
     Mount,
     MountKind,
     Product,
@@ -169,7 +170,8 @@ CLOSET_LUMINAIRE_TYPES = (
 CLOSET_SUPPLY_TYPES = (
     ElectricalDeviceType(tag="ED-T-LT-PSU-TRADFRI-30",
                          name="IKEA TRADFRI 30 W LED driver, plug-in",
-                         footprint=(inch(11.25), inch(2.125)), height=inch(0.75),
+                         footprint=(inch(11.25), inch(0.75)), height=inch(2.125),
+                         model_representation=ModelRepresentation(symbol="ikea-tradfri-driver"),
                          load_va=30.0, ports=_POWER_120,
                          product_ref="PROD-IKEA-TRADFRI-30",
                          source="IKEA US 603.426.61: 285 x 55 x 18 mm (11 1/4 x 2 1/8 x 3/4 in; "

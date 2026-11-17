@@ -51,6 +51,13 @@ from typehaus.model.placeable_symbols._gfci_in_use_cover import (
 from typehaus.model.placeable_symbols._gree_flexx import gree_flexx_horizontal
 from typehaus.model.placeable_symbols._gree_flexx_outdoor import gree_flexx_outdoor
 from typehaus.model.placeable_symbols._infrared_heater import infrared_heater
+from typehaus.model.placeable_symbols._led_controller import (
+    gledopto_gl_c_001p,
+    ikea_tradfri_driver,
+    nema_4x_box,
+)
+from typehaus.model.placeable_symbols._led_driver_jbox import diode_odx_j
+from typehaus.model.placeable_symbols._led_driver_potted import meanwell_hlg_100h
 from typehaus.model.placeable_symbols._sektion_kitchen import KITCHEN_SEKTION_SYMBOLS
 from typehaus.model.placeable_symbols._sheet_metal_plenum import plenum_parts, sheet_metal_plenum
 from typehaus.model.placeable_symbols._sunnersta import sunnersta_frame
@@ -95,7 +102,12 @@ _REGISTRY: dict[str, Builder] = {**FURNITURE_SYMBOLS, **APPLIANCE_SYMBOLS, **PLU
                                  "gree-flexx-ultra-24-horizontal": gree_flexx_horizontal,
                                  "gree-flexx-ultra-24-outdoor": gree_flexx_outdoor,
                                  "sunnersta-frame": sunnersta_frame,
-                                 "sheet-metal-plenum": sheet_metal_plenum}
+                                 "sheet-metal-plenum": sheet_metal_plenum,
+                                 "meanwell-hlg-100h": meanwell_hlg_100h,
+                                 "diode-odx-j": diode_odx_j,
+                                 "gledopto-gl-c-001p": gledopto_gl_c_001p,
+                                 "ikea-tradfri-driver": ikea_tradfri_driver,
+                                 "nema-4x-box": nema_4x_box}
 
 # The frozen vocabulary. A catalog entry may only name a symbol listed here; the contract test
 # holds the registry to it in both directions.
@@ -152,6 +164,9 @@ SYMBOL_NAMES = (UNIFI_ACCESS_POINT_SYMBOLS
     "gree-flexx-ultra-24-outdoor",
     "infrared-heater", "fireplace-insert", "ceramic-fan-heater",
     "disconnect", "meter", "junction-box", "spd", "thermostat",
+    # LED drivers and controllers, back on the mounting surface
+    "meanwell-hlg-100h", "diode-odx-j", "gledopto-gl-c-001p", "ikea-tradfri-driver",
+    "nema-4x-box",
     # Plumbing fixtures: "hydrant" is the Model 19 wall faucet; the Y34SS has its own
     # yard-hydrant geometry. Neither has a drain. "floor-drain" has no supply side.
     # "toilet-wall-hung" is a THIRD odd one out: no tank, so the china takes the whole

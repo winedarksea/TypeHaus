@@ -34,7 +34,7 @@ from plan.laundry_lighting_types import LAUNDRY_TRACK
 from plan.lighting_types_decor import DECORATIVE_LUMINAIRE_TYPES
 from typehaus import ElectricalDeviceType, LuminaireForm, Service, ServicePort, ft, inch, mm
 from typehaus.library.track_lighting import PUREEDGE_SUPPLY
-from typehaus.model import LuminaireType, ProductPart
+from typehaus.model import LuminaireType, ModelRepresentation, ProductPart
 
 # Every line-voltage luminaire lands on a 120V branch; one port tuple serves them all
 # (``electrical.circuit_refs`` checks poles against ports, and these are all 1-pole).
@@ -399,6 +399,10 @@ AMBIENT_LUMINAIRE_TYPES = (
 # Not luminaires, so plain ``ElectricalDeviceType``: a PSU is a junction box with a driver
 # in it. The switch types live in plan/device_types.py.
 #
+# Each is drawn as installed, back on the mounting surface: ``footprint=(length, thickness)``
+# and ``height`` is the sheet's width, standing vertical. In a ceiling cavity that is the
+# body on edge, as if screwed to a joist face.
+#
 # Per-area supplies rather than one central 24V bus. A house-wide 24V distribution would
 # mean 24V home runs the length of the building, where the voltage drop that matters is on
 # the *low* side: 3 W/ft of tape at 24V pulls real current, and a 40' run at that voltage
@@ -406,7 +410,8 @@ AMBIENT_LUMINAIRE_TYPES = (
 # runs keep the long wire at 120V. The alternative is documented, not built.
 LIGHTING_DEVICE_TYPES = (
     ElectricalDeviceType(tag="ED-T-LT-PSU-60", name="24V LED driver, 60 W, in own junction box",
-                         footprint=(inch(7.4), inch(3.7)), height=inch(1.36),
+                         footprint=(inch(7.4), inch(1.59)), height=inch(3.74),
+                         model_representation=ModelRepresentation(symbol="diode-odx-j"),
                          load_va=60.0, output_voltage=24, ports=_POWER_120,
                          product_ref="PROD-DIODE-OMNIDRIVE-X",
                          # Diode DI-ODX spec sheet (diodeled.com, read 2026-11-14): "Class 2 ...
@@ -414,7 +419,8 @@ LIGHTING_DEVICE_TYPES = (
                          supply_listing="cULus E499308, ANSI/UL 1310 power unit, UL 8750",
                          class_2=True,
                          source="Diode LED DI-ODX-24V60W-J (the -J version: driver in its own listed "
-                                "junction box, 7.40 x 3.70 x 1.36 in, retailer listings read 2026-11-08; "
+                                "junction box, 7.40 L x 3.74 W x 1.59 H in, OMNIDRIVE X spec sheet "
+                                "mechanical diagrams pp. 3-4, read 2026-11-16; "
                                 "the driver-only DI-ODX-24V60W would need a box of its own) — "
                                 "OMNIDRIVE X, 60 W: ELV + TRIAC + 0-10V in one part "
                                 "and, the spec that matters, NO MINIMUM LOAD: a cheap ELV "
@@ -422,21 +428,27 @@ LIGHTING_DEVICE_TYPES = (
                                 "or fail to strike. Load to <=80% of nameplate and keep it "
                                 "accessible and ventilated."),
     ElectricalDeviceType(tag="ED-T-LT-PSU-200", name="24V LED driver, 200 W, in-ceiling box",
-                         footprint=(inch(12), inch(8)), height=inch(4),
+                         footprint=(inch(10.24), inch(1.77)), height=inch(4.13),
+                         model_representation=ModelRepresentation(symbol="diode-odx-j"),
                          load_va=200.0, output_voltage=24, ports=_POWER_120,
                          product_ref="PROD-DIODE-OMNIDRIVE-X",
                          # Same sheet: "Class 2 ... No" for ODX24V200WJ (only 30/60/96 W are).
                          supply_listing="cULus E499308, ANSI/UL 1310 power unit",
                          class_2=False,
-                         source="Diode LED OMNIDRIVE X, 200 W. Same family as the 60 W; see "
-                                "that entry for the no-minimum-load argument."),
+                         source="Diode LED OMNIDRIVE X ODX-24V200W-J, 200 W: 10.24 L x 4.13 W "
+                                "x 1.77 H in (spec sheet pp. 3-4, read 2026-11-16). Same "
+                                "family as the 60 W; see that entry for the no-minimum-load "
+                                "argument."),
     ElectricalDeviceType(tag="ED-T-LT-PSU-96-WE", name="24V LED driver, 96 W, IP65",
-                         footprint=(mm(220), mm(68)), height=mm(38.8),
+                         # Driver 220 + 20 mm lead gap + the 4 in box, by the box's 2 1/8 in
+                         # depth + its 752 cover, by the box's 4 in.
+                         footprint=(mm(220 + 20) + inch(4), inch(2.19)), height=inch(4),
+                         model_representation=ModelRepresentation(symbol="meanwell-hlg-100h"),
                          load_va=96.0, output_voltage=24, ports=_POWER_120,
                          product_ref="PROD-MEANWELL-HLG-100H-24A",
                          # AC lead is bare SJOW cable: a 4 in. square box, blank cover and cord
-                         # connector beside each driver (not in the footprint; PROD-RACO-232 is
-                         # priced in [electrical_boxes] by use, here as a part).
+                         # connector beside each driver, inside the envelope and drawn
+                         # (PROD-RACO-232 is priced in [electrical_boxes] by use, here as a part).
                          parts=(ProductPart(role="fitting", product_ref="PROD-RACO-232"),
                                 ProductPart(role="fitting", product_ref="PROD-RACO-752"),
                                 ProductPart(role="fitting", product_ref="PROD-CORD-GRIP-GENERIC")),
@@ -444,29 +456,35 @@ LIGHTING_DEVICE_TYPES = (
                          # I/P-O/P 3.75 kVAC withstand and 100 Mohm isolation are its isolation.
                          supply_listing="UL 8750 (type HL), CSA C22.2 No. 250.0-08",
                          isolating_secondary=True,
-                         source="Mean Well HLG-100H-24A (HLG-100H-SPEC 2026-07-24): no Class 2 "
-                                "stated, 96 W, 24 V / 4 A, IP65, UL 8750, 220 x 68 x "
-                                "38.8 mm, not dimmable. A-type: SJOW 17 AWG cable leads (AC "
+                         source="Mean Well HLG-100H-24A (HLG-100H-SPEC 2025-04-10, case 994A): "
+                                "no Class 2 stated, 96 W, 24 V / 4 A, IP65, UL 8750, 220 "
+                                "(196 body + two 12 mm ears) x 68 x 38.8 mm, Vo/Io pots at the "
+                                "DC end, not dimmable. A-type: SJOW 17 AWG cable leads (AC "
                                 "and DC), nothing encloses the AC side (the junction-box option "
                                 "is a Mean Well special): the splice box above is ours."),
     # The controller is on the 24V side: no branch circuit, no load of its own worth summing.
     ElectricalDeviceType(tag="ED-T-LT-CTRL-5IN1", name="5-in-1 Zigbee LED controller, 12-54 V",
-                         footprint=(inch(4.5), inch(1.8)), height=inch(0.9),
+                         footprint=(mm(125), mm(24)), height=mm(37),
+                         model_representation=ModelRepresentation(symbol="gledopto-gl-c-001p"),
                          needs=frozenset(), product_ref="PROD-GLEDOPTO-GL-C-001P",
-                         source="Gledopto GL-C-001P, set once to RGBCCT (E4) or CCT (E6), "
-                                "power-on 'previous'. Beside its driver, accessible, indoors."),
+                         source="Gledopto GL-C-001P (manual: 125 x 37 x 24 mm), set once to "
+                                "RGBCCT (E4) or CCT (E6), power-on 'previous'. Beside its driver, "
+                                "accessible, indoors."),
     # The garage's (mark W) since 2026-11-07: Matter over Wi-Fi to HA's Matter server (local),
-    # boxed against the unconditioned garage's damp. The box is the billed part's envelope.
+    # boxed against the unconditioned garage's damp. The 6x6x4 box (the billed part) is the
+    # envelope; the 108 x 45 x 18 mm controller rides inside it.
     ElectricalDeviceType(tag="ED-T-LT-CTRL-MATTER",
                          name="Matter Wi-Fi LED controller, 12-24 V, in a NEMA 4X box",
-                         footprint=(inch(6), inch(6)), height=inch(4),
+                         footprint=(inch(6), inch(4)), height=inch(6),
+                         model_representation=ModelRepresentation(symbol="nema-4x-box"),
                          needs=frozenset(), product_ref="PROD-GLEDOPTO-GL-C-208M",
                          parts=(ProductPart(role="fitting",
                                             product_ref="PROD-NEMA4X-BOX-GENERIC"),
                                 ProductPart(role="fitting",
                                             product_ref="PROD-ENCLOSURE-VENT-GENERIC"),),
-                         source="Gledopto GL-C-208M (Matter 1.3, CSA256C5MAT46615-24), RGB+CCT "
-                                "with the tape's W on its warm terminal (C unused, color_temp "
+                         source="Gledopto GL-C-208M (manual: 108 x 45 x 18 mm; Matter 1.3, "
+                                "CSA256C5MAT46615-24), RGB+CCT with the tape's W on its warm "
+                                "terminal (C unused, color_temp "
                                 "pinned warmest), in a gasketed PVC NEMA 4X box with an M12 "
                                 "breather vent, beside its driver."),
 )

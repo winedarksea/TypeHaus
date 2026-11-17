@@ -240,9 +240,9 @@ BASEMENT_LIGHTING = [
     # reason not to oversize it (a PSU sums at its RATING on a backup circuit) is gone.
     #
     # On the workshop face of W-B-SA-N (y=10'-3 13/16"), not in the sauna: x=10'-0" keeps the
-    # 8" box clear of W-B-SA-W's corner and the sauna's north service strip; 48" AFF keeps the
-    # driver accessible and ventilated. Its 8x6x3 footprint projects 6" on a wall, not the
-    # part's real 3": do not measure a clearance off it. One 24V Class 2 pair crosses
+    # 7.4" box clear of W-B-SA-W's corner and the sauna's north service strip; 48" AFF keeps the
+    # driver accessible and ventilated. It draws at the -J box's published 7.40 x 3.74 x
+    # 1.59 in, flat on the wall. One 24V Class 2 pair crosses
     # W-B-SA-N's foil-faced polyiso through a gasketed grommet, sealed both faces.
     ElectricalDevice(uid="392P1PBQF7", tag="ED-B-SAUNA-LT-PSU", kind=DeviceKind.JUNCTION_BOX,
                      type_ref="ED-T-LT-PSU-60",

@@ -254,6 +254,15 @@ def _add_canvas_parts(mb: _MeshBuilder, item: ResolvedCanvasObject,
     return bool(parts)
 
 
+# The viewer's fallback colours (ui/src/three/builders/site.ts), so an un-symboled
+# device reads the same in both renderers.
+_FALLBACK_DOMAIN_COLORS = {
+    "electrical": PART_COLORS["electrical-orange"],
+    "plumbing": (66 / 255, 153 / 255, 225 / 255, 1.0),
+    "mechanical": (113 / 255, 128 / 255, 150 / 255, 1.0),
+}
+
+
 def _add_canvas_box(mb: _MeshBuilder, item: ResolvedCanvasObject, height_m: float | None) -> None:
     """Extrude a canvas object's resolved footprint into a box (Panel3D's fallback shape)."""
     ring = [tuple(point) for point in item.footprint]
@@ -262,7 +271,7 @@ def _add_canvas_box(mb: _MeshBuilder, item: ResolvedCanvasObject, height_m: floa
     height = height_m if height_m else 0.25  # Panel3D uses type.height_m ?? 0.25
     bottom = item.body_z0_m if item.body_z0_m is not None else item.z_m
     top = item.body_z1_m if item.body_z1_m is not None else bottom + height
-    mb.add_prism(ring, bottom, top, _color("furniture"))
+    mb.add_prism(ring, bottom, top, _FALLBACK_DOMAIN_COLORS.get(item.domain) or _color("furniture"))
 
 
 def _add_suspension(mb: _MeshBuilder, item: ResolvedCanvasObject,
