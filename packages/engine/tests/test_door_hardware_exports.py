@@ -1,9 +1,11 @@
 """The IFC accessories and live viewer consume the same resolved opening parts."""
 import ifcopenshell
+import ifcopenshell.geom
 import ifcopenshell.util.element
 import pytest
 
 from typehaus.server.model_json_opening_parts import opening_parts_json
+from typehaus.server.model_json_mesh import decode_mesh
 
 # Measured: shared house + IFC setup 16.2 s (pytest --durations=10).
 pytestmark = pytest.mark.slow
@@ -19,8 +21,12 @@ def test_authored_parts_include_two_finishes_and_viewer(catlin_model_ro):
     viewer_index = next(index for index, item in enumerate(spec.hardware) if item.role == "viewer")
     viewer = next(part for part in parts if part["key"] == f"hardware:{viewer_index}")
     leaf_bottom = entry.doorway.leaf_bottom_z_m
-    assert all((solid["z0_m"] + solid["z1_m"])/2 == pytest.approx(leaf_bottom + 1.524)
-               for solid in viewer["solids"])
+    assert viewer["meshes"] and not viewer["solids"]
+    heights = [point[2] for mesh in viewer["meshes"]
+               for point in decode_mesh(mesh)["positions"]]
+    assert (min(heights) + max(heights))/2 == pytest.approx(leaf_bottom + 1.524, abs=1e-5)
+    assert max(heights) - min(heights) == pytest.approx(.070, abs=1e-5)
+    assert any(part["key"] == viewer["key"] + ":optics" for part in parts)
     # Every opening is served, windows too; doorway sections and installation boards are not.
     keys = {part["key"].split(":")[0] for opening in model.openings
             for part in opening_parts_json(model, opening) or ()}
@@ -54,3 +60,7 @@ def test_ifc_hardware_accessories_have_product_quantity_installation_and_geometr
     assert spec["Quantity"] == 1
     assert accessory.Representation
     assert accessory.Nests[0].RelatingObject.is_a("IfcDoor")
+    shape = ifcopenshell.geom.create_shape(ifcopenshell.geom.settings(), accessory)
+    heights = shape.geometry.verts[2::3]
+    assert max(heights) - min(heights) == pytest.approx(.070)
+    assert len(shape.geometry.faces) > 128 * 3

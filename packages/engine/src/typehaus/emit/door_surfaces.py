@@ -33,6 +33,8 @@ def door_part_color(part, authored, *, linear_paint_defaults=False):
 def door_part_surface(part):
     if part.material_key == "door_hardware":
         return (0.35, 0.8)
+    if part.material_key == "shadow_gap":
+        return (0.9, 0.0)
     if part.material_key in ("door_frame", "door_leaf") or part.catalog:
         return (0.45, 0.0)
     return (0.9, 0.0)

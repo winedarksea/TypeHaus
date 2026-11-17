@@ -6,6 +6,7 @@ from dataclasses import dataclass, replace
 
 from typehaus.resolve.geometry import wall_frame
 from typehaus.resolve.geometry_door_products import lever_solids
+from typehaus.resolve.geometry_door_viewer import doorscope_parts
 from typehaus.resolve.geometry_ir import GPart, GPrism, PartCatalogRef
 
 
@@ -16,8 +17,6 @@ class HardwareGeometryDimensions:
     deadbolt_width_m: float = .0762
     deadbolt_height_m: float = .1397
     deadbolt_depth_m: float = .032
-    viewer_size_m: float = .060325
-    viewer_depth_m: float = .0127
     hinge_width_m: float = .0254
     hinge_height_m: float = .1016
     plate_width_m: float = .028575
@@ -75,12 +74,20 @@ def authored_door_parts(wall, opening, parts, hardware, field_finish, operation)
                 solids = lever_solids(box, latch, hinge_sign,
                     (-leaf_thickness/2, leaf_thickness/2),
                     bottom, item.height.meters if item.height else None)
-            elif item.role in {"deadbolt", "viewer"}:
-                viewer = item.role == "viewer"
-                width = dimensions.viewer_size_m if viewer else dimensions.deadbolt_width_m
-                height = width if viewer else dimensions.deadbolt_height_m
-                depth = dimensions.viewer_depth_m if viewer else dimensions.deadbolt_depth_m
-                along = 0 if viewer else latch + hinge_sign * dimensions.backset_m
+            elif item.role == "viewer":
+                exterior = _exterior_face(wall)
+                station = opening.center_along_m
+                parts += doorscope_parts(f"hardware:{index}",
+                    PartCatalogRef(role=item.role, name=item.product_ref),
+                    (origin[0] + tangent[0]*station + normal[0]*center_normal,
+                     origin[1] + tangent[1]*station + normal[1]*center_normal, z),
+                    tangent, normal, leaf_thickness, exterior[1] if exterior else 1)
+                continue
+            elif item.role == "deadbolt":
+                width = dimensions.deadbolt_width_m
+                height = dimensions.deadbolt_height_m
+                depth = dimensions.deadbolt_depth_m
+                along = latch + hinge_sign * dimensions.backset_m
                 solids = [box(width, height, depth, along, z,
                               side * (leaf_thickness + depth)/2)
                           for side in (-1, 1)]

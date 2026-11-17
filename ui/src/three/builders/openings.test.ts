@@ -5,6 +5,7 @@ import type { Opening, OpeningPart, Wall } from "../../model/types";
 import { RESOLVED_NORDIC_PALETTE } from "../../nordic/palette";
 import { categoryColor } from "../members";
 import { buildOpening } from "./openings";
+import { packMesh } from "../mesh";
 
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message);
@@ -107,5 +108,20 @@ export function runOpeningPartTests() {
     "A glazed leaf stays glass whatever finish its catalog names");
   assert(["hardware:viewer", "glass:0"].every((piece, i) => meshes[i + 2].userData.piece === piece),
     "Pieces name the served part");
+  const curved = new THREE.Group(), curvedPicks: THREE.Mesh[] = [];
+  const meshDoor = { ...door, opening_parts: [{ key: "hardware:7:optics",
+    material_key: "shadow_gap", solids: [], meshes: [packMesh(
+      [[2, .03, 1.52], [2.025, .03, 1.545], [2, .03, 1.57], [1.975, .03, 1.545]],
+      [[0, 2, 1], [0, 3, 2]])] }] } as Opening;
+  buildOpening(curved, meshDoor, wall, [1, 2], "nordic", RESOLVED_NORDIC_PALETTE.light,
+    {}, curvedPicks, new Map());
+  const opticalMesh = curved.children[0] as THREE.Mesh;
+  assert(curved.children.length === 1 && curvedPicks.length === 1,
+    "Mesh-only DoorScope parts must be drawn and selectable");
+  assert(boundsOf(opticalMesh).every((n, i) => Math.abs(n - [.975, 1.52, 1.97, 1.025, 1.57, 1.97][i]) < 1e-6),
+    "DoorScope meshes use the same plan-to-scene transform as prisms");
+  assert(opticalMesh.userData.piece === "hardware:7:optics"
+    && opticalMesh.geometry.getAttribute("normal").count === 6,
+    "Curved hardware keeps its inspector identity and face normals");
   console.log("Opening served-part tests passed.");
 }

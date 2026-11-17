@@ -1,6 +1,8 @@
 """Resolved opening parts for the live viewer, which extrudes these rings and derives none."""
 from typehaus.resolve.door_plan_dimensions import door_plan_dimensions
-from typehaus.resolve.geometry_ir import GPrism
+from typehaus.resolve.geometry_ir import GPrism, GSweep
+from typehaus.resolve.geometry_slice import sweep_mesh
+from typehaus.server.model_json_mesh import mesh_json
 
 # The viewer draws these from the opening's ``doorway`` record (sections, installation boards).
 _DOORWAY_KEYS = {"doorway", "installation"}
@@ -22,9 +24,12 @@ def opening_parts_json(model, opening):
         solids = [dict(ring=[[_r(x), _r(y)] for x, y in solid.ring],
                        z0_m=_r(solid.z0_m), z1_m=_r(solid.z1_m))
                   for solid in part.solids if isinstance(solid, GPrism)]
-        if not solids:
+        meshes = [sweep_mesh(solid) for solid in part.solids if isinstance(solid, GSweep)]
+        if not solids and not meshes:
             continue
         entry = dict(key=part.key, material_key=part.material_key, solids=solids)
+        if meshes:
+            entry["meshes"] = [mesh_json(mesh.positions, mesh.triangles) for mesh in meshes]
         if part.catalog is not None:
             # Catalog role (hinge, passage, ...) and product name feed the inspector.
             entry.update({name: value for name, value in (

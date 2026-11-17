@@ -249,7 +249,7 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
 - ERV terminals don't come out of the walls/floors/surfaces quite clearly enough, likely they protrude just a bit more
 - Door sills for exterior doors make sense
 - Condensate PR-M-COND-HP3-RUN goes through the studs of W-M-STRW, which is one wall that is exposed and we don't want to run the plumbing through (the data cable is probably fine)
-- 3d model of the DoorScope
+- [x] 3d model of the DoorScope (round DS2000 trim, recessed interior screen and exterior optics shared by viewer/GLB/IFC).
 - ERV likely blocks D-B-CLOSET, and its condensate also blocks
 
 # Project Management

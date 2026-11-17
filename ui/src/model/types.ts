@@ -399,6 +399,7 @@ export interface OpeningPart {
   role?: string | null;
   name?: string | null;
   solids: { ring: [number, number][]; z0_m: number; z1_m: number }[];
+  meshes?: PackedMesh[];
 }
 
 export interface DoorPlanDimensions {

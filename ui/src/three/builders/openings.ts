@@ -7,6 +7,7 @@ import { authoredAppearance, materialColor, type MaterialAppearance } from "../.
 import type { ResolvedNordicPalette } from "../../nordic/palette";
 import { categoryColor } from "../members";
 import { createPlanPrismGeometry, projectPointToScene, type PlanCenter } from "../planGeometry";
+import { decodeMesh } from "../mesh";
 import { NORDIC_ROUGHNESS, standardMaterial } from "../surfaces";
 import { buildDoorway } from "./doorway";
 import { authoredPiece } from "./openingPieces";
@@ -137,6 +138,19 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
     (x - openingCenter[0]) * direction[0] + (y - openingCenter[1]) * direction[1];
   for (const part of opening.opening_parts ?? []) {
     const { material, style } = materialOf(part);
+    for (const packed of part.meshes ?? []) {
+      const decoded = decodeMesh(packed, center);
+      const indexed = new THREE.BufferGeometry();
+      indexed.setAttribute("position", new THREE.BufferAttribute(decoded.positions, 3));
+      indexed.setIndex(new THREE.BufferAttribute(decoded.index, 1));
+      const geometry = indexed.toNonIndexed();
+      indexed.dispose();
+      geometry.computeVertexNormals();
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.userData.piece = part.key;
+      parent.add(mesh);
+    }
+    if (!part.solids.length) continue;
     // Frame boards are named by where they sit within the part (→ ./openingPieces).
     const spans = part.solids.map(solid => solid.ring.map(along));
     const partA0 = Math.min(...spans.flat()), partA1 = Math.max(...spans.flat());
