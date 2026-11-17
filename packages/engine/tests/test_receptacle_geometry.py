@@ -36,6 +36,12 @@ HORIZONTAL_TYPES = [ElectricalDeviceType(
 FLOOR_TYPE = ElectricalDeviceType(
     tag="FLOOR", name="Floor receptacle", footprint=(m(.168), m(.168)), height=m(.166),
     model_representation=ModelRepresentation(symbol="receptacle-floor"))
+COVER_TYPES = [ElectricalDeviceType(
+    tag=f"COVER-{amperage}", name="Covered GFCI",
+    footprint=(m(3.63 * .0254), m(3.08 * .0254)), height=m(6.69 * .0254),
+    model_representation=ModelRepresentation(symbol=symbol))
+    for amperage, symbol in ((20, "receptacle-gfci-in-use-cover"),
+                             (15, "receptacle-gfci-in-use-cover-15a"))]
 
 
 def _parts(product):
@@ -52,7 +58,7 @@ def test_single_gang_catalog_is_vertical(tag):
     assert product.height.inches == pytest.approx(2.63)
 
 
-@pytest.mark.parametrize("product", [*WALL_TYPES, *HORIZONTAL_TYPES, FLOOR_TYPE],
+@pytest.mark.parametrize("product", [*WALL_TYPES, *HORIZONTAL_TYPES, FLOOR_TYPE, *COVER_TYPES],
                          ids=lambda p: p.tag)
 def test_geometry_is_bounded_closed_and_in_budget(product):
     parts = _parts(product)
@@ -87,7 +93,8 @@ def test_geometry_is_bounded_closed_and_in_budget(product):
                    for (start, end), count in edges.items())
     assert triangle_count <= CFG.maximum_triangles
     assert parts[0]["color"] == "device-face"  # the face slab, standing on the plate
-    assert {part["color"] for part in parts} <= {"device-face", "device-slot", "device-accent"}
+    assert {part["color"] for part in parts} <= {
+        "device-face", "device-slot", "device-accent", "clear-glass"}
 
 
 @pytest.mark.parametrize("tag,socket_count", [
@@ -165,7 +172,7 @@ def test_wall_attachment_keeps_socket_front_facing_room(angle, side, offset):
     assert rotation == pytest.approx(angle + offset)
 
 
-@pytest.mark.parametrize("product", [*WALL_TYPES, *HORIZONTAL_TYPES, FLOOR_TYPE],
+@pytest.mark.parametrize("product", [*WALL_TYPES, *HORIZONTAL_TYPES, FLOOR_TYPE, *COVER_TYPES],
                          ids=lambda p: p.tag)
 def test_viewer_gltf_and_ifc_keep_shared_relief_and_colors(product):
     parts = _parts(product)
@@ -194,6 +201,34 @@ def test_viewer_gltf_and_ifc_keep_shared_relief_and_colors(product):
         assert max(point[axis] for point in gltf_positions) == pytest.approx(
             max(point[axis] for point in transformed))
     assert all(mesh.Closed for mesh in representation.Items)
+
+
+@pytest.mark.parametrize("product", COVER_TYPES, ids=lambda p: p.tag)
+def test_in_use_cover_keeps_vertical_gfci_at_back_of_clear_plug_cavity(product):
+    parts = _parts(product)
+    face_parts = [part for part in parts if part["color"] != "clear-glass"]
+    sockets = [part for part in face_parts if "mesh" in part and part["color"] == "device-face"]
+    assert len(sockets) == 2
+    assert sockets[0]["center"][0] == pytest.approx(sockets[1]["center"][0])
+    assert abs(sockets[0]["center"][2] - sockets[1]["center"][2]) > .0254
+    back = product.footprint[1].meters / 2
+    # The cover projects 3.08 inches; the electrical face stays within 0.35 inches
+    # of its mounting plane, leaving space for a plug behind the closed clear lid.
+    front = min(p["center"][1] - p["size"][1] / 2 for p in face_parts)
+    assert back - front <= .35 * .0254 + 1e-9
+    assert sum(p["color"] == "device-accent" for p in parts) == 2
+    appearance = _symbol_geometry(product, product.footprint)["model_parts"]
+    assert sum(p.get("opacity", 1) < 1 for p in appearance) == 5
+
+
+def test_catlin_weather_resistant_gfcis_use_cover_geometry(catlin_plan):
+    products = {product.tag: product for product in catlin_plan.library.electrical_device_types}
+    for tag, expected in zip(("ED-T-LEV-GFCI-WR", "ED-T-LEV-GFCI-WR-15"),
+                             COVER_TYPES, strict=True):
+        product = products[tag]
+        assert product.model_representation.symbol == expected.model_representation.symbol
+        assert product.footprint == expected.footprint
+        assert product.height == expected.height
 
 
 def test_catlin_hosted_receptacles_face_away_from_wall(catlin_model_ro):

@@ -9,6 +9,9 @@ rows in `plan/device_boxes.py` (`resolve/device_banks.py`).
 - **Type geometry.** `footprint` is (face width, projection past the plate) and `height` is the face height.
   - Projection past the plate = front past the strap, less the 1/4" midway plate.
   - The body behind the plate is not drawn. It is graded as `rear_projection` against box depth.
+  - WR GFCIs use a separate 5980-UCL clear hood symbol, 3.63" W x 6.69" H x 3.08" D.
+    The vertical GFCI face stays at the back of the plug cavity; cover depth must never
+    scale the socket relief. Hood panels and adapter relief are schematic.
   - Scaled or unpublished rears are left unauthored: T5020, T6525, DVELV-300P, MA-T51 and ZEN32.
 - **Plates.**
   - Default family `midway`, because the Lever Edge strap is 1.78" wide (Leviton).

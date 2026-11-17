@@ -44,6 +44,10 @@ from typehaus.model.placeable_symbols._frame import (
     part_hex,
     with_material_refs,
 )
+from typehaus.model.placeable_symbols._gfci_in_use_cover import (
+    gfci_in_use_cover,
+    gfci_in_use_cover_15a,
+)
 from typehaus.model.placeable_symbols._gree_flexx import gree_flexx_horizontal
 from typehaus.model.placeable_symbols._gree_flexx_outdoor import gree_flexx_outdoor
 from typehaus.model.placeable_symbols._infrared_heater import infrared_heater
@@ -74,6 +78,8 @@ Builder = Callable[[float, float, float], tuple[tuple[Stroke, ...], tuple[Part, 
 _REGISTRY: dict[str, Builder] = {**FURNITURE_SYMBOLS, **APPLIANCE_SYMBOLS, **PLUMBING_SYMBOLS,
                                  **LIGHTING_SYMBOLS, **KITCHEN_SEKTION_SYMBOLS,
                                  **RECEPTACLE_SYMBOLS, **SWITCH_SYMBOLS,
+                                 "receptacle-gfci-in-use-cover": gfci_in_use_cover,
+                                 "receptacle-gfci-in-use-cover-15a": gfci_in_use_cover_15a,
                                  "eg4-12kpv": eg4_12kpv,
                                  "eg4-wallmount-indoor-280ah": eg4_wallmount_indoor,
                                  "renewaire-fa8-wall-hood": erv_wall_hood,
@@ -96,6 +102,7 @@ _REGISTRY: dict[str, Builder] = {**FURNITURE_SYMBOLS, **APPLIANCE_SYMBOLS, **PLU
 SYMBOL_NAMES = (UNIFI_ACCESS_POINT_SYMBOLS
                 | frozenset(KITCHEN_SEKTION_SYMBOLS) | frozenset(RECEPTACLE_SYMBOLS)
                 | frozenset(SWITCH_SYMBOLS)) | frozenset({
+    "receptacle-gfci-in-use-cover", "receptacle-gfci-in-use-cover-15a",
     "plant-reservoir", "plant-irrigation-rack", "plant-leak-sensors",
     "broan-bwp1304ss-recirculating",
     "plain-round-mirror-nickel", "plain-arch-mirror-nickel", "plain-arch-mirror-chrome",

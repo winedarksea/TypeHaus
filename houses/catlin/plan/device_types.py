@@ -43,7 +43,8 @@ def _dev(tag: str, name: str, prod: Product, *, ports=_P120, symbol="receptacle-
     rep = ModelRepresentation(symbol=symbol, material_refs=colour) if symbol else None
     return ElectricalDeviceType(
         tag=tag, name=name, footprint=footprint, height=height, ports=ports,
-        product_ref=prod.tag if prod else "PROD-LEVITON-1450R", model_representation=rep, source=_DECISION, **facts)
+        product_ref=prod.tag if prod else "PROD-LEVITON-1450R",
+        model_representation=rep, source=_DECISION, **facts)
 
 
 # --- receptacles -----------------------------------------------------------------------
@@ -99,12 +100,14 @@ RECEPTACLE_TYPES = (
     # "Extra Duty Weatherproof While-In-Use Cover", NEMA 3R. No 'controlled' marking on either.
     _dev("ED-T-LEV-GFCI-WR",
          "WR GFCI 20 A TR (GFWT2-W), 5980-UCL in-use cover, non-metallic gasketed box",
-         GFWT2, footprint=(inch(4.5), inch(3)), height=inch(3), nema="5-20R",
+         GFWT2, footprint=(inch(3.63), inch(3.08)), height=inch(6.69), nema="5-20R",
+         symbol="receptacle-gfci-in-use-cover", rear_projection=inch(1.03),
          device_box=True, weather_resistant=True, in_use_cover=True),
     # On a 15 A branch (NEC 210.21(B)(3)): the radon fan's outlet on CKT-RC-ATTIC.
     _dev("ED-T-LEV-GFCI-WR-15",
          "WR GFCI 15 A TR (GFWT1-W), 5980-UCL in-use cover, non-metallic gasketed box",
-         GFWT1, footprint=(inch(4.5), inch(3)), height=inch(3), nema="5-15R",
+         GFWT1, footprint=(inch(3.63), inch(3.08)), height=inch(6.69), nema="5-15R",
+         symbol="receptacle-gfci-in-use-cover-15a", rear_projection=inch(1.03),
          device_box=False, weather_resistant=True, in_use_cover=True),
     _dev("ED-T-LEV-GFCI-DF", "Blank-face GFCI 20 A, feed-through (GFRBF-W)", GFRBF,
          deadfront=True, **{**_GFCI20, "symbol": "receptacle-blank-gfci"}),
