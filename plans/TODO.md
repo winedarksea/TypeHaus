@@ -239,6 +239,13 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
 - [x] 3d model of the recirculating range hood (Broan BWP1304SS pyramidal canopy, telescopic chimney, side return grilles, paired filters, LEDs and controls).
 - 3d model of the SPD devices (or just put them in the circuit box?), PV shutdown initiator
 - Not sure we need REG-S-EXH4 in RM-S-VANITY. And if we do, we need to move it out of the center of the floor
+- Attic wall assembly seems to have lost its
+- garage wall to standard zip possibly (doesn't need to be taped)
+- The siding to balcony flashing is two pieces, TR-SG-BASE-FLASH-W-1 and TR-SG-COUNTER-FLASH-W. Do we really need both like this? The "counter flash" seems a bit unsupported. A more extreme change might be to have the horizontal band run lower, at this height, and integrate here.
+- 3d model of the in-use cover of the SmartlockPro GFCI outlets
+- Handrail and guardrail duplicated, RL-SG-PSTAIR-S and RL-SG-PSTAIR-HR, doesn't need the extra handrail, the guard doubles
+- Might need a second SL-S-KNEE-CAP for the partition wall
+- Model the LED junction boxes and power supply LED accurately to the products and dimensions
 
 # Project Management
 

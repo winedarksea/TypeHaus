@@ -750,9 +750,8 @@ class ResolvedCeiling:
     the covering deck's ``ceiling_below``, else the room's roof's ``default_lining``).
 
     ``z0_m``/``z1_m`` are None for a room whose ceiling follows a sloped/vaulted roof
-    (``Room.ceiling=FollowRoof(...)``) — there is no single flat plane to state, so no
-    ``ResolvedSolid`` is emitted for it either, and only the layer stack (for the roof's
-    own material/BOM) is carried here.
+    (``Room.ceiling=FollowRoof(...)``) — there is no single flat plane to state; its sloped
+    board is a derived ``ResolvedSolid`` from ``resolve/roof_linings.py``.
     """
 
     uid: str

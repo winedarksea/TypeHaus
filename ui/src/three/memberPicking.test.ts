@@ -5,8 +5,8 @@ import { buildMembers } from "./members";
 import { buildRebarMeshes, isStraightBar, tubePath } from "./rebar";
 import { RESOLVED_NORDIC_PALETTE } from "../nordic/palette";
 import {
-  elevationProfileVertices, rakedBoxGeometry, sectionRingVertices, seatedProfileVertices,
-  TRIANGLES_PER_MEMBER_BOX,
+  elevationProfileVertices, rakedBoxGeometry, sectionRingVertices, seatedIJoistParts,
+  seatedProfileVertices, TRIANGLES_PER_MEMBER_BOX,
 } from "./memberBox";
 import { packMesh } from "./mesh";
 import { createSolidBodyMesh } from "./solidBodyMesh";
@@ -223,16 +223,26 @@ function checkIJoistPliesShareOneIdentity() {
   }
 }
 
-// A seated I-joist rafter draws the engine's notched sweep, never three plies below the plate.
+// A seated I-joist rafter takes the engine's seat cut, never straight plies through the plate,
+// and still reads as an I: flanges at the flange width, a web at the web's.
 function checkSeatedIJoistIsNotchedNotPlied() {
   const group = new THREE.Group();
   const rafter = member({ key: "rafter-000", category: "rafter", shape: "i_joist", p0: [0, 0],
     p1: [3, 0], z0_m: 3, z1_m: 3.3, z0_end_m: 4, z1_end_m: 4.3, orient: null,
+    flange_width_m: 0.06, flange_thickness_m: 0.03, web_thickness_m: 0.01,
     seat: { plate_top_z_m: 3.2, heel: [0.3, 0], seat_run_m: 0.3 } });
   buildMembers(group, [rafter], CENTER, "schematic", RESOLVED_NORDIC_PALETTE.light, "RF1");
   assert(!group.children.some((child) => child instanceof THREE.InstancedMesh),
     "A seated i-joist is not the three-ply instanced bucket");
-  assert(group.children.length === 1, "It draws as one notched sweep");
+  assert(group.children.length === 1, "It draws as one merged notched mesh");
+  const widths = new Set(seatedIJoistParts(rafter, CENTER)!.map((part) => {
+    const [a, b] = [part[0], part[part.length / 2]];
+    return Math.round(Math.hypot(a[0] - b[0], a[2] - b[2]) * 1000);
+  }));
+  assert(widths.has(60) && widths.has(10) && widths.size === 2, "Flanges and a web, not a block");
+  const lowest = Math.min(...seatedIJoistParts(rafter, CENTER)!.flat()
+    .filter(([x]) => x > 0.3 + 1e-6 && x < 0.6 - 1e-6).map(([, y]) => y));
+  assert(lowest >= 3.2 - 1e-6, "Nothing hangs below the plate top inside the seat");
 }
 
 // A member skipped at build time (no plan run, so no raked box) must not shift the identities

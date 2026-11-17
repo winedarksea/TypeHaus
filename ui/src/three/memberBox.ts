@@ -130,18 +130,29 @@ export function pushBoxIndices(indices: number[], base: number) {
   }
 }
 
+type Corner = [number, number, number];
+
+/** A birdsmouthed member's notched elevation in (s along the run, z), and its scene frame. */
+interface SeatedProfile {
+  points: [number, number][];
+  /** The same outline as convex pieces (tail, seat, main run), so a band clip cannot bridge. */
+  pieces: [number, number][][];
+  near: THREE.Vector3;
+  ux: number;
+  uz: number;
+  /** Soffit at the bearing end and its rise per metre of run: the line plies are offset from. */
+  soffit: number;
+  slope: number;
+}
+
 /**
- * The corners of a birdsmouthed member: its notched profile, twice, across its own width.
- *
  * Mirrors `resolve/geometry_members.py::_seated_sweep` — the member less one triangle: the
  * plumb heel cut on the plate's outer face, and the flat seat inward from it to where the
  * underside meets the plate top. Walking: bearing-end top, far top, far bottom, seat's inner
  * end, heel's foot, heel's head, bearing-end bottom, coincident points dropped. Null when the
  * member carries no seat, has no plan run, or nothing lies below the plate top to cut.
  */
-export function seatedProfileVertices(
-  m: Member, center: PlanCenter,
-): [number, number, number][] | null {
+function seatedProfile(m: Member, center: PlanCenter): SeatedProfile | null {
   const seat = m.seat;
   if (!seat) return null;
   const a = projectPointToScene(m.p0, 0, center);
@@ -158,31 +169,104 @@ export function seatedProfileVertices(
   const z1Near = nearP0 ? m.z1_m : (m.z1_end_m ?? m.z1_m);
   const z0Far = nearP0 ? (m.z0_end_m ?? m.z0_m) : m.z0_m;
   const z1Far = nearP0 ? (m.z1_end_m ?? m.z1_m) : m.z1_m;
-  const ux = (far.x - near.x) / run, uz = (far.z - near.z) / run;
   const slope = (z0Far - z0Near) / run;
   const heelS = Math.min(d0, d1);
   const endS = heelS + seat.seat_run_m;
   const top = seat.plate_top_z_m;
-  if (z0Near + slope * heelS >= top - MIN_EXTENT_M || endS >= run) return null;
-  const at = (s: number, y: number): [number, number, number] =>
-    [near.x + ux * s, y, near.z + uz * s];
-  const points = [
-    at(0, z1Near), at(run, z1Far), at(run, z0Far), at(endS, z0Near + slope * endS),
-    at(endS, top), at(heelS, top), at(heelS, z0Near + slope * heelS), at(0, z0Near),
-  ];
-  const profile: [number, number, number][] = [];
-  const apart = (p: number[], q: number[]) =>
-    Math.hypot(p[0] - q[0], p[1] - q[1], p[2] - q[2]) > MIN_EXTENT_M;
-  for (const point of points) {
-    if (!profile.length || apart(point, profile[profile.length - 1])) profile.push(point);
-  }
-  if (!apart(profile[0], profile[profile.length - 1])) profile.pop();
-  const half = crossWidth(m) / 2;
-  const nx = -uz * half, nz = ux * half;
+  const bottom = (s: number) => z0Near + slope * s;
+  if (bottom(heelS) >= top - MIN_EXTENT_M || endS >= run) return null;
+  const points = dedupe([
+    [0, z1Near], [run, z1Far], [run, z0Far], [endS, bottom(endS)],
+    [endS, top], [heelS, top], [heelS, bottom(heelS)], [0, z0Near],
+  ]);
+  const upper = (s: number) => z1Near + (z1Far - z1Near) * s / run;
+  const pieces = [
+    [[0, z0Near], [heelS, bottom(heelS)], [heelS, upper(heelS)], [0, z1Near]],
+    [[heelS, top], [endS, top], [endS, upper(endS)], [heelS, upper(heelS)]],
+    [[endS, bottom(endS)], [run, z0Far], [run, z1Far], [endS, upper(endS)]],
+  ] as [number, number][][];
+  return { points, pieces, near, ux: (far.x - near.x) / run, uz: (far.z - near.z) / run,
+    soffit: z0Near, slope };
+}
+
+function dedupe(points: [number, number][]): [number, number][] {
+  const out: [number, number][] = [];
+  const apart = (p: number[], q: number[]) => Math.hypot(p[0] - q[0], p[1] - q[1]) > MIN_EXTENT_M;
+  for (const point of points) if (!out.length || apart(point, out[out.length - 1])) out.push(point);
+  if (out.length > 1 && !apart(out[0], out[out.length - 1])) out.pop();
+  return out;
+}
+
+/** The profile's ring twice, `width` apart across the run: the vertex layout sweeps index. */
+function extrudeAcross(p: SeatedProfile, points: [number, number][], width: number): Corner[] {
+  const half = width / 2;
+  const nx = -p.uz * half, nz = p.ux * half;
+  const ring = points.map(([s, y]): Corner => [p.near.x + p.ux * s, y, p.near.z + p.uz * s]);
   return [
-    ...profile.map(([x, y, z]) => [x + nx, y, z + nz] as [number, number, number]),
-    ...profile.map(([x, y, z]) => [x - nx, y, z - nz] as [number, number, number]),
+    ...ring.map(([x, y, z]): Corner => [x + nx, y, z + nz]),
+    ...ring.map(([x, y, z]): Corner => [x - nx, y, z - nz]),
   ];
+}
+
+/** The corners of a birdsmouthed member: its notched profile across its own width. */
+export function seatedProfileVertices(m: Member, center: PlanCenter): Corner[] | null {
+  const profile = seatedProfile(m, center);
+  return profile ? extrudeAcross(profile, profile.points, crossWidth(m)) : null;
+}
+
+/**
+ * A birdsmouthed I-joist as its three plies — bottom flange, web, top flange — each the notched
+ * profile's convex pieces clipped to its band of the section, so the seat cut reads AND the
+ * joist still reads as an I. Bands are measured perpendicular to the run off the soffit, as
+ * `buildIJoists` stacks them. Null when the member is not seated.
+ */
+export function seatedIJoistParts(m: Member, center: PlanCenter): Corner[][] | null {
+  const p = seatedProfile(m, center);
+  if (!p) return null;
+  const cos = 1 / Math.hypot(1, p.slope);
+  const depth = (m.z1_m - m.z0_m) * cos;
+  const flangeT = m.flange_thickness_m ?? depth * 0.1;
+  const flangeW = m.flange_width_m ?? m.width_m;
+  const webT = m.web_thickness_m ?? Math.min(flangeW, 0.01);
+  const bands: [number, number, number][] = [
+    [0, flangeT, flangeW], [flangeT, depth - flangeT, webT], [depth - flangeT, depth, flangeW]];
+  const offset = ([s, z]: [number, number]) => (z - p.soffit - p.slope * s) * cos;
+  const parts: Corner[][] = [];
+  for (const [lo, hi, width] of bands) {
+    for (const piece of p.pieces) {
+      const ring = dedupe(clipBand(clipBand(piece, (q) => offset(q) - lo), (q) => hi - offset(q)));
+      if (ring.length >= 3) parts.push(extrudeAcross(p, ring, width));
+    }
+  }
+  return parts;
+}
+
+/**
+ * The swept bodies a member draws as when it is not a plain raked box: a seated I-joist's three
+ * plies (one pick identity), else its elevation profile, seat cut or formed ring. Null for a box.
+ */
+export function memberSweeps(m: Member, center: PlanCenter): Corner[][] | null {
+  const plies = m.shape === "i_joist" && !m.elevation_profile && !m.section_ring
+    ? seatedIJoistParts(m, center) : null;
+  if (plies) return plies;
+  const one = elevationProfileVertices(m, center)
+    ?? seatedProfileVertices(m, center) ?? sectionRingVertices(m, center);
+  return one ? [one] : null;
+}
+
+/** Sutherland-Hodgman against one half-plane, `inside(q) >= 0`; the plane is linear in q. */
+function clipBand(points: [number, number][], inside: (q: [number, number]) => number) {
+  const out: [number, number][] = [];
+  points.forEach((q, i) => {
+    const prev = points[(i + points.length - 1) % points.length];
+    const fq = inside(q), fp = inside(prev);
+    if ((fq >= 0) !== (fp >= 0)) {
+      const t = fp / (fp - fq);
+      out.push([prev[0] + (q[0] - prev[0]) * t, prev[1] + (q[1] - prev[1]) * t]);
+    }
+    if (fq >= 0) out.push(q);
+  });
+  return out;
 }
 
 /**

@@ -8,7 +8,7 @@
 //      the exact 8-vertex box (vertical ends, sloped top/bottom), mirroring
 //      emit/gltf/emitter.py's add_member_box so the 3D panel and the glTF agree.
 //   3. I-joists -> three InstancedMeshes (top flange, bottom flange, web) on the member's
-//      axis; a seated one (birdsmouth) takes the notched sweep via the raked merge.
+//      axis; a seated one (birdsmouth) takes three notched plies via the raked merge.
 //   4. Open-web floor trusses -> chords + end blocks + diagonal webs (three/floorTruss.ts).
 //   5. Roof trusses -> a fink inside the member's envelope (three/roofTruss.ts).
 //   6. Formed trim (drip edge, corner trim, gutter) -> the raked merge again, one mesh per
@@ -31,9 +31,8 @@ import {
   metalDepthTier, metalPanelProfileForFinish, panelTileSizeM, SEAM_PROFILE,
 } from "./materials";
 import {
-  composeCenteredBoxMatrix, composeMemberBoxMatrix, elevationProfileVertices,
-  isRakedMember, isVerticalMember,
-  MIN_EXTENT_M, pushBoxIndices, pushSweepIndices, rakedBoxVertices, sectionRingVertices,
+  composeCenteredBoxMatrix, composeMemberBoxMatrix, isRakedMember, isVerticalMember,
+  memberSweeps, MIN_EXTENT_M, pushBoxIndices, pushSweepIndices, rakedBoxVertices,
   seatedProfileVertices, TRIANGLES_PER_MEMBER_BOX, UNIT_BOX,
 } from "./memberBox";
 import {
@@ -340,33 +339,33 @@ function buildRectInstances(group: THREE.Group, members: Member[], center: PlanC
   group.add(mesh);
 }
 
-// Exact 8-vertex raked box: vertical ends, sloped top/bottom — mirrors
-// emit/gltf/emitter.py's add_member_box. One merged geometry (vertex colors) per trade.
+// Exact 8-vertex raked box (vertical ends, sloped top/bottom; emitter.py's add_member_box)
+// or a member's sweeps (→ memberSweeps). One merged geometry (vertex colors) per trade.
 function buildRakedMesh(group: THREE.Group, members: Member[], center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette, ownerUid: string,
   materials?: readonly MaterialAppearance[], offset?: ReturnType<typeof metalDepthTier>) {
   if (!members.length) return;
-  const positions: number[] = [];
-  const indices: number[] = [];
-  const colors: number[] = [];
+  const positions: number[] = [], indices: number[] = [], colors: number[] = [];
   const drawn: Member[] = [];
   // Prefix sums of the triangles each member contributed. A birdsmouthed rafter is not a
   // 12-triangle box, so picking cannot divide by a constant (→ memberPicking.ts).
   const triangleStarts: number[] = [0];
   for (const m of members) {
-    const seated = elevationProfileVertices(m, center)
-      ?? seatedProfileVertices(m, center) ?? sectionRingVertices(m, center);
-    const verts = seated ?? rakedBoxVertices(m, center);
-    if (!verts) continue;
-    const base = positions.length / 3;
+    const sweeps = memberSweeps(m, center);
+    const box = sweeps ? null : rakedBoxVertices(m, center);
+    if (!sweeps && !box) continue;
     const col = new THREE.Color(memberColor(m, palette, materials));
-    for (const v of verts) {
-      positions.push(v[0], v[1], v[2]);
-      colors.push(col.r, col.g, col.b);
+    let triangles = 0;
+    for (const verts of sweeps ?? [box!]) {
+      const base = positions.length / 3;
+      for (const v of verts) {
+        positions.push(v[0], v[1], v[2]);
+        colors.push(col.r, col.g, col.b);
+      }
+      triangles += sweeps
+        ? pushSweepIndices(indices, base, verts.length / 2, verts)
+        : (pushBoxIndices(indices, base), TRIANGLES_PER_MEMBER_BOX);
     }
-    const triangles = seated
-      ? pushSweepIndices(indices, base, verts.length / 2, verts)
-      : (pushBoxIndices(indices, base), TRIANGLES_PER_MEMBER_BOX);
     triangleStarts.push(triangleStarts[triangleStarts.length - 1] + triangles);
     drawn.push(m);
   }

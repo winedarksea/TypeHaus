@@ -18,8 +18,8 @@ A flat plane (a deck overhead, or a room sitting under a truss roof's flat botto
 gets a ``ResolvedSolid`` too, which is what makes it render — the same
 ``ResolvedSoffit``/``ResolvedSolid`` split :mod:`typehaus.resolve.envelope` already uses
 for a dropped ceiling. A room whose ceiling follows a sloped roof
-(``Room.ceiling=FollowRoof(...)``) has no single flat plane to draw, so only the layer
-stack is carried, for the checks and the takeoff that read it.
+(``Room.ceiling=FollowRoof(...)``) has no single flat plane, so only the layer stack is
+carried here; :mod:`typehaus.resolve.roof_linings` draws its sloped board.
 
 **A room is not guaranteed one ceiling.** Where two decks meet inside a room, each hangs
 its own board at its own elevation, so the room resolves one record per deck region

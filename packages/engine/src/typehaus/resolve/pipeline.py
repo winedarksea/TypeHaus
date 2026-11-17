@@ -178,6 +178,10 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         findings.extend(resolve_rooms(plan, model))
         # After resolve_rooms: needs each room's clear face to hang a ceiling under.
         resolve_ceilings(plan, model)
+        # A rafter roof's bay fill and sloped ceilings, drawn (derived: billed off the stacks).
+        from typehaus.resolve.roof_linings import resolve_roof_linings
+
+        pass  # resolve_roof_linings(model)
         from typehaus.resolve.passage_seat import mark_seated_passages
 
         mark_seated_passages(model)

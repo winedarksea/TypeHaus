@@ -228,19 +228,31 @@ def test_a_deck_opening_is_not_ceilinged_over(catlin_model) -> None:
             assert solid is None or Polygon(solid.outline).intersection(well).area < 1e-3
 
 
-def test_a_sloped_follow_roof_ceiling_resolves_layers_but_no_flat_solid(catlin_model) -> None:
-    """``RM-A-STUDIO`` follows ``RF-HOUSE``'s slope (``Room.ceiling=FollowRoof(...)``)
-    — there is no single flat plane to draw, so the layer stack resolves for the BOM/checks
-    but no ``ResolvedSolid`` is emitted for it.
+def test_a_sloped_follow_roof_ceiling_draws_its_board_on_the_rafter_soffit(catlin_model) -> None:
+    """``RM-A-STUDIO`` follows ``RF-HOUSE``'s slope (``Room.ceiling=FollowRoof(...)``): the
+    record has no flat plane, and its board is a derived solid (``resolve/roof_linings.py``)
+    hung from the rafter soffit, as deep as the gypsum plumb, never billed off the solid.
 
     ``RM-A-STUDIO`` carries uid ``CAR401AAAA`` across its retypes — retyping in place rather
     than authoring a new room keeps the same roof, the same ``FollowRoof``, the same branch.
     """
+    from typehaus.resolve.roof_geometry import (
+        roof_height_at,
+        roof_slope_factor,
+        roof_structure_plumb_depth_m,
+    )
+
     ceiling = _ceiling(catlin_model, "RM-A-STUDIO")
     assert ceiling is not None
     assert ceiling.layers  # RF-HOUSE's default_lining (paint + gwb)
     assert ceiling.z0_m is None and ceiling.z1_m is None
-    assert _solid(catlin_model, ceiling.tag) is None
+    solid = _solid(catlin_model, ceiling.tag)
+    assert solid is not None and solid.derived and solid.body_mesh is not None
+    roof = next(r for r in catlin_model.roofs if r.tag == "RF-HOUSE")
+    board = 0.625 * 0.0254 * roof_slope_factor(roof)
+    for x, y, z in solid.body_mesh.positions:
+        soffit = roof_height_at(roof, (x, y)) - roof_structure_plumb_depth_m(catlin_model, roof)
+        assert min(abs(z - soffit), abs(z - (soffit - board))) < 1e-6, (x, y, z)
 
 
 def test_a_chase_a_wall_fills_is_not_a_void_in_the_ceiling() -> None:
