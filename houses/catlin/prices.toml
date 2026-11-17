@@ -2524,6 +2524,14 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "ED-T-HP-STAT" = { material = { low = 130, high = 200 }, labour = { low = 60, high = 150 } }  # 1 ea, Aqara W200 on 24 VAC
 "ED-T-ALARM-RELAY-SMOKE" = { material = { low = 40, high = 80 }, labour = { low = 45, high = 95 } }  # 1 ea, SM120X + 4" box
 "ED-T-ALARM-RELAY-CO" = { material = { low = 50, high = 90 }, labour = { low = 45, high = 95 } }  # 1 ea, CO120X + 4" box
+# Alarm heads by type (Alarm.type_ref, 2026-11-17). The Kidde heads keep the lump's old
+# $45-80 + $35-75 per device; the battery sensors are estimates, NOT read off a retailer, and
+# the owner pairs them (labour is placement only).
+"ED-T-ALARM-COMBO-KIDDE" = { material = { low = 45, high = 80 }, labour = { low = 35, high = 75 } }  # 10 ea, 30CUA10-V
+"ED-T-ALARM-SMOKE-KIDDE" = { material = { low = 25, high = 45 }, labour = { low = 35, high = 75 } }  # 1 ea, 20SA10
+"ED-T-ALARM-HEAT-KIDDE" = { material = { low = 30, high = 55 }, labour = { low = 35, high = 75 } }  # 2 ea, HD135F
+"ED-T-LEAK-SNZB05P" = { material = { low = 12, high = 22 }, labour = { low = 0, high = 5 } }  # 16 ea
+"ED-T-FREEZE-ARRE" = { material = { low = 25, high = 40 }, labour = { low = 0, high = 5 } }  # 1 ea
 "APPL-BROAN-BWP1304SS" = { material = { low = 150, high = 600 }, labour = { low = 100, high = 300 } }  # 1 ea
 # Named LG products, priced 2026-08-24 off LG.com plus the retailer checks in the research
 # note. Low is the observed street/promo price, high is LG's own MSRP — the honest spread
@@ -7699,7 +7707,7 @@ concrete-window-bucks-and-blockouts = { low = 250, high = 600, unit = "ea", driv
 # loop in the stone, the 4" riser from slab to roof, its penetration and sealing, and the
 # labelling. Back to an undriven lump because that scope is a stack, not an area — one riser
 # whatever the slab does. The fan, monitor and commissioning are already the
-# `electrical-radon-fan-smoke-co-and-commissioning` row below and are NOT here.
+# `electrical-radon-fan-commissioning` row below and are NOT here.
 radon-passive-pipe-and-stack = { low = 900, high = 2200 }
 # ** ANSWERED 2026-08-20: SUMMER POUR, so this is ZERO. ** Foundation and suspended deck go in
 # May-Oct. The row is kept at zero rather than deleted, because it is the reminder of what a
@@ -8259,11 +8267,11 @@ plumbing-wall-hung-wc-carrier = { material = { low = 420, high = 900 }, labour =
 # Ex. / 215.18 require (CKT-SPD, CKT-SPD-2, CKT-SPD-BACKUP, one per feeder panel) now bill
 # by count in `electrical-spd-plug-on` above, and the $100-250 + $100-250 SPD line is out of
 # the build-up below, so nothing bills twice. The key dropped "surge" with it.
-# 2026-10-29 build-up ($2,450-8,000 -> $1,900-4,300): radon fan $190-350 + wiring/switch/gauge $150-400; 13 hardwired
-# smoke/CO/heat devices (plan Alarms: 10 combo, 1 smoke, 2 heat; ONE Kidde hardwired line, 2026-10-30: 30CUA10-V combo,
-# 20SA10 smoke, HD135F heat — Alarm has no product_ref, so the line is named here) @ $45-80 mat + $35-75 labour = $1,040-2,015;
-# commissioning/labelling $300-1,000. 2026-11-07: -$200-500 (the SPD) -> $1,700-3,800.
-electrical-radon-fan-smoke-co-and-commissioning = { low = 1700, high = 3800 }
+# ** THE 13 KIDDE HEADS LEFT THIS LUMP 2026-11-17. ** Each Alarm now names its type and bills
+# by count in [placeables] (ED-T-ALARM-*-KIDDE), so the $1,040-2,015 head share is out below.
+# 2026-10-29 build-up: radon fan $190-350 + wiring/switch/gauge $150-400; commissioning/
+# labelling $300-1,000. 2026-11-07: -$200-500 (the SPD). 2026-11-17: -$1,040-2,015 -> $660-1,785.
+electrical-radon-fan-commissioning = { low = 660, high = 1785 }
 # Separate from the building permit, which is in the soft-cost row below.
 permits-mep = { low = 1500, high = 4000 }
 

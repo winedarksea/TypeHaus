@@ -61,6 +61,7 @@ from typehaus.model.placeable_symbols._led_controller import (
 )
 from typehaus.model.placeable_symbols._led_driver_jbox import diode_odx_j
 from typehaus.model.placeable_symbols._led_driver_potted import meanwell_hlg_100h
+from typehaus.model.placeable_symbols._pan_tilt_camera import reolink_omvi_3i_ceiling
 from typehaus.model.placeable_symbols._sektion_kitchen import KITCHEN_SEKTION_SYMBOLS
 from typehaus.model.placeable_symbols._sheet_metal_plenum import plenum_parts, sheet_metal_plenum
 from typehaus.model.placeable_symbols._sunnersta import sunnersta_frame
@@ -97,6 +98,7 @@ _REGISTRY: dict[str, Builder] = {**FURNITURE_SYMBOLS, **APPLIANCE_SYMBOLS, **PLU
                                  "infrared-heater": infrared_heater,
                                  "ceramic-fan-heater": ceramic_fan_heater,
                                  "thermostat": thermostat,
+                                 "reolink-omvi-3i-ceiling": reolink_omvi_3i_ceiling,
                                  "unifi-u6-pro-ceiling": unifi_u6_pro_ceiling,
                                  "unifi-u6-pro-wall": unifi_u6_pro_wall,
                                  "insinkerator-badger-5": badger_disposal,
@@ -170,6 +172,7 @@ SYMBOL_NAMES = (UNIFI_ACCESS_POINT_SYMBOLS
     "gree-flexx-ultra-24-outdoor",
     "infrared-heater", "fireplace-insert", "ceramic-fan-heater",
     "disconnect", "meter", "junction-box", "spd", "thermostat",
+    "reolink-omvi-3i-ceiling",
     # LED drivers and controllers, back on the mounting surface
     "meanwell-hlg-100h", "diode-odx-j", "gledopto-gl-c-001p", "ikea-tradfri-driver",
     "nema-4x-box",

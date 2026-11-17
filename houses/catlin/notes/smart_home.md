@@ -70,7 +70,7 @@ session at setup is allowed. Instances: `plan/smart_home.py`; types and products
 | Backyard camera | `ED-M-CAM-PORCH` | Reolink Omvi 3i PoE (owner, 2026-11-02), PoE+ 20 W | RTSP stream to HA (local): not in the core `reolink` integration's tested, certified or incompatible lists, and Reolink lists RTSP/RTMP/HTTP(S) but not ONVIF (both pages read 2026-11-07) | none | records to microSD | one 802.3at switch port; try core `reolink` first, keep RTSP as the fallback |
 | Canopy camera | `ED-BW-CAM-CANOPY` | Reolink Duo 3 PoE | core `reolink` | none | records to microSD | none |
 | Garage opener | `APPL-G-GDO` | LiftMaster 87504-267 (Security+ 2.0) + ratgdo32 | ESPHome (local push) | none; MyQ never set up | wall button and remotes | learn button colour (confirm yellow on arrival); head size is from reposted guides |
-| Smoke/CO/heat | `AL-*` (13) | Kidde hardwired interconnect | relay dry contacts into an isolated input in `ED-B-BACKUP-ENCL` | none | interconnect sounds every alarm | confirm part numbers on kidde.com |
+| Smoke/CO/heat | `AL-*` (13) | Kidde hardwired interconnect | relay dry contacts into an isolated input in `ED-B-BACKUP-ENCL` | none | interconnect sounds every alarm | confirm part numbers on kidde.com (typed `ED-T-ALARM-*-KIDDE`) |
 | EVSE | `APPL-G-EVSE` | Grizzl-E Smart 40 A, hardwired | OCPP 1.6J to HACS `ocpp` (local push) | none | charges at the DIP-set amps | the Smart's own UL file; 1.6J vs 1.6 |
 | HP1 thermostat | `ED-S-HP-STAT` | Aqara W200 | Matter over Wi-Fi (local push) | Aqara app for firmware | runs its schedule standalone | aux staging in HA (below) |
 | HP2/HP3 heads | `EQ-*-HP2-*`, `EQ-M-HP3-STAIR` | Gree built-in Wi-Fi | core `gree` (local polling) | Gree+ once, then WAN blocked | IR remote | GCM-encrypted firmware may not pair |
@@ -114,7 +114,7 @@ Reolink plug-in chime or an HA announcement; there is no mechanical chime.
 
 **Cameras.** Both record to their own microSD, and HA keeps events through the core
 integration. There is no NVR; Frigate is optional later.
-- The backyard Omvi 3i (202 x 151 x 125 mm, 1.3 kg, on its ceiling bracket) hangs under the
+- The backyard Omvi 3i (151 W x 125 D x 202 H mm, 1.3 kg, on its ceiling bracket) hangs under the
   balcony joists, south of the screen's front track, so its IR does not flare off the mesh.
   It is the only PoE+ load: the switch needs one 802.3at (30 W) port. Its Cat 6A is the second cable in `CD-M-DATA-PORCH`, and
   `CD-M-DATA-CAM-PORCH` then bores the balcony joists at mid-depth, so nothing crosses under
@@ -152,8 +152,9 @@ slab, so there is 3'-1" over the 7'-0" door: room for a standard-lift track and 
 
 The SM120X relay trips on smoke only, so the CO120X carries CO. Both sit under the backup
 enclosure (`ED-B-ALARM-RELAY-*`), and their contacts land on two isolated inputs of a Shelly or
-ESPHome board inside it. `Alarm` has no `product_ref`, so the line is named here and in the
-alarm price row.
+ESPHome board inside it. Each `Alarm` names its head by `type_ref` (`ED-T-ALARM-COMBO-KIDDE`,
+`-SMOKE-KIDDE`, `-HEAT-KIDDE`; leak `ED-T-LEAK-SNZB05P`, freeze `ED-T-FREEZE-ARRE`), so the
+heads bill by count in `[placeables]` and export as `IfcSensor`s.
 
 **EVSE.** The Emporia has no local API and no OCPP, and OpenEVSE appears not to be UL-listed.
 The Grizzl-E Smart is listed and speaks OCPP. Keep it off the internet, and point its OCPP

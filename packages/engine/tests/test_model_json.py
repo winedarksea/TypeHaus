@@ -517,3 +517,7 @@ def test_alarms_are_served_at_the_shared_alarm_point(catlin_model_ro, catlin_pay
     room = next(room for room in catlin_model_ro.rooms if room.tag == "RM-B-STAIR")
     assert leak["mount"] == "floor"
     assert leak["z"] == room_finished_floor_elevation(catlin_model_ro, room)
+    # The served body is the resolved one: on the floor, the head's type, its own height.
+    assert leak["type"] == "ED-T-LEAK-SNZB05P"
+    assert leak["solid"]["z0_m"] == pytest.approx(leak["z"], abs=1e-6)
+    assert leak["solid"]["z1_m"] - leak["solid"]["z0_m"] == pytest.approx(0.0216, abs=1e-5)

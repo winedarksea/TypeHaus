@@ -14,6 +14,7 @@ from typehaus import (
     ServicePort,
     ft,
     inch,
+    mm,
 )
 from typehaus.model import ModelRepresentation
 
@@ -155,10 +156,12 @@ DEVICE_TYPES = (
         footprint=(inch(1.875), inch(0.875)), height=inch(5.25),
         product_ref=REOLINK_DOORBELL.tag, poe_watts=12.95, source=REOLINK_DOORBELL.source,
         **_CAMERA),
+    # Product photo orientation: 202 mm high, 151 mm wide, 125 mm deep.
     # PoE+: the only port on ED-B-NET-PATCH's switch that needs 802.3at.
     ElectricalDeviceType(
         tag="ED-T-CAM-PANTILT", name="PoE+ pan-tilt camera, 180 deg (Reolink Omvi 3i)",
-        footprint=(inch(7.9375), inch(5.9375)), height=inch(4.9375),
+        footprint=(mm(151), mm(125)), height=mm(202),
+        model_representation=ModelRepresentation(symbol="reolink-omvi-3i-ceiling"),
         product_ref=REOLINK_OMVI_3I.tag, poe_watts=20.0, source=REOLINK_OMVI_3I.source,
         **_CAMERA),
     # Body 195 x 56 mm in plan; the depth carries the mount bracket under a beam soffit.
