@@ -1027,7 +1027,10 @@ class EquipmentType(FurnitureType, AirHandlingProductFacts, EquipmentElectricalF
 
 class RegisterType(FurnitureType, AirHandlingProductFacts):
     #: Explicit opt-in to shared physical terminal geometry.
-    face_style: Literal["rectangular_grille", "disc_valve"] | None = None
+    face_style: Literal["rectangular_grille", "disc_valve", "cast_scroll_grille"] | None = None
+    #: Finished surface to the room-facing edge of the modeled trim or disc.
+    face_projection: Length | None = None
+    disc_diameter: Length | None = None
     #: Nominal opening behind the flange; independent of any in-cavity neck.
     face_opening: tuple[Length, Length] | None = None
     double_deflection: bool = False

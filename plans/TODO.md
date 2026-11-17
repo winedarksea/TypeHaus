@@ -244,7 +244,7 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
 - Handrail and guardrail duplicated, RL-SG-PSTAIR-S and RL-SG-PSTAIR-HR, doesn't need the extra handrail, the guard doubles
 - Might need a second SL-S-KNEE-CAP for the partition wall
 - Model the LED junction boxes and power supply LED accurately to the products and dimensions
-- ERV terminals don't come out of the walls/floors/surfaces quite clearly enough, likely they protrude just a bit more
+- [x] ERV terminal trim projects into the room, with raised center discs on wall and ceiling valves and shallow cast scroll grilles on floors.
 - Door sills for exterior doors make sense
 - Condensate PR-M-COND-HP3-RUN goes through the studs of W-M-STRW, which is one wall that is exposed and we don't want to run the plumbing through (the data cable is probably fine there though)
 - [x] 3d model of the DoorScope (round DS2000 trim, recessed interior screen and exterior optics shared by viewer/GLB/IFC).

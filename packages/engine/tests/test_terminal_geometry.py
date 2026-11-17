@@ -17,6 +17,7 @@ from typehaus.resolve.terminal_geometry import (
     neck_mesh,
     resolve_terminal_faces,
     shell,
+    terminal_frame,
     tube,
 )
 from typehaus.solids3d.recorder import SolidRecorder
@@ -133,7 +134,7 @@ def test_faces_share_the_glb_and_json_mesh(catlin_model_ro):
     # Test the actual GLB drawing entrypoint, bypassing symbol rebuilding.
     model = catlin_model_ro
     context = CanvasDrawContext.of(model)
-    obj = next(o for o in model.canvas_objects if o.tag == "REG-M-XFER-MUD")
+    obj = next(o for o in model.canvas_objects if o.tag == "REG-M-SUP1")
     recorder = SolidRecorder()
     draw_canvas_object(recorder, obj, context)
     assert len(recorder.primitives) == 1
@@ -151,7 +152,7 @@ def test_ifc_keeps_terminal_identity_and_shared_mesh(catlin_ifc_path, catlin_mod
 
     model = catlin_model_ro
     file = ifcopenshell.open(str(catlin_ifc_path))
-    for tag in ("REG-M-XFER-MUD", "REG-M-SUP1", "REG-S-HP-STAIR"):
+    for tag in ("REG-M-XFER-MUD", "REG-M-SUP1", "REG-S-HP-STAIR", "REG-S-RET-BED1"):
         obj = next(o for o in model.canvas_objects if o.tag == tag)
         entity = next(e for e in file.by_type("IfcAirTerminal") if e.Name == tag)
         mesh = entity.Representation.Representations[0].Items[0]
@@ -165,6 +166,37 @@ def test_ifc_keeps_terminal_identity_and_shared_mesh(catlin_ifc_path, catlin_mod
         entity = next(e for e in file.by_type("IfcDuctFitting") if e.Name == tag)
         mesh = entity.Representation.Representations[0].Items[0]
         assert np.allclose(mesh.Coordinates.CoordList, solid.body_mesh.positions)
+
+
+@pytest.mark.parametrize("tag,projection_in", [
+    ("REG-M-SUP1", .625), ("REG-B-SUP1", .625), ("REG-B-SUP2", .55),
+    ("REG-M-RET-STUDY", .625), ("REG-S-RET-BED1", .1875), ("REG-S-EXH4", .1875),
+])
+def test_erv_trim_projects_into_the_room_with_openings(catlin_model_ro, tag, projection_in):
+    import trimesh
+
+    model = catlin_model_ro
+    obj = next(o for o in model.canvas_objects if o.tag == tag)
+    origin, across, up, into_host = terminal_frame(model, obj)
+    local = (np.array(obj.body_mesh.positions) - origin) @ np.array([across, up, into_host]).T
+    projection = inch(projection_in).meters
+    assert local[:, 2].min() == pytest.approx(-projection)
+    assert local[:, 2].max() == pytest.approx(0, abs=1e-9)
+    metal = trimesh.Trimesh(vertices=local, faces=obj.body_mesh.triangles, process=True)
+    assert metal.is_watertight and metal.is_winding_consistent
+
+    spec = next(t for t in model.plan.library.register_types if t.tag == obj.type_ref)
+    if spec.face_style == "disc_valve":
+        centre, rim = sorted(metal.split(), key=lambda part: part.bounds[0, 2])
+        assert centre.bounds[0, 2] < rim.bounds[0, 2] < 0
+        assert centre.extents[0] == pytest.approx(spec.disc_diameter.meters)
+        assert np.linalg.norm(rim.vertices[:, :2], axis=1).min() > centre.extents[0] / 2
+    else:
+        # The face has webbing at its center and open round cutouts to either side.
+        caps = [Polygon(metal.vertices[tri, :2]) for tri in metal.faces
+                if np.allclose(metal.vertices[tri, 2], -projection)]
+        assert any(cap.covers(Point(0, 0)) for cap in caps)
+        assert not any(cap.covers(Point(inch(1.7).meters, 0)) for cap in caps)
 
 
 def test_panel_cut_opens_its_back_paint_without_cutting_the_next_layer():

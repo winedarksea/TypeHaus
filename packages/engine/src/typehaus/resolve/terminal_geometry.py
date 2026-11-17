@@ -12,7 +12,9 @@ from dataclasses import dataclass, replace
 
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.connector_geometry.mesh import box_mesh, combine_meshes, transform_mesh
+from typehaus.resolve.geometry_ir import GMesh
 from typehaus.resolve.geometry_panel import panel
+from typehaus.resolve.terminal_scroll import scroll_openings
 
 
 @dataclass(frozen=True)
@@ -22,7 +24,7 @@ class TerminalVisualization:
     blade_pitch_m: float = 0.0254
     blade_chord_m: float = 0.0127
     blade_angle_degrees: float = 35.0
-    disc_radius_ratio: float = 0.76
+    disc_diameter_ratio: float = 0.60
     facets: int = 48
 
 
@@ -85,17 +87,54 @@ def shell(width, height, depth, section, inlet=None):
     return combine_meshes(*parts)
 
 
-def face_mesh(width, height, depth, style, double_deflection, opening=None):
+def _revolve(profile):
+    """Spin a closed (radius, depth) section, with single vertices at the poles."""
+    positions, rings, triangles = [], [], []
+    for radius, depth in profile:
+        ring = circle(2 * radius) if radius else ((0, 0),)
+        indices = tuple(range(len(positions), len(positions) + len(ring)))
+        positions.extend((x, y, depth) for x, y in ring)
+        rings.append(indices if radius else indices * VISUALIZATION.facets)
+    for front, back in zip(rings, rings[1:] + rings[:1], strict=True):
+        for i in range(VISUALIZATION.facets):
+            j = (i + 1) % VISUALIZATION.facets
+            if front[i] != front[j]:
+                triangles.append((front[i], front[j], back[j]))
+            if back[i] != back[j]:
+                triangles.append((front[i], back[j], back[i]))
+    return GMesh(positions=tuple(positions), triangles=tuple(triangles))
+
+
+def _disc_valve(diameter, depth, disc_diameter):
+    # Piecewise sections approximate the pressed steel profiles. The raised center
+    # and the turned inner edge leave a continuous annular opening around the baffle.
+    radius = diameter / 2
+    disc = (disc_diameter or diameter * VISUALIZATION.disc_diameter_ratio) / 2
+    if not 0 < disc < radius:
+        raise ValueError("valve disc must fit inside its casing")
+    span = radius - disc
+    throat = disc + 0.26 * span
+    rear = disc + 0.44 * span
+    rim = _revolve(((throat, depth * 0.67), (disc + 0.55 * span, depth * 0.49),
+                    (disc + 0.82 * span, depth * 0.42), (radius, depth * 0.56),
+                    (radius, depth), (rear, depth), (throat, depth * 0.81)))
+    spindle = min(VISUALIZATION.sheet_m * 2, disc / 4)
+    centre = _revolve(((0, 0), (disc * 0.55, depth * 0.02),
+                       (disc * 0.87, depth * 0.08), (disc, depth * 0.19),
+                       (disc, depth * 0.28), (spindle, depth * 0.28),
+                       (spindle, depth), (0, depth)))
+    return combine_meshes(rim, centre)
+
+
+def face_mesh(width, height, depth, style, double_deflection, opening=None,
+              disc_diameter=None):
+    if style == "disc_valve":
+        return _disc_valve(min(width, height), depth, disc_diameter)
+    if style == "cast_scroll_grille":
+        return panel(rectangle(width, height), scroll_openings(width, height), 0, depth,
+                     constrained=True)
     frame = min(VISUALIZATION.frame_m, width / 8, height / 8)
     thickness = min(VISUALIZATION.sheet_m, depth / 4)
-    if style == "disc_valve":
-        diameter = min(width, height)
-        rim = panel(circle(diameter), (circle(diameter - 2 * frame),), 0, thickness)
-        disc = panel(circle(diameter * VISUALIZATION.disc_radius_ratio), (),
-                     depth - thickness, depth)
-        # A central stem supports the disc while leaving the annular passage visible.
-        stem = block(-thickness, -thickness, 0, thickness, thickness, depth)
-        return combine_meshes(rim, disc, stem)
     inner_width, inner_height = opening or (width - 2 * frame, height - 2 * frame)
     if not (0 < inner_width < width and 0 < inner_height < height):
         raise ValueError("grille opening must fit inside its face")
@@ -155,11 +194,18 @@ def resolve_terminal_faces(model):
         width = catalog.footprint[0].meters
         height = catalog.height.meters if wall else catalog.footprint[1].meters
         depth = catalog.footprint[1].meters if wall else catalog.height.meters
+        # The face plane also locates the neck. Keep it fixed and draw authored
+        # trim into the room, independently of the legacy fit envelope.
+        projection = catalog.face_projection
+        if projection is not None:
+            depth = projection.meters
+        disc_diameter = catalog.disc_diameter
         mesh = face_mesh(width, height, depth, catalog.face_style,
                          catalog.double_deflection,
                          tuple(v.meters for v in catalog.face_opening)
-                         if catalog.face_opening is not None else None)
-        if wall:
+                         if catalog.face_opening is not None else None,
+                         disc_diameter.meters if disc_diameter is not None else None)
+        if wall or projection is not None:
             mesh = transform_mesh(mesh, (0, 0, -depth))
         model.canvas_objects[index] = replace(obj, body_mesh=transform_mesh(mesh, *frame))
 

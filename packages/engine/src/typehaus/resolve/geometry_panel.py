@@ -1,5 +1,6 @@
 """Closed horizontal sheet meshes with polygon openings, shared by equipment details."""
 
+from shapely import constrained_delaunay_triangles
 from shapely.geometry import Polygon
 from shapely.geometry.polygon import orient
 from shapely.ops import triangulate
@@ -8,7 +9,7 @@ from typehaus.resolve.connector_geometry.mesh import combine_meshes
 from typehaus.resolve.geometry_ir import GMesh
 
 
-def panel(outer, holes, bottom, top):
+def panel(outer, holes, bottom, top, *, constrained=False):
     """Closed sheet extrusion with real openings, in metres."""
     polygon = Polygon(outer)
     for hole in holes:
@@ -20,12 +21,12 @@ def panel(outer, holes, bottom, top):
     if polygon.geom_type == "MultiPolygon":
         return combine_meshes(*(panel(tuple(p.exterior.coords)[:-1],
                                      tuple(tuple(r.coords)[:-1] for r in p.interiors),
-                                     bottom, top) for p in polygon.geoms))
+                                     bottom, top, constrained=constrained) for p in polygon.geoms))
     polygon = orient(polygon, sign=1.0)
     positions, triangles = [], []
-    for triangle in triangulate(polygon):
-        if not polygon.covers(triangle):
-            continue
+    caps = (constrained_delaunay_triangles(polygon).geoms if constrained
+            else (triangle for triangle in triangulate(polygon) if polygon.covers(triangle)))
+    for triangle in caps:
         corners = tuple(orient(triangle, sign=1.0).exterior.coords)[:3]
         start = len(positions)
         positions.extend((x, y, z) for z in (bottom, top) for x, y in corners)

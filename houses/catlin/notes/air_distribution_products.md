@@ -50,20 +50,28 @@ run from above on a stock 90, `resolve/terminal_drops.py`).
   extrapolation and is labelled as one.
 - **Valves run near fully open**; balancing is at the plenum collar dampers (§8 of the
   budget). A valve is cleaned by pulling it from its collar; the lock ring keeps the setting.
-- **Wall valves** use the ceiling collar screwed to bay blocking: nobody sells a sidewall
-  collar. `REG-A-STUBATH-EXH` projects 1 3/4" (A117 §307.2 limit 4").
+- **Wall valves** use the ceiling collar screwed to bay blocking. The clearance envelope
+  retains 1 3/4" of projection. The 3D trim uses the
+  [Vents-US AM 100 VRF drawing](https://images.thdstatic.com/catalog/pdfImages/01/01631271-ed42-4a7d-918a-0440ebcf5e0e.pdf)
+  for the 2 15/16" center disc, with an estimated 5/8" of installed relief at the center.
+  The larger valve uses the
+  [TROX LVS 125 drawing](https://www.trox.be/en/downloads/5664c8e9bd27129a/LVS_PD_2026_07_09_DE_en.pdf)
+  for the profile and an estimated 0.55" of relief. Both meshes show the rounded rim and
+  the open annular gap around the center disc.
 - **125 mm on the one 30 cfm terminal** (`REG-B-SUP2`): a 100 mm valve lost 17.1 Pa there and
   governed the machine; the 125 mm on a 4x5 increaser loses 8.2 Pa (budget §10.2).
 - Not found: a stainless or aluminium valve sold retail (the plant room takes the
   powder-coated steel valve and a yearly clean), and supply-pattern published curves.
 
-## 3. ERV floor extracts — `REG-T-ERV-EXH-FLOOR` (5)
+## 3. ERV floor extracts — `REG-T-ERV-EXH-FLOOR`
 
 A disc valve cannot go in a floor. **Reggio 412-AH** 2 1/4x10 aluminium floor grille (~$30),
 or equal Reggio G412 / Shoemaker AFP, on a **2 1/4x10x4 stamped 90° boot** (Snappy P13-204 or
-equal). Face 12 x 3 1/2" outside (Ferguson 412-AH listing, 2026-10-31); the boot's 5" height
-is still an estimate — confirm it on the submittal (§13). Long side along the joist bay. Free area ~22 in² against the
-duct's 12.6, so the grille is not the restriction; loss stays the derived K 5.
+equal). The [Reggio 412 drawing](https://s3.amazonaws.com/rb-production/rgo/spec-sheet-cast-scroll.pdf)
+gives a 12 x 3 1/2" face and 3/16" cast plate. The visible face sits on the finished floor,
+with simplified scroll openings based on the drawing. The boot's 5" height is still an
+estimate to confirm on the submittal (§13). The long side follows the joist bay. The loss
+allowance remains the derived K 5.
 
 ## 4. System 1 aluminium family
 

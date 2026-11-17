@@ -27,6 +27,12 @@ from typehaus import (
 from typehaus.model import ProductPart
 
 _NOTE = "notes/air_distribution_products.md"
+# The VRF drawing dimensions the disc. The installed relief shown in the mesh is
+# an estimate for a valve set open, separate from the conservative fit envelope.
+_AM100_DISC = inch(2.9375)
+_AM100_FACE_PROJECTION = inch(0.625)
+_LVS125_DISC = inch(3.94)  # estimated from the proportions of the LVS 125 drawing
+_LVS125_FACE_PROJECTION = inch(0.55)  # estimated from the 9 mm rim and +5 mm setting
 
 
 def _port(tag: str, service: Service, z=None) -> ServicePort:
@@ -63,6 +69,7 @@ _OBD_NECK_0806 = TerminalNeck(section="rectangular",
 AIR_REGISTER_TYPES = (
     RegisterType(tag="REG-T-ERV-VALVE-SUP",
                  face_style="disc_valve",
+                 face_projection=_AM100_FACE_PROJECTION, disc_diameter=_AM100_DISC,
                  name="ERV supply disc valve, 100 mm, white steel, ceiling collar",
                  footprint=(inch(5.0625), inch(5.0625)), height=inch(1), plan_symbol="register",
                  ventilation_terminal=True, product_ref="PROD-AIR-DISC-VALVE-100",
@@ -76,6 +83,7 @@ AIR_REGISTER_TYPES = (
     # since 2026-11-10, like both basement supplies: (face width, projection), height.
     RegisterType(tag="REG-T-ERV-VALVE-SUP-125-WALL",
                  face_style="disc_valve",
+                 face_projection=_LVS125_FACE_PROJECTION, disc_diameter=_LVS125_DISC,
                  name="ERV supply disc valve, 125 mm, white steel, sidewall collar, 4x5in "
                       "increaser",
                  footprint=(inch(6.375), inch(1.75)), height=inch(6.375),
@@ -90,6 +98,7 @@ AIR_REGISTER_TYPES = (
                  ports=(_port("supply", Service.SUPPLY_AIR),)),
     RegisterType(tag="REG-T-ERV-VALVE-SUP-WALL",
                  face_style="disc_valve",
+                 face_projection=_AM100_FACE_PROJECTION, disc_diameter=_AM100_DISC,
                  name="ERV supply disc valve, 100 mm, white steel, sidewall collar",
                  footprint=(inch(5.0625), inch(1.75)), height=inch(5.0625),
                  plan_symbol="register", ventilation_terminal=True,
@@ -100,6 +109,7 @@ AIR_REGISTER_TYPES = (
                  ports=(_port("supply", Service.SUPPLY_AIR),)),
     RegisterType(tag="REG-T-ERV-VALVE-EXH",
                  face_style="disc_valve",
+                 face_projection=_AM100_FACE_PROJECTION, disc_diameter=_AM100_DISC,
                  name="ERV extract disc valve, 100 mm, white steel, ceiling collar",
                  footprint=(inch(5.0625), inch(5.0625)), height=inch(1), plan_symbol="register",
                  ventilation_terminal=True, product_ref="PROD-AIR-DISC-VALVE-100",
@@ -107,10 +117,11 @@ AIR_REGISTER_TYPES = (
                  source=f"Extract pattern of the supply valve; pull it from the collar to "
                         f"clean, lock ring holds the setting. {_NOTE} §2.",
                  ports=(_port("return", Service.RETURN_AIR),)),
-    # Wall type: (face width, projection), face height in `height`. 1 3/4in is the AM 100's
-    # published overall height, so A117 sec. 307.2's 4in at REG-A-STUBATH-EXH holds on it.
+    # Use the AM 100's overall height as the conservative wall projection for
+    # clearance checks. The modeled trim uses the installed relief above.
     RegisterType(tag="REG-T-ERV-VALVE-EXH-WALL",
                  face_style="disc_valve",
+                 face_projection=_AM100_FACE_PROJECTION, disc_diameter=_AM100_DISC,
                  name="ERV extract disc valve, 100 mm, white steel, sidewall collar",
                  footprint=(inch(5.0625), inch(1.75)), height=inch(5.0625),
                  plan_symbol="register", ventilation_terminal=True,
@@ -124,6 +135,7 @@ AIR_REGISTER_TYPES = (
     # A 1.5D round elbow cannot turn inside this 5 1/2in staggered wall cavity.
     RegisterType(tag="REG-T-ERV-SUITEBATH-WALL",
                  face_style="disc_valve",
+                 face_projection=_AM100_FACE_PROJECTION, disc_diameter=_AM100_DISC,
                  name="Suite bath 100 mm extract valve on TH-ERV-SUITEBATH-BOOT-01",
                  footprint=(inch(5.0625), inch(1.75)), height=inch(5.0625),
                  plan_symbol="register", ventilation_terminal=True,
@@ -143,6 +155,7 @@ AIR_REGISTER_TYPES = (
     # The same box turned over: a stack head for a riser dropping in a wall (REG-M-RET-STUDY).
     RegisterType(tag="REG-T-ERV-STACK-TOP-WALL",
                  face_style="disc_valve",
+                 face_projection=_AM100_FACE_PROJECTION, disc_diameter=_AM100_DISC,
                  name="100 mm extract valve on TH-ERV-STACK-TOP-BOOT-01",
                  footprint=(inch(5.0625), inch(1.75)), height=inch(5.0625),
                  plan_symbol="register", ventilation_terminal=True,
@@ -161,6 +174,7 @@ AIR_REGISTER_TYPES = (
     # The bottom-entry box 9in deep: the riser stands in the 2x6 leaf behind the 2x4 furring.
     RegisterType(tag="REG-T-ERV-STUBATH-WALL",
                  face_style="disc_valve",
+                 face_projection=_AM100_FACE_PROJECTION, disc_diameter=_AM100_DISC,
                  name="100 mm extract valve on TH-ERV-STUBATH-BOOT-01",
                  footprint=(inch(5.0625), inch(1.75)), height=inch(5.0625),
                  plan_symbol="register", ventilation_terminal=True,
@@ -179,7 +193,7 @@ AIR_REGISTER_TYPES = (
     # A disc valve cannot sit in a floor. Long side along the joist bay.
     RegisterType(tag="REG-T-ERV-EXH-FLOOR",
                  face_opening=(inch(10), inch(2.25)),
-                 face_style="rectangular_grille",
+                 face_style="cast_scroll_grille", face_projection=inch(0.1875),
                  name="ERV extract floor grille, 2 1/4x10 aluminium, on a 4in-round boot",
                  footprint=(inch(12), inch(3.5)), height=inch(1), plan_symbol="register",
                  ventilation_terminal=True, product_ref="PROD-AIR-FLOOR-GRILLE-2X10",
