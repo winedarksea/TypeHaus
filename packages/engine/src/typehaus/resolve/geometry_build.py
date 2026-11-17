@@ -31,6 +31,7 @@ from typehaus.emit.finishes import (
 )
 from typehaus.emit.trade_rules import assembly_trades, layer_trades, solid_trades
 from typehaus.resolve.assembly_material import solid_material_ref
+from typehaus.resolve.cladding_trim.corner_closures import clear_of_closures, corner_closures
 from typehaus.resolve.geometry_ir import (
     ElementGeometry,
     GBox,
@@ -94,7 +95,7 @@ def _member_parts(members: tuple[FramedMember, ...] | list[FramedMember]) -> tup
     return tuple(parts)
 
 
-def _wall_geometry(wall: ResolvedWall, openings) -> ElementGeometry:
+def _wall_geometry(wall: ResolvedWall, openings, closures=None) -> ElementGeometry:
     """A wall's body: one part per depth-bearing layer, jamb-split around its openings.
 
     Every layer with a body of its own gets a part — which is ``body_layers()``, not
@@ -102,12 +103,16 @@ def _wall_geometry(wall: ResolvedWall, openings) -> ElementGeometry:
     accounting, and building from it left a brick plinth standing with its own field and
     bands missing above it. Cavity fill shares the structure layer's polygon, so a second
     solid there would only z-fight it, and neither list carries it.
+
+    ``closures`` maps a layer name to its corner C-Closures: the panel stops inside the C's
+    web, as its drawn skin does (``board_batten``).
     """
     parts: list[GPart] = []
     for layer in wall.body_layers():
         if not layer.polygon or layer.coating:
             continue  # a coating has no solid; the glTF draws it as a skin
-        solids = layer_solids(wall, layer.polygon, openings,
+        polygon = clear_of_closures(wall, layer, (closures or {}).get(layer.name))
+        solids = layer_solids(wall, polygon, openings,
                               band=layer.band(wall) if layer.is_banded else None,
                               layer_name=layer.name)
         if not solids:
@@ -338,8 +343,12 @@ def build_geometry(model: ResolvedModel) -> GeometryModel:
     for opening in model.openings:
         openings_by_wall.setdefault(opening.host_wall, []).append(opening)
     walls_by_tag = {wall.tag: wall for wall in model.walls}
+    closures: dict[str, dict[str, list]] = {}
+    for closure in corner_closures(model):
+        closures.setdefault(closure.wall_uid, {}).setdefault(closure.layer_name, []).append(closure)
     for wall in model.walls:
-        elements.append(_wall_geometry(wall, openings_by_wall.get(wall.tag, ())))
+        elements.append(_wall_geometry(wall, openings_by_wall.get(wall.tag, ()),
+                                       closures.get(wall.uid)))
 
     door_types = {dt.tag: dt for dt in model.plan.library.door_types}
     for opening in model.openings:
