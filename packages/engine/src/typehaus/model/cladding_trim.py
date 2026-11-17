@@ -6,6 +6,8 @@ from enum import Enum
 class TrimCondition(str, Enum):
     BASE = "base"
     OUTSIDE_CORNER = "outside_corner"
+    #: The panel's end under a wide outside corner, where the leg rides the closure's face.
+    CORNER_CLOSURE = "corner_closure"
     HORIZONTAL_JOINT = "horizontal_joint"
     EAVE_TOP = "eave_top"
     RAKE_TOP = "rake_top"
@@ -30,6 +32,7 @@ PBR_KIT = {
 }
 BBD_KIT = {
     TrimCondition.OUTSIDE_CORNER: "WIDE_OUTSIDE_CORNER",
+    TrimCondition.CORNER_CLOSURE: "BBD_C_CLOSURE",
     TrimCondition.BASE: "BBD_BASE",
     TrimCondition.RAKE_TOP: "6411499",
     TrimCondition.HORIZONTAL_JOINT: "BBD_TRANSITION",

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typehaus.library.trim.metal_sales import BBD_TRANSITION
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.cladding_trim.corner_closures import closures_for
 from typehaus.resolve.cladding_trim.members import split_stock_run
 from typehaus.resolve.cladding_trim.runs import cladding_face, subtract_spans
 from typehaus.resolve.cladding_trim.section import folded_section_mesh
@@ -11,13 +12,16 @@ from typehaus.resolve.metal_skin_profiles import SHEET_24_GA_M
 from typehaus.resolve.model import ResolvedSolid
 
 _PRODUCT = "BBD_TRANSITION"
+#: A band's end short of a corner C-Closure's return: under the 1/8" insect limit.
+CLOSURE_GAP_M = M_PER_IN / 16
 
 
 def band_spans(model, wall) -> list[tuple[float, float, float]]:
     """``(joint z, s0, s1)`` along a BBD75 band, in the cladding face's stations.
 
     Read off the assembly's authored ``panel_joint_elevations``. An opening framed through the
-    Transition Trim's height is left out: its own head detail governs there.
+    Transition Trim's height is left out: its own head detail governs there. At a corner
+    C-Closure the band stops 1/16" short of its return, the end under the corner's leg.
     """
     if not wall.assembly:
         return []
@@ -43,6 +47,9 @@ def band_spans(model, wall) -> list[tuple[float, float, float]]:
             cuts = [(a - course, b + course) for opening, a, b in face.openings(model)
                     if wall.base_ref_z_m + opening.sill_m - course < high
                     and wall.base_ref_z_m + opening.sill_m + opening.height_m + course > low]
+            cuts += [(min(face.lo, c.web_station), c.lip_station + CLOSURE_GAP_M) if c.inward > 0
+                     else (c.lip_station - CLOSURE_GAP_M, max(face.hi, c.web_station))
+                     for c in closures_for(model, wall, layer.name)]
             spans += [(joint, a, b) for a, b in subtract_spans(face.lo, face.hi, cuts)]
     return spans
 

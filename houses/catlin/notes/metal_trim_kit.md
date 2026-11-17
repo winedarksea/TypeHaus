@@ -26,9 +26,9 @@ otherwise stated; standard stock is 10 ft 2 in unless a different length is stat
 | PBR base | 1.25 in Base 58138XX raised 1 in over the K2 Z-flashing; panel end on a perforated strip (6460800 is the fallback, taped both faces) | PBR p. 69, adapted (wall base stack) |
 | BBD75 base | Vertical Base Trim 55545XX raised 1 in over the K2 Z-flashing; panel end on a perforated strip, no C-Closure | BBD75 p. 22, open and drained |
 | Corrugated base | 1.25 in Base over the aluminium stem Z (`TR-G-STEMZ-*`), profile-matched vented closure | Corrugated P7/8-3 |
-| House outside corner | Wide Outside Corner 58132XX (10 ft 2 in) or 58136XX (20 ft 3 in), 5.5 in legs; PBR-to-BBD75, one leg on each face; C-Closure on BBD75 side | PBR and BBD75 corner details, BBD75 pp. 30–31 |
+| House outside corner | Wide Outside Corner 58132XX (10 ft 2 in) or 58136XX (20 ft 3 in), 5.5 in legs; PBR-to-BBD75, one leg on each face. The BBD75 panel ends in a C-Closure 55548XX (base on the girt plane, web on the PBR back plane, return 1 in out); the corner's BBD75 leg rides the C's face 1 in off the panel back, riveted to it, the fold on the PBR rib tops. The C runs the BBD75 side's full height, lapped sticks (3 per corner) | PBR and BBD75 corner details, BBD75 pp. 30–31 |
 | Garage corner | Corrugated Outside Corner | Corrugated manual |
-| BBD75 horizontal joint | Transition Trim 55536XX, pop rivets at 12 in o.c.; the cavity's vented outlet (below) | BBD75 p. 40 |
+| BBD75 horizontal joint | Transition Trim 55536XX, pop rivets at 12 in o.c.; the cavity's vented outlet (below). At a house corner it stops 1/16 in short of the C-Closure's return, its end ~3 in under the corner leg (face 0.996 in, behind the leg on the C at 1 in): no notch, no field bend. A project application of pp. 30 and 40, which publish no intersection; no new parts | BBD75 p. 40 |
 | PBR under eave | Inside closure flush with panel top under box gutter | PBR p. 46 |
 | BBD75 under rake | Universal Closure 6411499 taped to slope-cut panel, covered by rake face | PBR p. 61 method |
 | Corrugated under soffit | 1.5 in Sill to Soffit | Corrugated manual |
@@ -105,7 +105,7 @@ sills and heads are not outlets (owner, 2026-10-28).
   a strip there lay face-up on the shelf in the rain and held water under the panel's cut edge
   (owner, 2026-10-31). The batten ends stay open.
 - Trim and strip both skip an opening framed through the trim's height; at +19'-0" none is.
-  Seven walls, 74.4 LF of outlet.
+  Seven walls, 73.6 LF of outlet: trim and strip stop 1/16 in short of each corner C-Closure.
 
 ### Strip bearing (owner, 2026-10-29)
 

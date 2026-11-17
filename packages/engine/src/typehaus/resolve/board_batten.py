@@ -16,6 +16,7 @@ import math
 from dataclasses import replace
 from functools import lru_cache
 
+from typehaus.resolve.cladding_trim.corner_closures import clear_of_closures, corner_closures
 from typehaus.resolve.geometry_ir import GMesh
 from typehaus.resolve.geometry_members import member_box
 from typehaus.resolve.geometry_prims import (
@@ -287,6 +288,9 @@ def resolve_profiled_metal_surfaces(model) -> None:
     }
     walls = {wall.uid: wall for wall in model.walls}
     support_clearances = {}
+    closures = {}
+    for closure in corner_closures(model):
+        closures.setdefault((closure.wall_uid, closure.layer_name), []).append(closure)
 
     def profile_for(ref):
         return PANEL_PROFILES.get(finishes.get(ref))
@@ -321,8 +325,10 @@ def resolve_profiled_metal_surfaces(model) -> None:
                 clearance = panel_support_clearance_m(model, wall, layer)
                 support_clearances[wall.uid, layer.material_ref] = clearance
                 segments = joint_segments(wall, layer, profile, z0, z1)
+                # Draw-only: the billed layer keeps its polygon.
+                polygon = clear_of_closures(wall, layer, closures.get((wall.uid, layer.name)))
                 meshes = [profile_mesh(
-                    wall, layer.polygon, bottom, top, lines.get(wall.tag, wall.axis),
+                    wall, polygon, bottom, top, lines.get(wall.tag, wall.axis),
                     openings=[op for op in model.openings if op.host_wall == wall.tag],
                     layer_name=layer.name,
                     upper_at=lambda x, y, w=wall: body_top_at(w, x, y),
