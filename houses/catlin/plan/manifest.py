@@ -50,7 +50,7 @@ from plan import (air_terminal_types, appliance_types, assemblies, bath_finish, 
                   plant_reservoir, plant_reservoir_types, plant_room, plant_room_types, plant_types, plate_ties, porch_lighting,
                   opening_products, paint, products, products_paint, smart_home, smart_home_types,
                   workshop_fume, workshop_fume_types,
-                  sauna, sauna_types, site, study_bridge, titanium_types, transitions, views,
+                  sauna, sauna_control_types, sauna_types, site, study_bridge, titanium_types, transitions, views,
                   wall_top_ties, wind_clamps, window_stools, window_types)
 from plan import framing_charts, french_door_installations
 from plan.storeys import attic, attic_studio, basement, garage, main, second
@@ -152,6 +152,7 @@ _library = Library(
     electrical_device_types=(*ALL_ELECTRICAL_DEVICE_TYPES, *panel_types.PANEL_TYPES,
                              *mep.ELECTRICAL_DEVICE_TYPES,
                              *electrical.DEVICE_TYPES, *electrical_floor_types.DEVICE_TYPES,
+                             *sauna_control_types.SAUNA_CONTROL_TYPES,
                              *device_types.DEVICE_TYPES, *grounding_types.GROUNDING_DEVICE_TYPES, *smart_home_types.DEVICE_TYPES,
                              *lighting_types.LIGHTING_TYPES, *mirror_types.MIRROR_LIGHT_TYPES),
     circuits=circuits.CIRCUITS,

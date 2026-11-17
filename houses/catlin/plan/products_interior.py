@@ -214,10 +214,14 @@ HARVIA_CILINDRO_PC110E = Product(
            "HL90E that holds less than half the stone and is also undersized.",
 )
 HARVIA_XENIO_CX170 = Product(
-    tag="PROD-HARVIA-CX170", brand="Harvia", model="Xenio CX170",
+    tag="PROD-HARVIA-CX170", brand="Harvia", model="Xenio CX170-U1-15",
     name="Xenio CX170 sauna control unit",
     source="Harvia published specifications, read 2026-09-06. Mandatory with PC110E -- the "
-           "heater has no onboard control. Mounts OUTSIDE the hot room.",
+           "heater has no onboard control. Touch panel and separate power unit mount on "
+           "W-B-CS's dry gym face (ED-B-SAUNA-CONTROL / ED-B-SAUNA-POWER). US manual "
+           "02112021/Y05-0653 figure 6b: U1-15 supports the 10.5 kW single-feed heater; "
+           "the basic U1 supports only 7 kW with one feed. Kit cost remains included in "
+           "EQ-T-SAUNA-HEATER, not charged again for its two placed components.",
 )
 CARIITTI_FIBRE_KIT = Product(
     tag="PROD-CARIITTI-VPL30-G211", brand="Cariitti", model="Premium Glass Fiber 8-spot",

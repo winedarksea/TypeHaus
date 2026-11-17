@@ -66,7 +66,7 @@ EQUIPMENT_TYPES = (
                   plan_symbol="sauna-heater",
                   model_representation=ModelRepresentation(symbol="harvia-cilindro-pc110e"),
                   product_ref="PROD-HARVIA-PC110E",
-                  source="Harvia Cilindro PC110E, 10.5 kW at 240 V 1-phase, 43.75 A nominal, rated 141-636 cf, ETL listed, 16 x 15 x 45 in., 264 lb of stone. The Xenio CX170 control (PROD-HARVIA-CX170) is MANDATORY and mounts outside the hot room - there is no built-in-control variant of this heater.",
+                  source="Harvia Cilindro PC110E, 10.5 kW at 240 V 1-phase, 43.75 A nominal, rated 141-636 cf, ETL listed, 16 x 15 x 45 in., 264 lb of stone. The Xenio CX170-U1-15 control (PROD-HARVIA-CX170) is MANDATORY; ED-B-SAUNA-CONTROL and ED-B-SAUNA-POWER mount on W-B-CS's dry gym face outside the hot room. There is no built-in-control variant of this heater.",
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),)),
     # The ERV is EQ-T-BROAN-B210E75RT in plan/mep_erv_types.py — an ERV with a modeled intake and

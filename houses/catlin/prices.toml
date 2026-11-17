@@ -3177,6 +3177,10 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # low end is that package rather than the heater alone. Labour rises with the circuit: this
 # is a 60 A 2-pole home run in #6 THHN in conduit, not a 50 A NM-B pull.
 "EQ-T-SAUNA-HEATER" = { material = { low = 2970, high = 4200 }, labour = { low = 780, high = 1700 } }  # 1 ea
+# Placed Xenio kit components: procurement and installation are included in the heater
+# package above. Explicit zero rows prevent counting the mandatory controller twice.
+"ED-T-SAUNA-CONTROL" = { material = { low = 0, high = 0 }, labour = { low = 0, high = 0 } }
+"ED-T-SAUNA-POWER" = { material = { low = 0, high = 0 }, labour = { low = 0, high = 0 } }
 # One tank, not two (2026-08-15, replacing the two-row entry the old two-tank model
 # carried) — Rheem ProTerra 80gal PROPH80/XE80T10HS45U0 class, retail-listed $900-$1,300.
 # Library option only since removal 2026-11-02 (notes/bath2_shower.md §7): a 4" insulated inline

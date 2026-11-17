@@ -20,6 +20,7 @@ from typehaus.model.placeable_symbols._sauna_recliner import (
     profile_height_in,
 )
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.room_floor import room_finished_floor_elevation
 from typehaus.takeoff.lighting import PSU_SIZING_FACTOR
 from typehaus.takeoff.placeables import placeables_takeoff
 
@@ -335,3 +336,43 @@ def test_all_custom_seating_is_counted_and_priced_once(catlin_model_ro, catlin_p
     for tag in types:
         assert rows[tag]["count"] == 1
         assert tag in prices.placeables
+
+
+def test_xenio_controls_are_outside_hot_room_and_clear_of_existing_devices(catlin_model_ro):
+    model = catlin_model_ro
+    objects = {o.tag: o for o in model.canvas_objects}
+    elements = {e.tag: e for e in model.plan.all_elements()}
+    gym = next(r for r in model.rooms if r.tag == "RM-B-GYM")
+    sauna = next(r for r in model.rooms if r.tag == "RM-B-SAUNA")
+    prices = load_prices(HOUSE)
+    rows = {r["type"]: r for r in placeables_takeoff(model)}
+    for tag, base_inches in (("ED-B-SAUNA-CONTROL", 56), ("ED-B-SAUNA-POWER", 60)):
+        placed, element = objects[tag], elements[tag]
+        footprint = Polygon(placed.footprint)
+        assert Polygon(gym.clear_face).buffer(1e-6).covers(footprint)
+        assert footprint.intersection(Polygon(sauna.clear_face)).area < 1e-10
+        assert placed.body_z0_m - room_finished_floor_elevation(model, gym) == pytest.approx(
+            base_inches * M_PER_IN
+        )
+        assert element.room == "RM-B-GYM"
+        assert element.location.attachment.wall_ref == "W-B-CS"
+        assert element.location.attachment.face == "left"
+        assert not element.mount.recessed_into_host_surface
+        # Check full bodies, including door and towel bar, rather than plan rectangles alone.
+        for other in objects.values():
+            if other.tag == tag or other.storey != placed.storey:
+                continue
+            if placed.body_z0_m < other.body_z1_m and placed.body_z1_m > other.body_z0_m:
+                assert footprint.intersection(Polygon(other.footprint)).area < 1e-9, other.tag
+        assert rows[element.type_ref]["count"] == 1
+        assert prices.placeables[element.type_ref].material.high == 0
+        assert prices.placeables[element.type_ref].labour.high == 0
+    panel = elements["ED-B-SAUNA-CONTROL"]
+    power = elements["ED-B-SAUNA-POWER"]
+    assert panel.circuit is None
+    assert power.controlled_by == (panel.tag,)
+    assert power.circuit == elements["EQ-B-SAUNA-HTR"].circuit == "CKT-SAUNA"
+    types = {t.tag: t for t in model.plan.library.electrical_device_types}
+    assert types[power.type_ref].product_ref == "PROD-HARVIA-CX170"
+    assert types[power.type_ref].load_va is None
+    assert types[elements["ED-B-SAUNA-JB"].type_ref].load_va is None

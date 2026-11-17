@@ -91,7 +91,7 @@ MAIN_ELEMENTS = [
     # not flare off the mesh. Base = soffit (105.75") less the 202 mm body.
     ElectricalDevice(uid="VD453HW3G7", tag="ED-M-CAM-PORCH", kind=DeviceKind.DATA_OUTLET,
                      position=pt(ft(17, 6), ft(-9, -2.5)), type_ref="ED-T-CAM-PANTILT",
-                     mount=Mount(kind=MountKind.CEILING, elevation=inch(105.75) - mm(202))),
+                     mount=Mount(kind=MountKind.CEILING, elevation=mm(2484.05))),
     # A second Cat 6A in CD-M-DATA-PORCH, then this extension: up into the balcony joists
     # beside the AP and south through them (bored at mid-depth) so nothing crosses under
     # the screen track, then down to the camera.

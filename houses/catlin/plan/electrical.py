@@ -115,9 +115,8 @@ DEVICE_TYPES = (
     # The PV array's wall box: same NEMA 3R shell as ED-T-JBOX but on the 2-pole backfeed
     # circuit, so its port is 240V (circuit_refs reconciles poles against ports).
     # Sauna heaters are hard-wired: a 240V junction box at the heater corner, not a
-    # receptacle. 50A/2p circuit feeding the 9 kW EQ-B-SAUNA-HTR -> 9000 VA connected.
+    # receptacle. CKT-SAUNA feeds the Xenio power unit, then this box and the 10.5 kW heater.
     ElectricalDeviceType(tag="ED-T-SAUNA-JB", name="Sauna heater junction box, 240V",
-                          load_va=9000,
                           footprint=(inch(6), inch(6)), height=inch(4),
                           plan_symbol="junction-box",
                           ports=(ServicePort(tag="power", service=Service.POWER_240,
@@ -400,6 +399,23 @@ BASEMENT_EQUIPMENT = [
               position=pt(inch(199.75), inch(20.5)), footprint=(inch(18), inch(16)),
               room="RM-B-SAUNA", type_ref="EQ-T-SAUNA-HEATER", rotation=deg(270),
               circuit="CKT-SAUNA"),
+    # Dry gym face beside D-B-SAUNA, directly above the light dimmer. The panel's
+    # data cable terminates at the separate power unit; it has no branch circuit.
+    ElectricalDevice(uid="CSACTR0001", tag="ED-B-SAUNA-CONTROL", kind=DeviceKind.SWITCH,
+                     type_ref="ED-T-SAUNA-CONTROL", room="RM-B-GYM",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(56)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-B-CS", face="left", distance_from_start=inch(52.625),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+    # Same dry face, north of the panel and above the towel bar. Surface mounting
+    # preserves the power unit's cooling; do not recess it into the sauna partition.
+    ElectricalDevice(uid="CSAPWR0001", tag="ED-B-SAUNA-POWER", kind=DeviceKind.JUNCTION_BOX,
+                     type_ref="ED-T-SAUNA-POWER", room="RM-B-GYM", circuit="CKT-SAUNA",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(60)),
+                     controlled_by=("ED-B-SAUNA-CONTROL",),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-B-CS", face="left", distance_from_start=inch(12),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
 ]
 
 # --- Main storey: dryer, freezer, heat-pump condensers/heads + disconnects ------------
