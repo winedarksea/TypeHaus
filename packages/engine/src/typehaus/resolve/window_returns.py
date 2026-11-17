@@ -6,6 +6,9 @@ board instead, whatever the wall's finish: no beads, and its pieces go to the sl
 On a buck-lined (outie) opening the board runs on the buck's face all the way to the frame.
 The buck stands ``lining`` inside the framed jamb, so the stud-zone jamb and head are furred
 out by a 3/8" plywood rip to that plane, and the field board laps the step.
+
+Under a stool, a flat 2x packer on the full-depth buck sill carries it across the stud zone,
+and every room-side layer closes the strip from the RO sill up to the stool's underside.
 """
 
 from __future__ import annotations
@@ -34,6 +37,7 @@ from typehaus.resolve.model_window_returns import (
 _GEOMETRY_TOLERANCE_M = 1e-9
 _FUR_PREFIX = "buck-fur-"
 _FUR_MATERIAL = "struct-1-plywood"  # the buck's own stock
+_SHIM_GAP_M = 0.25 * 0.0254  # under a stool, this much or less is shims
 FinishStack = list[tuple[ResolvedLayer, bool]]
 
 
@@ -189,13 +193,16 @@ def _fit_return(wall: ResolvedWall, opening: ResolvedOpening,
     if depth <= _GEOMETRY_TOLERANCE_M:
         raise ValueError("window frame leaves no interior reveal depth")
     bottom = sill.z1_m
+    ro_sill = wall.base_ref_z_m + opening.sill_m
+    underside = None
     if stool is not None:
         prism = window_stool_prism(wall, opening, stool)
         if prism is None:
             raise ValueError("the authored stool has no fitted geometry")
         # A stool notched round the finished return leaves the board to run past it.
         bottom = prism.z0_m if stool.notch_inset_m > 0 else prism.z1_m
-    ro_head = wall.base_ref_z_m + opening.sill_m + opening.height_m
+        underside = prism.z0_m
+    ro_head = ro_sill + opening.height_m
     top = ro_head - lining if lining > _GEOMETRY_TOLERANCE_M else head.z1_m
     total = sum(layer.thickness_m for layer, _ in stack)
     inset = total + lining
@@ -288,12 +295,18 @@ def _fit_return(wall: ResolvedWall, opening: ResolvedOpening,
                                              layer.material_ref,
                                              layer.thickness_m, area, coating))
         remaining = backing
+    if underside is not None and underside - ro_sill > _GEOMETRY_TOLERANCE_M:
+        _sill_laps(wall, opening, quantities, solids, ring, lambda xy: sign * project(xy),
+                   ro_sill, underside)
     exposed_area = (depth * (2 * (top - total - bottom) + opening.width_m - 2 * inset)
                     + inset * (opening.width_m + 2 * (top - total - bottom)))
     fur = []
     if lining > _GEOMETRY_TOLERANCE_M and shell_face is not None:
         fur = _stud_zone_fur(wall, opening, point, normal, (face + total, shell_face),
                              bottom, ro_head)
+        if underside is not None:
+            fur.extend(_stool_packer(wall, opening, point, lambda xy: sign * project(xy),
+                                     ro_sill, underside))
     return ResolvedWindowReturn(
         uid=f"{opening.uid}-RETURN", tag=f"{opening.tag}-return",
         window_ref=opening.tag, wall_tag=wall.tag, storey=wall.storey,
@@ -332,3 +345,79 @@ def _stud_zone_fur(wall: ResolvedWall, opening: ResolvedOpening, point, normal,
             out.append(member(f"jamb-{side}", at, at, bottom, head_z, head_z - bottom,
                               orient=(normal[0], normal[1])))
     return out
+
+
+def _sill_laps(wall: ResolvedWall, opening: ResolvedOpening, quantities: list,
+               solids: list, ring, depth_of, ro_sill: float, underside: float) -> None:
+    """Each room-side layer, RO sill up to the stool's underside; it screws to the packer."""
+    width = opening.width_m
+    seen: set[tuple[str | None, float, float]] = set()
+    index = 0
+    for layer in wall.body_layers():
+        if layer.function == "structure":
+            break
+        low, high = layer.band(wall)
+        z0, z1 = max(ro_sill, low), min(underside, high)
+        key = (layer.slot or layer.name, low, high)
+        if z1 - z0 <= _GEOMETRY_TOLERANCE_M or key in seen or not layer.polygon:
+            continue
+        seen.add(key)  # a tee-split board's pieces share one slot and one band
+        depths = [depth_of(point) for point in layer.polygon]
+        if layer.thickness_m > 0:
+            solids.append(ResolvedSolid(
+                uid=f"{opening.uid}-RETURN-{index}-lap-sill",
+                tag=f"{opening.tag}-return-{index}-lap-sill", storey=wall.storey,
+                category="window_return", outline=ring(-width / 2, width / 2, min(depths),
+                                                       max(depths)),
+                z0_m=z0, z1_m=z1, material=layer.material_ref, host_ref=opening.tag))
+        index += 1
+        name = layer.source_layer_name or layer.name
+        coating = layer.thickness_m <= 0
+        at = next((i for i, q in enumerate(quantities)
+                   if q.name == name and q.material_ref == layer.material_ref), None)
+        if at is None:
+            quantities.append(WindowReturnLayer(name, layer.material_ref, layer.thickness_m,
+                                                width * (z1 - z0), coating))
+        else:
+            quantities[at] = replace(quantities[at],
+                                     area_m2=quantities[at].area_m2 + width * (z1 - z0))
+
+
+def _stool_packer(wall: ResolvedWall, opening: ResolvedOpening, point, depth_of,
+                  ro_sill: float, underside: float) -> list[FramedMember]:
+    """A flat 2x on the buck sill across the stud zone, its top flush with the pan's dam.
+
+    Cloned from the rough sill so it bills as framing lumber. A stool more than 1/4" above
+    it takes a second piece ripped to the remainder; less is shims. Bed the stool on the
+    packer and fasten into it, never through the dam or pan.
+    """
+    from typehaus.resolve.framing.truss_common import BUCK_THICKNESS_IN
+
+    zone = [depth_of(p) for layer in wall.depth_layers() if layer.function == "structure"
+            for p in layer.polygon]
+    half = opening.width_m / 2
+    centre = opening.center_along_m
+    rough = next((m for m in wall.members if m.category == "sill"
+                  and abs(m.z1_m - ro_sill) < 1e-4 and m.p0 != m.p1
+                  and abs(_station(wall, m) - centre) < half), None)
+    if not zone or rough is None:
+        return []
+    near, far = min(zone), max(zone)
+    mid = (near + far) / 2
+    z0 = ro_sill + BUCK_THICKNESS_IN * 0.0254
+    z1 = min(z0 + (rough.z1_m - rough.z0_m), underside)
+    out = []
+    for key, lo, hi in (("stool", z0, z1), ("stool-rip", z1, underside)):
+        if hi - lo <= (_GEOMETRY_TOLERANCE_M if key == "stool" else _SHIM_GAP_M):
+            continue
+        out.append(replace(rough, child_key=f"{_FUR_PREFIX}{key}-{opening.tag}",
+                           p0=point(-half, mid), p1=point(half, mid), z0_m=lo, z1_m=hi,
+                           length_m=2 * half, plan_width_m=far - near, z0_end_m=None,
+                           z1_end_m=None, elevation_profile=None, cut_length_m=None))
+    return out
+
+
+def _station(wall: ResolvedWall, member: FramedMember) -> float:
+    origin, tangent, _normal, _run = wall_frame(wall)
+    x, y = ((a + b) / 2 for a, b in zip(member.p0, member.p1, strict=True))
+    return (x - origin[0]) * tangent[0] + (y - origin[1]) * tangent[1]

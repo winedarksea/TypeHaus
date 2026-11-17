@@ -1147,6 +1147,62 @@
       "node": "polyline",
       "points": [
         [
+          6.000000000000001,
+          32.0
+        ],
+        [
+          6.5,
+          32.0
+        ],
+        [
+          6.5,
+          34.10863845144357
+        ],
+        [
+          6.000000000000001,
+          34.10863845144357
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMX303AAAA-RETURN-1-lap-sill",
+      "tag": "WIN-M-BED-S1-return-1-lap-sill"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          6.000000000000001,
+          32.0
+        ],
+        [
+          6.5,
+          32.0
+        ],
+        [
+          6.5,
+          34.10863845144357
+        ],
+        [
+          6.000000000000001,
+          34.10863845144357
+        ]
+      ],
+      "pattern": "gwb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "gwb"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           0.5,
           80.0
         ],
@@ -1543,11 +1599,11 @@
           32.0
         ],
         [
-          0.0,
+          6.000000000000001,
           32.0
         ],
         [
-          0.0,
+          6.000000000000001,
           32.375
         ],
         [
@@ -1571,11 +1627,11 @@
           32.0
         ],
         [
-          0.0,
+          6.000000000000001,
           32.0
         ],
         [
-          0.0,
+          6.000000000000001,
           32.375
         ],
         [
@@ -1645,6 +1701,62 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "struct-1-plywood"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          0.5,
+          32.375
+        ],
+        [
+          6.000000000000001,
+          32.375
+        ],
+        [
+          6.000000000000001,
+          33.875
+        ],
+        [
+          0.5,
+          33.875
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW101AAAA",
+      "tag": "buck-fur-stool-WIN-M-BED-S1"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          0.5,
+          32.375
+        ],
+        [
+          6.000000000000001,
+          32.375
+        ],
+        [
+          6.000000000000001,
+          33.875
+        ],
+        [
+          0.5,
+          33.875
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
     },
     {
       "space": "model",

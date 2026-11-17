@@ -16,9 +16,8 @@ def window_return_finish_rows(model: ResolvedModel) -> list[dict[str, object]]:
     billed = {reveal.uid for reveal, _ref, _t in countertop_returns(model)}
     areas: dict[tuple[str, float], float] = defaultdict(float)
     for reveal in model.window_returns:
-        if reveal.uid in billed:
-            continue
-        for layer in reveal.layers:
+        # A frame cut from a top bills there; the wall layers closing its sill strip bill here.
+        for layer in reveal.layers[1:] if reveal.uid in billed else reveal.layers:
             areas[(layer.material_ref, layer.thickness_m)] += layer.area_m2
     return [{"scope": "window return", "function": "finish", "material": material,
              "thickness_in": round(thickness / 0.0254, 3),

@@ -14397,6 +14397,62 @@
       "node": "polyline",
       "points": [
         [
+          425.50000000000006,
+          34.28125
+        ],
+        [
+          426.0,
+          34.28125
+        ],
+        [
+          426.0,
+          36.533589238845146
+        ],
+        [
+          425.50000000000006,
+          36.533589238845146
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "83YR1VW00D-RETURN-1-lap-sill",
+      "tag": "WIN-M-DINING-E-return-1-lap-sill"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          425.50000000000006,
+          34.28125
+        ],
+        [
+          426.0,
+          34.28125
+        ],
+        [
+          426.0,
+          36.533589238845146
+        ],
+        [
+          425.50000000000006,
+          36.533589238845146
+        ]
+      ],
+      "pattern": "gwb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "gwb"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           -31.15748031496063,
           -57.99999999999999
         ],

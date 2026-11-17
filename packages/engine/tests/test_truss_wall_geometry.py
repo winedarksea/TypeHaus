@@ -281,7 +281,12 @@ def test_the_buck_lines_the_rough_opening_out_to_the_truss_plane(swinburne_model
         bucks = [m for m in _by_category(wall, "buck")
                  if not m.child_key.startswith("buck-fur-")]
         assert len(bucks) == 4 * len(openings), wall.tag
-        assert all(m.profile == "5x0.375 panel" for m in bucks), wall.tag
+        # A window's sill board runs on in to the stud face: 5 1/2" + 1/2" + 5".
+        sills = [m for m in bucks if m.child_key.startswith("buck-sill-")]
+        windows = sum(op.kind == "window" for op in openings)
+        assert sum(m.profile == "11x0.375 panel" for m in sills) == windows, wall.tag
+        assert all(m.profile == "5x0.375 panel" for m in bucks
+                   if m.profile != "11x0.375 panel"), wall.tag
 
 
 def test_every_owned_truss_wall_l_corner_carries_a_clear_plywood_corner_cap(swinburne_model):

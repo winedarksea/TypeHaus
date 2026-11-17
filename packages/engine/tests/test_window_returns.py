@@ -139,7 +139,10 @@ def test_jambs_meet_the_actual_stool_top(return_model):
     stool = window_stool_prism(model.walls[0], model.openings[0], model.window_stools[0])
     assert stool is not None
     assert all(s.z0_m == pytest.approx(stool.z1_m) for s in model.solids if 'jamb' in s.tag)
-    assert all('sill' not in s.tag for s in model.solids)
+    # Three sides wrap the reveal; below the stool the board only closes the RO strip.
+    laps = [s for s in model.solids if 'sill' in s.tag]
+    assert laps and all(s.tag.endswith('lap-sill') and s.z1_m == pytest.approx(stool.z0_m)
+                        for s in laps)
 
 
 def test_wall_axis_reversal_and_rotation_preserve_physical_shape(return_model):

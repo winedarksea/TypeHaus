@@ -1,6 +1,6 @@
 """The two outside-room components of the mandatory Xenio controller kit."""
 
-from typehaus import ElectricalDeviceType, Service, ServicePort, inch
+from typehaus import ElectricalDeviceType, ModelRepresentation, Service, ServicePort, inch
 
 XENIO_MANUAL = (
     "Harvia CX170 US manual 02112021/Y05-0653, sections 1.2, 3.1, 3.2, figure 6b: "
@@ -12,7 +12,8 @@ SAUNA_CONTROL_TYPES = (
     ElectricalDeviceType(
         tag="ED-T-SAUNA-CONTROL", name="Harvia Xenio CX170 touch control panel",
         footprint=(inch(3.4), inch(1)), height=inch(4.4),
-        plan_symbol="switch", needs=frozenset(),
+        plan_symbol="switch", needs=frozenset(), device_box=False,
+        model_representation=ModelRepresentation(symbol="thermostat"),
         source=XENIO_MANUAL + "; low-voltage data cable to ED-B-SAUNA-POWER, no branch feed. "
         "Included in PROD-HARVIA-CX170 and the EQ-T-SAUNA-HEATER package price.",
     ),

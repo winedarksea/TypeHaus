@@ -118,6 +118,11 @@ class BandFrame:
         an outrigger, 6" behind the girts (whether that 6" is one tier on a 4-1/2" block or
         two tiers of 1-1/2") — so it is read off ``buck_depth`` rather than named, and the
         profile string follows the wall it is actually in.
+
+        A WINDOW's sill board runs on in over the rough sill to the stud layer's room face,
+        so it bears on the rough sill, the sheathing edge and the girt sill course rather
+        than floating its inner edge over foam. That board is also the stud zone's sill fur
+        (``window_returns`` packs the stool down onto it).
         """
         profile = panel_profile(self.buck_depth / 0.0254, BUCK_THICKNESS_IN)
         thickness = self.buck_thickness
@@ -126,17 +131,24 @@ class BandFrame:
         lo, hi = opening.center_along_m - half, opening.center_along_m + half
         z_sill = self.wall.base_ref_z_m + opening.sill_m
         z_head = z_sill + opening.height_m
-        p_a, p_b = self.point(lo, centre), self.point(hi, centre)
         out: list[FramedMember] = []
         # Head and sill line the RO from *inside* it, so the flashing above and the blocking
         # below land on the buck's back rather than clashing through it. A DOOR's sill board
         # lies flush with the rough sill instead: its pan runs level out over it, and a buck
         # standing 3/8" proud would dam the pan's front (``door_sill_drop``).
-        for name, z0 in (("head", z_head - thickness),
-                         ("sill", z_sill - door_sill_drop(opening, thickness))):
+        sill_profile, sill_centre = profile, centre
+        inner = self._structure_face() if opening.kind == "window" else None
+        mount = centre + self.buck_depth / 2.0
+        if inner is not None and mount - inner > self.buck_depth + _TOL:
+            sill_profile = panel_profile(round((mount - inner) / 0.0254, 4), BUCK_THICKNESS_IN)
+            sill_centre = (mount + inner) / 2.0
+        for name, z0, prof, at in (
+                ("head", z_head - thickness, profile, centre),
+                ("sill", z_sill - door_sill_drop(opening, thickness), sill_profile, sill_centre)):
             out.append(FramedMember(
-                self.wall.uid, f"buck-{name}-{index:03d}", BUCK_CATEGORY, profile,
-                p_a, p_b, z0, z0 + thickness, hi - lo, material="struct-1-plywood"))
+                self.wall.uid, f"buck-{name}-{index:03d}", BUCK_CATEGORY, prof,
+                self.point(lo, at), self.point(hi, at), z0, z0 + thickness, hi - lo,
+                material="struct-1-plywood"))
         z0, z1 = z_sill + thickness, z_head - thickness
         if z1 - z0 > _TOL:
             for side, jamb in enumerate((lo, hi)):
@@ -147,6 +159,14 @@ class BandFrame:
                     point, point, z0, z1, z1 - z0,
                     orient=self.across, material="struct-1-plywood"))
         return out
+
+    def _structure_face(self) -> float | None:
+        """The stud layer's room face, as a signed depth along ``across``."""
+        depths = [x * self.across[0] + y * self.across[1]
+                  for layer in self.wall.layers
+                  if layer.function == "structure" and not layer.is_cavity
+                  for x, y in layer.polygon]
+        return min(depths) if depths else None
 
 
 def door_sill_drop(opening: ResolvedOpening, thickness: float) -> float:

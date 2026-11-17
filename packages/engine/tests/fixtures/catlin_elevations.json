@@ -383,12 +383,18 @@
 "canvas_objects/ED-B-PLAY-N-SW/body_z0_m": -1.5926435,
 "canvas_objects/ED-B-PLAY-N-SW/body_z1_m": -1.5263495,
 "canvas_objects/ED-B-PLAY-N-SW/z_m": -1.5926435,
+"canvas_objects/ED-B-SAUNA-CONTROL/body_z0_m": -1.3382625,
+"canvas_objects/ED-B-SAUNA-CONTROL/body_z1_m": -1.2265025,
+"canvas_objects/ED-B-SAUNA-CONTROL/z_m": -1.3382625,
 "canvas_objects/ED-B-SAUNA-JB/body_z0_m": -2.3225125,
 "canvas_objects/ED-B-SAUNA-JB/body_z1_m": -2.2209125,
 "canvas_objects/ED-B-SAUNA-JB/z_m": -2.3225125,
 "canvas_objects/ED-B-SAUNA-LT-PSU/body_z0_m": -1.5605125,
 "canvas_objects/ED-B-SAUNA-LT-PSU/body_z1_m": -1.4655165,
 "canvas_objects/ED-B-SAUNA-LT-PSU/z_m": -1.5605125,
+"canvas_objects/ED-B-SAUNA-POWER/body_z0_m": -1.2366625,
+"canvas_objects/ED-B-SAUNA-POWER/body_z1_m": -0.9674225,
+"canvas_objects/ED-B-SAUNA-POWER/z_m": -1.2366625,
 "canvas_objects/ED-B-SAUNA-SW/body_z0_m": -1.5922625,
 "canvas_objects/ED-B-SAUNA-SW/body_z1_m": -1.5259685,
 "canvas_objects/ED-B-SAUNA-SW/z_m": -1.5922625,
@@ -4204,6 +4210,18 @@
 7.610475,
 8,
 "6fbb1099941b"
+],
+"geometry/03GPR9ZAA5::framing/member:buck-fur-stool-WIN-A-N1": [
+6.715125,
+6.753225,
+8,
+"b6b0d14e5cdb"
+],
+"geometry/03GPR9ZAA5::framing/member:buck-fur-stool-rip-WIN-A-N1": [
+6.753225,
+6.7691594,
+8,
+"5cb8d5b0b8bb"
 ],
 "geometry/03GPR9ZAA5::framing/member:buck-head-000": [
 7.610475,
@@ -8291,6 +8309,12 @@
 2,
 "0d7130815260"
 ],
+"geometry/82WVR597PA-RETURN-1-lap-sill/body": [
+1.0668,
+1.115762,
+2,
+"5dc040ca8315"
+],
 "geometry/82WVR597PA-flashing-perimeter/body": [
 0.9652,
 1.8684896,
@@ -8494,6 +8518,12 @@
 2.0799108,
 2,
 "259880e04a33"
+],
+"geometry/83YR1VW00D-RETURN-1-lap-sill/body": [
+0.8707438,
+0.9279532,
+2,
+"bdeb65f56995"
 ],
 "geometry/83YR1VW00D-flashing-perimeter/body": [
 0.7691438,
@@ -16577,6 +16607,24 @@
 8,
 "754800320752"
 ],
+"geometry/CAW102AAAA::framing/member:buck-fur-stool-WIN-A-S-JUL-W": [
+6.918325,
+6.956425,
+8,
+"a9d7b34d104e"
+],
+"geometry/CAW102AAAA::framing/member:buck-fur-stool-WIN-A-S2": [
+6.918325,
+6.956425,
+8,
+"a9d7b34d104e"
+],
+"geometry/CAW102AAAA::framing/member:buck-fur-stool-rip-WIN-A-S2": [
+6.956425,
+6.9723594,
+8,
+"1244a175e16a"
+],
 "geometry/CAW102AAAA::framing/member:buck-head-000": [
 7.508875,
 7.5184,
@@ -17201,6 +17249,24 @@
 8,
 "754800320752"
 ],
+"geometry/CAW103AAAA::framing/member:buck-fur-stool-WIN-A-S-JUL-E": [
+6.918325,
+6.956425,
+8,
+"a9d7b34d104e"
+],
+"geometry/CAW103AAAA::framing/member:buck-fur-stool-WIN-A-S3": [
+6.918325,
+6.956425,
+8,
+"a9d7b34d104e"
+],
+"geometry/CAW103AAAA::framing/member:buck-fur-stool-rip-WIN-A-S3": [
+6.956425,
+6.9723594,
+8,
+"1244a175e16a"
+],
 "geometry/CAW103AAAA::framing/member:buck-head-000": [
 7.508875,
 7.5184,
@@ -17818,6 +17884,18 @@
 7.610475,
 8,
 "3d07fd8965d5"
+],
+"geometry/CAW104AAAA::framing/member:buck-fur-stool-WIN-A-N2": [
+6.715125,
+6.753225,
+8,
+"b6b0d14e5cdb"
+],
+"geometry/CAW104AAAA::framing/member:buck-fur-stool-rip-WIN-A-N2": [
+6.753225,
+6.7621594,
+8,
+"803d71cb750d"
 ],
 "geometry/CAW104AAAA::framing/member:buck-head-000": [
 7.610475,
@@ -18761,6 +18839,12 @@
 2,
 "6b8767d78392"
 ],
+"geometry/CAX302AAAA-RETURN-1-lap-sill/body": [
+6.9088,
+6.9723594,
+2,
+"da6deabca5f9"
+],
 "geometry/CAX302AAAA-flashing-perimeter/body": [
 6.8072,
 7.7104896,
@@ -18868,6 +18952,12 @@
 7.508367,
 2,
 "6b8767d78392"
+],
+"geometry/CAX303AAAA-RETURN-1-lap-sill/body": [
+6.9088,
+6.9723594,
+2,
+"da6deabca5f9"
 ],
 "geometry/CAX303AAAA-flashing-perimeter/body": [
 6.8072,
@@ -18977,6 +19067,12 @@
 2,
 "26d8edc61f08"
 ],
+"geometry/CAX304AAAA-RETURN-1-lap-sill/body": [
+6.7056,
+6.7691594,
+2,
+"709172c8d374"
+],
 "geometry/CAX304AAAA-flashing-perimeter/body": [
 6.604,
 7.8120896,
@@ -19084,6 +19180,12 @@
 7.609967,
 2,
 "21c8fd392bc2"
+],
+"geometry/CAX305AAAA-RETURN-1-lap-sill/body": [
+6.7056,
+6.7621594,
+2,
+"c679b1378bd1"
 ],
 "geometry/CAX305AAAA-flashing-perimeter/body": [
 6.604,
@@ -19199,6 +19301,12 @@
 2,
 "a4bbcaa486c2"
 ],
+"geometry/CAX311AAAA-RETURN-1-lap-sill/body": [
+6.9088,
+6.9623594,
+2,
+"5f3df4213c3b"
+],
 "geometry/CAX311AAAA-flashing-perimeter/body": [
 6.8072,
 8.4724896,
@@ -19312,6 +19420,12 @@
 8.270367,
 2,
 "a4bbcaa486c2"
+],
+"geometry/CAX312AAAA-RETURN-1-lap-sill/body": [
+6.9088,
+6.9623594,
+2,
+"5f3df4213c3b"
 ],
 "geometry/CAX312AAAA-flashing-perimeter/body": [
 6.8072,
@@ -33317,6 +33431,18 @@
 8,
 "9f2a37d452c2"
 ],
+"geometry/CMW101AAAA::framing/member:buck-fur-stool-WIN-M-BED-S1": [
+0.822325,
+0.860425,
+8,
+"c36c2281c024"
+],
+"geometry/CMW101AAAA::framing/member:buck-fur-stool-WIN-M-BED-S2": [
+0.822325,
+0.860425,
+8,
+"c36c2281c024"
+],
 "geometry/CMW101AAAA::framing/member:buck-head-000": [
 2.022475,
 2.032,
@@ -34378,6 +34504,18 @@
 2.022475,
 8,
 "6e67ffbec7f6"
+],
+"geometry/CMW102AAAA::framing/member:buck-fur-stool-WIN-M-LIV-S1": [
+0.822325,
+0.860425,
+8,
+"c36c2281c024"
+],
+"geometry/CMW102AAAA::framing/member:buck-fur-stool-WIN-M-LIV-S2": [
+0.822325,
+0.860425,
+8,
+"c36c2281c024"
 ],
 "geometry/CMW102AAAA::framing/member:buck-head-000": [
 2.11455,
@@ -36149,6 +36287,36 @@
 8,
 "f3cb50222081"
 ],
+"geometry/CMW103AAAA::framing/member:buck-fur-stool-WIN-M-DINING-E": [
+0.8802688,
+0.9183688,
+8,
+"73a937527c14"
+],
+"geometry/CMW103AAAA::framing/member:buck-fur-stool-WIN-M-KIT-E": [
+1.076325,
+1.114425,
+8,
+"560d9f0182ff"
+],
+"geometry/CMW103AAAA::framing/member:buck-fur-stool-WIN-M-LIV-E1": [
+0.8802688,
+0.9183688,
+8,
+"73a937527c14"
+],
+"geometry/CMW103AAAA::framing/member:buck-fur-stool-WIN-M-LIV-E2": [
+0.8802688,
+0.9183688,
+8,
+"73a937527c14"
+],
+"geometry/CMW103AAAA::framing/member:buck-fur-stool-rip-WIN-M-DINING-E": [
+0.9183688,
+0.9279532,
+8,
+"17845be02d7b"
+],
 "geometry/CMW103AAAA::framing/member:buck-head-000": [
 2.0804188,
 2.0899438,
@@ -37493,6 +37661,18 @@
 8,
 "9bcb32f11eb2"
 ],
+"geometry/CMW105AAAA::framing/member:buck-fur-stool-WIN-M-KITCH": [
+1.076325,
+1.114425,
+8,
+"560d9f0182ff"
+],
+"geometry/CMW105AAAA::framing/member:buck-fur-stool-WIN-M-KITCH-N": [
+1.076325,
+1.114425,
+8,
+"560d9f0182ff"
+],
 "geometry/CMW105AAAA::framing/member:buck-head-000": [
 1.971675,
 1.9812,
@@ -38687,6 +38867,18 @@
 8,
 "e2d8d0b9723d"
 ],
+"geometry/CMW108AAAA::framing/member:buck-fur-stool-WIN-M-MUD": [
+1.076325,
+1.114425,
+8,
+"560d9f0182ff"
+],
+"geometry/CMW108AAAA::framing/member:buck-fur-stool-rip-WIN-M-MUD": [
+1.114425,
+1.1303594,
+8,
+"851f47ed5ccf"
+],
 "geometry/CMW108AAAA::framing/member:buck-head-000": [
 1.666875,
 1.6764,
@@ -39058,6 +39250,12 @@
 1.666875,
 8,
 "fc77c8952799"
+],
+"geometry/CMW109AAAA::framing/member:buck-fur-stool-WIN-M-BATH1-W": [
+1.076325,
+1.114425,
+8,
+"560d9f0182ff"
 ],
 "geometry/CMW109AAAA::framing/member:buck-head-000": [
 1.666875,
@@ -39604,6 +39802,18 @@
 1.819275,
 8,
 "70ddcf84975a"
+],
+"geometry/CMW110AAAA::framing/member:buck-fur-stool-WIN-M-BATH2": [
+0.923925,
+0.962025,
+8,
+"bed23c7a5149"
+],
+"geometry/CMW110AAAA::framing/member:buck-fur-stool-rip-WIN-M-BATH2": [
+0.962025,
+0.9913706,
+8,
+"703afcc3a6d4"
 ],
 "geometry/CMW110AAAA::framing/member:buck-head-000": [
 1.819275,
@@ -40246,6 +40456,30 @@
 1.819275,
 8,
 "48426f5bf16a"
+],
+"geometry/CMW111AAAA::framing/member:buck-fur-stool-WIN-M-BED-W1": [
+0.923925,
+0.962025,
+8,
+"bed23c7a5149"
+],
+"geometry/CMW111AAAA::framing/member:buck-fur-stool-WIN-M-BED-W2": [
+0.923925,
+0.962025,
+8,
+"bed23c7a5149"
+],
+"geometry/CMW111AAAA::framing/member:buck-fur-stool-rip-WIN-M-BED-W1": [
+0.962025,
+0.9709594,
+8,
+"5af229d5fd7b"
+],
+"geometry/CMW111AAAA::framing/member:buck-fur-stool-rip-WIN-M-BED-W2": [
+0.962025,
+0.9709594,
+8,
+"5af229d5fd7b"
 ],
 "geometry/CMW111AAAA::framing/member:buck-head-000": [
 1.819275,
@@ -44351,6 +44585,12 @@
 2,
 "0185ffb75619"
 ],
+"geometry/CMX301AAAA-RETURN-1-lap-sill/body": [
+0.9144,
+0.9709594,
+2,
+"47b332ed2d29"
+],
 "geometry/CMX301AAAA-flashing-perimeter/body": [
 0.8128,
 2.0208896,
@@ -44458,6 +44698,12 @@
 1.818767,
 2,
 "0185ffb75619"
+],
+"geometry/CMX302AAAA-RETURN-1-lap-sill/body": [
+0.9144,
+0.9709594,
+2,
+"47b332ed2d29"
 ],
 "geometry/CMX302AAAA-flashing-perimeter/body": [
 0.8128,
@@ -44567,6 +44813,12 @@
 2,
 "9d81f77faada"
 ],
+"geometry/CMX303AAAA-RETURN-1-lap-sill/body": [
+0.8128,
+0.8663594,
+2,
+"63e66dda0d8a"
+],
 "geometry/CMX303AAAA-flashing-perimeter/body": [
 0.7112,
 2.2240896,
@@ -44674,6 +44926,12 @@
 2.021967,
 2,
 "9d81f77faada"
+],
+"geometry/CMX304AAAA-RETURN-1-lap-sill/body": [
+0.8128,
+0.8663594,
+2,
+"63e66dda0d8a"
 ],
 "geometry/CMX304AAAA-flashing-perimeter/body": [
 0.7112,
@@ -44783,6 +45041,12 @@
 2,
 "57f70c17fcc8"
 ],
+"geometry/CMX305AAAA-RETURN-1-lap-sill/body": [
+0.9144,
+0.9913706,
+2,
+"88dfad0ec687"
+],
 "geometry/CMX305AAAA-flashing-perimeter/body": [
 0.8128,
 2.0208896,
@@ -44885,6 +45149,12 @@
 2,
 "8ccffa1edf29"
 ],
+"geometry/CMX306AAAA-RETURN-1-lap-sill/body": [
+1.0668,
+1.1303594,
+2,
+"4b770e518628"
+],
 "geometry/CMX306AAAA-flashing-perimeter/body": [
 0.9652,
 1.8684896,
@@ -44986,6 +45256,12 @@
 2.021967,
 2,
 "720358de3887"
+],
+"geometry/CMX307AAAA-RETURN-1-lap-sill/body": [
+0.8128,
+0.8630094,
+2,
+"b68773219025"
 ],
 "geometry/CMX307AAAA-flashing-perimeter/body": [
 0.7112,
@@ -45095,6 +45371,12 @@
 2,
 "720358de3887"
 ],
+"geometry/CMX308AAAA-RETURN-1-lap-sill/body": [
+0.8128,
+0.8630094,
+2,
+"b68773219025"
+],
 "geometry/CMX308AAAA-flashing-perimeter/body": [
 0.7112,
 2.2240896,
@@ -45202,6 +45484,12 @@
 2.0799108,
 2,
 "0c1ade48b762"
+],
+"geometry/CMX309AAAA-RETURN-1-lap-sill/body": [
+0.8707438,
+0.9209532,
+2,
+"2446d80d610b"
 ],
 "geometry/CMX309AAAA-flashing-perimeter/body": [
 0.7691438,
@@ -45311,6 +45599,12 @@
 2,
 "0c1ade48b762"
 ],
+"geometry/CMX310AAAA-RETURN-1-lap-sill/body": [
+0.8707438,
+0.9209532,
+2,
+"2446d80d610b"
+],
 "geometry/CMX310AAAA-flashing-perimeter/body": [
 0.7691438,
 2.2820333,
@@ -45418,6 +45712,12 @@
 1.971167,
 2,
 "88a538204eb2"
+],
+"geometry/CMX313AAAA-RETURN-1-lap-sill/body": [
+1.0668,
+1.118762,
+2,
+"275f52f19e52"
 ],
 "geometry/CMX313AAAA-flashing-perimeter/body": [
 0.9652,
@@ -51053,6 +51353,42 @@
 8,
 "4d7ccc6fcdb7"
 ],
+"geometry/CSW101AAAA::framing/member:buck-fur-stool-WIN-S-PLANT1": [
+3.870325,
+3.908425,
+8,
+"7aaad262d099"
+],
+"geometry/CSW101AAAA::framing/member:buck-fur-stool-WIN-S-PLANT2": [
+3.870325,
+3.908425,
+8,
+"7aaad262d099"
+],
+"geometry/CSW101AAAA::framing/member:buck-fur-stool-WIN-S-PLANT4": [
+3.870325,
+3.908425,
+8,
+"7aaad262d099"
+],
+"geometry/CSW101AAAA::framing/member:buck-fur-stool-rip-WIN-S-PLANT1": [
+3.908425,
+3.9377706,
+8,
+"70218a67b5bd"
+],
+"geometry/CSW101AAAA::framing/member:buck-fur-stool-rip-WIN-S-PLANT2": [
+3.908425,
+3.9377706,
+8,
+"70218a67b5bd"
+],
+"geometry/CSW101AAAA::framing/member:buck-fur-stool-rip-WIN-S-PLANT4": [
+3.908425,
+3.9377706,
+8,
+"70218a67b5bd"
+],
 "geometry/CSW101AAAA::framing/member:buck-head-000": [
 5.070475,
 5.08,
@@ -52205,6 +52541,30 @@
 8,
 "f7e7bad0a770"
 ],
+"geometry/CSW102AAAA::framing/member:buck-fur-stool-WIN-S-STUDY1": [
+3.870325,
+3.908425,
+8,
+"7aaad262d099"
+],
+"geometry/CSW102AAAA::framing/member:buck-fur-stool-WIN-S-STUDY2": [
+3.870325,
+3.908425,
+8,
+"7aaad262d099"
+],
+"geometry/CSW102AAAA::framing/member:buck-fur-stool-rip-WIN-S-STUDY1": [
+3.908425,
+3.9173594,
+8,
+"2dca68f38b30"
+],
+"geometry/CSW102AAAA::framing/member:buck-fur-stool-rip-WIN-S-STUDY2": [
+3.908425,
+3.9173594,
+8,
+"2dca68f38b30"
+],
 "geometry/CSW102AAAA::framing/member:buck-head-000": [
 5.16255,
 5.172075,
@@ -52925,6 +53285,12 @@
 8,
 "d4952057e260"
 ],
+"geometry/CSW102BAAA::framing/member:buck-fur-stool-WIN-S-BED1": [
+3.971925,
+4.010025,
+8,
+"cdb61ed337c0"
+],
 "geometry/CSW102BAAA::framing/member:buck-head-000": [
 5.172075,
 5.1816,
@@ -53380,6 +53746,18 @@
 5.172075,
 8,
 "bae17495fea8"
+],
+"geometry/CSW103AAAA::framing/member:buck-fur-stool-WIN-S-STUDY3": [
+3.971925,
+4.010025,
+8,
+"cdb61ed337c0"
+],
+"geometry/CSW103AAAA::framing/member:buck-fur-stool-rip-WIN-S-STUDY3": [
+4.010025,
+4.0189594,
+8,
+"ba5ed6323eb7"
 ],
 "geometry/CSW103AAAA::framing/member:buck-head-000": [
 5.172075,
@@ -53860,6 +54238,12 @@
 5.172075,
 8,
 "d4952057e260"
+],
+"geometry/CSW104AAAA::framing/member:buck-fur-stool-WIN-S-BED2": [
+3.971925,
+4.010025,
+8,
+"cdb61ed337c0"
 ],
 "geometry/CSW104AAAA::framing/member:buck-head-000": [
 5.172075,
@@ -54346,6 +54730,12 @@
 5.172075,
 8,
 "d4952057e260"
+],
+"geometry/CSW105AAAA::framing/member:buck-fur-stool-WIN-S-BED3": [
+3.971925,
+4.010025,
+8,
+"cdb61ed337c0"
 ],
 "geometry/CSW105AAAA::framing/member:buck-head-000": [
 5.172075,
@@ -54935,6 +55325,12 @@
 8,
 "783c4209f333"
 ],
+"geometry/CSW107AAAA::framing/member:buck-fur-stool-WIN-S-HALL-N": [
+4.073525,
+4.111625,
+8,
+"40e0f7c64792"
+],
 "geometry/CSW107AAAA::framing/member:buck-head-000": [
 5.273675,
 5.2832,
@@ -55402,6 +55798,18 @@
 5.273675,
 8,
 "012e7f914486"
+],
+"geometry/CSW108AAAA::framing/member:buck-fur-stool-WIN-S-STAIR-N": [
+4.073525,
+4.111625,
+8,
+"40e0f7c64792"
+],
+"geometry/CSW108AAAA::framing/member:buck-fur-stool-rip-WIN-S-STAIR-N": [
+4.111625,
+4.1275594,
+8,
+"bbfcdcb96417"
 ],
 "geometry/CSW108AAAA::framing/member:buck-head-000": [
 5.273675,
@@ -56093,6 +56501,18 @@
 8,
 "139822337cfe"
 ],
+"geometry/CSW110AAAA::framing/member:buck-fur-stool-WIN-S-BATH-W": [
+4.124325,
+4.162425,
+8,
+"db75c8cbffdd"
+],
+"geometry/CSW110AAAA::framing/member:buck-fur-stool-rip-WIN-S-BATH-W": [
+4.162425,
+4.1783594,
+8,
+"b870e5ab9165"
+],
 "geometry/CSW110AAAA::framing/member:buck-head-000": [
 4.714875,
 4.7244,
@@ -56434,6 +56854,18 @@
 4.714875,
 8,
 "139822337cfe"
+],
+"geometry/CSW111AAAA::framing/member:buck-fur-stool-WIN-S-VANITY-W": [
+4.124325,
+4.162425,
+8,
+"db75c8cbffdd"
+],
+"geometry/CSW111AAAA::framing/member:buck-fur-stool-rip-WIN-S-VANITY-W": [
+4.162425,
+4.1783594,
+8,
+"b870e5ab9165"
 ],
 "geometry/CSW111AAAA::framing/member:buck-head-000": [
 4.714875,
@@ -56926,6 +57358,18 @@
 5.108575,
 8,
 "3e8814fa2006"
+],
+"geometry/CSW112AAAA::framing/member:buck-fur-stool-WIN-S-SUITE1": [
+3.756025,
+3.794125,
+8,
+"4b409d960d11"
+],
+"geometry/CSW112AAAA::framing/member:buck-fur-stool-WIN-S-SUITE2": [
+3.756025,
+3.794125,
+8,
+"4b409d960d11"
 ],
 "geometry/CSW112AAAA::framing/member:buck-head-000": [
 5.108575,
@@ -57514,6 +57958,18 @@
 5.108575,
 8,
 "4148f363dfdf"
+],
+"geometry/CSW113AAAA::framing/member:buck-fur-stool-WIN-S-PLANT3": [
+3.756025,
+3.794125,
+8,
+"4b409d960d11"
+],
+"geometry/CSW113AAAA::framing/member:buck-fur-stool-rip-WIN-S-PLANT3": [
+3.794125,
+3.8234706,
+8,
+"bd809e9c957a"
 ],
 "geometry/CSW113AAAA::framing/member:buck-head-000": [
 5.108575,
@@ -62579,6 +63035,12 @@
 2,
 "82a4fa31cfa1"
 ],
+"geometry/CSX301AAAA-RETURN-1-lap-sill/body": [
+3.9624,
+4.0159594,
+2,
+"b031ba82d506"
+],
 "geometry/CSX301AAAA-flashing-perimeter/body": [
 3.8608,
 5.3736896,
@@ -62692,6 +63154,12 @@
 5.171567,
 2,
 "82a4fa31cfa1"
+],
+"geometry/CSX302AAAA-RETURN-1-lap-sill/body": [
+3.9624,
+4.0159594,
+2,
+"b031ba82d506"
 ],
 "geometry/CSX302AAAA-flashing-perimeter/body": [
 3.8608,
@@ -62807,6 +63275,12 @@
 2,
 "82a4fa31cfa1"
 ],
+"geometry/CSX303AAAA-RETURN-1-lap-sill/body": [
+3.9624,
+4.0159594,
+2,
+"b031ba82d506"
+],
 "geometry/CSX303AAAA-flashing-perimeter/body": [
 3.8608,
 5.3736896,
@@ -62921,6 +63395,12 @@
 2,
 "0677fbc2f1db"
 ],
+"geometry/CSX304AAAA-RETURN-1-lap-sill/body": [
+3.7465,
+3.8000594,
+2,
+"0291d233fc0d"
+],
 "geometry/CSX304AAAA-flashing-perimeter/body": [
 3.6449,
 5.3101896,
@@ -63028,6 +63508,12 @@
 5.108067,
 2,
 "0677fbc2f1db"
+],
+"geometry/CSX305AAAA-RETURN-1-lap-sill/body": [
+3.7465,
+3.8000594,
+2,
+"0291d233fc0d"
 ],
 "geometry/CSX305AAAA-flashing-perimeter/body": [
 3.6449,
@@ -63137,6 +63623,30 @@
 2,
 "121747c4e95d"
 ],
+"geometry/CSX306AAAA-RETURN-0-lap-sill/body": [
+3.8608,
+3.9377706,
+2,
+"bcc511f20a09"
+],
+"geometry/CSX306AAAA-RETURN-1-lap-sill/body": [
+3.8608,
+3.9377706,
+2,
+"bcc511f20a09"
+],
+"geometry/CSX306AAAA-RETURN-2-lap-sill/body": [
+3.8608,
+3.9377706,
+2,
+"bcc511f20a09"
+],
+"geometry/CSX306AAAA-RETURN-3-lap-sill/body": [
+3.8608,
+3.9377706,
+2,
+"bcc511f20a09"
+],
 "geometry/CSX306AAAA-flashing-perimeter/body": [
 3.7592,
 5.2720896,
@@ -63238,6 +63748,30 @@
 5.069967,
 2,
 "121747c4e95d"
+],
+"geometry/CSX307AAAA-RETURN-0-lap-sill/body": [
+3.8608,
+3.9377706,
+2,
+"bcc511f20a09"
+],
+"geometry/CSX307AAAA-RETURN-1-lap-sill/body": [
+3.8608,
+3.9377706,
+2,
+"bcc511f20a09"
+],
+"geometry/CSX307AAAA-RETURN-2-lap-sill/body": [
+3.8608,
+3.9377706,
+2,
+"bcc511f20a09"
+],
+"geometry/CSX307AAAA-RETURN-3-lap-sill/body": [
+3.8608,
+3.9377706,
+2,
+"bcc511f20a09"
 ],
 "geometry/CSX307AAAA-flashing-perimeter/body": [
 3.7592,
@@ -63341,6 +63875,30 @@
 2,
 "1375302c1b5c"
 ],
+"geometry/CSX308AAAA-RETURN-0-lap-sill/body": [
+3.7465,
+3.8234706,
+2,
+"8421f0643994"
+],
+"geometry/CSX308AAAA-RETURN-1-lap-sill/body": [
+3.7465,
+3.8234706,
+2,
+"8421f0643994"
+],
+"geometry/CSX308AAAA-RETURN-2-lap-sill/body": [
+3.7465,
+3.8234706,
+2,
+"8421f0643994"
+],
+"geometry/CSX308AAAA-RETURN-3-lap-sill/body": [
+3.7465,
+3.8234706,
+2,
+"8421f0643994"
+],
 "geometry/CSX308AAAA-flashing-perimeter/body": [
 3.6449,
 5.3101896,
@@ -63442,6 +64000,12 @@
 5.069967,
 2,
 "d6af1dbe401d"
+],
+"geometry/CSX309AAAA-RETURN-1-lap-sill/body": [
+3.8608,
+3.9173594,
+2,
+"6722fdf006f6"
 ],
 "geometry/CSX309AAAA-flashing-perimeter/body": [
 3.7592,
@@ -63557,6 +64121,12 @@
 2,
 "d6af1dbe401d"
 ],
+"geometry/CSX310AAAA-RETURN-1-lap-sill/body": [
+3.8608,
+3.9173594,
+2,
+"6722fdf006f6"
+],
 "geometry/CSX310AAAA-flashing-perimeter/body": [
 3.7592,
 5.2720896,
@@ -63671,6 +64241,12 @@
 2,
 "3f85c3d21f95"
 ],
+"geometry/CSX312AAAA-RETURN-1-lap-sill/body": [
+4.1148,
+4.1783594,
+2,
+"5e24bd66678a"
+],
 "geometry/CSX312AAAA-flashing-perimeter/body": [
 4.0132,
 4.9164896,
@@ -63772,6 +64348,12 @@
 5.273167,
 2,
 "9050d69d199b"
+],
+"geometry/CSX313AAAA-RETURN-1-lap-sill/body": [
+4.064,
+4.1175594,
+2,
+"1dc2ec07a6a6"
 ],
 "geometry/CSX313AAAA-flashing-perimeter/body": [
 3.9624,
@@ -63880,6 +64462,12 @@
 5.171567,
 2,
 "6a4f40df34fb"
+],
+"geometry/CSX314AAAA-RETURN-1-lap-sill/body": [
+3.9624,
+4.0189594,
+2,
+"f72a2b4b9296"
 ],
 "geometry/CSX314AAAA-flashing-perimeter/body": [
 3.8608,
@@ -63994,6 +64582,12 @@
 5.273167,
 2,
 "7016e977d750"
+],
+"geometry/CSX315AAAA-RETURN-1-lap-sill/body": [
+4.064,
+4.1275594,
+2,
+"02068a7a3719"
 ],
 "geometry/CSX315AAAA-flashing-perimeter/body": [
 3.9624,
@@ -64763,6 +65357,12 @@
 2,
 "9408de1f68e0"
 ],
+"geometry/FGWPV572DB-RETURN-1-lap-sill/body": [
+1.0668,
+1.1203594,
+2,
+"38fa758248bf"
+],
 "geometry/FGWPV572DB-flashing-perimeter/body": [
 0.9652,
 1.8684896,
@@ -64960,6 +65560,12 @@
 1.666367,
 2,
 "0d7130815260"
+],
+"geometry/G0Y75W9ZS1-RETURN-1-lap-sill/body": [
+1.0668,
+1.115762,
+2,
+"5dc040ca8315"
 ],
 "geometry/G0Y75W9ZS1-flashing-perimeter/body": [
 0.9652,
@@ -72995,6 +73601,12 @@
 2,
 "3f85c3d21f95"
 ],
+"geometry/RGC7QGVF7Y-RETURN-1-lap-sill/body": [
+4.1148,
+4.1783594,
+2,
+"5e24bd66678a"
+],
 "geometry/RGC7QGVF7Y-flashing-perimeter/body": [
 4.0132,
 4.9164896,
@@ -77111,6 +77723,30 @@
 2,
 "121747c4e95d"
 ],
+"geometry/T84MSZYSVQ-RETURN-0-lap-sill/body": [
+3.8608,
+3.9377706,
+2,
+"bcc511f20a09"
+],
+"geometry/T84MSZYSVQ-RETURN-1-lap-sill/body": [
+3.8608,
+3.9377706,
+2,
+"bcc511f20a09"
+],
+"geometry/T84MSZYSVQ-RETURN-2-lap-sill/body": [
+3.8608,
+3.9377706,
+2,
+"bcc511f20a09"
+],
+"geometry/T84MSZYSVQ-RETURN-3-lap-sill/body": [
+3.8608,
+3.9377706,
+2,
+"bcc511f20a09"
+],
 "geometry/T84MSZYSVQ-flashing-perimeter/body": [
 3.7592,
 5.2720896,
@@ -80354,6 +80990,18 @@
 7.610475,
 2,
 "f77eee701edb"
+],
+"member/03GPR9ZAA5/buck-fur-stool-WIN-A-N1": [
+6.715125,
+6.753225,
+2,
+"b9f3b6f6e864"
+],
+"member/03GPR9ZAA5/buck-fur-stool-rip-WIN-A-N1": [
+6.753225,
+6.7691594,
+2,
+"9d01802cf8de"
 ],
 "member/03GPR9ZAA5/buck-head-000": [
 7.610475,
@@ -86457,6 +87105,24 @@
 2,
 "b2fcd5f9bba3"
 ],
+"member/CAW102AAAA/buck-fur-stool-WIN-A-S-JUL-W": [
+6.918325,
+6.956425,
+2,
+"08cabaa1adc1"
+],
+"member/CAW102AAAA/buck-fur-stool-WIN-A-S2": [
+6.918325,
+6.956425,
+2,
+"08cabaa1adc1"
+],
+"member/CAW102AAAA/buck-fur-stool-rip-WIN-A-S2": [
+6.956425,
+6.9723594,
+2,
+"6b89c00a1d7f"
+],
 "member/CAW102AAAA/buck-head-000": [
 7.508875,
 7.5184,
@@ -87033,6 +87699,24 @@
 2,
 "b2fcd5f9bba3"
 ],
+"member/CAW103AAAA/buck-fur-stool-WIN-A-S-JUL-E": [
+6.918325,
+6.956425,
+2,
+"08cabaa1adc1"
+],
+"member/CAW103AAAA/buck-fur-stool-WIN-A-S3": [
+6.918325,
+6.956425,
+2,
+"08cabaa1adc1"
+],
+"member/CAW103AAAA/buck-fur-stool-rip-WIN-A-S3": [
+6.956425,
+6.9723594,
+2,
+"6b89c00a1d7f"
+],
 "member/CAW103AAAA/buck-head-000": [
 7.508875,
 7.5184,
@@ -87602,6 +88286,18 @@
 7.610475,
 2,
 "e3b1db03b893"
+],
+"member/CAW104AAAA/buck-fur-stool-WIN-A-N2": [
+6.715125,
+6.753225,
+2,
+"b9f3b6f6e864"
+],
+"member/CAW104AAAA/buck-fur-stool-rip-WIN-A-N2": [
+6.753225,
+6.7621594,
+2,
+"351a54bff7bb"
 ],
 "member/CAW104AAAA/buck-head-000": [
 7.610475,
@@ -92799,6 +93495,18 @@
 2,
 "4ce04b088173"
 ],
+"member/CMW101AAAA/buck-fur-stool-WIN-M-BED-S1": [
+0.822325,
+0.860425,
+2,
+"505a85f71e7e"
+],
+"member/CMW101AAAA/buck-fur-stool-WIN-M-BED-S2": [
+0.822325,
+0.860425,
+2,
+"505a85f71e7e"
+],
 "member/CMW101AAAA/buck-head-000": [
 2.022475,
 2.032,
@@ -93752,6 +94460,18 @@
 2.022475,
 2,
 "0272286324d6"
+],
+"member/CMW102AAAA/buck-fur-stool-WIN-M-LIV-S1": [
+0.822325,
+0.860425,
+2,
+"505a85f71e7e"
+],
+"member/CMW102AAAA/buck-fur-stool-WIN-M-LIV-S2": [
+0.822325,
+0.860425,
+2,
+"505a85f71e7e"
 ],
 "member/CMW102AAAA/buck-head-000": [
 2.11455,
@@ -95379,6 +96099,36 @@
 2,
 "5bdd2b16409c"
 ],
+"member/CMW103AAAA/buck-fur-stool-WIN-M-DINING-E": [
+0.8802688,
+0.9183688,
+2,
+"92da1b0f0dbf"
+],
+"member/CMW103AAAA/buck-fur-stool-WIN-M-KIT-E": [
+1.076325,
+1.114425,
+2,
+"f94ab08c01cc"
+],
+"member/CMW103AAAA/buck-fur-stool-WIN-M-LIV-E1": [
+0.8802688,
+0.9183688,
+2,
+"92da1b0f0dbf"
+],
+"member/CMW103AAAA/buck-fur-stool-WIN-M-LIV-E2": [
+0.8802688,
+0.9183688,
+2,
+"92da1b0f0dbf"
+],
+"member/CMW103AAAA/buck-fur-stool-rip-WIN-M-DINING-E": [
+0.9183688,
+0.9279532,
+2,
+"5033addac7a2"
+],
 "member/CMW103AAAA/buck-head-000": [
 2.0804188,
 2.0899438,
@@ -96621,6 +97371,18 @@
 2,
 "93652d4ee1e7"
 ],
+"member/CMW105AAAA/buck-fur-stool-WIN-M-KITCH": [
+1.076325,
+1.114425,
+2,
+"f94ab08c01cc"
+],
+"member/CMW105AAAA/buck-fur-stool-WIN-M-KITCH-N": [
+1.076325,
+1.114425,
+2,
+"f94ab08c01cc"
+],
 "member/CMW105AAAA/buck-head-000": [
 1.971675,
 1.9812,
@@ -97569,6 +98331,18 @@
 2,
 "e16866e78952"
 ],
+"member/CMW108AAAA/buck-fur-stool-WIN-M-MUD": [
+1.076325,
+1.114425,
+2,
+"f94ab08c01cc"
+],
+"member/CMW108AAAA/buck-fur-stool-rip-WIN-M-MUD": [
+1.114425,
+1.1303594,
+2,
+"c045cad94bde"
+],
 "member/CMW108AAAA/buck-head-000": [
 1.666875,
 1.6764,
@@ -97856,6 +98630,12 @@
 1.666875,
 2,
 "d69bfcc53efa"
+],
+"member/CMW109AAAA/buck-fur-stool-WIN-M-BATH1-W": [
+1.076325,
+1.114425,
+2,
+"f94ab08c01cc"
 ],
 "member/CMW109AAAA/buck-head-000": [
 1.666875,
@@ -98318,6 +99098,18 @@
 1.819275,
 2,
 "957be9a8cd82"
+],
+"member/CMW110AAAA/buck-fur-stool-WIN-M-BATH2": [
+0.923925,
+0.962025,
+2,
+"6a09230f96bd"
+],
+"member/CMW110AAAA/buck-fur-stool-rip-WIN-M-BATH2": [
+0.962025,
+0.9913706,
+2,
+"10cfaef60f49"
 ],
 "member/CMW110AAAA/buck-head-000": [
 1.819275,
@@ -98858,6 +99650,30 @@
 1.819275,
 2,
 "d870c18ff370"
+],
+"member/CMW111AAAA/buck-fur-stool-WIN-M-BED-W1": [
+0.923925,
+0.962025,
+2,
+"6a09230f96bd"
+],
+"member/CMW111AAAA/buck-fur-stool-WIN-M-BED-W2": [
+0.923925,
+0.962025,
+2,
+"6a09230f96bd"
+],
+"member/CMW111AAAA/buck-fur-stool-rip-WIN-M-BED-W1": [
+0.962025,
+0.9709594,
+2,
+"59c7aa76a69f"
+],
+"member/CMW111AAAA/buck-fur-stool-rip-WIN-M-BED-W2": [
+0.962025,
+0.9709594,
+2,
+"59c7aa76a69f"
 ],
 "member/CMW111AAAA/buck-head-000": [
 1.819275,
@@ -104889,6 +105705,42 @@
 2,
 "d1f6d617a619"
 ],
+"member/CSW101AAAA/buck-fur-stool-WIN-S-PLANT1": [
+3.870325,
+3.908425,
+2,
+"afef4adcdf11"
+],
+"member/CSW101AAAA/buck-fur-stool-WIN-S-PLANT2": [
+3.870325,
+3.908425,
+2,
+"afef4adcdf11"
+],
+"member/CSW101AAAA/buck-fur-stool-WIN-S-PLANT4": [
+3.870325,
+3.908425,
+2,
+"afef4adcdf11"
+],
+"member/CSW101AAAA/buck-fur-stool-rip-WIN-S-PLANT1": [
+3.908425,
+3.9377706,
+2,
+"774c4fe11914"
+],
+"member/CSW101AAAA/buck-fur-stool-rip-WIN-S-PLANT2": [
+3.908425,
+3.9377706,
+2,
+"774c4fe11914"
+],
+"member/CSW101AAAA/buck-fur-stool-rip-WIN-S-PLANT4": [
+3.908425,
+3.9377706,
+2,
+"774c4fe11914"
+],
 "member/CSW101AAAA/buck-head-000": [
 5.070475,
 5.08,
@@ -105963,6 +106815,30 @@
 2,
 "9726d6f02036"
 ],
+"member/CSW102AAAA/buck-fur-stool-WIN-S-STUDY1": [
+3.870325,
+3.908425,
+2,
+"afef4adcdf11"
+],
+"member/CSW102AAAA/buck-fur-stool-WIN-S-STUDY2": [
+3.870325,
+3.908425,
+2,
+"afef4adcdf11"
+],
+"member/CSW102AAAA/buck-fur-stool-rip-WIN-S-STUDY1": [
+3.908425,
+3.9173594,
+2,
+"6113a09d695d"
+],
+"member/CSW102AAAA/buck-fur-stool-rip-WIN-S-STUDY2": [
+3.908425,
+3.9173594,
+2,
+"6113a09d695d"
+],
 "member/CSW102AAAA/buck-head-000": [
 5.16255,
 5.172075,
@@ -106659,6 +107535,12 @@
 2,
 "f73e09e6d15f"
 ],
+"member/CSW102BAAA/buck-fur-stool-WIN-S-BED1": [
+3.971925,
+4.010025,
+2,
+"038e16ac1667"
+],
 "member/CSW102BAAA/buck-head-000": [
 5.172075,
 5.1816,
@@ -107096,6 +107978,18 @@
 5.172075,
 2,
 "a8790284177a"
+],
+"member/CSW103AAAA/buck-fur-stool-WIN-S-STUDY3": [
+3.971925,
+4.010025,
+2,
+"038e16ac1667"
+],
+"member/CSW103AAAA/buck-fur-stool-rip-WIN-S-STUDY3": [
+4.010025,
+4.0189594,
+2,
+"5119666b1937"
 ],
 "member/CSW103AAAA/buck-head-000": [
 5.172075,
@@ -107546,6 +108440,12 @@
 5.172075,
 2,
 "f73e09e6d15f"
+],
+"member/CSW104AAAA/buck-fur-stool-WIN-S-BED2": [
+3.971925,
+4.010025,
+2,
+"038e16ac1667"
 ],
 "member/CSW104AAAA/buck-head-000": [
 5.172075,
@@ -108008,6 +108908,12 @@
 5.172075,
 2,
 "f73e09e6d15f"
+],
+"member/CSW105AAAA/buck-fur-stool-WIN-S-BED3": [
+3.971925,
+4.010025,
+2,
+"038e16ac1667"
 ],
 "member/CSW105AAAA/buck-head-000": [
 5.172075,
@@ -108525,6 +109431,12 @@
 2,
 "906927fb9066"
 ],
+"member/CSW107AAAA/buck-fur-stool-WIN-S-HALL-N": [
+4.073525,
+4.111625,
+2,
+"34ab179a0956"
+],
 "member/CSW107AAAA/buck-head-000": [
 5.273675,
 5.2832,
@@ -108938,6 +109850,18 @@
 5.273675,
 2,
 "016d47c617bf"
+],
+"member/CSW108AAAA/buck-fur-stool-WIN-S-STAIR-N": [
+4.073525,
+4.111625,
+2,
+"34ab179a0956"
+],
+"member/CSW108AAAA/buck-fur-stool-rip-WIN-S-STAIR-N": [
+4.111625,
+4.1275594,
+2,
+"5bd1cf356dc0"
 ],
 "member/CSW108AAAA/buck-head-000": [
 5.273675,
@@ -109539,6 +110463,18 @@
 2,
 "9dab803523a7"
 ],
+"member/CSW110AAAA/buck-fur-stool-WIN-S-BATH-W": [
+4.124325,
+4.162425,
+2,
+"beb75653a333"
+],
+"member/CSW110AAAA/buck-fur-stool-rip-WIN-S-BATH-W": [
+4.162425,
+4.1783594,
+2,
+"9ec6bfa7588f"
+],
 "member/CSW110AAAA/buck-head-000": [
 4.714875,
 4.7244,
@@ -109850,6 +110786,18 @@
 4.714875,
 2,
 "9dab803523a7"
+],
+"member/CSW111AAAA/buck-fur-stool-WIN-S-VANITY-W": [
+4.124325,
+4.162425,
+2,
+"beb75653a333"
+],
+"member/CSW111AAAA/buck-fur-stool-rip-WIN-S-VANITY-W": [
+4.162425,
+4.1783594,
+2,
+"9ec6bfa7588f"
 ],
 "member/CSW111AAAA/buck-head-000": [
 4.714875,
@@ -110312,6 +111260,18 @@
 5.108575,
 2,
 "ee49bfbf94c7"
+],
+"member/CSW112AAAA/buck-fur-stool-WIN-S-SUITE1": [
+3.756025,
+3.794125,
+2,
+"f52df47bff99"
+],
+"member/CSW112AAAA/buck-fur-stool-WIN-S-SUITE2": [
+3.756025,
+3.794125,
+2,
+"f52df47bff99"
 ],
 "member/CSW112AAAA/buck-head-000": [
 5.108575,
@@ -110852,6 +111812,18 @@
 5.108575,
 2,
 "d86cf375c404"
+],
+"member/CSW113AAAA/buck-fur-stool-WIN-S-PLANT3": [
+3.756025,
+3.794125,
+2,
+"f52df47bff99"
+],
+"member/CSW113AAAA/buck-fur-stool-rip-WIN-S-PLANT3": [
+3.794125,
+3.8234706,
+2,
+"671946fb29fd"
 ],
 "member/CSW113AAAA/buck-head-000": [
 5.108575,
@@ -127858,6 +128830,8 @@
 "solids/WIN-A-N1-return-1-lap-left/z1_m": 7.609967,
 "solids/WIN-A-N1-return-1-lap-right/z0_m": 6.7945594,
 "solids/WIN-A-N1-return-1-lap-right/z1_m": 7.609967,
+"solids/WIN-A-N1-return-1-lap-sill/z0_m": 6.7056,
+"solids/WIN-A-N1-return-1-lap-sill/z1_m": 6.7691594,
 "solids/WIN-A-N2-FLASH-PERIMETER/z0_m": 6.604,
 "solids/WIN-A-N2-FLASH-PERIMETER/z1_m": 7.8120896,
 "solids/WIN-A-N2-FLASH-SILL-SUPPORT/z0_m": 6.715125,
@@ -127888,6 +128862,8 @@
 "solids/WIN-A-N2-return-1-lap-left/z1_m": 7.609967,
 "solids/WIN-A-N2-return-1-lap-right/z0_m": 6.7875594,
 "solids/WIN-A-N2-return-1-lap-right/z1_m": 7.609967,
+"solids/WIN-A-N2-return-1-lap-sill/z0_m": 6.7056,
+"solids/WIN-A-N2-return-1-lap-sill/z1_m": 6.7621594,
 "solids/WIN-A-S-JUL-E-FLASH-PERIMETER/z0_m": 6.8072,
 "solids/WIN-A-S-JUL-E-FLASH-PERIMETER/z1_m": 8.4724896,
 "solids/WIN-A-S-JUL-E-FLASH-SILL-SUPPORT/z0_m": 6.918325,
@@ -127918,6 +128894,8 @@
 "solids/WIN-A-S-JUL-E-return-1-lap-left/z1_m": 8.270367,
 "solids/WIN-A-S-JUL-E-return-1-lap-right/z0_m": 6.9877594,
 "solids/WIN-A-S-JUL-E-return-1-lap-right/z1_m": 8.270367,
+"solids/WIN-A-S-JUL-E-return-1-lap-sill/z0_m": 6.9088,
+"solids/WIN-A-S-JUL-E-return-1-lap-sill/z1_m": 6.9623594,
 "solids/WIN-A-S-JUL-W-FLASH-PERIMETER/z0_m": 6.8072,
 "solids/WIN-A-S-JUL-W-FLASH-PERIMETER/z1_m": 8.4724896,
 "solids/WIN-A-S-JUL-W-FLASH-SILL-SUPPORT/z0_m": 6.918325,
@@ -127948,6 +128926,8 @@
 "solids/WIN-A-S-JUL-W-return-1-lap-left/z1_m": 8.270367,
 "solids/WIN-A-S-JUL-W-return-1-lap-right/z0_m": 6.9877594,
 "solids/WIN-A-S-JUL-W-return-1-lap-right/z1_m": 8.270367,
+"solids/WIN-A-S-JUL-W-return-1-lap-sill/z0_m": 6.9088,
+"solids/WIN-A-S-JUL-W-return-1-lap-sill/z1_m": 6.9623594,
 "solids/WIN-A-S2-FLASH-PERIMETER/z0_m": 6.8072,
 "solids/WIN-A-S2-FLASH-PERIMETER/z1_m": 7.7104896,
 "solids/WIN-A-S2-FLASH-SILL-SUPPORT/z0_m": 6.918325,
@@ -127978,6 +128958,8 @@
 "solids/WIN-A-S2-return-1-lap-left/z1_m": 7.508367,
 "solids/WIN-A-S2-return-1-lap-right/z0_m": 6.9977594,
 "solids/WIN-A-S2-return-1-lap-right/z1_m": 7.508367,
+"solids/WIN-A-S2-return-1-lap-sill/z0_m": 6.9088,
+"solids/WIN-A-S2-return-1-lap-sill/z1_m": 6.9723594,
 "solids/WIN-A-S3-FLASH-PERIMETER/z0_m": 6.8072,
 "solids/WIN-A-S3-FLASH-PERIMETER/z1_m": 7.7104896,
 "solids/WIN-A-S3-FLASH-SILL-SUPPORT/z0_m": 6.918325,
@@ -128008,6 +128990,8 @@
 "solids/WIN-A-S3-return-1-lap-left/z1_m": 7.508367,
 "solids/WIN-A-S3-return-1-lap-right/z0_m": 6.9977594,
 "solids/WIN-A-S3-return-1-lap-right/z1_m": 7.508367,
+"solids/WIN-A-S3-return-1-lap-sill/z0_m": 6.9088,
+"solids/WIN-A-S3-return-1-lap-sill/z1_m": 6.9723594,
 "solids/WIN-G-N1-FLASH-PERIMETER/z0_m": 0.762,
 "solids/WIN-G-N1-FLASH-PERIMETER/z1_m": 1.479042,
 "solids/WIN-G-N1-FLASH-SILL-SUPPORT/z0_m": 0.762,
@@ -128078,6 +129062,8 @@
 "solids/WIN-M-BATH1-W-return-1-lap-left/z1_m": 1.666367,
 "solids/WIN-M-BATH1-W-return-1-lap-right/z0_m": 1.1457594,
 "solids/WIN-M-BATH1-W-return-1-lap-right/z1_m": 1.666367,
+"solids/WIN-M-BATH1-W-return-1-lap-sill/z0_m": 1.0668,
+"solids/WIN-M-BATH1-W-return-1-lap-sill/z1_m": 1.1203594,
 "solids/WIN-M-BATH2-FLASH-PERIMETER/z0_m": 0.8128,
 "solids/WIN-M-BATH2-FLASH-PERIMETER/z1_m": 2.0208896,
 "solids/WIN-M-BATH2-FLASH-SILL-SUPPORT/z0_m": 0.923925,
@@ -128108,6 +129094,8 @@
 "solids/WIN-M-BATH2-return-1-lap-left/z1_m": 1.818767,
 "solids/WIN-M-BATH2-return-1-lap-right/z0_m": 0.9913706,
 "solids/WIN-M-BATH2-return-1-lap-right/z1_m": 1.818767,
+"solids/WIN-M-BATH2-return-1-lap-sill/z0_m": 0.9144,
+"solids/WIN-M-BATH2-return-1-lap-sill/z1_m": 0.9913706,
 "solids/WIN-M-BED-S1-FLASH-PERIMETER/z0_m": 0.7112,
 "solids/WIN-M-BED-S1-FLASH-PERIMETER/z1_m": 2.2240896,
 "solids/WIN-M-BED-S1-FLASH-SILL-SUPPORT/z0_m": 0.822325,
@@ -128138,6 +129126,8 @@
 "solids/WIN-M-BED-S1-return-1-lap-left/z1_m": 2.021967,
 "solids/WIN-M-BED-S1-return-1-lap-right/z0_m": 0.8917594,
 "solids/WIN-M-BED-S1-return-1-lap-right/z1_m": 2.021967,
+"solids/WIN-M-BED-S1-return-1-lap-sill/z0_m": 0.8128,
+"solids/WIN-M-BED-S1-return-1-lap-sill/z1_m": 0.8663594,
 "solids/WIN-M-BED-S2-FLASH-PERIMETER/z0_m": 0.7112,
 "solids/WIN-M-BED-S2-FLASH-PERIMETER/z1_m": 2.2240896,
 "solids/WIN-M-BED-S2-FLASH-SILL-SUPPORT/z0_m": 0.822325,
@@ -128168,6 +129158,8 @@
 "solids/WIN-M-BED-S2-return-1-lap-left/z1_m": 2.021967,
 "solids/WIN-M-BED-S2-return-1-lap-right/z0_m": 0.8917594,
 "solids/WIN-M-BED-S2-return-1-lap-right/z1_m": 2.021967,
+"solids/WIN-M-BED-S2-return-1-lap-sill/z0_m": 0.8128,
+"solids/WIN-M-BED-S2-return-1-lap-sill/z1_m": 0.8663594,
 "solids/WIN-M-BED-W1-FLASH-PERIMETER/z0_m": 0.8128,
 "solids/WIN-M-BED-W1-FLASH-PERIMETER/z1_m": 2.0208896,
 "solids/WIN-M-BED-W1-FLASH-SILL-SUPPORT/z0_m": 0.923925,
@@ -128198,6 +129190,8 @@
 "solids/WIN-M-BED-W1-return-1-lap-left/z1_m": 1.818767,
 "solids/WIN-M-BED-W1-return-1-lap-right/z0_m": 0.9963594,
 "solids/WIN-M-BED-W1-return-1-lap-right/z1_m": 1.818767,
+"solids/WIN-M-BED-W1-return-1-lap-sill/z0_m": 0.9144,
+"solids/WIN-M-BED-W1-return-1-lap-sill/z1_m": 0.9709594,
 "solids/WIN-M-BED-W2-FLASH-PERIMETER/z0_m": 0.8128,
 "solids/WIN-M-BED-W2-FLASH-PERIMETER/z1_m": 2.0208896,
 "solids/WIN-M-BED-W2-FLASH-SILL-SUPPORT/z0_m": 0.923925,
@@ -128228,6 +129222,8 @@
 "solids/WIN-M-BED-W2-return-1-lap-left/z1_m": 1.818767,
 "solids/WIN-M-BED-W2-return-1-lap-right/z0_m": 0.9963594,
 "solids/WIN-M-BED-W2-return-1-lap-right/z1_m": 1.818767,
+"solids/WIN-M-BED-W2-return-1-lap-sill/z0_m": 0.9144,
+"solids/WIN-M-BED-W2-return-1-lap-sill/z1_m": 0.9709594,
 "solids/WIN-M-DINING-E-FLASH-PERIMETER/z0_m": 0.7691438,
 "solids/WIN-M-DINING-E-FLASH-PERIMETER/z1_m": 2.2820333,
 "solids/WIN-M-DINING-E-FLASH-SILL-SUPPORT/z0_m": 0.8802688,
@@ -128258,6 +129254,8 @@
 "solids/WIN-M-DINING-E-return-1-lap-left/z1_m": 2.0799108,
 "solids/WIN-M-DINING-E-return-1-lap-right/z0_m": 0.9597032,
 "solids/WIN-M-DINING-E-return-1-lap-right/z1_m": 2.0799108,
+"solids/WIN-M-DINING-E-return-1-lap-sill/z0_m": 0.8707438,
+"solids/WIN-M-DINING-E-return-1-lap-sill/z1_m": 0.9279532,
 "solids/WIN-M-KIT-E-FLASH-PERIMETER/z0_m": 0.9652,
 "solids/WIN-M-KIT-E-FLASH-PERIMETER/z1_m": 1.8684896,
 "solids/WIN-M-KIT-E-FLASH-SILL-SUPPORT/z0_m": 1.076325,
@@ -128288,6 +129286,8 @@
 "solids/WIN-M-KIT-E-return-1-lap-left/z1_m": 1.666367,
 "solids/WIN-M-KIT-E-return-1-lap-right/z0_m": 1.115762,
 "solids/WIN-M-KIT-E-return-1-lap-right/z1_m": 1.666367,
+"solids/WIN-M-KIT-E-return-1-lap-sill/z0_m": 1.0668,
+"solids/WIN-M-KIT-E-return-1-lap-sill/z1_m": 1.115762,
 "solids/WIN-M-KITCH-FLASH-PERIMETER/z0_m": 0.9652,
 "solids/WIN-M-KITCH-FLASH-PERIMETER/z1_m": 2.1732896,
 "solids/WIN-M-KITCH-FLASH-SILL-SUPPORT/z0_m": 1.076325,
@@ -128328,6 +129328,8 @@
 "solids/WIN-M-KITCH-N-return-1-lap-left/z1_m": 1.666367,
 "solids/WIN-M-KITCH-N-return-1-lap-right/z0_m": 1.115762,
 "solids/WIN-M-KITCH-N-return-1-lap-right/z1_m": 1.666367,
+"solids/WIN-M-KITCH-N-return-1-lap-sill/z0_m": 1.0668,
+"solids/WIN-M-KITCH-N-return-1-lap-sill/z1_m": 1.115762,
 "solids/WIN-M-KITCH-TRIM-HEAD-1/z0_m": 1.9558368,
 "solids/WIN-M-KITCH-TRIM-HEAD-1/z1_m": 2.028317,
 "solids/WIN-M-KITCH-TRIM-JAMB-LEFT-1/z0_m": 1.0807594,
@@ -128348,6 +129350,8 @@
 "solids/WIN-M-KITCH-return-1-lap-left/z1_m": 1.971167,
 "solids/WIN-M-KITCH-return-1-lap-right/z0_m": 1.118762,
 "solids/WIN-M-KITCH-return-1-lap-right/z1_m": 1.971167,
+"solids/WIN-M-KITCH-return-1-lap-sill/z0_m": 1.0668,
+"solids/WIN-M-KITCH-return-1-lap-sill/z1_m": 1.118762,
 "solids/WIN-M-LIV-E1-FLASH-PERIMETER/z0_m": 0.7691438,
 "solids/WIN-M-LIV-E1-FLASH-PERIMETER/z1_m": 2.2820333,
 "solids/WIN-M-LIV-E1-FLASH-SILL-SUPPORT/z0_m": 0.8802688,
@@ -128378,6 +129382,8 @@
 "solids/WIN-M-LIV-E1-return-1-lap-left/z1_m": 2.0799108,
 "solids/WIN-M-LIV-E1-return-1-lap-right/z0_m": 0.9527032,
 "solids/WIN-M-LIV-E1-return-1-lap-right/z1_m": 2.0799108,
+"solids/WIN-M-LIV-E1-return-1-lap-sill/z0_m": 0.8707438,
+"solids/WIN-M-LIV-E1-return-1-lap-sill/z1_m": 0.9209532,
 "solids/WIN-M-LIV-E2-FLASH-PERIMETER/z0_m": 0.7691438,
 "solids/WIN-M-LIV-E2-FLASH-PERIMETER/z1_m": 2.2820333,
 "solids/WIN-M-LIV-E2-FLASH-SILL-SUPPORT/z0_m": 0.8802688,
@@ -128408,6 +129414,8 @@
 "solids/WIN-M-LIV-E2-return-1-lap-left/z1_m": 2.0799108,
 "solids/WIN-M-LIV-E2-return-1-lap-right/z0_m": 0.9527032,
 "solids/WIN-M-LIV-E2-return-1-lap-right/z1_m": 2.0799108,
+"solids/WIN-M-LIV-E2-return-1-lap-sill/z0_m": 0.8707438,
+"solids/WIN-M-LIV-E2-return-1-lap-sill/z1_m": 0.9209532,
 "solids/WIN-M-LIV-S1-FLASH-PERIMETER/z0_m": 0.7112,
 "solids/WIN-M-LIV-S1-FLASH-PERIMETER/z1_m": 2.2240896,
 "solids/WIN-M-LIV-S1-FLASH-SILL-SUPPORT/z0_m": 0.822325,
@@ -128438,6 +129446,8 @@
 "solids/WIN-M-LIV-S1-return-1-lap-left/z1_m": 2.021967,
 "solids/WIN-M-LIV-S1-return-1-lap-right/z0_m": 0.8947594,
 "solids/WIN-M-LIV-S1-return-1-lap-right/z1_m": 2.021967,
+"solids/WIN-M-LIV-S1-return-1-lap-sill/z0_m": 0.8128,
+"solids/WIN-M-LIV-S1-return-1-lap-sill/z1_m": 0.8630094,
 "solids/WIN-M-LIV-S2-FLASH-PERIMETER/z0_m": 0.7112,
 "solids/WIN-M-LIV-S2-FLASH-PERIMETER/z1_m": 2.2240896,
 "solids/WIN-M-LIV-S2-FLASH-SILL-SUPPORT/z0_m": 0.822325,
@@ -128468,6 +129478,8 @@
 "solids/WIN-M-LIV-S2-return-1-lap-left/z1_m": 2.021967,
 "solids/WIN-M-LIV-S2-return-1-lap-right/z0_m": 0.8947594,
 "solids/WIN-M-LIV-S2-return-1-lap-right/z1_m": 2.021967,
+"solids/WIN-M-LIV-S2-return-1-lap-sill/z0_m": 0.8128,
+"solids/WIN-M-LIV-S2-return-1-lap-sill/z1_m": 0.8630094,
 "solids/WIN-M-MUD-FLASH-PERIMETER/z0_m": 0.9652,
 "solids/WIN-M-MUD-FLASH-PERIMETER/z1_m": 1.8684896,
 "solids/WIN-M-MUD-FLASH-SILL-SUPPORT/z0_m": 1.076325,
@@ -128498,6 +129510,8 @@
 "solids/WIN-M-MUD-return-1-lap-left/z1_m": 1.666367,
 "solids/WIN-M-MUD-return-1-lap-right/z0_m": 1.1557594,
 "solids/WIN-M-MUD-return-1-lap-right/z1_m": 1.666367,
+"solids/WIN-M-MUD-return-1-lap-sill/z0_m": 1.0668,
+"solids/WIN-M-MUD-return-1-lap-sill/z1_m": 1.1303594,
 "solids/WIN-S-BATH-W-FLASH-PERIMETER/z0_m": 4.0132,
 "solids/WIN-S-BATH-W-FLASH-PERIMETER/z1_m": 4.9164896,
 "solids/WIN-S-BATH-W-FLASH-SILL-SUPPORT/z0_m": 4.124325,
@@ -128528,6 +129542,8 @@
 "solids/WIN-S-BATH-W-return-1-lap-left/z1_m": 4.714367,
 "solids/WIN-S-BATH-W-return-1-lap-right/z0_m": 4.2037594,
 "solids/WIN-S-BATH-W-return-1-lap-right/z1_m": 4.714367,
+"solids/WIN-S-BATH-W-return-1-lap-sill/z0_m": 4.1148,
+"solids/WIN-S-BATH-W-return-1-lap-sill/z1_m": 4.1783594,
 "solids/WIN-S-BED1-FLASH-PERIMETER/z0_m": 3.8608,
 "solids/WIN-S-BED1-FLASH-PERIMETER/z1_m": 5.3736896,
 "solids/WIN-S-BED1-FLASH-SILL-SUPPORT/z0_m": 3.971925,
@@ -128558,6 +129574,8 @@
 "solids/WIN-S-BED1-return-1-lap-left/z1_m": 5.171567,
 "solids/WIN-S-BED1-return-1-lap-right/z0_m": 4.0413594,
 "solids/WIN-S-BED1-return-1-lap-right/z1_m": 5.171567,
+"solids/WIN-S-BED1-return-1-lap-sill/z0_m": 3.9624,
+"solids/WIN-S-BED1-return-1-lap-sill/z1_m": 4.0159594,
 "solids/WIN-S-BED2-FLASH-PERIMETER/z0_m": 3.8608,
 "solids/WIN-S-BED2-FLASH-PERIMETER/z1_m": 5.3736896,
 "solids/WIN-S-BED2-FLASH-SILL-SUPPORT/z0_m": 3.971925,
@@ -128588,6 +129606,8 @@
 "solids/WIN-S-BED2-return-1-lap-left/z1_m": 5.171567,
 "solids/WIN-S-BED2-return-1-lap-right/z0_m": 4.0413594,
 "solids/WIN-S-BED2-return-1-lap-right/z1_m": 5.171567,
+"solids/WIN-S-BED2-return-1-lap-sill/z0_m": 3.9624,
+"solids/WIN-S-BED2-return-1-lap-sill/z1_m": 4.0159594,
 "solids/WIN-S-BED3-FLASH-PERIMETER/z0_m": 3.8608,
 "solids/WIN-S-BED3-FLASH-PERIMETER/z1_m": 5.3736896,
 "solids/WIN-S-BED3-FLASH-SILL-SUPPORT/z0_m": 3.971925,
@@ -128618,6 +129638,8 @@
 "solids/WIN-S-BED3-return-1-lap-left/z1_m": 5.171567,
 "solids/WIN-S-BED3-return-1-lap-right/z0_m": 4.0413594,
 "solids/WIN-S-BED3-return-1-lap-right/z1_m": 5.171567,
+"solids/WIN-S-BED3-return-1-lap-sill/z0_m": 3.9624,
+"solids/WIN-S-BED3-return-1-lap-sill/z1_m": 4.0159594,
 "solids/WIN-S-HALL-N-FLASH-PERIMETER/z0_m": 3.9624,
 "solids/WIN-S-HALL-N-FLASH-PERIMETER/z1_m": 5.4752896,
 "solids/WIN-S-HALL-N-FLASH-SILL-SUPPORT/z0_m": 4.073525,
@@ -128648,6 +129670,8 @@
 "solids/WIN-S-HALL-N-return-1-lap-left/z1_m": 5.273167,
 "solids/WIN-S-HALL-N-return-1-lap-right/z0_m": 4.1429594,
 "solids/WIN-S-HALL-N-return-1-lap-right/z1_m": 5.273167,
+"solids/WIN-S-HALL-N-return-1-lap-sill/z0_m": 4.064,
+"solids/WIN-S-HALL-N-return-1-lap-sill/z1_m": 4.1175594,
 "solids/WIN-S-PLANT1-FLASH-PERIMETER/z0_m": 3.7592,
 "solids/WIN-S-PLANT1-FLASH-PERIMETER/z1_m": 5.2720896,
 "solids/WIN-S-PLANT1-FLASH-SILL-SUPPORT/z0_m": 3.870325,
@@ -128678,6 +129702,14 @@
 "solids/WIN-S-PLANT1-return-0-lap-left/z1_m": 5.069967,
 "solids/WIN-S-PLANT1-return-0-lap-right/z0_m": 3.9377706,
 "solids/WIN-S-PLANT1-return-0-lap-right/z1_m": 5.069967,
+"solids/WIN-S-PLANT1-return-0-lap-sill/z0_m": 3.8608,
+"solids/WIN-S-PLANT1-return-0-lap-sill/z1_m": 3.9377706,
+"solids/WIN-S-PLANT1-return-1-lap-sill/z0_m": 3.8608,
+"solids/WIN-S-PLANT1-return-1-lap-sill/z1_m": 3.9377706,
+"solids/WIN-S-PLANT1-return-2-lap-sill/z0_m": 3.8608,
+"solids/WIN-S-PLANT1-return-2-lap-sill/z1_m": 3.9377706,
+"solids/WIN-S-PLANT1-return-3-lap-sill/z0_m": 3.8608,
+"solids/WIN-S-PLANT1-return-3-lap-sill/z1_m": 3.9377706,
 "solids/WIN-S-PLANT2-FLASH-PERIMETER/z0_m": 3.7592,
 "solids/WIN-S-PLANT2-FLASH-PERIMETER/z1_m": 5.2720896,
 "solids/WIN-S-PLANT2-FLASH-SILL-SUPPORT/z0_m": 3.870325,
@@ -128708,6 +129740,14 @@
 "solids/WIN-S-PLANT2-return-0-lap-left/z1_m": 5.069967,
 "solids/WIN-S-PLANT2-return-0-lap-right/z0_m": 3.9377706,
 "solids/WIN-S-PLANT2-return-0-lap-right/z1_m": 5.069967,
+"solids/WIN-S-PLANT2-return-0-lap-sill/z0_m": 3.8608,
+"solids/WIN-S-PLANT2-return-0-lap-sill/z1_m": 3.9377706,
+"solids/WIN-S-PLANT2-return-1-lap-sill/z0_m": 3.8608,
+"solids/WIN-S-PLANT2-return-1-lap-sill/z1_m": 3.9377706,
+"solids/WIN-S-PLANT2-return-2-lap-sill/z0_m": 3.8608,
+"solids/WIN-S-PLANT2-return-2-lap-sill/z1_m": 3.9377706,
+"solids/WIN-S-PLANT2-return-3-lap-sill/z0_m": 3.8608,
+"solids/WIN-S-PLANT2-return-3-lap-sill/z1_m": 3.9377706,
 "solids/WIN-S-PLANT3-FLASH-PERIMETER/z0_m": 3.6449,
 "solids/WIN-S-PLANT3-FLASH-PERIMETER/z1_m": 5.3101896,
 "solids/WIN-S-PLANT3-FLASH-SILL-SUPPORT/z0_m": 3.756025,
@@ -128738,6 +129778,14 @@
 "solids/WIN-S-PLANT3-return-0-lap-left/z1_m": 5.108067,
 "solids/WIN-S-PLANT3-return-0-lap-right/z0_m": 3.8234706,
 "solids/WIN-S-PLANT3-return-0-lap-right/z1_m": 5.108067,
+"solids/WIN-S-PLANT3-return-0-lap-sill/z0_m": 3.7465,
+"solids/WIN-S-PLANT3-return-0-lap-sill/z1_m": 3.8234706,
+"solids/WIN-S-PLANT3-return-1-lap-sill/z0_m": 3.7465,
+"solids/WIN-S-PLANT3-return-1-lap-sill/z1_m": 3.8234706,
+"solids/WIN-S-PLANT3-return-2-lap-sill/z0_m": 3.7465,
+"solids/WIN-S-PLANT3-return-2-lap-sill/z1_m": 3.8234706,
+"solids/WIN-S-PLANT3-return-3-lap-sill/z0_m": 3.7465,
+"solids/WIN-S-PLANT3-return-3-lap-sill/z1_m": 3.8234706,
 "solids/WIN-S-PLANT4-FLASH-PERIMETER/z0_m": 3.7592,
 "solids/WIN-S-PLANT4-FLASH-PERIMETER/z1_m": 5.2720896,
 "solids/WIN-S-PLANT4-FLASH-SILL-SUPPORT/z0_m": 3.870325,
@@ -128768,6 +129816,14 @@
 "solids/WIN-S-PLANT4-return-0-lap-left/z1_m": 5.069967,
 "solids/WIN-S-PLANT4-return-0-lap-right/z0_m": 3.9377706,
 "solids/WIN-S-PLANT4-return-0-lap-right/z1_m": 5.069967,
+"solids/WIN-S-PLANT4-return-0-lap-sill/z0_m": 3.8608,
+"solids/WIN-S-PLANT4-return-0-lap-sill/z1_m": 3.9377706,
+"solids/WIN-S-PLANT4-return-1-lap-sill/z0_m": 3.8608,
+"solids/WIN-S-PLANT4-return-1-lap-sill/z1_m": 3.9377706,
+"solids/WIN-S-PLANT4-return-2-lap-sill/z0_m": 3.8608,
+"solids/WIN-S-PLANT4-return-2-lap-sill/z1_m": 3.9377706,
+"solids/WIN-S-PLANT4-return-3-lap-sill/z0_m": 3.8608,
+"solids/WIN-S-PLANT4-return-3-lap-sill/z1_m": 3.9377706,
 "solids/WIN-S-STAIR-N-FLASH-PERIMETER/z0_m": 3.9624,
 "solids/WIN-S-STAIR-N-FLASH-PERIMETER/z1_m": 5.4752896,
 "solids/WIN-S-STAIR-N-FLASH-SILL-SUPPORT/z0_m": 4.073525,
@@ -128798,6 +129854,8 @@
 "solids/WIN-S-STAIR-N-return-1-lap-left/z1_m": 5.273167,
 "solids/WIN-S-STAIR-N-return-1-lap-right/z0_m": 4.1529594,
 "solids/WIN-S-STAIR-N-return-1-lap-right/z1_m": 5.273167,
+"solids/WIN-S-STAIR-N-return-1-lap-sill/z0_m": 4.064,
+"solids/WIN-S-STAIR-N-return-1-lap-sill/z1_m": 4.1275594,
 "solids/WIN-S-STUDY1-FLASH-PERIMETER/z0_m": 3.7592,
 "solids/WIN-S-STUDY1-FLASH-PERIMETER/z1_m": 5.2720896,
 "solids/WIN-S-STUDY1-FLASH-SILL-SUPPORT/z0_m": 3.870325,
@@ -128828,6 +129886,8 @@
 "solids/WIN-S-STUDY1-return-1-lap-left/z1_m": 5.069967,
 "solids/WIN-S-STUDY1-return-1-lap-right/z0_m": 3.9427594,
 "solids/WIN-S-STUDY1-return-1-lap-right/z1_m": 5.069967,
+"solids/WIN-S-STUDY1-return-1-lap-sill/z0_m": 3.8608,
+"solids/WIN-S-STUDY1-return-1-lap-sill/z1_m": 3.9173594,
 "solids/WIN-S-STUDY2-FLASH-PERIMETER/z0_m": 3.7592,
 "solids/WIN-S-STUDY2-FLASH-PERIMETER/z1_m": 5.2720896,
 "solids/WIN-S-STUDY2-FLASH-SILL-SUPPORT/z0_m": 3.870325,
@@ -128858,6 +129918,8 @@
 "solids/WIN-S-STUDY2-return-1-lap-left/z1_m": 5.069967,
 "solids/WIN-S-STUDY2-return-1-lap-right/z0_m": 3.9427594,
 "solids/WIN-S-STUDY2-return-1-lap-right/z1_m": 5.069967,
+"solids/WIN-S-STUDY2-return-1-lap-sill/z0_m": 3.8608,
+"solids/WIN-S-STUDY2-return-1-lap-sill/z1_m": 3.9173594,
 "solids/WIN-S-STUDY3-FLASH-PERIMETER/z0_m": 3.8608,
 "solids/WIN-S-STUDY3-FLASH-PERIMETER/z1_m": 5.3736896,
 "solids/WIN-S-STUDY3-FLASH-SILL-SUPPORT/z0_m": 3.971925,
@@ -128888,6 +129950,8 @@
 "solids/WIN-S-STUDY3-return-1-lap-left/z1_m": 5.171567,
 "solids/WIN-S-STUDY3-return-1-lap-right/z0_m": 4.0443594,
 "solids/WIN-S-STUDY3-return-1-lap-right/z1_m": 5.171567,
+"solids/WIN-S-STUDY3-return-1-lap-sill/z0_m": 3.9624,
+"solids/WIN-S-STUDY3-return-1-lap-sill/z1_m": 4.0189594,
 "solids/WIN-S-SUITE1-FLASH-PERIMETER/z0_m": 3.6449,
 "solids/WIN-S-SUITE1-FLASH-PERIMETER/z1_m": 5.3101896,
 "solids/WIN-S-SUITE1-FLASH-SILL-SUPPORT/z0_m": 3.756025,
@@ -128918,6 +129982,8 @@
 "solids/WIN-S-SUITE1-return-1-lap-left/z1_m": 5.108067,
 "solids/WIN-S-SUITE1-return-1-lap-right/z0_m": 3.8254594,
 "solids/WIN-S-SUITE1-return-1-lap-right/z1_m": 5.108067,
+"solids/WIN-S-SUITE1-return-1-lap-sill/z0_m": 3.7465,
+"solids/WIN-S-SUITE1-return-1-lap-sill/z1_m": 3.8000594,
 "solids/WIN-S-SUITE2-FLASH-PERIMETER/z0_m": 3.6449,
 "solids/WIN-S-SUITE2-FLASH-PERIMETER/z1_m": 5.3101896,
 "solids/WIN-S-SUITE2-FLASH-SILL-SUPPORT/z0_m": 3.756025,
@@ -128948,6 +130014,8 @@
 "solids/WIN-S-SUITE2-return-1-lap-left/z1_m": 5.108067,
 "solids/WIN-S-SUITE2-return-1-lap-right/z0_m": 3.8254594,
 "solids/WIN-S-SUITE2-return-1-lap-right/z1_m": 5.108067,
+"solids/WIN-S-SUITE2-return-1-lap-sill/z0_m": 3.7465,
+"solids/WIN-S-SUITE2-return-1-lap-sill/z1_m": 3.8000594,
 "solids/WIN-S-VANITY-W-FLASH-PERIMETER/z0_m": 4.0132,
 "solids/WIN-S-VANITY-W-FLASH-PERIMETER/z1_m": 4.9164896,
 "solids/WIN-S-VANITY-W-FLASH-SILL-SUPPORT/z0_m": 4.124325,
@@ -128978,6 +130046,8 @@
 "solids/WIN-S-VANITY-W-return-1-lap-left/z1_m": 4.714367,
 "solids/WIN-S-VANITY-W-return-1-lap-right/z0_m": 4.2037594,
 "solids/WIN-S-VANITY-W-return-1-lap-right/z1_m": 4.714367,
+"solids/WIN-S-VANITY-W-return-1-lap-sill/z0_m": 4.1148,
+"solids/WIN-S-VANITY-W-return-1-lap-sill/z1_m": 4.1783594,
 "stairs/ST-B2M/arrival_elevation_m": 0.02605,
 "stairs/ST-B2M/base_elevation_m": -2.7797125,
 "stairs/ST-BW-ENTRY/arrival_elevation_m": 0.0,

@@ -642,7 +642,12 @@ def test_the_buck_lines_the_rough_opening_out_to_the_mount_plane(catlin_model):
         bucks = [m for m in wall.members
                  if m.category == "buck" and not m.child_key.startswith("buck-fur-")]
         assert len(bucks) == 4 * len(openings), wall.tag
-        assert all(m.profile == "6x0.375 panel" for m in bucks), wall.tag
+        # A window's sill board runs on in over the rough sill: 1/2" gypsum to 12 1/2".
+        sills = [m for m in bucks if m.child_key.startswith("buck-sill-")]
+        windows = sum(op.kind == "window" for op in openings)
+        assert sum(m.profile == "12x0.375 panel" for m in sills) == windows, wall.tag
+        assert all(m.profile == "6x0.375 panel" for m in bucks
+                   if m.profile != "12x0.375 panel"), wall.tag
 
 
 def test_no_girt_member_stands_inside_a_rough_opening(catlin_model):

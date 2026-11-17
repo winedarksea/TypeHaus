@@ -1507,6 +1507,232 @@
       "node": "polyline",
       "points": [
         [
+          7.29,
+          147.5
+        ],
+        [
+          7.79,
+          147.5
+        ],
+        [
+          7.79,
+          150.53033923884516
+        ],
+        [
+          7.29,
+          150.53033923884516
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CSX308AAAA-RETURN-0-lap-sill",
+      "tag": "WIN-S-PLANT3-return-0-lap-sill"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          7.29,
+          147.5
+        ],
+        [
+          7.79,
+          147.5
+        ],
+        [
+          7.79,
+          150.53033923884516
+        ],
+        [
+          7.29,
+          150.53033923884516
+        ]
+      ],
+      "pattern": "pvc-panel",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "pvc-panel",
+      "fill": "#f2f4f3"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          6.540000000000001,
+          147.5
+        ],
+        [
+          7.29,
+          147.5
+        ],
+        [
+          7.29,
+          150.53033923884516
+        ],
+        [
+          6.540000000000001,
+          150.53033923884516
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CSX308AAAA-RETURN-1-lap-sill",
+      "tag": "WIN-S-PLANT3-return-1-lap-sill"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          6.540000000000001,
+          147.5
+        ],
+        [
+          7.29,
+          147.5
+        ],
+        [
+          7.29,
+          150.53033923884516
+        ],
+        [
+          6.540000000000001,
+          150.53033923884516
+        ]
+      ],
+      "pattern": "spf",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          6.5,
+          147.5
+        ],
+        [
+          6.540000000000001,
+          147.5
+        ],
+        [
+          6.540000000000001,
+          150.53033923884516
+        ],
+        [
+          6.5,
+          150.53033923884516
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CSX308AAAA-RETURN-2-lap-sill",
+      "tag": "WIN-S-PLANT3-return-2-lap-sill"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          6.5,
+          147.5
+        ],
+        [
+          6.540000000000001,
+          147.5
+        ],
+        [
+          6.540000000000001,
+          150.53033923884516
+        ],
+        [
+          6.5,
+          150.53033923884516
+        ]
+      ],
+      "pattern": "humid-room-membrane",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "humid-room-membrane",
+      "fill": "#3f4a52"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          6.000000000000001,
+          147.5
+        ],
+        [
+          6.5,
+          147.5
+        ],
+        [
+          6.5,
+          150.53033923884516
+        ],
+        [
+          6.000000000000001,
+          150.53033923884516
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CSX308AAAA-RETURN-3-lap-sill",
+      "tag": "WIN-S-PLANT3-return-3-lap-sill"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          6.000000000000001,
+          147.5
+        ],
+        [
+          6.5,
+          147.5
+        ],
+        [
+          6.5,
+          150.53033923884516
+        ],
+        [
+          6.000000000000001,
+          150.53033923884516
+        ]
+      ],
+      "pattern": "gwb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "gwb"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           1.7500000000000002,
           201.5
         ],
@@ -1959,11 +2185,11 @@
           147.5
         ],
         [
-          0.0,
+          6.000000000000001,
           147.5
         ],
         [
-          0.0,
+          6.000000000000001,
           147.875
         ],
         [
@@ -1987,11 +2213,11 @@
           147.5
         ],
         [
-          0.0,
+          6.000000000000001,
           147.5
         ],
         [
-          0.0,
+          6.000000000000001,
           147.875
         ],
         [
@@ -2061,6 +2287,118 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "struct-1-plywood"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          0.5,
+          147.875
+        ],
+        [
+          6.000000000000001,
+          147.875
+        ],
+        [
+          6.000000000000001,
+          149.375
+        ],
+        [
+          0.5,
+          149.375
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CSW113AAAA",
+      "tag": "buck-fur-stool-WIN-S-PLANT3"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          0.5,
+          147.875
+        ],
+        [
+          6.000000000000001,
+          147.875
+        ],
+        [
+          6.000000000000001,
+          149.375
+        ],
+        [
+          0.5,
+          149.375
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          0.5,
+          149.375
+        ],
+        [
+          6.000000000000001,
+          149.375
+        ],
+        [
+          6.000000000000001,
+          150.53033923884516
+        ],
+        [
+          0.5,
+          150.53033923884516
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CSW113AAAA",
+      "tag": "buck-fur-stool-rip-WIN-S-PLANT3"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          0.5,
+          149.375
+        ],
+        [
+          6.000000000000001,
+          149.375
+        ],
+        [
+          6.000000000000001,
+          150.53033923884516
+        ],
+        [
+          0.5,
+          150.53033923884516
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
     },
     {
       "space": "model",
