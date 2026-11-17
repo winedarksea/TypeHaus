@@ -136,6 +136,10 @@ def window_trim_solids(model, wall, opening, frame, material, seat=None):
     sill = wall.base_ref_z_m + opening.sill_m
     head = sill + opening.height_m - seat.head_drop_m
     jamb_points, sill_points = window_profile_sections(frame, seat)
+    # A window's trim stands on the membrane lining its RO; a bare RO has none.
+    lined = opening.kind == "window"
+    jamb_face = frame.mount + (FLASHING.perimeter_membrane_m if lined else 0.0)
+    sill_face = frame.mount + (FLASHING.sill_membrane_m if lined else 0.0)
     # The jamb's inboard flange shares the sill upstand's plane, so it stands on the upstand's top.
     jamb_base = sill + max(z for _, z in sill_points) * INCH_M
     # PBR ribs take the catalog jamb; BBD75 and corrugated keep the site-brake section.
@@ -144,6 +148,9 @@ def window_trim_solids(model, wall, opening, frame, material, seat=None):
         jamb_points = PBR_WINDOW_JAMB.section_in
     else:
         jamb_key, jamb_profile = "WINDOW_JAMB_CUSTOM", WINDOW_JAMB_CUSTOM
+        # Its panel-side leg bears on the rib plane, so the reveal is measured off the membrane.
+        jamb_points = window_jamb_section((frame.clad - jamb_face) / INCH_M,
+                                          seat.jamb_inset_m / INCH_M).points_in
     solids = []
     axis_up = (0.0, 0.0, 1.0)
     outward = (*frame.outward, 0.0)
@@ -166,14 +173,12 @@ def window_trim_solids(model, wall, opening, frame, material, seat=None):
 
     # Each sheet is traced on its bearing face and stands outboard of the membrane under it:
     # metal laps over the flashing, never behind it.
-    jamb_face = frame.mount + FLASHING.perimeter_membrane_m
     for key, station, sign in (("jamb-left", lo, 1.0), ("jamb-right", hi, -1.0)):
         add(key, jamb_key, jamb_profile, jamb_points,
             frame.point(station, jamb_face, jamb_base),
             tuple(v * sign for v in along), outward, axis_up, head - jamb_base)
     add("sill", "WINDOW_SILL_CUSTOM", WINDOW_SILL_CUSTOM, sill_points,
-        frame.point(lo, frame.mount + FLASHING.sill_membrane_m, sill), outward, axis_up, along,
-        opening.width_m)
+        frame.point(lo, sill_face, sill), outward, axis_up, along, opening.width_m)
     # 58114XX's one-inch inner upstand folds against its back leg, so the bearing face sweeps.
     add("head", WINDOW_HEAD_PRODUCT, OPENING_HEAD, OPENING_HEAD.section_in,
         frame.point(lo - INCH_M, jamb_face, head), outward, axis_up, along,

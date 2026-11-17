@@ -436,6 +436,7 @@ def test_the_screen_cap_bears_on_tape(catlin_model_ro):
 
 def test_metal_wall_window_membrane_lies_behind_its_metal(catlin_model_ro):
     """Metal laid over a membrane stands outboard of it; no flashing membrane shows."""
+    from typehaus.resolve.metal_skin_profiles import SHEET_24_GA_M
     from typehaus.resolve.opening_head_cap import head_trim_back_leg_in
 
     model, tol = catlin_model_ro, 1e-6
@@ -475,6 +476,9 @@ def test_metal_wall_window_membrane_lies_behind_its_metal(catlin_model_ro):
                          else FLASHING.perimeter_membrane_m)
                 assert not any(-inch_m(0.25) < depth < front - tol for depth, _z in points), \
                     solid.tag
+                if solid.product == "WINDOW_JAMB_CUSTOM":  # its panel leg bears on the ribs
+                    assert max(d for d, _z in points) == pytest.approx(
+                        frame.clad - frame.mount + SHEET_24_GA_M, abs=tol), solid.tag
                 # The sill trim's upstand reaches the unit.
                 if solid.product == "WINDOW_SILL_CUSTOM":
                     assert max(z for _depth, z in points) >= sill + seat.sill_rise_m - tol
