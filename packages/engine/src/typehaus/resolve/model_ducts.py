@@ -83,3 +83,6 @@ class ResolvedDuctSupport:
     width_m: float | None = None
     thickness_m: float | None = None
     gap: str | None = None
+    #: A saddle's block under the duct (``DuctSupportRow.sleeper``); 0 when it bears direct.
+    sleeper_m: float = 0.0
+    sleeper_product_ref: str | None = None

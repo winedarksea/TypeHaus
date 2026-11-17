@@ -104,6 +104,13 @@ ROUND_DAMPER_4_MANUAL = Product(
            "the sauna hatches swings DU-B-ERV-R-SAUNA-EXH's flow to the valve. SKU picked at "
            "order; any retail 4in round volume damper with a quadrant lock.",
 )
+ROUND_DAMPER_6_MANUAL = Product(
+    tag="PROD-AIR-DAMPER-6-MANUAL", brand="Imperial",
+    name="6in round manual volume damper, locking quadrant, galvanized",
+    source="The DuctStandard's in-line damper on DU-S-ERV-HP-FEED: sets the mixing box's "
+           "115 cfm at commissioning. SKU picked at order; any retail 6in round volume damper "
+           "whose quadrant locks (Minn. R. 1346.0603 subp. 10, IMC 603.18.3).",
+)
 STAIR_REGISTER_BOX = Product(
     tag="PROD-AIR-STAIR-REGISTER-BOX", brand="Project fabrication", model="TH-HP-STAIR-BOX-01",
     name="26ga galvanized 12x6x4in register box, centred 4in round back collar",
@@ -177,6 +184,6 @@ SPOT_NOZZLE_4 = Product(
 AIR_PRODUCTS = (
     SUITEBATH_EXTRACT_BOOT, STACK_TOP_EXTRACT_BOOT, STUBATH_EXTRACT_BOOT,
     DISC_VALVE_100, FLOOR_GRILLE_ERV, SIDEWALL_DD_OBD, FLOOR_REGISTER_HP,
-    FILTER_RETURN_GRILLE, FILTER_RETURN_GRILLE_1212, RETURN_GRILLE_1210, RETURN_GRILLE_0606, ROUND_DAMPER_4_MANUAL, STAIR_REGISTER_BOX, RETURN_GRILLE_1006, RETURN_GRILLE_1006_OBD, XFER_SLEEVE_1006,
+    FILTER_RETURN_GRILLE, FILTER_RETURN_GRILLE_1212, RETURN_GRILLE_1210, RETURN_GRILLE_0606, ROUND_DAMPER_4_MANUAL, ROUND_DAMPER_6_MANUAL, STAIR_REGISTER_BOX, RETURN_GRILLE_1006, RETURN_GRILLE_1006_OBD, XFER_SLEEVE_1006,
     WALL_HOOD_8, WALL_SEAL_FOAM, ELASTOMERIC_SHEET, SPOT_NOZZLE_4,
 )

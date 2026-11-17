@@ -108,6 +108,20 @@ def test_a_saddle_row_is_only_a_fallback():
     assert std.support_for("round", 4 * M_PER_IN, "saddle").hanger == "saddle"
 
 
+def test_a_saddle_bears_on_its_sleeper_where_the_duct_stands_off_the_deck(catlin_model_ro):
+    """HP-FEED's north leg rides 1" off the deck for the mixing box's collar land (2026-11-17):
+    both its saddles take the row's 3/4" sleeper, billed by the piece; a duct on the deck none."""
+    from typehaus.takeoff.duct_parts import duct_support_takeoff
+
+    saddles = [s for s in catlin_model_ro.duct_supports if s.hanger == "saddle"]
+    feed = [s for s in saddles if s.run_tag == "DU-S-ERV-HP-FEED"]
+    assert len(feed) == 2 and all(s.sleeper_m == inch(0.75).meters and s.hangs_from
+                                  for s in feed)
+    assert all(not s.sleeper_m for s in saddles if s.run_tag != "DU-S-ERV-HP-FEED")
+    blocks = [r for r in duct_support_takeoff(catlin_model_ro) if r["hanger"] == "sleeper"]
+    assert [(r["product"], r["count"]) for r in blocks] == [("PROD-DUCT-SLEEPER", 2)]
+
+
 def test_an_adjustable_elbow_makes_any_turn_and_reads_its_own_k():
     """Set down to 15 or 70 degrees (between the catalog's 30/45/90 windows): graded as the
     bought 90, K linear through the row's authored points. A stamped row never sets down."""

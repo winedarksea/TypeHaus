@@ -90,6 +90,8 @@ a release or for exhaustive local verification.
   reducers, collar dampers, boots, port kits and hangers into `ResolvedModel.duct_parts` /
   `duct_supports`; elbows stay `mep_fittings` records keyed off the standard's angles (rect W×D).
   Billed in `[duct_parts]`/`[duct_supports]`/`[duct_sealing]`, printed on M-601.
+  A deck `saddle` row's `sleeper` lets a duct standing ~that far off the deck bear on a block
+  (`ResolvedDuctSupport.sleeper_m`, its own `[duct_supports]` row).
   An elbow's R is `DuctElbowRow.radius_m()` (centre-to-face, else `radius_diameters` × D); a
   rectangular turn is the standard's shop-made `rect_elbow` (r/W × the side in the turn's plane,
   `resolve/rect_elbows.py`), else a coverage gap (#124). An in-line damper is a station on its
@@ -100,7 +102,7 @@ a release or for exhaustive local verification.
   `manifold_feed.py`. A run draws as stretches and elbows split at its parts
   (`resolve/duct_fabrication.py`); a boot's row matches its derived `entry`. A plain ceiling neck, round or rectangular, takes a drop from above and must match the arriving
   section (`resolve/terminal_drops.py`, #129). A passive shop box is `EquipmentKind.PLENUM`, one
-  with a damper `MIXING_BOX` (#125); a blocking `RunBand` is boxed by half-width and half-height.
+  where an ERV feed joins a return `MIXING_BOX` (#125); a blocking `RunBand` is boxed by half-width and half-height.
 - **NEC labels are derived, never authored** (decision #134): `resolve/electrical_labels.py` reads each
   label's trigger (PV, a source circuit, the service, an ESS, a heating cable, a remote EVSE breaker) into
   `ResolvedModel.electrical_labels`, wording from the paraphrase docs only. House inputs go on the one

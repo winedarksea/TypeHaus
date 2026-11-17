@@ -8608,3 +8608,17 @@ bend dimensions. See `notes/porch_enclosure.md` for that remaining connection de
   (`PD-B-WELL`, `cast_with`) carries both posts: 3,172 lb, 1,189 psf against 2,000
   (`notes/stairwell_post_pad.md`). The slab and its sub-slab layers are clipped round a
   flush pad as they are round a flush footing (`resolve/slab_clip.py`).
+
+## ERV feed: no backdraft damper, a locking balancing damper (2026-11-17, owner)
+
+- **No backdraft damper in `DU-S-ERV-HP-FEED`.** `EQ-S-ERV-MIX` is always below room
+  pressure, so the air handler pulls the feed's own way; a gravity damper would swing open and
+  stop nothing. A motorized NC damper was rejected to avoid extra wiring. ERV off is rare, and
+  the air handler then draws a little house air back out of the ERV's other supply grilles;
+  the hall return is the easiest path for the rest. Accepted.
+- **A 6" locking volume damper** (`PROD-AIR-DAMPER-6-MANUAL`) on the feed's north deck leg,
+  east of the AH service zone: set 115 cfm at commissioning with the AH running, then lock.
+  C 0.34 adds ~0.007" (`notes/erv_static_budget.md` §10.29); the extract still governs.
+- **Collar lands.** The box's fresh and attic openings rose 3/4" (box z 4" and 14"): a 1" land
+  under the 6" collar and 1" between the openings. The feed's north deck leg rides +4 3/4",
+  the attic stub and `REG-A-HP-EAST-RET` 3/4" higher.

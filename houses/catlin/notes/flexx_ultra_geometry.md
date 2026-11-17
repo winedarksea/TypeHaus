@@ -59,12 +59,15 @@ seam/flange requirement still need a fabricator's detail.
 | hall | Bottom | 304.5 / 360 / 240.75 | 12 × 10 | `DU-S-HP-RET` |
 | suite | Bottom | 312.5 / 344 / 240.75 | 6 × 4 | `DU-S-HP-SUITE-RET-UP` |
 | bed3 | North | 317.5 / 368 / 243.75 | 12 × 6 | `DU-S-HP-BED3-RET` |
-| attic | South | 311.75 / 328 / 254 | 12 × 12 | `DU-A-HP1-EAST-RET` |
-| fresh | South | 310 / 328 / 244 | 6 round | `DU-S-ERV-HP-FEED` |
+| attic | South | 311.75 / 328 / 254.75 | 12 × 12 | `DU-A-HP1-EAST-RET` |
+| fresh | South | 310 / 328 / 244.75 | 6 round | `DU-S-ERV-HP-FEED` |
 
 The ERV feed enters horizontally through the south face, **not the floor** as previous
-notes claimed. The four returns carry 455 + 80 + 80 + 35 = 650 cfm; the ERV adds 100,
-making the nominal 750 cfm supply. Attic return balancing remains 35 cfm.
+notes claimed. The four returns are authored at 455 + 80 + 80 + 35 = 650 cfm and the ERV
+feed at 115 (`erv_balance.EQ_S_ERV_MIX`): 765 cfm against the 750 cfm modeled at the neck
+and supply. The 15 cfm (2%) falls inside balancing. Attic return balancing remains 35 cfm.
+The fresh and attic openings sit 1 inch off the box bottom and 1 inch apart, so each collar
+has a land (2026-11-17).
 
 `mep.plenum_openings` tests each declared face opening against a duct crossing its centre,
 normal to the face, with matching service, shape and section. Missing ducts, wrong sizes
@@ -156,10 +159,12 @@ sheet/seams and point loads, and access for cap removal require installer review
 2. **Heat kit:** `FLEXA2LHTR05KWD` is specified and placed inside the raised cabinet, but its drawn
    envelope is schematic. Obtain its installation envelope and resolve the main manual's
    supply-duct clearance wording against the drop through the wood floor assembly.
-3. **ERV backdraft damper:** required in the 6-inch feed but has no selected product or
-   independently verified blade/body/service envelope here. The drawn feed invert is only
-   1/4 inch above the box bottom, so a flanged collar cannot be assumed to fit there;
-   coordinate the damper/collar assembly and final deck-leg height. A shell opening adds none.
+3. **ERV feed damper (resolved 2026-11-17, owner):** no backdraft damper. The plenum is
+   always below room pressure, so a gravity damper would open in the feed's own direction;
+   a motorized one was rejected as extra wiring, and the small ERV-off back-draw is accepted.
+   A 6-inch locking volume damper on the north deck leg sets 115 cfm with the AH running.
+   The feed invert is now 1 inch above the box bottom (the leg on 3/4-inch sleepers), a
+   collar land the shop drawing confirms.
 4. **Refrigerant pair and controls:** outdoor pairing is declared; the 3/8 + 3/4 lineset,
    insulation, fitting access and actual control route are not modeled. The cabinet's
    markers reserve none of this space.

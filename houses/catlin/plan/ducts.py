@@ -58,7 +58,7 @@ _ROUND = "SMACNA HVAC DCS 1995 Table 4-2, round to 10 in."
 _RECT = "SMACNA HVAC DCS 1995 Table 4-1, half-perimeter to 30 in."
 _FLEX = "JP Lamborn Installation Guidelines Rev. 11-16 (sylvane.com/cdn/shop/files/installation-guide-jpl-mhp25-25-ft-insulated-flex-duct.pdf, read 2026-11-07): 'supported at 4 ft maximum intervals by means of min 1.5 in. wide straps'; IMC 603.10 sends flex to the manufacturer"
 _RECT_ELBOW = "SMACNA HVAC DCS 1995 rectangular radius elbow, shop-fabricated, r/W 1.0, no vanes; Co 0.25 at r/W 1.0, H/W 0.5 (ASHRAE 'Fitting Loss Coefficients', online supplement to Principles of HVAC 9th ed., 2021, Fitting 3-5 p. 12, after Idelchik Diagram 6-1; read 2026-11-08, notes/erv_static_budget.md)"
-_DAMPER = "In-line single-blade volume damper fully open: no 4 in. maker publishes a loss, so C is read off Greenheck VCDR-53 (Aug 2023) AMCA 500-D Fig. 5.3 fully ducted, 12 in.: 0.19 in. wg at 3000 fpm = 0.34 x VP (0.32-0.36 over the table), above the 0.30 ASHRAE butterfly term notes/erv_static_budget.md s.4 uses; body length unpublished (drawn at its diameter)"
+_DAMPER = "In-line single-blade volume damper fully open (4 and 6 in.): no maker of either publishes a loss, so C is read off Greenheck VCDR-53 (Aug 2023) AMCA 500-D Fig. 5.3 fully ducted, 12 in.: 0.19 in. wg at 3000 fpm = 0.34 x VP (0.32-0.36 over the table), above the 0.30 ASHRAE butterfly term notes/erv_static_budget.md s.4 uses; body length unpublished (drawn at its diameter)"
 _REGBOX = "Master Flow (GAF) RB12X6X6 universal register box: a straight, in-line transition from 6 in. round to a 12 x 6 register, 30 ga galvanized (GAF 'Master Flow Register Box - Straight', Home Depot 100114412, Zoro; retailer pages refused automated reads, read through search listings 2026-11-16); depth unpublished, drawn at its envelope"
 _ENDBOOT = "Snappy P17C-204 Center End Register Boot, 2-1/4x10x4, galvanized, stamp-lock, hemmed collar, 2 in. throat (firstsupply.com SNAP17C204 listing, 2026-11-16): the collar on the boot's short end, for a run along the opening's long side; P13-204 is the 90 with the collar on the long side"
 _KIT = "Broan B210E75RT manual pp. 10-11; transition C 0.22 is the sudden 6/8 in. bound"
@@ -145,6 +145,9 @@ DUCT_PRODUCTS = (
     Product(tag="PROD-DUCT-STRAP-FLEX", brand="Any", model="1-1/2 in. flex duct strap",
             name="1-1/2 in. wide flex duct hanger strap (JP Lamborn); no retail roll read",
             source=_FLEX),
+    Product(tag="PROD-DUCT-SLEEPER", brand="Project fabrication", model="TH-DUCT-SLEEPER",
+            name="3/4 in. plywood sleeper block, 3 1/2 in. x the duct's width, cut from scrap",
+            source="Under a deck saddle where the duct stands ~1 in. off the deck (DU-S-ERV-HP-FEED's collar land at EQ-S-ERV-MIX, owner 2026-11-17)"),
 )
 
 DUCT_STANDARD = [
@@ -184,6 +187,8 @@ DUCT_STANDARD = [
             DuctPartRow(kind="collar_damper", size="4in", product_ref="PROD-DUCT-SPIN-4",
                         source=_IMPERIAL),
             DuctPartRow(kind="damper", size="4in", product_ref="PROD-AIR-DAMPER-4-MANUAL",
+                        loss_c=0.34, source=_DAMPER),
+            DuctPartRow(kind="damper", size="6in", product_ref="PROD-AIR-DAMPER-6-MANUAL",
                         loss_c=0.34, source=_DAMPER),
             DuctPartRow(kind="collar_damper", size="8in", integral=True,
                         source="the plenum's own trunk spigot; a trunk is not balanced"),
@@ -274,7 +279,8 @@ DUCT_STANDARD = [
                            source=_RECT),
             DuctSupportRow(section="round", max_size=inch(10), spacing=ft(12), hanger="saddle",
                            product_ref="PROD-DUCT-STRAP", width=inch(1),
-                           thickness=inch(0.0336), source=_SADDLE),
+                           thickness=inch(0.0336), sleeper=inch(0.75),
+                           sleeper_product_ref="PROD-DUCT-SLEEPER", source=_SADDLE),
             DuctSupportRow(section="rectangular", max_size=inch(30), spacing=ft(10),
                            hanger="saddle", product_ref="PROD-DUCT-STRAP", width=inch(1),
                            thickness=inch(0.0336), source=_SADDLE),

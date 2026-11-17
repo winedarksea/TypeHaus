@@ -40,14 +40,14 @@ REGISTERS_HVAC_ATTIC = [
              mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     # RM-A-EAST-UNFIN's return (owner, 2026-11-12): the 35 cfm its supply pushes in goes back
     # to the air handler through the stock 12x12x1 on the SOUTH face of EQ-S-ERV-MIX (x 298-325.5",
-    # y 328-368"), centred 14" AFF (base at 6"), reached from the room. ** THE DAMPER IS THE DESIGN. ** The plenum's
+    # y 328-368"), centred 14 3/4" AFF (base at 6 3/4"), reached from the room. ** THE DAMPER IS THE DESIGN. ** The plenum's
     # returns are in PARALLEL and an open 12x12 pulls its share of the 750 cfm from the nearest
     # grille, not the 35 it was given; the locked balancing damper in the stub, set to 35 cfm
     # through the hinged face, is what stops the short-circuit. Re-check at filter changes.
     Register(uid="S81SMAW96C", tag="REG-A-HP-EAST-RET", kind=DuctSystem.RETURN,
              room="RM-A-EAST-UNFIN", position=pt(inch(311.75), inch(322.5)),
              duct_ref="DU-A-HP1-EAST-RET", type_ref="REG-T-HP-RET-FILTER-1212-WALL",
-             design_cfm=35, mount=Mount(kind=MountKind.WALL, elevation=inch(6))),
+             design_cfm=35, mount=Mount(kind=MountKind.WALL, elevation=inch(6.75))),
     # The west loft's supply: a floor boot at (17'-0", 14'-0"), the y 160-176 bay's centre, fed
     # by DU-S-HP-WEST-BOOT, its own 6" off DU-S-HP-SUP's crown, arriving level along the bay
     # into the stock end boot's end (2026-11-16). Rotation 0 puts the boot's 12" length with

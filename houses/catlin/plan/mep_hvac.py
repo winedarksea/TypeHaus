@@ -362,11 +362,11 @@ DUCTS_HVAC_ATTIC = [
             width=inch(20), depth=inch(16), routing=DuctRouting.EXPOSED,
             design_cfm=750, material="galvanized"),
     # RM-A-EAST-UNFIN's return stub (2026-11-12): REG-A-HP-EAST-RET's 12x12 neck, 6" long, into
-    # EQ-S-ERV-MIX's south face (y=328") at 14" AFF. Its locked balancing damper holds 35 cfm:
+    # EQ-S-ERV-MIX's south face (y=328") at 14 3/4" AFF. Its locked balancing damper holds 35 cfm:
     # the plenum's returns are parallel, so an open grille would short-circuit the others.
     DuctRun(uid="MZW8P3P49V", tag="DU-A-HP1-EAST-RET", system=DuctSystem.RETURN,
             path=(pt(inch(311.75), inch(323)), pt(inch(311.75), inch(329))),
-            elevations=(inch(14), inch(14)),
+            elevations=(inch(14.75), inch(14.75)),
             width=inch(12), depth=inch(12), routing=DuctRouting.EXPOSED,
             design_cfm=35, material="galvanized"),
 ]

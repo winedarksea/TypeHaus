@@ -32,8 +32,8 @@ the model goes back to `plans/TODO.md` as a design item.
   unpublished; the secondary keeps its factory plug), and the selected RectorSeal
   SS3 Gen3 97089's delivered body/bracket and wet-tested trip level. Its current drawing
   is undimensioned; the drawn switch envelope is provisional. Preserve Gree's blower
-  delay and R32 mitigation in the cooling-shutdown wiring. Obtain the ERV backdraft-damper
-  submittal, including flange and service envelope; confirm pitched neck transitions
+  delay and R32 mitigation in the cooling-shutdown wiring. Confirm the 1-inch fresh-collar land
+  on the plenum shop drawing and the locking quadrant on the feed's 6-inch damper; confirm pitched neck transitions
   before releasing the two fabricated plenums (now 27 inches high).
 
 - **Sconce J/J1 (WAC Sprig BL-23210-BK):** confirm it can be hardwired. Output drops from

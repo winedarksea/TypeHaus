@@ -50,14 +50,16 @@ EQUIPMENT_ERV_ATTIC = [
 ]
 # THE MIXING BOX — System 1's return plenum at EQ-S-HP1-AH's return end, on the attic deck
 # since 2026-11-11 (it was in SF-S-HP1, retired with the unit's move). Fresh air may arrive
-# only here, upstream of the coil and the internal heat kit: 100 cfm of -15 F air downstream
+# only here, upstream of the coil and the internal heat kit: 115 cfm of -15 F air downstream
 # of them would be delivered untempered.
 #
-# ** A BOX WITH A BACKDRAFT DAMPER, NOT A WYE. ** The ERV and the air handler run on their own
-# schedules. AH running, ERV off: the return is negative and, undampered, pulls backwards
-# through the 6" feed and a stopped (non-recovering, not airtight) ERV core. ERV running, AH
-# off: 100 cfm enters a still chamber and leaves through the return grilles, so the ERV calls
-# the AH fan (EQ-B-ERV.blower_interlock_ref, mep.erv_blower_interlock).
+# ** A BOX, NOT A WYE, AND NO BACKDRAFT DAMPER (owner, 2026-11-17). ** The plenum is always
+# below room pressure, so a gravity damper would swing open in the feed's own direction and
+# stop nothing; the Broan's port dampers close the outdoor legs. AH running, ERV off (rare):
+# the AH draws a little house air back out of the ERV's other supply grilles; accepted, and
+# a motorized damper rejected as extra wiring. ERV running, AH off: 115 cfm would leave
+# through the return grilles, so the ERV calls the AH fan (EQ-B-ERV.blower_interlock_ref,
+# mep.erv_blower_interlock).
 # `_pair_is_plumbed` excuses only equipment<->duct pairs, which is why the feed lands on
 # equipment.
 #
@@ -254,7 +256,8 @@ DUCTS_ERV_MIX_FEED = [
             # -8 1/2" is a 6" duct strapped low in an FS-ATTIC bay, invert 228 1/2", 3/8"
             # off the ceiling board (2026-11-07; -8 7/8" laid it ON the board at 228 1/8":
             # an I-joist bay has no chord under a duct, only gypsum); +4" is the same duct
-            # lying on the attic deck.
+            # lying on the attic deck. The north leg rides +4 3/4" (2026-11-17), 3/4" up, so
+            # the box's fresh opening keeps a 1" collar land under it.
             # 21'-11 1/2", not the 22'-0" bay centre, since 2026-09-16: centred, the 6" duct
             # stood 3/8" into FO-A-HALL's outboard trimmer ply (face at 22'-2 5/8") for the
             # whole 8' it runs beside the hole. `mep.run_through_blocking` found it where
@@ -272,8 +275,12 @@ DUCTS_ERV_MIX_FEED = [
                   pt(inch(310), ft(21, 10.625)), pt(inch(310), inch(331))),
             elevations=(inch(-9.75), inch(-3.875), inch(4), inch(4),
                         inch(-8.5), inch(-8.5),
-                        inch(4), inch(4)),
+                        inch(4.75), inch(4.75)),
             adjustable_elbows=(1,),
+            # Locking volume damper ~34" up the north deck leg, between its two sleeper
+            # saddles, east of the AH service zone: set 115 cfm with the AH at its
+            # interlocked fan speed, then lock (IMC 603.18.3).
+            inline_dampers=(inch(517),),
             # It names no soffit: CHASE, one run in two cavities (bay and deck).
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=DU_S_ERV_HP_FEED),

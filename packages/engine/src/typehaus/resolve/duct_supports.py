@@ -7,7 +7,7 @@ carried by the wall or chase they climb and take none here. Each hanger names th
 it hangs from: a horizontal member over (or, in a joist bay, beside) the duct within
 ``HANGER_REACH_M``. With nothing overhead the standard's fallback rows are tried: a
 ``saddle`` (a strap band to the deck, house practice; SMACNA draws no bottom support) where
-the duct bears on a deck, then a ``bracket`` to a parallel wall within SMACNA Fig. 4-8's 2".
+the duct bears on a deck (or on the row's ``sleeper`` block on it), then a ``bracket`` to a parallel wall within SMACNA Fig. 4-8's 2".
 A slab is never a saddle host: a duct on concrete stays UNKNOWN, on purpose. A hanger with
 no host is kept, with its ``gap``, for ``mep.duct_supports`` to grade.
 """
@@ -62,22 +62,29 @@ def derive_supports(model: Any, standard: DuctStandard) -> list[ResolvedDuctSupp
             for point in stations(a, b, near, row.spacing.meters):
                 used = row
                 member, drop = index.over(point[:2], point[2] + duct.depth_m / 2.0)
+                sleeper = 0.0
                 for fallback, kind_ in fallbacks:
                     if member is not None:
                         break
                     foot = duct.width_m / 2.0 + (fallback.thickness.meters
                                                  if fallback.thickness else 0.0)
-                    member, drop = (index.deck_under(point, a, b, duct.depth_m / 2.0, foot)
-                                    if kind_ == "saddle"
-                                    else index.wall_beside(point, a, b, duct.width_m / 2.0))
+                    if kind_ == "saddle":
+                        member, drop = index.deck_under(point, a, b, duct.depth_m / 2.0, foot)
+                        if member is None and fallback.sleeper:
+                            sleeper = fallback.sleeper.meters
+                            member, drop = index.deck_under(point, a, b, duct.depth_m / 2.0,
+                                                            foot, sleeper)
+                            sleeper = sleeper if member is not None else 0.0
+                    else:
+                        member, drop = index.wall_beside(point, a, b, duct.width_m / 2.0)
                     used = fallback if member is not None else row
                 out.append(_record(duct, point, used, member, drop,
-                                   [k for _, k in fallbacks]))
+                                   [k for _, k in fallbacks], sleeper))
     return out
 
 
 def _record(duct: Any, point: Point3, row: DuctSupportRow, member: str | None, drop: float,
-            fallbacks: list[str]) -> ResolvedDuctSupport:
+            fallbacks: list[str], sleeper: float = 0.0) -> ResolvedDuctSupport:
     reach = (f"no framing within {HANGER_REACH_M / M_PER_IN:.0f}\" above or "
              f"{HANGER_PLAN_REACH_M / M_PER_IN:.0f}\" beside the duct")
     near = f"{FALLBACK_REACH_M / M_PER_IN:.0f}\""
@@ -89,7 +96,8 @@ def _record(duct: Any, point: Point3, row: DuctSupportRow, member: str | None, d
         hanger=row.hanger, spacing_m=row.spacing.meters, product_ref=row.product_ref,
         hangs_from=member, drop_m=drop, width_m=row.width.meters if row.width else None,
         thickness_m=row.thickness.meters if row.thickness else None,
-        gap=None if member else reach)
+        gap=None if member else reach, sleeper_m=sleeper,
+        sleeper_product_ref=row.sleeper_product_ref if sleeper else None)
 
 
 def needs_hangers(duct: Any) -> bool:
@@ -172,10 +180,10 @@ class _MemberIndex:
         return best[2], best[0]
 
     def deck_under(self, point: Point3, a: Point3, b: Point3, half_depth: float,
-                   foot: float) -> tuple[str | None, float]:
-        """(``FLOOR:deck``, invert-to-deck gap) for a floor deck the duct bears on, with both
-        band feet (``foot`` either side of the duct, across leg a-b) on it. Slabs are never
-        hosts."""
+                   foot: float, sleeper: float = 0.0) -> tuple[str | None, float]:
+        """(``FLOOR:deck``, invert-to-deck gap) for a floor deck the duct bears on (on a
+        ``sleeper`` block that thick, if given), with both band feet (``foot`` either side of
+        the duct, across leg a-b) on it. Slabs are never hosts."""
         from shapely.geometry import Point, Polygon
 
         run = math.dist(a[:2], b[:2]) or 1.0
@@ -191,7 +199,8 @@ class _MemberIndex:
             if not all(deck.covers(f) and not any(v.contains(f) for v in voids) for f in feet):
                 continue
             gap = invert - max(floor.deck_top_at(f.x, f.y) for f in feet)
-            if -0.003 <= gap <= SADDLE_BEARING_M + _SLOP_M and (best is None or gap < best[0]):
+            bears = gap - sleeper
+            if -0.003 <= bears <= SADDLE_BEARING_M + _SLOP_M and (best is None or gap < best[0]):
                 best = (max(gap, 0.0), f"{floor.tag}:deck")
         return (best[1], best[0]) if best else (None, 0.0)
 

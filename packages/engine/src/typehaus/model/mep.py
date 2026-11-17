@@ -398,8 +398,8 @@ class Equipment(Element):
     access_panel_ref: str | None = None
     # The other unit whose blower this one's operation is interlocked with — an ERV naming
     # the air handler it shares a return plenum with, or the reverse. It is a *behaviour*,
-    # authored because it can be authored nowhere else: the mixing box's backdraft damper is
-    # geometry, but "these two fans start together" is a control sequence, and it is the
+    # authored because it can be authored nowhere else: the mixing box is geometry, but
+    # "these two fans start together" is a control sequence, and it is the
     # sequence a commissioning agent balances the house against. Never inferred from a
     # shared plenum: two machines can share a plenum and run on independent schedules.
     # ``mep.erv_blower_interlock`` derives the coupling from the ducts and reads this.

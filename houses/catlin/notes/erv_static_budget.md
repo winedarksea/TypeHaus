@@ -510,6 +510,9 @@ measured one.
 - **Report per terminal**: tag, design cfm, measured cfm, damper position. 23 rows, one
   page, filed with the O&M.
 - **The number to hit is 188 cfm net supply** (MN 1322 R403.5 on 4,900 sf and five bedrooms, §10.23), not 210.
+- **Set the mixing-box feed with the air handler running.** `DU-S-ERV-HP-FEED`'s 6" locking
+  damper (§10.29) sets 115 cfm into `EQ-S-ERV-MIX` with `EQ-S-HP1-AH` at its interlocked fan
+  speed (the box is negative, so the reading moves with the AH), then lock the quadrant.
 
 ## 9. What is NOT graded here
 
@@ -1603,6 +1606,23 @@ as if in withdrawal, 245 lb by TB-808's example). The north strut sits 1/2" inbo
 clear joist 006's flange. 47 lb / 4 = 11.8 lb a rod; the worst joist carries 21.2 lb in 5 ft,
 all on one side of its web, against TB-808's 500 lb (250 a side). Drop 57.2".
 `structural.equipment_hangers` passes all three.
+
+### 10.29 HP-FEED's balancing damper; the deck leg 3/4" up (2026-11-17)
+
+No backdraft damper (owner): `EQ-S-ERV-MIX` is always below room pressure, so a gravity damper
+would open in the feed's own direction. A 6" locking volume damper (`PROD-AIR-DAMPER-6-MANUAL`,
+the DuctStandard's 6" `damper` row, C 0.34 on §10.24's VCDR basis) sits at
+`inline_dampers=(517",)`, y = 297" on the north deck leg between its two saddles. That leg now
+rides +4 3/4" (was +4") for the box's 1" fresh-collar land, so the stand-up is 3/4" longer
+(550.213 -> 550.963") and each saddle bears on a 3/4" sleeper.
+
+    HP-FEED (115 cfm, 6" bore, VP 0.0213861, f 0.02504; §10.28):
+      friction  +0.02504 x (0.75 / 6) x VP = +0.0000669 in.
+      damper     0.34 x VP                 = +0.0072713 in.
+      leg 0.076193 -> 0.083531 in.          Engine: 0.083528 (f rounding).
+    supply via HP-FEED: 0.476648 + 0.000067 + 0.007271 = 0.483986 in.
+
+**Governing:** unchanged. Extract via `DU-M-ERV-R-SUITEBATH`, 0.602426 in., **198.9 cfm**.
 
 ### 10.5 The thermal penalty of the legs (hand-worked)
 

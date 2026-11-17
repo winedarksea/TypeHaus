@@ -395,8 +395,8 @@ def test_the_fresh_feed_ends_in_the_mixing_box_on_the_attic_deck(catlin_model) -
     assert feed.uid == "CSDV02AAAA"
     deck_top = 240.75
     tail = feed.z_m[-1] / M_PER_IN
-    # 6" duct, its invert a quarter inch over the deck it bears on.
-    assert tail - 3.0 == pytest.approx(deck_top + 0.25, abs=0.01)
+    # 6" duct, its invert a quarter inch over the 3/4" sleeper it bears on (collar land, 2026-11-17).
+    assert tail - 3.0 == pytest.approx(deck_top + 0.75 + 0.25, abs=0.01)
     # Its low point is the riser head the 30 degree skew leaves (2026-11-12, note §10.28).
     assert min(feed.z_m) / M_PER_IN == pytest.approx(230.25, abs=0.01)
 

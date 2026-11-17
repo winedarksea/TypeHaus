@@ -133,23 +133,24 @@ EQUIPMENT_TYPES_ERV = (
     # its direction once cannot describe a placement that reverses it, and a FAIL there
     # would have reported the catalog rather than the building.
     # The mixing box: where the ERV's fresh leg joins System 1's return. A box and not a tee
-    # because of the damper in it — a backdraft damper on the ERV leg is what keeps the
-    # return working when the ERV is off, which is the behaviour the owner asked for and is
-    # behaviour, not geometry.
+    # because several returns meet here, upstream of the coil and heat kit. No backdraft
+    # damper (owner, 2026-11-17): the plenum is always below room pressure, so a gravity
+    # damper would swing open in the feed's own direction. ERV off, the AH draws a little
+    # house air back through the feed; accepted. A locking volume damper in the feed sets 115 cfm.
     #
     # 27 1/2 x 40 x 27: raised return opening follows the cabinet's rail/pan stack and pitch.
     # (plan/mep_erv_l3.py). 750 cfm leaves through the 20 x 16 neck at 340 fpm.
     EquipmentType(tag="EQ-T-ERV-MIXING-BOX",
-                  name="Return-air mixing plenum, 6\" ERV leg with backdraft damper",
+                  name="Return-air mixing plenum, 6\" ERV feed",
                   footprint=(inch(27.5), inch(40)), height=inch(27),
                   model_representation=ModelRepresentation(symbol="sheet-metal-plenum"),
-                  source="Fabricated plenum box, 27 1/2 x 40 x 27 in, on the attic deck at EQ-S-HP1-AH's return end: System 1's return plenum, taking the hall return riser, RM-S-SUITE's, RM-S-BED3's and RM-A-EAST-UNFIN's returns (the last a 12x12 stub on the south face, damper-locked at 35 cfm: the returns are in parallel) and a 6 in ERV inlet on a gravity backdraft damper, and giving the cabinet a 20 x 16 neck through its canvas connector. The raised west-face opening follows the cabinet pan/rails and pitch; all other port stations stay fixed. The damper is the whole point: the ERV and the air handler run on independent schedules and each must breathe without the other. Mastic-sealed galvanized; the neck size waits on the delivered cabinet's return opening.",
+                  source="Fabricated plenum box, 27 1/2 x 40 x 27 in, on the attic deck at EQ-S-HP1-AH's return end: System 1's return plenum, taking the hall return riser, RM-S-SUITE's, RM-S-BED3's and RM-A-EAST-UNFIN's returns (the last a 12x12 stub on the south face, damper-locked at 35 cfm: the returns are in parallel) and a 6 in ERV inlet, and giving the cabinet a 20 x 16 neck through its canvas connector. The returns meet here so fresh air joins upstream of the coil and heat kit. No backdraft damper (owner, 2026-11-17): the plenum is always below room pressure, so with the ERV off the air handler draws a little house air back through the feed and the ERV's other supply grilles; accepted. The ERV calls the air handler's fan (blower interlock), and the feed's locking volume damper sets its 115 cfm. The raised west-face opening follows the cabinet pan/rails and pitch; the fresh and attic openings sit 1 in off the bottom and each other for collar lands. Mastic-sealed galvanized; the neck size waits on the delivered cabinet's return opening.",
                   # Face stations follow the drawn runs. Approximate means a design
                   # opening, still awaiting a coordinated fabricator's shop drawing.
                   ports=(ServicePort(tag="fresh", service=Service.SUPPLY_AIR,
-                                     position=(inch(-1.75), inch(-20), inch(3.25)),
+                                     position=(inch(-1.75), inch(-20), inch(4)),
                                      connection_size=inch(6), direction=(0, -1, 0),
-                                     notes="ERV feed enters south face horizontally, not the floor; backdraft damper required."),
+                                     notes="ERV feed enters south face horizontally, not the floor; 1in collar land below."),
                          ServicePort(tag="return", service=Service.RETURN_AIR,
                                      position=(inch(-13.75), inch(-8.907472317), inch(16.485179447)),
                                      width=inch(20), depth=inch(16), direction=(-1, 0, 0),
@@ -167,7 +168,7 @@ EQUIPMENT_TYPES_ERV = (
                                      width=inch(12), depth=inch(6), direction=(0, 1, 0),
                                      notes="Bedroom return enters north face; its invert is at deck level."),
                          ServicePort(tag="attic", service=Service.RETURN_AIR,
-                                     position=(ft(0), inch(-20), inch(13.25)),
+                                     position=(ft(0), inch(-20), inch(14)),
                                      width=inch(12), depth=inch(12), direction=(0, -1, 0),
                                      notes="Attic return stub, damper locked at 35 cfm."))),
 

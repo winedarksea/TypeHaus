@@ -153,6 +153,10 @@ class DuctSupportRow(HausModel):
     #: The strap or rod as published: width x thickness, or rod diameter in ``width``.
     width: Length | None = None
     thickness: Length | None = None
+    #: A saddle only: a block this thick under the duct, between the strap's feet, where the
+    #: duct stands off its deck by about that much (a collar land at a box, say).
+    sleeper: Length | None = None
+    sleeper_product_ref: str | None = None
     source: str | None = None
 
 
@@ -245,6 +249,7 @@ class DuctStandard(Element):
         refs = [self.sealant_product_ref, self.tape_product_ref, self.insulation_product_ref,
                 *(r.product_ref for r in self.elbows), *(r.product_ref for r in self.parts),
                 *(r.product_ref for r in self.supports),
+                *(r.sleeper_product_ref for r in self.supports),
                 *(ref for k in self.port_kits
                   for ref in (k.transition_product_ref, k.flex_product_ref))]
         return tuple(dict.fromkeys(ref for ref in refs if ref))

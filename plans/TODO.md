@@ -250,7 +250,6 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
 - [x] 3d model of the DoorScope (round DS2000 trim, recessed interior screen and exterior optics shared by viewer/GLB/IFC).
 - ERV likely blocks D-B-CLOSET, and its condensate also blocks
 - [x] Kitchen Dearborn P9703WBG J-bend and slip nuts modeled with the disposer, connecting to the trap arm; purchased once through install_parts. [Plumbing declaration (line 4)](/Users/colincatlin/Documents-NoCloud/TypeHaus/houses/catlin/plan/kitchen_sink_plumbing.py:4)
-- ERV backdraft damper lacks a selected product and installation envelope. It is required by the mixing-plenum design, but its body, blade, collar, and service clearance remain unresolved. [Design hold](../houses/catlin/notes/flexx_ultra_geometry.md#remaining-design-holds)
 - "Views" button in the UI is the most important and needs some sort of design to be more obvious to the user as the first place they should click (not adding a product tour though)
 
 # Project Management

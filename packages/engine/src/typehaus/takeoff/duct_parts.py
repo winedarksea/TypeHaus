@@ -49,6 +49,12 @@ def duct_support_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         if support.hangs_from is None:
             row["unhung"] = int(row["unhung"]) + 1  # type: ignore[call-overload]
         row["tags"].add(support.run_tag)  # type: ignore[union-attr]
+        if support.sleeper_m:  # the saddle's block: its own row, by the piece
+            block = rows.setdefault((support.sleeper_product_ref or "", "sleeper", support.size), {
+                "product": support.sleeper_product_ref, "hanger": "sleeper",
+                "size": support.size, "count": 0, "drop_ft": 0.0, "unhung": 0, "tags": set()})
+            block["count"] = int(block["count"]) + 1  # type: ignore[call-overload]
+            block["tags"].add(support.run_tag)  # type: ignore[union-attr]
     return [{**row, "tags": sorted(row["tags"])}  # type: ignore[call-overload]
             for _, row in sorted(rows.items())]
 

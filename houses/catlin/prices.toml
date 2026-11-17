@@ -3089,8 +3089,8 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "EQ-T-ERV-PLENUM-M-EXH" = { material = { low = 140, high = 350 }, labour = { low = 180, high = 420 } }  # 1 ea — 34 x 8, a 6" riser inlet and one 8" trunk collar
 "EQ-T-ERV-PLENUM-B-SUP" = { material = { low = 150, high = 370 }, labour = { low = 210, high = 480 } }  # 1 ea — 36 x 8, two 6" ports in the underside and two 4" collars (sauna supply off GYM, 2026-11-11)
 "EQ-T-ERV-PLENUM-B-EXH" = { material = { low = 150, high = 370 }, labour = { low = 210, high = 480 } }  # 1 ea — the same shell, services reversed (bench valve off SAUNA-EXH, 2026-11-11)
-# Fabricated plenum box with a 6" collar and a gravity backdraft damper. Sheet-metal shop
-# work, not a catalogue item: the material range is the metal and the damper, the labour is
+# Fabricated plenum box with a 6" collar (no backdraft damper, owner 2026-11-17). Sheet-metal shop
+# work, not a catalogue item: the material range is the metal and collars, the labour is
 # the fabrication plus fitting it into a 30 3/4" soffit with an air handler already in it.
 "EQ-T-ERV-MIXING-BOX" = { material = { low = 160, high = 380 }, labour = { low = 200, high = 460 } }  # 1 ea — 27 1/2 x 39 x 23 since 2026-11-11 (was 12 x 29 x 20), estimate
 "EQ-T-HP1-SUP-BOX" = { material = { low = 90, high = 220 }, labour = { low = 120, high = 300 } }  # 1 ea — 22 1/2 x 14 x 23 supply box at the attic air handler, estimate
@@ -6418,6 +6418,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "PROD-DUCT-SPIN-4" = { low = 8, high = 15 }              # 13 ea — 4" spin collar with damper (12 collar_damper + 1 takeoff)
 "PROD-DUCT-SPIN-6" = { low = 9, high = 18 }              # 4 ea — 6" spin collar with damper
 "PROD-AIR-DAMPER-4-MANUAL" = { low = 10, high = 25 }     # 1 ea — 4" in-line volume damper, locking quadrant (DU-B-ERV-R-BENCH, 2026-11-12; estimate, no listing read)
+"PROD-AIR-DAMPER-6-MANUAL" = { low = 12, high = 30 }     # 1 ea — 6" in-line volume damper, locking quadrant (DU-S-ERV-HP-FEED, 2026-11-17; estimate, no listing read)
 "PROD-DUCT-SADDLE-4" = { low = 6, high = 12 }            # 9 ea — 4" wye saddle on the 8" trunk
 "PROD-DUCT-INCREASER-4-5" = { low = 4, high = 10 }       # 1 ea — 4" to 5" increaser at a boot
 "PROD-DUCT-BOOT-2X10X4" = { low = 6, high = 12 }         # 1 ea — 2-1/4 x 10 x 4 90 floor boot
@@ -6460,6 +6461,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # 2026-11-07 cross-check (search listings, not fetched): DiversiTech 710-005, 1 in. x 100 ft
 # 22 ga, $48.59 (elliottelectric.com/P/Item/DVV/710005) to $76.67 (walmart.com) a roll, so
 # $0.49-0.77/ft; a strap or deck saddle takes ~1-2 ft. Range kept.
+"PROD-DUCT-SLEEPER" = { low = 0.25, high = 1.00 }        # 2 ea — 3/4" ply block under a saddle (DU-S-ERV-HP-FEED, 2026-11-17); scrap, estimate
 "PROD-DUCT-STRAP" = { low = 0.50, high = 1.50 }          # 136 ea (118 hung + 18 deck saddles)
 # 1-1/2 in. flex duct strap (JP Lamborn): ESTIMATE, no retail product read. 0 ea today (no flex
 # DuctRun; the port leads ride on their kit joints).

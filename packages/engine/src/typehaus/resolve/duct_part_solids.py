@@ -38,6 +38,8 @@ from typehaus.resolve.takeoff_solids import takeoff_mesh
 MIN_DROP_M = 0.5 * M_PER_IN
 STRAP_WIDTH_M, STRAP_THICKNESS_M = 1.0 * M_PER_IN, M_PER_IN / 32.0
 ROD_DIAMETER_M = 0.375 * M_PER_IN
+#: A saddle sleeper's length along the run (a ply block cut 3 1/2" from scrap).
+SLEEPER_LENGTH_M = 3.5 * M_PER_IN
 #: The collar damper's quadrant handle: along the collar, around it, and out from it.
 HANDLE_M = (1.5 * M_PER_IN, 2.0 * M_PER_IN, 0.25 * M_PER_IN)
 HANDLE_STANDOFF_M = 0.125 * M_PER_IN  # the shaft, undrawn
@@ -202,7 +204,16 @@ def _support_mesh(model: ResolvedModel, hanger: ResolvedDuctSupport) -> GMesh | 
                        (0.0, width / M_PER_IN, 0.0))
     shifted = transform_mesh(plate, origin_m=_add(hanger.point, run, -width / 2.0),
                              x_axis=across, y_axis=run, z_axis=(0.0, 0.0, 1.0))
-    return shifted
+    if not hanger.sleeper_m:
+        return shifted
+    # The saddle's block, between the strap's feet: deck to duct invert less the bearing gap.
+    z0 = -half_d - hanger.drop_m
+    block = plate_mesh(tuple((a / M_PER_IN, 0.0, z / M_PER_IN) for a, z in (
+        (-half_w, z0), (half_w, z0), (half_w, z0 + hanger.sleeper_m),
+        (-half_w, z0 + hanger.sleeper_m))), (0.0, SLEEPER_LENGTH_M / M_PER_IN, 0.0))
+    return combine_meshes(shifted, transform_mesh(
+        block, origin_m=_add(hanger.point, run, -SLEEPER_LENGTH_M / 2.0),
+        x_axis=across, y_axis=run, z_axis=(0.0, 0.0, 1.0)))
 
 
 def _solid(uid: str, tag: str, storey: str, category: str, mesh: GMesh,

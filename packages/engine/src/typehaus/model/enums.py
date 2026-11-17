@@ -451,15 +451,13 @@ class EquipmentKind(Enum):
     # ``EquipmentType``, so a second battery module is one more placement, not a new kind.
     BATTERY = "battery"
     INVERTER = "inverter"
-    # A box where two air streams meet under a damper: the ERV's fresh-air leg joining an
-    # air handler's return. Equipment rather than a duct fitting because it is a purchased
-    # enclosure with a footprint, it occupies a soffit the way the air handler beside it
-    # does, and the backdraft damper in it is what keeps the return working when the ERV is
-    # off — behaviour, not a tee. Also any passive shop box air passes through (an air
-    # handler's supply box): no backing, walked through by the interlock graph.
+    # A box where a ventilator's fresh-air leg joins an air handler's return. Equipment
+    # rather than a duct fitting because it is an enclosure with a footprint that occupies
+    # space like the air handler beside it; whether it carries a damper does not define it.
+    # Passive like PLENUM: no backing, walked through by the interlock graph.
     MIXING_BOX = "mixing_box"
     # A passive shop-made air box: no fan, no dampers (an air handler's supply box). Walked
-    # through by the interlock graph, never wall-backed; a box with a damper is MIXING_BOX.
+    # through by the interlock graph, never wall-backed; one an ERV feeds is MIXING_BOX.
     PLENUM = "plenum"
     # A radial-distribution plenum: one collared trunk connection, N small round takeoffs.
     # The thing that makes a semi-rigid radial install a radial install, and a real box with
