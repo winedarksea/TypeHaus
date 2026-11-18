@@ -8704,3 +8704,7 @@ Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
   re-run on the rim (Z' 133 lb, worst share 124.33), a draft check. Table 5 is read by each
   member's SG: KDAT is SP, so the >0.50 column, and the seats grew 9 1/4" → 10" for its 3" end
   distance. The seat's rotation under the 7 1/4" eccentric reaction is UNKNOWN (an owner question).
+- **One head drip at all three framed-floor doors (owner, 2026-11-18).** D-S-BALCONY drops its stock
+  SureSill HeadFlash and keeps only the door trim kit's head drip, as PORCH and ENTRY have since
+  abab0d087; `framed_floor_installation` sets it once. BALCONY keeps its flashing ends (the rear
+  runs they close are its own).

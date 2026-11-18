@@ -311,12 +311,14 @@ def test_flashing_selection_and_dimensions_are_independent_of_support(catlin_mod
 
     assert any(s.name == "flashing-end-house-adapter--1"
                for s in sections(support_kind="concrete_cantilever"))
-    assert len(sections(independent_landing_flashing=False)) == 4
-    without_head = sections(stock_head_flashing=False)
+    # D-S-BALCONY takes no stock HeadFlash since 2026-11-18 (the kit's head drip only).
+    assert len(sections(stock_head_flashing=True, independent_landing_flashing=False)) == 4
+    without_head = sections()
     assert not any(s.name.startswith("stock-headflash-") for s in without_head)
     assert any(s.name.startswith("flashing-end-") for s in without_head)
 
-    modified = sections(head_cap_depth=inch(2), transition_strip_width=inch(8),
+    modified = sections(stock_head_flashing=True, head_cap_depth=inch(2),
+                        transition_strip_width=inch(8),
                         head_source_url="https://example.test/head", transition_sheet_thickness=inch(.04))
     cap = next(s for s in modified if s.name == "stock-headflash-cap-envelope")
     assert Polygon(cap.polygon_m).bounds[2] - Polygon(cap.polygon_m).bounds[0] == pytest.approx(.0508)

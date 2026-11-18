@@ -88,7 +88,8 @@ _XXXXW_URL = ('https://resources.enduraproducts.com/hubfs/OMRSv3%20-%20Line%20Dr
 
 def framed_floor_installation(support_ref, bearing, catalog=None, **door):
     """The shared package on the girt sill beam; each door passes its trim, landing and any
-    catalog overrides."""
+    catalog overrides. One head drip at all three, the door trim kit's: no stock HeadFlash
+    (owner, 2026-11-18)."""
     return ExteriorDoorInstallation(
         factory_frame_depth=inch(4.5625), interior_material_ref='pine-fj-base',
         approach_bearing=bearing, **door,
@@ -97,14 +98,13 @@ def framed_floor_installation(support_ref, bearing, catalog=None, **door):
             sill_outline_m=tuple(tuple(point) for point in _OUTLINE_5625['polygon_m']),
             sill_extender_ref='XXXXW', sill_extender_source_url=_XXXXW_URL,
             sill_extender_depth=inch(6.375), sill_extender_height=inch(17 / 32),
-            support_kind='girt_bridge', support_ref=support_ref, **_MEMBRANE_PAN,
-            **(catalog or {})))
+            support_kind='girt_bridge', support_ref=support_ref, stock_head_flashing=False,
+            **_MEMBRANE_PAN, **(catalog or {})))
 
 
-# PORCH and ENTRY keep the one head drip they had before the shared package: the door trim
-# kit's. The stock HeadFlash and the flashing ends that close FS-SG-BALCONY's rear runs are
-# BALCONY's alone; neither run exists at these two doors.
-_MAIN_FLOOR_FLASHING = dict(stock_head_flashing=False, independent_landing_flashing=False)
+# The flashing ends that close FS-SG-BALCONY's rear runs are BALCONY's alone; neither run
+# exists at these two doors.
+_MAIN_FLOOR_FLASHING = dict(independent_landing_flashing=False)
 
 
 # The planks reach FS-SG-BALCONY's north sister, 3/8" off the beam face like ENTRY's (owner,
