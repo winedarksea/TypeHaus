@@ -305,7 +305,7 @@ The governing row of `lateral_system/RF-BW-CANOPY`.
 ### 4e. The landing tie
 
 `deck_tie/FS-BW-FLOOR` reads the whole 1,034.49 lb as the screen's N-S share. Its verdicts, worked in
-`north_entry_piers.md` §10: N-S 0.761, **E-W 0.794 (governs)**, guard 0.653. The E-W row does not read the screen's
+`north_entry_piers.md` §10: N-S 0.761, **E-W 0.792 (governs)**, guard 0.653. The E-W row does not read the screen's
 share at all.
 
 ### 4f. The band over the panel — `canopy_west_band.md` §3
@@ -487,7 +487,7 @@ presumed); a soils report that predicts more than 3/16" between the two planes r
 
 | trigger | where | today |
 |---|---|---|
-| landing tie or screen OVER at the envelope | §4, §4e | 0.907 / 0.794, both under |
+| landing tie or screen OVER at the envelope | §4, §4e | 0.907 / 0.792, both under |
 | `W-G-S` surplus or overturning needs more than a hold-down | §3e, §3f | 0.212 and one STHD14 (0.090) |
 | garage-roof blocking unbuildable round the drift trusses | §3d | none required |
 

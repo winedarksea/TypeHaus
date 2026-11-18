@@ -178,15 +178,18 @@ EXT_2X6 = Assembly(
               framing=FramingSpec(member="2x4", direction="horizontal", laid="flat",
                                   spacing=inch(24), layout_origin="line",
                                   course_datum="framing-base", course_offset=inch(0),
-                                  # A door's sill course carries its approach (owner, 2026-11-14):
-                                  # 3-screw end blocks, 6" interior blocks, TLOK10 through an SPF
-                                  # backer pair in the edge TJI's web recess.
+                                  # A door's sill course is a 2x6 beam outboard of the girt band,
+                                  # its face at the XXXXW nose, seated at its ends on 4-ply stacks
+                                  # (owner, 2026-11-17): 4 TLOK10 a seat into an SPF backer pair.
                                   sill_course=SillCourseFastening(
-                                      block_spacing=inch(6), end_screws=3,
-                                      end_screw_pitch=inch(0.75), fastener_part="TLOK10",
-                                      fastener_length_in=10.0, backer_stock="2x4",
-                                      backer_material_ref="spf", course_modulus_psi=1400000.0,
-                                      source="notes/exterior_door_structural_mount.md, Girt sill course connection; E per notes/catlin_truss_engineering.md section 4"),
+                                      layout="end_seats", course_stock="2x6",
+                                      seat_width=inch(9.25), seat_rows=2, screws_per_row=2,
+                                      fastener_part="TLOK10", fastener_length_in=10.0,
+                                      backer_stock="2x6", backer_material_ref="spf",
+                                      course_modulus_psi=1260000.0, course_bending_psi=1137.0,
+                                      course_shear_psi=131.0, lateral_wet_lb=135.0,
+                                      lateral_source="house NDS 2018 12.3 calc, mode IIIm 194.4 lb x C_M 0.70 = 136.1, authored 135: notes/exterior_door_sill_beam.md section 3",
+                                      source="notes/exterior_door_sill_beam.md; No.2 SPF wet as the lower bound for KDAT"),
                                   standoff="block",
                                   standoff_fastener="FastenMaster TimberLOK 8\" TLOK08, ESR-1078",
                                   standoff_fastener_part="TLOK08",

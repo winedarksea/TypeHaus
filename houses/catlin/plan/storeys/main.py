@@ -12,7 +12,6 @@
 from library.doors import DT_INT_ACCESS24, DT_INT_CLOSET24
 from ..doorway_transitions import BEDROOM_ZBAR, D_M_BED2_SADDLE
 from typehaus import (
-    ApproachBearing,
     Alarm,
     AlarmKind,
     Beam,
@@ -23,8 +22,6 @@ from typehaus import (
     Door,
     DoorType,
     FramingSpec,
-    ExteriorDoorInstallation,
-    ExteriorDoorSillDesign,
     FloorHeat,
     FloorOpening,
     FloorOpeningLid,
@@ -1101,39 +1098,16 @@ OPENINGS = [
     # pack backing W-M-MECH-E's end and that casing leg scribed to ~2 1/4".
     Door(uid="CMD201AAAA", tag="D-M-ENTRY", host="W-M-N3", type_ref="DT-EXT-SWING36",
          egress=True,
-         position=from_node("N-M-N2", ft(0, 6)),
-         exterior_installation=ExteriorDoorInstallation(interior_material_ref="pine-fj-base",
-             # No cantilever (owner, 2026-11-13): the plate rests on its landing over
-             # the nearest member, on a slip pad; the strips stop at the girt sill course.
-             approach_bearing=ApproachBearing(landing_ref="FS-BW-FLOOR", landing="slip_pad",
-                 slip_pad_material_ref="uhmw-slip-pad"),
-             exterior_wrap_material_ref="metal-dark-exterior",
-             sill_design=ExteriorDoorSillDesign(
-                 source_url="https://outdoorsandsecurity.widen.net/content/6ybzlyty7g/original/2026-Arch-Comp-BOOK---COMP-7-Sills.pdf",
-                 source_drawing="2026 Comp 7.3: 7-3/4 inch inswing; schematic design envelope",
-                 threshold_depth=inch(7.75), threshold_height=inch(1.5), cap_depth=inch(1.5),
-                 # Owner 2026-11-06: 1/4" seat on a pan sloped across the RO only, so the
-                 # crest stands 1.47" over the mudroom LVP (R311.3.1 egress, <= 1.5").
-                 seat_height=inch(0.25), pan_across_ro=True,
-                 approach_minimum_height=inch(0.625)))),
+         # Its sill, pan and landing joint: plan/french_door_installations.py.
+         position=from_node("N-M-N2", ft(0, 6))),
     # Stands directly under D-S-BALCONY, so the south face reads as one column of French
     # pairs. Its published 63 5/16" RO is re-centred at 8 11/32" off N-M-S1, like the pair
     # above (owner, 2026-10-29: the mirrored facade beats the stud module, suppressed).
+    # Its sill, pan and joint cover: plan/french_door_installations.py.
     Door(uid="CMD202AAAA", tag="D-M-PORCH", host="W-M-S2", type_ref="DT-EXT-FRENCH60",
          position=from_node("N-M-S1", inch(8.34375)), flip_swing=True,
          # 63" glazed pair: a 2-2x8 on edge, not the derived flat nailer (owner, #116).
-         header_spec="2-2x8",
-         exterior_installation=ExteriorDoorInstallation(interior_material_ref="pine-fj-base",
-             # No cantilever (owner, 2026-11-13): the plate rests on its landing over
-             # the nearest member, on a slip pad; the strips stop at the girt sill course.
-             approach_bearing=ApproachBearing(landing_ref="FS-SG-PORCH", landing="slip_pad",
-                 slip_pad_material_ref="uhmw-slip-pad"),
-             exterior_wrap_material_ref="metal-dark-exterior",
-             sill_design=ExteriorDoorSillDesign(
-                 source_url="https://marketing.poweredbyendura.com/hubfs/Sills_TechnicalDocuments/Z-Series%20Sills%20-%20Line%20Drawings.pdf",
-                 source_drawing="Endura Z-Series Sill Options p.5, ZAI4565FN: 4-9/16 x 1-3/8 inches; schematic envelope, installed section and pair approval pending",
-                 threshold_depth=inch(4.5625), threshold_height=inch(1.375), cap_depth=inch(1.5),
-                 seat_height=inch(0.375), approach_minimum_height=inch(0.625)))),
+         header_spec="2-2x8"),
     # Interior
     # D-M-STAIR was here — the 32" swing in the west lane, onto the flight ST-B2M arrives in.
     # Retired 2026-08-24 with its host wall W-M-STRS; see WALLS. The stair head is open.
@@ -2371,8 +2345,10 @@ CONNECTORS = [
     Connector(uid="RYMM0XWNBM", tag="CN-M-HD-ENTRY-E", kind=ConnectorKind.HOLD_DOWN,
               position=pt(ft(9, 9), _JAMB_Y_NORTH), elevation=_JAMB_Z,
               size="STHD", connects=("W-M-N3", "W-B-N3")),
+    # 3" outboard of the 38 3/8" RO's west edge (x=6'-3 5/8"): at 6'-3" it stood 7/8" inside
+    # the RO, under the sill (2026-11-18).
     Connector(uid="V5HNZ3S6Q1", tag="CN-M-HD-ENTRY-W", kind=ConnectorKind.HOLD_DOWN,
-              position=pt(ft(6, 3), _JAMB_Y_NORTH), elevation=_JAMB_Z,
+              position=pt(inch(72.625), _JAMB_Y_NORTH), elevation=_JAMB_Z,
               size="STHD", connects=("W-M-N3", "W-B-N3")),
     # The porch door stands on W-B-S3-FR, a framed wall, not on concrete: W-B-S3 is a
     # 7 1/4" curb at -102 3/16". So each jamb is two parts — an MSTC52 across the floor

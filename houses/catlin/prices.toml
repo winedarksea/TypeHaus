@@ -558,6 +558,10 @@
 # also bills W-M-STRW's KDAT sole plate (one 10' stick), exposed in the mudroom's open bays.
 "2x6:kdat" = { material = { low = 2.0, high = 2.9 }, labour = { low = 0.8, high = 1.4 } }  # 130 LF ordered
 "3-2x6:kdat" = { material = { low = 6.0, high = 8.7 }, labour = { low = 0.5, high = 1 } }  # 24 LF (36 standoffs x 3 plies)
+# The exterior doors' end seats (2026-11-17, notes/exterior_door_sill_beam.md): four plies of
+# 2x6 KDAT, 9 1/4" long, two a door. Material 4x the 2x6:kdat row; labour lays out and drives
+# the two staggered screw rows to ESR-1078 Table 5. ESTIMATE. The beams bill as 2x6:kdat.
+"4-2x6:kdat" = { material = { low = 8.0, high = 11.6 }, labour = { low = 2.0, high = 4.0 } }  # 8 LF ordered (6 seats)
 # W-M-STRW's oak bay courses (bench support, 6' shelf, 7' cap): owner-stock 8/4 red oak
 # (`oak-8q`; `white-oak-8-4` until 2026-10-16, when the pile turned out to be red oak),
 # milled S4S to 1 1/2" — milling is the material rate; labour is fitting each block between
@@ -1504,7 +1508,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # ESR-4645 is dry service only) and HECO TOPIX-plus (no US evaluation report).
 "TLOK08" = { low = 0.81, high = 1.10 }  # 1235 ea — the catlin truss's one girt screw
 # TimberLOK 10" (FMTLOK10-50): Home Depot $41.69 per 50 = $0.83 ea; high is Zoro's 50-pack (~$1.38-1.68).
-"TLOK10" = { low = 0.83, high = 1.40 }  # 41 ea — door sill-course blocks into the TJI backer pair
+"TLOK10" = { low = 0.83, high = 1.40 }  # 24 ea — the doors' sill-beam end seats into the TJI backer pair
 # RF-HOUSE eave blocking toe screws (notes/eave_gutter_girt.md §4): 2 per end into the
 # stiffener pair (3") and 2 per block down into the rafter plate (4").
 "SDWS22300DB" = { low = 0.55, high = 0.85 }  # 144 ea — RF-HOUSE eave blocking
@@ -5742,7 +5746,16 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # it between the box sides on the PVC sheet. The 40 psi XPS course is an offcut-sized piece
 # of a 2x8 sheet. The PVC sheet laps under the SureSill lip and onto the beam top.
 "trex-enhance-basics" = { material = { low = 7, high = 9 }, labour = { low = 15, high = 30 } }  # 5.2 LF — the sunken-garden tread
-"xps-40" = { material = { low = 2, high = 5 }, labour = { low = 2, high = 4 } }  # 5.2 LF — the tread's 40 psi bed course
+"xps-40" = { material = { low = 2, high = 5 }, labour = { low = 2, high = 4 } }  # 0 LF since 2026-11-17 — the revert
+# Since 2026-11-17 (notes/exterior_door_sill_beam.md §5): a 60 psi course under a 1/4" FRP plate
+# that spreads the scalloped board over its footprint. ESTIMATE: 60 psi XPS runs ~1.5x the 40;
+# the plate is a 6" rip of 1/4" FRP sheet.
+"xps-60" = { material = { low = 3, high = 7 }, labour = { low = 2, high = 4 } }  # 5.2 LF — the tread's 60 psi bed course
+"frp-bearing-plate" = { material = { low = 3, high = 8 }, labour = { low = 2, high = 4 } }  # 5.2 LF — the tread's plate
+# D-M-PORCH's removable joint cover (owner, 2026-11-17): a gritted FRP plank 2 3/8" wide cut to the
+# door, screwed to the porch joist, on a KDAT ledge. ESTIMATE, product not selected: molded or
+# pultruded grating strips at ~$12-30/LF; labour fits it, the ledge and its screws.
+"frp-joint-cover" = { material = { low = 12, high = 30 }, labour = { low = 8, high = 16 } }  # 5.2 LF — D-M-PORCH
 "pvc-door-water-sheet" = { material = { low = 3, high = 6 }, labour = { low = 4, high = 8 } }  # 5.2 LF — the tread's water sheet
 # The sunken-garden door's box sides: Trex Tide Pool fascia, 0.56 x 7 1/4 x 12', ripped to ~6". The jambs
 # (2 x 6.8') and head (5.3') need THREE 12' boards (~$55-80 each): no two pieces share one. ESTIMATE.

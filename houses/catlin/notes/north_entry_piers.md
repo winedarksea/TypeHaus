@@ -1056,7 +1056,7 @@ rest 0.237 on the guard at C_D 1.0).
 The landing is tied to the garage so its four piers stop being the lateral system. There are two joints, both
 wood to wood, both on y = 43.1458' (the garage cladding face): **W** on the screen's end stud pack into `W-G-W`, and
 **FE** on `BM-BW-FE` into `W-G-S`. No joint lands on concrete (§10e is the anchor module's oracle only). Every row
-passes: **E-W wind at W governs at 0.794**.
+passes: **E-W wind at W governs at 0.792**.
 
 ### 10a. The parts
 
@@ -1104,13 +1104,15 @@ the two stand at different heights, and nobody should unify them. The deck's own
 (a fascia counts only where its path lies on the deck's sheet; otherwise the joist and board edge,
 `balcony_wind.deck_edge_band`), with the deck's q taken at the lowest spot elevation on the site, 40' away:
 conservative, and the rule for every deck. Geometry: §10i (edge band), §10k (landing, seat beams), §10n (joint x).
+The deck's south edge stands at y 36'-7 7/8" since 2026-11-17 (3/8" off D-M-ENTRY's sill beam,
+`exterior_door_sill_beam.md` §4): the E-W band is 6.4479' long, its centre 39.8802'.
 
 | load | axis | lb | acts at (x, y) ft |
 |---|---|---:|---|
-| deck wind E-W: 0.6825' x 6.500' x 15.183 | x | **67.35** | (7.9323, 39.8542) |
+| deck wind E-W: 0.6825' x 6.4479' x 15.183 | x | **66.82** | (7.9323, 39.8802) |
 | `W-BW-SCREEN` face, 6.5417' x 4.0783' x 15.183 | x | 405.07 | (6.19792, 39.8750) |
 | `W-BW-SCREEN-SKIRT` face, 6.5417' x 1.125' x 15.183 | x | 111.74 | (6.19792, 39.8750) |
-| **E-W total** | | **584.16** | |
+| **E-W total** | | **583.62** | |
 | deck wind N-S: (0.6825 x 3.3021 + 2 x 0.6042 x 3.0355) x 15.183 = (2.2537 + 3.6681) x 15.183 | y | **89.91** | (7.9323, -) |
 | `W-BW-SCREEN` share of `RF-BW-CANOPY` N-S (canopy note §4, the whole delivered shear) | y | 1,034.49 | (6.19792, -) |
 | **N-S total** | | **1,124.40** | |
@@ -1127,11 +1129,11 @@ N-S   ΣFy 1,124.40
       M = 1,034.49 (6.19792 - 7.96354) + 89.91 (7.9323 - 7.96354) = -1,829.3 lb-ft
       W:  562.20 + 1,829.3 x 1.61979/5.24745 = 562.20 + 564.68 = 1,126.9 lb  / 1,480 = 0.761
       FE: 562.20 - 564.68 = -2.5 lb,  2.5 / 1,785 = 0.001
-E-W   ΣFx 584.16, X = 292.08 each
-      M = 67.35 x (43.1458 - 39.8542) + 516.80 x (43.1458 - 39.8750) = 221.71 + 1,690.37 = 1,912.1 lb-ft
-      Y = 1,912.1 x 1.61979/5.24745 = 590.2 lb
-      W:  590.2/1,480 + 292.1/740     = 0.3988 + 0.3947 = 0.794
-      FE: 292.08/892.5 + 590.2/1,785  = 0.3273 + 0.3306 = 0.658
+E-W   ΣFx 583.62, X = 291.81 each
+      M = 66.82 x (43.1458 - 39.8802) + 516.80 x (43.1458 - 39.8750) = 218.19 + 1,690.37 = 1,908.5 lb-ft
+      Y = 1,908.5 x 1.61979/5.24745 = 589.1 lb
+      W:  589.1/1,480 + 291.8/740     = 0.3981 + 0.3943 = 0.792
+      FE: 291.81/892.5 + 589.1/1,785  = 0.3270 + 0.3300 = 0.657
 guard at C_D 1.0 (caps / 1.6), 200 lb E-W at the south end: M = 200 x 6.5417 = 1,308.3 lb-ft, X = 100,
       Y = 1,308.3 x 1.61979/5.24745 = 403.9 lb
       W:  403.9/925 + 100/462.5 = 0.4366 + 0.2162 = 0.653
@@ -1140,12 +1142,12 @@ guard at C_D 1.0 (caps / 1.6), 200 lb E-W at the south end: M = 200 x 6.5417 = 1
 
 At W, Y acts along the wall (1,480) and X across it (740); at FE X acts along `W-G-S` (892.5) and Y across it (1,785).
 
-### 10d. Verdict — every row passes; E-W wind at W governs at 0.794
+### 10d. Verdict — every row passes; E-W wind at W governs at 0.792
 
 | reading | N-S | E-W | guard |
 |---|---:|---:|---:|
-| W (2 x HL33HDG, dry) | 0.761 | **0.794** | 0.653 |
-| FE (2 x HL43HDG, wet) | 0.001 | 0.658 | 0.541 |
+| W (2 x HL33HDG, dry) | 0.761 | **0.792** | 0.653 |
+| FE (2 x HL43HDG, wet) | 0.001 | 0.657 | 0.541 |
 
 Two things stay the engineer of record's to confirm: **W's dry service** (§10a), and FE's 3/4" bolt, which stands
 2-3/4" (3.7D) off FE's end grain, under NDS Table 12.5.1A's 7D for full design value, with the wall leg's lag landing

@@ -147,16 +147,21 @@ HOUSE_SEAT_Y_FT = PIER_LINE_Y_FT
 # framing edge, inside R507.5.1's quarter of the back span.
 GARAGE_SEAT_Y_FT = GARAGE_CLADDING_Y_FT - 8 / 12
 
-# The joist field runs south to y=36'-8 1/2", cantilevering 9 1/2" past the seat. A deck sheet
+# The joist field runs south to y=36'-8 5/8", cantilevering 9 3/8" past the seat: the rim's
+# inner face stands 3/8" off D-M-ENTRY's sill beam, past the 1/4" movement (2026-11-17). A deck sheet
 # running 12 1/4" to the cladding over air is past `structural.subfloor_oversail`'s 8" bound
 # (`preferences.toml [framing] bearing_plan_tolerance_in`, also used by takeoff/uplift.py): the
 # uplift pass then finds neither a tie nor a hanger and FAILs every member under the deck, far from
 # its cause. The southernmost joist IS the rim.
-FRAME_Y0_FT = 36 + 8.5 / 12
+FRAME_Y0_FT = 36 + 8.625 / 12
 FRAME_Y1_FT = GARAGE_CLADDING_Y_FT - 0.75 / 12
 # Boards stay 1/2" off the house cladding so the rainscreen gap drains. Abutting is not bearing,
 # but it has to be DRAWN or a carpenter will close it.
 DECK_SHEET_SOUTH_Y_FT = HOUSE_CLADDING_Y_FT + 0.5 / 12
+# The deck's own south edge: on the rim's inner face, 0.42" off the XXXXW nose and 3/8" off
+# D-M-ENTRY's sill beam (notes/exterior_door_sill_beam.md §4). The line above stays the
+# screen's datum.
+DECK_EDGE_SOUTH_Y_FT = FRAME_Y0_FT - 0.75 / 12
 DECK_SHEET_NORTH_Y_FT = GARAGE_CLADDING_Y_FT - 0.5 / 12
 # A-508's cut, 55 1/2" north of the deck sheet: mid-panel of the MDO screen, so the MDO layer is
 # in the cut.

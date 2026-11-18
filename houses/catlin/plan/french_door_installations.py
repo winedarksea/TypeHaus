@@ -1,4 +1,4 @@
-"""Catalog coordination for the sunken-garden and study; no ordered-assembly claims.
+"""Catalog coordination for the exterior swing doors; no ordered-assembly claims.
 
 Dimensions are evidence-backed envelopes. Outstanding connection and installation
 sections remain UNKNOWN in the engine and in notes/french_door_catalog_installation.md.
@@ -11,7 +11,7 @@ from typehaus import (ApproachBearing, ExteriorDoorCatalogInstallation,
 
 _ASSETS = Path(__file__).resolve().parents[1] / 'notes/assets'
 _OUTLINE = json.loads((_ASSETS / 'endura-zai4565fn-outline.json').read_text())
-# The study's 5-5/8" sill, the only Z-Series width Endura publishes the 6-3/8" XXXXW for.
+# The 5-5/8" sill, the only Z-Series width Endura publishes the 6-3/8" XXXXW for.
 _OUTLINE_5625 = json.loads((_ASSETS / 'endura-zai5625fn-outline.json').read_text())
 
 
@@ -38,13 +38,17 @@ def catalog_installation(**overrides):
 # at the beam's arris is the drain slot, into the isolation joint below. Graded as
 # 300 lb over a square of its own width against 40/3 psi (notes/french_door_catalog_
 # installation.md §6). Off Trex's published install (joists at 16", air under): a warranty
-# exposure the owner accepted, not a code one.
+# exposure the owner accepted, not a code one. Since 2026-11-17 a 1/4" FRP plate under the
+# scalloped board spreads it over its whole footprint, on 60 psi XPS thinned by the plate, so
+# the tread top holds (notes/exterior_door_sill_beam.md §5).
 _SUNKEN_TREAD = dict(
     # The sheltered self-supporting veneer arch has no face-mounted head flashing.
     stock_head_flashing=False,
     independent_landing_flashing=False,
-    support_kind='foam_bed', support_ref='W-B-S3', support_material_ref='xps-40',
-    support_width=inch(5.5), support_depth=inch(4.06), foam_rated_psi=40.0,
+    support_kind='foam_bed', support_ref='W-B-S3', support_material_ref='xps-60',
+    support_width=inch(5.5), support_depth=inch(4.06), foam_rated_psi=60.0,
+    bearing_plate_material_ref='frp-bearing-plate', bearing_plate_thickness=inch(0.25),
+    approach_profiled_underside=True,
     approach_material_ref='trex-enhance-basics', approach_thickness=inch(0.94),
     approach_board_width=inch(5.5),
     approach_source_url='https://www.trex.com/professionals/products/decking/',
@@ -68,28 +72,54 @@ SUNKEN_DOOR_INSTALLATION = ExteriorDoorInstallation(
     seat_opening_ref='AO-B-SUNKEN-SEAT',
     landing_search=inch(12),
     catalog_installation=catalog_installation(**_SUNKEN_TREAD))
-# ** NOTHING CANTILEVERS (owner, 2026-11-13). ** The outriggers into FS-S-EAST are gone (they
-# crossed its edge I-joist). A ZAI5625FN sill on the 4 9/16" jamb (1 1/16" proud) takes the
-# resizable XXXXW extender at its full 6 3/8": it rests on draining strips over the truss
-# wall's buck sill and girt sill course, and its nose stops ~1" short of FS-SG-BALCONY's
-# north sister, which the court's planks now reach. No board crosses the house/court joint.
-STUDY_INSTALLATION = ExteriorDoorInstallation(
-    factory_frame_depth=inch(4.5625), interior_material_ref='pine-fj-base',
-    exterior_material_ref='captivate-sheet',
-    approach_bearing=ApproachBearing(landing_ref='FS-SG-BALCONY', landing='gap'),
-    catalog_installation=catalog_installation(
-        source_url=_OUTLINE_5625['source_url'], source_drawing=_OUTLINE_5625['source_drawing'],
-        sill_outline_m=tuple(tuple(point) for point in _OUTLINE_5625['polygon_m']),
-        sill_extender_ref='XXXXW',
-        sill_extender_source_url='https://resources.enduraproducts.com/hubfs/OMRSv3%20-%20Line'
-                                 '%20Drawings/Sill%20Extenders/Sill%20Width%20Extender%20Release'
-                                 '_final.pdf',
-        sill_extender_depth=inch(6.375), sill_extender_height=inch(17 / 32),
-        support_kind='girt_bridge', support_ref='W-S-S2'))
+# ** ONE SILL PACKAGE AT THE THREE FRAMED-FLOOR DOORS (owner, 2026-11-17). ** A ZAI5625FN on the
+# 4 9/16" jamb with the full 6 3/8" XXXXW, on a self-adhered membrane pan on the subfloor. The
+# nose bears on the girt sill beam, outboard of the girt band with its face at the nose, seated
+# at its ends (envelope_walls.py); the pan wraps the beam face to a drip past the cladding.
+# Nothing is fastened across the house/landing joint. notes/exterior_door_sill_beam.md.
+_MEMBRANE_PAN = dict(
+    pan_height=inch(1 / 16),
+    pan_product='Impermeable self-adhered membrane pan (AAMA 711) with a back dam; the sill '
+                'bears on the subfloor',
+    pan_source_url='notes/opening_flashing_spec.md')
+_XXXXW_URL = ('https://resources.enduraproducts.com/hubfs/OMRSv3%20-%20Line%20Drawings/Sill%20'
+              'Extenders/Sill%20Width%20Extender%20Release_final.pdf')
+
+
+def framed_floor_installation(support_ref, bearing, **door):
+    """The shared package on the girt sill beam; each door passes its trim and landing."""
+    return ExteriorDoorInstallation(
+        factory_frame_depth=inch(4.5625), interior_material_ref='pine-fj-base',
+        approach_bearing=bearing, **door,
+        catalog_installation=catalog_installation(
+            source_url=_OUTLINE_5625['source_url'], source_drawing=_OUTLINE_5625['source_drawing'],
+            sill_outline_m=tuple(tuple(point) for point in _OUTLINE_5625['polygon_m']),
+            sill_extender_ref='XXXXW', sill_extender_source_url=_XXXXW_URL,
+            sill_extender_depth=inch(6.375), sill_extender_height=inch(17 / 32),
+            support_kind='girt_bridge', support_ref=support_ref, **_MEMBRANE_PAN))
+
+
+# The planks reach FS-SG-BALCONY's north sister: the joint (~1" off the beam face) is too narrow
+# for a cover with its seat and range (notes/exterior_door_sill_beam.md §4), so it stays open.
+STUDY_INSTALLATION = framed_floor_installation(
+    'W-S-S2', ApproachBearing(landing_ref='FS-SG-BALCONY', landing='gap'),
+    exterior_material_ref='captivate-sheet')
+# A removable gritted cover over the ~2 1/8" joint: fixed on FS-SG-PORCH's north joist, sliding
+# on a ledge on the beam face below the drip; water drops through to TR-SG-SLOT.
+PORCH_INSTALLATION = framed_floor_installation(
+    'W-M-S2', ApproachBearing(landing_ref='FS-SG-PORCH', landing='cover',
+                              cover_material_ref='frp-joint-cover', cover_seat=inch(1.5625),
+                              cover_discharge_ref='TR-SG-SLOT'),
+    exterior_wrap_material_ref='metal-dark-exterior')
+# FS-BW-FLOOR's rim and deck edge stand under 1/2" off the nose (params/breezeway.py): no cover.
+ENTRY_INSTALLATION = framed_floor_installation(
+    'W-M-N3', ApproachBearing(landing_ref='FS-BW-FLOOR', landing='gap'),
+    exterior_wrap_material_ref='metal-dark-exterior')
 
 
 def with_catalog_installations(elements):
-    installations = {'D-B-SUNKEN': SUNKEN_DOOR_INSTALLATION, 'D-S-BALCONY': STUDY_INSTALLATION}
+    installations = {'D-B-SUNKEN': SUNKEN_DOOR_INSTALLATION, 'D-S-BALCONY': STUDY_INSTALLATION,
+                     'D-M-PORCH': PORCH_INSTALLATION, 'D-M-ENTRY': ENTRY_INSTALLATION}
     return tuple(element.model_copy(update={'exterior_installation': installations[element.tag]})
                  if element.tag in installations else element for element in elements)
 
@@ -105,6 +135,16 @@ DOOR_INSTALLATION_MATERIALS = (
              source="ASTM C578 XPS with vertical drainage channels and a bonded filter fabric; "
                     "replaces W-SG-BRKBM's isolation board under D-B-SUNKEN's drain slot, foot "
                     "on FB-SG-BRKBM's stone (owner 2026-11-13). Product not selected."),
+    Material(tag="frp-joint-cover", name="Gritted FRP joint cover, cut to the door width",
+             color="#6f7a6a", hatch="rigid",
+             source="Removable cover over D-M-PORCH's walking joint (owner 2026-11-17): molded or "
+                    "pultruded FRP, gritted top, open to drain, its thickness the deck's; fixed "
+                    "on the landing joist, sliding on a KDAT ledge. Product not selected."),
+    Material(tag="frp-bearing-plate", name="FRP bearing plate, 1/4 in, under D-B-SUNKEN's tread",
+             color="#d8d4c8", hatch="rigid",
+             source="Flat 1/4 in FRP (or cellular PVC) sheet spreading the scalloped Trex tread "
+                    "over its full footprint on the 60 psi XPS (owner 2026-11-17). Trex "
+                    "compatibility is a supplier hold. Product not selected."),
     Material(tag="box-side-sealant", name="Silicone sealant joint on closed-cell backer rod",
              color="#8a8a8a",
              source="ASTM C920 Class 50 or better, 1/2 in wide: the Trex box sides (house) to "

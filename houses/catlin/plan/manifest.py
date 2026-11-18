@@ -422,7 +422,7 @@ PLAN = (
         # through `W-M-S1`, the house's own south wall, and names `RM-M-BED` behind it. A
         # hydrant you reach from the porch still belongs to the wall it penetrates. Same for
         # `BALCONY_HYDRANT` on `second` (`W-S-S1`, `RM-S-PLANT`).
-        [*main.ELEMENTS, *fixtures.MAIN_FIXTURES, *fixtures.PORCH_HYDRANT,
+        [*french_door_installations.with_catalog_installations(main.ELEMENTS), *fixtures.MAIN_FIXTURES, *fixtures.PORCH_HYDRANT,
          *main_deck.MAIN_ELEMENTS, *mep.MAIN_ELEMENTS, *mep_lavatories.MAIN_LAV_CONNECTIONS, *mep_supply_branches.MAIN_SUPPLY_BRANCHES,
          # The four wall corners where the north/south board & batten meets the east/west
          # PBR. Filed on `main` (the run starts below the main datum) though the module

@@ -47,7 +47,14 @@ XPS_40_TREAD_BED = Material(
     source="ASTM C578 Type VI, 40 psi min at yield or 10% deformation (e.g. Owens Corning "
            "FOAMULAR 400); D-B-SUNKEN's tread bed, graded at 40/3 psi for creep.",
 )
-HOUSE_DECK_MATERIALS = (TREX_TIDE_POOL_FASCIA, XPS_40_TREAD_BED)
+# Since 2026-11-17 the bed is 60 psi under a bearing plate; xps-40 stays as the revert.
+XPS_60_TREAD_BED = Material(
+    tag="xps-60", name="XPS rigid insulation, 60 psi (ASTM C578 Type VII)",
+    r_per_inch=5.0, perm_rating=1.1, hatch="rigid", color="#e9a7b8", foam_plastic=True,
+    source="ASTM C578 Type VII, 60 psi min at yield or 10% deformation (e.g. Owens Corning "
+           "FOAMULAR 600); D-B-SUNKEN's tread bed under its plate, graded at 60/3 psi for creep.",
+)
+HOUSE_DECK_MATERIALS = (TREX_TIDE_POOL_FASCIA, XPS_40_TREAD_BED, XPS_60_TREAD_BED)
 
 
 def with_selected_decking(materials):
