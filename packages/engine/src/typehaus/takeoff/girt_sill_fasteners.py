@@ -1,7 +1,8 @@
 """Screws in a door's girt sill beam seats (``FramingSpec.sill_course``).
 
 Each seat names its count (``resolve/framing/girt_sill_course.py``); the part is
-the authored ``SillCourseFastening.fastener_part``, into the floor's LSL edge rim.
+the authored ``SillCourseFastening.fastener_part``, into the floor's LSL edge rim and the
+backer behind it.
 """
 
 from __future__ import annotations
@@ -43,5 +44,6 @@ def girt_sill_screw_rows(model: ResolvedModel) -> list:
 def _basis(spec, thread_in):
     return (f"per end seat as resolved: {spec.seat_rows} staggered rows of "
             f"{spec.screws_per_row}, through the {spec.course_stock} sill beam + seat stack "
-            f"+ sheathing into the floor's LSL edge rim ({thread_in:g} in thread); "
+            f"+ sheathing into the floor's LSL edge rim and its backer ({thread_in:g} in "
+            "thread); "
             "notes/exterior_door_sill_beam.md")

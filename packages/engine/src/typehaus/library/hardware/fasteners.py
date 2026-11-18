@@ -121,6 +121,37 @@ FASTENMASTER_TIMBERLOK = StructuralHardware(
            "Table 6",
 )
 
+# A door sill beam's seat screw (``notes/exterior_door_sill_beam.md`` §3). HeadLOK, not
+# TimberLOK, for its flat head: ESR-1078 Table 3 gives it 600 / 400 lb of head pull-through at
+# SG 0.55 / 0.42 against TimberLOK's 200 / 110, which the seat's rotation couple needs. Its
+# Table 2 floor is 2.0" of embedded thread, so it reaches a backer behind the 1 1/4" rim.
+#: Authored by part (``SillCourseFastening.fastener_part``), never length-selected.
+ROLE_SILL_SEAT_SCREW = "sill_seat_screw"
+_LOK_TABLE_5 = "ICC-ES ESR-1078 (reissued 2026-01) Table 5 (TimberLOK, OlyLOG and HeadLOK)"
+FASTENMASTER_HEADLOK = StructuralHardware(
+    tag="fastenmaster-headlok",
+    name="HeadLOK flat-head structural wood screw (0.191 in shank)",
+    role=ROLE_SILL_SEAT_SCREW,
+    manufacturer="FastenMaster",
+    model="HLGM",
+    part_number_by_length_in={10.0: "HLGM10"},
+    thread_length_in_by_length_in={10.0: 2.0},
+    spacing=FastenerSpacing(
+        end_distance=2.625, in_row_spacing=2.625, row_spacing=0.75, in_line_row_spacing=1.375,
+        loaded_edge=1.75, unloaded_edge=1.375, min_embedded_thread=2.0,
+        source=f"{_LOK_TABLE_5}, SG < 0.50, lateral load perpendicular to grain; Table 2's "
+               "2.0 in minimum embedded thread"),
+    spacing_dense=FastenerSpacing(
+        end_distance=3.0, in_row_spacing=2.625, row_spacing=0.75, in_line_row_spacing=1.875,
+        loaded_edge=1.75, unloaded_edge=1.75, min_embedded_thread=2.0,
+        source=f"{_LOK_TABLE_5}, SG > 0.50, lateral load perpendicular to grain; Table 2's "
+               "2.0 in minimum embedded thread"),
+    source="FastenMaster HeadLOK, ICC-ES ESR-1078 (reissued 2026-01) Table 1B — HLGM10, "
+           "10 in, 2 in thread incl. tip, shank 0.191 in, root 0.172 in, F_yb 187,300 psi, "
+           "allowable tension 1,215 lb, shear 965 lb; coating for ACQ-D <= 0.40 pcf per "
+           "4.1.7 / Table 6",
+)
+
 # The two SDPW records are ONE role on two shank diameters — the same non-overlapping ladder
 # SDWS/SDWH make above. What picks between them here is NOT length, though: it is the
 # TOP-PLATE condition each is published for, which is why both carry ``fits_nominal`` and why

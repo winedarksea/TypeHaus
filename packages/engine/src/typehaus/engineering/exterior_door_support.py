@@ -19,6 +19,18 @@ def girt_course_screw_shares(length_in, screws_in, diameter_in, modulus_psi, ine
     (``notes/exterior_door_sill_beam.md`` §3). ``None``
     when fewer than two distinct screw stations leave the course unstable.
     """
+    solved = screw_force_matrix(length_in, screws_in, diameter_in, modulus_psi, inertia_in4,
+                                load_lb)
+    if solved is None:
+        return None
+    forces, nodes = solved
+    screw, load = np.unravel_index(int(np.argmax(forces)), forces.shape)
+    return float(forces[screw, load]), nodes[load], float(screws_in[screw])
+
+
+def screw_force_matrix(length_in, screws_in, diameter_in, modulus_psi, inertia_in4, load_lb):
+    """``(forces[screw, load], load stations)``: every screw's share of the point load at
+    every scanned station, or ``None`` for an unstable course."""
     stations = sorted({round(x, 6) for x in screws_in})
     if len(stations) < 2:
         return None
@@ -45,9 +57,7 @@ def girt_course_screw_shares(length_in, screws_in, diameter_in, modulus_psi, ine
         displacement = np.linalg.solve(stiffness, loads)
     except np.linalg.LinAlgError:
         return None
-    forces = k * displacement[rows, :]
-    screw, load = np.unravel_index(int(np.argmax(forces)), forces.shape)
-    return float(forces[screw, load]), nodes[load], float(screws_in[screw])
+    return k * displacement[rows, :], nodes
 
 
 def _slip_modulus_lb_per_in(diameter_in):

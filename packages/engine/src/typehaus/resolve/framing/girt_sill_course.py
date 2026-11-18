@@ -54,8 +54,8 @@ def end_seat_sill_course(frame, tier: str, index: int, band: str,
                          jambs: tuple[float, float], top: float, seat_top: float
                          ) -> list[FramedMember]:
     """The beam, back on the girt band's outer face, top at the rough sill (``top``), RO edge
-    to RO edge, its top ripped to fall outward (``section_ring``); one seat stack per end,
-    sheathing to the beam, under the buck (``seat_top``)."""
+    to RO edge, its top ripped to fall outward (``section_ring``); one seat stack of
+    ``seat_stock`` plies per end, sheathing to the beam, under the buck (``seat_top``)."""
     spec = frame.sill_course
     beam = cross_section(spec.course_stock)
     girt_face = frame.sheathing_face + frame.buck_depth
@@ -69,10 +69,12 @@ def end_seat_sill_course(frame, tier: str, index: int, band: str,
     plies = max(1, round(frame.buck_depth / frame.stock_thickness))
     depth = frame.sheathing_face + frame.buck_depth / 2
     width = spec.seat_width.meters
+    stock = spec.seat_stock or spec.course_stock
+    seat = cross_section(stock)
     for side, (s0, s1) in enumerate(((lo, lo + width), (hi - width, hi))):
         out.append(FramedMember(
             frame.wall.uid, f"{sill_block_prefix(tier, index)}seat-{side}", BLOCK_CATEGORY,
-            f"{plies}-{spec.course_stock}", frame.point(s0, depth), frame.point(s1, depth),
-            seat_top - beam.depth_m, seat_top, width, material=frame.block_materials[tier],
+            f"{plies}-{stock}", frame.point(s0, depth), frame.point(s1, depth),
+            seat_top - seat.depth_m, seat_top, width, material=frame.block_materials[tier],
             connection=f"{SILL_SCREWS}{spec.seat_rows * spec.screws_per_row}"))
     return out
