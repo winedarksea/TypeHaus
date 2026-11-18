@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 2ac8eebf8c88d5ee  
+**Model hash:** 7a55afcc0bb47a12  
 **Lines:** 259
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
@@ -22,7 +22,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 1 1/4" x 11 7/8" rim board, 10' (1.25x11.875 rim) | 1 | pc | rim board | 10 LF | building |
 | 1 1/4" x 11 7/8" rim board, 14' (1.25x11.875 rim) | 2 | pc | rim board | 28 LF | building |
 | 1 1/4" x 11 7/8" rim board, 16' (1.25x11.875 rim) | 4 | pc | rim board | 64 LF | building |
-| 1 1/4" x 11 7/8" rim board, 20' (1.25x11.875 rim) | 10 | pc | rim board | 200 LF | building |
+| 1 1/4" x 11 7/8" rim board, 20' (1.25x11.875 rim) | 12 | pc | rim board | 240 LF | building |
 | 1.5x11.875 SPF No. 2 & Btr framing lumber, 8' (1.5x11.875:spf) | 5 | pc | blocking | 40 LF | building |
 | 1 1/2" x 14" LSL, 8' (1.5x14 LSL) | 5 | pc | blocking | 40 LF | building |
 | 1 3/4" x 11 7/8" LSL 1.55E, 16' (1.75x11.875 LSL) | 2 | pc | rim board | 32 LF | building |
@@ -37,7 +37,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 11 7/8" floor truss, 8' (11.875 floor truss) | 1 | ea | joist | 8 LF | building |
 | 11 7/8" floor truss, 10' (11.875 floor truss) | 4 | ea | trimmer | 40 LF | building |
 | 11 7/8" floor truss, 12' (11.875 floor truss) | 5 | ea | joist | 60 LF | building |
-| 11 7/8" floor truss, 18' (11.875 floor truss) | 42 | ea | joist, sister joist, trimmer | 756 LF | building |
+| 11 7/8" floor truss, 18' (11.875 floor truss) | 40 | ea | joist, sister joist, trimmer | 720 LF | building |
 | 1x4 SPF No. 2 & Btr framing lumber, 8' (1x4:spf) | 21 | pc | girt strapping | 168 LF | building |
 | 1x4 SPF No. 2 & Btr framing lumber, 10' (1x4:spf) | 28 | pc | ceiling furring, girt strapping | 280 LF | building |
 | 1x4 SPF No. 2 & Btr framing lumber, 20' (1x4:spf) | 5 | pc | girt strapping | 100 LF | building |
@@ -136,7 +136,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | HDG smooth-shank connector nail, 0.131in x 1.5in (0.131x1.5 connector nail:connector fasteners) | 84 | ea |  | building |
 | HDG smooth-shank connector nail, 0.148in x 1.5in (0.148x1.5 connector nail:connector fasteners) | 972 | ea |  | building |
 | HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3:connector fasteners) | 40 | ea |  | building |
-| HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3:treated framing nails (allowance)) | 936 | ea |  | building |
+| HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3:treated framing nails (allowance)) | 927 | ea |  | building |
 | HDG smooth-shank strap nail, 0.148in x 2.5in (10d short common 0.148x2.5:diaphragm joint strap nails) | 72 | ea |  | building |
 | HDG 16d common nail, 0.162in x 3.5in (16d common 0.162x3.5:connector fasteners) | 248 | ea |  | building |
 | HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5:connector fasteners) | 176 | ea |  | building |
@@ -144,7 +144,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5:sheathing nails) | 1,037 | ea |  | building |
 | A35Z framing angle (A35Z:joist bearing) | 34 | ea |  | building |
 | A35Z framing angle (A35Z:joist bearing) | 2 | ea |  | building |
-| A35Z framing angle (A35Z:joist bearing) | 17 | ea |  | building |
+| A35Z framing angle (A35Z:joist bearing) | 16 | ea |  | building |
 | A35Z framing angle (A35Z:joist bearing) | 4 | ea |  | building |
 | A35Z framing angle (A35Z:modeled connector) | 51 | ea |  | building |
 | A35Z framing angle (A35Z:slat brace centre post tie) | 4 | ea |  | main |
@@ -212,7 +212,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 10d common ring-shank nail, 0.148in x 3in, Type 304 (S10ACN:treated framing nails (allowance)) | 764 | ea |  | building |
 | 8d common ring-shank nail, 0.131in x 2.5in, Type 304 (S8ACN:sheathing nails) | 72 | ea |  | building |
 | HDG steel U-saddle on a 4 1/2 in (3-ply 2x) joist line, two 5/8 in through-bolts (SADDLE-4.5-2x58-HDG:suspension anchor) | 4 | ea |  | basement |
-| Strong-Drive SD connector screw, #9 x 1-1/2in (SD9112:connector fasteners) | 1,344 | ea |  | building |
+| Strong-Drive SD connector screw, #9 x 1-1/2in (SD9112:connector fasteners) | 1,332 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600:partition top plate, blocking between parallel members) | 72 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600:partition top plate, perpendicular framing above) | 108 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600:partition top plate, under a parallel member) | 12 | ea |  | building |

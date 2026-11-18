@@ -2880,7 +2880,7 @@
 2.6416,
 3.025775,
 14,
-"59de9599be94"
+"06e5234f5163"
 ],
 "conduits/CD-M-DATA-PORCH/z_start_m": 2.9972,
 "conduits/CD-M-RSD-INIT/z_end_m": 0.3937,
@@ -5123,6 +5123,12 @@
 8,
 "a10a5d0008e8"
 ],
+"geometry/1JXQ975X9E::framing/member:edge-rim-0-000-0": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
 "geometry/1JXQ975X9E::framing/member:header-FO-S-ERV-CHASE-1": [
 2.746375,
 3.048,
@@ -5130,12 +5136,6 @@
 "3c4d41a19688"
 ],
 "geometry/1JXQ975X9E::framing/member:header-FO-S-STAIR-0": [
-2.746375,
-3.048,
-8,
-"3c4d41a19688"
-],
-"geometry/1JXQ975X9E::framing/member:joist-0-000-0": [
 2.746375,
 3.048,
 8,
@@ -22509,7 +22509,7 @@
 2.6416,
 3.0374844,
 312,
-"06973fbe8918"
+"5c7d9e902e0c"
 ],
 "geometry/CDT012AAAA-run/body": [
 6.2484,
@@ -71687,6 +71687,12 @@
 8,
 "7bbc6bf9443f"
 ],
+"geometry/Q3ZJD83QVD::framing/member:edge-rim-0-018-0": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
 "geometry/Q3ZJD83QVD::framing/member:joist-0-000-0": [
 -0.301625,
 0.0,
@@ -71790,12 +71796,6 @@
 "80db91a70531"
 ],
 "geometry/Q3ZJD83QVD::framing/member:joist-0-017-0": [
--0.301625,
-0.0,
-8,
-"80db91a70531"
-],
-"geometry/Q3ZJD83QVD::framing/member:joist-0-018-0": [
 -0.301625,
 0.0,
 8,
@@ -81171,6 +81171,12 @@
 2,
 "4f5bebcd882e"
 ],
+"member/1JXQ975X9E/edge-rim-0-000-0": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
 "member/1JXQ975X9E/header-FO-S-ERV-CHASE-1": [
 2.746375,
 3.048,
@@ -81178,12 +81184,6 @@
 "e76b7cb538bf"
 ],
 "member/1JXQ975X9E/header-FO-S-STAIR-0": [
-2.746375,
-3.048,
-2,
-"e76b7cb538bf"
-],
-"member/1JXQ975X9E/joist-0-000-0": [
 2.746375,
 3.048,
 2,
@@ -116145,6 +116145,12 @@
 2,
 "94aa84910cbe"
 ],
+"member/Q3ZJD83QVD/edge-rim-0-018-0": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
 "member/Q3ZJD83QVD/joist-0-000-0": [
 -0.301625,
 0.0,
@@ -116248,12 +116254,6 @@
 "07a4d7ea6917"
 ],
 "member/Q3ZJD83QVD/joist-0-017-0": [
--0.301625,
-0.0,
-2,
-"07a4d7ea6917"
-],
-"member/Q3ZJD83QVD/joist-0-018-0": [
 -0.301625,
 0.0,
 2,

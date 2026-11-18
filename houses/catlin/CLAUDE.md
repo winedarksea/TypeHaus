@@ -122,7 +122,7 @@
 > (`SillCourseFastening`, `resolve/girt_sill_connection.py`; house NDS 12.3 draft calc, no table
 > covers an 8" side member): worst screw 124.33 lb vs 133, Table 5 by each member's SG; the seat's
 > rotation is UNKNOWN. **Every TJI gable-end edge line is an LSL rim board** (`JoistSpec.edge_rims`,
-> owner 2026-11-18; the trusses' are not). PORCH's 2 1/8" joint takes a
+> owner 2026-11-18; the truss fields' FS-M-NE north and FS-S-WEST south too). PORCH's 2 1/8" joint takes a
 > removable FRP cover on a beam-face ledge (`landing="cover"`); ENTRY's landing stands 3/8" off the
 > beam; BALCONY's planks stand 3/8" off it too (rear rim oversail 2 1/8", the north sister packed
 > flush; owner, 2026-11-18), open, no cover. ENTRY's crest is 1.20" over the
@@ -852,7 +852,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   IUS2.37/11.88 hangers). `FS-M-NE` (x 18'-36', y 13'-36', where `SL-M-DECK` was) is 11 7/8"
   open-web floor trusses at **16" o.c. on TRIFORCE's published OJ418S row** (40 psf live / 25 dead,
   L/480, 18'-0"; `TRIFORCE_OJ418S_FLOOR_SPAN`, L/720 live on the order), with TRIFORCE's one published web
-  opening (a 7 1/4" round, `TRIFORCE_OJ_WEB_OPENINGS`; the Warren pitch is assumed). 19 trusses (y 156..396 on 16", then 408/420/432, so the N1 bays stay 12"); the 316 and 332
+  opening (a 7 1/4" round, `TRIFORCE_OJ_WEB_OPENINGS`; the Warren pitch is assumed). 18 trusses (y 156..396 on 16", then 408/420) and the north edge an LSL rim at 432, so the N1 bays stay 12"; the 316 and 332
   lines are doubled under the peninsula boxes (each pack end takes two A35Z, one an outer face), and two 2x6 `Strongback`s (x 317.75"/330.25", TRIFORCE pp. 20-22)
   are cut at stations 180/196/292/414 where lanes cross (`notes/main_floor_truss_basis.md` §3). Constants live in
   `params/main_deck.py`; `integrity.floor_bearing_grid` and `floor_end_bearing` hold the grid.

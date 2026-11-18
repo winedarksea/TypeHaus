@@ -10,10 +10,12 @@ bounce, not 60 psf: the 12" o.c. / 60 psf order had no published row.
 
 ## 1. Geometry
 
-- Field x 18'-36', y 13'-36'. **19 open-web floor trusses**, 11 7/8" deep, 2x4 chords flat
+- Field x 18'-36', y 13'-36'. **18 open-web floor trusses**, 11 7/8" deep, 2x4 chords flat
   (3 1/2" wide, 1 1/2" thick), at 16" o.c. from the y=13' seam: y = 156, 172, ... 396 (16
-  lines), then 408, 420, 432 (`line_overrides` 412 -> 408, 428 -> 420, so the three bays at
-  W-B-N1 stay 12" and a 0.5" slit at 428-432 is avoided). Webs: TRIFORCE publishes one 7 1/4" round
+  lines), then 408, 420, and the north gable edge at 432 laid as a 1 1/4" x 11 7/8" LSL rim
+  flush with the stud face, inner face 430 1/4" (`edge_rims`, owner 2026-11-18)
+  (`line_overrides` 412 -> 408, 428 -> 420, so the three bays at W-B-N1 stay 12" and a 0.5"
+  slit at 428-432 is avoided). Webs: TRIFORCE publishes one 7 1/4" round
   opening (`TRIFORCE_OJ_WEB_OPENINGS`); the 24" Warren pitch, symmetric about mid-span, is assumed
   until the shop drawing (`notes/open_web_truss_geometry.md` §4).
 - Count: (396 - 156)/16 + 1 = 16, plus 3 = **19**, plus two sisters: 332 at 328.5" and 316 at 319.5" (section 3a).
@@ -141,7 +143,8 @@ ducts or pipes". The owner's bounce goal, so two:
   strongback's bottom edge, short of R502.8.1's 2", so the bay is cut) and 408-420 (the kitchen
   drain, 414). Omit stations 180, 196, 292, 414.
 - Pieces per strongback, line centre to line centre: 156-172 (16"), 204-284 (80"), 300-408 (108"),
-  420-432 (12"): **8 pieces in all**, the longest 108", far inside 20' stock.
+  420-430 1/4" (10 1/4", butting the north rim's inner face): **8 pieces in all**, the longest
+  108", far inside 20' stock.
 - Hand-derived from the omit list; the resolver and the crossings checks are the confirmation.
 
 ## 4. Seat, ties and wall-top restraint
@@ -193,17 +196,19 @@ ducts or pipes". The owner's bounce goal, so two:
   | W-B-W1 | FS-M-WEST, 2-ply pack (240, the bath) | 1 | 16" | 533 lb | 2 x 563 | 0.47 |
   | W-B-W2 | FS-M-WEST, TJI (includes BATH2 drain bay's added line) | 14 | 16" max | 533 lb | 563 | 0.95 |
 
-  54 ends, **57 A35Z**: one an end (35 TJI + 19 truss), plus one on each sister ply that lands on
+  53 ends, **56 A35Z**: one an end (35 TJI + 18 truss), plus one on each sister ply that lands on
   a sill (the 316 and 332 trusses, and `FS-M-WEST`'s bath ply at y 240"). Since 2026-11-18 the
-  three gable-end edge lines (FS-M-EAST and FS-M-WEST at y=0, FS-M-MECH at y=36') are LSL rim
-  boards seated along their parallel walls, whose stations tie them; their ends take no angle.
+  four gable-end edge lines on concrete (FS-M-EAST and FS-M-WEST at y=0, FS-M-MECH and FS-M-NE at
+  y=36') are LSL rim boards seated along their parallel walls, whose stations tie them; their
+  ends take no angle.
   A second angle is not needed for demand anywhere.
   Hand count of the truss ends: W-B-E1's axis runs y 0..216", so lines 156, 172, 188, 204 = 4;
-  W-B-E2 (216"..432") takes 220, 236, ... 396 = (396 - 220)/16 + 1 = 12, plus 408, 420, 432 = **15**.
+  W-B-E2 (216"..432") takes 220, 236, ... 396 = (396 - 220)/16 + 1 = 12, plus 408, 420 = **14**
+  (432 is the rim).
   **A sistered pack takes one A35Z on each OUTER face** (owner, 2026-11-02): Subp. 1 connects
   each joist, an angle cannot fit between plies, and the 16" tributary does not grow, so a 2-ply
   pack reads 533 / 1,076 = 0.50 (`joints/bearing.py`, the outer-face rule). (The engine's finding
-  splits the 19 as 5 + 12 + 2 packs; the per-end d/c, 533/538 = 0.99, is the same either way.) The 533 lb is also
+  splits the 18 as 5 + 11 + 2 packs; the per-end d/c, 533/538 = 0.99, is the same either way.) The 533 lb is also
   the bound for the three 12" bays at the north wall, whose tributary is smaller.
 
   Parallel (footnote f): blocking in the first three joist spaces (two blocked lines a

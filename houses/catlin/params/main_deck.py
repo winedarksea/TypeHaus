@@ -434,7 +434,7 @@ EAST_FLOOR = FloorSystem(
 # ** LINES. ** 16" from the seam, 156".."396"; the two north lines move (412 -> 408,
 # 428 -> 420) so the three bays at W-B-N1 stay 12" — the N1 blocking, the CN-WT-N1 ties,
 # the kitchen drain and risers and ``W-M-PAN-S`` (1" off 396) all keep their bays, and the
-# north sink run's base cabinets get trusses at 408 and 420. 19 trusses.
+# north sink run's base cabinets get trusses at 408 and 420. 18 trusses; 432 is an LSL rim.
 #
 # ** POINT LOADS FOR THE FABRICATOR. ** The peninsula's cabinet boxes (y 319.4"..343.4")
 # carry the cantilevered quartz and its stool users: the 332" line under the box centre is
@@ -499,8 +499,8 @@ NE_FLOOR = FloorSystem(
                      web_openings=TRIFORCE_OJ_WEB_OPENINGS,
                      end_bearing=(("W-B-CS3", _TRUSS_BEARING), ("W-B-CS2", _TRUSS_BEARING),
                                   ("W-B-CN2", _TRUSS_BEARING), ("W-B-CN", _TRUSS_BEARING)),
-                     line_overrides=_TRUSS_LINE_MOVES,
-                     sill_tie="A35Z"),
+                     line_overrides=_TRUSS_LINE_MOVES,  # north edge: LSL rim (2026-11-18)
+                     edge_rims=("hi",), sill_tie="A35Z"),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
     reinforcements=(*_N_WALL_BLOCKING, _PENINSULA_TRUSS, _PENINSULA_BACK_TRUSS),
     strongbacks=_STRONGBACKS,

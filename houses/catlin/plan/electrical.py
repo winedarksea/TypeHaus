@@ -1580,17 +1580,19 @@ MAIN_DATA_TRUNKS = [
                # 2026-11-08: out of the chase through the trimmers' D0 at x=1'-3 1/2", east high in the
                # 384"..394 3/4" bay over LIVING and the ERV neck, then south on x=5'-7" in the R1 and
                # D4 pockets, 7" up, over the ERV takeoffs (D1-D3 are the trunk's and LIVING's).
+               # 2026-11-18: the y=0 line is an LSL rim; the leg bores it centred (TJ-8000 p.4) at
+               # x~15'-2", under WIN-S-PLANT4's RO, clear of its jamb pack (x 15'-11"..16'-2").
                path=(pt(inch(22), inch(406.2)), pt(inch(22), inch(401)), pt(inch(15.5), inch(401)),
                      pt(inch(15.5), inch(389.5)), pt(inch(21), inch(389.5)), pt(inch(64), inch(389.5)),
                      pt(inch(67), inch(389.5)), pt(inch(67), ft(1)), pt(inch(100), ft(1)),
-                     pt(inch(159), ft(1)), pt(ft(17, 6), inch(-6)),
+                     pt(inch(139), ft(1)), pt(ft(17, 6), inch(-6)),
                      pt(ft(17, 6), inch(-6)), pt(ft(17, 6), ft(-4.833)),
                      pt(ft(17, 6), ft(-4.833))),
                start_elevation=inch(118), end_elevation=ft(8, 8),
                # The tier drop is spread along the y=1'-0" bay leg rather than taken plumb.
                elevations=(inch(118), inch(118), inch(114.125), inch(114.125), inch(119.125), inch(119.125),
                            inch(115.125), inch(115.125), inch(118),
-                           ft(9, 3.75), ft(9, 3.75), ft(8, 10.25),
+                           inch(114.0625), inch(114.0625), ft(8, 10.25),
                            ft(8, 10.25), ft(8, 8)),
                # Pull box at 5 (2'-5 1/2", 1'-0"), the foot of the drop to the south bay, behind
                # a ceiling access cover (360 deg before it since the J12 jogs, 2026-11-06). Re-index

@@ -196,9 +196,8 @@ def test_a_floor_is_tied_along_its_whole_bearing_line(catlin_model_ro) -> None:
     trussed = [c for c in wall_ties if c.assembly_tag == "FS-S-WEST"]
     # Less one tie: the y=34'-5 3/4" truss's west end hangs on FO-S-ERV-CHASE's header.
     # The y=25'-4" line is FO-S-STAIR's full-span south trimmer pack since 2026-09-25.
-    # Plus one: the y=0 truss's east end on W-M-C1, which FS-S-EAST's edge TJI shadowed at the
-    # same grid point until that edge became an LSL rim (2026-11-18).
-    assert len(trussed) == len(joists) - 1 + 1 == 25
+    # The y=0 line is an LSL rim (2026-11-18), so no truss end lands at that grid point.
+    assert len(trussed) == len(joists) - 1 == 23
     assert len({c.support_tag for c in trussed}) > 1, \
         "the west bearing line is more than one wall; a single support means _bearing_line died"
 
@@ -219,8 +218,8 @@ def test_a_floor_joist_on_a_wall_takes_no_tie(catlin_model_ro, connections) -> N
     # The BATH2 drain bay adds one full-span TJI and its west-sill tie; the x=18' plate is nailed.
     assert {c.support_tag for c in on_walls} == {"W-B-E1", "W-B-E2", "W-B-W1", "W-B-W2"}
     # The three sistered packs (FS-M-NE 316/332, FS-M-WEST's bath ply) tie both outer faces.
-    # The three gable-end edge lines are LSL rims since 2026-11-18: their ends take none.
-    assert Counter((c.sill_tie, c.sill_ties) for c in on_walls) == {("A35Z", 1): 51,
+    # The four gable-end edge lines on concrete are LSL rims since 2026-11-18: none there.
+    assert Counter((c.sill_tie, c.sill_ties) for c in on_walls) == {("A35Z", 1): 50,
                                                                      ("A35Z", 2): 3}
     assert [c for c in connections if c.assembly_tag in {f.tag for f in catlin_model_ro.floors}
             and c.support_tag not in walls], "deck joists on beams stay tied"

@@ -8691,7 +8691,8 @@ Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
 - **Rim.** Every TJI field's outermost line on a gable end (FS-M-WEST/-EAST south, FS-M-MECH/-STAIR
   north, FS-S-EAST and FS-ATTIC both) is the house's stock 1 1/4" x 11 7/8" TimberStrand LSL rim
   (`JoistSpec.edge_rims`, emitted as `edge-rim-*` rim members). The open-web trusses' edge lines
-  (FS-M-NE north, FS-S-WEST south) stay trusses: the owner named I-joists. Nothing needed 1 1/2" or
+  (FS-M-NE north, FS-S-WEST south) stay trusses: the owner named I-joists (reversed the same
+  day, below). Nothing needed 1 1/2" or
   1 3/4". The three edge lines that lost an A35Z sill tie bear on their parallel walls' blocking
   stations; `code.MN_1309_0404_wall_top` still passes.
 - **What went.** D-S-BALCONY's squash plies (the rim is rated for vertical load: the pack is 0.310
@@ -8735,4 +8736,21 @@ Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
 - **Grade.** Uniform deck load into the joist is 41 lb on the south piece, 7 lb a nail against Z' 90
   (10d into SP, NDS 12.3 mode IV, C_M 0.70), 19 psi of torsion (`north_entry_structure.md` §2a).
   Bid: +3 8' 2x8, butyl tape +0.6 LF.
+
+## The truss fields' gable edges are LSL rims too (2026-11-18, owner)
+
+- **"Swap them too", for consistency.** FS-M-NE's north line (y 36') and FS-S-WEST's south line
+  (y 0) are the stock 1 1/4" x 11 7/8" TimberStrand rim (`edge_rims`), laid flush with the stud face
+  like every other edge rim; the 3 1/2" edge trusses had been centred on the sheathing's outer face,
+  half in the foam. Same 11 7/8" depth, so nothing above or below moved. FS-S-WEST's north line was
+  already opening trimmer packs (FO-S-STAIR, FO-S-ERV-CHASE) and stays so.
+- **What the edge truss carried.** Nothing beyond its own strip and the gable wall over it: no point
+  load, no sister. FS-M-NE's two strongbacks now butt the rim's inner face (`floor_strongbacks`) and
+  its N1 blocking still cuts to 430 1/4". One run crossed an edge truss's web: CD-M-DATA-PORCH leaves
+  through FS-S-WEST's south edge. It now bores the rim centred (TJ-8000 p.4: round, up to 2/3 depth,
+  centred vertically, 2D from the end, not under a concentrated load): the leg moved 20" west to
+  cross under WIN-S-PLANT4's RO, clear of its jamb pack, and its drop starts at +9'-6 1/16".
+  `mep.run_member_crossing` reads an edge rim on that rule now, not as the field's truss web.
+- **Ties.** FS-M-NE's edge line lost its east-end A35Z on W-B-E2 (17 -> 16 in the bid); W-B-N1 is
+  restrained by its blocking stations, unchanged. Bid: 2 fewer 18' trusses, 2 more 20' rims.
 
