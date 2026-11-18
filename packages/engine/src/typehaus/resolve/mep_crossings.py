@@ -100,8 +100,8 @@ def member_window(floor: ResolvedFloor, member: FramedMember | None = None, *,
         return CrossingWindow(
             low + margin, high - margin, kind="rim_board",
             basis=(f"inside the middle 2/3 of a {member.profile}, where TJ-8000 (March 2025) "
-                   "p.4 allows a round hole up to 2/3 its depth, centred vertically; its 2D "
-                   "end distance and 'not under concentrated loads' are not graded here"))
+                   "p.4 allows a round hole up to 2/3 its depth, centred vertically (a hole "
+                   "inside that one); 'not under concentrated loads' is not graded here"))
 
     opening_m = open_web_opening_m(section)
     if opening_m is not None and opening_m > 0:

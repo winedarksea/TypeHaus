@@ -90,6 +90,20 @@ def test_an_edge_rim_is_bored_centred_and_the_strongback_butts_it(catlin_model_r
     assert max(ends) == pytest.approx(430.25)
 
 
+def test_an_edge_rim_hole_keeps_twice_its_diameter_off_the_rim_end(catlin_model_ro) -> None:
+    """TJ-8000 p.4's end distance: 2D for a round hole, 3L for a rectangle."""
+    from typehaus.checks.mep.routing_members import _rim_end_finding
+
+    floor = _floor(catlin_model_ro, "FS-S-WEST")
+    rim = next(m for m in floor.members if m.child_key.startswith("edge-rim-"))
+    end = min(rim.p0[0], rim.p1[0])
+    hole = 1.0 * M_PER_IN
+    assert _rim_end_finding("conduit", "T", floor, rim, end + 2.6 * M_PER_IN, hole, True) is None
+    short = _rim_end_finding("conduit", "T", floor, rim, end + 2.4 * M_PER_IN, hole, True)
+    assert short is not None and short.result.value == "fail"
+    assert _rim_end_finding("duct", "T", floor, rim, end + 2.6 * M_PER_IN, hole, False)
+
+
 def test_corridors_delegates_rather_than_re_deriving(catlin_model_ro) -> None:
     """The routing side and the checks side must not be able to drift apart."""
     from typehaus.routing.corridors import crossing_window

@@ -99,8 +99,8 @@ def run_member_crossing(ctx: CheckContext) -> list[Finding]:
         # web. Unquoted, no member carries a shape and the reading is unchanged —
         # ``mep.open_web_panel`` is the one that says so, once, naming the floor.
         webbed = {m.child_key: m for m in floor.members if m.web is not None}
-        rim_windows = {m.child_key: member_window(floor, m) for m in floor.members
-                       if m.child_key.startswith(EDGE_RIM_PREFIX)}
+        rims = {m.child_key: m for m in floor.members if m.child_key.startswith(EDGE_RIM_PREFIX)}
+        rim_windows = {key: member_window(floor, m) for key, m in rims.items()}
         # Every crossing on this floor first, keyed by member, because R502.8.1's spacing
         # rule is a question about the OTHER holes in the same joist and no per-run pass can
         # see them. Two 2" drains 1 1/2" apart each fit the window and each clear D/3; the
@@ -131,7 +131,13 @@ def run_member_crossing(ctx: CheckContext) -> list[Finding]:
             half_d += insulation_thickness_m(lagging) or 0.0
             tightest: tuple | None = None
             on_web: tuple[float, str, float, str] | None = None
+            rim_short: Finding | None = None
             for crossing in crossings:
+                if crossing.member_key in rims and rim_short is None:
+                    hole_m = 2 * half_w * oblique[(tag, crossing.member_key, crossing.station_m)]
+                    rim_short = _rim_end_finding(kind, tag, floor, rims[crossing.member_key],
+                                                 crossing.station_m, hole_m,
+                                                 abs(half_w - half_d) < 1e-9)
                 # An edge rim (``JoistSpec.edge_rims``) is a rim board, not the field member.
                 here = rim_windows.get(crossing.member_key, window)
                 crown_gap = here.z1_m - (crossing.z_m + half_d)
@@ -158,6 +164,8 @@ def run_member_crossing(ctx: CheckContext) -> list[Finding]:
             out.append(_finding(kind, tag, floor.tag, half_d, tightest))
             if on_web is not None:
                 out.append(_web_finding(kind, tag, floor.tag, on_web))
+            if rim_short is not None:
+                out.append(rim_short)
             bore = (_ijoist_finding(floor, chart, tag, radius, crossings, by_member,
                                     supports)
                     if chart is not None and window.kind == "i_joist" else
@@ -201,6 +209,26 @@ def _finding(kind: str, tag: str, floor_tag: str, radius_m: float,
         f"{where}: crown {crown_gap / M_PER_IN:+.3f}\", invert "
         f"{invert_gap / M_PER_IN:+.3f}\" ({sizes}) — {window.basis}",
         (tag, floor_tag))
+
+
+def _rim_end_finding(kind: str, tag: str, floor, rim, station_m: float, hole_m: float,
+                     round_: bool) -> Finding | None:
+    """TJ-8000 (March 2025) p.4: a rim hole's edge stands 2x its diameter (3x a rectangle's
+    length) from the rim's end. ``hole_m`` is the hole's length along the rim. None if clear."""
+    k = 0 if floor.direction == "x" else 1
+    lo, hi = sorted((rim.p0[k], rim.p1[k]))
+    edge_m = min(station_m - lo, hi - station_m) - hole_m / 2.0
+    need_m = (2.0 if round_ else 3.0) * hole_m
+    if edge_m >= need_m - 1e-9:
+        return None
+    rule = "2x the diameter" if round_ else "3x the length"
+    return _fail(
+        _CID,
+        f"{kind} {tag} bores {floor.tag}'s edge rim {rim.child_key} {feet_inches(station_m)} "
+        f"along it, its hole's edge {edge_m / M_PER_IN:.2f}\" from the rim's end against "
+        f"{need_m / M_PER_IN:.2f}\" (TJ-8000 p.4: {rule})",
+        (tag, floor.tag),
+        fix="move the crossing along the rim, away from its end")
 
 
 def _stretch(a, b, along_x: bool) -> float:
