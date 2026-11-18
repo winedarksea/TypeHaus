@@ -109,6 +109,13 @@ FASTENMASTER_TIMBERLOK = StructuralHardware(
         source="ICC-ES ESR-1078 (reissued 2026-01) Table 5, SG < 0.50, lateral load "
                "perpendicular to grain (staggered rows per its note 4); Table 2's 1-1/4 in "
                "minimum embedded thread"),
+    # SG > 0.50 (KDAT SYP 0.55; an LSL rim's equivalent 0.50 read on the stricter side).
+    spacing_dense=FastenerSpacing(
+        end_distance=3.0, in_row_spacing=2.625, row_spacing=0.75, in_line_row_spacing=1.875,
+        loaded_edge=1.75, unloaded_edge=1.75, min_embedded_thread=1.25,
+        source="ICC-ES ESR-1078 (reissued 2026-01) Table 5, SG > 0.50, lateral load "
+               "perpendicular to grain (staggered rows per its note 4); Table 2's 1-1/4 in "
+               "minimum embedded thread"),
     source="FastenMaster TimberLOK, ICC-ES ESR-1078 (reissued 2026-01) Table 1A — 2 in "
            "thread at every length; coating rated for ACQ-D <= 0.40 pcf per §4.1.7 / "
            "Table 6",

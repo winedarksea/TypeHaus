@@ -12,7 +12,7 @@ The RO is 82 7/8" with a -1 3/4" sill, so the rough head stands 4 5/8" under the
 R602.7 2-2x10 grew 9 1/4" up from it, through both top plates and 1 5/8" past the wall top
 (geometry review C3-E2). `W-B-S3-FR` is BEARING but runs PARALLEL to `FS-M-EAST`'s joists:
 the member over the opening is the y=0 edge-joist line. So the beam goes there, flush:
-two 1 3/4" x 11 7/8" Microllam LVL plies beside the edge I-joist, x 18'-2 11/32" to
+two 1 3/4" x 11 7/8" Microllam LVL plies beside the edge line (an LSL rim board since 2026-11-18), x 18'-2 11/32" to
 24'-5 21/32" — the outer faces of the two 2-jack + 2-king packs, which run up to the plates.
 It is NOT a bearing ref: `resolve/floors.py` would cut every joist at that line.
 
@@ -53,8 +53,7 @@ not by this span.
 
 - Dry-use service (the band is inside the envelope; TJ-9000 p.5: Microllam is for dry use).
 - Lateral support: the subfloor sheathes the top edge.
-- The squash plies and filler are not billed as separate lines (the plies bill as LVL with
-  the band's own).
+- The plies' nails into the edge rim are not billed as a separate line.
 
 ## 5. The stacked jambs, by hand (2026-11-13; graded since BASIS_VERSION 2)
 
@@ -97,15 +96,24 @@ The east seat's gable frames 83.95": 1,545.9 lb on that seat. The west governs.
 | D-M-PORCH pack on W-M-S2's plate | 1,693.64 | 6.0 x 5.5 = 33.0 | 51.32 | 425 | 0.121 |
 | W-M-S2's plate on the two plies | 1,693.64 | 6.0 x 3.5 = 21.0 | 80.65 | 425 | 0.190 |
 | plies on W-B-S3-FR's plates | 1,693.64 + 131.5 = 1,825.14 | 21.0 | 86.91 | 425 | **0.204** |
-| D-S-BALCONY pack on FS-S-EAST's squash plies | 1,163.77 | 6.0 x 3.5 = 21.0 | 55.42 | 425 | 0.130 |
+| D-S-BALCONY pack on FS-S-EAST's edge rim | 1,163.77 | 6.0 x 1.25 = 7.5 | 155.17 | 425 | 0.365 |
 
-131.5 lb is the band's own end reaction (§3). **Governs: the plies on W-B-S3-FR's plates,
-d/c 0.204.**
+131.5 lb is the band's own end reaction (§3).
 
-**The load crosses FS-S-EAST on squash plies.** D-S-BALCONY's packs stand on W-S-S2's plate
-over FS-S-EAST's edge TJI, which TJ-4000 (July 2025) detail CS forbids loading from above
-without squash blocks matching the column's bearing area. Two 1 3/4" x 11 7/8" Microllam plies
-(`params/second_deck.py`, one per pack, 3" past each face) are those blocks.
+**The load crosses FS-S-EAST on its LSL edge rim (2026-11-18).** The gable-end edge lines are
+1 1/4" x 11 7/8" TimberStrand LSL rim boards now, not TJI 230s, so TJ-4000 detail CS's squash
+plies (two 1 3/4" Microllam plies under each D-S-BALCONY pack, 2026-11-13) are gone: the rim is
+rated for vertical load. Read off Weyerhaeuser TJ-8000 (March 2025; ESR-1387), 1 1/4" x 11 7/8":
+
+| Read | Demand | Published | d/c |
+|---|---|---|---|
+| concentrated vertical load | 1,163.77 lb | 3,760 lb | 0.310 |
+| vertical load, the pack over its 6" seat | 1,163.77 / 0.5 ft = 2,327.54 plf | 5,400 plf | **0.431** |
+| the rim over the 63 5/16" RO as a 1-ply header, uniform only | the whole strip, 45.53 plf (§2) | 864 plf (5'-6" clear, the next row past 5.276 ft) | 0.053 |
+
+**Governs: the edge rim under the pack, d/c 0.431** (it was the plies on W-B-S3-FR's plates,
+0.204). The rim over the opening is a companion to the plies, not counted in them; the plies
+still carry the whole strip in §3.
 
 **Published reads, not calculations:**
 
@@ -114,9 +122,9 @@ without squash blocks matching the column's bearing area. Two 1 3/4" x 11 7/8" M
   one face (an extra row only at depths of 14" or more), or 12d-16d in 2 rows at 12", or
   SDS/WS screws in 2 rows at 24". The load enters evenly across the plies' width through the
   subfloor and the wall plate, which is the table's condition. Authored: 10d, 3 rows at 12".
-- Filler block, TJ-4000 (July 2025) p.28, *Filler and Backer Block Sizes*, TJI 230 at
-  9 1/2"-11 7/8": **2x6 + 1/2" sheathing**, (15) 0.131" x 3" nails driven from alternating
-  sides, 24" suggested minimum length.
+- No filler since 2026-11-18: TJ-4000 p.28's *Filler and Backer Block Sizes* (2x6 + 1/2"
+  sheathing for a TJI 230) fills an I-joist's web recess; the LSL rim is solid, so the plies
+  nail straight to its face.
 
 ## Sources
 
@@ -124,6 +132,8 @@ without squash blocks matching the column's bearing area. Two 1 3/4" x 11 7/8" M
   pp.4-5 (Allowable Design Properties; Design Stresses), p.30 (multiple-member connections
   for top-loaded beams).
 - Weyerhaeuser **TJ-4000** *TJI Joist Specifier's Guide*, July 2025, p.27 detail CS (squash
-  blocks), p.28 (filler and backer block sizes).
+  blocks), p.28 (filler and backer block sizes) — history since the LSL rim.
+- Weyerhaeuser **TJ-8000** *TimberStrand LSL rim board*, March 2025, pp.2, 5-6 (vertical and
+  concentrated load, 1-ply header rows); ICC-ES **ESR-1387**.
 - AWC NDS 2018 §3.10.2 (compression perpendicular to grain).
 - IRC 2018 R301.5 (floor loads), Table R301.7 (L/360).

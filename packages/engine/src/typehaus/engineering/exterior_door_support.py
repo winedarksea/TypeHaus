@@ -92,29 +92,30 @@ def sill_beam_report(span_in, width_in, depth_in, modulus_psi, bending_psi, shea
 def screw_spacing_failures(screws, members, spacing):
     """Every published-minimum miss of a screw layout, as messages; empty is a pass.
 
-    ``screws``: ``(station, z, row)`` inches. ``members``: ``(name, s0, s1, z0, z1, loaded)``
-    inches, ``loaded`` the edge the screw bears toward in that member (``"top"``/``"bottom"``);
-    a member counts for a screw whose station it spans. ``spacing`` is a
-    ``hardware.catalog.FastenerSpacing``. Grain runs along the station axis.
+    ``screws``: ``(station, z, row)`` inches. ``members``: ``(name, s0, s1, z0, z1, loaded,
+    rule)`` inches, ``loaded`` the edge the screw bears toward in that member (``"top"``/
+    ``"bottom"``) and ``rule`` its own ``hardware.catalog.FastenerSpacing`` column; a member
+    counts for a screw whose station it spans. ``spacing`` (the main member's column) sets
+    the in-row and row minima. Grain runs along the station axis.
     """
     tol = 1e-6
     out = []
     for station, z, row in screws:
-        for name, s0, s1, z0, z1, loaded in members:
+        for name, s0, s1, z0, z1, loaded, rule in members:
             if not s0 - tol <= station <= s1 + tol:
                 continue
             end = min(station - s0, s1 - station)
-            if end < spacing.end_distance - tol:
+            if end < rule.end_distance - tol:
                 out.append(f"row {row} at {station:.3f} in: end distance {end:.3f} in in the "
-                           f"{name} < {spacing.end_distance:g} in")
+                           f"{name} < {rule.end_distance:g} in")
             top, bottom = z1 - z, z - z0
             to_loaded, to_free = (top, bottom) if loaded == "top" else (bottom, top)
-            if to_loaded < spacing.loaded_edge - tol:
+            if to_loaded < rule.loaded_edge - tol:
                 out.append(f"row {row} at {station:.3f} in: loaded edge {to_loaded:.3f} in in "
-                           f"the {name} < {spacing.loaded_edge:g} in")
-            if to_free < spacing.unloaded_edge - tol:
+                           f"the {name} < {rule.loaded_edge:g} in")
+            if to_free < rule.unloaded_edge - tol:
                 out.append(f"row {row} at {station:.3f} in: unloaded edge {to_free:.3f} in in "
-                           f"the {name} < {spacing.unloaded_edge:g} in")
+                           f"the {name} < {rule.unloaded_edge:g} in")
     rows = {}
     for station, z, row in screws:
         rows.setdefault(row, []).append((station, z))

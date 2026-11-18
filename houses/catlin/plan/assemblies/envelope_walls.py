@@ -180,15 +180,14 @@ EXT_2X6 = Assembly(
                                   course_datum="framing-base", course_offset=inch(0),
                                   # A door's sill course is a 2x6 beam outboard of the girt band,
                                   # its face at the XXXXW nose, seated at its ends on 4-ply stacks
-                                  # (owner, 2026-11-17): 4 TLOK10 a seat into an SPF backer pair.
+                                  # (owner, 2026-11-17): 4 TLOK10 a seat into the LSL edge rim.
                                   sill_course=SillCourseFastening(
                                       course_stock="2x6",
-                                      seat_width=inch(9.25), seat_rows=2, screws_per_row=2,
+                                      seat_width=inch(10), seat_rows=2, screws_per_row=2,
                                       fastener_part="TLOK10", fastener_length_in=10.0,
-                                      backer_stock="2x6", backer_material_ref="spf",
                                       course_modulus_psi=1260000.0, course_bending_psi=1137.0,
-                                      course_shear_psi=131.0, lateral_wet_lb=135.0,
-                                      lateral_source="house NDS 2018 12.3 calc, mode IIIm 194.4 lb x C_M 0.70 = 136.1, authored 135: notes/exterior_door_sill_beam.md section 3",
+                                      course_shear_psi=131.0, lateral_wet_lb=133.0,
+                                      lateral_source="house NDS 2018 12.3 calc into a 1 1/4 in LSL rim (G 0.50), mode IIIm 190.0 lb x C_M 0.70 = 133.0: notes/exterior_door_sill_beam.md section 3",
                                       source="notes/exterior_door_sill_beam.md; No.2 SPF wet as the lower bound for KDAT"),
                                   standoff="block",
                                   standoff_fastener="FastenMaster TimberLOK 8\" TLOK08, ESR-1078",

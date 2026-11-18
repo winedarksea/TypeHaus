@@ -18,10 +18,16 @@ Depths are inches outward from the sheathing's outer face; elevations are off th
   board-and-batten face (6.75"). Top at the rough sill (+3/4", the subfloor top), bottom −4 3/4".
   The top is ripped at 1/4"/ft: 1/32" across 1 1/2". The pan runs level over the buck sill, falls
   across the beam and turns down its face to a 1/2" drip at 7.5"+.
-- **Seats.** One stack per end, 4 plies of 2x6 KDAT (sheathing to beam back, 6.0"), 9 1/4" along
-  the beam, 5 1/2" tall, top under the 3/8" buck sill (+3/8"), bottom −5 1/8".
-- **Wood through the foam.** 2 × 9.25 × 5.5 = **101.75 in²** a door. The wide doors drop from
-  11 blocks × 3.5² = 134.75 in² (−24%); the entry *rises* from 7 × 12.25 = 85.75 in² (+19%).
+- **Seats.** One stack per end, 4 plies of 2x6 KDAT (sheathing to beam back, 6.0"), **10"** along
+  the beam (9 1/4" until 2026-11-18: SP's Table 5 end distance, §3), 5 1/2" tall, top under the
+  3/8" buck sill (+3/8"), bottom −5 1/8".
+- **Edge member.** An LSL rim board, 1 1/4" × 11 7/8" (Weyerhaeuser TimberStrand 1.3E, the house
+  rim; `JoistSpec.edge_rims`, owner 2026-11-18) in place of the edge TJI 230 at all three doors:
+  FS-M-EAST `edge-rim-0-000-0` (PORCH, D-B-SUNKEN's LVL band plies nailed to its inner face),
+  FS-M-MECH `edge-rim-0-011-0` (ENTRY, on W-B-N3's mudsill) and FS-S-EAST `edge-rim-0-000-0`
+  (BALCONY, on W-M-S2's plates). The SPF web backers and their flange question are gone.
+- **Wood through the foam.** 2 × 10 × 5.5 = **110 in²** a door. The wide doors drop from
+  11 blocks × 3.5² = 134.75 in² (−18%); the entry *rises* from 7 × 12.25 = 85.75 in² (+28%).
   The foam now runs unbroken between the seats.
 
 ## 2. Beam
@@ -29,93 +35,112 @@ Depths are inches outward from the sheathing's outer face; elevations are off th
 No.2 SPF wet stands in for KDAT SP (lower bound, as `catlin_truss_engineering.md` §4):
 Fb' = 875 × C_F 1.3 = **1,137 psi** (C_M 1.0: Fb·C_F ≤ 1,150; C_D 1.0), Fv' = 135 × 0.97 = **131
 psi**, E' = 1.4e6 × 0.90 = **1.26e6 psi**. S = 1.5 × 5.5²/6 = 7.5625 in³, I = 20.797 in⁴,
-A = 8.25 in². Span between the seats' screw-group centroids (each 4.59375" in from its end, §3):
-63.3125 − 9.1875 = **54.125"**; entry 38.375 − 9.1875 = **29.1875"**. 300 lb point.
+A = 8.25 in². Span between the seats' screw-group centroids (each (3 + 5.625 + 4.3125 + 6.9375)/4
+= 4.96875" in from its end, §3): 63.3125 − 9.9375 = **53.375"**; entry 38.375 − 9.9375 =
+**28.4375"**. 300 lb point. EI = 1.26e6 × 20.797 = 2.6204e7 lb-in².
 
 | | M = PL/4 | fb / Fb' | fv = 1.5P/A, / Fv' | Δ = PL³/48EI vs 1/8" |
 |---|---|---|---|---|
-| wide | 4,059.4 lb-in | 536.8 / 1,137 = **0.472** | 54.5 / 131 = **0.416** | **0.0378"** |
-| entry | 2,189.1 lb-in | 289.5 / 1,137 = **0.255** | **0.416** | **0.0059"** |
+| wide | 4,003.1 lb-in | 529.3 / 1,137 = **0.466** | 54.5 / 131 = **0.416** | 4.5618e7 / 1.2578e9 = **0.0363"** |
+| entry | 2,132.8 lb-in | 282.0 / 1,137 = **0.248** | **0.416** | 6.8991e6 / 1.2578e9 = **0.0055"** |
 
 1/8" is the door maker's limit over an unsupported span (Marvin site prep, cited in the review).
 
-## 3. Seat screws, TLOK10
+## 3. Seat screws, TLOK10 into the LSL rim (2026-11-18)
 
-**The main member is the edge TJI, not an LSL rim.** At all three doors the joists run parallel
-to the wall, so the edge member is a TJI 230: FS-M-EAST `joist-0-000-0` (PORCH, D-B-SUNKEN's LVL
-band plies behind), FS-M-MECH `joist-0-011-0` (ENTRY), FS-S-EAST `joist-0-000-0` (BALCONY). The
-LSL rims are at joist ends, on the east and west walls. Each seat's length takes an SPF backer
-pair in the web recesses: 2x6 ripped to 31/32", 5 1/2" tall, tight under the 1 1/4" flange.
+**An all-table joint was tried first (owner: "a strong preference to keep it to a table") and
+does not exist here.** ESR-1078 (reissued 2026-01), read in full:
 
-**Screw fit** (`catlin_truss_engineering.md` §3.1–§3.3: the sheathing is nailed to the edge member,
-so it is on the main member's side):
+- Table 4 is two-member, "Gaps are not permitted between the main and side members" (note 1); a
+  thicker side member keeps the row only if the main penetration is still met (note 2). Every
+  TimberLOK row needs 2 1/2"-5" of main penetration; the rim is 1 1/4".
+- Its one LSL row (note 7) is LedgerLOK LL358: a **1 1/2"** side member of SG 0.50 into a
+  ≥ 1" LSL rim, through it, Z⊥ 300 lb, with note 5 "side member thickness must not be
+  increased". A seat would have to be laminated ply by ply: ply 1 on the rim by note 7, the
+  others and the beam by the LL358 1 1/2"-into-1 1/2" through row (Z⊥ 220 lb at G 0.42).
+- The 1/2" sheathing between ply 1 and the rim is a third member the row never tested; cutting
+  it out behind each seat leaves the stack 1/2" short of the girt face, and a 1/2" packer is the
+  same interlayer again. ESR-1387's ledger rows (1/2" lag 610 lb, through-bolt 725 lb in a
+  1 1/4" rim) do include a structural panel, but for a 2x ledger only, with the same problem at
+  every ply beyond it.
+- Each interface also carries the reaction's eccentric moment as withdrawal; LL358 cannot embed
+  Table 2's 2" of thread in a 1 1/2" ply or a 1 1/4" rim, so that couple is an NDS §12.4.1
+  design either way (ESR-1078 §4.1.6 sends it there).
+- Five interfaces of two or more LL358 each, a sheathing cut-out and a packer per seat, against
+  four long screws: clearly more parts and labour, still not a table read.
+
+So the NDS 12.3 calc stays the lateral basis, re-run on the rim; it is a draft check (no seal).
+ESR-1078's Table 2 embedded thread and Table 5 spacing stay graded as published.
+
+**Screw fit** (`catlin_truss_engineering.md` §3.1–§3.3: the sheathing is nailed to the rim, so
+it is on the main member's side):
 
     clamped stack   beam 1.5 + seat 6.0                     = 7.5"
     through         + sheathing 0.5                         = 8.0"
     TLOK10          10", 2" thread (ESR-1078 Table 1A) → plain shank 8.0" ≥ 7.5"   ✓ 0.5"
-    thread          8.0" to 10.0": starts at the TJI's face, ends 5/16" short of its far face ✓
-    in wood         31/32 outer backer + (2.0 − 1 11/32) inner backer = 1.625" ≥ 1 1/4" ✓
-    penetration     2.0" ≥ 6D = 1.134" (NDS 12.1.4.6)                              ✓
+    thread          8.0" to 10.0": starts at the rim's face, 1.25" in it, 0.75" past its far
+                    face (into the joist bay; at PORCH into the LVL plies, not credited)
+    in wood         1.25" ≥ 1 1/4" (ESR-1078 Table 2)                           ✓ exactly
+    penetration     1.25" in the rim ≥ 6D = 1.134" (NDS 12.1.4.6)               ✓
 
-ESR-1078 Table 4's lateral values need 5" of main-member penetration and §5.4 leaves NDS
-lateral design outside the report, so, as for the retired detail, the house's NDS 12.3 calc is
-the lateral basis; the report's 1 1/4" embedded thread and Table 5 spacing are graded as
-published.
+**NDS 2018 §12.3**, single shear: D 0.172" root, F_yb 190,600 psi, R_d = 10D + 0.5 = 2.22. Side:
+the 8" stack at G 0.42 (SPF, a lower bound for the KDAT SP and the plywood), F_es = 16,600 ×
+0.42^1.84 = 3,364.2 psi. Main: the rim at G 0.50 (ESR-1387, equivalent SG for fasteners in the
+face), F_em = 16,600 × 0.50^1.84 = 4,636.7 psi, l_m 1.25". R_e = 1.3782, R_t = 0.15625.
 
-**NDS 2018 §12.3** (inputs as `exterior_door_structural_mount.md`: D 0.172" root, F_yb 190,600,
-G 0.42 every member, F_e 3,364.2 psi, q = 578.65 lb/in, M_y = 161.64 lb-in, R_d 2.22). Main
-member wood: [0, 31/32] and [1 11/32, 2.0] past its face (the web a gap).
+| Mode | Working | Z, lb |
+|---|---|---|
+| Im | D l_m F_em / R_d = 0.172 × 1.25 × 4,636.7 / 2.22 | 449.1 |
+| Is | D l_s F_es / R_d, l_s 8.0 | 2,085.2 |
+| II | k1 0.35366 × D l_s F_es / R_d | 737.5 |
+| IIIm | k2 = −1 + √(2(1 + R_e) + 2F_yb(1 + 2R_e)D²/(3F_em l_m²)) = −1 + √(4.7565 + 1.9491) = 1.58952; k2 D l_m F_em / ((1 + 2R_e) R_d) | **190.0** |
+| IIIs | k3 0.86920 × D l_s F_em / ((2 + R_e) R_d) | 739.5 |
+| IV | D²/R_d √(2 F_em F_yb / (3(1 + R_e))) | 209.7 |
 
-- IV: h = √(2M_y/q) = 0.7475", inside the outer backer; P = 432.5, Z = 194.8.
-- IIIm: h = (y0 − 3/8) − (2.0 − y0) = 2y0 − 2.375. Moments about the hinge,
-  q h²/2 − q[(31/32 + h)² − h²]/2 − q[(y0 + h)² − (1 11/32 + h)²]/2 + q[(2.0 + h)² − (y0 + h)²]/2
-  = −M_y at y0 = 1.5604", h = 0.7458": 160.9 − 689.6 − 275.5 + 642.6 = −161.6 ✓.
-  P = 431.6 lb, **Z = 194.4 (governs)**. Im = q × 1.625/2.22 = 423.6.
-- **Z' = 0.70 × 194.4 = 136.1 lb, authored 135** (C_M 0.70, NDS Table 11.3.3).
+**Z = 190.0 (IIIm), Z' = 0.70 × 190.0 = 133.0 lb** (C_M 0.70, NDS Table 11.3.3, wet KDAT side
+members), authored 133. The TJI backer pair gave 135.
 
-**Spacing, ESR-1078 Table 5** (SPF, perpendicular to grain): end and in-row 2 5/8", loaded edge
-1 3/4", unloaded 1 3/8", 3/4" between staggered rows. The screw bears up into the beam and seat
-(loaded edge at their tops) and down into the backer (loaded at its bottom):
+**Spacing, ESR-1078 Table 5, by each member's specific gravity.** The beam and seats are KDAT SP
+(G 0.55) and the rim LSL (0.50, read on the stricter side), so every member takes the
+**SG > 0.50** column: end 3", in-row 2 5/8", loaded and unloaded edge 1 3/4", rows in line
+1 7/8" or 3/4" staggered at half pitch (note 4); rows are spaced on the rim's (main member's)
+column. The screw bears up into the beam and seat and down into the rim:
 
-    beam   +0.75 / −4.75   →  −3.375 ≤ z ≤ −1.000
-    seat   +0.375 / −5.125 →  −3.750 ≤ z ≤ −1.375
-    backer −1.25 / −6.75   →  −5.000 ≤ z ≤ −2.625
-    band   −3.375 … −2.625 = 3/4" → rows at −2.625 and −3.375, exactly at the minima
+    beam   +0.75 / −4.75    →  −3.000 ≤ z ≤ −1.000
+    seat   +0.375 / −5.125  →  −3.375 ≤ z ≤ −1.375
+    rim    0 / −11.875      →  −10.125 ≤ z ≤ −1.750
+    band   −3.000 … −1.750 = 1 1/4" → rows at −2.000 and −2.750, 1/4" inside each end
 
-Rows staggered by half the in-row spacing, from each beam end: row 1 at 2.625, 5.25; row 2 at
-3.9375, 6.5625; far end distance 9.25 − 6.5625 = 2.6875" ✓. The 3/4" is Table 5's staggered value,
-which its note 4 allows only at that half-pitch offset; rows in line need 1 3/8". **8 TLOK10 a
-door, 24 in all (was 41).** The band is the 2x6 beam's: it has no margin. A 2x8 beam would give
-2 3/8".
+Rows staggered by half the in-row spacing, from each beam end: row 1 at 3, 5.625; row 2 at
+4.3125, 6.9375; far end 10 − 6.9375 = 3.0625" ✓, which is why the seat is 10". **8 TLOK10 a
+door, 24 in all**, unchanged. The rim has no flange, so the 2026-11-18 UNKNOWN is gone.
 
-**The flange decides it (review, 2026-11-18).** The backer's top is the edge TJI's flange
-underside. The model reads TJ-4000 p.6's flange band at its thin end, 1 1/4". At its thick end,
-1 3/8", the backer sits 1/8" lower and its unloaded edge allows z ≤ −1.375 − 1.375 = −2.75. The
-band then shrinks to −3.375 … −2.75 = 5/8", under the staggered 3/4": the top row has only 1 1/4"
-to the backer's top. The engine reports this as UNKNOWN, decided by the delivered flange. If
-the flange is thick, a 2x8 beam on 7 1/4" seats restores 2 3/8".
+**Shares.** The spring beam (E' 1.26e6, k = 270,000 × 0.189^1.5 = 22,184.8 lb/in at the eight
+stations, 300 lb scanned along it). An independent PyNite model (a beam on vertical springs at
+the stations, the load at the engine's worst station and at the ends):
 
-**Shares.** The spring beam of the retired detail, E' 1.26e6, k = 270,000 × 0.189^1.5 =
-22,185 lb/in, 300 lb scanned along it. An independent PyNite model (the beam on vertical springs
-at the eight stations, E' and k as above, the load at the engine's worst station) gives:
-
-| Door | Load at | Screw forces, lb (station) | Σ | Worst / 135 |
+| Door | Load at | Screw forces, lb (station) | Σ | Worst / 133 |
 |---|---|---|---|---|
-| wide | 41.13" | −35.38 (2.625) · 4.19 · 43.83 · 83.58 (6.5625) · **126.29 (56.75)** · 76.04 · 25.82 · −24.37 (60.6875) | 300.00 | **0.936** |
-| wide | 63.31" (end) | 7.52 · −1.39 · −10.31 · −19.25 · 43.26 · 67.27 · 92.90 · 120.01 | 300.00 | 0.889 |
-| entry | 38.375" (end) | −7.39 · −9.78 · −12.15 · −14.47 · 60.23 · 76.30 · 94.02 · **113.22 (35.75)** | 300.00 | **0.839** |
+| wide | 41.13" | −33.78 (3.0) · 43.05 (5.625) · 4.61 (4.3125) · 81.61 (6.9375) · −22.06 (60.3125) · 75.52 (57.6875) · 26.71 (59.0) · **124.33 (56.375)** | 300.00 | **0.935** |
+| wide | 63.31" (end) | 8.00 · −11.24 · −1.62 · −20.90 · 123.20 · 66.92 · 94.25 · 41.38 | 300.00 | 0.926 |
+| entry | 0" (end) | **116.01 (3.0)** · 76.96 · 95.67 · 60.06 · −8.38 · −13.46 · −10.93 · −15.93 | 300.00 | **0.872** |
 
-Σ(F·(x − load)) = 0.000 in each. The worst wide case is not the end: a load inside the span turns
-the beam over the far seat and its innermost screw takes the most. The negative shares are the
-outer screws holding the beam end down; lateral capacity works both ways.
+Σ(F·(x − load)) = 0.000 in each; a ¼" scan finds no worse load. As before, the worst wide case
+turns the beam over the far seat and its innermost screw takes the most.
+
+**Not graded: the seat's rotation (owner question, 2026-11-18).** The reaction stands 0.5 + 6.0 +
+0.75 = 7.25" off the rim face, so each seat sees about 300 × 7.25 = 2,175 lb-in about its bottom
+bearing on the sheathing, resisted by withdrawal of its upper screws in the rim and pull-through
+of their heads at the beam face (ESR-1078 Table 3: 110 lb at 1 1/2", G 0.42, before C_M). A rough
+couple (the compression resultant 0.4" over the seat bottom, the rows 2.725" and 1.975" above it,
+shares linear in the arm: 2,175 / (2 × 2.725 + 2 × 1.975²/2.725) = 261.6) puts ~260 lb on each
+top screw, well over that; restraint from the beam, the sill fastened on it and the pan is
+not credited. The engine reports it UNKNOWN on every door.
 
 **Jamb-post variant (rejected, design unchanged).** A girt jamb post's own standoff at the sill is
-one 3 1/2" block: a screw needs 2 5/8" of end distance each side (5 1/4"), so the post cannot take
-even one screw to Table 5; the beam would also have to run 3 1/2" past each RO edge in front of
-the cladding to reach it.
-
-**Open:** TJ-4000 p.28's backer row and nailing are not in the repo, so the backer attachment is
-UNKNOWN (`plans/TODO.md`).
+one 3 1/2" block: a screw needs 3" of end distance each side, so the post cannot take even one
+screw to Table 5; the beam would also have to run 3 1/2" past each RO edge in front of the
+cladding to reach it.
 
 ## 4. Walking joint
 

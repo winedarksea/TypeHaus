@@ -213,6 +213,8 @@ EAST_FLOOR = FloorSystem(
                      # FURN-M-LIV-TRACK-S's ceiling track screws up into this line; it runs
                      # parallel to the joists, 6 1/2" off the y=16" line.
                      extra_lines=(inch(9.5),),
+                     # The gable-end edge lines are a 1 1/4" LSL rim boards (owner, 2026-11-18).
+                     edge_rims=("lo", "hi"),
                      end_bearing=(("W-M-C2", _JOIST_BEARING),)),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
     # The main floor's ceiling: this deck's underside *is* that ceiling (unchanged from
@@ -223,15 +225,8 @@ EAST_FLOOR = FloorSystem(
     reinforcements=(
         JoistReinforcement(at=pt(inch(374.375), inch(66.875)), plies=3, blocking=True,
                            source="ST-S2A departing-rim reactions: sister the supporting I-joist and block both adjacent bays to the main-storey bearing walls"),
-        # ** SQUASH PLIES UNDER D-S-BALCONY'S JAMB PACKS (2026-11-13). ** Its packs stand on
-        # this deck's y=0 edge TJI, which TJ-4000 p.27 detail CS will not load from above:
-        # two 1 3/4" Microllam plies beside it under each pack (3" past both faces) carry the
-        # stack down onto D-M-PORCH's packs (band_header/D-B-SUNKEN; note §5).
-        *(JoistReinforcement(at=pt(inch((_lo + _hi) / 2), inch(3.25)), plies=3,
-                             member="1.75x11.875 LVL", blocking=False,
-                             extent=(inch(_lo - 3), inch(_hi + 3)),
-                             source="squash plies under a D-S-BALCONY jamb pack (TJ-4000 CS)")
-          for _lo, _hi in ((218.34375, 224.34375), (287.65625, 293.65625))),
+        # D-S-BALCONY's jamb packs stand on the y=0 LSL edge rim, which TJ-8000 rates for
+        # vertical load: the squash plies a TJI needed are gone (note §5, 2026-11-18).
     ),
     source="catlin second floor, east half — 11 7/8\" TJI 230 joists at 16\" o.c. spanning "
            "18'-0\" from the x=18' bearing line to W-M-E1, unchanged from the old "

@@ -26,7 +26,7 @@ def test_catlin_wall_tops_match_the_basis_note(catlin_model_ro) -> None:
     # The doubled 316/332 trusses: one A35Z on each outer face of the pack.
     assert "(2 11.875 floor truss ends at 16\" o.c., 533 lb each): 2 A35Z x 538 lb" \
         in findings["W-B-E2"].message
-    assert "15 11.875 TJI 230 ends at 16\" o.c., 533 lb each): 1 A35Z x 563 lb" \
+    assert "14 11.875 TJI 230 ends at 16\" o.c., 533 lb each): 1 A35Z x 563 lb" \
         in findings["W-B-W2"].message
     assert "d/c 0.95" in findings["W-B-W2"].message
     # Parallel: worst station per wall.

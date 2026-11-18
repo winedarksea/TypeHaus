@@ -16,6 +16,8 @@ from pathlib import Path
 import pytest
 from _helpers import CATLIN, copy_house
 
+from typehaus.resolve.model import EDGE_RIM_PREFIX
+
 M_PER_IN = 0.0254
 
 
@@ -70,10 +72,12 @@ def test_a_shared_plate_carries_no_rim_from_either_deck(catlin):
     """
     for tag in ("FS-S-WEST", "FS-S-EAST"):
         floor = _floor(catlin, tag)
-        assert len([m for m in floor.members if m.category == "rim"]) == 1, tag
+        assert len([m for m in floor.members if m.category == "rim"
+                    and not m.child_key.startswith(EDGE_RIM_PREFIX)]) == 1, tag
         assert (floor.ends.rim_lo is None) != (floor.ends.rim_hi is None), tag
     west = _floor(catlin, "FS-S-WEST")
-    rim = next(m for m in west.members if m.category == "rim")
+    rim = next(m for m in west.members if m.category == "rim"
+               and not m.child_key.startswith(EDGE_RIM_PREFIX))
     # 1 1/4" band, outboard face on the 0 1/2" stud face: axis at 1 1/8".
     assert _inches(rim.p0[0]) == 1.125
 

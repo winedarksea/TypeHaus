@@ -8684,3 +8684,23 @@ Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
   across D-M-PORCH's RO, so the cover's fixed end has the inner 3/4"; TR-SG-SLOT drops 3/4" under
   the cover's ledge, which had been drawn inside it. The balcony wind rose 0.2% with the longer
   rear oversail (`balcony_moment_columns.md` §19); nothing governing moved.
+
+## Gable-end edge lines are LSL rim boards; the sill seats re-based on them (2026-11-18, owner)
+
+- **Rim.** Every TJI field's outermost line on a gable end (FS-M-WEST/-EAST south, FS-M-MECH/-STAIR
+  north, FS-S-EAST and FS-ATTIC both) is the house's stock 1 1/4" x 11 7/8" TimberStrand LSL rim
+  (`JoistSpec.edge_rims`, emitted as `edge-rim-*` rim members). The open-web trusses' edge lines
+  (FS-M-NE north, FS-S-WEST south) stay trusses: the owner named I-joists. Nothing needed 1 1/2" or
+  1 3/4". The three edge lines that lost an A35Z sill tie bear on their parallel walls' blocking
+  stations; `code.MN_1309_0404_wall_top` still passes.
+- **What went.** D-S-BALCONY's squash plies (the rim is rated for vertical load: the pack is 0.310
+  of TJ-8000's concentrated row, 0.431 of its plf row, now `band_header`'s governing state),
+  D-B-SUNKEN's TJ-4000 p.28 filler (the plies nail to the solid rim), the SPF web backers behind
+  the sill seats and their flange UNKNOWN.
+- **Sill seats: no all-table joint.** ESR-1078's only LSL row (LedgerLOK LL358, note 7) is a 1 1/2"
+  side member with no interlayer; the seat is 7 1/2" over 1/2" sheathing. Laminating ply by ply on
+  LL358s needs a sheathing cut-out and packer per seat, five fastened interfaces, and still leaves
+  the eccentric couple to NDS §12.4.1. Rejected for parts and labour; the TLOK10 NDS 12.3 calc is
+  re-run on the rim (Z' 133 lb, worst share 124.33), a draft check. Table 5 is read by each
+  member's SG: KDAT is SP, so the >0.50 column, and the seats grew 9 1/4" → 10" for its 3" end
+  distance. The seat's rotation under the 7 1/4" eccentric reaction is UNKNOWN (an owner question).

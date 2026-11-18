@@ -403,7 +403,9 @@ class StructuralHardware:
     #: kit follows the 2W + 1" every commodity series publishes (``tables.pocket_run``).
     rough_opening_in_by_length_in: dict = field(default_factory=dict)
     #: Published spacing, end and edge minima (``FastenerSpacing``); ``None``: unread.
+    #: ``spacing`` is the SG < 0.50 column, ``spacing_dense`` the SG >= 0.50 one.
     spacing: FastenerSpacing | None = None
+    spacing_dense: FastenerSpacing | None = None
     #: A pocket frame's published RO height over the leaf, inches, from the FINISHED floor.
     #: ``None``: the kit publishes none and the generic door equation frames it.
     rough_opening_head_over_leaf_in: float | None = None

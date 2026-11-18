@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** f06658686a135e86  
-**Lines:** 258
+**Model hash:** 089a5d63a1fcd3b7  
+**Lines:** 259
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
 
@@ -18,20 +18,21 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 |---|---|---|---|---|---|
 | 0.75x3.5 Poplar trim, 1x4 S4S, paint grade, 8' (0.75x3.5:poplar-trim-paint) | 2 | pc | blocking | 16 LF | building |
 | 1.0x3.5 SPF No. 2 & Btr framing lumber, 8' (1.0x3.5:spf) | 1 | pc | blocking | 8 LF | building |
-| 1 1/4" x 11 7/8" rim board, 8' (1.25x11.875 rim) | 2 | pc | rim board | 16 LF | building |
+| 1 1/4" x 11 7/8" rim board, 8' (1.25x11.875 rim) | 3 | pc | rim board | 24 LF | building |
+| 1 1/4" x 11 7/8" rim board, 10' (1.25x11.875 rim) | 1 | pc | rim board | 10 LF | building |
 | 1 1/4" x 11 7/8" rim board, 14' (1.25x11.875 rim) | 2 | pc | rim board | 28 LF | building |
 | 1 1/4" x 11 7/8" rim board, 16' (1.25x11.875 rim) | 4 | pc | rim board | 64 LF | building |
-| 1 1/4" x 11 7/8" rim board, 20' (1.25x11.875 rim) | 2 | pc | rim board | 40 LF | building |
+| 1 1/4" x 11 7/8" rim board, 20' (1.25x11.875 rim) | 10 | pc | rim board | 200 LF | building |
 | 1.5x11.875 SPF No. 2 & Btr framing lumber, 8' (1.5x11.875:spf) | 5 | pc | blocking | 40 LF | building |
 | 1 1/2" x 14" LSL, 8' (1.5x14 LSL) | 5 | pc | blocking | 40 LF | building |
 | 1 3/4" x 11 7/8" LSL 1.55E, 16' (1.75x11.875 LSL) | 2 | pc | rim board | 32 LF | building |
 | 1 3/4" x 11 7/8" LSL 1.55E, 20' (1.75x11.875 LSL) | 2 | pc | rim board | 40 LF | building |
-| 1 3/4" x 11 7/8" LVL 2.0E, 8' (1.75x11.875 LVL) | 11 | pc | sister joist, trimmer | 88 LF | building |
+| 1 3/4" x 11 7/8" LVL 2.0E, 8' (1.75x11.875 LVL) | 10 | pc | sister joist, trimmer | 80 LF | building |
 | 1 3/4" x 11 7/8" LVL 2.0E, 10' (1.75x11.875 LVL) | 4 | pc | trimmer | 40 LF | building |
 | 1 3/4" x 11 7/8" LVL 2.0E, 20' (1.75x11.875 LVL) | 4 | pc | trimmer | 80 LF | building |
-| 11 7/8" TJI 230, 8' (11.875 TJI 230) | 22 | pc | blocking, joist | 176 LF | building |
-| 11 7/8" TJI 230, 10' (11.875 TJI 230) | 20 | pc | joist | 200 LF | building |
-| 11 7/8" TJI 230, 20' (11.875 TJI 230) | 107 | pc | joist, sister joist | 2140 LF | building |
+| 11 7/8" TJI 230, 8' (11.875 TJI 230) | 21 | pc | blocking, joist | 168 LF | building |
+| 11 7/8" TJI 230, 10' (11.875 TJI 230) | 19 | pc | joist | 190 LF | building |
+| 11 7/8" TJI 230, 20' (11.875 TJI 230) | 99 | pc | joist, sister joist | 1980 LF | building |
 | 11 7/8" TJI 230, 22' (11.875 TJI 230) | 38 | pc | rafter | 836 LF | building |
 | 11 7/8" floor truss, 8' (11.875 floor truss) | 1 | ea | joist | 8 LF | building |
 | 11 7/8" floor truss, 10' (11.875 floor truss) | 4 | ea | trimmer | 40 LF | building |
@@ -96,7 +97,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x6 Laminated strand lumber, 8' (2x6:lsl) | 69 | pc | cripple stud, door blocking, jack stud | 552 LF | building |
 | 2x6 Laminated strand lumber, 104 5/8" PET (2x6:lsl) | 133 | pc | corner stud, king stud, stud | 1159.6 LF | building |
 | 2x6 Red oak 8/4, custom-milled S4S to 1 1/2", 8' (2x6:oak-8q) | 4 | pc | blocking | 32 LF | building |
-| 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6:spf) | 11 | pc | blocking | 88 LF | building |
+| 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6:spf) | 10 | pc | blocking | 80 LF | building |
 | 2x8 SPF No. 2 & Btr framing lumber, 8' (2x8) | 34 | pc | joist, landing framing, plate, rim board | 272 LF | building |
 | 2x8 SPF No. 2 & Btr framing lumber, 16' (2x8) | 3 | pc | plate | 48 LF | building |
 | 2x8 SPF No. 2 & Btr framing lumber, 8' (2x8:spf) | 39 | pc | blocking | 312 LF | building |
@@ -135,13 +136,13 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | HDG smooth-shank connector nail, 0.131in x 1.5in (0.131x1.5 connector nail:connector fasteners) | 84 | ea |  | building |
 | HDG smooth-shank connector nail, 0.148in x 1.5in (0.148x1.5 connector nail:connector fasteners) | 972 | ea |  | building |
 | HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3:connector fasteners) | 40 | ea |  | building |
-| HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3:treated framing nails (allowance)) | 969 | ea |  | building |
+| HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3:treated framing nails (allowance)) | 936 | ea |  | building |
 | HDG smooth-shank strap nail, 0.148in x 2.5in (10d short common 0.148x2.5:diaphragm joint strap nails) | 72 | ea |  | building |
 | HDG 16d common nail, 0.162in x 3.5in (16d common 0.162x3.5:connector fasteners) | 248 | ea |  | building |
 | HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5:connector fasteners) | 176 | ea |  | building |
 | HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5:diaphragm 8d nails) | 452 | ea |  | building |
 | HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5:sheathing nails) | 1,037 | ea |  | building |
-| A35Z framing angle (A35Z:joist bearing) | 37 | ea |  | building |
+| A35Z framing angle (A35Z:joist bearing) | 34 | ea |  | building |
 | A35Z framing angle (A35Z:joist bearing) | 2 | ea |  | building |
 | A35Z framing angle (A35Z:joist bearing) | 17 | ea |  | building |
 | A35Z framing angle (A35Z:joist bearing) | 4 | ea |  | building |
@@ -211,7 +212,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 10d common ring-shank nail, 0.148in x 3in, Type 304 (S10ACN:treated framing nails (allowance)) | 764 | ea |  | building |
 | 8d common ring-shank nail, 0.131in x 2.5in, Type 304 (S8ACN:sheathing nails) | 72 | ea |  | building |
 | HDG steel U-saddle on a 4 1/2 in (3-ply 2x) joist line, two 5/8 in through-bolts (SADDLE-4.5-2x58-HDG:suspension anchor) | 4 | ea |  | basement |
-| Strong-Drive SD connector screw, #9 x 1-1/2in (SD9112:connector fasteners) | 1,380 | ea |  | building |
+| Strong-Drive SD connector screw, #9 x 1-1/2in (SD9112:connector fasteners) | 1,344 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600:partition top plate, blocking between parallel members) | 72 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600:partition top plate, perpendicular framing above) | 108 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600:partition top plate, under a parallel member) | 12 | ea |  | building |
@@ -342,6 +343,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 0.75x3.5 Poplar trim, 1x4 S4S, paint grade, 8' (0.75x3.5:poplar-trim-paint) | — |
 | 1.0x3.5 SPF No. 2 & Btr framing lumber, 8' (1.0x3.5:spf) | — |
 | 1 1/4" x 11 7/8" rim board, 8' (1.25x11.875 rim) | — |
+| 1 1/4" x 11 7/8" rim board, 10' (1.25x11.875 rim) | — |
 | 1 1/4" x 11 7/8" rim board, 14' (1.25x11.875 rim) | — |
 | 1 1/4" x 11 7/8" rim board, 16' (1.25x11.875 rim) | — |
 | 1 1/4" x 11 7/8" rim board, 20' (1.25x11.875 rim) | — |

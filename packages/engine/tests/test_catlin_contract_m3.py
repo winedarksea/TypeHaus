@@ -28,6 +28,7 @@ from typehaus.resolve import resolve
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import opening_center
 from typehaus.resolve.geometry_members import member_solid
+from typehaus.resolve.model import EDGE_RIM_PREFIX
 from typehaus.resolve.roof_image_ii_eave import eave_stack
 from typehaus.resolve.solid_categories import in_slab_family
 
@@ -81,9 +82,10 @@ def test_floor_joist_counts_match_old_model(catlin_model):
         joists = [m for m in floor.members if m.category == "joist"]
         # Less one: FO-A-STAIR's south edge is ON the y=5'-4" line, and its east-span joist
         # is the trimmer pack now (resolve/floor_openings.py). Plus each authored extra line
-        # across both spans (y=9 1/2", FURN-S-STUDY-TRACK-BALCONY's track).
+        # across both spans (y=9 1/2", FURN-S-STUDY-TRACK-BALCONY's track). Less the two
+        # gable-end edge lines across both spans: LSL rim boards (``JoistSpec.edge_rims``).
         extra = len(catlin_model.plan.by_tag(tag).joists.extra_lines)
-        assert len(joists) == expected_pair_count - 1 + 2 * extra, tag
+        assert len(joists) == expected_pair_count - 1 + 2 * extra - 2 * 2, tag
         # A full-bay joist is NOT ``GRID_FT`` long, and the difference is the point of
         # ``resolve/floor_ends.py``: the 18'-0" grid is the line the joists are cut *at*,
         # while the stick runs from behind the 1 3/4" LSL rim at the west framing face to
@@ -102,8 +104,9 @@ def test_floor_joist_counts_match_old_model(catlin_model):
     # Less two on the west: FO-S-ERV-CHASE's trimmer pack and header (2026-09-24). Less
     # three since 2026-09-25: the y=25'-4" line is FO-S-STAIR's full-span south pack.
     assert len(west_joists) == expected_positions - 3
-    # Plus FS-S-EAST's authored extra line (y=9 1/2", FURN-M-LIV-TRACK-S's track).
-    assert len(east_joists) == expected_positions + len(
+    # Plus FS-S-EAST's authored extra line (y=9 1/2", FURN-M-LIV-TRACK-S's track), less its
+    # two gable-end edge lines, LSL rim boards since 2026-11-18.
+    assert len(east_joists) == expected_positions - 2 + len(
         catlin_model.plan.by_tag("FS-S-EAST").joists.extra_lines)
     # Neither half is 18'-0" of stick, and they are not even the same length as each other:
     # the x=18' plate they share is split 3 1/2" to the trusses and 2" to the I-joists
@@ -525,11 +528,14 @@ def test_floors_get_two_rim_boards_at_the_outer_bearing_lines(catlin_model):
     derived, both halves drew a band on the same line — two coincident rims, billed twice,
     each interpenetrating the other deck's joists.
     """
-    assert len([m for m in _floor(catlin_model, "FS-ATTIC").members
-                if m.category == "rim"]) == 2
+    def end_rims(floor):  # the gable-end edge lines are rim boards too, along the joists
+        return [m for m in floor.members if m.category == "rim"
+                and not m.child_key.startswith(EDGE_RIM_PREFIX)]
+
+    assert len(end_rims(_floor(catlin_model, "FS-ATTIC"))) == 2
     for tag in ("FS-S-WEST", "FS-S-EAST"):
         floor = _floor(catlin_model, tag)
-        rims = [m for m in floor.members if m.category == "rim"]
+        rims = end_rims(floor)
         assert len(rims) == 1, tag
         # The one it keeps is the exterior one, at its own end of the house.
         outer = 0.0 if tag == "FS-S-WEST" else ft(36).meters
@@ -542,8 +548,7 @@ def test_floors_get_two_rim_boards_at_the_outer_bearing_lines(catlin_model):
         assert all(m.profile.endswith(" rim")
                    for m in floor.members if m.category == "rim"), tag
     attic = next(f for f in catlin_model.floors if f.tag == "FS-ATTIC")
-    assert all(m.profile == "1.75x11.875 LSL"
-               for m in attic.members if m.category == "rim")
+    assert all(m.profile == "1.75x11.875 LSL" for m in end_rims(attic))
 
 
 def test_exterior_wall_spans_floor_to_floor_across_the_rim(catlin_model):

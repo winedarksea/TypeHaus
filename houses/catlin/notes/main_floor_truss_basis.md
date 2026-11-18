@@ -184,17 +184,19 @@ ducts or pipes". The owner's bounce goal, so two:
 
   | wall | field | ends | spacing | demand / end | capacity | d/c |
   |---|---|---|---|---|---|---|
-  | W-B-E1 | FS-M-EAST, TJI | 10 | 16" | 400 x 1.333 = 533 lb | 563 | 0.95 |
+  | W-B-E1 | FS-M-EAST, TJI | 9 | 16" | 400 x 1.333 = 533 lb | 563 | 0.95 |
   | W-B-E1 | FS-M-NE, truss | 4 | 16" | 400 x 1.333 = 533 lb | 538 | 0.99 |
   | W-B-E2 | FS-M-NE, truss | 13 | 16" | 533 lb | 538 | 0.99 |
   | W-B-E2 | FS-M-NE, 2-ply pack (316, 332) | 2 | 16" | 533 lb | 2 x 538 | 0.50 |
-  | W-B-W1 | FS-M-MECH, TJI | 10 | 16" | 533 lb | 563 | 0.95 |
+  | W-B-W1 | FS-M-MECH, TJI | 9 | 16" | 533 lb | 563 | 0.95 |
   | W-B-W1 | FS-M-WEST, TJI | 2 | 16" | 533 lb | 563 | 0.95 |
   | W-B-W1 | FS-M-WEST, 2-ply pack (240, the bath) | 1 | 16" | 533 lb | 2 x 563 | 0.47 |
-  | W-B-W2 | FS-M-WEST, TJI (includes BATH2 drain bay's added line) | 15 | 16" max | 533 lb | 563 | 0.95 |
+  | W-B-W2 | FS-M-WEST, TJI (includes BATH2 drain bay's added line) | 14 | 16" max | 533 lb | 563 | 0.95 |
 
-  57 ends, **60 A35Z**: one an end (38 TJI + 19 truss), plus one on each sister ply that lands on
-  a sill (the 316 and 332 trusses, and `FS-M-WEST`'s bath ply at y 240").
+  54 ends, **57 A35Z**: one an end (35 TJI + 19 truss), plus one on each sister ply that lands on
+  a sill (the 316 and 332 trusses, and `FS-M-WEST`'s bath ply at y 240"). Since 2026-11-18 the
+  three gable-end edge lines (FS-M-EAST and FS-M-WEST at y=0, FS-M-MECH at y=36') are LSL rim
+  boards seated along their parallel walls, whose stations tie them; their ends take no angle.
   A second angle is not needed for demand anywhere.
   Hand count of the truss ends: W-B-E1's axis runs y 0..216", so lines 156, 172, 188, 204 = 4;
   W-B-E2 (216"..432") takes 220, 236, ... 396 = (396 - 220)/16 + 1 = 12, plus 408, 420, 432 = **15**.

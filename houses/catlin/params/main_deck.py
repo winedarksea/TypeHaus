@@ -40,7 +40,6 @@ from typehaus.quantities import M_PER_IN
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus import (
     DeckLayer,
-    FillerBlock,
     FloorSystem,
     JoistReinforcement,
     JoistSpec,
@@ -309,7 +308,8 @@ WEST_FLOOR = FloorSystem(
                                    "W-B-CN2"),
                      # The x=18' plate is shared with FS-M-NE's trusses north of y=13'.
                      end_bearing=(("W-B-CS2", _JOIST_BEARING), ("W-B-CN2", _JOIST_BEARING)),
-                     sill_tie="A35Z"),
+                     # The gable-end edge line is a 1 1/4" LSL rim board (owner, 2026-11-18).
+                     edge_rims=("lo",), sill_tie="A35Z"),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
     published_span=TJI_230_FLOOR_SPAN,
     reinforcements=_WEST_FLOOR_REINFORCEMENT,
@@ -327,7 +327,8 @@ MECH_FLOOR = FloorSystem(
     uid="CMFS03AAAA", tag="FS-M-MECH",
     joists=JoistSpec(member=_JOIST, spacing=_JOIST_OC, direction="x",
                      bearing_refs=("W-B-W1", "W-B-STR3B", "W-B-STR3", "W-B-STR"),
-                     sill_tie="A35Z"),
+                     # The gable-end edge line is a 1 1/4" LSL rim board (owner, 2026-11-18).
+                     edge_rims=("hi",), sill_tie="A35Z"),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
     published_span=TJI_230_FLOOR_SPAN,
     ceiling_below=_CEILING_GWB,
@@ -360,7 +361,8 @@ STAIR_FLOOR = FloorSystem(
     uid="CMFS04AAAA", tag="FS-M-STAIR",
     joists=JoistSpec(member=_JOIST, spacing=_JOIST_OC, direction="x",
                      bearing_refs=("W-B-STR3B", "W-B-STR3", "W-B-STR", "W-B-CN"),
-                     end_bearing=(("W-B-CN", _JOIST_BEARING),)),
+                     # The gable-end edge line is a 1 1/4" LSL rim board (owner, 2026-11-18).
+                     edge_rims=("hi",), end_bearing=(("W-B-CN", _JOIST_BEARING),)),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
     published_span=TJI_230_FLOOR_SPAN,
     ceiling_below=_CEILING_GWB,
@@ -384,14 +386,15 @@ EAST_FLOOR = FloorSystem(
                      # South of y=13'-10", so its west bearing is the framed pair W-B-CS
                      # (y 0..10'-0") and W-B-CS3 (10'-0"..13'-10").
                      bearing_refs=("W-B-CS", "W-B-CS3", "W-B-E1"),
-                     sill_tie="A35Z"),
+                     # The gable-end edge line is a 1 1/4" LSL rim board (owner, 2026-11-18).
+                     edge_rims=("lo",), sill_tie="A35Z"),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
     published_span=TJI_230_FLOOR_SPAN,
     ceiling_below=_CEILING_GWB,
     outline=_rect(_CENTRE_X, _ZERO, _HOUSE, _SEAM_Y_S),
     # ** D-B-SUNKEN'S HEADER IS IN THIS BAND (2026-10-31). ** W-B-S3-FR bears this deck's
     # y=0 edge line but runs PARALLEL to the joists, so the 63 5/16" opening under it is
-    # carried by a flush 2-ply 1 3/4" x 11 7/8" Microllam LVL beside the edge joist, seated
+    # carried by a flush 2-ply 1 3/4" x 11 7/8" Microllam LVL beside the LSL edge rim, seated
     # on the two 4-stud jamb packs. NOT a bearing ref: resolve/floors.py would cut every
     # joist at that line. Graded as `band_header/D-B-SUNKEN` (notes/sunken_door_band_header.md).
     reinforcements=(JoistReinforcement(
@@ -399,9 +402,9 @@ EAST_FLOOR = FloorSystem(
         extent=(inch(218.34375), inch(293.65625)),
         source="flush band header over D-B-SUNKEN (Door.header_in_band) — 2-ply Microllam "
                "LVL 2.0E, Weyerhaeuser TJ-9000 (July 2026)",
-        # TJ-9000 p.30 (top-loaded, 2 plies of 1 3/4"); TJ-4000 p.28 filler to the edge TJI 230.
-        fastening=PlyFastening(fastener="10d", rows=3, spacing=inch(12), faces="one"),
-        filler=FillerBlock(stock="2x6 + 1/2\" sheathing", nails=15)),
+        # TJ-9000 p.30 (top-loaded, 2 plies of 1 3/4"), nailed straight to the LSL edge rim:
+        # no TJ-4000 p.28 filler since the rim is solid (2026-11-18).
+        fastening=PlyFastening(fastener="10d", rows=3, spacing=inch(12), faces="one")),
         *_wall_top_blocks("W-B-S4", (inch(350), inch(398)), _S_WALL_LINES)),
     # RM-M-LIVING's fireplace piers pass through this deck in the pockets between joists
     # 005/006; the joists run continuous and the subfloor cut is DERIVED

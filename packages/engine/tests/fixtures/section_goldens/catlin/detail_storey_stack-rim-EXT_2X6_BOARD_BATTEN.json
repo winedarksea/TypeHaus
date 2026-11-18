@@ -951,19 +951,19 @@
       "node": "polyline",
       "points": [
         [
-          -1.15625,
+          -0.625,
           108.125
         ],
         [
-          1.15625,
+          0.625,
           108.125
         ],
         [
-          1.15625,
+          0.625,
           120.0
         ],
         [
-          -1.15625,
+          -0.625,
           120.0
         ]
       ],
@@ -972,26 +972,26 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CSF603AAAA",
-      "tag": "joist-0-000-0"
+      "tag": "edge-rim-0-000-0"
     },
     {
       "space": "model",
       "node": "hatch",
       "boundary": [
         [
-          -1.15625,
+          -0.625,
           108.125
         ],
         [
-          1.15625,
+          0.625,
           108.125
         ],
         [
-          1.15625,
+          0.625,
           120.0
         ],
         [
-          -1.15625,
+          -0.625,
           120.0
         ]
       ],
@@ -1001,46 +1001,6 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": null
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          -1.15625,
-          109.37500000000001
-        ],
-        [
-          1.15625,
-          109.37500000000001
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.13,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CSF603AAAA",
-      "tag": "joist-0-000-0/flange"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          -1.15625,
-          118.75
-        ],
-        [
-          1.15625,
-          118.75
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.13,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CSF603AAAA",
-      "tag": "joist-0-000-0/flange"
     },
     {
       "space": "model",

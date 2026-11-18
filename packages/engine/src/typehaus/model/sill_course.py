@@ -1,4 +1,4 @@
-"""A door's girt sill beam: the beam, seats, screws and backer that carry its approach."""
+"""A door's girt sill beam: the beam, seats and screws that carry its approach."""
 
 from __future__ import annotations
 
@@ -16,15 +16,13 @@ class SillCourseFastening(HausModel):
     ``seat_width`` block stack back to the sheathing at each end; each seat takes ``seat_rows``
     staggered rows of ``screws_per_row``, laid out to the screw's published spacing
     (``hardware/catalog.FastenerSpacing``) and graded on ``lateral_wet_lb``. The screw
-    (``fastener_part``) crosses the sheathing into the floor's edge member; at an I-joist, into
-    a derived backer pair of ``backer_stock`` ripped to the web recess. ``course_modulus_psi``
-    feeds the screw-share solve (``engineering/exterior_door_support.py``).
+    (``fastener_part``) crosses the sheathing into the floor's LSL edge rim.
+    ``course_modulus_psi`` feeds the screw-share solve (``engineering/exterior_door_support.py``);
+    ``course_fall_per_ft`` is the fall ripped across the beam's top.
     """
 
     fastener_part: str = Field(min_length=1)
     fastener_length_in: float = Field(gt=0)
-    backer_stock: str = Field(min_length=1)
-    backer_material_ref: str = Field(min_length=1)
     course_modulus_psi: float = Field(gt=0)
     source: str = Field(min_length=1)
     course_stock: str = Field(min_length=1)

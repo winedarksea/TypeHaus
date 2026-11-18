@@ -17,7 +17,11 @@ _ROWS = {"bending": (189.9, 17849.0), "shear": (131.5, 7897.0),
          "bearing, jamb pack on the wall plate above": (51.32, 425.0),
          "bearing, wall plate on the plies": (80.65, 425.0),
          "bearing, plies on the seat's plates": (86.91, 425.0),
-         "bearing, upper jamb pack on FS-S-EAST's squash plies": (55.42, 425.0)}
+         "bearing, upper jamb pack on FS-S-EAST's edge rim": (155.17, 425.0),
+         # §5: the LSL edge rim's own TJ-8000 rows, under the pack and over the opening.
+         "FS-S-EAST's edge rim, concentrated vertical load": (1163.77, 3760.0),
+         "FS-S-EAST's edge rim, vertical load under the pack": (2327.54, 5400.0),
+         "edge rim over the opening, 1-ply header": (45.53, 864.0)}
 
 
 def test_the_record_reproduces_the_note(catlin_ctx) -> None:
@@ -34,7 +38,7 @@ def test_the_record_reproduces_the_note(catlin_ctx) -> None:
     assert values["loads_inside_span"] == 0
     assert "W-M-S2:king-0-l1" in record.notes[0]
     assert values["seat_load"] == pytest.approx(1693.64, abs=0.5)
-    assert record.governing.name == "bearing, plies on the seat's plates"
+    assert record.governing.name == "FS-S-EAST's edge rim, vertical load under the pack"
 
 
 def test_the_wall_frames_no_header_and_an_empty_band_is_an_error(catlin_model) -> None:

@@ -224,9 +224,10 @@ def test_no_deck_sisters_a_joist_and_one_floor_does(catlin_model):
     # doubled north edge joist, fastener backing for RL-SG-BALCONY's 6" screws; since
     # 2026-11-13 that edge joist is one run, through D-S-BALCONY, under the planks' tab;
     # since 2026-11-18 a 2x12 packed to 2 1/8", flush with the rim oversail.
-    # FS-S-EAST's other four are D-S-BALCONY's squash plies, two under each jamb pack.
+    # D-S-BALCONY's squash plies went with the TJI edge (2026-11-18): its jamb packs stand on
+    # FS-S-EAST's LSL edge rim.
     assert sorted(tag for tag, _ in sisters) == [
-        "FS-M-EAST", "FS-M-EAST", "FS-M-NE", "FS-M-NE", "FS-M-WEST"] + ["FS-S-EAST"] * 6 + [
+        "FS-M-EAST", "FS-M-EAST", "FS-M-NE", "FS-M-NE", "FS-M-WEST"] + ["FS-S-EAST"] * 2 + [
         "FS-SG-BALCONY"] * 7
     # Full span, tip to tip: a sister that stops short carries nothing where the load is
     # (``resolve/floors.py::_reinforcement_members``). 17.79' and not the 18'-0" bearing grid

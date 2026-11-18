@@ -59,26 +59,28 @@ def test_schematic_plate_rests_on_its_landing(catlin_model_ro):
 
 
 @pytest.mark.parametrize("tag, demand, span, deflection", (
-    ("D-S-BALCONY", 126.29, 54.125, 0.0378), ("D-M-PORCH", 126.29, 54.125, 0.0378),
-    ("D-M-ENTRY", 113.22, 29.1875, 0.0059)))
+    ("D-S-BALCONY", 124.33, 53.375, 0.0363), ("D-M-PORCH", 124.33, 53.375, 0.0363),
+    ("D-M-ENTRY", 116.01, 28.4375, 0.0055)))
 def test_end_seat_sill_beam_is_graded(catlin_model_ro, tag, demand, span, deflection):
     """notes/exterior_door_sill_beam.md §2-§3: the beam between its seats, and the worst seat
-    screw's share of the 300 lb against the joint's 135 lb, laid out to ESR-1078 Table 5."""
+    screw's share of the 300 lb against the joint's 133 lb into the LSL edge rim, laid out to
+    ESR-1078 Table 5."""
     report = _door(catlin_model_ro, tag).doorway.exterior_placement.installation_report
     report = report["support"]
     assert report["connection_status"] == report["member_status"] == "PASS"
     assert report["connection_demand_lb"] == pytest.approx(demand, abs=0.01)
-    assert report["connection_dcr"] == pytest.approx(demand / 135.0, abs=1e-4)
+    assert report["connection_dcr"] == pytest.approx(demand / 133.0, abs=1e-4)
     assert report["sill_beam_span_in"] == pytest.approx(span, abs=1e-4)
     assert report["sill_beam_deflection_in"] == pytest.approx(deflection, abs=1e-4)
     assert (report["screw_shank_in"], report["screw_clamped_stack_in"]) == pytest.approx(
         (8.0, 7.5))
-    assert report["screw_embedded_thread_in"] == pytest.approx(1.625)
-    assert sorted({z for _, z in report["seat_screws"]})[1] - sorted(
-        {z for _, z in report["seat_screws"]})[0] == pytest.approx(0.75)
-    backers = [m for f in catlin_model_ro.floors for m in f.members
-               if m.child_key.startswith(f"girt-sill-backer-{tag}-")]
-    assert len(backers) == 4 and {m.stock_profile for m in backers} == {"2x6"}
+    assert report["screw_embedded_thread_in"] == pytest.approx(1.25)
+    assert report["girt_course_member"].startswith("edge-rim-")
+    # §3: the band every member's edge distances leave is 1 1/4", rows staggered 3/4" in it.
+    rows = sorted({z for _, z in report["seat_screws"]})
+    assert rows[1] - rows[0] == pytest.approx(0.75)
+    assert sorted({round(s, 4) for s, _ in report["seat_screws"]})[:4] == pytest.approx(
+        [3.0, 4.3125, 5.625, 6.9375])
 
 
 def test_a_seat_row_inside_the_published_spacing_fails():
@@ -86,7 +88,7 @@ def test_a_seat_row_inside_the_published_spacing_fails():
     from typehaus.hardware.catalog import screw_by_part_number
 
     rule = screw_by_part_number("TLOK10")[0].spacing
-    beam = ("beam", 0.0, 63.3125, -4.75, 0.75, "top")
+    beam = ("beam", 0.0, 63.3125, -4.75, 0.75, "top", rule)
     good = [(2.625, -2.625, "a"), (5.25, -2.625, "a"), (3.9375, -3.375, "b")]
     assert not screw_spacing_failures(good, [beam], rule)
     # The retired course's row: 1" from the end at 3/4" pitch.

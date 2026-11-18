@@ -847,6 +847,9 @@ FLOOR = [
                                  # RIM. ** The engine models neither; this note is the
                                  # record.
                                  rim_member="1.75x11.875 LSL",
+                                 # The two gable-end edge lines are 1 1/4" LSL rim boards
+                                 # (owner, 2026-11-18).
+                                 edge_rims=("lo", "hi"),
                                  # BM-S-HALL is the centre line for its 8'-6"; the joists
                                  # either side of the hall opening hang off it.
                                  bearing_refs=("W-S-W3", "W-S-C1", "W-S-E2",

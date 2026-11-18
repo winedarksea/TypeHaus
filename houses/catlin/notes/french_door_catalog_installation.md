@@ -133,8 +133,8 @@ along the rear edge is 1-1/8 inch.
 ### Calculations and limits
 
 The sunken-garden tread's foam bearing is §6. The framed-floor doors' sill beam, its seats and
-their screws are `exterior_door_sill_beam.md` §2–§3: worst seat screw 126.29 lb against the
-joint's 135 lb (d/c 0.936) at the 63 5/16 inch doors, 113.22 lb at the entry.
+their screws are `exterior_door_sill_beam.md` §2–§3: worst seat screw 124.33 lb against the
+joint's 133 lb into the LSL edge rim (d/c 0.935) at the 63 5/16 inch doors, 116.01 lb at the entry.
 
 ## 3. Height and geometry review
 

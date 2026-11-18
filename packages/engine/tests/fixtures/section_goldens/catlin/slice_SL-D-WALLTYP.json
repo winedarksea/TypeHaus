@@ -7912,19 +7912,19 @@
       "node": "polyline",
       "points": [
         [
-          -1.15625,
+          -0.625,
           -11.875
         ],
         [
-          1.15625,
+          0.625,
           -11.875
         ],
         [
-          1.15625,
+          0.625,
           0.0
         ],
         [
-          -1.15625,
+          -0.625,
           0.0
         ]
       ],
@@ -7933,26 +7933,26 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CMFS01AAAA",
-      "tag": "joist-0-000-0"
+      "tag": "edge-rim-0-000-0"
     },
     {
       "space": "model",
       "node": "hatch",
       "boundary": [
         [
-          -1.15625,
+          -0.625,
           -11.875
         ],
         [
-          1.15625,
+          0.625,
           -11.875
         ],
         [
-          1.15625,
+          0.625,
           0.0
         ],
         [
-          -1.15625,
+          -0.625,
           0.0
         ]
       ],
@@ -7962,46 +7962,6 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": null
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          -1.15625,
-          -10.625
-        ],
-        [
-          1.15625,
-          -10.625
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.13,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CMFS01AAAA",
-      "tag": "joist-0-000-0/flange"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          -1.15625,
-          -1.25
-        ],
-        [
-          1.15625,
-          -1.25
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.13,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CMFS01AAAA",
-      "tag": "joist-0-000-0/flange"
     },
     {
       "space": "model",
@@ -9232,19 +9192,19 @@
       "node": "polyline",
       "points": [
         [
-          -1.15625,
+          -0.625,
           228.12500000000003
         ],
         [
-          1.15625,
+          0.625,
           228.12500000000003
         ],
         [
-          1.15625,
+          0.625,
           240.0
         ],
         [
-          -1.15625,
+          -0.625,
           240.0
         ]
       ],
@@ -9253,26 +9213,26 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CAF602AAAA",
-      "tag": "joist-0-000-0"
+      "tag": "edge-rim-0-000-0"
     },
     {
       "space": "model",
       "node": "hatch",
       "boundary": [
         [
-          -1.15625,
+          -0.625,
           228.12500000000003
         ],
         [
-          1.15625,
+          0.625,
           228.12500000000003
         ],
         [
-          1.15625,
+          0.625,
           240.0
         ],
         [
-          -1.15625,
+          -0.625,
           240.0
         ]
       ],
@@ -9282,46 +9242,6 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": null
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          -1.15625,
-          229.37500000000003
-        ],
-        [
-          1.15625,
-          229.37500000000003
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.13,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CAF602AAAA",
-      "tag": "joist-0-000-0/flange"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          -1.15625,
-          238.75000000000003
-        ],
-        [
-          1.15625,
-          238.75000000000003
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.13,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CAF602AAAA",
-      "tag": "joist-0-000-0/flange"
     },
     {
       "space": "model",
