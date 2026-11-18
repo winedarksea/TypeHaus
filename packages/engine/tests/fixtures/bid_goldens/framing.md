@@ -138,7 +138,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | HDG smooth-shank connector nail, 0.131in x 1.5in (0.131x1.5 connector nail:connector fasteners) | 84 | ea |  | building |
 | HDG smooth-shank connector nail, 0.148in x 1.5in (0.148x1.5 connector nail:connector fasteners) | 972 | ea |  | building |
 | HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3:connector fasteners) | 40 | ea |  | building |
-| HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3:treated framing nails (allowance)) | 939 | ea |  | building |
+| HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3:treated framing nails (allowance)) | 915 | ea |  | building |
 | HDG smooth-shank strap nail, 0.148in x 2.5in (10d short common 0.148x2.5:diaphragm joint strap nails) | 72 | ea |  | building |
 | HDG 16d common nail, 0.162in x 3.5in (16d common 0.162x3.5:connector fasteners) | 248 | ea |  | building |
 | HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5:connector fasteners) | 176 | ea |  | building |

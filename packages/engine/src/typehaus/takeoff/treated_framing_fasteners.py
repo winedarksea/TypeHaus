@@ -81,11 +81,18 @@ def _sill_nails(model: ResolvedModel, sill, rules: TreatedFramingFastenerRules
                     and footprint.contains(Point(member.p0[:2])))
         return studs * rules.sill_stud_end_nails, "bottom-plate sill"
     rim = math.floor(sill.length_m / (rules.sill_rim_toenail_spacing_in * M_PER_IN)) + 1
-    joist_ends = sum(1 for floor in model.floors if floor.storey == sill.storey
-                     for member in floor.members
-                     if member.category in rules.sill_joist_categories
-                     for end in (member.p0, member.p1)
-                     if footprint.contains(Point(end[:2])))
+    joist_ends = 0
+    for floor in model.floors:
+        if floor.storey != sill.storey:
+            continue
+        for member in floor.members:
+            if member.category not in rules.sill_joist_categories:
+                continue
+            on = [footprint.contains(Point(end[:2])) for end in (member.p0, member.p1)]
+            # Both ends on the sill: it lies along it (a trimmer on the wall line, a rim
+            # backer), toe nailed by the rim row already counted, not a joist end bearing.
+            if not all(on):
+                joist_ends += sum(on)
     return rim + joist_ends * rules.nails_per_end, "floor sill"
 
 
