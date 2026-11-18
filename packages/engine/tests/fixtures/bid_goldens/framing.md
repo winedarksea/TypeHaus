@@ -98,7 +98,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x6 Laminated strand lumber, 104 5/8" PET (2x6:lsl) | 133 | pc | corner stud, king stud, stud | 1159.6 LF | building |
 | 2x6 Red oak 8/4, custom-milled S4S to 1 1/2", 8' (2x6:oak-8q) | 4 | pc | blocking | 32 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6:spf) | 10 | pc | blocking | 80 LF | building |
-| 2x8 SPF No. 2 & Btr framing lumber, 8' (2x8) | 34 | pc | joist, landing framing, plate, rim board | 272 LF | building |
+| 2x8 SPF No. 2 & Btr framing lumber, 8' (2x8) | 37 | pc | joist, landing framing, plate, rim board, sister joist | 296 LF | building |
 | 2x8 SPF No. 2 & Btr framing lumber, 16' (2x8) | 3 | pc | plate | 48 LF | building |
 | 2x8 SPF No. 2 & Btr framing lumber, 8' (2x8:spf) | 39 | pc | blocking | 312 LF | building |
 | 2x12 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (3-2x12:kdat) | 6 | pc | joist (3-ply) | 120 LF | building |
@@ -262,7 +262,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
 | butyl-tape, 1 1/2" on beam (butyl-tape) | 18.1 | LF |  | main |
-| butyl-tape, 1 1/2" on deck (butyl-tape) | 448.4 | LF |  | main, second |
+| butyl-tape, 1 1/2" on deck (butyl-tape) | 449 | LF |  | main, second |
 | butyl-tape, 4 1/2" on deck (butyl-tape) | 33.5 | LF |  | main |
 | butyl-tape, 1 1/2" on stair (butyl-tape) | 65.7 | LF |  | main |
 | butyl-tape-beam, 1 1/2" on beam (butyl-tape-beam) | 4.5 | LF |  | main |

@@ -1909,6 +1909,118 @@
       "node": "polyline",
       "points": [
         [
+          76.875,
+          -8.19
+        ],
+        [
+          78.375,
+          -8.19
+        ],
+        [
+          78.375,
+          -0.94
+        ],
+        [
+          76.875,
+          -0.94
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "BWFS01AAAA",
+      "tag": "sister-1-0"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          76.875,
+          -8.19
+        ],
+        [
+          78.375,
+          -8.19
+        ],
+        [
+          78.375,
+          -0.94
+        ],
+        [
+          76.875,
+          -0.94
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          75.375,
+          -8.19
+        ],
+        [
+          76.875,
+          -8.19
+        ],
+        [
+          76.875,
+          -0.94
+        ],
+        [
+          75.375,
+          -0.94
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "BWFS01AAAA",
+      "tag": "sister-1-1"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          75.375,
+          -8.19
+        ],
+        [
+          76.875,
+          -8.19
+        ],
+        [
+          76.875,
+          -0.94
+        ],
+        [
+          75.375,
+          -0.94
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           169.00000000000003,
           -27.900000000000002
         ],

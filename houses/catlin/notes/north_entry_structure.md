@@ -98,7 +98,8 @@ basement concrete.
 |---|---|---|
 | `BM-BW-HOUSE-SEAT` | `PT-BW-W` (14"), `PT-BW-E` (12") | 3'-7" between two round piers, soffit -15.44" (-1'-3 7/16"). An `SS316-SHIM-35` pack under it (bearing, and the dielectric off the pour). The tie is a cast-in `HETA20Z` pair at `PT-BW-E` and the `LUS26-2Z` hanger on the `CBSTQ66Z-SDS2` post at `PT-BW-W` (`canopy_west_band.md` §5f). |
 | `BM-BW-GARAGE-SEAT` | `PT-BW-GW` (14"), `PT-BW-GE` (12") | Identical span, elevation and detail. |
-| `BM-BW-SCSILL` | Both west columns | The screen panel's sill and the deck's west rim in one 2x8, on the screen axis (1" west of the column line) where the joist field cannot reach; hung from both columns on `LUS28Z` (`CN-BW-HGR-SCS-*`). |
+| `BM-BW-SCSILL` | Both west columns | The screen panel's sill, one 2x8 on the screen axis (1" west of the column line), its east face 1/4" short of the deck edge; hung from both columns on `LUS28Z` (`CN-BW-HGR-SCS-*`). |
+| West edge plies | The westmost joist | A 2-ply KDAT 2x8 face-nailed to the westmost joist's west face, top flush, in three pieces cut 1/8" off `PT-BW-CW`/`-CNW` (§2a). Both rims run 3 3/4" west onto the ply ends. |
 | `BM-BW-FE` | Both seat beams | A 3-ply 2x8 east edge beam on the RO's east jamb line, ending at the garage seat beam, so nothing crosses the stem or `W-G-S`. Its tip takes deck tie line 1 (two `HL43HDG` into `W-G-S`, `params/landing_tie.py`). |
 | `FS-BW-FLOOR` joists | Both seat beams | 2x8 at 12" o.c. running **north-south**, bearing on top, overhanging 9 1/2" south and 7 1/4" north. Joist tape, stainless fasteners. |
 
@@ -114,6 +115,37 @@ basement concrete.
 There is no interior garage landing: `D-G-SERVICE` swings OUT onto this deck, and `ST-G-SERVICE` rises straight to
 the threshold with its stringer heads seated on the `W-G-S` stem (`notes/garage_service_door_outswing.md`). A 1/4"
 drainage/movement break separates the board field at the threshold.
+
+## 2a. The west edge strip (owner, 2026-11-18)
+
+The joist field stops 3 3/4" east of the deck's west edge (x 6'-3 3/8") to clear the two west columns, so the
+board ends overhung the westmost joist (x 6'-7 1/8") by 3" with nothing under them, and `W-BW-SCREEN`'s plate south
+of `PT-BW-CW` stood on nothing. The fix is two KDAT 2x8 plies face-nailed to that joist's west face, top flush
+(`params/entry_landing_edge.py`, `JoistReinforcement` with an `extent`): 5 3/4" south of `PT-BW-CW`, 54" between
+the columns (1/8" off each, clear of the `LUS28Z` flanges), 3 5/8" north of `PT-BW-CNW`. Both rims run 3 3/4"
+west, end nailed into the ply ends as into any joist end, so the two corners are framed too. Nothing reaches
+`BM-BW-SCSILL`: no joist-to-beam mechanism is needed. The earlier "rim stub cantilevered past the end joist"
+objection is gone, because the stub's end now bears on the plies.
+
+Nailing, IRC R602.3(1) built-up rows as the house allows them (`takeoff/treated_framing_fasteners.py`): each ply
+3 nails at each end and 2 rows at 16" o.c., 10d common (3" x 0.148") 304 stainless `S10ACN` (R317.3.1).
+
+**Load into the joist** (R507 deck, 40 psf live + 10 dead; the strip is the 3" past the joist):
+
+    strip         50 x 3/12                                   = 12.5 plf
+    south piece   12.5 x 5.75/12 + screen 55.6 plf x 7.5/12   = 6.0 + 34.8 = 40.8 lb   (piers §2's screen plf)
+    middle piece  12.5 x 54/12                                = 56.3 lb (the screen stands on BM-BW-SCSILL)
+    torque        40.8 x 2.25" (ply-pack centroid to joist axis) = 92 lb-in
+
+    10d into SP, NDS 12.3: D 0.148, F_yb 90 ksi, F_e 16,600 x 0.55^1.84 = 5,530 psi, l_s = p = 1.5", R_d 2.2
+      Im = Is 558 · II 231 · IIIm = IIIs 200.5 · IV 0.021904/2.2 x sqrt(2 x 5,530 x 90,000 / 6) = 128.2 lb
+      Z' = 128.2 x C_M 0.70 = 89.7 lb a nail
+    south piece, 6 nails a ply into the joist: 40.8 / 6 = 6.8 lb  -> 0.08
+    joist torsion: 92 / (0.29 x 1.5^2 x 7.25) = 19 psi vs F_v' 131 psi (No.2 SPF wet, the §2 lower bound) -> 0.15
+
+A 300 lb point on the corner board end (not an R507 framing load; the sill notes' convention) puts 341 lb on the
+south piece: 57 lb a nail (0.63). Its 767 lb-in would be 162 psi of torsion on the joist alone, which the end-nailed
+rim and the screwed boards share; not graded. The screen plate bears 0.75" of its 3 1/2" on the outer ply: 8 psi.
 
 ## 3. The tiers — one stepped pour on a compacted base
 

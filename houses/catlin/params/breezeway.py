@@ -28,6 +28,7 @@ from params.foundations import SITE_GRADE
 from params.garage_roof_wind_clamps import EAST_CLAMP_X_IN
 from params.landing_tie import LANDING_TIES
 from params.entry_screen_finish import FINISH_ELEMENTS
+from params.entry_landing_edge import WEST_EDGE_PLIES, WEST_RIM_EXTENSION
 from params.north_entry_frame import (
     BEARING_TOP_FT,
     COLUMN_HALF_FT,
@@ -72,9 +73,8 @@ from plan.storeys.garage import GARAGE_Y_SOUTH
 # it. Cantilevers of 9 3/8" south and 7 1/4" north stay inside R507.5.1's quarter of the back span.
 #
 # The field is narrower than the deck: west, the canopy columns PT-BW-CW/-CNW stand on the pier
-# line at x=6'-3 3/8" and stop the westmost joist at their east face; east, BM-BW-FE does. Boards
-# oversail 3 3/4" each side onto the blocking named in AN-BW-STRUCTURE (a composite board is not
-# cantilevered at its end, so that strip is blocked between joists).
+# line at x=6'-3 3/8" and stop the westmost joist at their east face; east, BM-BW-FE does. The
+# west board ends bear on a 2-ply on that joist and the rims run to it (params/entry_landing_edge).
 FLOOR = FloorSystem(
     uid="BWFS01AAAA", tag="FS-BW-FLOOR",
     top_elevation=ft(DECK_JOIST_TOP_FT),
@@ -82,7 +82,9 @@ FLOOR = FloorSystem(
                      bearing_refs=("BM-BW-HOUSE-SEAT", "BM-BW-GARAGE-SEAT"),
                      cantilever_start=ft(HOUSE_SEAT_Y_FT - FRAME_Y0_FT),
                      cantilever_end=ft(FRAME_Y1_FT - GARAGE_SEAT_Y_FT),
-                     rim_member="2x8"),  # no 1 1/4" treated rim is stocked; LUSZ is 1 9/16"
+                     rim_member="2x8",  # no 1 1/4" treated rim is stocked; LUSZ is 1 9/16"
+                     rim_end_extensions=(WEST_RIM_EXTENSION, inch(0))),
+    reinforcements=WEST_EDGE_PLIES,
     outline=rectangle(FIELD_WEST_X_FT, FRAME_Y0_FT, FIELD_EAST_X_FT, FRAME_Y1_FT),
     subfloor_outline=rectangle(LANDING_WEST_FT, DECK_EDGE_SOUTH_Y_FT,
                                LANDING_EAST_FT, DECK_SHEET_NORTH_Y_FT),
@@ -180,10 +182,8 @@ NOTES = [
 # (plan/assemblies/entry_screen.py::ENTRY_SCREEN_WALL). The band above is SB-BW-BAND
 # (params/entry_band_brace.py).
 #
-# It stands on BM-BW-SCSILL, a 2x8 between the two columns that is also the deck's west rim: a
-# sill plate lower down would share space with the seats and joists
-# (`structural.member_interference`).
-# Shear still reaches concrete in one step: the sill lands on the seats, each directly over a pier.
+# It stands on BM-BW-SCSILL, a 2x8 between the two columns (a sill lower down would share space
+# with the seats and joists); shear reaches concrete in one step, each seat over a pier.
 # Ends on W-G-S's corrugated face, not its node line (E2-101).
 SCREEN_END_Y_FT = GARAGE_CLADDING_Y_FT
 SCREEN_PANEL_NODES = [

@@ -235,8 +235,8 @@ beam(7, "BM-BW-RE", ROOF_COLUMN_EAST_X_FT, HEADER_SOUTH_Y_FT,
 
 # BM-BW-SCSILL carries W-BW-SCREEN (no joist under it) between the two columns: 37.5 plf, 55.6
 # with the band (notes/north_entry_piers.md §2). It sits in the joist plane, not the seat plane,
-# which would cross the seats' west ends at one elevation (`structural.member_interference`), and
-# doubles as the deck's west rim since the joist field starts 3 3/4" east of this line.
+# which would cross the seats' west ends at one elevation (`structural.member_interference`). The
+# board ends east of it bear on the edge plies (params/entry_landing_edge.py), not on it.
 #
 # It hangs off both columns (LUS28Z, CN-BW-HGR-SCS-* in params/breezeway.py): the 6x6 (5 1/2")
 # fully shadows the 3" seat beam on the same centreline, so authored to the column centres it

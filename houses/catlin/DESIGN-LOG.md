@@ -8655,7 +8655,8 @@ Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
   the narrowest, over 1/4" movement + 1/4" tolerance). BALCONY's 1" joint cannot take one (a
   cover needs ~2"), so it stays open: an owner question. ENTRY's rim moved 1/8" out so the deck
   edge stands 3/8" off the beam. The edge blocking the plan asked for past the rim's ends was
-  not modelled: it would be a rim stub cantilevered past the end joist.
+  not modelled: it would be a rim stub cantilevered past the end joist. (Superseded 2026-11-18:
+  the west edge plies, below.)
 - **Pan and crests (2026-11-18).** The Endura outlines had been digitized 7.3% tall (vertical
   scale fitted to the 1 3/8" tick, not the drawing's uniform scale; the 5° deck checks at it):
   ZAI5625FN 1.517" → 1.414", ZAI4565FN 1.522" → 1.419". The three framed doors' sills sit on a
@@ -8719,3 +8720,19 @@ Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
   row is read c-c of bearing (6'-0", 792 plf): `band_header/D-B-SUNKEN` governs at 0.434
   (`sunken_door_band_header.md` §2-§5). The seat-rotation UNKNOWN's head pull-through reads 110 lb
   (G 0.42) or 200 lb (SP 0.55), × C_M 0.70; ~260 lb per top screw is over both.
+
+## FS-BW-FLOOR's west edge strip (2026-11-18, owner)
+
+- **Plies, not blocking.** The joist field stops 3 3/4" short of the deck's west edge to clear
+  PT-BW-CW/-CNW, so the board ends overhung the westmost joist by 3" and W-BW-SCREEN's plate south of
+  PT-BW-CW stood on nothing (BM-BW-SCSILL stands 1/4" west of the deck edge and only between the
+  columns). A 2-ply KDAT 2x8 is face-nailed to the joist's west face, top flush, in three pieces cut
+  1/8" off the columns (`params/entry_landing_edge.py`, a `JoistReinforcement` with an `extent`);
+  both rims run 3 3/4" west and end-nail into the ply ends, so the corners are framed and no rim stub
+  cantilevers. The owner chose the plies for the SW corner; the middle and NW pieces are the same
+  member on the same joist, which is what the original "blocked strip" intent asked for without a
+  joist-to-beam mechanism to SCSILL.
+- **Grade.** Uniform deck load into the joist is 41 lb on the south piece, 7 lb a nail against Z' 90
+  (10d into SP, NDS 12.3 mode IV, C_M 0.70), 19 psi of torsion (`north_entry_structure.md` §2a).
+  Bid: +3 8' 2x8, butyl tape +0.6 LF.
+
