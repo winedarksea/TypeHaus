@@ -2462,9 +2462,13 @@ _GUARD_EDGE_PATH = (
 )
 # Seat the end bolt patterns on the rim, retaining <4 inches to the house cladding.
 _BALCONY_END_POST_HOUSE_CLEARANCE_IN = 3.9375
-# 1 1/2" past the plank, so the end post's rear screws hold 4D (1 1/4") to the rim's cut end;
-# the movement gap to the cladding is then 1 3/4" (was 2 3/4").
-_BALCONY_REAR_RIM_OVERSAIL_IN = 1.5
+# 2 1/8" past the plank (owner, 2026-11-18; 1 1/2" before), so the planks at D-S-BALCONY stop
+# 3/8" off its sill beam and the end posts' rear screws keep >= 4D to the rim's cut end; the
+# movement gap to the cladding is then 1 1/8". The north sister fills it flush with the rim
+# ends: a 2x12 and a 5/8" treated ply packer on its face, drawn as one 2 1/8" ply.
+_BALCONY_REAR_RIM_OVERSAIL_IN = 2.125
+_BALCONY_NORTH_SISTER = (f"{_BALCONY_REAR_RIM_OVERSAIL_IN:g}x"
+                         f"{cross_section(SPEC.balcony_joist).depth_m / 0.0254:g}:kdat")
 # The rear FLASHING runs break beyond D-S-BALCONY's wrapped 3 1/2" casing, where the door's
 # own flashing ends take over. Its outriggers are gone (2026-11-13: its XXXXW extender rests
 # on the house's girt sill course), so the doubled north joist now runs through the door
@@ -2702,7 +2706,7 @@ BALCONY_JOISTS = FloorSystem(
         # tab ends bear on it (the door's outriggers that it once stopped short of are gone).
         JoistReinforcement(
             at=pt(ft((_deck_x_w + _deck_x_e) / 2), ft(_bal_y1 + 1.0 / 12.0)), plies=2,
-            blocking=False, extent=(ft(_deck_x_w), ft(_deck_x_e)),
+            member=_BALCONY_NORTH_SISTER, blocking=False, extent=(ft(_deck_x_w), ft(_deck_x_e)),
             source="north edge joist doubled into the rim oversail — backing for RL-SG-BALCONY's "
                    "end-post screws, the bed for TR-SG-BASE-FLASH and the plank ends at "
                    "D-S-BALCONY"),

@@ -99,8 +99,8 @@ def framed_floor_installation(support_ref, bearing, **door):
             support_kind='girt_bridge', support_ref=support_ref, **_MEMBRANE_PAN))
 
 
-# The planks reach FS-SG-BALCONY's north sister: the joint (~1" off the beam face) is too narrow
-# for a cover with its seat and range (notes/exterior_door_sill_beam.md §4), so it stays open.
+# The planks reach FS-SG-BALCONY's north sister, 3/8" off the beam face like ENTRY's (owner,
+# 2026-11-18: rear rim oversail 2 1/8"), open, no cover (notes/exterior_door_sill_beam.md §4).
 STUDY_INSTALLATION = framed_floor_installation(
     'W-S-S2', ApproachBearing(landing_ref='FS-SG-BALCONY', landing='gap'),
     exterior_material_ref='captivate-sheet')

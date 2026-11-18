@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** b773f42a493581f3  
-**Lines:** 257
+**Model hash:** 64f6db91039a552f  
+**Lines:** 258
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
 
@@ -50,6 +50,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x6 SPF No. 2 & Btr framing lumber, 8' (2-2x6:spf) | 6 | pc | blocking (2-ply) | 48 LF | building |
 | 2x8 SPF No. 2 & Btr framing lumber, 8' (2-2x8) | 12 | pc | header (2-ply) | 96 LF | building |
 | 2x8 SPF No. 2 & Btr framing lumber, 8' (2-2x8:spf) | 4 | pc | blocking (2-ply) | 32 LF | building |
+| 2.125x11.25 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (2.125x11.25:kdat) | 1 | pc | sister joist | 20 LF | building |
 | 24 gable roof truss, 24' (24 gable roof truss) | 2 | ea | roof truss | 48 LF | building |
 | 24 roof truss, 24' (24 roof truss) | 14 | ea | roof truss | 336 LF | building |
 | 25 ga. resilient channel 1/2" resilient channel, 8' (25 ga. resilient channel:resilient-channel) | 7 | pc | girt strapping | 56 LF | building |
@@ -58,7 +59,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x10 SPF No. 2 & Btr framing lumber, 10' (2x10) | 1 | pc | hanger board | 10 LF | building |
 | 2x10 SPF No. 2 & Btr framing lumber, 8' (2x10:spf) | 10 | pc | blocking, ceiling furring | 80 LF | building |
 | 2x12 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (2x12:kdat) | 7 | pc | blocking, sister joist | 56 LF | building |
-| 2x12 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (2x12:kdat) | 21 | pc | joist, sister joist | 420 LF | building |
+| 2x12 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (2x12:kdat) | 20 | pc | joist | 400 LF | building |
 | 2x12 White-painted PT lumber, 10' (2x12:kdat:post-paint-white) | 2 | pc | rim board | 20 LF | building |
 | 2x12 SPF No. 2 & Btr framing lumber, 8' (2x12:spf) | 3 | pc | blocking | 24 LF | building |
 | 2x2 SPF No. 2 & Btr framing lumber, 8' (2x2) | 27 | pc | blocking, plate, stud | 216 LF | building |
@@ -112,7 +113,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| Aluminum deck board (Wahoo AridDek, Granite), 1 1/2" subfloor (aluminum-deck:subfloor) | 189.2 | SF | 6 sheets 4x8 over 189.2 SF net; 6.0 sheets in the takeoff | building |
+| Aluminum deck board (Wahoo AridDek, Granite), 1 1/2" subfloor (aluminum-deck:subfloor) | 189.6 | SF | 6 sheets 4x8 over 189.6 SF net; 6.0 sheets in the takeoff | building |
 | CDX sheathing plywood, 4- or 5-ply, Exposure 1, 1/2" exterior wall (cdx-plywood:exterior wall) | 77 | sheets 4x10 | 77 sheets 4x10 over 3059.8 SF net | building |
 | CDX sheathing plywood, 4- or 5-ply, Exposure 1, 5/8" exterior wall (cdx-plywood:exterior wall) | 1 | sheets 4x8 | 1 sheets 4x8 over 26.5 SF net | building |
 | CDX sheathing plywood, 4- or 5-ply, Exposure 1, 5/8" exterior wall (cdx-plywood:exterior wall) | 19 | sheets 4x9 | 19 sheets 4x9 over 662.4 SF net | building |
@@ -260,7 +261,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
 | butyl-tape, 1 1/2" on beam (butyl-tape) | 18.1 | LF |  | main |
-| butyl-tape, 1 1/2" on deck (butyl-tape) | 448.3 | LF |  | main, second |
+| butyl-tape, 1 1/2" on deck (butyl-tape) | 448.4 | LF |  | main, second |
 | butyl-tape, 4 1/2" on deck (butyl-tape) | 33.5 | LF |  | main |
 | butyl-tape, 1 1/2" on stair (butyl-tape) | 65.7 | LF |  | main |
 | butyl-tape-beam, 1 1/2" on beam (butyl-tape-beam) | 4.5 | LF |  | main |
@@ -372,6 +373,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x6 SPF No. 2 & Btr framing lumber, 8' (2-2x6:spf) | — |
 | 2x8 SPF No. 2 & Btr framing lumber, 8' (2-2x8) | — |
 | 2x8 SPF No. 2 & Btr framing lumber, 8' (2-2x8:spf) | — |
+| 2.125x11.25 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (2.125x11.25:kdat) | — |
 | 24 gable roof truss, 24' (24 gable roof truss) | — |
 | 24 roof truss, 24' (24 roof truss) | — |
 | 25 ga. resilient channel 1/2" resilient channel, 8' (25 ga. resilient channel:resilient-channel) | — |

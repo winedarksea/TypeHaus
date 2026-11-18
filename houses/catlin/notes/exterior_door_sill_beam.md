@@ -130,10 +130,15 @@ the pan's 0.020" drip leg on the beam face, so it just meets that leg at the nar
   9.625 − 0.5 − 9.0625 = **1/16"**. Fixed end 1.5 − 0.75 = 0.75". Cover 0.94" thick (joist top 0
   to deck top 0.94), 2.355" wide. Ledge top at 0, under the drip's foot (+0.75 − 1/32 − 1/2 =
   +0.22). Water drops through to TR-SG-SLOT.
-- **D-S-BALCONY, open gap.** FS-SG-BALCONY's sister 8.5": joint **1.0"** (1.04" off the nose). A
-  ledge must stop 1/2" short of the sister (≤ 0.5") and the cover's edge 1/2" off the beam, so the
-  bearing at the widest is ≤ 7.5 + 0.5 − 8.5 = −0.5": no cover fits. One needs a joint of at least
-  1/2 + 3 × 1/2 = 2.0". The 1.0" gap stays open (owner question in `plans/TODO.md`).
+- **D-S-BALCONY, open gap (owner, 2026-11-18).** A 1.0" joint took no cover (one needs ≥ 2.0"), so it
+  narrows like ENTRY's: the rear rim oversail goes 1 1/2" → 2 1/8" along the whole edge and the
+  planks' tab at the door reaches **7.875"**, **3/8"** off the beam (0.4175" off the nose), 1/8" left
+  after the 1/4" movement. The north sister (a 2x12 plus a 5/8" treated ply packer, one 2 1/8"
+  ply) runs beam to beam flush with the rim ends, so the tab bears its full depth on it and the rim
+  ends are backed: nothing oversails a support. A 300 lb point on the tab's edge lands on that
+  doubled joist, a full-span ply graded with the field's joists; no new cantilever arises. The rear
+  cladding gap is 1 1/8" (was 1 3/4"): the base flashing's upstand stands that far off the
+  cladding against 1/4" movement, and the counterflashing (gap + 1/2" wide) still laps past it. Wahoo publishes no plank-to-wall gap (`plans/TODO.md`).
 - **D-M-ENTRY, open gap.** FS-BW-FLOOR's rim moved 1/8" out (inner face 7.875", rim centre
   36'-8 5/8") and the deck edge onto it: **3/8"** off the beam, 0.4175" off the nose, ≤ 1/2".
 

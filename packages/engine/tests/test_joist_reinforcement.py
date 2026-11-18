@@ -222,7 +222,8 @@ def test_no_deck_sisters_a_joist_and_one_floor_does(catlin_model):
     # FS-M-NE's two are the doubled 316/332 trusses under the peninsula.
     # FS-SG-BALCONY (2026-11-05): two 20" plies behind each front guard bracket and the
     # doubled north edge joist, fastener backing for RL-SG-BALCONY's 6" screws; since
-    # 2026-11-13 that edge joist is one run, through D-S-BALCONY, under the planks' tab.
+    # 2026-11-13 that edge joist is one run, through D-S-BALCONY, under the planks' tab;
+    # since 2026-11-18 a 2x12 packed to 2 1/8", flush with the rim oversail.
     # FS-S-EAST's other four are D-S-BALCONY's squash plies, two under each jamb pack.
     assert sorted(tag for tag, _ in sisters) == [
         "FS-M-EAST", "FS-M-EAST", "FS-M-NE", "FS-M-NE", "FS-M-WEST"] + ["FS-S-EAST"] * 6 + [
@@ -239,7 +240,8 @@ def test_no_deck_sisters_a_joist_and_one_floor_does(catlin_model):
     rows = {(row["profile"], row["category"]) for row in framing_takeoff(catlin_model)}
     assert sorted(key for key in rows if key[1] == "sister_joist") == [
         ("1.75x11.875 LVL", "sister_joist"), ("11.875 TJI 230", "sister_joist"),
-        ("11.875 floor truss", "sister_joist"), ("2x12:kdat", "sister_joist")]
+        ("11.875 floor truss", "sister_joist"), ("2.125x11.25:kdat", "sister_joist"),
+        ("2x12:kdat", "sister_joist")]
 
 
 def test_both_garden_decks_block_only_where_something_is_bolted_down(catlin_model):

@@ -8677,3 +8677,6 @@ Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
 - **Receiver (owner, 2026-11-18).** The passive leaf's receiver is graded on Endura's instruction
   (a cup in a 5/8" hole at least 1 3/8" deep in the cap): from the cap top at the hole it leaves
   0.038" of sill body, inside the outline's 0.1" accuracy, a pass; no clearance rule, no hold.
+- **BALCONY joint (owner, 2026-11-18).** The rear rim oversail went 1 1/2" → 2 1/8" along the whole
+  edge, the north sister packed to 2 1/8" flush with it: the planks stop 3/8" off D-S-BALCONY's
+  sill beam like ENTRY's, open, no cover; the rear cladding gap is 1 1/8".

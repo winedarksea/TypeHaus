@@ -123,7 +123,8 @@
 > screw 126.29 lb vs 135, rows exactly at ESR-1078 Table 5's minima under a 1 1/4" flange (a
 1 3/8" one is UNKNOWN). PORCH's 2 1/8" joint takes a
 > removable FRP cover on a beam-face ledge (`landing="cover"`); ENTRY's landing stands 3/8" off the
-> beam; BALCONY's 1" joint is too narrow for a cover and stays open. ENTRY's crest is 1.20" over the
+> beam; BALCONY's planks stand 3/8" off it too (rear rim oversail 2 1/8", the north sister packed
+> flush; owner, 2026-11-18), open, no cover. ENTRY's crest is 1.20" over the
 > LVP (1.45" with 1/4"). D-B-SUNKEN's Trex tread lies on a 1/4" FRP plate over 60 psi XPS, its slot
 > draining down W-SG-BRKBM's isolation joint. D-G-SERVICE keeps its UHMW pad. Oracle:
 > `notes/exterior_door_sill_beam.md`. The band header's stacked jambs cross FS-S-EAST on squash

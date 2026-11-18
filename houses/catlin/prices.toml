@@ -425,6 +425,9 @@
 "2x12:kdat" = { material = { low = 2.4, high = 3.6 }, labour = { low = 1.4, high = 2.6 } }  # 520 LF ordered (2026-11-04 takeoff) — joists, spare joist, blocks (8 under the porch guard's south leg) and ST-SG-PORCH's six stringers
 # The court daybed's two built-up porch lines (plan/court_daybed.py): three plies of the row
 # above per LF of line, nailed up on site.
+# FS-SG-BALCONY's north sister (2026-11-18): a 2x12 KDAT and a 5/8" treated ply packer, one
+# 2 1/8" ply flush with the rear rim oversail. ESTIMATE: the 2x12:kdat row plus a ripped packer.
+"2.125x11.25:kdat" = { material = { low = 3.0, high = 4.6 }, labour = { low = 1.8, high = 3.2 } }  # 20 LF ordered
 "3-2x12:kdat" = { material = { low = 7.2, high = 10.8 }, labour = { low = 4.2, high = 7.8 } }  # 40 LF ordered — FS-SG-PORCH lines 003 and 006
 "2x2" = { material = { low = 0.35, high = 0.6 }, labour = { low = 0.5, high = 1 } }  # 260 LF
 # 2"x2" rigid-insulation strip: 1/6 SF of 2" board per LF, at the [envelope_layers]

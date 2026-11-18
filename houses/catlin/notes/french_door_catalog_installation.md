@@ -127,7 +127,8 @@ stepped up outboard of the sheathing. At a door both now drop by the buck's thic
 The flashing ends (house and deck adaptors, flexible corner) still close the two interrupted
 rear flashing runs, now on the planks' tab edge. They are not verified Tremco application
 sections. The whole balcony movement basis remains `balcony_differential_movement.md`; the
-1/4 inch reserved each way leaves 0.79 inch of the gap.
+3/8 inch joint at D-S-BALCONY (2026-11-18) keeps 1/8 inch after the 1/4 inch movement; the cladding gap
+along the rear edge is 1-1/8 inch.
 
 ### Calculations and limits
 
@@ -201,7 +202,7 @@ unit label, order confirmation or warranty extension was obtained.
    XXXXW extenders; adjust the sweep and corner seals. Drill the receiver to the cup's length
    with a depth stop, caulk the hole's bottom per Endura, and keep the bit off the membrane.
 6. Lay the sunken tread on its plate and foam; extend the court planks to the north sister;
-   fit PORCH's cover and ledge; keep BALCONY's 1 inch joint, ENTRY's 3/8 inch joint, the slot
+   fit PORCH's cover and ledge; keep BALCONY's and ENTRY's 3/8 inch joints, the slot
    and the veneer weeps open.
 7. Complete the flashing ends, returns/casing and head kit; verify both leaf swings, bolt
    operation and weather seals.

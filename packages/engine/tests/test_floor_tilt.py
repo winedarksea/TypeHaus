@@ -45,8 +45,8 @@ def test_catlin_balcony_joists_sit_on_their_beams_and_the_deck_follows(catlin_mo
     assert floor.deck_top_at(x, min(ys)) == pytest.approx(low)
     assert floor.deck_top_at(x, max(ys)) == pytest.approx(high)
     # 1/4" per foot over the 116" plank (notes/balcony_differential_movement.md §2), plus
-    # the 1 1/2" tab out to the north sister across D-S-BALCONY (2026-11-13).
-    assert (high - low) / IN == pytest.approx(117.5 / 48, abs=1e-3)
+    # the tab out to the north sister across D-S-BALCONY (2026-11-13), 2 1/8" since 2026-11-18.
+    assert (high - low) / IN == pytest.approx(118.125 / 48, abs=1e-3)
     # The storey datum is the beams' START (south node) — the plank's south edge.
     assert low == pytest.approx(floor.deck_z1_m, abs=1e-9)
     beam = next(s for s in catlin_model_ro.solids if s.tag == "BM-SG-BLW")

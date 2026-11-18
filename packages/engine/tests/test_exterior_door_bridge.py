@@ -28,7 +28,7 @@ def test_catalog_extender_rests_on_the_sill_beam_short_of_the_court(catlin_model
     assert support["buck_top_z_m"] == pytest.approx(opening.doorway.rough_opening_z_m)
     assert support["landing_member"].startswith("sister")
     assert support["landing"] == "gap"
-    assert support["nose_gap_in"] == pytest.approx(1.0, abs=1e-3)
+    assert support["nose_gap_in"] == pytest.approx(0.375, abs=1e-3)
     assert not opening.doorway.conflicts
 
 
