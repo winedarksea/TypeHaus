@@ -54,6 +54,7 @@ from typehaus.model.placeable_symbols._gfci_in_use_cover import (
 )
 from typehaus.model.placeable_symbols._gree_flexx import gree_flexx_horizontal
 from typehaus.model.placeable_symbols._gree_flexx_outdoor import gree_flexx_outdoor
+from typehaus.model.placeable_symbols._imo_rsd_initiator import imo_ess_rsd01
 from typehaus.model.placeable_symbols._infrared_heater import infrared_heater
 from typehaus.model.placeable_symbols._led_controller import (
     gledopto_gl_c_001p,
@@ -62,9 +63,11 @@ from typehaus.model.placeable_symbols._led_controller import (
 )
 from typehaus.model.placeable_symbols._led_driver_jbox import diode_odx_j
 from typehaus.model.placeable_symbols._led_driver_potted import meanwell_hlg_100h
+from typehaus.model.placeable_symbols._midnite_mnspd import midnite_mnspd
 from typehaus.model.placeable_symbols._pan_tilt_camera import reolink_omvi_3i_ceiling
 from typehaus.model.placeable_symbols._sektion_kitchen import KITCHEN_SEKTION_SYMBOLS
 from typehaus.model.placeable_symbols._sheet_metal_plenum import plenum_parts, sheet_metal_plenum
+from typehaus.model.placeable_symbols._siemens_fs140 import siemens_fs140
 from typehaus.model.placeable_symbols._sunnersta import sunnersta_frame
 from typehaus.model.placeable_symbols._swanstone_flex import swanstone_flex
 from typehaus.model.placeable_symbols._thermostat import thermostat
@@ -115,7 +118,10 @@ _REGISTRY: dict[str, Builder] = {**FURNITURE_SYMBOLS, **APPLIANCE_SYMBOLS, **PLU
                                  "diode-odx-j": diode_odx_j,
                                  "gledopto-gl-c-001p": gledopto_gl_c_001p,
                                  "ikea-tradfri-driver": ikea_tradfri_driver,
-                                 "nema-4x-box": nema_4x_box}
+                                 "nema-4x-box": nema_4x_box,
+                                 "imo-ess-rsd01": imo_ess_rsd01,
+                                 "siemens-fs140": siemens_fs140,
+                                 "midnite-mnspd": midnite_mnspd}
 
 # The frozen vocabulary. A catalog entry may only name a symbol listed here; the contract test
 # holds the registry to it in both directions.
@@ -177,6 +183,10 @@ SYMBOL_NAMES = (UNIFI_ACCESS_POINT_SYMBOLS
     # LED drivers and controllers, back on the mounting surface
     "meanwell-hlg-100h", "diode-odx-j", "gledopto-gl-c-001p", "ikea-tradfri-driver",
     "nema-4x-box",
+    # PV rapid-shutdown initiator, NEMA 4X rotary
+    "imo-ess-rsd01",
+    # Surge protective devices: the service SPD and the PV DC SPDs (the plug-ons are not drawn)
+    "siemens-fs140", "midnite-mnspd",
     # Plumbing fixtures: "hydrant" is the Model 19 wall faucet; the Y34SS has its own
     # yard-hydrant geometry. Neither has a drain. "floor-drain" has no supply side.
     # "toilet-wall-hung" is a THIRD odd one out: no tank, so the china takes the whole

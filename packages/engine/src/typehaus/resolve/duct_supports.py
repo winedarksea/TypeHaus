@@ -7,7 +7,8 @@ carried by the wall or chase they climb and take none here. Each hanger names th
 it hangs from: a horizontal member over (or, in a joist bay, beside) the duct within
 ``HANGER_REACH_M``. With nothing overhead the standard's fallback rows are tried: a
 ``saddle`` (a strap band to the deck, house practice; SMACNA draws no bottom support) where
-the duct bears on a deck (or on the row's ``sleeper`` block on it), then a ``bracket`` to a parallel wall within SMACNA Fig. 4-8's 2".
+the duct bears on a deck (or on the row's ``sleeper`` block on it), then a ``bracket`` to a
+parallel wall within SMACNA Fig. 4-8's 2".
 A slab is never a saddle host: a duct on concrete stays UNKNOWN, on purpose. A hanger with
 no host is kept, with its ``gap``, for ``mep.duct_supports`` to grade.
 """

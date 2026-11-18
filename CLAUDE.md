@@ -69,6 +69,8 @@ a release or for exhaustive local verification.
   N-gang box, snapped to `gang_pitch`, and a derived `wall_plate` from `BoxStandard.plates`; every
   box record is a bank (`device_tags`, `boxes_by_device`). A device symbol draws only its face
   proud of the plate (`footprint` = face width x projection); the body is `rear_projection`.
+  A box solid carries a `body_mesh` (`resolve/device_box_mesh.py`: round, raised cover, mud ring)
+  and its colour from `BoxRow.material_ref`.
 - **Drywall accessories are derived from one `DrywallStandard`** (decision #103):
   `resolve/drywall_trims.py` finds outside corners, J-bead terminations, tile-stop reveals,
   trimless-door L-bead and window-return beads off the host faces into

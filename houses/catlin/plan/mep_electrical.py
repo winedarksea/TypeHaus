@@ -581,9 +581,9 @@ ATTIC_DEVICES = [
 #     cord; the outlet is its GFCI (NEC 210.8(F), outdoors) and its disconnect in one, on a
 #     15 A device to match the 15 A breaker (210.21(B)(3)).
 #   * W-A-N2, centre x=8'-10", below the radon leg's 23'-8" elbow and so below the fan's
-#     24" x 3' space (graded, subp. 5.D). East along the same course, 2" apart: ED-A-PV-SPD,
-#     then ED-A-PV-JB.
-#   * GABLE ENCLOSURE MOUNTING (all three): a 3/4" cellular-PVC block, 1" larger than the
+#     24" x 3' space (graded, subp. 5.D). East along the same course: ED-A-PV-JB, with
+#     ED-A-PV-SPD hung from its bottom knockout (the MNSPD mounts only by its nipple).
+#   * GABLE ENCLOSURE MOUNTING (both boxes): a 3/4" cellular-PVC block, 1" larger than the
 #     box all round, centred on the 22'-0" girt course (264"-267 1/2") and screwed through a
 #     panel flat into the KDAT with two gasketed screws in one row. The box screws to the
 #     block, so its own hole pattern never has to fit a 3 1/2" course (normal_gap 3/4").

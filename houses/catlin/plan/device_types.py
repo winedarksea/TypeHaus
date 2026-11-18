@@ -221,6 +221,7 @@ SWITCH_TYPES = (
     ElectricalDeviceType(
         tag="ED-T-RSD-INIT", name="PV rapid-shutdown initiator, NEMA 4X rotary (IMO ESS-RSD01)",
         footprint=(inch(3.875), inch(4.25)), height=inch(7.125), needs=frozenset(), ports=(),
+        model_representation=ModelRepresentation(symbol="imo-ess-rsd01"),
         device_box=False, rsd_initiator=True, product_ref=RSD_INIT.tag, source=RSD_INIT.source),
     _dev("ED-T-LEV-SW1", "Lever Edge single-pole switch (E5601-W)", E5601,
          symbol="wall-switch-rocker", rear_projection=inch(1.01)),

@@ -5,6 +5,7 @@ pending" name the listing a part must carry, not a SKU; the electrician picks th
 """
 
 from typehaus import ElectricalDeviceType, Product, inch
+from typehaus.model import ModelRepresentation
 
 _SRC = "notes/grounding_bonding.md (2026-11-10)"
 _PENDING = _SRC + "; selection pending, any part carrying the stated listing"
@@ -32,7 +33,8 @@ GND_CLIP = Product(tag="GND-CLIP-S5", brand="TBD",
 # sheet publishes In, so 230.67(E) stays ungraded until the label is read.
 _FS140_SRC = ("Siemens FirstSurge product overview, s3.amazonaws.com/s3.supplyhouse.com/"
               "product_files/Siemens-FS140-Product-Overview.pdf; Siemens Canada FirstSurge "
-              "datasheet LP-1408-2 (SCCR 100 kA)")
+              "datasheet LP-1408-2 (SCCR 100 kA); envelope 8 x 4 x 3 in from the Siemens FS100P "
+              "product data sheet (one FirstSurge enclosure)")
 SPD_T1 = Product(tag="PROD-SIEMENS-FS140", brand="Siemens", model="FS140",
                  name="Type 2 SPD, 140 kA surge capacity, 120/240 V split phase, UL 1449",
                  source=_FS140_SRC)
@@ -48,22 +50,30 @@ SPD_HOM = Product(tag="PROD-SQUARED-HOM2175SB", brand="Square D", model="HOM2175
                   name="Homeline plug-on Surgebreaker SPD, 25 kA, 120/240 V, 2-pole",
                   source="Schneider Electric product data sheet HOM2175SB, Jun 28 2026 "
                          "(do1jvmih5t6vs.cloudfront.net mirror)")
+# MidNite MNSPD datasheet (mrsolar.com/content/pdf/MidNite/MNSPD.pdf, read 2026-11-17): the
+# MNSPD-600 row is 0-600 VDC, 57 kA per phase, SCCR 115 kA; a 3.527 in dome, 4.425 in over
+# its 1/2 in knockout nipple, 24 in #12 leads, polycarbonate Type 4X.
+_MNSPD_SRC = "MidNite Solar MNSPD datasheet, mrsolar.com/content/pdf/MidNite/MNSPD.pdf"
 SPD_PV = Product(tag="PROD-MIDNITE-MNSPD600", brand="MidNite Solar", model="MNSPD-600-DC",
-                 name="PV DC surge protector, 600 VDC, UL 1449 Type 1CA", source=_SRC)
+                 name="PV DC surge protector, 600 VDC, UL 1449 Type 1CA", source=_MNSPD_SRC)
 
 GROUNDING_PRODUCTS = (GND_ROD, GND_ACORN, GND_UFER_CLAMP, GND_IBT, GND_TRANSITION, GND_CLIP,
                       SPD_T1, SPD_PV, SPD_QO, SPD_HOM)
 
-_BOX = dict(footprint=(inch(6), inch(4)), height=inch(6), needs=frozenset(), ports=())
-
 GROUNDING_DEVICE_TYPES = (
     # The tag keeps its old "T1"; the FS140 is a Type 2 (Siemens), landed on a breaker.
     ElectricalDeviceType(tag="ED-T-SPD-T1", name="Type 2 SPD beside the meter-main (NEC 230.67)",
-                         product_ref=SPD_T1.tag, spd_class="2", surge_ka=140, **_BOX,
-                         spd_listing="UL 1449 Type 2", source=_FS140_SRC),
+                         product_ref=SPD_T1.tag, spd_class="2", surge_ka=140,
+                         spd_listing="UL 1449 Type 2", source=_FS140_SRC,
+                         # Laid on its side, nipple into the meter-main (Siemens' figure).
+                         footprint=(inch(8), inch(3)), height=inch(4), needs=frozenset(),
+                         ports=(),
+                         model_representation=ModelRepresentation(symbol="siemens-fs140")),
     ElectricalDeviceType(tag="ED-T-SPD-PV", name="PV DC SPD, 600 VDC",
-                         product_ref=SPD_PV.tag, spd_class="pv_dc", surge_ka=20, **_BOX,
-                         source=_SRC),
+                         product_ref=SPD_PV.tag, spd_class="pv_dc", surge_ka=57,
+                         source=_MNSPD_SRC, footprint=(inch(3.527), inch(3.527)),
+                         height=inch(4.425), needs=frozenset(), ports=(),
+                         model_representation=ModelRepresentation(symbol="midnite-mnspd")),
     # Catalog-only (never placed): the plug-ons a ``Circuit.spd_type_ref`` names.
     ElectricalDeviceType(tag="ED-T-SPD-QO2175SB", name="QO plug-on Type 1 SPD (QO2175SB)",
                          product_ref=SPD_QO.tag, spd_class="1", surge_ka=25,

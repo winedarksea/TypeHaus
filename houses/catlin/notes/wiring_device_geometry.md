@@ -8,7 +8,15 @@ rows in `plan/device_boxes.py` (`resolve/device_banks.py`).
 
 - **Type geometry.** `footprint` is (face width, projection past the plate) and `height` is the face height.
   - Projection past the plate = front past the strap, less the 1/4" midway plate.
-  - The body behind the plate is not drawn. It is graded as `rear_projection` against box depth.
+  - The device body behind the plate is not drawn. It is graded as `rear_projection` against box depth.
+- **Box bodies.** Each derived box is one solid with a `body_mesh` (`resolve/device_box_mesh.py`):
+  - a rectangular body with 1/8" corner chamfers, or a round body for a `shape="round"` row;
+  - a surface box's raised cover: a 1/16" flange, then a plateau inset 1/4" with the bank's device
+    opening, proud by exactly `projection_m`; a flat cover (rise ≤ 1/8", RACO 753) is one plate;
+  - a `flush_raceway` box's mud ring (RACO 768, `cover_rise` 5/8") inside the box envelope, its
+    raised border 3/8" round the device. Inset, border and chamfer are representative.
+  - Colour is the row's `material_ref`: the Carlon and Airfoil rows are `box-pvc-blue`; steel
+    rows stay galvanized. Knockouts, brackets, screws and ceiling boxes are not drawn.
   - WR GFCIs use a separate 5980-UCL clear hood symbol, 3.63" W x 6.69" H x 3.08" D.
     The vertical GFCI face stays at the back of the plug cavity; cover depth must never
     scale the socket relief. Hood panels and adapter relief are schematic.
@@ -149,3 +157,29 @@ The bottom has two open circular cord ports; the supplied removable port inserts
 omitted. Shell thickness, taper, hardware and port dimensions are representative,
 not manufacturer fabrication dimensions. Shared closed solids feed the viewer,
 GLB and IFC; the gray cover finish is independent of the device face material.
+
+## 6. PV rapid-shutdown initiator geometry
+
+ED-T-RSD-INIT draws the **IMO ESS-RSD01** (`imo-ess-rsd01`) from the
+[datasheet](https://www.solar-electric.com/lib/wind-sun/ESS-RSD01_Datasheet.pdf) (ref 0426):
+a RAL 7035 grey 98 × 170 mm box, 180 mm over the top and bottom mounting ears (holes 160
+apart), four lid screws, a grey bezel and black knob whose bar stands 31 mm proud (107 mm
+overall), the handle centre below mid-height, and M25 stepped knockouts top and bottom. The
+handle is drawn ON (bar vertical, RSD loop closed). The base/lid split depth, screw heads and
+badge are representative.
+
+## 7. Surge protective device geometry
+
+| Device | Symbol | Envelope | Source | Representative |
+| --- | --- | --- | --- | --- |
+| ED-T-SPD-T1, Siemens FS140 (ED-M-SPD) | `siemens-fs140` | 8 L x 4 H x 3 D, laid on its side | Siemens FS100P product data (8 x 4 x 3, one FirstSurge enclosure); FirstSurge overview photo and install figure (`s3.amazonaws.com/s3.supplyhouse.com/product_files/Siemens-FS140-Product-Overview.pdf`) | end caps/ears, label, LED positions; the 3/4" nipple is from the FSPD140 successor drawing (Siemens Canada SIEPC-D25-CAEN) |
+| ED-T-SPD-PV, MidNite MNSPD-600(-DC) (ED-A-PV-SPD, ED-B-INV-SPD) | `midnite-mnspd` | Ø3.527 dome, 3.82 to the neck base, 4.425 over the 1/2" nipple | MidNite MNSPD datasheet (`mrsolar.com/content/pdf/MidNite/MNSPD.pdf`): Type 4X polycarbonate, 1/2" knockout mount, 24" #12 leads, 57 kA/phase | neck taper, flange, MOV core; the leads run inside the enclosure the nipple enters, so are not drawn |
+
+- **ED-M-SPD** follows Siemens' figure: on its side beside the CL320, nipple tip 1/2" off the
+  meter case, body clear of ED-M-DATA-ENTRY below (top at -4").
+- **The MNSPD mounts only by its 1/2" nipple**, so both hang dome-down from a bottom
+  knockout of what they protect: ED-A-PV-SPD centred under ED-A-PV-JB (dome to 259 5/16"),
+  ED-B-INV-SPD under EQ-B-ESS-INV, 3 1/2" east of CD-B-PV-INV's entry. Confirm the
+  inverter knockout against the EG4 manual before it is punched.
+- The plug-on SPDs (QO2175SB, HOM2175SB) sit in a breaker slot behind the deadfront, so they
+  are schedule and BOM rows only. `panel_board()` draws the enclosure and deadfront, no breakers.

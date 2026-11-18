@@ -84,11 +84,14 @@ HOUSE_GROUNDING = [
     BondingConductor(uid="75ZF8AVPS6", tag="BC-B-WATER-BATH", role="water_bond", from_ref="PR-B-CW-WH",
                      to_ref="PR-B-CW-BATH", size="2"),
     # PV DC SPD at the inverter's DC input (the EG4's own DC surge rating is unpublished).
+    # The MNSPD mounts only by its 1/2" nipple: it hangs dome-down from a bottom knockout of
+    # EQ-B-ESS-INV (case bottom 33" AFF), centred x=4'-2", 3 1/2" east of CD-B-PV-INV's entry.
+    # Confirm that knockout against the EG4 manual before the electrician punches it.
     ElectricalDevice(uid="EJH2340ANK", tag="ED-B-INV-SPD", kind=DeviceKind.SPD, type_ref="ED-T-SPD-PV",
-                     room="RM-B-FURNACE", mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
+                     room="RM-B-FURNACE", mount=Mount(kind=MountKind.WALL, elevation=inch(28.575)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-N4", face="left", distance_from_start=inch(44),
-                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+                         wall_ref="W-B-N4", face="left", distance_from_start=inch(22),
+                         normal_gap=inch(0.375), rotation_offset=deg(-180)))),
 ]
 
 # --- service: GECs, SPD, IBT and the single-point comms entry, all on W-M-W1 -------------
@@ -117,10 +120,12 @@ SERVICE_GROUNDING = [
                      elevations=(inch(0), inch(-6), inch(-6), inch(-6), inch(-96))),
     BondingConductor(uid="F15125QS01", tag="BC-M-IBT", role="ibt", from_ref="ED-M-IBT", to_ref="ED-M-METER",
                      size="6"),
+    # The FS140 on its side, close-nippled into ED-M-METER's side: nipple tip 1/2" off the
+    # meter's case (y 367 1/8"), body to y 375 5/8", over ED-M-DATA-ENTRY (top at -4").
     ElectricalDevice(uid="FWX17NKXGJ", tag="ED-M-SPD", kind=DeviceKind.SPD, type_ref="ED-T-SPD-T1",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(0)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-W1", face="right", distance_from_start=inch(29),
+                         wall_ref="W-M-W1", face="right", distance_from_start=inch(28.375),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="22CJG651XR", tag="ED-M-IBT", kind=DeviceKind.JUNCTION_BOX, type_ref="ED-T-IBT",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(-12)),
@@ -144,13 +149,13 @@ SERVICE_GROUNDING = [
 
 # --- PV: DC SPD at the array box and the down-lead ---------------------------------------
 PV_GROUNDING = [
-    # Beside ED-A-PV-JB on the 22'-0" girt course (2026-11-12): x 9'-3"..9'-9", 2" west of
-    # the box, out from under the radon fan's space (MN 1303.2402 subp. 5.D). On a PVC block
-    # like the box (plan/mep_electrical.py, GABLE ENCLOSURE MOUNTING).
+    # Hung dome-down from ED-A-PV-JB's bottom knockout, centred under the box (the MNSPD
+    # mounts only by its 1/2" nipple): nipple tip at the box's 263 3/4" underside, dome to
+    # 259 5/16". Same 3/4" stand-off as the box, so it clears the box's PVC block.
     ElectricalDevice(uid="XQ69SAWHP0", tag="ED-A-PV-SPD", kind=DeviceKind.SPD, type_ref="ED-T-SPD-PV",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(22.75)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(19.325)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-A-N2", face="right", distance_from_start=inch(6),
+                         wall_ref="W-A-N2B", face="right", distance_from_start=inch(94),
                          normal_gap=inch(0.75), rotation_offset=deg(-180)))),
     # Aluminium (never copper on the Galvalume skin) on seam clips from SP-A-PV-W9 north to
     # the rake, down the rake and the NW corner trim to 18" above grade. Confirm the PVKIT's

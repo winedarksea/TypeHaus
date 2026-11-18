@@ -17,6 +17,7 @@
 #     Its new-work screws want wood (Q-3), and both boxes sit mid-bay, so each gets a flat
 #     2x4 block behind it, stud to stud, derived from the row (geometry review M3-107).
 # Covers and rings are not credited a volume: none of these is marked with one.
+# The blue nonmetallic boxes name box-pvc-blue; steel rows stay galvanized (material_ref None).
 
 from typehaus import BoxRow, BoxStandard, PlateRow, Product, inch
 
@@ -231,25 +232,29 @@ BOX_STANDARD = [
                    box_size=(inch(4), inch(4), inch(2.125)), designation="4 x 2-1/8 square",
                    cover_rise=inch(0.5)),
             BoxRow(mounting="flush", gangs=1, box_product_ref="PROD-CARLON-B122A",
-                   box_size=(inch(2.25), inch(3.75), inch(3.5)), box_volume_in3=22.0),
+                   box_size=(inch(2.25), inch(3.75), inch(3.5)), box_volume_in3=22.0,
+                   material_ref="box-pvc-blue"),
             BoxRow(mounting="flush", gangs=2, box_product_ref="PROD-CARLON-BH235A",
-                   box_size=(inch(4), inch(3.75), inch(3.5)), box_volume_in3=35.0),
+                   box_size=(inch(4), inch(3.75), inch(3.5)), box_volume_in3=35.0,
+                   material_ref="box-pvc-blue"),
             BoxRow(mounting="flush", gangs=3, box_product_ref="PROD-CARLON-BH353A",
                    box_size=(inch(5.875), inch(3.75), inch(3.5)), box_volume_in3=53.0,
-                   internal_clamps=True),
+                   internal_clamps=True, material_ref="box-pvc-blue"),
             BoxRow(mounting="flush", gangs=4, box_product_ref="PROD-CARLON-BH464A",
                    box_size=(inch(7.75), inch(3.875), inch(3.5)), box_volume_in3=64.0,
-                   internal_clamps=True),
+                   internal_clamps=True, material_ref="box-pvc-blue"),
             BoxRow(mounting="flush_raceway", gangs=1, box_product_ref="PROD-RACO-232",
                    cover_product_ref="PROD-RACO-768",
-                   box_size=(inch(4), inch(4), inch(2.125)), designation="4 x 2-1/8 square"),
+                   box_size=(inch(4), inch(4), inch(2.125)), designation="4 x 2-1/8 square",
+                   cover_rise=inch(0.625)),
             BoxRow(mounting="surface", gangs=1, use="luminaire", box_product_ref="PROD-RACO-192",
                    cover_product_ref="PROD-RACO-753",
                    box_size=(inch(4), inch(4), inch(1.563)), designation="4 x 1-1/2 square",
                    cover_rise=inch(0.0625)),
             BoxRow(mounting="flush", gangs=1, use="luminaire-round",
                    box_product_ref="PROD-CARLON-B520A", shape="round",
-                   box_size=(inch(4), inch(4), inch(2.25)), box_volume_in3=20.0),
+                   box_size=(inch(4), inch(4), inch(2.25)), box_volume_in3=20.0,
+                   material_ref="box-pvc-blue"),
             BoxRow(mounting="flush", gangs=1, use="recessed",
                    box_product_ref="PROD-ARLINGTON-DVFR1W",
                    box_size=(inch(4.2), inch(6.698), inch(3.875)), box_volume_in3=21.0,
@@ -261,10 +266,12 @@ BOX_STANDARD = [
                    internal_clamps=False, plate_included=True),
             BoxRow(mounting="flush", gangs=1, use="air-sealed",
                    box_product_ref="PROD-LESSCO-AIRFOIL-1G",
-                   box_size=(inch(2.5), inch(4), inch(3.5)), box_volume_in3=20.0),
+                   box_size=(inch(2.5), inch(4), inch(3.5)), box_volume_in3=20.0,
+                   material_ref="box-pvc-blue"),
             BoxRow(mounting="flush", gangs=1, use="air-sealed-luminaire-round",
                    box_product_ref="PROD-LESSCO-AIRFOIL-ROUND", shape="round",
-                   box_size=(inch(4), inch(4), inch(2.25)), box_volume_in3=20.0),
+                   box_size=(inch(4), inch(4), inch(2.25)), box_volume_in3=20.0,
+                   material_ref="box-pvc-blue"),
         ),
     ),
 ]

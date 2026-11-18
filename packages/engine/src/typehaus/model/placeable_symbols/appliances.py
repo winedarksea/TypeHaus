@@ -234,7 +234,7 @@ def meter_socket() -> Builder:
 
 
 def panel_board() -> Builder:
-    """A load centre: the enclosure outline plus its breaker columns."""
+    """A load centre: the enclosure and its deadfront (no breakers, no plug-on SPD)."""
 
     def build(width: float, depth: float, height: float) -> Geometry:
         strokes = [rect(0, 0, width, depth, fill="appliance-steel"),

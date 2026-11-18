@@ -26,6 +26,8 @@ MATERIALS = [
              color="#f2f1ec", source="Leviton and Lutron white (-W / -WH) devices and plates."),
     Material(tag="device-black", name="Wiring device face, black",
              color="#1c1c1c", source="Leviton 1450R and 278 power receptacles ship black."),
+    Material(tag="box-pvc-blue", name="Nonmetallic device box, blue PVC",
+             color="#2f5fae", source="Carlon SuperBlue / Lessco Airfoil blue nonmetallic boxes."),
     Material(tag="durock-half-inch", name="USG Durock cement board, 1/2 in.",
              source="USG FAQ 567 permits sauna use; complete waterproofing/tape/sealant heat qualification OPEN"),
     Material(tag="pvc-opening-flashing", name="SureSill PVC opening flashing",

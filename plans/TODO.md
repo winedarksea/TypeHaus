@@ -224,30 +224,17 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
 - Try to keep most interior doors as 1/2" factory undercut or privacy doors where decided
 - Door residue: the steel and sauna slabs are modelled cut down 1/8" (the steel may need ordering to size); the library interior types and the plan door symbol still use the 45 mm schematic leaf.
 - Shower in sauna?
-- [x] Improve the 3d model of the EQ-S-PLANT-HEATER (CD08210-style housing, bowed grille, top controls and rear intake).
-- [x] Improve the 3d model of AD-SG-COURT (hollow basin, open slotted grate, round hollow riser).
 - AD-SG-COURT connection: resolve the bottom-drop adapter/product; the named [NDS 1200](https://www.adspipe.com/nds/products/drainage/catch-basins-and-grates/square-catch-basins/1200-12-in-square-catch-basin-drain-with-2-openings) has lateral outlets. Geometry remains representative, within the authored nominal envelope.
-- [x] Improve the 3d model of the EQ-T-SAUNA-HEATER (US Cilindro PC110E stone tower, front grille, rear shroud, raised top guard and feet).
-- [x] 3d model of the garbage disposal (Badger 5 housing, sink mount, side inlet and west-facing discharge elbow; axis aligned to sink drain).
-- [x] 3d model of the wall sconces (Roland diffuser blade, Bantam stepped uplight, Soren fluted glass, Tube recessed downlight and Heritage candle/U arm; product dimensions corrected).
-- [x] 3d model of the recessed cans (round beveled white trim, open stepped baffle, regressed lamp and cylindrical housing; shared viewer/GLB/IFC geometry).
-- [x] Switches, junction boxes and receptacles: face-only devices at real projection in true colour, derived wall plates and gang banks (`resolve/device_banks.py`, `houses/catlin/notes/wiring_device_geometry.md`).
 - ED-M-FIRE-RC: measure the delivered RACO 862 handy-box cover. It must be no wider than the pocket's 2 3/8" strip (nominal 2 5/16"; Hubbell's table reads 2.425").
-- [x] 3d model of the recirculating range hood (Broan BWP1304SS pyramidal canopy, telescopic chimney, side return grilles, paired filters, LEDs and controls).
-- 3d model of the SPD devices (or just put them in the circuit box?), PV shutdown initiator, and device boxes
+- Ceiling boxes for surface ceiling luminaires (pancake / octagon / fan-rated): resolve the box, bill it and grade its fill. Today only wall devices take a derived box.
 - Not sure we need REG-S-EXH4 in RM-S-VANITY. And if we do, we need to move it out of the center of the floor
-- Attic wall assembly seems to have lost its
 - garage wall to standard zip possibly (doesn't need to be taped)
 - The siding to balcony flashing is two pieces, TR-SG-BASE-FLASH-W-1 and TR-SG-COUNTER-FLASH-W. Do we really need both like this? The "counter flash" seems a bit unsupported. A more extreme change might be to have the horizontal band run lower, at this height, and integrate here.
-- [x] 3d model of the in-use cover of the SmartlockPro GFCI outlets (5980-UCL tapered clear hood, gray base, hinge, lock tab and open cord ports).
-- Handrail and guardrail duplicated, RL-SG-PSTAIR-S and RL-SG-PSTAIR-HR, doesn't need the extra handrail, the guard doubles
 - Might need a second SL-S-KNEE-CAP for the partition wall
 - ERV terminals don't come out of the walls/floors/surfaces quite clearly enough, likely they protrude just a bit more
 - Verify the support for the door sills for exterior doors
 - Condensate PR-M-COND-HP3-RUN goes through the studs of W-M-STRW, which is one wall that is exposed and we don't want to run the plumbing through (the data cable is probably fine there though)
-- [x] 3d model of the DoorScope (round DS2000 trim, recessed interior screen and exterior optics shared by viewer/GLB/IFC).
 - ERV likely blocks D-B-CLOSET, and its condensate also blocks
-- [x] Kitchen Dearborn P9703WBG J-bend and slip nuts modeled with the disposer, connecting to the trap arm; purchased once through install_parts. [Plumbing declaration (line 4)](/Users/colincatlin/Documents-NoCloud/TypeHaus/houses/catlin/plan/kitchen_sink_plumbing.py:4)
 - "Views" button in the UI is the most important and needs some sort of design to be more obvious to the user as the first place they should click (not adding a product tour though)
 
 # Project Management

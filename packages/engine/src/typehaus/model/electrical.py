@@ -224,7 +224,10 @@ class BoxRow(HausModel):
     (diameter, diameter, depth). A metal box names its Table
     314.16(A) ``designation``; a nonmetallic one authors its marked ``box_volume_in3``.
     ``cover_volume_in3`` is the volume a raised cover or ring adds where it is marked with
-    one (314.16(A)); ``cover_rise`` is how far a surface cover stands proud of the box.
+    one (314.16(A)); ``cover_rise`` is how far a surface cover stands proud of the box, or a
+    ``flush_raceway`` ring's raise (drawn inside the box's envelope; it adds no projection).
+    ``material_ref`` colours the box (and its cover or ring) by its ``Material``; None stays
+    galvanized.
     ``use`` names a special-purpose row (``"luminaire"`` for every light, or the
     ``box_use`` a device type asks for, e.g. ``"recessed"``); None is the general row.
     ``block_profile`` derives a flat block of that lumber behind each such box, between the
@@ -247,6 +250,7 @@ class BoxRow(HausModel):
     box_volume_in3: float | None = None
     cover_volume_in3: float = 0.0
     cover_rise: Length = inch(0)
+    material_ref: str | None = None
     block_profile: str | None = None
     internal_clamps: bool | None = None
     support_fittings: int = 0

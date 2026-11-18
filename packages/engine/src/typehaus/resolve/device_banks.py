@@ -18,6 +18,7 @@ from shapely.geometry.polygon import orient
 
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.electrical import BoxStandard, PlateRow
+from typehaus.resolve.device_box_mesh import Opening, box_mesh
 from typehaus.resolve.device_boxes import (
     BoxPlan,
     ResolvedDeviceBox,
@@ -184,6 +185,7 @@ def _place(model: ResolvedModel, bank: list[_Member], plan: BoxPlan, standard: B
     thick = plate.thickness.meters if plate is not None else 0.0
     total, slot = sum(m.gangs for m in bank), 0
     shifts, footprints = [], []
+    openings: list[Opening | None] = []
     for member in bank:
         target = (centre + (slot + (member.gangs - 1) / 2 - (total - 1) / 2) * pitch
                   if len(bank) > 1 else member.station)
@@ -194,11 +196,12 @@ def _place(model: ResolvedModel, bank: list[_Member], plan: BoxPlan, standard: B
         moved = [(x + dx, y + dy) for x, y in obj.footprint]
         shifts.append(shift)
         footprints.append(tuple(moved))
-        objects[member.pending.index] = replace(
+        objects[member.pending.index] = obj = replace(
             obj, position=(obj.position[0] + dx, obj.position[1] + dy), footprint=moved,
             z_m=obj.z_m + dz,
             body_z0_m=None if obj.body_z0_m is None else obj.body_z0_m + dz,
             body_z1_m=None if obj.body_z1_m is None else obj.body_z1_m + dz)
+        openings.append(_opening(obj, origin, tangent, middle))
     wall = model.wall(lead.item.location.attachment.wall_ref)
     width, height, depth = (part.meters for part in plan.row.box_size)
     near, far = (0.0, plan.projection_m) if plan.mounting == "surface" else (-depth, 0.0)
@@ -243,7 +246,12 @@ def _place(model: ResolvedModel, bank: list[_Member], plan: BoxPlan, standard: B
     model.solids.append(ResolvedSolid(
         uid=f"{item.uid}-box", tag=f"{item.tag}-BOX", storey=lead.pending.storey,
         category="electrical_box", outline=list(ring), z0_m=z0, z1_m=z1,
-        product=plan.row.box_product_ref, derived=True))  # billed in [electrical_boxes]
+        product=plan.row.box_product_ref, material=plan.row.material_ref,
+        body_mesh=box_mesh(origin, tangent, normal, middle, width=width, height=height,
+                           depth=depth, shape=plan.row.shape, mounting=plan.mounting,
+                           cover_rise=plan.row.cover_rise.meters,
+                           openings=tuple(o for o in openings if o is not None)),
+        derived=True))  # billed in [electrical_boxes]
     if plan.mounting == "surface":  # the device and its box collide as one
         index = bank[0].pending.index
         obj = objects[index]
@@ -252,6 +260,16 @@ def _place(model: ResolvedModel, bank: list[_Member], plan: BoxPlan, standard: B
             obj, footprint=[tuple(p) for p in list(hull.exterior.coords)[:-1]],
             body_z0_m=min(obj.body_z0_m if obj.body_z0_m is not None else z0, z0),
             body_z1_m=max(obj.body_z1_m if obj.body_z1_m is not None else z1, z1))
+
+
+def _opening(obj: ResolvedCanvasObject, origin: Point, tangent: Point,
+             middle: float) -> Opening | None:
+    """A placed device's face in the box frame: its tangent span and z band about the centre."""
+    if obj.body_z0_m is None or obj.body_z1_m is None or not obj.footprint:
+        return None
+    stations = [(x - origin[0]) * tangent[0] + (y - origin[1]) * tangent[1]
+                for x, y in obj.footprint]
+    return (min(stations), max(stations), obj.body_z0_m - middle, obj.body_z1_m - middle)
 
 
 def _ring(origin: Point, tangent: Point, normal: Point, width: float, near: float,

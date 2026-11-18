@@ -88,3 +88,22 @@ def test_every_boxed_device_draws_a_symbol(catlin_model_ro):
             if box.device_kinds[box.device_tags.index(tag)] != "light"
             and model_symbol_for(types.get(objs[tag].type_ref or "")) not in _REGISTRY]
     assert not bare
+
+
+def test_box_mesh_is_round_and_a_cover_stands_proud(catlin_model_ro):
+    """A round row draws round; a surface box's mesh reaches exactly its projection."""
+    solids = {s.uid: s for s in catlin_model_ro.solids if s.category == "electrical_box"}
+    boxes = catlin_model_ro.device_boxes
+    rnd = next(b for b in boxes if b.shape == "round")
+    mesh = solids[rnd.uid].body_mesh
+    (fx, fy), (nx, ny) = rnd.face_point, rnd.normal
+    radii = {round(((x - fx) * -ny + (y - fy) * nx) ** 2
+                   + (z - (rnd.z0_m + rnd.z1_m) / 2) ** 2, 9) ** 0.5
+             for x, y, z in mesh.positions}
+    assert max(radii) == pytest.approx(rnd.width_m / 2, abs=1e-6)
+    assert solids[rnd.uid].material == "box-pvc-blue"
+    surface = next(b for b in boxes if b.mounting == "surface" and b.box_use is None)
+    proud = max((x - surface.face_point[0]) * surface.normal[0]
+                + (y - surface.face_point[1]) * surface.normal[1]
+                for x, y, _ in solids[surface.uid].body_mesh.positions)
+    assert proud == pytest.approx(surface.projection_m, abs=1e-9)

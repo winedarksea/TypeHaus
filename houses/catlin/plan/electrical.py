@@ -1109,7 +1109,8 @@ PV_JBOX = [
     # ** DROPPED TO THE 22'-0" GIRT COURSE ON 2026-11-12. ** At 25'-0" it hung in panel
     # alone, between courses, and inside the radon fan's 24" circle once the radon leg took
     # 9'-7 1/2" (MN 1303.2402 subp. 5.D). On a PVC block centred on 264"-267 1/2"
-    # (plan/mep_electrical.py, GABLE ENCLOSURE MOUNTING); ED-A-PV-SPD and ED-A-RADON-RC are
+    # (plan/mep_electrical.py, GABLE ENCLOSURE MOUNTING); ED-A-PV-SPD hangs from its bottom
+    # knockout, and ED-A-RADON-RC is
     # west of it on the same course. The window notes above still hold.
     ElectricalDevice(uid="CEE014AAAA", tag="ED-A-PV-JB", kind=DeviceKind.JUNCTION_BOX,
                      type_ref="ED-T-PV-JB", circuit="CKT-ESS-GRID",
