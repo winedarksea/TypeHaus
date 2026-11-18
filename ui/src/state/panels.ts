@@ -16,6 +16,8 @@ export interface PanelSpec {
   label: string;
   icon: IconName;
   hint: string;
+  /** The rail's primary tile: tinted, above a divider, pulsing until first opened. */
+  primary?: boolean;
 }
 
 /**
@@ -28,6 +30,7 @@ export const PANELS: PanelSpec[] = [
     label: "Views",
     icon: "layers",
     hint: "Level, disciplines, saved view recipes",
+    primary: true,
   },
   {
     id: "project",

@@ -1,0 +1,55 @@
+/* The rail's primary tile (Views): MD3's nav-rail FAB slot. Always tinted, so it reads as
+   the first place to click; open is a stronger fill. Its own file because shell.css is
+   already past the 500-line budget. */
+
+.rail-primary {
+  color: var(--md-on-primary-container);
+}
+.rail-primary .rail-indicator,
+.rail-primary.active .rail-indicator {
+  background: var(--md-primary-container);
+  box-shadow: var(--md-elev-1);
+}
+.rail-primary.active {
+  color: var(--md-on-primary-container);
+}
+.rail-primary.active .rail-indicator {
+  background: color-mix(in srgb, var(--accent) 40%, var(--bg));
+}
+/* Full FAB size on the desktop rail only; the bottom bar has no height to spare. */
+.nav-rail .rail-primary .rail-indicator {
+  width: 56px;
+  height: 44px;
+  border-radius: var(--md-shape-lg);
+}
+.rail-primary-readout {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  color: var(--md-on-surface-variant);
+}
+
+/* Until Views is first opened: a slow ring. Reduced motion (base.css stops every
+   animation) gets a static outline instead. */
+.rail-primary--beckon .rail-indicator {
+  animation: rail-primary-beckon 2.4s ease-in-out infinite;
+}
+@keyframes rail-primary-beckon {
+  0%,
+  100% {
+    box-shadow: var(--md-elev-1), 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent);
+  }
+  50% {
+    box-shadow: var(--md-elev-1), 0 0 0 6px color-mix(in srgb, var(--accent) 0%, transparent);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rail-primary--beckon .rail-indicator {
+    outline: 2px solid color-mix(in srgb, var(--accent) 60%, transparent);
+    outline-offset: 2px;
+  }
+}

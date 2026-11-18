@@ -31,6 +31,7 @@ import { createSiteSlice, type SiteSlice } from "./site";
 import { createPendingSlice, type PendingSlice } from "./pending";
 import { createPlacementSlice, type PlacementSlice } from "./placement";
 import { createReaderViewSlice, type ReaderViewSlice } from "./readerView";
+import { markViewsDiscovered, viewsDiscovered } from "./viewsDiscovered";
 import { emptySessionEdits, type SessionEdits } from "./sessionEdits";
 import {
   DEFAULT_EARTH_OPACITY, DEFAULT_EARTH_TONE,
@@ -60,6 +61,7 @@ export interface StoreState
   // One left-hand panel at a time. Replaced three independent booleans whose mutual
   // exclusion was only half-wired (Issues closed neither of the other two).
   activePanel: PanelId | null;
+  viewsDiscovered: boolean; // Views opened once, ever: stops the rail pulse
   // Severity the issues drawer is narrowed to, or null for "everything". Set when a surface
   // opens the drawer *about* something specific (the load-error banner opens it on "error"),
   // so the user lands on the findings they were just told about instead of the whole list.
@@ -211,6 +213,7 @@ export const useStore = create<StoreState>((set, get, store) => ({
   roomMode: "rect",
   roomOccupancy: "living",
   activePanel: null,
+  viewsDiscovered: viewsDiscovered(),
   issuesSeverityFilter: null,
   commandPaletteOpen: false,
   recentCommands: [],
@@ -364,9 +367,15 @@ export const useStore = create<StoreState>((set, get, store) => ({
   setRoomMode: (roomMode) => set({ roomMode }),
   setRoomOccupancy: (roomOccupancy) => set({ roomOccupancy }),
   // Left side hosts one large panel at a time (reviewer rule).
-  setActivePanel: (panel) => set((s) => ({ activePanel: s.activePanel === panel ? null : panel,
-    // A hand-driven open starts unfiltered; only openIssues narrows it.
-    issuesSeverityFilter: panel === "issues" ? null : s.issuesSeverityFilter })),
+  setActivePanel: (panel) => {
+    if (panel === "views" && !get().viewsDiscovered) {
+      markViewsDiscovered();
+      set({ viewsDiscovered: true });
+    }
+    set((s) => ({ activePanel: s.activePanel === panel ? null : panel,
+      // A hand-driven open starts unfiltered; only openIssues narrows it.
+      issuesSeverityFilter: panel === "issues" ? null : s.issuesSeverityFilter }));
+  },
   openIssues: (issuesSeverityFilter) => set({ activePanel: "issues", issuesSeverityFilter }),
   setCommandPaletteOpen: (commandPaletteOpen) => set({ commandPaletteOpen }),
   pushRecentCommand: (id) =>

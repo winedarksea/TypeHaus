@@ -2,28 +2,29 @@ import { useStore } from "../../state/store";
 import { Icon } from "../../icons/Icon";
 import { PANELS } from "../../state/panels";
 import { visibleFindings } from "../../state/locate";
+import { activeLevelKey } from "../../model/levels";
+import { PanelRailItem } from "./PanelRailItem";
 import { ToolRailSection } from "./ToolRailSection";
 import { DOCUMENT_DESTINATIONS, SITE_DESTINATION } from "./navigationConfig";
 
 /**
  * The permanent left navigation rail.
  *
- * Views is the most-used control in the app; this gives it a labelled destination at full
- * target size that is always visible and never moves.
+ * Views is the most-used control in the app, so it is the primary tile: tinted, above a
+ * divider, with the active level as a live readout, and pulsing until first opened.
  *
  * Destinations and tools share one rail rather than occupying two competing left gutters,
  * which also retires the `:has(.views-panel) .toolrail` hack: panels open to the right of a
  * rail whose width is a token, so nothing has to react to a drawer being open.
  */
 export function NavigationRail() {
-  const activePanel = useStore((s) => s.activePanel);
-  const setActivePanel = useStore((s) => s.setActivePanel);
   const model = useStore((s) => s.model);
   const engineReady = useStore((s) => s.engineReady);
   const detailView = useStore((s) => s.detailView);
   const setDetailView = useStore((s) => s.setDetailView);
   const openDocuments = useStore((s) => s.openDocuments);
   const documentsTab = useStore((s) => s.documentsTab);
+  const activeStorey = useStore((s) => s.activeStorey);
   const documentsOpen = detailView === "documents";
 
   const findings = model ? visibleFindings(model.findings) : [];
@@ -32,30 +33,18 @@ export function NavigationRail() {
 
   return (
     <nav className="nav-rail" aria-label="Panels and tools">
-      {PANELS.map((panel) => {
-        const selected = activePanel === panel.id;
-        // Issues carries a count badge: an issue list nobody opens is the same as no checks.
-        const badge = panel.id === "issues" ? errorCount || warnCount : 0;
-        return (
-          <button
-            key={panel.id}
-            className={`rail-item${selected ? " active" : ""}`}
-            aria-pressed={selected}
-            title={panel.hint}
-            onClick={() => setActivePanel(panel.id)}
-          >
-            <span className="rail-indicator">
-              <Icon name={panel.icon} size={22} />
-              {badge > 0 && (
-                <span className={`rail-badge${errorCount > 0 ? " error" : " warn"}`}>
-                  {badge > 99 ? "99+" : badge}
-                </span>
-              )}
-            </span>
-            <span className="rail-label">{panel.label}</span>
-          </button>
-        );
-      })}
+      {PANELS.filter((p) => p.primary).map((panel) => (
+        <PanelRailItem key={panel.id} panel={panel} badge={0} badgeIsError={false}
+          readout={model ? activeLevelKey(model, activeStorey) : null} />
+      ))}
+      <div className="rail-divider" role="separator" />
+
+      {/* Issues carries a count badge: an issue list nobody opens is the same as no checks. */}
+      {PANELS.filter((p) => !p.primary).map((panel) => (
+        <PanelRailItem key={panel.id} panel={panel}
+          badge={panel.id === "issues" ? errorCount || warnCount : 0}
+          badgeIsError={errorCount > 0} />
+      ))}
 
       {/* Documents sits with the panels rather than with the tools: it is a destination
           you go to, not something you do to the drawing. One entry per tab, so a report is

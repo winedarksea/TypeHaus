@@ -235,7 +235,6 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
 - Verify the support for the door sills for exterior doors
 - Condensate PR-M-COND-HP3-RUN goes through the studs of W-M-STRW, which is one wall that is exposed and we don't want to run the plumbing through (the data cable is probably fine there though)
 - ERV likely blocks D-B-CLOSET, and its condensate also blocks
-- "Views" button in the UI is the most important and needs some sort of design to be more obvious to the user as the first place they should click (not adding a product tour though)
 
 # Project Management
 

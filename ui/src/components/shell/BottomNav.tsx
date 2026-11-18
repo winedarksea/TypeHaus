@@ -2,6 +2,7 @@ import { useStore } from "../../state/store";
 import { Icon } from "../../icons/Icon";
 import { PANELS } from "../../state/panels";
 import { visibleFindings } from "../../state/locate";
+import { PanelRailItem } from "./PanelRailItem";
 import { Menu } from "../ui/Menu";
 import { DOCUMENTS_DESTINATION, SITE_DESTINATION, TOOL_GROUPS, GROUP_OF_TOOL } from "./navigationConfig";
 
@@ -17,8 +18,6 @@ import { DOCUMENTS_DESTINATION, SITE_DESTINATION, TOOL_GROUPS, GROUP_OF_TOOL } f
  * one — so the destinations get the bar and the tools get one clearly-labelled entry.
  */
 export function BottomNav() {
-  const activePanel = useStore((s) => s.activePanel);
-  const setActivePanel = useStore((s) => s.setActivePanel);
   const model = useStore((s) => s.model);
   const tool = useStore((s) => s.tool);
   const setTool = useStore((s) => s.setTool);
@@ -38,29 +37,12 @@ export function BottomNav() {
 
   return (
     <nav className="bottom-nav" aria-label="Panels and tools">
-      {PANELS.map((panel) => {
-        const selected = activePanel === panel.id;
-        const badge = panel.id === "issues" ? errorCount || warnCount : 0;
-        return (
-          <button
-            key={panel.id}
-            className={`rail-item${selected ? " active" : ""}`}
-            aria-pressed={selected}
-            title={panel.hint}
-            onClick={() => setActivePanel(panel.id)}
-          >
-            <span className="rail-indicator">
-              <Icon name={panel.icon} size={22} />
-              {badge > 0 && (
-                <span className={`rail-badge${errorCount > 0 ? " error" : " warn"}`}>
-                  {badge > 99 ? "99+" : badge}
-                </span>
-              )}
-            </span>
-            <span className="rail-label">{panel.label}</span>
-          </button>
-        );
-      })}
+      {/* The primary tile keeps its tint here but drops the readout: no room. */}
+      {PANELS.map((panel) => (
+        <PanelRailItem key={panel.id} panel={panel}
+          badge={panel.id === "issues" ? errorCount || warnCount : 0}
+          badgeIsError={errorCount > 0} />
+      ))}
 
       {/* The phone case for this app is reading a drawing, so Documents earns a bar slot. */}
       <button
