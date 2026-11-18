@@ -122,7 +122,10 @@ def test_framing_takeoff_reconciles_and_groups(catlin_model) -> None:
     blocks = [row for row in rows if row["category"] == "truss_block"]
     assert blocks
     for row in blocks:
-        assert row["order_length_ft"] < 1.5 * row["cut_length_ft"]
+        # A row whose whole cut is under one stick still buys that stick (the door sill
+        # beam's six 9 1/4" seats: 4.6 ft of each ply, one 8 ft 2x6 a ply).
+        shortest = min(b["length_ft"] for b in row["stock"])
+        assert row["order_length_ft"] < max(1.5 * row["cut_length_ft"], shortest + 1e-9)
 
     # Head cripples over a door are a short-cut family too — an 18" stud above a garage
     # overhead-door header is ~1.5 ft of 2x6 — so the same nesting has to reach them. This
