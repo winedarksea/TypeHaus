@@ -2,8 +2,9 @@
 
 TRIFORCE Detail 5 Option #1: the strongback runs perpendicular to the trusses through one
 web opening, on the bottom chords and against the web, nailed at every truss. One piece per
-run of consecutive kept bays, line centre to line centre; an ``omit_bays`` station cuts its
-bay ("can be cut between two joists for ducts or pipes"). Refused, with an
+run of consecutive kept bays, line centre to line centre (to the face of an edge rim, which
+it butts); an ``omit_bays`` station cuts its bay ("can be cut between two joists for ducts or
+pipes"). Refused, with an
 ``integrity.floor_strongback`` ERROR, off an open-web field with no authored panel layout,
 on a web, or longer than one stick of stock. "Inside one web opening" is read on every truss
 the piece crosses, against its derived ``OpenWebShape`` (``resolve/open_web.py``).
@@ -15,7 +16,7 @@ from typehaus.findings import Finding, Result, Severity
 from typehaus.model.floors import FloorSystem
 from typehaus.quantities import inch
 from typehaus.resolve.framing.profiles import cross_section
-from typehaus.resolve.model import FramedMember
+from typehaus.resolve.model import EDGE_RIM_PREFIX, FramedMember
 from typehaus.resolve.open_web import _contains_point, open_web_shape, run_of
 
 #: The longest stock a piece is cut from.
@@ -65,12 +66,21 @@ def strongback_members(system: FloorSystem, lines: list[float], along_x: bool, z
                 element_tags=(system.tag,), result=Result.FAIL))
             continue
         bottom = z0 + (chord.flange_thickness_m or 0.0)
+        rims = _edge_rim_half_widths(members, along_x)
+        pieces = [(a + rims.get(round(a, 6), 0.0), b - rims.get(round(b, 6), 0.0))
+                  for a, b in pieces]
         for n, (a, b) in enumerate(pieces):
             p0, p1 = ((at, a), (at, b)) if along_x else ((a, at), (b, at))
             members.append(FramedMember(
                 system.uid, f"strongback-{index}-{n}", "strongback", strongback.member,
                 p0, p1, bottom, bottom + section.depth_m, b - a))
     return findings
+
+
+def _edge_rim_half_widths(members: list[FramedMember], along_x: bool) -> dict[float, float]:
+    """Half the width of each edge rim (``JoistSpec.edge_rims``), keyed by its line."""
+    return {round(m.p0[1 if along_x else 0], 6): cross_section(m.profile).width_m / 2.0
+            for m in members if m.child_key.startswith(EDGE_RIM_PREFIX)}
 
 
 def _outside_opening(row, chord, section, members, at: float, half: float,

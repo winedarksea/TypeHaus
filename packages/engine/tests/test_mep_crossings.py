@@ -76,6 +76,20 @@ def test_the_window_is_read_off_a_joist_not_whichever_member_came_first(
     assert member_window(floor).kind == "open_web"
 
 
+def test_an_edge_rim_is_bored_centred_and_the_strongback_butts_it(catlin_model_ro) -> None:
+    """FS-S-WEST's south edge is an LSL rim (TJ-8000 p.4: a centred round hole up to 2/3 of
+    its depth), and FS-M-NE's strongbacks stop at its north rim's inner face."""
+    floor = _floor(catlin_model_ro, "FS-S-WEST")
+    rim = next(m for m in floor.members if m.child_key.startswith("edge-rim-"))
+    window = member_window(floor, rim)
+    assert window.kind == "rim_board" and "TJ-8000" in window.basis
+    assert window.height_m / M_PER_IN == pytest.approx(11.875 * 2 / 3)
+    north = _floor(catlin_model_ro, "FS-M-NE")
+    ends = {round(max(m.p0[1], m.p1[1]) / M_PER_IN, 3) for m in north.members
+            if m.category == "strongback"}
+    assert max(ends) == pytest.approx(430.25)
+
+
 def test_corridors_delegates_rather_than_re_deriving(catlin_model_ro) -> None:
     """The routing side and the checks side must not be able to drift apart."""
     from typehaus.routing.corridors import crossing_window

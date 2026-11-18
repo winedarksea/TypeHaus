@@ -53,7 +53,7 @@ class CrossingWindow:
     z0_m: float
     z1_m: float
     basis: str
-    #: ``"open_web" | "i_joist" | "solid_sawn"`` — which of the three rules applied. A
+    #: ``"open_web" | "i_joist" | "solid_sawn" | "rim_board"`` — which rule applied. A
     #: consumer needing to qualify its verdict (an I-joist PASS is not a whole answer)
     #: branches on this rather than on the prose.
     kind: str
@@ -93,6 +93,15 @@ def member_window(floor: ResolvedFloor, member: FramedMember | None = None, *,
     if member is None:
         member = next((m for m in placed if m.category == "joist"), placed[0])
     section = cross_section(member.profile)
+
+    if member.category == "rim":
+        # A centred round hole up to 2/3 of the depth holds anything in the middle 2/3.
+        margin = depth_m / 6.0
+        return CrossingWindow(
+            low + margin, high - margin, kind="rim_board",
+            basis=(f"inside the middle 2/3 of a {member.profile}, where TJ-8000 (March 2025) "
+                   "p.4 allows a round hole up to 2/3 its depth, centred vertically; its 2D "
+                   "end distance and 'not under concentrated loads' are not graded here"))
 
     opening_m = open_web_opening_m(section)
     if opening_m is not None and opening_m > 0:

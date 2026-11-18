@@ -47,6 +47,7 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.mep_crossings import CrossingWindow, member_window
+from typehaus.resolve.model import EDGE_RIM_PREFIX
 
 _CID = "mep.run_member_crossing"
 
@@ -98,6 +99,8 @@ def run_member_crossing(ctx: CheckContext) -> list[Finding]:
         # web. Unquoted, no member carries a shape and the reading is unchanged —
         # ``mep.open_web_panel`` is the one that says so, once, naming the floor.
         webbed = {m.child_key: m for m in floor.members if m.web is not None}
+        rim_windows = {m.child_key: member_window(floor, m) for m in floor.members
+                       if m.child_key.startswith(EDGE_RIM_PREFIX)}
         # Every crossing on this floor first, keyed by member, because R502.8.1's spacing
         # rule is a question about the OTHER holes in the same joist and no per-run pass can
         # see them. Two 2" drains 1 1/2" apart each fit the window and each clear D/3; the
@@ -126,15 +129,17 @@ def run_member_crossing(ctx: CheckContext) -> list[Finding]:
             half_w, half_d, lagging = sections.get(tag, (radius, radius, None))
             # The window must hold the envelope, lagging included, not the bare pipe.
             half_d += insulation_thickness_m(lagging) or 0.0
-            tightest: tuple[float, float, float, str, float] | None = None
+            tightest: tuple | None = None
             on_web: tuple[float, str, float, str] | None = None
             for crossing in crossings:
-                crown_gap = window.z1_m - (crossing.z_m + half_d)
-                invert_gap = (crossing.z_m - half_d) - window.z0_m
+                # An edge rim (``JoistSpec.edge_rims``) is a rim board, not the field member.
+                here = rim_windows.get(crossing.member_key, window)
+                crown_gap = here.z1_m - (crossing.z_m + half_d)
+                invert_gap = (crossing.z_m - half_d) - here.z0_m
                 worst = min(crown_gap, invert_gap)
                 if tightest is None or worst < tightest[0]:
                     tightest = (worst, crown_gap, invert_gap,
-                                crossing.member_key, crossing.station_m)
+                                crossing.member_key, crossing.station_m, here)
                 member = webbed.get(crossing.member_key)
                 grade = (web_grade(
                     floor, member, crossing.station_m, crossing.z_m,
@@ -150,7 +155,7 @@ def run_member_crossing(ctx: CheckContext) -> list[Finding]:
             if tightest is None:
                 continue
             graded += 1
-            out.append(_finding(kind, tag, floor.tag, half_d, window, tightest))
+            out.append(_finding(kind, tag, floor.tag, half_d, tightest))
             if on_web is not None:
                 out.append(_web_finding(kind, tag, floor.tag, on_web))
             bore = (_ijoist_finding(floor, chart, tag, radius, crossings, by_member,
@@ -168,9 +173,8 @@ def run_member_crossing(ctx: CheckContext) -> list[Finding]:
 
 
 def _finding(kind: str, tag: str, floor_tag: str, radius_m: float,
-             window: CrossingWindow,
-             tightest: tuple[float, float, float, str, float]) -> Finding:
-    worst, crown_gap, invert_gap, member_key, station_m = tightest
+             tightest: tuple[float, float, float, str, float, CrossingWindow]) -> Finding:
+    worst, crown_gap, invert_gap, member_key, station_m, window = tightest
     diameter_in = 2 * radius_m / M_PER_IN
     where = (f"{kind} {tag} crosses {floor_tag} at {member_key}, "
              f"{feet_inches(station_m)} along it")

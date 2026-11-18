@@ -236,8 +236,10 @@ def duct_direction_hint(ctx: CheckContext) -> list[Finding]:
             continue
         floor = floors[duct.floor_ref]
         if not is_parallel_to_floor(list(duct.path), floor):
-            opening_m = (open_web_opening_m(cross_section(floor.members[0].profile))
-                        if floor.members else None)
+            # The field member's profile, never an edge rim's (``JoistSpec.edge_rims``).
+            joist = next((m for m in floor.members if m.category == "joist"), None)
+            opening_m = (open_web_opening_m(cross_section(joist.profile))
+                         if joist is not None else None)
             if opening_m is not None and duct.depth_m <= opening_m + 1e-9:
                 # A truss-floor run through the open webs needs no soffit hint.
                 continue
