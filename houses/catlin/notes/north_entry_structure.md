@@ -120,9 +120,10 @@ drainage/movement break separates the board field at the threshold.
 
 The joist field stops 3 3/4" east of the deck's west edge (x 6'-3 3/8") to clear the two west columns, so the
 board ends overhung the westmost joist (x 6'-7 1/8") by 3" with nothing under them, and `W-BW-SCREEN`'s plate south
-of `PT-BW-CW` stood on nothing. The fix is two KDAT 2x8 plies face-nailed to that joist's west face, top flush
-(`params/entry_landing_edge.py`, `JoistReinforcement` with an `extent`): 5 3/4" south of `PT-BW-CW`, 54" between
-the columns (1/8" off each, clear of the `LUS28Z` flanges), 3 5/8" north of `PT-BW-CNW`. Both rims run 3 3/4"
+of `PT-BW-CW` stood on nothing. The fix is KDAT 2x8 plies face-nailed to that joist's west face, top flush
+(`params/entry_landing_edge.py`, `JoistReinforcement` with an `extent`): 5 3/4" south of `PT-BW-CW` and 3 5/8"
+north of `PT-BW-CNW` three plies (x 73 7/8"..78 3/8", owner 2026-11-18, so the screen plate stubs bear), 54" between
+the columns two (1/8" off each, clear of the `LUS28Z` flanges). Both rims run 3 3/4"
 west, end nailed into the ply ends as into any joist end, so the two corners are framed too. Nothing reaches
 `BM-BW-SCSILL`: no joist-to-beam mechanism is needed. The earlier "rim stub cantilevered past the end joist"
 objection is gone, because the stub's end now bears on the plies.
@@ -135,25 +136,27 @@ Nailing, IRC R602.3(1) built-up rows as the house allows them (`takeoff/treated_
     strip         50 x 3/12                                   = 12.5 plf
     south piece   12.5 x 5.75/12 + screen 55.6 plf x 7.5/12   = 6.0 + 34.8 = 40.8 lb   (piers §2's screen plf)
     middle piece  12.5 x 54/12                                = 56.3 lb (the screen stands on BM-BW-SCSILL)
-    torque        6.0 x 2.25" (ply-pack centroid) + 34.8 x 3.75" (the plate's load at the deck edge:
-                  its centroid stands 1" outboard of its 0.75" bearing)  = 13.5 + 130.5 = 144 lb-in
+    torque        6.0 x 2.25" (the board strip's centroid) + 34.8 x 4.75" (the plate's centre, x 74 3/8",
+                  now over the third ply)                               = 13.5 + 165.3 = 178.8 lb-in
 
     10d into SP (the landing is KDAT SYP No.2, G 0.55), NDS 12.3: D 0.148, F_yb 90 ksi, F_e 16,600 x 0.55^1.84 = 5,530 psi, l_s = p = 1.5", R_d 2.2
       Im = Is 558 · II 231 · IIIm = IIIs 200.5 · IV 0.021904/2.2 x sqrt(2 x 5,530 x 90,000 / 6) = 128.2 lb
       Z' = 128.2 x C_M 0.70 = 89.7 lb a nail
     south piece, 6 nails a ply into the joist: 40.8 / 6 = 6.8 lb  -> 0.08
-    joist torsion: 144 / (0.29 x 1.5^2 x 7.25) = 30 psi vs F_v' 135 x C_M 0.97 = 131 psi (No.2 SPF wet,
-                   a lower bound on SYP's 175) -> 0.23
+    each outer ply into the next: the plate's 34.8 lb on 6 nails = 5.8 lb -> 0.06
+    joist torsion: 178.8 / (0.29 x 1.5^2 x 7.25) = 37.8 psi vs F_v' 135 x C_M 0.97 = 131 psi (No.2 SPF wet,
+                   a lower bound on SYP's 175) -> 0.29
 
 A 300 lb point on the corner board end (not an R507 framing load; the sill notes' convention) puts 341 lb on the
-south piece: 57 lb a nail (0.63). Its 819 lb-in (300 x 2.25 + 144) would be 173 psi of torsion on the joist alone,
-which the end-nailed rim and the screwed boards share; not graded.
+south piece: 57 lb a nail (0.63). Its 854 lb-in (300 x 2.25 + 178.8) would be 180 psi of torsion on the joist
+alone, which the end-nailed rim and the screwed boards share; not graded.
 
-**Open (owner): the screen plate south of `PT-BW-CW` overhangs its bearing.** `plate-bottom-0` (x 72 5/8"..76 1/8",
-y 439 3/4"..447 1/4") bears 0.75" of its 3 1/2" on the outer ply and the rim end (34.8 / (0.75 x 7.25) = 6.4 psi);
-the other 2 3/4" stand west of the deck edge over nothing, so the wall's line lands 1" outboard of its bearing and
-the stub is held by its sheathing and the column, not by bearing. North of `PT-BW-CNW` (`plate-bottom-2`) is the
-same. Between the columns `BM-BW-SCSILL` carries the plate's centre.
+**The screen plate stubs bear (owner, 2026-11-18, option (a)).** `plate-bottom-0` (x 72 5/8"..76 1/8",
+y 439 3/4"..447 1/4") and `plate-bottom-2` (north of `PT-BW-CNW`) stood 0.75" of their 3 1/2" on the deck edge,
+the wall's line 1" outboard of its bearing. The third ply on each end piece carries 2 1/4" of the plate, its centre
+(x 74 3/8") 1/2" inside the pack's outer face: 34.8 / (2.25 x 5.75 + 0.75 x 1.5) = 2.5 psi. The ply's south and
+north ends stop at the rims' inner faces; its outer face is 1 1/4" inside the screen's 2x4 face, so the skirt and
+corrugated pass outside it. Between the columns `BM-BW-SCSILL` carries the plate's centre.
 
 ## 3. The tiers — one stepped pour on a compacted base
 

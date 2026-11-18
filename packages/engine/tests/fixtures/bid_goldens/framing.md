@@ -210,7 +210,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | PROD-SCHLUTER-SCHIENE — aluminium, height to the tile (PROD-SCHLUTER-SCHIENE:doorway transition / hardware) | 3 | ea |  | second |
 | RSRS-01 roof sheathing ring-shank nail, 0.113in x 2-3/8in, full round head (RSRS-01 0.113x2.375:sheathing nails) | 3,138 | ea |  | building |
 | S-5-N Mini nail-strip seam clamp (S-5-N Mini:modeled connector) | 21 | ea |  | building |
-| 10d common ring-shank nail, 0.148in x 3in, Type 304 (S10ACN:treated framing nails (allowance)) | 836 | ea |  | building |
+| 10d common ring-shank nail, 0.148in x 3in, Type 304 (S10ACN:treated framing nails (allowance)) | 848 | ea |  | building |
 | 8d common ring-shank nail, 0.131in x 2.5in, Type 304 (S8ACN:sheathing nails) | 72 | ea |  | building |
 | HDG steel U-saddle on a 4 1/2 in (3-ply 2x) joist line, two 5/8 in through-bolts (SADDLE-4.5-2x58-HDG:suspension anchor) | 4 | ea |  | basement |
 | Strong-Drive SD connector screw, #9 x 1-1/2in (SD9112:connector fasteners) | 1,332 | ea |  | building |

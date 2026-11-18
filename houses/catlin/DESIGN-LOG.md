@@ -8756,4 +8756,9 @@ Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
   `mep.run_member_crossing` reads an edge rim on that rule now, not as the field's truss web.
 - **Ties.** FS-M-NE's edge line lost its east-end A35Z on W-B-E2 (17 -> 16 in the bid); W-B-N1 is
   restrained by its blocking stations, unchanged. Bid: 2 fewer 18' trusses, 2 more 20' rims.
+- **The screen plate stubs bear (owner, 2026-11-18, option (a)).** W-BW-SCREEN's `plate-bottom-0`
+  (south of PT-BW-CW) and `plate-bottom-2` (north of PT-BW-CNW) stood 3/4" of their 3 1/2" on the
+  deck edge. The two short end pieces take a third 2x8 ply (x 73 7/8"..78 3/8"), cut 1/8" off the
+  column faces as before: each plate bears 2 1/4", its centre over the pack. Joist torsion 37.8 psi
+  (0.29); bid S10ACN +12, no new stick (`north_entry_structure.md` §2a).
 

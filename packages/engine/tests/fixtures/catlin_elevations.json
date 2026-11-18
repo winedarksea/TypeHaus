@@ -9977,6 +9977,12 @@
 8,
 "9c79cb4d3717"
 ],
+"geometry/BWFS01AAAA::framing/member:sister-0-2": [
+-0.208026,
+-0.023876,
+8,
+"9c79cb4d3717"
+],
 "geometry/BWFS01AAAA::framing/member:sister-1-0": [
 -0.208026,
 -0.023876,
@@ -9996,6 +10002,12 @@
 "9c79cb4d3717"
 ],
 "geometry/BWFS01AAAA::framing/member:sister-2-1": [
+-0.208026,
+-0.023876,
+8,
+"9c79cb4d3717"
+],
+"geometry/BWFS01AAAA::framing/member:sister-2-2": [
 -0.208026,
 -0.023876,
 8,
@@ -82275,6 +82287,12 @@
 2,
 "0593dbb109c8"
 ],
+"member/BWFS01AAAA/sister-0-2": [
+-0.208026,
+-0.023876,
+2,
+"0593dbb109c8"
+],
 "member/BWFS01AAAA/sister-1-0": [
 -0.208026,
 -0.023876,
@@ -82294,6 +82312,12 @@
 "0593dbb109c8"
 ],
 "member/BWFS01AAAA/sister-2-1": [
+-0.208026,
+-0.023876,
+2,
+"0593dbb109c8"
+],
+"member/BWFS01AAAA/sister-2-2": [
 -0.208026,
 -0.023876,
 2,
