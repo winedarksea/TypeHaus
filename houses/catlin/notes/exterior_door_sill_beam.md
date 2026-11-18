@@ -26,7 +26,8 @@ Depths are inches outward from the sheathing's outer face; elevations are off th
   the beam (9 1/4" until 2026-11-18: SP's Table 5 end distance, §3), 5 1/2" tall, top under the
   3/8" buck sill (+3/8"), bottom −5 1/8".
 - **Edge member.** An LSL rim board, 1 1/4" × 11 7/8" (Weyerhaeuser TimberStrand 1.3E, the house
-  rim; `JoistSpec.edge_rims`, owner 2026-11-18) in place of the edge TJI 230 at all three doors:
+  rim; `JoistSpec.edge_rims`, owner 2026-11-18) in place of the edge TJI 230 at all three doors,
+  its outer face on the sheathing's back (flush with the stud face, as an end rim's is):
   FS-M-EAST `edge-rim-0-000-0` (PORCH, D-B-SUNKEN's LVL band plies nailed to its inner face),
   FS-M-MECH `edge-rim-0-011-0` (ENTRY, on W-B-N3's mudsill) and FS-S-EAST `edge-rim-0-000-0`
   (BALCONY, on W-M-S2's plates). The SPF web backers and their flange question are gone.
@@ -135,10 +136,12 @@ turns the beam over the far seat and its innermost screw takes the most.
 **Not graded: the seat's rotation (owner question, 2026-11-18).** The reaction stands 0.5 + 6.0 +
 0.75 = 7.25" off the rim face, so each seat sees about 300 × 7.25 = 2,175 lb-in about its bottom
 bearing on the sheathing, resisted by withdrawal of its upper screws in the rim and pull-through
-of their heads at the beam face (ESR-1078 Table 3: 110 lb at 1 1/2", G 0.42, before C_M). A rough
-couple (the compression resultant 0.4" over the seat bottom, the rows 2.725" and 1.975" above it,
-shares linear in the arm: 2,175 / (2 × 2.725 + 2 × 1.975²/2.725) = 261.6) puts ~260 lb on each
-top screw, well over that; restraint from the beam, the sill fastened on it and the pan is
+of their heads at the beam face (ESR-1078 Table 3, 1 1/2" side member: W_H 110 lb at G 0.42, the
+house's lower bound; 200 lb at the KDAT's SP 0.55; × C_M 0.70 wet, 77 or 140 lb). Withdrawal in the
+dry rim is not the weak link (Table 2: 220 lb/in at G 0.50 × 1.25" = 275 lb). A rough couple (the
+compression resultant 0.4" over the seat bottom, the rows 2.725" and 1.975" above it, shares
+linear in the arm: 2,175 / (2 × 2.725 + 2 × 1.975²/2.725) = 261.6) puts ~260 lb on each top
+screw, over either pull-through value; restraint from the beam, the sill fastened on it and the pan is
 not credited. The engine reports it UNKNOWN on every door.
 
 **Jamb-post variant (rejected, design unchanged).** A girt jamb post's own standoff at the sill is

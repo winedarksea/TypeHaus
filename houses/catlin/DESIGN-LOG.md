@@ -8711,3 +8711,11 @@ Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
 - **The sill beam's ripped top is modelled (2026-11-18).** Its `section_ring` falls 1/32" across
   the 1 1/2" toward the outside; the bridge reads the pan's fall off that ring (it had used the
   authored rate) and grades it against the flashing spec's 1/4"/ft minimum: exactly at it.
+- **Review fixes (2026-11-18).** The edge rims had been laid on the wall's datum line, centred on
+  the sheathing's OUTER face (half in the foam, 1/8" under the plates); they now sit flush with the
+  stud face like an end rim (`floor_ends.edge_rim_line`), never absorbed into an opening's trimmer
+  pack. FO-A-RADON-STACK stops at FS-ATTIC's north rim (y 430 1/4"), which runs through. The
+  band and jamb strips gain the 1 1/8" of deck outboard of the rim line, and TJ-8000 p.6's header
+  row is read c-c of bearing (6'-0", 792 plf): `band_header/D-B-SUNKEN` governs at 0.434
+  (`sunken_door_band_header.md` §2-§5). The seat-rotation UNKNOWN's head pull-through reads 110 lb
+  (G 0.42) or 200 lb (SP 0.55), × C_M 0.70; ~260 lb per top screw is over both.
