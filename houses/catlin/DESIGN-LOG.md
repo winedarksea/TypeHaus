@@ -8762,3 +8762,25 @@ Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
   column faces as before: each plate bears 2 1/4", its centre over the pack. Joist torsion 37.8 psi
   (0.29); bid S10ACN +12, no new stick (`north_entry_structure.md` §2a).
 
+## Sill seat rotation designed out: HeadLOK, 2x8 seats, a backer (2026-11-18, owner)
+
+- **Why.** Graded as ESR-1078 §4.1.6 asks (NDS 12.4.1, lateral and withdrawal together), the
+  TLOK10 seats were 2.2 (SP pull-through) to 3.8 (G 0.42) over: the beam's reaction stands 7 1/4"
+  off the rim face and the near seat takes up to 348.7 lb (ENTRY, load at the end), not the 300
+  the earlier rough couple assumed, while each screw already sat at 0.94 of its lateral value.
+- **Chosen (option 3).** FastenMaster HeadLOK HLGM10 (same 10", 2" thread; Table 3 pull-through
+  600 / 400 lb at SG 0.55 / 0.42) on 4-ply 2x8 seats (7 1/4", 13/16" over the main-floor starter
+  girt course), with a backer behind the rim so its 2.0" Table 2 thread embeds: PORCH's LVL
+  plies, BALCONY a 10" rim-stock ply (TJ-8000 p.7, 3 rows of 10d), ENTRY a 1/2" LSL filler to
+  FO-M-ERV-OA's trimmer pack (IRC R602.3(1) item 10, 16d at 16" each edge). Lateral Z' 145.5 lb
+  (mode IV 207.9 × 0.70). Worst §12.4.1 0.965 (wide) / 0.946 (entry) at G 0.42, 0.828 / 0.783 at
+  SP; lateral 0.861. 8 a door, 24 in all, unchanged; the UNKNOWN is gone. Oracle:
+  `exterior_door_sill_beam.md` §3 (an independent PyNite model).
+- **Rejected.** Taller seats alone (2x12 still 1.07 at SP, and the main-floor girt course stops a
+  seat at 2x8); a 2x8 beam with 18-24 TLOK10s a door (fails at G 0.42); through-bolts or ThruLOK
+  (ThruLOK is out of scope in treated wood, ESR-1078 §5.6; bolts need inside access that PORCH's
+  plies and ENTRY's trimmer pack block, and ~14" of bolt).
+- Bid: HLGM10 24 replaces TLOK10 24 (`prices.toml` estimate), 4-2x8:kdat seats for 4-2x6, +1 8'
+  rim board (backers), one 1/2" LSL filler line; HDG 10d allowance +12 (the fillers read as joist
+  ends on W-B-N3's mudsill).
+

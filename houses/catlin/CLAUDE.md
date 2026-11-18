@@ -118,10 +118,12 @@
 > D-S-BALCONY share one package (`plan/french_door_installations.py`): ZAI5625FN + full XXXXW on a
 > 1/16" self-adhered membrane pan on the subfloor, the nose on a KDAT 2x6 sill beam outboard of the
 > girt band (face at the nose, 3/4" proud of the cladding, the pan wrapped to a drip), seated at its
-> ends on 10" 4-ply stacks, four TLOK10s a seat into the floor's 1 1/4" LSL edge rim
-> (`SillCourseFastening`, `resolve/girt_sill_connection.py`; house NDS 12.3 draft calc, no table
-> covers an 8" side member): worst screw 124.33 lb vs 133, Table 5 by each member's SG; the seat's
-> rotation is UNKNOWN. **Every TJI gable-end edge line is an LSL rim board** (`JoistSpec.edge_rims`,
+> ends on 10" 4-ply 2x8 stacks, four HeadLOK HLGM10s a seat into the floor's 1 1/4" LSL edge rim
+> and a backer behind it (`params/sill_seat_backers.py`: PORCH's LVL plies, BALCONY a rim-stock
+> ply, ENTRY a 1/2" filler to the ERV trimmer; owner 2026-11-18) (`SillCourseFastening`,
+> `resolve/girt_sill_connection.py`; house NDS 12.3 draft calc, no table covers an 8" side
+> member): worst lateral 125.34 lb vs 145.5, Table 5 by each member's SG; the seat's rotation is
+> NDS 12.4.1 combined, 0.965 at the G 0.42 pull-through (0.828 at SP). **Every TJI gable-end edge line is an LSL rim board** (`JoistSpec.edge_rims`,
 > owner 2026-11-18; the truss fields' FS-M-NE north and FS-S-WEST south too). PORCH's 2 1/8" joint takes a
 > removable FRP cover on a beam-face ledge (`landing="cover"`); ENTRY's landing stands 3/8" off the
 > beam; BALCONY's planks stand 3/8" off it too (rear rim oversail 2 1/8", the north sister packed
@@ -535,7 +537,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   horizontal KDAT 2x4 girts at 24" o.c. in free air, then the panel. Each crossing: three
   loose 3-1/2"x3-1/2"x1-1/2" KDAT offcuts stacked to 4-1/2" over every OTHER stud, clamped
   by one 8" FASTENMASTER TIMBERLOK (TLOK08) through girt + block + sheathing, 1-1/2" into
-  the stud (a door's sill beam seats: TLOK10 into the floor's LSL edge rim). There is only ONE tier — do not add a second inner one; the foam needs no
+  the stud (a door's sill beam seats: HeadLOK HLGM10 into the floor's LSL edge rim and its backer). There is only ONE tier — do not add a second inner one; the foam needs no
   backing (ER-859 §3.3.4.2.2, 7-1/2" vertical) (→ DESIGN-LOG.md, "Shell: framing module and envelope").
 - **AN INTERIOR PARTITION'S FRAMING STOPS 3/4" CLEAR OF WHATEVER IS OVER IT** (2026-09-19) —
   the rafter soffit in the attic, the joist or SIP soffit everywhere else — and a Simpson

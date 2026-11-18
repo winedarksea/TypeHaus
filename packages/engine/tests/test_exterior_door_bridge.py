@@ -58,24 +58,33 @@ def test_schematic_plate_rests_on_its_landing(catlin_model_ro):
     assert not opening.doorway.conflicts
 
 
-@pytest.mark.parametrize("tag, demand, span, deflection", (
-    ("D-S-BALCONY", 124.33, 53.375, 0.0363), ("D-M-PORCH", 124.33, 53.375, 0.0363),
-    ("D-M-ENTRY", 116.01, 28.4375, 0.0055)))
-def test_end_seat_sill_beam_is_graded(catlin_model_ro, tag, demand, span, deflection):
-    """notes/exterior_door_sill_beam.md §2-§3: the beam between its seats, and the worst seat
-    screw's share of the 300 lb against the joint's 133 lb into the LSL edge rim, laid out to
-    ESR-1078 Table 5."""
+@pytest.mark.parametrize("tag, demand, span, deflection, reaction, rotation", (
+    ("D-S-BALCONY", 125.34, 53.375, 0.0363, 325.73, (0.8283, 0.9647)),
+    ("D-M-PORCH", 125.34, 53.375, 0.0363, 325.73, (0.8283, 0.9647)),
+    ("D-M-ENTRY", 116.33, 28.4375, 0.0055, 348.67, (0.7831, 0.9460))))
+def test_end_seat_sill_beam_is_graded(catlin_model_ro, tag, demand, span, deflection,
+                                      reaction, rotation):
+    """notes/exterior_door_sill_beam.md §2-§3: the beam between its seats, the worst HLGM10's
+    share of the 300 lb against Z' 145.5 into the rim and its backer, laid out to ESR-1078
+    Table 5, and each seat's rotation by NDS 12.4.1 on both pull-through columns."""
     report = _door(catlin_model_ro, tag).doorway.exterior_placement.installation_report
     report = report["support"]
     assert report["connection_status"] == report["member_status"] == "PASS"
     assert report["connection_demand_lb"] == pytest.approx(demand, abs=0.01)
-    assert report["connection_dcr"] == pytest.approx(demand / 133.0, abs=1e-4)
+    assert report["connection_dcr"] == pytest.approx(demand / 145.5, abs=1e-4)
     assert report["sill_beam_span_in"] == pytest.approx(span, abs=1e-4)
     assert report["sill_beam_deflection_in"] == pytest.approx(deflection, abs=1e-4)
     assert (report["screw_shank_in"], report["screw_clamped_stack_in"]) == pytest.approx(
         (8.0, 7.5))
-    assert report["screw_embedded_thread_in"] == pytest.approx(1.25)
+    # 1 1/4" in the rim and 3/4" in the backer nailed behind it (params/sill_seat_backers.py).
+    assert report["screw_embedded_thread_in"] == pytest.approx(2.0)
+    assert report["screw_backers"]
     assert report["girt_course_member"].startswith("edge-rim-")
+    assert report["seat_rotation_status"] == "PASS"
+    assert report["seat_reaction_max_lb"] == pytest.approx(reaction, abs=0.01)
+    columns = report["seat_rotation_columns"]
+    assert (columns["SG 0.55"]["dcr"], columns["SG 0.42"]["dcr"]) == pytest.approx(
+        rotation, abs=1e-4)
     # §1: the beam's top is ripped 1/32" across its 1 1/2", 1/4"/ft, and the pan falls with it.
     assert report["pan_fall_in"] == pytest.approx(1 / 32)
     assert report["pan_fall_per_ft_in"] == pytest.approx(0.25)

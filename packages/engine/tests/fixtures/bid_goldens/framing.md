@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 7a55afcc0bb47a12  
-**Lines:** 260
+**Model hash:** c22878b05d7ceb7c  
+**Lines:** 261
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
 
@@ -16,9 +16,10 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | application | detail | storeys |
 |---|---|---|---|---|---|
+| 0.5x11.875 Laminated strand lumber, 8' (0.5x11.875:lsl) | 1 | pc | sister joist | 8 LF | building |
 | 0.75x3.5 Poplar trim, 1x4 S4S, paint grade, 8' (0.75x3.5:poplar-trim-paint) | 2 | pc | blocking | 16 LF | building |
 | 1.0x3.5 SPF No. 2 & Btr framing lumber, 8' (1.0x3.5:spf) | 1 | pc | blocking | 8 LF | building |
-| 1 1/4" x 11 7/8" rim board, 8' (1.25x11.875 rim) | 3 | pc | rim board | 24 LF | building |
+| 1 1/4" x 11 7/8" rim board, 8' (1.25x11.875 rim) | 4 | pc | rim board, sister joist | 32 LF | building |
 | 1 1/4" x 11 7/8" rim board, 10' (1.25x11.875 rim) | 1 | pc | rim board | 10 LF | building |
 | 1 1/4" x 11 7/8" rim board, 14' (1.25x11.875 rim) | 2 | pc | rim board | 28 LF | building |
 | 1 1/4" x 11 7/8" rim board, 16' (1.25x11.875 rim) | 4 | pc | rim board | 64 LF | building |
@@ -105,7 +106,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x12 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (3-2x12:kdat) | 6 | pc | joist (3-ply) | 120 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (3-2x4:kdat) | 135 | pc | truss girt block (3-ply) | 1080 LF | building |
 | 2x6 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (3-2x6:kdat) | 9 | pc | truss girt block (3-ply) | 72 LF | building |
-| 2x6 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (4-2x6:kdat) | 4 | pc | truss girt block (4-ply) | 32 LF | building |
+| 2x8 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (4-2x8:kdat) | 4 | pc | truss girt block (4-ply) | 32 LF | building |
 | 5 1/4" x 7" LVL 2.0E, 8' (5.25x7 LVL) | 1 | pc | header | 8 LF | building |
 | 5 1/2" x 3 1/2" LSL, 12' (5.5x3.5 LSL) | 3 | pc | ridge beam | 36 LF | building |
 | 6x6 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (6x6:kdat) | 2 | pc | brace, stud | 16 LF | building |
@@ -137,7 +138,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | HDG smooth-shank connector nail, 0.131in x 1.5in (0.131x1.5 connector nail:connector fasteners) | 84 | ea |  | building |
 | HDG smooth-shank connector nail, 0.148in x 1.5in (0.148x1.5 connector nail:connector fasteners) | 972 | ea |  | building |
 | HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3:connector fasteners) | 40 | ea |  | building |
-| HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3:treated framing nails (allowance)) | 927 | ea |  | building |
+| HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3:treated framing nails (allowance)) | 939 | ea |  | building |
 | HDG smooth-shank strap nail, 0.148in x 2.5in (10d short common 0.148x2.5:diaphragm joint strap nails) | 72 | ea |  | building |
 | HDG 16d common nail, 0.162in x 3.5in (16d common 0.162x3.5:connector fasteners) | 248 | ea |  | building |
 | HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5:connector fasteners) | 176 | ea |  | building |
@@ -172,6 +173,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL (HHUS410:hung framing) | 1 | ea |  | building |
 | HL33HDG heavy angle, 7 ga, hot-dip galvanized (HL33HDG:modeled connector) | 2 | ea |  | building |
 | HL43HDG heavy angle, 3 ga, hot-dip galvanized (HL43HDG:modeled connector) | 2 | ea |  | building |
+| HeadLOK flat-head structural wood screw (0.191 in shank) (HLGM10:girt door sill beam seats) | 24 | ea |  | building |
 | HUC concealed-flange masonry/concrete hanger (HUC:hung framing) | 2 | ea |  | building |
 | IUS2.37/11.88 face-mount I-joist hanger (IUS2.37/11.88:hung framing) | 3 | ea |  | building |
 | IUS2.37/11.88 face-mount I-joist hanger (IUS2.37/11.88:hung framing) | 3 | ea |  | building |
@@ -233,7 +235,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | KDAT 4x4 tie block, 3-1/2" long, screwed to the tied member (TIE-BLOCK-4X4-KDAT:modeled connector) | 1 | ea |  | building |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:eave gutter girt standoffs) | 72 | ea |  | building |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:girt wall blocks) | 1,159 | ea |  | building |
-| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK10:girt door sill beam seats) | 24 | ea |  | building |
 
 ## Other structural solids
 
@@ -341,6 +342,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | elements |
 |---|---|
+| 0.5x11.875 Laminated strand lumber, 8' (0.5x11.875:lsl) | — |
 | 0.75x3.5 Poplar trim, 1x4 S4S, paint grade, 8' (0.75x3.5:poplar-trim-paint) | — |
 | 1.0x3.5 SPF No. 2 & Btr framing lumber, 8' (1.0x3.5:spf) | — |
 | 1 1/4" x 11 7/8" rim board, 8' (1.25x11.875 rim) | — |
@@ -430,7 +432,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x12 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (3-2x12:kdat) | — |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (3-2x4:kdat) | — |
 | 2x6 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (3-2x6:kdat) | — |
-| 2x6 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (4-2x6:kdat) | — |
+| 2x8 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (4-2x8:kdat) | — |
 | 5 1/4" x 7" LVL 2.0E, 8' (5.25x7 LVL) | — |
 | 5 1/2" x 3 1/2" LSL, 12' (5.5x3.5 LSL) | — |
 | 6x6 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (6x6:kdat) | — |
@@ -487,6 +489,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL (HHUS410:hung framing) | — |
 | HL33HDG heavy angle, 7 ga, hot-dip galvanized (HL33HDG:modeled connector) | — |
 | HL43HDG heavy angle, 3 ga, hot-dip galvanized (HL43HDG:modeled connector) | — |
+| HeadLOK flat-head structural wood screw (0.191 in shank) (HLGM10:girt door sill beam seats) | — |
 | HUC concealed-flange masonry/concrete hanger (HUC:hung framing) | — |
 | IUS2.37/11.88 face-mount I-joist hanger (IUS2.37/11.88:hung framing) | — |
 | IUS2.37/11.88 face-mount I-joist hanger (IUS2.37/11.88:hung framing) | — |
@@ -548,7 +551,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | KDAT 4x4 tie block, 3-1/2" long, screwed to the tied member (TIE-BLOCK-4X4-KDAT:modeled connector) | — |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:eave gutter girt standoffs) | — |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:girt wall blocks) | — |
-| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK10:girt door sill beam seats) | — |
 | Beam — EQUIP_STAND_ALUM (beam:EQUIP_STAND_ALUM) | BM-M-HP3-R1, BM-M-HP3-R2 |
 | Column (column) | P-S-SN3-SQUASH |
 | Column — ELM_TIMBER (column:ELM_TIMBER) | P-S-TUDOR1, P-S-TUDOR2 |

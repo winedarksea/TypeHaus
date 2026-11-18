@@ -31823,6 +31823,18 @@
 8,
 "80db91a70531"
 ],
+"geometry/CMFS03AAAA::framing/member:sister-4-0": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS03AAAA::framing/member:sister-5-0": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
 "geometry/CMFS03AAAA::framing/member:trimmer-FO-M-ERV-OA-0-0": [
 -0.301625,
 0.0,
@@ -34296,16 +34308,16 @@
 "1d3e00337e5a"
 ],
 "geometry/CMW102AAAA::framing/member:block-2-sill-000-seat-0": [
--0.130175,
+-0.174625,
 0.009525,
 8,
-"7851ccdc73a1"
+"9c1ac816b99b"
 ],
 "geometry/CMW102AAAA::framing/member:block-2-sill-000-seat-1": [
--0.130175,
+-0.174625,
 0.009525,
 8,
-"7851ccdc73a1"
+"9c1ac816b99b"
 ],
 "geometry/CMW102AAAA::framing/member:block-2-sill-001-00": [
 0.7239,
@@ -38358,16 +38370,16 @@
 "6a27196525e7"
 ],
 "geometry/CMW107AAAA::framing/member:block-2-sill-000-seat-0": [
--0.130175,
+-0.174625,
 0.009525,
 8,
-"7851ccdc73a1"
+"9c1ac816b99b"
 ],
 "geometry/CMW107AAAA::framing/member:block-2-sill-000-seat-1": [
--0.130175,
+-0.174625,
 0.009525,
 8,
-"7851ccdc73a1"
+"9c1ac816b99b"
 ],
 "geometry/CMW107AAAA::framing/member:buck-head-000": [
 2.11455,
@@ -48011,6 +48023,18 @@
 8,
 "3c4d41a19688"
 ],
+"geometry/CSF603AAAA::framing/member:sister-1-0": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/CSF603AAAA::framing/member:sister-2-0": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
 "geometry/CSH801AAAA-cold-lead-run/body": [
 3.10515,
 4.29895,
@@ -52200,16 +52224,16 @@
 "841980b3de84"
 ],
 "geometry/CSW102AAAA::framing/member:block-2-sill-000-seat-0": [
-2.917825,
+2.873375,
 3.057525,
 8,
-"22793db3f18a"
+"f0a3189980d1"
 ],
 "geometry/CSW102AAAA::framing/member:block-2-sill-000-seat-1": [
-2.917825,
+2.873375,
 3.057525,
 8,
-"22793db3f18a"
+"f0a3189980d1"
 ],
 "geometry/CSW102AAAA::framing/member:block-2-sill-001-00": [
 3.7719,
@@ -92745,6 +92769,18 @@
 2,
 "07a4d7ea6917"
 ],
+"member/CMFS03AAAA/sister-4-0": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS03AAAA/sister-5-0": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
 "member/CMFS03AAAA/trimmer-FO-M-ERV-OA-0-0": [
 -0.301625,
 0.0,
@@ -94090,16 +94126,16 @@
 "2e338a8a2966"
 ],
 "member/CMW102AAAA/block-2-sill-000-seat-0": [
--0.130175,
+-0.174625,
 0.009525,
 2,
-"2b42e0ba445d"
+"ef8816d96611"
 ],
 "member/CMW102AAAA/block-2-sill-000-seat-1": [
--0.130175,
+-0.174625,
 0.009525,
 2,
-"2b42e0ba445d"
+"ef8816d96611"
 ],
 "member/CMW102AAAA/block-2-sill-001-00": [
 0.7239,
@@ -97744,16 +97780,16 @@
 "a26592700eb9"
 ],
 "member/CMW107AAAA/block-2-sill-000-seat-0": [
--0.130175,
+-0.174625,
 0.009525,
 2,
-"2b42e0ba445d"
+"ef8816d96611"
 ],
 "member/CMW107AAAA/block-2-sill-000-seat-1": [
--0.130175,
+-0.174625,
 0.009525,
 2,
-"2b42e0ba445d"
+"ef8816d96611"
 ],
 "member/CMW107AAAA/buck-head-000": [
 2.11455,
@@ -103563,6 +103599,18 @@
 2,
 "e76b7cb538bf"
 ],
+"member/CSF603AAAA/sister-1-0": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/CSF603AAAA/sister-2-0": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
 "member/CST701AAAA/hanger-W-B-N2-landing-joist-lower-004": [
 -1.7053067,
 -1.5021067,
@@ -106324,16 +106372,16 @@
 "127c90fed5de"
 ],
 "member/CSW102AAAA/block-2-sill-000-seat-0": [
-2.917825,
+2.873375,
 3.057525,
 2,
-"4fa9bddd4a52"
+"80e883745b98"
 ],
 "member/CSW102AAAA/block-2-sill-000-seat-1": [
-2.917825,
+2.873375,
 3.057525,
 2,
-"4fa9bddd4a52"
+"80e883745b98"
 ],
 "member/CSW102AAAA/block-2-sill-001-00": [
 3.7719,

@@ -53,6 +53,7 @@ from typehaus import (
 )
 
 from params.flooring import LVP_THICKNESS_IN
+from params.sill_seat_backers import ENTRY_SEAT_BACKERS
 from params.second_deck import _DEPTH as _JOIST_DEPTH
 from params.second_deck import (_JOIST, _JOIST_BEARING, _SUBFLOOR, _TRUSS, _TRUSS_BEARING,
                                 TJI_230_FLOOR_SPAN, TRIFORCE_OJ418S_FLOOR_SPAN,
@@ -327,25 +328,24 @@ MECH_FLOOR = FloorSystem(
     uid="CMFS03AAAA", tag="FS-M-MECH",
     joists=JoistSpec(member=_JOIST, spacing=_JOIST_OC, direction="x",
                      bearing_refs=("W-B-W1", "W-B-STR3B", "W-B-STR3", "W-B-STR"),
-                     # The gable-end edge line is a 1 1/4" LSL rim board (owner, 2026-11-18).
-                     edge_rims=("hi",), sill_tie="A35Z"),
+                     edge_rims=("hi",), sill_tie="A35Z"),  # an LSL rim (owner, 2026-11-18)
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
     published_span=TJI_230_FLOOR_SPAN,
     ceiling_below=_CEILING_GWB,
     outline=_rect(_ZERO, _MECH_Y, _STR_X, _HOUSE),
     # The two ERV risers' own holes, added 2026-09-15 — the FIRST openings this deck has ever
     # declared, though four risers have been passing through its joist field all along.
-    # FO-M-ERV-OA is the intake, which moved into this closet out of the NW chase that day;
-    # FO-M-ERV-EA is the discharge, which stayed in the chase but re-stationed. Each cuts one
-    # joist. The vents, the radon riser and the conduits through this deck are still undrawn —
-    # see the openings' own notes in plan/storeys/main.py.
+    # FO-M-ERV-OA is the intake, moved into this closet out of the NW chase that day; FO-M-ERV-EA
+    # the discharge, which stayed in the chase but re-stationed. Each cuts one joist. The
+    # vents, radon riser and conduits through this deck are still undrawn (plan/storeys/main.py).
     # FO-M-ERV-SUP-FEED (2026-11-12): DU-M-ERV-SUP-FEED's 6" hole in one bay, no member cut.
     openings=("FO-M-ERV-OA", "FO-M-ERV-SUP-FEED"),
     # W-B-N3 at x=8', W-B-N4 at x=5'-10", its east end: the FO-M-ERV-OA chase (x 6"..48 1/2")
     # and DU-ERV-RISER-SUP's 6" run west through the third space (x 17"..68") leave no other
     # spot. The station also serves W-B-N3's west end.
     reinforcements=(*_wall_top_blocks("W-B-N3", (inch(96),), _N_WALL_LINES),
-                    *_wall_top_blocks("W-B-N4", (inch(70),), _N_WALL_LINES)),
+                    *_wall_top_blocks("W-B-N4", (inch(70),), _N_WALL_LINES),
+                    *ENTRY_SEAT_BACKERS),  # D-M-ENTRY's sill seats
     source="catlin main floor, over the furnace room — same joists as FS-M-WEST, spanning "
            "10'-0\" east-west from the west wall to the x=10' bearing line",
 )

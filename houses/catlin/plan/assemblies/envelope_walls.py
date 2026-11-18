@@ -179,15 +179,21 @@ EXT_2X6 = Assembly(
                                   spacing=inch(24), layout_origin="line",
                                   course_datum="framing-base", course_offset=inch(0),
                                   # A door's sill course is a 2x6 beam outboard of the girt band,
-                                  # its face at the XXXXW nose, seated at its ends on 4-ply stacks
-                                  # (owner, 2026-11-17): 4 TLOK10 a seat into the LSL edge rim.
+                                  # its face at the XXXXW nose, seated at its ends on 4-ply 2x8
+                                  # stacks: 4 HeadLOK HLGM10 a seat into the LSL edge rim and the
+                                  # backer behind it (owner, 2026-11-18; params/sill_seat_backers).
                                   sill_course=SillCourseFastening(
-                                      course_stock="2x6",
+                                      course_stock="2x6", seat_stock="2x8",
                                       seat_width=inch(10), seat_rows=2, screws_per_row=2,
-                                      fastener_part="TLOK10", fastener_length_in=10.0,
+                                      fastener_part="HLGM10", fastener_length_in=10.0,
+                                      fastener_diameter_in=0.191,
                                       course_modulus_psi=1260000.0, course_bending_psi=1137.0,
-                                      course_shear_psi=131.0, lateral_wet_lb=133.0,
-                                      lateral_source="house NDS 2018 12.3 calc into a 1 1/4 in LSL rim (G 0.50), mode IIIm 190.0 lb x C_M 0.70 = 133.0: notes/exterior_door_sill_beam.md section 3",
+                                      course_shear_psi=131.0, lateral_wet_lb=145.5,
+                                      lateral_source="house NDS 2018 12.3 calc into the 1 1/4 in LSL rim and its backer (main member 2.0 in, G 0.50), mode IV 207.9 lb x C_M 0.70 = 145.5: notes/exterior_door_sill_beam.md section 3",
+                                      withdrawal_lb_per_in=230.0,
+                                      pull_through_lb=(("SG 0.55", 600.0), ("SG 0.42", 400.0)),
+                                      pull_through_wet_factor=0.70,
+                                      axial_source="ICC-ES ESR-1078 (reissued 2026-01): Table 2 HeadLOK withdrawal 230 lb/in at SG 0.50 (the LSL rim and backer, dry); Table 3 head pull-through at a 1 1/2 in side member, 600 lb at the KDAT's SP 0.55 and 400 lb at the house's G 0.42 bound, x C_M 0.70; combined per NDS 12.4.1 (section 4.1.6)",
                                       source="notes/exterior_door_sill_beam.md; No.2 SPF wet as the lower bound for KDAT"),
                                   standoff="block",
                                   standoff_fastener="FastenMaster TimberLOK 8\" TLOK08, ESR-1078",

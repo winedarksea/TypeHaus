@@ -2,7 +2,8 @@
 
 Hand oracle for `engineering/exterior_door_support.py` (`sill_beam_report`,
 `screw_spacing_failures`, `girt_course_connection_report`, `foam_bed_support_report`),
-`resolve/girt_sill_connection.py` and `resolve/exterior_door_cover.py`. Review basis:
+`engineering/sill_seat_rotation.py`, `resolve/girt_sill_connection.py` and
+`resolve/exterior_door_cover.py`. Review basis:
 `plans/exterior-door-sill-and-approach.md`. It replaces the girt sill course of
 `exterior_door_structural_mount.md` (3-screw end blocks, 41 TLOK10s).
 
@@ -22,18 +23,26 @@ Depths are inches outward from the sheathing's outer face; elevations are off th
   ripped beam, 0.03125 / 1.5 × 12 = **0.25"/ft**, and graded against
   `opening_flashing_spec.md` §3's 1/4"/ft minimum (`SillCourseFastening.pan_min_fall_per_ft`):
   exactly at it.
-- **Seats.** One stack per end, 4 plies of 2x6 KDAT (sheathing to beam back, 6.0"), **10"** along
-  the beam (9 1/4" until 2026-11-18: SP's Table 5 end distance, §3), 5 1/2" tall, top under the
-  3/8" buck sill (+3/8"), bottom −5 1/8".
+- **Seats.** One stack per end, 4 plies of **2x8** KDAT (sheathing to beam back, 6.0"), **10"**
+  along the beam (SP's Table 5 end distance, §3), 7 1/4" tall (2x6 until 2026-11-18: the taller
+  ply lengthens the rotation couple's arm, §3), top under the 3/8" buck sill (+3/8"), bottom
+  −6 7/8": 13/16" over the main-floor walls' starter girt course (top −7.69"); at BALCONY nothing
+  stands below it inside the rim's depth (rim bottom −11 7/8", next course −24").
 - **Edge member.** An LSL rim board, 1 1/4" × 11 7/8" (Weyerhaeuser TimberStrand 1.3E, the house
   rim; `JoistSpec.edge_rims`, owner 2026-11-18) in place of the edge TJI 230 at all three doors,
   its outer face on the sheathing's back (flush with the stud face, as an end rim's is):
   FS-M-EAST `edge-rim-0-000-0` (PORCH, D-B-SUNKEN's LVL band plies nailed to its inner face),
   FS-M-MECH `edge-rim-0-011-0` (ENTRY, on W-B-N3's mudsill) and FS-S-EAST `edge-rim-0-000-0`
   (BALCONY, on W-M-S2's plates). The SPF web backers and their flange question are gone.
-- **Wood through the foam.** 2 × 10 × 5.5 = **110 in²** a door. The wide doors drop from
-  11 blocks × 3.5² = 134.75 in² (−18%); the entry *rises* from 7 × 12.25 = 85.75 in² (+28%).
-  The foam now runs unbroken between the seats.
+- **Backer behind the rim** (owner, 2026-11-18; `params/sill_seat_backers.py`), so the HeadLOK's
+  2.0" of thread embeds (§3): PORCH, D-B-SUNKEN's 1 3/4" LVL plies already nailed to the rim;
+  BALCONY, a 10" piece of the 1 1/4" rim stock on the rim's inner face behind each seat (a 2-ply
+  rim board), alone in its bay (y 1 3/4"..3", the next line at 8 11/32"); ENTRY, a 10" × 1/2"
+  LSL filler behind each seat closing the 1/2" gap to FO-M-ERV-OA's LVL trimmer pack, clear of
+  the two 1/2" wall-top blocks at x 70"/96". No hanger, MEP run or ceiling item in any of them.
+- **Wood through the foam.** 2 × 10 × 7.25 = **145 in²** a door (110 with the 2x6 seats). The
+  retired course had 11 blocks × 3.5² = 134.75 in² at the wide doors and 7 × 12.25 = 85.75 at
+  the entry. The foam runs unbroken between the seats.
 
 ## 2. Beam
 
@@ -51,98 +60,114 @@ A = 8.25 in². Span between the seats' screw-group centroids (each (3 + 5.625 + 
 
 1/8" is the door maker's limit over an unsupported span (Marvin site prep, cited in the review).
 
-## 3. Seat screws, TLOK10 into the LSL rim (2026-11-18)
+## 3. Seat screws, HeadLOK HLGM10 into the LSL rim and its backer (2026-11-18)
 
 **An all-table joint was tried first (owner: "a strong preference to keep it to a table") and
-does not exist here.** ESR-1078 (reissued 2026-01), read in full:
+does not exist here.** ESR-1078 (reissued 2026-01) Table 4 is two-member with no gap (note 1)
+and every row wants 2 1/2"-5" of main penetration; its one LSL row (LedgerLOK LL358, note 7) is a
+1 1/2" side member that may not be thickened (note 5). Laminating the seat ply by ply on LL358s
+still leaves the sheathing as an untested third member and the eccentric couple to NDS §12.4.1.
+So the lateral value is a house NDS 12.3 calc (a draft check, no seal) and the couple is graded
+by §12.4.1, as ESR-1078 §4.1.6 directs; Tables 1B, 2, 3 and 5 are read as published.
 
-- Table 4 is two-member, "Gaps are not permitted between the main and side members" (note 1); a
-  thicker side member keeps the row only if the main penetration is still met (note 2). Every
-  TimberLOK row needs 2 1/2"-5" of main penetration; the rim is 1 1/4".
-- Its one LSL row (note 7) is LedgerLOK LL358: a **1 1/2"** side member of SG 0.50 into a
-  ≥ 1" LSL rim, through it, Z⊥ 300 lb, with note 5 "side member thickness must not be
-  increased". A seat would have to be laminated ply by ply: ply 1 on the rim by note 7, the
-  others and the beam by the LL358 1 1/2"-into-1 1/2" through row (Z⊥ 220 lb at G 0.42).
-- The 1/2" sheathing between ply 1 and the rim is a third member the row never tested; cutting
-  it out behind each seat leaves the stack 1/2" short of the girt face, and a 1/2" packer is the
-  same interlayer again. ESR-1387's ledger rows (1/2" lag 610 lb, through-bolt 725 lb in a
-  1 1/4" rim) do include a structural panel, but for a 2x ledger only, with the same problem at
-  every ply beyond it.
-- Each interface also carries the reaction's eccentric moment as withdrawal; LL358 cannot embed
-  Table 2's 2" of thread in a 1 1/2" ply or a 1 1/4" rim, so that couple is an NDS §12.4.1
-  design either way (ESR-1078 §4.1.6 sends it there).
-- Five interfaces of two or more LL358 each, a sheathing cut-out and a packer per seat, against
-  four long screws: clearly more parts and labour, still not a table read.
-
-So the NDS 12.3 calc stays the lateral basis, re-run on the rim; it is a draft check (no seal).
-ESR-1078's Table 2 embedded thread and Table 5 spacing stay graded as published.
+**The screw: HeadLOK, not TimberLOK (owner, 2026-11-18).** Same 10" length and 2" thread
+(ESR-1078 Table 1B: HLGM10, shank 0.191", root 0.172", F_yb 187,300 psi, allowable tension
+1,215 lb, shear 965 lb), but a flat head: Table 3, 1 1/2" side member, W_H **600 lb** at SG 0.55
+(the KDAT's SP, as Table 5 reads it) and **400 lb** at SG 0.42 (the house's lower bound), against
+TimberLOK's 200 / 110. Its Table 2 floor is **2.0"** of embedded thread, hence the backer (§1).
+TimberLOK's 2x6 seats put ~300 lb of tension on a top screw: 2.23 (SP) / 3.75 (G 0.42) of §12.4.1.
 
 **Screw fit** (`catlin_truss_engineering.md` §3.1–§3.3: the sheathing is nailed to the rim, so
 it is on the main member's side):
 
     clamped stack   beam 1.5 + seat 6.0                     = 7.5"
     through         + sheathing 0.5                         = 8.0"
-    TLOK10          10", 2" thread (ESR-1078 Table 1A) → plain shank 8.0" ≥ 7.5"   ✓ 0.5"
-    thread          8.0" to 10.0": starts at the rim's face, 1.25" in it, 0.75" past its far
-                    face (into the joist bay; at PORCH into the LVL plies, not credited)
-    in wood         1.25" ≥ 1 1/4" (ESR-1078 Table 2)                           ✓ exactly
-    penetration     1.25" in the rim ≥ 6D = 1.134" (NDS 12.1.4.6)               ✓
+    HLGM10          10", 2" thread → plain shank 8.0" ≥ 7.5"                     ✓ 0.5"
+    thread          8.0" to 10.0": starts at the rim's face, 1.25" in the rim, 0.75" in the backer
+                    PORCH  LVL ply 1 (1.75", tip 1.0" short of its far face)
+                    BALCONY rim-stock backer (1.25", tip 0.5" short)
+                    ENTRY  1/2" filler, then 0.25" into the LVL trimmer
+    in wood         1.25 + 0.75 = 2.00" ≥ 2.0" (ESR-1078 Table 2)                ✓ exactly
+    penetration     2.00" ≥ 6D = 6 × 0.191 = 1.146" (NDS 12.1.4.6)               ✓
 
-**NDS 2018 §12.3**, single shear: D 0.172" root, F_yb 190,600 psi, R_d = 10D + 0.5 = 2.22. Side:
-the 8" stack at G 0.42 (SPF, a lower bound for the KDAT SP and the plywood), F_es = 16,600 ×
-0.42^1.84 = 3,364.2 psi. Main: the rim at G 0.50 (ESR-1387, equivalent SG for fasteners in the
-face), F_em = 16,600 × 0.50^1.84 = 4,636.7 psi, l_m 1.25". R_e = 1.3782, R_t = 0.15625.
+**Lateral, NDS 2018 §12.3**, single shear: D 0.172" (root), F_yb 187,300 psi, R_d = 10D + 0.5 =
+2.22. Side: the 8" stack at G 0.42, F_es = 16,600 × 0.42^1.84 = 3,364.2 psi. Main: the rim and
+backer at G 0.50 (ESR-1387's equivalent SG; Microllam LVL the same), F_em = 4,636.7 psi,
+l_m 2.0". R_e = 1.3782, R_t = 0.25.
 
 | Mode | Working | Z, lb |
 |---|---|---|
-| Im | D l_m F_em / R_d = 0.172 × 1.25 × 4,636.7 / 2.22 | 449.1 |
-| Is | D l_s F_es / R_d, l_s 8.0 | 2,085.2 |
-| II | k1 0.35366 × D l_s F_es / R_d | 737.5 |
-| IIIm | k2 = −1 + √(2(1 + R_e) + 2F_yb(1 + 2R_e)D²/(3F_em l_m²)) = −1 + √(4.7565 + 1.9491) = 1.58952; k2 D l_m F_em / ((1 + 2R_e) R_d) | **190.0** |
-| IIIs | k3 0.86920 × D l_s F_em / ((2 + R_e) R_d) | 739.5 |
-| IV | D²/R_d √(2 F_em F_yb / (3(1 + R_e))) | 209.7 |
+| Im | 0.172 × 2.0 × 4,636.7 / 2.22 | 718.5 |
+| Is | 0.172 × 8.0 × 3,364.2 / 2.22 | 2,085.2 |
+| II | k1 0.34994 × 2,085.2 | 729.7 |
+| IIIm | k2 = −1 + √(4.7565 + 2 × 187,300 × 3.7565 × 0.029584 / (3 × 4,636.7 × 4.0)) = −1 + √(4.7565 + 0.7482) = 1.34621; k2 × 0.172 × 2.0 × 4,636.7 / (3.7565 × 2.22) | 257.5 |
+| IIIs | k3 0.86900 × 0.172 × 8.0 × 4,636.7 / (3.3782 × 2.22) | 739.3 |
+| IV | 0.029584 / 2.22 × √(2 × 4,636.7 × 187,300 / (3 × 2.3782)) | **207.9** |
 
-**Z = 190.0 (IIIm), Z' = 0.70 × 190.0 = 133.0 lb** (C_M 0.70, NDS Table 11.3.3, wet KDAT side
-members), authored 133. The TJI backer pair gave 135.
+**Z = 207.9 (IV), Z' = 0.70 × 207.9 = 145.5 lb** (C_M 0.70, wet KDAT side members). Mode IV does
+not see l_m, so the backer's share of it is the IIIm mode it lifts off the governing line
+(190.0 on the rim alone).
 
-**Spacing, ESR-1078 Table 5, by each member's specific gravity.** The beam and seats are KDAT SP
-(G 0.55) and the rim LSL (0.50, read on the stricter side), so every member takes the
-**SG > 0.50** column: end 3", in-row 2 5/8", loaded and unloaded edge 1 3/4", rows in line
-1 7/8" or 3/4" staggered at half pitch (note 4); rows are spaced on the rim's (main member's)
-column. The screw bears up into the beam and seat and down into the rim:
+**Spacing, ESR-1078 Table 5** (its TimberLOK/OlyLOG/HeadLOK column, SG > 0.50 for the KDAT SP
+and the LSL/LVL): end 3", in-row 2 5/8", edges 1 3/4", staggered rows 3/4". The band every
+member's edge distances leave is unchanged by the taller seat: beam −3.000..−1.000, seat
+−5.125..−1.375, rim and backers −10.125..−1.750, so −3.000..−1.750 and rows at −2.000 and
+−2.750. Row 1 at 3, 5.625; row 2 at 4.3125, 6.9375 from each beam end; 10 − 6.9375 = 3.0625 ✓.
+The backers are each seat's own 10", so the 3" end distance holds in them too. **8 HLGM10 a door,
+24 in all** (24 TLOK10 before).
 
-    beam   +0.75 / −4.75    →  −3.000 ≤ z ≤ −1.000
-    seat   +0.375 / −5.125  →  −3.375 ≤ z ≤ −1.375
-    rim    0 / −11.875      →  −10.125 ≤ z ≤ −1.750
-    band   −3.000 … −1.750 = 1 1/4" → rows at −2.000 and −2.750, 1/4" inside each end
+**Shares, an independent PyNite model** (`Pynite` FEModel3D: the 2x6 beam, E' 1.26e6, I 20.797,
+on vertical springs k = 270,000 × 0.191^1.5 = 22,537.9 lb/in at the eight stations, 300 lb
+scanned at 1/4"). Load at the beam end, the case that governs the rotation:
 
-Rows staggered by half the in-row spacing, from each beam end: row 1 at 3, 5.625; row 2 at
-4.3125, 6.9375; far end 10 − 6.9375 = 3.0625" ✓, which is why the seat is 10". **8 TLOK10 a
-door, 24 in all**, unchanged. The rim has no flange, so the 2026-11-18 UNKNOWN is gone.
+| Door | Screw forces, lb (station) | seat Σ |
+|---|---|---|
+| wide | **123.73 (3.0)** · 66.73 (5.625) · 94.41 (4.3125) · 40.87 (6.9375) / far seat 8.22 · −11.31 · −1.54 · −21.11 | **325.73** |
+| entry | **116.33 (3.0)** · 76.83 (5.625) · 95.75 (4.3125) · 59.75 (6.9375) / far seat −8.23 · −13.50 · −10.87 · −16.07 | **348.67** |
 
-**Shares.** The spring beam (E' 1.26e6, k = 270,000 × 0.189^1.5 = 22,184.8 lb/in at the eight
-stations, 300 lb scanned along it). An independent PyNite model (a beam on vertical springs at
-the stations, the load at the engine's worst station and at the ends):
+The near seat takes more than the 300 lb: the beam levers the far seat up. Worst lateral share
+anywhere: **125.34 lb** (wide, load 22 1/4" in, the 6.9375 screw) → 125.34 / 145.5 = **0.861**;
+entry 116.33 → **0.800**.
 
-| Door | Load at | Screw forces, lb (station) | Σ | Worst / 133 |
-|---|---|---|---|---|
-| wide | 41.13" | −33.78 (3.0) · 43.05 (5.625) · 4.61 (4.3125) · 81.61 (6.9375) · −22.06 (60.3125) · 75.52 (57.6875) · 26.71 (59.0) · **124.33 (56.375)** | 300.00 | **0.935** |
-| wide | 63.31" (end) | 8.00 · −11.24 · −1.62 · −20.90 · 123.20 · 66.92 · 94.25 · 41.38 | 300.00 | 0.926 |
-| entry | 0" (end) | **116.01 (3.0)** · 76.96 · 95.67 · 60.06 · −8.38 · −13.46 · −10.93 · −15.93 | 300.00 | **0.872** |
+**Rotation.** The reaction stands 0.5 + 6.0 + 0.75 = **7.25"** off the rim face, so a seat rolls
+outward about its bottom bearing on the sheathing; the compression resultant is taken 0.4" up
+(the compression is ΣT, 611 lb at ENTRY's end load: 76 psi over a 10" × 0.8" block of plywood face). Pivot −6.875 + 0.4 =
+−6.475; levers 4.475 (row −2.000) and 3.725 (row −2.750); Σd² = 2 × 4.475² + 2 × 3.725² =
+67.8025 in². Tension T = R × 7.25 × d / Σd²; each screw's own lateral share rides with it.
 
-Σ(F·(x − load)) = 0.000 in each; a ¼" scan finds no worse load. As before, the worst wide case
-turns the beam over the far seat and its innermost screw takes the most.
+    axial W'   withdrawal 230 lb/in (Table 2, SG 0.50, dry rim and backer) × 2.0" = 460 lb
+               pull-through × C_M 0.70: 600 → 420 (SP 0.55), 400 → 280 (G 0.42)
+               W' = 420 (SP) or 280 (G 0.42); the screw's own 1,215 / 965 lb never governs
+    §12.4.1    Z'α = W' Z' / (W' cos²α + Z' sin²α), tan α = T / Z, graded on √(Z² + T²)
 
-**Not graded: the seat's rotation (owner question, 2026-11-18).** The reaction stands 0.5 + 6.0 +
-0.75 = 7.25" off the rim face, so each seat sees about 300 × 7.25 = 2,175 lb-in about its bottom
-bearing on the sheathing, resisted by withdrawal of its upper screws in the rim and pull-through
-of their heads at the beam face (ESR-1078 Table 3, 1 1/2" side member: W_H 110 lb at G 0.42, the
-house's lower bound; 200 lb at the KDAT's SP 0.55; × C_M 0.70 wet, 77 or 140 lb). Withdrawal in the
-dry rim is not the weak link (Table 2: 220 lb/in at G 0.50 × 1.25" = 275 lb). A rough couple (the
-compression resultant 0.4" over the seat bottom, the rows 2.725" and 1.975" above it, shares
-linear in the arm: 2,175 / (2 × 2.725 + 2 × 1.975²/2.725) = 261.6) puts ~260 lb on each top
-screw, over either pull-through value; restraint from the beam, the sill fastened on it and the pan is
-not credited. The engine reports it UNKNOWN on every door.
+| Door, column | Case | Z | T | √ | cos²α | Z'α | ratio |
+|---|---|---|---|---|---|---|---|
+| wide, G 0.42 | end load, 3.0 screw, R 325.73, M 2,361.6 | 123.73 | 155.87 | 199.01 | 0.38655 | 280 × 145.5 / (108.23 + 89.26) = 206.29 | **0.965** |
+| entry, G 0.42 | end load, 3.0 screw, R 348.67, M 2,527.8 | 116.33 | 166.84 | 203.39 | 0.32713 | 40,740 / (91.60 + 97.90) = 214.99 | **0.946** |
+| wide, SP 0.55 | load 22 3/4", 6.9375 screw, R 201.30 | 125.31 | 80.18 | 148.77 | 0.70951 | 61,110 / (297.99 + 42.27) = 179.60 | **0.828** |
+| entry, SP 0.55 | end load, 3.0 screw | 116.33 | 166.84 | 203.39 | 0.32713 | 61,110 / (137.39 + 97.90) = 259.71 | **0.783** |
+
+The ¼" scan finds nothing worse; the engine's own scan agrees to the hundredth of a pound
+(0.9647 / 0.9460 / 0.8283 / 0.7831). **It passes on both pull-through columns**, the SP reading
+the house already takes for `girt_screw/W-A-N1` and Table 5, and the G 0.42 bound.
+
+**Backer nailing**, the published rows:
+
+- BALCONY: TJ-8000 (March 2025) p.7, *Multiple-member connections for 2-ply rim board*, side
+  load, 1 1/4" plies, 10d (0.128-0.131 × 3"), one face, **3 rows** at 12" o.c.: 560 plf on either
+  member. A 10" backer takes 3 rows of 2 (one near each end), clinched (note 2). Demand, the whole
+  wide-door seat reaction as if all of it reached the backer: 325.73 / (10/12) = 390.9 plf →
+  **0.70** (2 rows, 370 plf, would be 1.06).
+- ENTRY: IRC R602.3(1) item 10, *built-up header (2" to 2" header with 1/2" spacer)*: 16d common
+  (3 1/2" × 0.162") at 16" o.c. each edge, face nail, through the rim and filler into the LVL
+  trimmer: 2 an edge on a 10" filler, 4 in all. Check: 16d, NDS 12.3, side 1.75" (rim + filler)
+  and penetration 1.75" at G 0.50, F_yb 90 ksi, R_d 2.2: Im = Is 597.5 · II 247.5 · IIIm = IIIs
+  215.4 · IV 0.026244 / 2.2 × √(2 × 4,636.7 × 90,000 / 6) = **140.7 lb** (dry, C_M 1.0);
+  348.67 / 4 = 87.2 lb a nail → **0.62**.
+- PORCH: the LVL plies' own band-header fastening (TJ-9000 p.30, 3 rows of 10d at 12", nailed to
+  the rim, `sunken_door_band_header.md`); nothing added.
+
+The screws' tension pulls each backer toward the rim, so no nail is in withdrawal.
 
 **Jamb-post variant (rejected, design unchanged).** A girt jamb post's own standoff at the sill is
 one 3 1/2" block: a screw needs 3" of end distance each side, so the post cannot take even one

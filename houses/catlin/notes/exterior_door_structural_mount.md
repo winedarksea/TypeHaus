@@ -3,7 +3,8 @@
 **Sill beam, 2026-11-17 (owner).** D-M-PORCH, D-M-ENTRY and D-S-BALCONY share one sill package,
 a ZAI5625FN + 6 3/8" XXXXW on a self-adhered membrane pan on the subfloor. The extender's nose
 bears on a KDAT 2x6 sill beam outboard of the girt band, face at the nose, seated at its ends on
-4-ply stacks with four TLOK10s each into the floor's LSL edge rim (2026-11-18). PORCH's joint takes
+4-ply 2x8 stacks with four HeadLOK HLGM10s each into the floor's LSL edge rim and a backer
+behind it (2026-11-18). PORCH's joint takes
 a removable cover; ENTRY's landing stands 3/8" off the beam; BALCONY's 1" gap stays open.
 Design and hand oracle: `exterior_door_sill_beam.md`. D-G-SERVICE keeps its schematic sill and
 UHMW slip pad on FS-BW-FLOOR's rim (the garage wall has no girt course).

@@ -46,6 +46,7 @@ the fabricator's order, which ``haus takeoff``'s fabrication schedule states.
 """
 
 from typehaus.geometry import rect
+from params.sill_seat_backers import BALCONY_SEAT_BACKERS
 from typehaus import (DeckLayer, FloorSystem, JoistSpec, JoistReinforcement, Layer,
                       LayerFunction, PublishedSpan, PublishedWebOpenings, ft, inch, pt)
 
@@ -230,6 +231,7 @@ EAST_FLOOR = FloorSystem(
                            source="ST-S2A departing-rim reactions: sister the supporting I-joist and block both adjacent bays to the main-storey bearing walls"),
         # D-S-BALCONY's jamb packs stand on the y=0 LSL edge rim, which TJ-8000 rates for
         # vertical load: the squash plies a TJI needed are gone (note §5, 2026-11-18).
+        *BALCONY_SEAT_BACKERS,
     ),
     source="catlin second floor, east half — 11 7/8\" TJI 230 joists at 16\" o.c. spanning "
            "18'-0\" from the x=18' bearing line to W-M-E1, unchanged from the old "
