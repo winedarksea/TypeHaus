@@ -1440,7 +1440,8 @@ STAIRS = [
 ]
 
 # W-S-WELL-KNEE's cap: a 5/4 red oak tread ripped to 5 1/4", 3/8" proud of each gypsum face,
-# glued and screwed down into the top plate. Its ends run 1/2" over the wall's end boards.
+# glued and screwed down into the top plate. Its ends run 1/2" past the framing, flush with
+# the wall's end boards.
 CAPS = [
     Slab(uid="CMJRX0C2X2", tag="SL-S-KNEE-CAP", kind="platform",
          outline=(pt(inch(165.3125), ft(25, 11.875)), pt(inch(170.5625), ft(25, 11.875)),

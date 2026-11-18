@@ -12,9 +12,9 @@ skirt top over the floor at the first riser 13.5825", toe 13.3904", blanks 95.79
 numbers below are the 2026-10-30 basis; the tests pin the new values.
 
 **2026-11-05 amendment (W-S-WELL-KNEE).** A 36" knee wall now continues the partition face
-above the second floor from the stairhead to y 382 3/8" (the landing end, since 2026-11-17), so §3's "Head" rule no longer clips
-skirt-upper-left flush with the floor: like the STRW board it runs its full profile to the
-head. The model's blank is 96.096" (was 92.115). That value is the resolver's, not yet
+above the second floor from the stairhead to y 382 3/8" (the landing end, since 2026-11-17),
+so §3's "Head" rule no longer clips skirt-upper-left flush with the floor: like the STRW
+board it runs its full profile to the head. The model's blank is 96.096" (was 92.115). That value is the resolver's, not yet
 reworked by hand here.
 
 ## 1. Decisions (owner)

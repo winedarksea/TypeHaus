@@ -7892,8 +7892,8 @@ straight bracket, holds under 4D to the band's end. Basis and hand check:
 - **Blocking:** each RL-A-STAIR base sets its north screws in the trimmer pack's LVL and its
   south pair in a 2x12 block nailed to the pack's south face.
 - **Knee wall:** the owner chose `W-S-WELL-KNEE`, a framed 2x4 wall on the generated well
-  partition's top plate, 36" over the oak, from the well head to nosing 5. It replaces the
-  metal leg RL-S-STAIRHEAD-N (uid FR1DYXJJH7 spent). The cap (`SL-S-KNEE-CAP`) is a 5/4
+  partition's top plate, 36" over the oak, from the well head to nosing 5 (to the landing end
+  since 2026-11-17). It replaces the metal leg RL-S-STAIRHEAD-N (uid FR1DYXJJH7 spent). The cap (`SL-S-KNEE-CAP`) is a 5/4
   oak tread ripped to 5 1/4", 3/8" over each face. RL-S-STAIRHEAD's end post stands on the
   cap's edge, 1 7/8" off the gypsum. The platform rule lifts W-M-WELL's body to meet the knee
   wall; its gypsum still stops at the plate. Guard run 26.1 -> 21.5 LF; the framer installs it.
@@ -8627,7 +8627,7 @@ bend dimensions. See `notes/porch_enclosure.md` for that remaining connection de
 
 - The knee wall and `SL-S-KNEE-CAP` now run from the well head to the landing end
   (`N-S-KNEE-N` = `N-M-WELL-N`, y=31'-10 3/8"), not to nosing 5. The last 20" of `W-M-WELL`
-  had topped out at the deck with a bare gypsum top and beads, a step and a free end mid-well.
+  had topped out at the deck with a bare gypsum top, a step and a free end mid-well.
   One wall, one top line, one cap, one free end stacked through both storeys.
 - Cost: ~20" more 2x4/gypsum; the cap is 71", one 72" tread. The wall end now stands ~96"
   over the landing, closing the 20" sight line between the flights there.
