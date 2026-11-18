@@ -3234,7 +3234,7 @@ BASEMENT_ELEMENTS = [*NODES, *WALLS, *GRADE_BEAMS, *FOOTINGS, *BRKBM_OPENINGS,
 # the deck; this closes the slot they stop over.
 #
 # ** IT FASTENS TO THE GARDEN AND NOTHING ELSE. ** Screws into the porch deck's north rim
-# only; the piece cantilevers 2 1/8" north, stopping 1/4" off the cladding face at
+# only; the piece cantilevers 2 1/8" north, stopping 3/4" off the cladding face at
 # -0'-7 1/2" like the curtain tracks (4" stood 1 1/4" inside the panel, measured
 # 2026-09-23), and a compressible foam or brush lip BEARS on the cladding without
 # penetrating it. Sloped south to drain back over the deck. That lip, and the weighted flap
@@ -3254,7 +3254,7 @@ BASEMENT_ELEMENTS = [*NODES, *WALLS, *GRADE_BEAMS, *FOOTINGS, *BRKBM_OPENINGS,
 # Its top is 3/4" under the JOISTS' top (`_porch_top`), screwed to the rim: the composite
 # plank's north edge laps over it, and since 2026-11-18 D-M-PORCH's joint-cover ledge (3/4",
 # on the sill beam's face, top at the joist top) sits over it across the door.
-# From the porch deck's north rim to 1/4" off the cladding (-7 1/2"): 2 1/8" since the deck
+# From the porch deck's north rim to 3/4" off the cladding (-7 1/2"): 2 1/8" since the deck
 # followed the brick 3/8" north (2026-11-04); it was 2 1/2" off `_y_out_n`.
 _SLOT_CLOSURE_NORTH_IN = -7.5
 _SLOT_CLOSURE_REACH_IN = _SLOT_CLOSURE_NORTH_IN - _y_porch_deck_n * 12.0

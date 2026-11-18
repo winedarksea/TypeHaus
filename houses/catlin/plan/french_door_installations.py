@@ -86,8 +86,9 @@ _XXXXW_URL = ('https://resources.enduraproducts.com/hubfs/OMRSv3%20-%20Line%20Dr
               'Extenders/Sill%20Width%20Extender%20Release_final.pdf')
 
 
-def framed_floor_installation(support_ref, bearing, **door):
-    """The shared package on the girt sill beam; each door passes its trim and landing."""
+def framed_floor_installation(support_ref, bearing, catalog=None, **door):
+    """The shared package on the girt sill beam; each door passes its trim, landing and any
+    catalog overrides."""
     return ExteriorDoorInstallation(
         factory_frame_depth=inch(4.5625), interior_material_ref='pine-fj-base',
         approach_bearing=bearing, **door,
@@ -96,7 +97,14 @@ def framed_floor_installation(support_ref, bearing, **door):
             sill_outline_m=tuple(tuple(point) for point in _OUTLINE_5625['polygon_m']),
             sill_extender_ref='XXXXW', sill_extender_source_url=_XXXXW_URL,
             sill_extender_depth=inch(6.375), sill_extender_height=inch(17 / 32),
-            support_kind='girt_bridge', support_ref=support_ref, **_MEMBRANE_PAN))
+            support_kind='girt_bridge', support_ref=support_ref, **_MEMBRANE_PAN,
+            **(catalog or {})))
+
+
+# PORCH and ENTRY keep the one head drip they had before the shared package: the door trim
+# kit's. The stock HeadFlash and the flashing ends that close FS-SG-BALCONY's rear runs are
+# BALCONY's alone; neither run exists at these two doors.
+_MAIN_FLOOR_FLASHING = dict(stock_head_flashing=False, independent_landing_flashing=False)
 
 
 # The planks reach FS-SG-BALCONY's north sister, 3/8" off the beam face like ENTRY's (owner,
@@ -110,11 +118,11 @@ PORCH_INSTALLATION = framed_floor_installation(
     'W-M-S2', ApproachBearing(landing_ref='FS-SG-PORCH', landing='cover',
                               cover_material_ref='frp-joint-cover', cover_seat=inch(1.5625),
                               cover_discharge_ref='TR-SG-SLOT'),
-    exterior_wrap_material_ref='metal-dark-exterior')
+    catalog=_MAIN_FLOOR_FLASHING, exterior_wrap_material_ref='metal-dark-exterior')
 # FS-BW-FLOOR's rim and deck edge stand under 1/2" off the nose (params/breezeway.py): no cover.
 ENTRY_INSTALLATION = framed_floor_installation(
     'W-M-N3', ApproachBearing(landing_ref='FS-BW-FLOOR', landing='gap'),
-    exterior_wrap_material_ref='metal-dark-exterior')
+    catalog=_MAIN_FLOOR_FLASHING, exterior_wrap_material_ref='metal-dark-exterior')
 
 
 def with_catalog_installations(elements):
