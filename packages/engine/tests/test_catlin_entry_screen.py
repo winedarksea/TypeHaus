@@ -22,7 +22,7 @@ def test_mdos_keep_posts_exposed_and_west_structure_fixed(catlin_model_ro):
         xs = [x / INCH for x, _y in layers[name].polygon]
         assert (min(xs), max(xs)) == pytest.approx(expected)
     # The MDO stops at the north chord post; the end pack and its ties stay exposed.
-    expected_runs = ((0.125, 7.875), (13.625, 37.750), (43.500, 67.625))
+    expected_runs = ((0.125, 7.375), (13.125, 37.250), (43.000, 67.125))
     assert "mdo-in-4" not in layers
     for index, expected in enumerate(expected_runs, 1):
         layer = layers[f"mdo-in-{index}"]
@@ -36,7 +36,7 @@ def test_mdos_keep_posts_exposed_and_west_structure_fixed(catlin_model_ro):
     # must not silently put new supports or clips through existing timber.
     stud_stations = sorted((member.p0[1] - wall.axis[0][1]) / INCH
                            for member in wall.members if member.category == "stud")
-    assert stud_stations == pytest.approx([0.75, 16, 32, 48, 64, 77.75])
+    assert stud_stations == pytest.approx([0.75, 16, 32, 48, 64, 77.25])
 
 
 
@@ -47,13 +47,13 @@ def test_mdo_area_and_weight_use_the_same_bounded_regions(catlin_model_ro):
     net = wall_net_areas_m2(catlin_model_ro)[wall.tag]
     layers = [layer for layer in wall.layers if layer.name.startswith("mdo-in-")]
     area = sum(wall_layer_net_area_m2(catlin_model_ro, wall, layer, net) for layer in layers)
-    assert area * 10.7639104 == pytest.approx(17.694444, abs=0.001)
+    assert area * 10.7639104 == pytest.approx(17.536458, abs=0.001)
     rows = [row for row in envelope_layer_takeoff(catlin_model_ro)
             if row["material"] == "entry-screen-white-mdo"]
     assert len(rows) == 1
     assert rows[0]["net_area_sqft"] == pytest.approx(area * 10.7639104, abs=0.05)
     weight = dead_load_plf(SimpleNamespace(plan=catlin_model_ro.plan), wall, wall.z1_m - wall.z0_m)
-    assert weight == pytest.approx(37.53005, abs=0.02)
+    assert weight == pytest.approx(37.5692, abs=0.02)
 
 
 def test_normal_swing_reaches_exports_and_preserves_east_jamb(catlin_model_ro):
@@ -241,10 +241,10 @@ def test_lower_timber_is_one_solid_6x6_and_backs_panel_edges(catlin_model_ro):
     bounds = _supplemental_bounds(model, "TR-BW-MDO-TIMBER")
     # Both faces are the band's centre post's and the chord posts'.
     assert bounds[0] == pytest.approx((72.625, 78.125))
-    assert bounds[1] == pytest.approx((south + 37.875, south + 43.375))
+    assert bounds[1] == pytest.approx((south + 37.375, south + 42.875))
     assert bounds[2] == pytest.approx((0.56, 45))
-    for tag, station, panel_edge in (("TR-BW-MDO-NAILER-6", 37, 37.750),
-                                     ("TR-BW-MDO-NAILER-7", 44.25, 43.500)):
+    for tag, station, panel_edge in (("TR-BW-MDO-NAILER-6", 36.5, 37.250),
+                                     ("TR-BW-MDO-NAILER-7", 43.75, 43.000)):
         bounds = _supplemental_bounds(model, tag)
         assert bounds[1] == pytest.approx((south + station - 0.75, south + station + 0.75))
         # A screw 3/8in inside each new cut lands in solid framing.

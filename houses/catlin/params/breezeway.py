@@ -58,6 +58,7 @@ from params.north_entry_frame import (
     SCREEN_AXIS_X_FT,
     SCREEN_CLADDING_WEST_X_FT,
     SCREEN_PANEL_TOP_FT,
+    SCREEN_START_Y_FT,
     SEAT_START_X_FT,
     SEAT_TOP_FT,
     TRUSS_DATUM_Y_FT,
@@ -183,7 +184,6 @@ NOTES = [
 # sill plate lower down would share space with the seats and joists
 # (`structural.member_interference`).
 # Shear still reaches concrete in one step: the sill lands on the seats, each directly over a pier.
-SCREEN_START_Y_FT = DECK_SHEET_SOUTH_Y_FT
 # Ends on W-G-S's corrugated face, not its node line (E2-101).
 SCREEN_END_Y_FT = GARAGE_CLADDING_Y_FT
 SCREEN_PANEL_NODES = [

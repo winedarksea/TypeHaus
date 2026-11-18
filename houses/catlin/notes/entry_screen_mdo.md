@@ -22,18 +22,19 @@ support mass, purchasing and the local checks all read it. Run
 - `TR-BW-MDO-TIMBER`: one KDAT Southern Pine No. 2 6x6, 5.5 x 5.5, cut 44.44 inches,
   x=72.625–78.125, stations 37.875–43.375, +0.56 to +45. Both faces line up with the band's
   centre post and the chord posts. Pigmented penetrating oil, not white paint.
-- Five KDAT 2x4 edge nailers, x=72.625–76.125, +0.56 to +45, at stations 7.125, 14.375
-  (`-1`, `-2`), 37.000, 44.250 (`-6`, `-7`) and 66.875 (`-4`). `-3` and `-5` are retired.
+- Five KDAT 2x4 edge nailers, x=72.625–76.125, +0.56 to +45, at stations 6.625, 13.875
+  (`-1`, `-2`), 36.500, 43.750 (`-6`, `-7`) and 66.375 (`-4`). `-3` and `-5` are retired.
 - White-painted 3/4-inch Roseburg DuraGard Premium exterior MDO, screwed to framing, face
   x=76.875, 1 1/4 inch behind the exposed timber. No east WRB or cavity.
 
 | Panel | Stations from south node, in | Width, in | Height, in |
 |---|---|---|---|
-| 1 | 0.125–7.875 | 7.750 | 45.5 |
-| 2 | 13.625–37.750 | 24.125 | 45.5 |
-| 3 | 43.500–67.625 | 24.125 | 45.5 |
+| 1 | 0.125–7.375 | 7.250 | 45.5 |
+| 2 | 13.125–37.250 | 24.125 | 45.5 |
+| 3 | 43.000–67.125 | 24.125 | 45.5 |
 
-Panels run +2 to +47.5. Net MDO area 56.0 x 45.5 = 17.694 sf. **Nothing north of the chord
+Panels run +2 to +47.5. Net MDO area 55.5 x 45.5 = 17.536 sf. The south node moved 1/2" north on
+2026-11-18, clear of D-M-ENTRY's casing; every station dropped 1/2", nothing moved but panel 1's end. **Nothing north of the chord
 post** (owner, 2026-11-14): the two HL33 garage ties sit on the end stud pack's east face at
 +10 3/4"..+13 1/4" and +34 3/4"..+37 1/4", and a panel cannot lie flat over them. The end
 pack, tie block and ties are finished like the timber and stay inspectable.
@@ -85,8 +86,8 @@ E 1.2e6): 200 lb x 44.44 / 4 / 27.729 in³ = 80.1 psi, **0.094**; shear 0.060; w
 0.039. The 1/4-inch deflection limit is a project criterion, not a statutory one.
 
 **Plates and sill.** A guard load on the timber reaches the plates as it does from any stud;
-the wall's own guard row (`deck_tie/FS-BW-FLOOR`, 0.653) already takes 200 lb anywhere on
-it. `BM-BW-SCSILL` was sized at the thin-brick wall's 77 plf (197 lb-ft); today's 55.62 plf
+the wall's own guard row (`deck_tie/FS-BW-FLOOR`, 0.650) already takes 200 lb anywhere on
+it. `BM-BW-SCSILL` was sized at the thin-brick wall's 77 plf (197 lb-ft); today's 55.66 plf
 line with the timber's point load is under that.
 
 **Door.** `D-G-SERVICE` clears every screen solid by 0.641 inch at the 87-degree stop
@@ -97,7 +98,7 @@ before setting the stop (`garage_service_door_outswing.md`).
 
 Support wood 54.43 lb (timber 29.1, five nailers 25.3); hardware and paint reserve 2.16 lb
 (2 lb paint and fastening, eight end nails). Both are charged once through the MDO's areal
-density. The wall is **37.53 plf**, the line with the band **55.62 plf**, **163.65 lb** to
+density. The wall is **37.57 plf**, the line with the band **55.66 plf**, **162.99 lb** to
 each west chord: `north_entry_piers.md` §2a.
 
 ## Purchasing

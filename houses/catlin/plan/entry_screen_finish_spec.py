@@ -12,19 +12,20 @@ FINISH_BOTTOM_IN = 2.0
 FINISH_TOP_IN = 47.5
 PREVIOUS_PANEL_RUNS_IN = ((0.125, 7.875), (13.625, 40.5625),
                           (40.6875, 67.625), (73.375, 79.25))
-# Wall length: south node to W-G-S's cladding face (E2-101); was 79.375 to its node line.
-SCREEN_LENGTH_IN = 78.500
+# Wall length: south node to W-G-S's cladding face (E2-101); was 79.375 to its node line, and
+# 78.5 until the south end moved 1/2" north, clear of D-M-ENTRY's casing (2026-11-18).
+SCREEN_LENGTH_IN = 78.000
 # The MDO stops at the north chord post: the end pack north of it, its tie block and the two
 # HL33 garage ties stay exposed and oiled like the timber (owner, 2026-11-14).
-PANEL_RUNS_IN = ((0.125, 7.875), (13.625, 37.750), (43.500, 67.625))
+PANEL_RUNS_IN = ((0.125, 7.375), (13.125, 37.250), (43.000, 67.125))
 # The retired north panel's tie relief; only the previous-finish baseline still reads it.
 TIE_RELIEF_START_IN = 76.625
 TIE_RELIEF_BOTTOM_IN = 22.125
 TIE_RELIEF_TOP_IN = 25.875
-NAILER_STATIONS_IN = (7.125, 14.375, 37.000, 44.250, 66.875)
+NAILER_STATIONS_IN = (6.625, 13.875, 36.500, 43.750, 66.375)
 NAILER_BOTTOM_IN = 0.56
 NAILER_TOP_IN = 45.0
-TIMBER_STATION_IN = 40.625
+TIMBER_STATION_IN = 40.125
 STUD_WEST_IN = 72.625
 STUD_EAST_IN = 76.125
 # One solid 6x6 under the band's centre post, on both its faces and the chord posts'.

@@ -46,7 +46,8 @@ _WORKED = {
     # The screen stops on the garage cladding (2026-11-06): chord -1.18 lb, GW 35.25 -> 35.00;
     # the seat beam stops off the base strap the same day: P_u -4.40 lb, 35.00 -> 34.24.
     # MDO stops at the north chord post, timber nailed (2026-11-14): chord -5.55 lb, -> 33.64.
-    "PT-BW-GW": (1.3277, 33.64, Status.OVER),
+    # The screen's south end 1/2" north (2026-11-18): chord -0.66 lb, -> 33.52.
+    "PT-BW-GW": (1.3277, 33.52, Status.OVER),
     # GE's P_u fell 1,107.8 -> 1,074.7 lb when the landing came in 3 3/8" (2026-10-31).
     "PT-BW-GE": (1.0502, 1.2254, Status.INCOMPLETE),
     # The balcony at the same date: each edge beam carries 9.75' (not 18'), P_u 7,886 ->

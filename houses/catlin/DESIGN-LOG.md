@@ -8671,3 +8671,6 @@ Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
   row 1 1/4" from the backer top. That is UNKNOWN until the flange is known; a 2x8 beam on 7 1/4"
   seats is the fix if it is thick. The retired blocked layout was deleted from the engine. The
   cover now clears the pan's drip leg at the narrowest joint (seat bearing 0.5425").
+- **ENTRY casing (owner, 2026-11-18).** W-BW-SCREEN's south end moved 1/2" north (1" off the house
+  cladding), 1/4" clear of D-M-ENTRY's west casing; both casing legs stay full width. Screen
+  stations dropped 1/2" with it; the deck tie's E-W row is now 0.786 (`north_entry_piers.md` §10).

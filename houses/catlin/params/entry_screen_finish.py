@@ -3,15 +3,15 @@
 from plan.entry_screen_finish_spec import SCREEN_LENGTH_IN, SUPPORTS
 
 from params.north_entry_frame import (
-    DECK_SHEET_SOUTH_Y_FT,
     GARAGE_CLADDING_Y_FT,
     SCREEN_AXIS_X_FT,
+    SCREEN_START_Y_FT,
 )
 from typehaus import Flashing, TrimKind, ft, inch, pt
 
 STUD_EAST_IN = SCREEN_AXIS_X_FT * 12 + 1.75
 # The panel schedule is in inches off N-BW-SCREEN-S; hold it to the wall it cuts.
-assert abs((GARAGE_CLADDING_Y_FT - DECK_SHEET_SOUTH_Y_FT) * 12 - SCREEN_LENGTH_IN) < 1e-6
+assert abs((GARAGE_CLADDING_Y_FT - SCREEN_START_Y_FT) * 12 - SCREEN_LENGTH_IN) < 1e-6
 # Trim solids coordinate supplemental timber in the existing stud cavity. Their mass
 # is already included in the MDO material's effective areal density.
 FINISH_ELEMENTS = [
@@ -22,9 +22,9 @@ FINISH_ELEMENTS = [
         kind=TrimKind.WRB_COUNTERFLASHING,
         path=(
             pt(inch((support.west_in + support.east_in) / 2),
-               ft(DECK_SHEET_SOUTH_Y_FT) + inch(support.station_start_in)),
+               ft(SCREEN_START_Y_FT) + inch(support.station_start_in)),
             pt(inch((support.west_in + support.east_in) / 2),
-               ft(DECK_SHEET_SOUTH_Y_FT) + inch(support.station_end_in)),
+               ft(SCREEN_START_Y_FT) + inch(support.station_end_in)),
         ),
         top_elevation=inch(support.top_in),
         depth=inch(support.top_in - support.bottom_in),
@@ -55,11 +55,11 @@ for panel, (start, end) in enumerate(PANEL_RUNS_IN, 1):
                     path=(
                         pt(
                             inch(STUD_EAST_IN + 0.8125),
-                            ft(DECK_SHEET_SOUTH_Y_FT) + inch(station - 0.1875),
+                            ft(SCREEN_START_Y_FT) + inch(station - 0.1875),
                         ),
                         pt(
                             inch(STUD_EAST_IN + 0.8125),
-                            ft(DECK_SHEET_SOUTH_Y_FT) + inch(station + 0.1875),
+                            ft(SCREEN_START_Y_FT) + inch(station + 0.1875),
                         ),
                     ),
                     top_elevation=inch(z + 0.1875),
