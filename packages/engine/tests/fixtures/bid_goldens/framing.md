@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** d1bb8374c7466b9c  
-**Lines:** 256
+**Model hash:** 5271ed6dc47f16b1  
+**Lines:** 257
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
 
@@ -69,13 +69,13 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x4 SPF No. 2 & Btr framing lumber, 104 5/8" PET (2x4) | 252 | pc | corner stud, king stud, stud | 2197.1 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 10' (2x4) | 31 | pc | partition backer, plate, raked top plate | 310 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 14' (2x4) | 12 | pc | plate | 168 LF | building |
-| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (2x4:kdat) | 211 | pc | girt strapping, truss ladder blocking | 1688 LF | building |
+| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (2x4:kdat) | 208 | pc | girt strapping, truss ladder blocking | 1664 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 10' (2x4:kdat) | 30 | pc | girt strapping | 300 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 12' (2x4:kdat) | 14 | pc | girt strapping | 168 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 14' (2x4:kdat) | 10 | pc | girt strapping | 140 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 16' (2x4:kdat) | 12 | pc | girt strapping | 192 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (2x4:kdat) | 23 | pc | girt strapping | 460 LF | building |
-| 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4:spf) | 21 | pc | blocking, ceiling furring, girt strapping | 168 LF | building |
+| 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4:spf) | 16 | pc | blocking, ceiling furring, girt strapping | 128 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 92 5/8" PET (2x6) | 110 | pc | corner stud, king stud, stud | 849.1 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6) | 395 | pc | blocking, corner stud, cripple stud, door blocking, header, jack stud, king stud, plate, raked top plate, sill, strongback, stud | 3160 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 104 5/8" PET (2x6) | 202 | pc | corner stud, king stud, stud | 1761.2 LF | building |
@@ -89,19 +89,20 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x6 Douglas fir-larch No. 2 framing, 10' (2x6:df-l-no2) | 2 | pc | plate | 20 LF | building |
 | 2x6 Douglas fir-larch No. 2 framing, 14' (2x6:df-l-no2) | 2 | pc | plate | 28 LF | building |
 | 2x6 Douglas fir Select Structural S4S, eased corners, 10' (2x6:df-select-s4s) | 9 | pc | corner stud, stud | 90 LF | building |
-| 2x6 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (2x6:kdat) | 7 | pc | cripple stud, plate, sill, girt strapping | 56 LF | building |
+| 2x6 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (2x6:kdat) | 10 | pc | cripple stud, plate, sill, girt strapping, truss ladder blocking | 80 LF | building |
 | 2x6 KDAT southern yellow pine No. 2 (treated exterior framing), 10' (2x6:kdat) | 6 | pc | plate, girt strapping | 60 LF | building |
 | 2x6 KDAT southern yellow pine No. 2 (treated exterior framing), 14' (2x6:kdat) | 1 | pc | girt strapping | 14 LF | building |
 | 2x6 Laminated strand lumber, 8' (2x6:lsl) | 69 | pc | cripple stud, door blocking, jack stud | 552 LF | building |
 | 2x6 Laminated strand lumber, 104 5/8" PET (2x6:lsl) | 133 | pc | corner stud, king stud, stud | 1159.6 LF | building |
 | 2x6 Red oak 8/4, custom-milled S4S to 1 1/2", 8' (2x6:oak-8q) | 4 | pc | blocking | 32 LF | building |
-| 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6:spf) | 10 | pc | blocking | 80 LF | building |
+| 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6:spf) | 11 | pc | blocking | 88 LF | building |
 | 2x8 SPF No. 2 & Btr framing lumber, 8' (2x8) | 34 | pc | joist, landing framing, plate, rim board | 272 LF | building |
 | 2x8 SPF No. 2 & Btr framing lumber, 16' (2x8) | 3 | pc | plate | 48 LF | building |
 | 2x8 SPF No. 2 & Btr framing lumber, 8' (2x8:spf) | 39 | pc | blocking | 312 LF | building |
 | 2x12 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (3-2x12:kdat) | 6 | pc | joist (3-ply) | 120 LF | building |
-| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (3-2x4:kdat) | 138 | pc | truss girt block (3-ply) | 1104 LF | building |
+| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (3-2x4:kdat) | 135 | pc | truss girt block (3-ply) | 1080 LF | building |
 | 2x6 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (3-2x6:kdat) | 9 | pc | truss girt block (3-ply) | 72 LF | building |
+| 2x6 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (4-2x6:kdat) | 4 | pc | truss girt block (4-ply) | 32 LF | building |
 | 5 1/4" x 7" LVL 2.0E, 8' (5.25x7 LVL) | 1 | pc | header | 8 LF | building |
 | 5 1/2" x 3 1/2" LSL, 12' (5.5x3.5 LSL) | 3 | pc | ridge beam | 36 LF | building |
 | 6x6 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (6x6:kdat) | 2 | pc | brace, stud | 16 LF | building |
@@ -229,7 +230,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | KDAT 4x4 tie block, 3-1/2" long, screwed to the tied member (TIE-BLOCK-4X4-KDAT:modeled connector) | 1 | ea |  | building |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:eave gutter girt standoffs) | 72 | ea |  | building |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:girt wall blocks) | 1,159 | ea |  | building |
-| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK10:girt door sill course blocks) | 41 | ea |  | building |
+| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK10:girt door sill course blocks) | 24 | ea |  | building |
 
 ## Other structural solids
 
@@ -423,6 +424,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x12 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (3-2x12:kdat) | — |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (3-2x4:kdat) | — |
 | 2x6 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (3-2x6:kdat) | — |
+| 2x6 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (4-2x6:kdat) | — |
 | 5 1/4" x 7" LVL 2.0E, 8' (5.25x7 LVL) | — |
 | 5 1/2" x 3 1/2" LSL, 12' (5.5x3.5 LSL) | — |
 | 6x6 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (6x6:kdat) | — |

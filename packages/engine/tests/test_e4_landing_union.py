@@ -105,10 +105,11 @@ def test_catlin_patio_door_still_lands_on_the_court(catlin_check_report):
 
 
 def test_catlin_egress_door_grades_its_interior_rise(catlin_check_report):
-    """R311.3.1 on the inside: D-M-ENTRY's crest on its across-RO pan stands under 1.5"."""
+    """R311.3.1 on the inside: D-M-ENTRY's crest on its membrane pan stands under 1.5"."""
     from typehaus.findings import Result
 
     entry = [f for f in catlin_check_report().findings
              if f.check_id == "code.R311_3_exterior_landing" and "D-M-ENTRY" in f.message]
     assert [f.result for f in entry] == [Result.PASS], entry
-    assert 'inside, threshold 1.47" over the interior floor' in entry[0].message
+    # The catalog ZAI5625FN on its membrane pan, with the 1/4" allowance (2026-11-18).
+    assert 'inside, threshold 1.45" over the interior floor' in entry[0].message

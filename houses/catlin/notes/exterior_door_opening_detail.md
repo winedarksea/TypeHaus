@@ -17,14 +17,14 @@ source:
 ### General
 - Cut at D-M-ENTRY: DT-EXT-SWING36, R.O. 3'-2 3/8" x 6'-10 7/8". D-M-PORCH and D-S-BALCONY: same sill package.
 - R.O. starts on the 3/4" subfloor, not the joist top. The subfloor runs under the sill; the skin below stops at the datum.
-- One sill at all three: ZAI5625FN + 6 3/8" XXXXW on a membrane pan on the subfloor. Crest 1.20" over the LVP (1.45" with 1/4"), 2.23" over the ENTRY landing.
-- Wall frame as at the windows (posts, head course, 3/8" ply buck), but the sill is a 2x6 KDAT beam outboard of the girts, face at the extender nose, on a 4-ply seat at each end (exterior_door_sill_beam.md).
+- One sill at all three: ZAI5625FN + 6 3/8" XXXXW on a membrane pan. Crest 1.20" over the LVP (1.45" with 1/4"), 2.23" over the landing.
+- Wall frame as at the windows, but the sill is a 2x6 KDAT beam outboard of the girts, its face at the extender nose, seated at each end.
 - Factory jambs anchor to the stud opening. The buck is a flashing substrate, not anchorage or threshold bearing.
 - The sill is a digitized catalog outline until the prehanger's installed section is in hand.
 
 ### Keyed
 - [K1 @ host#layer:outer-girt:out] Jamb post: KDAT 2x4 flat, inner face on the R.O. edge, 3-1/2" past each end.
-- [K2] Self-adhered membrane pan on the subfloor and buck: back dam, end dams 6" up the jambs, over the beam top (ripped 1/4"/ft) and 1/2" down its face to a drip, 3/4" past the cladding.
+- [K2] Membrane pan on subfloor and buck: back dam, end dams 6" up the jambs, over the beam top and 1/2" down its face to a drip.
 - [K3 @ host#layer:spray-foam:out] Head: site-brake 24 ga steel drip cap, 1" past each casing end, end dams. Upstand stripped in.
 - [K4] Panel end above the head on a perforated strip. Keep the pan outlet open: never caulk or shim across it.
 - [K5 @ host#layer:cladding:out] Sealant at the cladding-to-frame joint, at the mount plane, under the drip.

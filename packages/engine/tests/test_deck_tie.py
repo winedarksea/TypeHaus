@@ -46,7 +46,8 @@ def test_the_tie_is_derived_from_the_authored_hardware(catlin_ctx):
 def test_the_loads_reproduce_section_10b(catlin_ctx):
     record = catlin_ctx.engineering[_ITEM]
     # The landing's OWN edge band (§10b): 8.19" of joist and board (2026-10-15, §10i), not TR-SG-FASCIA.
-    assert _input(record, "x:FS-BW-FLOOR deck wind") == pytest.approx(67.3549, abs=0.01)
+    # The deck's south edge moved 5/8" north for D-M-ENTRY's sill beam (2026-11-17).
+    assert _input(record, "x:FS-BW-FLOOR deck wind") == pytest.approx(66.8159, abs=0.01)
     assert _input(record, "x:W-BW-SCREEN face") == pytest.approx(405.065, abs=0.01)
     assert _input(record, "x:W-BW-SCREEN-SKIRT face") == pytest.approx(111.736, abs=0.01)
     # §10k (2026-10-31): the landing is 3.3021' wide; the seat beams 3.0355' long since they
@@ -59,16 +60,16 @@ def test_the_loads_reproduce_section_10b(catlin_ctx):
 
 
 def test_the_verdicts_reproduce_section_10h(catlin_ctx):
-    """§10n: every row passes; E-W wind at W governs at 0.794."""
+    """§10n: every row passes; E-W wind at W governs at 0.792."""
     record = catlin_ctx.engineering[_ITEM]
     assert record.status is Status.OK
     ns = _state(record, "tie interaction, N-S wind")
     assert ns.ratio == pytest.approx(0.7614, abs=5e-4)
     assert record.governing.name == "tie interaction, E-W wind"
     ew = _state(record, "tie interaction, E-W wind")
-    assert ew.ratio == pytest.approx(0.7935, abs=5e-4)
+    assert ew.ratio == pytest.approx(0.7924, abs=5e-4)
     assert _state(record, "tie interaction, guard").ratio == pytest.approx(0.6528, abs=5e-4)
-    assert "590.2 lb along the wall / 1,480.0 + 292.1 lb across it / 740.0" in ew.citation
+    assert "589.1 lb along the wall / 1,480.0 + 291.8 lb across it / 740.0" in ew.citation
     # W's dry service is a judgement named for the engineer of record, on the record.
     assert any("DRY SERVICE at W-BW-SCREEN/W-G-W" in n and "engineer of record" in n
                for n in record.notes)

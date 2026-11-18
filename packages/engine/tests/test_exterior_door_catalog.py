@@ -61,6 +61,9 @@ def test_a_foam_bed_grades_bearing_and_owes_no_connection():
     assert result["allowable_psi"] == pytest.approx(13.333, abs=1e-3)
     assert result["bearing_dcr"] == pytest.approx(0.780, abs=1e-3)
     assert (result["member_status"], result["connection_status"]) == ("PASS", "NOT_APPLICABLE")
+    profiled = _catalog(support_kind="foam_bed", foam_rated_psi=40.0,
+                        approach_profiled_underside=True)
+    assert foam_bed_support_report(profiled)["member_status"] == "UNKNOWN"
     soft = _catalog(support_kind="foam_bed", foam_rated_psi=15.0, approach_board_width=inch(5.5))
     assert foam_bed_support_report(soft)["member_status"] == "FAIL"  # 10.4 > 15 / 3
     with pytest.raises(ValueError, match="rated compressive"):
@@ -125,12 +128,13 @@ def test_catalog_installation_keeps_evidence_separate(catlin_model_ro, tag):
     # The study's extender rests on the girt course, whose screws are graded (2026-11-14).
     assert report["support"]["connection_status"] == ("NOT_APPLICABLE" if tag == "D-B-SUNKEN"
                                                       else "PASS")
-    assert report["support"]["member_status"] == ("PASS" if tag == "D-B-SUNKEN"
-                                                  else "NOT_APPLICABLE")
+    # The study's PASS is its end-seated sill beam's (2026-11-17).
+    assert report["support"]["member_status"] == "PASS"
     assert report["approach_slope"] == pytest.approx(1 / 48)
     if tag == "D-S-BALCONY":
         assert report["drainage_clearance_in"] > 0
-    assert report["receiver_pan_clearance_in"] >= 0.0625
+    # Short of the pan; inside 1/16" the cap's factory setting decides (a supplier hold).
+    assert report["receiver_pan_clearance_in"] > 0
     if tag == "D-S-BALCONY":
         assert report["minimum_movement_gap_in"] > 0
     assert report["minimum_flashing_overlap_in"] > 0

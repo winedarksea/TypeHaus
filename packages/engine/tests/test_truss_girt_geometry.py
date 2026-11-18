@@ -601,8 +601,13 @@ def test_head_and_sill_courses_span_the_rough_opening(catlin_model):
                     key = f"ladder-{name}-{band}-{index:03d}"
                     piece = next((m for m in wall.members if m.child_key == key), None)
                     assert piece is not None, f"{wall.tag}: no {key}"
-                    assert piece.z0_m == pytest.approx(z0, abs=1e-9), key
-                    assert piece.z1_m - piece.z0_m == pytest.approx(_STOCK_FACE, abs=1e-9)
+                    if name == "sill" and opening.kind == "door":
+                        # The end-seated 2x6 sill beam tops out at the rough sill (2026-11-17).
+                        assert piece.z1_m == pytest.approx(z_sill, abs=1e-9), key
+                        assert piece.z1_m - piece.z0_m == pytest.approx(5.5 * IN, abs=1e-9)
+                    else:
+                        assert piece.z0_m == pytest.approx(z0, abs=1e-9), key
+                        assert piece.z1_m - piece.z0_m == pytest.approx(_STOCK_FACE, abs=1e-9)
                     assert piece.length_m == pytest.approx(opening.width_m, abs=1e-9), (
                         f"{wall.tag} {key}: spans {piece.length_m / IN:.1f}\" of a "
                         f"{opening.width_m / IN:.1f}\" RO")

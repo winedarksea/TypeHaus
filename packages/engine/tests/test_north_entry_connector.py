@@ -58,7 +58,8 @@ def test_both_full_door_landing_patches_fit_the_shared_deck(catlin_plan):
     # rainscreened wall they dam the drainage plane and hold water against it. Abutting was
     # never bearing, so the gap costs the landing nothing structurally -- but the 36" patch
     # R311.3 wants is measured from where the DECK starts, not from the wall.
-    deck_south = house_face + ft(0, 0.5).meters
+    # 2026-11-17: the board edge moved 1/8" further, 3/8" past D-M-ENTRY's sill beam.
+    deck_south = house_face + ft(0, 0.625).meters
     assert surface.buffer(1e-8).covers(box(ft(6.5).meters, deck_south,
                                          ft(9.5).meters, deck_south + ft(3).meters))
     # The 32in service opening is now 6'-11"..9'-7"; its east jamb and the deck edge

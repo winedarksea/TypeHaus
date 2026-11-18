@@ -264,9 +264,10 @@ def test_fitted_cap_and_openings_do_not_change_the_volume_bill(catlin_model_ro):
     assert rows[0]["count"] == 1
     assert rows[0]["length_ft"] > 0
     # The doors' head drip is a billed `cladding_trim` cut now, not flashing sheet.
-    for tag in ("D-M-ENTRY", "D-G-SERVICE"):
+    # A catalog sill's pan is its installation's own section (D-M-ENTRY since 2026-11-17).
+    for tag, pan in (("D-M-ENTRY", set()), ("D-G-SERVICE", {"opening_sill_pan"})):
         assert {s.category for s in sheets if s.host_ref == tag} == {
-            "opening_sill_pan", "opening_flashing_membrane"}
+            "opening_flashing_membrane", *pan}
         assert any(s.category == "cladding_trim" and s.host_ref == tag and "-TRIM-HEAD-" in s.tag
                    for s in model.solids)
 
