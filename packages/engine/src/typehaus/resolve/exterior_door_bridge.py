@@ -11,6 +11,7 @@ from math import ceil
 
 from shapely.geometry import LineString, Polygon
 
+from typehaus.resolve.exterior_door_cover import add_cover
 from typehaus.resolve.exterior_door_sections import DoorSectionBuilder
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import opening_center, wall_frame
@@ -224,8 +225,6 @@ def _across_faces(member, local):
 
 def bridge_installation(model, wall, opening, placement, layout, clad):
     """A catalog ``girt_bridge`` door: ``(support report, sections, conflicts, unknown)``."""
-    from typehaus.resolve.exterior_door_cover import add_cover
-
     installation = placement.specification
     spec = installation.catalog_installation
     bearing = installation.approach_bearing
@@ -267,9 +266,11 @@ def bridge_installation(model, wall, opening, placement, layout, clad):
                    "supplier hold")
     cover = {}
     if bearing.landing == "cover":
+        # The pan wraps the beam face down to its drip: the cover closes onto that skin.
+        skin = layout.membrane if pan_outlet == support.girt_face else 0.0
         cover, cover_conflicts, cover_unknown = add_cover(
-            model, builder, bearing, support, house_face, layout,
-            spec.movement_horizontal.meters)
+            model, builder, bearing, support, house_face,
+            spec.movement_horizontal.meters, skin, layout.base - fall - _DRIP_LEG)
         conflicts.extend(cover_conflicts)
         unknown.extend(cover_unknown)
     report = dict(

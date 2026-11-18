@@ -184,7 +184,7 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     # length, which the length-ordered exterior-insulation ladder cannot see.
     girt_rows = [row for row in all_rows if row["role"] == ROLE_GIRT_STANDOFF_SCREW
                  and row["scope"] not in ("eave gutter girt standoffs",
-                                          "girt door sill course blocks")]
+                                          "girt door sill beam seats")]
     # ONE "exterior wall furring" row, and it is the garage ICF stem's protection band.
     # `GARAGE_ICF_6`'s stem walls are filed on `g-foundation` — the GARAGE's own frost-depth
     # storey since 2026-09-13, `basement` before that — which is what separates them from the

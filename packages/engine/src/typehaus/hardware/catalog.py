@@ -320,13 +320,15 @@ class AllowableLoads:
 class FastenerSpacing:
     """A screw's published placement minima, inches, for load perpendicular to the grain.
 
-    ``row_spacing`` is between STAGGERED rows; ``loaded_edge`` is the edge the screw bears
-    toward in each member. ``min_embedded_thread`` is the report's own embedment floor.
+    ``row_spacing`` is between STAGGERED rows (adjacent rows offset by half the in-row
+    spacing), ``in_line_row_spacing`` between rows that are not; ``loaded_edge`` is the edge
+    the screw bears toward in each member. ``min_embedded_thread`` is the report's own floor.
     """
 
     end_distance: float
     in_row_spacing: float
     row_spacing: float
+    in_line_row_spacing: float
     loaded_edge: float
     unloaded_edge: float
     min_embedded_thread: float

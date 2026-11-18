@@ -8666,3 +8666,8 @@ Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
 - **Rejected:** the porch-supported tread (FS-SG-PORCH's last joist is at the court edge; a
   nearer bearing enters the house's foam and cladding zone); seating the beam on the girt jamb
   posts (a 3 1/2" post block cannot hold one screw to Table 5); a longer TimberLOK.
+- **Review (2026-11-18).** The seat rows sit at Table 5's minima only under a 1 1/4" TJI flange,
+  the thin end of TJ-4000 p.6's band; a 1 3/8" flange drops the backers 1/8" and leaves the top
+  row 1 1/4" from the backer top. That is UNKNOWN until the flange is known; a 2x8 beam on 7 1/4"
+  seats is the fix if it is thick. The retired blocked layout was deleted from the engine. The
+  cover now clears the pan's drip leg at the narrowest joint (seat bearing 0.5425").

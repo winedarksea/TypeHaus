@@ -3,11 +3,12 @@
 Owner scope, 2026-10-26: standard rainproofing, catalog parts and ordinary field
 fitting; no inquiries, custom metal fabrication or purchases. Keep the nominal
 60 × 80 pairs and their centerlines. Exterior finish is composite/PVC/aluminum,
-with no exposed wood. Main-floor door installations and WIN-B-SAUNA are unchanged.
+with no exposed wood. Since 2026-11-17 D-M-PORCH and D-M-ENTRY share D-S-BALCONY's sill
+package (`exterior_door_sill_beam.md`); WIN-B-SAUNA is unchanged.
 
 **Status: coordinated, NOT construction-ready.** Both approaches now rest without
 cantilevers: the sunken door's tread on rated foam with its slot draining down the
-isolation joint (§6), and the study's extender on the girt sill course (§2). Door
+isolation joint (§6), and the framed-floor doors' extenders on the end-seated sill beam (§2). Door
 installation stays UNKNOWN on supplier evidence (installed pan/sweep/hinge sections, the
 XXXXW and the 5-5/8 inch sill on this jamb, assembly label and warranty) and on one
 engineered connection, the girt course's blocks under the study approach (§2,
@@ -188,17 +189,20 @@ unit label, order confirmation or warranty extension was obtained.
 ## 5. Construction sequence after the evidence holds close
 
 1. Confirm the exact catalog unit/hinge/sweep/pan sections and adjust the RO/head allowance.
-2. Engineer the girt sill course's block connection under the approach load (study); detail
-   the tread bed, joint drain and sealant (sunken garden, §6).
+2. Confirm the TJ-4000 p.28 backer row and the delivered TJI flange behind the sill beam's
+   seats (`exterior_door_sill_beam.md` §3); detail the tread bed, plate, joint drain and
+   sealant (sunken garden, §6).
 3. Form the sunken-garden door recess, cut its joint board and set the drainage board; frame
-   the study's opening with the door's buck sill flush with its rough sill.
+   the framed-floor openings with the buck sill flush with the rough sill, and set each sill
+   beam on its two seats before the foam.
 4. Install the pans with their end dams, the sunken door's water sheet under its pan, and the
-   study pan level over the buck to its drip past the cladding.
-5. Set and anchor the composite frames on continuous level bearing; the study's draining
-   strips and XXXXW extender; adjust the sweep, corner seals and FLA receiver without drilling
-   through a pan.
-6. Lay the sunken tread on its foam; extend the court planks to the north sister; keep the
-   1 inch gap at the study's extender nose, the slot and the veneer weeps open.
+   framed-floor pans over the buck, falling across the beam top and down its face to the drip.
+5. Set and anchor the composite frames on continuous level bearing; the draining strips and
+   XXXXW extenders; adjust the sweep, corner seals and FLA receiver without drilling through a
+   pan.
+6. Lay the sunken tread on its plate and foam; extend the court planks to the north sister;
+   fit PORCH's cover and ledge; keep BALCONY's 1 inch joint, ENTRY's 3/8 inch joint, the slot
+   and the veneer weeps open.
 7. Complete the flashing ends, returns/casing and head kit; verify both leaf swings, bolt
    operation and weather seals.
 8. Measure finished crest/landing heights and clear headroom; water-test drainage before

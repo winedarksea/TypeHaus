@@ -124,10 +124,18 @@ def screw_spacing_failures(screws, members, spacing):
             if b - a < spacing.in_row_spacing - tol:
                 out.append(f"row {row}: in-row spacing {b - a:.3f} in < "
                            f"{spacing.in_row_spacing:g} in")
+    # The staggered minimum holds only where neighbouring rows sit half a pitch apart along
+    # the grain (Table 5 note 4); closer than that, the in-line minimum applies.
     heights = sorted({round(z, 6) for _, z, _ in screws})
     for a, b in zip(heights, heights[1:], strict=False):
-        if b - a < spacing.row_spacing - tol:
-            out.append(f"row spacing {b - a:.3f} in < {spacing.row_spacing:g} in")
+        lower = [s for s, z, _ in screws if abs(z - a) < tol]
+        upper = [s for s, z, _ in screws if abs(z - b) < tol]
+        offset = min(abs(p - q) for p in lower for q in upper)
+        staggered = offset >= spacing.in_row_spacing / 2 - tol
+        minimum = spacing.row_spacing if staggered else spacing.in_line_row_spacing
+        if b - a < minimum - tol:
+            out.append(f"{'staggered' if staggered else 'in-line'} row spacing {b - a:.3f} in "
+                       f"< {minimum:g} in")
     return out
 
 

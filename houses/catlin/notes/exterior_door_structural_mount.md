@@ -24,7 +24,8 @@ approach sections pass the geometric interference check. Study nominal crest dif
 above oak and 0.988 inch above the landing, with a separate +0.250 inch allowance.
 The support member checks pass; root connections, concrete development, installed
 pan/apron interfaces and flashing-end application evidence remain open. The main-floor
-installations described below are unchanged. This is not a construction-ready detail.
+schematic sills, walking plates and pads described below were retired on 2026-11-17 (top of
+this note); they stay as history. This is not a construction-ready detail.
 
 Design decision, 2026-10-24; extended to **D-S-BALCONY** on 2026-10-26.
 Applies to **D-M-ENTRY**, **D-M-PORCH**, and **D-S-BALCONY**.
@@ -96,7 +97,9 @@ purchase confirmation. Doorway JSON/IFC expose section, supplier and fit statuse
 Missing geometry or installation data remains UNKNOWN; measured conflicts remain FAIL.
 Existing `verified` section records retain their behavior for compatibility.
 
-The main entry D-M-ENTRY and porch door D-M-PORCH retain an explicitly selected
+*Superseded 2026-11-17: D-M-ENTRY and D-M-PORCH now use the catalog package; the next four
+paragraphs record the retired schematic selection.* The main entry D-M-ENTRY and porch door
+D-M-PORCH retained an explicitly selected
 **schematic sill design**, rather than leaving the exposed pan as the only bottom
 geometry. It does **not**
 set `section_documented`, `supplier_confirmed`, or a VERIFIED fit. The factory frame,

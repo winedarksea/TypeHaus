@@ -4,17 +4,16 @@ Fixed on the landing member's inner part, beside the plank ends' bearing, its to
 with the deck; at the house end it slides on a ledge on the sill beam's face, below the
 pan's drip. It bears at both ends and slides at one. Graded across the joint's full range,
 the catalog's movement plus ``cover_tolerance`` each way: bearing on the ledge at the widest
-opening, and the ledge clear of the landing member and the cover clear of the beam at the
-narrowest (``notes/exterior_door_sill_beam.md`` §4). Depths are the bridge's layout frame.
+opening, and the ledge clear of the landing member and the cover clear of the beam (and the
+pan's drip leg on its face, ``skin``) at the narrowest (``notes/exterior_door_sill_beam.md``
+§4). Depths are the bridge's layout frame; ``drip_foot`` is the drip leg's bottom.
 """
-
-from typehaus.resolve.exterior_door_bridge import _DRIP_LEG
 
 _IN = 0.0254
 _TOL = _IN / 64
 
 
-def add_cover(model, builder, bearing, support, house_face, layout, movement):
+def add_cover(model, builder, bearing, support, house_face, movement, skin, drip_foot):
     """``(report fields, conflicts, unknown)``; draws the cover and its ledge."""
     conflicts, unknown = [], []
     if None in (support.member_inner, support.member_outer, support.member_top,
@@ -23,7 +22,7 @@ def add_cover(model, builder, bearing, support, house_face, layout, movement):
     swing = movement + bearing.cover_tolerance.meters
     seat = bearing.cover_seat.meters
     fixed_outer = support.member_outer - bearing.plank_bearing.meters
-    inner = house_face + swing
+    inner = house_face + skin + swing
     bottom, top = support.member_top, support.deck_top
     fixed = fixed_outer - support.member_inner
     sliding = house_face + seat - inner - swing
@@ -43,7 +42,7 @@ def add_cover(model, builder, bearing, support, house_face, layout, movement):
                          "seat, under its minimum")
     if ledge_clear < -_TOL:
         conflicts.append("at the narrowest joint the cover seat meets the landing member")
-    if bottom > layout.base - _DRIP_LEG + _TOL:
+    if bottom > drip_foot + _TOL:
         conflicts.append("the cover seat stands above the pan's drip on the sill beam")
     if not any(getattr(e, "tag", None) == bearing.cover_discharge_ref
                for items in model.plan.elements.values() for e in items):

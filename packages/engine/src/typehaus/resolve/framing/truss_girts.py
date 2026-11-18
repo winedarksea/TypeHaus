@@ -88,7 +88,7 @@ from typehaus.resolve.framing.furring import (  # noqa: F401 - re-exported by tr
     course_elevations,
     opening_margin,
 )
-from typehaus.resolve.framing.girt_sill_course import end_seat_sill_course, sill_course_blocks
+from typehaus.resolve.framing.girt_sill_course import end_seat_sill_course
 from typehaus.resolve.framing.girt_support_spacing import (
     complete_support_stations,
     land_free_ends,
@@ -680,8 +680,7 @@ class GirtFrame(BandFrame):
                         tier, station, z,
                         f"block-{tier}-jamb-{index:03d}-{side}-{count:02d}"))
             for name, z0 in (("head", head_z), ("sill", sill_z)):
-                if (name == "sill" and opening.kind == "door" and self.sill_course is not None
-                        and self.sill_course.layout == "end_seats"):
+                if name == "sill" and opening.kind == "door" and self.sill_course is not None:
                     out.extend(end_seat_sill_course(self, tier, index, band, jambs, z_sill,
                                                     z0 + self.stock_face))
                     continue
@@ -708,9 +707,6 @@ class GirtFrame(BandFrame):
                 spacing, phase = self._module(tier)
                 half = self.stock_face / 2.0
                 span = (jambs[0] + half, jambs[1] - half)
-                if name == "sill" and opening.kind == "door" and self.sill_course is not None:
-                    out.extend(sill_course_blocks(self, tier, index, span, z0))
-                    continue
                 for count, station in enumerate(
                         st for st in _module_stations(
                             span[0], span[1], spacing, self.stock_face,

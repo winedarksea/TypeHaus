@@ -230,7 +230,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | KDAT 4x4 tie block, 3-1/2" long, screwed to the tied member (TIE-BLOCK-4X4-KDAT:modeled connector) | 1 | ea |  | building |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:eave gutter girt standoffs) | 72 | ea |  | building |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:girt wall blocks) | 1,159 | ea |  | building |
-| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK10:girt door sill course blocks) | 24 | ea |  | building |
+| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK10:girt door sill beam seats) | 24 | ea |  | building |
 
 ## Other structural solids
 
@@ -542,7 +542,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | KDAT 4x4 tie block, 3-1/2" long, screwed to the tied member (TIE-BLOCK-4X4-KDAT:modeled connector) | — |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:eave gutter girt standoffs) | — |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:girt wall blocks) | — |
-| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK10:girt door sill course blocks) | — |
+| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK10:girt door sill beam seats) | — |
 | Beam — EQUIP_STAND_ALUM (beam:EQUIP_STAND_ALUM) | BM-M-HP3-R1, BM-M-HP3-R2 |
 | Column (column) | P-S-SN3-SQUASH |
 | Column — ELM_TIMBER (column:ELM_TIMBER) | P-S-TUDOR1, P-S-TUDOR2 |

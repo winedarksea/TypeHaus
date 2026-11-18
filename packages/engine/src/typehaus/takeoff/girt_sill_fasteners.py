@@ -1,6 +1,6 @@
-"""Screws in a door's girt sill course blocks or end seats (``FramingSpec.sill_course``).
+"""Screws in a door's girt sill beam seats (``FramingSpec.sill_course``).
 
-Each block or seat names its count (``resolve/framing/girt_sill_course.py``); the part is
+Each seat names its count (``resolve/framing/girt_sill_course.py``); the part is
 the authored ``SillCourseFastening.fastener_part``, into the floor edge's backer pair.
 """
 
@@ -14,7 +14,7 @@ from typehaus.resolve.framing.truss_girts import truss_girt_bands
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff.hardware_row import hardware_row
 
-SCOPE = "girt door sill course blocks"
+SCOPE = "girt door sill beam seats"
 
 
 def girt_sill_screw_rows(model: ResolvedModel) -> list:
@@ -41,13 +41,7 @@ def girt_sill_screw_rows(model: ResolvedModel) -> list:
 
 
 def _basis(spec, thread_in):
-    if spec.layout == "end_seats":
-        return (f"per end seat as resolved: {spec.seat_rows} staggered rows of "
-                f"{spec.screws_per_row}, through the {spec.course_stock} sill beam + seat stack "
-                f"+ sheathing into the edge joist's SPF backer pair ({thread_in:g} in thread); "
-                "notes/exterior_door_sill_beam.md")
-    return (f"per block as resolved: {spec.end_screws} in each end block, 1 in each "
-            f"interior block at {round(spec.block_spacing.inches, 4):g} in max, "
-            "through girt + block + sheathing + the edge joist's SPF backer pair "
-            f"({thread_in:g} in thread in the inner backer); "
-            "notes/exterior_door_structural_mount.md")
+    return (f"per end seat as resolved: {spec.seat_rows} staggered rows of "
+            f"{spec.screws_per_row}, through the {spec.course_stock} sill beam + seat stack "
+            f"+ sheathing into the edge joist's SPF backer pair ({thread_in:g} in thread); "
+            "notes/exterior_door_sill_beam.md")

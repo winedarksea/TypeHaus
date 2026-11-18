@@ -1,13 +1,13 @@
-"""A door's girt sill course carries its approach on its blocks' screws.
+"""A door's girt sill beam carries its approach on its two end seats' screws.
 
 The screws cross the sheathing into the floor's edge member. At an I-joist they would cross
-the web and nothing else, so an SPF backer goes on each face of the web, ripped to the
-recess, and becomes derived floor framing here: the course's length behind blocks, each
-seat's length behind end seats. The screw is graded on what ESR-1078 and the house's own
-basis ask (``notes/exterior_door_sill_beam.md`` §3): plain shank across the clamped stack
-(the sheathing is nailed to the edge member, ``catlin_truss_engineering.md`` §3.1), thread
-inside the edge member, embedded thread and penetration minima, the published spacing; the
-share is ``engineering.exterior_door_support``'s spring beam.
+the web and nothing else, so an SPF backer goes on each face of the web behind each seat,
+ripped to the recess, and becomes derived floor framing here. The screw is graded on what
+ESR-1078 and the house's own basis ask (``notes/exterior_door_sill_beam.md`` §3): plain
+shank across the clamped stack (the sheathing is nailed to the edge member,
+``catlin_truss_engineering.md`` §3.1), thread inside the edge member, embedded thread and
+penetration minima, the published spacing; the share is
+``engineering.exterior_door_support``'s spring beam.
 """
 
 from __future__ import annotations
@@ -21,7 +21,7 @@ from typehaus.engineering.exterior_door_support import (
     sill_beam_report,
 )
 from typehaus.hardware.catalog import screw_by_part_number
-from typehaus.resolve.framing.girt_sill_course import sill_block_prefix, sill_block_screws
+from typehaus.resolve.framing.girt_sill_course import sill_block_prefix
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.framing.truss_girts import OUTER, truss_girt_bands
 from typehaus.resolve.geometry import opening_center, wall_frame
@@ -33,29 +33,27 @@ _EDGE_CATEGORIES = ("joist", "rim", "sister_joist", "trimmer", "blocking", "band
 _BACKER_KEY = "girt-sill-backer-"
 #: NDS §12.1.4.6 minimum penetration, in diameters (``catlin_truss_engineering.md`` §3.3).
 _MIN_PENETRATION_D = 6
+#: Width of TJ-4000 p.6's published flange-thickness band (``framing/profiles._TJI_SERIES_IN``
+#: models its low end): a backer tight under a thick flange sits this much lower.
+_FLANGE_BAND_IN = 0.125
 
 
 def girt_sill_connection(model, wall, opening, placement, course: FramedMember):
-    """``(report fields, unknown, conflicts)`` for one door's girt sill course."""
+    """``(report fields, unknown, conflicts)`` for one door's girt sill beam."""
     bands = truss_girt_bands(model.plan, wall.assembly)
     framing = bands[1].framing if bands else None
     spec = framing.sill_course if framing is not None else None
     if spec is None or framing.standoff_fastener_diameter_in is None:
         return _unknown("its screws have no authored sill-course fastening")
-    seats = spec.layout == "end_seats"
-    capacity, source = ((spec.lateral_wet_lb, spec.lateral_source) if seats else
-                        (framing.standoff_fastener_wet_lateral_lb,
-                         framing.standoff_fastener_wet_lateral_source))
-    if capacity is None:
-        return _unknown("its screws have no authored lateral value")
+    capacity, source = spec.lateral_wet_lb, spec.lateral_source
     item, _, thread_in = screw_by_part_number(spec.fastener_part)
     index = int(course.child_key.rsplit("-", 1)[-1])
-    blocks = [m for m in wall.members if m.child_key.startswith(sill_block_prefix(OUTER, index))]
-    if not blocks or thread_in is None:
-        return _unknown("no blocks under it" if not blocks else
-                        f"{spec.fastener_part}'s thread length is unread")
+    seats = [m for m in wall.members if m.child_key.startswith(sill_block_prefix(OUTER, index))]
+    if len(seats) != 2 or thread_in is None or item.spacing is None:
+        return _unknown("it has no seat at each end" if len(seats) != 2 else
+                        f"{spec.fastener_part}'s thread length or published spacing is unread")
     frame = _CourseFrame(wall, opening, placement, course)
-    block = blocks[0]
+    block = seats[0]
     sheathing_out = frame.depth(block.p0) - cross_section(block.profile).width_m / 2
     sheathing_t = sum(layer.thickness_m for layer in wall.depth_layers()
                       if layer.function == "sheathing")
@@ -67,9 +65,7 @@ def girt_sill_connection(model, wall, opening, placement, course: FramedMember):
     floor_index, member = found
     section = cross_section(member.profile)
     unknown, conflicts = [], []
-    ranges = ([(frame.station(b.p0), frame.station(b.p1)) for b in blocks] if seats
-              else [(0.0, frame.span)])
-    ranges = [tuple(sorted(r)) for r in ranges]
+    ranges = [tuple(sorted((frame.station(b.p0), frame.station(b.p1)))) for b in seats]
     # The edge member's wood, depth past its face (the sheathing's back): an I-joist's web
     # is a gap between its two backers.
     wood = [(0.0, section.width_m)]
@@ -77,46 +73,42 @@ def girt_sill_connection(model, wall, opening, placement, course: FramedMember):
     if section.shape == "i_joist":
         flange_bottom = member.z1_m - section.flange_thickness_m
         if block.z0_m >= flange_bottom - _TOL:
-            return _unknown(f"its blocks sit wholly opposite {member.child_key}'s flange")
+            return _unknown(f"its seats sit wholly opposite {member.child_key}'s flange")
         recess = (section.flange_width_m - section.web_thickness_m) / 2
         wood = [(0.0, recess), (recess + section.web_thickness_m, section.flange_width_m)]
         backer_z = _add_backers(model, floor_index, member, frame, spec, opening.tag, recess,
                                 flange_bottom, ranges)
-        unknown.append("girt sill course: the edge TJI's backer blocks (TJ-4000 p.28 size and "
+        unknown.append("girt sill beam: the edge TJI's backer blocks (TJ-4000 p.28 size and "
                        "nailing) are unread; the backer attachment is ungraded")
     joint = _screw_fit(spec, item, length, thread, clamped, clamped + sheathing_t, wood,
                        framing.standoff_fastener_diameter_in)
     conflicts += joint.pop("conflicts")
-    screws = _screws(spec, item, course, blocks, frame, backer_z, conflicts) if seats else \
-        _block_screws(spec, blocks, frame)
+    screws = _screws(spec, item.spacing, course, seats, frame, backer_z, conflicts, unknown)
     height = course.z1_m - course.z0_m
     across = section_across(course, height)
-    stations = [s for s, _, _ in screws]
+    load = placement.specification.approach_bearing.concentrated_load_lb
     report = girt_course_connection_report(
-        course.length_m / _IN, stations, framing.standoff_fastener_diameter_in,
-        spec.course_modulus_psi, (across / _IN) * (height / _IN) ** 3 / 12,
-        placement.specification.approach_bearing.concentrated_load_lb, capacity, source)
+        course.length_m / _IN, [s for s, _, _ in screws], framing.standoff_fastener_diameter_in,
+        spec.course_modulus_psi, (across / _IN) * (height / _IN) ** 3 / 12, load, capacity,
+        source)
     report.update(girt_course_member=member.child_key, girt_course_fastener=spec.fastener_part,
-                  girt_course_layout=spec.layout, **joint)
-    if seats:
-        centroids = [sum(s for s, _, _ in screws if lo <= s <= hi) /
-                     max(1, sum(1 for s, _, _ in screws if lo <= s <= hi)) for lo, hi in
-                     ((r[0] / _IN, r[1] / _IN) for r in ranges)]
-        report.update(sill_beam_report(
-            abs(centroids[1] - centroids[0]), across / _IN, height / _IN,
-            spec.course_modulus_psi, spec.course_bending_psi, spec.course_shear_psi,
-            placement.specification.approach_bearing.concentrated_load_lb,
-            spec.course_deflection_limit.meters / _IN))
-        report.update(seat_width_in=spec.seat_width.meters / _IN,
-                      seat_screws=[(round(s, 4), round(z, 4)) for s, z, _ in screws])
-        if report["member_status"] == "FAIL":
-            conflicts.append("girt sill beam exceeds its bending, shear or deflection limit")
+                  **joint)
+    centroids = [sum(group) / len(group) for group in
+                 ([s for s, _, _ in screws if lo / _IN <= s <= hi / _IN] for lo, hi in ranges)]
+    report.update(sill_beam_report(
+        abs(centroids[1] - centroids[0]), across / _IN, height / _IN, spec.course_modulus_psi,
+        spec.course_bending_psi, spec.course_shear_psi, load,
+        spec.course_deflection_limit.meters / _IN))
+    report.update(seat_width_in=spec.seat_width.meters / _IN,
+                  seat_screws=[(round(s, 4), round(z, 4)) for s, z, _ in screws])
+    if report["member_status"] == "FAIL":
+        conflicts.append("girt sill beam exceeds its bending, shear or deflection limit")
     if report["connection_status"] == "FAIL":
         demand = report["connection_demand_lb"]
-        conflicts.append(f"girt sill course: worst screw share {demand:.1f} lb exceeds its "
+        conflicts.append(f"girt sill beam: worst seat screw share {demand:.1f} lb exceeds its "
                          f"{capacity:g} lb lateral value")
     if report["connection_status"] == "UNKNOWN":
-        unknown.append("girt sill course: its screws leave the course unstable")
+        unknown.append("girt sill beam: its screws leave the beam unstable")
     return report, unknown, conflicts
 
 
@@ -126,16 +118,16 @@ def _screw_fit(spec, item, length, thread, clamped, through, wood, diameter_in):
     shank = length - thread
     if shank < clamped - _TOL:
         conflicts.append(f"{spec.fastener_part}'s thread stands in the clamped stack at the "
-                         "girt sill course")
+                         "girt sill beam")
     member_width = wood[-1][1]
     start, end = shank - through, length - through
     if end > member_width + _TOL:
         conflicts.append(f"{spec.fastener_part}'s thread runs past the edge member behind the "
-                         "girt sill course")
+                         "girt sill beam")
     embedded = sum(max(0.0, min(end, b) - max(start, a)) for a, b in wood)
     penetration = length - through
-    minimum = item.spacing.min_embedded_thread * _IN if item.spacing else None
-    if minimum is not None and embedded < minimum - _TOL:
+    minimum = item.spacing.min_embedded_thread * _IN
+    if embedded < minimum - _TOL:
         conflicts.append(f"{spec.fastener_part} embeds {embedded / _IN:.2f}\" of thread in the "
                          f"edge member's wood, under {minimum / _IN:g}\"")
     if penetration < _MIN_PENETRATION_D * diameter_in * _IN - _TOL:
@@ -146,24 +138,10 @@ def _screw_fit(spec, item, length, thread, clamped, through, wood, diameter_in):
                 screw_embedded_thread_in=embedded / _IN)
 
 
-def _block_screws(spec, blocks, frame):
-    """One row: each block's count along the course at the end-screw pitch."""
-    pitch = spec.end_screw_pitch.meters / _IN
-    out = []
-    for item in blocks:
-        count = sill_block_screws(item) or 1
-        station = frame.station(item.p0) / _IN
-        out += [(station + (j - (count - 1) / 2) * pitch, None, 0) for j in range(count)]
-    return out
-
-
-def _screws(spec, item, course, seats, frame, backer_z, conflicts):
-    """Each seat's staggered rows laid out from its outer end, rows centred in the band every
-    member's edge distances leave, then graded against the published minima."""
-    rule = item.spacing
-    if rule is None:
-        conflicts.append(f"{spec.fastener_part} has no published spacing to lay the seats out by")
-        return []
+def _screws(spec, rule, course, seats, frame, backer_z, conflicts, unknown):
+    """Each seat's rows laid out from its outer end, every other row half a pitch along so
+    neighbours are staggered, rows centred in the band every member's edge distances leave,
+    then graded against the published minima."""
     span = frame.span / _IN
     members = [("beam", 0.0, span, course.z0_m / _IN, course.z1_m / _IN, "top")]
     for k, seat in enumerate(seats):
@@ -179,17 +157,25 @@ def _screws(spec, item, course, seats, frame, backer_z, conflicts):
     mid = (max(lows) + min(highs)) / 2
     rows = [mid + (r - (spec.seat_rows - 1) / 2) * rule.row_spacing
             for r in range(spec.seat_rows)][::-1]
-    stagger = rule.in_row_spacing / spec.seat_rows
     screws = []
     for k, seat in enumerate(seats):
         s0, s1 = sorted((frame.station(seat.p0) / _IN, frame.station(seat.p1) / _IN))
         outer, sign = (s0, 1.0) if abs(s0) < abs(span - s1) else (s1, -1.0)
         for r, z in enumerate(rows):
             for j in range(spec.screws_per_row):
-                offset = rule.end_distance + j * rule.in_row_spacing + r * stagger
+                offset = rule.end_distance + (j + (r % 2) / 2) * rule.in_row_spacing
                 screws.append((outer + sign * offset, z, f"{k}{r}"))
-    conflicts.extend(f"girt sill seat screws: {miss} (ESR-1078 Table 5)"
-                     for miss in screw_spacing_failures(screws, members, rule))
+    misses = screw_spacing_failures(screws, members, rule)
+    conflicts.extend(f"girt sill seat screws: {miss} (ESR-1078 Table 5)" for miss in misses)
+    if backer_z is not None and not misses:
+        drop = _FLANGE_BAND_IN
+        thick = [(n, s0, s1, z0 - drop, z1 - drop, loaded) if n.startswith("backer") else
+                 (n, s0, s1, z0, z1, loaded) for n, s0, s1, z0, z1, loaded in members]
+        if screw_spacing_failures(screws, thick, rule):
+            unknown.append("girt sill seat screws: they meet ESR-1078 Table 5 under the edge "
+                           "TJI's thin-end flange; a flange at the thick end of TJ-4000's band "
+                           f"(+{drop:g} in) drops the backers past it, so the delivered flange "
+                           "decides")
     return screws
 
 
@@ -283,4 +269,4 @@ def _add_backers(model, floor_index, member, frame, spec, tag, recess, flange_bo
 def _unknown(reason):
     return (dict(connection_status="UNKNOWN", connection_demand_lb=None,
                  connection_capacity_lb=None, connection_dcr=None),
-            [f"girt sill course: {reason}; its connection is ungraded"], [])
+            [f"girt sill beam: {reason}; its connection is ungraded"], [])

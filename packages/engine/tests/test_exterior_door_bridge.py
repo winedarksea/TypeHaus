@@ -41,7 +41,8 @@ def test_main_floor_doors_take_a_cover_or_a_narrow_gap(catlin_model_ro, tag, joi
     assert support["nose_gap_in"] == pytest.approx(joint, abs=1e-3)
     if tag == "D-M-PORCH":
         assert support["landing"] == "cover"
-        assert support["cover_min_seat_bearing_in"] == pytest.approx(0.5625, abs=1e-4)
+        # 9/16" less the 0.020" drip leg the cover closes onto at the narrowest.
+        assert support["cover_min_seat_bearing_in"] == pytest.approx(0.5425, abs=1e-4)
         assert support["cover_min_ledge_clearance_in"] == pytest.approx(0.0625, abs=1e-4)
         assert support["cover_thickness_in"] == pytest.approx(0.94, abs=1e-3)
     else:
@@ -65,7 +66,6 @@ def test_end_seat_sill_beam_is_graded(catlin_model_ro, tag, demand, span, deflec
     screw's share of the 300 lb against the joint's 135 lb, laid out to ESR-1078 Table 5."""
     report = _door(catlin_model_ro, tag).doorway.exterior_placement.installation_report
     report = report["support"]
-    assert report["girt_course_layout"] == "end_seats"
     assert report["connection_status"] == report["member_status"] == "PASS"
     assert report["connection_demand_lb"] == pytest.approx(demand, abs=0.01)
     assert report["connection_dcr"] == pytest.approx(demand / 135.0, abs=1e-4)
@@ -93,6 +93,9 @@ def test_a_seat_row_inside_the_published_spacing_fails():
     misses = screw_spacing_failures([(1.0, -2.625, "a"), (1.75, -2.625, "a")], [beam], rule)
     assert any("end distance" in m for m in misses)
     assert any("in-row spacing" in m for m in misses)
+    # Rows 3/4" apart but not half a pitch along: Table 5's in-line 1 3/8" applies.
+    in_line = [(2.625, -2.625, "a"), (5.25, -2.625, "a"), (2.625, -3.375, "b")]
+    assert any("in-line row spacing" in m for m in screw_spacing_failures(in_line, [beam], rule))
 
 
 def test_landing_conflicts_are_measured():

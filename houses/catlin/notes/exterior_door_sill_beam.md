@@ -83,8 +83,17 @@ member wood: [0, 31/32] and [1 11/32, 2.0] past its face (the web a gap).
     band   −3.375 … −2.625 = 3/4" → rows at −2.625 and −3.375, exactly at the minima
 
 Rows staggered by half the in-row spacing, from each beam end: row 1 at 2.625, 5.25; row 2 at
-3.9375, 6.5625; far end distance 9.25 − 6.5625 = 2.6875" ✓. **8 TLOK10 a door, 24 in all (was 41).**
-The band is the 2x6 beam's: it has no margin. A 2x8 beam would give 2 3/8".
+3.9375, 6.5625; far end distance 9.25 − 6.5625 = 2.6875" ✓. The 3/4" is Table 5's staggered value,
+which its note 4 allows only at that half-pitch offset; rows in line need 1 3/8". **8 TLOK10 a
+door, 24 in all (was 41).** The band is the 2x6 beam's: it has no margin. A 2x8 beam would give
+2 3/8".
+
+**The flange decides it (review, 2026-11-18).** The backer's top is the edge TJI's flange
+underside. The model reads TJ-4000 p.6's flange band at its thin end, 1 1/4". At its thick end,
+1 3/8", the backer sits 1/8" lower and its unloaded edge allows z ≤ −1.375 − 1.375 = −2.75. The
+band then shrinks to −3.375 … −2.75 = 5/8", under the staggered 3/4": the top row has only 1 1/4"
+to the backer's top. The engine reports this as UNKNOWN, decided by the delivered flange. If
+the flange is thick, a 2x8 beam on 7 1/4" seats restores 2 3/8".
 
 **Shares.** The spring beam of the retired detail, E' 1.26e6, k = 270,000 × 0.189^1.5 =
 22,185 lb/in, 300 lb scanned along it. An independent PyNite model (the beam on vertical springs
@@ -112,14 +121,15 @@ UNKNOWN (`plans/TODO.md`).
 
 Range each way = the catalog's 1/4" movement + 1/4" construction tolerance = **1/2"**. A cover is
 fixed on the landing member's inner part (the plank ends keep their 3/4" on its outer part), top
-flush with the deck, and slides on a KDAT ledge on the beam face, its inner edge 1/2" off the
-beam so it just meets the beam at the narrowest joint.
+flush with the deck, and slides on a KDAT ledge on the beam face. Its inner edge stands 1/2" off
+the pan's 0.020" drip leg on the beam face, so it just meets that leg at the narrowest joint.
 
 - **D-M-PORCH, cover.** Beam face 7.5", FS-SG-PORCH's north joist 9.625": joint 2.125". Ledge
-  1 9/16" → 9.0625". Bearing at the widest: 9.0625 − (8.0 + 0.5) = **0.5625" ≥ 1/2"**. Ledge to
-  joist at the narrowest: 9.625 − 0.5 − 9.0625 = **1/16"**. Fixed end 1.5 − 0.75 = 0.75". Cover
-  0.94" thick (joist top 0 to deck top 0.94), 2 3/8" wide; ledge top at 0, under the drip's foot
-  (+0.75 − 1/32 − 1/2 = +0.22). Water drops through to TR-SG-SLOT.
+  1 9/16" → 9.0625". Cover edge 7.5 + 0.020 + 0.5 = 8.02". Bearing at the widest:
+  9.0625 − (8.02 + 0.5) = **0.5425" ≥ 1/2"**. Ledge to joist at the narrowest:
+  9.625 − 0.5 − 9.0625 = **1/16"**. Fixed end 1.5 − 0.75 = 0.75". Cover 0.94" thick (joist top 0
+  to deck top 0.94), 2.355" wide. Ledge top at 0, under the drip's foot (+0.75 − 1/32 − 1/2 =
+  +0.22). Water drops through to TR-SG-SLOT.
 - **D-S-BALCONY, open gap.** FS-SG-BALCONY's sister 8.5": joint **1.0"** (1.04" off the nose). A
   ledge must stop 1/2" short of the sister (≤ 0.5") and the cover's edge 1/2" off the beam, so the
   bearing at the widest is ≤ 7.5 + 0.5 − 8.5 = −0.5": no cover fits. One needs a joint of at least

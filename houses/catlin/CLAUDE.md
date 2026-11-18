@@ -120,7 +120,8 @@
 > girt band (face at the nose, 3/4" proud of the cladding, the pan wrapped to a drip), seated at its
 > ends on 4-ply stacks, four TLOK10s a seat into an SPF backer pair in the edge TJI (it is a TJI, not
 > an LSL rim; `SillCourseFastening(layout="end_seats")`, `resolve/girt_sill_connection.py`): worst
-> screw 126.29 lb vs 135, rows exactly at ESR-1078 Table 5's minima. PORCH's 2 1/8" joint takes a
+> screw 126.29 lb vs 135, rows exactly at ESR-1078 Table 5's minima under a 1 1/4" flange (a
+1 3/8" one is UNKNOWN). PORCH's 2 1/8" joint takes a
 > removable FRP cover on a beam-face ledge (`landing="cover"`); ENTRY's landing stands 3/8" off the
 > beam; BALCONY's 1" joint is too narrow for a cover and stays open. ENTRY's crest is 1.20" over the
 > LVP (1.45" with 1/4"). D-B-SUNKEN's Trex tread lies on a 1/4" FRP plate over 60 psi XPS, its slot
@@ -532,7 +533,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   horizontal KDAT 2x4 girts at 24" o.c. in free air, then the panel. Each crossing: three
   loose 3-1/2"x3-1/2"x1-1/2" KDAT offcuts stacked to 4-1/2" over every OTHER stud, clamped
   by one 8" FASTENMASTER TIMBERLOK (TLOK08) through girt + block + sheathing, 1-1/2" into
-  the stud (a door's sill course: TLOK10 into the floor edge's backer pair). There is only ONE tier — do not add a second inner one; the foam needs no
+  the stud (a door's sill beam seats: TLOK10 into the floor edge's backer pair). There is only ONE tier — do not add a second inner one; the foam needs no
   backing (ER-859 §3.3.4.2.2, 7-1/2" vertical) (→ DESIGN-LOG.md, "Shell: framing module and envelope").
 - **AN INTERIOR PARTITION'S FRAMING STOPS 3/4" CLEAR OF WHATEVER IS OVER IT** (2026-09-19) —
   the rafter soffit in the attic, the joist or SIP soffit everywhere else — and a Simpson
@@ -882,9 +883,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     base cabinets' boxes (less the 3" kick) out of the plank.
   - `RM-M-MUDROOM` + its closets (`RM-M-MECH`, `RM-M-MUD-CLOSET`) share the hall LVP
     plane at +1.02559". Their doors open into the mudroom, and the bypass guide at
-    `D-M-MUDC` needs one level field. The exterior `D-M-ENTRY` has a separate flashed
-    weather sill on a pan sloped across the RO only (`pan_across_ro`), crest 1.47" over the
-    LVP (R311.3.1); see `notes/floor_heights.md`. `RM-M-MUD-CLOSET` prints as `MUD CL.`
+    `D-M-MUDC` needs one level field. The exterior `D-M-ENTRY` has the catalog ZAI5625FN on a
+    1/16" membrane pan, crest 1.20" over the LVP, 1.45" with 1/4" (R311.3.1; 2026-11-18,
+    `notes/exterior_door_sill_beam.md` §6). `RM-M-MUD-CLOSET` prints as `MUD CL.`
     (`Room.short_label`, used only where the full name finds no clear spot).
   - **`W-M-STRW`'s mudroom face is open bays to 7'-0"** (2026-10-14): three flat
     `oak-8q` red-oak courses (bench support 15"-16 1/2", a 6' shelf, the 7' cap under the

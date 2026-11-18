@@ -182,7 +182,7 @@ EXT_2X6 = Assembly(
                                   # its face at the XXXXW nose, seated at its ends on 4-ply stacks
                                   # (owner, 2026-11-17): 4 TLOK10 a seat into an SPF backer pair.
                                   sill_course=SillCourseFastening(
-                                      layout="end_seats", course_stock="2x6",
+                                      course_stock="2x6",
                                       seat_width=inch(9.25), seat_rows=2, screws_per_row=2,
                                       fastener_part="TLOK10", fastener_length_in=10.0,
                                       backer_stock="2x6", backer_material_ref="spf",
@@ -198,8 +198,6 @@ EXT_2X6 = Assembly(
                                   standoff_fastener_thread_in=2.0,
                                   standoff_fastener_withdrawal_lb_per_in=170.0,
                                   standoff_fastener_pull_through_lb=200.0,
-                                  standoff_fastener_wet_lateral_lb=120.0,
-                                  standoff_fastener_wet_lateral_source="house NDS 2018 12.3 calc, mode IIIm 175.0 lb x C_M 0.70 = 122.5, authored 120: notes/french_door_catalog_installation.md section 2, notes/exterior_door_structural_mount.md",
                                   standoff_fastener_source="ICC-ES ESR-1078 (reissued 2026-01), Tables 1A (2 in thread), 2 (withdrawal, SPF G 0.42) and 3 (head pull-through, 1-1/2 in side member at SG 0.55); coating for ACQ-D <= 0.40 pcf per 4.1.7 / Table 6")),
         Layer(name="cladding", material_ref="pbr-panel-24", thickness=inch(1.25),
               function=LayerFunction.CLADDING),
