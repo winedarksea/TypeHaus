@@ -92,7 +92,10 @@ KEY_GLOSSARY: dict[tuple[str, str], str] = {
     ("ducts", "supply"): "Supply", ("ducts", "return"): "Return", ("ducts", "exhaust"): "Exhaust",
     ("ducts", "outdoor_air"): "Outdoor air", ("ducts", "dryer"): "Dryer exhaust",
     ("ducts", "transfer"): "Transfer",
-    ("light_run_materials", "channel"): "Aluminium channel with diffuser",
+    ("light_run_materials", "channel"): "Aluminium LED channel",
+    ("light_run_materials", "lens"): "Channel lens",
+    ("light_run_materials", "clip"): "Channel mounting clip",
+    ("light_run_materials", "tape_connector"): "Tape-to-wire connector",
     ("light_run_materials", "tape"): "LED tape",
     ("light_run_materials", "end_cap"): "Channel end cap",
     ("light_run_materials", "corner_connector"): "Channel corner connector",
@@ -357,7 +360,8 @@ def _label(section: str, bare: str, row: Mapping[str, Any], labels: LabelIndex) 
     if section == "light_run_materials":
         # The key is ``<part>:<luminaire type>``; the part is the word a supplier quotes and
         # the type is the mark it belongs to, which is how the schedule names it.
-        part = KEY_GLOSSARY.get((section, bare), bare.replace("_", " ").capitalize())
+        part = g("name") or KEY_GLOSSARY.get((section, bare),
+                                             bare.replace("_", " ").capitalize())
         mark = g("mark")
         type_ref = str(g("type") or "")
         named = labels.types.get(type_ref) or type_ref

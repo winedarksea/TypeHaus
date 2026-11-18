@@ -27,6 +27,8 @@ from typehaus.takeoff.lighting_supplies import (
     PSU_SIZING_FACTOR,
     effective_lighting_circuit,
     electrical_devices,
+    input_va,
+    rated_output_w,
     supplied_loads,
 )
 
@@ -62,16 +64,6 @@ class _SupplyTotals(TypedDict):
     fixtures: list[str]
     length_ft: float
     watts: float
-
-
-class _RunMaterialTotals(TypedDict):
-    type: str
-    mark: str
-    runs: int
-    length_ft: float
-    channel_ft: float
-    end_caps: int
-    corner_connectors: int
 
 
 class _CircuitTotals(TypedDict):
@@ -298,7 +290,7 @@ def light_run_takeoff(model: ResolvedModel) -> dict[str, object]:
     for psu_tag in sorted(by_psu):
         supply = by_psu[psu_tag]
         device = devices.get(psu_tag)
-        rating = getattr(types.get(getattr(device, "type_ref", "") or ""), "load_va", None)
+        rating = rated_output_w(types.get(getattr(device, "type_ref", "") or ""))
         required = float(supply["watts"]) * PSU_SIZING_FACTOR
         supplies.append({
             "psu": psu_tag,
@@ -323,45 +315,102 @@ def light_run_takeoff(model: ResolvedModel) -> dict[str, object]:
 
 
 def light_run_materials(model: ResolvedModel) -> list[dict[str, object]]:
-    """Real order-sheet lines for every cove/LED run — channel stock and tape by the lineal
-    foot, end caps and corner connectors by the count — where ``light_run_takeoff`` bills one
-    blended length against the type.
+    """Order-sheet lines for every LED run, from its tape and channel (decision #137).
 
-    A run's channel and tape are the same length (the tape rides the channel end to end); a
-    run always takes two end caps, one per open end; and it takes one corner connector per
-    interior path vertex, the fitting a straight length of stock cannot become on its own.
-    A shadow-gap run's tape sticks in the drywall trade's bead (``drywall_trims``), so it
-    bills tape here and no channel, end cap or connector.
+    Per type: ``tape`` by the net lineal foot (``reels`` beside it where the strip states a
+    reel), or one ``module_<n>in`` row per rigid-bar length; ``channel`` and ``lens`` by the
+    foot of whole sticks cut per run (net feet where the stick is unread); ``end_cap`` two per
+    open run, ``clip`` ``ceil(len / spacing) + 1`` per run, ``corner_connector`` one per
+    interior vertex. A shadow-gap run's tape sits in the drywall trade's bead
+    (``drywall_trims``), so it bills tape alone. The 24 V leads bill from the house's
+    ``LedStandard`` (``lead_<awg>awg`` by the foot, ``tape_connector`` one per feed).
     """
+    import math
+
+    from typehaus.resolve.led_sections import led_channels
+
     types = _device_types(model)
-    by_type: dict[str, _RunMaterialTotals] = {}
+    channels = led_channels(model.plan)
+    totals: dict[str, dict[str, float]] = {}
+    counts: dict[str, int] = {}
     for run in model.light_runs:
         product = types.get(run.type_ref)
-        row = by_type.setdefault(run.type_ref, {
-            "type": run.type_ref, "mark": getattr(product, "type_mark", None) or "",
-            "runs": 0, "length_ft": 0.0, "channel_ft": 0.0, "end_caps": 0,
-            "corner_connectors": 0})
-        surface = run.profile == "surface"
-        row["runs"] = int(row["runs"]) + 1
-        row["length_ft"] = float(row["length_ft"]) + run.length_m * _M_TO_FT
-        row["channel_ft"] = float(row["channel_ft"]) + surface * run.length_m * _M_TO_FT
-        row["end_caps"] = int(row["end_caps"]) + 2 * surface
-        row["corner_connectors"] = int(row["corner_connectors"]) + surface * max(
-            len(run.path) - 2, 0)
+        strip = getattr(product, "strip", None)
+        row = totals.setdefault(run.type_ref, {})
+        counts[run.type_ref] = counts.get(run.type_ref, 0) + 1
+        run_ft = run.length_m * _M_TO_FT
+
+        def add(item: str, qty: float, row=row) -> None:
+            row[item] = row.get(item, 0.0) + qty
+
+        if run.modules_m:
+            for size in run.modules_m:
+                add(f"module_{round(size / 0.0254, 2):g}in", 1)
+        elif not (strip is not None and strip.modules):
+            add("tape", run_ft)
+        for item in ("channel", "end_cap", "corner_connector"):
+            add(item, 0)  # a zero row still visits its price row
+        if run.profile != "surface":
+            continue
+        channel = channels.get(run.channel_ref or "")
+        stick = channel.stick_length.meters * _M_TO_FT if channel and channel.stick_length else 0
+        bought = math.ceil(run_ft / stick - 1e-6) * stick if stick else run_ft
+        if not run.modules_m:
+            add("channel", bought)
+        if channel is not None and channel.lens_product_ref:
+            add("lens", bought)
+        if channel is not None and channel.clip_spacing:
+            add("clip", math.ceil(run.length_m / channel.clip_spacing.meters - 1e-6) + 1)
+        add("end_cap", 2)
+        add("corner_connector", max(len(run.path) - 2, 0))
+    for lead in getattr(model, "led_leads", ()):
+        row = totals.setdefault(lead.type_ref, {})
+        if lead.awg is not None:
+            row[f"lead_{lead.awg}awg"] = row.get(f"lead_{lead.awg}awg", 0.0) + \
+                lead.length_m * _M_TO_FT
+        if lead.leg == "feed":
+            row["tape_connector"] = row.get("tape_connector", 0.0) + 1
 
     rows: list[dict[str, object]] = []
-    for tag in sorted(by_type):
-        row = by_type[tag]
-        length_ft = round(float(row["length_ft"]), 1)
-        for item, unit, quantity in (
-            ("channel", "LF", round(float(row["channel_ft"]), 1)),
-            ("tape", "LF", length_ft),
-            ("end_cap", "EA", int(row["end_caps"])),
-            ("corner_connector", "EA", int(row["corner_connectors"])),
-        ):
-            rows.append({"type": tag, "mark": row["mark"], "item": item, "unit": unit,
-                         "quantity": quantity, "runs": int(row["runs"])})
+    for tag in sorted(totals):
+        product = types.get(tag)
+        strip = getattr(product, "strip", None)
+        mark = getattr(product, "type_mark", None) or ""
+        for item in sorted(totals[tag], key=_item_order):
+            qty = totals[tag][item]
+            unit = "LF" if item in _LF_ITEMS or item.startswith("lead_") else "EA"
+            row: dict[str, object] = {
+                "type": tag, "mark": mark, "item": item, "unit": unit,
+                "quantity": round(qty, 1) if unit == "LF" else int(qty),
+                "runs": counts.get(tag, 0)}
+            if item == "tape" and strip is not None and strip.reel_length:
+                row["reels"] = math.ceil(qty / (strip.reel_length.meters * _M_TO_FT) - 1e-6)
+            named = _part_name(model, channels.get(strip.channel_ref or "") if strip else None,
+                               item)
+            if named:
+                row["name"] = named
+            rows.append(row)
     return rows
+
+
+def _part_name(model: ResolvedModel, channel, item: str) -> str | None:
+    """The product a channel part is bought as, for the order line's label."""
+    ref = {"channel": "product_ref", "lens": "lens_product_ref", "end_cap": "end_cap_ref",
+           "clip": "clip_ref"}.get(item)
+    product = model.plan.library.product(getattr(channel, ref, None) or "") if ref else None
+    if product is None:
+        return None
+    return product.name or " ".join(part for part in (product.brand, product.model) if part)
+
+
+_LF_ITEMS = ("tape", "channel", "lens")
+_ORDER = ("tape", "module", "channel", "lens", "end_cap", "clip", "corner_connector", "lead",
+          "tape_connector")
+
+
+def _item_order(item: str) -> tuple[int, str]:
+    head = item.split("_")[0] if item.startswith(("module_", "lead_")) else item
+    return (_ORDER.index(head) if head in _ORDER else len(_ORDER)), item
 
 
 def connected_lighting_va(model: ResolvedModel) -> dict[str, object]:
@@ -393,7 +442,7 @@ def connected_lighting_va(model: ResolvedModel) -> dict[str, object]:
             circuit = element.circuit
             if circuit is None:
                 continue
-            va = getattr(types.get(element.type_ref or ""), "load_va", None) or 0.0
+            va = input_va(types.get(element.type_ref or "")) or 0.0
             row = _row(circuit)
             row["fixtures"] = int(row["fixtures"]) + 1
             row["connected_va"] = float(row["connected_va"]) + va

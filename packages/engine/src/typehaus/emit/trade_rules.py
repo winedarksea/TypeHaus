@@ -208,6 +208,8 @@ def solid_trades(category: str | None, material: str | None = None) -> tuple[str
     key = (category or "").strip().lower()
     trade = solid_trade(key)
     mat = (material or "").strip().lower()
+    if key == "insulation" and material_trade(mat) == "spray_foam":
+        return ("spray_foam",)
     if key in _CAST_BY_MATERIAL and mat == "concrete":
         return ("concrete",)
     if key in _LAYER_BY_MATERIAL:  # the layer's own trade, as takeoff/envelope.py bills it

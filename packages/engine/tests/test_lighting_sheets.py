@@ -121,7 +121,16 @@ def test_psu_leader_connects_a_run_to_its_shared_supply(catlin_model):
     psu_labels = [node for node in scene.nodes if isinstance(node, Text) and node.content == "PSU"]
     supplies = {r.psu_ref for r in catlin_model.light_runs if r.storey == "main"}
     assert len(supplies) == 8
-    assert len(psu_labels) == 10, "one marker per supply, incl. laundry track and pantry jambs"
+    # A driver feeding a derived 24 V lead (decision #137) is tagged "DRV <tag>", or counted
+    # in its bank's one label ("DRV x4 / CTRL x4"), not "PSU": one per supply either way.
+    import re
+
+    def counted(kind):
+        return sum(int(m.group(1)) if (m := re.search(kind + r" x(\d+)", n.content)) else
+                   n.content.startswith(kind + " ")
+                   for n in scene.nodes if isinstance(n, Text))
+    assert len(psu_labels) + counted("DRV") == 10, "incl. laundry track and pantry jambs"
+    assert counted("CTRL") == 4
 
 
 def test_switch_legs_are_dashed_and_only_drawn_where_both_ends_are_on_the_sheet(catlin_model):

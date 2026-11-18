@@ -2948,7 +2948,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "PROD-RACO-752" = { material = { low = 1, high = 2 }, labour = 0 }  # 13 ea, flat blank cover (Elliott ~$1.04)
 "PROD-CORD-GRIP-GENERIC" = { material = { low = 2, high = 5 }, labour = 0 }  # 13 ea, 1/2 in. cord connector
 "PROD-ENCLOSURE-VENT-GENERIC" = { material = { low = 3, high = 8 }, labour = 0 }  # 6 ea; Wiska EVSP 12 (https://www.rapidonline.com/wiska-evsp-12-vent-plugs-m12-549410, read 2026-11-07); high = Remke RVP15-M12-NM at Zoro, search snippet only
-"ED-T-LT-PSU-60" = { material = { low = 30, high = 90 }, labour = { low = 45, high = 95 } }  # 3 ea — ED-M-BATH2-PSU, the sauna's surface-mounted ED-B-SAUNA-LT-PSU and the closet's PAX supply (the pantry went to a PSU-96-WE 2026-10-31)
+"ED-T-LT-PSU-60" = { material = { low = 30, high = 90 }, labour = { low = 45, high = 95 } }  # 3 ea — ED-M-BATH2-PSU (on the laundry ceiling since 2026-11-17), the sauna's surface-mounted ED-B-SAUNA-LT-PSU and the basement stair's ED-B-STAIR-LT-PSU (the closet's PAX supply is a TRADFRI; the pantry went to a PSU-96-WE 2026-10-31)
 "ED-T-LT-SCONCE-EXT" = { material = { low = 186, high = 232 }, labour = { low = 48, high = 115 } }  # 4 ea — WAC WS-W2605-BK $186-232 (researched 2026-10-28)
 "ED-T-LT-SCONCE-SPOT" = { material = { low = 99, high = 130 }, labour = { low = 48, high = 115 } }  # 5 ea — WAC Sprig BL-23210-BK $99 dealer (2026-10-29, owner swap from Stretch); hardwiring unconfirmed
 # 2026-08-18: the same down-spot, wet-location listed with a gasketed lens and a
@@ -3313,7 +3313,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # Umbra Hubba Pill 62x18 retail $220; titanium 1023469-624, not the brass variant.
 # https://www.umbra.com/products/hubba-pill-mirror-62x18 ; availability is not guaranteed.
 "FT-MIRROR-UMBRA-HUBBA-PILL" = { material = { low = 220, high = 280 }, labour = { low = 35, high = 85 } }  # 1 ea, no electrical load
-"ED-T-LT-PSU-TRADFRI-30" = { material = { low = 57, high = 75 }, labour = { low = 0, high = 20 } }  # 2 ea — $45 driver + $12 ANSLUTA cord + connection cords; plug-in
+"ED-T-LT-PSU-TRADFRI-30" = { material = { low = 57, high = 75 }, labour = { low = 0, high = 20 } }  # 3 ea — the closet's PAX supply and the kitchen's two MITTLED drivers (2026-11-08); $45 driver + $12 ANSLUTA cord + connection cords; plug-in
 # BED1-3'S WARDROBES, 2026-10-02 (plan/bedroom_wardrobes.py). IKEA US list read 2026-10-02:
 # PAX/GRIMO corner wardrobe s89560818 $695 (high end adds hinges/rails at list); the 19 5/8"
 # frame $170 + six KOMPLEMENT shelves; the 39 3/8" frame $200 + six shelves ($15-25), or two
@@ -7352,6 +7352,13 @@ channel = { material = { low = 5, high = 12 }, labour = { low = 4, high = 10 } }
 tape = { material = { low = 5, high = 13 }, labour = { low = 3, high = 7 } }
 end_cap = { unit = "EA", material = { low = 2, high = 4 }, labour = { low = 4, high = 8 } }
 corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { low = 5, high = 11 } }
+# The 24 V leads and feed connectors, derived off LED-STANDARD since 2026-11-17 (decision
+# #137): cable by the foot by gauge, one tape-to-wire connector per feed. Retail estimates,
+# not quotes; labour is pulling and terminating in an open frame.
+lead_18awg = { material = { low = 0.4, high = 0.7 }, labour = { low = 1, high = 2.5 } }
+lead_16awg = { material = { low = 0.35, high = 0.6 }, labour = { low = 1, high = 2.5 } }
+lead_14awg = { material = { low = 0.45, high = 0.8 }, labour = { low = 1, high = 2.5 } }
+tape_connector = { unit = "EA", material = { low = 2, high = 5 }, labour = { low = 4, high = 8 } }
 # Mark E2, RM-M-CLOSET's two IKEA OVERSIDAN strips (38" each, 76" total since
 # 2026-10-04): a finished fixture bought by the piece ($36 per 38"), so the strip is billed as tape and the channel, caps
 # and connectors are $0 — they ship in the box. $36 / 3.17 ft = $11.40/LF.
@@ -7401,10 +7408,14 @@ corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { l
 "end_cap:ED-T-LT-STRIP24-TUNABLE" = { unit = "EA", material = { low = 2, high = 4 }, labour = { low = 4, high = 8 } }
 "corner_connector:ED-T-LT-STRIP24-TUNABLE" = { unit = "EA", material = { low = 3, high = 7 }, labour = { low = 5, high = 11 } }
 "channel:ED-T-LT-MITTLED" = { material = { low = 0, high = 0 }, labour = { low = 0, high = 0 } }
-# MITTLED is bought as fixed modules, not cut tape. Schedule 2026-11-04: 36 = 24+12,
-# 30 = 18+12, 15.56 -> 15, 12 = 12: 6 modules ~$156 over 7.8 LF (~$20/LF), plus one VÅGDAL
-# ($8) per group, 4 groups: ~$188, ~$24/LF. High allows a price move.
-"tape:ED-T-LT-MITTLED" = { material = { low = 24, high = 28 }, labour = { low = 3, high = 8 } }
+# MITTLED is bought as fixed modules, not cut tape, and since 2026-11-17 the takeoff counts
+# them (decision #137, the engine fills each run): 36 = 24+12, 30 = 18+12, 15.56 -> 15,
+# 12 = 12. The 2026-11-04 schedule's 6 modules ~$156 over 7.8 LF (~$20/LF) is spread by
+# length (estimates, not quotes), each carrying a share of the four $8 VÅGDAL cords.
+"module_12in:ED-T-LT-MITTLED" = { unit = "EA", material = { low = 25, high = 29 }, labour = { low = 3, high = 8 } }
+"module_15in:ED-T-LT-MITTLED" = { unit = "EA", material = { low = 30, high = 35 }, labour = { low = 4, high = 10 } }
+"module_18in:ED-T-LT-MITTLED" = { unit = "EA", material = { low = 35, high = 41 }, labour = { low = 5, high = 12 } }
+"module_24in:ED-T-LT-MITTLED" = { unit = "EA", material = { low = 45, high = 52 }, labour = { low = 6, high = 16 } }
 "end_cap:ED-T-LT-MITTLED" = { unit = "EA", material = { low = 0, high = 0 }, labour = { low = 0, high = 0 } }
 "corner_connector:ED-T-LT-MITTLED" = { unit = "EA", material = { low = 0, high = 0 }, labour = { low = 0, high = 0 } }
 

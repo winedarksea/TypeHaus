@@ -1892,10 +1892,26 @@ export interface LightRun {
   // The swept cross-section (→ resolve/geometry.py light_run_parts): each quad corner is
   // [across toward the emission side, drop below the run's height], metres.
   section?: LightRunSectionPart[];
+  // What to sweep it along (→ resolve/led_sections.py): one piece per rigid module (else the
+  // path), and the `endcap` part along a stub past each open end.
+  pieces?: LightRunPiece[];
+  caps?: LightRunPiece[];
+  channel?: string | null;
+  modules_m?: number[];
+  controller_ref?: string | null;
+  feed?: "start" | "end" | null;
+  // The derived 24 V lead to the feed (→ resolve/led_leads.py).
+  lead?: { from: string; awg: number | null; length_m: number; current_a: number;
+    drop_pct: number | null } | null;
+}
+
+export interface LightRunPiece {
+  path: [number, number][];
+  z: number[];
 }
 
 export interface LightRunSectionPart {
-  key: "back" | "base" | "lip" | "tape" | "body" | "lens" | "flange";
+  key: "back" | "base" | "lip" | "tape" | "body" | "lens" | "flange" | "endcap";
   quad: [number, number][];
 }
 

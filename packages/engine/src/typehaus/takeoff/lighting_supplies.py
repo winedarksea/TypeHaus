@@ -9,6 +9,19 @@ PSU_SIZING_FACTOR = 1.25
 METERS_TO_FEET = 3.280839895013123
 
 
+def rated_output_w(product) -> float | None:
+    """A supply's DC capacity: ``rated_output_w``, else the legacy ``load_va``."""
+    value = getattr(product, "rated_output_w", None)
+    return value if value is not None else getattr(product, "load_va", None)
+
+
+def input_va(product) -> float | None:
+    """A device's branch load: a driver's nameplate ``input_va`` (NEC 220.18(B)), else
+    ``load_va``."""
+    value = getattr(product, "input_va", None)
+    return value if value is not None else getattr(product, "load_va", None)
+
+
 def electrical_devices(model):
     return {element.tag: element for storey in model.plan.storeys
             for element in model.plan.storey_elements(storey.tag)

@@ -347,7 +347,7 @@ not instruction: when it disagrees with this file or the model, it is the one th
   2026-10-31). Coloured/tunable runs (E4, E6, W) take one 96 W HLG-100H-24A plus one
   controller per segment (`ED-T-LT-CTRL-5IN1` indoors; the garage's `ED-T-LT-CTRL-MATTER`
   GL-C-208M in a vented NEMA 4X box, 2026-11-07); split a run rather than reach for a bigger driver.
-  Every HLG-100H-24A takes a RACO 232 AC splice box (`PSU-96-WE.parts`; billed, not drawn). The
+  Every HLG-100H-24A takes a RACO 232 AC splice box (`PSU-96-WE.parts`, drawn with the driver). **LED construction is derived (decision #137, `plan/led_construction.py`):** each strip type's `LedStrip` (datasheet widths; E4 12 mm, E6 10 mm, MITTLED filled as modules) builds its section, the stair rail sits in Diode DI-CHB-S2 and the garage W tube in QSG-3211, and the 24 V leads are derived off `LED-STANDARD` (18/16/14 AWG, 3%). **Every driver and controller must be reachable** (`electrical.led_gear_access`): the lounge/dining bank is surface-mounted on the study ceiling's east half (owner, 2026-11-17), `ED-M-BATH2-PSU` on the laundry ceiling across W-M-BA2E. Hand oracle: `notes/led_construction.md`. The
   hall cove is two straight legs (`LR-S-HALL-GAP` west to y=22'-4", `-GAP2` east to the 27'-6"
   bulkhead), drivers and controllers in RM-S-NCLOSET; a soffit run's ends snap to host edges only within 10".
 - **Lighting conventions (2026-10-31 review, trimmed 2026-11-03; `DESIGN-LOG.md` "Lighting

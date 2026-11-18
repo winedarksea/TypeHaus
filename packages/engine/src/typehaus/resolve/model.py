@@ -1517,6 +1517,18 @@ class ResolvedLightRun:
     host_ref: str | None = None
     #: The reveal's width, cut from the host board (shadow gap only).
     aperture_m: float | None = None
+    #: LED construction (decision #137, → resolve/led_sections.py): the channel the
+    #: section was built from, which way it opens, and the rigid modules filling the run
+    #: (``spans_m``: each module's (start, end) along the developed length; empty is one
+    #: continuous piece). ``end_caps`` sweeps the ``endcap`` part past each open end.
+    channel_ref: str | None = None
+    aperture: str | None = None
+    modules_m: tuple[float, ...] = ()
+    spans_m: tuple[tuple[float, float], ...] = ()
+    end_caps: bool = False
+    #: The 24 V wiring (→ resolve/led_leads.py): its controller and the fed path end.
+    controller_ref: str | None = None
+    feed: str | None = None
 
     def vertex_z(self) -> list[float]:
         return list(self.z_path_m) if self.z_path_m else [self.z_m] * len(self.path)
@@ -1801,6 +1813,8 @@ class ResolvedModel:
     # One head per Alarm: point and body for viewer/GLB/IFC (→ resolve/alarm_heads.py).
     alarm_heads: list[Any] = field(default_factory=list)
     light_runs: list[ResolvedLightRun] = field(default_factory=list)
+    # Derived 24 V leads off the house's LedStandard (→ resolve/led_leads.py, #137).
+    led_leads: list[Any] = field(default_factory=list)
     solar_panels: list[ResolvedSolarPanel] = field(default_factory=list)
     footing_beddings: list[ResolvedFootingBedding] = field(default_factory=list)
     # Pour slab uid -> (authored outline, authored voids, voids after the clip): the floor a

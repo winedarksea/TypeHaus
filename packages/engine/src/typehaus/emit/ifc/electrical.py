@@ -18,7 +18,7 @@ from typehaus._meta import PSET_SOURCE
 from typehaus.emit.ifc import lowlevel as ll
 from typehaus.model.ids import derive_child_guid, derive_guid
 from typehaus.quantities import M_PER_IN
-from typehaus.resolve.geometry import light_run_parts, light_run_section_shells, rect_between
+from typehaus.resolve.geometry import light_run_shells, rect_between
 from typehaus.resolve.model import ResolvedModel
 
 _M_TO_FT = 3.280839895013123
@@ -91,8 +91,7 @@ def emit_light_runs(f: Any, body: Any, model: ResolvedModel, storeys: dict[str, 
 def _strip_shells(run: Any) -> list[list[list[tuple[float, ...]]]]:
     """One closed shell per section part per plan leg: the surface channel and its tape, or
     a shadow-gap bead (→ :func:`~typehaus.resolve.geometry.light_run_section_shells`)."""
-    return [faces for _key, faces in light_run_section_shells(
-        list(run.path), run.vertex_z(), light_run_parts(run), run.emission_side)]
+    return [faces for _key, faces in light_run_shells(run)]
 
 
 def emit_solar_panels(f: Any, body: Any, model: ResolvedModel, storeys: dict[str, Any],

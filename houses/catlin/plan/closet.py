@@ -133,7 +133,7 @@ MAIN_CLOSET = [
     # TRADFRI 30 W driver on top of the east frame, corded into ED-M-CLOSET-RC1. It names
     # the circuit so its 30 VA lands on CKT-LT-MAIN; ED-T-RECEPTACLE carries no load_va, so
     # nothing counts twice.
-    ElectricalDevice(uid="FB7ZP1MC75", tag="ED-M-CLOSET-LT-PSU", kind=DeviceKind.JUNCTION_BOX,
+    ElectricalDevice(uid="FB7ZP1MC75", tag="ED-M-CLOSET-LT-PSU", kind=DeviceKind.LED_DRIVER,
                      type_ref="ED-T-LT-PSU-TRADFRI-30", circuit="CKT-LT-MAIN",
                      room="RM-M-CLOSET",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(93.25)),

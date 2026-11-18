@@ -22,6 +22,7 @@ _DEVICE_LAYER = {
     "switch": "E-LITE", "light": "E-LITE", "panel": "E-POWR-DEVC",
     "junction_box": "E-POWR-DEVC", "meter": "E-POWR-DEVC", "disconnect": "E-POWR-DEVC",
     "spd": "E-POWR-DEVC",
+    "led_driver": "E-LITE", "led_controller": "E-LITE",
     # Low-voltage lands on its own AIA discipline layer, not E-POWR: an electrician pulling
     # branch circuits and a low-voltage tech pulling CAT6 want to switch each other off.
     "data_outlet": "E-COMM-DEVC",
@@ -36,6 +37,7 @@ _LEGEND = (
     ("panel", "ELECTRICAL PANEL"), ("junction_box", "JUNCTION BOX"),
     ("meter", "UTILITY METER"), ("disconnect", "DISCONNECT"),
     ("spd", "SPD (SURGE PROTECTIVE DEVICE)"),
+    ("led_driver", "24V LED DRIVER"), ("led_controller", "24V LED CONTROLLER"),
     ("data_outlet", "DATA / LOW-VOLTAGE"),
 )
 

@@ -34,7 +34,7 @@ from plan.laundry_lighting_types import LAUNDRY_TRACK
 from plan.lighting_types_decor import DECORATIVE_LUMINAIRE_TYPES
 from typehaus import ElectricalDeviceType, LuminaireForm, Service, ServicePort, ft, inch, mm
 from typehaus.library.track_lighting import PUREEDGE_SUPPLY
-from typehaus.model import LuminaireType, ModelRepresentation, ProductPart
+from typehaus.model import LedController, LedStrip, LuminaireType, ModelRepresentation, ProductPart
 
 # Every line-voltage luminaire lands on a 120V branch; one port tuple serves them all
 # (``electrical.circuit_refs`` checks poles against ports, and these are all 1-pole).
@@ -152,6 +152,7 @@ AMBIENT_LUMINAIRE_TYPES = (
                   footprint=(inch(0.5), inch(0.5)), height=inch(0.5),
                   lamp="LED tape, 24V DC, COB", watts_per_ft=3.0, lumens=250.0,
                   cct_k=3000, cri=90, voltage=24, dimmable=True,
+                  strip=LedStrip(tape_width=mm(8), cut_pitch=inch(2), max_feed_length=mm(5000), channel_ref="CH-DIODE-S2", source="Armacost 171230 via superbrightleds.com/171x30, read 2026-11-17: 8 mm, cut 2 in., 16.4 ft (5 m) max run. Height and reel not published."),
                   product_ref="PROD-ARMACOST-RIBBONFLEX-COB",
                   source="Armacost RibbonFlex Pro 24V COB, 3000K: the basement stair rail "
                          "(and mark T's tape). The coves are E4/E6 since 2026-10-31."),
@@ -168,6 +169,7 @@ AMBIENT_LUMINAIRE_TYPES = (
                   lamp="LED tape, 24V DC, COB, silicone-coated", watts_per_ft=3.0,
                   lumens=230.0, cct_k=2700, cri=90, voltage=24, dimmable=True,
                   damp_rated=True,
+                  strip=LedStrip(tape_width=mm(10), cut_pitch=inch(2), source="Armacost #171132 silicone-coated 2700 K (armacostlighting.com, search summary, 2026-11-17): 10 mm, 2 in. cut, IP67. Height, max run and reel CONFIRM."),
                   product_ref="PROD-ARMACOST-RIBBONFLEX-COB-2700",
                   source="Armacost RibbonFlex Pro 24V COB family in 2700K, silicone-coated "
                          "for a damp room (confirm the damp SKU). Ceiling over the tub in "
@@ -186,6 +188,7 @@ AMBIENT_LUMINAIRE_TYPES = (
                   footprint=(inch(0.5), inch(0.5)), height=inch(0.5),
                   lamp="LED tape, 24V DC, RGB+CCT COB, 12 mm", watts_per_ft=6.1, lumens=102.0,
                   cct_k=2800, cri=90, voltage=24, dimmable=True,
+                  strip=LedStrip(tape_width=mm(12), tape_height=mm(2.2), cut_pitch=mm(41.6), reel_length=mm(5000), source="SuperLightingLED FCOB-24V-RGBCCT page, read 2026-11-17: 12 mm, 2.2 mm PCB, cut 41.6 mm, 5 m reel. Max single-feed run not published."),
                   product_ref="PROD-SLL-COB-RGBCCT-24V",
                   source="SuperLightingLED DC24V RGB+CCT COB, 12 mm: 20 W/m (spec page); W "
                          "2855 K Ra 92, ~102 lm/ft (test report, ~1 m sample inferred); "
@@ -198,6 +201,7 @@ AMBIENT_LUMINAIRE_TYPES = (
                   footprint=(inch(0.5), inch(0.5)), height=inch(0.5),
                   lamp="LED tape, 24V DC, tunable-white COB, 10 mm", watts_per_ft=3.0,
                   lumens=250.0, cct_k=2700, cri=90, voltage=24, dimmable=True,
+                  strip=LedStrip(tape_width=mm(10), cut_pitch=mm(19.3), max_feed_length=mm(10000), reel_length=mm(5000), source="SuperLightingLED FSLCOB-CCT-624X10M-W10 spec, read 2026-11-17: 10 mm, cut 19.3 mm, up to 10 m one feed, 5 m reel. Height not published."),
                   product_ref="PROD-SLL-COB-CCT-24V",
                   source="SuperLightingLED DC24V tunable COB 2700-6500 K, CRI 90+; GL-C-001P "
                          "in CCT mode. cct_k is the warm (night) end."),
@@ -266,6 +270,7 @@ AMBIENT_LUMINAIRE_TYPES = (
                   footprint=(inch(0.75), inch(0.5)), height=inch(0.4),
                   lamp="LED integrated strip, IKEA 24V system", watts_per_ft=3.2, lumens=240.0,
                   cct_k=2700, cri=90, voltage=24, dimmable=True,
+                  strip=LedStrip(tape_width=inch(1), tape_height=inch(1), modules=(inch(12), inch(15), inch(18), inch(24)), system_cords=True, source="IKEA US MITTLED pages, read 2026-11-17: 12/15/18/24 in., 1 in. W x 1 in. H (IKEA Canada lists 2 x 1.4 cm). Modules butt; one VAGDAL cord per group, no gap published."),
                   product_ref="PROD-IKEA-MITTLED",
                   source="IKEA US MITTLED pages, read 2026-11-07: 12 in. 904.725.14 230 lm 3.3 W, "
                          "15 in. 104.554.34 300 lm 4.3 W, 18 in. 504.554.27 360 lm 5.0 W, 24 in. "
@@ -298,6 +303,7 @@ AMBIENT_LUMINAIRE_TYPES = (
                   lamp="RGBW COB LED tape, 24V DC, IP67 silicone tube, in a 1/2 in. U-channel",
                   watts_per_ft=4.5, lumens=300.0, cct_k=3000, cri=90, voltage=24,
                   dimmable=True, damp_rated=True, wet_rated=True, full_cutoff=True,
+                  strip=LedStrip(tape_width=mm(15), reel_length=mm(5000), channel_ref="CH-SLL-QSG-3211", source="SuperLightingLED FCOB-24V-840RGBW datasheet, read 2026-11-17: IP67 width 15 mm, 5 m reel. Tube height and max run not published; cut pitch conflicts (71.4 vs 50 mm), CONFIRM."),
                   product_ref="PROD-SLL-COB-RGBW-IP67-30",
                   source="SuperLightingLED 24V RGBW COB, IP67 tube, W 3000 K; generic "
                          "aluminium U-channel, clear cover, aperture down. CONFIRM W/ft."),
@@ -336,6 +342,7 @@ AMBIENT_LUMINAIRE_TYPES = (
                   lamp="LED tape, 24V DC, silicone-jacketed IP68, -30..90 C",
                   watts_per_ft=3.0, lumens=320.0, cct_k=2700, cri=90,
                   voltage=24, dimmable=True, wet_rated=True,
+                  strip=LedStrip(tape_width=mm(12), cut_pitch=inch(2), max_feed_length=ft(32), reel_length=mm(5000), source="LEDsupply HT120-IP6824V12M white datasheet, read 2026-11-17: 12 mm, cut 2 in., 32 ft max run (the tunable page says 10 mm). Height not published."),
                   product_ref="PROD-LEDSUPPLY-SAUNA-STRIP",
                   source="LEDsupply sauna LED strip, fixed white 2700K: 24V DC, 3 W/ft, up "
                          "to 320 lm/ft, CRI 90, 120 LED/m, IP68, rated -30 C to 90 C. Under "
@@ -445,6 +452,9 @@ LIGHTING_DEVICE_TYPES = (
                          footprint=(mm(220 + 20) + inch(4), inch(2.19)), height=inch(4),
                          model_representation=ModelRepresentation(symbol="meanwell-hlg-100h"),
                          load_va=96.0, output_voltage=24, ports=_POWER_120,
+                         # Sheet: 1.2 A typ. at 115 VAC = 138 VA, the branch load NEC 220.18(B)
+                         # takes for a driver; 96 W is what it is sized against.
+                         rated_output_w=96.0, input_va=138.0,
                          product_ref="PROD-MEANWELL-HLG-100H-24A",
                          # AC lead is bare SJOW cable: a 4 in. square box, blank cover and cord
                          # connector beside each driver, inside the envelope and drawn
@@ -466,7 +476,8 @@ LIGHTING_DEVICE_TYPES = (
     ElectricalDeviceType(tag="ED-T-LT-CTRL-5IN1", name="5-in-1 Zigbee LED controller, 12-54 V",
                          footprint=(mm(125), mm(24)), height=mm(37),
                          model_representation=ModelRepresentation(symbol="gledopto-gl-c-001p"),
-                         needs=frozenset(), product_ref="PROD-GLEDOPTO-GL-C-001P",
+                         needs=frozenset(), led_controller=LedController(channels=5, max_current_a=5.0, source="SuperLightingLED GL-C-001P page, read 2026-11-17: total output 5 A (270 W at 54 V); five outputs in RGB+CCT mode. A retailer's 5 A per channel / 10 A total disagrees: CONFIRM."),
+                         product_ref="PROD-GLEDOPTO-GL-C-001P",
                          source="Gledopto GL-C-001P (manual: 125 x 37 x 24 mm), set once to "
                                 "RGBCCT (E4) or CCT (E6), power-on 'previous'. Beside its driver, "
                                 "accessible, indoors."),
@@ -477,7 +488,8 @@ LIGHTING_DEVICE_TYPES = (
                          name="Matter Wi-Fi LED controller, 12-24 V, in a NEMA 4X box",
                          footprint=(inch(6), inch(4)), height=inch(6),
                          model_representation=ModelRepresentation(symbol="nema-4x-box"),
-                         needs=frozenset(), product_ref="PROD-GLEDOPTO-GL-C-208M",
+                         needs=frozenset(), led_controller=LedController(channels=5, max_current_a=20.0, max_channel_current_a=15.0, source="GL-C-208M (domadoo.fr listing; manuals.plus manual), read 2026-11-17: 15 A per channel, 20 A total; R G B C W terminals."),
+                         product_ref="PROD-GLEDOPTO-GL-C-208M",
                          parts=(ProductPart(role="fitting",
                                             product_ref="PROD-NEMA4X-BOX-GENERIC"),
                                 ProductPart(role="fitting",

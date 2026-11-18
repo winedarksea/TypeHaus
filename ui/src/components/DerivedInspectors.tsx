@@ -128,6 +128,18 @@ export function LightRunInspector({ run }: { run: LightRun }) {
       <span className="k">Room</span><span>{run.room ?? "—"}</span>
       <span className="k">Circuit</span><span>{run.circuit ?? "—"}</span>
       <span className="k">PSU</span><span>{run.psu_ref ?? "—"}</span>
+      <span className="k">Controller</span><span>{run.controller_ref ?? "—"}</span>
+      <span className="k">Channel</span><span>{run.channel ?? "—"}</span>
+      {run.modules_m?.length ? <><span className="k">Modules</span>
+        <span>{run.modules_m.map((m) => `${Math.round(m / 0.0254)}"`).join(" + ")}</span></> : null}
+      {run.lead ? <>
+        <span className="k">24 V lead</span>
+        <span>{formatFtIn(run.lead.length_m)} from {run.lead.from}, {run.lead.awg != null
+          ? `${run.lead.awg} AWG` : "no stocked cable"}, feed at {run.feed ?? "—"}</span>
+        <span className="k">Lead drop</span>
+        <span>{run.lead.drop_pct != null ? `${run.lead.drop_pct.toFixed(2)}%` : "—"}
+          {" "}at {run.lead.current_a.toFixed(2)} A</span>
+      </> : null}
       <span className="k">Controlled by</span><span>{run.controlled_by.join(", ") || "—"}</span>
       <span className="k">Storey</span><span>{run.storey}</span>
       <span className="k">uid</span><span className="prov">{run.uid}</span>

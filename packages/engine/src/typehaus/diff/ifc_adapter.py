@@ -25,8 +25,7 @@ from typehaus.resolve.box_members import member_footprint
 from typehaus.resolve.device_boxes import boxes_by_device
 from typehaus.resolve.geometry import (
     LIGHT_STRIP_HEIGHT_M,
-    light_run_parts,
-    light_run_section_shells,
+    light_run_shells,
     opening_center,
     wall_frame,
 )
@@ -142,6 +141,7 @@ def baseline_elems(model: ResolvedModel) -> list[DiffElem]:
         "junction_box": "IfcJunctionBox", "meter": "IfcFlowMeter",
         "disconnect": "IfcSwitchingDevice", "data_outlet": "IfcOutlet",
         "spd": "IfcProtectiveDevice",
+        "led_driver": "IfcJunctionBox", "led_controller": "IfcController",
     }
     device_types = {t.tag: t for t in model.plan.library.electrical_device_types}
     from typehaus.resolve.geometry_countertops import slab_hosts
@@ -221,8 +221,7 @@ def baseline_elems(model: ResolvedModel) -> list[DiffElem]:
         # Project the *swept* section, not the bare polyline: the emitted solid is the
         # channel (or shadow-gap bead) around each leg, so a straight run's bbox is not
         # zero-deep. Reading the bare path would report every run as resized.
-        points = [point for _key, faces in light_run_section_shells(
-            list(run.path), run.vertex_z(), light_run_parts(run), run.emission_side)
+        points = [point for _key, faces in light_run_shells(run)
             for face in faces for point in face]
         if points:
             centroid, bbox = _bounds([(x, y) for x, y, _z in points],
@@ -252,7 +251,8 @@ def external_elems(ifc_path: Path) -> list[DiffElem]:
     for cls in ("IfcWall", "IfcOpeningElement", "IfcWindow", "IfcDoor", "IfcFurniture",
                 "IfcSanitaryTerminal", "IfcBuildingElementProxy", "IfcOutlet", "IfcAirTerminal",
                 "IfcSwitchingDevice", "IfcLightFixture", "IfcElectricDistributionBoard",
-                "IfcJunctionBox", "IfcFlowMeter", "IfcProtectiveDevice", "IfcUnitaryEquipment",
+                "IfcJunctionBox", "IfcFlowMeter", "IfcProtectiveDevice", "IfcController",
+                "IfcUnitaryEquipment",
                 "IfcAirToAirHeatRecovery", "IfcFan",
                 # Low-voltage, reachable only through ``ElectricalDeviceType.ifc_entity``.
                 # Left off this list, every access point and camera we exported would read

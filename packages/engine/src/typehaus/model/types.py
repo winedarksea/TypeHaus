@@ -34,6 +34,7 @@ from typehaus.model.enums import (
 from typehaus.model.exterior_door import DoorCatalogDimensions
 from typehaus.model.fascia_mount import FasciaMountSpec
 from typehaus.model.furniture_cut import FurnitureCut
+from typehaus.model.led import LedController, LedStrip
 from typehaus.model.opening_size import OpeningSize
 from typehaus.model.placeables import (
     ClearanceZone,
@@ -438,6 +439,9 @@ class FurnitureType(HausModel):
     footprint: tuple[Length, Length]  # (width, depth)
     height: Length
     storage: bool = False
+    # A framed access panel: its opening is how concealed gear is reached
+    # (``electrical.led_gear_access``).
+    access_opening: bool = False
     # Fixed cabinetry answers this; ``None`` means the type is not fixed cabinetry standing
     # on the floor, and a bookcase you can pull away from the wall breaks nothing. 2026 NEC
     # 210.52(A)(2)(1) breaks wall space at every fixed cabinet, True or False here (before
@@ -1060,6 +1064,13 @@ class ElectricalDeviceType(FurnitureType, DeviceElectricalFacts):
     # Connected load in volt-amps; summed per circuit by the panel-schedule takeoff.
     load_va: float | None = None
     output_voltage: int | None = None  # DC supplies; distinct from branch voltage
+    # LED drivers (decision #137): the DC capacity a supply is sized against, and its
+    # nameplate input (A x V) that NEC 220.18(B) loads the branch with. Each falls back to
+    # ``load_va`` when unset.
+    rated_output_w: float | None = None
+    input_va: float | None = None
+    # A 24 V controller's outputs (→ model/led.py), graded by ``electrical.led_wiring``.
+    led_controller: LedController | None = None
     # Breaker spaces in the enclosure (panel kinds only) — what electrical.panel_spaces
     # reconciles the circuit slots against.
     spaces: int | None = None
@@ -1170,6 +1181,8 @@ class LuminaireType(ElectricalDeviceType):
     # face it mounts on (`electrical.canopy_covers_box`).
     canopy: tuple[Length, Length] | None = None
     track_lighting: TrackLightingSpec | None = None
+    # STRIP forms: the tape (or rigid bar) and its channel (→ model/led.py).
+    strip: LedStrip | None = None
 
     @model_validator(mode="after")
     def _track_configuration(self):

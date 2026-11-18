@@ -178,7 +178,7 @@ def led_cove_bands(thickness_m: float, depth_m: float) -> tuple[Band, Band, Band
 # A shadow-gap bead's vinyl wall, drawn this thin; its mudded leg hangs this far below the
 # board face so it reads as flush finish over the ceiling rather than vanishing into it.
 FLANGE_SKIN_M = inch(1 / 32).meters
-# Bare tape on the reveal's back: the 8 mm COB stock a 5/8" reveal is chosen to take.
+# Bare tape on the reveal's back when the run's type states no ``LedStrip``.
 SHADOW_GAP_TAPE_WIDTH_M = 0.008
 
 Quad = tuple[tuple[float, float], ...]
@@ -195,8 +195,8 @@ def surface_channel_parts(width_m: float, depth_m: float) -> tuple[tuple[str, Qu
     return tuple(out)
 
 
-def shadow_gap_parts(reveal_m: float, depth_m: float,
-                     flange_m: float) -> tuple[tuple[str, Quad], ...]:
+def shadow_gap_parts(reveal_m: float, depth_m: float, flange_m: float,
+                     tape_width_m: float | None = None) -> tuple[tuple[str, Quad], ...]:
     """A Z shadow bead and its tape in the (across, drop) frame, drop 0 at the board's face.
 
     The run's path is the reveal's centre: the board's edge at ``-reveal/2``, the washed
@@ -205,7 +205,8 @@ def shadow_gap_parts(reveal_m: float, depth_m: float,
     back, facing down. Nothing rises past ``depth_m``.
     """
     half, skin = reveal_m / 2.0, FLANGE_SKIN_M
-    tape_half = min(SHADOW_GAP_TAPE_WIDTH_M, reveal_m - 2.0 * skin) / 2.0
+    tape = tape_width_m if tape_width_m is not None else SHADOW_GAP_TAPE_WIDTH_M
+    tape_half = min(tape, reveal_m - 2.0 * skin) / 2.0
     back = -depth_m + skin
     return (
         ("flange", ((-half - flange_m, 0.0), (-half, 0.0), (-half, skin),

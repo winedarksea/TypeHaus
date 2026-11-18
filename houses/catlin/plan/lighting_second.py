@@ -33,14 +33,14 @@ SECOND_LIGHTING = [
     # HA recalls after dark while the plain 3-ways (2026-11-03) leave both drivers' 120 V on.
     LightRun(uid="QRS0001AAA", tag="LR-S-HALL-GAP", type_ref="ED-T-LT-STRIP24-TUNABLE",
              path=(pt(ft(18, 6), ft(9, 7)), pt(ft(18, 6), ft(22, 4))),
-             room="RM-S-HALL", psu_ref="ED-S-HALL-LT-PSU",
+             room="RM-S-HALL", psu_ref="ED-S-HALL-LT-PSU", controller_ref="ED-S-HALL-LT-CTRL",
              controlled_by=("ED-S-HALL-SW", "ED-S-HALL-SW2"),
              soffit_ref="SF-S-DUCT", soffit_edge_offset=inch(0.3125),
              emission_side="left",
              mount=Mount(kind=MountKind.CEILING, elevation=inch(94.5))),
     LightRun(uid="6V6YZABYSN", tag="LR-S-HALL-GAP2", type_ref="ED-T-LT-STRIP24-TUNABLE",
              path=(pt(ft(21, 6), ft(27, 6)), pt(ft(21, 6), ft(9, 7))),
-             room="RM-S-HALL", psu_ref="ED-S-HALL-LT-PSU2",
+             room="RM-S-HALL", psu_ref="ED-S-HALL-LT-PSU2", controller_ref="ED-S-HALL-LT-CTRL2",
              controlled_by=("ED-S-HALL-SW", "ED-S-HALL-SW2"),
              soffit_ref="SF-S-DUCT", soffit_edge_offset=inch(0.3125),
              emission_side="left",
@@ -49,31 +49,32 @@ SECOND_LIGHTING = [
     # on the east wall (W-S-BW4's closet face), reachable from the closet floor. 12.75 ft / 17.9 ft at 3 W/ft x1.25 is 48 / 67 W. Each 24 V pair is
     # fed at its leg's NORTH end. East: straight out through the bulkhead, ~3 ft. West: 18 AWG
     # Class 2 through SF-S-DUCT along the east wall to y=22'-4", ~12 ft each way; at
-    # 38 W (1.6 A) the pair drops ~0.3 V (1.3% of 24 V), then the tape's own run. The engine
-    # models no 24 V feeder, so the path is this comment; pull it before the board goes up,
-    # clear of DU-S-HP-SUITE-RET-LANE (x 251-257", up at the ceiling board) in SF-S-DUCT.
-    ElectricalDevice(uid="QTS0001AAA", tag="ED-S-HALL-LT-PSU", kind=DeviceKind.JUNCTION_BOX,
+    # 38 W (1.6 A) the pair drops ~0.3 V (1.3% of 24 V), then the tape's own run. The lead is
+    # derived since 2026-11-17 (resolve/led_leads.py, decision #137) for its length, gauge and
+    # drop; pull it before the board goes up, clear of DU-S-HP-SUITE-RET-LANE (x 251-257", up
+    # at the ceiling board) in SF-S-DUCT.
+    ElectricalDevice(uid="QTS0001AAA", tag="ED-S-HALL-LT-PSU", kind=DeviceKind.LED_DRIVER,
                      type_ref="ED-T-LT-PSU-96-WE",
                      circuit="CKT-LT-UPPER", room="RM-S-NCLOSET",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(66)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-BW4", face="left", distance_from_start=inch(16),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    ElectricalDevice(uid="RTFGRQ9WBV", tag="ED-S-HALL-LT-CTRL", kind=DeviceKind.JUNCTION_BOX,
-                     type_ref="ED-T-LT-CTRL-5IN1", room="RM-S-NCLOSET",
+    ElectricalDevice(uid="RTFGRQ9WBV", tag="ED-S-HALL-LT-CTRL", kind=DeviceKind.LED_CONTROLLER,
+                     type_ref="ED-T-LT-CTRL-5IN1", psu_ref="ED-S-HALL-LT-PSU", room="RM-S-NCLOSET",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(66)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-BW4", face="left", distance_from_start=inch(32),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    ElectricalDevice(uid="PZY7PB1XX0", tag="ED-S-HALL-LT-PSU2", kind=DeviceKind.JUNCTION_BOX,
+    ElectricalDevice(uid="PZY7PB1XX0", tag="ED-S-HALL-LT-PSU2", kind=DeviceKind.LED_DRIVER,
                      type_ref="ED-T-LT-PSU-96-WE",
                      circuit="CKT-LT-UPPER", room="RM-S-NCLOSET",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(52)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-BW4", face="left", distance_from_start=inch(16),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    ElectricalDevice(uid="MW0FDQBB4F", tag="ED-S-HALL-LT-CTRL2", kind=DeviceKind.JUNCTION_BOX,
-                     type_ref="ED-T-LT-CTRL-5IN1", room="RM-S-NCLOSET",
+    ElectricalDevice(uid="MW0FDQBB4F", tag="ED-S-HALL-LT-CTRL2", kind=DeviceKind.LED_CONTROLLER,
+                     type_ref="ED-T-LT-CTRL-5IN1", psu_ref="ED-S-HALL-LT-PSU2", room="RM-S-NCLOSET",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(52)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-BW4", face="left", distance_from_start=inch(32),

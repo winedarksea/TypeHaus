@@ -375,6 +375,8 @@ _BOM_WAIVED_COLLECTIONS: dict[str, str] = {
     "stairs": "carriage in `framing`, walking surfaces in `stair_finish` and, where they "
               "are a finish material, by the piece in `stair_treads`",
     "light_runs": "billed as `light_runs` by the lineal foot (a dict, not a row list)",
+    "led_leads": "billed in `light_run_materials` as `lead_<awg>awg` by the foot and one "
+                 "`tape_connector` per feed (decision #137)",
     "solar_panels": "billed as `solar` (a dict summary of installed wattage)",
     "slab_floor_plans": "the authored plan behind a slab clipped at its footings, read as "
                         "floor; the slab itself bills as its solid",

@@ -18,6 +18,7 @@ from typehaus import (
     deg,
     ft,
     inch,
+    mm,
     pt,
 )
 from typehaus.model import Location, WallAttachment
@@ -32,58 +33,67 @@ LIVING_LIGHTING = [
     # zone, so the two ends scene apart. 12 mm tape in the 15.9 mm reveal leaves ~2 mm a side.
     LightRun(uid="QRM0001AAA", tag="LR-M-LIVING-W", type_ref="ED-T-LT-STRIP24-RGBCCT",
              path=(pt(ft(18, 3.5625), ft(1)), pt(ft(18, 3.5625), ft(13))),
-             room="RM-M-LIVING", psu_ref="ED-M-LIVING-LT-PSU",
+             room="RM-M-LIVING", psu_ref="ED-M-LIVING-LT-PSU", controller_ref="ED-M-LIVING-LT-CTRL",
              controlled_by=("ED-M-LIVING-SW-COVE",),
              mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 11))),
     LightRun(uid="QRM0002AAA", tag="LR-M-LIVING-E", type_ref="ED-T-LT-STRIP24-RGBCCT",
              path=(pt(ft(35, 5.1875), ft(1)), pt(ft(35, 5.1875), ft(13))),
-             room="RM-M-LIVING", psu_ref="ED-M-LIVING-LT-PSU-E",
+             room="RM-M-LIVING", psu_ref="ED-M-LIVING-LT-PSU-E", controller_ref="ED-M-LIVING-LT-CTRL-E",
              controlled_by=("ED-M-LIVING-SW-COVE",), emission_side="right",
              mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 11))),
     LightRun(uid="BJTQTK477J", tag="LR-M-DINING-W", type_ref="ED-T-LT-STRIP24-RGBCCT",
              path=(pt(ft(18, 3.5625), ft(13)), pt(ft(18, 3.5625), ft(21, 6))),
-             room="RM-M-LIVING", psu_ref="ED-M-DINING-LT-PSU",
+             room="RM-M-LIVING", psu_ref="ED-M-DINING-LT-PSU", controller_ref="ED-M-DINING-LT-CTRL",
              controlled_by=("ED-M-LIVING-SW-COVE",),
              mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 11))),
     LightRun(uid="H7WQ6SD52G", tag="LR-M-DINING-E", type_ref="ED-T-LT-STRIP24-RGBCCT",
              path=(pt(ft(35, 5.1875), ft(13)), pt(ft(35, 5.1875), ft(21, 6))),
-             room="RM-M-LIVING", psu_ref="ED-M-DINING-LT-PSU-E",
+             room="RM-M-LIVING", psu_ref="ED-M-DINING-LT-PSU-E", controller_ref="ED-M-DINING-LT-CTRL-E",
              controlled_by=("ED-M-LIVING-SW-COVE",), emission_side="right",
              mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 11))),
     # ** ONE CLASS 2 DRIVER PER COVE HALF (owner, 2026-10-31). ** The tape carries no
     # listing, so the listed part is the supply, and each segment gets a <=100 VA Class 2
     # HLG-100H-24A (non-dimming) with its own GL-C-001P beside it, which dims and mixes; HA
     # groups each zone's pair. All channels on (20 W/m, 2026-11-07): lounge halves 12' x 6.1
-    # W/ft = 73 W, x1.25 = 92 W; dining 8.5' = 52 W, x1.25 = 65 W; all on 96 W. At the old OMNIDRIVE's spot by the kitchen
-    # soffit's service hatch; the cove paddle (a hard-off, left on) cuts all four drivers' 120 V.
-    ElectricalDevice(uid="QTM0001AAA", tag="ED-M-LIVING-LT-PSU", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(19), ft(22, 6)), type_ref="ED-T-LT-PSU-96-WE",
-                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
-                     mount=Mount(kind=MountKind.CEILING)),
-    ElectricalDevice(uid="BT4Y3QPQYX", tag="ED-M-LIVING-LT-PSU-E", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(19), ft(22, 10)), type_ref="ED-T-LT-PSU-96-WE",
-                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
-                     mount=Mount(kind=MountKind.CEILING)),
-    ElectricalDevice(uid="KADE9WHCBJ", tag="ED-M-LIVING-LT-CTRL", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(19), ft(23, 2)), type_ref="ED-T-LT-CTRL-5IN1",
-                     room="RM-M-LIVING", mount=Mount(kind=MountKind.CEILING)),
-    ElectricalDevice(uid="A4G60525S8", tag="ED-M-LIVING-LT-CTRL-E", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(19), ft(23, 6)), type_ref="ED-T-LT-CTRL-5IN1",
-                     room="RM-M-LIVING", mount=Mount(kind=MountKind.CEILING)),
-    ElectricalDevice(uid="AMDV43NTPM", tag="ED-M-DINING-LT-PSU", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(20, 3), ft(22, 6)), type_ref="ED-T-LT-PSU-96-WE",
-                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
-                     mount=Mount(kind=MountKind.CEILING)),
-    ElectricalDevice(uid="M9S69APGYK", tag="ED-M-DINING-LT-PSU-E", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(20, 3), ft(22, 10)), type_ref="ED-T-LT-PSU-96-WE",
-                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
-                     mount=Mount(kind=MountKind.CEILING)),
-    ElectricalDevice(uid="WEY30PQ1C8", tag="ED-M-DINING-LT-CTRL", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(20, 3), ft(23, 2)), type_ref="ED-T-LT-CTRL-5IN1",
-                     room="RM-M-LIVING", mount=Mount(kind=MountKind.CEILING)),
-    ElectricalDevice(uid="4KSC9M1MHX", tag="ED-M-DINING-LT-CTRL-E", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(20, 3), ft(23, 6)), type_ref="ED-T-LT-CTRL-5IN1",
-                     room="RM-M-LIVING", mount=Mount(kind=MountKind.CEILING)),
+    # W/ft = 73 W, x1.25 = 92 W; dining 8.5' = 52 W, x1.25 = 65 W; all on 96 W.
+    # ** A VISIBLE BANK ON THE STUDY CEILING (owner, 2026-11-17). ** It was hidden above the
+    # living ceiling behind a hatch nobody modelled (electrical.led_gear_access). Now four
+    # drivers on edge at 4" pitch, long axis N-S, under the study board's east half against
+    # the x=18' wall the west coves sit behind; each controller in line at its driver's DC
+    # end. West-cove pairs nearest the wall. Leads are derived (resolve/led_leads.py): the
+    # east coves' ~30' takes 14 AWG. The cove paddle (a hard-off, left on) cuts all four 120 V.
+    ElectricalDevice(uid="QTM0001AAA", tag="ED-M-LIVING-LT-PSU", kind=DeviceKind.LED_DRIVER,
+                     position=pt(inch(212.5), inch(243)), rotation=deg(90),
+                     type_ref="ED-T-LT-PSU-96-WE", circuit="CKT-LT-MAIN", room="RM-M-STUDY-CLOSET",
+                     mount=Mount(kind=MountKind.CEILING, drop=inch(4))),
+    ElectricalDevice(uid="KADE9WHCBJ", tag="ED-M-LIVING-LT-CTRL", kind=DeviceKind.LED_CONTROLLER,
+                     position=pt(inch(212.5), inch(253.25)), rotation=deg(90),
+                     type_ref="ED-T-LT-CTRL-5IN1", psu_ref="ED-M-LIVING-LT-PSU", room="RM-M-STUDY-CLOSET",
+                     mount=Mount(kind=MountKind.CEILING, drop=mm(37))),
+    ElectricalDevice(uid="AMDV43NTPM", tag="ED-M-DINING-LT-PSU", kind=DeviceKind.LED_DRIVER,
+                     position=pt(inch(208.5), inch(243)), rotation=deg(90),
+                     type_ref="ED-T-LT-PSU-96-WE", circuit="CKT-LT-MAIN", room="RM-M-STUDY-CLOSET",
+                     mount=Mount(kind=MountKind.CEILING, drop=inch(4))),
+    ElectricalDevice(uid="WEY30PQ1C8", tag="ED-M-DINING-LT-CTRL", kind=DeviceKind.LED_CONTROLLER,
+                     position=pt(inch(208.5), inch(253.25)), rotation=deg(90),
+                     type_ref="ED-T-LT-CTRL-5IN1", psu_ref="ED-M-DINING-LT-PSU", room="RM-M-STUDY-CLOSET",
+                     mount=Mount(kind=MountKind.CEILING, drop=mm(37))),
+    ElectricalDevice(uid="BT4Y3QPQYX", tag="ED-M-LIVING-LT-PSU-E", kind=DeviceKind.LED_DRIVER,
+                     position=pt(inch(204.5), inch(243)), rotation=deg(90),
+                     type_ref="ED-T-LT-PSU-96-WE", circuit="CKT-LT-MAIN", room="RM-M-STUDY-CLOSET",
+                     mount=Mount(kind=MountKind.CEILING, drop=inch(4))),
+    ElectricalDevice(uid="A4G60525S8", tag="ED-M-LIVING-LT-CTRL-E", kind=DeviceKind.LED_CONTROLLER,
+                     position=pt(inch(204.5), inch(253.25)), rotation=deg(90),
+                     type_ref="ED-T-LT-CTRL-5IN1", psu_ref="ED-M-LIVING-LT-PSU-E", room="RM-M-STUDY-CLOSET",
+                     mount=Mount(kind=MountKind.CEILING, drop=mm(37))),
+    ElectricalDevice(uid="M9S69APGYK", tag="ED-M-DINING-LT-PSU-E", kind=DeviceKind.LED_DRIVER,
+                     position=pt(inch(200.5), inch(243)), rotation=deg(90),
+                     type_ref="ED-T-LT-PSU-96-WE", circuit="CKT-LT-MAIN", room="RM-M-STUDY-CLOSET",
+                     mount=Mount(kind=MountKind.CEILING, drop=inch(4))),
+    ElectricalDevice(uid="4KSC9M1MHX", tag="ED-M-DINING-LT-CTRL-E", kind=DeviceKind.LED_CONTROLLER,
+                     position=pt(inch(200.5), inch(253.25)), rotation=deg(90),
+                     type_ref="ED-T-LT-CTRL-5IN1", psu_ref="ED-M-DINING-LT-PSU-E", room="RM-M-STUDY-CLOSET",
+                     mount=Mount(kind=MountKind.CEILING, drop=mm(37))),
     # The lounge, laid out off the furniture (2026-10-31): ED-M-LIVING-LT (plan/mep_electrical)
     # over the coffee table on the fire axis y=7'-4"; CAN2 a gimbal 27" off the fireplace wall
     # aimed at the mantel; CAN3/CAN4 gimbals 33" off the south glazing, washing the curtains;
@@ -291,24 +301,24 @@ LIVING_LIGHTING = [
              path=(pt(inch(297.375), ft(34, 3.375)), pt(inch(333.375), ft(34, 3.375))),
              room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU",
              controlled_by=("ED-M-KITCH-SW-UC",),
-             mount=Mount(kind=MountKind.WALL, elevation=inch(53))),
+             aperture="down", mount=Mount(kind=MountKind.WALL, elevation=inch(53))),
     LightRun(uid="0ZE5GQV7CQ", tag="LR-M-KIT-N-WE2", type_ref="ED-T-LT-MITTLED",
              path=(pt(inch(369.49), ft(34, 3.375)), pt(inch(399.49), ft(34, 3.375))),
              room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU",
              controlled_by=("ED-M-KITCH-SW-UC",),
-             mount=Mount(kind=MountKind.WALL, elevation=inch(53))),
+             aperture="down", mount=Mount(kind=MountKind.WALL, elevation=inch(53))),
     # Corner tape follows the diagonal front, inset one inch onto its real underside:
     # 15.56" drawn, one 15" MITTLED module bought.
     LightRun(uid="5SGJTPFRSQ", tag="LR-M-KIT-N-WE3", type_ref="ED-T-LT-MITTLED",
              path=(pt(inch(400.375), inch(411.375)), pt(inch(411.375), inch(400.375))),
              room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU2",
              controlled_by=("ED-M-KITCH-SW-UC",),
-             mount=Mount(kind=MountKind.WALL, elevation=inch(73))),
+             aperture="down", mount=Mount(kind=MountKind.WALL, elevation=inch(73))),
     LightRun(uid="D1YNDEW7NK", tag="LR-M-KIT-E-WN1", type_ref="ED-T-LT-MITTLED",
              path=(pt(ft(34, 3.375), inch(387.375)), pt(ft(34, 3.375), inch(399.375))),
              room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU2",
              controlled_by=("ED-M-KITCH-SW-UC",),
-             mount=Mount(kind=MountKind.WALL, elevation=inch(73))),
+             aperture="down", mount=Mount(kind=MountKind.WALL, elevation=inch(73))),
     # Six US modules draw 25.2 W, over one TRADFRI 30 W's 125% rule (31.5 W), so two drivers
     # split them by place (owner, 2026-11-08): -PSU takes WE1 (24+12) and WE2 (18+12), 17.6 W
     # = 22 W at 125%; -PSU2 the corner WE3 (15) and the east WN1 (12), 7.6 W = 9.5 W. The
@@ -316,14 +326,14 @@ LIVING_LIGHTING = [
     # 32.5"-62.5"; each 11 1/4" long, d 34.4"-45.6" and 50.4"-61.6"), under the 76" -UC-RC box
     # (74"-78") they cord into, which ED-M-KITCH-SW-UC switches. Each TRADFRI's 30 VA lands on
     # CKT-LT-BACKUP; the outlet has none.
-    ElectricalDevice(uid="7VSVT7B8ZS", tag="ED-M-KITCH-LT-PSU", kind=DeviceKind.JUNCTION_BOX,
+    ElectricalDevice(uid="7VSVT7B8ZS", tag="ED-M-KITCH-LT-PSU", kind=DeviceKind.LED_DRIVER,
                      type_ref="ED-T-LT-PSU-TRADFRI-30",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(72)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-N1", face="left", distance_from_start=inch(56),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
-    ElectricalDevice(uid="120VZACVB0", tag="ED-M-KITCH-LT-PSU2", kind=DeviceKind.JUNCTION_BOX,
+    ElectricalDevice(uid="120VZACVB0", tag="ED-M-KITCH-LT-PSU2", kind=DeviceKind.LED_DRIVER,
                      type_ref="ED-T-LT-PSU-TRADFRI-30",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(72)),

@@ -334,6 +334,9 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         findings.extend(standard_findings(plan))
         derive_sleeve_drops(model)
         derive_floor_heat_leads(model)
+        from typehaus.resolve.led_leads import derive_led_leads
+
+        derive_led_leads(model)
     with _stage("stacking"):
         findings.extend(resolve_stacking(model))
     with _stage("connector_markers"):

@@ -37,7 +37,8 @@ _DASHED_LINETYPE = "DASHED"
 _DEVICE_SYMBOLS = frozenset({
     "register-supply", "register-return", "receptacle", "gfci", "receptacle_240",
     "switch", "light", "panel", "spot-elev", "utility-entry", "level-marker", "alarm",
-    "junction_box", "meter", "disconnect", "spd", "data_outlet",
+    "junction_box", "meter", "disconnect", "spd", "data_outlet", "led_driver",
+    "led_controller",
 })
 
 # Symbols drawn by a branch of their own; anything else falls through to the window mark,

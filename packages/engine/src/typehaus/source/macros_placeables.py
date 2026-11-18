@@ -460,6 +460,7 @@ _DEVICE_KIND_TOKENS = (
     ("panel", DeviceKind.PANEL), ("load centre", DeviceKind.PANEL),
     ("meter", DeviceKind.METER), ("disconnect", DeviceKind.DISCONNECT),
     ("spd", DeviceKind.SPD), ("surge", DeviceKind.SPD),
+    ("led driver", DeviceKind.LED_DRIVER), ("led controller", DeviceKind.LED_CONTROLLER),
     ("junction", DeviceKind.JUNCTION_BOX), ("data", DeviceKind.DATA_OUTLET),
 )
 

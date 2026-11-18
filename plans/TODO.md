@@ -38,8 +38,7 @@ the future.
 
 - **Lighting confirms left after 2026-11-07** (`houses/catlin/notes/smart_home.md`): the Omvi 3i
   is not on HA's `reolink` list (RTSP works, ONVIF unlisted); the garage GL-C-208M's Wi-Fi/Matter
-  VLAN is unplanned; MITTLED
-  counts one piece per run until `LightRun.modules` / `stock_length` carries its SKUs. E4 coves
+  VLAN is unplanned. E4 coves
   stay ~102 lm/ft per white channel (no 12 mm RGB+CCT tape reaches 250; owner accepts).
 - **Owner: move the indoor cove controllers to the Matter GL-C-208M too?** The coves are the
   only Zigbee devices; doing it retires the second ZBT-2.
@@ -243,9 +242,8 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
 - [x] 3d model of the in-use cover of the SmartlockPro GFCI outlets (5980-UCL tapered clear hood, gray base, hinge, lock tab and open cord ports).
 - Handrail and guardrail duplicated, RL-SG-PSTAIR-S and RL-SG-PSTAIR-HR, doesn't need the extra handrail, the guard doubles
 - Might need a second SL-S-KNEE-CAP for the partition wall
-- Model the LED junction boxes and power supply LED accurately to the products and dimensions
-- [x] ERV terminal trim projects into the room, with raised center discs on wall and ceiling valves and shallow cast scroll grilles on floors.
-- Door sills for exterior doors make sense
+- ERV terminals don't come out of the walls/floors/surfaces quite clearly enough, likely they protrude just a bit more
+- Verify the support for the door sills for exterior doors
 - Condensate PR-M-COND-HP3-RUN goes through the studs of W-M-STRW, which is one wall that is exposed and we don't want to run the plumbing through (the data cable is probably fine there though)
 - [x] 3d model of the DoorScope (round DS2000 trim, recessed interior screen and exterior optics shared by viewer/GLB/IFC).
 - ERV likely blocks D-B-CLOSET, and its condensate also blocks

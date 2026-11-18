@@ -12,6 +12,7 @@ from collections import Counter
 from typehaus.model.nec import NEC, cite
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff.lighting import line_voltage_run_va, nec_floor_area_ft2
+from typehaus.takeoff.lighting_supplies import input_va
 
 # 2026 NEC 120.82 (optional method, was 220.82), read in the printed code 2026-11-13.
 # (A): the sum of (B), (C) and (D); permitted only where the service conductors are >= 100 A.
@@ -72,7 +73,7 @@ def _listed_va(model: ResolvedModel, consumers: list) -> float:
     types = {t.tag: t for t in model.plan.library.electrical_device_types}
     run_va = line_voltage_run_va(model)
     return sum(
-        float(types[element.type_ref].load_va or 0.0)
+        float(input_va(types[element.type_ref]) or 0.0)
         for element in consumers
         # A typed Alarm is a device on its circuit too (a hardwired head's draw).
         if element.element_kind in ("ElectricalDevice", "Alarm") and element.type_ref in types

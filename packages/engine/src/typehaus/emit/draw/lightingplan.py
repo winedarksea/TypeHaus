@@ -128,7 +128,10 @@ def build_lighting_plan(model: ResolvedModel, storey: str) -> Scene:
         positions[run.tag] = mid
         _emit_light_run_ticks(b, run)
 
-    _emit_psu_leaders(b, [*runs_on_storey, *(light for light in luminaires if light.psu_ref)],
+    _emit_led_leads(b, model, storey, device_positions)
+    led_fed = {lead.run_ref for lead in model.led_leads if lead.leg == "feed"}
+    _emit_psu_leaders(b, [*(run for run in runs_on_storey if run.tag not in led_fed),
+                          *(light for light in luminaires if light.psu_ref)],
                       device_positions, feeds=model.conduits)
     _emit_switch_legs(b, [*luminaires, *runs_on_storey], positions)
     _emit_legend(b, model, storey, types, forms_present)
@@ -208,6 +211,56 @@ def _sub(a: tuple[float, float], c: tuple[float, float]) -> tuple[float, float]:
 def _unit(a: tuple[float, float]) -> tuple[float, float]:
     n = math.hypot(a[0], a[1])
     return (a[0] / n, a[1] / n) if n > 1e-12 else (0.0, 0.0)
+
+
+def _emit_led_leads(b: SceneBuilder, model: ResolvedModel, storey: str,
+                    device_positions: dict) -> None:
+    """The derived 24 V leads (→ resolve/led_leads.py) in plan, gear to feed, each labelled
+    with its gauge; every driver and controller boxed and tagged once."""
+    gear: dict[str, str] = {}
+    for lead in model.led_leads:
+        if lead.storey != storey:
+            continue
+        plan = [p[:2] for i, p in enumerate(lead.path)
+                if i == 0 or math.dist(p[:2], lead.path[i - 1][:2]) > 1e-6]
+        if len(plan) >= 2:
+            b.add(Polyline(points=tuple(_in(p) for p in plan), layer="E-LITE-COVE",
+                           lineweight=LIGHT, linetype="DASHED"))
+        if len(plan) >= 2 and lead.leg == "feed":  # a bank's short legs stay unlabelled
+            mid = plan[len(plan) // 2]
+            gauge = f"{lead.awg} AWG" if lead.awg is not None else "NO CABLE"
+            b.add(Text(anchor=_in((mid[0] + 0.05, mid[1] - 0.12)), content=gauge,
+                       height=1.5, layer="E-LITE-COVE"))
+        for tag in (lead.from_ref, lead.to_ref):
+            kind = getattr(getattr(model.plan.by_tag(tag), "kind", None), "value", "")
+            if kind in ("led_driver", "led_controller", "junction_box"):
+                gear[tag] = "CTRL" if kind == "led_controller" else "DRV"
+    # Gear within 2 ft is one bank: one box round it and one label, so a bank reads.
+    banks: list[list[tuple[str, str, tuple]]] = []
+    for tag, kind in sorted(gear.items()):
+        target = device_positions.get(tag)
+        if target is None:
+            continue
+        bank = next((bk for bk in banks if any(math.dist(target, t) < 0.6 for _, _, t in bk)),
+                    None)
+        if bank is None:
+            banks.append(bank := [])
+        bank.append((tag, kind, target))
+    half = 0.09
+    for bank in banks:
+        xs = [t[0] for _, _, t in bank]
+        ys = [t[1] for _, _, t in bank]
+        x0, x1, y0, y1 = min(xs) - half, max(xs) + half, min(ys) - half, max(ys) + half
+        b.add(Polyline(points=tuple(_in(p) for p in ((x0, y0), (x1, y0), (x1, y1), (x0, y1))),
+                       layer="E-LITE-COVE", lineweight=PROFILE, closed=True))
+        if len(bank) == 1:
+            tag, kind, _ = bank[0]
+            text = f"{kind} {tag.split('-LT-')[-1] if '-LT-' in tag else tag}"
+        else:
+            kinds = [kind for _, kind, _ in bank]
+            text = " / ".join(f"{k} x{kinds.count(k)}" for k in ("DRV", "CTRL") if k in kinds)
+        b.add(Text(anchor=_in((x1 + 0.05, (y0 + y1) / 2)), content=text, height=1.8,
+                   layer="E-LITE-COVE"))
 
 
 def _emit_psu_leaders(b: SceneBuilder, runs: list, device_positions: dict, *, feeds=()) -> None:

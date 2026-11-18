@@ -8,8 +8,9 @@ from shapely.geometry import LineString, Point, Polygon
 
 from typehaus.findings import Finding, element_error
 from typehaus.quantities import inch
-from typehaus.resolve.geometry import LIGHT_STRIP_WIDTH_M, rect_between
+from typehaus.resolve.geometry import light_run_parts, rect_between
 from typehaus.resolve.geometry_ir import GPrism
+from typehaus.resolve.led_sections import section_extent
 from typehaus.resolve.model import (
     ResolvedModel,
     SoffitFinishPanel,
@@ -124,9 +125,10 @@ def resolve_soffit_finishes(model: ResolvedModel) -> list[Finding]:
             if run.soffit_ref != soffit.tag:
                 continue
             # A shadow gap's reveal was set on this face (→ resolve/drywall_led.py).
-            width = run.aperture_m or LIGHT_STRIP_WIDTH_M
+            run_w, run_d = section_extent(light_run_parts(run))
+            width = run.aperture_m or run_w
             if run.profile != "shadow_gap" and not (
-                    soffit.z0_m <= run.z_m - LIGHT_STRIP_WIDTH_M
+                    soffit.z0_m <= run.z_m - run_d
                     and run.z_m <= soffit.z0_m + thickness):
                 findings.append(element_error("integrity.soffit_channel",
                     f"channel {run.tag} must fit within {soffit.tag}'s underside board",

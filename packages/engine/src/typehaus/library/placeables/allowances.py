@@ -50,17 +50,20 @@ CELLULAR_BLIND_2748 = FurnitureType(
 )
 # 14x14 is a tub waste-and-overflow size; 14x29 reaches the whole of a wall-hung WC carrier.
 ACCESS_PANEL_1414 = FurnitureType(
+    access_opening=True,
     tag="FT-ACCESS-PANEL-1414", name='Access panel, 14" x 14"',
     footprint=(inch(14), inch(1)), height=inch(14),
     plan_symbol=None, mount=_WALL, source=_PANEL,
 )
 ACCESS_PANEL_1429 = FurnitureType(
+    access_opening=True,
     tag="FT-ACCESS-PANEL-1429", name='Access panel, 14" x 29"',
     footprint=(inch(14), inch(1)), height=inch(29),
     plan_symbol=None, mount=_WALL, source=_PANEL,
 )
 # 20"L x 15"H: the minimum Kohler publishes for a heated-bath service panel (K-1130-W1).
 ACCESS_PANEL_2015 = FurnitureType(
+    access_opening=True,
     tag="FT-ACCESS-PANEL-2015", name='Access panel, 20" x 15"',
     footprint=(inch(20), inch(1)), height=inch(15),
     plan_symbol=None, mount=_WALL, source=_PANEL,
@@ -69,6 +72,7 @@ ACCESS_PANEL_2015 = FurnitureType(
 # projection is the height. Gasketed, because a return-side cavity behind an unsealed lid in
 # a closet ceiling is IMC 601.5(7)'s return-air-from-a-closet.
 ACCESS_PANEL_CLG_3029 = FurnitureType(
+    access_opening=True,
     tag="FT-ACCESS-PANEL-CLG-3029", name='Ceiling access panel, 30" x 29", gasketed',
     footprint=(inch(30), inch(29)), height=inch(1),
     plan_symbol=None, mount=Mount(kind=MountKind.CEILING),

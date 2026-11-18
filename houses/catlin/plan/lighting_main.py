@@ -59,7 +59,7 @@ MAIN_LIGHTING = [
     # from the top shelf, ventilated, and under the 8'-4" cold-water crossing. Since the
     # channels went to generic COB (2026-10-31), 4 x 18 W x 1.25 = 90 W: a 96 W Class 2 HLG,
     # on/off with the occupancy sensor (the pantry needs no dimming).
-    ElectricalDevice(uid="DZVAFADH7Y", tag="ED-M-PANTRY-LT-PSU", kind=DeviceKind.JUNCTION_BOX,
+    ElectricalDevice(uid="DZVAFADH7Y", tag="ED-M-PANTRY-LT-PSU", kind=DeviceKind.LED_DRIVER,
                      type_ref="ED-T-LT-PSU-96-WE",
                      circuit="CKT-LT-MAIN", room="RM-M-PANTRY", controlled_by=("ED-M-PANTRY-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(90)),
@@ -276,11 +276,13 @@ MAIN_LIGHTING = [
              room="RM-M-BATH2", psu_ref="ED-M-BATH2-PSU",
              controlled_by=("ED-M-BATH2-SW-EVE",), emission_side="right",
              mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
-    # In the ceiling's y 192"-208" bay, outside the shower zone and off the extract trunk.
-    ElectricalDevice(uid="ESWYM2QANP", tag="ED-M-BATH2-PSU", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(2, 6), ft(16, 8)), type_ref="ED-T-LT-PSU-60",
-                     circuit="CKT-LT-MAIN", room="RM-M-BATH2",
-                     mount=Mount(kind=MountKind.CEILING)),
+    # ** ON THE LAUNDRY CEILING, ACROSS W-M-BA2E (owner, 2026-11-17). ** It was above
+    # BATH2's board with no hatch (electrical.led_gear_access); now surface-mounted beside
+    # the tub run's north end, out of the wet room, between RET3's valve and the track.
+    ElectricalDevice(uid="ESWYM2QANP", tag="ED-M-BATH2-PSU", kind=DeviceKind.LED_DRIVER,
+                     position=pt(inch(112), inch(242)), rotation=deg(90),
+                     type_ref="ED-T-LT-PSU-60", circuit="CKT-LT-MAIN", room="RM-M-LAUNDRY",
+                     mount=Mount(kind=MountKind.CEILING, drop=inch(3.74))),
     # A 2-gang over the vanity's south end: day toggle (the old ED-M-BATH2-SW, same uid)
     # and the evening toggle 4" west. A third gang does not fit: ED-M-BATH2-FH-STAT is at
     # x 9 3/4"-13 3/4" and D-M-BATH2's casing starts ~22".
@@ -306,7 +308,7 @@ MAIN_LIGHTING = [
                      psu_ref="ED-M-LAUNDRY-PSU", room="RM-M-LAUNDRY",
                      controlled_by=("ED-M-LAUNDRY-SW",),
                      mount=Mount(kind=MountKind.CEILING, drop=LAUNDRY_TRACK_DROP)),
-    ElectricalDevice(uid="QTM02YAAAA", tag="ED-M-LAUNDRY-PSU", kind=DeviceKind.JUNCTION_BOX,
+    ElectricalDevice(uid="QTM02YAAAA", tag="ED-M-LAUNDRY-PSU", kind=DeviceKind.LED_DRIVER,
                      type_ref="ED-T-LT-PSU-PUREEDGE-40", circuit="CKT-LT-MAIN",
                      room="RM-M-LAUNDRY", controlled_by=("ED-M-LAUNDRY-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=LAUNDRY_SUPPLY_MOUNT),

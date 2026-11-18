@@ -22,6 +22,7 @@ const PART_LOOK: Record<LightRunSectionPart["key"], { color: number; metal: bool
   tape: { color: LED_TAPE_COLOR, metal: false },
   lens: { color: COVE_LENS_COLOR, metal: false },
   flange: { color: COVE_FLANGE_COLOR, metal: false },
+  endcap: { color: COVE_CHANNEL_COLOR, metal: true },
 };
 
 // One mesh per section part, swept along every leg. One pick target for the whole run,
@@ -31,6 +32,8 @@ export function buildLightRun(parent: THREE.Group, run: LightRun, center: PlanCe
   if (run.path.length < 2 || !run.section?.length) return;
   const heights = run.z_path_m?.length === run.path.length
     ? run.z_path_m : run.path.map(() => run.z_m);
+  const whole = [{ path: run.path, z: heights }];
+  const pieces = run.pieces?.length ? run.pieces : whole;
   const sign = run.emission_side === "right" ? -1 : 1;
   const firstChildIndex = parent.children.length;
   const byKey = new Map<LightRunSectionPart["key"], number[]>();
@@ -46,9 +49,10 @@ export function buildLightRun(parent: THREE.Group, run: LightRun, center: PlanCe
       area += a0 * r1 - a1 * r0;
     }
     if (area < 0) ring.reverse();
-    for (let index = 0; index < run.path.length - 1; index++) {
-      const p0 = run.path[index];
-      const p1 = run.path[index + 1];
+    for (const piece of part.key === "endcap" ? run.caps ?? [] : pieces)
+    for (let index = 0; index < piece.path.length - 1; index++) {
+      const p0 = piece.path[index];
+      const p1 = piece.path[index + 1];
       const dx = p1[0] - p0[0];
       const dy = p1[1] - p0[1];
       const len = Math.hypot(dx, dy);
@@ -58,8 +62,8 @@ export function buildLightRun(parent: THREE.Group, run: LightRun, center: PlanCe
       // Plan (x, y, z) to three's Y-up frame.
       const at = (p: readonly [number, number], z: number, a: number, r: number) =>
         [p[0] + nx * a - center[0], z + r, -(p[1] + ny * a - center[1])] as const;
-      const start = ring.map(([a, r]) => at(p0, heights[index], a, r));
-      const end = ring.map(([a, r]) => at(p1, heights[index + 1], a, r));
+      const start = ring.map(([a, r]) => at(p0, piece.z[index], a, r));
+      const end = ring.map(([a, r]) => at(p1, piece.z[index + 1], a, r));
       const push = (...points: (readonly [number, number, number])[]) => {
         for (const point of points) positions.push(point[0], point[1], point[2]);
       };

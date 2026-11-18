@@ -25,6 +25,7 @@ from typehaus.takeoff.lighting_supplies import (
     PSU_SIZING_FACTOR,
     effective_lighting_circuit,
     electrical_devices,
+    rated_output_w,
     supply_demands,
 )
 
@@ -302,7 +303,7 @@ def light_run_psu(ctx: CheckContext) -> list[Finding]:
         if psu_tag not in devices:
             continue
         required = demand_by_psu[psu_tag] * PSU_SIZING_FACTOR
-        rating = getattr(types.get(devices[psu_tag].type_ref or ""), "load_va", None)
+        rating = rated_output_w(types.get(devices[psu_tag].type_ref or ""))
         if rating is None:
             out.append(_unknown(cid, "supply " + psu_tag + " states no rating, so the "
                                      + f"{required:.0f}" + " W it has to carry "

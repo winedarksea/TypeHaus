@@ -177,6 +177,7 @@ _MARKER_STYLE = {
     "level-marker": ("<", "#204070"), "alarm": ("h", "#555555"),
     "junction_box": ("$J$", "#8a2a2a"), "meter": ("$M$", "#8a2a2a"),
     "disconnect": ("$D$", "#8a2a2a"), "spd": ("$Z$", "#8a2a2a"),
+    "led_driver": ("$Dr$", "#c08a00"), "led_controller": ("$C$", "#c08a00"),
     # Teal, not the power reds or the lighting amber — low-voltage is a third trade and the
     # E-COMM layer it draws on says so. "N" rather than the conventional data triangle
     # because ^/v are already the supply/return registers, and a third triangle in a fourth

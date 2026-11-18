@@ -12,6 +12,7 @@ from typing import Any
 
 from typehaus.checks.registry import Preferences
 from typehaus.resolve.geometry import light_run_parts
+from typehaus.resolve.led_sections import cap_pieces, run_pieces
 from typehaus.resolve.model import ResolvedModel
 from typehaus.server.model_json_shared import _provenance
 from typehaus.source.provenance import Provenance
@@ -77,6 +78,16 @@ def systems_json(
              "profile": run.profile,
              "section": [{"key": key, "quad": [list(corner) for corner in quad]}
                          for key, quad in light_run_parts(run)],
+             # What to sweep it along (→ resolve/led_sections.py): one piece per module
+             # (else the path), and the ``endcap`` part along a stub past each open end.
+             "pieces": [{"path": [list(p) for p in path], "z": list(z)}
+                        for path, z in run_pieces(run)],
+             "caps": [{"path": [list(p) for p in path], "z": list(z)}
+                      for path, z in cap_pieces(run)],
+             "channel": run.channel_ref, "modules_m": list(run.modules_m),
+             "controller_ref": run.controller_ref, "feed": run.feed,
+             # The derived 24 V lead to its feed (→ resolve/led_leads.py), None if none.
+             "lead": _lead_payload(model, run.tag),
              "provenance": _provenance(provenance, run.tag)}
             for run in sorted(model.light_runs, key=lambda item: item.uid)
         ],
@@ -128,3 +139,13 @@ def systems_json(
             },
         },
     }
+
+
+def _lead_payload(model, run_tag: str) -> dict | None:
+    from typehaus.resolve.led_leads import lead_drop_pct
+
+    feed = next((le for le in model.led_leads if le.run_ref == run_tag), None)
+    if feed is None:
+        return None
+    return {"from": feed.from_ref, "awg": feed.awg, "length_m": feed.length_m,
+            "current_a": feed.current_a, "drop_pct": lead_drop_pct(model, run_tag)}

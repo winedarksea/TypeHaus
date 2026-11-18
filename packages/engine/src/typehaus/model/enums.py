@@ -518,6 +518,10 @@ class DeviceKind(Enum):
     DATA_OUTLET = "data_outlet"
     # Surge protective device (NEC 242 / 230.67): its class rides ``spd_class`` on the type.
     SPD = "spd"
+    # 24 V LED gear (decision #137): a driver with its AC splice box, and the controller
+    # between it and the tape. Graded for access by ``electrical.led_gear_access``.
+    LED_DRIVER = "led_driver"
+    LED_CONTROLLER = "led_controller"
 
 
 class LuminaireForm(Enum):

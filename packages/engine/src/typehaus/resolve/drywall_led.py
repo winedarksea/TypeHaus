@@ -47,7 +47,7 @@ def host_shadow_gap_runs(model: ResolvedModel, standard: DrywallStandard | None)
         return []
     materials = {m.tag: m for m in model.plan.library.materials}
     reveal = profile.reveal.meters
-    parts = shadow_gap_parts(reveal, profile.depth.meters, profile.flange.meters)
+    types = {t.tag: t for t in model.plan.library.electrical_device_types}
     findings: list[Finding] = []
     bodies: dict[int, object] = {}  # wall bodies are fixed for the pass; built once each
     for index, run in enumerate(model.light_runs):
@@ -63,9 +63,13 @@ def host_shadow_gap_runs(model: ResolvedModel, standard: DrywallStandard | None)
             findings.append(path)
             continue
         developed = sum(length(sub(b, a)) for a, b in zip(path, path[1:], strict=False))
+        strip = getattr(types.get(run.type_ref), "strip", None)
+        parts = shadow_gap_parts(reveal, profile.depth.meters, profile.flange.meters,
+                                 strip.tape_width.meters if strip is not None else None)
         model.light_runs[index] = dataclasses.replace(
             run, path=path, length_m=developed, z_m=face_z, z_path_m=(), profile="shadow_gap",
-            section=parts, host_ref=host_ref, aperture_m=reveal)
+            section=parts, host_ref=host_ref, aperture_m=reveal, channel_ref=None,
+            aperture="down", end_caps=False)
         if run.soffit_ref is None:
             _cut_ceiling(model, host_ref, path, reveal / 2.0, face_z)
     return findings

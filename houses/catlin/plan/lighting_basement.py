@@ -244,7 +244,7 @@ BASEMENT_LIGHTING = [
     # driver accessible and ventilated. It draws at the -J box's published 7.40 x 3.74 x
     # 1.59 in, flat on the wall. One 24V Class 2 pair crosses
     # W-B-SA-N's foil-faced polyiso through a gasketed grommet, sealed both faces.
-    ElectricalDevice(uid="392P1PBQF7", tag="ED-B-SAUNA-LT-PSU", kind=DeviceKind.JUNCTION_BOX,
+    ElectricalDevice(uid="392P1PBQF7", tag="ED-B-SAUNA-LT-PSU", kind=DeviceKind.LED_DRIVER,
                      type_ref="ED-T-LT-PSU-60",
                      circuit="CKT-LT-BSMT", room="RM-B-WORKSHOP",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
@@ -456,13 +456,13 @@ BASEMENT_LIGHTING = [
              path=(pt(ft(10, 4.375), ft(25, 8)), pt(ft(10, 4.375), ft(34, 10))),
              room="RM-B-STAIR", psu_ref="ED-B-STAIR-LT-PSU", serves_stair="ST-B2M",
              controlled_by=("ED-B-STAIR-SW", "ED-M-STAIR-SW"),
-             mount=Mount(kind=MountKind.WALL, elevation=inch(34))),
+             aperture="down", mount=Mount(kind=MountKind.WALL, elevation=inch(34))),
     # The AC/DC supply in a ceiling box, at the head of the run it feeds (notes: "Box in
     # ceiling for AC/DC power supply"). 9'-5" of tape at 3 W/ft is 28 W; x1.25 = 35 W, so
     # the 60 W supply is the catalog size above it. **It moved to the lower landing's
     # ceiling on 2026-09-05**: (11', 26') is inside the under-stair storage, and a stair
     # light's supply does not belong behind the stored goods.
-    ElectricalDevice(uid="QTB000GAAA", tag="ED-B-STAIR-LT-PSU", kind=DeviceKind.JUNCTION_BOX,
+    ElectricalDevice(uid="QTB000GAAA", tag="ED-B-STAIR-LT-PSU", kind=DeviceKind.LED_DRIVER,
                      position=pt(ft(15, 6), ft(33)), type_ref="ED-T-LT-PSU-60",
                      circuit="CKT-LT-BSMT", room="RM-B-STAIR",
                      mount=Mount(kind=MountKind.CEILING)),

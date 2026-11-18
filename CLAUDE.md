@@ -108,6 +108,15 @@ a release or for exhaustive local verification.
   `ResolvedModel.electrical_labels`, wording from the paraphrase docs only. House inputs go on the one
   `LabelStandard`; an unauthored one is UNKNOWN in `electrical.label_inputs`. Billed in
   `[electrical_labels]`, printed on E-605.
+- **LED construction is derived from one `LedStandard`** (decision #137, `model/led.py`): a
+  strip type's `LedStrip` names its tape (width, feed limit, reel, rigid `modules`) and its
+  `LedChannel`; `resolve/led_sections.py` builds every run's section (body, tape, lens, end caps;
+  modules swept per piece) and emitters sweep it through `geometry.light_run_shells`.
+  `resolve/led_leads.py` derives driver→controller and controller→feed leads
+  (`ResolvedModel.led_leads`, functional route, gauge by drop, NEC Ch. 9 Table 8). Graded by
+  `electrical.light_run_fit`, `led_gear_access` (concealed gear needs an opening in reach),
+  `led_wiring` and `led_voltage_drop`; billed in `[light_run_materials]`. A driver is
+  `DeviceKind.LED_DRIVER`, sized on `rated_output_w`, loading its branch at `input_va`.
 - **Condensate overflow is authored on the unit** (decision #127): `Equipment.secondary_drain_pan`
   / `overflow_drain_ref` / `float_switch_ref`, graded by `mep.condensate_overflow` (IMC 307.2.3).
 - **A hung machine's trapeze is derived from `Equipment.hangers`** (decision #131):

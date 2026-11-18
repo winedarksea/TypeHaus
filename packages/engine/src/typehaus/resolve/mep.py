@@ -113,6 +113,8 @@ def resolve_mep(model: ResolvedModel) -> list[Finding]:
 
 # A soffit-hosted run's authored extremes follow the host's edges within this (10 in.).
 _EDGE_SNAP_M = 0.254
+# A run whose type states no tape keeps the generic channel (→ resolve/geometry.py).
+_GENERIC_WIDTH_M = 0.0127
 
 
 def _resolve_light_run(model: ResolvedModel, run: LightRun, storey) -> list[Finding]:
@@ -153,6 +155,16 @@ def _resolve_light_run(model: ResolvedModel, run: LightRun, storey) -> list[Find
                     f"{len(path)} path points — one per point, or none for a level run",
             element_tags=(run.tag,), result=Result.FAIL,
         )]
+    from typehaus.resolve.led_sections import (
+        led_channels,
+        modules_for,
+        section_extent,
+        surface_section,
+    )
+
+    built = surface_section(run, product, led_channels(model.plan),
+                            run.mount.kind.value if run.mount else None)
+    width_m = section_extent(built["section"])[0] if built else _GENERIC_WIDTH_M
     if run.soffit_ref is not None:
         host = next((host for host in model.soffits if host.tag == run.soffit_ref), None)
         if host is None or run.soffit_edge_offset is None:
@@ -161,11 +173,9 @@ def _resolve_light_run(model: ResolvedModel, run: LightRun, storey) -> list[Find
                             element_tags=(run.tag,), result=Result.FAIL)]
         from shapely.geometry import Polygon
 
-        from typehaus.resolve.geometry import LIGHT_STRIP_WIDTH_M
-
         minx, miny, maxx, maxy = Polygon(host.outline).bounds
         offset = run.soffit_edge_offset.meters
-        if not LIGHT_STRIP_WIDTH_M / 2 <= offset < min(maxx - minx, maxy - miny) / 2:
+        if not width_m / 2 <= offset < min(maxx - minx, maxy - miny) / 2:
             return [Finding(severity=Severity.ERROR, check_id="integrity.light_run_host",
                             message=f"light run {run.tag} has an invalid perimeter offset",
                             element_tags=(run.tag,), result=Result.FAIL)]
@@ -196,6 +206,7 @@ def _resolve_light_run(model: ResolvedModel, run: LightRun, storey) -> list[Find
         controlled_by=tuple(run.controlled_by), room=run.room,
         z_path_m=tuple(z_path) if run.rise else (),
         soffit_ref=run.soffit_ref, emission_side=run.emission_side,
+        controller_ref=run.controller_ref, **built, **modules_for(product, developed),
     ))
     return []
 

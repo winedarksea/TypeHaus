@@ -97,36 +97,34 @@ def test_run_lengths_and_watts_sum_from_the_authored_polylines(catlin_model):
 
 
 def test_light_run_materials_splits_the_blended_length_into_order_lines(catlin_model):
-    """``light_run_takeoff`` bills one blended length per type; this is the real order
-    sheet a channel/tape install needs: channel and tape by the foot, end caps and corner
-    connectors by the piece."""
+    """The order sheet off each type's tape and channel (decision #137): tape by the foot,
+    channel by whole sticks per run, two end caps per surface run, modules by length, and
+    the derived 24 V leads by gauge with one connector per feed."""
+    import math
+
     materials = light_run_materials(catlin_model)
     by_key = {(row["type"], row["item"]): row for row in materials}
-    assert {row["item"] for row in materials} == {
-        "channel", "tape", "end_cap", "corner_connector"}
-
-    strip24 = {run.tag: run for run in catlin_model.light_runs if run.type_ref == "ED-T-LT-STRIP24"}
-    surface = {tag: run for tag, run in strip24.items() if run.profile == "surface"}
-    # The shadow-gap coves' tape sticks in the drywall trade's bead (#103), so only surface
-    # runs bill channel and caps; the tape rides every run. The coves are E4/E6 since
-    # 2026-10-31, so mark E is surface runs only, and the RGB+CCT coves bill no channel.
-    assert set(strip24) == set(surface)
+    strip24 = [run for run in catlin_model.light_runs if run.type_ref == "ED-T-LT-STRIP24"]
+    assert all(run.profile == "surface" for run in strip24)
+    # Shadow-gap coves bill tape alone; their channel row stays, at zero.
     assert by_key[("ED-T-LT-STRIP24-RGBCCT", "channel")]["quantity"] == 0
-    channel = by_key[("ED-T-LT-STRIP24", "channel")]
     tape = by_key[("ED-T-LT-STRIP24", "tape")]
-    assert channel["quantity"] == pytest.approx(
-        round(sum(run.length_m * _M_TO_FT for run in surface.values()), 1))
     assert tape["quantity"] == pytest.approx(
-        round(sum(run.length_m * _M_TO_FT for run in strip24.values()), 1))
+        round(sum(run.length_m * _M_TO_FT for run in strip24), 1))
+    # DI-CHB-S2 comes in 48" sticks: each run buys whole ones.
+    channel = by_key[("ED-T-LT-STRIP24", "channel")]
+    assert channel["quantity"] == pytest.approx(
+        sum(math.ceil(run.length_m * _M_TO_FT / 4) * 4 for run in strip24))
     assert channel["unit"] == tape["unit"] == "LF"
-    # Every surface run takes exactly two end caps, one per open end.
-    end_cap = by_key[("ED-T-LT-STRIP24", "end_cap")]
-    assert end_cap["quantity"] == 2 * len(surface)
-    assert end_cap["unit"] == "EA"
-    # A corner connector for every interior vertex of a surface run; a shadow-gap corner
-    # (the hall cove's two) is the tape's own bend.
-    corner = by_key[("ED-T-LT-STRIP24", "corner_connector")]
-    assert corner["quantity"] == sum(max(len(run.path) - 2, 0) for run in surface.values())
+    assert by_key[("ED-T-LT-STRIP24", "end_cap")]["quantity"] == 2 * len(strip24)
+    # MITTLED is bought as modules (24+12, 18+12, 15, 12), never as cut tape.
+    assert ("ED-T-LT-MITTLED", "tape") not in by_key
+    assert {item: by_key[("ED-T-LT-MITTLED", item)]["quantity"] for item in (
+        "module_12in", "module_15in", "module_18in", "module_24in")} == {
+        "module_12in": 3, "module_15in": 1, "module_18in": 1, "module_24in": 1}
+    # One connector per fed run; the lounge's long east leads take 14 AWG.
+    assert by_key[("ED-T-LT-STRIP24-RGBCCT", "tape_connector")]["quantity"] == 4
+    assert by_key[("ED-T-LT-STRIP24-RGBCCT", "lead_14awg")]["unit"] == "LF"
 
 
 def test_every_supply_is_sized_at_125_percent_of_what_it_drives(catlin_model):
@@ -253,7 +251,11 @@ def test_a_line_voltage_run_reaches_the_panel_schedule(catlin_model):
     library = catlin_model.plan.library
     w_per_ft = next(t for t in library.electrical_device_types if t.tag == run.type_ref).watts_per_ft
     driver = next(d for d in catlin_model.plan.all_elements() if d.tag == run.psu_ref)
-    rating = next(t for t in library.electrical_device_types if t.tag == driver.type_ref).load_va
+    from typehaus.takeoff.lighting_supplies import input_va
+
+    # A driver loads its branch at its nameplate input (NEC 220.18(B)), not its output.
+    rating = input_va(next(t for t in library.electrical_device_types
+                           if t.tag == driver.type_ref))
     assert set(va) == {"LR-G-EAVE-W"}
     assert va["LR-G-EAVE-W"] == pytest.approx(run.length_m * _M_TO_FT * w_per_ft)
     assert per_circuit["CKT-LT-GARAGE"]["runs"] == 1

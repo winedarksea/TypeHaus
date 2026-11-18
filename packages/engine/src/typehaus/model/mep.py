@@ -673,6 +673,16 @@ class LightRun(Element):
     soffit_edge_offset: Length | None = None
     emission_side: Literal["left", "right"] = "left"
     serves_stair: str | None = None  # Stair tag this run lights (NEC 210.70(A)(2)(3))
+    # Which way a channel opens (→ model/led.py); None derives it: a ceiling or soffit run
+    # down, a wall run out (channel back on the wall).
+    aperture: Literal["down", "out", "up"] | None = None
+    # The LED_CONTROLLER between the run's driver (``psu_ref``) and its tape.
+    controller_ref: str | None = None
+    # The path end the 24 V lead lands on; None derives the end nearest the controller
+    # (else the driver). ``lead_path`` overrides the derived lead's plan route, gear to
+    # feed; its heights stay derived (the cavity plane).
+    feed: Literal["start", "end"] | None = None
+    lead_path: tuple[Point2D, ...] = ()
 
 
 for _name, _obj in (

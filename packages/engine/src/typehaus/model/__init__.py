@@ -132,6 +132,7 @@ from typehaus.model.landscape import (
     RainGarden,
     Trellis,
 )
+from typehaus.model.led import LedCable, LedChannel, LedController, LedStandard, LedStrip
 from typehaus.model.materials import Material
 from typehaus.model.mep import (
     ConduitRun,
@@ -483,7 +484,7 @@ __all__ = [
     "Circuit", "LoadManagement", "BoxStandard", "BoxRow", "PlateRow", "ConduitRun", "LightRun",
     "RacewayCable",
     "GroundingStandard", "GroundingElectrode", "BondingConductor", "ServiceEntrance",
-    "LabelStandard",
+    "LabelStandard", "LedCable", "LedChannel", "LedController", "LedStandard", "LedStrip",
     "DuctStandard", "RoundGaugeRow", "DuctElbowRow", "DuctPartRow", "DuctSupportRow", "PortKit",
     "RectElbowRow",
     "Sump", "SumpPump", "VentRun",

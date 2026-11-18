@@ -4,7 +4,12 @@ from typehaus.checks._authoring import advisory, passed, unknown
 from typehaus.checks.registry import Tier, check
 from typehaus.findings import Result
 from typehaus.model.electrical import luminaire_types
-from typehaus.takeoff.lighting_supplies import PSU_SIZING_FACTOR, electrical_devices, supply_demands
+from typehaus.takeoff.lighting_supplies import (
+    PSU_SIZING_FACTOR,
+    electrical_devices,
+    rated_output_w,
+    supply_demands,
+)
 
 
 @check(Tier.ADVISORY, "electrical.point_luminaire_psu")
@@ -22,7 +27,8 @@ def point_luminaire_psu(ctx):
     for device in devices.values():
         product = types.get(device.type_ref)
         if product is None:
-            if device.psu_ref:
+            # A 24 V controller names the driver it sits on (decision #137).
+            if device.psu_ref and device.kind.value != "led_controller":
                 fail(f"{device.tag} is not a luminaire but names a lighting supply", device.tag)
             continue
         if product.voltage == 120 and device.psu_ref is None:
@@ -38,8 +44,8 @@ def point_luminaire_psu(ctx):
             continue
         supplies.add(supply.tag)
         supply_type = device_types.get(supply.type_ref)
-        if supply.kind.value != "junction_box" or getattr(supply_type, "output_voltage", None) \
-                != product.voltage:
+        if supply.kind.value not in ("junction_box", "led_driver") \
+                or getattr(supply_type, "output_voltage", None) != product.voltage:
             fail(f"{device.tag} requires a compatible {product.voltage}V DC supply", device.tag,
                  supply.tag)
         if supply.circuit is None or supply.circuit not in {
@@ -50,7 +56,7 @@ def point_luminaire_psu(ctx):
                  device.tag, supply.tag)
 
     for tag in sorted(supplies):
-        rating = getattr(device_types.get(devices[tag].type_ref), "load_va", None)
+        rating = rated_output_w(device_types.get(devices[tag].type_ref))
         required = demand.get(tag, 0.0) * PSU_SIZING_FACTOR
         if rating is None:
             out.append(unknown(cid, f"{tag} states no supply rating", (tag,)))

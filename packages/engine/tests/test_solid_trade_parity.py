@@ -78,6 +78,14 @@ def test_every_emitted_solid_category_is_classified(catlin_solid_categories) -> 
         f"emit/trades.py or add them to DELIBERATELY_UNCLASSIFIED: {unclassified}")
 
 
+def test_roof_bay_fill_routes_foam_and_batts_to_their_own_trades(catlin_model_ro) -> None:
+    fills = [solid for solid in catlin_model_ro.solids if "-bay-fill-" in solid.uid]
+    by_material = {solid.material: solid_trades(solid.category, solid.material) for solid in fills}
+    assert by_material["closed-cell-spray-foam"] == ("spray_foam",)
+    assert any("fiberglass" in material and trades == ("insulation",)
+               for material, trades in by_material.items() if material)
+
+
 def test_standalone_beams_and_posts_are_framing(catlin_model) -> None:
     """The regression this table was written for: BM-M-HALL and BM-S-HALL rendered under
     Concrete while RB-HOUSE — the same authored element kind — rendered under Framing."""

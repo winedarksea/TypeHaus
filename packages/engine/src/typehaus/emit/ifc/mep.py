@@ -643,6 +643,10 @@ def _device_ifc_classes(kind: str, product_type: Any | None = None) -> tuple[str
         "light": ("IfcLightFixture", "IfcLightFixtureType"),
         "panel": ("IfcElectricDistributionBoard", "IfcElectricDistributionBoardType"),
         "junction_box": ("IfcJunctionBox", "IfcJunctionBoxType"),
+        # IFC4 has no LED driver class: the driver rides its splice box, the controller
+        # is a controller.
+        "led_driver": ("IfcJunctionBox", "IfcJunctionBoxType"),
+        "led_controller": ("IfcController", "IfcControllerType"),
         "meter": ("IfcFlowMeter", "IfcFlowMeterType"),
         "disconnect": ("IfcSwitchingDevice", "IfcSwitchingDeviceType"),
         "spd": ("IfcProtectiveDevice", "IfcProtectiveDeviceType"),

@@ -218,6 +218,23 @@ def light_run_parts(run) -> tuple[SectionPart, ...]:
         LIGHT_STRIP_WIDTH_M, LIGHT_STRIP_HEIGHT_M)
 
 
+def light_run_shells(run) -> list[tuple[str, list[list[Vec3]]]]:
+    """The run's whole sweep: every part along each module piece, and the ``endcap`` part
+    just past each open end (→ resolve/led_sections.py). What every emitter draws."""
+    from typehaus.resolve.led_sections import cap_pieces, run_pieces
+
+    parts = light_run_parts(run)
+    body = tuple(part for part in parts if part[0] != "endcap")
+    caps = tuple(part for part in parts if part[0] == "endcap")
+    side = getattr(run, "emission_side", "left")
+    shells = [shell for path, z in run_pieces(run)
+              for shell in light_run_section_shells(path, z, body, side)]
+    if caps:
+        shells += [shell for path, z in cap_pieces(run)
+                   for shell in light_run_section_shells(path, z, caps, side)]
+    return shells
+
+
 def light_run_section_shells(path: list[Vec], z_path: list[float],
                              parts: tuple[SectionPart, ...],
                              emission_side: str = "left") -> list[tuple[str, list[list[Vec3]]]]:
