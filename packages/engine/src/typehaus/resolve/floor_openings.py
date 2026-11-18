@@ -367,8 +367,7 @@ def _edge_carriers(model: ResolvedModel, opening: FloorOpening,
     Tested against each wall's plan *footprint*, not its centreline: an opening drawn to the
     finished well never coincides with a wall axis (plans/TODO.md D3).
     """
-    # Lazy: floors.py imports this module.
-    from typehaus.resolve.floors import (
+    from typehaus.resolve.floor_bearing_refs import (
         _bearing_axis,
         _bearing_footprint_span,
         _wall_footprint_span,

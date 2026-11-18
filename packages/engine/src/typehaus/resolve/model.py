@@ -209,6 +209,15 @@ class TrussShape:
     gable: bool = False
 
 
+#: Child-key prefix of a floor's edge line laid as a rim board (``JoistSpec.edge_rims``).
+EDGE_RIM_PREFIX = "edge-rim-"
+
+
+def on_joist_line(member) -> bool:
+    """A floor member standing on one of the field's parallel lines: a joist or an edge rim."""
+    return member.category == "joist" or member.child_key.startswith(EDGE_RIM_PREFIX)
+
+
 @dataclass(frozen=True)
 class FramedMember:
     """A framing member as a lightweight record (no geometry kernel) until emit (risk 6)."""

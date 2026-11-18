@@ -10,11 +10,11 @@ from __future__ import annotations
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import FloorOpeningPurpose
 from typehaus.model.floors import FloorSystem
-from typehaus.model.structure import Beam
 from typehaus.quantities import inch
 from typehaus.resolve.band_headers import band_header_findings
 from typehaus.resolve.blocking_parts import solid_block_profile
 from typehaus.resolve.coatings import layer_depth_m
+from typehaus.resolve.floor_bearing_refs import _bearing_axis
 from typehaus.resolve.floor_ends import floor_ends
 from typehaus.resolve.floor_lines import extra_lines, move_lines
 from typehaus.resolve.floor_openings import (
@@ -27,7 +27,13 @@ from typehaus.resolve.floor_openings import (
 from typehaus.resolve.floor_strongbacks import strongback_members
 from typehaus.resolve.floor_tilt import joist_lift, twisted
 from typehaus.resolve.framing.profiles import cross_section
-from typehaus.resolve.model import FramedMember, ResolvedFloor, ResolvedModel, Ring
+from typehaus.resolve.model import (
+    EDGE_RIM_PREFIX,
+    FramedMember,
+    ResolvedFloor,
+    ResolvedModel,
+    Ring,
+)
 from typehaus.resolve.open_web import attach_open_web_shapes
 from typehaus.resolve.opening_lining import lining_solids
 from typehaus.resolve.room_paint import lining_coating
@@ -165,6 +171,8 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey, anchors=()
     # at, and the remainder — 3 3/8" of deck over the top plate, where the trimmer actually
     # sits — is not a joist. Emitting it put stub members in the frame and the take-off.
     min_segment_m = _member_depth_m(spec.member)
+    # A gable end's outermost line is a stock rim board, not the field member.
+    edge_rim = {perp0 if side == "lo" else perp1 for side in spec.edge_rims}
     lines = [(f"{index:03d}", perp) for index, perp in enumerate(positions)]
     lines += [(f"x{index:02d}", perp) for index, perp in enumerate(extra)]
     lines += [(f"a{index:02d}", perp) for index, perp in enumerate(anchored)]
@@ -189,9 +197,13 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey, anchors=()
                     p0, p1 = (perp, segment_a), (perp, segment_b)
                 lift_a, lift_b = lift(segment_a, perp), lift(segment_b, perp)
                 rakes = abs(lift_b - lift_a) > 1e-9
+                key, category, profile = (f"joist-{span_index}-{index}-{segment_index}",
+                                          "joist", line_members.get(index, spec.member))
+                if any(abs(perp - edge) < 1e-6 for edge in edge_rim):
+                    key = f"{EDGE_RIM_PREFIX}{span_index}-{index}-{segment_index}"
+                    category, profile = "rim", f"1.25x{depth_in:g} rim"
                 members.append(FramedMember(
-                    system.uid, f"joist-{span_index}-{index}-{segment_index}", "joist",
-                    line_members.get(index, spec.member), p0, p1, z0 + lift_a, z1 + lift_a,
+                    system.uid, key, category, profile, p0, p1, z0 + lift_a, z1 + lift_a,
                     segment_b - segment_a,
                     z0_end_m=(z0 + lift_b) if rakes else None,
                     z1_end_m=(z1 + lift_b) if rakes else None,
@@ -383,11 +395,14 @@ def _reinforcement_members(system: FloorSystem, spec, positions: list[float], al
         return out
     #: (joist line index, ply extent) -> (cluster lo, cluster hi, sisters laid, their side)
     laid: dict[tuple, tuple[float, float, int, float]] = {}
-    widths = {position: cross_section(spec.member).width_m for position in positions}
+    # Each line's widest member as laid (an edge rim is narrower than the field member).
+    laid_widths: dict[float, float] = {}
     for member in field_members or ():
         position = member.p0[1 if along_x else 0]
-        if position in widths:
-            widths[position] = max(widths[position], cross_section(member.profile).width_m)
+        laid_widths[position] = max(laid_widths.get(position, 0.0),
+                                    cross_section(member.profile).width_m)
+    widths = {position: laid_widths.get(position, cross_section(spec.member).width_m)
+              for position in positions}
     for index, reinforcement in enumerate(system.reinforcements):
         at_x, at_y = reinforcement.at.xy_m
         perp_at, axis_at = (at_y, at_x) if along_x else (at_x, at_y)
@@ -468,54 +483,3 @@ def _reinforcement_members(system: FloorSystem, spec, positions: list[float], al
                 z1_end_m=(block_z1 + block_end) if block_end else None,
             ))
     return out
-
-
-def _bearing_axis(model: ResolvedModel, tag: str):
-    """The plan axis (p0, p1) of a joist bearing ref — a resolved wall, or an authored
-    standalone Beam (looked up through its per-storey nodes)."""
-    wall = model.wall(tag)
-    if wall is not None:
-        return wall.axis
-    beam = model.plan.by_tag(tag)
-    if isinstance(beam, Beam):
-        for storey in model.plan.storeys:
-            nodes = {e.tag: e.position.xy_m for e in model.plan.storey_elements(storey.tag)
-                     if e.element_kind == "Node"}
-            p0, p1 = nodes.get(beam.start_node), nodes.get(beam.end_node)
-            if p0 is not None and p1 is not None:
-                return (p0, p1)
-    return None
-
-
-def _wall_footprint_span(wall, across: int) -> tuple[float, float] | None:
-    """The wall's plan extent along axis ``across`` (0=x, 1=y), from its layer polygons.
-
-    Read off the resolved polygons rather than ``axis`` +/- half ``thickness_m`` because an
-    ``alignment=face(...)`` wall's axis is not its centreline.
-    """
-    values = [point[across] for layer in wall.layers for point in layer.polygon]
-    return (min(values), max(values)) if values else None
-
-
-def _bearing_footprint_span(model: ResolvedModel, tag: str,
-                            across: int) -> tuple[float, float] | None:
-    """The plan extent across the member's axis, for a wall *or* a standalone ``Beam``.
-
-    A wall reads its resolved layer polygons (``alignment=face(...)`` means the axis is not
-    the centreline). A ``Beam`` has no layers — it is not a resolved wall at all — so its
-    width comes off ``Beam.size`` and straddles the axis, which is how the resolver places
-    it. Without this, a beam named in ``FloorOpening.bearing_refs`` was skipped outright and
-    the edge read as unsupported, putting a header under a beam that plainly carries it.
-    """
-    wall = model.wall(tag)
-    if wall is not None:
-        return _wall_footprint_span(wall, across)
-    beam = model.plan.by_tag(tag)
-    if not isinstance(beam, Beam):
-        return None
-    axis = _bearing_axis(model, tag)
-    if axis is None:
-        return None
-    half = cross_section(beam.size).width_m / 2.0
-    centre = axis[0][across]
-    return (centre - half, centre + half)

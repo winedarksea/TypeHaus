@@ -15,9 +15,10 @@ record goes INCOMPLETE naming it; on a seat it bypasses the span and is listed, 
 Fb 2,600 psi at 12" x (12/d)^0.136, Fv 285 psi, E 2.0e6 psi, 100% duration (floor live) — and
 its p.5 deflection equation with the shear term, at IRC Table R301.7's L/360 live.
 
-**The seats (BASIS_VERSION 2):** the stacked jambs are taken down (``jamb_takedown``) and
-graded in bearing at every interface they cross, squash blocks found where they cross a TJI
-band; the ply fastening and the filler are published reads (``band_header_seats``).
+**The seats (BASIS_VERSION 2; 3 adds edge rims):** the stacked jambs are taken down
+(``jamb_takedown``) and graded in bearing at every interface they cross, squash blocks found
+where they cross a TJI band; the ply fastening, the filler and an LSL edge rim's TJ-8000 rows
+are published reads (``band_header_seats``).
 **Not graded here:** lateral support (the subfloor sheathes the top edge). Oracle:
 ``houses/catlin/notes/sunken_door_band_header.md`` §3 and §5.
 """
@@ -37,13 +38,14 @@ from typehaus.engineering.registry import EngineeringContext, calc, keys, oracle
 from typehaus.loads import FLOOR_DEAD_LOAD_PSF, FLOOR_LIVE_LOAD_PSF
 from typehaus.resolve.band_headers import _frame, band_header, band_header_doors
 from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.model import on_joist_line
 
 KIND = "band_header"
-BASIS_VERSION = "2"
+BASIS_VERSION = "3"
 BASIS = ("AWC NDS 2018 §3.3-3.4 on Weyerhaeuser TJ-9000 (July 2026) p.5 Microllam LVL 2.0E "
          "design stresses; IRC R301.5 floor loads, Table R301.7 L/360; the stacked jambs' "
          "takedown in bearing (NDS §3.10.2); TJ-9000 p.30 ply fastening; TJ-4000 p.27 CS, "
-         "p.28 filler")
+         "p.28 filler; TJ-8000 LSL edge rim rows")
 _SOURCE = "Weyerhaeuser TJ-9000 Specifier's Guide (July 2026)"
 
 _IN = 0.0254
@@ -74,7 +76,7 @@ def _tributary_m(floor, wall, plies) -> float:
     """Floor strip the band line carries: half-way to the next line + deck outboard of it."""
     _u, along, across = _frame(wall.axis)
     band = sum(across(p.p0) for p in plies) / len(plies)
-    lines = sorted({round(across(m.p0), 6) for m in floor.members if m.category == "joist"
+    lines = sorted({round(across(m.p0), 6) for m in floor.members if on_joist_line(m)
                     and abs(across(m.p0) - across(m.p1)) < 1e-6})
     host = min(lines, key=lambda line: abs(line - band))
     inboard = 1.0 if band >= host else -1.0
@@ -161,7 +163,8 @@ def _one(ctx: EngineeringContext, door) -> EngineeringRecord:
     x0, y0 = wall.axis[0]
     seat_ls, seat_inputs, missing, seat_notes = seat_states(
         ctx, header, wall, floor, seated, shear, along, lambda s: (x0 + ux * s, y0 + uy * s))
-    connection_ls, connection_missing = connection_states(ctx, header, floor, across)
+    connection_ls, connection_missing = connection_states(ctx, header, floor, across, w_total,
+                                                          clear_ft)
     missing += connection_missing
     if missing:
         return _incomplete(door.tag, tags + (header.wall,), "; ".join(missing),

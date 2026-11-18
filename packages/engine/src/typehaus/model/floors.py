@@ -93,6 +93,11 @@ class JoistSpec(HausModel):
     # ``UpliftTieRules`` toe-nail rule. ``code.MN_1309_0404_wall_top`` grades the count.
     sill_tie: str | None = None
     sill_ties_per_end: int = 1
+    # The field's outermost parallel line at the low ("lo") / high ("hi") perpendicular edge
+    # laid as a stock rim board (``1.25x<depth> rim``) instead of the field member: a gable
+    # end, where the edge line stands on a wall and spans nothing. Emitted as ``rim``
+    # members keyed ``edge-rim-*`` (``resolve/model.EDGE_RIM_PREFIX``).
+    edge_rims: tuple[Literal["lo", "hi"], ...] = ()
 
     @model_validator(mode="after")
     def validate_rim_extensions(self):

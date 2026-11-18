@@ -19,6 +19,7 @@ from shapely.geometry import Point, Polygon
 from typehaus.loads import FLOOR_DEAD_LOAD_PSF, FLOOR_LIVE_LOAD_PSF, ROOF_TOTAL_LOAD_PSF
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry_walls import body_top_at, is_raked
+from typehaus.resolve.model import on_joist_line
 from typehaus.resolve.stacked_ladder import walls_over
 
 _IN = 0.0254
@@ -121,7 +122,7 @@ def _parallel(wall, member):
 def _edge_strip(floor, wall):
     """Half the way from the joist line on ``wall``'s line to the next one."""
     lines = sorted({round(_offset(wall, m.p0), 6) for m in floor.members
-                    if m.category == "joist" and _parallel(wall, m)}, key=abs)
+                    if on_joist_line(m) and _parallel(wall, m)}, key=abs)
     if len(lines) < 2:
         return 0.0
     host = lines[0]

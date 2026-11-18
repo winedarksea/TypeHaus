@@ -166,7 +166,7 @@ def bearing_bays(model: ResolvedModel, floor: ResolvedFloor,
     walls_above = [w for w in model.walls
                    if w.storey == floor.storey and not w.is_foundation
                    and abs(w.z0_m - z1) <= BASE_TOL_M]
-    edges = [m for m in floor.members if m.category in BAY_EDGES
+    edges = [m for m in floor.members if m.category in (*BAY_EDGES, "rim")
              and abs(m.p0[perp_i] - m.p1[perp_i]) <= 1e-6]
     ends = cast(FloorEnds, floor.ends)
 
@@ -269,7 +269,7 @@ def _partition_top_blocking(
     # Every member that closes a bay, not the joists alone: an opening's trimmers and a
     # flush beam bound one too, and a block cut to a joist line through either of them is
     # an interpenetration ``structural.member_interference`` reports (and did).
-    edges = [m for m in floor.members if m.category in BAY_EDGES
+    edges = [m for m in floor.members if m.category in (*BAY_EDGES, "rim")
              and abs(m.p0[perp_i] - m.p1[perp_i]) <= 1e-6]
 
     members: list[FramedMember] = []

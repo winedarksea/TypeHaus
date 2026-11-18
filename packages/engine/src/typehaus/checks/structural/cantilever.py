@@ -51,7 +51,7 @@ from typehaus.quantities import M_PER_IN
 # here would be a second answer to the same question (and the two would drift);
 # ``code/mn_residential/fall_protection.py`` reaches into the same module for the same
 # reason.
-from typehaus.resolve.floors import _bearing_axis
+from typehaus.resolve.floor_bearing_refs import _bearing_axis
 from typehaus.resolve.model import ResolvedFloor
 
 # The tables are published at 12/16/24" o.c.; a FloorSystem that leaves JoistSpec.spacing

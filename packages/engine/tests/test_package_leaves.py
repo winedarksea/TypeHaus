@@ -115,6 +115,8 @@ _EXCUSED: dict[str, set[str]] = {
     # And again: the break's thrust reaches the house wall's sill anchors, graded on their
     # published F2 (free body §11d).
     "engineering/thermal_break_house.py": {"hardware"},
+    # An edge rim under a stacked jamb pack or beside a band header reads TJ-8000's own rows.
+    "engineering/band_header_seats.py": {"library"},
     # ``value_source`` is the dialect printer. A proposal has to be dialect-legal BY
     # CONSTRUCTION — 1-tuple commas, no operators, no frozenset — and a second printer in
     # this package would be a second definition of what the dialect accepts, drifting from

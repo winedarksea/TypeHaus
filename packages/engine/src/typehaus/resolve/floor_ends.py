@@ -78,7 +78,7 @@ def structure_span(model: ResolvedModel, tag: str, across: int) -> tuple[float, 
     that stack includes 7 1/4" of foam, girt and cladding, none of which carries anything. A
     ``Beam`` has no layers, so its section straddles its axis as the resolver places it.
     """
-    from typehaus.resolve.floors import _bearing_footprint_span
+    from typehaus.resolve.floor_bearing_refs import _bearing_footprint_span
     from typehaus.resolve.framing.solver import _structure_polygon
 
     wall = model.wall(tag)
@@ -98,7 +98,7 @@ def bearing_lines(model: ResolvedModel, spec: JoistSpec, boundaries: list[float]
     Several refs can name one line (catlin's x=18' carries ``W-M-C2`` and the ``BM-M-HALL``
     flitch continuing it); a wall wins over a beam, being what the joists sit on.
     """
-    from typehaus.resolve.floors import _bearing_axis
+    from typehaus.resolve.floor_bearing_refs import _bearing_axis
 
     lines: dict[float, tuple[list[str], tuple[float, float] | None, bool]] = {}
     for tag in spec.bearing_refs:
@@ -129,7 +129,7 @@ def _is_shared(model: ResolvedModel, system: FloorSystem, storey_tag: str, coord
     wrong — catlin's main storey has four decks whose west ends all sit on x=0 sharing no
     plate — so the sibling must reach ACROSS the line and overlap this deck perpendicular.
     """
-    from typehaus.resolve.floors import _bearing_axis
+    from typehaus.resolve.floor_bearing_refs import _bearing_axis
 
     for other in model.plan.storey_elements(storey_tag):
         if not isinstance(other, FloorSystem) or other.uid == system.uid:

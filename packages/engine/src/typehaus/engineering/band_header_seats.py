@@ -2,7 +2,8 @@
 
 The stacked jambs' load is taken down by ``jamb_takedown`` and graded in bearing (NDS
 §3.10.2, no C_D) at every interface it crosses; the plies' fastening and the filler to the
-I-joist beside them are published reads (Weyerhaeuser TJ-9000 p.30, TJ-4000 p.28).
+I-joist beside them are published reads (Weyerhaeuser TJ-9000 p.30, TJ-4000 p.28); an LSL edge
+rim, under a stacked pack or beside the plies over the opening, reads TJ-8000's own rows.
 Oracle: ``houses/catlin/notes/sunken_door_band_header.md`` §5.
 """
 
@@ -10,7 +11,9 @@ from __future__ import annotations
 
 from typehaus.engineering.item import LimitState, Quantity
 from typehaus.engineering.jamb_takedown import GABLE_ROOF_STRIP_FT, WALL_DEAD_PSF, seat_takedown
+from typehaus.library.rim_boards import TJ8000, header_row, rim_board
 from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.model import EDGE_RIM_PREFIX
 
 _IN = 0.0254
 #: Sawn plates (SPF), dry: NDS Supplement Table 4A; TJ-9000's own bearing tables use it too.
@@ -76,10 +79,25 @@ def seat_states(ctx, header, wall, floor, seated, shear_lb, along, frame):
                            f"({_TJ4000} p.27 detail CS: a TJI loaded from above)")
             continue
         area = seat_in * min(crossing.solid_width_m, wall_depth) / _IN
+        rims = [m for m in crossing.members if m.startswith(EDGE_RIM_PREFIX)]
+        solid = "edge rim" if rims else "squash plies"
         states.append(LimitState(
-            name=f"bearing, upper jamb pack on {crossing.floor}'s squash plies",
+            name=f"bearing, upper jamb pack on {crossing.floor}'s {solid}",
             demand=crossing.above_lb / area, capacity=SAWN_FC_PERP_PSI, unit="psi",
-            citation=f"{_NDS}; {_TJ4000} p.27 detail CS ({', '.join(crossing.members)})"))
+            citation=(f"{_NDS}: the SPF plate on {', '.join(rims)}" if rims else
+                      f"{_NDS}; {_TJ4000} p.27 detail CS ({', '.join(crossing.members)})")))
+        if rims:
+            row = _rim_row(floor_members(ctx, crossing.floor, rims[0]))
+            if row is None:
+                missing.append(f"a published vertical capacity for {crossing.floor}'s edge rim")
+                continue
+            states += [
+                LimitState(name=f"{crossing.floor}'s edge rim, concentrated vertical load",
+                           demand=crossing.above_lb, capacity=row.concentrated_lb, unit="lb",
+                           citation=row.source),
+                LimitState(name=f"{crossing.floor}'s edge rim, vertical load under the pack",
+                           demand=crossing.above_lb / (seat_in / 12.0),
+                           capacity=row.vertical_plf, unit="plf", citation=row.source)]
     inputs += [Quantity("wall_dead", WALL_DEAD_PSF, "psf", 0.1),
                Quantity("gable_roof_strip", GABLE_ROOF_STRIP_FT, "ft", 0.01),
                Quantity("jamb_tributary", trib / _IN, "in", 0.01),
@@ -90,8 +108,9 @@ def seat_states(ctx, header, wall, floor, seated, shear_lb, along, frame):
     return states, inputs, missing, notes
 
 
-def connection_states(ctx, header, floor, across):
-    """``(states, missing)``: the ply fastening and the filler, read against the maker."""
+def connection_states(ctx, header, floor, across, w_total_plf, clear_ft):
+    """``(states, missing)``: the ply fastening and the filler (or the edge rim beside the
+    plies, over the opening as a 1-ply header on the whole strip), read against the maker."""
     states, missing = [], []
     reinforcement = _authored(ctx, header)
     plies = len(header.plies)
@@ -113,6 +132,17 @@ def connection_states(ctx, header, floor, across):
                        capacity=spacing, unit="in o.c.",
                        citation=f"{_TJ9000} p.30: {spacing:g}\" o.c. maximum",
                        is_detailing=True)]
+    rim = _edge_rim_beside(floor, header, across)
+    if rim is not None:
+        row = _rim_row(rim)
+        read = header_row(row, clear_ft) if row is not None else None
+        if read is None:
+            missing.append(f"a {TJ8000} header row for {rim.profile} over {clear_ft:.2f} ft")
+        else:
+            states.append(LimitState(
+                name="edge rim over the opening, 1-ply header", demand=w_total_plf,
+                capacity=read[1], unit="plf",
+                citation=f"{row.source}: {read[0]:g} ft clear, uniform load only"))
     beside = _ijoist_beside(floor, header, across)
     if beside is not None:
         series = beside.profile.split("TJI")[-1].strip()
@@ -148,6 +178,25 @@ def _ijoist_beside(floor, header, across):
                 abs(across(member.p0) - across(member.p1)) < 1e-6:
             return member
     return None
+
+
+def _edge_rim_beside(floor, header, across):
+    faces = [across(p.p0) for p in header.plies]
+    for member in floor.members:
+        if member.child_key.startswith(EDGE_RIM_PREFIX) and \
+                min(abs(across(member.p0) - f) for f in faces) < 3 * _IN:
+            return member
+    return None
+
+
+def _rim_row(member):
+    section = cross_section(member.profile)
+    return rim_board(section.width_m / _IN, section.depth_m / _IN)
+
+
+def floor_members(ctx, floor_tag, key):
+    floor = next(f for f in ctx.model.floors if f.tag == floor_tag)
+    return next(m for m in floor.members if m.child_key == key)
 
 
 def _project(wall, point):

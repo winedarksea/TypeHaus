@@ -19,7 +19,7 @@ from dataclasses import dataclass
 
 from typehaus.joints.model import axis_of
 from typehaus.quantities import M_PER_IN
-from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.model import ResolvedModel, on_joist_line
 
 #: A floor whose subfloor sits this far over the wall top is seated on it (a 1 1/2" sill
 #: plus joists of any depth this house frames); a deck at the wall top hangs off it.
@@ -72,7 +72,7 @@ def along_wall(wall, point) -> tuple:
 
 def _overlap(floor, origin, unit, length, reach_m) -> tuple | None:
     """The stretch of the wall the floor's deck covers, from its parallel joists' ends."""
-    along = [_project(p, origin, unit)[0] for m in floor.members if m.category == "joist"
+    along = [_project(p, origin, unit)[0] for m in floor.members if on_joist_line(m)
              for p in (m.p0, m.p1) if _project(p, origin, unit)[1] <= reach_m]
     if not along:
         return None
@@ -103,7 +103,7 @@ def parallel_runs(model: ResolvedModel) -> list:
             if span is None:
                 continue
             lines = sorted({round(_project(m.p0, origin, unit)[1], 4) for m in floor.members
-                            if m.category == "joist"
+                            if on_joist_line(m)
                             and _project(m.p0, origin, unit)[1] <= wall.thickness_m})
             edge = lines[0] if lines else 0.0
             runs.append(ParallelRun(wall.tag, floor.tag, floor.storey, span,

@@ -405,7 +405,9 @@ def _floor(floor: Any, library: Any = None, model: Any = None,
                            max(ay, by) + hw, member.z0_m, top))
     out.half_widths = [_half_width(j[5]) for j in joists]  # type: ignore[attr-defined]
     out.stations = [j[0] for j in joists]
-    out.profile = joists[0][5] if joists else ""  # type: ignore[attr-defined]
+    # The field member's profile, not an edge rim's (``JoistSpec.edge_rims``).
+    field = [j for j in joists if j[6].category == "joist"] or joists
+    out.profile = field[0][5] if field else ""  # type: ignore[attr-defined]
     out.chart = (joist_hole_chart(library, out.profile)  # type: ignore[attr-defined]
                  if window.kind == "i_joist" and library is not None else None)
     supports = floor_supports(model, floor) if out.chart is not None and model else ()

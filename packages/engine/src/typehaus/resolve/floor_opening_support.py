@@ -138,7 +138,7 @@ def _seat_end(seats, boundary: float, seat: float, *, at_low_end: bool) -> float
 
 
 def _bearing_seats(model, opening, carriers, across, band_lo, band_hi):
-    from typehaus.resolve.floors import _bearing_axis
+    from typehaus.resolve.floor_bearing_refs import _bearing_axis
 
     along = 1 - across
     seats = []
