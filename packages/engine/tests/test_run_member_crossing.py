@@ -142,10 +142,12 @@ def test_the_two_raceway_defects_are_fixed_and_stay_fixed(
 
     2026-09-24: both re-laned around the ERV trunk. KITCH crosses at +9'-2 1/2" (invert
     +0.414"); PORCH's north-south leg rode the top chord (crown +0.039") until it moved to
-    x=5'-7" at 7" up, east of the flat ERV trunk (2026-11-08): invert +1.664" there."""
+    x=5'-7" at 7" up, east of the flat ERV trunk (2026-11-08): invert +1.664" there. Since
+    2026-11-18 it holds +9'-6 1/16" to cross the south LSL edge rim at its centre: invert
+    +5.039" at the first truss."""
     findings = _findings(catlin_plan, catlin_model_ro)
     for tag, side, gap in (("CD-M-DATA-KITCH", "invert", 0.414),
-                           ("CD-M-DATA-PORCH", "invert", 1.664)):
+                           ("CD-M-DATA-PORCH", "invert", 5.039)):
         finding = _for(findings, tag, "FS-S-WEST")
         assert finding.result is Result.PASS, finding.message
         measured = float(finding.message.split(f"{side} ")[1].split('"')[0])

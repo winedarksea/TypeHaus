@@ -148,7 +148,8 @@ Both are inside `_TIE_IN_INVERT_TOL_M` (1"), which keeps `drain_tie_ins` linking
 `JoistSpec(member="11.875 floor truss", spacing=inch(16), direction="x")`.
 
     direction "x"     ⇒ trusses run in x, so their LINES are at constant y
-    spacing 16"       ⇒ lines at y = 16n; bay centres at y = 8 + 16n
+    spacing 16"       ⇒ lines at y = 16n (n ≥ 1; y = 0 is the LSL edge rim since
+                        2026-11-18); bay centres at y = 8 + 16n
     2x4 flat chords   ⇒ 3.5" wide, centred on the line
     clear bay         = 16 − 3.5 = 12.5"     ← what clear_bay_width_m() returns
     clear zone        = (16n + 1.75) .. (16(n+1) − 1.75)

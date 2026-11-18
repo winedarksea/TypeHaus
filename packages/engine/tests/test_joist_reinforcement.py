@@ -226,9 +226,12 @@ def test_no_deck_sisters_a_joist_and_one_floor_does(catlin_model):
     # since 2026-11-18 a 2x12 packed to 2 1/8", flush with the rim oversail.
     # D-S-BALCONY's squash plies went with the TJI edge (2026-11-18): its jamb packs stand on
     # FS-S-EAST's LSL edge rim.
-    assert sorted(tag for tag, _ in sisters) == [
-        "FS-M-EAST", "FS-M-EAST", "FS-M-NE", "FS-M-NE", "FS-M-WEST"] + ["FS-S-EAST"] * 2 + [
-        "FS-SG-BALCONY"] * 7
+    # Sill seat backers (2026-11-18): BALCONY's two rim-stock plies on FS-S-EAST, ENTRY's two
+    # 1/2" fillers on FS-M-MECH. FS-BW-FLOOR's west edge: a 2-ply 2x8 in three pieces, a
+    # third ply on the two end pieces under W-BW-SCREEN's plate stubs.
+    assert sorted(tag for tag, _ in sisters) == ["FS-BW-FLOOR"] * 8 + [
+        "FS-M-EAST", "FS-M-EAST"] + ["FS-M-MECH"] * 2 + [
+        "FS-M-NE", "FS-M-NE", "FS-M-WEST"] + ["FS-S-EAST"] * 4 + ["FS-SG-BALCONY"] * 7
     # Full span, tip to tip: a sister that stops short carries nothing where the load is
     # (``resolve/floors.py::_reinforcement_members``). 17.79' and not the 18'-0" bearing grid
     # — the joist it doubles starts 1 3/4" in, behind the west rim board, and since decision
@@ -239,10 +242,10 @@ def test_no_deck_sisters_a_joist_and_one_floor_does(catlin_model):
     # And the BOM follows: the 2x8 sister rows the porch pack bought are gone with it, and
     # the I-joist ply under the bath is the only sistered stock this house orders.
     rows = {(row["profile"], row["category"]) for row in framing_takeoff(catlin_model)}
-    assert sorted(key for key in rows if key[1] == "sister_joist") == [
-        ("1.75x11.875 LVL", "sister_joist"), ("11.875 TJI 230", "sister_joist"),
-        ("11.875 floor truss", "sister_joist"), ("2.125x11.25:kdat", "sister_joist"),
-        ("2x12:kdat", "sister_joist")]
+    # Plus the 2026-11-18 sill seat backers (1/2" LSL, rim stock) and the landing's edge plies.
+    assert sorted(key[0] for key in rows if key[1] == "sister_joist") == [
+        "0.5x11.875:lsl", "1.25x11.875 rim", "1.75x11.875 LVL", "11.875 TJI 230",
+        "11.875 floor truss", "2.125x11.25:kdat", "2x12:kdat", "2x8:kdat"]
 
 
 def test_both_garden_decks_block_only_where_something_is_bolted_down(catlin_model):

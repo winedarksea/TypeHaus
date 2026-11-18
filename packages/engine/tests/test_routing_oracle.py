@@ -123,7 +123,8 @@ def test_the_bay_and_its_crossing_window_are_hand_derivable(catlin_model_ro) -> 
     floor = next(f for f in catlin_model_ro.floors if f.tag == "FS-S-WEST")
     assert floor.direction == "x"
     lines = {round(_in(v), 3) for v in joist_line_stations(floor)}
-    assert {0.0, 16.0, 32.0, 48.0} <= lines
+    # y = 0 is the south LSL edge rim since 2026-11-18, not a bay edge.
+    assert {16.0, 32.0, 48.0} <= lines and 0.0 not in lines
     assert _in(clear_bay_width_m(floor)) == pytest.approx(12.5, abs=0.001)
 
     low, high = crossing_window(catlin_model_ro, floor)
@@ -134,7 +135,8 @@ def test_the_bay_and_its_crossing_window_are_hand_derivable(catlin_model_ro) -> 
     bays = [c for c in floor_corridors(catlin_model_ro)
             if c.tag.startswith("FS-S-WEST")]
     assert bays and all(c.axis == "x" for c in bays)
-    assert {round(_in(c.station), 3) for c in bays} >= {8.0, 24.0, 40.0}
+    # The edge bay (rim to the 16" line) is no corridor: a rim is not a bay edge.
+    assert {round(_in(c.station), 3) for c in bays} >= {24.0, 40.0}
 
 
 def test_a_floor_bay_is_decremented_by_what_is_ALREADY_in_it(catlin_model_ro) -> None:
