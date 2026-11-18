@@ -12,8 +12,8 @@ UHMW slip pad on FS-BW-FLOOR's rim (the garage wall has no girt course).
 The girt sill course this replaces (2026-11-14: a 2x4 course on 3-screw end blocks and 6"
 single-screw blocks, 41 TLOK10s, worst screw 116.09 lb against 120) is retired: its end screws
 sat at 3/4" pitch 1" from the end, against ESR-1078 Table 5's 2 5/8". Its NDS 12.3 derivation
-for a TLOK10 through a backer pair is carried into the new note, §3, with the shorter
-penetration the deeper stack leaves.
+for a TLOK10 through a backer pair became the new note's §3, now on HeadLOK HLGM10 into the
+LSL rim and a backer (2026-11-18).
 
 **Current study/sunken-garden coordination (2026-10-26):**
 [french_door_catalog_installation.md](french_door_catalog_installation.md) supersedes

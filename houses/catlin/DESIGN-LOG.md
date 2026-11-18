@@ -8781,6 +8781,10 @@ Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
   (ThruLOK is out of scope in treated wood, ESR-1078 §5.6; bolts need inside access that PORCH's
   plies and ENTRY's trimmer pack block, and ~14" of bolt).
 - Bid: HLGM10 24 replaces TLOK10 24 (`prices.toml` estimate), 4-2x8:kdat seats for 4-2x6, +1 8'
-  rim board (backers), one 1/2" LSL filler line; HDG 10d allowance +12 (the fillers read as joist
-  ends on W-B-N3's mudsill).
+  rim board (backers), one 1/2" LSL filler line. Review, same day: the HDG 10d allowance had read
+  the two fillers as joist ends on W-B-N3's mudsill (+12); a member lying along a sill (both ends
+  on it) is now the rim row's, not a joist end, which also drops FO-M-STAIR's trimmer pair on
+  W-B-N2 (927 -> 915). ESR-1078 §3.2 leaves LSL/LVL outside the report, so the thread's
+  withdrawal is read at ESR-1387's SG 0.50; on the rim alone the SP column is still 0.953 and the
+  G 0.42 column does not move (`exterior_door_sill_beam.md` §3, "Scope").
 

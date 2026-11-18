@@ -106,7 +106,8 @@ l_m 2.0". R_e = 1.3782, R_t = 0.25.
 
 **Z = 207.9 (IV), Z' = 0.70 × 207.9 = 145.5 lb** (C_M 0.70, wet KDAT side members). Mode IV does
 not see l_m, so the backer's share of it is the IIIm mode it lifts off the governing line
-(190.0 on the rim alone).
+(189.2 on the rim alone, Z' 132.5; the TLOK10's was 190.0). Neither does it see l_s: with the
+sheathing on the main side (l_s 7.5") Is, II and IIIs drop to 1,955 / 684 / 694 and Z holds.
 
 **Spacing, ESR-1078 Table 5** (its TimberLOK/OlyLOG/HeadLOK column, SG > 0.50 for the KDAT SP
 and the LSL/LVL): end 3", in-row 2 5/8", edges 1 3/4", staggered rows 3/4". The band every
@@ -130,7 +131,9 @@ anywhere: **125.34 lb** (wide, load 22 1/4" in, the 6.9375 screw) → 125.34 / 1
 entry 116.33 → **0.800**.
 
 **Rotation.** The reaction stands 0.5 + 6.0 + 0.75 = **7.25"** off the rim face, so a seat rolls
-outward about its bottom bearing on the sheathing; the compression resultant is taken 0.4" up
+outward about its bottom bearing on the sheathing (the arm is taken to the rim face, as if the
+screws' shear acted there: about the sheathing face it is 6.75" less the screws' own arm in the
+seat, so 7.25 is an upper bound); the compression resultant is taken 0.4" up
 (the compression is ΣT, 611 lb at ENTRY's end load: 76 psi over a 10" × 0.8" block of plywood face). Pivot −6.875 + 0.4 =
 −6.475; levers 4.475 (row −2.000) and 3.725 (row −2.750); Σd² = 2 × 4.475² + 2 × 3.725² =
 67.8025 in². Tension T = R × 7.25 × d / Σd²; each screw's own lateral share rides with it.
@@ -151,16 +154,29 @@ The ¼" scan finds nothing worse; the engine's own scan agrees to the hundredth 
 (0.9647 / 0.9460 / 0.8283 / 0.7831). **It passes on both pull-through columns**, the SP reading
 the house already takes for `girt_screw/W-A-N1` and Table 5, and the G 0.42 bound.
 
+**Scope of the withdrawal read (review, 2026-11-18).** ESR-1078 §3.2 puts EWP other than glulam
+and CLT outside the report, so Table 2 in the LSL rim, the LVL plies and the filler is read at
+ESR-1387 Table 2's face-withdrawal SG 0.50, and the 2.0" minimum is met only by summing thread
+across pieces held in contact (rim + backer; at ENTRY rim 1.25 + filler 0.5 + 0.25 of LVL, the
+last of it the gimlet tip). The tension pulls each backer onto the rim, so the pieces bear
+rather than part. Neither reading is load-bearing for the grade: the G 0.42 column is
+pull-through in the sawn beam (280 < 460) and does not move, and on the rim's 1.25" alone
+(W' 287.5) the SP column rises to 0.953 (wide) / 0.933 (entry), rim + filler at ENTRY
+(402.5) 0.797. What the backer buys is ESR's 2.0" minimum, which a single member here cannot
+give.
+
 **Backer nailing**, the published rows:
 
 - BALCONY: TJ-8000 (March 2025) p.7, *Multiple-member connections for 2-ply rim board*, side
   load, 1 1/4" plies, 10d (0.128-0.131 × 3"), one face, **3 rows** at 12" o.c.: 560 plf on either
-  member. A 10" backer takes 3 rows of 2 (one near each end), clinched (note 2). Demand, the whole
-  wide-door seat reaction as if all of it reached the backer: 325.73 / (10/12) = 390.9 plf →
-  **0.70** (2 rows, 370 plf, would be 1.06).
-- ENTRY: IRC R602.3(1) item 10, *built-up header (2" to 2" header with 1/2" spacer)*: 16d common
-  (3 1/2" × 0.162") at 16" o.c. each edge, face nail, through the rim and filler into the LVL
-  trimmer: 2 an edge on a 10" filler, 4 in all. Check: 16d, NDS 12.3, side 1.75" (rim + filler)
+  member. The row's 12" o.c. is a maximum: a 10" backer takes 3 rows of 2 (one near each end,
+  denser than the row, credited only at it), clinched (note 2; 3" through 2 1/2" of LSL). Capacity
+  pro rata, 560 × 10/12 = 467 lb. Demand, the whole wide-door seat reaction as if all of it reached
+  the backer: 325.73 / (10/12) = 390.9 plf → **0.70** (2 rows, 370 plf, would be 1.06).
+- ENTRY: no published row covers a rim nailed through a filler to a trimmer pack; the pattern is
+  borrowed from IRC R602.3(1) item 10, *built-up header (2" to 2" header with 1/2" spacer)*, 16d
+  common (3 1/2" × 0.162") at 16" o.c. each edge, face nail, through the rim and filler into the
+  LVL trimmer: 2 an edge on a 10" filler, 4 in all. The NDS check carries it: 16d, NDS 12.3, side 1.75" (rim + filler)
   and penetration 1.75" at G 0.50, F_yb 90 ksi, R_d 2.2: Im = Is 597.5 · II 247.5 · IIIm = IIIs
   215.4 · IV 0.026244 / 2.2 × √(2 × 4,636.7 × 90,000 / 6) = **140.7 lb** (dry, C_M 1.0);
   348.67 / 4 = 87.2 lb a nail → **0.62**.
