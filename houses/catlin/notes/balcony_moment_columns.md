@@ -1395,6 +1395,34 @@ T, on-axis       (55,303 + 3,702.1 x 2.6875)/7.3935 − 3,702.1 = 5,123         
 BR1 at the other covers: 2 1/2" C 9,847, T 5,569; 3" C 10,311, T 6,089. A shorter guard lowers
 every couple a little, and the dowel development (0.884) still governs. **2" stays.**
 
+## 19. The 2 1/8" rear rim oversail (2026-11-18)
+
+D-S-BALCONY's joint narrowed to 3/8" off its sill beam (owner): the flank rims oversail the rear
+plank 2 1/8" (was 1 1/2"), so the E-W band is 5/8" longer. Heights, P_u, δ and the guard do not
+move; §18's q_h holds (the guard top did not move).
+
+```
+A_s         29.780 + 13" x 5/8" / 144               = 29.836 sf
+F           0.6 x 18.535 x 0.85 x 1.80 x 29.836     = 507.7 lb / 4 = 126.92 lb per column
+M_w         126.92 x 8.6979' = 1,103.9 front;  x 8.8507' = 1,123.3 rear
+1.0W        1,103.9 / 0.6 = 1,839.9 front;  1,123.3 / 0.6 = 1,872.2 rear
+wind        1,839.9 / 24,667 = 0.075 (front); the guard's 0.176 still governs the column
+V_u         126.92 / 0.6 + 200                      = 411.5 lb   (§15c's 410.3 was never re-struck at §18)
+```
+
+**§18's joint (1.2D + 1.0W + L)** at the same P_u and δ:
+
+```
+                 BR1                                        BF1
+M_u              1.0213 x (1,872.2 + 2,643.75) = 4,612.1    1.0204 x (1,839.9 + 2,643.75) = 4,575.1
+C (±45°)         (55,345 + 3,702.1 x 1.900)/6.606 = 9,443   (54,901 + 3,680.1 x 1.900)/6.606 = 9,369
+T, on-axis       (55,345 + 3,702.1 x 2.6875)/7.3935 − 3,702.1 = 5,129          5,083
+φV_n             55,800 − (C − P_u) = 50,059 lb              50,111 lb
+```
+
+Every row moves in its fourth figure (+0.2% on wind); the dowel development (0.884) still governs
+and the frame's governing ratio does not change. **2" stays.**
+
 ---
 
 ## Sources

@@ -303,3 +303,10 @@ not column + 42": **200 × 13.375 = 2,675 lb-ft** at every balcony column. The s
 
 **2026-11-05:** the fascia guard is 40 1/8" (balcony note §18): the record reads
 **200 x 13.219 = 2,643.75 lb-ft** and the solve 2,570.5, long by 2.8 %.
+
+## Addendum 2026-11-18 — the 2 1/8" rear rim oversail
+
+The flank rims oversail the rear plank 5/8" more (balcony note §19): A_s 29.836 sf, 126.92 lb per
+column at the deck plane. The record reads **126.92 × 8.6979 = 1,103.9 / × 8.8507 = 1,123.3 lb-ft**
+(front / rear). The frame takes the same storey shear, so its solve moves by the same +0.19 %
+and the record stays long by the margins above.

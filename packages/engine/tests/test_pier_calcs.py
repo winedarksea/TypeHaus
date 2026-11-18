@@ -220,17 +220,20 @@ _TIER_PIERS = tuple(f"PT-BW-T{_n}{_s}" for _n in (1, 2, 3, 4) for _s in ("W", "E
 # ** GUARD 2,675 -> 2,643.75 ON 2026-11-05 (note §18). ** The fascia guard is the stock 48"
 # tube's 40 1/8", so the lever is 13.219'; q_h follows the lower top and the rear rim
 # oversail adds 1" of E-W band (wind 1,100.7 -> 1,101.9 front, 1,120.0 -> 1,121.2 rear).
+#
+# ** 5/8" MORE REAR OVERSAIL ON 2026-11-18 (note §19). ** D-S-BALCONY's 3/8" joint: A_s
+# 29.780 -> 29.836 sf, wind 1,101.9 -> 1,103.9 front, 1,121.2 -> 1,123.3 rear.
 _CORNER_ORACLE = {
-    "PT-SG-BF1": {"height_in": 104.375, "wind_lb_ft": 1101.9, "guard_lb_ft": 2643.75},
-    "PT-SG-BF3": {"height_in": 104.375, "wind_lb_ft": 1101.9, "guard_lb_ft": 2643.75},
+    "PT-SG-BF1": {"height_in": 104.375, "wind_lb_ft": 1103.9, "guard_lb_ft": 2643.75},
+    "PT-SG-BF3": {"height_in": 104.375, "wind_lb_ft": 1103.9, "guard_lb_ft": 2643.75},
     # The rear row runs 2" proud for the deck's drainage crown.
     # ** THE REAR PAIR LOST 1/6" ON 2026-09-14. ** ``SPEC.rear_pillar_rise_in = 2.0`` became
     # ``SPEC.balcony_fall_in_per_ft = 0.25``: the FALL is the authored number now and the rise
     # follows the run between the bearing rows, which over 7'-4" is 1.833" rather than 2.000".
     # Both base moments are ``shear x height``, so they follow it exactly and by the same
     # 0.15%. Nothing else about the rear row moved.
-    "PT-SG-BR1": {"height_in": 106.208, "wind_lb_ft": 1121.2, "guard_lb_ft": 2643.75},
-    "PT-SG-BR3": {"height_in": 106.208, "wind_lb_ft": 1121.2, "guard_lb_ft": 2643.75},
+    "PT-SG-BR1": {"height_in": 106.208, "wind_lb_ft": 1123.3, "guard_lb_ft": 2643.75},
+    "PT-SG-BR3": {"height_in": 106.208, "wind_lb_ft": 1123.3, "guard_lb_ft": 2643.75},
 }
 #: §4 of the note: phi*Mn at the column's own axial load, hand-worked term by term.
 #:

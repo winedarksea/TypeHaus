@@ -22,11 +22,12 @@ CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 #: §16 (2026-09-23): the guard's lever reaches the column base, so M_u and the couple rise.
 #: §17 (2026-10-31): the columns cast one 3/4" pack short — less wind lever and self weight.
 #: §18 (2026-11-05): the 40 1/8" fascia guard and the 1 1/2" rear rim oversail.
+#: §19 (2026-11-18): the 2 1/8" rear rim oversail; V_u re-struck (it had stayed at §15c's).
 _ORACLE = {
-    "PT-SG-BR1": {"bearing": (9_436, 38_811), "tension": (5_123, 16_740),
-                  "shear": (410.3, 50_066), "development": (21.2, 24.0)},
-    "PT-SG-BF1": {"bearing": (9_363, 38_803), "tension": (5_077, 16_740),
-                  "shear": (410.3, 50_117), "development": (21.2, 24.0)},
+    "PT-SG-BR1": {"bearing": (9_443, 38_811), "tension": (5_129, 16_740),
+                  "shear": (411.5, 50_059), "development": (21.2, 24.0)},
+    "PT-SG-BF1": {"bearing": (9_369, 38_803), "tension": (5_083, 16_740),
+                  "shear": (411.5, 50_111), "development": (21.2, 24.0)},
 }
 _LABELS = {"bearing": "bearing on the wall top", "tension": "dowel tension across the joint",
            "shear": "shear friction across the cold joint",
