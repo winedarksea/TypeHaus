@@ -112,17 +112,21 @@
 > in `notes/interior_door_schedule.md` (types in `plan/interior_door_types.py`). Halifax Square
 > US15 house-wide; hardware bills by `DoorType.function` in `[allowances]`.
 
-> **Exterior door approaches rest; nothing cantilevers (owner, 2026-11-13):** every exterior
-> door's `ExteriorDoorInstallation.approach_bearing` rests its approach on the truss wall's girt
-> sill course and on the landing (`resolve/exterior_door_bridge.py`). D-S-BALCONY is a
-> ZAI5625FN + full XXXXW extender, its nose 1" short of FS-SG-BALCONY's continuous north sister
-> (the planks carry a tab to it). The main doors' plates rest on a UHMW pad over the landing's
-> member. A door's buck sill and girt sill course sit flush with its rough sill. D-B-SUNKEN's
-> slot drains down W-SG-BRKBM's isolation joint (a drainage board onto FB-SG-BRKBM's stone).
-> A door's girt sill course hangs on 3-screw end blocks and 6" single-screw blocks, TLOK10s
-> into an SPF backer pair in the edge TJI's web recess (derived, `resolve/girt_sill_connection.py`):
-> worst screw 116.09 lb vs the house's 120 lb, d/c 0.967 (note "Girt sill course connection"). The band header's
-> stacked jambs cross FS-S-EAST on squash plies (`band_header/D-B-SUNKEN`, note §5).
+> **Exterior door approaches rest; nothing cantilevers (owner, 2026-11-13; sill beam 2026-11-17):**
+> every exterior door's `ExteriorDoorInstallation.approach_bearing` rests its approach on house
+> structure and on the landing (`resolve/exterior_door_bridge.py`). D-M-PORCH, D-M-ENTRY and
+> D-S-BALCONY share one package (`plan/french_door_installations.py`): ZAI5625FN + full XXXXW on a
+> 1/16" self-adhered membrane pan on the subfloor, the nose on a KDAT 2x6 sill beam outboard of the
+> girt band (face at the nose, 3/4" proud of the cladding, the pan wrapped to a drip), seated at its
+> ends on 4-ply stacks, four TLOK10s a seat into an SPF backer pair in the edge TJI (it is a TJI, not
+> an LSL rim; `SillCourseFastening(layout="end_seats")`, `resolve/girt_sill_connection.py`): worst
+> screw 126.29 lb vs 135, rows exactly at ESR-1078 Table 5's minima. PORCH's 2 1/8" joint takes a
+> removable FRP cover on a beam-face ledge (`landing="cover"`); ENTRY's landing stands 3/8" off the
+> beam; BALCONY's 1" joint is too narrow for a cover and stays open. ENTRY's crest is 1.20" over the
+> LVP (1.45" with 1/4"). D-B-SUNKEN's Trex tread lies on a 1/4" FRP plate over 60 psi XPS, its slot
+> draining down W-SG-BRKBM's isolation joint. D-G-SERVICE keeps its UHMW pad. Oracle:
+> `notes/exterior_door_sill_beam.md`. The band header's stacked jambs cross FS-S-EAST on squash
+> plies (`band_header/D-B-SUNKEN`, `sunken_door_band_header.md` §5).
 
 > **Exterior door hardening, 2026-10-25:** `plan/door_types.py` owns hardware, doubled
 > jamb packs, local ccSPF and entry field finish. `notes/exterior_door_hardening.md`

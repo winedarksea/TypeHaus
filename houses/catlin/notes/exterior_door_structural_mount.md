@@ -1,129 +1,18 @@
 # Exterior doors: structural-wall mounting
 
-**Approaches rest; nothing cantilevers (owner, 2026-11-13).** Every exterior door's approach
-now rests at both ends (`ExteriorDoorInstallation.approach_bearing`,
-`resolve/exterior_door_bridge.py`):
+**Sill beam, 2026-11-17 (owner).** D-M-PORCH, D-M-ENTRY and D-S-BALCONY share one sill package,
+a ZAI5625FN + 6 3/8" XXXXW on a self-adhered membrane pan on the subfloor. The extender's nose
+bears on a KDAT 2x6 sill beam outboard of the girt band, face at the nose, seated at its ends on
+4-ply stacks with four TLOK10s each into an SPF backer pair in the edge TJI. PORCH's joint takes
+a removable cover; ENTRY's landing stands 3/8" off the beam; BALCONY's 1" gap stays open.
+Design and hand oracle: `exterior_door_sill_beam.md`. D-G-SERVICE keeps its schematic sill and
+UHMW slip pad on FS-BW-FLOOR's rim (the garage wall has no girt course).
 
-- **D-M-PORCH, D-M-ENTRY, D-G-SERVICE** keep their schematic sills. Their draining strips stop
-  at the truss wall's girt sill course (the garage wall has none, so at the frame), and the
-  walking plate runs on to rest on a UHMW slip pad over the landing's nearest member. The deck
-  is cut back only clear of the pan's drip: where what's left still covers the member by 1",
-  the pad sits on the deck (D-M-PORCH on FS-SG-PORCH's last joist; D-M-ENTRY on 1.46" of deck
-  over FS-BW-FLOOR's rim, which runs under ~80% of the plate). Otherwise the pad sits on the
-  member itself with the deck cut back over it (D-G-SERVICE, 1 1/2" on the rim, pad 1.43").
-  The cuts rip planks that run along the wall, so there are no board ends to block.
-- **D-S-BALCONY**: see `french_door_catalog_installation.md` §2 (XXXXW extender on the girt
-  course, with an open gap to the court).
-- A door's 3/8" buck sill and girt sill course now sit flush with its rough sill, so the pan
-  never steps up outboard of the sheathing.
-
-The girt sill course's screws are graded in "Girt sill course connection" below (owner,
-2026-11-14). The plates' published load awaits each supplier's section. Earlier paragraphs
-below describe the cantilevered strips and the cutback this replaces.
-
-## Girt sill course connection (owner, 2026-11-14)
-
-Each door's sill course is a KDAT 2x4 on edge spanning jamb post to jamb post, butted at both
-ends (free ends), z -3 1/8" to +3/8" off the storey datum (top of joists). It hangs on 3-ply
-blocks, and the blocks' TimberLOKs go through the sheathing into the floor's edge TJI 230.
-
-| Door | Course | Edge member behind the screws |
-|---|---|---|
-| D-S-BALCONY | 63 5/16" | FS-S-EAST `joist-0-000-0`, TJI 230 |
-| D-M-PORCH | 63 5/16" | FS-M-EAST `joist-0-000-0`, TJI 230 (D-B-SUNKEN's LVL band header behind) |
-| D-M-ENTRY | 38 3/8" | FS-M-MECH `joist-0-011-0`, TJI 230 |
-
-**Layout.** One end block centred 1 3/4" in from each course end takes three screws in one
-row along the course at 3/4" pitch (1", 1 3/4" and 2 1/2" from the end). Interior blocks take
-one screw each, evenly spaced at 6" maximum: 63 5/16" → 9 interior at 5.98125"; 38 3/8" → 5
-at 5.8125". All screws sit in one row, 15/16" above the course bottom (z -2 3/16"), which is
-15/16" below the TJI's 1 1/4" top flange (`profiles._TJI_SERIES_IN`, TB-808 Table 1). A screw
-into the flange's narrow edge is what TB-206 rules out (`partition_top_deflection.md` #9).
-
-**Backer pair.** Below the flange the screw would cross the 3/8" web and nothing else. Each
-face of the web takes an SPF backer: a 2x4 ripped to the web recess, (2 5/16" - 3/8")/2 =
-**31/32"**, 3 1/2" tall, tight under the top flange, the full course length. Derived framing
-(`resolve/girt_sill_connection.py`), billed as 2x4 SPF blocking in `[framing]`.
-TJ-4000 p.28 *Filler and Backer Block Sizes* is the governing table, but the repo records only
-its filler row (`sunken_door_band_header.md`). **The backer row and its nailing are missing:**
-read p.28 before ordering. The model draws the edge joist centred on the sheathing's outer
-face (joist lines start at the outline), so the backers follow it there. The calc below uses
-the built stack: joist outer face on the sheathing's inner face.
-
-### Screw capacity, NDS 2018 §12.3
-
-The inputs are from `french_door_catalog_installation.md` §2: D = 0.172" root,
-F_yb = 190,600 psi, G 0.42 (SPF) for every member. KDAT SP and the 1/2" plywood are both
-denser, so taking them at 0.42 is a lower bound. F_e = 16,600 G^1.84 = 3,364.2 psi
-(`canopy_garage_diaphragm.md`); R_e = 1; R_d = K_D = 10D + 0.5 = 2.22. q = F_e D = 578.65 lb/in,
-M_y = F_yb D³/6 = 161.64 lb-in. Side member: girt 1 1/2" + block 4 1/2" + sheathing 1/2" =
-6 1/2".
-
-| Main member | l_m | Governs | Z | Z' (C_M 0.70) |
-|---|---|---|---|---|
-| stud, the note's basis (TLOK08) | 1 1/2" SPF | IIIm, k2 1.3430 | 175.0 | **122.5** |
-| outer backer only (TLOK08 tip, 1 1/2" past sheathing) | 31/32" SPF | IIIm, k2 1.7517 | 147.4 | 103.2 ✗ |
-| backer + web + inner backer (TLOK10), web not credited | 31/32" + gap 3/8" + 31/32" | IV | 194.8 | **136.4** |
-
-C_M 0.70 is NDS Table 11.3.3 (dowel fasteners, in-service MC > 19%; `north_entry_piers.md`).
-The house authors **120 lb** wet (`standoff_fastener_wet_lateral_lb`), 122.5 rounded down.
-
-**The 8" screw does not reach.** It stops 1 1/2" past the sheathing: 31/32" in the outer
-backer, 3/8" across the web, 5/32" into the inner backer. No dowel-bearing value for the OSB
-web is in the repo (`roof_sheathing_and_membranes.md`: don't copy plywood's 0.50), so the
-web counts for nothing. With only the outer backer it is 103.2 lb, short of 120.
-
-**TimberLOK's 10" (TLOK10, `library/hardware/fasteners.py`) does.** It needs 6 + 1/2 +
-2 5/16 = 8 13/16" to cross the whole joist. Its 2" thread starts 8" from the head: past the
-stack, the sheathing, the outer backer and the web (7 27/32"), so no thread stands in a joint
-being clamped. The tip ends 1 3/16" into the joist bay. The web is taken as a 3/8" gap.
-
-- Mode IV (hinges in both members): h = √(2M_y/q) = 0.7475" of main member, inside the
-  31/32" backer. P = q h = 432.5 lb, Z = 432.5/2.22 = **194.8** (= D²/R_d √(2F_e F_yb/6)).
-- Mode IIIm (hinge in the side member; the main member rotates about y0 in the inner backer):
-  force balance h = (y0 - 3/8) - (2 5/16 - y0) = 2y0 - 2 11/16. Moments about the hinge,
-  q h²/2 - q[(31/32 + h)² - h²]/2 - q[(y0 + h)² - (1 11/32 + h)²]/2 +
-  q[(2 5/16 + h)² - (y0 + h)²]/2 = -M_y, solved at y0 = 1.7489", h = 0.8102". The terms are
-  189.9 - 725.7 - 552.4 + 926.6 = -161.6 ✓. P = 468.8 lb, Z = 211.2.
-- IIIs is 575.9 and II is over 500. **Z = 194.8 (IV), Z' = 136.4 lb ≥ 120: the 120 lb basis
-  holds.** Engagement is in lateral only: ESR-1078's 1 1/4" minimum embedded thread belongs to
-  its own tabulated values, which are not used here. 13/16" of thread in the inner backer
-  clamps the stack, roughly 170 × 0.81 = 138 lb.
-
-### Distribution: discrete-spring beam
-
-The course is an Euler-Bernoulli beam, E = 1.4e6 psi (`catlin_truss_engineering.md` §4,
-No.2 SPF, below KDAT SP), I = 1.5 × 3.5³/12 = 5.359 in⁴, EI = 7.503e6 lb-in². Free ends.
-Each screw is a vertical spring at its own station, k = 270,000 D^1.5 = 22,185 lb/in at the
-0.189" shank. That is NDS §11.3.6's wood-to-metal γ (`analytical_model_basis.md`), the
-stiffest in the repo. A stiffer spring concentrates load on the nearest screw, so it bounds
-the share. The 300 lb point (`ApproachBearing.concentrated_load_lb`) is scanned every 1/4",
-plus every screw station and both ends. The worst case is always the point at a free end:
-
-| Course | Worst screw | d/c vs 120 | Load over the end-block centre | Load over the first interior screw | Load at midspan |
-|---|---|---|---|---|---|
-| 63 5/16" (D-S-BALCONY, D-M-PORCH) | **116.09** (outer end screw) | **0.967** | 94.43 | 78.49 | 94.44 |
-| 38 3/8" (D-M-ENTRY) | **115.84** | **0.965** | 94.09 | 76.58 | 98.85 |
-
-Screw forces (lb) with the point at the end, by distance from the loaded end:
-
-- 63 5/16": 1" 116.09 · 1 3/4" 102.86 · 2 1/2" 90.33 · 7.731" 25.23 · 13.713" -7.46 ·
-  19.694" -13.56 · 25.675" -9.55 · 31.656" -4.36 · 37.638" -1.04 · 43.619" 0.36 · 49.6" 0.60 ·
-  55.581" 0.38 · 60.813" 0.09 · 61.563" 0.04 · 62.313" 0.00
-- 38 3/8": 1" 115.84 · 1 3/4" 102.57 · 2 1/2" 90.02 · 7.563" 26.33 · 13.375" -6.86 ·
-  19.188" -13.96 · 25" -10.46 · 30.813" -4.81 · 35.875" -0.21 · 36.625" 0.44 · 37.375" 1.10
-
-**Hand check.** Sum of forces: 300.01 and 300.00 lb. Sum of moments about the load
-(force × distance): -0.20 and -0.12 lb-in, both 2-decimal rounding. PyNite (spring supports,
-the same members) gives 116.09 and 115.84. With one screw per block, the same model puts
-250-270 lb on the end screw whatever the spacing. With 1" pitch the worst is 119.7: the 3/4"
-pitch keeps the outer screw further from the free end.
-
-**Not graded, sensitivity only.** The 70 psf (60 live + 10 dead) approach load over a
-4.5-5.6" tributary adds 14-17 lb to the end screw. Point and uniform together give 120-121 lb,
-d/c 0.89 against the backer joint's own 136.4 lb. The owner's basis is the point alone.
-**Open:** TimberLOK spacing and edge distances (3/4" pitch = 4D; 15/16" edges) are not in the
-repo, and neither is the backer nailing. Predrill the course if it checks.
+The girt sill course this replaces (2026-11-14: a 2x4 course on 3-screw end blocks and 6"
+single-screw blocks, 41 TLOK10s, worst screw 116.09 lb against 120) is retired: its end screws
+sat at 3/4" pitch 1" from the end, against ESR-1078 Table 5's 2 5/8". Its NDS 12.3 derivation
+for a TLOK10 through a backer pair is carried into the new note, §3, with the shorter
+penetration the deeper stack leaves.
 
 **Current study/sunken-garden coordination (2026-10-26):**
 [french_door_catalog_installation.md](french_door_catalog_installation.md) supersedes

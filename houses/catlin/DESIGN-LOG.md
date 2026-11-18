@@ -8632,3 +8632,37 @@ bend dimensions. See `notes/porch_enclosure.md` for that remaining connection de
 - Cost: ~20" more 2x4/gypsum; the cap is 71", one 72" tread. The wall end now stands ~96"
   over the landing, closing the 20" sight line between the flights there.
 - **Rejected:** a second cap on `W-M-WELL`'s top (two tops, two free ends, an extra oak piece).
+
+## Exterior door sills: an end-seated beam, a joint cover, a seated tread (2026-11-17/18, owner)
+
+Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
+`notes/exterior_door_sill_beam.md`.
+
+- **The girt sill course is retired.** Its end screws sat at 3/4" pitch 1" from the end
+  (ESR-1078 Table 5 asks 2 5/8"), 41 TLOK10s through blocks that broke the foam over ~61% of
+  each doorway. D-M-PORCH, D-M-ENTRY and D-S-BALCONY now share one prehung package, ZAI5625FN
+  + full XXXXW, whose nose bears on a KDAT 2x6 sill beam outboard of the girt band, seated at
+  its ends on 4-ply stacks: 24 TLOK10s in all, rows laid out to Table 5 (exactly at its minima),
+  foam continuous between the seats.
+- **The 10" TimberLOK stays (owner).** The beam face at the nose makes a 7.5" clamped stack;
+  the 2" thread starts at the edge TJI's face and stays inside it, 1.625" of it in backer wood
+  (ESR's 1 1/4" floor), 2" penetration. The old geometric rules (cross the backer pair, thread
+  past the outer backer) were written for the retired detail and are replaced by those ESR and
+  house-basis rows. The edge member is a TJI 230, not an LSL rim: the joists run parallel to
+  these walls.
+- **Joint.** PORCH's 2 1/8" joint takes a removable gritted FRP cover fixed on the porch joist
+  and sliding on a beam-face ledge below the drip (1/2" bearing at the widest, 1/16" clear at
+  the narrowest, over 1/4" movement + 1/4" tolerance). BALCONY's 1" joint cannot take one (a
+  cover needs ~2"), so it stays open: an owner question. ENTRY's rim moved 1/8" out so the deck
+  edge stands 3/8" off the beam. The edge blocking the plan asked for past the rim's ends was
+  not modelled: it would be a rim stub cantilevered past the end joist.
+- **Pan and crests (2026-11-18).** The Endura outlines had been digitized 7.3% tall (vertical
+  scale fitted to the 1 3/8" tick, not the drawing's uniform scale; the 5° deck checks at it):
+  ZAI5625FN 1.517" → 1.414", ZAI4565FN 1.522" → 1.419". The three framed doors' sills sit on a
+  1/16" self-adhered membrane pan on the subfloor (the owner's detail) instead of SureSill's
+  3/8" worst case. ENTRY's crest is 1.20" over the LVP, 1.45" with 1/4": inside R311.3.1.
+- **D-B-SUNKEN** keeps its Trex tread (nicer barefoot than FRP grating, the fallback) on a 1/4"
+  FRP plate over 60 psi XPS thinned by the plate: d/c 0.52, and the scallop question is moot.
+- **Rejected:** the porch-supported tread (FS-SG-PORCH's last joist is at the court edge; a
+  nearer bearing enters the house's foam and cladding zone); seating the beam on the girt jamb
+  posts (a 3 1/2" post block cannot hold one screw to Table 5); a longer TimberLOK.
