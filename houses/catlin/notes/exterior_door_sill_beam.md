@@ -16,8 +16,12 @@ Depths are inches outward from the sheathing's outer face; elevations are off th
 - **Beam.** KDAT 2x6 on edge, RO edge to RO edge, its back on the girt band's outer face (6.0"),
   face **7.5"**: 0.0425" past the nose, so the nose is fully supported; 0.75" proud of the
   board-and-batten face (6.75"). Top at the rough sill (+3/4", the subfloor top), bottom −4 3/4".
-  The top is ripped at 1/4"/ft: 1/32" across 1 1/2". The pan runs level over the buck sill, falls
-  across the beam and turns down its face to a 1/2" drip at 7.5"+.
+  The top is ripped at 1/4"/ft: 1/32" across 1 1/2", top +0.71875" at the face (modelled as the
+  beam's `section_ring` since 2026-11-18). The pan runs level over the buck sill, falls across
+  the beam and turns down its face to a 1/2" drip at 7.5"+. The pan's fall is read off the
+  ripped beam, 0.03125 / 1.5 × 12 = **0.25"/ft**, and graded against
+  `opening_flashing_spec.md` §3's 1/4"/ft minimum (`SillCourseFastening.pan_min_fall_per_ft`):
+  exactly at it.
 - **Seats.** One stack per end, 4 plies of 2x6 KDAT (sheathing to beam back, 6.0"), **10"** along
   the beam (9 1/4" until 2026-11-18: SP's Table 5 end distance, §3), 5 1/2" tall, top under the
   3/8" buck sill (+3/8"), bottom −5 1/8".

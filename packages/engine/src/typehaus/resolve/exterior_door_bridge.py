@@ -13,10 +13,12 @@ from shapely.geometry import LineString, Polygon
 
 from typehaus.resolve.exterior_door_cover import add_cover
 from typehaus.resolve.exterior_door_sections import DoorSectionBuilder
+from typehaus.resolve.framing.girt_sill_course import ripped_top_fall
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import opening_center, wall_frame
 
 _IN = 0.0254
+_FT = 0.3048
 _TOL = _IN / 32
 _LANDING_MEMBERS = ("joist", "sister_joist", "rim", "band", "blocking", "ledger")
 #: How far out from the sheathing a landing member is looked for.
@@ -232,14 +234,18 @@ def bridge_installation(model, wall, opening, placement, layout, clad):
     conflicts = list(support.conflicts)
     builder = DoorSectionBuilder(placement.outward_sign, layout.width)
     pan_outlet = placement.outward_sign * clad + installation.drainage_gap.meters
-    fall = 0.0
-    # A sill beam proud of the cladding: the pan wraps its face, falling across its top.
+    fall, slope = 0.0, None
+    # A sill beam proud of the cladding: the pan wraps its face, falling across its ripped top.
     if support.girt_face is not None and support.girt_face > placement.outward_sign * clad:
         pan_outlet = support.girt_face
+        course = next(m for m in wall.members if m.child_key == support.girt_key)
+        fall = ripped_top_fall(course)
+        slope = fall / (support.girt_face - support.girt_inner) * _FT
         sill = _sill_course_spec(model, wall)
-        if sill is not None:
-            fall = ((support.girt_face - support.girt_inner)
-                    * sill.course_fall_per_ft.meters / 0.3048)
+        least = sill.pan_min_fall_per_ft.meters if sill is not None else None
+        if least is not None and slope < least - _TOL / 12:
+            conflicts.append(f"the pan falls {slope / _IN:.3f}\"/ft across the sill beam's top, "
+                             f"under {least / _IN:g}\"/ft")
     strips = add_bridge_sections(builder, spec, installation, layout, support, pan_outlet, fall)
     if bearing.landing == "slip_pad":
         conflicts.append("a catalog extender stops short of its landing: use a gap or a cover")
@@ -282,7 +288,8 @@ def bridge_installation(model, wall, opening, placement, layout, clad):
         landing_member_cover=support.member_cover,
         landing_member_inner_in=_inch(support.member_inner),
         landing_deck_edge_in=_inch(support.deck_edge), nose_gap_in=_inch(gap),
-        pan_outlet_in=pan_outlet / _IN, pan_fall_in=fall / _IN, bearing_strips=strips,
+        pan_outlet_in=pan_outlet / _IN, pan_fall_in=fall / _IN,
+        pan_fall_per_ft_in=None if slope is None else slope / _IN, bearing_strips=strips,
         **cover)
     return report, tuple(builder.sections), conflicts, unknown
 

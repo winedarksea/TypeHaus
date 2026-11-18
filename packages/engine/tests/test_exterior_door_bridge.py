@@ -76,6 +76,9 @@ def test_end_seat_sill_beam_is_graded(catlin_model_ro, tag, demand, span, deflec
         (8.0, 7.5))
     assert report["screw_embedded_thread_in"] == pytest.approx(1.25)
     assert report["girt_course_member"].startswith("edge-rim-")
+    # §1: the beam's top is ripped 1/32" across its 1 1/2", 1/4"/ft, and the pan falls with it.
+    assert report["pan_fall_in"] == pytest.approx(1 / 32)
+    assert report["pan_fall_per_ft_in"] == pytest.approx(0.25)
     # §3: the band every member's edge distances leave is 1 1/4", rows staggered 3/4" in it.
     rows = sorted({z for _, z in report["seat_screws"]})
     assert rows[1] - rows[0] == pytest.approx(0.75)

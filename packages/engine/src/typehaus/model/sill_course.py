@@ -37,6 +37,8 @@ class SillCourseFastening(HausModel):
     # The door maker's limit over the sill's unsupported span.
     course_deflection_limit: Length = inch(0.125)
     course_fall_per_ft: Length = inch(0.25)
+    # The least outward fall the pan may take across the beam's top.
+    pan_min_fall_per_ft: Length = inch(0.25)
 
 
 register_constructor("SillCourseFastening", SillCourseFastening)

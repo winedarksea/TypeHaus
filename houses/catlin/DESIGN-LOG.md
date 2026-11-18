@@ -8708,3 +8708,6 @@ Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
   SureSill HeadFlash and keeps only the door trim kit's head drip, as PORCH and ENTRY have since
   abab0d087; `framed_floor_installation` sets it once. BALCONY keeps its flashing ends (the rear
   runs they close are its own).
+- **The sill beam's ripped top is modelled (2026-11-18).** Its `section_ring` falls 1/32" across
+  the 1 1/2" toward the outside; the bridge reads the pan's fall off that ring (it had used the
+  authored rate) and grades it against the flashing spec's 1/4"/ft minimum: exactly at it.
