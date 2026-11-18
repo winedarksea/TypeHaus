@@ -270,7 +270,8 @@ def bridge_installation(model, wall, opening, placement, layout, clad):
         skin = layout.membrane if pan_outlet == support.girt_face else 0.0
         cover, cover_conflicts, cover_unknown = add_cover(
             model, builder, bearing, support, house_face,
-            spec.movement_horizontal.meters, skin, layout.base - fall - _DRIP_LEG)
+            spec.movement_horizontal.meters, skin, layout.base - fall - _DRIP_LEG,
+            opening.width_m)
         conflicts.extend(cover_conflicts)
         unknown.extend(cover_unknown)
     report = dict(

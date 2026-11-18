@@ -1927,8 +1927,8 @@ def _guard_post_stations(path_ft, spacing_ft):
 
 _PORCH_OUTLINE = (pt(ft(_x_in_w), ft(_y_ax_front)), pt(ft(_x_in_e), ft(_y_ax_front)),
                   pt(ft(_x_in_e), ft(_y_porch_deck_n)), pt(ft(_x_in_w), ft(_y_porch_deck_n)))
-# The plank: the full N-S outline, across the span to the pour faces the ledgers bear on.
-_PORCH_PLANK_OUTLINE = _PORCH_OUTLINE
+# The plank: the full N-S outline, across the span to the pour faces the ledgers bear on,
+# less D-M-PORCH's joint-cover notch (`_PORCH_PLANK_OUTLINE`, below the door's RO constants).
 _PORCH_JOIST_OUTLINE = (pt(ft(_x_in_w), ft(_porch_y0)), pt(ft(_x_in_e), ft(_porch_y0)),
                         pt(ft(_x_in_e), ft(_porch_y1)), pt(ft(_x_in_w), ft(_porch_y1)))
 
@@ -2479,6 +2479,18 @@ _REAR_CASING_CLEARANCE_IN = 3.5 + 0.5
 _REAR_BREAKS_FT = ((_deck_x_w, _REAR_DOOR_RO_W_FT - _REAR_CASING_CLEARANCE_IN / 12.0),
                    (_REAR_DOOR_RO_E_FT + _REAR_CASING_CLEARANCE_IN / 12.0, _deck_x_e))
 _REAR_DOOR_SPAN_FT = (_REAR_BREAKS_FT[0][1], _REAR_BREAKS_FT[1][0])
+# D-M-PORCH stands under D-S-BALCONY on one RO. Across it the porch planks stop on the north
+# joist's outer 3/4" (`ApproachBearing.plank_bearing`): its inner 3/4" carries the joint cover's
+# fixed end (notes/exterior_door_sill_beam.md §4).
+_PORCH_COVER_NOTCH_IN = 0.75
+_PORCH_PLANK_OUTLINE = (
+    *_PORCH_OUTLINE[:3],
+    pt(ft(_REAR_DOOR_RO_E_FT), ft(_y_porch_deck_n)),
+    pt(ft(_REAR_DOOR_RO_E_FT), ft(_y_porch_deck_n - _PORCH_COVER_NOTCH_IN / 12.0)),
+    pt(ft(_REAR_DOOR_RO_W_FT), ft(_y_porch_deck_n - _PORCH_COVER_NOTCH_IN / 12.0)),
+    pt(ft(_REAR_DOOR_RO_W_FT), ft(_y_porch_deck_n)),
+    _PORCH_OUTLINE[3],
+)
 # The plank sheet with a tab across the door out to the north sister's face, so the plank
 # ends there bear on it and the extender's nose sees one open gap.
 _DECK_PLANK_OUTLINE = (
@@ -3239,8 +3251,9 @@ BASEMENT_ELEMENTS = [*NODES, *WALLS, *GRADE_BEAMS, *FOOTINGS, *BRKBM_OPENINGS,
 # rows in [openings] — those come off wall layers, this is an authored `_EdgeRun` billed by
 # the foot in [edge_trim].
 #
-# `top_elevation=_porch_top` is the top of the JOISTS, which is where a piece screwed to the
-# rim lands: the composite plank's north edge laps over it.
+# Its top is 3/4" under the JOISTS' top (`_porch_top`), screwed to the rim: the composite
+# plank's north edge laps over it, and since 2026-11-18 D-M-PORCH's joint-cover ledge (3/4",
+# on the sill beam's face, top at the joist top) sits over it across the door.
 # From the porch deck's north rim to 1/4" off the cladding (-7 1/2"): 2 1/8" since the deck
 # followed the brick 3/8" north (2026-11-04); it was 2 1/2" off `_y_out_n`.
 _SLOT_CLOSURE_NORTH_IN = -7.5
@@ -3252,8 +3265,8 @@ PORCH_SLOT_CLOSURE = Flashing(
     # W-SG-W1/E1. 17'-0". It screws to the deck's north edge joist.
     path=(pt(ft(_x_in_w), ft(_slot_closure_y)),
           pt(ft(_x_in_e), ft(_slot_closure_y))),
-    top_elevation=_porch_top, depth=inch(2), thickness=inch(_SLOT_CLOSURE_REACH_IN),
-    material="metal-flat-sheet", host_ref="FS-SG-PORCH",
+    top_elevation=_porch_top - inch(0.75), depth=inch(2),
+    thickness=inch(_SLOT_CLOSURE_REACH_IN), material="metal-flat-sheet", host_ref="FS-SG-PORCH",
     # West→east, so the left-hand normal points north — the house side, which is the end
     # carrying the lip rather than the fastener line.
     back_side="left")

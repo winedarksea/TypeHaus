@@ -119,7 +119,7 @@
 > 1/16" self-adhered membrane pan on the subfloor, the nose on a KDAT 2x6 sill beam outboard of the
 > girt band (face at the nose, 3/4" proud of the cladding, the pan wrapped to a drip), seated at its
 > ends on 4-ply stacks, four TLOK10s a seat into an SPF backer pair in the edge TJI (it is a TJI, not
-> an LSL rim; `SillCourseFastening(layout="end_seats")`, `resolve/girt_sill_connection.py`): worst
+> an LSL rim; `SillCourseFastening`, `resolve/girt_sill_connection.py`): worst
 > screw 126.29 lb vs 135, rows exactly at ESR-1078 Table 5's minima under a 1 1/4" flange (a
 1 3/8" one is UNKNOWN). PORCH's 2 1/8" joint takes a
 > removable FRP cover on a beam-face ledge (`landing="cover"`); ENTRY's landing stands 3/8" off the

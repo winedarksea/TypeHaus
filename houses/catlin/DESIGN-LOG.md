@@ -8680,3 +8680,7 @@ Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
 - **BALCONY joint (owner, 2026-11-18).** The rear rim oversail went 1 1/2" → 2 1/8" along the whole
   edge, the north sister packed to 2 1/8" flush with it: the planks stop 3/8" off D-S-BALCONY's
   sill beam like ENTRY's, open, no cover; the rear cladding gap is 1 1/8".
+- **PORCH cover fit (review, 2026-11-18).** The porch planks stop on the north joist's outer 3/4"
+  across D-M-PORCH's RO, so the cover's fixed end has the inner 3/4"; TR-SG-SLOT drops 3/4" under
+  the cover's ledge, which had been drawn inside it. The balcony wind rose 0.2% with the longer
+  rear oversail (`balcony_moment_columns.md` §19); nothing governing moved.

@@ -128,8 +128,11 @@ the pan's 0.020" drip leg on the beam face, so it just meets that leg at the nar
   1 9/16" → 9.0625". Cover edge 7.5 + 0.020 + 0.5 = 8.02". Bearing at the widest:
   9.0625 − (8.02 + 0.5) = **0.5425" ≥ 1/2"**. Ledge to joist at the narrowest:
   9.625 − 0.5 − 9.0625 = **1/16"**. Fixed end 1.5 − 0.75 = 0.75". Cover 0.94" thick (joist top 0
-  to deck top 0.94), 2.355" wide. Ledge top at 0, under the drip's foot (+0.75 − 1/32 − 1/2 =
-  +0.22). Water drops through to TR-SG-SLOT.
+  to deck top 0.94), 2.355" wide, over the full RO. Ledge top at 0, under the drip's foot
+  (+0.75 − 1/32 − 1/2 = +0.22). Across the RO the porch planks stop on the joist's outer 3/4"
+  (10.375"), so the cover's fixed end has the inner 3/4" (review, 2026-11-18: the planks had
+  covered it). TR-SG-SLOT drops 3/4" to sit under the ledge (it filled the ledge's place); water
+  through the cover falls past the ledge onto it.
 - **D-S-BALCONY, open gap (owner, 2026-11-18).** A 1.0" joint took no cover (one needs ≥ 2.0"), so it
   narrows like ENTRY's: the rear rim oversail goes 1 1/2" → 2 1/8" along the whole edge and the
   planks' tab at the door reaches **7.875"**, **3/8"** off the beam (0.4175" off the nose), 1/8" left

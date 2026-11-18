@@ -30510,16 +30510,16 @@
 "55eb547e4b89"
 ],
 "geometry/CMD202AAAA/installation:flashing-end-silicone-corner-envelope--1": [
-0.0381635,
+0.0286385,
 0.075184,
 12,
-"d9b529b6cac7"
+"2cc116a7b4e7"
 ],
 "geometry/CMD202AAAA/installation:flashing-end-silicone-corner-envelope-1": [
-0.0381635,
+0.0286385,
 0.075184,
 12,
-"d9b529b6cac7"
+"2cc116a7b4e7"
 ],
 "geometry/CMD202AAAA/installation:impermeable-pan-apron": [
 0.0182562,
@@ -74274,10 +74274,10 @@
 "b7ca4a48300f"
 ],
 "geometry/SGFF03AAAA-00/body": [
--0.0508,
-0.0,
+-0.06985,
+-0.01905,
 2,
-"40d2be36f208"
+"4eaadb4754ea"
 ],
 "geometry/SGFS01AAAA/deck": [
 0.0,
@@ -128084,8 +128084,8 @@
 "solids/TR-SG-RUNNEL-3-BOTTOM/z1_m": 0.0127,
 "solids/TR-SG-RUNNEL-3-FRONT/z0_m": 0.0,
 "solids/TR-SG-RUNNEL-3-FRONT/z1_m": 0.0762,
-"solids/TR-SG-SLOT-1/z0_m": -0.0508,
-"solids/TR-SG-SLOT-1/z1_m": 0.0,
+"solids/TR-SG-SLOT-1/z0_m": -0.06985,
+"solids/TR-SG-SLOT-1/z1_m": -0.01905,
 "solids/TRIM-N-G-NE-CORNER-1/z0_m": -0.3048,
 "solids/TRIM-N-G-NE-CORNER-1/z1_m": 2.2352,
 "solids/TRIM-N-G-NW-CORNER-1/z0_m": -0.3048,

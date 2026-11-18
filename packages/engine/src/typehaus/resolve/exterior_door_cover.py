@@ -13,8 +13,8 @@ _IN = 0.0254
 _TOL = _IN / 64
 
 
-def add_cover(model, builder, bearing, support, house_face, movement, skin, drip_foot):
-    """``(report fields, conflicts, unknown)``; draws the cover and its ledge."""
+def add_cover(model, builder, bearing, support, house_face, movement, skin, drip_foot, span):
+    """``(report fields, conflicts, unknown)``; draws the cover and its ledge, ``span`` long."""
     conflicts, unknown = [], []
     if None in (support.member_inner, support.member_outer, support.member_top,
                 support.deck_top, support.girt_top):
@@ -34,6 +34,8 @@ def add_cover(model, builder, bearing, support, house_face, movement, skin, drip
                   cover_range_in=swing / _IN)
     if top - bottom <= _TOL:
         conflicts.append("the joint cover has no depth between its member and the deck top")
+    if support.deck_edge is not None and support.deck_edge < fixed_outer - _TOL:
+        conflicts.append("the landing's planks cover the member where the joint cover is fixed")
     if fixed < bearing.cover_min_bearing.meters - _TOL:
         conflicts.append("the joint cover's fixed end bears on less of the landing member "
                          "than its minimum")
@@ -50,10 +52,10 @@ def add_cover(model, builder, bearing, support, house_face, movement, skin, drip
     if conflicts:
         return report, conflicts, unknown
     builder.rectangle("approach-joint-cover", inner, fixed_outer, bottom, top,
-                      bearing.cover_material_ref, "rigid")
+                      bearing.cover_material_ref, "rigid", span=span)
     builder.rectangle("approach-cover-seat", house_face, house_face + seat,
                       bottom - bearing.cover_seat_thickness.meters, bottom,
-                      bearing.cover_seat_material_ref, "lumber")
+                      bearing.cover_seat_material_ref, "lumber", span=span)
     unknown.append("joint cover: the product, its slip rating and its seat's fastening are "
                    f"a supplier hold; water drops through to {bearing.cover_discharge_ref}")
     return report, conflicts, unknown
