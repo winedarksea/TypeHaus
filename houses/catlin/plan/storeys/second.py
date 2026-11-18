@@ -145,7 +145,7 @@ NODES = [
     # W-S-WELL-KNEE on ST-M2S's well partition, 167 15/16" its centre (STAIRS).
     Node(uid="ZSW0B25N8C", tag="N-S-KNEE-S", position=pt(inch(167.9375), ft(26, 0.375)),
          open_end=True),
-    Node(uid="DXS13T771Y", tag="N-S-KNEE-N", position=pt(inch(167.9375), ft(30, 2.375)),
+    Node(uid="DXS13T771Y", tag="N-S-KNEE-N", position=pt(inch(167.9375), ft(31, 10.375)),
          open_end=True),
     # W-S-SBF, FX-S-SUITEBATH-TUBSH's furred plumbing end (see the wall).
     Node(uid="NDKXJJQSF8", tag="N-S-SBF-W", position=pt(inch(182.615), inch(262.375)), open_end=True),
@@ -537,9 +537,9 @@ WALLS = [
     # The well partition carried 36" over the oak as a knee wall (2026-11-05, was the metal
     # RL-S-STAIRHEAD-N). ST-M2S's generated partition tops out flush with the deck, so the
     # upper flight's top four nosings stand 7 1/2"-30" under it over a 60"-98" fall into
-    # the lower lane (R312.1.1). Framed on that top plate at the oak (+121.5"), from the
-    # well head to nosing 5, the first the partition stands 34" over. 1/2" gwb each face
-    # matches the partition's 4 1/2"; SL-S-KNEE-CAP is its oak cap.
+    # the lower lane (R312.1.1). Framed on that top plate at the oak (+121.5"), the well's
+    # full length, stairhead to landing end: one top line (owner 2026-11-17). 1/2" gwb each
+    # face matches the partition's 4 1/2"; SL-S-KNEE-CAP is its oak cap.
     Wall(uid="6G7CJV5WTK", tag="W-S-WELL-KNEE", start_node="N-S-KNEE-S", end_node="N-S-KNEE-N",
          assembly="INT_2X4_PARTITION_HALF", structural_role=StructuralRole.NONBEARING,
          base_elevation=inch(121.5), top=inch(36), interior_room="RM-S-HALL"),
@@ -1444,7 +1444,7 @@ STAIRS = [
 CAPS = [
     Slab(uid="CMJRX0C2X2", tag="SL-S-KNEE-CAP", kind="platform",
          outline=(pt(inch(165.3125), ft(25, 11.875)), pt(inch(170.5625), ft(25, 11.875)),
-                  pt(inch(170.5625), ft(30, 2.875)), pt(inch(165.3125), ft(30, 2.875))),
+                  pt(inch(170.5625), ft(31, 10.875)), pt(inch(165.3125), ft(31, 10.875))),
          thickness=inch(1), assembly="KNEE_WALL_OAK_CAP", top_elevation=inch(158.5)),
 ]
 

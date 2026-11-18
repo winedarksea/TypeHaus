@@ -7889,6 +7889,18 @@
 8,
 "144d73e3292a"
 ],
+"geometry/6G7CJV5WTK::framing/member:stud-004": [
+3.1242,
+3.9243,
+8,
+"144d73e3292a"
+],
+"geometry/6G7CJV5WTK::framing/member:stud-005": [
+3.1242,
+3.9243,
+8,
+"144d73e3292a"
+],
 "geometry/6KE3VP3HY1-FB0/body": [
 0.0,
 0.01905,
@@ -27017,12 +27029,6 @@
 24,
 "527867f33533"
 ],
-"geometry/CM-284ed734e778/body": [
-3.032125,
-3.140075,
-56,
-"fa73a082d0a3"
-],
 "geometry/CM-2874ab754ba4/body": [
 8.7772875,
 8.9804875,
@@ -27208,12 +27214,6 @@
 8.9804875,
 2,
 "b9f1f7dab632"
-],
-"geometry/CM-38e4f2ef14a0/body": [
-3.032125,
-3.140075,
-56,
-"fa73a082d0a3"
 ],
 "geometry/CM-3a5120f357f0/body": [
 6.08965,
@@ -27893,6 +27893,12 @@
 2,
 "3ed819e58eeb"
 ],
+"geometry/CM-72e8f8aa043a/body": [
+3.032125,
+3.140075,
+56,
+"fa73a082d0a3"
+],
 "geometry/CM-734d45a08f2a/body": [
 6.08965,
 6.29285,
@@ -28372,6 +28378,12 @@
 6.245902,
 32,
 "f2c5756123a5"
+],
+"geometry/CM-9d8a2c3c7557/body": [
+3.032125,
+3.140075,
+56,
+"fa73a082d0a3"
 ],
 "geometry/CM-9da39b23bf80/body": [
 6.08965,
@@ -50181,7 +50193,7 @@
 1.557719,
 3.254187,
 8,
-"98e6dd7985fc"
+"c24e8bfb3bc6"
 ],
 "geometry/CST702AAAA::framing/member:skirt-upper-right": [
 1.556075,
@@ -82174,6 +82186,18 @@
 "64ade99912ef"
 ],
 "member/6G7CJV5WTK/stud-003": [
+3.1242,
+3.9243,
+2,
+"64ade99912ef"
+],
+"member/6G7CJV5WTK/stud-004": [
+3.1242,
+3.9243,
+2,
+"64ade99912ef"
+],
+"member/6G7CJV5WTK/stud-005": [
 3.1242,
 3.9243,
 2,

@@ -65,7 +65,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x2 SPF No. 2 & Btr framing lumber, 10' (2x2) | 2 | pc | plate | 20 LF | building |
 | 2x3 SPF No. 2 & Btr framing lumber, 8' (2x3) | 6 | pc | corner stud, plate, stud | 48 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 92 5/8" PET (2x4) | 81 | pc | corner stud, king stud, stud | 625.2 LF | building |
-| 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4) | 147 | pc | blocking, corner stud, cripple stud, header, jack stud, king stud, ledger, outlooker, partition backer, plate, raked top plate, stud | 1176 LF | building |
+| 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4) | 148 | pc | blocking, corner stud, cripple stud, header, jack stud, king stud, ledger, outlooker, partition backer, plate, raked top plate, stud | 1184 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 104 5/8" PET (2x4) | 252 | pc | corner stud, king stud, stud | 2197.1 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 10' (2x4) | 31 | pc | partition backer, plate, raked top plate | 310 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 14' (2x4) | 12 | pc | plate | 168 LF | building |
@@ -241,7 +241,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Column — EQUIP_STAND_ALUM (column:EQUIP_STAND_ALUM) | 12 | ea | 12 placed, 0.3 SF plan; 0.02 cy in the takeoff | main |
 | Column — POST_CONCEALED_SPF (column:POST_CONCEALED_SPF) | 18 | bf | 2 placed, 0.2 SF plan; 0.06 cy in the takeoff | main |
 | Slab deck — AH_PLATFORM_PLY (slab_deck:AH_PLATFORM_PLY) | 9.4 | SF | 1 placed, 9.4 SF plan; 0.12 cy in the takeoff | attic |
-| Slab platform — KNEE_WALL_OAK_CAP (slab_platform:KNEE_WALL_OAK_CAP) | 1.9 | SF | 1 placed, 1.9 SF plan; 0.01 cy in the takeoff | second |
+| Slab platform — KNEE_WALL_OAK_CAP (slab_platform:KNEE_WALL_OAK_CAP) | 2.6 | SF | 1 placed, 2.6 SF plan; 0.01 cy in the takeoff | second |
 | Slab platform — TUBDECK_INT_PLY_CAP (slab_platform:TUBDECK_INT_PLY_CAP) | 4.3 | SF | 1 placed, 4.3 SF plan; 0.03 cy in the takeoff | main |
 
 ## Timber

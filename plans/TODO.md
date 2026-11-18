@@ -230,7 +230,6 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
 - Not sure we need REG-S-EXH4 in RM-S-VANITY. And if we do, we need to move it out of the center of the floor
 - garage wall to standard zip possibly (doesn't need to be taped)
 - The siding to balcony flashing is two pieces, TR-SG-BASE-FLASH-W-1 and TR-SG-COUNTER-FLASH-W. Do we really need both like this? The "counter flash" seems a bit unsupported. A more extreme change might be to have the horizontal band run lower, at this height, and integrate here.
-- Might need a second SL-S-KNEE-CAP for the partition wall
 - ERV terminals don't come out of the walls/floors/surfaces quite clearly enough, likely they protrude just a bit more
 - Verify the support for the door sills for exterior doors
 - Condensate PR-M-COND-HP3-RUN goes through the studs of W-M-STRW, which is one wall that is exposed and we don't want to run the plumbing through (the data cable is probably fine there though)

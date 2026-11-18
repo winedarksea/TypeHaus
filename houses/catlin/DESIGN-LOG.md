@@ -8622,3 +8622,13 @@ bend dimensions. See `notes/porch_enclosure.md` for that remaining connection de
 - **Collar lands.** The box's fresh and attic openings rose 3/4" (box z 4" and 14"): a 1" land
   under the 6" collar and 1" between the openings. The feed's north deck leg rides +4 3/4",
   the attic stub and `REG-A-HP-EAST-RET` 3/4" higher.
+
+## W-S-WELL-KNEE runs the well's full length (2026-11-17, owner)
+
+- The knee wall and `SL-S-KNEE-CAP` now run from the well head to the landing end
+  (`N-S-KNEE-N` = `N-M-WELL-N`, y=31'-10 3/8"), not to nosing 5. The last 20" of `W-M-WELL`
+  had topped out at the deck with a bare gypsum top and beads, a step and a free end mid-well.
+  One wall, one top line, one cap, one free end stacked through both storeys.
+- Cost: ~20" more 2x4/gypsum; the cap is 71", one 72" tread. The wall end now stands ~96"
+  over the landing, closing the 20" sight line between the flights there.
+- **Rejected:** a second cap on `W-M-WELL`'s top (two tops, two free ends, an extra oak piece).
