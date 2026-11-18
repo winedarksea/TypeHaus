@@ -368,13 +368,12 @@ export const useStore = create<StoreState>((set, get, store) => ({
   setRoomOccupancy: (roomOccupancy) => set({ roomOccupancy }),
   // Left side hosts one large panel at a time (reviewer rule).
   setActivePanel: (panel) => {
-    if (panel === "views" && !get().viewsDiscovered) {
-      markViewsDiscovered();
-      set({ viewsDiscovered: true });
-    }
+    const discover = panel === "views" && !get().viewsDiscovered;
+    if (discover) markViewsDiscovered();
     set((s) => ({ activePanel: s.activePanel === panel ? null : panel,
       // A hand-driven open starts unfiltered; only openIssues narrows it.
-      issuesSeverityFilter: panel === "issues" ? null : s.issuesSeverityFilter }));
+      issuesSeverityFilter: panel === "issues" ? null : s.issuesSeverityFilter,
+      ...(discover ? { viewsDiscovered: true } : {}) }));
   },
   openIssues: (issuesSeverityFilter) => set({ activePanel: "issues", issuesSeverityFilter }),
   setCommandPaletteOpen: (commandPaletteOpen) => set({ commandPaletteOpen }),

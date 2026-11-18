@@ -5,8 +5,7 @@
 .rail-primary {
   color: var(--md-on-primary-container);
 }
-.rail-primary .rail-indicator,
-.rail-primary.active .rail-indicator {
+.rail-primary .rail-indicator {
   background: var(--md-primary-container);
   box-shadow: var(--md-elev-1);
 }
@@ -27,23 +26,24 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: var(--text-xs);
+  /* Secondary to the label: smaller and muted (--text-xs out-shouted the 10.5px label). */
+  font-size: 10px;
   font-variant-numeric: tabular-nums;
   line-height: 1.1;
-  color: var(--md-on-surface-variant);
+  color: var(--muted);
 }
 
-/* Until Views is first opened: a slow ring. Reduced motion (base.css stops every
-   animation) gets a static outline instead. */
+/* Until Views is first opened: a slow ring that grows, fades out, then rests. Reduced
+   motion (base.css stops every animation) gets a static outline instead. */
 .rail-primary--beckon .rail-indicator {
-  animation: rail-primary-beckon 2.4s ease-in-out infinite;
+  animation: rail-primary-beckon 2.4s ease-out infinite;
 }
 @keyframes rail-primary-beckon {
-  0%,
-  100% {
-    box-shadow: var(--md-elev-1), 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent);
+  0% {
+    box-shadow: var(--md-elev-1), 0 0 0 0 color-mix(in srgb, var(--accent) 70%, transparent);
   }
-  50% {
+  70%,
+  100% {
     box-shadow: var(--md-elev-1), 0 0 0 6px color-mix(in srgb, var(--accent) 0%, transparent);
   }
 }
