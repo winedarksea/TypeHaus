@@ -12,6 +12,17 @@ from typehaus.resolve.exterior_door_catalog_parts import catalog_sill_sections
 _IN = 0.0254
 
 
+def receiver_substrate_left(spec):
+    """Sill body left over its underside (outline z 0, on the pan) under a receiver hole drilled
+    to ``receiver_depth`` from the cap top at ``receiver_station`` (the outline's rear edge is
+    x 0); negative, the drill breaks through."""
+    from shapely.geometry import LineString, Polygon
+
+    x = spec.receiver_station.meters
+    cut = Polygon(spec.sill_outline_m).intersection(LineString(((x, -1.0), (x, 1.0))))
+    return cut.bounds[3] - spec.receiver_depth.meters
+
+
 def add_catalog_installation(model, wall, opening, assembly, clad):
     placement = assembly.exterior_placement
     installation = placement.specification
@@ -54,17 +65,14 @@ def add_catalog_installation(model, wall, opening, assembly, clad):
     if (not foam_bed and not bridge
             and layout.approach_front - layout.thickness <= layout.pan_front + layout.membrane):
         conflicts.append("catalog approach blocks the membrane drainage path")
-    # The drill's bottom over the pan, at the outline's cap. Short of the pan but inside the
-    # clearance, the unconfirmed factory cap setting decides it: a supplier hold.
-    receiver_margin = layout.crest - spec.receiver_depth.meters - layout.seat
-    if receiver_margin < 0:
+    # Endura's minimum receiver hole, from the cap top at the hole: the sill body left under it.
+    # Inside the outline's own accuracy it is in the body; only a gross break-through fails.
+    receiver_left = receiver_substrate_left(spec)
+    if receiver_left < -spec.outline_tolerance.meters:
         conflicts.append(
-            "FLA receiver drilling reaches the pan; coordinate cap setting or receiver"
+            f"FLA receiver drilling to {spec.receiver_depth.meters / _IN:g}\" breaks through the "
+            f"sill body by {-receiver_left / _IN:.3f}\" ({spec.receiver_source})"
         )
-    elif receiver_margin < spec.receiver_pan_clearance.meters:
-        unknown.append(f"FLA receiver drilling stops {receiver_margin / _IN:.3f}\" over the pan, "
-                       "inside its clearance: the cap's factory setting and the receiver are a "
-                       "supplier hold")
     report = _installation_report(assembly, placement, spec, layout, support)
     if layout.landing_gap is not None and layout.landing_gap <= spec.movement_horizontal.meters:
         conflicts.append("house/deck movement closes the approach gap")
@@ -160,7 +168,6 @@ def _installation_report(assembly, placement, spec, layout, support):
             if floor and floor.surface_m is not None
             else None
         )
-    receiver_clearance = layout.crest - spec.receiver_depth.meters - layout.seat
     return dict(
         **floor_report,
         source_url=spec.source_url,
@@ -188,7 +195,7 @@ def _installation_report(assembly, placement, spec, layout, support):
             layout.approach_front - layout.thickness - layout.pan_front - layout.membrane
         )
         / _IN,
-        receiver_pan_clearance_in=receiver_clearance / _IN,
+        receiver_substrate_left_in=receiver_substrate_left(spec) / _IN,
         movement_gap_in=layout.landing_gap / _IN if layout.landing_gap is not None else None,
         minimum_movement_gap_in=(layout.landing_gap - spec.movement_horizontal.meters) / _IN
         if layout.landing_gap is not None

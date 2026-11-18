@@ -133,8 +133,11 @@ def test_catalog_installation_keeps_evidence_separate(catlin_model_ro, tag):
     assert report["approach_slope"] == pytest.approx(1 / 48)
     if tag == "D-S-BALCONY":
         assert report["drainage_clearance_in"] > 0
-    # Short of the pan; inside 1/16" the cap's factory setting decides (a supplier hold).
-    assert report["receiver_pan_clearance_in"] > 0
+    # Endura's 1-3/8" minimum hole, from the cap top at the hole, stays in the ~1.41" sill body
+    # to within the outline's 0.1" digitising accuracy: a pass, no hold.
+    assert report["receiver_substrate_left_in"] == pytest.approx(
+        0.0437 if tag == "D-B-SUNKEN" else 0.0382, abs=1e-3)
+    assert not any("receiver" in m for m in (*assembly.unknown, *assembly.conflicts))
     if tag == "D-S-BALCONY":
         assert report["minimum_movement_gap_in"] > 0
     assert report["minimum_flashing_overlap_in"] > 0

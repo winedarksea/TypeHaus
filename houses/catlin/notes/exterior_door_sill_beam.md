@@ -162,6 +162,8 @@ sit on a self-adhered membrane pan on the subfloor, 1/16" (was SureSill's 3/8" w
 | D-S-BALCONY | 0.726" over the oak (was 1.142") | 0.976" | 1.285" |
 | D-B-SUNKEN | 6.544" (outline only, −0.104") | | 7.294" |
 
-The FLA receiver's 1 3/8" drilling now stops 0.039" over the pan (0.044" at SUNKEN), inside its
-1/16" clearance: the cap's factory setting decides it, a supplier hold. Raising the cap raises the
-crest one for one.
+The passive leaf's lower bolt receiver is a cup in a hole drilled into the cap, 5/8" wide and at least
+1 3/8" deep (Endura Flip-Lever astragal instructions #211159-FL-I-FP, step 1d; owner, 2026-11-18). From the
+cap top at the hole (x 1" off the rear edge, 1.413"; 1.419" on the ZAI4565FN), the hole leaves 0.038"
+(0.044") of sill body: in the body to within the outline's ~0.1" accuracy, so it passes on the maker's
+instruction. Only a break-through past 0.1" is a conflict. Raising the cap raises the crest one for one.

@@ -23,7 +23,7 @@ engineered connection, the girt course's blocks under the study approach (§2,
 | Returns / casing | AZEK Captivate Graphite Gray, 3/4 × 48 × 96 smooth sheet; PaintPro substrate AS03448096. Field-rip the deep returns and 3-1/2 inch flat casings from two sheets | Catalog product/color selection; no exact color match to the steel or purchase/finish warranty confirmation claimed |
 | Sill | D-B-SUNKEN: Endura ZAI4565FN, 4-9/16 inch, no extender (XMN5 dropped 2026-11-01). D-S-BALCONY, D-M-PORCH, D-M-ENTRY (2026-11-17): ZAI5625FN, 5-5/8 inch on the 4-9/16 inch jamb (1-1/16 inch proud), with the resizable XXXXW extender at its full 6-3/8 inch (published for the 5-5/8 inch sill only); its nose bears on the girt sill beam | Adjustment limits, cap setting (raising the cap raises the crest one for one) and bearing contacts; both outlines are digitized; a prehung 4-9/16 inch jamb on a 5-5/8 inch sill is a supplier hold |
 | Sweep / pads | Endura DBK-R double-bulb kerfed bottom and compatible corner-pad family are catalog candidates | Therma-Tru leaf kerf fit, installed compression and selected pad variant; no substitute sweep geometry is invented |
-| Passive leaf | Ultimate Flip Lever Astragal; field instructions include the lower receiver | Receiver is drilled 5/8 inch diameter, at least 1-3/8 inch deep; delivered assembly setting and cap/screw clearances remain unconfirmed |
+| Passive leaf | Ultimate Flip Lever Astragal; field instructions include the lower receiver | Receiver is a cup in a 5/8 inch hole at least 1-3/8 inch deep in the cap (#211159-FL-I-FP step 1d), graded on the maker's instruction (`exterior_door_sill_beam.md` §6) |
 | Active leaf | PanoLock+ and Schlage BE365 | Endura explicitly lists BE365 CAM/PLY with **adapter F**; selected passage-handle adapter and exact assembly prep still need documentation |
 | Fasteners | Factory hinges and installation kit, structural screws into framing at hinge/strike locations | Actual screw gauge, length, count, hinge machining and substrate-specific anchorage; the inherited generic three-inch kit is not an approved shop schedule |
 | Pan | D-B-SUNKEN: SureSill 4-9/16 inch sloped pan, 80 inch complete pack (3/8 inch, the FAQ's worst rise). The three framed-floor doors (2026-11-18): an impermeable self-adhered membrane pan with a back dam, the sill on the subfloor, 1/16 inch | The membrane pan under the prehanger's sill is a supplier confirmation; neither is a traced installed section |
@@ -198,8 +198,8 @@ unit label, order confirmation or warranty extension was obtained.
 4. Install the pans with their end dams, the sunken door's water sheet under its pan, and the
    framed-floor pans over the buck, falling across the beam top and down its face to the drip.
 5. Set and anchor the composite frames on continuous level bearing; the draining strips and
-   XXXXW extenders; adjust the sweep, corner seals and FLA receiver without drilling through a
-   pan.
+   XXXXW extenders; adjust the sweep and corner seals. Drill the receiver to the cup's length
+   with a depth stop, caulk the hole's bottom per Endura, and keep the bit off the membrane.
 6. Lay the sunken tread on its plate and foam; extend the court planks to the north sister;
    fit PORCH's cover and ledge; keep BALCONY's 1 inch joint, ENTRY's 3/8 inch joint, the slot
    and the veneer weeps open.

@@ -8674,3 +8674,6 @@ Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
 - **ENTRY casing (owner, 2026-11-18).** W-BW-SCREEN's south end moved 1/2" north (1" off the house
   cladding), 1/4" clear of D-M-ENTRY's west casing; both casing legs stay full width. Screen
   stations dropped 1/2" with it; the deck tie's E-W row is now 0.786 (`north_entry_piers.md` §10).
+- **Receiver (owner, 2026-11-18).** The passive leaf's receiver is graded on Endura's instruction
+  (a cup in a 5/8" hole at least 1 3/8" deep in the cap): from the cap top at the hole it leaves
+  0.038" of sill body, inside the outline's 0.1" accuracy, a pass; no clearance rule, no hold.

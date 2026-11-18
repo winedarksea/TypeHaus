@@ -162,9 +162,15 @@ class ExteriorDoorCatalogInstallation(HausModel):
     reinforcement_area_in2: float = Field(default=0.2, gt=0)
     reinforcement_diameter: Length = inch(0.5)
     reinforcement_yield_psi: float = Field(default=60_000, gt=0)
+    # The passive leaf's lower bolt receiver: a cup in a hole drilled into the cap, at
+    # ``receiver_station`` from the outline's rear edge, at least ``receiver_depth`` deep.
     receiver_depth: Length = inch(1.375)
     receiver_diameter: Length = inch(0.625)
-    receiver_pan_clearance: Length = inch(0.0625)
+    receiver_station: Length = inch(1.0)
+    receiver_source: str = ("Endura Flip-Lever astragal field instructions #211159-FL-I-FP, "
+                            "step 1d (Z-adjustable cap sill): 5/8 in hole at least 1-3/8 in deep")
+    # A digitized outline's height accuracy: a hole within it of the body's underside is in.
+    outline_tolerance: Length = inch(0.1)
 
     @model_validator(mode="after")
     def valid_catalog_installation(self):
@@ -188,7 +194,8 @@ class ExteriorDoorCatalogInstallation(HausModel):
                       self.support_spacing, self.support_width, self.support_depth,
                       self.support_backspan, self.movement_horizontal, self.movement_vertical,
                       self.flashing_overlap, self.receiver_depth, self.receiver_diameter,
-                      self.receiver_pan_clearance, self.cross_bearer_width, self.cross_bearer_depth,
+                      self.receiver_station, self.outline_tolerance, self.cross_bearer_width,
+                      self.cross_bearer_depth,
                       self.minimum_drainage_clearance, self.approach_board_width,
                       self.head_cap_depth, self.head_upstand_height, self.head_end_dam_height,
                       self.head_profile_thickness, self.transition_adapter_width,
