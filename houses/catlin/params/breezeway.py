@@ -78,11 +78,11 @@ from plan.storeys.garage import GARAGE_Y_SOUTH
 FLOOR = FloorSystem(
     uid="BWFS01AAAA", tag="FS-BW-FLOOR",
     top_elevation=ft(DECK_JOIST_TOP_FT),
-    joists=JoistSpec(member="2x8", spacing=inch(12), direction="y",
+    joists=JoistSpec(member="2x8:kdat", spacing=inch(12), direction="y",
                      bearing_refs=("BM-BW-HOUSE-SEAT", "BM-BW-GARAGE-SEAT"),
                      cantilever_start=ft(HOUSE_SEAT_Y_FT - FRAME_Y0_FT),
                      cantilever_end=ft(FRAME_Y1_FT - GARAGE_SEAT_Y_FT),
-                     rim_member="2x8",  # no 1 1/4" treated rim is stocked; LUSZ is 1 9/16"
+                     rim_member="2x8:kdat",  # no 1 1/4" treated rim is stocked; LUSZ is 1 9/16"
                      rim_end_extensions=(WEST_RIM_EXTENSION, inch(0))),
     reinforcements=WEST_EDGE_PLIES,
     outline=rectangle(FIELD_WEST_X_FT, FRAME_Y0_FT, FIELD_EAST_X_FT, FRAME_Y1_FT),

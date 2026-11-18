@@ -8734,8 +8734,11 @@ Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
   member on the same joist, which is what the original "blocked strip" intent asked for without a
   joist-to-beam mechanism to SCSILL.
 - **Grade.** Uniform deck load into the joist is 41 lb on the south piece, 7 lb a nail against Z' 90
-  (10d into SP, NDS 12.3 mode IV, C_M 0.70), 19 psi of torsion (`north_entry_structure.md` §2a).
-  Bid: +3 8' 2x8, butyl tape +0.6 LF.
+  (10d into SP, NDS 12.3 mode IV, C_M 0.70), 30 psi of torsion (`north_entry_structure.md` §2a;
+  first written 19 psi, with the screen's load at the ply centroid rather than the deck edge).
+  Bid: +3 8' 2x8, butyl tape +0.6 LF. Review: the landing's joists, rims and plies are `2x8:kdat`
+  (they billed as SPF, outside the S10ACN allowance: +72 nails). The screen plate stubs past both
+  west columns bear 0.75" of 3 1/2" with their centroid off the deck edge: open, an owner item.
 
 ## The truss fields' gable edges are LSL rims too (2026-11-18, owner)
 

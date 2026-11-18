@@ -135,17 +135,25 @@ Nailing, IRC R602.3(1) built-up rows as the house allows them (`takeoff/treated_
     strip         50 x 3/12                                   = 12.5 plf
     south piece   12.5 x 5.75/12 + screen 55.6 plf x 7.5/12   = 6.0 + 34.8 = 40.8 lb   (piers §2's screen plf)
     middle piece  12.5 x 54/12                                = 56.3 lb (the screen stands on BM-BW-SCSILL)
-    torque        40.8 x 2.25" (ply-pack centroid to joist axis) = 92 lb-in
+    torque        6.0 x 2.25" (ply-pack centroid) + 34.8 x 3.75" (the plate's load at the deck edge:
+                  its centroid stands 1" outboard of its 0.75" bearing)  = 13.5 + 130.5 = 144 lb-in
 
-    10d into SP, NDS 12.3: D 0.148, F_yb 90 ksi, F_e 16,600 x 0.55^1.84 = 5,530 psi, l_s = p = 1.5", R_d 2.2
+    10d into SP (the landing is KDAT SYP No.2, G 0.55), NDS 12.3: D 0.148, F_yb 90 ksi, F_e 16,600 x 0.55^1.84 = 5,530 psi, l_s = p = 1.5", R_d 2.2
       Im = Is 558 · II 231 · IIIm = IIIs 200.5 · IV 0.021904/2.2 x sqrt(2 x 5,530 x 90,000 / 6) = 128.2 lb
       Z' = 128.2 x C_M 0.70 = 89.7 lb a nail
     south piece, 6 nails a ply into the joist: 40.8 / 6 = 6.8 lb  -> 0.08
-    joist torsion: 92 / (0.29 x 1.5^2 x 7.25) = 19 psi vs F_v' 131 psi (No.2 SPF wet, the §2 lower bound) -> 0.15
+    joist torsion: 144 / (0.29 x 1.5^2 x 7.25) = 30 psi vs F_v' 135 x C_M 0.97 = 131 psi (No.2 SPF wet,
+                   a lower bound on SYP's 175) -> 0.23
 
 A 300 lb point on the corner board end (not an R507 framing load; the sill notes' convention) puts 341 lb on the
-south piece: 57 lb a nail (0.63). Its 767 lb-in would be 162 psi of torsion on the joist alone, which the end-nailed
-rim and the screwed boards share; not graded. The screen plate bears 0.75" of its 3 1/2" on the outer ply: 8 psi.
+south piece: 57 lb a nail (0.63). Its 819 lb-in (300 x 2.25 + 144) would be 173 psi of torsion on the joist alone,
+which the end-nailed rim and the screwed boards share; not graded.
+
+**Open (owner): the screen plate south of `PT-BW-CW` overhangs its bearing.** `plate-bottom-0` (x 72 5/8"..76 1/8",
+y 439 3/4"..447 1/4") bears 0.75" of its 3 1/2" on the outer ply and the rim end (34.8 / (0.75 x 7.25) = 6.4 psi);
+the other 2 3/4" stand west of the deck edge over nothing, so the wall's line lands 1" outboard of its bearing and
+the stub is held by its sheathing and the column, not by bearing. North of `PT-BW-CNW` (`plate-bottom-2`) is the
+same. Between the columns `BM-BW-SCSILL` carries the plate's centre.
 
 ## 3. The tiers — one stepped pour on a compacted base
 

@@ -61,7 +61,8 @@ Left run by symmetry: node 97 gives [86.26, 97.0].
 
 Chase in PLAN: this member's `p0` is x = 1.75" (behind the 1 1/4" rim, 1/2" off the sheathing),
 so **chase centre x = 109.25"** (9'-1 1/4"), R1 x [101.25, 117.25], posts x [98.75, 100.25] and
-[118.25, 119.75]. The 21 full trusses (joists and the FO-S-ERV-CHASE trimmers) all share it.
+[118.25, 119.75]. The 20 full trusses (18 joists and FO-S-STAIR's two trimmers; the y=0 line is an LSL rim since
+2026-11-18) all share it.
 
 ## 2. A stair-clipped truss (FS-S-WEST, 120.75" = 10'-0 3/4")
 

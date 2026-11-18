@@ -5,7 +5,8 @@ board ends overhung the westmost joist by 3". A 2-ply 2x8 nailed to that joist's
 top flush with the framing, fills the strip in three pieces cut 1/8" off the column faces (the
 middle piece clears BM-BW-SCSILL's LUS28Z flanges). Both rims run 3 3/4" west onto the ply
 ends, end nailed as at a joist, so the corners carry the board ends too. The south piece also
-carries W-BW-SCREEN's plate east of the column (`notes/north_entry_structure.md` §2a).
+takes the east 3/4" of W-BW-SCREEN's plate south of PT-BW-CW; the rest of that stub overhangs
+the deck edge, an open owner item (`notes/north_entry_structure.md` §2a).
 """
 
 from typehaus import JoistReinforcement, ft, inch, pt

@@ -18,7 +18,7 @@ bounce, not 60 psf: the 12" o.c. / 60 psf order had no published row.
   slit at 428-432 is avoided). Webs: TRIFORCE publishes one 7 1/4" round
   opening (`TRIFORCE_OJ_WEB_OPENINGS`); the 24" Warren pitch, symmetric about mid-span, is assumed
   until the shop drawing (`notes/open_web_truss_geometry.md` §4).
-- Count: (396 - 156)/16 + 1 = 16, plus 3 = **19**, plus two sisters: 332 at 328.5" and 316 at 319.5" (section 3a).
+- Count: (396 - 156)/16 + 1 = 16, plus 408 and 420 = **18** (432 is the rim), plus two sisters: 332 at 328.5" and 316 at 319.5" (section 3a).
 - Truss ends x = 215 1/4" .. 430 1/4": **17'-11"**, the same blank as `FS-S-WEST`.
   - West: 3 1/2" onto the x=18' 2x6 double top plate (studs 213 1/4"..218 3/4"); the TJIs
     west of it take the other 2". 3 1/2" + 2" = 5 1/2", the plate exactly.

@@ -4,7 +4,7 @@
 **Trade:** Framing  
 **Engine:** 0.1.2  
 **Model hash:** 7a55afcc0bb47a12  
-**Lines:** 259
+**Lines:** 260
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
 
@@ -98,8 +98,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x6 Laminated strand lumber, 104 5/8" PET (2x6:lsl) | 133 | pc | corner stud, king stud, stud | 1159.6 LF | building |
 | 2x6 Red oak 8/4, custom-milled S4S to 1 1/2", 8' (2x6:oak-8q) | 4 | pc | blocking | 32 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6:spf) | 10 | pc | blocking | 80 LF | building |
-| 2x8 SPF No. 2 & Btr framing lumber, 8' (2x8) | 37 | pc | joist, landing framing, plate, rim board, sister joist | 296 LF | building |
+| 2x8 SPF No. 2 & Btr framing lumber, 8' (2x8) | 29 | pc | landing framing, plate | 232 LF | building |
 | 2x8 SPF No. 2 & Btr framing lumber, 16' (2x8) | 3 | pc | plate | 48 LF | building |
+| 2x8 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (2x8:kdat) | 8 | pc | joist, rim board, sister joist | 64 LF | building |
 | 2x8 SPF No. 2 & Btr framing lumber, 8' (2x8:spf) | 39 | pc | blocking | 312 LF | building |
 | 2x12 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (3-2x12:kdat) | 6 | pc | joist (3-ply) | 120 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (3-2x4:kdat) | 135 | pc | truss girt block (3-ply) | 1080 LF | building |
@@ -209,7 +210,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | PROD-SCHLUTER-SCHIENE — aluminium, height to the tile (PROD-SCHLUTER-SCHIENE:doorway transition / hardware) | 3 | ea |  | second |
 | RSRS-01 roof sheathing ring-shank nail, 0.113in x 2-3/8in, full round head (RSRS-01 0.113x2.375:sheathing nails) | 3,138 | ea |  | building |
 | S-5-N Mini nail-strip seam clamp (S-5-N Mini:modeled connector) | 21 | ea |  | building |
-| 10d common ring-shank nail, 0.148in x 3in, Type 304 (S10ACN:treated framing nails (allowance)) | 764 | ea |  | building |
+| 10d common ring-shank nail, 0.148in x 3in, Type 304 (S10ACN:treated framing nails (allowance)) | 836 | ea |  | building |
 | 8d common ring-shank nail, 0.131in x 2.5in, Type 304 (S8ACN:sheathing nails) | 72 | ea |  | building |
 | HDG steel U-saddle on a 4 1/2 in (3-ply 2x) joist line, two 5/8 in through-bolts (SADDLE-4.5-2x58-HDG:suspension anchor) | 4 | ea |  | basement |
 | Strong-Drive SD connector screw, #9 x 1-1/2in (SD9112:connector fasteners) | 1,332 | ea |  | building |
@@ -424,6 +425,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6:spf) | — |
 | 2x8 SPF No. 2 & Btr framing lumber, 8' (2x8) | — |
 | 2x8 SPF No. 2 & Btr framing lumber, 16' (2x8) | — |
+| 2x8 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (2x8:kdat) | — |
 | 2x8 SPF No. 2 & Btr framing lumber, 8' (2x8:spf) | — |
 | 2x12 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (3-2x12:kdat) | — |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (3-2x4:kdat) | — |
