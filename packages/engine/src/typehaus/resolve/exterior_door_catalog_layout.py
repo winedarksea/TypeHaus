@@ -115,7 +115,7 @@ def catalog_installation_layout(model, wall, opening, assembly, clad):
     # On a foam bed the water sheet lies directly under the tread.
     apron_back = (
         base if bridge else
-        approach_back - thickness - membrane if foam_bed else
+        approach_back - thickness - spec.bearing_plate_thickness.meters - membrane if foam_bed else
         approach_front
         - thickness
         - spec.cross_bearer_depth.meters

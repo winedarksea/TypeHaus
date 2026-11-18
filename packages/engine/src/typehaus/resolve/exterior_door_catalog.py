@@ -34,6 +34,9 @@ def add_catalog_installation(model, wall, opening, assembly, clad):
                    else cantilever_support_report(spec, layout.projection, layout.spacing))
     if not any(item.tag == spec.support_ref for item in (*model.walls, *model.floors)):
         conflicts.append(f"approach support reference {spec.support_ref} does not resolve")
+    if support["member_status"] == "UNKNOWN":
+        unknown.append("foam-bed tread: a profiled underside with no bearing plate or "
+                       "authored contact area leaves its bearing on the foam ungraded")
     if support["member_status"] == "FAIL":
         conflicts.append("catalog approach support member exceeds strength or deflection limit")
     # A girt bridge's connection reports its own findings (resolve/girt_sill_connection.py).
@@ -51,10 +54,17 @@ def add_catalog_installation(model, wall, opening, assembly, clad):
     if (not foam_bed and not bridge
             and layout.approach_front - layout.thickness <= layout.pan_front + layout.membrane):
         conflicts.append("catalog approach blocks the membrane drainage path")
-    if layout.crest - spec.receiver_depth.meters < layout.seat + spec.receiver_pan_clearance.meters:
+    # The drill's bottom over the pan, at the outline's cap. Short of the pan but inside the
+    # clearance, the unconfirmed factory cap setting decides it: a supplier hold.
+    receiver_margin = layout.crest - spec.receiver_depth.meters - layout.seat
+    if receiver_margin < 0:
         conflicts.append(
             "FLA receiver drilling reaches the pan; coordinate cap setting or receiver"
         )
+    elif receiver_margin < spec.receiver_pan_clearance.meters:
+        unknown.append(f"FLA receiver drilling stops {receiver_margin / _IN:.3f}\" over the pan, "
+                       "inside its clearance: the cap's factory setting and the receiver are a "
+                       "supplier hold")
     report = _installation_report(assembly, placement, spec, layout, support)
     if layout.landing_gap is not None and layout.landing_gap <= spec.movement_horizontal.meters:
         conflicts.append("house/deck movement closes the approach gap")
@@ -78,7 +88,7 @@ def add_catalog_installation(model, wall, opening, assembly, clad):
             # A foam-bed sheet is shingled under the pan, so no apron bond is claimed.
             "SureSill installed section and pan-to-sill sealant remain unconfirmed"
             if foam_bed else
-            "SureSill installed section, compatible apron bond and pan-to-sill sealant "
+            "the pan's installed section, compatible apron bond and pan-to-sill sealant "
             "remain unconfirmed",
         )
     )

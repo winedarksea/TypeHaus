@@ -23,6 +23,8 @@ _LANDING_REACH = 18 * _IN
 #: The share of the approach's width a landing member must run under; past its ends the
 #: landing's own decking (which oversails its end joists) carries the rest.
 _MIN_COVER = 0.75
+#: A pan wrapped down a sill beam's face ends in a short drip, clear of a cover seat below.
+_DRIP_LEG = 0.5 * _IN
 
 
 @dataclass(frozen=True)
@@ -32,6 +34,7 @@ class BridgeSupport:
     girt_inner: float | None = None
     girt_face: float | None = None
     girt_bottom: float | None = None
+    girt_top: float | None = None
     buck_top: float | None = None
     member: str | None = None
     member_inner: float | None = None
@@ -39,6 +42,7 @@ class BridgeSupport:
     member_top: float | None = None
     member_cover: float | None = None
     deck_edge: float | None = None
+    deck_top: float | None = None
     conflicts: tuple[str, ...] = ()
 
 
@@ -60,7 +64,7 @@ def bridge_support(model, wall, opening, placement, base, half_width):
     if girt is not None:
         depth, across = _across_faces(girt, local)
         support.update(girt_key=girt.child_key, girt_inner=depth - across,
-                       girt_face=depth + across, girt_bottom=girt.z0_m)
+                       girt_face=depth + across, girt_bottom=girt.z0_m, girt_top=girt.z1_m)
     elif bearing.girt_course:
         conflicts.append("no girt sill course under the approach")
     buck = _covering(wall.members, local, ("buck-sill-",), -half_width, half_width)
@@ -97,6 +101,7 @@ def bridge_support(model, wall, opening, placement, base, half_width):
               for p in getattr(line, "coords", ())]
     if depths:
         support["deck_edge"] = min(depths)
+    support["deck_top"] = floor.deck_z1_m
     return BridgeSupport(**support, conflicts=tuple(conflicts))
 
 
@@ -157,18 +162,24 @@ def slip_pad_bearing(support, bearing, plate_bottom, deck_top, lo=None):
 
 
 def add_bridge_sections(builder: DoorSectionBuilder, spec, installation, layout, support,
-                        pan_outlet):
-    """Pan level over the buck to its drip past the cladding; draining strips on it out to
-    the girt face carry the sill's overhang and the extender."""
+                        pan_outlet, fall=0.0):
+    """Pan over the buck to its drip; draining strips on it out to the girt course's face
+    carry the sill's overhang and the extender. A sill beam standing proud of the cladding
+    takes the pan over its top, falling ``fall`` across it, and down its face to a drip."""
     membrane = layout.membrane
     face = support.sheathing
-    builder.section("impermeable-pan-apron", ((face, layout.base), (pan_outlet, layout.base),
-                                              (pan_outlet, layout.base + membrane),
+    wrap = support.girt_face is not None and pan_outlet <= support.girt_face + _TOL
+    back = support.girt_inner if wrap else pan_outlet
+    builder.section("impermeable-pan-apron", ((face, layout.base), (back, layout.base),
+                                              (pan_outlet, layout.base - fall),
+                                              (pan_outlet, layout.base - fall + membrane),
+                                              (back, layout.base + membrane),
                                               (face, layout.base + membrane)),
                     spec.pan_material_ref, "membrane")
+    drip = _DRIP_LEG if wrap else 3 * _IN
     builder.rectangle("pan-outlet-drop", pan_outlet, pan_outlet + membrane,
-                      layout.base - 3 * _IN, layout.base + membrane, spec.pan_material_ref,
-                      "membrane")
+                      layout.base - fall - drip, layout.base - fall + membrane,
+                      spec.pan_material_ref, "membrane")
     reach = support.girt_face if support.girt_face is not None else face
     if reach - face <= _TOL:
         return 0
@@ -213,6 +224,8 @@ def _across_faces(member, local):
 
 def bridge_installation(model, wall, opening, placement, layout, clad):
     """A catalog ``girt_bridge`` door: ``(support report, sections, conflicts, unknown)``."""
+    from typehaus.resolve.exterior_door_cover import add_cover
+
     installation = placement.specification
     spec = installation.catalog_installation
     bearing = installation.approach_bearing
@@ -220,35 +233,63 @@ def bridge_installation(model, wall, opening, placement, layout, clad):
     conflicts = list(support.conflicts)
     builder = DoorSectionBuilder(placement.outward_sign, layout.width)
     pan_outlet = placement.outward_sign * clad + installation.drainage_gap.meters
-    strips = add_bridge_sections(builder, spec, installation, layout, support, pan_outlet)
-    if bearing.landing != "gap":
-        conflicts.append("a catalog extender stops short of its landing: use landing='gap'")
-    conflicts.extend(gap_landing_conflicts(support, bearing, layout.end,
+    fall = 0.0
+    # A sill beam proud of the cladding: the pan wraps its face, falling across its top.
+    if support.girt_face is not None and support.girt_face > placement.outward_sign * clad:
+        pan_outlet = support.girt_face
+        sill = _sill_course_spec(model, wall)
+        if sill is not None:
+            fall = ((support.girt_face - support.girt_inner)
+                    * sill.course_fall_per_ft.meters / 0.3048)
+    strips = add_bridge_sections(builder, spec, installation, layout, support, pan_outlet, fall)
+    if bearing.landing == "slip_pad":
+        conflicts.append("a catalog extender stops short of its landing: use a gap or a cover")
+    house_face = max(layout.end, support.girt_face if support.girt_face is not None
+                     else layout.end)
+    conflicts.extend(gap_landing_conflicts(support, bearing, house_face,
                                            spec.movement_horizontal.meters))
     overhang = None
     if support.girt_face is not None:
         overhang = layout.end - support.girt_face
-        if overhang < -_TOL:
+        if layout.end < support.girt_inner - _TOL:
             conflicts.append("the extender stops short of the girt sill course")
-        if pan_outlet > layout.end + _TOL:
+        if pan_outlet > layout.end + _TOL and pan_outlet > support.girt_face + _TOL:
             conflicts.append("the pan's drip stands past the extender's nose")
-    gap = (min(support.deck_edge, support.member_inner) - layout.end
+    gap = (min(support.deck_edge, support.member_inner) - house_face
            if support.deck_edge is not None and support.member_inner is not None else None)
     connection, unknown, connection_conflicts = girt_course_connection(
         model, wall, opening, placement, support)
     conflicts.extend(connection_conflicts)
-    unknown += [f"{spec.sill_extender_ref}: its support under the nose past the girt course"
-               + (f" ({overhang / _IN:.2f}\")" if overhang is not None else "")
-               + " and the prehung assembly on this sill are supplier holds"]
+    if overhang is not None and overhang > _TOL:
+        unknown.append(f"{spec.sill_extender_ref}: its nose runs {overhang / _IN:.2f}\" past "
+                       "the girt sill course; its support there is a supplier hold")
+    unknown.append(f"{spec.sill_extender_ref}: the prehung assembly on this sill is a "
+                   "supplier hold")
+    cover = {}
+    if bearing.landing == "cover":
+        cover, cover_conflicts, cover_unknown = add_cover(
+            model, builder, bearing, support, house_face, layout,
+            spec.movement_horizontal.meters)
+        conflicts.extend(cover_conflicts)
+        unknown.extend(cover_unknown)
     report = dict(
-        member_status="NOT_APPLICABLE", **connection, kind="girt_bridge",
-        girt_face_in=_inch(support.girt_face),
+        member_status=connection.pop("member_status", "NOT_APPLICABLE"), **connection,
+        kind="girt_bridge", girt_face_in=_inch(support.girt_face),
         buck_top_z_m=support.buck_top, extender_overhang_in=_inch(overhang),
-        landing_member=support.member, landing_member_cover=support.member_cover,
+        landing=bearing.landing, landing_member=support.member,
+        landing_member_cover=support.member_cover,
         landing_member_inner_in=_inch(support.member_inner),
         landing_deck_edge_in=_inch(support.deck_edge), nose_gap_in=_inch(gap),
-        pan_outlet_in=pan_outlet / _IN, bearing_strips=strips)
+        pan_outlet_in=pan_outlet / _IN, pan_fall_in=fall / _IN, bearing_strips=strips,
+        **cover)
     return report, tuple(builder.sections), conflicts, unknown
+
+
+def _sill_course_spec(model, wall):
+    from typehaus.resolve.framing.truss_girts import truss_girt_bands
+
+    bands = truss_girt_bands(model.plan, wall.assembly)
+    return bands[1].framing.sill_course if bands and bands[1].framing else None
 
 
 def _inch(value):

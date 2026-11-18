@@ -90,7 +90,7 @@ def _joint_drain(model, wall, opening, spec, layout, builder, conflicts, report)
         conflicts.append("the drain slot does not open onto the isolation joint")
     # From the bed course's underside, which the slot drops onto, to the joint's foot, and
     # along the reveal short of any isolation board already filling the joint lower down.
-    top = layout.pan_front - spec.foam_course_depth.meters
+    top = layout.pan_front + spec.bearing_plate_thickness.meters - spec.foam_course_depth.meters
     lo, hi = _clear_span(model, to_local, sign, (x0, x1), (joint_wall.z0_m, top),
                          layout.width / 2)
     builder.rectangle("joint-drain", x0, x1, joint_wall.z0_m, top,

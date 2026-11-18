@@ -16,7 +16,7 @@ def girt_course_screw_shares(length_in, screws_in, diameter_in, modulus_psi, ine
     """``(worst screw lb, load station in, screw station in)`` for a point load anywhere.
 
     A free-ended Euler-Bernoulli course on one vertical spring per screw
-    (``notes/exterior_door_structural_mount.md``, "Girt sill course connection"). ``None``
+    (``notes/exterior_door_sill_beam.md`` §3). ``None``
     when fewer than two distinct screw stations leave the course unstable.
     """
     stations = sorted({round(x, 6) for x in screws_in})
@@ -72,20 +72,94 @@ def girt_course_connection_report(length_in, screws_in, diameter_in, modulus_psi
                 girt_course_load_at_in=load_at, girt_course_worst_screw_at_in=screw_at)
 
 
+def sill_beam_report(span_in, width_in, depth_in, modulus_psi, bending_psi, shear_psi,
+                     load_lb, deflection_limit_in):
+    """A sill beam simply supported between its seats' screw-group centroids, the point at
+    midspan for bending and deflection and at a seat for shear
+    (``notes/exterior_door_sill_beam.md`` §2)."""
+    moment = load_lb * span_in / 4
+    bending = moment / (width_in * depth_in**2 / 6) / bending_psi
+    shear = 1.5 * load_lb / (width_in * depth_in) / shear_psi
+    deflection = load_lb * span_in**3 / (48 * modulus_psi * width_in * depth_in**3 / 12)
+    ok = max(bending, shear) <= 1 and deflection <= deflection_limit_in
+    return dict(sill_beam_span_in=span_in, sill_beam_moment_lb_in=moment,
+                sill_beam_bending_dcr=bending, sill_beam_shear_dcr=shear,
+                sill_beam_deflection_in=deflection,
+                sill_beam_deflection_limit_in=deflection_limit_in,
+                member_status="PASS" if ok else "FAIL")
+
+
+def screw_spacing_failures(screws, members, spacing):
+    """Every published-minimum miss of a screw layout, as messages; empty is a pass.
+
+    ``screws``: ``(station, z, row)`` inches. ``members``: ``(name, s0, s1, z0, z1, loaded)``
+    inches, ``loaded`` the edge the screw bears toward in that member (``"top"``/``"bottom"``);
+    a member counts for a screw whose station it spans. ``spacing`` is a
+    ``hardware.catalog.FastenerSpacing``. Grain runs along the station axis.
+    """
+    tol = 1e-6
+    out = []
+    for station, z, row in screws:
+        for name, s0, s1, z0, z1, loaded in members:
+            if not s0 - tol <= station <= s1 + tol:
+                continue
+            end = min(station - s0, s1 - station)
+            if end < spacing.end_distance - tol:
+                out.append(f"row {row} at {station:.3f} in: end distance {end:.3f} in in the "
+                           f"{name} < {spacing.end_distance:g} in")
+            top, bottom = z1 - z, z - z0
+            to_loaded, to_free = (top, bottom) if loaded == "top" else (bottom, top)
+            if to_loaded < spacing.loaded_edge - tol:
+                out.append(f"row {row} at {station:.3f} in: loaded edge {to_loaded:.3f} in in "
+                           f"the {name} < {spacing.loaded_edge:g} in")
+            if to_free < spacing.unloaded_edge - tol:
+                out.append(f"row {row} at {station:.3f} in: unloaded edge {to_free:.3f} in in "
+                           f"the {name} < {spacing.unloaded_edge:g} in")
+    rows = {}
+    for station, z, row in screws:
+        rows.setdefault(row, []).append((station, z))
+    for row, items in rows.items():
+        stations = sorted(s for s, _ in items)
+        for a, b in zip(stations, stations[1:], strict=False):
+            if b - a < spacing.in_row_spacing - tol:
+                out.append(f"row {row}: in-row spacing {b - a:.3f} in < "
+                           f"{spacing.in_row_spacing:g} in")
+    heights = sorted({round(z, 6) for _, z, _ in screws})
+    for a, b in zip(heights, heights[1:], strict=False):
+        if b - a < spacing.row_spacing - tol:
+            out.append(f"row spacing {b - a:.3f} in < {spacing.row_spacing:g} in")
+    return out
+
+
 def foam_bed_support_report(specification):
     """A tread laid continuously on rated foam, not fastened to anything.
 
-    The concentrated load spreads over a square of the tread's own width; the uniform
-    live + dead load is added on top. Allowable is the foam's rated psi over the creep
-    divisor. There is no root connection and no bar to develop, so neither is UNKNOWN.
+    The concentrated load spreads over a square of the tread's own width — through a bearing
+    plate where one is authored, else through the board's own underside, which a profiled
+    board only earns with an authored contact area (UNKNOWN without one). The uniform live +
+    dead load is added on top. Allowable is the foam's rated psi over the creep divisor.
+    There is no root connection and no bar to develop, so neither is UNKNOWN.
     """
     width = specification.approach_board_width.meters / 0.0254
-    area = width * width
+    contact = specification.approach_contact_area_in2
+    if specification.bearing_plate_material_ref is not None:
+        area, basis = width * width, "bearing plate over the full footprint"
+    elif contact is not None:
+        area, basis = min(contact, width * width), "authored contact area"
+    elif specification.approach_profiled_underside:
+        return dict(spread_area_in2=None, bearing_psi=None, bearing_dcr=None,
+                    spread_basis="profiled underside, no plate or contact area",
+                    connection_demand_lb=0.0, connection_capacity_lb=None,
+                    connection_source=None, connection_dcr=None,
+                    member_status="UNKNOWN", connection_status="NOT_APPLICABLE")
+    else:
+        area, basis = width * width, "flat underside over the full footprint"
     uniform = (specification.live_load_psf + specification.dead_load_psf) / 144
     bearing = specification.concentrated_load_lb / area + uniform
     allowable = specification.foam_rated_psi / specification.foam_creep_divisor
     return dict(
         spread_area_in2=area,
+        spread_basis=basis,
         uniform_psi=uniform,
         bearing_psi=bearing,
         allowable_psi=allowable,

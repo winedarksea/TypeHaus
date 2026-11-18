@@ -39,8 +39,23 @@ def _add_foam_bed_tread(builder, spec, layout):
         span=layout.width,
         source_url=spec.approach_source_url,
     )
-    # The host foam's top course, cut down and replaced in the rated foam under the sheet.
-    bottom = layout.pan_front - spec.foam_course_depth.meters
+    plate = spec.bearing_plate_thickness.meters
+    if spec.bearing_plate_material_ref is not None:
+        builder.section(
+            "approach-bearing-plate",
+            (
+                (layout.end, layout.approach_back - layout.thickness - plate),
+                (layout.outlet, layout.approach_front - layout.thickness - plate),
+                (layout.outlet, layout.approach_front - layout.thickness),
+                (layout.end, layout.approach_back - layout.thickness),
+            ),
+            spec.bearing_plate_material_ref,
+            "rigid",
+            span=layout.width,
+        )
+    # The host foam's top course, cut down and replaced in the rated foam under the sheet;
+    # a plate takes its thickness off the course, so the course's underside holds.
+    bottom = layout.pan_front + plate - spec.foam_course_depth.meters
     builder.section(
         "foam-bed-course",
         (

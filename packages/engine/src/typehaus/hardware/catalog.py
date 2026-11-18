@@ -317,6 +317,23 @@ class AllowableLoads:
 
 
 @dataclass(frozen=True)
+class FastenerSpacing:
+    """A screw's published placement minima, inches, for load perpendicular to the grain.
+
+    ``row_spacing`` is between STAGGERED rows; ``loaded_edge`` is the edge the screw bears
+    toward in each member. ``min_embedded_thread`` is the report's own embedment floor.
+    """
+
+    end_distance: float
+    in_row_spacing: float
+    row_spacing: float
+    loaded_edge: float
+    unloaded_edge: float
+    min_embedded_thread: float
+    source: str
+
+
+@dataclass(frozen=True)
 class StructuralHardware:
     """One catalog connector/fastener: a stable tag, a role, a part number, and a source."""
 
@@ -383,6 +400,8 @@ class StructuralHardware:
     #: A pocket frame's published rough-opening WIDTH per door width, inches. Empty means the
     #: kit follows the 2W + 1" every commodity series publishes (``tables.pocket_run``).
     rough_opening_in_by_length_in: dict = field(default_factory=dict)
+    #: Published spacing, end and edge minima (``FastenerSpacing``); ``None``: unread.
+    spacing: FastenerSpacing | None = None
     #: A pocket frame's published RO height over the leaf, inches, from the FINISHED floor.
     #: ``None``: the kit publishes none and the generic door equation frames it.
     rough_opening_head_over_leaf_in: float | None = None

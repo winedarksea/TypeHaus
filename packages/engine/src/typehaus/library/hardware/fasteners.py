@@ -18,6 +18,7 @@ from typehaus.hardware.catalog import (
     ROLE_SLAB_PLATE_PIN,
     ROLE_STAIR_SPACER_SCREW,
     AllowableLoads,
+    FastenerSpacing,
     StructuralHardware,
 )
 from typehaus.library.hardware._common import _SIMPSON
@@ -101,6 +102,12 @@ FASTENMASTER_TIMBERLOK = StructuralHardware(
     model="TLOK",
     part_number_by_length_in={6.0: "TLOK06", 8.0: "TLOK08", 10.0: "TLOK10"},
     thread_length_in_by_length_in={6.0: 2.0, 8.0: 2.0, 10.0: 2.0},
+    # SPF, load perpendicular to grain (plans/exterior-door-sill-and-approach.md).
+    spacing=FastenerSpacing(
+        end_distance=2.625, in_row_spacing=2.625, row_spacing=0.75, loaded_edge=1.75,
+        unloaded_edge=1.375, min_embedded_thread=1.25,
+        source="ICC-ES ESR-1078 (reissued 2026-01) Table 5, SPF, perpendicular to grain; "
+               "1-1/4 in minimum embedded thread for its tabulated values"),
     source="FastenMaster TimberLOK, ICC-ES ESR-1078 (reissued 2026-01) Table 1A — 2 in "
            "thread at every length; coating rated for ACQ-D <= 0.40 pcf per §4.1.7 / "
            "Table 6",

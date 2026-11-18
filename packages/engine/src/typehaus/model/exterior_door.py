@@ -28,10 +28,21 @@ class ApproachBearing(HausModel):
     House end: the threshold, and past the sheathing draining strips on the truss wall's
     buck sill over its girt sill course (``girt_course``). Outer end: ``landing="gap"``
     stops short of the landing by an open movement gap, the landing's plank ends on its own
-    member; ``"slip_pad"`` rests on the landing deck over its nearest member on a pad.
+    member; ``"slip_pad"`` rests on the landing deck over its nearest member on a pad;
+    ``"cover"`` bridges the open gap with a removable cover fixed on the landing member's
+    inner part and sliding on a ``cover_seat`` ledge on the sill beam's face, below its drip.
     """
     landing_ref: str = Field(min_length=1)
-    landing: Literal["gap", "slip_pad"] = "gap"
+    landing: Literal["gap", "slip_pad", "cover"] = "gap"
+    cover_material_ref: str | None = None
+    cover_seat_material_ref: str = "kdat"
+    cover_seat: Length = inch(1.5)
+    cover_seat_thickness: Length = inch(0.75)
+    cover_min_bearing: Length = inch(0.5)
+    # Added to the catalog's movement allowance, each way, for the cover's range.
+    cover_tolerance: Length = inch(0.25)
+    # Where the water dropping through the cover goes: an element tag that must resolve.
+    cover_discharge_ref: str | None = None
     girt_course: bool = True
     minimum_bearing: Length = inch(1)
     slip_pad_material_ref: str | None = None
@@ -45,6 +56,8 @@ class ApproachBearing(HausModel):
     def slip_pad_named(self):
         if self.landing == "slip_pad" and not self.slip_pad_material_ref:
             raise ValueError("a slip-pad landing names its pad material")
+        if self.landing == "cover" and not (self.cover_material_ref and self.cover_discharge_ref):
+            raise ValueError("a cover landing names its cover material and discharge")
         return self
 
 
@@ -105,6 +118,13 @@ class ExteriorDoorCatalogInstallation(HausModel):
     support_backspan: Length = inch(24)
     support_material_ref: str = "kdat"
     foam_rated_psi: float | None = Field(default=None, gt=0)
+    # foam_bed: a flat plate under the tread spreads its load over the full footprint; the
+    # foam course thins by its thickness. Without one, a profiled underside needs an authored
+    # contact area or its bearing is UNKNOWN.
+    bearing_plate_material_ref: str | None = None
+    bearing_plate_thickness: Length = inch(0)
+    approach_profiled_underside: bool = False
+    approach_contact_area_in2: float | None = Field(default=None, gt=0)
     foam_creep_divisor: float = Field(default=3.0, gt=1)
     foam_course_depth: Length = inch(1)
     # The water layer under the approach; the pan's own membrane when not stated.
@@ -178,6 +198,8 @@ class ExteriorDoorCatalogInstallation(HausModel):
             raise ValueError("catalog installation dimensions must be positive")
         if self.support_connection_capacity_lb is not None and not self.support_connection_source:
             raise ValueError("a connection capacity requires published/design evidence")
+        if (self.bearing_plate_material_ref is None) != (self.bearing_plate_thickness.meters <= 0):
+            raise ValueError("a bearing plate names its material and a positive thickness")
         if self.support_kind == "foam_bed" and self.foam_rated_psi is None:
             raise ValueError("a foam-bed approach needs the foam's rated compressive psi")
         drain = (self.joint_drain_wall_ref, self.joint_drain_material_ref,
