@@ -11639,12 +11639,6 @@
 8,
 "be15a1710151"
 ],
-"geometry/CAF602AAAA::framing/member:bearing-block-1-035": [
-5.794375,
-6.096,
-8,
-"be15a1710151"
-],
 "geometry/CAF602AAAA::framing/member:edge-rim-0-000-0": [
 5.794375,
 6.096,
@@ -31811,19 +31805,7 @@
 2,
 "6dc455ea4c5e"
 ],
-"geometry/CMFS04AAAA::framing/member:bearing-block-0-006": [
--0.301625,
-0.0,
-8,
-"80db91a70531"
-],
 "geometry/CMFS04AAAA::framing/member:bearing-block-1-000": [
--0.301625,
-0.0,
-8,
-"80db91a70531"
-],
-"geometry/CMFS04AAAA::framing/member:bearing-block-1-006": [
 -0.301625,
 0.0,
 8,
@@ -82593,12 +82575,6 @@
 2,
 "ee0eeebd4433"
 ],
-"member/CAF602AAAA/bearing-block-1-035": [
-5.794375,
-6.096,
-2,
-"ee0eeebd4433"
-],
 "member/CAF602AAAA/edge-rim-0-000-0": [
 5.794375,
 6.096,
@@ -92697,19 +92673,7 @@
 2,
 "07a4d7ea6917"
 ],
-"member/CMFS04AAAA/bearing-block-0-006": [
--0.301625,
-0.0,
-2,
-"07a4d7ea6917"
-],
 "member/CMFS04AAAA/bearing-block-1-000": [
--0.301625,
-0.0,
-2,
-"07a4d7ea6917"
-],
-"member/CMFS04AAAA/bearing-block-1-006": [
 -0.301625,
 0.0,
 2,

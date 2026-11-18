@@ -783,14 +783,15 @@ FLOOR_OPENINGS = [
     # Where the radon/vent bundle rises again after its jog: vent at x=9'-7 1/2", radon 6.2"
     # west at 9'-1.3" (side by side since 2026-10-08). The two risers straddle the y=34'-8"
     # joist, so each takes its own hole in its own bay. The radon hole runs east to the vent
-    # hole's x=9'-11" so the bath ceiling below keeps no 4" sliver between them.
+    # hole's x=9'-11" so the bath ceiling below keeps no 4" sliver between them. Its north
+    # edge is the gable's LSL edge rim's inner face (2026-11-18), which runs through.
     FloorOpening(uid="2BSGJXFM0G", tag="FO-A-VENT-STACK", purpose=FloorOpeningPurpose.CHASE,
                  outline=(pt(inch(112), inch(400)), pt(inch(119), inch(400)),
                           pt(inch(119), inch(416)), pt(inch(112), inch(416))),
                  penetration_for=("VR-M-STACK-vent",)),
     FloorOpening(uid="FHM5PC8VZA", tag="FO-A-RADON-STACK", purpose=FloorOpeningPurpose.CHASE,
                  outline=(pt(inch(105.75), inch(416)), pt(inch(119), inch(416)),
-                          pt(inch(119), inch(432)), pt(inch(105.75), inch(432))),
+                          pt(inch(119), inch(430.25)), pt(inch(105.75), inch(430.25))),
                  penetration_for=("VR-M-STACK-radon",)),
     # North edge on W-A-SN's study face, 8'-9 3/4" since the 1/2" board (2026-10-23).
     FloorOpening(uid="CAF601AAAA", tag="FO-A-STAIR",

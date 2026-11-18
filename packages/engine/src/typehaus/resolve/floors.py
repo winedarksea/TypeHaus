@@ -15,7 +15,7 @@ from typehaus.resolve.band_headers import band_header_findings
 from typehaus.resolve.blocking_parts import solid_block_profile
 from typehaus.resolve.coatings import layer_depth_m
 from typehaus.resolve.floor_bearing_refs import _bearing_axis
-from typehaus.resolve.floor_ends import floor_ends
+from typehaus.resolve.floor_ends import edge_rim_line, floor_ends
 from typehaus.resolve.floor_lines import extra_lines, move_lines
 from typehaus.resolve.floor_openings import (
     _shift,
@@ -155,6 +155,14 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey, anchors=()
     if positions and positions[-1] < perp1 - 1e-6:
         positions.append(perp1)
     findings = move_lines(system, positions, perp0, perp1)
+    # A gable end's outermost line is a stock rim board, laid flush with the framing face.
+    edge_rim = set()
+    for side in spec.edge_rims:
+        i, edge = (0, perp0) if side == "lo" else (-1, perp1)
+        if positions and abs(positions[i] - edge) < 1e-6:
+            positions[i] = edge_rim_line(model, storey.tag, edge, side == "lo", along_x,
+                                         (ends.tip_lo, ends.tip_hi), inch(1.25).meters)
+            edge_rim.add(positions[i])
     extra, extra_findings = extra_lines(system, positions, perp0, perp1)
     findings += extra_findings
     # A SuspensionAnchor's line: a regular one moved and upgraded, or one added.
@@ -171,12 +179,11 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey, anchors=()
     # at, and the remainder — 3 3/8" of deck over the top plate, where the trimmer actually
     # sits — is not a joist. Emitting it put stub members in the frame and the take-off.
     min_segment_m = _member_depth_m(spec.member)
-    # A gable end's outermost line is a stock rim board, not the field member.
-    edge_rim = {perp0 if side == "lo" else perp1 for side in spec.edge_rims}
     lines = [(f"{index:03d}", perp) for index, perp in enumerate(positions)]
     lines += [(f"x{index:02d}", perp) for index, perp in enumerate(extra)]
     lines += [(f"a{index:02d}", perp) for index, perp in enumerate(anchored)]
     for index, perp in lines:
+        rim = any(abs(perp - edge) < 1e-6 for edge in edge_rim)
         for span_index in range(len(boundaries) - 1):
             a, b = boundaries[span_index], boundaries[span_index + 1]
             # Cantilever only the two outer joist tips past the outermost bearing lines;
@@ -187,7 +194,9 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey, anchors=()
                 b = ends.tip_hi
             segments = [(a, b)]
             for frame in opening_boxes:
-                segments = frame.clip(segments, perp)
+                # An edge rim is cut only by an opening it crosses, never absorbed in a pack.
+                if not rim or frame.perp0 < perp < frame.perp1:
+                    segments = frame.clip(segments, perp)
             for segment_index, (segment_a, segment_b) in enumerate(segments):
                 if segment_b - segment_a <= min_segment_m:
                     continue
@@ -199,7 +208,7 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey, anchors=()
                 rakes = abs(lift_b - lift_a) > 1e-9
                 key, category, profile = (f"joist-{span_index}-{index}-{segment_index}",
                                           "joist", line_members.get(index, spec.member))
-                if any(abs(perp - edge) < 1e-6 for edge in edge_rim):
+                if rim:
                     key = f"{EDGE_RIM_PREFIX}{span_index}-{index}-{segment_index}"
                     category, profile = "rim", f"1.25x{depth_in:g} rim"
                 members.append(FramedMember(

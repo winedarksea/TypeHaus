@@ -11,17 +11,17 @@ from typehaus.resolve.band_headers import band_header_findings
 
 _IN = 0.0254
 #: §3: name -> (demand, capacity).
-_ROWS = {"bending": (189.9, 17849.0), "shear": (131.5, 7897.0),
-         "deflection": (0.00099, 0.1925),
-         # §5: the stacked jambs on the west seat, 1,693.64 lb (1,163.77 above FS-S-EAST).
-         "bearing, jamb pack on the wall plate above": (51.32, 425.0),
-         "bearing, wall plate on the plies": (80.65, 425.0),
-         "bearing, plies on the seat's plates": (86.91, 425.0),
-         "bearing, upper jamb pack on FS-S-EAST's edge rim": (155.17, 425.0),
+_ROWS = {"bending": (199.66, 17849.0), "shear": (138.27, 7897.0),
+         "deflection": (0.00106, 0.1925),
+         # §5: the stacked jambs on the west seat, 1,708.35 lb (1,171.13 above FS-S-EAST).
+         "bearing, jamb pack on the wall plate above": (51.77, 425.0),
+         "bearing, wall plate on the plies": (81.35, 425.0),
+         "bearing, plies on the seat's plates": (87.93, 425.0),
+         "bearing, upper jamb pack on FS-S-EAST's edge rim": (156.15, 425.0),
          # §5: the LSL edge rim's own TJ-8000 rows, under the pack and over the opening.
-         "FS-S-EAST's edge rim, concentrated vertical load": (1163.77, 3760.0),
-         "FS-S-EAST's edge rim, vertical load under the pack": (2327.54, 5400.0),
-         "edge rim over the opening, 1-ply header": (45.53, 864.0)}
+         "FS-S-EAST's edge rim, concentrated vertical load": (1171.13, 3760.0),
+         "FS-S-EAST's edge rim, vertical load under the pack": (2342.25, 5400.0),
+         "edge rim over the opening, 1-ply header": (47.88, 792.0)}
 
 
 def test_the_record_reproduces_the_note(catlin_ctx) -> None:
@@ -32,12 +32,12 @@ def test_the_record_reproduces_the_note(catlin_ctx) -> None:
         assert states[name].demand == pytest.approx(demand, rel=5e-3), name
         assert states[name].capacity == pytest.approx(capacity, rel=1e-3), name
     values = {q.name: q.value for q in record.inputs}
-    assert values["tributary"] == pytest.approx(8 / 12, abs=1e-6)
+    assert values["tributary"] == pytest.approx(8.5625 / 12, abs=1e-6)
     assert (values["seat_lo"], values["seat_hi"]) == pytest.approx((6.0, 6.0))
     # §2: D-M-PORCH's packs stand on the seats, so nothing lands in the span.
     assert values["loads_inside_span"] == 0
     assert "W-M-S2:king-0-l1" in record.notes[0]
-    assert values["seat_load"] == pytest.approx(1693.64, abs=0.5)
+    assert values["seat_load"] == pytest.approx(1708.35, abs=0.5)
     assert record.governing.name == "FS-S-EAST's edge rim, vertical load under the pack"
 
 

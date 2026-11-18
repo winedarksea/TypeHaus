@@ -15,7 +15,8 @@ record goes INCOMPLETE naming it; on a seat it bypasses the span and is listed, 
 Fb 2,600 psi at 12" x (12/d)^0.136, Fv 285 psi, E 2.0e6 psi, 100% duration (floor live) — and
 its p.5 deflection equation with the shear term, at IRC Table R301.7's L/360 live.
 
-**The seats (BASIS_VERSION 2; 3 adds edge rims):** the stacked jambs are taken down
+**The seats (BASIS_VERSION 2; 3 adds edge rims; 4 lays them flush with the framing face
+and reads the header row c-c of bearing):** the stacked jambs are taken down
 (``jamb_takedown``) and graded in bearing at every interface they cross, squash blocks found
 where they cross a TJI band; the ply fastening, the filler and an LSL edge rim's TJ-8000 rows
 are published reads (``band_header_seats``).
@@ -41,7 +42,7 @@ from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import on_joist_line
 
 KIND = "band_header"
-BASIS_VERSION = "3"
+BASIS_VERSION = "4"
 BASIS = ("AWC NDS 2018 §3.3-3.4 on Weyerhaeuser TJ-9000 (July 2026) p.5 Microllam LVL 2.0E "
          "design stresses; IRC R301.5 floor loads, Table R301.7 L/360; the stacked jambs' "
          "takedown in bearing (NDS §3.10.2); TJ-9000 p.30 ply fastening; TJ-4000 p.27 CS, "
@@ -164,7 +165,7 @@ def _one(ctx: EngineeringContext, door) -> EngineeringRecord:
     seat_ls, seat_inputs, missing, seat_notes = seat_states(
         ctx, header, wall, floor, seated, shear, along, lambda s: (x0 + ux * s, y0 + uy * s))
     connection_ls, connection_missing = connection_states(ctx, header, floor, across, w_total,
-                                                          clear_ft)
+                                                          span_ft)
     missing += connection_missing
     if missing:
         return _incomplete(door.tag, tags + (header.wall,), "; ".join(missing),

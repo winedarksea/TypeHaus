@@ -129,7 +129,7 @@
 > LVP (1.45" with 1/4"). D-B-SUNKEN's Trex tread lies on a 1/4" FRP plate over 60 psi XPS, its slot
 > draining down W-SG-BRKBM's isolation joint. D-G-SERVICE keeps its UHMW pad. Oracle:
 > `notes/exterior_door_sill_beam.md`. The band header's stacked jambs cross FS-S-EAST on its LSL edge
-> rim, TJ-8000's rows (`band_header/D-B-SUNKEN`, governing 0.431; `sunken_door_band_header.md` §5).
+> rim, TJ-8000's rows (`band_header/D-B-SUNKEN`, governing 0.434; `sunken_door_band_header.md` §5).
 
 > **Exterior door hardening, 2026-10-25:** `plan/door_types.py` owns hardware, doubled
 > jamb packs, local ccSPF and entry field finish. `notes/exterior_door_hardening.md`

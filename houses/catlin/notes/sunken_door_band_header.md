@@ -23,11 +23,11 @@ It is NOT a bearing ref: `resolve/floors.py` would cut every joist at that line.
 | Clear span | the RO | 63.3125" = 5.276 ft |
 | Seats | 4 x 1 1/2" pack each end | 6" each |
 | Design span L | 63.3125 + 6/2 + 6/2 = 69.3125" | **5.776 ft** |
-| Floor strip | edge line at y=0 to half-way to the y=16" line; no deck outboard | **8" = 0.6667 ft** |
+| Floor strip | the deck edge (y=0) to half-way from the edge rim's line (y=1.125", flush with the stud face at 0.5") to the y=16" line: 1.125 + 14.875/2 | **8.5625" = 0.71354 ft** |
 | Floor load | IRC R301.5, 40 live + 10 dead | 50 psf |
 | Ply weight | TJ-9000 p.4, 1 3/4" x 11 7/8": 6.1 plf, x 2 | 12.2 plf |
-| w total | 50 x 0.6667 + 12.2 | **45.53 plf** |
-| w live | 40 x 0.6667 | **26.67 plf** |
+| w total | 50 x 0.71354 + 12.2 | **47.88 plf** |
+| w live | 40 x 0.71354 | **28.54 plf** |
 
 **The jamb loads are not in the span.** `D-M-PORCH` above is the same 63 5/16" RO on the same
 centre, so its 2-jack + 2-king packs stand on these seats exactly (x 18'-2 11/32"..18'-8 11/32"
@@ -42,11 +42,11 @@ Fv 285 psi, E 2.0 x 10^6 psi. b = 2 x 1.75 = 3.5", d = 11.875".
 
 | Limit state | Demand | Capacity | d/c |
 |---|---|---|---|
-| Bending | 45.53 x 5.776² / 8 = **189.9 lb-ft** | 2600 x 1.00142 x (3.5 x 11.875² / 6 = 82.26) / 12 = **17,849 lb-ft** (p.4: 2 x 8,925 = 17,850) | 0.011 |
-| Shear | 45.53 x 5.776 / 2 = **131.5 lb** | 2/3 x 285 x 3.5 x 11.875 = **7,897 lb** (p.4: 2 x 3,950) | **0.017** |
-| Deflection, live | 270 x 26.67 x 5.776⁴ / (2e6 x 3.5 x 11.875³) = 0.000684, + 28.8 x 26.67 x 5.776² / (2e6 x 3.5 x 11.875) = 0.000308: **0.00099"** | L/360 = 69.3125 / 360 = **0.1925"** | 0.005 |
+| Bending | 47.88 x 5.776² / 8 = **199.66 lb-ft** | 2600 x 1.00142 x (3.5 x 11.875² / 6 = 82.26) / 12 = **17,849 lb-ft** (p.4: 2 x 8,925 = 17,850) | 0.011 |
+| Shear | 47.88 x 5.776 / 2 = **138.27 lb** | 2/3 x 285 x 3.5 x 11.875 = **7,897 lb** (p.4: 2 x 3,950) | **0.018** |
+| Deflection, live | 270 x 28.54 x 5.776⁴ / (2e6 x 3.5 x 11.875³) = 0.000732, + 28.8 x 28.54 x 5.776² / (2e6 x 3.5 x 11.875) = 0.000330: **0.00106"** | L/360 = 69.3125 / 360 = **0.1925"** | 0.006 |
 
-Governs: shear, d/c 0.017. The 2-ply is sized by the bearing it must give the stacked jambs,
+Governs: shear, d/c 0.018. The 2-ply is sized by the bearing it must give the stacked jambs,
 not by this span.
 
 ## 4. Not graded here
@@ -67,8 +67,9 @@ Wall dead load is a stated **15 psf** on the framed height at the pack's outer f
 truss wall: 1/2" gypsum 2.2, 2x6 at 16" 1.6, 1/2" CDX 1.5, 4" ccSPF at 2 pcf 0.7, blocks and
 girts 1.5, 24 ga panel 1.3, batts 0.4, trim/fasteners 0.8 = 10.0 psf, carried at 15). Glass
 in the openings is lighter and is not deducted. Floors at 40 + 10 psf over half the way to
-the next joist line (FS-S-EAST and FS-ATTIC both carry an extra line at y = 9 1/2", so their
-edge strips are **4.75" = 0.39583 ft**). The gable carries half of RF-HOUSE's 24" rafter
+the next joist line plus the deck outboard of it (FS-S-EAST and FS-ATTIC both carry an extra
+line at y = 9 1/2" and an edge rim at y = 1 1/8", so their edge strips are 1.125 + 8.375 / 2 =
+**5.3125" = 0.44271 ft**). The gable carries half of RF-HOUSE's 24" rafter
 spacing at 15 dead + 35 snow (`loads.ROOF_TOTAL_LOAD_PSF`, Pg 50 psf).
 
 West seat (the gable is tallest there; W-A-S3 frames 362.355 - 240.75 = 121.605" at x =
@@ -78,14 +79,14 @@ West seat (the gable is tallest there; W-A-S3 frames 362.355 - 240.75 = 121.605"
 |---|---|---|
 | W-A-S3 gable | 15 x (121.605 / 12) x 3.13802 | 477.00 |
 | RF-HOUSE gable strip | 50 x 1.0 x 3.13802 | 156.90 |
-| FS-ATTIC edge strip | 50 x 0.39583 x 3.13802 | 62.11 |
+| FS-ATTIC edge strip | 50 x 0.44271 x 3.13802 | 69.46 |
 | W-S-S2 | 15 x (119.25 / 12) x 3.13802 | 467.76 |
-| FS-S-EAST edge strip | 50 x 0.39583 x 3.13802 | 62.11 |
+| FS-S-EAST edge strip | 50 x 0.44271 x 3.13802 | 69.46 |
 | W-M-S2 | 15 x (119.25 / 12) x 3.13802 | 467.76 |
-| **On the seat** | | **1,693.64** |
-| of which above FS-S-EAST | the first four | 1,163.77 |
+| **On the seat** | | **1,708.35** |
+| of which above FS-S-EAST | the first four | 1,171.13 |
 
-The east seat's gable frames 83.95": 1,545.9 lb on that seat. The west governs.
+The east seat's gable frames 83.95": 1,560.6 lb on that seat. The west governs.
 
 **Bearing, NDS §3.10.2** (no C_D; C_b taken as 1.0). Sawn plates are SPF at Fc-perp
 **425 psi**, dry (TJ-9000's own bearing tables use 425 for sawn plates); Microllam is 750 psi
@@ -93,25 +94,30 @@ The east seat's gable frames 83.95": 1,545.9 lb on that seat. The west governs.
 
 | Interface | Demand | Area | Stress | Capacity | d/c |
 |---|---|---|---|---|---|
-| D-M-PORCH pack on W-M-S2's plate | 1,693.64 | 6.0 x 5.5 = 33.0 | 51.32 | 425 | 0.121 |
-| W-M-S2's plate on the two plies | 1,693.64 | 6.0 x 3.5 = 21.0 | 80.65 | 425 | 0.190 |
-| plies on W-B-S3-FR's plates | 1,693.64 + 131.5 = 1,825.14 | 21.0 | 86.91 | 425 | **0.204** |
-| D-S-BALCONY pack on FS-S-EAST's edge rim | 1,163.77 | 6.0 x 1.25 = 7.5 | 155.17 | 425 | 0.365 |
+| D-M-PORCH pack on W-M-S2's plate | 1,708.35 | 6.0 x 5.5 = 33.0 | 51.77 | 425 | 0.122 |
+| W-M-S2's plate on the two plies | 1,708.35 | 6.0 x 3.5 = 21.0 | 81.35 | 425 | 0.191 |
+| plies on W-B-S3-FR's plates | 1,708.35 + 138.27 = 1,846.62 | 21.0 | 87.93 | 425 | **0.207** |
+| D-S-BALCONY pack on FS-S-EAST's edge rim | 1,171.13 | 6.0 x 1.25 = 7.5 | 156.15 | 425 | 0.367 |
 
-131.5 lb is the band's own end reaction (§3).
+138.27 lb is the band's own end reaction (§3).
 
 **The load crosses FS-S-EAST on its LSL edge rim (2026-11-18).** The gable-end edge lines are
 1 1/4" x 11 7/8" TimberStrand LSL rim boards now, not TJI 230s, so TJ-4000 detail CS's squash
 plies (two 1 3/4" Microllam plies under each D-S-BALCONY pack, 2026-11-13) are gone: the rim is
-rated for vertical load. Read off Weyerhaeuser TJ-8000 (March 2025; ESR-1387), 1 1/4" x 11 7/8":
+rated for vertical load. Each rim lies flush with its wall's stud face (y 0.5"..1.75"), wholly
+under the plates. Read off Weyerhaeuser TJ-8000 (March 2025; ESR-1387 Table 4), 1 1/4" 1.3E x
+11 7/8":
 
 | Read | Demand | Published | d/c |
 |---|---|---|---|
-| concentrated vertical load | 1,163.77 lb | 3,760 lb | 0.310 |
-| vertical load, the pack over its 6" seat | 1,163.77 / 0.5 ft = 2,327.54 plf | 5,400 plf | **0.431** |
-| the rim over the 63 5/16" RO as a 1-ply header, uniform only | the whole strip, 45.53 plf (§2) | 864 plf (5'-6" clear, the next row past 5.276 ft) | 0.053 |
+| concentrated vertical load (p.5; needs 4 1/2" of bearing, the pack gives 6") | 1,171.13 lb | 3,760 lb | 0.311 |
+| vertical load, the pack over its 6" seat (p.5) | 1,171.13 / 0.5 ft = 2,342.25 plf | 5,400 plf | **0.434** |
+| the rim over the 63 5/16" RO as a 1-ply header, uniform only (p.6) | the whole strip, 47.88 plf (§2) | 792 plf (the 6'-0" row: p.6 reads the span c-c of bearing, 5.776 ft; 4 1/2" end bearing, 6" given) | 0.060 |
 
-**Governs: the edge rim under the pack, d/c 0.431** (it was the plies on W-B-S3-FR's plates,
+The header table assumes uniform load: D-M-PORCH's packs stand over the seats, not the span (§2),
+and no joist hangs on this rim (it runs parallel to them), so its face-mount-hanger note is moot.
+
+**Governs: the edge rim under the pack, d/c 0.434** (it was the plies on W-B-S3-FR's plates,
 0.204). The rim over the opening is a companion to the plies, not counted in them; the plies
 still carry the whole strip in §3.
 
@@ -133,7 +139,8 @@ still carry the whole strip in §3.
   for top-loaded beams).
 - Weyerhaeuser **TJ-4000** *TJI Joist Specifier's Guide*, July 2025, p.27 detail CS (squash
   blocks), p.28 (filler and backer block sizes) — history since the LSL rim.
-- Weyerhaeuser **TJ-8000** *TimberStrand LSL rim board*, March 2025, pp.2, 5-6 (vertical and
-  concentrated load, 1-ply header rows); ICC-ES **ESR-1387**.
+- Weyerhaeuser **TJ-8000** *Trus Joist Rim Board Specifier's Guide*, March 2025, p.5 (vertical
+  load transfer at bearing), p.6 (1-ply rim board headers, floor 100%); ICC-ES **ESR-1387**
+  Table 4 (the same 5,400 plf / 3,760 lb for 1 1/4" 1.3E).
 - AWC NDS 2018 §3.10.2 (compression perpendicular to grain).
 - IRC 2018 R301.5 (floor loads), Table R301.7 (L/360).

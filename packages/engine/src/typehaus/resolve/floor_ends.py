@@ -91,6 +91,28 @@ def structure_span(model: ResolvedModel, tag: str, across: int) -> tuple[float, 
     return _bearing_footprint_span(model, tag, across)
 
 
+def edge_rim_line(model: ResolvedModel, storey_tag: str, perp: float, low_side: bool,
+                  along_x: bool, extent: tuple[float, float], rim_thickness_m: float) -> float:
+    """An edge rim's axis (``JoistSpec.edge_rims``): its outboard face flush with the framing
+    face of the storey's wall standing on that edge, as an end rim's is; ``perp`` (the wall
+    datum line) where no such wall is found."""
+    across, along = (1, 0) if along_x else (0, 1)
+    faces = []
+    for wall in model.walls:
+        (a, b) = wall.axis
+        if (wall.storey != storey_tag or wall.is_foundation
+                or abs(a[across] - perp) > 0.01 or abs(b[across] - perp) > 0.01
+                or max(a[along], b[along]) <= extent[0] or min(a[along], b[along]) >= extent[1]):
+            continue
+        span = structure_span(model, wall.tag, across)
+        if span is not None:
+            faces.append(span[0] if low_side else span[1])
+    if not faces:
+        return perp
+    face = min(faces) if low_side else max(faces)
+    return face + (rim_thickness_m if low_side else -rim_thickness_m) / 2.0
+
+
 def bearing_lines(model: ResolvedModel, spec: JoistSpec, boundaries: list[float],
                   across: int) -> list[BearingLine]:
     """One :class:`BearingLine` per distinct span boundary.

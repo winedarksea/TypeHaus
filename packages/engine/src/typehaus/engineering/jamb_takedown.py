@@ -120,13 +120,17 @@ def _parallel(wall, member):
 
 
 def _edge_strip(floor, wall):
-    """Half the way from the joist line on ``wall``'s line to the next one."""
+    """Half the way from the joist line on ``wall``'s line to the next one, plus the deck
+    outboard of it (an edge rim stands inboard of the wall's datum line)."""
     lines = sorted({round(_offset(wall, m.p0), 6) for m in floor.members
                     if on_joist_line(m) and _parallel(wall, m)}, key=abs)
     if len(lines) < 2:
         return 0.0
     host = lines[0]
-    return min(abs(line - host) for line in lines[1:] if abs(line - host) > 1e-6) / 2.0
+    near = min((line - host for line in lines[1:] if abs(line - host) > 1e-6), key=abs)
+    inward = 1.0 if near > 0 else -1.0
+    outboard = max([0.0] + [(host - _offset(wall, p)) * inward for p in floor.deck_outline])
+    return abs(near) / 2.0 + outboard
 
 
 def _solid_under(floor, upper, along, seat):

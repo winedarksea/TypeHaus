@@ -7,14 +7,19 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-TJ8000 = "Weyerhaeuser TJ-8000 TimberStrand LSL rim board guide (March 2025)"
+TJ8000 = "Weyerhaeuser Trus Joist Rim Board Specifier's Guide TJ-8000 (March 2025)"
+
+
+#: p.5 note: the concentrated row needs at least this bearing width; p.6: the header's end
+#: bearing.
+MIN_BEARING_IN = 4.5
 
 
 @dataclass(frozen=True)
 class RimBoardRow:
-    """One rim section: allowable vertical load (plf, and lb concentrated) and, where the
-    guide publishes it, the 1-ply header row as ``(clear span ft, total plf)``, uniform
-    load only."""
+    """One rim section: allowable vertical load at bearing (p.5: plf, and lb concentrated,
+    neither increased for duration) and, where read, the 1-ply header row (p.6) as
+    ``(span ft c-c of bearing, total plf)``: uniform load, simple span, L/240 total."""
 
     thickness_in: float
     depth_in: float
@@ -25,10 +30,11 @@ class RimBoardRow:
 
 
 RIM_BOARDS = (
-    RimBoardRow(1.25, 11.875, 5400.0, 3760.0, ((5.0, 951.0), (5.5, 864.0)),
-                f"{TJ8000} pp.2, 5-6; ICC-ES ESR-1387, 1 1/4\" 1.3E"),
-    RimBoardRow(1.5, 11.875, 6480.0, 4520.0, (), f"{TJ8000} p.2; ICC-ES ESR-1387"),
-    RimBoardRow(1.75, 11.875, 7560.0, 7470.0, (), f"{TJ8000} p.2; ICC-ES ESR-1387"),
+    RimBoardRow(1.25, 11.875, 5400.0, 3760.0, ((5.0, 951.0), (5.5, 864.0), (6.0, 792.0)),
+                f"{TJ8000} pp.5-6; ICC-ES ESR-1387 Table 4, 1 1/4\" 1.3E"),
+    RimBoardRow(1.5, 11.875, 6480.0, 4520.0, (), f"{TJ8000} p.5, 1 1/2\" 1.3E"),
+    # TJ-8000 sells its 1 3/4" as 1.55E beam stock; a 1.3E 1 3/4" rates 4,520 lb (ESR-1387).
+    RimBoardRow(1.75, 11.875, 7560.0, 7470.0, (), f"{TJ8000} p.5, 1 3/4\" 1.55E"),
 )
 
 
@@ -37,6 +43,7 @@ def rim_board(thickness_in: float, depth_in: float) -> RimBoardRow | None:
                  and abs(r.depth_in - depth_in) < 1e-3), None)
 
 
-def header_row(row: RimBoardRow, clear_ft: float) -> tuple[float, float] | None:
-    """The first published clear span at or past ``clear_ft``: reading up is conservative."""
-    return next(((span, plf) for span, plf in row.header_plf if span >= clear_ft - 1e-9), None)
+def header_row(row: RimBoardRow, span_ft: float) -> tuple[float, float] | None:
+    """The first published span at or past ``span_ft`` (c-c of bearing, p.6 "How to Use"
+    step 2): reading up is conservative."""
+    return next(((span, plf) for span, plf in row.header_plf if span >= span_ft - 1e-9), None)

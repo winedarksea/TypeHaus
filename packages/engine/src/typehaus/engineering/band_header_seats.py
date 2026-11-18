@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from typehaus.engineering.item import LimitState, Quantity
 from typehaus.engineering.jamb_takedown import GABLE_ROOF_STRIP_FT, WALL_DEAD_PSF, seat_takedown
-from typehaus.library.rim_boards import TJ8000, header_row, rim_board
+from typehaus.library.rim_boards import MIN_BEARING_IN, TJ8000, header_row, rim_board
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import EDGE_RIM_PREFIX
 
@@ -88,8 +88,10 @@ def seat_states(ctx, header, wall, floor, seated, shear_lb, along, frame):
                       f"{_NDS}; {_TJ4000} p.27 detail CS ({', '.join(crossing.members)})")))
         if rims:
             row = _rim_row(floor_members(ctx, crossing.floor, rims[0]))
-            if row is None:
-                missing.append(f"a published vertical capacity for {crossing.floor}'s edge rim")
+            if row is None or seat_in < MIN_BEARING_IN - 1e-6:
+                missing.append(f"a published vertical capacity for {crossing.floor}'s edge rim"
+                               f" (a {seat_in:.2f}\" pack; {TJ8000} p.5 wants "
+                               f"{MIN_BEARING_IN:g}\" of bearing)")
                 continue
             states += [
                 LimitState(name=f"{crossing.floor}'s edge rim, concentrated vertical load",
@@ -108,7 +110,7 @@ def seat_states(ctx, header, wall, floor, seated, shear_lb, along, frame):
     return states, inputs, missing, notes
 
 
-def connection_states(ctx, header, floor, across, w_total_plf, clear_ft):
+def connection_states(ctx, header, floor, across, w_total_plf, span_ft):
     """``(states, missing)``: the ply fastening and the filler (or the edge rim beside the
     plies, over the opening as a 1-ply header on the whole strip), read against the maker."""
     states, missing = [], []
@@ -135,14 +137,17 @@ def connection_states(ctx, header, floor, across, w_total_plf, clear_ft):
     rim = _edge_rim_beside(floor, header, across)
     if rim is not None:
         row = _rim_row(rim)
-        read = header_row(row, clear_ft) if row is not None else None
-        if read is None:
-            missing.append(f"a {TJ8000} header row for {rim.profile} over {clear_ft:.2f} ft")
+        seat_in = min(header.ro_lo - header.pack_lo, header.pack_hi - header.ro_hi) / _IN
+        read = header_row(row, span_ft) if row is not None else None
+        if read is None or seat_in < MIN_BEARING_IN - 1e-6:
+            missing.append(f"a {TJ8000} header row for {rim.profile} over {span_ft:.2f} ft "
+                           f"on {MIN_BEARING_IN:g}\" seats")
         else:
             states.append(LimitState(
                 name="edge rim over the opening, 1-ply header", demand=w_total_plf,
                 capacity=read[1], unit="plf",
-                citation=f"{row.source}: {read[0]:g} ft clear, uniform load only"))
+                citation=f"{row.source}: the {read[0]:g} ft row (c-c of bearing), uniform "
+                         "load only"))
     beside = _ijoist_beside(floor, header, across)
     if beside is not None:
         series = beside.profile.split("TJI")[-1].strip()
