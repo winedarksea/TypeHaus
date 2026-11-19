@@ -125,6 +125,23 @@ def test_no_edge_rim_hole_under_a_jamb_pack(catlin_model_ro) -> None:
     assert under is not None and under.result.value == "fail"
 
 
+def test_no_edge_rim_hole_over_the_opening_it_spans_as_a_header(catlin_model_ro) -> None:
+    """TJ-8000 p.4: FS-M-EAST's south rim spans D-B-SUNKEN's 63 5/16" RO as a header."""
+    from typehaus.checks.mep.routing_members import _RIM_HEADER_RULE, _rim_load_finding
+    from typehaus.resolve.rim_loads import rim_header_spans
+
+    floor = _floor(catlin_model_ro, "FS-M-EAST")
+    rim = next(m for m in floor.members if m.child_key.startswith("edge-rim-"))
+    (span,) = rim_header_spans(catlin_model_ro, floor, rim)
+    assert (span.lo_m / M_PER_IN, span.hi_m / M_PER_IN) == pytest.approx((224.344, 287.656),
+                                                                          abs=1e-3)
+    hole = 0.922 * M_PER_IN
+    assert _rim_load_finding("conduit", "T", floor, rim.child_key, 250 * M_PER_IN, hole,
+                             [span], _RIM_HEADER_RULE).result.value == "fail"
+    assert _rim_load_finding("conduit", "T", floor, rim.child_key, 221 * M_PER_IN, hole,
+                             [span], _RIM_HEADER_RULE) is None
+
+
 def test_corridors_delegates_rather_than_re_deriving(catlin_model_ro) -> None:
     """The routing side and the checks side must not be able to drift apart."""
     from typehaus.routing.corridors import crossing_window

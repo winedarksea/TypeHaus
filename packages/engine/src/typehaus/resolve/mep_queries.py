@@ -381,6 +381,7 @@ def duct_bay_occupancy(path: list[tuple[float, float]], width_m: float, depth_m:
     # round hole through an 11 7/8" I-joist web, which no chart allows — so a crossing on
     # anything but an open web still wants a soffit or a chase.
     field = [m for m in edges if not m.child_key.startswith(EDGE_RIM_PREFIX)]
+    field_lines = sorted({_station(floor, m) for m in field})
     window = member_window(floor, field[0]) if field else None
     opening_m = (window.height_m
                  if window is not None and window.kind == "open_web" else None)
@@ -413,7 +414,8 @@ def duct_bay_occupancy(path: list[tuple[float, float]], width_m: float, depth_m:
                     f"clear bay at {spacing_m / M_PER_IN:.0f}\" o.c."
                 )
         else:
-            crossed = [jl for jl in joist_lines if min(pa, pb) < jl < max(pa, pb)]
+            # An edge rim is bored, not crossed in a web: ``mep.run_member_crossing`` grades it.
+            crossed = [jl for jl in field_lines if min(pa, pb) < jl < max(pa, pb)]
             if crossed and routing not in (DuctRouting.SOFFIT, DuctRouting.CHASE):
                 if opening_m is not None and depth_m <= opening_m + 1e-9:
                     # Legal: the run passes through the truss webs, same as a

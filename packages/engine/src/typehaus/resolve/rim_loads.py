@@ -3,7 +3,12 @@
 TJ-8000 (March 2025) p.4: "Do not locate holes under concentrated loads such as trimmers or
 columns". Derived, never authored: the jamb packs (kings and jacks) of each wall standing on
 the rim, a band header's stacked seats among them, and every post standing on it. The guide
-states no distance, so each zone is the load's own bearing footprint along the rim.
+states no distance, so each zone is the load's own bearing footprint along the rim. A load
+hung off the rim's face (a hanger, a sill-beam seat) is not one of these and is not read.
+
+Its other rule, "or where rim is used as a header that clear spans more than 24"": a rim
+over a ``Door.header_in_band`` opening wider than that is a header across its rough opening;
+any other opening below frames its own header in its wall.
 """
 
 from __future__ import annotations
@@ -22,6 +27,8 @@ _POST_CATEGORIES = ("column", "post")
 _SEAT_TOL_M = 0.025
 _MIN_AREA_M2 = 1e-6
 _JOIN_M = 1e-3
+#: TJ-8000 p.4: no hole over a clear opening wider than this where the rim is a header.
+_HEADER_CLEAR_SPAN_M = 24 * 0.0254
 
 
 @dataclass(frozen=True)
@@ -90,3 +97,28 @@ def rim_point_loads(model: ResolvedModel, floor: ResolvedFloor,
         else:
             merged.append(RimLoad(lo, hi, source))
     return merged
+
+
+def rim_header_spans(model: ResolvedModel, floor: ResolvedFloor,
+                     rim: FramedMember) -> list[RimLoad]:
+    """Each rough opening wider than 24" that ``rim`` spans as a header (a band header's)."""
+    from typehaus.resolve.band_headers import BandHeader, band_header, band_header_doors
+
+    along = 0 if floor.direction == "x" else 1
+    strip = _rim_strip(floor, rim)
+    out: list[RimLoad] = []
+    for door in band_header_doors(model.plan):
+        header = band_header(model, door.tag)
+        wall = model.wall(header.wall) if isinstance(header, BandHeader) else None
+        band = _structure_polygon(wall) if wall is not None else ()
+        if (len(band) < 3 or header.floor != floor.tag
+                or header.ro_hi - header.ro_lo <= _HEADER_CLEAR_SPAN_M
+                or Polygon(band).intersection(strip).area <= _MIN_AREA_M2):
+            continue
+        (x0, y0), (x1, y1) = wall.axis
+        run = ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5 or 1.0
+        u = ((x1 - x0) / run, (y1 - y0) / run)
+        start = (x0, y0)[along]
+        lo, hi = sorted(start + s * u[along] for s in (header.ro_lo, header.ro_hi))
+        out.append(RimLoad(lo, hi, f"{door.tag}'s rough opening"))
+    return out
