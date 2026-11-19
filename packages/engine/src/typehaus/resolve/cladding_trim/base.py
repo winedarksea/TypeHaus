@@ -5,6 +5,7 @@ from __future__ import annotations
 from typehaus.library.trim.catalog import PROFILES
 from typehaus.model.cladding_trim import TrimCondition
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.cladding_trim.corner_closures import corner_end_cuts
 from typehaus.resolve.cladding_trim.runs import (
     add_horizontal_run,
     covered_below,
@@ -17,6 +18,8 @@ from typehaus.resolve.rainscreen_closures import screens_rainscreen_base
 # An opening whose bottom is within the base's upstand of the panel bottom breaks the base;
 # a door sill above that (a threshold over a skirt) leaves it unbroken beneath.
 _DOOR_REACH_M = 3 * M_PER_IN
+#: A base's end short of a corner C-Closure's return, as the BBD75 band's.
+_CLOSURE_GAP_M = M_PER_IN / 16
 
 
 def base_trim_spans(model):
@@ -26,6 +29,7 @@ def base_trim_spans(model):
     the back leg then lies on the girt plane instead of across the cavity mouth. Over a
     screened cavity base the foot is raised ``trim_rise`` off the seat, so the pan edge
     drains and the screen breathes under it; the back leg laps the screen on the EPDM.
+    A run stops at a wide outside corner (``corner_end_cuts``).
     """
     entries = list(kit_faces(model, TrimCondition.BASE))
     faces = [face for face, _ in entries]
@@ -34,6 +38,9 @@ def base_trim_spans(model):
             continue
         cuts = [(a, b) for opening, a, b in face.openings(model)
                 if face.wall.base_ref_z_m + opening.sill_m < face.z0 + _DOOR_REACH_M]
+        # Stop at a wide outside corner, which lands on the strip top: the run and its strip
+        # no longer reach into the corner trim or the adjoining wall's base.
+        cuts += corner_end_cuts(model, face, _CLOSURE_GAP_M)
         spec = _base_spec(model, face)
         rise = spec.trim_rise.meters if spec and screens_rainscreen_base(model, face.wall) \
             else 0.0

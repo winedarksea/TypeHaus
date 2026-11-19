@@ -16,7 +16,8 @@ from typehaus.findings import failed, not_applicable, passed, unknown
 from typehaus.library.trim.metal_sales import PROFILES
 from typehaus.model.cladding_trim import TrimCondition
 from typehaus.quantities import M_PER_IN
-from typehaus.resolve.cladding_trim.base import _DOOR_REACH_M
+from typehaus.resolve.cladding_trim.base import _CLOSURE_GAP_M, _DOOR_REACH_M
+from typehaus.resolve.cladding_trim.corner_closures import corner_end_cuts
 from typehaus.resolve.cladding_trim.openings import SMALL_PENETRATION_M, is_profiled_metal_wall
 from typehaus.resolve.cladding_trim.runs import covered_below, kit_faces, subtract_spans
 from typehaus.resolve.metal_skin_profiles import PANEL_PROFILES
@@ -100,6 +101,8 @@ def _bases(ctx, pieces):
             continue
         cuts = [(a, b) for opening, a, b in face.openings(model)
                 if face.wall.base_ref_z_m + opening.sill_m < face.z0 + _DOOR_REACH_M]
+        # A wide outside corner's leg closes the panel bottom it stands over (the C's lip gap too).
+        cuts += corner_end_cuts(model, face, _CLOSURE_GAP_M)
         needed = subtract_spans(face.lo, face.hi, cuts)
         mine = [p for p in pieces if p.tag.startswith(f"TRIM-{face.wall.tag}-BASE-")]
         spans = []

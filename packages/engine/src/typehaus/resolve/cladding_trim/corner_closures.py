@@ -149,6 +149,39 @@ def closures_for(model, wall, layer_name) -> list[CornerClosure]:
             if c.wall_uid == wall.uid and c.layer_name == layer_name]
 
 
+def corner_end_cuts(model, face, gap_m: float) -> list[tuple[float, float]]:
+    """Station spans a run along ``face`` leaves to its wall's wide outside corners.
+
+    A side ending in a C-Closure stops ``gap_m`` short of the return's lip, under the corner
+    leg that rides the C; the other side stops at the corner trim's own leg edge. Each span
+    runs past the face's end, so whatever lay beyond the corner is cut too.
+    """
+    from typehaus.resolve.cladding_corner import _intersection
+
+    closures = {c.node_tag: c for c in closures_for(model, face.wall, face.layer.name)}
+    section = PROFILES[WIDE_CORNER_KEY].section_in
+    cuts = []
+    for junction, walls, faces in wide_corner_junctions(model):
+        if face.wall.uid not in {wall.uid for wall in walls}:
+            continue
+        closure = closures.get(junction.node_tag)
+        if closure is not None:
+            cuts.append((min(face.lo, closure.web_station), closure.lip_station + gap_m)
+                        if closure.inward > 0 else
+                        (closure.lip_station - gap_m, max(face.hi, closure.web_station)))
+            continue
+        (da, db) = (incident.direction for incident in junction.incidents)
+        x, y = _intersection(faces[0][1], faces[1][1], faces[0][2], faces[1][2])
+        stations = [(x + u * M_PER_IN * da[0] + v * M_PER_IN * db[0]) * face.d[0]
+                    + (y + u * M_PER_IN * da[1] + v * M_PER_IN * db[1]) * face.d[1]
+                    for u, v in section]
+        apex = x * face.d[0] + y * face.d[1]
+        lo, hi = min(stations), max(stations)
+        cuts.append((min(face.lo, lo), hi) if apex - lo < hi - apex
+                    else (lo, max(face.hi, hi)))
+    return cuts
+
+
 def clear_of_closures(wall, layer, closures):
     """``layer.polygon`` drawn short of each closure's web: the panel stops inside the C."""
     face = cladding_face(wall, layer) if closures else None

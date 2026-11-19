@@ -127,7 +127,9 @@ def test_base_stack_on_a_house_wall(catlin_model_ro):
     assert (max(offsets) - min(offsets)) / _IN == pytest.approx(2.0)
     assert (max(s.z1_m for s in screen) - seat) / _IN == pytest.approx(2.04, abs=0.01)
     trim = [s for s in model.solids if s.tag.startswith("TRIM-W-M-W4-BASE-")]
-    assert sorted(round(p.trim_length_m / _IN, 2) for p in trim) == [42.75, 122.0]
+    # 42.75 -> 37.5 (2026-11-19): the run stops at the SW wide corner's 5 1/2" leg, which it
+    # used to reach 1/4" short of the apex under.
+    assert sorted(round(p.trim_length_m / _IN, 2) for p in trim) == [37.5, 122.0]
     leg = min(x * n[0] + y * n[1] for t in trim for x, y, _ in t.body_mesh.positions)
     assert leg >= run.outer_offset + inch(0.0625).meters - 1e-6
     foot = max(z for t in trim for x, y, z in t.body_mesh.positions
