@@ -11659,18 +11659,6 @@
 8,
 "d89b30a50f4b"
 ],
-"geometry/CAF602AAAA::framing/member:bearing-block-1-020-cheek-r0h": [
-5.832475,
-6.0579,
-8,
-"d89b30a50f4b"
-],
-"geometry/CAF602AAAA::framing/member:bearing-block-1-020-cheek-r1l": [
-5.832475,
-6.0579,
-8,
-"d89b30a50f4b"
-],
 "geometry/CAF602AAAA::framing/member:bearing-block-1-020-p1-rail-bottom": [
 5.794375,
 5.832475,
@@ -31405,18 +31393,6 @@
 8,
 "019dcc357ddd"
 ],
-"geometry/CMFS01AAAA::framing/member:partition-block-W-B-CW3-000-cheek-r0h": [
--0.263525,
--0.0381,
-8,
-"019dcc357ddd"
-],
-"geometry/CMFS01AAAA::framing/member:partition-block-W-B-CW3-000-cheek-r1l": [
--0.263525,
--0.0381,
-8,
-"019dcc357ddd"
-],
 "geometry/CMFS01AAAA::framing/member:partition-block-W-B-CW3-000-p1-rail-bottom": [
 -0.301625,
 -0.263525,
@@ -31440,18 +31416,6 @@
 0.0,
 8,
 "7bbc6bf9443f"
-],
-"geometry/CMFS01AAAA::framing/member:partition-block-W-B-CW3-001-cheek-lo": [
--0.263525,
--0.0381,
-8,
-"019dcc357ddd"
-],
-"geometry/CMFS01AAAA::framing/member:partition-block-W-B-CW3-001-cheek-r0h": [
--0.263525,
--0.0381,
-8,
-"019dcc357ddd"
 ],
 "geometry/CMFS01AAAA::framing/member:partition-block-W-B-CW3-001-rail-bottom": [
 -0.301625,
@@ -32118,24 +32082,6 @@
 0.0,
 8,
 "7bbc6bf9443f"
-],
-"geometry/CMFS04AAAA::framing/member:partition-block-W-B-BA-N-001-cheek-hi": [
--0.263525,
--0.0381,
-8,
-"019dcc357ddd"
-],
-"geometry/CMFS04AAAA::framing/member:partition-block-W-B-BA-N-001-cheek-lo": [
--0.263525,
--0.0381,
-8,
-"019dcc357ddd"
-],
-"geometry/CMFS04AAAA::framing/member:partition-block-W-B-BA-N-001-cheek-r0h": [
--0.263525,
--0.0381,
-8,
-"019dcc357ddd"
 ],
 "geometry/CMFS04AAAA::framing/member:partition-block-W-B-BA-N-001-cheek-r1l": [
 -0.263525,
@@ -83477,18 +83423,6 @@
 2,
 "afa7fad6631e"
 ],
-"member/CAF602AAAA/bearing-block-1-020-cheek-r0h": [
-5.832475,
-6.0579,
-2,
-"afa7fad6631e"
-],
-"member/CAF602AAAA/bearing-block-1-020-cheek-r1l": [
-5.832475,
-6.0579,
-2,
-"afa7fad6631e"
-],
 "member/CAF602AAAA/bearing-block-1-020-p1-rail-bottom": [
 5.794375,
 5.832475,
@@ -92975,18 +92909,6 @@
 2,
 "b8f15f8c2970"
 ],
-"member/CMFS01AAAA/partition-block-W-B-CW3-000-cheek-r0h": [
--0.263525,
--0.0381,
-2,
-"b8f15f8c2970"
-],
-"member/CMFS01AAAA/partition-block-W-B-CW3-000-cheek-r1l": [
--0.263525,
--0.0381,
-2,
-"b8f15f8c2970"
-],
 "member/CMFS01AAAA/partition-block-W-B-CW3-000-p1-rail-bottom": [
 -0.301625,
 -0.263525,
@@ -93010,18 +92932,6 @@
 0.0,
 2,
 "94aa84910cbe"
-],
-"member/CMFS01AAAA/partition-block-W-B-CW3-001-cheek-lo": [
--0.263525,
--0.0381,
-2,
-"b8f15f8c2970"
-],
-"member/CMFS01AAAA/partition-block-W-B-CW3-001-cheek-r0h": [
--0.263525,
--0.0381,
-2,
-"b8f15f8c2970"
 ],
 "member/CMFS01AAAA/partition-block-W-B-CW3-001-rail-bottom": [
 -0.301625,
@@ -93670,24 +93580,6 @@
 0.0,
 2,
 "94aa84910cbe"
-],
-"member/CMFS04AAAA/partition-block-W-B-BA-N-001-cheek-hi": [
--0.263525,
--0.0381,
-2,
-"b8f15f8c2970"
-],
-"member/CMFS04AAAA/partition-block-W-B-BA-N-001-cheek-lo": [
--0.263525,
--0.0381,
-2,
-"b8f15f8c2970"
-],
-"member/CMFS04AAAA/partition-block-W-B-BA-N-001-cheek-r0h": [
--0.263525,
--0.0381,
-2,
-"b8f15f8c2970"
 ],
 "member/CMFS04AAAA/partition-block-W-B-BA-N-001-cheek-r1l": [
 -0.263525,
