@@ -766,6 +766,7 @@ MAIN_EQUIPMENT = [
     Equipment(uid="CEE030AAAA", tag="EQ-M-HP3-STAIR", kind=EquipmentKind.INDOOR_HEAD,
               footprint=(inch(33), inch(8)),
               room="RM-M-LIVING", type_ref="EQ-T-GREE-SAPPHIRE-9", outdoor_ref="EQ-M-HP3-OD",
+              pan_drain_ref="PR-M-COND-HP3",
               mount=Mount(kind=MountKind.WALL, elevation=inch(35.5)),
               zone_rooms=("RM-M-MUDROOM", "RM-M-MECH", "RM-M-MUD-CLOSET"),
               location=Location(attachment=WallAttachment(

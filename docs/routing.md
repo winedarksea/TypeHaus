@@ -271,8 +271,9 @@ and a supply end on a shower-assembly inlet leaves on a straight stub along the 
 - Tree rows carry one illegal bore each: a wall-hung lav's plumb drop from its port stands in the
   stud plane (the cavity stub above).
 - Flex transfers that need a free-angle bend (DU-B-WH-OUT/IN) are refused: the duct lattice is
-  axis-aligned. DU-B-ERV-R-BATH is refused 0.4" short of its clearance to PR-M-COND-HP3. Both
-  stay authored by owner decision.
+  axis-aligned. DU-B-ERV-R-BATH was refused 0.4" short of its clearance to PR-M-COND-HP3; that
+  run was re-routed 2026-11-18 (its drop now stands 1" beside the duct) and the campaign has not
+  been re-run, so the margin is unmeasured. Both stay authored by owner decision.
 - The supply trunk search carries the house's outside as space prisms
   (`gravity_band.outside_prisms`, 12" holes at run ends) and retries free of the outline, with a
   notice, only when no interior lane crosses the floor system. The main-floor seam was never

@@ -71657,6 +71657,12 @@
 8,
 "80db91a70531"
 ],
+"geometry/Q3ZJD83QVD::framing/member:bearing-block-0-009-cheek-r0h": [
+-0.263525,
+-0.0381,
+8,
+"019dcc357ddd"
+],
 "geometry/Q3ZJD83QVD::framing/member:bearing-block-0-009-rail-bottom": [
 -0.301625,
 -0.263525,
@@ -78853,9 +78859,9 @@
 ],
 "geometry/XM4GM4VEZS-run/body": [
 -1.5873703,
-0.9112224,
+0.9620224,
 336,
-"8937b47c2030"
+"c7cfe118c733"
 ],
 "geometry/XNJFPY0B2F-connector-1/body": [
 6.3305736,
@@ -116175,6 +116181,12 @@
 2,
 "07a4d7ea6917"
 ],
+"member/Q3ZJD83QVD/bearing-block-0-009-cheek-r0h": [
+-0.263525,
+-0.0381,
+2,
+"b8f15f8c2970"
+],
 "member/Q3ZJD83QVD/bearing-block-0-009-rail-bottom": [
 -0.301625,
 -0.263525,
@@ -119797,11 +119809,11 @@
 "pipe_runs/PR-M-COND-HP3/z_end_m": -1.577848,
 "pipe_runs/PR-M-COND-HP3/z_m": [
 -1.577848,
-0.9017,
+0.9525,
 15,
-"251d1cadb8a0"
+"2d5741cc9a3b"
 ],
-"pipe_runs/PR-M-COND-HP3/z_start_m": 0.9017,
+"pipe_runs/PR-M-COND-HP3/z_start_m": 0.9525,
 "pipe_runs/PR-M-CW-BALCONY-HYD/z_end_m": 3.6786566,
 "pipe_runs/PR-M-CW-BALCONY-HYD/z_m": [
 2.8194,
@@ -126345,7 +126357,7 @@
 "solids/PR-M-COND-HEADS-RUN/z0_m": -0.5278217,
 "solids/PR-M-COND-HEADS-RUN/z1_m": 0.762,
 "solids/PR-M-COND-HP3-RUN/z0_m": -1.5873703,
-"solids/PR-M-COND-HP3-RUN/z1_m": 0.9112224,
+"solids/PR-M-COND-HP3-RUN/z1_m": 0.9620224,
 "solids/PR-M-CW-BALCONY-HYD-RUN/z0_m": 2.8194,
 "solids/PR-M-CW-BALCONY-HYD-RUN/z1_m": 3.6786566,
 "solids/PR-M-CW-BATH1-LAV-RUN/z0_m": 0.6035228,

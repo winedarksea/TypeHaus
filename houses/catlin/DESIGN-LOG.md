@@ -2,15 +2,18 @@
 
 - **Why.** The run bored W-M-STRW's studs at ~36" for 67", and that wall's mudroom face is
   open coat bays below 7'-0". The doorbell raceway stays (owner: fine).
-- **Route.** Out the head's east end into W-M-N2's cavity under the mounting plate, east,
-  then south down W-M-C5B/C5 at ~26"..23" (4" under PR-M-CW-COLDSTORE-STUB's 30" leg). In
-  C5's south bay it drops through the plate at x=17'-10.3" into the 1 7/8" slot between the
-  well's lining and FS-M-NE's bearing box (0.73" off the nearest member), steps into the box,
-  runs south over CD-B-PLAY-SPARE and west along the FS-M-STAIR/MECH bay at y=25'-2 3/4"
-  (~7/8" under PR-B-BATH-WC-CW; W-B-BA-N's nailers bored). It steps 2 1/4" south off
-  PR-B-HW-SBATH's y=25'-3" leg, drops at x=8'-2 1/2" and keeps the old tail to the sink.
-  39 LF against ~25; flattest leg 0.27"/ft.
-  - The box's cheeks went with it: the crossing spans the whole bay, so it frames rails only.
+- **Route.** Out the head's east end at 37" (inside the body; the head's `pan_drain_ref`
+  names the run), through the mounting plate's 2x8 backing into W-M-N2's cavity, east, then
+  south down W-M-C5B/C5 at ~26"..22" (4" under PR-M-CW-COLDSTORE-STUB's 30" leg). In C5's
+  south bay it drops mid-plate at y=26'-0.9" into FS-M-NE's bearing box, runs east out of it,
+  south in the truss bay over CD-B-PLAY-SPARE, west back across the box at y=25'-2 3/4",
+  south to y=25'-0" and west along the FS-M-STAIR/MECH bay (1" under PR-B-BATH-WC-CW;
+  W-B-BA-N's nailers bored), clear of PR-B-HW-SBATH's y=25'-3" leg. It drops at x=8'-2 1/2"
+  and keeps the old tail to the sink. 40 LF against ~25; flattest leg 0.27"/ft (3/4" PVC).
+  - **The box under W-M-C5's end stud keeps a cheek.** That stud carries BM-M-HALL's north
+    bearing. A leg lying along the box (the first cut, 2026-11-18) opens the whole bay and
+    strips both cheeks, leaving the stud on a flat rail between trusses, and no check sees
+    it. The riser's hole instead ends the top rail on a cheek right under the stud.
 - **Rejected:** west through W-M-N3 (D-M-ENTRY fills it); down W-M-N2 (concrete under the
   trimmer) or W-B-STR (RM-B-ESS's rated walls and lid); the kitchen sink (arrives above its
   base); out with the lineset to grade (no receptor that sees water).

@@ -21,27 +21,28 @@ from typehaus import (
 # Filed on `main` (datum 0'-0"), like SECOND_DRAINS, so every elevation is absolute.
 CONDENSATE_NORTH = [
     # EQ-M-HP3-STAIR (re-routed 2026-11-18 out of W-M-STRW, whose mudroom bays are open: a
-    # bored stud shows). The hose leaves the head's east end back into W-M-N2's cavity under
-    # the mounting plate, drops to 27" and runs east, then south down W-M-C5B/C5 under
-    # PR-M-CW-COLDSTORE-STUB's 30" leg. In C5's south bay it drops through the plate into the
-    # 1 7/8" slot between the well's lining and FS-M-NE's bearing box over W-B-CN, steps east
-    # into the box (it then frames rails only), south over CD-B-PLAY-SPARE, and west along the
-    # FS-M-STAIR/MECH bay at y=25'-2 3/4", boring W-B-BA-N's nailers and passing under
-    # PR-B-BATH-WC-CW. It steps 2 1/4" south off PR-B-HW-SBATH's y=25'-3" leg, drops into the
-    # furnace room at x=8'-2 1/2" (1" west of DU-B-ERV-R-BATH) and runs south to the sink,
-    # turning east over its bowl beside the ERV and WH outlets.
+    # bored stud shows; its pan_drain_ref names this run). The hose leaves the head's east end
+    # at 37" (inside the body), bores the mounting plate's 2x8 backing into W-M-N2's cavity,
+    # drops to 26 1/2" and runs east, then south down W-M-C5B/C5 under
+    # PR-M-CW-COLDSTORE-STUB's 30" leg. It drops mid-plate in C5's south bay into FS-M-NE's
+    # bearing box, east out of it and south in the truss bay over CD-B-PLAY-SPARE, back west
+    # across the box at y=25'-2 3/4", south to y=25'-0" and west along the FS-M-STAIR/MECH
+    # bay, boring W-B-BA-N's nailers and 1" under PR-B-BATH-WC-CW. The riser's hole leaves
+    # the box a cheek under W-M-C5's end stud (BM-M-HALL's bearing); a run along the box
+    # would strip both cheeks. It drops into the furnace room at x=8'-2 1/2" (1" west of
+    # DU-B-ERV-R-BATH) and runs south to the sink, turning east over its bowl.
     PipeRun(uid="XM4GM4VEZS", tag="PR-M-COND-HP3", system=PipeSystem.DRAIN, sanitary=False,
             path=(pt(inch(158), inch(418)), pt(inch(158), inch(428.75)),
                   pt(inch(158), inch(428.75)), pt(inch(216), inch(428.75)),
-                  pt(inch(216), inch(313)), pt(inch(214.3), inch(313)),
-                  pt(inch(214.3), inch(313)), pt(inch(216.3), inch(313)),
-                  pt(inch(216.3), inch(302.75)), pt(inch(98.5), inch(302.75)),
-                  pt(inch(98.5), inch(300.5)), pt(inch(98.5), inch(300.5)),
+                  pt(inch(216), inch(312.9)), pt(inch(216), inch(312.9)),
+                  pt(inch(223), inch(312.9)), pt(inch(223), inch(302.75)),
+                  pt(inch(214), inch(302.75)), pt(inch(214), inch(300)),
+                  pt(inch(98.5), inch(300)), pt(inch(98.5), inch(300)),
                   pt(inch(98.5), inch(238)), pt(inch(98.5), inch(238)),
                   pt(inch(103.5), inch(238))),
             diameter=inch(0.75), material="pvc",
-            elevations=(inch(35.5), inch(35.25), inch(27), inch(25.55), inch(22.65), inch(22.6),
-                        inch(-4.5), inch(-4.55), inch(-4.85), inch(-10.5), inch(-10.55), inch(-26),
+            elevations=(inch(37.5), inch(37.25), inch(26.5), inch(25.05), inch(22.15), inch(-4.5),
+                        inch(-4.7), inch(-5), inch(-5.25), inch(-5.33), inch(-10.55), inch(-26),
                         inch(-27.4), inch(-62), inch(-62.12))),
     # EQ-S-HP1-AH: from the modeled trap outlet east of the cabinet and service zone,
     # south on the deck at x=24'-11 1/2" (blocked
