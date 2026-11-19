@@ -165,6 +165,10 @@ pull-through in the sawn beam (280 < 460) and does not move, and on the rim's 1.
 (402.5) 0.797. What the backer buys is ESR's 2.0" minimum, which a single member here cannot
 give.
 
+**Accepted as the house reading (owner, 2026-11-18).** ENTRY meets Table 2's 2.0" by the sum,
+rim 1 1/4" + filler 1/2" + 1/4" of FO-M-ERV-OA's LVL trimmer, the pieces drawn tight, with the
+withdrawal in LSL/LVL read at ESR-1387's SG 0.50. The rim alone passes too (0.933, SP).
+
 **Backer nailing**, the published rows:
 
 - BALCONY: TJ-8000 (March 2025) p.7, *Multiple-member connections for 2-ply rim board*, side

@@ -8788,3 +8788,11 @@ Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
   withdrawal is read at ESR-1387's SG 0.50; on the rim alone the SP column is still 0.953 and the
   G 0.42 column does not move (`exterior_door_sill_beam.md` §3, "Scope").
 
+## ENTRY's seat thread: the summed reading accepted (2026-11-18, owner)
+
+- **Accepted.** D-M-ENTRY's HLGM10s meet ESR-1078 Table 2's 2.0" embedded thread by summing the
+  rim 1 1/4" + the 1/2" LSL filler + 1/4" of FO-M-ERV-OA's LVL trimmer, the three nailed tight
+  (IRC R602.3(1) item 10), and withdrawal into LSL/LVL is read at ESR-1387's SG 0.50, since
+  ESR-1078 §3.2 puts EWP outside the report. Not load-bearing for the grade: on the rim alone the
+  SP column is 0.933 (`exterior_door_sill_beam.md` §3).
+- **Not taken.** Changing the detail: the grade does not lean on the reading.
