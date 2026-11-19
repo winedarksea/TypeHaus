@@ -534,8 +534,9 @@ SUPPLY = [
     # derived RO (owner, 2026-10-29), and jogs east over the plates in FS-S-WEST's
     # y 311 3/4"..322 1/4" bay to x=6'-4", where the second-storey branches tee off. The
     # bay is 2 3/4" wide, so this run takes the 1/2" (R-3.1) sleeve the house uses elsewhere.
-    # PEX-A since 2026-11-19 (design review §10): same 7/8" OD, 0.671" bore against copper's
-    # 0.785", so the branch holds ~0.73 gal, not 1.00. The tee stays on the copper trunk.
+    # PEX-A since 2026-11-19 (design review §10): same 7/8" OD, 0.681" bore (SDR 9) against
+    # copper's 0.785", so the branch holds ~0.75 gal, not 1.00 (notes/water_service.md). The
+    # tee stays on the copper trunk.
     PipeRun(uid="CBPW41AAAA", tag="PR-B-HW-SBATH", system=PipeSystem.WATER_HOT,
             path=(pt(inch(153.786), inch(191.36)), pt(inch(102), inch(191.36)), pt(inch(102), inch(212.5)),
                   pt(inch(102), inch(212.5)), pt(inch(102), inch(303)),

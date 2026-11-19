@@ -58,7 +58,7 @@ sockets to 14 W each.
 
 | Location | Fixture / schedule mark | Lamps | Body bottom / top AFF |
 |---|---|---|---|
-| Basement | 54623BN / P5 | 3 × CentricHOME | 76 3/16 / 83 11/16 |
+| Basement | 54622BN / P1 (was P5 until 2026-11-19; the room's only light since the can retired) | 2 × CentricHOME | 76 3/16 / 83 11/16 |
 | Powder room | 54622CM / P2 | 2 × CentricHOME | 76 / 83 1/2 |
 | Bath2 daytime | 54623CM / P3 | 3 × 80795-SU | 80 / 87 1/2 |
 | Hall bath | 54623BN / P5 | 3 × CentricHOME | 74 1/16 / 81 9/16 |

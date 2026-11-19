@@ -12,7 +12,7 @@ BASEMENT_MIRRORS = [
                 wall_ref="W-B-CW2", face="left", distance_from_start=inch(24),
                 normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="2455867868", tag="ED-B-BATH-MIRROR", kind=DeviceKind.LIGHT,
-            type_ref="ED-T-LT-KARLIE-3-BN", room="RM-B-BATH",
+            type_ref="ED-T-LT-KARLIE-2-BN", room="RM-B-BATH",
             circuit="CKT-LT-BSMT", controlled_by=("ED-B-BATH-SW",),
             mount=Mount(kind=MountKind.WALL, elevation=inch(76.1875)),
             location=Location(attachment=WallAttachment(

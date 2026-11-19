@@ -2929,10 +2929,10 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # https://bulbcenter.com/products/sunlite-80795-led-a19-standard-household-light-bulb-9-watts-60w-equivalent-800-lumens-medium-base-e26-dimmable-ul-listed-energy-star-90-cri-title-20-5000k-daylight-6-count
 # Carry $3-8 per exact 80795-SU 5000 K bulb (MIRROR-DAY); the upper end is estimating judgement, not observed quotes. Verify availability; do not silently
 # substitute the V2 lamp without its own CRI/R9 sheet. Tax/freight and spare bulbs excluded.
-"ED-T-LT-KARLIE-2-BN" = { material = { low = 189, high = 195 }, labour = { low = 60, high = 135 } }  # 1 ea, 54622BN, fixture only
+"ED-T-LT-KARLIE-2-BN" = { material = { low = 189, high = 195 }, labour = { low = 60, high = 135 } }  # 2 ea (bar + basement bath since 2026-11-19), 54622BN, fixture only
 "ED-T-LT-KARLIE-2-BN-ATTIC" = { material = { low = 194, high = 205 }, labour = { low = 60, high = 135 } }  # 1 ea, same fixture plus offset box/crossbar allowance
 "ED-T-LT-KARLIE-2-CM" = { material = { low = 189, high = 195 }, labour = { low = 60, high = 135 } }  # 1 ea, 54622CM, fixture only
-"ED-T-LT-KARLIE-3-BN" = { material = { low = 209, high = 215 }, labour = { low = 60, high = 135 } }  # 3 ea, 54623BN, fixture only
+"ED-T-LT-KARLIE-3-BN" = { material = { low = 209, high = 215 }, labour = { low = 60, high = 135 } }  # 2 ea, 54623BN, fixture only
 "ED-T-LT-MIRROR-DAY" = { material = { low = 218, high = 233 }, labour = { low = 60, high = 135 } }  # 1 ea, 54623CM + three 80795-SU
 # MHAP4236 (2026-10-22, replaces the 24 x 36 MHAP2436 at $968): Fleurco's US catalog lists
 # $1,484; Modern Furnishings lists $1,337. Five-year warranty, own dimmer. Quote the dealer.
