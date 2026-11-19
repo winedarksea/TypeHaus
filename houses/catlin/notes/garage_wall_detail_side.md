@@ -34,8 +34,13 @@ source:
 - [K7] Overhead door header: 2-ply 14" LVL on packs sized from the 16'-0" opening.
 - [K8] Joint to SL-DW-DRIVE: 1" 40 psi XPS, 1/2" traffic-rated polyurethane sealant.
 
+### Spec 07 25 00
+- WRB: 7/16" ZIP System 4x9 (ESR-1474), every seam ZIP tape or liquid flash, up both gables to the truss top chords.
+- Carry the WRB over the eave heel; lap tape over every flashing leg (WRB over flashing).
+- Alt.: GP ForceField 7/16" (APA PR-N136), ForceField Seam Tape, Seam Tape Plus at ROs, taped at 20°F or above.
+- Never mix one system's tape on the other's panel.
+
 ### Spec 07 27 00
-- WRB: 7/16" ZIP (ESR-1474), every seam taped, to the top chords. Alt.: GP ForceField, its own tape.
 - Seal the top plate to the sheathing and the drywall, continuous.
 
 ### Spec 03 11 00

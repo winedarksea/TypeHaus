@@ -595,7 +595,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   HDG A153 default; every ZMAX/HDG/stainless connector bills its schedule's nails (SSA8D,
   SSNA10D, SSA10D, HDG 8d/10d/16d, SD9112); RF-HOUSE's deck is RSRS-01 ring-shank at 4" o.c.,
   the garage/canopy decks 8d HDG 6"/12" (the canopy's blocked edges too, off its `DiaphragmSpec`)
-  and W-BW-SCREEN's CDX 304 `S8ACN` at 4" edges.
+  and W-BW-SCREEN's 7/16" ZIP 304 `S8ACN` at 4" edges.
   Blocks are on the STUD module, every OTHER stud, at 32" from the wall's LAYOUT LINE (girts
   run their own 24" module) — 32"x24"=5.33 ft2 is the crossing tributary in
   `notes/catlin_truss_engineering.md`. Block phase is solved for 32", not 16" — reusing the

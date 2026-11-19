@@ -534,6 +534,11 @@ screen's own rows: `canopy_west_band.md` §10.
      column 1,600.7/13,171.8 x 1,173.52 = 142.61 + 9,335 x 1,600.7 x 17.8278 / 1,393,335 = 191.19 -> 333.80 lb
 ```
 
+The §7 column holds the panel at 9,970.5 lb/in (G_a 11); the engine at G_a 11 reads 334.33 lb, 0.16% over, as
+before. The screen's 7/16" row doubles G_a to 22 (`canopy_west_band.md` §4a), which halves the panel's shear term
+and stiffens it, so the engine sheds 0.84 lb off each column: **333.49 lb**. Not re-iterated by hand; the column's
+connector ratio (0.247) does not move in its third figure.
+
 Every other §3-§10 figure moves by the p ratio, x 1.00007, inside its printed precision. The receiving walls keep
 their carried 182.5 plf.
 

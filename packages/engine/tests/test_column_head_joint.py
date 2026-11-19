@@ -83,9 +83,10 @@ def test_canopy_columns_reproduce_9b_9c_9e(catlin_cast_ctx):
     # under the soffit: the hand pass at the 16.4479' shaft reads the N-S head force 332.81 lb
     # (canopy_garage_diaphragm.md §7, E13 line); 333.69 with the screen 1in west
     # (north_entry_piers.md §10m); these pinned the engine's 334.28, 0.18% over it. 2026-11-18,
-    # columns 3/16" out behind the garage's 7/16" ZIP: the hand pass reads 333.80 (panel k held
-    # at 9,970.5; canopy_garage_diaphragm.md §11), the engine 333.49, 0.09% under it
-    # (column shear 679.46 against the hand 679.84).
+    # columns 3/16" out behind the garage's 7/16" ZIP: the hand pass reads 333.80 with the
+    # panel k held at 9,970.5 (G_a 11; canopy_garage_diaphragm.md §11), where the engine reads
+    # 334.33, the same 0.16% over. The screen's 7/16" row doubles G_a to 22, stiffening the
+    # panel, which sheds 0.84 lb off each column: 333.49 (column shear 679.46).
     for tag, e_w, shear in (("PT-BW-RE", 333.49, 679.46),
                             ("PT-BW-RNE", 333.49, 679.46)):
         record = _record(catlin_cast_ctx, tag)

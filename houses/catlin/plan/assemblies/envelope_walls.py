@@ -356,9 +356,9 @@ GARAGE_WALL_2X6 = Assembly(
         # 24" o.c., not the solver's 16" default. The ridge runs N-S, so the trusses bear
         # on W-G-E/W-G-W; the 16'-0" overhead door is carried by its own 2-ply 14" LVL on
         # jamb packs the solver sizes from the opening and its derived load, so there is
-        # no 16" zone at the door. There could not cheaply be one anyway:
-        # `FramingSpec.spacing` lives on the ASSEMBLY and a Wall names one assembly, so a closer-spaced zone means a second
-        # assembly tag, a second prices.toml row and a second condition_gates key to say
+        # no 16" zone at the door. There could not cheaply be one anyway: `FramingSpec.spacing`
+        # lives on the ASSEMBLY and a Wall names one assembly, so a closer-spaced zone means a
+        # second assembly tag, a second prices.toml row and a second condition_gates key to say
         # "same wall, closer studs". The trusses above went to 24" with it (GARAGE_ROOF).
         #
         # THE BAYS ARE INSULATED. They were deliberately empty with 1.5" Zip-R's continuous

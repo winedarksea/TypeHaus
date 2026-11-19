@@ -36,7 +36,7 @@ GUARD_HEIGHT_M = inch(42).meters
 def test_catlin_grades_one_guard_wall_and_it_is_not_masonry(catlin_ctx):
     """The house gained its first ``Wall.guard`` on 2026-09-10, and it is a light one.
 
-    ``W-BW-SCREEN`` is the north entry's west panel: KDAT 2x4 at 16" o.c. under 5/8" CDX and
+    ``W-BW-SCREEN`` is the north entry's west panel: KDAT 2x4 at 16" o.c. under 7/16" ZIP and
     west 7/8" corrugated and east white painted MDO, closing the passage to +4'-0" and doing
     three jobs at once — the canopy's north-south shear panel, the guard, and the closure
     over the deck framing.

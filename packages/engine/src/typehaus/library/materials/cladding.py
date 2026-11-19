@@ -61,7 +61,7 @@ _BASE_ROWS: tuple[Material, ...] = (
         "truncates the Glaser walk before it",
     ),
     # 7/8" corrugated, the third profile in the site's one white steel skin, and the
-    # detached garage's wall panel — GARAGE_WALL_2X6 over 5/8" CDX. A sinusoidal
+    # detached garage's wall panel — GARAGE_WALL_2X6 over 7/16" taped ZIP. A sinusoidal
     # exposed-fastener sheet: 7/8" deep on a 2-2/3" pitch, 32" net coverage, screwed
     # in the valleys, where the washer bears on panel backed by the sheathing. Crest
     # fastening is a roof practice: on a wall it hangs the washer over a 7/8" void.

@@ -25,18 +25,18 @@ _DELIVERED = {"x": 670.82, "y": 1034.57}
 _ROWS = {
     "open front, L'": (6.000, 25.0),
     "open front, L'/W'": (0.2250, 1.0),
-    "joint boundary nailing, along": (28.876, 190.0),
-    "LSTA24 joint straps, across": (172.42, 823.3333333333334),
+    "joint boundary nailing, along": (28.839, 190.0),
+    "LSTA24 joint straps, across": (172.43, 823.3333333333334),
     "LSTA24 joint straps, rotation couple": (56.689, 823.3333333333334),
     "CN-BW-JOINT-2 RF-BW-CANOPY nailer into deck": (261.177, 1079.3951163681184),
     "CN-BW-JOINT-2 RF-GARAGE nailer into deck": (261.177, 959.4623256605497),
-    "LTP4 plate clips, frame into wall": (95.824, 450.0),
+    "LTP4 plate clips, frame into wall": (95.831, 450.0),
     "RF-GARAGE unit-shear increment": (22.51, 167.5),
-    "W-G-S delivered shear on the surplus": (38.775, 182.5),
+    "W-G-S delivered shear on the surplus": (38.777, 182.5),
     "W-G-E delivered shear on the surplus": (25.72, 182.5),
     "W-G-W delivered shear on the surplus": (26.46, 182.5),
     "W-G-S overturning, delivered increment": (275.47, 3065.0),
-    "diaphragm unit shear at W-BW-SCREEN": (172.42, 190.0),
+    "diaphragm unit shear at W-BW-SCREEN": (172.43, 190.0),
 }
 
 
