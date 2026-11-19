@@ -2034,7 +2034,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CSW101AAAA",
-      "tag": "strapping-outer-girt-001"
+      "tag": "strapping-outer-girt-002"
     },
     {
       "space": "model",
@@ -2090,7 +2090,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CSW101AAAA",
-      "tag": "strapping-outer-girt-010"
+      "tag": "strapping-outer-girt-011"
     },
     {
       "space": "model",

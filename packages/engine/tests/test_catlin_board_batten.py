@@ -7,7 +7,7 @@ from typehaus.emit.gltf.validate import validate_gltf
 
 def test_band_is_a_panel_cut_with_backed_girt_courses(catlin_model_ro):
     """Lower panel stops 1" under the joint, upper hangs 1/4" over it (BBD75 p. 40)."""
-    joint = 228 * .0254
+    joint = 125.5 * .0254
     below, above = joint - .0254, joint + .25 * .0254
     walls = [wall for wall in catlin_model_ro.walls
              if wall.z0_m < joint < wall.z1_m
@@ -19,7 +19,7 @@ def test_band_is_a_panel_cut_with_backed_girt_courses(catlin_model_ro):
         zs = {position[2] for position in mesh.positions}
         assert any(abs(z - below) < 1e-8 for z in zs) and any(abs(z - above) < 1e-8 for z in zs)
         assert not any(below + 1e-8 < z < above - 1e-8 for z in zs)
-        # The band girt is derived to back BOTH panel edges (226"-229.5"), not seated on the joint.
+        # The band girt is derived to back BOTH panel edges (123.5"-127"), not seated on the joint.
         def backs_joint(member):
             return member.z0_m <= below + 1e-8 and member.z1_m >= above - 1e-8
 

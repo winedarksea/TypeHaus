@@ -14,6 +14,8 @@ from typehaus.resolve.model import ResolvedSolid
 _PRODUCT = "BBD_TRANSITION"
 #: A band's end short of a corner C-Closure's return: under the 1/8" insect limit.
 CLOSURE_GAP_M = M_PER_IN / 16
+#: How near a joint an authored wall flashing's back leg must sit to stand in for the trim.
+FLASHING_JOINT_TOL_M = M_PER_IN / 2
 
 
 def band_spans(model, wall) -> list[tuple[float, float, float]]:
@@ -54,6 +56,40 @@ def band_spans(model, wall) -> list[tuple[float, float, float]]:
     return spans
 
 
+def trim_spans(model, wall) -> list[tuple[float, float, float]]:
+    """``band_spans`` less the stations an authored wall ``Flashing`` takes at the joint.
+
+    The flashing must name a wall as ``host_ref``, top out at the joint and lie along this
+    face's back plane (so a run spilling past a wall break cuts both faces). Only the trim
+    yields: the outlet strip and band girt follow the joint and stay continuous. A remnant
+    under one stock lap (a flashing end shy of an opening's cut) is the flashing's to close.
+    """
+    spans = band_spans(model, wall)
+    if not spans:
+        return spans
+    walls = {w.tag for w in model.walls}
+    face = cladding_face(wall, next(ly for ly in wall.layers if ly.function == "cladding"))
+    flashings = [f for f in model.plan.elements_of_kind("Flashing")
+                 if f.host_ref in walls and not f.vertical]
+    out = []
+    for joint, lo, hi in spans:
+        cuts = []
+        for run in flashings:
+            if abs(run.top_elevation.meters - joint) > FLASHING_JOINT_TOL_M:
+                continue
+            centre = face.back + run.thickness.meters / 2
+            points = [p.xy_m for p in run.path]
+            if all(abs(x * face.n[0] + y * face.n[1] - centre) < FLASHING_JOINT_TOL_M
+                   for x, y in points):
+                stations = [x * face.d[0] + y * face.d[1] for x, y in points]
+                cuts.append((min(stations), max(stations)))
+        ends = [x for cut in cuts for x in cut]
+        out += [(joint, a, b) for a, b in subtract_spans(lo, hi, cuts)
+                if b - a > BBD_TRANSITION.min_lap_in * M_PER_IN
+                or not any(min(abs(a - x), abs(b - x)) < 1e-6 for x in ends)]
+    return out
+
+
 def _course_depth(model, wall) -> float:
     from typehaus.resolve.framing.profiles import cross_section
     from typehaus.resolve.framing.truss_girts import truss_girt_bands
@@ -69,7 +105,7 @@ def resolve_band_trim(model) -> None:
     section = tuple((x * M_PER_IN, y * M_PER_IN) for x, y in profile.section_in)
     stock = tuple(v * M_PER_IN for v in profile.stock_lengths_in)
     for wall in model.walls:
-        spans = band_spans(model, wall)
+        spans = trim_spans(model, wall)
         if not spans:
             continue
         layer = next(ly for ly in wall.layers if ly.function == "cladding")

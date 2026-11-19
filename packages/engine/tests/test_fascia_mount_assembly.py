@@ -136,8 +136,9 @@ def test_balcony_mounts_follow_deck_and_preserve_order_quantities(catlin_model_r
     surface = deck_surface(deck, [p.xy_m for p in guard.path],
                            guard.fascia_face_offset.meters + PRODUCT.fascia_post_offset.meters)
     spec = PRODUCT.fascia_mount
-    counter = model.plan.by_tag("TR-SG-COUNTER-FLASH-W")
-    house_face_y = counter.path[0].y.meters + counter.thickness.meters/2
+    wall = next(w for w in model.walls if w.tag == "W-S-S1")
+    house_face_y = min(p[1] for ly in wall.layers if ly.function == "cladding"
+                       for p in ly.polygon)
     # The edge at its ends: the planks' tab across D-S-BALCONY reaches the sister's face.
     xs = (min(x for x, _y in deck.deck_outline), max(x for x, _y in deck.deck_outline))
     north_edge = max(y for x, y in deck.deck_outline if x in xs)

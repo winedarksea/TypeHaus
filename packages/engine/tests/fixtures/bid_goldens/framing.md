@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 048cdf11f21414ca  
+**Model hash:** 581e743b71b79895  
 **Lines:** 265
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
@@ -74,10 +74,10 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x4 SPF No. 2 & Btr framing lumber, 14' (2x4) | 12 | pc | plate | 168 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (2x4:kdat) | 208 | pc | girt strapping, truss ladder blocking | 1664 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 10' (2x4:kdat) | 30 | pc | girt strapping | 300 LF | building |
-| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 12' (2x4:kdat) | 14 | pc | girt strapping | 168 LF | building |
+| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 12' (2x4:kdat) | 15 | pc | girt strapping | 180 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 14' (2x4:kdat) | 10 | pc | girt strapping | 140 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 16' (2x4:kdat) | 12 | pc | girt strapping | 192 LF | building |
-| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (2x4:kdat) | 23 | pc | girt strapping | 460 LF | building |
+| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (2x4:kdat) | 22 | pc | girt strapping | 440 LF | building |
 | 2x4 Pressure-treated southern yellow pine No. 2 (sill plate), 8' (2x4:pt-syp) | 4 | pc | plate | 32 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4:spf) | 16 | pc | blocking, ceiling furring, girt strapping | 128 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 92 5/8" PET (2x6) | 110 | pc | corner stud, king stud, stud | 849.1 LF | building |
@@ -238,7 +238,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Titen HD 1/2 in x 6 in Type 316 stainless screw anchor, deck ledger to concrete (THD50600H6SS:modeled connector) | 18 | ea |  | building |
 | KDAT 4x4 tie block, 3-1/2" long, screwed to the tied member (TIE-BLOCK-4X4-KDAT:modeled connector) | 1 | ea |  | building |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:eave gutter girt standoffs) | 72 | ea |  | building |
-| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:girt wall blocks) | 1,159 | ea |  | building |
+| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:girt wall blocks) | 1,158 | ea |  | building |
 
 ## Other structural solids
 

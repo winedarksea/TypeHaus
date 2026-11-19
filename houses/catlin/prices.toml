@@ -4773,7 +4773,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # a recessed reveal rather than a batten. No rate change for any of them.
 #
 # ** PANEL LENGTH IS A REAL CONSTRAINT ON THIS PROFILE. ** B&B maxes at 20', and the N/S
-# gables run 31.4' base-to-peak, so they joint at +19'-0" with Transition Trim
+# gables run 31.4' base-to-peak, so they joint at +10'-5 1/2" with Transition Trim
 # 55536XX — inside this rate, and the 11.1 ft max band is two panels out of one 20'-2" stock
 # length with no drop. PBR and 7/8" corrugated run to 45', which is why the E/W walls are
 # one-piece over 21'.
@@ -6891,7 +6891,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # Cut to 13 5/8" pieces, a panel is 10 pieces x 16" = 13.3 LF of run, so $2.62/LF; + $0.40-1.40/LF
 # of F/J channel (~$5-8 per 12' stick, one or two runs per LF). Vinyl at ~$18/12' is the fallback.
 "soffit" = { material = { low = 3, high = 4 }, labour = { low = 3, high = 5.5 } }  # 78.2 LF (75.9 panel + 2.3 corner returns) — the depth question is SETTLED by the model: the profile is 13.625" wide, so this is the 12-16" overhang band at $3-5.50/LF. Every published $/LF silently assumes a depth; at 24" it would be $5-9 and at 36" $8-13, and the material rate would be understated ~2x
-"wrb_counterflashing" = { material = { low = 1.5, high = 4 }, labour = { low = 9.5, high = 19 } }  # ~29 LF since 2026-10-16: the balcony's rear edge is TWO pieces either side of D-S-BALCONY, a deck-side base flashing and a house-side counterflashing (params/sunken_garden.py) — 21 feet is below any sub's minimum, so the labour here is a $200-400 LUMP spread over the run, not a real per-foot rate
+"wrb_counterflashing" = { material = { low = 1.5, high = 4 }, labour = { low = 9.5, high = 19 } }  # ~13.6 LF since 2026-11-19: the balcony's rear edge is the BBD75 band trim braked longer, one piece either side of D-S-BALCONY (TR-SG-BAND-W/E, params/sunken_garden.py; ~29 LF in two layers before) — that is below any sub's minimum, so the labour here is a $200-400 LUMP spread over the run, not a real per-foot rate
 
 [cladding_trim]
 # TR-RF-GUTTER-E/W (2026-10-27): the PBR 5x4 box, 24 ga PVDF 20'-3" sticks (58079XX, PBR p. 12),
@@ -6932,7 +6932,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "58138XX" = { material = { low = 32, high = 44 }, labour = { low = 18, high = 30 } }   # PBR 1.25" Base ($3.1-4.3/LF)
 "55545XX" = { material = { low = 32, high = 44 }, labour = { low = 18, high = 30 } }   # BBD75 Base Trim (vertical)
 "CORRUGATED_BASE" = { material = { low = 30, high = 42 }, labour = { low = 18, high = 30 } }  # no part number published
-"55536XX" = { material = { low = 40, high = 54 }, labour = { low = 24, high = 38 } }   # BBD75 Transition Trim at the +19'-0" band, Linen White
+"55536XX" = { material = { low = 40, high = 54 }, labour = { low = 24, high = 38 } }   # BBD75 Transition Trim at the +10'-5 1/2" band, Linen White
 "58114XX" = { material = { low = 36, high = 50 }, labour = { low = 14, high = 24 } }   # 1.5" Sill/Head at every window head; 42 cuts pooled from 10'-2" stock = 10 sticks (2026-10-29)
 "58728XX" = { material = { low = 34, high = 46 }, labour = { low = 16, high = 28 } }   # BBD75 Panel Starter at door jambs
 "CORRUGATED_JAMB" = { material = { low = 30, high = 42 }, labour = { low = 16, high = 28 } }  # screen ends and garage door jambs

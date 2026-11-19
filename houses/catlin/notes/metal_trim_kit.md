@@ -89,10 +89,10 @@ starter girt is −11 3/16" to −7 11/16".
 The garage has no separate cavity, because the corrugation is the rainscreen. There the
 vented corrugated closure on the aluminium stem Z closes both.
 
-### Band outlet (N/S walls, +19 ft 0 in)
+### Band outlet (N/S walls, +10 ft 5-1/2 in)
 
 The cavity breathes in at the base and out at the BBD75 band, the existing Transition Trim
-55536XX at +19'-0" (228 in) on the N/S walls. E/W walls stay bottom-vented only; eaves, rakes,
+55536XX at +10'-5 1/2" (125.5 in; +19'-0" until 2026-11-19) on the N/S walls. E/W walls stay bottom-vented only; eaves, rakes,
 sills and heads are not outlets (owner, 2026-10-28).
 
 - The lower panel stops 1 in below the trim seat, hidden behind the trim's 2-1/2 in face leg.
@@ -104,8 +104,12 @@ sills and heads are not outlets (owner, 2026-10-28).
 - The upper panel hangs 1/4 in over the trim's shelf, as BBD75 p. 40 draws it, on no strip:
   a strip there lay face-up on the shelf in the rain and held water under the panel's cut edge
   (owner, 2026-10-31). The batten ends stay open.
-- Trim and strip both skip an opening framed through the trim's height; at +19'-0" none is.
-  Seven walls, 73.6 LF of outlet: trim and strip stop 1/16 in short of each corner C-Closure.
+- Trim and strip both skip an opening framed through the trim's height: at +10'-5 1/2" that is
+  D-S-BALCONY.
+- Over the balcony the trim is one longer brake of the same section, `TR-SG-BAND-W/E`: its
+  shelf runs out 1 in past the capped deck edge and drips 1-1/2 in, the deck's rear flashing.
+  The stock trim yields to it (`cladding_trim.bands.trim_spans`); the strip and girt run on.
+  Seven walls, 67.8 LF of outlet: trim and strip stop 1/16 in short of each corner C-Closure.
 
 ### Strip bearing (owner, 2026-10-29)
 
@@ -256,7 +260,7 @@ What the model derives and bills, with the counts the tests pin
 | House K2 base | 24 ga Galvalume PVDF Z, 120 in stock with 2 in laps, continuous under each base screen; EPDM at the steel trim | 14 runs / 21 sticks; 148 LF isolation |
 | Wall tops | PBR inside closure 6460800; BBD75 Universal Closure 6411499; corrugated Sill to Soffit at garage eaves; corrugated outside closure at garage panel tops | 74.25 / 83.01 / 48.29 / 99.04 LF |
 | Outside corners | Wide corner (PBR↔BBD75), corrugated corner | 8 / 4 |
-| BBD75 band | Transition Trim at +19'-0", one run per N/S wall segment, Linen White | 10 |
+| BBD75 band | Transition Trim at +10'-5 1/2", one run per N/S wall segment, Linen White; over the balcony the extended `TR-SG-BAND-W/E` (13.6 LF, `[edge_trim]`) | 8 |
 | Window head, jamb, sill | 1.5 in Sill/Head 58114XX at every head; PBR jamb 58208XX (unpriced); BBD75 and corrugated jambs and every sill: site-brake (`WINDOW_JAMB_CUSTOM` 146.9 LF, `WINDOW_SILL_CUSTOM` 87.3 LF) | 43 heads / 86 jambs / 43 sills; heads and PBR jambs pooled FFD from 10'-2" stock (heads 42 cuts, 91.5 LF, 10 sticks) |
 | Door jambs | Panel Starter 58728XX (BBD75); Corrugated Jamb at the garage door jambs (stock, no part number) | 6 + 4 |
 | Door heads | site-brake drip cap, legacy head section swept at stock, catalog unit D-S-BALCONY included | 6 |

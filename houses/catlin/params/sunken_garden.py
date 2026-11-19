@@ -96,6 +96,7 @@ from typehaus.quantities import m
 from typehaus.model.structure import CompliantLayer
 from params.column_heads import HETA20Z_PAIR_HEAD, STANDOFF_PACK_IN
 from params.cladding import HOUSE_NS_OUTBOARD_IN
+from plan.assemblies.board_batten import BBD_BAND_JOINT, BOARD_BATTEN_DEPTH
 from params.landscape_walk import D_X0 as WALK_D_X0
 from params.landscape_walk import GAP_FT as WALK_GAP_FT
 from params.landscape_walk import TOP as WALK_TOP
@@ -2713,14 +2714,14 @@ BALCONY_JOISTS = FloorSystem(
                    "SD04964 5/16\" x 6\" screws cross the edge joist into these two sisters")
           for _gx in _BALCONY_FRONT_POSTS_FT),
         # The rear end posts' upper screws land in the rim's 1 1/2" oversail, north of the
-        # last joist: one ply outboard of it, flush with the rim ends, under both rear base
-        # flashing runs and, since 2026-11-13, through D-S-BALCONY too, where the planks'
+        # last joist: one ply outboard of it, flush with the rim ends, under the rear band
+        # flashing's drip and, since 2026-11-13, through D-S-BALCONY too, where the planks'
         # tab ends bear on it (the door's outriggers that it once stopped short of are gone).
         JoistReinforcement(
             at=pt(ft((_deck_x_w + _deck_x_e) / 2), ft(_bal_y1 + 1.0 / 12.0)), plies=2,
             member=_BALCONY_NORTH_SISTER, blocking=False, extent=(ft(_deck_x_w), ft(_deck_x_e)),
             source="north edge joist doubled into the rim oversail — backing for RL-SG-BALCONY's "
-                   "end-post screws, the bed for TR-SG-BASE-FLASH and the plank ends at "
+                   "end-post screws, under the TR-SG-BAND drip, and the plank ends at "
                    "D-S-BALCONY"),
         *(JoistReinforcement(
             at=pt(ft(_gx), ft(_gy)), plies=1, blocking=True,
@@ -3113,23 +3114,22 @@ BALCONY_APRON = Flashing(
     section=FormedFlashingSection(profile="counter", slope=0.5, hem=inch(0),
                                   upstand=_APRON_UPSTAND_TOP - _APRON_KICK_TOP,
                                   drip=inch(1.5)))
-# ** THE REAR EDGE IS TWO PIECES ACROSS A MOVEMENT GAP (2026-10-16). ** The deck's north edge
-# stands 2 3/4" off the house cladding, and the two are separately founded structures. The
-# house has no WRB to tuck into, so the old single run (uid SGFF02AAAA, retired) was a free
-# upstand in the gap. Now: a deck-side BASE flashing on the plank (aluminium, like the
-# deck), its 3 1/2" upstand at the deck edge; and a house-side COUNTERFLASHING (the house's
-# steel trim coil) screwed through the panel into the girts with the cladding's gasketed
-# screws, its top leg in butyl, lapping 2" down over the upstand with 1/2" of air beside it
-# and ~1" over the plank. Neither touches the other or crosses the gap fastened.
-# Both break beyond D-S-BALCONY's wrapped 3-1/2" casing with a 1/8" side joint. The
-# door pan discharges into the gap; the flashing end transition still needs detailing.
-_REAR_CLAD_Y_IN = -SPEC.house_ext_layers_in       # house cladding face
+# ** THE REAR EDGE IS THE BBD75 BAND TRIM (2026-11-19). ** The deck's north edge stands
+# 1 1/8" off the house cladding, and the two are separately founded. The house's BBD75 band
+# (`BBD_BAND_JOINT`) sits just over the deck, and over the balcony its Transition Trim is
+# one longer brake of the same 55536XX section: 2" back leg behind the upper panel, backed
+# by the derived band girt, the 5 deg shelf out 1" past the capped deck edge and a 1 1/2"
+# drip. Pan water lands on the plank under it. It replaces a deck-side base flashing
+# (TR-SG-BASE-FLASH-W/E, uids NXN52KSTF7/8V0TSMCBW5, retired) and a counterflashing screwed
+# over the battens (2026-10-16 to 2026-11-19). Nothing crosses the gap fastened. The band
+# trim yields to these runs (`cladding_trim.bands.trim_spans`); the W run spills 4" onto
+# W-S-S2 and cuts its band too. Both break beyond D-S-BALCONY's wrapped 3 1/2" casing.
+_REAR_BACK_Y_IN = -(HOUSE_NS_OUTBOARD_IN - BOARD_BATTEN_DEPTH.inches)  # panel back plane
 _REAR_DECK_Y_IN = _y_in_n * 12.0 + _BALCONY_REAR_RIM_OVERSAIL_IN  # capped rim edge
 _REAR_PLANK_TOP = (_deck_walking_surface + _balcony_beam_rise
                    + inch(SPEC.balcony_fall_in_per_ft * _BALCONY_REAR_RIM_OVERSAIL_IN / 12))
-_REAR_UPSTAND_IN = 3.5
-_REAR_BASE_W_IN = 4.0
-_REAR_COUNTER_W_IN = _REAR_CLAD_Y_IN - _REAR_DECK_Y_IN + 0.5
+_REAR_BAND_W_IN = _REAR_BACK_Y_IN - _REAR_DECK_Y_IN + 1.0
+_REAR_BAND_SLOPE = math.tan(math.radians(5.0))  # 55536XX's shelf
 
 
 def _rear_run(y_in, x0, x1):
@@ -3137,26 +3137,14 @@ def _rear_run(y_in, x0, x1):
 
 
 BALCONY_REAR_FLASH = [
-    Flashing(uid=uid, tag=f"TR-SG-BASE-FLASH-{side}", kind=TrimKind.WRB_COUNTERFLASHING,
-             path=_rear_run(_REAR_DECK_Y_IN - _REAR_BASE_W_IN / 2.0, x0, x1),
-             top_elevation=_REAR_PLANK_TOP, depth=inch(_REAR_UPSTAND_IN),
-             thickness=inch(_REAR_BASE_W_IN), material="metal-flat-sheet",
-             host_ref="FS-SG-BALCONY", back_side="left",
-             section=FormedFlashingSection(profile="counter", slope=0.25 / 12,
-                                           upstand=inch(_REAR_UPSTAND_IN), drip=inch(0),
-                                           hem=inch(0)))
-    for uid, side, (x0, x1) in (("NXN52KSTF7", "W", _REAR_BREAKS_FT[0]),
-                                ("8V0TSMCBW5", "E", _REAR_BREAKS_FT[1]))
-] + [
-    Flashing(uid=uid, tag=f"TR-SG-COUNTER-FLASH-{side}", kind=TrimKind.WRB_COUNTERFLASHING,
-             path=_rear_run(_REAR_CLAD_Y_IN - _REAR_COUNTER_W_IN / 2.0, x0, x1),
-             top_elevation=_REAR_PLANK_TOP + inch(_REAR_UPSTAND_IN + 0.75), depth=inch(3),
-             thickness=inch(_REAR_COUNTER_W_IN), material="metal-dark-exterior",
-             back_side="left",
-             section=FormedFlashingSection(profile="counter", slope=0.25 / 12,
-                                           upstand=inch(3), drip=inch(3)))
-    for uid, side, (x0, x1) in (("HPXC1Y5YE6", "W", _REAR_BREAKS_FT[0]),
-                                ("TM7XNG0XE4", "E", _REAR_BREAKS_FT[1]))
+    Flashing(uid=uid, tag=f"TR-SG-BAND-{side}", kind=TrimKind.WRB_COUNTERFLASHING,
+             path=_rear_run(_REAR_BACK_Y_IN - _REAR_BAND_W_IN / 2.0, x0, x1),
+             top_elevation=BBD_BAND_JOINT, depth=inch(3.5), thickness=inch(_REAR_BAND_W_IN),
+             material="bbd-transition-trim", host_ref=host, back_side="left",
+             section=FormedFlashingSection(profile="counter", slope=_REAR_BAND_SLOPE,
+                                           upstand=inch(2), drip=inch(1.5)))
+    for uid, side, host, (x0, x1) in (("HPXC1Y5YE6", "W", "W-S-S1", _REAR_BREAKS_FT[0]),
+                                      ("TM7XNG0XE4", "E", "W-S-S2", _REAR_BREAKS_FT[1]))
 ]
 
 # ============================================================================

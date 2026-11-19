@@ -1,3 +1,22 @@
+## BBD75 band drops to +10'-5 1/2"; the balcony's rear edge is the band trim (2026-11-19, owner)
+
+- **Why.** The rear edge was two pieces: a deck-side base flashing and a house-side
+  counterflashing screwed over the battens. Pan water ran down behind the counter into the
+  gap anyway, and its screws found a girt only by luck.
+- **Taken.** `BBD_BAND_JOINT` (`plan/assemblies/board_batten.py`) moves house-wide from 228" to
+  125.5", so the north and south bands stay one line. Over the balcony the 55536XX section is
+  braked longer (`TR-SG-BAND-W/E`, uids kept from the counter runs): 2" back leg captured under
+  the upper panel on the derived band girt, 5 deg shelf out 1" past the capped deck edge, 1 1/2"
+  drip 2.8" over the plank. The stock trim yields to an authored wall flashing at a joint
+  (`resolve/cladding_trim/bands.trim_spans`); the outlet strip and girt run on. The base runs
+  (uids `NXN52KSTF7`/`8V0TSMCBW5`) are retired. Still breaks at D-S-BALCONY's casing.
+- **The window.** Drip clearance and the 20' panel limit both want the joint at or above ~123.5";
+  the band girt (joint -2" to +1.5") must not displace the 120" storey course, so it starts
+  exactly on that course's top at 125.5". The panels read 11'-4 15/16" below and 19'-9 3/4"
+  above (the gable), against 19'-11 7/16" below before.
+- **Not taken.** Keeping the joint at 19'-0" with an extended counter: still two pieces, still
+  screwed over battens.
+
 ## PR-M-COND-HP3 leaves W-M-STRW (2026-11-18)
 
 - **Why.** The run bored W-M-STRW's studs at ~36" for 67", and that wall's mudroom face is
@@ -8856,3 +8875,14 @@ Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
   panel under 16% MC before spraying (`ccspf_spec.md`).
 - **Not taken.** Housewrap + full-depth R-21 batts (the review's value option): it frees ~$550 but
   needs a warm-side retarder and air-sealing transitions in a garage that sees wet vehicles.
+
+## Garage stem band stays two pieces: band + Z (2026-11-18, owner)
+
+- **Considered.** One brake-formed piece: the 24" Una-Clad stem band with its top folded back
+  onto the ZIP and taped, in place of the band plus `STEM_TOP_Z_FLASHING`. ZIP makes the fold easy.
+- **Kept two pieces.** The band stands on a 1/4" vented standoff (`coil-gap`) that keeps the
+  stem's dew point off the concrete, and it breathes out only at the top, under the Z's drip; its
+  foot is buried 2" below grade. A taped fold seals that only vent. A vented one-piece would need
+  hand-punched slots, which nothing off the shelf does.
+- **Nothing grades it.** `building_science.condensation` reads only the layer function
+  (`checks/building_science/glaser.py`), so a sealed fold would pass the Glaser walk too.

@@ -394,33 +394,36 @@ def test_garage_stem_z_stands_up_behind_the_panel(catlin_model_ro):
     assert all(s.z1_m >= inch_m(-10.0) - 1e-6 for s in zs)
 
 
-def test_balcony_rear_edge_is_two_pieces_that_lap_without_touching(catlin_model_ro):
+def test_balcony_rear_edge_is_the_band_trim_over_the_deck(catlin_model_ro):
+    from typehaus.resolve.cladding_trim.runs import cladding_face
+
     model = catlin_model_ro
-    solids = {s.tag.rsplit("-", 1)[0]: s for s in model.solids
-              if s.tag.startswith(("TR-SG-BASE-FLASH", "TR-SG-COUNTER-FLASH"))}
-    assert set(solids) == {"TR-SG-BASE-FLASH-W", "TR-SG-BASE-FLASH-E",
-                           "TR-SG-COUNTER-FLASH-W", "TR-SG-COUNTER-FLASH-E"}
+    runs = [model.plan.by_tag(f"TR-SG-BAND-{side}") for side in ("W", "E")]
+    solids = {s.tag.rsplit("-", 1)[0]: s for s in model.solids if s.tag.startswith("TR-SG-BAND")}
+    wall = next(w for w in model.walls if w.tag == "W-S-S1")
+    face = cladding_face(wall, next(ly for ly in wall.layers if ly.function == "cladding"))
+    joint = next(j for j in model.plan.library.resolve_assembly(wall.assembly).layers
+                 if j.name == "cladding").panel_joint_elevations[0].meters
+    deck = next(f for f in model.floors if f.tag == "FS-SG-BALCONY")
+    deck_y = max(m.p1[1] for m in deck.members if m.category == "rim")
     door = next(o for o in model.openings if o.tag == "D-S-BALCONY")
-    lo = door.center_along_m - door.width_m / 2
-    wall = next(w for w in model.walls if w.tag == door.host_wall)
-    x0 = min(wall.axis[0][0], wall.axis[1][0])
+    lo = door.center_along_m - door.width_m / 2 + min(wall.axis[0][0], wall.axis[1][0])
     installation = door.doorway.exterior_placement.specification
-    casing_clearance = installation.casing_width.meters + installation.drainage_gap.meters
-    for side in ("W", "E"):
-        base, counter = solids[f"TR-SG-BASE-FLASH-{side}"], solids[f"TR-SG-COUNTER-FLASH-{side}"]
-        # The counterflashing's drip laps the upstand by 2", above the plank, beside it.
-        assert base.z1_m - counter.z0_m >= inch_m(2.0) - 1e-6
-        assert counter.z0_m > base.z0_m + inch_m(0.5)
-        assert min(y for _x, y in counter.outline) < max(y for _x, y in base.outline)
-        # Both end outside the casing, leaving its separate drainage joint unobstructed.
-        for solid in (base, counter):
-            xs = [x for x, _y in solid.outline]
-            assert (max(xs) <= x0 + lo - casing_clearance + 1e-6
-                    or min(xs) >= x0 + lo + door.width_m + casing_clearance - 1e-6)
-    meshes = {k: solids[k].body_mesh.positions for k in solids}
-    gap = min(math.dist(a, b) for a in meshes["TR-SG-BASE-FLASH-W"]
-              for b in meshes["TR-SG-COUNTER-FLASH-W"])
-    assert gap > inch_m(0.25)
+    casing = installation.casing_width.meters + installation.drainage_gap.meters
+    bands = [s for s in model.solids if s.product == "BBD_TRANSITION"
+             and s.host_ref in ("W-S-S1", "W-S-S2")]
+    for run in runs:
+        solid = solids[run.tag]
+        xs = [x for x, _y in solid.outline]
+        # The back leg stands on the joint at the panel back plane; nothing else trims there.
+        assert run.top_elevation.meters == pytest.approx(joint)
+        assert max(y for _x, y in solid.outline) == pytest.approx(-face.back, abs=1e-3)
+        assert not any(min(x for x, _ in b.outline) < max(xs) - 1e-6
+                       and max(x for x, _ in b.outline) > min(xs) + 1e-6 for b in bands)
+        # The drip falls outboard of the capped deck edge, clear above the plank.
+        assert min(y for _x, y in solid.outline) < deck_y - inch_m(0.5)
+        assert solid.z0_m - deck.deck_top_at(sum(xs) / len(xs), deck_y) >= inch_m(0.75)
+        assert max(xs) <= lo - casing + 1e-6 or min(xs) >= lo + door.width_m + casing - 1e-6
 
 
 def test_the_screen_cap_bears_on_tape(catlin_model_ro):

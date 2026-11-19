@@ -608,7 +608,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   KDAT touches aluminium. Net free area 83 cm2/m (DIN 18516-1: 50). Heads: a steel K6 cap
   floors the cavity over every metal-wall window and laps the 58114XX by 1"; the panel end sits
   on a strip; heads are NOT outlets. Band: a 1" outlet strip under the Transition Trim at
-  +19'-0" (77 cm2/m); the upper panel hangs 1/4" over the trim's shelf on no strip (BBD75 p.40). At the four mixed corners the band ends 1/16" short of the BBD75 side's C-Closure, under the corner leg that rides the C (`resolve/cladding_trim/corner_closures.py`). All DERIVED (`resolve/rainscreen_closures.py`, `rainscreen_strips.py`,
+  +10'-5 1/2" (77 cm2/m); the upper panel hangs 1/4" over the trim's shelf on no strip (BBD75 p.40). At the four mixed corners the band ends 1/16" short of the BBD75 side's C-Closure, under the corner leg that rides the C (`resolve/cladding_trim/corner_closures.py`). All DERIVED (`resolve/rainscreen_closures.py`, `rainscreen_strips.py`,
   `opening_head_cap.py`), graded by `integrity.rainscreen_cavity`, billed in `[bug_screens]`.
   Sills, eaves, rakes and corners stay closed; jamb buck returns are a hold point. **The top
   stays closed: the roof deck oversails to the girt face**, pinned by
@@ -730,8 +730,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     `notes/metal_trim_kit.md`). A material's `trim_kit` (`model/cladding_trim.py`: `PBR_KIT`,
     `BBD_KIT`, `CORRUGATED_KIT`) names a `TrimProfile` per condition, and `resolve/cladding_trim/`
     sweeps it from the published section: base, wide/corrugated outside corners, the BBD75 band
-    (one run per N/S wall segment, at +19'-0", Linen White like the panel, clear of every
-    opening head), window/door/small-RO opening trim (every door takes the kit head), and the
+    (one run per N/S wall segment, at +10'-5 1/2", Linen White like the panel, cut at
+    D-S-BALCONY; over the balcony the authored `TR-SG-BAND-W/E` stands in for it), window/door/small-RO opening trim (every door takes the kit head), and the
     W-BW-SCREEN ends. The `TR-H-CORNER-*` runs are gone; `TR-G-STEMZ-*` stays (Metal Sales PVDF
     flat on the stem band). Every exterior dark is coloured from `plan/exterior_palette.py`
     (`METAL`, `WINDOW`; `notes/exterior_darks.md`). `takeoff/cladding_trim.py` bills it by part and stock length with closures,
@@ -749,8 +749,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     is cheaper to install (~9% fewer panels, ~840 screws and no clips against ~2,000 and
     ~1,000). 12" is 3.0x PBR's panel count, which is why `prices.toml` labour sits near the
     top of its band. **Panel length maxes at 20'** (recommended, p.13), so the 31.4' gables
-    joint at +19'-0" with Transition Trim 55536XX: the lower panel is 19'-11 7/16", which is
-    why the band is not at the gutter line (21'-7"; owner, 2026-10-31).
+    joint with Transition Trim 55536XX at +10'-5 1/2" (`BBD_BAND_JOINT`; +19'-0" until
+    2026-11-19): the lower panel is 11'-4 15/16", the upper 19'-9 3/4" to the gable peak, so the
+    joint cannot drop below ~123.5". It sits just over the balcony, where the trim, braked
+    longer (`TR-SG-BAND-W/E`, `params/sunken_garden.py`), oversails the deck edge as its rear
+    flashing; the band girt lands on the 120" course. Never move it without both limits.
     `integrity.cladding_trim_fit` measures that run up the whole facade. PBR and corrugated run
     to 45'.
   - A MANUFACTURER READ, not an engineered item, since 2026-09-22 — `wall_panel/W-A-N1` is
@@ -2495,6 +2498,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     the ICF webs. 162.7 SF, $813-1,627 (156.2 SF until 2026-09-11, when the service door's
     stem gap closed and 3'-6" of bare wall gained the band), the garage's entire base skin, flashed at the top by
     `STEM_TOP_Z_FLASHING`.
+  - **The band and the Z stay two pieces** (owner, 2026-11-18): a one-piece band folded onto
+    the ZIP and taped seals the standoff's only vent, under the Z's drip. The Glaser walk
+    cannot see the difference, so do not reopen it on a clean check (→ DESIGN-LOG.md).
   - **The standoff is not optional and is not about drainage.** A painted sheet laid flat is
     0 perms — a Class I retarder on the cold side of the stem — and produces a real
     `building_science.condensation` FAIL. The 1/4" gap restores outward drying; delete it and
@@ -2642,7 +2648,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   `FS-SG-BALCONY`'s aluminium plank is the porch roof and carries no other
   penetrations — do not switch to surface mounting. The backing is
   `FS-SG-BALCONY.reinforcements` (flank block pairs, front sisters, the doubled north edge
-  joist); the resolver refuses a screw that misses it. Height is what the stock 48" tube
+  joist); the resolver refuses a screw that misses it. The rear edge's flashing is the
+  house's BBD75 band trim braked over the deck (`TR-SG-BAND-W/E`), nothing fastened across
+  the movement gap. Height is what the stock 48" tube
   gives, 40 1/8" (`notes/balcony_fascia_mounts.md`). Its posts stand in the brackets 1.518" outboard of the fascia
   face (`RailingType.fascia_post_offset`, ESR-3485 Fig. 10). `TR-SG-GUTTER` hangs 1" under
   the bracket bottoms (derived from them, 2026-10-31) and `TR-SG-APRON` laps from behind the

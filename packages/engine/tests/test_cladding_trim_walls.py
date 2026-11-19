@@ -20,7 +20,8 @@ def test_trim_inventory_by_profile(catlin_model_ro):
     assert counts == {
         "PBR_WINDOW_JAMB": 36, "WINDOW_JAMB_CUSTOM": 46, "WINDOW_SILL_CUSTOM": 41,
         "OPENING_HEAD": 41,  # 42 until WIN-S-BED3-N went (2026-11-16)
-        "PBR_BASE": 11, "BBD_BASE": 10, "CORRUGATED_BASE": 12, "BBD_TRANSITION": 10,
+        "PBR_BASE": 11, "BBD_BASE": 10, "CORRUGATED_BASE": 12,
+        "BBD_TRANSITION": 8,  # 10 until TR-SG-BAND took the balcony (2026-11-19)
         "BBD_PANEL_STARTER": 6, "CORRUGATED_JAMB": 8, "DOOR_HEAD_CUSTOM": 6,
         "WIDE_OUTSIDE_CORNER": 8, "CORRUGATED_OUTSIDE_CORNER": 4,
         "BBD_C_CLOSURE": 12,  # three sticks under each mixed corner's BBD75 leg
@@ -51,7 +52,7 @@ def test_catalog_door_takes_the_kit_jambs_and_head(catlin_model_ro):
     assert sorted(s.product for s in deck) == [
         "BBD_PANEL_STARTER", "BBD_PANEL_STARTER", "DOOR_HEAD_CUSTOM"]
     bands = [s for s in pieces if s.product == "BBD_TRANSITION"]
-    assert bands and all(s.z0_m / M_PER_IN < 228 < s.z1_m / M_PER_IN for s in bands)
+    assert bands and all(s.z0_m / M_PER_IN < 125.5 < s.z1_m / M_PER_IN for s in bands)
 
 
 def test_penetrations_under_six_inches_take_no_trim(catlin_model_ro):

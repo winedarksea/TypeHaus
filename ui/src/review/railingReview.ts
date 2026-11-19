@@ -87,7 +87,7 @@ for (const sample of cases) {
     || sample.name.startsWith("Shared head") || sample.name.startsWith("Porch leg");
   const context = model.solids!.filter(s => s.tag.startsWith("TR-SG-FASCIA-")
     || s.tag.startsWith("TR-SG-GUTTER-") || s.tag.startsWith("TR-SG-APRON-")
-    || (sample.name.startsWith("Rear end") && s.tag.startsWith("TR-SG-BASE-FLASH-")));
+    || (sample.name.startsWith("Rear end") && s.tag.startsWith("TR-SG-BAND-")));
   // The cast columns are the porch guard's posts at its leg ends.
   const visible = isStair ? [...stairSolids, ...model.solids!.filter(s => s.tag === "SL-SG-STAIRPAD"
     || /^PT-SG-B[RF][13]$/.test(s.tag))] : [...guard, ...context];

@@ -73,10 +73,12 @@ opening surfaces do not add purchase quantities: the existing opening-flashing a
 and trim-inclusive siding rates still buy them. The same formed-sheet representation
 replaces the garage stem drips and balcony drip/counterflashing; gutters remain unchanged.
 The stem Z (`TR-G-STEMZ-*`) is a `counter` section, its 2″ back leg standing up the ZIP face behind
-the panel, ZIP tape lapped over it. The balcony's rear edge is two pieces across the movement gap: a deck-side
-aluminium base flashing with a 3 1/2″ upstand, and a house-side steel counterflashing lapping
-2″ over it with 1/2″ of air beside it. Neither is fastened across the gap, and both break at
-D-S-BALCONY.
+the panel, ZIP tape lapped over it. The balcony's rear edge is the house's BBD75 band trim
+(2026-11-19): the band sits at +10'-5 1/2″, just over the deck, and there the 55536XX section
+is braked longer (`TR-SG-BAND-W/E`), its 2″ back leg captured under the upper panel on the
+band girt, its 5° shelf running 1″ past the capped deck edge to a 1 1/2″ drip ~2.8″ above the
+plank. Nothing crosses the movement gap fastened; it breaks at D-S-BALCONY's casing. It
+replaced a deck-side base flashing and a counterflashing screwed over the battens.
 
 The existing construction specifications still govern, including their open substrate
 approval item: [opening flashing specification](opening_flashing_spec.md) and
