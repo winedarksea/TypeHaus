@@ -88,16 +88,16 @@ def floor_corridors(model: ResolvedModel) -> list[Corridor]:
     """
     from typehaus.resolve.mep_envelopes import run_polylines
     from typehaus.resolve.mep_packing import run_occupants
-    from typehaus.resolve.mep_queries import clear_bay_width_m, joist_line_stations
+    from typehaus.resolve.mep_queries import bay_edge_faces, clear_bay_width_m
 
     # Derived ONCE for the whole house, not once per bay: a floor has a hundred-odd bays and
     # this reading now walks every VentRun's roof geometry as well.
     lines_by_tag = {tag: path for _kind, tag, path, _z in run_polylines(model)}
     out: list[Corridor] = []
     for floor in model.floors:
-        lines = joist_line_stations(floor)
+        faces = bay_edge_faces(floor)
         clear = clear_bay_width_m(floor)
-        if len(lines) < 2 or clear is None or clear <= 0:
+        if len(faces) < 2 or clear is None or clear <= 0:
             continue
         members = [m for m in floor.members if m.z0_m is not None]
         if not members:
@@ -111,17 +111,17 @@ def floor_corridors(model: ResolvedModel) -> list[Corridor]:
         span = _member_span(floor, along)
         if span is None:
             continue
-        for index in range(len(lines) - 1):
-            gap = lines[index + 1] - lines[index]
-            if gap <= clear:
+        # Gated centre to centre, measured face to face: an edge rim is narrower than a chord.
+        for (lo_a, near), (far, hi_b) in zip(faces, faces[1:], strict=False):
+            if (far + hi_b) / 2.0 - (lo_a + near) / 2.0 <= clear:
                 continue  # a doubled pair or an end strip, not a field bay
-            centre = (lines[index] + lines[index + 1]) / 2.0
+            centre, bay = (near + far) / 2.0, min(far - near, clear)
             taken, gaps, packing = _bay_taken(floor, occupants, lines_by_tag, along,
-                                              centre, clear)
+                                              centre, bay)
             out.append(Corridor(
                 tag=f"{floor.tag}:bay@{centre:.4f}", kind="bay", axis=along,
                 station=centre, z0_m=low, z1_m=high,
-                clear_width_m=max(clear - taken, 0.0),
+                clear_width_m=max(bay - taken, 0.0),
                 lo_m=span[0], hi_m=span[1], gaps=gaps,
                 occupied_z=packing.z_m if packing is not None and packing.tier else None,
                 occupants=packing.tier if packing is not None else ()))

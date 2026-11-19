@@ -116,15 +116,15 @@ def test_the_two_arms_arrive_above_the_collector_they_tie_into(catlin_model_ro) 
 def test_the_bay_and_its_crossing_window_are_hand_derivable(catlin_model_ro) -> None:
     """§3, from the authored `JoistSpec`: lines at y = 16n, bay centres at 8 + 16n, a
     12.5" clear bay between 3.5" chords, and an 8 7/8" chord-to-chord crossing window
-    from 109.625" to 118.5"."""
+    from 109.625" to 118.5". The y = 0 edge is a 1 1/4" rim centred at 1.125"; its bay
+    runs face to face, 1.75..14.25, centred at 8"."""
     from typehaus.resolve.mep_queries import clear_bay_width_m, joist_line_stations
     from typehaus.routing.corridors import crossing_window, floor_corridors
 
     floor = next(f for f in catlin_model_ro.floors if f.tag == "FS-S-WEST")
     assert floor.direction == "x"
     lines = {round(_in(v), 3) for v in joist_line_stations(floor)}
-    # y = 0 is the south LSL edge rim since 2026-11-18, not a bay edge.
-    assert {16.0, 32.0, 48.0} <= lines and 0.0 not in lines
+    assert {1.125, 16.0, 32.0, 48.0} <= lines and 0.0 not in lines
     assert _in(clear_bay_width_m(floor)) == pytest.approx(12.5, abs=0.001)
 
     low, high = crossing_window(catlin_model_ro, floor)
@@ -135,8 +135,9 @@ def test_the_bay_and_its_crossing_window_are_hand_derivable(catlin_model_ro) -> 
     bays = [c for c in floor_corridors(catlin_model_ro)
             if c.tag.startswith("FS-S-WEST")]
     assert bays and all(c.axis == "x" for c in bays)
-    # The edge bay (rim to the 16" line) is no corridor: a rim is not a bay edge.
-    assert {round(_in(c.station), 3) for c in bays} >= {24.0, 40.0}
+    assert {round(_in(c.station), 3) for c in bays} >= {8.0, 24.0, 40.0}
+    edge = next(c for c in bays if abs(_in(c.station) - 8.0) < 1e-3)
+    assert not edge.gaps and _in(edge.clear_width_m) == pytest.approx(12.5, abs=0.001)
 
 
 def test_a_floor_bay_is_decremented_by_what_is_ALREADY_in_it(catlin_model_ro) -> None:
@@ -148,7 +149,7 @@ def test_a_floor_bay_is_decremented_by_what_is_ALREADY_in_it(catlin_model_ro) ->
 
     The two limits of that reading are DISCLOSED rather than papered over.
     """
-    from typehaus.resolve.mep_queries import clear_bay_width_m
+    from typehaus.resolve.mep_queries import bay_edge_faces, clear_bay_width_m
     from typehaus.routing.corridors import floor_corridors
 
     floor = next(f for f in catlin_model_ro.floors if f.tag == "FS-S-WEST")
@@ -158,7 +159,12 @@ def test_a_floor_bay_is_decremented_by_what_is_ALREADY_in_it(catlin_model_ro) ->
     empty = [c for c in bays if not c.gaps]
     assert occupied and empty, "FS-S-WEST holds the ERV radials in some of its bays"
 
-    assert all(c.clear_width_m == pytest.approx(structural) for c in empty)
+    # An empty bay is its own face gap, capped at the field's: one beside a trimmer pack
+    # is narrower than 12.5".
+    faces = bay_edge_faces(floor)
+    gap = {round((a[1] + b[0]) / 2.0, 6): b[0] - a[1] for a, b in zip(faces, faces[1:])}
+    assert all(c.clear_width_m == pytest.approx(min(structural, gap[round(c.station, 6)]))
+               for c in empty)
     assert all(c.clear_width_m < structural for c in occupied)
     # A 4" duct in the bay takes 4" of it, and the next 4" duct is graded against what is
     # left rather than against the joists.

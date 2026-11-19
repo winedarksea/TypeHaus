@@ -31,6 +31,7 @@ from typehaus.resolve.mep_concrete import (  # noqa: F401  (re-exported: see the
 from typehaus.resolve.mep_crossings import member_window
 from typehaus.resolve.mep_tie_ins import drain_tie_ins
 from typehaus.resolve.model import (
+    EDGE_RIM_PREFIX,
     FramedMember,
     ResolvedConduitRun,
     ResolvedFloor,
@@ -45,7 +46,8 @@ from typehaus.resolve.model import (
 _JOIST_BREADTH_FALLBACK_M = inch(1.5).meters
 #: What actually bounds a joist bay. ``blocking`` sits BETWEEN joists and ``rim``/``header``
 #: run around the perimeter, so none of the three is a bay edge; a ``trimmer`` or a
-#: ``sister_joist`` is one, because both are a doubled joist at an opening.
+#: ``sister_joist`` is one, because both are a doubled joist at an opening. So is an edge rim
+#: (``EDGE_RIM_PREFIX``), laid on the field's outermost line: it bounds the end bay.
 _BAY_EDGE_CATEGORIES = ("joist", "trimmer", "sister_joist")
 _PIPE_CAVITY_CLEARANCE_M = inch(0.25).meters  # boring/annular allowance inside a stud bay
 _STUD_BAY_TRAVEL_M = inch(16).meters  # one standard bay: horizontal in-wall travel note
@@ -280,13 +282,23 @@ def is_parallel_to_floor(path: list[tuple[float, float]], floor) -> bool:
 
 
 def bay_edge_members(floor: ResolvedFloor) -> list[FramedMember]:
-    """The floor members that actually bound a joist bay.
+    """The floor members that actually bound a joist bay, edge rims included.
 
     Reading every member manufactures phantom bay edges out of blocking (which sits
     mid-bay by definition) and out of the rim, and a phantom edge inside a bay is what
     turns a legal parallel run into a "straddles a joist line" conflict.
     """
-    return [m for m in floor.members if m.category in _BAY_EDGE_CATEGORIES]
+    return [m for m in floor.members
+            if m.category in _BAY_EDGE_CATEGORIES or m.child_key.startswith(EDGE_RIM_PREFIX)]
+
+
+def _field_members(floor: ResolvedFloor) -> list[FramedMember]:
+    """The bay edges less the edge rims: what sets the field's spacing and section."""
+    return [m for m in bay_edge_members(floor) if not m.child_key.startswith(EDGE_RIM_PREFIX)]
+
+
+def _station(floor: ResolvedFloor, member: FramedMember) -> float:
+    return member.p0[1] if floor.direction == "x" else member.p0[0]
 
 
 def joist_line_stations(floor: ResolvedFloor) -> list[float]:
@@ -296,10 +308,20 @@ def joist_line_stations(floor: ResolvedFloor) -> list[float]:
     ``duct_bay_occupancy`` below asks whether one run straddles one, and
     ``mep.duct_joist_bay_occupancy`` asks whether one lies *between* two runs — a joist
     between two ducts is what makes them two bays' worth of air rather than a hanger-gap
-    conflict.
+    conflict. An edge rim's station is its own centreline, set to the stud face.
     """
-    along_x = floor.direction == "x"
-    return sorted({(m.p0[1] if along_x else m.p0[0]) for m in bay_edge_members(floor)})
+    return sorted({_station(floor, m) for m in bay_edge_members(floor)})
+
+
+def bay_edge_faces(floor: ResolvedFloor) -> list[tuple[float, float]]:
+    """Each bay edge's (low, high) faces across the joists, sorted: a 1 1/4" rim is not a
+    3 1/2" chord, so a bay is measured face to face, not centre to centre."""
+    widths: dict[float, float] = {}
+    for m in bay_edge_members(floor):
+        station = _station(floor, m)
+        widths[station] = max(widths.get(station, 0.0), cross_section(m.profile).width_m)
+    return [(station - width / 2.0, station + width / 2.0)
+            for station, width in sorted(widths.items())]
 
 
 def clear_bay_width_m(floor: ResolvedFloor) -> float | None:
@@ -309,12 +331,12 @@ def clear_bay_width_m(floor: ResolvedFloor) -> float | None:
     against an authored ``JoistSpec``; a reader that has only a ``ResolvedFloor`` — the
     duct-against-duct occupancy check — has to recover it from the members. The *median*
     line-to-line step, not the minimum: an end strip and a doubled line at an opening are
-    both narrower than the field and neither is the bay a duct rides in. None when the floor
-    has fewer than two bay edges and there is therefore no bay.
+    both narrower than the field and neither is the bay a duct rides in. Edge rims are left
+    out: the field is the joists'. None when the floor has fewer than two joist lines.
     """
-    lines = joist_line_stations(floor)
-    edges = bay_edge_members(floor)
-    if len(lines) < 2 or not edges:
+    edges = _field_members(floor)
+    lines = sorted({_station(floor, m) for m in edges})
+    if len(lines) < 2:
         return None
     steps = sorted(lines[i + 1] - lines[i] for i in range(len(lines) - 1))
     breadths = {cross_section(m.profile).width_m for m in edges}
@@ -358,7 +380,8 @@ def duct_bay_occupancy(path: list[tuple[float, float]], width_m: float, depth_m:
     # does not hold. Reading all three as "a duct may cross here" would silently permit an 8"
     # round hole through an 11 7/8" I-joist web, which no chart allows — so a crossing on
     # anything but an open web still wants a soffit or a chase.
-    window = member_window(floor, edges[0]) if edges else None
+    field = [m for m in edges if not m.child_key.startswith(EDGE_RIM_PREFIX)]
+    window = member_window(floor, field[0]) if field else None
     opening_m = (window.height_m
                  if window is not None and window.kind == "open_web" else None)
 
@@ -369,7 +392,7 @@ def duct_bay_occupancy(path: list[tuple[float, float]], width_m: float, depth_m:
     # 11 7/8" floor truss has a 3 1/2" chord and an 11 7/8" I-joist a 2 1/2" flange, so on 16"
     # centres a hardcoded breadth credits 14 1/2" of clear bay where a truss leaves 12 1/2"
     # and an I-joist 13 1/2". Two inches is the difference between a 12" duct fitting and not.
-    breadths = {cross_section(m.profile).width_m for m in edges}
+    breadths = {cross_section(m.profile).width_m for m in field}
     clear_width_m = spacing_m - (max(breadths) if breadths else _JOIST_BREADTH_FALLBACK_M)
     for i in range(len(path) - 1):
         a, b = path[i], path[i + 1]
