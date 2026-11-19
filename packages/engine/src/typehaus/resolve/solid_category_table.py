@@ -177,6 +177,9 @@ ROWS: tuple[C, ...] = (
     # A free wall end's board and its paint: sheet_goods / coating_areas bill model.wall_ends.
     C("wall_end_board", trade="drywall", ifc_class=_COVER, ifc_predefined="CLADDING",
       billed_elsewhere=True),
+    # A leafless through opening's return board and paint: billed off model.passage_wraps.
+    C("passage_return", trade="drywall", ifc_class=_COVER, ifc_predefined="CLADDING",
+      material_refile="finish", billed_elsewhere=True),
     # A stool's solid-surface picture frame is the fabricator's (``material_refile``).
     C("window_return", trade="drywall", ifc_class=_COVER, ifc_predefined="CLADDING",
       material_refile="finish", billed_elsewhere=True),

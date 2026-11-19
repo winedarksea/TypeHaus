@@ -145,3 +145,27 @@ def test_a_leafless_passage_is_wrapped_with_corner_bead_on_both_faces(catlin_mod
     assert not any("AO-B-BRICK-DOOR" in t.tags for t in trims)
     rows = {r["material"]: r["net_area_sqft"] for r in passage_return_finish_rows(catlin_model_ro)}
     assert rows["gwb-mr"] == pytest.approx(round((2 * 78.5 + 32.0) * 1.75 / 144, 1))
+    # The wrap is a record now, with its board and paint drawn on the opening.
+    assert {w.room for w in catlin_model_ro.passage_wraps if w.opening == "D-S-STUDY2"} \
+        == {"RM-S-HALL", "RM-S-STUDY2"}
+    drawn = {s.tag for s in catlin_model_ro.solids if s.host_ref == "D-S-STUDY2"
+             and s.category == "passage_return"}
+    assert {"D-S-STUDY2-wrap-a-head", "D-S-STUDY2-wrap-a-paint-jamb-left"} <= drawn
+
+
+def test_a_pass_through_off_the_floor_returns_across_its_sill(catlin_model_ro):
+    """D-S-STUDY2 lifted to a 30" x 23.62" pass-through at 0.9 m: jambs, head and a sill
+    return on each face, 2 x 23.62 + 2 x 30 = 107.24" of bead a face."""
+    from typehaus.resolve.drywall_trims import resolve_drywall_trims
+
+    model = copy.copy(catlin_model_ro)
+    model.solids = list(catlin_model_ro.solids)
+    model.passage_wraps = []
+    model.openings = [dataclasses.replace(o, sill_m=0.9, height_m=0.6)
+                      if o.tag == "D-S-STUDY2" else o for o in catlin_model_ro.openings]
+    resolve_drywall_trims(model.plan, model)
+    wraps = [w for w in model.passage_wraps if w.opening == "D-S-STUDY2"]
+    assert len(wraps) == 2 and all(w.sill and w.head and w.jambs == 2 for w in wraps)
+    assert all(w.bead_length_m / _IN == pytest.approx(107.24, abs=0.01) for w in wraps)
+    sills = [s for s in model.solids if s.tag.endswith("-sill") and s.host_ref == "D-S-STUDY2"]
+    assert len(sills) == 4  # board and paint, each face

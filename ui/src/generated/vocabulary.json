@@ -267,6 +267,7 @@
     "pad": 8422021,
     "panel_strap": 12106431,
     "partition": 11699540,
+    "passage_return": 15592419,
     "penetration_seal": 15906905,
     "pipe_drain": 3355448,
     "pipe_gas": 14270259,
@@ -500,6 +501,7 @@
     "pad": 8422021,
     "panel_strap": 12106431,
     "partition": 11699540,
+    "passage_return": 15592419,
     "penetration_seal": 15906905,
     "pipe_drain": 3355448,
     "pipe_gas": 14270259,
@@ -762,6 +764,9 @@
     "panel_strap": [
       "roofing"
     ],
+    "passage_return": [
+      "drywall"
+    ],
     "penetration_seal": [
       "plumbing"
     ],
@@ -964,6 +969,7 @@
     "opening_sill_pan": "openings",
     "pad": "concrete",
     "panel_strap": "roofing",
+    "passage_return": "drywall",
     "penetration_seal": "plumbing",
     "pipe_drain": "plumbing",
     "pipe_gas": "plumbing",

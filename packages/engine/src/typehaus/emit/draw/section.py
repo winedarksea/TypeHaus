@@ -51,6 +51,7 @@ from typehaus.emit.draw.section_members import (
 from typehaus.model.enums import SliceKind
 from typehaus.model.views import Slice
 from typehaus.quantities import M_PER_IN, m, pt
+from typehaus.resolve.coatings import is_coating
 from typehaus.resolve.geometry_slice import CutPlane, ring_intervals, slice_part
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
 from typehaus.resolve.roof_geometry import roof_plane_z
@@ -359,11 +360,13 @@ def _emit_solid_cut(b, model, solid, plane: CutPlane, crop) -> None:
     (two lines) but moves 212 golden fields (spf -> lumber, ...): a drawing change of its own.
     """
     element = model.geometry.by_uid(solid.uid)
-    if element is None:
+    # A return's paint skin is a viewer's film, never a cut solid (resolve/coatings.py).
+    if element is None or (solid.category in ("window_return", "passage_return")
+                           and is_coating(model.plan.library, solid.material)):
         return
     tub_insulation = solid.category in {"tub_batt", "tub_insulation_return"}
     layer = ("A-WALL-INSU" if tub_insulation else
-             "A-WALL-FINI" if solid.category == "window_return" else
+             "A-WALL-FINI" if solid.category in ("window_return", "passage_return") else
              "S-FRAM" if solid.category in ("sill_plate", "sill_gasket") else
              "A-SLAB" if in_slab_family(solid.category) else "S-FNDN")
     # Backfill names no material and would default to concrete stipple: draw it as outline.

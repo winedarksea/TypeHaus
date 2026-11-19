@@ -129,3 +129,31 @@ class ResolvedWallEnd:
     coating: str | None
     area_m2: float
     height_m: float
+
+
+@dataclass(frozen=True)
+class ResolvedPassageWrap:
+    """One gypsum face of a leafless through opening's wrap (``resolve/drywall_passage_wraps``):
+    its bead and its share of the return. Its board and paint solids are in ``model.solids``.
+    """
+
+    opening: str
+    storey: str
+    room: str | None
+    height_m: float  # this side's finished floor (or the sill) to the head
+    width_m: float
+    jambs: int  # jambs with board beside them on this face
+    head: bool
+    sill: bool  # a pass-through's sill return (an opening off the floor)
+    depth_m: float  # this face's share of the reveal between the two faces' boards
+    finish: tuple[tuple[str, float], ...]  # (material, thickness): board and coatings
+
+    @property
+    def bead_length_m(self) -> float:
+        across = (1 if self.head else 0) + (1 if self.sill else 0)
+        return self.jambs * self.height_m + across * self.width_m
+
+    @property
+    def return_area_m2(self) -> float:
+        return self.bead_length_m * self.depth_m
+

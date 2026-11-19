@@ -1,4 +1,4 @@
-"""A leafless passage's return strips by installed area, as window returns bill theirs.
+"""A leafless through opening's return strips by installed area, as window returns bill theirs.
 
 The wall's own finish rows stop at the rough opening; the beads bill in ``drywall_trims``
 (→ resolve/drywall_passage_wraps.py). Like the beads, nothing bills without a DrywallStandard.
@@ -7,7 +7,6 @@ The wall's own finish rows stop at the rough opening; the beads bill in ``drywal
 from collections import defaultdict
 
 from typehaus.resolve.drywall_led import drywall_standard
-from typehaus.resolve.drywall_passage_wraps import passage_wrap_faces
 from typehaus.resolve.model import ResolvedModel
 
 _M2_TO_FT2 = 10.7639104167
@@ -16,9 +15,8 @@ _M2_TO_FT2 = 10.7639104167
 def passage_return_finish_rows(model: ResolvedModel) -> list[dict[str, object]]:
     if drywall_standard(model.plan)[0] is None:
         return []
-    materials = {m.tag: m for m in model.plan.library.materials}
     areas: dict[tuple[str, float], float] = defaultdict(float)
-    for face in passage_wrap_faces(model, materials):
+    for face in model.passage_wraps:
         for material, thickness in face.finish:
             areas[(material, thickness)] += face.return_area_m2
     return [{"scope": "passage return", "function": "finish", "material": material,

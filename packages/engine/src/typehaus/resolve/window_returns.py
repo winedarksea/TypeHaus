@@ -16,6 +16,7 @@ from __future__ import annotations
 from dataclasses import replace
 
 from typehaus.findings import Finding, Result, Severity
+from typehaus.resolve.coatings import COATING_SKIN_M
 from typehaus.resolve.geometry import opening_center, wall_frame
 from typehaus.resolve.geometry_millwork import window_stool_prism
 from typehaus.resolve.geometry_openings import opening_parts
@@ -276,8 +277,23 @@ def _fit_return(wall: ResolvedWall, opening: ResolvedOpening,
                 ("jamb-right-front", ring(inner_right, half, near, far), bottom, head_top),
                 ("head-front", ring(-half, half, near, far), head_top, top),
             ))
+        if coating and layer.thickness_m == 0:
+            # A coating takes no depth: draw it as a skin stood off each exposed reveal face
+            # (``coatings.COATING_SKIN_M``). Its material is the room's coat: room_paint has
+            # already resolved the wall's room face to it.
+            skin = COATING_SKIN_M
+            face_left, face_right = -half + lining + backing, half - lining - backing
+            under = top - backing
+            pieces = [
+                ("paint-jamb-left", ring(face_left, face_left + skin, near, frame_face),
+                 bottom, under - skin),
+                ("paint-jamb-right", ring(face_right - skin, face_right, near, frame_face),
+                 bottom, under - skin),
+                ("paint-head", ring(face_left, face_right, near, frame_face),
+                 under - skin, under),
+            ]
         for edge, outline, z0, z1 in pieces:
-            if layer.thickness_m == 0:
+            if layer.thickness_m == 0 and not edge.startswith("paint-"):
                 continue
             solids.append(ResolvedSolid(
                 uid=f"{opening.uid}-RETURN-{index}-{edge}",

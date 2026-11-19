@@ -33,7 +33,8 @@ KIND_POLICY: dict[str, Treatment] = {
                      "trellis"), _D),
     # Thin trim: printed only where it is already thick enough.
     **dict.fromkeys(("cladding_trim", "baseboard", "door_casing", "window_return",
-                     "window_stool", "gutter", "opening_lining", "wall_end_board"), _T),
+                     "window_stool", "gutter", "opening_lining", "wall_end_board",
+                     "passage_return"), _T),
     # Site and landscape.
     **dict.fromkeys(("plant", "earth", "backfill_native", "backfill_cap", "footing", "sub_slab",
                      "drain_tile", "french_drain", "drywell", "area_drain", "area_drain_riser",

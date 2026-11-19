@@ -9,6 +9,7 @@ from shapely.geometry import Polygon
 
 from typehaus.library.materials import ALL_MATERIALS
 from typehaus.model import Library, Material, Storey, ft
+from typehaus.resolve.coatings import COATING_SKIN_M
 from typehaus.resolve.geometry import wall_frame
 from typehaus.resolve.geometry_openings import opening_parts
 from typehaus.resolve.model import (
@@ -76,7 +77,8 @@ def test_pieces_fit_frame_and_never_overlap_glazing_or_each_other(return_model):
     model = return_model()
     assert not resolve_window_returns(model)
     reveal, = model.window_returns
-    assert len(model.solids) == 3  # the board's jambs and head; a coating has no solid
+    # The board's jambs and head, and the coating's skin on each (it takes no depth).
+    assert len(model.solids) == 6
     assert {layer.material_ref for layer in reveal.layers} == {'gwb', 'latex-paint'}
     _assert_no_overlap(model.solids)
     frame = opening_parts(model.walls[0], model.openings[0], None)
@@ -221,13 +223,16 @@ def test_beads_load_and_price_by_length_and_reach_estimate_csv(return_model, tmp
         assert row['total_low'] == pytest.approx(row['quantity'] * rate)
 
 
-def test_zero_thickness_coating_bills_surface_without_degenerate_solids(return_model):
+def test_zero_thickness_coating_bills_surface_and_draws_a_skin(return_model):
     model = return_model()
     wall = model.walls[0]
     model.walls[0] = replace(wall, layers=(replace(wall.layers[0], thickness_m=0),
                                          *wall.layers[1:]))
     assert not resolve_window_returns(model)
-    assert len(model.solids) == 3
-    assert all(s.material == 'gwb' for s in model.solids)
+    assert sorted(s.material for s in model.solids) == ['gwb'] * 3 + ['latex-paint'] * 3
+    skins = [s for s in model.solids if s.material == 'latex-paint']
+    assert all(min(Polygon(s.outline).bounds[2] - Polygon(s.outline).bounds[0],
+                   Polygon(s.outline).bounds[3] - Polygon(s.outline).bounds[1],
+                   s.z1_m - s.z0_m) == pytest.approx(COATING_SKIN_M) for s in skins)
     assert next(r['net_area_sqft'] for r in window_return_finish_rows(model)
                 if r['material'] == 'latex-paint') > 0

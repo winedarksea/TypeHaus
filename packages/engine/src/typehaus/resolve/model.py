@@ -24,6 +24,7 @@ from typehaus.resolve.model_trim import (
     ResolvedBaseRun,
     ResolvedDoorCasing,
     ResolvedDrywallTrim,
+    ResolvedPassageWrap,
     ResolvedWallEnd,
 )
 from typehaus.resolve.model_window_returns import ResolvedWindowReturn
@@ -1799,6 +1800,8 @@ class ResolvedModel:
     # Drywall beads and shadow-gap LED reveals off the house's DrywallStandard (#103).
     drywall_trims: list[ResolvedDrywallTrim] = field(default_factory=list)
     wall_ends: list[ResolvedWallEnd] = field(default_factory=list)
+    # A leafless through opening's wrap, one record per gypsum face (#122).
+    passage_wraps: list[ResolvedPassageWrap] = field(default_factory=list)
     conditions: list[BoundaryCondition] = field(default_factory=list)
     stack_edges: list[StackEdge] = field(default_factory=list)
     # Derived wall-line chains (#43): collinear within a storey, stacked across them,

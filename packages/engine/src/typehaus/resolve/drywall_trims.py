@@ -4,7 +4,8 @@ The house's ``DrywallStandard`` names one bead per edge kind; this stage finds t
 
 * ``outside_corner`` — each reflex vertex of a room ring with gypsum on both faces, finished
   floor to ceiling less any tile band over it; a gypsum soffit's free bottom edges; and a
-  leafless passage's wrap, both jambs and the head on each face (``drywall_passage_wraps``);
+  leafless through opening's wrap, both jambs, the head and any sill on each face
+  (``drywall_passage_wraps``);
   and a free wall end's board, two corners each (``wall_ends``);
 * ``termination`` (J-bead, picked by the board's thickness) — where a gypsum arc meets a
   bare face along a ring (floor to ceiling), and along a banded gypsum layer whose edge
@@ -98,13 +99,14 @@ class TrimContext:
 
 def resolve_drywall_trims(plan, model: ResolvedModel) -> list[Finding]:
     from typehaus.resolve import drywall_trim_edges as edges
-    from typehaus.resolve.drywall_passage_wraps import passage_beads
+    from typehaus.resolve.drywall_passage_wraps import passage_wraps
     from typehaus.resolve.wall_ends import wall_end_boards
 
     standard, findings = drywall_standard(plan)
     findings.extend(host_shadow_gap_runs(model, standard))
     ctx = TrimContext(model, standard)
     edges.window_returns(ctx)
+    passage_wraps(ctx)  # clears its records and solids even without a standard
     if standard is not None:
         edges.led_profiles(ctx)
         for room in sorted(model.rooms, key=lambda r: r.uid):
@@ -113,7 +115,6 @@ def resolve_drywall_trims(plan, model: ResolvedModel) -> list[Finding]:
         edges.soffit_corners(ctx)
         edges.tile_reveals(ctx)
         edges.door_beads(ctx)
-        passage_beads(ctx)
         wall_end_boards(ctx)
         _stair_underside_beads(ctx)
     model.drywall_trims = ctx.records

@@ -199,7 +199,8 @@ def test_structural_solids_account_for_every_resolved_solid(catlin_model) -> Non
     # These parts have dedicated area or lineal-foot takeoffs.
     measured = [solid for solid in catlin_model.solids
                 if not solid.derived and solid.tag not in steel_tags
-                and solid.category not in {"fireblock", "window_return", "tub_insulation_return",
+                and solid.category not in {"fireblock", "window_return", "passage_return",
+                                           "tub_insulation_return",
                                            "bug_screen", "sill_plate", "sill_gasket",
                                            "grounding_electrode", "grounding_conductor"}]
     assert measured, "every solid is derived — the fixture is wrong, not the rule"
@@ -434,6 +435,8 @@ _BOM_COVERAGE: dict[str, tuple[str, ...]] = {
     # A stone stool is the slab yard's, so the stools reach both (→ takeoff/countertops.py).
     "window_stools": ("hardwood", "countertops"),
     "window_returns": ("envelope_layers", "drywall_trims"),
+    # A leafless through opening's wrap: its return strips ride envelope_layers' finish rows.
+    "passage_wraps": ("envelope_layers",),
     # Beads and LED shadow-gap beads by the LF, off the DrywallStandard (#103).
     "drywall_trims": ("drywall_trims",),
     "eave_sealing_runs": ("cladding_trim",),

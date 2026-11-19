@@ -64,15 +64,17 @@ def test_returns_reach_viewer_and_glb_with_material_and_trade(catlin_model_ro):
     model = catlin_model_ro
     solids = {s.uid: s for s in model.solids if s.category == 'window_return'}
     # 39 returns x jambs + head, 3 laps on each of the 37 bucked, and a sill lap per board
-    # under 33 gypsum stools and 4 liners' 4 layers; paint has no solid.
-    assert len(solids) == 277
+    # under 33 gypsum stools and 4 liners' 4 layers (277); and the paint's skin on each of
+    # the 35 gypsum reveals' jambs and head (105, 2026-11-19).
+    assert len(solids) == 382
     payload = model_to_dict(model)
     rows = [row for row in payload['solids'] if row['category'] == 'window_return']
     assert {row['uid'] for row in rows} == set(solids)
     # A solid-surface frame is the fabricator's, gypsum the drywaller's, and a liner's
     # layers under a stool go to whoever hangs that layer on the wall.
     trade = {'solid-surface-fabricated': 'countertops', 'pvc-panel': 'carpentry',
-             'spf': 'framing', 'humid-room-membrane': 'insulation'}
+             'spf': 'framing', 'humid-room-membrane': 'insulation', 'paint-wall': 'paint',
+             'paint-wet': 'paint', 'latex-paint-accent': 'paint'}
     assert all(row['host_ref'] and row['trades'] == [trade.get(row['material'], 'drywall')]
                for row in rows)
     gltf, _ = emit_gltf_dict(model)
@@ -102,7 +104,7 @@ def test_returns_export_as_ifc_coverings(catlin_model_ro, catlin_ifc_path):
                 if ifcopenshell.util.element.get_psets(p).get(PSET_SOURCE, {}).get(
                     'category') == 'window_return'}
     solids = [s for s in model.solids if s.category == 'window_return']
-    assert len(products) == len(solids) == 277
+    assert len(products) == len(solids) == 382
     for solid in solids:
         product = products[solid.tag]
         assert product.PredefinedType == 'CLADDING'
