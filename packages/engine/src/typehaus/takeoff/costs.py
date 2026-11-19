@@ -241,7 +241,8 @@ def write_costs(house_dir: Path, state: CostsState) -> Path:
     per line — so a diff of ``costs.toml`` reads as exactly the check-offs that changed."""
     lines = ["# costs.toml — cost tracking (written by Type:Haus; safe to edit by hand).",
              "# [entries.<section>.<key>]: paid / paid_date / product / actual_cost / note",
-             "# for the BOM row `estimate_costs` joins as (section, key). `product` is the",
+             "# for the BOM row `estimate_costs` joins as (section, key); a key two trades",
+             "# bill files one entry per trade, \"<key>@<trade>\". `product` is the",
              "# AS-BOUGHT record: write it when it differs from the product the plan",
              "# specifies, which the estimate row already carries (takeoff/product_labels).",
              "# [[extra]]: id / name / cost / paid / product / category / note for spend",
