@@ -38,15 +38,17 @@ from typehaus.resolve.sweep import round_profile, sweep_plan_silhouette, sweep_z
 from typehaus.resolve.wall_hosting import hosted_placement
 
 
-def _sleeve_host(model: ResolvedModel, host_ref: str):
+def _sleeve_host(model: ResolvedModel, host_ref: str, at: tuple[float, float]):
     """A sleeve's concrete host: (footprint, z0, z1, category, tag) or None.
 
     A slab, footing or cast beam is a ResolvedSolid; a foundation/concrete wall is a
-    ResolvedWall whose structure layer supplies the footprint."""
+    ResolvedWall whose structure layer supplies the footprint. A falling pour's band is read
+    at ``at``, where the sleeve crosses it (top and bottom lift together)."""
     solid = next((s for s in model.solids
                   if s.tag == host_ref and is_concrete_host(s.category)), None)
     if solid is not None:
-        return solid.outline, solid.z0_m, solid.z1_m, solid.category, solid.tag
+        lift = solid.top_at(*at) - solid.z1_m
+        return solid.outline, solid.z0_m + lift, solid.z1_m + lift, solid.category, solid.tag
     beam = next((s for s in model.solids if s.tag == host_ref and s.category == "beam"), None)
     if beam is not None and is_cast_beam(model.plan, model.plan.by_tag(host_ref)):
         return beam.outline, beam.z0_m, beam.z1_m, "beam", beam.tag
@@ -101,7 +103,7 @@ def _framed_envelope_band(wall, structure) -> Ring:
 def _resolve_sleeve(model: ResolvedModel, sleeve: SleevePenetration,
                     storey_tag: str) -> list[Finding]:
     findings: list[Finding] = []
-    host = _sleeve_host(model, sleeve.host_ref)
+    host = _sleeve_host(model, sleeve.host_ref, sleeve.position.xy_m)
     if host is None:
         return [Finding(
             severity=Severity.ERROR, check_id="integrity.sleeve_host",
