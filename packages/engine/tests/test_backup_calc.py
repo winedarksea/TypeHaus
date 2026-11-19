@@ -75,7 +75,7 @@ def test_a_circuit_without_a_duty_cycle_is_an_unknown_contributor(catlin_model):
     assert tier["complete"] is False and result["complete"] is False
     # The row is present and its average is None — not 0.0, which would sum silently.
     row = next(r for r in tier["circuits"] if r["circuit"] == "CKT-FRIDGE")
-    assert row["average_w"] is None and row["connected_va"] == 800
+    assert row["average_w"] is None and row["connected_va"] == 460
     # And the tier average excludes it rather than counting it as nothing.
     assert tier["average_w"] < backup_runtime_summary(catlin_model)["tiers"][
         "always_on"]["average_w"]

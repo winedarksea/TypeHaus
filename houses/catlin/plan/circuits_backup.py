@@ -29,14 +29,23 @@ BACKUP_CIRCUITS = (
     # everything else on this bus, so a circuit feeding it from the grid side was backwards.
 
     # -- ALWAYS_ON --
-    # 800 VA is the *circuit allowance*, not the draw — the gap is why duty_cycle exists.
-    # The fridge averages ~60W and the upright freezer column beside it ~45W: 105W of 800VA
-    # = 0.13, still the largest always-on term and the one most worth metering.
+    # One dedicated always-on branch per cold appliance since 2026-11-19 (design review §6):
+    # Frigidaire requires each receptacle of a paired column installation on its own circuit,
+    # and one trip no longer takes out all the cold storage. 20 A to match the DVFR1W
+    # receptacles; the service calc sums load_va, not breakers. load_va is an allowance, not
+    # the draw — duty_cycle is the average: the fridge ~60 W of 460 VA = 0.13.
     Circuit(uid="CKT016AAAA", tag="CKT-FRIDGE", slot=2, panel_ref=_BACKUP_PANEL,
             breaker_amps=20, poles=1, backup_tier=BackupTier.ALWAYS_ON, afci=True,
             conductor_awg="12", egc_awg="12",
-            load_va=800, duty_cycle=0.13,
-            description="Kitchen outlet 1: fridge + freezer"),
+            load_va=460, duty_cycle=0.13,
+            description="Refrigerator column (ED-M-LIVING-KRF1)"),
+    # The upright freezer column beside it, ~45 W of 340 VA = 0.13. Slot 11 (leg B; the
+    # fridge's slot 2 is leg A).
+    Circuit(tag="CKT-FREEZER", slot=11, panel_ref=_BACKUP_PANEL,
+            breaker_amps=20, poles=1, backup_tier=BackupTier.ALWAYS_ON, afci=True,
+            conductor_awg="12", egc_awg="12",
+            load_va=340, duty_cycle=0.13,
+            description="Freezer column (ED-M-LIVING-KFZ1)"),
     # 300 VA is an outlet allowance; the real load is a router (~12W), an always-on HA server
     # (~28W), and a PoE switch feeding 3 APs, the doorbell and 2 cameras (E-603, through an
     # 88% supply) — ~133W of 300VA = 0.44. Per-device PoE draw is scheduled on E-603
@@ -105,7 +114,7 @@ BACKUP_CIRCUITS = (
     # maximum x 120 V; 15 A is Rheem's minimum breaker. A Shelly Pro 4PM channel switches it.
     # duty 0.05: the 395 W average compressor draw for ~4.5 h a day (12 GPH recovery) =
     # 74 W. DEDICATED, not the unit's shared-circuit feature: on the backup panel there is
-    # no second load to share with. Slot 9, 1-pole; 11 is spare.
+    # no second load to share with. Slot 9, 1-pole; 11 is CKT-FREEZER.
     Circuit(uid="CKT007AAAA", tag="CKT-WH", slot=9, panel_ref=_BACKUP_PANEL,
             breaker_amps=15, poles=1, backup_tier=BackupTier.SURPLUS, load_va=1440,
             conductor_awg="14", egc_awg="14",
@@ -114,7 +123,7 @@ BACKUP_CIRCUITS = (
                         "(EQ-B-WH; surplus tier)"),
 
     # The backup panel's SPD (2026 NEC 215.18(B): fed from the inverter's load-output feeder,
-    # it holds branch OCPDs; see CKT-SPD in plan/circuits.py). Slots 8/10 of the five spares.
+    # it holds branch OCPDs; see CKT-SPD in plan/circuits.py). Slots 8/10; 5 and 12 stay spare.
     # Not a backup load, so no tier and no duty cycle.
     Circuit(tag="CKT-SPD-BACKUP", slot=8, panel_ref=_BACKUP_PANEL, breaker_amps=20, poles=2,
             load_va=0, spd=True, spd_type_ref="ED-T-SPD-QO2175SB",

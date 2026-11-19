@@ -172,7 +172,7 @@ lights, a charging outlet, the sump; heat and hot water only when there is sun t
 
 | Tier | Circuits | What it is |
 |---|---|---|
-| `ALWAYS_ON` | `CKT-FRIDGE`, `CKT-HA`, `CKT-LT-BACKUP`, `CKT-SUMP` | Food, network, two furnace-room cans + the kitchen tape, the alarms, the sump |
+| `ALWAYS_ON` | `CKT-FRIDGE`, `CKT-FREEZER`, `CKT-HA`, `CKT-LT-BACKUP`, `CKT-SUMP` | Food (one branch per appliance since 2026-11-19), network, two furnace-room cans + the kitchen tape, the alarms, the sump |
 | `SURPLUS` | `CKT-HP3`, `CKT-WH` | Heat into the open stair; hot water — on battery only on solar surplus |
 
 **ALWAYS_ON is what the battery is graded on.** **SURPLUS replaced SHED** ("drop on low
@@ -219,7 +219,8 @@ with no idle or efficiency.
 
 | Circuit | VA | Duty | Average |
 |---|---|---|---|
-| `CKT-FRIDGE` | 800 | 0.13 | 104.0 W |
+| `CKT-FRIDGE` | 460 | 0.13 | 59.8 W |
+| `CKT-FREEZER` | 340 | 0.13 | 44.2 W |
 | `CKT-HA` | 300 | 0.44 | 132.0 - 85.2 = 46.8 W |
 | `CKT-LT-BACKUP` | 95 | 0.40 | 38.1 W |
 | `CKT-SUMP` | 1,164 (one M53, 9.7 A) | 0.025 | 29.1 W |

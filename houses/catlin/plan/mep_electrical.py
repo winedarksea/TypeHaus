@@ -199,7 +199,7 @@ MAIN_DEVICES = [
     # Counter outlets at 42" (6" backsplash over the 36" counter, under 54" cabinets);
     # `electrical.receptacle_spacing` grades them against the resolved countertops (NEC
     # 210.52(C): <= 24" of wall line from one, 20" above the top, none within 24" below).
-    # KRF1 is an ordinary duplex — the fridge's future battery-backup circuit isn't modeled. KGF1 and KGF2 both fall over FURN-M-KIT-E2 (a B15
+    # KRF1 is a recessed DVFR1W on its own always-on CKT-FRIDGE (the freezer is on CKT-FREEZER). KGF1 and KGF2 both fall over FURN-M-KIT-E2 (a B15
     # since 2026-10-02) and its filler, 30'-10".."32'-3 3/8".
     ElectricalDevice(uid="VDGMBY3YW7", tag="ED-M-LIVING-KET1", kind=DeviceKind.RECEPTACLE_240,
                      type_ref="ED-T-LEV-620-FLUSH", circuit="CKT-KETTLE",

@@ -247,6 +247,13 @@ CIRCUITS = (
             conductor_awg="12", egc_awg="12",
             gfci=True, afci=True, load_va=1500,
             description="General receptacles — basement + spa convenience"),
+    # The Broan B210E75RT is 120 V, 3.6 A, on a 6' factory cord (spec sheet p. 1; it was a
+    # 2-pole 240 V circuit at 200 VA until 2026-11-19, design review §5). load_va is the
+    # nameplate, 432 VA. Dedicated, GFCI at the breaker (210.8(A)(5) basement); the cord
+    # plugs into ED-B-ERV-RC on W-B-ESS-S. Slot 2 alone: slot 4 is a spare now.
+    Circuit(uid="CKT008AAAA", tag="CKT-ERV", slot=2, panel_ref=_PANEL, breaker_amps=15, poles=1,
+            conductor_awg="14", egc_awg="14", gfci=True,
+            load_va=432, description="ERV, Broan B210E75RT, 120 V cord-and-plug (EQ-B-ERV)"),
     Circuit(uid="CKT029AAAA", tag="CKT-RC-ATTIC", slot=47, panel_ref=_PANEL, breaker_amps=15, poles=1,
             conductor_awg="14", egc_awg="14",
             afci=True, load_va=1000,

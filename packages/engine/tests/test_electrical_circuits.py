@@ -209,7 +209,8 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     # Then PLUS CKT-BATH-RC (210.11(C)(3)), absorbing CKT-BATH-ATTIC, and CKT-SPD-2/-BACKUP
     # (230.67(B) Ex., 215.18), 2026-11-07. Then PLUS CKT-PLANT-HEAT (2026-11-12). Then PLUS
     # CKT-GAR-FEEDER and CKT-SPD-GAR, the garage subpanel's feeder and SPD (2026-11-14).
-    assert len(rows) == 47  # plus the workshop's two-pole receptacle branch
+    # Then PLUS CKT-FREEZER, split off CKT-FRIDGE (2026-11-19).
+    assert len(rows) == 48  # plus the workshop's two-pole receptacle branch
     # Each radiant floor zone is its own 120V circuit with breaker-level GFCI, controlled
     # by one thermostat (NEC 424.44(G) — heating cable in a bathroom or kitchen floor).
     assert "CKT-FH-DINING" not in rows
@@ -247,10 +248,10 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     # The notes' backup set is tiered, and every one of them is on the subpanel. CKT-WH (the
     # 120 V plug-in HPWH since 2026-11-02) and CKT-HP3 are the solar-surplus tier.
     backup = {tag for tag, row in rows.items() if row["backup"]}
-    assert backup == {"CKT-WH", "CKT-SUMP", "CKT-FRIDGE", "CKT-HA",
+    assert backup == {"CKT-WH", "CKT-SUMP", "CKT-FRIDGE", "CKT-FREEZER", "CKT-HA",
                       "CKT-LT-BACKUP", "CKT-HP3"}
     assert {tag for tag, row in rows.items() if row["backup_tier"] == "always_on"} == {
-        "CKT-FRIDGE", "CKT-HA", "CKT-LT-BACKUP", "CKT-SUMP"}
+        "CKT-FRIDGE", "CKT-FREEZER", "CKT-HA", "CKT-LT-BACKUP", "CKT-SUMP"}
     assert {tag for tag, row in rows.items() if row["backup_tier"] == "surplus"} == {
         "CKT-WH", "CKT-HP3"}
     assert all(rows[tag]["panel"] == "ED-B-BACKUP-PANEL" for tag in backup)
@@ -604,11 +605,13 @@ def test_catlin_panel_spaces_fits_the_54_space_enclosure(catlin_model):
     # CKT-FH-DINING (slot 31) went with the dining mat (2026-11-02). 2026-11-07: CKT-BATH-RC
     # took 31 and CKT-BATH-ATTIC left 41, and each panel gained a 2-pole SPD. 41 once
     # CKT-PLANT-HEAT took slot 41 (2026-11-12). 38 once the garage's three 1-pole circuits
-    # left for its subpanel (2026-11-14); PANEL-2 traded EV + 6-20R for the feeder.
-    assert main == (38, 54)
+    # left for its subpanel (2026-11-14); PANEL-2 traded EV + 6-20R for the feeder. 37 once
+    # CKT-ERV went 1-pole 120 V (2026-11-19).
+    assert main == (37, 54)
     assert spaces("ED-B-PANEL-2", "ED-T-PANEL-2") == (10, 20)
     assert spaces("ED-G-PANEL", "ED-T-PANEL-GARAGE") == (9, 12)
-    assert backup == (9, 12)  # 8 until CKT-WH went 1-pole (120 V HPWH, 2026-11-02)
+    # 8 until CKT-WH went 1-pole (120 V HPWH, 2026-11-02); 10 with CKT-FREEZER (2026-11-19)
+    assert backup == (10, 12)
     required = sum(circuit.poles for circuit in circuits)
     declared = main[1]
     # A 42-space enclosure still would not hold the schedule, which keeps this from
@@ -895,7 +898,7 @@ def test_model_json_carries_the_electrical_takeoff(catlin_model):
     assert payload["devices"] == electrical_device_takeoff(catlin_model)
     assert payload["solar"] == solar_takeoff(catlin_model)
     # Same count as test_catlin_panel_schedule_is_derived's history above.
-    assert len(payload["panel_schedule"]) == 47  # includes the workshop branch
+    assert len(payload["panel_schedule"]) == 48  # includes the workshop branch
 
 
 def test_model_json_canvas_objects_carry_their_circuit(catlin_model):

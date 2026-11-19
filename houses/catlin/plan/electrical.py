@@ -279,6 +279,15 @@ BASEMENT_DEVICES = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-CW2", face="right", distance_from_start=inch(7),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
+    # EQ-B-ERV's 6' factory cord (120 V, 3.6 A). On W-B-ESS-S's furnace-room face, 12" off
+    # its west end at 48": the case's north face is ~12" south, inside the cord's reach.
+    # Dedicated CKT-ERV, GFCI at the breaker. A rated (U305) membrane: putty-pad the box.
+    ElectricalDevice(uid="5882M6YXNX", tag="ED-B-ERV-RC", kind=DeviceKind.RECEPTACLE,
+                     type_ref="ED-T-LEV-DUPLEX-15", circuit="CKT-ERV", room="RM-B-FURNACE",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-B-ESS-S", face="right", distance_from_start=inch(12),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
     # On the sauna's SOUTH liner immediately WEST of EQ-B-SAUNA-HTR, low like the heater
     # terminals. It followed the heater onto the garden wall when the room rotated on
     # 2026-09-05, into the south-east corner when the room shrank, and 2'-0" further east
@@ -453,12 +462,12 @@ MAIN_DEVICES = [
                          distance_from_start=inch(43.5), normal_gap=inch(-2.46875),
                          rotation_offset=deg(180)))),
     # Freezer beside the fridge (KRF1 at (18'-4 3/8", 31'-4 5/8")) on the centre wall's east
-    # face; fridge + freezer share the backup kitchen circuit (PoE Wi-Fi is on CKT-HA).
+    # face; its own always-on CKT-FREEZER since 2026-11-19 (Frigidaire: one circuit each).
     # This box stays behind its own appliance (freezer y 27'-4 9/16"..30'-1 7/16") — the
     # same constraint that decided which end of the bay the retired filler went to. Recessed
     # (Arlington IN BOX): the units stand 1" off the wall, less than a plug (C5-E2).
     ElectricalDevice(uid="CEE006AAAA", tag="ED-M-LIVING-KFZ1", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-LEV-DUPLEX-20-REC", circuit="CKT-FRIDGE",
+                     type_ref="ED-T-LEV-DUPLEX-20-REC", circuit="CKT-FREEZER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-C5", face="right", distance_from_start=inch(47.25),

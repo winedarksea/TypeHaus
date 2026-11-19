@@ -31,8 +31,8 @@ through 625.52(B)(1). Article 710 is now fully read (710.1-710.15 is all of it).
   705.28/.30 work in the sister file stands, and 702 adds capacity, transfer, signals and signs.
   An AHJ may call it 705 alone; every requirement below still lands on the same equipment.
 - **702.4(A)(3) capacity: graded, advisory (`electrical.standby_capacity`).** The 12kPV's 8 kW
-  continuous output covers all six backup circuits at once (5,649 VA: `CKT-HP3` 1,850, `CKT-WH`
-  1,440, `CKT-SUMP` 1,164, `CKT-FRIDGE` 800, `CKT-HA` 300 and `CKT-LT-BACKUP`), and the largest
+  continuous output covers all seven backup circuits at once (5,649 VA: `CKT-HP3` 1,850, `CKT-WH`
+  1,440, `CKT-SUMP` 1,164, `CKT-FRIDGE` 460, `CKT-FREEZER` 340, `CKT-HA` 300 and `CKT-LT-BACKUP`), and the largest
   single one, `CKT-HP3` at 1,850 VA, so the full-load route of 702.4(A)(2)(a) is met. UNKNOWN
   (an owner question): whether the 12kPV is **listed as a PCS** (`EquipmentType.pcs_listed`,
   not stated, never inferred), its control setting (capacity must be at least that), and that

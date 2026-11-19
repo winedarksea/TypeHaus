@@ -76,7 +76,9 @@ EQUIPMENT_TYPES_ERV = (
                   # 6 1/16" off each side and 13 3/4" off the back, so 9 3/4" apart (the
                   # 21 7/8" case less two 6 1/16"; derived, not dimensioned directly).
                   # All four are EXACT since 2026-11-11 (EQ-B-ERV at 90 degrees, §10.22).
-                  ports=(ServicePort(tag="power", service=Service.POWER_240,
+                  # 120 V, 3.6 A, 6' factory cord into ED-B-ERV-RC (spec sheet p. 1).
+                  utilization_connection="cord_and_plug",
+                  ports=(ServicePort(tag="power", service=Service.POWER_120,
                                      position=(ft(0), ft(0), ft(0))),
                          # Port 2, fresh air to building.
                          ServicePort(tag="supply", service=Service.SUPPLY_AIR,

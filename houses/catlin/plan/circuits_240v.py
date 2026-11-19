@@ -76,10 +76,7 @@ DEDICATED_240V_CIRCUITS = (
             conductor_awg="6", egc_awg="10", continuous_va=0,  # not continuous (owner)
             gfci=False, load_va=10500, description="Sauna heater (EQ-B-SAUNA-HTR), 10.5 kW"),
     # CKT-WH (was CKT-WH-240) is on the backup subpanel — see the SURPLUS tier below. Slot 25
-    # is a spare on the main panel now.
-    Circuit(uid="CKT008AAAA", tag="CKT-ERV", slot=2, panel_ref=_PANEL, breaker_amps=15, poles=2,
-            conductor_awg="14", egc_awg="14",
-            load_va=200, description="ERV"),
+    # is a spare on the main panel now. CKT-ERV is 120 V since 2026-11-19 (plan/circuits.py).
     # The three Gree heat-pump systems (plan/electrical.py). A multi's indoor heads are fed
     # from the outdoor unit, so System 2's three heads add no circuits; System 1's ducted
     # air handler does get its own, because a ducted blower is fed at the unit.
