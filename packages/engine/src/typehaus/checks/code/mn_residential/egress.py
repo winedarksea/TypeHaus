@@ -346,9 +346,14 @@ _MAX_STEP_UP_M = 0.05
 
 
 def tilted_decks(ctx: CheckContext) -> dict:
-    """Decks on tilted bearings, by tag. ``_landing_surfaces`` lists them at their datum and
-    never merges them; a caller reads one where it stands (``deck_top_at``)."""
-    return {f.tag: f for f in ctx.model.floors if f.deck_plane is not None}
+    """Decks on tilted bearings, and falling pours, by tag. ``_landing_surfaces`` lists them at
+    their datum and never merges them; a caller reads one where it stands (``deck_top_at``)."""
+    from types import SimpleNamespace
+
+    out = {f.tag: f for f in ctx.model.floors if f.deck_plane is not None}
+    out.update({s.tag: SimpleNamespace(deck_top_at=s.top_at) for s in ctx.model.solids
+                if s.top_plane is not None})
+    return out
 
 
 # How much of the 36" patch a surface must cover to be its landing. Not 1.0: the patch is

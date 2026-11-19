@@ -24,6 +24,7 @@ from typehaus.quantities import inch
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.overhead import OverheadIndex
 from typehaus.resolve.stair_headroom import STAIR_HEADROOM, run_clearances
+from typehaus.resolve.stairs.foot import foot_point
 from typehaus.resolve.stairs.walkline import (
     flight_stations,
     headroom_stations,
@@ -491,6 +492,11 @@ def stair_end_risers(ctx: CheckContext) -> list[Finding]:
                 break
             deck_tag, deck_top, room_tag, finish_ref, finish_in = min(
                 near, key=lambda row: abs(row[1] + (row[4] or 0.0) * 0.0254 - wanted))
+            falling = next((s for s in ctx.model.solids
+                            if s.tag == deck_tag and s.top_plane is not None), None)
+            authored = ctx.model.plan.by_tag(stair.tag)
+            if falling is not None and not at_top and authored.start is not None:
+                deck_top = falling.top_at(*foot_point(authored))  # read under the riser
             if finish_in is None:
                 gap = (f"{stair.tag}'s {label} meets {deck_tag} under {room_tag}'s "
                        f"{finish_ref!r} finish, whose installed thickness the material "

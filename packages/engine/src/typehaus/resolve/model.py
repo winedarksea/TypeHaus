@@ -703,6 +703,14 @@ class ResolvedSolid:
     trim_stock_length_in: float | None = None
     # Pick/inspect key shared by the solids of one physical part (a gutter's three boards).
     group: str | None = None
+    # A falling pour (``resolve/slab_fall.py``): the lift of top AND bottom off ``z1_m`` /
+    # ``z0_m``, which stay the low edge's. Flat readers see the low point; readers that
+    # follow the floor call ``top_at``.
+    top_plane: DeckPlane | None = None
+
+    def top_at(self, x: float, y: float) -> float:
+        """Top at plan ``(x, y)``: ``z1_m``, lifted where the solid falls."""
+        return self.z1_m + (self.top_plane.lift(x, y) if self.top_plane is not None else 0.0)
 
 
 @dataclass(frozen=True)

@@ -31,6 +31,7 @@ from typehaus.resolve.geometry_millwork import (
 )
 from typehaus.resolve.geometry_walls import cuts_layer
 from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.slab_fall import solid_mesh
 from typehaus.server.model_json_mesh import mesh_json
 from typehaus.server.model_json_opening_parts import (
     door_plan_dimensions_json,
@@ -253,8 +254,9 @@ def shell_json(model: ResolvedModel, provenance: Provenance | None) -> dict[str,
              # Manufacturer part number where the solid IS a purchased part (connectors);
              # null on everything cut from stock.
              "product": solid.product,
-             "body_mesh": (None if solid.body_mesh is None else mesh_json(
-                 solid.body_mesh.positions, solid.body_mesh.triangles)),
+             # A falling pour is served as its mesh (resolve/slab_fall.py): one plane.
+             "body_mesh": (None if (mesh := solid_mesh(solid)) is None
+                           else mesh_json(mesh.positions, mesh.triangles)),
              # A run carried as one swept solid (→ resolve/sweep.py), null on every prism;
              # the viewer forks on it in ``buildSolid`` and mitres the tube itself.
              "sweep": (None if solid.sweep is None else {
@@ -498,3 +500,4 @@ def _interior_trim_json(model: ResolvedModel) -> dict[str, Any]:
                        if len(piece.outline) >= 3 and piece.z1_m > piece.z0_m],
         })
     return {"base_runs": base_runs, "door_casings": casings}
+

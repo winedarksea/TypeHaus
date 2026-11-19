@@ -1,0 +1,36 @@
+"""A pour slab that falls to drain: the plane its top (and, constant thickness, its bottom)
+follows (decision #138).
+
+``Slab.top_elevation`` stays the top at the LOW edge, so every flat reader of the slab's
+``z1_m`` sees its lowest point; the readers that must follow the floor read
+``resolve/slab_fall.slab_top_at``.
+"""
+
+from __future__ import annotations
+
+from typing import Literal
+
+from pydantic import model_validator
+
+from typehaus.model.base import HausModel
+from typehaus.model.registry import register_constructor
+from typehaus.quantities import Length
+
+
+class SlabFall(HausModel):
+    """The slab's top falls ``rate_in_per_ft`` toward ``toward``, reaching
+    ``Slab.top_elevation`` at ``low_edge``: the y of an east-west line (north/south), else
+    the x of a north-south one. Above that line the top rises, never below it."""
+
+    toward: Literal["north", "south", "east", "west"]
+    rate_in_per_ft: float
+    low_edge: Length
+
+    @model_validator(mode="after")
+    def _positive_rate(self) -> SlabFall:
+        if not 0 < self.rate_in_per_ft <= 1.0:
+            raise ValueError("SlabFall.rate_in_per_ft must be in (0, 1] (in/ft)")
+        return self
+
+
+register_constructor("SlabFall", SlabFall)

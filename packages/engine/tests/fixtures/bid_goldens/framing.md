@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 581e743b71b79895  
+**Model hash:** 98c05ee0614addfb  
 **Lines:** 265
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
@@ -270,7 +270,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | butyl-tape, 1 1/2" on beam (butyl-tape) | 18.1 | LF |  | main |
 | butyl-tape, 1 1/2" on deck (butyl-tape) | 449 | LF |  | main, second |
 | butyl-tape, 4 1/2" on deck (butyl-tape) | 33.5 | LF |  | main |
-| butyl-tape, 1 1/2" on stair (butyl-tape) | 65.7 | LF |  | main |
+| butyl-tape, 1 1/2" on stair (butyl-tape) | 64.8 | LF |  | main |
 | butyl-tape-beam, 1 1/2" on beam (butyl-tape-beam) | 4.5 | LF |  | main |
 | butyl-tape-beam, 3" on beam (butyl-tape-beam) | 6.1 | LF |  | main |
 | butyl-tape-beam, 3 1/2" on beam (butyl-tape-beam) | 19.3 | LF |  | second |

@@ -395,7 +395,7 @@ def wall_top_landing_width(ctx: CheckContext) -> list[Finding]:
     modelled = [(Polygon(floor.deck_outline), floor.deck_top_at)
                 for floor in ctx.model.floors
                 if floor.deck_outline and len(floor.deck_outline) >= 3]
-    modelled += [(Polygon(floor_outline(ctx.model, solid)), lambda _x, _y, z=solid.z1_m: z)
+    modelled += [(Polygon(floor_outline(ctx.model, solid)), solid.top_at)
                  for solid in ctx.model.solids
                  if in_slab_family(solid.category) and len(solid.outline) >= 3]
     out: list[Finding] = []

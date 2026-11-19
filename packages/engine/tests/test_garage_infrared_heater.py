@@ -44,7 +44,11 @@ def test_installed_heater_clears_ceiling_and_workbench(catlin_model_ro):
     product = next(row for row in model.plan.library.equipment_types
                    if row.tag == heater.type_ref)
     assert heater.mount.elevation.meters / INCH_M == pytest.approx(96)
-    assert (wall.z1_m - heater.body_z1_m) / INCH_M == pytest.approx(18)
+    # 96" AFF where it hangs: the floor falls 1/8"/ft to the door (decision #138), so the
+    # body stands that much nearer the plate than the 18" it had over the door-line floor.
+    slab = next(s for s in model.solids if s.tag == "SL-G-FLOOR")
+    rise = slab.top_at(*heater.position) - slab.z1_m
+    assert (wall.z1_m - heater.body_z1_m) / INCH_M == pytest.approx(18 - rise / INCH_M)
     assert heater.body_z0_m - bench.body_z1_m >= 39.4 * INCH_M
     assert heater.position[1] == pytest.approx(bench.position[1], abs=1e-5)
     assert product.resistance_heating_btuh == 5118

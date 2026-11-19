@@ -153,6 +153,8 @@ a release or for exhaustive local verification.
 - **A tee branch frames to the through wall's framing** (`resolve/tee_interrupt.py`): its core
   passes the through wall's room-face layers, which a late stage cuts over its stud band
   into `<layer>-tee-<i>` pieces sharing one slot. Walk a stack by slot, not by entry.
+- **A pour slab may fall** (`Slab.fall`, decision #138): `top_elevation` is its low edge; read a
+  point with `ResolvedSolid.top_at`, never `z1_m`. `Stair.foot_on` seats a flight's foot on it.
 - **`Slab.kind`** is `pour | deck | platform | band` (decision #81). Code that means concrete
   reads `is_pour_slab`, never `category == "slab"`.
 - **`clear_face` is the finish face; `axis_face` owns points** (decision #82). Measure

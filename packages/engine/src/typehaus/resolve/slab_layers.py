@@ -96,4 +96,5 @@ def resolve_slab_layers(model: ResolvedModel) -> None:
                 uid=f"{slab.uid}-{layer.name}", tag=f"{slab.tag}:{layer.name}",
                 storey=slab.storey, category=CATEGORY, outline=list(slab.outline),
                 z0_m=slab.z1_m - depth_m, z1_m=slab.z1_m - top_m, voids=slab.voids,
-                material=layer.material_ref, derived=True))
+                material=layer.material_ref, derived=True,
+                top_plane=slab.top_plane))  # the subgrade follows a falling pour

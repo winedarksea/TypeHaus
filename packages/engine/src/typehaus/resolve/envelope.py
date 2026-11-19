@@ -39,6 +39,7 @@ from typehaus.resolve.rafter_seat import rafter_eave_z_m
 from typehaus.resolve.roof_bearing import roof_bearings
 from typehaus.resolve.roof_edge_geometry import skin_layers, skin_stand_ins
 from typehaus.resolve.roof_layer_setbacks import deck_rise_m, layer_edge_setbacks
+from typehaus.resolve.slab_fall import fall_plane
 from typehaus.resolve.slab_kind import CATEGORY_FOR_KIND, slab_kind
 from typehaus.resolve.slab_layers import split_top_finish
 from typehaus.resolve.soffits import fit_soffit_outline
@@ -83,6 +84,7 @@ def resolve_envelope_geometry(model: ResolvedModel) -> list[Finding]:
                     z0, top,
                     element.assembly,
                     voids,
+                    top_plane=fall_plane(element),
                 ))
                 model.solids.extend(finish)
             elif isinstance(element, Pad):

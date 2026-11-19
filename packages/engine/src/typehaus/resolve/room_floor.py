@@ -63,6 +63,13 @@ def room_floor_elevation(model: ResolvedModel, room: ResolvedRoom) -> float:
     if not room.clear_face:
         return wall_z
     centroid = Polygon(room.clear_face).centroid
+    best = _room_slab(model, centroid, wall_z)
+    # A falling pour is read at the room's centroid (``room_floor_elevation_at`` per point).
+    return best.top_at(centroid.x, centroid.y) if best is not None else wall_z
+
+
+def _room_slab(model: ResolvedModel, centroid, wall_z: float):
+    """The slab under ``centroid`` whose (low-edge) top is nearest the wall datum."""
     best = None
     for solid in model.solids:
         if solid.category not in SLAB_FAMILY:
@@ -73,7 +80,26 @@ def room_floor_elevation(model: ResolvedModel, room: ResolvedRoom) -> float:
             continue
         if best is None or abs(solid.z1_m - wall_z) < abs(best.z1_m - wall_z):
             best = solid
-    return best.z1_m if best is not None else wall_z
+    return best
+
+
+def floor_fall_at(model: ResolvedModel, room: ResolvedRoom, x: float, y: float,
+                  frame_hung: bool = False) -> float:
+    """How far ``room``'s floor at ``(x, y)`` stands above its centroid's: 0 unless the room
+    is floored by a falling pour. Added to either floor plane, it seats a thing where it
+    stands (the hydrant, the EV gear, a bench) rather than at the room's average.
+
+    ``frame_hung`` (a ceiling mount): measured off the pour's low edge instead, the datum
+    the frame above was set from, so nothing hung from it moves with the floor."""
+    if not room.clear_face:
+        return 0.0
+    centroid = Polygon(room.clear_face).centroid
+    wall_z = next((w.base_ref_z_m for w in model.walls if w.storey == room.storey), 0.0)
+    best = _room_slab(model, centroid, wall_z)
+    if best is None or best.top_plane is None:
+        return 0.0
+    here = 0.0 if frame_hung else best.top_plane.lift(x, y)
+    return here - best.top_plane.lift(centroid.x, centroid.y)
 
 
 def room_finished_floor_elevation(model: ResolvedModel, room: ResolvedRoom) -> float:

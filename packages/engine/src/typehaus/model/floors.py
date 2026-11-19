@@ -13,6 +13,7 @@ from typehaus.model.published_web import PublishedWebOpenings
 from typehaus.model.rebar import ReinforcementSpec
 from typehaus.model.refs import Embed, PublishedHole, PublishedSpan
 from typehaus.model.registry import register_constructor, register_element
+from typehaus.model.slab_fall import SlabFall
 from typehaus.quantities import Length, Point2D
 
 
@@ -417,6 +418,15 @@ class Slab(Element):
     # ground ``band`` (sod, frost-wing foam). ``None`` derives it (``resolve/slab_kind.py``);
     # authored, ``integrity.slab_kind_matches_assembly`` holds it to the derivation.
     kind: Literal["pour", "deck", "platform", "band"] | None = None
+    # A pour that falls to drain (``model/slab_fall.py``): its plane, constant thickness;
+    # ``top_elevation`` is its low edge.
+    fall: SlabFall | None = None
+
+    @model_validator(mode="after")
+    def _fall_needs_a_pour_at_an_elevation(self) -> Slab:
+        if self.fall is not None and (self.kind != "pour" or self.top_elevation is None):
+            raise ValueError(f"{self.tag}: a fall needs kind=\"pour\" and a top_elevation")
+        return self
 
 
 class SoffitOpening(HausModel):

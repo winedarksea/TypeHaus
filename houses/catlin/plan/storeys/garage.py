@@ -790,8 +790,9 @@ ALARMS = [
 STAIRS = [
     Stair(uid="X99TD38ZS3", tag="ST-G-SERVICE",
           from_storey="garage", to_storey="garage",
-          # D-G-SERVICE's interim crest: 1" sill on its 0.2835" seat (pan + plate fall).
-          base_elevation=ft(-2, -10), top_elevation=inch(1.2835),
+          # D-G-SERVICE's interim crest: 1" sill on its 0.2835" seat (pan + plate fall). The
+          # foot stands on the falling SL-G-FLOOR, read where the first riser lands.
+          foot_on="SL-G-FLOOR", top_elevation=inch(1.2835),
           width=ft(3), start=pt(ft(6, 11.625), ft(47, 6.125)),
           run_direction="y", run_reversed=True,
           tread_depth=inch(11), nosing_depth=inch(0),

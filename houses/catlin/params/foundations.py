@@ -25,6 +25,7 @@ from typehaus import (
     ReinforcementSpec,
     Service,
     Slab,
+    SlabFall,
     SlabThermalBreak,
     SleevePenetration,
     face,
@@ -790,6 +791,10 @@ GARAGE_SLAB = Slab(
              pt(_door_x_w, _slab_y_n), pt(_slab_x_w, _slab_y_n)),
     thickness=inch(3.5), assembly="GARAGE_SLAB_ON_GRADE", top_elevation=SITE_GRADE,
     perimeter_thermal_break=SlabThermalBreak(**GARAGE_SLAB_EDGE_BREAK),
+    # No floor drain: the floor sheds slush north to the overhead door at 1/8"/ft (design
+    # review §8, owner 2026-11-19), a constant 3 1/2" pour on a subgrade that follows.
+    # top_elevation is the door line's; the south end stands ~2 7/16" higher.
+    fall=SlabFall(toward="north", rate_in_per_ft=0.125, low_edge=GARAGE_Y_NORTH),
 )
 
 # --- garage service-door landing ---------------------------------------------------

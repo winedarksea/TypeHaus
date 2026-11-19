@@ -171,6 +171,9 @@ class Stair(Element):
     # rise stays ``to_storey.elevation - from_storey.elevation`` and nothing moves.
     base_elevation: Length | None = None
     top_elevation: Length | None = None
+    # The pour the foot stands on, in place of ``base_elevation``: the base is derived from
+    # its top where the first riser lands (a falling slab, ``resolve/stairs/foot.py``).
+    foot_on: str | None = None
     # What the flight is built of. ``Stair`` carried no material at all: the generators
     # build ``FramedMember``s with hard-coded "2x12"/"2x8" profiles and passed no
     # ``material=``, so every stair in every house rendered — in the viewer, the sections

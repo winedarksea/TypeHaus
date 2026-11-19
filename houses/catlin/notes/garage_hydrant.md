@@ -37,7 +37,7 @@ require an oil/sand interceptor and a discharge permit that a single-family gara
 get. The alternatives are worse rather than better: a drain to daylight becomes a frozen
 plug by December, and a drain to the sanitary system is the thing the code is objecting to.
 
-So the floor is poured to fall toward the overhead door instead, and the wash water leaves
+So the floor is poured to fall toward the overhead door instead (`SL-G-FLOOR.fall`, 1/8"/ft north, modelled since 2026-11-19; the hydrant seats ~2.4" over the door line), and the wash water leaves
 the building the way it came in — across the apron, onto the driveway. Nothing catches it
 and nothing is meant to.
 

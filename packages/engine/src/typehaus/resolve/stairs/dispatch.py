@@ -39,6 +39,7 @@ from typehaus.resolve.stairs.finish import (
     stair_finish_parts,
     stairhead_nosing_part,
 )
+from typehaus.resolve.stairs.foot import foot_elevation
 from typehaus.resolve.stairs.skirt import plan_skirts, skirt_members
 from typehaus.resolve.stairs.straight import _straight_stair_members
 from typehaus.resolve.stairs.stringer_cuts import cut_stringer_profiles
@@ -65,13 +66,21 @@ def _resolve_stair(
     if source is None or target is None:
         return None, [_error("integrity.stair_storey", f"stair {stair.tag} references an "
                              "unknown storey", stair.tag)]
-    if (stair.base_elevation is None) != (stair.top_elevation is None):
+    foot = None
+    if stair.foot_on is not None:  # the base is derived from the pour under the first riser
+        foot = (foot_elevation(model.plan, stair) if stair.base_elevation is None
+                else "foot_on and base_elevation both state the base")
+        if isinstance(foot, str):
+            return None, [_error("integrity.stair_rise", f"stair {stair.tag}: {foot}",
+                                 stair.tag)]
+    if (stair.base_elevation is None and foot is None) != (stair.top_elevation is None):
         return None, [_error("integrity.stair_rise", f"stair {stair.tag} authors only one of "
-                             "base_elevation/top_elevation; a flight that states its own "
-                             "rise must state both ends of it", stair.tag)]
+                             "base_elevation (or foot_on)/top_elevation; a flight that states "
+                             "its own rise must state both ends of it", stair.tag)]
     base, top = stair.base_elevation, stair.top_elevation
-    explicit = base is not None and top is not None
-    z0 = base.meters if base is not None else source.elevation.meters
+    explicit = (base is not None or foot is not None) and top is not None
+    z0 = (foot if foot is not None else base.meters if base is not None
+          else source.elevation.meters)
     z_top = top.meters if top is not None else target.elevation.meters
     rise = z_top - z0
     if rise <= 0:

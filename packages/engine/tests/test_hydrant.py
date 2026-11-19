@@ -188,12 +188,13 @@ def test_the_hydrant_stands_on_the_garage_slab_not_on_the_storey_datum(catlin_mo
     """
     hydrant = next(o for o in catlin_model.canvas_objects if o.tag == "FX-G-HYDRANT")
     slab = next(s for s in catlin_model.solids if s.tag == "SL-G-FLOOR")
-    assert hydrant.z_m == pytest.approx(slab.z1_m, abs=1e-6)
+    # The slab falls to the door (decision #138): the hydrant stands on it where it is.
+    assert hydrant.z_m == pytest.approx(slab.top_at(*hydrant.position), abs=1e-6)
     grade = catlin_model.plan.project.site.grade.meters
-    assert hydrant.z_m == pytest.approx(grade, abs=1e-6)
-    # ...and that is a full GARAGE_STEM_REVEAL below the storey it is filed on.
+    assert slab.z1_m == pytest.approx(grade, abs=1e-6)
+    # ...and that is within the fall of a full GARAGE_STEM_REVEAL below its storey.
     storey = next(s for s in catlin_model.plan.storeys if s.tag == "garage")
-    assert (storey.elevation.meters - hydrant.z_m) * _M_TO_FT == pytest.approx(
+    assert (storey.elevation.meters - slab.z1_m) * _M_TO_FT == pytest.approx(
         1 + 10 / 12, abs=1e-6)
 
 
@@ -203,7 +204,14 @@ def test_the_whole_garage_stands_on_its_floor_not_on_the_stem_top(catlin_model):
     one shared resolver measured them all from the same wrong plane."""
     by_tag = {o.tag: o for o in catlin_model.canvas_objects}
     grade = catlin_model.plan.project.site.grade.meters
-    assert by_tag["FURN-G-WORKBENCH"].z_m == pytest.approx(grade, abs=1e-6)
+    slab = next(s for s in catlin_model.solids if s.tag == "SL-G-FLOOR")
+
+    def floor(tag):  # the falling floor where it stands; a ceiling mount keeps the low edge
+        item = by_tag[tag]
+        return grade if item.mount and item.mount.kind.value == "ceiling" else slab.top_at(
+            *item.position)
+
+    assert by_tag["FURN-G-WORKBENCH"].z_m == pytest.approx(floor("FURN-G-WORKBENCH"), abs=1e-6)
     # ** ED-G-SW IS AUTHORED AT 76", NOT THE HOUSE'S USUAL 46", AND THAT IS THE POINT OF
     # THIS ASSERTION RATHER THAN AN EXCEPTION TO IT. ** It is reached from ST-G-SERVICE's top
     # tread, 27.2" over the slab this datum measures from (80" over the interior landing,
@@ -214,7 +222,7 @@ def test_the_whole_garage_stands_on_its_floor_not_on_the_stem_top(catlin_model):
                                 ("EQ-G-HEATER", 8.0), ("ED-G-SW", 76 / 12),
                                 ("ED-G-LT1", 8.0)):
         # 0.002 ft: ED-G-SW's face is centred on its 3-gang plate beside a taller GFCI face.
-        assert (by_tag[tag].z_m - grade) * _M_TO_FT == pytest.approx(
+        assert (by_tag[tag].z_m - floor(tag)) * _M_TO_FT == pytest.approx(
             above_floor_ft, abs=2e-3), tag
     # The one deliberate exception: the ED-G-EXT-LT-E/-W pair is authored with no `room` (it
     # stands outside RM-GARAGE, and `electrical.wet_location` decides "exterior" from that),

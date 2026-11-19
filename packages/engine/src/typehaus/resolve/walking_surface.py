@@ -147,7 +147,7 @@ def _covers(model: ResolvedModel, point: tuple[float, float]):
         holes = tuple(_ring_key(void) for void in floor_voids)
         cover = _shrunk_polygon(outline, holes)
         if not cover.is_empty and cover.contains(probe):
-            yield solid.tag, solid.storey, solid.z1_m
+            yield solid.tag, solid.storey, solid.top_at(*point)  # a falling pour's plane
     for surface in getattr(model.plan.project.site, "impervious_surfaces", ()):
         verts = tuple(vertex.xy_m for vertex in surface.outline)
         if (len(verts) >= 3 and not _bbox_misses(point, verts)
@@ -248,5 +248,10 @@ def deck_owning_opening(model: ResolvedModel, storey: str,
                 return floor.tag, floor.deck_top_at(cx, cy)
         for solid in model.solids:
             if solid.tag == element.tag and in_slab_family(solid.category):
-                return solid.tag, solid.z1_m
+                opening = model.plan.by_tag(opening_tag)
+                ring = [p.xy_m for p in getattr(opening, "outline", ())]
+                if solid.top_plane is None or not ring:
+                    return solid.tag, solid.z1_m
+                return solid.tag, solid.top_at(sum(p[0] for p in ring) / len(ring),
+                                               sum(p[1] for p in ring) / len(ring))
     return None

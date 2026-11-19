@@ -22,6 +22,7 @@ from typehaus.resolve.placeable_clear_floor_obstruction import (
 )
 from typehaus.resolve.placeable_groups import PlacementGroupAnchorZone, assign_placement_groups
 from typehaus.resolve.room_floor import (
+    floor_fall_at,
     room_finished_floor_elevation,
     room_floor_elevation,
 )
@@ -59,6 +60,7 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     # The two floor planes walk every wall, slab and deck, so the pair is memoised per room
     # tag — a hundred placeables in the same room ask the same question.
     floor_by_room: dict[str, tuple[float, float]] = {}
+    fall_rooms: dict[str, object] = {}
     from typehaus.resolve.ceilings import ceiling_faces, finished_ceiling_at
 
     faces = ceiling_faces(model)
@@ -98,6 +100,9 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
             floor, structural_floor = _floor_elevation(
                 model, storey, explicit_room or resolved_room, floor_by_room)
             mount = getattr(item, "mount", None)
+            fall = _floor_fall(model, explicit_room or resolved_room, center, fall_rooms,
+                               frame_hung=mount is not None and mount.kind.value == "ceiling")
+            floor, structural_floor = floor + fall, structural_floor + fall
             ceiling = (finished_ceiling_at(faces, storey.tag, explicit_room or resolved_room,
                                            center)
                        if mount is not None and mount.kind.value == "ceiling"
@@ -263,6 +268,17 @@ def _floor_elevation(model: ResolvedModel, storey: object, room_tag: str | None,
                            else (room_finished_floor_elevation(model, room),
                                  room_floor_elevation(model, room)))
     return cache[room_tag]
+
+
+def _floor_fall(model: ResolvedModel, room_tag: str | None, center: tuple[float, float],
+                cache: dict[str, object], frame_hung: bool = False) -> float:
+    """A falling pour's rise at ``center`` over the room's centroid (``floor_fall_at``)."""
+    if room_tag is None:
+        return 0.0
+    if room_tag not in cache:
+        cache[room_tag] = next((r for r in model.rooms if r.tag == room_tag), None)
+    room = cache[room_tag]
+    return 0.0 if room is None else floor_fall_at(model, room, *center, frame_hung=frame_hung)
 
 
 def _soffit_underside(model: ResolvedModel, item: object) -> float | None:

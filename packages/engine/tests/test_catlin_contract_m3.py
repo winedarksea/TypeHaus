@@ -31,6 +31,7 @@ from typehaus.resolve.geometry_members import member_solid
 from typehaus.resolve.model import EDGE_RIM_PREFIX
 from typehaus.resolve.roof_image_ii_eave import eave_stack
 from typehaus.resolve.solid_categories import in_slab_family
+from typehaus.resolve.stairs.foot import foot_point
 
 # Old CatlinHouseSpec contract values.
 HOUSE_SIZE_FT = 36.0
@@ -1717,22 +1718,26 @@ def test_garage_service_door_opens_onto_the_breezeway_deck_not_the_slab(catlin_m
     assert abs(deck_top - threshold) <= inch(1.5).meters
     assert threshold - slab.z1_m == pytest.approx(inch(34.0).meters)
 
-    # Five 7.06" risers inside close that 2'-10" plus the interim 1.28" threshold crest (pan
-    # seat): four pressure-treated treads and the head riser up to the threshold itself.
+    # The slab falls 1/8"/ft north to the overhead door (decision #138), so the flight's foot,
+    # 19'-8 1/2" south of the door line, stands 2.46" over the slab's low edge: five equal
+    # risers of (35.2835 - 2.4635) / 5 = 6.564" close it to the 1.28" threshold crest.
     assert not [f for f in catlin_model.floors if f.tag == "FS-BW-GARAGE"]
     assert not [s.tag for s in catlin_model.solids if s.tag.startswith("SL-G-STEP-")], \
         "the pour is gone, and so is the deck that replaced it"
 
     stair = next(s for s in catlin_model.stairs if s.tag == "ST-G-SERVICE")
+    foot = slab.top_at(*foot_point(catlin_model.plan.by_tag("ST-G-SERVICE")))
+    assert (foot - slab.z1_m) / inch(1).meters == pytest.approx(2.4635, abs=1e-3)
+    rise = threshold + inch(1.2835).meters - foot
     assert stair.riser_count == 5
-    assert stair.riser_height_m == pytest.approx(inch(35.2835 / 5).meters)
-    assert stair.base_elevation_m == pytest.approx(slab.z1_m)
+    assert stair.riser_height_m == pytest.approx(rise / 5)
+    assert stair.riser_height_m / inch(1).meters == pytest.approx(6.564, abs=1e-3)
+    assert stair.base_elevation_m == pytest.approx(foot)
     assert stair.arrival_elevation_m == pytest.approx(threshold + inch(1.2835).meters)
     treads = sorted((m for m in stair.members if m.category == "tread"), key=lambda m: m.z1_m)
     assert len(treads) == 4
-    assert treads[0].z1_m - slab.z1_m == pytest.approx(inch(35.2835 / 5).meters)
-    assert treads[-1].z1_m == pytest.approx(
-        threshold + inch(1.2835).meters - inch(35.2835 / 5).meters)
+    assert treads[0].z1_m - foot == pytest.approx(rise / 5)
+    assert treads[-1].z1_m == pytest.approx(threshold + inch(1.2835).meters - rise / 5)
     # Pressure-treated, distinct from the generic lumber elsewhere in the house.
     assert {m.material for m in stair.members if m.category == "tread"} == {"trex-enhance-basics"}
     assert {m.material for m in stair.members if m.category != "tread"} == {"kdat"}
@@ -1979,9 +1984,9 @@ def test_the_thermal_break_is_one_product_everywhere_it_is_stated(catlin_model):
     # (ASTM C578 Type X, 15 psi), two thicknesses (free body §11i). Basis 7 (2026-09-22)
     # adds two statements to the same sweep: no board is a form face, and the SLAB's own
     # edge board is a second product that must not drift from the one the house orders.
-    assert sunken_garden.THERMAL_BREAK_IN == pytest.approx(2.5)
-    assert sunken_garden.VENEER_BEAM_BREAK_IN == pytest.approx(2.0)
-    assert sunken_garden.THERMAL_BREAK_PSI == pytest.approx(15.0)
+    assert pytest.approx(2.5) == sunken_garden.THERMAL_BREAK_IN
+    assert pytest.approx(2.0) == sunken_garden.VENEER_BEAM_BREAK_IN
+    assert pytest.approx(15.0) == sunken_garden.THERMAL_BREAK_PSI
     # The constant the court's geometry actually reads.
     assert sunken_garden.SPEC.closure_break_in == pytest.approx(
         sunken_garden.THERMAL_BREAK_IN)

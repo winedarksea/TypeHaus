@@ -32,9 +32,10 @@ def test_finished_boards_and_both_stairs_meet_both_sills(catlin_model_ro):
         assert floor.deck_z0_m == pytest.approx(-inch(0.94).meters)
         assert all(m.z1_m == pytest.approx(-inch(0.94).meters) for m in floor.members)
     # The entry flight rises 33" off SL-WK-C, 1" over grade, to the deck. The garage flight
-    # rises 35.28" off the slab to D-G-SERVICE's interim threshold crest at +1.28" (its unit
-    # on the pan alone until MMI's sill drawing), the door's own sill still on the deck at 0'-0".
-    for tag, rise_in, arrival_in in (("ST-BW-ENTRY", 33, 0), ("ST-G-SERVICE", 35.2835, 1.2835)):
+    # rises 32.82" off the falling slab (its foot 2.4635" over the door line, decision #138) to
+    # D-G-SERVICE's interim threshold crest at +1.28" (its unit on the pan alone until MMI's
+    # sill drawing), the door's own sill still on the deck at 0'-0".
+    for tag, rise_in, arrival_in in (("ST-BW-ENTRY", 33, 0), ("ST-G-SERVICE", 32.819958, 1.2835)):
         stair = next(s for s in model.stairs if s.tag == tag)
         assert stair.arrival_elevation_m == pytest.approx(inch(arrival_in).meters)
         assert stair.riser_count == 5

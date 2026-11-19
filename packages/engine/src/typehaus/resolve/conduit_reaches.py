@@ -139,16 +139,17 @@ def _classify(model, site: Site, x, y, z, radius, heading, local_grade) -> Sampl
     for tag, shape in site.buildings:
         if shape.contains(point):
             over = [s for s, p in site.slabs if s.z1_m <= site.grade_m + _SLAB_ABOVE_GRADE_M
-                    and s.z1_m > top and p.contains(point)]
+                    and s.top_at(x, y) > top and p.contains(point)]
             return Sample(x, y, z, top, "under_building" if over else "indoor", host=tag,
                           vertical=vertical)
+    # A falling pour is read where the run passes under it; its low edge decides what it is.
     covering = [(s, p) for s, p in site.slabs
-                if s.z1_m > top and s.z1_m <= site.grade_m + _SLAB_ABOVE_GRADE_M
+                if s.top_at(x, y) > top and s.z1_m <= site.grade_m + _SLAB_ABOVE_GRADE_M
                 and p.contains(point)]
     if covering:
-        slab, shape = max(covering, key=lambda item: item[0].z1_m)
+        slab, shape = max(covering, key=lambda item: item[0].top_at(x, y))
         edge = _lateral_clear(shape, x, y, heading, radius)
-        return Sample(x, y, z, top, "earth", slab.z1_m, slab.tag,
+        return Sample(x, y, z, top, "earth", slab.top_at(x, y), slab.tag,
                       (slab.z1_m - slab.z0_m) / 0.0254, edge, vertical=vertical)
     ring = [(x - .05, y - .05), (x + .05, y - .05), (x + .05, y + .05), (x - .05, y + .05)]
     station_m = min((point.distance(p) for p in site.stations), default=math.inf)

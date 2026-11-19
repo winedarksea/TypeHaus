@@ -3,8 +3,9 @@
 One `Slab`, `SL-DW-DRIVE`, on `yard-grade`, in `DRIVEWAY_FRC_CLASS5` (4" fibre-only
 EXPOSED_MIX on 8" of MnDOT Class 5, no foam). It is modelled flat at its high edge, 1"
 below the -2'-10" garage slab, which is the sidewalk's convention. The fall to the street
-lives on the matching `ImperviousSurface(kind="driveway")` because a `Slab` cannot slope,
-and `plan/manifest.py` merges that surface into the site. notes/driveway_layout.md is the
+lives on the matching `ImperviousSurface(kind="driveway")`, and `plan/manifest.py` merges
+that surface into the site. (A pour may fall since decision #138, as SL-G-FLOOR does; the
+drive keeps its surface.) notes/driveway_layout.md is the
 quantity oracle.
 
 ** SHAPE. ** It is 16'-0" wide at the door (x 10'..26', the jambs) and tapers both sides

@@ -37,8 +37,8 @@ Concrete at 4": 218.38 / 3 / 27 = **2.70 cy**. Class 5 at 8": 218.38 × 8/12 / 2
 
 ## 3. Fall
 
-The slab is modelled flat at −2'-11", 1" under the −2'-10" garage slab so the drive sheds
-away from the door. The `driveway` impervious surface falls to −3'-3 1/2" at the lot line:
+The slab is modelled flat at −2'-11", 1" under the −2'-10" garage slab's door line (the
+garage floor falls 1/8"/ft to that line, decision #138) so the drive sheds away from the door. The `driveway` impervious surface falls to −3'-3 1/2" at the lot line:
 4.5" over 84.5 − 67.302 = 17.198' (206.4"), so **2.18%**. `code.R401_3_impervious` grades it
 against the garage's foundation enclosure, which it abuts.
 

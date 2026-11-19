@@ -93,6 +93,7 @@ from typehaus.resolve.geometry_ir import GBox
 from typehaus.resolve.geometry_millwork import window_stool_prism
 from typehaus.resolve.model import FramedMember, ResolvedModel
 from typehaus.resolve.room_floor import room_finished_floor_elevation
+from typehaus.resolve.slab_fall import solid_mesh
 from typehaus.resolve.sweep import sweep_legs
 from typehaus.resolve.walking_surface import surfaces_at
 
@@ -253,10 +254,10 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
                     prism.z0_m, prism.z1_m, _solid_color(model, solid))
             scene.add_object(mb, ("drywall",), kind="solid", uid=solid.uid,
                              category=solid.category)
-        elif solid.body_mesh is not None:
+        elif solid.body_mesh is not None or solid.top_plane is not None:
             mb = _MeshBuilder()
             color = _solid_color(model, solid)
-            mb.add_mesh(solid.body_mesh, color)
+            mb.add_mesh(solid_mesh(solid), color)  # a falling pour's plane too
             surfaces = None
             snow_component = solid.category == "snow_guard"
             if snow_component:

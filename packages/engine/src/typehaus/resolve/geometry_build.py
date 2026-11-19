@@ -159,6 +159,16 @@ def _solid_geometry(solid: ResolvedSolid, plan) -> ElementGeometry:
             trades=solid_trades(solid.category, solid_material_ref(plan, solid)),
             parts=(GPart(key="body", solids=(solid.body_mesh,),
                          material_key=normalize(solid.category), layer_group="structure"),))
+    if solid.top_plane is not None:  # a falling pour: one mesh on its plane
+        from typehaus.resolve.slab_fall import sloped_slab_mesh
+
+        return ElementGeometry(
+            uid=solid.uid, kind=solid.category,
+            trades=solid_trades(solid.category, solid_material_ref(plan, solid)),
+            parts=(GPart(key="body", solids=(sloped_slab_mesh(solid),),
+                         material_key=normalize(solid.category), layer_group="structure",
+                         catalog=PartCatalogRef(material_ref=solid_material_ref(plan, solid),
+                                                role=solid.category, name=solid.tag)),))
     if solid.sweep is not None:
         boxes = tuple(GBox(corners_bottom=start, corners_top=end)
                       for start, end in sweep_legs(solid.sweep))
