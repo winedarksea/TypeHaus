@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 44bf415cf97e115e  
+**Model hash:** 36930c7a401f0a9e  
 **Lines:** 265
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
@@ -81,7 +81,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x4 Pressure-treated southern yellow pine No. 2 (sill plate), 8' (2x4:pt-syp) | 4 | pc | plate | 32 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4:spf) | 16 | pc | blocking, ceiling furring, girt strapping | 128 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 92 5/8" PET (2x6) | 110 | pc | corner stud, king stud, stud | 849.1 LF | building |
-| 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6) | 387 | pc | blocking, corner stud, cripple stud, door blocking, header, jack stud, king stud, plate, raked top plate, sill, strongback, stud | 3096 LF | building |
+| 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6) | 388 | pc | blocking, corner stud, cripple stud, door blocking, header, jack stud, king stud, plate, raked top plate, sill, strongback, stud | 3104 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 104 5/8" PET (2x6) | 202 | pc | corner stud, king stud, stud | 1761.2 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 116 5/8" PET (2x6) | 6 | pc | king stud, stud | 58.3 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 10' (2x6) | 48 | pc | plate, raked top plate, strongback | 480 LF | building |

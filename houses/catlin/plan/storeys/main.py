@@ -599,9 +599,10 @@ WALLS = [
     # 10'-3 1/4" until 2026-10-23); FO-S-STAIR and ST-M2S are struck off that face, so a
     # leaf thickness change moves them too. The bearing band does not move.
     #
-    # MEP: keep wiring/plumbing out — a bored stud shows. One exception: REG-M-XFER-MUD, a
+    # MEP: keep wiring/plumbing out — a bored stud shows. Two exceptions: CD-M-DATA-DOORBELL
+    # (owner: fine), and REG-M-XFER-MUD, a
     # 12" transfer-louver cut centred y=34'-0" in the clear bay between studs at 33'-4" and
-    # 34'-8", so no stud is cut and no header is needed.
+    # 34'-8", so no stud is cut and no header is needed. PR-M-COND-HP3 left it 2026-11-18.
     Wall(uid="CMW117AAAA", tag="W-M-STRW", start_node="N-M-N2",
          end_node="N-M-STRJ", assembly="INT_2X6_BRG_MUDROOM_UPPER_GWB", top=ft(9),
          layer_materials=(LayerMaterial(layer="stud", material="df-select-s4s"), LayerMaterial(layer="gwb-mudroom-upper", material="gwb-ar"),),

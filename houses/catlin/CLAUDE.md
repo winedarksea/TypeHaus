@@ -1937,8 +1937,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       4" of its run's section. WEST leaves `DU-S-HP-SUITE`'s side because that duct is under a
       joist.
     - **Condensate goes to `FX-B-UTIL-SINK`** (`plan/mep_condensate.py`): `PR-A-COND-HP1` down
-      `W-S-DC2`/`W-M-CLN` beside the attic bath stack, and `PR-M-COND-HP3` down `W-M-STRW`,
-      both south of `RM-B-ESS` and in the furnace room's one free lane at x 8'-2".
+      `W-S-DC2`/`W-M-CLN` beside the attic bath stack, and `PR-M-COND-HP3` east in `W-M-N2`,
+      down `W-M-C5B`/`W-M-C5`, and west in the FS-M-STAIR bay south of the stairhead (never
+      `W-M-STRW`: its mudroom bays are open), both south of `RM-B-ESS` and in the furnace
+      room's one free lane at x 8'-2".
       `EQ-B-HP2-GYM`'s is `PR-B-COND-HP2-GYM`, by gravity (owner, 2026-11-14): 28" exposed on the
       gym face over `D-B-SAUNA`, then in `W-B-CS`'s and the sauna north walls' stud cores onto
       `PR-B-COND`'s drop at x=13'-6". The sauna ceiling void is above any head's drain.

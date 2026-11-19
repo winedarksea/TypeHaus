@@ -1,3 +1,22 @@
+## PR-M-COND-HP3 leaves W-M-STRW (2026-11-18)
+
+- **Why.** The run bored W-M-STRW's studs at ~36" for 67", and that wall's mudroom face is
+  open coat bays below 7'-0". The doorbell raceway stays (owner: fine).
+- **Route.** Out the head's east end into W-M-N2's cavity under the mounting plate, east,
+  then south down W-M-C5B/C5 at ~26"..23" (4" under PR-M-CW-COLDSTORE-STUB's 30" leg). In
+  C5's south bay it drops through the plate at x=17'-10.3" into the 1 7/8" slot between the
+  well's lining and FS-M-NE's bearing box (0.73" off the nearest member), steps into the box,
+  runs south over CD-B-PLAY-SPARE and west along the FS-M-STAIR/MECH bay at y=25'-2 3/4"
+  (~7/8" under PR-B-BATH-WC-CW; W-B-BA-N's nailers bored). It steps 2 1/4" south off
+  PR-B-HW-SBATH's y=25'-3" leg, drops at x=8'-2 1/2" and keeps the old tail to the sink.
+  39 LF against ~25; flattest leg 0.27"/ft.
+  - The box's cheeks went with it: the crossing spans the whole bay, so it frames rails only.
+- **Rejected:** west through W-M-N3 (D-M-ENTRY fills it); down W-M-N2 (concrete under the
+  trimmer) or W-B-STR (RM-B-ESS's rated walls and lid); the kitchen sink (arrives above its
+  base); out with the lineset to grade (no receptor that sees water).
+- `haus route` cannot propose it (an air-gap terminal has no root), so it is hand-authored
+  and graded by `haus trial`/`haus check`.
+
 ## East facade rebalance (2026-11-16, owner)
 
 - **Why.** The upper row ended in a 14x24 slit (WIN-S-BED3 at 34'-0"). The lower row's 63"

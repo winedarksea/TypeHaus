@@ -675,19 +675,19 @@
       "node": "polyline",
       "points": [
         [
-          114.50000000000001,
-          -1.4999999999999998
+          117.68750000000001,
+          -11.875
         ],
         [
           120.0,
-          -1.4999999999999998
+          -11.875
         ],
         [
           120.0,
           0.0
         ],
         [
-          114.50000000000001,
+          117.68750000000001,
           0.0
         ]
       ],
@@ -696,26 +696,26 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CMFS03AAAA",
-      "tag": "bearing-block-1-005-p1-rail-top"
+      "tag": "bearing-block-1-005"
     },
     {
       "space": "model",
       "node": "hatch",
       "boundary": [
         [
-          114.50000000000001,
-          -1.4999999999999998
+          117.68750000000001,
+          -11.875
         ],
         [
           120.0,
-          -1.4999999999999998
+          -11.875
         ],
         [
           120.0,
           0.0
         ],
         [
-          114.50000000000001,
+          117.68750000000001,
           0.0
         ]
       ],
@@ -731,168 +731,40 @@
       "node": "polyline",
       "points": [
         [
-          114.50000000000001,
-          -11.875
+          117.68750000000001,
+          -10.625
         ],
         [
           120.0,
-          -11.875
-        ],
-        [
-          120.0,
-          -10.375
-        ],
-        [
-          114.50000000000001,
-          -10.375
+          -10.625
         ]
       ],
       "layer": "S-FRAM",
-      "lineweight": 0.18,
+      "lineweight": 0.13,
       "linetype": "CONTINUOUS",
-      "closed": true,
+      "closed": false,
       "uid": "CMFS03AAAA",
-      "tag": "bearing-block-1-005-p1-rail-bottom"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          114.50000000000001,
-          -11.875
-        ],
-        [
-          120.0,
-          -11.875
-        ],
-        [
-          120.0,
-          -10.375
-        ],
-        [
-          114.50000000000001,
-          -10.375
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
+      "tag": "bearing-block-1-005/flange"
     },
     {
       "space": "model",
       "node": "polyline",
       "points": [
         [
-          114.50000000000001,
-          -10.375
+          117.68750000000001,
+          -1.25
         ],
         [
           120.0,
-          -10.375
-        ],
-        [
-          120.0,
-          -1.4999999999999998
-        ],
-        [
-          114.50000000000001,
-          -1.4999999999999998
+          -1.25
         ]
       ],
       "layer": "S-FRAM",
-      "lineweight": 0.18,
+      "lineweight": 0.13,
       "linetype": "CONTINUOUS",
-      "closed": true,
+      "closed": false,
       "uid": "CMFS03AAAA",
-      "tag": "bearing-block-1-005-cheek-hi"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          114.50000000000001,
-          -10.375
-        ],
-        [
-          120.0,
-          -10.375
-        ],
-        [
-          120.0,
-          -1.4999999999999998
-        ],
-        [
-          114.50000000000001,
-          -1.4999999999999998
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          114.50000000000001,
-          -10.375
-        ],
-        [
-          120.0,
-          -10.375
-        ],
-        [
-          120.0,
-          -1.4999999999999998
-        ],
-        [
-          114.50000000000001,
-          -1.4999999999999998
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMFS03AAAA",
-      "tag": "bearing-block-1-005-cheek-r1l"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          114.50000000000001,
-          -10.375
-        ],
-        [
-          120.0,
-          -10.375
-        ],
-        [
-          120.0,
-          -1.4999999999999998
-        ],
-        [
-          114.50000000000001,
-          -1.4999999999999998
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
+      "tag": "bearing-block-1-005/flange"
     },
     {
       "space": "model",

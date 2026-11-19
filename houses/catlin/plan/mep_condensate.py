@@ -20,22 +20,29 @@ from typehaus import (
 
 # Filed on `main` (datum 0'-0"), like SECOND_DRAINS, so every elevation is absolute.
 CONDENSATE_NORTH = [
-    # EQ-M-HP3-STAIR: the hose leaves the head's west end into W-M-STRW's 2x6 cavity and
-    # falls south inside it to y=29'-3" (RM-B-ESS's rated closet fills the furnace room's NE
-    # corner, y >= 31'-2 3/8", and DU-B-ERV-R-PLAY crosses at y=30'-4 5/8"). Down through the
-    # plates into FS-M-MECH's y 342-356 bay between the two conduits, west across the x=10'
-    # bearing, out under the joists, and south along x=8'-2 1/2", the one free lane west of
-    # PR-B-HW-SBATH, under DU-B-ERV-R-BATH and PR-B-HW-SBATH's y=25'-3" leg (6'-10" AFF), to
-    # the sink, turning east over its bowl beside the ERV and WH outlets.
+    # EQ-M-HP3-STAIR (re-routed 2026-11-18 out of W-M-STRW, whose mudroom bays are open: a
+    # bored stud shows). The hose leaves the head's east end back into W-M-N2's cavity under
+    # the mounting plate, drops to 27" and runs east, then south down W-M-C5B/C5 under
+    # PR-M-CW-COLDSTORE-STUB's 30" leg. In C5's south bay it drops through the plate into the
+    # 1 7/8" slot between the well's lining and FS-M-NE's bearing box over W-B-CN, steps east
+    # into the box (it then frames rails only), south over CD-B-PLAY-SPARE, and west along the
+    # FS-M-STAIR/MECH bay at y=25'-2 3/4", boring W-B-BA-N's nailers and passing under
+    # PR-B-BATH-WC-CW. It steps 2 1/4" south off PR-B-HW-SBATH's y=25'-3" leg, drops into the
+    # furnace room at x=8'-2 1/2" (1" west of DU-B-ERV-R-BATH) and runs south to the sink,
+    # turning east over its bowl beside the ERV and WH outlets.
     PipeRun(uid="XM4GM4VEZS", tag="PR-M-COND-HP3", system=PipeSystem.DRAIN, sanitary=False,
-            path=(pt(inch(126.5), inch(418)), pt(inch(120), inch(418)),
-                  pt(inch(120), inch(351)), pt(inch(120), inch(351)),
-                  pt(inch(98.5), inch(351)), pt(inch(98.5), inch(351)),
-                  pt(inch(98.5), inch(303)), pt(inch(98.5), inch(238)),
-                  pt(inch(98.5), inch(238)), pt(inch(103.5), inch(238))),
+            path=(pt(inch(158), inch(418)), pt(inch(158), inch(428.75)),
+                  pt(inch(158), inch(428.75)), pt(inch(216), inch(428.75)),
+                  pt(inch(216), inch(313)), pt(inch(214.3), inch(313)),
+                  pt(inch(214.3), inch(313)), pt(inch(216.3), inch(313)),
+                  pt(inch(216.3), inch(302.75)), pt(inch(98.5), inch(302.75)),
+                  pt(inch(98.5), inch(300.5)), pt(inch(98.5), inch(300.5)),
+                  pt(inch(98.5), inch(238)), pt(inch(98.5), inch(238)),
+                  pt(inch(103.5), inch(238))),
             diameter=inch(0.75), material="pvc",
-            elevations=(inch(37), inch(36.8), inch(35.4), inch(-6), inch(-6.45), inch(-23),
-                        inch(-26), inch(-27.4), inch(-62), inch(-62.12))),
+            elevations=(inch(35.5), inch(35.25), inch(27), inch(25.55), inch(22.65), inch(22.6),
+                        inch(-4.5), inch(-4.55), inch(-4.85), inch(-10.5), inch(-10.55), inch(-26),
+                        inch(-27.4), inch(-62), inch(-62.12))),
     # EQ-S-HP1-AH: from the modeled trap outlet east of the cabinet and service zone,
     # south on the deck at x=24'-11 1/2" (blocked
     # off the deck at 4' o.c.), down into FS-ATTIC's free y 208-224 bay, west along it over
