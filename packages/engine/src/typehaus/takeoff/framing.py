@@ -12,6 +12,7 @@ from typehaus.resolve.framing.profiles import _RE_PANEL, cross_section
 from typehaus.resolve.geometry import polygon_area
 from typehaus.resolve.geometry_ir import signed_volume
 from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.sill_solids import framed_on_the_pour
 from typehaus.resolve.soffits import SOFFIT_LINING_THICKNESS
 from typehaus.resolve.strap_braces import STRAP_CATEGORY
 from typehaus.resolve.sweep import sweep_length_m
@@ -458,11 +459,14 @@ def construction_returns_takeoff(model: ResolvedModel) -> list[dict[str, object]
     (:class:`~typehaus.resolve.model.ResolvedConstructionReturn`) contributes its lineal run
     and count to the ``takeoff_category`` it declares — a PT sill plate, the sauna liner
     return, the foundation foam return, the masonry corner return. Rows reconcile 1:1 with
-    ``model.construction_returns`` so the BOM matches the geometry the section/3D/IFC render.
+    ``model.construction_returns`` so the BOM matches the geometry the section/3D/IFC render,
+    less a sill a wall frames as its own sole plate: that board bills once, in framing.
     """
     Row = dict[str, object]
     groups: dict[tuple[str, str], Row] = {}
     for ret in model.construction_returns:
+        if framed_on_the_pour(model, ret):
+            continue
         category = ret.takeoff_category or ret.kind
         key = (category, ret.material_ref)
         row = groups.get(key)

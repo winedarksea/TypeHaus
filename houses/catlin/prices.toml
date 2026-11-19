@@ -589,6 +589,12 @@
 # (notes/main_floor_truss_basis.md §5). Upper Midwest yards stock DF-L 2x6 at ~1.2-1.5x SPF;
 # labour is the "2x6" row's. 2026-11-02, estimate.
 "2x6:df-l-no2" = { material = { low = 1.0, high = 1.7 }, labour = { low = 0.9, high = 1.6 } }  # 80 LF ordered
+# A wall framed on a pour frames its own treated sill (2026-11-18): those sole plates bill
+# here, no longer on [construction_returns] "pt-sill-plate". AC2 PT 2x6 $1.62-1.86/LF
+# (Menards 2026); 2x4/2x8 scaled by the SPF rows' ratio, an estimate. Labour is SPF's.
+"2x4:pt-syp" = { material = { low = 1.05, high = 1.3 }, labour = { low = 0.65, high = 1.2 } }  # 32 LF ordered
+"2x6:pt-syp" = { material = { low = 1.62, high = 1.86 }, labour = { low = 0.9, high = 1.6 } }  # 106 LF ordered
+"2x8:pt-syp" = { material = { low = 2.1, high = 2.5 }, labour = { low = 1.3, high = 2.4 } }  # 80 LF ordered
 # 2026-08-28: 492 -> 464 LF ordered (80 -> 76 pc). The porch joist reinforcement under
 # PT-SG-BR2 — 2 sister 2x8s and 2 blocks, 28 LF — came out when the rear balcony pillar row
 # moved onto the back-beam line and the pillar stopped standing on a cantilevered joist tip.
@@ -7241,8 +7247,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 #   masonry-corner-return   — retaining block; already in [concrete]/[wall_structure].
 #   sauna-liner-return      — the foil-polyiso wrapping onto concrete; already in
 #                             [envelope_layers] as `polyiso-foil`.
-#   pt-sill-plate           — RESOLVED 2026-08-20, see below. It is the same board [framing]
-#                             already bills, so only the PT/sealer/anchor delta is priced.
+#   pt-sill-plate           — priced below: the mudsills [framing] does not bill.
 #   resilient-channel       — priced below; 522.2 LF of RC-1.
 #
 # rim-spray-foam: 3" of closed-cell foam in an 11-7/8" rim cavity is about 3.0 board-feet of
@@ -7255,64 +7260,15 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # $/LF of return, by takeoff_category
 "rim-spray-foam" = { material = { low = 1.2, high = 2.4 }, labour = { low = 1.8, high = 6.6 } }  # 81.0 LF — was 54 LF when this rate was written (re-read 2026-08-22)
 
-# 2026-08-20 — the two rows the 2026-08-18 pass left open, answered as far as they can be.
-#
-# pt-sill-plate, 370.0 LF (306.6 when this block was written). ** THE OPEN QUESTION IS NOW
-# CLOSED, and the delta-only answer
-# below is the right one. ** Two facts settle it:
-#   1. `resolve/framing/solver.py:_append_plates` appends exactly one `plate-bottom` member to
-#      EVERY framed wall, unconditionally — there is no branch that skips it when the wall
-#      lands on concrete. So [framing] has already bought the board on all 306.6 LF.
-#   2. CR-CONC-TO-FRAMED-SILL (plan/assemblies.py:972) is `kind="bearing_plate"` with
-#      `dimension=inch(1.5)` — one 2x course, the same 1.5" as that bottom plate, declared at
-#      `applies_to="wall:framed_on_concrete"`. The rule's own docstring calls the construction
-#      rules "typed declarations of the physical returns the junction solver leaves", i.e. it
-#      states that this plate must be PRESSURE-TREATED. It does not add a second plate.
-# So this row is the upgrade on the board [framing] already bought. Price ONLY THE DELTA, and
-# do NOT buy a second 2x6:
-#   PT premium over the SPF already billed   $0.50-1.00/LF
-#   anchor bolt + nut + washer at 6' o.c.    $0.42-0.83/LF  (Grip Fast 1/2"x10" HDG $1.645 ea)
-#   drill, set, plate layout                 $2.00-4.00/LF labour (0.04-0.06 crew-hr/LF),
-#                                            which includes rolling the sill seal out ahead
-#                                            of the plate — see the note in [sill_gaskets]
-#
-# ** The sill sealer came OUT of this row on 2026-08-24 ** ($0.15-0.30/LF material, which is
-# why the material end reads 0.92-1.83 where it read 1.07-2.13). It has its own BOM table and
-# its own price rows now, because the model distinguishes the two products the house actually
-# uses — plain foam inside, peel-and-stick where the plate joint is the air barrier's
-# crossing — and one blended figure inside a PT delta could not carry that. Leaving it here
-# as well would double-count it.
-#
-# **The material the takeoff reports for this return is `pt-syp` (plain PT) since 2026-10-13;
-# `kdat` from 2026-08-24, `spf` before.** The wall pins the plate flat, so KDAT was overkill.
-# The old note here argued the `spf` it reported "is not a bug to chase — it is the framing
-# member's species". That was wrong about the record even though it was right about the
-# money: `resolve/construction_sills.py` was hardcoding a species onto a return whose own
-# category is `pt-sill-plate` and whose docstring cites IRC R317.1, so the BOM said untreated
-# where the detail said treated. Nothing about the rate changes — `construction_returns` is
-# not in `QUALIFIED_KEY_FIELD` (cli/prices.py), so the material column is reported, not
-# priced on — and this row stays the delta for exactly the reasons (1) and (2) above.
-# The FULL assembly, if it is genuinely a separate plate, is material $2.00-2.50/LF and
-# installed $4.50-7.00/LF — verified against AC2 PT 2x6 at $1.62-1.86/LF (Menards 2026). Add
-# a further $1.10-2.35/LF if the anchors have to be drilled into cured concrete rather than
-# wet-set in the pour (Titen HD 1/2"x4" at $2.40 zinc / $4.60 mechanically galvanised).
-# The full-assembly figures above are kept only as a cross-check on the delta; do NOT add the
-# 2x6 itself at $1.30-2.20/LF on top — per (1) and (2), [framing] has already bought it.
-#
-# **One honest gap, opened 2026-08-23 and left open on purpose.** The return is now the UNION
-# of the framed-wall runs and the floor systems' bearing runs on the same pour
-# (resolve/construction_sills.py), because the mudsill is one board carrying both the studs
-# and the joists. Argument (1) covers the framed part and only the framed part: on the ~10 LF
-# where a floor bears and no wall stacks over it — W-B-CN's north 4.05 LF and the like —
-# [framing] has bought no plate, so those feet are being priced at the delta
-# when they want the full assembly. That is roughly $13-25 understated on a $1,100-2,300 row.
-# It is recorded rather than fudged: the clean fix is for the takeoff to split the return by
-# whether a framed wall stands on it, which is a schema question and not a rate.
-# The gap SHRANK on 2026-08-28: W-B-CS's 0.83 LF was named here too, and framing that wall
-# put a stud wall over its own footing run, so those feet are now covered by argument (1)
-# like every other framed run. The remaining understatement is W-B-CN's north 4.05 LF and
-# the like.
-"pt-sill-plate" = { material = { low = 0.92, high = 1.83 }, labour = { low = 2, high = 4 } }  # 370.0 LF — the PT/anchor DELTA only, sealer moved to [sill_gaskets] (see the notes above)
+# pt-sill-plate, 127.7 LF (2026-11-18). ** A FULL BOARD SINCE 2026-11-18, NOT A DELTA. **
+# A wall framed on a pour frames its own treated sill, and that sole plate now bills once, in
+# [framing] as `:pt-syp` (the garage and ~23 basement walls: 187 LF cut). What is left here is
+# only the mudsills [framing] never bought: under the main storey's platform-framed walls,
+# whose own plate sits on the subfloor, and under floor bearing alone. The old delta argument
+# ("[framing] already bought the board") was true of neither set. Full assembly, AC2 PT 2x6
+# at $1.62-1.86/LF (Menards 2026) plus nuts/washers: $2.00-2.50/LF material, $4.50-7.00/LF
+# installed incl. drill, set and plate layout. Sealer is [sill_gaskets]; anchors [hardware].
+"pt-sill-plate" = { material = { low = 2.0, high = 2.5 }, labour = { low = 2.5, high = 4.5 } }  # 127.7 LF
 
 # resilient-channel, 522.2 LF. The 2026-08-18 guess of $0.45-0.90/LF material is CONFIRMED and
 # tightened: single-leg RC-1 in 12' sticks clusters at $0.499-0.566/LF across three independent
@@ -7331,8 +7287,8 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # is where the air barrier crosses onto the foundation, and that joint gets the peel-and-stick
 # form; everything else gets plain closed-cell foam.
 #
-# ** MATERIAL ONLY, DELIBERATELY. ** Rolling the seal out is inside the "drill, set, plate
-# layout" labour already billed on `pt-sill-plate` — it is the same crew in the same pass, and
+# ** MATERIAL ONLY, DELIBERATELY. ** Rolling the seal out is inside the plate's own labour
+# (`pt-sill-plate`, or [framing] `:pt-syp` where the plate is the sill) — the same crew and pass, and
 # a second labour figure here would be the double-count that pulling the sealer out of that
 # row was meant to end. If this ever becomes a separately-subbed air-sealing scope, price the
 # labour here and say so, and take it back off the plate row in the same edit.

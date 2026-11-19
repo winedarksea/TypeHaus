@@ -75,8 +75,18 @@ def test_returns_contribute_takeoff_rows(catlin_model) -> None:
     for row in rows:
         assert row["count"] >= 1
         assert row["length_ft"] > 0.0
-    # Rows reconcile 1:1 with the resolved returns.
-    assert sum(row["count"] for row in rows) == len(catlin_model.construction_returns)
+    # Rows reconcile 1:1 with the resolved returns, less the sills a wall frames as its own
+    # sole plate: that board bills once, in framing, as treated stock.
+    from typehaus.resolve.sill_solids import framed_on_the_pour
+
+    framed = [r for r in catlin_model.construction_returns
+              if framed_on_the_pour(catlin_model, r)]
+    assert framed
+    assert sum(row["count"] for row in rows) == len(catlin_model.construction_returns) - len(framed)
+    plates = [m for tag in {t for r in framed for t in r.element_tags[1:]}
+              if (w := catlin_model.wall(tag)) is not None for m in w.members
+              if m.child_key.startswith("plate-bottom") and abs(m.z0_m - w.frame_base_z_m) < 1e-3]
+    assert plates and all(m.material == "pt-syp" for m in plates)
 
 
 def test_sill_plate_is_pt_bearing_and_carries_overlay_metadata(catlin_model) -> None:

@@ -12,13 +12,15 @@ from __future__ import annotations
 from typehaus.resolve.model import ResolvedModel, ResolvedSolid
 from typehaus.resolve.solid_categories import is_pour_slab
 
-_SILL_RETURN = "wall:framed_on_concrete"
+SILL_RETURN = "wall:framed_on_concrete"
 _TOL_M = 0.001
 GASKET_MATERIAL = "sill-seal"
 
 
-def _framed_on_the_pour(model: ResolvedModel, ret) -> bool:
-    """Does a wall over this return frame its own bottom plate at the pour top?"""
+def framed_on_the_pour(model: ResolvedModel, ret) -> bool:
+    """Is this sill a wall's own bottom plate, framed at the pour top? It bills as framing."""
+    if ret.applies_to != SILL_RETURN:
+        return False
     walls = (model.wall(tag) for tag in ret.element_tags[1:])
     return any(w is not None and w.frame_base_z_m <= ret.z0_m + _TOL_M for w in walls)
 
@@ -47,7 +49,7 @@ def sill_solids(model: ResolvedModel) -> list[ResolvedSolid]:
     """One gasket and one plate solid per sill return no framed wall draws."""
     out: list[ResolvedSolid] = []
     for ret in model.construction_returns:
-        if ret.applies_to != _SILL_RETURN or _framed_on_the_pour(model, ret):
+        if ret.applies_to != SILL_RETURN or framed_on_the_pour(model, ret):
             continue
         outline = _clear_of_pours(model, ret)
         if outline is None:

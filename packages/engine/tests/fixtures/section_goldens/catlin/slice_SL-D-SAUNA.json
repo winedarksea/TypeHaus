@@ -2020,7 +2020,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": null
+      "material": "pt-syp"
     },
     {
       "space": "model",
@@ -2638,7 +2638,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": null
+      "material": "pt-syp"
     },
     {
       "space": "model",

@@ -4,7 +4,7 @@
 **Trade:** Framing  
 **Engine:** 0.1.2  
 **Model hash:** c22878b05d7ceb7c  
-**Lines:** 261
+**Lines:** 265
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
 
@@ -68,7 +68,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x2 SPF No. 2 & Btr framing lumber, 10' (2x2) | 2 | pc | plate | 20 LF | building |
 | 2x3 SPF No. 2 & Btr framing lumber, 8' (2x3) | 6 | pc | corner stud, plate, stud | 48 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 92 5/8" PET (2x4) | 81 | pc | corner stud, king stud, stud | 625.2 LF | building |
-| 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4) | 148 | pc | blocking, corner stud, cripple stud, header, jack stud, king stud, ledger, outlooker, partition backer, plate, raked top plate, stud | 1184 LF | building |
+| 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4) | 144 | pc | blocking, corner stud, cripple stud, header, jack stud, king stud, ledger, outlooker, partition backer, plate, raked top plate, stud | 1152 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 104 5/8" PET (2x4) | 252 | pc | corner stud, king stud, stud | 2197.1 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 10' (2x4) | 31 | pc | partition backer, plate, raked top plate | 310 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 14' (2x4) | 12 | pc | plate | 168 LF | building |
@@ -78,14 +78,15 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 14' (2x4:kdat) | 10 | pc | girt strapping | 140 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 16' (2x4:kdat) | 12 | pc | girt strapping | 192 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (2x4:kdat) | 23 | pc | girt strapping | 460 LF | building |
+| 2x4 Pressure-treated southern yellow pine No. 2 (sill plate), 8' (2x4:pt-syp) | 4 | pc | plate | 32 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4:spf) | 16 | pc | blocking, ceiling furring, girt strapping | 128 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 92 5/8" PET (2x6) | 110 | pc | corner stud, king stud, stud | 849.1 LF | building |
-| 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6) | 395 | pc | blocking, corner stud, cripple stud, door blocking, header, jack stud, king stud, plate, raked top plate, sill, strongback, stud | 3160 LF | building |
+| 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6) | 387 | pc | blocking, corner stud, cripple stud, door blocking, header, jack stud, king stud, plate, raked top plate, sill, strongback, stud | 3096 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 104 5/8" PET (2x6) | 202 | pc | corner stud, king stud, stud | 1761.2 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 116 5/8" PET (2x6) | 6 | pc | king stud, stud | 58.3 LF | building |
-| 2x6 SPF No. 2 & Btr framing lumber, 10' (2x6) | 50 | pc | plate, raked top plate, strongback | 500 LF | building |
+| 2x6 SPF No. 2 & Btr framing lumber, 10' (2x6) | 48 | pc | plate, raked top plate, strongback | 480 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 12' (2x6) | 5 | pc | plate | 60 LF | building |
-| 2x6 SPF No. 2 & Btr framing lumber, 14' (2x6) | 16 | pc | plate | 224 LF | building |
+| 2x6 SPF No. 2 & Btr framing lumber, 14' (2x6) | 15 | pc | plate | 210 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 16' (2x6) | 15 | pc | barge rafter, plate | 240 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 20' (2x6) | 24 | pc | blocking, plate, raked top plate | 480 LF | building |
 | 2x6 Douglas fir-larch No. 2 framing, 8' (2x6:df-l-no2) | 4 | pc | plate | 32 LF | building |
@@ -98,10 +99,13 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x6 Laminated strand lumber, 8' (2x6:lsl) | 69 | pc | cripple stud, door blocking, jack stud | 552 LF | building |
 | 2x6 Laminated strand lumber, 104 5/8" PET (2x6:lsl) | 133 | pc | corner stud, king stud, stud | 1159.6 LF | building |
 | 2x6 Red oak 8/4, custom-milled S4S to 1 1/2", 8' (2x6:oak-8q) | 4 | pc | blocking | 32 LF | building |
+| 2x6 Pressure-treated southern yellow pine No. 2 (sill plate), 8' (2x6:pt-syp) | 9 | pc | plate | 72 LF | building |
+| 2x6 Pressure-treated southern yellow pine No. 2 (sill plate), 10' (2x6:pt-syp) | 2 | pc | plate | 20 LF | building |
+| 2x6 Pressure-treated southern yellow pine No. 2 (sill plate), 14' (2x6:pt-syp) | 1 | pc | plate | 14 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6:spf) | 10 | pc | blocking | 80 LF | building |
-| 2x8 SPF No. 2 & Btr framing lumber, 8' (2x8) | 29 | pc | landing framing, plate | 232 LF | building |
-| 2x8 SPF No. 2 & Btr framing lumber, 16' (2x8) | 3 | pc | plate | 48 LF | building |
 | 2x8 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (2x8:kdat) | 8 | pc | joist, rim board, sister joist | 64 LF | building |
+| 2x8 Pressure-treated southern yellow pine No. 2 (sill plate), 8' (2x8:pt-syp) | 4 | pc | plate | 32 LF | building |
+| 2x8 Pressure-treated southern yellow pine No. 2 (sill plate), 16' (2x8:pt-syp) | 3 | pc | plate | 48 LF | building |
 | 2x8 SPF No. 2 & Btr framing lumber, 8' (2x8:spf) | 39 | pc | blocking | 312 LF | building |
 | 2x12 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (3-2x12:kdat) | 6 | pc | joist (3-ply) | 120 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (3-2x4:kdat) | 135 | pc | truss girt block (3-ply) | 1080 LF | building |
@@ -284,7 +288,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| Treated sill plate, Pressure-treated southern yellow pine No. 2 (sill plate) (pt-sill-plate) | 320.3 | LF |  | building |
+| Treated sill plate, Pressure-treated southern yellow pine No. 2 (sill plate) (pt-sill-plate) | 127.7 | LF |  | building |
 
 ## Sill gaskets
 
@@ -404,6 +408,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 14' (2x4:kdat) | — |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 16' (2x4:kdat) | — |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (2x4:kdat) | — |
+| 2x4 Pressure-treated southern yellow pine No. 2 (sill plate), 8' (2x4:pt-syp) | — |
 | 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4:spf) | — |
 | 2x6 SPF No. 2 & Btr framing lumber, 92 5/8" PET (2x6) | — |
 | 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6) | — |
@@ -424,10 +429,13 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x6 Laminated strand lumber, 8' (2x6:lsl) | — |
 | 2x6 Laminated strand lumber, 104 5/8" PET (2x6:lsl) | — |
 | 2x6 Red oak 8/4, custom-milled S4S to 1 1/2", 8' (2x6:oak-8q) | — |
+| 2x6 Pressure-treated southern yellow pine No. 2 (sill plate), 8' (2x6:pt-syp) | — |
+| 2x6 Pressure-treated southern yellow pine No. 2 (sill plate), 10' (2x6:pt-syp) | — |
+| 2x6 Pressure-treated southern yellow pine No. 2 (sill plate), 14' (2x6:pt-syp) | — |
 | 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6:spf) | — |
-| 2x8 SPF No. 2 & Btr framing lumber, 8' (2x8) | — |
-| 2x8 SPF No. 2 & Btr framing lumber, 16' (2x8) | — |
 | 2x8 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (2x8:kdat) | — |
+| 2x8 Pressure-treated southern yellow pine No. 2 (sill plate), 8' (2x8:pt-syp) | — |
+| 2x8 Pressure-treated southern yellow pine No. 2 (sill plate), 16' (2x8:pt-syp) | — |
 | 2x8 SPF No. 2 & Btr framing lumber, 8' (2x8:spf) | — |
 | 2x12 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (3-2x12:kdat) | — |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (3-2x4:kdat) | — |

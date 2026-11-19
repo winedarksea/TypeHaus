@@ -128,6 +128,9 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
 
         apply_girt_starter_rise(model)
         findings.extend(frame_model(plan, model))
+        from typehaus.resolve.framing.sill_plate import treat_pour_sole_plates
+
+        treat_pour_sole_plates(model)  # a wall on a pour frames its treated sill
         from typehaus.resolve.jamb_fill import resolve_jamb_fills
 
         resolve_jamb_fills(model)

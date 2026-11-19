@@ -62,6 +62,13 @@ def _framed_elements(model: ResolvedModel):
         yield from getattr(model, kind)
 
 
+def _plates_at(model: ResolvedModel, sill) -> list:
+    """The host walls' plates at the sill's own z: the sill is that wall's bottom plate."""
+    return [member for wall in model.walls if wall.tag in sill.element_tags
+            for member in wall.members
+            if member.category == _PLATE and abs(member.z0_m - sill.z0_m) < _Z_TOLERANCE_M]
+
+
 def _sill_nails(model: ResolvedModel, sill, rules: TreatedFramingFastenerRules
                 ) -> tuple[int, str]:
     """Nails into one treated sill, and what it was read as.
@@ -72,8 +79,7 @@ def _sill_nails(model: ResolvedModel, sill, rules: TreatedFramingFastenerRules
     """
     footprint = Polygon(sill.outline).buffer(_PLAN_TOLERANCE_M)
     hosts = [wall for wall in model.walls if wall.tag in sill.element_tags]
-    if any(member.category == _PLATE and abs(member.z0_m - sill.z0_m) < _Z_TOLERANCE_M
-           for wall in hosts for member in wall.members):
+    if _plates_at(model, sill):
         studs = sum(1 for wall in hosts for member in wall.members
                     if member.category != _PLATE
                     and member.category not in rules.excluded_categories
@@ -112,11 +118,16 @@ def treated_framing_fastener_rows(model: ResolvedModel,
     """One row per fastener model, its storeys and the sticks it answers for."""
     counts: dict[str, Counter] = defaultdict(Counter)
     sticks: dict[str, Counter] = defaultdict(Counter)
+    sills = [sill for sill in model.construction_returns
+             if sill.kind == rules.sill_return_kind and _treated(model, sill.material_ref)]
+    # A plate that IS a pour sill is nailed as that sill, below: the studs landing on it.
+    sill_plates = {id(member) for sill in sills for member in _plates_at(model, sill)}
     for element in _framed_elements(model):
         assembly = getattr(element, "assembly", None)
         host = assembly_structure_material(model.plan, assembly) if assembly else None
         for member in element.members:
             if (member.category in rules.excluded_categories or member.supplied_by
+                    or id(member) in sill_plates
                     or (member.connection or "").startswith(_STAIR_SPACER)):
                 continue
             ref = member_material(member, host)
@@ -124,11 +135,10 @@ def treated_framing_fastener_rows(model: ResolvedModel,
                 continue
             counts[ref][element.storey] += _stick_nails(member, rules)
             sticks[ref][member.category] += 1
-    for sill in model.construction_returns:
-        if sill.kind == rules.sill_return_kind and _treated(model, sill.material_ref):
-            nails, kind = _sill_nails(model, sill, rules)
-            counts[sill.material_ref][sill.storey] += nails
-            sticks[sill.material_ref][kind] += 1
+    for sill in sills:
+        nails, kind = _sill_nails(model, sill, rules)
+        counts[sill.material_ref][sill.storey] += nails
+        sticks[sill.material_ref][kind] += 1
 
     by_part: dict[str, tuple] = {}
     for ref in sorted(counts):
