@@ -176,6 +176,31 @@ def test_costs_import_lands_an_edited_actual_cost(sandbox, tmp_path) -> None:
     assert entry.actual_cost == 1234.56 and entry.paid is True
 
 
+def test_costs_import_files_a_split_key_per_trade(sandbox, tmp_path) -> None:
+    """framing/2x8 is billed by framing and by stairs: each trade's row imports to its own
+    ``key@trade`` entry, and a row that drops the trade is refused, never guessed."""
+    estimate_csv = tmp_path / "estimate.csv"
+    assert runner.invoke(app, ["takeoff", str(sandbox), "--csv",
+                               str(estimate_csv)]).exit_code == 0
+    rows = list(csv.DictReader(estimate_csv.open()))
+    split = [row for row in rows if (row["section"], row["key"]) == ("framing", "2x8")]
+    assert {row["trade"] for row in split} == {"framing", "stairs"}
+    stairs = next(row for row in split if row["trade"] == "stairs")
+    stairs["actual_cost"] = "80"
+    path = tmp_path / "split.csv"
+    with path.open("w", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
+        writer.writeheader()
+        writer.writerow(stairs)
+    result = runner.invoke(app, ["costs", "import", str(path), "--house", str(sandbox)])
+    assert result.exit_code == 0, result.output
+    assert load_costs(sandbox).entries["framing"]["2x8@stairs"].actual_cost == 80.0
+
+    path.write_text("section,key,actual_cost,paid\nframing,2x8,100,yes\n")
+    result = runner.invoke(app, ["costs", "import", str(path), "--house", str(sandbox)])
+    assert result.exit_code == 2 and "needs a trade" in result.output
+
+
 def test_costs_import_reports_a_stale_row_rather_than_applying_it(sandbox, tmp_path) -> None:
     """A row whose (section, key) matches nothing means the plan moved on under the
     spreadsheet — which is exactly the fact an owner has to see."""

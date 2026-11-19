@@ -88,12 +88,11 @@ def test_the_column_order_is_the_documented_intake_shape() -> None:
     assert ESTIMATE_COLUMNS[-2:] == ("actual_cost", "paid")
 
 
-def test_one_row_per_section_key_even_when_the_estimate_has_several(estimate) -> None:
-    """``structural_solids`` bills two assemblies as ``solids/column``. ``(section, key)``
-    is what ``costs.toml`` files an actual cost under, so the CSV has to aggregate or the
-    file cannot be written back unambiguously."""
+def test_one_row_per_section_key_trade_even_when_the_estimate_has_several(estimate) -> None:
+    """``structural_solids`` bills two assemblies as ``solids/column`` on one trade: one row,
+    summed, so the file writes back unambiguously."""
     rows = estimate_rows(estimate)
-    keys = [(row["section"], row["key"]) for row in rows]
+    keys = [(row["section"], row["key"], row["trade"]) for row in rows]
     assert len(keys) == len(set(keys))
     column = next(row for row in rows if row["key"] == "column")
     assert column["quantity"] == pytest.approx(3.0)
@@ -101,9 +100,28 @@ def test_one_row_per_section_key_even_when_the_estimate_has_several(estimate) ->
     assert "ELM_TIMBER" in column["description"] and "POST_WHITE" in column["description"]
 
 
+def _row(trade: str, quantity: float, cost: float) -> dict:
+    return {"key": "2x8", "trade": trade, "quantity": quantity, "unit": "LF",
+            "unit_price": {"low": 1.0, "high": 1.0}, "cost": {"low": cost, "high": cost},
+            "material": {"low": cost, "high": cost}, "labour": {"low": 0.0, "high": 0.0}}
+
+
+def test_two_trades_under_one_key_stay_two_rows_with_their_own_actuals() -> None:
+    """2x8 blocking is framing's and the stair landing's: each trade keeps its quantity,
+    and a split key's actual is filed per trade (``key@trade``)."""
+    estimate = {"sections": {"framing": {"rows": [
+        _row("framing", 300.0, 300.0), _row("stairs", 12.0, 12.0), _row("framing", 10.0, 10.0)]}}}
+    state = CostsState(entries={"framing": {"2x8@stairs": CostEntry(actual_cost=20.0)}})
+    rows = estimate_rows(estimate, state)
+    by_trade = {row["trade"]: row for row in rows}
+    assert len(rows) == 2 and by_trade["framing"]["quantity"] == pytest.approx(310.0)
+    assert by_trade["stairs"]["actual_cost"] == 20.0
+    assert by_trade["framing"]["actual_cost"] is None
+
+
 def test_rows_are_sorted_by_the_join_key(estimate) -> None:
     rows = estimate_rows(estimate)
-    assert rows == sorted(rows, key=lambda row: (row["section"], row["key"]))
+    assert rows == sorted(rows, key=lambda row: (row["section"], row["key"], row["trade"]))
 
 
 def test_a_merged_row_leaves_the_split_columns_blank_not_zero(estimate) -> None:

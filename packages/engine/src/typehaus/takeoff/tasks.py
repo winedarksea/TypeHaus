@@ -35,6 +35,7 @@ from typehaus.cli.prices import ZERO, PriceRange
 from typehaus.emit.trades import CONSTRUCTION_SEQUENCE, TRADE_PREDECESSORS
 from typehaus.takeoff.bom_walk import walk_bom
 from typehaus.takeoff.cost_codes import CostCode, cost_code
+from typehaus.takeoff.costs import entries_for_key
 from typehaus.takeoff.labels import LabelIndex, describe
 
 #: The storey slot for work a takeoff bills building-wide. Named rather than blank so a
@@ -152,6 +153,7 @@ def build_work_items(model: Any, bom: dict[str, Any], estimate: dict[str, Any] |
     buckets: dict[tuple[str, str], _Bucket] = {}
     nahb_of: dict[tuple[str, str], str] = {}
     trade_of = _one_trade_per_row(_priced_or_bare_rows(bom, estimate))
+    counted: set[tuple[str, str]] = set()
     for section, key, cost, code in _priced_or_bare_rows(bom, estimate):
         trade = trade_of[(section, key)]
         nahb_of.setdefault((section, key), code.nahb)
@@ -162,10 +164,13 @@ def build_work_items(model: Any, bom: dict[str, Any], estimate: dict[str, Any] |
             bucket.rows.append((section, key))
         bucket.tags.update(str(tag) for tag in tags)
         bucket.estimate = bucket.estimate.plus(cost)
-        actual = getattr(entries.get(section, {}).get(key), "actual_cost", None)
-        if actual is not None:
-            bucket.actual += float(actual)
-            bucket.has_actual = True
+        if (section, key) in counted:  # several estimate rows share a key: count it once
+            continue
+        counted.add((section, key))
+        for entry in entries_for_key(entries.get(section, {}), key):
+            if entry.actual_cost is not None:
+                bucket.actual += float(entry.actual_cost)
+                bucket.has_actual = True
 
     project_uuid = model.plan.project.project_uuid
     order = {trade: i for i, trade in enumerate(CONSTRUCTION_SEQUENCE)}
@@ -224,7 +229,7 @@ def _one_trade_per_row(rows: Iterator[tuple[str, str, PriceRange, CostCode]]
     Two BOM rows can share a price key and file on different trades — the below-grade
     waterproofing on the pour and the same sheet carried up the framed walkout walls are
     both ``envelope_layers:waterproofing``, concrete and siding.
-    The CSV keeps both. A work package cannot: ``(section, key)`` is the join
+    The estimate CSV keeps one row per trade. A work package cannot: ``(section, key)`` is the join
     ``tasks.toml`` visits and ``costs.toml`` check-offs are written against, and a row that
     is in two packages is counted twice. The trade carrying the most money wins; on the
     bare path (no estimate) the first row seen does.

@@ -10,15 +10,16 @@ from whatever keys happen to be present, so adding a field to the estimate paylo
 silently widen a file that somebody's import mapping is pinned to.
 
 Actual-vs-estimated rides in the last two columns, read from ``costs.toml`` through the same
-``(section, key)`` join everything else uses — which is what lets the file round-trip:
-export, edit ``actual_cost`` in a spreadsheet, and ``haus costs import`` reads it back.
+``(section, key)`` join everything else uses, qualified by trade where two trades bill one
+key — which is what lets the file round-trip: export, edit ``actual_cost`` in a spreadsheet,
+and ``haus costs import`` reads it back.
 """
 
 from __future__ import annotations
 
 from typing import Any
 
-from typehaus.takeoff.costs import CostsState
+from typehaus.takeoff.costs import CostsState, entry_key
 
 #: One row per priced BOM line. Order is the contract — see the module docstring.
 ESTIMATE_COLUMNS = (
@@ -30,7 +31,7 @@ ESTIMATE_COLUMNS = (
 )
 
 
-#: Columns summed when two estimate rows share one ``(section, key)``.
+#: Columns summed when two estimate rows share one ``(section, key, trade)``.
 _ADDITIVE = ("quantity", "order_quantity", "total_low", "total_high",
              "material_low", "material_high", "labour_low", "labour_high")
 
@@ -39,24 +40,30 @@ def estimate_rows(estimate: dict[str, Any],
                   state: CostsState | None = None) -> list[dict[str, Any]]:
     """Flatten ``estimate_costs``'s nested payload into CSV rows, deterministically sorted.
 
-    **One row per ``(section, key)``.** The estimate payload can carry several rows under
-    one key — ``structural_solids`` bills three different assemblies as ``concrete/column``
-    — but ``(section, key)`` is the join every other cost surface uses: it is what
-    ``costs.toml`` files an ``actual_cost`` under and what ``haus costs import`` reads back.
-    Emitting the un-aggregated rows would produce a file whose lines cannot be written back
-    unambiguously, so they are summed here and their descriptions merged.
+    **One row per ``(section, key, trade)``.** The estimate payload can carry several rows
+    under one key — ``structural_solids`` bills three different assemblies as
+    ``concrete/column`` — and those are summed here, their descriptions merged. Rows of one
+    key that file on DIFFERENT trades stay apart (2x8 blocking is framing's and the stair
+    landing's both), so an estimator's import sees each trade's quantity. ``costs.toml``
+    files a split key's actuals per trade (:func:`typehaus.takeoff.costs.entry_key`).
 
-    Sorted by ``(section, key)`` rather than left in payload order: the payload's order is
+    Sorted by ``(section, key, trade)`` rather than left in payload order: the payload's order is
     ``ESTIMATE_PLANS``' order, which is authored for reading, and a re-export after an
     unrelated plan edit should diff as the rows that changed and nothing else.
     """
     entries = (state.entries if state is not None else {})
-    merged: dict[tuple[str, str], dict[str, Any]] = {}
-    descriptions: dict[tuple[str, str], list[str]] = {}
+    trades_of: dict[tuple[str, str], set[str]] = {}
+    for section, body in estimate.get("sections", {}).items():
+        for row in body.get("rows", []):
+            trades_of.setdefault((section, row["key"]), set()).add(row.get("trade") or "")
+    merged: dict[tuple[str, str, str], dict[str, Any]] = {}
+    descriptions: dict[tuple[str, str, str], list[str]] = {}
     for section, body in estimate.get("sections", {}).items():
         section_entries = entries.get(section, {})
         for row in body.get("rows", []):
-            entry = section_entries.get(row["key"])
+            trade = row.get("trade") or ""
+            split = len(trades_of[(section, row["key"])]) > 1
+            entry = section_entries.get(entry_key(row["key"], trade if split else None))
             built = {
                 "nahb_code": row.get("nahb_code"),
                 "csi_code": row.get("csi_code"),
@@ -81,7 +88,7 @@ def estimate_rows(estimate: dict[str, Any],
                 "category": row.get("category"),
                 "level": row.get("level"),
             }
-            slot = (section, row["key"])
+            slot = (section, row["key"], trade)
             descriptions.setdefault(slot, [])
             if built["description"] and built["description"] not in descriptions[slot]:
                 descriptions[slot].append(built["description"])

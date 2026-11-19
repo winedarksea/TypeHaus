@@ -7,7 +7,8 @@ the house directory and versioned with the plan:
 
 * **entries** — per-BOM-line state, keyed ``(section, price_key)`` with exactly the join
   :func:`typehaus.cli.prices.estimate_costs` uses (``ESTIMATE_PLANS``), so a paid check-off
-  points at the same row the estimate prices. A BOM row that later disappears (the plan
+  points at the same row the estimate prices. A key two trades bill files one entry per
+  trade, ``"<key>@<trade>"`` (:func:`entry_key`). A BOM row that later disappears (the plan
   changed) leaves its entry *stale* — surfaced by :func:`costs_payload`, never dropped.
 * **extra** — real spend that is on no estimate line at all, so the running total is the
   project's rather than just the modelled material's.
@@ -102,6 +103,29 @@ class ExtraItem:
 class CostsState:
     entries: Mapping[str, Mapping[str, CostEntry]] = field(default_factory=dict)
     extra: tuple[ExtraItem, ...] = ()
+
+
+#: Separates a price key from its trade in an entry key. A key billed by ONE trade files as
+#: the bare key (every costs.toml written before the CSV split still loads); a key two
+#: trades bill (2x8 blocking under framing and under stairs) files one entry per trade.
+TRADE_SEPARATOR = "@"
+
+
+def entry_key(key: str, trade: str | None = None) -> str:
+    """The ``costs.toml`` key for ``(key, trade)``; bare when no trade qualifies it."""
+    return f"{key}{TRADE_SEPARATOR}{trade}" if trade else key
+
+
+def split_entry_key(name: str) -> tuple[str, str | None]:
+    """``"key@trade"`` -> ``(key, trade)``; a bare key -> ``(key, None)``."""
+    key, sep, trade = name.rpartition(TRADE_SEPARATOR)
+    return (key, trade) if sep and key else (name, None)
+
+
+def entries_for_key(section_entries: Mapping[str, CostEntry], key: str) -> list[CostEntry]:
+    """Every entry filed against ``key``: the bare one and each trade-qualified one."""
+    return [entry for name, entry in section_entries.items()
+            if split_entry_key(name)[0] == key]
 
 
 # --- load ---------------------------------------------------------------------------------
@@ -350,7 +374,9 @@ def costs_payload(bom: dict, prices: Prices | None, state: CostsState,
         row_keys = {str(row.get(plan["key_field"]))
                     for row in (bom.get(plan["bom_key"]) or [])}
         for key in sorted(state.entries[section]):
-            if key not in row_keys:
+            # A trade-qualified entry is stale once its key leaves the BOM; whether the
+            # trade still bills it is the estimate's question, answered by `costs import`.
+            if split_entry_key(key)[0] not in row_keys:
                 stale.append({"section": section, "key": key})
 
     extra_total = ZERO
@@ -396,5 +422,6 @@ def costs_payload(bom: dict, prices: Prices | None, state: CostsState,
     }
 
 
-__all__ = ["COSTS_FILENAME", "CostEntry", "ExtraItem", "CostsState", "load_costs",
-           "write_costs", "apply_costs_op", "costs_payload"]
+__all__ = ["COSTS_FILENAME", "CostEntry", "ExtraItem", "CostsState", "TRADE_SEPARATOR",
+           "entry_key", "split_entry_key", "entries_for_key", "load_costs", "write_costs",
+           "apply_costs_op", "costs_payload"]

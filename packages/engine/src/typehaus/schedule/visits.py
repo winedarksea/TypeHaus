@@ -25,6 +25,7 @@ from typing import Any
 from typehaus.schedule.graph import implied_gates
 from typehaus.schedule.milestones import MILESTONE_OF_TRADE
 from typehaus.schedule.model import Constraint, Visit
+from typehaus.takeoff.costs import entries_for_key
 from typehaus.takeoff.visit_state import VisitEntry, package_of
 
 #: Set once per :func:`~typehaus.schedule.readiness.make_ready` call. ``WorkItem`` carries
@@ -68,10 +69,9 @@ def holds_of(entry: Any) -> tuple[Constraint, ...]:
 def _unpaid(rows: tuple[tuple[str, str], ...], costs_entries: Any) -> bool:
     entries = getattr(costs_entries, "entries", {}) or {}
     for section, key in rows:
-        entry = entries.get(section, {}).get(key)
-        if entry is not None and getattr(entry, "actual_cost", None) is not None \
-                and not getattr(entry, "paid", False):
-            return True
+        for entry in entries_for_key(entries.get(section, {}), key):
+            if entry.actual_cost is not None and not entry.paid:
+                return True
     return False
 
 

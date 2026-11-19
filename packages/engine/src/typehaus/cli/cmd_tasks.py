@@ -128,9 +128,10 @@ def costs_import(
     """Read ``actual_cost`` and ``paid`` back out of an edited estimate CSV.
 
     The file `haus takeoff --csv` writes, edited in a spreadsheet and handed back. Rows are
-    matched on ``(section, key)`` — the same join the estimate prices and ``costs.toml``
-    files under — and routed through the existing ``apply_costs_op``, so this adds no new
-    state and no new server surface.
+    matched on ``(section, key, trade)`` — the same join the estimate prices, split by trade
+    where two trades bill one key — and routed through the existing ``apply_costs_op``, so
+    this adds no new state and no new server surface. A file without a ``trade`` column (or
+    a blank cell) falls back to ``(section, key)``, which is refused when that key splits.
 
     A row whose ``(section, key)`` no longer matches the estimate is **reported, never
     silently applied**: it means the plan moved on under the spreadsheet, which is exactly
@@ -138,16 +139,17 @@ def costs_import(
     """
     import csv as csv_module
 
-    from typehaus.takeoff.costs import apply_costs_op, load_costs, write_costs
+    from typehaus.takeoff.costs import apply_costs_op, entry_key, load_costs, write_costs
 
     d = _resolve_house(house)
     if not csv_path.exists():
         console.print(f"[red]no such file: {csv_path}[/red]", soft_wrap=True)
         raise typer.Exit(2)
     _model, _bom, estimate, _costs = _load_priced_model(d)
-    known = {(section, row["key"])
-             for section, body in (estimate or {}).get("sections", {}).items()
-             for row in body.get("rows", [])}
+    trades_of: dict[tuple[str, str], set[str]] = {}
+    for section, body in (estimate or {}).get("sections", {}).items():
+        for row in body.get("rows", []):
+            trades_of.setdefault((section, row["key"]), set()).add(row.get("trade") or "")
 
     with csv_path.open(newline="") as handle:
         rows = list(csv_module.DictReader(handle))
@@ -165,24 +167,33 @@ def costs_import(
         if actual is None and not paid:
             skipped += 1
             continue
-        if slot not in known:
-            stale.append(slot)
+        trades = trades_of.get(slot)
+        trade = (row.get("trade") or "").strip()
+        if trades is None or (trade and trade not in trades):
+            stale.append((*slot, trade))
             continue
+        if not trade and len(trades) > 1:
+            console.print(f"[red]{slot[0]}:{slot[1]} is billed by {len(trades)} trades "
+                          f"({', '.join(sorted(trades))}); its row needs a trade to say "
+                          f"which[/red]", soft_wrap=True)
+            raise typer.Exit(2)
+        name = entry_key(slot[1], trade if len(trades) > 1 else None)
         # Merged onto the existing entry, not written over it: product, paid_date and note
         # are fields the CSV has no column for, and an import that silently erased the
         # product somebody recorded would be worse than one that refused to run.
-        current = state.entries.get(slot[0], {}).get(slot[1])
+        current = state.entries.get(slot[0], {}).get(name)
         entry = current.as_dict() if current is not None else {}
-        entry = {name: value for name, value in entry.items() if value is not None}
+        entry = {field: value for field, value in entry.items() if value is not None}
         entry["paid"] = paid
         if actual is not None:
             entry["actual_cost"] = actual
         state = apply_costs_op(state, {"op": "set_entry", "section": slot[0],
-                                       "key": slot[1], "entry": entry})
+                                       "key": name, "entry": entry})
         applied += 1
 
-    for section, key in stale:
-        console.print(f"[yellow]stale: {section}:{key} matches no current takeoff row — "
+    for section, key, trade in stale:
+        where = f"{section}:{key}" + (f" ({trade})" if trade else "")
+        console.print(f"[yellow]stale: {where} matches no current takeoff row — "
                       f"not applied[/yellow]", soft_wrap=True)
     if dry_run:
         console.print(f"[dim]dry run: {applied} row(s) would be written, {skipped} blank, "
