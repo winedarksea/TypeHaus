@@ -10,6 +10,7 @@ import {
   buildExtraTable,
   costsSubtitle,
   decorateWithCosts,
+  entryKey,
   formatRange,
   staleEntries,
 } from "./engineCosts";
@@ -123,6 +124,35 @@ export function runEngineCostsTests() {
     "An unjoined section grows nothing");
   assert(!drainage.table.columns.includes("paid"),
     "…not even the paid column");
+
+  // --- a key two trades bill: one row and one "key@trade" entry per trade --------------------
+
+  assert(entryKey("2x8") === "2x8" && entryKey("2x8", "stairs") === "2x8@stairs",
+    "A single-trade key stays bare; a trade qualifies it");
+  const splitRow = (trade: string, cost: number) => ({
+    key: "2x8", trade, quantity: 10, unit: "LF", unit_price: { low: 1, high: 1 },
+    cost: { low: cost, high: cost }, cost_fmt: "" });
+  const splitCosts: EngineCosts = {
+    ...COSTS,
+    estimate: { ...COSTS.estimate!, sections: { framing: {
+      rows: [splitRow("framing", 10), splitRow("stairs", 20), splitRow("stairs", 5),
+        { ...splitRow("framing", 3), key: "2x6" }],
+      subtotal: { low: 0, high: 0 }, subtotal_fmt: "" } } },
+    entries: { framing: { "2x8@stairs": { paid: true, paid_date: null, product: null,
+      actual_cost: 20, note: null }, "2x6": COSTS.entries.framing["2x6"] } },
+  };
+  const splitBom = { framing_by_size: [{ profile: "2x8", pieces: 1 }, { profile: "2x6", pieces: 1 }] };
+  const splitTable = decorateWithCosts(groupBom(splitBom), splitCosts)
+    .flatMap((g) => g.sections).find((s) => s.key === "framing_by_size")!.table;
+  const splitRcs = splitTable.rowCosts!;
+  assert(splitRcs.length === 3, "A two-trade key grows one row per trade; a one-trade key stays one");
+  assert(splitRcs[0].entryKey === "2x8@framing" && splitRcs[0].entry === null
+    && splitRcs[1].entryKey === "2x8@stairs" && splitRcs[1].entry?.paid === true,
+    "Each trade row reads and writes its own key@trade entry");
+  assert(splitRcs[1].estimate?.cost.low === 25 && splitRcs[1].estimate.quantity === 20,
+    "A trade's rows under one key are summed");
+  assert(splitRcs[2].entryKey === "2x6" && splitRcs[2].trade === null,
+    "A key one trade bills keeps the bare entry key");
 
   // --- stale + extras ---------------------------------------------------------------------
 

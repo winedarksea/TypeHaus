@@ -8,8 +8,12 @@ the house directory and versioned with the plan:
 * **entries** — per-BOM-line state, keyed ``(section, price_key)`` with exactly the join
   :func:`typehaus.cli.prices.estimate_costs` uses (``ESTIMATE_PLANS``), so a paid check-off
   points at the same row the estimate prices. A key two trades bill files one entry per
-  trade, ``"<key>@<trade>"`` (:func:`entry_key`). A BOM row that later disappears (the plan
-  changed) leaves its entry *stale* — surfaced by :func:`costs_payload`, never dropped.
+  trade, ``"<key>@<trade>"`` (:func:`entry_key`); the BOM view lists such a key once per
+  trade and writes that key (``model/engineCosts.ts``), a one-trade key stays bare. A
+  legacy BARE entry on a two-trade key still counts for tasks and visits
+  (:func:`entries_for_key`) but the CSV and the view file it against no trade. A BOM row
+  that later disappears (the plan changed) leaves its entry *stale* — surfaced by
+  :func:`costs_payload`, never dropped.
 * **extra** — real spend that is on no estimate line at all, so the running total is the
   project's rather than just the modelled material's.
 

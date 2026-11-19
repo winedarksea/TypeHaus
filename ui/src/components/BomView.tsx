@@ -61,7 +61,7 @@ function BomTableView({ table, actions }: { table: CostedTable; actions?: CostAc
                           type="checkbox"
                           checked={rc.entry?.paid ?? false}
                           onChange={(event) => actions.togglePaid(rc, event.target.checked)}
-                          aria-label={`Paid: ${rc.key}`}
+                          aria-label={`Paid: ${rc.entryKey}`}
                         />
                       </td>
                     );
@@ -174,8 +174,8 @@ export function BomView() {
   }, [client]);
 
   const togglePaid = useCallback(async (rc: RowCost, next: boolean) => {
-    if (rc.key === null) return;
-    const { section, key } = rc;
+    if (rc.entryKey === null) return;
+    const { section, entryKey: key } = rc;
     const previous = rc.entry;
     const optimistic = { ...(previous ?? {}), paid: next,
       paid_date: next ? (previous?.paid_date ?? today()) : null };
@@ -197,18 +197,18 @@ export function BomView() {
   }, [applyCostsOps]);
 
   const editProduct = useCallback(async (rc: RowCost) => {
-    if (rc.key === null) return;
+    if (rc.entryKey === null) return;
     // Prefilled with the specified product where the plan names one: the common edit is a
     // substitution, so the field starts from what was asked for rather than from blank.
     // Clearing it back to empty still deletes the record — the specification is the model's
     // and is never written into costs.toml by this dialog.
     const specified = rc.estimate?.product ?? "";
     const prompt = specified
-      ? `Exact product bought for ${rc.key} (specified: ${specified}):`
-      : `Exact product for ${rc.key}:`;
+      ? `Exact product bought for ${rc.entryKey} (specified: ${specified}):`
+      : `Exact product for ${rc.entryKey}:`;
     const product = window.prompt(prompt, rc.entry?.product ?? specified);
     if (product === null) return;
-    await applyCostsOps([{ op: "set_entry", section: rc.section, key: rc.key,
+    await applyCostsOps([{ op: "set_entry", section: rc.section, key: rc.entryKey,
       entry: { ...(rc.entry ?? {}), product: product.trim() || null } }]);
   }, [applyCostsOps]);
 

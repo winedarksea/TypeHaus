@@ -22,11 +22,23 @@ export function formatRange(range: EnginePriceRange | null | undefined): string 
   return `${dollars(range.low)} – ${dollars(range.high)}`;
 }
 
+/** Separates a price key from its trade in a costs.toml entry key (→ takeoff/costs.py). */
+export const TRADE_SEPARATOR = "@";
+
+/** The costs.toml key for (key, trade): bare unless a second trade bills the same key. */
+export function entryKey(key: string, trade?: string | null): string {
+  return trade ? `${key}${TRADE_SEPARATOR}${trade}` : key;
+}
+
 // Per-row cost identity: which costs (section, key) a BOM table row joins, plus what is
 // known about it. `key` is null on rows whose key cell was empty — nothing to check off.
+// A key two trades bill becomes one row per trade: `trade` names it and `entryKey` is the
+// "key@trade" every read and write of its entry uses; otherwise `entryKey === key`.
 export interface RowCost {
   section: string;
   key: string | null;
+  trade: string | null;
+  entryKey: string | null;
   entry: EngineCostEntry | null;
   estimate: EngineEstimateRow | null;
 }
@@ -47,7 +59,19 @@ export interface CostedGroup extends Omit<BomGroup, "sections"> {
 // The cost columns appended to a joined table, in reading order. Values are display
 // strings/booleans so BomView's formatCell renders them; the interactive cells (paid,
 // product) are re-rendered from `rowCosts` by the view.
-export const COST_COLUMNS = ["unit_price", "est_cost", "actual_cost", "product", "paid"] as const;
+export const COST_COLUMNS = ["trade", "unit_price", "est_cost", "actual_cost", "product",
+  "paid"] as const;
+
+/** One trade's estimate rows under a key as a single row: quantity and cost summed. */
+function mergeRows(rows: readonly EngineEstimateRow[]): EngineEstimateRow {
+  if (rows.length === 1) return rows[0];
+  const cost = {
+    low: rows.reduce((n, r) => n + r.cost.low, 0),
+    high: rows.reduce((n, r) => n + r.cost.high, 0),
+  };
+  return { ...rows[0], quantity: rows.reduce((n, r) => n + r.quantity, 0), cost,
+    cost_fmt: formatRange(cost) ?? "" };
+}
 
 /**
  * Decorate `groupBom(bom)`'s output with cost columns wherever the payload's join says a
@@ -77,36 +101,52 @@ export function decorateWithCosts(groups: BomGroup[], costs: EngineCosts): Coste
       const keyField = costs.join[costSection].key_field;
       const keyIndex = section.table.columns.indexOf(keyField);
       if (keyIndex < 0) return section;
-      const estimateRows = new Map<string, { section: string; row: EngineEstimateRow }>();
+      const estimateRows = new Map<string, { section: string; rows: EngineEstimateRow[] }>();
       for (const from of costSections) {
+        const inSection = new Map<string, EngineEstimateRow[]>();
         for (const row of costs.estimate?.sections[from]?.rows ?? []) {
-          estimateRows.set(row.key, { section: from, row });
+          inSection.set(row.key, [...(inSection.get(row.key) ?? []), row]);
         }
+        for (const [key, rows] of inSection) estimateRows.set(key, { section: from, rows });
       }
-      const rowCosts: RowCost[] = section.table.rows.map((row) => {
+      const rows: (readonly unknown[])[] = [];
+      const rowCosts: RowCost[] = [];
+      for (const row of section.table.rows) {
         const raw = row[keyIndex];
         const key = raw === null || raw === undefined ? null : String(raw);
         const priced = key !== null ? estimateRows.get(key) ?? null : null;
         // A check-off can exist without a price, so the entry is looked up across every
         // section reading this table rather than only the one that priced the row.
-        const from = key === null ? null
+        const from = key === null ? costSection
           : priced?.section ?? costSections.find((s) => costs.entries[s]?.[key]) ?? costSection;
-        return {
-          section: from ?? costSection,
-          key,
-          entry: key !== null && from !== null ? costs.entries[from]?.[key] ?? null : null,
-          estimate: priced?.row ?? null,
-        };
-      });
+        // A key two trades bill files one entry per trade. A bare entry on such a key
+        // belongs to no trade row (the CSV ignores it too); tasks/visits still read it.
+        const byTrade = new Map<string, EngineEstimateRow[]>();
+        for (const r of priced?.rows ?? []) {
+          if (r.trade) byTrade.set(r.trade, [...(byTrade.get(r.trade) ?? []), r]);
+        }
+        const split = key !== null && byTrade.size > 1;
+        const parts: { trade: string | null; estimate: EngineEstimateRow | null }[] = split
+          ? [...byTrade].map(([trade, group]) => ({ trade, estimate: mergeRows(group) }))
+          : [{ trade: null, estimate: priced ? mergeRows(priced.rows) : null }];
+        for (const part of parts) {
+          const name = key === null ? null : entryKey(key, part.trade);
+          rows.push(row);
+          rowCosts.push({ section: from, key, trade: part.trade, entryKey: name,
+            entry: name !== null ? costs.entries[from]?.[name] ?? null : null,
+            estimate: part.estimate });
+        }
+      }
       const table: CostedTable = {
         ...section.table,
         columns: [...section.table.columns, ...COST_COLUMNS],
-        headers: [...section.table.headers, "unit price", "est. cost", "actual cost",
+        headers: [...section.table.headers, "trade", "unit price", "est. cost", "actual cost",
           "product", "paid"],
-        rows: section.table.rows.map((row, index) => {
+        rows: rows.map((row, index) => {
           const rc = rowCosts[index];
           return [
             ...row,
+            rc.trade,
             formatRange(rc.estimate?.unit_price),
             formatRange(rc.estimate?.cost),
             rc.entry?.actual_cost ?? null,

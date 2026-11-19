@@ -17,7 +17,8 @@ from typehaus.cli.prices import (ALLOWANCE_KEY_FIELD, ALLOWANCES, ESTIMATE_PLANS
                                   PriceRange, _SECTIONS)
 from typehaus.takeoff.bom import bill_of_materials
 from typehaus.takeoff.costs import (COSTS_FILENAME, CostEntry, CostsState, ExtraItem,
-                                    apply_costs_op, costs_payload, load_costs, write_costs)
+                                    apply_costs_op, costs_payload, entries_for_key, entry_key,
+                                    load_costs, write_costs)
 
 
 @pytest.fixture(scope="module")
@@ -119,6 +120,28 @@ def test_set_entry_sets_and_clearing_every_field_deletes():
     cleared = apply_costs_op(state, {
         "op": "set_entry", "section": "framing", "key": "2x6", "entry": {}})
     assert cleared.entries == {}
+
+
+def test_a_trade_qualified_entry_round_trips_and_a_bare_one_stays_readable(tmp_path: Path):
+    """The UI writes ``key@trade`` for a key two trades bill (``entry_key``): it survives the
+    file, reaches ``entries_for_key`` (tasks, visits) and files its actual on that trade's
+    CSV row only. A legacy bare entry still counts for tasks, and the CSV ignores it."""
+    from typehaus.takeoff.estimate_csv import estimate_rows
+
+    state = CostsState()
+    for key, cost in (("2x8", 5.0), (entry_key("2x8", "stairs"), 20.0)):
+        state = apply_costs_op(state, {"op": "set_entry", "section": "framing", "key": key,
+                                       "entry": {"paid": True, "actual_cost": cost}})
+    write_costs(tmp_path, state)
+    loaded = load_costs(tmp_path)
+    assert set(loaded.entries["framing"]) == {"2x8", "2x8@stairs"}
+    assert sorted(e.actual_cost for e in entries_for_key(loaded.entries["framing"], "2x8")) \
+        == [5.0, 20.0]
+    rows = [{"key": "2x8", "trade": trade, "quantity": 1.0, "unit": "LF",
+             "unit_price": {"low": 1.0, "high": 1.0}, "cost": {"low": 1.0, "high": 1.0}}
+            for trade in ("framing", "stairs")]
+    out = estimate_rows({"sections": {"framing": {"rows": rows}}}, loaded)
+    assert {r["trade"]: r["actual_cost"] for r in out} == {"framing": None, "stairs": 20.0}
 
 
 def test_set_entry_rejects_an_unknown_section():
