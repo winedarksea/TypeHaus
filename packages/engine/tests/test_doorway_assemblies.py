@@ -17,7 +17,7 @@ from typehaus.resolve.geometry_ir import GSweep
 from typehaus.resolve.geometry_openings import opening_parts
 from typehaus.resolve.model import (
     FramedMember, ResolvedFinishZone, ResolvedLayer, ResolvedModel, ResolvedOpening, ResolvedRoom,
-    ResolvedWall,
+    ResolvedSolid, ResolvedWall,
 )
 from typehaus.resolve.walking_surface import room_finish_at
 from typehaus.takeoff.doors import doorway_purchase_rows
@@ -49,8 +49,7 @@ def doorway_model():
                  NS(tag="metal", finish_thickness_in=None, coating=False)]
     plan = NS(library=NS(door_types=(product,), materials=materials),
               by_tag=lambda tag: None, project=NS(site=NS(impervious_surfaces=())))
-    slab = NS(tag="slab", category="slab", storey="main", outline=rectangle(0, -2, 4, 2),
-              z1_m=0, voids=())
+    slab = ResolvedSolid("slab", "slab", "main", "slab", rectangle(0, -2, 4, 2), -.1, 0)
     return ResolvedModel(plan=plan, walls=[wall], openings=[opening], rooms=rooms, solids=[slab])
 
 

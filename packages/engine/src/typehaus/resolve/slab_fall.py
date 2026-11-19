@@ -42,12 +42,6 @@ def slab_top_at(slab: Slab, x: float, y: float) -> float:
     return top + (plane.lift(x, y) if plane is not None else 0.0)
 
 
-def solid_top_at(solid: Any, x: float, y: float) -> float:
-    """A resolved solid's top at ``(x, y)``: ``z1_m``, lifted where it carries a plane."""
-    plane = getattr(solid, "top_plane", None)
-    return solid.z1_m + (plane.lift(x, y) if plane is not None else 0.0)
-
-
 def sloped_slab_mesh(solid: Any) -> GMesh:
     """The solid's plan ring with its top on the plane, extruded straight down its thickness.
 
@@ -63,7 +57,7 @@ def sloped_slab_mesh(solid: Any) -> GMesh:
         ring = ring[::-1]  # counter-clockwise in plan, so the top faces up
     thickness = solid.z1_m - solid.z0_m
     count = len(ring)
-    top = [(x, y, solid_top_at(solid, x, y)) for x, y in ring]
+    top = [(x, y, solid.top_at(x, y)) for x, y in ring]
     positions = tuple(top) + tuple((x, y, z - thickness) for x, y, z in top)
     cx, cy = (sum(p[i] for p in ring) / count for i in (0, 1))
     cap = _triangulate(tuple((x - cx, y - cy, 0.0) for x, y in ring), (0.0, 0.0, 1.0))
@@ -78,7 +72,7 @@ def solid_mesh(solid: Any) -> GMesh | None:
     """A solid's own mesh: its ``body_mesh``, a falling pour's plane mesh, else None."""
     if solid.body_mesh is not None:
         return solid.body_mesh
-    return sloped_slab_mesh(solid) if getattr(solid, "top_plane", None) is not None else None
+    return sloped_slab_mesh(solid) if solid.top_plane is not None else None
 
 
 def _without_collinear(ring: list[tuple[float, float]]) -> list[tuple[float, float]]:

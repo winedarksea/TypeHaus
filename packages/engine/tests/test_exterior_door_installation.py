@@ -112,12 +112,12 @@ def test_documented_design_geometry_does_not_require_order_confirmation():
 
 
 def test_exterior_landing_search_crosses_gap_without_matching_elevation():
-    from typehaus.resolve.model import ResolvedModel, ResolvedWall
+    from typehaus.resolve.model import ResolvedModel, ResolvedSolid, ResolvedWall
 
     plan = NS(project=NS(site=NS(impervious_surfaces=())), by_tag=lambda tag: None,
               library=NS(materials=[]))
-    slab = NS(tag="landing", category="slab", storey="main", z1_m=-.1, voids=(),
-              outline=((0,.05),(4,.05),(4,2),(0,2)))
+    slab = ResolvedSolid("landing", "landing", "main", "slab",
+                         ((0,.05),(4,.05),(4,2),(0,2)), -.2, -.1)
     model = ResolvedModel(plan, solids=[slab])
     wall = ResolvedWall("wall", "W", "main", "A", ((0,0),(4,0)), (), 0, 3)
     installation = ExteriorDoorInstallation(interior_material_ref="wood")
