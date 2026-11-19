@@ -118,9 +118,11 @@ def test_catlin_panels_bill_once_and_by_the_sheet(catlin_model_ro) -> None:
     panels = [row for row in framing if "panel" in str(row["profile"])]
     assert panels and all(row["board_feet"] is None for row in panels)
 
-    # Every rip row prices: `sheet_goods` joins on `material`, and both tags are priced.
+    # Every rip row prices: `sheet_goods` joins on `material`, and every tag is priced. The
+    # garage's sheathing rip is 7/16" ZIP since its wall took ZIP (2026-11-18).
     assert {str(row["material"]) for row in rips.values()} == {
-        "struct-1-plywood", "cdx-plywood"}
+        "struct-1-plywood", "cdx-plywood", "zip-sheathing"}
+    assert int(rips[("sheathing rip", "zip-sheathing")]["sheets"]) == 1
     # The 5/8" CDX rip is the one that was silently UNPRICED before: it had no `[framing]`
     # row of its own, so 96 LF of it billed at zero.
     assert int(rips[("sheathing rip", "cdx-plywood")]["sheets"]) == 1

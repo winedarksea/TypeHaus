@@ -64,5 +64,6 @@ def test_catlins_multi_receptacle_circuits_fit_the_table(catlin_model_ro):
     assert not [f for f in found if f.result.value == "fail"]
     # Every type names its NEMA (Q14); the GDO's blank-face GFCI holds no receptacle.
     assert not [f for f in found if f.result.value == "unknown"]
-    # 11: the opener outlet left CKT-LT-MAIN for CKT-LT-GARAGE, so neither holds two.
-    assert sum(f.result.value == "pass" for f in found) == 11
+    # 10: the opener outlet left CKT-LT-MAIN for CKT-LT-GARAGE, so neither holds two; the
+    # fridge and freezer then split onto CKT-FRIDGE / CKT-FREEZER, one receptacle each.
+    assert sum(f.result.value == "pass" for f in found) == 10
