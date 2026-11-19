@@ -523,15 +523,10 @@ BASEMENT_LIGHTING = [
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
 
     # RM-B-BATH (2026-07-30; rotated 2026-09-05). On CKT-LT-BSMT with the stair foot since
-    # 2026-11-02 (off backup: notes/backup_power.md §5). The can is the vanity light,
-    # on the room's centre line 17 1/2" off the mirror wall: the only joist bay in the 18-24"
-    # band (the doubled joists at 20'-0"/21'-4" hold the rest); switch on the latch-jamb side
-    # (door swings out, so it isn't behind the leaf).
-    ElectricalDevice(uid="QTB000KAAA", tag="ED-B-BATH-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(12), ft(19, 7.75)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-BSMT", room="RM-B-BATH",
-                     controlled_by=("ED-B-BATH-SW",),
-                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    # 2026-11-02 (off backup: notes/backup_power.md §5). No recessed light since 2026-11-19
+    # (owner): ED-B-BATH-CAN1 is retired and the Karlie over the mirror (ED-B-BATH-MIRROR,
+    # plan/mirrors.py) lights the room. Switch on the latch-jamb side (door swings out, so
+    # it isn't behind the leaf).
     # Hosted on W-B-BA-E's bath face (x=13'-7 3/4" since the 2026-11-16 1" alignment), so it
     # follows the wall.
     ElectricalDevice(uid="QTB000LAAA", tag="ED-B-BATH-SW", kind=DeviceKind.SWITCH,

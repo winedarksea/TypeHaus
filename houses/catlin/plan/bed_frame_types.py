@@ -7,6 +7,7 @@ lives in prices.toml.
 from __future__ import annotations
 
 from typehaus.library.placeables._zones import front_zone, side_zone
+from typehaus.library.placeables.furniture import TWIN_BED
 from typehaus.model import FurnitureType, Product, inch
 
 NECTAR_JAPANESE_BAMBOO_KING_NATURAL = Product(
@@ -39,4 +40,12 @@ NECTAR_JAPANESE_BAMBOO_KING = FurnitureType(
 )
 
 BED_FRAME_PRODUCTS = (NECTAR_JAPANESE_BAMBOO_KING_NATURAL,)
-BED_FRAME_TYPES = (NECTAR_JAPANESE_BAMBOO_KING,)
+# RM-S-BED1's twin: the library twin with a headboard at most 36" over the carpet (design
+# review §4, 2026-11-19). WIN-S-BED1's inward turn sash starts 37.36" above the carpet and
+# swings over the head, so 36" leaves ~1 3/8" under it (notes/egress_window_review.md).
+TWIN_BED_LOW_HEADBOARD = TWIN_BED.model_copy(update={
+    "tag": "FURN-BED-TWIN-36", "name": "Twin bed, headboard 36\" max", "height": inch(36),
+    "source": ("Library twin footprint and access zones; overall height capped at 36 in. so the "
+               "headboard stays under WIN-S-BED1's inward-turning sash (37.36 in. AFF).")})
+
+BED_FRAME_TYPES = (NECTAR_JAPANESE_BAMBOO_KING, TWIN_BED_LOW_HEADBOARD)

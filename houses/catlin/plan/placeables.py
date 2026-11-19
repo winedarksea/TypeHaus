@@ -511,8 +511,9 @@ GARAGE_PLACEABLES = [
 SECOND_PLACEABLES = [
     # BED1 stays in the southern part of its bay; its west-side wardrobe and north-side desk
     # leave the bed's modeled access zones open. Nudged 1/64" east (owner, 2026-10-03)
-    # to clear the added east PAX frame's 18" foot-access zone.
-    Furniture(uid="819QDDYMZ5", tag="FURN-S-BED1", type_ref="FURN-BED-TWIN", room="RM-S-BED1",
+    # to clear the added east PAX frame's 18" foot-access zone. A 36" headboard at most
+    # (FURN-BED-TWIN-36): WIN-S-BED1's turn sash swings over the head (review §4).
+    Furniture(uid="819QDDYMZ5", tag="FURN-S-BED1", type_ref="FURN-BED-TWIN-36", room="RM-S-BED1",
               position=pt(m(9.801366875), m(3.36872)), rotation=deg(-90)),
     Furniture(uid="CSB701AAAA", tag="FURN-S-BED2", type_ref="FURN-QUEEN-BED", room="RM-S-BED2",
               position=pt(m(9.95572), m(6.98818)), rotation=deg(0)),

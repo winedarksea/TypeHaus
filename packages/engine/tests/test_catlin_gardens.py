@@ -29,15 +29,15 @@ def test_rain_garden_catchment_and_volume(catlin_model_ro) -> None:
         assert catchment.by_leader[f"TR-G-LEADER-{side}"] * _SF == pytest.approx(418.75, abs=0.1)
         assert catchment.by_leader[f"TR-RF-LEADER-{side}"] * _SF == pytest.approx(690.7, abs=0.2)
         basin = catlin_model_ro.plan.by_tag(f"RG-{side}-BASIN")
-        assert ponding_volume_m3(basin) * _CF == pytest.approx(100.33, abs=0.05)
+        assert ponding_volume_m3(basin) * _CF == pytest.approx(108.58, abs=0.05)
     assert catchment.uncounted == []
 
 
 def test_rain_garden_and_extension_quantities(catlin_model_ro) -> None:
     rows = {r["category"]: r for r in drainage_takeoff(catlin_model_ro)
             if r["category"] in ("leader_extension", "rain_garden_media", "rain_garden_stone")}
-    assert rows["rain_garden_media"]["aggregate_cubic_yards"] == pytest.approx(12.96, abs=0.01)
-    assert rows["rain_garden_stone"]["aggregate_cubic_yards"] == pytest.approx(6.48, abs=0.01)
+    assert rows["rain_garden_media"]["aggregate_cubic_yards"] == pytest.approx(13.61, abs=0.01)
+    assert rows["rain_garden_stone"]["aggregate_cubic_yards"] == pytest.approx(6.81, abs=0.01)
     # 59.8 -> 59.9: the 5" box moved the trough centre line, and the leaders with it, 1/2" in.
     assert rows["leader_extension"]["length_ft"] == pytest.approx(59.9, abs=0.1)
 
@@ -53,13 +53,13 @@ def test_garden_checks_read_as_the_note_says(catlin_model_ro) -> None:
     ctx = check_context(model=catlin_model_ro)
     capacity = rain_garden_capacity(ctx)
     for side in ("W", "E"):
-        assert any(f.result is Result.PASS and f"RG-{side}-BASIN ponds 100.3 cf against "
-                   "92.5 cf" in f.message for f in capacity)
+        assert any(f.result is Result.PASS and f"RG-{side}-BASIN ponds 108.6 cf against "
+                   "107.8 cf" in f.message for f in capacity)
     setbacks = infiltration_setback(ctx)
     assert any(f.result is Result.PASS and "RG-W-BASIN is 10.5 ft" in f.message
                for f in setbacks)
     # 10.4 -> 10.5: the east basement pour went 12" -> 10" on 2026-11-05 (rain_garden_sizing.md).
-    assert any(f.result is Result.PASS and "RG-E-BASIN is 10.5 ft" in f.message
+    assert any(f.result is Result.PASS and "RG-E-BASIN is 10.4 ft" in f.message
                for f in setbacks)
     assert sum(f.result is Result.UNKNOWN for f in setbacks) == 4   # garage, lot line x2
     assert {f.result for f in leader_extension_fall(ctx)} == {Result.PASS}

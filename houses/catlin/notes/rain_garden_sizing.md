@@ -5,7 +5,8 @@
 inlets `TR-G-LEADER-W`/`-E` and `TR-RF-LEADER-W`/`-E` with their extensions, and the roofs
 they drain (`RF-GARAGE`, `RF-HOUSE`, `RF-BW-CANOPY`).
 **Written:** 2026-09-21, by hand from the authored geometry; the east basin, the canopy's
-two-leader split and 12" ponding 2026-09-23.
+two-leader split and 12" ponding 2026-09-23; direct rain on the basin and the 5'-3" width
+2026-11-19 (design review §11).
 **Oracle for:** `resolve/roof_catchment.py`, `resolve/rain_garden.py`,
 `checks/mep/landscape_drainage.py` (`drainage.rain_garden_capacity`,
 `drainage.infiltration_setback`, `drainage.leader_extension_fall`); reproduced by
@@ -13,7 +14,7 @@ two-leader split and 12" ponding 2026-09-23.
 **What is asked of the reviewer:** confirm §1's catchment split and §3's prismoidal volume.
 
 > ⚠ Both Manual setbacks fall short on both basins, by the owner's choice (2026-09-21, and
-> the east basin mirrors it): about 1'-0" to the side lot line and 6'-6" to the garage's
+> the east basin mirrors it): about 1'-0" to the side lot line and 6'-3" to the garage's
 > frost stem, against 10' each. They report as advisory UNKNOWNs. Confirm with St Paul DSI
 > and both neighbours before digging.
 
@@ -49,25 +50,32 @@ Each 3" garage leader therefore carries 418.75 sf against the ~425 sf a 3" round
 
 ## 2. Demand, per basin
 
-1.0" over 1,109.45 sf = 1,109.45 / 12 = **92.5 cf**.
+The storm falls on the basin too, and no infiltration is credited during it, so the rim's
+own footprint adds to the roof.
+
+Roof: 1.0" over 1,109.45 sf = 1,109.45 / 12 = 92.45 cf.
+Basin: 1.0" over 5.25 × 35 = 183.75 sf = 15.31 cf.
+**Total 107.77 cf** (107.8). At the old 5'-0" width the basin added 14.58 cf: 107.04 cf
+against the 100.3 cf it held, about 50 gal short.
 
 ## 3. Basin, per side
 
-West rim x −6'..−1', y 47'..82'; east rim x 37'..42', the mirror. 5' × 35' = 175 sf at
+West rim x −6'..−0.75', y 47'..82'; east rim x 36.75'..42', the mirror (the 3" added
+2026-11-19 went on the garage side, away from the lot line). 5.25' × 35' = 183.75 sf at
 −3'-1", ponding 12", side slopes 2:1, so the floor is the rim inset 2 × 1.0 = 2.0' each side:
-1' × 31' = 31 sf at −4'-1". Mid-depth (inset 1.0'): 3 × 33 = 99 sf.
+1.25' × 31' = 38.75 sf at −4'-1". Mid-depth (inset 1.0'): 3.25 × 33 = 107.25 sf.
 
-Prismoidal: V = h/6 · (A_top + 4 A_mid + A_bottom) = 1.0/6 × (175 + 396 + 31) =
-602 / 6 = **100.3 cf ≥ 92.5 cf**, a 7.8 cf margin. Overflow is over the rim at the north end
-to daylight, falling to the street.
+Prismoidal: V = h/6 · (A_top + 4 A_mid + A_bottom) = 1.0/6 × (183.75 + 429 + 38.75) =
+651.5 / 6 = **108.6 cf ≥ 107.8 cf**, a 0.8 cf margin. Overflow is over the rim at the north
+end to daylight, falling to the street. (At 5'-0" it held 100.3 cf.)
 
 (At the old 9" the same rim held 88.5 cf, 4.1 cf short once the canopy half was counted.)
 
-Media 12" under the whole rim: 175 cf = 6.48 cy a basin, **12.96 cy** both. Stone 6" under
-that: 87.5 cf = 3.24 cy a basin, **6.48 cy** both. Billed over the rim area, conservatively,
+Media 12" under the whole rim: 183.75 cf = 6.81 cy a basin, **13.61 cy** both. Stone 6"
+under that: 91.875 cf = 3.40 cy a basin, **6.81 cy** both. Billed over the rim area, conservatively,
 as the drywell's stone is.
 
-The floor is only 1'-0" wide at 12". It takes ONE planted row on its centre line
+The floor is only 1'-3" wide at 12". It takes ONE planted row on its centre line
 (`_FLOOR_GRID`'s 6" edge inset), 15" o.c. along the run.
 
 ## 4. Drawdown
@@ -80,14 +88,15 @@ ponding gone in 48 h, which needs at least 12 / 48 = **0.25 in/hr** (0.19 at the
 | basin | to | working | ft | verdict |
 |---|---|---|---|---|
 | W | house basement W-B-N4 | rim south edge y=47' to the wall face | 10.5 | PASS (≥ 10) |
-| W | garage stem W-GF-N | rim east edge x=−1' to the stem face | 6.5 | UNKNOWN |
+| W | garage stem W-GF-N | rim east edge x=−0.75' to the stem face | 6.3 | UNKNOWN |
 | W | west lot line x=−7' | x=−6' | 1.0 | UNKNOWN |
-| E | house basement W-B-E2 | rim SW corner (37', 47') to the wall face | 10.5 | PASS (≥ 10) |
-| E | garage stem W-GF-E | rim west edge x=37' to the stem face | 6.5 | UNKNOWN |
+| E | house basement W-B-E2 | rim SW corner (36.75', 47') to the wall face | 10.4 | PASS (≥ 10) |
+| E | garage stem W-GF-E | rim west edge x=36.75' to the stem face | 6.3 | UNKNOWN |
 | E | east lot line x=43' | x=42' | 1.0 | UNKNOWN |
 
 The east basement read 0.1' closer than the west while W-B-E1/E2 were 12" pours; they are
-10" since 2026-11-05 (`notes/east_breast_bearing.md`), so both read 10.5.
+10" since 2026-11-05 (`notes/east_breast_bearing.md`); the widened east basin's corner reads
+10.4 (2026-11-19).
 
 ## 6. Leader extensions (4" solid PVC, SDR 35)
 
@@ -118,7 +127,7 @@ not the 8.77" the clamps still quote.
 −40" inlet. So the west basin also takes pumped groundwater — the house perimeter tile and,
 through the one-tie bridge, the court's relief — which is **not in §2's design volume**, by
 the owner's choice (2026-09-23): `drainage.rain_garden_capacity` reports it as an UNKNOWN
-beside the PASS. The 7.8 cf margin is unclaimed headroom for it, not a credit. In winter the
+beside the PASS. Since direct rain is counted, only a 0.8 cf margin is left for it. That pumped water is overflow, not storage. In winter the
 buried line freezes; the pump's ice guard spills at the foundation foot, where the water can
 recirculate to the perimeter tile and the pit.
 

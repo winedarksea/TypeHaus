@@ -113,10 +113,14 @@ def rain_garden_capacity(ctx: CheckContext) -> list[Finding]:
                 cid, f"UNKNOWN — no roof catchment derives for every leader feeding "
                      f"{garden.tag}", (garden.tag,), Result.UNKNOWN, code=_MANUAL))
             continue
-        need = area * DESIGN_RAIN_DEPTH_IN * _IN
+        # The storm falls on the basin too: with no infiltration credit during it, the rain
+        # on the rim footprint fills the same ponding volume as the roof water.
+        basin_m2 = Polygon([p.xy_m for p in garden.outline]).area
+        need = (area + basin_m2) * DESIGN_RAIN_DEPTH_IN * _IN
         cf = 35.3146667
         msg = (f"{garden.tag} ponds {held * cf:.1f} cf against {need * cf:.1f} cf "
-               f"({DESIGN_RAIN_DEPTH_IN:g}\" off {area / _M_PER_FT ** 2:.0f} sf of roof)")
+               f"({DESIGN_RAIN_DEPTH_IN:g}\" off {area / _M_PER_FT ** 2:.0f} sf of roof "
+               f"and {basin_m2 / _M_PER_FT ** 2:.0f} sf of basin)")
         result = Result.PASS if held >= need - 1e-9 else Result.FAIL
         out.append(advisory(cid, msg, (garden.tag,), result, code=_MANUAL))
         out.extend(_non_roof_inflow(ctx, garden))

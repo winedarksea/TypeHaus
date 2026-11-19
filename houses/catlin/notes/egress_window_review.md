@@ -73,6 +73,14 @@ If the written figure is ≥ 20" W / 24" H / 5.7 sf at 27½", write it into the 
 - BED1/2 and SUITE1/2 are on bearing walls and have no fallback. Andersen 400 is the documented
   revert on those four (the brand count then does not fall). That is an owner decision.
 
+### Furniture in the sash's swing (2026-11-19, design review §4)
+
+An inward turn sash needs its swing clear, not just its opening. `WIN-S-BED1`'s sash starts
+37.36" above BED1's carpet and its tip reaches the bed's head end, so **BED1's headboard is
+36" overall at most** (`FURN-BED-TWIN-36`): ~1 3/8" under the sash. Keep bedding out of the
+swing too. The suite's 30" desk overlaps `WIN-S-SUITE1`'s sash by ~7/8"; that is a usability
+note only (the suite has a second escape window): move the desk or use a 28" top.
+
 ## Andersen 400 basis (2026-10-23), superseded 2026-11-13 and kept as the documented revert
 
 Every figure below is the Andersen 400 casement's; none applies to the Max Light units above.

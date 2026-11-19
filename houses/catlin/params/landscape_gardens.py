@@ -25,12 +25,14 @@ from typehaus import (
 # --- rain gardens -----------------------------------------------------------------------
 # Two basins, mirrored about the lot's centre line x=18'-0", each hugging its side lot line
 # (x=-7' / 43') by 1'-0" and running 35' north beside the garage. Each takes one garage
-# leader and one house leader, so each carries 1,110.8 sf of roof and needs 92.6 cf at 1".
+# leader and one house leader: 1,109 sf of roof plus the 184 sf basin itself, 107.8 cf at
+# 1", against 108.6 cf held. 5'-3" wide since 2026-11-19 (design review §11): the 3" went
+# on the garage side, away from the lot line.
 # The owner accepted the Manual's 10' lot-line and foundation setbacks falling short on
-# 2026-09-21 (~1' and ~6.5' to the garage stem); both report as advisory UNKNOWNs. The
-# south ends stay 10.5' clear of the basement corners (0, 36) / (36, 36).
+# 2026-09-21 (~1' and ~6.3' to the garage stem); both report as advisory UNKNOWNs. The
+# south ends stay 10.4-10.5' clear of the basement corners (0, 36) / (36, 36).
 LOT_MID_FT = 18.0
-RG_X_W, RG_X_E = -6.0, -1.0         # the west basin; the east is its mirror
+RG_X_W, RG_X_E = -6.0, -0.75        # the west basin; the east is its mirror
 RG_Y_S, RG_Y_N = 47.0, 82.0
 RG_RIM = ft(-3, -1)                 # the garage-side grade station, both sides
 RG_PONDING = inch(12)               # 9" until 2026-09-23: 88.5 cf no longer held the west

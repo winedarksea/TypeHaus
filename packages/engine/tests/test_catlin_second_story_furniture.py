@@ -16,7 +16,7 @@ from typehaus.takeoff.placeables import placeables_takeoff
 # The study table/chairs subsequently moved together 30" west for the corner shelf.
 # tag, catalog type, room, centre, rotation in degrees
 SECOND_STORY_UI_PLACEMENTS = (
-    ("FURN-S-BED1", "FURN-BED-TWIN", "RM-S-BED1", (9.801366875, 3.36872), -90),
+    ("FURN-S-BED1", "FURN-BED-TWIN-36", "RM-S-BED1", (9.801366875, 3.36872), -90),
     ("FURN-S-DESK1", "FURN-DESK-48", "RM-S-BED1", (10.4995, 4.58763), 90),
     ("FURN-S-DESK-CHAIR1", "FURN-DESK-CHAIR", "RM-S-BED1", (10.0492, 4.62797), 90),
     ("FURN-S-STUDY-TABLE", "FURN-CHESS-TABLE-315", "RM-S-STUDY2", (8.79495, 0.56515), 90),
@@ -217,7 +217,7 @@ def test_deleted_study_rocker_and_duplicate_pot_reach_the_takeoff(catlin_model_r
     assert set(rows["FURN-PLANT-18"]["tags"]) == expected_pot_tags
     assert rows["FURN-ROCKING-CHAIR-30"]["count"] == 1
     assert rows["FURN-ROCKING-CHAIR-30"]["tags"] == ["FURN-S-PLANT-ROCKER"]
-    assert rows["FURN-BED-TWIN"]["tags"] == ["FURN-S-BED1"]
+    assert rows["FURN-BED-TWIN-36"]["tags"] == ["FURN-S-BED1"]
     assert "FURN-S-BED1" not in rows["FURN-QUEEN-BED"]["tags"]
 
 

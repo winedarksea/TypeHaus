@@ -221,8 +221,8 @@ _MECH_Y_S = inch(_MECH_Y.inches - _TRANSITION_DOUBLE.inches)
 # straight through them — ``structural.member_interference``, two FAILs. ``plies=1`` asks
 # for no ply of its own and tops up nothing; it rides the bath entry's finished cluster.
 # one flange wide at x=150", clear of the bath's blocks at x=74.56". The station follows
-# the machine (east with D-M-LAUN on 2026-11-07), 6 3/4" east of its centre to clear
-# ED-B-BATH-CAN1's housing at x=12'-0" below (`electrical.ceiling_can_framing`).
+# the machine (east with D-M-LAUN on 2026-11-07), 6 3/4" east of its centre; it cleared
+# ED-B-BATH-CAN1's housing at x=12'-0", retired 2026-11-19, and stays where it is.
 _TUB_DECK_X = inch(74.56)          # the blocks' axis: 3.9" west of FX-M-BATH2-TUB's centre (78.49"),
                                    # clear of the end drain's drop at x=78.49", y=215.18"
 _LAUNDRY_X = inch(150)             # under FX-M-LAUNDRY (x 129.75"..156.75"): its blocks' station
