@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typehaus.checks.structural import (
+    bearing_block_seat,  # noqa: F401 - registers checks
     bearing_seat,  # noqa: F401 - registers checks
     bearing_wall_footing,  # noqa: F401 - registers checks
     braced_wall,  # noqa: F401 - registers checks

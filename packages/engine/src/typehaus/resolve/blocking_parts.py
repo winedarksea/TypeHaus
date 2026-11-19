@@ -21,6 +21,9 @@ BOX_T_M = inch(1.5).meters
 RAIL_W_M = inch(5.5).meters
 #: Clearance from a run's outside to a cheek.
 BOX_CLEARANCE_M = inch(0.5).meters
+#: How far a cheek may slide along its rail piece to clear a run; the rail then overhangs it.
+CHEEK_SLIDE_MAX_M = inch(3).meters
+CHEEK_SLIDE_STEP_M = inch(0.125).meters
 #: Members that close a joist bay at a bearing line.
 BAY_EDGES = ("joist", "sister_joist", "trimmer")
 #: A gap narrower than this is two plies face to face, not a bay to block.
@@ -140,6 +143,7 @@ def pass_through_box(
     z1: float,
     crossing: Sequence[Crossing],
     risers: Sequence[Span] = (),
+    runs: Sequence[RunBand] = (),
 ) -> tuple[list[FramedMember], list[BlockingConflict]]:
     """A 2x6 box around every run crossing this bay, and a conflict for each misfit.
 
@@ -149,6 +153,10 @@ def pass_through_box(
     The bottom rail is drawn only when every run clears it: a run resting on the plate takes
     the plate as the box's bottom, and the cheeks bear straight on it. A run may touch the
     joist or beam closing the bay; the clearance only places the cheeks.
+
+    ``runs``: every run's band. A cheek (the cheeks are ``RAIL_W_M`` wide) that lands on a run
+    slides along its rail piece to clear it, or is left out, as is one a seated cheek already
+    covers; ``structural.bearing_block_seat`` grades a beam's bearing stud left with none.
     """
     inch_m = inch(1).meters
     open_lo = min(c[1] for c in crossing) - BOX_CLEARANCE_M
@@ -181,15 +189,67 @@ def pass_through_box(
     posts += [(f"-cheek-r{n}{end}", edge) for n, (lo, hi) in enumerate(pieces)
               for end, edge, cut in (("l", lo + BOX_T_M / 2.0, lo > gap[0] + FIT_TOL_M),
                                      ("h", hi - BOX_T_M / 2.0, hi < gap[1] - FIT_TOL_M)) if cut]
+    hazards = _leg_hazards(runs, along_x, centre, gap, base, rail_top) if runs else []
+    seated: list[float] = []
     for name, perp in posts:
         if not gap[0] + BOX_T_M / 2.0 <= perp <= gap[1] - BOX_T_M / 2.0:
             continue  # the joist or beam face is that side of the box
+        piece = next(((lo, hi) for lo, hi in pieces if lo - FIT_TOL_M <= perp <= hi + FIT_TOL_M),
+                     gap)
+        perp = _clear_cheek(perp, piece, hazards, along_x, centre, seated)
+        if perp is None:
+            continue  # a run stands there, or a cheek already carries this spot
+        seated.append(perp)
         point = (centre, perp) if along_x else (perp, centre)
         box_members.append(
             FramedMember(floor.uid, f"{key}{name}", "blocking", BOX_PROFILE,
                          point, point, base, rail_top, rail_top - base, orient=orient)
         )
     return box_members, list(conflicts.values())
+
+
+def _leg_hazards(runs: Sequence[RunBand], along_x: bool, centre: float, gap: Span,
+                 z0: float, z1: float) -> list:
+    """Plan shapes of the run legs (and risers) in the box footprint, within z ``z0``..``z1``."""
+    from shapely.geometry import LineString, Point, box
+
+    reach = RAIL_W_M / 2.0
+    out = []
+    for _tag, path, z, half_w, half_h in runs:
+        footprint = (box(centre - reach - half_w, gap[0] - half_w, centre + reach + half_w,
+                         gap[1] + half_w) if along_x else
+                     box(gap[0] - half_w, centre - reach - half_w, gap[1] + half_w,
+                         centre + reach + half_w))
+        for i in range(len(path) - 1):
+            pa, pb = path[i], path[i + 1]
+            low, high = min(z[i], z[i + 1]) - half_h, max(z[i], z[i + 1]) + half_h
+            leg = Point(pa) if pa == pb else LineString([pa, pb])
+            if high > z0 and low < z1 and footprint.intersects(leg):
+                out.append(leg.buffer(half_w))
+    return out
+
+
+def _clear_cheek(perp: float, piece: Span, hazards: Sequence, along_x: bool, centre: float,
+                 seated: Sequence[float]) -> float | None:
+    """The perp station nearest ``perp`` inside ``piece`` (within ``CHEEK_SLIDE_MAX_M``) where a
+    cheek clears every hazard and overlaps no seated cheek; ``None`` if there is none."""
+    from shapely.geometry import box
+
+    half = BOX_T_M / 2.0
+    steps = round(CHEEK_SLIDE_MAX_M / CHEEK_SLIDE_STEP_M)
+    for n in range(steps + 1):
+        for sign in ((1.0, -1.0) if n else (1.0,)):
+            at = perp + sign * n * CHEEK_SLIDE_STEP_M
+            if not piece[0] + half - FIT_TOL_M <= at <= piece[1] - half + FIT_TOL_M:
+                continue
+            if any(abs(at - other) < BOX_T_M - FIT_TOL_M for other in seated):
+                return None  # a cheek already stands within a cheek's width of here
+            lo, hi = at - half + FIT_TOL_M, at + half - FIT_TOL_M
+            along = (centre - RAIL_W_M / 2.0, centre + RAIL_W_M / 2.0)
+            shape = box(along[0], lo, along[1], hi) if along_x else box(lo, along[0], hi, along[1])
+            if not any(shape.intersects(h) for h in hazards):
+                return at
+    return None
 
 
 def riser_cuts(runs: Sequence[RunBand], along_x: bool, centre: float, gap: Span,

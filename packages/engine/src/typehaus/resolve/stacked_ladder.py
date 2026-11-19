@@ -254,17 +254,17 @@ def _block_at(model, floor, key, profile, c, width, plate, edges, spacing, runs,
     if gap is None or _taken(placed, c, width, gap, axis_i, perp_i):
         return None, "the bay is taken"
     crossing = crossing_runs(runs, along_x, c, width, gap, z0, z1)
-    return seated(floor, key, profile, along_x, c, gap, plate, z0, z1, crossing)
+    return seated(floor, key, profile, along_x, c, gap, plate, z0, z1, crossing, runs)
 
 
-def seated(floor, key, profile, along_x, c, gap, plate, z0, z1, crossing):
+def seated(floor, key, profile, along_x, c, gap, plate, z0, z1, crossing, runs=()):
     """A solid block, or a 2x6 box only where a cheek stands on the plate: a box whose
     cheeks are off the plate carries the wall above into the joists, not down."""
     if not crossing:
         if min(gap[1], plate[1]) - max(gap[0], plate[0]) >= MIN_BEARING_OVERLAP_M - 1e-9:
             return [block_member(floor, key, profile, along_x, c, gap, z0, z1)], ""
         return None, "the clear bay misses the plate"
-    box, clashes = pass_through_box(floor, key, along_x, c, gap, z0, z1, crossing)
+    box, clashes = pass_through_box(floor, key, along_x, c, gap, z0, z1, crossing, (), runs)
     if clashes:
         return None, f"{clashes[0].run_tag} cannot clear a 2x6 box"
     perp_i = 1 if along_x else 0

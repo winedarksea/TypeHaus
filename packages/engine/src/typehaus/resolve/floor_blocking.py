@@ -226,7 +226,7 @@ def _floor_blocking(
             continue
         box, box_conflicts = pass_through_box(
             floor, bay.key, bay.along_x, bay.box_centre, bay.gap, bay.z0, bay.z1, crossing,
-            riser_cuts(runs, bay.along_x, bay.box_centre, bay.gap, bay.z0, bay.z1))
+            riser_cuts(runs, bay.along_x, bay.box_centre, bay.gap, bay.z0, bay.z1), runs)
         members.extend(box)
         conflicts.extend(box_conflicts)
     return members, conflicts
@@ -327,7 +327,8 @@ def _partition_top_blocking(
             at = min(max(centre, tip_lo + RAIL_W_M / 2.0), tip_hi - RAIL_W_M / 2.0)
             box, box_conflicts = pass_through_box(floor, key, along_x, at, gap, z0, z1,
                                                   crossing,
-                                                  riser_cuts(runs, along_x, at, gap, z0, z1))
+                                                  riser_cuts(runs, along_x, at, gap, z0, z1),
+                                                  runs)
             if box_conflicts:
                 unframed.append(joint.wall_tag)
                 continue

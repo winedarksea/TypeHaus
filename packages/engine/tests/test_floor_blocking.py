@@ -184,3 +184,22 @@ def test_a_riser_in_the_rails_opens_them_and_a_cheek_holds_the_rest() -> None:
     assert sorted(m.p0[1] for m in top) == pytest.approx([0.0, cuts[0][1]])
     assert sorted(m.p1[1] for m in top) == pytest.approx([cuts[0][0], _GAP[1]])
     assert any("-cheek-r" in m.child_key for m in box)
+
+
+def test_a_cheek_slides_off_a_run_and_never_doubles_another() -> None:
+    from typehaus.resolve.blocking_parts import RAIL_W_M
+
+    # A 2" pipe lying along the box's cheek spots (x = 1" is inside the 5 1/2" footprint).
+    z = 5 * _IN
+    pipe = ("PR", ((1.0 * _IN, 0.0), (1.0 * _IN, 13.5 * _IN)), (z, z), 1.0 * _IN, 1.0 * _IN)
+    box, _ = pass_through_box(_FLOOR, "k", True, 0.0, _GAP, _Z0, _Z1,
+                              [_crossing("PR", 4.0, 8.0, 4.0, 6.0)], (), [pipe])
+    assert not any("cheek" in m.child_key for m in box)
+    assert RAIL_W_M / 2 > 1.0 * _IN  # the pipe really is inside the cheek's footprint
+    # A riser cheek on top of the lo cheek's spot is not laid twice.
+    riser = ("R", ((2.0 * _IN, 4.5 * _IN),) * 2, (z, 20 * _IN), 0.4 * _IN, 0.4 * _IN)
+    box, _ = pass_through_box(_FLOOR, "k", True, 0.0, _GAP, _Z0, _Z1,
+                              [_crossing("PR", 6.0, 8.0, 4.0, 6.0)],
+                              [(4.3 * _IN, 5.5 * _IN)], [riser])
+    spots = [round(m.p0[1] / _IN, 3) for m in box if "cheek" in m.child_key]
+    assert len(spots) == len(set(spots))
