@@ -24584,10 +24584,10 @@
 "1be45e2e469b"
 ],
 "geometry/CGF101AAAA/layer:gwb-stem": [
--0.8636,
+-0.7904758,
 -0.3048,
-2,
-"ded48000f7fb"
+8,
+"f987c677715f"
 ],
 "geometry/CGF102AAAA/layer:coil-ext": [
 -0.9144,
@@ -24620,10 +24620,10 @@
 "1be45e2e469b"
 ],
 "geometry/CGF102AAAA/layer:gwb-stem": [
--0.8636,
+-0.8606896,
 -0.3048,
-2,
-"ded48000f7fb"
+8,
+"2760c38fb42a"
 ],
 "geometry/CGF103AAAA/layer:coil-ext": [
 -0.9144,
@@ -24656,10 +24656,10 @@
 "1be45e2e469b"
 ],
 "geometry/CGF103AAAA/layer:gwb-stem": [
--0.8636,
+-0.8606896,
 -0.3048,
-2,
-"ded48000f7fb"
+8,
+"3023d12b287d"
 ],
 "geometry/CGF104AAAA/layer:coil-ext": [
 -0.9144,
@@ -24692,10 +24692,10 @@
 "1be45e2e469b"
 ],
 "geometry/CGF104AAAA/layer:gwb-stem": [
--0.8636,
+-0.8606896,
 -0.3048,
-2,
-"ded48000f7fb"
+8,
+"7597afad33ad"
 ],
 "geometry/CGF107AAAA/layer:coil-ext": [
 -0.9144,
@@ -24728,10 +24728,10 @@
 "1be45e2e469b"
 ],
 "geometry/CGF107AAAA/layer:gwb-stem": [
--0.8636,
+-0.7904758,
 -0.3048,
-2,
-"ded48000f7fb"
+8,
+"9edb05e5860e"
 ],
 "geometry/CGF108AAAA/layer:coil-ext": [
 -0.9144,
@@ -24764,10 +24764,10 @@
 "1be45e2e469b"
 ],
 "geometry/CGF108AAAA/layer:gwb-stem": [
--0.8636,
+-0.7904758,
 -0.3048,
-2,
-"ded48000f7fb"
+8,
+"9edb05e5860e"
 ],
 "geometry/CGF109AAAA/layer:coil-ext": [
 -0.9144,
@@ -24800,10 +24800,10 @@
 "1be45e2e469b"
 ],
 "geometry/CGF109AAAA/layer:gwb-stem": [
--0.8636,
+-0.7904758,
 -0.3048,
-2,
-"ded48000f7fb"
+8,
+"f987c677715f"
 ],
 "geometry/CGF110AAAA/layer:coil-ext": [
 -0.9144,
@@ -24836,10 +24836,10 @@
 "1be45e2e469b"
 ],
 "geometry/CGF110AAAA/layer:gwb-stem": [
--0.8636,
+-0.8606896,
 -0.3048,
-2,
-"ded48000f7fb"
+8,
+"62a966fbac1d"
 ],
 "geometry/CGF201AAAA/body": [
 -2.1336,

@@ -34,8 +34,8 @@ import { wallBandShapes, type ArchSoffitCylinder } from "./wallBandShape";
 // The wall's local frame and the arch-head circle live in ./wallFrame, shared with the
 // voussoir rings. Re-exported here because callers and tests knew them at this path first.
 import {
-  archSoffitCircle, archSoffitSample, archSoffitSegmentCount, baseRefZ, bodyTopAt, wallLocalFrame,
-  wallLocalToSceneMatrix,
+  archSoffitCircle, archSoffitSample, archSoffitSegmentCount, baseRefZ, bodyTopAt, layerFootAt,
+  wallLocalFrame, wallLocalToSceneMatrix,
 } from "./wallFrame";
 export {
   ARCH_SOFFIT_CHORD_TOLERANCE_M, ARCH_SOFFIT_MAX_SEGMENT_COUNT, ARCH_SOFFIT_MIN_SEGMENT_COUNT,
@@ -181,10 +181,13 @@ export function buildWall(
       ? [createSurfaceMeshGeometry(ly.surface_mesh, center)]
       : smoothArchGeometry
       ? [smoothArchGeometry]
-      : clampPiecesToBand(wallLayerPieces(w, ly.polygon, layerOpenings, skin), ly).map((piece) => piece.topIsRaked
-        ? createRakedPlanPrismGeometry(piece.polygon, piece.z0_m,
-          (point) => bodyTopAt(w, point[0], point[1]), center)
-        : createPlanPrismGeometry(piece.polygon, piece.z0_m, piece.z1_m, [], center));
+      : clampPiecesToBand(wallLayerPieces(w, ly.polygon, layerOpenings, skin), ly).map((piece) => {
+        const topAt = (point: [number, number]) => piece.topIsRaked ? bodyTopAt(w, point[0], point[1]) : piece.z1_m;
+        const footAt = layerFootAt(w, ly, piece, topAt);
+        return piece.topIsRaked || footAt
+          ? createRakedPlanPrismGeometry(piece.polygon, piece.z0_m, topAt, center, footAt ?? undefined)
+          : createPlanPrismGeometry(piece.polygon, piece.z0_m, piece.z1_m, [], center);
+      });
     for (const geo of geometries) {
       if (!geo) continue;
       // The line, not the wall: the pan module belongs to the facade, and the outriggers it

@@ -134,8 +134,11 @@ export function createRakedPlanPrismGeometry(
   z0M: number,
   topElevationAt: (point: Vec2) => number,
   center: PlanCenter = [0, 0],
+  bottomElevationAt?: (point: Vec2) => number,
 ): THREE.BufferGeometry | null {
   if (outline.length < 3) return null;
+  // A per-vertex foot (a finish riding a falling pour); flat at z0M otherwise.
+  const bot = bottomElevationAt ?? (() => z0M);
   // Unlike `createPlanPrismGeometry`, nothing downstream normalizes winding for us:
   // the fixed vertex order below only faces outward for one input orientation, so a
   // ring authored the other way renders inside-out and vanishes to backface culling.
@@ -146,13 +149,13 @@ export function createRakedPlanPrismGeometry(
   for (let index = 0; index < outline.length; index++) {
     const next = (index + 1) % outline.length;
     triangles.push(
-      [[outline[index], z0M], [outline[next], z0M], [outline[next], topElevationAt(outline[next])]],
-      [[outline[index], z0M], [outline[next], topElevationAt(outline[next])], [outline[index], topElevationAt(outline[index])]],
+      [[outline[index], bot(outline[index])], [outline[next], bot(outline[next])], [outline[next], topElevationAt(outline[next])]],
+      [[outline[index], bot(outline[index])], [outline[next], topElevationAt(outline[next])], [outline[index], topElevationAt(outline[index])]],
     );
   }
   for (let index = 1; index < outline.length - 1; index++) {
     triangles.push(
-      [[outline[0], z0M], [outline[index + 1], z0M], [outline[index], z0M]],
+      [[outline[0], bot(outline[0])], [outline[index + 1], bot(outline[index + 1])], [outline[index], bot(outline[index])]],
       [[outline[0], topElevationAt(outline[0])], [outline[index], topElevationAt(outline[index])], [outline[index + 1], topElevationAt(outline[index + 1])]],
     );
   }

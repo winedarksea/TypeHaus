@@ -10,7 +10,7 @@ from __future__ import annotations
 from typehaus.emit.gltf.mesh import _MeshBuilder
 from typehaus.emit.gltf.palette import _layer_color
 from typehaus.resolve.coatings import coating_skin_ring
-from typehaus.resolve.geometry_ir import GMesh, GPrism
+from typehaus.resolve.geometry_ir import GBox, GMesh, GPrism
 
 # `_wall_top_at` keeps its old name here: openings.py and emitter.py import it from this
 # module, and the rake it answers for is the same one the wall solids are built with.
@@ -28,6 +28,8 @@ def _add_solid(mb: _MeshBuilder, solid, color) -> None:
             tops = dict(zip(solid.ring, solid.top, strict=True))
             mb.add_raked_prism(list(solid.ring), solid.z0_m,
                                lambda x, y: tops[(x, y)], color)
+    elif isinstance(solid, GBox):  # a finish whose foot rides a falling pour
+        mb.add_gbox(solid, color)
     elif isinstance(solid, GMesh):
         mb.add_mesh(solid, color)
 

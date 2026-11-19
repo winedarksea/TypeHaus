@@ -89,3 +89,18 @@ def test_catlin_garage_slab_reaches_gltf_and_ifc_on_its_plane(catlin_model_ro,
     face_set = element.Representation.Representations[0].Items[0]
     assert face_set.is_a("IfcTriangulatedFaceSet")
     assert max(p[2] for p in face_set.Coordinates.CoordList) == pytest.approx(high, abs=1e-6)
+
+
+def test_the_stem_board_runs_down_to_the_falling_slab(catlin_model_ro) -> None:
+    """GARAGE_ICF_6's gwb-stem goes up after the pour: its foot is the slab's plane."""
+    from typehaus.resolve.geometry_ir import GBox
+
+    slab = next(s for s in catlin_model_ro.solids if s.tag == "SL-G-FLOOR")
+    wall = next(w for w in catlin_model_ro.walls if w.tag == "W-GF-E")
+    element = catlin_model_ro.geometry.by_uid(wall.uid)
+    (box,) = next(p for p in element.parts if p.key == "layer:gwb-stem").solids
+    assert isinstance(box, GBox)
+    for x, y, z in box.corners_bottom:
+        assert z == pytest.approx(slab.top_at(x, y), abs=1e-9)
+    rise = max(z for *_xy, z in box.corners_bottom) - min(z for *_xy, z in box.corners_bottom)
+    assert rise / _IN == pytest.approx(2.77, abs=0.05)

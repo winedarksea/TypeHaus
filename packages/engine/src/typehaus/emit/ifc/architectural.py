@@ -22,7 +22,7 @@ from typing import Any
 
 from typehaus._meta import PSET_SOURCE
 from typehaus.emit.ifc import lowlevel as ll
-from typehaus.emit.ifc.structural import _emit_framed_member
+from typehaus.emit.ifc.structural import _box_faces, _emit_framed_member
 from typehaus.emit.ifc.wall_coatings import emit_banded_coatings
 from typehaus.model.enums import DoorOperation
 from typehaus.model.ids import derive_child_guid, derive_guid
@@ -30,6 +30,7 @@ from typehaus.model.placeable_symbols._frame import is_counter_part
 from typehaus.resolve.coatings import coating_tags
 from typehaus.resolve.envelope_geometry import envelope_geometry
 from typehaus.resolve.geometry import opening_center, rect_between
+from typehaus.resolve.geometry_ir import GBox
 from typehaus.resolve.geometry_openings import opening_parts
 from typehaus.resolve.geometry_walls import layer_solids
 from typehaus.resolve.layer_bands import at_body_band, wall_body_band
@@ -260,7 +261,9 @@ def _emit_banded_layer_parts(f: Any, body: Any, rw: ResolvedWall,
         pieces = layer_solids(rw, layer.polygon, openings, band=(z0, z1),
                               layer_name=layer.name)
         for index, piece in enumerate(pieces):
-            ring = getattr(piece, "ring", None)
+            box = piece if isinstance(piece, GBox) else None
+            ring = ([p[:2] for p in box.corners_bottom] if box is not None
+                    else getattr(piece, "ring", None))
             if ring is None or len(ring) < 3:
                 continue  # a GMesh has no plan ring to extrude; nothing to export here
             # One piece keeps the bare key; several take indexed ones.
@@ -271,7 +274,8 @@ def _emit_banded_layer_parts(f: Any, body: Any, rw: ResolvedWall,
                 f, body, name,
                 derive_child_guid(project_uuid, "wall-parts", piece_key),
                 [(point[0], point[1]) for point in ring],
-                piece.z0_m, piece.z1_m, layer.material_ref,
+                0.0 if box else piece.z0_m, 0.0 if box else piece.z1_m, layer.material_ref,
+                faces=_box_faces(box) if box else None,
             ))
     return parts
 

@@ -74,6 +74,9 @@ export interface Layer {
   // feet of buried foam, and stacks a brick wythe's three colours in the same place.
   z0_m?: number | null;
   z1_m?: number | null;
+  // A finish on a falling pour: its foot is the higher of its band floor and this plane
+  // (absolute z; engine resolve/layer_seat.py). Absent on every other layer.
+  bottom_plane?: { origin: Vec2; lift_at_origin_m: number; gradient: Vec2 } | null;
   // Which way a board finish's boards run, derived by the engine from the furring behind the
   // layer (resolve/topology.py `_board_run`) — boards land perpendicular to what they are
   // fastened to. Null/absent on every layer that is not a board finish, and on one with no

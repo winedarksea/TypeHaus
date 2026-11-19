@@ -34,8 +34,8 @@ from typehaus.solids3d.recorder import drawn_placeables  # noqa: E402
 # for the straight runs. Shrink them when the holes are cut round the elbows.
 # connector_embedded|passage_return: D-B-GYM's jamb returns lap the 1/16" flange of the two
 # MASAZ at the sill end (the board humps a flange). opening|slab: D-G-OVERHEAD's jambs stand
-# on SL-G-FLOOR's low edge, which rises 0.4 mm under their 1 9/16" depth. slab|wall is NOT
-# reviewed: the falling slab rises into GARAGE_ICF_6's gwb-stem board, banded flat at grade.
+# on SL-G-FLOOR's low edge, which rises 0.4 mm under their 1 9/16" depth. GARAGE_ICF_6's
+# gwb-stem foot rides the falling slab's plane (resolve/layer_seat.py), so slab|wall holds.
 GOLDEN = Path(__file__).parent / "fixtures" / "solids3d_overlaps.json"
 #: The billed volume may differ from the exact solid by this much (relative, absolute m^3).
 VOLUME_TOLERANCE = (0.01, 1e-7)

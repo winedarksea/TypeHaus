@@ -168,7 +168,7 @@ def _banded_part_names(wall, openings=()) -> set[str]:
             continue
         pieces = [p for p in layer_solids(wall, layer.polygon, openings, band=(z0, z1),
                                           layer_name=layer.name)
-                  if getattr(p, "ring", None) is not None and len(p.ring) >= 3]
+                  if len(getattr(p, "ring", None) or getattr(p, "corners_bottom", ())) >= 3]
         if len(pieces) == 1:
             names.add(f"{wall.tag}:{layer.name}")
             continue

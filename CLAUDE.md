@@ -155,6 +155,9 @@ a release or for exhaustive local verification.
   into `<layer>-tee-<i>` pieces sharing one slot. Walk a stack by slot, not by entry.
 - **A pour slab may fall** (`Slab.fall`, decision #138): `top_elevation` is its low edge; read a
   point with `ResolvedSolid.top_at`, never `z1_m`. `Stair.foot_on` seats a flight's foot on it.
+  A wall finish whose foot lies in a falling pour rides its plane (`ResolvedLayer.bottom_plane`,
+  `resolve/layer_seat.py`): `layer_solids` makes those pieces `GBox`es, the viewer reads the
+  served plane, the takeoff bills the trapezoid. `mep_concrete.concrete_hosts` carries the plane.
 - **`Slab.kind`** is `pour | deck | platform | band` (decision #81). Code that means concrete
   reads `is_pour_slab`, never `category == "slab"`.
 - **A pour slab may fall; `top_elevation` is its low edge** (decision #138): `Slab.fall`

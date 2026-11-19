@@ -127,8 +127,14 @@ def _layer_json(layer, scope: str = "wall", wall=None) -> dict[str, Any]:
     """
     polygon = (coating_skin_ring(wall, layer) if layer.coating and wall is not None
                else layer.polygon)
+    plane = getattr(layer, "bottom_plane", None)
     return {**({"surface_mesh": _surface_mesh_json(layer.surface_mesh)}
                if layer.surface_mesh is not None else {}),
+            # A finish on a falling pour: its foot rides this plane (resolve/layer_seat.py).
+            **({"bottom_plane": {"origin": list(plane.origin),
+                                 "lift_at_origin_m": plane.lift_at_origin_m,
+                                 "gradient": list(plane.gradient)}}
+               if plane is not None else {}),
             "name": layer.name, "material": layer.material_ref, "function": layer.function,
             "thickness_m": layer.thickness_m, "polygon": [list(point) for point in polygon],
             "coating": layer.coating,

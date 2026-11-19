@@ -505,7 +505,8 @@ def assign_material_layer_set(f: Any, element: Any, layers: list[dict[str, Any]]
 
 def create_building_element_part(f: Any, body_ctx: Any, name: str, guid: str,
                                  points_m: list[tuple[float, float]],
-                                 z0_m: float, z1_m: float, material_ref: str) -> Any:
+                                 z0_m: float, z1_m: float, material_ref: str,
+                                 faces: list | None = None) -> Any:
     """One ``IfcBuildingElementPart`` prism, with its own single material.
 
     This is how a wall whose content varies *vertically* is exported. ``IfcMaterialLayerSet``
@@ -523,8 +524,10 @@ def create_building_element_part(f: Any, body_ctx: Any, name: str, guid: str,
     """
     part = create_entity(f, "IfcBuildingElementPart", name=name)
     part.GlobalId = guid
+    # ``faces``: a closed shell instead (a board whose foot rides a falling pour).
     assign_representation(f, part,
-                          add_prism_from_profile(f, body_ctx, points_m, z1_m - z0_m, z0_m))
+                          add_faceted_solids(f, body_ctx, [faces]) if faces is not None
+                          else add_prism_from_profile(f, body_ctx, points_m, z1_m - z0_m, z0_m))
     material = f.create_entity("IfcMaterial", Name=material_ref)
     f.create_entity("IfcRelAssociatesMaterial", GlobalId=new_guid(),
                     RelatedObjects=[part], RelatingMaterial=material)

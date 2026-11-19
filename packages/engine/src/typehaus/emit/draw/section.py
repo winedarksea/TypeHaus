@@ -261,6 +261,10 @@ def _emit_wall_cut(b, model, wall: ResolvedWall, plane: CutPlane, crop,
                     if pattern:
                         b.add(Hatch(boundary=points, pattern=pattern, layer="A-WALL-PATT",
                                     material=catalog.material_ref))
+                    if is_detail and name not in label_entries:  # a foot on a falling pour
+                        us = [u for u, _z in clipped]
+                        label_entries[name] = (_layer_label(catalog, name, max(us) - min(us)),
+                                               (min(us) + max(us)) / 2 / M_PER_IN)
                 continue
             u0, u1, z0, top_left, top_right = band
             if term is not None:
@@ -281,12 +285,7 @@ def _emit_wall_cut(b, model, wall: ResolvedWall, plane: CutPlane, crop,
             if is_detail and name not in label_entries:
                 # An oblique or longitudinal cut measures a visible run, not the layer's
                 # thickness. The catalog retains the authored thickness even after crop.
-                label_thickness = (catalog.thickness_m if catalog.thickness_m is not None
-                                   else true_thickness)
-                # A board's ROLE name (gwb-a/gwb-b) hides its type; print the board (I4-010).
-                shown = (catalog.material_ref if (catalog.material_ref or "").startswith("gwb")
-                         else name)
-                label = f'{shown} {inches_fraction(label_thickness / M_PER_IN)}'
+                label = _layer_label(catalog, name, true_thickness)
                 if exaggerated:
                     label += " (NTS)"
                 label_entries[name] = (label, ((ru0 + ru1) / 2) / M_PER_IN)
@@ -307,6 +306,13 @@ def _emit_wall_cut(b, model, wall: ResolvedWall, plane: CutPlane, crop,
     ladder_top = wall_top if cut_top is None else min(wall_top, cut_top)
     wall_layer_ladder(wall, label_entries, ladder_top, crop, ladder_labels, scale,
                       either_side=joints is None, view_u=view_u)
+
+
+def _layer_label(catalog, name: str, true_thickness: float) -> str:
+    """A ladder rung: the board (not its role name, I4-010) and its authored thickness."""
+    thickness = catalog.thickness_m if catalog.thickness_m is not None else true_thickness
+    shown = catalog.material_ref if (catalog.material_ref or "").startswith("gwb") else name
+    return f'{shown} {inches_fraction(thickness / M_PER_IN)}'
 
 
 def _emit_glazing_lines(b, model, wall, plane: CutPlane, crop, is_detail) -> None:

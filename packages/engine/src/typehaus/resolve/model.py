@@ -121,6 +121,10 @@ class ResolvedLayer:
     coating: bool = False
     # A coating's authored film (its ``thickness_m`` is 0): the drawing legend quotes it.
     film_m: float = 0.0
+    # A finish standing on a falling pour: the pour's top as ABSOLUTE z (``lift`` is the
+    # elevation). The layer's bottom is the higher of this and its band floor
+    # (``resolve/layer_seat.py``).
+    bottom_plane: DeckPlane | None = None
 
     def band(self, wall: ResolvedWall) -> tuple[float, float]:
         """This layer's absolute (z0, z1), falling back to the wall's where unbanded."""

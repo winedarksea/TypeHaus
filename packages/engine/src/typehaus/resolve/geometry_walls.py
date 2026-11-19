@@ -21,7 +21,7 @@ from __future__ import annotations
 import math
 
 from typehaus.resolve.geometry import wall_frame
-from typehaus.resolve.geometry_ir import GMesh, GPrism, GSolid, Vec3
+from typehaus.resolve.geometry_ir import GBox, GMesh, GPrism, GSolid, Vec3
 from typehaus.resolve.geometry_prims import (
     _arch_soffit_sample,
     _arch_soffit_segment_count,
@@ -31,6 +31,7 @@ from typehaus.resolve.geometry_prims import (
     arch_soffit_circle,
 )
 from typehaus.resolve.intervals import subtract as _subtract_spans
+from typehaus.resolve.layer_seat import bottom_at as _layer_bottom_at
 from typehaus.resolve.model import ResolvedWall
 
 
@@ -81,9 +82,20 @@ def head_cap_breakpoints(wall: ResolvedWall) -> tuple[tuple[float, float], ...]:
     return tuple(out)
 
 
-def _prism(ring, z0: float, z1: float, top_at) -> GPrism:
-    """A wall slice: raked to ``top_at`` when the wall is raked, else flat to ``z1``."""
+def _prism(ring, z0: float, z1: float, top_at, bottom_at=None) -> GSolid:
+    """A wall slice: raked to ``top_at`` when the wall is raked, else flat to ``z1``.
+
+    ``bottom_at`` (a finish on a falling pour, ``resolve/layer_seat.py``) makes it a GBox
+    whose bottom ring rides that plane."""
     ring_t = tuple((float(x), float(y)) for x, y in ring)
+    if bottom_at is not None:
+        if sum(ax * by - bx * ay for (ax, ay), (bx, by)
+               in zip(ring_t, ring_t[1:] + ring_t[:1], strict=True)) < 0:
+            ring_t = ring_t[::-1]  # counter-clockwise, so the caps face out
+        tops = [z1 if top_at is None else top_at(x, y) for x, y in ring_t]
+        return GBox(corners_bottom=tuple((x, y, min(bottom_at(x, y), t))
+                                         for (x, y), t in zip(ring_t, tops, strict=True)),
+                    corners_top=tuple((x, y, t) for (x, y), t in zip(ring_t, tops, strict=True)))
     if top_at is None:
         return GPrism(ring=ring_t, z0_m=z0, z1_m=z1)
     tops = tuple(top_at(x, y) for x, y in ring_t)
@@ -230,10 +242,12 @@ def layer_solids(wall: ResolvedWall, polygon, openings,
         # end of a gable wall, under a band that starts partway up — from inverting the
         # prism instead of producing nothing.
         top_at = lambda x, y, _rake=top_at, _floor=z0: max(min(_rake(x, y), z1), _floor)  # noqa: E731
+    named = next((ly for ly in wall.layers if ly.name == layer_name), None)
+    bottom_at = _layer_bottom_at(named, z0, z1) if named is not None else None
     ops = sorted((op for op in openings if cuts_layer(wall, layer_name, op)),
                  key=lambda o: o.center_along_m)
     if not ops:
-        return (_prism(polygon, z0, z1, top_at),)
+        return (_prism(polygon, z0, z1, top_at, bottom_at),)
 
     edges = _thin_rect_edges(polygon, wall.axis)
     # An opening's station is an ABSOLUTE distance along the wall axis, but ``_slice``
@@ -269,7 +283,7 @@ def layer_solids(wall: ResolvedWall, polygon, openings,
     skin = _is_skin_layer(wall, layer_name)
     for op, o0, o1 in valid_ops:
         while pier_index < len(piers) and piers[pier_index][1] <= o0 + 1e-6:
-            solids.append(_prism(_slice(edges, *piers[pier_index]), z0, z1, top_at))
+            solids.append(_prism(_slice(edges, *piers[pier_index]), z0, z1, top_at, bottom_at))
             pier_index += 1
         # Openings are positioned from the *wall* base — a sill height is a property of the
         # wall, not of whichever layer happens to be in front of it — then clipped into this
@@ -281,7 +295,9 @@ def layer_solids(wall: ResolvedWall, polygon, openings,
         bottom = min(max(cut_from, z0), z1)
         head = min(max(raw_bottom + op.height_m, z0), z1)
         if bottom > z0 + 1e-6:  # sill band — always flat, below the rake
-            solids.append(GPrism(ring=tuple(_slice(edges, o0, o1)), z0_m=z0, z1_m=bottom))
+            solids.append(GPrism(ring=tuple(_slice(edges, o0, o1)), z0_m=z0, z1_m=bottom)
+                          if bottom_at is None
+                          else _prism(_slice(edges, o0, o1), z0, bottom, None, bottom_at))
         if op.arch_rise_m > 1e-6:
             # v1: arch heads stay flat-topped even under a rake (a rare combination); the
             # raked square header below handles the common gable-end case.
@@ -299,6 +315,6 @@ def layer_solids(wall: ResolvedWall, polygon, openings,
             elif z1 > head + 1e-6:
                 solids.append(GPrism(ring=tuple(header), z0_m=head, z1_m=z1))
     while pier_index < len(piers):  # trailing pier(s)
-        solids.append(_prism(_slice(edges, *piers[pier_index]), z0, z1, top_at))
+        solids.append(_prism(_slice(edges, *piers[pier_index]), z0, z1, top_at, bottom_at))
         pier_index += 1
     return tuple(solids)

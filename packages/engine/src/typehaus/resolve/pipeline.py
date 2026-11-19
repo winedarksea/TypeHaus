@@ -385,6 +385,9 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         from typehaus.resolve.roof_image_ii_eave import assign_wall_head_caps
 
         assign_wall_head_caps(model)
+        from typehaus.resolve.layer_seat import seat_layers_on_falling_pours
+
+        seat_layers_on_falling_pours(model)
         resolve_profiled_metal_surfaces(model)
         from typehaus.resolve.cladding_trim.edges import resolve_corrugated_corners
         from typehaus.resolve.cladding_trim.mixed_corners import resolve_mixed_corners

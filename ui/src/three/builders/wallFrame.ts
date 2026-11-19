@@ -5,7 +5,7 @@
 // out of: x runs ALONG the wall axis from its start node, y is absolute elevation, and z is
 // distance ACROSS the wall measured inward from its maximum-across face.
 import * as THREE from "three";
-import type { Wall } from "../../model/types";
+import type { Layer, Wall } from "../../model/types";
 import type { PlanCenter } from "../planGeometry";
 
 export function rakedTopAt(w: Wall, x: number, y: number): number {
@@ -17,6 +17,18 @@ export function rakedTopAt(w: Wall, x: number, y: number): number {
   const len2 = dx * dx + dy * dy;
   const t = len2 < 1e-9 ? 0 : Math.min(1, Math.max(0, ((x - x0) * dx + (y - y0) * dy) / len2));
   return start + (end - start) * t;
+}
+
+// A finish on a falling pour: a piece standing on the band floor takes its foot off the
+// engine's plane (resolve/layer_seat.py), held between the floor and the piece's top.
+export function layerFootAt(
+  w: Wall, ly: Layer, piece: { z0_m: number }, topAt: (point: [number, number]) => number,
+): ((point: [number, number]) => number) | null {
+  const plane = ly.bottom_plane;
+  if (!plane || piece.z0_m > Math.max(w.z0_m, ly.z0_m ?? -Infinity) + 1e-9) return null;
+  return (point) => Math.min(topAt(point), Math.max(piece.z0_m, plane.lift_at_origin_m
+    + plane.gradient[0] * (point[0] - plane.origin[0])
+    + plane.gradient[1] * (point[1] - plane.origin[1])));
 }
 
 /** `rakedTopAt` held under the wall's eave head caps (mirrors geometry_walls.body_top_at). */

@@ -1,3 +1,14 @@
+## The garage stem board runs down to the falling slab (2026-11-19, owner)
+
+- **Why.** `SL-G-FLOOR` falls 1/8"/ft to the door (decision #138), rising up to 2.9" at the
+  south stems, while `GARAGE_ICF_6`'s 5/8" `gwb-stem` stopped flat at the low-edge top: the pour
+  cut up into the board (`slab|wall` overlap 0.0007 -> 0.0039 m^3).
+- **Taken.** The ICF runs full depth, so the slab is poured against the foam; the board goes up
+  after the pour and runs down to the slab top, as the R316.4 thermal barrier. Its foot is the
+  higher of its band floor and the pour's plane (`ResolvedLayer.bottom_plane`,
+  `resolve/layer_seat.py`), drawn by every emitter and billed as the trapezoid: `gwb-stem`
+  132.8 -> 121.9 SF over the eight stem walls. Slab edge, gap and slope unchanged.
+
 ## BBD75 band drops to +10'-5 1/2"; the balcony's rear edge is the band trim (2026-11-19, owner)
 
 - **Why.** The rear edge was two pieces: a deck-side base flashing and a house-side

@@ -34,6 +34,7 @@ from typehaus.model.layer_functions import LAYER_FUNCTIONS
 from typehaus.resolve.coatings import coating_tags
 from typehaus.resolve.geometry import length, polygon_area, sub, wall_frame
 from typehaus.resolve.geometry_walls import cuts_layer
+from typehaus.resolve.layer_seat import mean_bottom
 from typehaus.resolve.model import ResolvedLayer, ResolvedModel, ResolvedWall
 from typehaus.resolve.rainscreen_closures import BUG_SCREEN_MATERIAL
 from typehaus.resolve.roof_geometry import roof_ceiling_area_m2
@@ -118,6 +119,7 @@ def wall_layer_net_area_m2(model: ResolvedModel, wall: ResolvedWall,
         start, end = layer.run_span_m
         bottom, top = layer.band(wall)
         top = min(top, mean_top)
+        bottom = mean_bottom(layer, bottom, top)  # a foot on a falling pour
         run = (end - start if layer.coating or layer.function != LayerFunction.FINISH.value
                else layer_run_m(layer, end - start))
         area = run * max(0.0, top - bottom)
@@ -139,9 +141,11 @@ def wall_layer_net_area_m2(model: ResolvedModel, wall: ResolvedWall,
     elif layer.function == LayerFunction.FINISH.value:
         run = finish_run_m(layer, axis_run)
     if not getattr(layer, "is_banded", False):
-        return max(0.0, wall_net_m2 + (run - axis_run) * (mean_top - wall.z0_m) - blind)
+        seat = run * (mean_bottom(layer, wall.z0_m, mean_top) - wall.z0_m)
+        return max(0.0, wall_net_m2 + (run - axis_run) * (mean_top - wall.z0_m) - blind - seat)
     band_z0, band_z1 = layer.band(wall)
     band_z1 = min(band_z1, mean_top)
+    band_z0 = mean_bottom(layer, band_z0, band_z1)  # a foot on a falling pour
     if band_z1 - band_z0 <= 0.0:
         return 0.0
     area = run * (band_z1 - band_z0)
