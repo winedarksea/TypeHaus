@@ -82,7 +82,7 @@ def run_in_slab(ctx: CheckContext) -> list[Finding]:
     """Every run segment against every cast band, with the through-crossings taken out."""
     from shapely.geometry import LineString, Point
 
-    from typehaus.resolve.mep_concrete import concrete_crossings, concrete_hosts
+    from typehaus.resolve.mep_concrete import band_at, concrete_crossings, concrete_hosts
     from typehaus.resolve.mep_envelopes import (
         insulation_thickness_m,
         opening_prisms,
@@ -115,17 +115,19 @@ def run_in_slab(ctx: CheckContext) -> list[Finding]:
             if a == b:
                 continue  # a riser has no plan length to lie ALONG a band
             line = LineString((a, b))
-            for host_tag, _category, footprint, band_low, band_high in hosts:
+            for host_tag, _category, footprint, band_low, band_high, plane in hosts:
                 if (tag, host_tag) in authorised:
                     continue
                 inside = line.intersection(footprint)
                 length_m = getattr(inside, "length", 0.0)
                 if length_m < MIN_EMBEDDED_M:
                     continue
+                middle = inside.interpolate(0.5, normalized=True)
+                # A falling pour's band, read where the leg lies in it.
+                band_low, band_high = band_at(band_low, band_high, plane, (middle.x, middle.y))
                 low, high = _clipped_band(line, inside, z[leg], z[leg + 1], grow)
                 if high <= band_low + 1e-9 or low >= band_high - 1e-9:
                     continue
-                middle = inside.interpolate(0.5, normalized=True)
                 if any(run == tag and host == host_tag
                        and where.distance(middle) <= CROSSING_TOL_M
                        for run, host, where in crossings):

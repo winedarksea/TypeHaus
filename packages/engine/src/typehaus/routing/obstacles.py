@@ -305,7 +305,7 @@ def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] 
     # A foundation wall's structure layer: ``mep.run_in_slab``'s host, the same list.
     from typehaus.resolve.mep_concrete import concrete_hosts
 
-    for tag, category, footprint, z0, z1 in concrete_hosts(model):
+    for tag, category, footprint, z0, z1, _plane in concrete_hosts(model):
         if category == "wall":
             out.append(HardPrism(tag=tag, kind="concrete", footprint=footprint.buffer(inflate),
                                  z0_m=z0 - zi, z1_m=z1 + zi))

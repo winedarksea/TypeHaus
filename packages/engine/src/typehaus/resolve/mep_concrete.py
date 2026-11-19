@@ -100,8 +100,11 @@ def concrete_bands(model: ResolvedModel, solid) -> list[tuple[float, float]]:
     return merged
 
 
-def concrete_hosts(model: ResolvedModel) -> list[tuple[str, str, object, float, float]]:
-    """Every cast band a run could be inside, as ``(tag, category, footprint, z0, z1)``.
+def concrete_hosts(model: ResolvedModel) -> list[tuple]:
+    """Every cast band a run could be inside, as ``(tag, category, footprint, z0, z1, plane)``.
+
+    ``plane`` is a falling pour's ``top_plane`` (else None): the band lifts by
+    ``plane.lift(x, y)`` at a point (:func:`band_at`), as ``mep_sleeves._sleeve_host`` reads it.
 
     The host list :func:`concrete_crossings` used to build inline. It is public because
     ``mep.run_in_slab`` asks a DIFFERENT question of the same list — not "where does this
@@ -126,12 +129,12 @@ def concrete_hosts(model: ResolvedModel) -> list[tuple[str, str, object, float, 
             return shell
         return difference(shell, union_all(Polygon(v) for v in s.voids if len(v) >= 3))
 
-    hosts: list[tuple[str, str, object, float, float]] = [
-        (s.tag, s.category, net(s), z0, z1)
+    hosts: list[tuple] = [
+        (s.tag, s.category, net(s), z0, z1, s.top_plane)
         for s in model.solids
         if is_concrete_host(s.category) and len(s.outline) >= 3
         for z0, z1 in concrete_bands(model, s)]
-    hosts.extend((s.tag, "beam", Polygon(s.outline), s.z0_m, s.z1_m)
+    hosts.extend((s.tag, "beam", Polygon(s.outline), s.z0_m, s.z1_m, None)
                  for s in model.solids
                  if s.category == "beam" and len(s.outline) >= 3
                  and is_cast_beam(model.plan, model.plan.by_tag(s.tag)))
@@ -141,8 +144,14 @@ def concrete_hosts(model: ResolvedModel) -> list[tuple[str, str, object, float, 
         structure = next((ly for ly in wall.layers if ly.function == "structure"), None)
         if structure is not None and len(structure.polygon) >= 3:
             hosts.append((wall.tag, "wall", Polygon(structure.polygon),
-                          wall.z0_m, wall.z1_m))
+                          wall.z0_m, wall.z1_m, None))
     return hosts
+
+
+def band_at(z0: float, z1: float, plane, point) -> tuple[float, float]:
+    """A host band at a plan point: lifted by a falling pour's plane, else as given."""
+    lift = plane.lift(*point) if plane is not None and point is not None else 0.0
+    return z0 + lift, z1 + lift
 
 
 def concrete_crossings(model: ResolvedModel) -> list[dict]:
@@ -196,7 +205,10 @@ def concrete_crossings(model: ResolvedModel) -> list[dict]:
         for i in range(len(path) - 1):
             a, b = path[i], path[i + 1]
             za, zb = z_m[i], z_m[i + 1]
-            for host_tag, category, footprint, hz0, hz1 in hosts:
+            for host_tag, category, footprint, hz0, hz1, plane in hosts:
+                if plane is not None:  # read the band where the leg meets the pour
+                    hz0, hz1 = band_at(hz0, hz1, plane, _meet_point(a, b, footprint,
+                                                                    LineString))
                 hit = _segment_concrete_hit(a, b, za, zb, footprint, hz0, hz1,
                                             LineString, Point)
                 if hit is None:
@@ -208,6 +220,17 @@ def concrete_crossings(model: ResolvedModel) -> list[dict]:
                     host=host_tag, host_category=category, point=point, z_m=z_at,
                     sleeve=sleeve))
     return crossings
+
+
+def _meet_point(a, b, footprint, LineString):
+    """Where a leg meets a footprint: the middle of its plan run inside, else ``a``."""
+    if a == b:
+        return a
+    inside = LineString((a, b)).intersection(footprint)
+    if inside.is_empty or getattr(inside, "length", 0.0) <= 0.0:
+        return a
+    middle = inside.interpolate(0.5, normalized=True)
+    return middle.x, middle.y
 
 
 def _segment_concrete_hit(a, b, za, zb, footprint, hz0, hz1, LineString, Point):
