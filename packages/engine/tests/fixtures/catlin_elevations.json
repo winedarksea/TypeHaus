@@ -68958,10 +68958,10 @@
 "d0062a2c742e"
 ],
 "geometry/HPXC1Y5YE6-00/body": [
-3.1432111,
+3.1178111,
 3.2385,
 32,
-"d71c120e7fbc"
+"7a73a25447d2"
 ],
 "geometry/HQQQFQ576Z-00/body": [
 -0.3429,
@@ -77682,10 +77682,10 @@
 "773eb900eb87"
 ],
 "geometry/TM7XNG0XE4-00/body": [
-3.1432111,
+3.1178111,
 3.2385,
 32,
-"d71c120e7fbc"
+"7a73a25447d2"
 ],
 "geometry/TMNX0WK28P-FB0/body": [
 6.096,
@@ -127844,9 +127844,9 @@
 "solids/TR-RF-LEADER-W/z1_m": 6.289274,
 "solids/TR-SG-APRON-1/z0_m": 2.746375,
 "solids/TR-SG-APRON-1/z1_m": 2.9337,
-"solids/TR-SG-BAND-E-1/z0_m": 3.1432111,
+"solids/TR-SG-BAND-E-1/z0_m": 3.1178111,
 "solids/TR-SG-BAND-E-1/z1_m": 3.2385,
-"solids/TR-SG-BAND-W-1/z0_m": 3.1432111,
+"solids/TR-SG-BAND-W-1/z0_m": 3.1178111,
 "solids/TR-SG-BAND-W-1/z1_m": 3.2385,
 "solids/TR-SG-DRIP-1-1/z0_m": 2.8956,
 "solids/TR-SG-DRIP-1-1/z1_m": 2.9726128,

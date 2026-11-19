@@ -76,8 +76,9 @@ The stem Z (`TR-G-STEMZ-*`) is a `counter` section, its 2″ back leg standing u
 the panel, ZIP tape lapped over it. The balcony's rear edge is the house's BBD75 band trim
 (2026-11-19): the band sits at +10'-5 1/2″, just over the deck, and there the 55536XX section
 is braked longer (`TR-SG-BAND-W/E`), its 2″ back leg captured under the upper panel on the
-band girt, its 5° shelf running 1″ past the capped deck edge to a 1 1/2″ drip ~2.8″ above the
-plank. Nothing crosses the movement gap fastened; it breaks at D-S-BALCONY's casing. It
+band girt, its 5° shelf running 1″ past the capped deck edge to the stock 2 1/2″ face leg as
+a drip, lapping the lower panel 1 3/4″ and stopping ~1.8″ above the plank. The stock trim laps
+2″ under each end. Nothing crosses the movement gap fastened; it breaks at D-S-BALCONY's casing. It
 replaced a deck-side base flashing and a counterflashing screwed over the battens.
 
 The existing construction specifications still govern, including their open substrate

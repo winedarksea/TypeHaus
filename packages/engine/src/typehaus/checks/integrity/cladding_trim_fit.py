@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import math
-import re
 
 from typehaus.checks.integrity.cladding_panel_tops import panel_top_girts
 from typehaus.checks.integrity.cladding_trim_runs import (
@@ -243,30 +242,45 @@ def _rake_faces(ctx):
     return findings
 
 
-def _band_laps(pieces):
+def _band_laps(model, pieces):
     """Each BBD75 band's face leg laps the lower panel by the stock leg less the outlet slot.
 
     The guide gives the 2-1/2 in leg over a panel run up to the seat (p. 40); the lower panel
-    here stops the 1 in outlet slot short, so the lap it leaves is the honest requirement."""
+    here stops the 1 in outlet slot short, so the lap it leaves is the honest requirement.
+    An authored flashing standing in for the trim (``bands.stand_ins``) owes the same lap."""
     from typehaus.library.trim.metal_sales import BBD_TRANSITION
+    from typehaus.resolve.cladding_trim.bands import band_spans, stand_ins
     from typehaus.resolve.rainscreen_strips import BAND_PANEL_GAP_IN, band_panel_top
 
     (x0, z0), (x1, z1) = BBD_TRANSITION.section_in[-2:]
     required = (math.hypot(x1 - x0, z1 - z0) - BAND_PANEL_GAP_IN) * M_PER_IN
+    back_leg = BBD_TRANSITION.section_in[0][1] * M_PER_IN
     laps = {}
-    for piece in pieces:
-        match = re.search(r"-BAND-(\d+)-", piece.tag)
-        if piece.product != "BBD_TRANSITION" or match is None or not piece.body_mesh:
-            continue
-        joint = int(match.group(1)) * M_PER_IN
-        lap = band_panel_top(joint) - min(p[2] for p in piece.body_mesh.positions)
-        key = (piece.host_ref, match.group(1))
+
+    def note(name, joint, mesh):
+        lap = band_panel_top(joint) - min(p[2] for p in mesh.positions)
+        key = (name, round(joint / M_PER_IN, 3))
         laps[key] = min(laps.get(key, lap), lap)
+
+    for piece in pieces:
+        if piece.product == "BBD_TRANSITION" and piece.body_mesh:
+            # The joint is the back leg's foot: the tag rounds it to the inch.
+            note(piece.host_ref, max(p[2] for p in piece.body_mesh.positions) - back_leg,
+                 piece.body_mesh)
+    meshes = {}
+    for solid in model.solids:
+        if solid.category == "flashing" and solid.body_mesh:
+            meshes.setdefault(solid.uid.rsplit("-", 1)[0], []).append(solid.body_mesh)
+    for wall in model.walls:
+        for joint in {j for j, _lo, _hi in band_spans(model, wall)}:
+            for run, _a, _b in stand_ins(model, wall, joint):
+                for mesh in meshes.get(run.uid, ()):
+                    note(run.tag, joint, mesh)
     need = f"{required / M_PER_IN:.2f} in (the stock leg less the outlet slot)"
     short = [key for key, lap in laps.items() if lap + _TOL < required]
     if short:
         return [failed(FIT, f"{len(short)} band joints lap the lower panel under {need}",
-                       tuple(sorted({wall for wall, _ in short})), code=_BAND_CITE)]
+                       tuple(sorted({name for name, _ in short})), code=_BAND_CITE)]
     if laps:
         return [passed(FIT, f"{len(laps)} band joints lap the lower panel "
                             f"{min(laps.values()) / M_PER_IN:.2f} in, {need} needed",
@@ -338,5 +352,5 @@ def cladding_trim_fit(ctx: CheckContext) -> list:
     if not pieces and not any(screens_rainscreen_base(model, wall) for wall in model.walls):
         return [not_applicable(FIT, "no catalog cladding trim resolved")]
     return [*_opening_runs(ctx, pieces), *_run_limits(ctx, pieces), *_door_heads(ctx, pieces),
-            *_rake_faces(ctx), *_band_laps(pieces), *panel_top_girts(ctx, FIT),
+            *_rake_faces(ctx), *_band_laps(model, pieces), *panel_top_girts(ctx, FIT),
             *_site_brake(ctx, pieces), *_soffit_panel_joint(ctx)]

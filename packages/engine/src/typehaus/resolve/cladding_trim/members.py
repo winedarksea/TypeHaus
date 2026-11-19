@@ -26,7 +26,8 @@ def split_stock_run(
     if not lengths or any(not isfinite(length) or length <= lap for length in lengths):
         raise ValueError("each stock length must be finite and greater than the lap")
 
-    limits = [ceil(max(0.0, run_length - lap) / (length - lap)) for length in lengths]
+    # A run no longer than the lap still takes one piece.
+    limits = [max(1, ceil(max(0.0, run_length - lap) / (length - lap))) for length in lengths]
     best = None
     for counts in product(*(range(limit + 1) for limit in limits)):
         number = sum(counts)

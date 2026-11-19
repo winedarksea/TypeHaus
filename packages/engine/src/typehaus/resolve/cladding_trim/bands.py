@@ -56,37 +56,49 @@ def band_spans(model, wall) -> list[tuple[float, float, float]]:
     return spans
 
 
-def trim_spans(model, wall) -> list[tuple[float, float, float]]:
-    """``band_spans`` less the stations an authored wall ``Flashing`` takes at the joint.
+def stand_ins(model, wall, joint) -> list[tuple[object, float, float]]:
+    """``(Flashing, s0, s1)``: authored wall flashings standing in for the trim at ``joint``.
 
-    The flashing must name a wall as ``host_ref``, top out at the joint and lie along this
-    face's back plane (so a run spilling past a wall break cuts both faces). Only the trim
-    yields: the outlet strip and band girt follow the joint and stay continuous. A remnant
-    under one stock lap (a flashing end shy of an opening's cut) is the flashing's to close.
+    The flashing names a wall as ``host_ref``, tops out at the joint and lies on this face's
+    back plane, so a run spilling past a wall break stands in on both faces.
+    """
+    walls = {w.tag for w in model.walls}
+    face = cladding_face(wall, next(ly for ly in wall.layers if ly.function == "cladding"))
+    found = []
+    for run in model.plan.elements_of_kind("Flashing"):
+        if (run.host_ref not in walls or run.vertical
+                or abs(run.top_elevation.meters - joint) > FLASHING_JOINT_TOL_M):
+            continue
+        centre = face.back + run.thickness.meters / 2
+        points = [p.xy_m for p in run.path]
+        if all(abs(x * face.n[0] + y * face.n[1] - centre) < FLASHING_JOINT_TOL_M
+               for x, y in points):
+            stations = [x * face.d[0] + y * face.d[1] for x, y in points]
+            found.append((run, min(stations), max(stations)))
+    return found
+
+
+def trim_spans(model, wall) -> list[tuple[float, float, float]]:
+    """``band_spans`` less the stations a ``stand_ins`` flashing takes at the joint.
+
+    Only the trim yields: the outlet strip and band girt follow the joint and stay
+    continuous. The trim runs one stock lap under a stand-in's end, as two sticks lap; a
+    remnant no longer than that lap (a stand-in ending shy of an opening's cut) is dropped,
+    the stand-in closing it.
     """
     spans = band_spans(model, wall)
     if not spans:
         return spans
-    walls = {w.tag for w in model.walls}
-    face = cladding_face(wall, next(ly for ly in wall.layers if ly.function == "cladding"))
-    flashings = [f for f in model.plan.elements_of_kind("Flashing")
-                 if f.host_ref in walls and not f.vertical]
+    lap = BBD_TRANSITION.min_lap_in * M_PER_IN
     out = []
     for joint, lo, hi in spans:
-        cuts = []
-        for run in flashings:
-            if abs(run.top_elevation.meters - joint) > FLASHING_JOINT_TOL_M:
+        cuts = [(a, b) for _run, a, b in stand_ins(model, wall, joint)]
+        for a, b in subtract_spans(lo, hi, cuts):
+            under_a = a > lo + 1e-6 and any(abs(a - c1) < 1e-6 for _c0, c1 in cuts)
+            under_b = b < hi - 1e-6 and any(abs(b - c0) < 1e-6 for c0, _c1 in cuts)
+            if (under_a or under_b) and b - a <= lap:
                 continue
-            centre = face.back + run.thickness.meters / 2
-            points = [p.xy_m for p in run.path]
-            if all(abs(x * face.n[0] + y * face.n[1] - centre) < FLASHING_JOINT_TOL_M
-                   for x, y in points):
-                stations = [x * face.d[0] + y * face.d[1] for x, y in points]
-                cuts.append((min(stations), max(stations)))
-        ends = [x for cut in cuts for x in cut]
-        out += [(joint, a, b) for a, b in subtract_spans(lo, hi, cuts)
-                if b - a > BBD_TRANSITION.min_lap_in * M_PER_IN
-                or not any(min(abs(a - x), abs(b - x)) < 1e-6 for x in ends)]
+            out.append((joint, a - lap * under_a, b + lap * under_b))
     return out
 
 

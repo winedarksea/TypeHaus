@@ -3118,16 +3118,16 @@ BALCONY_APRON = Flashing(
 # 1 1/8" off the house cladding, and the two are separately founded. The house's BBD75 band
 # (`BBD_BAND_JOINT`) sits just over the deck, and over the balcony its Transition Trim is
 # one longer brake of the same 55536XX section: 2" back leg behind the upper panel, backed
-# by the derived band girt, the 5 deg shelf out 1" past the capped deck edge and a 1 1/2"
-# drip. Pan water lands on the plank under it. It replaces a deck-side base flashing
-# (TR-SG-BASE-FLASH-W/E, uids NXN52KSTF7/8V0TSMCBW5, retired) and a counterflashing screwed
-# over the battens (2026-10-16 to 2026-11-19). Nothing crosses the gap fastened. The band
-# trim yields to these runs (`cladding_trim.bands.trim_spans`); the W run spills 4" onto
-# W-S-S2 and cuts its band too. Both break beyond D-S-BALCONY's wrapped 3 1/2" casing.
+# by the derived band girt, the 5 deg shelf out 1" past the capped deck edge and the stock
+# 2 1/2" face leg as its drip: it laps the lower panel 1 3/4" (the band check wants 1 1/2")
+# and stops ~1.8" over the plank. Pan water lands on the plank under it. It replaces a
+# deck-side base flashing (TR-SG-BASE-FLASH-W/E, uids NXN52KSTF7/8V0TSMCBW5, retired) and a
+# counterflashing screwed over the battens (2026-10-16 to 2026-11-19). Nothing crosses the
+# gap fastened. The band trim yields to these runs and laps 2" under their ends
+# (`cladding_trim.bands.trim_spans`); the W run spills 4" onto W-S-S2 and cuts its band too.
+# Both break beyond D-S-BALCONY's wrapped 3 1/2" casing.
 _REAR_BACK_Y_IN = -(HOUSE_NS_OUTBOARD_IN - BOARD_BATTEN_DEPTH.inches)  # panel back plane
 _REAR_DECK_Y_IN = _y_in_n * 12.0 + _BALCONY_REAR_RIM_OVERSAIL_IN  # capped rim edge
-_REAR_PLANK_TOP = (_deck_walking_surface + _balcony_beam_rise
-                   + inch(SPEC.balcony_fall_in_per_ft * _BALCONY_REAR_RIM_OVERSAIL_IN / 12))
 _REAR_BAND_W_IN = _REAR_BACK_Y_IN - _REAR_DECK_Y_IN + 1.0
 _REAR_BAND_SLOPE = math.tan(math.radians(5.0))  # 55536XX's shelf
 
@@ -3139,10 +3139,10 @@ def _rear_run(y_in, x0, x1):
 BALCONY_REAR_FLASH = [
     Flashing(uid=uid, tag=f"TR-SG-BAND-{side}", kind=TrimKind.WRB_COUNTERFLASHING,
              path=_rear_run(_REAR_BACK_Y_IN - _REAR_BAND_W_IN / 2.0, x0, x1),
-             top_elevation=BBD_BAND_JOINT, depth=inch(3.5), thickness=inch(_REAR_BAND_W_IN),
+             top_elevation=BBD_BAND_JOINT, depth=inch(4.5), thickness=inch(_REAR_BAND_W_IN),
              material="bbd-transition-trim", host_ref=host, back_side="left",
              section=FormedFlashingSection(profile="counter", slope=_REAR_BAND_SLOPE,
-                                           upstand=inch(2), drip=inch(1.5)))
+                                           upstand=inch(2), drip=inch(2.5)))
     for uid, side, host, (x0, x1) in (("HPXC1Y5YE6", "W", "W-S-S1", _REAR_BREAKS_FT[0]),
                                       ("TM7XNG0XE4", "E", "W-S-S2", _REAR_BREAKS_FT[1]))
 ]

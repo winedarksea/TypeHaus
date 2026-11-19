@@ -17,7 +17,7 @@
 > is on resilient channel. No tile medallions (review in `plans/TODO.md`).
 
 > **Fit and product-data pass, 2026-11-01 (REPORT items 14-24):**
-> - **Band girt is DERIVED from the BBD75 joint** (226-229.5": joint - 1" slot - 1" backing);
+> - **Band girt is DERIVED from the BBD75 joint** (123.5-127" at the 125.5" joint: joint - 1" slot - 1" backing);
 >   lap graded 1.59" vs 1.50"; `cladding_trim_fit` requires a girt behind every metal panel top.
 >   B&B heads keep 58114XX (58720XX does not fit the window-first outie).
 > - **Outie reveal:** gypsum returns run on the buck's lining to the frame; the stud zone is furred

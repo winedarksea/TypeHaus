@@ -15,6 +15,7 @@ def test_corner_uses_mixed_stock_and_three_inch_lap():
 
 def test_short_run_chooses_short_stock():
     assert split_stock_run(50, (122, 243), 2) == ((0.0, 50, 122),)
+    assert split_stock_run(1, (122, 243), 2) == ((0.0, 1, 122),)  # shorter than the lap
 
 
 @pytest.mark.parametrize("run, lengths, lap", [(0, (10,), 1), (10, (), 1), (10, (1,), 1)])

@@ -6,8 +6,10 @@
 - **Taken.** `BBD_BAND_JOINT` (`plan/assemblies/board_batten.py`) moves house-wide from 228" to
   125.5", so the north and south bands stay one line. Over the balcony the 55536XX section is
   braked longer (`TR-SG-BAND-W/E`, uids kept from the counter runs): 2" back leg captured under
-  the upper panel on the derived band girt, 5 deg shelf out 1" past the capped deck edge, 1 1/2"
-  drip 2.8" over the plank. The stock trim yields to an authored wall flashing at a joint
+  the upper panel on the derived band girt, 5 deg shelf out 1" past the capped deck edge, the stock
+  2 1/2" face leg as its drip (laps the lower panel 1 3/4", ~1.8" over the plank; a 1 1/2" drip
+  lapped it only 3/4", under the band's 1 1/2" rule, review 2026-11-19). The stock trim yields
+  to an authored wall flashing at a joint and laps 2" under its ends
   (`resolve/cladding_trim/bands.trim_spans`); the outlet strip and girt run on. The base runs
   (uids `NXN52KSTF7`/`8V0TSMCBW5`) are retired. Still breaks at D-S-BALCONY's casing.
 - **The window.** Drip clearance and the 20' panel limit both want the joint at or above ~123.5";

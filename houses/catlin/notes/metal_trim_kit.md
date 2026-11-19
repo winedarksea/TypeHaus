@@ -107,7 +107,8 @@ sills and heads are not outlets (owner, 2026-10-28).
 - Trim and strip both skip an opening framed through the trim's height: at +10'-5 1/2" that is
   D-S-BALCONY.
 - Over the balcony the trim is one longer brake of the same section, `TR-SG-BAND-W/E`: its
-  shelf runs out 1 in past the capped deck edge and drips 1-1/2 in, the deck's rear flashing.
+  shelf runs out 1 in past the capped deck edge and drips the stock 2-1/2 in, the deck's rear
+  flashing; the stock trim laps 2 in under each of its ends.
   The stock trim yields to it (`cladding_trim.bands.trim_spans`); the strip and girt run on.
   Seven walls, 67.8 LF of outlet: trim and strip stop 1/16 in short of each corner C-Closure.
 

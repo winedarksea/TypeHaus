@@ -415,12 +415,16 @@ def test_balcony_rear_edge_is_the_band_trim_over_the_deck(catlin_model_ro):
     for run in runs:
         solid = solids[run.tag]
         xs = [x for x, _y in solid.outline]
-        # The back leg stands on the joint at the panel back plane; nothing else trims there.
+        # The back leg stands on the joint at the panel back plane; the stock trim only laps
+        # 2" under its ends.
         assert run.top_elevation.meters == pytest.approx(joint)
         assert max(y for _x, y in solid.outline) == pytest.approx(-face.back, abs=1e-3)
-        assert not any(min(x for x, _ in b.outline) < max(xs) - 1e-6
-                       and max(x for x, _ in b.outline) > min(xs) + 1e-6 for b in bands)
-        # The drip falls outboard of the capped deck edge, clear above the plank.
+        assert all(min(max(xs), max(x for x, _ in b.outline))
+                   - max(min(xs), min(x for x, _ in b.outline)) <= inch_m(2.0) + 1e-6
+                   for b in bands)
+        # The drip laps the lower panel (1" under the joint) 1 1/2", like the stock face leg,
+        # and falls outboard of the capped deck edge, clear above the plank.
+        assert solid.z0_m <= joint - inch_m(2.5) + 1e-6
         assert min(y for _x, y in solid.outline) < deck_y - inch_m(0.5)
         assert solid.z0_m - deck.deck_top_at(sum(xs) / len(xs), deck_y) >= inch_m(0.75)
         assert max(xs) <= lo - casing + 1e-6 or min(xs) >= lo + door.width_m + casing - 1e-6

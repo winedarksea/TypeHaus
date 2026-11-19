@@ -20,7 +20,7 @@ pickets share the resolved deck plane. The bottom-rail clearance is 3 inches.
     oversail, which puts wood behind the upper rear screws (the rear flashing is now the
     house's band trim, `TR-SG-BAND-*`, clear above it). It runs in two pieces that break with the flashing beyond D-S-BALCONY's casing,
     where the door's own threshold outriggers cross the gap.
-  - The movement gap to the cladding is now 1¾ inches (it was 2¾).
+  - The movement gap to the cladding is now 1⅛ inches (2026-11-18; 1¾ before, 2¾ before that).
 - **Corners:** FM244390 wraps the framed corner. Its outboard walls run full, and its
   inboard walls jog 45° onto flanges that start ⅞ inch past the fascia corner, leaving the
   post's corner open (product drawing). Its holes sit within 4D of the corner by the
