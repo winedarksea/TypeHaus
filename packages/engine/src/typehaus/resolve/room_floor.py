@@ -64,7 +64,7 @@ def room_floor_elevation(model: ResolvedModel, room: ResolvedRoom) -> float:
         return wall_z
     centroid = Polygon(room.clear_face).centroid
     best = _room_slab(model, centroid, wall_z)
-    # A falling pour is read at the room's centroid (``room_floor_elevation_at`` per point).
+    # A falling pour is read at the room's centroid (``floor_fall_at`` moves it per point).
     return best.top_at(centroid.x, centroid.y) if best is not None else wall_z
 
 

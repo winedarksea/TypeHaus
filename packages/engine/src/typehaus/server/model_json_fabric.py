@@ -112,9 +112,8 @@ def wall_graph_json(
                 # A writeback op matches the constructor `Name` LITERALLY
                 # (source/writeback_py._call_kind), so an editor that addressed every wall
                 # as `type: "Wall"` could never patch a FoundationWall: the op routed to no
-                # file and came back 422. The UI sends this back verbatim instead of
-                # guessing. Falls back to "Wall" for a wall with no authored element behind
-                # it (params-generated), which is unaddressable either way.
+                # file and came back 422. The UI sends this back verbatim. "Wall" for a
+                # params-generated wall, which is unaddressable either way.
                 "kind": _wall_kind(model, w),
                 "provenance": _provenance(provenance, w.tag),
                 "axis": [list(w.axis[0]), list(w.axis[1])],
@@ -252,9 +251,8 @@ def shell_json(model: ResolvedModel, provenance: Provenance | None) -> dict[str,
              "trades": list(solid_trades(solid.category,
                                          solid_material_ref(model.plan, solid))),
              # Manufacturer part number where the solid IS a purchased part (connectors);
-             # null on everything cut from stock.
+             # null on everything cut from stock. A falling pour serves its plane's mesh.
              "product": solid.product,
-             # A falling pour is served as its mesh (resolve/slab_fall.py): one plane.
              "body_mesh": (None if (mesh := solid_mesh(solid)) is None
                            else mesh_json(mesh.positions, mesh.triangles)),
              # A run carried as one swept solid (→ resolve/sweep.py), null on every prism;
@@ -500,4 +498,3 @@ def _interior_trim_json(model: ResolvedModel) -> dict[str, Any]:
                        if len(piece.outline) >= 3 and piece.z1_m > piece.z0_m],
         })
     return {"base_runs": base_runs, "door_casings": casings}
-

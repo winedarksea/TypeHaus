@@ -20,7 +20,8 @@ from typehaus.quantities import Length
 class SlabFall(HausModel):
     """The slab's top falls ``rate_in_per_ft`` toward ``toward``, reaching
     ``Slab.top_elevation`` at ``low_edge``: the y of an east-west line (north/south), else
-    the x of a north-south one. Above that line the top rises, never below it."""
+    the x of a north-south one. The top rises away from that line; the plane is not
+    clamped, so the outline should lie wholly on its uphill side."""
 
     toward: Literal["north", "south", "east", "west"]
     rate_in_per_ft: float

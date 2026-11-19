@@ -157,6 +157,10 @@ a release or for exhaustive local verification.
   point with `ResolvedSolid.top_at`, never `z1_m`. `Stair.foot_on` seats a flight's foot on it.
 - **`Slab.kind`** is `pour | deck | platform | band` (decision #81). Code that means concrete
   reads `is_pour_slab`, never `category == "slab"`.
+- **A pour slab may fall; `top_elevation` is its low edge** (decision #138): `Slab.fall`
+  (`SlabFall`) lifts top and bottom on one plane, so `z0_m`/`z1_m` are the low edge's.
+  Anything that stands on the floor reads `ResolvedSolid.top_at(x, y)`; a falling pour draws
+  from `resolve/slab_fall.sloped_slab_mesh`. `Stair.foot_on` seats a flight's foot on it.
 - **`clear_face` is the finish face; `axis_face` owns points** (decision #82). Measure
   furniture and areas off `clear_face`. For "which room is this in", use
   `resolve/room_lookup.room_owning`.

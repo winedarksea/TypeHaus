@@ -79,14 +79,15 @@ def resolve_envelope_geometry(model: ResolvedModel) -> list[Finding]:
                             if element.assembly else None)
                 top, finish = split_top_finish(assembly, model.plan.library, element.uid,
                                                element.tag, storey.tag, outline, z1, voids)
+                plane = fall_plane(element)  # a falling pour's finish rides the same plane
                 model.solids.append(ResolvedSolid(
                     element.uid, element.tag, storey.tag, CATEGORY_FOR_KIND[kind], outline,
                     z0, top,
                     element.assembly,
                     voids,
-                    top_plane=fall_plane(element),
+                    top_plane=plane,
                 ))
-                model.solids.extend(finish)
+                model.solids.extend(replace(s, top_plane=plane) for s in finish)
             elif isinstance(element, Pad):
                 outline = [point.xy_m for point in element.outline]
                 if len(outline) < 3:

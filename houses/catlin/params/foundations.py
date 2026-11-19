@@ -793,7 +793,7 @@ GARAGE_SLAB = Slab(
     perimeter_thermal_break=SlabThermalBreak(**GARAGE_SLAB_EDGE_BREAK),
     # No floor drain: the floor sheds slush north to the overhead door at 1/8"/ft (design
     # review §8, owner 2026-11-19), a constant 3 1/2" pour on a subgrade that follows.
-    # top_elevation is the door line's; the south end stands ~2 7/16" higher.
+    # top_elevation is the door line's; the south end stands ~2 7/8" higher (23'-0" up).
     fall=SlabFall(toward="north", rate_in_per_ft=0.125, low_edge=GARAGE_Y_NORTH),
 )
 
