@@ -7265,10 +7265,11 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # [framing] as `:pt-syp` (the garage and ~23 basement walls: 187 LF cut). What is left here is
 # only the mudsills [framing] never bought: under the main storey's platform-framed walls,
 # whose own plate sits on the subfloor, and under floor bearing alone. The old delta argument
-# ("[framing] already bought the board") was true of neither set. Full assembly, AC2 PT 2x6
-# at $1.62-1.86/LF (Menards 2026) plus nuts/washers: $2.00-2.50/LF material, $4.50-7.00/LF
-# installed incl. drill, set and plate layout. Sealer is [sill_gaskets]; anchors [hardware].
-"pt-sill-plate" = { material = { low = 2.0, high = 2.5 }, labour = { low = 2.5, high = 4.5 } }  # 127.7 LF
+# ("[framing] already bought the board") was true of neither set. Material is the board, AC2
+# PT 2x6 at $1.62-1.86/LF (Menards 2026): these sills take MASAZ straps, billed in [hardware]
+# with the sealer in [sill_gaskets], so no nut or washer rides here. Labour $2.50-4.50/LF,
+# setting and plate layout, from the old full-assembly note ($4.50-7.00 installed).
+"pt-sill-plate" = { material = { low = 1.62, high = 1.86 }, labour = { low = 2.5, high = 4.5 } }  # 127.7 LF
 
 # resilient-channel, 522.2 LF. The 2026-08-18 guess of $0.45-0.90/LF material is CONFIRMED and
 # tightened: single-leg RC-1 in 12' sticks clusters at $0.499-0.566/LF across three independent
