@@ -26,10 +26,12 @@ NAILER_STATIONS_IN = (6.625, 13.875, 36.500, 43.750, 66.375)
 NAILER_BOTTOM_IN = 0.56
 NAILER_TOP_IN = 45.0
 TIMBER_STATION_IN = 40.125
-STUD_WEST_IN = 72.625
-STUD_EAST_IN = 76.125
+# The 6x6 chords' west face: 72" + the garage's 7/16" ZIP, flush with W-G-W's studs (it was
+# 72.625 behind the 5/8" CDX until 2026-11-18). params/north_entry_frame.py holds the line.
+STUD_WEST_IN = 72.4375
+STUD_EAST_IN = STUD_WEST_IN + 3.5
 # One solid 6x6 under the band's centre post, on both its faces and the chord posts'.
-TIMBER_WEST_IN = 72.625
+TIMBER_WEST_IN = STUD_WEST_IN
 TIMBER_WIDTH_IN = 5.5
 TIMBER_EAST_IN = TIMBER_WEST_IN + TIMBER_WIDTH_IN
 WOOD_DENSITY_KG_M3 = 600.0

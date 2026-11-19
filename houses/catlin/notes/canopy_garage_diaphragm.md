@@ -1,6 +1,7 @@
 # The canopy braces off the garage — hand-worked basis
 
-**House:** catlin. **Current basis:** wind of 2026-10-31 (ridge 11.644'), screen and joints as of 2026-11-14.
+**House:** catlin. **Current basis:** wind of 2026-10-31 (ridge 11.644'), screen and joints as of 2026-11-14,
+**amended 2026-11-18** (§11: the garage's 7/16" ZIP moved the header lines 3/16" out; its rows supersede).
 **Written by hand** (plain arithmetic, no engine import).
 **Structure:** `RF-BW-CANOPY` (4:12, 26.667' x 6.000', trusses spanning 24' over two 5-1/2" x 11-7/8" treated
 glulam headers `BM-BW-RW`/`-RE`, on four 6x6 KDAT posts) delivering into `RF-GARAGE`, `W-G-S`, `W-G-E`,
@@ -15,7 +16,7 @@ glulam headers `BM-BW-RW`/`-RE`, on four 6x6 KDAT posts) delivering into `RF-GAR
 `north_entry_canopy_lateral.md` §8 (collectors, hold-down anchorage); `north_entry_piers.md` §10 (the landing
 tie, which reads the screen's share); `entry_column_base_fixity.md` §7 (the cast shafts).
 **What is asked of the reviewer:** whether the garage may take the canopy's whole lateral load (§3-§4) and §5a.
-Every row is under 0.92; the closest is the canopy deck's boundary at the screen line (§4d, 0.907).
+Every row is under 0.92; the closest is the canopy deck's boundary at the screen line (§4d, 0.908 since §11).
 
 ---
 
@@ -24,7 +25,7 @@ Every row is under 0.92; the closest is the canopy deck's boundary at the screen
 | term | working | value |
 |---|---|---|
 | canopy footprint | x 4.667 -> 31.333, y 37.219 -> 43.219 | 26.667' x 6.000' |
-| header centres | garage truss lines, x 6.28125' / 29.71875' | 23.4375' apart |
+| header centres | garage truss lines, x 6.265625' / 29.734375' (§11) | 23.46875' apart |
 | headers | 5-1/2" x 11-7/8" glulam, y 37.271 -> 42.708, post face to post face | 5.4375' |
 | header soffit | +7'-4" - 11.875" | +6.3438' |
 | pier top (steel, kdat) | `Site.grade` -2'-10" + 3'-0" | +0.1667' |
@@ -94,7 +95,8 @@ off the joint. The chord force, the couple's path and the drift limit (N/A, earn
 **Capacity of the decks.** Both roof decks are 19/32" Structural I. The canopy's blocked capacity is the
 SDPWS Table 4.2A 15/32" row, 8d at 6" boundary and edges, Case 1: 755 plf nominal x 0.92 (SPF, fn. 2) / 2.0 = 347
 plf, **carried at 190 plf** (a deliberate round-down for the 19/32" deck, with G_a at the soft end of its band).
-RF-GARAGE is unblocked: 167.5 plf (Table 4.2C, Case 1). Receiving walls: 182.5 plf (Table 4.3A, 15/32" 8d at 6").
+RF-GARAGE is unblocked: 167.5 plf (Table 4.2C, Case 1). Receiving walls: carried at 182.5 plf (Table 4.3A; the
+garage's 7/16" ZIP row at 8d 6" reads 670 x 0.92 / 2 = 308 plf, so the carry is conservative).
 
 ### 3b. The joint
 
@@ -503,6 +505,37 @@ presumed); a soils report that predicts more than 3/16" between the two planes r
 * The screen's own face in the canopy's demand (§2): it is the landing tie's.
 * Weld design of the steel variant's saddle and base plate, the fabricator's shop drawing against AWS D1.1.
 * **ColorGard snow retention** (`CN-BW-SNOW-E-1`): the supplier's drift sizing stays open.
+
+## 11. 2026-11-18 amendment: the header lines 3/16" out
+
+The garage sheathing went 5/8" CDX -> 7/16" ZIP with its face held on the node line, so the plates and the header
+centrelines moved 3/16" outward: x 6.265625' / 29.734375', 23.46875' apart. The canopy overhang went to 1'-7 3/16"
+to hold the one fascia line, so the footprint is still 26.667' x 6.000'; the ridge is 1/16" higher. Wind and the
+screen's own rows: `canopy_west_band.md` §10.
+
+```
+§2   ridge over lowest ground 20.7692': K_z 0.63072, q_h 18.151, p = 16.6622 psf; post head half 23.587 lb
+     E-W  37.429 x 16.6622 = 623.64 + 47.17 = 670.82 lb      N-S  59.259 x 16.6622 = 987.39 + 47.17 = 1,034.57 lb
+§3b  stations x - 18' at i x 23.46875/6: +/-3.911458, +/-7.822917; end straps +/-(11.734375 - 0.104167) = +/-11.630208
+     Σx² = 2 (15.2995 + 61.1980 + 135.2617) = 423.519 ft²;  strap line 23.260416'
+     M = 670.82 x 3.0774 = 2,064.35 lb-ft
+     linear increment   2,064.35 x 11.630208 / 423.519 = 56.69 lb      0.069
+     N-S across         1,034.57 / 6 = 172.43 lb                        0.209
+     local attachment   172.43 + 2,064.35 / 23.260416 = 172.43 + 88.75 = 261.18 lb
+                        canopy nailer 0.242, garage nailer 261.18 / 959.462 = 0.272
+     along-joint        670.82 / 23.260416 = 28.84 plf                  0.152
+§3d  x_V = (987.39 x 18 + 47.17 x 29.734375) / 1,034.57 = 18.5351
+     W-G-E 1,034.57 x 12.5351 / 24 = 540.35 lb (22.51 plf, 0.134);  W-G-W 494.22 lb
+§3e  W-G-S 670.82 / 17.299 = 38.78 plf;  W-G-E 540.35 / 21.008 = 25.72;  W-G-W 494.22 / 18.675 = 26.46
+§4a  panel 190.27 plf vs 490 (the 7/16" ZIP row, 0.388); hold-down 2,230.5 lb (0.729); base shear 0.815
+§4d  1,034.57 / 6.000 = 172.43 plf vs 190                               0.908  (governs)
+§7   cast: 987.39 + 2 x 93.07 = 1,173.52 lb N-S. Columns at x 29.734375, panel (k 9,970.5, held) at 6.182292:
+     x_r = 11.9066, x_V = 19.8612, M_t = 1,173.52 x 7.9546 = 9,335 lb-ft, J = 1,393,335
+     column 1,600.7/13,171.8 x 1,173.52 = 142.61 + 9,335 x 1,600.7 x 17.8278 / 1,393,335 = 191.19 -> 333.80 lb
+```
+
+Every other §3-§10 figure moves by the p ratio, x 1.00007, inside its printed precision. The receiving walls keep
+their carried 182.5 plf.
 
 ## Sources
 

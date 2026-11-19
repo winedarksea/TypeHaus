@@ -50,7 +50,8 @@ precision. **Rebuilding that sandbox is the one outstanding measurement in this 
 predates it.** `GARAGE_WALL_2X6` went 2x6 @16" o.c. / empty bays / 1.5" Zip-R / 26 ga
 concealed nail-strip → **2x6 @24" o.c. / 2" ccSPF / 5/8" CDX / 7/8" corrugated
 exposed-fastener panel** (`houses/catlin/CLAUDE.md`), and the trusses went to 24" o.c. with
-it. It is `built` in the fullest sense — not a sandbox copy, the reference house itself —
+it. (On 2026-11-18 the CDX became 7/16" taped ZIP, the WRB Minnesota requires; not re-measured
+here, a small premium of the panel's taped rate over CDX's on ~663 SF.) It is `built` in the fullest sense — not a sandbox copy, the reference house itself —
 confirmed at 0 FAIL. Diffing `haus takeoff` immediately either side of that one commit
 (759850a vs. the redesign) puts it at **−$2,916–$5,359** off the bid total, ahead of the
 plan's own arithmetic estimate of ≈−$1,700–$3,500: the ccSPF spends back roughly a third of

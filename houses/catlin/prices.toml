@@ -743,14 +743,11 @@
 # nailbase ever comes back, because it is the part a plain plywood rate does not carry.
 "osb" = { material = { low = 24, high = 38 }, labour = { low = 30, high = 58 } }  # 0 sheets (was 45)
 "struct-1-plywood" = { material = { low = 27, high = 42 }, labour = { low = 16, high = 34 } }  # 4 sheets (ceiling 3 + sheathing rip 1); wall/roof sheathing bills in [envelope_layers] (2026-10-29)
-# Plain ZIP (not ZIP-R) — the roof's structural deck and air-barrier plane. Cheaper than the
-# ZIP-R row below by the whole cost of the foam laminated to it, which this roof buys loose.
-# NOT TAKEN as of 2026-08-31 — 0 sheets. The roof deck is 5/8" CDX now and the air barrier
-# moved off the taped panel onto the ccSPF bonded to its underside (R806.5 item 5.1.3), so
-# there is no ZIP left in the house. Kept for the rate.
-"zip-sheathing" = { material = { low = 36, high = 58 }, labour = { low = 22, high = 44 } }  # 0 sheets (was 45)
+# Plain ZIP (not ZIP-R). Was the roof deck until 2026-08-31; since 2026-11-18 the 7/16" garage
+# and W-BW-SCREEN panel, which bills by the SF in [envelope_layers]; only a rip bills here.
+"zip-sheathing" = { material = { low = 36, high = 58 }, labour = { low = 22, high = 44 } }  # 1 sheet (sheathing rip)
 "zip-r" = { material = { low = 78, high = 105 }, labour = { low = 25, high = 50 } }  # 0 sheets (was 20) — retired 2026-08-31, kept for the rate
-# 5/8" CDX, GARAGE_WALL_2X6's sheathing since 2026-08-31, replacing the ZIP-R row above.
+# 5/8" CDX, GARAGE_WALL_2X6's sheathing 2026-08-31 to 2026-11-18 (now 7/16" ZIP).
 # $30-52 the 4x8 sheet is the ordinary-sheathing shelf price a grade below the sanded
 # underlayment row and a thickness above the 1/2" the struct-1-plywood row is basised on;
 # labour is that row's, unchanged, because hanging a sheet is hanging a sheet.
@@ -4993,22 +4990,25 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # The blended fallback. Any thickness without a row above lands here. Researched; the three
 # qualified rows are derived FROM it, so re-researching this row should re-derive those.
 "xps" = { material = { low = 0.9, high = 1.8 }, labour = { low = 0.75, high = 1.45 } }  # 0 SF billed here now — every XPS thickness in the model has its own row above
-# NOT TAKEN as of 2026-08-31 — 0 SF. The roof deck is 5/8" CDX now; see the
-# `struct-1-plywood` row above, which is $0.20-0.15/SF cheaper for a thicker, smoother,
-# faster-drying panel. Kept for the rate.
+# The 1/2" rate, 0 SF since the roof left ZIP on 2026-08-31. Kept for the rate.
 "zip-sheathing" = { material = { low = 1.1, high = 1.85 }, labour = { low = 1.0, high = 1.9 } }  # 0 SF (was 1547.9) — 1/2" plain ZIP, taped; was the roof's air-barrier plane
+# 7/16" ZIP System, every seam taped: GARAGE_WALL_2X6's sheathing + WRB and W-BW-SCREEN's
+# shear panel (2026-11-18). Budget estimate, not a quote: 4x9 7/16" at ~$40-60 a 36 SF sheet;
+# the tape is in the labour (taping every seam), as the old roof row carried it. No tape row.
+"zip-sheathing:0.438" = { material = { low = 1.1, high = 1.7 }, labour = { low = 1.1, high = 2.1 } }  # 689.4 SF (garage 662.9 + screen 26.5)
 # NOT TAKEN as of 2026-08-31 — 0 SF. GARAGE_WALL_2X6 was the only Zip-R in the house and
-# its sheathing is 5/8" CDX now, with 2" of ccSPF in the bays doing the thermal and air
+# its sheathing is plain ZIP now, with 2" of ccSPF in the bays doing the thermal and air
 # work the panel's laminated polyiso used to. Kept for the rate, like every other retired
 # row in this file.
 "zip-r" = { material = { low = 2.2, high = 4.2 }, labour = { low = 1.3, high = 2.4 } }  # 0 SF (was 631.3)
-# GARAGE_WALL_2X6's sheathing since 2026-08-31, 631.3 SF. Ordinary 5/8" CDX and NOT the
+# GARAGE_WALL_2X6's sheathing 2026-08-31 to 2026-11-18 (631.3 SF then; the garage is 7/16"
+# ZIP above now, and W-BW-SCREEN with it). Ordinary 5/8" CDX and NOT the
 # house's shear-rated `struct-1-plywood` — see that Material's comment in
 # plan/assemblies.py; billing a garage box at Structural 1's rate overstates every square
 # foot of it. Material $1.10-1.90/SF is 5/8" CDX at $30-52 the 32 SF sheet, which is the
 # same basis the [sheet_goods] row below carries. Labour is a touch under the Structural 1
 # row's: it is the same hang-and-nail operation, on a one-storey box, off a 6' ladder.
-"cdx-plywood" = { material = { low = 1.1, high = 1.9 }, labour = { low = 0.95, high = 1.8 } }  # 631.3 SF
+"cdx-plywood" = { material = { low = 1.1, high = 1.9 }, labour = { low = 0.95, high = 1.8 } }  # 0 SF (was 631.3)
 # Named revert, 0 SF since 2026-11-02 (see the [sheet_goods] row of the same tag).
 "siding-303-mdo" = { material = { low = 2.2, high = 3.8 }, labour = { low = 1.2, high = 2.2 } }  # 0 SF
 
@@ -7986,7 +7986,8 @@ roof-flashings-boots-and-custom-sheet-metal = { low = 2000, high = 4500 }
 # (`notes/opening_flashing_spec.md` §3).
 #
 # The two 36" exterior swing doors' pans are NOT in this row (driver is `[kind=window]`);
-# they are `envelope-door-sill-pans` below.
+# they are `envelope-door-sill-pans` below. The two garage windows ride this row too: ZIP
+# liquid flash lapped onto the taped ZIP (2026-11-18), a lighter detail at the same rate.
 envelope-opening-flashing-and-sill-pans = { low = 180, high = 262, unit = "ea", driver = "openings.count[kind=window]" }
 # Sloped sill pan with back and end dams under each exterior swing door
 # (`notes/opening_flashing_spec.md` §6). Filtered to single exterior SWINGS, not `kind=door`:
@@ -7995,10 +7996,10 @@ envelope-opening-flashing-and-sill-pans = { low = 180, high = 262, unit = "ea", 
 # ~$60-140 of preformed pan or membrane plus about an hour.
 envelope-door-sill-pans = { low = 150, high = 300, unit = "ea", driver = "openings.count[function=entry,operation=swing]" }
 # D-G-OVERHEAD's perimeter membrane (2026-10-16, `notes/opening_flashing_spec.md` §7): head
-# band and both jambs on the CDX buck, lapped 2" onto the sheathing, from the stem top to the
+# band and both jambs on the buck, ZIP liquid flash lapped 2" onto the taped ZIP (2026-11-18), from the stem top to the
 # head — ~30 LF on a 16'x7' opening, no pan. Neither row above buys it: one is driven by
 # windows and the other by the 36" exterior swings. Its metal head is in `corrugated-panel-24`'s trim
-# load, like every other garage opening. ~$8/LF of FastFlash-class material plus ~1.5 h.
+# load, like every other garage opening. ~$8/LF of liquid-flash material plus ~1.5 h.
 envelope-garage-door-flashing = { low = 250, high = 500, unit = "ea", driver = "openings.count[operation=overhead]" }
 # MN limits to 3.0 ACH50, so the second blower-door test is not optional.
 # DRIVEN 2026-08-27 off gross floor area — 6,098 SF, one of the two addressable scalars.
@@ -8829,7 +8830,7 @@ wall_structure = false
 "envelope_layers:standing-seam-nailstrip-26" = "kept with the garage's green revert (standing-seam-nailstrip-26-green)"
 "envelope_layers:foundation-protection-panel" = "the named alternate to the acrylic coating, kept priced so the swap stays costed"
 "envelope_layers:white-brick" = "the fireplace surround's blend until 2026-09-13; brown-brick washed white replaced it"
-"envelope_layers:zip-r" = "named alternate to the CDX + ccSPF garage wall; never specified here"
+"envelope_layers:zip-r" = "named alternate to the ZIP + ccSPF garage wall; never specified here"
 "openings:WT-1424-T" = "catalog-only: all four tempered 14x24 units became fixed on 2026-10-21"
 "openings:WT-2736-T" = "catalog-only: WIN-M-BATH2 became fixed on 2026-10-21"
 "openings:WT-1448" = "catalog-only: superseded by WT-1436 under the 6:12 south rake"

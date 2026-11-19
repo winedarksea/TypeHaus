@@ -118,7 +118,7 @@ WALLS = [
     # the gable ends. All four keep `top=ft(8, 4)` — the two gable triangles are closed by
     # resolve/roof_edge.py's wall→roof closure, whichever pair they fall on.
     Wall(uid="CGW101AAAA", tag="W-G-S", start_node="N-G-SW", end_node="N-G-SE",
-         assembly="GARAGE_WALL_2X6", alignment=face("cdx-ext"), top=ft(8, 4),
+         assembly="GARAGE_WALL_2X6", alignment=face("sheathing-ext"), top=ft(8, 4),
          structural_role=StructuralRole.NONBEARING),
     # This wall carried Western States "Classic Green" nail-strip for part of 2026-08-26 —
     # it was the overhead-door facade then — and is back to the house white. The revert is
@@ -128,13 +128,13 @@ WALLS = [
     # going green again is a one-line change rather than a re-derivation. Note it would now
     # be the wrong wall to paint: the facade is W-G-N.
     Wall(uid="CGW102AAAA", tag="W-G-E", start_node="N-G-SE", end_node="N-G-NE",
-         assembly="GARAGE_WALL_2X6", alignment=face("cdx-ext"), top=ft(8, 4),
+         assembly="GARAGE_WALL_2X6", alignment=face("sheathing-ext"), top=ft(8, 4),
          structural_role=StructuralRole.BEARING),
     Wall(uid="CGW103AAAA", tag="W-G-N", start_node="N-G-NE", end_node="N-G-NW",
-         assembly="GARAGE_WALL_2X6", alignment=face("cdx-ext"), top=ft(8, 4),
+         assembly="GARAGE_WALL_2X6", alignment=face("sheathing-ext"), top=ft(8, 4),
          structural_role=StructuralRole.NONBEARING),
     Wall(uid="CGW104AAAA", tag="W-G-W", start_node="N-G-NW", end_node="N-G-SW",
-         assembly="GARAGE_WALL_2X6", alignment=face("cdx-ext"), top=ft(8, 4),
+         assembly="GARAGE_WALL_2X6", alignment=face("sheathing-ext"), top=ft(8, 4),
          structural_role=StructuralRole.BEARING),
 ]
 
@@ -163,7 +163,8 @@ WALLS = [
 # BAND AND Z ARE ONE ALUMINIUM (2026-10-30): Una-Clad PVDF, Matte Black
 # (`aluminum-flat-pvdf`), for the plowed, salted splash zone; the Z at 0.040", open hems.
 # The corrugated panel above is Metal Sales PVDF Galvalume and oversails the Z's upstand:
-# sealant or EPDM between the panel and the Z, never metal-to-metal.
+# sealant or EPDM between the panel and the Z, never metal-to-metal. The Z's 2" upstand sits
+# on the ZIP face with ZIP tape lapped >= 2" down over it (WRB over flashing).
 #
 # ** IT BREAKS AT THE ONE STEM GAP. ** There is no stem — and so no band and no Z — across
 # the 16'-0" overhead door, where params/foundations.py gaps the stem and the slab runs out
@@ -176,7 +177,7 @@ WALLS = [
 # literals because this file is `# haus: editable` and the dialect bans arithmetic.
 #
 # ** `thickness` IS THE FLAT LEG AND IT IS CENTRED ON THE PATH, so the path is NOT a wall
-# face. ** It is the mid-line of what the Z has to cover: from the node line (the CDX/EPS
+# face. ** It is the mid-line of what the Z has to cover: from the node line (the ZIP/EPS
 # plane the panel's back and the stem's foam face share) out past the band's outer face,
 # which stands 0.30" proud — `coil-gap` 1/4" + `coil-ext` 0.05" — plus about 1/2" of throw.
 # 0.80" of leg, so the mid-line is 0.40" outboard of each wall's own node line. That is much
@@ -598,12 +599,13 @@ ROOFS = [
     #
     # It bears on BEAMS (resolve/roof_bearing.py). BM-BW-RW/RE top out at +7'-4", the same plate elevation as
     # W-G-W/W-G-E, so the two roof planes are one plane.
-    # The eave overhang is RF-GARAGE's 1'-4" plus 3 3/8": the headers' axes are their
-    # centrelines on the garage's truss bearing lines (2026-10-31), 3 3/8" inboard of the
-    # garage walls' sheathing-plane axes, so both eaves still land on one fascia line.
+    # The eave overhang is RF-GARAGE's 1'-4" plus 3 3/16": the headers' axes are their
+    # centrelines on the garage's truss bearing lines (2026-10-31), 3 3/16" inboard of the
+    # garage walls' sheathing-plane axes behind the 7/16" ZIP (2026-11-18), so both eaves
+    # still land on one fascia line.
     Roof(uid="YX2GDZJMBV", tag="RF-BW-CANOPY", form=RoofForm.GABLE,
          pitch=Pitch(4, 12), bearing_refs=("BM-BW-RW", "BM-BW-RE"),
-         assembly="CANOPY_ROOF", overhang=ft(1, 7.375), ridge_direction="y",
+         assembly="CANOPY_ROOF", overhang=ft(1, 7.1875), ridge_direction="y",
          # ** THE DECK IS A DECLARED DIAPHRAGM SINCE 2026-09-19, AND THAT IS A DESIGN
          # DECISION WITH PARTS IN IT. ** Until it was, the paragraph above was true twice
          # over: this roof's sheathing tied two structures together and carried none of the
@@ -672,9 +674,9 @@ ROOFS = [
              delivers_to=DiaphragmDelivery(
                  roof="RF-GARAGE",
                  lines=(
-                     ReceivingLine(wall="W-G-S", unit_shear_asd_plf=182.5, apparent_stiffness_kips_per_in=11.0, source="AWC SDPWS-2015 Table 4.3A, wood structural panel sheathing, 15/32in with 8d at 6in edges (the 5/8in CDX quoted conservatively), v_w 365 plf nominal / 2.0"),
-                     ReceivingLine(wall="W-G-E", unit_shear_asd_plf=182.5, apparent_stiffness_kips_per_in=11.0, source="AWC SDPWS-2015 Table 4.3A, wood structural panel sheathing, 15/32in with 8d at 6in edges (the 5/8in CDX quoted conservatively), v_w 365 plf nominal / 2.0"),
-                     ReceivingLine(wall="W-G-W", unit_shear_asd_plf=182.5, apparent_stiffness_kips_per_in=11.0, source="AWC SDPWS-2015 Table 4.3A, wood structural panel sheathing, 15/32in with 8d at 6in edges (the 5/8in CDX quoted conservatively), v_w 365 plf nominal / 2.0"),
+                     ReceivingLine(wall="W-G-S", unit_shear_asd_plf=182.5, apparent_stiffness_kips_per_in=11.0, source="AWC SDPWS-2015 Table 4.3A, wood structural panels - sheathing, 7/16in (the taped ZIP) with 8d at 6in edges: v_w 670 plf nominal x 0.92 SPF (fn. 3, G 0.42) / 2.0 = 308 plf ASD; carried at 182.5 plf and G_a 11 (the row reads 15 OSB), unchanged from the 5/8in CDX reading"),
+                     ReceivingLine(wall="W-G-E", unit_shear_asd_plf=182.5, apparent_stiffness_kips_per_in=11.0, source="AWC SDPWS-2015 Table 4.3A, wood structural panels - sheathing, 7/16in (the taped ZIP) with 8d at 6in edges: v_w 670 plf nominal x 0.92 SPF (fn. 3, G 0.42) / 2.0 = 308 plf ASD; carried at 182.5 plf and G_a 11 (the row reads 15 OSB), unchanged from the 5/8in CDX reading"),
+                     ReceivingLine(wall="W-G-W", unit_shear_asd_plf=182.5, apparent_stiffness_kips_per_in=11.0, source="AWC SDPWS-2015 Table 4.3A, wood structural panels - sheathing, 7/16in (the taped ZIP) with 8d at 6in edges: v_w 670 plf nominal x 0.92 SPF (fn. 3, G 0.42) / 2.0 = 308 plf ASD; carried at 182.5 plf and G_a 11 (the row reads 15 OSB), unchanged from the 5/8in CDX reading"),
                  ),
                  joint_refs=("CN-BW-JOINT-1", "CN-BW-JOINT-2", "CN-BW-JOINT-3", "CN-BW-JOINT-5", "CN-BW-JOINT-6", "CN-BW-JOINT-7"),
                  joint_nailing=JointNailing(
@@ -869,7 +871,7 @@ RAILINGS = [
 # engineering.toml (notes/canopy_west_band.md §9, canopy_garage_diaphragm.md §10).
 TRUSS_ORDER = [
     Annotation(uid="7FTJXBJ6NP", tag="AN-G-TRUSS-ORDER", position=pt(ft(18), ft(55)),
-               text="TRUSS ORDER — RF-GARAGE and RF-BW-CANOPY, one fabricator, SEALED component design and reaction schedule. ONE truss for both roofs: 4:12 2x4 fink at 24in o.c., span 23ft 10-3/4in out to out of bearing with the bottom chord across the full 5-1/2in bearing at both ends (garage 2x6 plates; canopy glulam headers on the same lines), 1ft 4-5/8in tails both ends, STANDARD HEEL 3-15/16in measured at the OUTSIDE FACE OF BEARING (top-chord plumb depth 3-11/16in + 1/4in butt cut), no raised or energy heel. (1) A reaction at EVERY bearing, gravity and uplift, stating its basis: ground snow 50 psf, flat 42 psf balanced, the roof-step DRIFT surcharge of 50 psf peak over 9.8ft off the house gable (ASCE 7-16 §7.7), wind V_ult 115 mph Exposure B Risk Category II, 10 psf dead. (2) DRIFT TRUSSES: all three canopy trusses and RF-GARAGE's two southernmost (truss-000/-001) carry the drift case, not ground snow. (3) The canopy's SOUTH-END truss stands at the open south edge with no wall under it: design it for the out-of-plane wind on the gable-end triangle (2.22ft x 26.67ft, 16.8 psf ASD) braced at the deck, and say how it is braced. (4) The N-S diaphragm CHORD: both canopy end trusses' top chords, combined with gravity, and the peak splice's slip — the lateral design assumes 0.03in. (5) The heel ties are H2.5ASS stainless on the canopy (CN-BW-TRTIE-*) and H2.5A on the garage; confirm or supersede from the uplift reactions. (6) PERMANENT BRACING per BCSI-B3: show every web continuous lateral restraint and its diagonal brace, and the gable-end bracing at RF-GARAGE's north gable (W-G-N, over the 16ft overhead door) and south gable; state whether the 5/8in gypsum ceiling is relied on as bottom-chord restraint"),
+               text="TRUSS ORDER — RF-GARAGE and RF-BW-CANOPY, one fabricator, SEALED component design and reaction schedule. ONE truss for both roofs: 4:12 2x4 fink at 24in o.c., span 23ft 11-1/8in out to out of bearing with the bottom chord across the full 5-1/2in bearing at both ends (garage 2x6 plates; canopy glulam headers on the same lines), 1ft 4-5/8in tails both ends, STANDARD HEEL 3-15/16in measured at the OUTSIDE FACE OF BEARING (top-chord plumb depth 3-11/16in + 1/4in butt cut), no raised or energy heel. (1) A reaction at EVERY bearing, gravity and uplift, stating its basis: ground snow 50 psf, flat 42 psf balanced, the roof-step DRIFT surcharge of 50 psf peak over 9.8ft off the house gable (ASCE 7-16 §7.7), wind V_ult 115 mph Exposure B Risk Category II, 10 psf dead. (2) DRIFT TRUSSES: all three canopy trusses and RF-GARAGE's two southernmost (truss-000/-001) carry the drift case, not ground snow. (3) The canopy's SOUTH-END truss stands at the open south edge with no wall under it: design it for the out-of-plane wind on the gable-end triangle (2.22ft x 26.67ft, 16.8 psf ASD) braced at the deck, and say how it is braced. (4) The N-S diaphragm CHORD: both canopy end trusses' top chords, combined with gravity, and the peak splice's slip — the lateral design assumes 0.03in. (5) The heel ties are H2.5ASS stainless on the canopy (CN-BW-TRTIE-*) and H2.5A on the garage; confirm or supersede from the uplift reactions. (6) PERMANENT BRACING per BCSI-B3: show every web continuous lateral restraint and its diagonal brace, and the gable-end bracing at RF-GARAGE's north gable (W-G-N, over the 16ft overhead door) and south gable; state whether the 5/8in gypsum ceiling is relied on as bottom-chord restraint"),
 ]
 
 # `Door` and `DoorType` carry no hardware field, so the stop is a drawing note (2026-10-13).

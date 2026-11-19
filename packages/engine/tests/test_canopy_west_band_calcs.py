@@ -19,12 +19,13 @@ _ITEM = "lateral_system/RF-BW-CANOPY"
 
 #: §3, §4 and §6: ``row name -> (demand, capacity)``. §3 re-worked 2026-10-26 for one
 #: corner-to-corner 6x6 per bay; §6 re-worked 2026-10-28 for the flush headers; every wind row
-#: re-worked 2026-10-31 (16.661 psf, headers 23.4375' apart: the note's 10-31 amendment).
+#: re-worked 2026-10-31 (16.661 psf, headers 23.4375' apart: the note's 10-31 amendment); and
+#: 2026-11-18 (§10: 16.6622 psf, headers 23.46875' apart, V 1,034.57 lb; the panel's 7/16" row).
 _ROWS = {
-    "W-BW-SCREEN unit shear": (190.25, 265.0),
+    "W-BW-SCREEN unit shear": (190.27, 490.0),
     "W-BW-SCREEN aspect ratio": (0.751, 3.5),
-    "SB-BW-BAND slat end, KBS1Z": (742.834, 993.218),
-    "SB-BW-BAND slat buckling": (742.834, 24904.1),
+    "SB-BW-BAND slat end, KBS1Z": (742.888, 993.218),
+    "SB-BW-BAND slat buckling": (742.888, 24904.1),
     "SB-BW-BAND clipped end bearing on a post": (23.81, 251.25),
     "SB-BW-BAND clipped end bearing on a plate": (25.30, 251.25),
     "SB-BW-BAND centre post bending": (33.94, 1360.0),
@@ -38,9 +39,9 @@ _ROWS = {
     "W-BW-SCREEN chord hold-down, full height": (2230.3, 3060.0),
     "W-BW-SCREEN chord base shear, one base": (1034.49, 1270.0),
     "diaphragm unit shear at W-BW-SCREEN": (172.42, 190.0),
-    "LSTA24 end straps, chord force + across share": (260.488, 823.3333333333334),
-    "BM-BW-RW chord into CN-BW-JOINT-1's block": (216.451, 450.0),
-    "BM-BW-RE chord into CN-BW-JOINT-7's block": (88.072, 450.0),
+    "LSTA24 end straps, chord force + across share": (260.389, 823.3333333333334),
+    "BM-BW-RW chord into CN-BW-JOINT-1's block": (216.408, 450.0),
+    "BM-BW-RE chord into CN-BW-JOINT-7's block": (87.961, 450.0),
     "W-G-W joint couple, E-W case": (4.606, 182.5),
     "W-G-E joint couple, E-W case": (4.094, 182.5),
 }
@@ -66,17 +67,17 @@ def test_the_band_inputs_reproduce_section_1_and_4b(record) -> None:
     values = {q.name: q.value for q in record.inputs}
     assert values["band_height_W-BW-SCREEN"] == pytest.approx(2.34375, abs=1e-4)
     assert values["overturning_height_W-BW-SCREEN"] == pytest.approx(8.6825, abs=1e-3)
-    assert values["joint_couple_lb_ft"] == pytest.approx(2064.20, abs=1.0)
-    assert values["chord_force_open_front_lb"] == pytest.approx(88.072, abs=0.1)
+    assert values["joint_couple_lb_ft"] == pytest.approx(2064.35, abs=1.0)
+    assert values["chord_force_open_front_lb"] == pytest.approx(87.961, abs=0.1)
 
 
 def test_the_slat_band_reproduces_section_3a_and_3b(record) -> None:
-    """§3a-b: 24.375" x 25.125" bays, one brace across mid-band, 742.834 lb a brace (10-31)."""
+    """§3a-b: 24.375" x 25.125" bays, one brace across mid-band, 742.888 lb a brace (11-18, §10)."""
     values = {q.name: q.value for q in record.inputs}
     assert values["slat_bay_width_SB-BW-BAND"] == pytest.approx(24.375, abs=1e-3)
     assert values["slat_bay_height_SB-BW-BAND"] == pytest.approx(25.125, abs=1e-3)
     assert values["slats_crossing_mid_SB-BW-BAND"] == 1
-    assert values["slat_force_SB-BW-BAND"] == pytest.approx(742.834, abs=0.01)
+    assert values["slat_force_SB-BW-BAND"] == pytest.approx(742.888, abs=0.01)
     assert not any("band strap tension" in s.name for s in record.limit_states)
 
 

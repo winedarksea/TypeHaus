@@ -7,7 +7,7 @@
 #
 # ** CS-WSP EVERYWHERE, AND WSP WAS REJECTED ON ONE MEASUREMENT. ** Every exterior wall of
 # this house is sheathed in 1/2" struct-1 plywood over its whole face, above and below every
-# opening (the garage in 5/8" CDX), which is Method CS-WSP's own requirement (R602.10.4.2)
+# opening (the garage in 7/16" ZIP), which is Method CS-WSP's own requirement (R602.10.4.2)
 # and is what the house builds anyway. Method WSP would ask 48" of every panel at these wall
 # heights (Table R602.10.5) — main E1's first qualifying run is 34 1/2", so the line's
 # first 48" panel would not start until 21'-1 1/2", past R602.10.2.2's 10 ft.

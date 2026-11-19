@@ -107,7 +107,7 @@ def _walls(model):
 def test_the_order_bills_the_same_sheet(catlin_model_ro):
     """Catlin (owner, 2026-09-22): the house in 4x10, the garage in 4x9."""
     house = _walls(catlin_model_ro)
-    assert ("cdx-plywood", 0.5, "4x10") in house and ("cdx-plywood", 0.625, "4x9") in house
+    assert ("cdx-plywood", 0.5, "4x10") in house and ("zip-sheathing", 0.438, "4x9") in house
     for (_material, _t, size), row in house.items():
         length = {"4x8": 96.0, "4x9": 108.0, "4x10": 120.0}[size]
         assert abs(int(row["sheets"]) - sheets_for(float(row["net_area_sqft"]), length)) <= 1

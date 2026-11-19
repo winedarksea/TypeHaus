@@ -73,7 +73,7 @@ from plan.storeys.garage import GARAGE_Y_SOUTH
 # it. Cantilevers of 9 3/8" south and 7 1/4" north stay inside R507.5.1's quarter of the back span.
 #
 # The field is narrower than the deck: west, the canopy columns PT-BW-CW/-CNW stand on the pier
-# line at x=6'-3 3/8" and stop the westmost joist at their east face; east, BM-BW-FE does. The
+# line at x=6'-3 3/16" and stop the westmost joist at their east face; east, BM-BW-FE does. The
 # west board ends bear on a 2-ply on that joist and the rims run to it (params/entry_landing_edge).
 FLOOR = FloorSystem(
     uid="BWFS01AAAA", tag="FS-BW-FLOOR",
@@ -174,7 +174,7 @@ NOTES = [
     Annotation(uid="SG5P5RZE02", tag="AN-BW-HETA-TRIM", position=pt(ft(12), ft(41)),
                text="HOLD POINT, HETA20Z SEAT TIES (CN-BW-TIE-EA/EB/GEA/GEB): set each 16in strap in the pour from a template of the seat beam's faces; after the beam is on its 3/4in SS316 pack, FIELD-TRIM each strap flush with the beam top (8in above the pier top) BEFORE the joists go on. No HETA12/16 is published in ZMAX or stainless (G90 only, wrong against KDAT), so the 20 is cut. Nail 6 - 16d HDG per strap, 12 per pair (FL11473 Table 3): the LOWEST FOUR holes (Table 2 note 2) then the next two up, all on the beam face; confirm the lowest hole stands above the pack, and confirm the trim with Simpson before the pour."),
     Annotation(uid="BWAN04AAAA", tag="AN-BW-KDAT", position=pt(ft(9), ft(41)),
-               text="ALL KDAT: 304 stainless fasteners (IRC R317.3.1), with connector-specific fasteners as scheduled; TREX walking boards use 316 stainless Cap-Tor xd per AN-G-COMPOSITE-DECKING; butyl joist tape over every beam/rim top; field-treat every cut end, notch and hole with 2% copper naphthenate per AWPA M4 (IRC R317.1.1 — required, not advisory); finish with a PIGMENTED penetrating oil on installation, recoat 2-3yr horizontal. NO silicate/'liquid glass' — it is a masonry densifier, leaches from wood and adds no UV protection. W-BW-SCREEN is KDAT 2x4 framing with CDX and corrugated on the WEST face, and directly mounted white-painted 3/4in exterior MDO on the EAST face, recessed 1-1/4in behind the exposed timber. One solid KDAT SP No.2 6x6 lower centre timber lines up with the upper centre post and the chord posts on both faces; five 2x4 edge nailers. The MDO stops at the north chord post: the end pack and the garage ties north of it stay exposed. FRAME THE LOWER TIMBER IN LIKE A STUD: four S10ACN through each plate into its ends, on the flat, before the band goes on. Use removable stainless face screws into framing, sealed cut edges and holes, and compatible exterior primer/topcoats on both faces. No east WRB, rails or ventilation cavity. Keep the garage tie block and its bolts accessible. See notes/entry_screen_mdo.md. W-BW-SCREEN-SKIRT carries the west corrugated down over the sill, the seat beams and the two column standoff bases, stopping 1in ABOVE the pier tops — do not seal that edge to the concrete, it is how the flutes drain and the column bases dry"),
+               text="ALL KDAT: 304 stainless fasteners (IRC R317.3.1), with connector-specific fasteners as scheduled; TREX walking boards use 316 stainless Cap-Tor xd per AN-G-COMPOSITE-DECKING; butyl joist tape over every beam/rim top; field-treat every cut end, notch and hole with 2% copper naphthenate per AWPA M4 (IRC R317.1.1 — required, not advisory); finish with a PIGMENTED penetrating oil on installation, recoat 2-3yr horizontal. NO silicate/'liquid glass' — it is a masonry densifier, leaches from wood and adds no UV protection. W-BW-SCREEN is KDAT 2x4 framing with 7/16in taped ZIP and corrugated on the WEST face, and directly mounted white-painted 3/4in exterior MDO on the EAST face, recessed 1-1/4in behind the exposed timber. One solid KDAT SP No.2 6x6 lower centre timber lines up with the upper centre post and the chord posts on both faces; five 2x4 edge nailers. The MDO stops at the north chord post: the end pack and the garage ties north of it stay exposed. FRAME THE LOWER TIMBER IN LIKE A STUD: four S10ACN through each plate into its ends, on the flat, before the band goes on. Use removable stainless face screws into framing, sealed cut edges and holes, and compatible exterior primer/topcoats on both faces. No east WRB, rails or ventilation cavity. Keep the garage tie block and its bolts accessible. See notes/entry_screen_mdo.md. W-BW-SCREEN-SKIRT carries the west corrugated down over the sill, the seat beams and the two column standoff bases, stopping 1in ABOVE the pier tops — do not seal that edge to the concrete, it is how the flutes drain and the column bases dry"),
 ]
 
 # W-BW-SCREEN: a sheathed KDAT wall from the joist plane up to SCREEN_PANEL_TOP_FT. It is the
@@ -206,8 +206,8 @@ GARAGE_STOREY_ELEMENTS = []
 # faces.
 #
 # `ShearPanelSpec` is the fastener schedule that lets the engine split the canopy shear between
-# panel and columns (IBC 2018 1604.4). The 15/32" SDPWS row is quoted for the 5/8" panel and the
-# softer plywood G_a is used, which gives the columns the larger share. `anchorage_slip` is an
+# panel and columns (IBC 2018 1604.4). The 7/16" OSB row is the ZIP panel's own (2026-11-18);
+# the 15/32" figures carried before were half the table's. `anchorage_slip` is an
 # assumption (1/16" bearing take-up at the two 6x6s), not a published slip for the base.
 SCREEN_PANEL = Wall(
     uid="BWWS01AAAA", tag="W-BW-SCREEN",
@@ -216,17 +216,16 @@ SCREEN_PANEL = Wall(
     top=ft(SCREEN_PANEL_TOP_FT - DECK_JOIST_TOP_FT), guard=True,
     alignment=face("stud-ext", offset=inch(-1.75)),
     shear_panel=ShearPanelSpec(
-        sheathing_layer="cdx-out",
+        sheathing_layer="sheathing-out",
         fastening=('8d common (0.131" x 2 1/2") at 4" o.c. at every panel edge and 12" '
                    'o.c. in the field, panel edges BLOCKED, the sheet nailed to both 6x6 '
                    'chords; 2x4 KDAT framing at 16" o.c. — the WEST face alone, the east '
                    'MDO is finish and is not counted'),
-        source=("AWC SDPWS-2015 Table 4.3A, wood structural panels - sheathing, 15/32\" "
-                "with 8d at 4\" edges, v_w 530 plf nominal / 2.0 — quoted for this 5/8\" "
-                "panel because thicker sheathing at the same schedule is not weaker; G_a "
-                "kept at the 6\" plywood row's 11.0, the softer end"),
-        unit_shear_asd_plf=265.0,
-        apparent_stiffness_kips_per_in=11.0,
+        source=("AWC SDPWS-2015 Table 4.3A, wood structural panels - sheathing, 7/16\" "
+                "(the 7/16\" ZIP, OSB) with 8d at 4\" edges: v_w 980 plf nominal / 2.0 = 490 "
+                "plf ASD (KDAT SYP framing, fn. 3 factor 1.0); G_a 22 kips/in, the OSB column"),
+        unit_shear_asd_plf=490.0,
+        apparent_stiffness_kips_per_in=22.0,
         chords=("PT-BW-CW and PT-BW-CNW, the two 6x6 KDAT columns this wall is framed "
                 "around (`within_wall`), 4.979ft centre to centre, each on a cast-in "
                 "CBSTQ66Z-SDS2 in its 14in pier; the band over the panel is the slat brace "

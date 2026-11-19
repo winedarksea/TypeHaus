@@ -291,29 +291,34 @@ lapped onto the house's fluid-applied system (§3). **Unlike a window's, a door 
 the cladding** (the model draws it 1/2" past the cladding face): a threshold has no sill
 trim to hide behind, and stopping it at the mount plane would discharge behind the panel.
 
-## 7. Garage openings and the overhead door (2026-10-16)
+## 7. Garage openings and the overhead door (2026-10-16; WRB 2026-11-18)
 
-The garage wall is `GARAGE_WALL_2X6`: 2" ccSPF in the bays, 5/8" CDX and the corrugated panel,
-with **no WRB** and no exterior foam. So the CDX is the substrate and the plane the membrane
-laps onto, and the opening is an innie: no buck projection, no vent gap.
+The garage wall is `GARAGE_WALL_2X6`: 2" ccSPF in the bays, **7/16" ZIP System, every seam taped**,
+and the corrugated panel, with no exterior foam. The taped ZIP is the WRB and air barrier (Minn.
+R. 1309.0703 subp. 2a has no accessory-building exception; `garage_wall_detail_side.md`), so its
+face is the plane every opening membrane laps onto, and the opening is an innie: no buck
+projection, no vent gap.
 
-- **Windows and `D-G-SERVICE`**: §3's sequence on CDX, 1/4"/ft on a tapered KDAT shim, back
+**Membrane: ZIP System liquid flash at the garage ROs, not FastFlash.** ESR-4363's substrate list
+(§1 item 3) names OSB but not a factory WRB facer, so FastFlash on the ZIP face is not a listed use.
+Huber's own ZIP System liquid flash, applied per Huber's installation instructions for the panel
+it is sold with, is the membrane here; confirm its listing on the order. With the ForceField
+alternate, use its Seam Tape Plus at the ROs instead. Never mix the systems.
+
+- **Windows and `D-G-SERVICE`**: §3's sequence on the ZIP, 1/4"/ft on a tapered KDAT shim, back
   dam on a strip at the studs' inner face. `D-G-SERVICE`'s pan runs out past the panel to a
-  drip (a threshold has no sill trim). **A window's pan tucks behind the sill trim** (owner,
-  2026-11-16): it turns down 3/4" on the CDX behind the trim's upstand and the corrugated, as
-  on the house. FastFlash is rated for ~12 months of UV, so a lip past the panel was a red
-  band under each window that would chalk; the little water a pan releases now lands on bare
-  CDX behind the panel, with no WRB below it, an accepted tradeoff. The
-  window heads (`WIN-G-N1`, `WIN-G-S1`) take the stock 1.5" Sill/Head 58114XX, as every
-  metal-wall window does (`metal_trim_kit.md`): 24 ga PVDF, 2-1/2" back leg, 1-1/2" throat,
-  10'-2" stock (Metal Sales PBR installation guide, April 2024, Flashing Profiles, p. 20).
-  With no cavity above it, its back leg's top edge is stripped in 2" onto the CDX; no custom
-  head goes over the casing.
-  CDX is on every qualifying report's substrate list, so §1 item 3's open item does not arise.
-- **`D-G-OVERHEAD`**: head band and both jambs on the buck, lapped 2" onto the CDX. **No pan**:
+  drip (a threshold has no sill trim) and laps onto the ZIP and the base Z. **A window's pan
+  tucks behind the sill trim** (owner, 2026-11-16): it turns down 3/4" over the ZIP face,
+  shingle-lapped, behind the trim's upstand and the corrugated, as on the house. The little
+  water a pan releases now lands on the WRB, not bare sheathing. The window heads (`WIN-G-N1`,
+  `WIN-G-S1`) take the stock 1.5" Sill/Head 58114XX, as every metal-wall window does
+  (`metal_trim_kit.md`): 24 ga PVDF, 2-1/2" back leg, 1-1/2" throat, 10'-2" stock (Metal Sales
+  PBR installation guide, April 2024, Flashing Profiles, p. 20). With no cavity above it, ZIP
+  tape laps 2" down over its back leg (WRB over flashing); no custom head goes over the casing.
+- **`D-G-OVERHEAD`**: head band and both jambs on the buck, lapped 2" onto the ZIP. **No pan**:
   the opening runs to the slab. The jamb membrane **stops at the framed wall's base** (-1'-0",
-  the ICF stem top), where the stem's Z flashing (`TR-G-STEMZ-*`, now with a 2" back leg up the
-  CDX) takes over. Below it is the stem end, not this wall. Bought by
+  the ICF stem top) and laps the stem's Z flashing (`TR-G-STEMZ-*`, its 2" back leg up the ZIP
+  face under the ZIP tape). Below it is the stem end, not this wall. Bought by
   `[allowances] envelope-garage-door-flashing`; the head metal is in the panel's trim.
 - **Aluminium never touches the steel panel.** The stem Z and band are aluminium; the opening
   heads are steel. Where they meet, EPDM or sealant between.

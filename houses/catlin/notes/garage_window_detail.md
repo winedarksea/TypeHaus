@@ -15,16 +15,16 @@ source:
 
 ### General
 - Cut at WIN-G-N1; WIN-G-S1 is the same unit. WT-1424-FIX, R.O. 1'-2" x 2'-0", sill 3'-6" above the stem top.
-- Wood wall: 2x6 at 24" o.c., 5/8" CDX, 2" of 2 lb closed-cell foam per bay. No WRB.
-- Innie: the unit sits in the stud plane, outer face on the CDX. No buck projection, no vent gap.
-- Bucks before foam. The bay foam is the air and water plane; the CDX is the membrane substrate.
+- Wood wall: 2x6 at 24" o.c., 7/16" ZIP taped (sheathing + WRB), 2" of 2 lb closed-cell foam per bay.
+- Innie: the unit sits in the stud plane, outer face on the ZIP. No buck projection, no vent gap.
+- Bucks before foam. The taped ZIP is the air and water plane; the bay foam is vapour and thermal.
 - Jamb and sill trim are site brakes from 24 ga flat stock; the head is the stock 58114XX.
 - No membrane shows: every one lies behind metal (owner, 2026-11-16).
 
 ### Keyed
-- [K1 @ host#layer:cdx:out] Fluid-applied membrane round the R.O., lapped 2" onto the CDX.
-- [K2 @ host#layer:cdx:out] Sill pan: 1/4"/ft on a tapered KDAT shim, back dam at the studs' inner face, turned down 3/4" on the CDX behind the sill trim and panel.
-- [K3] Head: stock 58114XX on the head membrane, its 2-1/2" back leg stripped in 2" onto the CDX. Sealant under its drip.
+- [K1 @ host#layer:sheathing:out] Fluid-applied membrane round the R.O., lapped 2" onto the ZIP face.
+- [K2 @ host#layer:sheathing:out] Sill pan: 1/4"/ft on a tapered KDAT shim, back dam at the studs' inner face, turned down 3/4" over the ZIP behind the sill trim and panel.
+- [K3] Head: stock 58114XX on the head membrane, ZIP tape lapped 2" over its 2-1/2" back leg. Sealant under its drip.
 - [K4] Steel head and trim never touch aluminium: EPDM or sealant between.
 
 # Notes
@@ -35,9 +35,9 @@ band, curb cap, sill and overhead header, none of which a window cut shows.
 
 Model values (2026-11-06): WIN-G-N1 and WIN-G-S1 are `WT-1424-FIX`, RO 14" x 24", `sill_m` 42"
 over `W-G-W`'s `base_ref_z_m` (-12", the ICF stem top), so the sill is 30" above the datum.
-`W-G-W` layers: gwb-int 5/8", stud 5 1/2" (stud-cavity foam 2"), cdx 5/8", cladding 7/8".
-`window_seat.outer_m` is 0: the frame's outer face is on the CDX. Owned trim: two
+`W-G-W` layers: gwb-int 5/8", stud 5 1/2" (stud-cavity foam 2"), sheathing 7/16" ZIP, cladding 7/8".
+`window_seat.outer_m` is 0: the frame's outer face is on the ZIP. Owned trim: two
 `WINDOW_JAMB_CUSTOM`, one `WINDOW_SILL_CUSTOM`, one `OPENING_HEAD`.
 
-Flashing per `opening_flashing_spec.md` §7 (windows and `D-G-SERVICE`: §3's sequence on CDX)
+Flashing per `opening_flashing_spec.md` §7 (windows and `D-G-SERVICE`: §3's sequence on the taped ZIP)
 and §4 (the steel head). The head rise is `FLASHING.head_rise_m` (3").

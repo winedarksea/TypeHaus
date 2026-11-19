@@ -82,9 +82,12 @@ def test_canopy_columns_reproduce_9b_9c_9e(catlin_cast_ctx):
     # 2026-10-31, heel at the outside face, the columns on x 29.719' and cast one 3/4" pack
     # under the soffit: the hand pass at the 16.4479' shaft reads the N-S head force 332.81 lb
     # (canopy_garage_diaphragm.md §7, E13 line); 333.69 with the screen 1in west
-    # (north_entry_piers.md §10m); these pin the engine's 334.28, 0.18% over it.
-    for tag, e_w, shear in (("PT-BW-RE", 334.28, 680.64),
-                            ("PT-BW-RNE", 334.28, 680.64)):
+    # (north_entry_piers.md §10m); these pinned the engine's 334.28, 0.18% over it. 2026-11-18,
+    # columns 3/16" out behind the garage's 7/16" ZIP: the hand pass reads 333.80 (panel k held
+    # at 9,970.5; canopy_garage_diaphragm.md §11), the engine 333.49, 0.09% under it
+    # (column shear 679.46 against the hand 679.84).
+    for tag, e_w, shear in (("PT-BW-RE", 333.49, 679.46),
+                            ("PT-BW-RNE", 333.49, 679.46)):
         record = _record(catlin_cast_ctx, tag)
         assert record.status == Status.OK
         lateral = _state(record, "connector lateral, wind")
@@ -96,7 +99,7 @@ def test_canopy_columns_reproduce_9b_9c_9e(catlin_cast_ctx):
         assert _state(record, "column shear").demand == pytest.approx(shear, abs=0.1)
         # N-S head force 342.52 lb ASD with torsion, not the 142.27 k/Σk share (§9e).
         torsion = _state(record, "column torsion")
-        assert torsion.demand == pytest.approx(127.68, abs=0.02)
+        assert torsion.demand == pytest.approx(127.37, abs=0.02)  # 333.49 x 2.75/12 / 0.6
         assert _input(record, "torsion_lever") == pytest.approx(2.75)
         combined = _state(record, "connector combined")
         assert combined.ratio == pytest.approx(0.414, abs=1e-3)

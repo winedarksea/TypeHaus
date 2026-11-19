@@ -78,10 +78,12 @@ same plane, with screw heads up to 1/8 inch proud. These modeled obstacles give:
 
 | Pivot inset | Worst clearance | Governing obstacle |
 |---:|---:|---|
-| 0 | 0.141 in | TR-BW-SCREEN-CAP, fails |
-| 1/2 in | 0.641 in | TR-BW-SCREEN-CAP |
+| 0 | 0.328 in | TR-BW-SCREEN-CAP (the brick base still bars it) |
+| 1/2 in | 0.645 in | RL-G-SERVICE-RETURN2 (cap 0.828 in) |
 | 1 in | 0.890 in | RL-G-SERVICE-RETURN2 |
 | 2 in | 1.366 in | CN-G-BWHD-S-DR |
+
+Re-swept 2026-11-18: the screen moved 3/16 inch west with the garage's 7/16-inch ZIP.
 
 Measure the delivered frame's pivot before setting the stop. The MDO panel, nailer and
 screw-head geometry is included in the continuous sweep. Recheck changes to the face

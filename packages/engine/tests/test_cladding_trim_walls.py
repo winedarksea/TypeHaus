@@ -132,7 +132,8 @@ def test_garage_soffit_trim_meets_the_soffit_not_the_higher_panel_top(catlin_mod
     # The soffit is 3.27" lower since the heel is read at the outside face of bearing (#108);
     # with a standard heel there is no heel band, so the panel tops out at the plate and its
     # 3/4" closure sits on it (edge at its top, 88.75).
-    assert sill.z_start / M_PER_IN == pytest.approx(80.898, abs=0.01)
+    # 1/16" higher since the plate moved 3/16" out behind the 7/16" ZIP (2026-11-18): 4:12.
+    assert sill.z_start / M_PER_IN == pytest.approx(80.960, abs=0.01)
     assert top.z_start / M_PER_IN == pytest.approx(88.75, abs=0.01)
     ctx = CheckContext(plan=catlin_model_ro.plan, model=catlin_model_ro,
                        preferences=None, profile=None)

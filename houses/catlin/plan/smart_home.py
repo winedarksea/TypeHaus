@@ -138,11 +138,11 @@ MAIN_ELEMENTS = [
 
 # --- entry: the canopy column camera ---------------------------------------------------------
 # Under BM-BW-RE's soffit (+6'-4"), just north of PT-BW-RE's cap, on the header's centreline
-# (x=29'-8 5/8" since it moved 3 3/8" inboard, 2026-10-31; the conduit's last legs with it). Faces north (180 deg): the
+# (x=29'-8 13/16" since the 7/16" ZIP, 2026-11-18; the conduit's last legs with it). Faces north (180 deg): the
 # lens spans west through north to east, the drive and the street.
 ENTRY_ELEMENTS = [
     ElectricalDevice(uid="N9MVN2Z9HK", tag="ED-BW-CAM-CANOPY", kind=DeviceKind.DATA_OUTLET,
-                     position=pt(ft(29, 8.625), ft(37, 11.75)), rotation=deg(180),
+                     position=pt(ft(29, 8.8125), ft(37, 11.75)), rotation=deg(180),
                      type_ref="ED-T-CAM-WIDE",
                      mount=Mount(kind=MountKind.CEILING, elevation=inch(71.75))),
 ]

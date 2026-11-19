@@ -16,7 +16,7 @@ source:
 
 ### General
 - {*EXT_2X6*} Framed wall: 2x6 at 16" o.c., R-19 bays, 4" continuous exterior.
-- {*GARAGE*} Framed wall: 2x6 at 24" o.c., 2" ccSPF bays, 5/8" CDX. No rainscreen.
+- {*GARAGE*} Framed wall: 2x6 at 24" o.c., 2" ccSPF bays, 7/16" taped ZIP.
 - {*BASEMENT_8*} Basement wall: 8" pour, #5 at 41" o.c., aligned on the concrete face.
 - {!*BASEMENT_8*} Pour and steel per the S-100 schedule.
 - {*BASEMENT_*,*GARDEN_CURB*} 60 mil waterproofing, footing to grade (Minn. R. 1309.0406).

@@ -1,4 +1,4 @@
-> Current white MDO screen: 37.57 plf, 162.99 lb to each west chord (§2a).
+> Current white MDO screen: 35.65 plf, 156.74 lb to each west chord (§2a, 7/16" ZIP west face since 2026-11-18).
 
 # North entry canopy, piers and headers — hand-worked basis
 
@@ -115,8 +115,8 @@ That is a benefit of this scheme, and it is why the landing is graded at IRC Tab
 `BM-BW-SCSILL` is the sill under `W-BW-SCREEN`, hung (`LUS28Z`) off the two 6x6 KDAT canopy columns
 `PT-BW-CW`/`-CNW`, which stand on `PT-BW-W` / `PT-BW-GW` through `supported_by`. A wall is neither a `FloorSystem`
 nor a `Roof`, so its dead load is a plf times a run, never a tributary area. The screen is the guard, the closure
-over the deck framing and a declared shear panel: WEST face 5/8" CDX under `corrugated-panel-24` (the shear, alone),
-2x4 KDAT studs on axis 74.375" (flush with the chords' west faces), EAST face white painted 3/4" MDO (finish only).
+over the deck framing and a declared shear panel: WEST face 7/16" taped ZIP under `corrugated-panel-24` (the shear,
+alone), 2x4 KDAT studs on axis 74.1875" (flush with the chords' west faces), EAST face white painted 3/4" MDO (finish only).
 The MDO is three panels and stops at the north chord post (owner, 2026-11-14). The lower centre timber is one solid
 KDAT 6x6, 5.5" x 5.5" x 44.44", with five 2x4 MDO nailers, 3.5" x 1.5" x 44.44" (`entry_screen_mdo.md`). The weight is derived from the assembly, never a constant; `checks/structural/guards.py`
 reads the same plf (`engineering` may not import `checks`).
@@ -127,10 +127,10 @@ reads the same plf (`engineering` may not import `checks`).
 | layer | working | psf | plf (x 4.0783') |
 |---|---|---:|---:|
 | 2x4 KDAT studs | 3.5/12 x 37.457 x 0.23 | 2.513 | 10.25 |
-| 5/8" CDX (west) | 0.625/12 x 37.457 | 1.951 | 7.96 |
+| 7/16" ZIP (west), 650 kg/m³ = 40.578 pcf | 0.4375/12 x 40.578 | 1.479 | 6.03 |
 | corrugated 24 ga | 5.2 kg/m² x 0.20482 | 1.065 | 4.34 |
 | white 3/4" MDO, with timber, nailers, reserve | 2.341 + 3.227, over 55.5" of the 78.0" run, 45.5" high | 5.568 | 15.02 |
-| **wall** | | | **37.57** |
+| **wall** | | | **35.65** |
 
 ```
 MDO sheet     0.75/12 x 37.457 = 2.341 psf
@@ -142,17 +142,17 @@ MDO row       5.568 x 45.5/12 x 55.5/78.0 = 5.568 x 3.7917 x 0.7115 = 15.02 plf
 
 `SB-BW-BAND` stands on the screen's top plate: two 2x6 plates, the centre 6x6 post and two corner-to-corner 6x6
 diagonals cut 35.0058", 2 x 54.25 x 1.5 x 5.5 + 25.125 x 5.5² + 2 x 35.0058 x 5.5² = 3,773.0 in³ = 2.1835 ft³ x
-37.457 = 81.79 lb over its own 4.5208': **18.09 plf**. The line is 37.57 + 18.09 = **55.66 plf**. The sill is
+37.457 = 81.79 lb over its own 4.5208': **18.09 plf**. The line is 35.65 + 18.09 = **53.74 plf**. The sill is
 54.25" = 4.5208' between the chords; the panel runs 78.0" (6.5', its south end 1" off the house cladding since
 2026-11-18, clear of D-M-ENTRY's casing), 23.75" = 1.9792' past it, where only the panel runs (the band stops on
 the sill):
 
 ```
-on the sill   55.66 x 4.5208 = 251.6 lb          past the sill   37.57 x 1.9792 = 74.4 lb
-total 326.0 lb  ->  162.99 lb to each west chord, `PT-BW-CW` / `-CNW`, and down to `PT-BW-W` / `-GW`
+on the sill   53.74 x 4.5208 = 242.9 lb          past the sill   35.65 x 1.9792 = 70.6 lb
+total 313.5 lb  ->  156.74 lb to each west chord, `PT-BW-CW` / `-CNW`, and down to `PT-BW-W` / `-GW`
 ```
 
-`checks/structural/deck.py` divides the same pounds by R507.3.1's 50 psf: 162.99 / 50 = 3.26 ft² per pier. The screen
+`checks/structural/deck.py` divides the same pounds by R507.3.1's 50 psf: 156.74 / 50 = 3.13 ft² per pier. The screen
 has no roof-support role; its local member, connection and plate checks are `entry_screen_mdo.md`'s.
 
 ## 3. The design snow — ASCE 7-16 §7.7 roof-step drift **(READ THIS ONE)**
@@ -1212,7 +1212,7 @@ deck sheet stops 1/2" south of the garage cladding: y 36.604' -> 43.104', 6.500'
 
 ### 10j. The screen's weight at the sill
 
-See §2a: 162.99 lb to each west chord.
+See §2a: 156.74 lb to each west chord.
 
 ### 10k. The landing and its seat beams
 
@@ -1233,6 +1233,29 @@ at x 6.19792', x_r 11.9145'); connector 333.76/1,350 = 0.247. The engine reads 3
 
 Joint W seats on the end stud pack's east face, a half stud off the axis: 6.19792 + 1.75/12 = **6.34375'**. The
 distribution and verdict are §10c-§10d.
+
+### 10o. 2026-11-18 — the garage's 7/16" ZIP moves the column line 3/16" west
+
+The column line is now x 6.265625' (`canopy_west_band.md` §10), so the screen axis is 74.1875" = **6.182292'** and
+joint W is at 6.182292 + 1.75/12 = **6.328125'**. The landing is 115 - 75.1875 = 39.8125" = **3.317708'** wide, the
+seat beams 115 - (75.1875 + 2.75 + 0.4495) = 36.6130" = **3.051083'** long, the deck centroid x 7.924479'. The
+canopy's N-S delivered shear is 1,034.57 lb. Every E-W load and every y station are unchanged.
+
+```
+deck wind N-S  (0.6825 x 3.317708 + 2 x 0.604167 x 3.051083) x 15.183 = 5.951061 x 15.183 = 90.35 lb
+joints         W 6.328125, FE 9.583333: centroid 7.955729, dx -/+1.627604, 2 dx = 3.255208'
+N-S   ΣFy 1,124.92;  M = 1,034.57 (6.182292 - 7.955729) + 90.35 (7.924479 - 7.955729) = -1,837.6 lb-ft
+      W:  562.46 + 1,837.6/3.255208 = 562.46 + 564.50 = 1,127.0 lb / 1,480        0.761
+      FE: 562.46 - 564.50 = -2.0 lb                                              0.001
+E-W   Y = 1,887.1 / 3.255208 = 579.7 lb
+      W:  579.7/1,480 + 290.2/740 = 0.3917 + 0.3921                              0.784  (governs)
+      FE: 290.17/892.5 + 579.7/1,785                                             0.650
+guard Y = 1,300.0 / 3.255208 = 399.4 lb
+      W:  399.4/925 + 100/462.5                                                  0.648
+      FE: 100/557.8 + 399.4/1,115.6                                              0.537
+```
+
+§10b-§10n above are the 11-17 working; these rows supersede theirs.
 
 ## Sources
 

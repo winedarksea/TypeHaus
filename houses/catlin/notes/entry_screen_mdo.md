@@ -17,7 +17,7 @@ support mass, purchasing and the local checks all read it. Run
 
 ## Geometry
 
-- West 5/8-inch CDX (the shear, alone), corrugated skin, field studs, plates, cap and the band
+- West 7/16-inch taped ZIP (the shear, alone), corrugated skin, field studs, plates, cap and the band
   above are unchanged. The timber and nailers add no roof support and no shear chord.
 - `TR-BW-MDO-TIMBER`: one KDAT Southern Pine No. 2 6x6, 5.5 x 5.5, cut 44.44 inches,
   x=72.625–78.125, stations 37.875–43.375, +0.56 to +45. Both faces line up with the band's
@@ -86,11 +86,12 @@ E 1.2e6): 200 lb x 44.44 / 4 / 27.729 in³ = 80.1 psi, **0.094**; shear 0.060; w
 0.039. The 1/4-inch deflection limit is a project criterion, not a statutory one.
 
 **Plates and sill.** A guard load on the timber reaches the plates as it does from any stud;
-the wall's own guard row (`deck_tie/FS-BW-FLOOR`, 0.650) already takes 200 lb anywhere on
-it. `BM-BW-SCSILL` was sized at the thin-brick wall's 77 plf (197 lb-ft); today's 55.66 plf
+the wall's own guard row (`deck_tie/FS-BW-FLOOR`, 0.648) already takes 200 lb anywhere on
+it. `BM-BW-SCSILL` was sized at the thin-brick wall's 77 plf (197 lb-ft); today's 53.74 plf
 line with the timber's point load is under that.
 
-**Door.** `D-G-SERVICE` clears every screen solid by 0.641 inch at the 87-degree stop
+**Door.** `D-G-SERVICE` clears every screen solid by 0.828 inch at the 87-degree stop (the
+handrail return governs the sweep at 0.645 inch since 2026-11-18)
 (1/4 inch required), measured at a 1/2-inch pivot inset: measure the delivered frame's pivot
 before setting the stop (`garage_service_door_outswing.md`).
 
@@ -98,8 +99,8 @@ before setting the stop (`garage_service_door_outswing.md`).
 
 Support wood 54.43 lb (timber 29.1, five nailers 25.3); hardware and paint reserve 2.16 lb
 (2 lb paint and fastening, eight end nails). Both are charged once through the MDO's areal
-density. The wall is **37.57 plf**, the line with the band **55.66 plf**, **162.99 lb** to
-each west chord: `north_entry_piers.md` §2a.
+density. The wall is **35.65 plf**, the line with the band **53.74 plf**, **156.74 lb** to
+each west chord (7/16" ZIP west face since 2026-11-18): `north_entry_piers.md` §2a.
 
 ## Purchasing
 

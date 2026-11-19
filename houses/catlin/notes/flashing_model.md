@@ -72,8 +72,8 @@ liquid flashing read on its substrate without inflating its physical thickness. 
 opening surfaces do not add purchase quantities: the existing opening-flashing allowances
 and trim-inclusive siding rates still buy them. The same formed-sheet representation
 replaces the garage stem drips and balcony drip/counterflashing; gutters remain unchanged.
-The stem Z (`TR-G-STEMZ-*`) is a `counter` section, its 2″ back leg standing up the CDX behind
-the panel. The balcony's rear edge is two pieces across the movement gap: a deck-side
+The stem Z (`TR-G-STEMZ-*`) is a `counter` section, its 2″ back leg standing up the ZIP face behind
+the panel, ZIP tape lapped over it. The balcony's rear edge is two pieces across the movement gap: a deck-side
 aluminium base flashing with a 3 1/2″ upstand, and a house-side steel counterflashing lapping
 2″ over it with 1/2″ of air beside it. Neither is fastened across the gap, and both break at
 D-S-BALCONY.

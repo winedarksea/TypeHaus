@@ -76,7 +76,7 @@ def test_an_override_substitutes_the_material_and_nothing_else(tmp_path) -> None
     source = garage.read_text()
     plain_wall = ('    Wall(uid="CGW102AAAA", tag="W-G-E", start_node="N-G-SE", '
                   'end_node="N-G-NE",\n'
-                  '         assembly="GARAGE_WALL_2X6", alignment=face("cdx-ext"), '
+                  '         assembly="GARAGE_WALL_2X6", alignment=face("sheathing-ext"), '
                   'top=ft(8, 4),\n'
                   '         structural_role=StructuralRole.BEARING),')
     # BEARING since 2026-09-07: the garage's ridge turned north-south with its overhead door,

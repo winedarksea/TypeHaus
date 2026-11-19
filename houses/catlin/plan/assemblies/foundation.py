@@ -261,7 +261,7 @@ DECK_EPS_INT = Assembly(
 # --- garage (freestanding: ICF stem + 2x6 wood wall) ---------------------------
 # The form's two published dimensions, as constants rather than literals inside the layer
 # stack: params/foundations.py aligns the stem off the EPS thickness (the exterior foam
-# face has to land on the same node line the wood wall's zip-R face uses) and insets the
+# face has to land on the same node line the wood wall's ZIP sheathing face uses) and insets the
 # slab off the whole 11" section. Repeating either number there would let the two drift.
 #
 # Reconciled against library GARAGE_ICF (CONTRIBUTING "do NOT duplicate" —

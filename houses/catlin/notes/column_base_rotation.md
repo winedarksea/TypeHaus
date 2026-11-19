@@ -594,5 +594,7 @@ det 4,651.4`; `u0 = (1,205.63 + 192.901 x 9.11458)/(14,000 x 4,651.4) x 12 = 5.4
 The screen weighs 37.57 plf and each west chord receives 162.99 lb: `north_entry_piers.md` §2a. At that load the
 retired cast-column spring example reads W stiff/soft magnifiers 1.078/1.321 and GW 1.327/33.52 (GW still OVER;
 5.55 lb less on the chord is 1.2 x 5.55 / (0.75 x 9,270) = 0.00096 on 1/δ, from 1/34.76 to 1/33.64; the screen's
-south end moving 1/2" north on 2026-11-18 takes 0.66 lb more off, 1.2 x 0.66 / 6,952.5 = 0.00011, 1/33.52):
+south end moving 1/2" north on 2026-11-18 takes 0.66 lb more off, 1.2 x 0.66 / 6,952.5 = 0.00011, 1/33.52;
+the 7/16" ZIP the same day takes the screen to 35.65 plf, 156.74 lb a chord, while the landing grows 3/16" with
+the column line: the engine reads 1/32.63):
 test oracles for the retired variant, not verdicts on the active pinned canopy posts.

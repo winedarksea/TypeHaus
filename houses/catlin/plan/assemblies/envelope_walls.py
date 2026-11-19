@@ -351,14 +351,13 @@ EXT_2X6_SWINBURNE = Assembly(
 GARAGE_WALL_2X6 = Assembly(
     tag="GARAGE_WALL_2X6",
     layers=(
-        # Zip-R replaced with CDX + 2" ccSPF; nail strip replaced with corrugated.
+        # Zip-R replaced with 7/16" taped ZIP + 2" ccSPF; nail strip replaced with corrugated.
         #
-        # 24" o.c., not the solver's 16" default. W-G-E is NONBEARING (the ridge runs E-W
-        # and the trusses bear on W-G-S/W-G-N), the 16'-0" overhead door is carried by its
-        # own 2-ply 14" LVL on jamb packs the solver sizes from the opening, and field studs
-        # beside a nonbearing opening carry nothing extra — so there is no 16" zone at the
-        # door. There could not cheaply be one anyway: `FramingSpec.spacing` lives on the
-        # ASSEMBLY and a Wall names one assembly, so a closer-spaced zone means a second
+        # 24" o.c., not the solver's 16" default. The ridge runs N-S, so the trusses bear
+        # on W-G-E/W-G-W; the 16'-0" overhead door is carried by its own 2-ply 14" LVL on
+        # jamb packs the solver sizes from the opening and its derived load, so there is
+        # no 16" zone at the door. There could not cheaply be one anyway:
+        # `FramingSpec.spacing` lives on the ASSEMBLY and a Wall names one assembly, so a closer-spaced zone means a second
         # assembly tag, a second prices.toml row and a second condition_gates key to say
         # "same wall, closer studs". The trusses above went to 24" with it (GARAGE_ROOF).
         #
@@ -382,28 +381,28 @@ GARAGE_WALL_2X6 = Assembly(
               # door pan: KDAT, not SPF (notes/opening_flashing_spec.md §6).
               framing=FramingSpec(member="2x6", sill_gasket=inch(0.0625),
                                   spacing=inch(24),
-                                  # 2x8 PT sill flush outside the studs: 5 3/8" of its 7 1/4"
-                                  # bears on the 6" ICF core (was 3 5/8" of 5 1/2"), the 1 3/4"
+                                  # 2x8 PT sill flush outside the studs: ~5 3/16" of its 7 1/4"
+                                  # bears on the 6" ICF core (5 3/8" under 5/8" CDX), the
                                   # ledge sits inside under the curb-cap flashing.
                                   sill_member="2x8",
                                   exterior_door_sill_material_ref="kdat"),
               cavity=CavityFill(material_ref="closed-cell-spray-foam", thickness=inch(2.0),
                                 framing_factor=0.20,
-                                control={ControlLayer.AIR, ControlLayer.WATER,
-                                         ControlLayer.VAPOR, ControlLayer.THERMAL})),
-        # 5/8" CDX, the house's panel one size up for the 24" o.c. studs. It carries NO
-        # `control` set on purpose: the ccSPF behind it
-        # is the air, water and vapour plane, exactly the division EXT_2X6 draws, and
-        # a bare sheathing panel that claimed those layers would be a WRB nobody is buying.
-        #
-        # NO WRB, and that is a decision rather than an omission (owner). IRC
-        # R703.2's exception releases an unconditioned detached accessory building from the
-        # water-resistive barrier, and this is one. The corrugated skin over an open crown
-        # cavity is the drainage plane, closed top and bottom by strips (prices.toml) — a
-        # vented closure at the base and a solid one at the head, which is what makes the
-        # profile self-draining rather than a trough.
-        Layer(name="cdx", material_ref="cdx-plywood", thickness=inch(0.625),
+                                # No WATER: the taped ZIP outboard is the water plane.
+                                control={ControlLayer.AIR, ControlLayer.VAPOR,
+                                         ControlLayer.THERMAL})),
+        # 7/16" ZIP System, every seam taped: the sheathing, WRB and air barrier in one
+        # (ESR-1474). Minn. R. 1309.0703 subp. 2a rewrites R703.2 with no accessory-building
+        # exception — every exterior wall takes a WRB, continuous to the truss top chord.
+        # 7/16" is the ZIP sold in 4x9 (1/2" and 5/8" are 4x8 only), so the 100" wall keeps
+        # one sheet. Framer's alternate: GP ForceField 7/16" (APA PR-N136) with its own tape.
+        # Drying: unconditioned, low vapour drive; the facer keeps wetting off the OSB and
+        # it dries outward into the corrugated's vented flutes. The corrugated over an open
+        # crown cavity is the drainage plane, closed by a vented base strip and a solid head
+        # strip (prices.toml).
+        Layer(name="sheathing", material_ref="zip-sheathing", thickness=inch(0.4375),
               function=LayerFunction.SHEATHING,
+              control={ControlLayer.AIR, ControlLayer.WATER},
               sheet_length=inch(108.0)),  # 4x9 on the 100" wall
         # NO RAINSCREEN FURRING, and that is a decision rather than an omission
         # (owner). Corrugated is face-fastened
@@ -427,5 +426,5 @@ GARAGE_WALL_2X6 = Assembly(
               function=LayerFunction.CLADDING),
     ),
     default_lining=GWB_LINING,
-    source="catlin-house ifcplot/assemblies.py GARAGE_WALL; rainscreen furring dropped 2026-08-20; rebuilt 2026-08-31 — 24\" o.c. studs, 2\" ccSPF in the bays, 5/8\" CDX for the 1.5\" Zip-R, and 7/8\" corrugated exposed-fastener panel for the 26 ga. nail strip. No WRB (IRC R703.2 exception, unconditioned detached accessory building)",
+    source="catlin-house ifcplot/assemblies.py GARAGE_WALL; rainscreen furring dropped 2026-08-20; rebuilt 2026-08-31 — 24\" o.c. studs, 2\" ccSPF in the bays, 5/8\" CDX for the 1.5\" Zip-R, and 7/8\" corrugated exposed-fastener panel for the 26 ga. nail strip; 2026-11-18 7/16\" taped ZIP for the CDX as sheathing + WRB (Minn. R. 1309.0703 subp. 2a: no accessory exception; GP ForceField alternate)",
 )

@@ -18,7 +18,7 @@ source:
 - ICF stem: 42" below grade to frost, 22" above. 8'-0" max, IRC R404.1.4.2.
 - Stem footing: 20"x8" crushed stone, IRC R403.5.
 - Slab: 3-1/2", 5,000 psi exposed mix, sloped to the door.
-- Wood wall: 2x6 at 24" o.c., 5/8" CDX, 2" of 2 lb closed-cell foam per bay.
+- Wood wall: 2x6 at 24" o.c., 7/16" taped ZIP (WRB), 2" ccSPF per bay.
 - Cladding: 7/8" corrugated 24 ga PVDF steel, house white, screwed at the crowns.
 - Stem band: PVDF aluminium sheet, 0.040" min, 2" below grade to the stem top.
 - Interior: 5/8" drywall on the wall, 5/8" exterior gypsum on the stem.
@@ -27,7 +27,7 @@ source:
 ### Keyed
 - [K1 @ host#layer:coil-gap:out] Stem band on a 1/4" vented standoff into the ICF webs. Hem each edge.
 - [K2 @ host#layer:cladding:out] Closures: vented inside at base, solid outside at head and rake. ~192 LF.
-- [K3 @ host#layer:cdx:out] Z-flashing at the wall base: aluminium, drip edge, upper leg behind the panel.
+- [K3 @ host#layer:sheathing:out] Base Z: aluminium, drip edge; ZIP tape lapped 2" over its upstand.
 - [K4] Isolate steel panel from aluminium band: EPDM between, no metal contact.
 - [K5 @ host#layer:gwb-int:in] Curb cap: up-turned PVC flashing behind drywall, sloped in, drip inboard.
 - [K6] Sill: 2x8 PT, flush outside, on gasket and capillary break. Bolts: see S-103.
@@ -35,6 +35,7 @@ source:
 - [K8] Joint to SL-DW-DRIVE: 1" 40 psi XPS, 1/2" traffic-rated polyurethane sealant.
 
 ### Spec 07 27 00
+- WRB: 7/16" ZIP (ESR-1474), every seam taped, to the top chords. Alt.: GP ForceField, its own tape.
 - Seal the top plate to the sheathing and the drywall, continuous.
 
 ### Spec 03 11 00
@@ -43,7 +44,7 @@ source:
 ### Spec 03 15 19
 - Canopy bases CN-BW-BASE-W/-NW: cast-in CBSTQ66Z-SDS2 (ESR-3050), no anchor bolt.
 - Set the straps in the 14" piers with 3" side cover (ESR-3050 Table 2 fn. 4).
-- Uplift 2,217 lb vs 3,060 cracked (0.725); base shear on ONE base 1,034 vs 1,270 lb (0.815).
+- Uplift 2,231 lb vs 3,060 cracked (0.729); base shear on ONE base 1,035 vs 1,270 lb (0.815).
 - Arithmetic: notes/canopy_west_band.md §4b-§4c.
 
 ### Spec 07 42 13
@@ -67,13 +68,13 @@ source:
 
 - Slab: 3.5" thick at the exposed mix, 5,000 psi F3/C2 (IRC R506.1 floor is 3,500). Slab must be sloped (typically toward overhead door).
 
-- Wood wall (REBUILT 2026-08-31; what stood here before that date was 2×6 @16" o.c. with 1.5" Zip-R continuous sheathing, Method CS-G, and empty bays): 2×6 studs **@24" o.c.**, **5/8" CDX** sheathing, **2" of 2 lb closed-cell spray foam in the bays**, **7/8" corrugated 26 ga PVDF exposed-fastener steel panel** in the house white, screwed through its crowns into the studs with #9 × 1-1/2" 316 stainless gasketed panel screws. Interior finish: 5/8" drywall. Whole-wall R-13.2 (`haus explain GARAGE_WALL_2X6 --card`), roughly double the honest R-7–8 the empty-bay Zip-R wall carried — the R-14.3 that assembly's card used to read was an artifact of billing an uninsulated 5.5" stud bay as solid SPF.
+- Wood wall (REBUILT 2026-08-31; what stood here before that date was 2×6 @16" o.c. with 1.5" Zip-R continuous sheathing, Method CS-G, and empty bays): 2×6 studs **@24" o.c.**, **7/16" ZIP System** sheathing, every seam taped (5/8" CDX until 2026-11-18), **2" of 2 lb closed-cell spray foam in the bays**, **7/8" corrugated 26 ga PVDF exposed-fastener steel panel** in the house white, screwed through its crowns into the studs with #9 × 1-1/2" 316 stainless gasketed panel screws. Interior finish: 5/8" drywall. Whole-wall R-13.2 (`haus explain GARAGE_WALL_2X6 --card`), roughly double the honest R-7–8 the empty-bay Zip-R wall carried — the R-14.3 that assembly's card used to read was an artifact of billing an uninsulated 5.5" stud bay as solid SPF.
 
-- **No WRB, and that is a decision rather than an omission.** IRC R703.2's exception releases an unconditioned detached accessory building from the water-resistive barrier, and this is one (`RM-GARAGE` is `conditioned=False`). The ccSPF is the air, water and vapour plane; the CDX is structure and nailbase only. Build order follows from that, exactly as it does on the house: **bucks before foam.**
+- **The taped ZIP is the WRB and the air barrier (2026-11-18).** Minn. R. 1309.0703 subp. 2a rewrites IRC R703.2 with no exceptions: every exterior wall takes a WRB, continuous to the underside of the truss top chord, so the accessory-building exception the wall cited before never applied in Minnesota. 7/16" ZIP (ESR-1474), all seams taped, is sheathing, WRB and air barrier in one; GP ForceField 7/16" (APA PR-N136) with its own tape is the framer's alternate. The ccSPF stays as the vapour and thermal layer. **Drying, a deliberate exception to the house's "not OSB behind ccSPF" rule:** the garage is unconditioned (an intermittent radiant heater only) so vapour drive is low; the 12-16 perm facer keeps wetting off the OSB, it dries outward into the corrugated's vented flutes, and the facer keeps the panel under 16% MC before spraying (`ccspf_spec.md`). Build order is unchanged: **bucks before foam.**
 
 - **The corrugation is the rainscreen.** There is no furring layer. A 7/8" corrugated sheet screwed to a flat face leaves a continuous open flute behind every panel — more free area than the 3/8" 1×4 vertical furring this wall carried before 2026-08-20 ever gave it. What makes it work rather than making it a trough is the closures: a **vented (inside) closure strip at the base**, so the cavity drains and vents while nothing insect-sized gets in, and a **solid (outside) closure under the head and the rake**, so wind-driven rain and snow do not enter over the top. ~192 LF, both courses. Neither is optional.
 
-- **24" o.c. is deliberate, and there is no 16" zone at the overhead door.** W-G-E is nonbearing — the ridge runs E–W and the trusses bear on W-G-S/W-G-N — and the 16'-0" opening is carried by its own 2-ply 14" LVL on jamb packs sized from the opening, not from field spacing. Field studs beside a nonbearing opening carry nothing extra. The garage's window pair and its service door were re-stationed onto the 24" grid the same day; D-G-OVERHEAD stays where it is and its off-module advisory is a recorded decision (`preferences.toml [checks] suppress`), because every legal station moves the ICF stem gap under it. **That suppression's ORIGINAL reason — a visibly asymmetric 5'-0"/3'-0" pair of wainscot piers — died with the wainscot on 2026-09-03**; the base band is uniform now and does not care where the door sits. What is left is the stem-gap chain, which is a cost of moving rather than a reason not to. Open question, not a settled one.
+- **24" o.c. is deliberate, and there is no 16" zone at the overhead door.** The ridge runs N–S, so W-G-E/W-G-W are bearing and W-G-N/W-G-S are the gables; the 16'-0" opening in W-G-N is carried by its own 2-ply 14" LVL on jamb packs sized from the opening, not from field spacing. The garage's window pair and its service door were re-stationed onto the 24" grid the same day; D-G-OVERHEAD stays where it is and its off-module advisory is a recorded decision (`preferences.toml [checks] suppress`), because every legal station moves the ICF stem gap under it. **That suppression's ORIGINAL reason — a visibly asymmetric 5'-0"/3'-0" pair of wainscot piers — died with the wainscot on 2026-09-03**; the base band is uniform now and does not care where the door sits. What is left is the stem-gap chain, which is a cost of moving rather than a reason not to. Open question, not a settled one.
 
 - **THERE IS NO WAINSCOT SINCE 2026-09-03. The 24" stem band is the whole base skin, on all four walls.** From a hemmed drip **2" below grade** to the stem top at **22" above** it, PVDF-painted aluminium flat sheet on a 1/4" vented standoff, fixed with 316 stainless gasketed screws into the ICF webs, every edge hemmed. It is the outside half of this note's own both-faces requirement for the exposed EPS, and it now stands alone rather than behind something taller.
 
@@ -83,14 +84,14 @@ source:
 
   **THE ONE NEW RULE IS A CORROSION RULE.** The corrugated panel above is 26 ga PVDF-coated **steel** and this band is **aluminium**. The Z-flash between them must be aluminium, and the two must never lap metal-to-metal — sealant or EPDM between, the Z's upper leg behind the corrugated. In a salted splash zone that contact line is where the detail fails, and nothing in the engine grades dissimilar metals. Aluminium must also never touch concrete or fresh mortar: alkali strips its oxide film. On site the corrugated terminates at the Z with its vented base closure there; the model bills the panel full height behind the band.
 
-- Sill: **2x8** PT over gasket and capillary break, **flush with the stud outside face**. Anchors are **1/2" cast-in bolts, 3"x3" plate washers** (R403.1.6), not MASAZ: ESR-2555 covers 2x4/2x6 sills only. The bolt goes in the plate's **middle third** and the 6" core: **3 3/8" to 4 13/16" in from the sill's outside edge**, nominal 4 1/8" (1 1/2" concrete edge, ACI 318-19 20.5.1.3 cover read across; the 6 d_a of 17.7.2 leaves no band, so the ICF maker's anchor detail governs). `structural.sill_bearing_on_core` grades it; S-103 prints it.
+- Sill: **2x8** PT over gasket and capillary break, **flush with the stud outside face**. Anchors are **1/2" cast-in bolts, 3"x3" plate washers** (R403.1.6), not MASAZ: ESR-2555 covers 2x4/2x6 sills only. The bolt goes in the plate's **middle third** and the 6" core: **3 9/16" to 4 13/16" in from the sill's outside edge**, nominal 4 3/16" (1 1/2" concrete edge, ACI 318-19 20.5.1.3 cover read across; the 6 d_a of 17.7.2 leaves no band, so the ICF maker's anchor detail governs). `structural.sill_bearing_on_core` grades it; S-103 prints it.
 - **STHD14 (CN-G-BWHD-SW, -S-DR) take a notched sill**: cast at the stud's inside face, now mid-sill. Simpson C-C-2026 pp. 66-68 show the strap on the framing face and bar no plate detail, so cut a 4" wide, 1 3/4" deep notch in the sill's inside edge at each strap. Embedment and nailing are unchanged.
 
 - Top plate must be sealed (e.g., with spray foam or sealant) to create continuous air barrier between interior drywall and exterior sheathing.
 
 - Provide Z-flashing / drip edge at base of exterior wall (liquid flashing recommended) to direct water out over the foundation / protective coating. **Aluminium, not steel** — it lands on the aluminium stem band, and see the corrosion rule above on why that contact matters here. **This is built as of 2026-09-03**: `STEM_TOP_Z_FLASHING` in `plan/storeys/garage.py` is six runs at the stem top, broken at the overhead and service door gaps where there is no stem to band.
 
-- Stem and framing are flush on the outside: the wood wall's SHEATHING face (5/8" CDX since 2026-08-31, 1.5" Zip-R before it — the wall's own `alignment` puts whichever it carries on the node line) and the ICF's exterior EPS face are the same plane, so the only thing standing proud at the base of the wall is the 7/8" of corrugated panel, which drips clear. The stem must NOT stand out past the sheathing. A 5 1/2" sill bore only 3 5/8" on the 6" core (66%, under the two-thirds graded), so the sill is a **2x8 flush outside**: **5 3/8" of 7 1/4" (74%)** bears and a 1 3/4" ledge stands inside the studs, under the curb flashing. The leftover section shows inside as a curb below the drywall, where a curb belongs in a garage.
+- Stem and framing are flush on the outside: the wood wall's SHEATHING face (7/16" ZIP since 2026-11-18, 5/8" CDX from 2026-08-31, 1.5" Zip-R before it — the wall's own `alignment` puts whichever it carries on the node line) and the ICF's exterior EPS face are the same plane, so the only thing standing proud at the base of the wall is the 7/8" of corrugated panel, which drips clear. The stem must NOT stand out past the sheathing. A 5 1/2" sill bore only 3 5/8" on the 6" core (66%, under the two-thirds graded), so the sill is a **2x8 flush outside**: **5 3/16" of 7 1/4" (72%)** bears behind the 7/16" ZIP and a ledge stands inside the studs, under the curb flashing. The leftover section shows inside as a curb below the drywall, where a curb belongs in a garage.
 
 - Cap the curb: an up-turned **PVC** (or self-adhered butyl membrane) flashing tucked behind the wood wall's interior drywall, sloped back into the room, with a drip at the inboard edge. Water running down the stud wall's interior face (splash, a hosed-down wall, condensation) is diverted out onto the curb top and into the garage instead of tracking down behind the drywall and into the ICF's board joint below. **Not aluminium**: it laps PT lumber and bare concrete (corrosion rule above).
 

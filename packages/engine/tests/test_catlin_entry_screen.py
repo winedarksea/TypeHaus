@@ -17,7 +17,7 @@ INCH = 0.0254
 def test_mdos_keep_posts_exposed_and_west_structure_fixed(catlin_model_ro):
     wall = catlin_model_ro.wall("W-BW-SCREEN")
     layers = {layer.name: layer for layer in wall.layers}
-    for name, expected in {"stud": (72.625, 76.125), "cdx-out": (72, 72.625),
+    for name, expected in {"stud": (72.4375, 75.9375), "sheathing-out": (72, 72.4375),
                            "cladding-out": (71.125, 72)}.items():
         xs = [x / INCH for x, _y in layers[name].polygon]
         assert (min(xs), max(xs)) == pytest.approx(expected)
@@ -27,10 +27,10 @@ def test_mdos_keep_posts_exposed_and_west_structure_fixed(catlin_model_ro):
     for index, expected in enumerate(expected_runs, 1):
         layer = layers[f"mdo-in-{index}"]
         xs = [x / INCH for x, _ in layer.polygon]
-        assert (min(xs), max(xs)) == pytest.approx((76.125, 76.875))
+        assert (min(xs), max(xs)) == pytest.approx((75.9375, 76.6875))
         assert tuple(value / INCH for value in layer.run_span_m) == pytest.approx(expected)
         assert tuple(value / INCH for value in layer.band(wall)) == pytest.approx((2, 47.5))
-    assert catlin_model_ro.plan.by_tag(wall.tag).shear_panel.sheathing_layer == "cdx-out"
+    assert catlin_model_ro.plan.by_tag(wall.tag).shear_panel.sheathing_layer == "sheathing-out"
     assert not {"thin-brick-in", "packing-in", "cement-board-in"} & layers.keys()
     # The supplemental nailer layout reserves these existing studs; a framing change
     # must not silently put new supports or clips through existing timber.
@@ -53,7 +53,8 @@ def test_mdo_area_and_weight_use_the_same_bounded_regions(catlin_model_ro):
     assert len(rows) == 1
     assert rows[0]["net_area_sqft"] == pytest.approx(area * 10.7639104, abs=0.05)
     weight = dead_load_plf(SimpleNamespace(plan=catlin_model_ro.plan), wall, wall.z1_m - wall.z0_m)
-    assert weight == pytest.approx(37.5692, abs=0.02)
+    # 7/16" ZIP at 650 kg/m3 for 5/8" CDX at 600 (2026-11-18): 1.923 plf lighter.
+    assert weight == pytest.approx(35.6464, abs=0.02)
 
 
 def test_normal_swing_reaches_exports_and_preserves_east_jamb(catlin_model_ro):
@@ -89,13 +90,16 @@ def test_stock_leaf_sweep_clears_hold_down_and_screen_with_required_margin(catli
 
     Re-pinned 2026-11-01 when the MMI frame was anchored flush with the sheathing
     (``factory_frame_depth`` 6-9/16"), which moved the leaf plane: ties 0.320 -> 0.381",
-    hold-down 2.873 -> 2.865".
+    hold-down 2.873 -> 2.865". 2026-11-18: the screen went 3/16" west with the garage's 7/16"
+    ZIP, so the cap reads 0.828" and RL-G-SERVICE-RETURN2 governs at 0.645".
     """
     results = _service_sweep(catlin_model_ro)
     anchor = [result for result in results if result.obstacle == "CN-G-BWHD-S-DR"]
     assert min(result.clearance_m for result in anchor) / INCH == pytest.approx(2.865, abs=1e-3)
-    assert results[0].obstacle == "TR-BW-SCREEN-CAP"
-    assert min(result.clearance_m for result in results) / INCH == pytest.approx(0.641, abs=1e-3)
+    assert results[0].obstacle == "RL-G-SERVICE-RETURN2"
+    assert min(result.clearance_m for result in results) / INCH == pytest.approx(0.645, abs=1e-3)
+    cap = [result for result in results if result.obstacle == "TR-BW-SCREEN-CAP"]
+    assert min(result.clearance_m for result in cap) / INCH == pytest.approx(0.828, abs=1e-3)
     assert any(result.obstacle == "W-BW-SCREEN" for result in results)
     assert any(result.obstacle == "PT-BW-CNW" for result in results)
     assert any(result.obstacle.startswith("TR-BW-MDO-") for result in results)
@@ -104,7 +108,7 @@ def test_stock_leaf_sweep_clears_hold_down_and_screen_with_required_margin(catli
 @pytest.mark.parametrize("inset_in", [0.5, 1.0, 2.0])
 def test_stock_leaf_clears_across_the_hinge_inset_range(catlin_model_ro, inset_in):
     """The 1/2in pivot inset is the LOWER bound at the 87deg stop: the 32in leaf passes from
-    1/2in to 2in, and a flush hinge fails."""
+    1/2in to 2in (a flush hinge is barred by the brick base)."""
     from typehaus.quantities import inch
 
     results = _service_sweep(catlin_model_ro, hinge_inset=inch(inset_in))
@@ -121,11 +125,14 @@ def test_a_90_degree_stop_meets_the_band(catlin_model_ro):
     assert "SB-BW-BAND" in hit and "CN-BW-GWTIE-LO" not in hit
 
 
-def test_a_flush_hinge_fails(catlin_model_ro):
+def test_a_flush_hinge_is_the_thinnest_margin(catlin_model_ro):
+    """Flush, the lever passes the cap by 0.328" (about 0.14" before the screen went 3/16" west,
+    2026-11-18): under the 1/2" inset's margin, and still barred by the brick base."""
     from typehaus.quantities import inch
 
     results = _service_sweep(catlin_model_ro, hinge_inset=inch(0))
-    assert results[0].clearance_m / INCH < 0.25
+    assert results[0].obstacle == "TR-BW-SCREEN-CAP"
+    assert results[0].clearance_m / INCH == pytest.approx(0.328, abs=1e-3)
 
 
 def test_the_old_schematic_leaf_overlaps_the_hold_down(catlin_model_ro):
@@ -240,7 +247,7 @@ def test_lower_timber_is_one_solid_6x6_and_backs_panel_edges(catlin_model_ro):
     assert model.plan.by_tag("TR-BW-MDO-NAILER-3") is None
     bounds = _supplemental_bounds(model, "TR-BW-MDO-TIMBER")
     # Both faces are the band's centre post's and the chord posts'.
-    assert bounds[0] == pytest.approx((72.625, 78.125))
+    assert bounds[0] == pytest.approx((72.4375, 77.9375))
     assert bounds[1] == pytest.approx((south + 37.375, south + 42.875))
     assert bounds[2] == pytest.approx((0.56, 45))
     for tag, station, panel_edge in (("TR-BW-MDO-NAILER-6", 36.5, 37.250),

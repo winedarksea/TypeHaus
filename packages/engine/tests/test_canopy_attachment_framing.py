@@ -86,10 +86,10 @@ def test_no_strap_at_the_ridge_and_the_end_straps_centre_on_the_collector_blocks
     assert plan.by_tag("CN-BW-JOINT-4") is None
     canopy = next(r for r in catlin_model_ro.roofs if r.tag == "RF-BW-CANOPY")
     blocks = {m.child_key: m for m in canopy.members}
-    # Inboard faces 78.125 / 353.875 since the headers moved onto the garage plate lines, and
-    # 2-2x8 since the heel is read at the outside face (canopy_west_band.md, 2026-10-31).
-    for strap, block, header_face_in in (("CN-BW-JOINT-1", "collector-block-BM-BW-RW-002", 78.125),
-                                         ("CN-BW-JOINT-7", "collector-block-BM-BW-RE-002", 353.875)):
+    # Inboard faces 77.9375 / 354.0625 on the garage plate lines behind the 7/16" ZIP
+    # (2026-11-18), and 2-2x8 since the heel is read at the outside face (2026-10-31).
+    for strap, block, header_face_in in (("CN-BW-JOINT-1", "collector-block-BM-BW-RW-002", 77.9375),
+                                         ("CN-BW-JOINT-7", "collector-block-BM-BW-RE-002", 354.0625)):
         member = blocks[block]
         assert member.profile == "2-2x8" and member.material == "spf"
         assert plan.by_tag(strap).position.xy_m[0] == pytest.approx(member.p0[0])
@@ -145,11 +145,11 @@ def test_the_chord_plates_carry_the_chord_force_and_the_west_collector_share(cat
     record = next(r for r in compute(catlin_ctx.engineering.context)
                   if r.item_id == "lateral_system/RF-BW-CANOPY")
     states = {s.name: s for s in record.limit_states}
-    # canopy_west_band.md 2026-10-31: 88.072 / 2 + 172.415 west, 88.072 east, vs 450.
+    # canopy_west_band.md §10 (2026-11-18): 87.961 / 2 + 172.427 west, 87.961 east, vs 450.
     west = states["BM-BW-RW chord into CN-BW-JOINT-1's block"]
     east = states["BM-BW-RE chord into CN-BW-JOINT-7's block"]
-    assert west.demand == pytest.approx(216.451, abs=0.1)
-    assert east.demand == pytest.approx(88.072, abs=0.1)
+    assert west.demand == pytest.approx(216.408, abs=0.1)
+    assert east.demand == pytest.approx(87.961, abs=0.1)
     assert east.capacity == pytest.approx(450)
 
 
@@ -172,7 +172,7 @@ def test_nailers_read_their_own_nails_at_their_own_species(catlin_ctx):
                            ("CN-BW-JOINT-2 RF-GARAGE", 959.462)):
         state = states[f"{name} nailer into deck"]
         assert state.capacity == pytest.approx(capacity, abs=0.1)
-        assert state.demand == pytest.approx(261.277, abs=0.05)
+        assert state.demand == pytest.approx(261.177, abs=0.05)
 
 
 def test_added_framing_and_fasteners_are_billed(catlin_model_ro):

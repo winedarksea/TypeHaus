@@ -3652,7 +3652,9 @@ replace the lumber forms and the bedding tile, and serve as the sub-slab radon c
     shape of the whole change: ccSPF spends about a third of what the cladding and spacing
     save, and buys a real air seal.
   - There is no WRB, and that is a decision (IRC R703.2's exception for an unconditioned
-    detached accessory building). The ccSPF is the air/water/vapour plane —
+    detached accessory building). **CORRECTED 2026-11-18: the exception never applied here.**
+    Minn. R. 1309.0703 subp. 2a rewrites R703.2 with no exceptions; the wall took taped ZIP
+    as its WRB (entry of that date, at the end of this log). As written then: the ccSPF is the air/water/vapour plane —
     `TR-CATLIN-GARAGE-OPENING` names `stud-cavity` for all four controls, not the house's
     `sheathing-ext`/`spray-foam-ext` tuple — so bucks before foam, as on the house. The CDX
     carries no `control` set for exactly this reason: bare sheathing claiming those layers
@@ -8796,3 +8798,39 @@ Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
   ESR-1078 §3.2 puts EWP outside the report. Not load-bearing for the grade: on the rim alone the
   SP column is 0.933 (`exterior_door_sill_beam.md` §3).
 - **Not taken.** Changing the detail: the grade does not lean on the reading.
+
+## Garage WRB: 7/16" taped ZIP, and the canopy moves 3/16" with it (2026-11-18, owner)
+
+- **Code basis.** Minn. R. 1309.0703 subp. 2a rewrites IRC R703.2 with no exceptions: "all
+  exterior walls", continuous to the underside of the truss top chord. DLI's garage guide shows
+  a WRB over the sheathing, and the 2024-IRC TAG worksheet deletes the narrowed shed exception.
+  The detached-accessory exception the wall cited since 2026-08-31 was never adopted here
+  (`plans/catlin-construction-design-review.md` §1).
+- **Taken.** 7/16" ZIP System, every seam taped, as sheathing + WRB + air barrier (ESR-1474);
+  GP ForceField 7/16" (APA PR-N136, its own tapes) as the framer's alternate; 2" ccSPF kept.
+  The ZIP layer claims `{AIR, WATER}`, the cavity foam `{AIR, VAPOR, THERMAL}`; the garage
+  opening transitions name `sheathing-ext` for air and water. Garage ROs take ZIP liquid
+  flash: ESR-4363 lists OSB, not a WRB facer.
+- **Why ZIP over housewrap.** One trade and one layer: the panel the framer hangs is the WRB, the
+  corrugated is face-fastened through it with no furring, and taped seams make it the air
+  barrier too. Housewrap + CDX would add a wrap crew and a second lap sequence at every opening.
+- **Why 7/16".** It is the ZIP thickness sold in long lengths (4x8/9/10/12; 1/2" and 5/8" are 4x8
+  only), so the 100" wall keeps one 4x9 sheet and no horizontal joint (bracing item 8 still reads).
+  W-BW-SCREEN's west panel went to the same product so its corrugated stays in the garage's plane;
+  its shear row is now SDPWS-2015 Table 4.3A's own 7/16" OSB row, 8d at 4": 980 plf / 2 = 490 plf,
+  G_a 22 (0.388). The 15/32" figures carried before (365/530 "nominal") were half the table's.
+- **The ripple.** The sheathing face holds the node line, so studs, plates, foam and drywall moved
+  3/16" outward on all four walls: the sill bears 5 3/16" of 7 1/4" (72%), the bolt band reads
+  3 9/16"-4 13/16". `GARAGE_PLATE_INSET_FT` now reads the assemblies, so the canopy columns
+  followed (decision #108): x 6'-3 3/16" / 29'-8 13/16", ONE truss 23'-11 1/8" out to out, ridge
+  139.79"; the canopy overhang went 1'-7 3/8" -> 1'-7 3/16" to keep one fascia line (the garage's
+  eave is set off the node line and did not move). The canopy oracles were re-worked by hand
+  (`canopy_west_band.md` §10, `canopy_garage_diaphragm.md` §11, `north_entry_piers.md` §10o):
+  V 1,034.57 lb, deck boundary 0.908 governs, the landing tie 0.784.
+- **Drying.** Unconditioned (intermittent radiant heater only), low vapour drive; the taped facer
+  (12-16 perm) keeps wetting off the OSB and it dries outward into the corrugated's vented flutes.
+  A deliberate garage-only exception to the house's "not OSB behind ccSPF" rule
+  (`wall_bracing_layout.md`), justified by the WRB now limiting wetting. The facer also keeps the
+  panel under 16% MC before spraying (`ccspf_spec.md`).
+- **Not taken.** Housewrap + full-depth R-21 batts (the review's value option): it frees ~$550 but
+  needs a warm-side retarder and air-sealing transitions in a garage that sees wet vehicles.

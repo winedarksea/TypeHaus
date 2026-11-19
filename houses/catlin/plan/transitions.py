@@ -47,18 +47,18 @@ TRANSITIONS = (
                suppress=True,
                suppress_reason="the beam's XPS board cut down under the sunken-garden tread, not a framed opening; coordinated in the sunken-garden door installation review"),
     # Two eaves in this project and they are genuinely two drawings: the house's
-    # zero-overhang eave over EXT_2X6, and the garage's over a trussed roof with a raised
-    # heel on a wall with no WRB. The four interior-partition-to-roof keys are unstarred —
+    # zero-overhang eave over EXT_2X6, and the garage's over a trussed roof on a wall whose
+    # taped ZIP is the WRB. The four interior-partition-to-roof keys are unstarred —
     # a partition dying into the ceiling plane has no eave at all: no soffit, no fascia, no
     # vent, and none of the three control layers to hand off. It is framing, and it is
     # drawn on S-101.3.
     # The garage's overhung eave: fascia, vented soffit, formed drip edge and K-gutter, all
     # derived from its EaveTrim. BEFORE TR-CATLIN-EAVE because matching is first-match. Water
-    # only: the garage wall carries no foam face for an air or thermal claim to hand off.
+    # only: the ZIP runs up to the truss top chord and the vented eave hands off no air plane.
     Transition(uid="BKK603N875", tag="TR-CATLIN-GARAGE-EAVE", title="Garage eave",
                condition_pattern="wall_roof:GARAGE_ROOF|*",
                notes="notes/garage_eave_detail.md", overlay="overhang-eave",
-               continuity=(Continuity(control="water", from_face="cdx-ext",
+               continuity=(Continuity(control="water", from_face="sheathing-ext",
                                       to_face="membrane-ext"),),
                star=True),
     # The N/S gables are rakes, not eaves (C7-E7): no gutter and no eave chain, a stock
@@ -248,20 +248,17 @@ TRANSITIONS = (
                overlay="window-head-jamb-sill", continuity=AIR_WATER_THERMAL,
                star=True),
     # ** IT DECLARES ITS OWN CONTINUITY, and it is not AIR_WATER_THERMAL. ** GARAGE_WALL_2X6
-    # has no WRB at all — IRC R703.2's exception for an unconditioned detached accessory
-    # building — so there is no `spray-foam-ext` band and no taped Zip-R face for the
-    # house's tuple to name. What carries all four controls here is the 2" of ccSPF IN THE
-    # BAYS (`stud-cavity`), which is why the build order on notes/garage_wall_detail_side.md
-    # is bucks before foam, exactly as it is on the house. The air plane is the foam too,
-    # not the sheathing: bare CDX is not taped and is not an air barrier, which is the whole
-    # difference from the house's `sheathing-ext` row.
+    # has no `spray-foam-ext` band: its air and water plane is the taped 7/16" ZIP
+    # (`sheathing-ext`, Minn. R. 1309.0703 has no accessory exception), while vapour and
+    # thermal are the 2" of ccSPF IN THE BAYS (`stud-cavity`). The build order on
+    # notes/garage_wall_detail_side.md is still bucks before foam, as on the house.
     Transition(uid="CATR009AAAA", tag="TR-CATLIN-GARAGE-OPENING", title="Garage opening",
                condition_pattern="opening_perimeter:GARAGE_WALL_2X6",
                notes="notes/garage_wall_detail_side.md", overlay="garage-opening",
-               continuity=(Continuity(control="air", from_face="stud-cavity",
-                                      to_face="stud-cavity"),
-                           Continuity(control="water", from_face="stud-cavity",
-                                      to_face="stud-cavity"),
+               continuity=(Continuity(control="air", from_face="sheathing-ext",
+                                      to_face="sheathing-ext"),
+                           Continuity(control="water", from_face="sheathing-ext",
+                                      to_face="sheathing-ext"),
                            Continuity(control="vapor", from_face="stud-cavity",
                                       to_face="stud-cavity"),
                            Continuity(control="thermal", from_face="stud-cavity",
@@ -272,10 +269,10 @@ TRANSITIONS = (
     Transition(uid="XXQ85X2X0J", tag="TR-CATLIN-GARAGE-WINDOW", title="Garage window",
                condition_pattern="opening_perimeter:window:GARAGE_WALL_2X6",
                notes="notes/garage_window_detail.md", overlay="garage-opening",
-               continuity=(Continuity(control="air", from_face="stud-cavity",
-                                      to_face="stud-cavity"),
-                           Continuity(control="water", from_face="stud-cavity",
-                                      to_face="stud-cavity"),
+               continuity=(Continuity(control="air", from_face="sheathing-ext",
+                                      to_face="sheathing-ext"),
+                           Continuity(control="water", from_face="sheathing-ext",
+                                      to_face="sheathing-ext"),
                            Continuity(control="vapor", from_face="stud-cavity",
                                       to_face="stud-cavity"),
                            Continuity(control="thermal", from_face="stud-cavity",

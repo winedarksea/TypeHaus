@@ -1282,8 +1282,9 @@ def test_hp1_faces_north_off_its_own_pad(catlin_model) -> None:
     cabinet = Polygon(next(o for o in catlin_model.canvas_objects
                            if o.tag == unit.tag).footprint)
     pier = Polygon(_solid(catlin_model, "PT-BW-PE").outline)
-    # Gree's 12" service side; the unit moved 3 3/8" west with PT-BW-PE (2026-10-31).
-    assert (pier.bounds[0] - cabinet.bounds[2]) / INCH == pytest.approx(12.0)
+    # Gree's 12" service side; the unit moved 3 3/8" west with PT-BW-PE (2026-10-31). The
+    # pier went 3/16" east with the garage's 7/16" ZIP (2026-11-18); the unit stayed put.
+    assert (pier.bounds[0] - cabinet.bounds[2]) / INCH == pytest.approx(12.1875)
     garage = _wall(catlin_model, "W-G-S")
     garage_face_y = min(p[1] for layer in garage.layers for p in layer.polygon)
     assert (garage_face_y - cabinet.bounds[3]) / INCH == pytest.approx(58.4375)

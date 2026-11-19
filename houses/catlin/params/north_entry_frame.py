@@ -46,6 +46,7 @@ from typehaus.resolve.connector_geometry.bases_caps import (
 from params.cladding import HOUSE_NS_OUTBOARD_IN
 from params.column_heads import CBSTQ66Z_HEAD, HETA20Z_PAIR_HEAD, STANDOFF_PACK_IN
 from params.east_posts import east_supports, full_height_columns, moment_piers, pier_assembly
+from plan.assemblies import ENTRY_SCREEN_WALL, GARAGE_WALL_2X6
 from plan.storeys.garage import (
     GARAGE_X_EAST, GARAGE_X_WEST, GARAGE_Y_SOUTH, SERVICE_DOOR_OFFSET, SERVICE_DOOR_WIDTH,
 )
@@ -64,18 +65,17 @@ SERVICE_RO_WEST_FT = GARAGE_X_WEST.feet + SERVICE_DOOR_OFFSET.feet
 SERVICE_RO_EAST_FT = SERVICE_RO_WEST_FT + SERVICE_DOOR_WIDTH.feet
 # The column lines are the garage's truss bearing lines (decision #108): each header centres on
 # the 2x6 garage plate it extends, so one truss, heel at the outside face and bottom chord across
-# the full 5 1/2", bears the same on both roofs.
-GARAGE_PLATE_INSET_FT = (0.625 + 5.5 / 2) / 12
-# The column line, 6'-3 3/8"; also the screen panel's reference.
-LANDING_WEST_FT = GARAGE_X_WEST.feet + GARAGE_PLATE_INSET_FT
-# East edge: the RO's east jamb covers both the D-M-ENTRY and D-G-SERVICE patches.
-LANDING_EAST_FT = SERVICE_RO_EAST_FT
+# the full 5 1/2", bears the same on both roofs. Panel thicknesses come off the assemblies.
+_PANEL_IN = {x.name: x.thickness.inches for x in GARAGE_WALL_2X6.layers + ENTRY_SCREEN_WALL.layers}
+GARAGE_PLATE_INSET_FT = (_PANEL_IN["sheathing"] + 5.5 / 2) / 12
+LANDING_WEST_FT = GARAGE_X_WEST.feet + GARAGE_PLATE_INSET_FT  # column line 6'-3 3/16"
+LANDING_EAST_FT = SERVICE_RO_EAST_FT  # the RO's east jamb covers D-M-ENTRY and D-G-SERVICE
 # The west corrugated plane, published so nothing re-derives it: W-BW-SCREEN's
 # `alignment=face("stud-ext", offset=inch(-1.75))` (params/breezeway.py) puts its 2x4s flush with
 # the 6x6s' west faces, 1" west of the column line, so both west planes are the garage's own.
 # W-BW-SCREEN-SKIRT reads this: a drifted skirt is a step in steel, graded by nothing.
 SCREEN_AXIS_X_FT = LANDING_WEST_FT - (5.5 - 3.5) / 24
-SCREEN_CLADDING_WEST_X_FT = SCREEN_AXIS_X_FT - (1.75 + 0.625 + 0.875) / 12
+SCREEN_CLADDING_WEST_X_FT = SCREEN_AXIS_X_FT - (1.75 + _PANEL_IN["sheathing-out"] + 0.875) / 12
 assert abs(SCREEN_CLADDING_WEST_X_FT - (GARAGE_X_WEST.feet - 0.875 / 12)) < 1e-9
 DECK_FINISH_FT = 0.0
 DECK_JOIST_TOP_FT = DECK_FINISH_FT - TREX_ENHANCE_BASICS_DECK_LAYER.thickness.feet
@@ -117,14 +117,14 @@ HEADER_TOP_FT = 7 + 4 / 12
 HEADER_DEPTH_IN = 11.875
 HEADER_SIZE = "5.5x11.875"
 HEADER_SOFFIT_FT = HEADER_TOP_FT - HEADER_DEPTH_IN / 12
-ROOF_COLUMN_EAST_X_FT = GARAGE_X_EAST.feet - GARAGE_PLATE_INSET_FT  # 29'-8 5/8"
+ROOF_COLUMN_EAST_X_FT = GARAGE_X_EAST.feet - GARAGE_PLATE_INSET_FT  # 29'-8 13/16"
 
 # W-BW-SCREEN's top: it covers the guard zone outright and is SB-BW-BAND's sill. No cross rails.
 SCREEN_PANEL_TOP_FT = 4.0
 
 
 # One tier of beams: the joists run N-S straight on the two seat beams. The seats, not N-S beams
-# on the piers, are the tier that fits: x=6'-3 3/8" is occupied at both y stations by a canopy
+# on the piers, are the tier that fits: x=6'-3 3/16" is occupied at both y stations by a canopy
 # column on the same pier, so a beam there would interpenetrate it.
 #
 # BM-BW-FE is the deck's east edge beam, seat to seat in the joist plane; nothing crosses the stem
@@ -206,7 +206,7 @@ beam(5, "BM-BW-FE", EDGE_BEAM_X_FT, FRAME_Y0_FT, EDGE_BEAM_X_FT, GARAGE_CLADDING
      ("BM-BW-HOUSE-SEAT", "BM-BW-GARAGE-SEAT"), size="3-2x8")
 
 # The canopy is freestanding on four 6x6 posts of its own for gravity (PT-BW-CW/-CNW west,
-# PT-BW-RE/-RNE east); nothing bears on a garage wall terminus. x=6'-3 3/8" and x=29'-8 5/8" are
+# PT-BW-RE/-RNE east); nothing bears on a garage wall terminus. x=6'-3 3/16" and x=29'-8 13/16" are
 # the garage's truss bearing lines, so the roofs are one plane with sheathing continuous across the
 # tied joint (the canopy's lateral system, AN-BW-ROOF), which carries no gravity.
 #

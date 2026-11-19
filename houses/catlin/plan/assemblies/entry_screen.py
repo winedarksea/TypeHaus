@@ -46,9 +46,10 @@ ENTRY_SCREEN_WALL = Assembly(
             framing=FramingSpec(member="2x4", spacing=inch(16)),
         ),
         Layer(
-            name="cdx-out",
-            material_ref="cdx-plywood",
-            thickness=inch(0.625),
+            # 7/16" taped ZIP, the garage wall's panel, so the west planes stay coplanar.
+            name="sheathing-out",
+            material_ref="zip-sheathing",
+            thickness=inch(0.4375),
             function=LayerFunction.SHEATHING,
             nailing=SheathingNailing(
                 part="S8ACN",

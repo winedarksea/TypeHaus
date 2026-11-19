@@ -194,10 +194,9 @@ MATERIALS = [
     # The stair face. 3/4" rather than the 1/2" a plain panel finish would take, because
     # this panel is structural backing: coat hooks and the closet rail screw straight into
     # it anywhere along the wall, with no blocking behind and no stud to hunt for.
-    # `cdx-plywood` (library) is every exterior wall's sheathing: 15/32" on the house
-    # (owner, 2026-11-04; EXT_2X6 says why not Structural I or OSB), 5/8" on the garage's
-    # 24" o.c. studs. It carries NO `control` set: the ccSPF is the air/water plane, and a
-    # bare CDX sheet is not a WRB and must not be authored as one.
+    # `cdx-plywood` (library) is the house's wall sheathing, 15/32" (owner, 2026-11-04;
+    # EXT_2X6 says why not Structural I or OSB). It carries NO `control` set: the ccSPF is the
+    # air/water plane. The garage and W-BW-SCREEN are 7/16" taped `zip-sheathing` (2026-11-18).
     # `siding-303-mdo` (library) was ENTRY_SCREEN_WALL's east ply until 2026-11-02; the east
     # face is now `entry-screen-white-mdo` (materials_entry_screen.py), finish only.
     # FS-ATTIC's deck sheet, and only FS-ATTIC's. The two unfinished lofts

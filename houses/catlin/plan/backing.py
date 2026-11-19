@@ -418,7 +418,7 @@ GARAGE_BACKING = [
                 elevation=inch(41.5), height=inch(11.25), profile="2x12",
                 material_ref="spf", purpose="handrail return (RL-BW-ENTRY, head of flight)"),
     # RL-BW-ENTRY's foot return (rail centre ~22" over the sill datum), same bay as the
-    # panel's band but let in from the outdoor face, under the cdx.
+    # panel's band but let in from the outdoor face, under the ZIP.
     WallBacking(uid="VDB9SEX087", tag="BK-G-S-RAIL-FOOT", wall_ref="W-G-S", face="right",
                 start=inch(96.75), length=inch(22.5),
                 elevation=inch(16), height=inch(11.25), profile="2x12",

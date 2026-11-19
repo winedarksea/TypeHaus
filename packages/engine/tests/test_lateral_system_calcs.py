@@ -292,9 +292,9 @@ def test_the_kdat_canopy_delivers_both_axes_to_the_garage(catlin_ctx) -> None:
     inputs = _inputs(record)
     assert record.status is Status.OK, record.summary
     assert not record.missing
-    # canopy_garage_diaphragm.md §2, 2026-10-31 amendment (16.661 psf).
-    assert inputs["delivered_shear_x"] == pytest.approx(670.77, abs=0.2)
-    assert inputs["delivered_shear_y"] == pytest.approx(1034.49, abs=0.2)
+    # canopy_garage_diaphragm.md §11, 2026-11-18 amendment (16.6622 psf).
+    assert inputs["delivered_shear_x"] == pytest.approx(670.82, abs=0.2)
+    assert inputs["delivered_shear_y"] == pytest.approx(1034.57, abs=0.2)
     assert states["open front, L'"].ratio == pytest.approx(0.24)
     assert states["open front, L'/W'"].ratio == pytest.approx(0.225)
     assert states["joint boundary nailing, along"].demand == pytest.approx(28.876, abs=0.05)
@@ -325,7 +325,7 @@ def test_the_kdat_collectors_and_open_front_chord_are_drawn(catlin_ctx) -> None:
                for tag in roof.diaphragm.collector_refs)
     record = catlin_ctx.engineering[f"{KIND}/RF-BW-CANOPY"]
     states = _states(record)
-    assert _inputs(record)["chord_force_open_front_lb"] == pytest.approx(88.072, abs=0.2)
+    assert _inputs(record)["chord_force_open_front_lb"] == pytest.approx(87.961, abs=0.2)
     assert states["BM-BW-RW chord tension, open front"].ok
     assert states["BM-BW-RE chord tension, open front"].ok
     assert states["LSTA24 end straps, chord force + across share"].ok
@@ -341,8 +341,8 @@ def test_cast_variant_keeps_its_column_collectors_and_delivers_to_garage(
     assert "PT-BW-RNE collector end connection, N-S" in states
     assert states["W-G-S delivered shear on the surplus"].ok
     assert states["RF-GARAGE unit-shear increment"].ok
-    # §7 cast one pack low (C3-E13), 16.4479' shaft: 987.32 + 2 x 93.06.
-    assert _inputs(record)["delivered_shear_y"] == pytest.approx(1173.43, abs=0.5)
+    # §7 cast one pack low (C3-E13), 16.4479' shaft: 987.39 + 2 x 93.07 (§11, 2026-11-18).
+    assert _inputs(record)["delivered_shear_y"] == pytest.approx(1173.52, abs=0.5)
 
 
 def test_only_the_declared_canopy_has_a_lateral_system_item(catlin_ctx) -> None:

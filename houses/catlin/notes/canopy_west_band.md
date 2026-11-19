@@ -2,7 +2,9 @@
 
 **House:** catlin
 **Basis:** the design as built on 2026-11-14, under the 2026-10-31 wind: q_h 18.149 psf, p = 16.661 psf
-ASD (0.6W), derived once in `canopy_garage_diaphragm.md` §2 and not re-derived here.
+ASD (0.6W), derived once in `canopy_garage_diaphragm.md` §2 and not re-derived here. **Amended 2026-11-18**
+(the garage's 7/16" ZIP moved both column lines 3/16" out): §1, §4a and §10 supersede; every other figure below
+is the 11-14 value, which §10 moves by x 1.000072.
 **Structure:** `RF-BW-CANOPY`'s west line: `W-BW-SCREEN`, the band over it (`SB-BW-BAND`), the chords
 `PT-BW-CW`/`-CNW`, the glulam headers `BM-BW-RW`/`-RE`, the heads and bases of all four 6x6 KDAT posts
 (`PT-BW-CW`/`-CNW`/`-RE`/`-RNE`, `EAST_POST_SYSTEM = "kdat"`), and the open front's chord and couple.
@@ -17,7 +19,8 @@ works inside); `north_entry_canopy_lateral.md` §8 (collectors, torsion, hold-do
 rests on, and §4b's full-height overturning at the chord bases: the judgement and the row nearest its limit
 after the deck.
 
-Every demand below is linear in the delivered shear V = 1,034.49 lb (and in p). The band forces are
+Every demand below is linear in the delivered shear V = 1,034.49 lb (and in p); since 2026-11-18 V = 1,034.57 lb
+(§10). The band forces are
 P = V / (2 cos θ) = 0.71808 V and v = V tan θ / 2 = 0.51538 V, so a unit test that runs §3 at another V
 (`test_slat_braces.py` uses 1,038.35 lb) reproduces the same arithmetic.
 
@@ -36,8 +39,8 @@ P = V / (2 cos θ) = 0.71808 V and v = V tan θ / 2 = 0.51538 V, so a unit test 
 
 | term | working | value |
 |---|---|---|
-| column line | garage plate x 6.0 + (5/8" CDX + half the 5 1/2" plate) | x **6.28125'** (6'-3 3/8"); east line 29.71875' |
-| header | 5-1/2" x 11-7/8" glulam, top +7'-4"; glulam faces x 72.625-78.125" | soffit **+6.34375'** |
+| column line | garage plate x 6.0 + (7/16" ZIP + half the 5 1/2" plate) | x **6.265625'** (6'-3 3/16"); east line 29.734375' |
+| header | 5-1/2" x 11-7/8" glulam, top +7'-4"; glulam faces x 72.4375-77.9375" | soffit **+6.34375'** |
 | header length | post face to post face, y 37.2708 to 42.7083 | **5.4375'** (65-1/4"), no tails |
 | roof-bearing run | starts 3/4" in at the south, y 37.3333 to 42.7083 | 5.375' |
 | chords, centre to centre | `PT-BW-CW` y 37.5000 to `PT-BW-CNW` y 42.4792 | **4.9792'** |
@@ -49,9 +52,9 @@ P = V / (2 cos θ) = 0.71808 V and v = V tan θ / 2 = 0.51538 V, so a unit test 
 | chord bases (CBSTQ66Z-SDS2 seat) | pier top -15.44" less the 3/4" SS316 pack | **-16.19"** (-1.3492') |
 | west post | (76.125 + 16.19)/12 | L = 7.6929' (92.315") |
 | east post | 6.34375 - 0.1667 (base +2" on a 14" pier, top 3'-0" over grade) | 6.1771' (74.125") |
-| truss, both roofs | bearing out to out 359.375 - 72.625; bottom chord across the 5 1/2" | 286.75" (23'-10 3/4") |
+| truss, both roofs | bearing out to out 359.5625 - 72.4375; bottom chord across the 5 1/2" | 287.125" (23'-11 1/8") |
 | standard heel | top-chord plumb 3.5 / cos(atan 4/12) = 3.6893" + 1/4" butt cut, at the OUTSIDE face of bearing | 3.9393" |
-| roof plane | deck 91.9393" at the outside face; ridge at x 216": 91.9393 + 143.375/3 | ridge 139.731", eave (x 56") 86.398" |
+| roof plane | deck 91.9393" at the outside face; ridge at x 216": 91.9393 + 143.5625/3 | ridge 139.794", eave (x 56") 86.460" |
 
 ## 2. The band between the deck and the panel
 
@@ -246,25 +249,29 @@ vertical component credited.
 
 ## 4. The panel — `W-BW-SCREEN`
 
-2x4 KDAT studs at 16" o.c., flush with the 6x6 chords' west faces so the CDX laps them and the west corrugated
-plane is the garage's. The **WEST** face is 5/8" CDX under `corrugated-panel-24`, 8d at 4" edges and 12" field
+2x4 KDAT studs at 16" o.c., flush with the 6x6 chords' west faces so the ZIP laps them and the west corrugated
+plane is the garage's. The **WEST** face is 7/16" taped ZIP (the garage's panel, 2026-11-18) under `corrugated-panel-24`, 8d at 4" edges and 12" field
 (`S8ACN`, blocked): it carries the shear alone. The **EAST** face is white painted 3/4" MDO, finish only
 (`entry_screen_mdo.md`), so it adds no shear.
 
 ### 4a. Unit shear and aspect — SDPWS-2015 Table 4.3A
 
-Wood structural panels, sheathing, 15/32" with 8d. v_w nominal by edge spacing 6" / 4" / 3" / 2" is
-365 / 530 / 685 / 895 plf; ASD is half. The wall's own node run oversails both chords and nothing holds the
-oversail down, so the panel is read over the chords' out-to-out length:
+Wood structural panels - sheathing, **7/16"** (the ZIP, OSB), 8d, 1-3/8" penetration. Read off the published
+table (AWC's 2015 SDPWS, Chapter 4, 2026-11-18): v_w nominal by edge spacing 6" / 4" / 3" / 2" is
+670 / 980 / 1,260 / 1,640 plf; G_a at 4" is 22 kips/in OSB (15 PLY). ASD is v_w / 2.0 (§4.3.3); KDAT is SYP,
+so footnote 3's specific-gravity factor is 1.0, and the framing is dry (fn. 5 does not apply). The wall's own node
+run oversails both chords and nothing holds the oversail down, so the panel is read over the chords' out-to-out
+length:
 
 ```
-6" edges   1,034.49 / 5.4375 = 190.25 plf vs 182.5     1.043   OVER
-4" edges   190.25 vs 530 / 2 = 265.0                   0.718   <- authored
-aspect     4.0783 / 5.4375 = 0.750 vs 3.5              0.214
+6" edges   1,034.57 / 5.4375 = 190.27 plf vs 670 / 2 = 335.0     0.568
+4" edges   190.27 vs 980 / 2 = 490.0                             0.388   <- authored
+aspect     4.0783 / 5.4375 = 0.750 vs 3.5                        0.214
 ```
 
-The 15/32" row is quoted for the 5/8" panel because thicker sheathing at the same schedule is not weaker.
-`G_a` stays at the 6" plywood row's 11.0 kips/in, the softer end. The chords are the 6x6s (`chord_refs`).
+The 15/32" row carried until 2026-11-18 quoted 365 / 530 / 685 / 895 plf as nominal: those are half the table's
+730 / 1,065 / 1,370 / 1,790, so the old 265 plf (0.718) was read at half capacity. Footnote 2 would lift the 7/16"
+row to the 15/32" one (studs at 16" o.c.); it is not taken.
 
 ### 4b. The chords' hold-down, full height
 
@@ -520,6 +527,44 @@ Two other bracings of the same band are carried as documented backups; neither i
 * **The CBSTQ66Z-SDS2 download** (19,335 lb): no record grades it.
 * **Nail withdrawal at the LTP4Z under the deck's own uplift**: the heel ties carry that.
 * **ColorGard snow retention** on the east eave: `north_entry_structure.md` §5.
+
+## 10. 2026-11-18 amendment: the column lines 3/16" out
+
+The garage sheathing went 5/8" CDX -> 7/16" ZIP with its face held on the node line, so the plates, and with
+them both header centrelines (decision #108), moved 3/16" outward: x 6.265625' / 29.734375', 23.46875' apart.
+The canopy's eave overhang went 1'-7 3/8" -> 1'-7 3/16" so its fascia stays on the garage's line: the canopy is
+still **26.667'** across and the header tributary still 80 ft². The trusses grew 3/8" out to out, so the ridge rose
+(3/16")/3 = 1/16".
+
+**Wind** (`canopy_garage_diaphragm.md` §2 at the new ridge, 20.764 + 0.0052 = 20.7692'):
+
+```
+K_z = 2.01 (20.7692/1200)^(2/7) = 0.63072    q_h = 18.151 psf    p = 0.6 x 18.151 x 0.85 x 1.80 = 16.6622 psf
+east post head half   16.6622 x 5.5/12 x 6.1771 / 2 = 23.587 lb
+N-S  59.259 sf x 16.6622 = 987.39;  V_y = 987.39 + 2 x 23.587 = 1,034.57 lb    (x 1.000072)
+E-W  37.429 sf x 16.6622 = 623.64;  V_x = 670.82 lb
+```
+
+**Rows linear in V** (§3-§4) move by x 1.000072 and read as the 11-14 working to its printed figures: P 742.89 lb
+(0.748), plates 98.53 / 64.16 psi, clips and deck boundary 172.43 (0.383 / 0.908), screws 185.72 lb (0.280),
+centre post 476.63 lb (0.343). Hold-down 1,034.57 x 8.6825 / 4.9792 = 1,804.0 + uplift 40 x (16.6622 - 6) = 426.49
+-> **2,230.5 lb (0.729)**; base shear 0.815; chord head 426.49 + 205.61 = 632.10 lb; ACE6Z 0.550, CBSTQ along 0.280,
+west column 0.538, east 0.225.
+
+**What moved: the open front (§6).** The resultant's y and the moment are p-scaled; the header spacing is 3/8"
+longer:
+
+```
+y_V = (444.33 x 40.219 + 179.32 x 39.990 + 23.587 x 37.500 + 23.587 x 42.479) / 670.82 = 40.1416
+M = 670.82 x (43.219 - 40.1416) = 2,064.35 lb-ft
+chord M / 23.46875 = 87.96 lb (was / 23.4375 = 88.07)
+end strap 87.96 + 172.43 = 260.39 lb (0.316); chord into the end block, west 87.96/2 + 172.43 = 216.41 lb (0.481),
+east 87.96 lb (0.195); the couple into RF-GARAGE 2,064.35 / 24 = 86.01 lb: W-G-W 4.606 plf, W-G-E 4.094 plf
+```
+
+**The headers (§7)** are unchanged: 80 ft², 1,245.77 plf, chord bearing 302.0 psi, **0.877**.
+
+**The panel (§4a)** is the 7/16" ZIP's own row, 490 plf ASD, 0.388.
 
 ## Sources
 

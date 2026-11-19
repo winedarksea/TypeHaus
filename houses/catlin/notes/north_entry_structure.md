@@ -13,7 +13,7 @@ roof on its own structure, not a cantilever off the garage's gable.
 ## 1. The canopy — freestanding for gravity
 
 `RF-BW-CANOPY` is **three** 24'-span trusses at 24" o.c. on two headers, each header on **two** posts of its own.
-It is ONE truss with `RF-GARAGE`: 23'-10 3/4" out to out of bearing, bottom chord across the full 5 1/2" at both
+It is ONE truss with `RF-GARAGE`: 23'-11 1/8" out to out of bearing, bottom chord across the full 5 1/2" at both
 ends, SBCA standard heel 3.9393" at the OUTSIDE face of bearing, so the two roofs are one plane. `CANOPY_ROOF` is
 `GARAGE_ROOF`'s structure with **no insulation and no ceiling**: an open outdoor bay has no thermal boundary to
 hold, and billing one would order 144 sf of R-38 blown fiberglass and 5/8" gypsum nobody installs.
@@ -40,7 +40,7 @@ hold, and billing one would order 144 sf of R-38 blown fiberglass and 5/8" gypsu
 |---|---|---|
 | `RF-BW-CANOPY` | `BM-BW-RW`, `BM-BW-RE` | Sheathing runs **continuous** across the garage south wall line, no seam at the garage gable. Two `Roof` elements, one diaphragm: the canopy's connection to the garage. |
 | truss-to-header | `CN-BW-TRTIE-W1..3`, `-E1..3` | One **stainless `H2.5ASS`** each end of every truss (six). Not the galvanized H2.5A the rest of the house buys: these land on treated glulam at an entry that is salted every winter. |
-| `BM-BW-RW` / `-RE` | `PT-BW-CW`/`-CNW` and `PT-BW-RE`/`-RNE` | 5-1/2" x 11-7/8" treated glulam (24F-V4 DF), top at +7'-4" = the garage plate, **65-1/4" long, post face to post face, no tails**, 4'-11 3/4" between posts, centred on the garage's truss lines (x 6'-3 3/8" / 29'-8 5/8"). The deck, not the header, oversails (south 1 3/8", north 6 1/8") to reach the garage wall; open air at both beam ends (8" to the house cladding, 5 1/4" to the garage cladding). **The two headers do not land on the same thing.** |
+| `BM-BW-RW` / `-RE` | `PT-BW-CW`/`-CNW` and `PT-BW-RE`/`-RNE` | 5-1/2" x 11-7/8" treated glulam (24F-V4 DF), top at +7'-4" = the garage plate, **65-1/4" long, post face to post face, no tails**, 4'-11 3/4" between posts, centred on the garage's truss lines (x 6'-3 3/16" / 29'-8 13/16" since the 7/16" ZIP, 2026-11-18). The deck, not the header, oversails (south 1 3/8", north 6 1/8") to reach the garage wall; open air at both beam ends (8" to the house cladding, 5 1/4" to the garage cladding). **The two headers do not land on the same thing.** |
 | `PT-BW-CW` / `-CNW` | `PT-BW-W` / `PT-BW-GW` | The WEST pair: 6x6 KDAT, 7'-8 5/16", the chords of `W-BW-SCREEN`. `ACE6Z` end cap at the header, one `A35Z` across the beam, cast-in `CBSTQ66Z-SDS2` base in a 14" round pier. `PT-BW-CW` shares its pier with the house-side seat beam and `PT-BW-CNW` with the garage-side one. |
 | `PT-BW-RE` / `-RNE` | `PT-BW-PE` / `-PNE` on `PD-BW-RE` / `-RNE` | The EAST pair, selected by `EAST_POST_SYSTEM`: **6x6 KDAT, 6'-2 1/8"**, `ACE6Z` cap, one `A35Z`, cast-in `CBSTQ66Z-SDS2` in 14" round piers whose tops are 3'-0" over grade, with drained, accessible PVC column wraps (a finish, no capacity). `"steel"` (pinned HSS 4x4x1/4 on the same piers) and `"cast"` (the full-height fixed cast columns) remain graded alternatives. `canopy_garage_diaphragm.md` §5a grades the wood. |
 
@@ -77,12 +77,12 @@ that figure is not held in this repository. The `cast` alternative's fixed-base 
 slenderness are the engineer of record's.
 
 **West — a sheathed shear panel with a braced band over it.** `W-BW-SCREEN`: KDAT 2x4 at 16" o.c., deck to
-+4'-0", flush with the chords' west faces, **read over its chords 5.4375' out to out: 190.3 plf vs 265 (0.718),
-aspect 0.75 vs 3.5**. The shear rests on the WEST face alone (5/8" CDX under 7/8" corrugated, 8d at 4" edges);
++4'-0", flush with the chords' west faces, **read over its chords 5.4375' out to out: 190.3 plf vs 490 (0.388; 7/16" ZIP, SDPWS Table 4.3A),
+aspect 0.75 vs 3.5**. The shear rests on the WEST face alone (7/16" taped ZIP under 7/8" corrugated, 8d at 4" edges);
 the east face is finish only. The band over it, `SB-BW-BAND`, is one corner-to-corner 6x6 knee brace per bay, two
-open-knee `KBS1Z` per end (742.8 lb vs 993.2, 0.748). The chords' hold-down over the full height reads 2,230 lb vs
-3,060 (0.729), the base shear on one base 1,034 vs 1,270 (0.815), the eave collector's six `LTP4Z` 172.4 lb vs 450
-(0.383). The deck's unit shear at the screen line, 172.4 plf vs 190 (0.907), governs. All of it:
+open-knee `KBS1Z` per end (742.9 lb vs 993.2, 0.748). The chords' hold-down over the full height reads 2,231 lb vs
+3,060 (0.729), the base shear on one base 1,035 vs 1,270 (0.815), the eave collector's six `LTP4Z` 172.4 lb vs 450
+(0.383). The deck's unit shear at the screen line, 172.4 plf vs 190 (0.908), governs (2026-11-18 values). All of it:
 `canopy_west_band.md` §3-§5.
 
 ## 2. The landing
@@ -105,7 +105,7 @@ basement concrete.
 
 > ⚠ **ONE TIER OF BEAMS.** Pier, seat beam (east-west), joist (north-south), board. `BM-BW-FE` is not a tier: it
 > sits in the joist plane as the field's east edge. **The seats are the tier that fits:** putting north-south beams
-> straight on the piers fails on one line, because x=6'-3 3/8" is occupied at both y stations by a canopy column
+> straight on the piers fails on one line, because x=6'-3 3/16" is occupied at both y stations by a canopy column
 > standing on that same pier and rising through the deck band. The columns own that line; the seats get the piers.
 
 > ⚠ **Hold the deck boards 1/2" off the house cladding and let the gap drain.** Boards run tight to a rainscreened
@@ -118,11 +118,11 @@ drainage/movement break separates the board field at the threshold.
 
 ## 2a. The west edge strip (owner, 2026-11-18)
 
-The joist field stops 3 3/4" east of the deck's west edge (x 6'-3 3/8") to clear the two west columns, so the
-board ends overhung the westmost joist (x 6'-7 1/8") by 3" with nothing under them, and `W-BW-SCREEN`'s plate south
+The joist field stops 3 3/4" east of the deck's west edge (x 6'-3 3/16") to clear the two west columns, so the
+board ends overhung the westmost joist (x 6'-6 15/16") by 3" with nothing under them, and `W-BW-SCREEN`'s plate south
 of `PT-BW-CW` stood on nothing. The fix is KDAT 2x8 plies face-nailed to that joist's west face, top flush
 (`params/entry_landing_edge.py`, `JoistReinforcement` with an `extent`): 5 3/4" south of `PT-BW-CW` and 3 5/8"
-north of `PT-BW-CNW` three plies (x 73 7/8"..78 3/8", owner 2026-11-18, so the screen plate stubs bear), 54" between
+north of `PT-BW-CNW` three plies (x 73 11/16"..78 3/16", owner 2026-11-18; 3/16" west with the garage's 7/16" ZIP, so the screen plate stubs bear), 54" between
 the columns two (1/8" off each, clear of the `LUS28Z` flanges). Both rims run 3 3/4"
 west, end nailed into the ply ends as into any joist end, so the two corners are framed too. Nothing reaches
 `BM-BW-SCSILL`: no joist-to-beam mechanism is needed. The earlier "rim stub cantilevered past the end joist"
@@ -151,10 +151,10 @@ A 300 lb point on the corner board end (not an R507 framing load; the sill notes
 south piece: 57 lb a nail (0.63). Its 854 lb-in (300 x 2.25 + 178.8) would be 180 psi of torsion on the joist
 alone, which the end-nailed rim and the screwed boards share; not graded.
 
-**The screen plate stubs bear (owner, 2026-11-18, option (a)).** `plate-bottom-0` (x 72 5/8"..76 1/8",
+**The screen plate stubs bear (owner, 2026-11-18, option (a)).** `plate-bottom-0` (x 72 7/16"..75 15/16",
 y 439 3/4"..447 1/4") and `plate-bottom-2` (north of `PT-BW-CNW`) stood 0.75" of their 3 1/2" on the deck edge,
 the wall's line 1" outboard of its bearing. The third ply on each end piece carries 2 1/4" of the plate, its centre
-(x 74 3/8") 1/2" inside the pack's outer face: 34.8 / (2.25 x 5.75 + 0.75 x 1.5) = 2.5 psi. The ply's south and
+(x 74 3/16") 1/2" inside the pack's outer face: 34.8 / (2.25 x 5.75 + 0.75 x 1.5) = 2.5 psi. The ply's south and
 north ends stop at the rims' inner faces; its outer face is 1 1/4" inside the screen's 2x4 face, so the skirt and
 corrugated pass outside it. Between the columns `BM-BW-SCSILL` carries the plate's centre.
 
@@ -191,7 +191,7 @@ truck that is coming anyway.
 garage wall, on its own 2x8 sill (`BM-BW-SCSILL`). It does three jobs: the canopy's north-south shear panel
 (§1a), the guard, and the closure over the deck framing.
 
-**The two faces are not the same.** WEST takes 5/8" CDX under 7/8" `corrugated-panel-24`, the garage's own panel,
+**The two faces are not the same.** WEST takes 7/16" taped ZIP under 7/8" `corrugated-panel-24`, the garage's own panel,
 because the two structures already share a roof plane and a different profile on the one wall standing under that
 joint would read as a mistake; it carries the shear. EAST is white painted 3/4" exterior MDO in three removable
 panels screwed directly to the framing, 1 1/4" behind the exposed timber, with no WRB or ventilation cavity: a
@@ -199,7 +199,7 @@ finish under the canopy roof, no shear (`notes/entry_screen_mdo.md`). One solid 
 2x4 edge nailers complete it.
 
 The wall carries `alignment=face("stud-ext", offset=inch(-1.75))`, so its 2x4s stand flush with the west faces of
-`PT-BW-CW`/`-CNW` (`SCREEN_AXIS_X_FT`, 1" west of the column line): the CDX laps the chords and the west
+`PT-BW-CW`/`-CNW` (`SCREEN_AXIS_X_FT`, 1" west of the column line): the ZIP laps the chords and the west
 corrugated plane is the garage panel's own, the one plane here that is not free to move. Both columns carry
 `within_wall`, so each plate course is cut flush at the column faces. The alignment rests on the cladding plane
 alone.

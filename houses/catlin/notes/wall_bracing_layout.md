@@ -144,7 +144,9 @@ penalty is taken. Line up the plant room in gypsum and both lines drop to 7.41'.
   Structural-1). Method CS-WSP asks only for a wood structural panel, so Structural I buys
   no bracing length. OSB is not the fallback: the sheathing must dry below 16% before the
   ccSPF and can then dry only inward, and plywood dries faster and swells less.
-- **The garage stays 5/8" CDX** at 4x9: 8" spare on a 100" wall, where a 4x10 would waste 20".
+- **The garage is 7/16" ZIP System, taped, at 4x9** (2026-11-18; 5/8" CDX before): 8" spare on a 100" wall, where a
+  4x10 would waste 20". 7/16" is the ZIP thickness sold in 4x9. It is OSB behind ccSPF, a deliberate exception to
+  the rule above: the garage is unconditioned, and the taped facer is its WRB (`garage_wall_detail_side.md`).
 
 ## 5. The panels
 

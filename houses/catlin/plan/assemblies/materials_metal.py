@@ -39,9 +39,8 @@ MATERIALS_METAL = [
     #
     # It is here because the truss-girt work built the substrate for it — flat horizontal
     # 2x4 girts (32" o.c.) are what a PBR panel wants and are the reason this stops at the
-    # house: GARAGE_WALL_2X6 has no furring at all (cladding
-    # straight on Zip-R), so PBR there would need a whole new girt layer, and that cost
-    # cancels the saving over 631 SF. The garage stays on `standing-seam-nailstrip-26`.
+    # house: GARAGE_WALL_2X6 has no furring at all (corrugated straight on its taped ZIP),
+    # so PBR there would need a whole new girt layer. The garage is `corrugated-panel-24`.
     #
     # `exposed_fastener=True` is not decoration: it is what lets `takeoff.fasteners` bill
     # the panel screws as a counted part. On the four skins above the fixings ride inside

@@ -229,9 +229,9 @@ GARAGE_ROOF = Assembly(
 #
 # ** STRUCTURALLY IDENTICAL TO GARAGE_ROOF, AND THAT IS THE POINT. ** Same 2x4 fink at
 # 24" o.c., same standard heel, same deck/membrane/roofing. RF-BW-CANOPY bears at +7'-4" on
-# BM-BW-RW/RE, whose 5-1/2" faces stand exactly on the garage's 2x6 plate lines (x 6'-0 5/8"
-# to 6'-6 1/8" and 29'-5 7/8" to 29'-11 3/8", moved 3 3/8" inboard 2026-10-31), so the two
-# roofs order ONE truss, 23'-10 3/4" out to out, and share ONE plane: change this layer's
+# BM-BW-RW/RE, whose 5-1/2" faces stand exactly on the garage's 2x6 plate lines (x 6'-0 7/16"
+# to 6'-5 15/16" and 29'-6 1/16" to 29'-11 9/16" behind the 7/16" ZIP, 2026-11-18), so the two
+# roofs order ONE truss, 23'-11 1/8" out to out, and share ONE plane: change this layer's
 # depth, spacing or heel, or either bearing line, and the canopy steps off the garage roof.
 # The sheathing runs continuous across the garage south wall line even though the `Roof` elements are separate, and since 2026-09-29
 # it is again the canopy's lateral path — but now a DESIGNED one: six LSTA24 straps across
