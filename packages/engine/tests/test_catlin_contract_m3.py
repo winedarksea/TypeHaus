@@ -102,8 +102,9 @@ def test_floor_joist_counts_match_old_model(catlin_model):
     west_joists = [m for m in west.members if m.category == "joist"]
     east_joists = [m for m in east.members if m.category == "joist"]
     # Less two on the west: FO-S-ERV-CHASE's trimmer pack and header (2026-09-24). Less
-    # three since 2026-09-25: the y=25'-4" line is FO-S-STAIR's full-span south pack.
-    assert len(west_joists) == expected_positions - 3
+    # three since 2026-09-25: the y=25'-4" line is FO-S-STAIR's full-span south pack. Less
+    # four since 2026-11-18: the y=0 gable edge is an LSL rim board.
+    assert len(west_joists) == expected_positions - 4
     # Plus FS-S-EAST's authored extra line (y=9 1/2", FURN-M-LIV-TRACK-S's track), less its
     # two gable-end edge lines, LSL rim boards since 2026-11-18.
     assert len(east_joists) == expected_positions - 2 + len(
