@@ -104,6 +104,27 @@ def test_an_edge_rim_hole_keeps_twice_its_diameter_off_the_rim_end(catlin_model_
     assert _rim_end_finding("duct", "T", floor, rim, end + 2.6 * M_PER_IN, hole, False)
 
 
+def test_no_edge_rim_hole_under_a_jamb_pack(catlin_model_ro) -> None:
+    """TJ-8000 p.4: no rim hole under a concentrated load. CD-M-DATA-PORCH crosses
+    FS-S-WEST's south rim at x ~ 181.9", under WIN-S-PLANT4's RO and clear of its east
+    jamb pack (W-S-S1's king and jack, 191..194"); the same hole there would FAIL."""
+    from typehaus.checks.mep.routing_members import _rim_load_finding
+    from typehaus.resolve.rim_loads import rim_point_loads
+
+    floor = _floor(catlin_model_ro, "FS-S-WEST")
+    rim = next(m for m in floor.members if m.child_key.startswith("edge-rim-"))
+    loads = rim_point_loads(catlin_model_ro, floor, rim)
+    east = next(load for load in loads if load.lo_m / M_PER_IN > 185.0)
+    assert (east.lo_m / M_PER_IN, east.hi_m / M_PER_IN) == pytest.approx((191.0, 194.0))
+    assert east.source == "W-S-S1's jamb pack"
+    hole = 0.922 * M_PER_IN
+    assert _rim_load_finding("conduit", "T", floor, rim.child_key, 181.9 * M_PER_IN, hole,
+                             loads) is None
+    under = _rim_load_finding("conduit", "T", floor, rim.child_key, 190.8 * M_PER_IN, hole,
+                              loads)
+    assert under is not None and under.result.value == "fail"
+
+
 def test_corridors_delegates_rather_than_re_deriving(catlin_model_ro) -> None:
     """The routing side and the checks side must not be able to drift apart."""
     from typehaus.routing.corridors import crossing_window
