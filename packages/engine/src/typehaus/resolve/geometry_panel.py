@@ -1,6 +1,6 @@
 """Closed horizontal sheet meshes with polygon openings, shared by equipment details."""
 
-from shapely import constrained_delaunay_triangles
+import shapely
 from shapely.geometry import Polygon
 from shapely.geometry.polygon import orient
 from shapely.ops import triangulate
@@ -24,7 +24,9 @@ def panel(outer, holes, bottom, top, *, constrained=False):
                                      bottom, top, constrained=constrained) for p in polygon.geoms))
     polygon = orient(polygon, sign=1.0)
     positions, triangles = [], []
-    caps = (constrained_delaunay_triangles(polygon).geoms if constrained
+    # Pyodide's Shapely 2.0 lacks CDT: fall back to filtered Delaunay
+    caps = (shapely.constrained_delaunay_triangles(polygon).geoms
+            if constrained and hasattr(shapely, "constrained_delaunay_triangles")
             else (triangle for triangle in triangulate(polygon) if polygon.covers(triangle)))
     for triangle in caps:
         corners = tuple(orient(triangle, sign=1.0).exterior.coords)[:3]
