@@ -246,7 +246,7 @@ SUPPLY = [
     # HydroBoost riser's side tap (E 42 3/8"), a 3" stub on the port axis under DU-B-WH-OUT,
     # a 90 to x=12'-9 3/4" (8" clear of the ducts), up to 95 1/2", north and east, and down
     # into EQ-B-HW-HEADER's +y-facing inlet. UPC 604.13: copper at the tap, never PEX.
-    # PR-B-HW-SBATH and PR-B-HW-SUITE stay 3/4" and tee off the 95 1/2" legs ahead of the
+    # PR-B-HW-SBATH (PEX-A) and PR-B-HW-SUITE stay 3/4" and tee off the 95 1/2" legs ahead of the
     # header. The header's eight 1/2" branches: plan/mep_supply_header.py.
     PipeRun(uid="CBPW31AAAA", tag="PR-B-HW-TRUNK", system=PipeSystem.WATER_HOT,
             path=(pt(inch(145.023), inch(188.405)), pt(inch(146.523), inch(185.807)),
@@ -534,6 +534,8 @@ SUPPLY = [
     # derived RO (owner, 2026-10-29), and jogs east over the plates in FS-S-WEST's
     # y 311 3/4"..322 1/4" bay to x=6'-4", where the second-storey branches tee off. The
     # bay is 2 3/4" wide, so this run takes the 1/2" (R-3.1) sleeve the house uses elsewhere.
+    # PEX-A since 2026-11-19 (design review §10): same 7/8" OD, 0.671" bore against copper's
+    # 0.785", so the branch holds ~0.73 gal, not 1.00. The tee stays on the copper trunk.
     PipeRun(uid="CBPW41AAAA", tag="PR-B-HW-SBATH", system=PipeSystem.WATER_HOT,
             path=(pt(inch(153.786), inch(191.36)), pt(inch(102), inch(191.36)), pt(inch(102), inch(212.5)),
                   pt(inch(102), inch(212.5)), pt(inch(102), inch(303)),
@@ -543,7 +545,7 @@ SUPPLY = [
                   pt(inch(66.5), inch(319.5)), pt(inch(66.5), inch(319.5)),
                   pt(inch(76), inch(319.5)), pt(inch(76), inch(319.5)),
                   pt(inch(76), inch(319.5)), pt(inch(76), inch(319.5))),
-            diameter=inch(0.75), material="copper", insulation='1/2" fiberglass sleeve, ASJ jacket (R-3.1)',
+            diameter=inch(0.75), material="pex", insulation='1/2" fiberglass sleeve, ASJ jacket (R-3.1)',
             elevations=(inch(95.5), inch(95.5), inch(95.5), inch(82.5), inch(82.5), inch(85.5), inch(85.5),
                   inch(85.5), inch(88), inch(88), inch(97.4375), inch(109.438), inch(219.438),
                   inch(219.438), inch(229.438), inch(259.438), inch(321.438)),

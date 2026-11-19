@@ -3141,7 +3141,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 ### Water supply
 
 - **Supply is PEX-A, except copper at `EQ-B-WH`'s taps** (owner, 2026-09-26): `PR-B-HW-TRUNK`,
-  `PR-B-CW-WH`, `PR-B-HW-SBATH` and `PR-B-CW-BATH`.
+  `PR-B-CW-WH` and `PR-B-CW-BATH`. `PR-B-HW-SBATH` went PEX-A on 2026-11-19 (design review §10),
+  teeing off the copper trunk.
   UPC 604.13 keeps PEX out of the first 18" of piping on any water heater, graded by
   `mep.pex_water_heater_clearance` along the developed piping; the header's PEX branches
   start 7 ft of trunk out.

@@ -240,13 +240,21 @@ trunk (conservative for the two 3/4" tees): 19.3 ft x 0.0429 = 0.83 gal before, 
 | powder lav, `PR-B-HW-BATH1` | 12.8 | 0.95 | 20.8 | 0.50 |
 | basement lav, `PR-B-HW-BATH` | 15.8 | 0.97 | 14.2 | 0.44 |
 | suite and attic (`PR-B-HW-SUITE`, 3/4" PEX) | 41.0 | 1.60 | 25.6 | 0.79 |
-| hall bath upstairs (`PR-B-HW-SBATH`, 3/4" copper) | 21.7 | 1.37 | 39.7 | 1.31 |
+| hall bath upstairs (`PR-B-HW-SBATH`, 3/4" PEX-A since 2026-11-19) | 21.7 | 1.37 | 39.7 | 1.06 |
 
 At 1.5 gpm the kitchen waits ~28 s (was ~54 s in the closet). Three branches got longer: the
 powder lav (+8.0 ft, it now crosses from the workshop), the hall bath upstairs (+18 ft of
 3/4" copper) and the main bath sink (+0.5 ft). Each still waits less: the trunk is 12 ft
 shorter. The hall bath upstairs is the longest wait left; a ninth outlet
 cannot feed it (3/4" by `mep.pipe_sizing`).
+
+**`PR-B-HW-SBATH` went PEX-A on 2026-11-19 (design review §10).** It has the same 7/8" OD and a
+smaller bore: 39.7 ft x 0.0189 = 0.75 gal against 39.7 x 0.0251 = 1.00 gal in copper. With
+the trunk that is 1.06 gal, not 1.31, so the wait at 1.5 gpm falls from ~52 s to ~42 s. The
+cost is friction. Hazen-Williams at C = 150 and 5 gpm (the straight branch, before fittings)
+gives 2.72 psi/100 ft x 39.7 ft = 1.1 psi in copper (ID 0.785") and 5.44 psi/100 ft = 2.2 psi
+in PEX (ID 0.681"). Its fittings are all catalogued (`mep.fitting_pattern`), and the tee stays
+on the copper trunk, 66" from the heater (`mep.pex_water_heater_clearance`).
 
 **Pressure on the 1/2" kitchen branch, by hand (2026-11-08).** Hazen-Williams, C = 150, ID
 0.475": psi/100 ft = 0.433 x 0.2083 x (100/150)^1.852 x Q^1.852 / 0.475^4.8655. Length was
