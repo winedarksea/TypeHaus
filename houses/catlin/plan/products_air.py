@@ -47,7 +47,7 @@ SIDEWALL_CHEVRON_SUN_GOLD = Product(
     tag="PROD-AIR-CHEVRON-1206-SG", brand="Reggio Register Co.", model="Chevron 6x12",
     name="Chevron grille, 6x12 duct / 8x14 overall, 3/16in laser-cut aluminium, Sun Gold, "
          "mounting holes",
-    url="https://www.reggioregister.com/products/vcu",
+    url="https://www.ventcoversunlimited.com/products/chevron-design-vent-covers-made-to-order",
     source=f"Made to order, 4-6 wk; price and free area unconfirmed, need >= 29 in2 (100 cfm "
            f"at 500 fpm) on the submittal. Or equal: any laser-cut 6x12 decorative grille "
            f"meeting that free area. {_SPEC} §4.",
@@ -55,7 +55,7 @@ SIDEWALL_CHEVRON_SUN_GOLD = Product(
 LOUVER_DAMPER_814 = Product(
     tag="PROD-AIR-LOUVER-814", brand="Reggio Register Co.", model="814-BL",
     name="Steel louver damper behind a 6x12 grille, key-set at commissioning, 2 5/16in deep",
-    url="https://www.ferguson.com/search/?q=reggio+814-BL",
+    url="https://www.fergusonhome.com/reggio-registers-814/s1246350",
     source=f"The Chevron has no damper of its own; this sits in the 6in register box. {_SPEC} §4.",
 )
 FLOOR_REGISTER_HP = Product(

@@ -1,6 +1,8 @@
 """Representative openings of a laser-cut chevron grille (Reggio Chevron)."""
 from __future__ import annotations
 
+import math
+
 from typehaus.quantities import M_PER_IN
 
 # Visual defaults read off the product photo, not a cut file.
@@ -20,7 +22,9 @@ def chevron_openings(width, height):
     column = field_w / columns
     web, drop, slot = (v * M_PER_IN for v in (_WEB_IN, _DROP_IN, _SLOT_IN))
     pitch = _ROW_PITCH_IN * M_PER_IN
-    rows = max(1, int((field_h - drop - slot - web) / pitch) + 1)
+    rows = math.floor((field_h - drop - slot - web) / pitch) + 1
+    if rows < 1 or column <= web:
+        return ()  # too small for one slot: a plain plate
     # Centre the stack of rows in the field.
     y_start = -(drop + slot + (rows - 1) * pitch) / 2
     slots = []

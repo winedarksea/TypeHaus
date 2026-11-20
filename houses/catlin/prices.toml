@@ -3791,10 +3791,11 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # System 1's aluminium sidewalls: TRUaire A220VO 12X06 $79.80 and 08X06 $68.60 (hvacquick,
 # 2026-10-31); Hart & Cooley HVD is the dearer or-equal. Aimed on site, hence the labour.
 "REG-T-HP-SIDE-1206" = { material = { low = 75, high = 115 }, labour = { low = 25, high = 60 } }  # 3 ea
-# RM-S-SUITE's supply (owner, 2026-11-19): Reggio Chevron 6x12 Sun Gold, made to order, plus the
-# 814-BL louver ($35.95 Ferguson). ESTIMATE, Chevron price unread; quote pending (Reggio's cut
-# 6x12 lines read $69.95-$92.95, so $70-110). Labour sets the box, the louver and the key.
-"REG-T-HP-SUITE-CHEVRON" = { material = { low = 105, high = 150 }, labour = { low = 20, high = 45 } }  # 1 ea
+# RM-S-SUITE's supply (owner, 2026-11-19): Reggio Chevron 6x12 Sun Gold, made to order. ESTIMATE,
+# Chevron price unread; quote pending (Reggio's cut 6x12 lines read $69.95-$92.95, so $70-110).
+"REG-T-HP-SUITE-CHEVRON" = { material = { low = 70, high = 110 }, labour = { low = 15, high = 30 } }  # 1 ea
+# Its 814-BL louver part, $35.95 Ferguson; labour sets it in the box and keys it at commissioning.
+"PROD-AIR-LOUVER-814" = { material = { low = 34, high = 40 }, labour = { low = 5, high = 15 } }  # 1 ea
 # Stair: A220VO 12x6 plus TH-HP-STAIR-BOX-01, included once. Straight 4in branch bills by LF.
 "REG-T-HP-STAIR-SIDE" = { material = { low = 100, high = 155 }, labour = { low = 40, high = 85 } }
 "REG-T-HP-STUDY-SIDE" = { material = { low = 65, high = 100 }, labour = { low = 25, high = 60 } }  # 1 ea
