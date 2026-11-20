@@ -22,6 +22,7 @@ from typehaus.model.placeable_symbols._frame import (
 )
 from typehaus.model.placeable_symbols._harvia_cilindro import harvia_cilindro_pc110e
 from typehaus.model.placeable_symbols._laundry_tower import laundry_tower
+from typehaus.model.placeable_symbols._liftmaster_87504 import liftmaster_87504
 from typehaus.model.placeable_symbols._mini_split_head import mini_split_head
 from typehaus.model.placeable_symbols._plant_reservoir import (
     plant_irrigation_rack,
@@ -338,6 +339,7 @@ def grille(*, louvers: int = 5) -> Builder:
 
 
 APPLIANCE_SYMBOLS: dict[str, Builder] = {
+    "liftmaster-87504-267-7ft": liftmaster_87504,
     "plant-reservoir": plant_reservoir,
     "plant-irrigation-rack": plant_irrigation_rack,
     "plant-leak-sensors": plant_leak_sensors,

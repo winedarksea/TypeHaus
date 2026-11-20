@@ -57,8 +57,9 @@ LIFTMASTER_87504 = Product(
     source="Replaces the discontinued 8550W (06-001). Owner's manual (Smart LED 87504-267/84501, "
            "read 2026-11-04): 'ONLY compatible with myQ and Security+ 2.0'; control panel on red/"
            "white terminals; 12 V 485LM battery. Garaga page: belt drive, battery backup, "
-           "headroom 2 in. Head 10.5 L x 18.7 W x 8.185 H in (30 in wide with the decorative "
-           "doors open) from reposted product guides, NOT the LiftMaster PDF. ratgdo32 supports "
+           "headroom 2 in. LiftMaster product guide: head 10.5 L x 18.7 W x 8.185 H in "
+           "(30 in wide with the decorative doors open), 124 in installed with the 7 ft rail. "
+           "ratgdo32 supports "
            "Security+ 2.0 (ratcloud / ratgdo docs); no 87504 report was found, and the manual "
            "never names the learn-button colour: CONFIRM yellow on arrival. Driven by a ratgdo32 "
            "on ESPHome; MyQ and its camera are never set up. Not Security+ 3.0 (white button)."
@@ -225,8 +226,10 @@ DEVICE_TYPES = (
 # --- appliances: equipment the house names but does not wire in --------------
 APPLIANCE_TYPES = (
     ApplianceType(
-        tag="APPL-LIFTMASTER-87504-267", name="Garage door opener, belt trolley (LiftMaster 87504-267)",
+        tag="APPL-LIFTMASTER-87504-267",
+        name="Garage door opener, belt trolley (LiftMaster 87504-267)",
         product_ref=LIFTMASTER_87504.tag, footprint=(inch(18.7), inch(10.5)), height=inch(8.185),
+        model_representation=ModelRepresentation(symbol="liftmaster-87504-267-7ft"),
         needs=frozenset({Service.POWER_120}), ports=_P120, source=LIFTMASTER_87504.source),
     ApplianceType(
         tag="APPL-GRIZZLE-SMART-40", name="EVSE, 40 A hardwired (Grizzl-E Smart, plug removed)",

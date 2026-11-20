@@ -54,8 +54,9 @@ def is_parts_furniture(furniture_type: Any) -> bool:
 
 
 def is_parts_fixture(model_symbol: str | None) -> bool:
-    """Whether the emitter draws this fixture from its generated parts, not a prism."""
+    """Whether the emitter uses generated parts for this fixture or appliance."""
     return model_symbol in {
+        "liftmaster-87504-267-7ft",
         "plant-reservoir", "plant-irrigation-rack", "plant-leak-sensors",
         "kohler-underscore-6036", "kohler-underscore-6032", "roman-tub-filler",
         "solid-surface-vanity", "sektion-vanity", "sektion-vanity-indy",

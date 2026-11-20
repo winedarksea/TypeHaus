@@ -295,7 +295,8 @@ export function MemberInspector({ located }: { located: LocatedMember }) {
       <span className="k">Length</span><span>{formatFtIn(Math.max(...sticks.map((stick) => stick.length_m)))}</span>
       <span className="k">Elevation</span>
       <span>{formatFtIn(member.z0_m)} → {formatFtIn(member.z1_m)}{raked ? " (raked)" : ""}</span>
-      <span className="k">Material</span><span>{member.material ?? "lumber"}</span>
+      <span className="k">Stock</span><span>{member.stock ?? member.profile}</span>
+      {member.material && <><span className="k">Material</span><span>{member.material}</span></>}
       <ProductRows product={productForMaterial(model, member.material)} />
       {/* Only shown when the resolver actually overrode the category default — otherwise the
           trade is whatever the category implies and repeating it here is noise. */}

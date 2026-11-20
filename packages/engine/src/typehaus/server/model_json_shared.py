@@ -19,6 +19,7 @@ from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember
 from typehaus.server.model_json_mesh import mesh_json
 from typehaus.source.provenance import Provenance
+from typehaus.takeoff.labels import EMPTY_LABELS, lumber_label
 
 
 def _provenance(prov: Provenance | None, tag: str) -> dict[str, Any] | None:
@@ -105,6 +106,9 @@ def _member_json(m: FramedMember) -> dict[str, Any]:
         "plan_width_m": m.plan_width_m,
         "connection": m.connection,
         "material": m.material,
+        # What the yard is asked for, worded as the cut list words it (an LSL rim board, a
+        # TJI, SPF): the inspector shows this rather than guessing at a bare profile.
+        "stock": lumber_label(m.profile, m.material, EMPTY_LABELS) if m.profile else None,
         # Explicit visibility trade override (fascia is trim *and* framing); ``None`` leaves
         # the consumer on its category-derived default.
         "trade": m.trade,

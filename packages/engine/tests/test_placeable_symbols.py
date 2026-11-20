@@ -189,12 +189,26 @@ def test_parts_stay_inside_the_declared_box_and_name_a_real_colour(
         (cx, cy, cz), (sx, sy, sz) = part["center"], part["size"]
         assert part["color"] in PART_COLORS
         assert min(sx, sy, sz) > 0, f"{symbol} has a degenerate part"
+        if part.get("role") == "garage-opener:installation":
+            continue  # The catalog box is the motor head. Check the installation below.
         assert abs(cx) + sx / 2 <= width / 2 + side_projection + TOLERANCE, (
             f"{symbol} part escapes width")
         assert abs(cy) + sy / 2 <= depth / 2 + projection + TOLERANCE, (
             f"{symbol} part escapes depth")
         assert cz - sz / 2 >= -base_projection - TOLERANCE, f"{symbol} part sinks below its base"
         assert cz + sz / 2 <= height + TOLERANCE, f"{symbol} part escapes its height"
+
+
+def test_liftmaster_opener_spans_the_published_length_and_reaches_the_ceiling() -> None:
+    from typehaus.quantities import inch
+
+    parts = model_parts("liftmaster-87504-267-7ft", *(inch(v).meters for v in (18.7, 10.5, 8.185)))
+    rear = min(part["center"][1] - part["size"][1] / 2 for part in parts)
+    front = max(part["center"][1] + part["size"][1] / 2 for part in parts)
+    ceiling = max(part["center"][2] + part["size"][2] / 2 for part in parts)
+    assert front - rear == pytest.approx(inch(124).meters)
+    assert ceiling == pytest.approx(inch(33.375).meters)
+    assert any(part["color"] == "disposal-reset" and part["center"][2] < 0 for part in parts)
 
 
 @pytest.mark.parametrize("symbol", sorted(_REGISTRY))

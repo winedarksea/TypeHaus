@@ -167,6 +167,7 @@ SYMBOL_NAMES = (UNIFI_ACCESS_POINT_SYMBOLS
     "tall-cabinet-double", "tall-cabinet-triple", "besta", "tannforsen-wall", "countertop-bracket",
     # appliances + mechanical/electrical equipment
     "refrigerator", "range", "dishwasher", "washer", "dryer", "washer-dryer-stacked",
+    "liftmaster-87504-267-7ft",
     "microwave", "countertop-microwave", "hood", "tea-kettle", "espresso-machine",
     "insinkerator-badger-5",
     "badger-5-with-dearborn-p9703wbg",

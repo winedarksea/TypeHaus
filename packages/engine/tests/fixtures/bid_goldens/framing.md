@@ -19,11 +19,11 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 0.5x11.875 Laminated strand lumber, 8' (0.5x11.875:lsl) | 1 | pc | sister joist | 8 LF | building |
 | 0.75x3.5 Poplar trim, 1x4 S4S, paint grade, 8' (0.75x3.5:poplar-trim-paint) | 2 | pc | blocking | 16 LF | building |
 | 1.0x3.5 SPF No. 2 & Btr framing lumber, 8' (1.0x3.5:spf) | 1 | pc | blocking | 8 LF | building |
-| 1 1/4" x 11 7/8" rim board, 8' (1.25x11.875 rim) | 4 | pc | rim board, sister joist | 32 LF | building |
-| 1 1/4" x 11 7/8" rim board, 10' (1.25x11.875 rim) | 1 | pc | rim board | 10 LF | building |
-| 1 1/4" x 11 7/8" rim board, 14' (1.25x11.875 rim) | 2 | pc | rim board | 28 LF | building |
-| 1 1/4" x 11 7/8" rim board, 16' (1.25x11.875 rim) | 4 | pc | rim board | 64 LF | building |
-| 1 1/4" x 11 7/8" rim board, 20' (1.25x11.875 rim) | 12 | pc | rim board | 240 LF | building |
+| 1 1/4" x 11 7/8" LSL rim board 1.3E, 8' (1.25x11.875 rim) | 4 | pc | rim board, sister joist | 32 LF | building |
+| 1 1/4" x 11 7/8" LSL rim board 1.3E, 10' (1.25x11.875 rim) | 1 | pc | rim board | 10 LF | building |
+| 1 1/4" x 11 7/8" LSL rim board 1.3E, 14' (1.25x11.875 rim) | 2 | pc | rim board | 28 LF | building |
+| 1 1/4" x 11 7/8" LSL rim board 1.3E, 16' (1.25x11.875 rim) | 4 | pc | rim board | 64 LF | building |
+| 1 1/4" x 11 7/8" LSL rim board 1.3E, 20' (1.25x11.875 rim) | 12 | pc | rim board | 240 LF | building |
 | 1.5x11.875 SPF No. 2 & Btr framing lumber, 8' (1.5x11.875:spf) | 5 | pc | blocking | 40 LF | building |
 | 1 1/2" x 14" LSL, 8' (1.5x14 LSL) | 5 | pc | blocking | 40 LF | building |
 | 1 3/4" x 11 7/8" LSL 1.55E, 16' (1.75x11.875 LSL) | 2 | pc | rim board | 32 LF | building |
@@ -349,11 +349,11 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 0.5x11.875 Laminated strand lumber, 8' (0.5x11.875:lsl) | — |
 | 0.75x3.5 Poplar trim, 1x4 S4S, paint grade, 8' (0.75x3.5:poplar-trim-paint) | — |
 | 1.0x3.5 SPF No. 2 & Btr framing lumber, 8' (1.0x3.5:spf) | — |
-| 1 1/4" x 11 7/8" rim board, 8' (1.25x11.875 rim) | — |
-| 1 1/4" x 11 7/8" rim board, 10' (1.25x11.875 rim) | — |
-| 1 1/4" x 11 7/8" rim board, 14' (1.25x11.875 rim) | — |
-| 1 1/4" x 11 7/8" rim board, 16' (1.25x11.875 rim) | — |
-| 1 1/4" x 11 7/8" rim board, 20' (1.25x11.875 rim) | — |
+| 1 1/4" x 11 7/8" LSL rim board 1.3E, 8' (1.25x11.875 rim) | — |
+| 1 1/4" x 11 7/8" LSL rim board 1.3E, 10' (1.25x11.875 rim) | — |
+| 1 1/4" x 11 7/8" LSL rim board 1.3E, 14' (1.25x11.875 rim) | — |
+| 1 1/4" x 11 7/8" LSL rim board 1.3E, 16' (1.25x11.875 rim) | — |
+| 1 1/4" x 11 7/8" LSL rim board 1.3E, 20' (1.25x11.875 rim) | — |
 | 1.5x11.875 SPF No. 2 & Btr framing lumber, 8' (1.5x11.875:spf) | — |
 | 1 1/2" x 14" LSL, 8' (1.5x14 LSL) | — |
 | 1 3/4" x 11 7/8" LSL 1.55E, 16' (1.75x11.875 LSL) | — |

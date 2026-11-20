@@ -138,11 +138,13 @@ stay Security+ 2.0: not 3.0 (white button: ratgdo cannot speak it) and not the 8
 jackshaft. Two things are unverified: no ratgdo report for the 87504 was found, and the manual
 never names the learn-button colour, so confirm yellow when the box opens (if it is not, fall back
 to ratgdo's dry-contact mode with a door-position sensor). The built-in camera and MyQ are never
-set up. The head is 10.5 x 18.7 x 8.185 in (30 in wide with the decorative doors open; reposted
-product guides, not the LiftMaster PDF) and needs 2 in above the door's high point. It is 11' back
-on the door's centreline, hung on straps, and plugs into `ED-G-GDO-RC`, on `CKT-LT-MAIN` behind the
-blank-face GFCI `ED-G-GDO-GFCI` by the light switch (2026-10-30). The ceiling is 10'-1" above the
-slab, so there is 3'-1" over the 7'-0" door: room for a standard-lift track and a trolley rail.
+set up. The [LiftMaster product guide](https://www.upanddowngaragedoors.com/wp-content/uploads/2022/02/87504_267_Product_Guide_Eng.pdf)
+gives a 10.5 x 18.7 x 8.185 in head (30 in wide with the decorative doors open), 2 in of headroom
+above the door's high point and a 124 in installed length with the 7 ft rail. The model sets the
+head 118¾ in inboard of the finished header wall on the door's centreline, with a 33⅜ in drop from
+the ceiling to the camera base. The rail section, trolley and hanging hardware are schematic.
+The opener plugs into `ED-G-GDO-RC` on `CKT-LT-GARAGE` behind the blank-face GFCI
+`ED-G-GDO-GFCI` by the light switch.
 
 **Smoke/CO/heat.** One Kidde hardwired line, every unit with a sealed backup, all on
 `CKT-LT-BACKUP`. Kidde wants every interconnected unit on one branch. The line is:

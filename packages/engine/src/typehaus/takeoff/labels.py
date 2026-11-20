@@ -201,8 +201,10 @@ def _fraction_in(value: object) -> str:
 DEFAULT_LUMBER = "spf"
 #: The E grade the design values an EWP is checked against were published for: LVL by
 #: ``library/member_grades`` (Microllam 2.0E), 1 3/4" LSL by the TimberStrand 1.55E stringer
-#: table. A thickness nothing reads (an LSL stud) stays ungraded, never guessed.
-_EWP_GRADE: dict[tuple[str, float | None], str] = {("LVL", None): "2.0E", ("LSL", 1.75): "1.55E"}
+#: table, a rim board by ``library/rim_boards`` (TJ-8000: 1 1/4" and 1 1/2" 1.3E, 1 3/4" 1.55E).
+#: A thickness nothing reads (an LSL stud) stays ungraded, never guessed.
+_EWP_GRADE: dict[tuple[str, float | None], str] = {
+    ("LVL", None): "2.0E", ("LSL", 1.75): "1.55E", ("rim", None): "1.3E", ("rim", 1.75): "1.55E"}
 _PLIES = re.compile(r"(?:(\d+)-)?(.+)")
 _SAWN = re.compile(r"\d+x\d+")
 _EWP = re.compile(r"(\d[\d.]*)x(\d[\d.]*) (LVL|LSL|rim)")
@@ -221,7 +223,7 @@ def lumber_label(profile: str, material: object, labels: LabelIndex) -> str:
         width, depth, kind = m.groups()
         grade = _EWP_GRADE.get((kind, float(width)), _EWP_GRADE.get((kind, None), ""))
         size = (f"{_fraction_in(width)} x {_fraction_in(depth)} "
-                f"{'rim board' if kind == 'rim' else kind} {grade}").strip()
+                f"{'LSL rim board' if kind == 'rim' else kind} {grade}").strip()
     elif m := _JOIST.fullmatch(size):
         size = f"{_fraction_in(m.group(1))} {m.group(2)}"
     else:
