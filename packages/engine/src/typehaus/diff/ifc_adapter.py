@@ -186,7 +186,11 @@ def baseline_elems(model: ResolvedModel) -> list[DiffElem]:
         product_type = device_types.get(item.type_ref or "")
         track = getattr(product_type, "track_lighting", None)
         emitted = _emitted_parts_bounds(model, item, hosted_countertops, body_z0)
-        if emitted is not None:
+        if item.kind == "Register" and item.body_mesh is not None:
+            # emit/ifc/mep._emit_register tessellates the resolved body, not the type's box.
+            xs, ys, zs = zip(*item.body_mesh.positions, strict=True)
+            centroid, bbox = _bounds(list(zip(xs, ys, strict=True)), min(zs), max(zs))
+        elif emitted is not None:
             centroid, bbox = emitted
         elif track is not None:
             from typehaus.model.placeable_symbols import place_local

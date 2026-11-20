@@ -9,6 +9,29 @@ BOX_TRIANGLES = ((0, 2, 1), (0, 3, 2), (4, 5, 6), (4, 6, 7),
                  (2, 3, 7), (2, 7, 6), (3, 0, 4), (3, 4, 7))
 
 
+def fixture_parts(product_type, tag: str, hosted_countertops) -> list | None:
+    """A fixture's or appliance's generated parts as the emitter draws them, else None (a prism).
+
+    One reader for the emitter and ``diff/ifc_bounds.py``, so the self-diff sees the same body.
+    """
+    from typehaus.emit.ifc.architectural import is_parts_fixture
+    from typehaus.model.canvas import model_symbol_for
+    from typehaus.model.placeable_symbols import model_parts
+    from typehaus.model.placeable_symbols._frame import is_counter_part
+
+    symbol = model_symbol_for(product_type)
+    shower = getattr(product_type, "shower_assembly", None)
+    if not is_parts_fixture(symbol) and shower is None:
+        return None
+    representation = product_type.model_representation
+    return [part for part in model_parts(
+        symbol, product_type.footprint[0].meters, product_type.footprint[1].meters,
+        product_type.height.meters, shower_assembly=shower,
+        material_refs=representation.material_refs if representation else None)
+        # A vanity under a countertop slab: the slab draws its deck (→ millwork).
+        if tag not in hosted_countertops or not is_counter_part(part)]
+
+
 def parts_representation(f, body, parts, center, rotation, z_base, *, materials=None):
     items = []
     for part in parts:

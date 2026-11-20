@@ -21,7 +21,8 @@ def _bounds(
 
 def _emitted_parts_bounds(model: ResolvedModel, item, hosted_countertops, base_z_m: float):
     """Bounds of a furniture or fixture the emitter draws from generated parts, else None."""
-    from typehaus.emit.ifc.architectural import is_parts_fixture, is_parts_furniture
+    from typehaus.emit.ifc.architectural import is_parts_furniture
+    from typehaus.emit.ifc.placeable_parts import fixture_parts
     from typehaus.model.canvas import model_symbol_for
     from typehaus.model.placeable_symbols import model_parts
     from typehaus.model.placeable_symbols._frame import is_counter_part
@@ -54,11 +55,9 @@ def _emitted_parts_bounds(model: ResolvedModel, item, hosted_countertops, base_z
     fixture = next((t for t in (*model.plan.library.fixture_types,
                                 *model.plan.library.appliance_types)
                     if t.tag == item.type_ref), None)
-    symbol = model_symbol_for(fixture) if fixture is not None else None
-    if is_parts_fixture(symbol):
-        parts = [part for part in model_parts(symbol, fixture.footprint[0].meters,
-                                              fixture.footprint[1].meters, fixture.height.meters)
-                 if item.tag not in hosted_countertops or not is_counter_part(part)]
+    parts = (fixture_parts(fixture, item.tag, hosted_countertops)
+             if fixture is not None else None)
+    if parts is not None:
         return _parts_bounds(parts, item.position, item.rotation_degrees, base_z_m)
     return None
 
@@ -75,6 +74,10 @@ def _parts_bounds(parts, position, rotation_degrees: float, base_z_m: float):
             continue
         center_x, center_y, center_z = part["center"]
         size_x, size_y, size_z = part["size"]
+        if part.get("points"):  # an extruded ring, as parts_representation draws it
+            local_vertices.extend((x, y, center_z + dz * size_z / 2)
+                                  for x, y in part["points"] for dz in (-1, 1))
+            continue
         local_vertices.extend(
             (center_x + x * size_x / 2, center_y + y * size_y / 2,
              center_z + z * size_z / 2)

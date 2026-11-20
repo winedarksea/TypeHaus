@@ -723,7 +723,7 @@ def _type_identity(product_type: Any) -> dict[str, str]:
 def _emit_resolved_placeables(f: Any, body: Any, model: ResolvedModel, storeys: dict[str, Any],
                               project_uuid: Any) -> None:
     """Export resolved plumbing fixtures and appliances with semantic, stable identities."""
-    from typehaus.model.canvas import model_symbol_for
+    from typehaus.emit.ifc.placeable_parts import fixture_parts, parts_representation
     from typehaus.resolve.geometry_countertops import slab_hosts
 
     hosted_countertops = slab_hosts(model)
@@ -751,20 +751,8 @@ def _emit_resolved_placeables(f: Any, body: Any, model: ResolvedModel, storeys: 
             type_cache[type_key] = type_object
         element = ll.create_entity(f, ifc_class, name=item.tag)
         element.GlobalId = derive_guid(project_uuid, item.uid)
-        model_symbol = model_symbol_for(product_type)
-        if (is_parts_fixture(model_symbol)
-                or getattr(product_type, "shower_assembly", None) is not None):
-            from typehaus.emit.ifc.placeable_parts import parts_representation
-            from typehaus.model.placeable_symbols import model_parts
-
-            parts = [part for part in model_parts(
-                model_symbol, product_type.footprint[0].meters,
-                product_type.footprint[1].meters, product_type.height.meters,
-                shower_assembly=getattr(product_type, "shower_assembly", None),
-                material_refs=product_type.model_representation.material_refs
-                if product_type.model_representation else None)
-                # A vanity under a countertop slab: the slab draws its deck (→ millwork).
-                if item.tag not in hosted_countertops or not is_counter_part(part)]
+        parts = fixture_parts(product_type, item.tag, hosted_countertops)
+        if parts is not None:
             representation = parts_representation(
                 f, body, parts, item.position, item.rotation_degrees, item.z_m,
                 materials={material.tag: material for material in model.plan.library.materials})
