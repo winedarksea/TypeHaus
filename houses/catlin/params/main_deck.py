@@ -248,9 +248,9 @@ _CLN2_X_W = inch(174)              # 1'-2" east of W-M-CLN2's west end at 13'-4"
 _CLN2_X_E = inch(201)              # 1'-3" west of the x=18'-0" bearing line
 # ** WALL-TOP BLOCKING (Minn. R. 1309.0404, Table R404.1(1) fn. f; basis note §4). ** Where a
 # TJI field runs PARALLEL to a backfilled foundation wall, full-depth blocking in the first
-# three joist spaces at <= 72" o.c., each station tied to the sill by five A35Z
-# (``JoistSpec.station_ties``, derived beside the block) and within 8" of a MASA (derived: the nearest anchor moves to
-# it). Two lines per station block four spaces, as on W-B-N1. ``code.MN_1309_0404_wall_top``
+# three joist spaces at <= 72" o.c., each station tied to the sill by five derived A35Z
+# (``JoistSpec.station_ties``) within 8" of a MASA (derived: one is added where none is).
+# Two lines per station block four spaces, as on W-B-N1. ``code.MN_1309_0404_wall_top``
 # grades it; W-B-N2 has no station because FO-M-STAIR fills those spaces.
 def _wall_top_blocks(wall, xs, lines):
     return tuple(

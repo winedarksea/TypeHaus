@@ -65,7 +65,8 @@ def _dot(a, b) -> float:
     return a[0] * b[0] + a[1] * b[1]
 
 
-def _footprint(centre, inward, dims):
+def footprint(centre, inward, dims):
+    """The flat leaf's plan rectangle on the sill."""
     from shapely.geometry import Polygon
 
     h, (nx, ny) = dims.width_m / 2.0, inward
@@ -96,7 +97,7 @@ def _clear(index, centre, inward, dims) -> bool:
     """No framing but the rims stands where the tie would lie."""
     from shapely.geometry import LineString
 
-    spot = _footprint(centre, inward, dims)
+    spot = footprint(centre, inward, dims)
     x0, y0, x1, y1 = spot.bounds
     for (a, b, c, d), r, m in _framing(index):
         if a >= x1 or c <= x0 or b >= y1 or d <= y0:
@@ -166,7 +167,7 @@ def _sill_tie_face(index, joint, floor, dims):
 
 def plate_angle_body(index, joint) -> GMesh | None:
     """The tie at a wall-top station or a joist end, on its face and the sill top."""
-    from typehaus.joints.wall_top import edge_face, sill_top_z
+    from typehaus.joints.wall_top import edge_face, sill_returns, sill_top_z
 
     dims = plate_angle_dims(joint.part)
     wall = index.model.wall(joint.members[0]) if joint.members else None
@@ -185,5 +186,8 @@ def plate_angle_body(index, joint) -> GMesh | None:
     centre, inward = placed
     top = wall.plate_top_z_m if wall.plate_top_z_m is not None else wall.z1_m
     probe = (centre[0] + inward[0] * dims.leg_m / 2, centre[1] + inward[1] * dims.leg_m / 2)
-    z_m = sill_top_z(index.model, probe, top)
+    returns = index.__dict__.get("_plate_angle_returns")
+    if returns is None:
+        returns = index.__dict__["_plate_angle_returns"] = sill_returns(index.model)
+    z_m = sill_top_z(index.model, probe, top, returns)
     return plate_angle_mesh(dims, centre, inward, joint.z_m if z_m is None else z_m)

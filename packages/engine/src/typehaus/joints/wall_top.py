@@ -193,6 +193,12 @@ class StationTie:
     station_m: tuple  # the station's plan point on the wall axis
     point_m: tuple  # the leaf's centre on the inboard face
     z_m: float | None  # the sill top under it
+    under: str | None = None  # the framing member over its flat leaf, if any: not nailable
+
+
+def in_span(run, station) -> bool:
+    """Whether ``station`` lies on ``run``'s own stretch of wall (and so on its sill)."""
+    return run.span_m[0] <= station.along_m <= run.span_m[1]
 
 
 def _width(member) -> float:
@@ -222,15 +228,43 @@ def edge_face(floor, wall) -> tuple | None:
     return offset + sign * width / 2.0, (normal[0] * sign, normal[1] * sign)
 
 
-def sill_top_z(model: ResolvedModel, point, base_z_m: float) -> float | None:
+def sill_returns(model: ResolvedModel) -> list:
+    """``(z0, top over the gasket, prepared outline)`` per construction return, for
+    ``sill_top_z``: built once per caller, not once per tie."""
+    from shapely.geometry import Polygon
+    from shapely.prepared import prep
+
+    return [(r.z0_m, r.z1_m + (r.gasket_thickness_m or 0.0),
+             prep(Polygon(r.outline).buffer(1e-6)))
+            for r in model.construction_returns if len(r.outline) >= 3]
+
+
+def sill_top_z(model: ResolvedModel, point, base_z_m: float, returns=None) -> float | None:
     """The top of the sill standing on ``base_z_m`` under ``point``, over its gasket."""
-    from shapely.geometry import Point, Polygon
+    from shapely.geometry import Point
 
     here = Point(point[0], point[1])
-    tops = [r.z1_m + (r.gasket_thickness_m or 0.0) for r in model.construction_returns
-            if abs(r.z0_m - base_z_m) <= 1e-3 and len(r.outline) >= 3
-            and Polygon(r.outline).buffer(1e-6).contains(here)]
+    tops = [top for z0, top, outline in (sill_returns(model) if returns is None else returns)
+            if abs(z0 - base_z_m) <= 1e-3 and outline.contains(here)]
     return max(tops) if tops else None
+
+
+def _under(floor, footprint) -> str | None:
+    """The first non-rim, non-block member standing on ``footprint`` (the flat leaf)."""
+    from shapely.geometry import LineString
+
+    x0, y0, x1, y1 = footprint.bounds
+    for m in floor.members:
+        if m.category in ("rim", "blocking"):
+            continue
+        r = _width(m) / 2.0
+        if (max(m.p0[0], m.p1[0]) + r <= x0 or min(m.p0[0], m.p1[0]) - r >= x1
+                or max(m.p0[1], m.p1[1]) + r <= y0 or min(m.p0[1], m.p1[1]) - r >= y1):
+            continue
+        if LineString([m.p0[:2], m.p1[:2]]).buffer(r, cap_style=2).intersection(
+                footprint).area > 1e-7:
+            return m.child_key or m.category
+    return None
 
 
 def _block_extent(floor, origin, unit, station) -> tuple:
@@ -270,12 +304,13 @@ def station_tie_points(model: ResolvedModel) -> list:
     of one floor both see is tied from the run whose span contains it."""
     from shapely.geometry import Point, Polygon
 
-    from typehaus.resolve.connector_geometry.plate_angle import plate_angle_dims
+    from typehaus.resolve.connector_geometry.plate_angle import footprint, plate_angle_dims
 
     elements = {e.tag: e for e in model.plan.all_elements()} if model.plan else {}
     floors = {f.tag: f for f in model.floors}
     out: list = []
     done: set = set()
+    returns = sill_returns(model)
     for run in parallel_runs(model):
         spec = getattr(elements.get(run.floor_tag), "joists", None)
         if spec is None or spec.station_ties <= 0 or not spec.sill_tie:
@@ -301,7 +336,7 @@ def station_tie_points(model: ResolvedModel) -> list:
 
         for station in run.stations:
             key = (run.floor_tag, round(station.point_m[0], 3), round(station.point_m[1], 3))
-            if key in done or not run.span_m[0] <= station.along_m <= run.span_m[1]:
+            if key in done or not in_span(run, station):
                 continue
             done.add(key)
             extent = _block_extent(floor, origin, unit, station)
@@ -309,6 +344,8 @@ def station_tie_points(model: ResolvedModel) -> list:
                           run, station, blocked):
                 point = at(a)
                 probe = (point[0] + inward[0] * half, point[1] + inward[1] * half)
+                under = _under(floor, footprint(point, inward, dims)) if dims else None
                 out.append(StationTie(run.wall_tag, run.floor_tag, run.storey, spec.sill_tie,
-                                      station.point_m, point, sill_top_z(model, probe, top)))
+                                      station.point_m, point,
+                                      sill_top_z(model, probe, top, returns), under))
     return out

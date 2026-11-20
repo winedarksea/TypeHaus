@@ -28,7 +28,7 @@ from typehaus.checks.soil import site_soil_class
 from typehaus.checks.structural._mn_r404_1_table import SOIL_GROUP_PCF, top_of_wall_row
 from typehaus.checks.structural.foundation import _unbalanced_fill_ft, _wall_height_ft
 from typehaus.findings import Finding
-from typehaus.joints.wall_top import STATION_REACH_M
+from typehaus.joints.wall_top import STATION_REACH_M, in_span
 
 _CID = "code.MN_1309_0404_wall_top"
 _CODE = "Minn. R. 1309.0404"
@@ -120,21 +120,7 @@ def _station_key(floor_tag: str, point) -> tuple:
     return floor_tag, round(point[0], 3), round(point[1], 3)
 
 
-def _station_loads(runs, reactions) -> dict:
-    """Each station's total demand: a station two collinear runs see carries both."""
-    loads: dict = {}
-    for tag, reaction in reactions.items():
-        for run in runs.get(tag, ()):
-            alongs = [s.along_m for s in run.stations]
-            for station, trib in zip(run.stations, _tributaries(run.span_m, alongs),
-                                     strict=True):
-                key = _station_key(run.floor_tag, station.point_m)
-                loads[key] = loads.get(key, 0.0) + reaction * trib / _M_PER_FT
-    return loads
-
-
-def _parallel(ctx, run, reaction_plf, blocking_in, connectors, anchors,
-              loads) -> tuple[list, list]:
+def _parallel(ctx, run, reaction_plf, blocking_in, connectors, anchors) -> tuple[list, list]:
     """``(ok lines, short lines)`` for one parallel floor over the wall."""
     head = f"{run.floor_tag} parallel"
     if run.voids:
@@ -142,10 +128,13 @@ def _parallel(ctx, run, reaction_plf, blocking_in, connectors, anchors,
         return [], [f"{head}: UNKNOWN — a floor opening fills the first three joist spaces "
                     f"along {cut}, so no footnote f blocking can stand there; the restraint "
                     "is an approved-equivalent design (the opening's edge framing)"]
-    if not run.stations:
+    # A station past this run's span stands on its neighbour's sill, whose ties this sill's
+    # thrust cannot reach: the run grades only its own (``station_tie_points``' rule).
+    stations = [s for s in run.stations if in_span(run, s)]
+    if not stations:
         return [], [f"{head}: no blocking stations (footnote f, {blocking_in}\" o.c.)"]
     limit_m = blocking_in * _M_PER_IN
-    alongs = [s.along_m for s in run.stations]
+    alongs = [s.along_m for s in stations]
     gaps = [b - a for a, b in zip(alongs, alongs[1:], strict=False)]
     ends = (alongs[0] - run.span_m[0], run.span_m[1] - alongs[-1])
     short: list = []
@@ -157,20 +146,23 @@ def _parallel(ctx, run, reaction_plf, blocking_in, connectors, anchors,
     profile = next((m.profile for f in ctx.model.floors if f.tag == run.floor_tag
                     for m in f.members if m.category == "joist"), "")
     worst = 0.0
-    for station, trib in zip(run.stations, _tributaries(run.span_m, alongs), strict=True):
+    for station, trib in zip(stations, _tributaries(run.span_m, alongs), strict=True):
         where = f"{head} station at {station.along_m / _M_PER_FT:.1f} ft"
         if not {1, 2, 3} <= station.bays:
             short.append(f"{where}: blocks only joist space(s) {sorted(station.bays)}")
         key = _station_key(run.floor_tag, station.point_m)
-        demand = loads.get(key, reaction_plf * trib / _M_PER_FT)
+        demand = reaction_plf * trib / _M_PER_FT
         # The wall too: a collinear neighbour's ties are within reach of a station at its end.
-        # Ties laid for a shared station serve both runs, which share its demand.
-        mine = [(xy, part) for xy, part, connects, laid_for in connectors
+        mine = [(xy, part, under) for xy, part, connects, laid_for, under in connectors
                 if laid_for == key or ({run.floor_tag, run.wall_tag} <= connects
                                        and math.dist(xy, station.point_m)
                                        <= STATION_REACH_M + 1e-6)]
+        blocked = sorted({under for _xy, _part, under in mine if under})
+        if blocked:
+            return [], short + [f"{where}: UNKNOWN — tie(s) lie under {', '.join(blocked)}, "
+                                "so they cannot be nailed to the sill as laid; a design"]
         capacity = 0.0
-        for _xy, part in mine:
+        for _xy, part, _under in mine:
             each, why = tie_capacity_lb(part, profile)
             if each is None:
                 return [], short + [f"{where}: UNKNOWN — {why}"]
@@ -220,22 +212,18 @@ def foundation_wall_top(ctx: CheckContext) -> list[Finding]:
         return [_unknown(_CID, "no site grade or no soil class Table R404.1(1) lists, so no "
                                "top-of-wall reaction", tuple(sorted(carrying)), _CODE)]
     spacing = _floor_spacing_m(ctx)
-    connectors = [(c.position.xy_m, c.size, set(c.connects), None)
+    connectors = [(c.position.xy_m, c.size, set(c.connects), None, None)
                   for c in authored_connectors(ctx.model)]
     connectors += [(t.point_m, t.part, {t.wall_tag, t.floor_tag},
-                    _station_key(t.floor_tag, t.station_m))
+                    _station_key(t.floor_tag, t.station_m), t.under)
                    for t in station_tie_points(ctx.model)]
     anchors = mudsill_anchor_stations(ctx.model, config.sill_plate_anchors,
                                       config.sill_plate_takeoff_category)
-    rows = {}
-    for tag in sorted(carrying):
-        height = _wall_height_ft(walls[tag]) or 0.0
-        fill = _unbalanced_fill_ft(walls[tag], grade.meters)
-        rows[tag] = (height, fill, top_of_wall_row(height, fill, pcf))
-    loads = _station_loads(runs, {tag: r[2][1][0] for tag, r in rows.items() if r[2]})
     out: list[Finding] = []
     for tag in sorted(carrying):
-        height, fill, row = rows[tag]
+        wall = walls[tag]
+        height, fill = _wall_height_ft(wall) or 0.0, _unbalanced_fill_ft(wall, grade.meters)
+        row = top_of_wall_row(height, fill, pcf)
         if row is None:
             out.append(_unknown(_CID, f"{tag}: {height:.1f}' wall, {fill:.1f}' fill is past "
                                       "Table R404.1(1); the restraint is a design", (tag,), _CODE))
@@ -246,8 +234,7 @@ def foundation_wall_top(ctx: CheckContext) -> list[Finding]:
         on_wall = [along_wall(resolved, a.point_m) for a in anchors]
         on_wall = [a for a, offset in on_wall if offset <= resolved.thickness_m]
         for run in runs.get(tag, ()):
-            more_ok, more_short = _parallel(ctx, run, reaction, blocking, connectors, on_wall,
-                                            loads)
+            more_ok, more_short = _parallel(ctx, run, reaction, blocking, connectors, on_wall)
             ok, short = ok + more_ok, short + more_short
         head = (f"{tag} ({height:.1f}' wall, {fill:.1f}' fill, {soil}): Table R404.1(1) row "
                 f"{row_h:g}'/{row_b:g}' gives {reaction} plf at the top")

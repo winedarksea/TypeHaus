@@ -8995,7 +8995,7 @@ Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
   (`joints/wall_top.station_tie_points`); `plan/wall_top_ties.py` is gone. Both kinds draw as an
   L: upright on the rim (I-joist) or member side (truss) face, flat on the sill top.
 - **W-B-N4.** Its station is at the run's end, so the five fall west at 3 7/8" o.c. The
-  N3/N4 station is tied once and carries both runs: 2,708 lb on 5 x 563 = 0.96 (was graded as
-  0.83 and 0.65 apart). A35Z stays 111, MASAZ 77 (basis note §4).
+  N3/N4 station is tied once, from N4; N3's sill butts N4's there, so each run grades only the
+  stations its span holds (N4 0.83, N3 0.57). A35Z stays 111, MASAZ 77 (basis note §4).
 - **Open.** `FO-M-ERV-OA`'s trimmer pair fills W-B-N3/N4's first joist space (1/2" to the rim),
-  so ten ties lie under it; FS-M-WEST's seam joist on W-B-W1 has no clear side for its tie.
+  so ten ties lie under it and the check grades both walls UNKNOWN; FS-M-WEST's seam joist on W-B-W1 has no clear side for its tie.

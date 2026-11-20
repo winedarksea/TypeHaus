@@ -15,10 +15,14 @@ def test_catlin_wall_tops_match_the_basis_note(catlin_model_ro) -> None:
     findings = {f.element_tags[0] if f.element_tags else re.match(r"(W-B-\w+)", f.message)[1]: f
                 for f in foundation_wall_top(check_context(model=catlin_model_ro))}
     assert {tag for tag, f in findings.items() if f.result is Result.PASS} == {
-        "W-B-E1", "W-B-E2", "W-B-W1", "W-B-W2", "W-B-N1", "W-B-N3", "W-B-N4", "W-B-S1",
-        "W-B-S4"}
+        "W-B-E1", "W-B-E2", "W-B-W1", "W-B-W2", "W-B-N1", "W-B-S1", "W-B-S4"}
     # FO-M-STAIR fills W-B-N2's first three joist spaces: a design, not a table read.
     assert findings["W-B-N2"].result is Result.UNKNOWN
+    # FO-M-ERV-OA's trimmers stand on the N3/N4 sill where the station ties' leaves go.
+    for tag in ("W-B-N3", "W-B-N4"):
+        assert findings[tag].result is Result.UNKNOWN, tag
+        assert "lie under" in findings[tag].message and "trimmer-FO-M-ERV-OA" \
+            in findings[tag].message, tag
     for f in findings.values():
         assert "row 8'/7.5' gives 400 plf" in f.message
     # Perpendicular: 538 lb a truss end, 563 lb a TJI end (note §4).
@@ -30,6 +34,5 @@ def test_catlin_wall_tops_match_the_basis_note(catlin_model_ro) -> None:
         in findings["W-B-W2"].message
     assert "d/c 0.95" in findings["W-B-W2"].message
     # Parallel: worst station per wall.
-    for tag, worst in (("W-B-N1", "0.89"), ("W-B-S1", "0.69"), ("W-B-S4", "0.71"),
-                       ("W-B-N3", "0.96"), ("W-B-N4", "0.96")):
+    for tag, worst in (("W-B-N1", "0.89"), ("W-B-S1", "0.69"), ("W-B-S4", "0.71")):
         assert f"worst d/c {worst}" in findings[tag].message, tag

@@ -879,7 +879,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     C_D 0.9), 533 lb a TJI against 563 (onto the LSL rim, ×0.90). The x=18' plate ends are
     toe-nailed again (no net uplift). Parallel walls `W-B-N1`/`-N3`/`-N4`/`-S1`/`-S4` take
     blocking stations (first three spaces, ≤72") with five A35Z each, derived beside the block
-    (`JoistSpec.station_ties=5`; a station `-N3`/`-N4` share is tied once and carries both, 0.96);
+    (`JoistSpec.station_ties=5`; `-N3`/`-N4` are UNKNOWN: `FO-M-ERV-OA`'s trimmers sit on the sill);
     a MASA is added at each with none within 8" (`joints/sills._snap_to_blocking`). **`W-B-N2` is UNKNOWN**:
     `FO-M-STAIR` fills its first three joist spaces, so its restraint is the well's edge framing,
     a design (`plans/TODO.md`). Basis note §4.
