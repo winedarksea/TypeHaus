@@ -60,3 +60,24 @@ def test_a_pack_on_the_sill_stops_past_its_header(catlin_model_ro) -> None:
     assert max(members["trimmer-FO-M-ERV-OA-0-0"].p1[0], 0) == pytest.approx(120 * 0.0254)
     ties = station_tie_points(catlin_model_ro)
     assert ties and not [t for t in ties if t.under]
+
+
+def test_a_released_partition_seats_no_pack() -> None:
+    """A partition's plate stands 3/4" under the deck (``partition_top``): within the sill
+    window, but it carries nothing, so a pack over it keeps spanning."""
+    from types import SimpleNamespace as NS
+
+    from typehaus.model.enums import StructuralRole
+    from typehaus.resolve.floor_opening_packs import _on_wall_top
+
+    layer = NS(function="structure", polygon=[(0.0, -0.07), (3.0, -0.07), (3.0, 0.07),
+                                              (0.0, 0.07)])
+    wall = NS(tag="W", is_foundation=False, layers=[layer], plate_top_z_m=-0.019, z1_m=0.0,
+              axis=((0.0, 0.0, 0.0), (3.0, 0.0, 0.0)))
+
+    def model(role):
+        return NS(walls=[wall], plan=NS(by_tag=lambda _t: NS(structural_role=role)))
+
+    pack = (-0.04, 0.04)
+    assert not _on_wall_top(model(StructuralRole.NONBEARING), 0.0, True, pack, 0.5, 2.0)
+    assert _on_wall_top(model(StructuralRole.BEARING), 0.0, True, pack, 0.5, 2.0)

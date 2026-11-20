@@ -3,7 +3,8 @@
 An A35 lies beside its member, 1/8" clear (``plate_angle``). Parallel members whose ends sit
 together with a clear gap narrower than a tie's slot (its width and 1/8" each side) are one
 pack: no tie fits between them, so the pack is tied on its two outer faces (C-C-2026 p. 310
-fn. 1: "angles installed on each side of the joist"). The outermost tied member at each side
+fn. 1 allows angles on each side of a joist 3" thick or more; each outer tie here nails a
+different ply, and every pack is wider than 3"). The outermost tied member at each side
 owns that face's tie; a lone member takes the first clear side. Each tie names the framing
 over its flat leaf, so a blocked tie is reported, never drawn through wood.
 """

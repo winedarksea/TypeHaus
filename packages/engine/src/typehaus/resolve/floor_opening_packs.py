@@ -39,10 +39,15 @@ def sill_borne_run(model, seat_z, along_x, pack, run, header_runs, edges) -> tup
 
 def _on_wall_top(model, seat_z, along_x, pack, lo, hi) -> bool:
     """Do walls seating this deck, end to end, stand under ``pack`` (across) over ``lo..hi``
-    (along), their structure layer wide enough to take the whole pack?"""
+    (along), their structure layer wide enough to take the whole pack? A released interior
+    partition (its plate 3/4" under the deck, ``resolve/partition_top``) seats nothing."""
+    from typehaus.resolve.partition import is_interior_partition
+
     across, along = (1, 0) if along_x else (0, 1)
     spans = []
     for wall in model.walls:
+        if is_interior_partition(model, wall, frozenset()):
+            continue
         top = wall.plate_top_z_m if wall.plate_top_z_m is not None else wall.z1_m
         (a0, a1) = wall.axis[0][:2], wall.axis[1][:2]
         if not seat_z - _SEAT_DROP_M - 1e-3 <= top <= seat_z + 1e-3 \
