@@ -141,7 +141,8 @@ export function runEngineCostsTests() {
     entries: { framing: { "2x8@stairs": { paid: true, paid_date: null, product: null,
       actual_cost: 20, note: null }, "2x6": COSTS.entries.framing["2x6"] } },
   };
-  const splitBom = { framing_by_size: [{ profile: "2x8", pieces: 1 }, { profile: "2x6", pieces: 1 }] };
+  const splitBom = { framing_by_size: [{ profile: "2x8", order_length_ft: 35, pieces: 1 },
+    { profile: "2x6", order_length_ft: 3, pieces: 1 }] };
   const splitTable = decorateWithCosts(groupBom(splitBom), splitCosts)
     .flatMap((g) => g.sections).find((s) => s.key === "framing_by_size")!.table;
   const splitRcs = splitTable.rowCosts!;
@@ -153,6 +154,10 @@ export function runEngineCostsTests() {
     "A trade's rows under one key are summed");
   assert(splitRcs[2].entryKey === "2x6" && splitRcs[2].trade === null,
     "A key one trade bills keeps the bare entry key");
+  const qtyIndex = splitTable.columns.indexOf("order_length_ft");
+  assert(splitTable.rows[0][qtyIndex] === 10 && splitTable.rows[1][qtyIndex] === 20,
+    "Each trade row shows that trade's quantity, not the BOM row's full 35");
+  assert(splitTable.rows[2][qtyIndex] === 3, "A one-trade key keeps the BOM's own quantity");
 
   // --- stale + extras ---------------------------------------------------------------------
 

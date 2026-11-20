@@ -109,6 +109,7 @@ export function decorateWithCosts(groups: BomGroup[], costs: EngineCosts): Coste
         }
         for (const [key, rows] of inSection) estimateRows.set(key, { section: from, rows });
       }
+      const quantityIndex = section.table.columns.indexOf(costs.join[costSection].quantity_field);
       const rows: (readonly unknown[])[] = [];
       const rowCosts: RowCost[] = [];
       for (const row of section.table.rows) {
@@ -131,7 +132,10 @@ export function decorateWithCosts(groups: BomGroup[], costs: EngineCosts): Coste
           : [{ trade: null, estimate: priced ? mergeRows(priced.rows) : null }];
         for (const part of parts) {
           const name = key === null ? null : entryKey(key, part.trade);
-          rows.push(row);
+          // A trade row shows that trade's quantity, not the BOM row's whole one.
+          const quantity = part.trade !== null ? part.estimate?.quantity : undefined;
+          rows.push(quantityIndex >= 0 && quantity !== undefined && Number.isFinite(quantity)
+            ? row.map((cell, i) => (i === quantityIndex ? quantity : cell)) : row);
           rowCosts.push({ section: from, key, trade: part.trade, entryKey: name,
             entry: name !== null ? costs.entries[from]?.[name] ?? null : null,
             estimate: part.estimate });
