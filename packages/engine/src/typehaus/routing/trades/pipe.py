@@ -64,8 +64,7 @@ def bend_radius_m(diameter_m: float, system: str, material: str | None) -> float
     router never prices a bend the take-off will call a fitting. Copper and CPVC carry no
     rule; a drain or vent is never bent.
     """
-    from typehaus.hardware.fittings import tube_bend_radius_m
-    from typehaus.resolve.mep_fittings import tube_bend_rule
+    from typehaus.resolve.mep_fittings import tube_bend_radius_m, tube_bend_rule
     from typehaus.resolve.pipe_sections import pipe_outside_diameter_m
 
     system = getattr(system, "value", system)
