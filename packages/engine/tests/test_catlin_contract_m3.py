@@ -608,7 +608,11 @@ def test_opening_framing_registers_with_the_opening_it_frames(catlin_model):
                        if (not o.is_door or o.sill_m > 1e-9)
                        and wall.base_ref_z_m + o.sill_m - plate_h
                        > wall.base_ref_z_m + plate_h + 1e-9)
-        got_sills = sorted(m.z1_m for m in members if m.category == "sill")
+        # A stool's flat 2x packer (`buck-fur-stool-*`, 2026-11-17) is cloned from the rough
+        # sill and sits on it; it is not a rough sill.
+        rough_sills = [m for m in members if m.category == "sill"
+                       and not m.child_key.startswith("buck-fur-")]
+        got_sills = sorted(m.z1_m for m in rough_sills)
         got_heads = sorted(m.z0_m for m in members
                            if m.category == "header" or m.child_key.startswith("roughhead-"))
         assert got_sills == pytest.approx(sills, abs=1e-9), \
@@ -617,9 +621,7 @@ def test_opening_framing_registers_with_the_opening_it_frames(catlin_model):
             assert any(head == pytest.approx(h, abs=1e-9) for h in heads), \
                 f"{wall.tag}: a header/head nailer at {head} sits on no opening's head"
         # The sill hangs *below* the line it carries, one plate deep.
-        for member in members:
-            if member.category != "sill":
-                continue
+        for member in rough_sills:
             assert member.z1_m - member.z0_m == pytest.approx(plate_h, abs=1e-9)
         checked += len(openings)
     # 75 is a coverage floor, not a census: it exists to catch the fixture silently
