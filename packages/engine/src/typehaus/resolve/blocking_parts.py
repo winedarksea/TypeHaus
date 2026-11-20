@@ -216,15 +216,23 @@ def _leg_hazards(runs: Sequence[RunBand], along_x: bool, centre: float, gap: Spa
     reach = RAIL_W_M / 2.0
     out = []
     for _tag, path, z, half_w, half_h in runs:
-        footprint = (box(centre - reach - half_w, gap[0] - half_w, centre + reach + half_w,
-                         gap[1] + half_w) if along_x else
-                     box(gap[0] - half_w, centre - reach - half_w, gap[1] + half_w,
-                         centre + reach + half_w))
+        bounds = ((centre - reach - half_w, gap[0] - half_w, centre + reach + half_w,
+                   gap[1] + half_w) if along_x else
+                  (gap[0] - half_w, centre - reach - half_w, gap[1] + half_w,
+                   centre + reach + half_w))
+        footprint = None
         for i in range(len(path) - 1):
             pa, pb = path[i], path[i + 1]
             low, high = min(z[i], z[i + 1]) - half_h, max(z[i], z[i + 1]) + half_h
+            # Raw z and bounds tests first: shapely objects for every leg of every run cost
+            # half a second of resolve.
+            if not (high > z0 and low < z1
+                    and min(pa[0], pb[0]) <= bounds[2] and max(pa[0], pb[0]) >= bounds[0]
+                    and min(pa[1], pb[1]) <= bounds[3] and max(pa[1], pb[1]) >= bounds[1]):
+                continue
+            footprint = footprint or box(*bounds)
             leg = Point(pa) if pa == pb else LineString([pa, pb])
-            if high > z0 and low < z1 and footprint.intersects(leg):
+            if footprint.intersects(leg):
                 out.append(leg.buffer(half_w))
     return out
 
