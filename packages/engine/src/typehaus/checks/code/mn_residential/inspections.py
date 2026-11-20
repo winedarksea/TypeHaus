@@ -135,7 +135,7 @@ MN_INSPECTIONS: tuple[InspectionSpec, ...] = (
                    "mep.vent_reachability", "mep.vent_termination_height",
                    "mep.vent_grade",
                    "mep.wet_wall_occupancy", "structural.wet_wall_bearing",
-                   "mep.pipe_sizing", "mep.fixture_drain_reach",
+                   "mep.pipe_sizing", "mep.vent_aggregate_area", "mep.fixture_drain_reach",
                    # Not a plumbing rule as such — it grades pipe, duct and raceway alike
                    # — but the plumbing rough is when a person is standing under that floor
                    # with the holes already cut, and it is the last moment the answer is

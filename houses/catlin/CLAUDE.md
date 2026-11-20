@@ -39,8 +39,9 @@
 >   face held, mud closet 29 1/2"); `haus route` found no lane into HS1 or the chase.
 >   `mep.trap_arm_length` (CODE) is the 3D trap-arm walk; `mep.vent_connection` (ADVISORY) grades each tee; BATH2-WC is the one open vent.
 > - **Radon fan (MN 1303.2402 subp. 5.D/6):** `ED-A-RADON-RC` (WR GFCI outlet) on `CKT-RC-ATTIC`, on W-A-N2's 22'
->   girt course with the PV box (its SPD hangs from the box's bottom knockout). `VR-M-STACK`'s exterior pair is swapped, 14" c-c
->   (`exit_bundle_spacing`); that spacing and the radon station hold both the fan space and the
+>   girt course with the PV box (its SPD hangs from the box's bottom knockout). `VR-M-STACK`'s exterior pair is swapped, 14 1/2" c-c
+>   (`exit_bundle_spacing`; the vent leg is 4" above its 3x4 increaser at 20'-6", UPC 904.1,
+>   `mep.vent_aggregate_area`); that spacing and the radon station hold both the fan space and the
 >   exhaust's 2' over WIN-A-N1. Exit 23'-8". Gable fixings land on girt courses or the rake nailer,
 >   below the rake trim's hem (a raked-top block on the nailer).
 > - **ERV:** EQ-B-ERV is at `rotation=deg(90)` (box south, door east), case 40.4" AFF, 13" south

@@ -1211,7 +1211,7 @@ CONDUIT_TRUNKS = [
                elevations=(ft(20, 6), ft(20, 9), ft(20, 9), ft(20, 9), ft(20, 9), ft(20, 9),
                            inch(263.75)),
                # Pull box at 3 (9'-0 1/2", 33'-4"), attic deck in RM-A-POCKET: the riser
-               # chains in. Since 2026-11-12 the stack's rises stand at 8'-5 1/2" (vent) and
+               # chains in. Since 2026-11-12 the stack's rises stand at 8'-5" (vent) and
                # 9'-7 1/2" (radon), and this leg runs between them. The trimmer jog's extra
                # quarter bend takes a conduit body at 1, the riser head, to stay within 360°.
                pull_points=(1, 3),

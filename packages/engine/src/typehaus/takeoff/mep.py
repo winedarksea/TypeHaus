@@ -37,6 +37,12 @@ def pipe_run_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         entry["length_m"] += run.length_m
         entry["count"] += 1
         entry["tags"].append(run.tag)
+    for system, tag, nominal_m, length_m in vent_riser_pieces(model):
+        entry = runs.setdefault((system, "pvc", round(nominal_m / M_PER_IN, 3)),
+                                {"length_m": 0.0, "count": 0, "tags": []})
+        entry["length_m"] += length_m
+        entry["count"] += 1
+        entry["tags"].append(tag)
     return [
         {"system": system, "material": material, "diameter_in": diameter,
          "runs": int(entry["count"]),
@@ -44,6 +50,31 @@ def pipe_run_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
          "tags": sorted(entry["tags"])}
         for (system, material, diameter), entry in sorted(runs.items())
     ]
+
+
+def vent_riser_pieces(model: ResolvedModel) -> list[tuple[str, str, float, float]]:
+    """``(system, tag, nominal m, developed m)`` per one-size piece of every ``VentRun``
+    riser — the chase stacks are pipe too, and bill in [pipe_runs] beside the branches."""
+    import math
+
+    from typehaus.resolve.vent_termination import riser_pieces
+
+    out = []
+    for element in vent_runs(model):
+        for tag, path, z, nominal in riser_pieces(model, element):
+            pts = [(*p, h) for p, h in zip(path, z, strict=True)]
+            out.append((tag.rsplit("-", 1)[-1], tag, nominal,
+                        sum(math.dist(a, b) for a, b in zip(pts, pts[1:], strict=False))))
+    return out
+
+
+def vent_runs(model: ResolvedModel) -> list:
+    """Every ``VentRun``, storey by storey (the walk ``resolve_accessories`` takes)."""
+    from typehaus.model.mep import VentRun
+
+    plan = model.plan
+    return [e for storey in plan.storeys for e in plan.storey_elements(storey.tag)
+            if isinstance(e, VentRun)]
 
 
 def pipe_insulation_takeoff(model: ResolvedModel) -> list[dict[str, object]]:

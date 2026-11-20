@@ -405,8 +405,11 @@ def test_catlin_vent_routes_up_out_up_to_above_roof(catlin_model) -> None:
     assert len(chase2) == 2
     for c in chases:
         assert c.z0_m < -2.0 and abs(c.z1_m - jog_z) < 0.05
+    # The vent's CHASE2 stops at its 3x4 increaser (UPC 904.1, 2026-11-19); -INC goes on.
+    increaser_z = ft(20, 6).meters
     for c in chase2:
-        assert abs(c.z0_m - jog_z) < 0.05 and abs(c.z1_m - exit_z) < 0.05
+        top = increaser_z if "-vent-" in c.tag else exit_z
+        assert abs(c.z0_m - jog_z) < 0.05 and abs(c.z1_m - top) < 0.05
     jogs = [s for s in vent if "-JOG" in s.tag]
     assert len(jogs) == 2 * _PIPE_SWEEP_BANDS
     for j in jogs:
@@ -418,8 +421,8 @@ def test_catlin_vent_routes_up_out_up_to_above_roof(catlin_model) -> None:
     assembly = catlin_model.plan.library.resolve_assembly(roof.assembly)
     skin = sum(layer.thickness.meters for layer in above_structure_layers(assembly))
     # Each pipe terminates 12" over the rake at its OWN station: the pair stands side by side
-    # across the gable (radon on 9'-7 1/2", vent 14" west since 2026-11-12), so the tops differ.
-    stations = {"radon": ft(9, 7.5).meters, "vent": ft(9, 7.5).meters - inch(14).meters}
+    # across the gable (radon on 9'-7 1/2", vent 14 1/2" west since 2026-11-19), so the tops differ.
+    stations = {"radon": ft(9, 7.5).meters, "vent": ft(9, 7.5).meters - inch(14.5).meters}
     # The roof skin is every above-structure layer, perpendicular to the 6:12 plane, so its
     # vertical height is the sum times the slope factor (as derived_termination_elevation does).
     # It is summed here rather than written down, so a roof rebuild moves the vent with it.
@@ -445,10 +448,11 @@ def test_catlin_vent_pipes_are_round_sections(catlin_model) -> None:
     """A 3" vent used to render as a square post; risers now carry a faceted circle."""
     from typehaus.resolve.accessories import _PIPE_FACETS
 
-    radius = inch(3).meters / 2.0
     for solid in _solids(catlin_model, "vent"):
         if not (solid.tag.endswith("CHASE") or solid.tag.endswith("TERM")):
             continue
+        # The vent's TERM is above its 3x4 increaser.
+        radius = inch(4 if solid.tag.endswith("vent-TERM") else 3).meters / 2.0
         assert len(solid.outline) == _PIPE_FACETS
         cx = sum(x for x, _ in solid.outline) / _PIPE_FACETS
         cy = sum(y for _, y in solid.outline) / _PIPE_FACETS
@@ -466,7 +470,6 @@ def test_vent_horizontal_jog_sweeps_the_same_polygon_as_the_risers(catlin_model)
     """
     from typehaus.resolve.accessories import _PIPE_FACETS, _PIPE_SWEEP_BANDS
 
-    radius = inch(3).meters / 2.0
     jogs = [s for s in _solids(catlin_model, "vent") if "-OUT" in s.tag]
     per_riser = {}
     for band in jogs:
@@ -474,6 +477,7 @@ def test_vent_horizontal_jog_sweeps_the_same_polygon_as_the_risers(catlin_model)
 
     for riser_tag, bands in per_riser.items():
         assert len(bands) == _PIPE_SWEEP_BANDS, riser_tag
+        radius = inch(4 if riser_tag.endswith("-vent") else 3).meters / 2.0  # 4" head
         heights = sorted({round(z, 9) for band in bands for z in (band.z0_m, band.z1_m)})
         assert len(heights) == _PIPE_FACETS // 2 + 1  # the 12-gon section, on its side
         # Section spans the true diameter, and no band is wider than the pipe.

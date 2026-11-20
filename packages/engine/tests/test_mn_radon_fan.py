@@ -31,7 +31,7 @@ def test_a_pipe_inside_the_fan_circle_fails_5d(catlin_ctx) -> None:
     """At 8" c-c the radon leg's 24" circle takes in the vent leg beside it."""
     tight = _stack(catlin_ctx, exit_bundle_spacing=inch(-8))
     found = [f for f in fan_space_findings(catlin_ctx, tight) if f.result is Result.FAIL]
-    assert found and "VR-M-STACK-vent" in found[0].message
+    assert found and "VR-M-STACK-4in-vent" in found[0].message  # the vent's 4" head
 
 
 def test_catlin_passes_both_fan_subparts(catlin_ctx) -> None:

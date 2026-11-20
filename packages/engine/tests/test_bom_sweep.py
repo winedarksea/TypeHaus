@@ -387,11 +387,15 @@ def test_pipe_runs_bill_by_system_and_diameter(catlin_model, bom):
     # feed to the hydrant.
     assert {row["system"] for row in rows} == {"drain", "vent", "water_cold", "water_hot",
                                                "sump_discharge", "radon"}
+    # The VentRun chase stacks bill beside the authored runs, one row per size (2026-11-19).
+    from typehaus.takeoff.mep import vent_riser_pieces
+
+    pieces = vent_riser_pieces(catlin_model)
     billed = {tag for row in rows for tag in row["tags"]}
-    assert billed == {run.tag for run in catlin_model.pipe_runs}
+    assert billed == {run.tag for run in catlin_model.pipe_runs} | {p[1] for p in pieces}
     total = sum(float(row["length_ft"]) for row in rows)
-    assert total == pytest.approx(
-        sum(run.length_m for run in catlin_model.pipe_runs) * 3.280839895, rel=1e-3)
+    assert total == pytest.approx((sum(run.length_m for run in catlin_model.pipe_runs)
+                                   + sum(p[3] for p in pieces)) * 3.280839895, rel=1e-3)
 
 
 def test_ducts_and_sleeves_bill_every_resolved_record(catlin_model, bom):

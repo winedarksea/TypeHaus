@@ -65,7 +65,12 @@ from typehaus.resolve.round_solids import (  # noqa: F401  # isort: skip  (see a
     PIPE_SWEEP_BANDS as _PIPE_SWEEP_BANDS,
     round_run_bands as _round_run_bands,
 )
-from typehaus.resolve.vent_termination import RISER_LEGS, riser_polylines
+from typehaus.resolve.vent_termination import (
+    RISER_LEGS,
+    VENT_TERMINATION_CLEARANCE_M,
+    increaser_roof_gap,
+    riser_polylines,
+)
 
 
 def resolve_accessories(model: ResolvedModel) -> list[Finding]:
@@ -444,12 +449,8 @@ def _resolve_wedge(model: ResolvedModel, el: Wedge, storey: str) -> None:
 
 
 def _resolve_vent(model: ResolvedModel, el: VentRun, storey: str) -> list[Finding]:
-    """The bundled risers as solids — a **reader** of :func:`riser_polylines`.
-
-    The route itself is derived once, in ``resolve/vent_termination``, because an envelope
-    and a router obstacle read the same polyline: solids that drifted from the envelope
-    would put the viewer's pipe somewhere the collision checker's pipe is not.
-    """
+    """The bundled risers as solids — a **reader** of :func:`riser_polylines`, the one
+    route the envelopes and router obstacles read too, so the drawn pipe is the graded one."""
     risers = riser_polylines(model, el)
     if not risers:
         return [Finding(
@@ -457,12 +458,12 @@ def _resolve_vent(model: ResolvedModel, el: VentRun, storey: str) -> list[Findin
             message=(f"vent {el.tag} clears no derivable roof and authors no "
                      "roof_termination_elevation — its exterior riser is not resolved"),
             element_tags=(el.tag,), result=Result.FAIL)]
-    radius = el.diameter.meters / 2.0
     for tag, path, z in risers:
         sysname = tag.rsplit("-", 1)[-1]
         key = f"{el.uid}-{sysname}"
         for leg, (uid_part, tag_part, horizontal) in enumerate(RISER_LEGS):
             a, b, za, zb = path[leg], path[leg + 1], z[leg], z[leg + 1]
+            radius = el.diameter_of(sysname, max(za, zb)).meters / 2.0
             if horizontal:
                 # A leg the vent does not have — the jog on a riser authoring none — is
                 # degenerate, not absent, so the roles line up by index either way.
@@ -476,8 +477,23 @@ def _resolve_vent(model: ResolvedModel, el: VentRun, storey: str) -> list[Findin
                 continue
             if za == zb:
                 continue
-            model.solids.append(ResolvedSolid(
-                uid=f"{key}-{uid_part}", tag=f"{el.tag}-{sysname}-{tag_part}", storey=storey,
-                category="vent", outline=circle_outline(a, radius, _PIPE_FACETS),
-                z0_m=min(za, zb), z1_m=max(za, zb)))
+            # The increaser cuts this leg in two sizes (riser_pieces does the same).
+            cuts, inc = [min(za, zb), max(za, zb)], el.vent_increaser
+            if inc and sysname == "vent" and cuts[0] < inc.elevation.meters < cuts[1]:
+                cuts.insert(1, inc.elevation.meters)
+            for i, (z0, z1) in enumerate(zip(cuts, cuts[1:], strict=False)):
+                r = el.diameter_of(sysname, z1).meters / 2.0
+                model.solids.append(ResolvedSolid(
+                    uid=f"{key}-{uid_part}" + ("-inc" if i else ""),
+                    tag=f"{el.tag}-{sysname}-{tag_part}" + ("-INC" if i else ""),
+                    storey=storey, category="vent",
+                    outline=circle_outline(a, r, _PIPE_FACETS), z0_m=z0, z1_m=z1))
+    gap = increaser_roof_gap(model, el)
+    if gap is not None and gap + 1e-6 < VENT_TERMINATION_CLEARANCE_M:
+        return [Finding(
+            severity=Severity.ERROR, check_id="integrity.vent_increaser_roof",
+            message=(f"vent {el.tag}'s increaser stands {gap / 0.0254:.1f}\" below the roof "
+                     "surface; MN 4714.0906 subp. 3 wants the change in diameter >= 12\" "
+                     "below the roof, inside"),
+            element_tags=(el.tag,), result=Result.FAIL)]
     return []

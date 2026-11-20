@@ -392,7 +392,13 @@ are not outlets (owner, 2026-10-28). At an opening that means:
   their profile closure.
 - **Penetrations (sealed).** Hose bibs, exterior lights, the ERV hoods, the hydrants and
   `VR-M-STACK` sleeve through the cavity; seal each sleeve to the foam and to the panel
-  (`[allowances] envelope-exterior-hoods-and-flashing`).
+  (`[allowances] envelope-exterior-hoods-and-flashing`). `VR-M-STACK`'s 4" vent leg (4.5" OD,
+  2026-11-19) runs in a 6" PVC sleeve set to the sheathing. The sleeve is sealed into the
+  ccSPF, which is the WRB, with backer rod and a sealant the foam maker approves. At the
+  BBD75 flat it takes an ITW Buildex Dektite #4 EPDM boot (round, for 3-6" pipe, 9 1/4"
+  base) bedded in butyl and screwed to the flat. At x=101" the base laps the x=96" batten
+  by 5/8". Trim that edge to the batten face, which leaves 1 3/4" of seal, and confirm the
+  fit on the part. The radon leg's 3" sleeve is unchanged.
 
 **Closure inventory** (recorded, no geometry change): jamb buck returns, hold point; sills,
 closed; eaves and rakes, closed by the roof deck oversailing the girt face; outside corners,

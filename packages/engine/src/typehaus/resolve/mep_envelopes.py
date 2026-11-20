@@ -138,19 +138,19 @@ def run_radii(model: ResolvedModel) -> dict[str, float]:
 def vent_risers(model: ResolvedModel
                 ) -> list[tuple[str, tuple[tuple[float, float], ...],
                                 tuple[float, ...], float]]:
-    """Every ``VentRun``'s bundled risers, as ``(tag, plan path, per-vertex z)``.
+    """Every ``VentRun``'s bundled risers, as ``(tag, plan path, per-vertex z, OD m)``.
 
     A ``VentRun`` is a parametric chase riser, not a polyline, and so it used to resolve to
     ``ResolvedSolid``s alone: no envelope, nothing for ``mep.run_interference`` to grade,
     and — since ``routing/obstacles`` iterates envelopes — **not a router obstacle**. A
     campaign would lane a duct straight through the radon riser and call it clear.
 
-    The derivation is :func:`typehaus.resolve.vent_termination.riser_polylines`, which
-    ``resolve/accessories`` also reads to build the solids. One derivation, two readers.
+    The derivation is :func:`typehaus.resolve.vent_termination.riser_polylines` (cut by
+    ``riser_pieces``), which ``resolve/accessories`` also reads to build the solids.
     """
     from typehaus.model.mep import VentRun
     from typehaus.resolve.pipe_sections import pipe_outside_diameter_m
-    from typehaus.resolve.vent_termination import riser_polylines
+    from typehaus.resolve.vent_termination import riser_pieces
 
     out: list[tuple[str, tuple[tuple[float, float], ...], tuple[float, ...], float]] = []
     for element in model.plan.all_elements():
@@ -158,10 +158,10 @@ def vent_risers(model: ResolvedModel
             continue
         # The OUTSIDE diameter, as ``run_radii`` reads a ``PipeRun``: a 3" DWV riser is
         # 3.50" of obstruction. The solids still draw the nominal; the envelope may not.
-        # A ``VentRun`` states no material, so this takes the IPS series.
-        diameter = pipe_outside_diameter_m(element.diameter.meters, None)
-        out.extend((tag, path, z, diameter)
-                   for tag, path, z in riser_polylines(model, element))
+        # A ``VentRun`` states no material, so this takes the IPS series. An increaser
+        # splits the VENT pipe into two pieces, one size each (``riser_pieces``).
+        out.extend((tag, path, z, pipe_outside_diameter_m(nominal, None))
+                   for tag, path, z, nominal in riser_pieces(model, element))
     return out
 
 

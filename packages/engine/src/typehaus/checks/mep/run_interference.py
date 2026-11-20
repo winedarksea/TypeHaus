@@ -398,13 +398,13 @@ def _kit_lead_pair(leads, tag: str, other_tag: str, contact) -> bool:
 def _bundled_pairs(ctx: CheckContext) -> set[tuple[str, str]]:
     """Pairs of risers that are two systems of ONE ``VentRun`` — see the module docstring."""
     from typehaus.model.mep import VentRun
-    from typehaus.resolve.vent_termination import riser_polylines
+    from typehaus.resolve.vent_termination import riser_pieces
 
     out: set[tuple[str, str]] = set()
     for element in ctx.model.plan.all_elements():
         if not isinstance(element, VentRun):
             continue
-        tags = sorted(tag for tag, _path, _z in riser_polylines(ctx.model, element))
+        tags = sorted(tag for tag, *_rest in riser_pieces(ctx.model, element))
         for i, first in enumerate(tags):
             for second in tags[i + 1:]:
                 out.add((first, second))

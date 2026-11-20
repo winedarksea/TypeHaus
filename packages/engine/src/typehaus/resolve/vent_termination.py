@@ -189,6 +189,46 @@ def riser_polylines(model: ResolvedModel, vent: VentRun
     return out
 
 
+def riser_pieces(model: ResolvedModel, vent: VentRun
+                 ) -> list[tuple[str, tuple[tuple[float, float], ...], tuple[float, ...], float]]:
+    """:func:`riser_polylines` cut at the ``vent_increaser``, as ``(tag, path, z, nominal m)``.
+
+    Each piece has one size, so every envelope reader keeps its one-radius-per-tag
+    contract. The VENT pipe's piece above the step is ``{vent tag}-{d}in-vent``: the
+    ``-vent`` suffix still names its system.
+    """
+    inc = vent.vent_increaser
+    out = []
+    for tag, path, z in riser_polylines(model, vent):
+        system = tag.rsplit("-", 1)[-1]
+        if inc is None or system != "vent":
+            out.append((tag, path, z, vent.diameter_of(system, z[0]).meters))
+            continue
+        z_inc = inc.elevation.meters   # on the riser2 leg, vertices 2 -> 3 (validated)
+        lower = (path[:3] + (path[2],), z[:3] + (z_inc,))
+        upper = ((path[2],) + path[3:], (z_inc,) + z[3:])
+        out.append((tag, *lower, vent.diameter.meters))
+        out.append((f"{vent.tag}-{inc.diameter.inches:g}in-vent", *upper,
+                    inc.diameter.meters))
+    return out
+
+
+def increaser_roof_gap(model: ResolvedModel, vent: VentRun) -> float | None:
+    """Metres from the increaser up to the roof surface over its riser (subp. 3 wants
+    >= 12"), or ``None`` when there is no increaser or no derivable roof."""
+    inc = vent.vent_increaser
+    if inc is None:
+        return None
+    vent_leg = next((p for t, p, _z in riser_polylines(model, vent)
+                     if t.endswith("-vent")), None)
+    if vent_leg is None:
+        return None
+    top = derived_termination_elevation(model, vent, at=vent_leg[2])
+    if top is None:
+        return None
+    return top - VENT_TERMINATION_CLEARANCE_M - inc.elevation.meters
+
+
 def _lanes_meet(top, s1, n1, d1, s2, n2, d2) -> tuple[float, float]:
     """``top + s1·n1 + t·d1`` meets ``top + s2·n2 + u·d2`` (the exit offset runs along d2)."""
     rx, ry = s2 * n2[0] - s1 * n1[0], s2 * n2[1] - s1 * n1[1]

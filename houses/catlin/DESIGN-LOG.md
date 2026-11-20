@@ -8910,3 +8910,28 @@ Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
   hand-punched slots, which nothing off the shelf does.
 - **Nothing grades it.** `building_science.condensation` reads only the layer function
   (`checks/building_science/glaser.py`), so a sealed fold would pass the Glaser walk too.
+
+## The sanitary vent goes 4", and keeps its side exit (2026-11-19, owner)
+
+- **The finding.** `PR-B-MAIN-DRAIN` carries 50 DFU, so Table 703.2 requires a 4" building sewer
+  (12.57 in²). UPC 904.1, which MN 4714.0050 adopts unamended, wants the vents open to the air to
+  total that area. `VR-M-STACK`'s one 3" sanitary terminal gives 7.07 in², or 56%. The radon leg
+  is a separate system and does not count.
+- **Chosen: one 4" terminal.** `VentRun.vent_increaser` puts a 3x4 at 20'-6" in the conditioned
+  attic, and the chase stays 3" (84 DFU / 212 ft against 50 DFU / 36.9 ft). Rejected: two
+  independent 3" paths (a second chase and a second terminal), and a roof terminal (a seam and
+  PV-pathway penetration the house was laid out to avoid).
+- **The side exit stays.** 4714.0906 subp. 1 wants a flashed penetration and a vertical
+  termination 12" above the roof. Subp. 3 wants the change of diameter inside, >= 12" below the
+  roof, insulated. The UPC 906.4 "outdoor installations" clause covers vents serving outdoor
+  fixtures. Oracle: `notes/vent_aggregate_area.md`.
+- **Geometry.** `exit_bundle_spacing` -14" -> -14 1/2" (the fan's 12" plus the 4" pipe's 2 1/4"),
+  with `chase_offset` 8'-2 1/2" -> 8'-2 1/4", so radon holds 9'-7 1/2" and the vent moves to
+  8'-5". The vent still sits on the x 97-107 flat. The 4" elbow's hub tops about 289 1/2", so
+  option (a) was taken: the exit stays 23'-8", and the lower vent strap goes up to 292 1/2" on a
+  taller block whose through-screws stay at 289 3/4" in the 24' course. (b), dropping the exit,
+  would have re-tied `PR-A-STUBATH-VENT`. Every horizontal vent still clears MN 905.3's
+  23'-6 7/8".
+- **Billing.** `VentRun` risers billed nowhere until now. They bill in [pipe_runs] per one-size
+  piece, and their quarter bends and the increaser in [pipe_fittings]
+  (`takeoff/mep.vent_riser_pieces`, `takeoff/plumbing.vent_riser_fittings`).

@@ -33,6 +33,7 @@ from typehaus.model.equipment_hangers import EquipmentHangers
 from typehaus.model.placeables import Location, Mount, require_placed_or_hosted
 from typehaus.model.raceway_cables import RacewayCable
 from typehaus.model.registry import register_constructor, register_element
+from typehaus.model.vent_increaser import VentIncreaser, check_increaser, increased_diameter
 from typehaus.quantities import Length, Point2D
 
 
@@ -535,6 +536,18 @@ class VentRun(Element):
     exit_bundle_spacing: Length | None = None
     # The ElectricalDevice that powers a future radon fan (MN 1303.2402 subp. 6).
     fan_power_ref: str | None = None
+    # The VENT member's step up on the interior riser above the jog (UPC 904.1 aggregate
+    # area); the roof clearance (MN 4714.0906 subp. 3) is graded at resolve.
+    vent_increaser: VentIncreaser | None = None
+
+    @model_validator(mode="after")
+    def _increaser_on_the_riser(self):
+        check_increaser(self)
+        return self
+
+    def diameter_of(self, system: object, z_m: float | None = None) -> Length:
+        """Nominal size of one bundled pipe at ``z_m`` (``None``: at its terminal)."""
+        return increased_diameter(self, system, z_m)
 
 
 @register_element
@@ -702,5 +715,6 @@ for _name, _obj in (
     ("Sump", Sump),
     ("SumpPump", SumpPump),
     ("VentRun", VentRun),
+    ("VentIncreaser", VentIncreaser),
 ):
     register_constructor(_name, _obj)

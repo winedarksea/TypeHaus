@@ -131,7 +131,7 @@ trim's leg laps the U (item 3). The model draws and bills no pads
 | Sills | Closed (6460800 / 55548XX) |
 | Eaves and rakes | Closed by the deck oversail |
 | Outside corners | Closed |
-| ERV, hydrant and VR-M-STACK sleeves | Sealed |
+| ERV, hydrant and VR-M-STACK sleeves | Sealed (the 4" vent leg: Dektite #4 boot on the flat, 6" sleeve to the ccSPF, 2026-11-19) |
 | `D-S-BALCONY` head | Kit drip head over the casing, as `D-M-PORCH` |
 
 ### Open with suppliers (not blocking)

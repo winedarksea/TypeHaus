@@ -41,8 +41,15 @@ def test_the_solids_and_the_polyline_are_ONE_derivation(catlin_ctx) -> None:
                     continue  # a leg this vent does not have
                 solid = solids.get(f"{vent.tag}-{system}-{tag_part}")
                 assert solid is not None, f"{tag_part} of {tag} resolves a solid"
+                top = max(za, zb)
+                inc = vent.vent_increaser
+                cut = inc is not None and system == "vent"
+                if cut and min(za, zb) < inc.elevation.meters < top:
+                    upper = solids[f"{vent.tag}-{system}-{tag_part}-INC"]   # the 4" above it
+                    assert (upper.z0_m, upper.z1_m) == pytest.approx((inc.elevation.meters, top))
+                    top = inc.elevation.meters
                 assert solid.z0_m == pytest.approx(min(za, zb))
-                assert solid.z1_m == pytest.approx(max(za, zb))
+                assert solid.z1_m == pytest.approx(top)
                 centre = solid.outline
                 xs = [p[0] for p in centre]
                 ys = [p[1] for p in centre]

@@ -136,8 +136,43 @@ def fitting_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     grades it — not to the sheet the estimator prices off.
     """
     rows = takeoff_rows(family_records(fitting_records(model), FAMILY_PIPE))
-    return [{"system": row["system"], "fitting": row["fitting"],
-             "count": row["count"], "tags": row["tags"]} for row in rows]
+    out = {(row["system"], row["fitting"]): {"system": row["system"], "fitting": row["fitting"],
+                                             "count": row["count"], "tags": list(row["tags"])}
+           for row in rows}
+    for system, fitting, tag in vent_riser_fittings(model):
+        row = out.setdefault((system, fitting), {"system": system, "fitting": fitting,
+                                                 "count": 0, "tags": []})
+        row["count"] += 1
+        if tag not in row["tags"]:
+            row["tags"] = sorted([*row["tags"], tag])
+    return [out[key] for key in sorted(out)]
+
+
+def vent_riser_fittings(model: ResolvedModel) -> list[tuple[str, str, str]]:
+    """``(system, fitting key, tag)`` for a ``VentRun``'s bends and its increaser.
+
+    Every leg of a riser is plumb or level, so each turn between two real legs is a stock
+    quarter bend; the one collinear joint between two pieces is the increaser."""
+    from typehaus.resolve.vent_termination import riser_pieces
+    from typehaus.takeoff.mep import vent_runs
+
+    out = []
+    for element in vent_runs(model):
+        for tag, path, z, nominal in riser_pieces(model, element):
+            system = tag.rsplit("-", 1)[-1]
+            pts = [(*p, h) for p, h in zip(path, z, strict=True)]
+            legs = [tuple(b[i] - a[i] for i in range(3))
+                    for a, b in zip(pts, pts[1:], strict=False)]
+            legs = [v for v in legs if max(map(abs, v)) > 1e-6]
+            turns = sum(1 for u, v in zip(legs, legs[1:], strict=False)
+                        if abs(u[0] * v[1] - u[1] * v[0]) + abs(u[0] * v[2] - u[2] * v[0])
+                        + abs(u[1] * v[2] - u[2] * v[1]) > 1e-9)
+            out += [(system, f"elbow-90-{nominal / M_PER_IN:g}in", tag)] * turns
+        inc = element.vent_increaser
+        if inc is not None:
+            out.append(("vent", f"increaser-{inc.diameter.inches:g}x"
+                                f"{element.diameter.inches:g}in", element.tag))
+    return out
 
 
 def cast_in_list(model: ResolvedModel) -> list[dict[str, object]]:

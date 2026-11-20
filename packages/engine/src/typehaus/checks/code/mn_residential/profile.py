@@ -546,6 +546,8 @@ MN_2020 = JurisdictionProfile(
                        ("MN Plumbing Code (ch. 4714) Tables 702.1, 703.2, 610.3, 610.4",)),
         PermitItemSpec("Trap-arm length", ("mep.trap_arm_length",),
                        ("MN Plumbing Code (ch. 4714) Table 1002.2",)),
+        PermitItemSpec("Aggregate vent area", ("mep.vent_aggregate_area",),
+                       ("MN Plumbing Code (ch. 4714) 904.1 (4714.0050, unamended)",)),
         # Grouped as one line because a reviewer asks them as one question — "how is the
         # potable supply controlled and protected" — and because two of the three are
         # contingent on what the house contains: a plan with no hose connection produces no

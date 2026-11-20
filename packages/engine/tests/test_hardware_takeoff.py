@@ -675,7 +675,8 @@ def test_pipe_fixings_bill_by_size_not_as_a_bare_family(catlin_model) -> None:
     # nailer (2026-11-12). The roof
     # leaders' CN-A-LEADER-* stations bill as the 4 x 3 1/2 leader's own 58110XX strap
     # (cladding_trim, test_gutter_sizing), never a round pipe strap as well.
-    assert by_part == {"SS316-STANDOFF-STRAP #11": 4}
+    # Since 2026-11-19 the vent's two are sized for its 4" head (4.5" OD).
+    assert by_part == {"SS316-STANDOFF-STRAP #11": 2, "SS316-STANDOFF-STRAP 4in": 2}
     # And the strap reaches the wall by itself: nothing is carried under it.
     assert not [row for row in hardware_takeoff(catlin_model)
                 if row["scope"] == "carried-mount" and "strap" in row["basis"]]

@@ -332,6 +332,7 @@ from typehaus.model.types import (
     TerminalNeckInlet,
     WindowType,
 )
+from typehaus.model.vent_increaser import VentIncreaser
 from typehaus.model.views import (
     Continuity,
     DetailAnnotation,
@@ -488,7 +489,7 @@ __all__ = [
     "LabelStandard", "LedCable", "LedChannel", "LedController", "LedStandard", "LedStrip",
     "DuctStandard", "RoundGaugeRow", "DuctElbowRow", "DuctPartRow", "DuctSupportRow", "PortKit",
     "RectElbowRow",
-    "Sump", "SumpPump", "VentRun",
+    "Sump", "SumpPump", "VentRun", "VentIncreaser",
     "MonthlyNormal", "SubgradeModulus", "SoilBasis", "ConcreteServiceTemperature",
     "SetbackSpec",
     "SpotElevation", "ImperviousSurface",

@@ -211,7 +211,8 @@ def _radon_riser_notes(model: ResolvedModel, risers: list[Any]) -> list[str]:
         terminus = (f"TERMINATING {elevation_feet(top)} (DERIVED, 12\" ABOVE THE ROOF "
                     "SURFACE)" if top is not None else
                     "WITH NO DERIVABLE ROOF TERMINATION")
-        lines.append(f"SUBP. 5: VENT {riser.tag}, {riser.diameter.inches:.0f}\" DIA., "
+        radon_in = riser.diameter_of("radon").inches
+        lines.append(f"SUBP. 5: VENT {riser.tag}, {radon_in:.0f}\" DIA., "
                      f"{terminus}. THE 12\" AND THE 10 FT TO AN OPENING ARE GRADED BY "
                      "code.MN_1303_2402_radon AND mep.vent_termination_height.")
     return lines

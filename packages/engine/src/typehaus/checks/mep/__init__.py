@@ -115,6 +115,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     supply_protection,
     takeoff_collars,
     terminal_necks,
+    vent_area,
     vent_geometry,
     water_heater,
     water_manifold_ports,
