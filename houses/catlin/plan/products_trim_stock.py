@@ -58,7 +58,8 @@ MAPLE_PLY_PREFIN_34 = Product(
     name='Prefinished maple plywood sheet, 3/4" veneer core',
     stock_width=inch(48), stock_length=inch(96),
     source="The maple-ply-prefin-34 material's own wording: A-1 face, HPVA Type II glue, "
-           "UV-cured clear both faces. The pantry's three 18 x 84 uprights nest on two sheets.",
+           "UV-cured clear both faces. The pantry's three 84\" panels "
+           "(25 3/4, 18, 7 3/4) rip from two sheets.",
 )
 GIBRALTAR_SOFFIT_VENTED = Product(
     tag="PROD-GIBRALTAR-4PVS16-WH", brand="Gibraltar Building Products", model="4PVS16-WH",

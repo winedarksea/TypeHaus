@@ -8972,14 +8972,14 @@ Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
   oak board at east's old tops, so a 16 5/8" lane in front of the post runs at every height.
   Mid-length each board bears on a B-Line B409-18 cut to 15 5/8" (catalog 640 lb uniform,
   5,760 in-lb root moment) off a P1000 post (`FURN-M-PANTRY-STRUT`) on stud-002 at
-  x=21'-4", one 3/8" x 4" lag above each bracket. The post replaces the top angle.
+  x=21'-4", one 3/8" x 5" lag above each bracket. The post replaces the top angle.
 - **West return.** `FURN-M-PANTRY-RETURN`, 12" x 7 3/4", fills the strip's dead west end.
   Its west end is the west upright's forward part: the upright is 25 3/4" deep and billed once.
 - **Lighting.** `ED-M-PANTRY-LT2`/`-LT3` are retired with the gable. The driver stays at
   96 W (45 W needed). `ED-M-PANTRY-RC1` moved 3/4" east to clear the post.
-- **Arithmetic.** Worst cases: the bracket at 0.81 (300 lb at the tip) and the lag at 0.82.
-  The board is 0.089" on a front-edge strip, against L/360 = 0.100"
-  (`notes/pantry_climbable_shelving.md`).
+- **Arithmetic.** Worst cases: the bracket at 0.81 (300 lb at the tip) and the 3/8" x 5" lag
+  at 0.81 (a 4" lag was 0.99 once its tip and the post's depth were counted).
+  The board is 0.089" on a front-edge strip, against L/360 = 0.100" (`notes/pantry_climbable_shelving.md`).
 - **Open.** Does the pile have clear 6'+ boards? If not, two boards meet over a pair of
   brackets. The takeoff's crosscut-only nesting reads the three ply pieces as three sheets; a
   shop rips them from two, and the per-piece price row says so.

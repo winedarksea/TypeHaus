@@ -50,13 +50,13 @@ B409_18_BRACKET = Product(
            "uniform load, 'A' 12/18/24 in.; Safety Load Factor 2.5; finishes ZN, GRN or HDG.",
 )
 
-LAG_3_8_X_4 = Product(
-    tag="PROD-LAG-3-8X4-ZN", brand="Generic", model="3/8\" x 4\" hex lag screw, zinc",
-    name="3/8\" x 4\" hex lag screw with washer, through the strut web and 1/2\" gypsum "
-         "into a 2x stud (13/32\" hole in the web, 1/4\" lead hole)",
-    source="Commodity part. Withdrawal is NDS 12.2.1's W = 1800 G^1.5 D^0.75, worked in "
-           "notes/pantry_climbable_shelving.md.",
+LAG_3_8_X_5 = Product(
+    tag="PROD-LAG-3-8X5-ZN", brand="Generic", model="3/8\" x 5\" hex lag screw, zinc",
+    name="3/8\" x 5\" hex lag screw with washer, through the strut web and 1/2\" gypsum "
+         "into a 2x6 stud (13/32\" hole in the web, 1/4\" lead hole)",
+    source="Commodity part. Withdrawal is NDS 12.2.1's W = 1800 G^1.5 D^0.75 over 2.78\" "
+           "of thread (3\" less the tip), worked in notes/pantry_climbable_shelving.md.",
 )
 
 EQUIPMENT_HANGER_PRODUCTS = (ATR_ROD_3_8, P1000_STRUT, LAG_1_4_X_1_1_2, B409_18_BRACKET,
-                             LAG_3_8_X_4)
+                             LAG_3_8_X_5)

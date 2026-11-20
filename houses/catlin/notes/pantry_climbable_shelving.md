@@ -112,9 +112,10 @@ Load Factor 2.5. A uniform load W over 'A' is a root moment WA/2, and all three 
 | 40 psf, R2 = 224 lb along the bracket | 1,750 in-lb | 0.30 |
 | 250 lb at the tip with 40 psf | 5,656 in-lb | 0.98 |
 
-The last row is not a design case (a floor takes the uniform load OR the concentrated one,
-whichever governs), and it still holds, with the catalog's 2.5 behind it. All 300 lb is put
-on the bracket when it lands at the post line, which is conservative.
+The last row is not a design case: like a floor (ASCE 7-16 §4.4), the shelf takes the
+uniform load OR the concentrated one, not both. It still holds, with the catalog's 2.5 behind
+it; 300 lb on a fully loaded shelf would be 1.12. All 300 lb is put on the bracket when it
+lands at the post line, which is conservative.
 
 Unistrut P2231 is not a cantilever bracket and B-Line B297 is the double-channel one, so the
 plan's "P2231 / B297 series" became the B409.
@@ -124,19 +125,24 @@ plan's "P2231 / B297 series" became the B409.
 One Unistrut **P1000** (`PROD-UNISTRUT-P1000-PG`), 82 3/4" (floor to the top board's
 underside), open face south, against the gypsum on `W-M-N1B`'s **stud-002 at x = 21'-4"**,
 which is the resolved stud nearest the old gable and the bay's mid-length. Each bracket bolts
-to it on a spring channel nut. A **3/8" x 4" lag** (`PROD-LAG-3-8X4-ZN`) goes through the web
-**just above each bracket** into the stud, so the post cannot rotate. This replaces the old
-top angle.
+to it on a spring channel nut. A **3/8" x 5" lag** (`PROD-LAG-3-8X5-ZN`) goes through the web
+**just above each bracket's channel nut** into the stud, set before the bracket, so the post
+cannot rotate. This replaces the old top angle. Keep RC1's cable bores in stud-002 clear of
+the six lag heights.
 
 The bracket's moment pulls the post off the wall above the bracket and pushes it on below.
 The post is stiff against the gypsum, so take the couple as that bracket's lag in tension
-over the spacing to the lag below. The tightest spacing is 9 3/4" (54 1/4 to 64):
+over the spacing to the lag below, about the gypsum face. The arm is the post's 1 5/8" plus
+the bracket's 15 5/8": 17 1/4". The tightest spacing is 9 3/4" (54 1/4 to 64):
 
-- T = 4,688 / 9.75 = **481 lb** (300 lb at the tip); 401 lb at 250 lb.
+- T = 300 x 17.25 / 9.75 = **531 lb** (300 lb at the tip); 442 lb at 250 lb.
 - Withdrawal, NDS 12.2.1: W = 1800 G^1.5 D^0.75 = 1800 x 0.42^1.5 x 0.375^0.75 =
-  **235 lb/in** (G 0.42, SPF; the stud is LSL and denser). 4" less the 12 ga web and 1/2"
-  gypsum leaves ~3.4" in the stud; credit **2.5"** of thread: **587 lb** at C_D 1.0.
-- **481 / 587 = 0.82** (0.68 at 250 lb).
+  **235 lb/in** (G 0.42, SPF; the stud is a 2x6 LSL and denser).
+- Thread: a 3/8" x 5" lag threads 3" less a 7/32" tip, **2.78"** (NDS Table L2; the tip
+  does not count). The 2" shank spans the 12 ga web, 1/2" gypsum and washer (0.69"), so all
+  the thread is in the stud, 4.3" deep in its 5 1/2": **653 lb** at C_D 1.0.
+- **531 / 653 = 0.81** (0.68 at 250 lb). The 4" lag first drawn has 2.28" of thread, 535 lb:
+  0.99, too close.
 
 The top board (84") is not a step: 24" to the ceiling. Its bracket carries storage only.
 The post carries its own brackets' gravity to the floor; the lags take only the couples.

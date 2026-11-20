@@ -61,9 +61,9 @@ PANTRY_STRUT = FurnitureType(
     storage=False, work_surface=False,
     parts=(ProductPart(role="frame", product_ref="PROD-UNISTRUT-P1000-PG", length=inch(82.75)),
            ProductPart(role="fitting", product_ref="PROD-BLINE-B409-18-ZN", quantity=6),
-           ProductPart(role="fitting", product_ref="PROD-LAG-3-8X4-ZN", quantity=6)),
+           ProductPart(role="fitting", product_ref="PROD-LAG-3-8X5-ZN", quantity=6)),
     source="Unistrut P1000 post, B-Line B409-18 brackets cut to 15 5/8\" (cold-galvanized "
-           "end), each bolted to the post on a spring channel nut; 3/8\" x 4\" lag through the web "
+           "end), each bolted to the post on a spring channel nut; 3/8\" x 5\" lag through the web "
            "just above each bracket into W-M-N1B's stud. Boards notched 1 3/4\" x 1 5/8\" round "
            "the post and screwed up through a slot in the bracket.",
 )

@@ -77,7 +77,7 @@ that level. Keep every drywall fastener over the cassette at 1 inch maximum. Anc
 through the cassette's specified fixing points into the perpendicular framing; no
 cabinet, pipe, device box, shelf cleat, or added blocking may enter the cassette.
 
-The pantry lights are four jamb channels on the shelf uprights, switched by a PIR
+The pantry lights are two jamb channels on the end uprights (four until 2026-11-20), switched by a PIR
 sensor inside on the east return at 56 inches (2026-10-30,
 `pantry_climbable_shelving.md`); the kitchen-side box at 46 inches is the undercabinet
 dimmer. Western storage is reached sideways from the east opening.

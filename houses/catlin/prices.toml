@@ -3011,9 +3011,9 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # RM-M-PANTRY's jamb channels: per channel 6 ft of generic 90-CRI COB (mark E's tape, since
 # 2026-10-31; VALENT X was over-spec) at the cove rate ($5-13/ft) plus fitting, shop-fitted to
 # the ply. The 45-degree channel is its own part row; the driver is a Class 2 PSU-96-WE.
-"ED-T-LT-JAMB72" = { material = { low = 30, high = 80 }, labour = { low = 30, high = 70 } }  # 4 ea
+"ED-T-LT-JAMB72" = { material = { low = 30, high = 80 }, labour = { low = 30, high = 70 } }  # 2 ea
 "PROD-DIODE-S45-CHANNEL" = { material = { low = 70, high = 90 }, labour = 0 }  # 0 ea since 2026-10-31 (the Diode revert); HomElectrical $85.05 (read 2026-10-31)
-"PROD-CHANNEL-45-GENERIC" = { material = { low = 12, high = 25 }, labour = 0 }  # 4 ea, one 8 ft generic 45-degree channel with lens per jamb (retailer estimate)
+"PROD-CHANNEL-45-GENERIC" = { material = { low = 12, high = 25 }, labour = 0 }  # 2 ea, one 8 ft generic 45-degree channel with lens per jamb (retailer estimate)
 # ** REPRICED 2026-09-12 WITH THE CLASS 320 RETYPE. ** This is no longer a plain $70-200
 # meter socket: it is a Class 320 heavy-duty lever-bypass COMBINATION meter-main carrying the
 # two 200 A mains outdoors (Milbank/Eaton HD class, the Xcel MN residential standard above
@@ -3253,7 +3253,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "PROD-UNISTRUT-P1000-PG" = { material = { low = 43, high = 114 }, labour = 0 }  # 1 ea
 # B-Line B409-18 ZN: ESTIMATE, no retailer price read.
 "PROD-BLINE-B409-18-ZN" = { material = { low = 20, high = 45 }, labour = 0 }  # 6 ea
-"PROD-LAG-3-8X4-ZN" = { material = { low = 0.50, high = 1.20 }, labour = 0 }  # 6 ea — estimate
+"PROD-LAG-3-8X5-ZN" = { material = { low = 0.60, high = 1.50 }, labour = 0 }  # 6 ea — estimate
 "FT-BATH1-SHELF-1630" = { material = { low = 200, high = 750 }, labour = { low = 150, high = 450 } }  # 1 ea
 # The suite bath's twin of it, open to the west since 2026-10-03: the same build and the same
 # two ends of the band, a little lower, as 11 1/4" x 30" is less carcass than 20" x 30" and
