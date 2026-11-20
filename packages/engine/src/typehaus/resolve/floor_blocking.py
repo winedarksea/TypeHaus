@@ -189,7 +189,7 @@ def bearing_bays(model: ResolvedModel, floor: ResolvedFloor,
         if not above:
             continue
         blocked = carrier_spans(model, coord, z0, z1, axis_i, perp_i)
-        lines = bay_edges_at(edges, coord, axis_i, perp_i)
+        lines = bay_edges_at(edges, tip + inward * width / 2.0, axis_i, perp_i, width / 2.0)
         for bay, ((p_a, w_a), (p_b, w_b)) in enumerate(zip(lines, lines[1:], strict=False)):
             if p_b - p_a > spacing + inch(1).meters:
                 continue  # an opening between them, not one bay

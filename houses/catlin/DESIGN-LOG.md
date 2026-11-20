@@ -9134,3 +9134,12 @@ Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
 - **Result.** Two A35Z on the south pack's outer faces, 606 lb over 18.2" (half way to
   W-B-N4's face) against 1,076, d/c 0.56; A35Z 57 -> 59, SD9112 +24. No other wall changes
   (`notes/main_floor_truss_basis.md` §4).
+
+## A block is bounded only by framing that reaches it (2026-11-20)
+
+- **Bug.** `blocking_parts.bay_edges_at` took every bay edge within ~7" of a block's line, so
+  `bearing-block-1-012` (FS-M-MECH, x 9'-10 27/32") stopped at y 429" on D-M-ENTRY's
+  sill-seat backer, which ends at x 9'-6", 1 1/4" short of the LSL edge rim's face (430 1/4").
+- **Fix.** Only a member whose run reaches the block itself (its thickness, 1/16" slack)
+  bounds it. That block now runs to the rim; no other block in the house changes length.
+

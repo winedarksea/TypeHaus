@@ -243,7 +243,7 @@ def _block_at(model, floor, key, profile, c, width, plate, edges, spacing, runs,
     """The block (or box) at ``c`` if it bears on the plate, else ``None`` and why not."""
     along_x = floor.direction == "x"
     axis_i, perp_i = (0, 1) if along_x else (1, 0)
-    lines = bay_edges_at(edges, c, axis_i, perp_i)
+    lines = bay_edges_at(edges, c, axis_i, perp_i, width / 2.0)
     bays = [(min(clear[1], plate[1]) - max(clear[0], plate[0]), clear)
             for (p_a, w_a), (p_b, w_b) in zip(lines, lines[1:], strict=False)
             if p_b - p_a <= spacing + _IN

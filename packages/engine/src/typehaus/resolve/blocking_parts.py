@@ -58,12 +58,15 @@ Crossing = tuple[str, float, float, float, float]
 
 def bay_edges_at(
     edges: Sequence[FramedMember], coord: float, axis_i: int, perp_i: int,
+    half_thickness: float,
 ) -> list[Span]:
     """Sorted ``(perp, width)`` of the members bounding bays at this line.
 
     Joists, sister plies and opening trimmers all close a bay; a block is cut to their faces.
+    Only a member that reaches the block itself, centred on ``coord`` and ``2 x
+    half_thickness`` thick, bounds it: one ending short of it leaves the block running past.
     """
-    reach = LINE_TOL_M + inch(4).meters
+    reach = half_thickness + FIT_TOL_M
     lines: dict[float, float] = {}
     for member in edges:
         lo, hi = sorted((member.p0[axis_i], member.p1[axis_i]))
