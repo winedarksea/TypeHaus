@@ -686,7 +686,8 @@ def test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs(catli
     # 17 since 2026-11-16: WIN-S-BED3 rejoined the 27" row and WIN-S-BED3-N was deleted.
     # 19 since 2026-11-20: the lineset bores AO-M-RFG-HP1 / -HP3 (plan/mep_linesets.py), 4"
     # holes each inside one W-M-N1 / W-M-N2 bay — the hydrant pair's reason again.
-    assert len(framed) == 19, [o.tag for o in framed]
+    # 20 since 2026-11-20: AO-A-ERV-STAIR, the 4 1/2" stair-top ERV pickup in one W-A-BA-E bay.
+    assert len(framed) == 20, [o.tag for o in framed]
     for opening in framed:
         wall = walls[opening.host_wall]
         start, end = _framing_axis(wall)

@@ -765,8 +765,9 @@ def test_a_bored_penetration_is_invisible_to_the_cladding_framing(catlin_model) 
     # halves of the rule fail together instead of one of them going quiet.
     ducts = [op for op in catlin_model.openings
              if op.penetration_for and framed_around(op)]
-    # The plant transfer sleeves (2026-11-12) are 10 1/2" wide: framed, on an interior wall.
-    assert {op.tag for op in ducts} == {"AO-M-ERV-OA", "AO-S-ERV-EA",
+    # The plant transfer sleeves (2026-11-12) are 10 1/2" wide: framed, on an interior wall;
+    # so is AO-A-ERV-STAIR (2026-11-20), 4 1/2" and past the bore limit.
+    assert {op.tag for op in ducts} == {"AO-M-ERV-OA", "AO-S-ERV-EA", "AO-A-ERV-STAIR",
                                         "AO-S-XFER-PLANT-HI", "AO-S-XFER-PLANT-LO"}
     bore_m = BORE_MAX_IN * 0.0254
     assert all(max(op.width_m, op.height_m) <= bore_m for op in bores)
