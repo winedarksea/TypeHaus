@@ -74,7 +74,9 @@ a release or for exhaustive local verification.
   A ceiling fixture or hardwired alarm head that mounts to a box (not a housing/wafer, not
   PSU-fed) takes a `host="ceiling"` record (`resolve/ceiling_boxes.py`, decision #140): never
   banked or sleeved, graded by `electrical.ceiling_box_framing` (a clash moves the fixture) and
-  `ceiling_box_support` (a fan's row is `fan_rated`).
+  `ceiling_box_support` (a fan's row is `fan_rated`). A `remote_box` type (a knuckle flood on
+  its own plate) takes no box over its point: a surface junction box derives on the nearest
+  framing member beside it (`resolve/remote_feed_box.py`).
 - **Drywall accessories are derived from one `DrywallStandard`** (decision #103):
   `resolve/drywall_trims.py` finds outside corners, J-bead terminations, tile-stop reveals,
   trimless-door L-bead and window-return beads off the host faces into

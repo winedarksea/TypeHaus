@@ -173,6 +173,8 @@ runs to the ceiling.
   - CD-B-PLAY-SPARE: vertex 7 in RM-B-BATH's ceiling at x 13'-6 1/4", y 20'-3 1/2", and
     vertex 12 in RM-B-PLAY-N at x 19'-4 1/2", y 26'-0".
   - The workshop and theater ceiling boxes: closed 2026-11-20 (decision #140). Every
-    workshop strip and the theater's AL-B-COMBO take a derived ceiling box (Appleton
-    FFS561LDNBH on a bar hanger), billed in `[electrical_boxes]` and fill-graded.
+    workshop strip takes a derived ceiling box (Appleton FFS561LDNBH on a bar hanger),
+    billed in `[electrical_boxes]` and fill-graded. The theater's RC ceiling takes none:
+    AL-B-COMBO moved to the RM-B-STAIR hall ceiling at the foot of ST-B2M (owner,
+    2026-11-20), on the same box.
   - All of these are accessible through blank covers.

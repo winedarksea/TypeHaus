@@ -21,8 +21,9 @@ PORCH_LIGHTING = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-S2", face="left", distance_from_start=inch(78.8125),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
-    # The first balcony bay is beyond the porch deck and enclosure. The weatherproof
-    # box fixes into the modeled blocking from below, leaving the waterproof plank intact.
+    # The first balcony bay is beyond the porch deck and enclosure. The knuckle plate fixes
+    # into the modeled blocking from below, leaving the waterproof plank intact; the type's
+    # `remote_box` derives its weatherproof junction box on the next joist.
     # Rotation 0 aims the head south; its downward pose is shared by all 3D consumers.
     ElectricalDevice(uid="QTM001EAAA", tag="ED-M-PORCH-FLOOD", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-FLOOD-GARDEN", position=GARDEN_FLOOD_POSITION,

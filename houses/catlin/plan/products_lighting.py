@@ -173,7 +173,7 @@ HUNTER_GALLEGOS = Product(
            "flexible, the <= 11 in. height is not.",
 )
 # The sunken-garden flood (ED-M-PORCH-FLOOD): a small knuckle-mount surface flood whose
-# knuckle fastens up to the weatherproof box on the guard-post blocking, the head tilted
+# knuckle plate fastens up to the guard-post blocking (a junction box beside it), the head tilted
 # 66 deg below horizontal. The recessed Alcon 14119 trim (2026-10-22) could not aim there.
 ALCON_11414_KN_GARDEN_FLOOD = Product(
     tag="PROD-ALCON-11414-KN", brand="Alcon Lighting",

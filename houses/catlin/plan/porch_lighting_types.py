@@ -22,8 +22,12 @@ GARDEN_FLOOD_TYPE = luminaire_class("ED-T-LT-FLOOD-NARROW").model_copy(update={
     "height": inch(8.7),
     "lamp": f"LED integrated, {FLOOD_BEAM_DEGREES:g} deg beam",
     "product_ref": "PROD-ALCON-11414-KN",
+    # Owner, 2026-11-20: it needs no box to mount on, only a junction box near it.
+    "remote_box": True,
+    "box_use": "weatherproof",
     "source": f"Alcon 11414-KN-SM-BK: black wet-listed knuckle flood, switched to 20 W and "
-              f"3000K, 0-10 V; knuckle on a box fastened up to the balcony blocking, aimed "
+              f"3000K, 0-10 V; knuckle on its own plate screwed up to the balcony blocking, "
+              f"fed by a liquidtight whip from a weatherproof box on the next joist, aimed "
               f"{FLOOD_DOWNWARD_AIM_DEGREES:g} deg below horizontal into the open court. "
               f"ALLOWANCE: beam and 20 W lumens unpublished; {FLOOD_BEAM_DEGREES:g} deg and "
               "20 W / 1800 lm are assumed until Alcon's IES file is read at order.",

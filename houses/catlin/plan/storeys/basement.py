@@ -1419,9 +1419,11 @@ ROOMS = [
 ]
 
 ALARMS = [
+    # The storey's general smoke/CO head (R314.3, R315): on the hall ceiling at the foot of
+    # ST-B2M, not in the theater, whose RC ceiling takes no box (owner, 2026-11-20).
     Alarm(uid="CBA701AAAA", tag="AL-B-COMBO", kind=AlarmKind.COMBO,
-          type_ref="ED-T-ALARM-COMBO-KIDDE", room="RM-B-PLAY-N",
-          circuit="CKT-LT-BACKUP"),
+          type_ref="ED-T-ALARM-COMBO-KIDDE", room="RM-B-STAIR",
+          circuit="CKT-LT-BACKUP", position=pt(inch(191.5), inch(302))),
     # 2021 IRC R328.7 (not the adopted 2018 book; `advisory.ess_detection`) wants the smoke
     # alarm; the heat alarm is the owner's standard (a cell fails as heat first). Both sit
     # INSIDE RM-B-ESS so they sense the cabinet, not the room outside the Type X.

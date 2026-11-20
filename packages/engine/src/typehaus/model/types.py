@@ -1122,6 +1122,10 @@ class ElectricalDeviceType(FurnitureType, DeviceElectricalFacts):
     # Picks a BoxStandard row by its ``use`` (e.g. "recessed"); a light defaults to
     # "luminaire". Unmatched, the general row serves.
     box_use: str | None = None
+    # A ceiling fitting that mounts on its own bracket (a knuckle flood on a plate) and is fed
+    # by a whip from a junction box beside it: no box over its point; the box derives on the
+    # nearest framing member clear of its body (``resolve/remote_feed_box.py``, #140).
+    remote_box: bool = False
     # SPD kinds: UL 1449 type ("1", "2") or a PV DC unit ("pv_dc"), and its nominal kA.
     spd_class: Literal["1", "2", "pv_dc"] | None = None
     surge_ka: float | None = None

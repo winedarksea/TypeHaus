@@ -202,7 +202,18 @@ ARLINGTON_FBR415F = Product(tag="PROD-ARLINGTON-FBR415F", brand="Arlington", mod
     url="https://www.aifittings.com/catalog/fan-fixture-boxes/non-metallic-vapor-box-with-adjustable-steel-bracket/FBR415F",
     source=_CEILING_SOURCE)
 
-BOX_PRODUCTS = (APPLETON_FFS561LDNBH, RACO_929, ARLINGTON_FBR415F,
+# The garden flood's junction box (`remote_box`, owner 2026-11-20): Bell 5361-0, 4" round,
+# 1-1/2" deep, five 1/2" hubs, die-cast; 16 in3 is a retailer figure (Zoro), not read off a
+# Hubbell sheet. Bell 5374-0 4" round blank cover, gasket and screws included.
+BELL_5361_0 = Product(tag="PROD-BELL-5361-0", brand="Bell (Hubbell)", model="5361-0",
+    name="Weatherproof round box, 4 in., 1-1/2 in. deep, five 1/2 in. outlets, 16 cu. in., gray",
+    url="https://www.gexpro.com/p/51023/hubbell-raco-wp-round-box-4-depth-1-1-2-5-1-2-hubs-050169536100-5361-0",
+    source="Gexpro listing (4 in. dia., 1-1/2 in. deep, (5) 1/2 in. outlets); 16 cu. in. per Zoro. CONFIRM the marked volume at order.")
+BELL_5374_0 = Product(tag="PROD-BELL-5374-0", brand="Bell (Hubbell)", model="5374-0",
+    name="4 in. round weatherproof blank cover, gasket and screws, gray",
+    url="https://www.hubbell.com/bell/en/c/5374-0/p/2140990", source="Hubbell product page")
+
+BOX_PRODUCTS = (BELL_5361_0, BELL_5374_0, APPLETON_FFS561LDNBH, RACO_929, ARLINGTON_FBR415F,
                 PLATE_REGGIO_2SPB_SG, PLATE_REGGIO_6SPB_SG, PLATE_PJ26_W, PLATE_PJ262_W, PLATE_PJ263_W, PLATE_PJ264_W, PLATE_80401_NW, PLATE_80409_NW, PLATE_80411_NW, PLATE_80412_NW, PLATE_CW_1_WH, PLATE_CW_2_WH, PLATE_CW_3_WH, PLATE_CW_4_WH, PLATE_80704_W, PLATE_MULBERRY_32442,
                 RACO_232, CARLON_BH353A, CARLON_BH464A, RACO_808C, RACO_809C, RACO_768, CARLON_B122A, CARLON_BH235A,
                 CARLON_B520A, RACO_192, RACO_753, ARLINGTON_DVFR1W, AIRFOIL_1G, AIRFOIL_ROUND,
@@ -330,6 +341,11 @@ BOX_STANDARD = [
                    cover_product_ref="PROD-RACO-753",
                    box_size=(inch(4), inch(4), inch(1.563)), designation="4 x 1-1/2 square",
                    cover_rise=inch(0.0625)),
+            # A self-mounting wet fitting's junction box (`remote_box`), on the framing beside it.
+            BoxRow(mounting="surface", gangs=1, use="weatherproof",
+                   box_product_ref="PROD-BELL-5361-0", cover_product_ref="PROD-BELL-5374-0",
+                   shape="round", box_size=(inch(4), inch(4), inch(1.5)), box_volume_in3=16.0,
+                   cover_rise=inch(0.25)),
             BoxRow(mounting="flush", gangs=1, use="air-sealed-luminaire-round",
                    box_product_ref="PROD-LESSCO-AIRFOIL-ROUND", shape="round",
                    box_size=(inch(4), inch(4), inch(2.25)), box_volume_in3=20.0,

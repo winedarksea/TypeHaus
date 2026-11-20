@@ -2922,7 +2922,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # windings, then 40-70 freeze-thaw cycles a season. Installing a damp-rated fixture subject
 # to direct weather is an NEC 410.10 violation, so the cheaper band is not available here.
 "ED-T-LT-FAN60" = { material = { low = 270, high = 650 }, labour = { low = 155, high = 320 } }  # 1 ea
-"ED-T-LT-FLOOD-GARDEN" = { material = { low = 80, high = 250 }, labour = { low = 65, high = 145 } }  # 1 ea — shielded 60-degree garden flood, underside box on balcony blocking; provisional allowance
+"ED-T-LT-FLOOD-GARDEN" = { material = { low = 80, high = 250 }, labour = { low = 65, high = 145 } }  # 1 ea — shielded 60-degree garden flood, knuckle plate on balcony blocking (its junction box bills in [electrical_boxes]); provisional allowance
 # Mirror pass 2026-10-22 (the studio wet-bar task light is now P1, a Karlie).
 # 2026-10-31: the 3000 K Karlies (P1/P1A/P2/P5) no longer include bulbs: their Waveform
 # CentricHOME A19s bill as lamp part rows. P3 (MIRROR-DAY) still includes its 80795-SU.
@@ -6655,6 +6655,10 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # Ceiling boxes (decision #140, 2026-11-20). ESTIMATES off retail listings. Labour 0: the
 # fixture or alarm row's labour sets its box, as for every flush wall box (owner, 2026-10-29).
 "PROD-APPLETON-FFS561LDNBH" = { material = { low = 6, high = 12 }, labour = { low = 0, high = 0 } }  # 4" oct on bar hanger, lights and alarm heads
+# Garden flood junction box (remote_box, owner 2026-11-20): die-cast round box + blank cover.
+# ESTIMATES off retail listings; box labour is screwing it to the joist and the whip.
+"PROD-BELL-5361-0" = { material = { low = 8, high = 16 }, labour = { low = 15, high = 35 } }  # 1 ea
+"PROD-BELL-5374-0" = { material = { low = 3, high = 7 }, labour = { low = 0, high = 0 } }  # 1 ea
 "PROD-RACO-929" = { material = { low = 14, high = 25 }, labour = { low = 0, high = 0 } }  # fan brace box, 2 ea
 "PROD-ARLINGTON-FBR415F" = { material = { low = 12, high = 22 }, labour = { low = 5, high = 15 } }  # plant fan, vapor box; labour is the membrane taping
 

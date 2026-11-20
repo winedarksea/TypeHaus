@@ -9,10 +9,16 @@
   laundry track take none. 18 boxes landed on a joist, rafter, soffit rung or duct; each
   fixture moved 1/2"-4" into the clear bay (AL-S-BED3 9" east, off DU-S-HP-RET);
   the bedroom fan sits 2 1/4" south of its old centre. No pancake was needed.
-- **Open.** The porch fan and garden flood hang under FS-SG-BALCONY's bare deck: no lined face,
-  no box (UNKNOWN in `box_fill`). AL-B-COMBO and the living room's pendant and AL-M-HALL take a
-  box through resilient channel (`electrical.ceiling_box_decoupling`): wall-mount the theater
-  head within 12" of the ceiling (NFPA 72), or keep the box on the RC? Owner to decide.
+- **Open.** The porch fan hangs under FS-SG-BALCONY's bare deck: no lined face, no box
+  (UNKNOWN in `box_fill`). The living room's pendant and AL-M-HALL take a box through
+  resilient channel (`electrical.ceiling_box_decoupling`).
+- **Closed (owner, same day).** AL-B-COMBO, the basement's one general smoke/CO head, left the
+  theater's RC ceiling (it takes no boxes) for the RM-B-STAIR hall ceiling 10" south of
+  ST-B2M's foot, (15'-11 1/2", 25'-2"), mid-bay in FS-M-STAIR on its Appleton box; still on
+  CKT-LT-BACKUP. The fallback, the theater wall within 12" of the ceiling, was not needed.
+  The garden flood mounts on its own knuckle plate: the type says `remote_box`, and its
+  junction box derives on the nearest joist beside it (Bell 5361-0 round under a 5374-0
+  blank cover, `[electrical_boxes]`), fed to the flood by a liquidtight whip.
 
 ## DU-M-ERV-R-LIVING moves 3 1/8" south so a squash block stands under W-S-C2B's jack (2026-11-19, owner)
 
@@ -995,7 +1001,8 @@ stands.
 
 The garden retains its own switch. `ED-M-STAIR-LT` now shares `ED-M-PORCH-SW` with the
 west-bay fan light, so the porch stays lit with the garden flood off. Fixture UIDs and
-circuit assignments stayed intact. The shared flood model carries its box, knuckle,
+circuit assignments stayed intact. (2026-11-20: the knuckle mounts on its own plate on the
+blocking; the junction box is derived on the next joist.) The shared flood model carries its plate, knuckle,
 head, lens and visor through the viewer, GLB and IFC. Instances live in
 `plan/porch_lighting.py`; mounting and beam regressions use the shared read-only fixtures.
 

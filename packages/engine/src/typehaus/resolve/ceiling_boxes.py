@@ -10,6 +10,8 @@ the ``air-sealed-<use>`` row. A ceiling on resilient channel still takes its box
 that the box bridges the decoupling. Under a soffit the soffit's ladder hosts it, lined like
 the room's ceiling; with no ceiling, a lined roof's underside. No lining over the point (a
 porch under a bare deck), or no framing, is no box: ``electrical.box_fill`` lists it UNKNOWN.
+A ``remote_box`` type mounts on its own bracket; its junction box is a surface box on the
+nearest framing beside it (``remote_feed_box``).
 
 The resolver never moves a fixture or snaps it to framing: ``electrical.ceiling_box_framing``
 grades the clash and names the shift. A ``pancake`` row is flush too: its depth sits inside
@@ -40,6 +42,7 @@ from typehaus.resolve.device_boxes import (
 )
 from typehaus.resolve.model import ResolvedModel, ResolvedSolid
 from typehaus.resolve.overhead import OverheadIndex
+from typehaus.resolve.remote_feed_box import remote_box_point
 from typehaus.resolve.roof_geometry import (
     roof_height_at,
     roof_slope_factor,
@@ -85,7 +88,12 @@ def resolve_ceiling_boxes(model: ResolvedModel) -> list[Finding]:
             continue
         item = model.plan.by_tag(obj.tag)
         product_type = types.get(obj.type_ref or "")
-        if item is not None and takes_box(item, product_type):
+        if item is None or not takes_box(item, product_type):
+            continue
+        if getattr(product_type, "remote_box", False):
+            stage.place_remote(item, product_type, obj.storey, obj.room, obj.position,
+                               obj.z_m, tuple(obj.footprint), item.kind.value)
+        else:
             stage.place(item, product_type, obj.storey, obj.room, obj.position, obj.z_m,
                         tuple(obj.footprint), item.kind.value)
     for head in model.alarm_heads:
@@ -144,6 +152,23 @@ class _Stage:
         self._record(item, storey, face.room or room, xy, face, row, mounting,
                      cavity if top is not None else None,
                      host_layer, air, device_footprint, kind)
+
+    def place_remote(self, item: Any, product_type: Any, storey: str, room: str | None,
+                     xy: tuple[float, float], base_z: float, device_footprint: tuple,
+                     kind: str) -> None:
+        """A self-mounting fitting's junction box: surface, on the framing beside it."""
+        over = self.structure.lowest_above(xy[0], xy[1], base_z)
+        floor = None if over is None else self.floors.get(over.tag)
+        row = _row(self.standard, "surface", box_use(item, product_type), False)
+        if floor is None or row is None:
+            return
+        found = remote_box_point(floor, xy, device_footprint, row.box_size[0].meters, base_z)
+        if found is None:
+            return
+        at, z, member = found
+        face = _Face(z, _DOWN, (), room)
+        self._record(item, storey, room, at, face, row, "surface", None,
+                     f"{floor.tag}/{member}", False, device_footprint, kind)
 
     def _face(self, xy: tuple[float, float], base_z: float, storey: str,
               room: str | None) -> _Face | None:
