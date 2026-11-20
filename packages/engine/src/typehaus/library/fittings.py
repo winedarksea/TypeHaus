@@ -249,7 +249,14 @@ def _duct_elbows() -> list[FittingSpec]:
 _PEX_BEND = (6.0, "Uponor Professional Plumbing Installation Guide (PLU_InsG_P731_0213) "
                   "p. 9: \"The minimum bend radius of Uponor AquaPEX tubing in any direction "
                   "is six times the outside diameter (6 x OD).\"")
-TUBE_BEND_RULES: dict[str, tuple[float, str]] = {"pex": _PEX_BEND, "pex-a": _PEX_BEND}
+#: Soft (annealed) ACR lineset coil, bent by hand or lever bender. A planning figure, not a
+#: read: lever benders form 3/4" ACR on about a 3" radius, so 4 x OD; Gree's own minimum has
+#: not been read into the repo. CONFIRM against the delivered unit's installation manual.
+_ACR_BEND = (4.0, "TypeHaus planning figure: 4 x OD, the radius a lever bender forms 3/4 in. "
+                  "annealed ACR on (CDA Copper Tube Handbook, bending annealed tube). Gree "
+                  "minimum unread; confirm in the unit's installation manual.")
+TUBE_BEND_RULES: dict[str, tuple[float, str]] = {"pex": _PEX_BEND, "pex-a": _PEX_BEND,
+                                                 "copper_acr": _ACR_BEND}
 
 
 #: Every catalogued fitting. Sorted by tag so a take-off's row order never depends on the

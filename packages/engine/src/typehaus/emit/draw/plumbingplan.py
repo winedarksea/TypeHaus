@@ -147,7 +147,10 @@ def run_storeys(model: ResolvedModel) -> dict[str, str]:
 
 
 #: Pressure lines by their drawing abbreviation (M2-105: the enum text printed).
-_SYSTEM_TEXT = {"water_cold": "CW", "water_hot": "HW", "sump_discharge": "SUMP DISCHARGE"}
+_SYSTEM_TEXT = {"water_cold": "CW", "water_hot": "HW", "sump_discharge": "SUMP DISCHARGE",
+                "refrigerant": "RS/RL"}
+#: Pipe systems drawn off the plumbing layers: a pump's line is stormwater, a lineset HVAC.
+_SYSTEM_LAYER = {"sump_discharge": "P-STRM-LEDR", "refrigerant": "M-HVAC-RFRG"}
 
 
 def run_label(run) -> str:
@@ -179,7 +182,7 @@ def build_plumbing_plan(model: ResolvedModel, storey: str) -> Scene:
         if drawn_on.get(run.uid, run.storey) != storey:
             continue
         layer = ("P-SANR-PIPE" if run.system in _DRAIN_VENT
-                 else "P-STRM-LEDR" if run.system == "sump_discharge" else "P-DOMW-PIPE")
+                 else _SYSTEM_LAYER.get(run.system, "P-DOMW-PIPE"))
         linetype = "DASHED" if run.system in _DRAIN_VENT else "CONTINUOUS"
         b.add(Polyline(points=tuple(_in(p) for p in run.path), layer=layer,
                        lineweight=PROFILE, linetype=linetype, uid=run.uid, tag=run.tag))

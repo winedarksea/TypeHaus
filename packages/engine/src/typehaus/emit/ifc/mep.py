@@ -106,6 +106,7 @@ _PIPE_SYSTEM_TYPES = {
     "vent": ("SanitaryVent", "VENT"),
     "radon": ("RadonVent", "USERDEFINED"),
     "gas": ("Gas", "GAS"),
+    "refrigerant": ("Refrigerant", "REFRIGERATION"),
 }
 
 

@@ -47,7 +47,8 @@ KIND_POLICY: dict[str, Treatment] = {
                      "panel_strap", "beam_cap", "rebar"), _X),
     # MEP runs, boxes and devices.
     **dict.fromkeys(("pipe_drain", "pipe_vent", "pipe_water_cold", "pipe_water_hot",
-                     "pipe_radon", "pipe_sump_discharge", "pipe_sleeve", "duct_supply",
+                     "pipe_radon", "pipe_sump_discharge", "pipe_refrigerant", "pipe_sleeve",
+                     "duct_supply",
                      "duct_return", "duct_exhaust", "duct_outdoor_air", "duct_transfer",
                      "conduit_power", "conduit_data", "grounding_electrode",
                      "grounding_conductor", "electrical_box", "wall_plate", "vent",

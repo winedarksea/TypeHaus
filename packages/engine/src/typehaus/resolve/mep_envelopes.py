@@ -118,13 +118,13 @@ def run_radii(model: ResolvedModel) -> dict[str, float]:
     the size it measures, not by a nominal — so ducts pass through unconverted.
     """
     from typehaus.resolve.pipe_sections import (
-        pipe_outside_diameter_m,
+        pipe_run_outside_diameter_m,
         raceway_outside_diameter_m,
     )
 
     radii: dict[str, float] = {}
     for run in model.pipe_runs:
-        radii[run.tag] = pipe_outside_diameter_m(run.diameter_m or 0.0, run.material) / 2.0
+        radii[run.tag] = pipe_run_outside_diameter_m(run) / 2.0
     for duct in model.ducts:
         radii[duct.tag] = (duct.diameter_m or max(duct.width_m, duct.depth_m)) / 2.0
     for raceway in model.conduits:

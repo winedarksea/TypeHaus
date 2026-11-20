@@ -106,10 +106,22 @@ def test_a_buried_cleanout_takes_the_cheaper_of_floor_and_wall(occupancy, access
 def test_radon_and_sump_have_trades_and_only_gas_goes_unassigned() -> None:
     runs = [SimpleNamespace(tag=f"PR-{system}", system=system, storey="basement",
                             diameter_m=0.05, z_m=[0.0])
-            for system in ("radon", "sump_discharge", "gas")]
+            for system in ("radon", "sump_discharge", "refrigerant", "gas")]
     model = SimpleNamespace(pipe_runs=runs, ducts=[], conduits=[])
     trades = {t.tag: t.trade for t in order_targets(model)}
-    assert trades == {"PR-radon": "vent", "PR-sump_discharge": "supply", "PR-gas": ""}
+    assert trades == {"PR-radon": "vent", "PR-sump_discharge": "supply",
+                      "PR-refrigerant": "supply", "PR-gas": ""}
+
+
+def test_a_lineset_bends_at_four_od_and_pays_no_exterior_wall_freeze_charge() -> None:
+    """Soft ACR coil bends (4 x the 3/4" vapour OD = 3"), and refrigerant cannot freeze."""
+    from typehaus.routing.cost import RouteCost
+    from typehaus.routing.trades.pipe import bend_radius_m
+
+    assert bend_radius_m(inch(0.75).meters, "refrigerant", "copper_acr") == pytest.approx(
+        inch(3).meters)
+    assert RouteCost().for_run("pipe", "refrigerant").exterior_wall_per_ft == 0.0
+    assert RouteCost().for_run("pipe", "water_cold").exterior_wall_per_ft > 0.0
 
 
 def test_sump_discharge_roots_on_the_leaders_riser(catlin_model_ro) -> None:

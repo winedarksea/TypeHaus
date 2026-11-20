@@ -1613,6 +1613,54 @@
       "node": "polyline",
       "points": [
         [
+          440.9251319376136,
+          101.34153543307087
+        ],
+        [
+          441.5,
+          101.1875
+        ],
+        [
+          442.0748680623864,
+          101.34153543307087
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "VZK9M5DP8Y-run",
+      "tag": "PR-M-RFG-HP3-STAIR-RUN"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          440.9251319376136,
+          101.34153543307087
+        ],
+        [
+          441.5,
+          101.1875
+        ],
+        [
+          442.0748680623864,
+          101.34153543307087
+        ]
+      ],
+      "pattern": "concrete",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "concrete"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           423.3978846129281,
           -16.966535433070867
         ],

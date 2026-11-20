@@ -35,6 +35,7 @@ SERVICE_VENT = "vent"
 SERVICE_SUPPLY = "supply"
 SERVICE_DUCT = "duct"
 SERVICE_RACEWAY = "raceway"
+SERVICE_REFRIGERANT = "refrigerant"  # soft ACR coil: bent, flared only at its ends
 
 # Pattern families. A ``kind`` is what the fitting DOES, so one kind may hold several
 # patterns at different angles (an elbow at 90, 45 and 22.5) and the angle selects.

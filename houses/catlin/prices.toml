@@ -8134,31 +8134,14 @@ electrical-service-entrance-and-utility = { low = 3500, high = 9000 }
 # short runs on the same west wall. No `Feeder` element exists in the engine, so this is the
 # only place they are priced (2026-09-12).
 electrical-service-feeders-4-0-al-ser = { low = 400, high = 900 }
-# 5 pairings, ~198 LF. Entirely absent today. GREW ~50 LF on 2026-09-02, when both balcony
-# condensers moved to a ground pad east of the porch: HP1 ran ~40 ft up the W-M-S2 /
-# W-S-S2 stud bay into FS-ATTIC, and HP2's three ports ~25-30 ft each through the main-floor
-# band. It GREW ~8 LF on 2026-09-03 when the cabinets turned to face south, and GAVE MOST OF
-# IT BACK on 2026-09-04 when the row crossed the pocket to stand against the house: both
-# units are ~1'-9" from the single band penetration at x 30'-6" instead of 5'-0" of
-# east-west run along a pad, so each system lost roughly 3-4 ft of outdoor line.
-#
-# ** HP1'S ROUTE INVERTED LATER THE SAME DAY. ** Its condenser is on the NORTH face now
-# (params/hp1_north_pad.py) and its air handler is in SF-S-HP1 over RM-S-NCLOSET, at the
-# north end of the second storey. The run goes up the north wall from the pad at
-# x 26'-6"..29'-9", through the band, up an outside stud bay to FS-ATTIC, ~6'-4" west along
-# an attic joist bay — ALONG it, so nothing is bored — and drops into the box. ~31 ft
-# against 164 of line length and ~21 ft of rise against 49. That is a foot or two under the
-# precharge most 24k FLEXX Ultra sets ship with, so there is no meaningful field-charge
-# adder either way, and the run no longer climbs an occupied second-storey stud bay. HP1 is
-# at ~31 ft of 164 and 21 ft of 49. Routes and
-# lengths against Gree's published limits are in
-# notes/heat_pump_ground_pad.md. The allowance is NOT re-priced for it: the added footage is
-# inside its own spread, and the number below was always a lump. NOT DRIVEN (2026-08-27): `pipe_runs` carries
-# drain, vent, water_cold and water_hot and no refrigerant system, so there is no line-set
-# length to read. This is a MODELLING gap, not a pricing one — the day a refrigerant
-# `PipeRun` exists, this becomes `pipe_runs.length_ft[system=refrigerant]` at ~$26-49/LF.
-# 2026-10-29: $3,735-7,090 -> $3,600-6,300: ~198 LF at ~$18-32/LF installed (insulated copper, braze/nitrogen, vacuum); the "$26-49/LF" text above is stale.
-hvac-refrigerant-line-sets = { low = 3600, high = 6300 }
+# DRIVEN 2026-11-20 off the five modelled linesets' pre-flared KIT footage (decision #139,
+# plan/mep_linesets.py, [linesets]): 50 + 25 + 35 + 35 + 35 = 180 ft against the old ~198 LF
+# lump. ~$18-32/LF installed (kit, set, vacuum, start-up; 2026-10-29 rate). No [pipe_runs]
+# refrigerant price, or the copper bills twice. Routes and limits: notes/heat_pump_ground_pad.md.
+hvac-refrigerant-line-sets = { low = 18, high = 32, unit = "LF", driver = "linesets.kit_length_ft" }
+# The wall-held cover over each set's outdoor leg ([linesets] cover_ft; HP3's dogleg above the
+# entry is most of it). Estimate, no quote: ~$12-25/LF for PVC channel, fittings and labour.
+hvac-lineset-cover = { low = 12, high = 25, unit = "LF", driver = "linesets.cover_ft" }
 # Optional on Minneapolis municipal water; essential on a well.
 plumbing-water-softener-and-filtration = { low = 2500, high = 6000 }
 # DRIVEN 2026-08-27 off the low-voltage device count — 7 today. The scope is the CABLE AND

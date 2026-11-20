@@ -151,6 +151,7 @@ KEY_PATTERNS: tuple[tuple[str, str, CostCode], ...] = (
     ("pipe_runs", "gas", CostCode("3300", "22 11 00", "plumbing")),
     ("pipe_runs", "radon", CostCode("3200", "23 05 00", "mechanical")),
     ("pipe_runs", "sump_discharge", CostCode("3100", "22 14 00", "plumbing")),
+    ("pipe_runs", "refrigerant", CostCode("3200", "23 23 00", "mechanical")),
     ("pipe_fittings", "*", CostCode("3100", "22 13 00", "plumbing")),
     # A base the floor trade makes from the floor itself goes with that trade's arrival.
     ("interior_trim", "tile-base", CostCode("4000", "09 30 00", "tile")),

@@ -37,6 +37,7 @@ from typehaus.hardware.fittings import (
     SERVICE_DRAIN,
     SERVICE_DUCT,
     SERVICE_RACEWAY,
+    SERVICE_REFRIGERANT,
     SERVICE_SUPPLY,
     SERVICE_VENT,
     FittingSpec,
@@ -64,12 +65,13 @@ SERVICE_BY_SYSTEM: dict[str, str] = {
     "vent": SERVICE_VENT,
     "water_hot": SERVICE_SUPPLY,
     "water_cold": SERVICE_SUPPLY,
+    "refrigerant": SERVICE_REFRIGERANT,
 }
 
 #: Services whose turns are made by bending the product rather than by a fitting. A turn off
 #: a stock angle in one of these is a *bend*, graded against a product's minimum radius —
 #: which no source in this repo publishes, so it is a coverage gap and not a defect.
-BENDABLE_SERVICES: frozenset[str] = frozenset({SERVICE_SUPPLY})
+BENDABLE_SERVICES: frozenset[str] = frozenset({SERVICE_SUPPLY, SERVICE_REFRIGERANT})
 
 #: The smallest size ASTM D3311 makes a DWV pattern in, inches: a thinner gravity line (3/4"
 #: condensate, T&P) runs in tube and turns on a tube fitting.
@@ -223,7 +225,8 @@ def _match(service: str, kind: str, angle_deg: float, nominal_in: float,
 
 
 def _bend(path: Sequence[tuple[float, float, float]], index: int, angle_deg: float,
-          size_m: float, material: str | None) -> tuple[FittingSpec | None, str | None]:
+          size_m: float, material: str | None,
+          service: str = SERVICE_SUPPLY) -> tuple[FittingSpec | None, str | None]:
     """A bendable tube's off-pattern turn, graded as a BEND against the maker's radius.
 
     The bend's tangent length ``R tan(theta/2)`` has to fit on the straight tube either side
@@ -257,7 +260,7 @@ def _bend(path: Sequence[tuple[float, float, float]], index: int, angle_deg: flo
     return FittingSpec(
         tag=f"BEND-{(material or '').upper()}-{nominal:g}",
         name=f"{nominal:g}\" {material} field bend, {radius_in:.2f}\" min. radius",
-        service=SERVICE_SUPPLY, kind=KIND_ELBOW, nominal_in=nominal,
+        service=service, kind=KIND_ELBOW, nominal_in=nominal,
         angle_deg=round(angle_deg, 1), bend_radius_in=radius_in, source=source,
         data_note="a field bend in the tube, not a part"), None
 
@@ -309,7 +312,8 @@ def polyline_fittings(tag: str, family: str, system: str,
             if spec is None and family == FAMILY_DUCT:
                 spec, gap = set_down_spec(duct_standard, size_m, turn.angle_deg, gap, adj)
             if spec is None and bendable:
-                bent, why = _bend(cleaned, turn.index, turn.angle_deg, size_m, material)
+                bent, why = _bend(cleaned, turn.index, turn.angle_deg, size_m, material,
+                                  service)
                 if bent is not None or why is not None:
                     spec, gap = bent, why
         out.append(FittingRecord(

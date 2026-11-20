@@ -25,6 +25,7 @@ const SYSTEM_COLOR: Record<string, string> = {
   gas: "#d9bf33",
   radon: "#8c9499",
   sump_discharge: "#e6e6e0",
+  refrigerant: "#1f1f21",
 };
 const SYSTEM_LABEL: Record<string, string> = {
   drain: "drain",
@@ -34,6 +35,7 @@ const SYSTEM_LABEL: Record<string, string> = {
   gas: "gas",
   radon: "radon",
   sump_discharge: "sump discharge",
+  refrigerant: "lineset",
 };
 
 // PipeAccessoryKind → what a plumbing sheet calls it. Mirrors the engine enum

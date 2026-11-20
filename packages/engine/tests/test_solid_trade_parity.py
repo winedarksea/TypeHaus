@@ -120,7 +120,9 @@ def test_a_cast_column_is_concrete_in_the_viewer_too(catlin_model) -> None:
 def test_routed_pipe_runs_are_plumbing(catlin_model) -> None:
     pipes = [s for s in catlin_model.solids if s.category.startswith("pipe_")]
     assert pipes, "fixture regression: the Catlin house lost its routed plumbing"
-    assert {solid_trade(s.category) for s in pipes} == {"plumbing"}
+    assert {solid_trade(s.category) for s in pipes
+            if s.category != "pipe_refrigerant"} == {"plumbing"}
+    assert solid_trade("pipe_refrigerant") == "mechanical"  # a lineset (#139)
 
 
 def test_the_whole_stormwater_run_is_one_trade(catlin_model) -> None:

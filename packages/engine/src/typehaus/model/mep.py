@@ -123,22 +123,23 @@ class PipeRun(Element):
     # and the bare pipe is bored) or "continuous" (bored at the lagged OD). Read by the bore
     # checks (``checks/mep/routing_bore_scope.py``), which print the stop.
     lagging_at_framing: Literal["stops", "continuous"] = "stops"
-    # Self-regulating heater cable on the run, billed by the foot exactly as ``insulation``
-    # is, and a field for the same reason: a heat trace has no route of its own, it is as
-    # long as the pipe it follows, and a second authored polyline tracking the first would be
-    # a second source of truth for one length.
-    #
-    # It is a SEPARATE field from ``insulation`` and not a value of it. The two are different
-    # purchases, different trades and different failure modes — cable is an electrical item on
-    # a circuit, lagging is a thermal one — and a run very often wants both, the insulation
-    # over the cable. Folding them into one string would make "traced AND insulated"
-    # unsayable, which is the normal specification for an outdoor drain in this climate.
-    #
-    # ``None`` means no cable, which is the right answer for every interior run and the wrong
-    # one for a condensate line leaving a cold-climate heat pump: defrost meltwater running
-    # in an unheated pipe in February is how the pipe, and then whatever it discharges into,
-    # plugs with ice.
+    # Self-regulating heater cable, billed by the foot like ``insulation`` and a separate
+    # field from it: a different purchase and trade (cable is electrical, on a circuit), and an
+    # outdoor drain in this climate wants both. ``None`` is right for interior runs and wrong
+    # for a cold-climate heat pump's condensate line, where defrost meltwater freezes.
     freeze_protection: str | None = None  # e.g. '5 W/ft self-regulating, 120 V'
+    # Refrigerant only (a lineset, decision #139): ``diameter`` is the vapour line, this the
+    # liquid line, both tube OD; ``serves`` names the indoor head; ``outdoor_port`` the multi
+    # port letter the set lands on.
+    liquid_diameter: Length | None = None
+    outdoor_port: str | None = None
+
+    @model_validator(mode="after")
+    def _refrigerant_pair(self):
+        if (self.system is PipeSystem.REFRIGERANT) != (self.liquid_diameter is not None):
+            raise ValueError(f"{self.tag}: liquid_diameter is required on, and only on, a "
+                             "refrigerant run")
+        return self
 
 
 @register_element
@@ -367,9 +368,8 @@ class Equipment(Element):
     # a condenser's capacity against the load of exactly these rooms and reports any
     # conditioned room no unit claims, rather than guessing a partition.
     zone_rooms: tuple[str, ...] = ()
-    # An indoor head/air handler names the outdoor condenser it is paired with (its
-    # ``Equipment`` tag). Refrigerant lineset geometry is deliberately not modeled — this
-    # pairing is what the schedule and the capacity check need.
+    # An indoor head/air handler names its outdoor condenser (``Equipment`` tag); the
+    # lineset between them is a refrigerant ``PipeRun`` serving the head.
     outdoor_ref: str | None = None
     # --- UPC 608.5 (Minn. R. 4714.0608): temperature and pressure relief, water heaters ----
     # The TPR valve's discharge pipe, as a PipeRun tag. It is the one piece of a water

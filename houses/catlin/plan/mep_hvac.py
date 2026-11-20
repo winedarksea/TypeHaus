@@ -304,8 +304,8 @@ DUCTS_HVAC_SECOND = [
 # (x 20'-10 1/2"..24'-6", south of the pitched cabinet) is open deck at the end of the walk
 # from D-A-STUDY: ~20' at
 # 6'-9" headroom or more, inside IMC 306.3's 50' passageway. The supply opening's rear-biased
-# centre remains near the drop bay's centre. Tags keep their `-S-` for continuity. The
-# refrigerant lines are not modelled (notes/flexx_ultra_geometry.md).
+# centre remains near the drop bay's centre. Tags keep their `-S-` for continuity. Its
+# lineset is PR-A-RFG-HP1 (plan/mep_linesets.py).
 EQUIPMENT_HVAC_ATTIC = [
     Equipment(uid="CEE032AAAA", tag="EQ-S-HP1-AH",
               kind=EquipmentKind.DUCTED_AIR_HANDLER,

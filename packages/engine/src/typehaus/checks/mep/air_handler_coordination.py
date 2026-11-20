@@ -53,7 +53,8 @@ def air_handler_coordination(ctx: CheckContext):
                 CHECK_ID, f"{equipment.tag}: connection stations remain schematic for "
                 f"{', '.join(unresolved)}. The supply opening size is verified; its setback "
                 "and the return clear aperture are not dimensioned. Case-level duct "
-                "connectivity does not verify transition fit, drains or lineset routing. "
+                "connectivity does not verify transition fit or drains (linesets: "
+                "mep.lineset_reach). "
                 "Confirm the delivered cabinet revision before fabrication.", tags))
         else:
             findings.append(passed(

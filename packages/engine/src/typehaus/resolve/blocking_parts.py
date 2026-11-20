@@ -294,7 +294,8 @@ def run_bands(model: ResolvedModel) -> list[RunBand]:
     out: list[RunBand] = []
     for run in model.pipe_runs:
         if run.z_m and len(run.z_m) == len(run.path):
-            radius = pipe_outside_diameter_m(run.diameter_m or 0.0, run.material) / 2.0
+            radius = (run.bundle_diameter_m  # a lineset: its lagged bundle
+                      or pipe_outside_diameter_m(run.diameter_m or 0.0, run.material)) / 2.0
             out.append((run.tag, tuple(run.path), tuple(run.z_m), radius, radius))
     for duct in model.ducts:
         if len(duct.z_m) == len(duct.path):

@@ -313,6 +313,8 @@ def _pipe_run_endpoints(model: ResolvedModel, run: Any,
             advice=(f"{run.tag}: roots on {riser}, the receiver's derived riser", note),
             echo=_run_metadata(model, run.tag, ("material", "finish", "insulation",
                                                 "sanitary", "freeze_protection")))
+    if run.system == "refrigerant":
+        return _lineset_endpoints(model, run)
     found = _discharge(model, run, problems if falls else [])
     if found is None and falls:
         return None
@@ -340,6 +342,30 @@ def _pipe_run_endpoints(model: ResolvedModel, run: Any,
         advice=(_slope_basis(run),) if falls and getattr(run, "sanitary", True) is False else (),
         echo=_run_metadata(model, run.tag, ("material", "finish", "insulation",
                                             "sanitary", "freeze_protection")))
+
+
+def _lineset_endpoints(model: ResolvedModel, run: Any) -> Endpoints:
+    """A lineset: pressure, no grade, both ends fixed. The search runs from the authored
+    outdoor end (``--hold-upstream`` keeps the hand-drawn outside leg) to the head's port
+    pair, else to the authored head end; the bundle's radius and the coil's bend rule."""
+    from typehaus.resolve.mep_ports import placed_ports
+
+    head = run.serves[0] if run.serves else None
+    pair = [p.point for p in placed_ports(model) if p.equipment_tag == head
+            and p.port_tag in ("liquid", "vapor")]
+    root = (tuple(sum(c) / 2.0 for c in zip(*pair, strict=True)) if len(pair) == 2
+            else (run.path[-1][0], run.path[-1][1], run.z_m[-1]))
+    return Endpoints(
+        origin=(run.path[0][0], run.path[0][1], run.z_m[0]), root=root, kind="pipe",
+        radius_m=(run.bundle_diameter_m or run.diameter_m) / 2.0,
+        diameter_m=run.diameter_m,
+        bend_radius_m=pipe_trade.bend_radius_m(run.diameter_m, "refrigerant", run.material),
+        serves=run.serves, storey=run.storey, system=run.system, falls=False,
+        touch=frozenset({run.tag}),
+        advice=(f"{run.tag}: roots on {head}'s port pair" if len(pair) == 2
+                else f"{run.tag}: {head} declares no port pair; roots on the authored end",),
+        echo=_run_metadata(model, run.tag, ("material", "insulation", "liquid_diameter",
+                                            "outdoor_port")))
 
 
 def _slope_basis(run: Any) -> str:

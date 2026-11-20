@@ -370,6 +370,11 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         from typehaus.resolve.grounding import resolve_grounding
 
         findings.extend(resolve_grounding(model))
+    with _stage("linesets"):
+        # After placeables (ports) and every pipe run: records only (#139).
+        from typehaus.resolve.linesets import derive_linesets
+
+        derive_linesets(model)
     with _stage("electrical_labels"):
         # After conduits, solar and the service root: records only, no solids.
         from typehaus.resolve.electrical_labels import resolve_electrical_labels

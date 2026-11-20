@@ -226,7 +226,8 @@ def _outside_m(run: Any) -> float:
     if hasattr(run, "system"):
         from typehaus.resolve.pipe_sections import pipe_outside_diameter_m
 
-        return pipe_outside_diameter_m(run.diameter_m, run.material)
+        return (getattr(run, "bundle_diameter_m", None)
+                or pipe_outside_diameter_m(run.diameter_m, run.material))
     return float(getattr(run, "trade_size_m", 0.0) or 0.0)  # a raceway: its trade size
 
 

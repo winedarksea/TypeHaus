@@ -18,9 +18,9 @@ _GEO = "IfcGeographicElement"
 _HARD = "hard"  # a placeable body may not enter it
 
 
-def _pipe(system: str) -> C:
+def _pipe(system: str, trade: str = "plumbing") -> C:
     """A routed pipe run: exported as segments by ``emit/ifc/mep.py``, billed by the foot."""
-    return C(f"pipe_{system}", trade="plumbing", billed_elsewhere=True, collision=_HARD)
+    return C(f"pipe_{system}", trade=trade, billed_elsewhere=True, collision=_HARD)
 
 
 def _duct(system: str) -> C:
@@ -55,6 +55,7 @@ ROWS: tuple[C, ...] = (
     # Routed plumbing, one category per PipeSystem.
     *(_pipe(s) for s in ("drain", "vent", "water_hot", "water_cold", "gas", "radon",
                          "sump_discharge")),
+    _pipe("refrigerant", trade="mechanical"),  # a lineset, billed in [linesets]
     *(C(name, trade="plumbing", ifc_class="IfcPipeFitting", ifc_predefined="USERDEFINED",
         ifc_object_type=name.upper(), billed_elsewhere=True, collision=_HARD)
       for name in ("cleanout_fitting", "cleanout_extension", "cleanout_cap")),

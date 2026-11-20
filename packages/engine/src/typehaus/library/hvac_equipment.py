@@ -8,6 +8,13 @@ whether a unit covers it, is the house's arithmetic, never a row's.
 from __future__ import annotations
 
 from typehaus import EquipmentType, HeatPumpRating, RatingBasis, Service, ServicePort, ft, inch
+from typehaus.library.hvac_refrigerant import (
+    FXU24_LIMITS,
+    MUL30_LIMITS,
+    SAPPHIRE9_LIMITS,
+    head_refrigerant_ports,
+    outdoor_refrigerant_ports,
+)
 from typehaus.model.placeable_symbols._gree_flexx import (
     CABINET_IN,
     CONTROL_CENTER_IN,
@@ -217,6 +224,7 @@ GREE_FLEXX_ULTRA_24_OD = EquipmentType(
             "are not dimensioned; rendered details are schematic. "
             "https://www.greecomfort.com/assets/our-products/flexx-ultra-r32/documents/"
             "flexx-ultra-r32-submittal-24mbh-a.pdf"),
+    refrigerant_limits=FXU24_LIMITS,
     ports=(
         ServicePort(tag="power", service=Service.POWER_240,
                     position=tuple(inch(value) for value in OUTDOOR_POWER_CENTER_IN),
@@ -310,7 +318,9 @@ GREE_MULTI_U30 = EquipmentType(
             "ducted: SEER2 21, EER2 13.6, HSPF2 10.0; MCA 23 A / MOCP 30 A; heating range -22 F to"
             " 75 F. Cooling 28,400 Btu/h. A multi's minimum capacity is the whole outdoor unit's, "
             "shared by every head."),
-    ports=(ServicePort(tag="power", service=Service.POWER_240, position=(ft(0), ft(0), ft(0))),),
+    refrigerant_limits=MUL30_LIMITS,
+    ports=(ServicePort(tag="power", service=Service.POWER_240, position=(ft(0), ft(0), ft(0))),
+           *outdoor_refrigerant_ports(40.16, 16.81, 0.25, 0.375, ("A", "B", "C"))),
 )
 
 GREE_HEAD_9 = EquipmentType(
@@ -323,7 +333,7 @@ GREE_HEAD_9 = EquipmentType(
     source=("Gree GWH09ATCXB-D6DNA3C/I, Multi R32 9k wall-mounted indoor unit (submittal 'Wall "
             "Mounted Indoor Unit 09KBTU R32'): 32 7/8 x 10 53/64 x 7 7/8 in (W x H x D), 19.8 lb —"
             " the same cabinet as the 12k. Heating is rated on the outdoor unit."),
-    ports=(),
+    ports=head_refrigerant_ports(32.875, 7.875, 0.25, 0.375),
 )
 
 GREE_HEAD_12 = EquipmentType(
@@ -336,7 +346,7 @@ GREE_HEAD_12 = EquipmentType(
     source=("Gree GWH12ATCXB-D6DNA3A/I, Multi R32 12k wall-mounted indoor unit (submittal 'Wall "
             "Mounted Indoor Unit 12KBTU R32'): 32 7/8 x 10 53/64 x 7 7/8 in (W x H x D), 19.8 lb —"
             " the same cabinet as the 9k."),
-    ports=(),
+    ports=head_refrigerant_ports(32.875, 7.875, 0.25, 0.375),
 )
 
 GREE_SAPPHIRE_9 = EquipmentType(
@@ -351,7 +361,7 @@ GREE_SAPPHIRE_9 = EquipmentType(
     source=("Gree SAP09HP230V1R32AH, Sapphire R32 9k wall-mounted indoor unit (Sapphire R32 9 MBH "
             "230 V submittal, AHRI 214802444): 38 3/16 x 13 21/32 x 10 1/8 in (W x H x D), 33.1 "
             "lb. VFD inverter (soft start). Heating is rated on the outdoor unit."),
-    ports=(),
+    ports=head_refrigerant_ports(38.1875, 10.125, 0.25, 0.375),
 )
 
 GREE_SAPPHIRE_9_OD = EquipmentType(
@@ -421,7 +431,9 @@ GREE_SAPPHIRE_9_OD = EquipmentType(
             "NEEP (id 393164) states 12,000; the rows are NEEP's. Gree's low-ambient table implies"
             " a COP of 2.62 at -22 F, which is not physically plausible; NEEP's 7,400 Btu/h at COP"
             " 1.64 is used."),
-    ports=(ServicePort(tag="power", service=Service.POWER_240, position=(ft(0), ft(0), ft(0))),),
+    refrigerant_limits=SAPPHIRE9_LIMITS,
+    ports=(ServicePort(tag="power", service=Service.POWER_240, position=(ft(0), ft(0), ft(0))),
+           *outdoor_refrigerant_ports(34.375, 14.796875, 0.25, 0.375)),
 )
 
 HEAT_PUMP_TYPES = (

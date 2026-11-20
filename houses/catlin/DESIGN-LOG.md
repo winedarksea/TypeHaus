@@ -8935,3 +8935,30 @@ Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
 - **Billing.** `VentRun` risers billed nowhere until now. They bill in [pipe_runs] per one-size
   piece, and their quarter bends and the increaser in [pipe_fittings]
   (`takeoff/mep.vent_riser_pieces`, `takeoff/plumbing.vent_riser_fittings`).
+
+## Linesets modelled: five refrigerant PipeRuns, 180 ft of kit (2026-11-20, owner plan)
+
+- **What moved.** The five sets were prose in `notes/heat_pump_ground_pad.md` and a ~198 LF
+  lump. They are `plan/mep_linesets.py` now (decision #139), graded against Gree's tables and
+  billed by kit: 50 + 25 + 35 + 35 + 35 ft. The allowance drives off `linesets.kit_length_ft`.
+- **HP1** keeps the north-wall route, in `W-M-N1`'s 304-320 bay (no window on either floor),
+  entering above the cabinet at 2'-6" and rising past the kitchen backing on the cavity's outer
+  half. In the attic it comes up through the deck 4" off the wall and crosses OVER the AH to drop
+  onto its front ports. The router (`haus route --run PR-A-RFG-HP1 --hold-upstream 8`) found a
+  36.2 ft lane, but it ran at port height through the cabinet body to reach the front face, so
+  the hand route (40.6 ft) stands. 3.1 oz field charge past the 31 ft precharge.
+- **HP2**: the plan's "up the cavity" could not hold for two heads. `D-M-PORCH` fills the wall
+  under the living head, and `WIN-M-BED-S2` fills the wall under the bed head's right end. So
+  BED rises in the clear bay east of the window, and the head ports are read LEFT-rear. LIVING
+  rises in `W-M-S2`'s 352-367 bay, runs west in `FS-S-EAST`'s south bay and drops onto the door
+  header. GYM drops beside the head in the 4" gap to the south wall. The x=18' bearing line has
+  no vertical gap between its two blocking rows. The three sets cross the LSL rim in separate
+  holes, which is a floor penetration and not a wall RO: a RoughOpening in the band framed a
+  header into the plates.
+- **HP3** goes back into `W-M-N2`'s 128-144 bay and up the cavity. It exits at 8'-6 1/2",
+  between the girt and the plates, because an exit at the head put the cover over
+  `ST-BW-ENTRY`'s headroom. From there it runs west above the entry and down the NW corner.
+  23 ft of the 30 ft is cover. Sapphire's piping table is unread, so its limits are UNKNOWN.
+- **`EQ-B-HP2-GYM` turned to `rotation_offset=deg(-180)`** like the other heads, so its back
+  (the lineset side) is on the wall. It had been authored facing the wall, which the symmetric
+  symbol never showed.

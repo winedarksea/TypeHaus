@@ -119,6 +119,12 @@ a release or for exhaustive local verification.
   `electrical.light_run_fit`, `led_gear_access` (concealed gear needs an opening in reach),
   `led_wiring` and `led_voltage_drop`; billed in `[light_run_materials]`. A driver is
   `DeviceKind.LED_DRIVER`, sized on `rated_output_w`, loading its branch at `input_va`.
+- **Linesets are derived from one `LinesetStandard`** (decision #139): a lineset is a
+  `PipeRun(system=REFRIGERANT)` (`diameter` vapour, `liquid_diameter` liquid, `serves` the head,
+  `outdoor_port`), its envelope the lagged bundle; `resolve/linesets.py` reads it against the
+  outdoor type's `RefrigerantLimits` into `ResolvedModel.linesets` (length, rise, cover LF, kit,
+  field charge, port offsets). Graded by `mep.lineset_limits` / `mep.lineset_reach`, billed in
+  `[linesets]` (drive allowances off `kit_length_ft`; no `[pipe_runs]` refrigerant price).
 - **Condensate overflow is authored on the unit** (decision #127): `Equipment.secondary_drain_pan`
   / `overflow_drain_ref` / `float_switch_ref`, graded by `mep.condensate_overflow` (IMC 307.2.3).
 - **A hung machine's trapeze is derived from `Equipment.hangers`** (decision #131):

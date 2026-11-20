@@ -30,25 +30,29 @@ def pipe_run_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     ``length_m`` is the resolver's own developed length — plan run plus any rise — so a
     drop through a floor is not billed as the zero plan length it projects to.
     """
-    runs: dict[tuple[str, str, float], dict[str, object]] = {}
+    runs: dict[tuple, dict[str, object]] = {}
     for run in model.pipe_runs:
-        key = (run.system, run.material or "", round(run.diameter_m / M_PER_IN, 3))
+        # A lineset's liquid line keys it too: 1/4 x 3/8 and 3/8 x 3/8 are two orders.
+        liquid = round(run.liquid_diameter_m / M_PER_IN, 3) if run.liquid_diameter_m else None
+        key = (run.system, run.material or "", round(run.diameter_m / M_PER_IN, 3), liquid)
         entry = runs.setdefault(key, {"length_m": 0.0, "count": 0, "tags": []})
         entry["length_m"] += run.length_m
         entry["count"] += 1
         entry["tags"].append(run.tag)
     for system, tag, nominal_m, length_m in vent_riser_pieces(model):
-        entry = runs.setdefault((system, "pvc", round(nominal_m / M_PER_IN, 3)),
+        entry = runs.setdefault((system, "pvc", round(nominal_m / M_PER_IN, 3), None),
                                 {"length_m": 0.0, "count": 0, "tags": []})
         entry["length_m"] += length_m
         entry["count"] += 1
         entry["tags"].append(tag)
     return [
         {"system": system, "material": material, "diameter_in": diameter,
+         **({"liquid_diameter_in": liquid} if liquid else {}),
          "runs": int(entry["count"]),
          "length_ft": round(float(entry["length_m"]) * _M_TO_FT, 1),
          "tags": sorted(entry["tags"])}
-        for (system, material, diameter), entry in sorted(runs.items())
+        for (system, material, diameter, liquid), entry in sorted(
+            runs.items(), key=lambda item: (*item[0][:3], item[0][3] or 0.0))
     ]
 
 
@@ -91,7 +95,8 @@ def pipe_insulation_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """
     specs: dict[tuple[str, float], dict[str, object]] = {}
     for run in model.pipe_runs:
-        if not run.insulation:
+        # A lineset kit ships lagged: its insulation is in the kit ([linesets]).
+        if not run.insulation or run.system == "refrigerant":
             continue
         key = (run.insulation, round(run.diameter_m / M_PER_IN, 3))
         entry = specs.setdefault(key, {"length_m": 0.0, "count": 0, "tags": []})

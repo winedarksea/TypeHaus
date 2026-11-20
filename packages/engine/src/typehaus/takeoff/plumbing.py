@@ -135,7 +135,9 @@ def fitting_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     in ``model.json``, and what a fitting *is* belongs to ``mep.fitting_pattern``, which
     grades it — not to the sheet the estimator prices off.
     """
-    rows = takeoff_rows(family_records(fitting_records(model), FAMILY_PIPE))
+    # A lineset's turns are field bends in soft coil, not parts: no row.
+    rows = [row for row in takeoff_rows(family_records(fitting_records(model), FAMILY_PIPE))
+            if row["system"] != "refrigerant"]
     out = {(row["system"], row["fitting"]): {"system": row["system"], "fitting": row["fitting"],
                                              "count": row["count"], "tags": list(row["tags"])}
            for row in rows}

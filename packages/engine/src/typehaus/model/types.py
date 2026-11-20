@@ -35,6 +35,7 @@ from typehaus.model.exterior_door import DoorCatalogDimensions
 from typehaus.model.fascia_mount import FasciaMountSpec
 from typehaus.model.furniture_cut import FurnitureCut
 from typehaus.model.led import LedController, LedStrip
+from typehaus.model.linesets import RefrigerantLimits
 from typehaus.model.opening_size import OpeningSize
 from typehaus.model.placeables import (
     ClearanceZone,
@@ -761,12 +762,10 @@ class EquipmentType(FurnitureType, AirHandlingProductFacts, EquipmentElectricalF
     air_handler_installation: AirHandlerInstallation | None = None
     needs: frozenset[Service] = frozenset()
     #: The published heating-capacity table, ascending in ``outdoor_db_f`` (→
-    #: :class:`HeatPumpRating`). This REPLACES the two scalars that were here —
-    #: ``heating_capacity_btuh`` (the 47 °F rating) and ``heating_capacity_at_design_btuh``
-    #: — with no back-compatibility shim, because a shim would let a house keep authoring
-    #: the defect. Empty means the type publishes no table, and the sizing checks say so
-    #: rather than assuming one.
+    #: :class:`HeatPumpRating`). Empty: the type publishes none, and sizing checks say so.
     heating_ratings: tuple[HeatPumpRating, ...] = ()
+    #: An outdoor unit's published piping table (``mep.lineset_limits``, decision #139).
+    refrigerant_limits: RefrigerantLimits | None = None
     #: Electric resistance heat this unit can add, Btu/h. A SCALAR and not a table, and that
     #: is physics rather than a simplification: a resistance element's output is flat with
     #: outdoor temperature. A strip heater in a cabinet that can interlock it, an aux kit,

@@ -16,8 +16,8 @@ The disconnect at x=4 feet 4 inches provides the reserved 30-inch-wide working s
 between pad and screen. Its handle is 6 feet 4 inches above nominal grade; final mounting
 height must be checked against the actual device handle and finished ground.
 
-The indoor head and backup circuit `CKT-HP3` are retained. Refrigerant geometry is not
-represented by the engine; `outdoor_ref` preserves the equipment pairing. Route insulated
+The indoor head and backup circuit `CKT-HP3` are retained. The lineset is modelled as
+`PR-M-RFG-HP3-STAIR` (plan/mep_linesets.py; lengths in heat_pump_ground_pad.md). Route insulated
 refrigerant tubing/control wiring from the north-wall head penetration above the entry
 door, west on wall-supported covered trunking, then drop beside the condenser west of
 the screen. Keep the trunking on the house, clear of the roof movement joint and

@@ -262,7 +262,8 @@ class RouteProposal:
             if rectangular:
                 duct["section"] = (self.width_m, self.depth_m)
         return polyline_fittings(self.tag, family, self.system, self.points, size,
-                                 rectangular=rectangular, **duct)
+                                 rectangular=rectangular,
+                                 material=self.echo.get("material"), **duct)
 
     def fitting_lines(self) -> list[str]:
         """What ``--explain`` and the proposal banner print about the parts.

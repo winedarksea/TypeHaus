@@ -356,12 +356,17 @@ def _resolve_pipe_run(model: ResolvedModel, run: PipeRun, storey) -> list[Findin
     if any(f.result is Result.FAIL for f in findings):
         return findings
     plan_len = sum(length(sub(path[i], path[i + 1])) for i in range(len(path) - 1))
+    insulation, bundle = run.insulation, None
+    if run.liquid_diameter is not None:
+        from typehaus.resolve.linesets import lineset_section
+
+        insulation, bundle = lineset_section(model.plan, run)
     if z is not None:
         developed = sum(
             math.hypot(length(sub(path[i], path[i + 1])), z[i + 1] - z[i])
             for i in range(len(path) - 1))
         _emit_run_solids(model, run.uid or run.tag, run.tag, storey.tag, path, z,
-                         round_profile(run.diameter.meters / 2.0, PIPE_FACETS),
+                         round_profile((bundle or run.diameter.meters) / 2.0, PIPE_FACETS),
                          f"pipe_{run.system.value}")
     else:
         developed = plan_len
@@ -374,8 +379,10 @@ def _resolve_pipe_run(model: ResolvedModel, run: PipeRun, storey) -> list[Findin
         sanitary=run.sanitary,
         z_m=tuple(z) if z is not None else None,
         wall_refs=wall_refs, material=run.material,
-        finish=run.finish, insulation=run.insulation,
+        finish=run.finish, insulation=insulation,
         freeze_protection=run.freeze_protection,
+        liquid_diameter_m=run.liquid_diameter.meters if run.liquid_diameter else None,
+        outdoor_port=run.outdoor_port, bundle_diameter_m=bundle,
     ))
     return findings
 

@@ -33,9 +33,10 @@ _TRADE_INDEX = {trade: index for index, (trade, _why) in enumerate(TRADE_ORDER)}
 
 #: Systems the catalog's service map does not name, filed by what they ARE: a radon pipe
 #: rises to the same stack a vent does (``trades.pipe.RISING_SYSTEMS``), and a pumped sump
-#: line is a pressure line like supply (no grade, goal fixed). Gas has no row and no catlin
-#: run; it stays unassigned, and the campaign names it in ``skipped`` rather than guess.
-_TRADE_BY_SYSTEM = {"radon": "vent", "sump_discharge": "supply"}
+#: line and a lineset are pressure lines like supply (no grade, goal fixed; the lineset is the
+#: HVAC trade's, laid in supply's slot). Gas has no row and no catlin run; it stays
+#: unassigned, and the campaign names it in ``skipped`` rather than guess.
+_TRADE_BY_SYSTEM = {"radon": "vent", "sump_discharge": "supply", "refrigerant": "supply"}
 
 #: How many times a campaign may lift an accepted proposal to make room for a refused one.
 #: A count rather than a time, so the same campaign takes the same decisions on any machine.

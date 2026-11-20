@@ -83,6 +83,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     lighting_supplies,
     lighting_suspension,
     limited_energy,
+    linesets,
     manifold_feed,
     open_web_panel,
     plaster_in_depth,

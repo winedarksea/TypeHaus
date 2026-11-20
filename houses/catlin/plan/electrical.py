@@ -390,8 +390,9 @@ BASEMENT_EQUIPMENT = [
     # 92 13/16" over the 3/4" mats, 3 3/8" under the gypsum (Gree's top and side clearances
     # are not in the repo: FIELD HOLD). Any further north is inside 440.8's 3 ft of
     # FX-B-SAUNA-SH (here 3'-2"). Backs west, throws east across the gym's 16'-10 3/4".
-    # Plate on BK-B-CS-HP2-GYM; drain PR-B-COND-HP2-GYM. zone_rooms is the whole conditioned
-    # basement; RM-B-ESS is claimed for its load only and takes no register.
+    # Plate on BK-B-CS-HP2-GYM; drain PR-B-COND-HP2-GYM; lineset PR-B-RFG-HP2-GYM. Rotation
+    # -180 like the other heads, so its back (local +y, the lineset ports) is on the wall.
+    # zone_rooms is the whole conditioned basement; RM-B-ESS is claimed for its load only.
     Equipment(uid="CEE031AAAA", tag="EQ-B-HP2-GYM", kind=EquipmentKind.INDOOR_HEAD,
               footprint=(inch(32), inch(8)),
               room="RM-B-GYM", type_ref="EQ-T-GREE-HEAD-9", outdoor_ref="EQ-M-HP2-OD",
@@ -400,7 +401,7 @@ BASEMENT_EQUIPMENT = [
                           "RM-B-SAUNA", "RM-B-FURNACE", "RM-B-BATH", "RM-B-ESS"),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-B-CS", face="left", distance_from_start=inch(93.0625),
-                  normal_gap=inch(0), rotation_offset=deg(0)))),
+                  normal_gap=inch(0), rotation_offset=deg(-180)))),
     # Existing US PC110E remains on the east liner. Resolved body (type dimensions govern):
     # x192.25..207.25, y12.5..28.5, 45" tall. Reading deck ends at x181.75: 10.5" gap.
     # US manual Figure 5 and the fence/service requirements: notes/sauna_seating.md.
@@ -609,8 +610,8 @@ MAIN_DEVICES = [
 
 MAIN_EQUIPMENT = [
     # --- Outdoor units. `zone_rooms` is empty on all three — a condenser's zone is the union
-    # of its indoor units' rooms, named via each head's `outdoor_ref`. Refrigerant linesets
-    # are deliberately not modeled (the outdoor_ref pairing IS the record, plans/TODO.md).
+    # of its indoor units' rooms, named via each head's `outdoor_ref`. Linesets are
+    # refrigerant PipeRuns in plan/mep_linesets.py.
     # ** SYSTEMS 1 AND 2 STAND ON THE GROUND, NOT ON THE BALCONY. ** Moved 2026-09-02
     # (notes/heat_pump_ground_pad.md, which carries the clearances, the line-set routes and
     # the sound reasoning). They stood on FS-SG-BALCONY at +10' — the watertight aluminium roof
@@ -697,10 +698,9 @@ MAIN_EQUIPMENT = [
     # HP3 is west of the connector roof/screen, discharging NORTH into open yard.
     # Rear clearance is 12" to north cladding; cabinet x=0..2'-10 3/8". Pad and 18" stand
     # are in params/hp3_pad.py. Their shared base remains -1'-2" (20" above site grade).
-    # The former straight lineset punch is replaced by a high-level wall-supported dogleg
-    # above the entry, then a drop west of the screen; notes/hp3_north_relocation.md gives
-    # its route. Refrigerant geometry is not an engine element; outdoor_ref preserves the
-    # connection to the indoor head. Defrost drains to the west-yard gravel, off the walk.
+    # Its lineset (PR-M-RFG-HP3-STAIR, plan/mep_linesets.py) is a high-level wall-supported
+    # dogleg above the entry, then a drop west of the screen. Defrost drains to the west-yard
+    # gravel, off the walk.
     Equipment(uid="CEE027AAAA", tag="EQ-M-HP3-OD", kind=EquipmentKind.HEAT_PUMP,
               position=pt(ft(1, 5.1875), ft(38, 2.1484375)),
               footprint=(inch(34.375), inch(14.796875)), rotation=deg(180),

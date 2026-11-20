@@ -123,7 +123,7 @@ def elevate(points: Sequence[tuple[float, ...]], budget: HeadBudget | None, *,
 
 
 #: Tube sold in coils: a straight run of it has no joint between lengths.
-_COILED = frozenset({"pex", "pex-a"})
+_COILED = frozenset({"pex", "pex-a", "copper_acr"})  # soft coil: no sticks to join
 
 
 def coupling_disclosure(points: Sequence[tuple[float, float, float]],

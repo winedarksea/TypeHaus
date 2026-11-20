@@ -286,6 +286,8 @@ _SLEEVE_PURPOSES_BY_SYSTEM = {
     "water_cold": {"water_cold"}, "water_hot": {"water_hot"},
     "drain": {"drain"}, "vent": {"vent"}, "radon": {"vent", "drain"}, "gas": {"gas"},
     "sump_discharge": {"drain"},
+    # A lineset is the HVAC trade's; a cast sleeve for it states its pair of services.
+    "refrigerant": {"refrigerant_liquid", "refrigerant_vapor"},
     # A raceway may share a sleeve with another raceway of any voltage — they are all
     # electrical work — but never with a plumbing one. A spare pipe is electrical too: it is
     # in the electrician's rough-in, whatever eventually goes through it.

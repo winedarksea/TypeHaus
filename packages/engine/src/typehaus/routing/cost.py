@@ -211,10 +211,11 @@ class RouteCost:
     def for_run(self, kind: str, system: str) -> RouteCost:
         """This cost for one run: only supply and drain pipe pay ``exterior_wall_per_ft``.
 
-        The price is freeze risk and a hole in the insulation; a vent carries air, and a
-        duct or a raceway is not water.
+        The price is freeze risk and a hole in the insulation; a vent carries air, a lineset
+        refrigerant that cannot freeze, and a duct or a raceway is not water.
         """
-        if kind == "pipe" and getattr(system, "value", system) not in ("vent", "radon"):
+        if kind == "pipe" and getattr(system, "value", system) not in ("vent", "radon",
+                                                                        "refrigerant"):
             return self
         return replace(self, exterior_wall_per_ft=0.0, exterior_warm_per_ft=0.0,
                        exterior_cold_edge_in=0.0)

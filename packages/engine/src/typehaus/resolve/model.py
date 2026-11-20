@@ -1366,18 +1366,18 @@ class ResolvedPipeRun:
     z_start_m: float | None
     z_end_m: float | None
     length_m: float
-    # Fixture tags this run carries. Authored on ``PipeRun.serves``; carried into the IR so
-    # a check can ask "which run vents/drains this fixture" without re-reading plan source.
-    serves: tuple[str, ...] = ()
+    serves: tuple[str, ...] = ()  # ``PipeRun.serves``: the fixtures/head this run carries
     sanitary: bool = True
+    # A lineset (#139): liquid OD, multi port, and the lagged bundle's enclosing circle.
+    liquid_diameter_m: float | None = None
+    outdoor_port: str | None = None
+    bundle_diameter_m: float | None = None
     z_m: tuple[float, ...] | None = None  # per-vertex absolute inverts, len == len(path)
     wall_refs: tuple[str | None, ...] = ()  # host wall per segment; () -> none declared
     material: str | None = None
     finish: str | None = None      # applied coating, e.g. "lacquered" over copper
     insulation: str | None = None  # pipe-insulation spec, billed by the foot; None -> bare
-    # Self-regulating heater cable on the run, billed by the foot beside the insulation.
-    # Separate from it on purpose: a traced AND lagged run is the normal outdoor spec.
-    freeze_protection: str | None = None
+    freeze_protection: str | None = None  # heater cable, billed by the foot beside it
 
 
 @dataclass(frozen=True)
@@ -1839,6 +1839,7 @@ class ResolvedModel:
     light_runs: list[ResolvedLightRun] = field(default_factory=list)
     # Derived 24 V leads off the house's LedStandard (→ resolve/led_leads.py, #137).
     led_leads: list[Any] = field(default_factory=list)
+    linesets: list[Any] = field(default_factory=list)  # → resolve/linesets.py, #139
     solar_panels: list[ResolvedSolarPanel] = field(default_factory=list)
     footing_beddings: list[ResolvedFootingBedding] = field(default_factory=list)
     # Pour slab uid -> (authored outline, authored voids, voids after the clip): the floor a

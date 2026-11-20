@@ -331,6 +331,8 @@ class PipeSystem(Enum):
     # A sump pump's pressure line. Stormwater, not DWV: every DWV rule filters on "drain",
     # so this is excluded from them by construction, and IFC files it under Stormwater.
     SUMP_DISCHARGE = "sump_discharge"
+    # A mini-split lineset: liquid + vapour copper, insulated, bundled (decision #139).
+    REFRIGERANT = "refrigerant"
 
 
 class PipeAccessoryKind(Enum):

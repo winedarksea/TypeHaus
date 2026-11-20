@@ -61,6 +61,7 @@ from typehaus.takeoff.lighting import (
     lighting_controls,
     luminaire_schedule,
 )
+from typehaus.takeoff.linesets import lineset_takeoff
 from typehaus.takeoff.member_protection import member_protection_takeoff
 from typehaus.takeoff.mep import (
     duct_fitting_takeoff,
@@ -235,6 +236,8 @@ def bill_of_materials(
         # because a traced AND lagged run is the normal outdoor spec in this climate,
         # and one blended row cannot say that.
         "freeze_protection": freeze_protection_takeoff(model),
+        # Refrigerant sets, one row each: the kit ordered (→ resolve/linesets.py, #139).
+        "linesets": lineset_takeoff(model),
         "ducts": duct_takeoff(model),
         # Elbows by the piece off the ducts' own 3D polylines, the same derivation
         # [pipe_fittings] uses. Only possible since DuctRun gained elevations: a plan

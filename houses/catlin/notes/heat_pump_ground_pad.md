@@ -553,79 +553,63 @@ discharge, or the stair.
 
 ## Line sets — routes, lengths, limits
 
-**Not modelled.** `pipe_runs` carries drain, vent, water_cold and water_hot and no
-refrigerant system, so there is no `PipeRun` for a line set to be; the `outdoor_ref` pairing
-on each head is the record, and the money is in the `hvac-refrigerant-line-sets` allowance
-in `prices.toml`, which grew ~50 LF for the move to grade and ~8 LF more for the 2026-09-03
-turn, and is not re-priced (at $26–49/LF the added footage is inside its own spread, and the
-number was always a lump).
+**Modelled since 2026-11-20** (decision #139): `plan/mep_linesets.py`, one refrigerant
+`PipeRun` per set, graded by `mep.lineset_limits` / `mep.lineset_reach` and billed by kit in
+`[linesets]`. This section is the **hand oracle** (`tests/test_linesets.py` reads it). Every
+length is worked leg by leg off the authored vertices below, independently of the engine.
+Coordinates are inches, z absolute. The earlier prose estimates (~31 ft HP1, 25-30 ft HP2) are
+retired.
 
-**The 2026-09-04 swap is the only change that made these SHORTER, and it is why the owner
-noticed the arrangement was wrong.** The 2026-09-03 turn cost HP1 about 8 LF of outdoor run.
-Crossing the pocket gave most of it back and improved the geometry as well as the length:
-HP2 stands **1'-9" from the band penetration at x 30'-6", on the same wall it enters**, so
-it leaves the casing, crosses a foot and a half of gravel and goes straight in. The
-2026-09-03 layout ran 5'-0" of east-west line along the pad first, and the 2026-09-02 one
-ran it under what is now the stair.
-
-**And then HP1's route inverted outright.** Its condenser is on the NORTH face and its air
-handler is at the north end of the second storey, so the whole run turned round: ~36 ft
-became **~31 ft**, and it no longer climbs an occupied second-storey stud bay. The route is
-below. The allowance is a lump and is not re-priced for any of this (at $26-49/LF the
-footage is inside its own spread), but 31 ft is now essentially the FXU24's own 31 ft
-precharge, so there is no meaningful field-charge adder either.
-
-Gree's published limits, from the same submittals:
+Gree's published limits, from the submittals:
 
 | | line | total | per port | rise | precharge |
 |---|---|---|---|---|---|
 | FXU24 (HP1) | 3/8"–3/4" | 164 ft | — | 49 ft | 31 ft + 0.323 oz/ft |
 | MUL30 (HP2) | 1/4"–3/8" per port | 263 ft | 82 ft | 82 ft | 131 ft |
+| Sapphire 9 (HP3) | 1/4"–3/8" | not read | — | not read | not read |
 
-**One penetration through the main-floor band on the SOUTH side**, at y = 0, x ≈ 30'-6" —
-now HP2's alone; HP1 has its own on the north face, below. Sleeved, sloped to
-the outside, flashed, with an expansion loop inside. The band there runs -1'-1 7/16"..0'-0",
-i.e. 1'-9"..2'-10" above grade, and `FS-M-EAST`'s joists run in x, so the south bay is a
-straight east-west run with nothing to notch. **No sleeve element is authored**, and that is
-deliberate rather than an omission: `SleevePenetration` is concrete-only in this engine and
-there is no framed-wall equivalent, so a fake sleeve would put a cast-in item on the pour-day
-schedule that nobody pours. It is recorded here instead.
+**Bundle.** The lagging is 1/2" wall, so the tubes are 1.75" and 1.375" OD (3/8 x 3/4), or 1.375"
+and 1.25" (1/4 x 3/8). Side by side, the enclosing circle is **3.125"** or **2.625"**. A 1/2"
+cable fits the crotch, whose largest circle is r = 1/(1/r1 + 1/r2 - 1/(r1+r2)) = 0.51".
 
-- **HP2** (four-port unit, three used, 1/4–3/8): west inside the band bay to x 20'-0" and
-  x 16'-0", then 7'-6" up the wall cavity behind `EQ-M-HP2-LIVING` and `EQ-M-HP2-BED`. About
-  25–30 ft each against an 82 ft per-port limit and 263 ft total. Inside the 131 ft precharge —
-  no added charge.
-  - **Gym head on `W-B-CS` since 2026-11-14** (the sauna wall, over `D-B-SAUNA`, y
-    0'-10 1/2"..3'-7 3/8", top 93 9/16" over the slab). Hand length, not modelled (the engine
-    has no lineset element): ~3 ft unit to the band, 12'-0" west in `FS-M-EAST`'s south bay
-    (x 30'-6" to 18'-6", along the joists, nothing bored), ~6" north to the head's south end,
-    ~2 ft down into it: **~18 ft**, ~20 ft with a service loop. Still far inside 82 ft per
-    port, 263 ft total and the 131 ft precharge.
-**The SE-corner stud bay is a dead entry now, kept for the record.** East of
-`WIN-M-LIV-S1`'s jamb pack both `W-M-S2` and `W-S-S2` frame a king at x 33'-5 1/4" and a stud
-at x 34'-8", leaving a **13 1/4" clear bay at x 33'-6 3/4"..34'-8"** that lines up floor to
-floor (the corner bay beyond it is only 7 3/4" clear and carries the corner strapping, so it
-is not the one). It was HP1's alternative riser while HP1 stood in the pocket. **HP1 is on
-the north face and no system needs a riser on this wall at all**, so the bay is recorded as
-verified-and-available and nothing more.
+**Hand lengths** (each leg's length, in path order; sloped legs are the hypotenuse):
 
-- **HP1** (3/8–3/4), **north face since 2026-09-04**: **~2 ft** south out of the casing at
-  (26'-9 1/2", 37'-8 17/32") to a band penetration on `W-M-N1` — the same detail as the
-  south one, sleeved, sloped out, flashed, expansion loop inside, and **not modelled** for
-  the same reason. Then up an outside stud bay through the main top plates, the
-  second-floor band and the second top plates into an `FS-ATTIC` bay, **~6'-4" west ALONG
-  that bay** — along, so nothing is bored, `FS-ATTIC`'s I-joists spanning x — and down into
-  `SF-S-HP1` over `RM-S-NCLOSET`. The 2026-10-02 move retains that north-wall route but
-  shifts the penetration/riser with the cabinet; the earlier **31 ft of line / 21 ft of
-  rise** was an estimate for a previous siting. Measure the revised developed length
-  and apply the selected unit's charge instruction rather than carrying forward the
-  earlier claim of no meaningful field charge. Refrigerant geometry remains unmodelled.
-  - **It was ~36 ft up the `W-M-S2` / `W-S-S2` bay** on the south face — an occupied
-    second-storey stud bay in a bedroom-side wall, then 5'-0" west along an attic bay. Both
-    ends of that route moved, so both the length and the acoustic exposure improved.
-  - **A SECOND framed-wall penetration now exists in prose only.** `SleevePenetration` is
-    concrete-only and there is no refrigerant `PipeRun` system, so the model carries neither
-    hole. Two undrawn penetrations rather than one is the honest count.
+| set | legs (in.) | developed | +2 ft loop | kit | leftover |
+|---|---|---|---|---|---|
+| `PR-A-RFG-HP1` | 4.125, 12.53, 35, 17.5, 12.4, 74.5, 5.22, 123.5, 6.80, 6.5, 32.25, 29.5, 99.5, 21, 6.5 = 486.8 | **40.57 ft** | 42.57 | 50 | 9.4 |
+| `PR-B-RFG-HP2-GYM` | 10.34, 15.86, 19.24, 165.25, 14.5 = 225.2 | **18.77 ft** | 20.77 | 25 | 6.2 |
+| `PR-M-RFG-HP2-BED` | 7.34, 15.86, 19.37, 182.9, 5.75, 92.75 = 324.0 | **27.00 ft** | 29.00 | 35 | 8.0 |
+| `PR-M-RFG-HP2-LIVING` | 4.34, 15.86, 13.25, 21.1, 115.5, 5.82, 106.7, 5.82, 9.5 = 297.9 | **24.82 ft** | 26.82 | 35 | 10.2 |
+| `PR-M-RFG-HP3-STAIR` | 3, 20.35, 112.5, 139, 12.4, 68.5, 2.2 = 358.0 | **29.83 ft** | 31.83 | 35 | 5.2 |
+
+- **HP1**: 40.57 of 164 ft. The rise is 251 - (-5) = 256" = 21.3 ft, unit below, against 49.
+  Charge: (40.57 - 31) x 0.323 = **3.09 oz**. The route goes west off the valves, up beside the
+  cabinet's west end, and east above it. It enters `W-M-N1`'s 304-320 bay at 2'-6"
+  (`AO-M-RFG-HP1`) and rises on the cavity's outer half (y 429.1) past the kitchen backing.
+  It offsets to y 427.6 through the main top plates, clearing `FS-S-EAST`'s rim, and goes up
+  through the second floor into `FS-ATTIC`'s north bay. It comes up through the deck 4" off
+  the wall and crosses over the air handler to drop onto its front ports. Exterior leg ~6.0 ft.
+- **HP2**: 70.59 ft over three ports, of 263. Every port is far inside 82 ft and inside the
+  131 ft precharge, so no charge is added. The three sets leave the valves 3" apart in height
+  (ports A/B/C). LIVING runs at x 31'-8 1/2", BED at 31'-11 1/2" and GYM at 32'-2 1/2", so
+  none crosses another. Each crosses `FS-M-EAST`'s LSL rim in its own TJ-8000 hole and enters
+  the south bay. In the bay, BED runs over GYM at y=9".
+  - GYM goes west to the gym's SW corner and drops 14 1/2" in the 4" gap between the head and
+    the south wall, ending 6.5" off the ports.
+  - BED crosses the x=18' bearing (two blocking bores) into `FS-M-WEST`. It rises in
+    `W-M-S1`'s 194-207 bay, east of `WIN-M-BED-S2`, to 89 1/2", under the mounting plate.
+  - LIVING rises in `W-M-S2`'s 352-367 bay into `FS-S-EAST`'s south bay, runs west and drops
+    through the plates onto `D-M-PORCH`'s header to 100".
+- **HP3**: 29.83 ft, of which ~23 ft is outside in cover. It enters `W-M-N2`'s 128-144 bay
+  under the head's plate and rises in the cavity. It exits at 8'-6 1/2" (`AO-M-RFG-HP3`,
+  between the 8' girt and the plates, above `ST-BW-ENTRY`), runs west above the entry door
+  and canopy joint, and drops at the NW corner to the west-end valves. Limits unread: UNKNOWN.
+
+**Head ports are read left-rear** (`library/hvac_refrigerant.py`). The bed head's left end is
+the one clear of its window, and wall heads pipe either side. A head end stops within 12"
+(`LinesetStandard.port_tolerance`), because its factory pigtails reach into the wall.
+
+**The SE-corner stud bay** (x 33'-6 3/4"..34'-8") stays verified and unused.
 
 ## Electrical
 
@@ -680,10 +664,9 @@ of this.
 
 ## What is not modelled
 
-- **The line sets and their TWO sleeves** — above; the sleeves because no framed-wall
-  sleeve type exists, the line sets because no refrigerant `PipeRun` system does. There are
-  two framed-wall penetrations now, one on the south band for HP2 and one on the north for
-  HP1, and neither is an element.
+- **The line set sleeves.** HP1's and HP3's wall holes are `AO-M-RFG-*` RoughOpenings; HP2's
+  are rim holes in `FS-M-EAST`, which no element draws. The sleeve, slope and seal are drawing
+  notes.
 - **`CD-B-HP1`, a power raceway from the panel to the north pad.** Deliberately not added in
   the 2026-09-04 pass: no check requires one, and the omission got *cheaper* with the move
   (about 60 LF of unmodelled home run down to about 45). Adding it drags in a

@@ -65,7 +65,9 @@ RACEWAY_OD_IN: dict[str, dict[float, float]] = {
 }
 
 #: Materials built to copper-tube size rather than iron-pipe size.
-_TUBE_MATERIALS = frozenset({"copper", "pex", "pex-a", "pex-b", "cpvc-cts"})
+_TUBE_MATERIALS = frozenset({"copper", "pex", "pex-a", "pex-b", "cpvc-cts", "copper_acr"})
+#: Tube named by its OUTSIDE diameter: ACR (refrigeration) copper, 3/8" ACR is 0.375".
+_OD_SIZED_MATERIALS = frozenset({"copper_acr"})
 
 #: How close an authored nominal must land to a table key to be that size. Nominals are
 #: authored as ``inch(3)`` and arrive as metres and back, so the round trip is the only
@@ -97,6 +99,8 @@ def pipe_outside_diameter_m(nominal_m: float, material: str | None) -> float:
     """
     if nominal_m <= 0:
         return 0.0
+    if (material or "").strip().lower() in _OD_SIZED_MATERIALS:
+        return nominal_m
     nominal_in = nominal_m / M_PER_IN
     table = (TUBE_OD_IN if (material or "").strip().lower() in _TUBE_MATERIALS
              else IPS_OD_IN)
@@ -129,3 +133,33 @@ def raceway_outside_diameter_m(trade_size_m: float, material: str = "emt") -> fl
         return 0.0
     table = RACEWAY_OD_IN.get(material, RACEWAY_OD_IN["emt"])
     return _lookup(table, trade_size_m / M_PER_IN) * M_PER_IN
+
+
+def lineset_bundle_diameter_m(vapor_od_m: float, liquid_od_m: float, lagging_m: float,
+                              cable_od_m: float) -> float:
+    """The circle enclosing a lineset: two lagged tubes side by side, the cable taped on.
+
+    Two touching circles' enclosing circle is ``D1 + D2``. The cable rides in the crotch,
+    where the largest circle that fits has radius ``1 / (1/r1 + 1/r2 - 1/(r1 + r2))``
+    (Descartes; the curvature root is zero for this tangency). A thicker cable grows the
+    bundle by its excess, a conservative bound.
+    """
+    r1, r2 = vapor_od_m / 2.0 + lagging_m, liquid_od_m / 2.0 + lagging_m
+    if r1 <= 0 or r2 <= 0:
+        return 2.0 * (r1 + r2)
+    crotch_r = 1.0 / (1.0 / r1 + 1.0 / r2 - 1.0 / (r1 + r2))
+    return 2.0 * (r1 + r2) + max(0.0, cable_od_m - 2.0 * crotch_r)
+
+
+def pipe_run_outside_diameter_m(run) -> float:  # noqa: ANN001 — ResolvedPipeRun, no cycle
+    """A resolved run's outside diameter, BARE of its lagging (readers add the lagging).
+
+    A lineset's is its bundle less twice its lagging, so ``radius + lagging`` — what every
+    envelope reader computes — is the bundle circle.
+    """
+    bundle = getattr(run, "bundle_diameter_m", None)
+    if bundle:
+        from typehaus.resolve.mep_envelopes import insulation_thickness_m
+
+        return bundle - 2.0 * (insulation_thickness_m(run.insulation) or 0.0)
+    return pipe_outside_diameter_m(run.diameter_m or 0.0, run.material)
