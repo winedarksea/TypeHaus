@@ -41,20 +41,21 @@ def sill_shift_m(rw: ResolvedWall, band_polygon, sill_width_m: float) -> float:
 def header_shift_m(rw: ResolvedWall, band_polygon, width_m: float) -> float:
     """Left-normal offset putting a narrower header flush with the band's sheathing face.
 
-    0 for a wall with no sheathing layer (centred, symmetric for drywall) or a header as
-    wide as the band.
+    0 for a wall with no sheathing layer (centred, symmetric for drywall), sheathing on
+    both faces (no one face to serve), or a header as wide as the band.
     """
-    sheathing = next((layer for layer in rw.layers
-                      if layer.function == LayerFunction.SHEATHING.value and layer.polygon),
-                     None)
-    if sheathing is None or not band_polygon:
+    if not band_polygon:
         return 0.0
     lo, hi = _offsets(rw, band_polygon)
     half = (hi - lo) / 2.0
     if width_m >= 2.0 * half:
         return 0.0
-    sign = 1.0 if sum(_offsets(rw, sheathing.polygon)) >= lo + hi else -1.0
-    return sign * (half - width_m / 2.0)
+    sides = {1.0 if sum(_offsets(rw, layer.polygon)) >= lo + hi else -1.0
+             for layer in rw.layers
+             if layer.function == LayerFunction.SHEATHING.value and layer.polygon}
+    if len(sides) != 1:
+        return 0.0
+    return sides.pop() * (half - width_m / 2.0)
 
 
 __all__ = ["header_shift_m", "outward_sign", "sill_shift_m"]
