@@ -8,9 +8,11 @@ pin both the numbers and — more importantly — that the two wall-structure se
 
 from __future__ import annotations
 
-from typehaus.takeoff.wall_structure import stair_framed_walls, wall_structure_takeoff
+from dataclasses import replace
 
 from _helpers import frames_structure
+
+from typehaus.takeoff.wall_structure import stair_framed_walls, wall_structure_takeoff
 
 
 def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
@@ -199,6 +201,15 @@ def test_every_wall_bills_its_structure_exactly_once(catlin_model) -> None:
         f"double-billed: {sorted(monolithic & framed)}")
     assert monolithic | framed == all_walls, (
         f"billed nowhere: {sorted(all_walls - monolithic - framed)}")
+    # A well wall the stair frames only part of keeps its monolithic row.
+    index = next(i for i, s in enumerate(catlin_model.stairs) if s.tag == "ST-B2M")
+    stair = catlin_model.stairs[index]
+    catlin_model.stairs[index] = replace(stair, members=tuple(
+        m for m in stair.members if "-ext-" not in m.child_key))
+    try:
+        assert "W-B-WELL" not in stair_framed_walls(catlin_model)
+    finally:
+        catlin_model.stairs[index] = stair
 
 
 def test_the_sunken_garden_brick_wythe_is_billed(catlin_model) -> None:

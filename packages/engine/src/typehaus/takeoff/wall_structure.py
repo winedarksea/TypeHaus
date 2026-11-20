@@ -47,34 +47,64 @@ from __future__ import annotations
 import math
 
 from typehaus.model.enums import LayerFunction
+from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.framing.solver import frames_as_members
 from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.stairs.well_wall import face_only
 from typehaus.takeoff.envelope import wall_layer_net_area_m2, wall_net_areas_m2
 from typehaus.takeoff.framing import _FT3_PER_CUBIC_YARD, _M2_TO_FT2, _M3_TO_FT3
 
+_ON_LINE_M = 0.003  # a member this close to a wall's axis is on it
+_GAP_M = 0.006  # uncovered length a stair-framed wall may leave (a 1/4" fit-up)
+
 
 def stair_framed_walls(model: ResolvedModel) -> set[str]:
-    """Face-only walls whose studs a stair generates (a U-stair's well partition).
+    """Face-only walls a stair frames end to end (a U-stair's well partition).
 
-    Their sticks bill in [framing] as the stair's ``partition`` members, so the wall's
-    unframed STRUCTURE layer is not a second, monolithic quantity.
+    Their sticks bill in [framing] as the stair's ``partition`` members, so the unframed
+    STRUCTURE layer is not a second, monolithic quantity. A wall the stair's partition and
+    the columns on its line do not cover end to end keeps its monolithic row.
     """
     parts = [m for stair in model.stairs for m in stair.members if m.category == "partition"]
-    out = set()
-    for wall in model.walls:
-        (ax, ay), (bx, by) = wall.axis
-        length = math.hypot(bx - ax, by - ay)
-        if wall.members or length < 1e-9:
-            continue
-        ux, uy = (bx - ax) / length, (by - ay) / length
-        for m in parts:
-            mx, my = (m.p0[0] + m.p1[0]) / 2.0, (m.p0[1] + m.p1[1]) / 2.0
-            along = (mx - ax) * ux + (my - ay) * uy
-            if (abs((mx - ax) * uy - (my - ay) * ux) < 0.003 and 0.0 <= along <= length
-                    and m.z0_m < wall.z1_m and m.z1_m > wall.z0_m):
-                out.add(wall.tag)
-                break
-    return out
+    if not parts:
+        return set()
+    columns = [s.outline for s in model.solids if s.category == "column"]
+    return {wall.tag for wall in model.walls
+            if not wall.members and face_only(model.plan, wall.assembly)
+            and _covered_end_to_end(wall, parts, columns)}
+
+
+def _covered_end_to_end(wall, parts, columns) -> bool:
+    (ax, ay), (bx, by) = wall.axis
+    length = math.hypot(bx - ax, by - ay)
+    if length < 1e-9:
+        return False
+    ux, uy = (bx - ax) / length, (by - ay) / length
+
+    def along(points) -> list[float] | None:
+        if any(abs((x - ax) * uy - (y - ay) * ux) > _ON_LINE_M for x, y in points):
+            return None
+        return [(x - ax) * ux + (y - ay) * uy for x, y in points]
+
+    covered = []
+    for m in parts:
+        ss = along((m.p0, m.p1))
+        if ss is not None and m.z0_m < wall.z1_m and m.z1_m > wall.z0_m:
+            pad = cross_section(m.profile).width_m / 2.0 if m.p0 == m.p1 else 0.0
+            covered.append((min(ss) - pad, max(ss) + pad))
+    if not covered:
+        return False
+    for outline in columns:  # a post on the line backs the boards past the partition
+        xs, ys = [p[0] for p in outline], [p[1] for p in outline]
+        if along((((min(xs) + max(xs)) / 2.0, (min(ys) + max(ys)) / 2.0),)) is not None:
+            ss = [(x - ax) * ux + (y - ay) * uy for x, y in outline]
+            covered.append((min(ss), max(ss)))
+    reach = 0.0
+    for lo, hi in sorted(covered):
+        if lo > reach + _GAP_M:
+            return False
+        reach = max(reach, hi)
+    return reach >= length - _GAP_M
 
 
 def wall_structure_takeoff(model: ResolvedModel) -> list[dict[str, object]]:

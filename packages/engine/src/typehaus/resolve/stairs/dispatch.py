@@ -273,8 +273,7 @@ def _resolve_stair(
         members = set_landing_stack(members, deck.stack_thickness_m, _tread_thickness(stair))
     if opening is None:
         outline = _flight_footprint(stair, going_m, risers)
-    # Structural guards: the flight never drops below the subfloor it springs from, is borne
-    # on the walls beside it (posted where none reaches), and frames its well wall's rest.
+    # Guards: never below its subfloor, borne on the walls beside it (posted where none reach).
     if winder_layout is None:  # a flight off a floating finish bears on the sheet (C1 E4)
         support_floor_m = floating_support(model, stair, z0, members)
     unclipped_members = members

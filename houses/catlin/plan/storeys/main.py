@@ -209,9 +209,9 @@ NODES = [
     # W-M-STRW ends at W-M-STOS2 as an L corner. The former southern stub and its
     # free-end node are retired; FO-S-STAIR's local header stays inside the floor band.
     Node(uid="CMN024AAAA", tag="N-M-STRJ", position=pt(ft(10), ft(26, 7.5))),
-    # W-M-WELL's ends: FO-M-STAIR's south edge (the stairhead) and the south face of
-    # ST-M2S's level-landing joist (its axis is the landing edge, 31'-11 1/8": one head riser
-    # board past the lower flight's last riser line). Both free. x is ST-M2S's generated
+    # W-M-WELL's ends: FO-M-STAIR's south edge (the stairhead) and 3/4" short of ST-M2S's
+    # level-landing edge (the joist's south face, 31'-11 1/8": one head riser board past the
+    # lower flight's last riser line), 1" over the derived landing post. Both free. x is ST-M2S's generated
     # partition centreline, midway between W-M-STRW's MDO (123 1/8") and W-M-C5's gypsum
     # (212 3/4"), so these faces and the stair's studs are one wall (2026-10-30).
     Node(uid="4YBM7GZBJZ", tag="N-M-WELL-S", position=pt(inch(167.9375), ft(26, 0.375)), open_end=True),

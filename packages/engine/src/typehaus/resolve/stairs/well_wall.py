@@ -40,6 +40,13 @@ def _subtract(spans: list[tuple[float, float]], cut: tuple[float, float]
     return out
 
 
+def face_only(plan, assembly_tag: str) -> bool:
+    """A STRUCTURE layer that is neither framed nor masonry: a pour, or a stud wall whose
+    sticks something else (a U-stair) generates. Only ones inside a stair's extent are framed."""
+    layer = structure_layer(plan, assembly_tag)
+    return layer is not None and not frames_as_members(layer) and layer.masonry is None
+
+
 def frame_well_walls(model: ResolvedModel, stair: Stair,
                      members: tuple[FramedMember, ...]) -> tuple[FramedMember, ...]:
     """``members`` plus the framing a face-only well wall still needs past the partition."""
@@ -58,16 +65,22 @@ def frame_well_walls(model: ResolvedModel, stair: Stair,
                   for m in partition),
               max(max(m.p0[along], m.p1[along]) + (half if m.p0 == m.p1 else 0.0)
                   for m in partition))
+    # Only the stair's own extent along the line: a collinear wall beyond it (a pour, a
+    # face-only wall elsewhere on the storey) is not this stair's to frame.
+    reach = [p[along] for m in members for p in member_footprint(m)[0]]
+    extent = (min(reach), max(reach))
     spans: list[tuple[float, float]] = []
     for wall in model.walls:
         (a, b) = wall.axis
-        layer = structure_layer(model.plan, wall.assembly)
-        if (layer is None or frames_as_members(layer) or layer.masonry is not None
+        if (not face_only(model.plan, wall.assembly)
                 or abs(a[1 - along] - cross) > _ON_LINE_M
                 or abs(b[1 - along] - cross) > _ON_LINE_M
                 or wall.z1_m <= base_z + _TOL or wall.z0_m >= top_z - _TOL):
             continue
-        spans += _subtract([tuple(sorted((a[along], b[along])))], framed)
+        lo, hi = sorted((a[along], b[along]))
+        lo, hi = max(lo, extent[0]), min(hi, extent[1])
+        if hi - lo > _TOL:
+            spans += _subtract([(lo, hi)], framed)
     if not spans:
         return members
     # What crosses the stud plane, as (s_lo, s_hi, z_lo, z_hi).
