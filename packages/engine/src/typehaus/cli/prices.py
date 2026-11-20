@@ -414,6 +414,9 @@ UNPRICED_VIEWS: dict[str, str] = {
     "lighting_load": "engineering summary, not a purchase",
     "poe_budget": "engineering summary, not a purchase",
     "light_runs": "run geometry; its materials price in [light_run_materials]",
+    # One row per refrigerant set; a house prices the kits by an allowance driven off
+    # ``kit_length_ft`` (decision #139), never per row.
+    "linesets": "kit schedule; priced by an allowance driven off kit_length_ft",
     # ``solar`` is a dict of summaries (panel/watt totals, the per-string voltage check);
     # the priced view of it is the ``solar_modules`` list beside it — see ``takeoff/bom.py``.
     # ``conductors`` and ``data_raceways`` are priced in their own sections: the model

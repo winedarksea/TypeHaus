@@ -8141,6 +8141,7 @@ electrical-service-feeders-4-0-al-ser = { low = 400, high = 900 }
 hvac-refrigerant-line-sets = { low = 18, high = 32, unit = "LF", driver = "linesets.kit_length_ft" }
 # The wall-held cover over each set's outdoor leg ([linesets] cover_ft; HP3's dogleg above the
 # entry is most of it). Estimate, no quote: ~$12-25/LF for PVC channel, fittings and labour.
+# Summed per set, so HP2's three sets (one shared ~2.5 ft channel) read ~4 LF high.
 hvac-lineset-cover = { low = 12, high = 25, unit = "LF", driver = "linesets.cover_ft" }
 # Optional on Minneapolis municipal water; essential on a well.
 plumbing-water-softener-and-filtration = { low = 2500, high = 6000 }

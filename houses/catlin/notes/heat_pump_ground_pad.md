@@ -591,7 +591,7 @@ cable fits the crotch, whose largest circle is r = 1/(1/r1 + 1/r2 - 1/(r1+r2)) =
   the wall and crosses over the air handler to drop onto its front ports. Exterior leg ~6.0 ft.
 - **HP2**: 70.59 ft over three ports, of 263. Every port is far inside 82 ft and inside the
   131 ft precharge, so no charge is added. The three sets leave the valves 3" apart in height
-  (ports A/B/C). LIVING runs at x 31'-8 1/2", BED at 31'-11 1/2" and GYM at 32'-2 1/2", so
+  (ports A/B/C; D is spare on the four-port unit). LIVING runs at x 31'-8 1/2", BED at 31'-11 1/2" and GYM at 32'-2 1/2", so
   none crosses another. Each crosses `FS-M-EAST`'s LSL rim in its own TJ-8000 hole and enters
   the south bay. In the bay, BED runs over GYM at y=9".
   - GYM goes west to the gym's SW corner and drops 14 1/2" in the 4" gap between the head and

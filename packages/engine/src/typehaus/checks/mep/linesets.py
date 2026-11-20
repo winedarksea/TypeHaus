@@ -39,6 +39,7 @@ def lineset_limits(ctx: CheckContext) -> list[Finding]:
     linesets = getattr(ctx.model, "linesets", [])
     if not linesets:
         return [not_applicable(_LIMITS, "no refrigerant PipeRun in the model")]
+    standard = lineset_standard(ctx.plan)
     out: list[Finding] = []
     by_unit: dict[str, list] = {}
     for item in linesets:
@@ -66,7 +67,10 @@ def lineset_limits(ctx: CheckContext) -> list[Finding]:
                                            f"published {_ft(limit.meters)}{cite}", tags, _CODE))
             else:
                 graded.append(f"{label} {_ft(value)} of {_ft(limit.meters)}")
-        if item.kit_m is None:
+        if item.kit_m is None and standard is None:
+            out.append(unknown(_LIMITS, f"{item.tag}: no LinesetStandard names stock kits",
+                               tags))
+        elif item.kit_m is None:
             out.append(failed(_LIMITS, f"{item.tag}: ordered {_ft(item.ordered_m)} is longer "
                                        "than the LinesetStandard's longest stock kit", tags))
         if graded:

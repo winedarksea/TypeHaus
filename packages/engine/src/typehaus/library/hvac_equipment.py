@@ -313,14 +313,14 @@ GREE_MULTI_U30 = EquipmentType(
     min_operating_temp_f=-22.0,
     hspf2=10.0,
     seer2=21.0,
-    source=("Gree MUL30HP230V1R32AO (Multi R32, 3-port). 40 5/32 x 32 33/64 x 16 13/16 in, foot "
+    source=("Gree MUL30HP230V1R32AO (Multi R32, 4-port). 40 5/32 x 32 33/64 x 16 13/16 in, foot "
             "holes 25 x 15 19/32 in, 145.5 lb (Multi R32 IOM S3 outline p.31). AHRI 215218915 non-"
             "ducted: SEER2 21, EER2 13.6, HSPF2 10.0; MCA 23 A / MOCP 30 A; heating range -22 F to"
             " 75 F. Cooling 28,400 Btu/h. A multi's minimum capacity is the whole outdoor unit's, "
             "shared by every head."),
     refrigerant_limits=MUL30_LIMITS,
     ports=(ServicePort(tag="power", service=Service.POWER_240, position=(ft(0), ft(0), ft(0))),
-           *outdoor_refrigerant_ports(40.16, 16.81, 0.25, 0.375, ("A", "B", "C"))),
+           *outdoor_refrigerant_ports(40.16, 16.81, 0.25, 0.375, ("A", "B", "C", "D"))),
 )
 
 GREE_HEAD_9 = EquipmentType(
