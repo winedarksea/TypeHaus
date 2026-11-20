@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import math
+import weakref
 from dataclasses import dataclass
 
 from typehaus.emit.draw.detail_station import (
@@ -68,7 +69,31 @@ def _condition_opening(model: ResolvedModel, cond: BoundaryCondition):
     return condition_opening(model, cond)
 
 
+#: ``id(model) -> (weakref, signature, details)``. Sheet numbering re-derives the whole set for
+#: every detail, callout and schedule row (~0.2 s a call on catlin, 81 calls per print).
+_DERIVED_CACHE: dict[int, tuple[weakref.ref, tuple, tuple[DerivedDetail, ...]]] = {}
+
+
+def _signature(model: ResolvedModel) -> tuple:
+    """Cheap staleness guard for a model mutated after a first derive (tests do)."""
+    return (id(model.plan), len(model.walls), len(model.solids), len(model.junctions),
+            len(model.conditions))
+
+
 def derive_detail_slices(model: ResolvedModel) -> list[DerivedDetail]:
+    """:func:`_derive_detail_slices`, memoized per model object."""
+    hit = _DERIVED_CACHE.get(id(model))
+    signature = _signature(model)
+    if hit is not None and hit[0]() is model and hit[1] == signature:
+        return list(hit[2])
+    details = _derive_detail_slices(model)
+    key = id(model)
+    _DERIVED_CACHE[key] = (weakref.ref(model, lambda _ref: _DERIVED_CACHE.pop(key, None)),
+                           signature, tuple(details))
+    return details
+
+
+def _derive_detail_slices(model: ResolvedModel) -> list[DerivedDetail]:
     """One derived DETAIL slice per distinct bound condition key (skip authored-claimed keys).
 
     The cut plane runs perpendicular to the host wall at its midpoint, slid clear of any

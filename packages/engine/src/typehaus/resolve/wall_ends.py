@@ -12,7 +12,7 @@ import math
 from collections.abc import Iterator
 from typing import Any
 
-from shapely.geometry import Point, Polygon, box
+from shapely.geometry import Point, Polygon
 
 from typehaus.resolve.coatings import COATING_SKIN_M
 from typehaus.resolve.drywall_trims import TrimContext
@@ -160,26 +160,33 @@ def _clear_bands(model: Any, wall: ResolvedWall, board: Polygon,
 
 def _occupants(model: Any, wall: ResolvedWall,
                board: Polygon) -> Iterator[tuple[Polygon, float, float]]:
-    """Plan shape and height of every wall layer, member and solid near ``board``."""
-    near = box(*board.bounds).buffer(0.05)
+    """Plan shape and height of every wall layer, member and solid near ``board``.
+
+    A bounds test on raw coordinates comes first: building and intersecting a Polygon for
+    every layer and solid in the house cost ~3 s of resolve over eleven ends."""
+    nx0, ny0, nx1, ny1 = board.bounds
+    nx0, ny0, nx1, ny1 = nx0 - 0.05, ny0 - 0.05, nx1 + 0.05, ny1 + 0.05
+
+    def near(points: Any, pad: float = 0.0) -> bool:
+        xs, ys = [p[0] for p in points], [p[1] for p in points]
+        return (min(xs) <= nx1 + pad and max(xs) >= nx0 - pad
+                and min(ys) <= ny1 + pad and max(ys) >= ny0 - pad)
+
     for other in model.walls:
         if other.tag == wall.tag:
             continue
         for layer in other.layers:
-            if len(layer.polygon) >= 3 and not layer.coating:
+            if len(layer.polygon) >= 3 and not layer.coating and near(layer.polygon):
                 yield (Polygon(layer.polygon), *layer.band(other))
     own = {id(member) for member in wall.members}
     for member in model.all_members():
-        if id(member) in own:
-            continue
-        span = box(min(member.p0[0], member.p1[0]), min(member.p0[1], member.p1[1]),
-                   max(member.p0[0], member.p1[0]), max(member.p0[1], member.p1[1]))
-        if span.distance(near) > 0.15:
+        if id(member) in own or not near((member.p0, member.p1), 0.15):
             continue
         ring, z0, z1 = member_footprint(member)
         yield Polygon(ring), z0, z1
     for solid in model.solids:
-        if len(solid.outline) >= 3 and solid.category != _CATEGORY:
+        if (len(solid.outline) >= 3 and solid.category != _CATEGORY
+                and near(solid.outline)):
             shape = Polygon(solid.outline, [list(void) for void in solid.voids])
             if shape.is_valid:
                 yield shape, solid.z0_m, solid.z1_m

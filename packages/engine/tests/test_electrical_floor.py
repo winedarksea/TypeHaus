@@ -73,6 +73,28 @@ def test_floor_box_gltf_body_is_below_the_floor(catlin_model_ro):
     assert max(elevations) == pytest.approx(outlet.body_z1_m)
 
 
+def test_floor_box_cover_uses_antique_bronze(catlin_model_ro):
+    from typehaus.emit.gltf.canvas_objects import CanvasDrawContext, draw_canvas_object
+    from typehaus.emit.gltf.mesh import _MeshBuilder
+    from typehaus.emit.gltf.palette import _authored_material_color
+    from typehaus.model.canvas import canvas_object_types
+
+    model = catlin_model_ro
+    outlet = next(item for item in model.canvas_objects if item.tag == OUTLET)
+    context = CanvasDrawContext.of(model)
+    bronze = context.materials["floor-box-antique-bronze"]
+
+    outlet_type = next(item for item in canvas_object_types(model.plan, parts_for={outlet.type_ref})
+                       if item["tag"] == outlet.type_ref)
+    cover_colors = [part["color"] for part in outlet_type["model_parts"]
+                    if part.get("material_ref") == bronze.tag]
+    assert cover_colors == [bronze.color]
+
+    mesh = _MeshBuilder()
+    draw_canvas_object(mesh, outlet, context)
+    assert _authored_material_color(bronze) in mesh._buckets
+
+
 def test_floor_box_cannot_intersect_a_joist(catlin_model_ro):
     model = catlin_model_ro
     outlet = next(item for item in model.canvas_objects if item.tag == OUTLET)

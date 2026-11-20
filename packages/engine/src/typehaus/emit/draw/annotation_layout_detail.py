@@ -97,9 +97,51 @@ def _dim_options(node: ArchDimension, per_pt: float) -> list[tuple[float, float]
     return list(dict.fromkeys((o, a) for o in offsets for a in alongs))
 
 
+def _segment_hits_box(start, end, b, inset: float = 1e-6) -> bool:
+    """Does segment ``start``-``end`` touch box ``b`` shrunk by ``inset``? (Liang-Barsky)"""
+    x0, y0, x1, y1 = b[0] + inset, b[1] + inset, b[2] - inset, b[3] - inset
+    if x0 > x1 or y0 > y1:
+        return False
+    dx, dy = end[0] - start[0], end[1] - start[1]
+    t0, t1 = 0.0, 1.0
+    for p, q in ((-dx, start[0] - x0), (dx, x1 - start[0]),
+                 (-dy, start[1] - y0), (dy, y1 - start[1])):
+        if p == 0.0:
+            if q < 0.0:
+                return False
+            continue
+        t = q / p
+        if p < 0.0:
+            t0 = max(t0, t)
+        else:
+            t1 = min(t1, t)
+        if t0 > t1:
+            return False
+    return True
+
+
+def _orient(a, b, c) -> float:
+    return (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0])
+
+
+def _on_segment(a, b, c) -> bool:
+    """``c``, collinear with ``a``-``b``, lies within its bounds."""
+    return (min(a[0], b[0]) <= c[0] <= max(a[0], b[0])
+            and min(a[1], b[1]) <= c[1] <= max(a[1], b[1]))
+
+
+def _segments_touch(p1, p2, q1, q2) -> bool:
+    """Shapely's ``intersects`` for two segments, without building either."""
+    d1, d2 = _orient(q1, q2, p1), _orient(q1, q2, p2)
+    d3, d4 = _orient(p1, p2, q1), _orient(p1, p2, q2)
+    if ((d1 > 0 > d2) or (d1 < 0 < d2)) and ((d3 > 0 > d4) or (d3 < 0 < d4)):
+        return True
+    return ((d1 == 0 and _on_segment(q1, q2, p1)) or (d2 == 0 and _on_segment(q1, q2, p2))
+            or (d3 == 0 and _on_segment(p1, p2, q1)) or (d4 == 0 and _on_segment(p1, p2, q2)))
+
+
 def _crosses_any(start, end, boxes) -> bool:
-    line = LineString((start, end))
-    return any(line.intersects(shapely_box(*b).buffer(-1e-6)) for b in boxes)
+    return any(_segment_hits_box(start, end, b) for b in boxes)
 
 
 def _leader_blocked(target, at, boxes, lines, points=(), reach=0.0) -> bool:
@@ -108,9 +150,9 @@ def _leader_blocked(target, at, boxes, lines, points=(), reach=0.0) -> bool:
     neighbouring targets may sit closer than that)."""
     if _crosses_any(target, at, boxes):
         return True
-    own = LineString((target, at))
-    if any(own.intersects(LineString(line)) for line in lines):
+    if any(_segments_touch(target, at, line[0], line[-1]) for line in lines):
         return True
+    own = LineString((target, at))
     if not points or own.length <= reach:
         return False
     beyond = LineString((own.interpolate(reach), at))
