@@ -20,6 +20,7 @@ from typehaus.model.enums import LayerFunction
 from typehaus.model.spatial import Stair
 from typehaus.resolve import stair_underside_boards as geo
 from typehaus.resolve.coatings import coating_tags
+from typehaus.resolve.framing.footprint import member_footprint
 from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedStair, StairUnderside
 from typehaus.resolve.overlay import difference, intersection, union_all
 from typehaus.resolve.room_lookup import room_owning
@@ -34,6 +35,8 @@ from typehaus.resolve.soffits import wall_footprint
 
 CATEGORY = "stair_soffit"
 _IN = 0.0254
+# A board piece, or an overlap with what stands in its plane, thinner than this is noise.
+_SLIVER_M = 0.003
 
 
 def resolve_stair_undersides(plan, model: ResolvedModel) -> None:
@@ -61,43 +64,52 @@ def _boards(plan, model, stair: ResolvedStair, authored: Stair, walls) -> list[g
     railings = [el for el in plan.all_elements() if getattr(el, "element_kind", "") == "Railing"
                 and getattr(el, "mount", None) == "panel"]
     lands = geo.merged_landings(geo.landings(stair.members))
-    # What stands in a landing's plane: walls and posts (a U's partition line). A board stops
-    # at their faces rather than running into them.
+    # What stands in a landing's plane: walls, columns and the stair's own posts and studs
+    # (a U's partition line). A board stops at their faces rather than running into them.
     standing = [(footprint, wall.z0_m, wall.z1_m) for wall, footprint in walls]
     standing += [(Polygon(s.outline), s.z0_m, s.z1_m) for s in model.solids
                  if s.category == "column" and len(s.outline) >= 3]
+    standing += [(Polygon(member_footprint(m)[0]), m.z0_m, m.z1_m) for m in stair.members
+                 if m.p0 == m.p1 and m.category != CATEGORY]
+    steps, grow, cut = _steps(lands, t, standing, stair.members)
     out: list[geo.Board] = []
     for flight in geo.flights(stair.members):
         out.extend(_flight_boards(flight, t, walls, ceilings, railings, lands))
     for landing in lands:
-        out.extend(_landing_board(landing, t, ceilings, standing))
-    out.extend(_steps(lands, t, standing))
+        out.extend(_landing_board(landing, t, ceilings, standing, grow.get(landing.name),
+                                  cut.get(landing.name)))
+    out.extend(steps)
     return out
 
 
-def _in_plane(standing, z_lo: float, z_hi: float):
-    """The union of what stands across ``z_lo``..``z_hi``, or None."""
-    shapes = [f for f, z0, z1 in standing if z0 < z_hi - 1e-6 and z1 > z_lo + 1e-6]
-    return union_all(shapes) if shapes else None
+def _in_plane(standing, z_lo: float, z_hi: float) -> list[Polygon]:
+    """The footprints of what stands across ``z_lo``..``z_hi``."""
+    return [f for f, z0, z1 in standing if z0 < z_hi - 1e-6 and z1 > z_lo + 1e-6]
 
 
 def _rectangles(shape, guide: Polygon) -> list[Polygon]:
-    """A rectilinear ``shape`` (in ``guide``'s frame) as rectangles: slabs along the guide's
-    long edge, adjacent slabs of one cross extent merged."""
+    """``shape`` (in ``guide``'s frame) as rectangles, largest first: slabs along the guide's
+    long edge, adjacent slabs of one cross extent merged, none narrower than a sliver. A slab
+    piece that is not rectilinear keeps only the rectangle inscribed in it (never more)."""
     rect = tuple(geo.aligned_rect(guide, guide).exterior.coords)
     a, b = rect[0], rect[1]
     length = math.dist(a, b)
     frame = geo.Frame(a, ((b[0] - a[0]) / length, (b[1] - a[1]) / length),
                       (-(b[1] - a[1]) / length, (b[0] - a[0]) / length))
     parts = geo.polygons(shape)
-    ss = sorted({round(frame.s_of(c), 6) for p in parts for c in p.exterior.coords})
+    ss = sorted({round(frame.s_of(c), 6) for p in parts
+                 for ring in (p.exterior, *p.interiors) for c in ring.coords})
     slabs: list[list] = []
     for s0, s1 in zip(ss, ss[1:], strict=False):
         cut = intersection(shape, frame.rect(s0, s1, -1e3, 1e3))
         for piece in geo.polygons(cut):
-            cs = [frame.c_of(c) for c in piece.exterior.coords]
-            c0, c1 = round(min(cs), 6), round(max(cs), 6)
-            if piece.area < 1e-6:
+            ends = [[frame.c_of(c) for c in piece.exterior.coords
+                     if abs(frame.s_of(c) - s) < 1e-6] for s in (s0, s1)]
+            if not all(ends):
+                continue
+            c0 = round(max(min(e) for e in ends), 6)
+            c1 = round(min(max(e) for e in ends), 6)
+            if c1 - c0 < _SLIVER_M:  # a thin slab may still merge, so its run waits
                 continue
             same = next((sl for sl in slabs if abs(sl[1] - s0) < 1e-6
                          and (sl[2], sl[3]) == (c0, c1)), None)
@@ -105,7 +117,14 @@ def _rectangles(shape, guide: Polygon) -> list[Polygon]:
                 same[1] = s1
             else:
                 slabs.append([s0, s1, c0, c1])
-    return sorted((frame.rect(*sl) for sl in slabs), key=lambda r: -r.area)
+    rects = [frame.rect(*sl) for sl in slabs if sl[1] - sl[0] >= _SLIVER_M]
+    return [r for _, _, r in sorted((-round(r.area, 6), i, r) for i, r in enumerate(rects))]
+
+
+def _opened(shape):
+    """``shape`` less any part thinner than a sliver (a face grazing a board's edge)."""
+    joint = {"join_style": 2}
+    return shape.buffer(-_SLIVER_M / 2.0, **joint).buffer(_SLIVER_M / 2.0, **joint)
 
 
 def _flight_boards(flight: geo.Flight, t: float, walls, ceilings, railings,
@@ -202,14 +221,24 @@ def _plumb(key, a, b, lo: float, hi: float, bead: float, t: float, ceilings) -> 
     return out
 
 
-def _landing_board(landing: geo.Landing, t: float, ceilings, standing) -> list[geo.Board]:
+def _landing_board(landing: geo.Landing, t: float, ceilings, standing, grow=None,
+                   cut=None) -> list[geo.Board]:
     u = landing.underside_m
     if any(z < u for _, _, z in geo.ceiling_clips(ceilings, landing.polygon)):
         return []  # concealed above the room's ceiling
-    pieces = [landing.polygon]
-    blocking = _in_plane(standing, u - t, u)
-    if blocking is not None and intersection(landing.polygon, blocking).area > 1e-6:
-        pieces = _rectangles(difference(landing.polygon, blocking), landing.polygon)
+    shape = landing.polygon
+    if grow is not None:  # on under a step's framing, to its riser board
+        shape = union_all([shape, grow])
+    if cut is not None:  # back to the riser board under a higher landing's edge
+        shape = difference(shape, cut)
+    # Each obstacle is notched as its bounding rectangle in the board's frame.
+    notches = [geo.aligned_rect(part, landing.polygon)
+               for footprint in _in_plane(standing, u - t, u)
+               for part in geo.polygons(_opened(intersection(shape, footprint)))]
+    if notches:
+        shape = difference(shape, union_all(notches))
+    pieces = [landing.polygon] if shape is landing.polygon \
+        else _rectangles(shape, landing.polygon)
     out = []
     for i, piece in enumerate(pieces):
         a, b, c, d = tuple(geo.aligned_rect(piece, landing.polygon).exterior.coords)[:4]
@@ -223,34 +252,62 @@ def _landing_board(landing: geo.Landing, t: float, ceilings, standing) -> list[g
     return out
 
 
-def _steps(lands: list[geo.Landing], t: float, standing) -> list[geo.Board]:
-    """The riser between two half landings, where their footprints meet."""
-    out = []
-    for i, low in enumerate(lands):
-        for high in lands[i + 1:]:
-            if abs(low.underside_m - high.underside_m) < 1e-3:
+def _steps(lands: list[geo.Landing], t: float, standing, members):
+    """The riser between two half landings, where their footprints meet: on the high side
+    of the lower landing's framing there (a partition rim straddles the line), the lower
+    board run on to it and the higher one stopped at its back. Returns the boards and, per
+    landing, what to add to and cut from its board."""
+    out: list[geo.Board] = []
+    grow: dict[str, Polygon] = {}
+    cut: dict[str, Polygon] = {}
+    for i, first in enumerate(lands):
+        for second in lands[i + 1:]:
+            if abs(first.underside_m - second.underside_m) < 1e-3:
                 continue
-            meet = intersection(low.polygon.exterior, high.polygon.buffer(0.002))
+            meet = intersection(first.polygon.exterior, second.polygon.buffer(0.002))
             segments = [(a, b) for line in getattr(meet, "geoms", [meet])
                         for a, b in zip(line.coords, line.coords[1:], strict=False)]
             if not segments:
                 continue
             start, end = max(segments, key=lambda pair: math.dist(*pair))
-            z_lo, z_hi = (min(low.underside_m, high.underside_m),
-                          max(low.underside_m, high.underside_m))
-            run = LineString([start, end])
+            low, high = sorted((first, second), key=lambda land: land.underside_m)
+            z_lo, z_hi = low.underside_m, high.underside_m
+            length = math.dist(start, end)
+            ux, uy = (end[0] - start[0]) / length, (end[1] - start[1]) / length
+            frame = geo.Frame(start, (ux, uy), (-uy, ux))
+            if frame.c_of(high.polygon.centroid.coords[0]) < frame.c_of(
+                    low.polygon.centroid.coords[0]):
+                frame = geo.Frame(start, (ux, uy), (uy, -ux))
+            reach = frame.rect(0.0, length, -geo.LANDING_MEETS_M, geo.LANDING_MEETS_M)
+            face = max([frame.c_of(c) for fp in _framing(members, low.name)
+                        for part in geo.polygons(intersection(fp, reach))
+                        for c in part.exterior.coords], default=0.0)
+            face = max(face, 0.0)
+            for into, name, c1 in ((grow, low.name, face), (cut, high.name, face + t)):
+                strip = frame.rect(0.0, length, -_SLIVER_M, c1)
+                into[name] = union_all([into[name], strip]) if name in into else strip
+            run = LineString([frame.at(0.0, face + t / 2.0), frame.at(length, face + t / 2.0)])
             blocking = _in_plane(standing, z_lo - t, z_hi)
-            if blocking is not None:
-                run = difference(run, blocking)
-            key = f"soffit-step-{low.name}-{high.name}"
+            if blocking:
+                run = difference(run, union_all(blocking))
+            key = f"soffit-step-{first.name}-{second.name}"
             pieces = sorted((p for p in getattr(run, "geoms", [run])
-                             if p.geom_type == "LineString" and p.length > 1e-3),
+                             if p.geom_type == "LineString" and p.length > _SLIVER_M),
                             key=lambda p: -p.length)
-            for i, piece in enumerate(pieces):
+            for k, piece in enumerate(pieces):
                 a, b = piece.coords[0], piece.coords[-1]
-                out.extend(_plumb(key + (f"-{i}" if i else ""), a, b, z_lo - t, z_hi,
+                out.extend(_plumb(key + (f"-{k}" if k else ""), a, b, z_lo - t, z_hi,
                                   z_lo - t, t, ()))
-    return out
+    return out, grow, cut
+
+
+def _framing(members, name: str) -> list[Polygon]:
+    """The joists and rims of landing ``name`` (or of each half of a merged one)."""
+    prefixes = tuple(f"landing-{kind}-{part}-" for part in name.split("+")
+                     for kind in ("joist", "rim"))
+    return [Polygon(member_footprint(m)[0]) for m in members
+            if m.category == "landing_framing" and m.p0 != m.p1
+            and m.child_key.startswith(prefixes)]
 
 
 def _member(stair: ResolvedStair, board: geo.Board, material: str) -> FramedMember:

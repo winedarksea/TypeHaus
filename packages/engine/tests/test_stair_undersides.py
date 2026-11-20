@@ -35,16 +35,27 @@ def test_boards_sit_on_the_stringers_landings_and_steps(catlin_model_ro):
     assert upper.z1_m - lower.z1_m == pytest.approx(riser, abs=inch(0.25).meters)
     step = b2m["soffit-step-lower-upper"]
     assert (step.z0_m, step.z1_m) == pytest.approx((lower.z0_m, upper.z1_m))
-    # They stop at W-B-WELL's faces and its posts on the partition line, never inside them.
+    # They stop at W-B-WELL's faces and the posts and studs on the partition line (ST-M2S's
+    # landing post too); the riser stands on the lower landing's partition rim, the upper
+    # board stopped at it.
     from shapely.geometry import Polygon
 
     from typehaus.resolve.framing.footprint import member_footprint
     from typehaus.resolve.soffits import wall_footprint
 
     well = wall_footprint(catlin_model_ro.wall("W-B-WELL"))
-    for key, board in b2m.items():
-        if key.startswith(("soffit-landing", "soffit-step")):
-            assert Polygon(member_footprint(board)[0]).intersection(well).area < 1e-6, key
+    for tag, wall in (("ST-B2M", well), ("ST-M2S", None)):
+        stair = _stair(catlin_model_ro, tag)
+        frame = [(Polygon(member_footprint(m)[0]), m) for m in stair.members
+                 if m.category == "landing_framing" or m.p0 == m.p1]
+        for key, board in _boards(stair).items():
+            if not key.startswith(("soffit-landing", "soffit-step")):
+                continue
+            plan = Polygon(member_footprint(board)[0])
+            assert wall is None or plan.intersection(wall).area < 1e-6, key
+            for footprint, m in frame:
+                if m.z0_m < board.z1_m - 1e-6 and m.z1_m > board.z0_m + 1e-6:
+                    assert plan.intersection(footprint).area < 1e-6, (key, m.child_key)
 
     s2a = _stair(catlin_model_ro, "ST-S2A")
     assert not any("winder" in key for key in _boards(s2a))
