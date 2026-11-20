@@ -13,7 +13,7 @@ from typehaus.findings import Result
 def _vent(**increaser):
     from typehaus.model.enums import PipeSystem
     from typehaus.model.mep import VentRun
-    from typehaus.model.vent_increaser import VentIncreaser
+    from typehaus.model.vent_run import VentIncreaser
     from typehaus.quantities import ft, inch, pt
 
     return VentRun(uid="V1", tag="VR-T", systems=(PipeSystem.VENT, PipeSystem.RADON),

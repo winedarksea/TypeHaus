@@ -332,7 +332,7 @@ from typehaus.model.types import (
     TerminalNeckInlet,
     WindowType,
 )
-from typehaus.model.vent_increaser import VentIncreaser
+from typehaus.model.vent_run import VentIncreaser
 from typehaus.model.views import (
     Continuity,
     DetailAnnotation,

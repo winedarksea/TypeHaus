@@ -1412,7 +1412,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # The through-panel pipe straps that replaced the CanDuit rings on the two roof leaders (#13,
 # 4.0" OD) and the north-gable vent riser (#11, 3.5" OD). A commodity 316 stainless two-hole
 # strap, ~$2-4. Per POINT the row is meant to cover the strap, a laminated 5" cellular-PVC
-# block, two 6" 316 through-screws and sealant (plan/mep_venting.py VENT_CLAMPS, 2026-11-15).
+# block, two 6" 316 through-screws and sealant (plan/mep_vent_clamps.py, 2026-11-15).
 # ** UNDERSTATED: ** this range was set for a strap and two T09150HWAM screws; it does not
 # cover the 5" block and two 6" 316 screws as well. Not re-researched — re-price it.
 # The #11 points are on W-A-N2, BBD75 board-and-batten, screwed through a panel flat.
@@ -7710,11 +7710,13 @@ concrete-window-bucks-and-blockouts = { low = 250, high = 600, unit = "ea", driv
 #   have, and the old comment's "they ride inside the rate" was carrying it anyway.
 #
 # What survives is the PIPE AND STACK the model genuinely does not resolve: the perforated
-# loop in the stone, the 4" riser from slab to roof, its penetration and sealing, and the
+# loop in the stone, the riser's penetration and sealing, and the
 # labelling. Back to an undriven lump because that scope is a stack, not an area — one riser
 # whatever the slab does. The fan, monitor and commissioning are already the
 # `electrical-radon-fan-commissioning` row below and are NOT here.
-radon-passive-pipe-and-stack = { low = 900, high = 2200 }
+# 2026-11-19: the riser left this row. VR-M-STACK's radon leg (47.0 LF, 4 bends) bills in
+# [pipe_runs] "radon" and [pipe_fittings] now, ~$295-650 installed, taken off 900-2200.
+radon-passive-pipe-and-stack = { low = 600, high = 1550 }
 # ** ANSWERED 2026-08-20: SUMMER POUR, so this is ZERO. ** Foundation and suspended deck go in
 # May-Oct. The row is kept at zero rather than deleted, because it is the reminder of what a
 # schedule slip costs: if the pour lands Nov-Apr instead, this is 10-25% of the whole concrete

@@ -250,7 +250,7 @@ not instruction: when it disagrees with this file or the model, it is the one th
   `FIELD_*`, `ARCH_*`, `SOAKAWAY_TOP`). The beds and their soakaway course stay with the
   footings they sit under.
 - `plan/mep*.py` — MEP *instances*, split by system so no file runs past ~400 lines:
-  `mep_sleeves` (cast penetrations), `mep_drainage`, `mep_venting`, `mep_supply` +
+  `mep_sleeves` (cast penetrations), `mep_drainage`, `mep_venting` (+ `mep_vent_clamps`), `mep_supply` +
   `mep_supply_devices`, `mep_supply_plant`, `mep_hvac` (System 1's conditioned-air chase,
   equipment, terminal types), `mep_hvac_branches` (its three bedroom branches), `mep_registers_<storey>` (+ `erv_balance`, the ERV split),
   `mep_electrical` (symbols), and the ERV in six files (below). All sixteen are

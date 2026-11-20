@@ -204,9 +204,15 @@ def riser_pieces(model: ResolvedModel, vent: VentRun
         if inc is None or system != "vent":
             out.append((tag, path, z, vent.diameter_of(system, z[0]).meters))
             continue
-        z_inc = inc.elevation.meters   # on the riser2 leg, vertices 2 -> 3 (validated)
-        lower = (path[:3] + (path[2],), z[:3] + (z_inc,))
-        upper = ((path[2],) + path[3:], (z_inc,) + z[3:])
+        # The plumb leg holding the station: riser2 under a jog, the chase leg without one.
+        z_inc = inc.elevation.meters
+        k = next((i for i in range(len(z) - 1) if path[i] == path[i + 1]
+                  and min(z[i], z[i + 1]) < z_inc < max(z[i], z[i + 1])), None)
+        if k is None:
+            out.append((tag, path, z, vent.diameter.meters))
+            continue
+        lower = (path[:k + 1] + (path[k],), z[:k + 1] + (z_inc,))
+        upper = ((path[k],) + path[k + 1:], (z_inc,) + z[k + 1:])
         out.append((tag, *lower, vent.diameter.meters))
         out.append((f"{vent.tag}-{inc.diameter.inches:g}in-vent", *upper,
                     inc.diameter.meters))

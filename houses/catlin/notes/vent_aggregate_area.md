@@ -89,7 +89,7 @@ roof). The engine grades this as `integrity.vent_increaser_roof`.
 - The vent's own Table 703.2 length and DFU per branch (`mep.vent_reachability`, `mep.vent_connection`).
 - Vents upstream of a pump or ejector, which 904.1 excludes. Catlin has none on a sanitary branch: the
   sump is drain tile.
-- The wall flashing. It is recorded in `plan/mep_venting.py` VENT_CLAMPS and
+- The wall flashing. It is recorded in `plan/mep_vent_clamps.py` and
   `notes/outie_window_truss_detail.md`, and no check grades it.
 
 ## Sources
