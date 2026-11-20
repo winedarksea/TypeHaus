@@ -2418,9 +2418,10 @@ POSTS = [
     Post(uid="A9J80KK6AE", tag="P-M-STRWELL-S", position=pt(inch(167.9375), ft(32, 0.125)), size="4x4",
          height=ft(9, 1.4375), assembly="POST_CONCEALED_SPF", supported_by="PD-B-WELL"),
     # A THIRD one on the well centreline, 2026-09-15 (notes/u_stair_split_landing.md), under
-    # ST-B2M's half-landings, which start at y=31'-1 5/8": its 60" flights plus the head
-    # riser board and carpet (1 1/4") the landing edge stands past (2026-09-28,
-    # notes/stair_nosing_basis.md); its face is the 31'-0 3/8" riser line. That corner is a rim end no host wall reaches, and it
+    # ST-B2M's half-landings, which start at y=31'-1 3/8": its 60" flights plus the head
+    # riser board and carpet (1") the landing edge stands past (2026-09-28,
+    # notes/stair_nosing_basis.md); its south face is the 31'-0 3/8" riser line, so the rim
+    # ends bear 2 1/2" on it. That corner is a rim end no host wall reaches, and it
     # is over FO-M-STAIR's hole, so this full-height column carries it. `bearing.py` sees
     # the post at the corner and derives no 4x4 of its own (2026-11-16).
     Post(uid="H8TV2XS6B2", tag="P-M-STRWELL-SS", position=pt(inch(168), ft(31, 2.125)), size="4x4",

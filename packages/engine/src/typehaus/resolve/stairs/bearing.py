@@ -453,8 +453,8 @@ def _against_partition_end(corner: tuple[float, float],
     """A corner post on a U-stair's well partition stands face-to-face with its end stud.
 
     The partition ends on the flight's last riser line (``u_split.py``), a head riser
-    board short of the landing corner, so the post stands under the landing with its face
-    on that plane rather than centred on the rim end, proud of it.
+    board (none on an open-riser flight) short of the landing corner, so the post stands
+    under the landing with its face on that plane rather than centred on the rim end.
     """
     half = cross_section("4x4").width_m / 2.0
     for plate in plates:
@@ -462,10 +462,10 @@ def _against_partition_end(corner: tuple[float, float],
         if abs(corner[1 - axis] - plate.p0[1 - axis]) > 1e-4:
             continue
         lo, hi = sorted((plate.p0[axis], plate.p1[axis]))
-        gap = corner[axis] - hi if corner[axis] > hi else corner[axis] - lo
-        end = hi if gap > 0 else lo
-        if 1e-6 < abs(gap) <= 2.0 * half and not lo < corner[axis] < hi:
+        side = 1.0 if corner[axis] >= hi - 1e-6 else -1.0
+        end = hi if side > 0 else lo
+        if -1e-6 <= (corner[axis] - end) * side <= 2.0 * half:
             point = list(corner)
-            point[axis] = end + math.copysign(half, gap)
+            point[axis] = end + side * half
             return (round(point[0], 6), round(point[1], 6))
     return corner
