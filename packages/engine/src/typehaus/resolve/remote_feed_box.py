@@ -3,7 +3,8 @@
 A type with ``remote_box`` (a knuckle flood on its own plate) takes no box over its point. Its
 whip lands in a surface box screwed to the underside of the nearest framing member of the deck
 over it, at the member's point nearest the fitting, wherever the box clears the fitting's own
-footprint. No framed deck over the point, or no member clear of the body within a whip's
+footprint and stays inside the deck's outline (an edge member's box would hang into its fascia
+or rim cladding). No framed deck over the point, or no member clear of the body within a whip's
 reach, is no box.
 
 ``member_under`` serves a fixture that mounts to a box under a bare deck: the box hangs from
@@ -41,6 +42,8 @@ def remote_box_point(floor: Any, xy: tuple[float, float], fitting_footprint: tup
     point = Point(xy)
     body = Polygon(fitting_footprint) if len(fitting_footprint) >= 3 else point
     keep_out = body.buffer(CLEARANCE_M)
+    outline = getattr(floor, "deck_outline", ())
+    deck = Polygon(outline).buffer(1e-4) if len(outline) >= 3 else None
     best = None
     for member in floor.members:
         if member.p0 == member.p1:
@@ -48,7 +51,9 @@ def remote_box_point(floor: Any, xy: tuple[float, float], fitting_footprint: tup
         axis = LineString([member.p0, member.p1])
         at = axis.interpolate(axis.project(point))
         distance = at.distance(point)
-        if distance > MAX_REACH_M or at.buffer(box_width_m / 2).intersects(keep_out):
+        disc = at.buffer(box_width_m / 2)
+        if distance > MAX_REACH_M or disc.intersects(keep_out) or (
+                deck is not None and not deck.covers(disc)):
             continue
         z = _underside_at(member, axis, at)
         if z < base_z:

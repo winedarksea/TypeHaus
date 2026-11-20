@@ -3521,8 +3521,8 @@
 "device_boxes/QTM0017AAA-box/z1_m": 2.7181969,
 "device_boxes/QTM0018AAA-box/z0_m": 1.179972,
 "device_boxes/QTM0018AAA-box/z1_m": 1.275222,
-"device_boxes/QTM001EAAA-box/z0_m": 2.6419969,
-"device_boxes/QTM001EAAA-box/z1_m": 2.6864469,
+"device_boxes/QTM001EAAA-box/z0_m": 2.6483469,
+"device_boxes/QTM001EAAA-box/z1_m": 2.6927969,
 "device_boxes/QTS0005AAA-box/z0_m": 4.240022,
 "device_boxes/QTS0005AAA-box/z1_m": 4.335272,
 "device_boxes/QTS0006AAA-box/z0_m": 4.240022,
@@ -73878,10 +73878,10 @@
 "26fcbaf725ac"
 ],
 "geometry/QTM001EAAA-box/body": [
-2.6419969,
-2.6864469,
+2.6483469,
+2.6927969,
 110,
-"058d9a4550f3"
+"91c02e1488e6"
 ],
 "geometry/QTS0005AAA-box/body": [
 4.240022,
@@ -125732,8 +125732,8 @@
 "solids/ED-M-PANTRY-SW-PLATE/z1_m": 1.543573,
 "solids/ED-M-PORCH-FAN-BOX/z0_m": 2.6800969,
 "solids/ED-M-PORCH-FAN-BOX/z1_m": 2.7181969,
-"solids/ED-M-PORCH-FLOOD-BOX/z0_m": 2.6419969,
-"solids/ED-M-PORCH-FLOOD-BOX/z1_m": 2.6864469,
+"solids/ED-M-PORCH-FLOOD-BOX/z0_m": 2.6483469,
+"solids/ED-M-PORCH-FLOOD-BOX/z1_m": 2.6927969,
 "solids/ED-M-PORCH-SW-BOX/z0_m": 1.179972,
 "solids/ED-M-PORCH-SW-BOX/z1_m": 1.275222,
 "solids/ED-M-PORCH-SW-PLATE/z0_m": 1.165621,
