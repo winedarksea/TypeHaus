@@ -50,19 +50,25 @@ def outdoor_refrigerant_ports(width_in: float, depth_in: float, liquid_in: float
 
 
 FXU24_LIMITS = RefrigerantLimits(
-    max_total=ft(164), max_per_port=ft(164), max_rise_od_above=ft(49),
+    max_total=ft(164), max_per_port=ft(164), min_per_port=ft(10), max_rise_od_above=ft(49),
     max_rise_od_below=ft(49), precharged_length=ft(31), charge_oz_per_ft=0.323,
-    source="Gree FXU24 submittal (GREE_FXU24_230V_R32_SUB_01272026), piping: 3/8 x 3/4 in., "
-           "164 ft max length, 49 ft max height difference, 31 ft precharged, 0.323 oz/ft "
-           "added beyond it. Minimum length not read.")
+    source="Gree FXU24 submittal (GREE_FXU24_230V_R32_SUB_01272026) p.2, piping: 3/8 x 3/4 in., "
+           "Pipe Length (Min - Max) 10 - 164 ft, 49 ft max elevation, 31 ft precharged, "
+           "0.323 oz/ft added beyond it.")
 
 MUL30_LIMITS = RefrigerantLimits(
-    max_total=ft(263), max_per_port=ft(82), max_rise_od_above=ft(82),
-    max_rise_od_below=ft(82), precharged_length=ft(131),
-    source="Gree Multi R32 MUL30 submittal / IOM S3, piping: 1/4 x 3/8 in. per port, 263 ft "
-           "total, 82 ft per port, 82 ft height difference, 131 ft precharged. Minimum per "
-           "port and the added-charge rate not read.")
+    max_total=ft(263), max_per_port=ft(82), min_per_port=ft(10), max_rise_od_above=ft(82),
+    max_rise_od_below=ft(82), precharged_length=ft(131), charge_oz_per_ft=0.2,
+    source="Gree MUL30 submittal (GREE_MUL30HP_230V_R32_SUB_04022026) p.3, piping: 1/4 x 3/8 "
+           "in. per port, Pipe Length (Min - Max) 10 - 263 ft, 82 ft to the furthest indoor "
+           "unit, 82 ft max elevation, 131 ft precharged, 0.2 oz/ft added. The 10 ft minimum "
+           "is read per port (the stricter reading). The Multi R32 service manual p.17 agrees "
+           "but prints 82.02 ft as the total length, read here as a misprint.")
 
 SAPPHIRE9_LIMITS = RefrigerantLimits(
-    source="Gree Sapphire R32 9k: piping table not yet read into the repo (lengths, rise, "
-           "precharge unknown).")
+    max_total=ft(131), max_per_port=ft(131), min_per_port=ft(10), max_rise_od_above=ft(82),
+    max_rise_od_below=ft(82), precharged_length=ft(25), charge_oz_per_ft=0.2,
+    source="Gree SAP09 submittal (GREE_SAP09HP_230V_R32_AH_AO_SUB_07302025) p.2, piping: "
+           "1/4 x 1/2 in. flared, Pipe Length (Min - Max) 10 - 131 ft, 82 ft max elevation, "
+           "25 ft precharged, 0.2 oz/ft added. Service manual (SAP09-24) p.3 and Appendix 2 "
+           "agree (24.6 ft standard, 3 m minimum).")

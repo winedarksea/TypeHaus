@@ -7,9 +7,10 @@
 #   * HP1: west off the valves, up beside the cabinet's west end, east above it into
 #     W-M-N1's 304-320 bay (no window; west of ED-M-LIVING-KET1's box), up through both storeys'
 #     plates into FS-ATTIC's north bay, up through the deck and over to the AH's ports.
-#   * HP2: three sets side by side (4 5/8" centres) through FS-M-EAST's rim east of the
+#   * HP2: three sets side by side (x 380-393) through FS-M-EAST's rim east of the
 #     cabinet, between W-M-S2's starter girt and the next course, into its south bay. GYM
-#     west to the gym's south-west corner and down beside the head; BED west past the x=18' bearing into FS-M-WEST and up W-M-S1's bay east of WIN-M-BED-S2;
+#     west to the gym's south-west corner and down beside the head; BED west past the
+#     x=18' bearing into FS-M-WEST and up W-M-S1's bay east of WIN-M-BED-S2;
 #     LIVING up W-M-S2's 352-367 bay, west in FS-S-EAST's south bay and down over D-M-PORCH's
 #     header (the door fills the wall under the head).
 #   * HP3: back into W-M-N2's 128-144 bay under the head's plate, up the cavity, out at
@@ -55,7 +56,7 @@ LINESETS_MAIN = [
                   pt(inch(307.875), inch(441.5)), pt(inch(307.875), inch(429.1)),
                   pt(inch(307.875), inch(429.1)), pt(inch(307.875), inch(427.6)),
                   pt(inch(307.875), inch(427.6)), pt(inch(307.875), inch(421.5)),
-                  pt(inch(307.875), inch(421.5)), pt(inch(279.75), inch(421.5)),
+                  pt(inch(303.875), inch(421.5)), pt(inch(279.75), inch(421.5)),
                   pt(inch(279.75), inch(421.5)), pt(inch(279.75), inch(322)),
                   pt(inch(279.75), inch(322)), pt(inch(279.75), inch(328.5))),
             elevations=(inch(-5), inch(-5), inch(-5), inch(30), inch(30), inch(30),
@@ -87,14 +88,14 @@ LINESETS_MAIN = [
             elevations=(inch(-4), inch(-4), inch(-4), inch(-4), inch(109.5), inch(115),
                         inch(115), inch(109.5), inch(100))),
     PipeRun(uid="VZK9M5DP8Y", tag="PR-M-RFG-HP3-STAIR", system=PipeSystem.REFRIGERANT,
-            serves=("EQ-M-HP3-STAIR",), material="copper_acr", diameter=inch(0.375),
+            serves=("EQ-M-HP3-STAIR",), material="copper_acr", diameter=inch(0.5),
             liquid_diameter=inch(0.25),
-            path=(pt(inch(0), inch(461.85)), pt(inch(-3), inch(461.85)),
-                  pt(inch(-3), inch(441.5)), pt(inch(-3), inch(441.5)),
+            path=(pt(inch(0), inch(461.85)), pt(inch(-4), inch(461.85)),
+                  pt(inch(-4), inch(441.5)), pt(inch(-4), inch(441.5)),
                   pt(inch(136), inch(441.5)), pt(inch(136), inch(429.1)),
                   pt(inch(136), inch(429.1)), pt(inch(136), inch(426.9))),
             elevations=(inch(-10), inch(-10), inch(-10), inch(102.5), inch(102.5),
-                        inch(102.5), inch(34), inch(34))),
+                        inch(102.5), inch(36), inch(34))),
     # The framed-wall holes (sleeved, sloped out, sealed to the air barrier). HP2's three sets
     # cross FS-M-EAST's LSL rim below the wall, each in its own TJ-8000 rim hole: a floor
     # penetration, not a wall RoughOpening (one there frames a header into the plates).

@@ -387,8 +387,8 @@ def test_pipe_runs_bill_by_system_and_diameter(catlin_model, bom):
     # feed to the hydrant.
     assert {row["system"] for row in rows} == {"drain", "vent", "water_cold", "water_hot",
                                                "sump_discharge", "radon", "refrigerant"}
-    # Two lineset sizes stay two rows: the liquid line is in the key.
-    assert len([row for row in rows if row["system"] == "refrigerant"]) == 2
+    # Three lineset sizes stay three rows: the liquid line is in the key.
+    assert len([row for row in rows if row["system"] == "refrigerant"]) == 3
     # The VentRun chase stacks bill beside the authored runs, one row per size (2026-11-19).
     from typehaus.takeoff.mep import vent_riser_pieces
 

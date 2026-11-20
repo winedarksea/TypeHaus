@@ -560,61 +560,82 @@ length is worked leg by leg off the authored vertices below, independently of th
 Coordinates are inches, z absolute. The earlier prose estimates (~31 ft HP1, 25-30 ft HP2) are
 retired.
 
-Gree's published limits, from the submittals:
+Gree's published limits, from the submittals (each "Pipe Length (Min - Max)" row):
 
-| | line | total | per port | rise | precharge |
-|---|---|---|---|---|---|
-| FXU24 (HP1) | 3/8"–3/4" | 164 ft | — | 49 ft | 31 ft + 0.323 oz/ft |
-| MUL30 (HP2) | 1/4"–3/8" per port | 263 ft | 82 ft | 82 ft | 131 ft |
-| Sapphire 9 (HP3) | 1/4"–3/8" | not read | — | not read | not read |
+| | line | min | total | per port | rise | precharge |
+|---|---|---|---|---|---|---|
+| FXU24 (HP1), `..._SUB_01272026` p.2 | 3/8"–3/4" | 10 ft | 164 ft | — | 49 ft | 31 ft + 0.323 oz/ft |
+| MUL30 (HP2), `..._SUB_04022026` p.3 | 1/4"–3/8" per port | 10 ft | 263 ft | 82 ft | 82 ft | 131 ft + 0.2 oz/ft |
+| Sapphire 9 (HP3), `..._SUB_07302025` p.2 | 1/4"–**1/2"** | 10 ft | 131 ft | — | 82 ft | 25 ft + 0.2 oz/ft |
 
-**Bundle.** The lagging is 1/2" wall, so the tubes are 1.75" and 1.375" OD (3/8 x 3/4), or 1.375"
-and 1.25" (1/4 x 3/8). Side by side, the enclosing circle is **3.125"** or **2.625"**. A 1/2"
+- The MUL30's 10 ft is read **per port**, the stricter reading of a row that pairs it with the
+  263 ft total. The Multi R32 service manual (p.17) prints 82.02 ft as the total length too;
+  that contradicts both submittals and the per-port 82 ft, so it is read as a misprint.
+- The Sapphire 9's gas line is **1/2"**, not 3/8" as first modelled: the submittal and the
+  service manual (p.3, "Outer Diameter Gas Pipe 1/2") agree. `PR-M-RFG-HP3-STAIR` and the
+  type's ports are 1/2" since 2026-11-20.
+
+**Bend radius: 10 cm (3.94").** Gree's Sapphire R32 service manual (SAP09-24, Installation and
+Maintenance p.50, PDF p.53, "Neaten the Pipes"): "Min. semidiameter of bending the pipe is
+10cm." Gree's Livo R32 service manual carries the same sentence. The Multi R32 service manual
+and the FLEXX Ultra outdoor manual give no radius (FLEXX §3.2.2.3: bend no more than 90°,
+rebend no more than 3 times). `library/fittings._ACR_BEND` grades every ACR bend at
+max(4 x OD, 3.94"), so a 90° turn needs 3.94" of straight tube each side; the 4 x OD planning
+figure it replaces is retired.
+
+**Bundle.** The lagging is 1/2" wall, so the tubes are 1.75" and 1.375" OD (3/8 x 3/4), 1.375"
+and 1.25" (1/4 x 3/8), or 1.5" and 1.25" (1/4 x 1/2). Side by side, the enclosing circle is
+**3.125"**, **2.625"** or **2.75"**. A 1/2"
 cable fits the crotch, whose largest circle is r = 1/(1/r1 + 1/r2 - 1/(r1+r2)) = 0.51".
 
 **Hand lengths** (each leg's length, in path order; sloped legs are the hypotenuse):
 
 | set | legs (in.) | developed | +2 ft loop | kit | leftover |
 |---|---|---|---|---|---|
-| `PR-A-RFG-HP1` | 4.125, 12.53, 35, 13.375, 12.4, 74.5, 5.22, 123.5, 6.80, 6.5, 28.125, 29.5, 99.5, 21, 6.5 = 478.6 | **39.88 ft** | 41.88 | 50 | 8.1 |
-| `PR-B-RFG-HP2-GYM` | 11.34, 16.56, 14.01, 5.48, 166.25, 14.5 = 228.1 | **19.01 ft** | 21.01 | 25 | 4.0 |
-| `PR-M-RFG-HP2-BED` | 6.72, 35.06, 182.28, 5.75, 92.75 = 322.6 | **26.88 ft** | 28.88 | 35 | 6.1 |
-| `PR-M-RFG-HP2-LIVING` | 2.09, 28.96, 18.85, 113.5, 5.82, 106.7, 5.82, 9.5 = 291.2 | **24.27 ft** | 26.27 | 35 | 8.7 |
-| `PR-M-RFG-HP3-STAIR` | 3, 20.35, 112.5, 139, 12.4, 68.5, 2.2 = 358.0 | **29.83 ft** | 31.83 | 35 | 5.2 |
+| `PR-A-RFG-HP1` | 4.125, 12.53, 35, 13.375, 12.4, 74.5, 5.22, 123.5, 6.80, 7.63, 24.125, 29.5, 99.5, 21, 6.5 = 475.7 | **39.64 ft** | 41.64 | 50 | 8.4 |
+| `PR-B-RFG-HP2-GYM` | 16.84, 16.56, 19.08, 171.75, 14.5 = 238.7 | **19.89 ft** | 21.89 | 25 | 3.1 |
+| `PR-M-RFG-HP2-BED` | 9.09, 35.06, 178.9, 8.13, 92.75 = 323.9 | **26.99 ft** | 28.99 | 35 | 6.0 |
+| `PR-M-RFG-HP2-LIVING` | 4.09, 28.96, 20.85, 113.5, 7.06, 98.7, 7.06, 9.5 = 289.7 | **24.14 ft** | 26.14 | 35 | 8.9 |
+| `PR-M-RFG-HP3-STAIR` | 4, 20.35, 112.5, 140, 12.4, 66.5, 2.97 = 358.7 | **29.89 ft** | 31.89 | 35 | 3.1 |
 
-- **HP1**: 39.88 of 164 ft. The rise is 251 - (-5) = 256" = 21.3 ft, unit below, against 49.
-  Charge: (39.88 - 31) x 0.323 = **2.87 oz**. The route goes west off the valves, up beside the
+- **HP1**: 39.64 of 164 ft. The rise is 251 - (-5) = 256" = 21.3 ft, unit below, against 49.
+  Charge: (39.64 - 31) x 0.323 = **2.79 oz**. The route goes west off the valves, up beside the
   cabinet's west end, and east above it. It enters `W-M-N1`'s 304-320 bay at 2'-6"
   (`AO-M-RFG-HP1`) and rises on the cavity's outer half (y 429.1) past the kitchen backing,
   at x 25'-7 7/8": west of `ED-M-LIVING-KET1`'s box (x 311-315), which fills the bay's depth.
   It offsets to y 427.6 through the main top plates, clearing `FS-S-EAST`'s rim, and goes up
   through the second floor into `FS-ATTIC`'s north bay. It comes up through the deck 4" off
-  the wall and crosses over the air handler to drop onto its front ports. Exterior leg ~5.7 ft.
-- **HP2**: 70.16 ft over three ports, of 263. Every port is far inside 82 ft and inside the
+  the wall, rises on a 4" westward diagonal (room for the 3.94" bend) and crosses over the air
+  handler to drop onto its front ports. Exterior leg ~5.7 ft.
+- **HP2**: 71.03 ft over three ports, of 263. Every port is far inside 82 ft and inside the
   131 ft precharge, so no charge is added. The three sets leave the valves 3" apart in height
   (ports A/B/C; D is spare on the four-port unit) and turn north side by side: LIVING at
-  x 31'-6 1/4", BED at 31'-10 7/8", GYM at 32'-3 1/2" (4 5/8" centres, 2" clear), so none
-  crosses another. **Re-stacked 2026-11-20**: GYM used to bore the W-M-S2 starter girt
-  (z -11.19..-7.69), leaving under 1" of the 3.5" face, with its rim hole 3/16" over the A35Z
-  at x 390. Now all three cross the wall in the 7.69" gap between the starter girt and the
-  0..3.5 course (bundle centre at the girt: LIVING -4.00, BED -4.78, GYM -5.08; the gap
-  holds centres -6.38..-1.31), so no girt is cut. Each crosses `FS-M-EAST`'s LSL rim in its
-  own TJ-8000 hole (centre -4.00 / -4.10 / -4.85, inside the rim's centred 7.92" circle),
-  x 377-389: off the window's king/jack packs (x 366.8-369, 399-402) and 3.5"+ above the
-  rim-to-sill A35Zs (tops at -9.62). Outside they stand above the base trim (top -9.81).
-  - GYM rises 4 3/4" on its way to the wall, crosses at -5.25..-4.75, drops to -7 in the
-    bay, then goes west at y=9" to the gym's SW corner and drops 14 1/2" in the 4" gap
-    between the head and the south wall, ending 6.5" off the ports.
+  x 31'-8 1/4", BED at 32'-1 1/4", GYM at 32'-9", so none crosses another. **Re-stacked
+  2026-11-20**: GYM used to bore the W-M-S2 starter girt (z -11.19..-7.69), leaving under 1"
+  of its 3.5" face, with its rim hole 3/16" over the A35Z at x 390. Now all three cross the
+  wall in the 7.69" gap between the starter girt and the 0..3.5 course (bundle centre at the
+  girt plane y -5.25: LIVING -4.00, BED -4.78, GYM -5.69; the gap holds centres -6.38..-1.31),
+  so no girt is cut. Each crosses `FS-M-EAST`'s LSL rim in its own TJ-8000 hole (centres
+  -4.00 / -4.10 / -6.27, inside the rim's centred 7.92" circle, which holds -8.58..-3.29). The
+  holes sit at x 380-393: off the window's king/jack packs (x 366.8-369, 399-402); LIVING and
+  BED clear the rim-to-sill A35Zs in plan, and GYM stands between the ties at 390 and 395
+  (1" clear of each), all above the ties' tops at -9.62. Outside they clear the base trim
+  (top -9.81).
+  - GYM rises 4 3/4" on its way to the wall, then falls 1 3/4" over 19" through it to -7 at
+    y=9" (the 3.94" bend needs that whole leg; the valves sit below the hole, so Gree's
+    U-loop rule does not apply). It goes west to the gym's SW corner and drops 14 1/2" in the
+    4" gap between the head and the south wall, ending 6.5" off the ports.
   - BED climbs on one straight leg from its valve (-7) to -3.25 at y=9", over GYM, crosses
-    the x=18' bearing (two blocking bores) into `FS-M-WEST` and rises in `W-M-S1`'s 194-207
-    bay, east of `WIN-M-BED-S2`, to 89 1/2", under the mounting plate.
+    the x=18' bearing (two blocking bores) into `FS-M-WEST`, cuts a 45° corner to
+    `W-M-S1`'s 194-207 bay, east of `WIN-M-BED-S2`, and rises to 89 1/2", under the plate.
   - LIVING runs level at -4 to y=3.1", west to `W-M-S2`'s 352-367 bay, rises into
-    `FS-S-EAST`'s south bay, runs west and drops through the plates onto `D-M-PORCH`'s
-    header to 100".
-- **HP3**: 29.83 ft, of which ~23 ft is outside in cover. It enters `W-M-N2`'s 128-144 bay
-  under the head's plate and rises in the cavity. It exits at 8'-6 1/2" (`AO-M-RFG-HP3`,
-  between the 8' girt and the plates, above `ST-BW-ENTRY`), runs west above the entry door
-  and canopy joint, and drops at the NW corner to the west-end valves. Limits unread: UNKNOWN.
+    `FS-S-EAST`'s south bay on a 4" westward diagonal, runs west and comes down the same way
+    through the plates onto `D-M-PORCH`'s header to 100".
+- **HP3**: 29.89 ft, of 131; (29.89 - 25) x 0.2 = **0.98 oz** added. ~23 ft is outside in
+  cover. It enters `W-M-N2`'s 128-144 bay under the head's plate and rises in the cavity.
+  It exits at 8'-6 1/2" (`AO-M-RFG-HP3`, between the 8' girt and the plates, above
+  `ST-BW-ENTRY`), runs west above the entry door and canopy joint, and drops at the NW corner to the west-end valves. The leg off the
+  valves is 4" (was 3") and the head end drops 2" into its jog, both for the 3.94" bend.
 
 **Head ports are read left-rear** (`library/hvac_refrigerant.py`). The bed head's left end is
 the one clear of its window, and wall heads pipe either side. A head end stops within 12"

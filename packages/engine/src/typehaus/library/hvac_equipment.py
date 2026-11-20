@@ -361,7 +361,7 @@ GREE_SAPPHIRE_9 = EquipmentType(
     source=("Gree SAP09HP230V1R32AH, Sapphire R32 9k wall-mounted indoor unit (Sapphire R32 9 MBH "
             "230 V submittal, AHRI 214802444): 38 3/16 x 13 21/32 x 10 1/8 in (W x H x D), 33.1 "
             "lb. VFD inverter (soft start). Heating is rated on the outdoor unit."),
-    ports=head_refrigerant_ports(38.1875, 10.125, 0.25, 0.375),
+    ports=head_refrigerant_ports(38.1875, 10.125, 0.25, 0.5),
 )
 
 GREE_SAPPHIRE_9_OD = EquipmentType(
@@ -433,7 +433,7 @@ GREE_SAPPHIRE_9_OD = EquipmentType(
             " 1.64 is used."),
     refrigerant_limits=SAPPHIRE9_LIMITS,
     ports=(ServicePort(tag="power", service=Service.POWER_240, position=(ft(0), ft(0), ft(0))),
-           *outdoor_refrigerant_ports(34.375, 14.796875, 0.25, 0.375)),
+           *outdoor_refrigerant_ports(34.375, 14.796875, 0.25, 0.5)),
 )
 
 HEAT_PUMP_TYPES = (

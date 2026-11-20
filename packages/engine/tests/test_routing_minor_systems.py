@@ -113,13 +113,12 @@ def test_radon_and_sump_have_trades_and_only_gas_goes_unassigned() -> None:
                       "PR-refrigerant": "supply", "PR-gas": ""}
 
 
-def test_a_lineset_bends_at_four_od_and_pays_no_exterior_wall_freeze_charge() -> None:
-    """Soft ACR coil bends (4 x the 3/4" vapour OD = 3"), and refrigerant cannot freeze."""
+def test_a_lineset_bends_at_gree_10_cm_and_pays_no_exterior_wall_freeze_charge() -> None:
+    """Soft ACR bends on Gree's flat 10 cm radius (over 4 x the 3/4" OD), and cannot freeze."""
     from typehaus.routing.cost import RouteCost
     from typehaus.routing.trades.pipe import bend_radius_m
 
-    assert bend_radius_m(inch(0.75).meters, "refrigerant", "copper_acr") == pytest.approx(
-        inch(3).meters)
+    assert bend_radius_m(inch(0.75).meters, "refrigerant", "copper_acr") == pytest.approx(0.1)
     assert RouteCost().for_run("pipe", "refrigerant").exterior_wall_per_ft == 0.0
     assert RouteCost().for_run("pipe", "water_cold").exterior_wall_per_ft > 0.0
 
