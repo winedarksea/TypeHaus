@@ -2,8 +2,9 @@
 
 ``mep.lineset_limits``: per set, length against ``max_per_port`` / ``min_per_port`` and the
 rise against ``max_rise_od_above`` / ``below``; per outdoor unit, the sum against
-``max_total``; and a kit long enough to buy. The table is the manufacturer's (IRC M1401.1),
-a prescriptive read. An unread figure is UNKNOWN, never a default.
+``max_total``; and a kit long enough to buy. The table is the manufacturer's, a prescriptive
+read: Minnesota adopts the IMC for mechanical (Minn. R. 1346.0050), whose 304.1 binds it.
+An unread figure is UNKNOWN, never a default.
 
 ``mep.lineset_reach``: each end lands on its port pair within the standard's tolerance, and
 every head paired by ``outdoor_ref`` has a set. An end within tolerance of a schematic port
@@ -19,7 +20,7 @@ from typehaus.resolve.linesets import lineset_standard
 
 _LIMITS = "mep.lineset_limits"
 _REACH = "mep.lineset_reach"
-_CODE = "IRC M1401.1 (manufacturer's instructions)"
+_CODE = "MN Mechanical Code (Minn. R. 1346.0050, IMC 2018) 304.1 (manufacturer's instructions)"
 _FT = 0.3048
 
 
@@ -38,7 +39,7 @@ def _limits_of(ctx: CheckContext, outdoor_tag: str | None):
 def lineset_limits(ctx: CheckContext) -> list[Finding]:
     linesets = getattr(ctx.model, "linesets", [])
     if not linesets:
-        return [not_applicable(_LIMITS, "no refrigerant PipeRun in the model")]
+        return [not_applicable(_LIMITS, "no refrigerant PipeRun in the model", (), _CODE)]
     standard = lineset_standard(ctx.plan)
     out: list[Finding] = []
     by_unit: dict[str, list] = {}
@@ -69,10 +70,11 @@ def lineset_limits(ctx: CheckContext) -> list[Finding]:
                 graded.append(f"{label} {_ft(value)} of {_ft(limit.meters)}")
         if item.kit_m is None and standard is None:
             out.append(unknown(_LIMITS, f"{item.tag}: no LinesetStandard names stock kits",
-                               tags))
+                               tags, _CODE))
         elif item.kit_m is None:
             out.append(failed(_LIMITS, f"{item.tag}: ordered {_ft(item.ordered_m)} is longer "
-                                       "than the LinesetStandard's longest stock kit", tags))
+                                       "than the LinesetStandard's longest stock kit",
+                              tags, _CODE))
         if graded:
             out.append(passed(_LIMITS, f"{item.tag}: " + "; ".join(graded), tags, _CODE))
         if unread:
@@ -101,7 +103,8 @@ def lineset_reach(ctx: CheckContext) -> list[Finding]:
              if el.element_kind == "Equipment" and getattr(el, "outdoor_ref", None)]
     linesets = getattr(ctx.model, "linesets", [])
     if not heads and not linesets:
-        return [not_applicable(_REACH, "no indoor unit is paired with an outdoor unit")]
+        return [not_applicable(_REACH, "no indoor unit is paired with an outdoor unit",
+                               (), _CODE)]
     standard = lineset_standard(ctx.plan)
     tolerance = standard.port_tolerance.meters if standard else None
     out: list[Finding] = []
@@ -114,7 +117,7 @@ def lineset_reach(ctx: CheckContext) -> list[Finding]:
         tags = tuple(t for t in (item.tag, item.head_tag, item.outdoor_tag) if t)
         if tolerance is None:
             out.append(unknown(_REACH, f"{item.tag}: no LinesetStandard states a port "
-                                       "tolerance", tags))
+                                       "tolerance", tags, _CODE))
             continue
         missing = [name for name, offset in (("head", item.head_offset_m),
                                              ("outdoor unit", item.outdoor_offset_m))
@@ -122,7 +125,8 @@ def lineset_reach(ctx: CheckContext) -> list[Finding]:
         if missing:
             out.append(failed(_REACH, f"{item.tag}: no liquid/vapor port pair declared on its "
                                       f"{' or '.join(missing)}"
-                                      f"{' port ' + item.port if item.port else ''}", tags))
+                                      f"{' port ' + item.port if item.port else ''}",
+                              tags, _CODE))
             continue
         far = [f"{name} end {offset / 0.0254:.1f}\" off its ports"
                for name, offset in (("head", item.head_offset_m),
@@ -133,7 +137,7 @@ def lineset_reach(ctx: CheckContext) -> list[Finding]:
         elif not item.ports_exact:
             out.append(unknown(_REACH, f"{item.tag}: ends within {tolerance / 0.0254:.0f}\" of "
                                        "port stations that are schematic; confirm them on the "
-                                       "delivered units", tags))
+                                       "delivered units", tags, _CODE))
         else:
             out.append(passed(_REACH, f"{item.tag}: both ends on their ports", tags, _CODE))
     return out

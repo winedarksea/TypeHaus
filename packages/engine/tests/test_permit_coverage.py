@@ -162,7 +162,11 @@ def test_every_code_finding_carries_a_citation(profile, starter_dir) -> None:
 # RAISED 28 -> 29 on 2026-11-12: "Condensate overflow protection" (IMC 307.2.3), staged until
 # catlin authored EQ-S-HP1-AH's pan and float switch; LOWERED 29 -> 28 the same day when it
 # flipped to blocking.
-MAX_NON_BLOCKING_ITEMS = {"mn-2020": 28}
+#
+# RAISED 28 -> 29 on 2026-11-20: "Refrigerant linesets" (IMC 304.1, decision #139), staged
+# while catlin's HP3 piping table is unread, the minimum lengths unpublished in what is read,
+# and every port station schematic. Flip it when those read.
+MAX_NON_BLOCKING_ITEMS = {"mn-2020": 29}
 
 # The engineered lines are counted separately, and the split is not bookkeeping — the two
 # lanes have different exit conditions. A staging item leaves its lane when *this engine*

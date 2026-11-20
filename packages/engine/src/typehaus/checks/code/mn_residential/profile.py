@@ -391,6 +391,11 @@ MN_2020 = JurisdictionProfile(
         PermitItemSpec("Condensate overflow protection", ("mep.condensate_overflow",),
                        ("MN Mechanical Code (Minn. R. 1346.0050, IMC 2018) 307.2.3",),
                        blocking=True),
+        # Linesets against the outdoor unit's published piping table (decision #139). Not
+        # blocking while catlin's tables hold unread rows and its port stations are schematic.
+        PermitItemSpec("Refrigerant linesets", ("mep.lineset_limits", "mep.lineset_reach"),
+                       ("MN Mechanical Code (Minn. R. 1346.0050, IMC 2018) 304.1",),
+                       blocking=False),
         # ** THE CITATION WAS IRC P2801.6 / P2804.6.1 AND MINNESOTA DELETED BOTH. ** Same
         # reason as the two below: 1309.0010 subp. 3.D strikes IRC ch. 25-33. UPC 608.5 is
         # the relief discharge and 507.5 the pan (Minn. R. 4714.0507 deletes 507.6-507.11
