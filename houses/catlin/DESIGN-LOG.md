@@ -1,3 +1,14 @@
+## DU-M-ERV-R-LIVING moves 3 1/8" south so a squash block stands under W-S-C2B's jack (2026-11-19, owner)
+
+- **Why.** W-S-C2B is BEARING and its header-0 carries RF-HOUSE and FS-ATTIC; the jack at
+  y=152 1/8" stood over the 5" pass-through the 4" duct (y=152") used in FS-S-WEST's and
+  FS-S-EAST's bearing boxes, on a flat 2x6 rail. A point load needs a cheek or squash block
+  (IRC R502.1.2 I-joist maker's rules, R301.1 load path); `structural.bearing_block_seat` now FAILs it.
+- **Taken.** The branch runs at y=148 7/8" (12'-4 7/8"), tee on BED's lane and `REG-M-SUP1`
+  following. The box's own cheek then lands at 152 1/8", centred under the jack, on both
+  decks; the duct clears it by 1/2". 20.7 ft of duct, turns and the drop unchanged.
+- **Rejected.** Moving the opening: W-S-C2B has under 1" of wall past its kings.
+
 ## The garage stem board runs down to the falling slab (2026-11-19, owner)
 
 - **Why.** `SL-G-FLOOR` falls 1/8"/ft to the door (decision #138), rising up to 2.9" at the

@@ -1192,7 +1192,7 @@ flow + its own leg + its own terminal (at the register's own flow) + the plenum.
 |---|---|---|---|
 | `DU-B-ERV-R-SAUNA-SUP` | 49.5 ft, 9 elbows | 5.3 ft, 3 | tee off GYM's y=13'-4" leg at x=11.2', hatch over the upper bench (owner accepts leaving Harvia's "inlet near heater") |
 | `DU-B-ERV-R-BENCH` | 25.1 ft, 4 | 1.2 ft, 1 | side take-off off SAUNA-EXH's x=1'-7" leg at y=8'-6"; damper in-line since §10.24 |
-| `DU-M-ERV-R-LIVING` | 46.6 ft, 7 | 20.8 ft, 5 | tee off BED's 83 3/4" lane at y=12'-8"; the 42 1/4" lane is free |
+| `DU-M-ERV-R-LIVING` | 46.6 ft, 7 | 20.8 ft, 5 | tee off BED's 83 3/4" lane at y=12'-4 7/8" (was 12'-8", 2026-11-19); the 42 1/4" lane is free |
 | `DU-M-ERV-R-BED1` | 25.8 ft, 0 | 11.9 ft, 0 | tee off BED2's crossing at (16.15', 16'-8"); grille at (28'-1", 16'-8") |
 | `DU-M-ERV-R-PLANT` | 24.9 ft round, 1 | 10.3 ft 3 1/4x8 rect, 1 | trunk end, up W-S-PS1 to a high sidewall at x=3'-6 1/2", 8'-3" to centre |
 | `DU-M-ERV-EXH-TRUNK` | 25.03 ft | 23.36 ft | dead end trimmed to PS1's axis |

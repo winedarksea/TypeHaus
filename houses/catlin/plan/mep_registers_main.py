@@ -38,7 +38,7 @@ from .erv_balance import (
 # placed by position and still carries the LIVING room=.
 REGISTERS_MAIN = [
     Register(uid="CMRV01AAAA", tag="REG-M-SUP1", kind=DuctSystem.SUPPLY, room="RM-M-LIVING",
-            position=pt(ft(27), ft(12, 8)), duct_ref="DU-M-ERV-R-LIVING",
+            position=pt(ft(27), inch(148.875)), duct_ref="DU-M-ERV-R-LIVING",
             type_ref="REG-T-ERV-VALVE-SUP", design_cfm=REG_M_SUP1,
             mount=Mount(kind=MountKind.CEILING)),
     # No second living-room outlet: one ERV outlet is right for an open-plan room at the

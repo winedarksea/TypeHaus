@@ -131,6 +131,9 @@ _KITCH_Z = inch(-9.125)
 #: A level end over a ceiling valve: 6" over a 107" ceiling's collar top, a stock 90 down onto
 #: it (`resolve/terminal_drops.py`). LIVING and KITCH climb to it past their last crossing.
 _DROP_Z = inch(-4)
+#: DU-M-ERV-R-LIVING's line in the 12 1/2" truss bay: its north face + 1/2" clears a cheek under
+#: W-S-C2B's jack.
+_LIVING_Y = inch(148.875)
 #: The 6x4 neck's centreline where it crosses joist-0-026-1, the chase trimmers and the
 #: 32' truss: 7.9" over the chord, the one height all four pass a 6x4 at x 57 1/8"..58 5/8".
 _NECK_Z = inch(-3.975)
@@ -189,13 +192,15 @@ DUCTS_ERV_LEVEL2 = [
             material="galvanized", design_cfm=DU_M_ERV_R_STUDY, adjustable_elbows=(6, 9)),
     DuctRun(uid="MRH0QZT6NN", tag="DU-M-ERV-R-LIVING", system=DuctSystem.SUPPLY,
             # A BRANCH OF BED since 2026-11-11 (owner): a 4x4 tee on BED's x=83 3/4" pocket lane
-            # at the 12'-8" bay, east in that bay, down 4" to the low tier under PR-M-CW-HYD-DIST's
-            # x=96.5" leg and back up to _DROP_Z for the valve. It had its own collar, the 42 1/4"
+            # at the 12'-4 7/8" line, east in that bay, down 4" to the low tier under
+            # PR-M-CW-HYD-DIST's x=96.5" leg and back up to _DROP_Z for the valve. It had its own collar, the 42 1/4"
             # lane south and a jog (46.6 ft, five turns); this is 20.7 ft. `collar-living` is
             # gone from EQ-T-ERV-PLENUM-M-SUP: the shop cuts two collars, not three.
-            path=(pt(inch(83.75), ft(12, 8)), pt(inch(88), ft(12, 8)), pt(inch(94), ft(12, 8)),
-                  pt(inch(99.5), ft(12, 8)), pt(inch(103.875), ft(12, 8)),
-                  pt(ft(27), ft(12, 8))),
+            # 3 1/8" south of 12'-8" (2026-11-19, owner): FS-S-WEST/EAST's boxes under W-S-C2B's
+            # header jack (152 1/8") would have the duct where the squash block stands.
+            path=(pt(inch(83.75), _LIVING_Y), pt(inch(88), _LIVING_Y), pt(inch(94), _LIVING_Y),
+                  pt(inch(99.5), _LIVING_Y), pt(inch(103.875), _LIVING_Y),
+                  pt(ft(27), _LIVING_Y)),
             elevations=(_UP_Z, _UP_Z, _BAY_Z, _BAY_Z, _DROP_Z, _DROP_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=DU_M_ERV_R_LIVING),
