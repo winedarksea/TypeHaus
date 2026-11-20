@@ -311,13 +311,18 @@ _ELECTRODE = {
     "W-B-W2": ReinforcementSpec(bars=(BarSpec(**_UFER_BAR),)),
 }
 
+_CAST_WITH_WALL = {"W-B-S3"}
+
 HOUSE_FOOTINGS = [
     Footing(uid=f"CF{i:03d}AAAAA", tag=f"FT-{t[2:]}", under=t, reinforcement=_ELECTRODE.get(t),
             width=_STRIP_WIDTH,
             depth=_GARDEN_END_DEPTH if t in _GARDEN_END_TRIMMED else _STRIP_DEPTH,
             center_on=_center_on(t), offset=_toe_offset(t),
             start_extension=_START_EXTENSION.get(t), end_extension=_END_EXTENSION.get(t),
-            assembly="FOOTING_EXPOSED_25" if t in _FROST_FORMED else "FOOTING_25")
+            assembly="FOOTING_EXPOSED_25" if t in _FROST_FORMED else "FOOTING_25",
+            # The 7 1/4" curb is cast with its footing so the porch STHD14s' 14" embedment
+            # crosses no cold joint (tasks.toml, the walls visit).
+            cast_with_wall=t in _CAST_WITH_WALL)
     for i, t in _HOUSE_WALL_TAGS
 ] + [
     # The outer 56" of S1 / S4 (x 0..56, x 376..432): unreached by the court, ordinary bed.

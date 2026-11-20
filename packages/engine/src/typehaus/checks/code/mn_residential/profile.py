@@ -688,6 +688,11 @@ MN_2020 = JurisdictionProfile(
                         "structural.braced_wall_panels",
                         "structural.braced_wall_panel_rules"),
                        ("IRC R602.10", "IRC Table R602.10.3(1)", "IRC Table R602.10.5")),
+        # Every cast-in STHD against the ESR-2920 Table 1 row it is installed at: stem,
+        # embedment, end distance, clear span, the No. 4 bar, spacing (added 2026-11-20).
+        PermitItemSpec("Cast-in strap hold-downs (ESR-2920)",
+                       ("structural.strap_hold_down_embedment",),
+                       ("IRC R104.11", "ICC-ES ESR-2920 Table 1")),
         # `structural.lateral_racking` reaches it when a freestanding deck's lateral system
         # is a cast column FIXED at its base rather than knee braces — R507 grades neither,
         # and a braceless deck at storey height is exactly the thing a reviewer should be

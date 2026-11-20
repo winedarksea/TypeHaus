@@ -49,6 +49,7 @@ class Station:
     axis: str
     role: str = ROLE_MUDSILL_ANCHOR
     outward_xy: tuple | None = None
+    framed_tag: str | None = None
 
 
 def sill_plate_returns(model: ResolvedModel, category: str) -> list:
@@ -377,8 +378,23 @@ def strap_holdown_stations(model: ResolvedModel, rules: SillPlateAnchorRules,
         xy, outward = placed if placed is not None else ((point[0], point[1]), None)
         for _ in range(rules.holdowns_per_run_end):
             found.append(Station(run_tag=ret.tag, storey=ret.storey, point_m=xy,
-                                 z_m=ret.z0_m, axis=end_axis, outward_xy=outward))
+                                 z_m=ret.z0_m, axis=end_axis, outward_xy=outward,
+                                 framed_tag=ret.element_tags[1]
+                                 if len(ret.element_tags) > 1 else None))
     return found
+
+
+def strap_holdown_model(model: ResolvedModel, station: Station) -> str:
+    """A derived STHD's size: the STHD14 the engine draws, the RJ where its strap crosses
+    more unnailed span than the standard length keeps full nailing over (ESR-2920 Table 1)."""
+    from typehaus.hardware.esr2920 import max_clear_span_in
+    from typehaus.resolve.connector_geometry.embedded_straps import first_stud_z_m
+
+    wall = model.wall(station.framed_tag) if station.framed_tag else None
+    first = first_stud_z_m(wall, station.point_m) if wall is not None else None
+    if first is not None and (first - station.z_m) / M_PER_IN > max_clear_span_in("STHD14"):
+        return "STHD14RJ"
+    return "STHD14"
 
 
 def tie_plate_walls(model: ResolvedModel) -> list:

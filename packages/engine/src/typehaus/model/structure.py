@@ -205,6 +205,10 @@ class Footing(Element):
     #: than filling in — R403.4.1 is a specification and an unspecified stone meets none of
     #: it. Ignored on a concrete footing.
     stone: CrushedStoneSpec | None = None
+    #: The wall it carries is placed in the SAME pour: no cold joint at the footing top. A
+    #: claim the house makes and the crew owes (an STHD's embedment may then run on into the
+    #: footing, C-C-2026 p. 66). ``False``: a cold joint, as every stem is formed.
+    cast_with_wall: bool = False
     #: The steel this pour actually contains. Unset means this model does not say — which
     #: for a footing is the ordinary case and a legal one: ACI 318-19 §14.1.4 permits PLAIN
     #: concrete in a footing (unlike §14.1.5 for a column), so a missing spec grades as plain

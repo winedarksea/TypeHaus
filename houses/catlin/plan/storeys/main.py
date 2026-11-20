@@ -2330,28 +2330,30 @@ PANELING = [
 # foundation corners, not at mid-run openings, so these fill the gap: embedded strap-tie
 # holdowns, one per jamb, cast into the foundation and nailed up onto the framing above.
 #
-# Geometry: 3" outboard of each RO edge is the king stud's outer face, where the strap
-# lies clear of the pack it restrains. `_JAMB_Y_*` centres them 3 1/4" into the 5 1/2"
-# stud layer (measured from EXT_2X6's sheathing-ext plane); the dialect allows no
-# arithmetic, so each offset is written as the number it lands on. Elevation is
-# sill-plate mid-height.
+# Geometry: 3" outboard of each RO edge is the king stud's outer face. Each STHD's leaf is
+# on the stud band's inside face (W-M-N3 y=35'-6", W-B-S3-FR y=6"), its embedment line on
+# the pour top, its spoon across the core toward the outside (ESR-2920 Figure 1;
+# structural.strap_hold_down_embedment). The entry pair is the RJ: the strap crosses the
+# main floor band, 15 11/16" of clear span. The dialect allows no arithmetic, so each
+# value is written as the number it lands on.
 #
 # D-G-SERVICE is deliberately excluded: it's in the garage's ICF stem, which needs a
 # different embedded part, not a foundation-wall strap.
-_JAMB_Y_NORTH = ft(35, 8.75)
+_JAMB_Y_NORTH = ft(35, 6)
 _JAMB_Y_SOUTH = inch(3.25)
-_JAMB_Z = inch(1)
+_CURB_Y = inch(6)
+_JAMB_Z = inch(-13.4375)
 _BAND_Z = inch(-6.75)
-_CURB_Z = inch(-101.4375)
+_CURB_Z = inch(-102.1875)
 CONNECTORS = [
     Connector(uid="RYMM0XWNBM", tag="CN-M-HD-ENTRY-E", kind=ConnectorKind.HOLD_DOWN,
               position=pt(ft(9, 9), _JAMB_Y_NORTH), elevation=_JAMB_Z,
-              size="STHD", connects=("W-M-N3", "W-B-N3")),
+              size="STHD14RJ", connects=("W-M-N3", "W-B-N3")),
     # 3" outboard of the 38 3/8" RO's west edge (x=6'-3 5/8"): at 6'-3" it stood 7/8" inside
     # the RO, under the sill (2026-11-18).
     Connector(uid="V5HNZ3S6Q1", tag="CN-M-HD-ENTRY-W", kind=ConnectorKind.HOLD_DOWN,
               position=pt(inch(72.625), _JAMB_Y_NORTH), elevation=_JAMB_Z,
-              size="STHD", connects=("W-M-N3", "W-B-N3")),
+              size="STHD14RJ", connects=("W-M-N3", "W-B-N3")),
     # The porch door stands on W-B-S3-FR, a framed wall, not on concrete: W-B-S3 is a
     # 7 1/4" curb at -102 3/16". So each jamb is two parts — an MSTC52 across the floor
     # band into W-B-S3-FR's jamb studs, and an STHD14 cast in the curb under them.
@@ -2366,10 +2368,10 @@ CONNECTORS = [
               position=pt(inch(293.65625), _JAMB_Y_SOUTH), elevation=_BAND_Z,
               size="MSTC52", connects=("W-M-S2", "W-B-S3-FR")),
     Connector(uid="0NMTQ0A5A4", tag="CN-B-HD-PORCH-W", kind=ConnectorKind.HOLD_DOWN,
-              position=pt(inch(218.34375), _JAMB_Y_SOUTH), elevation=_CURB_Z,
+              position=pt(inch(218.34375), _CURB_Y), elevation=_CURB_Z,
               size="STHD14", connects=("W-B-S3-FR", "W-B-S3")),
     Connector(uid="V3TS8F7C9A", tag="CN-B-HD-PORCH-E", kind=ConnectorKind.HOLD_DOWN,
-              position=pt(inch(293.65625), _JAMB_Y_SOUTH), elevation=_CURB_Z,
+              position=pt(inch(293.65625), _CURB_Y), elevation=_CURB_Z,
               size="STHD14", connects=("W-B-S3-FR", "W-B-S3")),
 ]
 

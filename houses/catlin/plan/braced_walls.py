@@ -44,11 +44,12 @@
 # fallback the garage would have to adopt.
 from typehaus import BracedWallPanel, Connector, ConnectorKind, ft, inch, pt
 
-# The hold-down stations: 3 1/4" inboard of the wall axis, the `CN-M-HD-ENTRY-*` convention
-# (plan/storeys/main.py) — the king stud's face at the end of the panel nearest the corner.
-_NE_INBOARD = ft(35, 8.75)          # 36'-0" less 3 1/4"
+# The hold-down stations: the leaf on the stud band's inside face at the end of the panel
+# nearest the corner, the embedment line on the basement wall top (the `CN-M-HD-ENTRY-*`
+# convention, plan/storeys/main.py; ESR-2920 Figure 1).
+_NE_INBOARD = ft(35, 6)             # the main walls' stud inside face
 _NE_PANEL_END = ft(33, 5)           # where both main NE panels stop
-_MAIN_HD_Z = inch(1)                # sill-plate mid-height, project-frame absolute
+_MAIN_HD_Z = inch(-13.4375)         # basement wall top, project-frame absolute
 
 # ---------------------------------------------------------------------------------------
 # MAIN — first story of two. Table R602.10.3(1) at <=115 mph / 40' spacing / CS-WSP reads
@@ -250,7 +251,7 @@ GARAGE_BRACED_WALLS = [
 # past W-G-S's, so its 3" stays on the core inside the corner (the derived-corner rule).
 GARAGE_BRACED_CONNECTORS = [
     Connector(uid="EXWYG5FPB1", tag="CN-G-BWHD-SW", kind=ConnectorKind.HOLD_DOWN,
-              position=pt(ft(6, 5.9375), ft(43, 10.0625)), elevation=inch(-11.25),
+              position=pt(ft(6, 5.9375), ft(43, 10.0625)), elevation=inch(-12),
               size="STHD14", connects=("W-G-W", "W-GF-W")),
     # Canopy shear chord: nail directly to the GARAGE face of the two full-height kings.
     # The strap face is y=524 9/16in; its embedment line is the actual stem top, z=-12in.

@@ -30,7 +30,6 @@ from typehaus.hardware.config import (
 from typehaus.hardware.config import FT_TO_M
 from typehaus.joints.sills import anchored_sill_returns, pinned_partition_returns
 from typehaus.model.enums import ConnectorKind
-from typehaus.model.structure import Connector
 from typehaus.quantities import M_PER_IN, inch
 from typehaus.resolve.model import (
     FramedMember,
@@ -514,14 +513,11 @@ def test_exterior_door_jambs_are_strapped_to_the_foundation(catlin_model) -> Non
     own ``modeled connector`` row rather than being folded into the derived count — same
     part number, different rule, and the split is what keeps "why 40?" answerable.
     """
-    jamb_holdowns = [element
-                     for storey in catlin_model.plan.storeys
-                     for element in catlin_model.plan.storey_elements(storey.tag)
-                     if isinstance(element, Connector)
-                     and element.kind is ConnectorKind.HOLD_DOWN
-                     and element.size == "STHD"]
-    assert {element.tag for element in jamb_holdowns} == {
-        "CN-M-HD-ENTRY-E", "CN-M-HD-ENTRY-W"}
+    jamb_holdowns = [catlin_model.plan.by_tag(tag)
+                     for tag in ("CN-M-HD-ENTRY-E", "CN-M-HD-ENTRY-W")]
+    # The RJ: the strap crosses the main floor band (ESR-2920 Table 1).
+    assert all(element.kind is ConnectorKind.HOLD_DOWN and element.size == "STHD14RJ"
+               for element in jamb_holdowns)
     # The porch door stands on W-B-S3-FR, a framed wall on a curb: a strap across the
     # floor band into its studs, and an STHD14 cast into the curb under them. Never an
     # embedded part into wood.
@@ -542,10 +538,13 @@ def test_exterior_door_jambs_are_strapped_to_the_foundation(catlin_model) -> Non
 
     rows = [row for row in hardware_takeoff(catlin_model)
             if row["role"] == "embedded_strap_holdown"]
-    modeled = next(row for row in rows if row["scope"] == "modeled connector")
-    derived = next(row for row in rows if row["scope"] == "sill plate on concrete")
-    assert modeled["count"] == len(jamb_holdowns)
-    assert modeled["part_number"] == derived["part_number"] == "STHD"
+    assert any(row["scope"] == "modeled connector" and row["part_number"] == "STHD14RJ"
+               for row in rows)
+    # Derived corners are sized: the garage strap nails straight up from its sill, the
+    # house's crosses the floor band and is the RJ.
+    derived = {row["part_number"]: row["count"] for row in rows
+               if row["scope"] == "sill plate on concrete"}
+    assert derived == {"STHD14": 3, "STHD14RJ": 3}
 
 
 # --- knee braces, ties, straps, catalog ----------------------------------------------

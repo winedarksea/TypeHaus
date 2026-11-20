@@ -347,6 +347,8 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
 # Adding a collection to ResolvedModel now forces a decision here — bill it, or say why not.
 _BOM_WAIVED_COLLECTIONS: dict[str, str] = {
     "clear_zones": "finite empty reservations; they contain no purchased material",
+    "embedded_straps": "where each placed STHD sits; the parts bill as connector rows and "
+                       "their No. 4 bars under rebar",
     "plan": "the authored source, not a resolved quantity",
     "junctions": "derived wall-meeting topology; the framing it implies bills as members",
     "conditions": "boundary-condition keys for transition matching — an index, not material",

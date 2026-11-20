@@ -11,6 +11,7 @@ import math
 from dataclasses import dataclass, replace
 
 from typehaus.hardware.connector_dimensions import LATERAL_TIE_PLATE_DIMENSIONS
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.connector_geometry.mesh import (
     box_mesh,
     combine_meshes,
@@ -248,7 +249,7 @@ def _lateral_tie_plate() -> GMesh:
 
 
 def _embedded_strap(part: str, trimmed_exposed_in: float | None = None,
-                    spoon_projection_in: float | None = None) -> GMesh:
+                    spoon_projection_in: float | None = None, jog_in: float = 0.0) -> GMesh:
     dimensions = EMBEDDED_STRAPS[part]
     if trimmed_exposed_in is not None and 0.0 < trimmed_exposed_in < dimensions.exposed_height_in:
         # Field-trimmed where the strap would pass its member's top (a deck sits there).
@@ -270,8 +271,13 @@ def _embedded_strap(part: str, trimmed_exposed_in: float | None = None,
                            (0.0, thickness * spoon_height / math.hypot(projection, spoon_height),
                             thickness * projection / math.hypot(projection, spoon_height)))
         return combine_meshes(vertical, spoon)
+    # Bent one full cycle (ESR-2920 §4.2): cast ``jog_in`` behind the leaf, flat over the
+    # pour top to it; the run comes off the strap's length.
+    jog = max(jog_in, 0.0)
     vertical = box_mesh((-half_width, -thickness, 0.0),
-                        (half_width, 0.0, dimensions.exposed_height_in))
+                        (half_width, 0.0, dimensions.exposed_height_in - jog))
+    leg = box_mesh((-half_width, -jog - thickness, 0.0), (half_width, 0.0, thickness)) \
+        if jog > 0.0 else None
     return_length = projection * SILHOUETTE.embedded_spoon_return_fraction
     shaft_end_y = projection - return_length
     normal_length = math.hypot(depth, shaft_end_y)
@@ -282,7 +288,10 @@ def _embedded_strap(part: str, trimmed_exposed_in: float | None = None,
                         thickness * shaft_end_y / normal_length))
     toe = box_mesh((-half_width, shaft_end_y, -depth),
                    (half_width, projection, -depth + thickness))
-    return combine_meshes(vertical, shaft, toe)
+    if leg is None:
+        return combine_meshes(vertical, shaft, toe)
+    cast_in = transform_mesh(combine_meshes(shaft, toe), origin_m=(0.0, -jog * M_PER_IN, 0.0))
+    return combine_meshes(vertical, leg, cast_in)
 
 
 def _mudsill_anchor(sill_height_in: float) -> GMesh:
@@ -390,7 +399,8 @@ def strap_part(part: str) -> str:
 def tie_mesh(part: str, *, member_width_in: float | None = None,
              member_depth_in: float | None = None, slope_radians: float = 0.0,
              strap_length_in: float | None = None,
-             spoon_projection_in: float | None = None) -> GMesh | None:
+             spoon_projection_in: float | None = None,
+             strap_jog_in: float = 0.0) -> GMesh | None:
     """Return stock-size tie geometry in metres, with inputs expressed in inches.
 
     Hurricane ties use plate-top zero; concrete straps use pour-top zero; flat
@@ -418,7 +428,7 @@ def tie_mesh(part: str, *, member_width_in: float | None = None,
     if normalized == "LTP4":
         return _lateral_tie_plate()
     if normalized in EMBEDDED_STRAPS:
-        return _embedded_strap(normalized, strap_length_in, spoon_projection_in)
+        return _embedded_strap(normalized, strap_length_in, spoon_projection_in, strap_jog_in)
     if normalized == "MASA":
         return _mudsill_anchor(member_depth_in if member_depth_in is not None
                               else SILHOUETTE.masa_default_sill_height_in)

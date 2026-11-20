@@ -40,6 +40,8 @@ from typehaus.joints.sills import (
     pinned_partition_returns,
     sill_anchor_role,
     strap_holdown_locations,
+    strap_holdown_model,
+    strap_holdown_stations,
 )
 from typehaus.model.enums import ConnectorKind
 from typehaus.model.structure import Connector, KneeBrace
@@ -143,16 +145,19 @@ def sill_gasket_rows(model: ResolvedModel) -> list[dict[str, object]]:
 
 def strap_holdown_rows(model: ResolvedModel, rules: SillPlateAnchorRules,
                        sill_category: str) -> list:
-    """Embedded strap holdowns at the exterior foundation corners."""
+    """Embedded strap holdowns at the exterior foundation corners, one row per derived size."""
     returns, locations = strap_holdown_locations(model, rules, sill_category)
     if not returns:
         return []
-    count = len(locations) * rules.holdowns_per_run_end
-    item = hardware_for_role(ROLE_EMBEDDED_STRAP_HOLDOWN)
+    by_size = Counter(strap_holdown_model(model, station)
+                      for station in strap_holdown_stations(model, rules, sill_category))
     return [hardware_row(
-        item, scope="sill plate on concrete", count=count, tags=_pours(returns),
+        hardware_by_model(size) or hardware_for_role(ROLE_EMBEDDED_STRAP_HOLDOWN),
+        scope="sill plate on concrete", count=count, tags=_pours(returns),
         basis=(f"{rules.holdowns_per_run_end} per exterior foundation corner; "
-               f"{len(locations)} corners over {len(returns)} exterior sill runs"))]
+               f"{len(locations)} corners over {len(returns)} exterior sill runs; the RJ "
+               f"where the strap crosses a floor band (ESR-2920 Table 1)"))
+        for size, count in sorted(by_size.items())]
 
 
 # A wall whose every module stud gave way to a jamb pack or a within-wall post (catlin's

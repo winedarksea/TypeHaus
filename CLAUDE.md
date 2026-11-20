@@ -133,6 +133,12 @@ a release or for exhaustive local verification.
   outdoor type's `RefrigerantLimits` into `ResolvedModel.linesets` (length, rise, cover LF, kit,
   field charge, port offsets). Graded by `mep.lineset_limits` / `mep.lineset_reach`, billed in
   `[linesets]` (drive allowances off `kit_length_ft`; no `[pipe_runs]` refrigerant price).
+- **A cast-in STHD is graded as placed against ESR-2920 Table 1** (decision #141):
+  `ResolvedModel.embedded_straps` records each one (`resolve/connector_geometry/embedded_straps.py`).
+  Where the spoon cannot reach from the framing face, the strap is cast at the core face and bent
+  one cycle (§4.2). `resolve/strap_holdowns.py` reads its concrete, and `resolve/rebar/strap_bars.py`
+  lays the Figure 1 #4 bar. `structural.strap_hold_down_embedment` grades it; the table is
+  `hardware/esr2920.py`. `Footing.cast_with_wall` lets l_e run into the footing.
 - **Condensate overflow is authored on the unit** (decision #127): `Equipment.secondary_drain_pan`
   / `overflow_drain_ref` / `float_switch_ref`, graded by `mep.condensate_overflow` (IMC 307.2.3).
 - **A hung machine's trapeze is derived from `Equipment.hangers`** (decision #131):

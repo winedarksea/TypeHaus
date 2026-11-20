@@ -46,6 +46,7 @@ from typehaus.checks.structural import (
     stair_stringers,  # noqa: F401 - registers checks
     stair_winders,  # noqa: F401 - registers checks
     stairs,  # noqa: F401 - registers checks
+    strap_holdown_embedment,  # noqa: F401 - registers checks
     subfloor_oversail,  # noqa: F401 - registers checks
     suspension_anchor,  # noqa: F401 - registers checks
     through_deck,  # noqa: F401 - registers checks

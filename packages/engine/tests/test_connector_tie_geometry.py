@@ -228,3 +228,21 @@ def test_ends_closer_than_a_tie_slot_are_one_pack_tied_on_its_outer_faces():
     floor.members.append(ledger)
     blocked = sill_pack(ends[0], ends[0].p0, floor, [floor], dims).ties[0]
     assert blocked.blocked_by == ("ledger",)
+
+
+def test_a_spoon_that_cannot_reach_from_the_framing_face_is_cast_at_the_core_face() -> None:
+    """A 6" core with the leaf 2 9/16" in: no side holds a 5" spoon, so the strap enters at
+    the near face and is bent one cycle (ESR-2920 §4.2) — never clamped short."""
+    from typehaus.hardware.esr2920 import max_clear_span_in
+    from typehaus.resolve.connector_geometry.embedded_straps import embedded_strap_frame
+
+    inch_m = 0.0254
+    core = ((0.0, 0.0), (10.0, 0.0), (10.0, 6.0 * inch_m), (0.0, 6.0 * inch_m))
+    point = (5.0, 2.5625 * inch_m)
+    _, y_axis, spoon, jog = embedded_strap_frame(core, point, (1.0, 0.0, 0.0),
+                                                 (0.0, 1.0, 0.0), 5.0, 0.75)
+    assert spoon is None and jog == pytest.approx(2.5625)
+    assert y_axis[1] == pytest.approx(1.0)  # toward the far face, 3 7/16" ahead of the leaf
+    # The RJ's 13 1/2" extra length is what crosses 17" clear; a standard keeps 3 1/2".
+    assert max_clear_span_in("STHD14") == pytest.approx(3.5)
+    assert max_clear_span_in("STHD14RJ") == pytest.approx(17.0)

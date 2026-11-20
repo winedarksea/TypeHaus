@@ -62,6 +62,7 @@ from typehaus.joints.posts import (
 from typehaus.joints.sills import (
     mudsill_anchor_stations,
     partition_pin_stations,
+    strap_holdown_model,
     strap_holdown_stations,
     tie_plate_stations,
 )
@@ -268,7 +269,6 @@ def _ridge_strap_joints(model, config: HardwareTakeoffConfig, grid_m: float) -> 
 
 def _sill_joints(model, config: HardwareTakeoffConfig, grid_m: float) -> list[Joint]:
     rules, category = config.sill_plate_anchors, config.sill_plate_takeoff_category
-    sthd = hardware_for_role(ROLE_EMBEDDED_STRAP_HOLDOWN)
     ltp = hardware_for_role(ROLE_LATERAL_TIE_PLATE)
     out: list[Joint] = []
     # Every return shares one tag, so at a 6" grid the two plates' anchors at a corner were
@@ -285,7 +285,8 @@ def _sill_joints(model, config: HardwareTakeoffConfig, grid_m: float) -> list[Jo
                           members=(station.run_tag,), anchor_tag=station.run_tag,
                           grid_m=grid_m))
     for station in strap_holdown_stations(model, rules, category):
-        out.append(_joint(ROLE_EMBEDDED_STRAP_HOLDOWN, sthd.model, station.storey,
+        out.append(_joint(ROLE_EMBEDDED_STRAP_HOLDOWN, strap_holdown_model(model, station),
+                          station.storey,
                           station.point_m, station.z_m, station.axis, embedded=True,
                           members=(station.run_tag,), anchor_tag=station.run_tag,
                           grid_m=grid_m, outward_xy=station.outward_xy))

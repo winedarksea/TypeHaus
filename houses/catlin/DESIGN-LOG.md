@@ -1,3 +1,22 @@
+## Cast-in STHDs graded against ESR-2920; garage straps bent one cycle (2026-11-20, decision #141)
+
+- **Why.** In the 6" ICF core the garage spoons were drawn about 2.7" long against Figure 1's
+  4 3/4"-5 1/4", and nothing graded an STHD's embedment, edge, end or bar.
+- **Taken.** `structural.strap_hold_down_embedment` grades all 14 against ESR-2920 Table 1.
+  It reads the stem, l_e, cold joint, clear span, location, the #4 bar, spacing and f'c
+  (`notes/sthd_esr2920.md`). All 14 PASS.
+  - Garage straps are cast at the core's inside face and bent 2 9/16" over the pour top to
+    the stud face (§4.2), so Figure 1 holds exactly.
+  - Five embedment lines were off the pour top: NE-E/N and ENTRY-E/W at +1", above the
+    concrete; PORCH-W/E and BWHD-SW 3/4" high. All now sit on it.
+  - House and porch leaves moved to the stud band's inside face. ENTRY-E/W became STHD14RJ,
+    and derived corners are sized: STHD14 on a sill, STHD14RJ across the main floor band.
+  - FT-B-S3 is `cast_with_wall`, so the curb straps' 14" crosses no cold joint.
+  - Each strap derives its #4 bar 4" below the top. The S-DR bar is 56", not 40".
+- **Open.** ICF is not addressed by ESR-2920; the 6" core is read as the stem. The jog is
+  read off §4.2's "one full cycle"; confirm with Simpson if a reviewer reads that clause as
+  placement-only.
+
 ## Ceiling boxes over every ceiling fixture and alarm head that mounts to one (2026-11-20, decision #140)
 
 - **Why.** Only wall devices took a derived box, so ceiling fixtures and the hardwired Kidde

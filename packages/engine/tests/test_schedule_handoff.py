@@ -63,7 +63,7 @@ def test_the_holdown_count_matches_the_takeoff_row(catlin_model_ro) -> None:
     if not rows:
         assert "holdowns" not in items
         return
-    assert items["holdowns"].count == rows[0]["count"]
+    assert items["holdowns"].count == sum(row["count"] for row in rows)
 
 
 def test_the_rough_opening_schedule_covers_every_opening(catlin_model_ro) -> None:

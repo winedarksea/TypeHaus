@@ -258,7 +258,7 @@ kdat   v = 670.77 / 20.2917 = 33.06 plf    T = 33.06 x 8.333 = 275.47 lb   vs 3,
   king pack, not crediting the jack width; the two south panels total 243.5 in. Continue the scheduled panel-edge
   nailing onto the full-height kings on the opposite face; keep the wall's sheathing and plate collectors. Embedment
   line at the stem top **z = -12 in**, **14 in embedment** in the continuous 6-in core with no cold joint through
-  that depth. One **#4 x 40-in horizontal bar**, centred on the strap at **z = -16 in**, within its shear cone;
+  that depth. One **#4 x 56-in horizontal bar** (2 le each side, ESR-2920 Figure 1; 40 in until 2026-11-20), centred on the strap at **z = -16 in**, within its shear cone;
   1.5-in cover and existing reinforcement maintained. Strap and bar go in before the pour with an SM1 holder; no
   EPS in the anchorage; nail only into wood. The adjacent SW anchor is 42.75 in away in x, over 3 x 14 = 42 in. The
   fossil stem splits are continuous concrete, not free ends. The conservative 6-in end-wall allowable is **3,065 lb**

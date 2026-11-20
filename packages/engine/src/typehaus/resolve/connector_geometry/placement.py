@@ -325,7 +325,7 @@ def _body_at_joint(index: ConnectorPlacementIndex, solid: ResolvedSolid,
     member_depth_m = joint.height_m if joint else None
     slope = joint.slope_radians if joint else 0.0
     support_width_m = None
-    strap_length_in = spoon_in = None
+    strap_length_in, spoon_in, jog_in = None, None, 0.0
 
     if part.startswith(HANGER_PREFIXES):
         if joint is not None:
@@ -422,8 +422,8 @@ def _body_at_joint(index: ConnectorPlacementIndex, solid: ResolvedSolid,
             member_depth_m = run.z1_m - run.z0_m
             point = on_sill_face(run.outline, point, y_axis)
     elif part.startswith("STHD") and references:
-        x_axis, y_axis, spoon_in = strap_frame(index, part, references, point, z_m, x_axis,
-                                               y_axis, joint is not None)
+        x_axis, y_axis, spoon_in, jog_in = strap_frame(index, solid, part, references, point,
+                                                       z_m, x_axis, y_axis, joint is not None)
     elif part.startswith("HETA") and joint is None:
         strap_length_in = _trimmed_strap_in(index, references, z_m)
     elif part.startswith("MSTC"):
@@ -481,13 +481,15 @@ def _body_at_joint(index: ConnectorPlacementIndex, solid: ResolvedSolid,
                           if member_depth_m is not None else None,
                           support_width_in=support_width_m / M_PER_IN
                           if support_width_m is not None else None, slope_radians=slope,
-                          strap_length_in=strap_length_in, spoon_projection_in=spoon_in)
+                          strap_length_in=strap_length_in, spoon_projection_in=spoon_in,
+                          strap_jog_in=jog_in)
     return transform_mesh(body, origin_m=(*point, z_m), x_axis=x_axis, y_axis=y_axis,
                           z_axis=z_axis) if body is not None else None
 
 
 def resolve_connector_bodies(model: ResolvedModel, joints_by_uid: dict[str, Joint]) -> None:
     """Replace known marker envelopes once, after authored and derived joints both exist."""
+    model.embedded_straps = []  # strap_frame appends each STHD as it places it
     index = ConnectorPlacementIndex(model)
     for i, solid in enumerate(model.solids):
         if solid.body_mesh is not None or not solid.category.startswith("connector"):

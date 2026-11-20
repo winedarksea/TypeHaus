@@ -115,7 +115,9 @@ def resolve_rebar(model) -> list[ResolvedRebarSet]:
             laid_mats.append(solid)
         out.append(ResolvedRebarSet(solid.uid, solid.tag, element.element_kind, solid.storey,
                                     solid.category, tuple(sink.bars)))
-    return out
+    from typehaus.resolve.rebar.strap_bars import strap_bars
+
+    return strap_bars(model, out)
 
 
 def _strip_axis(model, element) -> tuple[float, float]:

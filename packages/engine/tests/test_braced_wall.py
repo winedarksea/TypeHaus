@@ -231,10 +231,18 @@ def test_a_panel_across_a_window_is_reported(catlin_model):
 
 def test_an_unrated_device_is_named_and_refused(catlin_model):
     """A hold-down whose part publishes no allowable is not a hold-down for R602.10.7."""
+    from typehaus import pt
     from typehaus.checks.structural.braced_wall_panels import _hold_down
+    from typehaus.model.enums import ConnectorKind
+    from typehaus.model.structure import Connector
+
+    device = Connector(uid="TESTHD0001", tag="CN-TEST-UNRATED", kind=ConnectorKind.HOLD_DOWN,
+                       position=pt(inch(0.0), inch(0.0)), size="STHD")  # family, no row
+    catlin_model.plan = catlin_model.plan.with_elements(
+        "main", [*catlin_model.plan.storey_elements("main"), device])
 
     class _Panel:
-        hold_down_refs = ("CN-M-HD-ENTRY-E",)   # size "STHD", a family record with no row
+        hold_down_refs = ("CN-TEST-UNRATED",)
 
     ok, sentence = _hold_down(_ctx(catlin_model), _Panel())
     assert not ok

@@ -93,8 +93,10 @@ Keep the canopy chord connection at the east jamb: stock **Simpson STHD14**,
 CN-G-BWHD-S-DR, centered at x=118 inches on the garage face at y=524 9/16 inches. It is
 nailed directly to the two full-height 2×6 east king studs spanning x=116.5..119.5 inches;
 the single jack is inboard at x=115..116.5 inches. Install 30 specified 0.148 × 3-1/4 inch
-nails. Set the strap at the stem top, z=−12 inches, with 14 inches of embedment into the
-continuous 6-inch concrete core and one centered No. 4 × 40 inch bar 4 inches below the
+nails. Cast it at the core's inside face (y=527 1/8 inches) and bend it one full cycle,
+2 9/16 inches over the pour top, to the kings (ESR-2920 §4.2). Set the strap at the stem top, z=−12 inches, with 14 inches of embedment into the
+continuous 6-inch concrete core and one centered No. 4 × 56 inch bar (2 le each side; was 40 inches,
+short of ESR-2920 Figure 1's midwall bar, `notes/sthd_esr2920.md`) 4 inches below the
 pour top. The calculated delivered tension is 275.47 lb (2026-10-31) against the documented 3,065 lb
 end-wall allowable. See [canopy_garage_diaphragm.md](canopy_garage_diaphragm.md) §3f for
 the load path and reinforcement basis. The door keeps its stop-only operation, at the 87° stop.

@@ -75,12 +75,16 @@ def test_every_spaced_role_is_within_one_bar_per_layer_of_area_over_spacing(
     for rebar_set in model.rebar:
         element = plan.by_tag(rebar_set.host_tag)
         spec = element.reinforcement
+        if spec is None:
+            continue  # only derived STHD bars (resolve/rebar/strap_bars.py), no spacing
         placed: dict[str, float] = defaultdict(float)
         longest: dict[str, float] = defaultdict(float)
         wall = model.wall(rebar_set.host_tag)
         host = None if wall is not None else next(
             s for s in model.solids if s.tag == rebar_set.host_tag)
         for bar in rebar_set.bars:
+            if "/sthd/" in bar.key:
+                continue  # an STHD's own bar, laid beside the spaced rows
             if host is not None and _leaves(bar, host):
                 continue  # a ``continues_into`` splice: it bills, the area never knew it
             below = 0.0
