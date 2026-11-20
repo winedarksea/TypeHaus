@@ -7,12 +7,13 @@ way the report tested it (Figure 1, §4.2). Read off the placed strap
 * **stem** — the concrete ahead of the cast-in strap along its spoon, from its entry to the
   far face: the 8" row where that is >= 8", the 6" row where >= 6", else no row. Figure 1
   casts the strap at a face with the spoon across the stem; a strap entering inside the
-  core has more concrete behind it than that, never less. A strap bent one full cycle
-  (§4.2) is measured from where it is cast.
+  core has more concrete behind it than that, never less.
+* **jog** — a strap cast at one face and offset over the pour top to framing elsewhere is
+  UNKNOWN: no figure prints it (``esr2920.JOG_RULE``), and the jog straightens under load.
 * **embedment** — pour top to the toe >= le, and the pour below the top (with a footing
   only where it is ``cast_with_wall``) at least le: no cold joint within it (C-C-2026 p. 66).
-* **clear span** — pour top to the first nailed vertical <= 17" for an RJ, 3 1/2" for a
-  standard strap (``esr2920.max_clear_span_in``).
+* **clear span** — pour top to the first nailed vertical <= 17" for an RJ; a standard strap
+  is read over Figure 1's one 2x sill, and more is UNKNOWN (``esr2920.max_clear_span_in``).
 * **location** — midwall where both ends are >= 1.5 le off (fn. 7), else corner where the
   concrete turns, else endwall; corner and endwall need 1/2" end distance (Figure 1).
 * **rebar** — a No. 4 or larger bar 3-5" below the top passing the strap, 2 le each side
@@ -157,11 +158,18 @@ def _grade(model, site, bars, demand: float | None, sites) -> Finding:
     framed = model.wall(strap.framed_tag) if strap.framed_tag else None
     first = first_stud_z_m(framed, strap.leaf_xy) if framed is not None else None
     clear = (first - site.top_z_m) / M_PER_IN if first is not None else None
+    unread: list[str] = []
     if clear is not None and clear > esr.max_clear_span_in(strap.part) + _TOL_IN:
-        problems.append(f"{clear:.2f} in unnailed from the pour top to the first stud, over "
-                        f"the {esr.max_clear_span_in(strap.part):g} in a "
-                        f"{'RJ' if esr.is_rim_joist(strap.part) else 'standard'} strap keeps "
-                        f"full nailing across")
+        if esr.is_rim_joist(strap.part):
+            problems.append(f"{clear:.2f} in unnailed from the pour top to the first stud, over "
+                            f"the RJ's {esr.RJ_CLEAR_SPAN_MAX_IN:g} in")
+        else:
+            unread.append(f"{clear:.2f} in unnailed to the first stud: Figure 1 draws a "
+                          f"standard strap over one 2x sill, and only the RJ prints a clear "
+                          f"span ({esr.RJ_CLEAR_SPAN_MAX_IN:g} in)")
+    if strap.jog_in > _TOL_IN:
+        unread.append(f"offset {strap.jog_in:.2f} in over the pour top to its leaf: "
+                      f"{esr.JOG_RULE}")
     location, end_in = _location(site, le)
     if location != "midwall" and end_in < esr.MIN_END_DISTANCE_IN - _TOL_IN:
         problems.append(f"{end_in:.2f} in end distance, under Figure 1's 1/2 in")
@@ -181,13 +189,14 @@ def _grade(model, site, bars, demand: float | None, sites) -> Finding:
     mix = concrete_spec_for(model.plan, model.plan.by_tag(strap.core_tag))
     if mix is not None and mix.fc_psi < esr.MIN_FC_PSI:
         problems.append(f"f'c {mix.fc_psi:,.0f} psi, under {esr.MIN_FC_PSI:,.0f}")
-    jog = f", bent one full cycle {strap.jog_in:.2f} in to its leaf (§4.2)" if strap.jog_in else ""
-    where = (f"{strap.tag} ({strap.part}) in {strap.core_tag}: {site.behind_in:.2f} in behind / "
-             f"{site.ahead_in:.2f} in ahead{jog}, {provided:.2f} in embedded, {location} "
-             f"({end_in:.1f} in to the end)")
+    span = f", {clear:.2f} in clear to the first stud" if clear is not None else ""
+    behind = round(site.behind_in, 2) + 0.0  # no "-0.00"
+    where = (f"{strap.tag} ({strap.part}) in {strap.core_tag}: {behind:.2f} in "
+             f"behind / {site.ahead_in:.2f} in ahead, {provided:.2f} in embedded{span}, "
+             f"{location} ({end_in:.1f} in to the end)")
     if problems:
         return failed(_ID, f"{where} — " + "; ".join(problems), tags, code=_CODE,
-                      fix="cast the strap at a core face (bend it one cycle to the framing), "
+                      fix="cast the strap plumb under its framing in a stem Table 1 covers, "
                           "set its embedment line on the pour top, size the RJ across a band, "
                           "or lay the Figure 1 bar")
     cap = min(esr.allowable(s, stem, location, cracked=True) for s in sizes)
@@ -200,6 +209,10 @@ def _grade(model, site, bars, demand: float | None, sites) -> Finding:
         return unknown(_ID, f"{where}; no stud of {strap.framed_tag or 'a framed wall'} stands "
                             f"within 12 in of the leaf to read its clear span", tags,
                        code=_CODE, fix="name the framed wall in connects")
+    if unread:
+        return unknown(_ID, f"{where}; " + "; ".join(unread), tags, code=_CODE,
+                       fix="frame so the leaf rises plumb from a Figure 1 entry, use the RJ, "
+                           "or hold the manufacturer's written acceptance of this installation")
     if demand is not None and demand > cap:
         return failed(_ID, f"{where}: {cap:,.0f} lb allowable{load}", tags, code=_CODE,
                       fix="a larger STHD, or a second device")

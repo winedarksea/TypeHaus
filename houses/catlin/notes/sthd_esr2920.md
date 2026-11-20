@@ -44,11 +44,14 @@ end distance.
 - The RJ crosses up to 17" of clear span "without any loss of strap nailing".
 - No horizontal cold joint may fall within the embedment depth.
 
-The RJ is the standard strap plus 13 1/2" (39 5/8 - 26 1/8). So a standard strap keeps full
-nailing over only 17 - 13 1/2 = **3 1/2"**.
+No clear span is printed for the standard strap. Figure 1 draws it over one 2x sill, so it is
+read only there: **1 1/2"**. (17 - 13 1/2 = 3 1/2" from the two lengths is arithmetic, not
+print; a standard strap over more grades UNKNOWN. Review, 2026-11-20.)
 
 **C-C-2026 p. 68, brick ledge.** An STHD14 set 4" from the inside face, bent straight, needs
-an 8" minimum wall. No catlin strap uses this detail.
+an 8" minimum wall (fn. 10: 8" STHD14 loads). No catlin strap uses this detail. Its callout
+reads the cycle as "bending the strap straight and aiding for wall placement": both brick
+ledge straps rise **plumb** from where they are cast. No Simpson figure shows a jog.
 
 **ICF is not addressed by ESR-2920 or C-C-2026.** The 6" core is read as the stem. The EPS
 is formwork and carries nothing. Where the concrete across the strap is under 6", no row
@@ -65,7 +68,7 @@ applies and the check FAILs.
 - **Bent strap.** A strap bent one cycle is measured from where it is **cast**.
 - **Allowable.** Cracked, wind/A&B.
 
-## The garage: why every strap is bent one cycle
+## The garage: why every strap is jogged (and why that is UNKNOWN)
 
 Take W-GF-E. The core runs x 351.5..357.5 and W-G-E's studs x 354.0625..359.5625.
 
@@ -81,12 +84,35 @@ change the engine drew it bent short to about 2.7, which no row covers.
 
 1. Cast the strap at the core's **inside face**, x = 351.5. That leaves 6.0 ahead: Figure 1
    exactly, with 6.0 - 5.25 = 0.75 cover past the toe.
-2. Bend it one cycle (§4.2) flat over the pour top, 2 9/16" outward to the stud face, then up.
+2. Jog it flat over the pour top, 2 9/16" outward to the stud face, then up (the implementer read this as §4.2's one cycle; UNKNOWN, see below).
 3. The flat leg and the leaf pass the sill's inside edge in S-103's 4"-wide notch. The sill
    runs x 352.31..359.56, so the notch is 354.06 - 352.31 = 1 3/4" deep, as already drawn.
 
 The strap's length above the line drops by the leg: 26.125 - 2.5625 = 23.5625. Thirty nails
 still fit on the studs, because the clear span is only the 1 1/2" sill.
+
+### Open: the garage jog (review, 2026-11-20)
+
+The check grades all five garage straps **UNKNOWN**, and the permit gate is shut on that line.
+
+- **Not printed.** Figure 1 and every C-C-2026 p. 68 detail show the strap rising plumb from
+  where it is cast. Simpson's own gloss on §4.2 is "bend the straps to horizontal and back to
+  vertical one cycle" (SE blog, 2016-03): the cycle clears the wall as it is set, then the strap
+  goes back plumb. Simpson's over-sheathing guidance caps a jog at 5/8".
+- **It straightens under load.** The 12 ga leaf, 2 5/8" wide, t = 0.1026:
+  Z = 2.625 x 0.1026^2 / 4 = 0.00691 in^3; M_p = 33 ksi x Z = 0.228 k-in.
+  The jog yields at T = 0.228 / 2.5625 = **89 lb**, against 800 required at BWHD-SW. Before it
+  holds, the leg pulls up into a diagonal. Table 1's 0.118" deflection does not apply.
+
+Options, none taken:
+
+1. A hold-down with a published row in a 6" stem (an anchor-rod hold-down on a cast-in rod
+   placed under the framing, e.g. SSTB + HDU/DTT). It needs its own reading.
+2. An 8" core (BB800) with the brick-ledge detail: STHD14 cast plumb under the stud face, spoon
+   straightened (fn. 10). It needs the stud face 4" off the inside face.
+3. Drop the three derived garage corner straps (a house rule, `holdowns_per_run_end`; no code
+   asks for them), which leaves BWHD-SW and S-DR to solve.
+4. Simpson's written acceptance of the jog. The owner prefers not to rely on letters.
 
 ## Per strap
 
@@ -100,8 +126,8 @@ still fit on the studs, because the clear span is only the 1 1/2" sill.
 | first stud | -10.5 | 2.25 |
 | clear span | 1.5 | 2.25 + 13.4375 = 15.6875 |
 
-- The garage clear span is at most 3.5, so the standard strap qualifies.
-- The house clear span is over 3.5 and at most 17, so it takes the **RJ**.
+- The garage and porch clear span is 1.5, Figure 1's one sill: the standard strap.
+- The house clear span is over that and at most 17, so it takes the **RJ**.
 - The porch curb pour is the 7.25 curb plus the 15 footing, cast together
   (`Footing.cast_with_wall`): 22.25 at least 14. Without that it would be 7.25, a cold joint
   inside the embedment, and a FAIL.
@@ -111,11 +137,11 @@ still fit on the studs, because the clear span is only the 1 1/2" sill.
 
 | strap | part | behind / ahead | row | end distance | location | allowable | demand / ratio |
 |---|---|---|---|---|---|---|---|
-| CN~STHD14~..~02 (garage NE, W-GF-E) | STHD14 | 0 / 6.0 (bent 2.5625) | 6" | 804.125 - 799.1875 - 1.3125 = 3.625 | corner | 4,935 | none stated |
-| CN~STHD14~..~03 (garage SE, W-GF-S3) | STHD14 | 0 / 6.0 (bent 2.5625) | 6" | 357.5 - 352.5625 - 1.3125 = 3.625 | corner | 4,935 | none stated |
-| CN~STHD14~..~01 (garage NW, W-GF-N) | STHD14 | 0 / 6.0 (bent 2.5625) | 6" | 79.4375 - 74.5 - 1.3125 = 3.625 | corner | 4,935 | none stated |
-| CN-G-BWHD-SW (W-GF-W) | STHD14 | 0 / 6.0 (bent 2.5625) | 6" | 526.0625 - 521.125 - 1.3125 = 3.625 | corner | 4,935 | 800 / **0.162** |
-| CN-G-BWHD-S-DR (W-GF-S-DR) | STHD14 | 0 / 6.0 (bent 2.5625) | 6" | 161.5 - 118 - 1.3125 = 42.19 (at least 21) | midwall | 4,935 | 275.47 (canopy note §3f) / 0.056; not in the model |
+| CN~STHD14~..~02 (garage NE, W-GF-E) | STHD14 | 0 / 6.0 (jog 2.5625) | 6" | 804.125 - 799.1875 - 1.3125 = 3.625 | corner | UNKNOWN (jog) | none stated |
+| CN~STHD14~..~03 (garage SE, W-GF-S3) | STHD14 | 0 / 6.0 (jog 2.5625) | 6" | 357.5 - 352.5625 - 1.3125 = 3.625 | corner | UNKNOWN (jog) | none stated |
+| CN~STHD14~..~01 (garage NW, W-GF-N) | STHD14 | 0 / 6.0 (jog 2.5625) | 6" | 79.4375 - 74.5 - 1.3125 = 3.625 | corner | UNKNOWN (jog) | none stated |
+| CN-G-BWHD-SW (W-GF-W) | STHD14 | 0 / 6.0 (jog 2.5625) | 6" | 526.0625 - 521.125 - 1.3125 = 3.625 | corner | UNKNOWN (jog); 4,935 if rated | 800 / **0.162** if rated |
+| CN-G-BWHD-S-DR (W-GF-S-DR) | STHD14 | 0 / 6.0 (jog 2.5625) | 6" | 161.5 - 118 - 1.3125 = 42.19 (at least 21) | midwall | UNKNOWN (jog) | 275.47 (canopy note §3f) / 0.056; not in the model |
 | CN~STHD14RJ~..~01, ~02, ~03 (house SW, NW, SE) | STHD14RJ | 2 / 6 (8" wall, leaf at stud face 6") | 6" | 7.5 - 0 - 1.3125 = 6.19 | corner | 4,935 | none stated |
 | CN-M-BWHD-NE-E (W-B-E2, 10" wall) | STHD14RJ | 4 / 6 (x 422..432, leaf 426) | 6" | 432 - 401 - 1.3125 = 29.69 | midwall | 4,935 | 800 / **0.162** |
 | CN-M-BWHD-NE-N (W-B-N1) | STHD14RJ | 2 / 6 | 6" | 29.69 | midwall | 4,935 | 800 / **0.162** |
@@ -166,5 +192,5 @@ These supersede the 40" bar the service-door note specified. The midwall strap n
 3. The entry pair became STHD14RJ. Derived corners are now sized: STHD14 on a sill, STHD14RJ
    across a band. A derived STHD at a house corner had been a standard strap across 15 11/16"
    of band.
-4. The garage straps are cast at the core face and bent 2 9/16".
+4. The garage straps are cast at the core face and jogged 2 9/16" (UNKNOWN since the review).
 5. One derived #4 bar per strap.

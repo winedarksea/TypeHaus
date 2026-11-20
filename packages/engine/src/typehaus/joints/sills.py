@@ -385,14 +385,15 @@ def strap_holdown_stations(model: ResolvedModel, rules: SillPlateAnchorRules,
 
 
 def strap_holdown_model(model: ResolvedModel, station: Station) -> str:
-    """A derived STHD's size: the STHD14 the engine draws, the RJ where its strap crosses
-    more unnailed span than the standard length keeps full nailing over (ESR-2920 Table 1)."""
+    """A derived STHD's size: the STHD14 over one sill (ESR-2920 Figure 1), the RJ where its
+    strap crosses more unnailed span than that."""
     from typehaus.hardware.esr2920 import max_clear_span_in
     from typehaus.resolve.connector_geometry.embedded_straps import first_stud_z_m
 
     wall = model.wall(station.framed_tag) if station.framed_tag else None
     first = first_stud_z_m(wall, station.point_m) if wall is not None else None
-    if first is not None and (first - station.z_m) / M_PER_IN > max_clear_span_in("STHD14"):
+    span_in = (first - station.z_m) / M_PER_IN if first is not None else 0.0
+    if span_in > max_clear_span_in("STHD14") + 1.0 / 16.0:
         return "STHD14RJ"
     return "STHD14"
 

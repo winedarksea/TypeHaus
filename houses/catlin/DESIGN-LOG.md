@@ -16,6 +16,17 @@
 - **Open.** ICF is not addressed by ESR-2920; the 6" core is read as the stem. The jog is
   read off §4.2's "one full cycle"; confirm with Simpson if a reviewer reads that clause as
   placement-only.
+- **Review, same day: the garage jog is UNKNOWN, not PASS.** ESR-2920 Figure 1 and C-C-2026
+  p. 68 show every strap rising plumb from where it is cast; where the framing stands inside
+  the wall (brick ledge) Simpson casts the strap plumb under it with the spoon straightened,
+  in an 8" wall. §4.2's cycle is "to horizontal and back to vertical" (Simpson SE blog,
+  2016-03) to clear wall placement, and the framing-connector guidance caps an over-sheathing
+  jog at 5/8". Mechanically a 12 ga, 2 5/8" leaf has M_p ~ 0.23 k-in, so a 2 9/16" jog yields
+  at ~90 lb and straightens before it holds: the tested 0.118" deflection does not apply.
+  Five garage straps grade UNKNOWN and the permit gate is SHUT on that one line. The
+  standard strap's "3 1/2" clear span" was also arithmetic, not print: it is now read only
+  over Figure 1's one sill (every standard strap here crosses 1 1/2"). Options for the owner
+  are in `notes/sthd_esr2920.md`, "Open: the garage jog".
 
 ## Ceiling boxes over every ceiling fixture and alarm head that mounts to one (2026-11-20, decision #140)
 

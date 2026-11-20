@@ -243,6 +243,6 @@ def test_a_spoon_that_cannot_reach_from_the_framing_face_is_cast_at_the_core_fac
                                                  (0.0, 1.0, 0.0), 5.0, 0.75)
     assert spoon is None and jog == pytest.approx(2.5625)
     assert y_axis[1] == pytest.approx(1.0)  # toward the far face, 3 7/16" ahead of the leaf
-    # The RJ's 13 1/2" extra length is what crosses 17" clear; a standard keeps 3 1/2".
-    assert max_clear_span_in("STHD14") == pytest.approx(3.5)
+    # Only the RJ prints a clear span; a standard strap is read over Figure 1's one 2x sill.
+    assert max_clear_span_in("STHD14") == pytest.approx(1.5)
     assert max_clear_span_in("STHD14RJ") == pytest.approx(17.0)

@@ -135,8 +135,8 @@ a release or for exhaustive local verification.
   `[linesets]` (drive allowances off `kit_length_ft`; no `[pipe_runs]` refrigerant price).
 - **A cast-in STHD is graded as placed against ESR-2920 Table 1** (decision #141):
   `ResolvedModel.embedded_straps` records each one (`resolve/connector_geometry/embedded_straps.py`).
-  Where the spoon cannot reach from the framing face, the strap is cast at the core face and bent
-  one cycle (§4.2). `resolve/strap_holdowns.py` reads its concrete, and `resolve/rebar/strap_bars.py`
+  Where the spoon cannot reach from the framing face, the strap is cast at the core face and jogged
+  over the pour to the leaf; that jog is UNKNOWN (no published row; §4.2's cycle bends back plumb). `resolve/strap_holdowns.py` reads its concrete, and `resolve/rebar/strap_bars.py`
   lays the Figure 1 #4 bar. `structural.strap_hold_down_embedment` grades it; the table is
   `hardware/esr2920.py`. `Footing.cast_with_wall` lets l_e run into the footing.
 - **Condensate overflow is authored on the unit** (decision #127): `Equipment.secondary_drain_pan`

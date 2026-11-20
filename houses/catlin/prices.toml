@@ -1556,14 +1556,13 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # Retail 2026-10-31: $2.56 to $2.99 each (toolnut, fastenersplus).
 "SP4Z" = { low = 2.5, high = 3.25 }  # 6 ea — W-BW-SCREEN only
 "SS-GASKET-12" = { low = 0.35, high = 0.9 }  # 32 ea — generic 304 SS #12 screw, bonded EPDM washer
-"STHD" = { low = 18, high = 32 }  # 8 ea — 6 derived exterior corners, 2 entry jambs
-# The braced-wall end devices (IRC R602.10.7), authored 2026-09-22. The retail reads that
-# set the STHD row above are per-length: STHD14 $23.99 single-piece, and the RJ strap is the
+# Every cast-in strap is sized since 2026-11-20 (ESR-2920; the unsized "STHD" row is gone).
+# Retail reads per length: STHD14 $23.99 single-piece, and the RJ strap is the
 # same part 13 1/2" longer (about a fifth more steel). DTT2Z is a small screw hold-down and
 # its band carries the eight SDS screws it ships with, NOT the 1/2" rod or its anchorage,
 # which ESR-2330 puts outside its own scope and which nothing here bills.
-"STHD14" = { low = 20, high = 36 }  # 3 ea — the garage SW corner (ICF stem) and the two balcony-jamb curb straps
-"STHD14RJ" = { low = 24, high = 42 }  # 2 ea — the main-floor NE corner, across the floor band
+"STHD14" = { low = 20, high = 36 }  # 7 ea — the garage (3 derived corners, BWHD-SW, BWHD-S-DR) and the two porch-jamb curb straps
+"STHD14RJ" = { low = 24, high = 42 }  # 7 ea — across the main floor band: 3 derived corners, the NE pair, the entry pair
 "DTT2Z" = { low = 22, high = 38 }  # 0 ea — the second-floor NE pair went with WIN-S-BED3-N (2026-11-16)
 
 # The court daybed's four ropes (2026-10-13), UNCONFIRMED allowances: a galvanized Crosby

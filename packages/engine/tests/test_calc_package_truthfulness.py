@@ -87,8 +87,8 @@ def test_the_readme_states_where_the_permit_gate_stands(catlin_engineering) -> N
     read nowhere, so the page a reviewer opens first was silent on the one fact that says
     whether this review unblocks anything.
 
-    Completed canopy attachments open the draft gate; the handoff must say so while
-    preserving the independent requirement for professional seals.
+    The handoff must say where the draft gate stands while preserving the independent
+    requirement for professional seals.
     """
     from typehaus.takeoff.handoff import pe_readme
 
@@ -97,7 +97,9 @@ def test_the_readme_states_where_the_permit_gate_stands(catlin_engineering) -> N
                        content_hash="abc", records=[ctx.engineering[i] for i in item_ids],
                        notes=[], checklist=checklist, has_pdf=False)
     assert "## Where the permit gate stands" in readme
-    assert "The draft gate is OPEN" in readme
+    # SHUT only on the garage STHD jog (2026-11-20 review); OPEN once that is resolved.
+    assert ("The draft gate is OPEN" in readme) if checklist.ok else \
+        ("Cast-in strap hold-downs (ESR-2920)" in readme)
     assert "CN-BW-EAVE-4: eave blocking" not in readme
     assert "PR-M-S-BATH1-WC-DRAIN" not in readme
     assert "FS-S-WEST" not in readme

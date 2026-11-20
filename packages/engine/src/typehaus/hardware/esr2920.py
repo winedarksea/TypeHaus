@@ -67,9 +67,11 @@ MIN_END_DISTANCE_IN = 0.5
 MIDWALL_END_LE = 1.5
 SPACING_LE = 3.0
 #: Figure 1 / C-C-2026 p. 66: an RJ strap crosses up to 17" clear "without any loss of strap
-#: nailing". It is the standard strap lengthened 13 1/2", so the standard keeps full nailing
-#: across 17 - 13 1/2 = 3 1/2" (a sill, or a sill and plate).
+#: nailing". No clear span is printed for the standard strap: Figure 1 draws it over one 2x
+#: sill, so that is all a standard strap is read at. (17 - 13 1/2 = 3 1/2" is arithmetic on
+#: the two lengths, not a published limit.)
 RJ_CLEAR_SPAN_MAX_IN = 17.0
+STANDARD_CLEAR_SPAN_IN = 1.5
 #: C-C-2026 p. 66: no horizontal cold joint within the embedment depth.
 COLD_JOINT_RULE = "C-C-2026 p. 66 installation note (a)"
 
@@ -94,11 +96,15 @@ def sizes(part: str) -> tuple[str, ...]:
 
 
 def max_clear_span_in(part: str) -> float:
-    """The unnailed span (pour top to the first stud) a strap keeps full nailing across."""
-    if is_rim_joist(part):
-        return RJ_CLEAR_SPAN_MAX_IN
-    return min(RJ_CLEAR_SPAN_MAX_IN - (RJ_LENGTH_IN[s] - STANDARD_LENGTH_IN[s])
-               for s in sizes(part))
+    """The unnailed span (pour top to the first stud) the strap is published across."""
+    return RJ_CLEAR_SPAN_MAX_IN if is_rim_joist(part) else STANDARD_CLEAR_SPAN_IN
+
+
+#: A strap jogged above the pour is not a published installation: §4.2's one cycle is bent
+#: back plumb "to aid wall placement", and C-C-2026 p. 68 casts an off-face strap plumb at
+#: the framing (spoon straightened, 8" wall). 12 ga at 2 5/8" yields at T x jog ~ 0.23 k-in.
+JOG_RULE = ("ESR-2920 Figure 1 and C-C-2026 p. 68 show the strap rising plumb from where it "
+            "is cast; §4.2's one cycle aids wall placement and prints no offset")
 
 
 def allowable(size: str, stem_in: int, location: str, cracked: bool,
