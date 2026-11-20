@@ -25,7 +25,7 @@ from typehaus.checks import run
 from typehaus.findings import Result
 from typehaus.quantities import ft, inch
 from typehaus.resolve import resolve
-from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.framing.profiles import cross_section, plan_cross_section_m
 from typehaus.resolve.geometry import opening_center
 from typehaus.resolve.geometry_members import member_solid
 from typehaus.resolve.model import EDGE_RIM_PREFIX
@@ -1809,6 +1809,13 @@ def test_garage_wood_framing_uses_its_structure_layer_centerline(catlin_model):
                 structure = next(ly for ly in wall.layers if ly.function == "structure")
                 backing_shift = (structure.thickness_m
                                  - cross_section(member.profile).width_m) / 2
+            elif member.category == "header":
+                # A header narrower than the band sits flush with the sheathing face
+                # (resolve/framing/header_flush.py, 2026-11-20); a flat one fills the band.
+                structure = next(ly for ly in wall.layers if ly.function == "structure")
+                width = member.plan_width_m or plan_cross_section_m(
+                    cross_section(member.profile), member.z1_m - member.z0_m)
+                backing_shift = max(structure.thickness_m - width, 0.0) / 2
             structure = next(ly for ly in wall.layers if ly.function == "structure")
             # The 2x8 sill (FramingSpec.sill_member, C3-E8) is flush with the stud band's
             # OUTSIDE face, so its centre sits half its extra width off the stud line.

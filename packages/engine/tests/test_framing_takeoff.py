@@ -239,6 +239,8 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
                         "electrical_devices", "panel_schedule", "service_load",
                         "conduit", "conduit_fittings", "electrical_boxes", "conductors",
                         "electrical_labels",
+                        # One row per refrigerant set, its kit (``takeoff/linesets.py``, #139).
+                        "linesets",
                         "grounding", "grounding_conductors",
                         "solar",
                         # The list view of ``solar["by_product"]`` that
@@ -418,6 +420,7 @@ _BOM_COVERAGE: dict[str, tuple[str, ...]] = {
     "conduits": ("conduit", "conduit_fittings", "conductors"),
     "device_boxes": ("electrical_boxes",),
     "electrical_labels": ("electrical_labels",),
+    "linesets": ("linesets",),
     "grounding": ("grounding", "grounding_conductors"),
     "footing_beddings": ("footing_bedding",),
     "wall_columns": ("excavation",),

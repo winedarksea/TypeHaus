@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 637bb8f21489a154  
-**Lines:** 267
+**Model hash:** 176d79667801536c  
+**Lines:** 268
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
 
@@ -68,7 +68,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x2 SPF No. 2 & Btr framing lumber, 10' (2x2) | 2 | pc | plate | 20 LF | building |
 | 2x3 SPF No. 2 & Btr framing lumber, 8' (2x3) | 6 | pc | corner stud, plate, stud | 48 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 92 5/8" PET (2x4) | 81 | pc | corner stud, king stud, stud | 625.2 LF | building |
-| 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4) | 144 | pc | blocking, corner stud, cripple stud, header, jack stud, king stud, ledger, outlooker, partition backer, plate, raked top plate, stud | 1152 LF | building |
+| 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4) | 145 | pc | blocking, corner stud, cripple stud, header, jack stud, king stud, ledger, outlooker, partition backer, plate, raked top plate, sill, stud | 1160 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 104 5/8" PET (2x4) | 252 | pc | corner stud, king stud, stud | 2197.1 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 10' (2x4) | 31 | pc | partition backer, plate, raked top plate | 310 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 14' (2x4) | 12 | pc | plate | 168 LF | building |
@@ -81,7 +81,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x4 Pressure-treated southern yellow pine No. 2 (sill plate), 8' (2x4:pt-syp) | 4 | pc | plate | 32 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4:spf) | 16 | pc | blocking, ceiling furring, girt strapping | 128 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 92 5/8" PET (2x6) | 110 | pc | corner stud, king stud, stud | 849.1 LF | building |
-| 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6) | 387 | pc | blocking, corner stud, cripple stud, door blocking, header, jack stud, king stud, plate, raked top plate, sill, strongback, stud | 3096 LF | building |
+| 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6) | 386 | pc | blocking, corner stud, cripple stud, door blocking, header, jack stud, king stud, plate, raked top plate, sill, strongback, stud | 3088 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 104 5/8" PET (2x6) | 202 | pc | corner stud, king stud, stud | 1761.2 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 116 5/8" PET (2x6) | 6 | pc | king stud, stud | 58.3 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 10' (2x6) | 48 | pc | plate, raked top plate, strongback | 480 LF | building |
@@ -325,6 +325,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | rough opening, 2.5" x 2.5" (no type) (None) | 1 | ea | 2 1/2" x 2 1/2" | main |
 | rough opening, 2.5" x 2.5" (no type) (None) | 1 | ea | 2 1/2" x 2 1/2" | second |
 | rough opening, 4" x 4" (no type) (None) | 2 | ea | 4" x 4" | main |
+| rough opening, 4.5" x 4.5" (no type) (None) | 1 | ea | 4 1/2" x 4 1/2" | attic |
 | rough opening, 9" x 9" (no type) (None) | 2 | ea | 9" x 9" | main, second |
 | rough opening, 10.5" x 6.5" (no type) (None) | 2 | ea | 10 1/2" x 6 1/2" | second |
 | rough opening, 12" x 10" (no type) (None) | 1 | ea | 12" x 10" | main |
@@ -602,6 +603,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | rough opening, 2.5" x 2.5" (no type) (None) | AO-M-PORCH-HYD |
 | rough opening, 2.5" x 2.5" (no type) (None) | AO-S-BALCONY-HYD |
 | rough opening, 4" x 4" (no type) (None) | AO-M-RFG-HP1, AO-M-RFG-HP3 |
+| rough opening, 4.5" x 4.5" (no type) (None) | AO-A-ERV-STAIR |
 | rough opening, 9" x 9" (no type) (None) | AO-M-ERV-OA, AO-S-ERV-EA |
 | rough opening, 10.5" x 6.5" (no type) (None) | AO-S-XFER-PLANT-HI, AO-S-XFER-PLANT-LO |
 | rough opening, 12" x 10" (no type) (None) | AO-M-XFER-MUD |
