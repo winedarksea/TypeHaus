@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import hashlib
 import pathlib
+import re
 
 import pytest
 from typer.testing import CliRunner
@@ -50,10 +51,12 @@ def test_a_fixture_proposal_prints_source_and_writes_nothing(runner) -> None:
 
 def test_explain_prints_the_terms_the_route_was_chosen_on(runner) -> None:
     """A router that cannot say why it chose a line is one nobody will take a line from."""
-    # Not PR-M-S-SUITE-TUB-DRAIN since 2026-09-16: the KITCH/BED2 returns moved into its
-    # 22'-0" bay (off BM-M-HALL) and cover its terminal in plan, so it has no lane to explain.
-    result = runner.invoke(app, ["route", str(_CATLIN), "--run",
-                                 "PR-B-KITCH-DRAIN", "--explain"])
+    # Not PR-M-S-SUITE-TUB-DRAIN since 2026-09-16 (the KITCH/BED2 returns cover its
+    # terminal), nor PR-B-KITCH-DRAIN since 2026-11-18 (9291b7894: FS-M-NE's north edge
+    # truss became a flush LSL rim, and the search lost the under-slab lane it used to find;
+    # it now refuses at W-B-N4). Any drain that routes will do; this one is cheap.
+    result = runner.invoke(app, ["route", str(_CATLIN), "--fixture",
+                                 "FX-A-STUBATH-WC", "--explain"])
     assert result.exit_code == 0, result.output
     assert "travel_in" in result.output
     assert "gravity:" in result.output
@@ -106,8 +109,10 @@ def test_the_tree_mode_routes_each_branch_at_its_own_derived_size(runner) -> Non
 
     **A tie down the stack** (`mep_tree_ripup_basis.md` §6): the head alone sits inside
     STUBATH's prism, so a branch may wye in lower on the stack; the lavatory does (rung
-    107.875). The tub and the WC find no lane to the stack at any rung; the tightest
-    refusal now names the member window rather than a movable supply run.
+    107.875). The tub and the WC find no lane to the stack at any rung, and say what
+    stopped them. Which refusal is "tightest" flips with unrelated framing (D14 held by
+    PR-B-CW-SUITE, then a member window, then D14 again after the 2026-11-18 LSL rims),
+    so the test pins only that one is named.
     """
     before = _plan_digest()
     result = runner.invoke(app, ["route", str(_CATLIN),
@@ -115,7 +120,9 @@ def test_the_tree_mode_routes_each_branch_at_its_own_derived_size(runner) -> Non
     assert result.exit_code == 0, result.output  # the lavatory is proposed
     assert '3 branch sizes (3", 2", 1.25")' in result.output
     output = " ".join(result.output.split())
-    for said in ("FX-S-SUITEBATH-TUBSH: no route", "tightest refusal was a member window",
+    assert re.search(r"FX-S-SUITEBATH-TUBSH: no route to [^#]*?the tightest refusal was",
+                     output)
+    for said in ("FX-S-SUITEBATH-TUBSH: no route",
                  "FX-S-SUITEBATH-WC: no route", "stack ties tried: 115.50, 107.88, 96.00",
                  "FX-S-SUITEBATH-LAV-PROPOSED"):
         assert said in output
