@@ -39,7 +39,7 @@ def test_catlin_rows_land_in_the_category_a_reader_looks_for(estimate) -> None:
     assert _filed(estimate, "placeables", "ED-T-AP-CEILING") == {("low_voltage", "devices")}
     pipe = {cat for s, row in _rows(estimate) if s == "pipe_runs"
             for cat in [(row["trade"], row["category"])]}
-    assert pipe == {("plumbing", "pipe")}
+    assert pipe == {("plumbing", "pipe"), ("mechanical", "pipe")}  # refrigerant linesets
     allowances = {row["category"] for s, row in _rows(estimate) if s == "allowances"}
     assert allowances == {"allowances"}
 

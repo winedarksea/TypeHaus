@@ -91,11 +91,12 @@ def test_stock_leaf_sweep_clears_hold_down_and_screen_with_required_margin(catli
     Re-pinned 2026-11-01 when the MMI frame was anchored flush with the sheathing
     (``factory_frame_depth`` 6-9/16"), which moved the leaf plane: ties 0.320 -> 0.381",
     hold-down 2.873 -> 2.865". 2026-11-18: the screen went 3/16" west with the garage's 7/16"
-    ZIP, so the cap reads 0.828" and RL-G-SERVICE-RETURN2 governs at 0.645".
+    ZIP, so the cap reads 0.828" and RL-G-SERVICE-RETURN2 governs at 0.645". 2026-11-20: the
+    hold-down moved to y=524 9/16" to sit inside the ICF core, 2.865 -> 2.863".
     """
     results = _service_sweep(catlin_model_ro)
     anchor = [result for result in results if result.obstacle == "CN-G-BWHD-S-DR"]
-    assert min(result.clearance_m for result in anchor) / INCH == pytest.approx(2.865, abs=1e-3)
+    assert min(result.clearance_m for result in anchor) / INCH == pytest.approx(2.863, abs=1e-3)
     assert results[0].obstacle == "RL-G-SERVICE-RETURN2"
     assert min(result.clearance_m for result in results) / INCH == pytest.approx(0.645, abs=1e-3)
     cap = [result for result in results if result.obstacle == "TR-BW-SCREEN-CAP"]
