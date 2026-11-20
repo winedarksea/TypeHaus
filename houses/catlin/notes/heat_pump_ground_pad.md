@@ -576,23 +576,25 @@ cable fits the crotch, whose largest circle is r = 1/(1/r1 + 1/r2 - 1/(r1+r2)) =
 
 | set | legs (in.) | developed | +2 ft loop | kit | leftover |
 |---|---|---|---|---|---|
-| `PR-A-RFG-HP1` | 4.125, 12.53, 35, 17.5, 12.4, 74.5, 5.22, 123.5, 6.80, 6.5, 32.25, 29.5, 99.5, 21, 6.5 = 486.8 | **40.57 ft** | 42.57 | 50 | 9.4 |
-| `PR-B-RFG-HP2-GYM` | 10.34, 15.86, 19.24, 165.25, 14.5 = 225.2 | **18.77 ft** | 20.77 | 25 | 6.2 |
+| `PR-A-RFG-HP1` | 4.125, 12.53, 35, 13.375, 12.4, 74.5, 5.22, 123.5, 6.80, 6.5, 28.125, 29.5, 99.5, 21, 6.5 = 478.6 | **39.88 ft** | 41.88 | 50 | 8.1 |
+| `PR-B-RFG-HP2-GYM` | 13.34, 15.86, 19.24, 168.25, 14.5 = 231.2 | **19.27 ft** | 21.27 | 25 | 3.7 |
 | `PR-M-RFG-HP2-BED` | 7.34, 15.86, 19.37, 182.9, 5.75, 92.75 = 324.0 | **27.00 ft** | 29.00 | 35 | 8.0 |
 | `PR-M-RFG-HP2-LIVING` | 4.34, 15.86, 13.25, 21.1, 115.5, 5.82, 106.7, 5.82, 9.5 = 297.9 | **24.82 ft** | 26.82 | 35 | 10.2 |
 | `PR-M-RFG-HP3-STAIR` | 3, 20.35, 112.5, 139, 12.4, 68.5, 2.2 = 358.0 | **29.83 ft** | 31.83 | 35 | 5.2 |
 
-- **HP1**: 40.57 of 164 ft. The rise is 251 - (-5) = 256" = 21.3 ft, unit below, against 49.
-  Charge: (40.57 - 31) x 0.323 = **3.09 oz**. The route goes west off the valves, up beside the
+- **HP1**: 39.88 of 164 ft. The rise is 251 - (-5) = 256" = 21.3 ft, unit below, against 49.
+  Charge: (39.88 - 31) x 0.323 = **2.87 oz**. The route goes west off the valves, up beside the
   cabinet's west end, and east above it. It enters `W-M-N1`'s 304-320 bay at 2'-6"
-  (`AO-M-RFG-HP1`) and rises on the cavity's outer half (y 429.1) past the kitchen backing.
+  (`AO-M-RFG-HP1`) and rises on the cavity's outer half (y 429.1) past the kitchen backing,
+  at x 25'-7 7/8": west of `ED-M-LIVING-KET1`'s box (x 311-315), which fills the bay's depth.
   It offsets to y 427.6 through the main top plates, clearing `FS-S-EAST`'s rim, and goes up
   through the second floor into `FS-ATTIC`'s north bay. It comes up through the deck 4" off
-  the wall and crosses over the air handler to drop onto its front ports. Exterior leg ~6.0 ft.
-- **HP2**: 70.59 ft over three ports, of 263. Every port is far inside 82 ft and inside the
+  the wall and crosses over the air handler to drop onto its front ports. Exterior leg ~5.7 ft.
+- **HP2**: 71.09 ft over three ports, of 263. Every port is far inside 82 ft and inside the
   131 ft precharge, so no charge is added. The three sets leave the valves 3" apart in height
-  (ports A/B/C; D is spare on the four-port unit). LIVING runs at x 31'-8 1/2", BED at 31'-11 1/2" and GYM at 32'-2 1/2", so
-  none crosses another. Each crosses `FS-M-EAST`'s LSL rim in its own TJ-8000 hole and enters
+  (ports A/B/C; D is spare on the four-port unit). LIVING runs at x 31'-8 1/2", BED at 31'-11 1/2" and GYM at 32'-5 1/2", so
+  none crosses another. GYM's rim hole sits between `CN-WT-S4-398-1` and `-2`, the A35Zs at x 386
+  and 392, and east of the girt block at x 384. Each crosses `FS-M-EAST`'s LSL rim in its own TJ-8000 hole and enters
   the south bay. In the bay, BED runs over GYM at y=9".
   - GYM goes west to the gym's SW corner and drops 14 1/2" in the 4" gap between the head and
     the south wall, ending 6.5" off the ports.

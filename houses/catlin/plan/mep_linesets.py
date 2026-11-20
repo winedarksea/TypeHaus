@@ -5,7 +5,7 @@
 # (datum 0'-0"), so every elevation is absolute. Each path runs outdoor unit -> head; the
 # outside legs are hand-drawn, and the oracle is notes/heat_pump_ground_pad.md "Line sets".
 #   * HP1: west off the valves, up beside the cabinet's west end, east above it into
-#     W-M-N1's 304-320 bay (clear on both floors: no window), up through both storeys'
+#     W-M-N1's 304-320 bay (no window; west of ED-M-LIVING-KET1's box), up through both storeys'
 #     plates into FS-ATTIC's north bay, up through the deck and over to the AH's ports.
 #   * HP2: three sets through one band penetration east of the cabinet into FS-M-EAST's
 #     south bay. GYM west to the gym's south-west corner and down beside the head; BED west
@@ -52,10 +52,10 @@ LINESETS_MAIN = [
             material="copper_acr", diameter=inch(0.75), liquid_diameter=inch(0.375),
             path=(pt(inch(298.625), inch(454.03125)), pt(inch(294.5), inch(454.03125)),
                   pt(inch(294.5), inch(441.5)), pt(inch(294.5), inch(441.5)),
-                  pt(inch(312), inch(441.5)), pt(inch(312), inch(429.1)),
-                  pt(inch(312), inch(429.1)), pt(inch(312), inch(427.6)),
-                  pt(inch(312), inch(427.6)), pt(inch(312), inch(421.5)),
-                  pt(inch(312), inch(421.5)), pt(inch(279.75), inch(421.5)),
+                  pt(inch(307.875), inch(441.5)), pt(inch(307.875), inch(429.1)),
+                  pt(inch(307.875), inch(429.1)), pt(inch(307.875), inch(427.6)),
+                  pt(inch(307.875), inch(427.6)), pt(inch(307.875), inch(421.5)),
+                  pt(inch(307.875), inch(421.5)), pt(inch(279.75), inch(421.5)),
                   pt(inch(279.75), inch(421.5)), pt(inch(279.75), inch(322)),
                   pt(inch(279.75), inch(322)), pt(inch(279.75), inch(328.5))),
             elevations=(inch(-5), inch(-5), inch(-5), inch(30), inch(30), inch(30),
@@ -64,8 +64,8 @@ LINESETS_MAIN = [
     PipeRun(uid="F5MDC6F8QB", tag="PR-B-RFG-HP2-GYM", system=PipeSystem.REFRIGERANT, serves=("EQ-B-HP2-GYM",),
             outdoor_port="A", material="copper_acr", diameter=inch(0.375),
             liquid_diameter=inch(0.25),
-            path=(pt(inch(376.16), inch(-25.86)), pt(inch(386.5), inch(-25.86)),
-                  pt(inch(386.5), inch(-10)), pt(inch(386.5), inch(9)),
+            path=(pt(inch(376.16), inch(-25.86)), pt(inch(389.5), inch(-25.86)),
+                  pt(inch(389.5), inch(-10)), pt(inch(389.5), inch(9)),
                   pt(inch(221.25), inch(9)), pt(inch(221.25), inch(9))),
             elevations=(inch(-10), inch(-10), inch(-10), inch(-7), inch(-7), inch(-21.5))),
     PipeRun(uid="660NG5X4HJ", tag="PR-M-RFG-HP2-BED", system=PipeSystem.REFRIGERANT, serves=("EQ-M-HP2-BED",),
@@ -99,7 +99,7 @@ LINESETS_MAIN = [
     # The framed-wall holes (sleeved, sloped out, sealed to the air barrier). HP2's three sets
     # cross FS-M-EAST's LSL rim below the wall, each in its own TJ-8000 rim hole: a floor
     # penetration, not a wall RoughOpening (one there frames a header into the plates).
-    RoughOpening(uid="5XPG5EHW9R", tag="AO-M-RFG-HP1", host="W-M-N1", position=from_node("N-M-NE", inch(118)),
+    RoughOpening(uid="5XPG5EHW9R", tag="AO-M-RFG-HP1", host="W-M-N1", position=from_node("N-M-NE", inch(122.125)),
                  width=inch(4), height=inch(4), sill_height=inch(28),
                  penetration_for=("PR-A-RFG-HP1",)),
     RoughOpening(uid="JRPGX9HKB5", tag="AO-M-RFG-HP3", host="W-M-N2", position=from_node("N-M-N1", inch(78)),

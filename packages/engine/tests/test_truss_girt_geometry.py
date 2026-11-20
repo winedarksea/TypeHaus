@@ -753,7 +753,9 @@ def test_a_bored_penetration_is_invisible_to_the_cladding_framing(catlin_model) 
 
     bores = [op for op in catlin_model.openings
              if op.penetration_for and not framed_around(op)]
-    assert {op.tag for op in bores} == {"AO-M-PORCH-HYD", "AO-S-BALCONY-HYD"}
+    # The lineset bores (2026-11-20) are 4", the bore limit itself: drilled, not framed.
+    assert {op.tag for op in bores} == {"AO-M-PORCH-HYD", "AO-S-BALCONY-HYD",
+                                        "AO-M-RFG-HP1", "AO-M-RFG-HP3"}
     assert all(op.penetration_for for op in bores), "the exemption IS the named run"
 
     # ** AND THE LINE IS SIZE, NOT KIND — THE TWO ERV SLEEVES ARE ON THE OTHER SIDE OF IT. **

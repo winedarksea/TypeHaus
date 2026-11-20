@@ -684,7 +684,9 @@ def test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs(catli
     # what fills the hole. The cladding rule is about a board being wider than the hole.
     # 19 since 2026-11-12: RM-S-PLANT's two 10x6 transfer sleeves, each inside one W-S-C1 bay.
     # 17 since 2026-11-16: WIN-S-BED3 rejoined the 27" row and WIN-S-BED3-N was deleted.
-    assert len(framed) == 17, [o.tag for o in framed]
+    # 19 since 2026-11-20: the lineset bores AO-M-RFG-HP1 / -HP3 (plan/mep_linesets.py), 4"
+    # holes each inside one W-M-N1 / W-M-N2 bay — the hydrant pair's reason again.
+    assert len(framed) == 19, [o.tag for o in framed]
     for opening in framed:
         wall = walls[opening.host_wall]
         start, end = _framing_axis(wall)

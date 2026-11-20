@@ -36,6 +36,10 @@ from typehaus.solids3d.recorder import drawn_placeables  # noqa: E402
 # MASAZ at the sill end (the board humps a flange). opening|slab: D-G-OVERHEAD's jambs stand
 # on SL-G-FLOOR's low edge, which rises 0.4 mm under their 1 9/16" depth. GARAGE_ICF_6's
 # gwb-stem foot rides the falling slab's plane (resolve/layer_seat.py), so slab|wall holds.
+# pipe_refrigerant|* are the linesets' cavity rises and plate/rim/deck bores, as for drains;
+# one is PR-B-RFG-HP2-GYM through W-M-S2's lowest outer girt (not intended, open). The 4"
+# vent grew vent|wall and grazes an attic joist (framing|vent). baseboard|insulation is
+# W-A-S3's base end 0.22" past the corner into the roof bay fill over W-A-E1's 3" plates.
 GOLDEN = Path(__file__).parent / "fixtures" / "solids3d_overlaps.json"
 #: The billed volume may differ from the exact solid by this much (relative, absolute m^3).
 VOLUME_TOLERANCE = (0.01, 1e-7)
