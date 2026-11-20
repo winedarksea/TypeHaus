@@ -6,7 +6,6 @@ board is replaced across the reveal by a drainage board down to a stone bed. The
 sealant joint to separately supported masonry is graded against the reserved movement.
 """
 
-from dataclasses import replace
 
 from shapely.geometry import Polygon, box
 
@@ -143,19 +142,16 @@ def _frame(wall, opening):
 
 def _layer_bounds(target, to_local):
     """``(function, (d0, z0, d1, z1))`` of each layer of ``target`` cut at the door's centre."""
-    from typehaus.resolve.geometry_ir import GMesh, GPrism
+    from typehaus.resolve.geometry_ir import GBox, GMesh, GPrism, remap_plan
 
     out = []
     for layer in target.body_layers():
         if layer.thickness_m <= 0:
             continue
         for solid in layer_solids(target, layer.polygon, [], layer_name=layer.name):
-            if not isinstance(solid, (GMesh, GPrism)):
+            if not isinstance(solid, (GMesh, GPrism, GBox)):
                 continue
-            moved = (replace(solid, positions=tuple((*to_local(p), p[2]) for p in solid.positions))
-                     if isinstance(solid, GMesh) else
-                     replace(solid, ring=tuple(to_local(p) for p in solid.ring),
-                             voids=tuple(tuple(to_local(p) for p in r) for r in solid.voids)))
+            moved = remap_plan(solid, to_local)
             for profile in slice_solid(moved, CutPlane("x", 0.0)):
                 bounds = Polygon(profile.outline, profile.voids).bounds
                 if not box(*bounds).is_empty:

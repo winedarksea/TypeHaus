@@ -5,7 +5,7 @@ from __future__ import annotations
 import pytest
 
 from _helpers import CATLIN, STARTER
-from typehaus.resolve.geometry_ir import GBox, GMesh, GPart, GPrism
+from typehaus.resolve.geometry_ir import GBox, GMesh, GPart, GPrism, remap_plan
 from typehaus.resolve.geometry_slice import (
     CutPlane,
     nearest_station,
@@ -21,6 +21,18 @@ UNIT = ((0.0, 0.0), (2.0, 0.0), (2.0, 1.0), (0.0, 1.0))
 
 def _rounded(profile, places: int = 9):
     return tuple((round(u, places), round(z, places)) for (u, z) in profile.outline)
+
+
+def test_remap_plan_moves_a_sloped_box_like_a_prism():
+    """A wall layer on a falling slab is a GBox; its footprint remaps, z stays."""
+    ring = ((0.0, 0.0), (2.0, 0.0), (2.0, 0.3), (0.0, 0.3))
+    box = GBox(tuple((x, y, 0.2 * x / 2) for x, y in ring), tuple((x, y, 2.0) for x, y in ring))
+    moved = remap_plan(box, lambda p: (p[1] - 0.1, p[0] - 1.0))
+    (profile,) = slice_solid(moved, CutPlane("x", 0.0))
+    us = [u for u, _z in profile.outline]
+    zs = [z for _u, z in profile.outline]
+    assert (min(us), max(us)) == pytest.approx((-0.1, 0.2))
+    assert (min(zs), max(zs)) == pytest.approx((0.1, 2.0))
 
 
 # --- CutPlane ------------------------------------------------------------------------

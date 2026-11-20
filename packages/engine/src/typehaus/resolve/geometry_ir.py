@@ -24,7 +24,7 @@ Conventions
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 
 # A 2D plan-frame ring (x, y), and a true 3D ring — both closed implicitly (no repeated
 # first point).
@@ -149,6 +149,24 @@ class GSweep:
 # Evaluated at import time (no ``from __future__`` deferral for a module-level alias), so
 # the ``X | Y`` form has to be a real runtime union — which it is on the 3.11 floor.
 GSolid = GPrism | GBox | GMesh | GSweep
+
+
+def remap_plan(solid: GPrism | GBox | GMesh, to_plan) -> GPrism | GBox | GMesh:
+    """``solid`` with every vertex's (x, y) sent through ``to_plan``; z is kept.
+
+    One footprint remap for the three wall-layer shapes (a layer on a falling slab is a
+    ``GBox``, ``resolve/layer_seat.py``). A GSweep is not one, and raises."""
+    def pts(ring):
+        return tuple((*to_plan(p), *p[2:]) for p in ring)
+    if isinstance(solid, GPrism):
+        return replace(solid, ring=tuple(to_plan(p) for p in solid.ring),
+                       voids=tuple(tuple(to_plan(p) for p in r) for r in solid.voids))
+    if isinstance(solid, GBox):
+        return replace(solid, corners_bottom=pts(solid.corners_bottom),
+                       corners_top=pts(solid.corners_top))
+    if isinstance(solid, GMesh):
+        return replace(solid, positions=pts(solid.positions))
+    raise TypeError(f"remap_plan: no plan footprint for {type(solid).__name__}")
 
 
 @dataclass(frozen=True)

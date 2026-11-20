@@ -1,7 +1,6 @@
 """Independent geometric checks on generated catalog-installation coordination parts."""
 
 import re
-from dataclasses import replace
 
 from shapely.geometry import Polygon
 
@@ -90,7 +89,7 @@ def _bounds(polygons):
 
 def _nearby_solids(model, local, reach, half, named, own):
     """``(label, hard, solid)`` in the opening's (normal, along, z) frame, box-filtered."""
-    from typehaus.resolve.geometry_ir import GMesh, GPrism
+    from typehaus.resolve.geometry_ir import GBox, GMesh, GPrism, remap_plan
     from typehaus.resolve.geometry_walls import layer_solids
 
     x0, z0, x1, z1 = reach
@@ -102,10 +101,7 @@ def _nearby_solids(model, local, reach, half, named, own):
                 and lo_z < z1 and hi_z > z0)
 
     def moved(solid):
-        if isinstance(solid, GMesh):
-            return replace(solid, positions=tuple((*local(p), p[2]) for p in solid.positions))
-        return replace(solid, ring=tuple(local(p) for p in solid.ring),
-                       voids=tuple(tuple(local(p) for p in ring) for ring in solid.voids))
+        return remap_plan(solid, local)
 
     for target in model.walls:
         if not near([p for ly in target.layers for p in ly.polygon], target.z0_m, target.z1_m):
@@ -115,7 +111,7 @@ def _nearby_solids(model, local, reach, half, named, own):
             if layer.function == "airgap" or layer.thickness_m <= 0:
                 continue
             for solid in layer_solids(target, layer.polygon, cuts, layer_name=layer.name):
-                if isinstance(solid, (GMesh, GPrism)):
+                if isinstance(solid, (GMesh, GPrism, GBox)):
                     hard = target.tag in named or layer.function == "structure"
                     yield f"{target.tag}/{layer.name}", hard, moved(solid)
     for solid in model.solids:
