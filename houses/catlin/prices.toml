@@ -3231,15 +3231,29 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # pair switched to stock 20-high frames on 2026-10-05. The bottomless mixer enclosure
 # FT-KIT-MIXER24-20 was retired 2026-10-25; both stock courses now hang over an open
 # countertop-appliance cave, and their underside/fixing is in [allowances].
-# RM-M-PANTRY's shelf stack, and it is NOT a closet system — see the type's `source` and
-# notes/pantry_climbable_shelving.md. The twelve 6/4 red oak shelves and 24 oak cleats are
-# owner stock, scheduled by `haus millwork` and carrying NO dollar here. The three ply
-# uprights bill as PROD-MAPLE-PLY-PREFIN-34 part rows below. What is left here: screws, the
-# top angle, edge banding and finish touch-up (2026-10-30: the ply ladder retired the
-# wall blocking and the back cleats). Labour is shop work on a story stick plus a scribed
-# install. A wire or melamine system cannot be substituted — it is not standable.
+# RM-M-PANTRY's shelf stack, and it is NOT a closet system — see plan/pantry_shelf_types.py
+# and notes/pantry_climbable_shelving.md. The six 6/4 red oak boards (71 3/4"), the return's
+# six 12" boards and the 24 oak cleats are owner stock, scheduled by `haus millwork` and
+# carrying NO dollar here. Ply, strut and brackets bill as part rows below. What is left
+# here: screws, edge banding, finish touch-up and the rear notches; labour is shop work on a
+# story stick plus a scribed install. Material and labour unchanged by the 2026-11-20 rework
+# (one bay, half the cleats, but six notched boards). A wire or melamine system cannot be
+# substituted — it is not standable.
 "FT-KIT-PANTRY-SHELVES-70" = { material = { low = 40, high = 120 }, labour = { low = 400, high = 1000 } }  # 1 ea
-"PROD-MAPLE-PLY-PREFIN-34" = { material = { low = 70, high = 110 }, labour = 0 }  # 3 ea, per 18 x 84 upright (they nest on 2 sheets); unresearched
+# The strut post: channel nuts, bolts and cold galv here; labour cuts six brackets, sets and
+# lags the post. ESTIMATE.
+"FT-KIT-PANTRY-STRUT" = { material = { low = 15, high = 40 }, labour = { low = 120, high = 300 } }  # 1 ea
+# The west return: cleats and screws; labour fits six 12" boards and the end panel. ESTIMATE.
+"FT-KIT-PANTRY-RETURN" = { material = { low = 10, high = 30 }, labour = { low = 120, high = 300 } }  # 1 ea
+# Three pieces (25 3/4, 18 and 7 3/4 x 84) that a shop rips from TWO sheets at ~$95-140; the
+# takeoff counts pieces (its nesting is crosscut-only, so it reads three sheets), so the
+# per-piece rate is two sheets over three. Unresearched.
+"PROD-MAPLE-PLY-PREFIN-34" = { material = { low = 63, high = 93 }, labour = 0 }  # 3 ea
+# One 10' stick of P1000 10PG, the [equipment_hangers] $4.25-11.40/ft basis.
+"PROD-UNISTRUT-P1000-PG" = { material = { low = 43, high = 114 }, labour = 0 }  # 1 ea
+# B-Line B409-18 ZN: ESTIMATE, no retailer price read.
+"PROD-BLINE-B409-18-ZN" = { material = { low = 20, high = 45 }, labour = 0 }  # 6 ea
+"PROD-LAG-3-8X4-ZN" = { material = { low = 0.50, high = 1.20 }, labour = 0 }  # 6 ea — estimate
 "FT-BATH1-SHELF-1630" = { material = { low = 200, high = 750 }, labour = { low = 150, high = 450 } }  # 1 ea
 # The suite bath's twin of it, open to the west since 2026-10-03: the same build and the same
 # two ends of the band, a little lower, as 11 1/4" x 30" is less carcass than 20" x 30" and

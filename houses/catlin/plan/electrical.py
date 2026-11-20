@@ -2163,11 +2163,11 @@ NEC_FILL_MAIN = [
     # floor-to-ceiling carcass. A receptacle behind a fixed cabinet is not wall space under
     # 210.52(A) and is not reachable under any reading of it. The tombstone is here rather
     # than a silent removal because the uid is an IFC GlobalId that has shipped.
-    # RM-M-PANTRY's reach-in outlet and the pantry MICROWAVE trial outlet (east bay, at
-    # x~258", inside the 36" door mouth, 2" east of the centre gable). NEC 210.52(B)(1) puts
-    # a pantry receptacle on a small-appliance branch circuit; SA2 (2026-10-25) so the
-    # microwave never shares with the coffee machine on SA1. NOT GFCI: 210.8(A)
-    # keys on room occupancy (STORAGE is not in the map) and on the 6' sink reach, and
+    # RM-M-PANTRY's reach-in outlet and the pantry MICROWAVE trial outlet (x=21'-6 3/4",
+    # inside the 36" door mouth; the plate clears FURN-M-PANTRY-STRUT by 9/16").
+    # NEC 210.52(B)(1) puts a pantry receptacle on a small-appliance branch circuit; SA2
+    # (2026-10-25) so the microwave never shares with the coffee machine on SA1. NOT GFCI:
+    # 210.8(A) keys on room occupancy (STORAGE is not in the map) and on the 6' sink reach, and
     # FX-M-KITCH-SINK is 8'-1" away.
     #
     # The NORTH wall at 48" — over the second shelf, which is what "reach-in height" means.
@@ -2179,7 +2179,7 @@ NEC_FILL_MAIN = [
                      circuit="CKT-KITCH-SA2", room="RM-M-PANTRY",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-N1B", face="left", distance_from_start=inch(37),
+                         wall_ref="W-M-N1B", face="left", distance_from_start=inch(36.25),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # Fills the >6' gap electrical.receptacle_spacing flags on the centre bearing wall
     # between RC2 (y=15.87) and the wall's south end, on the LIVING face.

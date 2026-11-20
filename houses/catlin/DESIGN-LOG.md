@@ -8962,3 +8962,24 @@ Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
 - **`EQ-B-HP2-GYM` turned to `rotation_offset=deg(-180)`** like the other heads, so its back
   (the lineset side) is on the wall. It had been authored facing the wall, which the symmetric
   symbol never showed.
+
+## Pantry shelves: open middle on a strut post (2026-11-20, owner)
+
+- **Why.** Review item 9: the west bins (~15" deep) had no way out. The full-depth centre
+  gable blocked them and the 8" floor strip is narrower than a bin. The reviewer proposed
+  smaller, reoriented bins; the owner opened the middle instead.
+- **What.** `FT-KIT-PANTRY-SHELVES-70` is one 71 3/4" bay. Each level is one continuous 6/4
+  oak board at east's old tops, so a 16 5/8" lane in front of the post runs at every height.
+  Mid-length each board bears on a B-Line B409-18 cut to 15 5/8" (catalog 640 lb uniform,
+  5,760 in-lb root moment) off a P1000 post (`FURN-M-PANTRY-STRUT`) on stud-002 at
+  x=21'-4", one 3/8" x 4" lag above each bracket. The post replaces the top angle.
+- **West return.** `FURN-M-PANTRY-RETURN`, 12" x 7 3/4", fills the strip's dead west end.
+  Its west end is the west upright's forward part: the upright is 25 3/4" deep and billed once.
+- **Lighting.** `ED-M-PANTRY-LT2`/`-LT3` are retired with the gable. The driver stays at
+  96 W (45 W needed). `ED-M-PANTRY-RC1` moved 3/4" east to clear the post.
+- **Arithmetic.** Worst cases: the bracket at 0.81 (300 lb at the tip) and the lag at 0.82.
+  The board is 0.089" on a front-edge strip, against L/360 = 0.100"
+  (`notes/pantry_climbable_shelving.md`).
+- **Open.** Does the pile have clear 6'+ boards? If not, two boards meet over a pair of
+  brackets. The takeoff's crosscut-only nesting reads the three ply pieces as three sheets; a
+  shop rips them from two, and the per-piece price row says so.

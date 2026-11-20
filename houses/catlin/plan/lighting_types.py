@@ -380,14 +380,13 @@ AMBIENT_LUMINAIRE_TYPES = (
                          "standard: 2700 K makes white oak read orange. Back plate 6 1/2 W x "
                          "4 5/16 H (installation sheet p.2, read 2026-11-07)."),
 
-    # --- T: RM-M-PANTRY's jamb channels (2026-10-30) ------------------------------------
-    # Four, one per inside face of the shelf uprights, 1" behind the shelf front, aimed into
-    # the bay: each bay is lit from both sides, so the gable shades nothing. A WALL_LAMP and
+    # --- T: RM-M-PANTRY's jamb channels (2026-10-30; two since 2026-11-20) --------------
+    # One per end upright's inside face, 1" behind the shelf front, aimed into the one open
+    # bay from both sides. A WALL_LAMP and
     # not a LightRun because a vertical run has no length in plan (``LightRun.path`` is plan
     # only): the body's base is the mount elevation and ``height`` measures up from it.
     # Shop-fitted to the ply, so no wall box. Generic 90-CRI COB since 2026-10-31 (VALENT X
-    # was over-spec for a pantry): mark E's tape, so all four (24 ft at 3 W/ft, 72 W) want
-    # the 200 W OMNIDRIVE X, ED-M-PANTRY-LT-PSU.
+    # was over-spec for a pantry): mark E's tape, 2 x 18 W on the 96 W ED-M-PANTRY-LT-PSU.
     LuminaireType(tag="ED-T-LT-JAMB72",
                   replaceable_lamp=True, name='72" vertical 45-degree LED channel, shelf jamb',
                   form=LuminaireForm.WALL_LAMP, type_mark="T",

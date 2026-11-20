@@ -31,13 +31,13 @@ from typehaus.model import (
     Mount,
     MountKind,
     PlacementStrategy,
-    ProductPart,
     ft,
     inch,
     pt,
 )
 
 from .garage_cart_types import GARAGE_CART_TYPES
+from .pantry_shelf_types import PANTRY_SHELF_TYPES
 from .study_booth_types import FOLD_LEAF, STUDY_BENCH, STUDY_DESK, STUDY_FOOTREST
 from .tub_access_panel_types import TUB_ACCESS_PANEL_1414, TUB_ACCESS_PANEL_2015
 
@@ -312,56 +312,7 @@ MEDIA_SECTIONAL_U = FurnitureType(
 # instances are, and to prices.toml [allowances], where the money is.
 
 
-# --- RM-M-PANTRY's shelf stack --------------------------------------------------------
-#
-# House-local: 73 1/4" is this room's 73 1/2" clear span less a 1/8" scribe each end.
-# Built to be STOOD ON (notes/pantry_climbable_shelving.md has the arithmetic).
-#
-# A 3-panel ply ladder (2026-10-30): west, centre and east uprights, 3/4" prefinished maple
-# ply, 18" x 84", on the floor, no back. Gravity goes to the floor through the ply, so the
-# walls only hold it plumb: the ends screw to the corner framing, the centre is tied by
-# every shelf and one top angle to a north-wall stud. NO blocking; that angle is the case's
-# only fastener in the exterior wall.
-# Each 6/4 red oak shelf sits on two 1x3 oak cleats glued and screwed to the uprights on the
-# bench, screwed UP through them (round hole front, 3/8" slot rear), 1/4" off the north wall
-# so its ~1/4" of front-to-back movement needs no slot into a wall. Gabled to 35 1/2", a 250
-# lb point deflects ~0.050" full depth, ~0.10" on a front-edge strip, against L/360 = 0.099":
-# 6/4 is the floor. Tops are graduated and the 64/74/84 tops line up across the gable.
-PANTRY_SHELVES_70 = FurnitureType(
-    tag="FT-KIT-PANTRY-SHELVES-70", name='Pantry ply-ladder shelf stack, 73 1/4" x 18"',
-    footprint=(inch(73.25), inch(18)), height=ft(7),
-    storage=True, work_surface=False, plan_symbol="bookcase",
-    wood_material_ref="oak-shelf-6q",
-    built_in_bookcase=BuiltInBookcaseSpec(
-        bays=(
-            # West: backstock in pull-out bins, 20/14/13/12/8 3/4/8 3/4 clear.
-            BuiltInBookcaseBay(clear_width=inch(35.5), height=inch(84), horizontal_board_count=6,
-                               board_tops=(inch(21.25), inch(36.5), inch(50.75), inch(64),
-                                           inch(74), inch(84))),
-            # East: everyday + the microwave in the 35"->53" opening, ED-M-PANTRY-RC1 at 48".
-            BuiltInBookcaseBay(clear_width=inch(35.5), height=inch(84), horizontal_board_count=6,
-                               board_tops=(inch(17), inch(35), inch(54.25), inch(64),
-                                           inch(74), inch(84))),
-        ),
-        shelf_depth=inch(18), horizontal_board_thickness=inch(1.25),
-        divider_thickness=inch(0.75), back_thickness=inch(0),
-        panel_material_ref="maple-ply-prefin-34", board_material_ref="oak-shelf-6q",
-    ),
-    # Shelves are SB-M-PANTRY; these are the cleats, two per board, 2" short of the front.
-    cut_list=(FurnitureCut(part="shelf cleat", count=24, thickness=inch(0.75),
-                           width=inch(2.5), length=inch(16), material_ref="oak-shelf-4q"),),
-    parts=(ProductPart(role="frame", product_ref="PROD-MAPLE-PLY-PREFIN-34", quantity=3,
-                       cut=(inch(18), inch(84))),),
-    source="Site-built millwork, DESIGNED TO BE CLIMBED (notes/pantry_climbable_shelving.md). "
-           "Three 3/4\" prefinished maple ply uprights, 18\" x 84\", floor-bearing, no back; "
-           "ends screwed to the corner framing, centre tied by the shelves and one top angle. "
-           "1 1/4\" solid red oak shelves (SB-M-PANTRY) on 1x3 oak cleats shop-fixed to the "
-           "ply, screwed up through them, front hole round, rear slotted, 1/4\" off the north "
-           "wall. No blocking, no wall cleats, no shelf pins. Design load as a floor: 40 psf "
-           "plus 250-300 lb anywhere. ED-M-PANTRY-LT..LT4 run in each upright's inside face, "
-           "the shelf front corners notched past them.",
-)
-
+# RM-M-PANTRY's shelf stack, strut post and return: plan/pantry_shelf_types.py.
 
 
 # --- Shared clearance variants ----------------------------------------------------------
@@ -383,7 +334,7 @@ PANTRY_SHELVES_70 = FurnitureType(
 # jacket on a hanger actually needs; 12" is the linen depth and is what RM-S-NCLOSET's
 # 40 3/4" of wall takes without crowding its door.
 #
-# ``plan_symbol="bookcase"`` for the same reason PANTRY_SHELVES_70 uses it: a shelf run is a
+# ``plan_symbol="bookcase"`` for the same reason the pantry shelves use it: a shelf run is a
 # depth of floor the room does not have, and a plan that draws the closet empty reads as
 # room that is there. They are WALL-mounted at rod height, so nothing stands on the floor —
 # the symbol is the reach, not an obstruction.
@@ -513,7 +464,7 @@ FURNITURE_TYPES = (STUDY_BUILT_IN_BOOKCASE,
                    BATH1_SHELF_1630,
                    MEDIA_SECTIONAL_U, SUITEBATH_SHELF_0730,
                    SUITEBATH_PEGS_24, SUITEBATH_MIRROR_ESTERO,
-                   PANTRY_SHELVES_70,
+                   *PANTRY_SHELF_TYPES,
                    STUDY_BENCH, STUDY_DESK, FOLD_LEAF, STUDY_FOOTREST,
                    CLOSET_SHELF_ROD_60, CLOSET_SHELF_ROD_84, CLOSET_SHELF_ROD_96,
                    CLOSET_SHELF_36, TANNFORSEN_1806, STUDIO_KITCHENETTE_4422,

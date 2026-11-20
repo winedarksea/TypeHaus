@@ -239,7 +239,7 @@ def test_catlin_pantry_lighting_and_shelves_stay_outside_the_cassette(catlin_pla
     assert shelves.position.x.inches == pytest.approx(256)
     assert shelves.position.y.inches == pytest.approx(416.25)
     bank = catlin_plan.by_tag("SB-M-PANTRY")
-    assert [bay.width.inches for bay in bank.bays] == pytest.approx([35.5, 35.5])
+    assert [bay.width.inches for bay in bank.bays] == pytest.approx([71.75])
 
 
 def test_a_single_support_retains_the_opposite_conventional_jamb_pack():

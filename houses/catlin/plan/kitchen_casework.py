@@ -326,8 +326,14 @@ MAIN_KITCHEN_CASEWORK = [
               plugs_into=("ED-M-LIVING-KGF4",),
               mount=Mount(kind=MountKind.FLOOR, elevation=inch(36))),
 
-    # Ply ladder, 18" deep and 1/4" off the north wall (the oak's movement), 8" of floor
-    # in front; 1/8" scribe each end, two 35 1/2" bays either side of the centre upright.
+    # One 71 3/4" bay, 18" deep and 1/4" off the north wall (the oak's movement), 8" of floor
+    # in front; 1/8" scribe each end. The strut post stands on W-M-N1B's x=21'-4" stud,
+    # against the gypsum (y=35'-5 1/2"); the return fills the strip's west end, 1/4" off
+    # W-M-PAN-S, its west end the west upright's forward 7 3/4".
     Furniture(uid="J49EW9WWTQ", tag="FURN-M-PANTRY-SHELVES", type_ref="FT-KIT-PANTRY-SHELVES-70",
               room="RM-M-PANTRY", position=pt(inch(256), ft(34, 8.25))),
+    Furniture(uid="6FTFKH57A8", tag="FURN-M-PANTRY-STRUT", type_ref="FT-KIT-PANTRY-STRUT",
+              room="RM-M-PANTRY", position=pt(inch(256), inch(424.6875))),
+    Furniture(uid="E3J2DC6KYY", tag="FURN-M-PANTRY-RETURN", type_ref="FT-KIT-PANTRY-RETURN",
+              room="RM-M-PANTRY", position=pt(inch(226.125), inch(403.375))),
 ]

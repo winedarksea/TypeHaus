@@ -194,16 +194,14 @@ ATTIC_SHELVES = [
 
 # --- the main pantry, FURN-M-PANTRY-SHELVES --------------------------------------------
 #
-# See notes/pantry_climbable_shelving.md and the FT-KIT-PANTRY-SHELVES-70 source.
+# See notes/pantry_climbable_shelving.md and plan/pantry_shelf_types.py.
 #
-# 1. DESIGNED TO BE CLIMBED, so thickness is structural: 6/4 red oak, 1 1/4". A 250 lb point
-#    on the 35 1/2" bays between the ply uprights is ~0.050" full depth and ~0.10" on a
-#    front-edge strip, against L/360 = 0.099". Do not go thinner.
+# 1. Safe to climb, so thickness is structural: 6/4 red oak, 1 1/4", each level ONE board
+#    over the strut bracket at mid-length. Do not go thinner.
 # 2. 18" deep, the edge of the supply: `depth` is inherited from the type's footprint, and
-#    `haus millwork` lays each shelf up as a two-board 9" panel (an 18" face needs 18 3/4"
-#    rough). Raise `max_board_width` above if the stack holds wider boards.
-#
-# Six boards per bay, the case top included, at the type's explicit `board_tops`.
+#    `haus millwork` lays each board up as a two-board 9" panel. 71 3/4" wants clear 6'+
+#    stock; if the pile has none, two boards meet over a pair of brackets.
+# 3. The return's six 12" boards are 7 3/4" deep, also inherited.
 MAIN_SHELVES = [
     ShelfBank(
         uid="E97F8XSSZ5", tag="SB-M-PANTRY",
@@ -212,10 +210,13 @@ MAIN_SHELVES = [
         thickness=inch(1.25),
         profile="S4S",
         procurement=ShelfProcurement.CUSTOM_MILLED,
-        bays=(
-            ShelfBay(width=inch(35.5), clear_height=ft(7), shelf_count=6),
-            ShelfBay(width=inch(35.5), clear_height=ft(7), shelf_count=6),
-        ),
+        bays=(ShelfBay(width=inch(71.75), clear_height=ft(7), shelf_count=6),),
+    ),
+    ShelfBank(
+        uid="DXGD06DAY8", tag="SB-M-PANTRY-RETURN", host="FURN-M-PANTRY-RETURN",
+        material_ref="oak-shelf-6q", thickness=inch(1.25), profile="S4S",
+        procurement=ShelfProcurement.CUSTOM_MILLED,
+        bays=(ShelfBay(width=inch(12), clear_height=ft(7), shelf_count=6),),
     ),
     # Booth bench cuts come from BuiltInBenchSpec, including its purchased plywood.
     # Only the fixed desk/leaf remain ShelfBanks; their dollars stay in placeables.

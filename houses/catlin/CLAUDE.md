@@ -2060,12 +2060,14 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   Explicit `frame_end_supports` use `W-M-C5B` and `W-M-PAN-E`, with full-height
   west backing and the existing east corner studs. Western storage remains a sideways reach.
   See `notes/pocket_frame_eclisse.md`.
-- **Pantry shelves (2026-10-30):** a floor-standing 3-panel maple-ply ladder, no back, no
-  blocking, one top angle its only fastener in the exterior wall; 6/4 oak shelves on bench-fixed cleats at explicit
-  `board_tops`, 1/4" off the north wall. Four 24V jamb channels (`ED-M-PANTRY-LT`..`-LT4`) on
-  one 60 W driver at 90" on `W-M-N1B`, all on the inside PIR `ED-M-PANTRY-SW` at 56" (no
-  kitchen-side pantry switch; the 46" box there is the undercabinet relay). Built to be
-  stood on: `notes/pantry_climbable_shelving.md`.
+- **Pantry shelves (2026-11-20):** one open 71 3/4" bay between floor-standing maple-ply end
+  uprights, no back, no blocking; six continuous 6/4 oak boards (17/35/54 1/4/64/74/84) on end
+  cleats and one cut-down B409 bracket each off `FURN-M-PANTRY-STRUT`, a P1000 lagged to
+  `W-M-N1B`'s x=21'-4" stud (its only fastener in the exterior wall). The 16 5/8" lane in
+  front of the post lets bins slide to the door; `FURN-M-PANTRY-RETURN` fills the strip's west
+  end on the 25 3/4" west upright. Two 24V jamb channels (`ED-M-PANTRY-LT`, `-LT4`) on the
+  96 W driver at 90", on the inside PIR `ED-M-PANTRY-SW` at 56". Types in
+  `plan/pantry_shelf_types.py`; safe to climb: `notes/pantry_climbable_shelving.md`.
 
 ### Basement
 
@@ -3251,7 +3253,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   bowl 30x17x10, placement envelope 32x22 including rear faucet space. Quartz opening
   follows the fixture; flange clips/template remain a fabrication check. Drain, disposer,
   sleeve and cleanout share x=352, y=416 7/8; downstream drain route stays fixed.
-  Pantry shelves are 73 1/4: two 35 1/2 bays between three 3/4 ply uprights.
+  Pantry shelves are 73 1/4: one 71 3/4 bay between two 3/4 ply uprights, a strut post mid-length.
 - **North uppers:** W36 + 20 stacker, W36 bridge, W30 + 20 stacker. WN1 is the true
   26x26x30 diagonal corner at 73 1/2 AFF; WN2 is W12-30 between it and the hood.
   Shared polygon geometry keeps plan, collisions, viewer and GLB aligned. Light strips

@@ -375,13 +375,13 @@ def test_catlin_ceiling_lights_resolve_to_their_authored_mount_height() -> None:
     # exception — a step light on W-SG-E1's east face, whose top IS the `main` datum — and it
     # moved back onto W-M-S2 at 7'-0" on 2026-09-20. The exception was retired, not forgotten.
     assert all(above_floor(item.tag) > 0.05 for item in placed)
-    # The 0.5 m line is the "did it fall to the floor" heuristic, and only RM-M-PANTRY's four
+    # The 0.5 m line is the "did it fall to the floor" heuristic, and only RM-M-PANTRY's two
     # 6'-0" vertical jamb channels are legitimately below it: their authored base is 1'-0".
     # ``resolved_mount_elevation`` returns the BASE of a body and LuminaireType.height
     # measures up from it, so a low z_m here is the fixture working, not falling. Naming them
     # keeps the heuristic sharp for the other fifty-odd.
     low = {item.tag for item in placed if above_floor(item.tag) <= 0.5}
-    pantry_channels = {"ED-M-PANTRY-LT", "ED-M-PANTRY-LT2", "ED-M-PANTRY-LT3", "ED-M-PANTRY-LT4"}
+    pantry_channels = {"ED-M-PANTRY-LT", "ED-M-PANTRY-LT4"}
     assert low == pantry_channels, sorted(low)
     # ...and 1'-0" off the FINISHED floor they stand on: a stated elevation is AFF (below),
     # here 3/4" subfloor + the 7 mm plank = 1.0255906" over the datum since #112.

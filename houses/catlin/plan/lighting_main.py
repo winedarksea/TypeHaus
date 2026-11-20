@@ -25,12 +25,13 @@ from typehaus import (
 from typehaus.model import Location, WallAttachment
 
 MAIN_LIGHTING = [
-    # --- RM-M-PANTRY's jamb channels (2026-10-30) ---------------------------------------
-    # One per inside face of FURN-M-PANTRY-SHELVES' three uprights, 12".."84" AFF, centred 1"
-    # behind the shelf front at y=34'-0 1/4". The ends are hosted on the side walls at the
-    # 1/8" scribe plus the 3/4" ply. The centre pair are fixed to the gable at x=21'-4", with
-    # no wall behind them, so they are FLOOR mounts at a stated height (a WALL mount must bear
-    # on a wall face). All four are 24V on ED-M-PANTRY-LT-PSU and switch with it.
+    # --- RM-M-PANTRY's jamb channels (2026-10-30; centre pair retired 2026-11-20) ------
+    # One per end upright's inside face of FURN-M-PANTRY-SHELVES, 12".."84" AFF, centred 1"
+    # behind the shelf front at y=34'-0 1/4", facing each other across the open 72" bay
+    # (the gable that shaded it is now a strut post). Hosted on the side walls at the 1/8"
+    # scribe plus the 3/4" ply; 24V on ED-M-PANTRY-LT-PSU, switched with it. Fallback if
+    # wanted: a pair on the strut post's side faces. LT2 (4W9J90JKEH) and LT3 (9H4SK1RZVM)
+    # are those retired GlobalIds.
     ElectricalDevice(uid="2A635YS6VW", tag="ED-M-PANTRY-LT", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-JAMB72", psu_ref="ED-M-PANTRY-LT-PSU",
                      room="RM-M-PANTRY", controlled_by=("ED-M-PANTRY-SW",),
@@ -38,16 +39,6 @@ MAIN_LIGHTING = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-C5B", face="right", distance_from_start=inch(11.25),
                          normal_gap=inch(0.875), rotation_offset=deg(0)))),
-    ElectricalDevice(uid="4W9J90JKEH", tag="ED-M-PANTRY-LT2", kind=DeviceKind.LIGHT,
-                     position=pt(inch(255.25), inch(408.25)), rotation=deg(-90),
-                     type_ref="ED-T-LT-JAMB72", psu_ref="ED-M-PANTRY-LT-PSU",
-                     room="RM-M-PANTRY", controlled_by=("ED-M-PANTRY-SW",),
-                     mount=Mount(kind=MountKind.FLOOR, elevation=inch(12))),
-    ElectricalDevice(uid="9H4SK1RZVM", tag="ED-M-PANTRY-LT3", kind=DeviceKind.LIGHT,
-                     position=pt(inch(256.75), inch(408.25)), rotation=deg(90),
-                     type_ref="ED-T-LT-JAMB72", psu_ref="ED-M-PANTRY-LT-PSU",
-                     room="RM-M-PANTRY", controlled_by=("ED-M-PANTRY-SW",),
-                     mount=Mount(kind=MountKind.FLOOR, elevation=inch(12))),
     ElectricalDevice(uid="GP9JMATM58", tag="ED-M-PANTRY-LT4", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-JAMB72", psu_ref="ED-M-PANTRY-LT-PSU",
                      room="RM-M-PANTRY", controlled_by=("ED-M-PANTRY-SW",),
@@ -55,10 +46,10 @@ MAIN_LIGHTING = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-PAN-E", face="left", distance_from_start=inch(11.25),
                          normal_gap=inch(0.875), rotation_offset=deg(-180)))),
-    # Their driver, surface-mounted over the case top above the gable at 90" AFF: reachable
-    # from the top shelf, ventilated, and under the 8'-4" cold-water crossing. Since the
-    # channels went to generic COB (2026-10-31), 4 x 18 W x 1.25 = 90 W: a 96 W Class 2 HLG,
-    # on/off with the occupancy sensor (the pantry needs no dimming).
+    # Their driver, surface-mounted over the case top above the strut post at 90" AFF:
+    # reachable from the top shelf, ventilated, and under the 8'-4" cold-water crossing.
+    # 2 x 18 W x 1.25 = 45 W on a 96 W Class 2 HLG: oversized since the centre pair went,
+    # kept as authored. On/off with the occupancy sensor (the pantry needs no dimming).
     ElectricalDevice(uid="DZVAFADH7Y", tag="ED-M-PANTRY-LT-PSU", kind=DeviceKind.LED_DRIVER,
                      type_ref="ED-T-LT-PSU-96-WE",
                      circuit="CKT-LT-MAIN", room="RM-M-PANTRY", controlled_by=("ED-M-PANTRY-SW",),
@@ -70,7 +61,7 @@ MAIN_LIGHTING = [
     # 8" strip ahead of the shelves: plate centre 4 1/2" north of the south wall finish,
     # box centre 56" AFF (clears the kitchen-side box at 46" in the same bay). The lens's
     # south half is masked so it sees along the shelves, not the kitchen. It switches the
-    # driver's 120V, so all four channels.
+    # driver's 120V, so both channels.
     ElectricalDevice(uid="1M4ZM8DRWH", tag="ED-M-PANTRY-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-OCC-PANTRY",
                      circuit="CKT-LT-MAIN", room="RM-M-PANTRY",
