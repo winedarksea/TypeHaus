@@ -60,9 +60,9 @@ def butt_layers(walls: dict[str, ResolvedWall], junction: ResolvedJunction,
 
     ``courses_only`` keeps a vertical batten band (and the retired truss's outrigger band,
     whose corner box closes its mitre) on the mitre. ``unclipped`` holds each wall's layer
-    rings before the mitre — bands already extended
-    past the node, so a band intersected with the pair's union runs to the neighbour's far
-    face. ``normalize`` is topology's ring normaliser, passed in to keep one ring convention.
+    rings before the mitre — bands already extended past the node, so a band intersected
+    with the pair's union runs to the neighbour's far face. ``normalize`` is topology's ring
+    normaliser, passed in to keep one ring convention.
     """
     through = junction.sheathing_through
     others = [item.wall_tag for item in junction.incidents if item.wall_tag != through]
@@ -150,6 +150,14 @@ def mitred_band(model: Any, wall: ResolvedWall, layer: ResolvedLayer) -> Resolve
                 ring = mitre
             break
     return replace(layer, polygon=ring) if ring is not layer.polygon else layer
+
+
+def mitred_courses(model: Any, wall: ResolvedWall) -> ResolvedWall:
+    """``wall`` with every course band's mitre restored (:func:`mitred_band`)."""
+    layers = tuple(mitred_band(model, wall, layer) if layer.courses else layer
+                   for layer in wall.layers)
+    changed = any(a is not b for a, b in zip(layers, wall.layers, strict=True))
+    return replace(wall, layers=layers) if changed else wall
 
 
 def layer_run_m(layer: ResolvedLayer, axis_run_m: float) -> float:

@@ -538,6 +538,7 @@ class GirtFrame(BandFrame):
         return station if self._in_void(centre, z0, list(voids)) else centre
 
     def _block_span(self, course: FramedMember) -> tuple[float, float]:
+        """``course``'s station range, clipped to where its blocks may stand."""
         seg_lo = self.station_of(course)
         return block_span(seg_lo, seg_lo + length(sub(course.p1, course.p0)), self.first,
                           self.last, self.stock_thickness / 2.0, self.continuations)
@@ -546,18 +547,11 @@ class GirtFrame(BandFrame):
                         butts: tuple[float, ...] = ()) -> list[float]:
         """Stud stations one course segment (its block span) crosses, plus one at each free end.
 
-        ``butts`` are the stations at which a course end lands against an opening's JAMB
-        POST — its outer face, since the field is held exactly one post width clear of every
-        RO (``furring.opening_margin``). Such an end is not free and must NOT take the
-        mandatory end block, for the plainest possible reason: **there is no stud there.**
-        The course stops 3-1/2" short of the RO edge, so a block held its own half-width
-        inside that stops 5-1/4" short of it — between the last module stud and the jack,
-        on bare sheathing. What actually carries that end is the jamb post it butts, which
-        is blocked at this very elevation and screwed to the jack and the king behind it.
-
-        This is the same class of mistake as a block landing on nothing, arrived at from
-        the other direction, and ``test_truss_girt_geometry.py`` measures the lap rather
-        than trusting the module.
+        ``butts`` are stations where a course end lands on an opening's JAMB POST (the field
+        is held one post width clear of every RO, ``furring.opening_margin``). Such an end
+        takes no end block: **there is no stud there** — a block would sit 5-1/4" short of
+        the RO, on bare sheathing. The jamb post, blocked at this elevation, carries it;
+        ``test_truss_girt_geometry.py`` measures the lap rather than trusting the module.
         """
         half = self.stock_face / 2.0
         spacing, phase = self._module(tier)

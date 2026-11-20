@@ -585,7 +585,9 @@ def test_courses_butt_at_an_l_corner(catlin_model_ro):
                 out[round(z0, 6)] = (Polygon(member_footprint(member)[0]), end)
         return out
 
-    checked = 0
+    closures = {m.child_key: m for roof in catlin_model_ro.roofs for m in roof.members
+                if "-closure-" in m.child_key}
+    checked = lone_closures = 0
     for junction in catlin_model_ro.junctions:
         tags = [item.wall_tag for item in junction.incidents]
         if junction.kind != "l" or not set(tags) <= girt_tags:
@@ -605,7 +607,18 @@ def test_courses_butt_at_an_l_corner(catlin_model_ro):
             assert run_fp.intersection(butt_fp).area < 1e-9
             assert run_fp.boundary.intersection(butt_fp.buffer(1e-6)).length > IN
             checked += 1
+        # An eave closure beside a gable that stops below it still owns the corner square.
+        band = _bands(catlin_model_ro, butting)[1]
+        lone = closures.get(f"{butting.tag}-closure-0-{band}")
+        if lone is not None and f"{through.tag}-closure-0-{band}" not in closures:
+            end = min((lone.p0, lone.p1), key=lambda p: (p[0] - junction.point[0]) ** 2
+                      + (p[1] - junction.point[1]) ** 2)
+            face = max(_off(through, p) for p in next(
+                ly for ly in through.layers if ly.name == band).polygon)
+            assert abs(_off(through, end) - face) < 1e-6, f"{butting.tag}: closure short"
+            lone_closures += 1
     assert checked >= 40, "vacuity guard: catlin's eight main corners, both storeys"
+    assert lone_closures >= 2, "vacuity guard: W-S-E4 and W-S-W4's eave closures"
 
 
 def _off(wall, point) -> float:

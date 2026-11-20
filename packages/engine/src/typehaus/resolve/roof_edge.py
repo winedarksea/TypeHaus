@@ -51,6 +51,7 @@ from typehaus.resolve.roof_geometry import (
 from typehaus.resolve.roof_image_ii_eave import wrapped_eave_head_cap_w
 from typehaus.resolve.roof_layer_setbacks import above_structure_layers
 from typehaus.resolve.roof_trim import roof_trim_members
+from typehaus.resolve.sheathing_corner import mitred_courses
 
 
 def resolve_roof_edges(model: ResolvedModel) -> None:
@@ -282,6 +283,9 @@ def _closure_members(
     model: ResolvedModel, roof: ResolvedRoof, walls: tuple[ResolvedWall, ...]
 ) -> tuple[FramedMember, ...]:
     """Carry each exterior wall's weather skin up to the roof faces it mates with."""
+    # A girt course band is butt-cut at an L, but the gable beside an eave closure stops
+    # below it: tile the corner off the band's mitre, or its square is nobody's.
+    walls = tuple(mitred_courses(model, wall) for wall in walls)
     structure_depth = roof_structure_plumb_depth_m(model, roof)
     assembly = model.plan.library.resolve_assembly(roof.assembly) if roof.assembly else None
     element = model.plan.by_tag(roof.tag)
