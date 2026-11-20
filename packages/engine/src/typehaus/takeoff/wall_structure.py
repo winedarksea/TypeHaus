@@ -44,11 +44,37 @@ Deliberately out of scope, so a reader does not assume they were forgotten:
 
 from __future__ import annotations
 
+import math
+
 from typehaus.model.enums import LayerFunction
 from typehaus.resolve.framing.solver import frames_as_members
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff.envelope import wall_layer_net_area_m2, wall_net_areas_m2
 from typehaus.takeoff.framing import _FT3_PER_CUBIC_YARD, _M2_TO_FT2, _M3_TO_FT3
+
+
+def stair_framed_walls(model: ResolvedModel) -> set[str]:
+    """Face-only walls whose studs a stair generates (a U-stair's well partition).
+
+    Their sticks bill in [framing] as the stair's ``partition`` members, so the wall's
+    unframed STRUCTURE layer is not a second, monolithic quantity.
+    """
+    parts = [m for stair in model.stairs for m in stair.members if m.category == "partition"]
+    out = set()
+    for wall in model.walls:
+        (ax, ay), (bx, by) = wall.axis
+        length = math.hypot(bx - ax, by - ay)
+        if wall.members or length < 1e-9:
+            continue
+        ux, uy = (bx - ax) / length, (by - ay) / length
+        for m in parts:
+            mx, my = (m.p0[0] + m.p1[0]) / 2.0, (m.p0[1] + m.p1[1]) / 2.0
+            along = (mx - ax) * ux + (my - ay) * uy
+            if (abs((mx - ax) * uy - (my - ay) * ux) < 0.003 and 0.0 <= along <= length
+                    and m.z0_m < wall.z1_m and m.z1_m > wall.z0_m):
+                out.add(wall.tag)
+                break
+    return out
 
 
 def wall_structure_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
@@ -74,8 +100,11 @@ def wall_structure_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     Row = dict[str, object]
     groups: dict[tuple[str, str, str, float], Row] = {}
     net_areas = wall_net_areas_m2(model)
+    stair_framed = stair_framed_walls(model)
 
     for wall in model.walls:
+        if wall.tag in stair_framed:
+            continue
         asm = model.plan.library.resolve_assembly(wall.assembly)
         if asm is None:
             continue

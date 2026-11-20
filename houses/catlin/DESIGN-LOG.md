@@ -9051,3 +9051,24 @@ Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
 - **Open.** `integrity.placeable_room_mismatch` reads REG-A-RET-STAIR UNKNOWN: no attic room owns
   the stair void, and the register names RM-S-HALL.
   Bedrooms now net 80 cfm under their doors (11.0 Pa, accepted).
+
+## Well partitions framed to the wall ends (2026-11-20, owner)
+
+- **Measured.** The generated framing stopped short of the authored faces: `W-B-WELL`'s
+  plates ended at y=30'-10 7/8", 14" short of its north end, `W-M-WELL`'s at 31'-8 5/8",
+  1 3/4" short, and `W-B-WELL-HEAD` had no sticks at all. Heights were full.
+- **Why.** `u_split` frames only between the flights, to the end stud against the landing
+  corner post, and ended both plates at that stud's centre. Past it `W-B-WELL` wraps
+  `P-M-STRWELL-SS`, a 6" slot and `P-M-STRWELL-S`; the slot was empty. `W-B-WELL-HEAD`
+  is outside the stair.
+- **Fix.** Plates run to the end stud's far face. `resolve/stairs/well_wall.py` frames the
+  rest of a face-only wall on the partition line: plates where the base and top lines are
+  free, studs cut round posts, rims and decks. The slot takes a plate pair and two studs
+  each side of the landing rims. `W-B-WELL-HEAD` is `INT_2X4_PARTITION_HALF` now; a framed
+  wall meeting a collinear wall that frames nothing keeps its end stud inside its own length.
+  `ED-B-STAIR-SW` moved 1/4" to clear that stud.
+- **Takeoff.** Stair `partition:2x4` 16 pc / 133.6 LF -> 22 pc / 150.3 LF; the stub adds two
+  studs and three plates. [wall_structure] no longer bills the three walls as 1.28 cy of
+  $0 "spf"; the framing bid listed that 415 bf on top of the sticks.
+- **Open.** `W-M-WELL`'s last 1" stands over ST-M2S's derived landing post. The post backs
+  the board below the landing; above it only the top plate reaches the end (no stud fits in 1").

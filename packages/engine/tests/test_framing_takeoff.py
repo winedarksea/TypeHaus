@@ -506,8 +506,9 @@ def test_every_wall_layer_is_billed_or_waived(catlin_model) -> None:
     """Every layer of every wall reaches a BOM section, or its function is waived above."""
     from typehaus.model.enums import LayerFunction
     from typehaus.takeoff.envelope import _BILLABLE, envelope_layer_takeoff
-    from typehaus.takeoff.wall_structure import wall_structure_takeoff
+    from typehaus.takeoff.wall_structure import stair_framed_walls, wall_structure_takeoff
 
+    stair_framed = stair_framed_walls(catlin_model)
     envelope = {(str(row["scope"]), str(row["function"]), str(row["material"]))
                 for row in envelope_layer_takeoff(catlin_model)}
     monolithic = {tag for row in wall_structure_takeoff(catlin_model)
@@ -526,7 +527,7 @@ def test_every_wall_layer_is_billed_or_waived(catlin_model) -> None:
                 assert (scope, function, layer.material_ref) in envelope, (
                     f"{wall.tag}: {function} layer {layer.material_ref} is billed nowhere")
             elif function == LayerFunction.STRUCTURE.value:
-                framed = frames_structure(wall)
+                framed = frames_structure(wall) or wall.tag in stair_framed
                 assert framed or wall.tag in monolithic, (
                     f"{wall.tag}: its {layer.material_ref} STRUCTURE layer frames no "
                     "members and is not in `wall_structure` — it is billed nowhere")

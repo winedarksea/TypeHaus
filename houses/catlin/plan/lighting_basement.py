@@ -471,15 +471,15 @@ BASEMENT_LIGHTING = [
     # until 2026-09-05, which the under-stair closet then enclosed — so it moved across the
     # well onto **W-B-WELL-HEAD's east face** (x=14'-2 1/4") at the same height, level with the
     # bathroom's north wall. That is the hall side, which is where you reach for it.
-    # y=25'-10", 4" north of W-B-BA-E's end; that face is flush with this one since
+    # y=25'-9 3/4", 3 3/4" north of W-B-BA-E's end; that face is flush with this one since
     # 2026-11-16, so the offset is no longer forced, and it is still the first thing your
-    # hand finds at the stair foot.
+    # hand finds at the stair foot. The box nails beside the stub's own end stud (2026-11-20).
     ElectricalDevice(uid="QTB000HAAA", tag="ED-B-STAIR-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW3",
                      circuit="CKT-LT-BSMT", room="RM-B-STAIR",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-WELL-HEAD", face="right", distance_from_start=inch(4),
+                         wall_ref="W-B-WELL-HEAD", face="right", distance_from_start=inch(3.75),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # The can lights the HALL — the slot between W-B-BA-E and W-B-CN2 — centred in it and
     # level with D-B-BATH's leaf. The slot was 3'-2 5/8" and the can sat at x=15'-9";

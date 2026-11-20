@@ -44,6 +44,7 @@ from typehaus.resolve.stairs.skirt import plan_skirts, skirt_members
 from typehaus.resolve.stairs.straight import _straight_stair_members
 from typehaus.resolve.stairs.stringer_cuts import cut_stringer_profiles
 from typehaus.resolve.stairs.u_split import _u_split_landing_members
+from typehaus.resolve.stairs.well_wall import frame_well_walls
 from typehaus.resolve.stairs.winder import (
     _winder_stair_members,
     local_winder_layout,
@@ -272,9 +273,8 @@ def _resolve_stair(
         members = set_landing_stack(members, deck.stack_thickness_m, _tread_thickness(stair))
     if opening is None:
         outline = _flight_footprint(stair, going_m, risers)
-    # Structural guards: the flight never drops below the subfloor it springs from (so a
-    # U-stair well partition cannot poke through the foundation), and every flight is
-    # borne on the walls beside it — posted down wherever none reaches.
+    # Structural guards: the flight never drops below the subfloor it springs from, is borne
+    # on the walls beside it (posted where none reaches), and frames its well wall's rest.
     if winder_layout is None:  # a flight off a floating finish bears on the sheet (C1 E4)
         support_floor_m = floating_support(model, stair, z0, members)
     unclipped_members = members
@@ -282,6 +282,7 @@ def _resolve_stair(
     members = _bear_stair_on_walls(model, stair, members, support_floor_m,
                                    skirts.offsets if skirts is not None else None,
                                    post_floor=winder_supporting_floor(model, stair, z0))
+    members = frame_well_walls(model, stair, members)
     members = cut_stringer_profiles(members, unclipped_members, support_floor_m)
     members += skirt_members(stair, skirts, members, riser, going_m, nosing_m,
                              finish_thickness_m, z_top, (z0, support_floor_m))

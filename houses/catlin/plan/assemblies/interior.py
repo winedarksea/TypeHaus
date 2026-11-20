@@ -459,8 +459,8 @@ INT_2X6_BRG_HALF_DFL = Assembly(
 # stringer. 1/2" gwb is already precedented in the library.
 #
 # The seam: the generated partition runs from a stud-head at the stairhead edge to an end
-# stud face-to-face with the landing's 4x4 corner post (u_split.py), so the board is backed
-# at both ends. Only the top plate still starts 0.20 m in, off the opening's header.
+# stud face-to-face with the landing's 4x4 corner post (u_split.py); past that post
+# `resolve/stairs/well_wall.py` frames the rest of the wall round the posts and rims.
 STAIRWELL_PARTITION_4H = Assembly(
     tag="STAIRWELL_PARTITION_4H",
     layers=(

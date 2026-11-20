@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 176d79667801536c  
-**Lines:** 268
+**Model hash:** 7296d988357c1cf9  
+**Lines:** 267
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
 
@@ -67,8 +67,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x2 SPF No. 2 & Btr framing lumber, 8' (2x2) | 27 | pc | blocking, plate, stud | 216 LF | building |
 | 2x2 SPF No. 2 & Btr framing lumber, 10' (2x2) | 2 | pc | plate | 20 LF | building |
 | 2x3 SPF No. 2 & Btr framing lumber, 8' (2x3) | 6 | pc | corner stud, plate, stud | 48 LF | building |
-| 2x4 SPF No. 2 & Btr framing lumber, 92 5/8" PET (2x4) | 81 | pc | corner stud, king stud, stud | 625.2 LF | building |
-| 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4) | 145 | pc | blocking, corner stud, cripple stud, header, jack stud, king stud, ledger, outlooker, partition backer, plate, raked top plate, sill, stud | 1160 LF | building |
+| 2x4 SPF No. 2 & Btr framing lumber, 92 5/8" PET (2x4) | 83 | pc | corner stud, king stud, stud | 640.7 LF | building |
+| 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4) | 149 | pc | blocking, corner stud, cripple stud, header, jack stud, king stud, ledger, outlooker, partition backer, plate, raked top plate, sill, stud | 1192 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 104 5/8" PET (2x4) | 252 | pc | corner stud, king stud, stud | 2197.1 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 10' (2x4) | 31 | pc | partition backer, plate, raked top plate | 310 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 14' (2x4) | 12 | pc | plate | 168 LF | building |
@@ -222,7 +222,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | HDG steel U-saddle on a 4 1/2 in (3-ply 2x) joist line, two 5/8 in through-bolts (SADDLE-4.5-2x58-HDG:suspension anchor) | 4 | ea |  | basement |
 | Strong-Drive SD connector screw, #9 x 1-1/2in (SD9112:connector fasteners) | 1,332 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600:partition top plate, blocking between parallel members) | 72 | ea |  | building |
-| Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600:partition top plate, perpendicular framing above) | 108 | ea |  | building |
+| Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600:partition top plate, perpendicular framing above) | 110 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600:partition top plate, under a parallel member) | 12 | ea |  | building |
 | slat brace plate screw (SDWS22400DB:slat brace plate screw) | 16 | ea |  | main |
 | SDWS Timber Screw (0.220 in shank), ridge plate to wall top plates (SDWS22600DB:ridge plate) | 36 | ea |  | building |
@@ -311,12 +311,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Structural 1 plywood sheathing, 3/4" — slab_deck (struct-1-plywood:0.75) | 9.4 | SF net |  | building |
 | Structural 1 plywood sheathing, 3/4" — slab_platform (struct-1-plywood:0.75) | 4.3 | SF net |  | building |
 | ZIP System sheathing, 7/16" — wall (zip-sheathing:0.438) | 689.4 | SF net |  | building |
-
-## Wall structure
-
-| item | quantity | unit | detail | storeys |
-|---|---|---|---|---|
-| STAIRWELL_PARTITION_4H, SPF No. 2 & Btr framing lumber (STAIRWELL_PARTITION_4H:spf) | 415.2 | bf | 1.28 cy in the takeoff | basement, main |
 
 ## Windows and doors, by product
 
@@ -599,7 +593,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Structural 1 plywood sheathing, 3/4" — slab_deck (struct-1-plywood:0.75) | — |
 | Structural 1 plywood sheathing, 3/4" — slab_platform (struct-1-plywood:0.75) | — |
 | ZIP System sheathing, 7/16" — wall (zip-sheathing:0.438) | — |
-| STAIRWELL_PARTITION_4H, SPF No. 2 & Btr framing lumber (STAIRWELL_PARTITION_4H:spf) | W-B-WELL, W-B-WELL-HEAD, W-M-WELL |
 | rough opening, 2.5" x 2.5" (no type) (None) | AO-M-PORCH-HYD |
 | rough opening, 2.5" x 2.5" (no type) (None) | AO-S-BALCONY-HYD |
 | rough opening, 4" x 4" (no type) (None) | AO-M-RFG-HP1, AO-M-RFG-HP3 |

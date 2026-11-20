@@ -2261,9 +2261,14 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   `LR-B-STAIR-RAIL` lies under the flight rather than along it — one `Mount` elevation for
   the whole `LightRun`, measured off the slab, so it cannot rake.
   - `W-B-WELL` gives the well partition its faces only — `resolve/stairs/u_split.py`
-    generates the 2x4 plates and studs between the two flights. Never add a `FramingSpec` to
-    `STAIRWELL_PARTITION_4H`'s structure layer or `structural.member_interference` FAILs
-    (it did, twelve times). Its thickness must stay locked to
+    generates the 2x4 plates and studs between the two flights, and
+    `resolve/stairs/well_wall.py` frames the rest of the wall past the landing corner (the
+    6" slot between the two posts, above and below the landing rims). Never add a
+    `FramingSpec` to `STAIRWELL_PARTITION_4H`'s structure layer or
+    `structural.member_interference` FAILs (it did, twelve times). The sticks bill once,
+    in [framing] as `partition:2x4`; [wall_structure] skips a stair-framed wall.
+    `W-B-WELL-HEAD`, the stub under the deck south of the opening, is outside the stair and
+    frames itself (`INT_2X4_PARTITION_HALF`). Its thickness must stay locked to
     `resolve/stairs/common._WELL_PARTITION_THICKNESS_M` (4 1/2"). Its north end is open
     (`open_end=True` on `N-B-CL-NE`) — the only honest way to model a partition dying
     mid-well; `integrity.wall_loop_open` reads it. Since 2026-11-16 that end is at y=32'-0 7/8",

@@ -8,7 +8,7 @@ pin both the numbers and — more importantly — that the two wall-structure se
 
 from __future__ import annotations
 
-from typehaus.takeoff.wall_structure import wall_structure_takeoff
+from typehaus.takeoff.wall_structure import stair_framed_walls, wall_structure_takeoff
 
 from _helpers import frames_structure
 
@@ -130,7 +130,10 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     # are framed 2x6 bearing walls now and bill in [framing].
     #
     # **43 SINCE 2026-11-10:** `W-B-WELL-HEAD`, the stub of W-B-WELL still under the deck.
-    assert len({tag for row in rows for tag in row["tags"]}) == 43
+    #
+    # **40 SINCE 2026-11-20**: the three stair-well walls left. Their sticks are the stairs'
+    # `partition` members in [framing] (`stair_framed_walls`); W-B-WELL-HEAD frames itself.
+    assert len({tag for row in rows for tag in row["tags"]}) == 40
     # **`metal-flat-sheet` LEFT THIS TABLE ON 2026-09-03, and it did not leave the house.**
     # The garage's base skin is now the 24" `coil-ext` band on the ICF stem, which is a
     # banded LAYER inside GARAGE_ICF_6 and bills through `[envelope_layers]` — 156.2 SF,
@@ -164,8 +167,7 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     # The same panel on the wall ABOVE the skirt is a CLADDING layer and still bills there, so
     # one material is legitimately split across the two tables. Do not "tidy" that into one.
     assert {row["material"] for row in rows} == {
-        "concrete", "retaining-block", "brown-brick", "spf",
-        "corrugated-panel-24"}
+        "concrete", "retaining-block", "brown-brick", "corrugated-panel-24"}
     # Bigger than the entire priced concrete order (footings + slab) the estimate used to
     # know about, which is the measure of what was missing. It was >100 cy until 2026-08-23:
     # the flat bearing seat took every basement wall from 9'-4" to exactly 8'-0", which is
@@ -188,6 +190,9 @@ def test_every_wall_bills_its_structure_exactly_once(catlin_model) -> None:
     ``_helpers.FRAMED_STRUCTURE_CATEGORIES`` for the wall that made the difference."""
     monolithic = {tag for row in wall_structure_takeoff(catlin_model) for tag in row["tags"]}
     framed = {wall.tag for wall in catlin_model.walls if frames_structure(wall)}
+    stair_framed = stair_framed_walls(catlin_model)  # their sticks are stair members
+    assert stair_framed & framed == set()
+    framed |= stair_framed
     all_walls = {wall.tag for wall in catlin_model.walls}
 
     assert monolithic & framed == set(), (

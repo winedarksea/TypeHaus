@@ -220,8 +220,9 @@ def test_the_three_count_rules_are_three_rows(sdpw_rows) -> None:
     # 67 -> 69: W-S-SBF, the suite tub's furred end (2026-11-08), parallel to FS-ATTIC.
     # 107 -> 108 (2026-11-09): W-B-HALL-W crosses FS-M-WEST's added BATH2 drain joist, y=186".
     # 69 -> 72 (2026-11-11): W-S-CLN-S runs full height under FS-ATTIC since SF-S-HP1 retired.
+    # 108 -> 110 (2026-11-20): W-B-WELL-HEAD frames its own plates and crosses two joists.
     assert counts == {
-        "partition top plate, perpendicular framing above": 108,
+        "partition top plate, perpendicular framing above": 110,
         "partition top plate, under a parallel member": 12,
         "partition top plate, blocking between parallel members": 72,
     }
@@ -244,8 +245,9 @@ def test_a_partition_under_a_sip_soffit_is_refused_and_says_so(sdpw_rows) -> Non
     """
     assert all(row["count"] for row in sdpw_rows), "no row here may be an empty order line"
     for row in sdpw_rows:
-        # W-B-CE left this list with SL-M-DECK (decision #112): it is under FS-M-NE now.
-        for tag in ("W-B-BA-E", "W-B-WELL"):
+        # W-B-CE left this list with SL-M-DECK (decision #112): it is under FS-M-NE now,
+        # and W-B-WELL-HEAD when it framed its own top plate (2026-11-20).
+        for tag in ("W-B-BA-E",):
             assert tag in row["basis"], f"{row['scope']} does not name {tag}"
 
 

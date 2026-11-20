@@ -5273,16 +5273,6 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 #   BURIED_MIX: 5,000 psi $185-215 + macro fibre $8-12         $193-227
 #   form ties, release, keyway, bracing consumables (81 SF form/cy)  $ 25- 45
 #                                                              $218-272
-# ** ZERO, AND IT IS NOT A PLACEHOLDER. ** W-B-WELL's structure layer carries no
-# `FramingSpec` on purpose (plan/assemblies.py): `resolve/stairs/u_split.py` already
-# generates the 2x4 plates and studs between ST-B2M's two flights, and authoring a second
-# set made twelve `structural.member_interference` FAILs. But `frames_as_members` is the
-# same predicate `wall_structure_takeoff` partitions on, so a structure layer that does not
-# frame reads as MONOLITHIC here and bills its gross volume — 0.47 cy of "placed spf".
-# Those sticks are already in [framing] under `partition:2x4` and `plate:2x4`. Pricing this
-# row at anything but zero buys them twice. The 1/2" board on both faces is real and is
-# bought in [envelope_layers], where every other gwb face in the house is.
-"STAIRWELL_PARTITION_4H" = { material = { low = 0, high = 0 }, labour = { low = 0, high = 0 } }  # W-B-WELL, 0.47 CY — billed in [framing], see above
 "BASEMENT_8" = { material = { low = 218, high = 272 }, labour = { low = 259, high = 485 } }  # W-B-N1/N2/N3, W-B-W1/W2; net of the waterproofing, see above
 # "BASEMENT_8_GARDEN" = { material = { low = 215, high = 270 }, labour = { low = 280, high = 540 } }
 # stood here from 2026-08-18, the south wall split out so its full-height parge could stay

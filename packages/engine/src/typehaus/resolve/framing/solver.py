@@ -817,6 +817,13 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
         if junction.kind == "open_end":
             for item in junction.incidents:
                 open_endpoints.setdefault(item.wall_tag, set()).add(item.endpoint)
+        if junction.kind == "collinear":
+            # A collinear neighbour that frames nothing (a pour, a face-only stair-well
+            # wall) leaves this end free: its end stud stands inside, as at an open end.
+            framed = [item for item in junction.incidents
+                      if frames_as_members(structure_layer(plan, item.assembly))]
+            if len(framed) == 1 < len(junction.incidents):
+                open_endpoints.setdefault(framed[0].wall_tag, set()).add(framed[0].endpoint)
         if junction.kind == "l" and junction.framing_owner:
             owner_item = next(item for item in junction.incidents
                               if item.wall_tag == junction.framing_owner)

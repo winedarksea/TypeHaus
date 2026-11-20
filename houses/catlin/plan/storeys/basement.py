@@ -944,9 +944,9 @@ WALLS = [
     # ROOMS for why it is no longer a `Room`: with nothing closing it, a second seed in the
     # same face resolved the SAME 114.8 sf polygon twice, and nothing grades that.
     #
-    # `resolve/stairs/common.py` budgets 4 1/2" between ST-B2M's two flights and emits no
-    # member, so W-B-WELL fills a RESERVED VOID: it is not colliding with the stair, it is
-    # the thing the stair already made room for. STAIRWELL_PARTITION_4H is 4 1/2"
+    # `resolve/stairs/common.py` budgets 4 1/2" between ST-B2M's two flights and the stair
+    # frames it (u_split.py, well_wall.py), so W-B-WELL fills a RESERVED VOID with faces: it
+    # is not colliding with the stair, it is the thing the stair already made room for. STAIRWELL_PARTITION_4H is 4 1/2"
     # exactly for that reason (plan/assemblies.py). It runs from N-B-BA-NE — the bathroom's
     # north-east corner — north to N-B-CL-NE. Its hall face is flush with W-B-BA-E's
     # (that wall is aligned 1" west). Its north end is free (`open_end` on N-B-CL-NE), at
@@ -954,10 +954,11 @@ WALLS = [
     #
     # It stands in FO-M-STAIR's void, not under joists, so its board runs up to the main
     # floor (+1.0255906", W-M-WELL's base). Nothing lands on it and it is not BEARING.
-    # W-B-WELL-HEAD is the stub still under the deck, south of the opening, at the 8'-0" seat.
-    # It carries no framing of its own — see the assembly.
+    # W-B-WELL-HEAD is the stub still under the deck, south of the opening, at the 8'-0" seat:
+    # outside the stair, so it frames itself as an ordinary 2x4 partition (2026-11-20), its
+    # end stud face-to-face with the stair's stud-head.
     Wall(uid="VJPS36HCSB", tag="W-B-WELL-HEAD", start_node="N-B-BA-NE",
-         end_node="N-B-WELL-HEAD", assembly="STAIRWELL_PARTITION_4H",
+         end_node="N-B-WELL-HEAD", assembly="INT_2X4_PARTITION_HALF",
          layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"), LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(8),
          interior_room="RM-B-STAIR"),
     Wall(uid="9AYPA03VAE", tag="W-B-WELL", start_node="N-B-WELL-HEAD",

@@ -181,7 +181,8 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
     # bear on it. It stops at the SHORTER flight's end: its studs run z0 → arrival, so
     # carrying it to the longer flight's line drives them straight through the upper
     # landing's deck. There the landings' shared corner stands on a 4x4 post
-    # (``bearing.py``) on this line, so the end stud stands face-to-face against it.
+    # (``bearing.py``) on this line, so the end stud stands face-to-face against it; an
+    # authored face-only wall running on past it is framed by ``well_wall.py``.
     # At the stairhead (s=0) only the TOP is held off the opening perimeter framing:
     # ``head_z`` is the underside of the arrival deck's framing, and an end stud stands
     # under it on a bottom plate run to the edge. A lined well has stepped that framing
@@ -197,12 +198,14 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
         base_s = 0.0 if head else lo_s
         through = head and lined_head
         top_s = 0.0 if through else lo_s
-        pa, pb = at(top_s, partition_centre), at(hi_s, partition_centre)
+        # Both plates run under the end stud to its far face, against the post.
+        end_s = hi_s + stud_half
+        pa, pb = at(top_s, partition_centre), at(end_s, partition_centre)
         out.append(FramedMember(stair.uid, "well-partition-plate-bottom", "partition",
                                 "2x4", at(base_s, partition_centre), pb, z0, z0 + plate,
-                                hi_s - base_s))
+                                end_s - base_s))
         out.append(FramedMember(stair.uid, "well-partition-plate-top", "partition",
-                                "2x4", pa, pb, arrival - plate, arrival, hi_s - top_s))
+                                "2x4", pa, pb, arrival - plate, arrival, end_s - top_s))
         orient = (float(sign), 0.0) if along_x else (0.0, float(sign))
         for index, offset in enumerate(_grid_positions(hi_s - lo_s, _FRAMING_SPACING_M)):
             point = at(lo_s + offset, partition_centre)

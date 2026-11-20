@@ -277,18 +277,28 @@ def test_well_partition_runs_to_the_landing_corner_post(catlin_model, tag):
     stud_half = cross_section("2x4").width_m / 2.0
     assert abs(post[along] - end.p0[along]) == pytest.approx(post_half + stud_half,
                                                                 abs=tol)
+    # Both plates run under the end stud to its far face (well_wall may carry one on).
+    face = end.p0[along] + math.copysign(stud_half, post[along] - end.p0[along])
     for key in ("well-partition-plate-bottom", "well-partition-plate-top"):
         plate = next(m for m in partition if m.child_key == key)
         near = min((plate.p0[along], plate.p1[along]),
                    key=lambda s: abs(s - post[along]))
-        assert near == pytest.approx(end.p0[along], abs=1e-6), key
-    # No partition member reaches into the post's footprint along the line.
+        assert abs(near - end.p0[along]) >= abs(face - end.p0[along]) - 1e-6, key
+    # No partition member reaches into the post, in plan and height.
     lo, hi = post[along] - post_half, post[along] + post_half
+    top = next((m.z1_m for m in stair.members if m.child_key.startswith("landing-post-")
+                and m.p0 == post), None)
+    for solid in catlin_model.solids:  # an authored column: its own footprint and top
+        span, side = [p[along] for p in solid.outline], [p[1 - along] for p in solid.outline]
+        if (solid.category == "column" and min(span) - tol <= post[along] <= max(span) + tol
+                and min(side) - tol <= post[1 - along] <= max(side) + tol):
+            lo, hi, top = min(span), max(span), solid.z1_m
     for member in partition:
         pad = stud_half if member.p0 == member.p1 else 0.0
         m_lo = min(member.p0[along], member.p1[along]) - pad
         m_hi = max(member.p0[along], member.p1[along]) + pad
-        assert m_hi <= lo + tol or m_lo >= hi - tol, member.child_key
+        clear = m_hi <= lo + tol or m_lo >= hi - tol
+        assert clear or (top is not None and member.z0_m >= top - tol), member.child_key
 
 
 # --------------------------------------------------------------- 5. landing platforms
@@ -972,3 +982,18 @@ def test_a_wall_four_inches_off_the_stringer_is_not_a_host():
     stair, _ = _resolved_stair(_stair_plan(near_wall_offset=inch(2)))
     stringer = next(m for m in stair.members if m.child_key == "stringer-0")
     assert stringer.connection == "framed-wall-ledger:W-NEAR"
+
+
+def test_well_wall_past_the_corner_post_is_framed(catlin_model):
+    """W-B-WELL runs on past ST-B2M's corner post: ``well_wall`` frames the slot between the
+    two posts with a plate pair and a stud under and over the landing rims, at each end."""
+    stair = next(s for s in catlin_model.stairs if s.tag == "ST-B2M")
+    ext = [m for m in stair.members if m.child_key.startswith("well-partition-ext-")]
+    rims = [m for m in stair.members if m.child_key.startswith("landing-rim-")
+            and abs(m.p0[0] - ext[0].p0[0]) < 1e-6]
+    studs = [m for m in ext if "-stud-" in m.child_key]
+    assert sum("-plate-" in m.child_key for m in ext) == 2
+    assert len(studs) == 4
+    under, over = min(r.z0_m for r in rims), max(r.z1_m for r in rims)
+    assert sum(abs(s.z1_m - under) < 1e-6 for s in studs) == 2
+    assert sum(s.z0_m >= over - 1e-6 for s in studs) == 2

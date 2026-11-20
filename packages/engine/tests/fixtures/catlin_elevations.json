@@ -50927,6 +50927,42 @@
 8,
 "1b70fed2e9c1"
 ],
+"geometry/CST701AAAA::framing/member:well-partition-ext-plate-bottom-000": [
+-2.7797125,
+-2.7416125,
+8,
+"6feb3b34ad8e"
+],
+"geometry/CST701AAAA::framing/member:well-partition-ext-plate-top-001": [
+-0.01205,
+0.02605,
+8,
+"933b04391aed"
+],
+"geometry/CST701AAAA::framing/member:well-partition-ext-stud-002": [
+-2.7416125,
+-1.6862567,
+8,
+"860e1c07e231"
+],
+"geometry/CST701AAAA::framing/member:well-partition-ext-stud-003": [
+-1.2896558,
+-0.01205,
+8,
+"6f8be8758c54"
+],
+"geometry/CST701AAAA::framing/member:well-partition-ext-stud-004": [
+-2.7416125,
+-1.6862567,
+8,
+"860e1c07e231"
+],
+"geometry/CST701AAAA::framing/member:well-partition-ext-stud-005": [
+-1.2896558,
+-0.01205,
+8,
+"6f8be8758c54"
+],
 "geometry/CST701AAAA::framing/member:well-partition-plate-bottom": [
 -2.7797125,
 -2.7416125,
@@ -79451,6 +79487,36 @@
 2,
 "a1269395efc9"
 ],
+"geometry/VJPS36HCSB::framing/member:plate-bottom": [
+-2.7797125,
+-2.7416125,
+8,
+"6feb3b34ad8e"
+],
+"geometry/VJPS36HCSB::framing/member:plate-top-0": [
+-0.358775,
+-0.320675,
+8,
+"df5d874a4064"
+],
+"geometry/VJPS36HCSB::framing/member:plate-top-1": [
+-0.396875,
+-0.358775,
+8,
+"d1e2739ad916"
+],
+"geometry/VJPS36HCSB::framing/member:stud-000": [
+-2.7416125,
+-0.396875,
+8,
+"0710bbf2ecf0"
+],
+"geometry/VJPS36HCSB::framing/member:stud-001": [
+-2.7416125,
+-0.396875,
+8,
+"0710bbf2ecf0"
+],
 "geometry/VK3C96KFRF-run/body": [
 6.626098,
 7.2306172,
@@ -105369,6 +105435,42 @@
 2,
 "f0dc7390ef38"
 ],
+"member/CST701AAAA/well-partition-ext-plate-bottom-000": [
+-2.7797125,
+-2.7416125,
+2,
+"2c6e5b3829a7"
+],
+"member/CST701AAAA/well-partition-ext-plate-top-001": [
+-0.01205,
+0.02605,
+2,
+"6530ee7b7935"
+],
+"member/CST701AAAA/well-partition-ext-stud-002": [
+-2.7416125,
+-1.6862567,
+2,
+"e5c374ad6d14"
+],
+"member/CST701AAAA/well-partition-ext-stud-003": [
+-1.2896558,
+-0.01205,
+2,
+"bec0aa7674a0"
+],
+"member/CST701AAAA/well-partition-ext-stud-004": [
+-2.7416125,
+-1.6862567,
+2,
+"e5c374ad6d14"
+],
+"member/CST701AAAA/well-partition-ext-stud-005": [
+-1.2896558,
+-0.01205,
+2,
+"bec0aa7674a0"
+],
 "member/CST701AAAA/well-partition-plate-bottom": [
 -2.7797125,
 -2.7416125,
@@ -119108,6 +119210,36 @@
 0.4699,
 2,
 "d15947ccbdbd"
+],
+"member/VJPS36HCSB/plate-bottom": [
+-2.7797125,
+-2.7416125,
+2,
+"2c6e5b3829a7"
+],
+"member/VJPS36HCSB/plate-top-0": [
+-0.358775,
+-0.320675,
+2,
+"0957785af78e"
+],
+"member/VJPS36HCSB/plate-top-1": [
+-0.396875,
+-0.358775,
+2,
+"7ac7f834a0e8"
+],
+"member/VJPS36HCSB/stud-000": [
+-2.7416125,
+-0.396875,
+2,
+"acb389d9be3e"
+],
+"member/VJPS36HCSB/stud-001": [
+-2.7416125,
+-0.396875,
+2,
+"acb389d9be3e"
 ],
 "member/VZPMT59XVQ/backing-0-000": [
 -2.1861145,
