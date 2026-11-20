@@ -584,6 +584,8 @@ class ElectricalDevice(Element):
     serves_stair: str | None = None
     # Wall-plate family for this device's bank ("standard" where space is tight), over its type's.
     plate: str | None = None
+    # BoxStandard row ``use`` over its type's (a ``"pancake"`` where centring governs, #140).
+    box_use: str | None = None
 
     @model_validator(mode="after")
     def _placed_or_hosted(self):

@@ -13,9 +13,12 @@ volume is Table 314.16(B)(4)'s, at the gauge the breaker implies — 15 A 14 AWG
 30 A 10 AWG. Box volume is the standard's row: Table 314.16(A) or the marked volume, plus a
 marked raised cover or ring. Depth is 314.24(B)'s by gauge, or a device's datasheet
 ``rear_projection`` plus 1/4 in. past 1-7/8 in. (1 in. on 12/10 AWG). A FAIL names the next
-box up. A gang bank is one box: each member counts its own cables and yokes at its own
-circuit's gauge, and the grounds, clamps, fittings and blocks count once, at the largest
-gauge present (314.16(B)(2), (5)); the deepest requirement of any member sets the depth.
+box up. A luminaire takes no yoke allowance (it is not a device on a strap); an alarm head
+counts three insulated conductors per cable (the interconnect), through-fed; fixture leads are
+not counted (314.16(B)(1) exception). A gang bank is one box: each member counts its own
+cables and yokes at its own circuit's gauge, and the grounds, clamps, fittings and blocks
+count once, at the largest gauge present (314.16(B)(2), (5)); the deepest requirement of any
+member sets the depth.
 Hand-worked oracle:
 ``houses/catlin/notes/basement_surface_wiring.md`` §Box fill.
 
@@ -50,6 +53,8 @@ _CODE = cite(NEC.BOX_FILL)
 #: against the printed 2026 Table 310.16, whose 14-8 AWG values are 15/20/30/40 A).
 GAUGE_BY_BREAKER_A = {15: 14, 20: 12, 30: 10, 40: 8, 50: 6}
 _RECEPTACLES = frozenset({"receptacle", "gfci", "receptacle_240"})
+_NO_YOKE = frozenset({"light", "alarm"})
+_ALARM_CONDUCTORS = 3  # hot, neutral and the interconnect per 14/3 cable
 #: Table 314.16(B)(4), in³ per conductor by AWG (printed 2026-11-14; 18 and 16 AWG omitted).
 VOLUME_PER_CONDUCTOR_IN3 = {14: 2.0, 12: 2.25, 10: 2.5, 8: 3.0, 6: 5.0}
 #: 314.24(B) minimum internal depth with a device, in, by conductor size. The listed-with-box
@@ -124,6 +129,7 @@ class _Load(NamedTuple):
     product_type: Any
     gangs: int
     cables: int
+    per_cable: int | None = None  # insulated conductors per cable, over the circuit's own
 
 
 def _loads(box: Any, circuits: dict[str, Any], types: dict[str, Any],
@@ -138,9 +144,12 @@ def _loads(box: Any, circuits: dict[str, Any], types: dict[str, Any],
             return out, member.tag
         product_type = types.get(type_refs.get(member.tag) or "")
         gangs = box.gangs if len(members) == 1 else gang_count(product_type)
+        if member.kind in _NO_YOKE:  # a luminaire or alarm hangs on the box, not a strap
+            gangs = 0
         end_fed = member.kind in _RECEPTACLES and loads.get(circuit.tag, 0) <= 1
         out.append(_Load(member.tag, circuit, GAUGE_BY_BREAKER_A.get(circuit.breaker_amps),
-                         product_type, gangs, 1 if end_fed else 2))
+                         product_type, gangs, 1 if end_fed else 2,
+                         _ALARM_CONDUCTORS if member.kind == "alarm" else None))
     return out, None
 
 
@@ -160,7 +169,8 @@ def _grade(box: Any, circuits: dict[str, Any], types: dict[str, Any],
                       code=cite(NEC.BOX_FLUSH_SETBACK),
                       fix="a shallower box row in the BoxStandard, or a deeper cavity")
     if box.air_barrier and not (box.box_use or "").startswith(AIR_SEALED):
-        return failed(_CID, f"{where} breaches an air-control membrane on {box.wall_tag}, and "
+        return failed(_CID, f"{where} breaches an air-control membrane on "
+                            f"{box.wall_tag or box.host_layer}, and "
                             f"the BoxStandard has no {AIR_SEALED!r} {box.mounting} "
                             f"{box.gangs}-gang row", tags,
                       fix="add an air-sealed row: a flanged, gasketed box whose flange is "
@@ -194,6 +204,9 @@ def _grade(box: Any, circuits: dict[str, Any], types: dict[str, Any],
     for w in wired:
         neutral = (w.circuit.neutral if w.circuit.neutral is not None
                    else device_has_neutral(w.product_type))
+        if w.per_cable is not None:
+            required += (w.cables * w.per_cable + 2 * w.gangs) * VOLUME_PER_CONDUCTOR_IN3[w.gauge]
+            continue
         required += conductor_volume_in3(w.gauge, w.circuit.poles, neutral, w.gangs, w.cables)
     feed = "+".join(sorted({"through-fed" if w.cables == 2 else "end-fed" for w in wired}))
     gauges = "/".join(str(g) for g in sorted({w.gauge for w in wired}, reverse=True))
@@ -212,8 +225,8 @@ def box_fill(ctx: CheckContext) -> list[Finding]:
     """Each derived device box against its through-fed fill and its cavity depth."""
     boxes = list(ctx.model.device_boxes)
     types = {t.tag: t for t in ctx.plan.library.electrical_device_types}
+    declared = any(el.element_kind == "BoxStandard" for el in ctx.plan.all_elements())
     if not boxes:
-        declared = any(el.element_kind == "BoxStandard" for el in ctx.plan.all_elements())
         wants = [obj.tag for obj in ctx.model.canvas_objects
                  if obj.kind == "ElectricalDevice" and obj.attachment_wall is not None
                  and takes_box(ctx.plan.by_tag(obj.tag), types.get(obj.type_ref or ""))]
@@ -224,8 +237,27 @@ def box_fill(ctx: CheckContext) -> list[Finding]:
                         fix="declare one BoxStandard (decision #93)")]
     circuits = {circuit.tag: circuit for circuit in ctx.plan.library.circuits}
     type_refs = {obj.tag: obj.type_ref for obj in ctx.model.canvas_objects}
+    type_refs.update({head.tag: head.type_ref for head in ctx.model.alarm_heads})
     loads = _circuit_loads(ctx)
-    return [_grade(box, circuits, types, type_refs, loads) for box in boxes]
+    out = [_grade(box, circuits, types, type_refs, loads) for box in boxes]
+    unboxed = _unboxed_ceiling(ctx, types, {t for b in boxes for t in (b.device_tags or ())})
+    if declared and unboxed:
+        out.append(unknown(_CID, f"{len(unboxed)} ceiling fixture(s) take a box but no lined, "
+                                 f"framed face is over them: {', '.join(unboxed)}",
+                           tuple(unboxed), code=_CODE,
+                           fix="model the ceiling or soffit they mount to (decision #140)"))
+    return out
+
+
+def _unboxed_ceiling(ctx: CheckContext, types: dict[str, Any], boxed: set[str]) -> list[str]:
+    """Ceiling objects and hardwired alarm heads that take a box but got none."""
+    wants = [obj.tag for obj in ctx.model.canvas_objects
+             if obj.kind == "ElectricalDevice" and obj.mount is not None
+             and obj.mount.kind.value == "ceiling"
+             and takes_box(ctx.plan.by_tag(obj.tag), types.get(obj.type_ref or ""))]
+    wants += [head.tag for head in ctx.model.alarm_heads if head.mount == "ceiling"
+              and takes_box(ctx.plan.by_tag(head.tag), types.get(head.type_ref or ""))]
+    return sorted(tag for tag in wants if tag not in boxed)
 
 
 def _circuit_loads(ctx: CheckContext) -> dict[str, int]:

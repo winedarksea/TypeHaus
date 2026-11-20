@@ -74,7 +74,7 @@ def derive_floor_heat_leads(model: ResolvedModel) -> None:
         if element.element_kind != "FloorHeat" or not element.thermostat_ref:
             continue
         box = boxes_by_device(model).get(element.thermostat_ref)
-        wall = model.wall(box.wall_tag) if box is not None else None
+        wall = model.wall(box.wall_tag) if box is not None and box.host == "wall" else None
         if box is None or wall is None or box.mounting == "surface" or element.stat is None:
             continue
         stat = element.stat.xy_m

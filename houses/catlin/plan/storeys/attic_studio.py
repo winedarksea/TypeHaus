@@ -487,7 +487,7 @@ ROOMS = [
 ALARMS = [
     Alarm(uid="PFWCRKMZJZ", tag="AL-A-STUDIO", kind=AlarmKind.COMBO,
           type_ref="ED-T-ALARM-COMBO-KIDDE", room="RM-A-STUDIO",
-          circuit="CKT-LT-BACKUP"),
+          circuit="CKT-LT-BACKUP", position=pt(inch(84), inch(99.75))),  # box clears a rafter (#140)
 ]
 
 # With all four sides walled, `code.R312_1_guard` grades the void's edges against attic-storey walls

@@ -107,6 +107,7 @@ def derive_sleeve_drops(model: ResolvedModel) -> None:
     standard, reached = _house(model.plan)
     # Outside a room there is no ceiling to feed from (an outdoor box is fed otherwise).
     boxes = [box for box in model.device_boxes if box.mounting == "surface" and not box.recess_m
+             and box.host == "wall"
              and box.room is not None
              and not reached.intersection(box.device_tags or (box.device_tag,))]
     if standard is None or not boxes:

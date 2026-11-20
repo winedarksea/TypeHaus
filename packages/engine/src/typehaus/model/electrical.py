@@ -211,10 +211,12 @@ METAL_BOX_VOLUME_IN3: dict[str, float] = {
     "3 x 2 x 2-3/4 device": 14.0, "3 x 2 x 3-1/2 device": 18.0,
     "4 x 2-1/8 x 1-1/2 device": 10.3, "4 x 2-1/8 x 1-7/8 device": 13.0,
     "4 x 2-1/8 x 2-1/8 device": 14.5,
+    "4 x 1-1/4 round/octagonal": 12.5, "4 x 1-1/2 round/octagonal": 15.5,
+    "4 x 2-1/8 round/octagonal": 21.5,
 }
 
 BoxMounting = Literal["surface", "flush", "flush_raceway"]
-BoxShape = Literal["rectangular", "round"]
+BoxShape = Literal["rectangular", "round", "octagon"]
 
 
 class BoxRow(HausModel):
@@ -236,6 +238,8 @@ class BoxRow(HausModel):
     allowance; False is a datasheet showing none. ``support_fittings`` (314.16(B)(3)) counts
     the kinds of fixture stud or hickey inside; ``terminal_blocks`` (314.16(B)(6)) the
     terminal-block assemblies, one allowance each.
+    ``fan_rated`` marks a box listed to support a ceiling fan (NEC 314.27(C)) and
+    ``rated_load_lb`` the luminaire weight it is marked for (314.27(A)(2)); None = unmarked.
     """
 
     mounting: BoxMounting
@@ -257,6 +261,8 @@ class BoxRow(HausModel):
     terminal_blocks: int = 0
     #: The box ships with its own trim plate (a recessed receptacle box): no wall plate.
     plate_included: bool = False
+    fan_rated: bool = False
+    rated_load_lb: float | None = None
 
     @property
     def volume_in3(self) -> float | None:

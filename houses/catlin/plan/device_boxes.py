@@ -16,6 +16,10 @@
 #   * recessed — the fridge and freezer receptacles: an Arlington IN BOX, plug inside the wall.
 #     Its new-work screws want wood (Q-3), and both boxes sit mid-bay, so each gets a flat
 #     2x4 block behind it, stud to stud, derived from the row (geometry review M3-107).
+#   * ceiling (decision #140) — a ceiling fixture or hardwired alarm head: a 4" octagon,
+#     2 1/8" deep, on a 16-24" bar hanger (the Kidde plates screw to a 4" octagon); a fan
+#     takes the RACO 929 fan-rated brace box; through RM-S-PLANT's membrane, the air-sealed
+#     rows. A ceiling receptacle takes the general flush row.
 # Covers and rings are not credited a volume: none of these is marked with one.
 # The blue nonmetallic boxes name box-pvc-blue; steel rows stay galvanized (material_ref None).
 
@@ -178,7 +182,28 @@ PLATE_REGGIO_6SPB_SG = Product(tag="PROD-REGGIO-6SPB-SG", brand="Reggio Register
     model="6SPB", name="Steel Double Decora wall plate, 2-gang, Sun Gold",
     url="https://www.reggioregister.com/products/6spb", source=_REGGIO_SOURCE)
 
-BOX_PRODUCTS = (PLATE_REGGIO_2SPB_SG, PLATE_REGGIO_6SPB_SG, PLATE_PJ26_W, PLATE_PJ262_W, PLATE_PJ263_W, PLATE_PJ264_W, PLATE_80401_NW, PLATE_80409_NW, PLATE_80411_NW, PLATE_80412_NW, PLATE_CW_1_WH, PLATE_CW_2_WH, PLATE_CW_3_WH, PLATE_CW_4_WH, PLATE_80704_W, PLATE_MULBERRY_32442,
+# Ceiling boxes (decision #140), retail listings read 2026-11-20; ESTIMATE until submittal.
+_CEILING_SOURCE = "Ceiling boxes, decision #140 (2026-11-20)."
+# Appleton FFS561LDNBH (Gexpro/Platt listings): 4" octagon, 2-1/8" deep, 21.5 in3, 16-24" bar
+# hanger, fixture 70 lb, fan 35 lb. Its 35 lb fan listing is not relied on: fans take the 929.
+APPLETON_FFS561LDNBH = Product(tag="PROD-APPLETON-FFS561LDNBH", brand="Appleton",
+    model="FFS561LDNBH", name="4 in. octagon ceiling box, 2-1/8 in. deep, 21.5 cu. in., NM clamps, 16-24 in. bar hanger",
+    url="https://www.gexpro.com/p/568232/appleton/2-1-8-deep-4-octagon-ceiling-box-with-hanger/687855001408/ffs561ldnbh",
+    source=_CEILING_SOURCE)
+# RACO 929 spec sheet (via search, RACO-929-SPEC-EN): 2-1/8" deep, 22.5 in3, fan 70 lb at 16 and
+# 24" spans, fixture 210 lb at 16" (90 at 24"), brace slides 16-24". Drawn as a 4" round.
+RACO_929 = Product(tag="PROD-RACO-929", brand="RACO", model="929",
+    name="KWIK-BRACE fan support with 2-1/8 in. deep box, 22.5 cu. in., fan rated 70 lb",
+    url="https://hubbellcdn.com/specsheet/RACO-929-SPEC-EN.pdf", source=_CEILING_SOURCE)
+# Arlington FBR415F (aifittings.com, read 2026-11-20): vapor box, gasketed flange and KOs,
+# 18.3 in3, 2.723" tall, fan 110 lb / fixture 150 lb at 16" o.c. (UL). The plant fan's box.
+ARLINGTON_FBR415F = Product(tag="PROD-ARLINGTON-FBR415F", brand="Arlington", model="FBR415F",
+    name="Non-metallic vapor fan/fixture box, gasketed flange, adjustable steel bracket, 18.3 cu. in.",
+    url="https://www.aifittings.com/catalog/fan-fixture-boxes/non-metallic-vapor-box-with-adjustable-steel-bracket/FBR415F",
+    source=_CEILING_SOURCE)
+
+BOX_PRODUCTS = (APPLETON_FFS561LDNBH, RACO_929, ARLINGTON_FBR415F,
+                PLATE_REGGIO_2SPB_SG, PLATE_REGGIO_6SPB_SG, PLATE_PJ26_W, PLATE_PJ262_W, PLATE_PJ263_W, PLATE_PJ264_W, PLATE_80401_NW, PLATE_80409_NW, PLATE_80411_NW, PLATE_80412_NW, PLATE_CW_1_WH, PLATE_CW_2_WH, PLATE_CW_3_WH, PLATE_CW_4_WH, PLATE_80704_W, PLATE_MULBERRY_32442,
                 RACO_232, CARLON_BH353A, CARLON_BH464A, RACO_808C, RACO_809C, RACO_768, CARLON_B122A, CARLON_BH235A,
                 CARLON_B520A, RACO_192, RACO_753, ARLINGTON_DVFR1W, AIRFOIL_1G, AIRFOIL_ROUND,
                 RACO_674, RACO_862)
@@ -284,6 +309,27 @@ BOX_STANDARD = [
                    box_product_ref="PROD-LESSCO-AIRFOIL-1G",
                    box_size=(inch(2.5), inch(4), inch(3.5)), box_volume_in3=20.0,
                    material_ref="box-pvc-blue"),
+            # Ceiling boxes (decision #140).
+            BoxRow(mounting="flush", gangs=1, use="ceiling",
+                   box_product_ref="PROD-APPLETON-FFS561LDNBH", shape="octagon",
+                   box_size=(inch(4), inch(4), inch(2.125)),
+                   designation="4 x 2-1/8 round/octagonal", rated_load_lb=70.0),
+            BoxRow(mounting="flush", gangs=1, use="fan", box_product_ref="PROD-RACO-929",
+                   shape="round", box_size=(inch(4), inch(4), inch(2.125)),
+                   box_volume_in3=22.5, fan_rated=True, rated_load_lb=210.0),
+            BoxRow(mounting="flush", gangs=1, use="air-sealed-fan",
+                   box_product_ref="PROD-ARLINGTON-FBR415F", shape="round",
+                   box_size=(inch(4), inch(4), inch(2.723)), box_volume_in3=18.3,
+                   fan_rated=True, rated_load_lb=150.0, material_ref="box-pvc-blue"),
+            BoxRow(mounting="flush", gangs=1, use="air-sealed-ceiling",
+                   box_product_ref="PROD-LESSCO-AIRFOIL-ROUND", shape="round",
+                   box_size=(inch(4), inch(4), inch(2.25)), box_volume_in3=20.0,
+                   material_ref="box-pvc-blue"),
+            # A bare concrete ceiling (none today): the wall light's drawn box and flat cover.
+            BoxRow(mounting="surface", gangs=1, use="ceiling", box_product_ref="PROD-RACO-192",
+                   cover_product_ref="PROD-RACO-753",
+                   box_size=(inch(4), inch(4), inch(1.563)), designation="4 x 1-1/2 square",
+                   cover_rise=inch(0.0625)),
             BoxRow(mounting="flush", gangs=1, use="air-sealed-luminaire-round",
                    box_product_ref="PROD-LESSCO-AIRFOIL-ROUND", shape="round",
                    box_size=(inch(4), inch(4), inch(2.25)), box_volume_in3=20.0,

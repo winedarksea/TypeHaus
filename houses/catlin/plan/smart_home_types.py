@@ -195,19 +195,20 @@ DEVICE_TYPES = (
         plan_symbol="junction-box", device_box=False, product_ref=KIDDE_CO120X.tag,
         source=KIDDE_CO120X.source),
     # Alarm heads: an Alarm's ``type_ref`` (kind stays on the Alarm). Round heads are cylinders.
+    # Hardwired heads take a derived ceiling box (decision #140): the plate screws to a 4" octagon.
     ElectricalDeviceType(
         tag="ED-T-ALARM-COMBO-KIDDE", name="Smoke/CO alarm, 120 V interconnect (Kidde 30CUA10-V)",
-        footprint=(inch(5), inch(5)), height=inch(1.88), ports=_P120, device_box=False,
+        footprint=(inch(5), inch(5)), height=inch(1.88), ports=_P120,
         model_representation=ModelRepresentation(primitive="cylinder"),
         product_ref=KIDDE_30CUA10_V.tag, source=KIDDE_30CUA10_V.source),
     ElectricalDeviceType(
         tag="ED-T-ALARM-SMOKE-KIDDE", name="Smoke alarm, 120 V interconnect (Kidde 20SA10)",
-        footprint=(inch(5), inch(5)), height=inch(2), ports=_P120, device_box=False,
+        footprint=(inch(5), inch(5)), height=inch(2), ports=_P120,
         model_representation=ModelRepresentation(primitive="cylinder"),
         product_ref=KIDDE_20SA10.tag, source=KIDDE_20SA10.source),
     ElectricalDeviceType(
         tag="ED-T-ALARM-HEAT-KIDDE", name="Heat alarm 135 F, 120 V interconnect (Kidde HD135F)",
-        footprint=(inch(5), inch(5)), height=inch(2), ports=_P120, device_box=False,
+        footprint=(inch(5), inch(5)), height=inch(2), ports=_P120,
         model_representation=ModelRepresentation(primitive="cylinder"),
         product_ref=KIDDE_HD135F.tag, source=KIDDE_HD135F.source),
     ElectricalDeviceType(

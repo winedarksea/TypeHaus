@@ -29,7 +29,9 @@ def _in(value_m: float) -> str:
 def canopy_covers_box(ctx: CheckContext) -> list[Finding]:
     """Each wall light's canopy against the face of its derived box."""
     # A luminaire takes its own box, never a bank row, so the lead's kind is the box's.
-    boxes = [box for box in ctx.model.device_boxes if box.device_kind == "light"]
+    # A ceiling box (#140) is covered by the fixture's own body or canopy: not graded here.
+    boxes = [box for box in ctx.model.device_boxes
+             if box.device_kind == "light" and getattr(box, "host", "wall") == "wall"]
     if not boxes:
         return [not_applicable(_CID, "no wall light sits on a derived box", code=_CODE)]
     types = {t.tag: t for t in ctx.plan.library.electrical_device_types}

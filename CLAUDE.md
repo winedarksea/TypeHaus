@@ -71,6 +71,10 @@ a release or for exhaustive local verification.
   proud of the plate (`footprint` = face width x projection); the body is `rear_projection`.
   A box solid carries a `body_mesh` (`resolve/device_box_mesh.py`: round, raised cover, mud ring)
   and its colour from `BoxRow.material_ref`.
+  A ceiling fixture or hardwired alarm head that mounts to a box (not a housing/wafer, not
+  PSU-fed) takes a `host="ceiling"` record (`resolve/ceiling_boxes.py`, decision #140): never
+  banked or sleeved, graded by `electrical.ceiling_box_framing` (a clash moves the fixture) and
+  `ceiling_box_support` (a fan's row is `fan_rated`).
 - **Drywall accessories are derived from one `DrywallStandard`** (decision #103):
   `resolve/drywall_trims.py` finds outside corners, J-bead terminations, tile-stop reveals,
   trimless-door L-bead and window-return beads off the host faces into

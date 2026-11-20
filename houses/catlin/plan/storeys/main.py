@@ -1648,12 +1648,12 @@ ALARMS = [
     # Off the seed, which sat under ED-M-BED-FAN: 3 ft past its blade tips and REG-M-SUP3.
     Alarm(uid="CMA701AAAA", tag="AL-M-BED", kind=AlarmKind.COMBO,
           type_ref="ED-T-ALARM-COMBO-KIDDE", room="RM-M-BED",
-          circuit="CKT-LT-BACKUP", position=pt(ft(13), ft(10, 6))),
+          circuit="CKT-LT-BACKUP", position=pt(ft(13), inch(124))),
     # The R314.3 "outside each separate sleeping area" alarm: in RM-M-LIVING, centred on
     # D-M-BED2, the suite's only door out (RM-M-CLOSET opens only into the bedroom).
     Alarm(uid="CMA702AAAA", tag="AL-M-HALL", kind=AlarmKind.COMBO,
           type_ref="ED-T-ALARM-COMBO-KIDDE", room="RM-M-LIVING",
-          circuit="CKT-LT-BACKUP", position=pt(ft(20), ft(8, 2))),
+          circuit="CKT-LT-BACKUP", position=pt(ft(20), inch(99.5))),
 ]
 
 # Electric radiant floor — the main-storey comfort zones. Not a heating system (the heat

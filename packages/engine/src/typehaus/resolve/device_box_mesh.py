@@ -1,7 +1,8 @@
 """A device box's drawn body (decision #93): its shape, raised cover or mud ring.
 
-Built in the box's (tangent ``s``, normal ``n``, ``z``) frame, ``n`` = 0 on the host face
-and positive into the room, ``z`` about the box centre, then placed at the bank's origin.
+Built in the box's (tangent ``s``, normal ``n``, ``up`` ``z``) frame, ``n`` = 0 on the host
+face and positive into the room, ``z`` about the box centre, then placed at the 3D origin.
+A wall box's ``up`` is plumb; a ceiling box's is ``tangent x normal`` (#140).
 Every piece is a closed convex prism (``duct_mesh.prism``), so the mesh stays watertight
 without booleans. A cover's device opening is a frame of four bars round the devices; the
 device face fills it. The solid's ``outline``/``z0``/``z1`` stay the bounding prism.
@@ -17,6 +18,7 @@ from typehaus.resolve.duct_mesh import prism
 from typehaus.resolve.geometry_ir import GMesh
 
 Point = tuple[float, float]
+Vec3 = tuple[float, float, float]
 Opening = tuple[float, float, float, float]  # s0, s1, z0, z1 about the box centre
 
 _ROUND_FACETS = 24
@@ -28,13 +30,15 @@ _RING_BORDER_M = 0.375 * M_PER_IN  # a 1-device mud ring's raised border round i
 _FLAT_COVER_M = 0.125 * M_PER_IN  # a cover rise at or under this is a flat plate (RACO 753)
 
 
-def box_mesh(origin: Point, tangent: Point, normal: Point, middle: float, *, width: float,
-             height: float, depth: float, shape: str, mounting: str, cover_rise: float,
-             openings: tuple[Opening, ...] = ()) -> GMesh:
+def box_mesh(origin: Vec3, tangent: tuple[float, ...], normal: tuple[float, ...], *,
+             width: float, height: float, depth: float, shape: str, mounting: str,
+             cover_rise: float, openings: tuple[Opening, ...] = (),
+             up: Vec3 = (0.0, 0.0, 1.0)) -> GMesh:
     """The box body plus its surface cover (proud by ``depth + cover_rise``) or its
     ``flush_raceway`` ring (inside ``-depth..0``); a plain flush box is the body alone."""
     pieces: list[tuple[list[Point], float, float]] = []  # (s, z) ring, n0, n1
     body = (_round(width / 2) if shape == "round"
+            else _octagon(width / 2) if shape == "octagon"
             else _chamfered(width / 2, height / 2, min(_CHAMFER_M, width / 4, height / 4)))
     if mounting == "surface":
         pieces.append((body, 0.0, depth))
@@ -46,9 +50,11 @@ def box_mesh(origin: Point, tangent: Point, normal: Point, middle: float, *, wid
     else:
         pieces.append((body, -depth, 0.0))
 
-    def place(ring: list[Point], n: float) -> list[tuple[float, float, float]]:
-        return [(origin[0] + tangent[0] * s + normal[0] * n,
-                 origin[1] + tangent[1] * s + normal[1] * n, middle + z) for s, z in ring]
+    t3, n3 = (*tangent, 0.0)[:3], (*normal, 0.0)[:3]
+
+    def place(ring: list[Point], n: float) -> list[Vec3]:
+        return [tuple(origin[i] + t3[i] * s + n3[i] * n + up[i] * z for i in range(3))
+                for s, z in ring]
 
     return combine_meshes(*(prism(place(ring, n0), place(ring, n1)) for ring, n0, n1 in pieces))
 
@@ -105,6 +111,13 @@ def _rect(s0: float, s1: float, z0: float, z1: float) -> list[Point]:
 def _chamfered(hw: float, hh: float, c: float) -> list[Point]:
     return [(-hw + c, -hh), (hw - c, -hh), (hw, -hh + c), (hw, hh - c),
             (hw - c, hh), (-hw + c, hh), (-hw, hh - c), (-hw, -hh + c)]
+
+
+def _octagon(apothem: float) -> list[Point]:
+    """A 4" octagon box: ``apothem`` is half its across-flats width, flats on the axes."""
+    r = apothem / math.cos(math.pi / 8)
+    return [(r * math.cos((i + 0.5) * math.pi / 4), r * math.sin((i + 0.5) * math.pi / 4))
+            for i in range(8)]
 
 
 def _round(r: float) -> list[Point]:

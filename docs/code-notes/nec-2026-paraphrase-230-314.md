@@ -167,10 +167,13 @@ volumes; locknuts, wire connectors and bushings are free.
 - **Tables.** (A) metal boxes and (B)(4) per-conductor volume, in³: 18 AWG 1.50, 16 1.75,
   14 2.00, 12 2.25, 10 2.50, 8 3.00, 6 5.00. Checked cell by cell against the printed tables
   2026-11-14: every volume the engine holds is right (14 AWG-6 AWG conductors, and the 4 x 1-1/4
-  to 4-11/16 x 2-1/8 square and 3 x 2 / 4 x 2-1/8 device rows). It omits the round/octagonal,
-  3 x 2 x 1-1/2, 3 x 2 x 2, masonry and FS/FD rows.
+  to 4-11/16 x 2-1/8 square and 3 x 2 / 4 x 2-1/8 device rows). The 4 in. round/octagonal
+  rows (12.5, 15.5, 21.5 in³) were added for ceiling boxes on 2026-11-20 from the long-standing
+  table values, not re-read against the print. It omits the 3 x 2 x 1-1/2, 3 x 2 x 2, masonry and FS/FD rows.
 - **Engine:** `electrical.box_fill` counts the cable conductors (through-fed, or end-fed for a
-  receptacle alone on its circuit), two allowances per gang at the circuit's gauge and one
+  receptacle alone on its circuit; an alarm head three per cable for its interconnect), two
+  allowances per gang at the circuit's gauge, none for a luminaire or alarm head (no yoke,
+  (4)); luminaire leads are not counted under the (1) exception and one
   allowance for all EGCs (never more than four). (2) is one allowance unless the `BoxRow`
   states `internal_clamps=False` (unset is counted); (3) is `BoxRow.support_fittings`; (5) is
   one allowance up to four EGCs, a quarter for each past four. (6) is one allowance per
@@ -214,7 +217,8 @@ luminaire canopy (conduit bodies a cover), matching machine screws. (A) A metal 
 plate is connected to the EGC per 250.110. (B) A canopy over a combustible finish is backed
 with noncombustible material where 410.23 asks. (C) Cord-pendant covers have bushings.
 - **Engine:** `electrical.canopy_covers_box` grades the first rule only: a wall light's
-  canopy spans its box face. Not graded: (A) EGC continuity, (B), (C).
+  canopy spans its box face; a ceiling box (decision #140) is not graded here. Not graded: (A)
+  EGC continuity, (B), (C).
 
 **314.27 Outlet boxes.**
 - **(A)** Luminaire boxes.
@@ -234,4 +238,7 @@ with noncombustible material where 410.23 asks. (C) Cord-pendant covers have bus
 - **(C)** Floor receptacles go in boxes listed for floor use.
 - **(D)** Boxes that support other utilization equipment (the printed page stops mid-rule).
 - **Engine:** `code.E3905_7_floor_boxes` grades (C), trusting the authored
-  `floor_box_listing` string. (A), (B) and (D) are not graded.
+  `floor_box_listing` string. `electrical.ceiling_box_support` grades (B)(1): a
+  `CEILING_FAN_LIGHT`'s derived ceiling box must come from a `BoxRow` with `fan_rated=True`
+  (decision #140); the 35/70 lb marking is carried as `rated_load_lb` but not graded. (A) is
+  not graded (a row may state its `rated_load_lb`); (B)(2) and (D) are not graded.

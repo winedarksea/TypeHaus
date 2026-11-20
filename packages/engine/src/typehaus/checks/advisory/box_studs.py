@@ -112,6 +112,8 @@ def box_on_stud(ctx: CheckContext) -> list[Finding]:
     blocked = {(row.box_product_ref, row.mounting) for el in ctx.plan.all_elements()
                if el.element_kind == "BoxStandard" for row in el.rows if row.block_profile}
     for box in sorted(ctx.model.device_boxes, key=lambda b: b.device_tag):
+        if box.host != "wall":
+            continue
         clash = stud_clash(ctx.model, box)
         if clash is None:
             continue

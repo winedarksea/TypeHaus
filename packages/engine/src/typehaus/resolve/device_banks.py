@@ -247,7 +247,7 @@ def _place(model: ResolvedModel, bank: list[_Member], plan: BoxPlan, standard: B
         uid=f"{item.uid}-box", tag=f"{item.tag}-BOX", storey=lead.pending.storey,
         category="electrical_box", outline=list(ring), z0_m=z0, z1_m=z1,
         product=plan.row.box_product_ref, material=plan.row.material_ref,
-        body_mesh=box_mesh(origin, tangent, normal, middle, width=width, height=height,
+        body_mesh=box_mesh((*origin, middle), tangent, normal, width=width, height=height,
                            depth=depth, shape=plan.row.shape, mounting=plan.mounting,
                            cover_rise=plan.row.cover_rise.meters,
                            openings=tuple(o for o in openings if o is not None)),

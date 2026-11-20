@@ -577,7 +577,7 @@ ALARMS = [
     # AL-A-STUDIO, in storeys/attic_studio.py. Tag, uid and CKT-LT-BACKUP all unchanged.
     Alarm(uid="CAA701AAAA", tag="AL-A-COMBO", kind=AlarmKind.COMBO,
           type_ref="ED-T-ALARM-COMBO-KIDDE", room="RM-A-STUDY",
-          circuit="CKT-LT-BACKUP"),
+          circuit="CKT-LT-BACKUP", position=pt(inch(324), inch(51.75))),  # box clears a rafter (#140)
 ]
 
 # The hot roof itself: gable, 6:12, ridge N-S, zero overhang (first-class #29).

@@ -1081,23 +1081,26 @@ ROOMS = [
          occupancy=Occupancy.CLOSET, floor_finish="oak-floor-custom"),
 ]
 
+# Off their room seeds by an inch or three since 2026-11-20: each ceiling box clears its joist
+# (decision #140).
 ALARMS = [
     Alarm(uid="CSA701AAAA", tag="AL-S-BED1", kind=AlarmKind.COMBO,
           type_ref="ED-T-ALARM-COMBO-KIDDE", room="RM-S-BED1",
-          circuit="CKT-LT-BACKUP"),
+          circuit="CKT-LT-BACKUP", position=pt(inch(348), inch(163.5))),
     Alarm(uid="CSA702AAAA", tag="AL-S-BED2", kind=AlarmKind.COMBO,
           type_ref="ED-T-ALARM-COMBO-KIDDE", room="RM-S-BED2",
-          circuit="CKT-LT-BACKUP"),
-    # Off the seed, which sat on REG-S-RET-BED3's grille; centred in an FS-ATTIC joist bay.
+          circuit="CKT-LT-BACKUP", position=pt(inch(348), inch(268.5))),
+    # Off the seed, which sat on REG-S-RET-BED3's grille; in an FS-ATTIC joist bay east of
+    # DU-S-HP-RET, so its ceiling box clears the duct (#140).
     Alarm(uid="CSA703AAAA", tag="AL-S-BED3", kind=AlarmKind.COMBO,
           type_ref="ED-T-ALARM-COMBO-KIDDE", room="RM-S-BED3",
-          circuit="CKT-LT-BACKUP", position=pt(ft(25, 4), ft(30))),
+          circuit="CKT-LT-BACKUP", position=pt(inch(313), ft(30))),
     Alarm(uid="CSA704AAAA", tag="AL-S-SUITE", kind=AlarmKind.COMBO,
           type_ref="ED-T-ALARM-COMBO-KIDDE", room="RM-S-SUITE",
-          circuit="CKT-LT-BACKUP"),
+          circuit="CKT-LT-BACKUP", position=pt(inch(60), inch(195.5))),
     Alarm(uid="CSA705AAAA", tag="AL-S-HALL", kind=AlarmKind.COMBO,
           type_ref="ED-T-ALARM-COMBO-KIDDE", room="RM-S-HALL",
-          circuit="CKT-LT-BACKUP"),
+          circuit="CKT-LT-BACKUP", position=pt(inch(240), inch(239.5))),
 ]
 
 # DITRA-HEAT is this hall bath's only heat source (REG-S-EXH1 is ERV exhaust).

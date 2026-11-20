@@ -81,7 +81,7 @@ class ResolvedDeviceBox:
     depth_m: float
     projection_m: float
     cavity_m: float | None
-    wall_tag: str
+    wall_tag: str | None  # None on a ceiling box
     host_layer: str
     footprint: tuple[tuple[float, float], ...]
     z0_m: float
@@ -124,6 +124,10 @@ class ResolvedDeviceBox:
     plate_footprint: tuple[tuple[float, float], ...] = ()
     #: A pocket box (``BoxPlan.recess_m``): fed from the framing beside it, so no NM drop.
     recess_m: float = 0.0
+    #: ``"ceiling"`` for a ceiling box (resolve/ceiling_boxes.py, #140): no wall, never banked;
+    #: ``axis`` is its face's 3D unit normal into the room (down, or down-slope).
+    host: str = "wall"
+    axis: tuple[float, float, float] | None = None
 
 
 def boxes_by_device(model: ResolvedModel) -> dict[str, ResolvedDeviceBox]:
@@ -194,19 +198,39 @@ def _error(tag: str, message: str) -> Finding:
                    element_tags=(tag,), result=Result.FAIL)
 
 
+def _on_ceiling(item: Any) -> bool:
+    return getattr(getattr(getattr(item, "mount", None), "kind", None), "value", None) == "ceiling"
+
+
 def takes_box(item: Any, product_type: Any | None) -> bool:
+    """The type's ``device_box`` wins; an alarm head with a circuit takes one (NEC 300.15);
+    a ceiling housing or wafer owns its j-box and a PSU-fed fitting is low voltage (#140)."""
     flag = getattr(product_type, "device_box", None)
     if flag is not None:
         return bool(flag)
+    if getattr(item, "element_kind", None) == "Alarm":
+        return bool(item.circuit)
+    if _on_ceiling(item) and (item.mount.recessed_into_host_surface
+                              or getattr(item, "psu_ref", None)):
+        return False
     return getattr(getattr(item, "kind", None), "value", None) in _BOXED_KINDS
 
 
 def box_use(item: Any, product_type: Any | None) -> str | None:
-    """The BoxStandard row ``use`` a device asks for: its type's, or a light's luminaire."""
-    use = getattr(product_type, "box_use", None)
+    """The BoxStandard row ``use`` a device asks for: its own, its type's, else by mount:
+    a ceiling fan ``"fan"``, other ceiling lights ``"ceiling"``, an alarm head ``"alarm"``,
+    a wall light ``"luminaire"``."""
+    use = getattr(item, "box_use", None) or getattr(product_type, "box_use", None)
     if use is not None:
         return use
-    return "luminaire" if getattr(getattr(item, "kind", None), "value", None) == "light" else None
+    if getattr(item, "element_kind", None) == "Alarm":
+        return "alarm"
+    if getattr(getattr(item, "kind", None), "value", None) != "light":
+        return None
+    if not _on_ceiling(item):
+        return "luminaire"
+    form = getattr(getattr(product_type, "form", None), "value", None)
+    return "fan" if form == "ceiling_fan_light" else "ceiling"
 
 
 def gang_count(product_type: Any | None) -> int:

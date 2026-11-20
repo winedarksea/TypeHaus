@@ -6652,6 +6652,11 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # reggioregister.com; the Double's price was unread, ESTIMATE. Labour 0: the device sets its plate.
 "PROD-REGGIO-2SPB-SG" = { material = { low = 10, high = 14 }, labour = { low = 0, high = 0 } }  # 10 ea
 "PROD-REGGIO-6SPB-SG" = { material = { low = 14, high = 22 }, labour = { low = 0, high = 0 } }  # 0 ea
+# Ceiling boxes (decision #140, 2026-11-20). ESTIMATES off retail listings. Labour 0: the
+# fixture or alarm row's labour sets its box, as for every flush wall box (owner, 2026-10-29).
+"PROD-APPLETON-FFS561LDNBH" = { material = { low = 6, high = 12 }, labour = { low = 0, high = 0 } }  # 4" oct on bar hanger, lights and alarm heads
+"PROD-RACO-929" = { material = { low = 14, high = 25 }, labour = { low = 0, high = 0 } }  # fan brace box, 2 ea
+"PROD-ARLINGTON-FBR415F" = { material = { low = 12, high = 22 }, labour = { low = 5, high = 15 } }  # plant fan, vapor box; labour is the membrane taping
 
 [grounding]
 # NEW 2026-11-10 (decision #123) — [low, high] $ EACH, split material/labour: electrode

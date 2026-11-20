@@ -85,7 +85,7 @@ def test_every_boxed_device_draws_a_symbol(catlin_model_ro):
     objs = {o.tag: o for o in catlin_model_ro.canvas_objects}
     boxes = boxes_by_device(catlin_model_ro)
     bare = [tag for tag, box in boxes.items()  # lights draw through the luminaire path
-            if box.device_kinds[box.device_tags.index(tag)] != "light"
+            if box.device_kinds[box.device_tags.index(tag)] not in ("light", "alarm")
             and model_symbol_for(types.get(objs[tag].type_ref or "")) not in _REGISTRY]
     assert not bare
 

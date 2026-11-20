@@ -1,3 +1,19 @@
+## Ceiling boxes over every ceiling fixture and alarm head that mounts to one (2026-11-20, decision #140)
+
+- **Why.** Only wall devices took a derived box, so ceiling fixtures and the hardwired Kidde
+  heads were never drawn, billed or fill-graded (TODO; `notes/basement_surface_wiring.md`).
+- **Taken.** 42 boxes: an Appleton FFS561LDNBH 4" octagon on a bar hanger (lights, heads, the
+  chandelier on the roof lining), the RACO 929 fan brace for the gym and bedroom fans, an
+  Arlington FBR415F vapor box for the plant fan and Airfoil rounds for its grow bars, a
+  B122A for the garage door-opener receptacle. Nora cans, the Juno wafers and the PSU-fed
+  laundry track take none. 18 boxes landed on a joist, rafter, soffit rung or duct; each
+  fixture moved 1/2"-4" into the clear bay (AL-S-BED3 9" east, off DU-S-HP-RET);
+  the bedroom fan sits 2 1/4" south of its old centre. No pancake was needed.
+- **Open.** The porch fan and garden flood hang under FS-SG-BALCONY's bare deck: no lined face,
+  no box (UNKNOWN in `box_fill`). AL-B-COMBO and the living room's pendant and AL-M-HALL take a
+  box through resilient channel (`electrical.ceiling_box_decoupling`): wall-mount the theater
+  head within 12" of the ceiling (NFPA 72), or keep the box on the RC? Owner to decide.
+
 ## DU-M-ERV-R-LIVING moves 3 1/8" south so a squash block stands under W-S-C2B's jack (2026-11-19, owner)
 
 - **Why.** W-S-C2B is BEARING and its header-0 carries RF-HOUSE and FS-ATTIC; the jack at

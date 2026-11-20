@@ -151,8 +151,9 @@ MAIN_LIGHTING = [
     # plus the remote.
     # CKT-LT-MAIN, the same circuit as the load it switches — a switch on another circuit
     # than its load FAILs electrical.lighting_controls (NEC 210.7).
+    # 2 1/4" south of the bed-centred 6'-6" since 2026-11-20: its fan brace box clears joist 5.
     ElectricalDevice(uid="SFVAJZ0YEM", tag="ED-M-BED-FAN", kind=DeviceKind.LIGHT,
-                     position=pt(ft(9), ft(6, 6)), type_ref="ED-T-LT-FAN52",
+                     position=pt(ft(9), inch(75.75)), type_ref="ED-T-LT-FAN52",
                      circuit="CKT-LT-MAIN", room="RM-M-BED",
                      controlled_by=("ED-M-BED-FAN-SW",),
                      mount=Mount(kind=MountKind.CEILING, drop=inch(18))),
