@@ -30,6 +30,7 @@ from typehaus.model.mep import (
 from typehaus.quantities import inch
 from typehaus.resolve.cleanouts import resolve_drain_cleanout
 from typehaus.resolve.geometry import length, sub
+from typehaus.resolve.hammer_arrestor_geometry import hammer_arrestor_solid
 from typehaus.resolve.isolation_valve_geometry import isolation_valve_solid
 from typehaus.resolve.mep_ducts import resolve_duct_run
 from typehaus.resolve.mep_queries import (  # noqa: F401 - re-exported query API
@@ -41,6 +42,7 @@ from typehaus.resolve.mep_queries import (  # noqa: F401 - re-exported query API
     duct_bay_occupancy,
     is_parallel_to_floor,
     on_pipe_segment,
+    pipe_elevations_at,
     pipe_invert_at,
     wet_wall_occupancy,
 )
@@ -424,7 +426,11 @@ def _resolve_pipe_accessory(model: ResolvedModel, el: PipeAccessory,
                 message=(f"pipe accessory {el.tag} authors no elevation and its host run "
                          f"{host.tag} carries none either — nothing to fall back to"),
                 element_tags=(el.tag, host.tag), result=Result.FAIL)]
-    bx, by, bz = _ACCESSORY_BOX
+        if el.kind is PipeAccessoryKind.WATER_HAMMER_ARRESTOR:
+            # The tee can be anywhere along a sloping leg. Keep the nearest vertex as
+            # a reference for choosing among several legs at the same plan position.
+            elevations = pipe_elevations_at(host, (cx, cy))
+            z = min(elevations, key=lambda elevation: abs(elevation - z), default=z)
     model.pipe_accessories.append(ResolvedPipeAccessory(
         uid=el.uid, tag=el.tag, storey=storey.tag, kind=el.kind.value,
         position=(cx, cy), z_m=z, pipe_ref=host.tag, system=host.system,
@@ -437,6 +443,14 @@ def _resolve_pipe_accessory(model: ResolvedModel, el: PipeAccessory,
             uid=el.uid or f"{el.tag}-acc", tag=el.tag, storey=storey.tag,
             category=_accessory_category(el.kind), center=(cx, cy, z), host=host))
         return []
+    if el.kind is PipeAccessoryKind.WATER_HAMMER_ARRESTOR:
+        solid = hammer_arrestor_solid(
+            uid=el.uid or f"{el.tag}-acc", tag=el.tag, storey=storey.tag,
+            category=_accessory_category(el.kind), center=(cx, cy, z), host=host)
+        if solid is not None:
+            model.solids.append(solid)
+            return []
+    bx, by, bz = _ACCESSORY_BOX
     model.solids.append(ResolvedSolid(
         uid=el.uid or f"{el.tag}-acc", tag=el.tag, storey=storey.tag,
         category=_accessory_category(el.kind),

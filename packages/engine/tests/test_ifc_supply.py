@@ -168,6 +168,32 @@ def test_each_accessory_kind_gets_the_right_valve_type(catlin_model_ro, catlin_i
     assert len({_ACCESSORY_IFC_CLASS[k] for k in seen}) > 1
 
 
+def test_arrestor_tees_follow_their_pipes_and_export_as_tessellated_fittings(
+        catlin_model_ro, catlin_ifc):
+    from typehaus.quantities import inch
+    from typehaus.resolve.mep_queries import pipe_elevations_at
+
+    arrestors = {item.tag: item for item in catlin_model_ro.pipe_accessories}
+    pipes = {item.tag: item for item in catlin_model_ro.pipe_runs}
+    solids = {item.tag: item for item in catlin_model_ro.solids}
+    fittings = {item.Name: item for item in catlin_ifc.by_type("IfcPipeFitting")}
+    for tag in ("PA-M-DW-WHA-HW", "PA-M-WASH-WHA-HW", "PA-M-WASH-WHA-CW"):
+        arrestor = arrestors[tag]
+        centerlines = pipe_elevations_at(pipes[arrestor.pipe_ref], arrestor.position)
+        assert any(arrestor.z_m == pytest.approx(elevation, abs=1e-7)
+                   for elevation in centerlines)
+        solid = solids[arrestor.tag]
+        assert solid.body_mesh is not None
+        assert solid.z1_m - solid.z0_m == pytest.approx(inch(4).meters, abs=1e-4)
+        assert solid.z1_m - arrestor.z_m > inch(3).meters
+        fitting = fittings[arrestor.tag]
+        assert fitting.ObjectType == "WATERHAMMERARRESTOR"
+        (representation,) = fitting.Representation.Representations
+        (face_set,) = representation.Items
+        assert face_set.is_a("IfcTriangulatedFaceSet")
+        assert len(face_set.CoordIndex) == len(solid.body_mesh.triangles)
+
+
 def test_a_run_carries_its_material_finish_and_insulation_into_the_file(catlin_model_ro,
                                                                        catlin_ifc):
     insulated = next((r for r in catlin_model_ro.pipe_runs if r.insulation), None)

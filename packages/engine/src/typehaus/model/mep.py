@@ -170,6 +170,7 @@ class PipeAccessory(Element):
     and optional — left off, the resolver takes the host run's invert at the nearest path
     vertex, which is nearly always what is meant (a valve is *on* the pipe) and is the one
     number an author would otherwise have to copy by hand and keep in step.
+    Arrestor tees also interpolate the centreline between vertices.
 
     ``fixture_ref`` attaches a vacuum breaker to a supported fixture's hose outlet.
     It replaces authored position/elevation; ``pipe_ref`` still identifies the supply.
@@ -192,7 +193,7 @@ class PipeAccessory(Element):
     fixture_ref: str | None = None  # mount on the fixture's hose_outlet, resolved after placeables
     product_ref: str | None = None  # dimensioned accessory catalog key
     pipe_ref: str | None = None  # host PipeRun tag
-    elevation: Length | None = None  # storey-relative; None -> host run z at nearest vertex
+    elevation: Length | None = None  # storey-relative; None -> derive from host run
     serves: tuple[str, ...] = ()  # Fixture/Equipment/PipeRun tags downstream of it
     accessible: bool = False
     room: str | None = None

@@ -65780,10 +65780,10 @@
 "94165fca81a9"
 ],
 "geometry/F3ZC6TWL9N/body": [
-0.8128,
-0.9652,
-2,
-"66d2b75ca944"
+0.8763,
+0.9779,
+650,
+"14fbe7af6489"
 ],
 "geometry/F5569DXC7B-run/body": [
 5.7912,
@@ -69980,10 +69980,10 @@
 "773eb900eb87"
 ],
 "geometry/K7XB2VDR5H/body": [
-0.8763,
-1.0287,
-2,
-"33b39a272dd3"
+0.942975,
+1.044575,
+650,
+"68bffa89144a"
 ],
 "geometry/K9XVXZ9XZ3-box/body": [
 7.577963,
@@ -78920,10 +78920,10 @@
 "f444de7cc5d0"
 ],
 "geometry/W4NL8QSJ0M/body": [
-0.0619252,
-0.2143252,
-2,
-"dd5e9398a38a"
+0.1292,
+0.2308457,
+650,
+"258f79d6c9ca"
 ],
 "geometry/W4T0H24P8K-run/body": [
 0.94615,
@@ -119775,7 +119775,7 @@
 "pipe_accessories/PA-M-BATH2-WC-STOP/z_m": 0.2413,
 "pipe_accessories/PA-M-COLDSTORE-STUB/z_m": 0.762,
 "pipe_accessories/PA-M-DW-STOP/z_m": 0.1397,
-"pipe_accessories/PA-M-DW-WHA-HW/z_m": 0.1381252,
+"pipe_accessories/PA-M-DW-WHA-HW/z_m": 0.1387569,
 "pipe_accessories/PA-M-KITCH-STOP-CW/z_m": 0.2682875,
 "pipe_accessories/PA-M-KITCH-STOP-HW/z_m": 0.2301875,
 "pipe_accessories/PA-M-LSINK-STOP-CW/z_m": 0.5588,
@@ -125734,8 +125734,8 @@
 "solids/PA-M-COLDSTORE-STUB/z1_m": 0.8382,
 "solids/PA-M-DW-STOP/z0_m": 0.1288859,
 "solids/PA-M-DW-STOP/z1_m": 0.1639618,
-"solids/PA-M-DW-WHA-HW/z0_m": 0.0619252,
-"solids/PA-M-DW-WHA-HW/z1_m": 0.2143252,
+"solids/PA-M-DW-WHA-HW/z0_m": 0.1292,
+"solids/PA-M-DW-WHA-HW/z1_m": 0.2308457,
 "solids/PA-M-KITCH-STOP-CW/z0_m": 0.2413,
 "solids/PA-M-KITCH-STOP-CW/z1_m": 0.32893,
 "solids/PA-M-KITCH-STOP-HW/z0_m": 0.2193925,
@@ -125754,10 +125754,10 @@
 "solids/PA-M-WASH-STOP-CW/z1_m": 0.9253855,
 "solids/PA-M-WASH-STOP-HW/z0_m": 0.941705,
 "solids/PA-M-WASH-STOP-HW/z1_m": 0.976757,
-"solids/PA-M-WASH-WHA-CW/z0_m": 0.8128,
-"solids/PA-M-WASH-WHA-CW/z1_m": 0.9652,
-"solids/PA-M-WASH-WHA-HW/z0_m": 0.8763,
-"solids/PA-M-WASH-WHA-HW/z1_m": 1.0287,
+"solids/PA-M-WASH-WHA-CW/z0_m": 0.8763,
+"solids/PA-M-WASH-WHA-CW/z1_m": 0.9779,
+"solids/PA-M-WASH-WHA-HW/z0_m": 0.942975,
+"solids/PA-M-WASH-WHA-HW/z1_m": 1.044575,
 "solids/PA-S-BALCONY-HYD-SEAL/z0_m": 3.6024566,
 "solids/PA-S-BALCONY-HYD-SEAL/z1_m": 3.7548566,
 "solids/PA-S-BALCONY-HYD-SEAT/z0_m": 3.6386516,

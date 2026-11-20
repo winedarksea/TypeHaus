@@ -1405,8 +1405,8 @@ class ResolvedPipeAccessory:
 
     ``z_m`` is absolute project-frame like every other resolved z: authored elevations are
     storey-relative, and where none was authored the resolver has already substituted the
-    host run's invert at the nearest path vertex, so a consumer never has to know which of
-    the two it got. A fixture-mounted device uses its connection origin for ``position`` /
+    host run's elevation (interpolated for an arrestor tee). A fixture-mounted device
+    uses its connection origin for ``position`` /
     ``z_m`` and carries the outward connection axis in ``direction``; its solid owns the
     full body bounds, which need not be centred on that origin."""
 
