@@ -231,7 +231,7 @@ def test_moved_grow_lights_keep_their_timer_and_ceiling_drop(catlin_plan, tag):
 
 
 @pytest.mark.parametrize("bedroom", ("BED1", "BED2"))
-def test_east_pax_frame_meets_corner_and_leaves_outlet_and_erv_access(catlin_model_ro, bedroom):
+def test_east_pax_frame_meets_corner_and_leaves_outlet_access(catlin_model_ro, bedroom):
     objects = {item.tag: item for item in catlin_model_ro.canvas_objects}
     corner = objects[f"FURN-S-{bedroom}-WARD"]
     shelf = objects[f"FURN-S-{bedroom}-PAX-SHELF-EAST"]
@@ -248,18 +248,9 @@ def test_east_pax_frame_meets_corner_and_leaves_outlet_and_erv_access(catlin_mod
     assert east == pytest.approx(ft(27, 4.375).meters)
 
     outlet = objects[f"ED-S-{bedroom}-RC4"]
-    grille = objects[f"REG-S-RET-{bedroom}"]
     # The 1.29" Lever Edge face's edge: 5 5/8" to the old 4" body's, plus half the difference.
     assert Polygon(outlet.footprint).bounds[0] - east == pytest.approx(inch(6.98).meters)
-    # The 12" floor-grille face (REG-T-ERV-EXH-FLOOR, 2026-10-31) is centred where the
-    # 7" one was, at x 28'-1", so its west edge now clears the frame by 2 5/8".
-    assert grille.position[0] == pytest.approx(ft(28, 1).meters)
-    assert Polygon(grille.footprint).bounds[0] - east == pytest.approx(inch(2.625).meters)
-    duct = next(item for item in catlin_model_ro.ducts if item.tag == f"DU-M-ERV-R-{bedroom}")
-    assert duct.path[-1] == pytest.approx(grille.position)
-    # BED1's grille is on the room's north side since it teed off BED2 (2026-11-11).
-    assert grille.position[1] == pytest.approx(
-        ft(16, 8).meters if bedroom == "BED1" else ft(18, 4).meters)
+    # The ERV floor pickup east of the frame went with the 2026-11-20 rebalance (929ed7f4f).
     if bedroom == "BED1":
         bed_west = Polygon(objects["FURN-S-BED1"].footprint).bounds[0]
         assert bed_west - east >= inch(18).meters

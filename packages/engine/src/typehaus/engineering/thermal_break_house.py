@@ -119,7 +119,11 @@ def house_wall_rows(ctx, board: Board, patch: dict, states, missing, inputs) -> 
 
 def _floor_line(ctx, board: Board, patch: dict, states, missing) -> None:
     """The wall's top reaction plus the band above it, into the sill anchorage."""
-    from typehaus.hardware.catalog import allowable_for_model
+    from typehaus.hardware.catalog import (
+        ROLE_MUDSILL_ANCHOR,
+        hardware_capacity_records,
+        structural_hardware_catalog,
+    )
 
     wall = patch["wall"]
     core = next((ly for ly in wall.depth_layers() if ly.function == "structure"), None)
@@ -131,7 +135,12 @@ def _floor_line(ctx, board: Board, patch: dict, states, missing) -> None:
         if not s.category.startswith("connector"):
             continue
         parts = s.tag.split("~")
-        allow = allowable_for_model(parts[1]) if len(parts) > 2 else None
+        # Only the concrete-to-sill link: an A35Z tying the sill to the floor above it is
+        # in series with the anchor, not beside it.
+        allow = next((h.allowable for h in (*structural_hardware_catalog(),
+                                            *hardware_capacity_records())
+                      if len(parts) > 2 and h.model == parts[1]
+                      and h.role == ROLE_MUDSILL_ANCHOR), None)
         value = getattr(allow, SILL_ANCHOR_DIRECTION, None) if allow is not None else None
         if value is None or not (s.z0_m * _IN - 6.0 <= top <= s.z1_m * _IN + 6.0):
             continue
