@@ -37,6 +37,11 @@ def test_catlin_wall_tops_match_the_basis_note(catlin_model_ro) -> None:
     assert ("FS-M-EAST/FS-M-NE pack of 2 ends at 12.9 ft (closer than a tie's slot, 515 lb "
             "over 15.5\"): 2 A35Z on its outer faces x 538 lb = 1076 lb, d/c 0.48"
             in findings["W-B-E1"].message)
+    # FO-M-ERV-OA's south trimmer pack, 2-ply LVL: the DF/SP column (C-C-2026 p. 20 note f),
+    # its tributary bounded at W-B-N4's face.
+    assert ("FS-M-MECH pack of 2 ends at 33.3 ft (closer than a tie's slot, 606 lb over "
+            "18.2\"): 2 A35Z on its outer faces x 626 lb = 1251 lb, d/c 0.48"
+            in findings["W-B-W1"].message)
     # Parallel: worst station per wall.
     # FO-M-ERV-OA's north pack stops past its header, so N3/N4's ties lie clear (§4).
     for tag, worst in (("W-B-N1", "0.89"), ("W-B-N3", "0.57"), ("W-B-N4", "0.83"),

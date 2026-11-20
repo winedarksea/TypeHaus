@@ -45,6 +45,10 @@ _SPF_FACTOR = 0.86
 #: F1 and F2 loads". No angle is listed on an I-joist flange; at a TJI the angle lands on
 #: the LSL rim or blocking at the joist end, Weyerhaeuser's own end detail.
 _LSL_FACTOR = 0.90
+#: C-C-2026 p. 20 general note f lists LVL (DF/SP) at SG 0.50, DF-L's, and ESR-3096 §3.2.2
+#: covers SG >= 0.50: an angle on an LVL ply takes the DF/SP column unreduced (the house's
+#: LVL hanger rows read it the same way, ER-280 §3.2.2).
+_LVL_FACTOR = 1.0
 #: Footnote f.
 _ANCHOR_REACH_M = 8.0 * _M_PER_IN
 
@@ -56,7 +60,9 @@ def _species_factor(profile: str) -> float:
         shape = cross_section(profile).shape
     except Exception:  # an unparsed profile reads as sawn
         return _SPF_FACTOR
-    return _LSL_FACTOR if shape == "i_joist" else _SPF_FACTOR
+    if shape == "i_joist":
+        return _LSL_FACTOR
+    return _LVL_FACTOR if profile.split()[-1:] == ["LVL"] else _SPF_FACTOR
 
 
 def tie_capacity_lb(model: str, profile: str) -> tuple[float | None, str]:

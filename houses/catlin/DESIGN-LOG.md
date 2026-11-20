@@ -9132,7 +9132,8 @@ Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
   held by it, and its end is a corner, so it takes none. The wall-top check bounds a pack's
   tributary at a return wall's face.
 - **Result.** Two A35Z on the south pack's outer faces, 606 lb over 18.2" (half way to
-  W-B-N4's face) against 1,076, d/c 0.56; A35Z 57 -> 59, SD9112 +24. No other wall changes
+  W-B-N4's face) against 1,251 (LVL takes the DF/SP column: C-C-2026 p. 20 note f, SG 0.50;
+  first read as sawn x 0.86, 1,076, 0.56), d/c 0.48; A35Z 57 -> 59, SD9112 +24. No other wall changes
   (`notes/main_floor_truss_basis.md` §4).
 
 ## A block is bounded only by framing that reaches it (2026-11-20)

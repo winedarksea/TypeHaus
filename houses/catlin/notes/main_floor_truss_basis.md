@@ -179,6 +179,8 @@ ducts or pipes". The owner's bounce goal, so two:
     published column (1.0): 695 x 0.9 = 625.5 lb.
   - Onto a truss chord or sawn block of unstated species, x 0.86: **537.9 lb**.
   - Onto the LSL rim at a TJI end, x 0.90: **563.0 lb**.
+  - Onto an LVL ply, x 1.00: **625.5 lb**. C-C-2026 p. 20 general note f lists LVL (DF/SP) at
+    SG 0.50, DF-L's, inside §3.2.2's SG >= 0.50; the house's LVL hanger rows read it so too.
 - **Every backfilled wall that carries a floor.** All are 8'-0" BASEMENT_8/12 pours (top
   -13 7/16", bottom -109 7/16"), grade -2'-10", so 75 7/16" = 6.3' of fill: the 8'/7'-6" row,
   GM soil, **400 plf**. Anchors are MASA at 4' (<= the row's 72").
@@ -197,7 +199,7 @@ ducts or pipes". The owner's bounce goal, so two:
   | W-B-W1 | seam pack: FS-M-WEST 256", 259 1/16" + FS-M-MECH 261 3/8" | 3 | 21.375" trib. | 712.5 lb | 2 x 563 | 0.63 |
   | W-B-W1 | FS-M-WEST, 2-ply pack (240, the bath) | 1 | 16" | 533 lb | 2 x 563 | 0.47 |
   | W-B-W2 | FS-M-WEST, TJI (includes BATH2 drain bay's added line) | 14 | 16" max | 533 lb | 563 | 0.95 |
-  | W-B-W1 | FS-M-MECH, `FO-M-ERV-OA` south trimmer pack, 2-ply LVL (398 7/8", 400 5/8") | 2 | 18.19" trib. | 606 lb | 2 x 538 | 0.56 |
+  | W-B-W1 | FS-M-MECH, `FO-M-ERV-OA` south trimmer pack, 2-ply LVL (398 7/8", 400 5/8") | 2 | 18.19" trib. | 606 lb | 2 x 626 | 0.48 |
 
   **A trimmer ending square on a tied sill takes ties like a joist** (2026-11-20, owner;
   `UpliftTieRules.sill_tied_floor_categories`). `FO-M-ERV-OA`'s south pack ends on W-B-W1's
@@ -207,7 +209,8 @@ ducts or pipes". The owner's bounce goal, so two:
   of everything else on the sill. Nothing is tied north of it, so its tributary runs half way to
   W-B-N4's inner face, y 424", where the return wall holds the top:
   (400.625 + 424)/2 - (389.375 + 398.875)/2 = 412.3125 - 394.125 = 18.1875":
-  400 x 18.1875/12 = **606.3 lb** on 2 x 537.9 (LVL read as sawn, x 0.86) = 1,075.8, **0.56**.
+  400 x 18.1875/12 = **606.3 lb** on 2 x 625.5 (LVL, DF/SP column) = 1,251.0, **0.48**
+  (0.56 if read as sawn SPF, x 0.86).
   The north pack (426 1/4"..429 3/4") lies along the N3/N4 sill, held by it like a rim, and
   its end is the corner: no angle (its north leaf would lie under the LSL edge rim).
   No other trimmer in the house ends on a tied sill; no other wall gains or loses a tie, and
