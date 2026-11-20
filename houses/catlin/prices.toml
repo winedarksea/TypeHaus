@@ -3790,7 +3790,11 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "REG-T-SAUNA-VENT-EXH" = { material = { low = 85, high = 120 }, labour = { low = 20, high = 50 } }  # 1 ea
 # System 1's aluminium sidewalls: TRUaire A220VO 12X06 $79.80 and 08X06 $68.60 (hvacquick,
 # 2026-10-31); Hart & Cooley HVD is the dearer or-equal. Aimed on site, hence the labour.
-"REG-T-HP-SIDE-1206" = { material = { low = 75, high = 115 }, labour = { low = 25, high = 60 } }  # 4 ea
+"REG-T-HP-SIDE-1206" = { material = { low = 75, high = 115 }, labour = { low = 25, high = 60 } }  # 3 ea
+# RM-S-SUITE's supply (owner, 2026-11-19): Reggio Chevron 6x12 Sun Gold, made to order, plus the
+# 814-BL louver ($35.95 Ferguson). ESTIMATE, Chevron price unread; quote pending (Reggio's cut
+# 6x12 lines read $69.95-$92.95, so $70-110). Labour sets the box, the louver and the key.
+"REG-T-HP-SUITE-CHEVRON" = { material = { low = 105, high = 150 }, labour = { low = 20, high = 45 } }  # 1 ea
 # Stair: A220VO 12x6 plus TH-HP-STAIR-BOX-01, included once. Straight 4in branch bills by LF.
 "REG-T-HP-STAIR-SIDE" = { material = { low = 100, high = 155 }, labour = { low = 40, high = 85 } }
 "REG-T-HP-STUDY-SIDE" = { material = { low = 65, high = 100 }, labour = { low = 25, high = 60 } }  # 1 ea
@@ -6643,6 +6647,10 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "PROD-CARLON-B520A" = { material = { low = 3, high = 6 }, labour = { low = 0, high = 0 } }  # WAC Sprig sconces; ~$3.82 Platt listing (2026-11-08), estimate
 "PROD-LESSCO-AIRFOIL-1G" = { material = { low = 4, high = 10 }, labour = { low = 5, high = 15 } }  # plant air-sealed boxes; labour is the membrane taping (estimate)
 "PROD-LESSCO-AIRFOIL-ROUND" = { material = { low = 5, high = 12 }, labour = { low = 5, high = 15 } }  # ED-S-PLANT-SPOT (estimate)
+# RM-S-SUITE's Sun Gold steel plates (owner, 2026-11-19). Single Decora $10.95 on
+# reggioregister.com; the Double's price was unread, ESTIMATE. Labour 0: the device sets its plate.
+"PROD-REGGIO-2SPB-SG" = { material = { low = 10, high = 14 }, labour = { low = 0, high = 0 } }  # 10 ea
+"PROD-REGGIO-6SPB-SG" = { material = { low = 14, high = 22 }, labour = { low = 0, high = 0 } }  # 0 ea
 
 [grounding]
 # NEW 2026-11-10 (decision #123) — [low, high] $ EACH, split material/labour: electrode

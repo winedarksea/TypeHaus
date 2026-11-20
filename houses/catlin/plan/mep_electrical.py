@@ -438,13 +438,13 @@ SECOND_DEVICES = [
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     # In the suite's east arm, beside D-S-SUITE (the hall door through the bearing wall).
     ElectricalDevice(uid="CED009K2AA", tag="ED-S-SUITE-SW", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-SW1", circuit="CKT-LT-UPPER",
+                     type_ref="ED-T-LEV-SW1", plate="reggio-sungold", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-CLN", face="left", distance_from_start=inch(83.5),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="CED009K3AA", tag="ED-S-SUITE-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
-                     type_ref="ED-T-LEV-GFCI-20", circuit="CKT-RC-SECOND",
+                     type_ref="ED-T-LEV-GFCI-20", plate="reggio-sungold", circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-SBS", face="right", distance_from_start=inch(67.5),

@@ -141,7 +141,7 @@ SECOND_LIGHTING = [
     # W-S-SN2: x=7'-7 1/2", west of the suite-face stud at 7'-10 1/2" and ~4" clear of
     # PR-M-WC-VENT rising in that wall at x=8'-2 1/2".
     ElectricalDevice(uid="BBVJNKQP5R", tag="ED-S-SUITE-LAMP-SW", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-SW1",
+                     type_ref="ED-T-LEV-SW1", plate="reggio-sungold",
                      circuit="CKT-LT-UPPER", room="RM-S-SUITE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(

@@ -52,7 +52,8 @@ def test_dimensioned_round_inlet_is_a_hole_in_the_back_plate():
 
 
 @pytest.mark.parametrize("style,double", [("rectangular_grille", False),
-                                         ("rectangular_grille", True), ("disc_valve", False)])
+                                         ("rectangular_grille", True), ("disc_valve", False),
+                                         ("laser_cut_chevron", False)])
 def test_faces_have_visible_air_gaps_and_stay_within_catalog_bounds(style, double):
     mesh = face_mesh(.3, .3, .0254, style, double)
     points = np.array(mesh.positions)

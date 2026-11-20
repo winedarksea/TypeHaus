@@ -214,6 +214,19 @@ AIR_REGISTER_TYPES = (
                  source=f"TRUaire A220VO 12X06 face 13 3/4 x 7 3/4in. Double deflection: the "
                         f"vertical blades aim, the horizontal set the spread. {_NOTE} §4.",
                  ports=(_port("supply", Service.SUPPLY_AIR),)),
+    # RM-S-SUITE's supply (owner, 2026-11-19): a fixed laser-cut face throws straight, no aim;
+    # a jet this near the ceiling stays attached to it. The louver fits inside the 6in box.
+    RegisterType(tag="REG-T-HP-SUITE-CHEVRON",
+                 face_opening=(inch(12), inch(6)),
+                 face_style="laser_cut_chevron", face_projection=inch(0.1875),
+                 name="Suite heat-pump supply, Reggio Chevron 6x12 Sun Gold sidewall, louver "
+                      "damper",
+                 footprint=(inch(14), inch(1)), height=inch(8), plan_symbol="register",
+                 product_ref="PROD-AIR-CHEVRON-1206-SG", neck=_OBD_NECK_1206,
+                 parts=(ProductPart(role="fitting", product_ref="PROD-AIR-LOUVER-814"),),
+                 source=f"Reggio Chevron 6x12 duct, 8 x 14in overall; free area unpublished "
+                        f"(need >= 29 in2). 814-BL louver 2 5/16in deep. {_NOTE} §4.",
+                 ports=(_port("supply", Service.SUPPLY_AIR),)),
     RegisterType(tag="REG-T-HP-STAIR-SIDE",
                  face_opening=(inch(12), inch(6)),
                  face_style="rectangular_grille", double_deflection=True,

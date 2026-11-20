@@ -14,6 +14,7 @@ from typehaus.quantities import M_PER_IN
 from typehaus.resolve.connector_geometry.mesh import box_mesh, combine_meshes, transform_mesh
 from typehaus.resolve.geometry_ir import GMesh
 from typehaus.resolve.geometry_panel import panel
+from typehaus.resolve.terminal_chevron import chevron_openings
 from typehaus.resolve.terminal_scroll import scroll_openings
 
 
@@ -132,6 +133,9 @@ def face_mesh(width, height, depth, style, double_deflection, opening=None,
         return _disc_valve(min(width, height), depth, disc_diameter)
     if style == "cast_scroll_grille":
         return panel(rectangle(width, height), scroll_openings(width, height), 0, depth,
+                     constrained=True)
+    if style == "laser_cut_chevron":
+        return panel(rectangle(width, height), chevron_openings(width, height), 0, depth,
                      constrained=True)
     frame = min(VISUALIZATION.frame_m, width / 8, height / 8)
     thickness = min(VISUALIZATION.sheet_m, depth / 4)

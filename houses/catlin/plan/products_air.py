@@ -42,6 +42,22 @@ SIDEWALL_DD_OBD = Product(
            f"depth unpublished; H&C HVD's 3 7/16\" overall depth is the planning figure. "
            f"{_SPEC} §4.",
 )
+# RM-S-SUITE's supply (owner, 2026-11-19): a decorative face, Sun Gold to match its plates.
+SIDEWALL_CHEVRON_SUN_GOLD = Product(
+    tag="PROD-AIR-CHEVRON-1206-SG", brand="Reggio Register Co.", model="Chevron 6x12",
+    name="Chevron grille, 6x12 duct / 8x14 overall, 3/16in laser-cut aluminium, Sun Gold, "
+         "mounting holes",
+    url="https://www.reggioregister.com/products/vcu",
+    source=f"Made to order, 4-6 wk; price and free area unconfirmed, need >= 29 in2 (100 cfm "
+           f"at 500 fpm) on the submittal. Or equal: any laser-cut 6x12 decorative grille "
+           f"meeting that free area. {_SPEC} §4.",
+)
+LOUVER_DAMPER_814 = Product(
+    tag="PROD-AIR-LOUVER-814", brand="Reggio Register Co.", model="814-BL",
+    name="Steel louver damper behind a 6x12 grille, key-set at commissioning, 2 5/16in deep",
+    url="https://www.ferguson.com/search/?q=reggio+814-BL",
+    source=f"The Chevron has no damper of its own; this sits in the 6in register box. {_SPEC} §4.",
+)
 FLOOR_REGISTER_HP = Product(
     tag="PROD-AIR-FLOOR-REG-6X12", brand="Hart & Cooley", model="531SA 6x12",
     name="6x12 extruded aluminium floor register with multi-shutter damper",
@@ -184,6 +200,7 @@ SPOT_NOZZLE_4 = Product(
 AIR_PRODUCTS = (
     SUITEBATH_EXTRACT_BOOT, STACK_TOP_EXTRACT_BOOT, STUBATH_EXTRACT_BOOT,
     DISC_VALVE_100, FLOOR_GRILLE_ERV, SIDEWALL_DD_OBD, FLOOR_REGISTER_HP,
+    SIDEWALL_CHEVRON_SUN_GOLD, LOUVER_DAMPER_814,
     FILTER_RETURN_GRILLE, FILTER_RETURN_GRILLE_1212, RETURN_GRILLE_1210, RETURN_GRILLE_0606, ROUND_DAMPER_4_MANUAL, ROUND_DAMPER_6_MANUAL, STAIR_REGISTER_BOX, RETURN_GRILLE_1006, RETURN_GRILLE_1006_OBD, XFER_SLEEVE_1006,
     WALL_HOOD_8, WALL_SEAL_FOAM, ELASTOMERIC_SHEET, SPOT_NOZZLE_4,
 )

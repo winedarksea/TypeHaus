@@ -2694,7 +2694,7 @@ NEC_FILL_SECOND = [
     # O-S-CLOSET's 4'-8" cased opening (x 11'-5 1/2"..16'-1 1/2"), a box in a doorway. Here it
     # also closes the 8'-5" run 210.52 measured from the opening's west jamb round to RC3.
     ElectricalDevice(uid="NEC042AAAA", tag="ED-S-SUITE-RC2", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-LEV-DUPLEX-20",
+                     type_ref="ED-T-LEV-DUPLEX-20", plate="reggio-sungold",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
@@ -2704,7 +2704,7 @@ NEC_FILL_SECOND = [
     # 210.52(A)(2) counts any unbroken run of 2'-0" or more as wall space, and this one had
     # nothing on it.
     ElectricalDevice(uid="NEC047AAAA", tag="ED-S-SUITE-RC7", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-LEV-DUPLEX-20",
+                     type_ref="ED-T-LEV-DUPLEX-20", plate="reggio-sungold",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
@@ -2713,7 +2713,7 @@ NEC_FILL_SECOND = [
     # x 8'-8", the 96"-112" stud bay: at 6'-5" it shared a bay with ED-S-PLANT-RC4 on the
     # plant face, 5.9" off (`advisory.acoustic_box_spacing`, 2026-10-25).
     ElectricalDevice(uid="NEC043AAAA", tag="ED-S-SUITE-RC3", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-LEV-DUPLEX-20",
+                     type_ref="ED-T-LEV-DUPLEX-20", plate="reggio-sungold",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
@@ -2722,7 +2722,7 @@ NEC_FILL_SECOND = [
     # RC4's box sits against the stud at y=12'-1 1/2" (2026-11-16): at y=12'-11 7/8" box and
     # plate stood inside P-S-TUDOR1 (advisory.wall_plate_clearance reads columns now).
     ElectricalDevice(uid="NEC044AAAA", tag="ED-S-SUITE-RC4", kind=DeviceKind.RECEPTACLE,
-                     type_ref="ED-T-LEV-DUPLEX-20",
+                     type_ref="ED-T-LEV-DUPLEX-20", plate="reggio-sungold",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
@@ -2732,14 +2732,14 @@ NEC_FILL_SECOND = [
     # not the 4 3/4" INT_2X4_PARTITION. The receptacle sits in a clear MDF bay:
     # extend the box/plate 1/4" to the new finished face, without moving its station.
     ElectricalDevice(uid="NEC045AAAA", tag="ED-S-SUITE-RC5", kind=DeviceKind.RECEPTACLE_GFCI,
-                     type_ref="ED-T-LEV-GFCI-20",
+                     type_ref="ED-T-LEV-GFCI-20", plate="reggio-sungold",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-SN1", face="right", distance_from_start=inch(12.75),
                          normal_gap=inch(0.25), rotation_offset=deg(0)))),
     ElectricalDevice(uid="NEC046AAAA", tag="ED-S-SUITE-RC6", kind=DeviceKind.RECEPTACLE_GFCI,
-                     type_ref="ED-T-LEV-GFCI-20",
+                     type_ref="ED-T-LEV-GFCI-20", plate="reggio-sungold",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
@@ -2756,7 +2756,7 @@ NEC_FILL_SECOND = [
     # suite-facing finish of W-S-SBS; the wet-wall duty belongs to SN3.
     ElectricalDevice(uid="N0F72WZE2H", tag="ED-S-SUITE-RC8",
                      kind=DeviceKind.RECEPTACLE_GFCI,
-                     type_ref="ED-T-LEV-GFCI-20",
+                     type_ref="ED-T-LEV-GFCI-20", plate="reggio-sungold",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(

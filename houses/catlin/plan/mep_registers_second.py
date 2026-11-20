@@ -93,12 +93,12 @@ REGISTERS_HVAC_SECOND = [
              position=pt(inch(218.76), inch(282.625)), duct_ref="DU-S-HP-STAIR", rotation=deg(90),
              type_ref="REG-T-HP-STAIR-SIDE", design_cfm=50,
              mount=Mount(kind=MountKind.WALL, elevation=inch(96.25))),
-    # The suite's high sidewall supply over D-S-SUITE, throwing west into RM-S-SUITE. Its
-    # mount elevation matches the bedroom side collars. The W-S-C2B station is y=14'-8 7/8",
+    # The suite's high sidewall supply over D-S-SUITE, throwing west into RM-S-SUITE: a Sun Gold
+    # Reggio Chevron since 2026-11-19. Its mount elevation matches the bedroom side collars. The W-S-C2B station is y=14'-8 7/8",
     # 7" north of the door centre, in the clear cripple bay its branch ends in (2026-10-31).
     # `face="left"` is the suite side of this north-running wall.
     Register(uid="CSRH06AAAA", tag="REG-S-HP-SUITE", kind=DuctSystem.SUPPLY, room="RM-S-SUITE",
-             duct_ref="DU-S-HP-SUITE", type_ref="REG-T-HP-SIDE-1206", design_cfm=100,
+             duct_ref="DU-S-HP-SUITE", type_ref="REG-T-HP-SUITE-CHEVRON", design_cfm=100,
              mount=Mount(kind=MountKind.WALL, elevation=inch(95)),
              location=Location(attachment=WallAttachment(
                  wall_ref="W-S-C2B", face="left", distance_from_start=inch(27.875),

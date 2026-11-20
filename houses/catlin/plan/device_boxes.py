@@ -168,7 +168,17 @@ PLATE_80704_W = Product(tag="PROD-LEVITON-80704-W", brand="Leviton", model="8070
     url="https://www.leviton.com/products/80704-w",
     source=_PLATE_SOURCE)
 
-BOX_PRODUCTS = (PLATE_PJ26_W, PLATE_PJ262_W, PLATE_PJ263_W, PLATE_PJ264_W, PLATE_80401_NW, PLATE_80409_NW, PLATE_80411_NW, PLATE_80412_NW, PLATE_CW_1_WH, PLATE_CW_2_WH, PLATE_CW_3_WH, PLATE_CW_4_WH, PLATE_80704_W, PLATE_MULBERRY_32442,
+# RM-S-SUITE's plates, Sun Gold to match its Chevron supply (owner, 2026-11-19). Sizes are
+# assumed standard (unpublished); a standard plate needs the Lever Edge strap's tab removed.
+_REGGIO_SOURCE = "Reggio steel switch plate; Sun Gold is a listed finish (floorregisters-n-vents.com/reggio-steel-switch-plate). Size and thickness unconfirmed, assumed standard."
+PLATE_REGGIO_2SPB_SG = Product(tag="PROD-REGGIO-2SPB-SG", brand="Reggio Register Co.",
+    model="2SPB", name="Steel Single Decora wall plate, 1-gang, Sun Gold",
+    url="https://www.reggioregister.com/products/2spb", source=_REGGIO_SOURCE)
+PLATE_REGGIO_6SPB_SG = Product(tag="PROD-REGGIO-6SPB-SG", brand="Reggio Register Co.",
+    model="6SPB", name="Steel Double Decora wall plate, 2-gang, Sun Gold",
+    url="https://www.reggioregister.com/products/6spb", source=_REGGIO_SOURCE)
+
+BOX_PRODUCTS = (PLATE_REGGIO_2SPB_SG, PLATE_REGGIO_6SPB_SG, PLATE_PJ26_W, PLATE_PJ262_W, PLATE_PJ263_W, PLATE_PJ264_W, PLATE_80401_NW, PLATE_80409_NW, PLATE_80411_NW, PLATE_80412_NW, PLATE_CW_1_WH, PLATE_CW_2_WH, PLATE_CW_3_WH, PLATE_CW_4_WH, PLATE_80704_W, PLATE_MULBERRY_32442,
                 RACO_232, CARLON_BH353A, CARLON_BH464A, RACO_808C, RACO_809C, RACO_768, CARLON_B122A, CARLON_BH235A,
                 CARLON_B520A, RACO_192, RACO_753, ARLINGTON_DVFR1W, AIRFOIL_1G, AIRFOIL_ROUND,
                 RACO_674, RACO_862)
@@ -215,6 +225,12 @@ BOX_STANDARD = [
             PlateRow(family="claro", openings=("decora", "decora", "decora", "decora"), product_ref="PROD-LUTRON-CW-4-WH",
                      size=(inch(8.37), inch(4.69)), thickness=inch(0.3),
                      material_ref="device-white"),
+            PlateRow(family="reggio-sungold", openings=("decora",),
+                     product_ref="PROD-REGGIO-2SPB-SG", size=(inch(2.75), inch(4.5)),
+                     thickness=inch(0.06), material_ref="reggio-sun-gold"),
+            PlateRow(family="reggio-sungold", openings=("decora", "decora"),
+                     product_ref="PROD-REGGIO-6SPB-SG", size=(inch(4.56), inch(4.5)),
+                     thickness=inch(0.06), material_ref="reggio-sun-gold"),
             PlateRow(family="standard", openings=("single",),
                      product_ref="PROD-LEVITON-80704-W", size=(inch(2.75), inch(4.5)),
                      thickness=inch(0.22), material_ref="device-white"),

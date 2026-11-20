@@ -77,7 +77,8 @@ allowance remains the derived K 5.
 
 | type | basis of design | or equal | face | neck | price read |
 |---|---|---|---|---|---|
-| `REG-T-HP-SIDE-1206` (4) | TRUaire A220VO 12X06, double deflection, OBD | H&C HVD, Shoemaker 904-O | 13 3/4 x 7 3/4 | 12x6x2 11/16 (H&C HVD 3 7/16" overall less face) | $79.80 hvacquick |
+| `REG-T-HP-SIDE-1206` (3) | TRUaire A220VO 12X06, double deflection, OBD | H&C HVD, Shoemaker 904-O | 13 3/4 x 7 3/4 | 12x6x2 11/16 (H&C HVD 3 7/16" overall less face) | $79.80 hvacquick |
+| `REG-T-HP-SUITE-CHEVRON` (1) | Reggio Chevron 6x12, 3/16" laser-cut aluminium, Sun Gold + Reggio 814-BL louver | any laser-cut 6x12 meeting the free area | 14 x 8 overall | 12x6x2 11/16 (the 814-BL's 2 5/16" fits the 6" box) | not published; estimate |
 | `REG-T-HP-STAIR-SIDE` (1) | A220VO 12X06 + TH-HP-STAIR-BOX-01 | | 13 3/4 x 7 3/4 | 12x6x4, centred 4in back collar | allowance |
 | `REG-T-HP-STUDY-SIDE` (1) | TRUaire A220VO 08X06 | H&C HVD 8x6 | 9 3/4 x 7 3/4 | 8x6x2 11/16 | $68.60 |
 | `REG-T-HP-FLOOR-0612` (3) | H&C 531SA 6x12, multi-shutter | Reggio, Shoemaker 600 | 13 3/8 x 7 3/8 (est.) | 12x6x2 (est.; TRUaire 150 is 2") | not read |
@@ -86,6 +87,18 @@ allowance remains the derived K 5.
 The sidewall faces are centred on the duct axis (faces grew 6" → 7 3/4", so every mount
 elevation dropped 7/8"). Oak-match flush in RM-A-STUDY is a note only. Caution read on
 Pace Supply: one listing calls the 220VO steel; order the **aluminium** A220 line.
+
+**RM-S-SUITE's Chevron (owner, 2026-11-19).** The suite's supply (`REG-S-HP-SUITE`, 100 cfm)
+is a Reggio Chevron in Sun Gold, to match the room's Reggio steel Decora plates; BED1-3, the
+stair and Study 2 keep the adjustable A220VO, and returns and transfers stay fixed bar.
+- Made to order (4-6 wk), 8 x 14" overall on a 6x12 duct. A fixed face throws straight with no
+  aim; a jet this near the ceiling stays attached to it.
+- Price basis: no price is published at this size. Reggio's cut-steel 6x12 lines read $69.95
+  (Royal) to $92.95 (Basketweave), so the grille is carried at $70-110, plus the 814-BL louver
+  ($35.95, Ferguson): key-set at commissioning, 2 5/16" deep, inside the straight 12x6x6 box.
+- **Open submittal item: free area.** None is published; the suite needs >= 29 in2 to hold
+  500 fpm at 100 cfm.
+- Quote: Reggio, 800-880-3090 (code ONCEAYEAR26 until 2026-11-29).
 
 The stair supply has an [explicit 4in branch and named register box](stair_supply_connection.md).
 
