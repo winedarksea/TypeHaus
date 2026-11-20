@@ -5,7 +5,8 @@ cut ``elevation_profile``, swept outer face to outer face, or on to the wall fac
 wall backs that side; the horizontal foot is dropped, so the board dies at the floor.
 A landing takes a flat board under its joists. Plumb returns close the steps: a flight end
 at a landing, a flight head at the stairhead header, and the riser between two half
-landings. An unwalled flight side takes a face board over its outer stringer.
+landings. Landing and riser boards stop at any wall or post standing in their plane. An
+unwalled flight side takes a face board over its outer stringer.
 """
 
 from __future__ import annotations
@@ -188,7 +189,7 @@ def aligned_rect(shape, guide: Polygon) -> Polygon:
     length = math.dist(a, b)
     frame = Frame(a, ((b[0] - a[0]) / length, (b[1] - a[1]) / length),
                   (-(b[1] - a[1]) / length, (b[0] - a[0]) / length))
-    coords = [c for part in _polygons(shape) for c in part.exterior.coords]
+    coords = [c for part in polygons(shape) for c in part.exterior.coords]
     ss, cs = [frame.s_of(c) for c in coords], [frame.c_of(c) for c in coords]
     return frame.rect(min(ss), max(ss), min(cs), max(cs))
 
@@ -204,7 +205,7 @@ def wall_face(walls: list[tuple[Any, Polygon]], frame: Frame, c_face: float, out
         meet = intersection(footprint, strip)
         if meet.is_empty or meet.area < 1e-5:
             continue
-        coords = [c for part in _polygons(meet) for c in part.exterior.coords]
+        coords = [c for part in polygons(meet) for c in part.exterior.coords]
         cs = [frame.c_of(p) for p in coords]
         faces.append(min(cs) if outward > 0 else max(cs))
         ss = [frame.s_of(p) for p in coords]
@@ -237,7 +238,7 @@ def ceiling_clips(ceilings, footprint: Polygon, frame: Frame | None = None,
         if frame is None:
             out.append((-1e3, 1e3, ceiling.z0_m))
             continue
-        ss = [frame.s_of(c) for part in _polygons(meet) for c in part.exterior.coords]
+        ss = [frame.s_of(c) for part in polygons(meet) for c in part.exterior.coords]
         out.append((min(ss), max(ss), ceiling.z0_m))
     return out
 
@@ -248,7 +249,7 @@ def clip(shape, clips, *, spans=()) -> list[Polygon]:
         shape = difference(shape, box(s0, z, s1, 1e3))
     for s0, s1 in spans:
         shape = difference(shape, box(s0, -1e3, s1, 1e3))
-    return [p for p in _polygons(shape) if p.area > 1e-6]
+    return [p for p in polygons(shape) if p.area > 1e-6]
 
 
 def band(flight: Flight, thickness: float) -> tuple[Polygon, float, float]:
@@ -301,7 +302,7 @@ def _covered_length(spans) -> float:
     return total
 
 
-def _polygons(shape) -> list[Polygon]:
+def polygons(shape) -> list[Polygon]:
     if isinstance(shape, Polygon):
         return [] if shape.is_empty else [shape]
     if isinstance(shape, MultiPolygon):

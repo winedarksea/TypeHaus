@@ -50783,7 +50783,19 @@
 8,
 "7a2a70bb8f5f"
 ],
+"geometry/CST701AAAA::framing/member:soffit-landing-lower-1": [
+-1.7021317,
+-1.6862567,
+8,
+"7a2a70bb8f5f"
+],
 "geometry/CST701AAAA::framing/member:soffit-landing-upper": [
+-1.5150808,
+-1.4992058,
+8,
+"321ee0e73349"
+],
+"geometry/CST701AAAA::framing/member:soffit-landing-upper-1": [
 -1.5150808,
 -1.4992058,
 8,
@@ -105291,7 +105303,19 @@
 2,
 "b635a3febf7c"
 ],
+"member/CST701AAAA/soffit-landing-lower-1": [
+-1.7021317,
+-1.6862567,
+2,
+"b635a3febf7c"
+],
 "member/CST701AAAA/soffit-landing-upper": [
+-1.5150808,
+-1.4992058,
+2,
+"0d7915944a3d"
+],
+"member/CST701AAAA/soffit-landing-upper-1": [
 -1.5150808,
 -1.4992058,
 2,

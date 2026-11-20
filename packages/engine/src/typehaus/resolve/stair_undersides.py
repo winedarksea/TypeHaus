@@ -13,7 +13,7 @@ from __future__ import annotations
 import math
 from dataclasses import replace
 
-from shapely.geometry import Polygon, box
+from shapely.geometry import LineString, Polygon, box
 
 from typehaus.model.assembly import Layer
 from typehaus.model.enums import LayerFunction
@@ -21,7 +21,7 @@ from typehaus.model.spatial import Stair
 from typehaus.resolve import stair_underside_boards as geo
 from typehaus.resolve.coatings import coating_tags
 from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedStair, StairUnderside
-from typehaus.resolve.overlay import intersection, union_all
+from typehaus.resolve.overlay import difference, intersection, union_all
 from typehaus.resolve.room_lookup import room_owning
 from typehaus.resolve.room_paint import (
     DEFAULT_PAINT,
@@ -61,13 +61,51 @@ def _boards(plan, model, stair: ResolvedStair, authored: Stair, walls) -> list[g
     railings = [el for el in plan.all_elements() if getattr(el, "element_kind", "") == "Railing"
                 and getattr(el, "mount", None) == "panel"]
     lands = geo.merged_landings(geo.landings(stair.members))
+    # What stands in a landing's plane: walls and posts (a U's partition line). A board stops
+    # at their faces rather than running into them.
+    standing = [(footprint, wall.z0_m, wall.z1_m) for wall, footprint in walls]
+    standing += [(Polygon(s.outline), s.z0_m, s.z1_m) for s in model.solids
+                 if s.category == "column" and len(s.outline) >= 3]
     out: list[geo.Board] = []
     for flight in geo.flights(stair.members):
         out.extend(_flight_boards(flight, t, walls, ceilings, railings, lands))
     for landing in lands:
-        out.extend(_landing_board(landing, t, ceilings))
-    out.extend(_steps(lands, t))
+        out.extend(_landing_board(landing, t, ceilings, standing))
+    out.extend(_steps(lands, t, standing))
     return out
+
+
+def _in_plane(standing, z_lo: float, z_hi: float):
+    """The union of what stands across ``z_lo``..``z_hi``, or None."""
+    shapes = [f for f, z0, z1 in standing if z0 < z_hi - 1e-6 and z1 > z_lo + 1e-6]
+    return union_all(shapes) if shapes else None
+
+
+def _rectangles(shape, guide: Polygon) -> list[Polygon]:
+    """A rectilinear ``shape`` (in ``guide``'s frame) as rectangles: slabs along the guide's
+    long edge, adjacent slabs of one cross extent merged."""
+    rect = tuple(geo.aligned_rect(guide, guide).exterior.coords)
+    a, b = rect[0], rect[1]
+    length = math.dist(a, b)
+    frame = geo.Frame(a, ((b[0] - a[0]) / length, (b[1] - a[1]) / length),
+                      (-(b[1] - a[1]) / length, (b[0] - a[0]) / length))
+    parts = geo.polygons(shape)
+    ss = sorted({round(frame.s_of(c), 6) for p in parts for c in p.exterior.coords})
+    slabs: list[list] = []
+    for s0, s1 in zip(ss, ss[1:], strict=False):
+        cut = intersection(shape, frame.rect(s0, s1, -1e3, 1e3))
+        for piece in geo.polygons(cut):
+            cs = [frame.c_of(c) for c in piece.exterior.coords]
+            c0, c1 = round(min(cs), 6), round(max(cs), 6)
+            if piece.area < 1e-6:
+                continue
+            same = next((sl for sl in slabs if abs(sl[1] - s0) < 1e-6
+                         and (sl[2], sl[3]) == (c0, c1)), None)
+            if same is not None:
+                same[1] = s1
+            else:
+                slabs.append([s0, s1, c0, c1])
+    return sorted((frame.rect(*sl) for sl in slabs), key=lambda r: -r.area)
 
 
 def _flight_boards(flight: geo.Flight, t: float, walls, ceilings, railings,
@@ -164,20 +202,28 @@ def _plumb(key, a, b, lo: float, hi: float, bead: float, t: float, ceilings) -> 
     return out
 
 
-def _landing_board(landing: geo.Landing, t: float, ceilings) -> list[geo.Board]:
+def _landing_board(landing: geo.Landing, t: float, ceilings, standing) -> list[geo.Board]:
     u = landing.underside_m
     if any(z < u for _, _, z in geo.ceiling_clips(ceilings, landing.polygon)):
         return []  # concealed above the room's ceiling
-    a, b, c, d = tuple(geo.aligned_rect(landing.polygon, landing.polygon).exterior.coords)[:4]
-    p0 = ((a[0] + d[0]) / 2.0, (a[1] + d[1]) / 2.0)
-    p1 = ((b[0] + c[0]) / 2.0, (b[1] + c[1]) / 2.0)
-    length, width = math.dist(p0, p1), math.dist(a, d)
-    ring = ((0.0, u - t), (length, u - t), (length, u), (0.0, u))
-    return [geo.Board(f"soffit-landing-{landing.name}", "landing", p0, p1, ring, width, t,
-                      length * width, (a, b, c, d), (p0, p1), u - t, u - t)]
+    pieces = [landing.polygon]
+    blocking = _in_plane(standing, u - t, u)
+    if blocking is not None and intersection(landing.polygon, blocking).area > 1e-6:
+        pieces = _rectangles(difference(landing.polygon, blocking), landing.polygon)
+    out = []
+    for i, piece in enumerate(pieces):
+        a, b, c, d = tuple(geo.aligned_rect(piece, landing.polygon).exterior.coords)[:4]
+        p0 = ((a[0] + d[0]) / 2.0, (a[1] + d[1]) / 2.0)
+        p1 = ((b[0] + c[0]) / 2.0, (b[1] + c[1]) / 2.0)
+        length, width = math.dist(p0, p1), math.dist(a, d)
+        ring = ((0.0, u - t), (length, u - t), (length, u), (0.0, u))
+        out.append(geo.Board(f"soffit-landing-{landing.name}" + (f"-{i}" if i else ""),
+                             "landing", p0, p1, ring, width, t, length * width, (a, b, c, d),
+                             (p0, p1), u - t, u - t))
+    return out
 
 
-def _steps(lands: list[geo.Landing], t: float) -> list[geo.Board]:
+def _steps(lands: list[geo.Landing], t: float, standing) -> list[geo.Board]:
     """The riser between two half landings, where their footprints meet."""
     out = []
     for i, low in enumerate(lands):
@@ -190,9 +236,20 @@ def _steps(lands: list[geo.Landing], t: float) -> list[geo.Board]:
             if not segments:
                 continue
             start, end = max(segments, key=lambda pair: math.dist(*pair))
-            z_lo = min(low.underside_m, high.underside_m)
-            out.extend(_plumb(f"soffit-step-{low.name}-{high.name}", start, end, z_lo - t,
-                              max(low.underside_m, high.underside_m), z_lo - t, t, ()))
+            z_lo, z_hi = (min(low.underside_m, high.underside_m),
+                          max(low.underside_m, high.underside_m))
+            run = LineString([start, end])
+            blocking = _in_plane(standing, z_lo - t, z_hi)
+            if blocking is not None:
+                run = difference(run, blocking)
+            key = f"soffit-step-{low.name}-{high.name}"
+            pieces = sorted((p for p in getattr(run, "geoms", [run])
+                             if p.geom_type == "LineString" and p.length > 1e-3),
+                            key=lambda p: -p.length)
+            for i, piece in enumerate(pieces):
+                a, b = piece.coords[0], piece.coords[-1]
+                out.extend(_plumb(key + (f"-{i}" if i else ""), a, b, z_lo - t, z_hi,
+                                  z_lo - t, t, ()))
     return out
 
 

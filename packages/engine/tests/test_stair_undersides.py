@@ -35,6 +35,16 @@ def test_boards_sit_on_the_stringers_landings_and_steps(catlin_model_ro):
     assert upper.z1_m - lower.z1_m == pytest.approx(riser, abs=inch(0.25).meters)
     step = b2m["soffit-step-lower-upper"]
     assert (step.z0_m, step.z1_m) == pytest.approx((lower.z0_m, upper.z1_m))
+    # They stop at W-B-WELL's faces and its posts on the partition line, never inside them.
+    from shapely.geometry import Polygon
+
+    from typehaus.resolve.framing.footprint import member_footprint
+    from typehaus.resolve.soffits import wall_footprint
+
+    well = wall_footprint(catlin_model_ro.wall("W-B-WELL"))
+    for key, board in b2m.items():
+        if key.startswith(("soffit-landing", "soffit-step")):
+            assert Polygon(member_footprint(board)[0]).intersection(well).area < 1e-6, key
 
     s2a = _stair(catlin_model_ro, "ST-S2A")
     assert not any("winder" in key for key in _boards(s2a))
