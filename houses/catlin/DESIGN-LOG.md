@@ -8983,3 +8983,19 @@ Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
 - **Open.** Does the pile have clear 6'+ boards? If not, two boards meet over a pair of
   brackets. The takeoff's crosscut-only nesting reads the three ply pieces as three sheets; a
   shop rips them from two, and the per-piece price row says so.
+
+## Wall-top A35Zs derived, and every A35Z drawn where it is nailed (2026-11-20)
+
+- **Why.** The 45 authored `CN-WT-*` ties stood at the old edge member's face (y=2", -11"):
+  since the LSL edge rims (2026-11-18) they floated 1/4" off the rim and 7/8" above the sill,
+  and each station's middle tie sat in its block. They were also drawn as post-to-beam angles,
+  and the 56 joist-end sill ties were never drawn at all.
+- **What.** `JoistSpec.station_ties=5` on `FS-M-WEST`/`-EAST`/`-MECH`/`-NE` derives the five
+  per footnote f station beside the block, 1/8" clear, 6" o.c., inside the check's 18"
+  (`joints/wall_top.station_tie_points`); `plan/wall_top_ties.py` is gone. Both kinds draw as an
+  L: upright on the rim (I-joist) or member side (truss) face, flat on the sill top.
+- **W-B-N4.** Its station is at the run's end, so the five fall west at 3 7/8" o.c. The
+  N3/N4 station is tied once and carries both runs: 2,708 lb on 5 x 563 = 0.96 (was graded as
+  0.83 and 0.65 apart). A35Z stays 111, MASAZ 77 (basis note §4).
+- **Open.** `FO-M-ERV-OA`'s trimmer pair fills W-B-N3/N4's first joist space (1/2" to the rim),
+  so ten ties lie under it; FS-M-WEST's seam joist on W-B-W1 has no clear side for its tie.

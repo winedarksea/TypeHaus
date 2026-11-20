@@ -160,3 +160,31 @@ def test_unknown_and_unmeasured_coil_do_not_invent_product_geometry():
     assert tie_mesh("CS16") is None
     with pytest.raises(ValueError, match="cut length"):
         tie_mesh("CS16", strap_length_in=-1.0)
+
+
+def test_derived_a35z_lies_on_its_sill_and_against_a_member_face(catlin_model_ro):
+    """Joist-end and wall-top-station ties: flat leaf on the sill top, upright on a face."""
+    from shapely.geometry import LineString, Point, Polygon, box
+
+    from typehaus.resolve.framing.profiles import cross_section
+
+    tol = 1 / 32 * 0.0254
+    sills = [(Polygon(s.outline), s.z1_m) for s in catlin_model_ro.solids
+             if s.category == "sill_plate"]
+    members = [LineString([m.p0, m.p1]).buffer(
+        (m.plan_width_m or cross_section(m.profile).width_m) / 2, cap_style=2)
+        for f in catlin_model_ro.floors for m in f.members
+        if m.category in ("rim", "joist", "sister_joist")]
+    ties = [s for s in catlin_model_ro.solids if s.derived and s.product == "A35Z"]
+    assert len(ties) == 101  # 56 joist ends + 45 at the wall-top stations
+    for tie in ties:
+        xs, ys, zs = zip(*tie.body_mesh.positions, strict=True)
+        spot = box(min(xs), min(ys), max(xs), max(ys))
+        tops = [z for poly, z in sills if poly.contains(spot.centroid)]
+        assert tops and abs(min(zs) - max(tops)) <= tol, tie.tag
+        corners = list(spot.exterior.coords)[:4]
+        edges = list(zip(corners, corners[1:] + corners[:1], strict=True))
+        assert any(not poly.contains(spot.centroid)
+                   and all(poly.exterior.distance(Point(p)) <= tol for p in edge)
+                   for poly in members if poly.distance(spot) <= tol
+                   for edge in edges), tie.tag

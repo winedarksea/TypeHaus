@@ -122,6 +122,9 @@ ROLE_RIDGE_PLATE_SCREW = "ridge_plate_screw"
 #: (``JoistSpec.sill_tie``, Minn. R. 1309.0404). A row/joint label, never a lookup key: the
 #: part comes from ``hardware_by_model``.
 ROLE_SILL_TIE = "sill_tie"
+#: The same part at a footnote f blocking station, block-to-sill on a PARALLEL foundation
+#: wall (``JoistSpec.station_ties``). A row/joint label like ``ROLE_SILL_TIE``.
+ROLE_WALL_TOP_TIE = "wall_top_tie"
 # A wood member held down to CONCRETE or masonry by a gusset angle — one leg screwed into
 # the wood, the other anchored with a concrete screw. Its own role and not a second product
 # on ROLE_HURRICANE_TIE, which ``hardware_for_role`` would refuse anyway: an H-tie is a

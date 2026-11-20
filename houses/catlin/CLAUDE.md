@@ -11,7 +11,7 @@
 > trusses at 16" o.c. (TRIFORCE OJ418S published row, 40/25 psf L/480, the 316/332 lines doubled under the peninsula, two strongbacks; amended 2026-11-02), and `W-B-CS2`/`-CN2`/`-CN`
 > are framed 2x6 bearing walls; one flat basement ceiling, no movement joint, no cast sleeves.
 > Every joist/truss end on a concrete wall takes an A35Z (`JoistSpec.sill_tie`; a sistered pack one on each outer face) and the parallel
-> walls take blocking stations with five A35Z each, graded by `code.MN_1309_0404_wall_top`; the
+> walls take blocking stations with five derived A35Z each (`JoistSpec.station_ties`), graded by `code.MN_1309_0404_wall_top`; the
 > x=18' line has DF-L top plates (`notes/main_floor_truss_basis.md` §4-§5). The main floor is Cotton Oak
 > LVP (7 mm, floating) on the subfloor throughout, cabinets on the subfloor; the theater ceiling
 > is on resilient channel. No tile medallions (review in `plans/TODO.md`).
@@ -878,7 +878,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     `sill_tie="A35Z"`: one per end on the concrete walls, 533 lb a truss (16" o.c.) against 538 (SPF ×0.86,
     C_D 0.9), 533 lb a TJI against 563 (onto the LSL rim, ×0.90). The x=18' plate ends are
     toe-nailed again (no net uplift). Parallel walls `W-B-N1`/`-N3`/`-N4`/`-S1`/`-S4` take
-    blocking stations (first three spaces, ≤72") with five A35Z each (`plan/wall_top_ties.py`);
+    blocking stations (first three spaces, ≤72") with five A35Z each, derived beside the block
+    (`JoistSpec.station_ties=5`; a station `-N3`/`-N4` share is tied once and carries both, 0.96);
     a MASA is added at each with none within 8" (`joints/sills._snap_to_blocking`). **`W-B-N2` is UNKNOWN**:
     `FO-M-STAIR` fills its first three joist spaces, so its restraint is the well's edge framing,
     a design (`plans/TODO.md`). Basis note §4.

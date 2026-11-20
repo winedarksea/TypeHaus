@@ -1091,7 +1091,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # 2026-09-30, UNCONFIRMED — the owner's numbers replace them. One row per assembled cap (the
 # pair of pieces).
 "ACE6Z" = { low = 30, high = 60 }  # 4 ea — CN-BW-CAP-W/-NW, CN-BW-CAP-E/-NE (the east two only under "kdat")
-"A35Z" = { low = 1.5, high = 3.5 }  # 111 ea — 56 derived joist-to-sill ties (JoistSpec.sill_tie: 37 TJI + 19 truss ends on the concrete walls, Minn. R. 1309.0404) + 45 at the wall-top blocking stations (plan/wall_top_ties.py) + CN-BW-A35-* (4, the east two only under "kdat") + CN-BW-PLATE-S/-N + 4 at SB-BW-BAND's centre post
+"A35Z" = { low = 1.5, high = 3.5 }  # 111 ea — 56 derived joist-to-sill ties (JoistSpec.sill_tie: 37 TJI + 19 truss ends on the concrete walls, Minn. R. 1309.0404) + 45 derived at the wall-top blocking stations (JoistSpec.station_ties, 5 x 9 stations) + CN-BW-A35-* (4, the east two only under "kdat") + CN-BW-PLATE-S/-N + 4 at SB-BW-BAND's centre post
 # The band brace's nails, billed per nail by `takeoff/strap_braces`. 0 ea since 2026-10-04: the
 # CS16 X became SB-BW-BAND's slats (notes/canopy_west_band.md §8 keeps the straps as a backup).
 "10d x 2-1/2\" common, HDG" = { low = 0.04, high = 0.12 }  # 0 ea — was 48, the SB-BW-BAND-* straps

@@ -17,6 +17,7 @@ from typehaus.model.enums import ConnectorKind
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.connector_geometry.catalog import connector_mesh
 from typehaus.resolve.connector_geometry.mesh import box_mesh, transform_mesh
+from typehaus.resolve.connector_geometry.plate_angle import is_plate_angle, plate_angle_body
 from typehaus.resolve.connector_geometry.roof_straps import roof_strap_mesh
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry_ir import GMesh, Vec2, Vec3
@@ -296,6 +297,8 @@ def _body_at_joint(index: ConnectorPlacementIndex, solid: ResolvedSolid,
     part = (solid.product or "").upper().strip()
     if part == "KBS1Z" and solid.uid in index.knee_bands:
         return _knee_body(*index.knee_bands[solid.uid])
+    if joint is not None and is_plate_angle(joint, part):
+        return plate_angle_body(index, joint)
     element = index.elements.get(solid.tag)
     if isinstance(element, Connector) and element.kind is ConnectorKind.BEARING_STANDOFF:
         return _standoff_pack_body(index, solid, element)

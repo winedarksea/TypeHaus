@@ -13,7 +13,7 @@ from typehaus.model.published_web import PublishedWebOpenings
 from typehaus.model.refs import Embed, PublishedHole, PublishedSpan
 from typehaus.model.registry import register_constructor, register_element
 from typehaus.model.slabs import Slab, SlabThermalBreak
-from typehaus.quantities import Length, Point2D
+from typehaus.quantities import Length, Point2D, inch
 
 
 class JoistSpec(HausModel):
@@ -93,6 +93,11 @@ class JoistSpec(HausModel):
     # ``UpliftTieRules`` toe-nail rule. ``code.MN_1309_0404_wall_top`` grades the count.
     sill_tie: str | None = None
     sill_ties_per_end: int = 1
+    # ``sill_tie``s at each footnote f blocking station where this field runs PARALLEL to a
+    # foundation wall, laid along the edge member clear of the block at ``station_tie_pitch``
+    # (``joints/wall_top.station_tie_points``). Derived only where a station exists.
+    station_ties: int = 0
+    station_tie_pitch: Length = inch(6)
     # The field's outermost parallel line at the low ("lo") / high ("hi") perpendicular edge
     # laid as a stock rim board (``1.25x<depth> rim``) instead of the field member: a gable
     # end, where the edge line stands on a wall and spans nothing. Emitted as ``rim``
@@ -103,6 +108,8 @@ class JoistSpec(HausModel):
     def validate_rim_extensions(self):
         if self.rim_end_extensions and any(v.meters < 0 for v in self.rim_end_extensions):
             raise ValueError("rim end extensions must be nonnegative")
+        if self.station_ties > 0 and not self.sill_tie:
+            raise ValueError("station_ties names no part: set sill_tie")
         return self
 
 class PlyFastening(HausModel):

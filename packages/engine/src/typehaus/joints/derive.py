@@ -38,6 +38,7 @@ from typehaus.hardware.catalog import (
     ROLE_SLAB_PLATE_PIN,
     ROLE_SLOPED_JOIST_HANGER,
     ROLE_STAIR_STRINGER_CONNECTOR,
+    ROLE_WALL_TOP_TIE,
     hardware_by_model,
     hardware_for_role,
     hardware_for_role_and_nominal,
@@ -89,6 +90,7 @@ COVERED_ROLES = frozenset({
     ROLE_POST_BASE,
     ROLE_POST_BASE_ANCHOR,
     ROLE_BEAM_HOLD_DOWN,
+    ROLE_WALL_TOP_TIE,
 })
 
 
@@ -108,6 +110,7 @@ def derived_joints(model, config: HardwareTakeoffConfig = DEFAULT_HARDWARE_TAKEO
     out.extend(_hanger_joints(model, config, grid_m))
     out.extend(_ridge_strap_joints(model, config, grid_m))
     out.extend(_sill_joints(model, config, grid_m))
+    out.extend(_wall_top_tie_joints(model, grid_m))
     out.extend(_post_joints(model, config, grid_m))
     return sorted(out, key=lambda joint: joint.key)
 
@@ -142,14 +145,34 @@ def _bearing_tie_joints(model, config: HardwareTakeoffConfig, grid_m: float) -> 
         exposure = EXPOSURE_TREATED if connection.support_treated else EXPOSURE_DRY
         item = (hardware_by_model(connection.sill_tie) if connection.sill_tie
                 else hardware_for_role(connection.tie_role, exposure=exposure))
-        for _ in range(connection.sill_ties if connection.sill_tie else ties):
+        for i in range(connection.sill_ties if connection.sill_tie else ties):
+            # A pack's second sill tie is on its other outer face: its own joint and marker.
+            member_key = connection.member_key
+            if connection.sill_tie and i and member_key:
+                member_key = f"{member_key}#{i}"
             out.append(_joint(
                 ROLE_SILL_TIE if connection.sill_tie else connection.tie_role, item.model,
                 connection.storey, connection.point_m,
                 connection.z_m, connection.axis, embedded=False,
                 members=(connection.support_tag, connection.assembly_tag),
                 anchor_tag=connection.support_tag, grid_m=grid_m,
-                carried_member_key=connection.member_key))
+                carried_member_key=member_key))
+    return out
+
+
+def _wall_top_tie_joints(model, grid_m: float) -> list[Joint]:
+    """The ``JoistSpec.station_ties`` at each Minn. R. 1309.0404 blocking station."""
+    from typehaus.joints.wall_top import station_tie_points
+
+    out: list[Joint] = []
+    for tie in station_tie_points(model):
+        wall = model.wall(tie.wall_tag)
+        z_m = tie.z_m if tie.z_m is not None else (
+            wall.plate_top_z_m if wall.plate_top_z_m is not None else wall.z1_m)
+        out.append(_joint(ROLE_WALL_TOP_TIE, hardware_by_model(tie.part).model, tie.storey,
+                          tie.point_m, z_m, axis_of(*wall.axis), embedded=False,
+                          members=(tie.wall_tag, tie.floor_tag), anchor_tag=tie.wall_tag,
+                          grid_m=min(grid_m, M_PER_IN)))
     return out
 
 

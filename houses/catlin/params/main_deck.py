@@ -249,7 +249,7 @@ _CLN2_X_E = inch(201)              # 1'-3" west of the x=18'-0" bearing line
 # ** WALL-TOP BLOCKING (Minn. R. 1309.0404, Table R404.1(1) fn. f; basis note §4). ** Where a
 # TJI field runs PARALLEL to a backfilled foundation wall, full-depth blocking in the first
 # three joist spaces at <= 72" o.c., each station tied to the sill by five A35Z
-# (``plan/wall_top_ties.py``) and within 8" of a MASA (derived: the nearest anchor moves to
+# (``JoistSpec.station_ties``, derived beside the block) and within 8" of a MASA (derived: the nearest anchor moves to
 # it). Two lines per station block four spaces, as on W-B-N1. ``code.MN_1309_0404_wall_top``
 # grades it; W-B-N2 has no station because FO-M-STAIR fills those spaces.
 def _wall_top_blocks(wall, xs, lines):
@@ -310,7 +310,7 @@ WEST_FLOOR = FloorSystem(
                      # The x=18' plate is shared with FS-M-NE's trusses north of y=13'.
                      end_bearing=(("W-B-CS2", _JOIST_BEARING), ("W-B-CN2", _JOIST_BEARING)),
                      # The gable-end edge line is a 1 1/4" LSL rim board (owner, 2026-11-18).
-                     edge_rims=("lo",), sill_tie="A35Z"),
+                     edge_rims=("lo",), sill_tie="A35Z", station_ties=5),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
     published_span=TJI_230_FLOOR_SPAN,
     reinforcements=_WEST_FLOOR_REINFORCEMENT,
@@ -328,7 +328,8 @@ MECH_FLOOR = FloorSystem(
     uid="CMFS03AAAA", tag="FS-M-MECH",
     joists=JoistSpec(member=_JOIST, spacing=_JOIST_OC, direction="x",
                      bearing_refs=("W-B-W1", "W-B-STR3B", "W-B-STR3", "W-B-STR"),
-                     edge_rims=("hi",), sill_tie="A35Z"),  # an LSL rim (owner, 2026-11-18)
+                     # an LSL rim (owner, 2026-11-18)
+                     edge_rims=("hi",), sill_tie="A35Z", station_ties=5),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
     published_span=TJI_230_FLOOR_SPAN,
     ceiling_below=_CEILING_GWB,
@@ -387,7 +388,7 @@ EAST_FLOOR = FloorSystem(
                      # (y 0..10'-0") and W-B-CS3 (10'-0"..13'-10").
                      bearing_refs=("W-B-CS", "W-B-CS3", "W-B-E1"),
                      # The gable-end edge line is a 1 1/4" LSL rim board (owner, 2026-11-18).
-                     edge_rims=("lo",), sill_tie="A35Z"),
+                     edge_rims=("lo",), sill_tie="A35Z", station_ties=5),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
     published_span=TJI_230_FLOOR_SPAN,
     ceiling_below=_CEILING_GWB,
@@ -479,7 +480,7 @@ _STRONGBACKS = (
 # W-B-E1/E2 sill (533 lb a truss at 16" o.c. against 538 lb), the x=18' plate ends stay
 # toe-nailed, and W-B-N1, the one foundation wall this field runs parallel to, takes
 # blocking in the four bays y 32'..36' at x 21'/27'/33' — 72" o.c., 36" off each end wall,
-# five A35Z a station (``plan/wall_top_ties.py``). Each line blocks the bay either side.
+# five A35Z a station (``JoistSpec.station_ties``). Each line blocks the bay either side.
 _N_WALL_BLOCK_X = (ft(21), ft(27), ft(33))
 _N_WALL_BLOCKING = tuple(
     JoistReinforcement(at=pt(x, y), plies=1, blocking=True,
@@ -500,7 +501,7 @@ NE_FLOOR = FloorSystem(
                      end_bearing=(("W-B-CS3", _TRUSS_BEARING), ("W-B-CS2", _TRUSS_BEARING),
                                   ("W-B-CN2", _TRUSS_BEARING), ("W-B-CN", _TRUSS_BEARING)),
                      line_overrides=_TRUSS_LINE_MOVES,  # north edge: LSL rim (2026-11-18)
-                     edge_rims=("hi",), sill_tie="A35Z"),
+                     edge_rims=("hi",), sill_tie="A35Z", station_ties=5),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
     reinforcements=(*_N_WALL_BLOCKING, _PENINSULA_TRUSS, _PENINSULA_BACK_TRUSS),
     strongbacks=_STRONGBACKS,

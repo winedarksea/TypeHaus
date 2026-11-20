@@ -51,7 +51,7 @@ from plan import (air_terminal_types, appliance_types, assemblies, bath_finish, 
                   opening_products, paint, products, products_paint, smart_home, smart_home_types,
                   workshop_fume, workshop_fume_types,
                   sauna, sauna_control_types, sauna_types, site, study_bridge, titanium_types, transitions, views,
-                  wall_top_ties, wind_clamps, window_stools, window_types)
+                  wind_clamps, window_stools, window_types)
 from plan import framing_charts, french_door_installations
 from plan.storeys import attic, attic_studio, basement, garage, main, second
 
@@ -444,7 +444,7 @@ PLAN = (
          *backing_towel_accessories.MAIN_TOWEL_BACKING,
          *bath_accessories.MAIN_BATH_ACCESSORIES, *backing_bath_accessories.MAIN_TP_BACKING,
          *braced_walls.MAIN_BRACED_WALLS, *braced_walls.MAIN_BRACED_CONNECTORS,
-         *plate_ties.MAIN_PLATE_TIES, *wall_top_ties.MAIN_WALL_TOP_TIES,
+         *plate_ties.MAIN_PLATE_TIES,
          *smart_home.MAIN_ELEMENTS],
     )
     .with_elements("second", [*framing_charts.with_header_holes(

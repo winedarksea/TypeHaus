@@ -50,6 +50,7 @@ from typehaus.hardware.catalog import (
     ROLE_LATERAL_TIE_PLATE,
     ROLE_RIDGE_PLATE_SCREW,
     ROLE_SILL_TIE,
+    ROLE_WALL_TOP_TIE,
     hardware_by_model,
     hardware_for_role,
 )
@@ -123,6 +124,33 @@ def bearing_uplift_tie_rows(model: ResolvedModel, rules: UpliftTieRules) -> list
                    + note))
         if sill_tie:
             row["role"] = ROLE_SILL_TIE
+        rows.append(row)
+    return rows
+
+
+def wall_top_station_tie_rows(model: ResolvedModel) -> list:
+    """The ``JoistSpec.station_ties`` at the Minn. R. 1309.0404 blocking stations, by part."""
+    from typehaus.joints.wall_top import station_tie_points
+
+    groups: dict = {}
+    for tie in station_tie_points(model):
+        entry = groups.setdefault(tie.part, {"by_storey": Counter(), "walls": {}})
+        entry["by_storey"][tie.storey] += 1
+        stations = entry["walls"].setdefault(tie.wall_tag, Counter())
+        stations[tie.station_m] += 1
+    rows = []
+    for part, entry in sorted(groups.items()):
+        walls = entry["walls"]
+        per = sorted({n for stations in walls.values() for n in stations.values()})
+        row = hardware_row(
+            hardware_by_model(part), scope="wall-top blocking station",
+            count=int(sum(entry["by_storey"].values())),
+            by_storey=dict(sorted(entry["by_storey"].items())),
+            basis=(f"{'/'.join(map(str, per))} per footnote f station x "
+                   f"{sum(len(s) for s in walls.values())} stations, by wall "
+                   + ", ".join(f"{tag} x{len(s)}" for tag, s in sorted(walls.items()))
+                   + " — block to concrete-wall sill, Minn. R. 1309.0404"))
+        row["role"] = ROLE_WALL_TOP_TIE
         rows.append(row)
     return rows
 
@@ -261,6 +289,7 @@ def uplift_rows(model: ResolvedModel, rules: UpliftTieRules,
     gable_rules = GableEndTieRules() if gable_rules is None else gable_rules
     return [
         *bearing_uplift_tie_rows(model, rules),
+        *wall_top_station_tie_rows(model),
         *continuous_bearing_tie_rows(model, rules),
         *ridge_plate_screw_rows(model, rules),
         *gable_end_tie_rows(model, gable_rules),

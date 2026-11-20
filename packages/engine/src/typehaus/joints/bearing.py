@@ -436,6 +436,8 @@ def _derive(model: ResolvedModel, rules: UpliftTieRules, *, authored: bool):
                     key_point = (*key_point, member.child_key)
                     point, seat_z = ridge_seat_point(member, support.half_width_m)
                 on_sill = sill_tie is not None and support.sill
+                if on_sill:  # the tie's face is read off its own member
+                    member_key = f"{member.parent_uid}:{member.child_key}"
                 # A sistered pack takes a sill tie on each OUTER face: nothing fits between plies.
                 plies = min(1 + _sisters_at(member, point, sisters, grid_m), 2) if on_sill else 1
                 yield BearingConnection(

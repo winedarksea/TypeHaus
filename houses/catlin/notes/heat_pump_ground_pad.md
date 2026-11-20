@@ -593,8 +593,8 @@ cable fits the crotch, whose largest circle is r = 1/(1/r1 + 1/r2 - 1/(r1+r2)) =
 - **HP2**: 71.09 ft over three ports, of 263. Every port is far inside 82 ft and inside the
   131 ft precharge, so no charge is added. The three sets leave the valves 3" apart in height
   (ports A/B/C; D is spare on the four-port unit). LIVING runs at x 31'-8 1/2", BED at 31'-11 1/2" and GYM at 32'-5 1/2", so
-  none crosses another. GYM's rim hole sits between `CN-WT-S4-398-1` and `-2`, the A35Zs at x 386
-  and 392, and east of the girt block at x 384. Each crosses `FS-M-EAST`'s LSL rim in its own TJ-8000 hole and enters
+  none crosses another. GYM's rim hole sits over the derived wall-top A35Z at x 390 (its leaf
+  2 1/4" up the rim face, about 3/16" under the insulated set), and east of the girt block at x 384. Each crosses `FS-M-EAST`'s LSL rim in its own TJ-8000 hole and enters
   the south bay. In the bay, BED runs over GYM at y=9".
   - GYM goes west to the gym's SW corner and drops 14 1/2" in the 4" gap between the head and
     the south wall, ending 6.5" off the ports.

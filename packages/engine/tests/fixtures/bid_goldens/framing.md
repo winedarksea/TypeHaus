@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 7d6514246cb51efc  
-**Lines:** 266
+**Model hash:** 637bb8f21489a154  
+**Lines:** 267
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
 
@@ -152,8 +152,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | A35Z framing angle (A35Z:joist bearing) | 2 | ea |  | building |
 | A35Z framing angle (A35Z:joist bearing) | 16 | ea |  | building |
 | A35Z framing angle (A35Z:joist bearing) | 4 | ea |  | building |
-| A35Z framing angle (A35Z:modeled connector) | 51 | ea |  | building |
+| A35Z framing angle (A35Z:modeled connector) | 6 | ea |  | building |
 | A35Z framing angle (A35Z:slat brace centre post tie) | 4 | ea |  | main |
+| A35Z framing angle (A35Z:wall-top blocking station) | 45 | ea |  | building |
 | ABU44 standoff post base (4x4) (ABU44:post base) | 2 | ea |  | building |
 | ACE6Z adjustable end post cap (6x beam end on 6x6), MAX nailing (ACE6Z:modeled connector) | 4 | ea |  | building |
 | CBSTQ66Z-SDS2 cast-in column base (6x6) (CBSTQ66Z-SDS2:modeled connector) | 4 | ea |  | building |
@@ -475,6 +476,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | A35Z framing angle (A35Z:joist bearing) | — |
 | A35Z framing angle (A35Z:modeled connector) | — |
 | A35Z framing angle (A35Z:slat brace centre post tie) | SB-BW-BAND |
+| A35Z framing angle (A35Z:wall-top blocking station) | — |
 | ABU44 standoff post base (4x4) (ABU44:post base) | — |
 | ACE6Z adjustable end post cap (6x beam end on 6x6), MAX nailing (ACE6Z:modeled connector) | — |
 | CBSTQ66Z-SDS2 cast-in column base (6x6) (CBSTQ66Z-SDS2:modeled connector) | — |

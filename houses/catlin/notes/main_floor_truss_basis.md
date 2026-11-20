@@ -213,7 +213,10 @@ ducts or pipes". The owner's bounce goal, so two:
 
   Parallel (footnote f): blocking in the first three joist spaces (two blocked lines a
   station, so four), each station tied by **five A35Z** on the edge member's inboard face
-  (`plan/wall_top_ties.py`): 5 x 538 = 2,690 lb (truss), 5 x 563 = 2,815 lb (TJI). A
+  (`JoistSpec.station_ties`, derived): 5 x 538 = 2,690 lb (truss), 5 x 563 = 2,815 lb (TJI).
+  Each is an L, 1 7/16" along the rim, one leaf up its face and one on the sill top, laid
+  1/8" clear of the block end at 6" o.c., nearest first, within 18" of the station
+  (`joints/wall_top.station_tie_points`). A
   station's demand is 400 plf over its tributary, midpoint to midpoint and out to the wall's
   ends; no gap and no end distance over 72".
 
@@ -222,14 +225,22 @@ ducts or pipes". The owner's bounce goal, so two:
   | W-B-N1 | FS-M-NE | 1.8"..216" | x 21'/27'/33' | 72" | 2,400 lb | 0.89 |
   | W-B-S1 | FS-M-WEST | 1.7"..118" | x 3'/7' | 58.3" | 1,943 lb | 0.69 |
   | W-B-S4 | FS-M-EAST | 0..116.2" | x 29'-2"/33'-2" | 60" | 2,000 lb | 0.71 |
-  | W-B-N3 | FS-M-MECH | 0..48" | x 8' / 5'-10" | 11" (1 A35Z) | 367 lb | 0.65 |
-  | W-B-N4 | FS-M-MECH | 0..70.3" | x 5'-10" | 70.3" | 2,343 lb | 0.83 |
+  | W-B-N3 | FS-M-MECH | 0..48" | x 8' / 5'-10" | 11" + N4's 70.3" | 2,708 lb | 0.96 |
+  | W-B-N4 | FS-M-MECH | 0..70.3" | x 5'-10" | 70.3" + N3's 11" | 2,708 lb | 0.96 |
 
   W-B-N4's station is at its east end, x=5'-10": `FO-M-ERV-OA` (x 6"..48 1/2") and
   `DU-ERV-RISER-SUP` (6", west through the third space over x 17"..68") leave no other spot.
   It is also W-B-N3's west-end station (N3 runs east to west, so along 50"): N3's x=8' station
-  takes 0..37", 1,233 lb / 2,815 = 0.44, and the end station 37..48", 400 x 11/12 = 367 lb
-  on N3's one tie within 18" (x=7', 563 lb), 0.65. A station counts only its own wall's ties.
+  takes 0..37", 1,233 lb / 2,815 = 0.44, and the end station 37..48", 400 x 11/12 = 367 lb.
+  The shared station is tied once (from N4, whose span holds it) and carries both runs:
+  400 x 70.25/12 = 2,342 + 367 = 2,708 lb on five A35Z, 2,708 / 2,815 = **0.96**. The block
+  is at the run's end, so the five fall west of it and the pitch closes to 3 7/8" to stay
+  inside 18": x 68, 64 1/8, 60 1/4, 56 3/8, 52 1/2. (The authored x=72" tie stood on the
+  N3/N4 node, N4's span end, half over each sill.)
+  **Open:** along W-B-N3/N4 `FO-M-ERV-OA`'s doubled LVL trimmers run x 1 3/4"..120" with 1/2"
+  to the LSL rim, so the ten ties there lie under the trimmers (as the authored ones did);
+  and on W-B-W1 `FS-M-WEST`'s seam line (y 259") has 3/4" to the next joist and none to
+  `FS-M-MECH`'s first, so its sill tie has no clear side.
   Each station has a MASA within 8": where the pitch left none, one is added (eight in all,
   69 -> 77 billed; `joints/sills._snap_to_blocking`). Moving one instead stranded the plate ends.
 - **W-B-N2 — UNKNOWN, a design.** `FO-M-STAIR` runs y 26'..35'-4 7/8" against the 36' wall, so

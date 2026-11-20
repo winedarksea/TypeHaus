@@ -9,7 +9,8 @@ anchor bolt. Two load paths, graded separately per wall:
 * **perpendicular** — every seated end (``joints/bearing``) on the wall's sill carries
   reaction x joist spacing through its ``JoistSpec.sill_tie``s;
 * **parallel** — every block station (``joints/wall_top``) carries reaction x its
-  tributary length through the ``Connector``s authored at it.
+  tributary length through the ties within reach: the derived ``JoistSpec.station_ties``
+  and any ``Connector`` authored there.
 
 Capacity is the tie's catalog lateral (the lesser of F1/F2, since a sill tie's orientation
 is the installer's) times C_D 0.9 over the lowest duration its row holds at, times a
@@ -27,6 +28,7 @@ from typehaus.checks.soil import site_soil_class
 from typehaus.checks.structural._mn_r404_1_table import SOIL_GROUP_PCF, top_of_wall_row
 from typehaus.checks.structural.foundation import _unbalanced_fill_ft, _wall_height_ft
 from typehaus.findings import Finding
+from typehaus.joints.wall_top import STATION_REACH_M
 
 _CID = "code.MN_1309_0404_wall_top"
 _CODE = "Minn. R. 1309.0404"
@@ -43,8 +45,6 @@ _SPF_FACTOR = 0.86
 #: F1 and F2 loads". No angle is listed on an I-joist flange; at a TJI the angle lands on
 #: the LSL rim or blocking at the joist end, Weyerhaeuser's own end detail.
 _LSL_FACTOR = 0.90
-#: How far from a station point an authored connector still serves it.
-_STATION_REACH_M = 18.0 * _M_PER_IN
 #: Footnote f.
 _ANCHOR_REACH_M = 8.0 * _M_PER_IN
 
@@ -116,7 +116,25 @@ def _tributaries(span, alongs) -> list:
     return out
 
 
-def _parallel(ctx, run, reaction_plf, blocking_in, connectors, anchors) -> tuple[list, list]:
+def _station_key(floor_tag: str, point) -> tuple:
+    return floor_tag, round(point[0], 3), round(point[1], 3)
+
+
+def _station_loads(runs, reactions) -> dict:
+    """Each station's total demand: a station two collinear runs see carries both."""
+    loads: dict = {}
+    for tag, reaction in reactions.items():
+        for run in runs.get(tag, ()):
+            alongs = [s.along_m for s in run.stations]
+            for station, trib in zip(run.stations, _tributaries(run.span_m, alongs),
+                                     strict=True):
+                key = _station_key(run.floor_tag, station.point_m)
+                loads[key] = loads.get(key, 0.0) + reaction * trib / _M_PER_FT
+    return loads
+
+
+def _parallel(ctx, run, reaction_plf, blocking_in, connectors, anchors,
+              loads) -> tuple[list, list]:
     """``(ok lines, short lines)`` for one parallel floor over the wall."""
     head = f"{run.floor_tag} parallel"
     if run.voids:
@@ -143,19 +161,23 @@ def _parallel(ctx, run, reaction_plf, blocking_in, connectors, anchors) -> tuple
         where = f"{head} station at {station.along_m / _M_PER_FT:.1f} ft"
         if not {1, 2, 3} <= station.bays:
             short.append(f"{where}: blocks only joist space(s) {sorted(station.bays)}")
-        demand = reaction_plf * trib / _M_PER_FT
+        key = _station_key(run.floor_tag, station.point_m)
+        demand = loads.get(key, reaction_plf * trib / _M_PER_FT)
         # The wall too: a collinear neighbour's ties are within reach of a station at its end.
-        mine = [c for c in connectors if {run.floor_tag, run.wall_tag} <= set(c.connects)
-                and math.dist(c.position.xy_m, station.point_m) <= _STATION_REACH_M]
+        # Ties laid for a shared station serve both runs, which share its demand.
+        mine = [(xy, part) for xy, part, connects, laid_for in connectors
+                if laid_for == key or ({run.floor_tag, run.wall_tag} <= connects
+                                       and math.dist(xy, station.point_m)
+                                       <= STATION_REACH_M + 1e-6)]
         capacity = 0.0
-        for c in mine:
-            each, why = tie_capacity_lb(c.size, profile)
+        for _xy, part in mine:
+            each, why = tie_capacity_lb(part, profile)
             if each is None:
                 return [], short + [f"{where}: UNKNOWN — {why}"]
             capacity += each
         if capacity < demand - 1e-6:
             short.append(f"{where}: {demand:.0f} lb over {trib / _M_PER_IN:.0f}\" against "
-                         f"{len(mine)} authored connector(s), {capacity:.0f} lb")
+                         f"{len(mine)} tie(s), {capacity:.0f} lb")
         else:
             worst = max(worst, demand / capacity)
         if not any(abs(along - station.along_m) <= _ANCHOR_REACH_M for along in anchors):
@@ -171,7 +193,7 @@ def foundation_wall_top(ctx: CheckContext) -> list[Finding]:
     from typehaus.joints.authored import authored_connectors
     from typehaus.joints.bearing import bearing_connections
     from typehaus.joints.sills import mudsill_anchor_stations
-    from typehaus.joints.wall_top import along_wall, parallel_runs
+    from typehaus.joints.wall_top import along_wall, parallel_runs, station_tie_points
     from typehaus.model.structure import FoundationWall
 
     walls = {e.tag: e for e in ctx.plan.all_elements() if isinstance(e, FoundationWall)}
@@ -198,14 +220,22 @@ def foundation_wall_top(ctx: CheckContext) -> list[Finding]:
         return [_unknown(_CID, "no site grade or no soil class Table R404.1(1) lists, so no "
                                "top-of-wall reaction", tuple(sorted(carrying)), _CODE)]
     spacing = _floor_spacing_m(ctx)
-    connectors = authored_connectors(ctx.model)
+    connectors = [(c.position.xy_m, c.size, set(c.connects), None)
+                  for c in authored_connectors(ctx.model)]
+    connectors += [(t.point_m, t.part, {t.wall_tag, t.floor_tag},
+                    _station_key(t.floor_tag, t.station_m))
+                   for t in station_tie_points(ctx.model)]
     anchors = mudsill_anchor_stations(ctx.model, config.sill_plate_anchors,
                                       config.sill_plate_takeoff_category)
+    rows = {}
+    for tag in sorted(carrying):
+        height = _wall_height_ft(walls[tag]) or 0.0
+        fill = _unbalanced_fill_ft(walls[tag], grade.meters)
+        rows[tag] = (height, fill, top_of_wall_row(height, fill, pcf))
+    loads = _station_loads(runs, {tag: r[2][1][0] for tag, r in rows.items() if r[2]})
     out: list[Finding] = []
     for tag in sorted(carrying):
-        wall = walls[tag]
-        height, fill = _wall_height_ft(wall) or 0.0, _unbalanced_fill_ft(wall, grade.meters)
-        row = top_of_wall_row(height, fill, pcf)
+        height, fill, row = rows[tag]
         if row is None:
             out.append(_unknown(_CID, f"{tag}: {height:.1f}' wall, {fill:.1f}' fill is past "
                                       "Table R404.1(1); the restraint is a design", (tag,), _CODE))
@@ -216,7 +246,8 @@ def foundation_wall_top(ctx: CheckContext) -> list[Finding]:
         on_wall = [along_wall(resolved, a.point_m) for a in anchors]
         on_wall = [a for a, offset in on_wall if offset <= resolved.thickness_m]
         for run in runs.get(tag, ()):
-            more_ok, more_short = _parallel(ctx, run, reaction, blocking, connectors, on_wall)
+            more_ok, more_short = _parallel(ctx, run, reaction, blocking, connectors, on_wall,
+                                            loads)
             ok, short = ok + more_ok, short + more_short
         head = (f"{tag} ({height:.1f}' wall, {fill:.1f}' fill, {soil}): Table R404.1(1) row "
                 f"{row_h:g}'/{row_b:g}' gives {reaction} plf at the top")

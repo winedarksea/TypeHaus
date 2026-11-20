@@ -26,8 +26,10 @@ from typehaus.hardware.catalog import (
     ROLE_RIDGE_TIE_STRAP,
     ROLE_SCL_FACE_MOUNT_HANGER,
     ROLE_SILL_ANCHOR_BOLT,
+    ROLE_SILL_TIE,
     ROLE_SLOPED_JOIST_HANGER,
     ROLE_STAIR_STRINGER_CONNECTOR,
+    ROLE_WALL_TOP_TIE,
 )
 
 #: The solid category a non-embedded, non-hanger connector marker is filed under. Matches
@@ -118,5 +120,10 @@ MARKER_RULES: dict[str, MarkerRule] = {
     ROLE_POST_BASE_ANCHOR: MarkerRule(draw=True, along_in=0.31, across_in=0.31,
                                       half_h_in=4.00,
                                       category=CATEGORY_CONNECTOR_EMBEDDED),
+    # Minn. R. 1309.0404 A35Zs: an L up the rim (or truss) face and flat on the sill.
+    ROLE_SILL_TIE: MarkerRule(draw=True, along_in=0.72, across_in=1.13, half_h_in=1.13,
+                              center_z_offset_in=2.63),
+    ROLE_WALL_TOP_TIE: MarkerRule(draw=True, along_in=0.72, across_in=1.13, half_h_in=1.13,
+                                  center_z_offset_in=1.13),
     ROLE_BEAM_HOLD_DOWN: MarkerRule(draw=False, along_in=0.63, across_in=0.25, half_h_in=6.00),
 }

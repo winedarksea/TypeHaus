@@ -168,3 +168,147 @@ def _stations(floor, origin, unit, span, edge_m, spacing_m) -> tuple:
             stations.append([along, {bay}])
     return tuple(BlockStation(along, (origin[0] + unit[0] * along, origin[1] + unit[1] * along),
                               frozenset(bays)) for along, bays in stations)
+
+
+# --- the ties at each station ---------------------------------------------------------
+
+#: How far from a station point a tie still serves it (``code.MN_1309_0404_wall_top``).
+STATION_REACH_M = 18.0 * M_PER_IN
+#: Laid ties stay this far inside the reach, so the check never grades a float hair.
+_REACH_MARGIN_M = 1.0 / 16.0 * M_PER_IN
+#: Clear of the block end that butts the edge member, and the pitch's floor when closing.
+_BLOCK_GAP_M = 0.125 * M_PER_IN
+_MIN_PITCH_M = 3.0 * M_PER_IN
+_PITCH_STEP_M = 0.125 * M_PER_IN
+
+
+@dataclass(frozen=True)
+class StationTie:
+    """One tie at a block station: on the edge member's inboard face, on the sill top."""
+
+    wall_tag: str
+    floor_tag: str
+    storey: str
+    part: str
+    station_m: tuple  # the station's plan point on the wall axis
+    point_m: tuple  # the leaf's centre on the inboard face
+    z_m: float | None  # the sill top under it
+
+
+def _width(member) -> float:
+    from typehaus.resolve.framing.profiles import cross_section
+
+    return member.plan_width_m or cross_section(member.profile).width_m
+
+
+def edge_face(floor, wall) -> tuple | None:
+    """``(signed offset of the edge member's inboard face off the wall axis, inward unit)``."""
+    origin, unit, _length = _frame(wall)
+    normal = (-unit[1], unit[0])
+    lines = []
+    for m in floor.members:
+        if not on_joist_line(m):
+            continue
+        dx, dy = m.p1[0] - m.p0[0], m.p1[1] - m.p0[1]
+        if abs(dx * unit[1] - dy * unit[0]) > 0.01 * (math.hypot(dx, dy) or 1.0):
+            continue  # not parallel to the wall
+        lines.append(((m.p0[0] - origin[0]) * normal[0] + (m.p0[1] - origin[1]) * normal[1],
+                      _width(m)))
+    near = [line for line in lines if abs(line[0]) <= wall.thickness_m]
+    if not near:
+        return None
+    sign = 1.0 if sum(off for off, _w in lines) >= 0.0 else -1.0
+    offset, width = min(near, key=lambda line: abs(line[0]))
+    return offset + sign * width / 2.0, (normal[0] * sign, normal[1] * sign)
+
+
+def sill_top_z(model: ResolvedModel, point, base_z_m: float) -> float | None:
+    """The top of the sill standing on ``base_z_m`` under ``point``, over its gasket."""
+    from shapely.geometry import Point, Polygon
+
+    here = Point(point[0], point[1])
+    tops = [r.z1_m + (r.gasket_thickness_m or 0.0) for r in model.construction_returns
+            if abs(r.z0_m - base_z_m) <= 1e-3 and len(r.outline) >= 3
+            and Polygon(r.outline).buffer(1e-6).contains(here)]
+    return max(tops) if tops else None
+
+
+def _block_extent(floor, origin, unit, station) -> tuple:
+    """The station's blocks along the wall: the stretch no tie may stand on."""
+    spans = []
+    for m in floor.members:
+        if m.category != "blocking" or not (m.child_key or "").startswith("sister-"):
+            continue
+        a0, a1 = _project(m.p0, origin, unit)[0], _project(m.p1, origin, unit)[0]
+        mid = (a0 + a1) / 2.0
+        if abs(a1 - a0) <= _STATION_CLUSTER_M and abs(mid - station.along_m) <= _STATION_CLUSTER_M:
+            spans.append((mid - _width(m) / 2.0, mid + _width(m) / 2.0))
+    if not spans:
+        return station.along_m, station.along_m
+    return min(lo for lo, _hi in spans), max(hi for _lo, hi in spans)
+
+
+def _lay(count, extent, half_m, pitch_m, run, station, blocked) -> list:
+    """``count`` positions nearest the station, closing the pitch to 3" before giving up."""
+    lo, hi = extent
+    reach = STATION_REACH_M - _REACH_MARGIN_M
+    while True:
+        found = []
+        for k in range(count):
+            for a in (lo - _BLOCK_GAP_M - half_m - k * pitch_m,
+                      hi + _BLOCK_GAP_M + half_m + k * pitch_m):
+                if (run.span_m[0] <= a - half_m and a + half_m <= run.span_m[1]
+                        and abs(a - station.along_m) <= reach and not blocked(a)):
+                    found.append((abs(a - station.along_m), a))
+        if len(found) >= count or pitch_m - _PITCH_STEP_M < _MIN_PITCH_M - 1e-9:
+            return sorted(a for _d, a in sorted(found)[:count])
+        pitch_m -= _PITCH_STEP_M
+
+
+def station_tie_points(model: ResolvedModel) -> list:
+    """Every ``JoistSpec.station_ties`` tie, once per station: a station two collinear runs
+    of one floor both see is tied from the run whose span contains it."""
+    from shapely.geometry import Point, Polygon
+
+    from typehaus.resolve.connector_geometry.plate_angle import plate_angle_dims
+
+    elements = {e.tag: e for e in model.plan.all_elements()} if model.plan else {}
+    floors = {f.tag: f for f in model.floors}
+    out: list = []
+    done: set = set()
+    for run in parallel_runs(model):
+        spec = getattr(elements.get(run.floor_tag), "joists", None)
+        if spec is None or spec.station_ties <= 0 or not spec.sill_tie:
+            continue
+        wall, floor = model.wall(run.wall_tag), floors[run.floor_tag]
+        face = edge_face(floor, wall)
+        if face is None:
+            continue
+        offset, inward = face
+        origin, unit, _length = _frame(wall)
+        normal = (-unit[1], unit[0])
+        dims = plate_angle_dims(spec.sill_tie)
+        half = dims.width_m / 2.0 if dims else 0.75 * M_PER_IN
+        holes = [Polygon([p[:2] for p in ring]) for ring in floor.deck_voids if len(ring) >= 3]
+        top = wall.plate_top_z_m if wall.plate_top_z_m is not None else wall.z1_m
+
+        def at(a, off=offset, o=origin, u=unit, n=normal):
+            return (o[0] + u[0] * a + n[0] * off, o[1] + u[1] * a + n[1] * off)
+
+        def blocked(a, run=run, holes=holes, at=at):
+            return (any(lo <= a <= hi for lo, hi in run.voids)
+                    or any(h.contains(Point(at(a))) for h in holes))
+
+        for station in run.stations:
+            key = (run.floor_tag, round(station.point_m[0], 3), round(station.point_m[1], 3))
+            if key in done or not run.span_m[0] <= station.along_m <= run.span_m[1]:
+                continue
+            done.add(key)
+            extent = _block_extent(floor, origin, unit, station)
+            for a in _lay(spec.station_ties, extent, half, spec.station_tie_pitch.meters,
+                          run, station, blocked):
+                point = at(a)
+                probe = (point[0] + inward[0] * half, point[1] + inward[1] * half)
+                out.append(StationTie(run.wall_tag, run.floor_tag, run.storey, spec.sill_tie,
+                                      station.point_m, point, sill_top_z(model, probe, top)))
+    return out
