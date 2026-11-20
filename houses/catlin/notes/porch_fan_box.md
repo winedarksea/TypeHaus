@@ -50,6 +50,11 @@ Fan: Craftmade FXL60DGT3 spec sheet
 (<https://data.craftmade.com/CraftPIM/ProductData/Specs/FXL60DGT3_SpecSheet.pdf>) gives
 20.06 lb against the 70 lb rating, and a 5.98" canopy that covers the 4.28" box.
 
+Blade height (not graded by the engine): the box face is 8'-9 1/2" (2.680 m) and FS-SG-PORCH's
+deck top 15/16" (0.024 m). Craftmade's blade-to-ceiling is 12.24" on the 6" downrod, so the
+blades are ~7'-8 1/2" over the deck, above the usual 7'-0" instruction minimum. The model's
+18" body is conservative (the sheet's total is 16.34"), its bottom 7'-2 1/2" over the deck.
+
 ## Fill oracle (NEC 314.16)
 
 The box is through-fed with 12/2 on CKT-LT-MAIN:

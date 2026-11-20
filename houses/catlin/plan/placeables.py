@@ -463,11 +463,8 @@ MAIN_PLACEABLES = [
     #
     # NO `room=` — the porch is not a Room, the FURN-M-PORCH-TRACK-* precedent.
     #
-    # ** KNOWN, AND LEFT: THE FAN IS NOT OVER THE CHAIRS. ** ED-M-PORCH-FAN hangs at
-    # x=18'-0", y=-4'-10" — centred on the whole porch, i.e. on the pillar line. Its 60"
-    # sweep reaches x 15'-6", which catches the east chair's outer arm and misses the west
-    # chair by 1'-9". Moving the fan west to ~x 14'-6" would put it over the seats and off
-    # the porch's centre; that is an owner call, not a plan error, and it is in plans/TODO.md.
+    # ED-M-PORCH-FAN hangs between the chairs at x 13'-3", y -5'-5 1/4" (under its
+    # joist, porch_lighting.py); its 60" sweep reaches both seats.
     Furniture(uid="KG1WAJESNZ", tag="FURN-M-PORCH-LOUNGE-W", type_ref="FT-PORCH-LOUNGE-27",
               position=pt(ft(11, 3), ft(-3, -6)), rotation=deg(0),
               mount=Mount(kind=MountKind.FLOOR, elevation=inch(1))),

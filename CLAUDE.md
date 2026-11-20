@@ -72,10 +72,10 @@ a release or for exhaustive local verification.
   A box solid carries a `body_mesh` (`resolve/device_box_mesh.py`: round, raised cover, mud ring)
   and its colour from `BoxRow.material_ref`.
   A ceiling fixture or hardwired alarm head that mounts to a box (not a housing/wafer, not
-  PSU-fed) takes a `host="ceiling"` record (`resolve/ceiling_boxes.py`, decision #140; under a bare
-  deck, a surface box on the member over its point): never
-  banked or sleeved, graded by `electrical.ceiling_box_framing` (a clash moves the fixture) and
-  `ceiling_box_support` (a fan's row is `fan_rated`). A `remote_box` type (a knuckle flood on
+  PSU-fed) takes a `host="ceiling"` record (`resolve/ceiling_boxes.py`, decision #140; under a
+  bare deck, a surface box on the member over its point): never banked or sleeved, graded by
+  `electrical.ceiling_box_framing` (a clash moves the fixture) and `ceiling_box_support` (a
+  fan's row is `fan_rated`). A `remote_box` type (a knuckle flood on
   its own plate) takes no box over its point: a surface junction box derives on the nearest
   framing member beside it, within a 6 ft whip (`resolve/remote_feed_box.py`).
 - **Drywall accessories are derived from one `DrywallStandard`** (decision #103):
