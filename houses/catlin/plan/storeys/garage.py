@@ -833,14 +833,10 @@ STAIR_SEATS = [
 #
 # ** WALL-MOUNTED ON W-G-W SINCE 2026-09-11. ** The flight is flush to the west stem, so the
 # rail is brackets into the framed wall above it, the way `RL-M-HANDRAIL-W` in
-# plan/storeys/main.py is. `mount="wall"` makes the resolver emit a bracket per station
-# instead of a 36" post on each tread; `post_spacing=48"` on a 3'-7 1/4" run puts one bracket at
-# each end of the path and none between. ** NEITHER END IS ON A STUD (2026-10-13). ** The top
-# end stands 1 1/2" off W-G-S's face, past the head riser and clear of the corner for the
-# return; W-G-W's stud-012 is inside that corner, so the bracket takes BK-G-W-RAIL-TOP, a
-# band filling the stud-012..stud-011 bay. The foot is over the bottom riser, 3 1/2" off
-# stud-010, on BK-G-W-RAIL-FOOT in the stud-010..stud-009 bay (plan/backing.py) — move this
-# path and move both.
+# plan/storeys/main.py is. `mount="wall"` makes the resolver emit wall hardware instead of a
+# 36" post on each tread: an end-plate return at each end and, at `post_spacing=38.5"`, one
+# bracket between. None lands on a stud, so each takes a band, BK-G-W-RAIL-TOP / -MID / -FOOT
+# (plan/backing.py) — move this path and move all three.
 # The rail centreline at x=6'-9 1/8" is 2 3/8" off the wall's gyp face at 6'-6 3/4": the
 # 1 1/2" clearance R311.7.8.2 wants plus the bar's own 3/4" radius, with 1/8" to spare. It
 # hangs over the stem ledge, 2 1/2" clear of the flight's west edge at 6'-11 5/8". Both ends

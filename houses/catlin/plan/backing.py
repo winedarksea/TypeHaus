@@ -80,22 +80,18 @@ from typehaus import WallBacking, ft, inch
 # ST-G-SERVICE's handrail RL-G-SERVICE is wall-mounted on W-G-W since 2026-09-11
 # (plan/storeys/garage.py). A bracket takes IRC Table R301.5's 200 lb in any direction, and
 # a 2x6 stud bay at 24" o.c. has a stud where the framer put one, not where the bracket
-# lands. `post_spacing=48"` on the 3'-7 1/4" rail path resolves one bracket at each end and
-# none between, and since the flight moved 3'-4 1/4" south to the threshold (2026-10-13,
-# no interior landing) NEITHER lands on a stud, so both get a 2x12 laid flat, cut to FILL
-# THE BAY, both ends nailed (a block with one free end cannot be fastened):
+# lands. The rail ends in two wall returns (EZA400 end plates) with one EZA200 bracket
+# between (`post_spacing=38.5"`); none lands on a stud, so each gets a 2x12 laid flat, cut to
+# FILL THE BAY, both ends nailed. Elevations are over the sill datum (-12" absolute), each
+# band centred on the resolved hardware (2026-11-19):
 #
-#  * TOP, y=43'-10 7/8" — 1 1/2" off W-G-S's face. W-G-W's stud-012 is inside that corner
-#    (y 43'-8 3/4"..43'-10 1/4"), so the band fills stud-012..stud-011: station
-#    22'-0 3/4"..23'-4 3/8" from N-G-NW, 15 5/8" of clear bay. Centred 2 1/2" below the rail
-#    top there, which is 36" over the top nosing at -6.8" absolute: 33"..44 1/4" above the
-#    garage datum against a rail top at +41.2".
-#  * FOOT, y=47'-6 1/8" — the bottom riser, 3 1/2" off stud-010, in the stud-010..stud-009
-#    bay: station 18'-0 3/4"..19'-11 1/4", 22 1/2" clear — the band that sat one module further north
-#    (16'-0 3/4"..17'-11 1/4") under the landing design. 12"..23 1/4" above the garage datum,
-#    against a rail top at +20 3/4" where the nosing line meets the first riser.
+#  * TOP, y=43'-10 7/8": stud-012..stud-011 bay, 15 5/8" clear. End plate centre +48.8".
+#  * MID, y=45'-8 1/2": stud-011..stud-010 bay, under WIN-G-S1's rough sill (+40 1/2"),
+#    which it butts. Bracket +32.9"..+35.9".
+#  * FOOT, y=47'-6 1/8": stud-010..stud-009 bay, 22 1/2" clear. End plate centre +23.0".
 #
-# 11 1/4" tall (`integrity.wall_backing_ref` holds `height` to the profile).
+# Move the rail path or its height and move all three. 11 1/4" tall
+# (`integrity.wall_backing_ref` holds `height` to the profile).
 
 # The groups above, filed on the storey each wall stands on: `PlanModel` keys elements
 # by storey, so a band cannot ride in a list that mixes them.
@@ -393,11 +389,15 @@ SECOND_BACKING = [
 GARAGE_BACKING = [
     WallBacking(uid="YJH79SSVTK", tag="BK-G-W-RAIL-TOP", wall_ref="W-G-W",
                 start=ft(22, 0.75), length=inch(15.625),
-                elevation=inch(33), height=inch(11.25), profile="2x12",
+                elevation=inch(43.25), height=inch(11.25), profile="2x12",
                 material_ref="spf", purpose="handrail brackets (RL-G-SERVICE, head of flight)"),
+    WallBacking(uid="057H90RPGT", tag="BK-G-W-RAIL-MID", wall_ref="W-G-W",
+                start=ft(20, 0.75), length=inch(22.5),
+                elevation=inch(29.25), height=inch(11.25), profile="2x12",
+                material_ref="spf", purpose="handrail bracket (RL-G-SERVICE, mid-flight)"),
     WallBacking(uid="1FTWGZ1WJ3", tag="BK-G-W-RAIL-FOOT", wall_ref="W-G-W",
                 start=ft(18, 0.75), length=inch(22.5),
-                elevation=inch(12), height=inch(11.25), profile="2x12",
+                elevation=inch(17.375), height=inch(11.25), profile="2x12",
                 material_ref="spf", purpose="handrail brackets (RL-G-SERVICE, foot of flight)"),
     # The EVSE's four screws (APPL-G-EVSE, 42"..52 1/4" AFF), one bay between studs at 20' and
     # 22'. The slab is 22" under this wall's base, so 19 1/2" here is 41 1/2" AFF.
