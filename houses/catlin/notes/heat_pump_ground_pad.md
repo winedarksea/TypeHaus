@@ -593,7 +593,7 @@ cable fits the crotch, whose largest circle is r = 1/(1/r1 + 1/r2 - 1/(r1+r2)) =
 | set | legs (in.) | developed | +2 ft loop | kit | leftover |
 |---|---|---|---|---|---|
 | `PR-A-RFG-HP1` | 4.125, 12.53, 35, 13.375, 12.4, 74.5, 5.22, 123.5, 6.80, 7.63, 24.125, 29.5, 99.5, 21, 6.5 = 475.7 | **39.64 ft** | 41.64 | 50 | 8.4 |
-| `PR-B-RFG-HP2-GYM` | 16.84, 16.56, 19.08, 171.75, 14.5 = 238.7 | **19.89 ft** | 21.89 | 25 | 3.1 |
+| `PR-B-RFG-HP2-GYM` | 16.84, 16.33, 22.01, 158.26, 4.24, 10.5, 14.5 = 242.7 | **20.22 ft** | 22.22 | 25 | 2.8 |
 | `PR-M-RFG-HP2-BED` | 9.09, 35.06, 178.9, 8.13, 92.75 = 323.9 | **26.99 ft** | 28.99 | 35 | 6.0 |
 | `PR-M-RFG-HP2-LIVING` | 4.09, 28.96, 20.85, 113.5, 7.06, 98.7, 7.06, 9.5 = 289.7 | **24.14 ft** | 26.14 | 35 | 8.9 |
 | `PR-M-RFG-HP3-STAIR` | 4, 20.35, 112.5, 140, 12.4, 66.5, 2.97 = 358.7 | **29.89 ft** | 31.89 | 35 | 3.1 |
@@ -607,25 +607,29 @@ cable fits the crotch, whose largest circle is r = 1/(1/r1 + 1/r2 - 1/(r1+r2)) =
   through the second floor into `FS-ATTIC`'s north bay. It comes up through the deck 4" off
   the wall, rises on a 4" westward diagonal (room for the 3.94" bend) and crosses over the air
   handler to drop onto its front ports. Exterior leg ~5.7 ft.
-- **HP2**: 71.03 ft over three ports, of 263. Every port is far inside 82 ft and inside the
+- **HP2**: 71.36 ft over three ports, of 263. Every port is far inside 82 ft and inside the
   131 ft precharge, so no charge is added. The three sets leave the valves 3" apart in height
   (ports A/B/C; D is spare on the four-port unit) and turn north side by side: LIVING at
   x 31'-8 1/4", BED at 32'-1 1/4", GYM at 32'-9", so none crosses another. **Re-stacked
   2026-11-20**: GYM used to bore the W-M-S2 starter girt (z -11.19..-7.69), leaving under 1"
   of its 3.5" face, with its rim hole 3/16" over the A35Z at x 390. Now all three cross the
   wall in the 7.69" gap between the starter girt and the 0..3.5 course (bundle centre at the
-  girt plane y -5.25: LIVING -4.00, BED -4.78, GYM -5.69; the gap holds centres -6.38..-1.31),
+  girt plane y -5.25: LIVING -4.00, BED -4.78, GYM -5.97; the gap holds centres -6.38..-1.31),
   so no girt is cut. Each crosses `FS-M-EAST`'s LSL rim in its own TJ-8000 hole (centres
-  -4.00 / -4.10 / -6.27, inside the rim's centred 7.92" circle, which holds -8.58..-3.29). The
+  -4.00 / -4.10 / -5.80, inside the rim's centred 7.92" circle, which holds -8.58..-3.29). The
   holes sit at x 380-393: off the window's king/jack packs (x 366.8-369, 399-402); LIVING and
   BED clear the rim-to-sill A35Zs in plan, and GYM stands between the ties at 390 and 395
   (1" clear of each), all above the ties' tops at -9.62. Outside they clear the base trim
   (top -9.81).
-  - GYM rises 4 3/4" on its way to the wall, then falls 1 3/4" over 19" through it to -7 at
-    y=9" (the 3.94" bend needs that whole leg; the valves sit below the hole, so Gree's
-    U-loop rule does not apply). It goes west to the gym's SW corner and drops 14 1/2" in the
-    4" gap between the head and the south wall, ending 6.5" off the ports.
-  - BED climbs on one straight leg from its valve (-7) to -3.25 at y=9", over GYM, crosses
+  - No set falls inward through the wall: a sweating vapour line and rain on the bundle run
+    out, not into the rim. LIVING is level; BED and GYM rise inward. GYM climbs 3.9" from its
+    valve to -6.1 at y -10, then 0.6" more over 22" through the wall to -5.5 at y 12. It
+    goes west there, 3" north of BED's leg (so it passes behind BED's corner rather than
+    under it), falling 1.5" to -7 by x 234.75; a 45° jog back to y 9 (4.24" diagonal, then
+    10.5" to the drop for the 3.94" bend) puts it 3.75" under BED. It drops 14 1/2" in the 4"
+    gap between the head and the south wall, ending 6.5" off the ports. (Until 2026-11-20 it
+    fell 1 3/4" inward through the wall to reach -7 under BED at y 9.)
+  - BED climbs on one straight leg from its valve (-7) to -3.25 at y=9", crosses
     the x=18' bearing (two blocking bores) into `FS-M-WEST`, cuts a 45° corner to
     `W-M-S1`'s 194-207 bay, east of `WIN-M-BED-S2`, and rises to 89 1/2", under the plate.
   - LIVING runs level at -4 to y=3.1", west to `W-M-S2`'s 352-367 bay, rises into

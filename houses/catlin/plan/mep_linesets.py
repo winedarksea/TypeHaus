@@ -8,8 +8,9 @@
 #     W-M-N1's 304-320 bay (no window; west of ED-M-LIVING-KET1's box), up through both storeys'
 #     plates into FS-ATTIC's north bay, up through the deck and over to the AH's ports.
 #   * HP2: three sets side by side (x 380-393) through FS-M-EAST's rim east of the
-#     cabinet, between W-M-S2's starter girt and the next course, into its south bay. GYM
-#     west to the gym's south-west corner and down beside the head; BED west past the
+#     cabinet, between W-M-S2's starter girt and the next course, into its south bay, each
+#     level or rising inward through the wall so water runs out. GYM west at y 12 (behind
+#     BED's corner), back to y 9 and down beside the head; BED west past the
 #     x=18' bearing into FS-M-WEST and up W-M-S1's bay east of WIN-M-BED-S2;
 #     LIVING up W-M-S2's 352-367 bay, west in FS-S-EAST's south bay and down over D-M-PORCH's
 #     header (the door fills the wall under the head).
@@ -66,9 +67,11 @@ LINESETS_MAIN = [
             outdoor_port="A", material="copper_acr", diameter=inch(0.375),
             liquid_diameter=inch(0.25),
             path=(pt(inch(376.16), inch(-25.86)), pt(inch(393), inch(-25.86)),
-                  pt(inch(393), inch(-10)), pt(inch(393), inch(9)),
+                  pt(inch(393), inch(-10)), pt(inch(393), inch(12)),
+                  pt(inch(234.75), inch(12)), pt(inch(231.75), inch(9)),
                   pt(inch(221.25), inch(9)), pt(inch(221.25), inch(9))),
-            elevations=(inch(-10), inch(-10), inch(-5.25), inch(-7), inch(-7), inch(-21.5))),
+            elevations=(inch(-10), inch(-10), inch(-6.1), inch(-5.5), inch(-7), inch(-7),
+                        inch(-7), inch(-21.5))),
     PipeRun(uid="660NG5X4HJ", tag="PR-M-RFG-HP2-BED", system=PipeSystem.REFRIGERANT, serves=("EQ-M-HP2-BED",),
             outdoor_port="B", material="copper_acr", diameter=inch(0.375),
             liquid_diameter=inch(0.25),
