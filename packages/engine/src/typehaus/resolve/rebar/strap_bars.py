@@ -11,9 +11,12 @@ from __future__ import annotations
 import math
 from dataclasses import replace
 
+from shapely.geometry import Polygon
+
 from typehaus.model.rebar import BARS
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.concrete import concrete_spec_for
+from typehaus.resolve.overlay import union_all
 from typehaus.resolve.rebar.records import ResolvedBar, ResolvedRebarSet
 from typehaus.resolve.strap_holdowns import (
     BAR_BAND_IN,
@@ -21,6 +24,8 @@ from typehaus.resolve.strap_holdowns import (
     MIN_BAR,
     REBAR_LE,
     StrapSite,
+    _pours,
+    _run,
     strap_sites,
 )
 
@@ -46,7 +51,7 @@ def passes(bar: ResolvedBar, site: StrapSite) -> bool:
     return False
 
 
-def _path(site: StrapSite, le_in: float, cover_m: float, z: float) -> list:
+def _path(site: StrapSite, le_in: float, cover_m: float, z: float, model) -> list:
     c, d = site.centre_xy, site.strap.along_xy
     want = REBAR_LE * le_in * M_PER_IN
     reach = {}
@@ -63,8 +68,9 @@ def _path(site: StrapSite, le_in: float, cover_m: float, z: float) -> list:
         offs = [((p[0] - c[0]) * d[0] + (p[1] - c[1]) * d[1]) for p in turn.turn_core]
         u_turn = (min(offs) + max(offs)) / 2.0
         corner = (c[0] + d[0] * u_turn, c[1] + d[1] * u_turn)
-        span = max((p[0] - corner[0]) * t[0] + (p[1] - corner[1]) * t[1]
-                   for p in turn.turn_core) - cover_m
+        # To where the concrete ends, not the turned-into segment's seam (W-GF-S1/-S-DR).
+        pours = union_all([Polygon(p) for _, p in _pours(model, site.top_z_m)])
+        span = _run(pours, corner, t) - cover_m
         leg = (corner[0] + t[0] * min(leg_in * M_PER_IN, span),
                corner[1] + t[1] * min(leg_in * M_PER_IN, span))
         pts = [pts[1], corner, leg] if turn.sign < 0 else [pts[0], corner, leg]
@@ -88,7 +94,7 @@ def strap_bars(model, sets: list[ResolvedRebarSet]) -> list[ResolvedRebarSet]:
         element = plan.by_tag(host)
         mix = concrete_spec_for(plan, element)
         z = site.top_z_m - sum(BAR_BAND_IN) / 2.0 * M_PER_IN
-        path = _path(site, le_in, cover_m(plan, element), z)
+        path = _path(site, le_in, cover_m(plan, element), z, model)
         length = sum(math.dist(a, b) for a, b in zip(path, path[1:], strict=False))
         if length <= 0.0:
             continue

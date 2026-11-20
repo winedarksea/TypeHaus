@@ -37,7 +37,7 @@ _SCHEDULE = {
     ("footing", "#4", "hdg-a767"): (51, 261.5),  # +3: the Ufer bar (#123)
     ("footing", "#5", "hdg-a767"): (179, 1465.9),
     ("foundation wall", "#3", "hdg-a767"): (12, 16.2),
-    ("foundation wall", "#4", "hdg-a767"): (283, 1610.1),
+    ("foundation wall", "#4", "hdg-a767"): (297, 1654.7),  # +14: ESR-2920 strap bars
     ("foundation wall", "#5", "hdg-a767"): (110, 1045.8),
     ("foundation wall", "#6", "hdg-a767"): (10, 129.5),
 }
@@ -95,8 +95,10 @@ _SCHEDULE = {
 # free body §6 addendum) — W-SG-S 32 -> 23 verticals, W2/E2 eight fewer each.
 # +88.5 lb, +16 pieces on 2026-11-05 (F5-106, note addendum): the four 14" north-entry piers
 # (4) #5 -> (6) #5, two more verticals and two more dowels each.
-_TOTAL_LB = 5205.9
-_TOTAL_PIECES = 832
+# +45.0 lb, +14 pieces on 2026-11-20 (note addendum): one derived #4 bar per cast-in STHD
+# (ESR-2920 §4.2, notes/sthd_esr2920.md), 807.6" in all.
+_TOTAL_LB = 5250.9
+_TOTAL_PIECES = 846
 
 @pytest.fixture(scope="module")
 def rows(catlin_model):
@@ -180,7 +182,9 @@ def test_the_concrete_the_steel_sits_in_is_the_note_s_volume(catlin_model) -> No
     # the whole prism) and FOUNDATION_WALL_12_INT's 6.57 cy (W-B-CN/CN2/CS2, now framed) out.
     # 113.49 -> 118.25 on 2026-11-05: the house strips to 25" x 10"/15" (Table R403.1(1)),
     # less the slab they now displace.
-    assert total_cy == pytest.approx(118.25, rel=0.02), (
+    # 118.25 -> 116.54 (re-read 2026-11-20): BASEMENT_12 10.67 -> BASEMENT_10 8.89 (W-B-E1/E2
+    # a 10" pour, 2026-11-05) and PD-B-WELL's SLAB_THICKENED_PAD +0.07 (2026-11-16).
+    assert total_cy == pytest.approx(116.54, rel=0.02), (
         f"the concrete volume moved to {total_cy:.2f} cy; notes/rebar_backout.md §2 and the "
         f"lb/cy figure in §3 both need re-working")
 
@@ -237,4 +241,5 @@ def test_the_concrete_the_steel_sits_in_is_the_note_s_volume(catlin_model) -> No
     # 43.1 on 2026-11-05: plain concrete in, no steel — the wider house strips, 118.25 cy.
     # 43.8 the same day: the 14" north-entry piers at (6) #5, +88.5 lb (F5-106).
     # 44.0 on 2026-11-10: the Ufer bar in FT-B-W1/W2, +26.6 lb (decision #123).
-    assert total_lb / total_cy == pytest.approx(44.02, rel=0.02)
+    # 45.06 on 2026-11-20: the STHD bars (+45.0 lb) over the re-read 116.54 cy (was 44.67).
+    assert total_lb / total_cy == pytest.approx(45.06, rel=0.02)

@@ -39,6 +39,10 @@ to: *a back-out that only agrees with itself is not verified.*
 
 ## 1. What is billed today
 
+**2026-11-20: 846 pieces, 5,250.9 lb** (addendum 2026-11-20). One derived #4 bar per cast-in
+STHD (ESR-2920 §4.2): foundation wall #4 **283 → 297 pieces, 1,610.1 → 1,654.7 lb**; every
+other row as pinned on 2026-11-10. 45.1 lb/cy over §2's re-read 116.54 cy.
+
 **Active KDAT variant, 2026-09-30.** The east roof supports are 6x6 KDAT posts on
 `PT-BW-PE`/`-PNE`, not continuous cast columns `PT-BW-RE`/`-RNE`. The pinned-pier
 scheme removes 21 #3 ties and 18.7 lb from the column tie row; the #5 row keeps
@@ -253,24 +257,32 @@ footing  COURT_FOOTING_12                      19.12
 footing  FOOTING_25                            10.07
 footing  FOOTING_EXPOSED_25                     3.47
 pad      PIER_BASE_12                           0.80
+pad      SLAB_THICKENED_PAD                     0.07
 slab     ENTRY_STEP_TIER                        1.86
 slab     GARAGE_SLAB_ON_GRADE                   5.43
 slab     GARDEN_COURT_SLAB                      1.06
 slab     HP_PAD_ON_GRADE                        0.73
 slab     SLAB_FLOOR                            10.69
-                                     solids   56.24 cy
+                                     solids   56.31 cy
 
 BASEMENT_8                                    18.11
 SUNKEN_GARDEN_WALL_DRAINED                    17.11
-BASEMENT_12                                   10.67
+BASEMENT_10                                    8.89
 GARAGE_ICF_6                                   7.90
 SUNKEN_GARDEN_WALL                             7.06
 SG_VENEER_BEAM_14                              0.99
 GARDEN_CURB_6 + SAUNA_LINER_ON_GARDEN_CURB     0.17
-                                      walls   62.01 cy
+                                      walls   60.23 cy
 
-                                      TOTAL  118.25 cy
+                                      TOTAL  116.54 cy
 ```
+
+**Re-read 2026-11-20, and it had been stale since 2026-11-05:** `W-B-E1`/`-E2` went to a 10"
+pour the evening the strips widened (`a754a0c7f`), `BASEMENT_12` 10.67 -> `BASEMENT_10` 8.89
+(−1.78), and the slab that stops at them gained 0.03 (10.69 -> 10.72): 116.50. On 2026-11-16
+`PD-B-WELL` (`SLAB_THICKENED_PAD`, 16" x 24" x 8", 0.07) went in under the well posts and took
+its 4" of slab footprint back out (−0.03): **116.54 cy**. Within the test's 2% all along, so
+nothing flagged it until the STHD bars pushed the ratio past its own 2%.
 
 **Re-read 2026-11-05 (IRC Table R403.1(1)):** the house strips went 20" x 8" -> 25" x 10"
 (15" under the four garden-end strips); `FOOTING_25`/`_EXPOSED_25` 8.09 -> 13.54 cy, and the
@@ -423,7 +435,9 @@ $10,000-18,000 (`[allowances]` note) brackets the result's upper half.
 **The gate history**, kept for the record:
 
 ```
-billed          6,718 lb / 143.93 cy   =  46.7 lb/cy   (2026-09-21, veneer beam bottom row stops at the dowels)
+billed          5,251 lb / 116.54 cy   =  45.1 lb/cy   (2026-11-20, ESR-2920 STHD bars; §2 re-read)
+  was           5,206 lb / 118.25 cy   =  44.0 lb/cy   (2026-11-10, Ufer bar; 44.7 over the true 116.54)
+  was           6,718 lb / 143.93 cy   =  46.7 lb/cy   (2026-09-21, veneer beam bottom row stops at the dowels)
   was           6,736 lb / 143.93 cy   =  46.8 lb/cy   (2026-09-21, veneer beam hook ties + dowels)
   was           6,668 lb / 143.93 cy   =  46.3 lb/cy   (2026-09-20, west landing pair doweled)
   was           6,635 lb / 143.86 cy   =  46.1 lb/cy   (2026-09-20, canopy bases deepened)
@@ -833,4 +847,39 @@ One #4 HDG `electrode` bar on the bottom of FT-B-W1 and FT-B-W2 (210" each) plus
 across their joint: footing #4 **48 → 51 pieces, 234.9 → 261.5 lb** (+26.6; the hand sum in
 `grounding_bonding.md` §3 is 26.2 off placed length, the rest is the splice's cut length).
 Total **5,205.9 lb / 832 pieces** over the same 118.25 cy, **44.0 lb/cy**.
+
+## Addendum 2026-11-20 — one #4 bar per cast-in STHD (ESR-2920 §4.2)
+
+Figure 1's bar, 4" below the pour top, laid wherever the host's own bars put none in the band
+past the strap (`resolve/rebar/strap_bars.py`; geometry in `sthd_esr2920.md`). Lengths by hand
+off that note's stations, 2 le = 28", a corner's return 24", 3" cover at a concrete end:
+
+```
+garage NE, SE, NW (W-GF-E, -S3, -N)  28 + 1.9375 to the corner + 24  3 x 53.9375  161.8125
+garage SW, BWHD-SW (W-GF-W)          (554.0625 - 524.125) 29.9375 + 24    53.9375
+garage S-DR (W-GF-S-DR)              2 x 28                              56.0
+house SW, NW (W-B-S1, -N4)           28 + (7.5 - 4) 3.5 + 24           2 x 55.5   111.0
+house SE (W-B-S4)                    427 - 396.5 = 30.5 + 24              54.5
+NE-E (W-B-E2)                        28 + 27 + 24                         79.0
+NE-N (W-B-N1)                        28 + (427 - 401) 26 + 24             78.0
+ENTRY-E, -W (W-B-N3)                 2 x 56                              112.0
+PORCH-W (W-B-S3)                     2 x 28                               56.0
+PORCH-E (W-B-S3)                     28 + (311 - 293.656) 17.344          45.344
+                                                          14 bars       807.594 in
+```
+
+807.594 / 12 = 67.30 LF x 0.668 plf = **44.96 lb**, straight bar, no laps or hooks: foundation
+wall #4 **283 → 297 pieces, 1,610.1 → 1,654.7 lb** (the engine's 44.6 against the hand 44.96
+is the 2026-11-10 row's rounding). Total **5,250.9 lb / 846 pieces** over §2's re-read
+**116.54 cy**, **45.1 lb/cy**.
+
+The house corners' 8" walls put the corner at their mid-thickness, 4" in; the 10" `W-B-E1`/`-E2`
+put it at x = 427. NE-N turns because its east reach is exactly 432 - 401 - 3 = 28.0, not more.
+NE-E's return stops at x = 403 and NE-N's at y = 404, each 2-3" short of the other's strap, so
+the two are separate bars, not one counted twice.
+
+**BWHD-SW's return was 18.5" until this pass, and that was a bug.** The leg stopped 3" short of
+the `W-GF-S1`/`W-GF-S-DR` seam at x = 99, a split in one pour, not an end of concrete. It now
+runs to where the pour union ends, as the strap's own end distance always did: 24", x 77.5 ->
+101.5. +5.5" (+0.31 lb).
 
