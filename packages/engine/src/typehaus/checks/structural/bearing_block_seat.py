@@ -88,8 +88,9 @@ def _point_load_studs(ctx: CheckContext, floor: ResolvedFloor, z_deck: float):
                 if ctx.plan is None:
                     continue
                 role = getattr(ctx.plan.by_tag(wall.tag), "structural_role", None)
-                header = next((m for m in wall.members if m.category == "header"
-                               and stud.child_key.startswith(f"jack-{m.child_key[7:]}-")), None)
+                header = next((m for m in wall.members if m.category == "header" and
+                               stud.child_key.startswith(
+                                   f"jack-{m.child_key.removeprefix('header-')}-")), None)
                 if header is None:
                     continue
                 if index is None:
