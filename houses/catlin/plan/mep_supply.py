@@ -624,9 +624,9 @@ SUPPLY = [
             # 15.7" off the support (field row 6"), sleeve cut each side of the web.
             # ** IN THE TRUSS FLOOR IT RUNS UNDER THE TUB WASTE (2026-10-08). ** The north leg
             # shares x=16'-5" with PR-M-S-SUITE-TUB-DRAIN's leg (0.6" apart) and there is no
-            # lane beside it: the web opening ends at 16'-7 1/2" and DU-M-ERV-R-BED2 and the
-            # cold hold the west. So it rides under the waste at 9'-6 11/16" on a 1/2" sleeve
-            # (R-3.1, as PR-A-HW-STUBATH), 3.06" over the BED2 and STUDY radials' crowns, dips
+            # lane beside it: the web opening ends at 16'-7 1/2" and DU-M-ERV-R-BED2 (deleted
+            # 2026-11-20) and the cold held the west. So it rides under the waste at 9'-6 11/16"
+            # on a 1/2" sleeve (R-3.1, as PR-A-HW-STUBATH), over the STUDY radial's crown, dips
             # to 9'-6" under CD-M-DATA-KITCH at y=21'-1.3" and through truss 016's opening,
             # steps to 9'-7" for DU-M-ERV-R-KITCH. North of truss 017 it jogs 5" west to
             # x=16'-0" (2026-11-05), clear of the tub's trap and under its arm, and climbs to

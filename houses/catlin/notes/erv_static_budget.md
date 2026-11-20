@@ -511,7 +511,7 @@ measured one.
   page, filed with the O&M.
 - **The number to hit is 188 cfm net supply** (MN 1322 R403.5 on 4,900 sf and five bedrooms, §10.23), not 210.
 - **Set the mixing-box feed with the air handler running.** `DU-S-ERV-HP-FEED`'s 6" locking
-  damper (§10.29) sets 115 cfm into `EQ-S-ERV-MIX` with `EQ-S-HP1-AH` at its interlocked fan
+  damper (§10.29) sets 92 cfm (115 until §10.30) into `EQ-S-ERV-MIX` with `EQ-S-HP1-AH` at its interlocked fan
   speed (the box is negative, so the reading moves with the AH), then lock the quadrant.
 
 ## 9. What is NOT graded here
@@ -553,7 +553,7 @@ measured one.
   to govern.**
 
 - **2026-11-11: the supply riser is charged WHOLE to every path that crosses it, at 160
-  cfm** (`DU-M-ERV-R-BED` 35 incl. LIVING + `-STUDY` 10 + `DU-S-ERV-HP-FEED` 115). Those
+  cfm** (142 since §10.30: BED 40 incl. LIVING + STUDY 10 + HP-FEED 92) (`DU-M-ERV-R-BED` 35 incl. LIVING + `-STUDY` 10 + `DU-S-ERV-HP-FEED` 115). Those
   paths are the level-2 supplies and HP-FEED's own (§10.20); no basement radial crosses it
   any more. The geometric reason below still stands, so the level-2 supply plenum is charged
   the riser as the tap it would take (`erv_routes`: an unfed plenum takes its nearest trunk).

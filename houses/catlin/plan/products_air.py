@@ -124,7 +124,7 @@ ROUND_DAMPER_6_MANUAL = Product(
     tag="PROD-AIR-DAMPER-6-MANUAL", brand="Imperial",
     name="6in round manual volume damper, locking quadrant, galvanized",
     source="The DuctStandard's in-line damper on DU-S-ERV-HP-FEED: sets the mixing box's "
-           "115 cfm at commissioning. SKU picked at order; any retail 6in round volume damper "
+           "92 cfm at commissioning. SKU picked at order; any retail 6in round volume damper "
            "whose quadrant locks (Minn. R. 1346.0603 subp. 10, IMC 603.18.3).",
 )
 STAIR_REGISTER_BOX = Product(

@@ -227,7 +227,7 @@ not instruction: when it disagrees with this file or the model, it is the one th
   in `plan/bedroom_wardrobe_types.py`. BED1/2's doors sit 2 1/2" off module for them (accepted).
   BED1/2 each have an open 19 5/8" six-shelf frame at both ends of the L (2026-10-03).
   The east frames end at x 27'-4 3/8", with south-wall rail backing; RC4 outlets are at
-  x 28'-0", ERV floor returns at x 28'-1". Heat-pump supplies stay in place. BED1's bed
+  x 28'-0" (the ERV floor returns there went 2026-11-20). Heat-pump supplies stay in place. BED1's bed
   moves 1/64" east to keep its foot gap above the 18" recommendation.
 - `plan/court_daybed.py` — `# haus: editable`, the court's 4-rope hanging daybed under
   FS-SG-PORCH and its four `SuspensionAnchor`s, which derive lines 003 and 006 as 3-ply 2x12
@@ -978,7 +978,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     maybe later), `floor_finish="catlin-vinyl-gatsby"` over `plywood-subfloor`, uid
     `CAR401AAAA` (retagged in place). `RM-A-STUDY` next door is oak. HOBBY is habitable
     (R303/R304/R305, receptacle spacing) but not sleeping. **Retyping it BEDROOM adds 15 cfm
-    to R403.5** (198.9 delivered vs 203.0, a FAIL) and brings back R310 and the R314 pair;
+    to R403.5** (199.4 delivered vs 203.0, a FAIL) and brings back R310 and the R314 pair;
     `WIN-A-S-JUL-W` and `AL-A-STUDIO` are kept so that conversion needs no rework.
     - 13.6 sf glazing, none addable (south gable mirror about x=18' is fixed; dormer/roof
       penetration excluded). R303.1 has passed on daylight since 2026-09-10 via
@@ -1055,26 +1055,25 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     (2026-09-26). Raising it again re-opens the crossing.
   - **Level-2 extract is a FLAT trunk in J12's D pockets** (owner 2026-11-07, routed 2026-11-08):
     an 8x4 at x=27" (the one x where every truss's 9x4 R2 lines up) off a 6x4 neck from
-    `EQ-M-ERV-MAN-EXH`'s top collar, ending at PS1's axis; seven 4" takeoffs on shop-made side
-    taps, each in its own bay, plus MUD's on the neck. **Shared legs (2026-11-11):** BED1 tees
-    off BED2's crossing at y=16'-8", LIVING off BED's 83 3/4" lane at y=12'-8"; the parent
+    `EQ-M-ERV-MAN-EXH`'s top collar, capped 6" past BATH2's take-off (2026-11-20); five 4" takeoffs
+    on shop-made side taps, each in its own bay, plus MUD's on the neck. **Shared legs:** LIVING off BED's 83 3/4" lane at y=12'-8"; the parent
     carries the branch's flow (`plan/erv_balance.py`). Supply lanes on the upper tier: BED
     83 3/4", STUDY 106 7/8"; the 42 1/4" lane is free. One run per D pocket
     (`mep.open_web_panel`). Pressure: §10.14, §10.20.
   - **The static budget charges a path only the trunks on its own route** (2026-11-11,
     `checks/mep/erv_routes.py`), every plenum it passes THROUGH (riser air expands into
     the basement boxes too), and a trunk it leaves at a tap only to that tap
-    (`erv_segments.py`, 2026-11-12, note §10.21): extract via `DU-M-ERV-R-SUITEBATH` governs
-    at 0.602" -> 198.9 cfm (note §10.28). A same-size tee is a branch when its FIRST vertex lies on the
+    (`erv_segments.py`, 2026-11-12, note §10.21): supply via `DU-B-ERV-R-SAUNA-SUP` governs
+    at 0.579" -> 199.4 cfm (note §10.30). A same-size tee is a branch when its FIRST vertex lies on the
     parent. Junction losses are still ungraded.
   - `AL-A-COMBO` is in `RM-A-STUDY`, `AL-A-STUDIO` in the studio. `AL-A-STUDIO` is beyond
     code while the studio is a craft room. If it becomes a bedroom again, swapping the two is a hard FAIL:
     `code.R315_co_every_sleeping_area` fails if every CO alarm on a storey is inside a bedroom.
-  - `code.N1103_6_whole_house_ventilation` grades the DELIVERED 198.9 cfm against **188.0**
+  - `code.N1103_6_whole_house_ventilation` grades the DELIVERED 199.4 cfm against **188.0**
     required (five bedrooms since 2026-11-11): MN 1322 R403.5 on 4,900 sf of conditioned floor area,
     measured to the outer face of the structure (sheathing / foundation concrete, not the
     ccSPF, girts or cladding), each stair well deducted once on the storey above
-    (`resolve/conditioned_area.py`, `notes/conditioned_floor_area.md`). +10.9 cfm. With the
+    (`resolve/conditioned_area.py`, `notes/conditioned_floor_area.md`). +11.4 cfm (§10.30). With the
     studio as a bedroom it was −3.0 (a FAIL, with R303.1 Exception 1 in four rooms); 2 cfm or
     less short would be UNKNOWN. RM-A-POCKET and RM-A-EAST-UNFIN stay conditioned (inside the
     hot roof, holding ducts) and leave only the FINISHED area (`resolve/finished_area.py`).
