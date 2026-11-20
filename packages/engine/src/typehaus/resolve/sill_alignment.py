@@ -3,10 +3,12 @@
 ``FramingSpec.sill_member`` (a 2x8 on a 2x6 wall) is set so the sill and the stud band share
 an outside plane (the sheathing/EPS plane the wall is built to), which is what puts most of
 the board on the ICF core. The 1 3/4" ledge lands inside, under the curb-cap flashing.
+A header NARROWER than the band is flush outside too: on the sheathing face, the void inside.
 """
 
 from __future__ import annotations
 
+from typehaus.model.enums import LayerFunction
 from typehaus.resolve.geometry import normal, unit
 from typehaus.resolve.model import ResolvedWall
 
@@ -36,4 +38,23 @@ def sill_shift_m(rw: ResolvedWall, band_polygon, sill_width_m: float) -> float:
     return outward_sign(rw) * (half - sill_width_m / 2.0)
 
 
-__all__ = ["outward_sign", "sill_shift_m"]
+def header_shift_m(rw: ResolvedWall, band_polygon, width_m: float) -> float:
+    """Left-normal offset putting a narrower header flush with the band's sheathing face.
+
+    0 for a wall with no sheathing layer (centred, symmetric for drywall) or a header as
+    wide as the band.
+    """
+    sheathing = next((layer for layer in rw.layers
+                      if layer.function == LayerFunction.SHEATHING.value and layer.polygon),
+                     None)
+    if sheathing is None or not band_polygon:
+        return 0.0
+    lo, hi = _offsets(rw, band_polygon)
+    half = (hi - lo) / 2.0
+    if width_m >= 2.0 * half:
+        return 0.0
+    sign = 1.0 if sum(_offsets(rw, sheathing.polygon)) >= lo + hi else -1.0
+    return sign * (half - width_m / 2.0)
+
+
+__all__ = ["header_shift_m", "outward_sign", "sill_shift_m"]

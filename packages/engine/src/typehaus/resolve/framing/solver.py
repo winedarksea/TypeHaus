@@ -47,6 +47,7 @@ from typehaus.resolve.framing.frame_end_supports import (
     resolve_frame_end_supports,
 )
 from typehaus.resolve.framing.header_choice import choose_headers
+from typehaus.resolve.framing.header_flush import flush_headers
 from typehaus.resolve.framing.openings import (
     WallOpening,
     frame_end_supported,
@@ -375,6 +376,7 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
                           opening_index, module_spacing, bearing_stations,
                           module_phase, cripple_spacing=spacing)
         )
+    flush_headers(opening_framing_members, rw, structure_polygon)
 
     # Opening framing is computed first because it is structural and takes precedence over
     # finish-backing ladder rungs. Keep the historical member order by appending the backing

@@ -366,3 +366,38 @@ def test_an_opening_wider_than_its_row_fails(catlin_model) -> None:
     finding = _header_finding(catlin_model, span=ft(12))
     assert finding.result is Result.FAIL
     assert "past the 12.00'" in finding.message
+
+
+def test_narrow_headers_sit_flush_with_the_sheathing_face(catlin_model_ro) -> None:
+    """A header narrower than a sheathed wall's band shares its outer (sheathing) plane."""
+    from typehaus.resolve.framing.profiles import plan_cross_section_m
+    from typehaus.resolve.sill_alignment import _offsets
+
+    checked = 0
+    for rw in catlin_model_ro.walls:
+        band = next((la.polygon for la in rw.layers
+                     if la.function == "structure" and la.polygon), None)
+        sheathing = next((la.polygon for la in rw.layers
+                          if la.function == LayerFunction.SHEATHING.value and la.polygon), None)
+        if band is None or sheathing is None:
+            continue
+        lo, hi = _offsets(rw, band)
+        outward = 1.0 if sum(_offsets(rw, sheathing)) >= lo + hi else -1.0
+        (x0, y0), (x1, y1) = rw.axis
+        run = ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5
+        nx, ny = -(y1 - y0) / run, (x1 - x0) / run
+        for m in rw.members:
+            if m.category != "header":
+                continue
+            width = m.plan_width_m or plan_cross_section_m(cross_section(m.profile),
+                                                           m.z1_m - m.z0_m)
+            if width >= hi - lo:
+                continue
+            c = (m.p0[0] - x0) * nx + (m.p0[1] - y0) * ny
+            outer, inner = (c + width / 2, c - width / 2) if outward > 0 else (
+                c - width / 2, c + width / 2)
+            band_outer, band_inner = (hi, lo) if outward > 0 else (lo, hi)
+            assert abs(outer - band_outer) < 1e-6, (rw.tag, m.child_key)
+            assert (inner - band_inner) * outward >= -1e-6, (rw.tag, m.child_key)
+            checked += 1
+    assert checked >= 10
