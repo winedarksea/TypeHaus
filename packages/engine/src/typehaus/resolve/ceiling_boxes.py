@@ -11,7 +11,7 @@ that the box bridges the decoupling. Under a soffit the soffit's ladder hosts it
 the room's ceiling; with no ceiling, a lined roof's underside. No lining over the point (a
 porch under a bare deck), or no framing, is no box: ``electrical.box_fill`` lists it UNKNOWN.
 A ``remote_box`` type mounts on its own bracket; its junction box is a surface box on the
-nearest framing beside it (``remote_feed_box``).
+nearest framing beside it (``remote_feed_box``), on the board where a ceiling lines it.
 
 The resolver never moves a fixture or snaps it to framing: ``electrical.ceiling_box_framing``
 grades the clash and names the shift. A ``pancake`` row is flush too: its depth sits inside
@@ -166,7 +166,10 @@ class _Stage:
         if found is None:
             return
         at, z, member = found
-        face = _Face(z, _DOWN, (), room)
+        # A lined ceiling under the member: the box goes on the board, never into the cavity.
+        lined = self._face(at, base_z, storey, room)
+        bare = lined is None or lined.z >= z - _FACE_TOL_M
+        face = _Face(z, _DOWN, (), room) if bare else lined
         self._record(item, storey, room, at, face, row, "surface", None,
                      f"{floor.tag}/{member}", False, device_footprint, kind)
 

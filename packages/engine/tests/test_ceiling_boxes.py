@@ -75,3 +75,18 @@ def test_a_box_on_a_joist_fails_with_a_shift_and_a_pancake_under_it_passes(catli
     assert "move ED-M-BED-FAN" in clash.fix_hint and '"' in clash.fix_hint
     pancake = replace(on_joist, z1_m=on_joist.z0_m + 0.0127, depth_m=0.0127, box_use="pancake")
     assert grade(pancake).result is Result.PASS
+
+
+def test_a_remote_box_hangs_from_the_nearest_member_clear_of_the_fitting(catlin_model_ro):
+    """The garden flood (``remote_box``) takes its junction box beside it, not over it."""
+    from shapely.geometry import LineString, Point, Polygon
+
+    box = _boxes(catlin_model_ro)["ED-M-PORCH-FLOOD"]
+    flood = next(o for o in catlin_model_ro.canvas_objects if o.tag == "ED-M-PORCH-FLOOD")
+    floor_tag, key = box.host_layer.split("/")
+    floor = next(f for f in catlin_model_ro.floors if f.tag == floor_tag)
+    member = next(m for m in floor.members if m.child_key == key)
+    assert (box.mounting, box.box_product) == ("surface", "PROD-BELL-5361-0")
+    assert LineString([member.p0, member.p1]).distance(Point(box.face_point)) < 1e-6
+    assert abs(box.z1_m - member.z0_m) < 1e-6  # screwed to the underside, hanging below
+    assert not Polygon(box.footprint).intersects(Polygon(flood.footprint))

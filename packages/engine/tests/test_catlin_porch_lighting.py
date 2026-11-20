@@ -46,7 +46,7 @@ def test_porch_ambient_and_garden_utility_controls_are_independent(catlin_plan):
         assert catlin_plan.by_tag(tag).controlled_by == ("ED-M-PORCH-SW",)
 
 
-def test_flood_box_is_on_blocking_beyond_the_porch_floor(catlin_model_ro):
+def test_flood_plate_is_on_blocking_beyond_the_porch_floor(catlin_model_ro):
     model = catlin_model_ro
     flood, product = _flood(model)
     balcony = next(floor for floor in model.floors if floor.tag == "FS-SG-BALCONY")
@@ -55,7 +55,7 @@ def test_flood_box_is_on_blocking_beyond_the_porch_floor(catlin_model_ro):
     assert not Polygon(porch.deck_outline).intersects(Polygon(flood.footprint))
     blocks = [member for member in balcony.members if member.category == "blocking"
               and LineString((member.p0, member.p1)).distance(Point(*flood.position)) < 1e-8]
-    assert len(blocks) == 1, "the box needs a real support between the outer two joists"
+    assert len(blocks) == 1, "the knuckle plate needs a real support between the outer two joists"
     block = blocks[0]
     fraction = ((flood.position[1] - block.p0[1]) / (block.p1[1] - block.p0[1]))
     support_z = block.z0_m + fraction * ((block.z0_end_m or block.z0_m) - block.z0_m)

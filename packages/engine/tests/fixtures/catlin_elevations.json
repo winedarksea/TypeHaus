@@ -4,7 +4,7 @@
 "alarm_heads/AL-A-STUDIO-LEAK/z": 6.118098,
 "alarm_heads/AL-A-STUDIO/z": 7.2022012,
 "alarm_heads/AL-B-BATH-LEAK/z": -2.7766645,
-"alarm_heads/AL-B-COMBO/z": -0.3302,
+"alarm_heads/AL-B-COMBO/z": -0.3175,
 "alarm_heads/AL-B-ESS-HEAT/z": -0.422275,
 "alarm_heads/AL-B-ESS-SMOKE/z": -0.422275,
 "alarm_heads/AL-B-HDR-LEAK/z": -2.7797125,
@@ -3139,8 +3139,8 @@
 "device_boxes/C75K1P71SX-box/z1_m": -1.6287115,
 "device_boxes/CAA701AAAA-box/z0_m": 7.4842828,
 "device_boxes/CAA701AAAA-box/z1_m": 7.5779964,
-"device_boxes/CBA701AAAA-box/z0_m": -0.3302,
-"device_boxes/CBA701AAAA-box/z1_m": -0.276225,
+"device_boxes/CBA701AAAA-box/z0_m": -0.3175,
+"device_boxes/CBA701AAAA-box/z1_m": -0.263525,
 "device_boxes/CBA702AAAA-box/z0_m": -0.422275,
 "device_boxes/CBA702AAAA-box/z1_m": -0.3683,
 "device_boxes/CBA703AAAA-box/z0_m": -0.422275,
@@ -3519,6 +3519,8 @@
 "device_boxes/QTM0016AAA-box/z1_m": 1.275222,
 "device_boxes/QTM0018AAA-box/z0_m": 1.179972,
 "device_boxes/QTM0018AAA-box/z1_m": 1.275222,
+"device_boxes/QTM001EAAA-box/z0_m": 2.6419969,
+"device_boxes/QTM001EAAA-box/z1_m": 2.6864469,
 "device_boxes/QTS0005AAA-box/z0_m": 4.240022,
 "device_boxes/QTS0005AAA-box/z1_m": 4.335272,
 "device_boxes/QTS0006AAA-box/z0_m": 4.240022,
@@ -19784,10 +19786,10 @@
 "f35f1c0bc75d"
 ],
 "geometry/CBA701AAAA-box/body": [
--0.3302,
--0.276225,
+-0.3175,
+-0.263525,
 18,
-"12ec994d064c"
+"761420bbb872"
 ],
 "geometry/CBA702AAAA-box/body": [
 -0.422275,
@@ -73813,6 +73815,12 @@
 2,
 "26fcbaf725ac"
 ],
+"geometry/QTM001EAAA-box/body": [
+2.6419969,
+2.6864469,
+110,
+"058d9a4550f3"
+],
 "geometry/QTS0005AAA-box/body": [
 4.240022,
 4.335272,
@@ -122260,8 +122268,8 @@
 "solids/AL-A-COMBO-BOX/z1_m": 7.5779964,
 "solids/AL-A-STUDIO-BOX/z0_m": 7.1794828,
 "solids/AL-A-STUDIO-BOX/z1_m": 7.2731964,
-"solids/AL-B-COMBO-BOX/z0_m": -0.3302,
-"solids/AL-B-COMBO-BOX/z1_m": -0.276225,
+"solids/AL-B-COMBO-BOX/z0_m": -0.3175,
+"solids/AL-B-COMBO-BOX/z1_m": -0.263525,
 "solids/AL-B-ESS-HEAT-BOX/z0_m": -0.422275,
 "solids/AL-B-ESS-HEAT-BOX/z1_m": -0.3683,
 "solids/AL-B-ESS-SMOKE-BOX/z0_m": -0.422275,
@@ -125550,6 +125558,8 @@
 "solids/ED-M-PANTRY-SW-BOX/z1_m": 1.529222,
 "solids/ED-M-PANTRY-SW-PLATE/z0_m": 1.419621,
 "solids/ED-M-PANTRY-SW-PLATE/z1_m": 1.543573,
+"solids/ED-M-PORCH-FLOOD-BOX/z0_m": 2.6419969,
+"solids/ED-M-PORCH-FLOOD-BOX/z1_m": 2.6864469,
 "solids/ED-M-PORCH-SW-BOX/z0_m": 1.179972,
 "solids/ED-M-PORCH-SW-BOX/z1_m": 1.275222,
 "solids/ED-M-PORCH-SW-PLATE/z0_m": 1.165621,

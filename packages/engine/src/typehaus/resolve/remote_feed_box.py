@@ -3,7 +3,8 @@
 A type with ``remote_box`` (a knuckle flood on its own plate) takes no box over its point. Its
 whip lands in a surface box screwed to the underside of the nearest framing member of the deck
 over it, at the member's point nearest the fitting, wherever the box clears the fitting's own
-footprint. No framed deck over the point, or no member clear of the body, is no box.
+footprint. No framed deck over the point, or no member clear of the body within a whip's
+reach, is no box.
 """
 
 from __future__ import annotations
@@ -14,9 +15,19 @@ from shapely.geometry import LineString, Point, Polygon
 
 #: Air between the fitting's body and the box, so the box is beside it, not under its plate.
 CLEARANCE_M = 0.0127
+#: NEC 350.30(A) Ex. 3: an unsupported liquidtight whip to a luminaire is at most 6 ft.
+MAX_REACH_M = 1.8288
 
 
 Found = tuple[tuple[float, float], float, str]
+
+
+def _underside_at(member: Any, axis: LineString, at: Point) -> float:
+    """The member's underside z at ``at``: a sloped member interpolates to ``z0_end_m``."""
+    end = getattr(member, "z0_end_m", None)
+    if end is None:
+        return member.z0_m
+    return member.z0_m + axis.project(at, normalized=True) * (end - member.z0_m)
 
 
 def remote_box_point(floor: Any, xy: tuple[float, float], fitting_footprint: tuple,
@@ -27,13 +38,16 @@ def remote_box_point(floor: Any, xy: tuple[float, float], fitting_footprint: tup
     keep_out = body.buffer(CLEARANCE_M)
     best = None
     for member in floor.members:
-        if member.p0 == member.p1 or member.z0_m < base_z:
+        if member.p0 == member.p1:
             continue
         axis = LineString([member.p0, member.p1])
         at = axis.interpolate(axis.project(point))
-        if at.buffer(box_width_m / 2).intersects(keep_out):
-            continue
         distance = at.distance(point)
+        if distance > MAX_REACH_M or at.buffer(box_width_m / 2).intersects(keep_out):
+            continue
+        z = _underside_at(member, axis, at)
+        if z < base_z:
+            continue
         if best is None or distance < best[0]:
-            best = (distance, (at.x, at.y), member.z0_m, member.child_key)
+            best = (distance, (at.x, at.y), z, member.child_key)
     return None if best is None else best[1:]
