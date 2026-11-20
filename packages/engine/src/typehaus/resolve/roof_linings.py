@@ -5,8 +5,10 @@ room's ceiling has no single plane, so neither had geometry: the takeoff billed 
 the layer stacks while the viewer showed bare joists. This stage draws them.
 
 - **Bay fill**: one ``insulation`` solid per fill, every bay between two adjacent rafters'
-  flange faces, inside the eave plate, clear of blocking and gable walls, stacked from the
-  soffit in the authored (interior -> exterior) order.
+  flange faces, run to the heel, stacked from the soffit in the authored (interior ->
+  exterior) order. Each bay is a section extruded across it: blocking and the plate cut it at
+  their own height (the foam fills over an eave block), a gable wall to the deck in plan, and
+  the heel, out to the plate's inside face, is the air-control fill solid.
 - **Sloped ceiling**: one ``ceiling`` solid per ``FollowRoof`` ceiling and per face no Room
   claims under the roof's ``default_lining`` (what ``takeoff/ceiling_areas.py`` bills), its
   top on the rafter soffit, as deep as its boards plumb, folded at the ridge.
@@ -19,9 +21,11 @@ from __future__ import annotations
 
 import math
 from collections.abc import Callable
+from dataclasses import dataclass, replace
 
 from shapely.geometry import Polygon, box
 
+from typehaus.model.enums import ControlLayer
 from typehaus.model.refs import FollowRoof
 from typehaus.resolve.ceiling_over import (
     ceiling_decks_over,
@@ -48,6 +52,7 @@ from typehaus.resolve.sheet_geometry import combine_sheets, polygon_sheet
 from typehaus.resolve.wall_faces import storey_wall_mass
 
 _EPS = 1e-6
+_IN_BAY = ("blocking", "ridge_beam")  # framing that stands in a rafter bay at part height
 
 
 def resolve_roof_linings(model: ResolvedModel) -> None:
@@ -74,51 +79,188 @@ def _bay_fill(model: ResolvedModel, roof: ResolvedRoof) -> list[ResolvedSolid]:
         return []
     depth = roof_structure_depth_m(model, roof)
     plumb = roof_slope_factor(roof)
-    soffit = _soffit(model, roof)
-    cut = _in_the_bays(model, roof, soffit)
-    bays = [part for quad in _bays(roof, band.framing.spacing.meters)
-            for part in _simple(difference(Polygon(quad), cut))]
-    if not bays:
-        return []
-    solids, offset = [], 0.0
+    fills, offset = [], 0.0  # (index, fill, offset, thickness), soffit -> deck
     for index, fill in enumerate(band.cavity_fills, start=1):
         thickness = min((fill.thickness or band.thickness).meters, depth - offset)
         if thickness <= _EPS:
             break
-        lift, rise = offset * plumb, thickness * plumb
-        mesh = combine_sheets([
-            polygon_sheet([list(bay.exterior.coords)[:-1]],
-                          lambda x, y, lift=lift: (x, y, soffit(x, y) + lift), (0.0, 0.0, rise))
-            for bay in bays])
-        solids.append(_solid(f"{roof.uid}-bay-fill-{index}", f"INSUL-{roof.tag}-{index}",
-                             roof.storey, "insulation", mesh, fill.material_ref, roof.tag))
+        fills.append((index, fill, offset, thickness))
         offset += thickness
-    return solids
+    if not fills:
+        return []
+    air = next((f for f in fills if ControlLayer.AIR in f[1].control), fills[-1])
+    soffit = _soffit(model, roof)
+    walls = _climbing_walls(model, roof, soffit, depth * plumb)
+    blocks = [(Polygon(ring), z0, z1) for m in roof.members if m.category in _IN_BAY
+              for ring, z0, z1 in (member_footprint(m),) if len(ring) >= 3]
+    sheets: dict[int, list] = {f[0]: [] for f in fills}
+    for bay in _bays(roof, band.framing.spacing.meters):
+        for piece in _pieces(bay, walls, blocks):
+            if isinstance(piece, Polygon):  # not a frame rectangle: the old plan extrusion
+                _plan_sheets(piece, fills, soffit, plumb, sheets)
+                continue
+            for index, region in _sections(piece, fills, air, soffit, depth * plumb, plumb):
+                sheets[index].extend(_extrude(piece, part) for part in _parts(region))
+    return [_solid(f"{roof.uid}-bay-fill-{index}", f"INSUL-{roof.tag}-{index}", roof.storey,
+                   "insulation", combine_sheets(sheets[index]), fill.material_ref, roof.tag)
+            for index, fill, _o, _t in fills if sheets[index]]
 
 
-def _in_the_bays(model: ResolvedModel, roof: ResolvedRoof, soffit: Callable):
-    """What else stands in the bays, in plan: the roof's blocking (eave, ridge) and every wall
-    whose top climbs past the soffit to the deck — a gable end, whose studs fill the end bay."""
+@dataclass(frozen=True)
+class _Bay:
+    """One bay in its own frame: run ``u``, across ``n`` (left of ``u``), flange faces ``lo/hi``
+    across, ``s0/s1`` along; ``seats`` are (heel s, plate inside-face s, plate top z)."""
+
+    u: tuple[float, float]
+    lo: float
+    hi: float
+    s0: float
+    s1: float
+    seats: tuple[tuple[float, float, float], ...] = ()
+    obstacles: tuple = ()  # partial-height framing as (s0, s1, z0, z1) section boxes
+
+    @property
+    def n(self) -> tuple[float, float]:
+        return (-self.u[1], self.u[0])
+
+    def xy(self, s: float, c: float) -> tuple[float, float]:
+        (ux, uy), (nx, ny) = self.u, self.n
+        return (s * ux + c * nx, s * uy + c * ny)
+
+    def sc(self, x: float, y: float) -> tuple[float, float]:
+        (ux, uy), (nx, ny) = self.u, self.n
+        return (x * ux + y * uy, x * nx + y * ny)
+
+    def plan(self) -> Polygon:
+        return Polygon([self.xy(s, c) for s, c in ((self.s0, self.lo), (self.s1, self.lo),
+                                                   (self.s1, self.hi), (self.s0, self.hi))])
+
+
+def _pieces(bay: _Bay, walls, blocks) -> list:
+    """The bay less what stands in it. Framing spanning the bay at part height becomes a section
+    box; a wall to the deck, or a block that stops short across it, cuts the plan. What is left
+    is banded across at its corners: a frame rectangle stays a ``_Bay``, any other band is a
+    plan ``Polygon`` clear of the plate (as the bays were before the heel was filled)."""
+    rect = bay.plan()
+    cut, boxes, spanning = [walls], [], []
+    for footprint, z0, z1 in blocks:
+        if not footprint.intersects(rect):
+            continue
+        hit = intersection(footprint, rect)
+        if hit.area <= _EPS * _EPS:
+            continue
+        sc = [bay.sc(x, y) for x, y in hit.convex_hull.exterior.coords]
+        ss, cs = [p[0] for p in sc], [p[1] for p in sc]
+        if min(cs) <= bay.lo + 0.003 and max(cs) >= bay.hi - 0.003:
+            boxes.append((min(ss), max(ss), z0, z1))
+            spanning.append(footprint)
+        else:
+            cut.append(footprint)
+    cut = [g for g in cut if not g.is_empty]
+    rest = _simple(difference(rect, union_all(cut))) if cut else [rect]
+    out = []
+    for part in (band for whole in rest for band in _banded(bay, whole)):
+        frame = Polygon([bay.sc(x, y) for x, y in part.exterior.coords])
+        s0, c0, s1, c1 = frame.bounds
+        if abs(frame.area - (s1 - s0) * (c1 - c0)) <= 1e-7:
+            out.append(replace(bay, lo=c0, hi=c1, s0=s0, s1=s1, obstacles=tuple(boxes)))
+            continue
+        inside = [bay.s0, bay.s1]
+        for heel, face, _z in bay.seats:
+            inside = [max(inside[0], face), inside[1]] if heel < face \
+                else [inside[0], min(inside[1], face)]
+        strip = Polygon([bay.xy(s, c) for s, c in ((inside[0], c0 - 1), (inside[1], c0 - 1),
+                                                   (inside[1], c1 + 1), (inside[0], c1 + 1))])
+        if inside[1] > inside[0]:
+            part = intersection(part, strip)
+            out.extend(_simple(difference(part, union_all(spanning)) if spanning else part))
+    return out
+
+
+def _banded(bay: _Bay, part: Polygon) -> list[Polygon]:
+    """``part`` cut along the run at each of its corners' across offsets."""
+    cs = sorted({round(bay.sc(x, y)[1], 6) for x, y in part.exterior.coords})
+    if len(cs) <= 2:
+        return [part]
+    reach = (bay.s0 - 1.0, bay.s1 + 1.0)
+    return [piece for c0, c1 in zip(cs, cs[1:], strict=False) if c1 - c0 > 0.001
+            for piece in _simple(intersection(part, Polygon(
+                [bay.xy(s, c) for s, c in ((reach[0], c0), (reach[1], c0),
+                                           (reach[1], c1), (reach[0], c1))])))]
+
+
+def _sections(bay: _Bay, fills, air, soffit, deep: float, plumb: float):
+    """Each fill's region in the bay's (s, z) section: the stacked band, less the framing at its
+    height. In the heel zone, heel to plate inside face, the air-control fill takes the whole
+    height — where the air barrier turns from the roof onto the wall's sheathing."""
+    mid = (bay.lo + bay.hi) / 2
+    z0, z1 = soffit(*bay.xy(bay.s0, mid)), soffit(*bay.xy(bay.s1, mid))
+
+    def strip(a: float, b: float) -> Polygon:
+        return Polygon([(bay.s0, z0 + a), (bay.s1, z1 + a), (bay.s1, z1 + b), (bay.s0, z0 + b)])
+
+    low = min(z0, z1) - 10.0
+    solid = [box(s0, za, s1, zb) for s0, s1, za, zb in bay.obstacles]
+    solid += [box(min(heel, face), low, max(heel, face), top) for heel, face, top in bay.seats]
+    region = difference(strip(0.0, deep), union_all(solid)) if solid else strip(0.0, deep)
+    heel = union_all([box(min(h, f), low, max(h, f), max(z0, z1) + deep + 1.0)
+                      for h, f, _t in bay.seats]) if bay.seats else None
+    # down to the plate and blocks, below the soffit line where the seat lifts off the plate
+    foamed = difference(intersection(strip(-5.0, deep), heel), union_all(solid)) \
+        if heel is not None else None
+    for index, _fill, offset, thickness in fills:
+        piece = intersection(region, strip(offset * plumb, (offset + thickness) * plumb))
+        if heel is not None:
+            piece = union_all([difference(piece, heel), foamed]) \
+                if index == air[0] else difference(piece, heel)
+        yield index, piece
+
+
+def _extrude(bay: _Bay, part: Polygon):
+    (nx, ny), width = bay.n, bay.hi - bay.lo
+    rings = [list(part.exterior.coords)[:-1], *(list(r.coords)[:-1] for r in part.interiors)]
+    return polygon_sheet(rings, lambda s, z: (*bay.xy(s, bay.lo), z),
+                         (width * nx, width * ny, 0.0))
+
+
+def _plan_sheets(part: Polygon, fills, soffit, plumb: float, sheets: dict) -> None:
+    for index, _fill, offset, thickness in fills:
+        lift = offset * plumb
+        sheets[index].append(polygon_sheet(
+            [list(part.exterior.coords)[:-1]],
+            lambda x, y, lift=lift: (x, y, soffit(x, y) + lift), (0.0, 0.0, thickness * plumb)))
+
+
+def _parts(geometry) -> list[Polygon]:
+    if isinstance(geometry, Polygon):
+        geoms = [geometry]
+    else:
+        geoms = [g for g in getattr(geometry, "geoms", ()) if isinstance(g, Polygon)]
+    return [g for g in geoms if g.area > 1e-7]
+
+
+def _climbing_walls(model: ResolvedModel, roof: ResolvedRoof, soffit: Callable, deep: float):
+    """Every wall whose top climbs past mid-bay toward the deck — a gable end, whose studs fill
+    the end bay — cut in plan. An eave wall stops at its plate: that is the seat's section box."""
     def climbs(wall) -> bool:
         tops = (wall.top_z0_m, wall.top_z1_m)
-        return any((wall.z1_m if top is None else top) > soffit(*point) + 0.005
+        return any((wall.z1_m if top is None else top) > soffit(*point) + deep / 2
                    for top, point in zip(tops, (wall.axis[0], wall.axis[-1]), strict=True))
 
-    rings = [member_footprint(m)[0] for m in roof.members if m.category == "blocking"]
-    rings += [layer.polygon for wall in model.walls if wall.storey == roof.storey and climbs(wall)
-              for layer in wall.layers if len(layer.polygon) >= 3]
-    return union_all([Polygon(ring) for ring in rings if len(ring) >= 3])
+    rings = [layer.polygon for wall in model.walls if wall.storey == roof.storey and climbs(wall)
+             for layer in wall.layers if len(layer.polygon) >= 3]
+    return union_all([Polygon(ring) for ring in rings])
 
 
-def _bays(roof: ResolvedRoof, spacing_m: float) -> list[tuple[tuple[float, float], ...]]:
-    """Each bay's plan quad: flange face to flange face, over the run both rafters share."""
+def _bays(roof: ResolvedRoof, spacing_m: float) -> list[_Bay]:
+    """Each bay: flange face to flange face, over the run both rafters share, to the heel."""
     planes: dict[tuple[float, float], list] = {}
     for member in (m for m in roof.members if m.category == "rafter"):
         dx, dy = member.p1[0] - member.p0[0], member.p1[1] - member.p0[1]
         run = math.hypot(dx, dy)
         if run > _EPS:
             planes.setdefault((round(dx / run, 3), round(dy / run, 3)), []).append(member)
-    quads = []
+    bays = []
     for (ux, uy), rafters in planes.items():
         nx, ny = -uy, ux
 
@@ -126,27 +268,26 @@ def _bays(roof: ResolvedRoof, spacing_m: float) -> list[tuple[tuple[float, float
             return m.p0[0] * nx + m.p0[1] * ny
 
         def along(m, ux=ux, uy=uy):
-            """The run, less the plate a seated end bears on: the fill stops at its inside face."""
+            """The run, to the heel at a seated end; the seat as (heel, plate inside face, top)."""
             lo, hi = sorted((m.p0[0] * ux + m.p0[1] * uy, m.p1[0] * ux + m.p1[1] * uy))
-            if m.seat is not None:
-                heel = m.seat.heel[0] * ux + m.seat.heel[1] * uy
-                plate = m.seat.bearing_run_m or m.seat.seat_run_m
-                if heel - lo < hi - heel:
-                    lo = max(lo, heel + plate)
-                else:
-                    hi = min(hi, heel - plate)
-            return lo, hi
+            if m.seat is None:
+                return lo, hi, ()
+            heel = m.seat.heel[0] * ux + m.seat.heel[1] * uy
+            plate = m.seat.bearing_run_m or m.seat.seat_run_m
+            if heel - lo < hi - heel:
+                return max(lo, heel), hi, ((heel, heel + plate, m.seat.plate_top_z_m),)
+            return lo, min(hi, heel), ((heel, heel - plate, m.seat.plate_top_z_m),)
 
         rafters.sort(key=across)
         for a, b in zip(rafters, rafters[1:], strict=False):
             lo = across(a) + _flange(a) / 2
             hi = across(b) - _flange(b) / 2
-            s0, s1 = max(along(a)[0], along(b)[0]), min(along(a)[1], along(b)[1])
+            (a0, a1, sa), (b0, b1, sb) = along(a), along(b)
+            s0, s1 = max(a0, b0), min(a1, b1)
             if hi - lo <= 0.005 or across(b) - across(a) > 1.5 * spacing_m or s1 - s0 <= _EPS:
                 continue
-            quads.append(tuple((s * ux + c * nx, s * uy + c * ny)
-                               for s, c in ((s0, lo), (s1, lo), (s1, hi), (s0, hi))))
-    return quads
+            bays.append(_Bay((ux, uy), lo, hi, s0, s1, (*sa, *sb)))
+    return bays
 
 
 def _flange(member) -> float:

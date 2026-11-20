@@ -947,9 +947,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - Attic is a hot-roofed cathedral space: rafter plates E/W (not knee walls), gables N/S,
   ridge N-S, 6:12, zero overhang.
 - **Eave blocking is a 2x6 on edge on the plate, tight to the sheathing** (`eave_blocking="2x6"`
-  on RF-HOUSE; 36 blocks, one per bay). Lower bay only, so ccSPF fills over it; the air
-  barrier is the sheathing band plus that foam, not the block. It is also what the gutter
-  girt screws into. See `notes/roof_wall_eave_detail.md` K3.
+  on RF-HOUSE; 36 blocks, one per bay). Lower bay only, so ccSPF fills over it, the heel
+  foamed solid to the plate's inside face; the air barrier is the sheathing band plus that
+  foam, not the block. It is also what the gutter girt screws into. See `notes/roof_wall_eave_detail.md` K3.
 - **The line every attic station answers to**: roof underside is `1 1/2" + x/2` above the 3/4"
   attic subfloor top (240.75"; decision #109, amended 2026-11-10 by the double eave plate),
   mirrored past x=18'-0" — 9'-1 1/2" at the ridge line, 7'-0" at x=13'-9", 5'-0" at x=9'-9",

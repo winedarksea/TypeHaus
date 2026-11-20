@@ -12249,15 +12249,15 @@
 ],
 "geometry/CARF01AAAA-bay-fill-1/body": [
 6.22935,
-9.0820617,
-384,
-"0196f9ce6e13"
+9.082062,
+864,
+"a91c91bc2445"
 ],
 "geometry/CARF01AAAA-bay-fill-2/body": [
-6.4245867,
+6.19125,
 9.224052,
-384,
-"86552c74121a"
+864,
+"5bd062e048f3"
 ],
 "geometry/CARF01AAAA-ceiling-1-1/body": [
 7.6879762,
@@ -125765,8 +125765,8 @@
 "solids/INSUL-CEIL-RM-GARAGE-1/z0_m": 2.2352,
 "solids/INSUL-CEIL-RM-GARAGE-1/z1_m": 2.6035,
 "solids/INSUL-RF-HOUSE-1/z0_m": 6.22935,
-"solids/INSUL-RF-HOUSE-1/z1_m": 9.0820617,
-"solids/INSUL-RF-HOUSE-2/z0_m": 6.4245867,
+"solids/INSUL-RF-HOUSE-1/z1_m": 9.082062,
+"solids/INSUL-RF-HOUSE-2/z0_m": 6.19125,
 "solids/INSUL-RF-HOUSE-2/z1_m": 9.224052,
 "solids/MJ-B-BRICK-E-1/z0_m": -2.6018998,
 "solids/MJ-B-BRICK-E-1/z1_m": -0.3386582,
