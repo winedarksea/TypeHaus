@@ -30,6 +30,8 @@ MATERIALS = [
              color="#1c1c1c", source="Leviton 1450R and 278 power receptacles ship black."),
     Material(tag="floor-box-antique-bronze", name="Antique bronze plated floor-box cover",
              color="#624a38", source="Visual approximation of the Arlington FLBR5420AB finish."),
+    Material(tag="box-pvc-bronze", name="Nonmetallic weatherproof box, bronze",
+             color="#4b3d31", source="Visual approximation of Bell's bronze (-BZ) finish."),
     Material(tag="box-pvc-blue", name="Nonmetallic device box, blue PVC",
              color="#2f5fae", source="Carlon SuperBlue / Lessco Airfoil blue nonmetallic boxes."),
     Material(tag="durock-half-inch", name="USG Durock cement board, 1/2 in.",

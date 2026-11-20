@@ -2610,7 +2610,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **`SPEC.balcony_fall_in_per_ft` = 1/4 in/ft** — authored; the rise is derived.
 - **The balcony is at 9'-9", 3" under `second`** (owner, 2026-09-23): `SPEC.balcony_level_ft`
   is the `court-upper` datum (`level="second"`), so beams, columns, trim and guard follow; the
-  porch fan and the three enclosure tracks are hand-transcribed (104.75", 7'-5"). Lands
+  porch fan (7'-3 1/2", its box under a joist) and the three enclosure tracks (104.75") are hand-transcribed. Lands
   `D-S-BALCONY` (R311.3, 0.58" under the study floor). `notes/balcony_moment_columns.md` §15.
 - `structural.deck_post_bearing` is now NOT_APPLICABLE house-wide and
   `post_bearing/*` has left the engineering register — no post in catlin stands

@@ -6661,6 +6661,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "PROD-BELL-5374-0" = { material = { low = 3, high = 7 }, labour = { low = 0, high = 0 } }  # 1 ea
 "PROD-RACO-929" = { material = { low = 14, high = 25 }, labour = { low = 0, high = 0 } }  # fan brace box, 2 ea
 "PROD-ARLINGTON-FBR415F" = { material = { low = 12, high = 22 }, labour = { low = 5, high = 15 } }  # plant fan, vapor box; labour is the membrane taping
+"PROD-BELL-PRCF57550BZ" = { material = { low = 15, high = 30 }, labour = { low = 10, high = 25 } }  # porch fan, weatherproof fan box under a bare joist; ESTIMATE, labour is the bracket and hub plugs
 
 [grounding]
 # NEW 2026-11-10 (decision #123) — [low, high] $ EACH, split material/labour: electrode

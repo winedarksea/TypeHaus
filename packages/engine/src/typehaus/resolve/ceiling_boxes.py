@@ -9,7 +9,8 @@ for the stud layer: bare concrete or masonry is ``surface``; a lined framed ceil
 the ``air-sealed-<use>`` row. A ceiling on resilient channel still takes its box, with a WARN
 that the box bridges the decoupling. Under a soffit the soffit's ladder hosts it, lined like
 the room's ceiling; with no ceiling, a lined roof's underside. No lining over the point (a
-porch under a bare deck), or no framing, is no box: ``electrical.box_fill`` lists it UNKNOWN.
+porch under a bare deck) takes a ``surface`` box hung from the member over the point (the
+porch fan's joist); no member over it, or no framing, is no box, UNKNOWN in ``box_fill``.
 A ``remote_box`` type mounts on its own bracket; its junction box is a surface box on the
 nearest framing beside it (``remote_feed_box``), on the board where a ceiling lines it.
 
@@ -42,7 +43,7 @@ from typehaus.resolve.device_boxes import (
 )
 from typehaus.resolve.model import ResolvedModel, ResolvedSolid
 from typehaus.resolve.overhead import OverheadIndex
-from typehaus.resolve.remote_feed_box import remote_box_point
+from typehaus.resolve.remote_feed_box import member_under, remote_box_point
 from typehaus.resolve.roof_geometry import (
     roof_height_at,
     roof_slope_factor,
@@ -125,6 +126,7 @@ class _Stage:
               kind: str) -> None:
         face = self._face(xy, base_z, storey, room)
         if face is None:
+            self._bare(item, product_type, storey, room, xy, base_z, device_footprint, kind)
             return
         over = self.structure.lowest_above(xy[0], xy[1], face.z)
         if over is None:
@@ -152,6 +154,20 @@ class _Stage:
         self._record(item, storey, face.room or room, xy, face, row, mounting,
                      cavity if top is not None else None,
                      host_layer, air, device_footprint, kind)
+
+    def _bare(self, item: Any, product_type: Any, storey: str, room: str | None,
+              xy: tuple[float, float], base_z: float, device_footprint: tuple,
+              kind: str) -> None:
+        """No lining over the point: a surface box on the underside of the member over it."""
+        over = self.structure.lowest_above(xy[0], xy[1], base_z)
+        floor = None if over is None else self.floors.get(over.tag)
+        found = None if floor is None else member_under(floor, xy, base_z)
+        row = _row(self.standard, "surface", box_use(item, product_type), False)
+        if found is None or row is None:
+            return
+        z, member = found
+        self._record(item, storey, room, xy, _Face(z, _DOWN, (), room), row, "surface", None,
+                     f"{floor.tag}/{member}", False, device_footprint, kind)
 
     def place_remote(self, item: Any, product_type: Any, storey: str, room: str | None,
                      xy: tuple[float, float], base_z: float, device_footprint: tuple,

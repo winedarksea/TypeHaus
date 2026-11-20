@@ -90,3 +90,17 @@ def test_a_remote_box_hangs_from_the_nearest_member_clear_of_the_fitting(catlin_
     assert LineString([member.p0, member.p1]).distance(Point(box.face_point)) < 1e-6
     assert abs(box.z1_m - member.z0_m) < 1e-6  # screwed to the underside, hanging below
     assert not Polygon(box.footprint).intersects(Polygon(flood.footprint))
+
+
+def test_a_fan_under_a_bare_deck_hangs_its_box_from_the_joist_over_it(catlin_model_ro):
+    """No lining over the porch fan: a surface fan box under the joist covering its point."""
+    box = _boxes(catlin_model_ro)["ED-M-PORCH-FAN"]
+    fan = next(o for o in catlin_model_ro.canvas_objects if o.tag == "ED-M-PORCH-FAN")
+    floor = next(f for f in catlin_model_ro.floors if f.tag == "FS-SG-BALCONY")
+    joist = next(m for m in floor.members if m.child_key == "joist-0-005-0")
+    assert (box.mounting, box.box_product, box.box_use) == (
+        "surface", "PROD-BELL-PRCF57550BZ", "fan")
+    assert box.host_layer == "FS-SG-BALCONY/joist-0-005-0"
+    assert abs(box.face_point[1] - joist.p0[1]) < 1e-6  # on the joist's centreline
+    assert abs(box.z1_m - joist.z0_m) < 1e-6
+    assert abs(fan.body_z1_m - box.z0_m) < 0.002  # the canopy hangs from the box face

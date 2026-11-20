@@ -5,6 +5,9 @@ whip lands in a surface box screwed to the underside of the nearest framing memb
 over it, at the member's point nearest the fitting, wherever the box clears the fitting's own
 footprint. No framed deck over the point, or no member clear of the body within a whip's
 reach, is no box.
+
+``member_under`` serves a fixture that mounts to a box under a bare deck: the box hangs from
+the member whose plan footprint covers the fixture's point.
 """
 
 from __future__ import annotations
@@ -12,6 +15,8 @@ from __future__ import annotations
 from typing import Any
 
 from shapely.geometry import LineString, Point, Polygon
+
+from typehaus.resolve.framing.footprint import member_footprint
 
 #: Air between the fitting's body and the box, so the box is beside it, not under its plate.
 CLEARANCE_M = 0.0127
@@ -51,3 +56,19 @@ def remote_box_point(floor: Any, xy: tuple[float, float], fitting_footprint: tup
         if best is None or distance < best[0]:
             best = (distance, (at.x, at.y), z, member.child_key)
     return None if best is None else best[1:]
+
+
+def member_under(floor: Any, xy: tuple[float, float], base_z: float) -> tuple[float, str] | None:
+    """(underside z, member key) of the lowest member of ``floor`` over ``xy``, or None."""
+    point = Point(xy)
+    best = None
+    for member in floor.members:
+        if member.p0 == member.p1:
+            continue
+        ring, _, _ = member_footprint(member)
+        if len(ring) < 3 or not Polygon(ring).covers(point):
+            continue
+        z = _underside_at(member, LineString([member.p0, member.p1]), point)
+        if z >= base_z and (best is None or z < best[0]):
+            best = (z, member.child_key)
+    return best

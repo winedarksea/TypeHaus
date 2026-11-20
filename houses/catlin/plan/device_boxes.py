@@ -20,6 +20,8 @@
 #     2 1/8" deep, on a 16-24" bar hanger (the Kidde plates screw to a 4" octagon); a fan
 #     takes the RACO 929 fan-rated brace box; through RM-S-PLANT's membrane, the air-sealed
 #     rows. A ceiling receptacle takes the general flush row.
+#   * fan, surface — the porch fan under FS-SG-BALCONY's bare joists: a Bell PRCF57550BZ
+#     weatherproof fan box screwed under the joist over it (notes/porch_fan_box.md).
 # Covers and rings are not credited a volume: none of these is marked with one.
 # The blue nonmetallic boxes name box-pvc-blue; steel rows stay galvanized (material_ref None).
 
@@ -213,7 +215,17 @@ BELL_5374_0 = Product(tag="PROD-BELL-5374-0", brand="Bell (Hubbell)", model="537
     name="4 in. round weatherproof blank cover, gasket and screws, gray",
     url="https://www.hubbell.com/bell/en/c/5374-0/p/2140990", source="Hubbell product page")
 
-BOX_PRODUCTS = (BELL_5361_0, BELL_5374_0, APPLETON_FFS561LDNBH, RACO_929, ARLINGTON_FBR415F,
+# The porch fan's box (owner, 2026-11-20): FS-SG-BALCONY is bare joists, so the box hangs
+# from the joist over the fan. Bell spec sheets BELL-PRCF57550BZ-SPEC-EN (REV 8/2026) and
+# PRCF57550BZ (2019): polycarbonate, NEMA 3R, UL listed, 1.5" deep, 4.28" wide, 7.5" with its
+# galvanized bracket, cubic capacity 16 (unit unprinted: in3), fan 70 lb, fixture 150 lb, mounts
+# parallel, perpendicular or 45 deg to a joist, five 3/4" threaded hubs (no clamps), rain collar.
+BELL_PRCF57550BZ = Product(tag="PROD-BELL-PRCF57550BZ", brand="Bell (Hubbell)", model="PRCF57550BZ",
+    name="Outdoor Comforts weatherproof ceiling fan/luminaire box, 16 cu. in., fan 70 lb, bronze",
+    url="https://hubbellcdn.com/specsheet/BELL-PRCF57550BZ-SPEC-EN.pdf",
+    source="Hubbell spec sheets BELL-PRCF57550BZ-SPEC-EN and PRCF57550BZ; retail at Menards and Lowe's. notes/porch_fan_box.md.")
+
+BOX_PRODUCTS = (BELL_PRCF57550BZ, BELL_5361_0, BELL_5374_0, APPLETON_FFS561LDNBH, RACO_929, ARLINGTON_FBR415F,
                 PLATE_REGGIO_2SPB_SG, PLATE_REGGIO_6SPB_SG, PLATE_PJ26_W, PLATE_PJ262_W, PLATE_PJ263_W, PLATE_PJ264_W, PLATE_80401_NW, PLATE_80409_NW, PLATE_80411_NW, PLATE_80412_NW, PLATE_CW_1_WH, PLATE_CW_2_WH, PLATE_CW_3_WH, PLATE_CW_4_WH, PLATE_80704_W, PLATE_MULBERRY_32442,
                 RACO_232, CARLON_BH353A, CARLON_BH464A, RACO_808C, RACO_809C, RACO_768, CARLON_B122A, CARLON_BH235A,
                 CARLON_B520A, RACO_192, RACO_753, ARLINGTON_DVFR1W, AIRFOIL_1G, AIRFOIL_ROUND,
@@ -346,6 +358,12 @@ BOX_STANDARD = [
                    box_product_ref="PROD-BELL-5361-0", cover_product_ref="PROD-BELL-5374-0",
                    shape="round", box_size=(inch(4), inch(4), inch(1.5)), box_volume_in3=16.0,
                    cover_rise=inch(0.25)),
+            # A fan under a bare deck: hung from the joist over it, the canopy covers it.
+            BoxRow(mounting="surface", gangs=1, use="fan",
+                   box_product_ref="PROD-BELL-PRCF57550BZ", shape="round",
+                   box_size=(inch(4.28), inch(4.28), inch(1.5)), box_volume_in3=16.0,
+                   internal_clamps=False, fan_rated=True, rated_load_lb=150.0,
+                   material_ref="box-pvc-bronze"),
             BoxRow(mounting="flush", gangs=1, use="air-sealed-luminaire-round",
                    box_product_ref="PROD-LESSCO-AIRFOIL-ROUND", shape="round",
                    box_size=(inch(4), inch(4), inch(2.25)), box_volume_in3=20.0,

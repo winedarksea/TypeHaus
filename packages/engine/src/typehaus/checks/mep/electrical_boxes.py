@@ -242,10 +242,11 @@ def box_fill(ctx: CheckContext) -> list[Finding]:
     out = [_grade(box, circuits, types, type_refs, loads) for box in boxes]
     unboxed = _unboxed_ceiling(ctx, types, {t for b in boxes for t in (b.device_tags or ())})
     if declared and unboxed:
-        out.append(unknown(_CID, f"{len(unboxed)} ceiling fixture(s) take a box but no lined, "
-                                 f"framed face is over them: {', '.join(unboxed)}",
+        out.append(unknown(_CID, f"{len(unboxed)} ceiling fixture(s) take a box but no lined face "
+                                 f"or framing member is over them: {', '.join(unboxed)}",
                            tuple(unboxed), code=_CODE,
-                           fix="model the ceiling or soffit they mount to (decision #140)"))
+                           fix="model the ceiling or soffit they mount to, or move them under "
+                               "a member of the bare deck (decision #140)"))
     return out
 
 

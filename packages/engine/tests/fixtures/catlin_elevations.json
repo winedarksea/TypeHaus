@@ -1037,9 +1037,9 @@
 "canvas_objects/ED-M-PORCH-AP/body_z0_m": 2.5558,
 "canvas_objects/ED-M-PORCH-AP/body_z1_m": 2.5908,
 "canvas_objects/ED-M-PORCH-AP/z_m": 2.5558,
-"canvas_objects/ED-M-PORCH-FAN/body_z0_m": 2.2606,
-"canvas_objects/ED-M-PORCH-FAN/body_z1_m": 2.7178,
-"canvas_objects/ED-M-PORCH-FAN/z_m": 2.2606,
+"canvas_objects/ED-M-PORCH-FAN/body_z0_m": 2.2225,
+"canvas_objects/ED-M-PORCH-FAN/body_z1_m": 2.6797,
+"canvas_objects/ED-M-PORCH-FAN/z_m": 2.2225,
 "canvas_objects/ED-M-PORCH-FLOOD-SW/body_z0_m": 1.19445,
 "canvas_objects/ED-M-PORCH-FLOOD-SW/body_z1_m": 1.260744,
 "canvas_objects/ED-M-PORCH-FLOOD-SW/z_m": 1.19445,
@@ -3517,6 +3517,8 @@
 "device_boxes/QTM0014AAA-box/z1_m": 1.275222,
 "device_boxes/QTM0016AAA-box/z0_m": 1.179972,
 "device_boxes/QTM0016AAA-box/z1_m": 1.275222,
+"device_boxes/QTM0017AAA-box/z0_m": 2.6800969,
+"device_boxes/QTM0017AAA-box/z1_m": 2.7181969,
 "device_boxes/QTM0018AAA-box/z0_m": 1.179972,
 "device_boxes/QTM0018AAA-box/z1_m": 1.275222,
 "device_boxes/QTM001EAAA-box/z0_m": 2.6419969,
@@ -73803,6 +73805,12 @@
 2,
 "26fcbaf725ac"
 ],
+"geometry/QTM0017AAA-box/body": [
+2.6800969,
+2.7181969,
+50,
+"1d767f4fd4cc"
+],
 "geometry/QTM0018AAA-box/body": [
 1.179972,
 1.275222,
@@ -125558,6 +125566,8 @@
 "solids/ED-M-PANTRY-SW-BOX/z1_m": 1.529222,
 "solids/ED-M-PANTRY-SW-PLATE/z0_m": 1.419621,
 "solids/ED-M-PANTRY-SW-PLATE/z1_m": 1.543573,
+"solids/ED-M-PORCH-FAN-BOX/z0_m": 2.6800969,
+"solids/ED-M-PORCH-FAN-BOX/z1_m": 2.7181969,
 "solids/ED-M-PORCH-FLOOD-BOX/z0_m": 2.6419969,
 "solids/ED-M-PORCH-FLOOD-BOX/z1_m": 2.6864469,
 "solids/ED-M-PORCH-SW-BOX/z0_m": 1.179972,

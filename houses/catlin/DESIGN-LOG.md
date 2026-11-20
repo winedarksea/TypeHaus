@@ -9,9 +9,8 @@
   laundry track take none. 18 boxes landed on a joist, rafter, soffit rung or duct; each
   fixture moved 1/2"-4" into the clear bay (AL-S-BED3 9" east, off DU-S-HP-RET);
   the bedroom fan sits 2 1/4" south of its old centre. No pancake was needed.
-- **Open.** The porch fan hangs under FS-SG-BALCONY's bare deck: no lined face, no box
-  (UNKNOWN in `box_fill`). The living room's pendant and AL-M-HALL take a box through
-  resilient channel (`electrical.ceiling_box_decoupling`).
+- **Open.** The living room's pendant and AL-M-HALL take a box through resilient channel
+  (`electrical.ceiling_box_decoupling`).
 - **Closed (owner, same day).** AL-B-COMBO, the basement's one general smoke/CO head, left the
   theater's RC ceiling (it takes no boxes) for the RM-B-STAIR hall ceiling 10" south of
   ST-B2M's foot, (15'-11 1/2", 25'-2"), mid-bay in FS-M-STAIR on its Appleton box; still on
@@ -19,6 +18,13 @@
   The garden flood mounts on its own knuckle plate: the type says `remote_box`, and its
   junction box derives on the nearest joist beside it (Bell 5361-0 round under a 5374-0
   blank cover, `[electrical_boxes]`), fed to the flood by a liquidtight whip.
+- **Closed (owner, same day): the porch fan.** It hung under FS-SG-BALCONY's bare joists
+  with no lined face, so no box (UNKNOWN in `box_fill` and `ceiling_box_support`). A fixture
+  with no lining over it now takes a `surface` box under the member covering its point. The
+  fan moved 3/4" north onto joist 005's centreline and 1 1/2" down, and hangs from a Bell
+  PRCF57550BZ weatherproof fan box (NEMA 3R, 16 in3, fan 70 lb against its 20 lb). Both
+  checks PASS. Bar hangers do not fit 12" o.c.; the FB415 saddle needs drywall; a pancake
+  is too small for through-fed 12/2 (`notes/porch_fan_box.md`).
 
 ## DU-M-ERV-R-LIVING moves 3 1/8" south so a squash block stands under W-S-C2B's jack (2026-11-19, owner)
 

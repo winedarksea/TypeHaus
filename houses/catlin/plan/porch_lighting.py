@@ -8,11 +8,13 @@ from typehaus.model import Location, WallAttachment
 from .porch_lighting_types import GARDEN_FLOOD_MOUNT, GARDEN_FLOOD_POSITION
 
 PORCH_LIGHTING = [
-    # West sitting bay, with the canopy at the balcony joist soffit; wet-rated fan/light.
+    # West sitting bay, wet-rated fan/light. Centred under FS-SG-BALCONY's joist at y -5'-5 1/4"
+    # (owner, 2026-11-20): its Bell weatherproof fan box screws under that joist and the
+    # canopy hangs from the box, 1 1/2" below the joist soffit.
     ElectricalDevice(uid="QTM0017AAA", tag="ED-M-PORCH-FAN", kind=DeviceKind.LIGHT,
-                     position=pt(ft(13, 3), inch(-66)), type_ref="ED-T-LT-FAN60",
+                     position=pt(ft(13, 3), inch(-65.25)), type_ref="ED-T-LT-FAN60",
                      circuit="CKT-LT-MAIN", controlled_by=("ED-M-PORCH-SW",),
-                     mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 5))),
+                     mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 3.5))),
     # A D315S relay (2026-11-03) for dusk and arrival. CHECK ITEM: set the fan off at its own
     # control, so a dusk "on" lights the lamp without spinning the fan.
     ElectricalDevice(uid="QTM0018AAA", tag="ED-M-PORCH-SW", kind=DeviceKind.SWITCH,
