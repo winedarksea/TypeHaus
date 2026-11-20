@@ -1771,12 +1771,16 @@ BASEMENT_DATA_TRUNKS = [
     # West leg shifts 4 in. west to clear the relocated WC drop without adding bends.
     ConduitRun(uid="Z9TXYSYKWG", tag="CD-B-DATA-STUDY", cables=(RacewayCable(count=1, outside_diameter=inch(0.287), cable_type="CMR", role="indoor Cat 6A: study jack", source="trueCABLE Cat6A Riser U/UTP 23AWG CMR spec sheet rev 3: OD 7.30 mm"),),
                trade_size=inch(0.75), service=Service.DATA,
+               # Strapped under the furnace room's board (never in it); offsets under
+               # CD-B-PLAY-SPARE where it crosses at y=29'-1 3/8".
                path=(pt(inch(10), ft(31)), pt(inch(20), ft(31)),
+                     pt(inch(20), inch(353)), pt(inch(20), inch(351.5)),
+                     pt(inch(20), inch(347.25)), pt(inch(20), inch(345.75)),
                      pt(inch(20), ft(18, 8.5)), pt(ft(16), ft(18, 8.5)),
                      pt(ft(16), ft(18, 5)), pt(ft(16), ft(18, 5))),
-               start_elevation=inch(-12.5), end_elevation=ft(2, 8),
-               elevations=(inch(-12.5), inch(-12.5), inch(-12.5),
-                           inch(-12.5), inch(-12.5), ft(2, 8)),
+               start_elevation=inch(-13), end_elevation=ft(2, 8),
+               elevations=(inch(-13), inch(-13), inch(-13), inch(-14.5), inch(-14.5),
+                           inch(-13), inch(-13), inch(-13), inch(-13), ft(2, 8)),
                from_ref="ED-B-NET-PATCH", to_ref="ED-M-STUDY-DATA1"),
 ]
 

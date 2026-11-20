@@ -113,11 +113,17 @@ def fitting_catalog() -> tuple[FittingSpec, ...]:
     return MEP_FITTINGS
 
 
-def tube_bend_rule(material: str | None) -> tuple[float, str] | None:
-    """``(minimum radius / OD, source)`` for a tube bent rather than fitted, or ``None``."""
+def tube_bend_rule(material: str | None) -> tuple[float, str, float] | None:
+    """``(minimum radius / OD, source, absolute minimum radius in.)`` for a tube bent rather
+    than fitted, or ``None``."""
     from typehaus.library.fittings import TUBE_BEND_RULES
 
     return TUBE_BEND_RULES.get((material or "").strip().lower())
+
+
+def tube_bend_radius_m(rule: tuple[float, str, float], outside_m: float) -> float:
+    """A bend rule's minimum centreline radius for a tube of this OD: the larger reading."""
+    return max(rule[0] * outside_m, rule[2] * 0.0254)
 
 
 def fitting_for(service: str, kind: str, angle_deg: float, nominal_in: float,

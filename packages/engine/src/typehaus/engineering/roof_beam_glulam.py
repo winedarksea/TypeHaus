@@ -1,8 +1,9 @@
 """A GLULAM roof beam, for ``roof_beam`` — split out because that module is sawn-only by rule.
 
 A decimal ``Beam.size`` (``"5.5x11.875"``) is a glulam sold against its own design values, not
-an ``N-2xM``. A 5-1/2" width is a Western-species glulam, so it is graded at the 24F-V4 DF
-combination: ANSI/AWC NDS 2018 Supplement Table 5A. Wet service (Table 5.3.1), snow ``C_D``
+an ``N-2xM``. Graded at 24F-V4 DF, the ordered layup (Rosboro Treated X-Beam,
+``BEAM_GLULAM_TREATED_DF``; treated SYP stops at 5-1/4"): ANSI/AWC NDS 2018 Supplement
+Table 5A. Wet service (Table 5.3.1), snow ``C_D``
 1.15 (Table 2.3.2), and the volume factor ``C_V`` with x = 10 for a Western-species layup
 (§5.3.6), which is the smaller of ``C_V`` and ``C_L`` because the deck braces the top edge.
 
@@ -171,5 +172,5 @@ def glulam(ctx: Any, roof: Any, beam: Any, tributary_ft2: float,
                 Quantity("design_dead", dead_psf, "psf", 0.1),
                 Quantity("uniform_load", uniform_plf, "plf", 0.1), *truss_inputs),
         limit_states=states, element_tags=(roof.tag, beam.tag),
-        notes=("A 5-1/2\" glulam is a Western-species width; 24F-V4 DF is the combination "
-               "graded, and the supplier's treated stock must be at least that layup.",))
+        notes=("Graded as treated 24F-V4 DF (BEAM_GLULAM_TREATED_DF); a substitute must be "
+               "at least that layup.",))

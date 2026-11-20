@@ -60,6 +60,10 @@ that comparison; every run crossing it is measured again against
 whether somebody walks into the pipe (``code.R305_ceiling_height`` measures the structure
 overhead and has never seen a run).
 
+**Nothing runs IN the board** (:mod:`.routing_board`): neither test above sees a run
+buried in the lining's own thickness, so a third pass grades it in every flat-ceilinged
+room, declared or not.
+
 **Known soft spot.** The wall exemption asks only whether the run is inside a wall's plan
 footprint and z band — see
 :func:`~typehaus.checks.mep.routing_geometry.wall_cover`. A 12" cast foundation wall
@@ -346,6 +350,18 @@ def run_in_finished_volume(ctx: CheckContext) -> list[Finding]:
                 "not the same fix: clear height is read by lighting, code.R305 and the "
                 "takeoff. If the ceiling is meant to be open, say so on the Room: "
                 "`exposed_services=\"<why>\"` is an answer this check reads and quotes"))
+
+    from typehaus.checks.mep.routing_board import board_rows
+
+    for (tag, room), (length_ft, depth_in, board) in sorted(
+            board_rows(ctx, runs, vertical_radii, rules.min_ceiling_exposure_ft).items()):
+        out.append(advisory(
+            cid,
+            f"run {tag} lies {depth_in:.2f}\" into {room}'s ceiling board ({board}) "
+            f"for {length_ft:.2f} ft — a run goes above the board or below it, never in it",
+            (tag, room), Result.FAIL,
+            fix="lift it into the bay above the board or drop it clear below the face; an "
+                "exposed_services room still hangs its runs below the board"))
 
     head_label = _feet_inches(rules.exposed_service_headroom_ft)
     for (tag, room), (exposure_ft, intrusion_in) in sorted(low.items()):

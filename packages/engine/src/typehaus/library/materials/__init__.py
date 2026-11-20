@@ -51,6 +51,7 @@ _ORDER = (
     "kdat",
     "pt-syp",
     "glulam-treated",
+    "glulam-treated-df",
     "osb",
     "struct-1-plywood",
     "zip-r",

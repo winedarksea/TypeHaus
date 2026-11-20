@@ -61,6 +61,7 @@ from typehaus.library.assemblies.partitions_half import (
 )
 from typehaus.library.assemblies.structural import (
     BEAM_GLULAM_TREATED,
+    BEAM_GLULAM_TREATED_DF,
     BEAM_KDAT,
     BEAM_LVL,
     FOOTING_STONE_20,
@@ -98,6 +99,7 @@ ALL_ASSEMBLIES: tuple[Assembly, ...] = (
     INT_ESS_CLOSET_STEEL,
     INT_ESS_CLOSET_STEEL_6,
     BEAM_GLULAM_TREATED,
+    BEAM_GLULAM_TREATED_DF,
     BEAM_KDAT,
     BEAM_LVL,
     FOOTING_STONE_20,
@@ -123,6 +125,7 @@ __all__ = [
     "BEAM_KDAT",
     "POST_KDAT",
     "BEAM_GLULAM_TREATED",
+    "BEAM_GLULAM_TREATED_DF",
     "RETAINING_BLOCK_12",
     "FROST_WING_XPS_1IN",
     "FROST_WING_XPS_2IN",

@@ -481,8 +481,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **`BM-BW-RW`/`-RE` are 5-1/2" x 11-7/8" treated glulam since 2026-09-30** (the 2026-09-12
   refusal is reversed). The reason is the joints, not bending: an AC/ACE cap is published for a
   5-1/2" beam on a 6x6 with a lateral row along the beam (ESR-2604 Table 3), and the flush faces
-  carry the band's paired KBS1Z. `roof_beam` grades a decimal glulam size at 24F-V4 DF wet
-  (`engineering/roof_beam_glulam.py`), bearing on the post governing at 0.326. Since 2026-10-28
+  carry the band's paired KBS1Z. They are treated DF, 24F-V4 (Rosboro Treated X-Beam,
+  `BEAM_GLULAM_TREATED_DF`, 2026-11-20; the treated SYP line stops at 5-1/4"), and `roof_beam`
+  grades them so, wet (`engineering/roof_beam_glulam.py`), bearing on the post governing at 0.326;
+  `steel_post` reads the header's G off its material. The balcony beams stay SYP 24F-V5M1. Since 2026-10-28
   each header runs post face to post face (the ACE6 end cap wants the whole post at both ends);
   the bearing run is inset 3/4" at the south so truss 1 sits wholly on the beam, and the
   canopy's `edge_overhangs` are 1 3/8" south and 6 1/8" north. The rake did not move. (→ DESIGN-LOG.md, "Site and the four structures")

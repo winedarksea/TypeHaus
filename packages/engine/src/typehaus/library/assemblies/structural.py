@@ -33,6 +33,15 @@ BEAM_GLULAM_TREATED = Assembly(
     source="preservative-treated southern pine structural glulam, 3-1/2 in. wide, "
            "24F-V5M1/SP (ANSI A190.1); wet-service factors apply outdoors",
 )
+BEAM_GLULAM_TREATED_DF = Assembly(
+    tag="BEAM_GLULAM_TREATED_DF",
+    layers=(
+        Layer(name="glulam", material_ref="glulam-treated-df", thickness=inch(5.5),
+              function=LayerFunction.STRUCTURE),
+    ),
+    source="preservative-treated Douglas-fir structural glulam, 5-1/2 in. wide, 24F-V4 DF "
+           "(ANSI A190.1; Rosboro Treated X-Beam); wet-service factors apply outdoors",
+)
 POST_KDAT = Assembly(
     tag="POST_KDAT",
     layers=(

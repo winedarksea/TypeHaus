@@ -242,21 +242,25 @@ def _duct_elbows() -> list[FittingSpec]:
 
 
 #: Tube that turns by being BENT, by material: (minimum centreline radius as a multiple of the
-#: tube's OD, source). Minn. R. 4714.0609 allows flexible tubing to change direction without
-#: fittings "in accordance with the manufacturer's instructions", so the maker's rule governs.
+#: tube's OD, source, absolute minimum radius in inches). The radius is the larger of the two.
+#: Minn. R. 4714.0609 allows flexible tubing to change direction without fittings "in
+#: accordance with the manufacturer's instructions", so the maker's rule governs.
 #: Uponor's 6 x OD is the tightest-reading of the three PEX-a makers (REHAU and Viega publish
 #: 5 x OD cold or with a bend support), so a bend that passes here passes for any of them.
 _PEX_BEND = (6.0, "Uponor Professional Plumbing Installation Guide (PLU_InsG_P731_0213) "
                   "p. 9: \"The minimum bend radius of Uponor AquaPEX tubing in any direction "
-                  "is six times the outside diameter (6 x OD).\"")
-#: Soft (annealed) ACR lineset coil, bent by hand or lever bender. A planning figure, not a
-#: read: lever benders form 3/4" ACR on about a 3" radius, so 4 x OD; Gree's own minimum has
-#: not been read into the repo. CONFIRM against the delivered unit's installation manual.
-_ACR_BEND = (4.0, "TypeHaus planning figure: 4 x OD, the radius a lever bender forms 3/4 in. "
-                  "annealed ACR on (CDA Copper Tube Handbook, bending annealed tube). Gree "
-                  "minimum unread; confirm in the unit's installation manual.")
-TUBE_BEND_RULES: dict[str, tuple[float, str]] = {"pex": _PEX_BEND, "pex-a": _PEX_BEND,
-                                                 "copper_acr": _ACR_BEND}
+                  "is six times the outside diameter (6 x OD).\"", 0.0)
+#: Soft (annealed) ACR lineset, bent by hand. Gree, the only lineset maker in the catalog,
+#: publishes a flat 10 cm radius for every pipe size; 4 x OD stays as the floor for a tube
+#: so big that 4 x OD would exceed it.
+_ACR_BEND = (4.0, "Gree Sapphire R32 service manual (SAP09-24HP230V1R32AH/AO), Installation "
+                  "and Maintenance p. 50 (PDF p. 53), \"Neaten the Pipes\": \"Min. semidiameter "
+                  "of bending the pipe is 10cm.\" The same sentence is in Gree's Livo R32 "
+                  "service manual; the Multi R32 and FLEXX Ultra R32 manuals state no radius "
+                  "(FLEXX: bend no more than 90 degrees, rebend no more than 3 times).",
+             100.0 / 25.4)
+TUBE_BEND_RULES: dict[str, tuple[float, str, float]] = {
+    "pex": _PEX_BEND, "pex-a": _PEX_BEND, "copper_acr": _ACR_BEND}
 
 
 #: Every catalogued fitting. Sorted by tag so a take-off's row order never depends on the

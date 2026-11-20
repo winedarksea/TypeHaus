@@ -24,7 +24,7 @@ SOLID_SECTIONS = ("concrete", "timber", "site", "solids")
 
 #: Only members that really are sticks: ``spf`` is also the structure of a stud-wall
 #: assembly a non-lumber solid can carry (a rainscreen bug screen holding ``EXT_2X6``).
-TIMBER_MATERIALS = frozenset({"lvl", "lsl", "kdat", "glulam-treated"})
+TIMBER_MATERIALS = frozenset({"lvl", "lsl", "kdat", "glulam-treated", "glulam-treated-df"})
 
 SITE_TRADES = frozenset({"drainage", "landscaping", "earth"})
 

@@ -112,9 +112,26 @@ MATERIALS: tuple[Material, ...] = (
         hatch="lumber",
         color="#c8a877",
         preservative_treated=True,
+        specific_gravity=0.55,
         source="SYP glulam laminations at ~35 pcf oven-dry (560 kg/m3), the AWC "
         "NDS Supplement value for the group; R/inch shares the kdat SYP "
-        "figure, since the laminations are the same species",
+        "figure, since the laminations are the same species; G 0.55 (NDS Table 12.3.3A, "
+        "southern pine)",
+    ),
+    # Treated Douglas-fir structural glulam in a framing width (Rosboro Treated X-Beam,
+    # 24F-V4 DF, 5-1/2"): the SYP treated line stops at 5-1/4". The north-entry canopy
+    # headers. Same look as the SYP glulam: both are clear-finished laminations.
+    Material(
+        tag="glulam-treated-df",
+        name="Preservative-treated Douglas-fir structural glulam",
+        r_per_inch=1.25,
+        density=530.0,
+        hatch="lumber",
+        color="#c8a877",
+        preservative_treated=True,
+        specific_gravity=0.50,
+        source="Douglas-fir laminations, ~33 pcf (530 kg/m3); R/inch the softwood "
+        "1.25 of ASHRAE HOF Ch. 26; G 0.50 (NDS Table 12.3.3A, Douglas fir-larch)",
     ),
     # Light-gauge steel framing (25 ga. C-stud). Like the resilient channel above it is a
     # spaced section, not a skin, so the vapour path through the layer is the still air

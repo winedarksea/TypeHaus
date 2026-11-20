@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 4651cca8f33de640  
-**Lines:** 267
+**Model hash:** 14a16c45da421295  
+**Lines:** 268
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
 
@@ -258,7 +258,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| Beam — BEAM_GLULAM_TREATED (beam:BEAM_GLULAM_TREATED) | 126 | bf | 4 placed, 10.6 SF plan; 0.39 cy in the takeoff | main, second |
+| Beam — BEAM_GLULAM_TREATED (beam:BEAM_GLULAM_TREATED) | 67.2 | bf | 2 placed, 5.6 SF plan; 0.21 cy in the takeoff | second |
+| Beam — BEAM_GLULAM_TREATED_DF (beam:BEAM_GLULAM_TREATED_DF) | 58.8 | bf | 2 placed, 5.0 SF plan; 0.18 cy in the takeoff | main |
 | Beam — BEAM_KDAT (beam:BEAM_KDAT) | 57.6 | bf | 6 placed, 6.8 SF plan; 0.18 cy in the takeoff | main |
 | Beam — BEAM_LVL (beam:BEAM_LVL) | 86.4 | bf | 3 placed, 7.2 SF plan; 0.27 cy in the takeoff | main, second |
 | Column — POST_KDAT (column:POST_KDAT) | 38.4 | bf | 2 placed, 0.4 SF plan; 0.12 cy in the takeoff | main |
@@ -565,7 +566,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Slab deck — AH_PLATFORM_PLY (slab_deck:AH_PLATFORM_PLY) | SL-A-HP1-PLATFORM |
 | Slab platform — KNEE_WALL_OAK_CAP (slab_platform:KNEE_WALL_OAK_CAP) | SL-S-KNEE-CAP |
 | Slab platform — TUBDECK_INT_PLY_CAP (slab_platform:TUBDECK_INT_PLY_CAP) | SL-M-TUBDK |
-| Beam — BEAM_GLULAM_TREATED (beam:BEAM_GLULAM_TREATED) | BM-BW-RE, BM-BW-RW, BM-SG-BLE, BM-SG-BLW |
+| Beam — BEAM_GLULAM_TREATED (beam:BEAM_GLULAM_TREATED) | BM-SG-BLE, BM-SG-BLW |
+| Beam — BEAM_GLULAM_TREATED_DF (beam:BEAM_GLULAM_TREATED_DF) | BM-BW-RE, BM-BW-RW |
 | Beam — BEAM_KDAT (beam:BEAM_KDAT) | BM-BW-FE, BM-BW-GARAGE-SEAT, BM-BW-HOUSE-SEAT, BM-BW-SCSILL, BM-SG-LDGE, BM-SG-LDGW |
 | Beam — BEAM_LVL (beam:BEAM_LVL) | BM-M-HALL, BM-S-BATH-E, BM-S-HALL |
 | Column — POST_KDAT (column:POST_KDAT) | PT-BW-CNW, PT-BW-CW |

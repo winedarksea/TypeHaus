@@ -44,13 +44,13 @@ def test_e7_the_wall_is_nonslender() -> None:
 
 def test_the_saddle_bolt_yield_modes_match_the_note() -> None:
     """NDS §12.3.1 double shear, steel side plates, perpendicular to grain: III_s governs."""
-    z, modes = bolt_double_shear_lb(0.625, 4.5, 0.25, 0.55, perpendicular=True)
-    assert modes["I_m"] == pytest.approx(1824.1, abs=0.5)
+    z, modes = bolt_double_shear_lb(0.625, 5.5, 0.25, 0.50, perpendicular=True)
+    assert modes["I_m"] == pytest.approx(1941.6, abs=0.5)
     assert modes["I_s"] == pytest.approx(5437.5, abs=0.5)
-    assert modes["III_s"] == pytest.approx(1513.4, abs=0.5)
-    assert modes["IV"] == pytest.approx(1891.5, abs=0.5)
+    assert modes["III_s"] == pytest.approx(1421.1, abs=0.5)
+    assert modes["IV"] == pytest.approx(1769.3, abs=0.5)
     assert z == modes["III_s"]
-    assert 2 * z * 1.6 * 0.7 == pytest.approx(3390.0, abs=1.0)
+    assert 2 * z * 1.6 * 0.7 == pytest.approx(3183.3, abs=1.0)
 
 
 @pytest.fixture(scope="module")
@@ -65,7 +65,7 @@ def test_the_landed_record_reproduces_section_5(record) -> None:
         "slenderness KL/r, §E2": (48.77, 200.0),
         "axial, flexural buckling §E3": (3423.4, 84794.2),
         "combined axial and drag, §H1.1": (0.02246, 1.0),
-        "saddle bolts, uplift": (426.44, 3390.0),  # 40 ft2 x (16.661 - 6.0), 2026-10-31
+        "saddle bolts, uplift": (426.44, 3183.3),  # 40 ft2 x (16.661 - 6.0), 2026-10-31
         "PT-BW-RE base anchor tension (breakout / pullout / steel)": (710.74, 4528.2),  # 426.44 / 0.6
     }
     for name, (demand, capacity) in rows.items():

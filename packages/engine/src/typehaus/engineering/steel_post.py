@@ -87,8 +87,7 @@ SADDLE_PLATE_IN = 0.25
 #: NDS Table 12.3.3 notes: F_es of an A36 side plate, 1.5 F_u; F_yb of a SAE J429 Gr 2 bolt.
 FES_STEEL_PSI = 87_000.0
 FYB_PSI = 45_000.0
-#: The header's specific gravity (southern pine) and its C_D / C_M at an exposed eave.
-HEADER_G = 0.55
+#: The header's C_D / C_M at an exposed eave; its G is its material's (``_header_g``).
 C_D_WIND = 1.6
 C_M_WET = 0.7
 
@@ -166,12 +165,14 @@ def _one(ctx: EngineeringContext, post, wind) -> EngineeringRecord:  # type: ign
     shape = cross_section(size).shape
     section = PUBLISHED.get(size)
     header = next(iter(_headers(ctx, post.tag)), None)
+    header_g = _header_g(ctx, header)
     tags = tuple(t for t in (post.tag, header, post.below) if t)
     roof_trib, _ = roof_tributaries(ctx)
     trib = roof_trib.get(post.tag, 0.0)
     missing = [text for ok, text in (
         (section is not None, f"AISC Manual properties for `{size}` in steel_post.PUBLISHED"),
         (trib > 0.0, "a roof tributary on this post (`pier_basis.roof_tributaries`)"),
+        (header_g is not None, "Material.specific_gravity on the header's structure layer"),
     ) if not ok]
     if missing:
         return EngineeringRecord(item_id=ident, kind=KIND, key=post.tag,
@@ -179,7 +180,7 @@ def _one(ctx: EngineeringContext, post, wind) -> EngineeringRecord:  # type: ign
                                  status=Status.INCOMPLETE,
                                  summary=f"{post.tag}: the steel post could not be graded",
                                  missing=tuple(missing), element_tags=tags)
-    assert section is not None
+    assert section is not None and header_g is not None
     fy = FY_KSI[shape]
     length_in = post.length_ft * 12.0
     klr = length_in / section.radius_in
@@ -196,7 +197,7 @@ def _one(ctx: EngineeringContext, post, wind) -> EngineeringRecord:  # type: ign
     interaction = p_ratio / 2.0 + m_ratio if p_ratio < 0.2 else p_ratio + 8.0 / 9.0 * m_ratio
     uplift = trib * (wind.pressure_psf - 0.6 * roof_dead)
     z, modes = bolt_double_shear_lb(SADDLE_BOLT_IN, _header_width_in(ctx, header),
-                                    SADDLE_PLATE_IN, HEADER_G, perpendicular=True)
+                                    SADDLE_PLATE_IN, header_g, perpendicular=True)
     z_adj = z * C_D_WIND * C_M_WET
     limit = slender_limit(shape, fy)
 
@@ -220,7 +221,7 @@ def _one(ctx: EngineeringContext, post, wind) -> EngineeringRecord:  # type: ign
         LimitState("saddle bolts, uplift", uplift, SADDLE_BOLTS * z_adj, "lb",
                    f"NDS 2018 §12.3.1 double shear, {SADDLE_BOLT_IN}\" bolts, "
                    f"{SADDLE_PLATE_IN}\" steel side plates, load perpendicular to "
-                   f"{header or 'the header'}'s grain (G {HEADER_G}): modes "
+                   f"{header or 'the header'}'s grain (G {header_g:g}): modes "
                    + ", ".join(f"{k} {v:,.0f}" for k, v in modes.items())
                    + f" lb; Z {z:,.0f} x C_D {C_D_WIND} x C_M {C_M_WET} = {z_adj:,.0f} lb "
                    f"per bolt. Demand 0.6D + 0.6W on {trib:.1f} ft2"),
@@ -236,7 +237,8 @@ def _one(ctx: EngineeringContext, post, wind) -> EngineeringRecord:  # type: ign
     inputs = [Quantity("axial_lb", axial_lb, "lb", 1.0),
               Quantity("uplift_lb", uplift, "lb", 1.0),
               Quantity("length_in", length_in, "in", 0.01),
-              Quantity("roof_tributary_ft2", trib, "ft2", 0.01)]
+              Quantity("roof_tributary_ft2", trib, "ft2", 0.01),
+              Quantity("header_g", header_g, "", 0.01)]
 
     pier = ctx.plan.by_tag(post.below or "")
     pier_size = _round_size(getattr(pier, "size", "") or "") if pier is not None else None
@@ -273,6 +275,15 @@ def _headers(ctx: EngineeringContext, post_tag: str) -> list[str]:
 
     return sorted(e.tag for e in ctx.plan.all_elements()
                   if isinstance(e, Beam) and post_tag in (e.bearing_refs or ()))
+
+
+def _header_g(ctx: EngineeringContext, header: str | None) -> float | None:
+    from typehaus.resolve.assembly_material import assembly_structure_material
+
+    element = ctx.plan.by_tag(header or "")
+    ref = assembly_structure_material(ctx.plan, getattr(element, "assembly", None))
+    material = ctx.plan.library.material(ref) if ref else None
+    return getattr(material, "specific_gravity", None)
 
 
 def _header_width_in(ctx: EngineeringContext, header: str | None) -> float:

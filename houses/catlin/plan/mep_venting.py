@@ -481,12 +481,13 @@ VENT_BRANCHES_BASEMENT = [
             # (P3104.1) so it cannot dip under one thing and climb over the next; what it
             # can do is take its rise EARLY. It now gains 3 3/4" in the first 8'-6" and
             # coasts the remaining 15'-6". The y=19' point rose another 1/2" with the
-            # dry-fire collector lift, keeping clear of the raised laundry drain. The
+            # dry-fire collector lift, keeping clear of the raised laundry drain. The tail
+            # to the riser stays under the ceiling board (top 1/32" under its face). The
             # north profile retains the half-inch clearance over
             # DU-B-ERV-R-PLAY at y=30'-6", where D3 left it 2 1/2 thousandths of an inch.
             elevations=(inch(-9.19), ft(0, 3.4375), inch(90.5), inch(90.5625),
                         inch(91.75), inch(93.75), ft(7, 10.4375), ft(7, 11.14), ft(7, 11.54),
-                        ft(8, 0.0375), ft(8, 0.1375)),
+                        ft(7, 11.6), ft(7, 11.65)),
             serves=("FX-B-SAUNA-SH", "FX-B-SAUNA-FD")),
     # The floor drain's own tee: on the branch 9" downstream of PR-B-SAUNA-FD-DROP's tie,
     # up W-B-SA-N's 134"-150" bay through SP-B-SLAB-SA-FDV, and over the plates onto

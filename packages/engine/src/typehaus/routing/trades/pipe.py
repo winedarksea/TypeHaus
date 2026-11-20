@@ -58,18 +58,20 @@ def cavity_radius_m(diameter_m: float, system: str, material: str | None = None,
 
 
 def bend_radius_m(diameter_m: float, system: str, material: str | None) -> float:
-    """A pressure tube's minimum bend radius, the maker's ratio x OD; 0 where it is fitted.
+    """A pressure tube's minimum bend radius, the maker's rule; 0 where it is fitted.
 
     ``mep_fittings.tube_bend_rule`` is the rule the take-off grades a bend against, so the
     router never prices a bend the take-off will call a fitting. Copper and CPVC carry no
     rule; a drain or vent is never bent.
     """
+    from typehaus.hardware.fittings import tube_bend_radius_m
     from typehaus.resolve.mep_fittings import tube_bend_rule
     from typehaus.resolve.pipe_sections import pipe_outside_diameter_m
 
     system = getattr(system, "value", system)
     rule = tube_bend_rule(material) if system not in GRAVITY_SYSTEMS | {"vent"} else None
-    return 0.0 if rule is None else rule[0] * pipe_outside_diameter_m(diameter_m, material)
+    return 0.0 if rule is None else tube_bend_radius_m(
+        rule, pipe_outside_diameter_m(diameter_m, material))
 
 
 def crossing_admissible(corridor: Corridor, diameter_m: float,

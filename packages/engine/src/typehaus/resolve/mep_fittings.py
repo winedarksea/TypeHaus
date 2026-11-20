@@ -45,6 +45,7 @@ from typehaus.hardware.fittings import (
     catalogued_sizes,
     fitting_catalog,
     fitting_for,
+    tube_bend_radius_m,
     tube_bend_rule,
 )
 from typehaus.quantities import M_PER_IN
@@ -236,9 +237,10 @@ def _bend(path: Sequence[tuple[float, float, float]], index: int, angle_deg: flo
     rule = tube_bend_rule(material)
     if rule is None:
         return None, None
-    ratio, source = rule
+    ratio, source, floor_in = rule
     nominal = _nominal_in(size_m)
-    radius_in = ratio * pipe_outside_diameter_m(size_m, material) / M_PER_IN
+    radius_in = tube_bend_radius_m(rule, pipe_outside_diameter_m(size_m, material)) / M_PER_IN
+    basis = f"{ratio:g} x OD" if radius_in > floor_in + 1e-9 else f"{floor_in:.2f}\" flat"
 
     def leg(a: int, b: int) -> float:
         length = sum((pa - pb) ** 2 for pa, pb in zip(path[a], path[b], strict=True)) ** 0.5
@@ -254,7 +256,7 @@ def _bend(path: Sequence[tuple[float, float, float]], index: int, angle_deg: flo
     tangent_in = radius_in * math.tan(half)
     if tangent_in > room_in:
         return None, (f"a {angle_deg:.1f} degree bend in {nominal:g}\" {material} needs a "
-                      f"{radius_in:.2f}\" radius ({ratio:g} x OD, the maker's minimum) and "
+                      f"{radius_in:.2f}\" radius ({basis}, the maker's minimum) and "
                       f"{tangent_in:.1f}\" of straight tube each side, and the run gives "
                       f"{room_in:.1f}\" — lengthen the leg or fit an elbow")
     return FittingSpec(

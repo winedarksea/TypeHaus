@@ -216,7 +216,8 @@ beam(5, "BM-BW-FE", EDGE_BEAM_X_FT, FRAME_Y0_FT, EDGE_BEAM_X_FT, GARAGE_CLADDING
 # 5-1/2" x 11-7/8" glulam, flush with the 6x6 faces: the joints chose it, not bending. An AC6/ACE6
 # cap is published for a 5-1/2" beam on a 6x6 (ESR-2604 Table 3, the only post cap with a lateral
 # row along the beam), and the flush face takes the band brace's KBS1Z (params/entry_band_brace.py).
-# `roof_beam` grades it as 24F-V4 DF, wet (notes/canopy_west_band.md §7). The roof-bearing run
+# Treated DF glulam, 24F-V4 (Rosboro Treated X-Beam; the treated SYP line stops at 5-1/4"), and
+# `roof_beam` grades it so, wet (notes/canopy_west_band.md §7). The roof-bearing run
 # starts 3/4" in (`TRUSS_DATUM_INSET_FT`), so truss 1 bears its full 1 1/2" on the beam end.
 HEADER_SOUTH_Y_FT = PIER_LINE_Y_FT - COLUMN_HALF_FT
 HEADER_NORTH_Y_FT = GARAGE_SEAT_Y_FT + COLUMN_HALF_FT
@@ -224,13 +225,13 @@ TRUSS_DATUM_INSET_FT = 0.75 / 12
 TRUSS_DATUM_Y_FT = HEADER_SOUTH_Y_FT + TRUSS_DATUM_INSET_FT
 beam(6, "BM-BW-RW", LANDING_WEST_FT, HEADER_SOUTH_Y_FT,
      LANDING_WEST_FT, HEADER_NORTH_Y_FT, ("PT-BW-CW", "PT-BW-CNW"), HEADER_TOP_FT,
-     HEADER_SIZE, "BEAM_GLULAM_TREATED",
+     HEADER_SIZE, "BEAM_GLULAM_TREATED_DF",
      roof_bearing_insets=(ft(TRUSS_DATUM_INSET_FT), ft(0)))
 # What the east header lands on is EAST_POST_SYSTEM (params/east_posts.py); its tag and uid
 # never change.
 beam(7, "BM-BW-RE", ROOF_COLUMN_EAST_X_FT, HEADER_SOUTH_Y_FT,
      ROOF_COLUMN_EAST_X_FT, HEADER_NORTH_Y_FT, ("PT-BW-RE", "PT-BW-RNE"), HEADER_TOP_FT,
-     HEADER_SIZE, "BEAM_GLULAM_TREATED",
+     HEADER_SIZE, "BEAM_GLULAM_TREATED_DF",
      roof_bearing_insets=(ft(TRUSS_DATUM_INSET_FT), ft(0)))
 
 # BM-BW-SCSILL carries W-BW-SCREEN (no joist under it) between the two columns: 37.5 plf, 55.6

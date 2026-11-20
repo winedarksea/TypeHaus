@@ -367,8 +367,9 @@ SECOND_DRAINS = [
     # either side and bores both plates. It offsets 1'-4" south inside FS-M-WEST's joist
     # band (one web bore at the y=17'-4" I-joist) onto its old y=16'-8" lane west.
     # ** IT CROSSES EQ-B-WH HIGH (2026-11-09). ** The tank's top elbow stands at 91" under
-    # this lane, so the drain drops only to 98" AFF in the joist bay (parallel to the joists,
-    # nothing bored), runs west past the tank, and drops to 86" at x=10'-2", 3" west of the
+    # this lane, so the drain drops only to 100" AFF, its bottom 1/8" over the ceiling board
+    # in the joist bay (parallel to the joists, nothing bored; 2026-11-20, it was through the
+    # board), runs west past the tank, and drops to 86" at x=10'-2", 3" west of the
     # tank, so DU-B-ERV-R-GYM clears it; 1/4"/ft from there to the main.
     PipeRun(uid="CMPD08AAAA", tag="PR-M-S-SUITE-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(12, 6), ft(18)), pt(ft(12, 6), ft(18)), pt(ft(12, 6), ft(18)),
@@ -378,7 +379,7 @@ SECOND_DRAINS = [
                   pt(ft(6), ft(16, 6))),
             diameter=inch(3), material="pvc",
             elevations=(ft(9, 7.5), ft(8, 11.875), ft(0), inch(-5), inch(-5.5),
-                        inch(-11.4375), inch(-12.0625), inch(-23.4375), inch(-24.5036),
+                        inch(-9.375), inch(-10), inch(-23.4375), inch(-24.5036),
                         inch(-25.2956)),
             wall_refs=(None, "W-M-CLN", None, None, None, None, None, None, None),
             serves=("FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",

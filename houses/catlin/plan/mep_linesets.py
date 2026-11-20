@@ -7,9 +7,9 @@
 #   * HP1: west off the valves, up beside the cabinet's west end, east above it into
 #     W-M-N1's 304-320 bay (no window; west of ED-M-LIVING-KET1's box), up through both storeys'
 #     plates into FS-ATTIC's north bay, up through the deck and over to the AH's ports.
-#   * HP2: three sets through one band penetration east of the cabinet into FS-M-EAST's
-#     south bay. GYM west to the gym's south-west corner and down beside the head; BED west
-#     past the x=18' bearing into FS-M-WEST and up W-M-S1's bay east of WIN-M-BED-S2;
+#   * HP2: three sets side by side (4 5/8" centres) through FS-M-EAST's rim east of the
+#     cabinet, between W-M-S2's starter girt and the next course, into its south bay. GYM
+#     west to the gym's south-west corner and down beside the head; BED west past the x=18' bearing into FS-M-WEST and up W-M-S1's bay east of WIN-M-BED-S2;
 #     LIVING up W-M-S2's 352-367 bay, west in FS-S-EAST's south bay and down over D-M-PORCH's
 #     header (the door fills the wall under the head).
 #   * HP3: back into W-M-N2's 128-144 bay under the head's plate, up the cavity, out at
@@ -64,29 +64,28 @@ LINESETS_MAIN = [
     PipeRun(uid="F5MDC6F8QB", tag="PR-B-RFG-HP2-GYM", system=PipeSystem.REFRIGERANT, serves=("EQ-B-HP2-GYM",),
             outdoor_port="A", material="copper_acr", diameter=inch(0.375),
             liquid_diameter=inch(0.25),
-            path=(pt(inch(376.16), inch(-25.86)), pt(inch(389.5), inch(-25.86)),
-                  pt(inch(389.5), inch(-10)), pt(inch(389.5), inch(9)),
+            path=(pt(inch(376.16), inch(-25.86)), pt(inch(393), inch(-25.86)),
+                  pt(inch(393), inch(-10)), pt(inch(393), inch(9)),
                   pt(inch(221.25), inch(9)), pt(inch(221.25), inch(9))),
-            elevations=(inch(-10), inch(-10), inch(-10), inch(-7), inch(-7), inch(-21.5))),
+            elevations=(inch(-10), inch(-10), inch(-5.25), inch(-7), inch(-7), inch(-21.5))),
     PipeRun(uid="660NG5X4HJ", tag="PR-M-RFG-HP2-BED", system=PipeSystem.REFRIGERANT, serves=("EQ-M-HP2-BED",),
             outdoor_port="B", material="copper_acr", diameter=inch(0.375),
             liquid_diameter=inch(0.25),
-            path=(pt(inch(376.16), inch(-25.86)), pt(inch(383.5), inch(-25.86)),
-                  pt(inch(383.5), inch(-10)), pt(inch(383.5), inch(9)),
-                  pt(inch(200.6), inch(9)), pt(inch(200.6), inch(3.25)),
-                  pt(inch(200.6), inch(3.25))),
-            elevations=(inch(-7), inch(-7), inch(-7), inch(-3.25), inch(-3.25), inch(-3.25),
+            path=(pt(inch(376.16), inch(-25.86)), pt(inch(385.25), inch(-25.86)),
+                  pt(inch(385.25), inch(9)), pt(inch(206.35), inch(9)),
+                  pt(inch(200.6), inch(3.25)), pt(inch(200.6), inch(3.25))),
+            elevations=(inch(-7), inch(-7), inch(-3.25), inch(-3.25), inch(-3.25),
                         inch(89.5))),
     PipeRun(uid="RZ435RNK9F", tag="PR-M-RFG-HP2-LIVING", system=PipeSystem.REFRIGERANT,
             serves=("EQ-M-HP2-LIVING",), outdoor_port="C", material="copper_acr",
             diameter=inch(0.375), liquid_diameter=inch(0.25),
-            path=(pt(inch(376.16), inch(-25.86)), pt(inch(380.5), inch(-25.86)),
-                  pt(inch(380.5), inch(-10)), pt(inch(380.5), inch(3.1)),
-                  pt(inch(359.4), inch(3.1)), pt(inch(359.4), inch(3.1)),
-                  pt(inch(359.4), inch(5)), pt(inch(252.7), inch(5)),
-                  pt(inch(252.7), inch(3.1)), pt(inch(252.7), inch(3.1))),
-            elevations=(inch(-4), inch(-4), inch(-4), inch(-6), inch(-6), inch(109.5),
-                        inch(115), inch(115), inch(109.5), inch(100))),
+            path=(pt(inch(376.16), inch(-25.86)), pt(inch(380.25), inch(-25.86)),
+                  pt(inch(380.25), inch(3.1)), pt(inch(359.4), inch(3.1)),
+                  pt(inch(359.4), inch(3.1)), pt(inch(355.4), inch(5)),
+                  pt(inch(256.7), inch(5)), pt(inch(252.7), inch(3.1)),
+                  pt(inch(252.7), inch(3.1))),
+            elevations=(inch(-4), inch(-4), inch(-4), inch(-4), inch(109.5), inch(115),
+                        inch(115), inch(109.5), inch(100))),
     PipeRun(uid="VZK9M5DP8Y", tag="PR-M-RFG-HP3-STAIR", system=PipeSystem.REFRIGERANT,
             serves=("EQ-M-HP3-STAIR",), material="copper_acr", diameter=inch(0.375),
             liquid_diameter=inch(0.25),

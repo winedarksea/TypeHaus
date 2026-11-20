@@ -5515,6 +5515,10 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # treatment, not by "4x12 glulam" — the untreated price is a third less and the two get
 # quoted against each other constantly.
 "beam:BEAM_GLULAM_TREATED" = { material = { low = 2800, high = 3800 }, labour = { low = 1120, high = 1870 } }  # 0.25 cy = ~23 LF over BM-SG-BLW/BLE = $30-41/LF material, $12-20/LF to set (BM-SG-BLC retired 2026-09-22)
+# The canopy headers BM-BW-RW/-RE are treated DF glulam, 24F-V4, 5-1/2" x 11-7/8" (Rosboro Treated
+# X-Beam; Anthony's treated SYP stops at 5-1/4"). Same $/cy placeholder until a quote; ask by
+# combination and width.
+"beam:BEAM_GLULAM_TREATED_DF" = { material = { low = 2800, high = 3800 }, labour = { low = 1120, high = 1870 } }  # 0.18 cy = 10.9 LF, BM-BW-RW/-RE
 "beam:BEAM_KDAT" = { material = { low = 580, high = 958 }, labour = { low = 203, high = 388 } }  # 0.18 cy, 6 members since 2026-10-13 (BM-BW-FC and BM-BW-LAND-HDR went with the garage landing; FE went 3-ply). Was 0.40 cy / 9 members from 2026-09-22
 #
 # COLUMN, KDAT — 15.4 LF, 0.12 cy (2026-10-13). [framing] "6x6" is $5-8.50 mat +

@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from typehaus.library.assemblies import (
     BEAM_GLULAM_TREATED,
+    BEAM_GLULAM_TREATED_DF,
     BEAM_KDAT,
     BEAM_LVL,
     CONCRETE_BEARING,
@@ -109,6 +110,7 @@ __all__ = [
     "BEAM_KDAT",
     "POST_KDAT",
     "BEAM_GLULAM_TREATED",
+    "BEAM_GLULAM_TREATED_DF",
     "RETAINING_BLOCK_12",
     "FROST_WING_XPS_1IN",
     "FROST_WING_XPS_2IN",

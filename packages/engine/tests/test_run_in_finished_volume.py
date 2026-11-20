@@ -341,3 +341,23 @@ def test_the_bands_lower_edge_is_the_storey_datum(catlin_model) -> None:
     fails = _fails_for(model, "PR-B-MAIN-DRAIN")
     assert fails and all(tag.startswith("RM-M-") for tag in
                          (f.element_tags[1] for f in fails)), [f.message for f in fails]
+
+
+def test_no_run_lies_in_a_ceiling_board(catlin_model) -> None:
+    """Above the board or below it, never in it, even in a service room.
+
+    ``PR-M-S-SUITE-DRAIN``'s offset over RM-B-WORKSHOP once had its centreline at 98" AFF,
+    so the 3" pipe passed through the 5/8" board. Put back, it fails on the board."""
+    from typehaus.model import inch
+
+    original = next(r for r in catlin_model.pipe_runs if r.tag == "PR-M-S-SUITE-DRAIN")
+    assert not _fails_for(catlin_model, original.tag)
+    z = list(original.z_m)
+    z[5], z[6] = inch(-11.4375).meters, inch(-12.0625).meters
+    model = dataclasses.replace(
+        catlin_model, pipe_runs=tuple(dataclasses.replace(r, z_m=tuple(z))
+                                      if r.tag == original.tag else r
+                                      for r in catlin_model.pipe_runs))
+    fails = _fails_for(model, original.tag)
+    assert any("ceiling board" in f.message and f.element_tags[1] == "RM-B-WORKSHOP"
+               for f in fails), [f.message for f in fails]
