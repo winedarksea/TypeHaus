@@ -217,6 +217,10 @@ class UpliftTieRules:
     # Floors tie the joist only. A rim closes the joist ends and a trimmer frames an
     # opening; neither lands on a bearing line of its own.
     tied_floor_categories: frozenset = frozenset({"joist"})
+    # A ``JoistSpec.sill_tie`` restrains the concrete wall's top (Minn. R. 1309.0404), so
+    # every member ending square on that sill takes one, a trimmer like a joist; a rim lies
+    # along a wall, and its corner end is held by the return wall.
+    sill_tied_floor_categories: frozenset = frozenset({"joist", "trimmer"})
     # Off: a joist on a wall plate is toe-nailed and pinned by the wall above; storey-to-storey
     # uplift is the band's CS16/LTP4, not a tie per joist (owner, 2026-09-16). Joists on beams
     # (decks) are still tied.

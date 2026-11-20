@@ -197,8 +197,23 @@ ducts or pipes". The owner's bounce goal, so two:
   | W-B-W1 | seam pack: FS-M-WEST 256", 259 1/16" + FS-M-MECH 261 3/8" | 3 | 21.375" trib. | 712.5 lb | 2 x 563 | 0.63 |
   | W-B-W1 | FS-M-WEST, 2-ply pack (240, the bath) | 1 | 16" | 533 lb | 2 x 563 | 0.47 |
   | W-B-W2 | FS-M-WEST, TJI (includes BATH2 drain bay's added line) | 14 | 16" max | 533 lb | 563 | 0.95 |
+  | W-B-W1 | FS-M-MECH, `FO-M-ERV-OA` south trimmer pack, 2-ply LVL (398 7/8", 400 5/8") | 2 | 18.19" trib. | 606 lb | 2 x 538 | 0.56 |
 
-  55 ends, **57 A35Z**: one an end (37 TJI + 18 truss), less the seam pack's middle end, plus one
+  **A trimmer ending square on a tied sill takes ties like a joist** (2026-11-20, owner;
+  `UpliftTieRules.sill_tied_floor_categories`). `FO-M-ERV-OA`'s south pack ends on W-B-W1's
+  sill north of the 389 3/8" joist, so W1's top from there to the corner was held by toe-nails
+  alone. Plies 1 3/4" LVL at 398 7/8" and 400 5/8" -> 398..401 1/2", one pack; ties on its
+  outer faces, leaves y 395 3/4..398 and 401 1/2..403 3/4", clear of the joist (390 17/32) and
+  of everything else on the sill. Nothing is tied north of it, so its tributary runs half way to
+  W-B-N4's inner face, y 424", where the return wall holds the top:
+  (400.625 + 424)/2 - (389.375 + 398.875)/2 = 412.3125 - 394.125 = 18.1875":
+  400 x 18.1875/12 = **606.3 lb** on 2 x 537.9 (LVL read as sawn, x 0.86) = 1,075.8, **0.56**.
+  The north pack (426 1/4"..429 3/4") lies along the N3/N4 sill, held by it like a rim, and
+  its end is the corner: no angle (its north leaf would lie under the LSL edge rim).
+  No other trimmer in the house ends on a tied sill; no other wall gains or loses a tie, and
+  the return-wall bound moves no other pack (each has a tied end beyond it).
+
+  57 joist ends + 2 trimmer ends, **59 A35Z** (57 until 2026-11-20): one an end (37 TJI + 18 truss), less the seam pack's middle end, plus one
   on each sister ply that lands on a sill (the 316 and 332 trusses, and `FS-M-WEST`'s bath ply
   at y 240"). (Until 2026-11-20 the 6" coincident-bearing grid merged the 153 3/32"/156" and
   256"/259 1/16" ends, so 53 ends, 56 ties, one drawn through framing.) Since 2026-11-18 the

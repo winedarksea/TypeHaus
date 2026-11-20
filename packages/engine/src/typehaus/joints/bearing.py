@@ -37,6 +37,7 @@ from typehaus.model.enums import ConnectorKind
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.assembly_material import assembly_structure_material
 from typehaus.resolve.construction_assemblies import _is_concrete as is_concrete_assembly
+from typehaus.resolve.floor_opening_packs import member_on_wall_top
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import ResolvedModel, ResolvedRoof
 from typehaus.resolve.sweep import interpolate_along, straight_sweep_band
@@ -337,7 +338,7 @@ def bearing_connections(model: ResolvedModel, rules: UpliftTieRules) -> list:
              for c, _support in _derive(model, rules, authored=False)}
     return pack_sill_ties(model, sorted(found.values(), key=lambda c: (c.support_tag,
                                                                         c.key_point)),
-                          rules.tied_floor_categories)
+                          rules.tied_floor_categories | rules.sill_tied_floor_categories)
 
 
 def authored_tie_gaps(model: ResolvedModel, rules: UpliftTieRules,
@@ -419,20 +420,25 @@ def _derive(model: ResolvedModel, rules: UpliftTieRules, *, authored: bool):
         if not supports:
             continue
         sisters = [m for m in resolved.members if m.category == "sister_joist"]
+        sill_only = (rules.sill_tied_floor_categories - categories) if sill_tie else frozenset()
+        sill_supports = [s for s in supports if s.sill]
         for member in resolved.members:
-            if member.category not in categories:
+            if member.category not in categories and member.category not in sill_only:
                 continue
+            own = supports if member.category in categories else sill_supports
+            if own is sill_supports and member_on_wall_top(model, member):
+                continue  # borne along a wall top, so held by it; its end is a corner
             ties: list = []  # (point, support)
             for point, bottom_z in _member_ends(member):
-                for support in supports:
+                for support in own:
                     if _bears_on(point, bottom_z, support, rules):
                         ties.append((point, support))
                         break  # one tie per end, even where two declared bearings overlap
             # Every support an end bears on, not only the one the break above tied: a
             # collinear second segment is the same bearing, not a crossing.
             tied = {support.tag for point, bottom_z in _member_ends(member)
-                    for support in supports if _bears_on(point, bottom_z, support, rules)}
-            for support in supports:
+                    for support in own if _bears_on(point, bottom_z, support, rules)}
+            for support in own:
                 crossing = None if support.tag in tied else _crossing(member, support)
                 if crossing is not None and _bears_on(*crossing, support, rules):
                     ties.append((crossing[0], support))

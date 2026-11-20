@@ -174,11 +174,11 @@ def test_derived_a35z_lies_on_its_sill_and_against_a_member_face(catlin_model_ro
     members = [LineString([m.p0, m.p1]).buffer(
         (m.plan_width_m or cross_section(m.profile).width_m) / 2, cap_style=2)
         for f in catlin_model_ro.floors for m in f.members
-        if m.category in ("rim", "joist", "sister_joist")]
+        if m.category in ("rim", "joist", "sister_joist", "trimmer")]
     ties = [s for s in catlin_model_ro.solids if s.derived and s.product == "A35Z"]
-    # 57 joist-end ties (the W-B-W1 and W-B-E1 seams are packs, tied on their outer faces)
-    # + 45 at the wall-top stations.
-    assert len(ties) == 102
+    # 57 joist-end ties (the W-B-W1 and W-B-E1 seams are packs, tied on their outer faces),
+    # 2 on FO-M-ERV-OA's south trimmer pack + 45 at the wall-top stations.
+    assert len(ties) == 104
     for tie in ties:
         xs, ys, zs = zip(*tie.body_mesh.positions, strict=True)
         spot = box(min(xs), min(ys), max(xs), max(ys))

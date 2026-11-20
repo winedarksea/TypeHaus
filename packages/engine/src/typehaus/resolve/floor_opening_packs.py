@@ -37,6 +37,20 @@ def sill_borne_run(model, seat_z, along_x, pack, run, header_runs, edges) -> tup
     return run0, run1
 
 
+def member_on_wall_top(model, member) -> bool:
+    """Does a level, straight member stand on a wall top over its whole run?"""
+    from typehaus.resolve.framing.profiles import cross_section
+
+    along_x = abs(member.p1[1] - member.p0[1]) < 1e-6
+    if not along_x and abs(member.p1[0] - member.p0[0]) > 1e-6:
+        return False
+    across, along = (1, 0) if along_x else (0, 1)
+    half = (member.plan_width_m or cross_section(member.profile).width_m) / 2.0
+    pack = (member.p0[across] - half, member.p0[across] + half)
+    lo, hi = sorted((member.p0[along], member.p1[along]))
+    return _on_wall_top(model, member.z0_m, along_x, pack, lo, hi)
+
+
 def _on_wall_top(model, seat_z, along_x, pack, lo, hi) -> bool:
     """Do walls seating this deck, end to end, stand under ``pack`` (across) over ``lo..hi``
     (along), their structure layer wide enough to take the whole pack? A released interior

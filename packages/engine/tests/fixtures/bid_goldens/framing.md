@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** ac0bb74df7b20e23  
-**Lines:** 266
+**Model hash:** 4651cca8f33de640  
+**Lines:** 267
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
 
@@ -153,6 +153,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | A35Z framing angle (A35Z:joist bearing) | 4 | ea |  | building |
 | A35Z framing angle (A35Z:modeled connector) | 6 | ea |  | building |
 | A35Z framing angle (A35Z:slat brace centre post tie) | 4 | ea |  | main |
+| A35Z framing angle (A35Z:trimmer bearing) | 2 | ea |  | building |
 | A35Z framing angle (A35Z:wall-top blocking station) | 45 | ea |  | building |
 | ABU44 standoff post base (4x4) (ABU44:post base) | 2 | ea |  | building |
 | ACE6Z adjustable end post cap (6x beam end on 6x6), MAX nailing (ACE6Z:modeled connector) | 4 | ea |  | building |
@@ -219,7 +220,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 10d common ring-shank nail, 0.148in x 3in, Type 304 (S10ACN:treated framing nails (allowance)) | 848 | ea |  | building |
 | 8d common ring-shank nail, 0.131in x 2.5in, Type 304 (S8ACN:sheathing nails) | 72 | ea |  | building |
 | HDG steel U-saddle on a 4 1/2 in (3-ply 2x) joist line, two 5/8 in through-bolts (SADDLE-4.5-2x58-HDG:suspension anchor) | 4 | ea |  | basement |
-| Strong-Drive SD connector screw, #9 x 1-1/2in (SD9112:connector fasteners) | 1,344 | ea |  | building |
+| Strong-Drive SD connector screw, #9 x 1-1/2in (SD9112:connector fasteners) | 1,368 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600:partition top plate, blocking between parallel members) | 72 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600:partition top plate, perpendicular framing above) | 108 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600:partition top plate, under a parallel member) | 12 | ea |  | building |
@@ -469,6 +470,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | A35Z framing angle (A35Z:joist bearing) | — |
 | A35Z framing angle (A35Z:modeled connector) | — |
 | A35Z framing angle (A35Z:slat brace centre post tie) | SB-BW-BAND |
+| A35Z framing angle (A35Z:trimmer bearing) | — |
 | A35Z framing angle (A35Z:wall-top blocking station) | — |
 | ABU44 standoff post base (4x4) (ABU44:post base) | — |
 | ACE6Z adjustable end post cap (6x beam end on 6x6), MAX nailing (ACE6Z:modeled connector) | — |

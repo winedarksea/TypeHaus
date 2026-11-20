@@ -9120,3 +9120,17 @@ Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
   the posts is 6 1/2". `PD-B-WELL` holds (projection 6" / 4 1/2" against 8"; 1,193 psf,
   `notes/stairwell_post_pad.md`). `W-B-WELL`'s end board now runs to the main floor. One more
   2x4 in the framing bid.
+
+## Trimmer ends on a tied sill take ties (2026-11-20, owner)
+
+- **Gap.** Sill ties went to joists only, so `FO-M-ERV-OA`'s south trimmer pack, landing on
+  W-B-W1's sill at y 398 7/8"/400 5/8", was toe-nailed: W1's top from the 389 3/8" joist to
+  the corner had no footnote f restraint.
+- **Rule.** A floor that names a `sill_tie` ties every member ending square on that sill, a
+  trimmer like a joist (`UpliftTieRules.sill_tied_floor_categories`), packed by
+  `sill_tie_pack`. A member borne along a wall top (`member_on_wall_top`, the N3/N4 pack) is
+  held by it, and its end is a corner, so it takes none. The wall-top check bounds a pack's
+  tributary at a return wall's face.
+- **Result.** Two A35Z on the south pack's outer faces, 606 lb over 18.2" (half way to
+  W-B-N4's face) against 1,076, d/c 0.56; A35Z 57 -> 59, SD9112 +24. No other wall changes
+  (`notes/main_floor_truss_basis.md` §4).

@@ -83,9 +83,11 @@ def _floor_spacing_m(ctx: CheckContext) -> dict:
     return out
 
 
-def _perpendicular(connections, reaction_plf, spacing_by_floor) -> tuple[list, list]:
+def _perpendicular(connections, reaction_plf, spacing_by_floor,
+                   returns=()) -> tuple[list, list]:
     """``(ok lines, short lines)`` for the seated ends on one wall, per floor; ends packed
-    closer than a tie's slot are graded as one pack (``joints/sill_packs``)."""
+    closer than a tie's slot are graded as one pack (``joints/sill_packs``). ``returns``:
+    return walls' faces along this wall, which hold its top like a tied end."""
     short = [f"{c.assembly_tag} end at {c.member_key.partition(':')[2]}: UNKNOWN — its "
              f"{c.sill_tie} has no clear slot, {', '.join(c.blocked_by)} over its leaf"
              for c in connections if c.blocked_by]
@@ -95,19 +97,20 @@ def _perpendicular(connections, reaction_plf, spacing_by_floor) -> tuple[list, l
             packs.setdefault(tuple(round(v, 4) for v in c.pack_extent_m), []).append(c)
     ok = []
     for ends in packs.values():
-        line, fits = _pack_line(ends, connections, reaction_plf, spacing_by_floor)
+        line, fits = _pack_line(ends, connections, reaction_plf, spacing_by_floor, returns)
         (ok if fits else short).append(line)
     more_ok, more_short = _per_floor([c for c in connections if c.pack_members <= 1],
                                      reaction_plf, spacing_by_floor)
     return ok + more_ok, short + more_short
 
 
-def _pack_line(ends, connections, reaction_plf, spacing_by_floor) -> tuple[str, bool]:
-    """One pack: 400 plf over midpoint-to-midpoint to the ends either side of it."""
+def _pack_line(ends, connections, reaction_plf, spacing_by_floor,
+               returns=()) -> tuple[str, bool]:
+    """One pack: 400 plf over midpoint-to-midpoint to the ends (or return walls) beside it."""
     i = 0 if ends[0].axis == "x" else 1
     mine = {id(c) for c in ends}
     at = sorted(c.point_m[i] for c in ends)
-    others = [c.point_m[i] for c in connections if id(c) not in mine]
+    others = [c.point_m[i] for c in connections if id(c) not in mine] + list(returns)
     spacing = max(spacing_by_floor.get(c.assembly_tag, 0.0) for c in ends)
     below = max((v for v in others if v < at[0]), default=at[0] - spacing)
     above = min((v for v in others if v > at[-1]), default=at[-1] + spacing)
@@ -272,7 +275,8 @@ def foundation_wall_top(ctx: CheckContext) -> list[Finding]:
                                       "Table R404.1(1); the restraint is a design", (tag,), _CODE))
             continue
         (row_h, row_b), (reaction, _bolt, blocking) = row
-        ok, short = _perpendicular(seats.get(tag, ()), reaction, spacing)
+        ok, short = _perpendicular(seats.get(tag, ()), reaction, spacing,
+                                   _return_faces(ctx.model, tag, walls))
         resolved = ctx.model.wall(tag)
         on_wall = [along_wall(resolved, a.point_m) for a in anchors]
         on_wall = [a for a, offset in on_wall if offset <= resolved.thickness_m]
@@ -290,6 +294,37 @@ def foundation_wall_top(ctx: CheckContext) -> list[Finding]:
             out.append(_fail(_CID, f"{head}; " + "; ".join(short), tags, _CODE))
         else:
             out.append(_pass(_CID, f"{head}; " + "; ".join(ok), _CODE))
+    return out
+
+
+def _structure_box(wall):
+    points = [p for layer in wall.layers if layer.function == "structure" for p in layer.polygon]
+    if not points:
+        return None
+    xs, ys = [p[0] for p in points], [p[1] for p in points]
+    return min(xs), min(ys), max(xs), max(ys)
+
+
+def _return_faces(model, tag: str, walls) -> list:
+    """Faces of the perpendicular foundation walls meeting ``tag``'s concrete, along its
+    axis: the face toward its run, where a corner holds the wall top."""
+    wall = model.wall(tag)
+    box = _structure_box(wall) if wall is not None else None
+    if box is None:
+        return []
+    i = 0 if abs(wall.axis[1][1] - wall.axis[0][1]) < 1e-6 else 1
+    middle = (box[i] + box[i + 2]) / 2.0
+    out = []
+    for other in model.walls:
+        if other.tag == tag or other.tag not in walls:
+            continue
+        o_box = _structure_box(other)
+        if o_box is None or abs(other.axis[1][i] - other.axis[0][i]) > 1e-6:
+            continue  # not perpendicular: it runs along this wall's axis
+        if (o_box[0] > box[2] + 1e-6 or o_box[2] < box[0] - 1e-6
+                or o_box[1] > box[3] + 1e-6 or o_box[3] < box[1] - 1e-6):
+            continue
+        out.append(min((o_box[i], o_box[i + 2]), key=lambda v: abs(v - middle)))
     return out
 
 

@@ -10,7 +10,7 @@
 > **Main deck is wood, 2026-11-01 (decision #112):** `SL-M-DECK` is `FS-M-NE`, 11 7/8" open-web
 > trusses at 16" o.c. (TRIFORCE OJ418S published row, 40/25 psf L/480, the 316/332 lines doubled under the peninsula, two strongbacks; amended 2026-11-02), and `W-B-CS2`/`-CN2`/`-CN`
 > are framed 2x6 bearing walls; one flat basement ceiling, no movement joint, no cast sleeves.
-> Every joist/truss end on a concrete wall takes an A35Z (`JoistSpec.sill_tie`; ends closer than a tie's slot, a sistered pack or a seam, are one pack, one on each outer face; a tie on framing is UNKNOWN) and the parallel
+> Every joist/truss (or trimmer) end on a concrete wall takes an A35Z (`JoistSpec.sill_tie`; ends closer than a tie's slot, a sistered pack or a seam, are one pack, one on each outer face; a tie on framing is UNKNOWN) and the parallel
 > walls take blocking stations with five derived A35Z each (`JoistSpec.station_ties`), graded by `code.MN_1309_0404_wall_top`; the
 > x=18' line has DF-L top plates (`notes/main_floor_truss_basis.md` §4-§5). The main floor is Cotton Oak
 > LVP (7 mm, floating) on the subfloor throughout, cabinets on the subfloor; the theater ceiling

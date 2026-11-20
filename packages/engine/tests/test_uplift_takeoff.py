@@ -220,8 +220,14 @@ def test_a_floor_joist_on_a_wall_takes_no_tie(catlin_model_ro, connections) -> N
     # The three sistered packs (FS-M-NE 316/332, FS-M-WEST's bath ply) tie both outer faces.
     # The four gable-end edge lines on concrete are LSL rims since 2026-11-18: none there.
     # W-B-W1's seam is a pack of three ends: the middle one's slot is shut, so it owns none.
+    # FO-M-ERV-OA's south trimmer pack ends square on W-B-W1's sill: one tie a ply's outer
+    # face; its north pack lies along the N3/N4 sill and takes none.
     assert Counter((c.sill_tie, c.sill_ties) for c in on_walls) == {
-        ("A35Z", 1): 51, ("A35Z", 2): 3, ("A35Z", 0): 1}
+        ("A35Z", 1): 53, ("A35Z", 2): 3, ("A35Z", 0): 1}
+    assert {c.member_key.rsplit("-", 2)[0] for c in on_walls
+            if c.member_category == "trimmer"} == {"CMFS03AAAA:trimmer-FO-M-ERV-OA"}
+    assert {c.member_key[-3:] for c in on_walls if c.member_category == "trimmer"} == {
+        "0-0", "0-1"}
     assert [c for c in connections if c.assembly_tag in {f.tag for f in catlin_model_ro.floors}
             and c.support_tag not in walls], "deck joists on beams stay tied"
 
