@@ -225,8 +225,8 @@ ducts or pipes". The owner's bounce goal, so two:
   | W-B-N1 | FS-M-NE | 1.8"..216" | x 21'/27'/33' | 72" | 2,400 lb | 0.89 |
   | W-B-S1 | FS-M-WEST | 1.7"..118" | x 3'/7' | 58.3" | 1,943 lb | 0.69 |
   | W-B-S4 | FS-M-EAST | 0..116.2" | x 29'-2"/33'-2" | 60" | 2,000 lb | 0.71 |
-  | W-B-N3 | FS-M-MECH | 0..48" | x 8' | 48" | 1,600 lb | (0.57) UNKNOWN |
-  | W-B-N4 | FS-M-MECH | 0..70.3" | x 5'-10" | 70.3" | 2,342 lb | (0.83) UNKNOWN |
+  | W-B-N3 | FS-M-MECH | 0..48" | x 8' | 48" | 1,600 lb | 0.57 |
+  | W-B-N4 | FS-M-MECH | 0..70.3" | x 5'-10" | 70.3" | 2,342 lb | 0.83 |
 
   W-B-N4's station is at its east end, x=5'-10": `FO-M-ERV-OA` (x 6"..48 1/2") and
   `DU-ERV-RISER-SUP` (6", west through the third space over x 17"..68") leave no other spot.
@@ -234,14 +234,33 @@ ducts or pipes". The owner's bounce goal, so two:
   N4's sills butt at x=6', so N3's thrust cannot reach ties on N4's. Each run grades only the
   stations its own span holds, so the station is tied once, from N4: 400 x 70.25/12 =
   2,342 lb on five A35Z, 2,342 / 2,815 = 0.83; N3's x=8' station takes all 48", 1,600 lb /
-  2,815 = 0.57. The block is at the run's end, so the five fall west of it and the pitch closes to 3 7/8" to stay
-  inside 18": x 68, 64 1/8, 60 1/4, 56 3/8, 52 1/2. (The authored x=72" tie stood on the
-  N3/N4 node, N4's span end, half over each sill.)
-  **Open, and UNKNOWN:** along W-B-N3/N4 `FO-M-ERV-OA`'s doubled LVL trimmers (y 426 1/4"..
-  429 3/4") stand on the sill 1/2" off the LSL rim, so every tie's flat leaf there lies under
-  them (as the authored ones did); the check names the member and grades both walls UNKNOWN
-  until the detail is designed (the bracketed ratios are what the ties give once nailable);
-  and on W-B-W1 `FS-M-WEST`'s seam line (y 259") has 3/4" to the next joist and none to
+  2,815 = 0.57. (The authored x=72" tie stood on the N3/N4 node, N4's span end, half over
+  each sill.)
+  **`FO-M-ERV-OA`'s north pack stops past its header (2026-11-20, owner).** Its two LVL plies
+  (y 426 1/4"..429 3/4") stand on the N3/N4 sill, 1/2" off the rim, so a tie's flat leaf
+  (430 1/4" - 2 1/4" = 428") lay under them. A pack on a wall top spans nothing: it carries
+  the header's HHUS410 straight into the sill, so it needs no bearing line beyond it
+  (`resolve/floor_opening_packs.py`). It stops 3" past the header's far face: header x
+  48 1/2"..52", HHUS410 W 3 5/8" + 2" flanges (C-C-2026 p. 155) centred at 50 1/4" ->
+  flange edge 50.25 + 1.8125 + 2 = 54 1/16", pack end 52 + 3 = **55"**, 15/16" of LVL past
+  the flange for its nails. The south pack spans the field and still runs to x=10'.
+  - N4, block x 68 27/32..71 5/32 (TJI 2 5/16"): first tie 68 27/32 - 1/8 - 23/32 = 68";
+    the span ends at x=72", so all five fall west. A tie may not lie on framing, so the
+    pitch closes until the fifth clears the pack: 68 - 4p - 23/32 >= 55 -> p <= 3.07 -> **3"**
+    (the 1/8" ladder), x 68, 65, 62, 59, 56; reach 70 - 56 = 14" <= 18". Leaf 55 9/32"..,
+    9/32" clear of the pack end; the hanger flange is on the pack's opening face, y 426 1/4",
+    1 3/4" off the leaf's inner edge, so the two never meet.
+  - N3, block x 94 27/32..97 5/32: D-M-ENTRY's two 10" rim-stock backers (x 75 5/8"..85 5/8",
+    104"..114", y 429"..430 1/4", `params/sill_seat_backers.py`) also stand on the leaf's
+    strip. West ties 94 - kp, leaf >= 85 5/8 -> kp <= 7.66; east 98 + kp, leaf <= 104 ->
+    kp <= 5.28. At 3 7/8" only four fit; at **3 3/4"**: x 86 1/2, 90 1/4, 94, 98, 101 3/4.
+  - **Nothing else is owed on x 0..55".** Footnote f asks for stations at the table spacing;
+    N4's one station is 70" from W-B-W1's corner (the wall end) and 2" from N4's east end,
+    both <= 72", so the spacing is met without a station where the pack stands. The pack is
+    parallel to the wall, so it is not footnote f blocking and is not credited; the wall top
+    beneath it reaches the x=5'-10" station through the anchored sill, the reading every
+    tributary in this table takes. The header carries floor load only.
+  And on W-B-W1 `FS-M-WEST`'s seam line (y 259") has 3/4" to the next joist and none to
   `FS-M-MECH`'s first, so its sill tie has no clear side.
   Each station has a MASA within 8": where the pitch left none, one is added (eight in all,
   69 -> 77 billed; `joints/sills._snap_to_blocking`). Moving one instead stranded the plate ends.

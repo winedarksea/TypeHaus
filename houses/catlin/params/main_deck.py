@@ -343,7 +343,8 @@ MECH_FLOOR = FloorSystem(
     openings=("FO-M-ERV-OA", "FO-M-ERV-SUP-FEED"),
     # W-B-N3 at x=8', W-B-N4 at x=5'-10", its east end: the FO-M-ERV-OA chase (x 6"..48 1/2")
     # and DU-ERV-RISER-SUP's 6" run west through the third space (x 17"..68") leave no other
-    # spot. The station also serves W-B-N3's west end.
+    # spot. The station also serves W-B-N3's west end. FO-M-ERV-OA's north pack stops at x=55"
+    # (3" past its header), so N4's five ties fit at 3" o.c. (basis note §4).
     reinforcements=(*_wall_top_blocks("W-B-N3", (inch(96),), _N_WALL_LINES),
                     *_wall_top_blocks("W-B-N4", (inch(70),), _N_WALL_LINES),
                     *ENTRY_SEAT_BACKERS),  # D-M-ENTRY's sill seats

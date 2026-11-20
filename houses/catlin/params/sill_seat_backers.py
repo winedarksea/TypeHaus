@@ -5,9 +5,9 @@ holds 1 1/4", so 3/4" must land in wood behind it (`notes/exterior_door_sill_bea
 D-M-PORCH: D-B-SUNKEN's band-header LVL plies are already nailed to the rim. D-S-BALCONY: a
 10" piece of the rim stock on the rim's inner face, a 2-ply rim board, nailed per TJ-8000
 p.7 (side load, 10d, 3 rows; 2 a row on the 10" piece, credited at the row's 560 plf).
-D-M-ENTRY: a 1/2" LSL filler closing the gap to FO-M-ERV-OA's LVL trimmer pack, the three
-nailed together on IRC R602.3(1) item 10's pattern (16d at 16" o.c. each edge), graded by the
-note's NDS 12.3 nail check; no published row covers that joint. Each backer is the seat's
+D-M-ENTRY: the same rim-stock ply as BALCONY (2026-11-20): FO-M-ERV-OA's north trimmer
+pack, which a 1/2" filler used to close onto, now stops past its header
+(`resolve/floor_opening_packs.py`), so nothing else stands behind the rim. Each backer is the seat's
 own 10" station; the connection grade refuses a seat whose screws miss it
 (`resolve/girt_sill_connection.py`).
 """
@@ -16,7 +16,6 @@ from typehaus import JoistReinforcement, inch, pt
 
 _SEAT_IN = 10.0
 _BACKER = "1.25x11.875 rim"
-_FILLER = "0.5x11.875:lsl"
 
 
 def _backers(ro_edges_in, rim_inner_y_in, inward, member, source):
@@ -38,7 +37,7 @@ BALCONY_SEAT_BACKERS = _backers(
     "notes/exterior_door_sill_beam.md section 3")
 #: D-M-ENTRY's RO (x 75 5/8"..114") over FS-M-MECH's north rim (inner face 430 1/4").
 ENTRY_SEAT_BACKERS = _backers(
-    (75.625, 114.0), 430.25, -1.0, _FILLER,
-    "D-M-ENTRY sill seat filler: 1/2\" LSL rip closing the gap from the rim to FO-M-ERV-OA's "
-    "LVL trimmer pack, nailed through on IRC R602.3(1) item 10's pattern (16d common at 16\" "
-    "o.c. each edge), NDS 12.3 check; notes/exterior_door_sill_beam.md section 3")
+    (75.625, 114.0), 430.25, -1.0, _BACKER,
+    "D-M-ENTRY sill seat backer: 1 1/4\" LSL rim stock on the rim's inner face, a 2-ply "
+    "rim board nailed per TJ-8000 (March 2025) p.7, side load, 10d, 3 rows of 2 (12\" o.c. max); "
+    "notes/exterior_door_sill_beam.md section 3")

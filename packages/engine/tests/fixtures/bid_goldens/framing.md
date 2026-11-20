@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 7296d988357c1cf9  
-**Lines:** 267
+**Model hash:** 836d500df2ca674f  
+**Lines:** 266
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
 
@@ -16,7 +16,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | application | detail | storeys |
 |---|---|---|---|---|---|
-| 0.5x11.875 Laminated strand lumber, 8' (0.5x11.875:lsl) | 1 | pc | sister joist | 8 LF | building |
 | 0.75x3.5 Poplar trim, 1x4 S4S, paint grade, 8' (0.75x3.5:poplar-trim-paint) | 2 | pc | blocking | 16 LF | building |
 | 1.0x3.5 SPF No. 2 & Btr framing lumber, 8' (1.0x3.5:spf) | 1 | pc | blocking | 8 LF | building |
 | 1 1/4" x 11 7/8" LSL rim board 1.3E, 8' (1.25x11.875 rim) | 4 | pc | rim board, sister joist | 32 LF | building |
@@ -28,8 +27,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 1 1/2" x 14" LSL, 8' (1.5x14 LSL) | 5 | pc | blocking | 40 LF | building |
 | 1 3/4" x 11 7/8" LSL 1.55E, 16' (1.75x11.875 LSL) | 2 | pc | rim board | 32 LF | building |
 | 1 3/4" x 11 7/8" LSL 1.55E, 20' (1.75x11.875 LSL) | 2 | pc | rim board | 40 LF | building |
-| 1 3/4" x 11 7/8" LVL 2.0E, 8' (1.75x11.875 LVL) | 10 | pc | sister joist, trimmer | 80 LF | building |
-| 1 3/4" x 11 7/8" LVL 2.0E, 10' (1.75x11.875 LVL) | 4 | pc | trimmer | 40 LF | building |
+| 1 3/4" x 11 7/8" LVL 2.0E, 8' (1.75x11.875 LVL) | 12 | pc | sister joist, trimmer | 96 LF | building |
+| 1 3/4" x 11 7/8" LVL 2.0E, 10' (1.75x11.875 LVL) | 2 | pc | trimmer | 20 LF | building |
 | 1 3/4" x 11 7/8" LVL 2.0E, 20' (1.75x11.875 LVL) | 4 | pc | trimmer | 80 LF | building |
 | 11 7/8" TJI 230, 8' (11.875 TJI 230) | 21 | pc | blocking, joist | 168 LF | building |
 | 11 7/8" TJI 230, 10' (11.875 TJI 230) | 19 | pc | joist | 190 LF | building |
@@ -142,7 +141,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | HDG smooth-shank connector nail, 0.131in x 1.5in (0.131x1.5 connector nail:connector fasteners) | 84 | ea |  | building |
 | HDG smooth-shank connector nail, 0.148in x 1.5in (0.148x1.5 connector nail:connector fasteners) | 972 | ea |  | building |
 | HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3:connector fasteners) | 40 | ea |  | building |
-| HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3:treated framing nails (allowance)) | 915 | ea |  | building |
+| HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3:treated framing nails (allowance)) | 897 | ea |  | building |
 | HDG smooth-shank strap nail, 0.148in x 2.5in (10d short common 0.148x2.5:diaphragm joint strap nails) | 72 | ea |  | building |
 | HDG 16d common nail, 0.162in x 3.5in (16d common 0.162x3.5:connector fasteners) | 248 | ea |  | building |
 | HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5:connector fasteners) | 176 | ea |  | building |
@@ -222,7 +221,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | HDG steel U-saddle on a 4 1/2 in (3-ply 2x) joist line, two 5/8 in through-bolts (SADDLE-4.5-2x58-HDG:suspension anchor) | 4 | ea |  | basement |
 | Strong-Drive SD connector screw, #9 x 1-1/2in (SD9112:connector fasteners) | 1,332 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600:partition top plate, blocking between parallel members) | 72 | ea |  | building |
-| Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600:partition top plate, perpendicular framing above) | 110 | ea |  | building |
+| Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600:partition top plate, perpendicular framing above) | 108 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600:partition top plate, under a parallel member) | 12 | ea |  | building |
 | slat brace plate screw (SDWS22400DB:slat brace plate screw) | 16 | ea |  | main |
 | SDWS Timber Screw (0.220 in shank), ridge plate to wall top plates (SDWS22600DB:ridge plate) | 36 | ea |  | building |
@@ -343,7 +342,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | elements |
 |---|---|
-| 0.5x11.875 Laminated strand lumber, 8' (0.5x11.875:lsl) | — |
 | 0.75x3.5 Poplar trim, 1x4 S4S, paint grade, 8' (0.75x3.5:poplar-trim-paint) | — |
 | 1.0x3.5 SPF No. 2 & Btr framing lumber, 8' (1.0x3.5:spf) | — |
 | 1 1/4" x 11 7/8" LSL rim board 1.3E, 8' (1.25x11.875 rim) | — |

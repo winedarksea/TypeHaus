@@ -142,7 +142,7 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey, anchors=()
                       perp0, perp1, cross_section(rim_profile).width_m,
                       cant_start_m, cant_end_m)
     opening_boxes, opening_findings = opening_frames(
-        model, system, along_x, boundaries, ends, depth, (perp0, perp1))
+        model, system, along_x, boundaries, ends, depth, (perp0, perp1), seat_z=z0)
     if opening_boxes is None:
         return None, opening_findings
 

@@ -330,9 +330,12 @@ def station_tie_points(model: ResolvedModel) -> list:
         def at(a, off=offset, o=origin, u=unit, n=normal):
             return (o[0] + u[0] * a + n[0] * off, o[1] + u[1] * a + n[1] * off)
 
-        def blocked(a, run=run, holes=holes, at=at):
+        def blocked(a, run=run, holes=holes, at=at, floor=floor, inward=inward, dims=dims):
+            # Framing over the flat leaf (a trimmer on the sill, a backer on the rim) too.
             return (any(lo <= a <= hi for lo, hi in run.voids)
-                    or any(h.contains(Point(at(a))) for h in holes))
+                    or any(h.contains(Point(at(a))) for h in holes)
+                    or (dims is not None
+                        and _under(floor, footprint(at(a), inward, dims)) is not None))
 
         for station in run.stations:
             key = (run.floor_tag, round(station.point_m[0], 3), round(station.point_m[1], 3))

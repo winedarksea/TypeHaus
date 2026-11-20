@@ -124,7 +124,7 @@
 > girt band (face at the nose, 3/4" proud of the cladding, the pan wrapped to a drip), seated at its
 > ends on 10" 4-ply 2x8 stacks, four HeadLOK HLGM10s a seat into the floor's 1 1/4" LSL edge rim
 > and a backer behind it (`params/sill_seat_backers.py`: PORCH's LVL plies, BALCONY a rim-stock
-> ply, ENTRY a 1/2" filler to the ERV trimmer; owner 2026-11-18) (`SillCourseFastening`,
+> ply, ENTRY a rim-stock ply too since 2026-11-20; owner 2026-11-18) (`SillCourseFastening`,
 > `resolve/girt_sill_connection.py`; house NDS 12.3 draft calc, no table covers an 8" side
 > member): worst lateral 125.34 lb vs 145.5, Table 5 by each member's SG; the seat's rotation is
 > NDS 12.4.1 combined, 0.965 at the G 0.42 pull-through (0.828 at SP). **Every TJI gable-end edge line is an LSL rim board** (`JoistSpec.edge_rims`,
@@ -881,7 +881,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     C_D 0.9), 533 lb a TJI against 563 (onto the LSL rim, ×0.90). The x=18' plate ends are
     toe-nailed again (no net uplift). Parallel walls `W-B-N1`/`-N3`/`-N4`/`-S1`/`-S4` take
     blocking stations (first three spaces, ≤72") with five A35Z each, derived beside the block
-    (`JoistSpec.station_ties=5`; `-N3`/`-N4` are UNKNOWN: `FO-M-ERV-OA`'s trimmers sit on the sill);
+    (`JoistSpec.station_ties=5`; a tie never lies on framing; `FO-M-ERV-OA`'s north pack stands on the N3/N4 sill, so it stops 3" past its header, `resolve/floor_opening_packs.py`);
     a MASA is added at each with none within 8" (`joints/sills._snap_to_blocking`). **`W-B-N2` is UNKNOWN**:
     `FO-M-STAIR` fills its first three joist spaces, so its restraint is the well's edge framing,
     a design (`plans/TODO.md`). Basis note §4.

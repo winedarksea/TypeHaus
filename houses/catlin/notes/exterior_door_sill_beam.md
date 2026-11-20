@@ -37,9 +37,10 @@ Depths are inches outward from the sheathing's outer face; elevations are off th
 - **Backer behind the rim** (owner, 2026-11-18; `params/sill_seat_backers.py`), so the HeadLOK's
   2.0" of thread embeds (§3): PORCH, D-B-SUNKEN's 1 3/4" LVL plies already nailed to the rim;
   BALCONY, a 10" piece of the 1 1/4" rim stock on the rim's inner face behind each seat (a 2-ply
-  rim board), alone in its bay (y 1 3/4"..3", the next line at 8 11/32"); ENTRY, a 10" × 1/2"
-  LSL filler behind each seat closing the 1/2" gap to FO-M-ERV-OA's LVL trimmer pack, clear of
-  the two 1/2" wall-top blocks at x 70"/96". No hanger, MEP run or ceiling item in any of them.
+  rim board), alone in its bay (y 1 3/4"..3", the next line at 8 11/32"); ENTRY, the same
+  rim-stock ply (2026-11-20; it was a 1/2" filler closing onto FO-M-ERV-OA's north trimmer
+  pack, which now stops 3" past its header at x=55", `main_floor_truss_basis.md` §4), clear of
+  the wall-top blocks at x 70"/96". No hanger, MEP run or ceiling item in any of them.
 - **Wood through the foam.** 2 × 10 × 7.25 = **145 in²** a door (110 with the 2x6 seats). The
   retired course had 11 blocks × 3.5² = 134.75 in² at the wide doors and 7 × 12.25 = 85.75 at
   the entry. The foam runs unbroken between the seats.
@@ -86,7 +87,7 @@ it is on the main member's side):
     thread          8.0" to 10.0": starts at the rim's face, 1.25" in the rim, 0.75" in the backer
                     PORCH  LVL ply 1 (1.75", tip 1.0" short of its far face)
                     BALCONY rim-stock backer (1.25", tip 0.5" short)
-                    ENTRY  1/2" filler, then 0.25" into the LVL trimmer
+                    ENTRY  rim-stock backer (1.25", tip 0.5" short), as BALCONY
     in wood         1.25 + 0.75 = 2.00" ≥ 2.0" (ESR-1078 Table 2)                ✓ exactly
     penetration     2.00" ≥ 6D = 6 × 0.191 = 1.146" (NDS 12.1.4.6)               ✓
 
@@ -155,19 +156,18 @@ The ¼" scan finds nothing worse; the engine's own scan agrees to the hundredth 
 the house already takes for `girt_screw/W-A-N1` and Table 5, and the G 0.42 bound.
 
 **Scope of the withdrawal read (review, 2026-11-18).** ESR-1078 §3.2 puts EWP other than glulam
-and CLT outside the report, so Table 2 in the LSL rim, the LVL plies and the filler is read at
+and CLT outside the report, so Table 2 in the LSL rim, the backers and the LVL plies is read at
 ESR-1387 Table 2's face-withdrawal SG 0.50, and the 2.0" minimum is met only by summing thread
-across pieces held in contact (rim + backer; at ENTRY rim 1.25 + filler 0.5 + 0.25 of LVL, the
-last of it the gimlet tip). The tension pulls each backer onto the rim, so the pieces bear
+across pieces held in contact (rim + backer). The tension pulls each backer onto the rim, so the pieces bear
 rather than part. Neither reading is load-bearing for the grade: the G 0.42 column is
 pull-through in the sawn beam (280 < 460) and does not move, and on the rim's 1.25" alone
-(W' 287.5) the SP column rises to 0.953 (wide) / 0.933 (entry), rim + filler at ENTRY
-(402.5) 0.797. What the backer buys is ESR's 2.0" minimum, which a single member here cannot
+(W' 287.5) the SP column rises to 0.953 (wide) / 0.933 (entry). What the backer buys is ESR's 2.0" minimum, which a single member here cannot
 give.
 
-**Accepted as the house reading (owner, 2026-11-18).** ENTRY meets Table 2's 2.0" by the sum,
-rim 1 1/4" + filler 1/2" + 1/4" of FO-M-ERV-OA's LVL trimmer, the pieces drawn tight, with the
-withdrawal in LSL/LVL read at ESR-1387's SG 0.50. The rim alone passes too (0.933, SP).
+**Accepted as the house reading (owner, 2026-11-18).** Table 2's 2.0" is met by the sum, rim
+1 1/4" + 3/4" of the backer, the pieces drawn tight, with the withdrawal in LSL/LVL read at
+ESR-1387's SG 0.50. The rim alone passes too (0.933 at ENTRY, SP). (ENTRY's sum was rim + 1/2"
+filler + 1/4" of the ERV trimmer until 2026-11-20; the trimmer no longer reaches the door.)
 
 **Backer nailing**, the published rows:
 
@@ -177,13 +177,10 @@ withdrawal in LSL/LVL read at ESR-1387's SG 0.50. The rim alone passes too (0.93
   denser than the row, credited only at it), clinched (note 2; 3" through 2 1/2" of LSL). Capacity
   pro rata, 560 × 10/12 = 467 lb. Demand, the whole wide-door seat reaction as if all of it reached
   the backer: 325.73 / (10/12) = 390.9 plf → **0.70** (2 rows, 370 plf, would be 1.06).
-- ENTRY: no published row covers a rim nailed through a filler to a trimmer pack; the pattern is
-  borrowed from IRC R602.3(1) item 10, *built-up header (2" to 2" header with 1/2" spacer)*, 16d
-  common (3 1/2" × 0.162") at 16" o.c. each edge, face nail, through the rim and filler into the
-  LVL trimmer: 2 an edge on a 10" filler, 4 in all. The NDS check carries it: 16d, NDS 12.3, side 1.75" (rim + filler)
-  and penetration 1.75" at G 0.50, F_yb 90 ksi, R_d 2.2: Im = Is 597.5 · II 247.5 · IIIm = IIIs
-  215.4 · IV 0.026244 / 2.2 × √(2 × 4,636.7 × 90,000 / 6) = **140.7 lb** (dry, C_M 1.0);
-  348.67 / 4 = 87.2 lb a nail → **0.62**.
+- ENTRY (2026-11-20): BALCONY's row and pattern, 3 rows of 2 10d clinched on each 10" ply. Its
+  end-loaded seat's reaction is the larger: 348.67 / (10/12) = 418.4 plf against 560 → **0.75**.
+  (The retired filler took IRC R602.3(1) item 10's 16d pattern into the LVL trimmer, 0.62 by
+  NDS 12.3.)
 - PORCH: the LVL plies' own band-header fastening (TJ-9000 p.30, 3 rows of 10d at 12", nailed to
   the rim, `sunken_door_band_header.md`); nothing added.
 

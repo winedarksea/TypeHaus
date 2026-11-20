@@ -242,9 +242,10 @@ def test_no_deck_sisters_a_joist_and_one_floor_does(catlin_model):
     # And the BOM follows: the 2x8 sister rows the porch pack bought are gone with it, and
     # the I-joist ply under the bath is the only sistered stock this house orders.
     rows = {(row["profile"], row["category"]) for row in framing_takeoff(catlin_model)}
-    # Plus the 2026-11-18 sill seat backers (1/2" LSL, rim stock) and the landing's edge plies.
+    # Plus the 2026-11-18 sill seat backers (rim stock; ENTRY's 1/2" LSL filler went
+    # 2026-11-20) and the landing's edge plies.
     assert sorted(key[0] for key in rows if key[1] == "sister_joist") == [
-        "0.5x11.875:lsl", "1.25x11.875 rim", "1.75x11.875 LVL", "11.875 TJI 230",
+        "1.25x11.875 rim", "1.75x11.875 LVL", "11.875 TJI 230",
         "11.875 floor truss", "2.125x11.25:kdat", "2x12:kdat", "2x8:kdat"]
 
 

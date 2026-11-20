@@ -9029,6 +9029,20 @@ Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
 - **Open.** `FO-M-ERV-OA`'s trimmer pair fills W-B-N3/N4's first joist space (1/2" to the rim),
   so ten ties lie under it and the check grades both walls UNKNOWN; FS-M-WEST's seam joist on W-B-W1 has no clear side for its tie.
 
+## FO-M-ERV-OA's north pack stops at its header; W-B-N3/N4 tied (2026-11-20, owner)
+
+- **Why.** The pack ran x 1 3/4"..10' on the N3/N4 sill, 1/2" off the rim, under every
+  station tie's leaf. Bearing to bearing is for a pack that spans; this one stands on the wall
+  top its whole length.
+- **What.** `resolve/floor_opening_packs.py`: a pack on a wall top that seats its deck stops
+  3" past its last header's far face (HHUS410's 2" flange + 1"), here x=55". `joints/wall_top`
+  lays no tie on framing. N4's five ties close to 3" o.c. (x 56..68), N3's to 3 3/4" round
+  D-M-ENTRY's backers: N4 0.83, N3 0.57, both PASS. No station is owed under the pack: N4's
+  x=5'-10" station is 70" from W-B-W1's corner (footnote f's 72").
+- **D-M-ENTRY.** Its 1/2" fillers backed onto that pack; each is now BALCONY's 10" rim-stock ply
+  (2.0" of HLGM10 thread, TJ-8000 p.7 nailing, 0.75). Notes: `main_floor_truss_basis.md` §4,
+  `exterior_door_sill_beam.md` §1-§3.
+
 ## ERV rebalance: sauna at Harvia's rate, tokens out, a stair-top pickup (2026-11-20, owner)
 
 - **Why.** Harvia's 5 ACH on the sauna's 456 ft3 is 38 cfm; it had 20. RM-S-VANITY holds two

@@ -23,6 +23,7 @@ from typehaus.findings import Finding, Result, Severity
 from typehaus.model.floors import FloorOpening, FloorSystem
 from typehaus.quantities import inch, m
 from typehaus.resolve.coatings import layer_depth_m
+from typehaus.resolve.floor_opening_packs import sill_borne_run
 from typehaus.resolve.floor_opening_support import OpeningHeaderRun, edge_header_runs
 from typehaus.resolve.framing.profiles import cross_section, is_sawn_lumber
 from typehaus.resolve.framing.tables import ENGINEERED_LVL, header_size
@@ -152,7 +153,7 @@ class OpeningFrame:
 
 def opening_frames(model: ResolvedModel, system: FloorSystem, along_x: bool,
                    boundaries: list[float], ends, depth_m: float,
-                   deck: tuple[float, float] = (-1e9, 1e9)):
+                   deck: tuple[float, float] = (-1e9, 1e9), seat_z: float | None = None):
     """``(frames, findings)`` for every opening of ``system``; ``frames`` is None on error."""
     member = system.joists.member
     trimmer_profile = opening_trimmer_profile(member, depth_m)
@@ -204,6 +205,10 @@ def opening_frames(model: ResolvedModel, system: FloorSystem, along_x: bool,
                       axis1, band_lo, band_hi, boundaries, ends,
                       lo=False))
             for band_lo, band_hi in packs)
+        if seat_z is not None:
+            runs = tuple(sill_borne_run(model, seat_z, along_x, pack, run, header_runs,
+                                         (axis0, axis1)) for pack, run in zip(packs, runs,
+                                                                              strict=True))
         frames.append(OpeningFrame(
             opening, minx, maxx, miny, maxy, perp0, perp1, axis0, axis1, headers, runs,
             carriers, packs, plies, trimmer_profile, band, header_runs, setback,
