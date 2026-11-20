@@ -39,8 +39,8 @@ from typehaus.solids3d.recorder import drawn_placeables  # noqa: E402
 # one is PR-B-RFG-HP2-GYM through W-M-S2's lowest outer girt (not intended, open). The 4"
 # vent grew vent|wall and grazes an attic joist (framing|vent). baseboard|insulation is
 # W-A-S3's base end 0.22" past the corner into the roof bay fill over W-A-E1's 3" plates.
-# connector_embedded|fireblock: the NW corner STHD's leaf, on W-M-N3B's stud face, grazes the
-# 1/4" FO-M-ERV-OA lid that runs under that wall (a 1 1/2" x 0.1" contact).
+# connector_embedded|fireblock: the NW corner STHD's leaf, on W-M-N3B's stud face, passes the
+# 3/4" FO-M-ERV-OA lid sheet, which runs 1/4" past that face (3" x 0.1"; the lid is notched).
 GOLDEN = Path(__file__).parent / "fixtures" / "solids3d_overlaps.json"
 #: The billed volume may differ from the exact solid by this much (relative, absolute m^3).
 VOLUME_TOLERANCE = (0.01, 1e-7)

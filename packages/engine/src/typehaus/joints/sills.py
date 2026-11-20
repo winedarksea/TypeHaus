@@ -165,6 +165,8 @@ _ANCHOR_HALF_WIDTH_M = 1.5 * M_PER_IN
 _LEAF_M = 0.125 * M_PER_IN
 #: An anchor this close across a strap's run stands on the same sill.
 _SAME_SILL_M = 6.0 * M_PER_IN
+#: R403.1.6: an anchor within 12" of each plate end. A move past it is not made; the clash shows.
+_CODE_END_M = 12.0 * M_PER_IN
 
 
 def _authored_strap_frames(model: ResolvedModel) -> list:
@@ -195,8 +197,8 @@ def _clear_of_straps(model: ResolvedModel, rules: SillPlateAnchorRules, sill_cat
     straps = [(t.point_m, t.axis) for t in strap_holdown_stations(model, rules, sill_category)
               if t.outward_xy] + [(p, axis) for p, axis in _authored_strap_frames(model)
                                   if any(math.dist(p, c) <= standdown for c in corners)]
-    ends = [p for ret in anchored_sill_returns(model, sill_category)
-            for p in centerline_endpoints(list(ret.outline))]
+    ends = [(p, axis_of(*line)) for ret in anchored_sill_returns(model, sill_category)
+            for line in (centerline_endpoints(list(ret.outline)),) for p in line]
     clear = _STRAP_HALF_WIDTH_M + _ANCHOR_HALF_WIDTH_M
     off_leaf = _ANCHOR_HALF_WIDTH_M + _LEAF_M
     out = []
@@ -209,10 +211,16 @@ def _clear_of_straps(model: ResolvedModel, rules: SillPlateAnchorRules, sill_cat
             if abs(along) >= clear:
                 continue
             if station.axis == strap_axis and abs(across) < _SAME_SILL_M:
-                end = min(ends, key=lambda e: math.dist(e, point))
+                end = min((e for e, e_axis in ends if e_axis == strap_axis),
+                          key=lambda e: math.dist(e, point), default=None)
+                if end is None:
+                    continue
                 inward = 1.0 if (point[0] - end[0]) * d[0] + (point[1] - end[1]) * d[1] > 0 \
                     else -1.0
                 step, axis = inward * clear - along, d
+                at = (station.point_m[0] - end[0]) * d[0] + (station.point_m[1] - end[1]) * d[1]
+                if abs(at + step) > _CODE_END_M:
+                    continue
             elif (station.axis != strap_axis and station.role == ROLE_SILL_ANCHOR_BOLT
                   and abs(across) < off_leaf):
                 step, axis = math.copysign(off_leaf, across) - across, n

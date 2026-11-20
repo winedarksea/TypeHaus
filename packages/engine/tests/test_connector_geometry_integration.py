@@ -5,6 +5,7 @@ import math
 import pytest
 from _helpers import assert_wire_mesh
 
+from typehaus.hardware.catalog import ROLE_EMBEDDED_STRAP_HOLDOWN
 from typehaus.hardware.config import DEFAULT_HARDWARE_TAKEOFF_CONFIG
 from typehaus.joints import derived_joints
 from typehaus.joints.model import marker_uid
@@ -48,7 +49,8 @@ def test_hanger_seats_use_carried_member_ends_and_face_into_them(catlin_model_ro
     solids = {solid.uid: solid for solid in _simpson_solids(catlin_model_ro)}
     tested = []
     for joint in derived_joints(catlin_model_ro, DEFAULT_HARDWARE_TAKEOFF_CONFIG):
-        if None in (joint.outward_xy, joint.carried_member_key) \
+        # A corner STHD carries outward_xy too, but hangs no member.
+        if joint.outward_xy is None or joint.role == ROLE_EMBEDDED_STRAP_HOLDOWN \
                 or marker_uid(joint.key) not in solids:
             continue
         member = index.members[joint.carried_member_key]
