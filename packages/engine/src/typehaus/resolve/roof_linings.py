@@ -90,12 +90,12 @@ def _bay_fill(model: ResolvedModel, roof: ResolvedRoof) -> list[ResolvedSolid]:
         return []
     air = next((f for f in fills if ControlLayer.AIR in f[1].control), fills[-1])
     soffit = _soffit(model, roof)
-    walls = _climbing_walls(model, roof, soffit, depth * plumb)
     blocks = [(Polygon(ring), z0, z1) for m in roof.members if m.category in _IN_BAY
               for ring, z0, z1 in (member_footprint(m),) if len(ring) >= 3]
+    blocks += _walls_in_bays(model, roof, soffit)
     sheets: dict[int, list] = {f[0]: [] for f in fills}
     for bay in _bays(roof, band.framing.spacing.meters):
-        for piece in _pieces(bay, walls, blocks):
+        for piece in _pieces(bay, blocks):
             if isinstance(piece, Polygon):  # not a frame rectangle: the old plan extrusion
                 _plan_sheets(piece, fills, soffit, plumb, sheets)
                 continue
@@ -136,13 +136,13 @@ class _Bay:
                                                    (self.s1, self.hi), (self.s0, self.hi))])
 
 
-def _pieces(bay: _Bay, walls, blocks) -> list:
+def _pieces(bay: _Bay, blocks) -> list:
     """The bay less what stands in it. Framing spanning the bay at part height becomes a section
-    box; a wall to the deck, or a block that stops short across it, cuts the plan. What is left
+    box; what stops short across it (a gable wall's studs) cuts the plan. What is left
     is banded across at its corners: a frame rectangle stays a ``_Bay``, any other band is a
     plan ``Polygon`` clear of the plate (as the bays were before the heel was filled)."""
     rect = bay.plan()
-    cut, boxes, spanning = [walls], [], []
+    cut, boxes, spanning = [], [], []
     for footprint, z0, z1 in blocks:
         if not footprint.intersects(rect):
             continue
@@ -239,17 +239,21 @@ def _parts(geometry) -> list[Polygon]:
     return [g for g in geoms if g.area > 1e-7]
 
 
-def _climbing_walls(model: ResolvedModel, roof: ResolvedRoof, soffit: Callable, deep: float):
-    """Every wall whose top climbs past mid-bay toward the deck — a gable end, whose studs fill
-    the end bay — cut in plan. An eave wall stops at its plate: that is the seat's section box."""
-    def climbs(wall) -> bool:
-        tops = (wall.top_z0_m, wall.top_z1_m)
-        return any((wall.z1_m if top is None else top) > soffit(*point) + deep / 2
-                   for top, point in zip(tops, (wall.axis[0], wall.axis[-1]), strict=True))
-
-    rings = [layer.polygon for wall in model.walls if wall.storey == roof.storey and climbs(wall)
-             for layer in wall.layers if len(layer.polygon) >= 3]
-    return union_all([Polygon(ring) for ring in rings])
+def _walls_in_bays(model: ResolvedModel, roof: ResolvedRoof, soffit: Callable) -> list:
+    """Every wall whose top rises past the soffit, as framing to its top: a gable end's studs
+    cut the end bay in plan, a wall across the bay is a section box. Walls of one top are
+    merged, so a wall split mid-bay still spans it."""
+    by_top: dict[tuple[float, float], tuple] = {}
+    for wall in (w for w in model.walls if w.storey == roof.storey):
+        tops = [wall.z1_m if top is None else top for top in (wall.top_z0_m, wall.top_z1_m)]
+        if any(top > soffit(*point) + 0.005
+               for top, point in zip(tops, (wall.axis[0], wall.axis[-1]), strict=True)):
+            group = by_top.setdefault((round(max(tops), 4), round(wall.z0_m, 4)),
+                                      (max(tops), wall.z0_m, []))
+            group[2].extend(Polygon(layer.polygon) for layer in wall.layers
+                            if len(layer.polygon) >= 3)
+    return [(part, base, top) for top, base, rings in by_top.values()
+            for part in polygon_parts(union_all(rings))]
 
 
 def _bays(roof: ResolvedRoof, spacing_m: float) -> list[_Bay]:
