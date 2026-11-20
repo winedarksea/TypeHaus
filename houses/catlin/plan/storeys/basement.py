@@ -258,7 +258,7 @@ NODES = [
     Node(uid="CBN018AAAA", tag="N-B-ESS-N", position=pt(ft(6), ft(36))),
     Node(uid="BT88F385N4", tag="N-B-ESS-SW", position=pt(ft(6), ft(31))),
     Node(uid="GXJ9S72CKH", tag="N-B-ESS-SE", position=pt(ft(10), ft(31))),
-    # ** W-B-WELL's north end: an OPEN END (2026-09-05), now at y=32'-0 7/8" (2026-11-16). **
+    # ** W-B-WELL's north end: an OPEN END (2026-09-05), now at y=32'-1 7/8" (2026-11-20). **
     # That is P-M-STRWELL-S's north face, so the stud layer wraps both well posts and the
     # slot between them, slab to main floor. The free end takes its board, coat and beads
     # (`resolve/wall_ends.py`). The landing decks die into its faces, as the posts did.
@@ -266,7 +266,7 @@ NODES = [
     # `open_end=True` is the honest description and not a silencer: a wall that dies in the
     # middle of a stair well has one edge at this node, which is `integrity.wall_loop_open`'s
     # whole subject, and the flag is how the model says "this end is meant to be free".
-    Node(uid="SQZSP1P9DC", tag="N-B-CL-NE", position=pt(inch(168), ft(32, 0.875)),
+    Node(uid="SQZSP1P9DC", tag="N-B-CL-NE", position=pt(inch(168), ft(32, 1.875)),
          open_end=True),
     # Glazed-brick veneer over the exposed south wall (W-B-BRICK): a freestanding wythe off
     # the concrete, both ends ``open_end`` like the sunken garden's N-SG-NW/NE (not part of
@@ -1457,8 +1457,8 @@ SLABS = [
 
 # One thickened-slab pad under both stairwell posts (P-M-STRWELL-S/-SS, main.py), poured with
 # SL-B-FLOOR on its capillary stone; the XPS stops at its edge and the ABU44 bolts cast into
-# it. 16" x 24" x 8" from the slab top: projection (6 1/4" / 5 1/2") within the thickness,
-# 3,170 lb on 2.67 sf = 1,190 psf against GM's 2,000 (notes/stairwell_post_pad.md).
+# it. 16" x 24" x 8" from the slab top: projection (6 1/4" / 4 1/2"-6") within the thickness,
+# 3,180 lb on 2.67 sf = 1,193 psf against GM's 2,000 (notes/stairwell_post_pad.md).
 PADS = [
     Pad(uid="NAS34P2Q9F", tag="PD-B-WELL",
         outline=(pt(inch(160), inch(366.375)), pt(inch(176), inch(366.375)),

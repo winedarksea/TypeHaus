@@ -9099,3 +9099,24 @@ Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
   $0 "spf"; the framing bid listed that 415 bf on top of the sticks.
 - **Open.** `W-M-WELL`'s last 1" stands over ST-M2S's derived landing post. The post backs
   the board below the landing; above it only the top plate reaches the end (no stud fits in 1").
+
+## Well posts stand on the riser line (2026-11-20, owner)
+
+- **Question.** Close `W-M-WELL`'s last inch: move the wall 1" south onto the end stud and
+  post face, or move the post.
+- **Moving the wall was tried and rejected.** At 31'-9 3/8" the wall ends 1" short of the
+  lower flight's last riser line (31'-10 3/8"), where both flights' head riser boards and
+  both skirts meet the partition. The skirts follow the wall's face and shortened to match,
+  leaving the riser and landing-nosing ends open for 1" on each lane; the knee wall and its
+  oak cap would have moved with it.
+- **The post moved.** It was centred on the landing rim's end, 1 3/4" proud of the landing
+  edge and 1" past the riser plane. Now `u_split` ends the partition's end stud on the riser
+  line and `bearing.py` stands the derived post against it, under the landing (rim end
+  bearing 2 3/4" on its top). The end stud runs full height, so the wall end lands on framing
+  from floor to top plate, and stud, post face, wall end, skirts and risers share one plane.
+  The wall, knee wall and cap did not move.
+- **Ripple.** `P-M-STRWELL-S` +1" to 32'-0 1/8" (under the derived post), `P-M-STRWELL-SS`
+  +1/2" to 31'-2 1/8" (ST-B2M's riser line), `N-B-CL-NE` +1" to 32'-1 7/8"; the slot between
+  the posts is 6 1/2". `PD-B-WELL` holds (projection 6" / 4 1/2" against 8"; 1,193 psf,
+  `notes/stairwell_post_pad.md`). `W-B-WELL`'s end board now runs to the main floor. One more
+  2x4 in the framing bid.

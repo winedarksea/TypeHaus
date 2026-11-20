@@ -436,11 +436,36 @@ def _bear_stair_on_walls(model: ResolvedModel, stair: Stair,
     # A post stands on the structural sheet, never on a floating finish laid round it.
     base = subfloor if post_floor is None else min(post_floor, subfloor)
     orient = (1.0, 0.0) if stair.run_direction == "x" else (0.0, 1.0)
+    plates = [m for m in members if m.child_key == "well-partition-plate-bottom"]
     for index, (key, z_top) in enumerate(sorted(posts.items())):
         if z_top <= subfloor + 1e-9:
             continue
+        point = _against_partition_end(key, plates)
         out.append(FramedMember(stair.uid, f"landing-post-{index:03d}", "landing_framing",
                                 "4x4",
-                                key, key, base, z_top, z_top - base,
+                                point, point, base, z_top, z_top - base,
                                 orient=orient))
     return tuple(out)
+
+
+def _against_partition_end(corner: tuple[float, float],
+                           plates: list[FramedMember]) -> tuple[float, float]:
+    """A corner post on a U-stair's well partition stands face-to-face with its end stud.
+
+    The partition ends on the flight's last riser line (``u_split.py``), a head riser
+    board short of the landing corner, so the post stands under the landing with its face
+    on that plane rather than centred on the rim end, proud of it.
+    """
+    half = cross_section("4x4").width_m / 2.0
+    for plate in plates:
+        axis = 0 if abs(plate.p1[1] - plate.p0[1]) < 1e-6 else 1
+        if abs(corner[1 - axis] - plate.p0[1 - axis]) > 1e-4:
+            continue
+        lo, hi = sorted((plate.p0[axis], plate.p1[axis]))
+        gap = corner[axis] - hi if corner[axis] > hi else corner[axis] - lo
+        end = hi if gap > 0 else lo
+        if 1e-6 < abs(gap) <= 2.0 * half and not lo < corner[axis] < hi:
+            point = list(corner)
+            point[axis] = end + math.copysign(half, gap)
+            return (round(point[0], 6), round(point[1], 6))
+    return corner

@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 836d500df2ca674f  
+**Model hash:** ac0bb74df7b20e23  
 **Lines:** 266
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
@@ -67,7 +67,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x2 SPF No. 2 & Btr framing lumber, 10' (2x2) | 2 | pc | plate | 20 LF | building |
 | 2x3 SPF No. 2 & Btr framing lumber, 8' (2x3) | 6 | pc | corner stud, plate, stud | 48 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 92 5/8" PET (2x4) | 83 | pc | corner stud, king stud, stud | 640.7 LF | building |
-| 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4) | 149 | pc | blocking, corner stud, cripple stud, header, jack stud, king stud, ledger, outlooker, partition backer, plate, raked top plate, sill, stud | 1192 LF | building |
+| 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4) | 150 | pc | blocking, corner stud, cripple stud, header, jack stud, king stud, ledger, outlooker, partition backer, plate, raked top plate, sill, stud | 1200 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 104 5/8" PET (2x4) | 252 | pc | corner stud, king stud, stud | 2197.1 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 10' (2x4) | 31 | pc | partition backer, plate, raked top plate | 310 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 14' (2x4) | 12 | pc | plate | 168 LF | building |

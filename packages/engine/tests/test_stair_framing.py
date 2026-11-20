@@ -252,6 +252,16 @@ def _authored_column_at(model, point, underside=None) -> bool:
     return False
 
 
+def _column_centre(model, point) -> tuple[float, float]:
+    """The plan centre of the authored column holding ``point``."""
+    for solid in model.solids:
+        xs, ys = [p[0] for p in solid.outline], [p[1] for p in solid.outline]
+        if (solid.category == "column" and min(xs) - 1e-6 <= point[0] <= max(xs) + 1e-6
+                and min(ys) - 1e-6 <= point[1] <= max(ys) + 1e-6):
+            return ((min(xs) + max(xs)) / 2.0, (min(ys) + max(ys)) / 2.0)
+    raise AssertionError(point)
+
+
 @pytest.mark.parametrize("tag", ["ST-B2M", "ST-M2S"])
 def test_well_partition_runs_to_the_landing_corner_post(catlin_model, tag):
     """The landing end stud stands face-to-face against the corner post; both plates reach it.
@@ -266,9 +276,10 @@ def test_well_partition_runs_to_the_landing_corner_post(catlin_model, tag):
     posts = [m.p0 for m in stair.members if m.child_key.startswith("landing-post-")
              and m.p0[1 - along] == pytest.approx(cross, abs=tol)]
     if not posts:  # an authored column carries the corner (ST-B2M, P-M-STRWELL-SS)
-        posts = [p for m in stair.members if m.child_key.startswith("landing-rim-")
-                 for p in (m.p0, m.p1) if p[1 - along] == pytest.approx(cross, abs=tol)
-                 and _authored_column_at(catlin_model, p)]
+        corners = [p for m in stair.members if m.child_key.startswith("landing-rim-")
+                   for p in (m.p0, m.p1) if p[1 - along] == pytest.approx(cross, abs=tol)]
+        posts = [_column_centre(catlin_model, p) for p in corners
+                 if _authored_column_at(catlin_model, p)]
     studs = [m for m in partition if m.child_key.startswith("well-partition-stud-")
              and m.child_key != "well-partition-stud-head"]
     post = min(posts, key=lambda p: min(abs(p[along] - s.p0[along]) for s in studs))
@@ -277,6 +288,10 @@ def test_well_partition_runs_to_the_landing_corner_post(catlin_model, tag):
     stud_half = cross_section("2x4").width_m / 2.0
     assert abs(post[along] - end.p0[along]) == pytest.approx(post_half + stud_half,
                                                                 abs=tol)
+    # The end stud's far face, and so the post's face, is the flight's last riser line.
+    riser_line = max(m.p1[along] for m in stair.members
+                     if m.child_key.startswith("stringer-lower-"))
+    assert end.p0[along] + stud_half == pytest.approx(riser_line, abs=tol)
     # Both plates run under the end stud to its far face (well_wall may carry one on).
     face = end.p0[along] + math.copysign(stud_half, post[along] - end.p0[along])
     for key in ("well-partition-plate-bottom", "well-partition-plate-top"):
@@ -446,9 +461,12 @@ def test_every_landing_platform_corner_is_supported(catlin_model):
                 if key in carried or _authored_column_at(catlin_model, point, underside):
                     continue
                 # A post seats on the structural sheet under the walking surface, never on
-                # a floating plank laid round it.
+                # a floating plank laid round it. Its footprint holds the corner: a well
+                # post stands under the landing, against the partition's end.
                 beneath = [p for p in posts
-                           if (round(p.p0[0], 4), round(p.p0[1], 4)) == key
+                           if all(abs(p.p0[i] - point[i])
+                                  <= cross_section(p.profile).width_m / 2.0 + 1e-6
+                                  for i in (0, 1))
                            and subfloor - inch(1.0).meters <= p.z0_m <= subfloor + 1e-6
                            and p.z1_m >= underside - 1e-6]
                 assert beneath, (

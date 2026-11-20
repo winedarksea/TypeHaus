@@ -9175,15 +9175,15 @@
 ],
 "geometry/9AYPA03VAE-ENDE1/body": [
 -1.3150558,
-0.01905,
+0.02605,
 2,
-"8f693822e867"
+"29563a00ca9a"
 ],
 "geometry/9AYPA03VAE-ENDE1P/body": [
 -1.3150558,
-0.01905,
+0.02605,
 2,
-"8f693822e867"
+"29563a00ca9a"
 ],
 "geometry/9AYPA03VAE/layer:gwb-a": [
 -2.7797125,
@@ -130043,9 +130043,9 @@
 "solids/W-B-WELL-end-0-paint/z0_m": -2.7797125,
 "solids/W-B-WELL-end-0-paint/z1_m": -1.7021317,
 "solids/W-B-WELL-end-1-board/z0_m": -1.3150558,
-"solids/W-B-WELL-end-1-board/z1_m": 0.01905,
+"solids/W-B-WELL-end-1-board/z1_m": 0.02605,
 "solids/W-B-WELL-end-1-paint/z0_m": -1.3150558,
-"solids/W-B-WELL-end-1-paint/z1_m": 0.01905,
+"solids/W-B-WELL-end-1-paint/z1_m": 0.02605,
 "solids/W-M-C5-start-0-board/z0_m": 0.01905,
 "solids/W-M-C5-start-0-board/z1_m": 2.7178,
 "solids/W-M-C5-start-0-paint/z0_m": 0.01905,

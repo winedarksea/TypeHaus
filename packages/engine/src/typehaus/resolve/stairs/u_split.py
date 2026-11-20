@@ -180,18 +180,19 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
     # foundation (the flight-clip guard is the backstop). Both flights' inner stringers
     # bear on it. It stops at the SHORTER flight's end: its studs run z0 → arrival, so
     # carrying it to the longer flight's line drives them straight through the upper
-    # landing's deck. There the landings' shared corner stands on a 4x4 post
-    # (``bearing.py``) on this line, so the end stud stands face-to-face against it; an
-    # authored face-only wall running on past it is framed by ``well_wall.py``.
+    # landing's deck. Its end stud's far face is that flight's last riser line, the plane
+    # the head riser boards, the skirts and a wall end stop on; the landings' shared corner
+    # post (``bearing.py``) stands face-to-face against it, under the landing, so the stud
+    # runs full height. An authored face-only wall running on past is framed by
+    # ``well_wall.py``.
     # At the stairhead (s=0) only the TOP is held off the opening perimeter framing:
     # ``head_z`` is the underside of the arrival deck's framing, and an end stud stands
     # under it on a bottom plate run to the edge. A lined well has stepped that framing
     # behind the outline, so the stud and top plate run through to back the board.
     head_inset = 0.20
-    post_half = cross_section("4x4").width_m / 2.0
     stud_half = cross_section("2x4").width_m / 2.0
     lo_s = head_inset
-    hi_s = min(flight_len, upper_flight_len) + board - post_half - stud_half
+    hi_s = min(flight_len, upper_flight_len) - stud_half
     if hi_s > lo_s:
         plate = 0.0381  # a 2x4 plate laid flat
         head = head_z is not None and head_z > z0 + 2 * plate

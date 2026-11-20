@@ -1092,8 +1092,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   turn sits under intact `FS-ATTIC` deck, where `code.R311_7_2_stair_headroom` grades it
   (7.05'). The y=5'-4" joist line is moved into the trimmer pack (`line_overrides`). Moving
   the turn or the deck re-opens that check, not `integrity.stair_opening`.
-- **`P-M-STRWELL-SS` is the third well post** (`y=31'-1 5/8"`), under ST-B2M's
-  half-landings, whose corner is a rim end no host wall reaches. Since 2026-11-16 both well
+- **`P-M-STRWELL-SS` is the third well post** (`y=31'-2 1/8"`), under ST-B2M's
+  half-landings, whose corner is a rim end no host wall reaches. **Every well post stands
+  under its landing with its face on the flight's last riser line**, against the partition's
+  end stud (2026-11-20): the partition, `W-M-WELL`'s end, both skirts and the head riser
+  boards stop on that one plane (`bearing._against_partition_end`). Since 2026-11-16 both well
   posts are concealed SPF 4x4s (`POST_CONCEALED_SPF`) inside `W-B-WELL`, standing on
   `PD-B-WELL`, one 16x24x8" thickened-slab pad cast with `SL-B-FLOOR`
   (`notes/stairwell_post_pad.md`; nothing in the engine grades it). `bearing.py` derives no
@@ -2271,7 +2274,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     frames itself (`INT_2X4_PARTITION_HALF`). Its thickness must stay locked to
     `resolve/stairs/common._WELL_PARTITION_THICKNESS_M` (4 1/2"). Its north end is open
     (`open_end=True` on `N-B-CL-NE`) — the only honest way to model a partition dying
-    mid-well; `integrity.wall_loop_open` reads it. Since 2026-11-16 that end is at y=32'-0 7/8",
+    mid-well; `integrity.wall_loop_open` reads it. Since 2026-11-20 that end is at y=32'-1 7/8",
     `P-M-STRWELL-S`'s north face: the stud layer wraps both well posts, the free end takes its
     board and beads (`resolve/wall_ends.py`), and the landing decks die into its faces.
   - `W-B-STR3` is `STAIRWALL_INT_2X6_BRG_UNDERSTAIR` (5/8" Type X in place of 5/8" painted stair
