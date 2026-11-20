@@ -1624,6 +1624,105 @@ rides +4 3/4" (was +4") for the box's 1" fresh-collar land, so the stand-up is 3
 
 **Governing:** unchanged. Extract via `DU-M-ERV-R-SUITEBATH`, 0.602426 in., **198.9 cfm**.
 
+### 10.30 The rebalance: sauna 38, BED 20, feed 92; vanity and BED tokens out; stair pickup in (2026-11-20)
+
+Owner, 2026-11-19. Harvia's 5 ACH on the sauna's 456 ft3 is 38 cfm, not 20. RM-S-VANITY has two
+lavatories and nothing else, so it is no bathroom (IRC R202), and its extract goes
+(`resolve/bath_scope.py`, N/A in both `code.R303_3_local_exhaust` and
+`mep.ventilation_distribution`). The BED1/BED2 5 cfm tokens go too, with about 42 ft of 4" duct,
+two boots and a tee. A 10 cfm pickup at the stair top comes in. Still 210/210:
+
+    supply  GYM 10 + PLAY 20 + SAUNA 38 + LIVING 20 + BED 20 + STUDY 10 + HP-FEED 92 = 210
+    extract BENCH 6 + BATH 20 + SAUNA 38 + BATH1 20 + BATH2 20 + STUDY 5 + LAUNDRY 3 + KITCH 13
+            + MUD 10 + S-BATH1 20 + SUITEBATH 20 + STUDIO 5 + STUBATH 20 + STAIR 10 = 210
+    legs    level-2 trunk 91 (was 119), attic 55 (45), extract riser 146 (164),
+            supply riser 142 (160), GYM 48 (30), SAUNA-EXH 44 (26)
+
+The level-2 trunk is capped 6" past BATH2's take-off now (y 13'-6" -> 15'-0 1/4", 18 1/4"
+shorter). The sauna hatch curve runs on, square-law, to 40 cfm: 14.6 x (40/30)^2 = 26.0 Pa, so
+at 38 cfm it reads 14.6 + 0.8 x 11.4 = **23.72 Pa** (was 6.5 Pa). Unclamped at 30 it would have read
+14.6, 9 Pa light. Note that the line between the table points runs above the 23.42 Pa a pure
+square law gives.
+
+**Hand-worked** (Darcy-Weisbach, Colebrook solved by iteration, VP = (V/4005)^2, galvanized
+eps 9.14e-5 m, nu 1.63e-4 ft2/s, 249.089 Pa/in.; rectangles at Huebscher De with 59" per
+turn; C sums are the catalogued elbows already listed in earlier sections):
+
+    leg            cfm   D"      V fpm  VP         f        friction   fittings   total
+    SAUNA-SUP 63.47"  38  4       435.4  0.0118214  0.02950  0.005534   C .484 0.005722  0.011255
+                      20                 0.0032746  0.03421  0.001777          0.001585  0.003362
+    GYM 338.68"       48  4       550.0  0.0188618  0.02811  0.044891   C 1.452 0.027387 0.072279
+                      30                 0.0073679  0.03108  0.019389          0.010698  0.030087
+    SAUNA-EXH 517.96" 44  4       504.2  0.0158491  0.02861  0.058718   C 1.232 0.019526 0.078245
+                      26                 0.0055341  0.03212  0.023017          0.006818  0.029835
+    TRUNK 8x4 205.57" 91  De 6.094 449.3 0.0125880  0.02628  + 2 x 59"                   0.017564
+          (223.82")  119                 0.0215262  0.02492                              0.030097
+    NECK 6x4 76.78"   91  De 5.328 587.7 0.0215338  0.02578  + 2 x 59"                   0.020290
+                     119                 0.0368241  0.02453                              0.033018
+    EXH-FEED 26.95"   91  6       463.5  0.0133912  0.02622  0.001577   C .44  0.005892  0.007469
+                     119                 0.0228997  0.02487  0.002559          0.010076  0.012634
+    RISER-EXH below the tap, 236.79" with C 0.7687 (two stamped 90s, the skewed pair):
+                     146                 0.0344700  0.02396  0.032595          0.026497  0.059092
+                     164                 0.0434934  0.02348  0.040303          0.033434  0.073736
+    RISER-EXH above the tap, 176.58" with C 0.484:  55 0.006573, 45 0.004534
+    STAIR 99.39"      10  4       114.6  0.0008187  0.04081  0.000830   C .704 0.000576  0.001407
+    BED 371.25"       40  4       458.4  0.0130985  0.02918  0.035480   C .990 0.012970  0.048450
+                      35                 0.0100285  0.03003  0.027954          0.009930  0.037884
+    SUP-FEED 134.14"  50  6       254.6  0.0040427  0.02986  0.002699   C .22  0.000889  0.003588
+                      45                 0.0032746  0.03061  0.002241          0.000720  0.002961
+    EQ-M-ERV-MAN-EXH  (60, 0.5)-(120, 1.8): 1.1717 Pa at 91, 1.7783 at 119       -0.002436 in.
+
+The old figures are HEAD's engine readings, worked at the old flows: 0.012634, 0.033018 and
+0.030097 are §10.26/§10.27's numbers. Paths (HEAD's base -> now):
+
+    SUITEBATH  0.602457 - 0.012533 - 0.012728 - 0.005165 - 0.014644 - 0.002436 = 0.554951
+    SAUNA-SUP  0.459790 + 0.007893 + 0.042192 + (23.72 - 6.5) / 249.089     = 0.579007
+    SAUNA-EXH  0.449656 + 0.048410 + 0.069132                               = 0.567198
+    ATTIC      0.478563 - 0.014644 + 0.002039 (MAN-A on its 0.5 Pa floor)   = 0.465958
+    STAIR      0.465958 - 0.000545 - 1.0/249.089 + 0.001407 + 1.8/249.089   = 0.470032
+
+(HEAD reads SUITEBATH 0.000031 over §10.29's 0.602426, from SUITEBATH radial edits after it.)
+
+**Governing: the supply side via the sauna, 0.579007 in.** Delivered off (0.5, 201)-(0.6, 199):
+201 - 2 x 0.079007 / 0.1 = **199.42 cfm** against R403.5's 188.0 (+11.4). Engine: 0.579, 199 cfm.
+The sauna extract follows at 0.567. GYM's 48 cfm is under the 4" radial limit of 50
+(`mep.radial_capacity`).
+The review's similar trial read 200.1 cfm at 0.544 in.; this, worked from the model, governs.
+**Contingency**, if a change ever puts delivered under ~193 cfm: cut STAIR to 5 first, then
+the kitchen residue.
+
+**Commissioning order:** open the sauna hatches to 38 measured, set BED to 20, then let
+HP-FEED's locking damper (§10.29) take the ~11 cfm curve residue.
+
+**R403.5.6.1.2 tempering** (direct supplies of 20 cfm or more: LIVING, PLAY, BED, SAUNA must
+arrive at 40 F or warmer). At the core, Broan's 65% SRE gives T = To + 0.65 (70 - To):
+-13 F -> 40.95 F and -15 F (design) -> 40.25 F. The supply legs downstream run in conditioned
+space and only gain heat, and the OA leg's ~825 Btu/h (§10.22) warms the air before the core.
+So it closes by hand, thinly. It is ungraded, and it
+already applied at 20 cfm.
+
+**Bath extracts against the bathing fixture: surveyed, no moves.** The owner's rule: move one
+only where it is simple and cheap and never lengthens a run.
+
+| Room | Extract | Bathing fixture | Distance | Verdict |
+|---|---|---|---|---|
+| RM-M-BATH2 | REG-M-EXH2, ceiling (52", 186") | shower glass at x 58 5/8" | ~8" outside the glass | already at the source |
+| RM-S-BATH1 | REG-S-EXH1, ceiling (67 1/2", 392") | tub/shower, front ~y 394" | ~2" outside the tub front | already at the source |
+| RM-S-SUITEBATH | REG-S-EXH3, W-S-DC2 at 95 3/4" | tub/shower, nearest corner ~(182", 200") | ~5 1/2 ft, opposite wall | every closer station is longer or no shorter; owner: leave it |
+| RM-A-STUBATH | REG-A-STUBATH-EXH, W-A-STU-W at 3'-0" | 36" shower, west edge ~x 176 1/2" | ~4 3/4 ft | the drains and vents picked the station; no ceiling bay under the hot roof; closer is ~6 ft longer |
+| RM-B-BATH, RM-M-BATH1 | | none (WC and lav only) | | not applicable |
+| RM-B-SAUNA | REG-B-EXH2 | FX-B-SAUNA-SH | | Harvia's layout governs |
+
+**The stair pickup.** `DU-A-ERV-R-STAIR` leaves `EQ-A-ERV-MAN-EXH`'s east face (now 4 of 6 ports)
+at y=414". A 45 pair takes it to y=404", south of VR-M-STACK's riser and PR-A-STUBATH-VENT's
+west leg (y 412.9"). It runs east on the deck under CD-A-PV-EAST, rises at x=111 3/4" between
+that conduit and the vent, and goes through `W-A-BA-E` at +50" in the 400..416" stud bay
+(`AO-A-ERV-STAIR`, 4 1/2" square). At that height it clears the vent's +45" leg and lands
+between the 392"/408" rafters (+52" met rafter-034 by 0.16", `mep.terminal_neck_fit`).
+`REG-A-RET-STAIR` is a sidewall disc valve on the void face, filed to RM-S-HALL. No attic room
+owns the void, so `integrity.placeable_room_mismatch` reports it UNKNOWN; the hall is the
+true answer.
+
 ### 10.5 The thermal penalty of the legs (hand-worked)
 
 Both legs run through conditioned space in 2" of closed-cell elastomeric (two 1" layers of

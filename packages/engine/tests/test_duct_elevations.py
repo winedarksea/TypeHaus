@@ -127,7 +127,7 @@ def test_catlin_ducts_are_swept_solids(catlin_model) -> None:
 
     swept = {s.tag[:-4] for s in catlin_model.solids
              if s.category.startswith("duct_") and s.sweep is not None}
-    filled = {"DU-A-HP1-EAST-RET", "DU-M-ERV-R-VANITY", "DU-S-HP-STAIR"}
+    filled = {"DU-A-HP1-EAST-RET", "DU-S-HP-STAIR"}
     assert swept == {d.tag for d in catlin_model.ducts} - filled
     for duct in (d for d in catlin_model.ducts if d.tag in filled):
         total = _stations(_duct_path(duct))[-1]

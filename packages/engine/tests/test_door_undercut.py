@@ -50,12 +50,13 @@ def test_every_catlin_leaf_hangs_within_the_range(catlin_ctx):
 
 
 def test_bedroom_return_at_the_largest_allowed_undercut_matches_the_hand_note(catlin_ctx):
-    """75 cfm net (80 supply less the ERV's 5) through 30" x 3/4" = 22.5 in2."""
+    """80 cfm net (the ERV's 5 cfm pickup went 2026-11-20) through 30" x 3/4" = 22.5 in2:
+    11.0 Pa (notes/system1_return_path.md)."""
     from typehaus.checks.mep.door_transfer_air import door_transfer_air
     from typehaus.findings import Result
 
     bed1 = next(f for f in door_transfer_air(catlin_ctx) if f.element_tags[0] == "RM-S-BED1")
-    expected = (75 / (1.07 * 22.5)) ** 2
+    expected = (80 / (1.07 * 22.5)) ** 2
     assert bed1.result == Result.ADVISORY
     assert f"{expected:.1f} Pa" in bed1.message
 

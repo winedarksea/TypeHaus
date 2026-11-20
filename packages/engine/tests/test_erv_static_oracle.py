@@ -162,7 +162,7 @@ def test_the_broan_carries_the_whole_published_curve(catlin_plan) -> None:
     assert broan.fan_curve_max_static_in_wg == pytest.approx(1.3)
 
 
-def test_the_governing_side_is_extract_via_the_suitebath_takeoff(catlin_model_ro) -> None:
+def test_the_governing_side_is_supply_via_the_sauna(catlin_model_ro) -> None:
     """Note §6, and the governing SIDE swapped THREE times on 2026-09-15.
 
     The machine's curve is an external static PER SIDE, so what governs is the worse of two
@@ -194,10 +194,13 @@ def test_the_governing_side_is_extract_via_the_suitebath_takeoff(catlin_model_ro
     ** 2026-11-11: extract leads, 0.422 against 0.340 (note §10.20). ** A path now pays only
     the trunks on its own route: PLAY sheds the supply riser and HP-FEED (0.430 -> 0.232), and
     the PLAY/STUDY cut and the shared legs leave LIVING as the worst supply.
+
+    ** 2026-11-20: supply via the sauna, 0.579 against SAUNA-EXH 0.567 and SUITEBATH 0.555
+    (note §10.30). ** 38 cfm through the hatch (23.72 Pa) and 48 on GYM; the trunk fell to 91.
     """
     message = _machine_finding(catlin_model_ro).message
-    assert "extract side via DU-M-ERV-R-SUITEBATH" in message
-    assert "supply side" not in message
+    assert "supply side via DU-B-ERV-R-SAUNA-SUP" in message
+    assert "extract side" not in message
 
 
 def test_the_static_and_the_delivered_flow_are_the_notes(catlin_model_ro) -> None:
@@ -270,10 +273,13 @@ def test_the_static_and_the_delivered_flow_are_the_notes(catlin_model_ro) -> Non
     # 0.550966 - 0.004755 = 0.546211, 200.1 cfm.
     # 2026-11-12, note §10.28: EA pitched (-0.000153) and its 7" GV0772 kit lead bent on its
     # own flex (+0.056368): 0.546211 + 0.056215 = 0.602426, 198.9 cfm.
-    assert "extract side" in message
-    assert "0.602 in. w.g." in message
-    assert "DU-M-ERV-R-SUITEBATH 0.006\"" in message
-    assert "DU-M-ERV-EXH-TRUNK 0.030\"" in message
+    # 2026-11-20, note §10.30: the rebalance. Supply via the sauna governs:
+    # 0.459790 + 0.007893 + 0.042192 + 17.22 / 249.089 = 0.579007, 199.42 cfm.
+    assert "supply side" in message
+    assert "0.579 in. w.g." in message
+    assert "DU-B-ERV-R-SAUNA-SUP 0.011\"" in message
+    assert "DU-B-ERV-R-GYM 0.072\"" in message
+    assert "terminal 23.7 Pa" in message
     assert "delivering 199 cfm" in message
 
 
@@ -294,13 +300,14 @@ def test_the_bench_dampers_fully_open_charge_is_the_notes(catlin_model_ro) -> No
 
 def test_the_level2_supply_feed_is_the_notes(catlin_model_ro) -> None:
     """Note §10.25 addendum: 45 cfm through 6", 134.1375" and one stamped 90 is 0.002241
-    friction + 0.000720 elbow, teed off the riser's basement corner."""
+    friction + 0.000720 elbow, teed off the riser's basement corner. §10.30: at 50 cfm,
+    0.002699 + 0.000889 = 0.003588."""
     from typehaus.checks.mep.erv_static import _duct_drop
 
     ctx = check_context(model=catlin_model_ro)
     feed = next(d for d in catlin_model_ro.ducts if d.tag == "DU-M-ERV-SUP-FEED")
     assert feed.length_m / 0.0254 == pytest.approx(134.1375, abs=1e-3)
-    assert _duct_drop(ctx, feed, 1).drop_in_wg == pytest.approx(0.0029610, abs=2e-7)
+    assert _duct_drop(ctx, feed, 1).drop_in_wg == pytest.approx(0.0035881, abs=2e-7)
     tee = [p for p in catlin_model_ro.duct_parts
            if p.kind == "tee" and p.run_tag == "DU-ERV-RISER-SUP"]
     assert [t.product_ref for t in tee] == ["PROD-DUCT-TEE-6-6"]
@@ -310,20 +317,22 @@ def test_the_level2_supply_feed_is_the_notes(catlin_model_ro) -> None:
 def test_the_lengthened_straights_move_the_terms_the_notes_say(catlin_model_ro) -> None:
     """Note §10.26: the neck +2.5" (0.032594 -> 0.033018), the trunk -2.5" (0.035072 ->
     0.034852), the feed +0.4" (0.012596 -> 0.012634) and the supply riser's two 30 degree
-    bends gone (0.117172 -> 0.103382): the governing extract path 0.550724 -> 0.550966."""
+    bends gone (0.117172 -> 0.103382): the governing extract path 0.550724 -> 0.550966.
+    §10.30: neck, trunk and feed at 91 cfm (the trunk 18 1/4" shorter); the supply riser
+    re-reads at 142 cfm."""
     from typehaus.checks.mep.erv_static import _delivered, _duct_drop
 
     ctx = check_context(model=catlin_model_ro)
     ducts = {d.tag: d for d in catlin_model_ro.ducts}
-    for tag, elbows, drop in (("DU-M-ERV-EXH-NECK", 2, 0.0330180),
-                              ("DU-M-ERV-EXH-TRUNK", 2, 0.0300972),  # §10.27: -54"
-                              ("DU-M-ERV-EXH-FEED", 2, 0.0126344),
-                              ("DU-ERV-RISER-SUP", 5, 0.103117)):  # §10.28: -1.625"
+    for tag, elbows, drop in (("DU-M-ERV-EXH-NECK", 2, 0.0202898),  # §10.30: 91 cfm
+                              ("DU-M-ERV-EXH-TRUNK", 2, 0.0175645),  # §10.30: -18.25"
+                              ("DU-M-ERV-EXH-FEED", 2, 0.0074689)):
         assert _duct_drop(ctx, ducts[tag], elbows).drop_in_wg == pytest.approx(drop, abs=2e-6)
     assert ducts["DU-M-ERV-EXH-NECK"].length_m / 0.0254 == pytest.approx(76.775, abs=1e-3)
-    assert "0.602 in. w.g." in _machine_finding(catlin_model_ro).message  # §10.28
+    assert "0.579 in. w.g." in _machine_finding(catlin_model_ro).message  # §10.30
     assert _delivered(_BROAN_CURVE, 0.546211) == pytest.approx(200.0758, abs=1e-3)
     assert _delivered(_BROAN_CURVE, 0.602426) == pytest.approx(198.9030, abs=1e-3)
+    assert _delivered(_BROAN_CURVE, 0.579007) == pytest.approx(199.4199, abs=1e-3)
 
 
 def test_sauna_radials_route_through_clear_stud_bays_without_plate_or_duct_conflicts(
@@ -375,19 +384,19 @@ def test_catlin_reports_no_fail_from_this_check(catlin_model_ro) -> None:
 
 
 def test_every_branch_clears_the_products_own_flow_limit(catlin_model_ro) -> None:
-    """22 round radials all inside ``DUCT-T-GALV-4``'s 50 cfm — a 600 fpm QUIET limit for a
+    """20 round radials all inside ``DUCT-T-GALV-4``'s 50 cfm — a 600 fpm QUIET limit for a
     branch running continuously beside a bed, not the pipe's capacity. The highest is
-    ``DU-M-ERV-R-BED`` at 35 cfm, which carries the LIVING branch over its whole length.
+    ``DU-B-ERV-R-GYM`` at 48 cfm (2026-11-20), which carries the sauna supply.
 
     ``DU-M-ERV-R-RET3`` is graded since 2026-11-11: a 4" branch off a 4" never hopped the old
     size rule. ``DU-M-ERV-R-PLANT`` is a rectangular wall stack and has no ``max_cfm``.
 
-    The ten level-2 takeoffs are here because ``radial_landings`` follows one hop through
+    The level-2 takeoffs are here because ``radial_landings`` follows one hop through
     the trunk; ten runs left this budget silently until it did. The trunk itself is flat
     sheet metal since 2026-11-08, and a rectangular row publishes no ``max_cfm`` to grade
     it against (its friction is still in the path)."""
     rows = [f for f in _findings(catlin_model_ro) if " carries " in f.message]
-    assert len(rows) == 22
+    assert len(rows) == 20
     assert all(f.result is Result.PASS for f in rows)
     for tag in ("DU-M-ERV-R-RET3", "DU-B-ERV-R-SAUNA-SUP", "DU-M-ERV-R-BATH1",
                 "DU-M-ERV-R-KITCH"):

@@ -13,8 +13,8 @@ Its face bottom is 95 3/4 in. above the finished tile; its centre is
 leaf, and south of the robe-peg backing. The original proposed y=203 in.
 station put the riser through that backing.
 
-`DU-M-ERV-R-SUITEBATH` leaves the existing 8 in. extract trunk at
-(45 3/4, 196) in., rides the lower tier at second-relative -8 3/8 in.,
+`DU-M-ERV-R-SUITEBATH` leaves the flat 8x4 extract trunk at
+(27, 196) in., rides the lower tier at second-relative -8 3/8 in.,
 then rises at (115 1/2, 196) in. inside the staggered wall cavity.
 The horizontal-to-vertical turn has space for the existing 4 in. duct's
 6 in. centreline-radius elbow. It does not cross a truss.
@@ -66,7 +66,9 @@ The rerouted branch is 14.49 ft developed, with one catalogued 90-degree
 duct elbow plus the box's internal turn. At 20 cfm the engine calculates
 0.00571 in. w.g. for the duct and elbow and 11.46 Pa for the valve/box
 curve, approximately 0.052 in. w.g. combined before the shared trunk and
-manifold. It does not become the ERV's governing path.
+manifold. It governed the ERV until 2026-11-20 (0.602 in. with the trunk at 119 cfm); since the
+rebalance the trunk carries 91, the path reads 0.555 in. and the sauna supply governs at 0.579
+(`erv_static_budget.md` §10.30).
 
 ## Two more stack heads (2026-11-16)
 

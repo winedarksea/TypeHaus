@@ -12,11 +12,11 @@
 #
 # REG-S-HP-RET is the hall return; RM-S-SUITE has its own ducted REG-S-HP-SUITE-RET behind a
 # sealed door (2026-11-09) and RM-S-BED3 its REG-S-HP-BED3-RET (2026-11-11). Every other
-# System 1 terminal below is a supply, and the ERV's BED1/BED2 pickups are stale-air tokens,
-# not a return path. So a room's air gets back to the
+# System 1 terminal below is a supply, and the ERV takes no air from the bedrooms (the
+# BED1/BED2 5 cfm tokens were deleted 2026-11-20). So a room's air gets back to the
 # machine UNDER ITS DOOR. Since 2026-11-06 an undercut stays in 1/2"-3/4" (owner: stock
 # prehungs cut on site), so the relief doors hang at 3/4" and still fall short: a bedroom's
-# 75 cfm net through 22.5 in2 is 9.7 Pa against Manual D's 3 Pa. mep.door_transfer_air grades
+# 80 cfm net through 22.5 in2 is 9.7 Pa against Manual D's 3 Pa. mep.door_transfer_air grades
 # it; relief for the bedrooms is open. D-S-PLANT is a sealed steel door since 2026-11-12:
 # RM-S-PLANT takes no System 1 air and vents to Study 2 through its own transfer pair.
 # Arithmetic and history: notes/system1_return_path.md.
@@ -38,9 +38,6 @@ from typehaus.model import Location, WallAttachment
 from .erv_balance import (
     REG_S_EXH1,
     REG_S_EXH3,
-    REG_S_EXH4,
-    REG_S_RET_BED1,
-    REG_S_RET_BED2,
 )
 
 # Terminals off the chase name their drawn branch in `duct_ref`. Until 2026-09-23 the bedroom
@@ -129,7 +126,7 @@ REGISTERS_HVAC_SECOND = [
     # DU-S-HP-RET in FS-ATTIC's y 352-368 bay (2026-11-11; it was in SF-S-HP1's underside,
     # opening into EQ-S-ERV-MIX). In the hall, not the closet: IMC 601.5(7) forbids return
     # air from a closet (MN adopts the IMC). 288 in2 at 455 cfm is 228 fpm, inside Manual D
-    # SS4-10's 300 for a grille carrying the filter. The air handler moves 750: the ERV's 100,
+    # SS4-10's 300 for a grille carrying the filter. The air handler moves 750: the ERV's 92,
     # RM-S-SUITE's 80, RM-S-BED3's 80 and RM-A-EAST-UNFIN's 35 join in EQ-S-ERV-MIX.
     #
     # 92 1/2" is SF-S-DUCT's 94" underside off the hall's 1 1/2" oak floor, hand-coupled.
@@ -166,38 +163,16 @@ REGISTERS_HVAC_SECOND = [
 # frame below it, not a kerb on top, so it still counts against a neighbour's clear floor
 # space.
 #
-# The second storey has no supply on the ERV: the BED1/BED2 boots kept their uids (IFC
-# GlobalId stability) but are stale-air pickups on DU-M-ERV-RET. Fresh air comes from
-# REG-S-HP-BED1/2/3 and REG-S-HP-SUITE (REGISTERS_HVAC_SECOND above), so extracting here is
-# what moves the storey's air: in at the hall soffit, out at the far wall of each room.
+# The second storey has no ERV supply: fresh air reaches the bedrooms through System 1
+# (REG-S-HP-BED1/2/3, REG-S-HP-SUITE; REGISTERS_HVAC_SECOND above), interlocked to the ERV.
+# The bedroom extract pickups were deleted 2026-11-20 (5 cfm tokens): the rooms return under
+# their doors, and the stair-top pickup REG-A-RET-STAIR takes the hall's stale air.
 #
 # RM-S-STUDY2 is served by two System 1 grilles on SF-S-DUCT (east and south faces), both
 # off DU-S-HP-SOUTH. RM-S-PLANT is sealed: no supply, no extract (notes/plant_room.md).
 REGISTERS = [
-    # BED1 y 9'-18', BED2 y 18'-27'. BED3 has no ERV pickup since 2026-11-11: it returns
-    # to System 1 through REG-S-HP-BED3-RET instead, and its old 5 cfm went to the kitchen.
-    #
-    # BED1/BED2 ARE FLOOR BOOTS (2026-10-02), not mid-floor at x=29'. BED2's is against the south
-    # wall of its room; BED1's moved from y=9'-9" to y=16'-8", the north side of RM-S-BED1
-    # (2026-11-11), when its radial became a branch off BED2's x=16'-1 3/4" crossing: clear of the
-    # y=17'-4" joist line, inside the room (y<17'-5"), ~4'-11" west of FURN-S-DESK-CHAIR1.
-    # x=28'-1" leaves 5 1/8" from the east PAX frame to the grille's west edge (2026-10-03).
-    # It is the open floor between the expanded SW PAX run (to 27'-4 3/8") and the bed's west
-    # side (~29'-11"); y is the FS-S-EAST bay beside the wall (I-joists span x, so the
-    # boot cannot leave its bay). A low sidewall grille was rejected: the south walls are
-    # INT_2X4_RC, whose 3 1/2" cavity takes no 4" riser without a shop-made stack.
-    Register(uid="CMR903AAAA", tag="REG-S-RET-BED1", kind=DuctSystem.RETURN, room="RM-S-BED1",
-            position=pt(ft(28, 1), ft(16, 8)), duct_ref="DU-M-ERV-R-BED1",
-            type_ref="REG-T-ERV-EXH-FLOOR", design_cfm=REG_S_RET_BED1,
-            mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
-    Register(uid="CMR907AAAA", tag="REG-S-RET-BED2", kind=DuctSystem.RETURN, room="RM-S-BED2",
-            position=pt(ft(28, 1), ft(18, 4)), duct_ref="DU-M-ERV-R-BED2",
-            type_ref="REG-T-ERV-EXH-FLOOR", design_cfm=REG_S_RET_BED2,
-            mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
-    # No REG-S-RET2 (the suite's own extract) — the owner's call, and defensible on the
-    # model too: no check fires for its absence (BEDROOM is not in
-    # checks/mep/hvac.py's _STALE_OCCUPANCIES), and RM-S-SUITEBATH's REG-S-EXH3 carries the
-    # suite through the door undercut. The suite KEEPS its System 1 supply REG-S-HP-SUITE.
+    # No REG-S-RET2 (the suite's own extract): RM-S-SUITEBATH's REG-S-EXH3 carries the suite
+    # through the door undercut. The suite keeps its System 1 supply REG-S-HP-SUITE.
 ]
 
 REGISTERS_SECOND = [
@@ -211,12 +186,6 @@ REGISTERS_SECOND = [
             location=Location(attachment=WallAttachment(
                 wall_ref="W-S-DC2", face="right", distance_from_start=inch(5),
                 normal_gap=inch(0), rotation_offset=deg(0)))),
-    Register(uid="CSRV04AAAA", tag="REG-S-EXH4", kind=DuctSystem.EXHAUST, room="RM-S-VANITY",
-            # Turned 90 (2026-11-08): long axis north-south, clear of the flat trunk (x<=31")
-            # and DU-M-ERV-R-LIVING's x=40 1/2" lane.
-            position=pt(ft(3), ft(24, 8)), rotation=deg(90), duct_ref="DU-M-ERV-R-VANITY",
-            type_ref="REG-T-ERV-EXH-FLOOR", design_cfm=REG_S_EXH4,
-            mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     Register(uid="CSRV05AAAA", tag="REG-S-EXH1", kind=DuctSystem.EXHAUST, room="RM-S-BATH1",
             # Under its deck leg's end (2026-11-10): one stock 90 down onto the collar.
             position=pt(ft(5, 7.5), ft(32, 8)), duct_ref="DU-A-ERV-R-BATH1",

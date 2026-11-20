@@ -102,13 +102,28 @@ _EXPECTED_UNSERVED: set[str] = {"RM-S-PLANT"}
 def test_catlin_distribution_has_no_unserved_rooms(catlin_model):
     findings = _run(catlin_model)
     assert findings
-    unexpected = [f for f in findings if f.result != Result.PASS
+    graded = [f for f in findings if f.result != Result.NOT_APPLICABLE]
+    unexpected = [f for f in graded if f.result != Result.PASS
                   and not _EXPECTED_UNSERVED.intersection(f.element_tags)]
     assert not unexpected, [f.message for f in unexpected]
     # And nothing is exempt that the model does not actually flag — a stale entry in
     # _EXPECTED_UNSERVED is as much a bug as a missing terminal.
-    flagged = {t for f in findings if f.result != Result.PASS for t in f.element_tags}
+    flagged = {t for f in graded if f.result != Result.PASS for t in f.element_tags}
     assert flagged == _EXPECTED_UNSERVED, flagged
+
+
+def test_lavatory_only_vanity_is_not_a_bathroom(catlin_model):
+    """RM-S-VANITY holds two lavatories and nothing else: IRC R202 makes it no bathroom,
+    so neither rule asks it for an extract. RM-S-BATH1 (tub, WC) still is one."""
+    from typehaus.checks.code.mn_residential.ventilation import bathroom_exhaust
+
+    ctx = SimpleNamespace(model=catlin_model, plan=catlin_model.plan)
+    for findings in (ventilation_distribution(ctx), bathroom_exhaust(ctx)):
+        def result(room, findings=findings):
+            return {f.result for f in findings
+                    if f.message.removeprefix("N/A — ").split()[0].rstrip(":") == room}
+        assert result("RM-S-VANITY") == {Result.NOT_APPLICABLE}
+        assert Result.PASS in result("RM-S-BATH1")
 
 
 def test_catlin_covers_every_required_room(catlin_model):

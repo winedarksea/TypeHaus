@@ -169,7 +169,7 @@ def test_every_level_two_duct_rests_on_a_chord_and_none_is_inside_one(
              and "FS-S-WEST" in f.element_tags and "ON A WEB" not in f.message]
     assert sorted(tag for f in ducts for tag in f.element_tags
                   if tag.startswith("DU-M-ERV")) == [
-        "DU-M-ERV-EXH-NECK", "DU-M-ERV-EXH-TRUNK", "DU-M-ERV-R-BED", "DU-M-ERV-R-BED2",
+        "DU-M-ERV-EXH-NECK", "DU-M-ERV-EXH-TRUNK", "DU-M-ERV-R-BED",
         "DU-M-ERV-R-LAUNDRY", "DU-M-ERV-R-RET3", "DU-M-ERV-R-STUDY"]  # LIVING tees off BED
     assert not any("DU-M-ERV-R-SUITEBATH" in f.element_tags for f in ducts)
     for finding in ducts:

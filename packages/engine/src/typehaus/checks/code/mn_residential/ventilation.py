@@ -13,6 +13,7 @@ from typehaus.checks.code.mn_residential._common import (
     HABITABLE_OCCUPANCIES,
     SF_PER_M2,
     _fail,
+    _na,
     _pass,
     _room_windows,
     _unknown,
@@ -21,6 +22,7 @@ from typehaus.checks.code.mn_residential.whole_house_ventilation import whole_ho
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.model.enums import DuctSystem, Occupancy
+from typehaus.resolve.bath_scope import LAVATORY_ONLY_NOTE, lavatory_only_rooms
 
 # R303.1: aggregate glazing >= 8% of the floor area, openable >= 4%.
 _MIN_GLAZING_FRACTION = 0.08
@@ -318,8 +320,12 @@ def bathroom_exhaust(ctx: CheckContext) -> list[Finding]:
     ducts = {duct.tag: duct for duct in ctx.plan.all_elements()
              if duct.element_kind == "DuctRun"}
     registers = [r for r in ctx.plan.all_elements() if r.element_kind == "Register"]
+    lav_only = lavatory_only_rooms(ctx.plan)
     out: list[Finding] = []
     for bath in baths:
+        if bath.tag in lav_only:
+            out.append(_na(cid, f"{bath.tag}: {LAVATORY_ONLY_NOTE}", (bath.tag,), code))
+            continue
         windows = _room_windows(ctx, bath, Point, Polygon)
         operable = [w for w in windows if _openable(ctx, w)]
         glazed_sf = sum(w.width_m * w.height_m for w in windows) * _SF_PER_M2

@@ -138,7 +138,7 @@ EQUIPMENT_TYPES_ERV = (
     # because several returns meet here, upstream of the coil and heat kit. No backdraft
     # damper (owner, 2026-11-17): the plenum is always below room pressure, so a gravity
     # damper would swing open in the feed's own direction. ERV off, the AH draws a little
-    # house air back through the feed; accepted. A locking volume damper in the feed sets 115 cfm.
+    # house air back through the feed; accepted. A locking volume damper in the feed sets 92 cfm.
     #
     # 27 1/2 x 40 x 27: raised return opening follows the cabinet's rail/pan stack and pitch.
     # (plan/mep_erv_l3.py). 750 cfm leaves through the 20 x 16 neck at 340 fpm.
@@ -146,7 +146,7 @@ EQUIPMENT_TYPES_ERV = (
                   name="Return-air mixing plenum, 6\" ERV feed",
                   footprint=(inch(27.5), inch(40)), height=inch(27),
                   model_representation=ModelRepresentation(symbol="sheet-metal-plenum"),
-                  source="Fabricated plenum box, 27 1/2 x 40 x 27 in, on the attic deck at EQ-S-HP1-AH's return end: System 1's return plenum, taking the hall return riser, RM-S-SUITE's, RM-S-BED3's and RM-A-EAST-UNFIN's returns (the last a 12x12 stub on the south face, damper-locked at 35 cfm: the returns are in parallel) and a 6 in ERV inlet, and giving the cabinet a 20 x 16 neck through its canvas connector. The returns meet here so fresh air joins upstream of the coil and heat kit. No backdraft damper (owner, 2026-11-17): the plenum is always below room pressure, so with the ERV off the air handler draws a little house air back through the feed and the ERV's other supply grilles; accepted. The ERV calls the air handler's fan (blower interlock), and the feed's locking volume damper sets its 115 cfm. The raised west-face opening follows the cabinet pan/rails and pitch; the fresh and attic openings sit 1 in off the bottom and each other for collar lands. Mastic-sealed galvanized; the neck size waits on the delivered cabinet's return opening.",
+                  source="Fabricated plenum box, 27 1/2 x 40 x 27 in, on the attic deck at EQ-S-HP1-AH's return end: System 1's return plenum, taking the hall return riser, RM-S-SUITE's, RM-S-BED3's and RM-A-EAST-UNFIN's returns (the last a 12x12 stub on the south face, damper-locked at 35 cfm: the returns are in parallel) and a 6 in ERV inlet, and giving the cabinet a 20 x 16 neck through its canvas connector. The returns meet here so fresh air joins upstream of the coil and heat kit. No backdraft damper (owner, 2026-11-17): the plenum is always below room pressure, so with the ERV off the air handler draws a little house air back through the feed and the ERV's other supply grilles; accepted. The ERV calls the air handler's fan (blower interlock), and the feed's locking volume damper sets its 92 cfm. The raised west-face opening follows the cabinet pan/rails and pitch; the fresh and attic openings sit 1 in off the bottom and each other for collar lands. Mastic-sealed galvanized; the neck size waits on the delivered cabinet's return opening.",
                   # Face stations follow the drawn runs. Approximate means a design
                   # opening, still awaiting a coordinated fabricator's shop drawing.
                   ports=(ServicePort(tag="fresh", service=Service.SUPPLY_AIR,
@@ -315,14 +315,15 @@ REGISTER_TYPES_ERV = (
     # room up. House-local, since a library type cannot name a house Product. An 11" x 5.2"
     # sliding-panel aspen hatch (owner, 2026-10-29) over a 4"-round-to-rectangular boot on
     # the radial. Free area is unpublished (~9-14 in2 estimated, against a 4" duct's 12.6), so
-    # the loss curve stays the derived one (6.5 Pa at 20 cfm ~ K 4 on ~300 fpm face velocity)
-    # and the static budget does not move. Ceiling type: footprint is the plan face.
+    # the loss curve stays the derived one (6.5 Pa at 20 cfm ~ K 4 on ~300 fpm face velocity),
+    # square-law to 40 cfm (14.6 x (40/30)^2 = 26.0) for the 38 cfm Harvia rate (2026-11-20).
+    # Ceiling type: footprint is the plan face.
     RegisterType(tag="REG-T-SAUNA-VENT-SUP",
                  name="Sauna fresh-air supply, 11x5.2in aspen sliding vent hatch, 4in duct",
                  footprint=(inch(11), inch(5.2)), height=inch(0.5),
                  plan_symbol="register", ventilation_terminal=True,
                  product_ref="PROD-PROSAUNAS-VENT-HATCH-ASPEN",
-                 static_loss_pa_at_cfm=((10.0, 1.6), (20.0, 6.5), (30.0, 14.6)),
+                 static_loss_pa_at_cfm=((10.0, 1.6), (20.0, 6.5), (30.0, 14.6), (40.0, 26.0)),
                  source="ProSaunas aspen air hatch (SA-VNT-HTCH-ASP) on a 4 in. round-to-rectangular boot; the sliding panel closes it. Wood, for the heater's air.",
                  ports=(ServicePort(tag="supply", service=Service.SUPPLY_AIR,
                                     position=(ft(0), ft(0), ft(0))),)),
@@ -332,7 +333,7 @@ REGISTER_TYPES_ERV = (
                  footprint=(inch(11), inch(0.5)), height=inch(5.2),
                  plan_symbol="register", ventilation_terminal=True,
                  product_ref="PROD-PROSAUNAS-VENT-HATCH-ASPEN",
-                 static_loss_pa_at_cfm=((10.0, 1.6), (20.0, 6.5), (30.0, 14.6)),
+                 static_loss_pa_at_cfm=((10.0, 1.6), (20.0, 6.5), (30.0, 14.6), (40.0, 26.0)),
                  source="ProSaunas aspen air hatch (SA-VNT-HTCH-ASP) on a 4 in. round-to-rectangular boot, long side level. Same part as the supply.",
                  ports=(ServicePort(tag="return", service=Service.RETURN_AIR,
                                     position=(ft(0), ft(0), ft(0))),)),

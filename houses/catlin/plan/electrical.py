@@ -1584,7 +1584,7 @@ MAIN_DATA_TRUNKS = [
                # opening on the upper tier, over PR-M-S-BATH1-TUB-DRAIN and DU-M-ERV-R-BATH1, to
                # the 1'-0" bay south of DU-M-ERV-EXH-TRUNK's end (2026-09-24).
                # 2026-11-06 (TrimJoist pockets): south on x=2'-7 1/2" through the clipped trusses and
-               # x=2'-5 1/2" below them (pocket D2, T; the 296" boot REG-S-EXH4 stands at 30"), across the
+               # x=2'-5 1/2" below them (pocket D2, T; REG-S-EXH4's boot, gone 2026-11-20, stood at 30"), across the
                # y=0 truss on one diagonal leg, through pocket D14 at ~16'-1" (x=17'-6" is the
                # TrimEnd), so the tail turns less than the old square one did.
                # 2026-11-08: out of the chase through the trimmers' D0 at x=1'-3 1/2", east high in the

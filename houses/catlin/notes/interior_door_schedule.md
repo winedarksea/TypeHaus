@@ -29,7 +29,7 @@ sweep or automatic bottom closes its undercut (`DoorType.bottom_seal`).
 | D-M-BED | bed / closet | DT-INT-SWING32 | passage | hollow | 1/2" | - |
 | D-M-MECH | mech / mudroom | DT-INT-SWING30 | passage | hollow | 1/2" | - |
 | D-M-BATH1 | powder / living | DT-INT-SWING32-PRIV-SOLID | privacy | solid | 3/4" | exhaust makes up under it |
-| D-M-BATH2 | bath2 / bed | DT-INT-SWING32-PRIV | privacy | hollow | 3/4" **must stay** | RM-M-BED's 15 cfm exits here |
+| D-M-BATH2 | bath2 / bed | DT-INT-SWING32-PRIV | privacy | hollow | 3/4" **must stay** | RM-M-BED's 20 cfm exits here (15 until 2026-11-20) |
 | D-M-BED2 | bed / living | DT-INT-SWING32-TRIMLESS-PUSH | privacy | solid | kerf seal + automatic bottom | via D-M-BATH2 |
 | D-M-STUDY | study booth / living | DT-INT-SWING30-GLAZED-TRIMLESS | passage | glazed | open undercut | 5 cfm out under it; opens to 174 deg on an Emtek 2256US15 3" magnetic holder |
 | D-M-PANTRY, D-M-LAUN | - | DT-POCKET-INT-36 | pocket passage: flush + edge pull | - | - | - |

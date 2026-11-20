@@ -234,7 +234,7 @@ per run). Every lattice turn on a 4" run therefore needs 12.0" behind it at the 
 the last straight into a run end 6.0". `tests/test_routing_duct_fittings.py` asserts §7.1-§7.2
 with R injected, §7.3's 1.096, and §7.5's 12.579.
 
-### 7.3 Worked route A: `DU-M-ERV-R-BED2`, 4", clean (0 gaps)
+### 7.3 Worked route A: `DU-M-ERV-R-BED2`, 4", clean (0 gaps; the run was deleted 2026-11-20)
 
 Authored (`mep_erv_l2.py`, resolved z, inches): P0 (45.75, 168, 111.625) -> P1 (192, 168, 111.625)
 -> P2 (192, 178, 116.5) -> P3 (192, 210, 116.5) -> P4 (192, 220, 111.625) -> P5 (337, 220, 111.625).

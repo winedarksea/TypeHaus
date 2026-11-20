@@ -177,7 +177,7 @@ DUCTS_ERV_RISERS = [
                   pt(inch(45.86), ft(27, 2.5)), pt(inch(59.8), ft(27, 2.5))),
             elevations=(inch(244), inch(244), inch(244), inch(244), inch(-28.4),
                         inch(-28.4), inch(-28.4), inch(-22), inch(-22)),
-            # 164 cfm below the level-2 tap (attic 50 + level-2 114), 50 above it: the
+            # 146 cfm below the level-2 tap (attic 55 + level-2 91), 55 above it: the
             # basement's 46 never enters it (notes/erv_static_budget.md §10.6).
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=DU_ERV_RISER_EXH),

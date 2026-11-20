@@ -153,7 +153,7 @@ def test_ifc_keeps_terminal_identity_and_shared_mesh(catlin_ifc_path, catlin_mod
 
     model = catlin_model_ro
     file = ifcopenshell.open(str(catlin_ifc_path))
-    for tag in ("REG-M-XFER-MUD", "REG-M-SUP1", "REG-S-HP-STAIR", "REG-S-RET-BED1"):
+    for tag in ("REG-M-XFER-MUD", "REG-M-SUP1", "REG-S-HP-STAIR", "REG-A-RET1"):
         obj = next(o for o in model.canvas_objects if o.tag == tag)
         entity = next(e for e in file.by_type("IfcAirTerminal") if e.Name == tag)
         mesh = entity.Representation.Representations[0].Items[0]
@@ -171,7 +171,7 @@ def test_ifc_keeps_terminal_identity_and_shared_mesh(catlin_ifc_path, catlin_mod
 
 @pytest.mark.parametrize("tag,projection_in", [
     ("REG-M-SUP1", .625), ("REG-B-SUP1", .625), ("REG-B-SUP2", .55),
-    ("REG-M-RET-STUDY", .625), ("REG-S-RET-BED1", .1875), ("REG-S-EXH4", .1875),
+    ("REG-M-RET-STUDY", .625), ("REG-A-RET1", .1875),
 ])
 def test_erv_trim_projects_into_the_room_with_openings(catlin_model_ro, tag, projection_in):
     import trimesh

@@ -28,8 +28,7 @@ from typehaus.solids3d.recorder import drawn_placeables  # noqa: E402
 
 # Connected return runs and their boot meet EQ-S-ERV-MIX's equipment envelope;
 # those two kind-pair baselines include the intentional port connections (DU-A-HP1-EAST-RET
-# is all boot, so its 1" lap into the box is duct_fitting|equipment). duct_fitting|duct_fitting
-# is DU-M-ERV-R-VANITY's take-off collar 1/8" into its boot. The duct_*|floor/fireblock pairs
+# is all boot, so its 1" lap into the box is duct_fitting|equipment). The duct_*|floor/fireblock pairs
 # are NOT intended: drawn elbows (2026-11-16) dip into FS-ATTIC's deck, whose holes are cut
 # for the straight runs. Shrink them when the holes are cut round the elbows.
 # connector_embedded|passage_return: D-B-GYM's jamb returns lap the 1/16" flange of the two

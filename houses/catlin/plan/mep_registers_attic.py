@@ -7,7 +7,9 @@ from typehaus import (
     Mount,
     MountKind,
     Register,
+    RoughOpening,
     deg,
+    from_node,
     ft,
     inch,
     pt,
@@ -16,6 +18,7 @@ from typehaus.model import Location, WallAttachment
 
 from .erv_balance import (
     REG_A_RET1,
+    REG_A_RET_STAIR,
     REG_A_STUBATH_EXH,
 )
 
@@ -126,4 +129,21 @@ REGISTERS_ATTIC = [
              location=Location(attachment=WallAttachment(
                  wall_ref="W-A-STU-W", face="right", distance_from_start=inch(52.5),
                  normal_gap=inch(0), rotation_offset=deg(0)))),
+    # The stair-top pickup (2026-11-20): the warmest, stalest air in the house collects at
+    # the top of the stair volume. A sidewall valve on W-A-BA-E's void face, centred 50" over
+    # the attic datum, fed straight through the wall from the pocket (DU-A-ERV-R-STAIR).
+    # room=RM-S-HALL: the void over FO-A-HALL is the hall's volume; no attic room owns it, so
+    # the mount is off the hall's finished floor (121 1/2" abs): 166" puts the body at 287 1/2",
+    # the collar clear of RF-HOUSE's rafter (at +52" it met one by 0.16").
+    Register(uid="JD6FQPVD1T", tag="REG-A-RET-STAIR", kind=DuctSystem.RETURN, room="RM-S-HALL",
+             duct_ref="DU-A-ERV-R-STAIR",
+             type_ref="REG-T-ERV-VALVE-EXH-WALL", design_cfm=REG_A_RET_STAIR,
+             mount=Mount(kind=MountKind.WALL, elevation=inch(166)),
+             location=Location(attachment=WallAttachment(
+                 wall_ref="W-A-BA-E", face="left", distance_from_start=inch(28),
+                 normal_gap=inch(0), rotation_offset=deg(0)))),
+    RoughOpening(uid="KKJHWZ5J53", tag="AO-A-ERV-STAIR", host="W-A-BA-E",
+                 position=from_node("N-A-N3", inch(25.75)),
+                 width=inch(4.5), height=inch(4.5), sill_height=inch(47.75),
+                 penetration_for=("DU-A-ERV-R-STAIR",)),
 ]

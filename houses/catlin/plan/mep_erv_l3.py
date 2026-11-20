@@ -1,6 +1,6 @@
 # haus: editable
 # Catlin MEP — the ERV on LEVEL 3: the attic extract plenum, the mixing box it does not
-# feed, the three FS-ATTIC radials and the mixing-box feed.
+# feed, the three FS-ATTIC radials, the stair pickup and the mixing-box feed.
 #
 # The system as a whole is documented once, in plan/mep_erv_l1.py's header; the routing
 # declarations are there too. EQ-S-ERV-MIX is second-storey equipment and is filed here
@@ -21,6 +21,7 @@ from typehaus import (
 from .erv_balance import (
     DU_A_ERV_R_ATTIC,
     DU_A_ERV_R_BATH1,
+    DU_A_ERV_R_STAIR,
     DU_A_ERV_R_STUBATH,
     DU_S_ERV_HP_FEED,
 )
@@ -34,7 +35,7 @@ from .erv_balance import (
 # 46 1/2" at the far side of a 30" working space, so a person can crawl to it and kneel at
 # it. Extract only: the level's fresh-air duty is the mixing-box feed,
 # which stays a full-size 6" branch off the supply riser rather than a radial, because it
-# carries ~100 of the machine's 210 authored cfm on its own (206 certified — see the header).
+# carries 92 of the machine's 210 authored cfm on its own (206 certified — see the header).
 EQUIPMENT_ERV_ATTIC = [
     Equipment(uid="3QT1F3F01A", tag="EQ-A-ERV-MAN-EXH", kind=EquipmentKind.DUCT_MANIFOLD,
               position=pt(ft(5), ft(34, 6)), footprint=(inch(24), inch(8)),
@@ -50,14 +51,14 @@ EQUIPMENT_ERV_ATTIC = [
 ]
 # THE MIXING BOX — System 1's return plenum at EQ-S-HP1-AH's return end, on the attic deck
 # since 2026-11-11 (it was in SF-S-HP1, retired with the unit's move). Fresh air may arrive
-# only here, upstream of the coil and the internal heat kit: 115 cfm of -15 F air downstream
+# only here, upstream of the coil and the internal heat kit: 92 cfm of -15 F air downstream
 # of them would be delivered untempered.
 #
 # ** A BOX, NOT A WYE, AND NO BACKDRAFT DAMPER (owner, 2026-11-17). ** The plenum is always
 # below room pressure, so a gravity damper would swing open in the feed's own direction and
 # stop nothing; the Broan's port dampers close the outdoor legs. AH running, ERV off (rare):
 # the AH draws a little house air back out of the ERV's other supply grilles; accepted, and
-# a motorized damper rejected as extra wiring. ERV running, AH off: 115 cfm would leave
+# a motorized damper rejected as extra wiring. ERV running, AH off: 92 cfm would leave
 # through the return grilles, so the ERV calls the AH fan (EQ-B-ERV.blower_interlock_ref,
 # mep.erv_blower_interlock).
 # `_pair_is_plumbed` excuses only equipment<->duct pairs, which is why the feed lands on
@@ -217,6 +218,20 @@ DUCTS_ERV_ATTIC = [
             elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=DU_A_ERV_R_BATH1),
+    # The stair-top pickup (2026-11-20): off the plenum's EAST face, a 45 pair onto y=404"
+    # (south of VR-M-STACK's riser and PR-A-STUBATH-VENT's west leg at y=412.9"), east on
+    # the deck under CD-A-PV-EAST, up at x=111 3/4" between that conduit (x=108 1/2") and
+    # PR-A-STUBATH-VENT (x=115 1/2", +45"), and through W-A-BA-E's 400..416" bay at +50",
+    # over that vent and between the 392"/408" rafters, to REG-A-RET-STAIR on the void face.
+    # ~8.3 ft, two 45s and two 90s (notes/erv_static_budget.md §10.30).
+    DuctRun(uid="7KPHG7MNBS", tag="DU-A-ERV-R-STAIR", system=DuctSystem.RETURN,
+            path=(pt(inch(72), inch(414)), pt(inch(78), inch(414)), pt(inch(88), inch(404)),
+                  pt(inch(111.75), inch(404)), pt(inch(111.75), inch(404)),
+                  pt(inch(120), inch(404))),
+            elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z,
+                        inch(50), inch(50)),
+            diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
+            design_cfm=DU_A_ERV_R_STAIR),
 ]
 
 # THE MIXING-BOX FEED — the one place fresh air enters the heat-pump loop.
@@ -226,7 +241,7 @@ DUCTS_ERV_ATTIC = [
 # comes back up onto RM-A-EAST-UNFIN's deck and runs NORTH into the mixing box beside the air
 # handler (2026-11-11; it used to drop into SF-S-HP1). Developed ~44'-3".
 #
-# 6" and not a 4" radial: ~100 of the machine's 210 authored cfm goes through here (206
+# 6" and not a 4" radial: 92 of the machine's 210 authored cfm goes through here (206
 # certified — see the header), which is half the house's fresh air arriving in one place, and
 # a radial would run it at ~5,000 fpm.
 #
@@ -278,7 +293,7 @@ DUCTS_ERV_MIX_FEED = [
                         inch(4.75), inch(4.75)),
             adjustable_elbows=(1,),
             # Locking volume damper ~34" up the north deck leg, between its two sleeper
-            # saddles, east of the AH service zone: set 115 cfm with the AH at its
+            # saddles, east of the AH service zone: set 92 cfm with the AH at its
             # interlocked fan speed, then lock (IMC 603.18.3).
             inline_dampers=(inch(517),),
             # It names no soffit: CHASE, one run in two cavities (bay and deck).

@@ -18,8 +18,8 @@ mixing box.)
 Every other System 1 terminal is a supply. So the supply air delivered to a
 room behind a closed door has to get back to that hall through the door.
 
-The ERV does not help. Its second-storey bedroom pickups (`REG-S-RET-BED1/2`; BED3's went
-2026-11-11) run at **5 cfm each** (`plan/erv_balance.py`) — they are stale-air tokens on a 210 cfm balanced machine, not a return path.
+The ERV does not help. It takes no air from the bedrooms: BED3's pickup went 2026-11-11 and the
+BED1/BED2 5 cfm tokens on 2026-11-20 (`erv_static_budget.md` §10.30).
 
 ## The arithmetic
 
@@ -49,13 +49,12 @@ Rearranged, the free area a room needs is `A = Q / 1.853`.
 ## Re-graded at 3/4" (2026-11-06)
 
 Every relief door (the privacy types, `D-B-FURN`, `D-B-PLAY`) now hangs at 3/4", the top of
-the range; every other leaf at the factory 1/2". The check nets each zone's terminals (the
-ERV's 5 cfm bedroom pickups come off the supply), folds a dead-end bath or closet into the
+the range; every other leaf at the factory 1/2". The check nets each zone's terminals, folds a dead-end bath or closet into the
 room it opens from, and treats the zone a stair reaches as the house:
 
 | Zone | Net | Door | Free area | dP | Needs at 3 Pa |
 |---|---|---|---|---|---|
-| `RM-S-BED1/2` | 75 cfm out | 30" x 3/4" | 22.5 in^2 | **9.7 Pa** | 40 in^2 |
+| `RM-S-BED1/2` | 80 cfm out (75 until the ERV tokens went, 2026-11-20) | 30" x 3/4" | 22.5 in^2 | **11.0 Pa** (9.7 x (80/75)^2) | 43 in^2 (22.5 x sqrt(11.0/3)) |
 | `RM-S-BED3` | 0 (75 cfm out until its ducted return, 2026-11-11, below) | `D-S-BED3` 30" x 1/2" | - | balanced | - |
 | `RM-S-SUITE` (+ suite bath, closet) | 0 (80 cfm out until its ducted return, 2026-11-09, below) | `D-S-SUITE` 32" x 1/2", sealed | - | balanced (9.7 Pa before) | - |
 | `RM-A-STUDIO` (+ studio bath, ERV closet) | 50 cfm out | `D-A-HALVES` 32" x 3/4" | 24.0 in^2 | **3.8 Pa** | 27 in^2 |
@@ -180,7 +179,8 @@ from the blower. Lining the 12x6 is an open item.
 
 ## Owner decisions 2026-11-12
 
-* **`RM-S-BED1/2`: 9.7 Pa accepted.** 75 cfm out through a 30" x 3/4" door, no new returns. The
+* **`RM-S-BED1/2`: 9.7 Pa accepted** (11.0 Pa at 80 cfm since 2026-11-20, owner: the tokens
+  bought 1.3 Pa for ~42 ft of duct). 30" x 3/4" door, no new returns. The
   `mep.door_transfer_air` ADVISORYs stand as decided.
 * **`RM-A-STUDIO`: 3.8 Pa accepted** (`D-A-HALVES` 32" x 3/4", 50 cfm net out).
 * **`RM-S-PLANT`: closed 2026-11-12.** Sealed; its supply moved to Study 2's south grille.

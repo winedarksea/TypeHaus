@@ -8999,3 +8999,26 @@ Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
   stations its span holds (N4 0.83, N3 0.57). A35Z stays 111, MASAZ 77 (basis note §4).
 - **Open.** `FO-M-ERV-OA`'s trimmer pair fills W-B-N3/N4's first joist space (1/2" to the rim),
   so ten ties lie under it and the check grades both walls UNKNOWN; FS-M-WEST's seam joist on W-B-W1 has no clear side for its tie.
+
+## ERV rebalance: sauna at Harvia's rate, tokens out, a stair-top pickup (2026-11-20, owner)
+
+- **Why.** Harvia's 5 ACH on the sauna's 456 ft3 is 38 cfm; it had 20. RM-S-VANITY holds two
+  lavatories and nothing else, so IRC R202 makes it no bathroom and R303.3 asks it for nothing.
+  The BED1/BED2 5 cfm pickups cost ~42 ft of duct, two boots and a tee to buy 1.3 Pa under
+  their doors.
+- **What.** Still 210/210 on the same Broan. Sauna 38/38. BED 20, matching its sealed
+  ensuite's extract. HP-FEED 115 -> 92 pays for both. `REG-S-EXH4`, `REG-S-RET-BED1/2` and
+  their three runs are deleted; the vanity keeps its transfer pair for BATH1's makeup.
+  `REG-A-RET-STAIR` takes 10 at the stair top: a sidewall valve on `W-A-BA-E`'s void face at
+  +50", fed through the wall from the attic plenum (`DU-A-ERV-R-STAIR`, `AO-A-ERV-STAIR`).
+  The kitchen takes 13. The level-2 trunk is capped 18 1/4" shorter, past BATH2.
+- **Engine.** `resolve/bath_scope.py`: a BATHROOM room whose fixtures are all declared basins is
+  N/A in `code.R303_3_local_exhaust` and `mep.ventilation_distribution`. With no fixtures, it
+  stays in scope.
+- **Arithmetic.** The sauna supply governs at 0.579 in. and delivers 199.4 cfm against 188.0;
+  the sauna hatch curve runs square-law to 26.0 Pa at 40 cfm. Tempering at the core is
+  40.3 F at -15 F, so it closes thinly. The bath extracts were surveyed against their bathing
+  fixtures and none moves (`notes/erv_static_budget.md` §10.30).
+- **Open.** `integrity.placeable_room_mismatch` reads REG-A-RET-STAIR UNKNOWN: no attic room owns
+  the stair void, and the register names RM-S-HALL.
+  Bedrooms now net 80 cfm under their doors (11.0 Pa, accepted).

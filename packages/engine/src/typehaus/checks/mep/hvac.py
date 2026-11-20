@@ -6,12 +6,14 @@ from typing import TYPE_CHECKING
 
 from typehaus.checks._authoring import advisory
 from typehaus.checks._authoring import failed as _fail
+from typehaus.checks._authoring import not_applicable as _na
 from typehaus.checks._authoring import passed as _pass
 from typehaus.checks._authoring import unknown as _unknown
 from typehaus.checks.mep.erv_interlock import blower_dependent_ducts
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.bath_scope import LAVATORY_ONLY_NOTE, lavatory_only_rooms
 from typehaus.resolve.framing.profiles import cross_section, open_web_opening_m
 from typehaus.resolve.mep import is_parallel_to_floor
 from typehaus.resolve.placeables import placed_xy
@@ -117,6 +119,7 @@ def ventilation_distribution(ctx: CheckContext) -> list[Finding]:
     # Runs of an air handler an ERV feeds with no blower interlock: fresh air on them
     # arrives only while that blower happens to turn (``mep.erv_blower_interlock``).
     riding = blower_dependent_ducts(ctx)
+    lav_only = lavatory_only_rooms(ctx.plan)
 
     for room in rooms:
         kinds = by_room.get(room.tag, set())
@@ -140,7 +143,9 @@ def ventilation_distribution(ctx: CheckContext) -> list[Finding]:
                     "fresh-air supply register", (room.tag,),
                 ))
         if room.occupancy in _STALE_OCCUPANCIES:
-            if kinds & _STALE_KINDS:
+            if room.tag in lav_only:
+                out.append(_na(cid, f"{room.tag}: {LAVATORY_ONLY_NOTE}", (room.tag,)))
+            elif kinds & _STALE_KINDS:
                 out.append(_pass(
                     cid, f"{room.tag} ({room.occupancy}) has a return/exhaust terminal",
                     (room.tag,),
@@ -157,7 +162,8 @@ def ventilation_distribution(ctx: CheckContext) -> list[Finding]:
     stale_count = sum(1 for r in registers if r.kind.value in _STALE_KINDS)
     need_supply = sum(1 for r in rooms
                       if r.occupancy in _SUPPLY_OCCUPANCIES and r.conditioned)
-    need_stale = sum(1 for r in rooms if r.occupancy in _STALE_OCCUPANCIES)
+    need_stale = sum(1 for r in rooms
+                     if r.occupancy in _STALE_OCCUPANCIES and r.tag not in lav_only)
     if supply_count >= need_supply and stale_count >= need_stale:
         out.append(_pass(
             cid, f"{supply_count} supply / {stale_count} return+exhaust terminals cover "

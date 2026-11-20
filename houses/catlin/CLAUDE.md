@@ -48,13 +48,15 @@
 >   of its old station, and **all four Broan ports are EXACT** (2026-11-11, `notes/erv_static_budget.md`
 >   §10.22). EA lands north of OA on the east half, the order the risers need, so the outdoor legs
 >   never cross. SUP and RET duck under their rows on bent kit flex (C 1.18) into MAN-SUP and the
->   moved MAN-EXH (y=27'-2 1/2"). OA/EA wear 1" AP Armaflex (10" OD). Cost: 198.9 cfm delivered (§10.28), now
->   against 188.0 (the studio is a craft room, §10.23). Read §10.22 before moving any of it.
+>   moved MAN-EXH (y=27'-2 1/2"). OA/EA wear 1" AP Armaflex (10" OD). Delivered 199.4 cfm against
+>   188.0 (§10.30), the sauna supply governing since the 2026-11-20 rebalance: sauna 38/38, BED 20,
+>   HP-FEED 92; RM-S-VANITY (lavatories only, not a code bathroom) and the BED1/BED2 tokens lost
+>   their extracts; REG-A-RET-STAIR takes 10 at the stair top. Read §10.22 before moving any of it.
 >   (2026-11-12, §10.28) The case hangs on a strut trapeze (`EQ-B-ERV.hangers`, 4 rods, struts at
 >   1 1/2" overhang: more puts them in CZ-B-DRYFIRE). `DU-ERV-EA` falls 1/8"/ft to its riser
 >   foot onto a CAPPED drain tee (no gravity route; keep the kit-lead leg level). `FO-M-ERV-OA`
->   is lidded (ledgers), so RM-M-MECH's LVP runs across it. HP-FEED leaves the riser head on a
->   30 degree skew to x=12"; the head is 230 1/4".
+>   is lidded (ledgers), so RM-M-MECH's LVP runs across it. HP-FEED (92 cfm, damper locked)
+>   leaves the riser head on a 30 degree skew to x=12"; the head is 230 1/4".
 > - **Roof:** RF-GARAGE is the RDM vented peak under the same 7" 52131XX as the canopy (one cap
 >   ring, no step); R806.2 passes 873/553 in2: 562 ridge on Profile Vent's 23.4 in2/ft + 311 eave intake
   (48 LF x 6.48). Rake soffits are not intake. Coplanar abutting roofs
@@ -1025,7 +1027,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     W-A-N* at +23'-0" and never applied to W-M-N3B/W-S-N3B. (→ log4.md, why the gable failed)
   - `CD-A-DATA-NE` routes SOUTH — the only option, since
     `FO-A-HALL`'s maxy is `W-A-N2`'s gwb face, severing every west→east route north of the
-    studio. `DU-S-ERV-HP-FEED` (100 cfm) sets the chase section, turning east at y=21'-10 5/8"
+    studio. `DU-S-ERV-HP-FEED` (92 cfm) sets the chase section, turning east at y=21'-10 5/8"
     in the bay and up through `FO-A-ERV-HPFEED-E` onto the deck into `EQ-S-ERV-MIX`.
   - **The west chase is lanes, not one line** (D2, 2026-09-19). At x=1'-0" the 6:12
     underside is 7 1/2" over the deck and there is no second tier, so five runs drawn on that
