@@ -176,7 +176,9 @@ def test_derived_a35z_lies_on_its_sill_and_against_a_member_face(catlin_model_ro
         for f in catlin_model_ro.floors for m in f.members
         if m.category in ("rim", "joist", "sister_joist")]
     ties = [s for s in catlin_model_ro.solids if s.derived and s.product == "A35Z"]
-    assert len(ties) == 101  # 56 joist ends + 45 at the wall-top stations
+    # 57 joist-end ties (the W-B-W1 and W-B-E1 seams are packs, tied on their outer faces)
+    # + 45 at the wall-top stations.
+    assert len(ties) == 102
     for tie in ties:
         xs, ys, zs = zip(*tie.body_mesh.positions, strict=True)
         spot = box(min(xs), min(ys), max(xs), max(ys))
@@ -188,3 +190,41 @@ def test_derived_a35z_lies_on_its_sill_and_against_a_member_face(catlin_model_ro
                    and all(poly.exterior.distance(Point(p)) <= tol for p in edge)
                    for poly in members if poly.distance(spot) <= tol
                    for edge in edges), tie.tag
+
+
+def _member(key, y_in, category="joist", x0_in=1.75, x1_in=200.0, width_in=2.3125):
+    from types import SimpleNamespace
+
+    return SimpleNamespace(child_key=key, category=category, profile="11.875 TJI 230",
+                           plan_width_m=width_in * 0.0254, z0_m=-0.3016, z1_m=0.0,
+                           p0=(x0_in * 0.0254, y_in * 0.0254), p1=(x1_in * 0.0254, y_in * 0.0254))
+
+
+def test_ends_closer_than_a_tie_slot_are_one_pack_tied_on_its_outer_faces():
+    """W-B-W1's seam: three TJI ends 3/4" and 0" apart. Nothing fits between them, so the
+    outer two each own one face's tie, the middle none, and every leaf lies clear."""
+    from types import SimpleNamespace
+
+    from typehaus.resolve.connector_geometry.plate_angle import plate_angle_dims
+    from typehaus.resolve.connector_geometry.sill_tie_pack import sill_pack
+
+    rim = _member("rim", 0.0, "rim", 1.125, 1.125, 1.25)
+    rim.p0, rim.p1 = (1.125 * 0.0254, 0.0), (1.125 * 0.0254, 300 * 0.0254)
+    ends = [_member(f"j{y}", y) for y in (240.0, 256.0, 259.0625, 261.375, 277.375)]
+    floor = SimpleNamespace(members=[rim, *ends])
+    dims = plate_angle_dims("A35Z")
+    packs = {m.child_key: sill_pack(m, m.p0, floor, [floor], dims) for m in ends}
+    assert [len(packs[k].ties) for k in ("j256.0", "j259.0625", "j261.375")] == [1, 0, 1]
+    assert packs["j259.0625"].members == 3
+    assert [round(v / 0.0254, 3) for v in packs["j256.0"].extent_m] == [254.844, 262.531]
+    lo, hi = packs["j256.0"].ties[0], packs["j261.375"].ties[0]
+    assert lo.centre[1] / 0.0254 == pytest.approx(254.84375 - 0.125 - 0.71875)
+    assert hi.centre[1] / 0.0254 == pytest.approx(262.53125 + 0.125 + 0.71875)
+    assert not lo.blocked_by and not hi.blocked_by
+    assert len(packs["j240.0"].ties) == 1 and packs["j240.0"].members == 1
+    # A ledger across both of a lone end's slots: the tie is reported, not hidden.
+    ledger = _member("ledger", 0.0, "ledger", width_in=1.5)
+    ledger.p0, ledger.p1 = (3.0 * 0.0254, 230 * 0.0254), (3.0 * 0.0254, 250 * 0.0254)
+    floor.members.append(ledger)
+    blocked = sill_pack(ends[0], ends[0].p0, floor, [floor], dims).ties[0]
+    assert blocked.blocked_by == ("ledger",)

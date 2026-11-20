@@ -30,6 +30,13 @@ def test_catlin_wall_tops_match_the_basis_note(catlin_model_ro) -> None:
     assert "14 11.875 TJI 230 ends at 16\" o.c., 533 lb each): 1 A35Z x 563 lb" \
         in findings["W-B-W2"].message
     assert "d/c 0.95" in findings["W-B-W2"].message
+    # Ends closer than a tie's slot are one pack, tied on its outer faces (note §4).
+    assert ("FS-M-MECH/FS-M-WEST pack of 3 ends at 21.6 ft (closer than a tie's slot, 713 lb "
+            "over 21.4\"): 2 A35Z on its outer faces x 563 lb = 1126 lb, d/c 0.63"
+            in findings["W-B-W1"].message)
+    assert ("FS-M-EAST/FS-M-NE pack of 2 ends at 12.9 ft (closer than a tie's slot, 515 lb "
+            "over 15.5\"): 2 A35Z on its outer faces x 538 lb = 1076 lb, d/c 0.48"
+            in findings["W-B-E1"].message)
     # Parallel: worst station per wall.
     # FO-M-ERV-OA's north pack stops past its header, so N3/N4's ties lie clear (§4).
     for tag, worst in (("W-B-N1", "0.89"), ("W-B-N3", "0.57"), ("W-B-N4", "0.83"),

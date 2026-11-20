@@ -9027,7 +9027,20 @@ Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
   N3/N4 station is tied once, from N4; N3's sill butts N4's there, so each run grades only the
   stations its span holds (N4 0.83, N3 0.57). A35Z stays 111, MASAZ 77 (basis note §4).
 - **Open.** `FO-M-ERV-OA`'s trimmer pair fills W-B-N3/N4's first joist space (1/2" to the rim),
-  so ten ties lie under it and the check grades both walls UNKNOWN; FS-M-WEST's seam joist on W-B-W1 has no clear side for its tie.
+  so ten ties lie under it and the check grades both walls UNKNOWN; FS-M-WEST's seam joist on W-B-W1 has no clear side for its tie. (Both closed 2026-11-20, below.)
+
+## Sill ties: closely spaced ends are one pack (2026-11-20, owner)
+
+- **Measured.** At W-B-W1's seam FS-M-WEST's 256"/259 1/16" ends and FS-M-MECH's 261 3/8" sit
+  3/4" and 0" apart; the 6" coincident-bearing grid merged the first two (one tie for two ends)
+  and the middle one's tie fell back onto framing, unchecked. W-B-E1's TJI/truss seam
+  (153 3/32"/156") was merged the same way.
+- **What.** Each sill-tied end is its own joint. Members closer than a tie's slot (1 11/16")
+  are one pack, tied on its two outer faces by its outermost ends
+  (`resolve/connector_geometry/sill_tie_pack.py`, `joints/sill_packs.py`), graded as one pack
+  over its own tributary: W-B-W1 712.5 / 1,126 = 0.63, W-B-E1 515 / 1,076 = 0.48. A tie whose
+  leaf lies on framing grades UNKNOWN. A35Z 111 -> 112 (57 joist ends + 45 + 10 others).
+  Basis note §4.
 
 ## FO-M-ERV-OA's north pack stops at its header; W-B-N3/N4 tied (2026-11-20, owner)
 

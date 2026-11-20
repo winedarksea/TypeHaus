@@ -147,7 +147,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5:connector fasteners) | 176 | ea |  | building |
 | HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5:diaphragm 8d nails) | 452 | ea |  | building |
 | HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5:sheathing nails) | 1,037 | ea |  | building |
-| A35Z framing angle (A35Z:joist bearing) | 34 | ea |  | building |
+| A35Z framing angle (A35Z:joist bearing) | 35 | ea |  | building |
 | A35Z framing angle (A35Z:joist bearing) | 2 | ea |  | building |
 | A35Z framing angle (A35Z:joist bearing) | 16 | ea |  | building |
 | A35Z framing angle (A35Z:joist bearing) | 4 | ea |  | building |
@@ -219,7 +219,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 10d common ring-shank nail, 0.148in x 3in, Type 304 (S10ACN:treated framing nails (allowance)) | 848 | ea |  | building |
 | 8d common ring-shank nail, 0.131in x 2.5in, Type 304 (S8ACN:sheathing nails) | 72 | ea |  | building |
 | HDG steel U-saddle on a 4 1/2 in (3-ply 2x) joist line, two 5/8 in through-bolts (SADDLE-4.5-2x58-HDG:suspension anchor) | 4 | ea |  | basement |
-| Strong-Drive SD connector screw, #9 x 1-1/2in (SD9112:connector fasteners) | 1,332 | ea |  | building |
+| Strong-Drive SD connector screw, #9 x 1-1/2in (SD9112:connector fasteners) | 1,344 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600:partition top plate, blocking between parallel members) | 72 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600:partition top plate, perpendicular framing above) | 108 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600:partition top plate, under a parallel member) | 12 | ea |  | building |

@@ -94,6 +94,8 @@ def bearing_uplift_tie_rows(model: ResolvedModel, rules: UpliftTieRules) -> list
         return []
     groups: dict = {}
     for connection in connections:
+        if connection.sill_tie and not connection.sill_ties:
+            continue  # inside a sill-tie pack: its outer ends' ties hold it
         key = (connection.member_category, connection.member_profile,
                _exposure(connection), connection.sill_tie or "", connection.sill_ties,
                connection.tie_role)

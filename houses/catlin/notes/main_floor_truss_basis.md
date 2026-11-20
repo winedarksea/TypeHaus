@@ -189,15 +189,19 @@ ducts or pipes". The owner's bounce goal, so two:
   |---|---|---|---|---|---|---|
   | W-B-E1 | FS-M-EAST, TJI | 9 | 16" | 400 x 1.333 = 533 lb | 563 | 0.95 |
   | W-B-E1 | FS-M-NE, truss | 4 | 16" | 400 x 1.333 = 533 lb | 538 | 0.99 |
+  | W-B-E1 | seam pack: FS-M-EAST TJI 153 3/32" + FS-M-NE truss 156" | 2 | 15.45" trib. | 515 lb | 2 x 538 | 0.48 |
   | W-B-E2 | FS-M-NE, truss | 13 | 16" | 533 lb | 538 | 0.99 |
   | W-B-E2 | FS-M-NE, 2-ply pack (316, 332) | 2 | 16" | 533 lb | 2 x 538 | 0.50 |
-  | W-B-W1 | FS-M-MECH, TJI | 9 | 16" | 533 lb | 563 | 0.95 |
-  | W-B-W1 | FS-M-WEST, TJI | 2 | 16" | 533 lb | 563 | 0.95 |
+  | W-B-W1 | FS-M-MECH, TJI | 8 | 16" | 533 lb | 563 | 0.95 |
+  | W-B-W1 | FS-M-WEST, TJI | 1 | 16" | 533 lb | 563 | 0.95 |
+  | W-B-W1 | seam pack: FS-M-WEST 256", 259 1/16" + FS-M-MECH 261 3/8" | 3 | 21.375" trib. | 712.5 lb | 2 x 563 | 0.63 |
   | W-B-W1 | FS-M-WEST, 2-ply pack (240, the bath) | 1 | 16" | 533 lb | 2 x 563 | 0.47 |
   | W-B-W2 | FS-M-WEST, TJI (includes BATH2 drain bay's added line) | 14 | 16" max | 533 lb | 563 | 0.95 |
 
-  53 ends, **56 A35Z**: one an end (35 TJI + 18 truss), plus one on each sister ply that lands on
-  a sill (the 316 and 332 trusses, and `FS-M-WEST`'s bath ply at y 240"). Since 2026-11-18 the
+  55 ends, **57 A35Z**: one an end (37 TJI + 18 truss), less the seam pack's middle end, plus one
+  on each sister ply that lands on a sill (the 316 and 332 trusses, and `FS-M-WEST`'s bath ply
+  at y 240"). (Until 2026-11-20 the 6" coincident-bearing grid merged the 153 3/32"/156" and
+  256"/259 1/16" ends, so 53 ends, 56 ties, one drawn through framing.) Since 2026-11-18 the
   four gable-end edge lines on concrete (FS-M-EAST and FS-M-WEST at y=0, FS-M-MECH and FS-M-NE at
   y=36') are LSL rim boards seated along their parallel walls, whose stations tie them; their
   ends take no angle.
@@ -210,6 +214,22 @@ ducts or pipes". The owner's bounce goal, so two:
   pack reads 533 / 1,076 = 0.50 (`joints/bearing.py`, the outer-face rule). (The engine's finding
   splits the 18 as 5 + 11 + 2 packs; the per-end d/c, 533/538 = 0.99, is the same either way.) The 533 lb is also
   the bound for the three 12" bays at the north wall, whose tributary is smaller.
+  **Ends closer than a tie's slot are one pack, tied on its two outer faces** (owner,
+  2026-11-20; `resolve/connector_geometry/sill_tie_pack.py`): the slot is the A35's 1 7/16"
+  plus 1/8" each side, 1 11/16". The outermost tied end at each side owns that face's tie; the
+  pack's demand is 400 plf from midpoint to midpoint with the ends either side.
+  - W-B-W1, x=0 (TJI 2 5/16"): 256" -> 254 27/32..257 5/32; 259 1/16" -> 257 29/32..260 7/32;
+    261 3/8" (FS-M-MECH) -> 260 7/32..262 17/32. Gaps 3/4" and 0, both < 1 11/16": one pack,
+    254 27/32..262 17/32. Clear beyond: 11 3/8" to the 240" pack (sister to 243 15/32"),
+    13 11/16" to 277 3/8". Ties on the rim face at y 254 27/32 - 1/8 - 23/32 = **254"** and
+    262 17/32 + 1/8 + 23/32 = **263 3/8"**. Tributary (261.375 + 277.375)/2 - (240 + 256)/2 =
+    269.375 - 248 = 21.375": 400 x 21.375/12 = **712.5 lb** on 2 x 563.0 = 1,125.9, **0.63**.
+  - W-B-E1, x=36': TJI 153 3/32" (151 15/16..154 1/4) and the 3 1/2" truss at 156"
+    (154 1/4..157 3/4) touch: a pack. The TJI's tie on the rim face, the truss's on its side
+    face. Tributary (156 + 172)/2 - (144 + 153.094)/2 = 164 - 148.547 = 15.453": **515.1 lb**
+    on 2 x min(563.0, 537.9) = 1,075.9, **0.48**.
+  Every tie's flat leaf is tested against the framing on its sill: one with a member over it
+  grades `code.MN_1309_0404_wall_top` UNKNOWN, naming the member, never PASS.
 
   Parallel (footnote f): blocking in the first three joist spaces (two blocked lines a
   station, so four), each station tied by **five A35Z** on the edge member's inboard face
@@ -260,8 +280,6 @@ ducts or pipes". The owner's bounce goal, so two:
     parallel to the wall, so it is not footnote f blocking and is not credited; the wall top
     beneath it reaches the x=5'-10" station through the anchored sill, the reading every
     tributary in this table takes. The header carries floor load only.
-  And on W-B-W1 `FS-M-WEST`'s seam line (y 259") has 3/4" to the next joist and none to
-  `FS-M-MECH`'s first, so its sill tie has no clear side.
   Each station has a MASA within 8": where the pitch left none, one is added (eight in all,
   69 -> 77 billed; `joints/sills._snap_to_blocking`). Moving one instead stranded the plate ends.
 - **W-B-N2 — UNKNOWN, a design.** `FO-M-STAIR` runs y 26'..35'-4 7/8" against the 36' wall, so

@@ -84,7 +84,50 @@ def _floor_spacing_m(ctx: CheckContext) -> dict:
 
 
 def _perpendicular(connections, reaction_plf, spacing_by_floor) -> tuple[list, list]:
-    """``(ok lines, short lines)`` for the seated ends on one wall, per floor."""
+    """``(ok lines, short lines)`` for the seated ends on one wall, per floor; ends packed
+    closer than a tie's slot are graded as one pack (``joints/sill_packs``)."""
+    short = [f"{c.assembly_tag} end at {c.member_key.partition(':')[2]}: UNKNOWN — its "
+             f"{c.sill_tie} has no clear slot, {', '.join(c.blocked_by)} over its leaf"
+             for c in connections if c.blocked_by]
+    packs: dict = {}
+    for c in connections:
+        if c.pack_members > 1:
+            packs.setdefault(tuple(round(v, 4) for v in c.pack_extent_m), []).append(c)
+    ok = []
+    for ends in packs.values():
+        line, fits = _pack_line(ends, connections, reaction_plf, spacing_by_floor)
+        (ok if fits else short).append(line)
+    more_ok, more_short = _per_floor([c for c in connections if c.pack_members <= 1],
+                                     reaction_plf, spacing_by_floor)
+    return ok + more_ok, short + more_short
+
+
+def _pack_line(ends, connections, reaction_plf, spacing_by_floor) -> tuple[str, bool]:
+    """One pack: 400 plf over midpoint-to-midpoint to the ends either side of it."""
+    i = 0 if ends[0].axis == "x" else 1
+    mine = {id(c) for c in ends}
+    at = sorted(c.point_m[i] for c in ends)
+    others = [c.point_m[i] for c in connections if id(c) not in mine]
+    spacing = max(spacing_by_floor.get(c.assembly_tag, 0.0) for c in ends)
+    below = max((v for v in others if v < at[0]), default=at[0] - spacing)
+    above = min((v for v in others if v > at[-1]), default=at[-1] + spacing)
+    trib = (above + at[-1]) / 2.0 - (below + at[0]) / 2.0
+    demand = reaction_plf * trib / _M_PER_FT
+    count = sum(c.sill_ties for c in ends)
+    tie = next(c.sill_tie for c in ends if c.sill_tie)
+    each = min((tie_capacity_lb(tie, c.member_profile)[0] or 0.0) for c in ends)
+    floors = "/".join(sorted({c.assembly_tag for c in ends}))
+    head = (f"{floors} pack of {len(ends)} ends at {(at[0] + at[-1]) / 2 / _M_PER_FT:.1f} ft "
+            f"(closer than a tie's slot, {demand:.0f} lb over {trib / _M_PER_IN:.1f}\")")
+    if not each:
+        return f"{head}: UNKNOWN — {tie_capacity_lb(tie, ends[0].member_profile)[1]}", False
+    return (f"{head}: {count} {tie} on its outer faces x {each:.0f} lb = {count * each:.0f} "
+            f"lb, d/c {demand / (count * each):.2f}" if count else f"{head}: no tie fits",
+            count * each >= demand - 1e-6)
+
+
+def _per_floor(connections, reaction_plf, spacing_by_floor) -> tuple[list, list]:
+    """``(ok lines, short lines)`` for the lone and sistered ends, per floor."""
     by_floor: dict = {}
     for c in connections:
         by_floor.setdefault((c.assembly_tag, c.member_profile, c.sill_tie, c.sill_ties),

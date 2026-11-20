@@ -119,6 +119,11 @@ class BearingConnection:
     tie_role: str = ROLE_HURRICANE_TIE
     #: Set where two ends share a station and each takes its own tie (a ridge plate).
     member_key: str | None = None
+    #: A sill-tied end's pack (``joints/sill_packs``): its extent across the support, how
+    #: many tied ends share it, and the framing over any of its ties' leaves.
+    pack_extent_m: tuple = ()
+    pack_members: int = 1
+    blocked_by: tuple = ()
 
 
 def _support(model: ResolvedModel, tag: str, fallback_half_width_m: float):
@@ -326,9 +331,13 @@ def bearing_line_tags(model: ResolvedModel, refs: tuple, rules: UpliftTieRules) 
 
 def bearing_connections(model: ResolvedModel, rules: UpliftTieRules) -> list:
     """Every rafter/truss-heel/joist end that bears on a declared support."""
+    from typehaus.joints.sill_packs import pack_sill_ties
+
     found = {(c.support_tag, c.key_point): c
              for c, _support in _derive(model, rules, authored=False)}
-    return sorted(found.values(), key=lambda c: (c.support_tag, c.key_point))
+    return pack_sill_ties(model, sorted(found.values(), key=lambda c: (c.support_tag,
+                                                                        c.key_point)),
+                          rules.tied_floor_categories)
 
 
 def authored_tie_gaps(model: ResolvedModel, rules: UpliftTieRules,
@@ -436,8 +445,9 @@ def _derive(model: ResolvedModel, rules: UpliftTieRules, *, authored: bool):
                     key_point = (*key_point, member.child_key)
                     point, seat_z = ridge_seat_point(member, support.half_width_m)
                 on_sill = sill_tie is not None and support.sill
-                if on_sill:  # the tie's face is read off its own member
+                if on_sill:  # the tie's face is read off its own member, and each end has one
                     member_key = f"{member.parent_uid}:{member.child_key}"
+                    key_point = (*key_point, member_key)
                 # A sistered pack takes a sill tie on each OUTER face: nothing fits between plies.
                 plies = min(1 + _sisters_at(member, point, sisters, grid_m), 2) if on_sill else 1
                 yield BearingConnection(
