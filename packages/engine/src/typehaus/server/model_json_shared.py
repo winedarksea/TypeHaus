@@ -149,7 +149,7 @@ def _layer_json(layer, scope: str = "wall", wall=None) -> dict[str, Any]:
             "board_run": layer.board_run,
             # True when the band is really sticks at a spacing (the layer carries a
             # ``FramingSpec`` and the members are in this wall's `members`). The 3-D viewer
-            # uses it to stop drawing a solid prism over the very members it stands for.
+            # skips the furring and stud bands it draws as members.
             "framed": layer.framed,
             # The trade this band belongs to; the viewer derives visibility from it.
             "trades": [layer_trade(layer.function, scope, layer.material_ref)]}

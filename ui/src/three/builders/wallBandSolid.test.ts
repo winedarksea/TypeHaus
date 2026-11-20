@@ -8,7 +8,7 @@ function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message);
 }
 
-type Band = Pick<Layer, "function" | "is_cavity" | "framed">;
+type Band = Pick<Layer, "function" | "is_cavity" | "framed" | "trades">;
 const band = (over: Partial<Band>): Band =>
   ({ function: "cladding", is_cavity: false, framed: false, ...over });
 
@@ -22,10 +22,15 @@ export function runWallBandSolidTests(): void {
   assert(layerDrawsBandSolid(band({ function: "furring", framed: false })),
     "unframed furring is a real sheet and keeps its solid");
 
-  // The wall body has to stay opaque from outside; the `framing:*` facets answer the
-  // stud/sheathing double-draw instead.
-  assert(layerDrawsBandSolid(band({ function: "structure", framed: true })),
-    "a framed structure band still draws");
+  // A framing stud band is drawn as members; its prism only hid them.
+  assert(!layerDrawsBandSolid(band({ function: "structure", framed: true, trades: ["framing"] })),
+    "a framed stud band must not draw");
+  // Stair-well partitions: unframed on purpose, studs drawn by the stair.
+  assert(!layerDrawsBandSolid(band({ function: "structure", framed: false, trades: ["framing"] })),
+    "an unframed framing-trade stud band must not draw");
+  // A concrete core has no members; its prism is the wall.
+  assert(layerDrawsBandSolid(band({ function: "structure", trades: ["concrete"] })),
+    "a concrete structure band still draws");
   assert(layerDrawsBandSolid(band({ function: "sheathing" })), "sheathing still draws");
 
   // Cavity fill shares its host's polygon.

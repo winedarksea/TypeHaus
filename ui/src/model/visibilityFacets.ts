@@ -7,9 +7,9 @@
 // needs a container of its own.
 //
 // `framing` owns both the sticks and the planes nailed to them, which is right for a bid and
-// wrong for looking: the `structure`/`furring` bands are full-height prisms drawn over the
-// studs they stand for, and `sheathing` is the sheet across both. All three default OFF —
-// interior sandwich layers whose only view was the cutaway that wanted them gone. A furring
+// wrong for looking: an unframed `furring` band is a sheet over the studs, and `sheathing` is
+// the sheet across both. Both default OFF. A framing stud band draws no prism at all
+// (builders/walls.ts `layerDrawsBandSolid`). A furring
 // STICK is not a facet (builders/wallSkin.ts puts it on bare `framing` by category).
 //
 // The connectors default ON: a marker is what somebody asked to see, and cast-in hardware
@@ -37,8 +37,6 @@ export interface FacetSpec {
 }
 
 export const FACETS = [
-  { key: "framing:structure", label: "Structure band", defaultOff: true,
-    layerFunctions: ["structure"] },
   { key: "framing:furring", label: "Furring band", defaultOff: true,
     layerFunctions: ["furring"] },
   { key: "framing:sheathing", label: "Sheathing", defaultOff: true,

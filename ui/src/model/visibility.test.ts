@@ -41,8 +41,8 @@ export function runVisibilityTests() {
     "The engine's `framing` verdict is refined, not overridden");
   assert(layerTrades({ function: "sheathing", trades: ["siding"] }).join() === "siding",
     "A 303 MDO sheathing layer the engine filed as siding keeps siding");
-  assert(layerTrades({ function: "structure", trades: ["framing"] }).join() === "framing:structure",
-    "The structure band is a facet of its own — that solid prism over the studs");
+  assert(layerTrades({ function: "structure", trades: ["framing"] }).join() === "framing",
+    "A framing stud band is bare framing; the viewer draws it as members, not a prism");
   assert(layerTrades({ function: "structure", trades: ["concrete"] }).join() === "concrete",
     "A foundation wall's structure layer is concrete and never a framing facet");
   assert(layerTrades({ function: "furring", trades: ["framing"] }).join() === "framing:furring",
@@ -108,7 +108,7 @@ export function runVisibilityTests() {
   assert(groupState("walls", mixed) === "mixed", "Some chips off → mixed");
 
   assert(expandRolePreset({ groups: ["walls"], trades: ["framing"] }).join() ===
-    "framing,framing:structure,framing:furring,framing:sheathing,framing:connector," +
+    "framing,framing:furring,framing:sheathing,framing:connector," +
     "framing:connector-embedded,siding,siding:flashing,siding:screen,spray_foam,insulation,drywall,paint",
     "A preset expands its groups and trades, in order, framing to its facets");
 
@@ -157,7 +157,7 @@ export function runVisibilityTests() {
   const restored = onlyTrades(["framing"]);
   assert(restored.framing && !restored["framing:sheathing"],
     "onlyTrades is literal — a facet left out stays out");
-  // Defaults: the three solid BANDS start off, so the framing view opens on the sticks.
+  // Defaults: the solid BANDS start off, so the framing view opens on the sticks.
   // The connector facets do not — a band is an interior sandwich layer buried behind the
   // cladding, while a connector marker is the thing somebody asked to be able to see.
   const fresh = defaultVisibleTrades();
@@ -172,10 +172,10 @@ export function runVisibilityTests() {
   assert(ALL_VISIBILITY_KEYS.every((key) => allVisibleTrades()[key]),
     "…and the All button still means all of it");
   const migratedOff = migrateSavedVisibility({ framing: false });
-  assert(!migratedOff.framing && !migratedOff["framing:structure"],
+  assert(!migratedOff.framing && !migratedOff["framing:furring"],
     "A legacy `framing: false` takes the bands down with the sticks");
   const migratedOn = migrateSavedVisibility({ framing: true, siding: false });
-  assert(migratedOn.framing && !migratedOn["framing:structure"] && !migratedOn.siding,
+  assert(migratedOn.framing && !migratedOn["framing:furring"] && !migratedOn.siding,
     "…and a legacy `framing: true` leaves the bands at the default it never knew about");
 
   assert(canvasObjectTrade({ domain: "plumbing" }) === "plumbing", "Service domains map to their trade");

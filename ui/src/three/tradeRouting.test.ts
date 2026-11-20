@@ -77,9 +77,9 @@ export function runTradeRoutingTests() {
   buildWall(tradeGroups, wall(), [], [0, 0], "schematic", RESOLVED_NORDIC_PALETTE.light,
     [], new Map());
   const meshes = (trade: Trade) => tradeGroups[trade].children.filter((c) => c instanceof THREE.Mesh);
-  // The body files under the wall's primary trade; every band carries its own set. A wall
-  // with no lumber of its own keeps its structure band — nothing else would stand there.
-  assert(meshes("siding").length === 5, "Five bands build into the siding container");
+  // The body files under the wall's primary trade; every band carries its own set. The
+  // framing stud band builds no prism: its studs draw as members.
+  assert(meshes("siding").length === 4, "Four bands build into the siding container");
   const byTrade = (trade: string) => meshes("siding").filter((m) => (m.userData.trades as string[]).includes(trade));
   assert(byTrade("insulation").length === 1 && byTrade("drywall").length === 1,
     "Each band is tagged with its own trade");
@@ -107,13 +107,11 @@ export function runTradeRoutingTests() {
   assert(byTrade("insulation").length === 1, "Tagged children keep theirs");
 
   // --- the framing view --------------------------------------------------------------
-  // The two solid bands a framing view has to be able to drop — the structure prism standing
-  // for the studs and the sheathing nailed over them — ride facets of their own, not the bare
-  // `framing` token the sticks do. Before that, "just the wooden sticks" drew a solid box.
-  assert(!meshes("siding").some((m) => (m.userData.trades as string[]).join() === "framing"),
-    "No wall band is left on the bare framing token");
-  assert(byTrade("framing:structure").length === 1 && byTrade("framing:sheathing").length === 1,
-    "The structure and sheathing bands each take their own facet");
+  // The stud band draws no prism at all, and the sheathing nailed over the studs rides a facet
+  // of its own, not the bare `framing` token the sticks do: "just the sticks" draws no box.
+  assert(!meshes("siding").some((m) => (m.userData.trades as string[]).includes("framing")),
+    "No wall band is left on the bare framing token (no structure prism)");
+  assert(byTrade("framing:sheathing").length === 1, "The sheathing band takes its own facet");
 
   // Just the wooden sticks: framing on, both of its facets off — which is the default.
   const sticksOnly = defaultVisibleTrades();
@@ -194,8 +192,8 @@ export function runConnectorFacetTests() {
 
   applyTradeVisibility(container, allVisibleTrades());
   assert(marker.visible, "Everything on: the marker draws");
-  applyTradeVisibility(container, { ...allVisibleTrades(), "framing:structure": false });
-  assert(marker.visible, "Dropping the structure band leaves the connectors alone");
+  applyTradeVisibility(container, { ...allVisibleTrades(), "framing:sheathing": false });
+  assert(marker.visible, "Dropping the sheathing leaves the connectors alone");
   applyTradeVisibility(container, { ...allVisibleTrades(), "framing:connector": false });
   assert(!marker.visible, "Its own toggle reaches it");
   applyTradeVisibility(container, onlyTrades(["concrete"]));

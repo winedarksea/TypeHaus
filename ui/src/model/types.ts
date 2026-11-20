@@ -84,8 +84,8 @@ export interface Layer {
   board_run?: "horizontal" | "vertical" | null;
   // True when the layer carries a FramingSpec — the band is really sticks at a spacing, and
   // the members that prove it are in the wall's own `members`. The 3D viewer is the one place
-  // a band and its members draw together, so a framed FURRING band is not extruded there
-  // (three/builders/walls.ts): a solid plane over the girts hides them and seals the vent gap.
+  // a band and its members draw together, so it skips the furring and stud bands it draws as
+  // members (three/builders/walls.ts): a solid plane hid the sticks and sealed the vent gap.
   framed?: boolean;
   // A zero-depth coating (paint, wash): thickness_m is 0 and `polygon` is its display skin,
   // stood resolve/coatings.py COATING_SKIN_M off the host face by the engine.

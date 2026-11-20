@@ -109,8 +109,8 @@ class ResolvedLayer:
     # Whether the assembly gives this layer a ``FramingSpec`` — i.e. the band is really
     # sticks at a spacing, and the solver has emitted the members to prove it. ``FramingSpec``
     # itself does not survive into ``model.json``, and the 3-D viewer is the one consumer that
-    # draws the band AND the members at the same time: an extruded prism over girts it stands
-    # for both hides them and seals the vent gap behind them (→ ui builders/walls.ts).
+    # draws bands and members together, and it skips the furring and stud bands it draws as
+    # members: a prism over them hid the sticks and sealed the vent gap (→ ui builders/walls.ts).
     framed: bool = False
     # Optional viewer lens authored on the source assembly layer; distinct from bid trade.
     view_trade: str | None = None

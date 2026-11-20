@@ -7,7 +7,7 @@
 import * as THREE from "three";
 import { applySprayFoamUv, createSprayFoamMaterial, isSprayFoamFinish } from "../sprayFoamMaterial";
 import { createSurfaceMeshGeometry } from "../surfaceMesh";
-import { layerVisibilityKeys, primaryTrade, wallTrades } from "../../model/tradeVisibility";
+import { layerTrades, layerVisibilityKeys, primaryTrade, wallTrades } from "../../model/tradeVisibility";
 import type { Layer, MaterialSpec, Opening, Wall } from "../../model/types";
 import {
   authoredAppearance, finishBaseColor, materialColor, type ResolvedNordicPalette,
@@ -54,26 +54,21 @@ const ARCH_SOFFIT_SWEPT_FACE_MAX_AXIAL_NORMAL = 0.5;
 
 /** Whether a resolved layer gets an extruded prism of its own in the 3-D viewer.
  *
- * Cavity fill shares its host structure layer's polygon — a solid there would only z-fight
- * with the studs it lives between.
- *
- * A FRAMED FURRING band is not a plane. Furring is sticks at a spacing — catlin's girts, a
- * sauna's 1x4 strapping, a resilient channel — and the solver has already emitted every one of
- * them into the wall's own `members`, which this builder draws beside the bands. Extruding the
- * band as well drew a solid prism over the sticks it stands for AND, on EXT_2X6, closed the
- * 1/2" vent gap the girts stand off the foam on, so a vented rainscreen read as sheet furring.
- * Only the FRAMED ones: a furring layer with no FramingSpec is a genuine continuous sheet and
- * still has a solid to draw.
- *
- * Structure and sheathing bands deliberately stay. A wall body has to be opaque from outside,
- * and their double-draw is answered by the `framing:*` facets (model/tradeVisibility.ts) —
- * which a furring band on a wall no longer reaches.
+ * Cavity fill shares its host structure layer's polygon, so a solid would z-fight its studs.
+ * Framed furring and framing-trade stud bands are sticks the viewer already draws as members
+ * (the wall's own, or a stair's `partition` studs); a prism hid them and, on EXT_2X6, sealed
+ * the girts' vent gap. Keyed on trade, not `framed`: stair-well partitions are unframed on
+ * purpose. Concrete, masonry and other non-framing cores keep their prism.
  *
  * Depth accounting must NOT use this: the girts are 1 1/2" of real wall (→ `exteriorFace`).
  */
-export function layerDrawsBandSolid(layer: Pick<Layer, "function" | "is_cavity" | "framed">) {
+export function layerDrawsBandSolid(
+  layer: Pick<Layer, "function" | "is_cavity" | "framed" | "trades">,
+) {
   if (layer.is_cavity) return false;
-  return !(layer.framed && layer.function.trim().toLowerCase() === "furring");
+  const fn = layer.function.trim().toLowerCase();
+  if (layer.framed && fn === "furring") return false;
+  return !(fn === "structure" && layerTrades(layer).includes("framing"));
 }
 
 // Extrude a layer polygon between z0 and a per-vertex raked top (rather than a flat height) —
