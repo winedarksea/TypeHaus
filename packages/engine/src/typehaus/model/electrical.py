@@ -238,7 +238,7 @@ class BoxRow(HausModel):
     allowance; False is a datasheet showing none. ``support_fittings`` (314.16(B)(3)) counts
     the kinds of fixture stud or hickey inside; ``terminal_blocks`` (314.16(B)(6)) the
     terminal-block assemblies, one allowance each.
-    ``fan_rated`` marks a box listed to support a ceiling fan (NEC 314.27(C)) and
+    ``fan_rated`` marks a box listed to support a ceiling fan (NEC 314.27(B)(1)) and
     ``rated_load_lb`` the luminaire weight it is marked for (314.27(A)(2)); None = unmarked.
     """
 

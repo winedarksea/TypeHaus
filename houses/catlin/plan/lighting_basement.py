@@ -74,18 +74,18 @@ BASEMENT_LIGHTING = [
                      circuit="CKT-LT-BSMT", room="RM-B-GYM",
                      controlled_by=("ED-B-GYM-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # Ceiling boxes (decision #140) moved every Q1 strip below a few inches off its joist.
-    # Four Q1 strips, two E-W rows of two about the room's centre, 59" and 64" off the fan's
-    # centre and 33" clear of its 52" blade circle: no strobe through the blades. The north
+    # Four Q1 strips, two E-W rows of two about the room's centre (y=9'-2 1/4"), each row's
+    # ceiling box in a joist/truss bay (#140): 63 1/2" and 68" off the fan's centre, over 3'
+    # clear of its 52" blade circle: no strobe through the blades. The north
     # row hangs the same 2.5": the ceiling is one plane since decision #112 (it was 1 9/16"
     # lower under SL-M-DECK).
     ElectricalDevice(uid="GBATRH18K6", tag="ED-B-GYM-STRIP1", kind=DeviceKind.LIGHT,
-                     position=pt(inch(267.5), inch(51.5)), type_ref="ED-T-LT-STRIP-T8",
+                     position=pt(inch(267.5), inch(44.5)), type_ref="ED-T-LT-STRIP-T8",
                      circuit="CKT-LT-BSMT", room="RM-B-GYM",
                      controlled_by=("ED-B-GYM-SW2",),
                      mount=Mount(kind=MountKind.CEILING, drop=inch(2.5))),
     ElectricalDevice(uid="WSP6C8GG0P", tag="ED-B-GYM-STRIP2", kind=DeviceKind.LIGHT,
-                     position=pt(inch(371.5), inch(51.5)), type_ref="ED-T-LT-STRIP-T8",
+                     position=pt(inch(371.5), inch(44.5)), type_ref="ED-T-LT-STRIP-T8",
                      circuit="CKT-LT-BSMT", room="RM-B-GYM",
                      controlled_by=("ED-B-GYM-SW2",),
                      mount=Mount(kind=MountKind.CEILING, drop=inch(2.5))),

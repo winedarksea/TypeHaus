@@ -1649,8 +1649,9 @@ ALARMS = [
     Alarm(uid="CMA701AAAA", tag="AL-M-BED", kind=AlarmKind.COMBO,
           type_ref="ED-T-ALARM-COMBO-KIDDE", room="RM-M-BED",
           circuit="CKT-LT-BACKUP", position=pt(ft(13), inch(124))),
-    # The R314.3 "outside each separate sleeping area" alarm: in RM-M-LIVING, centred on
-    # D-M-BED2, the suite's only door out (RM-M-CLOSET opens only into the bedroom).
+    # The R314.3 "outside each separate sleeping area" alarm: in RM-M-LIVING, on D-M-BED2
+    # (1 1/2" north of its centre so the ceiling box clears a joist, #140), the suite's only
+    # door out (RM-M-CLOSET opens only into the bedroom).
     Alarm(uid="CMA702AAAA", tag="AL-M-HALL", kind=AlarmKind.COMBO,
           type_ref="ED-T-ALARM-COMBO-KIDDE", room="RM-M-LIVING",
           circuit="CKT-LT-BACKUP", position=pt(ft(20), inch(99.5))),

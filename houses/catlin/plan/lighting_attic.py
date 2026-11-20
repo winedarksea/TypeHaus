@@ -392,9 +392,8 @@ ATTIC_LIGHTING = [
     # the roof with no ceiling to recess into. The pocket runs x 0..10' under the west rake
     # (ceiling 1 1/2" to 5'-1 1/2"), too shallow for a recessed can, and is entered on hands
     # and knees, so a keyless lampholder with an A19 (Q2, 2026-10-31; the vaportight Q before)
-    # 3 1/2" north since 2026-11-20 so its ceiling box clears rafter 030 (#140);
-    # on the rafter at x=8'-9", where the underside is 4'-6": IRC M1305.1.3's light at the
-    # appliance passageway.
+    # at x=8'-9", where the underside is 4'-6": IRC M1305.1.3's light at the appliance
+    # passageway. 3 1/2" north since 2026-11-20 so its ceiling box clears rafter 030 (#140).
     ElectricalDevice(uid="QTA000AAAA", tag="ED-A-POCKET-LT1", kind=DeviceKind.LIGHT,
                      position=pt(m(2.66693), m(9.23212)), type_ref="ED-T-LT-KEYLESS",
                      circuit="CKT-LT-UPPER", room="RM-A-POCKET",
