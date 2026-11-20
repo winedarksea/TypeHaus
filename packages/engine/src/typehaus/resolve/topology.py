@@ -36,7 +36,7 @@ from typehaus.resolve.orientation import resolve_storey_windings, wall_outward_s
 from typehaus.resolve.overlay import union_all
 from typehaus.resolve.room_paint import RoomPaint
 from typehaus.resolve.rooms import wall_lining_overrides
-from typehaus.resolve.sheathing_corner import butt_sheathing
+from typehaus.resolve.sheathing_corner import butt_layers, course_band
 from typehaus.resolve.tee_interrupt import core_indices, framing_envelope
 
 _EPS = 1e-4  # meters — cavity-insulation coincidence tolerance
@@ -336,6 +336,7 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
                 band_spec=spec,
                 board_run=_board_run(stack, index),
                 framed=layer.framing is not None,
+                courses=course_band(layer),
                 coating=layer.material_ref in coatings,
                 film_m=layer.thickness.meters if layer.material_ref in coatings else 0.0,
             )
@@ -820,7 +821,8 @@ def _clip_l_corner(walls: dict[str, ResolvedWall], junction: ResolvedJunction) -
     from typehaus.resolve.cladding_corner import meet_cladding_faces
 
     meet_cladding_faces(walls, junction, unclipped)
-    butt_sheathing(walls, junction, unclipped, _normalized_ring)
+    butt_layers(walls, junction, unclipped, _normalized_ring, "sheathing")
+    butt_layers(walls, junction, unclipped, _normalized_ring, "furring", courses_only=True)
 
 
 def _through_envelope(walls: dict[str, ResolvedWall], wall_tags: tuple[str, ...]):

@@ -565,6 +565,56 @@ def test_courses_abut_at_a_facade_seam_with_one_block_in_the_joint(catlin_model)
     _ = corner_junctions
 
 
+def test_courses_butt_at_an_l_corner(catlin_model_ro):
+    """At an L the ``sheathing_through`` wall's course runs to the outer corner and the
+    other's butts its back: the two footprints share an edge and never overlap."""
+    from shapely.geometry import Polygon
+
+    from typehaus.resolve.framing.footprint import member_footprint
+
+    by_tag = {w.tag: w for w in catlin_model_ro.walls}
+    girt_tags = {w.tag for w in _girt_walls(catlin_model_ro)}
+
+    def end_courses(wall, node):
+        """``{z0: (footprint, end point)}`` for each course ending at ``node``."""
+        out = {}
+        for z0, _lo, _hi, member in _courses(wall, _bands(catlin_model_ro, wall)[1]):
+            end = min((member.p0, member.p1),
+                      key=lambda p: (p[0] - node[0]) ** 2 + (p[1] - node[1]) ** 2)
+            if (end[0] - node[0]) ** 2 + (end[1] - node[1]) ** 2 < (12 * IN) ** 2:
+                out[round(z0, 6)] = (Polygon(member_footprint(member)[0]), end)
+        return out
+
+    checked = 0
+    for junction in catlin_model_ro.junctions:
+        tags = [item.wall_tag for item in junction.incidents]
+        if junction.kind != "l" or not set(tags) <= girt_tags:
+            continue
+        through = by_tag[junction.sheathing_through]
+        butting = by_tag[next(t for t in tags if t != through.tag)]
+        run_ends = end_courses(through, junction.point)
+        butt_ends = end_courses(butting, junction.point)
+        for z0 in run_ends.keys() & butt_ends.keys():
+            (run_fp, run_end), (butt_fp, butt_end) = run_ends[z0], butt_ends[z0]
+            outer = max(_off(butting, p) for p in butt_fp.exterior.coords)
+            inner = min(_off(through, p) for p in run_fp.exterior.coords)
+            assert abs(_off(butting, run_end) - outer) < 1e-6, (
+                f"{through.tag}@{z0 / IN:.1f}: through course stops short of the corner")
+            assert abs(_off(through, butt_end) - inner) < 1e-6, (
+                f"{butting.tag}@{z0 / IN:.1f}: butting course is off the through course")
+            assert run_fp.intersection(butt_fp).area < 1e-9
+            assert run_fp.boundary.intersection(butt_fp.buffer(1e-6)).length > IN
+            checked += 1
+    assert checked >= 40, "vacuity guard: catlin's eight main corners, both storeys"
+
+
+def _off(wall, point) -> float:
+    """Distance from ``wall``'s axis LINE (not segment) to ``point``."""
+    (ax, ay), (bx, by) = wall.axis
+    dx, dy = bx - ax, by - ay
+    return abs((point[0] - ax) * dy - (point[1] - ay) * dx) / (dx * dx + dy * dy) ** 0.5
+
+
 # --- the rough opening's own frame -----------------------------------------------------
 
 

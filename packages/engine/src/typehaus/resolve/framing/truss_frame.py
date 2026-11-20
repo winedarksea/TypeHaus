@@ -20,7 +20,7 @@ from typehaus.model.plan import PlanModel
 from typehaus.quantities import inch
 from typehaus.resolve.assembly_material import assembly_structure_material
 from typehaus.resolve.framing.corners import neighbour_band_insets
-from typehaus.resolve.framing.furring import band_extent
+from typehaus.resolve.framing.course_ends import band_extent
 from typehaus.resolve.framing.profiles import cross_section, panel_profile
 from typehaus.resolve.framing.solver import _wall_top_elevations, band_axis
 from typehaus.resolve.framing.truss_common import (  # noqa: F401 - re-exported by truss_wall

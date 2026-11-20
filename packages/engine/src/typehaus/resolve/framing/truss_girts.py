@@ -79,6 +79,7 @@ from typehaus.model.assembly import FramingSpec, Layer
 from typehaus.model.enums import LayerFunction
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.assembly_material import assembly_structure_material
+from typehaus.resolve.framing.course_ends import block_span
 from typehaus.resolve.framing.furring import (  # noqa: F401 - re-exported by truss_wall
     HORIZONTAL,
     STRAPPING_CATEGORY,
@@ -382,11 +383,11 @@ class GirtFrame(BandFrame):
             for tier in self.tiers:
                 count = 0
                 for segment in segments[tier]:
-                    seg_lo = self.station_of(segment)
-                    seg_hi = seg_lo + length(sub(segment.p1, segment.p0))
+                    seg_lo, seg_hi = self._block_span(segment)
                     stations = [self.snap(station, segment.z0_m, verticals, voids,
                                           (seg_lo, seg_hi))
-                                for station in self._block_stations(segment, tier, butts)
+                                for station in self._block_stations(seg_lo, seg_hi, tier,
+                                                                    butts)
                                 if not self._in_void(station, segment.z0_m, voids)]
                     # A course end inside the band (a rake cut it) is free; band ends land
                     # on corner posts outside this wall's members, jambs on their posts.
@@ -430,8 +431,9 @@ class GirtFrame(BandFrame):
         out: list[FramedMember] = []
         for tier in self.tiers:
             for index, member in enumerate(rakes.get(tier, ())):
-                seg_lo = self.station_of(member)
-                seg_hi = seg_lo + length(sub(member.p1, member.p0))
+                run_lo = self.station_of(member)
+                run_hi = run_lo + length(sub(member.p1, member.p0))
+                seg_lo, seg_hi = self._block_span(member)
                 if seg_hi - seg_lo <= _TOL:
                     continue
                 z_lo = member.z0_m
@@ -445,7 +447,7 @@ class GirtFrame(BandFrame):
                     seams=(0.0, self.run))
                 count = 0
                 for station in stations:
-                    z0 = z_lo + (z_hi - z_lo) * (station - seg_lo) / (seg_hi - seg_lo)
+                    z0 = z_lo + (z_hi - z_lo) * (station - run_lo) / (run_hi - run_lo)
                     z0 -= self.stock_face
                     if self._in_void(station, z0, voids):
                         continue
@@ -535,9 +537,14 @@ class GirtFrame(BandFrame):
             return station
         return station if self._in_void(centre, z0, list(voids)) else centre
 
-    def _block_stations(self, course: FramedMember, tier: str,
+    def _block_span(self, course: FramedMember) -> tuple[float, float]:
+        seg_lo = self.station_of(course)
+        return block_span(seg_lo, seg_lo + length(sub(course.p1, course.p0)), self.first,
+                          self.last, self.stock_thickness / 2.0, self.continuations)
+
+    def _block_stations(self, seg_lo: float, seg_hi: float, tier: str,
                         butts: tuple[float, ...] = ()) -> list[float]:
-        """Stud stations one course segment crosses, plus one at each free end of it.
+        """Stud stations one course segment (its block span) crosses, plus one at each free end.
 
         ``butts`` are the stations at which a course end lands against an opening's JAMB
         POST — its outer face, since the field is held exactly one post width clear of every
@@ -552,8 +559,6 @@ class GirtFrame(BandFrame):
         the other direction, and ``test_truss_girt_geometry.py`` measures the lap rather
         than trusting the module.
         """
-        seg_lo = self.station_of(course)
-        seg_hi = seg_lo + length(sub(course.p1, course.p0))
         half = self.stock_face / 2.0
         spacing, phase = self._module(tier)
         stations = _module_stations(

@@ -112,6 +112,8 @@ class ResolvedLayer:
     # draws bands and members together, and it skips the furring and stud bands it draws as
     # members: a prism over them hid the sticks and sealed the vent gap (→ ui builders/walls.ts).
     framed: bool = False
+    # A FURRING band framed as horizontal courses: butt-cut at an L (``sheathing_corner``).
+    courses: bool = False
     # Optional viewer lens authored on the source assembly layer; distinct from bid trade.
     view_trade: str | None = None
     # Optional display skin; depth and takeoff accounting keep the nominal layer envelope.

@@ -26,6 +26,7 @@ from typehaus.resolve.model import (
     ResolvedOpening,
     ResolvedSolid,
 )
+from typehaus.resolve.sheathing_corner import mitred_band
 
 # Perforated 0.032" aluminium; its holes and open fraction are authored on the Material. The
 # base screen is an inverted U across the 2" cavity, 2" tall, braked from the sheet.
@@ -69,7 +70,9 @@ def cavity_base_run(model, wall) -> CavityBaseRun | None:
     if band is None:
         return None
     furring, depth = band
-    outline = _vented_band(wall, furring, depth, _cavity_airgap(wall.layers, furring))
+    airgap = _cavity_airgap(wall.layers, furring)
+    # The vent gap stays mitred; merge it with the band's mitre, not its butt cut.
+    outline = _vented_band(wall, mitred_band(model, wall, furring), depth, airgap)
     cladding = next((layer for layer in reversed(wall.layers)
                      if layer.function == LayerFunction.CLADDING.value), None)
     face = cladding_face(wall, cladding) if cladding and cladding.polygon else None
@@ -277,7 +280,9 @@ def _boxed_screen(model, wall, run, height) -> None:
     if found is None or not screens_rainscreen_base(model, wall):
         return
     furring, vent = found
-    outline = _vented_band(wall, furring, vent, _cavity_airgap(wall.layers, furring))
+    airgap = _cavity_airgap(wall.layers, furring)
+    # The vent gap stays mitred; merge it with the band's mitre, not its butt cut.
+    outline = _vented_band(wall, mitred_band(model, wall, furring), vent, airgap)
     if len(outline) < 3:
         return
     _origin, tangent, _across, _length = wall_frame(wall)

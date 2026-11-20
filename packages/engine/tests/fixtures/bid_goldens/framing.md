@@ -72,11 +72,11 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x4 SPF No. 2 & Btr framing lumber, 104 5/8" PET (2x4) | 252 | pc | corner stud, king stud, stud | 2197.1 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 10' (2x4) | 31 | pc | partition backer, plate, raked top plate | 310 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 14' (2x4) | 12 | pc | plate | 168 LF | building |
-| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (2x4:kdat) | 208 | pc | girt strapping, truss ladder blocking | 1664 LF | building |
-| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 10' (2x4:kdat) | 30 | pc | girt strapping | 300 LF | building |
-| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 12' (2x4:kdat) | 15 | pc | girt strapping | 180 LF | building |
-| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 14' (2x4:kdat) | 10 | pc | girt strapping | 140 LF | building |
-| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 16' (2x4:kdat) | 12 | pc | girt strapping | 192 LF | building |
+| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (2x4:kdat) | 215 | pc | girt strapping, truss ladder blocking | 1720 LF | building |
+| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 10' (2x4:kdat) | 35 | pc | girt strapping | 350 LF | building |
+| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 12' (2x4:kdat) | 10 | pc | girt strapping | 120 LF | building |
+| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 14' (2x4:kdat) | 15 | pc | girt strapping | 210 LF | building |
+| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 16' (2x4:kdat) | 7 | pc | girt strapping | 112 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (2x4:kdat) | 22 | pc | girt strapping | 440 LF | building |
 | 2x4 Pressure-treated southern yellow pine No. 2 (sill plate), 8' (2x4:pt-syp) | 4 | pc | plate | 32 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4:spf) | 16 | pc | blocking, ceiling furring, girt strapping | 128 LF | building |

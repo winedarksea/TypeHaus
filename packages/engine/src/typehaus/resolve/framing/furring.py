@@ -37,6 +37,7 @@ from typing import Any
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import LayerFunction
 from typehaus.model.plan import PlanModel
+from typehaus.resolve.framing.course_ends import band_extent, course_extent, l_corner_ends
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.framing.solver import (
     _wall_top_elevations,
@@ -102,9 +103,11 @@ def frame_furring(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                     plan, resolved_by_tag.get(tag), lines_for_wall.get(tag), layer_name))
         return roles_by_layer[layer_name]
 
+    l_ends = l_corner_ends(model)
     for rw in model.walls:
         members, wall_findings = frame_wall_furring(plan, rw, by_host.get(rw.tag, []),
-                                                    lines_for_wall.get(rw.tag), roles_for)
+                                                    lines_for_wall.get(rw.tag), roles_for,
+                                                    l_ends)
         findings.extend(wall_findings)
         # ``replace`` rather than a field-by-field rebuild, as in ``frame_model``: this pass
         # only appends members, and respelling the constructor drops fields added later.
@@ -148,6 +151,7 @@ def frame_wall_furring(
         plan: PlanModel, rw: ResolvedWall, openings: list[ResolvedOpening],
         line: object | None = None,
         roles_for: Callable[[str], dict[tuple[str, str], str]] | None = None,
+        l_ends: frozenset[tuple[str, str]] = frozenset(),
         ) -> tuple[tuple[FramedMember, ...], list[Finding]]:
     """Strapping for one wall: every FURRING layer that carries a ``FramingSpec``.
 
@@ -185,8 +189,9 @@ def frame_wall_furring(
             members.extend(_layout_vertical(
                 rw, resolved, spec, band_openings, line, continuations))
         else:
+            butted = ((rw.tag, "start") in l_ends, (rw.tag, "end") in l_ends)
             members.extend(_layout_horizontal(
-                rw, resolved, spec, band_openings, line, continuations))
+                rw, resolved, spec, band_openings, line, continuations, butted))
     return tuple(members), findings
 
 
@@ -431,6 +436,7 @@ def rake_nailer(rw: ResolvedWall, band: tuple[float, float] | None = None) -> bo
 def _layout_horizontal(rw: ResolvedWall, layer, spec, openings: list[ResolvedOpening],
                        _line: object | None = None,
                        continuations: tuple[str | None, str | None] = (None, None),
+                       butted: tuple[bool, bool] = (False, False),
                        ) -> list[FramedMember]:
     """Batten courses at the spec's spacing up the wall, split around any opening they cross.
 
@@ -448,7 +454,6 @@ def _layout_horizontal(rw: ResolvedWall, layer, spec, openings: list[ResolvedOpe
     p0, direction, axis_len = _band_geometry(rw, layer)
     if axis_len <= 0.0:
         return []
-    first, last = band_extent(layer.polygon, p0, direction, axis_len)
     section = cross_section(spec.member)
     # Laid flat and running horizontally, the strip's wide face is its *height* on the
     # wall; its thickness is the band depth, which is what ``member_footprint`` bands a
@@ -457,17 +462,12 @@ def _layout_horizontal(rw: ResolvedWall, layer, spec, openings: list[ResolvedOpe
     # its own z-extent, so a 1-1/2"-tall course automatically bands 3-1/2" deep.
     on_edge = spec.laid == EDGE
     face = section.width_m if on_edge else section.depth_m
-    # A course ends against whatever crosses its band at the corner — the neighbouring
-    # wall's course, whose centreline runs half a board inside the mitre. The member IR
-    # has no mitre and no butt cut, so hold each end back half a thickness and the two
-    # courses abut there instead of lapping through each other. A CONTINUED end has no
-    # such neighbour to lap: the course on the far side of the seam is this same course.
+    # At an L the band is butt-cut and the course runs to its end (one through, one
+    # butting its back); a continued end runs to the seam; any other is held half a board
+    # back (``course_ends``).
     plan_face = section.depth_m if on_edge else section.width_m
-    start_cont, end_cont = continuations
-    if not start_cont:
-        first = first + plan_face / 2.0
-    if not end_cont:
-        last = last - plan_face / 2.0
+    first, last = course_extent(layer, p0, direction, axis_len, plan_face,
+                                continuations, butted)
     band = layer.band(rw) if layer.is_banded else None
     top_start, top_end = band_tops(rw, band)
     margin = opening_margin(spec)
@@ -586,38 +586,6 @@ def _band_geometry(rw: ResolvedWall, layer):
     """The furring band's centreline start, unit direction, and run length."""
     start, end = band_axis(rw.axis, layer.polygon)
     return start, unit(sub(end, start)), length(sub(end, start))
-
-
-def band_extent(polygon, p0, direction, axis_len: float) -> tuple[float, float]:
-    """The band's first/last station *on its own centreline*, clamped to the wall.
-
-    The resolved layer polygon is mitred at every junction, so this is where corner
-    interference is actually resolved: the strapping stops where its band stops. On W-B-CS
-    the liner band gives up its last foot to the wall it tees into, and the battens stop
-    there rather than running through the neighbour's liner.
-
-    Measured by clipping the centreline against the polygon rather than by projecting its
-    vertices, because a mitre's far tip is a *corner* of the band, not a station the
-    centreline ever reaches. Projecting vertices ran the sauna's two liner courses a
-    half-board past each other, straight through the mitre they are cut to. A polygon the
-    centreline somehow misses falls back to the projection — a short band is better than
-    none.
-    """
-    across = normal(direction)
-    offsets = [(x - p0[0]) * across[0] + (y - p0[1]) * across[1] for x, y in polygon]
-    stations = [(x - p0[0]) * direction[0] + (y - p0[1]) * direction[1]
-                for x, y in polygon]
-    crossings: list[float] = []
-    for i, offset in enumerate(offsets):
-        j = (i + 1) % len(offsets)
-        if abs(offset) < 1e-12:
-            crossings.append(stations[i])
-        elif offset * offsets[j] < 0.0:
-            fraction = offset / (offset - offsets[j])
-            crossings.append(stations[i] + (stations[j] - stations[i]) * fraction)
-    if len(crossings) < 2:
-        crossings = stations
-    return max(0.0, min(crossings)), min(axis_len, max(crossings))
 
 
 def _module_stations(first: float, last: float, spacing: float, width: float,
