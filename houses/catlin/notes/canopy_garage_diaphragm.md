@@ -253,7 +253,7 @@ kdat   v = 670.77 / 20.2917 = 33.06 plf    T = 33.06 x 8.333 = 275.47 lb   vs 3,
 ```
 
 * **Beside `D-G-SERVICE`**, stock **STHD14, `CN-G-BWHD-S-DR`**, on the garage face of the two full-height east
-  kings, centre **x = 118 in, y = 524.75 in**. The jack occupies x = 115..116.5 in; the kings x = 116.5..119.5 in.
+  kings, centre **x = 118 in, y = 524 9/16 in**. The jack occupies x = 115..116.5 in; the kings x = 116.5..119.5 in.
   Nail directly to the kings with **30 x 0.148 x 3-1/4 in** nails, bottom up. The 119.5-in west panel starts at the
   king pack, not crediting the jack width; the two south panels total 243.5 in. Continue the scheduled panel-edge
   nailing onto the full-height kings on the opposite face; keep the wall's sheathing and plate collectors. Embedment

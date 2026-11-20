@@ -246,17 +246,18 @@ GARAGE_BRACED_WALLS = [
 
 # Cast into the ICF stem's 6" core at the SW corner (ESR-2920 Table 1's 6" stem rows). The
 # plain STHD14, not the RJ: the wood wall bears directly on the stem top, so there is no
-# floor band for the long strap to cross.
+# floor band for the long strap to cross. Leaf on W-G-W's stud inside face; centred 1 1/2"
+# past W-G-S's, so its 3" stays on the core inside the corner (the derived-corner rule).
 GARAGE_BRACED_CONNECTORS = [
     Connector(uid="EXWYG5FPB1", tag="CN-G-BWHD-SW", kind=ConnectorKind.HOLD_DOWN,
-              position=pt(ft(6, 3.25), ft(43, 5.5)), elevation=inch(-11.25),
+              position=pt(ft(6, 5.9375), ft(43, 10.0625)), elevation=inch(-11.25),
               size="STHD14", connects=("W-G-W", "W-GF-W")),
     # Canopy shear chord: nail directly to the GARAGE face of the two full-height kings.
-    # The strap face is y=524.75in; its embedment line is the actual stem top, z=-12in.
+    # The strap face is y=524 9/16in; its embedment line is the actual stem top, z=-12in.
     # x=118in centers its 3in width on the kings and leaves >42in to the SW anchor.
     # The jack is inboard of these kings; do not install this strap in the door reveal.
     Connector(uid="NEVC5ZWBXS", tag="CN-G-BWHD-S-DR", kind=ConnectorKind.HOLD_DOWN,
-              position=pt(ft(9, 10), ft(43, 8.75)), elevation=inch(-12),
+              position=pt(ft(9, 10), ft(43, 8.5625)), elevation=inch(-12),
               size="STHD14", axis="-x", connects=("W-G-S", "W-GF-S-DR"),
               source="Garage/interior face of two full-height east king studs, x=116.5..119.5in; strap center x=118in. One jack x=115..116.5in. Direct wood fastening, 14in cast-in embedment; Simpson C-C-2026 pp.66-68. See service-door note."),
 ]

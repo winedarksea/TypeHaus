@@ -11,7 +11,8 @@ from typehaus.resolve.geometry_ir import GMesh
 def connector_mesh(part: str, *, member_width_in: float | None = None,
                    member_depth_in: float | None = None, slope_radians: float = 0.0,
                    support_width_in: float | None = None,
-                   strap_length_in: float | None = None) -> GMesh | None:
+                   strap_length_in: float | None = None,
+                   spoon_projection_in: float | None = None) -> GMesh | None:
     """Catalog bodies in local metres. Unknown products have no invented dimension record."""
     from typehaus.resolve.connector_geometry.bases_caps import base_cap_mesh
     from typehaus.resolve.connector_geometry.fasteners import fastener_mesh
@@ -26,5 +27,6 @@ def connector_mesh(part: str, *, member_width_in: float | None = None,
     if body is not None:
         return body
     body = tie_mesh(part, member_width_in=member_width_in, member_depth_in=member_depth_in,
-                   slope_radians=slope_radians, strap_length_in=strap_length_in)
+                   slope_radians=slope_radians, strap_length_in=strap_length_in,
+                   spoon_projection_in=spoon_projection_in)
     return body if body is not None else fastener_mesh(part)

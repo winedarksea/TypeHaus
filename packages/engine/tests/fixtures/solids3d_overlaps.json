@@ -134,6 +134,7 @@
   "connector|wall": [595, 0.006434],
   "connector|wall_end_board": [1, 2.9e-05],
   "connector_embedded|connector_embedded": [1, 1e-06],
+  "connector_embedded|fireblock": [1, 4e-06],
   "connector_embedded|floor": [3, 4e-06],
   "connector_embedded|footing": [30, 0.000341],
   "connector_embedded|framing": [48, 0.000354],

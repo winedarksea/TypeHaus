@@ -19,7 +19,7 @@ STHDs land only at exterior foundation corners; every other holdown is authored.
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from typehaus.hardware.catalog import ROLE_MUDSILL_ANCHOR, ROLE_SILL_ANCHOR_BOLT
 from typehaus.hardware.config import FT_TO_M, SillPlateAnchorRules, UpliftTieRules
@@ -29,9 +29,13 @@ from typehaus.joints.model import axis_of
 from typehaus.model.braced_wall import BracedWallPanel
 from typehaus.model.enums import ConnectorKind
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.connector_geometry.ties import EMBEDDED_STRAPS
 from typehaus.resolve.model import ResolvedModel
 from typehaus.resolve.partition import bearing_ref_tags, is_clad, is_interior_partition
-from typehaus.resolve.sill_bearing import band_centre_ends, bolt_offset_m
+from typehaus.resolve.sill_bearing import band_centre_ends, bolt_offset_m, stud_band
+
+#: A derived STHD draws as the STHD14 (``tie_mesh``'s representative).
+_STRAP_HALF_WIDTH_M = EMBEDDED_STRAPS["STHD14"].width_in / 2.0 * M_PER_IN
 
 
 @dataclass(frozen=True)
@@ -44,6 +48,7 @@ class Station:
     z_m: float
     axis: str
     role: str = ROLE_MUDSILL_ANCHOR
+    outward_xy: tuple | None = None
 
 
 def sill_plate_returns(model: ResolvedModel, category: str) -> list:
@@ -149,7 +154,74 @@ def mudsill_anchor_stations(model: ResolvedModel, rules: SillPlateAnchorRules,
     found = _stations_on(returns, rules.mudsill_anchor_pitch_ft * FT_TO_M,
                          rules.minimum_anchors_per_run, rules.end_distance_in * M_PER_IN,
                          model=model)
-    return _snap_to_blocking(model, found) if model.plan is not None else found
+    if model.plan is None:
+        return found
+    return _snap_to_blocking(model, _clear_of_straps(model, rules, sill_category, found))
+
+
+#: Half a MASA's 3" width, or of a bolt's 3"x3" washer.
+_ANCHOR_HALF_WIDTH_M = 1.5 * M_PER_IN
+#: A 12 ga strap leaf (0.105") with a hair of clearance.
+_LEAF_M = 0.125 * M_PER_IN
+#: An anchor this close across a strap's run stands on the same sill.
+_SAME_SILL_M = 6.0 * M_PER_IN
+
+
+def _authored_strap_frames(model: ResolvedModel) -> list:
+    """``(point, axis)`` of each authored STHD: its own axis, else its framed wall's."""
+    out = []
+    for element in model.plan.all_elements() if model.plan is not None else ():
+        if getattr(element, "kind", None) is not ConnectorKind.HOLD_DOWN \
+                or getattr(element, "position", None) is None \
+                or not str(getattr(element, "size", "") or "").upper().startswith("STHD"):
+            continue
+        axis = (element.axis or "").lstrip("-") or next(
+            (axis_of(*w.axis[:2]) for tag in element.connects
+             if (w := model.wall(tag)) is not None and not w.is_foundation), None)
+        if axis:
+            out.append((element.position.xy_m, axis))
+    return out
+
+
+def _clear_of_straps(model: ResolvedModel, rules: SillPlateAnchorRules, sill_category: str,
+                     found: list) -> list:
+    """An anchor that would foul a corner STHD's leaf moves just clear of it.
+
+    On the strap's own sill it moves past the strap, away from the nearer sill end; on the
+    crossing sill its washer edge moves off the leaf.
+    """
+    _, corners = _corner_points(model, rules, sill_category)
+    standdown = rules.authored_holdown_standdown_in * M_PER_IN
+    straps = [(t.point_m, t.axis) for t in strap_holdown_stations(model, rules, sill_category)
+              if t.outward_xy] + [(p, axis) for p, axis in _authored_strap_frames(model)
+                                  if any(math.dist(p, c) <= standdown for c in corners)]
+    ends = [p for ret in anchored_sill_returns(model, sill_category)
+            for p in centerline_endpoints(list(ret.outline))]
+    clear = _STRAP_HALF_WIDTH_M + _ANCHOR_HALF_WIDTH_M
+    off_leaf = _ANCHOR_HALF_WIDTH_M + _LEAF_M
+    out = []
+    for station in found:
+        for point, strap_axis in straps:
+            d = (1.0, 0.0) if strap_axis == "x" else (0.0, 1.0)
+            n = (-d[1], d[0])
+            rel = (station.point_m[0] - point[0], station.point_m[1] - point[1])
+            along, across = rel[0] * d[0] + rel[1] * d[1], rel[0] * n[0] + rel[1] * n[1]
+            if abs(along) >= clear:
+                continue
+            if station.axis == strap_axis and abs(across) < _SAME_SILL_M:
+                end = min(ends, key=lambda e: math.dist(e, point))
+                inward = 1.0 if (point[0] - end[0]) * d[0] + (point[1] - end[1]) * d[1] > 0 \
+                    else -1.0
+                step, axis = inward * clear - along, d
+            elif (station.axis != strap_axis and station.role == ROLE_SILL_ANCHOR_BOLT
+                  and abs(across) < off_leaf):
+                step, axis = math.copysign(off_leaf, across) - across, n
+            else:
+                continue
+            station = replace(station, point_m=(station.point_m[0] + axis[0] * step,
+                                                station.point_m[1] + axis[1] * step))
+        out.append(station)
+    return out
 
 
 #: Minn. R. 1309.0404, Table R404.1(1) footnote f: "Blocking shall be installed within 8
@@ -217,6 +289,25 @@ def _authored_embedded_holdowns(model: ResolvedModel) -> list:
             and str(getattr(element, "size", "") or "").upper().startswith("STHD")]
 
 
+def _corner_points(model: ResolvedModel, rules: SillPlateAnchorRules,
+                   sill_category: str) -> tuple[list, list]:
+    """``(exterior sill runs, every corner)``, before any authored strap stands one down."""
+    returns = _exterior_corner_runs(model, sill_category)
+    tol = rules.coincident_end_tolerance_in * M_PER_IN
+    ends = []
+    for ret in returns:
+        start, end = band_centre_ends(model, ret)
+        ends.extend((point, axis_of(start, end), ret.z0_m) for point in (start, end))
+    corners: list = []
+    for point, axis, z in ends:
+        if any(math.dist(point, kept) <= tol for kept in corners):
+            continue
+        if any(other_axis != axis and math.dist(point, other) <= tol and abs(z - oz) <= tol
+               for other, other_axis, oz in ends):
+            corners.append(point)
+    return returns, corners
+
+
 def strap_holdown_locations(model: ResolvedModel, rules: SillPlateAnchorRules,
                             sill_category: str) -> tuple[list, list]:
     """``(exterior sill runs, corner locations)`` — the geometry behind the holdown count.
@@ -226,42 +317,59 @@ def strap_holdown_locations(model: ResolvedModel, rules: SillPlateAnchorRules,
     pour tops (a curb beside a full-height wall) are not one joint. An authored STHD near
     the corner (a braced-panel end) stands the derived one down.
     """
-    returns = _exterior_corner_runs(model, sill_category)
-    if not returns:
-        return [], []
-    tol = rules.coincident_end_tolerance_in * M_PER_IN
-    ends = []
-    for ret in returns:
-        start, end = band_centre_ends(model, ret)
-        ends.extend((point, axis_of(start, end), ret.z0_m) for point in (start, end))
+    returns, corners = _corner_points(model, rules, sill_category)
     authored = _authored_embedded_holdowns(model)
     standdown = rules.authored_holdown_standdown_in * M_PER_IN
-    corners: list = []
-    for point, axis, z in ends:
-        if any(math.dist(point, kept) <= tol for kept in corners):
-            continue
-        if any(math.dist(point, other) <= standdown for other in authored):
-            continue
-        if any(other_axis != axis and math.dist(point, other) <= tol and abs(z - oz) <= tol
-               for other, other_axis, oz in ends):
-            corners.append(point)
-    return returns, corners
+    return returns, [point for point in corners
+                     if not any(math.dist(point, other) <= standdown for other in authored)]
+
+
+def _span(polygon, axis: tuple) -> tuple[float, float]:
+    offsets = [p[0] * axis[0] + p[1] * axis[1] for p in polygon]
+    return min(offsets), max(offsets)
+
+
+def _centre(polygon, axis: tuple) -> float:
+    return sum(_span(polygon, axis)) / 2.0
+
+
+def _inside_corner(model: ResolvedModel, ret, ends, other) -> tuple | None:
+    """``(point, outward)``: the strap on ``ret``'s stud-band inside face, inside the corner.
+
+    Across the run the leaf lies on the band's interior face; along it the strap's centre
+    stands half its width past the perpendicular band's interior face (S-103's notched sill).
+    """
+    band, perp = stud_band(model, ret), stud_band(model, other)
+    run = math.dist(*ends)
+    if band is None or perp is None or run <= 0.0:
+        return None
+    d = ((ends[1][0] - ends[0][0]) / run, (ends[1][1] - ends[0][1]) / run)
+    n = (-d[1], d[0])
+    s_n = 1.0 if _centre(perp, n) > _centre(band, n) else -1.0
+    s_d = 1.0 if _centre(band, d) > _centre(perp, d) else -1.0
+    across = _span(band, n)[1 if s_n > 0 else 0]
+    along = _span(perp, d)[1 if s_d > 0 else 0] + s_d * _STRAP_HALF_WIDTH_M
+    point = (d[0] * along + n[0] * across, d[1] * along + n[1] * across)
+    return point, (-s_n * n[0], -s_n * n[1])
 
 
 def strap_holdown_stations(model: ResolvedModel, rules: SillPlateAnchorRules,
                            sill_category: str) -> list:
-    """``holdowns_per_run_end`` at each exterior foundation corner."""
+    """``holdowns_per_run_end`` at each exterior foundation corner, inside the corner."""
     returns, locations = strap_holdown_locations(model, rules, sill_category)
     tol = rules.coincident_end_tolerance_in * M_PER_IN
     found: list[Station] = []
     runs = [(ret, band_centre_ends(model, ret)) for ret in returns]
     for point in locations:
-        ret, ends = next((ret, ends) for ret, ends in runs
-                         if any(math.dist(point, p) <= tol for p in ends))
+        at = [(ret, ends) for ret, ends in runs if any(math.dist(point, p) <= tol for p in ends)]
+        ret, ends = at[0]
         end_axis = axis_of(*ends)
+        other = next((o for o, o_ends in at if axis_of(*o_ends) != end_axis), None)
+        placed = _inside_corner(model, ret, ends, other) if other is not None else None
+        xy, outward = placed if placed is not None else ((point[0], point[1]), None)
         for _ in range(rules.holdowns_per_run_end):
-            found.append(Station(run_tag=ret.tag, storey=ret.storey,
-                                 point_m=(point[0], point[1]), z_m=ret.z0_m, axis=end_axis))
+            found.append(Station(run_tag=ret.tag, storey=ret.storey, point_m=xy,
+                                 z_m=ret.z0_m, axis=end_axis, outward_xy=outward))
     return found
 
 

@@ -89,6 +89,11 @@ EMBEDDED_STRAPS = {
 }
 
 
+_COATING_ALIASES = {"H2.5AZ": "H2.5A", "H2.5ASS": "H2.5A", "H10ASS": "H10A", "A35Z": "A35",
+                    "A35SS": "A35", "LS30Z": "LS30", "MSTA12Z": "MSTA12", "LTP4Z": "LTP4",
+                    "HETA20Z": "HETA20", "STHD": "STHD14", "SP4Z": "SP4", "MASAZ": "MASA"}
+
+
 @dataclass(frozen=True)
 class TieSilhouetteConfig:
     """Undimensioned silhouettes, normalized to the catalog's dimensioned envelope.
@@ -104,6 +109,8 @@ class TieSilhouetteConfig:
     lateral_plate_tab_fraction: float = 0.16
     lateral_plate_tabs: int = 3
     embedded_spoon_return_fraction: float = 0.25
+    #: Concrete kept past a spoon clamped to its core's far face (display only).
+    embedded_spoon_cover_in: float = 0.75
     heta_spoon_height_in: float = 0.5
     masa_width_in: float = 3.0
     masa_fork_leaf_width_in: float = 0.75
@@ -240,11 +247,15 @@ def _lateral_tie_plate() -> GMesh:
     return _xz_leaf(tuple(right_edge + left_edge), STEEL_THICKNESS_IN[20])
 
 
-def _embedded_strap(part: str, trimmed_exposed_in: float | None = None) -> GMesh:
+def _embedded_strap(part: str, trimmed_exposed_in: float | None = None,
+                    spoon_projection_in: float | None = None) -> GMesh:
     dimensions = EMBEDDED_STRAPS[part]
     if trimmed_exposed_in is not None and 0.0 < trimmed_exposed_in < dimensions.exposed_height_in:
         # Field-trimmed where the strap would pass its member's top (a deck sits there).
         dimensions = replace(dimensions, exposed_height_in=trimmed_exposed_in)
+    if spoon_projection_in and 0.0 < spoon_projection_in < dimensions.spoon_projection_in:
+        # Bent short to stay in a narrow core.
+        dimensions = replace(dimensions, spoon_projection_in=spoon_projection_in)
     thickness = STEEL_THICKNESS_IN[dimensions.gauge]
     half_width = dimensions.width_in / 2.0
     depth, projection = dimensions.embedment_depth_in, dimensions.spoon_projection_in
@@ -370,9 +381,16 @@ def _knee_brace() -> GMesh:
                                                 z_axis=(0.0, sine, cosine)))
 
 
+def strap_part(part: str) -> str:
+    """The catalog row an embedded-strap part number draws as."""
+    normalized = part.strip().upper()
+    return _COATING_ALIASES.get(normalized, normalized)
+
+
 def tie_mesh(part: str, *, member_width_in: float | None = None,
              member_depth_in: float | None = None, slope_radians: float = 0.0,
-             strap_length_in: float | None = None) -> GMesh | None:
+             strap_length_in: float | None = None,
+             spoon_projection_in: float | None = None) -> GMesh | None:
     """Return stock-size tie geometry in metres, with inputs expressed in inches.
 
     Hurricane ties use plate-top zero; concrete straps use pour-top zero; flat
@@ -381,13 +399,7 @@ def tie_mesh(part: str, *, member_width_in: float | None = None,
     authored cut length; an embedded strap takes ``strap_length_in`` as a shorter, field-
     trimmed exposed height. ``STHD`` is displayed as the documented STHD14 representative.
     """
-    normalized = part.strip().upper()
-    coating_aliases = {"H2.5AZ": "H2.5A", "H2.5ASS": "H2.5A",
-                       "H10ASS": "H10A", "A35Z": "A35", "A35SS": "A35",
-                       "LS30Z": "LS30", "MSTA12Z": "MSTA12", "LTP4Z": "LTP4",
-                       "HETA20Z": "HETA20", "STHD": "STHD14", "SP4Z": "SP4",
-                       "MASAZ": "MASA"}
-    normalized = coating_aliases.get(normalized, normalized)
+    normalized = strap_part(part)
     if normalized in HURRICANE_TIES:
         return _hurricane_tie(normalized)
     if normalized in STRAPS:
@@ -406,7 +418,7 @@ def tie_mesh(part: str, *, member_width_in: float | None = None,
     if normalized == "LTP4":
         return _lateral_tie_plate()
     if normalized in EMBEDDED_STRAPS:
-        return _embedded_strap(normalized, strap_length_in)
+        return _embedded_strap(normalized, strap_length_in, spoon_projection_in)
     if normalized == "MASA":
         return _mudsill_anchor(member_depth_in if member_depth_in is not None
                               else SILHOUETTE.masa_default_sill_height_in)

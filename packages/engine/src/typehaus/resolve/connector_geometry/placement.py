@@ -16,6 +16,7 @@ from typehaus.model import Beam, Connector, Element, KneeBrace
 from typehaus.model.enums import ConnectorKind
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.connector_geometry.catalog import connector_mesh
+from typehaus.resolve.connector_geometry.embedded_straps import on_sill_face, strap_frame
 from typehaus.resolve.connector_geometry.mesh import box_mesh, transform_mesh
 from typehaus.resolve.connector_geometry.plate_angle import is_plate_angle, plate_angle_body
 from typehaus.resolve.connector_geometry.roof_straps import roof_strap_mesh
@@ -324,7 +325,7 @@ def _body_at_joint(index: ConnectorPlacementIndex, solid: ResolvedSolid,
     member_depth_m = joint.height_m if joint else None
     slope = joint.slope_radians if joint else 0.0
     support_width_m = None
-    strap_length_in = None
+    strap_length_in = spoon_in = None
 
     if part.startswith(HANGER_PREFIXES):
         if joint is not None:
@@ -414,14 +415,15 @@ def _body_at_joint(index: ConnectorPlacementIndex, solid: ResolvedSolid,
             return None
         z_m -= cross_section(member.profile).depth_m
         x_axis, z_axis = z_axis, x_axis
-    elif part.startswith(("MASA", "STHD")) and joint is not None and references:
+    elif part.startswith("MASA") and joint is not None and references:
         run = index.return_at(references[0], point, z_m, tangent)
         if run is not None:
             member_width_m = _width(run.outline, y_axis[:2])
             member_depth_m = run.z1_m - run.z0_m
-            # Embedded straps lie on the sill face; the embed bends back into its pour.
-            point = (point[0] - y_axis[0] * member_width_m / 2,
-                     point[1] - y_axis[1] * member_width_m / 2)
+            point = on_sill_face(run.outline, point, y_axis)
+    elif part.startswith("STHD") and references:
+        x_axis, y_axis, spoon_in = strap_frame(index, part, references, point, z_m, x_axis,
+                                               y_axis, joint is not None)
     elif part.startswith("HETA") and joint is None:
         strap_length_in = _trimmed_strap_in(index, references, z_m)
     elif part.startswith("MSTC"):
@@ -479,7 +481,7 @@ def _body_at_joint(index: ConnectorPlacementIndex, solid: ResolvedSolid,
                           if member_depth_m is not None else None,
                           support_width_in=support_width_m / M_PER_IN
                           if support_width_m is not None else None, slope_radians=slope,
-                          strap_length_in=strap_length_in)
+                          strap_length_in=strap_length_in, spoon_projection_in=spoon_in)
     return transform_mesh(body, origin_m=(*point, z_m), x_axis=x_axis, y_axis=y_axis,
                           z_axis=z_axis) if body is not None else None
 

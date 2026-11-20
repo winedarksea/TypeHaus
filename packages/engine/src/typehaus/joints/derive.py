@@ -288,7 +288,7 @@ def _sill_joints(model, config: HardwareTakeoffConfig, grid_m: float) -> list[Jo
         out.append(_joint(ROLE_EMBEDDED_STRAP_HOLDOWN, sthd.model, station.storey,
                           station.point_m, station.z_m, station.axis, embedded=True,
                           members=(station.run_tag,), anchor_tag=station.run_tag,
-                          grid_m=grid_m))
+                          grid_m=grid_m, outward_xy=station.outward_xy))
     for station in tie_plate_stations(model, config.uplift):
         out.append(_joint(ROLE_LATERAL_TIE_PLATE, ltp.model, station.storey, station.point_m,
                           station.z_m, station.axis, embedded=False,

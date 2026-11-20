@@ -99,6 +99,14 @@ def sill_bearing(model: ResolvedModel, ret: ResolvedConstructionReturn) -> SillB
                        core=core_i, third=third, band=band, sign=out)
 
 
+def stud_band(model: ResolvedModel, ret) -> tuple | None:
+    """The plan polygon of the stud band standing on a sill return; None where it has none."""
+    upper = model.wall(ret.element_tags[1]) if len(ret.element_tags) > 1 else None
+    layer = next((lyr for lyr in upper.layers if lyr.function == "structure" and lyr.polygon),
+                 None) if upper is not None else None
+    return tuple(layer.polygon) if layer is not None else None
+
+
 def band_centre_ends(model: ResolvedModel, ret) -> tuple:
     """The sill's centreline ends moved onto the STUD band's centre.
 
@@ -107,16 +115,13 @@ def band_centre_ends(model: ResolvedModel, ret) -> tuple:
     stud's width.
     """
     start, end = centerline_endpoints(list(ret.outline))
-    walls = {w.tag: w for w in model.walls}
-    upper = walls.get(ret.element_tags[1]) if len(ret.element_tags) > 1 else None
-    layer = next((lyr for lyr in upper.layers if lyr.function == "structure" and lyr.polygon),
-                 None) if upper is not None else None
+    band = stud_band(model, ret)
     run = math.dist(start, end)
-    if layer is None or run <= 0.0:
+    if band is None or run <= 0.0:
         return start, end
     n = (-(end[1] - start[1]) / run, (end[0] - start[0]) / run)
     sill_lo, sill_hi = _offsets(ret.outline, n, start)
-    lo, hi = _offsets(layer.polygon, n, start)
+    lo, hi = _offsets(band, n, start)
     shift = (lo + hi) / 2.0 - (sill_lo + sill_hi) / 2.0
     return ((start[0] + n[0] * shift, start[1] + n[1] * shift),
             (end[0] + n[0] * shift, end[1] + n[1] * shift))

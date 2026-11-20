@@ -48,7 +48,8 @@ def test_hanger_seats_use_carried_member_ends_and_face_into_them(catlin_model_ro
     solids = {solid.uid: solid for solid in _simpson_solids(catlin_model_ro)}
     tested = []
     for joint in derived_joints(catlin_model_ro, DEFAULT_HARDWARE_TAKEOFF_CONFIG):
-        if joint.outward_xy is None or marker_uid(joint.key) not in solids:
+        if None in (joint.outward_xy, joint.carried_member_key) \
+                or marker_uid(joint.key) not in solids:
             continue
         member = index.members[joint.carried_member_key]
         end = min(range(2), key=lambda i: math.dist(joint.point, (member.p0, member.p1)[i]))
@@ -212,6 +213,26 @@ def test_sill_anchors_use_their_local_run_despite_repeated_detail_tags(catlin_mo
         assert run.z0_m == pytest.approx(joint.z_m)
         mesh = solids[marker_uid(joint.key)].body_mesh
         assert min(math.dist(joint.point, p[:2]) for p in mesh.positions) < 4 * M_PER_IN
+
+
+def test_embedded_strap_holdowns_are_cast_inside_a_core(catlin_model_ro):
+    """Below the pour top every STHD vertex is in concrete, not EPS or past a wall end."""
+    from shapely.geometry import Point, Polygon
+
+    from typehaus.resolve.connector_geometry.ties import EMBEDDED_STRAPS, strap_part
+
+    cores = [Polygon(layer.polygon).buffer(1e-6) for wall in catlin_model_ro.walls
+             if wall.is_foundation for layer in wall.layers
+             if layer.function == "structure" and layer.polygon]
+    straps = [s for s in _simpson_solids(catlin_model_ro) if s.product.startswith("STHD")]
+    assert len(straps) >= 6
+    for solid in straps:
+        positions = solid.body_mesh.positions
+        depth_m = EMBEDDED_STRAPS[strap_part(solid.product)].embedment_depth_in * M_PER_IN
+        pour_m = min(p[2] for p in positions) + depth_m
+        for p in positions:
+            if p[2] < pour_m - 1e-6:
+                assert any(core.contains(Point(p[:2])) for core in cores), solid.tag
 
 
 def test_derived_post_base_seats_clear_the_timber(catlin_model_ro):
