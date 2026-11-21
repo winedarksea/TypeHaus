@@ -226,21 +226,33 @@ def _factors(model, line, panels, basis, row, eave_ft, wall_height_in, count, me
 
 def _blocking(model, line, factors: list[TableRead], not_taken: list[str],
               gaps: list[str]) -> None:
-    """Item 8: does every sheathing sheet on the line reach its wall's plate in one piece?
+    """Item 8: is every horizontal sheathing joint inside a panel on blocking?
 
-    A sheet set vertically at least as long as the plate-to-plate height leaves no
-    horizontal joint inside a panel; a band strip below or above it is outside the panel.
+    Read off the sheet layout (decision #146): a joint is unblocked where it is bare inside
+    the wall's plate-to-plate height; a joint on the plates, or in a band strip below or
+    above them, is outside the panel or already blocked.
     """
     unstated, jointed, whole = [], [], []
+    layouts = {}
+    for lay in model.sheet_layouts:
+        for tag in lay.wall_tags:
+            layouts.setdefault(tag, []).append(lay)
     for wall in model.walls:
         if wall.tag not in line.wall_tags:
             continue
         height = _one_wall_height_in(wall)
+        lo, hi = _plate_zone(wall)
         for name, length in wall_sheathing(model.plan, wall):
             if length is None:
                 unstated.append(f"{wall.tag} ({name})")
-            elif length + 1e-6 < height:
-                jointed.append(f"{wall.tag} ({sheet_label(length)} on {height:.1f} in)")
+                continue
+            bare = [b for lay in layouts.get(wall.tag, ()) if lay.layer_name == name
+                    or lay.layer_name.startswith(f"{name}-tee-")
+                    for b in lay.horizontal_breaks if not b.backed and lo < b.at < hi
+                    and lay.wall_at((b.lo + b.hi) / 2.0) == wall.tag]
+            if bare:
+                jointed.append(f"{wall.tag} ({sheet_label(length)}, unblocked joint at "
+                               f"{bare[0].at / M_PER_IN:.1f} in)")
             else:
                 whole.append(f"{sheet_label(length)} on {height:.1f} in")
     if unstated:
@@ -253,9 +265,8 @@ def _blocking(model, line, factors: list[TableRead], not_taken: list[str],
             f"on {', '.join(jointed)} (R602.10.4.4 exception 1): x{NO_BLOCKING_FACTOR:.2f}")))
     elif whole:
         not_taken.append(f"item 8 (x{NO_BLOCKING_FACTOR:.2f}, horizontal blocking omitted) is "
-                         f"NOT taken: every sheet reaches the plate in one piece "
-                         f"({', '.join(sorted(set(whole)))}), so there is no horizontal joint "
-                         f"to block")
+                         f"NOT taken: the sheet layout puts no unblocked horizontal joint "
+                         f"inside a panel ({', '.join(sorted(set(whole)))})")
     else:
         not_taken.append(f"item 8 (x{NO_BLOCKING_FACTOR:.2f}) is NOT taken: no wall on this "
                          f"line carries a sheathing layer")
@@ -295,6 +306,13 @@ def _wall_height_in(model, line: BracedWallLine) -> float:
     """The line's wall height: top of top plate to bottom of bottom plate, tallest wall."""
     heights = [_one_wall_height_in(w) for w in model.walls if w.tag in line.wall_tags]
     return max(heights) if heights else 0.0
+
+
+def _plate_zone(wall) -> tuple[float, float]:
+    plates = [m for m in wall.members if m.category in ("plate", "raked_plate")]
+    if not plates:
+        return wall.z0_m, wall.z1_m
+    return min(m.z0_m for m in plates), max(m.z1_m for m in plates)
 
 
 def _one_wall_height_in(wall) -> float:

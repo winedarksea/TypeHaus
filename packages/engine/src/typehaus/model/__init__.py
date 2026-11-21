@@ -236,6 +236,7 @@ from typehaus.model.registry import (
 )
 from typehaus.model.screens import SlatScreen
 from typehaus.model.sheathing_nailing import SheathingNailing
+from typehaus.model.sheet_layout import SheetLayoutStandard
 from typehaus.model.shower_assembly import (
     ShowerAssemblySpec,
     ShowerComponent,
@@ -475,7 +476,7 @@ __all__ = [
     "Countertop", "MillworkStandard", "RoomTrim", "StairLandingMillwork", "ShelfBank", "ShelfBay",
     "DoorTrim", "DoorUndercut", "StairSkirt", "TrimStandard", "TrimStock", "WindowStool",
     "DrywallStandard", "ShadowGapProfile", "TerminationBead", "PaintSpec", "PaintStandard",
-    "HeaderStandard",
+    "HeaderStandard", "SheetLayoutStandard",
     "Room", "Stair", "Roof", "GridAxis", "Annotation", "Fixture", "Furniture", "Appliance",
     "Alarm",
     "WallLiningException",

@@ -463,6 +463,8 @@ _BOM_COVERAGE: dict[str, tuple[str, ...]] = {
     "suspension_anchors": ("hardware",),
     # A chase fireblock: the sheet by area, the annulus seal by the foot.
     "fireblocks": ("sheet_goods", "fireblock_sealant"),
+    # Hung wall sheathing counts its sheets off the laid pieces (#146).
+    "sheet_layouts": ("sheet_goods",),
 }
 
 

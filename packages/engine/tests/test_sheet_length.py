@@ -19,6 +19,7 @@ from typehaus.findings import Result
 from typehaus.model.assembly import Layer
 from typehaus.model.enums import LayerFunction
 from typehaus.quantities import ft, inch
+from typehaus.resolve.sheet_layout import resolve_sheet_layouts
 from typehaus.resolve.sheet_stock import sheet_label, sheets_for
 from typehaus.takeoff.framing import sheet_goods_takeoff
 
@@ -41,6 +42,8 @@ def _with_sheets(model, length):
     out = copy(model)
     out.plan = model.plan.model_copy(
         update={"library": library.model_copy(update={"assemblies": assemblies})})
+    out.sheet_layouts = []  # the layout is laid from the sheet (decision #146)
+    resolve_sheet_layouts(out.plan, out)
     return out
 
 
@@ -82,7 +85,7 @@ def test_eight_foot_sheets_fail_two_lines(catlin_model_ro):
               if ev.line.tag == "BWL-W-A-E1")
     item8 = [f for f in e1.factors if "item 8" in f.row]
     assert item8 and "R602.10.4.4 exception 1" in item8[0].row
-    assert "W-M-E1 (4x8 on 107.4 in)" in item8[0].row  # on the subfloor, decision #110
+    assert "W-M-E1 (4x8, unblocked joint at" in item8[0].row  # the layout's joint, #146
 
 
 @pytest.mark.parametrize("length", [ft(9), ft(10)])
@@ -109,12 +112,15 @@ def test_the_order_bills_the_same_sheet(catlin_model_ro):
     house = _walls(catlin_model_ro)
     assert ("cdx-plywood", 0.5, "4x10") in house and ("zip-sheathing", 0.438, "4x9") in house
     for (_material, _t, size), row in house.items():
+        # Laid rows count whole sheets off the pieces (decision #146): never fewer than the
+        # net area buys, and within the openings' and rips' waste of it.
         length = {"4x8": 96.0, "4x9": 108.0, "4x10": 120.0}[size]
-        assert abs(int(row["sheets"]) - sheets_for(float(row["net_area_sqft"]), length)) <= 1
+        by_area = sheets_for(float(row["net_area_sqft"]), length)
+        assert by_area <= int(row["sheets"]) <= 1.35 * by_area
     unstated = _walls(_with_sheets(catlin_model_ro, None))
     assert {size for (_m, _t, size) in unstated} == {"4x8"}
-    assert (unstated[("cdx-plywood", 0.5, "4x8")]["sheets"]
-            > house[("cdx-plywood", 0.5, "4x10")]["sheets"])
+    row = unstated[("cdx-plywood", 0.5, "4x8")]  # no layout: area over the 4x8 shelf panel
+    assert row["sheets"] == sheets_for(float(row["net_area_sqft"]), 96.0) and "rips" not in row
 
 
 def test_sheet_length_must_be_positive():

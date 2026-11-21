@@ -841,6 +841,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - Sheathing meets edge to face at an L, never overlapping: the `framing_owner` wall's panel
     runs through the corner and the other's edge butts its back
     (`ResolvedJunction.sheathing_through`); every other layer mitres 45°.
+  - **Sheathing is laid sheet by sheet** (decision #146, `SHEET-LAYOUT-STANDARD` in
+    `plan/framing_standards.py`): every vertical joint lands on a member centre with 7/16"
+    of face under each edge (`structural.sheathing_edge_support`); collinear walls are one
+    run. Moving a stud, king or opening moves the joints and the sheet count
+    (`notes/sheet_layout_oracle.md`, W-G-S by hand).
 
 ### Bearing lines and floor decks
 

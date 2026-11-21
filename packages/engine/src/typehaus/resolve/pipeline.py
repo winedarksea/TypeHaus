@@ -328,6 +328,11 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         from typehaus.resolve.drywall_trims import resolve_drywall_trims
 
         findings.extend(resolve_drywall_trims(plan, model))
+    with _stage("sheet_layout"):
+        # After framing and openings are final; before geometry (decision #146).
+        from typehaus.resolve.sheet_layout import resolve_sheet_layouts
+
+        findings.extend(resolve_sheet_layouts(plan, model))
     with _stage("floor_heat"):
         findings.extend(resolve_floor_heat(model))
     with _stage("device_raceways"):

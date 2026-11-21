@@ -23,9 +23,10 @@ the future.
   inspection. Galvashield XPX anodes for the salt-splash court walls are undecided. Curing,
   cold-weather placement and slab joint layout exist only in prose.
 
-- **No sheet-layout engine**, so nothing checks a sheathing break landing on a stud. L corners
-  now carry `ResolvedJunction.sheathing_through`, which a layout pass would read. Cladding, WRB,
-  foam and finish layers still bill off the node axis.
+- **Sheet layout gaps (decision #146).** Two framing gaps the layout reports UNKNOWN: W-B-S2-FR/
+  -S3-FR top out 1 9/16" under FS-M-WEST's rim with no sill modelled (W-M-S1/S2 joints), and
+  FO-S-STAIR's edge trimmer stands 1 7/8" inboard of W-M-N2/N3B's sheathing with no rim at the
+  wall. D-M-ENTRY's flat head has no cripples above it. Gypsum is not laid sheet by sheet.
 
 ### Left out of decision #142 (metal-wall penetrations)
 

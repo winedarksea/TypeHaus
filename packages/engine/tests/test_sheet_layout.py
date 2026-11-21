@@ -1,0 +1,127 @@
+"""The sheathing sheet layout (decision #146): a synthetic wall, the check, and catlin's oracle."""
+
+from __future__ import annotations
+
+from types import SimpleNamespace
+
+import pytest
+
+from typehaus.checks.code.mn_residential.profile import MN_2020
+from typehaus.checks.registry import CheckContext, Preferences
+from typehaus.checks.structural.sheathing_edge_support import _grade, sheathing_edge_support
+from typehaus.findings import Result
+from typehaus.resolve.sheet_layout import lay_run, layout_params
+from typehaus.resolve.sheet_layout_runs import Face, build_runs
+
+IN = 0.0254
+
+
+def _stud(s_in, z0_in, z1_in, key):
+    p = (s_in * IN, 2.75 * IN)
+    return SimpleNamespace(p0=p, p1=p, z0_m=z0_in * IN, z1_m=z1_in * IN, profile="2x6",
+                           orient=(1.0, 0.0), child_key=key, category="stud",
+                           plan_width_m=None, z0_end_m=None, z1_end_m=None)
+
+
+def _flat(s0_in, s1_in, z0_in, z1_in, key):
+    return SimpleNamespace(p0=(s0_in * IN, 2.75 * IN), p1=(s1_in * IN, 2.75 * IN), z0_m=z0_in * IN,
+                           z1_m=z1_in * IN, profile="2x6", orient=None, child_key=key,
+                           category="plate", plan_width_m=None, z0_end_m=None, z1_end_m=None)
+
+
+def _wall(length_in, studs_in, band_in=108.0, blocks_in=(), openings=()):
+    """A wall along +x, sheathing on its -y face (y -0.5" to 0), studs y 0 to 5.5"."""
+    top = band_in
+    members = [_stud(s, 1.5, top - 3.0, f"stud-{i:03d}") for i, s in enumerate(studs_in)]
+    members += [_flat(0, length_in, 0, 1.5, "plate-bottom"),
+                _flat(0, length_in, top - 3.0, top - 1.5, "plate-top-1"),
+                _flat(0, length_in, top - 1.5, top, "plate-top-0")]
+    members += [_flat(0, length_in, z - 0.75, z + 0.75, f"block-{i}")
+                for i, z in enumerate(blocks_in)]
+    L = length_in * IN
+    sheathing = SimpleNamespace(name="sheathing", material_ref="ply", thickness_m=0.5 * IN,
+                                polygon=((0, -0.5 * IN), (L, -0.5 * IN), (L, 0), (0, 0)),
+                                run_span_m=None, function="sheathing", is_cavity=False)
+    stud_layer = SimpleNamespace(polygon=((0, 0), (L, 0), (L, 5.5 * IN), (0, 5.5 * IN)),
+                                 thickness_m=5.5 * IN, function="structure", is_cavity=False)
+    wall = SimpleNamespace(tag="W-T", axis=((0.0, 0.0), (L, 0.0)), members=members,
+                           layers=(stud_layer, sheathing), base_ref_z_m=0.0, z0_m=0.0,
+                           z1_m=top * IN, top_z0_m=None, top_z1_m=None, head_caps=())
+    model = SimpleNamespace(floors=[], solids=[], junctions=[], openings=list(openings),
+                            walls=[wall], wall=lambda tag: wall)
+    face = Face(wall, sheathing, stud_layer, 96 * IN, 0.0, top * IN)
+    return model, wall, face
+
+
+def _lay(model, face, **overrides):
+    params = layout_params(None)
+    for key, value in overrides.items():
+        setattr(params, key, value)
+    run = build_runs([face])[0]
+    return lay_run(model, run, params)
+
+
+def _opening(tag, centre_in, width_in, sill_in, height_in):
+    return SimpleNamespace(tag=tag, host_wall="W-T", center_along_m=centre_in * IN,
+                           width_m=width_in * IN, sill_m=sill_in * IN, height_m=height_in * IN,
+                           depth_m=None)
+
+
+def test_breaks_snap_back_to_a_stud_and_an_opening_cuts_its_piece():
+    studs = [0.75, 8, 24, 40, 56, 72, 88, 99.25]  # 16" o.c. off an 8" layout origin
+    window = _opening("WIN", 64.0, 24.0, 30.0, 40.0)
+    model, _wall_, face = _wall(100, studs, band_in=96, openings=[window])
+    layout = _lay(model, face)
+    assert [round(b.at / IN, 3) for b in layout.vertical_breaks] == [40.0, 88.0]
+    assert all(b.backed for b in layout.vertical_breaks)
+    kinds = [(round(p.s0 / IN), p.kind, p.opening_cuts) for p in layout.pieces]
+    assert kinds == [(0, "rip", ()), (40, "cut", ("WIN",)), (88, "rip", ())]
+
+
+def test_a_short_last_piece_pulls_the_previous_break_back():
+    studs = [0.75, 8, 24, 40, 56, 72, 88, 91.25]
+    model, _w, face = _wall(92, studs, band_in=96)
+    layout = _lay(model, face)
+    # 40 then 88 would leave a 4" sliver: the second break comes back to 72.
+    assert [round(b.at / IN) for b in layout.vertical_breaks] == [40, 72]
+
+
+def test_courses_alternate_their_anchor_so_horizontal_joints_stagger():
+    studs = [0.75, 16, 32, 48, 64, 80, 95.25]
+    model, _w, face = _wall(96, studs, band_in=108, blocks_in=(12.0, 96.0))
+    layout = _lay(model, face)
+    joints = [round(b.at / IN, 2) for b in layout.horizontal_breaks]
+    assert joints == [96.0, 12.0]
+    assert all(b.backed for b in layout.horizontal_breaks)
+
+
+def test_a_joint_off_framing_fails_the_check():
+    model, _w, face = _wall(120, [0.75, 60, 119.25], band_in=96)  # studs 60" apart
+    layout = _lay(model, face)
+    assert not all(b.backed for b in layout.vertical_breaks)
+    finding = _grade(model, layout, "")
+    assert finding.result is Result.FAIL and "off framing" in finding.message
+
+
+def test_catlin_garage_south_matches_the_oracle(catlin_model_ro):
+    """houses/catlin/notes/sheet_layout_oracle.md, worked by hand."""
+    layout = next(lay for lay in catlin_model_ro.sheet_layouts if lay.wall_tag == "W-G-S")
+    assert layout.start_end == "start" and layout.hi / IN == pytest.approx(287.5625, abs=1e-3)
+    assert [round(b.at / IN, 2) for b in layout.vertical_breaks] == [
+        46.75, 72.0, 120.0, 168.0, 216.0, 264.0]
+    assert not layout.horizontal_breaks and all(b.backed for b in layout.vertical_breaks)
+    assert [p.kind for p in layout.pieces] == ["cut", "rip", "full", "full", "full", "full",
+                                               "rip"]
+    assert layout.pieces[0].opening_cuts == ("D-G-SERVICE",)
+    from typehaus.takeoff.sheet_goods import layout_standard, pack_layouts
+
+    assert pack_layouts([layout], layout_standard(catlin_model_ro.plan)).sheets == 7
+
+
+def test_an_unstated_sheet_length_is_unknown(catlin_model_ro):
+    ctx = CheckContext(plan=catlin_model_ro.plan, model=catlin_model_ro,
+                       preferences=Preferences(), profile=MN_2020)
+    findings = sheathing_edge_support(ctx)
+    assert any(f.result is Result.UNKNOWN and "W-B-S2-FR" in f.element_tags
+               and "sheet_length" in f.message for f in findings)
+    assert not [f for f in findings if f.result is Result.FAIL]

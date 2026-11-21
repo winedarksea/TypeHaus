@@ -1,7 +1,8 @@
 """Sheet goods by the sheet — wall, roof, subfloor and ceiling panels, net of openings.
 
 Split out of ``takeoff/framing.py``. The sheet SIZE is each layer's ``sheet_length``, read
-through ``resolve/sheet_stock`` — the same reading the R602.10 blocking factor uses.
+through ``resolve/sheet_stock``. Hung wall sheathing with a sheet layout counts off its
+pieces (``takeoff/sheet_packing.py``, decision #146) and carries a ``rips`` column.
 """
 
 from __future__ import annotations
@@ -10,6 +11,7 @@ from collections import defaultdict
 
 from typehaus.model.enums import LayerFunction
 from typehaus.model.floors import FloorSystem
+from typehaus.model.sheet_layout import SheetLayoutStandard
 from typehaus.resolve.geometry import length, polygon_area, sub
 from typehaus.resolve.geometry_walls import cuts_layer
 from typehaus.resolve.model import ResolvedModel
@@ -23,6 +25,7 @@ from typehaus.resolve.sheet_stock import (
 )
 from typehaus.takeoff.ceiling_areas import ceiling_pieces
 from typehaus.takeoff.ceiling_framing import ceiling_lining_members
+from typehaus.takeoff.sheet_packing import pack_pieces
 from typehaus.takeoff.sheet_rips import rip_sheet_rows, rip_stock
 
 _M2_TO_FT2 = 10.7639104167
@@ -49,6 +52,12 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             if member.category == "stair_subdeck" and member.plan_outline:
                 areas[("stair subdeck", member.material, member.z1_m - member.z0_m, None)] += abs(
                     polygon_area(member.plan_outline))
+    # Laid sheathing counts off its pieces (decision #146); only an unlaid layer's area
+    # falls back to area / sheet.
+    layouts = {(tag, name): lay for lay in model.sheet_layouts
+               for tag, name, _lo, _hi in lay.faces}
+    laid: dict[tuple[str, str, float, float | None], list] = defaultdict(list)
+    unlaid: dict[tuple[str, str, float, float | None], float] = defaultdict(float)
     openings_by_wall: dict[str, list] = defaultdict(list)
     for opening in model.openings:
         openings_by_wall[opening.host_wall].append(opening)
@@ -71,9 +80,14 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             wall_area = gross - sum(
                 op.width_m * op.height_m for op in openings_by_wall[wall.tag]
                 if cuts_layer(wall, layer.name, op))
-            areas[("exterior wall", layer.material_ref, layer.thickness_m,
-                   stated.get(layer.name))] += max(
-                0.0, wall_area)
+            key = ("exterior wall", layer.material_ref, layer.thickness_m,
+                   stated.get(layer.source_layer_name or layer.name))
+            areas[key] += max(0.0, wall_area)
+            if (layout := layouts.get((wall.tag, layer.name))) is not None:
+                if all(layout is not seen for seen in laid[key]):  # a run crosses walls
+                    laid[key].append(layout)
+            else:
+                unlaid[key] += max(0.0, wall_area)
 
     for roof in model.roofs:
         assembly = model.plan.library.resolve_assembly(roof.assembly)
@@ -140,15 +154,22 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             areas[(scope, layer.material_ref, layer.thickness.meters,
                    layer_sheet_length_in(layer))] += piece.area_m2
 
-    rows = [
-        {"scope": scope, "material": material, "thickness_in": round(thickness / 0.0254, 3),
-         "net_area_sqft": round(area * _M2_TO_FT2, 1),
-         "sheet": sheet_label(order_sheet_length_in(sheet)),
-         "sheets": sheets_for(area * _M2_TO_FT2, order_sheet_length_in(sheet)),
-         "also_in_envelope_layers": scope in _ALSO_IN_ENVELOPE}
-        for (scope, material, thickness, sheet), area in sorted(
-            areas.items(), key=lambda item: (item[0][:3], item[0][3] or 0.0))
-    ]
+    standard = layout_standard(model.plan)
+    rows = []
+    for key, area in sorted(areas.items(), key=lambda item: (item[0][:3], item[0][3] or 0.0)):
+        scope, material, thickness, sheet = key
+        row = {"scope": scope, "material": material,
+               "thickness_in": round(thickness / 0.0254, 3),
+               "net_area_sqft": round(area * _M2_TO_FT2, 1),
+               "sheet": sheet_label(order_sheet_length_in(sheet)),
+               "sheets": sheets_for(area * _M2_TO_FT2, order_sheet_length_in(sheet)),
+               "also_in_envelope_layers": scope in _ALSO_IN_ENVELOPE}
+        if laid.get(key):
+            packed = pack_layouts(laid[key], standard)
+            row["sheets"] = packed.sheets + (sheets_for(
+                unlaid[key] * _M2_TO_FT2, order_sheet_length_in(sheet)) if unlaid[key] else 0)
+            row["rips"] = packed.rips
+        rows.append(row)
     # The panel-profile MEMBERS — a window buck, a web stiffener, a plywood furring rip. Every
     # row above is a layer bought as a flat sheet and hung; these are bought as the same sheet
     # and cut up, which is a different order and (until this existed) was billed as 8-ft
@@ -161,6 +182,20 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     return sorted(rows + rip_sheet_rows(rips),
                   key=lambda row: (str(row["scope"]), str(row["material"]),
                                    float(str(row["thickness_in"]))))
+
+
+def layout_standard(plan) -> SheetLayoutStandard:
+    from typehaus.resolve.sheet_layout import sheet_layout_standard
+
+    return sheet_layout_standard(plan)[0] or SheetLayoutStandard(tag="default")
+
+
+def pack_layouts(layouts, standard: SheetLayoutStandard):
+    """All the layouts of one row packed together: their sheets share offcuts."""
+    first = layouts[0]
+    return pack_pieces([p for lay in layouts for p in lay.pieces], first.sheet_w_m,
+                       first.sheet_l_m, standard.kerf.meters, first.vertical,
+                       offcut_min=standard.min_rip_width.meters)
 
 
 def _sheets(model: ResolvedModel, layers) -> list:

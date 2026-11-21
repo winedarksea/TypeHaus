@@ -20,6 +20,7 @@ from typehaus.resolve.model_door_products import BypassDoorPlacement, CasedDoorS
 from typehaus.resolve.model_ducts import ResolvedDuctPart, ResolvedDuctSupport
 from typehaus.resolve.model_earthwork import ResolvedExcavation, ResolvedWallColumn
 from typehaus.resolve.model_eave_sealing import ResolvedEaveSealingRun
+from typehaus.resolve.model_sheet_layout import ResolvedSheetLayout
 from typehaus.resolve.model_trim import (
     ResolvedBaseRun,
     ResolvedDoorCasing,
@@ -1818,6 +1819,8 @@ class ResolvedModel:
     # Drywall beads and shadow-gap LED reveals off the house's DrywallStandard (#103).
     drywall_trims: list[ResolvedDrywallTrim] = field(default_factory=list)
     wall_ends: list[ResolvedWallEnd] = field(default_factory=list)
+    # Structural sheathing laid sheet by sheet (#146, ``resolve/sheet_layout.py``).
+    sheet_layouts: list[ResolvedSheetLayout] = field(default_factory=list)
     # A leafless through opening's wrap, one record per gypsum face (#122).
     passage_wraps: list[ResolvedPassageWrap] = field(default_factory=list)
     conditions: list[BoundaryCondition] = field(default_factory=list)

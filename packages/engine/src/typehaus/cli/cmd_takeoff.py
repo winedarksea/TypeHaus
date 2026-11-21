@@ -270,7 +270,9 @@ def _takeoff(house: Path | None, as_json: bool, summary: bool, csv: Path | None,
         for item in payload["sheet_goods"]:
             console.print(f"  {item['scope']}: {item['sheets']} sheets {item['sheet']} of "
                           f"{item['thickness_in']}\" {item['material']} "
-                          f"({item['net_area_sqft']} sf net)")
+                          f"({item['net_area_sqft']} sf net"
+                          + (f", {item['rips']} cut pieces laid" if item.get("rips") else "")
+                          + ")")
     if payload["structural_solids"]:
         console.print("[bold]Structural solids (concrete + standalone structure)[/bold]")
         for item in payload["structural_solids"]:
