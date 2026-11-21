@@ -378,6 +378,11 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         from typehaus.resolve.linesets import derive_linesets
 
         derive_linesets(model)
+    with _stage("wall_penetrations"):
+        # After placeables, grounding and every run: metal-wall crossings and mounts (#142).
+        from typehaus.resolve.wall_penetrations import derive_wall_penetrations
+
+        derive_wall_penetrations(model)
     with _stage("electrical_labels"):
         # After conduits, solar and the service root: records only, no solids.
         from typehaus.resolve.electrical_labels import resolve_electrical_labels

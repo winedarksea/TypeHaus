@@ -32,5 +32,6 @@ from typehaus.checks.integrity import (  # noqa: F401 - registers checks
     transition_binding,
     wall_layer_material,
     wall_mounts,
+    wall_penetration_closure,
     wall_stack,
 )

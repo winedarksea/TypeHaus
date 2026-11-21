@@ -226,6 +226,8 @@ SECTION_CODES: dict[str, CostCode] = {
     # 06 43 00 Wood Stairs and Railings: the stair installer sets the treads.
     "stair_treads": CostCode("2700", "06 43 00", "stairs"),
     "openings": CostCode("2400", "08 00 00", "openings"),
+    # Metal-wall sleeves, boots, inlets, blocks and strut (#142): the siding crew's kit.
+    "wall_penetrations": CostCode("2100", "07 46 00", "siding"),
     # Washed stone under a footing, tile bedded in it: placed by the excavator BEFORE the
     # pour, so it files ahead of concrete in the sequence (drainage follows concrete, and a
     # footing visit that waited on a drainage package would be a cycle). The viewer draws

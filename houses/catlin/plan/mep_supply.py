@@ -787,7 +787,7 @@ HYDRANT_BRANCH_MAIN = [
             path=(pt(ft(12, 8), ft(0, 9)), pt(ft(12, 8), ft(0, 3.25)),
                   pt(ft(12, 8), ft(0, 3.25))),
             diameter=inch(0.75), material="pex",
-            elevations=(ft(9, 3), ft(9, 3), ft(2)),
+            elevations=(ft(9, 3), ft(9, 3), inch(22)),
             wall_refs=(None, "W-M-S1"),
             serves=("FX-M-PORCH-HYD",)),
     # Balcony leg: tees off the porch leg in the wall plane and rises straight over it. Split
@@ -817,7 +817,7 @@ HYDRANT_BRANCH_MAIN = [
             path=(pt(ft(12, 8), ft(0, 3.25)), pt(ft(12, 8), inch(-5))),
             diameter=inch(0.75), material="pex",
             insulation='1/2" closed-cell elastomeric sleeve, foil-faced, over the barrel',
-            elevations=(ft(2), ft(2)),
+            elevations=(inch(22), inch(22)),
             serves=("FX-M-PORCH-HYD",)),
 ]
 
@@ -948,7 +948,7 @@ HYDRANT_BRANCH_SECOND = [
 PENETRATIONS_HYDRANT_MAIN = [
     RoughOpening(uid="H72PNVX9AV", tag="AO-M-PORCH-HYD", host="W-M-S1",
                  position=from_node("N-M-SW", inch(150.75)),
-                 width=inch(2.5), height=inch(2.5), sill_height=inch(24),
+                 width=inch(2.5), height=inch(2.5), sill_height=inch(20.75),
                  depth=inch(12), depth_from="exterior",
                  penetration_for=("PR-M-CW-PORCH-HYD-CU", "PR-M-CW-PORCH-HYD")),
 ]

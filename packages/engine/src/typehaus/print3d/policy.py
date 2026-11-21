@@ -57,6 +57,8 @@ KIND_POLICY: dict[str, Treatment] = {
                      "cleanout_extension", "cleanout_cap", "insulation_wrap",
                      "duct_fitting", "duct_damper", "duct_connector", "duct_support",
                      "penetration_seal", "register", "electrical_device",
+                     "wall_sleeve", "penetration_boot", "lineset_inlet", "mount_block",
+                     "mount_strut", "lineset_cover",
                      "luminaire_suspended"), _X),
     # Envelope accessories, glazing and leaves (openings print as clean holes).
     **dict.fromkeys(("flashing", "opening_flashing_membrane", "opening_sill_pan", "bug_screen",

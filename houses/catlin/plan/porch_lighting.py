@@ -47,6 +47,6 @@ PORCH_LIGHTING = [
                      circuit="CKT-LT-MAIN", controlled_by=("ED-M-PORCH-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(7)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-S2", face="right", distance_from_start=inch(80),
+                         wall_ref="W-M-S2", face="right", distance_from_start=inch(83),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 ]

@@ -139,6 +139,13 @@ a release or for exhaustive local verification.
   over the pour to the leaf; that jog is UNKNOWN (no published row; §4.2's cycle bends back plumb). `resolve/strap_holdowns.py` reads its concrete, and `resolve/rebar/strap_bars.py`
   lays the Figure 1 #4 bar. `structural.strap_hold_down_embedment` grades it; the table is
   `hardware/esr2920.py`. `Footing.cast_with_wall` lets l_e run into the footing.
+- **Metal-wall penetrations and mounts are derived from one `PenetrationStandard`** (decision
+  #142): `resolve/wall_penetrations.py` finds every run/bond crossing a profiled-metal wall
+  (sleeve at the foam plane, then a boot, the lineset inlet, a hydrant escutcheon or the block)
+  into `ResolvedModel.wall_penetrations`; an exterior device stands off on a derived block or
+  strut pair (`ElectricalDeviceType.exterior_mount`, `resolve/mount_blocks.py`, `.mount_blocks`).
+  Flats come from `resolve/panel_flats.py`. Graded by `integrity.wall_penetration_closure`,
+  billed in `[wall_penetrations]`. Never author a `normal_gap` for a metal-wall device.
 - **Condensate overflow is authored on the unit** (decision #127): `Equipment.secondary_drain_pan`
   / `overflow_drain_ref` / `float_switch_ref`, graded by `mep.condensate_overflow` (IMC 307.2.3).
 - **A hung machine's trapeze is derived from `Equipment.hangers`** (decision #131):

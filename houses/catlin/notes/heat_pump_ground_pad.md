@@ -593,9 +593,9 @@ cable fits the crotch, whose largest circle is r = 1/(1/r1 + 1/r2 - 1/(r1+r2)) =
 | set | legs (in.) | developed | +2 ft loop | kit | leftover |
 |---|---|---|---|---|---|
 | `PR-A-RFG-HP1` | 4.125, 12.53, 35, 13.375, 12.4, 74.5, 5.22, 123.5, 6.80, 7.63, 24.125, 29.5, 99.5, 21, 6.5 = 475.7 | **39.64 ft** | 41.64 | 50 | 8.4 |
-| `PR-B-RFG-HP2-GYM` | 16.84, 16.33, 22.01, 158.26, 4.24, 10.5, 14.5 = 242.7 | **20.22 ft** | 22.22 | 25 | 2.8 |
-| `PR-M-RFG-HP2-BED` | 9.09, 35.06, 178.9, 8.13, 92.75 = 323.9 | **26.99 ft** | 28.99 | 35 | 6.0 |
-| `PR-M-RFG-HP2-LIVING` | 4.09, 28.96, 20.85, 113.5, 7.06, 98.7, 7.06, 9.5 = 289.7 | **24.14 ft** | 26.14 | 35 | 8.9 |
+| `PR-B-RFG-HP2-GYM` | 27.84, 16.33, 22.01, 169.26, 4.24, 10.5, 14.5 = 264.7 | **22.06 ft** | 24.06 | 25 | 2.9 |
+| `PR-M-RFG-HP2-BED` | 15.84, 35.06, 185.65, 8.13, 92.75 = 337.4 | **28.12 ft** | 30.12 | 35 | 6.9 |
+| `PR-M-RFG-HP2-LIVING` | 3.84, 28.96, 20.6, 113.5, 7.06, 98.7, 7.06, 9.5 = 289.2 | **24.10 ft** | 26.10 | 35 | 8.9 |
 | `PR-M-RFG-HP3-STAIR` | 4, 20.35, 112.5, 140, 12.4, 66.5, 2.97 = 358.7 | **29.89 ft** | 31.89 | 35 | 3.1 |
 
 - **HP1**: 39.64 of 164 ft. The rise is 251 - (-5) = 256" = 21.3 ft, unit below, against 49.
@@ -607,19 +607,19 @@ cable fits the crotch, whose largest circle is r = 1/(1/r1 + 1/r2 - 1/(r1+r2)) =
   through the second floor into `FS-ATTIC`'s north bay. It comes up through the deck 4" off
   the wall, rises on a 4" westward diagonal (room for the 3.94" bend) and crosses over the air
   handler to drop onto its front ports. Exterior leg ~5.7 ft.
-- **HP2**: 71.36 ft over three ports, of 263. Every port is far inside 82 ft and inside the
+- **HP2**: 74.28 ft over three ports, of 263 (re-spaced 2026-11-20, decision #142: one W-M-S2
+  batten bay each, LIVING x 380, BED 392, GYM 404, 12" c-c, each with its own wall inlet). Every port is far inside 82 ft and inside the
   131 ft precharge, so no charge is added. The three sets leave the valves 3" apart in height
   (ports A/B/C; D is spare on the four-port unit) and turn north side by side: LIVING at
-  x 31'-8 1/4", BED at 32'-1 1/4", GYM at 32'-9", so none crosses another. **Re-stacked
+  x 31'-8", BED at 32'-8", GYM at 33'-8", so none crosses another. **Re-stacked
   2026-11-20**: GYM used to bore the W-M-S2 starter girt (z -11.19..-7.69), leaving under 1"
   of its 3.5" face, with its rim hole 3/16" over the A35Z at x 390. Now all three cross the
   wall in the 7.69" gap between the starter girt and the 0..3.5 course (bundle centre at the
   girt plane y -5.25: LIVING -4.00, BED -4.78, GYM -5.97; the gap holds centres -6.38..-1.31),
   so no girt is cut. Each crosses `FS-M-EAST`'s LSL rim in its own TJ-8000 hole (centres
   -4.00 / -4.10 / -5.80, inside the rim's centred 7.92" circle, which holds -8.58..-3.29). The
-  holes sit at x 380-393: off the window's king/jack packs (x 366.8-369, 399-402); LIVING and
-  BED clear the rim-to-sill A35Zs in plan, and GYM stands between the ties at 390 and 395
-  (1" clear of each), all above the ties' tops at -9.62. Outside they clear the base trim
+  holes sit at x 380/392/404: off the window's king/jack packs (x 366.8-369, 399-402; GYM
+  was at 402 for one pass and bored the pack), all above the rim-to-sill ties' tops at -9.62. Outside they clear the base trim
   (top -9.81).
   - No set falls inward through the wall: a sweating vapour line and rain on the bundle run
     out, not into the rim. LIVING is level; BED and GYM rise inward. GYM climbs 3.9" from its
@@ -700,9 +700,11 @@ of this.
 
 ## What is not modelled
 
-- **The line set sleeves.** HP1's and HP3's wall holes are `AO-M-RFG-*` RoughOpenings; HP2's
-  are rim holes in `FS-M-EAST`, which no element draws. The sleeve, slope and seal are drawing
-  notes.
+- ~~The line set sleeves.~~ **Modelled since 2026-11-20 (decision #142):** every set's wall
+  crossing is a derived `WP-PR-*` record off `PENETRATION-STANDARD` (PVC sleeve to the ccSPF,
+  the cover's wall inlet on a flat, the cover swept along the outdoor leg); HP1's and HP3's
+  `AO-M-RFG-*` are sized to the sleeve OD, and HP2's three cross the rim one per W-M-S2 batten
+  bay, 12" c-c at x 380/392/404. The rim holes themselves are still not drawn.
 - **`CD-B-HP1`, a power raceway from the panel to the north pad.** Deliberately not added in
   the 2026-09-04 pass: no check requires one, and the omission got *cheaper* with the move
   (about 60 LF of unmodelled home run down to about 45). Adding it drags in a

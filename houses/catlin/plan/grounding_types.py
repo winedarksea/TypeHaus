@@ -68,7 +68,9 @@ GROUNDING_DEVICE_TYPES = (
                          # Laid on its side, nipple into the meter-main (Siemens' figure).
                          footprint=(inch(8), inch(3)), height=inch(4), needs=frozenset(),
                          ports=(),
-                         model_representation=ModelRepresentation(symbol="siemens-fs140")),
+                         model_representation=ModelRepresentation(symbol="siemens-fs140"),
+                         # Close-nippled to the meter-main: rides its strut (#142).
+                         exterior_mount="strut"),
     ElectricalDeviceType(tag="ED-T-SPD-PV", name="PV DC SPD, 600 VDC",
                          product_ref=SPD_PV.tag, spd_class="pv_dc", surge_ka=57,
                          source=_MNSPD_SRC, footprint=(inch(3.527), inch(3.527)),

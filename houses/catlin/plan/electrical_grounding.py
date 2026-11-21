@@ -111,39 +111,43 @@ SERVICE_GROUNDING = [
                                      pt(inch(-31), inch(412))),
                      elevations=(inch(0), inch(-58), inch(-58))),
     # Through the rim over the working spaces (their tops are -31 7/16"), down to the stub.
+    # It jogs 3 1/8" south outside to cross the PBR on a flat (y=354"), its boot clear of the
+    # major rib (decision #142).
     # #2, over 250.66(B)'s #4 cap: BC-B-WATER lands on this stub (250.104(A)(1)).
     BondingConductor(uid="A81HH8CV8V", tag="BC-M-GEC-UFER", role="gec", from_ref="ED-M-METER",
                      to_ref="GE-B-UFER", size="2", bare=False,
                      path=(pt(inch(-11.2), inch(357.1)), pt(inch(-11.2), inch(357.1)),
-                           pt(inch(13), inch(357.1)), pt(inch(13), inch(336)),
-                           pt(inch(13), inch(336))),
-                     elevations=(inch(0), inch(-6), inch(-6), inch(-6), inch(-96))),
+                           pt(inch(-11.2), inch(354)), pt(inch(13), inch(354)),
+                           pt(inch(13), inch(336)), pt(inch(13), inch(336))),
+                     elevations=(inch(0), inch(-6), inch(-6), inch(-6), inch(-6), inch(-96))),
     BondingConductor(uid="F15125QS01", tag="BC-M-IBT", role="ibt", from_ref="ED-M-IBT", to_ref="ED-M-METER",
                      size="6"),
     # The FS140 on its side, close-nippled into ED-M-METER's side: nipple tip 1/2" off the
-    # meter's case (y 367 1/8"), body to y 375 5/8", over ED-M-DATA-ENTRY (top at -4").
+    # meter's case (y 367 1/8"), body to y 375 5/8"; it rides the meter's strut pair (#142).
+    # ED-M-IBT and ED-M-DATA-ENTRY sit west of the strut on derived blocks, raised clear of
+    # W-M-W1's base trim (z -12.9"..-9.8"), the block bottoms at -9 1/4".
     ElectricalDevice(uid="FWX17NKXGJ", tag="ED-M-SPD", kind=DeviceKind.SPD, type_ref="ED-T-SPD-T1",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(0)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-W1", face="right", distance_from_start=inch(28.375),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="22CJG651XR", tag="ED-M-IBT", kind=DeviceKind.JUNCTION_BOX, type_ref="ED-T-IBT",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(-12)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(-8.5)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-W1", face="right", distance_from_start=inch(12),
+                         wall_ref="W-M-W1", face="right", distance_from_start=inch(6),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="12C93JY6Y5", tag="ED-M-DATA-ENTRY", kind=DeviceKind.DATA_OUTLET,
                      type_ref="ED-T-DATA-ENTRY",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(-12)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(-8.5)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-W1", face="right", distance_from_start=inch(24),
+                         wall_ref="W-M-W1", face="right", distance_from_start=inch(19),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ConduitRun(uid="BDXPZAZE29", tag="CD-M-DATA-ENTRY", trade_size=inch(1), material=RacewayMaterial.EMT,
                service=Service.DATA, from_ref="ED-M-DATA-ENTRY", to_ref="ED-B-NET-PATCH",
                # Cross above the foundation top, then drop inside; a diagonal from
                # -6 to -45 inches passes through the concrete rather than the rim.
-               path=(pt(inch(-11), inch(376)), pt(inch(12), inch(376)),
-                     pt(inch(12), inch(376))),
+               path=(pt(inch(-11), inch(381)), pt(inch(12), inch(381)),
+                     pt(inch(12), inch(381))),
                elevations=(inch(-6), inch(-6), inch(-45))),
 ]
 
@@ -151,20 +155,21 @@ SERVICE_GROUNDING = [
 PV_GROUNDING = [
     # Hung dome-down from ED-A-PV-JB's bottom knockout, centred under the box (the MNSPD
     # mounts only by its 1/2" nipple): nipple tip at the box's 263 3/4" underside, dome to
-    # 259 5/16". Same 3/4" stand-off as the box, so it clears the box's PVC block.
+    # 259 5/16". It shares the box's derived block (overlapping blocks merge, #142).
     ElectricalDevice(uid="XQ69SAWHP0", tag="ED-A-PV-SPD", kind=DeviceKind.SPD, type_ref="ED-T-SPD-PV",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(19.325)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-A-N2B", face="right", distance_from_start=inch(94),
-                         normal_gap=inch(0.75), rotation_offset=deg(-180)))),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     # Aluminium (never copper on the Galvalume skin) on seam clips from SP-A-PV-W9 north to
-    # the rake, down the rake and the NW corner trim to 18" above grade. Confirm the PVKIT's
+    # the rake, down the rake and the NW corner trim to 18" above grade. On the panel face
+    # (342"), over the gable top: it never crosses the wall (decision #142). Confirm the PVKIT's
     # UL 2703 module-to-rail bonding before relying on the array as one conductor.
     BondingConductor(uid="BA06162ZG0", tag="BC-A-PV-DOWN", role="down_lead", from_ref="SP-A-PV-W9",
                      to_ref="BC-B-PV-TAIL", size="1/0", material="aluminum",
                      path=(pt(inch(168), inch(401)), pt(inch(168), inch(438)),
                            pt(inch(-6), inch(438)), pt(inch(-6), inch(438))),
-                     elevations=(inch(338), inch(338), inch(251), inch(-16))),
+                     elevations=(inch(342), inch(342), inch(251), inch(-16))),
     # Bimetallic transition at -16" (18" above grade), then bare Cu to GE-B-ROD-1.
     BondingConductor(uid="4W5T38PB50", tag="BC-B-PV-TAIL", role="down_lead", from_ref="BC-A-PV-DOWN",
                      to_ref="GE-B-ROD-1", size="2",

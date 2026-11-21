@@ -126,6 +126,7 @@ SHAPES: dict[str, Shape] = {
     "duct_parts": Shape("Duct collars, takeoffs, boots and connectors, by the piece"),
     "duct_supports": Shape("Duct hangers, by the piece"),
     "equipment_hangers": Shape("Equipment trapeze rod, strut and lags"),
+    "wall_penetrations": Shape("Metal-wall sleeves, boots, inlets, blocks and strut"),
     "duct_sealing": Shape("Duct mastic and tape, by the container"),
     "placeables": Shape("Fixtures, devices and equipment, by model"),
     "floor_heat": Shape("Radiant floor heat cable"),
@@ -231,7 +232,8 @@ RECIPES: dict[str, Recipe] = {
                       ("A-201",), tags_appendix=False),
     "siding": Recipe("Siding and trim", "Cladding, the WRB and furring behind it, corners, "
                      "fascia, the eave soffit and the closures.",
-                     ("envelope_layers", "edge_trim", "cladding_trim", "bug_screens", "framing",
+                     ("envelope_layers", "edge_trim", "cladding_trim", "bug_screens",
+                      "wall_penetrations", "framing",
                       "hardware", "sheet_goods",
                       "wall_structure", "solids", "allowances"),
                      ("A-201", "A-401")),

@@ -131,7 +131,8 @@ trim's leg laps the U (item 3). The model draws and bills no pads
 | Sills | Closed (6460800 / 55548XX) |
 | Eaves and rakes | Closed by the deck oversail |
 | Outside corners | Closed |
-| ERV, hydrant and VR-M-STACK sleeves | Sealed (the 4" vent leg: Dektite #4 boot on the flat, 6" sleeve to the ccSPF, 2026-11-19) |
+| ERV hoods | Sealed sleeve and four-side trim (unchanged) |
+| Every other crossing and exterior mount | Derived off `PENETRATION-STANDARD` (decision #142): sleeve to the ccSPF before the spray, then a Dektite boot on a flat, the lineset inlet, the hydrant's escutcheon, or the device's block / strut. Graded by `integrity.wall_penetration_closure`, billed in `[wall_penetrations]` |
 | `D-S-BALCONY` head | Kit drip head over the casing, as `D-M-PORCH` |
 
 ### Open with suppliers (not blocking)

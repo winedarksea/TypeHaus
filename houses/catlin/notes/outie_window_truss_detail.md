@@ -390,21 +390,24 @@ are not outlets (owner, 2026-10-28). At an opening that means:
   and the cladding's back, behind the sill trim; whatever reaches the cavity drains to the
   base. Only the J-receiver joint needs sealing; seal it at the mount plane. Sills keep
   their profile closure.
-- **Penetrations (sealed).** Hose bibs, exterior lights, the ERV hoods, the hydrants and
-  `VR-M-STACK` sleeve through the cavity; seal each sleeve to the foam and to the panel
-  (`[allowances] envelope-exterior-hoods-and-flashing`). `VR-M-STACK`'s 4" vent leg (4.5" OD,
-  2026-11-19) runs in a 6" PVC sleeve set to the sheathing. The sleeve is sealed into the
-  ccSPF, which is the WRB, with backer rod and a sealant the foam maker approves. At the
-  BBD75 flat it takes an ITW Buildex Dektite #4 EPDM boot (round, for 3-6" pipe, 9 1/4"
-  base) bedded in butyl and screwed to the flat. At x=101" the base laps the x=96" batten
-  by 5/8". Trim that edge to the batten face, which leaves 1 3/4" of seal, and confirm the
-  fit on the part. The radon leg's 3" sleeve is unchanged.
+- **Penetrations (sealed), decision #142.** Every crossing of a metal wall is derived
+  (`resolve/wall_penetrations.py`, the `WP-*` records) off `PENETRATION-STANDARD`
+  (`plan/penetrations.py`) and billed in `[wall_penetrations]`: a PVC sleeve one size over
+  the run set to the sheathing before the spray, butyl-taped, the ccSPF (the WRB) sprayed
+  to it, the annulus low-expansion PU after the run is pulled; then the panel closure (an
+  EPDM boot on a flat, the lineset cover's wall inlet, a hydrant's escutcheon, or the block a
+  device stands on). `VR-M-STACK`'s 4" vent leg (4.5" OD) takes a 6" sleeve and a Dektite #4
+  (9 1/4" base); at x=101" the base laps the x=96" batten by 5/8" and is trimmed to the
+  batten face, leaving 1 3/4" of seal (the row's `min_trimmed_seal`, graded). The radon leg
+  (3.5" OD) takes a **4"** sleeve: the old "3" sleeve" could not pass a 3.5" OD. Its #3 boot
+  (7 3/4" base) laps the x=119" batten by 3/8" and is trimmed the same way, 1 3/4" of seal.
 
 **Closure inventory** (recorded, no geometry change): jamb buck returns, hold point; sills,
 closed; eaves and rakes, closed by the roof deck oversailing the girt face; outside corners,
 closed by the Wide Outside Corner, over girt courses that butt at the corner (the
 sheathing-through wall's course runs to the outer face, the other butts its back; no added
-block or fastener); ERV, hydrant and `VR-M-STACK` sleeves, sealed;
+block or fastener); every crossing and exterior mount per `PENETRATION-STANDARD`
+(decision #142, `integrity.wall_penetration_closure`);
 `D-S-BALCONY`'s head is its catalog unit's (no kit head trim, so no strip): a hold point.
 
 The base (inlet), the band (outlet) and the panel-end strips are in `metal_trim_kit.md`,

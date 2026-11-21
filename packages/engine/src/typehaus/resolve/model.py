@@ -1844,6 +1844,9 @@ class ResolvedModel:
     # Derived 24 V leads off the house's LedStandard (→ resolve/led_leads.py, #137).
     led_leads: list[Any] = field(default_factory=list)
     linesets: list[Any] = field(default_factory=list)  # → resolve/linesets.py, #139
+    # Metal-wall crossings and exterior mounts (→ resolve/wall_penetrations.py, #142).
+    wall_penetrations: list[Any] = field(default_factory=list)
+    mount_blocks: list[Any] = field(default_factory=list)
     solar_panels: list[ResolvedSolarPanel] = field(default_factory=list)
     footing_beddings: list[ResolvedFootingBedding] = field(default_factory=list)
     # Pour slab uid -> (authored outline, authored voids, voids after the clip): the floor a

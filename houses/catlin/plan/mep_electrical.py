@@ -586,7 +586,8 @@ ATTIC_DEVICES = [
 #   * GABLE ENCLOSURE MOUNTING (both boxes): a 3/4" cellular-PVC block, 1" larger than the
 #     box all round, centred on the 22'-0" girt course (264"-267 1/2") and screwed through a
 #     panel flat into the KDAT with two gasketed screws in one row. The box screws to the
-#     block, so its own hole pattern never has to fit a 3 1/2" course (normal_gap 3/4").
+#     block, so its own hole pattern never has to fit a 3 1/2" course. The block and the
+#     stand-off are DERIVED (PENETRATION-STANDARD, decision #142; MB-<device> records).
 #   * Fed on CKT-RC-ATTIC (15 A AFCI, slot 47) by NM off ED-A-POCKET-RC1's run in RM-A-POCKET,
 #     through a short sealed nipple behind the box: ccSPF and sheathing foamed, the panel
 #     hole under the block. Not modelled, like every NM branch.
@@ -597,7 +598,7 @@ NEMA_BOX = [
                      mount=Mount(kind=MountKind.WALL, elevation=inch(24.25)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-A-N2", face="right", distance_from_start=inch(14),
-                         normal_gap=inch(0.75), rotation_offset=deg(0)))),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
 ]
 # No clamp: the block's two gasketed screws per enclosure are inside the field-grid count
 # (``takeoff.fasteners``). An S-5! seam clamp has no seam to close on here.

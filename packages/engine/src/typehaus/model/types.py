@@ -1061,6 +1061,9 @@ class ElectricalDeviceType(FurnitureType, DeviceElectricalFacts):
     # A blank-face (deadfront) GFCI: protects what its load side feeds (`gfci_ref`) and is
     # no receptacle, so no 210.52 rule counts it.
     deadfront: bool = False
+    # On a metal wall's cladding face (decision #142): a derived cellular-PVC block, or a
+    # strut pair for a heavy enclosure (the meter-main and what rides it).
+    exterior_mount: Literal["block", "strut"] = "block"
     # Connected load in volt-amps; summed per circuit by the panel-schedule takeoff.
     load_va: float | None = None
     output_voltage: int | None = None  # DC supplies; distinct from branch voltage

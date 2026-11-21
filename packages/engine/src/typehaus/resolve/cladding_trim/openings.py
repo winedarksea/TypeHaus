@@ -188,7 +188,8 @@ def window_trim_solids(model, wall, opening, frame, material, seat=None):
 
 # Buck + membrane + shim around a rough opening that carries no window unit.
 _RO_LINING_M = 0.645 * 0.0254
-# A penetration this small is closed by its fixture's own flange and sealant, not by trim.
+# A penetration this small takes no four-side trim: its sleeve and panel closure are derived
+# by resolve/wall_penetrations.py (decision #142).
 SMALL_PENETRATION_M = 6 * 0.0254
 
 

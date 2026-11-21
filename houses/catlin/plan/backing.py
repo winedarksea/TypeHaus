@@ -286,8 +286,8 @@ MAIN_BACKING = [
     # too while the hydrant still stood on stud-006 at 144".
     WallBacking(uid="HTKFF371E9", tag="BK-M-S1-HYD", wall_ref="W-M-S1",
                 start=inch(144.75), length=inch(13.25),
-                elevation=inch(21), height=inch(7.25), profile="2x8",
-                material_ref="spf", purpose="wall hydrant seat (FX-M-PORCH-HYD, 24 in.)"),
+                elevation=inch(19), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="wall hydrant seat (FX-M-PORCH-HYD, 22 in.)"),
     # W-M-STRW's coat-nook hook rails: painted poplar 1x4 between the exposed studs, flat on
     # the back of the 1/2" MDO (the "left", stair-side, stud face). Bottoms 42"/60" AFF; the
     # LVP stands +1". Visible trim, not concealed backing (reviewer, 2026-10-23). The low rail

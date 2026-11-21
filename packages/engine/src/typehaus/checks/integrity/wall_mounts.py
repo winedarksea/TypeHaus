@@ -193,7 +193,10 @@ def _declared_gap(ctx: CheckContext, obj: ResolvedCanvasObject) -> float:
     attachment = getattr(getattr(element, "location", None), "attachment", None)
     gap = max(0.0, attachment.normal_gap.meters) if attachment is not None else 0.0
     box = boxes_by_device(ctx.model).get(obj.tag)
-    return gap + (box.plate_thickness_m if box is not None else 0.0)
+    mount = next((m for m in ctx.model.mount_blocks if m.kind != "strap_block"
+                  and obj.tag in m.holds), None)  # its derived block or strut (#142)
+    return (gap + (box.plate_thickness_m if box is not None else 0.0)
+            + (mount.depth_m if mount is not None else 0.0))
 
 
 @check(Tier.INTEGRITY, _BELOW)

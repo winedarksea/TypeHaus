@@ -69,7 +69,7 @@ _SECTIONS = ("framing", "sheet_goods", "hardware", "concrete", "site", "solids",
              "freeze_protection",
              "edge_trim",
              # Metal Sales trim by part and stock length, with closures, sealant, fasteners.
-             "cladding_trim",
+             "cladding_trim", "wall_penetrations",
              # Rainscreen insect screens, panel-end strips and their pads, by the foot.
              "bug_screens",
              # Joist/beam tape by the foot. See ``Prices.member_protection``.
@@ -178,6 +178,7 @@ ALTERNATE_UNITS: dict[str, dict[str, str]] = {
     # the foot of stock. The default stays LF, which is how mill lengths are quoted.
     "steel_members": {"ea": "count"},
     "cladding_trim": {"ea": "count", "LF": "length_ft"},
+    "wall_penetrations": {"LF": "length_ft", "SF": "area_sf"},
     # A retaining wall and a brick veneer are sold by the square foot of FACE, and neither is
     # ready-mix; ``net_area_sqft`` is the face the takeoff already measured.
     "wall_structure": {"SF": "net_area_sqft", "ea": "count"},
@@ -357,6 +358,7 @@ class Prices:
     # name): `ea` prices a stock piece, supply fastener or cleat; `LF` a custom cut,
     # closure, tape or sealant bead.
     cladding_trim: Mapping[str, PriceRange] = field(default_factory=dict)
+    wall_penetrations: Mapping[str, PriceRange] = field(default_factory=dict)
     bug_screens: Mapping[str, PriceRange] = field(default_factory=dict)
     # Self-adhered framing-top membrane by the lineal foot, keyed on the catalog material tag
     # the deck or beam names in ``top_protection``. Priced per foot of MEMBER, not per foot of

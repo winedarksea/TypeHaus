@@ -7,7 +7,8 @@
 #   * HP1: west off the valves, up beside the cabinet's west end, east above it into
 #     W-M-N1's 304-320 bay (no window; west of ED-M-LIVING-KET1's box), up through both storeys'
 #     plates into FS-ATTIC's north bay, up through the deck and over to the AH's ports.
-#   * HP2: three sets side by side (x 380-393) through FS-M-EAST's rim east of the
+#   * HP2: three sets, one per W-M-S2 batten bay (x 380/392/404, 12" c-c, decision #142),
+#     through FS-M-EAST's rim east of the
 #     cabinet, between W-M-S2's starter girt and the next course, into its south bay, each
 #     level or rising inward through the wall so water runs out. GYM west at y 12 (behind
 #     BED's corner), back to y 9 and down beside the head; BED west past the
@@ -66,8 +67,8 @@ LINESETS_MAIN = [
     PipeRun(uid="F5MDC6F8QB", tag="PR-B-RFG-HP2-GYM", system=PipeSystem.REFRIGERANT, serves=("EQ-B-HP2-GYM",),
             outdoor_port="A", material="copper_acr", diameter=inch(0.375),
             liquid_diameter=inch(0.25),
-            path=(pt(inch(376.16), inch(-25.86)), pt(inch(393), inch(-25.86)),
-                  pt(inch(393), inch(-10)), pt(inch(393), inch(12)),
+            path=(pt(inch(376.16), inch(-25.86)), pt(inch(404), inch(-25.86)),
+                  pt(inch(404), inch(-10)), pt(inch(404), inch(12)),
                   pt(inch(234.75), inch(12)), pt(inch(231.75), inch(9)),
                   pt(inch(221.25), inch(9)), pt(inch(221.25), inch(9))),
             elevations=(inch(-10), inch(-10), inch(-6.1), inch(-5.5), inch(-7), inch(-7),
@@ -75,16 +76,16 @@ LINESETS_MAIN = [
     PipeRun(uid="660NG5X4HJ", tag="PR-M-RFG-HP2-BED", system=PipeSystem.REFRIGERANT, serves=("EQ-M-HP2-BED",),
             outdoor_port="B", material="copper_acr", diameter=inch(0.375),
             liquid_diameter=inch(0.25),
-            path=(pt(inch(376.16), inch(-25.86)), pt(inch(385.25), inch(-25.86)),
-                  pt(inch(385.25), inch(9)), pt(inch(206.35), inch(9)),
+            path=(pt(inch(376.16), inch(-25.86)), pt(inch(392), inch(-25.86)),
+                  pt(inch(392), inch(9)), pt(inch(206.35), inch(9)),
                   pt(inch(200.6), inch(3.25)), pt(inch(200.6), inch(3.25))),
             elevations=(inch(-7), inch(-7), inch(-3.25), inch(-3.25), inch(-3.25),
                         inch(89.5))),
     PipeRun(uid="RZ435RNK9F", tag="PR-M-RFG-HP2-LIVING", system=PipeSystem.REFRIGERANT,
             serves=("EQ-M-HP2-LIVING",), outdoor_port="C", material="copper_acr",
             diameter=inch(0.375), liquid_diameter=inch(0.25),
-            path=(pt(inch(376.16), inch(-25.86)), pt(inch(380.25), inch(-25.86)),
-                  pt(inch(380.25), inch(3.1)), pt(inch(359.4), inch(3.1)),
+            path=(pt(inch(376.16), inch(-25.86)), pt(inch(380), inch(-25.86)),
+                  pt(inch(380), inch(3.1)), pt(inch(359.4), inch(3.1)),
                   pt(inch(359.4), inch(3.1)), pt(inch(355.4), inch(5)),
                   pt(inch(256.7), inch(5)), pt(inch(252.7), inch(3.1)),
                   pt(inch(252.7), inch(3.1))),
@@ -99,13 +100,15 @@ LINESETS_MAIN = [
                   pt(inch(136), inch(429.1)), pt(inch(136), inch(426.9))),
             elevations=(inch(-10), inch(-10), inch(-10), inch(102.5), inch(102.5),
                         inch(102.5), inch(36), inch(34))),
-    # The framed-wall holes (sleeved, sloped out, sealed to the air barrier). HP2's three sets
-    # cross FS-M-EAST's LSL rim below the wall, each in its own TJ-8000 rim hole: a floor
+    # The framed-wall holes, sized to the derived PVC sleeve (decision #142: sleeved at the
+    # sheathing, ccSPF sprayed to it, the cover's wall inlet outside): HP1 its 3" sleeve's
+    # 3 1/2" OD; HP3 3", over its 2" sleeve, to pass the run's 2 3/4" lagged envelope.
+    # HP2's three sets cross FS-M-EAST's LSL rim below the wall, each in its own TJ-8000 rim hole: a floor
     # penetration, not a wall RoughOpening (one there frames a header into the plates).
-    RoughOpening(uid="5XPG5EHW9R", tag="AO-M-RFG-HP1", host="W-M-N1", position=from_node("N-M-NE", inch(122.125)),
-                 width=inch(4), height=inch(4), sill_height=inch(28),
+    RoughOpening(uid="5XPG5EHW9R", tag="AO-M-RFG-HP1", host="W-M-N1", position=from_node("N-M-NE", inch(122.375)),
+                 width=inch(3.5), height=inch(3.5), sill_height=inch(28.25),
                  penetration_for=("PR-A-RFG-HP1",)),
-    RoughOpening(uid="JRPGX9HKB5", tag="AO-M-RFG-HP3", host="W-M-N2", position=from_node("N-M-N1", inch(78)),
-                 width=inch(4), height=inch(4), sill_height=inch(100.5),
+    RoughOpening(uid="JRPGX9HKB5", tag="AO-M-RFG-HP3", host="W-M-N2", position=from_node("N-M-N1", inch(78.5)),
+                 width=inch(3), height=inch(3), sill_height=inch(101),
                  penetration_for=("PR-M-RFG-HP3-STAIR",)),
 ]

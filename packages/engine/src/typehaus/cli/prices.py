@@ -138,6 +138,8 @@ ESTIMATE_PLANS = (
     ("freeze_protection", "freeze_protection", "spec", "length_ft", "LF"),
     ("edge_trim", "edge_trim", "category", "length_ft", "LF"),
     ("cladding_trim", "cladding_trim", "part", "count", "ea"),
+    # Sleeves, boots, inlets each; blocks by the SF of sheet, strut by the LF (#142).
+    ("wall_penetrations", "wall_penetrations", "product", "count", "ea"),
     # Rainscreen insect screens and panel-end strips by the foot, keyed on the kind.
     ("bug_screens", "bug_screens", "kind", "length_ft", "LF"),
     # Framing-top membrane by the foot, keyed on the material tag. Mirrors nothing: `framing`

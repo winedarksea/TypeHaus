@@ -1127,7 +1127,7 @@ PV_JBOX = [
                      mount=Mount(kind=MountKind.WALL, elevation=inch(23.75)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-A-N2B", face="right", distance_from_start=inch(94),
-                         normal_gap=inch(0.75), rotation_offset=deg(-180)))),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
 ]
 # ** THERE IS NO CN-A-PV-CLAMP. ** W-A-N2 is BBD75 board-and-batten, with no seam to
 # clamp, so a seam clamp there is uninstallable. The box screws to a PVC block that

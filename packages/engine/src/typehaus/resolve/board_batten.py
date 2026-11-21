@@ -278,14 +278,9 @@ def _fold(footprints, height_regions, holes, section, sheet_thickness_m, pitch_m
 def resolve_profiled_metal_surfaces(model) -> None:
     """Attach declared panel-profile meshes after openings, bands and roof closures resolve."""
     finishes = {material.tag: material.finish for material in model.plan.library.materials}
-    lines = {
-        member.wall_tag: (
-            line.origin,
-            (line.origin[0] + line.direction[0], line.origin[1] + line.direction[1]),
-        )
-        for line in model.layout_lines
-        for member in line.members
-    }
+    from typehaus.resolve.panel_flats import layout_datums
+
+    lines = layout_datums(model)
     walls = {wall.uid: wall for wall in model.walls}
     support_clearances = {}
     closures = {}

@@ -45,6 +45,7 @@ SECTION_LABELS: dict[str, str] = {
     "linesets": "Refrigerant linesets",
     "edge_trim": "Edge trim and flashing", "member_protection": "Member protection tape",
     "cladding_trim": "Cladding and roof-edge trim",
+    "wall_penetrations": "Metal-wall penetrations and mounts",
     "bug_screens": "Rainscreen insect screens",
     "fireblock_sealant": "Firestop sealant",
     "drywall_trims": "Drywall beads and LED profiles",
@@ -343,6 +344,8 @@ def _label(section: str, bare: str, row: Mapping[str, Any], labels: LabelIndex) 
         return f"{str(g('hanger') or 'hanger').capitalize()} hanger, {g('size')} duct"
     if section == "equipment_hangers":
         return f"Equipment trapeze {g('item')}"
+    if section == "wall_penetrations":
+        return f"Metal-wall {g('item')}"
     if section == "duct_sealing":
         return f"Duct {g('use') or 'sealant'}"
     if section == "duct_insulation":

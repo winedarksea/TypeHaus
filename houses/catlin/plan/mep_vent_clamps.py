@@ -30,8 +30,9 @@ from typehaus import Connector, ConnectorKind, ft, inch, pt
 #   top strap, 17.6" above the radon's.
 # * FITTING: 3" elbow hub top ~288"; the 4" vent elbow's ~289.5", under its lifted strap.
 #   Confirm both on the elbows delivered; exit stays 23'-8" (option (a), DESIGN-LOG).
-# * WALL PENETRATION: the 4" vent in a 6" PVC sleeve sealed to the ccSPF (the WRB), a Dektite
-#   #4 boot on the flat (`notes/outie_window_truss_detail.md`).
+# * WALL PENETRATION and BLOCKS are DERIVED (decision #142, PENETRATION-STANDARD): the
+#   WP-VR-M-STACK-* records (6" / 4" sleeves, Dektite #4 / #3 boots) and the MB-CN-* strap
+#   blocks (level on the course or raked under the hem), billed in [wall_penetrations].
 # * PAINT: both exterior PVC legs, exterior water-based latex (Linen White) per IAPMO IS 9 /
 #   Charlotte Pipe UV guidance. Never oil-based.
 # * FAN, if ever fitted: in-line on rubber couplings just above the elbow, its bracket on

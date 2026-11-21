@@ -251,9 +251,13 @@
     "leader_extension": 15132384,
     "led_tape": 16772024,
     "ledger": 11041356,
+    "lineset_cover": 15592936,
+    "lineset_inlet": 15592936,
     "lining": 15131611,
     "main_shutoff": 12096583,
     "membrane": 5010316,
+    "mount_block": 15922672,
+    "mount_strut": 11054512,
     "movement_joint": 7561556,
     "newel": 10054466,
     "oak_bookcase": 13217932,
@@ -268,6 +272,7 @@
     "panel_strap": 12106431,
     "partition": 11699540,
     "passage_return": 15592419,
+    "penetration_boot": 2369065,
     "penetration_seal": 15906905,
     "pipe_drain": 3355448,
     "pipe_gas": 14270259,
@@ -346,6 +351,7 @@
     "wall_corner": 12567756,
     "wall_end_board": 15592419,
     "wall_plate": 14408662,
+    "wall_sleeve": 15592936,
     "water_hammer_arrestor": 10396584,
     "winder": 11699540,
     "window_return": 15592419,
@@ -486,9 +492,13 @@
     "leader_extension": 15132384,
     "led_tape": 16772024,
     "ledger": 11041356,
+    "lineset_cover": 15592936,
+    "lineset_inlet": 15592936,
     "lining": 15131611,
     "main_shutoff": 12096583,
     "membrane": 5010316,
+    "mount_block": 15922672,
+    "mount_strut": 11054512,
     "movement_joint": 7561556,
     "newel": 10054466,
     "oak_bookcase": 13217932,
@@ -503,6 +513,7 @@
     "panel_strap": 12106431,
     "partition": 11699540,
     "passage_return": 15592419,
+    "penetration_boot": 2369065,
     "penetration_seal": 15906905,
     "pipe_drain": 3355448,
     "pipe_gas": 14270259,
@@ -581,6 +592,7 @@
     "wall_corner": 12567756,
     "wall_end_board": 15592419,
     "wall_plate": 14408662,
+    "wall_sleeve": 15592936,
     "water_hammer_arrestor": 10396584,
     "winder": 11699540,
     "window_return": 15592419,
@@ -742,8 +754,20 @@
     "leader_extension": [
       "drainage"
     ],
+    "lineset_cover": [
+      "mechanical"
+    ],
+    "lineset_inlet": [
+      "mechanical"
+    ],
     "main_shutoff": [
       "plumbing"
+    ],
+    "mount_block": [
+      "siding"
+    ],
+    "mount_strut": [
+      "electrical"
     ],
     "movement_joint": [
       "masonry"
@@ -768,6 +792,9 @@
     ],
     "passage_return": [
       "drywall"
+    ],
+    "penetration_boot": [
+      "siding"
     ],
     "penetration_seal": [
       "plumbing"
@@ -907,6 +934,9 @@
     "wall_plate": [
       "electrical"
     ],
+    "wall_sleeve": [
+      "siding"
+    ],
     "water_hammer_arrestor": [
       "plumbing"
     ],
@@ -966,7 +996,11 @@
     "insulation": "insulation",
     "insulation_wrap": "mechanical",
     "leader_extension": "drainage",
+    "lineset_cover": "mechanical",
+    "lineset_inlet": "mechanical",
     "main_shutoff": "plumbing",
+    "mount_block": "siding",
+    "mount_strut": "electrical",
     "movement_joint": "masonry",
     "opening_flashing_membrane": "openings",
     "opening_head_flashing": "siding",
@@ -975,6 +1009,7 @@
     "pad": "concrete",
     "panel_strap": "roofing",
     "passage_return": "drywall",
+    "penetration_boot": "siding",
     "penetration_seal": "plumbing",
     "pipe_drain": "plumbing",
     "pipe_gas": "plumbing",
@@ -1021,6 +1056,7 @@
     "wall_corner": "siding",
     "wall_end_board": "drywall",
     "wall_plate": "electrical",
+    "wall_sleeve": "siding",
     "water_hammer_arrestor": "plumbing",
     "window_return": "drywall"
   },

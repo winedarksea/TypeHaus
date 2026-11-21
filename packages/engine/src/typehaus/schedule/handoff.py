@@ -32,9 +32,9 @@ _BY_TRADE: dict[str, tuple[str, ...]] = {
     "framing": ("braced_walls", "rough_openings", "post_bases"),
     "openings": ("rough_openings", "window_order"),
     "roofing": ("roof_penetrations",),
-    "spray_foam": ("roof_penetrations",),
+    "spray_foam": ("roof_penetrations", "wall_penetrations"),
     "insulation": ("roof_penetrations",),
-    "siding": ("roof_penetrations",),
+    "siding": ("roof_penetrations", "wall_penetrations"),
     "plumbing": ("sleeves", "wall_sleeves_plumbing", "radon"),
 }
 
@@ -322,7 +322,25 @@ def roof_penetrations_item(model: Any) -> list[HandoffItem]:
         sheet_ref="A-201", derived=evidence)]
 
 
+def wall_penetrations(model: Any) -> list[HandoffItem]:
+    """Metal-wall sleeves set at the sheathing BEFORE the spray, per wall (decision #142)."""
+    found: dict[str, list[Any]] = {}
+    for pen in getattr(model, "wall_penetrations", []) or []:
+        if pen.sleeve_d_m and pen.sleeve_ref is None:
+            found.setdefault(pen.wall_tag, []).append(pen)
+    return [HandoffItem(
+        id=f"wall_penetrations:{wall}",
+        label=(f"HOLD before the spray: {len(pens)} sleeve(s) set and butyl-taped to the "
+               f"sheathing of {wall}"),
+        count=len(pens), element_tags=tuple(sorted(p.run_tag for p in pens)),
+        scope_tags=(wall,),
+        derived=("model.wall_penetrations, by wall: each crossing is found by geometry and "
+                 "sleeved off PENETRATION-STANDARD; the ccSPF is sprayed to the sleeve"))
+        for wall, pens in sorted(found.items())]
+
+
 _PROBES = {
+    "wall_penetrations": wall_penetrations,
     "sleeves": sleeves,
     "wall_sleeves_plumbing": lambda model: _wall_sleeves(model, "plumbing"),
     "wall_sleeves_mechanical": lambda model: _wall_sleeves(model, "mechanical"),

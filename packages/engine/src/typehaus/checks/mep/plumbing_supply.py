@@ -385,10 +385,16 @@ def exterior_hydrant_protection(ctx: CheckContext) -> list[Finding]:
             continue
         sleeved = "".join(f"; sleeved by {s.tag} ({s.seal}; {s.insulation})"
                           for s in sleeves)
+        # Unsleeved by an author: the metal-wall stage's derived sleeve covers it (#142).
+        derived = [] if sleeves else sorted(
+            p.tag for p in ctx.model.wall_penetrations
+            if p.device_ref == hydrant and p.sleeve_d_m and p.sleeve_ref is None)
+        sleeved += "".join(f"; sleeved by derived {tag} (foamed at the ccSPF)"
+                           for tag in derived)
         out.append(_pass(
             cid, f"wall hydrant {hydrant} is envelope-protected: insulated on "
                  f"{', '.join(sorted(insulated))}, sealed with {', '.join(kit)}{sleeved}",
-            (hydrant, *sorted(s.tag for s in seals), *(s.tag for s in sleeves))))
+            (hydrant, *sorted(s.tag for s in seals), *(s.tag for s in sleeves), *derived)))
     return out
 
 

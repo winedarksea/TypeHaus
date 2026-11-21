@@ -27,6 +27,17 @@ the future.
   now carry `ResolvedJunction.sheathing_through`, which a layout pass would read. Cladding, WRB,
   foam and finish layers still bill off the node axis.
 
+### Left out of decision #142 (metal-wall penetrations)
+
+- **The utility lateral** ends 11'-9" south of the meter-main with no riser modelled.
+- **`GND-CLIP-S5`** is a seam clamp, but PBR has no seam to close on.
+- **The SER feeders** have no element, so the meter's nipples and their boots are not derived.
+- **HP1's outdoor unit** overlaps WIN-M-KITCH by 2.5" in plan.
+- **`CD-M-DATA-PORCH`** cites a deleted `SP-SG-PORCH-ELEC`.
+- **Through-panel strap fasteners** (strap to block, block-to-device) stay in the field-grid count; only the strap block's two 6" through-screws bill in `[wall_penetrations]`.
+- **Dektite #2** has no row: no published US listing for it was found (2026-11-20), so a pipe
+  between #1 and #3 takes the #3.
+
 ### From the 2026-09-10 `plans/notes.md` triage
 
 - **Low-voltage devices still unmodelled:** the doorbell, both cameras, the leak probe and

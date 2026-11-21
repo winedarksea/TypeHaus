@@ -293,7 +293,7 @@ SUPPLY_DEVICES_GARAGE = [
 SUPPLY_DEVICES_MAIN = [
     PipeAccessory(uid="A5VK7BND3T", tag="PA-M-PORCH-HYD-SEAT",
                   kind=PipeAccessoryKind.SHUTOFF, pipe_ref="PR-M-CW-PORCH-HYD",
-                  position=pt(ft(12, 8), ft(0, 3.25)), elevation=ft(2), room="RM-M-BED",
+                  position=pt(ft(12, 8), ft(0, 3.25)), elevation=inch(22), room="RM-M-BED",
                   model="hydrant's own compression seat, inboard end of the barrel",
                   serves=("FX-M-PORCH-HYD",)),
     # The penetration itself: says "protected by the envelope, not bury depth", which

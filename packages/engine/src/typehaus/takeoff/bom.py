@@ -93,6 +93,7 @@ from typehaus.takeoff.stairs import stair_finish_takeoff, stair_tread_takeoff
 from typehaus.takeoff.steel import steel_members_takeoff
 from typehaus.takeoff.track_lighting import track_lighting_materials
 from typehaus.takeoff.trim_paint import trim_paint_rows
+from typehaus.takeoff.wall_penetrations import wall_penetration_takeoff
 from typehaus.takeoff.wall_structure import wall_structure_takeoff
 from typehaus.takeoff.wood_surfaces import wood_surfaces_takeoff
 
@@ -212,6 +213,8 @@ def bill_of_materials(
         # of aluminium is not an order.
         "edge_trim": edge_trim_takeoff(model),
         "cladding_trim": cladding_trim_takeoff(model),
+        # Metal-wall sleeves, boots, inlets, blocks and strut (#142).
+        "wall_penetrations": wall_penetration_takeoff(model),
         # Joist/beam tape by the foot of member it covers. Neither `framing` (sticks by
         # profile, house-wide) nor `structural_solids` (beams by the yard) can address
         # "the two garden decks' joists", so nothing could bill the membrane that keeps

@@ -168,6 +168,16 @@ from typehaus.model.opening_size import OpeningSize
 from typehaus.model.opening_supports import OpeningFrameEndSupports
 from typehaus.model.paint import PaintSpec, PaintStandard
 from typehaus.model.paneling import BoardAndBatten, PanelingSpan, PanelingSubstrate, WallPaneling
+from typehaus.model.penetrations import (
+    BondSleeveRow,
+    BootRow,
+    LinesetInletRow,
+    MountBlockRow,
+    PenetrationSleeveRow,
+    PenetrationStandard,
+    StrapBlockRow,
+    StrutRow,
+)
 from typehaus.model.placeables import (
     ClearancePolicy,
     ClearanceZone,
@@ -489,6 +499,8 @@ __all__ = [
     "GroundingStandard", "GroundingElectrode", "BondingConductor", "ServiceEntrance",
     "LabelStandard", "LedCable", "LedChannel", "LedController", "LedStandard", "LedStrip",
     "LinesetStandard", "RefrigerantLimits",
+    "PenetrationStandard", "PenetrationSleeveRow", "BondSleeveRow", "BootRow", "StrapBlockRow",
+    "LinesetInletRow", "MountBlockRow", "StrutRow",
     "DuctStandard", "RoundGaugeRow", "DuctElbowRow", "DuctPartRow", "DuctSupportRow", "PortKit",
     "RectElbowRow",
     "Sump", "SumpPump", "VentRun", "VentIncreaser",

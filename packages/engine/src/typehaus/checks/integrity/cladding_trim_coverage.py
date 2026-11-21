@@ -40,9 +40,14 @@ def _window_like(ctx, pieces):
     for opening, wall in metal_wall_openings(model, kinds=("window", "rough_opening")):
         small = max(opening.width_m, opening.height_m) < SMALL_PENETRATION_M
         if opening.kind == "rough_opening" and small:
+            record = next((p.tag for p in model.wall_penetrations
+                           if p.opening_ref == opening.tag), None)
             findings.append(not_applicable(
-                COVERAGE, "a penetration under 6 in is closed by its fixture's own flange",
-                (opening.tag,)))
+                COVERAGE, "a penetration under 6 in takes no trim: its sleeve and panel "
+                          "closure are " + (f"derived ({record}, "
+                                            "integrity.wall_penetration_closure)"
+                                            if record else "the wall-penetration stage's"),
+                (opening.tag, *((record,) if record else ()))))
             continue
         frame = opening_flashing_frame(model, wall)
         seat = opening.window_seat

@@ -98,6 +98,7 @@ ALL_ELECTRICAL_DEVICE_TYPES = (
         service_amps=320,
         plan_symbol="meter",
         model_representation=ModelRepresentation(symbol="meter-main-class320"),
+        exterior_mount="strut",  # a 36" can hangs on a strut pair, never on a block (#142)
     ),
     _device(
         "ED-T-DISCONNECT-3R",

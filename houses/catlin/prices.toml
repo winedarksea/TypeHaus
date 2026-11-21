@@ -1417,8 +1417,8 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # 4.0" OD) and the north-gable vent riser (#11, 3.5" OD). A commodity 316 stainless two-hole
 # strap, ~$2-4. Per POINT the row is meant to cover the strap, a laminated 5" cellular-PVC
 # block, two 6" 316 through-screws and sealant (plan/mep_vent_clamps.py, 2026-11-15).
-# ** UNDERSTATED: ** this range was set for a strap and two T09150HWAM screws; it does not
-# cover the 5" block and two 6" 316 screws as well. Not re-researched — re-price it.
+# The 5" laminated block and its two 6" 316 through-screws bill in [wall_penetrations] since
+# 2026-11-20 (decision #142, derived MB-CN-* records), so this row is the strap alone.
 # The #11 points are on W-A-N2, BBD75 board-and-batten, screwed through a panel flat.
 "SS316-STANDOFF-STRAP #11" = { low = 2.5, high = 4.5 }  # 2 ea — the radon pipe on W-A-N2
 # The 4" vent head (4.5" OD) since 2026-11-19: the #13 rate a size up; same understatement.
@@ -6547,6 +6547,30 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "PROD-UNISTRUT-P1000-PG" = { low = 4.25, high = 11.40, unit = "LF" } # ~10.5 LF — 2 struts + 4 bridges
 "PROD-LAG-1-4X1-1-2-ZN" = { low = 0.20, high = 0.60 }                # 8 ea — two per bridge
 
+[wall_penetrations]
+# NEW 2026-11-20 — decision #142, material only: the siding crew's install is inside its
+# cladding rate. ESTIMATES, not quotes and not fetched: commodity retail ranges for the part
+# named. Sleeves are per piece (each ~7" cut from stick; a stick is a few dollars), blocks
+# by the SF of 3/4" cellular PVC sheet they use (a 4x8 sheet ~$110-180 -> $3.40-5.60/SF),
+# strut by the foot (the [equipment_hangers] P1000 range).
+"PROD-PVC-SLEEVE-0-75" = { low = 0.50, high = 1.50 }
+"PROD-PVC-SLEEVE-1-5" = { low = 1.00, high = 2.50 }
+"PROD-PVC-SLEEVE-2" = { low = 1.25, high = 3.00 }
+"PROD-PVC-SLEEVE-3" = { low = 2.00, high = 5.00 }
+"PROD-PVC-SLEEVE-4" = { low = 3.00, high = 7.00 }
+"PROD-PVC-SLEEVE-6" = { low = 6.00, high = 14.00 }
+"PROD-DEKTITE-1" = { low = 9.00, high = 18.00 }
+"PROD-DEKTITE-3" = { low = 15.00, high = 28.00 }
+"PROD-DEKTITE-4" = { low = 20.00, high = 35.00 }
+"PROD-LINESET-WALL-INLET" = { low = 8.00, high = 20.00 }
+"PROD-CELLULAR-PVC-SHEET-3-4" = { low = 3.40, high = 5.60, unit = "SF" }
+"PROD-UNISTRUT-P1000-PG" = { low = 4.25, high = 11.40, unit = "LF" }
+"PROD-UNISTRUT-P1006" = { low = 0.60, high = 1.50 }
+"PROD-SS316-WOOD-SCREW-6" = { low = 1.00, high = 2.50 }
+"PROD-URETHANE-SEALANT" = { low = 9.00, high = 16.00 }
+"PROD-BUTYL-TAPE-1" = { low = 8.00, high = 18.00 }
+"PROD-AIR-WALL-SEAL-FOAM" = { low = 8.00, high = 15.00 }
+
 [sleeves]
 # RESEARCHED 2026-08-08 — [low, high] $ each, by sleeve diameter. Derived, not quoted: each
 # range is the sleeve's own average length (total_length_ft / count from the takeoff) times
@@ -8109,9 +8133,10 @@ site-scaffolding-and-lift-rental = { low = 3000, high = 8000 }
 #            [placeables] at $175-415 each. Buying "the HRV hood" here bills them twice.
 # What is left is the FLASHING AND AIR-SEALING RESIDUAL at the penetrations that do exist —
 # the two ERV hoods, the exterior hose bibs and the dryer-less wall — which is a detail and a
-# tube of sealant per opening, not a hood purchase. Also VR-M-STACK's two W-A-N2 sleeves
-# (2026-11-19): a Dektite #4 boot (~$20-35) and 6" PVC sleeve on the 4" vent, inside the range.
-envelope-exterior-hoods-and-flashing = { low = 200, high = 500 }
+# tube of sealant per opening, not a hood purchase. ** SHRUNK 2026-11-20 (decision #142) to
+# the two ERV hoods' residual: ** every other crossing's sleeve, boot, inlet, block, sealant
+# and foam now bills in [wall_penetrations], off the derived records.
+envelope-exterior-hoods-and-flashing = { low = 60, high = 150 }
 # NEW 2026-08-31 — the garage's corrugated closure strips, and they are NOT optional trim.
 # A 7/8" corrugated panel over a flat sheathing face leaves an open flute at every top and
 # bottom termination: a VENTED (inside) closure at the base, so the cavity drains and vents
@@ -8920,6 +8945,7 @@ duct_parts           = "material"
 duct_supports        = "material"
 duct_sealing         = "material"
 equipment_hangers    = "material"
+wall_penetrations    = "material"
 sleeves              = "material"
 conduit              = "material"
 conduit_fittings     = "material"

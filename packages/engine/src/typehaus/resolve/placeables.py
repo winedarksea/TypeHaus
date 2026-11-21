@@ -14,6 +14,7 @@ from typehaus.model.plan import PlanModel
 from typehaus.resolve.device_banks import PendingBox, place_banks
 from typehaus.resolve.device_boxes import plan_box
 from typehaus.resolve.model import ResolvedCanvasObject, ResolvedModel, Ring
+from typehaus.resolve.mount_blocks import plan_standoff
 from typehaus.resolve.placeable_clear_floor_obstruction import (
     CLEAR_FLOOR_SPACE_OBSTRUCTION_THRESHOLDS,
     ClearFloorSpaceObstruction,
@@ -139,12 +140,16 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                        if profile.body_height_m is not None else None)
             band = (body_z0, body_z1 if body_z1 is not None else body_z0)
             box = plan_box(model, item, product_type, band) if attachment is not None else None
+            standoff = (plan_standoff(model, item, product_type, band)
+                        if attachment is not None else None)
             if attachment is not None:
                 # Second pass: the finish face over the body's own band, not the tallest
-                # layer anywhere on the wall. A surface box stands the device off it.
+                # layer anywhere on the wall. A surface box, or a metal wall's derived
+                # block or strut (#142), stands the device off it.
                 center, rotation, _, _ = resolve_location(
                     item, model, findings, local_footprint, band=band,
-                    extra_gap_m=box.projection_m if box is not None else 0.0)
+                    extra_gap_m=(box.projection_m if box is not None else 0.0)
+                    + (standoff.depth_m if standoff is not None else 0.0))
                 resolved_room = _containing_room(room_shapes, center) or resolved_room
             footprint = _transformed_polygon(local_footprint, center, rotation)
             if box is not None:

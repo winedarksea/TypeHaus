@@ -89,14 +89,14 @@ SECOND_LIGHTING = [
                      type_ref="ED-T-LEV-GFCI-WR", circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(18)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-S2", face="right", distance_from_start=inch(79),
+                         wall_ref="W-S-S2", face="right", distance_from_start=inch(82),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="9MMKJPKNEW", tag="ED-S-BALCONY-LT", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-SCONCE-EXT", circuit="CKT-LT-UPPER",
                      controlled_by=("ED-S-STUDY2-SW-BALCONY",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(7)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-S2", face="right", distance_from_start=inch(80),
+                         wall_ref="W-S-S2", face="right", distance_from_start=inch(83),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="YJJ1BVX3AZ", tag="ED-S-STUDY2-SW-BALCONY", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW1", circuit="CKT-LT-UPPER", room="RM-S-STUDY2",

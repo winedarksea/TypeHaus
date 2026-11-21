@@ -243,6 +243,14 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "duct_connector": (0.300, 0.310, 0.320, 1.0),  # flex / vibration connector, a dark sleeve
     "duct_support": (0.420, 0.440, 0.460, 1.0),    # strap or rod, darker than the duct
     "equipment_hanger": (0.420, 0.440, 0.460, 1.0),  # trapeze rod and strut, as duct_support
+    # Metal-wall penetrations and mounts (-> resolve/wall_penetrations.py, #142); a solid
+    # naming its Material draws that colour first.
+    "wall_sleeve": (0.93, 0.93, 0.91, 1.0),       # white PVC sleeve lip
+    "penetration_boot": (0.14, 0.15, 0.16, 1.0),  # EPDM boot, black
+    "lineset_inlet": (0.93, 0.93, 0.91, 1.0),     # white PVC wall inlet
+    "mount_block": (0.95, 0.96, 0.94, 1.0),       # white cellular PVC
+    "mount_strut": (0.66, 0.68, 0.69, 1.0),       # pre-galvanized strut
+    "lineset_cover": (0.93, 0.93, 0.91, 1.0),     # white PVC lineset cover
     "solar": (0.10, 0.14, 0.28, 1.0),      # PV module glass, deep blue
     "fascia": (0.92, 0.92, 0.90, 1.0),     # PVC fascia
     "soffit": (0.88, 0.88, 0.85, 1.0),     # dropped soffit box / soffit skin member

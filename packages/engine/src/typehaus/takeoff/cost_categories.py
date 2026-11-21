@@ -69,6 +69,7 @@ SECTION_CATEGORY: dict[str, str] = {
     "equipment_hangers": "ductwork",
     "interior_trim": "trim", "trim_paint": "trim",
     "edge_trim": "flashing_trim", "cladding_trim": "flashing_trim",
+    "wall_penetrations": "flashing_trim",
     "framing": "lumber",
     "allowances": "allowances",
 }

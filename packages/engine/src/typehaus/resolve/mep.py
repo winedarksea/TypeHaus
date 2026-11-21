@@ -457,6 +457,13 @@ def _resolve_pipe_accessory(model: ResolvedModel, el: PipeAccessory,
         if solid is not None:
             model.solids.append(solid)
             return []
+    if el.kind is PipeAccessoryKind.PENETRATION_SEAL:
+        from typehaus.resolve.wall_penetration_solids import gasket_solid
+
+        solid = gasket_solid(el, storey.tag, (cx, cy, z), host)
+        if solid is not None:
+            model.solids.append(solid)
+            return []
     bx, by, bz = _ACCESSORY_BOX
     model.solids.append(ResolvedSolid(
         uid=el.uid or f"{el.tag}-acc", tag=el.tag, storey=storey.tag,
@@ -490,3 +497,4 @@ def _resolve_duct_run(model: ResolvedModel, duct: DuctRun, storey, *,
     acyclic.
     """
     return resolve_duct_run(model, duct, storey, _emit_run_solids, collar_fed=collar_fed)
+

@@ -105,6 +105,13 @@ ROWS: tuple[C, ...] = (
     # billed off ``model.equipment_hangers``.
     C("equipment_hanger", trade="mechanical", ifc_class="IfcMechanicalFastener",
       billed_elsewhere=True),
+    # Metal-wall penetrations and exterior mounts (resolve/wall_penetrations.py, #142),
+    # billed off ``model.wall_penetrations`` / ``mount_blocks`` in [wall_penetrations].
+    *(C(name, trade=trade, ifc_class=_ACC, ifc_predefined="USERDEFINED",
+        ifc_object_type=name.upper(), billed_elsewhere=True)
+      for name, trade in (("wall_sleeve", "siding"), ("penetration_boot", "siding"),
+                          ("lineset_inlet", "mechanical"), ("mount_block", "siding"),
+                          ("mount_strut", "electrical"), ("lineset_cover", "mechanical"))),
     # Fenestration.
     _trim("glazing", "openings", ifc=_FOOTING, elevation="glaz"),
     _trim("glazing_trim", "openings", ifc=_FOOTING, elevation="sash"),
