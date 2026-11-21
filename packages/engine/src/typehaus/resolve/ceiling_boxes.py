@@ -22,6 +22,7 @@ the board, so it clears the joist it screws under.
 from __future__ import annotations
 
 import math
+from dataclasses import replace
 from typing import Any, NamedTuple
 
 from shapely.geometry import MultiPoint, Point, Polygon
@@ -29,6 +30,8 @@ from shapely.geometry.polygon import orient
 
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.electrical import BoxRow, BoxStandard
+from typehaus.model.placeable_frame import PlaceableFrame
+from typehaus.model.placeable_symbols._leviton_9880 import LEVITON_9880_SYMBOL
 from typehaus.model.refs import FollowRoof
 from typehaus.resolve.ceiling_over import ceiling_channel_depth_m
 from typehaus.resolve.coatings import layer_depth_m
@@ -83,7 +86,7 @@ def resolve_ceiling_boxes(model: ResolvedModel) -> list[Finding]:
         return []
     types = {t.tag: t for t in model.plan.library.electrical_device_types}
     stage = _Stage(model, standard)
-    for obj in model.canvas_objects:
+    for index, obj in enumerate(model.canvas_objects):
         if (obj.kind != "ElectricalDevice" or obj.mount is None
                 or obj.mount.kind.value != "ceiling"):
             continue
@@ -95,8 +98,17 @@ def resolve_ceiling_boxes(model: ResolvedModel) -> list[Finding]:
             stage.place_remote(item, product_type, obj.storey, obj.room, obj.position,
                                obj.z_m, tuple(obj.footprint), item.kind.value)
         else:
-            stage.place(item, product_type, obj.storey, obj.room, obj.position, obj.z_m,
-                        tuple(obj.footprint), item.kind.value)
+            mount_face = stage.place(item, product_type, obj.storey, obj.room, obj.position,
+                                     obj.z_m, tuple(obj.footprint), item.kind.value)
+            representation = getattr(product_type, "model_representation", None)
+            if (mount_face is not None
+                    and getattr(representation, "symbol", None) == LEVITON_9880_SYMBOL):
+                # The symbol's mounting plane is at its nominal height.
+                face, (nx, ny, nz) = mount_face
+                height = product_type.height.meters
+                origin = (face[0] + height * nx, face[1] + height * ny, face[2] + height * nz)
+                model.canvas_objects[index] = replace(
+                    obj, model_frame=PlaceableFrame(origin, (-nx, -ny, -nz)))
     for head in model.alarm_heads:
         if head.mount != "ceiling" or head.x is None or head.z is None:
             continue
@@ -123,14 +135,14 @@ class _Stage:
 
     def place(self, item: Any, product_type: Any, storey: str, room: str | None,
               xy: tuple[float, float], base_z: float, device_footprint: tuple,
-              kind: str) -> None:
+              kind: str) -> tuple[Vec3, Vec3] | None:
         face = self._face(xy, base_z, storey, room)
         if face is None:
-            self._bare(item, product_type, storey, room, xy, base_z, device_footprint, kind)
-            return
+            return self._bare(item, product_type, storey, room, xy, base_z,
+                              device_footprint, kind)
         over = self.structure.lowest_above(xy[0], xy[1], face.z)
         if over is None:
-            return
+            return None
         layers = [_Layer(layer.name, layer.function.value, layer.material_ref,
                          layer_depth_m(self.model.plan.library, layer),
                          frozenset(c.value for c in layer.control)) for layer in face.layers]
@@ -142,32 +154,33 @@ class _Stage:
         layers.append(_Layer(host_tag, "structure", "", max(cavity_above, 0.0), frozenset()))
         found = _host_layers(self.model, layers)
         if found is None:
-            return
+            return None
         mounting, cavity, host_layer, crossed = found
         air = mounting != "surface" and any(
             layer.function == "membrane" and "air" in layer.control for layer in crossed)
         row = _row(self.standard, mounting, box_use(item, product_type), air)
         if row is None:
-            return
+            return None
         if floor is not None:
             self._decoupling(item, floor.tag, face.room)
-        self._record(item, storey, face.room or room, xy, face, row, mounting,
-                     cavity if top is not None else None,
-                     host_layer, air, device_footprint, kind)
+        return self._record(item, storey, face.room or room, xy, face, row, mounting,
+                            cavity if top is not None else None,
+                            host_layer, air, device_footprint, kind)
 
     def _bare(self, item: Any, product_type: Any, storey: str, room: str | None,
               xy: tuple[float, float], base_z: float, device_footprint: tuple,
-              kind: str) -> None:
+              kind: str) -> tuple[Vec3, Vec3] | None:
         """No lining over the point: a surface box on the underside of the member over it."""
         over = self.structure.lowest_above(xy[0], xy[1], base_z)
         floor = None if over is None else self.floors.get(over.tag)
         found = None if floor is None else member_under(floor, xy, base_z)
         row = _row(self.standard, "surface", box_use(item, product_type), False)
         if found is None or row is None:
-            return
+            return None
         z, member = found
-        self._record(item, storey, room, xy, _Face(z, _DOWN, (), room), row, "surface", None,
-                     f"{floor.tag}/{member}", False, device_footprint, kind)
+        return self._record(item, storey, room, xy, _Face(z, _DOWN, (), room),
+                            row, "surface", None, f"{floor.tag}/{member}", False,
+                            device_footprint, kind)
 
     def place_remote(self, item: Any, product_type: Any, storey: str, room: str | None,
                      xy: tuple[float, float], base_z: float, device_footprint: tuple,
@@ -261,7 +274,7 @@ class _Stage:
 
     def _record(self, item: Any, storey: str, room: str, xy: tuple[float, float], face: _Face,
                 row: BoxRow, mounting: str, cavity: float | None, host_layer: str, air: bool,
-                device_footprint: tuple, kind: str) -> None:
+                device_footprint: tuple, kind: str) -> tuple[Vec3, Vec3]:
         width, height, depth = (part.meters for part in row.box_size)
         axis = face.axis
         tangent = _unit((-axis[1], axis[0], 0.0)) if math.hypot(axis[0], axis[1]) > 1e-9 \
@@ -294,6 +307,8 @@ class _Stage:
             category="electrical_box", outline=list(ring), z0_m=z0, z1_m=z1,
             product=row.box_product_ref, material=row.material_ref, body_mesh=mesh,
             derived=True))  # billed in [electrical_boxes]
+        return ((xy[0] + axis[0] * projection, xy[1] + axis[1] * projection,
+                 face.z + axis[2] * projection), axis)
 
 
 def _row(standard: BoxStandard, mounting: str, use: str | None, air: bool) -> BoxRow | None:

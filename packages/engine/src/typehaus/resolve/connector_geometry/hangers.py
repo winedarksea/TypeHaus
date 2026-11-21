@@ -54,6 +54,12 @@ LUS_DIMENSIONS = {
     "LUS414": HangerDimensions(3.5625, 10.75, 2.0, 18, 1.0625),
 }
 
+# C-C-2026 pp. 110, 119-120: LUC's flanges turn in, so it draws as a concealed hanger.
+LUC_DIMENSIONS = {
+    "LUC26": HangerDimensions(1.5625, 4.75, 1.75, 18, 0.78125),
+    "LUC210": HangerDimensions(1.5625, 7.75, 1.75, 18, 0.78125),
+}
+
 HU_DIMENSIONS = {
     "HU28": HangerDimensions(1.5625, 5.25, 2.25, 14, 1.25),
     "HU210": HangerDimensions(1.5625, 7.125, 2.25, 14, 1.25),
@@ -324,6 +330,8 @@ def _selected(part: str, member_width_in: float | None, member_depth_in: float |
         model = _sawn_model("LUS", member_width_in, member_depth_in) or ""
     if model in LUS_DIMENSIONS:
         return "folded", LUS_DIMENSIONS[model]
+    if model in LUC_DIMENSIONS:
+        return "concealed", LUC_DIMENSIONS[model]
     if model == "HHUS410":
         return "folded", HHUS410_DIMENSIONS
     if model in ("HU", "HUC"):

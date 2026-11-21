@@ -16,7 +16,18 @@ from __future__ import annotations
 from library.lighting import luminaire_class
 
 from typehaus import LuminaireForm, Service, ServicePort, ft, inch
-from typehaus.model import LuminaireType, ProductPart
+from typehaus.model import LuminaireType, ModelRepresentation, ProductPart
+from typehaus.model.placeable_symbols._leviton_9726_c import (
+    ASSEMBLY_HEIGHT_IN,
+    ASSEMBLY_PROJECTION_IN,
+    LEVITON_9726_C_SYMBOL,
+    MOUNTING_FLANGE_DIAMETER_IN,
+)
+from typehaus.model.placeable_symbols._leviton_9880 import (
+    ASSEMBLY_DIAMETER_IN,
+    LEVITON_9880_SYMBOL,
+    MOUNTING_BAND_IN,
+)
 
 from .porch_lighting_types import GARDEN_FLOOD_TYPE
 
@@ -313,7 +324,9 @@ DECORATIVE_LUMINAIRE_TYPES = (
                   replaceable_lamp=True,
                   lamp_base="E26", name="Keyless porcelain lampholder, A19 LED",
                   form=LuminaireForm.PANEL, type_mark="Q2",
-                  footprint=(inch(4.5), inch(4.5)), height=inch(5.5), plan_symbol="light",
+                  footprint=(inch(ASSEMBLY_DIAMETER_IN), inch(ASSEMBLY_DIAMETER_IN)),
+                  height=inch(MOUNTING_BAND_IN), plan_symbol="light",
+                  model_representation=ModelRepresentation(symbol=LEVITON_9880_SYMBOL),
                   lamp="E26 A19 LED, 800 lm, 3000K, 90 CRI, replaceable", watts=9.0,
                   lumens=800.0, cct_k=3000, cri=90, load_va=9.0, ports=_POWER_120,
                   product_ref="PROD-LEVITON-9880",
@@ -325,8 +338,10 @@ DECORATIVE_LUMINAIRE_TYPES = (
                   replaceable_lamp=True,
                   lamp_base="E26", name="Porcelain lampholder with receptacle, A19 LED",
                   form=LuminaireForm.PANEL, type_mark="Q3",
-                  footprint=(inch(4.5), inch(4.5)), height=inch(5.5), plan_symbol="light",
-                  canopy_diameter=inch(4.5), box_use="luminaire-round",
+                  footprint=(inch(MOUNTING_FLANGE_DIAMETER_IN), inch(ASSEMBLY_PROJECTION_IN)),
+                  height=inch(ASSEMBLY_HEIGHT_IN), plan_symbol="light",
+                  model_representation=ModelRepresentation(symbol=LEVITON_9726_C_SYMBOL),
+                  canopy_diameter=inch(MOUNTING_FLANGE_DIAMETER_IN), box_use="luminaire-round",
                   lamp="E26 A19 LED, 800 lm, 3000K, 90 CRI, replaceable", watts=9.0,
                   lumens=800.0, cct_k=3000, cri=90, load_va=9.0, ports=_POWER_120,
                   product_ref="PROD-LEVITON-9726-C",

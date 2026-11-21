@@ -338,7 +338,8 @@ def test_landing_platforms_have_unique_joists_edge_joists_deck_and_rims(basement
         spacings = [b - a for a, b in zip(offsets, offsets[1:])]
         assert all(spacing <= inch(16).meters + 1e-9 for spacing in spacings)
         rims = [m for m in stair.members if m.child_key.startswith(f"landing-rim-{name}-")]
-        assert len(rims) == 2
+        # Two rim lines; the partition one is cut at the well posts' faces (post_cuts.py).
+        assert len({round(rim.p0[0], 6) for rim in rims}) == 2
         for rim in rims:
             assert rim.z1_m == pytest.approx(deck.z0_m)  # framing tops at the deck
 

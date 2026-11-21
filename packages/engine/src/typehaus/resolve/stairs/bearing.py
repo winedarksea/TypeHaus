@@ -7,10 +7,10 @@ from dataclasses import replace
 
 from typehaus.model.enums import StructuralRole
 from typehaus.model.spatial import Stair
-from typehaus.model.structure import Post
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember, ResolvedModel
 from typehaus.resolve.stairs.common import _MIN_SHARED_RUN_M, _TREAD_THICKNESS_M
+from typehaus.resolve.stairs.post_cuts import _authored_post_spans, frame_landing_to_posts
 
 # The 2x board a framer lags to a framed host wall's face for a stringer/rim to bear on.
 _LEDGER_PROFILE = "2x10"
@@ -264,37 +264,6 @@ def _spacer_carriage(stair: Stair, host, member: FramedMember,
                          z0_end_m=z_hi, z1_end_m=z_hi + spacer.depth_m, connection=tag))
 
 
-def _authored_post_spans(model: ResolvedModel
-                         ) -> list[tuple[tuple[float, float, float, float], float, float]]:
-    """Each authored ``Post`` as (plan box, z0, z1), read off the plan.
-
-    Posts resolve after the stairs, so their extent is derived here the way
-    ``envelope._resolve_post`` does it, less connector insets. A post whose support has
-    not resolved yet is left out: it claims no corner it cannot be shown to reach.
-    """
-    tops = {solid.tag: solid.z1_m for solid in model.solids}
-    spans = []
-    for storey in model.plan.storeys:
-        for element in model.plan.storey_elements(storey.tag):
-            if not isinstance(element, Post):
-                continue
-            height = (element.height.meters if element.height is not None
-                      else storey.default_ceiling_height.meters)
-            if element.supported_by:
-                if element.supported_by not in tops:
-                    continue
-                z0 = tops[element.supported_by]
-                z1 = z0 + height
-            else:
-                z1 = storey.elevation.meters
-                z0 = z1 - height
-            section = cross_section(element.size)
-            x, y = element.position.xy_m
-            half_w, half_d = section.width_m / 2.0, section.depth_m / 2.0
-            spans.append(((x - half_w, y - half_d, x + half_w, y + half_d), z0, z1))
-    return spans
-
-
 def _bear_stair_on_walls(model: ResolvedModel, stair: Stair,
                          members: tuple[FramedMember, ...], subfloor: float,
                          skirts: dict[str, float] | None = None,
@@ -329,6 +298,8 @@ def _bear_stair_on_walls(model: ResolvedModel, stair: Stair,
     ``skirts`` maps a stringer a skirt board stands beside to the board's thickness.
     """
     hanger_depth = 0.2032  # 8" ledger band
+    # Landing framing stops at an authored column's faces and hangs there (post_cuts.py).
+    members = frame_landing_to_posts(model, members)
 
     def corner_key(point: tuple[float, float]) -> tuple[float, float]:
         return (round(point[0], 4), round(point[1], 4))
@@ -355,8 +326,8 @@ def _bear_stair_on_walls(model: ResolvedModel, stair: Stair,
         if (member.category == "landing_framing"
                 and member.child_key.startswith("landing-rim-")
                 and not member.child_key.startswith("landing-rim-winder")):
-            rims_by_platform.setdefault(member.child_key.rsplit("-", 1)[0],
-                                        []).append(member)
+            platform = "-".join(member.child_key.split("-")[:3])  # landing-rim-<name>
+            rims_by_platform.setdefault(platform, []).append(member)
         if member.child_key.startswith("landing-rim-winder"):
             # Complete platforms bear through their own plywood decks to the first frame.
             # A second ledger here would occupy a lower deck and duplicate the fitted rim.

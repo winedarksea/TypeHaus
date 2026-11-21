@@ -380,6 +380,13 @@ export function buildCanvasObjectParts(
   }
   group.position.copy(projectPointToScene(item.position_m!, elevation, center));
   group.rotation.y = projectPlanRotationToSceneRadians(item.rotation ?? 0);
+  if (item.model_frame) {
+    const { origin: [x, y, z], up: [upX, upY, upZ] } = item.model_frame;
+    group.position.copy(projectPointToScene([x, y], z, center));
+    const tilt = new THREE.Quaternion().setFromUnitVectors(
+      new THREE.Vector3(0, 1, 0), projectPointToScene([upX, upY], upZ));
+    group.quaternion.premultiply(tilt);
+  }
   parent.add(group);
   byUid.set(item.uid, [...materials.values()].flatMap(material =>
     material.userData.endGrainMaterial ? [material, material.userData.endGrainMaterial] : [material]));

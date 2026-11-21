@@ -214,6 +214,7 @@ SYMBOL_NAMES = (UNIFI_ACCESS_POINT_SYMBOLS
     # "linear-light" covers ordinary compact linear fixtures. The plant tube has the
     # same plan glyph but its own 3D cable-suspension massing.
     "track-light", "flood-light", "recessed-can", "panel-light",
+    "leviton-9726-c-a19", "leviton-9880-a19",
     "sconce", "sconce-updown", "sconce-spot", "sconce-gothic",
     "sconce-bantam", "sconce-bantam-down", "sconce-soren", "sconce-tube", "sconce-slim-updown",
     "sconce-swing-arm", "sconce-wac-sprig", "sconce-candle",

@@ -10,6 +10,7 @@ from dataclasses import dataclass
 
 from typehaus.hardware.catalog import (
     ROLE_BEAM_HOLD_DOWN,
+    ROLE_CONCEALED_FLANGE_HANGER,
     ROLE_EMBEDDED_STRAP_HOLDOWN,
     ROLE_FACE_MOUNT_JOIST_HANGER,
     ROLE_FLOOR_TRUSS_HANGER,
@@ -113,6 +114,9 @@ MARKER_RULES: dict[str, MarkerRule] = {
     ROLE_FLOOR_TRUSS_HANGER: MarkerRule(draw=True, along_in=1.50, across_in=0.75,
                                         half_h_in=None,
                                         category=CATEGORY_CONNECTOR_HANGER),
+    ROLE_CONCEALED_FLANGE_HANGER: MarkerRule(draw=True, along_in=0.75, across_in=0.75,
+                                             half_h_in=None,
+                                             category=CATEGORY_CONNECTOR_HANGER),
     ROLE_LATERAL_TIE_PLATE: MarkerRule(draw=True, along_in=1.50, across_in=0.25,
                                        half_h_in=1.50),
     ROLE_POST_BASE: MarkerRule(draw=True, along_in=2.75, across_in=2.75, half_h_in=1.50),

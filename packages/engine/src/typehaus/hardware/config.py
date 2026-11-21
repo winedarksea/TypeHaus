@@ -149,6 +149,10 @@ class HangerDetectionRules:
     # beside a joist is blocking, not a hanger.
     stair_head_carrier_categories: frozenset = frozenset({"joist", "rim"})
     stair_head_hung_categories: frozenset = frozenset({"stringer"})
+    # An authored column carries the landing framing cut back to its faces
+    # (``resolve/stairs/post_cuts.py``) on face-mount hangers, and nothing else.
+    carrier_column_categories: frozenset = frozenset({"column"})
+    column_hung_categories: frozenset = frozenset({"landing_framing"})
     # A member within this plan angle of its carrier runs ALONGSIDE it and never dies into
     # it, however close its end lands (a joist blocked to a flush beam, a rim on its line).
     parallel_reject_deg: float = 20.0

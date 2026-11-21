@@ -686,6 +686,7 @@ export interface Furniture {
 export interface CanvasObject {
   /** Resolved world-space geometry, shared with GLB and IFC. */
   body_mesh?: PackedMesh | null;
+  model_frame?: { origin: [number, number, number]; up: [number, number, number] };
   uid: string;
   tag: string;
   storey: string;

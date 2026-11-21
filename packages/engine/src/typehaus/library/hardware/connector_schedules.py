@@ -33,6 +33,10 @@ CONNECTOR_FASTENERS: dict[str, ConnectorFastening] = {
                                f"{_CC} pp.113-114, LUS28 row (rim at 2x8 depth)"),
     "LUS28Z": ConnectorFastening("zmax", ((6, HDG_10D, "header"), (4, HDG_10D, "joist")),
                                  f"{_CC} pp.113-114, LUS28 row"),
+    "LUC26Z": ConnectorFastening(
+        "zmax", ((6, HDG_16D, "header"), (4, HDG_0148_15, "joist")), _RECORD),
+    "LUC210Z": ConnectorFastening(
+        "zmax", ((10, HDG_16D, "header"), (6, HDG_0148_15, "joist")), _RECORD),
     "LUS26-2Z": ConnectorFastening(
         "zmax", ((4, HDG_16D, "header"), (4, HDG_16D, "joist")), _RECORD),
     "LUS210-3Z": ConnectorFastening(

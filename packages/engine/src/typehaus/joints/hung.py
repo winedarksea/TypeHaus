@@ -229,7 +229,9 @@ def hung_connections(model: ResolvedModel, rules: HangerDetectionRules) -> list:
                 member_width_m=_width_m(member),
                 seat_z_m=bottom_z,
                 slope_radians=math.atan2(other_bottom_z - bottom_z, run)))
-    return found
+    from typehaus.joints.column_hung import column_hung_connections
+
+    return found + column_hung_connections(model, rules)
 
 
 def _stairs_through_openings(model: ResolvedModel) -> set[str]:

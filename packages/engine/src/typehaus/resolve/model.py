@@ -32,6 +32,7 @@ from typehaus.resolve.model_window_seat import WindowSeat
 from typehaus.resolve.rebar.records import ResolvedRebarSet
 
 if TYPE_CHECKING:
+    from typehaus.model.placeable_frame import PlaceableFrame
     from typehaus.model.placeables import Mount
     from typehaus.model.published_web import PublishedWebOpenings
     from typehaus.resolve.clear_zones import ResolvedClearZone
@@ -1746,6 +1747,7 @@ class ResolvedCanvasObject:
     #: A seat on several ropes: ``(x, y, cable_m)`` per hang point, x/y in the item's frame.
     #: ``suspension_m`` is then the shortest of them. Empty for a single point at the centre.
     suspension_points: tuple[tuple[float, float, float], ...] = ()
+    model_frame: PlaceableFrame | None = None
 
 
 @dataclass(frozen=True)

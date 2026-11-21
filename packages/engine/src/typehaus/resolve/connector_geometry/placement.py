@@ -34,7 +34,7 @@ from typehaus.resolve.model import (
     ResolvedWall,
 )
 
-HANGER_PREFIXES = ("LUS", "LSSR", "LSC", "IUS", "HHUS", "THA", "HUC", "HU")
+HANGER_PREFIXES = ("LUS", "LUC", "LSSR", "LSC", "IUS", "HHUS", "THA", "HUC", "HU")
 BASE_PREFIXES = ("ABU", "CBSTQ")
 CAP_PREFIXES = ("PC", "CCQ", "AC", "ACE")
 BEAM_CATEGORIES = frozenset({"beam", "ridge_beam", "header", "trimmer", "rim", "joist"})

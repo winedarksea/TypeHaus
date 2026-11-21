@@ -223,16 +223,20 @@ def _add_canvas_parts(mb: _MeshBuilder, item: ResolvedCanvasObject,
             color = _authored_material_color(material)
         if "mesh" in part:
             mesh = part["mesh"]
+            frame = item.model_frame
             placed = place_local([(x, y) for x, y, _ in mesh["positions"]],
-                                 item.position, item.rotation_degrees)
+                                 (0.0, 0.0) if frame else item.position, item.rotation_degrees)
             rotated_normals = place_local([(x, y) for x, y, _ in mesh["normals"]],
                                          (0.0, 0.0), item.rotation_degrees)
+            positions = tuple((x, y, point[2])
+                              for (x, y), point in zip(placed, mesh["positions"], strict=True))
+            normals = tuple((x, y, normal[2]) for (x, y), normal in
+                            zip(rotated_normals, mesh["normals"], strict=True))
             mb.add_mesh(GMesh(
-                positions=tuple((x, y, z_base + point[2])
-                                for (x, y), point in zip(placed, mesh["positions"], strict=True)),
+                positions=(tuple(frame.point(*point) for point in positions) if frame
+                           else tuple((x, y, z_base + z) for x, y, z in positions)),
                 triangles=mesh["triangles"],
-                normals=tuple((x, y, normal[2]) for (x, y), normal in
-                              zip(rotated_normals, mesh["normals"], strict=True)),
+                normals=tuple(frame.direction(*normal) for normal in normals) if frame else normals,
                 curved_vertices=frozenset(range(len(mesh["positions"]))),
             ), color)
             continue

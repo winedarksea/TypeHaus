@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
+from math import isclose
 from types import SimpleNamespace
 
 from typehaus.findings import Result
@@ -25,6 +26,29 @@ def test_housings_wafers_psu_fittings_and_battery_sensors_take_none(catlin_model
     for tag in ("ED-M-LIVING-LT", "ED-S-NCLOSET-LT", "ED-M-LAUNDRY-TRACK", "AL-G-FREEZE"):
         assert tag not in boxes, tag
     assert boxes["AL-M-BED"].box_use == "ceiling"  # the alarm row falls back to "ceiling"
+
+
+def test_keyless_lampholders_seat_against_flat_and_sloped_boxes(catlin_model_ro):
+    boxes = _boxes(catlin_model_ro)
+    solids = {solid.uid: solid for solid in catlin_model_ro.solids}
+    product = next(product for product in catlin_model_ro.plan.library.electrical_device_types
+                   if product.tag == "ED-T-LT-KEYLESS")
+    tested_slopes = set()
+    for item in catlin_model_ro.canvas_objects:
+        if item.type_ref != product.tag:
+            continue
+        box = boxes[item.tag]
+        frame = item.model_frame
+        assert frame is not None
+        assert frame.up == tuple(-component for component in box.axis)
+        mount_point = frame.point(0, 0, product.height.meters)
+        box_vertices = solids[box.uid].body_mesh.positions
+        box_face = min(sum(a * b for a, b in zip(point, frame.up, strict=True))
+                       for point in box_vertices)
+        mount_face = sum(a * b for a, b in zip(mount_point, frame.up, strict=True))
+        assert isclose(mount_face, box_face, abs_tol=1e-8), item.tag
+        tested_slopes.add(frame.up[2] < 1.0)
+    assert tested_slopes == {False, True}
 
 
 def test_fill_oracle_luminaire_takes_no_yoke_and_an_alarm_counts_its_interconnect(

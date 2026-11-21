@@ -2422,8 +2422,8 @@ POSTS = [
     # A THIRD one on the well centreline, 2026-09-15 (notes/u_stair_split_landing.md), under
     # ST-B2M's half-landings, which start at y=31'-1 3/8": its 60" flights plus the head
     # riser board and carpet (1") the landing edge stands past (2026-09-28,
-    # notes/stair_nosing_basis.md); its south face is the 31'-0 3/8" riser line, so the rim
-    # ends bear 2 1/2" on it. That corner is a rim end no host wall reaches, and it
+    # notes/stair_nosing_basis.md); its south face is the 31'-0 3/8" riser line. The rims stop
+    # at both posts' faces on LUC26Zs (2026-11-20, notes/stair_landing_post_hangers.md). That corner is a rim end no host wall reaches, and it
     # is over FO-M-STAIR's hole, so this full-height column carries it. `bearing.py` sees
     # the post at the corner and derives no 4x4 of its own (2026-11-16).
     Post(uid="H8TV2XS6B2", tag="P-M-STRWELL-SS", position=pt(inch(168), ft(31, 2.125)), size="4x4",

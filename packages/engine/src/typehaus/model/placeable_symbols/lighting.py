@@ -40,6 +40,11 @@ from typehaus.model.placeable_symbols._frame import (
     prism,
     rect,
 )
+from typehaus.model.placeable_symbols._leviton_9726_c import (
+    LEVITON_9726_C_SYMBOL,
+    leviton_9726_c,
+)
+from typehaus.model.placeable_symbols._leviton_9880 import LEVITON_9880_SYMBOL, leviton_9880
 from typehaus.model.placeable_symbols._mirrors import halo_mirror_light, mirror_light
 from typehaus.model.placeable_symbols._product_sconces import swing_arm_sconce
 from typehaus.model.placeable_symbols._recessed_can import recessed_can_parts
@@ -430,6 +435,8 @@ LIGHTING_SYMBOLS: dict[str, Builder] = {
     "flood-light": flood_light,
     "recessed-can": recessed_can(),
     "panel-light": panel_light(),
+    LEVITON_9726_C_SYMBOL: leviton_9726_c,
+    LEVITON_9880_SYMBOL: leviton_9880,
     "sconce": sconce(throw="down"),
     "sconce-updown": sconce(throw="updown"),
     "sconce-spot": sconce(throw="spot"),

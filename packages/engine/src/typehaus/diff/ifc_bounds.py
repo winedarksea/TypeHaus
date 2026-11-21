@@ -62,7 +62,7 @@ def _emitted_parts_bounds(model: ResolvedModel, item, hosted_countertops, base_z
     return None
 
 
-def _parts_bounds(parts, position, rotation_degrees: float, base_z_m: float):
+def _parts_bounds(parts, position, rotation_degrees: float, base_z_m: float, *, frame=None):
     """Bounds of generated placeable parts, placed as the emitter places them."""
     from typehaus.model.placeable_symbols import place_local
 
@@ -86,8 +86,14 @@ def _parts_bounds(parts, position, rotation_degrees: float, base_z_m: float):
         )
     if not local_vertices:
         return _bounds([], base_z_m, base_z_m)
-    world_xy = place_local([(x, y) for x, y, _z in local_vertices], position,
+    world_xy = place_local([(x, y) for x, y, _z in local_vertices],
+                           (0.0, 0.0) if frame else position,
                            rotation_degrees)
+    if frame:
+        world = [frame.point(x, y, point[2])
+                 for (x, y), point in zip(world_xy, local_vertices, strict=True)]
+        return _bounds([(x, y) for x, y, _ in world],
+                       min(point[2] for point in world), max(point[2] for point in world))
     z_values = [base_z_m + z for _x, _y, z in local_vertices]
     return _bounds(world_xy, min(z_values), max(z_values))
 

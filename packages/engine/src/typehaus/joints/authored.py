@@ -109,6 +109,7 @@ def hanger_part(connection, specs: dict[tuple[str, str], str]):
     from typehaus.hardware.catalog import (
         EXPOSURE_DRY,
         EXPOSURE_TREATED,
+        ROLE_CONCEALED_FLANGE_HANGER,
         ROLE_FACE_MOUNT_JOIST_HANGER,
         ROLE_FLOOR_TRUSS_HANGER,
         ROLE_IJOIST_FACE_MOUNT_HANGER,
@@ -130,6 +131,10 @@ def hanger_part(connection, specs: dict[tuple[str, str], str]):
                               f"{connection.member_floor} is not in the hardware catalog")
         swapped = item is not hardware_by_model(authored)
         return item.role, item, item.model if swapped else authored
+    if connection.carrier_category == "column":
+        # A post face is no wider than the hanger's flanges: the concealed-flange part.
+        item, part = _sized_in_role(ROLE_CONCEALED_FLANGE_HANGER, connection.member_profile)
+        return ROLE_CONCEALED_FLANGE_HANGER, item, part
     if connection.member_category == "stringer":
         item = hardware_for_role(ROLE_STAIR_STRINGER_CONNECTOR)
         return ROLE_STAIR_STRINGER_CONNECTOR, item, item.model

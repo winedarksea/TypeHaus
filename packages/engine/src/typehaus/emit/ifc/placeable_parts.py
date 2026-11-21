@@ -9,6 +9,27 @@ BOX_TRIANGLES = ((0, 2, 1), (0, 3, 2), (4, 5, 6), (4, 6, 7),
                  (2, 3, 7), (2, 7, 6), (3, 0, 4), (3, 4, 7))
 
 
+def device_parts(product_type):
+    """Generated parts for devices that opt into IFC tessellation."""
+    from typehaus.model.canvas import model_symbol_for
+    from typehaus.model.placeable_symbols import model_parts
+    from typehaus.model.placeable_symbols._leviton_9726_c import LEVITON_9726_C_SYMBOL
+    from typehaus.model.placeable_symbols._leviton_9880 import LEVITON_9880_SYMBOL
+    from typehaus.model.placeable_symbols._unifi_access_point import UNIFI_ACCESS_POINT_SYMBOLS
+    from typehaus.model.placeable_symbols.receptacles import RECEPTACLE_SYMBOLS
+    from typehaus.model.placeable_symbols.switches import SWITCH_SYMBOLS
+
+    symbol = model_symbol_for(product_type)
+    explicit_symbol = getattr(getattr(product_type, "model_representation", None), "symbol", None)
+    if (getattr(product_type, "plan_symbol", None) in {"flood-light", "recessed-can"}
+            or symbol in {LEVITON_9726_C_SYMBOL, LEVITON_9880_SYMBOL}
+            or explicit_symbol in RECEPTACLE_SYMBOLS or explicit_symbol in SWITCH_SYMBOLS
+            or explicit_symbol in UNIFI_ACCESS_POINT_SYMBOLS):
+        return model_parts(symbol, *(dimension.meters for dimension in product_type.footprint),
+                           product_type.height.meters)
+    return ()
+
+
 def fixture_parts(product_type, tag: str, hosted_countertops) -> list | None:
     """A fixture's or appliance's generated parts as the emitter draws them, else None (a prism).
 
@@ -32,7 +53,7 @@ def fixture_parts(product_type, tag: str, hosted_countertops) -> list | None:
         if tag not in hosted_countertops or not is_counter_part(part)]
 
 
-def parts_representation(f, body, parts, center, rotation, z_base, *, materials=None):
+def parts_representation(f, body, parts, center, rotation, z_base, *, materials=None, frame=None):
     items = []
     for part in parts:
         if "mesh" in part:
@@ -58,9 +79,12 @@ def parts_representation(f, body, parts, center, rotation, z_base, *, materials=
                                             (-1, 1, -1), (-1, -1, 1), (1, -1, 1),
                                             (1, 1, 1), (-1, 1, 1)))
             triangles = BOX_TRIANGLES
-        xy = place_local([(x, y) for x, y, _ in vertices], center, rotation)
-        points = f.createIfcCartesianPointList3D(tuple(
-            (x, y, z_base + vertex[2]) for (x, y), vertex in zip(xy, vertices, strict=True)))
+        xy = place_local([(x, y) for x, y, _ in vertices], (0.0, 0.0) if frame else center,
+                         rotation)
+        placed = tuple((x, y, vertex[2]) for (x, y), vertex in zip(xy, vertices, strict=True))
+        points = f.createIfcCartesianPointList3D(
+            tuple(frame.point(*point) for point in placed) if frame
+            else tuple((x, y, z_base + z) for x, y, z in placed))
         item = f.create_entity("IfcTriangulatedFaceSet", Coordinates=points, Closed=True,
                                CoordIndex=tuple(tuple(i + 1 for i in t) for t in triangles))
         color = PART_COLORS[part["color"]]

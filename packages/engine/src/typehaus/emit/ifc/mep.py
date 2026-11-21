@@ -492,21 +492,11 @@ def _emit_equipment(f: Any, body: Any, equipment: Any, storey: Any, storeys: dic
     ll.assign_container(f, element, storeys[storey.tag])
 
 
-def _uses_device_parts(product_type: Any | None) -> bool:
-    from typehaus.model.placeable_symbols._unifi_access_point import UNIFI_ACCESS_POINT_SYMBOLS
-    from typehaus.model.placeable_symbols.receptacles import RECEPTACLE_SYMBOLS
-    from typehaus.model.placeable_symbols.switches import SWITCH_SYMBOLS
-
-    model = getattr(product_type, "model_representation", None)
-    return (getattr(product_type, "plan_symbol", None) in {"flood-light", "recessed-can"}
-            or getattr(model, "symbol", None) in RECEPTACLE_SYMBOLS
-            or getattr(model, "symbol", None) in UNIFI_ACCESS_POINT_SYMBOLS
-            or getattr(model, "symbol", None) in SWITCH_SYMBOLS)
-
-
 def _emit_device(f: Any, body: Any, device: Any, storey: Any, storeys: dict[str, Any],
                  project_uuid: Any, product_type: Any | None, resolved: Any | None,
                  type_object: Any | None, box: Any | None = None) -> Any:
+    from typehaus.emit.ifc.placeable_parts import device_parts, parts_representation
+
     x, y = resolved.position if resolved is not None else device.position.xy_m
     # The box is its own IfcJunctionBox (the ``electrical_box`` solid); the device is only
     # the device: its own footprint from its mount z, not the canvas union with the box.
@@ -533,16 +523,10 @@ def _emit_device(f: Any, body: Any, device: Any, storey: Any, storeys: dict[str,
 
         representation = track_representation(f, body, track, (x, y),
                                                float(_rotation_metadata(device, resolved)), z0)
-    elif _uses_device_parts(product_type):
-        from typehaus.emit.ifc.placeable_parts import parts_representation
-        from typehaus.model.placeable_symbols import model_parts
-
-        symbol = (getattr(getattr(product_type, "model_representation", None), "symbol", None)
-                  or product_type.plan_symbol)
-        parts = model_parts(symbol, product_type.footprint[0].meters,
-                            product_type.footprint[1].meters, product_type.height.meters)
+    elif parts := device_parts(product_type):
         representation = parts_representation(
-            f, body, parts, (x, y), float(_rotation_metadata(device, resolved)), z0)
+            f, body, parts, (x, y), float(_rotation_metadata(device, resolved)), z0,
+            frame=resolved.model_frame if resolved is not None else None)
     else:
         representation = ll.add_prism_from_profile(
             f, body, outline, product_type.height.meters if product_type is not None else 0.05, z0)

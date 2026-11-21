@@ -29,6 +29,7 @@ from typehaus.checks.structural import (
     header_spans,  # noqa: F401 - registers checks
     interference,  # noqa: F401 - registers checks
     jamb_corner_pack,  # noqa: F401 - registers checks
+    landing_rim_support,  # noqa: F401 - registers checks
     lateral_racking,  # noqa: F401 - registers checks
     masonry_interference,  # noqa: F401 - registers checks
     masonry_joint,  # noqa: F401 - registers checks

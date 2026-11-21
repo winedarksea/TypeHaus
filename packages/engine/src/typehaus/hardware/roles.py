@@ -58,6 +58,9 @@ ROLE_FLOOR_TRUSS_HANGER = "floor_truss_hanger"
 # depth (``fits_nominal`` names the profile), derived wherever the header hangs.
 ROLE_SCL_FACE_MOUNT_HANGER = "scl_face_mount_hanger"
 ROLE_CONCRETE_FACE_MOUNT_HANGER = "concrete_face_mount_hanger"
+# A sawn member hung on a narrow carrier's face (a 4x4 post): the flanges turn in, inside the
+# seat width, so the part fits a face no wider than the member (LUC, C-C-2026 p. 110).
+ROLE_CONCEALED_FLANGE_HANGER = "concealed_flange_hanger"
 ROLE_KNEE_BRACE = "knee_brace"
 ROLE_KNEE_BRACE_EQUAL_WIDTH = "knee_brace_equal_width"
 ROLE_BRACE_THROUGH_BOLT = "brace_through_bolt"

@@ -113,6 +113,10 @@ from typehaus.library.hardware.simpson_hangers import (
     LUSZ_FACE_MOUNT_HANGER,
     THA_FLOOR_TRUSS_HANGER,
 )
+from typehaus.library.hardware.simpson_hangers_luc import (
+    LUC26Z_CONCEALED_HANGER,
+    LUC210Z_CONCEALED_HANGER,
+)
 from typehaus.library.hardware.simpson_hangers_lus import (
     LUS26_2Z_FACE_MOUNT_HANGER,
     LUS28Z_FACE_MOUNT_HANGER,
@@ -183,6 +187,8 @@ STRUCTURAL_HARDWARE: tuple = (
     LSTA24_RIDGE_STRAP,
     LUS_FACE_MOUNT_HANGER,
     LUSZ_FACE_MOUNT_HANGER,
+    LUC26Z_CONCEALED_HANGER,
+    LUC210Z_CONCEALED_HANGER,
     IUS_FACE_MOUNT_HANGER,
     IUS237_TJI230_HANGER,
     HHUS410_SCL_FACE_MOUNT_HANGER,
