@@ -37,6 +37,7 @@ from typehaus.resolve.sheet_stock import SHEET_WIDTH_IN, layer_sheet_length_in, 
 _GAP_TOL_M = 0.125 * M_PER_IN  # unbacked joint length under a panel gap's width is none
 _PIECE_TOL_M = 0.125 * M_PER_IN
 _PARALLEL = 0.99
+_TOP_STEP_M = 1.0 * M_PER_IN  # a column's top is sampled this finely (a gable apex inside it)
 
 
 def sheet_layout_standard(plan: Any) -> tuple[SheetLayoutStandard | None, list[Finding]]:
@@ -168,6 +169,16 @@ def _joint_top(ctx, s: float) -> float:
     return ctx.top(s)
 
 
+def _tops(ctx, c0: float, c1: float) -> list[tuple[float, float]]:
+    """``(s, top)`` across a column, ends included: a gable's apex can fall inside it."""
+    n = max(1, int((c1 - c0) / _TOP_STEP_M))
+    return [(s, ctx.top(s)) for s in (c0 + (c1 - c0) * i / n for i in range(n + 1))]
+
+
+def _peak(ctx, c0: float, c1: float) -> float:
+    return max(t for _s, t in _tops(ctx, c0, c1))
+
+
 def _vertical_cost(ctx, x: float) -> float:
     """Unbacked length of a vertical joint at ``x`` (the whole joint where unframed)."""
     if not ctx.framed:
@@ -179,13 +190,20 @@ def _vertical_cost(ctx, x: float) -> float:
 
 def _horizontal_span(ctx, c0: float, c1: float, z: float) -> tuple[float, float] | None:
     """Where a course joint at ``z`` has panel above it across a column (a rake clips it)."""
-    t0, t1 = ctx.top(c0), ctx.top(c1)
-    if t0 <= z and t1 <= z:
+    tops = _tops(ctx, c0, c1)
+    above = [i for i, (_s, t) in enumerate(tops) if t > z]
+    if not above:
         return None
-    if t0 > z and t1 > z:
+    if len(above) == len(tops):
         return c0, c1
-    cut = c0 + (c1 - c0) * (z - t0) / (t1 - t0)
-    return (c0, cut) if t0 > z else (cut, c1)
+
+    def cross(i: int, j: int) -> float:  # where the top passes z between samples i and j
+        (sa, ta), (sb, tb) = tops[i], tops[j]
+        return sa + (sb - sa) * (z - ta) / (tb - ta) if tb != ta else sa
+
+    lo, hi = above[0], above[-1]
+    return (c0 if lo == 0 else cross(lo - 1, lo),
+            c1 if hi == len(tops) - 1 else cross(hi, hi + 1))
 
 
 def _horizontal_cost(ctx, c0: float, c1: float, z: float) -> float:
@@ -200,7 +218,7 @@ def _horizontal_cost(ctx, c0: float, c1: float, z: float) -> float:
 
 def _column(ctx, c0: float, c1: float, prefer_top: bool, previous: list[float]):
     """``(courses, joints, shortfall)`` for one column, choosing its anchoring."""
-    hi = max(ctx.top(c0), ctx.top(c1))
+    hi = _peak(ctx, c0, c1)
     faces = [(r.z0, r.z1) for r in ctx.rects if r.s0 < c1 and r.s1 > c0]
     options = []
     for from_top in (prefer_top, not prefer_top):
@@ -255,11 +273,13 @@ def _piece(ctx, c0: float, c1: float, za: float, zb: float, coursed: bool
     """A course remainder is ``short`` only in a coursed column: a lone course cut to a
     band shorter than the sheet still takes a whole sheet."""
     t0, t1 = min(zb, ctx.top(c0)), min(zb, ctx.top(c1))
-    if t0 <= za + _PIECE_TOL_M and t1 <= za + _PIECE_TOL_M:
+    peak = min(zb, _peak(ctx, c0, c1))
+    if peak <= za + _PIECE_TOL_M:
         return None
     t0, t1 = max(t0, za), max(t1, za)
+    apex = peak if peak > max(t0, t1) + _PIECE_TOL_M else None  # a gable peak inside it
     cuts = tuple(h[0] for h in ctx.holes if h[1] < c1 and h[2] > c0 and h[3] < zb and h[4] > za)
-    raked = abs(t0 - t1) > _PIECE_TOL_M or max(t0, t1) < zb - _PIECE_TOL_M
+    raked = apex is not None or abs(t0 - t1) > _PIECE_TOL_M or peak < zb - _PIECE_TOL_M
     if cuts or raked:
         kind = "cut"
     elif coursed and zb - za < ctx.size_z - _PIECE_TOL_M:
@@ -268,4 +288,4 @@ def _piece(ctx, c0: float, c1: float, za: float, zb: float, coursed: bool
         kind = "rip"
     else:
         kind = "full"
-    return SheetPiece(c0, c1, za, t0, t1, kind, cuts)
+    return SheetPiece(c0, c1, za, t0, t1, kind, cuts, apex)

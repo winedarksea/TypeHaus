@@ -12,7 +12,8 @@ from dataclasses import dataclass
 class SheetPiece:
     """One piece of sheathing as hung: ``kind`` is ``full`` (a whole sheet), ``rip`` (full
     length, narrower), ``short`` (a course remainder) or ``cut`` (an opening or a rake
-    trims it). ``z1_far`` is the top at ``s1`` where a rake slopes it."""
+    trims it). ``z1_far`` is the top at ``s1`` where a rake slopes it; ``apex_z`` the top of a
+    gable peak falling inside the piece (None where its top is the straight ``z1``-``z1_far``)."""
 
     s0: float
     s1: float
@@ -21,6 +22,7 @@ class SheetPiece:
     z1_far: float
     kind: str
     opening_cuts: tuple[str, ...] = ()
+    apex_z: float | None = None
 
     @property
     def width_m(self) -> float:
@@ -28,11 +30,17 @@ class SheetPiece:
 
     @property
     def height_m(self) -> float:
-        return max(self.z1, self.z1_far) - self.z0
+        return max(self.z1, self.z1_far, self.apex_z or self.z0) - self.z0
 
     @property
     def area_m2(self) -> float:
-        return self.width_m * ((self.z1 + self.z1_far) / 2.0 - self.z0)
+        if self.apex_z is None:
+            return self.width_m * ((self.z1 + self.z1_far) / 2.0 - self.z0)
+        # Two trapezoids meeting at the apex; its station is read off the rake's symmetry.
+        rise = (self.apex_z - self.z1) + (self.apex_z - self.z1_far)
+        s_apex = self.width_m * (self.apex_z - self.z1) / rise if rise > 0 else 0.0
+        return (s_apex * ((self.z1 + self.apex_z) / 2.0 - self.z0)
+                + (self.width_m - s_apex) * ((self.apex_z + self.z1_far) / 2.0 - self.z0))
 
 
 @dataclass(frozen=True)

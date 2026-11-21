@@ -688,6 +688,12 @@ MN_2020 = JurisdictionProfile(
                         "structural.braced_wall_panels",
                         "structural.braced_wall_panel_rules"),
                        ("IRC R602.10", "IRC Table R602.10.3(1)", "IRC Table R602.10.5")),
+        # NON-BLOCKING until the house triages its UNKNOWNs (decision #146): every vertical
+        # sheathing joint read off the sheet layout. Two floor bands with no rim modelled
+        # behind the joint and the walls that state no `sheet_length` stay UNKNOWN.
+        PermitItemSpec("Wall sheathing joints on framing",
+                       ("structural.sheathing_edge_support",),
+                       ("IRC R602.10.4.4", "IRC R602.3"), blocking=False),
         # Every cast-in STHD against the ESR-2920 Table 1 row it is installed at: stem,
         # embedment, end distance, clear span, the No. 4 bar, spacing (added 2026-11-20).
         PermitItemSpec("Cast-in strap hold-downs (ESR-2920)",

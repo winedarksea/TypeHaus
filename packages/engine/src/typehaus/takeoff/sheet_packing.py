@@ -27,7 +27,8 @@ class PackedSheets:
 
 def _rake(piece, vertical: bool) -> tuple[float, float] | None:
     """``(low, high)`` end heights of a raked, unholed piece; None for anything else."""
-    if not vertical or piece.opening_cuts or abs(piece.z1 - piece.z1_far) <= _TOL_M:
+    if (not vertical or piece.opening_cuts or piece.apex_z is not None
+            or abs(piece.z1 - piece.z1_far) <= _TOL_M):
         return None
     a, b = piece.z1 - piece.z0, piece.z1_far - piece.z0
     return min(a, b), max(a, b)

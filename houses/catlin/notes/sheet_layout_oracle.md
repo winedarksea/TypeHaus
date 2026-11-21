@@ -35,8 +35,8 @@ by `packages/engine/tests/test_sheet_layout.py::test_catlin_garage_south_matches
 - **Pieces.** [0, 46.75] is cut by D-G-SERVICE (centre 26", 34" wide: 9 to 43, z 0 to
   81.5); [46.75, 72] rip; four full sheets; [264, 287.5625] rip.
 - **Sheets.** 4 full + width-packed strips with a 1/8" kerf: 46.75 (one sheet, 1.25" left),
-  25.25 (a second, 22.875" left), 23.5625 + 0.125 = 23.6875 does not fit the 22.875" left,
-  so a third: **7 sheets** for 200 sf gross (5.5 sheets by area).
+  25.25 + 0.125 (a second, 48.125 - 25.375 = 22.75" left), 23.5625 + 0.125 = 23.6875
+  does not fit the 22.75" left, so a third: **7 sheets** for 200 sf gross (5.5 sheets by area).
 
 ## What the run joins
 

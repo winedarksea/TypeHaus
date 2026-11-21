@@ -743,6 +743,8 @@ def test_the_bom_is_json_and_its_section_keys_are_the_uis_contract(bom):
         # carcasses, and the slab each cabinet SYMBOL draws billed nothing at all.
         "countertops",
         "cladding_trim",
+        # Metal-wall sleeves, boots and mounts off the PenetrationStandard (decision #142).
+        "wall_penetrations",
         # Base and door casing by the LF, off the TrimStandard (takeoff/interior_trim.py).
         "interior_trim",
         "glazing_panels", "glazing_trim", "edge_trim",

@@ -90,6 +90,13 @@ a release or for exhaustive local verification.
   the viewer, never copied there.
   A free wall end with gypsum on both faces takes a board, its coat and two corner beads
   (`resolve/wall_ends.py`, `ResolvedModel.wall_ends`), over the height nothing else occupies.
+- **Structural sheathing is laid sheet by sheet off one `SheetLayoutStandard`** (decision #146,
+  `model/sheet_layout.py`): stage `sheet_layout` joins collinear faces into runs, reads backing
+  off members, rims, deck edge and sill solids, and walks columns from the `sheathing_through`
+  end into `ResolvedModel.sheet_layouts` (`resolve/sheet_layout*.py`). Graded by
+  `structural.sheathing_edge_support` (vertical joints) and `bracing_eval` item 8 (horizontal);
+  `takeoff/sheet_goods.py` counts sheets off the pieces (`takeoff/sheet_packing.py`). Every
+  envelope layer bills off its own polygon (`resolve/face_extent.face_run_m`).
 - **Paint is derived from one `PaintStandard`** (decision #113, `model/paint.py`): rooms take its
   `walls`/`ceilings`/`wet` system through `resolve/room_paint.py`, swapping default coats only;
   trim and doors bill in `takeoff/trim_paint.py`; `Material.paint` + `Product.equals` feed A-604.

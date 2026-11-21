@@ -1,4 +1,4 @@
-"""Every vertical sheathing joint lands on framing (decision #146).
+"""Every vertical sheathing joint lands on framing (decision #146; a staged permit line).
 
 IRC R602.10.4.4: "Vertical joints of panel sheathing shall occur over and be fastened to
 common studs"; R602.3 fastens wall sheathing directly to framing members. A joint is backed

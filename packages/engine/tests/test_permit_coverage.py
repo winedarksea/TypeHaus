@@ -19,7 +19,6 @@ from pathlib import Path
 
 import pytest
 
-
 import typehaus.checks  # noqa: F401  - importing the package registers every check
 from typehaus.checks.code.mn_residential.profile import (
     DEFAULT_PROFILE_NAME,
@@ -166,7 +165,12 @@ def test_every_code_finding_carries_a_citation(profile, starter_dir) -> None:
 # RAISED 28 -> 29 on 2026-11-20: "Refrigerant linesets" (IMC 304.1, decision #139), staged
 # while catlin's HP3 piping table is unread, the minimum lengths unpublished in what is read,
 # and every port station schematic. Flip it when those read.
-MAX_NON_BLOCKING_ITEMS = {"mn-2020": 29}
+#
+# RAISED 29 -> 30 on 2026-11-21: "Wall sheathing joints on framing" (IRC R602.10.4.4,
+# decision #146), staged while W-M-S1/S2's and W-M-N2/N3's floor-band joints have no rim
+# modelled behind them and seven sheathed walls state no `sheet_length`. Keeping the check
+# off the checklist instead would be gaming the ratchet.
+MAX_NON_BLOCKING_ITEMS = {"mn-2020": 30}
 
 # The engineered lines are counted separately, and the split is not bookkeeping — the two
 # lanes have different exit conditions. A staging item leaves its lane when *this engine*
