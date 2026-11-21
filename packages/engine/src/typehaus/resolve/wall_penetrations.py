@@ -143,9 +143,12 @@ def derive_wall_penetrations(model: Any) -> None:
     if standard is None:
         return
     walls = metal_walls(model)
-    from typehaus.resolve.mep_envelopes import run_radii
+    from typehaus.resolve.mep_envelopes import insulation_thickness_m, run_radii
 
-    radii = run_radii(model)
+    # What passes the panel is the run's SURFACE: run_radii is bare of lagging, so add it
+    # (a lineset's bare radius plus its lagging is the bundle circle).
+    lagging = {r.tag: insulation_thickness_m(r.insulation) or 0.0 for r in model.pipe_runs}
+    radii = {tag: r + lagging.get(tag, 0.0) for tag, r in run_radii(model).items()}
     bonds = {b.tag: b for b in model.grounding.bonds}
     seen: dict[tuple[str, str], int] = {}
     for wall, kind, tag, system, xy, z in _crossings(model, walls):

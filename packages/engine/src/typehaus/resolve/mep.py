@@ -497,4 +497,3 @@ def _resolve_duct_run(model: ResolvedModel, duct: DuctRun, storey, *,
     acyclic.
     """
     return resolve_duct_run(model, duct, storey, _emit_run_solids, collar_fed=collar_fed)
-

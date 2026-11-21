@@ -39,6 +39,8 @@ PENETRATION_PRODUCTS = (
             name="1-1/2 in. Sch 40 PVC sleeve (1.900 in. OD)", source=_SCH40),
     Product(tag="PROD-PVC-SLEEVE-2", brand="(retail)", model="2 in. Sch 40 PVC",
             name="2 in. Sch 40 PVC sleeve (2.375 in. OD)", source=_SCH40),
+    Product(tag="PROD-PVC-SLEEVE-2-5", brand="(retail)", model="2-1/2 in. Sch 40 PVC",
+            name="2-1/2 in. Sch 40 PVC sleeve (2.875 in. OD)", source=_SCH40),
     Product(tag="PROD-PVC-SLEEVE-3", brand="(retail)", model="3 in. Sch 40 PVC",
             name="3 in. Sch 40 PVC sleeve (3.500 in. OD)", source=_SCH40),
     Product(tag="PROD-PVC-SLEEVE-4", brand="(retail)", model="4 in. Sch 40 PVC",
@@ -77,6 +79,7 @@ PENETRATION_STANDARD = [
         sleeves=(
             PenetrationSleeveRow(max_outside=inch(1.35), sleeve_diameter=inch(1.9), product_ref="PROD-PVC-SLEEVE-1-5"),
             PenetrationSleeveRow(max_outside=inch(1.8), sleeve_diameter=inch(2.375), product_ref="PROD-PVC-SLEEVE-2"),
+            PenetrationSleeveRow(max_outside=inch(2.2), sleeve_diameter=inch(2.875), product_ref="PROD-PVC-SLEEVE-2-5"),
             PenetrationSleeveRow(max_outside=inch(2.8), sleeve_diameter=inch(3.5), product_ref="PROD-PVC-SLEEVE-3"),
             PenetrationSleeveRow(max_outside=inch(3.75), sleeve_diameter=inch(4.5), product_ref="PROD-PVC-SLEEVE-4"),
             PenetrationSleeveRow(max_outside=inch(5.8), sleeve_diameter=inch(6.625), product_ref="PROD-PVC-SLEEVE-6"),
@@ -105,6 +108,6 @@ PENETRATION_STANDARD = [
         panel_sealant_ref="PROD-URETHANE-SEALANT",
         bridgeable_rib_height=inch(0.3125),
         boot_screw_spacing=inch(2),
-        source="Owner plan 2026-11-20 (decision #142): sleeve at the foam plane, closure at the panel. Sleeves one size over the run with a 1/4 in. or larger annulus.",
+        source="Owner plan 2026-11-20 (decision #142): sleeve at the foam plane, closure at the panel. Sleeves one size over the run (or lagged bundle), the sleeve ID at least 1/4 in. over its OD.",
     ),
 ]

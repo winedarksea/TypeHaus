@@ -34071,10 +34071,10 @@
 "f0718a5bd5c7"
 ],
 "geometry/CMW101AAAA-pen-PR-M-CW-PORCH-HYD-CU-sleeve/body": [
-0.53467,
-0.58293,
+0.5222875,
+0.5953125,
 200,
-"d2377cdeaa90"
+"184294488d49"
 ],
 "geometry/CMW101AAAA-trim-w-m-s1-base-s1-0/body": [
 -0.3303321,
@@ -34092,7 +34092,7 @@
 -0.3413125,
 3.048,
 20,
-"b2a2d1e30c3e"
+"21cfdd05d373"
 ],
 "geometry/CMW101AAAA/layer:gwb-int-tee-0": [
 0.0,
@@ -34104,31 +34104,31 @@
 -0.3413125,
 3.048,
 20,
-"b2a2d1e30c3e"
+"21cfdd05d373"
 ],
 "geometry/CMW101AAAA/layer:sheathing": [
 -0.3413125,
 3.048,
 20,
-"b2a2d1e30c3e"
+"21cfdd05d373"
 ],
 "geometry/CMW101AAAA/layer:spray-foam": [
 -0.3413125,
 3.048,
 20,
-"b2a2d1e30c3e"
+"21cfdd05d373"
 ],
 "geometry/CMW101AAAA/layer:stud": [
 -0.3413125,
 3.048,
 20,
-"b2a2d1e30c3e"
+"21cfdd05d373"
 ],
 "geometry/CMW101AAAA/layer:vent-gap": [
 -0.3413125,
 3.048,
 20,
-"b2a2d1e30c3e"
+"21cfdd05d373"
 ],
 "geometry/CMW101AAAA::framing/member:backing-0-000": [
 0.4826,
@@ -34947,10 +34947,10 @@
 "3e5828c071b6"
 ],
 "geometry/CMW102AAAA-pen-PR-B-RFG-HP2-GYM-sleeve/body": [
--0.18034,
--0.120015,
+-0.1946275,
+-0.1057275,
 200,
-"a03cbe56c6e9"
+"afba397397bb"
 ],
 "geometry/CMW102AAAA-pen-PR-M-RFG-HP2-BED-inlet/body": [
 -0.1855298,
@@ -34959,10 +34959,10 @@
 "269f6ad2c22f"
 ],
 "geometry/CMW102AAAA-pen-PR-M-RFG-HP2-BED-sleeve/body": [
--0.1458423,
--0.0855173,
+-0.1601298,
+-0.0712298,
 200,
-"ef6fe7fa6587"
+"bceb29153b28"
 ],
 "geometry/CMW102AAAA-pen-PR-M-RFG-HP2-LIVING-inlet/body": [
 -0.17145,
@@ -34971,10 +34971,10 @@
 "90ba9e6d8636"
 ],
 "geometry/CMW102AAAA-pen-PR-M-RFG-HP2-LIVING-sleeve/body": [
--0.1317625,
--0.0714375,
+-0.14605,
+-0.05715,
 200,
-"b9e4c70ddf3c"
+"b088b2f9887b"
 ],
 "geometry/CMW102AAAA-trim-w-m-s2-base-s1-0/body": [
 -0.3303321,
@@ -38169,10 +38169,10 @@
 "cb8157ec35c6"
 ],
 "geometry/CMW105AAAA-pen-PR-A-RFG-HP1-sleeve/body": [
-0.71755,
-0.80645,
+0.70485,
+0.81915,
 200,
-"1f47948c70f5"
+"084267469e36"
 ],
 "geometry/CMW105AAAA-trim-w-m-n1-base-s1-0/body": [
 -0.3303321,
@@ -38190,13 +38190,13 @@
 -0.3413125,
 3.048,
 20,
-"191242c4a4b1"
+"c5cedf0066c1"
 ],
 "geometry/CMW105AAAA/layer:gwb-int-tee-0": [
 0.0,
 2.7432,
 20,
-"2723be2480a8"
+"fd2ada6cf3d4"
 ],
 "geometry/CMW105AAAA/layer:gwb-int-tee-1": [
 2.727325,
@@ -38208,31 +38208,31 @@
 -0.3413125,
 3.048,
 20,
-"191242c4a4b1"
+"c5cedf0066c1"
 ],
 "geometry/CMW105AAAA/layer:sheathing": [
 -0.3413125,
 3.048,
 20,
-"191242c4a4b1"
+"c5cedf0066c1"
 ],
 "geometry/CMW105AAAA/layer:spray-foam": [
 -0.3413125,
 3.048,
 20,
-"191242c4a4b1"
+"c5cedf0066c1"
 ],
 "geometry/CMW105AAAA/layer:stud": [
 -0.3413125,
 3.048,
 20,
-"191242c4a4b1"
+"c5cedf0066c1"
 ],
 "geometry/CMW105AAAA/layer:vent-gap": [
 -0.3413125,
 3.048,
 20,
-"191242c4a4b1"
+"c5cedf0066c1"
 ],
 "geometry/CMW105AAAA::framing/member:backing-0-000": [
 0.3048,
@@ -39111,10 +39111,10 @@
 "c045aca56ac4"
 ],
 "geometry/CMW106AAAA-pen-PR-M-RFG-HP3-STAIR-sleeve/body": [
-2.5733375,
-2.6336625,
+2.55905,
+2.64795,
 200,
-"e7cc54d70549"
+"c88fe98b7a07"
 ],
 "geometry/CMW106AAAA-trim-w-m-n2-base-s1-0/body": [
 -0.3303321,
@@ -39126,43 +39126,43 @@
 -0.3413125,
 3.048,
 8,
-"004ebc4020f7"
+"9a6ab84a606e"
 ],
 "geometry/CMW106AAAA/layer:gwb-int-tee-0": [
 0.0,
 2.7432,
 8,
-"9302a4e0af37"
+"7b80b474db2c"
 ],
 "geometry/CMW106AAAA/layer:outer-girt": [
 -0.3413125,
 3.048,
 8,
-"004ebc4020f7"
+"9a6ab84a606e"
 ],
 "geometry/CMW106AAAA/layer:sheathing": [
 -0.3413125,
 3.048,
 8,
-"004ebc4020f7"
+"9a6ab84a606e"
 ],
 "geometry/CMW106AAAA/layer:spray-foam": [
 -0.3413125,
 3.048,
 8,
-"004ebc4020f7"
+"9a6ab84a606e"
 ],
 "geometry/CMW106AAAA/layer:stud": [
 -0.3413125,
 3.048,
 8,
-"004ebc4020f7"
+"9a6ab84a606e"
 ],
 "geometry/CMW106AAAA/layer:vent-gap": [
 -0.3413125,
 3.048,
 8,
-"004ebc4020f7"
+"9a6ab84a606e"
 ],
 "geometry/CMW106AAAA::framing/member:backing-0-000": [
 0.9144,
@@ -132225,26 +132225,26 @@
 "solids/WP-CD-M-DATA-PORCH-W-M-S1-SLEEVE/z1_m": 2.72288,
 "solids/WP-PR-A-RFG-HP1-W-M-N1-INLET/z0_m": 0.69215,
 "solids/WP-PR-A-RFG-HP1-W-M-N1-INLET/z1_m": 0.83185,
-"solids/WP-PR-A-RFG-HP1-W-M-N1-SLEEVE/z0_m": 0.71755,
-"solids/WP-PR-A-RFG-HP1-W-M-N1-SLEEVE/z1_m": 0.80645,
+"solids/WP-PR-A-RFG-HP1-W-M-N1-SLEEVE/z0_m": 0.70485,
+"solids/WP-PR-A-RFG-HP1-W-M-N1-SLEEVE/z1_m": 0.81915,
 "solids/WP-PR-B-RFG-HP2-GYM-W-M-S2-INLET/z0_m": -0.2200275,
 "solids/WP-PR-B-RFG-HP2-GYM-W-M-S2-INLET/z1_m": -0.0803275,
-"solids/WP-PR-B-RFG-HP2-GYM-W-M-S2-SLEEVE/z0_m": -0.18034,
-"solids/WP-PR-B-RFG-HP2-GYM-W-M-S2-SLEEVE/z1_m": -0.120015,
-"solids/WP-PR-M-CW-PORCH-HYD-CU-W-M-S1-SLEEVE/z0_m": 0.53467,
-"solids/WP-PR-M-CW-PORCH-HYD-CU-W-M-S1-SLEEVE/z1_m": 0.58293,
+"solids/WP-PR-B-RFG-HP2-GYM-W-M-S2-SLEEVE/z0_m": -0.1946275,
+"solids/WP-PR-B-RFG-HP2-GYM-W-M-S2-SLEEVE/z1_m": -0.1057275,
+"solids/WP-PR-M-CW-PORCH-HYD-CU-W-M-S1-SLEEVE/z0_m": 0.5222875,
+"solids/WP-PR-M-CW-PORCH-HYD-CU-W-M-S1-SLEEVE/z1_m": 0.5953125,
 "solids/WP-PR-M-RFG-HP2-BED-W-M-S2-INLET/z0_m": -0.1855298,
 "solids/WP-PR-M-RFG-HP2-BED-W-M-S2-INLET/z1_m": -0.0458298,
-"solids/WP-PR-M-RFG-HP2-BED-W-M-S2-SLEEVE/z0_m": -0.1458423,
-"solids/WP-PR-M-RFG-HP2-BED-W-M-S2-SLEEVE/z1_m": -0.0855173,
+"solids/WP-PR-M-RFG-HP2-BED-W-M-S2-SLEEVE/z0_m": -0.1601298,
+"solids/WP-PR-M-RFG-HP2-BED-W-M-S2-SLEEVE/z1_m": -0.0712298,
 "solids/WP-PR-M-RFG-HP2-LIVING-W-M-S2-INLET/z0_m": -0.17145,
 "solids/WP-PR-M-RFG-HP2-LIVING-W-M-S2-INLET/z1_m": -0.03175,
-"solids/WP-PR-M-RFG-HP2-LIVING-W-M-S2-SLEEVE/z0_m": -0.1317625,
-"solids/WP-PR-M-RFG-HP2-LIVING-W-M-S2-SLEEVE/z1_m": -0.0714375,
+"solids/WP-PR-M-RFG-HP2-LIVING-W-M-S2-SLEEVE/z0_m": -0.14605,
+"solids/WP-PR-M-RFG-HP2-LIVING-W-M-S2-SLEEVE/z1_m": -0.05715,
 "solids/WP-PR-M-RFG-HP3-STAIR-W-M-N2-INLET/z0_m": 2.53365,
 "solids/WP-PR-M-RFG-HP3-STAIR-W-M-N2-INLET/z1_m": 2.67335,
-"solids/WP-PR-M-RFG-HP3-STAIR-W-M-N2-SLEEVE/z0_m": 2.5733375,
-"solids/WP-PR-M-RFG-HP3-STAIR-W-M-N2-SLEEVE/z1_m": 2.6336625,
+"solids/WP-PR-M-RFG-HP3-STAIR-W-M-N2-SLEEVE/z0_m": 2.55905,
+"solids/WP-PR-M-RFG-HP3-STAIR-W-M-N2-SLEEVE/z1_m": 2.64795,
 "solids/WP-VR-M-STACK-4in-vent-W-A-N2-BOOT/z0_m": 7.096125,
 "solids/WP-VR-M-STACK-4in-vent-W-A-N2-BOOT/z1_m": 7.331075,
 "solids/WP-VR-M-STACK-4in-vent-W-A-N2-SLEEVE/z0_m": 7.1294625,

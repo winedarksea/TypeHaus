@@ -101,14 +101,16 @@ LINESETS_MAIN = [
             elevations=(inch(-10), inch(-10), inch(-10), inch(102.5), inch(102.5),
                         inch(102.5), inch(36), inch(34))),
     # The framed-wall holes, sized to the derived PVC sleeve (decision #142: sleeved at the
-    # sheathing, ccSPF sprayed to it, the cover's wall inlet outside): HP1 its 3" sleeve's
-    # 3 1/2" OD; HP3 3", over its 2" sleeve, to pass the run's 2 3/4" lagged envelope.
+    # sheathing, ccSPF sprayed to it, the cover's wall inlet outside), one size over the
+    # lagged bundle: HP3 2 3/4" in a 3" (3 1/2" OD). HP1's 3 1/8" takes a 4" sleeve (4 1/2"
+    # OD) flanged on the sheathing's face, so its hole stays the 4" bore (BORE_MAX_IN: a
+    # bigger one is framed around and breaks the field).
     # HP2's three sets cross FS-M-EAST's LSL rim below the wall, each in its own TJ-8000 rim hole: a floor
     # penetration, not a wall RoughOpening (one there frames a header into the plates).
-    RoughOpening(uid="5XPG5EHW9R", tag="AO-M-RFG-HP1", host="W-M-N1", position=from_node("N-M-NE", inch(122.375)),
-                 width=inch(3.5), height=inch(3.5), sill_height=inch(28.25),
+    RoughOpening(uid="5XPG5EHW9R", tag="AO-M-RFG-HP1", host="W-M-N1", position=from_node("N-M-NE", inch(122.125)),
+                 width=inch(4), height=inch(4), sill_height=inch(28),
                  penetration_for=("PR-A-RFG-HP1",)),
-    RoughOpening(uid="JRPGX9HKB5", tag="AO-M-RFG-HP3", host="W-M-N2", position=from_node("N-M-N1", inch(78.5)),
-                 width=inch(3), height=inch(3), sill_height=inch(101),
+    RoughOpening(uid="JRPGX9HKB5", tag="AO-M-RFG-HP3", host="W-M-N2", position=from_node("N-M-N1", inch(78.25)),
+                 width=inch(3.5), height=inch(3.5), sill_height=inch(100.75),
                  penetration_for=("PR-M-RFG-HP3-STAIR",)),
 ]

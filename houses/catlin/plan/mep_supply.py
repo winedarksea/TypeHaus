@@ -904,6 +904,8 @@ HYDRANT_BRANCH_SECOND = [
 # elastomeric sleeve, so 1 7/8" over the sleeve, and `PA-*-HYD-SEAL` foams a 1/4" annulus:
 # 2 3/8" is the computed minimum and 2 1/2" is the size that exists. The extra 1/16" of
 # annulus per side is foam, which is what the seal's install_parts already buy.
+# AO-M-PORCH-HYD is 2 7/8" since decision #142: the derived 2 1/2" Sch 40 PVC sleeve's OD
+# (PENETRATION-STANDARD, one size over the 1 7/8" lagged barrel). SP-S-BALCONY-HYD is authored.
 #
 # ** TWO DATUMS, AND THEY ARE NOT THE SAME ONE (E11, 2026-09-20). ** `RoughOpening.
 # sill_height` is measured off the WALL BASE — W-M-S1's `base_ref_z` is 0", W-S-S1's is
@@ -947,8 +949,8 @@ HYDRANT_BRANCH_SECOND = [
 # which is `resolve/framing/openings.framed_around` and the reason BK-M-S1-HYD survives it.
 PENETRATIONS_HYDRANT_MAIN = [
     RoughOpening(uid="H72PNVX9AV", tag="AO-M-PORCH-HYD", host="W-M-S1",
-                 position=from_node("N-M-SW", inch(150.75)),
-                 width=inch(2.5), height=inch(2.5), sill_height=inch(20.75),
+                 position=from_node("N-M-SW", inch(150.5625)),
+                 width=inch(2.875), height=inch(2.875), sill_height=inch(20.5625),
                  depth=inch(12), depth_from="exterior",
                  penetration_for=("PR-M-CW-PORCH-HYD-CU", "PR-M-CW-PORCH-HYD")),
 ]

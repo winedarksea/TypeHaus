@@ -26,8 +26,12 @@ def test_north_gable_has_the_vent_and_radon_exits_and_four_strap_blocks(catlin_m
 
 
 def test_hp2_linesets_cross_one_per_batten_bay(catlin_model_ro):
-    sets = sorted(p.station_m for p in _pens(catlin_model_ro, "W-M-S2") if p.kind == "lineset")
+    pens = [p for p in _pens(catlin_model_ro, "W-M-S2") if p.kind == "lineset"]
+    sets = sorted(p.station_m for p in pens)
     assert len(sets) == 3
+    # The sleeve passes the LAGGED bundle, not the bare tubes.
+    bundles = {r.tag: r.bundle_diameter_m for r in catlin_model_ro.pipe_runs}
+    assert all(p.outside_d_m == pytest.approx(bundles[p.run_tag]) for p in pens)
     assert [b - a for a, b in zip(sets, sets[1:], strict=False)] == pytest.approx([12 * _IN] * 2)
 
 

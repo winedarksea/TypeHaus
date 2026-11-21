@@ -702,8 +702,9 @@ of this.
 
 - ~~The line set sleeves.~~ **Modelled since 2026-11-20 (decision #142):** every set's wall
   crossing is a derived `WP-PR-*` record off `PENETRATION-STANDARD` (PVC sleeve to the ccSPF,
-  the cover's wall inlet on a flat, the cover swept along the outdoor leg); HP1's and HP3's
-  `AO-M-RFG-*` are sized to the sleeve OD, and HP2's three cross the rim one per W-M-S2 batten
+  the cover's wall inlet on a flat, the cover swept along the outdoor leg); each sleeve is one
+  size over the LAGGED bundle (HP1 4", HP2/HP3 3"); `AO-M-RFG-HP3` is the sleeve's OD and HP1's
+  stays the 4" bore under its sheathing-face flange, and HP2's three cross the rim one per W-M-S2 batten
   bay, 12" c-c at x 380/392/404. The rim holes themselves are still not drawn.
 - **`CD-B-HP1`, a power raceway from the panel to the north pad.** Deliberately not added in
   the 2026-09-04 pass: no check requires one, and the omission got *cheaper* with the move
