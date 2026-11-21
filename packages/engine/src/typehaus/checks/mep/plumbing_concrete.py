@@ -30,6 +30,7 @@ from typehaus.model.enums import Service
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.placeables import placed_xy
 from typehaus.resolve.slab_clip import floor_outline
+from typehaus.resolve.slab_dish import lowest_lift_along
 from typehaus.resolve.solid_categories import is_pour_slab
 
 _ALIGNMENT_TOLERANCE_M = 0.0127  # 1/2"
@@ -216,7 +217,8 @@ def under_slab_burial(ctx: CheckContext) -> list[Finding]:
                     continue
                 if crown >= slab.z1_m - 1e-6:
                     continue  # above the slab — not an under-slab segment
-                gap = slab.z0_m - crown
+                # A dished pour's underside drops with its top (#148).
+                gap = slab.z0_m + lowest_lift_along(ctx.model, slab, a, b) - crown
                 if worst is None or gap < worst[0]:
                     worst = (gap, slab.tag)
         if worst is None:

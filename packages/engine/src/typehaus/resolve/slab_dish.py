@@ -113,6 +113,28 @@ def piece_at(model: Any, solid: Any, xy: tuple[float, float]) -> Any:
     return solid
 
 
+def lowest_lift_along(model: Any, solid: Any, a: tuple[float, float],
+                      b: tuple[float, float]) -> float:
+    """The deepest dish lift (<= 0) of authored slab ``solid`` along plan segment ``a``-``b``.
+
+    The surface is linear between hips, so the minimum lies at a clipped end or a hip crossing.
+    """
+    from shapely.geometry import LineString, Polygon
+
+    segment, low = LineString((a, b)), 0.0
+    for piece in model.solids:
+        dish = piece.dish
+        if dish is None or dish.slab_uid != solid.uid or piece.category != solid.category:
+            continue
+        inside = segment.intersection(Polygon(dish.ring))
+        points = [p for g in getattr(inside, "geoms", (inside,)) for p in g.coords]
+        for vertex in dish.ring:
+            cross = segment.intersection(LineString((dish.drain, vertex)))
+            points += [p for g in getattr(cross, "geoms", (cross,)) for p in g.coords]
+        low = min(low, *(dish.lift(x, y) for x, y in points)) if points else low
+    return low
+
+
 def _signed_area(ring) -> float:
     return sum(a[0] * b[1] - b[0] * a[1]
                for a, b in zip(ring, list(ring[1:]) + list(ring[:1]), strict=True)) / 2

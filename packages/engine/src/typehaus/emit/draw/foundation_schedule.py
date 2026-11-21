@@ -108,7 +108,8 @@ def slabs_on_grade(model: ResolvedModel) -> list[ResolvedSolid]:
     storey_elevation = {storey.tag: storey.elevation.meters for storey in model.plan.storeys}
     out: list[ResolvedSolid] = []
     for solid in model.solids:
-        if not is_pour_slab(solid.category) or is_flatwork(model.plan, solid):
+        if (not is_pour_slab(solid.category) or is_flatwork(model.plan, solid)
+                or solid.dish is not None):  # a drain dish is inside its slab's row (#148)
             continue
         if (_carried_by_deck(model, solid)
                 or _room_below(model, solid, storey_elevation)):

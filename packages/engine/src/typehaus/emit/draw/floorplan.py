@@ -279,7 +279,8 @@ def _emit_slabs(b: SceneBuilder, model: ResolvedModel, storey: str,
     # line would otherwise set this sheet's extent and drop its scale.
     for slab in sorted((s for s in model.solids
                         if in_slab_family(s.category) and s.storey == storey
-                        and not is_flatwork(model.plan, s)),
+                        and not is_flatwork(model.plan, s)
+                        and s.dish is None),  # a drain dish lies inside its slab (#148)
                        key=lambda s: s.uid):
         _draw(slab.outline, slab.uid, slab.tag)
     # Only a deck no rooms sit on: an interior floor's subfloor covers the whole storey and

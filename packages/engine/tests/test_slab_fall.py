@@ -166,3 +166,18 @@ def test_catlin_sauna_floor_dishes_to_its_drain(catlin_model_ro) -> None:
     assert not any(layer.bottom_plane is not None for wall in model.walls
                    if wall.tag.startswith("W-B-SA") or wall.tag == "W-B-CS"
                    for layer in wall.layers)
+
+
+def test_the_deepest_lift_along_a_segment_is_found_on_its_hips() -> None:
+    from types import SimpleNamespace
+
+    from typehaus.resolve.slab_dish import build_dish, lowest_lift_along
+
+    dish = build_dish("U", "SL-T", _DRAIN, list(_RING), 0.125)
+    slab = ResolvedSolid("U", "SL-T", "s", "slab", list(_RING), -0.0889, 0.0)
+    piece = ResolvedSolid("U-dish-0", "SL-T:dish-0", "s", "slab", list(_RING),
+                          -0.0889, 0.0, dish=dish)
+    model = SimpleNamespace(solids=[slab, piece])
+    across = ((-1.0, _DRAIN[1]), (ft(13).meters, _DRAIN[1]))  # through the drain
+    assert lowest_lift_along(model, slab, *across) == pytest.approx(-dish.rise_m)
+    assert lowest_lift_along(model, slab, (-2.0, -1.0), (-1.0, -2.0)) == 0.0  # outside
