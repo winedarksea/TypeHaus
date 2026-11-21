@@ -27,7 +27,8 @@ def test_the_oak_flights_bill_owner_furnished_pieces(catlin_model_ro) -> None:
     b2m = [r for r in rows if r["stair"] == "ST-B2M"]
     assert {(r["use"], r["material"], r["supply"]) for r in b2m} == {
         ("riser", "plywood-subfloor", "purchased")}
-    assert sum(r["pieces"] for r in b2m) == 15
+    # 15 risers; the landing riser is cut round both well posts into two pieces.
+    assert sum(r["pieces"] for r in b2m) == 16
     # The landing field is the floor oak, 3/4" — its nosing is a millwork detail.
     [landing] = [r for r in rows if r["use"] == "landing"]
     assert (landing["material"], landing["thickness_in"]) == ("oak-floor-custom", 0.75)

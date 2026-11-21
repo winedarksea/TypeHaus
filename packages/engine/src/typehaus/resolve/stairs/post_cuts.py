@@ -3,7 +3,8 @@
 A landing rim or joist whose run reaches an authored ``Post`` standing through the landing
 framing is cut at the column faces; a run through a column becomes two pieces. Every cut end
 then hangs on that face (``joints/column_hung.py`` derives a concealed-flange hanger), so no
-rim runs into a post or rests on nothing. Hand check:
+rim runs into a post or rests on nothing. A riser board on that line is cut the same way and
+the deck is notched round the post. Hand check:
 houses/catlin/notes/stair_landing_post_hangers.md.
 """
 
@@ -55,18 +56,41 @@ def _authored_post_spans(model: ResolvedModel) -> list[PostSpan]:
 
 def frame_landing_to_posts(model: ResolvedModel, members: tuple[FramedMember, ...]
                            ) -> tuple[FramedMember, ...]:
-    """``members`` with every level landing rim/joist cut back to the authored posts' faces."""
+    """``members`` with every level landing rim/joist and riser board cut back to the
+    authored posts' faces, and each landing deck notched round them."""
     spans = _authored_post_spans(model)
     if not spans:
         return members
     out: list[FramedMember] = []
     for member in members:
-        if (member.category != "landing_framing" or member.p0 == member.p1
+        if member.category == "landing" and member.plan_outline is None:
+            out.append(_notch_deck(member, spans))
+            continue
+        if (member.category not in ("landing_framing", "riser") or member.p0 == member.p1
                 or "winder" in member.child_key):
             out.append(member)
             continue
         out.extend(_cut_at_posts(member, spans))
     return tuple(out)
+
+
+def _notch_deck(member: FramedMember, spans: list[PostSpan]) -> FramedMember:
+    """The deck less every post standing through its thickness, when that leaves one
+    simple outline (a post wholly inside a deck would need a hole; it keeps its board)."""
+    from shapely.geometry import Polygon, box
+
+    from typehaus.resolve.framing.footprint import member_footprint
+    from typehaus.resolve.stairs.winder_geometry import polygon_ring
+
+    deck = Polygon(member_footprint(member)[0])
+    cut = deck
+    for plan, z0, z1 in spans:
+        if member.z0_m < z1 - _TOL and member.z1_m > z0 + _TOL:
+            cut = cut.difference(box(*plan))
+    if (cut.equals(deck) or cut.geom_type != "Polygon" or cut.interiors
+            or cut.area < deck.area * 0.5):
+        return member
+    return replace(member, plan_outline=polygon_ring(cut))
 
 
 def _cut_at_posts(member: FramedMember, spans: list[PostSpan]) -> list[FramedMember]:

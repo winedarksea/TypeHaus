@@ -23,12 +23,13 @@ def test_carpet_covers_every_stair_surface_without_entering_takeoff(catlin_model
     by_role = {role: [part for part in stair.finish_parts if part.role == role]
                for role in ("walking", "nosing", "riser")}
     assert {role: len(parts) for role, parts in by_role.items()} == {
-        "walking": 14, "nosing": 12, "riser": 15}
+        "walking": 14, "nosing": 12, "riser": 16}  # the landing riser is cut at the posts
     # The landing edges' lips are carpet over the nose; the stairhead's is a flush LVP stair
     # nose on the main floor (notes/stair_nosing_basis.md).
     lips = {part.key: part.material_ref for part in stair.finish_parts
             if part.role == "landing-nosing"}
-    assert lips == {"landing-lower:nosing": _CARPET, "landing-upper:nosing": _CARPET,
+    assert lips == {"landing-lower:nosing": _CARPET, "landing-upper:nosing-seg0": _CARPET,
+                    "landing-upper:nosing-seg1": _CARPET,
                     "stairhead:nosing": "lvp"}
     assert all(part.z1_m > part.z0_m for part in stair.finish_parts)
     assert all(part.material_ref == _CARPET for part in stair.finish_parts
@@ -36,7 +37,7 @@ def test_carpet_covers_every_stair_surface_without_entering_takeoff(catlin_model
     assert {part.key for part in by_role["walking"]} == {
         f"{member.child_key}:top" for member in stair.members
         if member.category in {"tread", "landing"}}
-    assert "riser-landing:face" in {part.key for part in by_role["riser"]}
+    assert "riser-landing-seg1:face" in {part.key for part in by_role["riser"]}
 
     for member in stair.members:
         if member.category in {"tread", "landing"}:
@@ -51,7 +52,7 @@ def test_carpet_covers_every_stair_surface_without_entering_takeoff(catlin_model
     [finish_row] = [row for row in stair_finish_takeoff(catlin_model_ro)
                     if row["stair"] == stair.tag]
     assert (finish_row["treads"], finish_row["risers"],
-            finish_row["landing_decks"]) == (12, 15, 2)
+            finish_row["landing_decks"]) == (12, 16, 2)
 
 
 def test_carpet_surfaces_reach_model_json_and_geometry_ir(catlin_model_ro):
@@ -89,6 +90,8 @@ def test_carpet_is_ifc_covering_under_stair(catlin_ifc_path):
     children = [item for relation in stair.IsDecomposedBy for item in relation.RelatedObjects]
     coverings = [item for item in children if item.is_a("IfcCovering")
                  and item.PredefinedType != "CEILING"]  # the gypsum underside is its own
-    assert len(coverings) == 44  # 41 carpet faces + two carpet lips + the LVP stairhead nose
-    assert any(item.Name == "ST-B2M/riser-landing:face" for item in coverings)
+    # 42 carpet faces + three carpet lips + the LVP stairhead nose (the landing riser and its
+    # lip are cut round the well posts)
+    assert len(coverings) == 46
+    assert any(item.Name == "ST-B2M/riser-landing-seg1:face" for item in coverings)
     assert all(item.Representation is not None for item in coverings)

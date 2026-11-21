@@ -87,6 +87,14 @@ CONNECTOR_NAILS = (
                "Class 55, an alternate to hot-dip galvanized (ESR-3046); \"to be used with "
                "galvanized connectors\" (note 1).",
     ),
+    StructuralHardware(
+        tag="simpson-sd10112", name="Strong-Drive SD connector screw, #10 x 1-1/2in",
+        role=ROLE_CONNECTOR_NAIL, manufacturer=_SIMPSON, model="SD10112",
+        exposure=EXPOSURE_TREATED, finish="mech_galv",
+        source="Simpson Strong-Tie C-C-2026 pp.25, 378-379: 0.161in shank, mechanically "
+               "galvanized as SD9112; p.26 replaces a 0.162x3-1/2 face-mount header nail at "
+               "1.00 download and uplift.",
+    ),
 )
 
 #: The treated-framing allowance's nails. The HDG record is the library DEFAULT for any

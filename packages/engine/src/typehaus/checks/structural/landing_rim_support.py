@@ -22,10 +22,12 @@ from typehaus.resolve.model import FramedMember, ResolvedStair
 
 CHECK_ID = "structural.landing_rim_support"
 _R502_6_MIN_BEARING_IN = 1.5  # IRC R502.6: 1 1/2" on wood or metal
+_R502_6 = "IRC R502.6"
 _WALL_CARRIED = ("framed-wall-ledger:", "concrete-wall-hanger:", "framed-wall-spacer:")
 _PSF_TO_PA = 47.880259
 _N_PER_LB = 4.448222
 _TOL = 1e-4
+_NEAR_M = 2 * M_PER_IN  # a stringer end this close to a member's depth bears on it
 
 
 def _rims(stair: ResolvedStair) -> list[FramedMember]:
@@ -118,35 +120,65 @@ def _wall_reaches(ctx: CheckContext, stair: ResolvedStair, rim: FramedMember, en
 
 
 def _hung_reaction_lb(stair: ResolvedStair, member: FramedMember, end) -> float:
-    """(D + L) at a hung end: the member's uniform tributary plus stringer feet on it."""
+    """(D + L) at a hung end, lever-ruled: a joist's uniform strip plus the stringer feet on
+    it; a rim's joists framing into it (never less than its half-joist strip, smeared)."""
     psf = _LIVE_PSF + _DEAD_PSF
-    axis = _run_axis(member)
     length = math.dist(member.p0, member.p1)
+    name = member.child_key.split("-")[2]
+    joists = [m for m in stair.members if m.child_key.startswith(f"landing-joist-{name}-")
+              and m.p0 != m.p1]
     if member.child_key.startswith("landing-rim-"):
-        name = member.child_key.split("-")[2]
-        joists = [m for m in stair.members if m.child_key.startswith(f"landing-joist-{name}-")]
         width = max((math.dist(j.p0, j.p1) for j in joists), default=0.0) / 2.0
-    else:
-        name = member.child_key.split("-")[2]
-        stations = sorted(m.p0[1 - axis] for m in stair.members
-                          if m.child_key.startswith(f"landing-joist-{name}-"))
-        here = member.p0[1 - axis]
-        gaps = [abs(s - here) for s in stations if abs(s - here) > _TOL]
-        width = min(gaps, default=0.0) / 2.0 + _half(member)
+        smeared = psf * _PSF_TO_PA * width * length / 2.0 / _N_PER_LB
+        point = sum(_hung_reaction_lb(stair, joist, foot)
+                    * _lever(member, foot, end, length)
+                    for joist in joists for foot in (joist.p0, joist.p1)
+                    if _lands_on(member, foot))
+        return max(smeared, point)
+    axis = _run_axis(member)
+    here = member.p0[1 - axis]
+    stations = [m.p0[1 - axis] for m in joists if abs(m.p0[1 - axis] - here) > _TOL]
+    below = [here - s for s in stations if s < here]
+    above = [s - here for s in stations if s > here]
+    width = ((min(below) / 2.0 if below else _half(member))
+             + (min(above) / 2.0 if above else _half(member)))
     uniform = psf * _PSF_TO_PA * width * length / 2.0
     point = 0.0
     for flight in _flights(stair).values():
         for stringer, tributary_m in flight:
-            for foot in (stringer.p0, stringer.p1):
-                if abs(foot[1 - axis] - member.p0[1 - axis]) > _half(member) + 1.5 * M_PER_IN:
+            ends = ((stringer.p0, stringer.z0_m, stringer.z1_m),
+                    (stringer.p1, _or(stringer.z0_end_m, stringer.z0_m),
+                     _or(stringer.z1_end_m, stringer.z1_m)))
+            for foot, z0, z1 in ends:
+                if abs(foot[1 - axis] - here) > _half(member) + 1.5 * M_PER_IN:
                     continue
+                if z1 < member.z0_m - _NEAR_M or z0 > member.z1_m + _NEAR_M:
+                    continue  # a flight on another landing over the same plan point
                 lo, hi = sorted((member.p0[axis], member.p1[axis]))
                 if not lo - _TOL <= foot[axis] <= hi + _TOL:
                     continue
                 run = math.dist(stringer.p0, stringer.p1)
                 load = psf * _PSF_TO_PA * tributary_m * run / 2.0
-                point += load * (1.0 - abs(foot[axis] - end[axis]) / max(length, 1e-9))
+                point += load * _lever(member, foot, end, length)
     return (uniform + point) / _N_PER_LB
+
+
+def _or(value: float | None, default: float) -> float:
+    return default if value is None else value
+
+
+def _lever(member: FramedMember, at, end, length: float) -> float:
+    """The share of a load at ``at`` that reaches ``end`` of a simple span."""
+    axis = _run_axis(member)
+    return max(0.0, 1.0 - abs(at[axis] - end[axis]) / max(length, 1e-9))
+
+
+def _lands_on(rim: FramedMember, foot) -> bool:
+    """A joist end inside the rim's run, on its line (the joists run to its centreline)."""
+    axis = _run_axis(rim)
+    lo, hi = sorted((rim.p0[axis], rim.p1[axis]))
+    return (abs(foot[1 - axis] - rim.p0[1 - axis]) <= _half(rim) + _TOL
+            and lo + _TOL < foot[axis] < hi - _TOL)
 
 
 def _flights(stair: ResolvedStair) -> dict[str, list[tuple[FramedMember, float]]]:
@@ -202,7 +234,8 @@ def landing_rim_support(ctx: CheckContext) -> list[Finding]:
             if column is not None:
                 out.append(_advisory(CHECK_ID, f"{label} runs into column {column}",
                                      (stair.tag, column), Result.FAIL,
-                                     "stop the rim at the column faces and hang each end"))
+                                     "stop the rim at the column faces and hang each end",
+                                     code=_R502_6))
                 continue
             for end in (rim.p0, rim.p1):
                 out.append(_end_finding(ctx, stair, rim, end, label, posts))
@@ -247,19 +280,22 @@ def _end_finding(ctx, stair, rim, end, label, posts) -> Finding:
     column = _column_face_under(columns, end, into, 2 * _half(rim), rim)
     if column is not None:
         return _advisory(CHECK_ID, f"{label} end {feet} hangs on {column.tag}'s face",
-                         (stair.tag, column.tag), Result.PASS)
+                         (stair.tag, column.tag), Result.PASS, code=_R502_6)
     if _wall_reaches(ctx, stair, rim, end):
         return _advisory(CHECK_ID, f"{label} end {feet} is fastened along "
-                         f"{rim.connection.split(':', 1)[1]}", (stair.tag,), Result.PASS)
+                         f"{rim.connection.split(':', 1)[1]} (that fastening is not graded "
+                         "here)", (stair.tag,), Result.PASS, code=_R502_6)
     post = _post_bearing_in(rim, end, posts)
     if post is not None:
         result = Result.PASS if post[1] >= _R502_6_MIN_BEARING_IN - 1e-6 else Result.FAIL
         return _advisory(CHECK_ID, f"{label} end {feet} bears {post[1]:.2f}\" on {post[0]} "
                          f"(IRC R502.6 min {_R502_6_MIN_BEARING_IN}\")", (stair.tag,), result,
-                         "set the post under the rim end for 1 1/2\" of bearing")
+                         "set the post under the rim end for 1 1/2\" of bearing",
+                         code=_R502_6)
     corner = _framed_into(stair, rim, end)
     if corner is not None:
         return _advisory(CHECK_ID, f"{label} end {feet} frames into wall-carried {corner}",
-                         (stair.tag,), Result.PASS)
+                         (stair.tag,), Result.PASS, code=_R502_6)
     return _advisory(CHECK_ID, f"{label} end {feet} bears on nothing", (stair.tag,),
-                     Result.FAIL, "post the corner, hang it on a column face or ledger it")
+                     Result.FAIL, "post the corner, hang it on a column face or ledger it",
+                     code=_R502_6)

@@ -197,7 +197,7 @@ MN_INSPECTIONS: tuple[InspectionSpec, ...] = (
                    "structural.header_prescriptive", "structural.header_span",
                    "structural.wall_role_load", "structural.stacked_line_ladder",
                    "structural.ridge_beam_depth", "structural.ridge_bearing",
-                   "structural.stair_stringer",
+                   "structural.stair_stringer", "structural.landing_rim_support",
                    "structural.member_interference", "structural.floor_opening_header",
                    "structural.uplift_path_coverage", "code.R302_5_garage_separation",
                    "code.R302_13_floor_protection", "code.fireblock_chase"),

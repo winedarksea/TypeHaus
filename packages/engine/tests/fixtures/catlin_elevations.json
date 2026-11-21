@@ -50354,7 +50354,13 @@
 2,
 "876da508a8b7"
 ],
-"geometry/CST701AAAA::finish/landing-upper:nosing": [
+"geometry/CST701AAAA::finish/landing-upper:nosing-seg0": [
+-1.3150558,
+-1.2833058,
+2,
+"43c9dc6ea972"
+],
+"geometry/CST701AAAA::finish/landing-upper:nosing-seg1": [
 -1.3150558,
 -1.2833058,
 2,
@@ -50366,7 +50372,13 @@
 2,
 "859ad024f862"
 ],
-"geometry/CST701AAAA::finish/riser-landing:face": [
+"geometry/CST701AAAA::finish/riser-landing-seg0:face": [
+-1.4703567,
+-1.3150558,
+2,
+"5d9de3afbfc2"
+],
+"geometry/CST701AAAA::finish/riser-landing-seg1:face": [
 -1.4703567,
 -1.3150558,
 2,
@@ -50681,8 +50693,8 @@
 "geometry/CST701AAAA::framing/member:landing-lower": [
 -1.5021067,
 -1.4767067,
-8,
-"cb610ebc3f82"
+2,
+"18f71fe426f9"
 ],
 "geometry/CST701AAAA::framing/member:landing-rim-lower-0-seg0": [
 -1.6862567,
@@ -50723,8 +50735,8 @@
 "geometry/CST701AAAA::framing/member:landing-upper": [
 -1.3150558,
 -1.2896558,
-8,
-"74a8ee5ae81c"
+2,
+"866d24b8d8f7"
 ],
 "geometry/CST701AAAA::framing/member:ledger-W-B-CN-stringer-lower-2": [
 -2.7797125,
@@ -50738,7 +50750,13 @@
 8,
 "53069222e6f4"
 ],
-"geometry/CST701AAAA::framing/member:riser-landing": [
+"geometry/CST701AAAA::framing/member:riser-landing-seg0": [
+-1.4703567,
+-1.3150558,
+8,
+"c9791f4b4c71"
+],
+"geometry/CST701AAAA::framing/member:riser-landing-seg1": [
 -1.4703567,
 -1.3150558,
 8,
@@ -105240,7 +105258,13 @@
 4,
 "afdc37bb97e7"
 ],
-"member/CST701AAAA/riser-landing": [
+"member/CST701AAAA/riser-landing-seg0": [
+-1.4703567,
+-1.3150558,
+2,
+"5d9de3afbfc2"
+],
+"member/CST701AAAA/riser-landing-seg1": [
 -1.4703567,
 -1.3150558,
 2,

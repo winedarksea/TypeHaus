@@ -64,7 +64,8 @@ def test_riser_boards(catlin_model_ro, tag, material, heights):
     """§4: every step carries a 3/4" board of the flight's riser stock."""
     stair = _stair(catlin_model_ro, tag)
     risers = [m for m in stair.members if m.category == "riser"]
-    assert len(risers) == len(steps(stair))
+    # A riser cut round a post (resolve/stairs/post_cuts.py) is still one step.
+    assert len({m.child_key.split("-seg")[0] for m in risers}) == len(steps(stair))
     assert {m.material for m in risers} == {material}
     assert {round((m.z1_m - m.z0_m) / _IN, 3) for m in risers} == heights
     assert {m.profile.split("x")[0] for m in risers} == {"0.750"}

@@ -163,7 +163,10 @@ def landing_nosing_parts(members: tuple[FramedMember, ...], material_ref: str,
             back = [(x + ux * half, y + uy * half) for x, y in (riser.p0, riser.p1)]
             if any(edge.distance(Point(point)) > 1e-3 for point in back):
                 continue
-            parts.append(nosing_lip(riser, f"{landing.child_key}:nosing", material_ref,
+            # A riser cut round a post (post_cuts.py) takes one lip per piece.
+            seg = riser.child_key.rsplit("-", 1)[1] if "-seg" in riser.child_key else ""
+            key = f"{landing.child_key}:nosing" + (f"-{seg}" if seg else "")
+            parts.append(nosing_lip(riser, key, material_ref,
                                     landing.z1_m + finish_m, nosing_m, finish_m))
     return tuple(parts)
 

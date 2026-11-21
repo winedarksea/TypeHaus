@@ -29,16 +29,20 @@ lands at the corner and is conservative against the two-way split.
 
 | item | basis | lb |
 |---|---|---|
-| ST-B2M landing corner (post SS) | 2 halves x [(44.75/2 x 49.88/2) + (42.5/2 x 60/2)]/144 = 16.60 sf x 55 | 913 |
+| ST-B2M landings, both posts (hanger reactions) | (638 SS + 412 S) lb at 52 psf x 55/52, `stair_landing_post_hangers.md` §4 | 1,111 |
 | ST-M2S landing post (on S) | 2 halves x [(44.81/2 x 41.50/2) + (41.06/2 x 70/2)]/144 = 16.44 sf x 55 | 904 |
 | ST-M2S well partition, north end | half its inner-stringer load, 2 x (41.06/2 x 70)/144 = 19.96 sf x 55 / 2 | 549 |
 | ST-M2S partition self-weight, half | 6 psf x 5.83' x 10.04' / 2 (plates y 312.38..382.38", z 1.0..121.5") | 176 |
 | ST-B2M well partition, north end | 1' of inner stringers 2 x (21.25 x 12)/144 = 3.54 sf x 55, + 6 psf x 9.2' | 250 |
 | W-B-WELL over the pad | 6 psf x 1.63' x 9.2' (y 366.38..385.88") | 90 |
 | two posts | 2 x 0.0851 sf x 9.03' x 27 pcf | 42 |
-| **column load P** | | **2,924** |
+| **column load P** | | **3,122** |
 | pad self-weight (gross, no displaced-soil credit) | 16 x 24 x 8 in3 = 1.778 cf x 145 pcf | 258 |
-| **total on soil** | | **3,182** |
+| **total on soil** | | **3,380** |
+
+The ST-B2M row was a quarter-landing corner share (913 lb, SS only) until 2026-11-20. Since the
+rims and edge joists were cut at both posts and hung on them, the posts carry the hangers'
+lever-ruled reactions instead: SS 675 and S 436 lb at 55 psf, 1,111 together.
 
 Both partition ends are counted in full. `ST-B2M`'s end stud (y 371.63") stands on the pad,
 just south of SS; the ST-M2S partition is a line load along `W-B-WELL`, so taking half of it
@@ -47,8 +51,8 @@ here is conservative.
 ## 3. Bearing
 
     A = 16 x 24 / 144 = 2.667 sf
-    q = 3,182 / 2.667 = 1,193 psf   <=   2,000 psf (IRC Table R401.4.1, GM; presumed soil)
-    ratio 0.60
+    q = 3,380 / 2.667 = 1,267 psf   <=   2,000 psf (IRC Table R401.4.1, GM; presumed soil)
+    ratio 0.63
 
 The site class is PRESUMED (`plan/site.py` `SoilBasis`), as for every other bearing figure
 in this house.
