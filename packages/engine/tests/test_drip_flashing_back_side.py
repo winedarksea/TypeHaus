@@ -100,3 +100,48 @@ def test_a_lone_run_on_a_deck_edge_is_judged_against_the_deck() -> None:
             update={"host_ref": "FS-DECK", "back_side": back_side})
         lone = plan.model_copy(update={"elements": {"main": (south, deck)}})
         assert list(_results(lone).values()) == [expected]
+
+
+def test_a_lone_cladding_top_drip_is_judged_against_its_wall_core() -> None:
+    """A wall host names the inside by its core, not its node line: aligned to the cladding's
+    outer face, the axis lies OUTBOARD of a drip centred over the cladding top."""
+    from typehaus.model import (
+        Assembly,
+        FramingSpec,
+        Layer,
+        LayerFunction,
+        Material,
+        Node,
+        Wall,
+        ft,
+    )
+    from typehaus.model.refs import face
+    from typehaus.resolve import resolve
+
+    ext = Assembly(tag="EXT", layers=(
+        Layer(name="stud", material_ref="wood", thickness=inch(3.5),
+              function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x4")),
+        Layer(name="cladding", material_ref="wood", thickness=inch(1.5),
+              function=LayerFunction.CLADDING)))
+    nodes = (Node(uid="N000000001", tag="N-1", position=pt(m(0), m(0)), open_end=True),
+             Node(uid="N000000002", tag="N-2", position=pt(m(4), m(0)), open_end=True))
+    wall = Wall(uid="W000000001", tag="W-1", start_node="N-1", end_node="N-2",
+                assembly="EXT", top=ft(4), alignment=face("cladding-ext"))
+    base = _loop_plan(dict.fromkeys("SENW", "left")).model_copy(update={"library": Library(
+        materials=(Material(tag="wood", name="wood"),), assemblies=(ext,))})
+    plan = base.model_copy(update={"elements": {"main": (*nodes, wall)}})
+    resolved = next(w for w in resolve(plan)[0].walls if w.tag == "W-1")
+    clad = next(layer for layer in resolved.layers if layer.function == "cladding")
+    clad_y = sum(p[1] for p in clad.polygon) / len(clad.polygon)
+    axis_y = resolved.axis[0][1]
+    assert abs(clad_y - axis_y) > inch(0.5).meters  # the node line is not the core
+    # Path +x: the left normal is +y. Back toward the core, which lies across the cladding.
+    core_left = clad_y > axis_y
+    for back_side in ("left", "right"):
+        drip = Flashing(uid="drip-wall", tag="TR-WALL", kind=TrimKind.DRIP_FLASHING,
+                        path=(pt(m(0.5), m(clad_y)), pt(m(3.5), m(clad_y))),
+                        top_elevation=ft(4), depth=inch(1), thickness=inch(1.5),
+                        back_side=back_side, host_ref="W-1")
+        lone = plan.model_copy(update={"elements": {"main": (*nodes, wall, drip)}})
+        expected = Result.PASS if (back_side == "left") == core_left else Result.FAIL
+        assert list(_results(lone).values()) == [expected]

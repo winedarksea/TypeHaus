@@ -27,9 +27,10 @@ the building" for every run in it. The host is deliberately *not* consulted: a r
 take a centroid of, while a gutter runs parallel to the drip and so names no side at all.
 The exceptions are hosts that carry a plan body. A ``FloorSystem`` host with an authored
 ``outline`` IS the body the drip trims, so a lone deck-edge drip is judged against the deck's
-own centroid. A wall host (a drip over its cladding's top) is judged against the foot of the
-run's midpoint on the wall's axis: the back side must face the core, and since the run lies
-within the wall's own thickness the degenerate band shrinks to 1/2".
+own centroid. A wall host (a drip over its cladding's top) is judged against its structure
+layer's centre, not its node line, which ``alignment=face(...)`` may put on a face: the back
+side must face the core, and since the run lies within the wall's own thickness the degenerate
+band shrinks to 1/2".
 
 **What is deliberately not graded.** A ``vertical`` run's path spans the cladding thickness
 rather than travelling along the building, so its plan normal means nothing. And a run whose
@@ -44,7 +45,7 @@ from __future__ import annotations
 from typehaus.checks._authoring import failed, not_applicable, passed, unknown
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
-from typehaus.model.enums import TrimKind
+from typehaus.model.enums import LayerFunction, TrimKind
 from typehaus.model.trim import Flashing
 from typehaus.quantities import M_PER_IN
 
@@ -80,18 +81,17 @@ def _host_outline(plan, run) -> list[tuple[float, float]]:
     return [_xy(p) for p in host.outline]
 
 
-def _wall_axis_foot(walls, run, mid) -> tuple[float, float] | None:
-    """Where the run's midpoint falls on its wall host's axis line, or None."""
+def _wall_core_centre(walls, run) -> tuple[float, float] | None:
+    """The centre of a wall host's structure layer(s), or None for any other host."""
     wall = walls.get(run.host_ref) if run.host_ref else None
     if wall is None:
         return None
-    (ax, ay), (bx, by) = wall.axis
-    dx, dy = bx - ax, by - ay
-    length_sq = dx * dx + dy * dy
-    if length_sq == 0.0:
+    core = [layer for layer in wall.layers
+            if layer.function == LayerFunction.STRUCTURE.value and not layer.is_cavity]
+    points = [p for layer in (core or wall.layers) for p in layer.polygon]
+    if not points:
         return None
-    t = ((mid[0] - ax) * dx + (mid[1] - ay) * dy) / length_sq
-    return (ax + t * dx, ay + t * dy)
+    return (sum(p[0] for p in points) / len(points), sum(p[1] for p in points) / len(points))
 
 
 @check(Tier.INTEGRITY, _CHECK_ID)
@@ -130,22 +130,22 @@ def drip_flashing_back_side(ctx: CheckContext) -> list[Finding]:
             continue
 
         mid = ((p0[0] + p1[0]) / 2.0, (p0[1] + p1[1]) / 2.0)
-        foot = _wall_axis_foot(walls, run, mid)
+        core = _wall_core_centre(walls, run)
         points = _host_outline(ctx.plan, run) or by_storey.get(storey_of.get(run.tag)) or []
-        if foot is None and len(points) < 4:
+        if core is None and len(points) < 4:
             findings.append(unknown(
                 _CHECK_ID, f"{run.tag} has too few sibling drip runs on its storey to form a "
                            "loop — nothing names which side of it is the building",
                 tags=(run.tag,)))
             continue
-        reference = foot or (sum(p[0] for p in points) / len(points),
+        reference = core or (sum(p[0] for p in points) / len(points),
                              sum(p[1] for p in points) / len(points))
         to_reference = (reference[0] - mid[0], reference[1] - mid[1])
         # Only the component along the normal matters: the along-path component is where the
         # run sits on the edge, not which side of it the building is.
         toward = to_reference[0] * back[0] + to_reference[1] * back[1]
-        if abs(toward) < (_WALL_DEGENERATE_M if foot else _DEGENERATE_M):
-            where = "its wall's axis" if foot else "its storey's drip loop centroid"
+        if abs(toward) < (_WALL_DEGENERATE_M if core else _DEGENERATE_M):
+            where = "its wall's core" if core else "its storey's drip loop centroid"
             findings.append(unknown(
                 _CHECK_ID,
                 f"{run.tag} sits too close to {where} measured across its own line to "
@@ -157,7 +157,8 @@ def drip_flashing_back_side(ctx: CheckContext) -> list[Finding]:
         findings.append(failed(
             _CHECK_ID,
             f"{run.tag} is back_side=\"{run.back_side}\", which points its back "
-            f"{abs(toward) / M_PER_IN:.0f}\" AWAY from the loop those runs form — the "
+            f"{abs(toward) / M_PER_IN:.0f}\" AWAY from "
+            f"{'its wall host' if core else 'the loop those runs form'} — the "
             "turn-down therefore hangs on the building side and throws water behind "
             "the cladding",
             tags=(run.tag,),

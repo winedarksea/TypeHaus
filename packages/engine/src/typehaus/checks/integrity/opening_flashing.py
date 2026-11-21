@@ -1,6 +1,6 @@
 """Derived sheet goods must name catalog materials; exterior openings must be flashed.
 
-* ``integrity.derived_solid_material`` — a derived solid (opening flashing, a fitted cap,
+* ``integrity.derived_solid_material`` — a derived solid (opening flashing,
   a formed drip) whose material the catalog does not have. The look falls back to a
   category colour and the IFC and inspector material rows are empty, all silently.
 * ``integrity.opening_flashing_coverage`` — an exterior window or door the resolver drew

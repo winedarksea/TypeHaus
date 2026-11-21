@@ -6975,7 +6975,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # GE SCS2000, Pecora 890NST as equals) and rod run ~$2-5/LF; the Emseal 4" stick is gone.
 # Labour is a mason's small lump spread over the run. notes/sunken_garden_veneer_beam.md §6k.
 "movement_joint" = { material = { low = 2, high = 5 }, labour = { low = 10, high = 20 } }  # 14.9 LF — MJ-B-BRICK-E/-W
-"drip_flashing" = { material = { low = 1, high = 3 }, labour = { low = 1, high = 2 } }  # 136.5 LF — 19.5 LF plain aluminium + 19.5 LF balcony gutter apron (TR-SG-APRON, 2026-10-31) + 80.0 LF garage STEM_TOP_Z_FLASHING + 4.5 LF TR-BW-SCREEN-TOP (PVDF aluminium over the west screen cladding top, 2026-11-20) + ~13 LF other. The 321.6 LF of derived roof-edge drip (house 149.7 + garage/canopy 171.9) bills as Image II pieces since 2026-10-27: 52124XX Extended Eave and 52126XX Rake sticks in [cladding_trim]. $1-2/LF on a NEW roof (retrofit is $3-7). Material is high for mill aluminium and right for the prefinished dark Kynar this house uses. Commonly inside the roofer's price — check for a double count against any roofing bid
+"drip_flashing" = { material = { low = 1, high = 3 }, labour = { low = 1, high = 2 } }  # 121.9 LF (re-read 2026-11-21) — 17.9 LF balcony drip TR-SG-DRIP-1..4 + 19.5 LF balcony gutter apron (TR-SG-APRON, 2026-10-31) + 80.0 LF garage STEM_TOP_Z_FLASHING + 4.5 LF TR-BW-SCREEN-TOP (PVDF aluminium over the west screen cladding top, 2026-11-20). The 321.6 LF of derived roof-edge drip (house 149.7 + garage/canopy 171.9) bills as Image II pieces since 2026-10-27: 52124XX Extended Eave and 52126XX Rake sticks in [cladding_trim]. $1-2/LF on a NEW roof (retrofit is $3-7). Material is high for mill aluminium and right for the prefinished dark Kynar this house uses. Commonly inside the roofer's price — check for a double count against any roofing bid
 # 251.8 LF in three runs (81.2 / 96.4 / 74.2): the wall-top closure band, wall-panel metal that
 # the roof edge closes between the wall cladding and the roofing (resolve/roof_edge._closure_segment).
 # It is NOT rake trim; the rake is 52126XX.
@@ -7116,7 +7116,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # CONFIDENCE: HIGH on the narrow row, MEDIUM on the wide one (the 11" roll is unpriceable).
 # $/LF of member, by material tag
 "butyl-tape" = { material = { low = 0.40, high = 0.75 }, labour = { low = 0.30, high = 0.75 } }  # 420.8 LF — joists, rims and blocking on FS-SG-PORCH and FS-SG-BALCONY (+17.3 LF 2026-09-03: the porch enclosure's sixteen flank blocks, which inherit the deck's top_protection like every other stick), plus the four single-ply 2x12 girts. 1-5/8" roll
-"butyl-tape-beam" = { material = { low = 0.85, high = 1.75 }, labour = { low = 0.40, high = 1 } }  # 64.8 LF — the wide built-up beams (SB-BW-BAND's 15.5 LF left with TR-BW-SCREEN-CAP, 2026-11-20). Wide roll, or two runs of the 3-1/8"
+"butyl-tape-beam" = { material = { low = 0.85, high = 1.75 }, labour = { low = 0.40, high = 1 } }  # 47.2 LF (re-read 2026-11-21) — the wide built-up beams (SB-BW-BAND's 15.5 LF left with TR-BW-SCREEN-CAP, 2026-11-20). Wide roll, or two runs of the 3-1/8"
 
 [fireblock_sealant]
 # NEW 2026-11-04 — $/LF of annulus perimeter, by material tag (takeoff fireblock_sealant).
