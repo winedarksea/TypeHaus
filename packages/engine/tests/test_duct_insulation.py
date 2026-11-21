@@ -23,3 +23,17 @@ def test_catlin_verdicts_match_the_hand_grades(catlin_model_ro) -> None:
             assert "R-3.3 + V" in f.message
             length = float(f.message.split("meets ")[1].split(" ft")[0])
             assert 2.8 <= length <= 3.0, f.message
+
+
+def test_a_run_over_a_top_ceiling_with_no_room_above_is_not_conditioned(catlin_model_ro) -> None:
+    """Without the attic's rooms, DU-S-HP-RET's FS-ATTIC bay is over RM-S-*'s ceiling with
+    nothing above: an attic until a Room says otherwise, never silently conditioned."""
+    import dataclasses
+
+    from typehaus.checks.mep.duct_insulation import _Cells, _steps
+
+    model = catlin_model_ro
+    duct = next(d for d in model.ducts if d.tag == "DU-S-HP-RET")
+    assert {c for *_, c in _steps(duct, _Cells(model))} == {"conditioned"}
+    bare = dataclasses.replace(model, rooms=tuple(r for r in model.rooms if r.storey != "attic"))
+    assert "over_ceiling" in {c for *_, c in _steps(duct, _Cells(bare))}

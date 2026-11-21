@@ -12,10 +12,12 @@ envelope insulation. Whole table: docs/local-code-notes/mn-1322-r403-2-1.md.
 
 Each run is stepped in 3D. A step's class comes from the room owning it on the storey its
 height lies in (``room_lookup``): a conditioned room, an unconditioned one, below the lowest
-storey (ground), or no room. No room within ``WALL_ZONE_M`` of a room cell is the envelope
-wall the run passes through: a penetration, sealed by its own element, ungraded here but
-the edge note a measures from (unless it lies between two conditioned stretches: then the
-run only passes a wall's end). An OA, exhaust or dryer step in conditioned space takes the
+storey (ground), or no room. Over a room's flat ceiling with no room on a storey above, it
+is an attic unless a Room says otherwise: R-8 + V met passes, anything less is UNKNOWN.
+No room within ``WALL_ZONE_M`` of a room cell is the envelope wall the run passes through:
+a penetration, sealed by its own element, ungraded here but the edge note a measures from
+(unless it lies between two conditioned stretches: then the run only passes a wall's end).
+An OA, exhaust or dryer step in conditioned space takes the
 R-3.3 row within 3 ft (developed) of such an edge. The spec is read off the house's
 ``DuctStandard.insulations`` row; no row is UNKNOWN.
 """
@@ -46,8 +48,10 @@ NOTE_A_M = 3.0 * M_PER_FT
 COLD_SYSTEMS = frozenset({"outdoor_air", "exhaust", "dryer"})
 #: (required R, vapour retarder, weatherproof barrier) by step class.
 ROWS = {"exterior": (8.0, True, True), "unconditioned": (8.0, True, False),
+        "over_ceiling": (8.0, True, False),
         "ground": (3.5, True, False), "cold_conditioned": (3.3, True, False)}
 LABEL = {"exterior": "outside the building", "unconditioned": "in unconditioned space",
+         "over_ceiling": "over a top ceiling with no room above (an attic?)",
          "ground": "below the lowest floor", "cold_conditioned":
          "in conditioned space within 3 ft of the envelope"}
 
@@ -57,11 +61,16 @@ class _Cells:
 
     def __init__(self, model: Any) -> None:
         self.cells: dict[str, list] = {}
+        tops: dict[str, float] = {}
+        for c in model.ceilings:
+            if c.z1_m is not None:
+                tops[c.room_ref] = max(tops.get(c.room_ref, c.z1_m), c.z1_m)
         for room in model.rooms:
             ring = axis_ring(room)
             if len(ring) >= 3:
                 poly = Polygon(ring)
-                self.cells.setdefault(room.storey, []).append((room, prep(poly), poly))
+                self.cells.setdefault(room.storey, []).append(
+                    (room, prep(poly), poly, tops.get(room.tag)))
         # Only storeys with rooms: site and court levels share elevations with them.
         self.levels = sorted(((s.elevation.meters, s.tag) for s in model.plan.storeys
                               if s.tag in self.cells), reverse=True)
@@ -73,12 +82,21 @@ class _Cells:
         near = [self.cells[tag] for elev, tag in self.levels
                 if elev - 1e-3 <= z <= elev + STOREY_REACH_M]
         for cells in near:
-            for room, prepared, _ in cells:
+            for room, prepared, _, top in cells:
                 if prepared.covers(point):
-                    return "conditioned" if room.conditioned else "unconditioned"
-        if any(poly.distance(point) <= WALL_ZONE_M for cells in near for _, _, poly in cells):
+                    if not room.conditioned:
+                        return "unconditioned"
+                    if top is not None and z > top + 1e-3 and not self._roomed_above(point, z):
+                        return "over_ceiling"  # an attic, unless a Room says otherwise
+                    return "conditioned"
+        if any(poly.distance(point) <= WALL_ZONE_M for cells in near for _, _, poly, _ in cells):
             return "wall"
         return "exterior"
+
+    def _roomed_above(self, point: Point, z: float) -> bool:
+        """A room on a storey over ``z`` covers the point: the run is in a floor cavity."""
+        return any(prepared.covers(point) for elev, tag in self.levels
+                   if z < elev <= z + STOREY_REACH_M for _, prepared, _, _ in self.cells[tag])
 
 
 def _steps(duct: Any, cells: _Cells) -> list[tuple[float, float, str]]:
@@ -170,7 +188,8 @@ def _grade(duct: Any, need: dict[str, float], standard: Any) -> Finding:
                       for c in sorted(need))
     tags = (duct.tag,)
     if not duct.insulation:
-        return by_result(CID, Result.FAIL, f"{duct.tag} is bare: {where}", tags, CODE,
+        verdict = Result.UNKNOWN if set(need) == {"over_ceiling"} else Result.FAIL
+        return by_result(CID, verdict, f"{duct.tag} is bare: {where}", tags, CODE,
                          fix="name a DuctStandard.insulations spec on the run")
     row = standard.insulation(duct.insulation) if standard is not None else None
     if row is None:
@@ -181,6 +200,12 @@ def _grade(duct: Any, need: dict[str, float], standard: Any) -> Finding:
                               ("no vapour retarder", v_need and not row.vapour_retarder),
                               ("no weatherproof barrier", w_need and not row.weather_barrier))
              if bad]
+    if short and "over_ceiling" in need:
+        return by_result(CID, Result.UNKNOWN, f"{duct.tag}: {row.spec} falls short "
+                         f"({', '.join(short)}) for {where}; whether that space is an attic "
+                         "is unread", tags, CODE,
+                         fix="author a Room over the ceiling (conditioned or not), or insulate "
+                             "to R-8 + V")
     if short:
         return by_result(CID, Result.FAIL, f"{duct.tag}: {row.spec} falls short "
                          f"({', '.join(short)}) for {where}", tags, CODE)
