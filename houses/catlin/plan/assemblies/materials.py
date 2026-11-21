@@ -4,6 +4,7 @@
 from typehaus import (
     Material,
     PaintSpec,
+    TrimFastening,
 )
 from library import (
     ALL_MATERIALS,
@@ -329,7 +330,8 @@ MATERIALS = [
     Material(tag="pvc-trim", name='Cellular PVC trim, 3/4" x 3 1/2" S4S',
              hatch="lumber", color="#f4f6f1", finish="satin-enamel", wood_surface="painted", milling_profile="S4S",
              product_ref="PROD-STOCK-PVC-1X4",
-             source="White cellular PVC 1x4 (Azek/Versatex class), painted with the walls. The bathrooms and the 70% RH plant room. In the tile baths it goes in after tile: stainless trim nails + PVC adhesive, sitting on the tile."),
+             source="White cellular PVC 1x4 (Azek/Versatex class), painted with the walls. The bathrooms and the 70% RH plant room. In the tile baths it goes in after tile: stainless trim nails + PVC adhesive, sitting on the tile.",
+             trim_fastening=TrimFastening(part="T15N250SFN", pitch_in=16.0, rows=2, source="AZEK Trim and Moulding install guide: 2 fasteners per framing member, within 2 in. of each end; stainless or HDG; 1-1/4 in. into solid wood (3/4 + 1/2 gwb + 1-1/4 = 2-1/2 in.)")),
     Material(tag="mdf-panel-painted", name='Paint-grade MDF backing, 1/4", white enamel',
              color="#f0ede6", finish="satin-enamel",
              source="Bought 1/4 inch MDF sheets over continuous gypsum. Prime faces and cut edges; white enamel matching trim. Includes field painting in the paneling rate."),

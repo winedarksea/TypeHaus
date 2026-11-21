@@ -18,6 +18,7 @@ from library import (
     STUD_BEARING,
     PAINT_FINISH_B,
 )
+from ..framing_standards import WALL_SHEATHING_NAILING
 
 
 # Same painted gypsum faces and bearing interface as the library wet wall, with 2x4 studs.
@@ -136,7 +137,7 @@ PLANT_EXT_2X6_HUMID = Assembly(
                                   layout_origin="line", corner_style="4-stud"),
               cavity=CavityFill(material_ref="mineral-wool")),
         Layer(name="sheathing", material_ref="cdx-plywood", thickness=inch(0.5),
-              function=LayerFunction.SHEATHING,
+              function=LayerFunction.SHEATHING, nailing=WALL_SHEATHING_NAILING,
               sheet_length=inch(120.0)),  # 4x10: see EXT_2X6
         # BAND A, 0 - 4" off the sheathing. ONE application of continuous ccSPF, crossed
         # only by the BLOCK: three loose 3-1/2" x 3-1/2" x 1-1/2" KDAT offcuts stacked flat

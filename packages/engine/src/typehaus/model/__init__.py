@@ -318,6 +318,7 @@ from typehaus.model.trim import (
     Gutter,
     MovementJoint,
 )
+from typehaus.model.trim_fastening import TrimFastening
 from typehaus.model.tub_enclosure import TubEnclosureSpec
 from typehaus.model.types import (
     ApplianceType,
@@ -356,6 +357,7 @@ from typehaus.model.views import (
     Transition,
 )
 from typehaus.model.wall_mount import WallMountSpec
+from typehaus.model.window_install import WindowInstallFastening
 from typehaus.quantities import (
     Angle,
     Area,
@@ -397,6 +399,7 @@ for _name, _obj in (
     ("PublishedSpan", PublishedSpan), ("PublishedCapacity", PublishedCapacity),
     ("PublishedReaction", PublishedReaction), ("PublishedCladdingLoad", PublishedCladdingLoad),
     ("PublishedHole", PublishedHole), ("SheathingNailing", SheathingNailing),
+    ("TrimFastening", TrimFastening), ("WindowInstallFastening", WindowInstallFastening),
     ("PublishedWebOpenings", PublishedWebOpenings), ("JoistHoleChart", JoistHoleChart),
     ("JoistFlangeAllowance", JoistFlangeAllowance), ("EquipmentHangers", EquipmentHangers),
     ("AirHandlerInstallation", AirHandlerInstallation), ("DrainFittings", DrainFittings),
@@ -487,7 +490,7 @@ __all__ = [
     "PublishedSpan", "PublishedCapacity", "PublishedReaction",
     "PublishedCladdingLoad", "PublishedHole", "PublishedWebOpenings", "JoistHoleChart",
     "JoistFlangeAllowance", "EquipmentHangers", "AirHandlerInstallation", "DrainFittings",
-    "SheathingNailing",
+    "SheathingNailing", "TrimFastening", "WindowInstallFastening",
     "ShearPanelSpec", "DiaphragmSpec", "DiaphragmDelivery", "ReceivingLine", "HeadConnector",
     "CollectorBlocking", "JointNailing", "PanelEdgeBlocking",
     "InServiceMoisture",

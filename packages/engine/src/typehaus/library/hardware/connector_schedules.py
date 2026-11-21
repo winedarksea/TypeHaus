@@ -11,7 +11,8 @@ house-ridge LSTA24) — their nails are commodity and ride in the framing rate.
 
 from __future__ import annotations
 
-from typehaus.hardware.connector_fastening import ConnectorFastening
+from typehaus.hardware.connector_fastening import ConnectorFastening, SiteBolt
+from typehaus.library.hardware.ties import HL33HDG_HEAVY_ANGLE, HL43HDG_HEAVY_ANGLE
 
 HDG_8D = "8d common 0.131x2.5"
 HDG_10D = "10d common 0.148x3"
@@ -21,6 +22,11 @@ HDG_0148_15 = "0.148x1.5 connector nail"
 
 _CC = "Simpson Strong-Tie C-C-2026"
 _RECORD = "transcribed from the catalog record's AllowableLoads.fasteners"
+
+
+def _hl_bolts(angle) -> tuple[SiteBolt, ...]:
+    dia, per = angle.bolt_diameter_in, angle.bolts_per_leg
+    return (SiteBolt(dia, per, 0, "bolt"), SiteBolt(dia, per, 1, "lag", min_length_in=5.0))
 
 
 def _pair(count: int, model: str, first: str, second: str) -> tuple:
@@ -79,7 +85,13 @@ CONNECTOR_FASTENERS: dict[str, ConnectorFastening] = {
         "zmax", (), f"{_CC} p.84: the -SDS2 model ships with its (14) SDS 1/4 x 2 screws"),
     "DTT2Z": ConnectorFastening(
         "zmax", (), f"{_CC} p.60: \"Fasteners and crescent washer are included\" (8 SDS25112)"),
-    # Bolted: the bolt length is the member's, so it is a site purchase, not a count here.
-    "HL33HDG": ConnectorFastening("hdg", (), _RECORD + " — (2) 1/2 in through-bolts"),
-    "HL43HDG": ConnectorFastening("hdg", (), _RECORD + " — (2) 3/4 in through-bolts"),
+    # Bolted (decision #147): a through-bolt in the tied member (connects[0]), its length
+    # derived from the grip (``takeoff/site_bolts.py``); a lag into the structure tied to
+    # (connects[1]), HL fn 7's >= 5".
+    "HL33HDG": ConnectorFastening(
+        "hdg", (), _RECORD + " — (1) 1/2 in through-bolt + (1) 1/2 in lag >= 5 in (fn 7)",
+        site_bolts=_hl_bolts(HL33HDG_HEAVY_ANGLE)),
+    "HL43HDG": ConnectorFastening(
+        "hdg", (), _RECORD + " — (1) 3/4 in through-bolt + (1) 3/4 in lag >= 5 in (fn 7)",
+        site_bolts=_hl_bolts(HL43HDG_HEAVY_ANGLE)),
 }

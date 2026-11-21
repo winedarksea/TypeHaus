@@ -4,6 +4,7 @@
 # gable walls north/south frame ToRoof, ridge runs N-S over the center wall line,
 # 6:12, zero overhang (first-class). Roof underside above this floor: 1 1/2" + x/2.
 from ..doorway_transitions import D_A_HALVES_OAK_REDUCER, D_A_STUDY_OAK_NOSING
+from ..framing_standards import SUBFLOOR_FASTENING
 from typehaus.model.surface_mount import SurfacePostMount
 from typehaus import (
     Alarm,
@@ -867,7 +868,7 @@ FLOOR = [
                 # species and R-value — a grade and a price change, not a section change,
                 # and it takes the `finish-studio-floor-sealer` allowance out with it.
                 subfloor=DeckLayer(material_ref="plywood-subfloor",
-                                   thickness=inch(0.75)),
+                                   thickness=inch(0.75), nailing=SUBFLOOR_FASTENING),
                 # params/second_deck.TJI_230_FLOOR_SPAN, restated (no import here).
                 published_span=PublishedSpan(
                     source="Weyerhaeuser TJ-4000 Trus Joist TJI Joist Specifier's Guide (July 2025) p.7, \"Floor Span Tables\"",

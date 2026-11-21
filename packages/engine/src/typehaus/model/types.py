@@ -58,6 +58,7 @@ from typehaus.model.track_lighting import (
     TrackLightingSpec,
 )
 from typehaus.model.wall_mount import WallMountSpec
+from typehaus.model.window_install import WindowInstallFastening
 from typehaus.quantities import Length, UFactor, m
 
 
@@ -297,6 +298,8 @@ class WindowType(HausModel):
     frame_material_ref: str | None = None
     # The chosen product, by ``Product.tag`` — see ``FurnitureType.product_ref``.
     product_ref: str | None = None
+    # Fin and jamb-strap install fasteners (decision #147); None is unmodelled procurement.
+    install_fastening: WindowInstallFastening | None = None
     source: str | None = None
 
     @model_validator(mode="after")

@@ -27,13 +27,16 @@ from typehaus.takeoff.hangers import joist_hanger_rows, ridge_tie_strap_rows
 from typehaus.takeoff.panel_fasteners import concealed_panel_screw_rows
 from typehaus.takeoff.partition_fasteners import partition_deflection_screw_rows
 from typehaus.takeoff.sheathing_nails import sheathing_nail_rows
+from typehaus.takeoff.site_bolts import site_bolt_rows
 from typehaus.takeoff.slat_braces import slat_brace_rows
 from typehaus.takeoff.snow_retention import snow_retention_rows
 from typehaus.takeoff.stair_spacers import stair_spacer_screw_rows
 from typehaus.takeoff.strap_braces import strap_brace_rows
 from typehaus.takeoff.suspension_anchors import suspension_anchor_rows
 from typehaus.takeoff.treated_framing_fasteners import treated_framing_fastener_rows
+from typehaus.takeoff.trim_fasteners import trim_fastener_rows
 from typehaus.takeoff.uplift import uplift_rows
+from typehaus.takeoff.window_fasteners import window_fastener_rows
 
 
 def hardware_takeoff(model: ResolvedModel,
@@ -62,10 +65,13 @@ def hardware_takeoff(model: ResolvedModel,
         *door_hardware_rows(model),
         *suspension_anchor_rows(model),
     ]
-    # Decision #105: the fasteners whose spec a contractor could otherwise cheapen.
+    # Decisions #105/#147: every authored fastening schedule, counted.
     return [
         *rows,
         *connector_fastener_rows(rows),
+        *site_bolt_rows(model),
         *treated_framing_fastener_rows(model, config.treated_framing),
         *sheathing_nail_rows(model),
+        *trim_fastener_rows(model),
+        *window_fastener_rows(model),
     ]

@@ -17,6 +17,7 @@ from library import (
     GWB_LINING,
     GWB_LINING_HALF,
 )
+from ..framing_standards import WALL_SHEATHING_NAILING
 
 
 # --- exterior wall family -----------------------------------------------------
@@ -85,7 +86,7 @@ EXT_2X6 = Assembly(
         # CS-WSP takes any rated panel, and the girt screw bites the stud, not the ply.
         # Not OSB: it must dry below 16% before the foam and can then dry only inward.
         Layer(name="sheathing", material_ref="cdx-plywood", thickness=inch(0.5),
-              function=LayerFunction.SHEATHING,
+              function=LayerFunction.SHEATHING, nailing=WALL_SHEATHING_NAILING,
               sheet_length=inch(120.0)),  # 4x10: wall + rim above, one sheet
         # BAND A, 0 - 4" off the sheathing. ONE application of continuous ccSPF, crossed
         # only by the BLOCK: three loose 3-1/2" x 3-1/2" x 1-1/2" KDAT offcuts stacked flat
@@ -401,7 +402,7 @@ GARAGE_WALL_2X6 = Assembly(
         # crown cavity is the drainage plane, closed by a vented base strip and a solid head
         # strip (prices.toml).
         Layer(name="sheathing", material_ref="zip-sheathing", thickness=inch(0.4375),
-              function=LayerFunction.SHEATHING,
+              function=LayerFunction.SHEATHING, nailing=WALL_SHEATHING_NAILING,
               control={ControlLayer.AIR, ControlLayer.WATER},
               sheet_length=inch(108.0)),  # 4x9 on the 100" wall
         # NO RAINSCREEN FURRING, and that is a decision rather than an omission

@@ -28,6 +28,7 @@ HL33HDG_HEAVY_ANGLE = StructuralHardware(
     source="Simpson Strong-Tie HL heavy angle, 7 ga, legs 3-1/4\" x 3-1/4\", 2-1/2\" long, one "
            "1/2\" hole per leg 2\" off the heel (D3); HDG to order (C-C-2024 p. 303: 'May be "
            "ordered HDG'). ~$14 ea retail (fastenersplus, HL33HDG, 2026-09-21)",
+    bolt_diameter_in=0.5, bolts_per_leg=1, bolt_from_heel_in=2.0,
     # ** TWO PUBLISHED DIRECTIONS, AND THE THIRD IS A READING. ** Uplift (740) is the force
     # perpendicular to the heel in one leg's plane, prying the other leg; F1 (1,040) is along
     # the heel, every bolt in shear. The legs are equal and identically bolted, so the force
@@ -66,6 +67,7 @@ HL35HDG_HEAVY_ANGLE = StructuralHardware(
     source="Simpson Strong-Tie HL heavy angle, 7 ga, legs 3-1/4\" x 3-1/4\", 5\" long, two "
            "1/2\" holes per leg 1-1/4\" from each end (D1), 2-1/2\" apart (D2), 2\" off the "
            "heel (D3); HDG to order. Same reading as HL33HDG; only F1 differs",
+    bolt_diameter_in=0.5, bolts_per_leg=2, bolt_from_heel_in=2.0,
     allowable=AllowableLoads(
         uplift_lb=740.0,
         lateral_f1_lb=1310.0,
@@ -95,6 +97,7 @@ HL43HDG_HEAVY_ANGLE = StructuralHardware(
            "3/4\" hole per leg 1-1/2\" off its end (D1), 2-3/4\" off the heel (D3); HDG to "
            "order. ~$30-35 ea retail, made to order, 4-5 weeks (fastenersplus / benefast, "
            "HL43HDG, 2026-10-13)",
+    bolt_diameter_in=0.75, bolts_per_leg=1, bolt_from_heel_in=2.75,
     allowable=AllowableLoads(
         uplift_lb=1275.0,
         lateral_f1_lb=1445.0,

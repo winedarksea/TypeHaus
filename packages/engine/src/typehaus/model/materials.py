@@ -9,6 +9,7 @@ from typehaus.model.cladding_trim import TrimCondition
 from typehaus.model.paint import PaintSpec
 from typehaus.model.published_cladding import PublishedCladdingLoad
 from typehaus.model.registry import register_constructor
+from typehaus.model.trim_fastening import TrimFastening
 from typehaus.quantities import Length
 
 
@@ -162,6 +163,9 @@ class Material(HausModel):
     # support crossing, at the host wall's girt spacing (``takeoff/panel_fasteners.py``).
     panel_fastener_part: str | None = None
     panel_fastener_pitch_in: float | None = None
+    # Trim fixed to wood (fascia coil, soffit channel, PVC base): counted per billed run
+    # (``takeoff/trim_fasteners.py``, decision #147).
+    trim_fastening: TrimFastening | None = None
     # Specific gravity, G, of a WOOD material, oven-dry — NDS 2018 Table 12.3.3A. It is a
     # species fact, not a section fact, so it belongs on the material and not on a framing
     # spec. The one consumer is fastener withdrawal, where W = 2850 G^2 D and the answer

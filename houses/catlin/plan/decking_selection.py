@@ -8,7 +8,7 @@ comprehension, which the editable dialect forbids. notes/composite_decking.md.
 
 from __future__ import annotations
 
-from typehaus import Material
+from typehaus import Material, TrimFastening
 from typehaus.library import TREX_ENHANCE_BASICS, TREX_ENHANCE_BASICS_PRODUCT
 
 # Mean of the centre half of Trex's own Tide Pool swatch photo
@@ -39,6 +39,11 @@ TREX_TIDE_POOL_FASCIA = Material(
     finish="composite-deck-board",
     source="Trex Enhance fascia board, Tide Pool, actual 0.56 x 7.25 in x 12 ft; ripped to "
            "~6 in for D-B-SUNKEN's jambs and head (owner 2026-11-03).",
+    trim_fastening=TrimFastening(
+        part="T08175FS75", pitch_in=18.0, rows=2,
+        source="Trex Fascia Instructions TF-0823: approved fascia fasteners at 18 in. max; "
+               "2 per row on a 2x8-deep face (the ~6 in rip); Simpson Fascia-Fastening "
+               "Solution is a listed fastener"),
 )
 # The top course under D-B-SUNKEN's tread: the curb's 15 psi foam cut down and replaced.
 XPS_40_TREAD_BED = Material(

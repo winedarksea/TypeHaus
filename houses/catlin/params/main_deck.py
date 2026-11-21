@@ -36,6 +36,7 @@ an offset that stopped matching would slide their axis off x=18'.
 """
 
 from typehaus.geometry import rect
+from plan.framing_standards import SUBFLOOR_FASTENING
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus import (
@@ -311,7 +312,8 @@ WEST_FLOOR = FloorSystem(
                      end_bearing=(("W-B-CS2", _JOIST_BEARING), ("W-B-CN2", _JOIST_BEARING)),
                      # The gable-end edge line is a 1 1/4" LSL rim board (owner, 2026-11-18).
                      edge_rims=("lo",), sill_tie="A35Z", station_ties=5),
-    subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
+    subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR,
+                       nailing=SUBFLOOR_FASTENING),
     published_span=TJI_230_FLOOR_SPAN,
     reinforcements=_WEST_FLOOR_REINFORCEMENT,
     # The basement's ceiling: 5/8" gypsum end to end (houses/catlin/preferences.toml).
@@ -330,7 +332,8 @@ MECH_FLOOR = FloorSystem(
                      bearing_refs=("W-B-W1", "W-B-STR3B", "W-B-STR3", "W-B-STR"),
                      # an LSL rim (owner, 2026-11-18)
                      edge_rims=("hi",), sill_tie="A35Z", station_ties=5),
-    subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
+    subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR,
+                       nailing=SUBFLOOR_FASTENING),
     published_span=TJI_230_FLOOR_SPAN,
     ceiling_below=_CEILING_GWB,
     outline=_rect(_ZERO, _MECH_Y, _STR_X, _HOUSE),
@@ -365,7 +368,8 @@ STAIR_FLOOR = FloorSystem(
                      bearing_refs=("W-B-STR3B", "W-B-STR3", "W-B-STR", "W-B-CN"),
                      # The gable-end edge line is a 1 1/4" LSL rim board (owner, 2026-11-18).
                      edge_rims=("hi",), end_bearing=(("W-B-CN", _JOIST_BEARING),)),
-    subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
+    subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR,
+                       nailing=SUBFLOOR_FASTENING),
     published_span=TJI_230_FLOOR_SPAN,
     ceiling_below=_CEILING_GWB,
     outline=_rect(_STR_X, _MECH_Y, _CENTRE_X, _HOUSE),
@@ -390,7 +394,8 @@ EAST_FLOOR = FloorSystem(
                      bearing_refs=("W-B-CS", "W-B-CS3", "W-B-E1"),
                      # The gable-end edge line is a 1 1/4" LSL rim board (owner, 2026-11-18).
                      edge_rims=("lo",), sill_tie="A35Z", station_ties=5),
-    subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
+    subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR,
+                       nailing=SUBFLOOR_FASTENING),
     published_span=TJI_230_FLOOR_SPAN,
     ceiling_below=_CEILING_GWB,
     outline=_rect(_CENTRE_X, _ZERO, _HOUSE, _SEAM_Y_S),
@@ -503,7 +508,8 @@ NE_FLOOR = FloorSystem(
                                   ("W-B-CN2", _TRUSS_BEARING), ("W-B-CN", _TRUSS_BEARING)),
                      line_overrides=_TRUSS_LINE_MOVES,  # north edge: LSL rim (2026-11-18)
                      edge_rims=("hi",), sill_tie="A35Z", station_ties=5),
-    subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
+    subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR,
+                       nailing=SUBFLOOR_FASTENING),
     reinforcements=(*_N_WALL_BLOCKING, _PENINSULA_TRUSS, _PENINSULA_BACK_TRUSS),
     strongbacks=_STRONGBACKS,
     published_span=TRIFORCE_OJ418S_FLOOR_SPAN,

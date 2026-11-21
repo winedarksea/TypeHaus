@@ -12,6 +12,7 @@ from typehaus.model.enums import FloorOpeningPurpose, LayerFunction, RadiantSyst
 from typehaus.model.published_web import PublishedWebOpenings
 from typehaus.model.refs import Embed, PublishedHole, PublishedSpan
 from typehaus.model.registry import register_constructor, register_element
+from typehaus.model.sheathing_nailing import SheathingNailing
 from typehaus.model.slabs import Slab, SlabThermalBreak
 from typehaus.quantities import Length, Point2D, inch
 
@@ -173,6 +174,8 @@ class Strongback(HausModel):
 class DeckLayer(HausModel):
     material_ref: str
     thickness: Length
+    # Counted per sheet at the joist spacing (``takeoff/sheathing_nails.py``, decision #147).
+    nailing: SheathingNailing | None = None
 
 
 class FloorOpeningLid(HausModel):

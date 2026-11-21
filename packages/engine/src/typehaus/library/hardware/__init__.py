@@ -144,6 +144,7 @@ from typehaus.library.hardware.simpson_ties import (
     STHD14RJ_STRAP_HOLDOWN,
     STHD_STRAP_HOLDOWN,
 )
+from typehaus.library.hardware.site_bolts import SITE_BOLTS
 from typehaus.library.hardware.specialty import (
     BEARING_STANDOFF_SHIM,
     DECK_EQUIPMENT_ANCHOR,
@@ -166,6 +167,7 @@ from typehaus.library.hardware.specialty import (
 )
 from typehaus.library.hardware.suspension import SUSPENSION_HARDWARE
 from typehaus.library.hardware.ties import TIE_HARDWARE
+from typehaus.library.hardware.trim_fasteners import TRIM_FASTENERS
 
 STRUCTURAL_HARDWARE: tuple = (
     *DIAPHRAGM_NAILS,
@@ -250,6 +252,8 @@ STRUCTURAL_HARDWARE: tuple = (
     POCKET_FRAME_KIT_ECLISSE_2X4,
     POCKET_FRAME_KIT_ECLISSE_2X6,
     *TIE_HARDWARE,
+    *SITE_BOLTS,
+    *TRIM_FASTENERS,
     *SUSPENSION_HARDWARE,
 )
 

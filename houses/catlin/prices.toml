@@ -849,6 +849,15 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "S10ACN" = { low = 0.18, high = 0.25 }
 "S8ACN" = { low = 0.15, high = 0.25 }
 "RSRS-01 0.113x2.375" = { low = 0.03, high = 0.05 }
+# Wall sheathing and subfloor schedules, counted since decision #147. ESTIMATES, no retail read:
+# bright 8d common in 5 lb / 50 lb boxes; WSV212S 1 lb / 5 lb boxes (Simpson retail).
+"8d common 0.131x2.5 bright" = { low = 0.02, high = 0.04 }
+"WSV212S" = { low = 0.08, high = 0.14 }
+# Trim-to-wood (decision #147), ESTIMATES: Simpson Type 316 15 ga DA finish nail, 4,000 box;
+# the 316 Fascia-Fastening Solution screw (no run bills it yet: the Trex box sides are a door
+# installation, not an edge run).
+"T15N250SFN" = { low = 0.03, high = 0.06 }
+"T08175FS75" = { low = 0.25, high = 0.45 }
 # Concealed panel screws, out of the panel $/SF rates since 2026-10-31. The B&B screw is the
 # stocked 304 ST Fastening 10A150TQPSSN (owner, 2026-10-31; 316 found only special order):
 # $57.99/250 = $0.23, $502/2,500 = $0.20 (fastenersplus.com, read 2026-10-31). Metal Sales
@@ -1065,10 +1074,15 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # retail $13.99 (fastenersplus, 2026-09-21). Since 2026-10-13 the stem tie (4 HL35HDG on
 # blocks, Titen HD into the ICF) is gone with the garage landing; line 1 is two 3 ga HL43HDG
 # from BM-BW-FE into W-G-S, retail ~$30-35, made to order 4-5 weeks (fastenersplus /
-# benefast, 2026-10-13). Bolts and lags ride in the framing rate.
+# benefast, 2026-10-13). Their bolts and lags are counted since decision #147 (lengths derived
+# from the grip, notes/hl_site_bolts.md); ESTIMATES for HDG A307 with nut and washer, no read.
 # deck_tie/FS-BW-FLOOR closes at 0.778 (notes/north_entry_piers.md §10h).
 "HL33HDG" = { low = 12.0, high = 20.0 }  # 2 ea — into W-G-W
 "HL43HDG" = { low = 30.0, high = 45.0 }  # 2 ea — CN-BW-GSTIE-LO/-HI, BM-BW-FE into W-G-S
+"BOLT-12X5-HDG" = { low = 1.5, high = 3.0 }  # HL33 through W-BW-SCREEN
+"BOLT-34X8-HDG" = { low = 4.0, high = 7.0 }  # HL43 through BM-BW-FE + the last joist
+"LAG-12X5-HDG" = { low = 1.0, high = 2.0 }  # HL33 into W-G-W
+"LAG-34X5-HDG" = { low = 2.5, high = 4.5 }  # HL43 into W-G-S
 # KDAT 4x4 tie blocks and fillers, each an offcut plus cutting and M4 end treatment: LIST
 # BANDS, not quotes. The 3-1/2" cube is CN-BW-GWTIE-BLK (through the garage corner
 # cladding); the 26-1/2" filler gives the HL33's leg a 3-1/2" face in the screen's end
@@ -7808,7 +7822,8 @@ paint-theater-ceiling-perimeter-caulk = { low = 40, high = 100 }
 # --- framing -----------------------------------------------------------------------------
 # ** SUBFLOOR ADHESIVE, ADDED 2026-09-19. NOTHING IN THIS FILE BOUGHT GLUE. ** Glue-and-screw
 # is how a subfloor is laid — the adhesive is what keeps a screwed deck from squeaking once
-# the joists dry down — and the BOM had the sheets, the screws and no adhesive at all. This
+# the joists dry down — and the BOM had the sheets and no adhesive at all (the WSV212S screws
+# are a counted [hardware] row since decision #147). This
 # is a hole in the bill, not an upgrade to the house.
 #
 # DRIVEN, and the whole chain is published. Huber's installer FAQ Q2 gives the ratio: at

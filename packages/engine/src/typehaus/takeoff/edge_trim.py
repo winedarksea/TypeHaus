@@ -94,11 +94,14 @@ def _section_profile(depth_m: float, thickness_m: float) -> str:
     return f'{depth_m / M_PER_IN:g}" x {thickness_m / M_PER_IN:g}"'
 
 
-def edge_trim_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
-    """Lineal feet of edge trim, grouped by category, material and cross-section."""
+def edge_trim_runs(model: ResolvedModel) -> list[dict[str, object]]:
+    """Every billed edge run once: category, profile, material, tag, storey, length, mirror.
+
+    The one walk ``edge_trim_takeoff`` folds and ``takeoff/trim_fasteners.py`` counts off.
+    """
     from typehaus.model.trim import EaveSoffit, Fascia, Flashing, MovementJoint
 
-    rows = _Rows()
+    runs: list[dict[str, object]] = []
     for storey in model.plan.storeys:
         for element in model.plan.storey_elements(storey.tag):
             if not isinstance(element, (Fascia, EaveSoffit, Flashing, MovementJoint)):
@@ -119,18 +122,29 @@ def edge_trim_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             material = element.material or ""
             if isinstance(element, MovementJoint) and element.backer:
                 material = f"{material} over {element.backer}"  # one installed joint per LF
-            rows.add(element.kind.value,
-                     _section_profile(face_m, element.thickness.meters),
-                     material, tag=element.tag,
-                     length_m=length_m,
-                     mirror=("" if getattr(getattr(element, "section", None),
-                                           "fit_to_brace_sill", False)
-                             else "structural_solids"))
-    _add_derived_roof_trim(model, rows)
+            runs.append({
+                "category": element.kind.value,
+                "profile": _section_profile(face_m, element.thickness.meters),
+                "material": material, "tag": element.tag, "storey": storey.tag,
+                "length_m": length_m,
+                "mirror": ("" if getattr(getattr(element, "section", None),
+                                         "fit_to_brace_sill", False)
+                           else "structural_solids")})
+    runs.extend(_derived_roof_trim(model))
+    return runs
+
+
+def edge_trim_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
+    """Lineal feet of edge trim, grouped by category, material and cross-section."""
+    rows = _Rows()
+    for run in edge_trim_runs(model):
+        rows.add(str(run["category"]), str(run["profile"]), str(run["material"]),
+                 tag=str(run["tag"]), length_m=float(run["length_m"]),  # type: ignore[arg-type]
+                 mirror=str(run["mirror"]))
     return rows.finish()
 
 
-def _add_derived_roof_trim(model: ResolvedModel, rows: _Rows) -> None:
+def _derived_roof_trim(model: ResolvedModel) -> list[dict[str, object]]:
     """The trim a roof derives along its own edges (→ resolve/roof_trim.py).
 
     The drip-edge band member carries category ``cladding`` (it closes the stack edge in
@@ -138,6 +152,7 @@ def _add_derived_roof_trim(model: ResolvedModel, rows: _Rows) -> None:
     cannot be read as a wall-cladding row. The formed drip edge (``drip_edge``, four legs
     per run) bills once per run as ``drip_flashing``, measured along its face.
     """
+    runs: list[dict[str, object]] = []
     for roof in model.roofs:
         for member in roof.members:
             category = member.category
@@ -147,7 +162,8 @@ def _add_derived_roof_trim(model: ResolvedModel, rows: _Rows) -> None:
             # One band per run reaches the order: the composed piece mitres as one.
             if band is not None and member.child_key.rpartition("-")[2] != band:
                 continue
-            billed = _BILLED_AS.get(category, category)
-            rows.add(billed, member.profile, member.material or "",
-                     tag=f"{roof.tag}:{member.child_key}", length_m=member.length_m,
-                     mirror="framing")
+            runs.append({"category": _BILLED_AS.get(category, category),
+                         "profile": member.profile, "material": member.material or "",
+                         "tag": f"{roof.tag}:{member.child_key}", "storey": roof.storey,
+                         "length_m": member.length_m, "mirror": "framing"})
+    return runs

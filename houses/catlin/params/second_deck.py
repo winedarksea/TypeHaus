@@ -46,6 +46,7 @@ the fabricator's order, which ``haus takeoff``'s fabrication schedule states.
 """
 
 from typehaus.geometry import rect
+from plan.framing_standards import SUBFLOOR_FASTENING
 from params.sill_seat_backers import BALCONY_SEAT_BACKERS
 from typehaus import (DeckLayer, FloorSystem, JoistSpec, JoistReinforcement, Layer,
                       LayerFunction, PublishedSpan, PublishedWebOpenings, ft, inch, pt)
@@ -196,7 +197,8 @@ WEST_FLOOR = FloorSystem(
                      # TJI field (owner, 2026-11-18); the north one is opening trimmer packs.
                      edge_rims=("lo",),
                      end_bearing=(("W-M-C2", _TRUSS_BEARING),)),
-    subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
+    subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR,
+                       nailing=SUBFLOOR_FASTENING),
     ceiling_below=_CEILING_GWB,
     published_span=J12_FLOOR_SPAN,
     outline=_rect(_ZERO, _ZERO, _CENTRE_X, _HOUSE),
@@ -220,7 +222,8 @@ EAST_FLOOR = FloorSystem(
                      # The gable-end edge lines are a 1 1/4" LSL rim boards (owner, 2026-11-18).
                      edge_rims=("lo", "hi"),
                      end_bearing=(("W-M-C2", _JOIST_BEARING),)),
-    subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
+    subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR,
+                       nailing=SUBFLOOR_FASTENING),
     # The main floor's ceiling: this deck's underside *is* that ceiling (unchanged from
     # the old FS-SECOND). Plain board, not type X: R302.13 doesn't reach this floor.
     ceiling_below=_CEILING_GWB,

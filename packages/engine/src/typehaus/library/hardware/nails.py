@@ -7,6 +7,7 @@ a zinc one (Simpson L-F-SSNAILS line 1; IRC R317.3.1 for treated wood).
 """
 
 from typehaus.hardware.catalog import (
+    EXPOSURE_DRY,
     EXPOSURE_TREATED,
     ROLE_CONNECTOR_NAIL,
     ROLE_SHEATHING_NAIL,
@@ -135,5 +136,25 @@ SHEATHING_NAILS = (
         exposure=EXPOSURE_TREATED, finish="ss304",
         source="Simpson Strong-Tie S8ACN: common nail, annular ring shank, 2-1/2in x 0.131in, "
                "Type 304 stainless (toolnut S8ACN1 / S8ACN5 listings, 2026-10-31).",
+    ),
+    # Decision #147: an authored schedule is counted whatever the nail. Bright for dry SPF;
+    # the HDG 8d above stays for treated and diaphragm use.
+    StructuralHardware(
+        tag="common-nail-8d-25-bright",
+        name="Bright 8d common smooth-shank nail, 0.131in x 2.5in",
+        role=ROLE_SHEATHING_NAIL, manufacturer="generic",
+        model="8d common 0.131x2.5 bright", exposure=EXPOSURE_DRY, finish="bright",
+        source="IRC 2018 Table R602.3(1) items 30-31 and Table R602.3(3): 8d common "
+               "(2-1/2 in. x 0.131 in.); AWC NDS 2018 Table L4; ASTM F1667.",
+    ),
+    StructuralHardware(
+        tag="simpson-wsv212s", name="Strong-Drive WSV SUBFLOOR screw, #9 x 2-1/2in",
+        role=ROLE_SHEATHING_NAIL, manufacturer=_SIMPSON, model="WSV212S",
+        exposure=EXPOSURE_DRY, finish=None,
+        source="Simpson Strong-Tie Fastening Systems Technical Guide (C-F-2019TECHSUP) p.86: "
+               "ICC-ES ESR-1472 recognises WSV screws as substitutes for 8d and 10d common "
+               "nails in IRC 2018 Table R602.3(1); one-for-one at the nail spacing; on glued "
+               "I-joist floors no span reduction, 1-1/4 in. flange penetration or full flange. "
+               "0.13 in. shank, 2.0 in. thread. Stocked retail (WSV212S1LB / WSV212S5).",
     ),
 )

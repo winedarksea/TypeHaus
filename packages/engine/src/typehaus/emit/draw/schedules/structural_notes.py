@@ -14,6 +14,7 @@ from typing import TYPE_CHECKING, Any
 
 from typehaus.checks.soil import site_soil_bearing_psf
 from typehaus.emit.draw.schedules.blocks import draw_note_page, paginate_note_blocks
+from typehaus.emit.draw.schedules.special_fastening import special_fastening_block
 from typehaus.emit.draw.sheet_writer import schedule_sheet
 from typehaus.emit.draw.structural_common import (
     flat_roof_snow_psf,
@@ -452,6 +453,8 @@ def structural_note_blocks(model: ResolvedModel,
         ("FOUNDATIONS AND CONCRETE — ACI 318-19",
          concrete_block(model) + footing_dowel_lines(model, profile)),
         ("WOOD FRAMING", wood_framing_block(model)),
+        *((("SPECIAL FASTENING", special),) if (special := special_fastening_block(model))
+          else ()),
         ("ANCHORAGE AND CONNECTIONS", anchorage_block(model, sheets)),
         ("STRUCTURAL SPECIFICATIONS — DIVISIONS 03 / 05",
          structural_specification_block(model)),

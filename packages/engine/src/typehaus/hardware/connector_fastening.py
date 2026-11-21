@@ -15,16 +15,30 @@ ZINC_FINISHES = frozenset({"zmax", "hdg", "g90", "mech_galv"})
 
 
 @dataclass(frozen=True)
+class SiteBolt:
+    """A site-length bolt or lag through one leg (decision #147); ``leg`` indexes
+    ``Connector.connects``. A bolt's length is derived from the grip; a lag takes
+    ``min_length_in`` (HL fn 7: >= 5")."""
+
+    diameter_in: float
+    per_leg: int
+    leg: int
+    kind: str  # "bolt" | "lag"
+    min_length_in: float = 0.0
+
+
+@dataclass(frozen=True)
 class ConnectorFastening:
     """One connector's fasteners: ``(count, fastener model, into)`` per term.
 
     ``fasteners`` is empty where the screws ship in the connector's own box (CBSTQ-SDS2,
-    DTT2Z) or the joint is bolted to the member at the site; ``citation`` says which.
+    DTT2Z); a joint bolted at the site names its ``site_bolts`` instead.
     """
 
     finish: str
     fasteners: tuple[tuple[int, str, str], ...]
     citation: str
+    site_bolts: tuple[SiteBolt, ...] = ()
 
     @property
     def per_connector(self) -> int:

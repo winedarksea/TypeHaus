@@ -17,6 +17,7 @@ from library import (
     CONCRETE_BEARING,
     STUD_BEARING,
 )
+from ..framing_standards import WALL_SHEATHING_NAILING
 from .interior import _SAUNA_LINER
 from .mixes import BURIED_MIX
 
@@ -60,7 +61,7 @@ from .mixes import BURIED_MIX
 # carried reads better than the 8"-concrete stack it replaces.
 _GARDEN_FRAMED_OUTBOARD = (
     Layer(name="sheathing", material_ref="cdx-plywood", thickness=inch(0.5),
-          function=LayerFunction.SHEATHING),
+          function=LayerFunction.SHEATHING, nailing=WALL_SHEATHING_NAILING),
     Layer(name="waterproofing", material_ref="waterproofing", thickness=inch(0.06),
           function=LayerFunction.MEMBRANE,
           control={ControlLayer.AIR, ControlLayer.WATER}),

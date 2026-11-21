@@ -249,3 +249,10 @@ ROLE_CONNECTOR_NAIL = "connector_nail"
 ROLE_TREATED_FRAMING_NAIL = "treated_framing_nail"
 ROLE_STAINLESS_FRAMING_NAIL = "stainless_framing_nail"
 ROLE_SHEATHING_NAIL = "sheathing_nail"
+# Site-length through-bolts and lags an HL angle is fixed with (decision #147); the length
+# is derived from the grip, so the role holds one family per diameter.
+ROLE_SITE_BOLT = "site_bolt"
+ROLE_SITE_LAG = "site_lag"
+# Trim-to-wood and window-install fasteners (decision #147).
+ROLE_TRIM_FASTENER = "trim_fastener"
+ROLE_WINDOW_INSTALL_FASTENER = "window_install_fastener"

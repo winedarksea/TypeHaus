@@ -1,8 +1,9 @@
-"""Sheathing nails off an authored ``Layer.nailing`` schedule (decision #105).
+"""Sheathing nails off an authored ``Layer.nailing`` / ``DeckLayer.nailing`` (decisions #105, #147).
 
 A FORTIFIED deck (RSRS-01 ring-shank at 4" o.c.) or a shear panel's edge nailing is the
 spec a framer substitutes first. The count is a per-sheet density, read with the host's
-OWN support spacing (its ``FramingSpec``, never a constant), times the layer's area.
+OWN support spacing (its ``FramingSpec``, never a constant), times the layer's area. A
+subfloor reads its ``JoistSpec.spacing`` over the deck's net area.
 """
 
 from __future__ import annotations
@@ -12,6 +13,7 @@ from collections import Counter, defaultdict
 
 from typehaus.hardware.catalog import hardware_by_model
 from typehaus.model.enums import LayerFunction
+from typehaus.model.floors import FloorSystem
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.framing.tables import DEFAULT_SPACING
 from typehaus.resolve.model import ResolvedModel
@@ -22,6 +24,7 @@ from typehaus.resolve.sheet_stock import (
 )
 from typehaus.takeoff.envelope import wall_layer_net_area_m2, wall_net_areas_m2
 from typehaus.takeoff.hardware_row import hardware_row
+from typehaus.takeoff.sheet_goods import deck_net_area_m2
 
 _M2_PER_SF = (12 * M_PER_IN) ** 2
 
@@ -64,7 +67,8 @@ def _roof_blocked(model: ResolvedModel, roof) -> bool:
 def _density_per_sf(layer, support_oc_in: float, vertical: bool,
                     blocked: bool) -> tuple[float, str]:
     """Nails per SF of this layer, and the sheet arithmetic behind it."""
-    length_in = order_sheet_length_in(layer.sheet_length.inches if layer.sheet_length else None)
+    stated = getattr(layer, "sheet_length", None)  # a DeckLayer states none: 4x8
+    length_in = order_sheet_length_in(stated.inches if stated else None)
     # A wall sheet stands with its long side up the studs; a deck sheet spans across them.
     line_in, across_in = (length_in, SHEET_WIDTH_IN) if vertical else (SHEET_WIDTH_IN, length_in)
     spec = layer.nailing
@@ -76,17 +80,22 @@ def _density_per_sf(layer, support_oc_in: float, vertical: bool,
     return per_sheet / (SHEET_WIDTH_IN * length_in / 144.0), note
 
 
+def _hosts(hosts: set) -> str:
+    """One host by tag; many by count, so a wall-wide schedule stays one clause."""
+    return next(iter(hosts)) if len(hosts) == 1 else f"{len(hosts)} hosts"
+
+
 def sheathing_nail_rows(model: ResolvedModel) -> list:
     """One row per nail model, per storey, with each host's sheet arithmetic in the basis."""
     by_part: dict[str, Counter] = defaultdict(Counter)
-    notes: dict[str, set] = defaultdict(set)
+    notes: dict[str, dict[tuple, set]] = defaultdict(lambda: defaultdict(set))
 
     def add(layer, area_m2: float, storey: str, support_oc: float, vertical: bool, host: str,
             blocked: bool = False):
         density, note = _density_per_sf(layer, support_oc, vertical,
                                         blocked or layer.nailing.blocked)
         by_part[layer.nailing.part][storey] += density * area_m2 / _M2_PER_SF
-        notes[layer.nailing.part].add(f"{host} {layer.material_ref}: {note}")
+        notes[layer.nailing.part][(layer.material_ref, note)].add(host)
 
     net = wall_net_areas_m2(model)
     for wall in model.walls:
@@ -104,6 +113,19 @@ def sheathing_nail_rows(model: ResolvedModel) -> list:
                 add(layer, roof.surface_area_m2, roof.storey, _support_oc_in(assembly), False,
                     roof.tag, _roof_blocked(model, roof))
 
+    floors = {floor.tag: floor for floor in model.floors}
+    for storey in model.plan.storeys:
+        for system in model.plan.storey_elements(storey.tag):
+            if not isinstance(system, FloorSystem) or system.subfloor is None \
+                    or system.subfloor.nailing is None:
+                continue
+            floor = floors.get(system.tag)
+            if floor is None or not floor.members:
+                continue
+            spacing = (system.joists.spacing or DEFAULT_SPACING).inches
+            add(system.subfloor, deck_net_area_m2(floor), storey.tag, spacing, False,
+                system.tag)
+
     rows = []
     for part, storeys in sorted(by_part.items()):
         item = hardware_by_model(part)
@@ -113,5 +135,7 @@ def sheathing_nail_rows(model: ResolvedModel) -> list:
         rows.append(hardware_row(
             item, scope="sheathing nails", count=sum(counts.values()), part_number=part,
             by_storey=counts,
-            basis="nails per sheet / sheet area x layer area: " + "; ".join(sorted(notes[part]))))
+            basis="nails per sheet / sheet area x layer area: " + "; ".join(
+                f"{_hosts(hosts)} {material}: {note}"
+                for (material, note), hosts in sorted(notes[part].items()))))
     return rows

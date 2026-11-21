@@ -178,11 +178,16 @@ class StructuralHardware:
     #: A pocket frame whose track screws up into wood gets a flat 2x6 nailer over the header
     #: (the commodity kits). ``False``: the kit's own steel header carries the track (Eclisse).
     pocket_track_nailer: bool = True
-    #: A fastener's coating: ``"ss304"``, ``"ss316"``, ``"hdg"``, ``"zmax"``, ``"g90"`` or
-    #: ``"mech_galv"``.
+    #: A fastener's coating: ``"ss304"``, ``"ss316"``, ``"hdg"``, ``"zmax"``, ``"g90"``,
+    #: ``"mech_galv"`` or ``"bright"`` (uncoated, dry wood only).
     #: Read by the connector-schedule lint (never mix stainless and zinc in one joint).
     #: ``None``: not a fastener, or not recorded.
     finish: str | None = None
+    #: A bolted angle's holes (HL D1-D3, decision #147): diameter, bolts per leg, and the
+    #: hole centre's distance off the heel. ``None``: not a bolted part.
+    bolt_diameter_in: float | None = None
+    bolts_per_leg: int | None = None
+    bolt_from_heel_in: float | None = None
 
     @property
     def available_lengths_in(self) -> tuple:

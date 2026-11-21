@@ -604,6 +604,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   SSNA10D, SSA10D, HDG 8d/10d/16d, SD9112); RF-HOUSE's deck is RSRS-01 ring-shank at 4" o.c.,
   the garage/canopy decks 8d HDG 6"/12" (the canopy's blocked edges too, off its `DiaphragmSpec`)
   and W-BW-SCREEN's 7/16" ZIP 304 `S8ACN` at 4" edges.
+  **Every authored schedule is counted (decision #147):** walls bright 8d at 6"/12" off
+  `plan/framing_standards.WALL_SHEATHING_NAILING`, subfloors glued + WSV212S off `SUBFLOOR_FASTENING`,
+  PVC trim and the Trex box sides off `Material.trim_fastening`, the HL angles' bolts and lags
+  derived from the grip (`notes/hl_site_bolts.md`). S-001 lists only the special ones.
   Blocks are on the STUD module, every OTHER stud, at 32" from the wall's LAYOUT LINE (girts
   run their own 24" module) — 32"x24"=5.33 ft2 is the crossing tributary in
   `notes/catlin_truss_engineering.md`. Block phase is solved for 32", not 16" — reusing the

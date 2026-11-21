@@ -7,7 +7,21 @@
 # half an 8d common's 0.131" shank, so the shank lands inside the face (notes/
 # sheet_layout_oracle.md). 12" is the narrowest rip the crew hangs (house preference).
 
-from typehaus import HeaderStandard, SheetLayoutStandard, inch
+from typehaus import HeaderStandard, SheathingNailing, SheetLayoutStandard, inch
+
+# Wall sheathing nailing (decision #147): bright 8d common at 6"/12" on dry SPF, the
+# 1/2" CDX at 16" and the 7/16" ZIP at 24" alike; every edge on studs, plates or rim
+# (bracing panels). Code-standard: one S-001 note line.
+WALL_SHEATHING_NAILING = SheathingNailing(
+    part="8d common 0.131x2.5 bright", edge_oc_in=6.0, field_oc_in=12.0, blocked=True,
+    code_row="IRC 2018 Table R602.3(3)",
+    source="IRC 2018 Table R602.3(3) (UpCodes): 8d common, 7/16 in. 24/16 panel, 6 in. edges / 12 in. field, Vult 170 Exp. B at 16 in. studs; R602.10.4 WSP/CS-WSP fasten per R602.3(3) at 6/12. ZIP: Huber HUB 9216, code-recognized fasteners as for OSB")
+
+# Subfloor (decision #147): glued and screwed, the WSV substituting one-for-one for the
+# 8d of R602.3(1) item 31. Special (a screw, not the row's nail): S-001 lists it.
+SUBFLOOR_FASTENING = SheathingNailing(
+    part="WSV212S", edge_oc_in=6.0, field_oc_in=12.0,
+    source="IRC 2018 Table R602.3(1) item 31 spacing (19/32-1 in., 6 in. edges / 12 in. intermediate); Simpson C-F-2019TECHSUP p.86, ESR-1472: WSV one-for-one for 8d common; glued to I-joists, no span reduction")
 
 HEADER_STANDARD = [
     HeaderStandard(uid="FPEZ7QS5W4", tag="HEADER-STANDARD", min_bearing_header="2-2x8"),

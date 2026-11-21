@@ -37,6 +37,27 @@ _M_TO_FT = 3.280839895013123
 _ALSO_IN_ENVELOPE = frozenset({"exterior wall", "roof", "ceiling lining"})
 
 
+def deck_net_area_m2(floor) -> float:
+    """A resolved floor's subfloor area: its sheet outline less its deck voids."""
+    points = [point for member in floor.members for point in (member.p0, member.p1)]
+    # The FRAMING's own bounding box — joist tip to joist tip, behind the rim.
+    framed = (max(point[0] for point in points) - min(point[0] for point in points)) * (
+        max(point[1] for point in points) - min(point[1] for point in points)
+    )
+    # ``deck_voids``, not the authored ``FloorOpening`` outlines: a wall passing
+    # through the deck takes plywood out too and nobody authors that cut
+    # (``resolve/through_deck.py``).
+    openings = sum(abs(polygon_area(list(ring))) for ring in floor.deck_voids)
+    # **The SHEET bills off the sheet, not off the framing.** This read the member
+    # bounding box for both, which understates every deck by a rim thickness at each
+    # end and — once ``FloorSystem.subfloor_outline`` existed — would have let a
+    # plank oversail its rim, draw wide, pass R311.3 and still bill the joist field.
+    # ``deck_outline`` is the one polygon the geometry, the drawings and the checks
+    # already agree on, so it is what the order reads too.
+    sheet = abs(polygon_area(list(floor.deck_outline))) if floor.deck_outline else framed
+    return sheet - openings
+
+
 def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """Return net-area and whole-sheet quantities for wall, roof, and subfloor sheathing.
 
@@ -105,24 +126,8 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             floor = next((item for item in model.floors if item.tag == system.tag), None)
             if floor is None or not floor.members:
                 continue
-            points = [point for member in floor.members for point in (member.p0, member.p1)]
-            # The FRAMING's own bounding box — joist tip to joist tip, behind the rim.
-            framed = (max(point[0] for point in points) - min(point[0] for point in points)) * (
-                max(point[1] for point in points) - min(point[1] for point in points)
-            )
-            # ``deck_voids``, not the authored ``FloorOpening`` outlines: a wall passing
-            # through the deck takes plywood out too and nobody authors that cut
-            # (``resolve/through_deck.py``).
-            openings = sum(abs(polygon_area(list(ring))) for ring in floor.deck_voids)
-            # **The SHEET bills off the sheet, not off the framing.** This read the member
-            # bounding box for both, which understates every deck by a rim thickness at each
-            # end and — once ``FloorSystem.subfloor_outline`` existed — would have let a
-            # plank oversail its rim, draw wide, pass R311.3 and still bill the joist field.
-            # ``deck_outline`` is the one polygon the geometry, the drawings and the checks
-            # already agree on, so it is what the order reads too.
-            sheet = abs(polygon_area(list(floor.deck_outline))) if floor.deck_outline else framed
             areas[("subfloor", system.subfloor.material_ref,
-                   system.subfloor.thickness.meters, None)] += sheet - openings
+                   system.subfloor.thickness.meters, None)] += deck_net_area_m2(floor)
 
     # A lined well: the same board run down the joist band on every edge.
     for floor in model.floors:

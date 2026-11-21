@@ -1,4 +1,4 @@
-"""``SheathingNailing`` — a sheathing layer's nailing schedule (decision #105).
+"""``SheathingNailing`` — a sheathing or subfloor layer's nailing schedule (decisions #105, #147).
 
 Its own module because ``model/assembly.py`` is past the file-size limit. The support
 spacing is NOT here: it is read from the host's ``FramingSpec``, so a 24" roof and a 16"
@@ -23,3 +23,6 @@ class SheathingNailing(HausModel):
     # whose ``DiaphragmSpec`` is blocked and authors its blocks counts as blocked anyway.
     blocked: bool = False
     source: str = ""
+    # The prescriptive row this schedule merely restates (``"IRC 2018 Table R602.3(1) item
+    # 31"``). Empty means special: S-001 lists it rather than folding it into one note line.
+    code_row: str = ""

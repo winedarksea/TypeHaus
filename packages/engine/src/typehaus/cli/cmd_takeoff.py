@@ -193,6 +193,10 @@ def _takeoff(house: Path | None, as_json: bool, summary: bool, csv: Path | None,
     # `pipe_runs`/`ducts`/`conduit` lines already in the payload. Carried in `--json` too
     # when asked for, so the before/after diff a reroute is judged on is machine-readable.
     payload["floor_areas"] = _floor_areas(model)
+    # Decision #47: what the bill knowingly leaves out (window install fasteners, #147).
+    from typehaus.takeoff.window_fasteners import window_install_gaps
+
+    payload["unmodeled_procurement"] = window_install_gaps(model)
     if runs:
         payload["runs"] = run_schedule(model, prices)
     if prices is not None:
@@ -229,6 +233,11 @@ def _takeoff(house: Path | None, as_json: bool, summary: bool, csv: Path | None,
         _print_takeoff_summary(payload, console)
         return payload
     _print_floor_areas(payload, console)
+    if payload["unmodeled_procurement"]:
+        gaps = payload["unmodeled_procurement"]
+        console.print(f"[bold]Unmodelled procurement[/bold]  window install fasteners for "
+                      f"{sum(g['units'] for g in gaps)} units ({len(gaps)} types without "
+                      "install_fastening)")
     console.print("[bold]Framing bill of materials[/bold]  (size · type: pieces / lineal ft)")
     for row in framing_bom:
         buckets = ", ".join(f"{b['count']}×{b['label']}" for b in row["stock"])
