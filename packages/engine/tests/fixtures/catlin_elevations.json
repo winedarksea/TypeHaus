@@ -50607,16 +50607,16 @@
 "4ef546bf030f"
 ],
 "geometry/CST701AAAA::framing/member:hanger-W-B-N2-landing-joist-lower-004": [
--1.7053067,
+-1.6862567,
 -1.5021067,
 8,
-"6f1f2fd4d8be"
+"4975f0fc0468"
 ],
 "geometry/CST701AAAA::framing/member:hanger-W-B-N2-landing-joist-upper-004": [
--1.5182558,
+-1.4992058,
 -1.3150558,
 8,
-"710499cb0cef"
+"40206d9e4706"
 ],
 "geometry/CST701AAAA::framing/member:landing-joist-lower-000": [
 -1.6862567,
@@ -50726,23 +50726,11 @@
 8,
 "74a8ee5ae81c"
 ],
-"geometry/CST701AAAA::framing/member:ledger-W-B-CN-landing-rim-lower-1": [
--1.7370567,
--1.5021067,
-8,
-"91fbbc4abd0f"
-],
 "geometry/CST701AAAA::framing/member:ledger-W-B-CN-stringer-lower-2": [
 -2.7797125,
 -1.5021067,
 8,
 "2dc1787fa303"
-],
-"geometry/CST701AAAA::framing/member:ledger-W-B-STR-landing-rim-upper-0": [
--1.5500058,
--1.3150558,
-8,
-"c838ef442a46"
 ],
 "geometry/CST701AAAA::framing/member:ledger-W-B-STR3-stringer-upper-0": [
 -1.3372355,
@@ -51205,30 +51193,6 @@
 1.556075,
 8,
 "96f1e0df117a"
-],
-"geometry/CST702AAAA::framing/member:ledger-W-M-C5B-landing-rim-lower-1": [
-1.283025,
-1.517975,
-8,
-"f80df19e05e2"
-],
-"geometry/CST702AAAA::framing/member:ledger-W-M-N2-landing-joist-lower-003": [
-1.283025,
-1.517975,
-8,
-"f80df19e05e2"
-],
-"geometry/CST702AAAA::framing/member:ledger-W-M-N2-landing-joist-upper-003": [
-1.283025,
-1.517975,
-8,
-"f80df19e05e2"
-],
-"geometry/CST702AAAA::framing/member:ledger-W-M-STRW-landing-rim-upper-0": [
-1.283025,
-1.517975,
-8,
-"f80df19e05e2"
 ],
 "geometry/CST702AAAA::framing/member:riser-lower-000": [
 0.02605,
@@ -105145,16 +105109,16 @@
 "e76b7cb538bf"
 ],
 "member/CST701AAAA/hanger-W-B-N2-landing-joist-lower-004": [
--1.7053067,
+-1.6862567,
 -1.5021067,
 2,
-"ac29c6e00f0b"
+"f0bb59ea7b60"
 ],
 "member/CST701AAAA/hanger-W-B-N2-landing-joist-upper-004": [
--1.5182558,
+-1.4992058,
 -1.3150558,
 2,
-"60ec1c1e09c0"
+"6e8785bbdcd7"
 ],
 "member/CST701AAAA/landing-joist-lower-000": [
 -1.6862567,
@@ -105264,23 +105228,11 @@
 2,
 "866d24b8d8f7"
 ],
-"member/CST701AAAA/ledger-W-B-CN-landing-rim-lower-1": [
--1.7370567,
--1.5021067,
-4,
-"119e5619b366"
-],
 "member/CST701AAAA/ledger-W-B-CN-stringer-lower-2": [
 -2.7797125,
 -1.5021067,
 4,
 "fecf40f8300a"
-],
-"member/CST701AAAA/ledger-W-B-STR-landing-rim-upper-0": [
--1.5500058,
--1.3150558,
-4,
-"e1bda6c5132c"
 ],
 "member/CST701AAAA/ledger-W-B-STR3-stringer-upper-0": [
 -1.3372355,
@@ -105707,30 +105659,6 @@
 1.556075,
 2,
 "7025a169089b"
-],
-"member/CST702AAAA/ledger-W-M-C5B-landing-rim-lower-1": [
-1.283025,
-1.517975,
-4,
-"cad6cc0a53ae"
-],
-"member/CST702AAAA/ledger-W-M-N2-landing-joist-lower-003": [
-1.283025,
-1.517975,
-4,
-"cad6cc0a53ae"
-],
-"member/CST702AAAA/ledger-W-M-N2-landing-joist-upper-003": [
-1.283025,
-1.517975,
-4,
-"cad6cc0a53ae"
-],
-"member/CST702AAAA/ledger-W-M-STRW-landing-rim-upper-0": [
-1.283025,
-1.517975,
-4,
-"cad6cc0a53ae"
 ],
 "member/CST702AAAA/riser-lower-000": [
 0.02605,

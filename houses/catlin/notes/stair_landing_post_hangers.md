@@ -62,6 +62,28 @@ ST-B2M's wall-side rims are fastened along W-B-CN / W-B-STR full length; the nor
 frame into the wall-hung `landing-joist-*-004`. ST-M2S's partition rim bears 2.75" on
 `landing-post-000` (R502.6: 1 1/2"), its north end on the W-M-N2 joist.
 
+## 6. Landing ledgers (Task B, 2026-11-20)
+
+Each wall-side landing rim / end joist was drawn coincident with a 2x10 "ledger" board, its
+top flush, so the board hung 2" below the 2x8 framing and the landing soffit board ran
+through it. One board cannot occupy that place twice: the rim (or end joist) lying on the
+wall face IS the ledger, fastened to the studs. Removed (member now carries the
+`framed-wall-ledger:` tag alone):
+
+| Stair | Board removed | Member that is the ledger |
+|---|---|---|
+| ST-B2M | ledger-W-B-CN-landing-rim-lower-1 | landing-rim-lower-1 |
+| ST-B2M | ledger-W-B-STR-landing-rim-upper-0 | landing-rim-upper-0 |
+| ST-M2S | ledger-W-M-C5B-landing-rim-lower-1 | landing-rim-lower-1 |
+| ST-M2S | ledger-W-M-STRW-landing-rim-upper-0 | landing-rim-upper-0 |
+| ST-M2S | ledger-W-M-N2-landing-joist-lower-003 | landing-joist-lower-003 |
+| ST-M2S | ledger-W-M-N2-landing-joist-upper-003 | landing-joist-upper-003 |
+
+A landing ledger off the face (none in catlin) now takes the member's own depth, bottom
+flush. The concrete hanger bands on W-B-N2 (`hanger-W-B-N2-landing-joist-*-004`, 8") are
+clipped at the joist underside (3/4" was below it). Stringer ledgers (2x10 inside 2x12
+stringers, W-B-CN, W-B-STR3, W-S-SS2) are unchanged: none projects below its stringer.
+
 ## Open
 
 The posts' pad (`stairwell_post_pad.md`) still reads its own landing load, not these

@@ -495,8 +495,8 @@ def test_framed_wall_bearing_picks_the_longest_host(main_stair):
     assert members["landing-rim-lower-1"].connection == "framed-wall-ledger:W-M-C5B"
     assert members["stringer-upper-0"].connection == "framed-wall-spacer:W-M-STRW"
     assert members["landing-rim-upper-0"].connection == "framed-wall-ledger:W-M-STRW"
-    ledger = members["ledger-W-M-C5B-landing-rim-lower-1"]
-    assert ledger.length_m == pytest.approx(members["landing-rim-lower-1"].length_m)
+    # A wall-side rim flush on its host's face is its own ledger: no second board in it.
+    assert not any(key.startswith("ledger-") and "landing-" in key for key in members)
 
 
 def test_framed_hosts_emit_ledger_boards_flush_with_the_wall_face(catlin_model,
@@ -538,9 +538,10 @@ def test_framed_hosts_emit_ledger_boards_flush_with_the_wall_face(catlin_model,
                     inch(0.75).meters), member.child_key
                 # And never inside the wall: the board hangs off the face, not in the bays.
                 assert not near < member.p0[cross] < far, member.child_key
-    # ST-M2S's known framed hosts each carry at least one real ledger board.
+    # ST-M2S's framed hosts each carry landing framing fastened as its own ledger.
     ledger_hosts = {m.connection.split(":", 1)[1] for m in main_stair.members
-                    if m.child_key.startswith("ledger-")}
+                    if m.category == "landing_framing"
+                    and (m.connection or "").startswith("framed-wall-ledger:")}
     assert {"W-M-C5B", "W-M-N2", "W-M-STRW"} <= ledger_hosts
 
 

@@ -176,8 +176,14 @@ def _face_line(host, member: FramedMember, board_width: float, lo: float,
 
 def _framed_ledger(stair: Stair, host, member: FramedMember,
                    interval: tuple[float, float], subfloor: float,
-                   connection: str) -> FramedMember:
-    """The ledger board a framed host wall carries ``member`` on.
+                   connection: str) -> FramedMember | None:
+    """The ledger board a framed host wall carries ``member`` on, or ``None``.
+
+    Landing framing is its own ledger where it already lies on the host's face: the
+    wall-side rim or end joist is the board fastened to the studs, so no second board is
+    drawn in it. Off the face a landing ledger takes the member's own depth, bottom flush,
+    so nothing hangs below the landing framing into its soffit
+    (houses/catlin/notes/stair_landing_post_hangers.md §6).
 
     Two deliberate differences from the concrete hanger band (both share ``_face_line``'s
     plan position, flush against the host's face on the member's side):
@@ -189,12 +195,18 @@ def _framed_ledger(stair: Stair, host, member: FramedMember,
       under a partially-carried raked stringer bears where that stretch of stringer
       actually is, clamped at the subfloor like every stair member.
     """
-    section = cross_section(_LEDGER_PROFILE)
+    landing = member.category == "landing_framing"
+    profile = member.profile if landing else _LEDGER_PROFILE
+    section = cross_section(profile)
     lo, hi = interval
     a, b = _face_line(host, member, section.width_m, lo, hi)
+    if landing:
+        cross = 0 if abs(member.p1[0] - member.p0[0]) < 1e-6 else 1
+        if abs(a[cross] - member.p0[cross]) < section.width_m / 2.0 + 1e-6:
+            return None
     top_lo, top_hi = _top_at(member, lo), _top_at(member, hi)
     return FramedMember(
-        stair.uid, f"ledger-{host.tag}-{member.child_key}", "hanger", _LEDGER_PROFILE,
+        stair.uid, f"ledger-{host.tag}-{member.child_key}", "hanger", profile,
         a, b, max(subfloor, top_lo - section.depth_m), top_lo, hi - lo,
         z0_end_m=max(subfloor, top_hi - section.depth_m), z1_end_m=top_hi,
         connection=connection)
@@ -349,7 +361,9 @@ def _bear_stair_on_walls(model: ResolvedModel, stair: Stair,
             if host is not None and not host.is_foundation:
                 tag = f"framed-wall-ledger:{host.tag}"
                 out.append(replace(member, connection=tag))
-                out.append(_framed_ledger(stair, host, member, interval, subfloor, tag))
+                ledger = _framed_ledger(stair, host, member, interval, subfloor, tag)
+                if ledger is not None:
+                    out.append(ledger)
                 if member.category == "landing_framing":
                     # Only the endpoints the wall actually runs past are carried; a host
                     # that overlaps half a rim leaves the far corner needing a post.
@@ -376,7 +390,8 @@ def _bear_stair_on_walls(model: ResolvedModel, stair: Stair,
                     out.append(FramedMember(
                         stair.uid, f"hanger-{host.tag}-{member.child_key}", "hanger",
                         "hanger", band_a, band_b,
-                        max(subfloor, member.z1_m - hanger_depth), member.z1_m,
+                        # never below the landing framing, into its soffit
+                        max(subfloor, member.z0_m, member.z1_m - hanger_depth), member.z1_m,
                         member.length_m, connection=tag))
                     supported_corners.update(
                         corner_key(point) for point in covered_ends(member, interval))
