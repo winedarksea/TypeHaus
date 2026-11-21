@@ -324,7 +324,8 @@ DRAINS = [
             path=(pt(ft(13, 6), inch(98.1875)), pt(ft(13, 6), inch(98.1875)),
                   pt(ft(13, 6), inch(111.375)), pt(inch(152), inch(121.375))),
             diameter=inch(2), material="pvc",
-            elevations=(ft(0), inch(-8.7), inch(-9.09), inch(-9.5)),
+            # The body sits 0.804" under the datum, at the bottom of SL-B-FLOOR's dish (#148).
+            elevations=(inch(-0.804), inch(-8.7), inch(-9.09), inch(-9.5)),
             serves=("FX-B-SAUNA-FD",)),
 ]
 

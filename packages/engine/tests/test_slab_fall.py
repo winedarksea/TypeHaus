@@ -104,3 +104,65 @@ def test_the_stem_board_runs_down_to_the_falling_slab(catlin_model_ro) -> None:
         assert z == pytest.approx(slab.top_at(x, y), abs=1e-9)
     rise = max(z for *_xy, z in box.corners_bottom) - min(z for *_xy, z in box.corners_bottom)
     assert rise / _IN == pytest.approx(2.77, abs=0.05)
+
+
+# --- a dish to a floor drain inside a level rim (decision #148) -----------------------------
+
+_DRAIN = (ft(4).meters, ft(15).meters)  # 4' off the west edge, 5' off the north
+
+
+def test_a_dish_falls_at_its_rate_to_the_drain_and_holds_its_rim() -> None:
+    from typehaus.resolve.slab_dish import build_dish
+
+    dish = build_dish("U", "SL-T", _DRAIN, list(_RING), 0.125)
+    # The farthest edge (south, 15') sets the rise: 15 x 1/8" = 1 7/8".
+    assert dish.rise_m == pytest.approx(1.875 * _IN)
+    assert dish.lift(*_DRAIN) == pytest.approx(-dish.rise_m)
+    for x, y in (*_RING, (ft(5).meters, 0.0), (0.0, ft(9).meters)):
+        assert dish.lift(x, y) == pytest.approx(0.0, abs=1e-12)
+    assert dish.lift(-1.0, 3.0) == 0.0 and dish.lift(ft(12).meters, 1.0) == 0.0  # clamped
+    # The shallowest facet (south) falls at exactly the rate; the others are steeper.
+    step = ft(1).meters
+    south = dish.lift(_DRAIN[0], _DRAIN[1] - step) - dish.lift(*_DRAIN)
+    west = dish.lift(_DRAIN[0] - step, _DRAIN[1]) - dish.lift(*_DRAIN)
+    assert south == pytest.approx(0.125 * _IN) and west > south
+
+
+def test_a_dish_refuses_a_rim_not_star_shaped_from_its_drain() -> None:
+    from typehaus.resolve.slab_dish import build_dish
+
+    # An L whose inside corner hides the north-east arm from a drain in the south-west.
+    ell = [(0.0, 0.0), (4.0, 0.0), (4.0, 1.0), (1.0, 1.0), (1.0, 4.0), (0.0, 4.0)]
+    with pytest.raises(ValueError, match="star-shaped"):
+        build_dish("U", "SL-T", (3.5, 0.5), ell, 0.125)
+
+
+def test_the_dish_mesh_top_follows_the_surface() -> None:
+    from typehaus.resolve.slab_dish import build_dish, dish_mesh
+
+    dish = build_dish("U", "SL-T", _DRAIN, list(_RING), 0.125)
+    solid = ResolvedSolid("U-dish-0", "SL-T:dish-0", "s", "slab", list(_RING),
+                          -0.0889, 0.0, dish=dish)
+    mesh = dish_mesh(solid)
+    top = mesh.positions[: len(_RING) + 1]
+    for x, y, z in top:
+        assert z == pytest.approx(solid.top_at(x, y))
+    assert signed_volume(mesh.positions, mesh.triangles) == pytest.approx(
+        Polygon(_RING).area * 0.0889, rel=1e-9)
+
+
+def test_catlin_sauna_floor_dishes_to_its_drain(catlin_model_ro) -> None:
+    """Hand number: 1/8"/ft x 77 3/16" (drain to the south rim, FT-B-S2's edge) = 0.804"."""
+    model = catlin_model_ro
+    slab = next(s for s in model.solids if s.uid == "CBS501AAAA")
+    piece = next(s for s in model.solids if s.uid == "CBS501AAAA-dish-0")
+    drain = next(o for o in model.canvas_objects if o.tag == "FX-B-SAUNA-FD")
+    assert (slab.z1_m - piece.top_at(*drain.position)) / _IN == pytest.approx(0.804, abs=1e-3)
+    assert (slab.z1_m - drain.z_m) / _IN == pytest.approx(0.804, abs=1e-3)
+    # The rim, D-B-SAUNA's side included, stays flush with the gym.
+    ring = piece.dish.ring
+    for (ax, ay), (bx, by) in zip(ring, ring[1:] + ring[:1], strict=True):
+        assert piece.top_at((ax + bx) / 2, (ay + by) / 2) == pytest.approx(slab.z1_m)
+    assert not any(layer.bottom_plane is not None for wall in model.walls
+                   if wall.tag.startswith("W-B-SA") or wall.tag == "W-B-CS"
+                   for layer in wall.layers)

@@ -377,7 +377,8 @@ def test_sauna_bench_geometry_matches_placed_furniture(catlin_model):
                  and getattr(n, "tag", None) == "detail-component:sauna-bench"]
         assert seats
         assert max(z for n in seats for _, z in n.points) == pytest.approx(
-            floor.z1_m / M_PER_IN + height)
+            obj.body_z0_m / M_PER_IN + height)  # the step stands in the sauna's dish (#148)
+        assert obj.body_z0_m <= floor.z1_m + 1e-9
 
 
 def test_unresolvable_anchor_yields_finding_no_crash(catlin_model):

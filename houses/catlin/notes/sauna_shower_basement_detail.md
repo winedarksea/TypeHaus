@@ -29,9 +29,9 @@ is 84 1/16 inches AFF; use that surface for headroom and heater checks.
 
 - Slabs: both sauna and shower are slab-on-grade over vapor barrier and foam, with a thermal break around the perimeter of the combined room. **The 4" recess is dropped:** with a curb around the pan and a floor drain outside it, the slab stays flat across the whole room and the pan is built up on top of it. That also removes the step at the sauna/shower line the old scheme needed a threshold detail for.
 
-- Sauna floor: slopes 1/8" per foot down toward the floor drain at (13'-6", 8'-2 3/16") — about 8'-6" of run from the room's far south-west corner, so ~1 1/8" total. Detail shown as sloped slab schematically. The wet floor outside the pan slopes to the same drain, so there is one low point in the room and no dam between the two zones.
+- Sauna floor: dishes at 1/8" per foot minimum to the floor drain at (13'-6", 8'-2 3/16"); see "Dished floor (decision #148)" below. The wet floor outside the pan falls to the same drain, so there is one low point in the room and no dam between the two zones.
 
-- Shower floor: finish is built up using foam tile backer (GoBoard or other polyiso-based board preferred) and wedges. **Inside the pan**, slope to the pan drain at IRC P2708.1's 1/4"–1/2" per foot, built up over the flat slab. Coordinate with drain height and waterproofing membrane. Neither slope is carried in the model — `Slab` and `FinishZone` have no slope field — so these numbers and the plan-source comments in `plan/fixtures.py` are the record.
+- Shower floor: finish is built up using foam tile backer (GoBoard or other polyiso-based board preferred) and wedges. **Inside the pan**, slope to the pan drain at IRC P2708.1's 1/4"–1/2" per foot, built up from the pan's level bed. Coordinate with drain height and waterproofing membrane. The pan slope is not carried in the model; the room floor's dish is (below).
 
 - Curb: around the pan's two *open* sides only (south and west). The closed sides are finished wall. The plan symbol draws a single curb bar; build both.
 
@@ -47,7 +47,7 @@ is 84 1/16 inches AFF; use that surface for headroom and heater checks.
 
 - Ventilation: the ERV supply is a ceiling hatch at the NORTH end, over the upper bench (`REG-B-SUP3`, a 4" branch off the gym radial since 2026-11-11). The owner accepted this departure from Harvia's "inlet near the heater" guidance for 44 ft less duct. The low west-wall exhaust stays at 4 inches AFF; both terminals are adjustable. Keep plastic vent pipe behind insulation.
 
-- **The room floor is sealed concrete, not tile.** `FX-B-SAUNA-SH` is a curbed *liner* pan: it brings its own waterproof floor inside the curb, so there is no tile bed to lay there and no reason to tile the wet floor outside it either. `RM-B-SAUNA.floor_finish` is `sealed-concrete` — densifier plus two coats on `SL-B-FLOOR`, which already slopes 1/8" per foot to `FX-B-SAUNA-FD`. The tile that remains in this room is `WP-B-SAUNA-SPLASH`, the pan's two closed wall sides, unchanged. The "shower tile" and "foam tile backer" bullets above are superseded for the *floor*; the wall build-up still stands. Duckboards over the sealed slab in the hot zone remain an owner option and are not modelled.
+- **The room floor is sealed concrete, not tile.** `FX-B-SAUNA-SH` is a curbed *liner* pan: it brings its own waterproof floor inside the curb, so there is no tile bed to lay there and no reason to tile the wet floor outside it either. `RM-B-SAUNA.floor_finish` is `sealed-concrete` — densifier plus two coats on `SL-B-FLOOR`, which dishes 1/8" per foot to `FX-B-SAUNA-FD`. The tile that remains in this room is `WP-B-SAUNA-SPLASH`, the pan's two closed wall sides, unchanged. The "shower tile" and "foam tile backer" bullets above are superseded for the *floor*; the wall build-up still stands. Duckboards over the sealed slab in the hot zone remain an owner option and are not modelled.
 
 - Coordinate: thresholds (now flush throughout — see the slab note), the pan curb's two open sides, slip resistance, and transitions between the sealed slab, any duckboards, and the pan curb.
 
@@ -66,3 +66,11 @@ system is qualified for sauna temperatures and the pan connection and foil conti
 accepted. USG permits Durock in saunas; that does not approve the remaining materials.
 See the linked coordination note and its rendered valve section for the actual layer planes,
 insulation termination, supported stringer, sealed pipe penetrations and required foil return.
+
+## Dished floor (decision #148)
+
+- **Rim level, flush with the gym.** The walls, liner foot and D-B-SAUNA threshold stay where they were. The rim is the pour's edge: x 10'-2 1/2"..16'-11 1/2", y 1'-9"..9'-8 3/8". FT-B-S2 (south 11 3/4" strip) and FT-B-CS (east 6 1/2" strip) are poured first, flush and flat, so those strips stay level.
+- **Four planes to the drain.** Screed each one from the rim down to the drain. The south plane is the long one, 77 3/16", and it sets the drop: 1/8" x 77 3/16" / 12 = **0.804" (13/16")**. The other three planes are steeper.
+- **Constant 3 1/2" slab.** Dish the capillary stone and the 2" XPS under the sauna by the same amount. The vapour retarder follows the stone.
+- **Drain body 13/16" low.** Set the FX-B-SAUNA-FD strainer flush at the bottom of the dish. PR-B-SAUNA-FD-DROP starts at -0.804".
+- **Pan bedded level.** Bed FX-B-SAUNA-SH level at the rim, its highest point. Benches built against the rim are levelled off it, and their legs are scribed to the dish. The free-standing step sits about 3/8" low.

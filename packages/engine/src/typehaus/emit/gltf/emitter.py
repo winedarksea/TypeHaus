@@ -254,10 +254,10 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
                     prism.z0_m, prism.z1_m, _solid_color(model, solid))
             scene.add_object(mb, ("drywall",), kind="solid", uid=solid.uid,
                              category=solid.category)
-        elif solid.body_mesh is not None or solid.top_plane is not None:
+        elif solid.body_mesh is not None or solid.lifts:
             mb = _MeshBuilder()
             color = _solid_color(model, solid)
-            mb.add_mesh(solid_mesh(solid), color)  # a falling pour's plane too
+            mb.add_mesh(solid_mesh(solid), color)  # a falling or dished pour too
             surfaces = None
             snow_component = solid.category == "snow_guard"
             if snow_component:

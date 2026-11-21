@@ -69,9 +69,14 @@ def sloped_slab_mesh(solid: Any) -> GMesh:
 
 
 def solid_mesh(solid: Any) -> GMesh | None:
-    """A solid's own mesh: its ``body_mesh``, a falling pour's plane mesh, else None."""
+    """A solid's own mesh: its ``body_mesh``, a falling pour's plane mesh, a dish piece's
+    fan (``resolve/slab_dish.py``), else None."""
     if solid.body_mesh is not None:
         return solid.body_mesh
+    if getattr(solid, "dish", None) is not None:
+        from typehaus.resolve.slab_dish import dish_mesh
+
+        return dish_mesh(solid)
     return sloped_slab_mesh(solid) if solid.top_plane is not None else None
 
 

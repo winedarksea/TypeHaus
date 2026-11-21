@@ -65,6 +65,8 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     from typehaus.resolve.ceilings import ceiling_faces, finished_ceiling_at
 
     faces = ceiling_faces(model)
+    dish_drains = {dish.drain_ref for slab in plan.elements_of_kind("Slab")
+                   for dish in slab.drain_dishes}
     for storey in plan.storeys:
         # One shape per room, not one per (room, placeable): a per-placeable rebuild costs
         # ~1,700 GEOS polygon builds per resolve. The bounds ride along so the common
@@ -101,8 +103,14 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
             floor, structural_floor = _floor_elevation(
                 model, storey, explicit_room or resolved_room, floor_by_room)
             mount = getattr(item, "mount", None)
-            fall = _floor_fall(model, explicit_room or resolved_room, center, fall_rooms,
-                               frame_hung=mount is not None and mount.kind.value == "ceiling")
+            hung = mount is not None and mount.kind.value == "ceiling"
+            plan_ring = _transformed_polygon(local_footprint, center, rotation)
+            center_fall = _floor_fall(model, explicit_room or resolved_room, center, fall_rooms,
+                                      frame_hung=hung)
+            # On a dish a rigid body bears on the highest floor under it; its drain does not.
+            fall = (center_fall if hung or item.tag in dish_drains else
+                    _floor_fall(model, explicit_room or resolved_room, center, fall_rooms,
+                                under=plan_ring))
             floor, structural_floor = floor + fall, structural_floor + fall
             ceiling = (finished_ceiling_at(faces, storey.tag, explicit_room or resolved_room,
                                            center)
@@ -117,9 +125,10 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                 from typehaus.resolve.fixture_floor_finish import fixture_support_elevation
 
                 try:
+                    # Read at the centre; a pan on a dish beds level at its highest point.
                     mount_elevation = fixture_support_elevation(
                         model, center, structural_floor, fixture_tag=item.tag,
-                        footprint=Polygon(_transformed_polygon(local_footprint, center, rotation)))
+                        footprint=Polygon(plan_ring)) + fall - center_fall
                 except ValueError as exc:
                     findings.append(_finding("integrity.fixture_floor_finish", item.tag,
                                              str(exc)))
@@ -276,14 +285,17 @@ def _floor_elevation(model: ResolvedModel, storey: object, room_tag: str | None,
 
 
 def _floor_fall(model: ResolvedModel, room_tag: str | None, center: tuple[float, float],
-                cache: dict[str, object], frame_hung: bool = False) -> float:
-    """A falling pour's rise at ``center`` over the room's centroid (``floor_fall_at``)."""
+                cache: dict[str, object], frame_hung: bool = False,
+                under: list[tuple[float, float]] | None = None) -> float:
+    """A falling or dished pour's rise at ``center`` over the room's centroid
+    (``floor_fall_at``)."""
     if room_tag is None:
         return 0.0
     if room_tag not in cache:
         cache[room_tag] = next((r for r in model.rooms if r.tag == room_tag), None)
     room = cache[room_tag]
-    return 0.0 if room is None else floor_fall_at(model, room, *center, frame_hung=frame_hung)
+    return 0.0 if room is None else floor_fall_at(model, room, *center, frame_hung=frame_hung,
+                                                  under=under)
 
 
 def _soffit_underside(model: ResolvedModel, item: object) -> float | None:

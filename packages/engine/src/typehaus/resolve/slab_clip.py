@@ -26,7 +26,7 @@ from dataclasses import replace
 from shapely.geometry import Polygon
 from shapely.geometry.polygon import orient
 
-from typehaus.findings import Finding, unknown
+from typehaus.findings import Finding, element_error, unknown
 from typehaus.resolve.model import ResolvedModel, ResolvedSolid, Ring
 from typehaus.resolve.overlay import difference, intersection, union_all
 from typehaus.resolve.slab_layers import FINISH_CATEGORY
@@ -50,6 +50,10 @@ def floor_plan(model: ResolvedModel, solid: ResolvedSolid) -> tuple[Ring, tuple[
 
 
 def floor_outline(model: ResolvedModel, solid: ResolvedSolid) -> Ring:
+    """The floor's outline, voids ignored. Empty for a drain-dish piece (#148): its slab's
+    authored outline already covers it, so a void-blind reader sees the slab once."""
+    if getattr(solid, "dish", None) is not None:
+        return []
     return floor_plan(model, solid)[0]
 
 
@@ -102,6 +106,11 @@ def clip_pour_slabs(model: ResolvedModel) -> list[Finding]:
                   + _walls_through(slab, model, plan))
         if not shapes:
             continue
+        if slab.dish is not None:  # a dish rim must be the pour's own edge (#148)
+            findings.append(element_error(
+                "integrity.slab_drain_dish", f"slab {slab.dish.slab_tag}: a drain dish runs "
+                "over a footing or wall the pour is cast against", slab.dish.slab_tag))
+            continue
         cut = union_all(shapes)
         clipped = difference(plan, cut)
         if clipped.geom_type != "Polygon" or clipped.is_empty:
@@ -118,7 +127,8 @@ def clip_pour_slabs(model: ResolvedModel) -> list[Finding]:
         prefix = f"{slab.uid}-"
         model.solids[:] = [
             replace(s, outline=list(outline), voids=voids)
-            if s.uid == slab.uid or (s.category == FINISH_CATEGORY and s.uid.startswith(prefix))
+            if s.uid == slab.uid or (s.category == FINISH_CATEGORY and s.uid.startswith(prefix)
+                                     and s.dish is None)
             else s
             for s in model.solids]
     return findings

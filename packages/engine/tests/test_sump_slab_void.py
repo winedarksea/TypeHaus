@@ -26,7 +26,8 @@ def test_a_sump_voids_its_host_slab(catlin_model_ro):
     pit = next(s for s in catlin_model_ro.solids if s.tag == "SM-B-RADON")
     hole = Polygon(pit.outline)
     for solid in catlin_model_ro.solids:
-        if solid.tag == "SL-B-FLOOR" or solid.tag.startswith("SL-B-FLOOR:"):
+        if (solid.tag == "SL-B-FLOOR" or solid.tag.startswith("SL-B-FLOOR:")) and (
+                solid.dish is None):  # the sauna's dish piece lies clear of the pit
             assert any(Polygon(v).equals_exact(hole, 1e-9) for v in solid.voids), solid.tag
 
 

@@ -45,6 +45,7 @@ if TYPE_CHECKING:
     from typehaus.resolve.geometry_ir import GeometryModel, GMesh, GPrism
     from typehaus.resolve.jamb_fill import ResolvedJambFill
     from typehaus.resolve.open_web import OpenWebShape
+    from typehaus.resolve.slab_dish import DishSurface
     from typehaus.resolve.stairs.winder_geometry import WinderLayout
 
 # A polygon ring: list of (x, y) in meters. Layer polygons are simple rings.
@@ -716,10 +717,23 @@ class ResolvedSolid:
     # ``z0_m``, which stay the low edge's. Flat readers see the low point; readers that
     # follow the floor call ``top_at``.
     top_plane: DeckPlane | None = None
+    # A dish piece (``resolve/slab_dish.py``, #148): top and bottom drop under ``z1_m`` /
+    # ``z0_m``, which stay the rim's.
+    dish: DishSurface | None = None
+
+    @property
+    def lifts(self) -> bool:
+        """Whether the top departs from ``z1_m`` anywhere (a fall or a dish)."""
+        return self.top_plane is not None or self.dish is not None
+
+    def lift_at(self, x: float, y: float) -> float:
+        """How far top and bottom stand off ``z1_m`` / ``z0_m`` at plan ``(x, y)``."""
+        return ((self.top_plane.lift(x, y) if self.top_plane is not None else 0.0)
+                + (self.dish.lift(x, y) if self.dish is not None else 0.0))
 
     def top_at(self, x: float, y: float) -> float:
-        """Top at plan ``(x, y)``: ``z1_m``, lifted where the solid falls."""
-        return self.z1_m + (self.top_plane.lift(x, y) if self.top_plane is not None else 0.0)
+        """Top at plan ``(x, y)``: ``z1_m``, moved where the solid falls or dishes."""
+        return self.z1_m + self.lift_at(x, y)
 
 
 @dataclass(frozen=True)

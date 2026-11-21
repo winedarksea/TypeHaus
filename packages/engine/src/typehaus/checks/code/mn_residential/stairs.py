@@ -493,7 +493,7 @@ def stair_end_risers(ctx: CheckContext) -> list[Finding]:
             deck_tag, deck_top, room_tag, finish_ref, finish_in = min(
                 near, key=lambda row: abs(row[1] + (row[4] or 0.0) * 0.0254 - wanted))
             falling = next((s for s in ctx.model.solids
-                            if s.tag == deck_tag and s.top_plane is not None), None)
+                            if s.tag == deck_tag and s.lifts), None)
             authored = ctx.model.plan.by_tag(stair.tag)
             if falling is not None and not at_top and authored.start is not None:
                 deck_top = falling.top_at(*foot_point(authored))  # read under the riser

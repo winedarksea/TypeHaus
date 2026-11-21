@@ -92,7 +92,7 @@ def take_down(ctx, slab_solid, court: frozenset[str] = frozenset()) -> tuple[flo
     zone = _poly(floor_outline(ctx.model, slab_solid)).buffer(FOOTPRINT_REACH_IN, join_style=2)
     parts = {"footings": 0.0, "slabs": 0.0, "concrete walls": 0.0, "framed walls": 0.0}
     for s in ctx.model.solids:
-        el = ctx.plan.by_tag(s.tag)
+        el = ctx.plan.by_tag(s.dish.slab_tag if s.dish is not None else s.tag)  # a dish piece
         kind = ("footings" if isinstance(el, Footing) and s.category == "footing" else
                 "slabs" if isinstance(el, Slab) and in_slab_family(s.category)
                 and not _wood_slab(ctx, el) else None)

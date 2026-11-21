@@ -14,6 +14,7 @@ from typehaus import (
     BarSpec,
     ControlLayer,
     Door,
+    DrainDish,
     FloorOpening,
     FoundationWall,
     FramingSpec,
@@ -1343,9 +1344,8 @@ ROOMS = [
     # frame runs 5-8 F colder than that, so the frame does condense at design. That is an
     # accepted condition over a sealed, drained slab in a room that dries between sessions,
     # not a hidden failure.
-    # The floor is SEALED CONCRETE, not tile. SL-B-FLOOR already runs flat and
-    # sloped 1/8"/ft to FX-B-SAUNA-FD (13'-6", 8'-2 3/16") under the whole room, and
-    # FX-B-SAUNA-SH is a curbed
+    # The floor is SEALED CONCRETE, not tile. SL-B-FLOOR dishes 1/8"/ft to FX-B-SAUNA-FD
+    # (13'-6", 8'-2 3/16"; its `drain_dishes`, decision #148), and FX-B-SAUNA-SH is a curbed
     # liner pan — the pan brings its own waterproof floor, so nothing outside it needs a
     # tile bed. `integrity.concrete_finish_needs_concrete_deck` is satisfied by SL-B-FLOOR.
     # The tile that remains in this room is WP-B-SAUNA-SPLASH, the pan's two closed wall
@@ -1447,6 +1447,14 @@ SLABS = [
          outline=(pt(ft(0), ft(0)), pt(ft(36), ft(0)), pt(ft(36), ft(36)),
                   pt(ft(0), ft(36))),
          thickness=inch(3.5), assembly="SLAB_FLOOR",
+         # RM-B-SAUNA's floor dishes to FX-B-SAUNA-FD at 1/8"/ft min, rim flush with the gym
+         # (decision #148). The rim is the pour's edge: FT-B-S2 (south 11 3/4") and FT-B-CS
+         # (east 6 1/2") are cast first, flush and flat, so their strips stay level.
+         drain_dishes=(DrainDish(drain_ref="FX-B-SAUNA-FD",
+                                 outline=(pt(inch(122.5), inch(21)), pt(inch(203.5), inch(21)),
+                                          pt(inch(203.5), inch(116.375)),
+                                          pt(inch(122.5), inch(116.375))),
+                                 rate_in_per_ft=0.125),),
          # FOAMULAR 1000, stated (free body §11j-§11k): the court's thrust crosses this slab to
          # the north footings; the sheet's 1/3 dead-load rule grades 0.885. Spelled out to
          # match params/foundations.SLAB_EDGE_BREAK (test_catlin_contract_m3 pins the pair).

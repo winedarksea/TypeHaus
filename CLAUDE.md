@@ -189,17 +189,18 @@ a release or for exhaustive local verification.
 - **A tee branch frames to the through wall's framing** (`resolve/tee_interrupt.py`): its core
   passes the through wall's room-face layers, which a late stage cuts over its stud band
   into `<layer>-tee-<i>` pieces sharing one slot. Walk a stack by slot, not by entry.
-- **A pour slab may fall** (`Slab.fall`, decision #138): `top_elevation` is its low edge; read a
-  point with `ResolvedSolid.top_at`, never `z1_m`. `Stair.foot_on` seats a flight's foot on it.
-  A wall finish whose foot lies in a falling pour rides its plane (`ResolvedLayer.bottom_plane`,
-  `resolve/layer_seat.py`): `layer_solids` makes those pieces `GBox`es, the viewer reads the
-  served plane, the takeoff bills the trapezoid. `mep_concrete.concrete_hosts` carries the plane.
+- **A pour slab may fall or dish** (decisions #138, #148): `Slab.fall` (`SlabFall`) lifts top and
+  bottom on one plane and `top_elevation`/`z0_m`/`z1_m` are the low edge's; `Slab.drain_dishes`
+  (`DrainDish`) sinks a local fan to a floor drain inside a level rim, drawn as its own piece
+  (`<uid>-dish-<i>`, `ResolvedSolid.dish`, `resolve/slab_dish.py`) cut out of the slab's voids.
+  Read a point with `ResolvedSolid.top_at`/`lift_at`, never `z1_m`; both draw from
+  `slab_fall.solid_mesh`. `floor_outline` hides a dish piece (its slab covers it); `piece_at`
+  finds it under a slab tag. `Stair.foot_on` seats a flight's foot on a fall. A wall finish whose
+  foot lies in a falling pour rides its plane (`ResolvedLayer.bottom_plane`, `resolve/layer_seat.py`;
+  a dish never raises one): `layer_solids` makes those pieces `GBox`es, the viewer reads the
+  served plane, the takeoff bills the trapezoid. `mep_concrete.concrete_hosts` carries the solid.
 - **`Slab.kind`** is `pour | deck | platform | band` (decision #81). Code that means concrete
   reads `is_pour_slab`, never `category == "slab"`.
-- **A pour slab may fall; `top_elevation` is its low edge** (decision #138): `Slab.fall`
-  (`SlabFall`) lifts top and bottom on one plane, so `z0_m`/`z1_m` are the low edge's.
-  Anything that stands on the floor reads `ResolvedSolid.top_at(x, y)`; a falling pour draws
-  from `resolve/slab_fall.sloped_slab_mesh`. `Stair.foot_on` seats a flight's foot on it.
 - **`clear_face` is the finish face; `axis_face` owns points** (decision #82). Measure
   furniture and areas off `clear_face`. For "which room is this in", use
   `resolve/room_lookup.room_owning`.

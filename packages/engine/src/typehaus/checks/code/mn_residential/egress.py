@@ -352,7 +352,7 @@ def tilted_decks(ctx: CheckContext) -> dict:
 
     out = {f.tag: f for f in ctx.model.floors if f.deck_plane is not None}
     out.update({s.tag: SimpleNamespace(deck_top_at=s.top_at) for s in ctx.model.solids
-                if s.top_plane is not None})
+                if s.lifts})
     return out
 
 

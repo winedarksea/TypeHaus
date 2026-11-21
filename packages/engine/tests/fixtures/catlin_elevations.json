@@ -1625,9 +1625,9 @@
 "canvas_objects/FURN-B-SAUNA-RECLINER/body_z0_m": -2.1701125,
 "canvas_objects/FURN-B-SAUNA-RECLINER/body_z1_m": -1.2978266,
 "canvas_objects/FURN-B-SAUNA-RECLINER/z_m": -2.1701125,
-"canvas_objects/FURN-B-SAUNA-STEP/body_z0_m": -2.7797125,
-"canvas_objects/FURN-B-SAUNA-STEP/body_z1_m": -2.4749125,
-"canvas_objects/FURN-B-SAUNA-STEP/z_m": -2.7797125,
+"canvas_objects/FURN-B-SAUNA-STEP/body_z0_m": -2.7885705,
+"canvas_objects/FURN-B-SAUNA-STEP/body_z1_m": -2.4837705,
+"canvas_objects/FURN-B-SAUNA-STEP/z_m": -2.7885705,
 "canvas_objects/FURN-B-SAUNA-UPPER/body_z0_m": -2.7797125,
 "canvas_objects/FURN-B-SAUNA-UPPER/body_z1_m": -1.7129125,
 "canvas_objects/FURN-B-SAUNA-UPPER/z_m": -2.7797125,
@@ -2306,9 +2306,9 @@
 "canvas_objects/FX-B-BATH-WC/body_z0_m": -2.7766645,
 "canvas_objects/FX-B-BATH-WC/body_z1_m": -2.0114895,
 "canvas_objects/FX-B-BATH-WC/z_m": -2.7766645,
-"canvas_objects/FX-B-SAUNA-FD/body_z0_m": -2.7797125,
-"canvas_objects/FX-B-SAUNA-FD/body_z1_m": -2.7670125,
-"canvas_objects/FX-B-SAUNA-FD/z_m": -2.7797125,
+"canvas_objects/FX-B-SAUNA-FD/body_z0_m": -2.800135,
+"canvas_objects/FX-B-SAUNA-FD/body_z1_m": -2.787435,
+"canvas_objects/FX-B-SAUNA-FD/z_m": -2.800135,
 "canvas_objects/FX-B-SAUNA-SH/body_z0_m": -2.7797125,
 "canvas_objects/FX-B-SAUNA-SH/body_z1_m": -0.6461125,
 "canvas_objects/FX-B-SAUNA-SH/z_m": -2.7797125,
@@ -20331,16 +20331,16 @@
 "8a3924a0bdd0"
 ],
 "geometry/CBP905AAAA-sleeve/body": [
--2.8686125,
--2.7797125,
+-2.8743948,
+-2.7854948,
 2,
-"8a3924a0bdd0"
+"f1fa508a671f"
 ],
 "geometry/CBP906AAAA-sleeve/body": [
--2.8686125,
--2.7797125,
+-2.889035,
+-2.800135,
 2,
-"8a3924a0bdd0"
+"a4be68714fcc"
 ],
 "geometry/CBPC01AAAA-run/body": [
 -2.5606345,
@@ -20398,9 +20398,9 @@
 ],
 "geometry/CBPD10AAAA-run/body": [
 -3.0464018,
--2.7797125,
+-2.8001341,
 72,
-"6afe1a0051b6"
+"e489d98c72b9"
 ],
 "geometry/CBPT01AAAA-run/body": [
 -2.6273125,
@@ -20797,6 +20797,24 @@
 -2.9196665,
 2,
 "d4168825a668"
+],
+"geometry/CBS501AAAA-dish-0-capillary-break/body": [
+-3.041689,
+-2.9196665,
+10,
+"f3ee7deed269"
+],
+"geometry/CBS501AAAA-dish-0-xps-below/body": [
+-2.939835,
+-2.8686125,
+10,
+"1ec06d83abe9"
+],
+"geometry/CBS501AAAA-dish-0/body": [
+-2.889035,
+-2.7797125,
+10,
+"495050cdaa52"
 ],
 "geometry/CBS501AAAA-xps-below/body": [
 -2.9194125,
@@ -121818,11 +121836,11 @@
 "pipe_runs/PR-B-SAUNA-FD-DROP/z_end_m": -3.0210125,
 "pipe_runs/PR-B-SAUNA-FD-DROP/z_m": [
 -3.0210125,
--2.7797125,
+-2.8001341,
 4,
-"8dea79c8ff38"
+"e81f281775dc"
 ],
-"pipe_runs/PR-B-SAUNA-FD-DROP/z_start_m": -2.7797125,
+"pipe_runs/PR-B-SAUNA-FD-DROP/z_start_m": -2.8001341,
 "pipe_runs/PR-B-SAUNA-FD-VENT/z_end_m": -0.4670425,
 "pipe_runs/PR-B-SAUNA-FD-VENT/z_m": [
 -3.0227905,
@@ -123125,10 +123143,10 @@
 "sleeves/SP-B-S1-CD-SPA/center_z_m": -1.2192,
 "sleeves/SP-B-S1-CD-SPA/z0_m": -2.7797125,
 "sleeves/SP-B-S1-CD-SPA/z1_m": -0.3413125,
-"sleeves/SP-B-SAUNA-FD/z0_m": -2.8686125,
-"sleeves/SP-B-SAUNA-FD/z1_m": -2.7797125,
-"sleeves/SP-B-SAUNA-SH/z0_m": -2.8686125,
-"sleeves/SP-B-SAUNA-SH/z1_m": -2.7797125,
+"sleeves/SP-B-SAUNA-FD/z0_m": -2.889035,
+"sleeves/SP-B-SAUNA-FD/z1_m": -2.800135,
+"sleeves/SP-B-SAUNA-SH/z0_m": -2.8743948,
+"sleeves/SP-B-SAUNA-SH/z1_m": -2.7854948,
 "sleeves/SP-B-SEWER-EXIT/center_z_m": -3.2361187,
 "sleeves/SP-B-SEWER-EXIT/z0_m": -3.0337125,
 "sleeves/SP-B-SEWER-EXIT/z1_m": -2.7797125,
@@ -128920,7 +128938,7 @@
 "solids/PR-B-SAUNA-DRAIN-RUN/z0_m": -3.1797474,
 "solids/PR-B-SAUNA-DRAIN-RUN/z1_m": -2.7289125,
 "solids/PR-B-SAUNA-FD-DROP-RUN/z0_m": -3.0464018,
-"solids/PR-B-SAUNA-FD-DROP-RUN/z1_m": -2.7797125,
+"solids/PR-B-SAUNA-FD-DROP-RUN/z1_m": -2.8001341,
 "solids/PR-B-SAUNA-FD-VENT-RUN/z0_m": -3.0227905,
 "solids/PR-B-SAUNA-FD-VENT-RUN/z1_m": -0.448082,
 "solids/PR-B-SAUNA-VENT-RUN/z0_m": -3.0131385,
@@ -130153,6 +130171,12 @@
 "solids/SL-B-FLOOR/z1_m": -2.7797125,
 "solids/SL-B-FLOOR:capillary-break/z0_m": -3.0212665,
 "solids/SL-B-FLOOR:capillary-break/z1_m": -2.9196665,
+"solids/SL-B-FLOOR:dish-0/z0_m": -2.8686125,
+"solids/SL-B-FLOOR:dish-0/z1_m": -2.7797125,
+"solids/SL-B-FLOOR:dish-0:capillary-break/z0_m": -3.0212665,
+"solids/SL-B-FLOOR:dish-0:capillary-break/z1_m": -2.9196665,
+"solids/SL-B-FLOOR:dish-0:xps-below/z0_m": -2.9194125,
+"solids/SL-B-FLOOR:dish-0:xps-below/z1_m": -2.8686125,
 "solids/SL-B-FLOOR:xps-below/z0_m": -2.9194125,
 "solids/SL-B-FLOOR:xps-below/z1_m": -2.8686125,
 "solids/SL-BW-TIER1/z0_m": -0.8382,
@@ -130233,10 +130257,10 @@
 "solids/SP-B-N4-SUMP/z1_m": -0.4524375,
 "solids/SP-B-S1-CD-SPA/z0_m": -1.241425,
 "solids/SP-B-S1-CD-SPA/z1_m": -1.196975,
-"solids/SP-B-SAUNA-FD/z0_m": -2.8686125,
-"solids/SP-B-SAUNA-FD/z1_m": -2.7797125,
-"solids/SP-B-SAUNA-SH/z0_m": -2.8686125,
-"solids/SP-B-SAUNA-SH/z1_m": -2.7797125,
+"solids/SP-B-SAUNA-FD/z0_m": -2.889035,
+"solids/SP-B-SAUNA-FD/z1_m": -2.800135,
+"solids/SP-B-SAUNA-SH/z0_m": -2.8743948,
+"solids/SP-B-SAUNA-SH/z1_m": -2.7854948,
 "solids/SP-B-SEWER-EXIT/z0_m": -3.3123187,
 "solids/SP-B-SEWER-EXIT/z1_m": -3.1599187,
 "solids/SP-B-SLAB-KITCH/z0_m": -2.8686125,

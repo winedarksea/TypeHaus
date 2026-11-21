@@ -39,6 +39,7 @@ from typehaus.resolve.rafter_seat import rafter_eave_z_m
 from typehaus.resolve.roof_bearing import roof_bearings
 from typehaus.resolve.roof_edge_geometry import skin_layers, skin_stand_ins
 from typehaus.resolve.roof_layer_setbacks import deck_rise_m, layer_edge_setbacks
+from typehaus.resolve.slab_dish import dish_pieces
 from typehaus.resolve.slab_fall import fall_plane
 from typehaus.resolve.slab_kind import CATEGORY_FOR_KIND, slab_kind
 from typehaus.resolve.slab_layers import split_top_finish
@@ -80,14 +81,17 @@ def resolve_envelope_geometry(model: ResolvedModel) -> list[Finding]:
                 top, finish = split_top_finish(assembly, model.plan.library, element.uid,
                                                element.tag, storey.tag, outline, z1, voids)
                 plane = fall_plane(element)  # a falling pour's finish rides the same plane
-                model.solids.append(ResolvedSolid(
+                solids = [ResolvedSolid(
                     element.uid, element.tag, storey.tag, CATEGORY_FOR_KIND[kind], outline,
                     z0, top,
                     element.assembly,
                     voids,
                     top_plane=plane,
-                ))
-                model.solids.extend(replace(s, top_plane=plane) for s in finish)
+                ), *(replace(s, top_plane=plane) for s in finish)]
+                if element.drain_dishes:  # each dish its own piece (#148)
+                    solids, bad = dish_pieces(model, element, solids)
+                    findings.extend(bad)
+                model.solids.extend(solids)
             elif isinstance(element, Pad):
                 outline = [point.xy_m for point in element.outline]
                 if len(outline) < 3:

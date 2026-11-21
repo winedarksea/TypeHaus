@@ -250,7 +250,7 @@ def deck_owning_opening(model: ResolvedModel, storey: str,
             if solid.tag == element.tag and in_slab_family(solid.category):
                 opening = model.plan.by_tag(opening_tag)
                 ring = [p.xy_m for p in getattr(opening, "outline", ())]
-                if solid.top_plane is None or not ring:
+                if not solid.lifts or not ring:
                     return solid.tag, solid.z1_m
                 return solid.tag, solid.top_at(sum(p[0] for p in ring) / len(ring),
                                                sum(p[1] for p in ring) / len(ring))

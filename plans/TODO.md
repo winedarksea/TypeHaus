@@ -233,7 +233,6 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
 - ED-M-FIRE-RC: measure the delivered RACO 862 handy-box cover. It must be no wider than the pocket's 2 3/8" strip (nominal 2 5/16"; Hubbell's table reads 2.425").
 - ERV terminals don't come out of the walls/floors/surfaces quite clearly enough, likely they protrude just a bit more
 - ERV likely blocks D-B-CLOSET, and its condensate also blocks
-- Sauna needs a slope to concrete floor
 
 # Project Management
 

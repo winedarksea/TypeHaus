@@ -277,6 +277,8 @@ class EnvelopeGeometry:
         porch deck. The reason string is returned so a test can assert on *why* rather than
         only on the outcome, and so ``unknown_inputs`` can name a buffer.
         """
+        if getattr(solid, "dish", None) is not None:
+            return False, f"a drain dish in {solid.dish.slab_tag}, which is graded whole"
         above, above_tag = self.space_at(solid.outline, solid.z1_m, +1)
         below, below_tag = self.space_at(solid.outline, solid.z0_m, -1)
         reason = f"above={above}({above_tag}) below={below}({below_tag})"

@@ -47,8 +47,12 @@ def _sleeve_host(model: ResolvedModel, host_ref: str, at: tuple[float, float]):
     solid = next((s for s in model.solids
                   if s.tag == host_ref and is_concrete_host(s.category)), None)
     if solid is not None:
-        lift = solid.top_at(*at) - solid.z1_m
-        return solid.outline, solid.z0_m + lift, solid.z1_m + lift, solid.category, solid.tag
+        from typehaus.resolve.slab_dish import piece_at
+
+        solid = piece_at(model, solid, at)  # a dished pour is read on its piece
+        lift = solid.lift_at(*at)
+        return (solid.outline, solid.z0_m + lift, solid.z1_m + lift, solid.category,
+                host_ref)
     beam = next((s for s in model.solids if s.tag == host_ref and s.category == "beam"), None)
     if beam is not None and is_cast_beam(model.plan, model.plan.by_tag(host_ref)):
         return beam.outline, beam.z0_m, beam.z1_m, "beam", beam.tag

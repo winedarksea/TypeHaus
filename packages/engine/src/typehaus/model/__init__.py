@@ -262,7 +262,7 @@ from typehaus.model.site import (
     WindowWell,
     load_basemap_geojson,
 )
-from typehaus.model.slab_fall import SlabFall
+from typehaus.model.slab_fall import DrainDish, SlabFall
 from typehaus.model.snow_retention import SnowRetentionSpec
 from typehaus.model.spatial import (
     Alarm,
@@ -470,7 +470,7 @@ __all__ = [
     "LuminaireType", "MeshRef", "TrackHeadProduct", "TrackHeadSpec", "TrackLightingSpec",
     "JoistSpec", "JoistReinforcement", "Strongback", "DeckLayer", "FloorSystem", "FloorOpening",
     "FloorOpeningEdgeInterval", "FloorOpeningLid", "FloorOpeningPocketClosure",
-    "Slab", "SlabFall", "SlabThermalBreak",
+    "Slab", "SlabFall", "SlabThermalBreak", "DrainDish",
     "Soffit", "SoffitOpening",
     "FloorHeat", "FinishZone",
     "PanelingSubstrate", "BoardAndBatten", "PanelingSpan", "WallPaneling", "WallBacking",

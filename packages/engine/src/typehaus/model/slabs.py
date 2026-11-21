@@ -14,7 +14,7 @@ from typehaus.model.base import Element, HausModel
 from typehaus.model.rebar import ReinforcementSpec
 from typehaus.model.refs import PublishedSpan
 from typehaus.model.registry import register_element
-from typehaus.model.slab_fall import SlabFall
+from typehaus.model.slab_fall import DrainDish, SlabFall
 from typehaus.quantities import Length, Point2D
 
 
@@ -110,9 +110,15 @@ class Slab(Element):
     # A pour that falls to drain (``model/slab_fall.py``): its plane, constant thickness;
     # ``top_elevation`` is its low edge.
     fall: SlabFall | None = None
+    # Local dishes to floor drains inside a level rim (``model/slab_fall.DrainDish``, #148).
+    drain_dishes: tuple[DrainDish, ...] = ()
 
     @model_validator(mode="after")
     def _fall_needs_a_pour_at_an_elevation(self) -> Slab:
         if self.fall is not None and (self.kind != "pour" or self.top_elevation is None):
             raise ValueError(f"{self.tag}: a fall needs kind=\"pour\" and a top_elevation")
+        if self.drain_dishes and self.kind != "pour":
+            raise ValueError(f"{self.tag}: a drain dish needs kind=\"pour\"")
+        if self.drain_dishes and self.fall is not None:
+            raise ValueError(f"{self.tag}: a fall and a drain dish on one slab are not supported")
         return self

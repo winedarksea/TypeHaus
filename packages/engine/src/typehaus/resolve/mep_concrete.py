@@ -103,8 +103,9 @@ def concrete_bands(model: ResolvedModel, solid) -> list[tuple[float, float]]:
 def concrete_hosts(model: ResolvedModel) -> list[tuple]:
     """Every cast band a run could be inside, as ``(tag, category, footprint, z0, z1, plane)``.
 
-    ``plane`` is a falling pour's ``top_plane`` (else None): the band lifts by
-    ``plane.lift(x, y)`` at a point (:func:`band_at`), as ``mep_sleeves._sleeve_host`` reads it.
+    ``plane`` is the solid itself where its top falls or dishes (else None): the band moves
+    by its ``lift_at(x, y)`` at a point (:func:`band_at`), as ``mep_sleeves._sleeve_host``
+    reads it. A dish piece answers to its authored slab's tag, which its sleeves name.
 
     The host list :func:`concrete_crossings` used to build inline. It is public because
     ``mep.run_in_slab`` asks a DIFFERENT question of the same list — not "where does this
@@ -130,7 +131,8 @@ def concrete_hosts(model: ResolvedModel) -> list[tuple]:
         return difference(shell, union_all(Polygon(v) for v in s.voids if len(v) >= 3))
 
     hosts: list[tuple] = [
-        (s.tag, s.category, net(s), z0, z1, s.top_plane)
+        (s.dish.slab_tag if s.dish is not None else s.tag, s.category, net(s), z0, z1,
+         s if s.lifts else None)
         for s in model.solids
         if is_concrete_host(s.category) and len(s.outline) >= 3
         for z0, z1 in concrete_bands(model, s)]
@@ -149,8 +151,8 @@ def concrete_hosts(model: ResolvedModel) -> list[tuple]:
 
 
 def band_at(z0: float, z1: float, plane, point) -> tuple[float, float]:
-    """A host band at a plan point: lifted by a falling pour's plane, else as given."""
-    lift = plane.lift(*point) if plane is not None and point is not None else 0.0
+    """A host band at a plan point: moved by a falling or dished pour, else as given."""
+    lift = plane.lift_at(*point) if plane is not None and point is not None else 0.0
     return z0 + lift, z1 + lift
 
 

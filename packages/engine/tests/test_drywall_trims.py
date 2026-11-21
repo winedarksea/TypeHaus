@@ -126,7 +126,7 @@ def test_a_dropped_ceiling_lowers_the_clear_head(catlin_model_ro):
     ceiling = min(c.z0_m for c in catlin_model_ro.ceilings if c.room_ref == room.tag)
     floor = room_finished_floor_elevation(catlin_model_ro, room)
     assert room.clear_height_m == pytest.approx(ceiling - floor, abs=1e-9)
-    assert room.clear_height_m / _IN == pytest.approx(84.0625, abs=0.01)
+    assert room.clear_height_m / _IN == pytest.approx(84.0625, abs=0.01)  # off the dish's rim
 
 
 def test_a_leafless_passage_is_wrapped_with_corner_bead_on_both_faces(catlin_model_ro):

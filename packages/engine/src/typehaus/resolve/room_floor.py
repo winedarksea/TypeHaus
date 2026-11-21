@@ -24,7 +24,7 @@ from __future__ import annotations
 from shapely.geometry import Polygon
 
 from typehaus.resolve.model import ResolvedModel, ResolvedRoom
-from typehaus.resolve.slab_clip import floor_outline
+from typehaus.resolve.slab_clip import floor_plan
 from typehaus.resolve.solid_categories import SLAB_FAMILY
 from typehaus.resolve.walking_surface import surfaces_at
 
@@ -34,6 +34,7 @@ from typehaus.resolve.walking_surface import surfaces_at
 # below — every storey in this house is taller than 4' between finish floors, so nothing
 # legitimate is lost.
 SLAB_MATCH_TOLERANCE_M = 1.2192  # 4 ft
+_RIM_SHIM_M = 0.25 * 0.0254  # a body this near a dish's rim is levelled off it
 
 
 def room_floor_elevation(model: ResolvedModel, room: ResolvedRoom) -> float:
@@ -64,8 +65,13 @@ def room_floor_elevation(model: ResolvedModel, room: ResolvedRoom) -> float:
         return wall_z
     centroid = Polygon(room.clear_face).centroid
     best = _room_slab(model, centroid, wall_z)
-    # A falling pour is read at the room's centroid (``floor_fall_at`` moves it per point).
-    return best.top_at(centroid.x, centroid.y) if best is not None else wall_z
+    # A falling pour is read at the room's centroid, a dish at its rim (``floor_fall_at``
+    # moves it per point), so the base, casing and backing at the walls stay put.
+    return best.z1_m + _plane_lift(best, centroid) if best is not None else wall_z
+
+
+def _plane_lift(solid, point) -> float:
+    return solid.top_plane.lift(point.x, point.y) if solid.top_plane is not None else 0.0
 
 
 def _room_slab(model: ResolvedModel, centroid, wall_z: float):
@@ -76,7 +82,9 @@ def _room_slab(model: ResolvedModel, centroid, wall_z: float):
             continue
         if abs(solid.z1_m - wall_z) >= SLAB_MATCH_TOLERANCE_M:
             continue
-        if not Polygon(floor_outline(model, solid)).contains(centroid):  # a flush footing is floor
+        outline, voids = floor_plan(model, solid)  # a flush footing is floor; a dish is its piece
+        if not Polygon(outline).contains(centroid) or any(
+                len(v) >= 3 and Polygon(v).contains(centroid) for v in voids):
             continue
         if best is None or abs(solid.z1_m - wall_z) < abs(best.z1_m - wall_z):
             best = solid
@@ -84,22 +92,30 @@ def _room_slab(model: ResolvedModel, centroid, wall_z: float):
 
 
 def floor_fall_at(model: ResolvedModel, room: ResolvedRoom, x: float, y: float,
-                  frame_hung: bool = False) -> float:
-    """How far ``room``'s floor at ``(x, y)`` stands above its centroid's: 0 unless the room
-    is floored by a falling pour. Added to either floor plane, it seats a thing where it
-    stands (the hydrant, the EV gear, a bench) rather than at the room's average.
+                  frame_hung: bool = False, under=None) -> float:
+    """How far ``room``'s floor at ``(x, y)`` stands above its datum (a fall's centroid, a
+    dish's rim): 0 unless the room is floored by a falling or dished pour. Added to either
+    floor plane, it seats a thing where it stands (the hydrant, the EV gear, a bench) rather
+    than at the room's average.
 
-    ``frame_hung`` (a ceiling mount): measured off the pour's low edge instead, the datum
-    the frame above was set from, so nothing hung from it moves with the floor."""
+    ``frame_hung`` (a ceiling mount): measured off the pour's low edge (a dish's rim)
+    instead, the datum the frame above was set from, so nothing hung from it moves.
+
+    ``under`` (a footprint ring): on a dish, a rigid body bears on the highest point within
+    1/4" of it, not its centre (#148): one set against the rim is shimmed level off it.
+    A plane fall keeps the centre reading."""
     if not room.clear_face:
         return 0.0
     centroid = Polygon(room.clear_face).centroid
     wall_z = next((w.base_ref_z_m for w in model.walls if w.storey == room.storey), 0.0)
     best = _room_slab(model, centroid, wall_z)
-    if best is None or best.top_plane is None:
+    if best is None or not best.lifts:
         return 0.0
-    here = 0.0 if frame_hung else best.top_plane.lift(x, y)
-    return here - best.top_plane.lift(centroid.x, centroid.y)
+    here = 0.0 if frame_hung else best.lift_at(x, y)
+    if under and best.dish is not None and not frame_hung:
+        reach = Polygon(under).buffer(_RIM_SHIM_M, join_style=2).exterior.coords
+        here = max(here, *(best.lift_at(px, py) for px, py in reach))
+    return here - _plane_lift(best, centroid)
 
 
 def room_finished_floor_elevation(model: ResolvedModel, room: ResolvedRoom) -> float:
@@ -147,16 +163,21 @@ def room_finished_floor_elevation(model: ResolvedModel, room: ResolvedRoom) -> f
                        for outline, holes in room.floor_finish_exclusions]))
         if not remaining.is_empty:
             centroid = remaining.representative_point()
-    best = _underfoot(model, (centroid.x, centroid.y), structural)
+    point = (centroid.x, centroid.y)
+    best = _underfoot(model, point, structural)
     if best is None:
         # The centroid can stand over a hole the room wraps — a stair well, a closet's chase
         # — where no covering stands at all. Read it at a point of the room that has a floor.
-        floored = _floored_point(model, room, structural)
-        if floored is not None:
-            best = _underfoot(model, floored, structural)
+        point = _floored_point(model, room, structural)
+        if point is not None:
+            best = _underfoot(model, point, structural)
     if best is None:
         return structural
-    return best.deck_top_m if best.surface_m is None else best.surface_m
+    # A dish is read at its rim, as ``room_floor_elevation`` reads it.
+    dish = next((s.dish for s in model.solids if s.dish is not None and s.tag == best.deck_tag),
+                None)
+    rim = -dish.lift(*point) if dish is not None else 0.0
+    return rim + (best.deck_top_m if best.surface_m is None else best.surface_m)
 
 
 def _underfoot(model: ResolvedModel, point: tuple[float, float], structural: float):

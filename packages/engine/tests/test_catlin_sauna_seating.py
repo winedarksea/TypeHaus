@@ -37,6 +37,7 @@ def _footprint(obj):
 
 
 def _floor(model):
+    """The sauna floor's level rim: SL-B-FLOOR dishes inside it to FX-B-SAUNA-FD (#148)."""
     return next(s.z1_m for s in model.solids if s.tag == "SL-B-FLOOR")
 
 
@@ -88,8 +89,12 @@ def test_lying_surface_and_finished_headroom(catlin_model_ro):
     assert (upper.body_z1_m - floor) / M_PER_IN == pytest.approx(42)
     assert (ceiling.z0_m - upper.body_z1_m) / M_PER_IN == pytest.approx(42.0625)  # 7'-0 1/16" face
     assert _footprint(upper).covers(box(124.25, 43.1875, 150.25, 111.1875))  # 26 x 68
-    for tag, height in (("LOWER", 24), ("READING", 24), ("STEP", 12)):
+    for tag, height in (("LOWER", 24), ("READING", 24)):
         assert (_object(model, tag).body_z1_m - floor) / M_PER_IN == pytest.approx(height)
+    # The free-standing step bears on the dish, 0.35" under the rim at its highest corner.
+    step = _object(model, "STEP")
+    assert (step.body_z1_m - step.body_z0_m) / M_PER_IN == pytest.approx(12)
+    assert (floor - step.body_z0_m) / M_PER_IN == pytest.approx(0.349, abs=0.002)
 
 
 def test_four_people_include_seats_legs_and_access(catlin_model_ro):

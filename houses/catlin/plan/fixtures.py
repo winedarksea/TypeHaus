@@ -18,8 +18,9 @@ from typehaus.model import Location, TubEnclosureSpec, WallAttachment, m
 # pan is still in the NE corner, still the only corner with both sides finished wall, and
 # the floor drain still sits west of it at the 1/8"/ft slope's low point where a boxed
 # corner chase can bring PR-B-COND's air-gap down over it. D-B-SAUNA is on W-B-CS now and
-# swings OUT into the gym, so no leaf sweeps this floor at all. No slope field exists on
-# Slab/FinishZone, so both slopes (and IRC P2708.1's 1/4"-1/2"/ft) live only in comments.
+# swings OUT into the gym, so no leaf sweeps this floor at all. The room's fall is modelled
+# (SL-B-FLOOR's `drain_dishes`, decision #148: 0.804" low at the drain); the pan's own
+# P2708.1 1/4"-1/2"/ft is inside the pan and lives only in comments.
 #
 # Both fixtures still chase through W-B-CS, not the closer W-B-SA-N partition, to keep
 # W-B-SA-N's foil-faced polyiso vapour barrier unbreached; W-B-CS also gives a true vent

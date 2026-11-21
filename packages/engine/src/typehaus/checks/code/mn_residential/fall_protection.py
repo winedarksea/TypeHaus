@@ -229,7 +229,8 @@ def raised_surface_guard_height(ctx: CheckContext) -> list[Finding]:
     surfaces += [(solid.tag, list(floor_outline(ctx.model, solid)), solid.z1_m,
                   lambda _x, _y, z=solid.z1_m: z)
                  for solid in ctx.model.solids
-                 if in_slab_family(solid.category) and len(solid.outline) >= 3]
+                 if in_slab_family(solid.category) and len(solid.outline) >= 3
+                 and solid.dish is None]  # a dish is inside its slab's ring
     if not surfaces:
         return [_unknown(cid, "no floor decks or slabs resolve, so there is no raised "
                          "walking surface to measure", (), code)]

@@ -157,8 +157,8 @@ def _solid_body(f: Any, body: Any, solid: Any) -> Any:
     leg. Either way the run is *one* element with one representation, where a raked rail used
     to arrive as 292 separate ``IfcRailing``s, one per 1-1/2" of fall.
     """
-    if solid.body_mesh is not None or solid.top_plane is not None:
-        # A falling pour is one closed mesh on its plane (resolve/slab_fall.py).
+    if solid.body_mesh is not None or solid.lifts:
+        # A falling or dished pour is one closed mesh on its surface (resolve/slab_fall.py).
         mesh = solid_mesh(solid)
         # Folded leaves are an assembly of touching meshes, not one connected BRep shell.
         # IFC4 tessellation preserves their holes without claiming an invalid closed shell.
