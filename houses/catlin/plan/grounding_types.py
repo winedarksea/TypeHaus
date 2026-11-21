@@ -88,9 +88,12 @@ GROUNDING_DEVICE_TYPES = (
                          ports=(), source=SPD_HOM.source),
     ElectricalDeviceType(tag="ED-T-IBT", name="Intersystem bonding termination (NEC 250.94)",
                          product_ref=GND_IBT.tag, ibt=True, bonding_terminals=5,
-                         footprint=(inch(6), inch(2)),
-                         height=inch(3), needs=frozenset(), ports=(), source=_SRC),
+                         # IBTB spec sheet: 4 L x 2.01 W x 1.41 in overall, wall-mounted flat.
+                         footprint=(inch(4), inch(1.41)),
+                         height=inch(2.01), needs=frozenset(), ports=(), source=_SRC,
+                         model_representation=ModelRepresentation(symbol="nvent-erico-ibtb")),
     ElectricalDeviceType(tag="ED-T-DATA-ENTRY", name="NEMA 3R comms entrance box, blank cover",
                          footprint=(inch(8), inch(4)), height=inch(8), needs=frozenset(),
-                         ports=(), source=_SRC),
+                         ports=(), source=_SRC,
+                         model_representation=ModelRepresentation(symbol="comms-entrance-box")),
 )

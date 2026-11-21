@@ -154,7 +154,8 @@ _CAMERA = dict(ports=_DATA, ifc_entity="IfcAudioVisualAppliance", ifc_predefined
 DEVICE_TYPES = (
     ElectricalDeviceType(
         tag="ED-T-DOORBELL-POE", name="Video doorbell, PoE (Reolink D340P)",
-        footprint=(inch(1.875), inch(0.875)), height=inch(5.25),
+        footprint=(mm(48), mm(23)), height=mm(133),
+        model_representation=ModelRepresentation(symbol="reolink-d340p-doorbell"),
         product_ref=REOLINK_DOORBELL.tag, poe_watts=12.95, source=REOLINK_DOORBELL.source,
         **_CAMERA),
     # Product photo orientation: 202 mm high, 151 mm wide, 125 mm deep.

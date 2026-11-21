@@ -97,6 +97,7 @@ ALL_ELECTRICAL_DEVICE_TYPES = (
         _P240,
         service_amps=320,
         plan_symbol="meter",
+        model_representation=ModelRepresentation(symbol="meter-main-class320"),
     ),
     _device(
         "ED-T-DISCONNECT-3R",
@@ -143,6 +144,7 @@ ALL_ELECTRICAL_DEVICE_TYPES = (
         inch(4),
         _P240,
         plan_symbol="junction-box",
+        model_representation=ModelRepresentation(symbol="pv-junction-box"),
     ),
     _device(
         "ED-T-FLOOR-STAT", "Radiant floor thermostat, 120V", (inch(4), inch(2)), inch(4), _P120,
