@@ -8,8 +8,8 @@ Two published rows, the lesser governing (``hardware/anchor_holdowns.py``):
 * **anchor** — C-C-2026 p. 43, the SSTB's 6" stem-wall row: core at least the row's stem,
   1 3/4" from either face, middle at 1.5 l_e from the end (fn. 5) else corner or end at 5"
   or more, the embedment line on the pour top and the pour at least l_e deep, one #4 bar
-  3-5" below the top 2 l_e each side (a 16" return at a corner), 3 l_e between bolts on one
-  line, f'c 2,500 psi.
+  3-5" below the top 2 l_e each side (a 16" return at a corner), 3 l_e between bolts,
+  f'c 2,500 psi.
 
 Demand where this model states one: a braced panel's ``hold_down_ref``, 800 lb (IRC Figure
 R602.10.7). ICF is read as the stem, as the STHD check reads it.
@@ -125,10 +125,9 @@ def _grade(model, element, anchor, sites, bars, demand) -> Finding:
     for other in sites:
         if other is anchor:
             continue
-        parallel = abs(other.strap.along_xy[0] * anchor.strap.along_xy[0]
-                       + other.strap.along_xy[1] * anchor.strap.along_xy[1]) > 0.9
+        # fn. 5 spaces bolts in tension together, on one line or round a corner alike.
         gap = math.dist(other.strap.point_xy, anchor.strap.point_xy) / M_PER_IN
-        if parallel and gap < hd.SPACING_LE * srow.le_in - _TOL_IN:
+        if gap < hd.SPACING_LE * srow.le_in - _TOL_IN:
             problems.append(f"{gap:.1f} in from {other.strap.tag}, under 3 le")
     mix = concrete_spec_for(model.plan, model.plan.by_tag(anchor.strap.core_tag))
     if mix is not None and mix.fc_psi < hd.MIN_FC_PSI:

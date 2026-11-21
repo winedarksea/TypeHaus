@@ -34,8 +34,8 @@ HTT4_TENSION_TIE = StructuralHardware(
         fasteners="(18) 0.148 x 1-1/2 in nails into a member at least 1-1/2 x 3-1/2 in; "
                   "5/8 in anchor; the anchorage is graded separately on its own row",
         citation=(f"{CITATION_HTT}: (18) 0.148 x 1 1/2, 1 1/2 x 3 1/2 member, DF/SP 3,000 / "
-                  f"SPF/HF 2,580 lb (160); general note a: no further increase. Read "
-                  f"2026-11-20"),
+                  'SPF/HF 2,580 lb (160), Code Ref. "—" (no evaluation-report listing for '
+                  "this row); general note a: no further increase. Read 2026-11-20"),
     ),
 )
 

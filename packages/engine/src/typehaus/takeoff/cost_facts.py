@@ -46,7 +46,7 @@ _SIDING_HARDWARE_ROLES = frozenset({"exposed_fastener_panel_screw",
                                     "sidelap_stitch_screw", "concealed_siding_panel_screw",
                                     "exterior_insulation_screw"})
 _CAST_HARDWARE_ROLES = frozenset({"post_base_anchor", "mudsill_anchor",
-                                  "embedded_strap_holdown"})
+                                  "embedded_strap_holdown", "holdown_anchor_bolt"})
 
 
 def _electrical_trade(row: Mapping[str, Any]) -> str:

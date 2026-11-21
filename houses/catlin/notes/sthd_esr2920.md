@@ -107,9 +107,15 @@ Read 2026-11-20 from Simpson C-C-2026 (`out/bw-corner-brace-review/C-C-2026.pdf`
   fn. 5: middle at 1.5 l_e from the end; 3 l_e between bolts in tension together. p. 42:
   2,500 psi.
 - **p. 51, Table 2 (SPF/HF):** the HDUE3 pairs with SSTB16 in a 6" stem. The HTT4 is listed
-  there only at 8" (SSTB24) because that table develops the tie's full DF value; here the two
-  rows are read separately and the lesser governs. General note d: the anchor is the
-  designer's to specify.
+  at an 8" stem with SSTB20 (stem wall, Wind and SDC A&B, middle/corner and end; Table 1, DF/SP,
+  gives SSTB24) because the guide develops the tie's maximum row, SPF/HF 3,830 on SD screws,
+  which SSTB16's 3,465 misses. Here the two rows are read separately and the lesser governs;
+  p. 50: "unless noted otherwise, the solutions meet the maximum published allowable load of
+  the holdown", and general note d: the anchor is the designer's to specify.
+- **Open (owner):** the HTT4 row read here, (18) 0.148 x 1 1/2 into a 1 1/2 x 3 1/2 member,
+  carries Code Ref. "—" on p. 63: a catalog row with no evaluation-report listing. The
+  3 x 3 1/2 nail rows (3,105 SPF/HF) are IBC-listed. S-DR's two-ply king could take that row
+  if its plies are nailed independently (general note g); SW's single end stud cannot.
 
 Why not the alternatives: a MASA or the 1/2" sill bolts are plate anchorage, not an end-post
 hold-down, so they cannot make end condition 2. An HDUE needs a 3" post and the SW end is a
