@@ -12,7 +12,7 @@ BASEMENT_MIRRORS = [
                 wall_ref="W-B-CW2", face="left", distance_from_start=inch(24),
                 normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="2455867868", tag="ED-B-BATH-MIRROR", kind=DeviceKind.LIGHT,
-            type_ref="ED-T-LT-KARLIE-3-BN", room="RM-B-BATH",
+            type_ref="ED-T-LT-KARLIE-3-BN", box_use="bracket", room="RM-B-BATH",
             circuit="CKT-LT-BSMT", controlled_by=("ED-B-BATH-SW",),
             mount=Mount(kind=MountKind.WALL, elevation=inch(76.1875)),
             location=Location(attachment=WallAttachment(
@@ -53,7 +53,7 @@ MAIN_MIRRORS = [
                 normal_gap=inch(0), rotation_offset=deg(-180)))),
     # Bath2 glass, light and plug are centred on the vanity (wall distance 85 5/8" = y 15'-2 3/8").
     ElectricalDevice(uid="QTM000QAAA", tag="ED-M-BATH2-MIRROR", kind=DeviceKind.LIGHT,
-            type_ref="ED-T-LT-MIRROR-DAY", room="RM-M-BATH2",
+            type_ref="ED-T-LT-MIRROR-DAY", box_use="bracket", room="RM-M-BATH2",
             circuit="CKT-LT-MAIN", controlled_by=("ED-M-BATH2-SW-DAY",),
             mount=Mount(kind=MountKind.WALL, elevation=inch(80)),
             location=Location(attachment=WallAttachment(
@@ -96,7 +96,7 @@ SECOND_MIRRORS = [
                 wall_ref="W-S-BA-E1B", face="right", distance_from_start=inch(25.5),
                 normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="QTS000KAAA", tag="ED-S-BATH1-MIRROR", kind=DeviceKind.LIGHT,
-            type_ref="ED-T-LT-KARLIE-3-BN", room="RM-S-BATH1",
+            type_ref="ED-T-LT-KARLIE-3-BN", box_use="bracket", room="RM-S-BATH1",
             circuit="CKT-LT-UPPER", controlled_by=("ED-S-BATH1-SW",),
             mount=Mount(kind=MountKind.WALL, elevation=inch(74.0625)),
             location=Location(attachment=WallAttachment(

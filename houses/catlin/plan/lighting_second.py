@@ -229,12 +229,12 @@ SECOND_LIGHTING = [
     # so HA runs a photoperiod rather than whenever somebody remembers. The fan-light
     # (ED-S-PLANT-LT, re-typed) moves the humid air a plant room makes.
     ElectricalDevice(uid="QTS000PAAA", tag="ED-S-PLANT-TUBE1", kind=DeviceKind.LIGHT,
-                     position=pt(m(1.62004), m(0.594343)), type_ref="ED-T-LT-GROW-BAR",
+                     position=pt(m(1.62004), m(0.492743)), type_ref="ED-T-LT-GROW-BAR",
                      circuit="CKT-LT-UPPER", room="RM-S-PLANT",
                      controlled_by=("ED-S-PLANT-SW-TIMER",),
                      mount=Mount(kind=MountKind.CEILING, drop=ft(2, 3))),
     ElectricalDevice(uid="QTS000QAAA", tag="ED-S-PLANT-TUBE2", kind=DeviceKind.LIGHT,
-                     position=pt(m(3.7205), m(0.609677)), type_ref="ED-T-LT-GROW-BAR",
+                     position=pt(m(3.7205), m(0.723977)), type_ref="ED-T-LT-GROW-BAR",
                      circuit="CKT-LT-UPPER", room="RM-S-PLANT",
                      controlled_by=("ED-S-PLANT-SW-TIMER",),
                      mount=Mount(kind=MountKind.CEILING, drop=ft(2, 3))),
@@ -308,13 +308,14 @@ SECOND_LIGHTING = [
                          wall_ref="W-S-SS2", face="right", distance_from_start=inch(121),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # ST-S2A's foot end of the stair sconces' 3-way (ED-A-STUDY-STAIR-SW is the head end), on
-    # W-S-E1 beside the bottom step, south of WIN-S-STUDY3: NEC 210.70(A)(2)(3) wants the
-    # stair's lighting controlled at each floor level; ED-S-STUDY2-SW is 15 ft away at the door.
+    # W-S-E1 beside the bottom step: NEC 210.70(A)(2)(3) wants the stair's lighting controlled
+    # at each floor level; ED-S-STUDY2-SW is 15 ft away at the door. Since #149 it is on
+    # WIN-S-STUDY3's north king: south of the window it stood behind the corner bookcase.
     ElectricalDevice(uid="0V2B6HV409", tag="ED-S-STUDY2-STAIR-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW3", circuit="CKT-LT-UPPER", room="RM-S-STUDY2",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-E1", face="left", distance_from_start=inch(21),
+                         wall_ref="W-S-E1", face="left", distance_from_start=inch(66),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # RM-S-BED1/2/3, one template laid off the furniture (2026-10-31): ED-S-BED*-LT in front

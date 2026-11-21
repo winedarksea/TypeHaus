@@ -5,7 +5,6 @@ from math import dist
 
 import pytest
 
-from typehaus.checks.advisory.box_studs import stud_clash
 from typehaus.checks.code.mn_residential.ventilation import habitable_light_and_ventilation
 from typehaus.checks.mep.electrical_openings import wall_device_opening
 from typehaus.checks.mep.electrical_room_lighting import room_lighting
@@ -73,8 +72,7 @@ def test_study2_switch_box_and_plate_clear_passthrough(catlin_ctx):
     wall = catlin_ctx.model.wall(opening.host_wall)
     west_jamb = wall.axis[0][0] + opening.center_along_m - opening.width_m / 2
     assert max(x for x, _ in box.footprint + box.plate_footprint) < west_jamb
-    clash = stud_clash(catlin_ctx.model, box)
-    assert clash is not None and not clash.members
+    assert box.support_kind == "stud_side" and box.support_fault is None
 
 
 def test_original_study2_switch_in_leafless_opening_is_reported(catlin_ctx):

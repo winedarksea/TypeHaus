@@ -267,6 +267,7 @@ class NEC:
     BOX_DEPTH: Final = "314.24(B)"
     BOX_FLUSH_SETBACK: Final = "314.20"
     BOX_COVER: Final = "314.25"
+    BOX_SUPPORT: Final = "314.23"
     FLOOR_BOX: Final = "314.27(C)"
     FAN_BOX: Final = "314.27(B)(1)"  # 2023's (C); 2026 puts paddle fans at (B)
     NM_PROTECTION: Final = "334.15(B)"

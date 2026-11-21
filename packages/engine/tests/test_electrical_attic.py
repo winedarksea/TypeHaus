@@ -14,9 +14,9 @@ REMOVED = {
     "ED-A-STUDIO-RC8", "ED-A-STUDIO-RC9",
 }
 MOVED = {
-    "ED-A-STUDIO-RC1": ("923GJB648D", "W-A-S1", "left", 72, 6),
-    "ED-A-STUDIO-RC7": ("NZQNA1VMKW", "W-A-STU-N", "right", 72, 6),
-    "ED-A-STUDY-RC1": ("NEC056AAAA", "W-A-S3", "left", 144, 30),
+    "ED-A-STUDIO-RC1": ("923GJB648D", "W-A-S1", "left", 66, 5.5),  # stud seat, #149
+    "ED-A-STUDIO-RC7": ("NZQNA1VMKW", "W-A-STU-N", "right", 72, 5.5),  # seated 6" west, #149
+    "ED-A-STUDY-RC1": ("NEC056AAAA", "W-A-S3", "left", 150, 30.5),  # stud seat, #149
     # Body centre on the finish face: half its 0.05" projection plus the 1/4" plate off it.
     "ED-A-POCKET-RC1": ("E6RNBJBD76", "W-A-BA-E", "right", 36, 9.7895833333),
 }

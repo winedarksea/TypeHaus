@@ -33,6 +33,7 @@ from typehaus.model.electrical import BoxRow, BoxStandard
 from typehaus.model.placeable_frame import PlaceableFrame
 from typehaus.model.placeable_symbols._leviton_9880 import LEVITON_9880_SYMBOL
 from typehaus.model.refs import FollowRoof
+from typehaus.resolve.box_supports import Furring, ceiling_fit, support_fields, support_solid
 from typehaus.resolve.ceiling_over import ceiling_channel_depth_m
 from typehaus.resolve.coatings import layer_depth_m
 from typehaus.resolve.device_box_mesh import box_mesh
@@ -44,6 +45,7 @@ from typehaus.resolve.device_boxes import (
     box_use,
     takes_box,
 )
+from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import ResolvedModel, ResolvedSolid
 from typehaus.resolve.overhead import OverheadIndex
 from typehaus.resolve.remote_feed_box import member_under, remote_box_point
@@ -58,6 +60,7 @@ _DOWN: Vec3 = (0.0, 0.0, -1.0)
 _FACE_TOL_M = 0.02  # a ceiling this far under the probe's base still counts as over it
 _SLOPE_STEP_M = 0.05  # the finite-difference half-step for a sloped ceiling's normal
 DECOUPLING_CID = "electrical.ceiling_box_decoupling"
+_FURRING_OC_M = 16 * 0.0254  # FramingSpec.spacing's solver default
 
 
 class _Layer(NamedTuple):
@@ -165,7 +168,8 @@ class _Stage:
             self._decoupling(item, floor.tag, face.room)
         return self._record(item, storey, face.room or room, xy, face, row, mounting,
                             cavity if top is not None else None,
-                            host_layer, air, device_footprint, kind)
+                            host_layer, air, device_footprint, kind,
+                            (host_tag, self._members(host_tag), None, _furring(face, layers)))
 
     def _bare(self, item: Any, product_type: Any, storey: str, room: str | None,
               xy: tuple[float, float], base_z: float, device_footprint: tuple,
@@ -180,7 +184,7 @@ class _Stage:
         z, member = found
         return self._record(item, storey, room, xy, _Face(z, _DOWN, (), room),
                             row, "surface", None, f"{floor.tag}/{member}", False,
-                            device_footprint, kind)
+                            device_footprint, kind, (floor.tag, list(floor.members), member, None))
 
     def place_remote(self, item: Any, product_type: Any, storey: str, room: str | None,
                      xy: tuple[float, float], base_z: float, device_footprint: tuple,
@@ -200,7 +204,8 @@ class _Stage:
         bare = lined is None or lined.z >= z - _FACE_TOL_M
         face = _Face(z, _DOWN, (), room) if bare else lined
         self._record(item, storey, room, at, face, row, "surface", None,
-                     f"{floor.tag}/{member}", False, device_footprint, kind)
+                     f"{floor.tag}/{member}", False, device_footprint, kind,
+                     (floor.tag, list(floor.members), member, None))
 
     def _face(self, xy: tuple[float, float], base_z: float, storey: str,
               room: str | None) -> _Face | None:
@@ -272,9 +277,15 @@ class _Stage:
             element_tags=(item.tag,),
             fix="a wall mount instead, or a box on the channel alone, sealed in the board"))
 
+    def _members(self, tag: str) -> list[Any]:
+        host = (self.floors.get(tag) or self.roofs.get(tag)
+                or next((s for s, _ in self.soffits if s.tag == tag), None))
+        return list(getattr(host, "members", ()) or ())
+
     def _record(self, item: Any, storey: str, room: str, xy: tuple[float, float], face: _Face,
                 row: BoxRow, mounting: str, cavity: float | None, host_layer: str, air: bool,
-                device_footprint: tuple, kind: str) -> tuple[Vec3, Vec3]:
+                device_footprint: tuple, kind: str,
+                mount: tuple[str, list, str | None, Furring | None]) -> tuple[Vec3, Vec3]:
         width, height, depth = (part.meters for part in row.box_size)
         axis = face.axis
         tangent = _unit((-axis[1], axis[0], 0.0)) if math.hypot(axis[0], axis[1]) > 1e-9 \
@@ -289,6 +300,10 @@ class _Stage:
         z1 = max(p[2] for p in mesh.positions)
         projection = depth + row.cover_rise.meters if mounting == "surface" else 0.0
         circuit = getattr(item, "circuit", None)
+        host, members, under, furring = mount
+        fit = (None if row.support is None else
+               ceiling_fit(row.support, members, host, (xy[0], xy[1], face.z), axis, width,
+                           under, furring, ring))
         self.model.device_boxes.append(ResolvedDeviceBox(
             device_tag=item.tag, device_uid=item.uid, storey=storey, room=room,
             device_kind=kind, circuit=circuit, mounting=mounting, gangs=row.gangs,
@@ -301,7 +316,10 @@ class _Stage:
             support_fittings=row.support_fittings, terminal_blocks=row.terminal_blocks,
             device_tags=(item.tag,), device_uids=(item.uid,), device_kinds=(kind,),
             circuits=(circuit,), member_footprints=(device_footprint,), snap_shifts_m=(0.0,),
-            member_gangs=(row.gangs,), host="ceiling", axis=axis))
+            member_gangs=(row.gangs,), host="ceiling", axis=axis,
+            **(support_fields(fit) if fit else {})))
+        if fit is not None and (solid := support_solid(item.uid, item.tag, storey, fit)):
+            self.model.solids.append(solid)
         self.model.solids.append(ResolvedSolid(
             uid=f"{item.uid}-box", tag=f"{item.tag}-BOX", storey=storey,
             category="electrical_box", outline=list(ring), z0_m=z0, z1_m=z1,
@@ -309,6 +327,19 @@ class _Stage:
             derived=True))  # billed in [electrical_boxes]
         return ((xy[0] + axis[0] * projection, xy[1] + axis[1] * projection,
                  face.z + axis[2] * projection), axis)
+
+
+def _furring(face: _Face, layers: list[_Layer]) -> Furring | None:
+    """The face's furring layer with a ``FramingSpec`` and its band over the face, or None."""
+    below = 0.0
+    for authored, layer in zip(face.layers, layers, strict=False):
+        spec = getattr(authored, "framing", None)
+        if layer.function == "furring" and spec is not None:
+            half = cross_section(spec.member).width_m / 2
+            spacing = spec.spacing.meters if spec.spacing else _FURRING_OC_M
+            return Furring(layer.name, spacing, half, below, below + layer.thickness_m)
+        below += layer.thickness_m
+    return None
 
 
 def _row(standard: BoxStandard, mounting: str, use: str | None, air: bool) -> BoxRow | None:

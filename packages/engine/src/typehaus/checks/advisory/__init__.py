@@ -6,7 +6,6 @@ from typehaus.checks.advisory import (  # noqa: F401 - registers checks
     assembly_variety,
     backing,
     backing_fixings,
-    box_studs,
     carriers,
     checks,
     countertops,

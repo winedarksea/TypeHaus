@@ -194,9 +194,11 @@ equipment grounding per Article 250 Part VI.
   citing 314.20. Not graded: 314.19, 314.21, 314.22.
 
 **314.23 Support.** *(summary kept local)*
-- **Engine:** not graded. Catlin's surface boxes are fastened to concrete under (A); the
-  derived 3/4 in. EMT NM sleeve is NM protection (334.15(B)), not box support, and does not
-  bring (E)/(F) in. `block_profile` backs a flush box that screws to wood.
+- **Engine:** `electrical.box_support` (decision #149) grades a flush or framing-hung box's
+  mount off `BoxRow.support`: a nail-on box seated on a stud or joist face, a bar or bracket
+  spanning its bay within the listed range, a box under its member; a `block_profile` row's
+  block. Catlin's surface boxes on concrete take no row mount; the derived 3/4 in. EMT NM
+  sleeve is NM protection (334.15(B)), not box support, and does not bring (E)/(F) in.
 
 **314.24 Box dimensions.** (A) A box with no device is at least 1/2 in. deep inside. (B) With
 a device or equipment the depth fits its rear projection and conductor size, counting rings

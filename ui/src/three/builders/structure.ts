@@ -109,7 +109,12 @@ export function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter
   // Holes are a nordic look only; with no canvas the flat metal stays.
   if (perforated && mode === "nordic") applyPerforatedMap(material as THREE.MeshStandardMaterial);
   const mesh = makeSurfaceMesh(geo, woodMaterialsForGeometry(material, geo));
-  if (solid.category === "electrical_box" || solid.category === "wall_plate") tagElectrical(mesh);
+  if (
+    solid.category === "electrical_box" ||
+    solid.category === "electrical_box_support" ||
+    solid.category === "wall_plate"
+  )
+    tagElectrical(mesh);
   // Backfill rides the site sheet's opacity slider (→ Panel3D setEarthOpacity).
   if (BACKFILL_CATEGORIES.has(solid.category)) {
     mesh.userData.earthBackfill = true;

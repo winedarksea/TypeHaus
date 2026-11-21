@@ -141,7 +141,7 @@ BASEMENT_LIGHTING = [
                      controlled_by=("ED-B-WORKSHOP-SW", "ED-B-WORKSHOP-SW3"),
                      mount=Mount(kind=MountKind.CEILING, drop=inch(2.5)), rotation=deg(90)),
     ElectricalDevice(uid="QTB0006AAA", tag="ED-B-WORKSHOP-LT6", kind=DeviceKind.LIGHT,
-                     position=pt(inch(135), inch(166.5)), type_ref="ED-T-LT-STRIP-T8",
+                     position=pt(inch(135), inch(173.25)), type_ref="ED-T-LT-STRIP-T8",
                      circuit="CKT-LT-BSMT", room="RM-B-WORKSHOP",
                      controlled_by=("ED-B-WORKSHOP-SW", "ED-B-WORKSHOP-SW3"),
                      mount=Mount(kind=MountKind.CEILING, drop=inch(2.5))),
@@ -172,7 +172,7 @@ BASEMENT_LIGHTING = [
                      circuit="CKT-LT-BSMT", room="RM-B-WORKSHOP",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-CW", face="right", distance_from_start=inch(24),
+                         wall_ref="W-B-CW", face="right", distance_from_start=inch(30.25),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # The under-stair storage (RM-B-STAIR's volume behind D-B-CLOSET): two Q3 lampholders,
@@ -303,7 +303,7 @@ BASEMENT_LIGHTING = [
                      controlled_by=("ED-B-FURNACE-SW2", "ED-B-FURNACE-SW3"),
                      mount=Mount(kind=MountKind.CEILING, drop=inch(6)), rotation=deg(90)),
     ElectricalDevice(uid="5TN9818FDS", tag="ED-B-FURNACE-STRIP2", kind=DeviceKind.LIGHT,
-                     position=pt(inch(44), inch(393)), type_ref="ED-T-LT-STRIP-T8",
+                     position=pt(inch(44), inch(386)), type_ref="ED-T-LT-STRIP-T8",
                      circuit="CKT-LT-BSMT", room="RM-B-FURNACE",
                      controlled_by=("ED-B-FURNACE-SW2", "ED-B-FURNACE-SW3"),
                      mount=Mount(kind=MountKind.CEILING, drop=inch(6)), rotation=deg(90)),
@@ -403,14 +403,14 @@ BASEMENT_LIGHTING = [
                          wall_ref="W-B-CN", face="right", distance_from_start=inch(8.625),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="4XZRS7P3VR", tag="ED-B-PLAY-N-SCONCE5", kind=DeviceKind.LIGHT,
-                     type_ref="ED-T-LT-SCONCE-UD",
+                     type_ref="ED-T-LT-SCONCE-UD", box_use="bracket",
                      circuit="CKT-LT-BSMT", room="RM-B-PLAY-N", controlled_by=("ED-B-PLAY-N-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-CN", face="right", distance_from_start=inch(62.625),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="JBZ1PYPYF0", tag="ED-B-PLAY-N-SCONCE6", kind=DeviceKind.LIGHT,
-                     type_ref="ED-T-LT-SCONCE-UD",
+                     type_ref="ED-T-LT-SCONCE-UD", box_use="bracket",
                      circuit="CKT-LT-BSMT", room="RM-B-PLAY-N", controlled_by=("ED-B-PLAY-N-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
                      location=Location(attachment=WallAttachment(

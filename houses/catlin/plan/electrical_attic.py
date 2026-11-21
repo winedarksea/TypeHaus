@@ -63,7 +63,7 @@ NEC_FILL_ATTIC = [
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-A-S3", face="left", distance_from_start=inch(144),
+                         wall_ref="W-A-S3", face="left", distance_from_start=inch(150),
                          normal_gap=inch(0), rotation_offset=deg(180)))),
     # Removed study east-eave floor box RC2 (NEC057AAAA); its roof-to-floor boundary
     # remains an explicit spacing UNKNOWN pending the inspector's interpretation.
@@ -92,7 +92,7 @@ NEC_FILL_ATTIC = [
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-A-S1", face="left", distance_from_start=inch(72),
+                         wall_ref="W-A-S1", face="left", distance_from_start=inch(66),
                          normal_gap=inch(0), rotation_offset=deg(180)))),
     ElectricalDevice(uid="AN95ADVNCZ", tag="ED-A-STUDIO-RC2", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-15",
@@ -167,7 +167,7 @@ NEC_FILL_ATTIC = [
                      # its studs legally, and both faces moved 1" off the axis with it. This box is
                      # authored 1.000" off the GYPSUM face (the 0.01" paint film is not in the
                      # offset), so it moves the same 1".
-                     type_ref="ED-T-LEV-GFCI-15",
+                     type_ref="ED-T-LEV-GFCI-15", box_use="bracket",
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(

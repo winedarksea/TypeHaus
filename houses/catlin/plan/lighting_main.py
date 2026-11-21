@@ -63,7 +63,7 @@ MAIN_LIGHTING = [
     # south half is masked so it sees along the shelves, not the kitchen. It switches the
     # driver's 120V, so both channels.
     ElectricalDevice(uid="1M4ZM8DRWH", tag="ED-M-PANTRY-SW", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-OCC-PANTRY",
+                     type_ref="ED-T-LEV-OCC-PANTRY", box_use="bracket",
                      circuit="CKT-LT-MAIN", room="RM-M-PANTRY",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(56)),
                      location=Location(attachment=WallAttachment(

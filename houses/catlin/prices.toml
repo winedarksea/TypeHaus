@@ -6680,10 +6680,15 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # to the device alone the same day, so no box bills twice. ESTIMATE, not quoted: RACO and
 # Carlon at big-box / supply-house retail (2026-10). Surface-box labour is a Tapcon-set
 # steel box on concrete. A flush box and its ring bill labour 0: the device's own labour
-# already includes setting its box (owner, 2026-10-29). RACO 232 also serves the six
-# flush_raceway boxes: the takeoff splits rows by mounting, and those bill labour 0 too.
+# already includes setting its box (owner, 2026-10-29). The flush_raceway boxes are the
+# 232's TS-bracket twin, RACO 235 (decision #149), labour 0 too; ESTIMATE.
 "PROD-RACO-232" = { material = { low = 3, high = 6 }, labour = { low = 15, high = 35 } }
-"PROD-RACO-232:flush_raceway" = { material = { low = 3, high = 6 }, labour = { low = 0, high = 0 } }
+"PROD-RACO-235" = { material = { low = 5, high = 10 }, labour = { low = 0, high = 0 } }
+# The bracket alternative (decision #149): RACO 601 steel box on an Arlington SL18 SliderBar,
+# where a box holds its station mid-bay. ESTIMATES: SL24 is ~$4.60 by the case (HomElectrical);
+# labour 0, the device sets its box.
+"PROD-RACO-601" = { material = { low = 2, high = 5 }, labour = { low = 0, high = 0 } }
+"PROD-ARLINGTON-SL18" = { material = { low = 4, high = 9 }, labour = { low = 0, high = 0 } }
 "PROD-RACO-808C" = { material = { low = 3, high = 7 }, labour = { low = 3, high = 8 } }
 "PROD-RACO-809C" = { material = { low = 3, high = 7 }, labour = { low = 3, high = 8 } }
 # PLAY-N sconces (2026-11-01, C6-E10): drawn 4" sq x 1 1/2" box + flat 753 cover, Tapcon-set.

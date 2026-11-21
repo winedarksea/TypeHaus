@@ -25,6 +25,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     electrical,
     electrical_area_receptacles,
     electrical_bath_zone,
+    electrical_box_support,
     electrical_boxes,
     electrical_branch_rules,
     electrical_canopy,

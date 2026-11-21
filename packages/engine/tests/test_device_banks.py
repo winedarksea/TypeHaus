@@ -25,7 +25,8 @@ def test_a_four_gang_snaps_to_the_gang_pitch(catlin_model_ro):
     stations = [objs[t].position[0] * tx + objs[t].position[1] * ty for t in bank.device_tags]
     gaps = sorted(abs(b - a) / M_PER_IN for a, b in zip(stations, stations[1:], strict=False))
     assert gaps == pytest.approx([1.8125] * 3, abs=1e-6)
-    assert sum(bank.snap_shifts_m) == pytest.approx(0.0, abs=1e-9)  # centred on the bank
+    # centred on the bank, then the whole bank seated against a stud (#149)
+    assert sum(bank.snap_shifts_m) == pytest.approx(4 * bank.stud_shift_m, abs=1e-9)
     assert bank.uid == f"{min(bank.device_uids)}-box"
 
 

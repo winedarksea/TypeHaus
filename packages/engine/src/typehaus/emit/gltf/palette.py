@@ -214,6 +214,7 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     # distinction that actually earns a colour here.
     "conduit_power": (0.545, 0.302, 0.702, 1.0),  # 0x8b4db3
     "electrical_box": (0.62, 0.64, 0.66, 1.0),  # galvanized steel
+    "electrical_box_support": (0.55, 0.57, 0.59, 1.0),  # plated steel bracket or bar
     "wall_plate": (0.86, 0.86, 0.84, 1.0),  # white nylon; a plate material's colour wins
     "conduit_data": (0.180, 0.659, 0.608, 1.0),   # 0x2ea89b
     "grounding_electrode": (0.722, 0.451, 0.200, 1.0),  # copper-clad rod

@@ -10,6 +10,7 @@ thickness. Surface covers, luminaires, in-use covers and ``plate_included`` boxe
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass, replace
 from typing import Any
 
@@ -18,6 +19,13 @@ from shapely.geometry.polygon import orient
 
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.electrical import BoxStandard, PlateRow
+from typehaus.resolve.box_supports import (
+    stud_flanks,
+    stud_seat,
+    support_fields,
+    support_solid,
+    wall_fit,
+)
 from typehaus.resolve.device_box_mesh import Opening, box_mesh
 from typehaus.resolve.device_boxes import (
     BoxPlan,
@@ -179,6 +187,21 @@ def _place(model: ResolvedModel, bank: list[_Member], plan: BoxPlan, standard: B
     pitch = standard.gang_pitch.meters
     centre = (bank[0].station + bank[-1].station) / 2 if len(bank) > 1 else lead.station
     middle = sum(m.middle for m in bank) / len(bank)
+    wall = model.wall(lead.item.location.attachment.wall_ref)
+    width, height, depth = (part.meters for part in plan.row.box_size)
+    support, seat = plan.row.support, None
+    if support is not None and support.kind == "stud_side" and plan.mounting in _BANKED:
+        seat = stud_seat(model, wall, lead.point, tangent, normal, centre - width / 2,
+                         centre + width / 2, middle - height / 2, middle + height / 2, depth,
+                         support.section[1].meters)
+    flanks = (stud_flanks(model, wall, lead.point, tangent, normal, centre - width / 2,
+                          centre + width / 2, middle - height / 2, middle + height / 2, depth)
+              if support is not None and support.kind == "stud_span" else None)
+    stud_shift = seat[0] if seat else 0.0
+    # A light's canopy that still covers the seated box keeps the fixture put (its crossbar).
+    carry = 0.0 if (len(bank) == 1 and _canopy_covers(
+        lead, abs(stud_shift), width, height, plan.row.shape)) else stud_shift
+    centre += stud_shift
     origin = (lead.point[0] + tangent[0] * (centre - lead.station),
               lead.point[1] + tangent[1] * (centre - lead.station))
     plate = _plate(bank, plan, standard, findings)
@@ -188,7 +211,7 @@ def _place(model: ResolvedModel, bank: list[_Member], plan: BoxPlan, standard: B
     openings: list[Opening | None] = []
     for member in bank:
         target = (centre + (slot + (member.gangs - 1) / 2 - (total - 1) / 2) * pitch
-                  if len(bank) > 1 else member.station)
+                  if len(bank) > 1 else member.station + carry)
         slot += member.gangs
         shift, dz = target - member.station, middle - member.middle
         dx, dy = tangent[0] * shift + normal[0] * thick, tangent[1] * shift + normal[1] * thick
@@ -202,8 +225,6 @@ def _place(model: ResolvedModel, bank: list[_Member], plan: BoxPlan, standard: B
             body_z0_m=None if obj.body_z0_m is None else obj.body_z0_m + dz,
             body_z1_m=None if obj.body_z1_m is None else obj.body_z1_m + dz)
         openings.append(_opening(obj, origin, tangent, middle))
-    wall = model.wall(lead.item.location.attachment.wall_ref)
-    width, height, depth = (part.meters for part in plan.row.box_size)
     near, far = (0.0, plan.projection_m) if plan.mounting == "surface" else (-depth, 0.0)
     ring = _ring(origin, tangent, normal, width, near, far)
     z0, z1 = middle - height / 2, middle + height / 2
@@ -220,6 +241,9 @@ def _place(model: ResolvedModel, bank: list[_Member], plan: BoxPlan, standard: B
             z1_m=middle + plate_h / 2, material=plate.material_ref, product=plate.product_ref,
             derived=True))  # billed in [electrical_boxes]
     item = lead.item
+    fit = (wall_fit(support, seat, (*origin, middle), tangent, normal, width, height, depth,
+                    flanks)
+           if support is not None and plan.mounting != "surface" else None)
     model.device_boxes.append(ResolvedDeviceBox(
         device_tag=item.tag, device_uid=item.uid, storey=lead.pending.storey,
         room=lead.pending.room, device_kind=item.kind.value,
@@ -242,7 +266,11 @@ def _place(model: ResolvedModel, bank: list[_Member], plan: BoxPlan, standard: B
         plate_product=plate.product_ref if plate else None,
         plate_family=plate.family if plate else None,
         plate_size_m=tuple(p.meters for p in plate.size) if plate else None,
-        plate_thickness_m=thick, plate_footprint=plate_ring, recess_m=plan.recess_m))
+        plate_thickness_m=thick, plate_footprint=plate_ring, recess_m=plan.recess_m,
+        **(support_fields(fit) if fit else {})))
+    if fit is not None and (solid := support_solid(item.uid, item.tag, lead.pending.storey,
+                                                   fit)) is not None:
+        model.solids.append(solid)
     model.solids.append(ResolvedSolid(
         uid=f"{item.uid}-box", tag=f"{item.tag}-BOX", storey=lead.pending.storey,
         category="electrical_box", outline=list(ring), z0_m=z0, z1_m=z1,
@@ -260,6 +288,23 @@ def _place(model: ResolvedModel, bank: list[_Member], plan: BoxPlan, standard: B
             obj, footprint=[tuple(p) for p in list(hull.exterior.coords)[:-1]],
             body_z0_m=min(obj.body_z0_m if obj.body_z0_m is not None else z0, z0),
             body_z1_m=max(obj.body_z1_m if obj.body_z1_m is not None else z1, z1))
+
+
+def _canopy_covers(member: _Member, offset: float, width: float, height: float,
+                   shape: str) -> bool:
+    """A wall light whose canopy still covers its box ``offset`` off the canopy centre."""
+    if member.item.kind.value != "light":
+        return False
+    canopy = getattr(member.pending.product_type, "canopy", None)
+    diameter = getattr(member.pending.product_type, "canopy_diameter", None)
+    if canopy is not None:
+        cw, ch = (part.meters for part in canopy)
+        return offset + width / 2 <= cw / 2 + 1e-9 and height <= ch + 1e-9
+    if diameter is not None:
+        reach = (offset + width / 2 if shape == "round"
+                 else math.hypot(offset + width / 2, height / 2))
+        return reach <= diameter.meters / 2 + 1e-9
+    return False
 
 
 def _opening(obj: ResolvedCanvasObject, origin: Point, tangent: Point,

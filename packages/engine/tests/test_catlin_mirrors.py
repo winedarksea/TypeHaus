@@ -118,8 +118,8 @@ def test_mirror_glass_does_not_cover_switches_or_receptacle_plates(catlin_model_
             overlap_width = min(max(span), max(device_span)) - max(min(span), min(device_span))
             overlap_height = min(glass.body_z1_m, device.body_z1_m) - max(glass.body_z0_m, device.body_z0_m)
             assert overlap_width <= 0 or overlap_height <= 0, (glass.tag, device.tag)
-    assert objects["ED-S-VANITY-SW"].position[0] / IN == pytest.approx(37.375)
-    assert objects["ED-S-VANITY-RC1"].position[0] / IN == pytest.approx(65.88)
+    assert objects["ED-S-VANITY-SW"].position[0] / IN == pytest.approx(38.0)  # stud seat, #149
+    assert objects["ED-S-VANITY-RC1"].position[0] / IN == pytest.approx(66.0)
     assert Polygon(objects["ED-M-BATH2-MIRROR-PLUG"].footprint).intersects(
         Polygon(objects["ED-M-BATH2-MIRROR-HALO"].footprint))
 

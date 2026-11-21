@@ -96,8 +96,8 @@ def test_parts_and_conductors_on_known_runs(catlin_model_ro):
     assert "CD-B-WORKSHOP:CKT-WORKSHOP-240" in two_pole["tags"]
 
 
-def test_a_raceway_fed_box_prices_apart_from_the_same_product_on_concrete(catlin_model_ro):
-    """RACO 232 is both; the flush_raceway one bills no labour (owner, 2026-10-29)."""
+def test_a_raceway_fed_box_takes_the_bracketed_twin_and_bills_no_labour(catlin_model_ro):
+    """RACO 232 on concrete; its TS-bracket twin RACO 235 in a cavity, labour 0 (#149)."""
     from pathlib import Path
 
     from typehaus.cli.price_file import load_prices
@@ -107,10 +107,10 @@ def test_a_raceway_fed_box_prices_apart_from_the_same_product_on_concrete(catlin
     prices = load_prices(Path(__file__).parents[3] / "houses" / "catlin")
     rows = {(r["product"], r["mounting"]): r for r in device_box_takeoff(catlin_model_ro)}
     surface = rate_for(prices, "electrical_boxes", "PROD-RACO-232", "surface")
-    raceway = rate_for(prices, "electrical_boxes", "PROD-RACO-232", "flush_raceway")
-    assert rows["PROD-RACO-232", "flush_raceway"]["count"] == 4  # 6 until the EVSE was hardwired (2026-10-30); 5 until the dining thermostat went (2026-11-02)
+    raceway = rate_for(prices, "electrical_boxes", "PROD-RACO-235", "flush_raceway")
+    assert rows["PROD-RACO-235", "flush_raceway"]["count"] == 4
     assert surface[0] == "PROD-RACO-232" and surface[1].labour.high > 0
-    assert raceway[0] == "PROD-RACO-232:flush_raceway" and raceway[1].labour.high == 0
+    assert raceway[1].labour.high == 0
 
 
 def test_use_rows_luminaire_and_recessed(catlin_model_ro):
@@ -131,14 +131,48 @@ def test_use_rows_luminaire_and_recessed(catlin_model_ro):
     assert back == pytest.approx([-(3.875 + 0.75) * M_PER_IN] * 2)
 
 
-def test_box_on_stud_names_the_clearing_move(catlin_model_ro):
-    """M3-106: a box over a stud reports the station move; one beside it clears."""
-    from typehaus.checks.advisory.box_studs import stud_clash
+def test_a_nail_on_bank_seats_against_a_stud_face_as_one(catlin_model_ro):
+    """#149: a nail-on box sits its ear's thickness off a stud face; a bank moves whole."""
+    from typehaus.resolve.geometry_members import member_box
 
-    on = stud_clash(catlin_model_ro, _box(catlin_model_ro, "ED-S-NCLOSET-SW"))
-    assert on.members == ("king-0-r0",) and on.shift_m is not None
-    assert stud_clash(catlin_model_ro, _box(catlin_model_ro, "ED-M-LAUNDRY-DR1")).members == ()
-    assert stud_clash(catlin_model_ro, _box(catlin_model_ro, "ED-B-GYM-RC5")) is None
+    banks = [b for b in catlin_model_ro.device_boxes if b.support_kind == "stud_side"
+             and b.host == "wall" and len(b.device_tags) > 1 and abs(b.stud_shift_m) > 1e-3]
+    assert banks
+    for box in banks:
+        wall = catlin_model_ro.wall(box.wall_tag)
+        stud = next(m for m in wall.members if m.child_key == box.support_members[0])
+        tangent = (-box.normal[1], box.normal[0])
+        along = [x * tangent[0] + y * tangent[1] for x, y, _ in member_box(stud).corners_bottom]
+        edges = [x * tangent[0] + y * tangent[1] for x, y in box.footprint]
+        gap = min(abs(min(edges) - max(along)), abs(min(along) - max(edges)))
+        assert gap == pytest.approx(0.125 * M_PER_IN, abs=1e-4)
+    solids = {s.uid for s in catlin_model_ro.solids if s.category == "electrical_box_support"}
+    assert f"{banks[0].uid}-support" in solids
+
+
+def test_a_ceiling_bar_spans_joist_faces_and_a_wide_bay_fails():
+    """#149: a bar hanger runs face to face; a bay past its range is a fault."""
+    from types import SimpleNamespace as NS
+
+    from typehaus.model.electrical import BoxSupport
+    from typehaus.quantities import inch
+    from typehaus.resolve.box_supports import ceiling_fit
+
+    def joist(key, x):
+        return NS(child_key=key, category="joist", profile="2x10", p0=(x, -2.0), p1=(x, 2.0),
+                  z0_m=0.05, z0_end_m=None)
+
+    bar = BoxSupport(kind="joist_span", span=(inch(16), inch(24)), offset=inch(2))
+    down = (0.0, 0.0, -1.0)
+    ok = ceiling_fit(bar, [joist("j0", -8 * M_PER_IN), joist("j1", 8 * M_PER_IN)], "FS",
+                     (0.0, 0.0, 0.0), down, 4 * M_PER_IN)
+    assert ok.fault is None and ok.span_m == pytest.approx(16 * M_PER_IN)
+    assert set(ok.members) == {"FS/j0", "FS/j1"}
+    xs = [p[0] for p in ok.mesh.positions]
+    assert min(xs) == pytest.approx(-7.25 * M_PER_IN) and max(xs) == pytest.approx(7.25 * M_PER_IN)
+    wide = ceiling_fit(bar, [joist("j0", -16 * M_PER_IN), joist("j1", 16 * M_PER_IN)], "FS",
+                       (0.0, 0.0, 0.0), down, 4 * M_PER_IN)
+    assert wide.fault and "outside" in wide.fault and wide.mesh is None
 
 
 def test_canopy_spans_a_round_box_diameter_but_a_square_box_diagonal():

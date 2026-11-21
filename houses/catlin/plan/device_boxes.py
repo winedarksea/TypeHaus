@@ -7,7 +7,8 @@
 #   * flush — a framed cavity: a deep nonmetallic new-work box, which the owner prefers
 #     because it is easier to make up.
 #   * flush_raceway — a flush box an authored raceway or a floor-heat lead reaches: the steel
-#     4" square with a 1-device ring, which clears Schluter's 35 mm thermostat minimum.
+#     4" square (RACO 235, the 232 with a TS side bracket) with a 1-device ring, which clears
+#     Schluter's 35 mm thermostat minimum.
 #   * luminaire, surface — a wall light on concrete: RACO 192 4" square x 1 1/2" under a flat
 #     RACO 753, so a 4 1/2" square sconce backplate covers it (geometry review C6-E10, owner
 #     2026-11-01). The box sides stay in view: field-paint them to the wall.
@@ -22,16 +23,40 @@
 #     rows. A ceiling receptacle takes the general flush row.
 #   * fan, surface — the porch fan under FS-SG-BALCONY's bare joists: a Bell PRCF57550BZ
 #     weatherproof fan box screwed under the joist over it (notes/porch_fan_box.md).
+#   * mounts (decision #149, notes/box_supports.md) — every row names its `support`: nail-on
+#     boxes are seated against a stud face; ceiling bars span joist to joist; a `box_use=
+#     "bracket"` device holds its station on a RACO 601 + Arlington SL18 SliderBar.
 # Covers and rings are not credited a volume: none of these is marked with one.
 # The blue nonmetallic boxes name box-pvc-blue; steel rows stay galvanized (material_ref None).
 
-from typehaus import BoxRow, BoxStandard, PlateRow, Product, inch
+from typehaus import BoxRow, BoxStandard, BoxSupport, PlateRow, Product, inch
 
 _SOURCE = "Owner decision 2026-10-28, notes/basement_surface_wiring.md."
 
 RACO_232 = Product(tag="PROD-RACO-232", brand="RACO", model="232",
                    name="4 in. square box, 2-1/8 in. deep, welded, 1/2 and 3/4 in. KOs",
                    url="https://www.hubbell.com/raco/en/Products/232", source=_SOURCE)
+# The flush_raceway box (decision #149): the plain 232 has no bracket, so its TS-bracket twin.
+# RACO-235 sheet: 4" square x 2-1/8", 30.3 in3, TS side-mount bracket with gauging tabs and
+# nailing spurs, 7.01" overall.
+RACO_235 = Product(tag="PROD-RACO-235", brand="RACO", model="235",
+                   name="4 in. square box, 2-1/8 in. deep, welded, TS side-mount bracket",
+                   url="https://hubbellcdn.com/specsheet/RACO-8235-SPEC-EN.pdf",
+                   source="Hubbell RACO-235/8235 spec sheet; notes/box_supports.md.")
+# The bracket alternative (decision #149): where a box must stay mid-bay (centred over a
+# mirror, a symmetric pair, clear of a cabinet end), an Arlington SliderBar SL18 across the
+# bay ("Works with Studs 12" to 18" on-center", instruction sheet; "Can mount a steel box via
+# the pilot holes on the bar", catalog page) carries a RACO 601: 3 x 2 x 3-1/2 gangable
+# switch box, 18.0 cu in, NMSC L clamps (spec sheet). Arlington's own SLB101 (17.0 cu in)
+# is too small for a through-fed 12 AWG device. Bar section unpublished; drawn representative.
+ARLINGTON_SL18 = Product(tag="PROD-ARLINGTON-SL18", brand="Arlington", model="SL18",
+                         name="SLIDERBAR adjustable box mounting bar, studs 12-18 in. o.c.",
+                         url="https://www.aifittings.com/media/instruction-sheets/SL18.pdf",
+                         source="Arlington SL18 instruction sheet, spec sheet and catalog page; notes/box_supports.md.")
+RACO_601 = Product(tag="PROD-RACO-601", brand="RACO", model="601",
+                   name="3 x 2 in. gangable switch box, 3-1/2 in. deep, NMSC clamps, 18.0 cu. in.",
+                   url="https://hubbellcdn.com/specsheet/RACO-601-SPEC-EN.pdf",
+                   source="Hubbell RACO-601 spec sheet; notes/box_supports.md.")
 RACO_808C = Product(tag="PROD-RACO-808C", brand="RACO", model="808C",
                     name="4 in. square exposed-work cover, 1 Decorator device, 1/2 in. raised",
                     url="https://www.hubbell.com/raco/en/Products/808C", source=_SOURCE)
@@ -244,11 +269,39 @@ BELL_PRCF57550BZ = Product(tag="PROD-BELL-PRCF57550BZ", brand="Bell (Hubbell)", 
     url="https://hubbellcdn.com/specsheet/BELL-PRCF57550BZ-SPEC-EN.pdf",
     source="Hubbell spec sheets BELL-PRCF57550BZ-SPEC-EN and PRCF57550BZ; retail at Menards and Lowe's. notes/porch_fan_box.md.")
 
+# Box mounts (decision #149, notes/box_supports.md). Ear and bar sections the datasheets do not
+# dimension are drawn representative; ranges are the listed ones, on the basis each states.
+# A Carlon nail-on box: captive nails through molded ears on one side, nailed to the stud
+# face, the front left 1/2" proud of the stud for the board (ear size unpublished).
+NAIL_ON = BoxSupport(kind="stud_side", section=(inch(1), inch(0.125)), offset=inch(0.5))
+# RACO 235: the 232's box with a TS side bracket, 7" overall, flush to the stud face.
+TS_BRACKET = BoxSupport(kind="stud_side", section=(inch(1.5), inch(0.0625)),
+                        offset=inch(0.625), length=inch(7))
+# Appleton NBH: a telescoping flat bar, 16-24" o.c., the box hung under it.
+APPLETON_BAR = BoxSupport(kind="joist_span", span=(inch(16), inch(24)), span_basis="centres",
+                          section=(inch(0.5), inch(0.0625)), offset=inch(2.125))
+# RACO 929: two telescoping rectangular channels, "fits 16-24 in. o.c.", flanged ends.
+RACO_BRACE = BoxSupport(kind="joist_span", span=(inch(16), inch(24)), span_basis="centres",
+                        section=(inch(0.875), inch(0.75)), offset=inch(2.5))
+# Arlington FBR415F: an adjustable plated-steel bracket "for joists or rafters 16-24 in. on
+# centers", toothed end tabs, two #12 screws each end.
+ARLINGTON_BRACKET = BoxSupport(kind="joist_span", span=(inch(16), inch(24)),
+                               span_basis="centres", section=(inch(0.75), inch(0.0625)),
+                               offset=inch(2.723))
+# Screwed under the member over the point: the Bell fan box's 7.5" bracket, the 5361's lugs.
+BELL_FAN_BRACKET = BoxSupport(kind="member_under", section=(inch(1.25), inch(0.0625)),
+                              length=inch(7.5))
+# Arlington SL18: a slotted channel stud face to stud face, the box screwed to its face.
+SLIDERBAR = BoxSupport(kind="stud_span", span=(inch(12), inch(18)), span_basis="centres",
+                       section=(inch(2.375), inch(0.0625)), offset=inch(3.5),
+                       product_ref="PROD-ARLINGTON-SL18")
+BELL_LUGS = BoxSupport(kind="member_under", section=(inch(0.75), inch(0.125)),
+                       length=inch(5))
 BOX_PRODUCTS = (BELL_PRCF57550BZ, BELL_5361_0, BELL_5374_0, APPLETON_FFS561LDNBH, RACO_929, ARLINGTON_FBR415F,
                 PLATE_REGGIO_1SPB_SG, PLATE_REGGIO_2SPB_SG, PLATE_REGGIO_6SPB_SG,
                 PLATE_HUBBELL_SS1, PLATE_HUBBELL_SS2, PLATE_KYLE_SPSJS_T,
                 PLATE_PJ26_W, PLATE_PJ262_W, PLATE_PJ263_W, PLATE_PJ264_W, PLATE_80401_NW, PLATE_80409_NW, PLATE_80411_NW, PLATE_80412_NW, PLATE_CW_1_WH, PLATE_CW_2_WH, PLATE_CW_3_WH, PLATE_CW_4_WH, PLATE_80704_W, PLATE_MULBERRY_32442,
-                RACO_232, CARLON_BH353A, CARLON_BH464A, RACO_808C, RACO_809C, RACO_768, CARLON_B122A, CARLON_BH235A,
+                RACO_232, RACO_235, ARLINGTON_SL18, RACO_601, CARLON_BH353A, CARLON_BH464A, RACO_808C, RACO_809C, RACO_768, CARLON_B122A, CARLON_BH235A,
                 CARLON_B520A, RACO_192, RACO_753, ARLINGTON_DVFR1W, AIRFOIL_1G, AIRFOIL_ROUND,
                 RACO_674, RACO_862)
 
@@ -330,20 +383,25 @@ BOX_STANDARD = [
                    cover_rise=inch(0.5)),
             BoxRow(mounting="flush", gangs=1, box_product_ref="PROD-CARLON-B122A",
                    box_size=(inch(2.25), inch(3.75), inch(3.5)), box_volume_in3=22.0,
-                   material_ref="box-pvc-blue"),
+                   material_ref="box-pvc-blue",
+                   support=NAIL_ON),
             BoxRow(mounting="flush", gangs=2, box_product_ref="PROD-CARLON-BH235A",
                    box_size=(inch(4), inch(3.75), inch(3.5)), box_volume_in3=35.0,
-                   material_ref="box-pvc-blue"),
+                   material_ref="box-pvc-blue",
+                   support=NAIL_ON),
             BoxRow(mounting="flush", gangs=3, box_product_ref="PROD-CARLON-BH353A",
                    box_size=(inch(5.875), inch(3.75), inch(3.5)), box_volume_in3=53.0,
-                   internal_clamps=True, material_ref="box-pvc-blue"),
+                   internal_clamps=True, material_ref="box-pvc-blue",
+                   support=NAIL_ON),
             BoxRow(mounting="flush", gangs=4, box_product_ref="PROD-CARLON-BH464A",
                    box_size=(inch(7.75), inch(3.875), inch(3.5)), box_volume_in3=64.0,
-                   internal_clamps=True, material_ref="box-pvc-blue"),
-            BoxRow(mounting="flush_raceway", gangs=1, box_product_ref="PROD-RACO-232",
+                   internal_clamps=True, material_ref="box-pvc-blue",
+                   support=NAIL_ON),
+            BoxRow(mounting="flush_raceway", gangs=1, box_product_ref="PROD-RACO-235",
                    cover_product_ref="PROD-RACO-768",
                    box_size=(inch(4), inch(4), inch(2.125)), designation="4 x 2-1/8 square",
-                   cover_rise=inch(0.625)),
+                   cover_rise=inch(0.625),
+                   support=TS_BRACKET),
             BoxRow(mounting="surface", gangs=1, use="luminaire", box_product_ref="PROD-RACO-192",
                    cover_product_ref="PROD-RACO-753",
                    box_size=(inch(4), inch(4), inch(1.563)), designation="4 x 1-1/2 square",
@@ -351,7 +409,12 @@ BOX_STANDARD = [
             BoxRow(mounting="flush", gangs=1, use="luminaire-round",
                    box_product_ref="PROD-CARLON-B520A", shape="round",
                    box_size=(inch(4), inch(4), inch(2.25)), box_volume_in3=20.0,
-                   material_ref="box-pvc-blue"),
+                   material_ref="box-pvc-blue",
+                   support=NAIL_ON),
+            # A box that must hold its station mid-bay: on a stud-to-stud bar (device box_use).
+            BoxRow(mounting="flush", gangs=1, use="bracket", box_product_ref="PROD-RACO-601",
+                   box_size=(inch(2), inch(3), inch(3.5)), designation="3 x 2 x 3-1/2 device",
+                   internal_clamps=True, support=SLIDERBAR),
             BoxRow(mounting="flush", gangs=1, use="recessed",
                    box_product_ref="PROD-ARLINGTON-DVFR1W",
                    box_size=(inch(4.2), inch(6.698), inch(3.875)), box_volume_in3=21.0,
@@ -364,23 +427,28 @@ BOX_STANDARD = [
             BoxRow(mounting="flush", gangs=1, use="air-sealed",
                    box_product_ref="PROD-LESSCO-AIRFOIL-1G",
                    box_size=(inch(2.5), inch(4), inch(3.5)), box_volume_in3=20.0,
-                   material_ref="box-pvc-blue"),
+                   material_ref="box-pvc-blue",
+                   support=NAIL_ON),
             # Ceiling boxes (decision #140).
             BoxRow(mounting="flush", gangs=1, use="ceiling",
                    box_product_ref="PROD-APPLETON-FFS561LDNBH", shape="octagon",
                    box_size=(inch(4), inch(4), inch(2.125)),
-                   designation="4 x 2-1/8 round/octagonal", rated_load_lb=70.0),
+                   designation="4 x 2-1/8 round/octagonal", rated_load_lb=70.0,
+                   support=APPLETON_BAR),
             BoxRow(mounting="flush", gangs=1, use="fan", box_product_ref="PROD-RACO-929",
                    shape="round", box_size=(inch(4), inch(4), inch(2.125)),
-                   box_volume_in3=22.5, fan_rated=True, rated_load_lb=210.0),
+                   box_volume_in3=22.5, fan_rated=True, rated_load_lb=210.0,
+                   support=RACO_BRACE),
             BoxRow(mounting="flush", gangs=1, use="air-sealed-fan",
                    box_product_ref="PROD-ARLINGTON-FBR415F", shape="round",
                    box_size=(inch(4), inch(4), inch(2.723)), box_volume_in3=18.3,
-                   fan_rated=True, rated_load_lb=150.0, material_ref="box-pvc-blue"),
+                   fan_rated=True, rated_load_lb=150.0, material_ref="box-pvc-blue",
+                   support=ARLINGTON_BRACKET),
             BoxRow(mounting="flush", gangs=1, use="air-sealed-ceiling",
                    box_product_ref="PROD-LESSCO-AIRFOIL-ROUND", shape="round",
                    box_size=(inch(4), inch(4), inch(2.25)), box_volume_in3=20.0,
-                   material_ref="box-pvc-blue"),
+                   material_ref="box-pvc-blue",
+                   support=NAIL_ON),
             # A bare concrete ceiling (none today): the wall light's drawn box and flat cover.
             BoxRow(mounting="surface", gangs=1, use="ceiling", box_product_ref="PROD-RACO-192",
                    cover_product_ref="PROD-RACO-753",
@@ -390,17 +458,20 @@ BOX_STANDARD = [
             BoxRow(mounting="surface", gangs=1, use="weatherproof",
                    box_product_ref="PROD-BELL-5361-0", cover_product_ref="PROD-BELL-5374-0",
                    shape="round", box_size=(inch(4), inch(4), inch(1.5)), box_volume_in3=16.0,
-                   cover_rise=inch(0.25)),
+                   cover_rise=inch(0.25),
+                   support=BELL_LUGS),
             # A fan under a bare deck: hung from the joist over it, the canopy covers it.
             BoxRow(mounting="surface", gangs=1, use="fan",
                    box_product_ref="PROD-BELL-PRCF57550BZ", shape="round",
                    box_size=(inch(4.28), inch(4.28), inch(1.5)), box_volume_in3=16.0,
                    internal_clamps=False, fan_rated=True, rated_load_lb=150.0,
-                   material_ref="box-pvc-bronze"),
+                   material_ref="box-pvc-bronze",
+                   support=BELL_FAN_BRACKET),
             BoxRow(mounting="flush", gangs=1, use="air-sealed-luminaire-round",
                    box_product_ref="PROD-LESSCO-AIRFOIL-ROUND", shape="round",
                    box_size=(inch(4), inch(4), inch(2.25)), box_volume_in3=20.0,
-                   material_ref="box-pvc-blue"),
+                   material_ref="box-pvc-blue",
+                   support=NAIL_ON),
         ),
     ),
 ]

@@ -73,6 +73,6 @@ STUDY_NOOK = [
                      circuit="CKT-LT-UPPER", room="RM-S-STUDY2",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(34)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-SS2", face="right", distance_from_start=inch(22.5),
+                         wall_ref="W-S-SS2", face="right", distance_from_start=inch(30),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 ]

@@ -76,6 +76,10 @@ ROWS: tuple[C, ...] = (
     # A derived device box (resolve/device_boxes.py); its device carries the collision.
     C("electrical_box", trade="electrical", ifc_class="IfcJunctionBox", ifc_predefined="POWER",
       billed_elsewhere=True),
+    # A box's bracket, bar hanger or brace (resolve/box_supports.py, #149); its own solid
+    # so the box's hull stays body-only. Billed with the box in [electrical_boxes].
+    C("electrical_box_support", trade="electrical", ifc_class="IfcMechanicalFastener",
+      billed_elsewhere=True),
     # A derived wall plate over a flush bank (resolve/device_banks.py), billed with the boxes.
     C("wall_plate", trade="electrical", ifc_class=_ACC, ifc_predefined="USERDEFINED",
       ifc_object_type="WALLPLATE",

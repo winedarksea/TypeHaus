@@ -85,7 +85,8 @@ def test_main_bedroom_door_side_receptacle_is_in_electrical_plan(catlin_model):
     assert outlet.location.attachment.wall_ref == "W-M-BDN1"
     # Behind the west nightstand, clear of D-M-BATH2's derived RO (2026-10-29).
     assert outlet.location.attachment.distance_from_start.inches == pytest.approx(69.875)
-    assert placed_xy(catlin_model, outlet)[0] / 0.0254 == pytest.approx(69.875)
+    # Its nail-on box seats against the stud 3 7/8" west (#149).
+    assert placed_xy(catlin_model, outlet)[0] / 0.0254 == pytest.approx(66.0)
 
     scene = build_electrical_plan(catlin_model, "main")
     assert any(isinstance(node, Text) and node.content == "M-BED-RC8"

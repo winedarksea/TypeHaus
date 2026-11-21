@@ -186,7 +186,7 @@ GARAGE_ELEMENTS = [
     # circuit may have no outlet but the bay receptacles. 210.8(A)(2) still wants GFCI, with
     # a reset in reach, so it rides the load side of ED-G-GDO-GFCI beside ED-G-SW.
     ElectricalDevice(uid="8F8ER9WZ7X", tag="ED-G-GDO-RC", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(19, 6), ft(56, 6)), type_ref="ED-T-LEV-DUPLEX-20",
+                     position=pt(ft(19, 6), inch(684)), type_ref="ED-T-LEV-DUPLEX-20",
                      circuit="CKT-LT-GARAGE", room="RM-GARAGE", gfci_ref="ED-G-GDO-GFCI",
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(9, 11.25))),
     # Hardwired from ED-G-EV-1450's box (no plug, 2026-10-30); OCPP to HA, never online.

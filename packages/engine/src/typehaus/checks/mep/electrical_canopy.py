@@ -44,17 +44,21 @@ def canopy_covers_box(ctx: CheckContext) -> list[Finding]:
         canopy = getattr(product, "canopy", None)
         diameter = getattr(product, "canopy_diameter", None)
         is_round = box.shape == "round"
+        # A box seated off the fixture's centre (#149): its far edge is what the canopy covers.
+        moved = getattr(box, "snap_shifts_m", ()) or (0.0,)
+        off = abs(getattr(box, "stud_shift_m", 0.0) - moved[0])
         size = (f"{_in(box.width_m)} round" if is_round
                 else f"{_in(box.width_m)} x {_in(box.height_m)}")
         face = f"{size} {box.mounting} box ({box.box_product})"
         tags = (box.device_tag,)
         if canopy is not None:
             width, height = (part.meters for part in canopy)
-            short = max(box.width_m - width, box.height_m - height)
+            short = max(box.width_m + 2 * off - width, box.height_m - height)
             what = f"{_in(width)} x {_in(height)} canopy"
         elif diameter is not None:
             width = height = diameter.meters
-            short = (box.width_m if is_round else math.hypot(box.width_m, box.height_m)) - width
+            short = ((box.width_m + 2 * off) if is_round
+                     else math.hypot(box.width_m + 2 * off, box.height_m)) - width
             what = f"{_in(width)} round canopy"
         else:
             unstated.setdefault(type_ref, []).append(box.device_tag)

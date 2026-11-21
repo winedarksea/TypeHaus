@@ -224,6 +224,7 @@
     "earth": 8413248,
     "eave_soffit": 14737625,
     "electrical_box": 10396584,
+    "electrical_box_support": 9212310,
     "equipment_hanger": 7041141,
     "expansion_tank": 10396584,
     "fascia": 15461350,
@@ -465,6 +466,7 @@
     "earth": 8413248,
     "eave_soffit": 14737625,
     "electrical_box": 10396584,
+    "electrical_box_support": 9212310,
     "equipment_hanger": 7041141,
     "expansion_tank": 10396584,
     "fascia": 15461350,
@@ -707,6 +709,9 @@
       "siding"
     ],
     "electrical_box": [
+      "electrical"
+    ],
+    "electrical_box_support": [
       "electrical"
     ],
     "equipment_hanger": [
@@ -981,6 +986,7 @@
     "duct_transfer": "mechanical",
     "eave_soffit": "siding",
     "electrical_box": "electrical",
+    "electrical_box_support": "electrical",
     "equipment_hanger": "mechanical",
     "expansion_tank": "plumbing",
     "fascia": "siding",

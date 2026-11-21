@@ -217,6 +217,32 @@ METAL_BOX_VOLUME_IN3: dict[str, float] = {
 
 BoxMounting = Literal["surface", "flush", "flush_raceway"]
 BoxShape = Literal["rectangular", "round", "octagon"]
+SupportKind = Literal["stud_side", "stud_span", "joist_span", "joist_side", "member_under"]
+
+
+class BoxSupport(HausModel):
+    """How a box is held to its framing, as its datasheet says (decision #149).
+
+    ``stud_side``: nailed to a stud's side face (the box is seated against the nearer one;
+    on a ceiling, a joist's); ``stud_span``: a bracket across a stud bay; ``joist_span``: a
+    bar hanger or brace face to face between parallel members, ``span`` its listed range
+    read as member ``centres`` or ``clear`` opening; ``joist_side``: a one-side bracket
+    reaching ``reach`` to the nearer member face; ``member_under``: screwed under a member.
+    ``section`` is the drawn (width, thickness) of the bracket or bar (a tube's diameter
+    twice); ``offset`` the bar's height above the finish face, or a side flange's set-back
+    off it; ``length`` a side plate's or strap's drawn length (None = the box's height).
+    ``product_ref`` only when the mount is bought apart from the box (billed).
+    """
+
+    kind: SupportKind
+    span: tuple[Length, Length] | None = None
+    span_basis: Literal["centres", "clear"] = "centres"
+    reach: Length | None = None
+    section: tuple[Length, Length] = (inch(0.5), inch(0.0625))
+    offset: Length = inch(0)
+    length: Length | None = None
+    profile: Literal["flat", "tube"] = "flat"
+    product_ref: str | None = None
 
 
 class BoxRow(HausModel):
@@ -263,6 +289,8 @@ class BoxRow(HausModel):
     plate_included: bool = False
     fan_rated: bool = False
     rated_load_lb: float | None = None
+    #: How the box holds to the framing (#149); None draws no mount (screwed to concrete).
+    support: BoxSupport | None = None
 
     @property
     def volume_in3(self) -> float | None:
@@ -325,11 +353,14 @@ class BoxStandard(Element):
                 or next((row for row in rows if row.use is None), None))
 
     def product_refs(self) -> tuple[str, ...]:
-        refs = [ref for row in self.rows for ref in (row.box_product_ref, row.cover_product_ref)
-                if ref] + [plate.product_ref for plate in self.plates]
+        refs = [ref for row in self.rows for ref in (
+            row.box_product_ref, row.cover_product_ref,
+            row.support.product_ref if row.support else None) if ref]
+        refs += [plate.product_ref for plate in self.plates]
         return tuple(dict.fromkeys(refs))
 
 
 register_constructor("BoxStandard", BoxStandard)
 register_constructor("BoxRow", BoxRow)
 register_constructor("PlateRow", PlateRow)
+register_constructor("BoxSupport", BoxSupport)

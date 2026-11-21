@@ -24,8 +24,8 @@ panels, disconnects, meters and junction boxes do not unless their type says
 ``device_box=True``. The box is a solid (``electrical_box``) and, where surface, part of
 the device's footprint, so collision and ``integrity.wall_mount_on_face`` read both.
 A row with a ``block_profile`` also derives a flat block behind each box, butting the bay's
-studs (``box-block-<tag>``, billed as framing); ``advisory.box_on_stud`` reports one that
-does not fit.
+studs (``box-block-<tag>``, billed as framing); ``electrical.box_support`` reports one that
+does not fit, and a row's ``support`` its mount (``resolve/box_supports.py``, #149).
 """
 
 from __future__ import annotations
@@ -128,6 +128,13 @@ class ResolvedDeviceBox:
     #: ``axis`` is its face's 3D unit normal into the room (down, or down-slope).
     host: str = "wall"
     axis: tuple[float, float, float] | None = None
+    # --- the mount (resolve/box_supports.py, #149); None kind = the row draws none.
+    support_kind: str | None = None
+    support_product: str | None = None  # a separately bought bracket (billed)
+    support_members: tuple[str, ...] = ()  # child keys (``<host>/<key>`` on a ceiling)
+    support_span_m: float | None = None  # a bar's span on its basis, or a bracket's gap
+    stud_shift_m: float = 0.0  # how far the stud seat moved the bank (m, + = tangent)
+    support_fault: str | None = None  # why the mount cannot reach its framing
 
 
 def boxes_by_device(model: ResolvedModel) -> dict[str, ResolvedDeviceBox]:

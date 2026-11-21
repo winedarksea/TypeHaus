@@ -70,7 +70,10 @@ a release or for exhaustive local verification.
   box record is a bank (`device_tags`, `boxes_by_device`). A device symbol draws only its face
   proud of the plate (`footprint` = face width x projection); the body is `rear_projection`.
   A box solid carries a `body_mesh` (`resolve/device_box_mesh.py`: round, raised cover, mud ring)
-  and its colour from `BoxRow.material_ref`.
+  and its colour from `BoxRow.material_ref`. Its mount is `BoxRow.support` (decision #149,
+  `resolve/box_supports.py`): a nail-on wall box is seated against the nearest clear stud face
+  (the bank moves), a bar spans joist face to face, and a mount that cannot reach FAILs
+  `electrical.box_support`; the mount is its own `electrical_box_support` solid.
   A ceiling fixture or hardwired alarm head that mounts to a box (not a housing/wafer, not
   PSU-fed) takes a `host="ceiling"` record (`resolve/ceiling_boxes.py`, decision #140; under a
   bare deck, a surface box on the member over its point): never banked or sleeved, graded by

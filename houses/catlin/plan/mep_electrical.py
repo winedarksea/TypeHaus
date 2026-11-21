@@ -320,7 +320,7 @@ SECOND_DEVICES = [
     # a room that condenses on purpose, and this one hangs at the ceiling where the wettest
     # air in the room collects.
     ElectricalDevice(uid="CED004K1AA", tag="ED-S-PLANT-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(9), ft(6)), type_ref="ED-T-LT-FAN52", circuit="CKT-LT-UPPER",
+                     position=pt(ft(9), inch(62.75)), type_ref="ED-T-LT-FAN52", circuit="CKT-LT-UPPER",
                      room="RM-S-PLANT", controlled_by=("ED-S-PLANT-SW",),
                      mount=Mount(kind=MountKind.CEILING, drop=ft(1, 6))),
     # North of D-S-PLANT's y=47" jamb pack, in the clear bay before the y=64" stud.

@@ -167,7 +167,7 @@ ATTIC_LIGHTING = [
                      circuit="CKT-LT-UPPER", room="RM-A-STUDY", controlled_by=("ED-A-STUDY-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-A-C1", face="right", distance_from_start=inch(54),
+                         wall_ref="W-A-C1", face="right", distance_from_start=inch(62),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="H26W7D1G7P", tag="ED-A-STUDY-SCONCE3", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-SCONCE-UD",
@@ -422,7 +422,7 @@ ATTIC_LIGHTING = [
     ElectricalDevice(uid="G5RDBXPZVD", tag="ED-A-POCKET-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW1",
                      circuit="CKT-LT-UPPER", room="RM-A-STUDIO",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(36)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(34)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-A-STU-N", face="right", distance_from_start=inch(78.5),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),

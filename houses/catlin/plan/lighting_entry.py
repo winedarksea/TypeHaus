@@ -131,7 +131,7 @@ ENTRY_LIGHTING = [
     # and the 106 1/4" ceiling by 20". x=8 11/16" is the face convention: W-M-W1's paint
     # plane is 6.635" and the 4"-deep body is centred on its own position.
     ElectricalDevice(uid="FPDTQVFPTK", tag="ED-M-MUDROOM-SCONCE", kind=DeviceKind.LIGHT,
-                     type_ref="ED-T-LT-SCONCE-UD",
+                     type_ref="ED-T-LT-SCONCE-UD", box_use="bracket",
                      circuit="CKT-LT-MAIN", room="RM-M-MUDROOM", controlled_by=("ED-M-MUDROOM-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 8)),
                      location=Location(attachment=WallAttachment(
@@ -204,7 +204,7 @@ ENTRY_LIGHTING = [
                      circuit="CKT-LT-BSMT", room="RM-M-LIVING",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-STRW", face="left", distance_from_start=inch(96),
+                         wall_ref="W-M-STRW", face="left", distance_from_start=inch(98.125),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # ST-M2S's foot end of the chandelier's 3-way (ED-S-STAIR-SW is the head end), in a
     # two-gang box with ED-M-STAIR-SW: NEC 210.70(A)(2)(3) wants the stair's lighting

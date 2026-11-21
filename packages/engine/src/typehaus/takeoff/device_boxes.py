@@ -1,7 +1,8 @@
 """Device boxes, covers or rings and wall plates (→ resolve/device_boxes.py, decision #93).
 
 The device itself bills in ``[placeables]`` by its type; this is the box behind it and the
-cover or ring in front, so neither is billed twice.
+cover or ring in front, so neither is billed twice; a bracket bought apart from its box
+(``BoxSupport.product_ref``, #149) is a ``support`` line.
 """
 
 from __future__ import annotations
@@ -19,7 +20,7 @@ def device_box_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     rows: dict[tuple[str, str], dict[str, object]] = {}
     for box in model.device_boxes:
         for role, ref in (("box", box.box_product), ("cover", box.cover_product),
-                          ("plate", box.plate_product)):
+                          ("plate", box.plate_product), ("support", box.support_product)):
             if ref is None:
                 continue
             product = model.plan.library.product(ref)
