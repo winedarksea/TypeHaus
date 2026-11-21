@@ -170,8 +170,8 @@ def test_ifc_keeps_terminal_identity_and_shared_mesh(catlin_ifc_path, catlin_mod
 
 
 @pytest.mark.parametrize("tag,projection_in", [
-    ("REG-M-SUP1", .625), ("REG-B-SUP1", .625), ("REG-B-SUP2", .55),
-    ("REG-M-RET-STUDY", .625), ("REG-A-RET1", .1875),
+    ("REG-M-SUP1", 1.0), ("REG-B-SUP1", 1.0), ("REG-B-SUP2", .9),
+    ("REG-M-RET-STUDY", 1.0), ("REG-A-RET1", .1875),
 ])
 def test_erv_trim_projects_into_the_room_with_openings(catlin_model_ro, tag, projection_in):
     import trimesh

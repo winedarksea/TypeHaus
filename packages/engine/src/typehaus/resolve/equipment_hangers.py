@@ -94,7 +94,7 @@ def resolve_equipment_hangers(plan: Any, model: Any) -> None:
 
     runs = RunEnvelopes(model)
     types = {t.tag: t for t in plan.library.equipment_types}
-    index = _MemberIndex(model)
+    index = _floor_index(model)
     for item in sorted((o for o in model.canvas_objects if o.tag in hung),
                        key=lambda o: o.tag):
         spec = hung[item.tag].hangers
@@ -233,6 +233,20 @@ def _offset(member: Any, point: tuple[float, float]) -> float:
 def _along(member: Any, point: tuple[float, float]) -> float:
     dx, dy = _direction(member)
     return (point[0] - member.p0[0]) * dx + (point[1] - member.p0[1]) * dy
+
+
+def _floor_index(model: Any) -> _MemberIndex:
+    """The shared member index kept to floor framing: a wall's blocking beside the rod is
+    within the plan reach but holds no trapeze."""
+    from shapely.strtree import STRtree
+
+    index = _MemberIndex(model)
+    floors = {floor.uid for floor in model.floors}
+    keep = [i for i, m in enumerate(index.members) if m.parent_uid in floors]
+    geometries = [index.tree.geometries[i] for i in keep]
+    index.members = [index.members[i] for i in keep]
+    index.tree = STRtree(geometries)
+    return index
 
 
 def _far_member(index: _MemberIndex, host: Any,

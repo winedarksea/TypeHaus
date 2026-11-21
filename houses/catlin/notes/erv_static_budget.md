@@ -1723,6 +1723,82 @@ between the 392"/408" rafters (+52" met rafter-034 by 0.16", `mep.terminal_neck_
 owns the void, so `integrity.placeable_room_mismatch` reports it UNKNOWN; the hall is the
 true answer.
 
+### 10.31 The ERV by the sink; EA drains back to it (2026-11-21)
+
+Owner, 2026-11-20: the machine to W-B-STR3B by `FX-B-UTIL-SINK` (it stood in D-B-CLOSET's swing,
+the leaf stopping at ~55 deg), and `DU-ERV-EA`'s fall reversed so the riser's water runs back to
+a tee by the machine and into the sink instead of a capped tee emptied by hand.
+
+**The layout.** `EQ-B-ERV` keeps rotation 90 (box south, door east, 13" to the wall), case
+x 6'-10 7/8"..8'-7 7/8", y 24'-0 5/8"..26'-1 3/8", bottom 40". That rotation puts the outdoor
+pair in a north-south line on the east half, which is the only order in which both legs arrive
+from the north-west without crossing: EA (north row, y=29'-2 1/2") drops straight down the strip
+onto the north port, OA (south row, y=28'-4 3/8") turns south on x=5'-10.8" and comes in from
+the west onto the south port. `EQ-B-ERV-MAN-SUP` (20" now) sits straight over the supply port,
+so `DU-B-ERV-SUP-TRUNK` is a vertical drop with no bend; `EQ-B-ERV-MAN-EXH` sits 13" south of
+the return port, past OA's row. Both risers come down the west band: RISER-EXH at -28.4" to
+y=27'-1.4", RISER-SUP over it at 87.6" from the bay, so neither crosses an outdoor row.
+`DU-M-ERV-SUP-FEED` now tees off RISER-SUP's bay corner (x=2'-7.9") and rides that bay east to
+its old drop. GYM/PLAY/BATH re-leave the plenums east; SAUNA-EXH leaves MAN-EXH's west end over
+`PR-M-S-BATH1-DRAIN`.
+
+**The rejected options.** Rotation 180 (outdoor pair north, east-west) puts OA east of EA, so
+EA's southbound leg crosses OA's row; rotation 270 leaves the south port reachable only by a
+10" jog between two 8" elbows (14" needed). Plenums west of OA's lane do not fit beside
+`PR-B-HW-SBATH`'s riser. The plan's "EA north on x~6', west on y~34.3'" line runs through
+`W-B-ESS-W` and OA's drop; EA uses its old x=4'-7" lane instead.
+
+**EA's high point.** The foot sits at 82.46" AFF (was 74.6"), set by what is overhead: the tee
+under `EQ-B-ERV-MAN-SUP` (EA top <= 86"), the sump discharge's 88.5" leg at x=2'-8", and
+`PR-B-KITCH-DRAIN`, whose two-step drop became one (straight down at x=5'-6 1/2" to 75.6", west
+at 0.25"/ft) so EA clears it by 1/4". OA's drop moved 3/4" south (now 1" off W-M-MECH-S) so EA's
+foot leg passes north of it. EA falls 1/8"/ft from the foot to the tee 8 1/8" north of the kit
+lead; the 3/4" line (`PR-B-ERV-EA-DRAIN`, trapped) runs down W-B-STR3B to the sink. EA's lead
+keeps its bent flex (§10.28), whose tail needs the 8" leg; the tee's level leg is under 12".
+
+**Hand-worked legs** (§10.30's method; turns priced at the house rows: stamped 90/45 C 0.22,
+30 degree bends on the adjustable row C 0.37, K 0.45/0.60/1.0; lengths off the authored paths):
+
+    leg                    L"        cfm  D   f        VP         friction  fittings  total
+    DU-ERV-EA              454.682   210  8   0.02322  0.0225641  0.029778  0.024793  0.054571
+    DU-ERV-OA              302.289   210  8   0.02322  0.0225641  0.019797  0.043247  0.063044
+    DU-B-ERV-RET-TRUNK      36.400   210  6   0.02255  0.0713138  0.009755  0.026386  0.036141
+    DU-B-ERV-SUP-TRUNK      24.400   210  6   0.02255  0.0713138  0.006539  0         0.006539
+    DU-ERV-RISER-EXH below tap 289.781 146 6  0.02396  0.0344700  0.039890  0.043328  0.083219
+    DU-ERV-RISER-SUP below tap 159.910 142 6  0.02408  0.0326071  0.020927  0.041224  0.062151
+    DU-M-ERV-SUP-FEED      176.275    50  6   0.02986  0.0040427  0.003547  0.002668  0.006215
+    DU-B-ERV-R-GYM         264.648    48  4   0.02811  0.0188618  0.035080  0.023238  0.058317
+    DU-B-ERV-R-PLAY        251.722    20  4   0.03421  0.0032746  0.007050  0.006628  0.013678
+    DU-B-ERV-R-BATH         19.075    20  4   0.03421  0.0032746  0.000534  0         0.000534
+    DU-B-ERV-R-SAUNA-EXH   473.311    44  4   0.02861  0.0158491  0.053658  0.018131  0.071790
+
+The supply port's flex is straight now (1.2 Pa against 22.2 Pa bent, C 1.18 x VP 0.0713138 =
+0.0842 in. off). The other port kits are unchanged: OA and EA leads bend (2.85 C), the return
+bends (1.18 C). Paths (§10.30 -> now):
+
+    SUITEBATH  0.554951 - 0.012159 (EA) + 0.000007 (RET) + 0.024127 (riser stretch) = 0.566926
+    SAUNA-EXH  0.567197 - 0.006456 - 0.012159 + 0.000007                          = 0.548589
+    SAUNA-SUP  0.579007 - 0.013962 (GYM) + 0.024400 (OA) - 0.029762 (trunk)
+               - 0.0843 (flex) - 0.0004 (OA flex)                                 = 0.4750
+
+**Governing: extract via SUITEBATH, 0.566926 in.** Delivered off (0.5, 201)-(0.6, 199):
+201 - 2 x 0.066926 / 0.1 = **199.66 cfm** against R403.5's 188.0 (+11.7). Engine: 0.566923
+(the 0.000003 is the bent flex's cut length), 199.66 cfm. The supply side fell 0.104 in. and the
+extract side rose 0.012: the riser runs 4.4 ft further to reach a plenum south of the rows.
+
+**Thermal, 1" wrap** (§10.22's basis, UA 0.471 Btu/h.F.ft): OA 25.19 ft x 85 = 1,009; EA
+37.89 ft x 55 = 982; **1,991 Btu/h** (was 1,701). Effective recovery 0.65 x (12,530 - 1,991) /
+12,530 = 55%. R403.5.6.1.2 tempering still closes: the core gives 40.25 F at -15 F and the
+legs downstream only gain heat; OA's extra length warms the air before the core.
+
+**Against §10.28.** EA's turns read 89.4/90.6 deg at the 1/8"/ft fall, inside
+`elbow_for_turn`'s snap, so every stamped row stays. `mep.duct_drainage` passes with one drain
+and no capped tee.
+
+**Headroom over the open floor.** OA's wrap 76" AFF south of its step, EA's 76.0-76.4" on its
+row and 75.6" in the strip (over D-B-CLOSET's swing, head 73 1/2"), the return trunk's 13" leg
+66" beside the case (as before). Risers 78"+, plenums 85"/86".
+
 ### 10.5 The thermal penalty of the legs (hand-worked)
 
 Both legs run through conditioned space in 2" of closed-cell elastomeric (two 1" layers of

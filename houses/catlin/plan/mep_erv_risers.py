@@ -95,40 +95,33 @@ DUCTS_ERV_RISERS = [
     # and 2" of R-8 wrap each made the NW chase unbuildable. DU-ERV-OA/-EA carry outdoor
     # air and keep theirs, vapour-sealed.
     DuctRun(uid="1BMFGSMKJY", tag="DU-ERV-RISER-SUP", system=DuctSystem.SUPPLY,
-            # It lands on the plenum's NORTH FACE at x=5'-6" since D3 widened that box to
-            # 36" — the face the leg is already arriving at, rather than the west end it
-            # used to turn into. Four inches further west and four further south than
-            # before, and still inside RM-B-ESS's x=6'-0" wall.
-            # ** THE CHASE WAS RE-PACKED ON 2026-09-23. ** It stands at (1'-3.4", 33'-10.8")
-            # in the chase's south band, between the branch-vent slot on the west and the
-            # three conduits, south of the radon/vent bundle's 19'-6" jog lane.
-            # ** WEST IN FS-M-MECH'S JOIST BAY SINCE 2026-09-24. ** At -1'-5 15/16" its
-            # y=31'-8" leg crossed DU-ERV-OA's wrapped north-south leg, PR-B-KITCH-DRAIN and
-            # PR-B-SAUNA-VENT, each at its own height; no single elevation cleared all three.
-            # North off the plenum (1" west of its collar, 5/8" off W-B-ESS-W's face) to the
-            # bay between the 32'-5.4" joist and FO-M-ERV-OA's trimmer pack, up into it (6",
-            # under half the deck), west over everything, and down again at x=1'-3.4" onto
-            # the riser's foot. Two more elbows: +0.033" w.g. (notes/erv_static_budget.md §6).
-            # (2026-10-31) It drops out of the bay at x=1'-5 1/2", not under the riser:
-            # at x=1'-3.4" the drop stood 1.6" into ED-B-BACKUP-ENCL's NEC 110.26(E)
-            # dedicated space (x <= 14", y 382..398"). North to y=401 1/2", then west onto
-            # the riser foot, at the old -17 15/16".
+            # (2026-11-21, §10.31) It leaves the moved plenum's NORTH face over DU-ERV-EA,
+            # climbs a 30 degree pair to 92.6" (over DU-ERV-OA's leg), west on y=27'-7.9" and
+            # down a 45 to 87.6" before CD-B-GARAGE, then north up the west band on x=2'-7.9" (stacked over
+            # DU-ERV-RISER-EXH, 0.1" off DU-ERV-OA) to the bay between the 32'-5.4" joist and
+            # FO-M-ERV-OA's trimmer pack, and west in it to x=1'-5 1/2", down onto the foot.
+            # Coming down WEST of DU-ERV-OA's drop is what lets it reach a plenum south of the
+            # outdoor rows without crossing either.
+            # (2026-10-31) It drops out of the bay at x=1'-5 1/2", not under the riser: at
+            # x=1'-3.4" the drop stood 1.6" into ED-B-BACKUP-ENCL's NEC 110.26(E) dedicated
+            # space (x <= 14", y 382..398").
             # (2026-11-12) The foot's 12" tail is one SKEWED leg, not a 30 degree jog: the drop stands
             # at x=17.9" and the tail runs 12.2" NNW onto the riser's x=15.4" (two stamped 90s want
             # 12", and the jog's three turns wanted 18"). The skew's edge stays 0.17" off
             # ED-B-BACKUP-ENCL's y=398" space edge (x 14") and 0.1" off CD-B-ATTIC-RISER's x=19.1" face.
-            # (2026-11-12) x=5'-2" and 1" up (-18 7/16", the bay leg -6.4"): its corner is
-            # DU-M-ERV-SUP-FEED's tee, a lane 4.2" off PR-B-KITCH-DRAIN's x=66 1/2" drop.
-            path=(pt(inch(62), ft(30, 10)), pt(inch(62), inch(394.8)),
-                  pt(inch(62), inch(394.8)), pt(inch(17.9), inch(394.8)),
+            # The corner where it enters the bay is DU-M-ERV-SUP-FEED's tee.
+            path=(pt(inch(92), inch(313.21875)), pt(inch(92), inch(319.9)),
+                  pt(inch(92), inch(324.23)), pt(inch(92), inch(331.9)),
+                  pt(inch(63.3), inch(331.9)), pt(inch(58.3), inch(331.9)),
+                  pt(inch(31.9), inch(331.9)), pt(inch(31.9), inch(394.8)),
+                  pt(inch(31.9), inch(394.8)), pt(inch(17.9), inch(394.8)),
                   pt(inch(17.9), inch(394.8)), pt(inch(15.4), inch(406.8)),
                   pt(inch(15.4), inch(406.8))),
-            # The foot is at the bay leg's -18 7/16" (it was -17 15/16"): the 12" drop between
-            # the bay leg's two 90s was 11.5".
             # (2026-11-12) The head stops at 230 1/4" (FS-ATTIC -9 3/4"), where DU-S-ERV-HP-FEED's
             # 30 degree skew leaves it.
-            elevations=(inch(-18.4375), inch(-18.4375), inch(-6.4), inch(-6.4),
-                        inch(-18.4375), inch(-18.4375), inch(230.25)),
+            elevations=(inch(-19.4375), inch(-19.4375), inch(-16.8375), inch(-16.8375),
+                        inch(-16.8375), inch(-21.8375), inch(-21.8375), inch(-21.8375),
+                        inch(-6.4), inch(-6.4), inch(-18.4375), inch(-18.4375), inch(230.25)),
             # 150 cfm: the 210 at its foot less the basement plenum's 60. Its highest flow
             # anywhere (notes/erv_static_budget.md §10.6).
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
@@ -146,37 +139,24 @@ DUCTS_ERV_RISERS = [
             # The north face was the other candidate and is worse: CD-B-SPARE-CHASE stands
             # up at (2'-6", 34'-10"), so a leg on y=34'-10" grazes it by a tenth of an inch.
             #
-            # ** THE 9-DEGREE RAKE IS GONE (D3, 2026-09-19) AND SO IS THE PAIR IT MADE. **
-            # The leg used to climb from -27" to port level over the 46" between x=1'-6 5/8"
-            # and x=5'-0", which put its envelope right through PR-B-KITCH-DRAIN's x=4'-6"
-            # fall line at -19" — and `mep.fitting_pattern` could not name the part either,
-            # because a raked round duct is not a fitting anybody stocks. It now runs level
-            # at -27 1/2" the whole way east, ten inches under the drain, and turns UP into
-            # the plenum's underside at x=6'-1 1/2" on two 90s. Half an inch deeper than the
-            # old -27" so that the return trunk, which shares this y=28'-6" line at the
-            # machine's own -33 27/32", keeps 6 3/8" between the two envelopes; 78 15/16" of
-            # headroom under it, still over R305.1.1's 76" basement projection floor.
-            # The dry-fire lane lifts only the south approach to 83.5" AFF: rise at
-            # y350", west of the lane and south of the sauna supply crossing. The
-            # northern low tier stays below that radial; two extra elbows are budgeted.
             # Re-stationed at (2'-2.9", 33'-10.8") on 2026-09-23 — the east end of the chase's
             # south band, so DU-M-ERV-EXH-FEED arrives from the east with nothing between.
-            # (2026-11-05) The two short jogs are gone: the 1 9/16" lift at y=350" and the 2 1/2"
-            # rise into the box each sat between two 90s (a 6" duct wants 6" and 3"). It now
-            # runs level at -28.4" (underside 78" AFF: the NEC 110.26(A) working spaces of ED-B-PANEL and
-            # ED-B-BACKUP-ENCL) to x=34", climbs 6.4" on a pair of 30 degree bends, and enters the
-            # extract plenum's WEST face at -22", stopping at x=59.8" so it does not reach
-            # DU-B-ERV-R-SAUNA-EXH's collar at x=63". The box moved to y=27'-2 1/2" on
-            # 2026-11-11 and the leg went with it; the x=26.9" drop is 14 1/2" longer.
+            # (2026-11-21, §10.31) Down the west band at -28.4" (underside 78" AFF: the NEC
+            # 110.26(A) working spaces) to y=27'-1.4", 0.7" north of PR-M-S-BATH1-DRAIN's riser,
+            # east and up a 45 pair to 91 1/4" over DU-ERV-OA, east to x=5'-10", then south
+            # stacked over OA's leg, down a 30 degree pair to 89" and into EQ-B-ERV-MAN-EXH's north face.
             # (2026-11-12) The attic jog is a 45 pair (7.2" south over 10 1/4" of the y=34'-6" lane):
             # two 90s need 12" between them and have 7.2". The ramp starts 0.5" east for the 90 before it.
             path=(pt(ft(4, 2), ft(34, 6)), pt(inch(42.6), ft(34, 6)),
                   pt(inch(35.4), inch(406.8)), pt(inch(26.9), inch(406.8)),
                   pt(inch(26.9), inch(406.8)),
-                  pt(inch(26.9), ft(27, 2.5)), pt(inch(34.6), ft(27, 2.5)),
-                  pt(inch(45.86), ft(27, 2.5)), pt(inch(59.8), ft(27, 2.5))),
+                  pt(inch(26.9), inch(325.44)), pt(inch(36), inch(325.44)),
+                  pt(inch(46.2), inch(325.44)), pt(inch(70), inch(325.44)),
+                  pt(inch(70), inch(316.9)), pt(inch(70), inch(313.02)),
+                  pt(inch(70), inch(286.84375))),
             elevations=(inch(244), inch(244), inch(244), inch(244), inch(-28.4),
-                        inch(-28.4), inch(-28.4), inch(-22), inch(-22)),
+                        inch(-28.4), inch(-28.4), inch(-18.2), inch(-18.2),
+                        inch(-18.2), inch(-20.44), inch(-20.44)),
             # 146 cfm below the level-2 tap (attic 55 + level-2 91), 55 above it: the
             # basement's 46 never enters it (notes/erv_static_budget.md §10.6).
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
@@ -292,9 +272,10 @@ DUCTS_ERV_RISERS = [
     # 405-421" bay east of FO-M-ERV-OA's header) into the box's underside at y=412". In the
     # closet it stands 6 3/4" off W-M-MECH-S, behind the doorway's east end.
     DuctRun(uid="BKT25YWMSR", tag="DU-M-ERV-SUP-FEED", system=DuctSystem.SUPPLY,
-            path=(pt(inch(62), inch(394.8)), pt(inch(62), inch(412)),
+            path=(pt(inch(31.9), inch(394.8)), pt(inch(62), inch(394.8)),
+                  pt(inch(62), inch(394.8)), pt(inch(62), inch(412)),
                   pt(inch(62), inch(412))),
-            elevations=(inch(-18.4375), inch(-18.4375), inch(98.5)),
+            elevations=(inch(-6.4), inch(-6.4), inch(-18.4375), inch(-18.4375), inch(98.5)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=DU_M_ERV_SUP_FEED),
 ]

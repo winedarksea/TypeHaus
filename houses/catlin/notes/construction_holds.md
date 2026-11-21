@@ -99,8 +99,8 @@ the model goes back to `plans/TODO.md` as a design item.
   The ERV trapeze: a published hanging rating for a strut-bridge lag into a TJI 230 flange
   (245 lb is TB-808's design example) and the 3/8" rod's 730 lb (B-Line, not MSS SP-58).
   ICC's own IMC 2018 Table 603.4 text (proofread on UpCodes; codes.iccsafe.org refused the fetch).
-  `DU-ERV-EA`'s capped drain tap (`PROD-DUCT-DRAIN-TAP-8`): no SKU read; open it into a pail
-  each winter until a drain route is chosen (§10.28).
+  `DU-ERV-EA`'s drain tap (`PROD-DUCT-DRAIN-TAP-8`): no SKU read; it feeds `PR-B-ERV-EA-DRAIN`
+  through a 3/4" trap deeper than the leg's static (§10.31).
   AAF PerfectPleat HC M8 (nominal 10x10x1) actual size vs the bath-2 stall-dryer's grille holder.
 - ERV level 2 flat trunk (`notes/erv_static_budget.md` §10.14): a shop drawing confirming the
   rectangular elbows at r/W 1.0; TrimJoist's and TRIFORCE's shop layouts for the deck pocket

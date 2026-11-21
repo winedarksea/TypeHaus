@@ -71,12 +71,6 @@ finished area drops out.
 - [ ] No check grades the passageway from `D-A-STUDY` or the level service space; they exist
   only in `mep_hvac.py` prose.
 
-**ERV**
-
-- [ ] **`DU-ERV-EA`'s drain tee is capped** (`notes/erv_static_budget.md` §10.28): no gravity
-  line reaches a receptor. Choose: the radon sump (~2 ft, gas-tight trap entry), a condensate
-  pump over the lane to `PR-B-ERV-COND`, or keep emptying it by hand.
-
 **Plumbing**
 
 - [ ] **Basement backwater protection, before under-slab rough-in.** Once the upstream
@@ -231,8 +225,6 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
 - Layout of sauna (move heater, erv, shower)
 - AD-SG-COURT connection: resolve the bottom-drop adapter/product; the named [NDS 1200](https://www.adspipe.com/nds/products/drainage/catch-basins-and-grates/square-catch-basins/1200-12-in-square-catch-basin-drain-with-2-openings) has lateral outlets. Geometry remains representative, within the authored nominal envelope.
 - ED-M-FIRE-RC: measure the delivered RACO 862 handy-box cover. It must be no wider than the pocket's 2 3/8" strip (nominal 2 5/16"; Hubbell's table reads 2.425").
-- ERV terminals don't come out of the walls/floors/surfaces quite clearly enough, likely they protrude just a bit more
-- ERV likely blocks D-B-CLOSET, and its condensate also blocks
 
 # Project Management
 

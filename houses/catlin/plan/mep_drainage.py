@@ -99,9 +99,10 @@ DRAINS = [
     # is INSIDE the pour.
     # ** THE NW CORNER IS THE ERV RISER CHASE, SO THE KITCHEN COMES IN UNDER IT (2026-11-05). **
     # West along the north wall at the ceiling to x=5'-6 1/2" (east of DU-ERV-EA's leg, west
-    # of W-B-ESS-W), south at the ceiling to y=33'-7", then west in two steps down — over
-    # DU-ERV-EA's north leg at 7'-2 1/2" AFF, under DU-ERV-OA at 6'-4 1/2", above the dry-fire
-    # lane's 6'-0" and EQ-B-ESS-INV — and down at x=3'-2" through SP-B-SLAB-KITCH, 4" east
+    # of W-B-ESS-W), south at the ceiling to y=33'-7", then straight down to 6'-3 5/8" and
+    # west at 0.25"/ft — under DU-ERV-EA's north leg (1/4" clear; it dropped from 7'-2 1/2"
+    # when EA's fall was reversed, 2026-11-21) and DU-ERV-OA, above the dry-fire lane's 6'-0"
+    # and EQ-B-ESS-INV — and down at x=3'-2" through SP-B-SLAB-KITCH, 4" east
     # into the buried main. y=33'-7" is outside the 25"
     # FT-B-N4's 45-degree line (10.8" off its face, 10.3" under its bearing plane); x=3'-2"
     # is 1.3" off the dry-fire lane and SM-B-RADON both. Seal the slab sleeve to the radon layer.
@@ -118,8 +119,8 @@ DRAINS = [
                   pt(ft(18), inch(423.25)), pt(ft(17, 9.25), inch(423.25)),
                   pt(inch(119.25), inch(423.25)), pt(ft(9, 8), ft(35)),
                   pt(ft(6), ft(35)), pt(inch(66.5), ft(35)), pt(inch(66.5), inch(403)),
-                  pt(inch(66.5), inch(403)), pt(inch(49), inch(403)), pt(inch(49), inch(403)),
-                  pt(inch(38), inch(403)), pt(inch(38), inch(403)), pt(inch(42), inch(403))),
+                  pt(inch(66.5), inch(403)), pt(inch(38), inch(403)),
+                  pt(inch(38), inch(403)), pt(inch(42), inch(403))),
             diameter=inch(2), material="pvc",
             # Starts 5 1/2" AFF at the local sink waste return and drops through the deck
             # into the truss window.
@@ -130,8 +131,8 @@ DRAINS = [
             elevations=(ft(9, 7.875), inch(106.25), inch(105.15), inch(101.37),
                         inch(101.05), inch(100.31), inch(100.2),
                         ft(8, 0.3125), inch(96.2),
-                        ft(7, 11.25), inch(95.1125), inch(94.6875), inch(86.5), inch(86.0625),
-                        inch(76.5), inch(76.225), inch(-19.0), inch(-19.1)),
+                        ft(7, 11.25), inch(95.1125), inch(94.6875), inch(75.6), inch(75.0),
+                        inch(-19.0), inch(-19.1)),
             serves=("FX-M-KITCH-SINK",)),
     # BATH2's WC, at its flange on the wet wall (→ SP-M-WC2): x 2'-6", y 21'-0 3/4", the
     # Carlyle's 12" rough-in off W-M-HS1's finish, starting at the finished floor.
@@ -593,24 +594,30 @@ CONDENSATE_MAIN = [
 # A cold-climate ERV core makes water, on the order of a gallon or two a day at this flow
 # against -15 F outdoor air. `pan_drain_ref` on EQ-B-ERV names this run.
 #
-# ** GRAVITY TO A RECEPTOR, NOT THE SUMP (owner, 2026-10-17). ** No pump: the pan
-# (50.8" AFF, 1 1/2" under the case bottom at 52.3") is the highest the line can ever be.
-# ** EXPOSED THROUGH THE MECH ROOM, STRAIGHT TO THE SINK (2026-11-11, notes/erv_static_budget.md
-# §10.22). ** A mechanical room may show a 3/4" pipe. Off the 90-degree machine's pan (front centre,
-# now its east side) east under the case, south on x=7'-9" (west of D-B-CLOSET's swing) and east
-# onto the front of FX-B-UTIL-SINK: 116" of plan, 9.7 ft, every leg >= 1/4"/ft. x=7'-9" since
-# 2026-11-14: at 91 1/2" it ran under the trapeze's south strut and its rod; now it passes 1/2"
-# east of the strut end (structural.equipment_hanger_clearance). It ends 2.3" over the
-# 34" rim, below the faucet's 43" box: UPC 801.3 / Minn. R. 4714 want an air gap of twice the pipe
-# diameter and >= 1" (1 1/2" here). The sink's own trap seals it, so the line takes none (no trap
-# to a non-sewer receptor). Nothing crosses the dry-fire lane (x 40..68") or a door swing. The
-# water heater moved to RM-B-WORKSHOP; PR-B-WH-COND reaches the sink on its own.
+# ** GRAVITY TO A RECEPTOR, NOT THE SUMP (owner, 2026-10-17). ** No pump. Since the move to the
+# sink (2026-11-21, notes/erv_static_budget.md §10.31) it is a short wall run: off the pan
+# (38 1/2", 1 1/2" under the case bottom; front centre, now its east side) east under the case
+# between the trapeze struts, south down W-B-STR3B's face and over FX-B-UTIL-SINK's bowl,
+# every leg >= 1/4"/ft, ending 2 1/2" over the 34" rim: UPC 801.3 / Minn. R. 4714 want an air
+# gap of twice the pipe diameter and >= 1". The sink's own trap seals it, so the line takes
+# none. PR-B-ERV-EA-DRAIN (below) empties DU-ERV-EA's drain tee the same way.
 ERV_CONDENSATE = [
     PipeRun(uid="3XVTM6HD5T", tag="PR-B-ERV-COND", system=PipeSystem.DRAIN, sanitary=False,
-            path=(pt(inch(86.4375), inch(344.9125)), pt(inch(93), inch(344.9125)),
-                  pt(inch(93), inch(240)), pt(inch(97.5), inch(240))),
+            path=(pt(inch(99.375), inch(301.1625)), pt(inch(113.6), inch(301.1625)),
+                  pt(inch(113.6), inch(242)), pt(inch(110), inch(242))),
             diameter=inch(0.75), material="pvc",
-            elevations=(inch(38.9), inch(38.76), inch(36.5), inch(36.3))),
+            elevations=(inch(38.5), inch(38.15), inch(36.6), inch(36.5))),
+    # DU-ERV-EA's drain tee (2026-11-21): the riser's condensate and any rain past the hood
+    # run back down the reversed leg to the tee by the machine. 3/4" PVC with a P-trap at the
+    # tee (the leg is downstream of the fan, under positive pressure), east over the case at
+    # 75", down W-B-STR3B's face beside the closet jamb and south to its own air gap over the
+    # sink, 5 1/2" over the rim.
+    PipeRun(uid="D5MADB7T2B", tag="PR-B-ERV-EA-DRAIN", system=PipeSystem.DRAIN, sanitary=False,
+            path=(pt(inch(96.625), inch(310)), pt(inch(115), inch(310)),
+                  pt(inch(115), inch(310)), pt(inch(115), inch(243)),
+                  pt(inch(112.5), inch(243))),
+            diameter=inch(0.75), material="pvc",
+            elevations=(inch(75.3), inch(74.85), inch(41), inch(39.6), inch(39.5))),
     # EQ-B-WH's primary condensate (3/4" NPT, 59" AFF, Rheem sheet C), 2026-11-09: off the
     # port's axis, west along the tank's side, north at x=9'-8" through W-B-CW3 into the
     # furnace room, and down to its own 13" air gap over FX-B-UTIL-SINK's rim, beside

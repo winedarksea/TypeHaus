@@ -53,11 +53,14 @@ run from above on a stock 90, `resolve/terminal_drops.py`).
 - **Wall valves** use the ceiling collar screwed to bay blocking. The clearance envelope
   retains 1 3/4" of projection. The 3D trim uses the
   [Vents-US AM 100 VRF drawing](https://images.thdstatic.com/catalog/pdfImages/01/01631271-ed42-4a7d-918a-0440ebcf5e0e.pdf)
-  for the 2 15/16" center disc, with an estimated 5/8" of installed relief at the center.
-  The larger valve uses the
+  for the 2 15/16" center disc. The larger valve uses the
   [TROX LVS 125 drawing](https://www.trox.be/en/downloads/5664c8e9bd27129a/LVS_PD_2026_07_09_DE_en.pdf)
-  for the profile and an estimated 0.55" of relief. Both meshes show the rounded rim and
-  the open annular gap around the center disc.
+  for the profile. Installed relief at the center, re-read 2026-11-21 (the terminals read too
+  flat in the viewer): the AM-VR table gives H 1 3/4" against H1 2 1/16", a 5/16" face; the
+  LVS 125 table gives L1 9 mm, opened to its +5 mm setting. Each formed disc domes about 3/8"
+  more (estimated off both drawings), so the meshes carry **1"** (AM 100) and **0.9"**
+  (LVS 125), up from 5/8" and 0.55". The 1 3/4" fit envelope is unchanged. Both meshes show
+  the rounded rim and the open annular gap around the center disc.
 - **125 mm on the one 30 cfm terminal** (`REG-B-SUP2`): a 100 mm valve lost 17.1 Pa there and
   governed the machine; the 125 mm on a 4x5 increaser loses 8.2 Pa (budget §10.2).
 - Not found: a stainless or aluminium valve sold retail (the plant room takes the

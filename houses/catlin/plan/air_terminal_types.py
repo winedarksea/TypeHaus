@@ -28,11 +28,13 @@ from typehaus.model import ProductPart
 
 _NOTE = "notes/air_distribution_products.md"
 # The VRF drawing dimensions the disc. The installed relief shown in the mesh is
-# an estimate for a valve set open, separate from the conservative fit envelope.
+# an estimate for a valve set open, inside the 1 3/4" fit envelope (re-read 2026-11-21:
+# AM-VR H 1 3/4" / H1 2 1/16" gives a 5/16" rim; LVS 125 L1 9 mm, +5 mm open setting; plus
+# the formed disc's own dome, about 3/8"). notes/air_distribution_products.md.
 _AM100_DISC = inch(2.9375)
-_AM100_FACE_PROJECTION = inch(0.625)
+_AM100_FACE_PROJECTION = inch(1.0)
 _LVS125_DISC = inch(3.94)  # estimated from the proportions of the LVS 125 drawing
-_LVS125_FACE_PROJECTION = inch(0.55)  # estimated from the 9 mm rim and +5 mm setting
+_LVS125_FACE_PROJECTION = inch(0.9)
 
 
 def _port(tag: str, service: Service, z=None) -> ServicePort:

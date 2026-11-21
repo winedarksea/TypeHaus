@@ -528,8 +528,9 @@ SUPPLY = [
                     "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2")),
     # Tees off PR-B-HW-TRUNK's riser leg by the header (2026-11-09) and runs west at 95 1/2"
     # over the tank's ducts and PR-B-SAUNA-VENT, drops to 82 1/2" at x=8'-6" to pass
-    # W-B-CW3 and the header's lanes, north to y=25'-3" and west at 85 1/2" (over
-    # PR-B-HW-BATH1, under DU-B-ERV-R-BATH) to its old riser.
+    # W-B-CW3 and the header's lanes, north to y=22'-10.8", then (2026-11-21, the ERV by the
+    # sink) back up to 95 1/2", 7/16" under ED-B-FURNACE-CAN1, north over the ERV's plenums
+    # and up into FS-M-MECH's y=26'-7 1/2" bay, west in it over the risers to its old riser.
     # The main-storey leg rises at x=5'-6 1/2" in W-M-STOS's last bay, west of D-M-MUD's
     # derived RO (owner, 2026-10-29), and jogs east over the plates in FS-S-WEST's
     # y 311 3/4"..322 1/4" bay to x=6'-4", where the second-storey branches tee off. The
@@ -539,18 +540,17 @@ SUPPLY = [
     # tee stays on the copper trunk.
     PipeRun(uid="CBPW41AAAA", tag="PR-B-HW-SBATH", system=PipeSystem.WATER_HOT,
             path=(pt(inch(153.786), inch(191.36)), pt(inch(102), inch(191.36)), pt(inch(102), inch(212.5)),
-                  pt(inch(102), inch(212.5)), pt(inch(102), inch(303)),
-                  pt(inch(102), inch(303)), pt(inch(66.5), inch(303)),
-                  pt(inch(66.5), inch(306)), pt(inch(66.5), inch(306)),
-                  pt(inch(66.5), inch(319.5)), pt(inch(66.5), inch(319.5)),
+                  pt(inch(102), inch(212.5)), pt(inch(102), inch(274.8)),
+                  pt(inch(102), inch(274.8)), pt(inch(102), inch(319.5)),
+                  pt(inch(102), inch(319.5)), pt(inch(66.5), inch(319.5)),
                   pt(inch(66.5), inch(319.5)), pt(inch(66.5), inch(319.5)),
                   pt(inch(76), inch(319.5)), pt(inch(76), inch(319.5)),
                   pt(inch(76), inch(319.5)), pt(inch(76), inch(319.5))),
             diameter=inch(0.75), material="pex", insulation='1/2" fiberglass sleeve, ASJ jacket (R-3.1)',
-            elevations=(inch(95.5), inch(95.5), inch(95.5), inch(82.5), inch(82.5), inch(85.5), inch(85.5),
-                  inch(85.5), inch(88), inch(88), inch(97.4375), inch(109.438), inch(219.438),
+            elevations=(inch(95.5), inch(95.5), inch(95.5), inch(82.5), inch(82.5), inch(95.5), inch(95.5),
+                  inch(103), inch(103), inch(109.438), inch(219.438),
                   inch(219.438), inch(229.438), inch(259.438), inch(321.438)),
-            wall_refs=(None, None, None, None, None, None, None, None, None, None, None, "W-M-STOS", None,
+            wall_refs=(None, None, None, None, None, None, None, None, None, "W-M-STOS", None,
                   None, "W-S-BD-N1B", "W-S-BD-N1B"),
             serves=("FX-S-BATH1-LAV", "FX-S-BATH1-SH", "FX-S-VANITY-LAV1",
                     "FX-S-VANITY-LAV2")),

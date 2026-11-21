@@ -322,9 +322,11 @@ def test_drain_loads_roll_up_through_the_routed_geometry(catlin_model):
     # units moved to a ground pad on 2026-09-02 and drip onto it, so there is no pipe at all
     # any more — see houses/catlin/notes/heat_pump_ground_pad.md. The garden overflow's beam
     # pipe was the other sleeve termination until 2026-09-23; the leg is all FrenchDrain now.
-    # PR-M-COND-HP3 / PR-A-COND-HP1: the north units' air gaps over FX-B-UTIL-SINK (2026-11-11).
+    # PR-M-COND-HP3 / PR-A-COND-HP1: the north units' air gaps over FX-B-UTIL-SINK (2026-11-11);
+    # PR-B-ERV-EA-DRAIN, DU-ERV-EA's tee line, beside them (2026-11-21).
     assert terminals == {"PR-B-COND", "PR-B-MAIN-DRAIN", "PR-B-WH-TPR", "PR-B-ERV-COND",
-                         "PR-B-WH-COND", "PR-M-COND-HP3", "PR-A-COND-HP1"}
+                         "PR-B-WH-COND", "PR-M-COND-HP3", "PR-A-COND-HP1",
+                         "PR-B-ERV-EA-DRAIN"}
 
 
 def test_rollup_is_a_union_never_a_sum_and_unknown_never_partial():

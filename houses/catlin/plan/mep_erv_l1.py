@@ -132,161 +132,98 @@ from .erv_balance import (
 # ==================================== EQUIPMENT ======================================
 #
 # LEVEL 1 — at the machine, RM-B-FURNACE. EQ-B-ERV itself stays in plan/electrical.py with
-# the rest of the equipment schedule; only its type changed. Both manifolds hang from the
-# basement ceiling just south-east of it, ports down.
-#
-# **They are south of y=31'-6" because EQ-B-ESS-BATT's REQUIRED separation zone starts
-# there** (x 49 1/4"..145 1/4", y 378"..460", off EQ-T-ESS-BATT — `advisory.ess_clearance`
-# grades it with no room-or-wall exemption). The first attempt put the supply manifold at
-# (7'-0", 32'-0") and the check added it to that zone's occupant list on the spot. They are
-# also east of x=5'-0" to clear the ERV's own 24.8" x 21" case, and west of x=7'-6" to stay
-# out of the room's north-east notch, which is the ESS closet.
-
-#
-# ** BOTH BOXES WENT 24" -> 36" ON 2026-09-19 (D3), AND THE COLLARS ARE DRAWN. ** They were
-# library `EQ-T-ERV-MANIFOLD-6` plenums, which state a port COUNT and no layout, so every
-# radial left from the box's own centre point and three of them shared each lane. The
-# house-local types in plan/mep_erv_types.py put each radial on its own hole; the extra
-# foot of length is what makes room for the 6" trunk and the 6" riser to turn up into the
-# underside without landing within 5" of a collar's drop. The argument is in that file.
-#
-# The east end moves from x=7'-6" to x=8'-0" and nothing is in the way: RM-B-FURNACE runs
-# to x=10'-0" at these y's, and EQ-B-ESS-BATT's separation zone starts at y=31'-6", eight
-# inches north of the supply box's north face.
+# the rest of the equipment schedule. Both plenums hang beside it (2026-11-21, the move to
+# the sink, notes/erv_static_budget.md §10.31):
+#   * EQ-B-ERV-MAN-SUP straight over the supply port: the trunk is a vertical drop, no turn.
+#     20" long, between the north-west trapeze rod and the radial lanes at x=9'-0"/9'-6".
+#     DU-ERV-OA's row passes under its west end and DU-ERV-EA's under its east end.
+#   * EQ-B-ERV-MAN-EXH south of DU-ERV-OA's row, 13" south of the return port.
+# They stay south of EQ-B-ESS-BATT's separation zone (y >= 31'-6") as before.
 EQUIPMENT_ERV_BASEMENT = [
-    # y=30'-5 1/2", not 30'-6": at 30'-6" the box's north face stood 3/8" inside
-    # W-B-ESS-S's gypsum (structural.placeable_interference). Collars move 1/2", in tolerance.
     Equipment(uid="QGMYDXSMKH", tag="EQ-B-ERV-MAN-SUP", kind=EquipmentKind.DUCT_MANIFOLD,
-              position=pt(ft(6, 5), ft(30, 5.5)), footprint=(inch(38), inch(8)),
+              position=pt(inch(92.25), inch(309.21875)), footprint=(inch(20), inch(8)),
               room="RM-B-FURNACE", type_ref="EQ-T-ERV-PLENUM-B-SUP",
-              mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 2))),
-    # y=27'-2 1/2" since 2026-11-11 (14 1/2" south): the return port's 13" leg under
-    # DU-ERV-OA's row rises into its underside, and OA's row takes the old y=28'-5" slot.
-    # The box is clear of PR-B-SAUNA-VENT's y=28'-8" leg now; it kept its 7'-1 3/8".
+              mount=Mount(kind=MountKind.CEILING, elevation=inch(86))),
     Equipment(uid="CRN5GT0ECP", tag="EQ-B-ERV-MAN-EXH", kind=EquipmentKind.DUCT_MANIFOLD,
-              position=pt(ft(6, 6), ft(27, 2.5)), footprint=(inch(36), inch(8)),
+              position=pt(inch(82.8), inch(282.84375)), footprint=(inch(36), inch(8)),
               room="RM-B-FURNACE", type_ref="EQ-T-ERV-PLENUM-B-EXH",
-              mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 1.375))),
+              mount=Mount(kind=MountKind.CEILING, elevation=inch(85))),
 ]
 # ============================== LEVEL 1 — BASEMENT RADIALS ============================
 #
-# Six 4" radials off the two plenums beside the machine, boxed under the basement ceiling.
+# Six 4" radials off the two plenums beside the machine, exposed under the basement ceiling
+# (four collars; SAUNA-SUP and BENCH are branches). Each leaves its own collar. They travel
+# north-south below FS-M-*'s east-west joists, in the corridors that are actually clear:
 #
-# ** REDRAWN 2026-09-19 (D3). ** What was here before ran every radial from its plenum's
-# centre point at one flat 7'-6", which put GYM and SAUNA-SUP on the same line for twenty
-# feet, BATH and SAUNA-EXH on the same line for three, and all six through the middle of
-# the drain field between y=18'-9" and y=20'-0". Twenty-three pairs. The fix is two moves
-# and neither is a search result:
+#   * x=9'-0" (GYM) and x=9'-6" (PLAY): the furnace room's east strip, south from the plenum,
+#     84"/83 1/8" under DU-B-ERV-R-BATH and over HW-SBATH; x=9'-0" sits under PR-B-SAUNA-VENT.
+#   * x=1'-7" (SAUNA-EXH): W-B-CW's bay, out of the panels' 110.26(E) space, south to y=3'-4".
 #
-#   1. **Each radial leaves its own collar** (plan/mep_erv_types.py), so no two start at
-#      one hole and no two are born collinear.
-#   2. **The lanes move to the four corridors that are actually clear**, measured rather
-#      than assumed — and they are not in FS-M-WEST's joist bays, which run east-west while
-#      every one of these radials travels north-south. The band between the joists'
-#      underside (-11 7/8") and the top of the drain zone is 2 3/4"; a 4" duct does not go
-#      in it. The corridors that do work:
+# PR-B-SAUNA-VENT runs the x=9'-0" line from y=10'-6" to y=28'-8", rising -20" to -15 1/2", so
+# SAUNA-EXH goes down the WEST corridor and east along y=3'-4", south of the vent's corner;
+# the sauna supply (2026-11-11) crosses the vent's y=10'-6" run OVER it instead.
 #
-#        * **x=3'-3" and x=3'-9", -21 15/16" and -23 7/16"** — between PR-B-KITCH-DRAIN's
-#          x=4'-6" fall line and the SH2/SINK2 pair that converge on (3'-0", 16'-6"). Each
-#          holds one 4" duct and only one: the window is PR-B-WC1-DRAIN's tail at y=22'-0"
-#          on top and PR-M-S-BATH1-DRAIN's rake at y=17'-0" underneath, about three inches
-#          of air (that rake is gone: the drain drops straight on x=5'-0" since 2026-10-08).
-#        * **x=2'-0", -27 15/16"** — under everything, over PR-B-SINK2-DRAIN's -25.4"
-#          at y=15'-9". 79 1/2" of headroom under it, in the workshop, where the ceiling is
-#          open by design.
-#        * **x=9'-0", x=9'-6" and x=8'-0"** — the furnace room's east strip, for GYM, PLAY
-#          and BATH, stacked by elevation (see each run). The old "east chase" over ST-B2M
-#          is gone (2026-09-22): nothing crosses the stair.
-#
-# PR-B-SAUNA-VENT is the wall that shapes all of this. It runs the x=9'-0" line from
-# y=10'-6" to y=34'-6", rising -20" to -15 1/2" as it goes, so every east-west lane in the
-# west half crosses it and the crossing elevation depends on where. At y=29'-6" it is at
-# -16 7/16" and a duct passes under it at -20 7/16" with 1 3/16" to spare; at y=10'-6" it
-# is at -20" and nothing passes under it at all inside the ceiling. That is why SAUNA-EXH
-# still goes down the WEST corridor and east along y=3'-4", south of the vent's corner; the
-# sauna supply (2026-11-11) crosses the vent's y=10'-6" run OVER it instead.
-#
-# REG-B-SUP2's radial is the short one on purpose: it stops in the play room's west wall,
-# about nine feet short of the old (27', 27') position, and throws away from FURN-B-PLAY-TV
-# on the east wall.
+# REG-B-SUP2's radial is the short one on purpose: it stops in the play room's west wall and
+# throws away from FURN-B-PLAY-TV on the east wall.
 DUCTS_ERV_BASEMENT = [
-    # ** THE MACHINE'S OWN TWO TRUNKS (2026-11-11, notes/erv_static_budget.md §10.22). **
-    # Both 6", the machine's full 210 cfm, off the west half of its top. Each kit flex bends
-    # at 70" (2" straight, R = 6") under DU-ERV-EA's and DU-ERV-OA's rows, runs 13" level
-    # and turns up into its plenum: the supply north into EQ-B-ERV-MAN-SUP's underside, the
-    # return south into EQ-B-ERV-MAN-EXH's. 13" is the flex's 6.6" out plus the 6" elbow.
+    # ** THE MACHINE'S OWN TWO TRUNKS (2026-11-21, §10.31). ** Both 6", the full 210 cfm, off
+    # the west half of its top. The supply rises straight off Broan port 2 into
+    # EQ-B-ERV-MAN-SUP's underside. The return's kit flex bends at 69.6" (2" straight, R = 6")
+    # under DU-ERV-OA's row, runs 13" south and turns up into EQ-B-ERV-MAN-EXH.
     DuctRun(uid="225MZ1YDWB", tag="DU-B-ERV-SUP-TRUNK", system=DuctSystem.SUPPLY,
-            path=(pt(inch(73.8125), inch(352.96875)), pt(inch(73.8125), inch(352.96875)),
-                  pt(inch(73.8125), inch(365.96875)), pt(inch(73.8125), inch(365.96875))),
-            elevations=(inch(62), inch(70), inch(70), ft(7, 2)),
+            path=(pt(inch(86.75), inch(309.21875)), pt(inch(86.75), inch(309.21875))),
+            elevations=(inch(61.6), inch(86)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
-            design_cfm=DU_B_ERV_SUP_TRUNK, adjustable_elbows=(2,)),
+            design_cfm=DU_B_ERV_SUP_TRUNK),
     DuctRun(uid="6BTCWW2S1V", tag="DU-B-ERV-RET-TRUNK", system=DuctSystem.RETURN,
-            path=(pt(inch(75.5625), inch(339.59375)), pt(inch(75.5625), inch(339.59375)),
-                  pt(inch(75.5625), inch(326.59375)), pt(inch(75.5625), inch(326.59375))),
-            elevations=(inch(62), inch(70), inch(70), ft(7, 1.375)),
+            path=(pt(inch(88.5), inch(295.84375)), pt(inch(88.5), inch(295.84375)),
+                  pt(inch(88.5), inch(282.84375)), pt(inch(88.5), inch(282.84375))),
+            elevations=(inch(61.6), inch(69.6), inch(69.6), inch(85)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=DU_B_ERV_RET_TRUNK, adjustable_elbows=(2,)),
-    # ** NEITHER RADIAL CROSSES ST-B2M ANY MORE (2026-09-22). ** Both used to ride the
-    # y=29'-6"/30'-6" belt east over the stair, 1" (GYM) and 15 5/8" (PLAY) into the 6'-8"
-    # headroom over the upper flight's nosings — `code.R311_7_2_stair_headroom` counts runs
-    # now. The x=17'-0" "east chase" was only continuous by walking over the lower flight.
-    #
-    # Its collar moved to x=6'-10" (2026-11-01), clear of the supply trunk on Broan's port 2;
-    # GYM and PLAY now leave the ceiling layer on 30° ramps, not 6" drops between two 90s.
-    # THE GYM RADIAL GOES THROUGH THE WORKSHOP. South on x=9'-0", directly under
-    # PR-B-SAUNA-VENT, the bath vent, and the HW-BATH and LSINK legs it crosses, at 84" past
-    # the bath extract and laundry sink drain, then a 45° ramp to 90 1/8" by y=18'-2 3/8".
-    # Through W-B-CW3 in its 8'-1"..9'-5" stud bay, 1 1/2" under the plates.
-    # ** SOUTH OF EQ-B-WH SINCE 2026-11-09. ** A 45° offset takes it 4" east, off the vent's
+    # GYM leaves MAN-SUP's east end over DU-ERV-EA's lane, turns south on x=9'-0" and drops
+    # on a 45 to 84" before DU-B-ERV-R-BATH. South under PR-B-SAUNA-VENT, the bath vent, and
+    # the HW-BATH and LSINK legs it crosses, then a 45 ramp to 90 1/8" by y=18'-2 3/8",
+    # through W-B-CW3 in its 8'-1"..9'-5" stud bay, 1 1/2" under the plates.
+    # ** SOUTH OF EQ-B-WH SINCE 2026-11-09. ** A 45 offset takes it 4" east, off the vent's
     # x=9'-0" line, then south on x=9'-4" over PR-M-S-SUITE-DRAIN (1/2" clear) to y=13'-4",
     # and straight east over D-B-SHOP's flat head (5" over the head, 1 5/8" under the plates)
-    # and the hall. The NE corner stays free for the tank's ducts and header; about the same
-    # length as the old y=17'-4 3/4" leg.
-    # ** x=17'-0" STAYS. ** W-B-CN/-CN2/W-B-CS2 are framed now, so the lane could move east,
-    # but it already clears the hall's east face and nothing wants the move.
-    #
-    # ** IT RISES TO 90 1/8" AT x=17'-0" AND CROSSES `W-B-CS3` OVER `D-B-GYM`'s HEADER. ** The
-    # header tops out at -22.19" and the double top plate starts at -16.44"; centred at
-    # -19 5/16" the duct passes between the cripples at y=12'-4 3/16" and 13'-7 7/16" with
-    # 7/8" to header and plate, and cuts nothing (`notes/framing_bore_limits.md` §6a is a
-    # hole drilled IN a cripple; this is air between two). ** IT ENDS IN THAT BAY (2026-11-10):
-    # REG-B-SUP1 is a sidewall valve on the gym face, centred on the duct. ** Nothing of it is
-    # exposed in the gym any more.
-    # (2026-11-14) The collar leg turns east at y=29'-5 1/2", not 29'-8": EQ-B-ERV's trapeze
-    # rod 1 stood 0.16" off that row's centreline. 2.34" clear now
-    # (structural.equipment_hanger_clearance).
+    # and the hall.
+    # ** IT CROSSES `W-B-CS3` OVER `D-B-GYM`'s HEADER AT 90 1/8". ** Centred at -19 5/16" it
+    # passes between the cripples at y=12'-4 3/16" and 13'-7 7/16" with 7/8" to header and
+    # plate (`notes/framing_bore_limits.md` §6a is a hole IN a cripple; this is air between
+    # two), and ENDS in that bay on REG-B-SUP1, a sidewall valve on the gym face.
     DuctRun(uid="CND5TE40W0", tag="DU-B-ERV-R-GYM", system=DuctSystem.SUPPLY,
-            # Stock turns only: a 45 degree ramp and a 45 degree offset.
-            path=(pt(ft(6, 10), ft(30, 2)), pt(ft(6, 10), inch(353.5)),
-                  pt(inch(92.375), inch(353.5)), pt(inch(98.375), inch(353.5)),
-                  pt(ft(9), inch(353.5)),
+            # Stock turns only: two 45 degree ramps and a 45 degree offset.
+            path=(pt(inch(102.25), inch(308.21875)), pt(ft(9), inch(308.21875)),
+                  pt(ft(9), inch(302)), pt(ft(9), inch(296)),
                   pt(ft(9), inch(224.5)), pt(ft(9), inch(218.375)), pt(ft(9), inch(212)),
                   pt(inch(112), inch(208)),
                   pt(inch(112), ft(13, 4)), pt(ft(18), ft(13, 4))),
-            elevations=(ft(7, 6), ft(7, 6), ft(7, 6), inch(84), inch(84), inch(84), inch(90.125),
+            elevations=(inch(90), inch(90), inch(90), inch(84), inch(84), inch(90.125),
                         inch(90.125), inch(90.125), inch(90.125), inch(90.125)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=DU_B_ERV_R_GYM),
-    # THE PLAY RADIAL GOES THROUGH SF-B-BATH. From the plenum's east end it drops to 83 1/8"
-    # (7/8" lower, 2026-11-12: the rise to the plate wants 8" between its two stamped 90s)
-    # on x=9'-6" (east of the sauna vent, under everything), rises to 91 1/4" at
-    # y=19'-7 1/4" and crosses W-B-STR2 in its 19'-4"..20'-8" bay under the top plate
-    # (-15 5/8"). It eases down 1/2" on the eastbound leg to clear PR-B-LSINK-DRAIN's riser,
-    # then jogs south over PR-B-BATH-VENT at x=12'-3" (the vent dropped 1 1/2" for it) and
-    # leaves through W-B-BA-E at y=18'-6 3/4" — the one gap in that staggered wall south of
-    # the bath's three risers (y 19'-3"..19'-10") wide enough for a 4" duct. Then 1'-5"
-    # north up the hall at x=16'-9" and east at y=20'-6" into W-B-CN2's 240"..256" stud bay,
-    # where it ends on REG-B-SUP2, a sidewall valve on the theater face (2026-11-10). The old
-    # 45 onto 101 1/4" and the box over the plate are gone with the ceiling valve.
+    # PLAY leaves MAN-SUP's north face, crosses the strip east at y=26'-6" over DU-ERV-EA and
+    # D-B-CLOSET's swing, turns south on x=9'-6" and drops on a 45 to 83 1/8", under
+    # DU-B-ERV-R-BATH. It rises to 91 1/4" at y=19'-7 1/4" and crosses W-B-STR2 in its
+    # 19'-4"..20'-8" bay under the top plate (-15 5/8"), eases down 1/2" east to clear
+    # PR-B-LSINK-DRAIN's riser, jogs south over PR-B-BATH-VENT at x=12'-3" and leaves through
+    # W-B-BA-E at y=18'-6 3/4" (the one gap in that staggered wall south of the bath's three
+    # risers wide enough for a 4" duct). Then 1'-5" north up the hall at x=16'-9" and east at
+    # y=20'-6" into W-B-CN2's 240"..256" stud bay, where it ends on REG-B-SUP2, a sidewall
+    # valve on the theater face.
     DuctRun(uid="DMEQ946YAX", tag="DU-B-ERV-R-PLAY", system=DuctSystem.SUPPLY,
-            path=(pt(ft(8), ft(30, 6)), pt(ft(9, 6), ft(30, 6)), pt(ft(9, 6), inch(355.625)),
+            path=(pt(inch(98.5), inch(313.21875)), pt(inch(98.5), inch(318)),
+                  pt(ft(9, 6), inch(318)), pt(ft(9, 6), inch(310)),
+                  pt(ft(9, 6), inch(303.15)),
                   pt(ft(9, 6), ft(19, 7.25)), pt(ft(9, 6), ft(19, 7.25)),
                   pt(ft(12, 3), ft(19, 7.25)), pt(ft(12, 3), ft(18, 6.75)),
                   pt(ft(16, 9), ft(18, 6.75)), pt(ft(16, 9), ft(20, 6)),
                   pt(ft(18), ft(20, 6))),
-            elevations=(ft(7, 6), ft(7, 6), inch(83.15), inch(83.15), inch(91.25), inch(90.75),
-                        inch(90.75), inch(90.75), inch(90.75), inch(90.75)),
+            elevations=(inch(90), inch(90), inch(90), inch(90), inch(83.15), inch(83.15),
+                        inch(91.25), inch(90.75), inch(90.75), inch(90.75), inch(90.75),
+                        inch(90.75)),
             diameter=inch(4), routing=DuctRouting.SOFFIT, soffit_ref="SF-B-BATH",
             material="galvanized", design_cfm=DU_B_ERV_R_PLAY),
     # ** THE SAUNA SUPPLY IS A BRANCH OFF GYM'S y=13'-4" LEG (2026-11-11). ** It used to leave its
@@ -315,40 +252,28 @@ DUCTS_ERV_BASEMENT = [
             elevations=(inch(82.25), inch(82.25)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=DU_B_ERV_R_BENCH, inline_dampers=(inch(28),)),
-    # The basement bath's extract leaves the plenum's EAST end straight off its collar (6",
-    # one elbow's take-off; it dropped 1 1/4" there until 2026-11-01), then south on x=8'-6"
-    # and east on y=24'-0" to a sidewall grille in W-B-STR3B (REG-B-EXH1). At -19 7/16" it
-    # crosses 2" OVER the GYM and PLAY lanes and 7/8" under PR-B-SAUNA-VENT, and passes
-    # W-B-STR3B in its 23'-4"..24'-8" bay.
-    #
-    # ** IT USED TO GO THROUGH THE STAIR (until 2026-09-22). ** Its old leg ran south under
-    # the upper flight to (12', 24'-1 5/8") through `stringer-upper-0`, `tread-upper-003` and
-    # W-B-STR3's ledger. The flight's own structure is now inside the volume a router refuses.
+    # The basement bath's extract leaves MAN-EXH's east end and runs straight east on
+    # y=23'-6 27/32" at 89" to a sidewall grille in W-B-STR3B (REG-B-EXH1), over GYM's and
+    # PLAY's lanes and under PR-B-SAUNA-VENT; W-B-STR3B is passed in its 23'-4"..24'-8" bay.
     DuctRun(uid="03883CKF0H", tag="DU-B-ERV-R-BATH", system=DuctSystem.EXHAUST,
-            path=(pt(ft(8), ft(27, 2.5)), pt(ft(8, 6), ft(27, 2.5)),
-                  pt(ft(8, 6), ft(24)), pt(inch(119.875), ft(24))),
-            elevations=(ft(7, 6), ft(7, 6), ft(7, 6), ft(7, 6)),
+            path=(pt(inch(100.8), inch(282.84375)), pt(inch(119.875), inch(282.84375))),
+            elevations=(inch(89), inch(89)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=DU_B_ERV_R_BATH),
-    # It leaves its collar 4" south and steps down on a 45° ramp to 82 1/4" before it turns
-    # west, so it passes under PR-M-S-BATH1-DRAIN's x=5'-0" fall (2026-11-11, with the box). Its
-    # collar is at x=5'-10", between that stack and PR-B-HW-SBATH's riser at x=5'-6 1/2".
-    # The low pickup is 4" off the floor on W-B-SA-W. The route uses W-B-CW's x=1'-7" bay
-    # (out of the panels' 110.26(E) space since 2026-10-31), clear of D-B-FURN's header,
-    # then turns east at y=3'-4". (Until 2026-11-11 the sauna supply shared the lane, 1/4" over
-    # this at 86 1/2".) At y=3'-4" it enters the centre of W-B-SA-W's 5 1/2" cavity and drops
-    # between the studs to 4" AFF. The 2" shift to the register's y=3'-2" station stays
-    # inside that stud bay. W-B-SA-W uses SAUNA_2X6 so the 4" section fits, 1/4" off
-    # the west stud face and 1 1/4" off the east; its hot-side liner face stays fixed.
+    # It leaves MAN-EXH's west end at 90 1/2", passes OVER PR-M-S-BATH1-DRAIN's x=5'-0" fall
+    # (1/4" clear), drops on a 45 to 82 1/4" before ED-B-FURNACE-STRIP1 and runs west on
+    # y=23'-6 27/32" to W-B-CW's x=1'-7" bay (out of the panels' 110.26(E) space), then
+    # south and east at y=3'-4" into the centre of W-B-SA-W's 5 1/2" cavity and down between
+    # the studs to the low pickup 4" off the floor. W-B-SA-W uses SAUNA_2X6 so the 4" section
+    # fits, 1/4" off the west stud face and 1 1/4" off the east.
     DuctRun(uid="1Y457X9DMH", tag="DU-B-ERV-R-SAUNA-EXH", system=DuctSystem.EXHAUST,
-            # (2026-11-07) The drop stands at x=116" (was 116 9/16"): the last stub to the
-            # register is 6", the take-off of the 90 above it (was 5 7/16").
-            path=(pt(ft(5, 10), inch(322.5)), pt(ft(5, 10), inch(318.5)), pt(ft(5, 10), inch(310.75)),
-                  pt(ft(1, 7), inch(310.75)), pt(ft(1, 7), inch(40)),
+            path=(pt(inch(64.8), inch(282.84375)), pt(inch(57.5), inch(282.84375)),
+                  pt(inch(49.25), inch(282.84375)),
+                  pt(ft(1, 7), inch(282.84375)), pt(ft(1, 7), inch(40)),
                   pt(inch(116), inch(40)), pt(inch(116), inch(40)),
                   pt(inch(122), inch(40))),
-            elevations=(ft(7, 6), ft(7, 6), inch(82.25), inch(82.25), inch(82.25), inch(82.25),
-                        inch(4), inch(4)),
+            elevations=(inch(90.5), inch(90.5), inch(82.25), inch(82.25), inch(82.25),
+                        inch(82.25), inch(4), inch(4)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=DU_B_ERV_R_SAUNA_EXH),
 ]

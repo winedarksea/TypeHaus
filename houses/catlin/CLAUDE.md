@@ -44,19 +44,22 @@
 >   `mep.vent_aggregate_area`); that spacing and the radon station hold both the fan space and the
 >   exhaust's 2' over WIN-A-N1. Exit 23'-8". Gable fixings land on girt courses or the rake nailer,
 >   below the rake trim's hem (a raked-top block on the nailer).
-> - **ERV:** EQ-B-ERV is at `rotation=deg(90)` (box south, door east), case 40.4" AFF, 13" south
->   of its old station, and **all four Broan ports are EXACT** (2026-11-11, `notes/erv_static_budget.md`
->   §10.22). EA lands north of OA on the east half, the order the risers need, so the outdoor legs
->   never cross. SUP and RET duck under their rows on bent kit flex (C 1.18) into MAN-SUP and the
->   moved MAN-EXH (y=27'-2 1/2"). OA/EA wear 1" AP Armaflex (10" OD). Delivered 199.4 cfm against
->   188.0 (§10.30), the sauna supply governing since the 2026-11-20 rebalance: sauna 38/38, BED 20,
->   HP-FEED 92; RM-S-VANITY (lavatories only, not a code bathroom) and the BED1/BED2 tokens lost
->   their extracts; REG-A-RET-STAIR takes 10 at the stair top. Read §10.22 before moving any of it.
->   (2026-11-12, §10.28) The case hangs on a strut trapeze (`EQ-B-ERV.hangers`, 4 rods, struts at
->   1 1/2" overhang: more puts them in CZ-B-DRYFIRE). `DU-ERV-EA` falls 1/8"/ft to its riser
->   foot onto a CAPPED drain tee (no gravity route; keep the kit-lead leg level). `FO-M-ERV-OA`
->   is lidded (ledgers), so RM-M-MECH's LVP runs across it. HP-FEED (92 cfm, damper locked)
->   leaves the riser head on a 30 degree skew to x=12"; the head is 230 1/4".
+> - **ERV:** EQ-B-ERV stands by the sink since 2026-11-21 (`notes/erv_static_budget.md` §10.31):
+>   `rotation=deg(90)` (box south, door east, 13" off W-B-STR3B), case y 24'-0 5/8"..26'-1 3/8",
+>   south of D-B-CLOSET's swing, bottom 40". All four Broan ports are EXACT. The outdoor pair
+>   stands north-south on the east half: DU-ERV-EA drops straight down the strip onto the north
+>   port, DU-ERV-OA comes in from the west (south on x=5'-10.8") onto the south one, so the legs
+>   never cross. MAN-SUP sits straight over the supply port (no trunk bend); MAN-EXH is south of
+>   OA's row. Both chase risers come down the west band. **DU-ERV-EA falls BACK from its riser
+>   foot (82 1/2" AFF, the high point) to a drain tee by the machine** and `PR-B-ERV-EA-DRAIN`
+>   (trapped) runs to FX-B-UTIL-SINK; the foot is capped by MAN-SUP, the sump discharge and
+>   `PR-B-KITCH-DRAIN` (dropped to one step for it). OA's drop moved 3/4" south for EA's foot leg.
+>   OA/EA wear 1" AP Armaflex (10" OD). Delivered 199.7 cfm against 188.0, extract via SUITEBATH
+>   governing (sauna 38/38, BED 20, HP-FEED 92). The case hangs on a strut trapeze
+>   (`EQ-B-ERV.hangers`, 4 rods from FS-M-MECH joists; a wall's blocking is no host). Read §10.31
+>   before moving any of it. `FO-M-ERV-OA` is lidded (ledgers), so RM-M-MECH's LVP runs across
+>   it. HP-FEED (92 cfm, damper locked) leaves the riser head on a 30 degree skew to x=12"; the
+>   head is 230 1/4".
 > - **Roof:** RF-GARAGE is the RDM vented peak under the same 7" 52131XX as the canopy (one cap
 >   ring, no step); R806.2 passes 873/553 in2: 562 ridge on Profile Vent's 23.4 in2/ft + 311 eave intake
   (48 LF x 6.48). Rake soffits are not intake. Coplanar abutting roofs
@@ -96,7 +99,8 @@
 > UL U305 wood studs + 5/8" Type X both faces (library partitions, `gwb-x` swap; W-B-ESS-W
 > 2x6 for the kitchen drain bore) under a furred two-layer Type X lid, behind an unrated
 > 24" steel door with a tempered lite. `FX-B-UTIL-SINK` (SE furnace room, hose behind an
-> ASSE 1011 vacuum breaker) is the ERV/WH condensate receptor. `CKT-SUMP` rides ALWAYS_ON.
+> ASSE 1011 vacuum breaker) is the receptor for the ERV pan, DU-ERV-EA's drain tee
+> (`PR-B-ERV-EA-DRAIN`), the WH and HP1/HP3 condensate. `CKT-SUMP` rides ALWAYS_ON.
 > The 2018 IRC R327 has no kWh caps or detection rule: those grade as advisories (2021 R328).
 > **2026-11-02 trim:** `CKT-LT-BACKUP` is two furnace-room cans, the ESS closet light, the
 > kitchen tape and every alarm; the rest of the basement is `CKT-LT-BSMT`, the kitchen cans
@@ -1717,19 +1721,19 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     basement radials used to leave their plenums' centre points at one flat 7'-6" and run
     straight through the drain field: 23 reported interpenetrations and three stud bores,
     two of them in a BEARING wall. What replaces it:
-    - **The plenums are 36" and house-local** (`EQ-T-ERV-PLENUM-B-SUP/-EXH`), because each
-      takes five connections — a 6" trunk, a 6" riser and three 4" collars — and 24" cannot
-      hold them at the clearances `run_interference` wants. The two 6" ports turn up into
-      the box's UNDERSIDE; the 4" collars are on its 36" faces at the box's mid-height,
-      which is the radial layer itself.
+    - **The plenums are house-local** (`EQ-T-ERV-PLENUM-B-SUP/-EXH`), each a 6" trunk, a 6"
+      riser and two 4" collars on stations that are its shop drawing. Since the ERV moved to
+      the sink (2026-11-21, §10.31) MAN-SUP is 20" and straight over the supply port (the trunk
+      is a vertical drop); MAN-EXH is 36", south of DU-ERV-OA's row, the riser into its north
+      face, its collars on the two ends.
     - **FS-M-WEST's bays are not available and never were.** Its I-joists span x, so its
       bays run east-west while every basement radial travels north-south. The band between
       the joists' underside and the top of the drain zone is 2 3/4".
-    - **The four corridors that ARE clear**, measured: x=3'-3" and x=3'-9" at -21 15/16" and
-      -23 7/16" (between PR-B-KITCH-DRAIN's x=4'-6" fall line and the SH2/SINK2 pair);
-      x=2'-0" at -27 15/16" (under everything, over PR-B-SINK2-DRAIN); and the furnace
-      room's east strip — GYM on x=9'-0" and PLAY on x=9'-6" at -25 7/16", BATH across both
-      at -20 11/16".
+    - **The corridors that ARE clear**, measured: SAUNA-EXH on x=1'-7" (W-B-CW's bay) at
+      82 1/4"; and the furnace room's east strip south of the plenums — GYM on x=9'-0" at
+      84" and PLAY on x=9'-6" at 83 1/8", BATH straight east over both at 89" (2026-11-21).
+      Both chase risers come down the west band (x 2'-3"/2'-8") and turn east south of the
+      outdoor rows, so nothing crosses OA or EA.
     - **Nothing crosses `ST-B2M` (2026-09-22).** The old "east chase" (belt at y=29'-6",
       then x=17'-0") was continuous only by passing over the flight, 1"-17" into R311.7.2's
       6'-8". `code.R311_7_2_stair_headroom` counts runs now and the router refuses the

@@ -279,14 +279,14 @@ BASEMENT_DEVICES = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-CW2", face="right", distance_from_start=inch(7),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    # EQ-B-ERV's 6' factory cord (120 V, 3.6 A). On W-B-ESS-S's furnace-room face, 12" off
-    # its west end at 48": the case's north face is ~12" south, inside the cord's reach.
-    # Dedicated CKT-ERV, GFCI at the breaker. A rated (U305) membrane: putty-pad the box.
+    # EQ-B-ERV's 6' factory cord (120 V, 3.6 A). On W-B-STR3B's furnace-room face at 48",
+    # 23" off its north end (y 23'-7"), beside the case's south box side (2026-11-21, with
+    # the machine). Dedicated CKT-ERV, GFCI at the breaker.
     ElectricalDevice(uid="5882M6YXNX", tag="ED-B-ERV-RC", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-15", circuit="CKT-ERV", room="RM-B-FURNACE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-ESS-S", face="right", distance_from_start=inch(12),
+                         wall_ref="W-B-STR3B", face="right", distance_from_start=inch(23),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # On the sauna's SOUTH liner immediately WEST of EQ-B-SAUNA-HTR, low like the heater
     # terminals. It followed the heater onto the garden wall when the room rotated on
@@ -349,31 +349,27 @@ BASEMENT_EQUIPMENT = [
     # Position (6'-8 7/16", 28'-8 3/4"), east of the dry-fire lane (west face 1.94" out of
     # CZ-B-DRYFIRE). Every ERV branch is authored off the two manifolds (plan/mep_erv_l1.py).
     Equipment(uid="CEE016AAAA", tag="EQ-B-ERV", kind=EquipmentKind.ERV,
-              position=pt(ft(6, 8.4375), ft(28, 8.75)), footprint=(inch(24.8), inch(21)),
+              position=pt(inch(93.375), inch(301)), footprint=(inch(24.8), inch(21)),
               room="RM-B-FURNACE", type_ref="EQ-T-BROAN-B210E75RT", circuit="CKT-ERV",
               rotation=deg(90),  # electrical box south, door east: the collars follow
-              # ** ALL FOUR PORTS ARE EXACT (2026-11-11, notes/erv_static_budget.md §10.22). **
-              # At 90 the outdoor ports are on the east half with EA north of OA, the order the
-              # risers want (OA turns north at x=3'-4", EA comes in along y=34'-10 1/2"), so the
-              # two outdoor legs never cross. Supply and return are on the west half, under
-              # those two rows: their kit flex bends at 70" (R = 1D) and each takes a 13" leg
-              # under the rows, supply north into EQ-B-ERV-MAN-SUP, return south into
-              # EQ-B-ERV-MAN-EXH. The 13" is what put the machine at 28'-8 3/4".
+              # ** BY THE SINK SINCE 2026-11-21 (owner; notes/erv_static_budget.md §10.31). **
+              # South of D-B-CLOSET's swing (case y 24'-0 5/8"..26'-1 3/8"), door 13" off
+              # W-B-STR3B's face, box south. Rotation 90 is the one where the outdoor pair
+              # stands in a north-south line on the east half: DU-ERV-EA drops straight down
+              # the strip onto the north port, DU-ERV-OA comes in from the west onto the
+              # south one, and the two never cross. Supply and return are on the west half:
+              # the supply trunk rises straight into EQ-B-ERV-MAN-SUP overhead, the return
+              # bends south under OA's row into EQ-B-ERV-MAN-EXH.
               #
-              # HUNG at 40.4" to the case bottom, ports at 62". It hangs because it drains by
-              # gravity: PR-B-ERV-COND falls to FX-B-UTIL-SINK, and the case height is set by
-              # that fall and by OA/EA's straight leads (port + 12" flex + elbow = 19") staying
-              # under the 92.73" conduits. Broan's chains are not that long, so it sits on a
-              # strut trapeze: two P1000s under the short sides on four 3/8" rods, each rod
-              # from a strut bridge lagged into two FS-M-MECH TJI flanges (the drop, ~57" to
-              # the strut top, is derived; `structural.equipment_hangers` grades it). The
-              # struts stop 1 1/2" past the case: the west face is 1.94" off CZ-B-DRYFIRE.
+              # HUNG at 40" to the case bottom, ports at 61.6": the lead tops (port + 19")
+              # are set by DU-ERV-EA, whose high point is now its riser foot (§10.31).
+              # PR-B-ERV-COND falls along W-B-STR3B to FX-B-UTIL-SINK. Strut trapeze: two
+              # P1000s under the short sides on four 3/8" rods, each from a strut bridge
+              # lagged into two FS-M-MECH TJI flanges (`structural.equipment_hangers`).
               #
-              # SERVICE ACCESS (notes/erv_service_access.md): exposed in RM-B-FURNACE, 13" clear
-              # in front of the east door (x 7'-6 15/16"..8'-7 15/16") and 3" on the south
-              # electrical-box side. The door zone shares about 10" x 14" with D-B-CLOSET's
-              # swing; one door at a time. Quarterly filter/core service from the floor.
-              mount=Mount(kind=MountKind.CEILING, elevation=inch(40.4)),
+              # SERVICE ACCESS (notes/erv_service_access.md): exposed, 13" clear between the
+              # east door and W-B-STR3B, 3" on the south box side. Filter/core from the floor.
+              mount=Mount(kind=MountKind.CEILING, elevation=inch(40)),
               hangers=EquipmentHangers(count=4, rod_product_ref="PROD-BLINE-ATR-3-8", strut_product_ref="PROD-UNISTRUT-P1000-PG", top_fixing_product_ref="PROD-LAG-1-4X1-1-2-ZN", overhang=inch(1.5), source="owner, 2026-11-12: strut trapeze on 3/8 in. rod"),
               pan_drain_ref="PR-B-ERV-COND",
               # Its fresh air reaches the second storey through EQ-S-ERV-MIX and this AH's

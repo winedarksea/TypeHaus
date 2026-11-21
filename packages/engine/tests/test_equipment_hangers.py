@@ -19,7 +19,7 @@ def test_erv_hangs_on_four_bridged_rods(catlin_model_ro) -> None:
     rods = _rods(catlin_model_ro)
     assert len(rods) == 4 and all(r.gap is None for r in rods)
     # Joist underside (-11 7/8") less the case bottom: derived, not authored.
-    assert all(abs(r.drop_m / _IN - 57.16) < 0.1 for r in rods)
+    assert all(abs(r.drop_m / _IN - 57.56) < 0.1 for r in rods)
     for rod in rods:
         assert [s.profile for s in rod.bridge] == ["11.875 TJI 230"] * 2
         assert abs(sum(s.share for s in rod.bridge) - 1.0) < 1e-9
@@ -71,7 +71,7 @@ def test_clearance_grades_a_rod_against_a_wrapped_run(catlin_model_ro) -> None:
     )
 
     duct = next(d for d in catlin_model_ro.ducts if d.tag == "DU-ERV-EA")
-    (x0, y), (x1, _) = duct.path[1], duct.path[2]  # an east-west leg
+    (x0, y), (x1, _) = duct.path[3], duct.path[4]  # an east-west leg
     # 8" duct + 1" wrap + 3/16" rod radius.
     reach = (4.0 + 1.0 + 0.1875) * _IN
 

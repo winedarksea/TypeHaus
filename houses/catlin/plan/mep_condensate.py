@@ -29,21 +29,24 @@ CONDENSATE_NORTH = [
     # across the box at y=25'-2 3/4", south to y=25'-0" and west along the FS-M-STAIR/MECH
     # bay, boring W-B-BA-N's nailers and 1" under PR-B-BATH-WC-CW. The riser's hole leaves
     # the box a cheek under W-M-C5's end stud (BM-M-HALL's bearing); a run along the box
-    # would strip both cheeks. It drops into the furnace room at x=8'-2 1/2" (1" west of
-    # DU-B-ERV-R-BATH) and runs south to the sink, turning east over its bowl.
+    # would strip both cheeks. Since the ERV moved to the sink (2026-11-21) it drops into the
+    # furnace room at x=9'-3", between DU-B-ERV-R-GYM's and -PLAY's lanes, runs south to
+    # y=23'-11 3/8" (north of DU-B-ERV-R-BATH), drops again past the ERV's service gap and
+    # runs south to the sink, turning east over its bowl.
     PipeRun(uid="XM4GM4VEZS", tag="PR-M-COND-HP3", system=PipeSystem.DRAIN, sanitary=False,
             path=(pt(inch(158), inch(418)), pt(inch(158), inch(428.75)),
                   pt(inch(158), inch(428.75)), pt(inch(216), inch(428.75)),
                   pt(inch(216), inch(312.9)), pt(inch(216), inch(312.9)),
                   pt(inch(223), inch(312.9)), pt(inch(223), inch(302.75)),
                   pt(inch(214), inch(302.75)), pt(inch(214), inch(300)),
-                  pt(inch(98.5), inch(300)), pt(inch(98.5), inch(300)),
-                  pt(inch(98.5), inch(238)), pt(inch(98.5), inch(238)),
-                  pt(inch(103.5), inch(238))),
+                  pt(inch(111), inch(300)), pt(inch(111), inch(300)),
+                  pt(inch(111), inch(287.4)), pt(inch(111), inch(287.4)),
+                  pt(inch(111), inch(240)), pt(inch(111), inch(240)),
+                  pt(inch(114), inch(240))),
             diameter=inch(0.75), material="pvc",
             elevations=(inch(37.5), inch(37.25), inch(26.5), inch(25.05), inch(22.15), inch(-4.5),
-                        inch(-4.7), inch(-5), inch(-5.25), inch(-5.33), inch(-10.55), inch(-26),
-                        inch(-27.4), inch(-62), inch(-62.12))),
+                        inch(-4.7), inch(-5), inch(-5.25), inch(-5.33), inch(-10), inch(-21.5),
+                        inch(-21.8), inch(-58), inch(-59.2), inch(-62), inch(-62.1))),
     # EQ-S-HP1-AH: from the modeled trap outlet east of the cabinet and service zone,
     # south on the deck at x=24'-11 1/2" (blocked
     # off the deck at 4' o.c.), down into FS-ATTIC's free y 208-224 bay, west along it over

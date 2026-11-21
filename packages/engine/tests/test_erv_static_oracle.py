@@ -197,10 +197,14 @@ def test_the_governing_side_is_supply_via_the_sauna(catlin_model_ro) -> None:
 
     ** 2026-11-20: supply via the sauna, 0.579 against SAUNA-EXH 0.567 and SUITEBATH 0.555
     (note §10.30). ** 38 cfm through the hatch (23.72 Pa) and 48 on GYM; the trunk fell to 91.
+
+    ** 2026-11-21: extract via SUITEBATH, 0.567 against SAUNA-EXH 0.549 and supply via the
+    sauna 0.475 (note §10.31). ** The ERV moved to the sink: the supply trunk stands straight
+    into its plenum (its bent kit flex gone, -0.084") and the extract riser runs 4.4 ft further.
     """
     message = _machine_finding(catlin_model_ro).message
-    assert "supply side via DU-B-ERV-R-SAUNA-SUP" in message
-    assert "extract side" not in message
+    assert "extract side via DU-M-ERV-R-SUITEBATH" in message
+    assert "supply side" not in message
 
 
 def test_the_static_and_the_delivered_flow_are_the_notes(catlin_model_ro) -> None:
@@ -275,12 +279,14 @@ def test_the_static_and_the_delivered_flow_are_the_notes(catlin_model_ro) -> Non
     # own flex (+0.056368): 0.546211 + 0.056215 = 0.602426, 198.9 cfm.
     # 2026-11-20, note §10.30: the rebalance. Supply via the sauna governs:
     # 0.459790 + 0.007893 + 0.042192 + 17.22 / 249.089 = 0.579007, 199.42 cfm.
-    assert "supply side" in message
-    assert "0.579 in. w.g." in message
-    assert "DU-B-ERV-R-SAUNA-SUP 0.011\"" in message
-    assert "DU-B-ERV-R-GYM 0.072\"" in message
-    assert "terminal 23.7 Pa" in message
-    assert "delivering 199 cfm" in message
+    # 2026-11-21, note §10.31: the ERV by the sink. Extract via SUITEBATH governs:
+    # 0.554951 - 0.012159 + 0.000007 + 0.024127 = 0.566926, 199.66 cfm.
+    assert "extract side" in message
+    assert "0.567 in. w.g." in message
+    assert "DU-M-ERV-R-SUITEBATH 0.006\"" in message
+    assert "DU-M-ERV-EXH-TRUNK 0.018\"" in message
+    assert "terminal 11.5 Pa" in message
+    assert "delivering 200 cfm" in message
 
 
 def test_the_bench_dampers_fully_open_charge_is_the_notes(catlin_model_ro) -> None:
@@ -301,13 +307,14 @@ def test_the_bench_dampers_fully_open_charge_is_the_notes(catlin_model_ro) -> No
 def test_the_level2_supply_feed_is_the_notes(catlin_model_ro) -> None:
     """Note §10.25 addendum: 45 cfm through 6", 134.1375" and one stamped 90 is 0.002241
     friction + 0.000720 elbow, teed off the riser's basement corner. §10.30: at 50 cfm,
-    0.002699 + 0.000889 = 0.003588."""
+    0.002699 + 0.000889 = 0.003588. §10.31: teed off the riser's bay corner, 176.275" and
+    three stamped 90s, 0.003547 + 0.002668 = 0.006215."""
     from typehaus.checks.mep.erv_static import _duct_drop
 
     ctx = check_context(model=catlin_model_ro)
     feed = next(d for d in catlin_model_ro.ducts if d.tag == "DU-M-ERV-SUP-FEED")
-    assert feed.length_m / 0.0254 == pytest.approx(134.1375, abs=1e-3)
-    assert _duct_drop(ctx, feed, 1).drop_in_wg == pytest.approx(0.0035881, abs=2e-7)
+    assert feed.length_m / 0.0254 == pytest.approx(176.275, abs=1e-3)
+    assert _duct_drop(ctx, feed, 3).drop_in_wg == pytest.approx(0.006215, abs=2e-6)
     tee = [p for p in catlin_model_ro.duct_parts
            if p.kind == "tee" and p.run_tag == "DU-ERV-RISER-SUP"]
     assert [t.product_ref for t in tee] == ["PROD-DUCT-TEE-6-6"]
@@ -329,10 +336,11 @@ def test_the_lengthened_straights_move_the_terms_the_notes_say(catlin_model_ro) 
                               ("DU-M-ERV-EXH-FEED", 2, 0.0074689)):
         assert _duct_drop(ctx, ducts[tag], elbows).drop_in_wg == pytest.approx(drop, abs=2e-6)
     assert ducts["DU-M-ERV-EXH-NECK"].length_m / 0.0254 == pytest.approx(76.775, abs=1e-3)
-    assert "0.579 in. w.g." in _machine_finding(catlin_model_ro).message  # §10.30
+    assert "0.567 in. w.g." in _machine_finding(catlin_model_ro).message  # §10.31
     assert _delivered(_BROAN_CURVE, 0.546211) == pytest.approx(200.0758, abs=1e-3)
     assert _delivered(_BROAN_CURVE, 0.602426) == pytest.approx(198.9030, abs=1e-3)
     assert _delivered(_BROAN_CURVE, 0.579007) == pytest.approx(199.4199, abs=1e-3)
+    assert _delivered(_BROAN_CURVE, 0.566926) == pytest.approx(199.6615, abs=1e-3)
 
 
 def test_sauna_radials_route_through_clear_stud_bays_without_plate_or_duct_conflicts(
@@ -348,8 +356,9 @@ def test_sauna_radials_route_through_clear_stud_bays_without_plate_or_duct_confl
     exhaust = schedule["DU-B-ERV-R-SAUNA-EXH"]
     # 44.33 since the 2026-10-31 move to x=1'-7" (note §10.7); 43.86 since its collar
     # step became a 30° ramp (2026-11-01); 43.69 without its 2" register-end jog (note §10.9);
-    # 43.16 off the box's new collar at x=5'-10", y=26'-10 1/2" on a 45° ramp (note §10.22).
-    assert exhaust["developed_ft"] == pytest.approx(43.16)
+    # 43.16 off the box's new collar at x=5'-10", y=26'-10 1/2" on a 45° ramp (note §10.22);
+    # 39.44 off the moved box's west end, over the drain (note §10.31).
+    assert exhaust["developed_ft"] == pytest.approx(39.44)
     assert exhaust["elbows"] == 6  # the jog took one off
 
     routed_stud_passes = [finding for finding in catlin_model_report.findings

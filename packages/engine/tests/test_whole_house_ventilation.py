@@ -35,7 +35,7 @@ def test_the_continuous_rate_is_half_the_total_with_a_forty_cfm_floor(catlin_mod
 def test_catlin_grades_the_delivered_flow_against_the_cfa_rate(catlin_model_ro) -> None:
     """4,900 sf of CFA to the structural face (`notes/conditioned_floor_area.md`) and five
     bedrooms ask 188.0 cfm (RM-A-STUDIO is a craft room since 2026-11-11); the ERV delivers
-    199.4 off its curve, not its 210 rating (`notes/erv_static_budget.md` §10.22-§10.30)."""
+    199.7 off its curve, not its 210 rating (`notes/erv_static_budget.md` §10.22-§10.31)."""
     summary = whole_house_summary(catlin_model_ro, catlin_model_ro.plan)
     assert summary is not None
     assert summary.conditioned_area_ft2 == pytest.approx(4897.9, abs=1.0)
@@ -44,7 +44,7 @@ def test_catlin_grades_the_delivered_flow_against_the_cfa_rate(catlin_model_ro) 
     assert summary.bedrooms == 5
     assert summary.total_rate_cfm == pytest.approx(188.0, abs=0.1)
     assert summary.provided_cfm == pytest.approx(210.0)
-    assert summary.delivered_cfm == pytest.approx(199.42, abs=0.01)  # §10.30
+    assert summary.delivered_cfm == pytest.approx(199.66, abs=0.01)  # §10.31
     assert summary.verdict() == "pass"
 
 

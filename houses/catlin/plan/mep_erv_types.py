@@ -231,70 +231,52 @@ EQUIPMENT_TYPES_ERV = (
                                      width=inch(6), depth=inch(4),
                                      certainty=PortCertainty.EXACT))),
 
-    # ** THE TWO BASEMENT PLENUMS ARE 36" LONG AND THAT IS THE WHOLE DESIGN (D3). **
-    # They were 24 x 8 library manifolds stating six ports and no layout, and every radial
-    # left from the box's own centre point — three off each — which is why GYM and
-    # SAUNA-SUP shared a lane for twenty feet and BATH and SAUNA-EXH shared one for three.
-    #
-    # ** 24" COULD NOT HOLD FIVE CONNECTIONS. ** Each box takes a 6" trunk AND a 6" riser
-    # as well as three 4" collars: the basement plenums are where the machine's air and the
-    # upstairs air meet, unlike level 2's, which have one inlet each. `run_interference`
-    # wants 5" between a 6" duct and a 4" one and 6" between two 6"s, measured centre to
-    # centre where their drops run side by side — and on a 24" box every arrangement put
-    # some pair inside that. At 36" the two 6" ports sit 15" apart on the bottom face and
-    # the nearest 4" collar drop is 6". Eight inches of extra galvanized is the cheapest
-    # part of this campaign.
-    #
-    # ** THE 6" PORTS ARE ON THE BOTTOM FACE, THE 4" COLLARS ON THE SIDES. ** The trunk and
-    # the return come up from the machine, which sits below and west; the radials leave
-    # sideways into the ceiling layer, at the box's own mid-height. So the two big
-    # connections turn up into the underside and the small ones stay on the 36" faces where
-    # there is room to space them. Neither 6" port is a collar — no `connection_size`, so
-    # `mep.equipment_port_service` grades them at service level the way it always has.
+    # ** THE TWO BASEMENT PLENUMS: STATIONS ARE THE SHOP DRAWING (D3; re-stationed 2026-11-21
+    # with the move to the sink, notes/erv_static_budget.md §10.31). ** Each box is where the
+    # machine's trunk and a chase riser meet, and each radial leaves its own collar, so no two
+    # start at one hole or are born collinear. Neither 6" port is a collar (no
+    # `connection_size`): `mep.equipment_port_service` grades them at service level.
     EquipmentType(tag="EQ-T-ERV-PLENUM-B-SUP",
                   name="Fabricated supply plenum, 6in trunk + 6in riser, 2 x 4in dampered collars",
-                  footprint=(inch(38), inch(8)), height=inch(8), plan_symbol="erv",
+                  footprint=(inch(20), inch(8)), height=inch(8), plan_symbol="erv",
                   duct_ports=2, port_diameter=inch(4),
-                  # Note §4's method on a 6in trunk collar (it was the 8in box's curve): 0.80 x
-                  # 17.76 Pa expansion + 1.02 Pa port = 15.2 Pa at 210 cfm, Q^2 (§10.6).
+                  # Note §4's method on a 6in trunk collar: 0.80 x 17.76 Pa expansion + 1.02 Pa
+                  # port = 15.2 Pa at 210 cfm, Q^2 (§10.6).
                   static_loss_pa_at_cfm=((60.0, 1.24), (120.0, 4.96), (210.0, 15.2)),
-                  source="Fabricated galvanized plenum for THIS house, 38 x 8 x 8 in: a 6 in trunk inlet in the underside, a 6 in riser takeoff on the north face, and two 4 in dampered start collars at the stations below. The collar layout is a shop drawing and is authored here rather than in library/hvac.py for that reason. No submittal has been read; the stations are the design's and the fabricator confirms them.",
-                  # Trunk inlet where DU-B-ERV-SUP-TRUNK rises off Broan port 2 (2026-11-05).
+                  source="Fabricated galvanized plenum for THIS house, 20 x 8 x 8 in: a 6 in trunk inlet in the underside, a 6 in riser takeoff on the north face, and two 4 in dampered start collars at the stations below. The collar layout is a shop drawing and is authored here rather than in library/hvac.py for that reason. No submittal has been read; the stations are the design's and the fabricator confirms them.",
+                  # 20" (2026-11-21): the west end stands clear of EQ-B-ERV's north-west
+                  # trapeze rod, the east end of the GYM/PLAY lanes. The trunk rises straight
+                  # off Broan port 2.
                   ports=(ServicePort(tag="trunk", service=Service.SUPPLY_AIR,
-                                     position=(inch(11.65625), inch(-0.875), inch(0))),
-                         # 38" since 2026-11-12: the riser moved 3" west to x=5'-2" for the
-                         # feed's lane, and the box grew 2" west to keep its collar on the face.
+                                     position=(inch(-5.5), inch(0), inch(0))),
                          ServicePort(tag="riser", service=Service.SUPPLY_AIR,
-                                     position=(inch(-15), inch(4), inch(4))),
-                         # (2026-11-11) collar-sauna is not cut: DU-B-ERV-R-SAUNA-SUP taps GYM.
-                         # x 9" -> 4" (2026-11-01): the trunk now rises at x +10 5/8".
+                                     position=(inch(-0.25), inch(4), inch(4))),
                          ServicePort(tag="collar-gym", service=Service.SUPPLY_AIR,
-                                     position=(inch(5), inch(-4), inch(4)),
+                                     position=(inch(10), inch(-1), inch(4)),
                                      connection_size=inch(4),
                                      certainty=PortCertainty.EXACT),
                          ServicePort(tag="collar-play", service=Service.SUPPLY_AIR,
-                                     position=(inch(19), inch(0), inch(4)),
+                                     position=(inch(6.25), inch(4), inch(4)),
                                      connection_size=inch(4),
                                      certainty=PortCertainty.EXACT))),
     # The extract box is the same shell with the air going the other way: the riser brings
-    # the upstairs extract DOWN into it and the trunk carries the sum out to the machine.
-    # The collar on the east end is the only one that faces its terminal directly; the other
-    # two step clear of the riser's and the trunk's drops before they turn.
+    # the upstairs extract DOWN into its north face and the trunk carries the sum out of its
+    # underside to the machine. Both collars face their terminals from the two ends.
     EquipmentType(tag="EQ-T-ERV-PLENUM-B-EXH",
                   name="Fabricated extract plenum, 6in trunk + 6in riser, 2 x 4in dampered collars",
                   footprint=(inch(36), inch(8)), height=inch(8), plan_symbol="erv",
                   duct_ports=2, port_diameter=inch(4),
                   static_loss_pa_at_cfm=((60.0, 1.24), (120.0, 4.96), (210.0, 15.2)),
-                  source="Fabricated galvanized plenum for THIS house, 36 x 8 x 8 in: a 6 in riser inlet and a 6 in trunk outlet in the underside, and two 4 in dampered start collars at the stations below. Same shell as EQ-T-ERV-PLENUM-B-SUP; a separate row because the declared services differ and the BOM should read which box is which.",
+                  source="Fabricated galvanized plenum for THIS house, 36 x 8 x 8 in: a 6 in riser inlet on the north face, a 6 in trunk outlet in the underside, and two 4 in dampered start collars at the two ends. Same shell as EQ-T-ERV-PLENUM-B-SUP; a separate row because the declared services differ and the BOM should read which box is which.",
                   ports=(ServicePort(tag="trunk", service=Service.RETURN_AIR,
-                                     position=(inch(10.5), inch(0), inch(0))),
+                                     position=(inch(5.7), inch(0), inch(0))),
                          ServicePort(tag="riser", service=Service.RETURN_AIR,
-                                     position=(inch(-4.5), inch(0), inch(0))),
+                                     position=(inch(-12.8), inch(4), inch(4))),
+                         # High on the west end: SAUNA-EXH leaves over PR-M-S-BATH1-DRAIN.
                          ServicePort(tag="collar-sauna", service=Service.EXHAUST_AIR,
-                                     position=(inch(-8), inch(-4), inch(4)),
+                                     position=(inch(-18), inch(0), inch(5.5)),
                                      connection_size=inch(4),
                                      certainty=PortCertainty.EXACT),
-                         # (2026-11-11) collar-bench is not cut: DU-B-ERV-R-BENCH taps SAUNA-EXH.
                          ServicePort(tag="collar-bath", service=Service.EXHAUST_AIR,
                                      position=(inch(18), inch(0), inch(4)),
                                      connection_size=inch(4),

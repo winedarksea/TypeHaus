@@ -9,7 +9,7 @@ these locations need to stay accessible in the construction layout.
 | Item | Service access | Design direction |
 |---|---|---|
 | `REG-S-HP-RET` — System 1 return | Stock 12 x 24 x 1 MERV 13 filter behind a hinged face that opens down; reachable from the hall floor. | Keep the entire grille face unobstructed for drop-down filter changes. No ladder or access panel is needed. |
-| `EQ-B-ERV` — Broan B210E75RT | Internal MERV 8 washable filters (MERV 13 is an optional disposable filter). Its hinged cabinet door has two latches. The unit is exposed in `RM-B-FURNACE`, hung with its case bottom at 40.4" (2026-11-11), door east. | Preserve 13" in front of the east maintenance door and 3" on the south electrical-box side per Broan's drawing. The door zone shares about 10" x 14" with `D-B-CLOSET`'s swing: one door open at a time. Service from the floor; do not enclose the unit or put storage in the service aisle. |
+| `EQ-B-ERV` — Broan B210E75RT | Internal MERV 8 washable filters (MERV 13 is an optional disposable filter). Its hinged cabinet door has two latches. The unit is exposed in `RM-B-FURNACE` by `FX-B-UTIL-SINK` (2026-11-21), hung with its case bottom at 40", door east facing `W-B-STR3B`. | Preserve the 13" between the east maintenance door and the wall and 3" on the south electrical-box side per Broan's drawing. The case is south of `D-B-CLOSET`'s swing, so the two doors no longer conflict. The condensate lines (`PR-B-ERV-COND`, `PR-B-ERV-EA-DRAIN`, `PR-M-COND-HP3`) run low along the wall and the HP3 drop stands at the south end of the gap. Service from the floor; do not enclose the unit or put storage in the service aisle. |
 | `EQ-M-ERV-HOOD-OA` — outdoor intake | The 12" hood body is centered at +5'-0" main datum, or +7'-10" above the site grade; the screen runs from +7'-4" to +8'-4" above grade. Broan calls for quarterly inspection of the intake hood for leaves, twigs, ice, and snow, and cleaning as needed. | Use a portable ladder from the north slot. Keep a clear place to set it up; no fixed ladder or platform is modeled. The hood clears the HP3 disconnect work-space vertically, and intake/exhaust hood centers are 12'-0" apart. A ladder centered below the hood temporarily occupies part of the disconnect's working width. Owner accepted that overlap 2026-11-12: a ladder there during intake cleaning is occupancy, not NEC 110.26(B) storage. Take it down after. |
 | Gree indoor heads: `EQ-B-HP2-GYM`, `EQ-M-HP2-BED`, `EQ-M-HP2-LIVING`, `EQ-M-HP3-STAIR` | Each exposed wall head has a front filter face (`EQ-B-HP2-GYM` on the gym's west wall, `W-B-CS`, since 2026-11-14). The modeled bases are +6'-10", +7'-6", +7'-6", and +3'-0", respectively. Gree's owner manuals describe quarterly filter cleaning by lifting and pulling the filters forward. | Keep the faces and filter-removal path open. The three high heads require ladder access; the stair head is reachable from the floor. No access panels are needed while the heads remain surface-mounted. |
 
@@ -25,9 +25,9 @@ airflow display as a performance indicator.
 
 ## Before close-in
 
-- Keep `EQ-B-ERV` exposed and orient its door and electrical-box side toward the open furnace
-  room, away from the north partition. Preserve Broan's 13" and 3" clearances at the actual
-  installed orientation.
+- Keep `EQ-B-ERV` exposed with its door 13" off `W-B-STR3B` and its electrical box south, toward
+  `ED-B-ERV-RC`. Preserve Broan's 13" and 3" clearances at the installed orientation, and keep
+  `DU-ERV-EA`'s drain-tee trap reachable for priming.
 - Keep the outdoor hood screen reachable with a portable ladder from the north slot. Do not
   add a permanent obstruction in the ladder setup area.
 - Keep the System 1 return grille and bath-2 intake grille clear of furnishings and casework.

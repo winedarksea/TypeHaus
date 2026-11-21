@@ -1,3 +1,34 @@
+## The ERV moves to the sink; DU-ERV-EA drains back to it (2026-11-21, owner)
+
+- **Why.** The case stood in D-B-CLOSET's swing (the leaf stopped at ~55 deg), its condensate
+  line crossed the room, and DU-ERV-EA's riser foot ended on a capped tee emptied by hand.
+  Owner, 2026-11-20: the ERV to the east wall by the sink, and EA's fall reversed into the sink.
+- **Taken** (`notes/erv_static_budget.md` §10.31). EQ-B-ERV keeps rotation 90, case
+  y 24'-0 5/8"..26'-1 3/8" south of the swing, door 13" off W-B-STR3B, bottom 40". That is the
+  one rotation whose outdoor pair (north-south on the east half) lets both legs arrive from the
+  north-west uncrossed: EA straight down the strip onto the north port, OA south on x=5'-10.8"
+  then east onto the south one. MAN-SUP (20") sits over the supply port, so the supply trunk is
+  a straight drop (its bent flex, 0.084", gone); MAN-EXH is south of OA's row. Both chase risers
+  come down the west band and turn east south of the rows; SUP-FEED tees off RISER-SUP's bay
+  corner. GYM/PLAY/BATH/SAUNA-EXH re-leave the plenums; REG-B-EXH1 moved 5" south; HW-SBATH
+  climbs over the cluster into the y=26'-7 1/2" bay; HP3's condensate drops between GYM and PLAY;
+  ED-B-ERV-RC moved onto W-B-STR3B.
+- **EA reversed.** The riser foot is the high point at 82 1/2" AFF (was 74.6"), capped by the
+  tee under MAN-SUP, the sump discharge and PR-B-KITCH-DRAIN, which now drops in one step at
+  x=5'-6 1/2" so EA clears it. OA's drop moved 3/4" south for EA's foot leg. The tee is 8 1/8"
+  north of the kit lead; PR-B-ERV-EA-DRAIN (trapped) runs down W-B-STR3B to the sink.
+- **Static.** Extract via SUITEBATH governs at 0.567 in.; delivered 199.7 cfm (was 199.4)
+  against 188.0. Legs' heat loss 1,991 Btu/h (was 1,701), effective recovery 55%.
+- **Headroom.** OA and EA wraps 75.6-76.4" AFF over the room; risers 78"+.
+- **Engine.** A trapeze rod no longer takes a wall's mid-height blocking within its 16" plan
+  reach as its host (`resolve/equipment_hangers._floor_index`): the north-east rod picked
+  W-B-STR3's tee block.
+- **Rejected.** Rotation 180 (OA lands east of EA, so EA's leg crosses OA's row); rotation 270
+  (a 10" jog between two 8" elbows); plenums west of OA's lane (no room beside HW-SBATH's riser);
+  the plan's EA line north on x~6' (it runs through W-B-ESS-W and OA's drop); fallback L1.
+- **Also.** The AM 100 / LVS 125 valve meshes now stand 1" / 0.9" proud at the disc (were 5/8" /
+  0.55"); the 1 3/4" fit envelope is unchanged (`notes/air_distribution_products.md`).
+
 ## The garage loses its STHDs: corners dropped, panel ends on HTT4 + SSTB16 (2026-11-20, decision #141 amended)
 
 - **Why.** The five garage STHDs graded UNKNOWN (a 2 9/16" jog no figure prints, yielding at

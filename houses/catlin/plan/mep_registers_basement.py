@@ -101,12 +101,13 @@ REGISTERS_BASEMENT = [
     # recirculated. It is a SIDEWALL grille high on W-B-STR3B, the west wall, far from the
     # door, so the room's makeup air crosses it. Since 2026-09-22: the ceiling grille at
     # (12', 24'-1 5/8") was fed through ST-B2M's stringer. x is the bath-side paint face plus
-    # 1"; the base at 7'-1 1/4" centres the 7" face on the duct.
+    # 1"; the base at 7'-1 1/4" centres the 7" face on the duct. 5" south since 2026-11-21:
+    # the radial now runs straight east off EQ-B-ERV-MAN-EXH's end.
     Register(uid="CBRV05AAAA", tag="REG-B-EXH1", kind=DuctSystem.EXHAUST, room="RM-B-BATH",
             duct_ref="DU-B-ERV-R-BATH",
             type_ref="REG-T-ERV-VALVE-EXH-WALL", design_cfm=REG_B_EXH1,
             mount=Mount(kind=MountKind.WALL, elevation=inch(85.25)),
              location=Location(attachment=WallAttachment(
-                 wall_ref="W-B-STR3B", face="left", distance_from_start=inch(18),
+                 wall_ref="W-B-STR3B", face="left", distance_from_start=inch(23.15625),
                  normal_gap=inch(0), rotation_offset=deg(-180)))),
 ]
