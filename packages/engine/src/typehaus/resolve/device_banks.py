@@ -20,6 +20,7 @@ from shapely.geometry.polygon import orient
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.electrical import BoxStandard, PlateRow
 from typehaus.resolve.box_supports import (
+    plate_keepout,
     stud_flanks,
     stud_seat,
     support_fields,
@@ -189,11 +190,17 @@ def _place(model: ResolvedModel, bank: list[_Member], plan: BoxPlan, standard: B
     middle = sum(m.middle for m in bank) / len(bank)
     wall = model.wall(lead.item.location.attachment.wall_ref)
     width, height, depth = (part.meters for part in plan.row.box_size)
+    plate = _plate(bank, plan, standard, findings)
     support, seat = plan.row.support, None
     if support is not None and support.kind == "stud_side" and plan.mounting in _BANKED:
+        plate_w, plate_h = ((p.meters for p in plate.size) if plate else (width, height))
+        keepout = plate_keepout(model, wall, objects, lead.point, tangent, normal,
+                                max(0.0, (plate_w - width) / 2),
+                                (middle - plate_h / 2, middle + plate_h / 2),
+                                lead.pending.room, {m.item.tag for m in bank})
         seat = stud_seat(model, wall, lead.point, tangent, normal, centre - width / 2,
                          centre + width / 2, middle - height / 2, middle + height / 2, depth,
-                         support.section[1].meters)
+                         support.section[1].meters, keepout)
     flanks = (stud_flanks(model, wall, lead.point, tangent, normal, centre - width / 2,
                           centre + width / 2, middle - height / 2, middle + height / 2, depth)
               if support is not None and support.kind == "stud_span" else None)
@@ -204,7 +211,6 @@ def _place(model: ResolvedModel, bank: list[_Member], plan: BoxPlan, standard: B
     centre += stud_shift
     origin = (lead.point[0] + tangent[0] * (centre - lead.station),
               lead.point[1] + tangent[1] * (centre - lead.station))
-    plate = _plate(bank, plan, standard, findings)
     thick = plate.thickness.meters if plate is not None else 0.0
     total, slot = sum(m.gangs for m in bank), 0
     shifts, footprints = [], []

@@ -975,12 +975,15 @@ SECOND_DEVICES = [
     # is west of the water closet's 15" side band in plan, which does not matter -- at 44" AFF
     # it is nowhere near that envelope's clear FLOOR space, and `_clearance_conflicts` tests
     # bodies that stand in the zone, not things hung above it.
+    # At 18" its nail-on box seats on stud-002's east face (#149): 30 1/8" seated east of
+    # stud-004, 2'-9" from the tub; the next bay east holds PR-S-SUITEBATH-WC-VENT and the
+    # hall face's back-to-back stair switches.
     ElectricalDevice(uid="ZQBJ03VGYD", tag="ED-S-SUITEBATH-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
                      type_ref="ED-T-LEV-GFCI-GUIDE",
                      circuit="CKT-BATH-RC", room="RM-S-SUITEBATH",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(44)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-SN3", face="right", distance_from_start=inch(30.125),
+                         wall_ref="W-S-SN3", face="right", distance_from_start=inch(18),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # ** ONE OUTLET SERVES BOTH BOWLS IN THE ALCOVE, AND THAT IS DELIBERATE. ** 210.52(D)
     # asks for one within 36" of EACH sink, not one per sink. At x=5'-4 1/2", east of

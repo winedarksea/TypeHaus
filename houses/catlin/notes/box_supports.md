@@ -22,7 +22,7 @@ No stud-to-stud bracket exists for a 4" round box. Carlon B620K (bar hanger, 14.
 nVent CADDY TSGB/TB brackets are made for steel boxes, and plastic-box fit is unconfirmed. No owner pick was needed: one candidate survived.
 
 **Review fan-out (211 moved devices, four zones).**
-- **Bracketed (12):** every mirror light (B-BATH, M-BATH1, M-BATH2, S-BATH1, SUITEBATH, STUBATH), the PLAY-N up/down pair (SCONCE5/6), MUDROOM-SCONCE, PANTRY-SW, STUDIO-RC6 and SUITE-RC7.
+- **Bracketed (9):** the B-BATH, M-BATH2 and S-BATH1 mirror lights, the PLAY-N up/down pair (SCONCE5/6), MUDROOM-SCONCE, PANTRY-SW, STUDIO-RC6 and SUITE-RC7. The M-BATH1, SUITEBATH and STUBATH mirror lights keep nail-on seats: each box lands under 1 3/8" off its light, inside the canopy, so the light stays put.
 - **Re-stationed onto the other stud:**
   - WORKSHOP-SW3, latch side.
   - G-RC-W, symmetric about the heater.
@@ -35,6 +35,7 @@ nVent CADDY TSGB/TB brackets are made for steel boxes, and plastic-box fit is un
 - **Faults fixed:**
   - A-POCKET-SW lowered 2" below the raked king's top.
   - M-STUDY-RC3 raised to 21" on stud-000.
+  - S-SUITEBATH-RC1 to 18" (review of #149) on stud-002: seated east of stud-004 it stood 2'-9" from the tub, inside the 3 ft zone; the bay between holds the WC vent.
   - GYM-RC3, LIVING-RC2 and BED1-RC2 on the stud faces that keep the 6' rule.
 - **Ceiling fixtures moved into a bay their bar spans:** WORKSHOP-LT6, FURNACE-STRIP2, PLANT-LT, PLANT-TUBE1/2 and GDO-RC.
 - **Considered and left:**

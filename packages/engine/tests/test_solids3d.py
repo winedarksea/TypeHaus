@@ -41,6 +41,8 @@ from typehaus.solids3d.recorder import drawn_placeables  # noqa: E402
 # W-A-S3's base end 0.22" past the corner into the roof bay fill over W-A-E1's 3" plates.
 # connector_embedded|fireblock: the NW corner STHD's leaf, on W-M-N3B's stud face, passes the
 # 3/4" FO-M-ERV-OA lid sheet, which runs 1/4" past that face (3" x 0.1"; the lid is notched).
+# pipe_sleeve|sub_slab: SP-B-SAUNA-FD's flat-bottomed sleeve sits at the dish's low point, so
+# its rim dips ~1/32" into the XPS rising under the dish (#148); the drain passes it anyway.
 GOLDEN = Path(__file__).parent / "fixtures" / "solids3d_overlaps.json"
 #: The billed volume may differ from the exact solid by this much (relative, absolute m^3).
 VOLUME_TOLERANCE = (0.01, 1e-7)

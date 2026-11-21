@@ -42,6 +42,7 @@ const SOLID_CATEGORY_LABEL: Record<string, string> = {
   grounding_electrode: "Ground rod",
   grounding_conductor: "Grounding conductor",
   electrical_box: "Device box",
+  electrical_box_support: "Box mount",
   wall_plate: "Wall plate",
   duct_supply: "Supply duct",
   duct_return: "Return duct",

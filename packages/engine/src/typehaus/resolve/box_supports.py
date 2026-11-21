@@ -148,20 +148,75 @@ def _face_run(wall: Any, face_point: Point, tangent: Point, normal: Point, z0: f
     return next(((lo, hi) for lo, hi in merged if lo - TOL_M <= here <= hi + TOL_M), None)
 
 
+@dataclass(frozen=True)
+class PlateKeepout:
+    """What a bank's plate must clear as it seats: its overhang past the box each side,
+    station spans it may not lap (past the wall's ends, a door's casing) and casework edges
+    it must stand 1/8" clear of (``advisory.wall_plate_clearance``'s rules)."""
+
+    margin_m: float
+    spans: tuple[tuple[float, float], ...] = ()
+    edges: tuple[float, ...] = ()
+
+    def clears(self, lo: float, hi: float) -> bool:
+        lo, hi = lo - self.margin_m, hi + self.margin_m
+        return (all(_overlap(span, (lo, hi)) <= 1e-6 for span in self.spans)
+                and not any(lo - TOL_M < edge < hi + TOL_M for edge in self.edges))
+
+
+def plate_keepout(model: Any, wall: Any, objects: list, face_point: Point, tangent: Point,
+                  normal: Point, margin: float, band: tuple[float, float], room: str | None,
+                  own: set[str]) -> PlateKeepout:
+    """The wall's ends, its cased doors' casings (``trim_scope``) and the edges of casework
+    standing on this face, over the plate's z ``band``."""
+    from typehaus.resolve.interior_trim_scope import trim_scope
+
+    (ax, ay), (bx, by) = wall.axis
+    length = math.hypot(bx - ax, by - ay) or 1.0
+    u = ((bx - ax) / length, (by - ay) / length)
+    ends = _span([(ax, ay), (bx, by)], tangent)
+    spans = [(ends[0] - 1.0, ends[0]), (ends[1], ends[1] + 1.0)]
+    scope, _ = trim_scope(model.plan, model)
+    for o in model.openings if scope is not None else ():
+        half = scope.casing_half_width(o, room) if o.host_wall == wall.tag else None
+        if half is None:
+            continue
+        sill = wall.base_ref_z_m + o.sill_m
+        top = sill + o.height_m + scope.standard.casing_width_for(room, o.tag).meters
+        if _overlap((sill, top), band) > 0:
+            a, b = o.center_along_m - half, o.center_along_m + half
+            spans.append(_span([(ax + u[0] * a, ay + u[1] * a), (ax + u[0] * b, ay + u[1] * b)],
+                               tangent))
+    edges = []
+    for obj in objects:
+        if (obj.kind == "ElectricalDevice" or obj.tag in own or obj.attachment_wall is None
+                or obj.body_z0_m is None or obj.body_z1_m is None or len(obj.footprint) < 3
+                or _overlap((obj.body_z0_m, obj.body_z1_m), band) <= 0):
+            continue
+        n_lo, n_hi = _span(list(obj.footprint), normal, face_point)
+        if n_hi > -TOL_M and n_lo < 0.05:  # standing on this face, in front of the plate
+            edges += list(_span(list(obj.footprint), tangent))
+    return PlateKeepout(margin, tuple(spans), tuple(edges))
+
+
 def stud_seat(model: Any, wall: Any, face_point: Point, tangent: Point, normal: Point,
               lo: float, hi: float, z0: float, z1: float, depth: float,
-              thick: float) -> tuple[float, str, int] | None:
+              thick: float, plate: PlateKeepout | None = None) -> tuple[float, str, int] | None:
     """(shift along ``tangent``, stud key, side -1/+1) setting the box ``lo..hi`` (absolute
-    stations along ``tangent``) against the nearest clear stud face, or None."""
+    stations along ``tangent``) against the nearest clear stud face, or None. A seat whose
+    ``plate`` clears its keep-out wins over a nearer one that does not."""
     seats, obstacles = _uprights(model, wall, face_point, tangent, normal, z0, z1, depth)
-    best = None
+    best = None  # ((plate fouls, |shift|), (shift, key, side))
     for (a, b), key in seats:
         for side, shift in ((-1, b + thick - lo), (1, a - thick - hi)):
-            if abs(shift) > _MAX_SHIFT_M or (best is not None and abs(shift) >= abs(best[0])):
+            if abs(shift) > _MAX_SHIFT_M:
                 continue
-            if all(_overlap(span, (lo + shift, hi + shift)) <= TOL_M for span in obstacles):
-                best = (shift, key, side)
-    return best
+            if any(_overlap(span, (lo + shift, hi + shift)) > TOL_M for span in obstacles):
+                continue
+            rank = (plate is not None and not plate.clears(lo + shift, hi + shift), abs(shift))
+            if best is None or rank < best[0]:
+                best = (rank, (shift, key, side))
+    return None if best is None else best[1]
 
 
 def stud_flanks(model: Any, wall: Any, face_point: Point, tangent: Point, normal: Point,

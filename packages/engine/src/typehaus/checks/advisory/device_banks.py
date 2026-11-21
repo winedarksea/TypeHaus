@@ -24,6 +24,7 @@ BANK_ID = "advisory.device_bank"
 CLEAR_ID = "advisory.wall_plate_clearance"
 _BODY_CLEAR_M = M_PER_IN / 8
 _EPS_M2 = 1e-8  # plan overlap under this is two faces touching
+_BUTT_M = M_PER_IN / 64  # a lap this thin is a plate butting its casing (#149's stud seat)
 
 
 def _tags(box: Any) -> tuple[str, ...]:
@@ -86,11 +87,12 @@ def _clashes(ctx: CheckContext, box: Any, ring: list[tuple[float, float]],
         lo, hi = _span(ring, (x0, y0), ((x1 - x0) / length, (y1 - y0) / length))
         if lo < -1e-3 or hi > length + 1e-3:
             out.append(f"the end of {box.wall_tag}")
+    butt = poly.buffer(-_BUTT_M, join_style=2)  # a plate butting a casing is not on it
     for casing in getattr(model, "door_casings", ()):
         if casing.wall_tag != box.wall_tag:
             continue
         hit = any(p.z0_m < band[1] and p.z1_m > band[0]
-                  and poly.intersection(Polygon(p.outline)).area > _EPS_M2
+                  and butt.intersection(Polygon(p.outline)).area > _EPS_M2
                   for p in casing.pieces)
         if hit:
             out.append(f"{casing.tag} casing")
