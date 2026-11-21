@@ -32,6 +32,7 @@ from shapely.geometry import Polygon
 from typehaus.model.enums import LayerFunction, TrimKind
 from typehaus.model.layer_functions import LAYER_FUNCTIONS
 from typehaus.resolve.coatings import coating_tags
+from typehaus.resolve.face_extent import face_run_m
 from typehaus.resolve.geometry import length, polygon_area, sub, wall_frame
 from typehaus.resolve.geometry_walls import cuts_layer
 from typehaus.resolve.layer_seat import mean_bottom
@@ -132,14 +133,10 @@ def wall_layer_net_area_m2(model: ResolvedModel, wall: ResolvedWall,
             height = max(0.0, min(top, lower + opening.height_m) - max(bottom, lower))
             area -= width * height
         return max(0.0, area)
-    # Sheathing and finish run off their own polygon (a through corner panel is longer than
-    # the axis, a branch's board stops at the through wall's face); ``sheet_goods_takeoff``
-    # measures the same sheathing run, so the two sections agree.
-    run = axis_run
-    if layer.function == LayerFunction.SHEATHING.value:
-        run = layer_run_m(layer, axis_run)
-    elif layer.function == LayerFunction.FINISH.value:
-        run = finish_run_m(layer, axis_run)
+    # Every layer runs off its own polygon (a through corner panel is longer than the axis,
+    # a branch's board stops at the through wall's face); ``sheet_goods_takeoff`` measures
+    # the same sheathing run, so the two sections agree.
+    run = face_run_m(layer, axis_run, wall)
     if not getattr(layer, "is_banded", False):
         seat = run * (mean_bottom(layer, wall.z0_m, mean_top) - wall.z0_m)
         return max(0.0, wall_net_m2 + (run - axis_run) * (mean_top - wall.z0_m) - blind - seat)
@@ -161,12 +158,7 @@ def wall_layer_net_area_m2(model: ResolvedModel, wall: ResolvedWall,
     return max(0.0, area)
 
 
-def finish_run_m(layer: ResolvedLayer, axis_run: float) -> float:
-    """A finish layer's drawn run: a board by area / thickness, a coating by its ring."""
-    if layer.thickness_m > 0.0:
-        return layer_run_m(layer, axis_run)
-    half = Polygon(layer.polygon).length / 2.0 if len(layer.polygon) >= 3 else 0.0
-    return half if half > 0.0 else axis_run
+finish_run_m = face_run_m  # the old name, kept for its readers
 
 
 def _band_share(wall: ResolvedWall, layer: ResolvedLayer, band) -> float:

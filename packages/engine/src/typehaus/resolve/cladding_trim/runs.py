@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-import math
 from dataclasses import dataclass
 
 from typehaus.library.trim.metal_sales import TrimProfile
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.cladding_trim.members import split_stock_run
 from typehaus.resolve.cladding_trim.section import folded_section_mesh
+from typehaus.resolve.face_extent import axis_direction, face_span
 from typehaus.resolve.geometry_walls import cuts_layer
 from typehaus.resolve.metal_skin_profiles import SHEET_24_GA_M
 from typehaus.resolve.model import ResolvedSolid
@@ -44,21 +44,18 @@ class CladdingFace:
 
 
 def cladding_face(wall, layer) -> CladdingFace | None:
-    (ax, ay), (bx, by) = wall.axis[0], wall.axis[-1]
-    length = math.hypot(bx - ax, by - ay)
-    if length < 1e-6:
+    d, span = axis_direction(wall), face_span(wall, layer)
+    if d is None or span is None:
         return None
-    d = ((bx - ax) / length, (by - ay) / length)
     n = (-d[1], d[0])
     mid = [sum(p[i] for p in layer.polygon) / len(layer.polygon) for i in (0, 1)]
     inner = [sum(p[i] for p in wall.layers[0].polygon) / len(wall.layers[0].polygon)
              for i in (0, 1)]
     if sum((mid[i] - inner[i]) * n[i] for i in (0, 1)) < 0:
         n = (-n[0], -n[1])
-    along = [x * d[0] + y * d[1] for x, y in layer.polygon]
     z0, z1 = layer.band(wall)
     return CladdingFace(wall, layer, d, n, min(x * n[0] + y * n[1] for x, y in layer.polygon),
-                        min(along), max(along), z0, z1)
+                        span[0], span[1], z0, z1)
 
 
 def metal_faces(model, finishes: set[str]):

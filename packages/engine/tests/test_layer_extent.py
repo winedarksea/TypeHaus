@@ -179,12 +179,15 @@ def test_the_takeoff_bills_the_band_and_not_the_wall(catlin_model):
     banded 8" pour where it used to be an unbanded 7 1/4" curb, so it buys coating.
 
     278.2 -> 282.6 on 2026-09-22: the court narrowed to 17'-0" and W-B-S1/-S4 grew 1' each
-    toward it, 2' more banded run x 2.214' = 4.4 SF."""
+    toward it, 2' more banded run x 2.214' = 4.4 SF.
+
+    282.6 -> 288.6 on 2026-11-21: every layer bills off its own polygon (face_run_m), so
+    the coating runs to its corners rather than the node axis."""
     from typehaus.takeoff.envelope import envelope_layer_takeoff
 
     rows = {row["material"]: row for row in envelope_layer_takeoff(catlin_model)}
     panel = rows["foundation-coating-acrylic-tinted"]
-    assert panel["net_area_sqft"] == pytest.approx(282.6, abs=1.0)
+    assert panel["net_area_sqft"] == pytest.approx(288.6, abs=1.0)
     # The parge survives nowhere: `Material(tag="stucco")` is still in library/materials/
     # — this house simply has no instance of it. Nor does the protection board, which is
     # kept as the named alternate in plan/assemblies.py and priced in prices.toml but is
