@@ -28,7 +28,8 @@ def test_trim_inventory_by_profile(catlin_model_ro):
         "RAINSCREEN_BASE_Z": 21, "EPDM_BASE_ISOLATION": 14,
         "OPENING_HEAD_CAP": 37,
         # 6411499: the four gable corner stubs inside the eave skins are gone.
-        "6460800": 9, "6411499": 6, "CORRUGATED_SILL_TO_SOFFIT": 6,
+        # Sill to Soffit: 6 until the garage rakes took it too (decision #143).
+        "6460800": 9, "6411499": 6, "CORRUGATED_SILL_TO_SOFFIT": 10,
         "corrugated-outside-closure": 6,
     }
 
@@ -115,7 +116,8 @@ def test_wall_top_edges_use_developed_length_without_stacked_duplicates(catlin_m
         totals[edge.product] += edge.length_m / 0.3048
     assert totals["6460800"] == pytest.approx(74.25, abs=0.02)
     assert totals["6411499"] == pytest.approx(82.7345, abs=0.02)
-    assert totals["CORRUGATED_SILL_TO_SOFFIT"] == pytest.approx(48.2917, abs=0.02)
+    # 48.29 eaves + W-G-N's two raked runs (decision #143).
+    assert totals["CORRUGATED_SILL_TO_SOFFIT"] == pytest.approx(73.7436, abs=0.02)
     # The four gable rakes start at the plate now (#108), not a 3 1/2" heel band above it.
     assert totals["corrugated-outside-closure"] == pytest.approx(99.189, abs=0.02)
 
@@ -136,6 +138,10 @@ def test_garage_soffit_trim_meets_the_soffit_not_the_higher_panel_top(catlin_mod
     # 1/16" higher since the plate moved 3/16" out behind the 7/16" ZIP (2026-11-18): 4:12.
     assert sill.z_start / M_PER_IN == pytest.approx(80.960, abs=0.01)
     assert top.z_start / M_PER_IN == pytest.approx(88.75, abs=0.01)
+    # The rake soffit's wall edge takes the receiver too, raked with it.
+    rakes = [e for e in edges if e.wall.tag == "W-G-N"
+             and e.product == "CORRUGATED_SILL_TO_SOFFIT"]
+    assert len(rakes) == 2 and all(abs(e.z_end - e.z_start) > 0.5 for e in rakes)
     ctx = CheckContext(plan=catlin_model_ro.plan, model=catlin_model_ro,
                        preferences=None, profile=None)
     assert any(f.result.name == "UNKNOWN" for f in _soffit_panel_joint(ctx))

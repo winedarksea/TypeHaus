@@ -68,3 +68,8 @@ Try each gauge:
 The total lead drop is 0.190 + 2.358 = **2.548%**, under 3%.
 
 `electrical.led_voltage_drop` still reports UNKNOWN for this run because SuperLightingLED publishes no single-feed length for the E4 tape. A 12' run is well inside the usual 5 m reel. Read the real figure off the supplier before ordering.
+
+## Garage exterior (mark W)
+
+The six `LR-G-EAVE*` / `LR-G-GABLE*` runs are hosted on the corrugated Sill to Soffit's flange,
+eaves and rakes (`resolve/trim_led.py`, decision #143; detail in `metal_trim_kit.md`).

@@ -31,7 +31,7 @@ otherwise stated; standard stock is 10 ft 2 in unless a different length is stat
 | BBD75 horizontal joint | Transition Trim 55536XX, pop rivets at 12 in o.c.; the cavity's vented outlet (below). At a house corner it stops 1/16 in short of the C-Closure's return, its end ~3 in under the corner leg (face 0.996 in, behind the leg on the C at 1 in): no notch, no field bend. A project application of pp. 30 and 40, which publish no intersection; no new parts | BBD75 p. 40 |
 | PBR under eave | Inside closure flush with panel top under box gutter | PBR p. 46 |
 | BBD75 under rake | Universal Closure 6411499 taped to slope-cut panel, covered by rake face | PBR p. 61 method |
-| Corrugated under soffit | 1.5 in Sill to Soffit | Corrugated manual |
+| Corrugated under soffit | 1.5 in Sill to Soffit, at eaves and rakes (decision #143) | Corrugated manual |
 | Screen open ends | Corrugated Jamb candidate; 2.5 in back leg, 1 in throat and 1 in return; check against the actual two-face screen thickness | Corrugated manual p. P7/8-4 |
 
 The north and south BBD75 band is at +19 ft 0 in, supported by an added girt course.
@@ -260,7 +260,7 @@ What the model derives and bills, with the counts the tests pin
 |---|---|---|
 | Wall base | kit base (`PBR_BASE` / `BBD_BASE` / `CORRUGATED_BASE`) under every wall stack whose panel bottom is free, one run per wall segment and per span between floor-level openings | 11 / 10 / 12 sticks |
 | House K2 base | 24 ga Galvalume PVDF Z, 120 in stock with 2 in laps, continuous under each base screen; EPDM at the steel trim | 14 runs / 21 sticks; 148 LF isolation |
-| Wall tops | PBR inside closure 6460800; BBD75 Universal Closure 6411499; corrugated Sill to Soffit at garage eaves; corrugated outside closure at garage panel tops | 74.25 / 83.01 / 48.29 / 99.04 LF |
+| Wall tops | PBR inside closure 6460800; BBD75 Universal Closure 6411499; corrugated Sill to Soffit at garage eaves and W-G-N's rakes; corrugated outside closure at garage panel tops | 74.25 / 83.01 / 73.74 / 99.04 LF |
 | Outside corners | Wide corner (PBR↔BBD75), corrugated corner | 8 / 4 |
 | BBD75 band | Transition Trim at +10'-5 1/2", one run per N/S wall segment, Linen White; over the balcony the extended `TR-SG-BAND-W/E` (13.6 LF, `[edge_trim]`) | 8 |
 | Window head, jamb, sill | 1.5 in Sill/Head 58114XX at every head; PBR jamb 58208XX (unpriced); BBD75 and corrugated jambs and every sill: site-brake (`WINDOW_JAMB_CUSTOM` 146.9 LF, `WINDOW_SILL_CUSTOM` 87.3 LF) | 43 heads / 86 jambs / 43 sills; heads and PBR jambs pooled FFD from 10'-2" stock (heads 42 cuts, 91.5 LF, 10 sticks) |
@@ -308,8 +308,9 @@ is 4.185 in outboard, leaving about 1.815 in from the drip to that face. The 162
 uses 120 and 44 in cuts with a 2 in lap. The screen order now includes its corner mitres.
 
 The corrugated garage panel tops use a solid outside closure, separate from the vented base
-closure. The eave soffit's underside is at +84.17 in, below the panel extension's +91.5 in
-top; Sill to Soffit sits at that soffit, and the outside closure seals the higher panel edge.
+closure. The eave soffit's underside is at +80.96 in, below the panel's +88.75 in top
+(closure edge); Sill to Soffit sits at that soffit, raked under each rake soffit, and the
+outside closure seals the higher panel edge.
 Top closure lengths follow the resolved panel edge and include roof-generated extensions;
 overlapping stacked extensions are counted once.
 
@@ -350,3 +351,14 @@ Three items, plus one optional:
 3. Whether a stock end closure exists for a gable ridge on the 7 in cover (none is printed).
 4. Optional: stock part numbers for the Corrugated Jamb and the 1.5 in Sill/Head, if stock is preferred
    over the site bends.
+
+## Soffit edge, with and without LED (decision #143)
+
+- **Baseline.** The stock Sill to Soffit receives the soffit panel's wall edge at both eaves
+  and up both rakes of W-G-N; nothing else is added.
+- **LED (mark W).** The QSG-3211 channel (32.3 mm) clips to the flange underside, its edge on
+  the panel crest line; the flange gives 3.875 in clear of the cladding. Fix the clips with
+  stainless #8 self-drilling pan heads into the flange only, never through to the soffit
+  panel. The lead passes a grommeted hole near the feed end. The flange is solid, so no
+  intake is covered. Aluminium on PVDF Galvalume is compatible.
+  `resolve/trim_led.py` derives the position; the house states it only to within 6 in.

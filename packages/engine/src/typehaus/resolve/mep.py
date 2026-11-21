@@ -113,10 +113,10 @@ def resolve_mep(model: ResolvedModel) -> list[Finding]:
     return findings
 
 
-# A soffit-hosted run's authored extremes follow the host's edges within this (10 in.).
-_EDGE_SNAP_M = 0.254
+# A hosted run's authored extremes follow its host's edges within this (10 in.).
+EDGE_SNAP_M = 0.254
 # A run whose type states no tape keeps the generic channel (→ resolve/geometry.py).
-_GENERIC_WIDTH_M = 0.0127
+GENERIC_WIDTH_M = 0.0127
 
 
 def _resolve_light_run(model: ResolvedModel, run: LightRun, storey) -> list[Finding]:
@@ -166,7 +166,7 @@ def _resolve_light_run(model: ResolvedModel, run: LightRun, storey) -> list[Find
 
     built = surface_section(run, product, led_channels(model.plan),
                             run.mount.kind.value if run.mount else None)
-    width_m = section_extent(built["section"])[0] if built else _GENERIC_WIDTH_M
+    width_m = section_extent(built["section"])[0] if built else GENERIC_WIDTH_M
     if run.soffit_ref is not None:
         host = next((host for host in model.soffits if host.tag == run.soffit_ref), None)
         if host is None or run.soffit_edge_offset is None:
@@ -182,7 +182,7 @@ def _resolve_light_run(model: ResolvedModel, run: LightRun, storey) -> list[Find
                             message=f"light run {run.tag} has an invalid perimeter offset",
                             element_tags=(run.tag,), result=Result.FAIL)]
         # The authored path keeps its open end; each extreme x follows the nearer host edge
-        # and the north extreme the north edge, but only within _EDGE_SNAP_M of it, so a leg
+        # and the north extreme the north edge, but only within EDGE_SNAP_M of it, so a leg
         # that stops short of the host's edge (a straight leg, a leg ending mid-soffit) stays
         # where it is authored. This avoids a second set of wall-finish coordinates in source.
         old_minx = min(x for x, _y in path)
@@ -192,10 +192,10 @@ def _resolve_light_run(model: ResolvedModel, run: LightRun, storey) -> list[Find
 
         def _snap_x(x: float) -> float:
             near = [edge for edge, extreme in ((lo_x, old_minx), (hi_x, old_maxx))
-                    if x == extreme and abs(x - edge) <= _EDGE_SNAP_M]
+                    if x == extreme and abs(x - edge) <= EDGE_SNAP_M]
             return min(near, key=lambda edge: abs(x - edge)) if near else x
 
-        path = [(_snap_x(x), hi_y if y == old_maxy and abs(y - hi_y) <= _EDGE_SNAP_M else y)
+        path = [(_snap_x(x), hi_y if y == old_maxy and abs(y - hi_y) <= EDGE_SNAP_M else y)
                 for x, y in path]
     z_m = resolved_mount_elevation(storey, run)
     z_path = [z_m + r.meters for r in run.rise] if run.rise else [z_m] * len(path)

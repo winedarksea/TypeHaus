@@ -161,81 +161,45 @@ GARAGE_LIGHTING = [
     # ** THE EAVES ARE EAST AND WEST, AND THAT IS GEOMETRY, NOT A CHOICE. ** RF-GARAGE is a
     # gable with `ridge_direction="y"`, so the slopes fall east and west over W-G-E / W-G-W
     # and the two GABLE ENDS are north and south. The north wall — the facade, the one with
-    # the overhead door in it — is a RAKE: 16" of ladder framing with no soffit panel under
-    # it at all (`_GARAGE_EAVE_TRIM` declares one soffit, and `EaveTrim` is eave trim). That
-    # is why there are two recessed runs and one surface-mounted one, and why the third is
-    # not simply "the north eave".
+    # the overhead door in it — is a RAKE, so the third run climbs it rather than being "the
+    # north eave".
     #
-    # ** THE CHANNEL SITS ON THE SOFFIT'S SOLID INBOARD STRIP, CLEAR OF THE VENT SLOTS. **
-    # `_GARAGE_EAVE_TRIM` is `soffit_vented=True`: this soffit is the INTAKE end of the
-    # attic's vent channel, and a 2 1/2" extrusion laid across the perforations is a blocked
-    # intake that nothing in `haus check` would ever grade. The soffit's clear width is 12
-    # 5/8" — 16" of overhang less the 7/8" the corrugated panel stands proud and the 2 1/2"
-    # of sub-fascia plus metal fascia at the outer edge — and its inboard ~3" is the solid
-    # strip where the panel is captured in its receiving channel against the wall, which
-    # carries no perforation because the receiver covers it. The luminaire is held tight to
-    # that receiver, aperture down, so its 2 1/2" lands entirely on the solid strip and all
-    # ~10 1/8" of perforated panel — the whole net free vent area — stays open. It also keeps
-    # the channel out of the weather side of the soffit, where wind-driven rain tracks in.
+    # ** HOSTED ON THE SILL TO SOFFIT (decision #143). ** The QSG-3211 is clipped under the
+    # stock receiver's solid flange, its inside edge tight to the corrugated panel, so it
+    # covers no intake slot; `resolve/trim_led.py` derives x, z and the ends from the trim.
+    # The stated points below are those derived values; they only have to land within 6".
     #
-    # ** 24'-0" EACH, AND THAT IS THE BUILDING. ** GARAGE_Y_SOUTH..GARAGE_Y_NORTH is exactly
-    # 24'-0" face to face, which is six 4' sections with nothing cut and an end cap landing
-    # on a gable wall line at each end rather than out under the rake.
-    #
-    # x is the channel's centreline: W-G-W's cladding face is 5'-11 1/8" (GARAGE_X_WEST less
-    # the 7/8" panel) and W-G-E's is 30'-0 7/8", and a 2 1/2" channel owes its face half its
-    # width, the same arithmetic ED-G-EXT-LT-E/-W's comment does for a 5" sconce.
-    #
-    # The elevation is stated, not derived: a `LightRun` outside every room has no room
-    # ceiling to hang from. 8'-0 1/6" storey-relative (7'-0 1/6" absolute) is the
-    # resolved underside of RF-GARAGE's eave soffit — the fascia bottom, re-read when the
-    # standard-heel trusses dropped the plane 5.75" (2026-10-08). If the heel or fascia
-    # depth moves, this follows by hand.
-    # Each eave is two 12'-0" runs since 2026-10-31 (Class 2, below): the south halves keep
-    # the original tags, the north halves are -W2/-E2.
+    # Each eave runs cladding face to cladding face, 24'-1 3/4", in two halves (Class 2,
+    # below): the south halves keep the original tags.
     LightRun(uid="N2XWJEVXGS", tag="LR-G-EAVE-W", type_ref="ED-T-LT-LINEAR-EXT",
-             path=(pt(ft(5, 9.875), ft(43, 2.625)), pt(ft(5, 9.875), ft(55, 2.625))),
+             path=(pt(ft(5, 10.489), ft(43, 1.75)), pt(ft(5, 10.489), ft(55, 2.625))),
              psu_ref="ED-G-EAVE-W-PSU", controller_ref="ED-G-EAVE-W-CTRL", controlled_by=("ED-G-SOFFIT-SW",),
-             mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 0.167))),
+             mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 8.96))),
     LightRun(uid="T7GB8BJ2JP", tag="LR-G-EAVE-W2", type_ref="ED-T-LT-LINEAR-EXT",
-             path=(pt(ft(5, 9.875), ft(55, 2.625)), pt(ft(5, 9.875), ft(67, 2.625))),
+             path=(pt(ft(5, 10.489), ft(55, 2.625)), pt(ft(5, 10.489), ft(67, 3.5))),
              psu_ref="ED-G-EAVE-W2-PSU", controller_ref="ED-G-EAVE-W2-CTRL", controlled_by=("ED-G-SOFFIT-SW",),
-             mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 0.167))),
+             mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 8.96))),
     LightRun(uid="QPT63YW4TW", tag="LR-G-EAVE-E", type_ref="ED-T-LT-LINEAR-EXT",
-             path=(pt(ft(30, 2.125), ft(43, 2.625)), pt(ft(30, 2.125), ft(55, 2.625))),
+             path=(pt(ft(30, 1.511), ft(43, 1.75)), pt(ft(30, 1.511), ft(55, 2.625))),
              psu_ref="ED-G-EAVE-E-PSU", controller_ref="ED-G-EAVE-E-CTRL", controlled_by=("ED-G-SOFFIT-SW",),
-             mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 0.167))),
+             mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 8.96))),
     LightRun(uid="7G3Y0ST61X", tag="LR-G-EAVE-E2", type_ref="ED-T-LT-LINEAR-EXT",
-             path=(pt(ft(30, 2.125), ft(55, 2.625)), pt(ft(30, 2.125), ft(67, 2.625))),
+             path=(pt(ft(30, 1.511), ft(55, 2.625)), pt(ft(30, 1.511), ft(67, 3.5))),
              psu_ref="ED-G-EAVE-E2-PSU", controller_ref="ED-G-EAVE-E2-CTRL", controlled_by=("ED-G-SOFFIT-SW",),
-             mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 0.167))),
-    # The north gable: under RF-GARAGE's two RAKE soffits, corner -> ridge -> corner, tight
-    # to W-G-N's cladding, aperture down — the eave runs' detail turned up the 4:12 rake.
-    # (It was 16' on the wall face over D-G-OVERHEAD at 5'-0" absolute, feet below any soffit.)
-    #
-    # x runs cladding face to cladding face (5'-11 1/8" .. 30'-0 7/8"), exactly the rake
-    # soffit's extent, with the vertex at the 18'-0" ridge. y is W-G-N's cladding face
-    # 67'-3 1/2" plus half the 1/2" channel.
-    #
-    # Heights are stated, not derived, like the eave runs: 8'-5 5/24" storey-relative is
-    # the rake soffit's underside at the corners (7'-5 5/24" absolute, the fascia bottom at
-    # the eave), and `rise` climbs 144 7/8" of plan at 4:12 = 4'-0 7/24" to the ridge.
-    # Developed length ~25'-5", so the channel is cut, not a 4' module.
-    #
-    # `full_cutoff` is a DETAIL (aperture aimed down), and CEILING under the rake soffit
-    # takes the same shelter reading as the two eave runs.
-    # Split at the ridge vertex since 2026-10-31: the east rake keeps the tag, the west rake
-    # is -N2. Each half climbs from its corner to the ridge.
+             mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 8.96))),
+    # The north gable: the same detail up RF-GARAGE's two rake soffits, corner -> ridge, the
+    # rake's own Sill to Soffit hosting it. Split at the ridge: the east rake keeps the tag.
+    # `full_cutoff` is a DETAIL (aperture down); CEILING under the soffit reads as sheltered.
     LightRun(uid="12K1TBK2FC", tag="LR-G-GABLE-N", type_ref="ED-T-LT-LINEAR-EXT",
-             path=(pt(ft(18), ft(67, 3.75)), pt(ft(30, 0.875), ft(67, 3.75))),
+             path=(pt(ft(18), ft(67, 4.136)), pt(ft(30, 0.875), ft(67, 4.136))),
              rise=(ft(4, 0.292), ft(0)),
              psu_ref="ED-G-GABLE-N-PSU", controller_ref="ED-G-GABLE-N-CTRL", controlled_by=("ED-G-SOFFIT-SW",),
-             mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 5.208))),
+             mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 2.002))),
     LightRun(uid="WJ6P1GC7H2", tag="LR-G-GABLE-N2", type_ref="ED-T-LT-LINEAR-EXT",
-             path=(pt(ft(5, 11.125), ft(67, 3.75)), pt(ft(18), ft(67, 3.75))),
+             path=(pt(ft(5, 11.125), ft(67, 4.136)), pt(ft(18), ft(67, 4.136))),
              rise=(ft(0), ft(4, 0.292)),
              psu_ref="ED-G-GABLE-N2-PSU", controller_ref="ED-G-GABLE-N2-CTRL", controlled_by=("ED-G-SOFFIT-SW",),
-             mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 5.208))),
+             mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 2.002))),
     # ** ITS OWN CONTROL, NOT ED-G-EXT-SW, AND THE REASON IS DUTY CYCLE. ** Ganging ~73 LF of
     # perimeter linear onto the door pair's switch would force one of two bad habits: either
     # the two sconces burn all evening because somebody wanted the building lit, or the

@@ -100,10 +100,12 @@ class TrimContext:
 def resolve_drywall_trims(plan, model: ResolvedModel) -> list[Finding]:
     from typehaus.resolve import drywall_trim_edges as edges
     from typehaus.resolve.drywall_passage_wraps import passage_wraps
+    from typehaus.resolve.trim_led import host_trim_runs
     from typehaus.resolve.wall_ends import wall_end_boards
 
     standard, findings = drywall_standard(plan)
     findings.extend(host_shadow_gap_runs(model, standard))
+    findings.extend(host_trim_runs(model))
     ctx = TrimContext(model, standard)
     edges.window_returns(ctx)
     passage_wraps(ctx)  # clears its records and solids even without a standard

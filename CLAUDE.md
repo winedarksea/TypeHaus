@@ -127,6 +127,8 @@ a release or for exhaustive local verification.
   `electrical.light_run_fit`, `led_gear_access` (concealed gear needs an opening in reach),
   `led_wiring` and `led_voltage_drop`; billed in `[light_run_materials]`. A driver is
   `DeviceKind.LED_DRIVER`, sized on `rated_output_w`, loading its branch at `input_va`.
+  An exterior surface run along a corrugated soffit edge is hosted on the Sill to Soffit's
+  flange (`resolve/trim_led.py`, decision #143); a rake soffit takes that receiver too.
 - **Linesets are derived from one `LinesetStandard`** (decision #139): a lineset is a
   `PipeRun(system=REFRIGERANT)` (`diameter` vapour, `liquid_diameter` liquid, `serves` the head,
   `outdoor_port`), its envelope the lagged bundle; `resolve/linesets.py` reads it against the

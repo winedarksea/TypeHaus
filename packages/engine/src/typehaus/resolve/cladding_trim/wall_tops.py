@@ -66,11 +66,12 @@ class WallTopEdge:
 
 
 def _soffit_elevation(roof, face, start, end):
-    """Find the underside of the soffit whose inside edge meets this cladding face."""
+    """``(z at start, z at end)`` of the underside of the soffit, eave or rake, whose inside
+    edge meets this cladding face: raked where the soffit is."""
     outside = face.back + face.layer.thickness_m
     found = []
     for member in roof.members:
-        if member.category != "soffit" or not member.child_key.startswith("eave"):
+        if member.category != "soffit":
             continue
         box = member_box(member)
         if box is None:
@@ -79,10 +80,27 @@ def _soffit_elevation(roof, face, start, end):
         offsets = [x*face.n[0] + y*face.n[1] for x, y, _ in points]
         stations = [x*face.d[0] + y*face.d[1] for x, y, _ in points]
         error = min(abs(min(offsets)-outside), abs(max(offsets)-outside))
-        if (error < _FACE_ALIGNMENT_TOLERANCE_M
-                and min(max(stations), end)-max(min(stations), start) > M_PER_IN):
-            found.append((error, member.z0_m))
+        if (error >= _FACE_ALIGNMENT_TOLERANCE_M
+                or min(max(stations), end)-max(min(stations), start) <= M_PER_IN):
+            continue
+        # The two corners on the inside edge carry its fall along the face.
+        inside = sorted(range(4), key=lambda i: abs(offsets[i]-outside))[:2]
+        (s0, z0), (s1, z1) = sorted((stations[i], points[i][2]) for i in inside)
+        if s1 - s0 < 1e-9:
+            found.append((error, ((z0+z1)/2, (z0+z1)/2)))
+        else:
+            found.append((error, tuple(z0 + (z1-z0)*(s-s0)/(s1-s0) for s in (start, end))))
     return min(found)[1] if found else None
+
+
+def _receiver(material):
+    """The kit's soffit receiver, which takes the soffit's wall edge at eaves and rakes."""
+    product = material.trim_kit.get(TrimCondition.EAVE_TOP)
+    return product if product == "CORRUGATED_SILL_TO_SOFFIT" else None
+
+
+def wall_top_tag(edge) -> str:
+    return f"TRIM-{edge.wall.tag}-{edge.condition.value.upper()}-{edge.ordinal+1}"
 
 
 def exposed_wall_top_edges(model):
@@ -113,15 +131,18 @@ def exposed_wall_top_edges(model):
             if end < start:
                 start, end, z0, z1 = end, start, z1, z0
             if end - start > 1e-6:
-                if product == "CORRUGATED_SILL_TO_SOFFIT":
+                receiver = _receiver(material)
+                if receiver is not None:
+                    # The panel top takes the outside closure; the soffit's wall edge, eave or
+                    # rake, the receiver. An eave with no soffit keeps an empty (gap) edge.
                     soffit = _soffit_elevation(roof, face, start, end)
                     candidates.append(WallTopEdge(wall, roof, face,
                                                   "corrugated-outside-closure", condition,
                                                   start, end, z0, z1))
-                    candidates.append(WallTopEdge(wall, roof, face, product if soffit is not None
-                                                  else "", condition, start, end,
-                                                  soffit if soffit is not None else z0,
-                                                  soffit if soffit is not None else z1))
+                    if soffit is not None or condition is TrimCondition.EAVE_TOP:
+                        candidates.append(WallTopEdge(wall, roof, face, receiver if soffit
+                                                      else "", condition, start, end,
+                                                      *(soffit or (z0, z1))))
                 else:
                     candidates.append(WallTopEdge(wall, roof, face, product, condition,
                                                   start, end, z0, z1))
@@ -178,14 +199,14 @@ def exposed_wall_top_edges(model):
                 # The closure hangs its height below its edge, and here the panel under it is
                 # the wall's own layer, so the edge rides that height up: it sits ON the cut
                 # panel top, under the deck, as a crew sets it.
-                soffit = (_soffit_elevation(roof, face, a, b)
-                          if product == "CORRUGATED_SILL_TO_SOFFIT" else None)
+                receiver = _receiver(material)
+                soffit = _soffit_elevation(roof, face, a, b) if receiver else None
                 if soffit is not None:
                     candidates.append(WallTopEdge(wall, roof, face, "corrugated-outside-closure",
                                                   condition, a, b, z_a + _CLOSURE_HEIGHT_M,
                                                   z_b + _CLOSURE_HEIGHT_M))
-                    candidates.append(WallTopEdge(wall, roof, face, product, condition, a, b,
-                                                  soffit, soffit))
+                    candidates.append(WallTopEdge(wall, roof, face, receiver, condition, a, b,
+                                                  *soffit))
                     continue
                 candidates.append(WallTopEdge(wall, roof, face, product, condition, a, b,
                                               z_a, z_b))
@@ -394,7 +415,7 @@ def resolve_wall_top_closures(model):
         if not edge.product:
             continue
         span = edge.end-edge.start
-        tag = f"TRIM-{edge.wall.tag}-{edge.condition.value.upper()}-{edge.ordinal+1}"
+        tag = wall_top_tag(edge)
         if edge.product in PROFILES:
             profile = PROFILES[edge.product]
             section = tuple((-x*M_PER_IN, y*M_PER_IN) for x, y in profile.section_in)
