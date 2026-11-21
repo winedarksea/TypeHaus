@@ -160,11 +160,15 @@ def test_a_floor_bay_is_decremented_by_what_is_ALREADY_in_it(catlin_model_ro) ->
     assert occupied and empty, "FS-S-WEST holds the ERV radials in some of its bays"
 
     # An empty bay is its own face gap, capped at the field's: one beside a trimmer pack
-    # is narrower than 12.5".
-    faces = bay_edge_faces(floor)
-    gap = {round((a[1] + b[0]) / 2.0, 6): b[0] - a[1] for a, b in zip(faces, faces[1:])}
-    assert all(c.clear_width_m == pytest.approx(min(structural, gap[round(c.station, 6)]))
-               for c in empty)
+    # is narrower than 12.5". The gap is read where the piece is (its mid-stretch): a joist
+    # line that stops short or a short ply bounds a bay only over its own length.
+    def gap(c):
+        mid = (c.lo_m + c.hi_m) / 2.0
+        faces = bay_edge_faces(floor, (mid, mid))
+        return next(b[0] - a[1] for a, b in zip(faces, faces[1:], strict=False)
+                    if abs((a[1] + b[0]) / 2.0 - c.station) < 1e-6)
+
+    assert all(c.clear_width_m == pytest.approx(min(structural, gap(c))) for c in empty)
     assert all(c.clear_width_m < structural for c in occupied)
     # A 4" duct in the bay takes 4" of it, and the next 4" duct is graded against what is
     # left rather than against the joists.

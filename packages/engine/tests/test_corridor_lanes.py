@@ -114,6 +114,9 @@ def test_catlin_offers_a_second_lane_in_its_occupied_truss_bays(catlin_model_ro)
         assert any(abs(lane.station - bay.station) > 1e-6 for bay in bays
                    if bay.tag.split(":bay@")[0] == lane.tag.split(":bay@")[0])
         assert any("derived by SUBTRACTION" in gap for gap in lane.gaps)
+        # A bay is a piece (its edges' reach), so a lane runs no further than its bay does.
+        assert any(bay.tag.split(":bay@")[0] == lane.tag.split(":bay@")[0]
+                   and (bay.lo_m, bay.hi_m) == (lane.lo_m, lane.hi_m) for bay in bays)
 
 
 def test_a_proposal_names_the_lane_and_the_tier_it_rode() -> None:

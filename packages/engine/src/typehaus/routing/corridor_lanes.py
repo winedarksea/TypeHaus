@@ -69,6 +69,7 @@ def lane_corridors(model: ResolvedModel, corridors: list[Corridor],
         clear = clear_bay_width_m(floor)
         if clear is None or clear <= 0:
             continue
+        clear = min(clear, corridor.structural_width_m or clear)  # a short ply narrows it
         if floor_tag not in occupants_by_floor:
             occupants_by_floor[floor_tag] = run_occupants(
                 model, channel_ref=floor_tag, attr="floor_ref")
@@ -78,7 +79,8 @@ def lane_corridors(model: ResolvedModel, corridors: list[Corridor],
         taken: list[tuple[float, float]] = []
         for tag in corridor.occupants:
             station = _median_station(lines_by_tag.get(tag, ()), cross,
-                                      corridor.station, clear)
+                                      corridor.station, clear,
+                                      (corridor.lo_m, corridor.hi_m))
             width = widths.get(tag)
             if station is None or not width:
                 continue
@@ -107,10 +109,14 @@ def lane_corridors(model: ResolvedModel, corridors: list[Corridor],
 
 
 def _median_station(path, cross: int, bay_station: float,
-                    clear_m: float) -> float | None:
-    """The occupant's lateral station in this bay — the median of its points inside it."""
+                    clear_m: float,
+                    extent: tuple[float, float] | None = None) -> float | None:
+    """The occupant's lateral station in this bay — the median of its points inside it
+    (and, given ``extent``, inside the piece's stretch along the joists)."""
     inside = sorted(point[cross] for point in path
-                    if abs(point[cross] - bay_station) <= clear_m / 2.0)
+                    if abs(point[cross] - bay_station) <= clear_m / 2.0
+                    and (extent is None
+                         or extent[0] - 1e-6 <= point[1 - cross] <= extent[1] + 1e-6))
     if not inside:
         return None
     middle = len(inside) // 2

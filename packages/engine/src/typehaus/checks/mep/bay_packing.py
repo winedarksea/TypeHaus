@@ -31,6 +31,9 @@ from typehaus.checks._authoring import unknown as _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.bay_edges import BayEdge, edges_over
+from typehaus.resolve.bay_edges import faces as edge_faces
+from typehaus.resolve.bay_edges import stations as edge_stations
 from typehaus.resolve.mep_packing import Occupant, pack
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
@@ -41,32 +44,39 @@ _MIN_TRAVEL_M = 6 * M_PER_IN
 
 
 def bay_packings(floor: ResolvedFloor, runs: list[ResolvedDuct],
-                 lines: list[float], clear_m: float | None) -> list[tuple[float, object]]:
+                 edges: list[BayEdge], clear_m: float | None) -> list[tuple[float, object]]:
     """``(bay centre, Packing)`` for every bay of ``floor`` that carries two or more legs.
 
-    A leg belongs to the bay its centreline falls in, found against the resolved joist
-    stations — the same lines ``mep.duct_joist_bay`` grades a straddle against, so a run
-    reported as riding a bay is packed into that bay and not a neighbour.
+    A leg belongs to the bay its centreline falls in, found against the joist lines its
+    stretch reaches (a short ply bounds a bay only over its own length) — the same lines
+    ``mep.duct_joist_bay`` grades a straddle against, so a run reported as riding a bay is
+    packed into that bay and not a neighbour. A bay a ply narrows packs at its own width.
     """
-    if clear_m is None or clear_m <= 0 or len(lines) < 2:
+    if clear_m is None or clear_m <= 0 or len(edges) < 2:
         return []
     along_x = floor.direction == "x"
-    buckets: dict[int, dict[str, Occupant]] = {}
+    buckets: dict[tuple[float, float], dict[str, Occupant]] = {}
+    widths: dict[tuple[float, float], float] = {}
     for duct in runs:
-        for occupant, station in _legs(duct, along_x):
+        for occupant, station, span in _legs(duct, along_x):
+            reached = edges_over(edges, span)
+            lines = edge_stations(reached)
             index = _bay_index(lines, station)
             if index is None:
                 continue
+            key = (lines[index], lines[index + 1])
+            faces = dict(zip(lines, edge_faces(reached), strict=True))
+            widths[key] = min(widths.get(key, clear_m),
+                              faces[key[1]][0] - faces[key[0]][1])
             # One entry per run per bay: a run jogging twice in one bay occupies it once.
-            buckets.setdefault(index, {}).setdefault(occupant.tag, occupant)
+            buckets.setdefault(key, {}).setdefault(occupant.tag, occupant)
 
     out: list[tuple[float, object]] = []
-    for index in sorted(buckets):
-        occupants = list(buckets[index].values())
+    for key in sorted(buckets):
+        occupants = list(buckets[key].values())
         if len(occupants) < 2:
             continue  # one run in a cavity competes with nothing
-        centre = (lines[index] + lines[index + 1]) / 2.0
-        out.append((centre, pack(clear_m, occupants)))
+        out.append(((key[0] + key[1]) / 2.0, pack(min(clear_m, widths[key]), occupants)))
     return out
 
 
@@ -86,7 +96,7 @@ def packing_note(floor_tag: str, packings: list[tuple[float, object]]) -> tuple[
 
 
 def _legs(duct: ResolvedDuct, along_x: bool):
-    """Horizontal legs of ``duct`` as ``(Occupant, station across the joists)``.
+    """Horizontal legs of ``duct`` as ``(Occupant, station across, span along the joists)``.
 
     Only legs travelling WITH the members are bay travel. A leg crossing them passes through
     however many bays it is long and occupies none of them for its width — whether it may
@@ -107,7 +117,8 @@ def _legs(duct: ResolvedDuct, along_x: bool):
             continue
         mid = (duct.z_m[index] + duct.z_m[index + 1]) / 2.0
         station = a[1] if along_x else a[0]
-        yield Occupant(duct.tag, width, mid - depth / 2.0, mid + depth / 2.0), station
+        span = (a[0], b[0]) if along_x else (a[1], b[1])
+        yield Occupant(duct.tag, width, mid - depth / 2.0, mid + depth / 2.0), station, span
 
 
 def _bay_index(lines: list[float], station: float) -> int | None:
@@ -166,7 +177,7 @@ def duct_joist_bay_occupancy(ctx: CheckContext) -> list[Finding]:
     is or is not wide enough for both.
     """
     from typehaus.checks.mep.bay_packing import bay_packings, packing_note
-    from typehaus.resolve.mep_queries import clear_bay_width_m, joist_line_stations
+    from typehaus.resolve.mep_queries import bay_edge_spans, clear_bay_width_m
     from typehaus.resolve.mep_soffit import ducts_are_joined, segment_band
 
     cid = "mep.duct_joist_bay_occupancy"
@@ -184,12 +195,12 @@ def duct_joist_bay_occupancy(ctx: CheckContext) -> list[Finding]:
             continue  # one run in a cavity competes with nothing
         floor = floors[floor_tag]
         clear_m = clear_bay_width_m(floor)
-        lines = joist_line_stations(floor)
+        edges = bay_edge_spans(floor)
         occupants = _bay_occupants(runs, segment_band)
         overlaps: list[tuple[bool, str]] = []
         for index, first in enumerate(occupants):
             for second in occupants[index + 1:]:
-                found = _bay_pair_overlap(ctx, floor, lines, clear_m, first, second,
+                found = _bay_pair_overlap(ctx, floor, edges, clear_m, first, second,
                                           ducts_are_joined)
                 if found is not None:
                     overlaps.append(found)
@@ -199,7 +210,7 @@ def duct_joist_bay_occupancy(ctx: CheckContext) -> list[Finding]:
         # (one centreline per bay), but how much width is spoken for at the tightest
         # elevation is knowable and is what an installer is actually asking.
         over, packed = packing_note(
-            floor_tag, bay_packings(floor, runs, lines, clear_m))
+            floor_tag, bay_packings(floor, runs, edges, clear_m))
         room = f". Room: {packed}" if packed else ""
         if too_wide:
             out.append(_fail(cid, f"floor {floor_tag}: " + "; ".join(too_wide) + room,
@@ -256,7 +267,7 @@ def _bay_occupants(runs: list[ResolvedDuct],
     return occupants
 
 
-def _bay_pair_overlap(ctx: CheckContext, floor: ResolvedFloor, lines: list[float],
+def _bay_pair_overlap(ctx: CheckContext, floor: ResolvedFloor, edges: list[BayEdge],
                       clear_m: float | None, first: _Occupant, second: _Occupant,
                       joined: Callable[..., bool]) -> tuple[bool, str] | None:
     """``(the bay holds both, message)`` for two parallel legs sharing one bay, else None."""
@@ -276,9 +287,12 @@ def _bay_pair_overlap(ctx: CheckContext, floor: ResolvedFloor, lines: list[float
         return None  # side by side in the bay, which is what a bay is for
     # A joist can only stand between them when the separation axis IS the across-joist axis.
     # Two legs separated ALONG the joists have no member between them by definition.
+    # ... and only a line whose member reaches the stretch they share counts.
     if axis == floor.direction and any(
             min(across[1], other_across[1]) - 1e-9 <= line
-            <= max(across[0], other_across[0]) + 1e-9 for line in lines):
+            <= max(across[0], other_across[0]) + 1e-9
+            for line in edge_stations(edges_over(
+                edges, (max(along[0], other_along[0]), min(along[1], other_along[1]))))):
         return None
     if joined(ctx.model, tag, other_tag):
         return None

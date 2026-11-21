@@ -413,12 +413,12 @@ def bay_note(model: ResolvedModel, corridor_tags: tuple[str, ...],
     from typehaus.routing.corridors import floor_corridors, soffit_corridors
     from typehaus.routing.trades import duct as duct_trade
 
-    by_tag = {c.tag: c for c in (*floor_corridors(model), *soffit_corridors(model))}
+    by_tag: dict[str, list] = {}
+    for c in (*floor_corridors(model), *soffit_corridors(model)):
+        by_tag.setdefault(c.tag, []).append(c)  # a bay a short ply splits shares a tag
     for tag in corridor_tags:
-        corridor = by_tag.get(tag)
-        if corridor is None:
-            continue
-        note = duct_trade.bay_occupancy_note(corridor, radius_m)
-        if note:
-            return note
+        for corridor in sorted(by_tag.get(tag, ()), key=lambda c: c.clear_width_m):
+            note = duct_trade.bay_occupancy_note(corridor, radius_m)
+            if note:
+                return note
     return None

@@ -21,6 +21,9 @@ from __future__ import annotations
 
 from typehaus.model.enums import DuctRouting
 from typehaus.quantities import M_PER_IN, inch
+from typehaus.resolve.bay_edges import BayEdge, bay_edges, edges_over
+from typehaus.resolve.bay_edges import faces as edge_faces
+from typehaus.resolve.bay_edges import stations as edge_stations
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import length, sub
 from typehaus.resolve.mep_concrete import (  # noqa: F401  (re-exported: see the note above)
@@ -301,27 +304,32 @@ def _station(floor: ResolvedFloor, member: FramedMember) -> float:
     return member.p0[1] if floor.direction == "x" else member.p0[0]
 
 
-def joist_line_stations(floor: ResolvedFloor) -> list[float]:
+def bay_edge_spans(floor: ResolvedFloor) -> list[BayEdge]:
+    """The bay edges as stretches: each joist line with the along interval it reaches."""
+    return bay_edges(floor, bay_edge_members(floor))
+
+
+def joist_line_stations(floor: ResolvedFloor,
+                        span: tuple[float, float] | None = None) -> list[float]:
     """Sorted stations of this floor's joist lines, on the axis *across* the joists.
 
-    Public because two checks need the same lines from opposite directions:
+    ``span`` (along the joists) keeps only the lines whose member reaches it: a short ply
+    is a line over its own length. Public because two checks need the same lines from
+    opposite directions:
     ``duct_bay_occupancy`` below asks whether one run straddles one, and
     ``mep.duct_joist_bay_occupancy`` asks whether one lies *between* two runs — a joist
     between two ducts is what makes them two bays' worth of air rather than a hanger-gap
     conflict. An edge rim's station is its own centreline, set to the stud face.
     """
-    return sorted({_station(floor, m) for m in bay_edge_members(floor)})
+    return edge_stations(edges_over(bay_edge_spans(floor), span))
 
 
-def bay_edge_faces(floor: ResolvedFloor) -> list[tuple[float, float]]:
+def bay_edge_faces(floor: ResolvedFloor,
+                   span: tuple[float, float] | None = None) -> list[tuple[float, float]]:
     """Each bay edge's (low, high) faces across the joists, sorted: a 1 1/4" rim is not a
-    3 1/2" chord, so a bay is measured face to face, not centre to centre."""
-    widths: dict[float, float] = {}
-    for m in bay_edge_members(floor):
-        station = _station(floor, m)
-        widths[station] = max(widths.get(station, 0.0), cross_section(m.profile).width_m)
-    return [(station - width / 2.0, station + width / 2.0)
-            for station, width in sorted(widths.items())]
+    3 1/2" chord, so a bay is measured face to face, not centre to centre. ``span`` as in
+    ``joist_line_stations``."""
+    return edge_faces(edges_over(bay_edge_spans(floor), span))
 
 
 def clear_bay_width_m(floor: ResolvedFloor) -> float | None:
@@ -364,7 +372,7 @@ def duct_bay_occupancy(path: list[tuple[float, float]], width_m: float, depth_m:
     edges = bay_edge_members(floor)
     if z_m is not None and not _in_member_band(edges or floor.members, z_m, depth_m):
         return [], [], True
-    joist_lines = joist_line_stations(floor)
+    spans = bay_edge_spans(floor)  # a line counts only where its member reaches
     member_depth = max((m.z1_m - m.z0_m for m in floor.members), default=depth_m)
     depth_ok = depth_m <= member_depth + 1e-9
     # ``mep_crossings.member_window`` owns every reading of "the window a service gets", so
@@ -381,7 +389,7 @@ def duct_bay_occupancy(path: list[tuple[float, float]], width_m: float, depth_m:
     # round hole through an 11 7/8" I-joist web, which no chart allows — so a crossing on
     # anything but an open web still wants a soffit or a chase.
     field = [m for m in edges if not m.child_key.startswith(EDGE_RIM_PREFIX)]
-    field_lines = sorted({_station(floor, m) for m in field})
+    field_spans = bay_edges(floor, field)
     window = member_window(floor, field[0]) if field else None
     opening_m = (window.height_m
                  if window is not None and window.kind == "open_web" else None)
@@ -402,7 +410,8 @@ def duct_bay_occupancy(path: list[tuple[float, float]], width_m: float, depth_m:
         if abs(pa - pb) < 1e-6:
             c = pa
             lo, hi = c - width_m / 2, c + width_m / 2
-            straddled = [jl for jl in joist_lines if lo + 1e-6 < jl < hi - 1e-6]
+            reached = edge_stations(edges_over(spans, (aa, ab)))
+            straddled = [jl for jl in reached if lo + 1e-6 < jl < hi - 1e-6]
             if straddled:
                 conflicts.append(
                     f"segment {i} centered at {c:.3f}m crosses joist line(s) at "
@@ -415,7 +424,7 @@ def duct_bay_occupancy(path: list[tuple[float, float]], width_m: float, depth_m:
                 )
         else:
             # An edge rim is bored, not crossed in a web: ``mep.run_member_crossing`` grades it.
-            crossed = [jl for jl in field_lines if min(pa, pb) < jl < max(pa, pb)]
+            crossed = _crossed_lines(field_spans, pa, pb, aa, ab)
             if crossed and routing not in (DuctRouting.SOFFIT, DuctRouting.CHASE):
                 if opening_m is not None and depth_m <= opening_m + 1e-9:
                     # Legal: the run passes through the truss webs, same as a
@@ -445,6 +454,18 @@ def duct_bay_occupancy(path: list[tuple[float, float]], width_m: float, depth_m:
                 perp_at = pa + t * (pb - pa)
                 crossings.append((wc, perp_at) if along_x else (perp_at, wc))
     return conflicts, crossings, depth_ok
+
+
+def _crossed_lines(field: list[BayEdge], pa: float, pb: float, aa: float,
+                   ab: float) -> list[float]:
+    """Field joist lines a segment crosses, where its member reaches the crossing point."""
+    out = set()
+    for e in field:
+        if min(pa, pb) < e.station < max(pa, pb):
+            along_at = aa + (e.station - pa) / (pb - pa) * (ab - aa)
+            if e.reaches(along_at, along_at):
+                out.add(e.station)
+    return sorted(out)
 
 
 def _in_member_band(members: list, z_m: tuple[float, float], depth_m: float) -> bool:

@@ -61,6 +61,8 @@ class Corridor:
     #: Tags already in this channel's governing tier, so a proposal can say what it rode
     #: beside rather than only that it fitted.
     occupants: tuple[str, ...] = ()
+    #: A bay's width before its occupants, which a free lane is derived from; 0 if unset.
+    structural_width_m: float = 0.0
 
     def admits(self, radius_m: float) -> bool:
         return 2.0 * radius_m <= self.clear_width_m + 1e-9
@@ -86,18 +88,19 @@ def floor_corridors(model: ResolvedModel) -> list[Corridor]:
     ERV radial into the one truss bay that already holds thirteen at one elevation, which is
     the class of defect ``mep.run_interference`` reports at 4.00" on catlin's ``FS-S-WEST``.
     """
+    from typehaus.resolve.bay_edges import bay_pieces
     from typehaus.resolve.mep_envelopes import run_polylines
     from typehaus.resolve.mep_packing import run_occupants
-    from typehaus.resolve.mep_queries import bay_edge_faces, clear_bay_width_m
+    from typehaus.resolve.mep_queries import bay_edge_spans, clear_bay_width_m
 
     # Derived ONCE for the whole house, not once per bay: a floor has a hundred-odd bays and
     # this reading now walks every VentRun's roof geometry as well.
     lines_by_tag = {tag: path for _kind, tag, path, _z in run_polylines(model)}
     out: list[Corridor] = []
     for floor in model.floors:
-        faces = bay_edge_faces(floor)
+        spans = bay_edge_spans(floor)
         clear = clear_bay_width_m(floor)
-        if len(faces) < 2 or clear is None or clear <= 0:
+        if len(spans) < 2 or clear is None or clear <= 0:
             continue
         members = [m for m in floor.members if m.z0_m is not None]
         if not members:
@@ -111,18 +114,25 @@ def floor_corridors(model: ResolvedModel) -> list[Corridor]:
         span = _member_span(floor, along)
         if span is None:
             continue
-        # Gated centre to centre, measured face to face: an edge rim is narrower than a chord.
-        for (lo_a, near), (far, hi_b) in zip(faces, faces[1:], strict=False):
+        reach = (min(e.lo_m for e in spans), max(e.hi_m for e in spans))
+        # One corridor per piece: a bay is only as wide as its edges reach (a short ply
+        # narrows it over its own length). A piece that ends where the edges do runs on to
+        # the end rim.
+        for piece in bay_pieces(spans):
+            (lo_a, near), (far, hi_b) = piece.near, piece.far
+            # Gated centre to centre, measured face to face: an edge rim is narrower than a chord.
             if (far + hi_b) / 2.0 - (lo_a + near) / 2.0 <= clear:
                 continue  # a doubled pair or an end strip, not a field bay
             centre, bay = (near + far) / 2.0, min(far - near, clear)
+            lo_m = span[0] if piece.lo_m <= reach[0] + 1e-6 else piece.lo_m
+            hi_m = span[1] if piece.hi_m >= reach[1] - 1e-6 else piece.hi_m
             taken, gaps, packing = _bay_taken(floor, occupants, lines_by_tag, along,
-                                              centre, bay)
+                                              centre, bay, (lo_m, hi_m))
             out.append(Corridor(
                 tag=f"{floor.tag}:bay@{centre:.4f}", kind="bay", axis=along,
                 station=centre, z0_m=low, z1_m=high,
                 clear_width_m=max(bay - taken, 0.0),
-                lo_m=span[0], hi_m=span[1], gaps=gaps,
+                lo_m=lo_m, hi_m=hi_m, gaps=gaps, structural_width_m=bay,
                 occupied_z=packing.z_m if packing is not None and packing.tier else None,
                 occupants=packing.tier if packing is not None else ()))
     return out
@@ -130,7 +140,8 @@ def floor_corridors(model: ResolvedModel) -> list[Corridor]:
 
 def _bay_taken(floor: ResolvedFloor, occupants: list[Any],
                lines_by_tag: dict[str, Any], along: str, station: float,
-               clear_m: float) -> tuple[float, tuple[str, ...]]:
+               clear_m: float, extent: tuple[float, float],
+               ) -> tuple[float, tuple[str, ...], Any]:
     """How much of THIS bay is already occupied, and what that reading cannot see.
 
     ``floor_ref`` names the floor, not the bay, and a floor holds many: summing every
@@ -151,9 +162,10 @@ def _bay_taken(floor: ResolvedFloor, occupants: list[Any],
     if not occupants:
         return 0.0, (), None
     cross = 1 if along == "x" else 0
+    axis_i = 1 - cross
     present = [o for o in occupants
-               if any(abs(point[cross] - station) <= clear_m / 2.0
-                      for point in lines_by_tag.get(o.tag, ()))]
+               if _rides(lines_by_tag.get(o.tag, ()), cross, axis_i, station, clear_m,
+                         extent)]
     if not present:
         return 0.0, (), None
     packing = pack(clear_m, present)
@@ -163,6 +175,20 @@ def _bay_taken(floor: ResolvedFloor, occupants: list[Any],
         "elevation +/- half its depth, one band per run rather than one per segment, so a "
         "run that drops through the bay is priced where its average is; and a ConduitRun "
         "names no floor_ref and is not an occupant here at all.",), packing
+
+
+def _rides(path: Any, cross: int, axis_i: int, station: float, clear_m: float,
+           extent: tuple[float, float]) -> bool:
+    """Whether a plan polyline has a vertex within half a bay of ``station`` across, on a
+    segment that overlaps the piece's ``extent`` along the joists."""
+    pts = list(path)
+    for i, point in enumerate(pts):
+        if abs(point[cross] - station) > clear_m / 2.0:
+            continue
+        ends = [point[axis_i]] + [pts[j][axis_i] for j in (i - 1, i + 1) if 0 <= j < len(pts)]
+        if min(ends) <= extent[1] + 1e-6 and max(ends) >= extent[0] - 1e-6:
+            return True
+    return False
 
 
 def crossing_window(model: ResolvedModel,
