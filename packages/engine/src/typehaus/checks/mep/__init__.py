@@ -20,6 +20,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     drainage_network,
     duct_connectivity,
     duct_drainage,
+    duct_insulation,
     duct_parts,
     duct_penetrations,
     electrical,

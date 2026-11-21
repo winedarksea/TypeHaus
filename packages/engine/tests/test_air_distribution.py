@@ -107,16 +107,17 @@ def test_a_ceiling_collar_takes_its_run_on_a_derived_drop(catlin_model_ro) -> No
 
 def test_a_rectangular_return_neck_takes_a_drop_and_guards_its_section(
         catlin_model_ro) -> None:
-    """REG-S-HP-RET's 24x12 neck: a rectangular run drawn onto its top is graded connected
-    (connectivity, end landing, and register_reach stands aside); another section is not."""
+    """REG-S-HP-SUITE-RET's 12x12 neck: a rectangular run drawn onto its top is graded
+    connected (connectivity, end landing, and register_reach stands aside); another section
+    is not. (REG-S-HP-RET was the subject until its box took a side inlet, 2026-11-21.)"""
     from typehaus.checks.mep.register_reach import register_reach
     from typehaus.resolve.duct_terminations import end_landings
     from typehaus.resolve.terminal_drops import collars_by_run, drop_onto_collars
 
     model = catlin_model_ro
-    duct = next(d for d in model.ducts if d.tag == "DU-S-HP-RET")
+    duct = next(d for d in model.ducts if d.tag == "DU-S-HP-SUITE-RET")
     (reg, neck), = collars_by_run(model)[duct.tag]
-    assert (reg, neck.is_round) == ("REG-S-HP-RET", False)
+    assert (reg, neck.is_round) == ("REG-S-HP-SUITE-RET", False)
 
     def with_drop(**section):
         at = (neck.x, neck.y)
@@ -132,12 +133,12 @@ def test_a_rectangular_return_neck_takes_a_drop_and_guards_its_section(
 
     mine, reach, lands = with_drop(width_m=neck.width, depth_m=neck.depth)
     assert [f.result for f in mine] == [Result.PASS]
-    assert "drops onto REG-S-HP-RET" in mine[0].message
+    assert "drops onto REG-S-HP-SUITE-RET" in mine[0].message
     assert not reach and (lands.landing, lands.other) == ("terminal", reg)
     flipped, *_ = with_drop(width_m=neck.depth, depth_m=neck.width)  # either orientation
     assert flipped[0].result is Result.PASS
-    wrong, *_ = with_drop()  # DU-S-HP-RET is 12x10 and the neck 24x12
-    assert wrong[0].result is Result.FAIL and "arrives as 12x10 but" in wrong[0].message
+    wrong, *_ = with_drop()  # DU-S-HP-SUITE-RET is 6x4 and the neck 12x12
+    assert wrong[0].result is Result.FAIL and "arrives as 6x4 but" in wrong[0].message
 
     # A level end over the neck gets its drop appended, as a round collar's does.
     path, z = [(neck.x, neck.y), (neck.x + 1.0, neck.y)], [neck.z_top + 0.3] * 2

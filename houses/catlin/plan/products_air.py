@@ -181,11 +181,11 @@ WALL_SEAL_FOAM = Product(
 )
 ELASTOMERIC_SHEET = Product(
     tag="PROD-AIR-ELASTOMERIC-1IN", brand="Armacell", model="AP Armaflex sheet, 1in",
-    name="1in closed-cell elastomeric sheet, two layers on the OA/EA legs (R-8.4)",
+    name="1in closed-cell elastomeric sheet, one layer on the OA/EA legs (R-4.2)",
     url="https://cdn.bakerdist.com/armacell_aps_en_ss.pdf",
-    source=f"k 0.25 at 75 F (R-4.2 per inch, datasheet). Two 1in layers, not one 2in: plain "
-           f"AP is 25/50-rated only through 1in, and 2in FS reads R-7.1. Armaflex 520 "
-           f"adhesive; or equal K-Flex Insul-Sheet. Its own vapour retarder. {_SPEC} §9.",
+    source=f"k 0.25 at 75 F (R-4.2 per inch, datasheet). One 1in layer since 2026-11-11 "
+           f"(was two, R-8.4); plain AP is 25/50-rated through 1in. Armaflex 520 adhesive; "
+           f"or equal K-Flex Insul-Sheet. Its own vapour retarder. {_SPEC} §9.",
 )
 SPOT_NOZZLE_4 = Product(
     tag="PROD-AIR-SPOT-NOZZLE-4", brand="Shoemaker", model="1202-4",

@@ -82,14 +82,6 @@ finished area drops out.
   `PipeAccessoryKind.PRV` ahead of the meter set if static pressure is over 80 psi (UPC 608.2),
   and re-check the tank row (`notes/water_service.md` §4).
 
-**Engine**
-
-- [ ] `REG-S-HP-RET`'s 24x12 filter box is authored as its 15 1/8" neck run (decision #129
-  terminal drop), not as a drawn drop. The sweep now draws a vertical rectangle at its true
-  hu×hv, so modelling the box itself is a separate redesign, not an engine fix.
-- [ ] A run inside a sloped (`FollowRoof`) lining is not graded; flat ceilings are
-  (`checks/mep/routing_board.py`).
-
 **Autorouter.** `docs/routing.md` Limitations covers the rest (trunk `-END` riser in W-M-E1's bay,
 branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm, search U-turns,
 `--lift` on a first-leg tee). Open holds:
@@ -117,9 +109,8 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
 - **Pipe support spacing is ungraded** (UPC Table 313.3 via Minn. R. 4714.0313, plus MN Table
   313.3.1); the profile says so. Needs a `support_spacing_in` on `PipeRun` and a
   `mep.pipe_support` check. Field-inspected, not a permit gap.
-- [ ] Deferred checks: insulation vs R403.2.1; per-segment duct insulation; M1506.3's 3 ft
-  exception and the operable-opening distance; an insulation spec's thickness vs its R-value;
-  a damper actuator inside a duct.
+- [ ] Deferred checks: M1506.3's 3 ft exception and the operable-opening distance; a damper
+  actuator inside a duct; a PIPE insulation spec's thickness vs its R-value (ducts: #150).
 
 ## Questions
 

@@ -73,9 +73,9 @@ def spec_rows(model: ResolvedModel) -> tuple[tuple[str, str, str], ...]:
         k.transition_product_ref and f"{_label(library, k.transition_product_ref)} transition",
         k.flex_product_ref and f"{_inches(k.flex_length)} {_label(library, k.flex_product_ref)}")
         if x), k.source or "") for k in standard.port_kits]
-    if standard.insulation_product_ref:
-        rows.append(("Insulation (OA/EA)", _label(library, standard.insulation_product_ref),
-                     "see duct schedule"))
+    rows += [(f"Insulation {i.thickness.meters / M_PER_IN:g}\" R-{i.r_value:g}",
+              _label(library, i.product_ref) if i.product_ref else i.spec, i.source)
+             for i in standard.insulations]
     return tuple(rows)
 
 

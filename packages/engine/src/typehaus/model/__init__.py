@@ -43,6 +43,7 @@ from typehaus.model.drain_column import DrainColumn
 from typehaus.model.drywall import DrywallStandard, ShadowGapProfile, TerminationBead
 from typehaus.model.ducts import (
     DuctElbowRow,
+    DuctInsulationRow,
     DuctPartRow,
     DuctStandard,
     DuctSupportRow,
@@ -515,7 +516,7 @@ __all__ = [
     "PenetrationStandard", "PenetrationSleeveRow", "BondSleeveRow", "BootRow", "StrapBlockRow",
     "LinesetInletRow", "MountBlockRow", "StrutRow",
     "DuctStandard", "RoundGaugeRow", "DuctElbowRow", "DuctPartRow", "DuctSupportRow", "PortKit",
-    "RectElbowRow",
+    "RectElbowRow", "DuctInsulationRow",
     "Sump", "SumpPump", "VentRun", "VentIncreaser",
     "MonthlyNormal", "SubgradeModulus", "SoilBasis", "ConcreteServiceTemperature",
     "SetbackSpec",

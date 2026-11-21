@@ -16,6 +16,7 @@ from typehaus import (
     pt,
 )
 
+from .ducts import INSULATION_ERV_WRAP
 from .erv_balance import (
     DU_ERV_EA,
     DU_ERV_OA,
@@ -164,7 +165,7 @@ DUCTS_ERV_OUTDOOR_LEGS = [
             # the shaft's east face). Out here the lane is 1'-10"; the term fell 0.1318 ->
             # 0.0315 and handed the governing side back to EXTRACT, so §7 is spent.
             diameter=inch(8), routing=DuctRouting.CHASE, material="galvanized",
-            insulation='1" closed-cell elastomeric (AP Armaflex), R-4.2, vapour-sealed', design_cfm=DU_ERV_OA,
+            insulation=INSULATION_ERV_WRAP, design_cfm=DU_ERV_OA,
             adjustable_elbows=(5,)),
     DuctRun(uid="BYAVBJKRS6", tag="DU-ERV-EA", system=DuctSystem.EXHAUST,
             # Manifold first, hood last — the direction the air goes, and the direction
@@ -224,5 +225,5 @@ DUCTS_ERV_OUTDOOR_LEGS = [
             # shaft was sized for THIS diameter months before it was bought.
             # `AO-S-ERV-EA` grows 7" -> 9" to match.
             diameter=inch(8), routing=DuctRouting.CHASE, material="galvanized",
-            insulation='1" closed-cell elastomeric (AP Armaflex), R-4.2, vapour-sealed', design_cfm=DU_ERV_EA),
+            insulation=INSULATION_ERV_WRAP, design_cfm=DU_ERV_EA),
 ]

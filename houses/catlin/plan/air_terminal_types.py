@@ -271,8 +271,8 @@ AIR_REGISTER_TYPES = (
     # 12x24x1 MERV 13 (owner, 2026-11-12): 288 in2, 228 fpm. 14x25x1 is the larger stock size
     # but cannot stand here: the soffit's north end and the FS-ATTIC joists leave 12.5" clear in
     # y (13 11/16" bay less SF-S-DUCT's 2 1/8" end), so 12" is the ceiling on the short side.
-    # The neck is the 1" rack plus the shop filter box up to DU-S-HP-RET's underside (15 1/8"):
-    # a 24x12 duct does not fit its 14 1/4" bay, so the box is a boot, not a drawn run.
+    # The neck is the 1" rack plus the shop filter box, 25 1/8" up to DU-S-HP-RET's top in the
+    # FS-ATTIC bay; the 12x10 run enters its east face, top-aligned (a side inlet, not a drop).
     RegisterType(tag="REG-T-HP-RET-FILTER",
                  face_opening=(inch(24), inch(12)),
                  face_style="rectangular_grille",
@@ -281,8 +281,12 @@ AIR_REGISTER_TYPES = (
                  plan_symbol="register", product_ref="PROD-AIR-FILTER-RETURN-12X24",
                  filter_nominal_size="12x24x1", filter_merv=13, service_face="bottom",
                  neck=TerminalNeck(section="rectangular",
-                                   width=inch(24), height=inch(12), depth=inch(15.125),
-                                   part="1in filter rack and shop filter box"),
+                                   width=inch(24), height=inch(12), depth=inch(25.125),
+                                   part="1in filter rack and shop filter box, 12x10 east inlet",
+                                   inlet=TerminalNeckInlet(
+                                       position=(inch(12), inch(0.5), inch(20.125)),
+                                       section="rectangular", width=inch(12), height=inch(10),
+                                       normal=(1.0, 0.0))),
                  source=f"Face estimated off H&C 673 (+2 5/8in); 24 x 12in duct size, 288 in2, "
                         f"228 fpm at 455 cfm. {_NOTE} §5.",
                  ports=(_port("return", Service.RETURN_AIR),)),

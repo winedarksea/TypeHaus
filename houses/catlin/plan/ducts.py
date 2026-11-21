@@ -30,6 +30,7 @@
 
 from typehaus import (
     DuctElbowRow,
+    DuctInsulationRow,
     DuctPartRow,
     DuctStandard,
     DuctSupportRow,
@@ -57,6 +58,9 @@ _BRACKET = "SMACNA HVAC DCS 1995 Fig. 4-8 supports from wall: 'locate ducts agai
 _ROUND = "SMACNA HVAC DCS 1995 Table 4-2, round to 10 in."
 _RECT = "SMACNA HVAC DCS 1995 Table 4-1, half-perimeter to 30 in."
 _FLEX = "JP Lamborn Installation Guidelines Rev. 11-16 (sylvane.com/cdn/shop/files/installation-guide-jpl-mhp25-25-ft-insulated-flex-duct.pdf, read 2026-11-07): 'supported at 4 ft maximum intervals by means of min 1.5 in. wide straps'; IMC 603.10 sends flex to the manufacturer"
+# Insulation specs: a run's `insulation` names one of these, and its row says what it is.
+INSULATION_ERV_WRAP = '1" closed-cell elastomeric (AP Armaflex), R-4.2, vapour-sealed'
+INSULATION_HPWH_FLEX = '1 1/2" fibreglass flex jacket, R-6, vapour-sealed (Rheem AP22654 p.15)'
 _RECT_ELBOW = "SMACNA HVAC DCS 1995 rectangular radius elbow, shop-fabricated, r/W 1.0, no vanes; Co 0.25 at r/W 1.0, H/W 0.5 (ASHRAE 'Fitting Loss Coefficients', online supplement to Principles of HVAC 9th ed., 2021, Fitting 3-5 p. 12, after Idelchik Diagram 6-1; read 2026-11-08, notes/erv_static_budget.md)"
 _DAMPER = "In-line single-blade volume damper fully open (4 and 6 in.): no maker of either publishes a loss, so C is read off Greenheck VCDR-53 (Aug 2023) AMCA 500-D Fig. 5.3 fully ducted, 12 in.: 0.19 in. wg at 3000 fpm = 0.34 x VP (0.32-0.36 over the table), above the 0.30 ASHRAE butterfly term notes/erv_static_budget.md s.4 uses; body length unpublished (drawn at its diameter)"
 _REGBOX = "Master Flow (GAF) RB12X6X6 universal register box: a straight, in-line transition from 6 in. round to a 12 x 6 register, 30 ga galvanized (GAF 'Master Flow Register Box - Straight', Home Depot 100114412, Zoro; retailer pages refused automated reads, read through search listings 2026-11-16); depth unpublished, drawn at its envelope"
@@ -160,7 +164,15 @@ DUCT_STANDARD = [
         sealant_coverage_lf=213.0,
         sealant_unit="gal",
         tape_roll_length=ft(180),
-        insulation_product_ref="PROD-AIR-ELASTOMERIC-1IN",
+        insulations=(
+            DuctInsulationRow(spec=INSULATION_ERV_WRAP, thickness=inch(1), r_value=4.2,
+                              vapour_retarder=True, material_ref="elastomeric-sheet",
+                              product_ref="PROD-AIR-ELASTOMERIC-1IN",
+                              source="Armacell AP Armaflex sheet datasheet (cdn.bakerdist.com/armacell_aps_en_ss.pdf): k 0.25, R-4.2 per inch; closed-cell, its own vapour retarder (notes/air_distribution_products.md s.9)"),
+            DuctInsulationRow(spec=INSULATION_HPWH_FLEX, thickness=inch(1.5), r_value=6.0,
+                              vapour_retarder=True, material_ref="fiberglass",
+                              source="Rheem AP22654 duct kit instructions p.15: insulated flex, R-6 fibreglass jacket under a vapour barrier (notes/basement_winter_heat.md 'Air connections')"),
+        ),
         citations=("IMC 2018 603 (Minn. R. 1346)", "IMC 2018 Table 603.4 (Minn. R. 1346.0050)",
                    "SMACNA HVAC DCS 1995"),
         round_gauges=(
@@ -260,8 +272,8 @@ DUCT_STANDARD = [
                         source="top take-off register boot on the trunk, shop-fabricated"),
             DuctPartRow(kind="boot", size="18x8", branch="12x6", fabricated=True, entry="trunk",
                         source="top take-off register boot on the trunk, shop-fabricated"),
-            DuctPartRow(kind="boot", size="12x10", branch="24x12", fabricated=True,
-                        source="REG-S-HP-RET filter box up into the bay, shop-fabricated"),
+            DuctPartRow(kind="boot", size="12x10", branch="12x10", fabricated=True, entry="straight",
+                        source="REG-S-HP-RET's shop filter box includes its 12x10 east inlet collar"),
             DuctPartRow(kind="boot", size="6x4", branch="12x12", fabricated=True,
                         source="RM-S-SUITE return filter box, locking balancing damper, shop-fabricated"),
             DuctPartRow(kind="boot", size="12x6", branch="12x12", fabricated=True,

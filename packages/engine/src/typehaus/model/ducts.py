@@ -160,6 +160,22 @@ class DuctSupportRow(HausModel):
     source: str | None = None
 
 
+class DuctInsulationRow(HausModel):
+    """What a ``DuctRun.insulation`` spec is: the key the run names (and the
+    ``[duct_insulation]`` price key), its thickness and the installed R the product
+    publishes. Graded by ``mep.duct_insulation`` against MN 1322 Table R403.2.1."""
+
+    spec: str
+    thickness: Length
+    r_value: float
+    vapour_retarder: bool = False
+    #: An approved weatherproof barrier (the table's "W", for a duct outside the building).
+    weather_barrier: bool = False
+    material_ref: str | None = None
+    product_ref: str | None = None
+    source: str
+
+
 class PortKit(HausModel):
     """What connects a duct to an equipment type's ports (Broan: 6->8 transition + flex)."""
 
@@ -199,7 +215,7 @@ class DuctStandard(Element):
     #: Seam LF per joint of round duct: one girth joint per ``joint_length`` plus the
     #: longitudinal seam; the straight stock length a run is joined from.
     joint_length: Length = ft(5)
-    insulation_product_ref: str | None = None
+    insulations: tuple[DuctInsulationRow, ...] = ()
     round_gauges: tuple[RoundGaugeRow, ...] = ()
     elbows: tuple[DuctElbowRow, ...] = ()
     #: The shop-made rectangular elbow; None: a rectangular turn stays a coverage gap.
@@ -245,8 +261,12 @@ class DuctStandard(Element):
         return next((k for k in self.port_kits if k.type_ref == type_ref
                      and (not k.ports or port in k.ports)), None)
 
+    def insulation(self, spec: str | None) -> DuctInsulationRow | None:
+        return next((r for r in self.insulations if spec and r.spec == spec), None)
+
     def product_refs(self) -> tuple[str, ...]:
-        refs = [self.sealant_product_ref, self.tape_product_ref, self.insulation_product_ref,
+        refs = [self.sealant_product_ref, self.tape_product_ref,
+                *(r.product_ref for r in self.insulations),
                 *(r.product_ref for r in self.elbows), *(r.product_ref for r in self.parts),
                 *(r.product_ref for r in self.supports),
                 *(r.sleeper_product_ref for r in self.supports),
@@ -258,5 +278,6 @@ class DuctStandard(Element):
 for _name, _cls in (("DuctStandard", DuctStandard), ("RoundGaugeRow", RoundGaugeRow),
                     ("DuctElbowRow", DuctElbowRow), ("RectElbowRow", RectElbowRow),
                     ("DuctPartRow", DuctPartRow),
-                    ("DuctSupportRow", DuctSupportRow), ("PortKit", PortKit)):
+                    ("DuctSupportRow", DuctSupportRow), ("PortKit", PortKit),
+                    ("DuctInsulationRow", DuctInsulationRow)):
     register_constructor(_name, _cls)

@@ -147,12 +147,16 @@ def _emit_wrap(model: ResolvedModel, duct: DuctRun, storey_tag: str,
                path: list[tuple[float, float]], z: list[float],
                diameter_m: float | None) -> None:
     """A round run's stated wrap as its own swept solid, clipped at its wall's sheathing."""
+    from typehaus.resolve.duct_standard import duct_standard
     from typehaus.resolve.duct_wrap import wrap_path
     from typehaus.resolve.mep_envelopes import insulation_thickness_m
     from typehaus.resolve.model import ResolvedSolid, SolidSweep
     from typehaus.resolve.sweep import clean_path, sweep_plan_silhouette, sweep_z_extent
 
-    thickness = insulation_thickness_m(duct.insulation) if duct.insulation else None
+    standard, _ = duct_standard(model.plan)
+    row = standard.insulation(duct.insulation) if standard is not None else None
+    thickness = (row.thickness.meters if row is not None else
+                 insulation_thickness_m(duct.insulation) if duct.insulation else None)
     if diameter_m is None or not thickness:
         return
     points = wrap_path(model, duct.tag, clean_path(

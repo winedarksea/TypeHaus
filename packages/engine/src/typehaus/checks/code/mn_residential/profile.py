@@ -579,6 +579,8 @@ MN_2020 = JurisdictionProfile(
                         "MN Plumbing Code (ch. 4714) 606.6")),
         PermitItemSpec("Hot-water pipe insulation", ("mep.hot_water_insulation",),
                        ("IRC N1103.4.2",)),
+        PermitItemSpec("Duct and plenum insulation", ("mep.duct_insulation",),
+                       ("MN Rules 1322.0403 Table R403.2.1",)),
         # A balanced ventilator's outdoor-side terminations. A plan reviewer
         # does look at these — an intake within ten feet of a discharge short-circuits the
         # machine, and one within three feet of a plumbing vent draws sewer gas into every

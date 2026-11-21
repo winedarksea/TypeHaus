@@ -1799,7 +1799,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     78 1/2" AFF, wrapped bottoms over 72".
   - **The NW chase is the only riser and is full** (re-packed 2026-09-23): `DU-ERV-RISER-SUP`
     and `DU-ERV-RISER-EXH` (6", bare — house air, IECC R403.3) at y=33'-10.8", `DU-ERV-EA`
-    (8", 2" vapour-sealed wrap) at (2'-0.6", 34'-9.5"), `VR-M-STACK`'s pair at x=10"
+    (8", 1" vapour-sealed wrap) at (2'-0.6", 34'-9.5"), `VR-M-STACK`'s pair at x=10"
     (vent 34'-4.9", radon 34'-11.1", 6.2" apart so they straddle the attic's 34'-8" joist;
     the bundle jogs east at +19'-6" and exits the gable side by side, vent on x=9'-7 1/2",
     radon on 9'-1.3") and three conduits. The supply manifold's missing feed is blocked by
@@ -1856,8 +1856,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       2x4 laid flat in free air carrying the panel's wind load into the blocks either side,
       not gravity — broken in one 14 1/2" bay with the curb screwed to the cut ends. The
       discharge cuts nothing, clearing every course by 5 3/16".
-    - **The wall line has no bare metal (2026-10-31).** Both legs wear two 1" layers of AP
-      Armaflex (R-8.4) end to end; the wrap stops in the stud bay, the sheathing annulus is
+    - **The wall line has no bare metal (2026-10-31).** Both legs wear one 1" layer of AP
+      Armaflex (R-4.2) end to end; the wrap stops in the stud bay, the sheathing annulus is
       low-expansion foam and the ccSPF wraps the duct outboard. `SP-M-ERV-OA-SEAL` /
       `SP-S-ERV-EA-SEAL` (`SleevePenetration.serves_duct`) model the seal and bill it as
       `wall-seal-8in`; the wrap solid stops at the sheathing (`resolve/duct_wrap.py`).
@@ -1976,8 +1976,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     - **`REG-S-HP-RET` is a ceiling filter grille in `SF-S-DUCT`'s underside**: `AO-S-DUCT-RET`
       is exactly its 24x12 neck, and the return duct (not the soffit cavity) is behind it
       (IMC 601.5; no check catches a cavity return). The neck is the rack plus the shop filter
-      box, 15 1/8" up to `DU-S-HP-RET`'s underside: do not draw the box as a run (a vertical
-      rectangular riser grades as a square of its width). 455 cfm on a stock 12x24x1 (14x25x1
+      box, 25 1/8" up to `DU-S-HP-RET`'s top; the run enters its east face top-aligned (a side
+      `TerminalNeckInlet`, 2026-11-21), so the box draws as itself, not as a drop. 455 cfm on a stock 12x24x1 (14x25x1
       does not fit: 12.5" clear in y); static budget and change-out drop in
       `notes/air_distribution_products.md` §5. `RM-A-EAST-UNFIN` returns through
       `REG-A-HP-EAST-RET` on `EQ-S-ERV-MIX`'s south face, damper-locked at 35 cfm.

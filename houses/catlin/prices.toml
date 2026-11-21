@@ -6485,11 +6485,12 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # inside the insulation, which is worse because nobody sees it.
 # $/LF, by spec
 # ** 2026-10-31: two 1" layers of closed-cell elastomeric sheet (AP Armaflex or equal),
-# R-8.4, its own vapour retarder, on DU-ERV-OA/-EA end to end. ** About 5.3 SF of sheet per
-# foot of 8" duct over the two layers; at an ESTIMATED $3-5/SF plus 520 adhesive that is
-# $16-28/LF (no sheet price was readable online). It replaces the "2" R-8 wrap" that named no
-# real product (2" FRK is ~R-6). Owner checkpoint: about +$600-1,000 over the old row.
-'2" closed-cell elastomeric, two 1" layers, R-8.4, vapour-sealed' = { material = { low = 16, high = 28 }, labour = { low = 6, high = 14 } }  # 48.9 LF
+# R-8.4, replaced the "2" R-8 wrap" that named no real product. ** 2026-11-21: re-keyed to the
+# one-layer spec the runs carry since 2026-11-11 (1" AP Armaflex, R-4.2, its own vapour
+# retarder; R403.2.1 asks R-3.3, notes/duct_insulation.md). About 2.6 SF of sheet per foot of
+# 8" duct; at an ESTIMATED $3-5/SF plus 520 adhesive that is $8-14/LF (no sheet price was
+# readable online), half the old two-layer row.
+'1" closed-cell elastomeric (AP Armaflex), R-4.2, vapour-sealed' = { material = { low = 8, high = 14 }, labour = { low = 3, high = 7 } }
 
 [duct_parts]
 # NEW 2026-11-05 (#114): every duct part but the elbow, off ResolvedModel.duct_parts. ESTIMATES
@@ -6520,7 +6521,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "PROD-DUCT-REDUCER-8-4" = { low = 32, high = 35 }        # 1 set — Imperial GV0821 8-6 + GV0811 6-4, stacked
 "PROD-DUCT-DRAIN-TAP-8" = { low = 8, high = 20 }         # 1 ea — DU-ERV-EA foot: 3/4" PVC bulkhead tap + cap (M1-114, 2026-11-12; estimate, no listing read)
 # Shop fabrication, estimate (material only; the make-up time is the sheet-metal visit):
-"boot-12x10-24x12" = { low = 40, high = 80 }             # 1 ea — REG-S-HP-RET boot up into the bay, shop fabrication, estimate
+"boot-12x10-12x10" = { low = 40, high = 80 }             # 1 ea — REG-S-HP-RET filter box east inlet collar (re-keyed 2026-11-21, side inlet), shop fabrication, estimate
 "boot-6x4-12x12" = { low = 40, high = 90 }               # 1 ea — RM-S-SUITE return box + locking damper, estimate
 "boot-12x12-none" = { low = 40, high = 90 }              # 1 ea — REG-A-HP-EAST-RET damper box on EQ-S-ERV-MIX's face, estimate
 "boot-12x6-12x12" = { low = 40, high = 90 }              # 1 ea — RM-S-BED3 return box + locking damper, estimate

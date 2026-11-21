@@ -46,7 +46,35 @@ def _read(plan: Any) -> tuple[DuctStandard | None, list[Finding]]:
     out.extend(_error((standard.tag,), f"duct standard {standard.tag}: port kit names no "
                                        f"equipment type {kit.type_ref!r}")
                for kit in standard.port_kits if kit.type_ref not in types)
-    return (None if out else standard), out
+    return (None if out else standard), out + _insulation(plan, standard)
+
+
+def _insulation(plan: Any, standard: DuctStandard) -> list[Finding]:
+    """A run's spec with no row is an ERROR; a row's R off its material's by >10% a FAIL."""
+    from typehaus.model.mep import DuctRun
+
+    out = []
+    for run in plan.all_elements():
+        if isinstance(run, DuctRun) and run.insulation and standard.insulation(
+                run.insulation) is None:
+            out.append(_error((run.tag, standard.tag), f"duct {run.tag}'s insulation "
+                              f"{run.insulation!r} is no row of {standard.tag}.insulations"))
+    for row in standard.insulations:
+        material = plan.library.material(row.material_ref) if row.material_ref else None
+        if row.material_ref and material is None:
+            out.append(_error((standard.tag,), f"duct insulation {row.spec!r} names no "
+                                               f"material {row.material_ref!r}"))
+        if material is None or not material.r_per_inch:
+            continue
+        expect = row.thickness.meters / M_PER_IN * material.r_per_inch
+        if abs(row.r_value - expect) > 0.10 * expect:
+            out.append(Finding(
+                severity=Severity.WARN, check_id=CHECK_ID, result=Result.FAIL,
+                element_tags=(standard.tag,),
+                message=f"duct insulation {row.spec!r} claims R-{row.r_value:g}, but "
+                        f"{row.thickness.meters / M_PER_IN:g}\" of {material.tag} at "
+                        f"R-{material.r_per_inch:g}/in is R-{expect:.1f}"))
+    return out
 
 
 def _error(tags: tuple[str, ...], message: str) -> Finding:

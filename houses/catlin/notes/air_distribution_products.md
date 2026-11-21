@@ -164,11 +164,15 @@ estimates, not measured.
   and adds its own drop (~0.36" at 750 cfm: 337 fpm on its 2.22 sf, scaled from the same sheet): leave it empty, or the budget
   above is wrong. Confirm on the delivered unit.
 
-**The neck is the box.** `REG-T-HP-RET-FILTER`'s neck is the 1" rack plus the shop filter box,
-15 1/8" tall from the soffit face to `DU-S-HP-RET`'s underside (`boot-12x10-24x12`). E6's
-drop (`resolve/terminal_drops`) needs the arriving run to BE the neck's section, and a 24x12
-run does not fit the 14 1/4" bay (a vertical rectangular riser is also graded as a square of
-its width, `sweep_plan_silhouette`), so the box stays a boot.
+**The box takes a side inlet (2026-11-21).** `REG-T-HP-RET-FILTER`'s neck is the 1" rack plus
+the shop filter box, 25 1/8" from the soffit face to `DU-S-HP-RET`'s top in the FS-ATTIC bay.
+The 12x10 run comes west along the bay and enters the box's east face, top-aligned
+(`TerminalNeckInlet`, centre 20 1/8" up, 1/2" north of the box centre so the run stays on the
+bay's line); the box's collar bills as `boot-12x10-12x10`. Until then the box was a 15 1/8"
+neck under a terminal drop, because a drop needs the arriving run to be the neck's section and
+a 24x12 run does not fit the 14 1/4" bay. The return path's turns are unchanged: the riser
+elbow at the mixing box and the run's entry into the box (a drop before, a side entry now),
+so the 0.06" term stands.
 
 **RM-S-SUITE's return — `REG-T-HP-RET-FILTER-1212` (2026-11-09).** A 12x12 hinged
 filter-back grille (H&C 673 class, or equal TRUaire 190RF / Shoemaker 620FG) on a
@@ -228,13 +232,12 @@ Painted to match the north-face cladding's grey model colour. **10" option**: bu
 
 ## 9. Outdoor legs: insulation and the wall line
 
-- **Insulation:** two 1" layers of closed-cell elastomeric sheet, **AP Armaflex** (or equal
-  K-Flex Insul-Sheet), joints staggered, Armaflex 520 adhesive, R-4.2 per layer = **R-8.4**,
-  its own vapour retarder, over the whole of both legs. Two layers and not one 2" sheet:
-  plain AP is 25/50-rated only through 1", and 2" FS reads ~R-7.1. 12" OD on an 8" duct,
-  the OD every clearance was already graded at. Duct joints mastic-sealed first. **Kept over
-  FSK fibreglass wrap** (owner, 2026-10-31; the ~$600-1,200 option is in
-  `plans/cost-options.md` §1).
+- **Insulation:** one 1" layer of closed-cell elastomeric sheet, **AP Armaflex** (or equal
+  K-Flex Insul-Sheet), Armaflex 520 adhesive, **R-4.2**, its own vapour retarder, over the
+  whole of both legs (2026-11-11, budget §10.4a; was two layers, R-8.4). 10" OD on an 8" duct.
+  Code asks R-3.3 and a vapour retarder (`notes/duct_insulation.md`); the surface holds 58.2 F
+  against a 50.5 F dew point at 70 F / 50% RH. Duct joints mastic-sealed first. **Kept over
+  FSK fibreglass wrap** (owner, 2026-10-31; the option is in `plans/cost-options.md` §1).
 - **Through-wall detail, no bare metal** (owner, 2026-10-30), sequence:
   1. the duct is set and sealed before the ccSPF pass, through a 9" hole in the sheathing;
   2. the sprayer sprays the 4" ccSPF tight to the duct outboard of the sheathing;

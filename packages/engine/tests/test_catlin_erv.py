@@ -379,8 +379,9 @@ def test_the_mixing_box_is_upstream_of_the_coil_and_the_strip_heater(catlin_mode
     neck = ducts["DU-A-HP1-RET-NECK"]
     assert inside(neck.path[0], mix)
     assert neck.path[-1][0] == pytest.approx(handler[1], abs=1e-6)
-    for tag in ("DU-S-HP-RET", "DU-S-HP-SUITE-RET-UP", "DU-S-ERV-HP-FEED"):
+    for tag in ("DU-S-HP-SUITE-RET-UP", "DU-S-ERV-HP-FEED"):
         assert inside(ducts[tag].path[-1], mix), tag
+    assert inside(ducts["DU-S-HP-RET"].path[0], mix)  # runs from the box to its grille
     plan = {el.tag: el for el in catlin_model.plan.all_elements()}
     assert plan["EQ-S-ERV-MIX"].room == "RM-A-EAST-UNFIN"
     assert getattr(plan["EQ-S-ERV-MIX"], "soffit_ref", None) is None

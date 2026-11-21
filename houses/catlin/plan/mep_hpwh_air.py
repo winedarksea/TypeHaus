@@ -27,19 +27,20 @@
 from typehaus import DuctRun, DuctSystem, Mount, MountKind, Register, deg, inch, pt
 from typehaus.model import Location, WallAttachment
 
-_INSULATION = '1 1/2" fibreglass flex jacket, R-6, vapour-sealed (Rheem AP22654 p.15)'
+from .ducts import INSULATION_HPWH_FLEX
+
 
 DUCTS_HPWH_AIR = [
     DuctRun(uid="2XHERX8QJG", tag="DU-B-WH-OUT", system=DuctSystem.TRANSFER,
             path=(pt(inch(143.57), inch(190.87)), pt(inch(151.43), inch(177.25)),
                   pt(inch(163.5), inch(177.25))),
-            diameter=inch(8), material="flex", insulation=_INSULATION,
+            diameter=inch(8), material="flex", insulation=INSULATION_HPWH_FLEX,
             end_terminal_ref="REG-B-WH-OUT",
             elevations=(inch(65.5), inch(65.5), inch(65.5))),
     DuctRun(uid="NC6N6JJRAZ", tag="DU-B-WH-IN", system=DuctSystem.TRANSFER,
             path=(pt(inch(137.5), inch(201.375)), pt(inch(137.5), inch(201.375)),
                   pt(inch(151.43), inch(177.25)), pt(inch(163.5), inch(177.25))),
-            diameter=inch(8), material="flex", insulation=_INSULATION,
+            diameter=inch(8), material="flex", insulation=INSULATION_HPWH_FLEX,
             end_terminal_ref="REG-B-WH-IN",
             elevations=(inch(74.1875), inch(87), inch(87), inch(87))),
 ]

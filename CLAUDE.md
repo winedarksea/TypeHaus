@@ -110,6 +110,8 @@ a release or for exhaustive local verification.
   reducers, collar dampers, boots, port kits and hangers into `ResolvedModel.duct_parts` /
   `duct_supports`; elbows stay `mep_fittings` records keyed off the standard's angles (rect W×D).
   Billed in `[duct_parts]`/`[duct_supports]`/`[duct_sealing]`, printed on M-601.
+  Insulation is a `DuctStandard` row (`DuctInsulationRow`), graded by `mep.duct_insulation`
+  against MN 1322 Table R403.2.1 (decision #150).
   A deck `saddle` row's `sleeper` lets a duct standing ~that far off the deck bear on a block
   (`ResolvedDuctSupport.sleeper_m`, its own `[duct_supports]` row).
   An elbow's R is `DuctElbowRow.radius_m()` (centre-to-face, else `radius_diameters` × D); a

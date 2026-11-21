@@ -361,3 +361,23 @@ def test_no_run_lies_in_a_ceiling_board(catlin_model) -> None:
     fails = _fails_for(model, original.tag)
     assert any("ceiling board" in f.message and f.element_tags[1] == "RM-B-WORKSHOP"
                for f in fails), [f.message for f in fails]
+
+
+def test_a_run_in_a_sloped_lining_is_graded(catlin_model, catlin_plan) -> None:
+    """A ``FollowRoof`` lining is graded in its face's frame: a vent sunk 5/16" into
+    RM-A-STUBATH's 5/8" ``gwb-mr`` under the rake fails on the board."""
+    from typehaus.checks.mep.routing_sloped import sloped_plane
+    from typehaus.model import ft, inch
+
+    ceiling = next(c for c in catlin_model.ceilings if c.room_ref == "RM-A-STUBATH")
+    plane = sloped_plane(catlin_model, catlin_plan, ceiling)
+    original = next(r for r in catlin_model.pipe_runs if r.tag == "PR-A-STUBATH-VENT")
+    radius = 0.5 * original.diameter_m  # nominal: the real OD sits a little lower, still in
+    path = tuple((inch(x).meters, ft(19, 0).meters) for x in (180, 150, 120))
+    z = tuple(plane.z_at(p) + radius + inch(5 / 16).meters for p in path)
+    moved = dataclasses.replace(original, path=path, z_m=z)
+    model = dataclasses.replace(catlin_model, pipe_runs=tuple(
+        moved if r.tag == original.tag else r for r in catlin_model.pipe_runs))
+    fails = _fails_for(model, original.tag)
+    assert any("ceiling board" in f.message and f.element_tags[1] == "RM-A-STUBATH"
+               for f in fails), [f.message for f in fails]

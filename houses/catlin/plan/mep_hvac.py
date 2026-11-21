@@ -236,17 +236,17 @@ DUCTS_HVAC_SECOND = [
             elevations=(inch(121), inch(102)),
             width=inch(12), depth=inch(12), routing=DuctRouting.CHASE,
             design_cfm=750, material="galvanized"),
-    # THE HALL RETURN: REG-S-HP-RET's filter box (its neck, 15 1/8" tall: the 1" rack and the
-    # shop-made box above it) rises through SF-S-DUCT's open top into FS-ATTIC's y 352-368 bay;
-    # this run starts on its top, runs east along the bay (12 wide x 10 deep in 13 11/16" clear;
-    # 455 cfm is 546 fpm) and turns up through the deck into EQ-S-ERV-MIX. The bay runs in x,
-    # so nothing is bored. The box is the neck and not a drawn 24x12 run: E6's drop needs the
-    # arriving run to BE the neck's section, and a 24x12 run does not fit a 14 1/4" bay.
+    # THE HALL RETURN: from EQ-S-ERV-MIX down through the deck, west along FS-ATTIC's y 352-368
+    # bay (12 wide x 10 deep in 13 11/16" clear; 455 cfm is 546 fpm) into the east face of
+    # REG-S-HP-RET's filter box, which rises through SF-S-DUCT's open top to the run's top
+    # (2026-11-21: a side inlet, top-aligned; the box was a 15 1/8" neck under a drop). The bay
+    # runs in x, so nothing is bored.
     DuctRun(uid="CSDH02AAAA", tag="DU-S-HP-RET", system=DuctSystem.RETURN,
-            path=(pt(inch(239), inch(360)), pt(inch(304.5), inch(360)),
-                  pt(inch(304.5), inch(360))),
-            elevations=(inch(114.125), inch(114.125), inch(124.125)),
+            path=(pt(inch(304.5), inch(360)), pt(inch(304.5), inch(360)),
+                  pt(inch(251), inch(360))),
+            elevations=(inch(124.125), inch(114.125), inch(114.125)),
             width=inch(12), depth=inch(10), routing=DuctRouting.JOIST_BAY,
+            end_terminal_ref="REG-S-HP-RET",
             floor_ref="FS-ATTIC", design_cfm=455, material="galvanized"),
     # West branch to RM-S-SUITE (2026-11-16): a 6" round spin-in off the trunk's west face at
     # its 100 1/8" centreline, the bedroom side-collar idiom (plan/mep_hvac_branches.py). It
