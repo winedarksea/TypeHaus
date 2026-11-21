@@ -1,6 +1,7 @@
 """Receptacle, switch and control types: the owner's device schedule (2026-10-27).
 
-Selection and reasons: ``notes/workshop_receptacles.md``. NOT editable (types are never
+Selection and reasons: ``notes/workshop_receptacles.md`` (heavy-duty toggles: its
+"Heavy-duty toggles" section). NOT editable (types are never
 written back by a UI drag). Each type names its Leviton/Lutron ``Product``; the shared
 ``ED-T-*`` catalog cannot, so a house retypes its instances to these tags.
 """
@@ -156,6 +157,12 @@ RECEPTACLE_TYPES = (
 # --- switches and controls ---------------------------------------------------------------
 E5601 = _prod("E5601-W", "Lever Edge single-pole switch, white")
 E5603 = _prod("E5603-W", "Lever Edge 3-way switch, white")
+# Workshop, garage and attic study (owner, 2026-11-20): feel and glove-proof, not amps.
+_HBL = "https://hubbellcdn.com/specsheet/WIRING_{}_spec.pdf"
+HBL1221 = _prod("HBL1221BK", "HBL extra-heavy-duty toggle switch, single-pole, 20 A, black",
+                _HBL.format("HBL1221BK"), brand="Hubbell")
+HBL1223 = _prod("HBL1223BK", "HBL extra-heavy-duty toggle switch, 3-way, 20 A, black",
+                _HBL.format("HBL1223BK"), brand="Hubbell")
 DIVA = _prod("DVCL-153P", "Diva LED+ dimmer, 150 W LED, single-pole/3-way", brand="Lutron",
              url="https://www.lutron.com/")
 # Reverse-phase, for the sauna's OMNIDRIVE X: on Diode LED's recommended-dimmer list.
@@ -211,6 +218,12 @@ DISCONNECT_TYPES = (
          plan_symbol="disconnect", disconnect_rating_a=60, lockable=True),
 )
 
+# HBL drawing: body face 1.250 x 2.325 (the symbol draws the bat inside it); 1.130" strap to
+# back and 1.805" overall, so the bat stands 0.675" past the strap, less a 5/32" SS plate.
+_HBL_TOGGLE = dict(symbol="wall-switch-toggle", footprint=(inch(1.25), inch(0.52)),
+                   height=inch(2.325), colour={"device-face": "device-black"},
+                   plate="stainless", plate_openings=("toggle",), rear_projection=inch(1.13))
+
 SWITCH_TYPES = (
     # No power port and no box: a companion draws nothing from a circuit (device_box=False).
     ElectricalDeviceType(
@@ -227,6 +240,10 @@ SWITCH_TYPES = (
          symbol="wall-switch-rocker", rear_projection=inch(1.01)),
     _dev("ED-T-LEV-SW3", "Lever Edge 3-way switch (E5603-W)", E5603,
          symbol="wall-switch-rocker", rear_projection=inch(1.01)),
+    _dev("ED-T-HBL-SW1", "HBL extra-heavy-duty toggle, single-pole (HBL1221BK)", HBL1221,
+         **_HBL_TOGGLE),
+    _dev("ED-T-HBL-SW3", "HBL extra-heavy-duty toggle, 3-way (HBL1223BK)", HBL1223,
+         **_HBL_TOGGLE),
     # Diva paddle projection is not published (0.10" assumed); Claro plate is 0.30".
     _dev("ED-T-LUT-DIVA", "Lutron Diva dimmer (DVCL-153P), Claro plate", DIVA,
          symbol="wall-switch-dimmer", footprint=(inch(1.29), inch(0.10)), control="dimmer",
@@ -254,6 +271,6 @@ SWITCH_TYPES = (
 DEVICE_TYPES = (*RECEPTACLE_TYPES, *SWITCH_TYPES, *DISCONNECT_TYPES)
 DEVICE_PRODUCTS = (
     E5825, E5325, GFTR2, GFTR1, GFTA2, GFWT2, GFWT1, GFRBF, T5836, T5380, T6525, GFNL2, T5020,
-    T5461, R278, IN_USE, E5601, E5603, DIVA, DIVA_ELV, D315S, DAWSC, DOS02, ODS10, MAT51, ZEN32,
-    RSD_INIT, DU222RB,
+    T5461, R278, IN_USE, E5601, E5603, HBL1221, HBL1223, DIVA, DIVA_ELV, D315S, DAWSC, DOS02,
+    ODS10, MAT51, ZEN32, RSD_INIT, DU222RB,
 )

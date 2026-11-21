@@ -567,7 +567,7 @@ ATTIC_DEVICES = [
                          wall_ref="W-A-C1", face="right", distance_from_start=inch(40),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="CED012K2AA", tag="ED-A-STUDY-SW", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-SW1", circuit="CKT-LT-UPPER",
+                     type_ref="ED-T-HBL-SW1", plate="reggio-sungold", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-A-C1", face="right", distance_from_start=inch(60),

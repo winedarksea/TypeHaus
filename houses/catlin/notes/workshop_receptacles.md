@@ -79,6 +79,30 @@ steel box, raised cover and Matter-switch prices are estimates (`prices.toml`).
 - **Exception:** `ED-M-PANTRY-LT` stays on its `ODS10-IDW` occupancy sensor (not Matter).
 - **BATH2 shower fan** `ED-M-BATH2-SW-DRY`: Lutron Maestro `MA-T51` countdown, 5-60 min.
 
+### Heavy-duty toggles (2026-11-20)
+
+- **Where:** basement workshop, garage and attic study, seven switches. Hubbell HBL extra-heavy-duty
+  black toggles, `HBL1221BK` single-pole (`ED-T-HBL-SW1`: `ED-B-WORKSHOP-SW2`, `ED-G-SW`,
+  `ED-G-SOFFIT-SW`, `ED-A-STUDY-SW`) and `HBL1223BK` 3-way (`ED-T-HBL-SW3`: `ED-B-WORKSHOP-SW`,
+  `-SW3`, `ED-A-STUDY-STAIR-SW`). Every other switch stays Lever Edge, `ED-G-EXT-SW` included.
+- **Plates:** brushed stainless in the workshop and garage: Hubbell `SS2` (W-B-HALL-W 2-gang),
+  `SS1` (W-B-CW), and Kyle `SPSJS-T` toggle/Decora/toggle over the garage 3-gang (the blank-face
+  GFCI between the switches takes the Decora opening, `plate="stainless"`). Reggio `1SPB` Sun
+  Gold single toggle in the study, matching RM-S-SUITE's family; size assumed standard.
+- **Why:** feel (a firm positive snap) and robustness where switches meet gloves and dirty
+  hands. Not electrical: `CKT-LT-BSMT` and `CKT-LT-UPPER` are 15 A, and `CKT-LT-GARAGE`'s
+  20 A breaker protects 12 AWG, not the switch (NEC 404.14 rates a switch to its load, a few
+  LED amps at most). The 20 A rating buys nothing, and contact resistance is milliohms against
+  LED loads well under 1 A, so there is no voltage-drop gain. Don't extend the upgrade to other
+  rooms on electrical grounds.
+- **Rejected:** motor-rated switches (no motor load on these branches; a bigger, dearer device
+  for nothing) and bare machine toggles (not listed as wall switches, no strap or plate fit).
+- **Geometry** (Hubbell spec sheets `WIRING_HBL1221BK_spec.pdf` / `_HBL1223BK_`): body face
+  1.250 x 2.325", 1.130" strap to back (`rear_projection`), 1.805" overall, so the bat stands
+  0.675" past the strap. Hubbell's SS1/SS2 sheets publish no size: SS1 2.87 x 4.5" is the
+  distributor figure, SS2 is assumed one gang pitch wider, and all three stainless plates take
+  Kyle's published 5/32" depth.
+
 ## Workshop (west wall bench)
 
 RC1 and RC2 stay at their stations, 42" AFF over the 34" benches, surface-mounted on concrete.
@@ -159,6 +183,7 @@ box on the 1" CD-B-WORKSHOP trunk. The kettle's `ED-T-LEV-620-FLUSH` is flush in
 | Occupancy sensor, pantry | [ODS10-IDW](https://leviton.com/products/ODS10-IDW) |
 | Countdown timer, BATH2 fan | Lutron MA-T51 |
 | Switch, Lever Edge | [E5601-W](https://leviton.com/products/e5601-w) 1-pole, [E5603-W](https://leviton.com/products/e5603-w) 3-way |
+| Switch, heavy-duty toggle | [HBL1221BK](https://hubbellcdn.com/specsheet/WIRING_HBL1221BK_spec.pdf) 1-pole, [HBL1223BK](https://hubbellcdn.com/specsheet/WIRING_HBL1223BK_spec.pdf) 3-way |
 | Dimmer, LED cans/sconces | Lutron DVCL-153P |
 | Smart switch, Matter | [D315S-1BW](https://www.leviton.com/products/d315s-1bw) |
 | Dimmer, ELV (sauna) | Lutron DVELV-300P |

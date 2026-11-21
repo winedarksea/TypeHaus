@@ -76,7 +76,7 @@ GARAGE_LIGHTING = [
     # absolute, 27.2" over the slab, so 76" puts the gang 48.8" over the tread you stand on
     # and 42" over the threshold you walk in on.
     ElectricalDevice(uid="QTG0003AAA", tag="ED-G-SW", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-SW1",
+                     type_ref="ED-T-HBL-SW1",
                      circuit="CKT-LT-GARAGE", room="RM-GARAGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(76)),
                      location=Location(attachment=WallAttachment(
@@ -85,7 +85,7 @@ GARAGE_LIGHTING = [
     # Blank-face GFCI beside the switch: the opener's ceiling outlet ED-G-GDO-RC is on its
     # load side, so its reset is in reach (NEC 210.8) and a tripped opener leaves the lights on.
     ElectricalDevice(uid="T2P1VW9FJE", tag="ED-G-GDO-GFCI", kind=DeviceKind.RECEPTACLE_GFCI,
-                     type_ref="ED-T-LEV-GFCI-DF",
+                     type_ref="ED-T-LEV-GFCI-DF", plate="stainless",
                      circuit="CKT-LT-GARAGE", room="RM-GARAGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(76)),
                      location=Location(attachment=WallAttachment(
@@ -335,7 +335,7 @@ GARAGE_LIGHTING = [
                          wall_ref="W-G-N", face="left", distance_from_start=inch(276),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="S7ANA4Q300", tag="ED-G-SOFFIT-SW", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-SW1",
+                     type_ref="ED-T-HBL-SW1",
                      circuit="CKT-LT-GARAGE", room="RM-GARAGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(76)),
                      location=Location(attachment=WallAttachment(

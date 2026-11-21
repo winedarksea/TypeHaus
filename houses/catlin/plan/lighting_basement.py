@@ -150,14 +150,14 @@ BASEMENT_LIGHTING = [
     # so the gang is on the hinge side; at 90 degrees the leaf is clear of it. Distance is
     # off the wall's north end.
     ElectricalDevice(uid="QTB0007AAA", tag="ED-B-WORKSHOP-SW", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-SW3",
+                     type_ref="ED-T-HBL-SW3",
                      circuit="CKT-LT-BSMT", room="RM-B-WORKSHOP",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-HALL-W", face="right", distance_from_start=inch(41),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="3WSW0XSFYZ", tag="ED-B-WORKSHOP-SW2", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-SW1",
+                     type_ref="ED-T-HBL-SW1",
                      circuit="CKT-LT-BSMT", room="RM-B-WORKSHOP",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
@@ -168,7 +168,7 @@ BASEMENT_LIGHTING = [
     # workshop face at x=2'-0" (latch side; the leaf hangs on the east jamb), the bay east of
     # ED-B-FURNACE-SW3's so the two boxes do not meet back to back. Runs cross over 61".
     ElectricalDevice(uid="GTXS39HE9Z", tag="ED-B-WORKSHOP-SW3", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-SW3",
+                     type_ref="ED-T-HBL-SW3",
                      circuit="CKT-LT-BSMT", room="RM-B-WORKSHOP",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(

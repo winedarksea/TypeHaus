@@ -184,6 +184,25 @@ PLATE_REGGIO_6SPB_SG = Product(tag="PROD-REGGIO-6SPB-SG", brand="Reggio Register
     model="6SPB", name="Steel Double Decora wall plate, 2-gang, Sun Gold",
     url="https://www.reggioregister.com/products/6spb", source=_REGGIO_SOURCE)
 
+PLATE_REGGIO_1SPB_SG = Product(tag="PROD-REGGIO-1SPB-SG", brand="Reggio Register Co.",
+    model="1SPB", name="Steel Single Toggle wall plate, 1-gang, Sun Gold",
+    url="https://www.reggioregister.com/products/1spb", source=_REGGIO_SOURCE)
+
+# Heavy-duty toggles' plates (owner, 2026-11-20). Hubbell SS1/SS2 sheets publish no size: SS1
+# 2.87 x 4.5 is the distributor figure, SS2 assumed one gang pitch wider. Thickness is Kyle's
+# published 5/32" for all three. Kyle SPSJS-T: toggle/Decora/toggle, 6 3/8 x 4 1/2, 430 SS.
+_SS_SOURCE = "Heavy-duty toggles, owner 2026-11-20 (notes/workshop_receptacles.md)."
+PLATE_HUBBELL_SS1 = Product(tag="PROD-HUBBELL-SS1", brand="Hubbell", model="SS1",
+    name="Toggle wall plate, 1-gang, 302/304 stainless, brushed",
+    url="https://hubbellcdn.com/specsheet/WIRING_SS1_spec.pdf", source=_SS_SOURCE)
+PLATE_HUBBELL_SS2 = Product(tag="PROD-HUBBELL-SS2", brand="Hubbell", model="SS2",
+    name="Toggle wall plate, 2-gang, 302/304 stainless, brushed",
+    url="https://hubbellcdn.com/specsheet/WIRING_SS2_spec.pdf", source=_SS_SOURCE)
+PLATE_KYLE_SPSJS_T = Product(tag="PROD-KYLE-SPSJS-T", brand="Kyle Switch Plates", model="SPSJS-T",
+    name="3-gang wall plate, toggle/Decora/toggle, 430 stainless, satin",
+    url="https://www.kyleswitchplates.com/toggle-decora-toggle-triple-wall-switch-plate-cover-stainless-steel/",
+    source=_SS_SOURCE)
+
 # Ceiling boxes (decision #140), retail listings read 2026-11-20; ESTIMATE until submittal.
 _CEILING_SOURCE = "Ceiling boxes, decision #140 (2026-11-20)."
 # Appleton FFS561LDNBH (Gexpro/Platt listings): 4" octagon, 2-1/8" deep, 21.5 in3, 16-24" bar
@@ -226,7 +245,9 @@ BELL_PRCF57550BZ = Product(tag="PROD-BELL-PRCF57550BZ", brand="Bell (Hubbell)", 
     source="Hubbell spec sheets BELL-PRCF57550BZ-SPEC-EN and PRCF57550BZ; retail at Menards and Lowe's. notes/porch_fan_box.md.")
 
 BOX_PRODUCTS = (BELL_PRCF57550BZ, BELL_5361_0, BELL_5374_0, APPLETON_FFS561LDNBH, RACO_929, ARLINGTON_FBR415F,
-                PLATE_REGGIO_2SPB_SG, PLATE_REGGIO_6SPB_SG, PLATE_PJ26_W, PLATE_PJ262_W, PLATE_PJ263_W, PLATE_PJ264_W, PLATE_80401_NW, PLATE_80409_NW, PLATE_80411_NW, PLATE_80412_NW, PLATE_CW_1_WH, PLATE_CW_2_WH, PLATE_CW_3_WH, PLATE_CW_4_WH, PLATE_80704_W, PLATE_MULBERRY_32442,
+                PLATE_REGGIO_1SPB_SG, PLATE_REGGIO_2SPB_SG, PLATE_REGGIO_6SPB_SG,
+                PLATE_HUBBELL_SS1, PLATE_HUBBELL_SS2, PLATE_KYLE_SPSJS_T,
+                PLATE_PJ26_W, PLATE_PJ262_W, PLATE_PJ263_W, PLATE_PJ264_W, PLATE_80401_NW, PLATE_80409_NW, PLATE_80411_NW, PLATE_80412_NW, PLATE_CW_1_WH, PLATE_CW_2_WH, PLATE_CW_3_WH, PLATE_CW_4_WH, PLATE_80704_W, PLATE_MULBERRY_32442,
                 RACO_232, CARLON_BH353A, CARLON_BH464A, RACO_808C, RACO_809C, RACO_768, CARLON_B122A, CARLON_BH235A,
                 CARLON_B520A, RACO_192, RACO_753, ARLINGTON_DVFR1W, AIRFOIL_1G, AIRFOIL_ROUND,
                 RACO_674, RACO_862)
@@ -279,6 +300,18 @@ BOX_STANDARD = [
             PlateRow(family="reggio-sungold", openings=("decora", "decora"),
                      product_ref="PROD-REGGIO-6SPB-SG", size=(inch(4.56), inch(4.5)),
                      thickness=inch(0.06), material_ref="reggio-sun-gold"),
+            PlateRow(family="reggio-sungold", openings=("toggle",),
+                     product_ref="PROD-REGGIO-1SPB-SG", size=(inch(2.75), inch(4.5)),
+                     thickness=inch(0.06), material_ref="reggio-sun-gold"),
+            PlateRow(family="stainless", openings=("toggle",), product_ref="PROD-HUBBELL-SS1",
+                     size=(inch(2.87), inch(4.5)), thickness=inch(0.156),
+                     material_ref="plate-stainless"),
+            PlateRow(family="stainless", openings=("toggle", "toggle"),
+                     product_ref="PROD-HUBBELL-SS2", size=(inch(4.68), inch(4.5)),
+                     thickness=inch(0.156), material_ref="plate-stainless"),
+            PlateRow(family="stainless", openings=("toggle", "decora", "toggle"),
+                     product_ref="PROD-KYLE-SPSJS-T", size=(inch(6.375), inch(4.5)),
+                     thickness=inch(0.156), material_ref="plate-stainless"),
             PlateRow(family="standard", openings=("single",),
                      product_ref="PROD-LEVITON-80704-W", size=(inch(2.75), inch(4.5)),
                      thickness=inch(0.22), material_ref="device-white"),

@@ -26,6 +26,8 @@ MATERIALS = [
              color="#f2f1ec", source="Leviton and Lutron white (-W / -WH) devices and plates."),
     Material(tag="reggio-sun-gold", name="Reggio Sun Gold powder coat",
              color="#c8a24c", source="Colour is an estimate; Reggio publishes no swatch value."),
+    Material(tag="plate-stainless", name="Stainless steel wall plate, brushed",
+             color="#c4c6c8", source="Hubbell SS1/SS2 and Kyle SPSJS-T brushed stainless."),
     Material(tag="device-black", name="Wiring device face, black",
              color="#1c1c1c", source="Leviton 1450R and 278 power receptacles ship black."),
     Material(tag="floor-box-antique-bronze", name="Antique bronze plated floor-box cover",

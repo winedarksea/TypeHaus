@@ -199,9 +199,10 @@ ATTIC_LIGHTING = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-A-S3", face="left", distance_from_start=inch(111.75),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
-    # ST-S2A's head end of the stair sconces' 3-way, two-gang with ED-A-STUDY-SW.
+    # ST-S2A's head end of the stair sconces' 3-way: own 1-gang box, 6 3/8" from ED-A-STUDY-SW's.
     ElectricalDevice(uid="13MM2P47TQ", tag="ED-A-STUDY-STAIR-SW", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-SW3", circuit="CKT-LT-UPPER", room="RM-A-STUDY",
+                     type_ref="ED-T-HBL-SW3", plate="reggio-sungold", circuit="CKT-LT-UPPER",
+                     room="RM-A-STUDY",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-A-C1", face="right", distance_from_start=inch(53.625),
