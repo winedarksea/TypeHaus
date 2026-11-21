@@ -540,11 +540,11 @@ def test_exterior_door_jambs_are_strapped_to_the_foundation(catlin_model) -> Non
             if row["role"] == "embedded_strap_holdown"]
     assert any(row["scope"] == "modeled connector" and row["part_number"] == "STHD14RJ"
                for row in rows)
-    # Derived corners are sized: the garage strap nails straight up from its sill, the
-    # house's crosses the floor band and is the RJ.
+    # Derived corners are sized: the house's crosses the floor band and is the RJ. The
+    # garage's three left 2026-11-20: no plumb Figure 1 entry in its 6" core.
     derived = {row["part_number"]: row["count"] for row in rows
                if row["scope"] == "sill plate on concrete"}
-    assert derived == {"STHD14": 3, "STHD14RJ": 3}
+    assert derived == {"STHD14RJ": 3}
 
 
 # --- knee braces, ties, straps, catalog ----------------------------------------------

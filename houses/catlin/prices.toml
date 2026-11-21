@@ -1561,7 +1561,13 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # same part 13 1/2" longer (about a fifth more steel). DTT2Z is a small screw hold-down and
 # its band carries the eight SDS screws it ships with, NOT the 1/2" rod or its anchorage,
 # which ESR-2330 puts outside its own scope and which nothing here bills.
-"STHD14" = { low = 20, high = 36 }  # 7 ea — the garage (3 derived corners, BWHD-SW, BWHD-S-DR) and the two porch-jamb curb straps
+"STHD14" = { low = 20, high = 36 }  # 2 ea — the two porch-jamb curb straps (the garage's five left 2026-11-20)
+# The garage panel ends since 2026-11-20: an HTT4 on the end stud over a cast-in SSTB16.
+# ESTIMATES, not quotes: big-box retail for both reads roughly $11-16 (HTT4) and $8-13 (SSTB16)
+# each; the HTT4 ships without nails (18 0.148 x 1-1/2, a few cents) and the SSTB16's HDG
+# nut and washer are by others (noted in the range).
+"HTT4" = { low = 11, high = 18 }  # 2 ea — CN-G-BWHD-SW, CN-G-BWHD-S-DR
+"SSTB16" = { low = 8, high = 15 }  # 2 ea — CN-G-BWAB-SW, CN-G-BWAB-S-DR (nut + washer in the high end)
 "STHD14RJ" = { low = 24, high = 42 }  # 7 ea — across the main floor band: 3 derived corners, the NE pair, the entry pair
 "DTT2Z" = { low = 22, high = 38 }  # 0 ea — the second-floor NE pair went with WIN-S-BED3-N (2026-11-16)
 

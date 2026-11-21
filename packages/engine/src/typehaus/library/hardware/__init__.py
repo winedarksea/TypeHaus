@@ -85,6 +85,10 @@ from typehaus.library.hardware.s5 import (
     S5_S_SNAP_LOCK_CLAMP,
     S5_SEAM_CLAMP,
 )
+from typehaus.library.hardware.simpson_anchor_holdowns import (
+    HTT4_TENSION_TIE,
+    SSTB16_ANCHOR_BOLT,
+)
 from typehaus.library.hardware.simpson_caps_bases import (
     A35Z_FRAMING_ANGLE,
     AC6Z_POST_CAP,
@@ -190,6 +194,8 @@ STRUCTURAL_HARDWARE: tuple = (
     PDPAWL_SLAB_PLATE_PIN,
     STHD_STRAP_HOLDOWN,
     DTT2Z_FLOOR_TIE,
+    HTT4_TENSION_TIE,
+    SSTB16_ANCHOR_BOLT,
     SP4_STUD_PLATE_TIE,
     SP4Z_STUD_PLATE_TIE,
     SP6_STUD_PLATE_TIE,

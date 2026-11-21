@@ -26,13 +26,14 @@ from typehaus.hardware.config import FT_TO_M, SillPlateAnchorRules, UpliftTieRul
 from typehaus.hardware.connector_dimensions import LATERAL_TIE_PLATE_DIMENSIONS
 from typehaus.hardware.plan_geometry import centerline_endpoints
 from typehaus.joints.model import axis_of
+from typehaus.joints.strap_corners import placed as _placed
 from typehaus.model.braced_wall import BracedWallPanel
 from typehaus.model.enums import ConnectorKind
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.connector_geometry.ties import EMBEDDED_STRAPS
 from typehaus.resolve.model import ResolvedModel
 from typehaus.resolve.partition import bearing_ref_tags, is_clad, is_interior_partition
-from typehaus.resolve.sill_bearing import band_centre_ends, bolt_offset_m, stud_band
+from typehaus.resolve.sill_bearing import band_centre_ends, bolt_offset_m
 
 #: A derived STHD draws as the STHD14 (``tie_mesh``'s representative).
 _STRAP_HALF_WIDTH_M = EMBEDDED_STRAPS["STHD14"].width_in / 2.0 * M_PER_IN
@@ -171,14 +172,19 @@ _CODE_END_M = 12.0 * M_PER_IN
 
 
 def _authored_strap_frames(model: ResolvedModel) -> list:
-    """``(point, axis)`` of each authored STHD: its own axis, else its framed wall's."""
+    """``(point, axis)`` of each authored STHD (its own axis, else its framed wall's) and
+    bolted hold-down (its framed wall's: an HTT's ``axis`` turns the part, not the wall)."""
+    from typehaus.hardware.anchor_holdowns import HOLDOWNS
+
     out = []
     for element in model.plan.all_elements() if model.plan is not None else ():
+        size = str(getattr(element, "size", "") or "").upper()
         if getattr(element, "kind", None) is not ConnectorKind.HOLD_DOWN \
                 or getattr(element, "position", None) is None \
-                or not str(getattr(element, "size", "") or "").upper().startswith("STHD"):
+                or not (size.startswith("STHD") or size in HOLDOWNS):
             continue
-        axis = (element.axis or "").lstrip("-") or next(
+        own = "" if size in HOLDOWNS else (element.axis or "").lstrip("-")
+        axis = own or next(
             (axis_of(*w.axis[:2]) for tag in element.connects
              if (w := model.wall(tag)) is not None and not w.is_foundation), None)
         if axis:
@@ -329,53 +335,23 @@ def strap_holdown_locations(model: ResolvedModel, rules: SillPlateAnchorRules,
     returns, corners = _corner_points(model, rules, sill_category)
     authored = _authored_embedded_holdowns(model)
     standdown = rules.authored_holdown_standdown_in * M_PER_IN
-    return returns, [point for point in corners
-                     if not any(math.dist(point, other) <= standdown for other in authored)]
-
-
-def _span(polygon, axis: tuple) -> tuple[float, float]:
-    offsets = [p[0] * axis[0] + p[1] * axis[1] for p in polygon]
-    return min(offsets), max(offsets)
-
-
-def _centre(polygon, axis: tuple) -> float:
-    return sum(_span(polygon, axis)) / 2.0
-
-
-def _inside_corner(model: ResolvedModel, ret, ends, other) -> tuple | None:
-    """``(point, outward)``: the strap on ``ret``'s stud-band inside face, inside the corner.
-
-    Across the run the leaf lies on the band's interior face; along it the strap's centre
-    stands half its width past the perpendicular band's interior face (S-103's notched sill).
-    """
-    band, perp = stud_band(model, ret), stud_band(model, other)
-    run = math.dist(*ends)
-    if band is None or perp is None or run <= 0.0:
-        return None
-    d = ((ends[1][0] - ends[0][0]) / run, (ends[1][1] - ends[0][1]) / run)
-    n = (-d[1], d[0])
-    s_n = 1.0 if _centre(perp, n) > _centre(band, n) else -1.0
-    s_d = 1.0 if _centre(band, d) > _centre(perp, d) else -1.0
-    across = _span(band, n)[1 if s_n > 0 else 0]
-    along = _span(perp, d)[1 if s_d > 0 else 0] + s_d * _STRAP_HALF_WIDTH_M
-    point = (d[0] * along + n[0] * across, d[1] * along + n[1] * across)
-    return point, (-s_n * n[0], -s_n * n[1])
+    kept = [point for point in corners
+            if not any(math.dist(point, other) <= standdown for other in authored)]
+    runs = [(ret, band_centre_ends(model, ret)) for ret in returns]
+    tol = rules.coincident_end_tolerance_in * M_PER_IN
+    return returns, [point for point in kept
+                     if _placed(model, runs, point, tol) is not None]
 
 
 def strap_holdown_stations(model: ResolvedModel, rules: SillPlateAnchorRules,
                            sill_category: str) -> list:
-    """``holdowns_per_run_end`` at each exterior foundation corner, inside the corner."""
+    """``holdowns_per_run_end`` at each exterior foundation corner a strap fits, inside it."""
     returns, locations = strap_holdown_locations(model, rules, sill_category)
     tol = rules.coincident_end_tolerance_in * M_PER_IN
     found: list[Station] = []
     runs = [(ret, band_centre_ends(model, ret)) for ret in returns]
     for point in locations:
-        at = [(ret, ends) for ret, ends in runs if any(math.dist(point, p) <= tol for p in ends)]
-        ret, ends = at[0]
-        end_axis = axis_of(*ends)
-        other = next((o for o, o_ends in at if axis_of(*o_ends) != end_axis), None)
-        placed = _inside_corner(model, ret, ends, other) if other is not None else None
-        xy, outward = placed if placed is not None else ((point[0], point[1]), None)
+        ret, end_axis, xy, outward = _placed(model, runs, point, tol)
         for _ in range(rules.holdowns_per_run_end):
             found.append(Station(run_tag=ret.tag, storey=ret.storey, point_m=xy,
                                  z_m=ret.z0_m, axis=end_axis, outward_xy=outward,

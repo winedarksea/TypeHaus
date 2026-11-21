@@ -693,6 +693,11 @@ MN_2020 = JurisdictionProfile(
         PermitItemSpec("Cast-in strap hold-downs (ESR-2920)",
                        ("structural.strap_hold_down_embedment",),
                        ("IRC R104.11", "ICC-ES ESR-2920 Table 1")),
+        # A bolted hold-down (HTT) on its cast-in SSTB: the tie's row and the anchor's
+        # stem-wall row, the lesser governing (added 2026-11-20).
+        PermitItemSpec("Bolted hold-downs on cast-in anchors (Simpson C-C-2026)",
+                       ("structural.anchor_rod_hold_down",),
+                       ("IRC R104.11", "Simpson C-C-2026 pp. 43, 63")),
         # `structural.lateral_racking` reaches it when a freestanding deck's lateral system
         # is a cast column FIXED at its base rather than knee braces — R507 grades neither,
         # and a braceless deck at storey height is exactly the thing a reviewer should be

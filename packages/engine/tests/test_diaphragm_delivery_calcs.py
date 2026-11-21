@@ -35,7 +35,7 @@ _ROWS = {
     "W-G-S delivered shear on the surplus": (38.777, 182.5),
     "W-G-E delivered shear on the surplus": (25.72, 182.5),
     "W-G-W delivered shear on the surplus": (26.46, 182.5),
-    "W-G-S overturning, delivered increment": (275.47, 3065.0),
+    "W-G-S overturning, delivered increment": (275.47, 2580.0),  # HTT4 (was STHD14 3,065)
     "diaphragm unit shear at W-BW-SCREEN": (172.43, 190.0),
 }
 

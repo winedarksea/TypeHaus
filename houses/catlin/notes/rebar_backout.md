@@ -39,6 +39,11 @@ to: *a back-out that only agrees with itself is not verified.*
 
 ## 1. What is billed today
 
+**2026-11-20b: 843 pieces, 5,241.0 lb** (addendum 2026-11-20b). The garage's five STHD bars
+leave with its straps; the two SSTB16 anchors take C-C-2026 p. 43's bar: foundation wall #4
+**297 → 294 pieces, 1,654.7 → 1,644.8 lb**; every other row as pinned on 2026-11-10. 45.0 lb/cy
+over §2's re-read 116.54 cy.
+
 **2026-11-20: 846 pieces, 5,250.9 lb** (addendum 2026-11-20). One derived #4 bar per cast-in
 STHD (ESR-2920 §4.2): foundation wall #4 **283 → 297 pieces, 1,610.1 → 1,654.7 lb**; every
 other row as pinned on 2026-11-10. 45.1 lb/cy over §2's re-read 116.54 cy.
@@ -435,7 +440,8 @@ $10,000-18,000 (`[allowances]` note) brackets the result's upper half.
 **The gate history**, kept for the record:
 
 ```
-billed          5,251 lb / 116.54 cy   =  45.1 lb/cy   (2026-11-20, ESR-2920 STHD bars; §2 re-read)
+billed          5,241 lb / 116.54 cy   =  45.0 lb/cy   (2026-11-20b, garage STHD bars out, two SSTB bars in)
+  was           5,251 lb / 116.54 cy   =  45.1 lb/cy   (2026-11-20, ESR-2920 STHD bars; §2 re-read)
   was           5,206 lb / 118.25 cy   =  44.0 lb/cy   (2026-11-10, Ufer bar; 44.7 over the true 116.54)
   was           6,718 lb / 143.93 cy   =  46.7 lb/cy   (2026-09-21, veneer beam bottom row stops at the dowels)
   was           6,736 lb / 143.93 cy   =  46.8 lb/cy   (2026-09-21, veneer beam hook ties + dowels)
@@ -882,4 +888,26 @@ the two are separate bars, not one counted twice.
 the `W-GF-S1`/`W-GF-S-DR` seam at x = 99, a split in one pour, not an end of concrete. It now
 runs to where the pour union ends, as the strap's own end distance always did: 24", x 77.5 ->
 101.5. +5.5" (+0.31 lb).
+
+## Addendum 2026-11-20b — the garage straps leave; two SSTB bars come in
+
+The three derived garage corner STHDs are gone (no plumb Figure 1 entry: `sthd_esr2920.md`,
+"The garage, 2026-11-20"), and BWHD-SW / BWHD-S-DR are HTT4s on cast-in SSTB16s. Their bar is
+C-C-2026 p. 43's: one #4 3-5" from the top, 2 le = 2 x 12 5/8 = 25.25" each side, a 16" return
+at a corner, laid 4" down on the core's mid-thickness as before.
+
+```
+out  garage NE, SE, NW STHD bars           3 x 53.9375   161.8125
+out  BWHD-SW STHD bar (W-GF-W)                             53.9375
+out  BWHD-S-DR STHD bar (W-GF-S-DR)                        56.0
+                                                5 bars    271.75 in
+in   BWAB-SW (W-GF-W): rod y 527.375 + 25.25 = 552.625 north, to the
+     corner at y 524.125 (28.5), 16 east to x 93.5          44.5
+in   BWAB-S-DR (W-GF-S-DR): 2 x 25.25, x 95.5625 -> 146.0625 50.5
+                                                2 bars     95.0 in
+```
+
+Net -176.75 in = -14.73 LF x 0.668 plf = **-9.84 lb**, -3 pieces: foundation wall #4
+**297 → 294 pieces, 1,654.7 → 1,644.8 lb** (engine -9.9). Total **5,241.0 lb / 843 pieces**
+over the same 116.54 cy, **45.0 lb/cy**.
 

@@ -15,11 +15,15 @@ def connector_mesh(part: str, *, member_width_in: float | None = None,
                    spoon_projection_in: float | None = None,
                    strap_jog_in: float = 0.0) -> GMesh | None:
     """Catalog bodies in local metres. Unknown products have no invented dimension record."""
+    from typehaus.resolve.connector_geometry.anchor_holdowns import anchor_holdown_mesh
     from typehaus.resolve.connector_geometry.bases_caps import base_cap_mesh
     from typehaus.resolve.connector_geometry.fasteners import fastener_mesh
     from typehaus.resolve.connector_geometry.hangers import hanger_mesh
     from typehaus.resolve.connector_geometry.ties import tie_mesh
 
+    body = anchor_holdown_mesh(part)
+    if body is not None:
+        return body
     body = hanger_mesh(part, member_width_in=member_width_in, member_depth_in=member_depth_in,
                        slope_radians=slope_radians, support_width_in=support_width_in)
     if body is not None:

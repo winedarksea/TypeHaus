@@ -1,3 +1,24 @@
+## The garage loses its STHDs: corners dropped, panel ends on HTT4 + SSTB16 (2026-11-20, decision #141 amended)
+
+- **Why.** The five garage STHDs graded UNKNOWN (a 2 9/16" jog no figure prints, yielding at
+  ~90 lb) and shut the permit gate. Owner: drop the corner straps if code does not ask for them
+  and they do not fit; otherwise MASA, anchor bolts or bolted hold-downs.
+- **Corners, not required.** R602.10.7: NE/SE/NW have returns (end conditions 1/3/4) and were
+  never a `hold_down_ref`. R602.3.5: item 1.1 misses (4:12 roof), item 1.2 holds: R802.11 gives
+  178 lb a truss at 24" = 89 plf <= 100, so Table R602.3(1) fastening is the uplift path. The
+  house rule now places a corner strap only where it rises plumb from a Figure 1 entry; the
+  garage's 6" core has 2.69" of reach for a 5.25" spoon, so none. The house corners keep theirs.
+- **Panel ends.** BWHD-SW (800 lb, end condition 2) and BWHD-S-DR (canopy chord, 275 lb) are an
+  HTT4 on the end stud over a cast-in SSTB16, rod 1 5/16" off the stud face and 2" off the core's
+  outer face: min(2,580, 3,465) = 2,580 lb, 0.310 and 0.107 (`notes/sthd_esr2920.md`).
+- **Rejected.** MASA / sill bolts: plate anchorage, not an end-post hold-down, so no end
+  condition 2. HDUE3 + SSTB16 (Simpson's own Table 2 pair): needs a 3" post, and SW's end is one
+  stud (W-G-S owns the corner pack). DTT2Z: 1/2" rod, no published anchor row in a 6" stem.
+  Simpson's written acceptance of the jog: the owner prefers no letters.
+- **Graded by** `structural.anchor_rod_hold_down` (new blocking permit line); the #4 bars follow
+  (`rebar_backout.md` addendum 2026-11-20b: 297 -> 294 pieces, -9.9 lb); prices `[hardware]`
+  HTT4 / SSTB16 estimates, STHD14 7 -> 2.
+
 ## Cast-in STHDs graded against ESR-2920; garage straps bent one cycle (2026-11-20, decision #141)
 
 - **Why.** In the 6" ICF core the garage spoons were drawn about 2.7" long against Figure 1's

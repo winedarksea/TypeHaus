@@ -37,7 +37,7 @@ _SCHEDULE = {
     ("footing", "#4", "hdg-a767"): (51, 261.5),  # +3: the Ufer bar (#123)
     ("footing", "#5", "hdg-a767"): (179, 1465.9),
     ("foundation wall", "#3", "hdg-a767"): (12, 16.2),
-    ("foundation wall", "#4", "hdg-a767"): (297, 1654.7),  # +14: ESR-2920 strap bars
+    ("foundation wall", "#4", "hdg-a767"): (294, 1644.8),  # STHD bars; garage's 5 -> 2 SSTB
     ("foundation wall", "#5", "hdg-a767"): (110, 1045.8),
     ("foundation wall", "#6", "hdg-a767"): (10, 129.5),
 }
@@ -97,8 +97,10 @@ _SCHEDULE = {
 # (4) #5 -> (6) #5, two more verticals and two more dowels each.
 # +45.0 lb, +14 pieces on 2026-11-20 (note addendum): one derived #4 bar per cast-in STHD
 # (ESR-2920 §4.2, notes/sthd_esr2920.md), 807.6" in all.
-_TOTAL_LB = 5250.9
-_TOTAL_PIECES = 846
+# -9.9 lb, -3 pieces on 2026-11-20b (note addendum): the garage's five STHD bars out, the two
+# SSTB16 bars (C-C-2026 p. 43) in.
+_TOTAL_LB = 5241.0
+_TOTAL_PIECES = 843
 
 @pytest.fixture(scope="module")
 def rows(catlin_model):
@@ -242,4 +244,5 @@ def test_the_concrete_the_steel_sits_in_is_the_note_s_volume(catlin_model) -> No
     # 43.8 the same day: the 14" north-entry piers at (6) #5, +88.5 lb (F5-106).
     # 44.0 on 2026-11-10: the Ufer bar in FT-B-W1/W2, +26.6 lb (decision #123).
     # 45.06 on 2026-11-20: the STHD bars (+45.0 lb) over the re-read 116.54 cy (was 44.67).
-    assert total_lb / total_cy == pytest.approx(45.06, rel=0.02)
+    # 44.97 the same day: the garage's STHD bars out, two SSTB bars in (-9.9 lb).
+    assert total_lb / total_cy == pytest.approx(44.97, rel=0.02)

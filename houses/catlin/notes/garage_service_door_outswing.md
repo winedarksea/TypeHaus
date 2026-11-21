@@ -81,7 +81,7 @@ same plane, with screw heads up to 1/8 inch proud. These modeled obstacles give:
 | 0 | 0.328 in | TR-BW-SCREEN-CAP (the brick base still bars it) |
 | 1/2 in | 0.645 in | RL-G-SERVICE-RETURN2 (cap 0.828 in) |
 | 1 in | 0.890 in | RL-G-SERVICE-RETURN2 |
-| 2 in | 1.366 in | CN-G-BWHD-S-DR |
+| 2 in | 1.567 in | RL-G-SERVICE-RAIL1 (the hold-down, an HTT4 in the stud bay since 2026-11-20, 4.363 in) |
 
 Re-swept 2026-11-18: the screen moved 3/16 inch west with the garage's 7/16-inch ZIP.
 
@@ -89,17 +89,17 @@ Measure the delivered frame's pivot before setting the stop. The MDO panel, nail
 screw-head geometry is included in the continuous sweep. Recheck changes to the face
 plane or hardware projection.
 
-Keep the canopy chord connection at the east jamb: stock **Simpson STHD14**,
-CN-G-BWHD-S-DR, centered at x=118 inches on the garage face at y=524 9/16 inches. It is
-nailed directly to the two full-height 2×6 east king studs spanning x=116.5..119.5 inches;
-the single jack is inboard at x=115..116.5 inches. Install 30 specified 0.148 × 3-1/4 inch
-nails. Cast it at the core's inside face (y=527 1/8 inches) and bend it one full cycle,
-2 9/16 inches over the pour top, to the kings (ESR-2920 §4.2). Set the strap at the stem top, z=−12 inches, with 14 inches of embedment into the
-continuous 6-inch concrete core and one centered No. 4 × 56 inch bar (2 le each side; was 40 inches,
-short of ESR-2920 Figure 1's midwall bar, `notes/sthd_esr2920.md`) 4 inches below the
-pour top. The calculated delivered tension is 275.47 lb (2026-10-31) against the documented 3,065 lb
-end-wall allowable. See [canopy_garage_diaphragm.md](canopy_garage_diaphragm.md) §3f for
-the load path and reinforcement basis. The door keeps its stop-only operation, at the 87° stop.
+Keep the canopy chord connection at the east jamb: a **Simpson HTT4**, CN-G-BWHD-S-DR, on a
+cast-in **SSTB16**, CN-G-BWAB-S-DR (2026-11-20; it was an STHD14 cast at the core's inside face
+and jogged 2 9/16" to the kings, which ESR-2920 does not print). The HTT4 nails with (18)
+0.148 x 1-1/2 inch nails to the EAST face of the two full-height 2x6 east kings (x=116.5..119.5
+inches), in the stud bay and never in the door reveal; the single jack is inboard at
+x=115..116.5 inches. Its rod is at x=120 13/16, y=523 1/8 inches: 2 inches off the core's
+outer face, 4 off its inside, embedment line at the stem top z=−12 inches (l_e 12 5/8), with one
+#4 x 50.5 inch bar (2 l_e each side, Simpson C-C-2026 p. 43) 4 inches below the pour top. The
+calculated delivered tension is 275.47 lb (2026-10-31) against min(HTT4 2,580, SSTB16 3,465) =
+2,580 lb, 0.107. See [canopy_garage_diaphragm.md](canopy_garage_diaphragm.md) §3f and
+`sthd_esr2920.md`, "The garage, 2026-11-20". The door keeps its stop-only operation, at the 87° stop.
 
 The separate plan-review question about the stair-to-threshold exception remains in §1.
 

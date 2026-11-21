@@ -16,6 +16,7 @@ from typehaus.hardware.catalog import (
     ROLE_BRACE_THROUGH_BOLT,
     ROLE_COIL_STRAP,
     ROLE_EMBEDDED_STRAP_HOLDOWN,
+    ROLE_HOLDOWN_ANCHOR_BOLT,
     ROLE_KNEE_BRACE,
     ROLE_LAPPED_BRACE_BOLT,
     ROLE_MUDSILL_ANCHOR,
@@ -53,7 +54,7 @@ _M_TO_FT = 3.280839895013123
 
 #: Parts set wet in the pour. The concrete crew places them, so their rows say where.
 _CAST_IN_ROLES = frozenset({ROLE_MUDSILL_ANCHOR, ROLE_SILL_ANCHOR_BOLT,
-                            ROLE_EMBEDDED_STRAP_HOLDOWN})
+                            ROLE_EMBEDDED_STRAP_HOLDOWN, ROLE_HOLDOWN_ANCHOR_BOLT})
 
 
 def _pours(returns) -> list:

@@ -249,21 +249,20 @@ line is 4.5' x 0.70 (eave-to-ridge under 5') x 0.95 (story height) = 2.992'.
 The delivered shear over the whole provided length times the wall height, no dead load:
 
 ```
-kdat   v = 670.77 / 20.2917 = 33.06 plf    T = 33.06 x 8.333 = 275.47 lb   vs 3,065   0.090
+kdat   v = 670.77 / 20.2917 = 33.06 plf    T = 33.06 x 8.333 = 275.47 lb   vs 2,580   0.107
+(vs 3,065, 0.090, while it was an STHD14; HTT4 on SSTB16 since 2026-11-20)
 ```
 
-* **Beside `D-G-SERVICE`**, stock **STHD14, `CN-G-BWHD-S-DR`**, on the garage face of the two full-height east
-  kings, centre **x = 118 in, y = 524 9/16 in**. The jack occupies x = 115..116.5 in; the kings x = 116.5..119.5 in.
-  Nail directly to the kings with **30 x 0.148 x 3-1/4 in** nails, bottom up. The 119.5-in west panel starts at the
-  king pack, not crediting the jack width; the two south panels total 243.5 in. Continue the scheduled panel-edge
-  nailing onto the full-height kings on the opposite face; keep the wall's sheathing and plate collectors. Embedment
-  line at the stem top **z = -12 in**, **14 in embedment** in the continuous 6-in core with no cold joint through
-  that depth. One **#4 x 56-in horizontal bar** (2 le each side, ESR-2920 Figure 1; 40 in until 2026-11-20), centred on the strap at **z = -16 in**, within its shear cone;
-  1.5-in cover and existing reinforcement maintained. Strap and bar go in before the pour with an SM1 holder; no
-  EPS in the anchorage; nail only into wood. The adjacent SW anchor is 42.75 in away in x, over 3 x 14 = 42 in. The
-  fossil stem splits are continuous concrete, not free ends. The conservative 6-in end-wall allowable is **3,065 lb**
-  (Simpson C-C-2026 pp.66-68: double-stud nail pattern, embedment, bar and spacing). Plan and anchor drawing:
-  `garage_service_door_outswing.md`.
+* **Beside `D-G-SERVICE`**, an **HTT4, `CN-G-BWHD-S-DR`**, on a cast-in **SSTB16, `CN-G-BWAB-S-DR`** (2026-11-20:
+  the STHD14 here was cast at the core's inside face and jogged 2 9/16" to the kings, which no figure prints;
+  `sthd_esr2920.md`, "The garage, 2026-11-20"). The tie nails with **(18) 0.148 x 1-1/2 in** to the EAST face of the
+  two full-height east kings (x = 119.5 in), in the stud bay and never in the door reveal; the jack occupies
+  x = 115..116.5 in, the kings x = 116.5..119.5 in. Rod at **x = 120 13/16, y = 523 1/8 in**: 2" off the core's
+  outer face, 4" off its inside, 46 5/16" from the corner (middle, >= 1.5 x 12 5/8). Embedment line at the stem top
+  **z = -12 in** (l_e 12 5/8 in a 64 in pour). One **#4 x 50.5-in bar** (2 le = 25 1/4 in each side, C-C-2026
+  p. 43) at **z = -16 in**. The 119.5-in west panel starts at the king pack; the two south panels total 243.5 in.
+  Continue the scheduled panel-edge nailing onto the full-height kings; keep the wall's sheathing and plate
+  collectors. Capacity min(HTT4 2,580 SPF/HF, SSTB16 middle 3,465) = **2,580 lb**.
 * **The SE corner needs no device.** R602.10.7 end condition 1: a 144" return on the same post.
 * `CN-G-BWHD-SW` is on `W-G-W`. The E-W case reaches `W-G-W` and `W-G-E` as the joint couple, +/-M / 24' =
   +/-2,064.2 / 24 = +/-86.0 lb: graded, and small (4.6 and 4.1 plf; `canopy_west_band.md` §6).
@@ -466,7 +465,7 @@ bottom, **0.78** (basis 4's pad credit reads lower). The garage rows are graded 
 
 ```
 joint boundary 809.72 / 23.229 = 34.86 plf (0.183)     gable clips 809.72 / 7 = 115.67 lb (0.257)
-W-G-S 809.72 / 17.299 = 46.80 plf (0.256)              STHD14 809.72 / 20.2917 x 8.333 = 332.53 lb (0.108)
+W-G-S 809.72 / 17.299 = 46.80 plf (0.256)              HTT4 809.72 / 20.2917 x 8.333 = 332.53 lb (0.129; 0.108 vs the STHD14)
 RF-GARAGE increment: W-G-E 1,173.44 x (19.8587 - 6)/24 = 677.59 lb -> 28.23 plf (0.169); W-G-W 495.85 lb
 joint couple  y_V = 40.116, M = 809.72 x 3.103 = 2,512.7 lb-ft;  nailer 1,173.44/6 + 2,512.7/23.229 = 303.74 lb
               garage nailer 303.74 / 959.462 = 0.317, the largest row
@@ -490,7 +489,7 @@ presumed); a soils report that predicts more than 3/16" between the two planes r
 | trigger | where | today |
 |---|---|---|
 | landing tie or screen OVER at the envelope | §4, §4e | 0.907 / 0.786, both under |
-| `W-G-S` surplus or overturning needs more than a hold-down | §3e, §3f | 0.212 and one STHD14 (0.090) |
+| `W-G-S` surplus or overturning needs more than a hold-down | §3e, §3f | 0.212 and one HTT4 on an SSTB16 (0.107) |
 | garage-roof blocking unbuildable round the drift trusses | §3d | none required |
 
 ## 10. Not graded here / still open
@@ -551,5 +550,5 @@ their carried 182.5 plf.
 - AWC NDS 2018 §12.3.1 (yield limit equations), Table 12.3.3 notes, §11.3.3 (C_M).
 - ACI 318-19 Ch. 17 as in `north_entry_canopy_lateral.md` §8f.
 - Simpson Strong-Tie C-C-2019 p. 280, LTP4 row, directions G/H; C-C-2021 p. 269 (LSTA).
-- ICC-ES ESR-2105 Table 3 (LSTA24); ESR-2920 (STHD14, 6" ICF stem).
+- ICC-ES ESR-2105 Table 3 (LSTA24); Simpson C-C-2026 p. 63 (HTT4) and p. 43 (SSTB16, 6" stem).
 - ASTM A500 Gr C; ASTM A123 (galvanizing after fabrication); ASTM F1554 Gr 36.

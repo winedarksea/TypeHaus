@@ -35,7 +35,7 @@
 # ** THE GARAGE SW CORNER TAKES A THIRD. ** D-G-SERVICE sits 11" off that corner, so W-G-S has
 # no 24" return to give W-G-W's end panel. The alternative is to move the service door 17"
 # east, which `plan/storeys/garage.py` warns drags the landing, the carriers, two backing
-# bands, three lighting stations and a section cut with it; one cast-in strap is cheaper.
+# bands, three lighting stations and a section cut with it; one bolted hold-down is cheaper.
 #
 # ** THE 16' OVERHEAD DOOR NEEDS NO PORTAL FRAME. ** Its two 4'-0" piers are 48" against
 # Table R602.10.5's 35" (CS-WSP, 84" adjacent opening, read at the more onerous of the 8'
@@ -245,20 +245,29 @@ GARAGE_BRACED_WALLS = [
                     width=inch(124.0), note="SE corner return for BWL-W-G-E"),
 ]
 
-# Cast into the ICF stem's 6" core at the SW corner (ESR-2920 Table 1's 6" stem rows). The
-# plain STHD14, not the RJ: the wood wall bears directly on the stem top, so there is no
-# floor band for the long strap to cross. Leaf on W-G-W's stud inside face; centred 1 1/2"
-# past W-G-S's, so its 3" stays on the core inside the corner (the derived-corner rule).
+# The garage panel ends: an HTT4 on the end stud, its seat on the sill over a cast-in SSTB16
+# (Simpson C-C-2026 p. 63 and p. 43; notes/sthd_esr2920.md, "The garage, 2026-11-20"). The
+# stud face lies 2 9/16" inside the 6" core's inside face, so an STHD there needed a jog no
+# figure prints. Each rod sits 1 5/16" (CL) off the stud face and 2" off the core's OUTER
+# face (1 3/4" minimum), so the 2 1/2" tie stays on the stud: the rod is 4" off the inside.
 GARAGE_BRACED_CONNECTORS = [
+    # SW: W-G-W's end stud, north face y=526 1/16"; the rod is 6 1/4" off W-GF-S (5" min).
     Connector(uid="EXWYG5FPB1", tag="CN-G-BWHD-SW", kind=ConnectorKind.HOLD_DOWN,
-              position=pt(ft(6, 5.9375), ft(43, 10.0625)), elevation=inch(-12),
-              size="STHD14", connects=("W-G-W", "W-GF-W")),
-    # Canopy shear chord: nail directly to the GARAGE face of the two full-height kings.
-    # The strap face is y=524 9/16in; its embedment line is the actual stem top, z=-12in.
-    # x=118in centers its 3in width on the kings and leaves >42in to the SW anchor.
-    # The jack is inboard of these kings; do not install this strap in the door reveal.
+              position=pt(inch(76.5), inch(527.375)), elevation=inch(-10.5),
+              size="HTT4", axis="x", connects=("W-G-W", "W-GF-W"),
+              source="HTT4, (18) 0.148 x 1-1/2 nails into the north face of W-G-W's end stud; seat on the 2x8 sill over CN-G-BWAB-SW. Nut finger tight plus 1/3-1/2 turn by hand (C-C-2026 general note f)."),
+    Connector(uid="EC6E0XCT2M", tag="CN-G-BWAB-SW", kind=ConnectorKind.ANCHOR_BOLT,
+              position=pt(inch(76.5), inch(527.375)), elevation=inch(-12),
+              size="SSTB16", connects=("W-GF-W", "W-G-W"),
+              source="SSTB16 corner installation: arrow diagonal into the corner, embedment line at the stem top z=-12in, AnchorMate holder; #4 bar 3-5in below the top with a 16in return (C-C-2026 p. 43)."),
+    # Canopy shear chord beside D-G-SERVICE: the east face of its two full-height kings
+    # (x=119.5"), in the stud bay, never in the door reveal. Midwall: 44" to the corner.
     Connector(uid="NEVC5ZWBXS", tag="CN-G-BWHD-S-DR", kind=ConnectorKind.HOLD_DOWN,
-              position=pt(ft(9, 10), ft(43, 8.5625)), elevation=inch(-12),
-              size="STHD14", axis="-x", connects=("W-G-S", "W-GF-S-DR"),
-              source="Garage/interior face of two full-height east king studs, x=116.5..119.5in; strap center x=118in. One jack x=115..116.5in. Direct wood fastening, 14in cast-in embedment; Simpson C-C-2026 pp.66-68. See service-door note."),
+              position=pt(inch(120.8125), inch(523.125)), elevation=inch(-10.5),
+              size="HTT4", axis="-y", connects=("W-G-S", "W-GF-S-DR"),
+              source="HTT4, (18) 0.148 x 1-1/2 nails into the east face of the east king pair (x=119.5in); seat on the sill over CN-G-BWAB-S-DR. See notes/canopy_garage_diaphragm.md 3f."),
+    Connector(uid="9K8D8AY5A2", tag="CN-G-BWAB-S-DR", kind=ConnectorKind.ANCHOR_BOLT,
+              position=pt(inch(120.8125), inch(523.125)), elevation=inch(-12),
+              size="SSTB16", connects=("W-GF-S-DR", "W-G-S"),
+              source="SSTB16 midwall installation, embedment line at the stem top z=-12in, AnchorMate holder; #4 bar 3-5in below the top, 2 le each side (C-C-2026 p. 43)."),
 ]

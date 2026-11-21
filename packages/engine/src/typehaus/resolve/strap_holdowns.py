@@ -113,6 +113,31 @@ def _footing_bottom(model, footing: Footing) -> float | None:
     return solid.z0_m if solid is not None else None
 
 
+def ends_at(model, core_tag: str, centre, s, d, thick: float, top: float,
+            half_in: float) -> tuple[EndSide, EndSide]:
+    """Both ends along ``d`` from ``centre``: the clear run (less ``half_in``) to where the
+    concrete at this pour top ends, and a perpendicular core it turns into, if any."""
+    pours = _pours(model, top)
+    union = union_all([Polygon(p) for _, p in pours])
+    ends = []
+    for sign in (-1.0, 1.0):
+        dirn = (d[0] * sign, d[1] * sign)
+        run = _run(union, centre, dirn)
+        turn = turn_core = turn_tag = None
+        near = (centre[0] + dirn[0] * (run - 0.5 * M_PER_IN),
+                centre[1] + dirn[1] * (run - 0.5 * M_PER_IN))
+        for nsign in (-1.0, 1.0):
+            probe = (near[0] + s[0] * nsign * (thick / 2 + 3 * M_PER_IN),
+                     near[1] + s[1] * nsign * (thick / 2 + 3 * M_PER_IN))
+            hit = next(((tag, p) for tag, p in pours if tag != core_tag
+                        and Polygon(p).contains(Point(probe))), None)
+            if hit is not None:
+                turn, turn_tag, turn_core = (s[0] * nsign, s[1] * nsign), hit[0], hit[1]
+                break
+        ends.append(EndSide(sign, run / M_PER_IN - half_in, turn, turn_core, turn_tag))
+    return ends[0], ends[1]
+
+
 def strap_site(model, strap) -> StrapSite | None:
     wall = model.wall(strap.core_tag)
     core = _core(model, strap.core_tag)
@@ -127,28 +152,9 @@ def strap_site(model, strap) -> StrapSite | None:
     lo, hi = _offsets(core, e, s)
     mid = (lo + hi) / 2.0
     centre = (e[0] + s[0] * mid, e[1] + s[1] * mid)
-    pours = _pours(model, top)
-    union = union_all([Polygon(p) for _, p in pours])
-    half = EMBEDDED_WIDTH_IN / 2.0
-    ends = []
-    for sign in (-1.0, 1.0):
-        dirn = (d[0] * sign, d[1] * sign)
-        run = _run(union, centre, dirn)
-        turn = turn_core = turn_tag = None
-        thick = hi - lo
-        near = (centre[0] + dirn[0] * (run - 0.5 * M_PER_IN),
-                centre[1] + dirn[1] * (run - 0.5 * M_PER_IN))
-        for nsign in (-1.0, 1.0):
-            probe = (near[0] + s[0] * nsign * (thick / 2 + 3 * M_PER_IN),
-                     near[1] + s[1] * nsign * (thick / 2 + 3 * M_PER_IN))
-            hit = next(((tag, p) for tag, p in pours if tag != strap.core_tag
-                        and Polygon(p).contains(Point(probe))), None)
-            if hit is not None:
-                turn, turn_tag, turn_core = (s[0] * nsign, s[1] * nsign), hit[0], hit[1]
-                break
-        ends.append(EndSide(sign, run / M_PER_IN - half, turn, turn_core, turn_tag))
+    ends = ends_at(model, strap.core_tag, centre, s, d, hi - lo, top, EMBEDDED_WIDTH_IN / 2.0)
     return StrapSite(strap, top, bottom, footing.tag if footing else None,
-                     -lo / M_PER_IN, hi / M_PER_IN, centre, (ends[0], ends[1]), core,
+                     -lo / M_PER_IN, hi / M_PER_IN, centre, ends, core,
                      *strap_le(strap.part))
 
 

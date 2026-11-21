@@ -92,11 +92,12 @@ def test_stock_leaf_sweep_clears_hold_down_and_screen_with_required_margin(catli
     (``factory_frame_depth`` 6-9/16"), which moved the leaf plane: ties 0.320 -> 0.381",
     hold-down 2.873 -> 2.865". 2026-11-18: the screen went 3/16" west with the garage's 7/16"
     ZIP, so the cap reads 0.828" and RL-G-SERVICE-RETURN2 governs at 0.645". 2026-11-20: the
-    hold-down moved to y=524 9/16" to sit inside the ICF core, 2.865 -> 2.863".
+    hold-down moved to y=524 9/16" to sit inside the ICF core, 2.865 -> 2.863"; then it became
+    an HTT4 on the kings' east face, in the stud bay, 5.863".
     """
     results = _service_sweep(catlin_model_ro)
     anchor = [result for result in results if result.obstacle == "CN-G-BWHD-S-DR"]
-    assert min(result.clearance_m for result in anchor) / INCH == pytest.approx(2.863, abs=1e-3)
+    assert min(result.clearance_m for result in anchor) / INCH == pytest.approx(5.863, abs=1e-3)
     assert results[0].obstacle == "RL-G-SERVICE-RETURN2"
     assert min(result.clearance_m for result in results) / INCH == pytest.approx(0.645, abs=1e-3)
     cap = [result for result in results if result.obstacle == "TR-BW-SCREEN-CAP"]
@@ -136,13 +137,14 @@ def test_a_flush_hinge_is_the_thinnest_margin(catlin_model_ro):
     assert results[0].clearance_m / INCH == pytest.approx(0.328, abs=1e-3)
 
 
-def test_the_old_schematic_leaf_overlaps_the_hold_down(catlin_model_ro):
-    """34in leaf at the old x=83in hinge: the pass depends on the purchased 32in leaf."""
+def test_the_hold_down_no_longer_bounds_the_leaf(catlin_model_ro):
+    """34in leaf at the old x=83in hinge overlapped the garage-face STHD until 2026-11-20; the
+    HTT4 stands in the stud bay east of the kings, so even that leaf clears it."""
     from typehaus.quantities import inch
 
     results = _service_sweep(catlin_model_ro, hinge_inset=inch(2), leaf_end=inch(34))
     anchor = [result for result in results if result.obstacle == "CN-G-BWHD-S-DR"]
-    assert min(result.clearance_m for result in anchor) < 0
+    assert min(result.clearance_m for result in anchor) > 0
 
 
 def test_r311_2_grades_the_purchased_leaf_not_the_rough_opening(catlin_ctx):

@@ -211,6 +211,12 @@ ROLE_BEAM_HOLD_DOWN = "beam_hold_down"
 # concrete, and the two parts are selected against different reports (ESR-2330 screws into
 # wood, ESR-2920 a strap in a pour).
 ROLE_FLOOR_TIE_HOLDOWN = "floor_tie_holdown"
+# A bolted hold-down on an end stud, on a cast-in anchor rod (HTT4 on an SSTB). Its own
+# role: neither cast in (an STHD) nor floor to floor (a DTT2Z pair); read with its anchor.
+ROLE_ANCHOR_ROD_HOLDOWN = "anchor_rod_holdown"
+# The cast-in anchor bolt that hold-down bears on, graded on its stem-wall row. Not
+# ROLE_SILL_ANCHOR_BOLT: that bolt holds a plate down at a pitch, this one an end post.
+ROLE_HOLDOWN_ANCHOR_BOLT = "holdown_anchor_bolt"
 # A pre-cut strap nailed across a floor band, stud to stud. Not ROLE_COIL_STRAP: that is
 # bought by the coil and cut, this is one part per joint.
 ROLE_FLOOR_TO_FLOOR_STRAP = "floor_to_floor_strap"

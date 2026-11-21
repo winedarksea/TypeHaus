@@ -68,7 +68,89 @@ applies and the check FAILs.
 - **Bent strap.** A strap bent one cycle is measured from where it is **cast**.
 - **Allowable.** Cracked, wind/A&B.
 
-## The garage: why every strap is jogged (and why that is UNKNOWN)
+## The garage, 2026-11-20 (owner): no STHD at all
+
+Owner: "Drop the corner straps if they are not required by code and do not fit." They are
+neither, and the two panel straps became bolted hold-downs. Everything below "The garage:
+why every strap was jogged" is the record of why.
+
+### The three corners: not required
+
+- **R602.10.7.** The garage braces by CS-WSP. A line end needs a 24" sheathed return
+  (end conditions 1, 4), a panel at the end (3), or an 800 lb hold-down (2, 5). NE, SE and
+  NW meet 1/3/4 on their returns; `structural.braced_wall_panels` passes all four garage
+  lines without them (the derived straps were never a `hold_down_ref`). Only SW has no
+  return: D-G-SERVICE leaves 11".
+- **R602.3.5** (2018 IRC, read on UpCodes 2026-11-20). Item 1.1 does not apply (the garage
+  roof is 4:12, under 5:12). Item 1.2: net uplift at the wall top, by R802.11, at most
+  100 plf. Table R802.11, Exposure B, 24" o.c., the 24' row, 115 mph, under 5:12: **178 lb**
+  a truss (`wind_tables.uplift_connection_force_lb("B", 24, 24, 115, 4)`), 178 / 2 ft =
+  **89 plf <= 100**. So Table R602.3(1) fastening is the uplift path; no connector is asked
+  for at all, and none at a corner.
+- The rule that placed them was the house's (`holdowns_per_run_end`, one per exterior
+  corner). It now places a strap only where one rises plumb from a Figure 1 entry
+  (`joints/strap_corners.plumb_entry_fits`: the catalog spoon, less 3/4" cover, fits ahead of
+  the leaf). In the garage 3.44 - 0.75 = 2.69 < 5.25: none. The house's 8" walls: 6 - 0.75 =
+  5.25, so all three house corners keep theirs. The bill, S-100, the #4 bars and the check
+  all read that one rule.
+
+### The two panel ends: HTT4 on a cast-in SSTB16
+
+Read 2026-11-20 from Simpson C-C-2026 (`out/bw-corner-brace-review/C-C-2026.pdf`):
+
+- **p. 63, HTT4:** (18) 0.148 x 1 1/2 nails, minimum member 1 1/2 x 3 1/2: DF/SP 3,000,
+  **SPF/HF 2,580 lb** (160). Anchor 5/8"; CL 1 5/16" (rod centre off the member face);
+  W 2 1/2"; L 12 3/8". General note a: no further increase.
+- **p. 43, SSTB at stem wall, Wind and SDC A&B:** SSTB16, 6" stem, 5/8", l_e 12 5/8,
+  middle / corner / end **3,465** each. Plan views: 1 3/4" minimum to the face, 5" to the end
+  at a corner or end, #4 bar 3-5" from the top, 2 l_e each way, a 16" return at a corner.
+  fn. 5: middle at 1.5 l_e from the end; 3 l_e between bolts in tension together. p. 42:
+  2,500 psi.
+- **p. 51, Table 2 (SPF/HF):** the HDUE3 pairs with SSTB16 in a 6" stem. The HTT4 is listed
+  there only at 8" (SSTB24) because that table develops the tie's full DF value; here the two
+  rows are read separately and the lesser governs. General note d: the anchor is the
+  designer's to specify.
+
+Why not the alternatives: a MASA or the 1/2" sill bolts are plate anchorage, not an end-post
+hold-down, so they cannot make end condition 2. An HDUE needs a 3" post and the SW end is a
+single stud (W-G-S owns the corner pack). A DTT2Z takes a 1/2" rod, and no published 1/2"
+anchor row covers a 6" stem.
+
+**Geometry** (garage cores: W-GF-W x 74.5..80.5, W-GF-S y 521.125..527.125; studs 2x6):
+
+| | SW (CN-G-BWHD-SW / -BWAB-SW) | S-DR (CN-G-BWHD-S-DR / -BWAB-S-DR) |
+|---|---|---|
+| member face | W-G-W end stud, north face y 526.0625 | east king, east face x 119.5 |
+| rod | (76.5, 527.375) = face + 1.3125 | (120.8125, 523.125) = face + 1.3125 |
+| to the faces | 76.5 - 74.5 = **2.00**; 80.5 - 76.5 = 4.00 | 523.125 - 521.125 = **2.00**; 4.00 |
+| tie on the member | x 75.25..77.75 on the stud's 72.44..77.94 | y 521.875..524.375 on 519.06..524.56 |
+| end | 527.375 - 521.125 = **6.25** to W-GF-S's outer face: corner (< 1.5 x 12.625 = 18.94), >= 5 | 120.8125 - 74.5 = **46.31**: middle |
+| pour | -12 to -76 = 64 >= 12.625 | 64 |
+| #4 bar, z -16 | north to 527.375 + 25.25 = 552.625, to the corner y 524.125 (28.5), 16 east to x 93.5 | 120.8125 +/- 25.25 = x 95.5625..146.0625 |
+
+The rod is 2" off the core's outer face because the tie must sit on the stud: the stud's
+inside face is 3 7/16" off the core's outer face, so the rod can be at most 3.4375 - 1.25 =
+2.19" off it with the 2 1/2" tie still on the stud; 2.00 sits between that and the 1.75
+minimum. The garage sill bolts move clear of each seat (`joints/sills`):
+SW's W-G-W end bolt from y 524.62 to 530.375, its washer 1/2" past the seat.
+
+**Capacity and demand:**
+
+```
+SW     min(HTT4 2,580, SSTB16 corner 3,465) = 2,580 lb   vs 800 (Figure R602.10.7)   0.310
+S-DR   min(HTT4 2,580, SSTB16 middle 3,465) = 2,580 lb   vs 275.47 (canopy §3f)      0.107
+```
+
+R602.10.7 reads the HTT4's published 2,580 >= 800, so SW keeps end condition 2.
+`structural.anchor_rod_hold_down` grades both rows (blocking permit line, "Bolted
+hold-downs on cast-in anchors"); `structural.strap_hold_down_embedment` no longer sees the
+garage.
+
+Not graded: the SSTB's offset leg is set by the AnchorMate holder and its arrow; the nut is
+finger tight plus 1/3-1/2 turn (general note f). ICF is not addressed by C-C-2026: the core is
+read as the stem, as for the STHDs above.
+
+## The garage: why every strap was jogged (superseded 2026-11-20)
 
 Take W-GF-E. The core runs x 351.5..357.5 and W-G-E's studs x 354.0625..359.5625.
 
@@ -91,9 +173,10 @@ change the engine drew it bent short to about 2.7, which no row covers.
 The strap's length above the line drops by the leg: 26.125 - 2.5625 = 23.5625. Thirty nails
 still fit on the studs, because the clear span is only the 1 1/2" sill.
 
-### Open: the garage jog (review, 2026-11-20)
+### The garage jog (review, 2026-11-20; closed the same day, above)
 
-The check grades all five garage straps **UNKNOWN**, and the permit gate is shut on that line.
+The check graded all five garage straps **UNKNOWN** and shut the permit gate on that line,
+until the owner's decision above removed them.
 
 - **Not printed.** Figure 1 and every C-C-2026 p. 68 detail show the strap rising plumb from
   where it is cast. Simpson's own gloss on §4.2 is "bend the straps to horizontal and back to
@@ -104,7 +187,7 @@ The check grades all five garage straps **UNKNOWN**, and the permit gate is shut
   The jog yields at T = 0.228 / 2.5625 = **89 lb**, against 800 required at BWHD-SW. Before it
   holds, the leg pulls up into a diagonal. Table 1's 0.118" deflection does not apply.
 
-Options, none taken:
+Options (option 3 and a bolted hold-down for the two panel ends were taken):
 
 1. A hold-down with a published row in a 6" stem (an anchor-rod hold-down on a cast-in rod
    placed under the framing, e.g. SSTB + HDU/DTT). It needs its own reading.
@@ -137,11 +220,11 @@ Options, none taken:
 
 | strap | part | behind / ahead | row | end distance | location | allowable | demand / ratio |
 |---|---|---|---|---|---|---|---|
-| CN~STHD14~..~02 (garage NE, W-GF-E) | STHD14 | 0 / 6.0 (jog 2.5625) | 6" | 804.125 - 799.1875 - 1.3125 = 3.625 | corner | UNKNOWN (jog) | none stated |
-| CN~STHD14~..~03 (garage SE, W-GF-S3) | STHD14 | 0 / 6.0 (jog 2.5625) | 6" | 357.5 - 352.5625 - 1.3125 = 3.625 | corner | UNKNOWN (jog) | none stated |
-| CN~STHD14~..~01 (garage NW, W-GF-N) | STHD14 | 0 / 6.0 (jog 2.5625) | 6" | 79.4375 - 74.5 - 1.3125 = 3.625 | corner | UNKNOWN (jog) | none stated |
-| CN-G-BWHD-SW (W-GF-W) | STHD14 | 0 / 6.0 (jog 2.5625) | 6" | 526.0625 - 521.125 - 1.3125 = 3.625 | corner | UNKNOWN (jog); 4,935 if rated | 800 / **0.162** if rated |
-| CN-G-BWHD-S-DR (W-GF-S-DR) | STHD14 | 0 / 6.0 (jog 2.5625) | 6" | 161.5 - 118 - 1.3125 = 42.19 (at least 21) | midwall | UNKNOWN (jog) | 275.47 (canopy note §3f) / 0.056; not in the model |
+| (retired) CN~STHD14~..~02 (garage NE, W-GF-E) | STHD14 | 0 / 6.0 (jog 2.5625) | 6" | 804.125 - 799.1875 - 1.3125 = 3.625 | corner | UNKNOWN (jog) | none stated |
+| (retired) CN~STHD14~..~03 (garage SE, W-GF-S3) | STHD14 | 0 / 6.0 (jog 2.5625) | 6" | 357.5 - 352.5625 - 1.3125 = 3.625 | corner | UNKNOWN (jog) | none stated |
+| (retired) CN~STHD14~..~01 (garage NW, W-GF-N) | STHD14 | 0 / 6.0 (jog 2.5625) | 6" | 79.4375 - 74.5 - 1.3125 = 3.625 | corner | UNKNOWN (jog) | none stated |
+| (retired) CN-G-BWHD-SW (W-GF-W) | STHD14 | 0 / 6.0 (jog 2.5625) | 6" | 526.0625 - 521.125 - 1.3125 = 3.625 | corner | UNKNOWN (jog); 4,935 if rated | 800 / **0.162** if rated |
+| (retired) CN-G-BWHD-S-DR (W-GF-S-DR) | STHD14 | 0 / 6.0 (jog 2.5625) | 6" | 161.5 - 118 - 1.3125 = 42.19 (at least 21) | midwall | UNKNOWN (jog) | 275.47 (canopy note §3f) / 0.056; not in the model |
 | CN~STHD14RJ~..~01, ~02, ~03 (house SW, NW, SE) | STHD14RJ | 2 / 6 (8" wall, leaf at stud face 6") | 6" | 7.5 - 0 - 1.3125 = 6.19 | corner | 4,935 | none stated |
 | CN-M-BWHD-NE-E (W-B-E2, 10" wall) | STHD14RJ | 4 / 6 (x 422..432, leaf 426) | 6" | 432 - 401 - 1.3125 = 29.69 | midwall | 4,935 | 800 / **0.162** |
 | CN-M-BWHD-NE-N (W-B-N1) | STHD14RJ | 2 / 6 | 6" | 29.69 | midwall | 4,935 | 800 / **0.162** |

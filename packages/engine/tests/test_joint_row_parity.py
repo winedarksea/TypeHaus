@@ -153,8 +153,9 @@ def test_the_joint_counts_are_the_ones_the_house_is_known_to_have(catlin_model_r
     assert joints["ridge_tie_strap"] == 0
     assert joints["ridge_plate_strap"] == 19
     # 40 -> 6 on 2026-10-09: derived STHDs only at exterior foundation corners. The house's
-    # NE corner and the garage's SW corner stand down for their authored braced-panel STHDs.
-    assert joints["embedded_strap_holdown"] == 6
+    # NE corner stands down for its authored braced-panel STHDs. 6 -> 3 on 2026-11-20: the
+    # garage's three corners have no plumb Figure 1 entry, so the house rule places none.
+    assert joints["embedded_strap_holdown"] == 3
     # The leg that had nothing until 2026-09-14: six attic gable-end walls, 22 ties, plus one
     # LTP4 (was HGA10) under each of the garage's two gable-end trusses (2026-09-16). Worth
     # pinning hard, because the rule that finds them is four predicates and dropping any one

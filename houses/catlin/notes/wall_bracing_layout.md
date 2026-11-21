@@ -198,7 +198,7 @@ The parts, and what they publish:
 |---|---|---|---|
 | `CN-M-BWHD-NE-E`, `-N` | STHD14RJ cast in the basement wall top | 4,935 lb (midwall, 6" row as cast 2-4" in from the inside face, cracked, wind/SDC A&B; `structural.strap_hold_down_embedment`, `notes/sthd_esr2920.md`) | ICC-ES ESR-2920 Table 1 |
 | `CN-S-BWHD-NE-E`, `-N` (retired 2026-11-16) | DTT2Z pair on a 1/2" rod through the floor | 1,825 lb (1-1/2" member) | ICC-ES ESR-2330 Table 4 |
-| `CN-G-BWHD-SW` | STHD14 cast in the ICF-6 core | 4,935 lb (corner, 6" stem; 3,065 endwall is the catalog record's floor) | ICC-ES ESR-2920 Table 1 |
+| `CN-G-BWHD-SW` | HTT4 on W-G-W's end stud, on a cast-in SSTB16 (`CN-G-BWAB-SW`; an STHD14 until 2026-11-20, retired for its jog) | 2,580 lb (HTT4, SPF/HF), the SSTB16's 3,465 corner row the lesser not governing (`structural.anchor_rod_hold_down`, `notes/sthd_esr2920.md`) | Simpson C-C-2026 pp. 63, 43 |
 
 All of them cleared the 800 lb the figure asks for by three times or more. Two caveats belong to
 the reader and not to the arithmetic: the **RJ** strap is the one long enough to cross the

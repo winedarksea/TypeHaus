@@ -1,4 +1,5 @@
-"""The No. 4 bar an STHD's Table 1 load is tested with (ESR-2920 §3.2.6, §4.2, Figure 1).
+"""The No. 4 bar an STHD's Table 1 load is tested with (ESR-2920 §3.2.6, §4.2, Figure 1),
+and the same bar under an SSTB (C-C-2026 p. 43: 2 le each side, a 16" corner return).
 
 One bar 3-5" below the top of the foundation, 2 x le each side of the strap; near an end
 that turns a corner, an L round it with the Figure 1 return leg. Laid only where the host's
@@ -57,7 +58,8 @@ def _path(site: StrapSite, le_in: float, cover_m: float, z: float, model) -> lis
     reach = {}
     turn = None
     for end in site.ends:
-        avail = (end.distance_in + EMBEDDED_WIDTH_IN / 2.0) * M_PER_IN - cover_m
+        half_in = getattr(site, "half_width_in", EMBEDDED_WIDTH_IN / 2.0)
+        avail = (end.distance_in + half_in) * M_PER_IN - cover_m
         reach[end.sign] = max(min(want, avail), 0.0)
         if avail < want and end.turn_to is not None and turn is None:
             turn = end
@@ -78,12 +80,13 @@ def _path(site: StrapSite, le_in: float, cover_m: float, z: float, model) -> lis
 
 
 def strap_bars(model, sets: list[ResolvedRebarSet]) -> list[ResolvedRebarSet]:
-    """``sets`` with a derived STHD bar added to each strap's core that lacks one."""
+    """``sets`` with a derived bar added to each STHD's (and SSTB's) core that lacks one."""
+    from typehaus.resolve.anchor_holdowns import anchor_sites
     from typehaus.resolve.rebar.build import cover_m
 
     plan = model.plan
     added: dict[str, list[ResolvedBar]] = {}
-    for site in strap_sites(model):
+    for site in [*strap_sites(model), *anchor_sites(model)]:
         le_in = site.le_in
         host = site.strap.core_tag
         if le_in is None:
@@ -100,11 +103,14 @@ def strap_bars(model, sets: list[ResolvedRebarSet]) -> list[ResolvedRebarSet]:
             continue
         mine = added.setdefault(host, [])
         mine.append(ResolvedBar(
-            key=f"{host}/sthd/{len(mine) + 1:03d}", role="horizontal", bar=MIN_BAR,
+            key=f"{host}/{getattr(site, 'bar_kind', 'sthd')}/{len(mine) + 1:03d}",
+            role="horizontal", bar=MIN_BAR,
             coating=(mix.bar_coating if mix is not None else None) or "", spacing_in=None,
             path=tuple(path), closed=False, diameter_m=BARS[MIN_BAR].diameter_in * M_PER_IN,
             placed_length_m=length,
-            note=f"ESR-2920 §4.2: the {site.strap.part} bar for {site.strap.tag}"))
+            note=(f"C-C-2026 p. 43: the {site.strap.part} bar for {site.strap.tag}"
+                  if getattr(site, "bar_kind", "sthd") == "sstb" else
+                  f"ESR-2920 §4.2: the {site.strap.part} bar for {site.strap.tag}")))
     out = []
     for rs in sets:
         extra = added.pop(rs.host_tag, None)

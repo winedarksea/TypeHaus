@@ -360,14 +360,18 @@ def _anchor_bolt_rows(model: ResolvedModel) -> list[tuple[str, ...]]:
 
     A bolt that fastens a deck LEDGER (``Beam.ledger_on``) is not sill anchorage and is left
     out: it is the deck's attachment, graded by ``structural.deck_ledger``. Letting one in
-    would also displace every derived mudsill anchor below.
+    would also displace every derived mudsill anchor below. A hold-down's anchor (an SSTB
+    under an HTT) is the hold-down's, not the plate's, and is left out for the same reason.
     """
+    from typehaus.hardware.catalog import ROLE_HOLDOWN_ANCHOR_BOLT, hardware_by_model
     from typehaus.model.enums import ConnectorKind
     from typehaus.model.structure import is_ledger
 
     bolts = [e for e in model.plan.all_elements()
              if e.element_kind == "Connector"
              and getattr(e, "kind", None) is ConnectorKind.ANCHOR_BOLT
+             and getattr(hardware_by_model(str(getattr(e, "size", "") or "")), "role",
+                         None) != ROLE_HOLDOWN_ANCHOR_BOLT
              and not any(is_ledger(model.plan.by_tag(tag))
                          for tag in getattr(e, "connects", ()))]
     grouped: dict[str, list[Any]] = {}

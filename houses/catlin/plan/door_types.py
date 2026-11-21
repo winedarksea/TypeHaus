@@ -138,7 +138,8 @@ DOOR_TYPES = (
         source="D-G-SERVICE: stock MMI Z0364688R six-panel insulated steel prehung, "
                "6-9/16 composite frame. West hinges, outswing, painted outside to match the trim/white inside. "
                "34x81.5 framed opening, nominal 32x80 purchased unit. "
-               "STHD14 on garage face of two full-height east king studs; one jack inboard. "
+               "HTT4 on the east face of the two full-height east king studs, on a cast-in "
+               "SSTB16; one jack inboard. "
                "Retain factory sill; set support from delivered unit; see service-door note."),
     DoorType(
         tag="DT-EXT-FRENCH60", width=ft(5), height=ft(6, 8), exterior=True, function="entry",
