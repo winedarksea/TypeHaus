@@ -641,12 +641,13 @@
           88.0
         ]
       ],
-      "pattern": "glulam-treated",
+      "pattern": "glulam-treated-df",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "glulam-treated"
+      "material": "glulam-treated-df",
+      "fill": "#c8a877"
     },
     {
       "space": "model",
@@ -697,12 +698,13 @@
           88.0
         ]
       ],
-      "pattern": "glulam-treated",
+      "pattern": "glulam-treated-df",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "glulam-treated"
+      "material": "glulam-treated-df",
+      "fill": "#c8a877"
     },
     {
       "space": "model",

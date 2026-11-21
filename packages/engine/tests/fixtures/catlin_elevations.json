@@ -2695,12 +2695,12 @@
 "conduits/CD-B-DATA-SHOP/z_start_m": -1.2557125,
 "conduits/CD-B-DATA-STUDY/z_end_m": 0.8128,
 "conduits/CD-B-DATA-STUDY/z_m": [
--0.3175,
+-0.3683,
 0.8128,
-6,
-"7f5bc11db175"
+10,
+"fc6f06d0499e"
 ],
-"conduits/CD-B-DATA-STUDY/z_start_m": -0.3175,
+"conduits/CD-B-DATA-STUDY/z_start_m": -0.3302,
 "conduits/CD-B-GAP-EV/z_end_m": 1.778,
 "conduits/CD-B-GAP-EV/z_m": [
 -1.35255,
@@ -20326,9 +20326,9 @@
 ],
 "geometry/CBPV02AAAA-run/body": [
 -3.0131385,
--0.3124208,
+-0.3248027,
 240,
-"16d849e0f5e4"
+"844bd5931bd9"
 ],
 "geometry/CBPW18AAAA-sleeve/body": [
 -3.3123187,
@@ -33048,7 +33048,7 @@
 -0.6796115,
 2.9337,
 216,
-"db83d6af7ce4"
+"4d54b7b5f207"
 ],
 "geometry/CMQ806AAAA-W-M-TUBDK-S-batt-0-0-0/body": [
 0.05715,
@@ -81711,10 +81711,10 @@
 "e9b9b13bb296"
 ],
 "geometry/Z9TXYSYKWG-run/body": [
--0.3292094,
+-0.3800094,
 0.8128,
-120,
-"d63ea74e21b7"
+216,
+"56a7b36553f7"
 ],
 "geometry/Z9XJDD5SWM/body": [
 1.115762,
@@ -121153,12 +121153,12 @@
 "25f973f1ff72"
 ],
 "pipe_runs/PR-B-SAUNA-FD-VENT/z_start_m": -3.0227905,
-"pipe_runs/PR-B-SAUNA-VENT/z_end_m": -0.33782,
+"pipe_runs/PR-B-SAUNA-VENT/z_end_m": -0.3502025,
 "pipe_runs/PR-B-SAUNA-VENT/z_m": [
 -3.0131385,
--0.33782,
+-0.3502025,
 11,
-"dd8caa4e179c"
+"5514794e5753"
 ],
 "pipe_runs/PR-B-SAUNA-VENT/z_start_m": -3.0131385,
 "pipe_runs/PR-B-SH2-DRAIN/z_end_m": -0.61087,
@@ -121534,7 +121534,7 @@
 -0.6425082,
 2.9337,
 10,
-"dd96a14a625b"
+"91dac5972c90"
 ],
 "pipe_runs/PR-M-S-SUITE-DRAIN/z_start_m": 2.9337,
 "pipe_runs/PR-M-S-SUITE-LAV-DRAIN/z_end_m": 2.94259,
@@ -122575,7 +122575,7 @@
 "solids/CD-B-DATA-MEDIA-RUN/z1_m": -0.2105406,
 "solids/CD-B-DATA-SHOP-RUN/z0_m": -1.9786219,
 "solids/CD-B-DATA-SHOP-RUN/z1_m": -1.2074906,
-"solids/CD-B-DATA-STUDY-RUN/z0_m": -0.3292094,
+"solids/CD-B-DATA-STUDY-RUN/z0_m": -0.3800094,
 "solids/CD-B-DATA-STUDY-RUN/z1_m": 0.8128,
 "solids/CD-B-GAP-EV-RUN/z0_m": -1.373632,
 "solids/CD-B-GAP-EV-RUN/z1_m": 1.778,
@@ -128160,7 +128160,7 @@
 "solids/PR-B-SAUNA-FD-VENT-RUN/z0_m": -3.0227905,
 "solids/PR-B-SAUNA-FD-VENT-RUN/z1_m": -0.448082,
 "solids/PR-B-SAUNA-VENT-RUN/z0_m": -3.0131385,
-"solids/PR-B-SAUNA-VENT-RUN/z1_m": -0.3124208,
+"solids/PR-B-SAUNA-VENT-RUN/z1_m": -0.3248027,
 "solids/PR-B-SH2-DRAIN-RUN/z0_m": -0.6362594,
 "solids/PR-B-SH2-DRAIN-RUN/z1_m": 0.0127,
 "solids/PR-B-SINK2-DRAIN-RUN/z0_m": -0.6891072,

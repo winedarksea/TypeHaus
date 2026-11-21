@@ -471,62 +471,6 @@
       "node": "polyline",
       "points": [
         [
-          123.125,
-          50.51279530000001
-        ],
-        [
-          124.625,
-          50.51279530000001
-        ],
-        [
-          124.625,
-          59.76279530000001
-        ],
-        [
-          123.125,
-          59.76279530000001
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CST702AAAA",
-      "tag": "ledger-W-M-STRW-landing-rim-upper-0"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          123.125,
-          50.51279530000001
-        ],
-        [
-          124.625,
-          50.51279530000001
-        ],
-        [
-          124.625,
-          59.76279530000001
-        ],
-        [
-          123.125,
-          59.76279530000001
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           123.12106299212599,
           51.8877953
         ],
