@@ -190,6 +190,21 @@ def test_planting_counts(catlin_model_ro) -> None:
     assert len(catlin_model_ro.plants) == 582
 
 
+def test_basin_plants_are_centred_in_their_beds(catlin_model_ro) -> None:
+    """A widened basin keeps its rows centred: the grid splits its slack between edges."""
+    plan = catlin_model_ro.plan
+    for prefix in ("PB-RG-", "PB-RGE-"):
+        for part in ("SLOPE-W", "SLOPE-E", "FLOOR"):
+            bed = plan.by_tag(prefix + part)
+            xs = [p.xy_m[0] for p in bed.outline]
+            ys = [p.xy_m[1] for p in bed.outline]
+            plants = [p.position for p in catlin_model_ro.plants if p.source_ref == bed.tag]
+            assert plants, bed.tag
+            for axis, lo, hi in ((0, min(xs), max(xs)), (1, min(ys), max(ys))):
+                vals = [p[axis] for p in plants]
+                assert (min(vals) + max(vals)) / 2 == pytest.approx((lo + hi) / 2, abs=1e-6)
+
+
 def test_the_terrace_is_filled_and_planted(catlin_model_ro) -> None:
     """PB-TER-*: 12" of soil over fill to the yard, one row of tomatoes, between the walls."""
     from shapely.geometry import Polygon

@@ -45,10 +45,11 @@ class PlantType(HausModel):
 class GridLayout(HausModel):
     """A square (or staggered) planting grid, clipped to the bed outline.
 
-    Cell (i, j) sits at ``bbox_min + edge_inset + (i, j) * spacing``; odd rows shift by half
-    a spacing when ``stagger``. A cell is kept when it lies at least ``edge_inset`` inside
-    the outline. ``type_refs`` mixes the field: cell (i, j) takes ``type_refs[(i + j) % n]``;
-    empty means the bed's own ``type_ref``. Accents still override.
+    The lattice fits as many cells as ``edge_inset`` allows and centres them in the outline's
+    bounding box; odd rows shift by half a spacing when ``stagger``. A cell is kept when it
+    lies at least ``edge_inset`` inside the outline. ``type_refs`` mixes the field: cell
+    (i, j) takes ``type_refs[(i + j) % n]``; empty means the bed's own ``type_ref``. Accents
+    still override.
     """
 
     spacing: Length

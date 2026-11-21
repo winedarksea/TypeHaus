@@ -67,12 +67,15 @@ def grid_cells(outline, grid: GridLayout) -> list[tuple[int, int, float, float]]
     minx, miny, maxx, maxy = polygon.bounds
     columns = int(math.floor((maxx - minx - 2 * inset) / spacing + _EPS)) + 1
     rows = int(math.floor((maxy - miny - 2 * inset) / spacing + _EPS)) + 1
+    # Centre the lattice: the slack splits evenly between opposite edges.
+    x0 = (minx + maxx - (columns - 1) * spacing) / 2.0
+    y0 = (miny + maxy - (rows - 1) * spacing) / 2.0
     cells = []
     for j in range(max(rows, 0)):
         shift = spacing / 2.0 if grid.stagger and j % 2 else 0.0
         for i in range(max(columns, 0)):
-            x = minx + inset + i * spacing + shift
-            y = miny + inset + j * spacing
+            x = x0 + i * spacing + shift
+            y = y0 + j * spacing
             point = Point(x, y)
             if polygon.contains(point) and polygon.exterior.distance(point) >= inset - _EPS:
                 cells.append((i, j, x, y))

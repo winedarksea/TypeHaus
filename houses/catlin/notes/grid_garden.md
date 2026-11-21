@@ -14,7 +14,8 @@ takeoff table; reproduced by `tests/test_catlin_gardens.py`.
 
 ## 1. Rule
 
-Square grid at spacing s, inset s/2: columns = ⌊(W − s)/s⌋ + 1, rows = ⌊(H − s)/s⌋ + 1.
+Square grid at spacing s, inset d (default s/2): columns = ⌊(W − 2d)/s⌋ + 1, rows likewise.
+The lattice is centred in the bed's bounding box: the slack splits evenly between edges.
 Cell (i, j) is an accent when (a·i + b·j) mod `every` = 0; its type is
 `type_refs[(i + j) mod n]`.
 
@@ -38,9 +39,13 @@ Types `(M, M, M, A, M, M, M, C)[(i + j) mod 8]`:
 
 | bed | outline | cols × rows | cells |
 |---|---|---|---|
-| PB-RG-SLOPE-W | x −6..−4.5 × y 47..82 | 1 × ⌊33.75/1.25⌋+1 = 28 | 28 'Jazz' |
-| PB-RG-SLOPE-E | x −2.5..−1 × y 47..82 | 1 × 28 | 28 'Jazz' |
-| PB-RG-FLOOR | x −4.5..−2.5 × y 48.5..80.5 | 1 × ⌊30.75/1.25⌋+1 = 25 | 25 |
+| PB-RG-SLOPE-W | x −6..−4 × y 47..82 | 1 × ⌊33.75/1.25⌋+1 = 28 | 28 'Jazz', row x = −5 |
+| PB-RG-SLOPE-E | x −2.75..−0.75 × y 47..82 | 1 × 28 | 28 'Jazz', row x = −1.75 |
+| PB-RG-FLOOR | x −4..−2.75 × y 49..80, d = 6" | 1 × ⌊30/1.25⌋+1 = 25 | 25, row x = −3.375 |
+
+Each row sits on its bed's centre line (2026-11-20; before, the lattice struck from the
+bbox corner and the 3" widening left the rows 1.5"–4.5" west). PB-RGE-* mirror these
+about x = 18'.
 
 Floor accents: (i + 2j) mod 5 = 0 with i = 0 → j = 0, 5, 10, 15, 20; type
 `(IRIS, MILKWEED)[j mod 2]` → iris at 0, 10, 20 (**3**), milkweed at 5, 15 (**2**). The
@@ -49,8 +54,9 @@ other 20 cells take the field mix `(OCTOBER SKY, NORTHWIND)[j mod 2]`: even j (2
 
 ## 4. Totals
 
-'Jazz' 336 + 56 = **392**; Moonbeam 33; Angelina 6; Caramel 5; 'October Sky' 10;
-'Northwind' 10; iris 3; milkweed 2. With 27 pockets and 3 apples: **491 plants**.
+Two basins: 'Jazz' 336 + 4 × 28 = **448**; Moonbeam 33; Angelina 6; Caramel 5;
+'October Sky' 20; 'Northwind' 20; iris 6; milkweed 4. The whole-house count, pockets,
+apples and terrace included, is `test_planting_counts`.
 
 ## 5. What is NOT graded here
 

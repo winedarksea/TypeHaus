@@ -49,8 +49,8 @@ _rect = rect
 # switchgrass, 'October Sky' and 'Northwind' alternating, with iris and milkweed. Same
 # layout code, same rendering.
 _GRID = GridLayout(spacing=inch(15))
-# The floor is 1'-0" wide at 12" of ponding: a 6" inset keeps ONE row on its centre line
-# (the default half-spacing, 7 1/2", keeps none and the floor went bare).
+# The floor is 1'-3" wide at 12" of ponding; the grid centres ONE row on it. The 6" inset
+# keeps 25 plants down its 31' (the default 7 1/2" keeps 24).
 _FLOOR_GRID = GridLayout(spacing=inch(15), edge_inset=inch(6),
                          type_refs=("PT-PAN-OCTSKY", "PT-PAN-NORTHWIND"))
 _MID_SLOPE = ft(RG_RIM.feet - RG_PONDING.feet / 2.0)
