@@ -15,8 +15,9 @@ slab is cut to hang at its undercut (``door_undercut_m``) in whatever RO it is f
 and ``leaf_cut_m`` records the cut (an 80" slab in the 81.51" RO at 1/2" loses 0.11").
 
 A bypass or bifold set is sold by its finished opening, which its track sets: the RO is that
-plus the jamb allowance each side and at the head, with no leaf gap or undercut. A published
-RO measured to the finished floor (``OpeningSize.datum``) is raised by the build-up.
+plus the jamb allowance each side and at the head, with no leaf gap or undercut. A
+``BypassDoorSpec`` publishes it: nominal less the leaves' overlap, leaf + ``head_over_leaf``.
+A published RO measured to the finished floor (``OpeningSize.datum``) is raised by the build-up.
 
 The jamb depth is the wall's finish-to-finish depth. Against ``TrimStandard.jamb_stock_depths``
 it is ripped from the next stock up, or extended from the deepest; a door its ``DoorTrim``
@@ -107,6 +108,8 @@ class DoorSizing:
     # slab's bottom on site to get it in this RO (0 where it fits uncut).
     undercut_m: float = 0.0
     leaf_cut_m: float = 0.0
+    # The pocket frame kit sized for this door: (manufacturer, name, part number).
+    pocket_kit: tuple[str, str, str] | None = None
 
     @property
     def jamb_rip_m(self) -> float:
@@ -231,8 +234,11 @@ def door_sizing(door, door_type, trim_standard=None, kit=None,
     pair = operation == DoorOperation.DOUBLE_SWING
     track = operation in (DoorOperation.SLIDE, DoorOperation.BIFOLD)
     undercut = 0.0 if track else door_undercut_m(door_type, trim_standard)
+    bypass = getattr(door_type, "bypass_door", None)
+    overlap = bypass.overlap.meters if bypass is not None else 0.0
     if track:
-        side, head = 2 * a, floor_finish_m + d.track_head_m + a
+        over_leaf = bypass.head_over_leaf.meters if bypass is not None else d.track_head_m
+        side, head = 2 * a, floor_finish_m + over_leaf + a
         hang = head
     else:
         side = 2 * (a + g) + (g if pair else 0.0)
@@ -262,6 +268,11 @@ def door_sizing(door, door_type, trim_standard=None, kit=None,
     elif pocket:
         rough_w, rough_h, basis["rough"] = _pocket_rough(nominal_w, nominal_h, kit, head,
                                                         floor_finish_m, derived)
+    elif bypass is not None:
+        rough_w, rough_h = nominal_w - overlap + side, nominal_h + head
+        basis["rough"] = (f"{derived}, finished opening = nominal - {_inches(overlap)} overlap "
+                          f"x leaf + {_inches(bypass.head_over_leaf.meters)} "
+                          f"(published: {bypass.product_ref or 'bypass set'})")
     else:
         rough_w, rough_h = nominal_w + side, nominal_h + head
         basis["rough"] = derived + (
@@ -281,7 +292,7 @@ def door_sizing(door, door_type, trim_standard=None, kit=None,
             leaf_w = passage - 2 * (a + g)
         else:
             rough_w = passage
-            leaf_w = passage - side
+            leaf_w = passage - side + overlap
         leaf_h = rough_h - hang
         basis["rough"] = "held"
         basis["leaf"] = "inferred from the held RO"
@@ -320,7 +331,14 @@ def door_sizing(door, door_type, trim_standard=None, kit=None,
         leaf_gap_m=g, floor_finish_m=floor_finish_m, held=held is not None, fits=fits,
         basis=tuple(basis.items()), jamb_depth_m=jamb_depth, jamb_stock_m=jamb_stock,
         jamb_material_ref=flat, wall_depth_m=wall_depth_m, undercut_m=undercut,
-        leaf_cut_m=cut)
+        leaf_cut_m=cut, pocket_kit=_kit_identity(kit, nominal_w) if pocket else None)
+
+
+def _kit_identity(kit, nominal_w: float) -> tuple[str, str, str] | None:
+    if kit is None:
+        return None
+    numbers = getattr(kit, "part_number_by_length_in", None) or {}
+    return kit.manufacturer, kit.name, numbers.get(round(nominal_w / _IN), kit.model)
 
 
 def _jamb(door, door_type, trim_standard, wall_depth_m) -> tuple[float | None, float | None]:

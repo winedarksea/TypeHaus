@@ -114,7 +114,9 @@
 
 > **Interior doors, 2026-11-03:** function, core, seal, relief path and hardware per door are
 > in `notes/interior_door_schedule.md` (types in `plan/interior_door_types.py`). Halifax Square
-> US15 house-wide; hardware bills by `DoorType.function` in `[allowances]`.
+> US15 house-wide; hardware bills by `DoorType.function` in `[allowances]`. Every leaf is flush
+> and smooth and every type names its product (`plan/interior_door_products.py`, owner 2026-11-20);
+> `D-M-MUDC` is a Johnson 138F482D bypass set (`BypassDoorSpec`: RO 2W - 1", leaf + 2 3/8").
 
 > **Exterior door approaches rest; nothing cantilevers (owner, 2026-11-13; sill beam 2026-11-17):**
 > every exterior door's `ExteriorDoorInstallation.approach_bearing` rests its approach on house

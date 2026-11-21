@@ -108,6 +108,7 @@ def _catalog(model: ResolvedModel, provenance: Provenance | None) -> dict[str, A
                  "assembly_confirmed": dt.catalog_dimensions.assembly_confirmed,
              } if dt.catalog_dimensions else None),
              "trimless": dt.trimless, "leaf_set": dt.leaf_set, "product_ref": dt.product_ref,
+             **_door_facts(dt, standard),
              "bookcase_door": (None if dt.bookcase_door is None else {
                  "body_width_m": dt.bookcase_door.body_width.meters,
                  "body_height_m": dt.bookcase_door.body_height.meters,
@@ -243,6 +244,29 @@ def _placed_types(model: ResolvedModel, types: list[dict[str, Any]] | None) -> d
                 meshes.append(encoded)
             part["mesh_index"] = indices[key]
     return {"canvas_object_types": types, "meshes": meshes}
+
+
+def _door_facts(door_type, standard) -> dict[str, Any]:
+    """What a door is bought as and how it hangs, for the inspector's door rows."""
+    from typehaus.resolve.door_sizing import door_undercut_m
+
+    spec = door_type.bypass_door
+    track = door_type.operation in ("slide", "bifold", "overhead")
+    return {
+        "core": door_type.core, "function": door_type.function,
+        "leaf_thickness_m": (door_type.leaf_thickness.meters
+                             if door_type.leaf_thickness else None),
+        "bottom_seal": door_type.bottom_seal, "self_closing": door_type.self_closing,
+        "tempered": door_type.tempered, "fire_rating_minutes": door_type.fire_rating_minutes,
+        "pocket_frame": door_type.pocket_frame,
+        "undercut_m": None if track or door_type.exterior else door_undercut_m(
+            door_type, standard),
+        "bypass_door": None if spec is None else {
+            "product_ref": spec.product_ref, "overlap_m": spec.overlap.meters,
+            "lane_pitch_m": spec.lane_pitch.meters,
+            "head_over_leaf_m": spec.head_over_leaf.meters,
+            "floor_clearance_m": spec.floor_clearance.meters, "source": spec.source},
+    }
 
 
 def _type_sizing(door_type, standard):

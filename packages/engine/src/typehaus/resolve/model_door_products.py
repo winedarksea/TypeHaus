@@ -30,3 +30,25 @@ class CasedDoorSpec:
 
     frame_material_ref: str | None = None
     leaf_material_ref: str | None = None
+
+
+@dataclass(frozen=True)
+class BypassDoorPlacement:
+    """A ``BypassDoorSpec`` set fitted to its opening (``resolve/geometry_bypass_doors``)."""
+
+    finished_floor_z_m: float  # the higher side's
+    head_z_m: float  # the RO head
+    jamb_allowance_m: float
+    finished_width_m: float  # between the jambs
+    leaf_width_m: float  # each leaf
+    leaf_height_m: float
+    leaf_thickness_m: float
+    floor_clearance_m: float
+    track_width_m: float
+    track_height_m: float
+    lane_pitch_m: float
+    overlap_m: float
+    guide_size_m: tuple[float, float, float]  # along, across, tall
+    pull_diameter_m: float
+    pull_height_m: float
+    product_ref: str | None = None

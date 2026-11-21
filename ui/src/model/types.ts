@@ -392,6 +392,8 @@ export interface DoorSizing {
   fits: boolean;
   basis: Record<string, string>;
   pocket_run_m: number;
+  // The pocket frame kit sized for this door: [manufacturer, name, part number].
+  pocket_kit?: [string, string, string] | null;
 }
 
 // One resolved product part of an opening (server/model_json_opening_parts.py): plan rings
@@ -1595,6 +1597,25 @@ export interface DoorTypeSpec {
     casing_overall_width_m: number;
     mounting_face: "negative_normal" | "positive_normal";
     material_ref?: string | null;
+  } | null;
+  // What the leaf is bought as and how it hangs (server/model_json_catalog._door_facts).
+  core?: "solid" | "hollow" | null;
+  function?: string | null;
+  leaf_thickness_m?: number | null;
+  bottom_seal?: boolean;
+  self_closing?: boolean;
+  tempered?: boolean;
+  fire_rating_minutes?: number | null;
+  pocket_frame?: string | null;
+  // The hung undercut; null for a track or exterior door.
+  undercut_m?: number | null;
+  bypass_door?: {
+    product_ref: string | null;
+    overlap_m: number;
+    lane_pitch_m: number;
+    head_over_leaf_m: number;
+    floor_clearance_m: number;
+    source: string;
   } | null;
 }
 

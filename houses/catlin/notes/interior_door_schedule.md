@@ -15,6 +15,33 @@ plus an edge pull at `D-B-BATH`; a flush pull plus an edge pull at the pantry an
 **Core.** Hollow on every commodity leaf; the exceptions are the solid, steel and sauna rows
 below.
 
+**Style (owner, 2026-11-20).** Every leaf is flush and smooth. Each type names its product
+(`DoorType.product_ref`, `plan/interior_door_products.py`), and the viewer's door inspector
+prints it with the core, function, leaf and bottom:
+
+| Product | Types |
+|---|---|
+| Steves & Sons flush HC primed composite prehung, `x62H1WASAE` (J 24 / M 30 / N 32 / Q 36, RH/LH) | every hollow `-SWING*`, `CLOSET32` (cut to 6'-0", rail re-glued) |
+| Masonite 65726 flush solid-core primed prehung | every `-SOLID*`, `DOUBLE60` (prehung as a pair by the yard) |
+| Masonite 14548 flush HC slab, 36x80 | both pockets (the Eclisse kit serves on the opening: EKC3680 / its 2x6 sibling) |
+| Steves J62H1FADLC99 flush HC slab, 24x80 | `BYPASS48` (two), `ACCESS24` (cut to 36", rail re-glued) |
+| Johnson Hardware 138F482D | `BYPASS48`'s set |
+| Impact Plus BFP344-6080W flush bifold, trimmed to 56" (confirm; no stock 56") | `BIFOLD56` |
+| Mastercraft 4140314/5 flush steel prehung | `STEEL36-KEYED` |
+| Mastercraft full-lite steel prehung, 30" (model unread) | `STEEL30-SEALED` |
+| Finnleo all-wood sauna door, or equal (model unread) | `SAUNA24` |
+| Trimlite 1-lite tempered slab, 1 3/4" | `SWING30-GLAZED-TRIMLESS` (and catalog `SWING30-GLAZED`) |
+| Flush solid-core slab, 1 3/4" (Trimlite / JELD-WEN class) | `SWING32-TRIMLESS-PUSH` |
+| Steelcraft hollow metal, narrow lite, KD frame, or equal | `STEEL24-LITE` |
+
+**D-M-MUDC (2026-11-20).** Two 24x80 flush HC slabs on a Johnson 138F482D 48" two-door set,
+cased like every other door. Johnson's IN183834: finished opening 2W - 1" = 47" (the leaves
+lap 1"), height = leaf + 2 3/8" (82 3/8" over the LVP), 3/8" at the floor; RO 49" (was 50")
+x 83 3/8" over the finished floor. Track 3.459 x 2.187", lanes ~1 11/16" c-c (measured off
+Johnson's drawing), the 2135 guide at the floor centre, #30 cup pulls on the mudroom faces
+36" up (`flip_swing` picks that face). The start jamb stays at 16" off N-M-MUDC1, so the RO's
+east edge moved 1" further from the corner pack; the head is in the 9' nonbearing partition.
+
 **Undercut (owner, 2026-11-06).** Every interior door is a stock 6'-8" prehung cut down on
 site in its 81.51" RO: jamb legs trimmed, the slab cut to hang at its undercut over the
 higher finished floor. 1/2" by default (`TRIM-STANDARD.door_undercut`), 3/4" on a relief
@@ -33,7 +60,7 @@ sweep or automatic bottom closes its undercut (`DoorType.bottom_seal`).
 | D-M-BED2 | bed / living | DT-INT-SWING32-TRIMLESS-PUSH | privacy | solid | kerf seal + automatic bottom | via D-M-BATH2 |
 | D-M-STUDY | study booth / living | DT-INT-SWING30-GLAZED-TRIMLESS | passage | glazed | open undercut | 5 cfm out under it; opens to 174 deg on an Emtek 2256US15 3" magnetic holder |
 | D-M-PANTRY, D-M-LAUN | - | DT-POCKET-INT-36 | pocket passage: flush + edge pull | - | - | - |
-| D-M-MUDC | mud closet | DT-INT-BYPASS48 | closet | - | - | - |
+| D-M-MUDC | mud closet | DT-INT-BYPASS48 | closet: Johnson 138F482D, #30 cup pulls | hollow (2 x 24x80 flush slabs) | 3/8" over the LVP (set's clearance) | - |
 | D-S-BED1/2 | bedroom / hall | DT-INT-SWING30-PRIV | privacy | hollow | 3/4" (needs ~1.8x more: see return note) | System 1 return |
 | D-S-BED3 | bedroom / hall | DT-INT-SWING30-PRIV-STOCK | privacy | hollow | 1/2" | none: ducted return REG-S-HP-BED3-RET (2026-11-11) |
 | D-S-SUITE | suite / hall | DT-INT-SWING32-PRIV-SOLID-SEALED | privacy | solid | 1/2", kerf seal + sweep | none: ducted return REG-S-HP-SUITE-RET (2026-11-09) |
@@ -41,10 +68,10 @@ sweep or automatic bottom closes its undercut (`DoorType.bottom_seal`).
 | D-S-BATH1 | bath1 / hall | DT-INT-SWING30-PRIV-SOLID | privacy | solid | kerf seal + sweep across a 1/2" undercut | REG-S-XFER-VANITY -> lined bay -> REG-S-XFER-BATH1 |
 | D-S-NCLOSET | closet / hall | DT-INT-SWING30 | passage | hollow | 1/2" | - |
 | D-S-PLANT | plant / study2 | DT-INT-STEEL30-SEALED | passage | insulated steel, full tempered lite | none: compression seal + adjustable sill (2026-11-12) | closer with hold-open; the room vents through its own transfer pair (`plant_room.md`) |
-| O-S-CLOSET | suite closet | DT-INT-BIFOLD56 | closet | - | - | - |
+| O-S-CLOSET | suite closet | DT-INT-BIFOLD56 | closet | solid (flush MDF bifold) | - | - |
 | D-A-HALVES | studio / study | DT-INT-SWING32-PRIV | privacy | hollow | 3/4" (3.8 Pa: see return note) | System 1 return |
 | D-A-STUBATH | studio bath / studio | DT-INT-SWING24-PRIV | privacy | hollow | 3/4" | - |
-| D-A-POCKET | ERV access | DT-INT-ACCESS24 | passage | - | - | - |
+| D-A-POCKET | ERV access | DT-INT-ACCESS24 | passage | hollow (24x80 slab cut to 36") | 1/2" | - |
 | D-A-STUDY | attic study | DT-INT-BOOKCASE30 | touch latch, ships with the unit (filtered out of the passage row) | solid | sealed (owner, 2026-11-12): gasketed leaf, bottom sweep | none: passes no air; the study is open to the stair |
 | D-B-FURN | furnace / workshop | DT-INT-SWING36 | passage | hollow | 3/4" **must stay** | the workshop's makeup |
 | D-B-SHOP | workshop / stair hall | DT-INT-STEEL36-KEYED | keyed entry 740HFL SQT 15 SMT + US15 hinges | steel | weatherstrip + sweep across a 1/2" undercut, no sill | via D-B-FURN |

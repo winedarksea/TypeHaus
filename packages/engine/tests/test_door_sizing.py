@@ -20,6 +20,8 @@ class _Door:
 
 class _Kit:
     model = "KIT"
+    manufacturer = "Maker"
+    name = "Kit"
     rough_opening_in_by_length_in = {36: 74.5}
     rough_opening_head_over_leaf_in = 3.25
 

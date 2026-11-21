@@ -171,7 +171,7 @@ ESS_STEEL_DOOR = DoorType(
     # `glazed` so R308.4.1 grades the lite; the engine has no partial-lite leaf, so the
     # viewer draws it all glass and it takes no leaf_material_ref.
     glazed=True, tempered=True, self_closing=True, core="hollow", factory_frame=True,
-    frame_material_ref="paint-enamel",
+    frame_material_ref="paint-enamel", product_ref="PROD-HOLLOW-METAL-24-LITE",
     source="24x80 hollow-metal steel leaf in a knock-down steel frame, small tempered "
            "vision lite (R308.4.1), spring hinges. No fire_rating_minutes: unrated by "
            "choice. Ceco/Steelcraft/Republic narrow-lite class; 24 in. is special order.")

@@ -16,6 +16,7 @@ from typehaus.model.air_products import (  # noqa: F401 — public authoring exp
 )
 from typehaus.model.base import HausModel
 from typehaus.model.built_in_bench import BENCH_ENVELOPE_TOLERANCE_M, BuiltInBenchSpec
+from typehaus.model.bypass_door import BypassDoorSpec
 from typehaus.model.curtain_track import CurtainTrackSpec
 from typehaus.model.door_hardware import DoorHardwareItem, JambFraming
 from typehaus.model.doorway import DoorwayTreatment
@@ -141,6 +142,8 @@ class DoorType(HausModel):
     # A purchased bookshelf/Murphy door.  Its closed cabinet, face frame and casing are
     # real product geometry; its clearance is published installation information only.
     bookcase_door: BookcaseDoorSpec | None = None
+    # A purchased two-leaf bypass set (``operation`` slide): its track sizes the opening.
+    bypass_door: BypassDoorSpec | None = None
     # --- R302.5.1: the door between a garage and the dwelling ---------------------------
     # The code offers three ways to comply and names two of them by construction: a 1-3/8"
     # solid-wood or solid/honeycomb-steel door, or a 20-minute fire-rated assembly. Both
@@ -205,6 +208,19 @@ class DoorType(HausModel):
                 f"{self.tag}: the {unit_w / 0.0254:g} x {unit_h / 0.0254:g} in {what} does not "
                 f"fit its published {ro.width.inches:g} x {ro.height.inches:g} in rough "
                 "opening with 1/4 in of shim a side")
+        return self
+
+    @model_validator(mode="after")
+    def _bypass_set_takes_its_leaf(self) -> DoorType:
+        spec = self.bypass_door
+        if spec is None:
+            return self
+        if self.operation != DoorOperation.SLIDE:
+            raise ValueError(f"{self.tag}: bypass_door needs operation='slide'")
+        if (self.leaf_thickness is not None
+                and self.leaf_thickness.meters > spec.door_thickness.meters + 1e-6):
+            raise ValueError(f"{self.tag}: a {self.leaf_thickness.inches:g} in leaf is thicker "
+                             f"than the set's {spec.door_thickness.inches:g} in door")
         return self
 
     @model_validator(mode="after")

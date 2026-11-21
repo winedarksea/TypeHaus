@@ -16,7 +16,7 @@ from typehaus.model.enums import ConditionKind
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.door_sizing import DoorSizing
 from typehaus.resolve.layout_lines import ResolvedLayoutLine
-from typehaus.resolve.model_door_products import CasedDoorSpec
+from typehaus.resolve.model_door_products import BypassDoorPlacement, CasedDoorSpec
 from typehaus.resolve.model_ducts import ResolvedDuctPart, ResolvedDuctSupport
 from typehaus.resolve.model_earthwork import ResolvedExcavation, ResolvedWallColumn
 from typehaus.resolve.model_eave_sealing import ResolvedEaveSealingRun
@@ -536,6 +536,7 @@ class ResolvedOpening:
     flip_swing: bool = False
     doorway: DoorwayAssembly | None = None
     cased_product: CasedDoorSpec | None = None
+    bypass_door: BypassDoorPlacement | None = None
     # A flashed window's unit envelope inside the RO (``resolve/opening_flashing``).
     window_seat: WindowSeat | None = None
     frame_material_ref: str | None = None

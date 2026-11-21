@@ -71010,37 +71010,37 @@
 0.0,
 2.727325,
 8,
-"8fb17e72645d"
+"80bfbf6226ef"
 ],
 "geometry/KKVYSAJKZF/layer:gwb-b": [
 0.0,
 2.727325,
 8,
-"8fb17e72645d"
+"80bfbf6226ef"
 ],
 "geometry/KKVYSAJKZF/layer:stud": [
 0.0,
 2.727325,
 8,
-"8fb17e72645d"
+"80bfbf6226ef"
 ],
 "geometry/KKVYSAJKZF::framing/member:header-0": [
-2.09615,
-2.13425,
+2.143775,
+2.181875,
 8,
-"ad18273835b1"
+"e810a74514f4"
 ],
 "geometry/KKVYSAJKZF::framing/member:jack-0-l0": [
 0.05715,
-2.09615,
+2.143775,
 8,
-"81829bfe42b9"
+"8a6f726b8717"
 ],
 "geometry/KKVYSAJKZF::framing/member:jack-0-r0": [
 0.05715,
-2.09615,
+2.143775,
 8,
-"81829bfe42b9"
+"8a6f726b8717"
 ],
 "geometry/KKVYSAJKZF::framing/member:king-0-l0": [
 0.05715,
@@ -71079,6 +71079,12 @@
 "6d371ae8a315"
 ],
 "geometry/KKVYSAJKZF::framing/member:stud-000": [
+0.05715,
+2.651125,
+8,
+"97b385feff6e"
+],
+"geometry/KKVYSAJKZF::framing/member:stud-001": [
 0.05715,
 2.651125,
 8,
@@ -73780,33 +73786,45 @@
 ],
 "geometry/QBTZNWG6AG-casing-l/body": [
 0.02605,
-2.1644125,
+2.2120375,
 6,
-"f6e0fafb3234"
+"1a0e2156632e"
 ],
 "geometry/QBTZNWG6AG-casing-r/body": [
 0.02605,
-2.1644125,
+2.2120375,
 6,
-"f6e0fafb3234"
+"1a0e2156632e"
+],
+"geometry/QBTZNWG6AG/bypass_guide": [
+0.02605,
+0.0451,
+2,
+"c57c1f266dc4"
+],
+"geometry/QBTZNWG6AG/bypass_pull": [
+0.9229875,
+0.9769625,
+96,
+"253b25299860"
+],
+"geometry/QBTZNWG6AG/bypass_track": [
+2.0628252,
+2.118375,
+2,
+"a6c1bc29f5f4"
 ],
 "geometry/QBTZNWG6AG/frame": [
 0.02605,
-2.09615,
+2.143775,
 6,
-"f7075cf513f3"
+"95fe3cce3fec"
 ],
-"geometry/QBTZNWG6AG/sliding_panel": [
-0.03875,
-2.07075,
+"geometry/QBTZNWG6AG/leaf": [
+0.035575,
+2.067575,
 4,
-"e4486d7a82a0"
-],
-"geometry/QBTZNWG6AG/sliding_stile": [
-0.04445,
-2.07075,
-2,
-"91e5b254f737"
+"803710ce7eb1"
 ],
 "geometry/QCWNT36HQ0-neck/body": [
 3.29565,
@@ -117607,22 +117625,22 @@
 "cfcb2f5ec896"
 ],
 "member/KKVYSAJKZF/header-0": [
-2.09615,
-2.13425,
+2.143775,
+2.181875,
 2,
-"6fb12191ae12"
+"4dbc6ce162c9"
 ],
 "member/KKVYSAJKZF/jack-0-l0": [
 0.05715,
-2.09615,
+2.143775,
 2,
-"ed985fa56c2b"
+"29659c37c727"
 ],
 "member/KKVYSAJKZF/jack-0-r0": [
 0.05715,
-2.09615,
+2.143775,
 2,
-"ed985fa56c2b"
+"29659c37c727"
 ],
 "member/KKVYSAJKZF/king-0-l0": [
 0.05715,
@@ -117661,6 +117679,12 @@
 "b82b89591363"
 ],
 "member/KKVYSAJKZF/stud-000": [
+0.05715,
+2.651125,
+2,
+"252e16268b26"
+],
+"member/KKVYSAJKZF/stud-001": [
 0.05715,
 2.651125,
 2,

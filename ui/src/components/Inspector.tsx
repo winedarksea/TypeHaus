@@ -1,12 +1,13 @@
 import { Fragment, useEffect, useRef, useState } from "react";
 import { useStore } from "../state/store";
-import type { Model, Opening, Stair, Wall } from "../model/types";
+import type { DoorTypeSpec, Model, Opening, Stair, Wall } from "../model/types";
 import { formatFtIn, openingHostWall, openingStartFromCenter, wallLength } from "../model/geometry";
 import { SectionCard } from "./SectionCard";
 import { DetailViewer } from "./DetailViewer";
 import { StairDesigner } from "./StairDesigner";
 import { Provenance } from "./Provenance";
 import { ProductRows } from "./ProductRows";
+import { DoorFactsRows } from "./DoorFactsRows";
 import { pieceProduct, productFor } from "../model/products";
 import { FloorInspector, FootingBeddingInspector, LightRunInspector, MemberUidInspector, PanelingInspector, RoofInspector, SolarPanelInspector, SolidInspector } from "./DerivedInspectors";
 import { locateUid } from "../state/locate";
@@ -320,6 +321,8 @@ function OpeningInspector({ model, opening }: { model: Model; opening: Opening }
       <span className="k">Width</span><span>{formatFtIn(opening.width_m)}</span>
       <span className="k">Height</span><span>{formatFtIn(opening.height_m)}</span>
       <ProductRows product={productFor(model.catalog, openingType?.product_ref)} />
+      {opening.is_door && <DoorFactsRows type={openingType as DoorTypeSpec | undefined}
+        sizing={opening.sizing} catalog={model.catalog} />}
     </div>
     {picked && <div className="kv" data-testid="piece-block">
       <span className="k">Piece</span><span>{picked.label}</span>

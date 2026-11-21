@@ -15,6 +15,7 @@ from dataclasses import replace
 from typehaus.model.enums import DoorOperation
 from typehaus.resolve.geometry import opening_center, wall_frame
 from typehaus.resolve.geometry_bookcase_door import bookcase_door_parts
+from typehaus.resolve.geometry_bypass_doors import bypass_door_parts
 from typehaus.resolve.geometry_cased_doors import cased_door_parts
 from typehaus.resolve.geometry_door_products import (
     _GLAZED_LEAF_FRAME_WIDTH_M,
@@ -236,6 +237,11 @@ def _opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
             floor = max(floor, floors[side].surface_m)
         return bookcase_door_parts(box, bookcase_door, width,
                                    available_height - (floor - z0 - sill), floor, mount)
+    bypass = getattr(opening, "bypass_door", None) if opening.kind == "door" else None
+    if bypass is not None and operation is DoorOperation.SLIDE:
+        return bypass_door_parts(box, (posx, posy, ux, uy, nx, ny), bypass, faces, swing_sign,
+                                 min(bypass.head_z_m, z0 + sill + available_height),
+                                 frame_key, solid_leaf_key)
     if not is_trimless:
         parts.append(GPart(key="frame", material_key=frame_key, solids=(
             box(frame_width, available_height, frame_depth,
@@ -288,7 +294,7 @@ def _opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
                       + lever_solids(box, mullion_width / 2.0, 1.0,
                                      (-leaf_thickness / 2.0, leaf_thickness / 2.0), z0 + sill))
     elif opening.kind == "door" and operation is DoorOperation.SLIDE:
-        # A closed slider stays coplanar in the product view: the two glazed panels meet at
+        # A glazed slider (a bypass set returned above) stays coplanar: two panels meet at
         # a narrow stile and a low track, which distinguishes it from a French pair without
         # pretending the inactive panel is currently parked over the wall.
         stile_width = min(frame_width / 2.0, clear_width / 12.0)
@@ -429,7 +435,9 @@ def opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
 
     parts = parts + doorway_parts(wall, opening) + installation_parts(wall, opening)
     assembly = opening.doorway
-    if assembly and assembly.leaf_bottom_z_m is not None:
+    # A bypass set hangs its leaves at its own floor clearance.
+    if (assembly and assembly.leaf_bottom_z_m is not None
+            and getattr(opening, "bypass_door", None) is None):
         original_leaf_bottom = min((s.z0_m for p in parts if p.key == "leaf"
                                     for s in p.solids if isinstance(s, GPrism)),
                                    default=assembly.leaf_bottom_z_m)

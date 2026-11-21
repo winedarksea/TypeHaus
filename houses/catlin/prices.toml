@@ -6034,9 +6034,11 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "DT-EXT-OVERHEAD192" = { material = { low = 2298, high = 2700 }, labour = { low = 550, high = 1150 } }  # 1 ea — Clopay Classic Steel GDU293 16x7 R-12.9 Charcoal, HD $2,298 (2026-10-29, owner swap from R-18.4)
 
 # --- interior doors ---------------------------------------------------------------------------
-# 2026-11-03 (owner): hollow core on every commodity leaf, the low end of the old bands (Steves
-# 5-pack works out to $161.60 ea at Home Depot); solid-core MDF prehung $300-550 ($519 Masonite
-# 5-panel). Seals sit in the material band. Per door: notes/interior_door_schedule.md.
+# 2026-11-03 (owner): hollow core on every commodity leaf, the low end of the old bands; solid-
+# core prehung $300-550. 2026-11-20 (owner): every leaf FLUSH and smooth — Steves & Sons flush HC
+# primed prehung (x62H1WASAE) and Masonite 65726 flush solid core (plan/interior_door_products.py);
+# bands held, as the flush lines list in the same range as the panel ones they replace (unquoted).
+# Seals sit in the material band. Per door: notes/interior_door_schedule.md.
 # ** THE SAME MINIMUM-SIZE FLOOR APPLIES: a 24" door is barely cheaper than a 30". **
 # 2026-10-29: prehung hang labour $115-240 = 1.5-3 h at $60-85; casing is in [interior_trim], hardware in finish-door-hardware.
 "DT-INT-SWING24" = { material = { low = 145, high = 480 }, labour = { low = 115, high = 240 } }  # 0 ea since 2026-11-03 (D-A-STUBATH -> -PRIV, D-B-SAUNA -> SAUNA24); kept priced, catalog-only
@@ -6088,7 +6090,10 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # cassette arrives assembled, so the setting half sits nearer the low end.
 "DT-POCKET-INT-36" = { material = { low = 175, high = 590 }, labour = { low = 260, high = 560 } }  # 2 ea (D-M-PANTRY, D-M-LAUN), slab and installation; frame kits above
 "DT-POCKET-INT-36-PRIV" = { material = { low = 175, high = 590 }, labour = { low = 260, high = 560 } }  # 1 ea, D-B-BATH; its lock bills in [allowances]
-"DT-INT-BYPASS48" = { material = { low = 200, high = 500 }, labour = { low = 100, high = 220 } }  # 1 ea — stock molded pair + track, to solid-core or mirrored
+# D-M-MUDC (2026-11-20): Johnson 138F482D set (track, 1120 hangers, 2135 guide, #30 pulls;
+# ~$100-200 retail) + two 24x80 flush HC slabs (Steves J62H1FADLC99, ~$60-90 ea). Estimate,
+# not quoted; casing bills in [interior_trim].
+"DT-INT-BYPASS48" = { material = { low = 220, high = 380 }, labour = { low = 100, high = 220 } }  # 1 ea
 # D-M-BED2 since 2026-10-05: a push-set in-swing in a site-built kerfed hardwood jamb (see
 # the type in plan/storeys/main.py). ESTIMATE, built up from parts and not quoted:
 #   material: 32" solid-core slab 180-450, kerfed jamb + stop stock 90-220, 3 ball-bearing

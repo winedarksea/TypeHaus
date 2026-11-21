@@ -13,7 +13,7 @@ from typehaus.resolve.door_sizing import CASED_DOOR_DEFAULTS, door_undercut_m, l
 from typehaus.resolve.geometry import opening_center, pocket_centerline_offset, wall_frame
 from typehaus.resolve.geometry_door_products import finish_faces, handing
 from typehaus.resolve.geometry_walls import is_raked, wall_top_at
-from typehaus.resolve.model_door_products import CasedDoorSpec
+from typehaus.resolve.model_door_products import BypassDoorPlacement, CasedDoorSpec
 from typehaus.resolve.room_floor import room_finished_floor_elevation
 from typehaus.resolve.room_lookup import room_owning
 
@@ -81,6 +81,28 @@ def resolve_cased_door(wall, opening, door_type, *, standard=None,
         leaf_material_ref=opening.effective_leaf_material_ref)
 
 
+def resolve_bypass_door(wall, opening, door_type, standard, floor_z: float):
+    """A ``BypassDoorSpec`` set in its sized opening, else None."""
+    spec = getattr(door_type, "bypass_door", None)
+    sizing = opening.sizing
+    if spec is None or sizing is None:
+        return None
+    allowance = standard.jamb_allowance.meters if standard else (
+        CASED_DOOR_DEFAULTS.jamb_allowance_m)
+    return BypassDoorPlacement(
+        finished_floor_z_m=floor_z, head_z_m=wall.base_ref_z_m + opening.sill_m + opening.height_m,
+        jamb_allowance_m=allowance, finished_width_m=opening.width_m - 2 * allowance,
+        leaf_width_m=sizing.leaf_w_m / 2, leaf_height_m=sizing.leaf_h_m,
+        leaf_thickness_m=leaf_thickness_m(door_type),
+        floor_clearance_m=spec.floor_clearance.meters,
+        track_width_m=spec.track_width.meters, track_height_m=spec.track_height.meters,
+        lane_pitch_m=spec.lane_pitch.meters, overlap_m=spec.overlap.meters,
+        guide_size_m=(spec.guide_width.meters, spec.guide_depth.meters,
+                      spec.guide_height.meters),
+        pull_diameter_m=spec.pull_diameter.meters, pull_height_m=spec.pull_height.meters,
+        product_ref=spec.product_ref)
+
+
 def house_trim_standard(plan) -> TrimStandard | None:
     """The plan's one ``TrimStandard`` (a second is an integrity error), else None."""
     elements = plan.all_elements() if hasattr(plan, "all_elements") else ()
@@ -131,5 +153,7 @@ def resolve_door_products(model) -> None:
         opening = replace(opening, **refs)
         spec = resolve_cased_door(wall, opening, product_type, standard=standard,
                                  finished_floors=tuple(floors))
-        resolved.append(replace(opening, cased_product=spec))
+        bypass = resolve_bypass_door(wall, opening, product_type, standard,
+                                     max(floors, default=floor_z))
+        resolved.append(replace(opening, cased_product=spec, bypass_door=bypass))
     model.openings = resolved

@@ -212,7 +212,9 @@ def resolve_doorway(model, wall, opening, door_type=None, treatment=None):
     if exterior_type and treatment.threshold is None:
         unknown.append("exact exterior sill/track or leaf-mounted bottom-seal section "
                        "is unspecified")
-    if operation in ("slide", "pocket", "bifold") and treatment.threshold is None:
+    # A published bypass set documents its floor guide (no bottom track).
+    if (operation in ("slide", "pocket", "bifold") and treatment.threshold is None
+            and door_type.bypass_door is None):
         unknown.append("documented guide/track installation is unspecified; "
                        "no bottom track inferred")
     if mode == "transition" and treatment.transition is None and not exterior_type:
@@ -317,6 +319,8 @@ def _leaf_clearance(model, opening, door_type) -> float:
         return DOORWAY.exterior_leaf_clearance_m
     if opening.cased_product is not None:
         return opening.cased_product.undercut_m
+    if door_type.bypass_door is not None:
+        return door_type.bypass_door.floor_clearance.meters
     from typehaus.resolve.door_product_spec import house_trim_standard
     from typehaus.resolve.door_sizing import door_undercut_m
 

@@ -46,7 +46,8 @@ export interface PieceProduct {
 
 /**
  * The product behind one piece of an opening (→ `Selection.piece`). Frame, leaf and glass come
- * from the opening's type; hardware from its catalog item; a doorway part from its spec;
+ * from the opening's type; hardware and a bypass set's parts from their catalog item; a
+ * pocket track from its sized frame kit; a doorway part from its spec;
  * installation boards, casings and stools from their material.
  */
 export function pieceProduct(model: Model, opening: Opening, piece: string): PieceProduct {
@@ -56,6 +57,16 @@ export function pieceProduct(model: Model, opening: Opening, piece: string): Pie
   const types = opening.is_door ? catalog?.door_types ?? [] : catalog?.window_types ?? [];
   const typeProduct = () => productFor(catalog,
     types.find((type) => type.tag === opening.type_ref)?.product_ref);
+  if (role === "pocket_track") {
+    const kit = opening.sizing?.pocket_kit;
+    return { label, detail: "pocket frame kit", product: kit ? {
+      tag: kit[2], brand: kit[0], model: kit[2], name: kit[1], sku: "", url: null, source: null,
+    } : null };
+  }
+  if (role.startsWith("bypass_")) {
+    const part = opening.opening_parts?.find((one) => one.key === role);
+    return { label, product: productFor(catalog, part?.name), detail: "bypass set" };
+  }
   if (role === "hardware") {
     const part = opening.opening_parts?.find((one) => one.key === piece);
     return { label, product: productFor(catalog, part?.name), detail: part?.role ?? null };
