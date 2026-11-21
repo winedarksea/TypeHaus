@@ -172,6 +172,8 @@ runs to the ceiling.
 - **Pull boxes.**
   - CD-B-PLAY-SPARE: vertex 7 in RM-B-BATH's ceiling at x 13'-6 1/4", y 20'-3 1/2", and
     vertex 12 in RM-B-PLAY-N at x 19'-4 1/2", y 26'-0".
+  - CD-B-DATA-STUDY: vertex 6 in RM-B-FURNACE at x 1'-8", y 18'-8 1/2", where the south
+    leg turns east (2026-11-20; the dodge under CD-B-PLAY-SPARE took it to 540°).
   - The workshop and theater ceiling boxes: closed 2026-11-20 (decision #140). Every
     workshop strip takes a derived ceiling box (Appleton FFS561LDNBH on a bar hanger),
     billed in `[electrical_boxes]` and fill-graded. The theater's RC ceiling takes none:

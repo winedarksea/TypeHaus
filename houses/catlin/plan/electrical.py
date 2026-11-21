@@ -1781,6 +1781,8 @@ BASEMENT_DATA_TRUNKS = [
                start_elevation=inch(-13), end_elevation=ft(2, 8),
                elevations=(inch(-13), inch(-13), inch(-13), inch(-14.5), inch(-14.5),
                            inch(-13), inch(-13), inch(-13), inch(-13), ft(2, 8)),
+               # Body at 6, RM-B-FURNACE's corner (1'-8", 18'-8 1/2"): the dodge left 540°.
+               pull_points=(6,),
                from_ref="ED-B-NET-PATCH", to_ref="ED-M-STUDY-DATA1"),
 ]
 
