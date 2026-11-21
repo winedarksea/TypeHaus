@@ -2272,7 +2272,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   plan, fitting fit and the R301.5 span: `notes/titanium_handrail_backsplash.md`.
 - **Under-stair space.** No `RM-B-UNDERSTAIR` room exists; the storage under the arriving
   stair flight (and on under the landing deck) is part of `RM-B-STAIR`'s single polygon.
-  `D-B-CLOSET` (32" leaf, 6'-0" head, 55-degree stop, standard 1/2" undercut) is its only way in,
+  `D-B-CLOSET` (32" leaf, 6'-0" head, opens 90 since the ERV moved, standard 1/2" undercut) is its only way in,
   from the furnace room, and the full-height way to `PA-B-MAIN-SHUTOFF`. Two Q3 lampholders
   (Leviton 9726-C, with a receptacle) light it, one per bay (2026-11-15): `ED-B-CLOSET-LT` on
   `W-B-STR3` (west), `ED-B-CLOSET-LT2` on `W-B-CN` under the lower landing (east). Both are on

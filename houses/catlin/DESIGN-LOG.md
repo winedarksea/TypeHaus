@@ -28,6 +28,10 @@
   the plan's EA line north on x~6' (it runs through W-B-ESS-W and OA's drop); fallback L1.
 - **Also.** The AM 100 / LVS 125 valve meshes now stand 1" / 0.9" proud at the disc (were 5/8" /
   0.55"); the 1 3/4" fit envelope is unchanged (`notes/air_distribution_products.md`).
+- **Review.** D-B-CLOSET's 55-degree stop is gone: the case clears a 90-degree sweep by
+  4 3/8" and every ERV line passes above the head. A drain tee on a grade break (no elbow)
+  now stands on its vertex (`resolve/duct_drains._tap_point`); it had been set one take-off
+  back, inside the lead's 90, and PR-B-ERV-EA-DRAIN now starts there.
 
 ## The garage loses its STHDs: corners dropped, panel ends on HTT4 + SSTB16 (2026-11-20, decision #141 amended)
 

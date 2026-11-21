@@ -1121,10 +1121,10 @@ OPENINGS = [
     # casing, standard 1/2" undercut. Kept at 32" when EQ-B-WH left the closet for the
     # workshop (2026-11-09): the fewest differences. 6 3/4" off N-B-BA-NW: the south jamb
     # clears FO-M-STAIR's corner (y=312 3/8") so its point load stays off the head, and the
-    # RO cuts two studs. The 55-degree stop holds the leaf off PR-B-ERV-COND at x=91 1/2".
+    # RO cuts two studs. Opens the full 90 since EQ-B-ERV moved south to the sink (2026-11-21):
+    # the case clears the sweep by 4 3/8", and the ERV lines run above the head.
     Door(uid="B43P8B5Y0T", tag="D-B-CLOSET", host="W-B-STR3", type_ref="DT-INT-CLOSET32",
-         position=from_node("N-B-BA-NW", inch(6.75)), flip_swing=True, flip_hinge=True,
-         maximum_opening_degrees=55),
+         position=from_node("N-B-BA-NW", inch(6.75)), flip_swing=True, flip_hinge=True),
     # ** O-B-HALL IS GONE AND D-B-SHOP REPLACES IT (2026-09-07). ** The cased opening was
     # 2'-10" through W-B-CW2B and was justified by the workshop being the through-route
     # from the stair to the gym — "a door across a circulation spine buys nothing". The

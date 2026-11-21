@@ -609,15 +609,15 @@ ERV_CONDENSATE = [
             elevations=(inch(38.5), inch(38.15), inch(36.6), inch(36.5))),
     # DU-ERV-EA's drain tee (2026-11-21): the riser's condensate and any rain past the hood
     # run back down the reversed leg to the tee by the machine. 3/4" PVC with a P-trap at the
-    # tee (the leg is downstream of the fan, under positive pressure), east over the case at
-    # 75", down W-B-STR3B's face beside the closet jamb and south to its own air gap over the
-    # sink, 5 1/2" over the rim.
+    # tee (the leg is downstream of the fan, under positive pressure), east at 75" (over
+    # D-B-CLOSET's head), south past the jamb, down W-B-STR3B's face and south to its own air
+    # gap over the sink, 5 1/2" over the rim.
     PipeRun(uid="D5MADB7T2B", tag="PR-B-ERV-EA-DRAIN", system=PipeSystem.DRAIN, sanitary=False,
-            path=(pt(inch(96.625), inch(310)), pt(inch(115), inch(310)),
-                  pt(inch(115), inch(310)), pt(inch(115), inch(243)),
-                  pt(inch(112.5), inch(243))),
+            path=(pt(inch(96.625), inch(315.5)), pt(inch(115), inch(315.5)),
+                  pt(inch(115), inch(310)), pt(inch(115), inch(310)),
+                  pt(inch(115), inch(243)), pt(inch(112.5), inch(243))),
             diameter=inch(0.75), material="pvc",
-            elevations=(inch(75.3), inch(74.85), inch(41), inch(39.6), inch(39.5))),
+            elevations=(inch(75), inch(74.6), inch(74.45), inch(41), inch(39.6), inch(39.5))),
     # EQ-B-WH's primary condensate (3/4" NPT, 59" AFF, Rheem sheet C), 2026-11-09: off the
     # port's axis, west along the tank's side, north at x=9'-8" through W-B-CW3 into the
     # furnace room, and down to its own 13" air gap over FX-B-UTIL-SINK's rim, beside
