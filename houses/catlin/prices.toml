@@ -1173,6 +1173,10 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # The two seat-beam hangers since 2026-10-31. Home Depot SKU LUS26-2Z $4.77 single, $4.53 at 50+
 # (read 2026-10-31); the high end carries a short-stock yard price.
 "LUS26-2Z" = { low = 4.5, high = 7.5 }  # 2 ea — CN-BW-HGR-CW/-CNW
+# ESTIMATE, no quote (2026-11-20): ST-B2M's landing members hung on the two well posts
+# (8 ea), and the SD screws they are fastened with (opposing faces of one 4x4).
+"LUC26Z" = { low = 3, high = 6 }
+"SD10112" = { low = 0.15, high = 0.25 }
 # 22 ea -> 30 on 2026-08-30: the eight balcony knee braces moved off the unrated APVKB45-6
 # onto this part, two per brace (Simpson's own instruction — "install single KBS1Z on each
 # end" — and the F1 the code report publishes is measured through that pair). Net material
