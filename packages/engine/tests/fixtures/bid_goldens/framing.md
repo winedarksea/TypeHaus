@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 3a1951b69e2f4a83  
-**Lines:** 273
+**Model hash:** 8153c37a5b1e5377  
+**Lines:** 280
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
 
@@ -144,6 +144,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3:treated framing nails (allowance)) | 897 | ea |  | building |
 | HDG smooth-shank strap nail, 0.148in x 2.5in (10d short common 0.148x2.5:diaphragm joint strap nails) | 72 | ea |  | building |
 | HDG 16d common nail, 0.162in x 3.5in (16d common 0.162x3.5:connector fasteners) | 248 | ea |  | building |
+| Bright 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5 bright:sheathing nails) | 7,243 | ea |  | building |
 | HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5:connector fasteners) | 176 | ea |  | building |
 | HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5:diaphragm 8d nails) | 452 | ea |  | building |
 | HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5:sheathing nails) | 1,037 | ea |  | building |
@@ -157,6 +158,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | A35Z framing angle (A35Z:wall-top blocking station) | 45 | ea |  | building |
 | ABU44 standoff post base (4x4) (ABU44:post base) | 2 | ea |  | building |
 | ACE6Z adjustable end post cap (6x beam end on 6x6), MAX nailing (ACE6Z:modeled connector) | 4 | ea |  | building |
+| 1/2 in HDG A307 hex bolt with nut and washer (BOLT-12X5-HDG:connector site bolts) | 2 | ea |  | building |
+| 3/4 in HDG A307 hex bolt with nut and washer (BOLT-34X8-HDG:connector site bolts) | 2 | ea |  | building |
 | CBSTQ66Z-SDS2 cast-in column base (6x6) (CBSTQ66Z-SDS2:modeled connector) | 4 | ea |  | building |
 | CS16 coiled strap, 16 ga (CS16:stacked wall) | 2 | ea |  | building |
 | Pocket door frame, galvanized steel cassette, 2x4 wall (to 220 lb) (EKC3680:pocket door frame kit) | 2 | ea |  | building |
@@ -187,6 +190,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | IUS2.37/11.88 face-mount I-joist hanger (IUS2.37/11.88:hung framing) | 2 | ea |  | building |
 | IUS2.37/11.88 face-mount I-joist hanger (IUS2.37/11.88:hung framing) | 2 | ea |  | building |
 | KBS1Z knee-brace stabilizer (ZMAX), two per brace end (KBS1Z:slat brace connector) | 8 | ea |  | main |
+| 1/2 in HDG hex lag screw with washer (LAG-12X5-HDG:connector site bolts) | 2 | ea |  | building |
+| 3/4 in HDG hex lag screw with washer (LAG-34X5-HDG:connector site bolts) | 2 | ea |  | building |
 | LS30 skewable angle, gable-end stud to rafter (LS30:gable end wall) | 22 | ea |  | building |
 | LS30Z skewable angle, diaphragm blocking end (LS30Z:diaphragm blocking end angles) | 32 | ea |  | building |
 | LSCZ adjustable stair-stringer connector (ZMAX) (LSCZ:hung framing) | 3 | ea |  | building |
@@ -238,12 +243,15 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | SCNR ring-shank connector nail, 0.148in x 3in, Type 316 (SSA10D:connector fasteners) | 192 | ea |  | building |
 | SCNR ring-shank connector nail, 0.131in x 2.5in, Type 316 (SSA8D:connector fasteners) | 100 | ea |  | building |
 | SCNR ring-shank connector nail, 0.148in x 1.5in, Type 316 (SSNA10D:connector fasteners) | 360 | ea |  | building |
+| Fascia-Fastening Solution screw, #8 x 1-3/4in, Type 316 (T08175FS75:trim fasteners) | 34 | ea |  | building |
+| 15-gauge DA finishing nail, 2-1/2in, Type 316 (T15N250SFN:trim fasteners) | 416 | ea |  | building |
 | THA422 top-flange floor truss hanger (THA422:hung framing) | 1 | ea |  | building |
 | THA422 top-flange floor truss hanger (THA422:hung framing) | 2 | ea |  | building |
 | Titen HD 1/2 in x 6 in Type 316 stainless screw anchor, deck ledger to concrete (THD50600H6SS:modeled connector) | 18 | ea |  | building |
 | KDAT 4x4 tie block, 3-1/2" long, screwed to the tied member (TIE-BLOCK-4X4-KDAT:modeled connector) | 1 | ea |  | building |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:eave gutter girt standoffs) | 72 | ea |  | building |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:girt wall blocks) | 1,158 | ea |  | building |
+| Strong-Drive WSV SUBFLOOR screw, #9 x 2-1/2in (WSV212S:sheathing nails) | 4,786 | ea |  | building |
 
 ## Other structural solids
 
@@ -282,7 +290,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | butyl-tape-beam, 3 1/2" on beam (butyl-tape-beam) | 19.3 | LF |  | second |
 | butyl-tape-beam, 4 1/2" on beam (butyl-tape-beam) | 6.4 | LF |  | main |
 | butyl-tape-beam, 5 1/2" on beam (butyl-tape-beam) | 10.9 | LF |  | main |
-| butyl-tape-beam, 5 1/2" on brace (butyl-tape-beam) | 8.5 | LF |  | main |
 
 ## Firestop sealant
 
@@ -467,6 +474,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3:treated framing nails (allowance)) | — |
 | HDG smooth-shank strap nail, 0.148in x 2.5in (10d short common 0.148x2.5:diaphragm joint strap nails) | — |
 | HDG 16d common nail, 0.162in x 3.5in (16d common 0.162x3.5:connector fasteners) | — |
+| Bright 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5 bright:sheathing nails) | — |
 | HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5:connector fasteners) | — |
 | HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5:diaphragm 8d nails) | — |
 | HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5:sheathing nails) | — |
@@ -480,6 +488,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | A35Z framing angle (A35Z:wall-top blocking station) | — |
 | ABU44 standoff post base (4x4) (ABU44:post base) | — |
 | ACE6Z adjustable end post cap (6x beam end on 6x6), MAX nailing (ACE6Z:modeled connector) | — |
+| 1/2 in HDG A307 hex bolt with nut and washer (BOLT-12X5-HDG:connector site bolts) | — |
+| 3/4 in HDG A307 hex bolt with nut and washer (BOLT-34X8-HDG:connector site bolts) | — |
 | CBSTQ66Z-SDS2 cast-in column base (6x6) (CBSTQ66Z-SDS2:modeled connector) | — |
 | CS16 coiled strap, 16 ga (CS16:stacked wall) | — |
 | Pocket door frame, galvanized steel cassette, 2x4 wall (to 220 lb) (EKC3680:pocket door frame kit) | — |
@@ -510,6 +520,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | IUS2.37/11.88 face-mount I-joist hanger (IUS2.37/11.88:hung framing) | — |
 | IUS2.37/11.88 face-mount I-joist hanger (IUS2.37/11.88:hung framing) | — |
 | KBS1Z knee-brace stabilizer (ZMAX), two per brace end (KBS1Z:slat brace connector) | SB-BW-BAND |
+| 1/2 in HDG hex lag screw with washer (LAG-12X5-HDG:connector site bolts) | — |
+| 3/4 in HDG hex lag screw with washer (LAG-34X5-HDG:connector site bolts) | — |
 | LS30 skewable angle, gable-end stud to rafter (LS30:gable end wall) | — |
 | LS30Z skewable angle, diaphragm blocking end (LS30Z:diaphragm blocking end angles) | — |
 | LSCZ adjustable stair-stringer connector (ZMAX) (LSCZ:hung framing) | — |
@@ -561,12 +573,15 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | SCNR ring-shank connector nail, 0.148in x 3in, Type 316 (SSA10D:connector fasteners) | — |
 | SCNR ring-shank connector nail, 0.131in x 2.5in, Type 316 (SSA8D:connector fasteners) | — |
 | SCNR ring-shank connector nail, 0.148in x 1.5in, Type 316 (SSNA10D:connector fasteners) | — |
+| Fascia-Fastening Solution screw, #8 x 1-3/4in, Type 316 (T08175FS75:trim fasteners) | — |
+| 15-gauge DA finishing nail, 2-1/2in, Type 316 (T15N250SFN:trim fasteners) | — |
 | THA422 top-flange floor truss hanger (THA422:hung framing) | — |
 | THA422 top-flange floor truss hanger (THA422:hung framing) | — |
 | Titen HD 1/2 in x 6 in Type 316 stainless screw anchor, deck ledger to concrete (THD50600H6SS:modeled connector) | — |
 | KDAT 4x4 tie block, 3-1/2" long, screwed to the tied member (TIE-BLOCK-4X4-KDAT:modeled connector) | — |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:eave gutter girt standoffs) | — |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:girt wall blocks) | — |
+| Strong-Drive WSV SUBFLOOR screw, #9 x 2-1/2in (WSV212S:sheathing nails) | — |
 | Beam — EQUIP_STAND_ALUM (beam:EQUIP_STAND_ALUM) | BM-M-HP3-R1, BM-M-HP3-R2 |
 | Column (column) | P-S-SN3-SQUASH |
 | Column — ELM_TIMBER (column:ELM_TIMBER) | P-S-TUDOR1, P-S-TUDOR2 |
@@ -590,7 +605,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | butyl-tape-beam, 3 1/2" on beam (butyl-tape-beam) | BM-SG-BLE, BM-SG-BLW |
 | butyl-tape-beam, 4 1/2" on beam (butyl-tape-beam) | BM-BW-FE |
 | butyl-tape-beam, 5 1/2" on beam (butyl-tape-beam) | BM-BW-RE, BM-BW-RW |
-| butyl-tape-beam, 5 1/2" on brace (butyl-tape-beam) | SB-BW-BAND |
 | Fireblock sealant bead, 24 penetrations (firestop-sealant) | FO-A-ERV-CHASE, FO-M-ERV-OA, FO-S-BATH1-TUB-DRAIN, FO-S-ERV-CHASE |
 | Treated sill plate, Pressure-treated southern yellow pine No. 2 (sill plate) (pt-sill-plate) | — |
 | Sill seal foam gasket, under the sill plate (sill-seal-foam) | — |
