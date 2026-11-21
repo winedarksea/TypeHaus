@@ -7,7 +7,8 @@ standard open-knee KBS1Z per end; both faces are flush. Hand oracle:
 `notes/canopy_west_band.md` §3. The c = -6½" 4x6 and the former chevron are backups in §8.
 
 Every uid here was minted once with `typehaus.model.ids.new_uid()` (fmt never visits
-`params/`) and must never be re-typed.
+`params/`) and must never be re-typed. Retired, never reuse: `PD2PPXS59S` (TR-BW-SCREEN-CAP,
+the pierced steel cap on the sill, retired 2026-11-20 for the oiled sill + TR-BW-SCREEN-TOP).
 """
 
 from params.north_entry_frame import (
@@ -42,9 +43,6 @@ BAND = SlatBrace(
     base_elevation=ft(SCREEN_PANEL_TOP_FT), top_elevation=ft(HEADER_SOFFIT_FT),
     slat="6x6", corner_to_corner=True, connectors_per_end=2,
     plane_offset=inch(0), assembly="POST_KDAT", supported_by="W-BW-SCREEN",
-    # Under TR-BW-SCREEN-CAP: the dielectric between its steel and the KDAT, and the seal at
-    # every cut-out, turned up each slat and post 1" (the porch beams' wide roll).
-    top_protection="butyl-tape-beam",
     connects=("PT-BW-CW", "PT-BW-CNW", "BM-BW-RW", "W-BW-SCREEN"),
     source="notes/canopy_west_band.md §3, 2026-10-26 — one 6x6 corner-to-corner knee brace "
            "per bay, chord to top plate, two open-knee KBS1Z each end (ER-280 Table 7 "
@@ -115,19 +113,22 @@ PLATE_ANGLES = [
     )
 ]
 
-# The cap sits ON the exposed sill, fitted around the brace and its connectors. It never
-# changes a bearing surface or the sill-to-wall interface. West drip clears the corrugated;
-# east return projects only 1/8" past the existing 2x6, preserving passage clearance.
-_CAP_WEST_FT = SCREEN_CLADDING_WEST_X_FT - 0.125 / 12
-_CAP_EAST_FT = LANDING_WEST_FT + (2.75 + 0.125) / 12
-_CAP_CENTRE_FT = (_CAP_WEST_FT + _CAP_EAST_FT) / 2
-SILL_CAP = Flashing(
-    uid="PD2PPXS59S", tag="TR-BW-SCREEN-CAP", kind=TrimKind.BEAM_CAP,
-    path=(pt(ft(_CAP_CENTRE_FT), ft(PIER_LINE_Y_FT + COLUMN_HALF_FT)),
-          pt(ft(_CAP_CENTRE_FT), ft(GARAGE_SEAT_Y_FT - COLUMN_HALF_FT))),
-    top_elevation=ft(SCREEN_PANEL_TOP_FT + 1.5 / 12), depth=inch(0.75),
-    thickness=ft(_CAP_EAST_FT - _CAP_WEST_FT), back_side="right",
-    material="metal-dark-exterior", host_ref=BAND.tag,
-    section=FormedFlashingSection(profile="cap", slope=0.25 / 12, fit_to_brace_sill=True))
+# ** THE WEST CLADDING TOP (owner, 2026-11-20). ** The sill is bare KDAT, oiled like every
+# exposed KDAT (AN text, notes/entry_screen_mdo.md); a pierced cap traps water and cannot go
+# on after framing. Metal stays only where nothing passes: the west ZIP + corrugated stand
+# 1 5/16" proud of the sill's west face. A 1" upstand sealed to that face, under the KBS1Z
+# plates; the 1/4"/ft fall and drip over the corrugated (notes/flashing_model.md).
+_TOP_WEST_FT = SCREEN_CLADDING_WEST_X_FT - 0.125 / 12
+_TOP_EAST_FT = LANDING_WEST_FT - 2.75 / 12  # the sill's west face
+_TOP_CENTRE_FT = (_TOP_WEST_FT + _TOP_EAST_FT) / 2
+SCREEN_TOP = Flashing(
+    uid="YVVG3FVPJH", tag="TR-BW-SCREEN-TOP", kind=TrimKind.DRIP_FLASHING,
+    path=(pt(ft(_TOP_CENTRE_FT), ft(PIER_LINE_Y_FT + COLUMN_HALF_FT)),
+          pt(ft(_TOP_CENTRE_FT), ft(GARAGE_SEAT_Y_FT - COLUMN_HALF_FT))),
+    top_elevation=ft(SCREEN_PANEL_TOP_FT + 0.0625 / 12), depth=inch(0.75),
+    thickness=ft(_TOP_EAST_FT - _TOP_WEST_FT), back_side="right",
+    material="aluminum-flat-pvdf", host_ref="W-BW-SCREEN",
+    section=FormedFlashingSection(profile="counter", slope=0.25 / 12, upstand=inch(1),
+                                  drip=inch(0.75)))
 
-ELEMENTS = [BAND, SILL_CAP, *EAVE_CLIPS, *HEAD_ANGLES, *PLATE_ANGLES]
+ELEMENTS = [BAND, SCREEN_TOP, *EAVE_CLIPS, *HEAD_ANGLES, *PLATE_ANGLES]

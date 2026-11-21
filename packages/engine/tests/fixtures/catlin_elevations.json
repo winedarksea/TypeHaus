@@ -73400,12 +73400,6 @@
 8,
 "bdcf7f12e883"
 ],
-"geometry/PD2PPXS59S-cap/body": [
-1.23825,
-1.2618499,
-168,
-"42d4355dce59"
-],
 "geometry/PEHTPE0R62-box/body": [
 3.517011,
 3.618611,
@@ -81409,6 +81403,12 @@
 5.39115,
 72,
 "df0c1932c4ce"
+],
+"geometry/YVVG3FVPJH-00/body": [
+1.2009768,
+1.2461875,
+32,
+"9ab4ac80d27f"
 ],
 "geometry/YX2GDZJMBV/layer:deck": [
 2.196088,
@@ -130437,8 +130437,8 @@
 "solids/TR-BW-MDO-SCREW-3-3-4-1/z1_m": 1.2017375,
 "solids/TR-BW-MDO-TIMBER-1/z0_m": 0.014224,
 "solids/TR-BW-MDO-TIMBER-1/z1_m": 1.143,
-"solids/TR-BW-SCREEN-CAP/z0_m": 1.23825,
-"solids/TR-BW-SCREEN-CAP/z1_m": 1.2618499,
+"solids/TR-BW-SCREEN-TOP-1/z0_m": 1.2009768,
+"solids/TR-BW-SCREEN-TOP-1/z1_m": 1.2461875,
 "solids/TR-G-LEADER-E-EXT-RISER/z0_m": -1.2192,
 "solids/TR-G-LEADER-E-EXT-RISER/z1_m": -0.4572,
 "solids/TR-G-LEADER-E-EXT/z0_m": -1.2699921,

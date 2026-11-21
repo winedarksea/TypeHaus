@@ -78,8 +78,9 @@
 > HP1 (12 3/16" off `PT-BW-PE`). ONE truss on both roofs: 23'-11 1/8" out to out, bottom chord across the full 5 1/2", SBCA standard heel 3.939" (plumb 3.689" +
 > 1/4" butt cut) at the OUTSIDE face of bearing; ridge 139.79", eave 86.46". Canopy
 > overhang 1'-7 3/16" keeps one fascia line. Collector blocks 2-2x8. `roof_beam` grades the
-> trusses' chord bearing (0.877, governs). `D-G-SERVICE` stops at **87°** (the screen cap;
-> owner, 2026-11-10). Notes: `canopy_west_band.md` / `canopy_garage_diaphragm.md`
+> trusses' chord bearing (0.877, governs). `D-G-SERVICE` stops at **87°** (SB-BW-BAND;
+> owner, 2026-11-10). The sill is oiled KDAT; metal only on the west cladding top
+> (`TR-BW-SCREEN-TOP`; the pierced cap retired 2026-11-20). Notes: `canopy_west_band.md` / `canopy_garage_diaphragm.md`
 > 2026-10-31.
 
 > **Canopy headers, 2026-10-28:** `BM-BW-RW`/`-RE` end flush on the outer faces of their

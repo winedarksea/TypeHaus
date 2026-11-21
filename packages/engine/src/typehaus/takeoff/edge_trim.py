@@ -127,9 +127,7 @@ def edge_trim_runs(model: ResolvedModel) -> list[dict[str, object]]:
                 "profile": _section_profile(face_m, element.thickness.meters),
                 "material": material, "tag": element.tag, "storey": storey.tag,
                 "length_m": length_m,
-                "mirror": ("" if getattr(getattr(element, "section", None),
-                                         "fit_to_brace_sill", False)
-                           else "structural_solids")})
+                "mirror": "structural_solids"})
     runs.extend(_derived_roof_trim(model))
     return runs
 

@@ -86,22 +86,23 @@ def _service_sweep(model, **overrides):
 
 
 def test_stock_leaf_sweep_clears_hold_down_and_screen_with_required_margin(catlin_model_ro):
-    """At the authored 87deg stop the lever to the screen cap governs.
+    """At the authored 87deg stop RL-G-SERVICE-RETURN2 governs.
 
     Re-pinned 2026-11-01 when the MMI frame was anchored flush with the sheathing
     (``factory_frame_depth`` 6-9/16"), which moved the leaf plane: ties 0.320 -> 0.381",
     hold-down 2.873 -> 2.865". 2026-11-18: the screen went 3/16" west with the garage's 7/16"
     ZIP, so the cap reads 0.828" and RL-G-SERVICE-RETURN2 governs at 0.645". 2026-11-20: the
     hold-down moved to y=524 9/16" to sit inside the ICF core, 2.865 -> 2.863"; then it became
-    an HTT4 on the kings' east face, in the stud bay, 5.863".
+    an HTT4 on the kings' east face, in the stud bay, 5.863". Later 2026-11-20 the cap
+    (0.828") retired; the band is the screen's nearest obstacle, 0.953".
     """
     results = _service_sweep(catlin_model_ro)
     anchor = [result for result in results if result.obstacle == "CN-G-BWHD-S-DR"]
     assert min(result.clearance_m for result in anchor) / INCH == pytest.approx(5.863, abs=1e-3)
     assert results[0].obstacle == "RL-G-SERVICE-RETURN2"
     assert min(result.clearance_m for result in results) / INCH == pytest.approx(0.645, abs=1e-3)
-    cap = [result for result in results if result.obstacle == "TR-BW-SCREEN-CAP"]
-    assert min(result.clearance_m for result in cap) / INCH == pytest.approx(0.828, abs=1e-3)
+    band = [result for result in results if result.obstacle == "SB-BW-BAND"]
+    assert min(result.clearance_m for result in band) / INCH == pytest.approx(0.953, abs=1e-3)
     assert any(result.obstacle == "W-BW-SCREEN" for result in results)
     assert any(result.obstacle == "PT-BW-CNW" for result in results)
     assert any(result.obstacle.startswith("TR-BW-MDO-") for result in results)
@@ -128,13 +129,14 @@ def test_a_90_degree_stop_meets_the_band(catlin_model_ro):
 
 
 def test_a_flush_hinge_is_the_thinnest_margin(catlin_model_ro):
-    """Flush, the lever passes the cap by 0.328" (about 0.14" before the screen went 3/16" west,
-    2026-11-18): under the 1/2" inset's margin, and still barred by the brick base."""
+    """Flush, the lever passes the band (and the header over it) by 0.453": the cap's 0.328"
+    retired with it, 2026-11-20. Under the 1/2" inset's margin, and still barred by the brick
+    base."""
     from typehaus.quantities import inch
 
     results = _service_sweep(catlin_model_ro, hinge_inset=inch(0))
-    assert results[0].obstacle == "TR-BW-SCREEN-CAP"
-    assert results[0].clearance_m / INCH == pytest.approx(0.328, abs=1e-3)
+    assert results[0].obstacle in {"SB-BW-BAND", "BM-BW-RW"}
+    assert results[0].clearance_m / INCH == pytest.approx(0.453, abs=1e-3)
 
 
 def test_the_hold_down_no_longer_bounds_the_leaf(catlin_model_ro):

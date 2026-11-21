@@ -25,8 +25,11 @@ wall's four faces — so that centroid is the inside of the loop, and "toward it
 the building" for every run in it. The host is deliberately *not* consulted: a run's
 ``host_ref`` names a roof or a gutter, and at plan level neither carries a plan footprint to
 take a centroid of, while a gutter runs parallel to the drip and so names no side at all.
-The one exception is a ``FloorSystem`` host with an authored ``outline``: that IS the body
-the drip trims, so a lone deck-edge drip is judged against the deck's own centroid.
+The exceptions are hosts that carry a plan body. A ``FloorSystem`` host with an authored
+``outline`` IS the body the drip trims, so a lone deck-edge drip is judged against the deck's
+own centroid. A wall host (a drip over its cladding's top) is judged against the foot of the
+run's midpoint on the wall's axis: the back side must face the core, and since the run lies
+within the wall's own thickness the degenerate band shrinks to 1/2".
 
 **What is deliberately not graded.** A ``vertical`` run's path spans the cladding thickness
 rather than travelling along the building, so its plan normal means nothing. And a run whose
@@ -50,6 +53,7 @@ _CHECK_ID = "integrity.drip_flashing_back_side"
 #: How far off a run's own line the reference point must fall before "toward it" names a
 #: side at all. A run 6" from the centroid of what it trims is not a run around a body.
 _DEGENERATE_M = 6.0 * M_PER_IN
+_WALL_DEGENERATE_M = 0.5 * M_PER_IN
 
 
 def _xy(point) -> tuple[float, float]:
@@ -76,6 +80,20 @@ def _host_outline(plan, run) -> list[tuple[float, float]]:
     return [_xy(p) for p in host.outline]
 
 
+def _wall_axis_foot(walls, run, mid) -> tuple[float, float] | None:
+    """Where the run's midpoint falls on its wall host's axis line, or None."""
+    wall = walls.get(run.host_ref) if run.host_ref else None
+    if wall is None:
+        return None
+    (ax, ay), (bx, by) = wall.axis
+    dx, dy = bx - ax, by - ay
+    length_sq = dx * dx + dy * dy
+    if length_sq == 0.0:
+        return None
+    t = ((mid[0] - ax) * dx + (mid[1] - ay) * dy) / length_sq
+    return (ax + t * dx, ay + t * dy)
+
+
 @check(Tier.INTEGRITY, _CHECK_ID)
 def drip_flashing_back_side(ctx: CheckContext) -> list[Finding]:
     runs = [e for e in ctx.plan.all_elements()
@@ -94,6 +112,7 @@ def drip_flashing_back_side(ctx: CheckContext) -> list[Finding]:
     for run in runs:
         by_storey.setdefault(storey_of.get(run.tag), []).extend(_xy(p) for p in run.path)
 
+    walls = {wall.tag: wall for wall in ctx.model.walls}
     findings: list[Finding] = []
     correct = 0
     for run in runs:
@@ -110,26 +129,27 @@ def drip_flashing_back_side(ctx: CheckContext) -> list[Finding]:
                                     tags=(run.tag,)))
             continue
 
+        mid = ((p0[0] + p1[0]) / 2.0, (p0[1] + p1[1]) / 2.0)
+        foot = _wall_axis_foot(walls, run, mid)
         points = _host_outline(ctx.plan, run) or by_storey.get(storey_of.get(run.tag)) or []
-        if len(points) < 4:
+        if foot is None and len(points) < 4:
             findings.append(unknown(
                 _CHECK_ID, f"{run.tag} has too few sibling drip runs on its storey to form a "
                            "loop — nothing names which side of it is the building",
                 tags=(run.tag,)))
             continue
-        reference = (sum(p[0] for p in points) / len(points),
-                     sum(p[1] for p in points) / len(points))
-
-        mid = ((p0[0] + p1[0]) / 2.0, (p0[1] + p1[1]) / 2.0)
+        reference = foot or (sum(p[0] for p in points) / len(points),
+                             sum(p[1] for p in points) / len(points))
         to_reference = (reference[0] - mid[0], reference[1] - mid[1])
         # Only the component along the normal matters: the along-path component is where the
         # run sits on the edge, not which side of it the building is.
         toward = to_reference[0] * back[0] + to_reference[1] * back[1]
-        if abs(toward) < _DEGENERATE_M:
+        if abs(toward) < (_WALL_DEGENERATE_M if foot else _DEGENERATE_M):
+            where = "its wall's axis" if foot else "its storey's drip loop centroid"
             findings.append(unknown(
                 _CHECK_ID,
-                f"{run.tag} sits within 6\" of its storey's drip loop centroid measured "
-                "across its own line — too close to name a side", tags=(run.tag,)))
+                f"{run.tag} sits too close to {where} measured across its own line to "
+                "name a side", tags=(run.tag,)))
             continue
         if toward > 0.0:
             correct += 1

@@ -1226,6 +1226,14 @@ once; opening geometry uses the existing allowances and trim-inclusive rates. Se
 [the modeling basis and limits](notes/flashing_model.md) for dimensions and the distinction
 between modeled cutouts and fabrication/penetration details.
 
+**2026-11-20: the cap retired (owner).** A cap pierced round the brace feet, post and KBS1Z
+plates can't be put on after framing, and every cut-out is a joint that holds water against
+the wood. The sill is now bare KDAT under the house's oil finish (M4 on cut feet), its butyl
+dropped; `TR-BW-SCREEN-TOP`, a PVDF aluminium counter section with a 1" upstand on the sill's
+west face, covers only the west ZIP + corrugated top, where nothing passes through. The
+engine's `fit_to_brace_sill` fitted cap went with it. `integrity.drip_flashing_back_side` now
+reads a wall host's axis, so a lone cladding-top drip is graded rather than UNKNOWN.
+
 ## Shared Trex Enhance Basics on entry, porch and service stair (2026-10-15)
 
 The main library now names Trex Enhance Basics at actual 0.94 inch thickness. FS-BW-FLOOR

@@ -78,12 +78,14 @@ same plane, with screw heads up to 1/8 inch proud. These modeled obstacles give:
 
 | Pivot inset | Worst clearance | Governing obstacle |
 |---:|---:|---|
-| 0 | 0.328 in | TR-BW-SCREEN-CAP (the brick base still bars it) |
-| 1/2 in | 0.645 in | RL-G-SERVICE-RETURN2 (cap 0.828 in) |
+| 0 | 0.453 in | SB-BW-BAND / BM-BW-RW (the brick base still bars it) |
+| 1/2 in | 0.645 in | RL-G-SERVICE-RETURN2 (band 0.953 in) |
 | 1 in | 0.890 in | RL-G-SERVICE-RETURN2 |
 | 2 in | 1.567 in | RL-G-SERVICE-RAIL1 (the hold-down, an HTT4 in the stud bay since 2026-11-20, 4.363 in) |
 
-Re-swept 2026-11-18: the screen moved 3/16 inch west with the garage's 7/16-inch ZIP.
+Re-swept 2026-11-18: the screen moved 3/16 inch west with the garage's 7/16-inch ZIP. Re-swept
+2026-11-20: TR-BW-SCREEN-CAP retired; the band now governs flush. TR-BW-SCREEN-TOP, over the
+west cladding, does not come near the leaf.
 
 Measure the delivered frame's pivot before setting the stop. The MDO panel, nailer and
 screw-head geometry is included in the continuous sweep. Recheck changes to the face

@@ -23,13 +23,9 @@ class FormedFlashingSection(HausModel):
     upstand: Length = inch(3)
     drip: Length = inch(0.75)
     hem: Length = inch(0.25)
-    #: A SlatBrace host: resolve its sill top and cut around its wood and hardware.
-    fit_to_brace_sill: bool = False
 
     @model_validator(mode="after")
     def valid_section(self):
-        if self.fit_to_brace_sill and self.profile != "cap":
-            raise ValueError("a fitted brace sill requires a cap section")
         if self.sheet_thickness.meters <= 0:
             raise ValueError("flashing sheet thickness must be positive")
         if any(value.meters < 0 for value in (self.upstand, self.drip, self.hem)):

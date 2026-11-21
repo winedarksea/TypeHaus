@@ -5,24 +5,19 @@ flashing and opening membranes together. Construction trades remain separate: ro
 is roofing, wall/head metal is siding, and opening membranes/pans belong to openings.
 The control does not include gutters, connectors, or ordinary window casing.
 
-`TR-BW-SCREEN-CAP` protects the **exposed upper surface of SB-BW-BAND's 2×6 sill**, above
-W-BW-SCREEN's +4′-0″ top. It does not lie between the sill and wall. Its 0.032″ dark metal
-falls west at ¼″/ft, with a ¾″ drop and ¼″ hem beyond the corrugated face. The east return
-projects ⅛″ past the existing 2×6. Resolved wood and connector intersections cut the cap
-with 1/16″ installation clearance; structural members and bearing elevations stay fixed.
-It is billed once by run length under `edge_trim/beam_cap`.
+**The west screen top (2026-11-20).** SB-BW-BAND's 2×6 KDAT sill above W-BW-SCREEN's +4′-0″ top
+is bare wood under the house's KDAT finish (pigmented penetrating oil, horizontal faces recoated
+every 2–3 yr; 2% copper naphthenate on every cut, AWPA M4, including the slat and post feet). It
+replaced `TR-BW-SCREEN-CAP` (retired uid `PD2PPXS59S`), a steel cap pierced round both brace feet,
+the centre post and the KBS1Z plates: every cut-out is a sealant joint that lets water in and
+holds it against the wood, and the cap cannot go on once the band is framed.
 
-Since 2026-10-16 the cap **bears on tape**: `SB-BW-BAND.top_protection = "butyl-tape-beam"`,
-the porch beams' wide roll, over the whole sill and turned up 1" round each of the eight
-slats and the centre post that land on it. It is the dielectric between the steel and the
-KDAT and the seal at every cut-out. It bills 15.5 LF in `member_protection`, under
-`scope="brace"`. It is not drawn.
-
-The cap mesh describes the exposed cover and its cutouts, not fabrication seams, the tape
-collars, sealant joints, or a tested waterproof connection at each penetration. Develop
-those installation details around the actual connector hardware before fabrication.
-The proposed east-face decorative locust assembly remains a separate implementation;
-this cap is sized to current finishes and the existing sill.
+Metal stays only where nothing passes through it. `TR-BW-SCREEN-TOP` is a 0.032″ PVDF aluminium
+`counter` section over the west ZIP + corrugated, which stand 1 5/16″ proud of the sill's west
+face: a 1″ upstand sealed to that face below the KBS1Z plates (they start at +50.45″), ¼″/ft
+fall west, ¾″ drip and ¼″ hem over the corrugated. Post face to post face, ~4.5 LF, billed in
+`edge_trim/drip_flashing`. The east MDO is already under the sill's ~1 1/16″ overhang, its edges
+primed and painted (`entry_screen_mdo.md`).
 
 Exterior windows and pedestrian doors now carry separately selectable metal heads, sill
 pans, and concealed jamb/head membranes. The head flashing reads the resolved water plane,

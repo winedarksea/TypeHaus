@@ -42,7 +42,6 @@ class FlashingConfig:
     #: Shim space between a window unit and the membrane at each jamb and the head.
     #: Buck and flashing consume additional RO space; the sill bears on the pan.
     install_gap_m: float = inch(0.25).meters
-    obstacle_clearance_m: float = inch(0.0625).meters
     membrane_material: str = "fluid-applied-flashing"
     sill_shim_material: str = "kdat"
 

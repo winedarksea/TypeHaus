@@ -12,12 +12,12 @@ support mass, purchasing and the local checks all read it. Run
 - MDO stops at the north chord post; the end pack and both garage ties stay exposed and oiled.
 - Lower centre timber: one KDAT 6x6 framed in like a stud, four S10ACN through each plate into its ends.
 - Nail the timber on the flat, before the wall stands and before the band goes on.
-- Five 2x4 MDO edge nailers; retain west plywood, plates and cap. Keep bottom drainage open.
+- Five 2x4 MDO edge nailers; retain west plywood, plates and TR-BW-SCREEN-TOP; the sill is oiled, uncapped. Keep bottom drainage open.
 
 
 ## Geometry
 
-- West 7/16-inch taped ZIP (the shear, alone), corrugated skin, field studs, plates, cap and the band
+- West 7/16-inch taped ZIP (the shear, alone), corrugated skin, field studs, plates, TR-BW-SCREEN-TOP and the band
   above are unchanged. The timber and nailers add no roof support and no shear chord.
 - `TR-BW-MDO-TIMBER`: one KDAT Southern Pine No. 2 6x6, 5.5 x 5.5, cut 44.44 inches,
   x=72.625–78.125, stations 37.875–43.375, +0.56 to +45. Both faces line up with the band's

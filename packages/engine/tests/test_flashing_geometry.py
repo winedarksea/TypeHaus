@@ -22,7 +22,7 @@ from typehaus.model import (
     pt,
 )
 from typehaus.model.enums import DoorOperation
-from typehaus.resolve.flashing_caps import brace_cap_mesh, clipped_sheet, formed_run_mesh
+from typehaus.resolve.flashing_caps import formed_run_mesh
 from typehaus.resolve.flashing_config import FLASHING
 from typehaus.resolve.geometry_build import build_geometry
 from typehaus.resolve.model import ResolvedLayer, ResolvedModel, ResolvedOpening, ResolvedWall
@@ -32,8 +32,7 @@ from typehaus.resolve.opening_flashing import (
     opening_flashing_meshes,
     resolve_opening_flashing,
 )
-from typehaus.resolve.sheet_geometry import extruded_quad, polygon_sheet
-from typehaus.takeoff.edge_trim import edge_trim_takeoff
+from typehaus.resolve.sheet_geometry import polygon_sheet
 from typehaus.takeoff.framing import structural_solids_takeoff
 from typehaus.takeoff.openings import opening_takeoff
 
@@ -226,10 +225,6 @@ def test_sheet_cutouts_preserve_area_and_outward_winding():
              [(3, 0.5), (3.5, 0.5), (3.5, 1), (3, 1)]]
     mesh = polygon_sheet(rings, lambda x, y: (x, y, 0), (0, 0, 0.01))
     assert _signed_volume(mesh) == pytest.approx(6.75 * 0.01)
-    obstacle = extruded_quad(((1, 0.5, -1), (2, 0.5, -1), (2, 1.5, -1), (1, 1.5, -1)),
-                             (0, 0, 2))
-    clipped = clipped_sheet((0, 0, 0), (0, 2, 0), (4, 0, 0), 0.01, [obstacle])
-    assert _signed_volume(clipped) == pytest.approx(7 * 0.01)
 
 
 def test_reversing_a_formed_run_does_not_move_either_sheet_face():
@@ -245,24 +240,13 @@ def test_reversing_a_formed_run_does_not_move_either_sheet_face():
     assert _signed_volume(mesh) == pytest.approx(_signed_volume(reverse_mesh))
 
 
-def test_fitted_cap_and_openings_do_not_change_the_volume_bill(catlin_model_ro):
+def test_opening_sheets_do_not_change_the_volume_bill(catlin_model_ro):
     model = catlin_model_ro
     sheets = [s for s in model.solids if s.category in {
-        "opening_head_flashing", "opening_sill_pan", "opening_flashing_membrane"}
-        or s.tag == "TR-BW-SCREEN-CAP"]
+        "opening_head_flashing", "opening_sill_pan", "opening_flashing_membrane"}]
     baseline = replace(model, solids=[s for s in model.solids if s not in sheets])
     assert structural_solids_takeoff(model) == structural_solids_takeoff(baseline)
     assert opening_takeoff(model) == opening_takeoff(baseline)
-    caps = [s for s in sheets if s.tag == "TR-BW-SCREEN-CAP"]
-    assert len(caps) == 1
-    cap = caps[0]
-    assert cap.host_ref == "SB-BW-BAND"
-    assert cap.material == "metal-dark-exterior"
-    assert len(cap.body_mesh.triangles) > 100  # fitted around wood and steel, not a plain box
-    rows = [r for r in edge_trim_takeoff(model) if cap.tag in r["tags"]]
-    assert len(rows) == 1
-    assert rows[0]["count"] == 1
-    assert rows[0]["length_ft"] > 0
     # The doors' head drip is a billed `cladding_trim` cut now, not flashing sheet.
     # A catalog sill's pan is its installation's own section (D-M-ENTRY since 2026-11-17).
     for tag, pan in (("D-M-ENTRY", set()), ("D-G-SERVICE", {"opening_sill_pan"})):
@@ -270,37 +254,6 @@ def test_fitted_cap_and_openings_do_not_change_the_volume_bill(catlin_model_ro):
             "opening_flashing_membrane", *pan}
         assert any(s.category == "cladding_trim" and s.host_ref == tag and "-TRIM-HEAD-" in s.tag
                    for s in model.solids)
-
-
-def test_screen_cap_falls_west_and_clears_the_centre_post_without_moving_wood(catlin_model_ro):
-    from shapely.geometry import Polygon
-
-    model = catlin_model_ro
-    element = model.plan.by_tag("TR-BW-SCREEN-CAP")
-    brace = next(b for b in model.braces if b.tag == element.host_ref)
-    members = brace.members
-    sill = next(m for m in members if m.child_key == "plate-sill")
-    post = next(m for m in members if m.child_key == "post-centre")
-    mesh = brace_cap_mesh(model, element, element.section)
-    assert brace.members is members
-    west = element.path[0].x.meters - element.thickness.meters / 2
-    east = west + element.thickness.meters
-    assert west < min(x for x, _y in next(w for w in model.walls
-                                        if w.tag == "W-BW-SCREEN").layers[-1].polygon)
-    slope = element.section.slope
-    top_triangles = []
-    for triangle in mesh.triangles:
-        points = [mesh.positions[i] for i in triangle]
-        residual = [z - sill.z1_m - (x - west) * slope for x, _y, z in points]
-        if max(abs(r) for r in residual) < 1e-8:
-            top_triangles.append(Polygon([(x, y) for x, y, _z in points]))
-    assert top_triangles
-    assert max(z for x, _y, z in mesh.positions if abs(x - east) < 1e-7) > \
-        max(z for x, _y, z in mesh.positions if abs(x - west) < 1e-7)
-    from typehaus.resolve.geometry_members import member_box
-
-    footprint = Polygon([(x, y) for x, y, _z in member_box(post).corners_bottom])
-    assert all(tri.intersection(footprint).area < 1e-10 for tri in top_triangles)
 
 
 def test_shared_mesh_reaches_ir_json_glb_and_ifc(tmp_path):
@@ -428,18 +381,6 @@ def test_balcony_rear_edge_is_the_band_trim_over_the_deck(catlin_model_ro):
         assert min(y for _x, y in solid.outline) < deck_y - inch_m(0.5)
         assert solid.z0_m - deck.deck_top_at(sum(xs) / len(xs), deck_y) >= inch_m(0.75)
         assert max(xs) <= lo - casing + 1e-6 or min(xs) >= lo + door.width_m + casing - 1e-6
-
-
-def test_the_screen_cap_bears_on_tape(catlin_model_ro):
-    from typehaus.takeoff.member_protection import member_protection_takeoff
-
-    rows = [r for r in member_protection_takeoff(catlin_model_ro) if r["scope"] == "brace"]
-    assert [(r["material"], r["width_in"], r["tags"]) for r in rows] == [
-        ("butyl-tape-beam", 5.5, ["SB-BW-BAND"])]
-    # The clear sill, a 22-inch collar around the centre post, and each corner brace's foot:
-    # its 3.831" clipped face both sides plus its free 5.5" edge (the chord takes the other).
-    assert rows[0]["length_ft"] == pytest.approx((54.25 + 22 + 2 * (2 * 3.83148 + 5.5)) / 12,
-                                                 abs=0.05)
 
 
 def test_metal_wall_window_membrane_lies_behind_its_metal(catlin_model_ro):

@@ -329,8 +329,7 @@ OPENINGS = [
     # requires a leaf bottom >=1in above the rough sill; set and check in the standard install.
     # Frame-mounted overhead STOP-ONLY at 87deg: AN-G-SERVICE-DOOR (owner, 2026-11-10). The
     # largest stop the sweep clears at the 1/2" pivot inset with the 1/8" allowance and 1/4"
-    # minimum (scripts/garage_service_door_clearance.py): 88deg brings the lever within
-    # 0.19" of TR-BW-SCREEN-CAP, and at 90deg it meets SB-BW-BAND.
+    # minimum (scripts/garage_service_door_clearance.py); at 90deg it meets SB-BW-BAND.
     # Its rough sill sits flush with the deck: KDAT under a sloped, back-dammed pan
     # (notes/opening_flashing_spec.md §6).
     #
@@ -876,7 +875,7 @@ SERVICE_DOOR_HARDWARE = [
     Annotation(uid="GTREXSPEC1", tag="AN-G-COMPOSITE-DECKING", position=pt(ft(8), ft(44)),
                text="FS-BW-FLOOR, FS-SG-PORCH and ST-G-SERVICE: TREX ENHANCE BASICS, actual 0.94 x 5.5in square-edge, color TBD. Service treads: four 36 x 11in assemblies, each front 5.5in + 1/4in gap + rear rip 5.25in; five KDAT stringers <=9in o.c., EACH on a 316 stainless stem seat. BUTYL TAPE all deck framing tops and stepped stringer cuts; field-treat wood cuts. Both decks and treads: 316 stainless Cap-Tor xd #10 x 2-3/4in, TWO per board at EVERY support, flush; support all board ends. Retain KDAT rough sill under sloped pan, 1/2in open drainage gap, no board through doorway. See notes/composite_decking.md"),
     Annotation(uid="VJDMQAGNCA", tag="AN-G-SERVICE-DOOR", position=pt(ft(8, 1), ft(42, 6)),
-               text="D-G-SERVICE: MMI Z0364688R stock 32x80 six-panel insulated steel RH OUTSWING, 6-9/16 composite frame, factory fixed sill/seals/NRP hinges. West hinges; black exterior/white interior. Frame published RO 34x81.5, x=81..115in. Plumb/square the prehung unit in the RO; hinge pivot must sit 1/2..2in from the west RO edge (flush hits the brick base). Schlage F51A LAT 622 plus B60N 622 deadbolt. Mechanical overhead stop-only SET AT 87deg (clears the screen cap and slat band); no attachment to brick. HTT4 on the EAST face of the double full-height east kings (x=119.5in, in the stud bay, never the reveal), (18) 0.148x1.5in nails, seat on the sill over a cast-in SSTB16 at x=120 13/16in, y=523 1/8in, embedment line z=-12in; one #4x50.5in bar 4in below pour top (Simpson C-C-2026 pp. 43, 63). Support factory sill continuously on KDAT under the sloped pan; leaf/sweep >=1in above deck. Set stair risers from installed threshold. Keep stair-to-threshold arrangement; AHJ approval remains required. See notes/garage_service_door_outswing.md"),
+               text="D-G-SERVICE: MMI Z0364688R stock 32x80 six-panel insulated steel RH OUTSWING, 6-9/16 composite frame, factory fixed sill/seals/NRP hinges. West hinges; black exterior/white interior. Frame published RO 34x81.5, x=81..115in. Plumb/square the prehung unit in the RO; hinge pivot must sit 1/2..2in from the west RO edge (flush hits the brick base). Schlage F51A LAT 622 plus B60N 622 deadbolt. Mechanical overhead stop-only SET AT 87deg (clears the slat band); no attachment to brick. HTT4 on the EAST face of the double full-height east kings (x=119.5in, in the stud bay, never the reveal), (18) 0.148x1.5in nails, seat on the sill over a cast-in SSTB16 at x=120 13/16in, y=523 1/8in, embedment line z=-12in; one #4x50.5in bar 4in below pour top (Simpson C-C-2026 pp. 43, 63). Support factory sill continuously on KDAT under the sloped pan; leaf/sweep >=1in above deck. Set stair risers from installed threshold. Keep stair-to-threshold arrangement; AHJ approval remains required. See notes/garage_service_door_outswing.md"),
 ]
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ROOFS,
