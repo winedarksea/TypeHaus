@@ -18,8 +18,8 @@ from typehaus.resolve.framing.footprint import member_footprint
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.framing.solver import frames_as_members, structure_layer
 from typehaus.resolve.model import FramedMember, ResolvedModel
-from typehaus.resolve.stairs.post_cuts import _authored_post_spans
 from typehaus.resolve.stairs.common import _FRAMING_SPACING_M
+from typehaus.resolve.stairs.post_cuts import _authored_post_spans
 
 _ON_LINE_M = 0.003  # a wall axis this close to the partition centreline is on it
 _MIN_STUD_M = 0.15  # a free height shorter than this takes no stud

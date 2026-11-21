@@ -191,7 +191,7 @@ def test_viewer_gltf_and_ifc_keep_shared_relief_and_colors(product):
             assert serialized["shape"] == "mesh"
             assert serialized["mesh"] == part["mesh"]
     builder = _MeshBuilder()
-    item = SimpleNamespace(position=(1, 2), rotation_degrees=37, z_m=1, mount=None)
+    item = SimpleNamespace(position=(1, 2), rotation_degrees=37, z_m=1, mount=None, model_frame=None)
     assert _add_canvas_parts(builder, item, product, {})
     assert set(builder._buckets) == {PART_COLORS[part["color"]] for part in parts}
     gltf_positions = [point for positions, _ in builder._buckets.values() for point in positions]

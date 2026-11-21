@@ -29,7 +29,7 @@ from typehaus.resolve.geometry_ir import signed_volume
 def _assembly(*, center=(1.0, 2.0), rotation=0.0, floor=-0.6):
     fixture = SimpleNamespace(tag="FX", kind="Fixture", type_ref=WALL_HYDRANT.tag,
                               position=center, rotation_degrees=rotation, body_z0_m=floor,
-                              z_m=floor, room="ROOM", mount=None)
+                              z_m=floor, room="ROOM", mount=None, model_frame=None)
     pipe = SimpleNamespace(tag="PR", system="water_cold", diameter_m=inch(.75).meters,
                            serves=("FX",))
     model = SimpleNamespace(plan=SimpleNamespace(library=SimpleNamespace(
