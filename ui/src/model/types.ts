@@ -392,8 +392,8 @@ export interface DoorSizing {
   fits: boolean;
   basis: Record<string, string>;
   pocket_run_m: number;
-  // The pocket frame kit sized for this door: [manufacturer, name, part number].
-  pocket_kit?: [string, string, string] | null;
+  // The pocket frame kit sized for this door: [manufacturer, name, part number or null].
+  pocket_kit?: [string, string, string | null] | null;
 }
 
 // One resolved product part of an opening (server/model_json_opening_parts.py): plan rings

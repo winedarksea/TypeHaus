@@ -38,7 +38,7 @@ def test_bypass_set_sizes_its_opening_and_draws_two_lanes(catlin_model_ro):
     assert {"bypass_track", "bypass_guide", "bypass_pull"} <= parts.keys()
     assert parts["bypass_track"].catalog.name == "PROD-JOHNSON-138F482D"
     project = _along_and_normal(model, opening)
-    leaves = sorted((project(s) for s in parts["leaf"].solids if isinstance(s, GPrism)))
+    leaves = sorted(project(s) for s in parts["leaf"].solids if isinstance(s, GPrism))
     assert len(leaves) == 2
     (a0, a1), lane_a = leaves[0]
     (b0, b1), lane_b = leaves[1]

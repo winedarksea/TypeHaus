@@ -48,8 +48,8 @@ FLUSH_HC_SLAB_36 = Product(
     tag="PROD-MASONITE-FLUSH-HC-SLAB-36", brand="Masonite", model="14548",
     name="No Panel Primed White Smooth Flush Hardboard Hollow Core Composite Interior Door "
          "Slab, 36x80", sku="HD 202289103",
-    url=_HD + "questions/Masonite-36-in-x-80-in-No-Panel-Primed-White-Smooth-Flush-Hardboard-"
-              "Hollow-Core-Composite-Interior-Door-Slab-14548/202289103/4",
+    url=_HD + "Masonite-36-in-x-80-in-No-Panel-Primed-White-Smooth-Flush-Hardboard-"
+              "Hollow-Core-Composite-Interior-Door-Slab-14548/202289103",
     source="The pocket leaf. Steves' 36in flush HC slab was not found at retail.")
 JOHNSON_138F482D = Product(
     tag="PROD-JOHNSON-138F482D", brand="Johnson Hardware", model="138F482D",

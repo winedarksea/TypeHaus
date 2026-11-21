@@ -12,7 +12,7 @@ from math import cos, pi, sin
 from typehaus.resolve.geometry_ir import GPart, GSweep, PartCatalogRef
 from typehaus.resolve.model_door_products import BypassDoorPlacement
 
-_PULL_EDGE_INSET_M = 0.0508  # pull centre in from the leaf's outer edge (schematic)
+_PULL_EDGE_INSET_M = 0.0508  # pull centre 2" in from the leaf's outer edge (Johnson IN183834)
 _PULL_RECESS_M = 0.003  # what of the cup reads proud of the face
 _PULL_FACETS = 24
 _HARDWARE_KEY = "door_hardware"

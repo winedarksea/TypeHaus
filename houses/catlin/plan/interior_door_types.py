@@ -12,12 +12,11 @@ library preset. NOT ``# haus: editable``: catalog definitions, nothing placed.
 
 from __future__ import annotations
 
+from plan import interior_door_products as products
+from plan.opening_products import HALIFAX_KEYED, HOLD_OPEN_CLOSER, STEEL_PREHUNG_HINGE
 from typehaus import BypassDoorSpec, DoorHardwareItem, DoorType
 from typehaus.library.doors import DT_INT_ACCESS24, DT_POCKET_INT_36, STANDARD_DOOR_TYPES
 from typehaus.quantities import ft, inch
-
-from plan import interior_door_products as products
-from plan.opening_products import HALIFAX_KEYED, HOLD_OPEN_CLOSER, STEEL_PREHUNG_HINGE
 
 # Every commodity leaf is a stock 6'-8" prehung cut down on site (owner, 2026-11-06): jamb
 # legs trimmed, the 80" slab cut to its undercut in the 81.51" RO over the finished floor

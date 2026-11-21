@@ -108,8 +108,8 @@ class DoorSizing:
     # slab's bottom on site to get it in this RO (0 where it fits uncut).
     undercut_m: float = 0.0
     leaf_cut_m: float = 0.0
-    # The pocket frame kit sized for this door: (manufacturer, name, part number).
-    pocket_kit: tuple[str, str, str] | None = None
+    # The pocket frame kit sized for this door: (manufacturer, name, part number or None).
+    pocket_kit: tuple[str, str, str | None] | None = None
 
     @property
     def jamb_rip_m(self) -> float:
@@ -334,11 +334,12 @@ def door_sizing(door, door_type, trim_standard=None, kit=None,
         leaf_cut_m=cut, pocket_kit=_kit_identity(kit, nominal_w) if pocket else None)
 
 
-def _kit_identity(kit, nominal_w: float) -> tuple[str, str, str] | None:
+def _kit_identity(kit, nominal_w: float) -> tuple[str, str, str | None] | None:
+    """No catalogued part number at this width is None, never the kit's own tag."""
     if kit is None:
         return None
     numbers = getattr(kit, "part_number_by_length_in", None) or {}
-    return kit.manufacturer, kit.name, numbers.get(round(nominal_w / _IN), kit.model)
+    return kit.manufacturer, kit.name, numbers.get(round(nominal_w / _IN))
 
 
 def _jamb(door, door_type, trim_standard, wall_depth_m) -> tuple[float | None, float | None]:

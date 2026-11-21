@@ -8500,9 +8500,9 @@ finish-door-hardware-privacy = { low = 50, high = 100, unit = "ea", driver = "op
 finish-door-hardware-pocket-privacy = { low = 45, high = 110, unit = "ea", driver = "openings.count[function=pocket_privacy]" }
 #   pocket passage (D-M-PANTRY, D-M-LAUN): a flush pull and an edge pull, retail.
 finish-door-hardware-pocket-passage = { low = 20, high = 60, unit = "ea", driver = "openings.count[operation=pocket,function=passage]" }
-#   closet: D-B-CLOSET's dummy knob; the bifold's and the bypass's track hardware ship with
-#   them, so their share is a pull or knob each.
-finish-door-hardware-closet = { low = 15, high = 40, unit = "ea", driver = "openings.count[function=closet]" }
+#   closet: D-B-CLOSET's dummy knob and the bifold's pull (its track ships with it). The
+#   bypass is out: its #30 cup pulls ship in the Johnson 138F482D set (2026-11-20).
+finish-door-hardware-closet = { low = 15, high = 40, unit = "ea", driver = "openings.count[function=closet,operation!=slide]" }
 #   pair (D-B-PLAY): passage set on the active leaf, a dummy on the passive, top/bottom flush bolts.
 finish-door-hardware-pair = { low = 70, high = 150, unit = "ea", driver = "openings.count[operation=double_swing,hardware_authored=False]" }
 # Residual: an entry door with no authored set, D-G-SERVICE alone today — its keyed lever,

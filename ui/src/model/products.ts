@@ -60,7 +60,8 @@ export function pieceProduct(model: Model, opening: Opening, piece: string): Pie
   if (role === "pocket_track") {
     const kit = opening.sizing?.pocket_kit;
     return { label, detail: "pocket frame kit", product: kit ? {
-      tag: kit[2], brand: kit[0], model: kit[2], name: kit[1], sku: "", url: null, source: null,
+      tag: kit[2] ?? kit[1], brand: kit[0], model: kit[2] ?? "", name: kit[1], sku: "", url: null,
+      source: null,
     } : null };
   }
   if (role.startsWith("bypass_")) {

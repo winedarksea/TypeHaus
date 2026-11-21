@@ -44,7 +44,7 @@ export function DoorFactsRows({ type, sizing, catalog }: {
     {bottom && <><span className="k">Bottom</span><span>{bottom}</span></>}
     {type.self_closing && <><span className="k">Self-closing</span><span>yes</span></>}
     {kit && <><span className="k">Pocket frame kit</span>
-      <span>{kit[0]} {kit[1]} <span className="prov">{kit[2]}</span></span></>}
+      <span>{kit[0]} {kit[1]}{kit[2] && <> <span className="prov">{kit[2]}</span></>}</span></>}
     {bypass && <><span className="k">Bypass hardware</span>
       <span>{set ? `${set.brand} ${set.model}` : "bypass set"}, {formatInches(bypass.overlap_m)}
         {" "}overlap</span></>}
