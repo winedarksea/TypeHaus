@@ -2,7 +2,8 @@
 
 Per billed run of a material that authors one: ``(ceil(length / pitch) + 1) x rows`` — a
 fastener at each end and every pitch between, ``rows`` across the board. The runs are the
-edge-trim fascia, soffit and corner runs and the interior base and casing pieces.
+edge-trim fascia, soffit and corner runs, the interior base and casing pieces, and an
+exterior door installation's boards (the box sides and head lining its reveal).
 """
 
 from __future__ import annotations
@@ -37,6 +38,13 @@ def _runs(model: ResolvedModel):
     for casing in model.door_casings:
         for piece in casing.pieces:
             yield casing.material_ref, casing.storey, piece.length_m, "casing"
+    storeys = {wall.tag: wall.storey for wall in model.walls}
+    for opening in model.openings:
+        placement = opening.doorway.exterior_placement if opening.doorway else None
+        for board in placement.boards if placement is not None else ():
+            if board.role == "door_installation":
+                yield (board.material_ref, storeys.get(opening.host_wall, "building"),
+                       board.cut_dimensions_m[2], "door box")
 
 
 def trim_fastener_rows(model: ResolvedModel) -> list:

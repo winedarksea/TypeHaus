@@ -33,7 +33,7 @@ from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff.hardware_row import hardware_row
 
-#: ASME B18.2.2 heavy-hex nut height and ASME B18.21.1 Type A (USS) washer thickness, and
+#: ASME B18.2.2 heavy-hex nut height and ASME B18.22.1 Type A (USS) washer thickness, and
 #: the UNC pitch (threads per inch), by bolt diameter. Two threads stand past the nut.
 _NUT_IN = {0.5: 31 / 64, 0.75: 47 / 64}
 _WASHER_IN = {0.5: 0.097, 0.75: 0.134}

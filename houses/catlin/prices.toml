@@ -854,8 +854,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "8d common 0.131x2.5 bright" = { low = 0.02, high = 0.04 }
 "WSV212S" = { low = 0.08, high = 0.14 }
 # Trim-to-wood (decision #147), ESTIMATES: Simpson Type 316 15 ga DA finish nail, 4,000 box;
-# the 316 Fascia-Fastening Solution screw (no run bills it yet: the Trex box sides are a door
-# installation, not an edge run).
+# the 316 Fascia-Fastening Solution screw on D-B-SUNKEN's Trex box sides and head.
 "T15N250SFN" = { low = 0.03, high = 0.06 }
 "T08175FS75" = { low = 0.25, high = 0.45 }
 # Concealed panel screws, out of the panel $/SF rates since 2026-10-31. The B&B screw is the

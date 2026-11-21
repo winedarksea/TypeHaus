@@ -17,11 +17,11 @@ WALL_SHEATHING_NAILING = SheathingNailing(
     code_row="IRC 2018 Table R602.3(3)",
     source="IRC 2018 Table R602.3(3) (UpCodes): 8d common, 7/16 in. 24/16 panel, 6 in. edges / 12 in. field, Vult 170 Exp. B at 16 in. studs; R602.10.4 WSP/CS-WSP fasten per R602.3(3) at 6/12. ZIP: Huber HUB 9216, code-recognized fasteners as for OSB")
 
-# Subfloor (decision #147): glued and screwed, the WSV substituting one-for-one for the
-# 8d of R602.3(1) item 31. Special (a screw, not the row's nail): S-001 lists it.
+# Subfloor (decision #147): glued and screwed, the WSV in place of the 8d of R602.3(1)
+# item 31 at its spacing. Special (a screw, not the row's nail): S-001 lists it.
 SUBFLOOR_FASTENING = SheathingNailing(
     part="WSV212S", edge_oc_in=6.0, field_oc_in=12.0,
-    source="IRC 2018 Table R602.3(1) item 31 spacing (19/32-1 in., 6 in. edges / 12 in. intermediate); Simpson C-F-2019TECHSUP p.86, ESR-1472: WSV one-for-one for 8d common; glued to I-joists, no span reduction")
+    source="ICC-ES ESR-1472 (reissued Sept. 2026) 4.1.2.1: WSV screws >= 2 in. may substitute for the 8d/10d common nails of IRC 2018 Table R602.3(1) items 30-32 (subflooring to framing), >= 1-3/8 in. penetration; item 31 spacing (19/32-1 in., 6 in. edges / 12 in. intermediate)")
 
 HEADER_STANDARD = [
     HeaderStandard(uid="FPEZ7QS5W4", tag="HEADER-STANDARD", min_bearing_header="2-2x8"),

@@ -58,7 +58,8 @@ def fastening_specs(model: ResolvedModel) -> list[FasteningSpec]:
         for layer in assembly.layers if assembly else ():
             used_materials.add(layer.material_ref)
             if layer.nailing is not None:
-                add(_nailing(layer.nailing, ""), f"{layer.material_ref} sheathing")
+                # By assembly: one material (CDX) is a wall at 6"/12" and a roof at 4"/4".
+                add(_nailing(layer.nailing, ""), f"{tag} {layer.name}")
             framing = getattr(layer, "framing", None)
             if framing is not None and framing.standoff_fastener_part:
                 add(FasteningSpec("", framing.standoff_fastener_part,

@@ -6,7 +6,7 @@
 **Written:** 2026-11-21, by hand from the drawings' dimensions and the catalog page, before
 `takeoff/site_bolts.py` was run against it.
 **Oracle for:** `takeoff/site_bolts.py` (decision #147); reproduced by
-`tests/test_hardware_takeoff.py::test_hl_site_bolt_lengths_match_the_hand_note`.
+`tests/test_fastening_schedules.py::test_hl_site_bolt_lengths_match_the_hand_note`.
 **Companions:** `notes/north_entry_piers.md` §10 — what the ties carry and why they are there.
 **What is asked of the reviewer:** §2's grips, and whether §4's far-face condition on line 2
 is acceptable.
@@ -22,7 +22,7 @@ HL fn 7's minimum: a lag of the bolt's diameter, >= 5" long.
 
 | term | 1/2" bolt | 3/4" bolt |
 |---|---|---|
-| USS washer (ASME B18.21.1 Type A) | 0.097 | 0.134 |
+| USS washer (ASME B18.22.1 Type A, W) | 0.097 | 0.134 |
 | heavy-hex nut (ASME B18.2.2) | 31/64 = 0.484 | 47/64 = 0.734 |
 | two threads (13 / 10 TPI) | 2/13 = 0.154 | 2/10 = 0.200 |
 | allowance | 0.735 | 1.068 |
@@ -56,4 +56,7 @@ Steel (C-C-2024 p. 303): HL33 7 ga = 0.1793"; HL43 3 ga = 0.2391".
 ## Sources
 
 - Simpson Strong-Tie Wood Construction Connectors C-C-2024 p. 303, HL table and fn 7-8.
-- ASME B18.2.2 (nuts), ASME B18.21.1 (washers) — dimensions as transcribed above.
+- ASME B18.2.2 (nuts), ASME B18.22.1 (plain washers; B18.21.1 is lock washers) — dimensions
+  as transcribed above, not re-read at review (2026-11-21). The stocked lengths do not hang
+  on them: §3 leaves 0.148" (HL33) and 0.693" (HL43) of slack, more than any washer or nut
+  tolerance.

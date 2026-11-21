@@ -46,6 +46,17 @@ def test_hl_site_bolt_lengths_match_the_hand_note(catlin_model_ro):
                     "LAG-34X5-HDG": 2, "LAG-12X5-HDG": 2}
 
 
+def test_every_catlin_trim_schedule_bills(catlin_model_ro):
+    """An authored ``trim_fastening`` that counts nothing would print on S-001 unbilled."""
+    rows = {row["part_number"]: row for row in hardware_takeoff(catlin_model_ro)
+            if row["scope"] == "trim fasteners"}
+    authored = {m.trim_fastening.part for m in catlin_model_ro.plan.library.materials
+                if m.trim_fastening is not None}
+    assert authored == set(rows)
+    # D-B-SUNKEN's Trex box: two 82" sides (6 x 2) and a 63" head (5 x 2).
+    assert rows["T08175FS75"]["count"] == 34
+
+
 def test_trim_window_and_bolt_fasteners_survive_treated_wood(catlin_model_ro):
     """R317.3.1: anything that may land in treated wood is HDG or stainless; a bright
     sheathing nail never lands on a treated stud."""

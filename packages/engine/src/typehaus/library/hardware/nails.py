@@ -151,10 +151,10 @@ SHEATHING_NAILS = (
         tag="simpson-wsv212s", name="Strong-Drive WSV SUBFLOOR screw, #9 x 2-1/2in",
         role=ROLE_SHEATHING_NAIL, manufacturer=_SIMPSON, model="WSV212S",
         exposure=EXPOSURE_DRY, finish=None,
-        source="Simpson Strong-Tie Fastening Systems Technical Guide (C-F-2019TECHSUP) p.86: "
-               "ICC-ES ESR-1472 recognises WSV screws as substitutes for 8d and 10d common "
-               "nails in IRC 2018 Table R602.3(1); one-for-one at the nail spacing; on glued "
-               "I-joist floors no span reduction, 1-1/4 in. flange penetration or full flange. "
-               "0.13 in. shank, 2.0 in. thread. Stocked retail (WSV212S1LB / WSV212S5).",
+        source="ICC-ES ESR-1472 (reissued Sept. 2026): Table 1A WSV212, 2.50 in. long, 1.95 in. "
+               "thread incl. tip, 0.132 in. shank; 4.1.2.1: WSV screws >= 2 in. may substitute "
+               "for the 8d and 10d common nails of IRC 2018 Table R602.3(1) items 30-32 "
+               "(subflooring to framing) with >= 1-3/8 in. penetration into the framing. The "
+               "S suffix is the retail collated/boxed SKU (WSV212S1LB / WSV212S5), not re-read.",
     ),
 )
