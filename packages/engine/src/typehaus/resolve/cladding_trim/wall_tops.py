@@ -136,8 +136,9 @@ def exposed_wall_top_edges(model):
                     # The panel top takes the outside closure; the soffit's wall edge, eave or
                     # rake, the receiver. An eave with no soffit keeps an empty (gap) edge.
                     soffit = _soffit_elevation(roof, face, start, end)
-                    candidates.append(WallTopEdge(wall, roof, face,
-                                                  "corrugated-outside-closure", condition,
+                    closure = (product if condition is TrimCondition.RAKE_TOP
+                               else "corrugated-outside-closure")
+                    candidates.append(WallTopEdge(wall, roof, face, closure, condition,
                                                   start, end, z0, z1))
                     if soffit is not None or condition is TrimCondition.EAVE_TOP:
                         candidates.append(WallTopEdge(wall, roof, face, receiver if soffit
@@ -202,7 +203,9 @@ def exposed_wall_top_edges(model):
                 receiver = _receiver(material)
                 soffit = _soffit_elevation(roof, face, a, b) if receiver else None
                 if soffit is not None:
-                    candidates.append(WallTopEdge(wall, roof, face, "corrugated-outside-closure",
+                    closure = (product if condition is TrimCondition.RAKE_TOP
+                               else "corrugated-outside-closure")
+                    candidates.append(WallTopEdge(wall, roof, face, closure,
                                                   condition, a, b, z_a + _CLOSURE_HEIGHT_M,
                                                   z_b + _CLOSURE_HEIGHT_M))
                     candidates.append(WallTopEdge(wall, roof, face, receiver, condition, a, b,

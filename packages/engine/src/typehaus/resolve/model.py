@@ -1539,7 +1539,8 @@ class ResolvedLightRun:
     #: surface channel (→ resolve/geometry.light_run_parts).
     profile: str = "surface"
     section: tuple[tuple[str, tuple[tuple[float, float], ...]], ...] = ()
-    #: The ceiling solid or soffit the shadow-gap reveal is cut from.
+    #: The ceiling solid or soffit the shadow-gap reveal is cut from, or the Sill to Soffit
+    #: trim a surface run is hosted on (→ resolve/trim_led.py).
     host_ref: str | None = None
     #: The reveal's width, cut from the host board (shadow gap only).
     aperture_m: float | None = None

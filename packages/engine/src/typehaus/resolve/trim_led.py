@@ -102,11 +102,13 @@ def host_trim_runs(model: ResolvedModel) -> list[Finding]:
         legs = [_leg_edge(path[k], path[k + 1], zs[k], zs[k + 1], edges)
                 for k in range(len(path) - 1)]
         if not all(legs):
-            if run.room is None and not any(legs) and _ceiling_mount(model, run):
+            if run.room is None and _ceiling_mount(model, run):
+                missing = "finds no soffit receiver" if not any(legs) else (
+                    f"leaves the soffit receiver on leg {legs.index(None) + 1}")
                 findings.append(_finding(
                     run, Severity.WARN, Result.UNKNOWN,
-                    f"exterior ceiling-mount run {run.tag} finds no soffit receiver within "
-                    f"{_REACH_M / M_PER_IN:.0f}\" of it, so nothing hosts or grades it",
+                    f"exterior ceiling-mount run {run.tag} {missing} within "
+                    f"{_REACH_M / M_PER_IN:.0f}\", so nothing hosts or grades it",
                     "set the run under a soffit edge, or give it a soffit_ref"))
             continue
         width = section_extent(run.section)[0] if run.section else GENERIC_WIDTH_M
