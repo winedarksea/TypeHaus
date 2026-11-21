@@ -23,7 +23,8 @@ def test_erv_hangs_on_four_bridged_rods(catlin_model_ro) -> None:
     for rod in rods:
         assert [s.profile for s in rod.bridge] == ["11.875 TJI 230"] * 2
         assert abs(sum(s.share for s in rod.bridge) - 1.0) < 1e-9
-        assert abs(rod.strut_length_m / _IN - 24.0) < 0.01  # 21" side + 2 x 1 1/2"
+        # 21" side + 2 x 2" (2026-11-21: the 1 1/2" overhang put a rod into EQ-B-ERV-MAN-SUP).
+        assert abs(rod.strut_length_m / _IN - 25.0) < 0.01
         assert abs(rod.load_lb - 47 / 4) < 1e-9
         # The bridge bears on the flange tops (TJI 230's 1 1/4") inside the bay, clear of the
         # ceiling board under the joists, cut between the two webs (16" less a 3/8" web).

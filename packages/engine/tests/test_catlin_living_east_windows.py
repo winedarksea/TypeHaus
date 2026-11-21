@@ -112,6 +112,7 @@ def test_counter_devices_clear_windows_framing_and_each_other(catlin_model_ro):
     windows = [opening for opening in model.openings if opening.tag in EAST_WINDOWS]
     devices = [objects[tag] for tag in (*NORTH_COUNTER_RECEPTACLES, *WALL_RECEPTACLES)]
     east_wall = model.wall("W-M-E1")
+    boxes = {tag: box for box in model.device_boxes for tag in box.device_tags}
     for device in devices:
         _, device_south, _, device_north = Polygon(device.footprint).bounds
         for window in windows:
@@ -119,15 +120,19 @@ def test_counter_devices_clear_windows_framing_and_each_other(catlin_model_ro):
             opening_north = window.center_along_m + window.width_m / 2
             assert device_north <= opening_south or device_south >= opening_north, device.tag
         assert device.attachment_wall == east_wall.tag, device.tag
+        # The BOX clears the framing (2026-11-21): since #149 a box nails to a stud's side,
+        # so a device face wider than its box laps the stud's line by design.
+        box = boxes[device.tag]
+        _, box_south, _, box_north = Polygon(box.footprint).bounds
         for member in east_wall.members:
             if member.category not in {"stud", "king", "jack"}:
                 continue
-            if member.z1_m <= device.body_z0_m or member.z0_m >= device.body_z1_m:
+            if member.z1_m <= box.z0_m or member.z0_m >= box.z1_m:
                 continue
             half_thickness = cross_section(member.profile).width_m / 2
             assert (
-                device_north <= member.p0[1] - half_thickness
-                or device_south >= member.p0[1] + half_thickness
+                box_north <= member.p0[1] - half_thickness
+                or box_south >= member.p0[1] + half_thickness
             ), (device.tag, member.child_key)
     assert "ED-M-DINING-FH-STAT" not in objects  # retired with FH-M-DINING, decision #112
     # Wall space at 16", 26" under the counter devices' 42".

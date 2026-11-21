@@ -366,11 +366,12 @@ BASEMENT_EQUIPMENT = [
               # PR-B-ERV-COND falls along W-B-STR3B to FX-B-UTIL-SINK. Strut trapeze: two
               # P1000s under the short sides on four 3/8" rods, each from a strut bridge
               # lagged into two FS-M-MECH TJI flanges (`structural.equipment_hangers`).
+              # 2" overhang (2026-11-21): at 1 1/2" the north-west rod grazed EQ-B-ERV-MAN-SUP.
               #
               # SERVICE ACCESS (notes/erv_service_access.md): exposed, 13" clear between the
               # east door and W-B-STR3B, 3" on the south box side. Filter/core from the floor.
               mount=Mount(kind=MountKind.CEILING, elevation=inch(40)),
-              hangers=EquipmentHangers(count=4, rod_product_ref="PROD-BLINE-ATR-3-8", strut_product_ref="PROD-UNISTRUT-P1000-PG", top_fixing_product_ref="PROD-LAG-1-4X1-1-2-ZN", overhang=inch(1.5), source="owner, 2026-11-12: strut trapeze on 3/8 in. rod"),
+              hangers=EquipmentHangers(count=4, rod_product_ref="PROD-BLINE-ATR-3-8", strut_product_ref="PROD-UNISTRUT-P1000-PG", top_fixing_product_ref="PROD-LAG-1-4X1-1-2-ZN", overhang=inch(2), source="owner, 2026-11-12: strut trapeze on 3/8 in. rod"),
               pan_drain_ref="PR-B-ERV-COND",
               # Its fresh air reaches the second storey through EQ-S-ERV-MIX and this AH's
               # ducts, so the ERV's furnace/air-handler interlock contacts (Broan
@@ -2597,12 +2598,14 @@ NEC_FILL_SECOND = [
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # The southeast corner shelf covers the old south-wall station. The east wall under
     # WIN-S-STUDY3 keeps the box accessible, 20" below the sill since the 2026-11-08 move.
+    # Centred under the window (2026-11-21): at 40" #149 seated it on the south jack, 4" off
+    # the bookcase; here it nails to the sill cripple's south face.
     ElectricalDevice(uid="NEC062AAAA", tag="ED-S-STUDY2-RC5", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-E1", face="left", distance_from_start=inch(40),
+                         wall_ref="W-S-E1", face="left", distance_from_start=inch(48),
                          normal_gap=inch(0), rotation_offset=deg(180)))),
     ElectricalDevice(uid="NEC063AAAA", tag="ED-S-STUDY2-RC6", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20",

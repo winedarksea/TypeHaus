@@ -43,7 +43,9 @@ SUPPLY_DEVICES_BASEMENT = [
     # upstream of both.
     PipeAccessory(uid="H2VD7MCX4L", tag="PA-B-BFP-BATH",
                   kind=PipeAccessoryKind.BACKFLOW_PREVENTER, pipe_ref="PR-B-CW-BATH",
-                  position=pt(ft(7), ft(26)), room="RM-B-FURNACE", accessible=True,
+                  # x=7'-9" since 2026-11-21: at 7'-0" EQ-B-ERV's west trapeze rod and bridge
+                  # (14d558949) ran through it; mid-bay between the two bridges now.
+                  position=pt(inch(93), ft(26)), room="RM-B-FURNACE", accessible=True,
                   model='3/4" dual-check backflow preventer, testable',
                   serves=("FX-B-BATH-WC", "FX-B-BATH-LAV", "FX-B-UTIL-SINK")),
     # ESS closet firestop (owner standard, not a rated assembly): PR-B-KITCH-DRAIN passes

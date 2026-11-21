@@ -36,6 +36,7 @@ from typehaus.resolve.device_boxes import (
     gang_count,
 )
 from typehaus.resolve.model import ResolvedCanvasObject, ResolvedModel, ResolvedSolid
+from typehaus.resolve.room_floor import floor_fall_at
 from typehaus.resolve.wall_hosting import Band, face_frame
 
 _Z_TOLERANCE_M = 0.0127  # box centres within 1/2"
@@ -208,6 +209,8 @@ def _place(model: ResolvedModel, bank: list[_Member], plan: BoxPlan, standard: B
     # A light's canopy that still covers the seated box keeps the fixture put (its crossbar).
     carry = 0.0 if (len(bank) == 1 and _canopy_covers(
         lead, abs(stud_shift), width, height, plan.row.shape)) else stud_shift
+    if stud_shift and (len(bank) > 1 or carry):
+        middle += _floor_rise(model, lead, tangent, stud_shift)
     centre += stud_shift
     origin = (lead.point[0] + tangent[0] * (centre - lead.station),
               lead.point[1] + tangent[1] * (centre - lead.station))
@@ -294,6 +297,16 @@ def _place(model: ResolvedModel, bank: list[_Member], plan: BoxPlan, standard: B
             obj, footprint=[tuple(p) for p in list(hull.exterior.coords)[:-1]],
             body_z0_m=min(obj.body_z0_m if obj.body_z0_m is not None else z0, z0),
             body_z1_m=max(obj.body_z1_m if obj.body_z1_m is not None else z1, z1))
+
+
+def _floor_rise(model: ResolvedModel, lead: _Member, tangent: Point, shift: float) -> float:
+    """A falling pour's rise under a seated bank's move: its mount height stays AFF (#138)."""
+    room = next((r for r in model.rooms if r.tag == lead.pending.room), None)
+    if room is None:
+        return 0.0
+    x, y = lead.point
+    return (floor_fall_at(model, room, x + tangent[0] * shift, y + tangent[1] * shift)
+            - floor_fall_at(model, room, x, y))
 
 
 def _canopy_covers(member: _Member, offset: float, width: float, height: float,

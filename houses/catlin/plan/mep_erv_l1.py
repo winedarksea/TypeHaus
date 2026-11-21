@@ -195,16 +195,19 @@ DUCTS_ERV_BASEMENT = [
     # two), and ENDS in that bay on REG-B-SUP1, a sidewall valve on the gym face.
     DuctRun(uid="CND5TE40W0", tag="DU-B-ERV-R-GYM", system=DuctSystem.SUPPLY,
             # Stock turns only: two 45 degree ramps and a 45 degree offset.
-            path=(pt(inch(102.25), inch(308.21875)), pt(ft(9), inch(308.21875)),
-                  pt(ft(9), inch(302)), pt(ft(9), inch(296)),
-                  pt(ft(9), inch(224.5)), pt(ft(9), inch(218.375)), pt(ft(9), inch(212)),
+            # x=9'-0 1/4" (2026-11-21): 2" of collar damper before the first elbow.
+            path=(pt(inch(102.25), inch(308.21875)), pt(inch(108.25), inch(308.21875)),
+                  pt(inch(108.25), inch(302)), pt(inch(108.25), inch(296)),
+                  pt(inch(108.25), inch(224.5)), pt(inch(108.25), inch(218.375)),
+                  pt(inch(108.25), inch(211.75)),
                   pt(inch(112), inch(208)),
                   pt(inch(112), ft(13, 4)), pt(ft(18), ft(13, 4))),
             elevations=(inch(90), inch(90), inch(90), inch(84), inch(84), inch(90.125),
                         inch(90.125), inch(90.125), inch(90.125), inch(90.125)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=DU_B_ERV_R_GYM),
-    # PLAY leaves MAN-SUP's north face, crosses the strip east at y=26'-6" over DU-ERV-EA and
+    # PLAY leaves MAN-SUP's north face, crosses the strip east at y=26'-7 1/4" (2" of collar
+    # damper before its first elbow, 2026-11-21) over DU-ERV-EA and
     # D-B-CLOSET's swing, turns south on x=9'-6" and drops on a 45 to 83 1/8", under
     # DU-B-ERV-R-BATH. It rises to 91 1/4" at y=19'-7 1/4" and crosses W-B-STR2 in its
     # 19'-4"..20'-8" bay under the top plate (-15 5/8"), eases down 1/2" east to clear
@@ -214,8 +217,8 @@ DUCTS_ERV_BASEMENT = [
     # y=20'-6" into W-B-CN2's 240"..256" stud bay, where it ends on REG-B-SUP2, a sidewall
     # valve on the theater face.
     DuctRun(uid="DMEQ946YAX", tag="DU-B-ERV-R-PLAY", system=DuctSystem.SUPPLY,
-            path=(pt(inch(98.5), inch(313.21875)), pt(inch(98.5), inch(318)),
-                  pt(ft(9, 6), inch(318)), pt(ft(9, 6), inch(310)),
+            path=(pt(inch(98.5), inch(313.21875)), pt(inch(98.5), inch(319.25)),
+                  pt(ft(9, 6), inch(319.25)), pt(ft(9, 6), inch(310)),
                   pt(ft(9, 6), inch(303.15)),
                   pt(ft(9, 6), ft(19, 7.25)), pt(ft(9, 6), ft(19, 7.25)),
                   pt(ft(12, 3), ft(19, 7.25)), pt(ft(12, 3), ft(18, 6.75)),

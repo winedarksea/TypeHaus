@@ -36,7 +36,7 @@ def metal_wall_model():
                                trim_kit={TrimCondition.BASE: "PBR_BASE"})
     library = SimpleNamespace(materials=(material,), resolve_assembly=lambda tag: None)
     return SimpleNamespace(walls=[wall], wall=lambda tag: wall if tag == wall.tag else None,
-                           openings=[opening], solids=[], junctions=[],
+                           openings=[opening], solids=[], junctions=[], wall_penetrations=[],
                            plan=SimpleNamespace(library=library, project=SimpleNamespace(
                                opening_flashing_material="metal")))
 

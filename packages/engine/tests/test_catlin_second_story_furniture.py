@@ -14,6 +14,7 @@ from typehaus.takeoff.placeables import placeables_takeoff
 
 # UI coordinates are metres; BED1 was nudged 1/64" east for the added PAX frame.
 # The study table/chairs subsequently moved together 30" west for the corner shelf.
+# The grow bars moved 4" and 4 1/2" into bays their ceiling bars span (#149, 2026-11-21).
 # tag, catalog type, room, centre, rotation in degrees
 SECOND_STORY_UI_PLACEMENTS = (
     ("FURN-S-BED1", "FURN-BED-TWIN-36", "RM-S-BED1", (9.801366875, 3.36872), -90),
@@ -26,8 +27,8 @@ SECOND_STORY_UI_PLACEMENTS = (
     ("FURN-S-PLANT-POT2", "FURN-PLANT-18", "RM-S-PLANT", (2.6348, 0.584116), 0),
     ("FURN-S-PLANT-POT2-COPY", "FURN-PLANT-18", "RM-S-PLANT", (3.7592, 0.600137), 0),
     ("FURN-S-PLANT-ROCKER", "FURN-ROCKING-CHAIR-30", "RM-S-PLANT", (4.51571, 1.96147), -45),
-    ("ED-S-PLANT-TUBE1", "ED-T-LT-GROW-BAR", "RM-S-PLANT", (1.62004, 0.594343), 0),
-    ("ED-S-PLANT-TUBE2", "ED-T-LT-GROW-BAR", "RM-S-PLANT", (3.7205, 0.609677), 0),
+    ("ED-S-PLANT-TUBE1", "ED-T-LT-GROW-BAR", "RM-S-PLANT", (1.62004, 0.492743), 0),
+    ("ED-S-PLANT-TUBE2", "ED-T-LT-GROW-BAR", "RM-S-PLANT", (3.7205, 0.723977), 0),
 )
 
 
@@ -188,7 +189,8 @@ def test_study_bookcase_product_takeoff_and_relocated_outlet(catlin_plan, catlin
     assert source_outlet.location.attachment.wall_ref == "W-S-E1"
     objects = {item.tag: item for item in catlin_model_ro.canvas_objects}
     outlet = objects[source_outlet.tag]
-    assert outlet.position[1] == pytest.approx(inch(40).meters)
+    # Centred under WIN-S-STUDY3 at 48" (2026-11-21), seated 1/4" north onto the sill cripple.
+    assert outlet.position[1] == pytest.approx(inch(48.25).meters)
     outlet_bounds = Polygon(outlet.footprint).bounds
     shelf_north = Polygon(objects["FURN-S-STUDY-CORNER-BOOKCASE"].footprint).bounds[3]
     window = next(item for item in catlin_model_ro.openings if item.tag == "WIN-S-STUDY3")
@@ -248,8 +250,9 @@ def test_east_pax_frame_meets_corner_and_leaves_outlet_access(catlin_model_ro, b
     assert east == pytest.approx(ft(27, 4.375).meters)
 
     outlet = objects[f"ED-S-{bedroom}-RC4"]
-    # The 1.29" Lever Edge face's edge: 5 5/8" to the old 4" body's, plus half the difference.
-    assert Polygon(outlet.footprint).bounds[0] - east == pytest.approx(inch(6.98).meters)
+    # The 1.29" Lever Edge face's edge: 5 5/8" to the old 4" body's, plus half the difference,
+    # plus 5" since #149 seats its box on the next stud east (2026-11-21).
+    assert Polygon(outlet.footprint).bounds[0] - east == pytest.approx(inch(11.98).meters)
     # The ERV floor pickup east of the frame went with the 2026-11-20 rebalance (929ed7f4f).
     if bedroom == "BED1":
         bed_west = Polygon(objects["FURN-S-BED1"].footprint).bounds[0]

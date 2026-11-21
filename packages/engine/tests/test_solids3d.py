@@ -43,6 +43,10 @@ from typehaus.solids3d.recorder import drawn_placeables  # noqa: E402
 # 3/4" FO-M-ERV-OA lid sheet, which runs 1/4" past that face (3" x 0.1"; the lid is notched).
 # pipe_sleeve|sub_slab: SP-B-SAUNA-FD's flat-bottomed sleeve sits at the dish's low point, so
 # its rim dips ~1/32" into the XPS rising under the dish (#148); the drain passes it anyway.
+# ERV move (14d558949, blessed 2026-11-21): duct_*|insulation_wrap is each lagged leg in its
+# own wrap; duct_fitting|pipe_drain is DU-ERV-EA's drain tee taking PR-B-ERV-EA-DRAIN.
+# duct_supply|duct_support is OPEN, not intended: a derived strap leg on a stacked riser
+# (RISER-EXH x2, ERV-EA) passes 1-2 cm3 through the duct beside it; needs a shared trapeze.
 GOLDEN = Path(__file__).parent / "fixtures" / "solids3d_overlaps.json"
 #: The billed volume may differ from the exact solid by this much (relative, absolute m^3).
 VOLUME_TOLERANCE = (0.01, 1e-7)

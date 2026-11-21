@@ -860,6 +860,62 @@
       "node": "polyline",
       "points": [
         [
+          310.0,
+          -9.799499999999997
+        ],
+        [
+          314.0,
+          -9.799499999999997
+        ],
+        [
+          314.0,
+          -3.7994999999999965
+        ],
+        [
+          310.0,
+          -3.7994999999999965
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "H2VD7MCX4L",
+      "tag": "PA-B-BFP-BATH"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          310.0,
+          -9.799499999999997
+        ],
+        [
+          314.0,
+          -9.799499999999997
+        ],
+        [
+          314.0,
+          -3.7994999999999965
+        ],
+        [
+          310.0,
+          -3.7994999999999965
+        ]
+      ],
+      "pattern": "concrete",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "concrete"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           307.4074803149606,
           -12.5
         ],
