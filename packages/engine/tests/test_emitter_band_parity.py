@@ -273,6 +273,8 @@ def test_an_unsplit_banded_layer_keeps_its_globalid(catlin_model_ro, catlin_ifc)
     layers went with the wall. 61 with W-M-STRW's upper gypsum and paint closure. 38 since
     2026-10-30: a coating takes no depth and exports no part, which drops 21 banded coats
     (an authored-band coat is an IfcCovering instead, ``emit/ifc/wall_coatings``).
+    74 since ``LayerMaterial.extent``: each AR-below/plain-above gypsum face is two parts
+    (``resolve/layer_material_extent.py``), and a split pair is never in the body prism.
 
     A GlobalId is an identity a federated model and its issue log hold onto. Re-keying a
     part that still means exactly what it meant before would break those references for
@@ -286,7 +288,7 @@ def test_an_unsplit_banded_layer_keeps_its_globalid(catlin_model_ro, catlin_ifc)
                if f"{w.tag}:{ly.name}" in parts]
     untouched = [(w, ly) for w, ly in unsplit
                  if not (ly.slot or "").startswith("service-region:")]
-    assert len(untouched) == 30, "unaffected banded layers retain their identity"
+    assert len(untouched) == 74, "unaffected banded layers retain their identity"
     for wall, layer in unsplit:
         assert parts[f"{wall.tag}:{layer.name}"] == derive_child_guid(
             project_uuid, "wall-parts", f"{wall.uid}/{layer.name}")
@@ -409,7 +411,7 @@ def test_every_slot_region_of_a_banded_wythe_draws_in_section(banded_model):
 # ``IfcShapeRepresentation`` with no ``Items`` (invalid IFC4: ``Items`` is ``SET [1:?]``),
 # while every lifted ``EXT_2X6`` exports as a lining variant that is not a lining.
 
-_LIFTED_PARTITION = "W-B-CS3"   # INT_2X6_BRG, lifted, no authored band anywhere on it
+_LIFTED_PARTITION = "W-B-CS2"   # INT_2X6_BRG, lifted, no authored band anywhere on it
 _LIFTED_ENVELOPE = "W-S-E1"     # EXT_2X6, lifted, no lining or layer_materials override
 
 

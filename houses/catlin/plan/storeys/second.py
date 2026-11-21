@@ -20,6 +20,7 @@
 # - `WIN-S-BATH-W` has no source counterpart — kept for bathroom daylight.
 # - `RM-S-BATH1` is the hall bath; the suite's own bath is RM-S-SUITEBATH. Renamed from
 #   `RM-S-ENSUITE` (2026-07-27, which it never was) across fixtures/mep/views/lighting/electrical.
+from ..ar_gypsum_band import AR_LOWER_BAND
 from ..doorway_transitions import BEDROOM_ZBAR, D_S_PLANT_REDUCER, TILE_EDGE_FLUSH
 from typehaus import (
     Alarm,
@@ -245,7 +246,7 @@ WALLS = [
          structural_role=StructuralRole.BEARING, stacks_on="W-M-C1"),
     Wall(uid="CSW115AAAA", tag="W-S-C2", start_node="N-S-C1", end_node="N-S-C2",
          assembly="INT_2X6_BRG_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(9),
+         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-ar", extent=AR_LOWER_BAND),), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-C1"),
     # ** W-S-C2B IS INT_2X6_BRG_RC SINCE 2026-09-15 — the suite's own door wall. ** It is
     # the segment between RM-S-SUITE and RM-S-HALL, it hosts D-S-SUITE, and it carried an
@@ -267,12 +268,12 @@ WALLS = [
     # test_the_centreline_bearing_wall_is_one_stud_grid_on_every_storey reads.
     Wall(uid="CSW138AAAA", tag="W-S-C2B", start_node="N-S-C2", end_node="N-S-C2B",
          assembly="INT_2X6_BRG_RC_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-ar"),), interior_room="RM-S-SUITE", top=ft(9),
+         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-ar", extent=AR_LOWER_BAND),), interior_room="RM-S-SUITE", top=ft(9),
          alignment=face("stud-ext", offset=inch(-2.75)),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-C2"),
     Wall(uid="CSW139AAAA", tag="W-S-C2C", start_node="N-S-C2B", end_node="N-S-C2C",
          assembly="INT_2X6_BRG_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"), LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(9),
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"), LayerMaterial(layer="gwb-b", material="gwb-ar", extent=AR_LOWER_BAND),), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-C3"),
     # y 22'-4" .. 30'-10" IS NOT A WALL — it is the BM-S-HALL flitch of LVL below.
     # W-S-C3 / W-S-C3C / W-S-C4 used to stand here; the whole 8'-6" is now open so the
@@ -280,7 +281,7 @@ WALLS = [
     # stack is unbroken because the beam is *in* it: see BEAMS below.
     Wall(uid="CSW140AAAA", tag="W-S-C4B", start_node="N-S-C3D", end_node="N-S-N1",
          assembly="INT_2X6_BRG_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), top=ft(9),
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar", extent=AR_LOWER_BAND),), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-C5"),
     # --- south band north wall, y=9'-0" (source 9.035): plant room | study2 ------
     # These two are the plant room's north side, so they leave INT_2X4_PARTITION for
@@ -306,7 +307,7 @@ WALLS = [
     # same place is a worse answer than one extra cut stud, so the UNKNOWN stands and says so.
     Wall(uid="CSW120AAAA", tag="W-S-SS1", start_node="N-S-C1", end_node="N-S-B1",
          assembly="INT_2X4_PARTITION_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), top=ft(9),
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar", extent=AR_LOWER_BAND),), top=ft(9),
          structural_role=StructuralRole.NONBEARING),
     # ** W-S-SS2 IS INT_2X4_RC, AND THE CHANNEL IS ON THE NORTH FACE. **
     # RM-S-BED1 (sleeping) on the north, RM-S-STUDY2 (office) on the south — the one
@@ -347,17 +348,17 @@ WALLS = [
     # which leaks more sound than the channels would save.
     Wall(uid="CSW122AAAA", tag="W-S-BW1", start_node="N-S-B1", end_node="N-S-B2",
          assembly="INT_2X4_PARTITION_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), interior_room="RM-S-HALL", top=ft(9),
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar", extent=AR_LOWER_BAND),), interior_room="RM-S-HALL", top=ft(9),
          alignment=face("stud-ext", offset=inch(-1.75)),
          structural_role=StructuralRole.NONBEARING),
     Wall(uid="CSW123AAAA", tag="W-S-BW2", start_node="N-S-B2", end_node="N-S-B3",
          assembly="INT_2X4_PARTITION_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), interior_room="RM-S-HALL", top=ft(9),
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar", extent=AR_LOWER_BAND),), interior_room="RM-S-HALL", top=ft(9),
          alignment=face("stud-ext", offset=inch(-1.75)),
          structural_role=StructuralRole.NONBEARING),
     Wall(uid="CSW124AAAA", tag="W-S-BW3", start_node="N-S-B3", end_node="N-S-B4",
          assembly="INT_2X4_PARTITION_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), interior_room="RM-S-HALL", top=ft(9),
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar", extent=AR_LOWER_BAND),), interior_room="RM-S-HALL", top=ft(9),
          alignment=face("stud-ext", offset=inch(-1.75)),
          structural_role=StructuralRole.NONBEARING),
     # W-S-BW4 stays a plain half-board partition like W-S-BW3 (undercut door into the hall).
@@ -376,7 +377,7 @@ WALLS = [
     # hall face. Nonbearing (owner, 2026-10-29): D-S-NCLOSET heads with R602.7.4's flat 2x4.
     Wall(uid="CSW141AAAA", tag="W-S-CLN-S", start_node="N-S-C3D", end_node="N-S-B4",
          assembly="INT_2X4_PARTITION_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(9),
+         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-ar", extent=AR_LOWER_BAND),), top=ft(9),
          structural_role=StructuralRole.NONBEARING),
     # --- west block: walk-in, suite, suite bath, vanity alcove ------------------
     Wall(uid="CSW129AAAA", tag="W-S-DC1", start_node="N-S-D1", end_node="N-S-D2",
@@ -412,7 +413,7 @@ WALLS = [
          assembly="INT_2X4_STAGGERED_X_HALF", top=ft(9)),
     Wall(uid="CSW146AAAA", tag="W-S-SN2", start_node="N-S-V1", end_node="N-S-D4",
          assembly="INT_2X4_STAGGERED_X_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), top=ft(9)),
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar", extent=AR_LOWER_BAND),), top=ft(9)),
     # NOT BEARING (reverted 2026-08-30; was BEARING from 2026-08-29 to 2026-08-30). The
     # BEARING call was reasoned from FO-A-HALL's doubled trimmer pair delivering the attic
     # floor opening's south edge to "two points" — one on BM-S-BATH-E, whose own south end
@@ -455,7 +456,7 @@ WALLS = [
     # CLAUDE.md) would otherwise have been the only other candidate.
     Wall(uid="CSW147AAAA", tag="W-S-SN3", start_node="N-S-D4", end_node="N-S-C2C",
          assembly="INT_2X6_STAGGERED_PLUMBING_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"), LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9), stacks_on="W-M-HS3"),
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar", extent=AR_LOWER_BAND), LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9), stacks_on="W-M-HS3"),
     # FX-S-SUITEBATH-TUBSH's plumbing end (owner, 2026-11-08): a 4 1/2" 2x4 wall on W-S-SN3's
     # face, the tub's width, so the one-piece unit's drain (8 1/4" off the end studs) lands at
     # y=251.875", 1.4" south of the y=256" truss. Valve, risers and vent stand in its cavity.
@@ -466,7 +467,7 @@ WALLS = [
          structural_role=StructuralRole.NONBEARING),
     Wall(uid="CSW148AAAA", tag="W-S-VE", start_node="N-S-V1", end_node="N-S-V2",
          assembly="INT_2X4_PARTITION_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"), LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(9),
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"), LayerMaterial(layer="gwb-b", material="gwb-ar", extent=AR_LOWER_BAND),), top=ft(9),
          structural_role=StructuralRole.NONBEARING),
     Wall(uid="CSW132AAAA", tag="W-S-BD-N", start_node="N-S-W1", end_node="N-S-V2",
          assembly="INT_2X6_STAGGERED_PLUMBING_HALF",
@@ -476,7 +477,7 @@ WALLS = [
     # 2x6 studs stay for the lav bores (INT_2X6_BRG_PLUMBING_HALF).
     Wall(uid="CSW149AAAA", tag="W-S-BD-N1B", start_node="N-S-V2", end_node="N-S-BA1",
          assembly="INT_2X6_BRG_PLUMBING_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"), LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(9),
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"), LayerMaterial(layer="gwb-b", material="gwb-ar", extent=AR_LOWER_BAND),), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-M-STOS2"),
     # W-S-BD-N2 (the stair's south wall on y=25', with the 6'-0" O-S-STAIRTOP through it)
     # came out on 2026-07-28 with the centre line: a wall pierced by a 6' hole between two
@@ -513,11 +514,11 @@ WALLS = [
     # side.
     Wall(uid="CSW134AAAA", tag="W-S-BA-E", start_node="N-S-N2", end_node="N-S-BA-SPLIT",
          assembly="INT_2X6_BRG_PLUMBING_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"), LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9),
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar", extent=AR_LOWER_BAND), LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9),
          structural_role=StructuralRole.BEARING),
     Wall(uid="CSW150AAAA", tag="W-S-BA-E1B", start_node="N-S-BA-SPLIT", end_node="N-S-BA1",
          assembly="INT_2X6_BRG_PLUMBING_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"), LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9),
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar", extent=AR_LOWER_BAND), LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-STRW"),
     # W-S-BA-E2 (N-S-BA1 to the stair shaft's freed N-S-STR2 corner) came out with this
     # edit: since W-S-BD-N2 came out it was a stub dead-ending on an open node, poking into

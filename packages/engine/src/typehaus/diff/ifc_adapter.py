@@ -67,8 +67,10 @@ def _wall_geometry(
     # The z extent is the body band for the same reason — a lifted partition's solid stops
     # at the top plate, and measuring it to ``z1_m`` reports it RESIZED on a self-diff.
     band_z0, band_z1 = wall_body_band(w)
+    # Coatings are skins, not prisms (``_emit_wall``): a coat on a banded board's face stands
+    # outboard of the body and would widen it.
     points = [point for layer in w.layers
-              if at_body_band(layer, w)
+              if at_body_band(layer, w) and not layer.coating
               for point in layer.polygon]
     centroid, bbox = _bounds(points, band_z0, band_z1)
     return centroid, bbox, dir_

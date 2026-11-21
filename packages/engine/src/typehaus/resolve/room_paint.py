@@ -117,7 +117,10 @@ def _gypsum(library: Any, layer: Layer) -> bool:
 def paint_stack_end(stack: list, end: int, rooms: list[PaintRoom], library: Any,
                     envelope: bool) -> tuple[list, bool]:
     """``stack`` with the room rule applied at ``end`` (0 or -1), and whether rooms disagree."""
-    if not rooms or not stack or getattr(stack[end], "slot", None) is not None:
+    # A slotted end is a split row (brick plinth, AR-below/plain-above gypsum): only a gypsum
+    # one takes the room's coat.
+    if not rooms or not stack or (getattr(stack[end], "slot", None) is not None
+                                  and not _gypsum(library, stack[end])):
         return stack, False
     coatings = coating_tags(library)
     order = stack if end == 0 else stack[::-1]

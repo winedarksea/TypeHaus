@@ -16,6 +16,7 @@ from typehaus.model.base import HausModel
 from typehaus.model.diaphragm import DiaphragmDelivery as DiaphragmDelivery
 from typehaus.model.diaphragm import DiaphragmSpec as DiaphragmSpec
 from typehaus.model.diaphragm import ReceivingLine as ReceivingLine
+from typehaus.model.layer_extent import LayerExtent
 
 # Re-exported, not defined here: refs.py is at the 500-line limit, so ``PublishedHole``
 # lives in ``refs_holes.py`` and every reader still imports it from the one place the
@@ -55,10 +56,15 @@ class LayerMaterial(HausModel):
     It substitutes a material and nothing else — thickness, function, framing, banding and
     every derived geometry stay the assembly's. Use it for appearance; a layer that needs a
     different *thickness* or *function* is a different wall and wants its own assembly.
+
+    With ``extent`` the swap covers only that band of the layer: the layer splits into two
+    slot-mates (``resolve/layer_material_extent.py``), the band in ``material`` and the rest
+    in the layer's own — abuse-resistant board on the lower 4' under plain gypsum.
     """
 
     layer: str      # Layer.name within the wall's assembly
     material: str   # Material.tag to use instead of that layer's material_ref
+    extent: LayerExtent | None = None  # the band ``material`` covers; None -> whole layer
 
 
 class ToRoof(HausModel):

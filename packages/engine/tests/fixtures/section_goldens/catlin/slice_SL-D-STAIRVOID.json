@@ -472,7 +472,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "SNNBY9M3CE",
-      "tag": "W-M-WELL/gwb-a"
+      "tag": "W-M-WELL/gwb-a-upper"
     },
     {
       "space": "model",
@@ -500,8 +500,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "gwb-ar",
-      "fill": "#d3dbe3"
+      "material": "gwb"
     },
     {
       "space": "model",
@@ -585,7 +584,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "SNNBY9M3CE",
-      "tag": "W-M-WELL/gwb-b"
+      "tag": "W-M-WELL/gwb-b-upper"
     },
     {
       "space": "model",
@@ -613,8 +612,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "gwb-ar",
-      "fill": "#d3dbe3"
+      "material": "gwb"
     },
     {
       "space": "model",
@@ -741,7 +739,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CSW124AAAA",
-      "tag": "W-S-BW3/gwb-a"
+      "tag": "W-S-BW3/gwb-a-upper"
     },
     {
       "space": "model",
@@ -769,8 +767,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "gwb-ar",
-      "fill": "#d3dbe3"
+      "material": "gwb"
     },
     {
       "space": "model",
@@ -931,26 +928,6 @@
       "node": "polyline",
       "points": [
         [
-          261.0,
-          120.75
-        ],
-        [
-          261.0,
-          203.26181102362207
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CSW124AAAA",
-      "tag": "W-S-BW3-void"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           262.625,
           120.75
         ],
@@ -980,11 +957,11 @@
         ],
         [
           123.25,
-          228.0
+          168.75
         ],
         [
           122.75,
-          228.0
+          168.75
         ]
       ],
       "layer": "A-WALL-FINI",
@@ -1008,11 +985,11 @@
         ],
         [
           123.25,
-          228.0
+          168.75
         ],
         [
           122.75,
-          228.0
+          168.75
         ]
       ],
       "pattern": "gypsum",
@@ -1022,6 +999,62 @@
       "uid": null,
       "material": "gwb-ar",
       "fill": "#d3dbe3"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          122.75,
+          168.75
+        ],
+        [
+          123.25,
+          168.75
+        ],
+        [
+          123.25,
+          228.12500000000003
+        ],
+        [
+          122.75,
+          228.12500000000003
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CSW150AAAA",
+      "tag": "W-S-BA-E1B/gwb-a-upper"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          122.75,
+          168.75
+        ],
+        [
+          123.25,
+          168.75
+        ],
+        [
+          123.25,
+          228.12500000000003
+        ],
+        [
+          122.75,
+          228.12500000000003
+        ]
+      ],
+      "pattern": "gypsum",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "gwb"
     },
     {
       "space": "model",
@@ -7712,7 +7745,7 @@
         165.93750000000003,
         119.37999999999998
       ],
-      "text": "gwb-ar 1/2\"",
+      "text": "gwb 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -7762,7 +7795,7 @@
         169.93750000000003,
         114.17999999999999
       ],
-      "text": "gwb-ar 1/2\"",
+      "text": "gwb 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -7824,18 +7857,43 @@
       "anchor": {
         "kind": "point",
         "xy": [
+          261.0,
+          220.05500000000004
+        ],
+        "name": ""
+      },
+      "at": [
+        265.0,
+        220.05500000000004
+      ],
+      "to": [
+        261.0,
+        220.05500000000004
+      ],
+      "text": "gwb 1/2\"",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
           117.0,
-          225.88
+          226.00500000000002
         ],
         "name": ""
       },
       "at": [
         71.00000000000001,
-        225.88
+        226.00500000000002
       ],
       "to": [
         117.0,
-        225.88
+        226.00500000000002
       ],
       "text": "gwb-mr 1/2\"",
       "height": 1.6,
@@ -7850,17 +7908,17 @@
         "kind": "point",
         "xy": [
           120.0,
-          223.28
+          223.40500000000003
         ],
         "name": ""
       },
       "at": [
         71.00000000000001,
-        223.28
+        223.40500000000003
       ],
       "to": [
         120.0,
-        223.28
+        223.40500000000003
       ],
       "text": "stud 5 1/2\"",
       "height": 1.6,
@@ -7875,19 +7933,44 @@
         "kind": "point",
         "xy": [
           123.00000000000001,
-          220.68
+          220.80500000000004
         ],
         "name": ""
       },
       "at": [
         71.00000000000001,
-        220.68
+        220.80500000000004
       ],
       "to": [
         123.00000000000001,
-        220.68
+        220.80500000000004
       ],
       "text": "gwb-ar 1/2\"",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          123.00000000000001,
+          218.20500000000004
+        ],
+        "name": ""
+      },
+      "at": [
+        71.00000000000001,
+        218.20500000000004
+      ],
+      "to": [
+        123.00000000000001,
+        218.20500000000004
+      ],
+      "text": "gwb 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",

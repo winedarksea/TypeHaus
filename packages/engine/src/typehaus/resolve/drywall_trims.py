@@ -297,8 +297,11 @@ def _banded_edges(ctx: TrimContext, room: ResolvedRoom, wall, ring, span, floor_
                 or len(layer.polygon) < 3 or Polygon(layer.polygon).distance(probe) > 0.01):
             continue
         z0, z1 = layer.band(wall)
+        # An open top on a slot region is the wall's own end (AR below, plain above), which
+        # the unbanded case never beads either.
         for edge, z_lo, z_hi in ((z0 > floor_z + _BAND_GAP_M, z0 - _MEET_M, z0 - 0.01),
-                                 (z1 < top - _BAND_GAP_M, z1 + 0.01, z1 + _MEET_M)):
+                                 ((layer.z1_m is not None or layer.slot is None)
+                                  and z1 < top - _BAND_GAP_M, z1 + 0.01, z1 + _MEET_M)):
             if edge and not is_finish(face_function(wall, point, outward, z_lo, z_hi)):
                 ctx.add("termination", room.tag, room.storey,
                         ctx.standard.termination_for(layer.thickness_m), b - a, (room.tag,))

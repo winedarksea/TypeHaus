@@ -26,6 +26,7 @@ from typehaus.resolve.layer_bands import (
     band_spec,
     resolve_band_spec,
 )
+from typehaus.resolve.layer_material_extent import split_extent_overrides
 from typehaus.resolve.model import (
     JunctionIncident,
     ResolvedJunction,
@@ -219,6 +220,8 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
     # Full inside→outside stack: interior lining, then the core layers.
     lining = lining_override if lining_override is not None else asm.default_lining
     stack = list(lining) + list(asm.layers)
+    stack, banded_overrides = split_extent_overrides(
+        stack, getattr(wall, "layer_materials", ()))
     coatings = coating_tags(plan.library)
     added = _added_thicknesses(stack, coatings)
     total = sum(a for (_l, a, _c) in added)
@@ -273,7 +276,8 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
     # lets one wall carry a second coil colour or a second brick body without duplicating
     # the whole Assembly to restate one `material_ref`. An override naming a layer the
     # assembly does not have is reported by `checks.integrity.wall_layer_material`.
-    overrides = {lm.layer: lm.material for lm in getattr(wall, "layer_materials", ())}
+    overrides = {lm.layer: lm.material for lm in getattr(wall, "layer_materials", ())
+                 if lm.layer not in banded_overrides}
     layers: list[ResolvedLayer] = []
     for index, (layer, _add_t, cavity) in enumerate(added):
         host_index = _cavity_host(stack, index) if cavity else None

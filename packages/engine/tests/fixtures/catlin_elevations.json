@@ -5734,9 +5734,15 @@
 ],
 "geometry/21GE85HJDT/layer:gwb-a-tee-0": [
 0.0,
+1.23825,
+2,
+"9449348436c6"
+],
+"geometry/21GE85HJDT/layer:gwb-a-upper-tee-0": [
+1.23825,
 2.727325,
 2,
-"4cd3770f4a5a"
+"7edde08e3b55"
 ],
 "geometry/21GE85HJDT/layer:gwb-b-tee-0": [
 0.0,
@@ -8872,9 +8878,15 @@
 ],
 "geometry/8BRZAXSW73/layer:gwb-b": [
 -2.7797125,
+-1.5605125,
+4,
+"8d90aa66beb3"
+],
+"geometry/8BRZAXSW73/layer:gwb-b-upper": [
+-1.5605125,
 -0.320675,
 6,
-"c8f7c925b1c9"
+"b7f06483ca2c"
 ],
 "geometry/8BRZAXSW73/layer:staggered-studs": [
 -2.7797125,
@@ -9232,15 +9244,27 @@
 ],
 "geometry/9AYPA03VAE/layer:gwb-a": [
 -2.7797125,
+-1.5605125,
+2,
+"29cd63a3c2c9"
+],
+"geometry/9AYPA03VAE/layer:gwb-a-upper": [
+-1.5605125,
 0.02605,
 2,
-"edc80fe965de"
+"4a58517e2c6a"
 ],
 "geometry/9AYPA03VAE/layer:gwb-b": [
 -2.7797125,
+-1.5605125,
+2,
+"29cd63a3c2c9"
+],
+"geometry/9AYPA03VAE/layer:gwb-b-upper": [
+-1.5605125,
 0.02605,
 2,
-"edc80fe965de"
+"4a58517e2c6a"
 ],
 "geometry/9AYPA03VAE/layer:stud": [
 -2.7797125,
@@ -21424,9 +21448,15 @@
 ],
 "geometry/CBW113AAAA/layer:gwb-a": [
 -2.7797125,
+-1.5605125,
+2,
+"29cd63a3c2c9"
+],
+"geometry/CBW113AAAA/layer:gwb-a-upper": [
+-1.5605125,
 -0.3413125,
 2,
-"c0fa4924d6c7"
+"769c5dfe52c7"
 ],
 "geometry/CBW113AAAA/layer:gwb-b": [
 -2.7797125,
@@ -22396,9 +22426,15 @@
 ],
 "geometry/CBW120AAAA/layer:gwb-b": [
 -2.7797125,
+-1.5605125,
+2,
+"29cd63a3c2c9"
+],
+"geometry/CBW120AAAA/layer:gwb-b-upper": [
+-1.5605125,
 -0.320675,
 2,
-"a1269395efc9"
+"712b868ab9d4"
 ],
 "geometry/CBW120AAAA/layer:stud": [
 -2.7797125,
@@ -30742,9 +30778,15 @@
 ],
 "geometry/CM3FCDT2ST/layer:gwb-cold-tee-0": [
 -2.7797125,
+-1.5605125,
+2,
+"29cd63a3c2c9"
+],
+"geometry/CM3FCDT2ST/layer:gwb-cold-upper-tee-0": [
+-1.5605125,
 -0.4937125,
 2,
-"4afb73555a14"
+"1d3ce89c829c"
 ],
 "geometry/CM3FCDT2ST/layer:liner-furring": [
 -2.7797125,
@@ -41950,9 +41992,15 @@
 ],
 "geometry/CMW112AAAA/layer:gwb-b": [
 0.0,
-2.7432,
-8,
-"aea7e46853c6"
+1.23825,
+6,
+"e9b652b5f861"
+],
+"geometry/CMW112AAAA/layer:gwb-b-upper": [
+1.23825,
+2.746375,
+6,
+"30070a90cc00"
 ],
 "geometry/CMW112AAAA/layer:resilient-channel-tee-0": [
 0.0,
@@ -42184,9 +42232,15 @@
 ],
 "geometry/CMW113AAAA/layer:gwb-b": [
 0.0,
-2.7432,
+1.23825,
 2,
-"08fa410dc44f"
+"9449348436c6"
+],
+"geometry/CMW113AAAA/layer:gwb-b-upper": [
+1.23825,
+2.746375,
+2,
+"d41f1246f217"
 ],
 "geometry/CMW113AAAA/layer:stud": [
 0.0,
@@ -42298,9 +42352,15 @@
 ],
 "geometry/CMW114AAAA/layer:gwb-b": [
 0.0,
-2.7432,
-8,
-"e45bf9365e58"
+1.23825,
+6,
+"e9b652b5f861"
+],
+"geometry/CMW114AAAA/layer:gwb-b-upper": [
+1.23825,
+2.746375,
+6,
+"9b48664aadb5"
 ],
 "geometry/CMW114AAAA/layer:stud": [
 0.0,
@@ -43024,9 +43084,15 @@
 ],
 "geometry/CMW120AAAA/layer:gwb-a": [
 0.0,
+1.23825,
+6,
+"e9b652b5f861"
+],
+"geometry/CMW120AAAA/layer:gwb-a-upper": [
+1.23825,
 2.727325,
-8,
-"b8e811b5a2f0"
+6,
+"b736db780bfe"
 ],
 "geometry/CMW120AAAA/layer:gwb-b": [
 0.0,
@@ -43102,9 +43168,15 @@
 ],
 "geometry/CMW121AAAA/layer:gwb-a-tee-0": [
 0.0,
+1.23825,
+6,
+"e9b652b5f861"
+],
+"geometry/CMW121AAAA/layer:gwb-a-upper-tee-0": [
+1.23825,
 2.727325,
-8,
-"b8e811b5a2f0"
+6,
+"b736db780bfe"
 ],
 "geometry/CMW121AAAA/layer:gwb-b-tee-0": [
 0.0,
@@ -43576,9 +43648,15 @@
 ],
 "geometry/CMW123AAAA/layer:gwb-a-tee-0": [
 0.0,
+1.23825,
+2,
+"9449348436c6"
+],
+"geometry/CMW123AAAA/layer:gwb-a-upper-tee-0": [
+1.23825,
 2.727325,
 2,
-"4cd3770f4a5a"
+"7edde08e3b55"
 ],
 "geometry/CMW123AAAA/layer:gwb-b-tee-0": [
 0.0,
@@ -43666,9 +43744,15 @@
 ],
 "geometry/CMW124AAAA/layer:gwb-a": [
 0.0,
-2.7432,
-8,
-"05a8c266648e"
+1.23825,
+6,
+"e9b652b5f861"
+],
+"geometry/CMW124AAAA/layer:gwb-a-upper": [
+1.23825,
+2.746375,
+6,
+"8fc8e61ac4ab"
 ],
 "geometry/CMW124AAAA/layer:gwb-b-tee-0": [
 0.0,
@@ -43810,9 +43894,15 @@
 ],
 "geometry/CMW125AAAA/layer:gwb-a": [
 0.0,
-2.7432,
+1.23825,
 2,
-"08fa410dc44f"
+"9449348436c6"
+],
+"geometry/CMW125AAAA/layer:gwb-a-upper": [
+1.23825,
+2.746375,
+2,
+"d41f1246f217"
 ],
 "geometry/CMW125AAAA/layer:gwb-b-tee-0": [
 0.0,
@@ -45514,9 +45604,15 @@
 ],
 "geometry/CMW137AAAA/layer:gwb-b": [
 0.0,
+1.23825,
+6,
+"e9b652b5f861"
+],
+"geometry/CMW137AAAA/layer:gwb-b-upper": [
+1.23825,
 2.727325,
-8,
-"b8e811b5a2f0"
+6,
+"b736db780bfe"
 ],
 "geometry/CMW137AAAA/layer:stud": [
 0.0,
@@ -45604,9 +45700,15 @@
 ],
 "geometry/CMW138AAAA/layer:gwb-b": [
 0.0,
+1.23825,
+2,
+"9449348436c6"
+],
+"geometry/CMW138AAAA/layer:gwb-b-upper": [
+1.23825,
 2.727325,
 2,
-"4cd3770f4a5a"
+"7edde08e3b55"
 ],
 "geometry/CMW138AAAA/layer:stud": [
 0.0,
@@ -47500,9 +47602,15 @@
 ],
 "geometry/CQRJZCM0R1/layer:gwb-a": [
 -2.7797125,
+-1.5605125,
+4,
+"8d90aa66beb3"
+],
+"geometry/CQRJZCM0R1/layer:gwb-a-upper": [
+-1.5605125,
 -0.320675,
 6,
-"63404ac08212"
+"ca9088b18a95"
 ],
 "geometry/CQRJZCM0R1/layer:gwb-b-tee-0": [
 -2.7797125,
@@ -59914,15 +60022,21 @@
 ],
 "geometry/CSW115AAAA/layer:gwb-b-tee-0": [
 3.048,
-5.7912,
+4.28625,
 2,
-"7981cbeae3a4"
+"a10c7bf192a9"
 ],
-"geometry/CSW115AAAA/layer:gwb-b-tee-1": [
-5.775325,
-5.7912,
+"geometry/CSW115AAAA/layer:gwb-b-upper-tee-0": [
+4.28625,
+5.794375,
 2,
-"f6fb720675b7"
+"46ebbaecd2c6"
+],
+"geometry/CSW115AAAA/layer:gwb-b-upper-tee-1": [
+5.775325,
+5.794375,
+2,
+"d43a7fcc37e4"
 ],
 "geometry/CSW115AAAA/layer:stud": [
 3.048,
@@ -60442,9 +60556,15 @@
 ],
 "geometry/CSW120AAAA/layer:gwb-a-tee-0": [
 3.048,
+4.28625,
+4,
+"80a70a6ead4e"
+],
+"geometry/CSW120AAAA/layer:gwb-a-upper-tee-0": [
+4.28625,
 5.775325,
 6,
-"e7d8ff18ab19"
+"26de282ca0ac"
 ],
 "geometry/CSW120AAAA/layer:gwb-b": [
 3.048,
@@ -60730,9 +60850,15 @@
 ],
 "geometry/CSW122AAAA/layer:gwb-a": [
 3.048,
+4.28625,
+6,
+"7a2c95ad5dbf"
+],
+"geometry/CSW122AAAA/layer:gwb-a-upper": [
+4.28625,
 5.775325,
-8,
-"54f84b66bd55"
+6,
+"e0cc7f98736d"
 ],
 "geometry/CSW122AAAA/layer:gwb-b-tee-0": [
 3.048,
@@ -60880,9 +61006,15 @@
 ],
 "geometry/CSW123AAAA/layer:gwb-a": [
 3.048,
+4.28625,
+6,
+"7a2c95ad5dbf"
+],
+"geometry/CSW123AAAA/layer:gwb-a-upper": [
+4.28625,
 5.775325,
-8,
-"54f84b66bd55"
+6,
+"e0cc7f98736d"
 ],
 "geometry/CSW123AAAA/layer:gwb-b-tee-0": [
 3.048,
@@ -61030,9 +61162,15 @@
 ],
 "geometry/CSW124AAAA/layer:gwb-a-tee-0": [
 3.048,
+4.28625,
+6,
+"7a2c95ad5dbf"
+],
+"geometry/CSW124AAAA/layer:gwb-a-upper-tee-0": [
+4.28625,
 5.775325,
-8,
-"54f84b66bd55"
+6,
+"e0cc7f98736d"
 ],
 "geometry/CSW124AAAA/layer:gwb-b-tee-0": [
 3.048,
@@ -61906,9 +62044,15 @@
 ],
 "geometry/CSW134AAAA/layer:gwb-a": [
 3.048,
-5.7912,
+4.28625,
 2,
-"7981cbeae3a4"
+"a10c7bf192a9"
+],
+"geometry/CSW134AAAA/layer:gwb-a-upper": [
+4.28625,
+5.794375,
+2,
+"46ebbaecd2c6"
 ],
 "geometry/CSW134AAAA/layer:gwb-b": [
 3.048,
@@ -62248,9 +62392,15 @@
 ],
 "geometry/CSW138AAAA/layer:gwb-b": [
 3.048,
-5.7912,
-8,
-"b830fbf3a7f5"
+4.28625,
+6,
+"7a2c95ad5dbf"
+],
+"geometry/CSW138AAAA/layer:gwb-b-upper": [
+4.28625,
+5.794375,
+6,
+"0c4f9a9913d0"
 ],
 "geometry/CSW138AAAA/layer:resilient-channel-tee-0": [
 3.048,
@@ -62440,9 +62590,15 @@
 ],
 "geometry/CSW139AAAA/layer:gwb-b": [
 3.048,
-5.7912,
+4.28625,
 2,
-"7981cbeae3a4"
+"a10c7bf192a9"
+],
+"geometry/CSW139AAAA/layer:gwb-b-upper": [
+4.28625,
+5.794375,
+2,
+"46ebbaecd2c6"
 ],
 "geometry/CSW139AAAA/layer:stud": [
 3.048,
@@ -62512,9 +62668,15 @@
 ],
 "geometry/CSW140AAAA/layer:gwb-a": [
 3.048,
-5.7912,
+4.28625,
 2,
-"7981cbeae3a4"
+"a10c7bf192a9"
+],
+"geometry/CSW140AAAA/layer:gwb-a-upper": [
+4.28625,
+5.794375,
+2,
+"46ebbaecd2c6"
 ],
 "geometry/CSW140AAAA/layer:gwb-b": [
 3.048,
@@ -62590,9 +62752,15 @@
 ],
 "geometry/CSW141AAAA/layer:gwb-b": [
 3.048,
+4.28625,
+6,
+"7a2c95ad5dbf"
+],
+"geometry/CSW141AAAA/layer:gwb-b-upper": [
+4.28625,
 5.775325,
-8,
-"2b75d23a8f6d"
+6,
+"f6b730a6cf23"
 ],
 "geometry/CSW141AAAA/layer:stud": [
 3.048,
@@ -63106,9 +63274,15 @@
 ],
 "geometry/CSW146AAAA/layer:gwb-a-tee-0": [
 3.048,
+4.28625,
+2,
+"a10c7bf192a9"
+],
+"geometry/CSW146AAAA/layer:gwb-a-upper-tee-0": [
+4.28625,
 5.775325,
 2,
-"b7b31aff550e"
+"10a44ddc3763"
 ],
 "geometry/CSW146AAAA/layer:gwb-b-tee-0": [
 3.048,
@@ -63208,9 +63382,15 @@
 ],
 "geometry/CSW147AAAA/layer:gwb-a": [
 3.048,
-5.7912,
+4.28625,
 2,
-"7981cbeae3a4"
+"a10c7bf192a9"
+],
+"geometry/CSW147AAAA/layer:gwb-a-upper": [
+4.28625,
+5.794375,
+2,
+"46ebbaecd2c6"
 ],
 "geometry/CSW147AAAA/layer:gwb-b-tee-0": [
 3.048,
@@ -63430,9 +63610,15 @@
 ],
 "geometry/CSW148AAAA/layer:gwb-b": [
 3.048,
+4.28625,
+4,
+"80a70a6ead4e"
+],
+"geometry/CSW148AAAA/layer:gwb-b-upper": [
+4.28625,
 5.775325,
 6,
-"e7d8ff18ab19"
+"26de282ca0ac"
 ],
 "geometry/CSW148AAAA/layer:stud": [
 3.048,
@@ -63514,9 +63700,15 @@
 ],
 "geometry/CSW149AAAA/layer:gwb-b-tee-0": [
 3.048,
+4.28625,
+6,
+"7a2c95ad5dbf"
+],
+"geometry/CSW149AAAA/layer:gwb-b-upper-tee-0": [
+4.28625,
 5.775325,
-8,
-"2b75d23a8f6d"
+6,
+"f6b730a6cf23"
 ],
 "geometry/CSW149AAAA/layer:stud": [
 3.048,
@@ -63592,9 +63784,15 @@
 ],
 "geometry/CSW150AAAA/layer:gwb-a": [
 3.048,
-5.7912,
+4.28625,
 2,
-"7981cbeae3a4"
+"a10c7bf192a9"
+],
+"geometry/CSW150AAAA/layer:gwb-a-upper": [
+4.28625,
+5.794375,
+2,
+"46ebbaecd2c6"
 ],
 "geometry/CSW150AAAA/layer:gwb-b": [
 3.048,
@@ -71038,9 +71236,15 @@
 ],
 "geometry/KKVYSAJKZF/layer:gwb-b": [
 0.0,
+1.23825,
+6,
+"e9b652b5f861"
+],
+"geometry/KKVYSAJKZF/layer:gwb-b-upper": [
+1.23825,
 2.727325,
-8,
-"80bfbf6226ef"
+6,
+"3ba52d446faf"
 ],
 "geometry/KKVYSAJKZF/layer:stud": [
 0.0,
@@ -72706,11 +72910,17 @@
 ],
 "geometry/NJ21M7MF6R/layer:gwb-b-tee-0": [
 -2.7797125,
+-1.5605125,
+4,
+"8d90aa66beb3"
+],
+"geometry/NJ21M7MF6R/layer:gwb-b-upper-tee-0": [
+-1.5605125,
 -0.3413125,
 6,
-"9bbec3881b04"
+"5ff7f17a2775"
 ],
-"geometry/NJ21M7MF6R/layer:gwb-b-tee-1": [
+"geometry/NJ21M7MF6R/layer:gwb-b-upper-tee-1": [
 -0.4937125,
 -0.3413125,
 2,
@@ -78706,27 +78916,51 @@
 ],
 "geometry/SNNBY9M3CE-ENDS0/body": [
 0.02605,
-2.7178,
+1.24525,
 2,
-"2674d9536d08"
+"a60d9d071000"
 ],
 "geometry/SNNBY9M3CE-ENDS0P/body": [
 0.02605,
+1.24525,
+2,
+"a60d9d071000"
+],
+"geometry/SNNBY9M3CE-ENDS1/body": [
+1.24525,
 2.7178,
 2,
-"2674d9536d08"
+"53a191e2f5f7"
+],
+"geometry/SNNBY9M3CE-ENDS1P/body": [
+1.24525,
+2.7178,
+2,
+"53a191e2f5f7"
 ],
 "geometry/SNNBY9M3CE/layer:gwb-a": [
 0.02605,
+1.24525,
+2,
+"a60d9d071000"
+],
+"geometry/SNNBY9M3CE/layer:gwb-a-upper": [
+1.24525,
 3.0861,
 2,
-"57ac741f38d0"
+"72a13f95cc9d"
 ],
 "geometry/SNNBY9M3CE/layer:gwb-b": [
 0.02605,
+1.24525,
+2,
+"a60d9d071000"
+],
+"geometry/SNNBY9M3CE/layer:gwb-b-upper": [
+1.24525,
 3.0861,
 2,
-"57ac741f38d0"
+"72a13f95cc9d"
 ],
 "geometry/SNNBY9M3CE/layer:stud": [
 0.02605,
@@ -79876,15 +80110,27 @@
 ],
 "geometry/VJPS36HCSB/layer:gwb-a": [
 -2.7797125,
+-1.5605125,
+2,
+"29cd63a3c2c9"
+],
+"geometry/VJPS36HCSB/layer:gwb-a-upper": [
+-1.5605125,
 -0.320675,
 2,
-"a1269395efc9"
+"712b868ab9d4"
 ],
 "geometry/VJPS36HCSB/layer:gwb-b-tee-0": [
 -2.7797125,
+-1.5605125,
+2,
+"29cd63a3c2c9"
+],
+"geometry/VJPS36HCSB/layer:gwb-b-upper-tee-0": [
+-1.5605125,
 -0.320675,
 2,
-"a1269395efc9"
+"712b868ab9d4"
 ],
 "geometry/VJPS36HCSB/layer:stud": [
 -2.7797125,
@@ -130770,9 +131016,13 @@
 "solids/W-M-WELL-end-0-paint/z0_m": 1.333825,
 "solids/W-M-WELL-end-0-paint/z1_m": 3.0861,
 "solids/W-M-WELL-start-0-board/z0_m": 0.02605,
-"solids/W-M-WELL-start-0-board/z1_m": 2.7178,
+"solids/W-M-WELL-start-0-board/z1_m": 1.24525,
 "solids/W-M-WELL-start-0-paint/z0_m": 0.02605,
-"solids/W-M-WELL-start-0-paint/z1_m": 2.7178,
+"solids/W-M-WELL-start-0-paint/z1_m": 1.24525,
+"solids/W-M-WELL-start-1-board/z0_m": 1.24525,
+"solids/W-M-WELL-start-1-board/z1_m": 2.7178,
+"solids/W-M-WELL-start-1-paint/z0_m": 1.24525,
+"solids/W-M-WELL-start-1-paint/z1_m": 2.7178,
 "solids/W-S-N1-BANDSTRIP-LOWER-1-1/z0_m": 3.1623,
 "solids/W-S-N1-BANDSTRIP-LOWER-1-1/z1_m": 3.1631128,
 "solids/W-S-N1-BANDSTRIP-LOWER-1-2/z0_m": 3.1623,

@@ -45,26 +45,37 @@ def wall_end_boards(ctx: TrimContext) -> None:
 
 
 def _gypsum_faces(ctx: TrimContext, wall: ResolvedWall) -> tuple[Any, Any, str | None] | None:
-    """``(first board, last board, face coat)`` when both faces are gypsum, else ``None``."""
+    """``(first face, last face, face coat)`` when both faces are gypsum, else ``None``.
+
+    A face is the list of its board's regions (``_boards``)."""
     layers = wall.body_layers()
     boards = _boards(wall)
     if len(boards) < 2 or not all(
             getattr(ctx.materials.get(layer.material_ref), "gypsum_type", None)
-            for layer in (boards[0], boards[-1])):
+            for face in (boards[0], boards[-1]) for layer in face):
         return None
     return boards[0], boards[-1], layers[0].material_ref if layers[0].coating else None
 
 
-def _boards(wall: ResolvedWall) -> list[Any]:
-    """The non-coating layers, a cut layer's pieces (tee, pocket) collapsed to the first:
-    its other pieces are slivers of band (``tee-above``) and would read as the board."""
-    out, seen = [], set()
+def _boards(wall: ResolvedWall) -> list[list[Any]]:
+    """The non-coating layers as faces. A cut layer's pieces (tee, pocket) collapse to the
+    first: its others are slivers of band (``tee-above``) and would read as the board. Layers
+    sharing a slot are one board in several bands (AR below, plain above), so one face."""
+    out: list[list[Any]] = []
+    seen: set[str] = set()
+    by_slot: dict[str, list[Any]] = {}
     for layer in wall.body_layers():
         if layer.coating or (layer.source_layer_name or "") in seen:
             continue
         if layer.source_layer_name:
             seen.add(layer.source_layer_name)
-        out.append(layer)
+        if layer.slot is not None and layer.slot in by_slot:
+            by_slot[layer.slot].append(layer)
+            continue
+        face = [layer]
+        out.append(face)
+        if layer.slot is not None:
+            by_slot[layer.slot] = face
     return out
 
 
@@ -92,13 +103,15 @@ def _close_end(ctx: TrimContext, wall: ResolvedWall, junction: Any,
                     junction.point[1] + out[1] * t + normal[1] * n)
         return [at(t0, lo), at(t1, lo), at(t1, hi), at(t0, hi)]
 
-    board = ring(plane, plane + first.thickness_m)
+    thickness = first[0].thickness_m
+    board = ring(plane, plane + thickness)
     bands = _clear_bands(ctx.model, wall, Polygon(board), _face_band(wall, first, last, is_start))
     if not bands:
         return
     end = "start" if is_start else "end"
-    material, thickness = first.material_ref, first.thickness_m
-    for index, (z0, z1) in enumerate(bands):
+    height_by_material: dict[str, float] = {}
+    pieces = [piece for band in bands for piece in _by_material(first, band)]
+    for index, (z0, z1, material) in enumerate(pieces):
         key, tag = f"{wall.uid}-END{end[0].upper()}{index}", f"{wall.tag}-{end}-{index}"
         ctx.model.solids.append(ResolvedSolid(key, f"{tag}-board", wall.storey, _CATEGORY,
                                               board, z0, z1, material=material))
@@ -106,12 +119,13 @@ def _close_end(ctx: TrimContext, wall: ResolvedWall, junction: Any,
             film = ring(plane + thickness, plane + thickness + COATING_SKIN_M)
             ctx.model.solids.append(ResolvedSolid(f"{key}P", f"{tag}-paint", wall.storey,
                                                   _CATEGORY, film, z0, z1, material=coating))
-    height = sum(z1 - z0 for z0, z1 in bands)
+        height_by_material[material] = height_by_material.get(material, 0.0) + (z1 - z0)
     room = _room_tag(ctx, wall, Polygon(board))
-    ctx.model.wall_ends.append(ResolvedWallEnd(
-        wall=wall.tag, node=junction.node_tag, storey=wall.storey, room=room,
-        material_ref=material, thickness_m=thickness, coating=coating,
-        area_m2=(hi - lo) * height, height_m=height))
+    for material, height in height_by_material.items():  # one record per board material
+        ctx.model.wall_ends.append(ResolvedWallEnd(
+            wall=wall.tag, node=junction.node_tag, storey=wall.storey, room=room,
+            material_ref=material, thickness_m=thickness, coating=coating,
+            area_m2=(hi - lo) * height, height_m=height))
     if _on_room_ring(ctx.model, wall.storey, board[0]):
         return  # the ring walk has already beaded this end
     for z0, z1 in bands:
@@ -120,9 +134,27 @@ def _close_end(ctx: TrimContext, wall: ResolvedWall, junction: Any,
                     z1 - z0, (wall.tag,))
 
 
-def _face_band(wall: ResolvedWall, first: Any, last: Any, is_start: bool) -> tuple[float, float]:
+def _face_extent(wall: ResolvedWall, face: list[Any]) -> tuple[float, float]:
+    """The height a face's regions span together."""
+    bands = [layer.band(wall) for layer in face]
+    return min(z0 for z0, _ in bands), max(z1 for _, z1 in bands)
+
+
+def _by_material(face: list[Any], band: tuple[float, float]) -> list[tuple[float, float, str]]:
+    """``band`` cut at the face's regions, each piece with its board's material."""
+    out: list[tuple[float, float, str]] = []
+    for region in face:
+        z0, z1 = max(band[0], region.z0_m if region.z0_m is not None else band[0]), min(
+            band[1], region.z1_m if region.z1_m is not None else band[1])
+        if z1 - z0 > 1e-9:
+            out.append((z0, z1, region.material_ref))
+    return sorted(out)
+
+
+def _face_band(wall: ResolvedWall, first: list[Any], last: list[Any],
+               is_start: bool) -> tuple[float, float]:
     """The height both faces' board reaches at this end, from the subfloor up."""
-    (a0, a1), (b0, b1) = first.band(wall), last.band(wall)
+    (a0, a1), (b0, b1) = _face_extent(wall, first), _face_extent(wall, last)
     top = min(a1, b1)
     raked = wall.top_z0_m if is_start else wall.top_z1_m
     return max(a0, b0, wall.frame_base_z_m), top if raked is None else min(top, raked)

@@ -519,7 +519,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CMW114AAAA",
-      "tag": "W-M-C3/gwb-b"
+      "tag": "W-M-C3/gwb-b-upper"
     },
     {
       "space": "model",
@@ -547,8 +547,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "gwb-ar",
-      "fill": "#d3dbe3"
+      "material": "gwb"
     },
     {
       "space": "model",
@@ -664,26 +663,6 @@
         ],
         [
           216.00000000000003,
-          82.53740157480316
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CMW114AAAA",
-      "tag": "W-M-C3-void"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          219.00000000000003,
-          0.7499999999999999
-        ],
-        [
-          219.00000000000003,
           82.53740157480316
         ]
       ],
@@ -1441,6 +1420,31 @@
         90.03727034120735
       ],
       "text": "gwb-ar 1/2\"",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          219.0,
+          86.24560367454067
+        ],
+        "name": ""
+      },
+      "at": [
+        201.90748031496065,
+        86.24560367454067
+      ],
+      "to": [
+        219.0,
+        86.24560367454067
+      ],
+      "text": "gwb 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",

@@ -12,10 +12,11 @@ from typehaus.model.concrete_materials import AsrSpec, CementSpec, ScmFractions
 from typehaus.model.enums import (
     ControlLayer,
     JunctionPolicy,
-    LayerDatum,
     LayerFunction,
     PartitionLayout,
 )
+from typehaus.model.layer_extent import LayerBound as LayerBound
+from typehaus.model.layer_extent import LayerExtent as LayerExtent
 from typehaus.model.refs import LayerSpan
 from typehaus.model.registry import register_constructor
 from typehaus.model.sheathing_nailing import SheathingNailing
@@ -364,29 +365,6 @@ class CavityFill(HausModel):
     thickness: Length | None = None  # None => the host STRUCTURE layer's thickness
     framing_factor: float = 0.23  # fraction of area that is framing, not fill
     control: frozenset[ControlLayer] = frozenset()
-
-
-class LayerBound(HausModel):
-    """One end of a layer's vertical extent: a datum, plus a signed offset from it."""
-
-    datum: LayerDatum
-    offset: Length = inch(0)
-
-
-class LayerExtent(HausModel):
-    """How far up a wall one layer of the stack actually runs.
-
-    This is the "vertically compound wall" of a BIM authoring tool — a layer row split into
-    regions at a height — expressed on the *type* rather than on each wall, which is the only
-    place it can live: an ``Assembly`` is shared by many walls and knows none of their
-    elevations. Two layers with non-overlapping extents that name the same ``Layer.slot``
-    are the two regions of one split row, and share one depth position in the stack.
-
-    ``None`` on either end means the wall's own end.
-    """
-
-    bottom: LayerBound | None = None   # None -> the wall's base
-    top: LayerBound | None = None      # None -> the wall's top
 
 
 class Layer(HausModel):

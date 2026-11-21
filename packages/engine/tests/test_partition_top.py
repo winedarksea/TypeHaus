@@ -163,7 +163,9 @@ def test_a_partition_standing_in_a_well_is_boarded_through_the_floor_band(catlin
     lining carries a drawn coat on every edge."""
     def board_top(tag: str) -> float:
         wall = catlin_model_ro.wall(tag)
-        return next(layer for layer in wall.layers if layer.name == "gwb-a").band(wall)[1] / _IN
+        # AR below, plain above (``gwb-a`` + ``gwb-a-upper``): the board's top is the higher.
+        return max(layer.band(wall)[1] for layer in wall.layers
+                   if layer.name in ("gwb-a", "gwb-a-upper")) / _IN
 
     assert board_top("W-B-WELL") == pytest.approx(1.0255906, abs=1e-6)
     assert board_top("W-M-WELL") == pytest.approx(121.5, abs=1e-6)

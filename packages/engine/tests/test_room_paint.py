@@ -18,7 +18,9 @@ def _materials(model, tag: str) -> list[str]:
 
 def test_an_unpainted_room_strips_its_face_only(catlin_model_ro) -> None:
     """RM-M-MECH's partition face is bare; the mudroom face keeps its latex."""
-    assert _materials(catlin_model_ro, "W-M-MECH-S") == ["gwb", "spf", "gwb-ar", "paint-wall"]
+    # gwb-ar is the lower 4' of the board; plain gypsum stands above it (LayerMaterial.extent).
+    assert _materials(catlin_model_ro, "W-M-MECH-S") == [
+        "gwb", "spf", "gwb-ar", "gwb", "paint-wall"]
 
 
 def test_an_envelope_wall_in_an_unpainted_room_keeps_its_paint(catlin_model_ro) -> None:

@@ -10,6 +10,7 @@
 # 27" the bearing cap (the same 30.5" less a jack each side = 27.5", R602.7.5). The 3"
 # between the two caps IS the pair of jacks.
 from library.doors import DT_INT_CLOSET24
+from ..ar_gypsum_band import AR_LOWER_BAND, AR_LOWER_BAND_ON_SLAB
 from ..doorway_transitions import BEDROOM_ZBAR, D_M_BED2_SADDLE
 from typehaus import (
     Alarm,
@@ -539,16 +540,16 @@ WALLS = [
     # axis slides 1/4" and W-S-C1's `stacks_on` is inside `_axis_match`'s tolerance of
     # dropping. Both are explained in full at the assembly (plan/assemblies.py).
     Wall(uid="CMW112AAAA", tag="W-M-C1", start_node="N-M-S1", end_node="N-M-C1",
-         layer_materials=(LayerMaterial(layer="stud", material="lsl"), LayerMaterial(layer="gwb-b", material="gwb-ar"),),
+         layer_materials=(LayerMaterial(layer="stud", material="lsl"), LayerMaterial(layer="gwb-b", material="gwb-ar", extent=AR_LOWER_BAND),),
          assembly="INT_2X6_BRG_RC_HALF", interior_room="RM-M-BED", top=ft(9),
          alignment=face("stud-ext", offset=inch(-2.75)),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-CS"),
     Wall(uid="CMW113AAAA", tag="W-M-C2", start_node="N-M-C1", end_node="N-M-E4",
-         layer_materials=(LayerMaterial(layer="stud", material="lsl"), LayerMaterial(layer="gwb-b", material="gwb-ar"),),
+         layer_materials=(LayerMaterial(layer="stud", material="lsl"), LayerMaterial(layer="gwb-b", material="gwb-ar", extent=AR_LOWER_BAND),),
          assembly="INT_2X6_BRG_HALF", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-CS2"),
     Wall(uid="CMW114AAAA", tag="W-M-C3", start_node="N-M-E4", end_node="N-M-C2",
-         layer_materials=(LayerMaterial(layer="stud", material="lsl"), LayerMaterial(layer="gwb-b", material="gwb-ar"),),
+         layer_materials=(LayerMaterial(layer="stud", material="lsl"), LayerMaterial(layer="gwb-b", material="gwb-ar", extent=AR_LOWER_BAND),),
          assembly="INT_2X6_BRG_HALF", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-CS2"),
     # y 21'-8" .. 25'-10" IS NOT A WALL — it is the BM-M-HALL flitch of LVL, the main-storey
@@ -629,7 +630,7 @@ WALLS = [
     # lining has stepped that opening's south trimmer clear.
     Wall(uid="SNNBY9M3CE", tag="W-M-WELL", start_node="N-M-WELL-S", end_node="N-M-WELL-N",
          assembly="STAIRWELL_PARTITION_4H",
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"), LayerMaterial(layer="gwb-b", material="gwb-ar"),), base_elevation=inch(1.0255906), top=inch(120.4744094),
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar", extent=AR_LOWER_BAND_ON_SLAB), LayerMaterial(layer="gwb-b", material="gwb-ar", extent=AR_LOWER_BAND_ON_SLAB),), base_elevation=inch(1.0255906), top=inch(120.4744094),
          interior_room="RM-M-LIVING"),
     # A wet wall since 2026-11-01: it carries PR-M-S-BATH1-DRAIN's 3" stack (3.50" OD, ~4.2"
     # hub) and the hall-bath supply risers. `haus route` found no lane into W-M-HS1 or the
@@ -641,13 +642,13 @@ WALLS = [
          alignment=face("staggered-studs-ext", offset=inch(-1.75)), top=ft(9)),
     Wall(uid="CMW120AAAA", tag="W-M-STOS2", start_node="N-M-BA1",
          end_node="N-M-STRJ", assembly="INT_2X4_PARTITION_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), top=ft(9),
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar", extent=AR_LOWER_BAND),), top=ft(9),
          # BM-S-BATH-E lands on the N-S-BA1 corner over N-M-STRJ: W-M-STRW's (#116).
          structural_role=StructuralRole.NONBEARING),
     # --- powder bath west of hallway -------------------------------------------
     Wall(uid="CMW121AAAA", tag="W-M-BAE", start_node="N-M-BA1",
          end_node="N-M-BA2", assembly="INT_2X4_PARTITION_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"), LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9),
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar", extent=AR_LOWER_BAND), LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9),
          structural_role=StructuralRole.NONBEARING),
     # --- hallway south wall band ------------------------------------------------
     # W-M-HS1 is a wet wall since 2026-08-29, not the 2x4 partition it was: the RM-M-BATH2
@@ -685,18 +686,18 @@ WALLS = [
     # it, matching HS1 — the band reads as one wall, which it always did.
     Wall(uid="CMW123AAAA", tag="W-M-HS2", start_node="N-M-BA2",
          end_node="N-M-D1", assembly="INT_2X6_STAGGERED_PLUMBING_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"), LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9)),
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar", extent=AR_LOWER_BAND), LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9)),
     # The 2x4 sections are 2" thinner than HS2. Move their whole sections 1" north
     # from the shared node line so the hall-side gypsum stays flush across the change.
     # Keep the nodes on y=22'-4" for the bath/laundry/study tees and pocket travel.
     Wall(uid="CMW124AAAA", tag="W-M-HS3", start_node="N-M-D1",
          end_node="N-M-E3", assembly="INT_2X4_PARTITION_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"), LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9),
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar", extent=AR_LOWER_BAND), LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9),
          alignment=face("center", offset=inch(1)),
          structural_role=StructuralRole.BEARING),
     Wall(uid="CMW125AAAA", tag="W-M-HS4", start_node="N-M-E3",
          end_node="N-M-C2", assembly="INT_2X4_PARTITION_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), top=ft(9),
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar", extent=AR_LOWER_BAND),), top=ft(9),
          alignment=face("center", offset=inch(1)),
          structural_role=StructuralRole.BEARING),  # FO-A-HALL lands on W-S-SN3 above
     # --- bath2 / laundry / study / closet block ---------------------------------
@@ -855,11 +856,11 @@ WALLS = [
     # Lay out west to east so the shifted D-M-MECH interrupts only one module stud.
     Wall(uid="CMW137AAAA", tag="W-M-MECH-S", start_node="N-M-MECH1",
          end_node="N-M-MECH2", assembly="INT_2X4_PARTITION_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(9),
+         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-ar", extent=AR_LOWER_BAND),), top=ft(9),
          structural_role=StructuralRole.NONBEARING),
     Wall(uid="CMW138AAAA", tag="W-M-MECH-E", start_node="N-M-MECH2",
          end_node="N-M-MECH3", assembly="INT_2X4_PARTITION_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(9)),
+         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-ar", extent=AR_LOWER_BAND),), top=ft(9)),
     # --- RM-M-MUD-CLOSET: framed south mudroom closet --------------
     # Replaces FURN-M-MUD-CLOSET-S (plan/furniture_types.py, now empty). The north
     # partition carries the closet's opening — the bypass slider in D-M-MUDC — and the
@@ -868,11 +869,11 @@ WALLS = [
     # Lay out from the east end so the shifted bypass cuts only three module studs.
     Wall(uid="KKVYSAJKZF", tag="W-M-MUDC-N", start_node="N-M-MUDC2", end_node="N-M-MUDC1",
          assembly="INT_2X4_PARTITION_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(9),
+         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-ar", extent=AR_LOWER_BAND),), top=ft(9),
          structural_role=StructuralRole.NONBEARING),
     Wall(uid="21GE85HJDT", tag="W-M-MUDC-E", start_node="N-M-MUDC2", end_node="N-M-BA1",
          assembly="INT_2X4_PARTITION_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), top=ft(9)),
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar", extent=AR_LOWER_BAND),), top=ft(9)),
     # --- RM-M-PANTRY: framed reach-in pantry, kitchen NW corner ----
     # Clear 73 1/4 x 26 inches. The 74 1/2-inch Eclisse RO spans between
     # the perpendicular stud faces, with its ends supported by those walls.

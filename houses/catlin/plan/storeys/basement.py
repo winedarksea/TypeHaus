@@ -5,6 +5,7 @@
 # Perimeter walls align on the concrete exterior face so the 4" of exterior XPS stacks
 # directly under the framed wall's 4" polyiso+EPS (#43 control-layer continuity) — which
 # is also why thinning the pour moves only the INSIDE face.
+from ..ar_gypsum_band import AR_LOWER_BAND_ON_SLAB
 from ..doorway_transitions import D_B_BATH_VINYL_REDUCER, D_B_PLAY_MAT_ZBAR, D_B_SAUNA_MAT_REDUCER
 from typehaus import (
     Alarm,
@@ -658,7 +659,7 @@ WALLS = [
     # formed through — which is the whole point of the rotation.
     Wall(uid="NJ21M7MF6R", tag="W-B-CS3", start_node="N-B-C1",
          end_node="N-B-SA-NE", assembly="INT_2X6_BRG_HALF_DFL",
-         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(8),
+         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-ar", extent=AR_LOWER_BAND_ON_SLAB),), top=ft(8),
          alignment=face("stud-ext", offset=inch(-2.75)),
          structural_role=StructuralRole.BEARING),
     # ** THE REST OF THE x=18' LINE IS FRAMED TOO (2026-11-01, decision #112). ** W-B-CS2,
@@ -677,7 +678,7 @@ WALLS = [
     # uid, and the north 14'-2 5/8" that W-M-C5 stacks on, so the bearing stack is untouched.
     Wall(uid="CBW113AAAA", tag="W-B-CN", start_node="N-B-BA-E",
          end_node="N-B-N1", assembly="INT_2X6_BRG_HALF_DFL", top=ft(8),
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),),
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar", extent=AR_LOWER_BAND_ON_SLAB),),
          alignment=face("stud-ext", offset=inch(-2.75)),
          structural_role=StructuralRole.BEARING),
     Wall(uid="CBW121AAAA", tag="W-B-CN2", start_node="N-B-C",
@@ -877,7 +878,7 @@ WALLS = [
     # framing. The liner stack stays the same, so both the sauna hot face and hall face align.
     Wall(uid="CM3FCDT2ST", tag="W-B-SA-N2", start_node="N-B-HALL-S",
          end_node="N-B-SA-NE", assembly="SAUNA_2X4",
-         layer_materials=(LayerMaterial(layer="gwb-cold", material="gwb-ar"),), top=ft(7, 6),
+         layer_materials=(LayerMaterial(layer="gwb-cold", material="gwb-ar", extent=AR_LOWER_BAND_ON_SLAB),), top=ft(7, 6),
          interior_room="RM-B-SAUNA"),
     # ** THE HALL'S WEST SIDE, NEW 2026-09-07. ** Axis x=13'-11" (1" west of the node line,
     # hall face flush with W-B-WELL's) from the y=18' line south
@@ -892,7 +893,7 @@ WALLS = [
     Wall(uid="CQRJZCM0R1", tag="W-B-HALL-W", start_node="N-B-BA-SE",
          end_node="N-B-HALL-S", assembly="INT_2X6_PLUMBING_HALF",
          alignment=face("center", offset=inch(-1)),
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"),), top=ft(8),
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar", extent=AR_LOWER_BAND_ON_SLAB),), top=ft(8),
          structural_role=StructuralRole.NONBEARING),
     # ** RETYPED AND RE-NODED 2026-09-05, AND IT IS DRY NOW. ** This was the stair-foot
     # bathroom's only framed wall and it carried the whole room's plumbing. What is left
@@ -901,7 +902,7 @@ WALLS = [
     # Top=8'-0" is the bearing seat, like every other partition in this basement.
     Wall(uid="CBW120AAAA", tag="W-B-BA-N", start_node="N-B-BA-NW",
          end_node="N-B-BA-NE", assembly="INT_2X4_PARTITION_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"), LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(8),
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"), LayerMaterial(layer="gwb-b", material="gwb-ar", extent=AR_LOWER_BAND_ON_SLAB),), top=ft(8),
          interior_room="RM-B-BATH"),
     # This 2x6 staggered partition now holds D-B-BATH and its split pocket frame. The
     # services moved into W-B-STR2 so the leaf can pass south into W-B-HALL-W. Its north
@@ -911,7 +912,7 @@ WALLS = [
     Wall(uid="8BRZAXSW73", tag="W-B-BA-E", start_node="N-B-BA-NE",
          end_node="N-B-BA-SE", assembly="INT_2X6_STAGGERED_PLUMBING_HALF",
          alignment=face("center", offset=inch(1)),
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"), LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(8),
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"), LayerMaterial(layer="gwb-b", material="gwb-ar", extent=AR_LOWER_BAND_ON_SLAB),), top=ft(8),
          interior_room="RM-B-BATH", structural_role=StructuralRole.NONBEARING),
     # ESS closet's two framed walls: UL U305 wood studs, 5/8" Type X both faces (owner,
     # 2026-10-30) — the library partitions with their gwb swapped to `gwb-x`, no new tag.
@@ -959,11 +960,11 @@ WALLS = [
     # end stud face-to-face with the stair's stud-head.
     Wall(uid="VJPS36HCSB", tag="W-B-WELL-HEAD", start_node="N-B-BA-NE",
          end_node="N-B-WELL-HEAD", assembly="INT_2X4_PARTITION_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"), LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=ft(8),
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar", extent=AR_LOWER_BAND_ON_SLAB), LayerMaterial(layer="gwb-b", material="gwb-ar", extent=AR_LOWER_BAND_ON_SLAB),), top=ft(8),
          interior_room="RM-B-STAIR"),
     Wall(uid="9AYPA03VAE", tag="W-B-WELL", start_node="N-B-WELL-HEAD",
          end_node="N-B-CL-NE", assembly="STAIRWELL_PARTITION_4H",
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar"), LayerMaterial(layer="gwb-b", material="gwb-ar"),), top=inch(110.4630906),
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar", extent=AR_LOWER_BAND_ON_SLAB), LayerMaterial(layer="gwb-b", material="gwb-ar", extent=AR_LOWER_BAND_ON_SLAB),), top=inch(110.4630906),
          interior_room="RM-B-STAIR"),
     # Unglazed buff brick veneer over the exposed run of W-B-S2/W-B-S3, where the sunken
     # garden is dug against them — everywhere else this wall is buried and the parge is a

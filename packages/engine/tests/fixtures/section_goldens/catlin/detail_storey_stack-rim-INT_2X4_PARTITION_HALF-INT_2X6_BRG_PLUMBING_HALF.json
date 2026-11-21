@@ -28,7 +28,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CMW120AAAA",
-      "tag": "W-M-STOS2/gwb-a"
+      "tag": "W-M-STOS2/gwb-a-upper"
     },
     {
       "space": "model",
@@ -56,8 +56,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "gwb-ar",
-      "fill": "#d3dbe3"
+      "material": "gwb"
     },
     {
       "space": "model",
@@ -1362,7 +1361,7 @@
         321.5,
         101.76666666666668
       ],
-      "text": "gwb-ar 1/2\"",
+      "text": "gwb 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1706,12 +1705,12 @@
           1.1280000000000001
         ]
       ],
-      "pattern": "lumber",
+      "pattern": "gypsum",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "spf"
+      "material": "gwb"
     },
     {
       "space": "paper",
@@ -1748,7 +1747,7 @@
         0.7,
         1.058
       ],
-      "content": "spf  3 1/2\"",
+      "content": "gwb  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -1778,12 +1777,12 @@
           0.9580000000000001
         ]
       ],
-      "pattern": "gypsum",
+      "pattern": "lumber",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "gwb"
+      "material": "spf"
     },
     {
       "space": "paper",
@@ -1820,7 +1819,7 @@
         0.7,
         0.8880000000000001
       ],
-      "content": "gwb  1/2\"",
+      "content": "spf  3 1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,

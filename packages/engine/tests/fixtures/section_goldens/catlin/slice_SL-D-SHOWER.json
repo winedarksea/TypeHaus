@@ -584,7 +584,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CMW137AAAA",
-      "tag": "W-M-MECH-S/gwb-b"
+      "tag": "W-M-MECH-S/gwb-b-upper"
     },
     {
       "space": "model",
@@ -612,8 +612,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "gwb-ar",
-      "fill": "#d3dbe3"
+      "material": "gwb"
     },
     {
       "space": "model",
@@ -774,7 +773,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "KKVYSAJKZF",
-      "tag": "W-M-MUDC-N/gwb-b"
+      "tag": "W-M-MUDC-N/gwb-b-upper"
     },
     {
       "space": "model",
@@ -802,8 +801,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "gwb-ar",
-      "fill": "#d3dbe3"
+      "material": "gwb"
     },
     {
       "space": "model",
@@ -5373,7 +5371,7 @@
         398.00000000000006,
         106.5681594488189
       ],
-      "text": "gwb-ar 1/2\"",
+      "text": "gwb 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
