@@ -60,6 +60,8 @@ VOLUME_PER_CONDUCTOR_IN3 = {14: 2.0, 12: 2.25, 10: 2.5, 8: 3.0, 6: 5.0}
 #: 314.24(B) minimum internal depth with a device, in, by conductor size. The listed-with-box
 #: exception and the 1/2 in. rear-entry clearance are not read.
 MIN_DEPTH_IN = {14: 15 / 16, 12: 1 + 3 / 16, 10: 1 + 3 / 16, 8: 2 + 1 / 16, 6: 2 + 1 / 16}
+#: 314.24(A): a box enclosing no device or equipment (a luminaire's or alarm head's box).
+NO_DEVICE_MIN_DEPTH_IN = 0.5
 _PROJECTION_ADDER_IN = 0.25
 _DEEP_PROJECTION_IN = 1 + 7 / 8  # any gauge
 _SMALL_GAUGE_PROJECTION_IN = 1.0  # 12 and 10 AWG
@@ -183,19 +185,27 @@ def _grade(box: Any, circuits: dict[str, Any], types: dict[str, Any],
     if ungauged.gauge is None or box.volume_in3 is None:
         return unknown(_CID, f"{where}: no gauge for a {ungauged.circuit.breaker_amps} A "
                              "breaker or no box volume", tags, code=_CODE)
-    # The deepest member sets the depth (314.24(B)).
-    depths = []
-    for w in wired:
-        projection = getattr(w.product_type, "rear_projection", None)
-        projection_in = None if projection is None else projection.meters / M_PER_IN
-        depths.append((min_depth_in(w.gauge, projection_in), w.gauge, projection_in))
-    min_depth, gauge_d, projection_in = max(depths, key=lambda d: d[0])
-    if box.depth_m / M_PER_IN < min_depth - 1e-4:
-        why = (f"a device projecting {projection_in:.2f}\" needs"
-               if min_depth > MIN_DEPTH_IN[gauge_d] else f"{gauge_d} AWG to a device needs")
-        return failed(_CID, f"{where} is {box.depth_m / M_PER_IN:.2f}\" deep; {why} "
-                            f"{min_depth:.3f}\" internal depth", tags,
-                      code=cite(NEC.BOX_DEPTH), fix="a deeper box row in the BoxStandard")
+    if all(m.kind in _NO_YOKE for m in box_members(box)):
+        # 314.24(A): a luminaire's or alarm head's box encloses no device.
+        if box.depth_m / M_PER_IN < NO_DEVICE_MIN_DEPTH_IN - 1e-4:
+            return failed(_CID, f"{where} is {box.depth_m / M_PER_IN:.2f}\" deep; a box with "
+                                f"no device needs {NO_DEVICE_MIN_DEPTH_IN}\" internal depth",
+                          tags, code=cite(NEC.BOX_DEPTH_NO_DEVICE),
+                          fix="a deeper box row in the BoxStandard")
+    else:
+        # The deepest member sets the depth (314.24(B)).
+        depths = []
+        for w in wired:
+            projection = getattr(w.product_type, "rear_projection", None)
+            projection_in = None if projection is None else projection.meters / M_PER_IN
+            depths.append((min_depth_in(w.gauge, projection_in), w.gauge, projection_in))
+        min_depth, gauge_d, projection_in = max(depths, key=lambda d: d[0])
+        if box.depth_m / M_PER_IN < min_depth - 1e-4:
+            why = (f"a device projecting {projection_in:.2f}\" needs"
+                   if min_depth > MIN_DEPTH_IN[gauge_d] else f"{gauge_d} AWG to a device needs")
+            return failed(_CID, f"{where} is {box.depth_m / M_PER_IN:.2f}\" deep; {why} "
+                                f"{min_depth:.3f}\" internal depth", tags,
+                          code=cite(NEC.BOX_DEPTH), fix="a deeper box row in the BoxStandard")
     clamps = box.internal_clamps is not False
     gauge = min(w.gauge for w in wired)  # the largest conductor is the lowest AWG
     required = shared_volume_in3(gauge, sum(w.cables for w in wired), clamps=clamps,

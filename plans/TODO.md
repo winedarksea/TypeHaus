@@ -12,11 +12,7 @@ the future.
 
 ## Needs your decision
 
-- **DU-ERV-RISER-EXH's two straps pass through DU-ERV-RISER-SUP** (2 cm3 each), which is stacked
-  over its whole 81" west-band leg. Moving either duct fails (CDT008, DU-ERV-OA, the floor
-  opening) and neither leg end is held, so no strap is redundant. Choose: a shared trapeze under
-  both, or let a near-end station slide along its 2 ft window to the first clear point (y~399"
-  north; y~333" south past SUP's elbow).
+(none open)
 
 ## Remaining Work
 
@@ -221,6 +217,9 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
 - AD-SG-COURT connection: resolve the bottom-drop adapter/product; the named [NDS 1200](https://www.adspipe.com/nds/products/drainage/catch-basins-and-grates/square-catch-basins/1200-12-in-square-catch-basin-drain-with-2-openings) has lateral outlets. Geometry remains representative, within the authored nominal envelope.
 - ED-M-FIRE-RC: measure the delivered RACO 862 handy-box cover. It must be no wider than the pocket's 2 3/8" strip (nominal 2 5/16"; Hubbell's table reads 2.425").
 - Should the A35Z onto concrete from the joists actually be HGAM10 or something else?
+- The flashing plan had failures (I see PVC flashing over the linesets for a long ways not just through the wall, perhaps it meant pipe insulation?)
+- Sump discharge should be through concrete?
+- May have gone a bit too far with the cellular PVC backing for the siding mounted electrical items. Receptacles and lights shouldn't normally need that.
 
 # Project Management
 

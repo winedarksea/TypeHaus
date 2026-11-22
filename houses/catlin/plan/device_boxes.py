@@ -236,6 +236,13 @@ APPLETON_FFS561LDNBH = Product(tag="PROD-APPLETON-FFS561LDNBH", brand="Appleton"
     model="FFS561LDNBH", name="4 in. octagon ceiling box, 2-1/8 in. deep, 21.5 cu. in., NM clamps, 16-24 in. bar hanger",
     url="https://www.gexpro.com/p/568232/appleton/2-1-8-deep-4-octagon-ceiling-box-with-hanger/687855001408/ffs561ldnbh",
     source=_CEILING_SOURCE)
+# A 4" octagon, 1-1/4" deep (Table 314.16(A): 12.5 in3), external NM connectors so no clamp
+# allowance: through-fed 12 AWG needs 11.25. The laundry bar's box, under DU-M-ERV-R-KITCH
+# where a 2-1/8" box cannot go (2026-11-21). Any listed steel box of that size; CONFIRM.
+OCT_4_114 = Product(tag="PROD-OCT-4-114-GENERIC", brand="generic",
+    model="4 in. octagon, 1-1/4 in. deep",
+    name="4 in. octagon ceiling box, 1-1/4 in. deep, 12.5 cu. in., no internal clamps",
+    source="Ceiling boxes, decision #140 (2026-11-21). Volume per NEC Table 314.16(A).")
 # RACO 929 spec sheet (via search, RACO-929-SPEC-EN): 2-1/8" deep, 22.5 in3, fan 70 lb at 16 and
 # 24" spans, fixture 210 lb at 16" (90 at 24"), brace slides 16-24". Drawn as a 4" round.
 RACO_929 = Product(tag="PROD-RACO-929", brand="RACO", model="929",
@@ -280,6 +287,9 @@ TS_BRACKET = BoxSupport(kind="stud_side", section=(inch(1.5), inch(0.0625)),
 # Appleton NBH: a telescoping flat bar, 16-24" o.c., the box hung under it.
 APPLETON_BAR = BoxSupport(kind="joist_span", span=(inch(16), inch(24)), span_basis="centres",
                           section=(inch(0.5), inch(0.0625)), offset=inch(2.125))
+# The shallow box's bar: the same flat telescoping bar over a 1-1/4" box.
+SHALLOW_BAR = BoxSupport(kind="joist_span", span=(inch(16), inch(24)), span_basis="centres",
+                         section=(inch(0.5), inch(0.0625)), offset=inch(1.25))
 # RACO 929: two telescoping rectangular channels, "fits 16-24 in. o.c.", flanged ends.
 RACO_BRACE = BoxSupport(kind="joist_span", span=(inch(16), inch(24)), span_basis="centres",
                         section=(inch(0.875), inch(0.75)), offset=inch(2.5))
@@ -297,7 +307,7 @@ SLIDERBAR = BoxSupport(kind="stud_span", span=(inch(12), inch(18)), span_basis="
                        product_ref="PROD-ARLINGTON-SL18")
 BELL_LUGS = BoxSupport(kind="member_under", section=(inch(0.75), inch(0.125)),
                        length=inch(5))
-BOX_PRODUCTS = (BELL_PRCF57550BZ, BELL_5361_0, BELL_5374_0, APPLETON_FFS561LDNBH, RACO_929, ARLINGTON_FBR415F,
+BOX_PRODUCTS = (OCT_4_114, BELL_PRCF57550BZ, BELL_5361_0, BELL_5374_0, APPLETON_FFS561LDNBH, RACO_929, ARLINGTON_FBR415F,
                 PLATE_REGGIO_1SPB_SG, PLATE_REGGIO_2SPB_SG, PLATE_REGGIO_6SPB_SG,
                 PLATE_HUBBELL_SS1, PLATE_HUBBELL_SS2, PLATE_KYLE_SPSJS_T,
                 PLATE_PJ26_W, PLATE_PJ262_W, PLATE_PJ263_W, PLATE_PJ264_W, PLATE_80401_NW, PLATE_80409_NW, PLATE_80411_NW, PLATE_80412_NW, PLATE_CW_1_WH, PLATE_CW_2_WH, PLATE_CW_3_WH, PLATE_CW_4_WH, PLATE_80704_W, PLATE_MULBERRY_32442,
@@ -435,6 +445,12 @@ BOX_STANDARD = [
                    box_size=(inch(4), inch(4), inch(2.125)),
                    designation="4 x 2-1/8 round/octagonal", rated_load_lb=70.0,
                    support=APPLETON_BAR),
+            # Under a duct lying just over the board: shallow, on its own bar.
+            BoxRow(mounting="flush", gangs=1, use="ceiling-shallow",
+                   box_product_ref="PROD-OCT-4-114-GENERIC", shape="octagon",
+                   box_size=(inch(4), inch(4), inch(1.25)), box_volume_in3=12.5,
+                   designation="4 x 1-1/4 round/octagonal", internal_clamps=False,
+                   support=SHALLOW_BAR),
             BoxRow(mounting="flush", gangs=1, use="fan", box_product_ref="PROD-RACO-929",
                    shape="round", box_size=(inch(4), inch(4), inch(2.125)),
                    box_volume_in3=22.5, fan_rated=True, rated_load_lb=210.0,

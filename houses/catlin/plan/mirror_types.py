@@ -9,6 +9,7 @@ from typehaus import (
     FurnitureType, LuminaireForm, LuminaireType, Mount, MountKind, Product,
     Service, ServicePort, inch,
 )
+from plan.ikea_lighting_types import VALLMORA_VANITY
 from typehaus.model import ProductPart
 
 _KOHLER_SPEC = "https://resources.kohler.com/webassets/kpna/catalog/pdf/en/K-{}_spec_US-CA_Kohler_en.pdf"
@@ -171,4 +172,5 @@ MIRROR_PRODUCTS = (
     *(product for product, _ in _KARLIE_SELECTIONS),
 )
 MIRROR_FURNITURE_TYPES = (*(kind for _, kind in _KOHLER_SELECTIONS), _UMBRA_MIRROR)
-MIRROR_LIGHT_TYPES = (*(kind for _, kind in _KARLIE_SELECTIONS), _ATTIC_KARLIE, _HALO_TYPE)
+MIRROR_LIGHT_TYPES = (*(kind for _, kind in _KARLIE_SELECTIONS), _ATTIC_KARLIE, _HALO_TYPE,
+                      VALLMORA_VANITY)

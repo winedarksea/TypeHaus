@@ -28,9 +28,9 @@ VANITIES = {
     # The basement bath rotated north-south on 2026-09-05, so its 36" vanity turned with it:
     # it runs ACROSS the room's south end now, backing W-B-CW2's north face, where it used to
     # stand along the east wall against W-B-CN2's 12" pour.
-    "FX-B-BATH-LAV": ("FX-ANGSJON-36-SS", "basement", "W-B-CW2", "+y"),
+    "FX-B-BATH-LAV": ("FX-HAVBACK-36-SS", "basement", "W-B-CW2", "+y"),
     "FX-M-BATH1-LAV": ("FX-DURAVIT-DCODE-070545", "main", "W-M-HS1", "+y"),
-    "FX-S-BATH1-LAV": ("FX-ANGSJON-36", "second", "W-S-BA-E1B", "-x"),
+    "FX-S-BATH1-LAV": ("FX-HAVBACK-36", "second", "W-S-BA-E1B", "-x"),
     "FX-S-SUITEBATH-LAV": ("FX-CHULTON-30", "second", "W-S-SN3", "-y"),
     "FX-S-VANITY-LAV1": ("FX-VANITY-30-SEKTION", "second", "W-S-BD-N", "-y"),
     "FX-S-VANITY-LAV2": ("FX-VANITY-30-SEKTION", "second", "W-S-BD-N", "-y"),
@@ -385,6 +385,12 @@ def test_every_selected_lavatory_has_parts_ports_and_a_connected_exact_setout(ca
             Service.DRAIN, Service.WATER_HOT, Service.WATER_COLD}
         assert {part.role for part in fixture_type.parts} >= {"faucet", "trap"}
         assert fixture_type.product_ref
+        if tag in {"FX-B-BATH-LAV", "FX-S-BATH1-LAV"}:
+            cabinet = catlin_plan.library.product(fixture_type.product_ref)
+            assert cabinet.sku == "305.740.11"
+            pull, = (part for part in fixture_type.parts if part.role == "pull")
+            assert catlin_plan.library.product(pull.product_ref).sku == "803.384.13"
+            assert pull.quantity == 2
     findings = [f for f in catlin_check_report().findings
                 if f.check_id == "mep.fixture_port_connection" and f.element_tags[0] in tags]
     assert len(findings) == 27

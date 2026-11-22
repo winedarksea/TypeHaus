@@ -1,4 +1,4 @@
-"""ÄNGSJÖN/ORRSJÖN and Chulton, with their distinct fronts and base construction.
+"""IKEA/ORRSJÖN and Chulton vanities, with their distinct fronts and base construction.
 
 Cabinet/top envelopes follow the catalog. Bowl mouths and decorative profiles are visual
 approximations from product photos, independent of the authored plumbing connection points.
@@ -7,17 +7,20 @@ approximations from product photos, independent of the authored plumbing connect
 from typehaus.model.placeable_symbols._families import Geometry
 from typehaus.model.placeable_symbols._frame import box
 from typehaus.model.placeable_symbols._lav_waste import lav_waste
-from typehaus.model.placeable_symbols._sektion_fronts import axstad_front, round_bar
+from typehaus.model.placeable_symbols._sektion_fronts import axstad_front, bagganas_pull, round_bar
 from typehaus.model.placeable_symbols._solid_surface_vanity import deck_height, solid_surface_vanity
 
 REVEAL_IN = 0.125
 WALL_IN = 0.75
+HAVBACK_FRONT_IN = 0.625
+HAVBACK_DRAWER_COUNT = 2
 ORRSJON_BOWL_IN = (22.0, 13.0, 5.0)
 CHULTON_BOWL_IN = (18.0, 12.0, 6.0)
 
 
 def drawer_vanity(
-    width: float, depth: float, height: float, *, door_fronts: bool = False, faucet: str = "genta"
+    width: float, depth: float, height: float, *,
+    door_fronts: bool = False, faucet: str = "genta", havback: bool = False,
 ) -> Geometry:
     bowl = CHULTON_BOWL_IN if door_fronts else ORRSJON_BOWL_IN
     thickness_in = 0.75 if door_fronts else 2.5
@@ -46,6 +49,7 @@ def drawer_vanity(
     bottom = 3 * scale if door_fronts else 0
     cabinet_y = (depth - case_depth) / 2
     front_y = depth / 2 - case_depth + wall / 2
+    case_color = "havback-beige" if havback else "appliance-white"
     for sign in (-1, 1):
         body.append(
             box(
@@ -55,10 +59,10 @@ def drawer_vanity(
                 cabinet_top,
                 wall,
                 case_depth,
-                "appliance-white",
+                case_color,
             )
         )
-    body.append(box(0, cabinet_y, bottom, bottom + wall, case_width, case_depth, "appliance-white"))
+    body.append(box(0, cabinet_y, bottom, bottom + wall, case_width, case_depth, case_color))
     if door_fronts:
         drawer_bottom = cabinet_top * 0.70
         for sign in (-1, 1):
@@ -149,6 +153,18 @@ def drawer_vanity(
                     "chrome",
                 )
             )
+    elif havback:
+        # The slabs fit between the case sides and sit flush with their leading edge.
+        front_face = front_y - wall / 2
+        front_thickness = HAVBACK_FRONT_IN * scale
+        drawer_pitch = (cabinet_top - wall) / HAVBACK_DRAWER_COUNT
+        drawer_width = case_width - 2 * (wall + reveal)
+        for index in range(HAVBACK_DRAWER_COUNT):
+            low = wall + index * drawer_pitch + reveal / 2
+            high = wall + (index + 1) * drawer_pitch - reveal / 2
+            body.append(box(0, front_face + front_thickness / 2, low, high,
+                            drawer_width, front_thickness, case_color))
+            body.extend(bagganas_pull(0, front_face, (low + high) / 2))
     else:
         for index in range(2):
             low = index * cabinet_top / 2 + reveal
@@ -166,7 +182,7 @@ def drawer_vanity(
                     "casework-shadow",
                 )
             )
-    if not door_fronts:
+    if not door_fronts and not havback:
         body = [{**part, "color": "high-gloss-white"}
                 if part["color"] == "appliance-white" else part for part in body]
     bowl_shell = next(p for p in body if p["color"] == "porcelain" and "mesh" in p)

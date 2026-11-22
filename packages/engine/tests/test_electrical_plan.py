@@ -238,7 +238,7 @@ def test_the_porch_stair_has_its_R303_8_top_landing_light(catlin_model):
     lane between D-M-PORCH's RO (..23'-10") and WIN-M-LIV-S1's (32'-8"..) straddles that
     deck's east edge at x=27'-6" — 30'-0" is in the lane and over the heat-pump pocket.
 
-    ED-T-LT-SCONCE-EXT rather than a new type, deliberately — a LuminaireType with no
+    ED-T-LT-SCONCE-EXT (mark R) rather than a new type, deliberately — a LuminaireType with no
     prices.toml row is silently DROPPED from the takeoff, so minting one would have bought a
     fixture the bill never showed. No ``room=``: that absence is how electrical.wet_location
     and advisory.dark_sky_lighting read a device as exterior.
@@ -254,8 +254,9 @@ def test_the_porch_stair_has_its_R303_8_top_landing_light(catlin_model):
     assert light.room is None
     assert light.controlled_by == ("ED-M-PORCH-SW",)
     x_ft, y_ft = (c / 0.3048 for c in placed_xy(catlin_model, light))
-    # 5" body, footprint CENTRED, back on its derived 3/4" block (#142) on W-M-S2's cladding.
-    assert y_ft == pytest.approx(-10.0 / 12.0)
+    # 4" GRÖNSPRÖT body, footprint CENTRED, back on its derived 3/4" block (#142) on
+    # W-M-S2's cladding.
+    assert y_ft == pytest.approx(-9.5 / 12.0)
     assert light.mount.elevation.inches == pytest.approx(84.0)
     # Clear of both openings' ROs, and on the half of the lane that is over the porch.
     assert 23.0 + 10.0 / 12.0 < x_ft < 27.5

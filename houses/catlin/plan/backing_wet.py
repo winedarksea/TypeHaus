@@ -142,10 +142,10 @@ MAIN_WET_BACKING = [
 SECOND_WET_BACKING = [
     WallBacking(uid="5BYDW5KHPC", tag="BK-S-BA-E1B-VANITY-RAIL", wall_ref="W-S-BA-E1B", face="right",
                 start=inch(0.75), length=inch(46.5), elevation=inch(30), height=inch(7.25),
-                profile="2x8", material_ref="spf", purpose="ÄNGSJÖN suspension rail"),
+                profile="2x8", material_ref="spf", purpose="HAVBÄCK suspension rail"),
     WallBacking(uid="WNR3T3DGRA", tag="BK-S-BA-E1B-VANITY-FOOT", wall_ref="W-S-BA-E1B", face="right",
                 start=inch(0.75), length=inch(46.5), elevation=inch(7), height=inch(5.5),
-                profile="2x6", material_ref="spf", purpose="ÄNGSJÖN lower wall fixing"),
+                profile="2x6", material_ref="spf", purpose="HAVBÄCK cabinet base blocking"),
     WallBacking(uid="932YVPEJFQ", tag="BK-S-BD-N-VANITY-FOOT", wall_ref="W-S-BD-N", face="right",
                 start=inch(7.375), length=inch(63.125), elevation=inch(5), height=inch(5.5),
                 profile="2x6", material_ref="spf", purpose="SEKTION 30 pair ledger feet"),
@@ -225,8 +225,8 @@ BASEMENT_WET_BACKING = [
                 face_offset=inch(0.75), purpose="Delta 50353 valve stringer, 2 3/4 in. behind tile"),
     WallBacking(uid="D9Q5V8QJ9N", tag="BK-B-CW2-VANITY-RAIL", wall_ref="W-B-CW2", face="left",
                 start=inch(0.75), length=inch(42.5), elevation=inch(30), height=inch(7.25),
-                profile="2x8", material_ref="spf", purpose="ÄNGSJÖN suspension rail"),
+                profile="2x8", material_ref="spf", purpose="HAVBÄCK suspension rail"),
     WallBacking(uid="V6VG5D1HF1", tag="BK-B-CW2-VANITY-FOOT", wall_ref="W-B-CW2", face="left",
                 start=inch(0.75), length=inch(42.5), elevation=inch(7), height=inch(5.5),
-                profile="2x6", material_ref="spf", purpose="ÄNGSJÖN lower wall fixing"),
+                profile="2x6", material_ref="spf", purpose="HAVBÄCK cabinet base blocking"),
 ]

@@ -209,6 +209,7 @@ SYMBOL_NAMES = (UNIFI_ACCESS_POINT_SYMBOLS
     "toilet", "toilet-wall-hung", "toto-ap-duofit", "lavatory", "lavatory-wall-hung", "vanity",
     "solid-surface-vanity", "sektion-vanity", "drawer-vanity",
     "door-drawer-vanity", "drawer-vanity-indy", "sektion-vanity-indy",
+    "havback-vanity", "havback-vanity-indy",
     "sunnersta-sink", "sunnersta-frame", "solid-surface-access-leaf", "tub",
     "kohler-underscore-6036", "kohler-underscore-6032",
     # "roman-tub-filler" is a bath's deck trim, placed on the deck beside the rim.

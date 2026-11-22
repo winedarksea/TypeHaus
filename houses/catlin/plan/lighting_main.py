@@ -7,16 +7,14 @@
 #
 # Conventions (rotation, mounts, controlled_by, 24V PSUs, uids): plan/lighting_basement.py.
 
-from .laundry_lighting_types import LAUNDRY_SUPPLY_MOUNT, LAUNDRY_TRACK_DROP
+from .laundry_lighting_types import LAUNDRY_TRACK_DROP
 
 from typehaus import (
     DeviceKind,
-    ConduitRun,
     ElectricalDevice,
     LightRun,
     Mount,
     MountKind,
-    Service,
     deg,
     ft,
     inch,
@@ -293,29 +291,16 @@ MAIN_LIGHTING = [
                          wall_ref="W-M-BDN1", face="left", distance_from_start=inch(15.71875),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 
-    # The rail is north of the tall machine body: both task axes remain clear of it.
-    # Surface mounting leaves the existing ceiling ducts and framing intact.
+    # The bar is north of the tall machine body: all four task axes remain clear of it.
+    # IKEA NYMÅNE since 2026-11-21 (owner). Its centre box is a 1-1/4" octagon ~1/8" under
+    # DU-M-ERV-R-KITCH: ERV ducts lie 5/8" over the board across the whole room, so no
+    # 2-1/8" box fits and a pancake is too small for 12 AWG. The PureEdge supply,
+    # ED-M-LAUNDRY-PSU, and its Class 2 feed CR-M-LAUNDRY-24V went with the rail.
     ElectricalDevice(uid="QTM000SAAA", tag="ED-M-LAUNDRY-TRACK", kind=DeviceKind.LIGHT,
-                     position=pt(inch(128.4), inch(258)), type_ref="ED-T-LT-TRACK-LAUNDRY",
-                     psu_ref="ED-M-LAUNDRY-PSU", room="RM-M-LAUNDRY",
+                     position=pt(inch(128.4), inch(260)), type_ref="ED-T-LT-TRACK-LAUNDRY",
+                     circuit="CKT-LT-MAIN", room="RM-M-LAUNDRY", box_use="ceiling-shallow",
                      controlled_by=("ED-M-LAUNDRY-SW",),
                      mount=Mount(kind=MountKind.CEILING, drop=LAUNDRY_TRACK_DROP)),
-    ElectricalDevice(uid="QTM02YAAAA", tag="ED-M-LAUNDRY-PSU", kind=DeviceKind.LED_DRIVER,
-                     type_ref="ED-T-LT-PSU-PUREEDGE-40", circuit="CKT-LT-MAIN",
-                     room="RM-M-LAUNDRY", controlled_by=("ED-M-LAUNDRY-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=LAUNDRY_SUPPLY_MOUNT),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-BA2E", face="left", distance_from_start=inch(11),
-                         normal_gap=inch(0), rotation_offset=deg(-180)))),
-    # Class 2 surface feed: plumb up from the accessible supply, then one straight ceiling
-    # leg to the west end canopy (no 1/2" jogs, 2026-11-07: the canopy came 2.3" west).
-    # Its upper surface stays under the 107 1/2" board face; no ceiling bay is disturbed.
-    ConduitRun(uid="QRM02YAAAA", tag="CR-M-LAUNDRY-24V",
-               from_ref="ED-M-LAUNDRY-PSU", to_ref="ED-M-LAUNDRY-TRACK",
-               service=Service.POWER_24, trade_size=inch(0.5),
-               path=(pt(inch(104.815), inch(257)), pt(inch(104.815), inch(257)),
-                     pt(inch(110.4), inch(258))),
-               elevations=(inch(90.37), inch(107.125), inch(107.125))),
     # ED-M-LAUNDRY-SW moved off W-M-BA2E (2026-11-07): with the door 11 1/2" east that face
     # was 20" behind the strike wall. It is inside the strike jamb now, between stud-001
     # and the king.

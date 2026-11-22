@@ -15,15 +15,24 @@ bowls, two drains and two lavatory loads. The attic's separate Corian top is 24 
 
 | Fixture | Primary / basin and top | Footprint | Rim AFF | Faucet / finish | Trap | Backing |
 |---|---|---|---|---|---|---|
-| `FX-B-BATH-LAV` | IKEA ÄNGSJÖN 36 + ORRSJÖN 37 | 37 × 21.75 | 36 | Indy KBF-1401SFS, stainless | RÄNNILEN 1-bowl | `BK-B-CW2-VANITY-*` |
+| `FX-B-BATH-LAV` | IKEA HAVBÄCK 36 matte beige + ORRSJÖN 37 | 37 × 21.75 | 36 | Indy KBF-1401SFS, stainless | RÄNNILEN 1-bowl | `BK-B-CW2-VANITY-*` |
 | `FX-M-BATH1-LAV` | Duravit 07054500002 | 17.75 × 13.375 | 34 | B21010001U10, chrome | 707BN-1 | `BK-M-HS1-BASIN` |
 | `FX-M-BATH2-SINK` | IKEA SEKTION 36x15x30 wall, 2 AXSTAD matte white doors + solid-surface undermount lavatory, 16 3/8 x 13 x 5 | 48 × 18 | 36 | Genta LX 6702, chrome | 707BN-1 | `BK-M-W3-VANITY-*` |
-| `FX-S-BATH1-LAV` | IKEA ÄNGSJÖN 36 + ORRSJÖN 37 | 37 × 21.75 | 36 | Genta LX 6702, chrome | RÄNNILEN 1-bowl | `BK-S-BA-E1B-VANITY-*` |
+| `FX-S-BATH1-LAV` | IKEA HAVBÄCK 36 matte beige + ORRSJÖN 37 | 37 × 21.75 | 36 | Genta LX 6702, chrome | RÄNNILEN 1-bowl | `BK-S-BA-E1B-VANITY-*` |
 | `FX-S-SUITEBATH-LAV` | Kohler Chulton K-REC39579-ASB-0 | 30.9375 × 22.4375 | 35 5/16 (top) | Genta LX 6702, chrome | 707BN-1 | `floor-standing` |
 | `FX-S-VANITY-LAV1` | IKEA SEKTION 30x15x30 AXSTAD + solid-surface undermount lavatory, 16 3/8 x 13 x 5 | 30 × 18 | 36 | Genta LX 6702, chrome | 707BN-1 | `BK-S-BD-N-VANITY-*` |
 | `FX-S-VANITY-LAV2` | IKEA SEKTION 30x15x30 AXSTAD + solid-surface undermount lavatory, 16 3/8 x 13 x 5 | 30 × 18 | 36 | Genta LX 6702, chrome | 707BN-1 | `BK-S-BD-N-VANITY-*` |
 | `FX-A-STUBATH-LAV` | IKEA SEKTION 24x15x30 AXSTAD + solid-surface undermount lavatory, 16 3/8 x 13 x 5 | 24 × 18 | 36 | Indy KBF-1401SFS, stainless | 707BN-1 | `BK-A-HALL-S-VANITY-*` |
 | `FX-A-STUDIO-BAR-SINK` | IKEA SUNNERSTA integral sink | 18 × 14 | 36 | Indy KBF-1401SFS, stainless | 707BN-1 | `SUNNERSTA frame` |
+
+The basement and kids' bath each take IKEA US combo 396.344.35. It includes HAVBÄCK
+305.740.11, ORRSJÖN 705.451.06 and RÄNNILEN 504.224.13.
+[IKEA combo listing](https://www.ikea.com/us/en/p/havbaeck-orrsjoen-bathroom-vanity-w-drawers-and-sink-beige-s39634435/)
+
+Buy one two-pack of black BAGGANÄS 803.384.13 per vanity. Center one 5⅝ in. pull
+horizontally on each drawer front with the included washers. IKEA specifies 5 1/16 in.
+hole spacing and 3/16 in. drilled holes.
+[IKEA handle listing](https://www.ikea.com/us/en/p/bagganaes-handle-black-80338413/)
 
 The theme parameter `finish.bath_theme` accepts `chrome` or `brushed-nickel` and changes
 five Genta LX 6702 faucets to 6702BN, including the two occurrences of the SEKTION 30 type.
@@ -114,12 +123,9 @@ fabricated tops bill by area, and the faucet allowance buys five Genta, three In
 
 ## Source archive and remaining product facts
 
-Read 2026-10-24:
-
-- [IKEA US ÄNGSJÖN guide](assets/ikea-angsjon-guide.pdf), plus
-  [cabinet assembly](assets/aengsjoen-bathroom-vanity-with-drawers-high-gloss-white__AA-2400655-5-100.pdf).
-  Cabinet 36 × 21 × 25⅛ in.; heights count from the body base. House sets cabinet base
-  8⅜ in. AFF, cabinet top 33½ in. and ceramic rim 36 in.
+- The 36 × 21 × 25⅛ in. HAVBÄCK hangs from its supplied suspension rail. House sets the
+  cabinet base at 8⅜ in. AFF, cabinet top at 33½ in. and ceramic rim at 36 in.
+  [IKEA HAVBÄCK assembly AA-2400661-2](https://www.ikea.com/us/en/assembly_instructions/havbaeck-bathroom-vanity-with-drawers-beige__AA-2400661-2-100.pdf)
 - [ORRSJÖN installation](assets/orrsjoen-sink-white__AA-2376395-4-100.pdf) and
   [RÄNNILEN installation](assets/raennilen-water-trap-1-bowl__AA-2141893-6-100.pdf).
   Ceramic overall basin envelope includes a deeper bowl below the 2½ in. deck rise.
@@ -145,10 +151,11 @@ Read 2026-10-24:
 
 Manufacturer dimensions and missing facts remain distinguished in `Product.source`.
 
-## 3D product portrayal (2026-10-24)
+## 3D product portrayal
 
-Generated assemblies distinguish ÄNGSJÖN's two glossy slab drawers and 2½ in. ORRSJÖN
-ceramic top, AXSTAD's matte white recessed-panel doors and Corian bowls, and Chulton's
+Generated assemblies show HAVBÄCK's matte beige frame, two flat drawers with black
+BAGGANÄS pulls and 2½ in. ORRSJÖN ceramic top, AXSTAD's matte white recessed-panel
+doors and Corian bowls, and Chulton's
 raised panels, chrome pulls, feet and 3 5/16 in. backsplash. ORRSJÖN and Chulton bowl
 mouths are approximate photo-based silhouettes; they do not establish fabrication cutouts.
 The SUNNERSTA has an open white frame, steel work surface and stainless basin rather

@@ -133,6 +133,7 @@ PART_COLORS: dict[str, tuple[float, float, float, float]] = {
     "driver-black": (0.06, 0.06, 0.065, 1.0),
     "unifi-status-blue": (0.025, 0.35, 1.0, 1.0),
     "high-gloss-white": (0.96, 0.96, 0.95, 1.0),
+    "havback-beige": (0.79, 0.75, 0.67, 1.0),
     "solid-surface-white": (244 / 255, 245 / 255, 244 / 255, 1.0),
     "appliance-steel": (0.76, 0.78, 0.80, 1.0),
     "eg4-charcoal": (0.12, 0.13, 0.14, 1.0),
@@ -228,6 +229,7 @@ MIRROR_SURFACE_PROPERTIES = {"metalness": 1.0, "roughness": 0.08}
 PART_SURFACE_PROPERTIES = {
     "plastic-white": {"metalness": 0.0, "roughness": 0.45},
     "high-gloss-white": {"metalness": 0.0, "roughness": 0.16},
+    "havback-beige": {"metalness": 0.0, "roughness": 0.65},
     "appliance-white": {"metalness": 0.0, "roughness": 0.4},
     "porcelain": {"metalness": 0.0, "roughness": 0.22},
     "faucet": {"metalness": 1.0, "roughness": 0.12},

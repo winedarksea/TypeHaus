@@ -16,7 +16,9 @@ from typehaus.model.base import HausModel
 from typehaus.model.registry import register_constructor
 from typehaus.quantities import Length
 
-TrackSystem = Literal["magnetic_24v", "h_track_120v"]
+# fixed_bar_120v: a canopy bar with pivoting lampholders at fixed stations (IKEA NYMÅNE);
+# the "rail" is the fixture itself, its "feed" the centre canopy, its heads the lamps.
+TrackSystem = Literal["magnetic_24v", "h_track_120v", "fixed_bar_120v"]
 DIMENSION_TOLERANCE_M = 1e-9
 # Generated m(...) quantities serialize to six significant figures.
 ASSEMBLY_DIMENSION_TOLERANCE_M = 1e-6
@@ -101,7 +103,7 @@ class TrackLightingSpec(HausModel):
     feed_width: Length
     feed_height: Length
     finish: Literal["white", "black"] = "white"
-    feed_end: Literal["west", "east"] = "west"
+    feed_end: Literal["west", "east", "center"] = "west"
     heads: tuple[TrackHeadSpec, ...]
     source: str
 
@@ -116,8 +118,12 @@ class TrackLightingSpec(HausModel):
             raise ValueError("installed rail cannot exceed purchased stock length")
         if self.feed_system != self.system:
             raise ValueError("feed and rail systems are incompatible")
-        if self.system == "h_track_120v" and self.channel != 1:
-            raise ValueError("standard H track has one channel")
+        if self.system != "magnetic_24v" and self.channel != 1:
+            raise ValueError("a 120 V track or bar has one channel")
+        if self.system == "fixed_bar_120v" and (
+                self.rail_length != self.stock_length
+                or self.feed_product_ref != self.rail_product_ref):
+            raise ValueError("a fixed bar is one uncut product: rail and feed are the fixture")
         if not self.heads:
             raise ValueError("a track luminaire needs at least one head")
         for head in self.heads:

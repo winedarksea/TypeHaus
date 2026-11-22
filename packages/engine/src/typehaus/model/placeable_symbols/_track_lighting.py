@@ -64,8 +64,8 @@ def _ceiling_frame_parts(spec: TrackLightingSpec) -> tuple[Part, ...]:
     rail_height = spec.rail_height.meters
     parts = [box(0, 0, -rail_height, 0, spec.rail_length.meters,
                  spec.rail_width.meters, housing)]
-    feed_sign = -1 if spec.feed_end == "west" else 1
-    # The canopy/feed occupies the rail end; its inner half overlaps the rail.
+    # The canopy/feed occupies the rail end (its inner half overlaps the rail) or the centre.
+    feed_sign = {"west": -1, "east": 1, "center": 0}[spec.feed_end]
     feed_center = feed_sign * spec.rail_length.meters / 2
     parts.append(box(feed_center, 0, -spec.feed_height.meters, 0,
                      spec.feed_length.meters, spec.feed_width.meters, housing))

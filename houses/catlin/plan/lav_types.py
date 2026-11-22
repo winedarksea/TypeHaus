@@ -16,32 +16,39 @@ TUBULAR_TRAP = ProductPart(role="trap", product_ref="PROD-DEARBORN-707BN-1")
 BONDED_BOWL = ProductPart(role="basin", product_ref="PROD-SS-LAV-16X13")
 CORIAN_TOP = ProductPart(role="top", product_ref="PROD-CORIAN-GLACIER-WHITE")
 
-ANGSJON_36 = FixtureType(
-    tag="FX-ANGSJON-36", name='ÄNGSJÖN 36 with ORRSJÖN 37 single-bowl top',
+_HAVBACK_PARTS = (
+    ProductPart(role="basin", product_ref="PROD-IKEA-ORRSJON-37"),
+    ProductPart(role="trap", product_ref="PROD-IKEA-RANNILEN"),
+    ProductPart(role="pull", product_ref="PROD-IKEA-BAGGANAS-PULL-BLACK", quantity=2),
+)
+HAVBACK_36 = FixtureType(
+    tag="FX-HAVBACK-36", name="HAVBÄCK 36 matte beige with ORRSJÖN 37 single-bowl top",
     footprint=(inch(37), inch(21.75)), height=inch(27.625 + 8.4375),
     flood_rim_height=inch(27.625),  # 36 in. rim AFF on its 8 3/8 in. mount
     mount=Mount(elevation=inch(8.375)),
     plan_symbol="drawer-vanity", basin=True, needs=NEEDS,
-    product_ref="PROD-IKEA-ANGSJON-36",
-    parts=(ProductPart(role="basin", product_ref="PROD-IKEA-ORRSJON-37"),
-           THEME_FAUCET_PART, ProductPart(role="trap", product_ref="PROD-IKEA-RANNILEN")),
+    product_ref="PROD-IKEA-HAVBACK-36-BEIGE",
+    parts=(*_HAVBACK_PARTS, THEME_FAUCET_PART),
     cabinet_body_footprint=Footprint2D(points=(
         pt(inch(-18), inch(-10.125)), pt(inch(18), inch(-10.125)),
         pt(inch(18), inch(10.875)), pt(inch(-18), inch(10.875)),
     )),
     ports=lav_ports(21.75, base_in=8.375),
-    model_representation=ModelRepresentation(symbol="drawer-vanity", material_refs=THEME_MATERIAL_REFS),
+    model_representation=ModelRepresentation(
+        symbol="havback-vanity", material_refs=THEME_MATERIAL_REFS,
+    ),
     clearances=(front_zone(inch(37), inch(21.75), inch(21), "lavatory front clearance"),),
-    source="Owner 2026-10-24; IKEA AA-2400655-5 / AA-2376395-4 / AA-2141893-6, "
-           "notes/assets. 36 in. rim AFF; exact house installation stubs at 20/24 in. "
-           "Cabinet 36 x 21 x 25 1/8, top 37 x 21 3/4. Ports are installation setout "
-           "for adjustable RÄNNILEN, not manufacturer-published fixed outlets.",
+    source="Owner 2026-11-21; IKEA US combination 396.344.35 and cabinet assembly AA-2400661-2. "
+           "One horizontal black BAGGANÄS pull centered on each drawer. 36 in. rim AFF and "
+           "house waste/supply setout at 20/24 in. for the adjustable RÄNNILEN.",
 )
-ANGSJON_36_SS = ANGSJON_36.model_copy(update={
-    "tag": "FX-ANGSJON-36-SS", "height": inch(27.625 + 6.25),
-    "name": 'ÄNGSJÖN 36 / ORRSJÖN 37, Indy stainless',
-    "parts": (ANGSJON_36.parts[0], UTILITY_FAUCET_PART, ANGSJON_36.parts[2]),
-    "model_representation": ModelRepresentation(symbol="drawer-vanity-indy", material_refs=UTILITY_MATERIAL_REFS),
+HAVBACK_36_SS = HAVBACK_36.model_copy(update={
+    "tag": "FX-HAVBACK-36-SS", "height": inch(27.625 + 6.25),
+    "name": "HAVBÄCK 36 matte beige / ORRSJÖN 37, Indy stainless",
+    "parts": (*_HAVBACK_PARTS, UTILITY_FAUCET_PART),
+    "model_representation": ModelRepresentation(
+        symbol="havback-vanity-indy", material_refs=UTILITY_MATERIAL_REFS,
+    ),
 })
 
 
@@ -144,5 +151,5 @@ UTILITY_TUB = LAUNDRY_TUB.model_copy(update={
                        ("supply-hot", Service.WATER_HOT, 8.5, 10, 20, 0.5, (0, 1, 0)),
                        ("supply-cold", Service.WATER_COLD, -5, 10, 20, 0.5, (0, 1, 0)))),
 })
-LAV_TYPES = (ANGSJON_36, ANGSJON_36_SS, SEKTION_30, SEKTION_24_SS, CHULTON_30,
+LAV_TYPES = (HAVBACK_36, HAVBACK_36_SS, SEKTION_30, SEKTION_24_SS, CHULTON_30,
              SUNNERSTA_BAR_SINK, LAUNDRY_TUB, UTILITY_TUB)

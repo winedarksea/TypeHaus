@@ -33,7 +33,6 @@ from plan.closet_types import CLOSET_LUMINAIRE_TYPES, CLOSET_SUPPLY_TYPES
 from plan.laundry_lighting_types import LAUNDRY_TRACK
 from plan.lighting_types_decor import DECORATIVE_LUMINAIRE_TYPES
 from typehaus import ElectricalDeviceType, LuminaireForm, Service, ServicePort, ft, inch, mm
-from typehaus.library.track_lighting import PUREEDGE_SUPPLY
 from typehaus.model import LedController, LedStrip, LuminaireType, ModelRepresentation, ProductPart
 
 # Every line-voltage luminaire lands on a 120V branch; one port tuple serves them all
@@ -507,4 +506,4 @@ LIGHTING_DEVICE_TYPES = (
 LUMINAIRE_TYPES = (*AMBIENT_LUMINAIRE_TYPES, *DECORATIVE_LUMINAIRE_TYPES,
                    *CLOSET_LUMINAIRE_TYPES, LAUNDRY_TRACK)
 
-LIGHTING_TYPES = (*LUMINAIRE_TYPES, *LIGHTING_DEVICE_TYPES, *CLOSET_SUPPLY_TYPES, PUREEDGE_SUPPLY)
+LIGHTING_TYPES = (*LUMINAIRE_TYPES, *LIGHTING_DEVICE_TYPES, *CLOSET_SUPPLY_TYPES)

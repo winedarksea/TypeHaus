@@ -12,7 +12,7 @@ from typehaus.model.placeable_symbols import model_parts
 
 IN = 0.0254
 MIRRORS = {
-    "FURN-B-BATH-MIRROR": ("FT-MIRROR-KOHLER-26052-BNL", "FX-B-BATH-LAV", 40),
+    "FURN-B-BATH-MIRROR": ("FT-MIRROR-KOHLER-26052-BNL", "FX-B-BATH-LAV", 38),
     "FURN-M-BATH1-MIRROR": ("FT-MIRROR-KOHLER-30638-CPL", "FX-M-BATH1-LAV", 42),
     "FURN-S-BATH1-MIRROR": ("FT-MIRROR-KOHLER-26050-BNL", "FX-S-BATH1-LAV", 44),
     "FURN-S-VANITY-MIRROR1": ("FT-MIRROR-KOHLER-30638-BLL", "FX-S-VANITY-LAV1", 42),
@@ -147,7 +147,9 @@ def test_attic_and_basement_lights_clear_the_low_overhead_surfaces(catlin_model_
     assert roof_low - (attic.mount.elevation.meters / IN + 7.5) >= 0.9
     basement = objects["ED-B-BATH-MIRROR"]
     room = next(r for r in model.rooms if r.tag == "RM-B-BATH")
-    assert basement.mount.elevation.meters + (7.5 + 1) * IN < room.clear_height_m
+    kind = next(t for t in model.plan.library.electrical_device_types
+                if t.tag == basement.type_ref)
+    assert basement.mount.elevation.meters + kind.height.meters + IN < room.clear_height_m
 
 
 @pytest.mark.parametrize("shape", ["arch", "soft-rectangle", "capsule"])

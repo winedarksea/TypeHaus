@@ -68,10 +68,10 @@ BASEMENT_FIXTURES = (
     # Relocated from the mechanical room's utility sink, so the IFC GlobalId follows the
     # fixture rather than being retired with the tag.
     #
-    # ÄNGSJÖN 36 / ORRSJÖN 37, centered in the 39.94 in. south-wall run.
+    # HAVBÄCK 36 / ORRSJÖN 37, centered in the 39.94 in. south-wall run.
     # Cabinet/top clears the WC envelope; its recommended front zone overlaps it.
     # Trap and supplies follow ServicePorts; the slab drop remains at its existing sleeve.
-    Fixture(uid="5BBZTZNBWN", tag="FX-B-BATH-LAV", type_ref="FX-ANGSJON-36-SS",
+    Fixture(uid="5BBZTZNBWN", tag="FX-B-BATH-LAV", type_ref="FX-HAVBACK-36-SS",
             room="RM-B-BATH", position=pt(ft(12), inch(229.125)), mount=Mount(elevation=inch(8.375)), rotation=deg(180),
             wall_ref="W-B-STR2"),
     # Furnace-room utility sink (owner 2026-10-30): SE corner, back on W-B-STR2's bare studs,
@@ -268,9 +268,9 @@ SECOND_FIXTURES = (
     Fixture(uid="CSQ801AAAA", tag="FX-S-BATH1-WC", type_ref="FX-TOTO-AQUIA-IV-FLOOR",
             room="RM-S-BATH1",
             position=pt(inch(21.03125), inch(376)), rotation=deg(90), wall_ref="W-S-W1"),
-    # ÄNGSJÖN 36 with the 37 in. ORRSJÖN top: y=356..393, half-inch side overhang.
+    # HAVBÄCK 36 with the 37 in. ORRSJÖN top: y=356..393, half-inch side overhang.
     # Backs the east finish face; retains 1.5 in. to the tub return and the east-hinged entry.
-    Fixture(uid="CSQ802AAAA", tag="FX-S-BATH1-LAV", type_ref="FX-ANGSJON-36",
+    Fixture(uid="CSQ802AAAA", tag="FX-S-BATH1-LAV", type_ref="FX-HAVBACK-36",
             room="RM-S-BATH1", position=pt(inch(105.87), inch(374.5)), mount=Mount(elevation=inch(8.375)), rotation=deg(-90),
             wall_ref="W-S-BA-E1B"),
     # ** `drain_position` IS THE WASTE-AND-OVERFLOW AT THE WEST END, NOT THE WET WALL. **

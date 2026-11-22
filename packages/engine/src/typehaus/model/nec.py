@@ -265,6 +265,7 @@ class NEC:
     BOX_MARKED_VOLUME: Final = "314.16(A)(2)"
     CONDUCTOR_VOLUME_TABLE: Final = "Table 314.16(B)(4)"
     BOX_DEPTH: Final = "314.24(B)"
+    BOX_DEPTH_NO_DEVICE: Final = "314.24(A)"
     BOX_FLUSH_SETBACK: Final = "314.20"
     BOX_COVER: Final = "314.25"
     BOX_SUPPORT: Final = "314.23"

@@ -423,7 +423,7 @@ not instruction: when it disagrees with this file or the model, it is the one th
   documented in `notes/bath2_tub_hardware.md`; one-piece Corian deck, faces and splash,
   2026-10-22, `notes/bath2_tub_deck_finish.md`) and `FX-VANITY-48-SEKTION`
   (RM-M-BATH2's floating SEKTION vanity under a Corian or equal top, `plan/bath2_vanity_types.py`), plus
-  the selected lavatory assemblies in `plan/lav_types.py`: ÄNGSJÖN 36 / ORRSJÖN 37
+  the selected lavatory assemblies in `plan/lav_types.py`: HAVBÄCK 36 / ORRSJÖN 37
   in the basement and kids bath, two SEKTION 30 halves below one 61 in. Corian top in
   RM-S-VANITY, Chulton 30 in the suite, and SEKTION 24 / Corian in the attic guest bath.
   SUNNERSTA's own bar sink has its own type. Each declares basin, faucet and trap identity

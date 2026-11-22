@@ -2959,7 +2959,11 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "ED-T-LT-KARLIE-2-BN" = { material = { low = 189, high = 195 }, labour = { low = 60, high = 135 } }  # 1 ea, 54622BN, fixture only
 "ED-T-LT-KARLIE-2-BN-ATTIC" = { material = { low = 194, high = 205 }, labour = { low = 60, high = 135 } }  # 1 ea, same fixture plus offset box/crossbar allowance
 "ED-T-LT-KARLIE-2-CM" = { material = { low = 189, high = 195 }, labour = { low = 60, high = 135 } }  # 1 ea, 54622CM, fixture only
-"ED-T-LT-KARLIE-3-BN" = { material = { low = 209, high = 215 }, labour = { low = 60, high = 135 } }  # 3 ea, 54623BN, fixture only
+"ED-T-LT-KARLIE-3-BN" = { material = { low = 209, high = 215 }, labour = { low = 60, high = 135 } }  # 2 ea, 54623BN, fixture only (RM-B-BATH took VALLMORA 2026-11-21)
+# IKEA swaps 2026-11-21 (plan/ikea_lighting_types.py), ikea.com/us list read that day.
+"ED-T-LT-VALLMORA-3-NI" = { material = 89.99, labour = { low = 60, high = 135 } }  # 1 ea, RM-B-BATH, fixture only; lamps are the Waveform row
+"ED-T-LT-TRACK-LAUNDRY" = { material = 79.99, labour = { low = 60, high = 140 } }  # 1 ea, NYMÅNE 4-spot, fixture only; aiming four spots is in the labour. Was the unpriced PureEdge rail + 40 W supply
+"PROD-LAMP-GU10-90-30K" = { material = { low = 5, high = 12 }, labour = 0 }  # 9 ea — 4 laundry + 5 exterior; 90-CRI 3000 K GU10, estimate
 "ED-T-LT-MIRROR-DAY" = { material = { low = 218, high = 233 }, labour = { low = 60, high = 135 } }  # 1 ea, 54623CM + three 80795-SU
 # MHAP4236 (2026-10-22, replaces the 24 x 36 MHAP2436 at $968): Fleurco's US catalog lists
 # $1,484; Modern Furnishings lists $1,337. Five-year warranty, own dimmer. Quote the dealer.
@@ -2991,7 +2995,8 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "PROD-CORD-GRIP-GENERIC" = { material = { low = 2, high = 5 }, labour = 0 }  # 13 ea, 1/2 in. cord connector
 "PROD-ENCLOSURE-VENT-GENERIC" = { material = { low = 3, high = 8 }, labour = 0 }  # 6 ea; Wiska EVSP 12 (https://www.rapidonline.com/wiska-evsp-12-vent-plugs-m12-549410, read 2026-11-07); high = Remke RVP15-M12-NM at Zoro, search snippet only
 "ED-T-LT-PSU-60" = { material = { low = 30, high = 90 }, labour = { low = 45, high = 95 } }  # 3 ea — ED-M-BATH2-PSU (on the laundry ceiling since 2026-11-17), the sauna's surface-mounted ED-B-SAUNA-LT-PSU and the basement stair's ED-B-STAIR-LT-PSU (the closet's PAX supply is a TRADFRI; the pantry went to a PSU-96-WE 2026-10-31)
-"ED-T-LT-SCONCE-EXT" = { material = { low = 186, high = 232 }, labour = { low = 48, high = 115 } }  # 4 ea — WAC WS-W2605-BK $186-232 (researched 2026-10-28)
+"ED-T-LT-SCONCE-EXT" = { material = 19.99, labour = { low = 48, high = 115 } }  # 5 ea — IKEA GRÖNSPRÖT 205.559.99 since 2026-11-21, fixture only (lamp is the GU10 row)
+"ED-T-LT-SCONCE-EXT-WAC" = { material = { low = 186, high = 232 }, labour = { low = 48, high = 115 } }  # 0 ea — CATALOG-ONLY since 2026-11-21, kept priced as the revert: WAC WS-W2605-BK $186-232 (researched 2026-10-28)
 "ED-T-LT-SCONCE-SPOT" = { material = { low = 99, high = 130 }, labour = { low = 48, high = 115 } }  # 5 ea — WAC Sprig BL-23210-BK $99 dealer (2026-10-29, owner swap from Stretch); hardwiring unconfirmed
 # 2026-08-18: the same down-spot, wet-location listed with a gasketed lens and a
 # corrosion-resistant housing. Same ~30-40% adder as the fan above.
@@ -3586,14 +3591,16 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # role-tagged Product rows remain visible at zero so the BOM names each ordered fitting.
 # Included SEKTION shelves bill in the cabinet; there is no owner-hardwood shelf charge.
 "FX-VANITY-48-SEKTION" = { material = { low = 398, high = 478 }, labour = { low = 300, high = 720 } }  # 36" combination $338 + ledger; 12" cabinet and rail itemized
-"FX-ANGSJON-36" = { material = { low = 369, high = 369 }, labour = { low = 240, high = 560 } }
-"FX-ANGSJON-36-SS" = { material = { low = 369, high = 369 }, labour = { low = 240, high = 560 } }
+# IKEA US 396.344.35 ($509, 2026-11-21) split into cabinet ($299), basin ($170) and trap ($40).
+# Two BAGGANÄS pulls per HAVBÄCK bill on the shared kitchen hardware row.
+"FX-HAVBACK-36" = { material = 299, labour = { low = 240, high = 560 } }
+"FX-HAVBACK-36-SS" = { material = 299, labour = { low = 240, high = 560 } }
 "FX-CHULTON-30" = { material = { low = 600, high = 1000 }, labour = { low = 220, high = 510 } } # allowance; top/bowl included
 "FX-VANITY-30-SEKTION" = { material = { low = 304, high = 360 }, labour = { low = 220, high = 510 } }  # $304 cabinet + ledger; rail itemized
 "FX-VANITY-24-SEKTION-SS" = { material = { low = 260, high = 320 }, labour = { low = 200, high = 470 } }  # $260 cabinet + ledger; rail itemized
 "FX-SUNNERSTA-BAR-SINK" = { material = 0, labour = { low = 100, high = 200 } } # sink included in kitchenette
-"PROD-IKEA-ORRSJON-37" = { material = 210, labour = { low = 80, high = 140 } } # US combination includes separately packaged RANNILEN
-"PROD-IKEA-RANNILEN" = { material = 0, labour = { low = 40, high = 80 } } # included in ORRSJON combination price
+"PROD-IKEA-ORRSJON-37" = { material = 170, labour = { low = 80, high = 140 } }
+"PROD-IKEA-RANNILEN" = { material = 40, labour = { low = 40, high = 80 } }
 "PROD-SS-LAV-16X13" = { material = { low = 250, high = 450 }, labour = { low = 100, high = 200 } }
 "PROD-CORIAN-GLACIER-WHITE" = { material = 0, labour = 0 } # fabricated area bills in [countertops]
 "PROD-DEARBORN-707BN-1" = { material = { low = 45, high = 80 }, labour = { low = 50, high = 100 } }
@@ -6715,6 +6722,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # Ceiling boxes (decision #140, 2026-11-20). ESTIMATES off retail listings. Labour 0: the
 # fixture or alarm row's labour sets its box, as for every flush wall box (owner, 2026-10-29).
 "PROD-APPLETON-FFS561LDNBH" = { material = { low = 6, high = 12 }, labour = { low = 0, high = 0 } }  # 4" oct on bar hanger, lights and alarm heads
+"PROD-OCT-4-114-GENERIC" = { material = { low = 3, high = 8 }, labour = { low = 0, high = 0 } }  # 1 ea, the laundry bar's 1-1/4" octagon on a bar, estimate (2026-11-21)
 # Garden flood junction box (remote_box, owner 2026-11-20): die-cast round box + blank cover.
 # ESTIMATES off retail listings; box labour is screwing it to the joist and the whip.
 "PROD-BELL-5361-0" = { material = { low = 8, high = 16 }, labour = { low = 15, high = 35 } }  # 1 ea

@@ -29,6 +29,7 @@ from typehaus.model.placeable_symbols._leviton_9880 import (
     MOUNTING_BAND_IN,
 )
 
+from .ikea_lighting_types import GRONSPROT_EXT
 from .porch_lighting_types import GARDEN_FLOOD_TYPE
 
 _POWER_120 = (ServicePort(tag="power", service=Service.POWER_120,
@@ -355,12 +356,13 @@ DECORATIVE_LUMINAIRE_TYPES = (
     # house's 3000K warm line — the other half of the same advisory. Wet rated outright:
     # the garage face and open-sided balcony edge both see wind-driven weather.
     #
-    # R is the garage-door light: a shielded down-only wall sconce beside D-G-OVERHEAD.
-    # `form=SCONCE` rather than a new enum kind — the enum docstring discourages new
-    # kinds, and a wall pack is a sconce that grew a cutoff hood.
-    LuminaireType(tag="ED-T-LT-SCONCE-EXT",
+    # R (all five exterior wall lights) is IKEA GRÖNSPRÖT since 2026-11-21
+    # (plan/ikea_lighting_types.py). R1, the WAC Tube it replaced, is CATALOG-ONLY and kept
+    # priced: retype the placements to ED-T-LT-SCONCE-EXT-WAC to revert.
+    GRONSPROT_EXT,
+    LuminaireType(tag="ED-T-LT-SCONCE-EXT-WAC",
                   replaceable_lamp=False, name="Exterior LED tube wall light, down, black",
-                  form=LuminaireForm.SCONCE, type_mark="R",
+                  form=LuminaireForm.SCONCE, type_mark="R1",
                   footprint=(inch(4.5), inch(5)), height=inch(5), plan_symbol="sconce-tube",
                   lamp="LED integrated, ELV/0-10V", watts=16.0, lumens=800.0, cct_k=3000,
                   cri=90, dimmable=True, damp_rated=True, wet_rated=True, full_cutoff=True,

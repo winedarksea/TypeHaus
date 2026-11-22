@@ -22,7 +22,7 @@ the illuminated-mirror exception and its controls are documented in plan/mirror_
 from __future__ import annotations
 
 from plan.products_lighting_selected import SELECTED_LIGHTING_PRODUCTS
-from typehaus.library.track_lighting import MAGNETIC_TRACK_PRODUCTS
+from plan.ikea_lighting_types import IKEA_LIGHTING_PRODUCTS
 from typehaus.model import Product
 from typehaus.quantities import inch
 
@@ -206,7 +206,7 @@ DIODE_S45_CHANNEL = Product(
 LIGHTING_PRODUCTS = (
     ARMACOST_RIBBONFLEX_COB_2700,
     HUNTER_GALLEGOS,
-    *MAGNETIC_TRACK_PRODUCTS,
+    *IKEA_LIGHTING_PRODUCTS,
     *SELECTED_LIGHTING_PRODUCTS, WESTGATE_VAPORTIGHT, DOLRIA_PC0008,
     MODERN_FORMS_BANTAM, CRAFTMADE_FORCE_XL,
     ARMACOST_RIBBONFLEX_COB, DIODE_VALENT_X, DIODE_OMNIDRIVE_X, DIODE_S45_CHANNEL,

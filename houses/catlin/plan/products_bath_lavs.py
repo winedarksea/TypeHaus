@@ -26,27 +26,26 @@ KRAUS_INDY = Product(
            "6 1/4 in. high, 5 1/8 in. reach, 4 5/8 in. spout height; 23 5/8 in. "
            "integrated supplies, 3/8 compression, 1 1/2 in. maximum deck. Drain separate.",
 )
-ANGSJON_36 = Product(
-    tag="PROD-IKEA-ANGSJON-36", brand="IKEA", model="ÄNGSJÖN 36", sku="905.353.52",
-    name="ÄNGSJÖN 36 x 21 x 25 1/8 in. wall-hung two-drawer vanity, high-gloss white",
-    url="https://www.ikea.com/us/en/p/angsjoen-bathroom-vanity-with-drawers-high-gloss-white-90535352/",
-    source="IKEA US 905.353.52 and AA-2400655-5 assembly PDF, read 2026-10-24, "
-           "archived in notes/assets; rear plumbing space behind drawers, supplied suspension rail. "
-           "Cabinet height is above mount base. House installation: 36 in. rim. "
-           "Assembly does not publish a fixed trap outlet station; use installation setout.",
+HAVBACK_36 = Product(
+    tag="PROD-IKEA-HAVBACK-36-BEIGE", brand="IKEA", model="HAVBÄCK 36", sku="305.740.11",
+    name="HAVBÄCK 36 x 21 x 25 1/8 in. wall-hung two-drawer vanity, matte beige",
+    url="https://www.ikea.com/us/en/p/havbaeck-bathroom-vanity-with-drawers-beige-30574011/",
+    source="IKEA US 305.740.11 and AA-2400661-2, read 2026-11-21. Rear plumbing space, "
+           "supplied suspension rail and 5/8 in. drawer fronts. Cabinet, ORRSJÖN and "
+           "RÄNNILEN are sold together as 396.344.35. BAGGANÄS pulls are separate.",
 )
 ORRSJON_37 = Product(
-    tag="PROD-IKEA-ORRSJON-37", brand="IKEA", model="ORRSJÖN 37", sku="695.169.06",
+    tag="PROD-IKEA-ORRSJON-37", brand="IKEA", model="ORRSJÖN 37", sku="705.451.06",
     name="ORRSJÖN 37 x 21 3/4 in. white ceramic single bowl top, overflow, single faucet hole",
-    url="https://www.ikea.com/us/en/p/orrsjoen-sink-white-69516906/",
-    source="IKEA US January 2026 ÄNGSJÖN guide and AA-2376395-4, read 2026-10-24, "
-           "notes/assets: 37 x 21 3/4 x 2 1/2 in., centered single bowl and faucet. "
-           "RÄNNILEN separately packaged. No dimensioned bowl/drain center or fixed wall "
-           "stub elevation in the installation sheet; house setout recorded in lav_types.py.",
+    url="https://www.ikea.com/us/en/p/orrsjoen-sink-white-70545106/",
+    source="IKEA US 705.451.06 and AA-2376395-4, read 2026-11-21: "
+           "37 x 21 3/4 in., centered single bowl and faucet. Ceramic rises 2 1/2 in. above "
+           "the cabinet. RÄNNILEN separately packaged. No dimensioned bowl/drain center or "
+           "fixed wall stub elevation in the installation sheet; house setout in lav_types.py.",
 )
 RANNILEN = Product(
-    tag="PROD-IKEA-RANNILEN", brand="IKEA", model="RÄNNILEN 1-bowl",
-    name="RÄNNILEN single-bowl space-saving water trap and overflow drain",
+    tag="PROD-IKEA-RANNILEN", brand="IKEA", model="RÄNNILEN 1-bowl", sku="504.224.13",
+    name="RÄNNILEN single-bowl space-saving water trap",
     url="https://www.ikea.com/us/en/assembly_instructions/raennilen-water-trap-1-bowl__AA-2141893-6-100.pdf",
     source="IKEA US AA-2141893-6, read 2026-10-24, archived in notes/assets: "
            "1 1/2 in. wall outlet; cut-to-fit horizontal/vertical tubes, no fixed AFF outlet. "
@@ -93,5 +92,5 @@ SUNNERSTA_SINK = Product(
            "unit, then mark EXACT. This identity carries no separate sink charge.",
 )
 BATH_LAV_PRODUCTS = (MOEN_6702, MOEN_6702BN,
-                     KRAUS_INDY, ANGSJON_36, ORRSJON_37, RANNILEN, CHULTON_30,
+                     KRAUS_INDY, HAVBACK_36, ORRSJON_37, RANNILEN, CHULTON_30,
                      SEKTION_30, SEKTION_24, HOUSE_TRAP, SUNNERSTA_SINK)

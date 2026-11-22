@@ -1,5 +1,5 @@
 # haus: editable
-# Cabinet-included shelves in the SEKTION vanities only. ÄNGSJÖN drawers and Chulton's
+# Cabinet-included shelves in the SEKTION vanities only. HAVBÄCK drawers and Chulton's
 # purchased interior have no additional shelf-bank charge. Each bay includes its stock
 # adjustable shelf and cabinet top; these are excluded from owner-milled hardwood takeoff.
 

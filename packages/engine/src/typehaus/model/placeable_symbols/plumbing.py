@@ -411,6 +411,8 @@ PLUMBING_SYMBOLS: dict[str, Builder] = {
     "sektion-vanity": lambda w, d, h: solid_surface_vanity(w, d, h, fronts=(0.5, 0.5)),
     "drawer-vanity": drawer_vanity,
     "drawer-vanity-indy": lambda w, d, h: drawer_vanity(w, d, h, faucet="indy"),
+    "havback-vanity": lambda w, d, h: drawer_vanity(w, d, h, havback=True),
+    "havback-vanity-indy": lambda w, d, h: drawer_vanity(w, d, h, havback=True, faucet="indy"),
     "sektion-vanity-indy": lambda w, d, h: solid_surface_vanity(
         w, d, h, fronts=(.5, .5), faucet="indy"),
     "sunnersta-sink": sunnersta_sink,

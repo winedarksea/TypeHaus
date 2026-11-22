@@ -49,6 +49,25 @@ def test_orrsjon_has_a_wider_bowl_thick_ceramic_top_and_gloss_slab_drawers():
     assert not any("mesh" in p for p in fronts)  # flat fronts, unlike AXSTAD
 
 
+@pytest.mark.parametrize("symbol,faucet_height", [
+    ("havback-vanity", 8.4375), ("havback-vanity-indy", 6.25),
+])
+def test_havback_has_two_beige_slabs_with_centered_bagganas_pulls(symbol, faucet_height):
+    parts = model_parts(symbol, 37*IN, 21.75*IN, (27.625 + faucet_height)*IN)
+    drawers = [p for p in parts if p["color"] == "havback-beige"
+               and p["size"][1] == pytest.approx(0.625*IN)]
+    assert len(drawers) == 2
+    pull_bars = [p for p in parts if p["color"] == "metal-black"
+                 and p["size"][0] == pytest.approx(5.625*IN)]
+    assert len(pull_bars) == 2
+    for drawer, pull in zip(drawers, pull_bars, strict=True):
+        front_face = drawer["center"][1] - drawer["size"][1]/2
+        pull_edge = pull["center"][1] - pull["size"][1]/2
+        assert front_face - pull_edge == pytest.approx(1.25*IN)
+        assert pull["center"][0] == pytest.approx(0)
+        assert pull["center"][2] == pytest.approx(drawer["center"][2])
+
+
 def test_chulton_has_visible_pulls_feet_and_a_backsplash():
     parts = model_parts("door-drawer-vanity", 30.9375*IN, 22.4375*IN, 44.4375*IN)
     front_face = min(p["center"][1]-p["size"][1]/2 for p in parts
@@ -102,6 +121,7 @@ def test_faucet_material_color_reaches_viewer_glb_and_ifc(finish, color):
 
 
 @pytest.mark.parametrize("symbol", ["sektion-vanity", "sektion-vanity-indy", "drawer-vanity",
-                                     "drawer-vanity-indy", "door-drawer-vanity", "sunnersta-sink"])
+                                     "drawer-vanity-indy", "havback-vanity", "havback-vanity-indy",
+                                     "door-drawer-vanity", "sunnersta-sink"])
 def test_selected_vanities_export_their_geometry_in_ifc(symbol):
     assert is_parts_fixture(symbol)
