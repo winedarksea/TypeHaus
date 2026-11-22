@@ -511,11 +511,13 @@ SECOND_DEVICES = [
                      room="RM-S-NCLOSET", controlled_by=("ED-S-NCLOSET-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 3),
                                  recessed_into_host_surface=True)),
+    # Inside the closet, on W-S-BW4's west face by the door, beside stud-001 (2026-11-21): the
+    # hall-face bay east of D-S-NCLOSET (2 1/4" between king and end stud) is narrower than a box.
     ElectricalDevice(uid="CED016K2AA", tag="ED-S-NCLOSET-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW1", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-CLN-S", face="right", distance_from_start=inch(41.5),
+                         wall_ref="W-S-BW4", face="left", distance_from_start=inch(14),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 ]
 

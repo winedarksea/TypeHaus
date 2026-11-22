@@ -26,6 +26,7 @@ from shapely.geometry.polygon import orient
 
 from typehaus.model.electrical import BoxSupport
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.box_obstacles import level_obstacles
 from typehaus.resolve.box_support_mesh import block, side_plate, spanning_bar
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry_ir import GMesh
@@ -35,6 +36,7 @@ from typehaus.resolve.model import ResolvedSolid
 Point = tuple[float, float]
 Vec3 = tuple[float, float, float]
 TOL_M = 0.125 * M_PER_IN  # an overlap under 1/8" is a touch
+SEAT_CLEAR_M = M_PER_IN / 64  # a seated box may not stand in a neighbouring member
 SPAN_TOL_M = 0.25 * M_PER_IN  # a listed range read to the nearest 1/4"
 _SEAT_DEPTH_M = 0.5 * M_PER_IN  # a stud must back at least this much of the box's side
 _MAX_SHIFT_M = 16 * M_PER_IN
@@ -112,6 +114,7 @@ def _uprights(model: Any, wall: Any, face_point: Point, tangent: Point, normal: 
             continue
         if _overlap(_span(list(other.footprint), normal, face_point), box_n) > TOL_M:
             obstacles.append(_span(list(other.footprint), tangent))
+    obstacles += level_obstacles(wall, face_point, tangent, normal, z0, z1, depth)
     ends = _span([(ax, ay), (bx, by)], tangent)
     obstacles += [(ends[0] - 1.0, ends[0]), (ends[1], ends[1] + 1.0)]
     face = _face_run(wall, face_point, tangent, normal, z0, z1)
@@ -211,7 +214,7 @@ def stud_seat(model: Any, wall: Any, face_point: Point, tangent: Point, normal: 
         for side, shift in ((-1, b + thick - lo), (1, a - thick - hi)):
             if abs(shift) > _MAX_SHIFT_M:
                 continue
-            if any(_overlap(span, (lo + shift, hi + shift)) > TOL_M for span in obstacles):
+            if any(_overlap(span, (lo + shift, hi + shift)) > SEAT_CLEAR_M for span in obstacles):
                 continue
             rank = (plate is not None and not plate.clears(lo + shift, hi + shift), abs(shift))
             if best is None or rank < best[0]:

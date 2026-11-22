@@ -642,7 +642,7 @@ OPENINGS = [
     Door(uid="CSD208AAAA", tag="D-S-BATH1", host="W-S-BD-N1B", type_ref="DT-INT-SWING30-PRIV-SOLID",
          position=from_node("N-S-V2", inch(11.5)), flip_hinge=False, doorway=TILE_EDGE_FLUSH),  # x 8'-1"
     # Derived RO since 2026-10-29 (owner): a flat 2x4 head; the door slid 2 1/4" west,
-    # clear of ED-S-NCLOSET-SW.
+    # then clear of ED-S-NCLOSET-SW (inside the closet on W-S-BW4 since 2026-11-21).
     Door(uid="CSD217AAAA", tag="D-S-NCLOSET", host="W-S-CLN-S", type_ref="DT-INT-SWING30",
          position=from_node("N-S-C3D", inch(6.25)), flip_swing=True, flip_hinge=True,
          header_spec="flat 2x4 nonbearing"),                     # x 19'-10 3/8"

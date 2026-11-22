@@ -1,3 +1,23 @@
+## Screen ends capped, sheet lengths stated, framing stops at boxes (2026-11-21, owner)
+
+- **Screen.** TR-BW-SCREEN-TOP runs over both posts to their outer faces; TR-BW-SCREEN-END-S/-N
+  `cap` the wall top beyond them (`notes/flashing_model.md`). The drip edge stands 3/8" off the
+  corrugated so its hem clears. `integrity.drip_flashing_back_side` grades a cap straddling its
+  wall's core by the exterior layer. 6.5 LF of `drip_flashing`.
+- **Sheet lengths.** Garden framed cdx 4x10, the screen's ZIP 4x9, the tub-deck plies 4x8:
+  `structural.sheathing_edge_support` grades all seven. D-B-SUNKEN's band-header nailer now takes
+  head cripples (any band header does), which back the joint its 63" width forces over the head.
+- **Duct straps.** A near-fitting strap passing through another duct is dropped where the next
+  leg's hanger already holds the fitting (`resolve/duct_strap_clear.py`): DU-ERV-EA's strap at
+  SUP-FEED's elbow and DU-B-ERV-R-GYM's on its tee. DU-ERV-RISER-EXH's two straps still rise
+  through RISER-SUP, which is stacked over its whole leg: the riser can't move west (CDT008 is
+  1.15" off it up the chase) and neither leg end is held. Open (plans/TODO.md).
+- **Boxes.** `resolve/box_cuts.py` cuts liner furring and resilient channel round a flush box and
+  notches a backing band (strips kept over and under it); box seating clears members to 1/64" and
+  treats raked plates and tee blocks as obstacles. Box/framing clashes 32 -> 0. Moved:
+  ED-S-NCLOSET-SW into the closet on W-S-BW4 (the hall bay was 2 1/4"), ED-A-POCKET-SW to 32"
+  under the rake, ED-S-HALL-SW2 2" onto a king. Every other cut box stays cut (routine).
+
 ## The ERV moves to the sink; DU-ERV-EA drains back to it (2026-11-21, owner)
 
 - **Why.** The case stood in D-B-CLOSET's swing (the leaf stopped at ~55 deg), its condensate

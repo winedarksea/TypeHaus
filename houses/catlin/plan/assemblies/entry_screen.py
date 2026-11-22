@@ -51,6 +51,7 @@ ENTRY_SCREEN_WALL = Assembly(
             material_ref="zip-sheathing",
             thickness=inch(0.4375),
             function=LayerFunction.SHEATHING,
+            sheet_length=inch(108.0),  # 4x9, the garage wall's panel
             nailing=SheathingNailing(
                 part="S8ACN",
                 edge_oc_in=4.0,

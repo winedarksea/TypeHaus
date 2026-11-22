@@ -130,7 +130,7 @@ MILLWORK = [
             # D-S-BED1 is 2 1/4" both faces, so neither scribes against W-S-BD1 or the PAX.
             DoorTrim(doors=("D-S-BED1",), material_ref="mdf-casing", casing_width=inch(2.25)),
             # D-S-NCLOSET slid west toward W-S-C4B's corner: 1 1/2" both faces clears that
-            # corner's base and ED-S-NCLOSET-SW.
+            # corner's base (ED-S-NCLOSET-SW is inside the closet since 2026-11-21).
             DoorTrim(doors=("D-S-NCLOSET",), material_ref="mdf-casing", casing_width=inch(1.5)),
         ),
         # PVC and the milled hardwoods dress to 3/4"; the two yard stocks do not (owner,

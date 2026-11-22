@@ -14,6 +14,7 @@ from __future__ import annotations
 import dataclasses
 
 from test_backing_bands import _band, _wall_and_plan
+
 from typehaus.checks.advisory.backing import floating_band_ends
 from typehaus.quantities import M_PER_IN, inch
 from typehaus.resolve.framing.openings import WallOpening
@@ -74,3 +75,27 @@ def test_the_finding_names_the_authored_tag_not_the_member_key():
     members = frame_wall(plan, rw, openings=[], backing=(low, high))
     found = floating_band_ends(dataclasses.replace(rw, members=tuple(members)), [high, low])
     assert {tag for tag, _, _ in found} == {"BK-LOW", "BK-HIGH"}
+
+
+def test_a_box_notches_the_band_and_the_notch_ends_are_not_floating():
+    """A flush box in a bay-filling band: the board keeps strips over and under it, every
+    piece clears the box, and the cut ends butt each other rather than float."""
+    from types import SimpleNamespace
+
+    from typehaus.resolve.box_cuts import resolve_box_cuts
+
+    band = _band(start_m=inch(BAY_START_IN).meters, length_m=inch(BAY_LEN_IN).meters)
+    plan, rw = _wall_and_plan()
+    wall = dataclasses.replace(rw, members=tuple(frame_wall(plan, rw, openings=[],
+                                                            backing=(band,))))
+    x0, x1, z0, z1 = (inch(v).meters for v in (22.0, 24.25, 36.0, 39.75))
+    box = SimpleNamespace(wall_tag="W-TEST", mounting="flush", z0_m=z0, z1_m=z1,
+                          footprint=((x0, -0.2), (x1, -0.2), (x1, 0.2), (x0, 0.2)))
+    model = SimpleNamespace(walls=[wall], device_boxes=[box])
+    resolve_box_cuts(model)
+    pieces = [m for m in model.walls[0].members if m.child_key.startswith("backing-")]
+    assert len(pieces) == 4  # two sides, a strip over and a strip under
+    for m in pieces:
+        lo, hi = min(m.p0[0], m.p1[0]), max(m.p0[0], m.p1[0])
+        assert hi <= x0 + 1e-9 or lo >= x1 - 1e-9 or m.z1_m <= z0 or m.z0_m >= z1
+    assert floating_band_ends(model.walls[0], [band]) == []

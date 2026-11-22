@@ -14,6 +14,7 @@ the pierced steel cap on the sill, retired 2026-11-20 for the oiled sill + TR-BW
 from params.north_entry_frame import (
     COLUMN_HALF_FT,
     EAST_POST_SYSTEM,
+    GARAGE_CLADDING_Y_FT,
     GARAGE_SEAT_Y_FT,
     HEADER_SOFFIT_FT,
     HEADER_TOP_FT,
@@ -23,6 +24,7 @@ from params.north_entry_frame import (
     SCREEN_AXIS_X_FT,
     SCREEN_CLADDING_WEST_X_FT,
     SCREEN_PANEL_TOP_FT,
+    SCREEN_START_Y_FT,
 )
 from typehaus import (
     Connector,
@@ -118,17 +120,46 @@ PLATE_ANGLES = [
 # on after framing. Metal stays only where nothing passes: the west ZIP + corrugated stand
 # 1 5/16" proud of the sill's west face. A 1" upstand sealed to that face, under the KBS1Z
 # plates; the 1/4"/ft fall and drip over the corrugated (notes/flashing_model.md).
-_TOP_WEST_FT = SCREEN_CLADDING_WEST_X_FT - 0.125 / 12
-_TOP_EAST_FT = LANDING_WEST_FT - 2.75 / 12  # the sill's west face
+# Since 2026-11-21 it runs over the posts to their outer faces, and a `cap` closes each wall
+# end beyond them.
+_TOP_WEST_FT = SCREEN_CLADDING_WEST_X_FT - 0.375 / 12  # the 1/4" hem clears the crowns
+_TOP_EAST_FT = LANDING_WEST_FT - 2.75 / 12  # the sill's and posts' west face
 _TOP_CENTRE_FT = (_TOP_WEST_FT + _TOP_EAST_FT) / 2
+_SLOPE = 0.25 / 12
 SCREEN_TOP = Flashing(
     uid="YVVG3FVPJH", tag="TR-BW-SCREEN-TOP", kind=TrimKind.DRIP_FLASHING,
-    path=(pt(ft(_TOP_CENTRE_FT), ft(PIER_LINE_Y_FT + COLUMN_HALF_FT)),
-          pt(ft(_TOP_CENTRE_FT), ft(GARAGE_SEAT_Y_FT - COLUMN_HALF_FT))),
+    path=(pt(ft(_TOP_CENTRE_FT), ft(PIER_LINE_Y_FT - COLUMN_HALF_FT)),
+          pt(ft(_TOP_CENTRE_FT), ft(GARAGE_SEAT_Y_FT + COLUMN_HALF_FT))),
     top_elevation=ft(SCREEN_PANEL_TOP_FT + 0.0625 / 12), depth=inch(0.75),
     thickness=ft(_TOP_EAST_FT - _TOP_WEST_FT), back_side="right",
     material="aluminum-flat-pvdf", host_ref="W-BW-SCREEN",
-    section=FormedFlashingSection(profile="counter", slope=0.25 / 12, upstand=inch(1),
+    section=FormedFlashingSection(profile="counter", slope=_SLOPE, upstand=inch(1),
                                   drip=inch(0.75)))
 
-ELEMENTS = [BAND, SCREEN_TOP, *EAVE_CLIPS, *HEAD_ANGLES, *PLATE_ANGLES]
+# The end caps: post outer face to wall end, over the whole wall (corrugated -3/8" to the MDO
+# east face, +1/16"). A 1 1/4" downstand laps the MDO 3/4"; fall and drip west, the west edge
+# 1/16" over the plate. Each butts its post face; the north one also W-G-S's cladding.
+_CAP_EAST_FT = SCREEN_AXIS_X_FT + (1.75 + 0.75 + 0.0625) / 12
+_CAP_W_FT = _CAP_EAST_FT - _TOP_WEST_FT
+_CAP_CENTRE_FT = (_TOP_WEST_FT + _CAP_EAST_FT) / 2
+_CAP_TOP_FT = SCREEN_PANEL_TOP_FT + 0.0625 / 12 + _SLOPE * _CAP_W_FT
+
+
+def _end_cap(uid: str, tag: str, y0_ft: float, y1_ft: float) -> Flashing:
+    return Flashing(
+        uid=uid, tag=tag, kind=TrimKind.DRIP_FLASHING,
+        path=(pt(ft(_CAP_CENTRE_FT), ft(y0_ft)), pt(ft(_CAP_CENTRE_FT), ft(y1_ft))),
+        top_elevation=ft(_CAP_TOP_FT), depth=inch(0.75), thickness=ft(_CAP_W_FT),
+        back_side="right", material="aluminum-flat-pvdf", host_ref="W-BW-SCREEN",
+        section=FormedFlashingSection(profile="cap", slope=_SLOPE, upstand=inch(0),
+                                      drip=inch(1.25)))
+
+
+END_CAPS = [
+    _end_cap("WG99M8J3BF", "TR-BW-SCREEN-END-S", SCREEN_START_Y_FT,
+             PIER_LINE_Y_FT - COLUMN_HALF_FT),
+    _end_cap("D43MTBF568", "TR-BW-SCREEN-END-N", GARAGE_SEAT_Y_FT + COLUMN_HALF_FT,
+             GARAGE_CLADDING_Y_FT),
+]
+
+ELEMENTS = [BAND, SCREEN_TOP, *END_CAPS, *EAVE_CLIPS, *HEAD_ANGLES, *PLATE_ANGLES]

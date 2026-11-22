@@ -30,7 +30,8 @@ The exceptions are hosts that carry a plan body. A ``FloorSystem`` host with an 
 own centroid. A wall host (a drip over its cladding's top) is judged against its structure
 layer's centre, not its node line, which ``alignment=face(...)`` may put on a face: the back
 side must face the core, and since the run lies within the wall's own thickness the degenerate
-band shrinks to 1/2".
+band shrinks to 1/2". A cap straddling the core must instead face away from the wall's
+exterior-most layer.
 
 **What is deliberately not graded.** A ``vertical`` run's path spans the cladding thickness
 rather than travelling along the building, so its plan normal means nothing. And a run whose
@@ -94,6 +95,16 @@ def _wall_core_centre(walls, run) -> tuple[float, float] | None:
     return (sum(p[0] for p in points) / len(points), sum(p[1] for p in points) / len(points))
 
 
+def _away_from_exterior(wall, mid, back) -> float:
+    """How far the wall's exterior-most layer lies BEHIND ``back`` (layers run in -> out)."""
+    outer = next((layer.polygon for layer in reversed(wall.layers) if layer.polygon), None)
+    if not outer:
+        return 0.0
+    cx = sum(p[0] for p in outer) / len(outer) - mid[0]
+    cy = sum(p[1] for p in outer) / len(outer) - mid[1]
+    return -(cx * back[0] + cy * back[1])
+
+
 @check(Tier.INTEGRITY, _CHECK_ID)
 def drip_flashing_back_side(ctx: CheckContext) -> list[Finding]:
     runs = [e for e in ctx.plan.all_elements()
@@ -144,6 +155,9 @@ def drip_flashing_back_side(ctx: CheckContext) -> list[Finding]:
         # Only the component along the normal matters: the along-path component is where the
         # run sits on the edge, not which side of it the building is.
         toward = to_reference[0] * back[0] + to_reference[1] * back[1]
+        if core and abs(toward) < _WALL_DEGENERATE_M:
+            # A cap straddling its wall's core: its back faces away from the weather face.
+            toward = _away_from_exterior(walls[run.host_ref], mid, back)
         if abs(toward) < (_WALL_DEGENERATE_M if core else _DEGENERATE_M):
             where = "its wall's core" if core else "its storey's drip loop centroid"
             findings.append(unknown(

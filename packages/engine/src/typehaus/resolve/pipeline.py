@@ -308,6 +308,11 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         from typehaus.resolve.backing_datum import apply_backing_datums
 
         apply_backing_datums(plan, model)
+    with _stage("box_cuts"):
+        # After every box and band is final: bands and strapping stop at a box.
+        from typehaus.resolve.box_cuts import resolve_box_cuts
+
+        resolve_box_cuts(model)
     with _stage("millwork"):
         # After placeables and rooms: a shelf bank hosted on a carcass reads that
         # placeable's resolved type, and a stool's room scope reads the resolved rooms.

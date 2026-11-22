@@ -61,7 +61,8 @@ from .mixes import BURIED_MIX
 # carried reads better than the 8"-concrete stack it replaces.
 _GARDEN_FRAMED_OUTBOARD = (
     Layer(name="sheathing", material_ref="cdx-plywood", thickness=inch(0.5),
-          function=LayerFunction.SHEATHING, nailing=WALL_SHEATHING_NAILING),
+          function=LayerFunction.SHEATHING, nailing=WALL_SHEATHING_NAILING,
+          sheet_length=inch(120.0)),  # 4x10: the cdx stock EXT_2X6 orders
     Layer(name="waterproofing", material_ref="waterproofing", thickness=inch(0.06),
           function=LayerFunction.MEMBRANE,
           control={ControlLayer.AIR, ControlLayer.WATER}),

@@ -2,13 +2,14 @@
 
 Per horizontal leg: one hanger within ``support_near_fitting`` of each end (an elbow, a
 branch, a collar or a boot is at every leg end), then as many between as keep each gap
-inside the row's spacing. A leg shorter than a foot rides on its neighbours. Risers are
-carried by the wall or chase they climb and take none here. Each hanger names the framing
-it hangs from: a horizontal member over (or, in a joist bay, beside) the duct within
-``HANGER_REACH_M``. With nothing overhead the standard's fallback rows are tried: a
-``saddle`` (a strap band to the deck, house practice; SMACNA draws no bottom support) where
-the duct bears on a deck (or on the row's ``sleeper`` block on it), then a ``bracket`` to a
-parallel wall within SMACNA Fig. 4-8's 2".
+inside the row's spacing. An end hanger whose strap would pass another duct is dropped where
+the next leg's hanger already holds that fitting (``resolve/duct_strap_clear.py``). A leg
+shorter than a foot rides on its neighbours. Risers are carried by the wall or chase they
+climb and take none here. Each hanger names the framing it hangs from: a horizontal member
+over (or, in a joist bay, beside) the duct within ``HANGER_REACH_M``. With nothing overhead
+the standard's fallback rows are tried: a ``saddle`` (a strap band to the deck, house
+practice; SMACNA draws no bottom support) where the duct bears on a deck (or on the row's
+``sleeper`` block on it), then a ``bracket`` to a parallel wall within SMACNA Fig. 4-8's 2".
 A slab is never a saddle host: a duct on concrete stays UNKNOWN, on purpose. A hanger with
 no host is kept, with its ``gap``, for ``mep.duct_supports`` to grade.
 """
@@ -21,6 +22,7 @@ from typing import Any
 from typehaus.model.ducts import DuctStandard, DuctSupportRow
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.duct_branches import section
+from typehaus.resolve.duct_strap_clear import end_is_held, other_ducts
 from typehaus.resolve.model_ducts import Point3, ResolvedDuctSupport
 from typehaus.resolve.sweep import clean_path
 
@@ -45,6 +47,7 @@ _SLOP_M = 1e-4
 
 def derive_supports(model: Any, standard: DuctStandard) -> list[ResolvedDuctSupport]:
     index = _MemberIndex(model)
+    others = other_ducts(model)
     out: list[ResolvedDuctSupport] = []
     for duct in sorted(model.ducts, key=lambda d: d.tag):
         if len(duct.path) < 2 or len(duct.z_m) != len(duct.path):
@@ -59,8 +62,13 @@ def derive_supports(model: Any, standard: DuctStandard) -> list[ResolvedDuctSupp
                      if (r := standard.support_for(kind, size_m, kind_)) is not None]
         near = standard.support_near_fitting.meters
         path = clean_path([(x, y, z) for (x, y), z in zip(duct.path, duct.z_m, strict=True)])
-        for a, b in zip(path, path[1:], strict=False):
-            for point in stations(a, b, near, row.spacing.meters):
+        legs = list(zip(path, path[1:], strict=False))
+        per_leg = [stations(a, b, near, row.spacing.meters) for a, b in legs]
+
+        for i, (a, b) in enumerate(legs):
+            for k, point in enumerate(per_leg[i]):
+                if end_is_held(duct, legs, per_leg, i, k, near, index.over, others):
+                    continue
                 used = row
                 member, drop = index.over(point[:2], point[2] + duct.depth_m / 2.0)
                 sleeper = 0.0

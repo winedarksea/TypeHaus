@@ -435,12 +435,19 @@ def floating_band_ends(
     if not faces:
         return []
     ordered = sorted(bands, key=lambda b: (b.elevation_m, b.tag))
+    # A box notch splits a band into pieces that butt: an end meeting a sibling is joined.
+    ends: dict[int, list[float]] = {}
+    for member in runs:
+        ends.setdefault(int(member.child_key.split("-")[1]), []).extend(
+            (station(member.p0), station(member.p1)))
     out: list[tuple[str, float, float]] = []
     for member in sorted(runs, key=lambda m: m.child_key):
         index = int(member.child_key.split("-")[1])
         tag = ordered[index].tag if index < len(ordered) else member.child_key
         for end in (station(member.p0), station(member.p1)):
             if end <= _BEARING_REACH_M or end >= axis_len - _BEARING_REACH_M:
+                continue
+            if sum(abs(e - end) < 1e-4 for e in ends[index]) > 1:
                 continue
             gap = min(abs(end - face) for face in faces)
             if gap > _BEARING_REACH_M:

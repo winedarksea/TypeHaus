@@ -157,3 +157,13 @@ def test_part_lookup_takes_the_entry_row_then_the_wildcard():
     assert std.part("boot", "6in", "12x6", entry="end").product_ref == "END"
     assert std.part("boot", "6in", "12x6", entry="side").product_ref == "ANY"
     assert _standard(parts=(end,)).part("boot", "6in", "12x6") is None
+
+
+def test_a_clashing_end_strap_is_dropped_where_the_next_leg_holds_the_fitting(catlin_model_ro):
+    """DU-ERV-EA's strap 2 ft south of its y=34'-10 1/2" elbow stood in DU-M-ERV-SUP-FEED's
+    elbow; the west leg's hanger 15" past the corner holds it. A clear end strap stays."""
+    ea = [tuple(round(c / M_PER_IN, 1) for c in s.point)
+          for s in catlin_model_ro.duct_supports if s.run_tag == "DU-ERV-EA"]
+    assert not any(x == 55.2 and 394.0 <= y <= 395.0 for x, y, _ in ea)
+    assert any(x == 55.2 and abs(y - 374.5) < 0.1 for x, y, _ in ea)
+    assert any(abs(x - 39.9) < 0.1 and y == 418.5 for x, y, _ in ea)

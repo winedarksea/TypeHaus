@@ -12,7 +12,11 @@ the future.
 
 ## Needs your decision
 
-(none open)
+- **DU-ERV-RISER-EXH's two straps pass through DU-ERV-RISER-SUP** (2 cm3 each), which is stacked
+  over its whole 81" west-band leg. Moving either duct fails (CDT008, DU-ERV-OA, the floor
+  opening) and neither leg end is held, so no strap is redundant. Choose: a shared trapeze under
+  both, or let a near-end station slide along its 2 ft window to the first clear point (y~399"
+  north; y~333" south past SUP's elbow).
 
 ## Remaining Work
 

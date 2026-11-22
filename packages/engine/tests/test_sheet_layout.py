@@ -118,10 +118,17 @@ def test_catlin_garage_south_matches_the_oracle(catlin_model_ro):
     assert pack_layouts([layout], layout_standard(catlin_model_ro.plan)).sheets == 7
 
 
-def test_an_unstated_sheet_length_is_unknown(catlin_model_ro):
+def test_an_unstated_sheet_length_is_unknown(catlin_model_ro, monkeypatch):
+    """Catlin states every sheet_length and grades clean; unstate one and it is UNKNOWN."""
+    import typehaus.checks.structural.sheathing_edge_support as module
+
     ctx = CheckContext(plan=catlin_model_ro.plan, model=catlin_model_ro,
                        preferences=Preferences(), profile=MN_2020)
     findings = sheathing_edge_support(ctx)
+    assert not [f for f in findings if f.result is Result.FAIL or "sheet_length" in f.message]
+    real = module.wall_sheathing
+    monkeypatch.setattr(module, "wall_sheathing", lambda plan, wall: [
+        (name, None if wall.tag == "W-B-S2-FR" else length)
+        for name, length in real(plan, wall)])
     assert any(f.result is Result.UNKNOWN and "W-B-S2-FR" in f.element_tags
-               and "sheet_length" in f.message for f in findings)
-    assert not [f for f in findings if f.result is Result.FAIL]
+               and "sheet_length" in f.message for f in sheathing_edge_support(ctx))

@@ -15,8 +15,12 @@ holds it against the wood, and the cap cannot go on once the band is framed.
 Metal stays only where nothing passes through it. `TR-BW-SCREEN-TOP` is a 0.032″ PVDF aluminium
 `counter` section over the west ZIP + corrugated, which stand 1 5/16″ proud of the sill's west
 face: a 1″ upstand sealed to that face below the KBS1Z plates (they start at +50.45″), ¼″/ft
-fall west, ¾″ drip and ¼″ hem over the corrugated. Post face to post face, ~4.5 LF, billed in
-`edge_trim/drip_flashing`. The east MDO is already under the sill's ~1 1/16″ overhang, its edges
+fall west, ¾″ drip and ¼″ hem over the corrugated (its edge ⅜″ off the crowns so the hem
+clears). Since 2026-11-21 it runs over both posts to their outer faces (the upstand sealed to the
+post west face, flush with the sill's), 5.4 LF; `TR-BW-SCREEN-END-S` (7½″) and `-END-N` (5¼″,
+butting W-G-S's cladding) are `cap` sections closing the wall top beyond the posts — the whole
+wall width, a 1¼″ downstand lapping the MDO ¾″, the same fall and drip west, the low edge 1/16″
+over the plate. 6.5 LF in all, billed in `edge_trim/drip_flashing`. The east MDO is already under the sill's ~1 1/16″ overhang, its edges
 primed and painted (`entry_screen_mdo.md`).
 
 Exterior windows and pedestrian doors now carry separately selectable metal heads, sill

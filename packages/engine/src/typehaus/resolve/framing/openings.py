@@ -439,6 +439,10 @@ def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
                                 opening.width_m, opening_tag=opening.tag))
         _frame_rough_sill(out, rw, direction, wall_start, opening, opening_index, member,
                           z0, sill_datum, cripples_at)
+        # Cripples over the nailer back the sheathing joints a wide opening forces there.
+        _append_head_cripples(out, rw.uid, opening_index, direction, wall_start, center,
+                              half, header_bottom + _PLATE_THICKNESS_M, top_at, member,
+                              cripples_at)
         return out
     header = getattr(opening, "header", None) or ladder_header(opening)
     size, depth, flat = header.profile, header.depth_m, header.flat
