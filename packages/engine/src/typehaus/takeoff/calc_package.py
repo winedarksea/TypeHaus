@@ -28,7 +28,7 @@ from typehaus.engineering.item import EngineeringRecord, Status
 from typehaus.engineering.register import EngineeringRegister
 from typehaus.takeoff.calc_appendix import render_appendix
 from typehaus.takeoff.calc_collapse import collapse, collapsed_tables
-from typehaus.takeoff.calc_criteria import DESIGN_METHOD, _criteria
+from typehaus.takeoff.calc_criteria import _criteria, design_method
 from typehaus.takeoff.calc_family import (
     CONVENTIONS_FILE,
     appendix_filename,
@@ -111,7 +111,7 @@ def calc_package(inputs: PackageInputs, *, only: str | None = None) -> dict[str,
     for kind, records in families(kept).items():
         files[f"calcs/{family_filename(kind)}"] = render_family(
             kind, records, inputs.register, generated=inputs.generated,
-            house=inputs.house, design_method=DESIGN_METHOD.get(kind, ""))
+            house=inputs.house, design_method=design_method(kind, records))
         files[appendix_filename(kind)] = render_appendix(
             kind, records, house=inputs.house)
     for record in kept:
@@ -140,8 +140,8 @@ def _readme(inputs: PackageInputs) -> str:
             "`03-open-items.md` — what is **not** finished, and who owns each one.",
             "`04-assumptions.md` — every assumption any calculation made, deduped.",
             f"`calcs/` — **the calculations**, one per design family with a member "
-            f"schedule: {len(families(list(inputs.records)))} of them, in the standard "
-            f"nine-section order.",
+            f"schedule: {len(families(list(inputs.records)))} of them, each in the same "
+            f"ten-section order.",
             f"`{CONVENTIONS_FILE}` — how every calculation reads, and what none of them "
             f"covers, said once.",
             f"`appendix/<kind>.md` — the per-member data behind those schedules, one table "
@@ -279,7 +279,7 @@ def _register_page(inputs: PackageInputs) -> str:
             ", ".join(record.element_tags) or record.key,
             STATUS_LABEL[record.status].split(" —")[0],
             governing.name if governing else "—",
-            f"{governing.ratio:.2f}" if governing else "—",
+            f"{governing.ratio:.3f}" if governing else "—",
             state.value + (f" ({signoff.id})" if signoff else ""),
             ", ".join(str(o) for o in record.oracle) or "**none**",
         ])
@@ -319,15 +319,15 @@ def _open_items(inputs: PackageInputs) -> str:
     ]
     deferred = [r for r in open_records if r.status is Status.NO_CALC]
     if deferred:
-        rows = []
+        # Items that share one deferral share one row: two trussed roofs are one ask.
+        grouped: dict[tuple[str, str, str], list[str]] = {}
         for record in deferred:
             deferral = DEFERRALS.get(record.kind)
-            rows.append([
-                f"`{record.item_id}`",
-                deferral.designer if deferral else "not assigned",
-                deferral.deliverable if deferral else record.summary,
-                deferral.unblocks if deferral else "—",
-            ])
+            key = (deferral.designer if deferral else "not assigned",
+                   deferral.deliverable if deferral else record.summary,
+                   deferral.unblocks if deferral else "—")
+            grouped.setdefault(key, []).append(f"`{record.item_id}`")
+        rows = [[", ".join(items), *key] for key, items in grouped.items()]
         blocks += [
             heading("A. Deferred to a designer of record", 2),
             "This engine computes nothing for these, by decision — a fabricator's or a "
@@ -336,6 +336,9 @@ def _open_items(inputs: PackageInputs) -> str:
             table(["Item", "Designer of record", "What they must produce", "Unblocks"], rows),
         ]
     incomplete = [r for r in open_records if r.status is Status.INCOMPLETE]
+    if not incomplete:
+        blocks += [heading("B. Incomplete — the calculation exists, an input does not", 2),
+                   "_None._"]
     if incomplete:
         blocks += [
             heading("B. Incomplete — the calculation exists, an input does not", 2),
@@ -344,17 +347,19 @@ def _open_items(inputs: PackageInputs) -> str:
             table(["Item", "Governing (of what was computed)", "d/c", "What is missing"],
                   [[f"`{r.item_id}`",
                     r.governing.name if r.governing else "—",
-                    f"{r.governing.ratio:.2f}" if r.governing else "—",
+                    f"{r.governing.ratio:.3f}" if r.governing else "—",
                     " ".join(r.missing)] for r in incomplete]),
         ]
     over = [r for r in open_records if r.status is Status.OVER]
+    if not over:
+        blocks += [heading("C. Over capacity", 2), "_None._"]
     if over:
         blocks += [
             heading("C. Over capacity", 2),
             callout("These items were computed in full and do not check. They are design "
                     "failures, not gaps.", marker="**Action required**"),
             table(["Item", "Governing", "d/c", "Citation"],
-                  [[f"`{r.item_id}`", r.governing.name, f"{r.governing.ratio:.2f}",
+                  [[f"`{r.item_id}`", r.governing.name, f"{r.governing.ratio:.3f}",
                     r.governing.citation] for r in over if r.governing]),
         ]
     presumed = [r for r in inputs.records if r.status not in (Status.INCOMPLETE,
@@ -368,7 +373,7 @@ def _open_items(inputs: PackageInputs) -> str:
             table(["Item", "Presumed input", "Governing", "d/c"],
                   [[f"`{r.item_id}`", ", ".join(_presumed_inputs(r)),
                     r.governing.name if r.governing else "—",
-                    f"{r.governing.ratio:.2f}" if r.governing else "—"] for r in presumed]),
+                    f"{r.governing.ratio:.3f}" if r.governing else "—"] for r in presumed]),
         ]
     if not open_records and not presumed:
         blocks.append("**Nothing is outstanding.** Every item reached draft.")

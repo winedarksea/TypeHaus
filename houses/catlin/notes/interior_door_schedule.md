@@ -76,7 +76,7 @@ sweep or automatic bottom closes its undercut (`DoorType.bottom_seal`).
 | D-B-FURN | furnace / workshop | DT-INT-SWING36 | passage | hollow | 3/4" **must stay** | the workshop's makeup |
 | D-B-SHOP | workshop / stair hall | DT-INT-STEEL36-KEYED | keyed entry 740HFL SQT 15 SMT + US15 hinges | steel | weatherstrip + sweep across a 1/2" undercut, no sill | via D-B-FURN |
 | D-B-SAUNA | sauna / gym | DT-INT-SAUNA24 | own handle and roller catch, no lock | insulated wood | sealed | supply and exhaust balanced 20/20 cfm |
-| D-B-PLAY | play / gym | DT-INT-DOUBLE60 | pair: passage + dummy + flush bolts | solid | jamb/head gaskets + astragal, 3/4" | 30 cfm supply exits under the pair |
+| D-B-PLAY | play / gym | DT-INT-DOUBLE60 | pair: passage (east, active) + dummy + flush bolts on the passive west leaf, which shelters ED-B-PLAY-N-SW (owner, 2026-11-22) | solid | jamb/head gaskets + astragal, 3/4" | 30 cfm supply exits under the pair |
 | D-B-BATH | bath / stair hall | DT-POCKET-INT-36-PRIV | pocket privacy + edge pull | - | - | - |
 | D-B-ESS | ESS closet | DT-INT-STEEL24-LITE | passage, spring hinges | steel | - | - |
 | D-B-CLOSET | under-stair storage | DT-INT-CLOSET32 | closet (dummy knob) | hollow | 1/2" (standard; the 3/4" heater undercut is retired, 2026-11-09) | - |

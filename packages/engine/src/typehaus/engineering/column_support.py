@@ -42,7 +42,7 @@ from typehaus.wind import ASD_WIND_FACTOR
 
 KIND = "column_support"
 BASIS_VERSION = "1"
-BASIS = "ACI 318-19 §22.8.3 (bearing), §22.9 (shear friction), §25.4.2.4 (development)"
+BASIS = "ACI 318-19 §22.8.3 (bearing), §22.9 (shear friction), Table 25.4.2.3 (development)"
 
 #: ACI 318-19 Table 21.2.2: bearing 0.65, shear 0.75, tension-controlled 0.90.
 PHI_BEARING = 0.65

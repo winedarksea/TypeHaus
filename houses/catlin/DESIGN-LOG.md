@@ -9274,3 +9274,18 @@ Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
   the first run an end met even when that joint billed nothing, so the crown take-off
   vanished; it now looks on to the trunk. The Chevron now draws Sun Gold
   (`RegisterType.face_material_ref`).
+
+## Switch plates clear of casings (2026-11-22, owner)
+
+- **ED-S-PLANT-SW-TIMER** moves round the SE corner onto W-S-S1 (205 3/4", stud-004, 46"): on
+  W-S-C1 the only seat was the king, 1/8" off D-S-PLANT's casing, and air-sealed boxes never
+  gang with the light switch. Its box sits in the exterior wall's membrane, insulation packed
+  round it.
+- **ED-A-POCKET-SW** drops to 26" on stud-004 (66"), 13 1/4" off D-A-POCKET's casing. At 32" on
+  the king it butted the casing and overlapped ED-A-STUDIO-AP's body; the raked plate leaves no
+  stud taller than 2'-6" for a box.
+- **ED-B-PLAY-N-SW** stays: FURN-B-PLAY-BOOK-W2 covers about 1 1/4" of its plate, and narrowing
+  that bookcase to a 15 3/4" BILLY was declined. D-B-PLAY's passive leaf is the WEST one, so no
+  open leaf hides the dimmer.
+- Unchecked: no check sees a wall device behind free-standing furniture or overlapping another
+  device's body.

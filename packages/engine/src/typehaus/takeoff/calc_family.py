@@ -23,13 +23,15 @@ live in :func:`render_conventions` (``06-conventions.md``) and a family sheet po
 
 from __future__ import annotations
 
+import re
 from collections.abc import Mapping, Sequence
 
 from typehaus.emit.md_writer import bullets, callout, document, heading, kv_block, table
 from typehaus.engineering.fingerprint import fingerprint
 from typehaus.engineering.item import EngineeringRecord, Status
 from typehaus.engineering.register import EngineeringRegister
-from typehaus.takeoff.calc_collapse import collapse
+from typehaus.takeoff.calc_collapse import Collapsed, collapse
+from typehaus.takeoff.calc_numfmt import num, ratio_text
 from typehaus.takeoff.calc_sheet import (
     SCOPE_LABEL,
     SEAL_LABEL,
@@ -104,10 +106,15 @@ def references(records: Sequence[EngineeringRecord]) -> list[str]:
                        for state in record.limit_states])
 
 
+#: A factor of safety has no unit; say what the two columns are instead of leaving a blank.
+_FS_UNIT = "FS (required / achieved)"
+
+
 def _schedule(records: Sequence[EngineeringRecord],
               register: EngineeringRegister) -> str:
     """The table that replaces the repetition: one row per member, and what governs it."""
     rows = []
+    worst = governing_member(records)
     for record in records:
         governing = record.governing
         freshness, _signoff = register.freshness(record)
@@ -115,13 +122,13 @@ def _schedule(records: Sequence[EngineeringRecord],
             demand = capacity = unit = ratio = "—"
             state = "no load-carrying state computed"
         else:
-            demand = f"{governing.demand:,.1f}"
-            capacity = f"{governing.capacity:,.1f}"
-            unit = governing.unit
-            ratio = f"{governing.ratio:.2f}"
+            demand, capacity = num(governing.demand), num(governing.capacity)
+            unit = _FS_UNIT if governing.is_safety_factor else governing.unit
+            ratio = ratio_text(governing.ratio)
             state = governing.name
+        tag = f"`{record.item_id.split('/', 1)[1]}`"
         rows.append([
-            f"`{record.item_id.split('/', 1)[1]}`",
+            f"**{tag}**" if record is worst and len(records) > 1 else tag,
             ", ".join(record.element_tags) or record.key,
             state, demand, capacity, unit, ratio,
             STATUS_LABEL[record.status].split(" — ")[0],
@@ -134,7 +141,7 @@ def _schedule(records: Sequence[EngineeringRecord],
         f"\n\nPer-member data: `{appendix_filename(kind)}`.")
 
 
-def _worked(record: EngineeringRecord) -> str:
+def _worked(record: EngineeringRecord, refs: Sequence[str] = ()) -> str:
     """The governing member's arithmetic, with the substitutions and units beside it.
 
     ** THE SUBSTITUTIONS ARE THE POINT. ** A limit-state row saying "9,461 / 7,150 = 1.32"
@@ -146,7 +153,7 @@ def _worked(record: EngineeringRecord) -> str:
     if record.inputs:
         blocks.append(table(
             ["Symbol", "Value", "Unit"],
-            [[f"`{q.name}`", f"{q.value:,.4g}", q.unit or "—"] for q in record.inputs]))
+            [[f"`{q.name}`", num(q.value), q.unit or "—"] for q in record.inputs]))
     else:
         blocks.append("_This member consumed no input — the engine computes nothing here._")
 
@@ -158,14 +165,17 @@ def _worked(record: EngineeringRecord) -> str:
     rows = []
     for state in record.limit_states:
         if state.is_safety_factor:
-            form = f"{state.demand:,.4g} required / {state.capacity:,.4g} achieved"
+            form = f"{num(state.demand)} required / {num(state.capacity)} achieved"
         elif state.is_detailing:
-            form = f"{state.demand:,.4g} required / {state.capacity:,.4g} provided"
+            form = f"{num(state.demand)} required / {num(state.capacity)} provided"
         else:
-            form = f"{state.demand:,.4g} demand / {state.capacity:,.4g} capacity"
+            form = f"{num(state.demand)} demand / {num(state.capacity)} capacity"
         name = f"**{state.name}**" if state is record.governing else state.name
-        rows.append([name, f"{form} {state.unit}".strip(), f"{state.ratio:.3f}",
-                     state.combination or "—", state.citation])
+        # The clause is printed once, in §2; a 1,500-character cell per row buries the table.
+        cite = (f"R{refs.index(state.citation) + 1}" if state.citation in refs
+                else state.citation)
+        rows.append([name, f"{form} {state.unit}".strip(), ratio_text(state.ratio),
+                     state.combination or "—", cite])
     blocks.append(table(["Limit state", "Substitution", "= d/c", "Load combination",
                          "Citation"], rows))
     return "\n\n".join(blocks)
@@ -183,7 +193,7 @@ def _verdict(records: Sequence[EngineeringRecord]) -> str:
     if governing is not None:
         verdict = "PASS" if governing.ok else "**OVER CAPACITY**"
         line += (f"\n\nThe family is governed by `{worst.item_id}` at d/c "
-                 f"{governing.ratio:.2f} on {governing.name} "
+                 f"{ratio_text(governing.ratio)} on {governing.name} "
                  f"({governing.citation}) — {verdict}.")
     else:
         line += f"\n\n`{worst.item_id}` leads it; no load-bearing state — see §7."
@@ -224,9 +234,20 @@ def _coverage(records: Sequence[EngineeringRecord]) -> str:
     return scopes[0] if len(scopes) == 1 else "mixed (see the schedule)"
 
 
-def _exclusions(records: Sequence[EngineeringRecord]) -> str:
-    """One line. The standing exclusions are said once, in :data:`CONVENTIONS_FILE`."""
-    return f"**{_coverage(records)}** — §4's states only; see `{CONVENTIONS_FILE}`."
+#: How a record's note marks something it deliberately does not grade.
+_NOT_GRADED = re.compile(r"not graded|not checked|\bscreening\b", re.IGNORECASE)
+
+
+def _exclusions(records: Sequence[EngineeringRecord],
+                assumptions: Sequence[Collapsed] = ()) -> str:
+    """The standing exclusions point at :data:`CONVENTIONS_FILE`; the family's own are
+    located by row, not reprinted (each line stays short: one long line per file only)."""
+    lines = [f"**{_coverage(records)}** — §4's states only; see `{CONVENTIONS_FILE}`."]
+    rows = [str(n) for n, row in enumerate(assumptions, start=1)
+            if _NOT_GRADED.search(row.template)]
+    if rows:
+        lines.append(f"Not graded, by name: `{ASSUMPTIONS_FILE}` rows {', '.join(rows)}.")
+    return "\n\n".join(lines)
 
 
 def render_family(kind: str, records: Sequence[EngineeringRecord],
@@ -271,7 +292,7 @@ def render_family(kind: str, records: Sequence[EngineeringRecord],
         heading("3. Member schedule", 2),
         _schedule(records, register),
         heading("4. The calculation, worked at the governing member", 2),
-        _worked(worst),
+        _worked(worst, references(records)),
         heading("5. Result", 2),
         _verdict(records),
         heading("6. Assumptions and exclusions", 2),
@@ -281,7 +302,7 @@ def render_family(kind: str, records: Sequence[EngineeringRecord],
         heading("8. Independent check", 2),
         _oracle(records),
         heading("9. What this calculation does not cover", 2),
-        _exclusions(records),
+        _exclusions(records, assumptions),
         heading("10. Per-member fingerprints", 2),
         _fingerprints(records),
     )

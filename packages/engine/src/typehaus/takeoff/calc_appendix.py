@@ -20,6 +20,7 @@ from typehaus.emit.md_writer import document, heading, table
 from typehaus.engineering.item import EngineeringRecord, LimitState
 from typehaus.takeoff.calc_collapse import collapse, collapsed_tables
 from typehaus.takeoff.calc_family import family_filename, references
+from typehaus.takeoff.calc_numfmt import num
 
 #: Members per value table. Five columns of "4,947 / 285,893 = 0.017" is what a 5.5"
 #: measure holds beside the row labels without wrapping every cell.
@@ -99,7 +100,7 @@ def _states(records: Sequence[EngineeringRecord]) -> str:
             for state in record.limit_states:
                 cite = (f" (R{refs.index(state.citation) + 1})"
                         if state.citation in refs else "")
-                text = (f"{state.demand:,.4g} / {state.capacity:,.4g} "
+                text = (f"{num(state.demand)} / {num(state.capacity)} "
                         f"= {state.ratio:.3f}{cite}")
                 by_key[_state_key(state)] = (f"**{text}**" if state is record.governing
                                              else text)

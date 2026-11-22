@@ -555,7 +555,7 @@ def _sway_magnifier(pier: _Pier, axial_lb: float) -> tuple[float, float]:
 
 
 def _class_b_lap_in(cage: _Cage, fc_psi: float = PRESUMPTIVE_FC_PSI) -> float:
-    """ACI 318-19 §25.4.2.4 development, §25.5.2.1 class B splice, for a #6 or smaller bar.
+    """ACI 318-19 Table 25.4.2.3 development, §25.5.2.1 class B splice, for a #6 or smaller bar.
 
     ``ld = (fy psi_t psi_e psi_s / (25 lambda sqrt(f'c))) db`` with every factor 1.0 —
     bottom-cast (psi_t 1.0), UNCOATED (psi_e 1.0), and see below, normalweight (lambda 1.0).
@@ -588,7 +588,7 @@ def _dowel_anchorage(pier: _Pier, cage: _Cage, fc_psi: float) -> LimitState | No
     confirms on the drawing; the citation says so.
 
     **Into a wall: STRAIGHT, against the authored ``BarSpec.embedment``** (since 2026-09-20;
-    until then it returned ``None`` because nothing bounded the stem). §25.4.2.4 ld at the
+    until then it returned ``None`` because nothing bounded the stem). Table 25.4.2.3 ld at the
     WALL's f'c, ψt 1.0 — ψt's 1.3 is for HORIZONTAL bars with >12" of concrete cast below,
     and a dowel is vertical. The embedment is itself bounded by the stem height less the
     wall's cover; an authored figure past that is refused and the stem governs. Any hook at
@@ -613,7 +613,7 @@ def _dowel_anchorage(pier: _Pier, cage: _Cage, fc_psi: float) -> LimitState | No
         refused = authored > stem
         return LimitState(
             "dowel anchorage into the base", ld, min(authored, stem), "in",
-            f"ACI 318-19 §25.4.2.4 straight development of a #{entry.bar} dowel in the wall "
+            f"ACI 318-19 Table 25.4.2.3 straight development of a #{entry.bar} dowel in the wall "
             f"below at f'c {base_fc:,.0f} psi, psi_t 1.0 (vertical bar), psi_e 1.0 (zinc, "
             f"§25.4.2.5); against the authored {authored:g}\" embedment"
             + (f" — REFUSED: the stem holds only {stem:.1f}\" ({pier.base_thickness_in:.2f}\" "
@@ -770,7 +770,7 @@ def _moment_column(pier: _Pier, area: float, ratio: float, shape: str, demand: f
                    combination=f"ASCE 7-16 §2.3.1 {worst_case.label}",
                    combination_factors=worst_case.factors),
         LimitState("dowel lap, class B", lap, pier.height_in, "in",
-                   "ACI 318-19 §25.4.2.4 development x §25.5.2.1's 1.3 for a class B "
+                   "ACI 318-19 Table 25.4.2.3 development x §25.5.2.1's 1.3 for a class B "
                    "splice with every bar spliced at one section; graded against the "
                    "column's own height, which is the only bound this model holds on how "
                    "much lap can physically exist ABOVE the joint. The AUTHORED lap is in "
@@ -866,8 +866,8 @@ def _moment_column(pier: _Pier, area: float, ratio: float, shape: str, demand: f
         status=Status.OVER if over else Status.OK,
         summary=(f"{pier.tag}: a {pier.diameter_in:.0f}\" {shape} tied COLUMN (h/d "
                  f"{ratio:.1f}) FIXED at its base and carrying its deck's whole lateral "
-                 f"system — {pier.vertical_reinforcement}, at d/c "
-                 f"{governing * magnifier / phi_mn:.2f} in bending on {which}"),
+                 f"system — {pier.vertical_reinforcement}; bending d/c "
+                 f"{governing * magnifier / phi_mn:.2f} on {which}"),
         inputs=_inputs(pier, area, steel, cage) + (
             Quantity("wind_base_moment_Mu", wind_mu, "lb-ft", 1.0),
             Quantity("guard_base_moment_Mu", guard_mu, "lb-ft", 1.0),

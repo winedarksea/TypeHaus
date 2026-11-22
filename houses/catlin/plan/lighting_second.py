@@ -240,15 +240,15 @@ SECOND_LIGHTING = [
                      circuit="CKT-LT-UPPER", room="RM-S-PLANT",
                      controlled_by=("ED-S-PLANT-SW-TIMER",),
                      mount=Mount(kind=MountKind.CEILING, drop=ft(2, 3))),
-    # South/latch side of D-S-PLANT: the 4" device fits between the junction's end stud
-    # (north face y=9.415") and the door's south king (south face y=14").
+    # Latch side of D-S-PLANT, round the SE corner on W-S-S1, seated on stud-004 (x=17'-4"):
+    # on W-S-C1 the only seat was the king, its plate 1/8" off the casing (2026-11-22).
     ElectricalDevice(uid="QTS000RAAA", tag="ED-S-PLANT-SW-TIMER", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-MATTER",
                      circuit="CKT-LT-UPPER", room="RM-S-PLANT",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-C1", face="left", distance_from_start=inch(12),
-                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+                         wall_ref="W-S-S1", face="left", distance_from_start=inch(205.75),
+                         normal_gap=inch(0), rotation_offset=deg(180)))),
 
     # RM-S-STUDY2: the notes' study sconces — down spots on the *side* walls, set back
     # from the south window wall, so the desk is lit without a lit head in the glass after

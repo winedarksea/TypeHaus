@@ -222,7 +222,8 @@ def path_rows(ctx, boards, total_lb: float, floor_line_lb: float, states, missin
         f"(mu {soil.friction_coefficient} x D {dead:,.0f} + net at-rest {net:,.0f}) / H "
         f"{total_lb:,.0f} lb. D: {basis}. At rest {soil.at_rest_efp_psf_per_ft:.0f} psf/ft "
         f"over {depth_ft:.3f}' ({at_rest:,.1f} plf) on the far wall's {edge_len / 12:.2f}' less "
-        f"the near face's {near / 12:.2f}' (the court retains nothing); passive not credited",
+        f"the near face's backfilled {near / 12:.2f}' (its court opening retains nothing); "
+        f"passive not credited",
         is_safety_factor=True))
     far = at_rest * edge_len / 12.0 + max(0.0, total_lb - friction)
     cap = 0.5 * soil.lateral_bearing_psf_per_ft * depth_ft ** 2 * edge_len / 12.0

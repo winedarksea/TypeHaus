@@ -134,8 +134,10 @@ INTERIOR_DOOR_TYPES = (
              core="solid", function="passage", leaf_thickness=inch(1.375), undercut=_RELIEF,
              product_ref=products.FLUSH_SC_PREHUNG.tag,
              source="Flush 1 3/8in solid-core pair, unglazed: one Halifax Square passage set, a "
-                    "dummy and top/bottom flush bolts on the passive leaf. Jamb and head gaskets "
-                    "plus an astragal; the play room's 30 cfm supply leaves under it."
+                    "dummy and top/bottom flush bolts on the passive WEST leaf: the east leaf is "
+                    "the everyday one, so no open leaf hides ED-B-PLAY-N-SW (owner, 2026-11-22). "
+                    "Jamb and head gaskets plus an astragal; the play room's 30 cfm supply "
+                    "leaves under it."
                     + _PREHUNG.format(undercut="3/4in")),
     DT_POCKET_INT_36.model_copy(update={
         "pocket_frame": "eclisse", "function": "passage", "leaf_thickness": inch(1.375),

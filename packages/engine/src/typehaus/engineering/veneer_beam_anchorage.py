@@ -5,7 +5,7 @@ at the support face (no §25.4.10.1 reduction). A row either hooks into the supp
 (§25.4.3.1, ψr 1.0 on 6 db spacing or on authored ``BarSpec.hook_ties`` per Table 25.4.3.2
 and §25.4.3.3), or — where it sits below the wall, inside the footing poured a placement
 earlier — is carried by the beam's authored ``dowels``, cast STRAIGHT in that footing
-(§25.4.2.4). Nothing is assumed: a missing hook, tie or dowel is a named missing input.
+(Table 25.4.2.3). Nothing is assumed: a missing hook, tie or dowel is a named missing input.
 
 Oracle: ``houses/catlin/notes/sunken_garden_veneer_beam.md`` §6e.
 """
@@ -104,7 +104,7 @@ def _u_extent(solid: Any, origin: Any, u: Any) -> tuple[float, float]:
 def _dowel_state(ctx: Any, beam: Any, spec: Any, role: str, row: tuple[int, int, int],
                  sup: Any, starts: bool, solid: Any, frame: tuple[Any, Any, Any],
                  z_in: float, epoxy: bool, out: Anchorage) -> None:
-    """A row below the wall, carried by dowels cast STRAIGHT in the footing (§25.4.2.4)."""
+    """A row below the wall, carried by dowels cast STRAIGHT in the footing (Table 25.4.2.3)."""
     from typehaus.resolve.concrete import concrete_spec_for, cover_for, fc_psi
     from typehaus.resolve.rebar.detailing import development_length_in, tension_lap_in
 
@@ -133,7 +133,7 @@ def _dowel_state(ctx: Any, beam: Any, spec: Any, role: str, row: tuple[int, int,
     lap = tension_lap_in(dowel.bar, ftg_fc, spec.lap_class)
     out.states.append(LimitState(
         f"dowel development of {role} into {solid.tag}", ld, available, "in",
-        f"ACI 318-19 §25.4.2.4 straight ℓd of #{dowel.bar} at {solid.tag}'s f'c "
+        f"ACI 318-19 Table 25.4.2.3 straight ℓd of #{dowel.bar} at {solid.tag}'s f'c "
         f"{ftg_fc:,.0f}, ψt {'1.3' if below > 12.0 else '1.0'} ({below:.2f}\" cast below); past "
         f"the {sup.tag} face: min({embedded:g}\" embedment − {offset:.2f}\" face-to-joint, "
         f"{geometric:.2f}\" to the far face less {ftg_cover:g}\" cover)"))

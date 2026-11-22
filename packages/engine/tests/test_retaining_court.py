@@ -635,11 +635,11 @@ def test_staged_backfill_holds_at_half_a_wall_of_difference(catlin_plan) -> None
     of its H: at-rest earth ½ K0 (H f)² (no apron surcharge yet), heel soil to the fill line (H
     f − 1' of footing), the stem and footing whole. W1/E1 stand EMPTY until the porch braces
     them (IRC R404.1.7) and slide with the U:
-    2 x 10.443' x (5,974.8 − 3 x 9.12 x 110 = 2,965.2 plf) x 0.35 = 21,676 lb.
+    2 x 10.443' x (stem 1,368.0 + footing 1,050.0 = 2,418.0 plf) x 0.35 = 17,676 lb.
     Grid of twelfths, 110 pcf:
 
-    * no side more than H/2 above another: worst FS 1.64 (one side at half, two full);
-    * one side empty, two full: 1.37 — not a slide, and not 1.5: the rule forbids it;
+    * no side more than H/2 above another: worst FS 1.58 (one side at half, two full);
+    * one side empty, two full: 1.31 — not a slide, and not 1.5: the rule forbids it;
     * the three-wall loop alone at H/2: 1.31, which is why W1/E1 are named.
     """
     import dataclasses
@@ -660,8 +660,9 @@ def test_staged_backfill_holds_at_half_a_wall_of_difference(catlin_plan) -> None
     # after the backfill, so no stage carries it.
     efp = presumptive("GM").at_rest_efp_psf_per_ft
     h, heel, stem, pcf = 10.12, 3.0, 9.12, 110.0
-    north = 2 * 10.443 * (5_974.8 - heel * stem * pcf) * 0.35
-    assert north == pytest.approx(21_676, abs=1)
+    # 5,974.8 plf is W1/E1 at 130 pcf; empty, it is the stem and footing alone.
+    north = 2 * 10.443 * (5_974.8 - heel * stem * 130.0) * 0.35
+    assert north == pytest.approx(17_676, abs=1)
 
     def fs(fills, credit):
         staged = [dataclasses.replace(
@@ -678,9 +679,9 @@ def test_staged_backfill_holds_at_half_a_wall_of_difference(catlin_plan) -> None
         return min(fs(c, credit) for c in itertools.product(grid, repeat=len(full))
                    if max(c) - min(c) <= rule + 1e-9 and max(c) > 0)
 
-    assert worst(0.5, north) == pytest.approx(1.64, abs=0.01)
+    assert worst(0.5, north) == pytest.approx(1.58, abs=0.01)
     assert worst(0.5, north) >= 1.5
-    assert worst(1.0, north) == pytest.approx(1.37, abs=0.01)
+    assert worst(1.0, north) == pytest.approx(1.31, abs=0.01)
     assert worst(0.5, 0.0) == pytest.approx(1.31, abs=0.01)
 
 pytestmark = pytest.mark.slow

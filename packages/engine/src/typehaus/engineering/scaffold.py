@@ -62,6 +62,10 @@ _HEADER = """\
 #   1. A licensed professional reviews `calcs.pdf` in this bundle and stamps it.
 #   2. Fill in the engineer, the license, the date and the path to the stamped document,
 #      for the blocks they actually sealed. DELETE the blocks they did not.
+#      The same four blanks repeat in every block, so four find-and-replaces fill them
+#      all: <<ENGINEER NAME, PE>>, <<STATE 00000>>, <<YYYY-MM-DD>>, <<path/to/sealed.pdf>>.
+#      A block marked DEFERRED records an outside designer's document (a truss
+#      fabricator's sealed design); delete it until that document exists.
 #   3. Copy this file to `houses/{house}/engineering.toml`.
 #   4. Run `haus engineering --require-seal` and `haus print --sealed`.
 #

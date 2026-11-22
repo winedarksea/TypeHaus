@@ -421,11 +421,14 @@ ATTIC_LIGHTING = [
     # (80.81"..84.31"); now the plate clears it by 0.94", the 4" footprint by 0.31".
     # ** 2'-8" SINCE 2026-11-21. ** The raked top plate rises 1/2" per inch and sat on the box's
     # top corner (276.8" at x=76.5" vs the box to 278"); at 32" the box clears it, nailing to king-0-l0.
+    # ** 2'-2" AT x=5'-6" SINCE 2026-11-22. ** On the king its plate butted the casing leg and
+    # ran into ED-A-STUDIO-AP's body; stud-004 (64") is the only other stud tall enough, and
+    # only below 2'-6". It nails there, over RC7, 5" west of the AP.
     ElectricalDevice(uid="G5RDBXPZVD", tag="ED-A-POCKET-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW1",
                      circuit="CKT-LT-UPPER", room="RM-A-STUDIO",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(32)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(26)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-A-STU-N", face="right", distance_from_start=inch(78.5),
+                         wall_ref="W-A-STU-N", face="right", distance_from_start=inch(66),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 ]

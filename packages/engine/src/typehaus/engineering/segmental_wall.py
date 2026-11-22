@@ -357,7 +357,8 @@ def _one(ctx: EngineeringContext, wall) -> EngineeringRecord:  # type: ignore[no
         Quantity("wall_friction_ratio", WALL_FRICTION_RATIO, "", 0.01),
         Quantity("pad_friction_angle", read.pad_phi_deg if read.pad_phi_deg is not None
                  else -1.0, "deg", 0.1),
-        Quantity("friction_coefficient", base.friction_coefficient, "", 0.01),
+        # The mu the sliding row used, not the table value it may have replaced.
+        Quantity("friction_coefficient", body.friction, "", 0.01),
         Quantity("allowable_bearing", base.allowable_bearing_psf, "psf", 1.0),
         Quantity("interface_shear", shear if shear is not None else -1.0, "plf", 1.0),
         Quantity("drainage_zone_width", spec.drainage_zone.width.feet

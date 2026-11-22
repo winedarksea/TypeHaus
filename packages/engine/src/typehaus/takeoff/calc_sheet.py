@@ -159,7 +159,7 @@ def _result(record: EngineeringRecord) -> str:
         return f"**{STATUS_LABEL[record.status]}.** {record.summary}"
     verdict = "PASS" if governing.ok else "**OVER CAPACITY**"
     combination = f", {governing.combination}" if governing.combination else ""
-    line = (f"**d/c = {governing.ratio:.2f}, governed by {governing.name} "
+    line = (f"**d/c = {governing.ratio:.3f}, governed by {governing.name} "
             f"({governing.citation}{combination}) — {verdict}.**")
     if record.status is Status.INCOMPLETE:
         line += ("\n\nThis ratio is **not the whole answer**: the item is INCOMPLETE, and "

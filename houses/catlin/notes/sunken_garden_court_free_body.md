@@ -2992,7 +2992,7 @@ porch beams brace their tops (IRC R404.1.7 — they are designed braced, #6 @ 38
 the court's backfill they stand EMPTY and add weight only:
 
 ```
-2 × 10.443' × (5,974.8 − 3 × 9.12 × 110 = 2,965.2 plf) × 0.35          = 21,676 lb
+2 × 10.443' × (stem 1,368.0 + footing 1,050.0 = 2,418.0 plf) × 0.35     = 17,676 lb
 ```
 
 Dragging W1 sideways with W2 is a shear across the W1|W2 section: the 84" x 12" footing plus
@@ -3003,13 +3003,13 @@ BRKBM and the corner squares (§12b) are not credited.
 
 | rule: no side more than … above another | loop alone | + W1/E1 empty |
 |---|---|---|
-| H/4, 2'-6" | 1.56 | 1.92 |
-| H/3, 3'-4" | 1.47 | 1.82 |
-| **H/2, 5'-0" — "half one side, then the other"** | 1.31 | **1.64** |
-| anything (one side empty, two full) | 1.08 | 1.37 |
+| H/4, 2'-6" | 1.56 | 1.86 |
+| H/3, 3'-4" | 1.47 | 1.76 |
+| **H/2, 5'-0" — "half one side, then the other"** | 1.31 | **1.58** |
+| anything (one side empty, two full) | 1.08 | 1.31 |
 
-At 130 pcf the half rule reads 1.76; 110 governs, as in §4. On the site's own soil (μ 0.25,
-no bed) the half rule would be ~1.17. That is §5 again: the bed is the margin, at every stage.
+At 130 pcf the half rule reads 1.70; 110 governs, as in §4. On the site's own soil (μ 0.25,
+no bed) the half rule would be ~1.13. That is §5 again: the bed is the margin, at every stage.
 
 **The rule on the drawing (`AN-SG-BACKFILL`).**
 
@@ -3018,7 +3018,7 @@ no bed) the half rule would be ~1.17. That is §5 again: the bed is the margin, 
 - W1/E1 are not backfilled until braced.
 - Nothing is backfilled before the strut and footings have cured.
 
-That is safe at **1.64**. One side left empty while the others are full is 1.37: it does not
+That is safe at **1.58**. One side left empty while the others are full is 1.31: it does not
 slide, but it is not a design state, and the rule forbids it in words a crew can carry. No
 temporary bracing is needed. Bracing W2 to E2 across the court would add nothing in any
 case: the U already slides as one body, and a brace adds no friction.

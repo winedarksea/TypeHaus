@@ -213,8 +213,9 @@ def pe_readme(*, house: str, generated: str, engine_version: str, content_hash: 
         "",
         "## Five minutes, in order",
         "",
-        "1. **`calcs/00-cover.md`** — the building, the code edition, and the design",
-        "   criteria every calculation shares. If a criterion is wrong, stop here.",
+        "1. **`calcs/00-cover.md`** (status) and **`calcs/01-design-criteria.md`** — the",
+        "   wind, snow, soil, materials and load combinations every calculation shares.",
+        "   If a criterion is wrong, stop here.",
         "2. **`calcs/02-item-register.md`** — every item, its governing limit state and its",
         "   demand/capacity ratio, on one page.",
         "3. **`calcs/03-open-items.md`** — what is *not* finished, and who owns each one.",
@@ -246,9 +247,9 @@ def pe_readme(*, house: str, generated: str, engine_version: str, content_hash: 
         f"- **{len(ok)} item(s) are computed, and every limit state this engine enumerated",
         "  for them is under 1.** That is a narrower claim than \"they check out\", and the",
         f"  difference is the review: {len(screening)} of them are **screening** rather than",
-        "  complete. Section 9 of each sheet lists, in that item's own terms, the failure",
-        "  modes this engine does not enumerate — they are not evaluated and they are not",
-        "  implied to pass.",
+        "  complete. Section 9 of each family sheet names the rows of",
+        "  `calcs/04-assumptions.md` that state, in that family's own terms, what is not",
+        "  graded — those failure modes are not evaluated and are not implied to pass.",
     ]
     if incomplete:
         out.append(f"- **{len(incomplete)} item(s) are INCOMPLETE** — computed, but an input")

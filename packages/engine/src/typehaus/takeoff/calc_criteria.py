@@ -14,6 +14,9 @@ from typehaus.emit.md_writer import document, heading, table
 from typehaus.engineering.item import Status
 
 if TYPE_CHECKING:  # pragma: no cover — typing only
+    from collections.abc import Sequence
+
+    from typehaus.engineering.item import EngineeringRecord
     from typehaus.takeoff.calc_package import PackageInputs
 
 
@@ -35,7 +38,7 @@ def _criteria(inputs: PackageInputs) -> str:
         _soil_block(soil_module, site),
         heading("4. Materials", 2),
         _materials_block(inputs),
-        heading("5. Service conditions", 2),
+        heading("5. Codes and standards, by kind", 2),
         _service_block(inputs),
         heading("6. Load combinations", 2),
         _combinations_block(inputs),
@@ -78,13 +81,44 @@ DESIGN_METHOD: dict[str, str] = {
     "roof_beam": "ASD (published beam allowables against a service demand)",
     "veneer_beam": "LRFD (ACI 318-19 strength design at 1.4D); deflection at service loads "
                    "(Table 24.2.2)",
+    "tiered_retaining": "ASD (IRC R404.4 safety factors on service loads; IBC Table 1806.2 "
+                        "allowable bearing)",
+    "thermal_break_transfer": "MIXED — ASD for soil, sliding and the foam's sustained-load "
+                              "rule; LRFD for the plain-concrete near line and the "
+                              "winter-tension bars (ACI 318-19, phi 0.60 / 0.90, 1.0T)",
+    "lateral_system": "ASD (SDPWS-2015 nominal unit shear / 2.0; wind at 0.6W; NDS 2018 and "
+                      "published connector allowables)",
+    "wood_roof_post": "ASD (AWC NDS 2018 reference design values x adjustment factors; "
+                      "ICC-ES connector allowables)",
+    "band_header": "ASD (AWC NDS 2018; the LVL and rim-board makers' allowable design values)",
+    "column_support": "LRFD (ACI 318-19 §22.8 bearing, §22.9 shear friction, §25.4 "
+                      "development; ASCE 7-16 §2.3.1)",
+    "base_rotation": "LRFD (ACI 318-19 §6.6.4.5 moment magnification at the factored "
+                     "deck_post demands)",
+    "column_head_joint": "MIXED — LRFD for the column's shear, torsion and seat bearing "
+                         "(ACI 318-19); ASD for the head connector's published allowable",
+    "deck_tie": "ASD (published connector allowables, linear interaction; wind at 0.6W)",
 }
+
+#: What a kind with no calculation of its own prints instead of a method.
+DEFERRED_METHOD = "deferred — the responsible designer's method governs"
+
+
+def design_method(kind: str, records: Sequence[EngineeringRecord]) -> str:
+    """The method a kind's sheet and the criteria page both print. Never blank."""
+    declared = DESIGN_METHOD.get(kind)
+    if declared:
+        return declared
+    if records and all(r.status is Status.NO_CALC for r in records):
+        return DEFERRED_METHOD
+    return "not declared"
 
 LOAD_COMBINATIONS: dict[str, tuple[str, str]] = {
     "deck_post": ("1.2D + 1.6L", "ASCE 7-16 §2.3.1(2) / IBC 2018 §1605.2 Eq. 16-2"),
     "retaining_wall": ("1.6H (flexure and shear); service loads, FS >= 1.5 (stability)",
                        "ASCE 7-16 §2.3.1(6) / IBC 2018 §1605.2; IBC §1807.2.3"),
     "retaining_system": ("service loads, FS >= 1.5", "IBC 2018 §1807.2.3"),
+    "tiered_retaining": ("service loads, FS >= 1.5", "IRC R404.4"),
     "girt_screw": ("0.6W", "ASCE 7-16 §2.4.1(7), C&C pressures per §30.3"),
     "post_bearing": ("D + L, allowable stress design",
                      "AWC NDS 2018 §3.10; IRC R507.1 loads"),
@@ -119,17 +153,14 @@ def _combinations_block(inputs: PackageInputs) -> str:
             combination = "deferred — the responsible designer's combination governs"
             citation = "see `03-open-items.md`"
         else:
-            combination = "not stated"
-            citation = "this kind's arithmetic combines no cases"
-        method = DESIGN_METHOD.get(kind) or (
-            "deferred — the responsible designer's method governs"
-            if all(r.status is Status.NO_CALC for r in records) else "not declared")
+            combination = "not recorded on the limit states"
+            citation = "see the kind's sheet, §4"
+        method = design_method(kind, records)
         rows.append([f"`{kind}`", len(records), combination, method, citation or "—"])
     return table(["Kind", "Items", "Combination", "Design method", "From"], rows) + (
-        "\n\nA combination is printed only where the arithmetic really applied it. "
-        "\"not stated\" is not a missing factor — it is a calculation that took one case "
-        "and combined nothing, and inventing a number beside it would be a claim about "
-        "arithmetic this package did not do."
+        "\n\nA combination is printed here only where the limit states record one. Where "
+        "none is recorded, the kind's sheet names the loads each limit state was taken at "
+        "in its §2 references."
         "\n\n**The design method is per kind, and this package uses both.** Reading one "
         "method across the whole set is how a strength capacity gets compared against a "
         "service demand: every concrete item here is LRFD and every wood and presumptive-"
