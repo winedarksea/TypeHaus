@@ -116,10 +116,12 @@ SECOND_LIGHTING = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-BW1", face="left", distance_from_start=inch(12),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
+    # 45 1/2": at 46" the box ran 1/2" into the tee's backing block and seated on D-S-BED2's
+    # king, its plate butting the casing; now it seats on the tee's end stud, 2" clear.
     ElectricalDevice(uid="QTS0006AAA", tag="ED-S-HALL-SW2", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW3",
                      circuit="CKT-LT-UPPER", room="RM-S-HALL",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(45.5)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-BW2", face="left", distance_from_start=inch(106),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),

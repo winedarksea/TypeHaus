@@ -324,11 +324,12 @@ SECOND_DEVICES = [
                      room="RM-S-PLANT", controlled_by=("ED-S-PLANT-SW",),
                      mount=Mount(kind=MountKind.CEILING, drop=ft(1, 6))),
     # North of D-S-PLANT's y=47" jamb pack, in the clear bay before the y=64" stud.
+    # Seated on that stud, not the king: there its plate stood 1/8" off D-S-PLANT's casing.
     ElectricalDevice(uid="CED004K2AA", tag="ED-S-PLANT-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW1", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-C1", face="left", distance_from_start=inch(56),
+                         wall_ref="W-S-C1", face="left", distance_from_start=inch(62),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # Reservoir service rack: only its cord plug occupies RC6, so the in-use cover closes.
     # Local timers, power supplies and wired pump-permit relay mount in the dry enclosure;

@@ -200,7 +200,6 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
 - Is TypeHaus organized such that a contractor building typehaus could hand their chatbot/llm of choice the github repo link and easily get answers they need on the design?
 - Reverse osmosis sink?
 - Reduce the number of LED strip controllers, ideally one or two for the soffits, not six (Zigbee vs Matter: see the cove-controller item above).
-- Pantry shelves have a middle support that would ideally only go half depth (sticking to north half), right now it is rather restricting access to the west end of the pantry.
 - Robot training (light switches correspond, doors open)
 - Camera in ESS Room and Plant Room (for keeping an eye on them while on vacation). Something cheap, effective, and works well with the rest of the camera system
 - [ ] Canopy ColorGard: clamps graded (3,182 lbf drift wedge vs 4 x 863, d/c 0.922, `structural.snow_retention_capacity`, ideal sharing). Open: ColorGard 2.0 rail bending/end reactions and the Image II panel attachment drag (need S-5! rail allowables and Metal Sales clip/fastener values).

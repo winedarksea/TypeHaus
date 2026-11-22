@@ -2758,8 +2758,8 @@ NEC_FILL_SECOND = [
     # RC8: W-S-SN3 is INT_2X6_STAGGERED_PLUMBING (plan/storeys/second.py — the suite bath's
     # lav and WC actually back onto it), and this room's boundary opens a >6' gap on the
     # L-arm's south wall, W-S-SBS. RC1 farther east stops short of the corner.
-    # Set this box 9 1/2" from the wall start, before
-    # D-S-SUITEBATH's opening begins 17" from that end; the switch stays beyond the door on
+    # Set this box 5 1/2" from the wall start, on the 3 1/2" stud (at 9 1/2" it seated on the
+    # king, its plate 3/16" off D-S-SUITEBATH's casing); the switch stays beyond the door on
     # the other side.
     #
     # Retain GFCI protection near the suite-bath vanity. This box and RC1 follow the
@@ -2770,7 +2770,7 @@ NEC_FILL_SECOND = [
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-SBS", face="right", distance_from_start=inch(9.5),
+                         wall_ref="W-S-SBS", face="right", distance_from_start=inch(5.5),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 ]
 # Storage lofts are outside habitable-room receptacle spacing. The studio and study
