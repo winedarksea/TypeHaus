@@ -437,8 +437,10 @@ SECOND_DEVICES = [
                      room="RM-S-SUITE", controlled_by=("ED-S-SUITE-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     # In the suite's east arm, beside D-S-SUITE (the hall door through the bearing wall).
+    # On a bar mid-bay: seated on O-S-CLOSET's king its plate stood 3/16" off the casing.
     ElectricalDevice(uid="CED009K2AA", tag="ED-S-SUITE-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW1", plate="reggio-sungold", circuit="CKT-LT-UPPER",
+                     box_use="bracket",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-CLN", face="left", distance_from_start=inch(83.5),
