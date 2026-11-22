@@ -85,10 +85,17 @@ def canvas_object_types(plan: PlanModel, *,
                 "model_primitive": (
                     item.model_representation.primitive
                     if getattr(item, "model_representation", None) is not None else None),
+                "body_color": _face_color(item, materials),
                 **_symbol_geometry(item, footprint, wood_material(item, materials), materials,
                                    with_parts=parts_for is None or item.tag in parts_for),
             })
     return result
+
+
+def _face_color(item: Any, materials: dict[str, Any]) -> str | None:
+    """A register's face finish hex, for its resolved face mesh; None draws it white."""
+    material = materials.get(getattr(item, "face_material_ref", None))
+    return material.color[:7] if material is not None and material.color else None
 
 
 def _wood_part(role: str, wood: Any | None) -> dict[str, Any]:

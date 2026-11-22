@@ -30,6 +30,7 @@ from typehaus.resolve.framing.tables import (
     opening_framing_pattern,
     pocket_wall_is_deep,
 )
+from typehaus.resolve.framing.terminal_bays import clear_of_spans
 from typehaus.resolve.geometry import add, scale
 from typehaus.resolve.geometry_walls import cuts_layer
 from typehaus.resolve.model import FramedMember
@@ -141,6 +142,9 @@ class WallOpening:
     #: The header ``frame_model`` chose (``framing/header_choice.py``); ``None`` (a bare
     #: fixture) frames the authored spec or the span ladder.
     header: HeaderChoice | None = None
+    #: Wall register boxes over the head / under the sill (``framing/terminal_bays.py``).
+    head_box_spans: tuple[tuple[float, float], ...] = ()
+    sill_box_spans: tuple[tuple[float, float], ...] = ()
 
 
 def pack_counts(opening: WallOpening) -> tuple[int, int]:
@@ -442,7 +446,7 @@ def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
         # Cripples over the nailer back the sheathing joints a wide opening forces there.
         _append_head_cripples(out, rw.uid, opening_index, direction, wall_start, center,
                               half, header_bottom + _PLATE_THICKNESS_M, top_at, member,
-                              cripples_at)
+                              cripples_at, getattr(opening, "head_box_spans", ()))
         return out
     header = getattr(opening, "header", None) or ladder_header(opening)
     size, depth, flat = header.profile, header.depth_m, header.flat
@@ -471,7 +475,8 @@ def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
     if flat:
         return out
     _append_head_cripples(out, rw.uid, opening_index, direction, wall_start, center,
-                          half, cripple_bottom, top_at, member, cripples_at)
+                          half, cripple_bottom, top_at, member, cripples_at,
+                          getattr(opening, "head_box_spans", ()))
     return out
 
 
@@ -500,7 +505,7 @@ def _frame_rough_sill(out: list[FramedMember], rw, direction, wall_start,
     # framing through the opening itself.
     _append_sill_cripples(out, rw.uid, opening_index, direction, wall_start, center,
                           half, z0, sill_bottom if sill_bottom is not None else z0,
-                          member, cripples_at)
+                          member, cripples_at, getattr(opening, "sill_box_spans", ()))
 
 
 def _append_pocket_cavity(out: list[FramedMember], rw, direction, wall_start,
@@ -658,14 +663,17 @@ def _cripple_stations(center: float, half: float,
 def _append_sill_cripples(out: list[FramedMember], parent_uid: str, opening_index: int,
                           direction: tuple[float, float], wall_start: tuple[float, float],
                           center: float, half: float, bottom: float, sill: float,
-                          member: str, spacing: float) -> None:
+                          member: str, spacing: float,
+                          spans: tuple[tuple[float, float], ...] = ()) -> None:
     """Cripples under a rough sill, at the host wall's own maximum spacing. Windows
     only — a door has no rough sill to carry."""
     # ``<`` with a tolerance, never ``<=``: W-B-CE's head cripples resolve at exactly
     # 3.0" and clear the bound by ~1e-16 m of float luck.
     if sill - bottom < _MIN_CRIPPLE_M - _MIN_CRIPPLE_TOL_M:
         return
-    for index, station in _cripple_stations(center, half, spacing):
+    for index, station in clear_of_spans(_cripple_stations(center, half, spacing), spans,
+                                         member_actual(member)[0] * M_PER_IN,
+                                         center - half, center + half):
         position = add(wall_start, scale(direction, station))
         out.append(FramedMember(parent_uid, f"cripple-sill-{opening_index}-{index:02d}",
                                 "cripple", member, position, position, bottom, sill,
@@ -676,14 +684,17 @@ def _append_head_cripples(out: list[FramedMember], parent_uid: str, opening_inde
                           direction: tuple[float, float], wall_start: tuple[float, float],
                           center: float, half: float, header_top: float,
                           top_at: Callable[[float], float], member: str,
-                          spacing: float) -> None:
+                          spacing: float,
+                          spans: tuple[tuple[float, float], ...] = ()) -> None:
     """Cripples between the header (or its track nailer) and the plate underside.
 
     Every opening with a jamb pack gets these, doors included: what governs is the
     arithmetic gap above the header, not the operation. An opening whose header runs to
     the plate line simply has no gap and emits none.
     """
-    for index, station in _cripple_stations(center, half, spacing):
+    for index, station in clear_of_spans(_cripple_stations(center, half, spacing), spans,
+                                         member_actual(member)[0] * M_PER_IN,
+                                         center - half, center + half):
         position = add(wall_start, scale(direction, station))
         wall_top = top_at(station)
         if wall_top - header_top < _MIN_CRIPPLE_M - _MIN_CRIPPLE_TOL_M:

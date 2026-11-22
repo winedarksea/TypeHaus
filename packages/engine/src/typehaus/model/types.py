@@ -1057,6 +1057,8 @@ class RegisterType(FurnitureType, AirHandlingProductFacts):
     #: Nominal opening behind the flange; independent of any in-cavity neck.
     face_opening: tuple[Length, Length] | None = None
     double_deflection: bool = False
+    #: The face's finish (appearance only), drawn on its resolved face mesh; None is white.
+    face_material_ref: str | None = None
 
     needs: frozenset[Service] = frozenset({Service.SUPPLY_AIR})
     # A ventilation terminal (the ERV's fresh-air/stale-air grilles) rather than a

@@ -155,6 +155,14 @@ def unknown_wood_material_ref(ctx: CheckContext) -> list[Finding]:
                 message=f"furniture type {entry.tag!r} names material {ref!r}, absent from catalog",
                 element_tags=(entry.tag,), result=Result.FAIL,
                 fix_hint="correct the reference, or add the Material to the house catalog"))
+    for entry in library.register_types:
+        if entry.face_material_ref and entry.face_material_ref not in known:
+            findings.append(Finding(
+                severity=Severity.ERROR, check_id="integrity.unknown_wood_material_ref",
+                message=(f"register type {entry.tag!r} names face material "
+                         f"{entry.face_material_ref!r}, absent from catalog"),
+                element_tags=(entry.tag,), result=Result.FAIL,
+                fix_hint="correct the reference, or add the Material to the house catalog"))
     return findings
 
 

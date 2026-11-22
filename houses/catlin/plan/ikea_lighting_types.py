@@ -23,7 +23,7 @@ GU10_90_30K = Product(
            "for enclosed use where it goes in GRÖNSPRÖT. IKEA's SOLHETTA states no CRI.",
 )
 NYMANE_4SPOT = Product(
-    tag="PROD-IKEA-NYMANE-4SPOT-WH", brand="IKEA", model="603.377.06",
+    tag="PROD-IKEA-NYMANE-4SPOT-WH", brand="IKEA", model="603.377.06", sku="603.377.06",
     name="NYMÅNE ceiling light with 4 spotlights, white",
     url="https://www.ikea.com/us/en/p/nymane-ceiling-light-with-4-spotlights-white-60337706/",
     source=_READ + "$79.99. Hardwired, contract grade; 29 L x 3 W x 5 H in.; 4 x GU10 LED, "
@@ -32,7 +32,7 @@ NYMANE_4SPOT = Product(
            "sizes are not dimensioned. Reviews: the plate does not sit quite flush.",
 )
 VALLMORA_3 = Product(
-    tag="PROD-IKEA-VALLMORA-3-NI", brand="IKEA", model="803.069.40",
+    tag="PROD-IKEA-VALLMORA-3-NI", brand="IKEA", model="803.069.40", sku="803.069.40",
     name="VALLMORA wall lamp, 3 spots, nickel plated",
     url="https://www.ikea.com/us/en/p/vallmora-wall-lamp-3-spots-nickel-plated-80306940/",
     source=_READ + "$89.99. 23 W x 11 H x 6 D in.; brushed nickel-plated steel, frosted "
@@ -42,7 +42,7 @@ VALLMORA_3 = Product(
            "years in a shower room (this one has no shower).",
 )
 GRONSPROT = Product(
-    tag="PROD-IKEA-GRONSPROT-BK", brand="IKEA", model="205.559.99",
+    tag="PROD-IKEA-GRONSPROT-BK", brand="IKEA", model="205.559.99", sku="205.559.99",
     name="GRÖNSPRÖT wall lamp, hardwire installation, outdoor, black",
     url="https://www.ikea.com/us/en/p/groensproet-wall-lamp-hardwire-installation-outdoor-"
         "black-20555999/",

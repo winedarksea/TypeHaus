@@ -129,7 +129,8 @@ def test_psu_leader_connects_a_run_to_its_shared_supply(catlin_model):
         return sum(int(m.group(1)) if (m := re.search(kind + r" x(\d+)", n.content)) else
                    n.content.startswith(kind + " ")
                    for n in scene.nodes if isinstance(n, Text))
-    assert len(psu_labels) + counted("DRV") == 10, "incl. laundry track and pantry jambs"
+    # 9 since 2026-11-21: the laundry bar is line voltage, its PureEdge supply gone.
+    assert len(psu_labels) + counted("DRV") == 9, "incl. the pantry jambs"
     assert counted("CTRL") == 4
 
 

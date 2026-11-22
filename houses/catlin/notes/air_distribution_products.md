@@ -305,7 +305,7 @@ mud-in face cannot hold one. (Whether the stairway request covered that return i
 | `REG-M-RET3` | collar under `DU-M-ERV-R-STUDY` | onto its own radial's line, +2" | |
 | `REG-M-RET-STUDY` | collar on a `W-M-CLN2` stud | over its riser, +4" | |
 | `REG-S-HP-BED3` | 12x6 box on D-S-BED3's king | +2 3/4" north | |
-| `REG-S-HP-SUITE` + `DU-S-HP-SUITE` | **the 10x8 branch ran through the cripple over D-S-SUITE** | both 7" north into the next cripple bay (7" off the door centre) | |
+| `REG-S-HP-SUITE` + `DU-S-HP-SUITE` | **the 10x8 branch ran through the cripple over D-S-SUITE** | both 7" north into the next cripple bay (7" off the door centre); centred again 2026-11-21, the cripple steps aside (`framing/terminal_bays.py`) | |
 | `REG-S-HP-STAIR` | 12x6 box on a SF-S-DUCT ladder stud | 5 3/8" south | |
 | `REG-S-HP-RET` | a ladder rung across the return face | `AO-S-HP1-RET` heads it off; grille +1", plenum +1/4" | |
 | `REG-S-ERV-PLANT-EXH` | collar in W-S-C1's top plate | 1 3/4" lower, surface valve on the liner | |

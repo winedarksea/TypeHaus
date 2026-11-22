@@ -29,7 +29,8 @@ def track_lighting_materials(model):
             optic = head.product.optic_product_refs.get(head.beam_degrees)
             if optic is not None:
                 optic_counts[optic] = optic_counts.get(optic, 0) + 1
-        components.extend(("lamp" if fixed_bar else "head", ref, count) for ref, count in sorted(head_counts.items()))
+        head_item = "lamp" if fixed_bar else "head"
+        components.extend((head_item, ref, count) for ref, count in sorted(head_counts.items()))
         components.extend(("optic", ref, count) for ref, count in sorted(optic_counts.items()))
         if device.psu_ref and device.psu_ref not in supplies:
             supply_type = device_types.get(getattr(devices.get(device.psu_ref), "type_ref", None))

@@ -9258,3 +9258,19 @@ Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
 - **Fix.** Only a member whose run reaches the block itself (its thickness, 1/16" slack)
   bounds it. That block now runs to the rim; no other block in the house changes length.
 
+
+## Suite supply centred over D-S-SUITE (2026-11-21, owner)
+
+- **Was.** `REG-S-HP-SUITE` and `DU-S-HP-SUITE` sat 7" north of the door centre: head cripples
+  are laid from the RO's south edge, and `cripple-head-0-01` (168 7/8") stood where the
+  centred 12" box goes.
+- **Rule.** A wall-hosted register's box over a head or under a sill moves the cripple it lands
+  on to the nearer side, 1/2" off the box (`resolve/framing/terminal_bays.py`); no room on
+  either side leaves it for `mep.terminal_neck_fit`. A house-wide symmetric cripple layout was
+  tried and refused: it unbacked W-M-E1's sheathing joints.
+- **Result.** Register and branch at y 14'-2"; the cripple steps 6 1/8" south to 162 3/4" (bays
+  9 1/8" and 20 5/8", box in the second). Spin-in 6 7/8" south on the trunk, beside
+  `DU-S-HP-WEST-BOOT`'s crown collar. The two starts now touch, and `branch_parts` stopped at
+  the first run an end met even when that joint billed nothing, so the crown take-off
+  vanished; it now looks on to the trunk. The Chevron now draws Sun Gold
+  (`RegisterType.face_material_ref`).

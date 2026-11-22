@@ -78,6 +78,7 @@ from typehaus.resolve.framing.tables import (
     member_actual,
     pocket_kit_takes_track_nailer,
 )
+from typehaus.resolve.framing.terminal_bays import attach_terminal_spans
 from typehaus.resolve.geometry import add, length, normal, scale, sub, unit
 from typehaus.resolve.layout_lines import layout_phase, lines_by_wall
 from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedWall
@@ -776,6 +777,8 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                           if op.is_door and op.type_ref in door_types else None),
             header_in_band=band_floors.get(op.tag),
         ))
+    # A wall register's box over a head or under a sill moves the cripple it lands on.
+    attach_terminal_spans(plan, by_host)
     # The header decides the jack count, which every jamb-pack reading below needs.
     choose_headers(plan, model, by_host)
     # Before the corner topology is read: a jamb pack reaching into an L takes it.

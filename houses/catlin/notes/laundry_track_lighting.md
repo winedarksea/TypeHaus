@@ -1,47 +1,31 @@
-# Laundry task track
+# Laundry task light
 
-`ED-M-LAUNDRY-TRACK` replaces the obstructed can while preserving UID `QTM000SAAA`.
-The white rail runs east–west at (128.4", 258"), flush below the 108" ceiling (re-centred
-between the heads 2026-11-07, when the tower and tub swapped ends).
-Two 45° heads share channel 1 and `ED-M-LAUNDRY-SW`; `ED-M-LAUNDRY-PSU` owns
-the 120V connection to `CKT-LT-MAIN`. The heads carry 22W at 24V, without a second
-branch load. The supply is modeled at its 40VA rating, consistent with the house's
-other lighting supplies; this is a scheduling convention, not a measured input VA.
+`ED-M-LAUNDRY-TRACK` (UID `QTM000SAAA`, mark Y) is an **IKEA NYMÅNE ceiling light with 4
+spotlights** (603.377.06, white, $79.99) since 2026-11-21 (owner; cost). It runs east–west,
+centred at (128.4", 260"), flush on the 107 1/2" board face, on `CKT-LT-MAIN` and
+`ED-M-LAUNDRY-SW`. Four GU10 LED spots (`PROD-LAMP-GU10-90-30K`: 3000 K, CRI 90+, ≤ 8 W,
+short enough for the shade): the west pair aims at the sink's front interior (y=240", 34"
+AFF), the east pair at the centre of the machine's north face. Spot pitch is read off the
+assembly sheet's drawing (even, end spots at the bar ends); IKEA dimensions only 29 x 5 in.
 
-| Component | Order model | Quantity | Procurement |
-| --- | --- | ---: | --- |
-| PureEdge magnetic rail | TS24M-2C-4FT-WH | 1 | Buy 48", field-cut to 36" |
-| Radiant Medium head | T24M-2C-RADM-FL-30K-WH | 2 | Fixed 3000K, 11W, 660lm, CRI93, 45° |
-| White end feed | TS24M-2C-EP-WH | 1 | West end |
-| Universal supply enclosure | PSB-40W-UNI-24VDC-T | 1 | Surface mount; accessible cover |
+**The box.** The bar's canopy is at its centre, and every bay of `FS-S-WEST` over the room
+carries an ERV return lying 5/8" over the board (`DU-M-ERV-R-LAUNDRY` y=244",
+`-STUDY` 248.6", `-KITCH` 261.8"), with trusses at y=240/256/272". A 2-1/8" box fits nowhere;
+a 1/2" pan is too small for through-fed 12 AWG. It takes a **4" octagon, 1-1/4" deep**
+(12.5 in³, external NM connectors, so 11.25 in³ needed) on a bar between the 256" and 272"
+trusses, its top ~1/8" under `DU-M-ERV-R-KITCH`: lift the duct a hair on site if needed.
+`electrical.box_fill` grades the depth on 314.24(A) (no device in a luminaire box).
 
-Rail caps, slot covers, anchors and screws are included with the rail. All component
-prices require a vendor quote; no verified price is available. The component order view
-ships as `track_lighting_materials` in the BOM and lighting inspector. It describes the
-same assemblies counted in `placeables`, so it is excluded from a second cost total.
+Modelled as a `fixed_bar_120v` `TrackLightingSpec` (the bar is the "rail", the centre
+canopy the "feed", the lamps the heads), so plan, canvas, GLB and IFC draw the aimed spots
+and `track_lighting_materials` lists one fixture and four lamps. Tests check all four
+optical axes against the tall machine and the rack, stowed and deployed. Sightlines only,
+not illuminance.
 
-The supply mounts on the laundry face of `W-M-BA2E`, centered at y=257", bottom 84"
-above the main-storey datum. Its cover remains above the washer/dryer body. The authored
-Class 2 surface raceway `CR-M-LAUNDRY-24V` rises above the enclosure and runs below
-the ceiling to the west feed. Keep the enclosure ventilated and its cover removable.
-The installation leaves the existing ceiling ducts, framing and pocket-door cavity intact.
+**Revert:** the PureEdge 24 V magnetic rail (TS24M-2C, two Radiant Medium heads, west end
+feed, a 40 W supply on `W-M-BA2E` and the Class 2 raceway `CR-M-LAUNDRY-24V`) is
+`typehaus.library.track_lighting.magnetic_track_spec` + `PUREEDGE_SUPPLY`; it was never
+priced (~$450–650 retail estimate). Its end feed is why it needed no ceiling box.
 
-Adapters sit at x=143.25" (machines) and x=113.55" (sink). Both heads aim south;
-the Python catalog derives tilt from the modeled pivot/lens and the task target.
-The machine target is the center of its north/front face. The sink target is the front
-interior at y=240", 34" above the finished floor. Tests check both optical axes against
-the tall machine and the rack's stowed body and 16" deployment envelope. Hanging
-clothing can still interrupt the sink beam; adjust heads in the field as needed.
-These checks establish geometry and sightlines, not an illuminance calculation.
-
-Reusable factories live in `typehaus.library.track_lighting`. `magnetic_track_spec`
-configures the PureEdge system; `standard_track_spec` configures WAC HT4-WT / HLE-WT
-with H-2010-930-WT Silo X10 integral-driver heads (fixed 3000K, 10W each, 35° default,
-25° included optic). Authored head offsets, azimuth, tilt and optic drive plan strokes,
-canvas meshes, GLB and IFC. Hinge/adapter details without published dimensions are
-schematic; all consumers use the same geometry. Interactive head editing is outside this change.
-
-Sources: [PureEdge rail and supply specification](https://www.pureedgelighting.com/edge/specs/PureEdge_TS24M_Surface_Suspended_MagneticTrack_2C.pdf),
-[Radiant Medium specification](https://www.pureedgelighting.com/pure/specs/PureEdge_T24M_Radiant_Medium.pdf),
-[WAC H track](https://waclighting.com/product/h-track/),
-[Silo X10 specification](https://www.waclighting.com/storage/waclighting-images/specsheet_pdf/2010-HJL_SPSHT.pdf).
+Sources: [NYMÅNE page](https://www.ikea.com/us/en/p/nymane-ceiling-light-with-4-spotlights-white-60337706/),
+assembly sheet AA-1961877-8 (read 2026-11-21).

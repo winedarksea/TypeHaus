@@ -250,8 +250,8 @@ DUCTS_HVAC_SECOND = [
             floor_ref="FS-ATTIC", design_cfm=455, material="galvanized"),
     # West branch to RM-S-SUITE (2026-11-16): a 6" round spin-in off the trunk's west face at
     # its 100 1/8" centreline, the bedroom side-collar idiom (plan/mep_hvac_branches.py). It
-    # crosses W-S-C2B over D-S-SUITE in the clear bay between the header cripples (y 169 5/8"-
-    # 184 1/8"; z 97 1/8"-103 1/8" between header-0's top at 92 1/2" and the plates at
+    # crosses W-S-C2B on D-S-SUITE's centre (y 14'-2"), in the bay its register box opens between
+    # the header cripples (z 97 1/8"-103 1/8" between header-0's top at 92 1/2" and the plates at
     # 105 1/8") and ENDS 1/8" proud of the suite face, on the straight 12x6x6 register box behind
     # REG-S-HP-SUITE. 100 cfm, 509 fpm. The loft is fed separately (DU-S-HP-WEST-BOOT).
     #
@@ -259,7 +259,7 @@ DUCTS_HVAC_SECOND = [
     # graded across the box's width, and this one leaves it through its side. Nothing hangs
     # in the suite any more: the 10x8 that ran on into the room to the loft take-off is gone.
     DuctRun(uid="CSDH03AAAA", tag="DU-S-HP-SUITE", system=DuctSystem.SUPPLY,
-            path=(pt(ft(19, 6), ft(14, 8.875)), pt(inch(212.125), ft(14, 8.875))),
+            path=(pt(ft(19, 6), ft(14, 2)), pt(inch(212.125), ft(14, 2))),
             elevations=(inch(100.125), inch(100.125)),
             diameter=inch(6), routing=DuctRouting.EXPOSED,
             material="galvanized", design_cfm=100),

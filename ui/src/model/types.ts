@@ -746,6 +746,8 @@ export interface CanvasObjectType {
   footprint_m: [number, number] | null;
   footprint_shape_m?: Vec2[] | null;
   height_m: number | null;
+  /** A register's face finish, for its resolved `body_mesh`; null draws it white. */
+  body_color?: string | null;
   clearances?: { footprint_m: Vec2[]; purpose: string; policy: "required" | "recommended"; source: string | null; code_profile?: string | null }[];
   // `recessed_into_host_surface` = the body is let into its host surface rather than standing
   // on it (a floor register dropping into its boot), so its solid runs *below* the mount

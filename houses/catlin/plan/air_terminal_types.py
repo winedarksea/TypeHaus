@@ -221,6 +221,7 @@ AIR_REGISTER_TYPES = (
     RegisterType(tag="REG-T-HP-SUITE-CHEVRON",
                  face_opening=(inch(12), inch(6)),
                  face_style="laser_cut_chevron", face_projection=inch(0.1875),
+                 face_material_ref="reggio-sun-gold",
                  name="Suite heat-pump supply, Reggio Chevron 6x12 Sun Gold sidewall, louver "
                       "damper",
                  footprint=(inch(14), inch(1)), height=inch(8), plan_symbol="register",

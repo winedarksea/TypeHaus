@@ -80,9 +80,10 @@ def branch_parts(model: Any, standard: DuctStandard) -> list[ResolvedDuctPart]:
                 if pair in seen:
                     continue
                 part = _joint(standard, duct, main, point, axis, eccentric)
-                if part is not None:
-                    seen.add(pair)  # type: ignore[arg-type]
-                    out.append(part)
+                if part is None:
+                    continue  # a same-section end meeting bills nothing; its trunk may follow
+                seen.add(pair)  # type: ignore[arg-type]
+                out.append(part)
                 break
     return out
 

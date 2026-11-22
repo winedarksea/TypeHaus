@@ -134,7 +134,7 @@ export function buildCanvasObject(
   if (!item.position_m) return null;
   const resolvedGeometry = createSolidBodyMesh(item, center);
   if (resolvedGeometry) {
-    const material = standardMaterial(0xf0f0ed, mode,
+    const material = standardMaterial(type?.body_color ? new THREE.Color(type.body_color) : 0xf0f0ed, mode,
       { roughness: mode === "nordic" ? NORDIC_ROUGHNESS.massing : 1 });
     const mesh = new THREE.Mesh(resolvedGeometry, material);
     mesh.userData.uid = item.uid;

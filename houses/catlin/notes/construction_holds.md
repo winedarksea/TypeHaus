@@ -124,7 +124,7 @@ the model goes back to `plans/TODO.md` as a design item.
   lock-off fit on the QO GFCI/AFCI breakers of `CKT-FH-BATH1/2` (424.19).
 - **Unpublished datasheet facts** (the fields stay unset): `internal_clamps` on RACO 232/192
   and Carlon B122A/BH235A/B520A; `rear_projection` on the GFCI and smart-switch types;
-  PureEdge `CR-M-LAUNDRY-24V` cable OD and TS24M-2C rail amperes; Schluter floor-heat lead ODs;
+  Schluter floor-heat lead ODs;
   Class 2 marking on the Mean Well HLG-100H-24A and IKEA TRADFRI 30 W drivers (the Diode
   200 W is "Class 2: No" on its sheet), the TRADFRI's listing, an isolated-output statement
   for the Diode OMNIDRIVE X and TRADFRI (411.7(B)), any LED-driver output-cable listing

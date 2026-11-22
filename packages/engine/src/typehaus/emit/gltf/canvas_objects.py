@@ -85,10 +85,12 @@ class CanvasDrawContext:
 def draw_canvas_object(mb, item: ResolvedCanvasObject, context: CanvasDrawContext) -> None:
     """One object's solids into ``mb``: a ``_MeshBuilder``, or anything with its add methods
     (``solids3d.recorder.SolidRecorder`` takes the same calls as true solids)."""
-    if item.body_mesh is not None:
-        mb.add_mesh(item.body_mesh, PART_COLORS["appliance-white"])
-        return
     product_type = context.types.get(item.type_ref)
+    if item.body_mesh is not None:
+        finish = context.materials.get(getattr(product_type, "face_material_ref", None))
+        mb.add_mesh(item.body_mesh, srgb_material_color(finish) if finish is not None
+                    and finish.color else PART_COLORS["appliance-white"])
+        return
     drawn = False
     if product_type is not None and getattr(product_type, "mesh", None) is not None:
         drawn = _add_mesh_sidecar(mb, context.root / product_type.mesh.path, item.position,

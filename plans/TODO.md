@@ -220,6 +220,7 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
 - The flashing plan had failures (I see PVC flashing over the linesets for a long ways not just through the wall, perhaps it meant pipe insulation?)
 - Sump discharge should be through concrete?
 - May have gone a bit too far with the cellular PVC backing for the siding mounted electrical items. Receptacles and lights shouldn't normally need that.
+- The furring/orientation/shelf placement around FX-S-SUITEBATH-TUBSH
 
 # Project Management
 

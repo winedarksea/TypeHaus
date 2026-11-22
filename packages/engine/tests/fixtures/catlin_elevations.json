@@ -242,9 +242,9 @@
 "canvas_objects/ED-B-BACKUP-PANEL/body_z0_m": -1.2531725,
 "canvas_objects/ED-B-BACKUP-PANEL/body_z1_m": -0.7985125,
 "canvas_objects/ED-B-BACKUP-PANEL/z_m": -1.2531725,
-"canvas_objects/ED-B-BATH-MIRROR/body_z0_m": -0.841502,
-"canvas_objects/ED-B-BATH-MIRROR/body_z1_m": -0.651002,
-"canvas_objects/ED-B-BATH-MIRROR/z_m": -0.841502,
+"canvas_objects/ED-B-BATH-MIRROR/body_z0_m": -0.892302,
+"canvas_objects/ED-B-BATH-MIRROR/body_z1_m": -0.612902,
+"canvas_objects/ED-B-BATH-MIRROR/z_m": -0.892302,
 "canvas_objects/ED-B-BATH-RC1/body_z0_m": -1.7098645,
 "canvas_objects/ED-B-BATH-RC1/body_z1_m": -1.6412845,
 "canvas_objects/ED-B-BATH-RC1/z_m": -1.7098645,
@@ -857,18 +857,15 @@
 "canvas_objects/ED-M-LAUNDRY-DR1/body_z0_m": 1.13665,
 "canvas_objects/ED-M-LAUNDRY-DR1/body_z1_m": 1.18999,
 "canvas_objects/ED-M-LAUNDRY-DR1/z_m": 1.13665,
-"canvas_objects/ED-M-LAUNDRY-PSU/body_z0_m": 2.1336,
-"canvas_objects/ED-M-LAUNDRY-PSU/body_z1_m": 2.295398,
-"canvas_objects/ED-M-LAUNDRY-PSU/z_m": 2.1336,
 "canvas_objects/ED-M-LAUNDRY-RC1/body_z0_m": 1.11825,
 "canvas_objects/ED-M-LAUNDRY-RC1/body_z1_m": 1.184544,
 "canvas_objects/ED-M-LAUNDRY-RC1/z_m": 1.11825,
 "canvas_objects/ED-M-LAUNDRY-SW/body_z0_m": 1.19445,
 "canvas_objects/ED-M-LAUNDRY-SW/body_z1_m": 1.260744,
 "canvas_objects/ED-M-LAUNDRY-SW/z_m": 1.19445,
-"canvas_objects/ED-M-LAUNDRY-TRACK/body_z0_m": 2.5919106,
+"canvas_objects/ED-M-LAUNDRY-TRACK/body_z0_m": 2.5960364,
 "canvas_objects/ED-M-LAUNDRY-TRACK/body_z1_m": 2.7305,
-"canvas_objects/ED-M-LAUNDRY-TRACK/z_m": 2.5919106,
+"canvas_objects/ED-M-LAUNDRY-TRACK/z_m": 2.5960364,
 "canvas_objects/ED-M-LIVING-CAN2/body_z0_m": 2.7178,
 "canvas_objects/ED-M-LIVING-CAN2/body_z1_m": 2.8702,
 "canvas_objects/ED-M-LIVING-CAN2/z_m": 2.7178,
@@ -1574,9 +1571,9 @@
 "canvas_objects/FURN-B-BATH-HAND-TOWEL/body_z0_m": -1.5744825,
 "canvas_objects/FURN-B-BATH-HAND-TOWEL/body_z1_m": -1.5404465,
 "canvas_objects/FURN-B-BATH-HAND-TOWEL/z_m": -1.5744825,
-"canvas_objects/FURN-B-BATH-MIRROR/body_z0_m": -1.7606645,
-"canvas_objects/FURN-B-BATH-MIRROR/body_z1_m": -0.892302,
-"canvas_objects/FURN-B-BATH-MIRROR/z_m": -1.7606645,
+"canvas_objects/FURN-B-BATH-MIRROR/body_z0_m": -1.8114645,
+"canvas_objects/FURN-B-BATH-MIRROR/body_z1_m": -0.943102,
+"canvas_objects/FURN-B-BATH-MIRROR/z_m": -1.8114645,
 "canvas_objects/FURN-B-BATH-TP/body_z0_m": -2.1332825,
 "canvas_objects/FURN-B-BATH-TP/body_z1_m": -2.0992465,
 "canvas_objects/FURN-B-BATH-TP/z_m": -2.1332825,
@@ -2885,14 +2882,6 @@
 "2f8340a9593c"
 ],
 "conduits/CD-M-RSD-INIT/z_start_m": 0.3937,
-"conduits/CR-M-LAUNDRY-24V/z_end_m": 2.720975,
-"conduits/CR-M-LAUNDRY-24V/z_m": [
-2.295398,
-2.720975,
-3,
-"73af48d5472e"
-],
-"conduits/CR-M-LAUNDRY-24V/z_start_m": 2.295398,
 "conduits/ED-B-GYM-RC5-DROP/z_end_m": -0.3175,
 "conduits/ED-B-GYM-RC5-DROP/z_m": [
 -2.2703155,
@@ -3059,8 +3048,8 @@
 "device_boxes/1T4JDXFVH6-box/z1_m": 3.579622,
 "device_boxes/1VBBCZK5TY-box/z0_m": 2.468372,
 "device_boxes/1VBBCZK5TY-box/z1_m": 2.563622,
-"device_boxes/2455867868-box/z0_m": -0.784352,
-"device_boxes/2455867868-box/z1_m": -0.708152,
+"device_boxes/2455867868-box/z0_m": -0.790702,
+"device_boxes/2455867868-box/z1_m": -0.714502,
 "device_boxes/2S0EP92C13-box/z0_m": 8.4748828,
 "device_boxes/2S0EP92C13-box/z1_m": 8.5685964,
 "device_boxes/358QVY1D6R-box/z0_m": -2.3691215,
@@ -3507,6 +3496,8 @@
 "device_boxes/QTM000MAAA-box/z1_m": 1.275222,
 "device_boxes/QTM000QAAA-box/z0_m": 2.12725,
 "device_boxes/QTM000QAAA-box/z1_m": 2.20345,
+"device_boxes/QTM000SAAA-box/z0_m": 2.7305,
+"device_boxes/QTM000SAAA-box/z1_m": 2.76225,
 "device_boxes/QTM000TAAA-box/z0_m": 1.179972,
 "device_boxes/QTM000TAAA-box/z1_m": 1.275222,
 "device_boxes/QTM000WAAA-box/z0_m": 1.198372,
@@ -5953,16 +5944,16 @@
 "eb9665907cea"
 ],
 "geometry/2455867868-box-support/body": [
--0.7764145,
--0.7160895,
+-0.7827645,
+-0.7224395,
 30,
-"8fd57e6af4a5"
+"924b5b7bff76"
 ],
 "geometry/2455867868-box/body": [
--0.784352,
--0.708152,
+-0.790702,
+-0.714502,
 18,
-"a5d641fff8d6"
+"7761dc64887a"
 ],
 "geometry/27B8FKNDPB-cap-1/body": [
 5.489575,
@@ -22699,34 +22690,34 @@
 "ebf18144b674"
 ],
 "geometry/CBW119AAAA::framing/member:backing-2-000": [
--1.7637125,
--1.5795625,
+-1.8145125,
+-1.6303625,
 8,
-"11dbf928a6e2"
+"6e584decdb4d"
 ],
 "geometry/CBW119AAAA::framing/member:backing-3-000": [
--1.1541125,
--0.8683625,
+-1.2049125,
+-0.9191625,
 8,
-"2c7b3e52874b"
+"2b14b354ffa0"
 ],
 "geometry/CBW119AAAA::framing/member:backing-4-000-box-0": [
--0.7985125,
--0.6143625,
+-0.7350125,
+-0.5508625,
 8,
-"32d5ec327fb1"
+"be081afc2a6f"
 ],
 "geometry/CBW119AAAA::framing/member:backing-4-000-box-1": [
--0.7985125,
--0.6143625,
+-0.7350125,
+-0.5508625,
 8,
-"32d5ec327fb1"
+"be081afc2a6f"
 ],
 "geometry/CBW119AAAA::framing/member:backing-4-000-box-2": [
--0.704977,
--0.6143625,
+-0.711327,
+-0.5508625,
 8,
-"cbdfc9f6b4f3"
+"99ab080398e6"
 ],
 "geometry/CBW119AAAA::framing/member:plate-bottom": [
 -2.7797125,
@@ -49472,9 +49463,9 @@
 ],
 "geometry/CSDH03AAAA-hanger-109/body": [
 5.5141216,
-5.699125,
+5.718175,
 16,
-"cd816ec0d403"
+"e32146821198"
 ],
 "geometry/CSDH03AAAA-run/body": [
 5.514975,
@@ -75696,12 +75687,6 @@
 2,
 "b4a54a5f127c"
 ],
-"geometry/QRM02YAAAA-run/body": [
-2.295398,
-2.7299412,
-48,
-"91303099b079"
-],
 "geometry/QTA0001AAA-box-support/body": [
 7.692898,
 7.794498,
@@ -76079,6 +76064,18 @@
 2.20345,
 18,
 "2aed56b080ee"
+],
+"geometry/QTM000SAAA-box-support/body": [
+2.7614563,
+2.78765,
+30,
+"19bdbaac461d"
+],
+"geometry/QTM000SAAA-box/body": [
+2.7305,
+2.76225,
+18,
+"69e84dc63cff"
 ],
 "geometry/QTM000TAAA-box-support/body": [
 1.179972,
@@ -94049,34 +94046,34 @@
 "8f8b23b9cd85"
 ],
 "member/CBW119AAAA/backing-2-000": [
--1.7637125,
--1.5795625,
+-1.8145125,
+-1.6303625,
 2,
-"5b4ce2353fcb"
+"ab2de5c52530"
 ],
 "member/CBW119AAAA/backing-3-000": [
--1.1541125,
--0.8683625,
+-1.2049125,
+-0.9191625,
 2,
-"8c13f36efb9f"
+"5f6ba5c5d799"
 ],
 "member/CBW119AAAA/backing-4-000-box-0": [
--0.7985125,
--0.6143625,
+-0.7350125,
+-0.5508625,
 2,
-"6888f9da0b3c"
+"30c309770904"
 ],
 "member/CBW119AAAA/backing-4-000-box-1": [
--0.7985125,
--0.6143625,
+-0.7350125,
+-0.5508625,
 2,
-"6888f9da0b3c"
+"30c309770904"
 ],
 "member/CBW119AAAA/backing-4-000-box-2": [
--0.704977,
--0.6143625,
+-0.711327,
+-0.5508625,
 2,
-"4ad680490d3f"
+"96fc04025931"
 ],
 "member/CBW119AAAA/plate-bottom": [
 -2.7797125,
@@ -127629,8 +127626,6 @@
 "solids/CO-M-SUITE-EXT/z1_m": 0.64389,
 "solids/CO-M-SUITE/z0_m": -0.1778,
 "solids/CO-M-SUITE/z1_m": -0.0254,
-"solids/CR-M-LAUNDRY-24V-RUN/z0_m": 2.295398,
-"solids/CR-M-LAUNDRY-24V-RUN/z1_m": 2.7299412,
 "solids/D-B-GYM-wrap-a-head/z0_m": -0.7604125,
 "solids/D-B-GYM-wrap-a-head/z1_m": -0.7477125,
 "solids/D-B-GYM-wrap-a-jamb-left/z0_m": -2.7606625,
@@ -128148,7 +128143,7 @@
 "solids/DU-S-HP-SUITE-BOOT-1/z0_m": 5.514975,
 "solids/DU-S-HP-SUITE-BOOT-1/z1_m": 5.6769,
 "solids/DU-S-HP-SUITE-HANGER-109/z0_m": 5.5141216,
-"solids/DU-S-HP-SUITE-HANGER-109/z1_m": 5.699125,
+"solids/DU-S-HP-SUITE-HANGER-109/z1_m": 5.718175,
 "solids/DU-S-HP-SUITE-RET-BOOT-1/z0_m": 5.82295,
 "solids/DU-S-HP-SUITE-RET-BOOT-1/z1_m": 5.94995,
 "solids/DU-S-HP-SUITE-RET-HANGER-110/z0_m": 5.8474966,
@@ -128441,10 +128436,10 @@
 "solids/ED-A-STUDY-SW-BOX/z1_m": 7.4304525,
 "solids/ED-A-STUDY-SW-PLATE/z0_m": 7.3256775,
 "solids/ED-A-STUDY-SW-PLATE/z1_m": 7.4399775,
-"solids/ED-B-BATH-MIRROR-BOX-SUPPORT/z0_m": -0.7764145,
-"solids/ED-B-BATH-MIRROR-BOX-SUPPORT/z1_m": -0.7160895,
-"solids/ED-B-BATH-MIRROR-BOX/z0_m": -0.784352,
-"solids/ED-B-BATH-MIRROR-BOX/z1_m": -0.708152,
+"solids/ED-B-BATH-MIRROR-BOX-SUPPORT/z0_m": -0.7827645,
+"solids/ED-B-BATH-MIRROR-BOX-SUPPORT/z1_m": -0.7224395,
+"solids/ED-B-BATH-MIRROR-BOX/z0_m": -0.790702,
+"solids/ED-B-BATH-MIRROR-BOX/z1_m": -0.714502,
 "solids/ED-B-BATH-RC1-BOX-SUPPORT/z0_m": -1.7231995,
 "solids/ED-B-BATH-RC1-BOX-SUPPORT/z1_m": -1.6279495,
 "solids/ED-B-BATH-RC1-BOX/z0_m": -1.7231995,
@@ -128995,6 +128990,10 @@
 "solids/ED-M-LAUNDRY-SW-BOX/z1_m": 1.275222,
 "solids/ED-M-LAUNDRY-SW-PLATE/z0_m": 1.165621,
 "solids/ED-M-LAUNDRY-SW-PLATE/z1_m": 1.289573,
+"solids/ED-M-LAUNDRY-TRACK-BOX-SUPPORT/z0_m": 2.7614563,
+"solids/ED-M-LAUNDRY-TRACK-BOX-SUPPORT/z1_m": 2.78765,
+"solids/ED-M-LAUNDRY-TRACK-BOX/z0_m": 2.7305,
+"solids/ED-M-LAUNDRY-TRACK-BOX/z1_m": 2.76225,
 "solids/ED-M-LIVING-KDS1-BOX-SUPPORT/z0_m": 0.224805,
 "solids/ED-M-LIVING-KDS1-BOX-SUPPORT/z1_m": 0.320055,
 "solids/ED-M-LIVING-KDS1-BOX/z0_m": 0.224805,

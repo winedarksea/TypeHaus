@@ -92,13 +92,14 @@ REGISTERS_HVAC_SECOND = [
              mount=Mount(kind=MountKind.WALL, elevation=inch(96.25))),
     # The suite's high sidewall supply over D-S-SUITE, throwing west into RM-S-SUITE: a Sun Gold
     # Reggio Chevron since 2026-11-19. Its mount elevation matches the bedroom side collars.
-    # The W-S-C2B station is y=14'-8 7/8", 7" north of the door centre, in the clear cripple bay its branch ends in (2026-10-31).
+    # Centred on the door, y=14'-2" (2026-11-21); the head cripple under its box steps 6 1/8"
+    # south (framing/terminal_bays.py).
     # `face="left"` is the suite side of this north-running wall.
     Register(uid="CSRH06AAAA", tag="REG-S-HP-SUITE", kind=DuctSystem.SUPPLY, room="RM-S-SUITE",
              duct_ref="DU-S-HP-SUITE", type_ref="REG-T-HP-SUITE-CHEVRON", design_cfm=100,
              mount=Mount(kind=MountKind.WALL, elevation=inch(95)),
              location=Location(attachment=WallAttachment(
-                 wall_ref="W-S-C2B", face="left", distance_from_start=inch(27.875),
+                 wall_ref="W-S-C2B", face="left", distance_from_start=inch(21),
                  normal_gap=inch(0), rotation_offset=deg(0)))),
     # East face of the wall-width SF-S-DUCT (260 3/4"), throwing across the study.
     # The 8x6 grille and its 6" boot clear the ladder rails at a 99 1/8" centreline;
