@@ -84,11 +84,13 @@ _PATH = {
 # §11m: the exact beam-on-bed solution (transfer matrices, not FE) and the winter bound.
 # The W1|W2 / E1|E2 joints were graded plain (44.07 psi vs 212.13, 0.2077) until 2026-10-11,
 # when FT-SG-W2/E2's 6 #4 were spliced across them: now 6 splice bars, cracked, as the run.
-# 2026-11-23 (free body §15h): the court body at 130 pcf on the SPECIFIED bed friction 0.43,
-# 0.43 x 377,384 = 162,275, less 0.60 x 76,808 = 116,190 over 2 lines = 58,095; court sliding
-# reads 162,275 / 1.5 = 108,183. The E2|E1 joint carries the G3 #5 splices too: 12 bars.
-_WINTER = {"court winter tension, side run": (58_095.2, 64_800.0, 0.89653),
-           "court winter tension, spliced joint": (58_095.2, 165_240.0, 0.35158)}
+# 2026-11-23 (free body §15i): winter contraction is the one row higher friction hurts, so it
+# grades at the specified MAXIMUM bed friction 0.82: 0.82 x 377,384 = 309,455, less 0.60 x
+# 76,808 = 263,370 over 2 lines = 131,685, against W1/E1's 6 #4 + 4 #5 (2.44 in², 131,760).
+# The E2|E1 joint: 6 #4 + 6 #5 splices (3.06 in², 165,240). Court sliding reads the design
+# friction 0.43: 162,275 / 1.5 = 108,183.
+_WINTER = {"court winter tension, side run": (131_685.0, 131_760.0, 0.99943),
+           "court winter tension, spliced joint": (131_685.0, 165_240.0, 0.79693)}
 _LINE = {"house near-line plan flexure": (72_809.2, 287_262.1, 0.25346),
          "house near-line plan shear": (1_694.09, 18_384.78, 0.09215),
          "house slab-edge peak sustained load": (22.5404, 33.33, 0.67628), **_WINTER}
@@ -535,11 +537,11 @@ def test_the_line_solver_is_hetenyi_far_from_its_ends() -> None:
 
 
 def test_the_court_side_joint_is_spliced(records) -> None:
-    """§11m.2 (2026-10-11): 6 #4 in each braced run, and 6 #4 splice bars across W1|W2 /
-    E1|E2 (``BarSpec.continues_into``), so the joint is graded cracked, not plain."""
+    """§11m.2 / §15i: 6 #4 + 4 #5 in each braced run (2.44 in²), and 6 #4 + 6 #5 splice bars
+    across W1|W2 / E1|E2 (``BarSpec.continues_into``), so the joint is graded cracked."""
     record = records["TB-SG-W1"]
-    assert _input(record, "winter_tension_steel") == pytest.approx(1.20)
-    assert _input(record, "winter_joint_steel") == pytest.approx(1.20)
+    assert _input(record, "winter_tension_steel") == pytest.approx(2.44)
+    assert _input(record, "winter_joint_steel") == pytest.approx(3.06)
     assert not any(n.startswith("WINTER JOINT") for n in record.notes)
     assert not [s for s in record.limit_states if "unreinforced joint" in s.name]
 

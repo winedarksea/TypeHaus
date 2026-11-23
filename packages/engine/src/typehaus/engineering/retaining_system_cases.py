@@ -119,6 +119,9 @@ class Graded:
     #: ``{pcf: (friction mobilised once backfilled, before the apron; the most any graded
     #: service case mobilises)}`` — what the joint row's post-backfill movement reads.
     mobilised: dict[float, tuple[float, float]] = dataclasses.field(default_factory=dict)
+    #: ``{pcf: (dry resultant, base friction at the RESTRAINT friction)}``: the upper bed
+    #: friction (``restraint_friction``) that the court's contraction rows grade at.
+    restraint: dict[float, tuple[float, float]] = dataclasses.field(default_factory=dict)
 
 
 def grade(ctx, ref: str, walls: list, built_by_pcf: dict, soil) -> tuple[Graded | None, list[str]]:  # type: ignore[no-untyped-def]
@@ -128,6 +131,8 @@ def grade(ctx, ref: str, walls: list, built_by_pcf: dict, soil) -> tuple[Graded 
     missing: list[str] = []
     dry: dict[float, tuple[float, float]] = {}
     mobilised: dict[float, tuple[float, float]] = {}
+    restraint: dict[float, tuple[float, float]] = {}
+    upper = restraint_friction(ctx, soil)
     tables = []
     for pcf, built in built_by_pcf.items():
         members = members_for(ctx, walls, built, soil, pcf)
@@ -142,6 +147,7 @@ def grade(ctx, ref: str, walls: list, built_by_pcf: dict, soil) -> tuple[Graded 
         levels, gap = waters(ctx, body)
         missing.extend(gap)
         dry[pcf] = (body.resultant(), body.friction * body.weight())
+        restraint[pcf] = (body.resultant(), upper * body.weight())
         bare = dataclasses.replace(body, pushes=tuple(
             dataclasses.replace(p, lateral_plf=0.0) for p in body.pushes))
         service = [levels[k] for k in ("dry", "perched", "flooded court") if k in levels]
@@ -178,7 +184,7 @@ def grade(ctx, ref: str, walls: list, built_by_pcf: dict, soil) -> tuple[Graded 
               Quantity("body_weight_110", body110.weight(), "lb", 1.0),
               Quantity("body_resultant_110", body110.resultant(), "lb", 1.0))
     return Graded(tuple(states), tuple(pending), tuple(notes + tables), inputs, dry,
-                  mobilised), []
+                  mobilised, restraint), []
 
 
 def _how(case: Case, body: Body, water: Water, pcf: float) -> str:
@@ -223,3 +229,16 @@ def design_friction(ctx, soil) -> tuple[float, float, str, str]:  # type: ignore
                 + (f" — {params.source}" if params.source else ""))
     return aggregate_bed().friction_coefficient, soil.friction_coefficient, "presumptive", (
         "PRESUMPTIVE IBC Table 1806.2: class 3 on the stone, the site's class on the native")
+
+
+def restraint_friction(ctx, soil) -> float:  # type: ignore[no-untyped-def]
+    """The bed friction an UNFAVOURABLE (restraint) row grades at: the confirmed report
+    value, else the specified ``bed_friction_max``, else the design friction itself."""
+    site = getattr(getattr(ctx.plan, "project", None), "site", None)
+    confirmed = getattr(site, "confirmed_soil", None)
+    if confirmed is not None:
+        return confirmed.bed_friction
+    specified = getattr(site, "specified_soil", None)
+    if specified is not None and specified.bed_friction_max is not None:
+        return specified.bed_friction_max
+    return design_friction(ctx, soil)[0]

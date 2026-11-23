@@ -38,7 +38,8 @@ _SCHEDULE = {
     ("footing", "#4", "hdg-a767"): (51, 261.5),  # +3: the Ufer bar (#123)
     # +36 / +265.3 lb on 2026-11-23 (G3): 2 footings x (6 edge #5 x 11.0' + 12 splices x
     # (27.6 + 6 + 27.6)") = 254.4 ft x 1.043.
-    ("footing", "#5", "hdg-a767"): (215, 1731.2),
+    # +8 / +83.4 lb the same day (§15i): FT-SG-W1/E1 2 #5 per edge, 2 x 4 x 10.0' x 1.043.
+    ("footing", "#5", "hdg-a767"): (223, 1814.6),
     ("foundation wall", "#3", "hdg-a767"): (12, 16.2),
     ("foundation wall", "#4", "hdg-a767"): (294, 1644.8),  # STHD bars; garage's 5 -> 2 SSTB
     ("foundation wall", "#5", "hdg-a767"): (110, 1045.8),
@@ -102,8 +103,8 @@ _SCHEDULE = {
 # (ESR-2920 §4.2, notes/sthd_esr2920.md), 807.6" in all.
 # -9.9 lb, -3 pieces on 2026-11-20b (note addendum): the garage's five STHD bars out, the two
 # SSTB16 bars (C-C-2026 p. 43) in.
-_TOTAL_LB = 5539.7
-_TOTAL_PIECES = 879
+_TOTAL_LB = 5623.1
+_TOTAL_PIECES = 887
 
 @pytest.fixture(scope="module")
 def rows(catlin_model):
@@ -250,4 +251,5 @@ def test_the_concrete_the_steel_sits_in_is_the_note_s_volume(catlin_model) -> No
     # 44.97 the same day: the garage's STHD bars out, two SSTB bars in (-9.9 lb).
     # 47.58 on 2026-11-23: FT-SG-W2/E2's G3 edge ties, +265.3 lb.
     # 47.87 with L2's deeper column dowels (+33.4 lb).
-    assert total_lb / total_cy == pytest.approx(47.87, rel=0.02)
+    # 48.59 with W1/E1's side-run #5 (+83.4 lb, §15i).
+    assert total_lb / total_cy == pytest.approx(48.59, rel=0.02)

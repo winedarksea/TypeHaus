@@ -154,8 +154,9 @@ SITE = Site(
     # report's values go in `confirmed_soil`. Below these, the court's rows FAIL and the
     # printed fallback (AN-SG-SOIL) is built. Rounded up from what the graded rows need:
     # bed friction 0.422 (staged backfill), native phi' 23.7 deg (deep plane, soakaway full).
+    # bed_friction_max: the W1/E1 side run's winter tension reaches 1.0 at 0.820 (§15i).
     specified_soil=SoilParameters(
-        bed_friction=0.43, native_phi_deg=25.0, source="AN-SG-SOIL",
+        bed_friction=0.43, bed_friction_max=0.82, native_phi_deg=25.0, source="AN-SG-SOIL",
         report_scope="1-2 borings at the sunken court to ~20 ft below the terrace; groundwater observation; lab classification (ASTM D2487) of the native at the bed bottom; drained phi' and interface friction there; design friction for concrete on compacted washed #57 stone"),
     soil_basis=SoilBasis(
         provenance="presumed",

@@ -25,8 +25,11 @@ def soil_parameters_confirmed(ctx: CheckContext) -> list[Finding]:
         return [not_applicable(CID, "no design here is closed on specified soil parameters",
                                ())]
     got = getattr(site, "confirmed_soil", None)
-    asked = (f"bed friction >= {spec.bed_friction:.2f} and native phi' >= "
-             f"{spec.native_phi_deg:g} deg ({spec.source or 'the drawing note'})")
+    top = spec.bed_friction_max
+    asked = (f"bed friction >= {spec.bed_friction:.2f}"
+             + (f" and <= {top:.2f}" if top is not None else "")
+             + f", native phi' >= {spec.native_phi_deg:g} deg "
+             f"({spec.source or 'the drawing note'})")
     if got is None:
         return [structural_advisory(
             CID, f"design closed on specified soil parameters — {asked}; NOT YET CONFIRMED: "
@@ -36,9 +39,12 @@ def soil_parameters_confirmed(ctx: CheckContext) -> list[Finding]:
     short = [f"{name} {have:g} < {want:g}" for name, have, want in (
         ("bed friction", got.bed_friction, spec.bed_friction),
         ("native phi'", got.native_phi_deg, spec.native_phi_deg)) if have < want]
+    if top is not None and got.bed_friction > top:
+        short.append(f"bed friction {got.bed_friction:g} > {top:g} (the restraint rows were "
+                     f"designed to it; re-check them)")
     if short:
         return [structural_advisory(
-            CID, f"the site report ({got.source}) is short of the specified soil parameters: "
+            CID, f"the site report ({got.source}) is outside the specified soil parameters: "
                  + "; ".join(short), (), Result.FAIL,
             fix_hint="build the printed fallback and return the short rows to the owner")]
     return [structural_advisory(

@@ -552,6 +552,10 @@ def test_the_specified_soil_is_pending_until_the_report_and_fails_below_it(catli
     plan = catlin_plan.model_copy(update={"project": catlin_plan.project.model_copy(
         update={"site": site.model_copy(update={"confirmed_soil": short})})})
     assert run(plan) is Result.FAIL
+    high = SoilParameters(bed_friction=0.90, native_phi_deg=30.0, source="report")
+    over = catlin_plan.model_copy(update={"project": catlin_plan.project.model_copy(
+        update={"site": site.model_copy(update={"confirmed_soil": high})})})
+    assert run(over) is Result.FAIL   # above bed_friction_max 0.82: the winter rows
     from typehaus.engineering import EngineeringContext, EngineeringResults
 
     record = EngineeringResults(EngineeringContext(plan=plan, model=model, soil_class="GM"))[

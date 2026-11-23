@@ -117,7 +117,9 @@ def compute(ctx: EngineeringContext) -> list[EngineeringRecord]:
             mine = [o for o in boards if o.element is not None and o.loop_ref == b.loop_ref]
             products[b.tag] = next((products[o.tag] for o in mine if products[o.tag]), None)
             b.formed_and_stripped = bool(mine) and all(o.formed_and_stripped for o in mine)
-    bodies = loop_free_bodies(ctx)
+    # The design friction for the neutral point and court sliding; the upper (restraint)
+    # friction for the winter contraction rows, the one row higher friction hurts.
+    bodies = (loop_free_bodies(ctx), loop_free_bodies(ctx, restraint=True))
     graded = _grade(ctx, boards, products, bodies, 1.0)
     if any(p is not None and p.estimated for p in products.values()):
         sens = {k: _grade(ctx, boards, products, bodies, k) for k in E_SENSITIVITY}
@@ -156,7 +158,7 @@ def _sensitivity(tag, states, sens) -> str:
 def _grade(ctx, boards, products, bodies, e_scale) -> dict:
     """``{tag: (states, missing, inputs, notes)}`` at ``e_scale`` x each product's modulus."""
     temps = brd.temps(ctx)
-    npt = dem.neutral_point(ctx, boards, products, temps, bodies, e_scale) if temps else {}
+    npt = dem.neutral_point(ctx, boards, products, temps, bodies[0], e_scale) if temps else {}
     sigma, closure = {}, {}
     for b in boards:
         p = products.get(b.tag)
@@ -177,7 +179,8 @@ def _grade(ctx, boards, products, bodies, e_scale) -> dict:
             patches[b.tag] = house.wall_patch(
                 ctx, b, lambda z, s=sigma[b.tag], f=pour: s + f(z))
     sh = dict(boards=boards, temps=temps, products=products, sigma=sigma, thrust=thrust,
-              closure=closure, npt=npt, patches=patches, free_bodies=bodies, e_scale=e_scale,
+              closure=closure, npt=npt, patches=patches, free_bodies=bodies[0],
+              restraint_bodies=bodies[1], e_scale=e_scale,
               lock=lock)
     sh["lines"] = {ref: _near_line(ctx, [b for b in boards if b.loop_ref == ref], sh)
                    for ref in {b.loop_ref for b in boards if b.tag in sigma}}
@@ -258,7 +261,8 @@ def _thrust_rows(ctx, board, sh, pour, states, missing, inputs, notes) -> None:
 
     soil = presumptive(getattr(ctx, "soil_class", None),
                        basis=getattr(ctx, "soil_basis", None))
-    winter.winter_rows(ctx, board, sh["free_bodies"], soil, states, missing, inputs, notes)
+    winter.winter_rows(ctx, board, sh["restraint_bodies"], soil, states, missing, inputs,
+                       notes)
 
 
 def _near_line(ctx, mine, sh):

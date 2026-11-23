@@ -3355,6 +3355,29 @@ returns to the owner with the measured φ′.
 friction the joint row reads 0.0533 + (96,201 − 76,808) / 150,839 x 0.25 = 0.0854" against
 0.125", so 0.68.
 
+### 15i. The restraint side at an upper friction (owner, 2026-11-23)
+
+A specified MINIMUM friction cannot be what a row graded unfavourably by friction reads. The
+report will likely return more. Winter contraction is the only such row: sliding, the deep
+plane, the joint, corner delivery and the neutral point all improve as friction rises. Their
+basis stays the design friction 0.43; the neutral point gives the larger x there.
+
+There is no published row bounding concrete-on-#57 friction from above. The bound is
+therefore written into AN-SG-SOIL as an acceptance limit, `bed_friction_max` **0.82**. The
+winter row grades at the confirmed report value if one is entered, else at 0.82, and the
+confirmation check FAILs a report value outside 0.43-0.82. For reference, φ 40° for washed
+crushed stone gives about tan 0.84 (UNVERIFIED).
+
+**The side-run steel (owner chose "lighter"):** 2 #5 bundled at each edge of FT-SG-W1/E1,
+lapped by FT-SG-W2/E2's G3 splice bars at the joint. That is 2 x 4 x 10.0' = 80 LF, 83.4 lb.
+
+```
+side run (W1/E1)  As = 6 #4 + 4 #5 = 1.20 + 1.24 = 2.44 in²; 0.9 x 2.44 x 60,000 = 131,760 lb
+T = (0.82 x 377,384 − 0.60 x 76,808) / 2 = (309,455 − 46,085) / 2 = 131,685 lb   -> 0.999
+(0.82 is where T reaches 131,760: (2 x 131,760 + 46,085) / 377,384 = 0.8204, rounded down)
+E2|E1 joint       6 #4 + 6 #5 splices = 3.06 in², 165,240 lb                     -> 0.797
+```
+
 ## Sources
 
 Every standard and document this note rests on, collected from the citations above.

@@ -302,10 +302,8 @@ def system_factors(ctx: EngineeringContext, ref: str, members: list
     return {f"{pcf:.0f}": value for pcf, value in graded.dry.items()}
 
 
-def loop_mobilisation(ctx: EngineeringContext) -> dict[str, dict[float, tuple[float, float]]]:
-    """``{loop ref: Graded.mobilised}`` for every verified loop (the joint row reads it)."""
-    soil = presumptive(getattr(ctx, "soil_class", None),
-                       basis=getattr(ctx, "soil_basis", None))
+def _graded_loops(ctx: EngineeringContext) -> dict:
+    soil = presumptive(getattr(ctx, "soil_class", None))
     out = {}
     for ref, members in _loops(ctx).items():
         if soil is None or _verify(ctx, ref, members):
@@ -313,19 +311,21 @@ def loop_mobilisation(ctx: EngineeringContext) -> dict[str, dict[float, tuple[fl
         built, missing = _built(ctx, members, soil)
         graded, gap = (None, True) if missing else cases.grade(ctx, ref, members, built, soil)
         if graded is not None and not gap:
-            out[ref] = graded.mobilised
+            out[ref] = graded
     return out
 
 
-def loop_free_bodies(ctx: EngineeringContext) -> dict[str, dict[str, tuple[float, float]]]:
-    """``{loop ref: {soil_pcf: (soil resultant lb, base friction lb)}}`` for every verified
-    loop — what ``thermal_break`` pushes the court against."""
-    out = {}
-    for ref, members in _loops(ctx).items():
-        factors = system_factors(ctx, ref, members)
-        if factors:
-            out[ref] = factors
-    return out
+def loop_mobilisation(ctx: EngineeringContext) -> dict[str, dict[float, tuple[float, float]]]:
+    """``{loop ref: Graded.mobilised}`` for every verified loop (the joint row reads it)."""
+    return {ref: g.mobilised for ref, g in _graded_loops(ctx).items()}
+
+
+def loop_free_bodies(ctx: EngineeringContext, *, restraint: bool = False
+                     ) -> dict[str, dict[str, tuple[float, float]]]:
+    """``{loop ref: {soil_pcf: (soil resultant, base friction)}}`` at the design friction,
+    or at the upper restraint friction — what ``thermal_break`` pushes the court against."""
+    return {ref: {f"{pcf:.0f}": v for pcf, v in (g.restraint if restraint else g.dry).items()}
+            for ref, g in _graded_loops(ctx).items()}
 
 
 def footing_shortfalls(ctx: EngineeringContext
