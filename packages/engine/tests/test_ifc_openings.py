@@ -131,33 +131,40 @@ def test_blind_rough_opening_voids_only_its_depth(catlin_model):
         assert (lo - 1e-6 <= far <= hi + 1e-6) == (opening.depth_m is None), tag
 
 
-def test_arched_voids_use_vertical_curved_profiles(catlin_model, catlin_ifc):
-    """The brick veneer's two segmental reveals — the stricter case, because its circle
-    centre sits below the springline rather than on it."""
+def test_arched_voids_use_vertical_curved_profiles():
+    """A segmental arch (the stricter case: its circle centre sits below the springline).
+    Synthetic since 2026-11-23: catlin's two brick reveals went flat-headed on steel lintels."""
     import ifcopenshell
 
-    f = ifcopenshell.open(str(catlin_ifc))
-    arches = {opening.Name: opening for opening in f.by_type("IfcOpeningElement")
-              if opening.Name.startswith("AO-B-BRICK-")}
-    assert set(arches) == {"AO-B-BRICK-WIN/void", "AO-B-BRICK-DOOR/void"}
-    for opening in arches.values():
-        solid = opening.Representation.Representations[0].Items[0]
-        assert solid.is_a("IfcExtrudedAreaSolid")
-        assert solid.SweptArea.is_a("IfcArbitraryClosedProfileDef")
-        outer_curve = solid.SweptArea.OuterCurve
-        assert outer_curve.is_a("IfcCompositeCurve")
-        arch = outer_curve.Segments[2].ParentCurve
-        assert arch.is_a("IfcTrimmedCurve")
-        assert arch.BasisCurve.is_a("IfcCircle")
-        # Segmental: radius = (half_span^2 + rise^2) / (2 * rise), well past the half-span.
-        assert arch.BasisCurve.Radius > 0.0
-        assert solid.Position.Axis.DirectionRatios[2] == pytest.approx(0.0)
-        assert solid.ExtrudedDirection.DirectionRatios == (0.0, 0.0, 1.0)
-    # The void is cut through the wythe it is a reveal in, not the wall behind it.
-    veneer = next(w for w in catlin_model.walls if w.tag == "W-B-BRICK")
-    for opening in arches.values():
-        solid = opening.Representation.Representations[0].Items[0]
-        assert solid.Depth == pytest.approx(veneer.thickness_m)
+    from typehaus.emit.ifc import lowlevel as ll
+
+    f = ifcopenshell.file(schema="IFC4")
+    body = f.createIfcGeometricRepresentationContext(
+        None, "Model", 3, 1e-5, f.createIfcAxis2Placement3D(
+            f.createIfcCartesianPoint((0.0, 0.0, 0.0))))
+    wythe = 0.092075
+    rep = ll.add_arched_opening_prism(
+        f, body, center_m=(1.0, 2.0), wall_direction=(1.0, 0.0), wall_thickness_m=wythe,
+        width_m=1.6081375, height_m=2.032, arch_rise_m=0.2032, z0_m=0.0)
+    solid = rep.Items[0]
+    assert solid.is_a("IfcExtrudedAreaSolid")
+    assert solid.SweptArea.is_a("IfcArbitraryClosedProfileDef")
+    outer_curve = solid.SweptArea.OuterCurve
+    assert outer_curve.is_a("IfcCompositeCurve")
+    arch = outer_curve.Segments[2].ParentCurve
+    assert arch.is_a("IfcTrimmedCurve")
+    assert arch.BasisCurve.is_a("IfcCircle")
+    # Segmental: radius = (half_span^2 + rise^2) / (2 * rise), well past the half-span.
+    assert arch.BasisCurve.Radius > 0.0
+    assert solid.Position.Axis.DirectionRatios[2] == pytest.approx(0.0)
+    assert solid.ExtrudedDirection.DirectionRatios == (0.0, 0.0, 1.0)
+    assert solid.Depth == pytest.approx(wythe)
+
+
+def test_the_brick_reveals_void_as_plain_prisms(catlin_model):
+    """Flat heads: no rise, so the IFC void is the ordinary footprint prism."""
+    reveals = [o for o in catlin_model.openings if o.tag.startswith("AO-B-BRICK-")]
+    assert len(reveals) == 2 and all(o.arch_rise_m == 0 for o in reveals)
 
 
 def test_door_types_export_their_authored_operation(catlin_model, catlin_ifc):

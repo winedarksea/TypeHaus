@@ -918,7 +918,8 @@ WALLS = [
     # at 0.99 of ACI's threshold on a ±1/4" bearing tolerance. It was always cast on the
     # bed, so the span was an assumption; FB-SG-BRKBM now states the bed, and
     # `engineering/veneer_beam` skips a wall a bedding hosts. Its ends still run into the toes
-    # with the steel kept as nominal. Nothing grades its bearing (~0.5 ksf); nor W-SG-ARCH's.
+    # with the steel kept as nominal. `structural.veneer_bed_bearing` grades its bearing (2026-11-23:
+    # resultant 2.3" off a 12" contact, outside the kern, peak 1.06 of 2.0 ksf; note §6l); not W-SG-ARCH's.
     #
     # Flush on the house strips: board -4"..-6", concrete -6"..-18", and W-B-BRICK's back on
     # the concrete's north face, 6 1/2" off the backup studs (`_y_ax_brkbm` above).

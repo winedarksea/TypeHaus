@@ -285,14 +285,13 @@ def test_openings_serialize_swing_and_framing_overlays(catlin_payload):
     assert len(door["framing_bumper"]) == 4
 
 
-def test_arched_openings_serialize_their_rise(catlin_payload):
-    """The brick veneer's two segmental reveals — a segmental rise exercises the payload
-    field better than a semicircular one, whose rise is also its half-span."""
-    arches = {opening["tag"]: opening for opening in catlin_payload["openings"]
-              if opening["tag"].startswith("AO-B-BRICK-")}
-    assert set(arches) == {"AO-B-BRICK-WIN", "AO-B-BRICK-DOOR"}
-    assert arches["AO-B-BRICK-WIN"]["arch_rise_m"] == pytest.approx(0.0508)   # 2"
-    assert arches["AO-B-BRICK-DOOR"]["arch_rise_m"] == pytest.approx(0.2032)  # 8"
+def test_the_brick_reveals_are_flat_headed(catlin_payload):
+    """The veneer's two reveals carry a steel lintel each since 2026-11-23 (decision 11), so
+    neither serializes a rise; the field itself is exercised by the synthetic-arch tests."""
+    reveals = {opening["tag"]: opening for opening in catlin_payload["openings"]
+               if opening["tag"].startswith("AO-B-BRICK-")}
+    assert set(reveals) == {"AO-B-BRICK-WIN", "AO-B-BRICK-DOOR"}
+    assert all(r["arch_rise_m"] == 0 for r in reveals.values())
 
 
 def test_site_context_serializes_grade_parcel_and_spot_elevations(catlin_payload):

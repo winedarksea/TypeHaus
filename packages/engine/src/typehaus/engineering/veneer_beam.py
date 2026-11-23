@@ -103,7 +103,9 @@ def veneer_beams(ctx: EngineeringContext, *,
     edge or a stair is not found here, and a house that builds one should widen this.
 
     A beam a ``FootingBedding`` hosts is a soil-supported footing, not a span, and is skipped
-    (catlin's W-SG-BRKBM, note §6k) unless ``bedded=True`` (the court study's tie).
+    (catlin's W-SG-BRKBM, note §6k) unless ``bedded=True`` (the court study's tie). Its bearing
+    on the bed, where the wythe's eccentric load puts the resultant outside the kern, is
+    ``structural.veneer_bed_bearing`` (note §6l, F-04).
     """
     from typehaus.model.structure import FootingBedding
     on_stone = {b.host_ref for b in ctx.plan.all_elements() if isinstance(b, FootingBedding)}

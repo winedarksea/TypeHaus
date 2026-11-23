@@ -14,15 +14,20 @@ STRUCTURE face (the stud or concrete a tie fastens into): the table's maximum, w
 station governs. Back of the wythe to the backing's nearest face (sheathing or foam): the
 1" nominal airspace minimum, least station governs.
 
-**Table R703.8.4(1)** (checked 2026-11-03, notes/sunken_garden_veneer_beam.md §6k). The
-maximum is to the BACKING; the minimum airspace is 1" nominal from the sheathing or foam.
+**Table R703.8.4(1)** (UpCodes: MN 2018, Colorado 2021, Oklahoma 2024, read 2026-11-23;
+notes/sunken_garden_veneer_beam.md §6k). The maximum is to the BACKING; the minimum airspace
+is 1" nominal from the sheathing or foam. Every row is WOOD-STUD backing here.
 
 =================  ====================================  =======================
 edition            W1.7 adjustable wire (9 ga)          W2.8 adjustable (3/16")
 =================  ====================================  =======================
 2015 / 2018 IRC    4 1/2"                                no row
-2021 / 2024 IRC    4 5/8"                                6 5/8"
+2021 IRC           4 5/8"                                6 5/8"
+2024 IRC           4 5/8"                                6 5/8"
 =================  ====================================  =======================
+
+**No row has concrete or masonry backing** (F-02), so a tie goes on a stud and never into a
+concrete stretch: :mod:`typehaus.veneer_tie_layout` stations the ties on the studs.
 
 R703.8.4.1: each tie carries at most 2.67 sf of wall, 32" o.c. horizontally and 24" o.c.
 vertically; 2 sf where the wind pressure exceeds 30 psf.
@@ -56,11 +61,20 @@ class TieRow:
     max_to_backing_in: float
 
 
-#: Table R703.8.4(1), the rows each edition publishes, lightest tie first.
+#: Table R703.8.4(1), the rows each edition publishes, lightest tie first (wood-stud backing).
 _ROWS_2018 = (TieRow("W1.7 adjustable wire (9 ga)", 4.5),)
 _ROWS_2021 = (TieRow("W1.7 adjustable wire (9 ga)", 4.625),
               TieRow("W2.8 adjustable wire (3/16\")", 6.625))
-_ROWS = {2015: _ROWS_2018, 2018: _ROWS_2018, 2021: _ROWS_2021, 2024: _ROWS_2021}
+#: 2024: the 2021 rows, footnotes unchanged (e: 2 pintle legs, offset <= 1 1/4"; f: brick
+#: face to pintle end <= 2"; backing eye >= W2.8, barrel >= 1/4" OD, or plate >= 0.074" x 1 1/4").
+_ROWS_2024 = _ROWS_2021
+_ROWS = {2015: _ROWS_2018, 2018: _ROWS_2018, 2021: _ROWS_2021, 2024: _ROWS_2024}
+#: The edition the ties are DETAILED to (decision 10): the W2.8 row, in force in a 2024-based code.
+DETAIL_EDITION = 2024
+TIE_DETAIL = ("W2.8 (3/16\") adjustable wire tie, 2 pintle legs, offset at most 1 1/4\", brick "
+              "face to pintle end at most 2\"; backing eye or barrel per Table R703.8.4(1) "
+              "(eye W2.8, barrel 1/4\" OD or plate 0.074\" x 1 1/4\"); fastener not smaller than "
+              "an 8d common nail, long enough to seat in the stud through the foam and sheathing")
 
 
 def irc_edition(irc_base: str | None) -> int | None:
