@@ -1846,6 +1846,33 @@ sealed deck (net 11.0 psf up) are named on `column_head_joint`: 11.0 x 1' x 9.75
 against the catalog's H10ASS 1,040 lb (Simpson C-C-2026 p.300), about 0.10; no check grades them and
 the H2.5ASS at the end joists is not compared.
 
+## 30. Where the soil's prop goes (2026-11-23, coordinator)
+
+The 379 lb/ft factored (237 lb/ft service, `efp H^2 / 10`, efp 60, H 6.29') is **compression**. The
+soil pushes W1 and E1 inward, toward each other, so each stem's head presses on its ledger, the
+ledger (flat on the wall's court face) on the joist ends, and the joists carry it across the porch
+as struts to the other ledger and stem. The joists bear directly on the ledger's face (the LUS210SS
+only seats them), so the Titen HD ledger anchors and the hanger fasteners take **none** of it: they
+keep the gravity shear the Simpson letter L-A-THDSSLDGR23 grades, and would see tension only if the
+soil's thrust reversed, which a retained wall does not do. No anchor swap is needed.
+
+```
+per joist       237 lb/ft x 1.0' o.c.                       =   237 lb
+bearing         237 / (1.5" x 11.25")                       =   14.0 psi on the ledger's side grain
+                Fc-perp, SP No. 2 wet 565 x 0.67            =  378.6 psi          d/c 0.04
+joist as column Le 16.75' strong axis, plank bracing the weak axis: buckles only if E_min'
+                < 3 x 237 x 201"^2 / (pi^2 x 178 in4)        =  16,400 psi (E apparent 1,260,000)
+plank           not a strut, not relied on
+```
+
+**Assumptions to confirm.** The joist ends bear tight on the ledger (a hanger gap of 1/8" lets the
+stem head move that far before the strut engages); the porch is framed before backfill and the two
+sides are backfilled together (L1's `AN-SG-BACKFILL` (b)): a one-sided stage would push the porch
+into the far stem as a cantilever, which this record does not grade. The anchors keep the 8" skip
+at every column (`AN-SG-LEDGER-DOWELS`). The coordinator's request to read a published stainless
+anchor (ESR-3037 Strong-Bolt 2 316 SS, an adhesive 316 rod) is not needed for this load and was not
+read; it would be needed only if a design reversed the thrust.
+
 ---
 
 ## Sources
