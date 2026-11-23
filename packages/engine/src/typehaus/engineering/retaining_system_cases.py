@@ -1,0 +1,196 @@
+"""The court's case set: soil, water on both sides, uplift, two sliding planes (free body §15).
+
+One drawing-backed set, each case naming its plane, the body that moves and what resists:
+
+* **footing plane** (concrete on the stone bed, mu 0.35, IBC Table 1806.2 class 3): the cast
+  loop with every spliced wall and the retaining heels' soil (``retaining_system_body``);
+* **deep plane** (stone and native on native at the soakaway course's bottom, mu 0.25, class
+  4): the same body plus the beds and the native core they enclose. No frontal resistance
+  against the house is credited, and no passive.
+
+Water: **perched** at H/2 over the footing top on the retained side, the drain column taken as
+blocked and the bed still draining (no uplift; the water thrust unbalanced); **retained
+side full height, court empty** (the same, to the terrace); **flooded court**, one level on
+both sides at the court floor (the overflow failed), so the water forces close on themselves
+and uplift remains; and for the deep plane the soakaway **full to its lip**.
+
+A drained zone is credited only the pressure change its geometry gives: a vertical column
+moves a perched head's force from pore pressure to seepage force and the same force reaches
+the body, so the perched case takes it as blocked and nothing else is changed by it.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+from typehaus.engineering.item import LimitState, Quantity
+from typehaus.engineering.retaining_basis import REQUIRED_FS
+from typehaus.engineering.retaining_system_body import (
+    DRY,
+    STONE_PCF,
+    Body,
+    Member,
+    Water,
+    deep_plane_body,
+    footing_plane_body,
+)
+
+_M = 0.3048
+
+#: Cases whose row is new in the 2026-11-22 set and whose answer is an owner decision still
+#: open: under 1.50 they hold the record INCOMPLETE (named) instead of OVER. Take a case out
+#: once the design answers it, and an under-limit row grades OVER like any other.
+PENDING_CASES = frozenset({"perched", "flooded court", "deep, soakaway full"})
+
+
+@dataclass(frozen=True)
+class Case:
+    key: str
+    label: str
+    plane: str           # "footing" | "deep"
+    graded: bool
+
+
+CASES = (
+    Case("dry", "sliding, dry", "footing", True),
+    Case("perched", "sliding, perched at H/2", "footing", True),
+    Case("retained full", "sliding, retained water to the terrace, court empty", "footing",
+         False),
+    Case("flooded court", "sliding, flooded court", "footing", True),
+    Case("deep dry", "deep plane, dry", "deep", False),
+    Case("deep, soakaway full", "deep plane, soakaway full to its lip", "deep", True),
+    Case("deep flooded", "deep plane, flooded court", "deep", False),
+)
+
+
+def members_for(ctx, walls: list, built: list, soil, soil_pcf: float) -> list[Member]:  # type: ignore[no-untyped-def]
+    """``retaining_system._members`` output, as the body module reads it."""
+    from typehaus.engineering.tier_surcharge import court_surcharges
+
+    tiers, _ = court_surcharges(ctx, soil_pcf)
+    by_tag = {w.tag: w for w in walls}
+    out = []
+    for m in built:
+        resolved = next(w for w in ctx.model.walls if w.tag == m.tag)
+        wall = by_tag[m.tag]
+        out.append(Member(
+            m.tag, m.push, tuple((a / _M, b / _M) for a, b in resolved.axis),
+            soil.at_rest_efp_psf_per_ft,
+            tiers[m.tag].surcharge.lateral_plf if m.tag in tiers else 0.0,
+            (wall.bottom_elevation.meters + wall.unbalanced_fill.meters) / _M))
+    return out
+
+
+def _lip_ft(ctx, body: Body) -> float | None:  # type: ignore[no-untyped-def]
+    """The soakaway's overflow lip: an authored ``overflow_invert`` on a bed in the loop."""
+    from typehaus.model.structure import FootingBedding
+
+    hosts = {p.label.split(":")[1] for p in body.prisms if ":" in p.label}
+    lips = [b.overflow_invert.meters / _M for b in ctx.plan.all_elements()
+            if isinstance(b, FootingBedding) and b.overflow_invert is not None
+            and b.host_ref in hosts]
+    return max(lips) if lips else None
+
+
+def waters(ctx, body: Body) -> tuple[dict[str, Water], list[str]]:  # type: ignore[no-untyped-def]
+    floor = max(p.z1_ft for p in body.prisms if p.label.startswith("footing:"))
+    top = max(p.top_ft for p in body.pushes)
+    height = top - body.plane_ft
+    out = {"dry": DRY, "deep dry": DRY,
+           "perched": Water("perched", floor + height / 2.0),
+           "retained full": Water("retained full", top),
+           "flooded court": Water("flooded court", floor, both_sides=True),
+           "deep flooded": Water("deep flooded", floor, both_sides=True)}
+    lip = _lip_ft(ctx, body)
+    if lip is None:
+        return out, ["an overflow_invert on the court's soakaway bed — the lip the deep "
+                     "plane's soakaway-full case fills to"]
+    out["deep, soakaway full"] = Water("deep, soakaway full", lip, both_sides=True)
+    return out, []
+
+
+@dataclass(frozen=True)
+class Graded:
+    states: tuple[LimitState, ...]
+    pending: tuple[tuple[str, str], ...]
+    notes: tuple[str, ...]
+    inputs: tuple[Quantity, ...]
+    dry: dict[float, tuple[float, float]]
+
+
+def grade(ctx, ref: str, walls: list, built_by_pcf: dict, soil) -> tuple[Graded | None, list[str]]:  # type: ignore[no-untyped-def]
+    """Every case at both ends of the band; each row reports its worse end."""
+    from typehaus.engineering.soil import aggregate_bed
+
+    bed = aggregate_bed()
+    fs: dict[str, list[tuple[float, float, Body, Water]]] = {c.key: [] for c in CASES}
+    missing: list[str] = []
+    dry: dict[float, tuple[float, float]] = {}
+    tables = []
+    for pcf, built in built_by_pcf.items():
+        members = members_for(ctx, walls, built, soil, pcf)
+        body, gap = footing_plane_body(ctx, ref, walls, members, soil_pcf=pcf,
+                                       friction=bed.friction_coefficient)
+        missing.extend(gap)
+        if body is None:
+            return None, missing
+        deep, gap = deep_plane_body(ctx, body, friction=soil.friction_coefficient,
+                                    native_pcf=pcf)
+        missing.extend(gap)
+        levels, gap = waters(ctx, body)
+        missing.extend(gap)
+        dry[pcf] = (body.resultant(), body.friction * body.weight())
+        for case in CASES:
+            on = body if case.plane == "footing" else deep
+            water = levels.get(case.key)
+            if on is None or water is None:
+                continue
+            fs[case.key].append((on.fs(water), pcf, on, water))
+        tables.append(_table(pcf, body, deep, levels))
+    if missing:
+        return None, list(dict.fromkeys(missing))
+    states, pending, notes = [], [], []
+    for case in CASES:
+        if not fs[case.key]:
+            continue
+        value, pcf, on, water = min(fs[case.key], key=lambda r: (r[0], r[1]))
+        how = _how(case, on, water, pcf)
+        if case.graded:
+            states.append(LimitState(case.label, REQUIRED_FS, value, "", how,
+                                     is_safety_factor=True))
+            if value < REQUIRED_FS and case.key in PENDING_CASES:
+                pending.append((case.label, (
+                    f"a design answer for the court's {case.label} case, FS {value:.2f} "
+                    f"against {REQUIRED_FS:.2f} at {pcf:.0f} pcf (more resistance, a key, or "
+                    f"an owner-accepted basis)")))
+        else:
+            notes.append(f"REPORTED, not graded — {case.label}: FS {value:.2f} at "
+                         f"{pcf:.0f} pcf. {how}")
+    body110 = fs["dry"][0][2]
+    inputs = (Quantity("stone_unit_weight", STONE_PCF, "pcf", 1.0),
+              Quantity("body_weight_110", body110.weight(), "lb", 1.0),
+              Quantity("body_resultant_110", body110.resultant(), "lb", 1.0))
+    return Graded(tuple(states), tuple(pending), tuple(notes + tables), inputs, dry), []
+
+
+def _how(case: Case, body: Body, water: Water, pcf: float) -> str:
+    where = "both sides, uplift" if water.both_sides else "retained side, bed draining"
+    level = ("none" if water.level_ft is None else f"{water.level_ft * 12:.2f}\" ({where})")
+    return (f"IRC R404.4 — {body.label} at {body.plane_ft * 12:.2f}\", mu {body.friction:.2f}"
+            f": {body.friction:.2f} x N' {body.weight(water):,.0f} lb / H "
+            f"{body.resultant(water):,.0f} lb at {pcf:.0f} pcf; water {level}")
+
+
+def _table(pcf: float, body: Body, deep: Body | None, levels: dict[str, Water]) -> str:
+    def row(b: Body, key: str) -> str:
+        w = levels.get(key)
+        return "-" if w is None or b is None else f"{key} {b.fs(w):.2f}"
+
+    parts = "; ".join(f"{k} {v:,.0f}" for k, v in body.parts().items())
+    widths = ", ".join(f"{p.tag} {p.width_ft:.2f}'" for p in body.pushes)
+    deep_parts = "" if deep is None else "; ".join(
+        f"{k} {v:,.0f}" for k, v in deep.parts().items())
+    return (f"CASE SET at {pcf:.0f} pcf — footing-plane body (lb): {parts}; each push acts over "
+            f"its projected width ({widths}). Deep body adds (lb): {deep_parts}. FS: "
+            + ", ".join(row(body if c.plane == "footing" else deep, c.key) for c in CASES))
+
