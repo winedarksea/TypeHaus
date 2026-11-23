@@ -38,14 +38,13 @@ on IRC R404.1.1's 48" threshold exactly and send five landscape walls into an R4
 cantilever analysis they have no footing for; see the note beside `_APRON`.
 
 **READ OFF ALLAN BLOCK'S GRAVITY CHART (owner, 2026-11-22).** IRC R404.4 does not engage:
-40" of fill, no added load. Four legs (BLOCK, WEST, WEST-BALCONY, EAST-BALCONY) are drawn to AB
-Table 1.3 (level, clay 27 deg, 12 deg AB Stones: 3'-6" exposed, cap included): base 4" lower
-(12" buried), AB Capstones on top (top stays 0'-0"), drain pipe tied into the court's wall
-column, founding fill to 95% Standard Proctor. `structural.srw_gravity_chart` holds each to its
-applicability sheet (`notes/raised_garden_srw.md` §10). **W-RG-EAST misses (gate G9)**: TR-SG-RUNNEL
-lets go at its toe, 6" from FURN-SG-SPLASH-BASIN. It stays engineered at the 1.54 free body
-(§3b) on the old section until the runnel's end and the basin move. Back to back with the court
-(§6); global stability stays the court's (`notes/sunken_garden_court_free_body.md` §9).
+40" of fill, no added load. All five legs are drawn to AB Table 1.3 (level, clay 27 deg, 12 deg
+AB Stones: 3'-6" exposed, cap included): base 4" lower (12" buried), AB Capstones on top (top
+stays 0'-0"), drain pipe tied into the court's wall column, founding fill to 95% Standard
+Proctor. `structural.srw_gravity_chart` holds each to its applicability sheet
+(`notes/raised_garden_srw.md` §10); `tiered_retaining` is retired. W-RG-EAST fitted once
+TR-SG-RUNNEL's spout and its basin moved 3'-0" off the toe (owner, 2026-11-23). Back to back
+with the court (§6); global stability is the court's (`notes/sunken_garden_court_free_body.md`).
 
 Section, at a side leg, west (yard) to east (sunken garden):
 
@@ -124,7 +123,7 @@ a dry-stacked landscape wall.
 
 Not modelled as geometry: the cap, the filter fabric behind the wall rock, the drain pipe
 (authored as `SegmentalWallSpec.chart`; its LF and the cap LF are not yet billed). The wall
-rock is authored on the spec (graded on the engineered legs) but not billed.
+rock is authored on the spec but not billed.
 
 **The terrace is filled and planted (2026-09-23)**: ``TERRACE_BEDS``, three ``PlantingBed``
 strips tiling the U, each carrying 12" of planting soil over compacted fill down to the yard.
@@ -309,8 +308,7 @@ NODES = [
 # 8x12x18, 75 lb as AB Classic — only the setback differs), the design depth and in-place
 # weight off the manual's gravity sample (p.11, which IS a 12° wall: d 0.97 ft, 130 pcf with
 # the cores filled — the hollow unit alone is 125), and the interface shear off Table 1.2's
-# collection-wide minimum. The cap and chart row go on the legs that fit Table 1.3 only
-# (`_chart`, below). notes/raised_garden_srw.md §1.
+# collection-wide minimum. The cap and chart row are `_chart`, below. notes/raised_garden_srw.md §1.
 #
 # ** THE WALL ROCK IS AUTHORED (2026-09-21). ** AB's gravity construction puts 12" of wall
 # rock behind every course (manual p.22, Step 4). It is graded as the near-heel zone of a
@@ -331,7 +329,7 @@ AB_STONE = SegmentalWallSpec(
     drainage_zone=WALL_ROCK,
 )
 
-# ** TABLE 1.3 LEGS (owner, 2026-11-22). ** AB Capstone 4" x 12" x 18" (allanblock.com AB
+# ** THE TABLE 1.3 SECTION, ALL FIVE LEGS (owner, 2026-11-22). ** AB Capstone 4" x 12" x 18" (allanblock.com AB
 # Collection page) on six 8" courses: the base drops 4" so the top stays 0'-0" (court datum)
 # and the exposure incl. cap is the old 40"/36". Buried block is 12" (AB wants 6"). Each field of
 # `SrwChartSection` is a condition of the row; `structural.srw_gravity_chart` compares it to
@@ -385,6 +383,7 @@ _CAPPED = dict(bottom_elevation=_CAPPED_BASE)
 _APRON_WASHED = dict(_APRON, assembly="RETAINING_BLOCK_12_WASHED")
 _APRON_SOUTH = dict(_APRON_WASHED, **_CAPPED, srw=_chart("FB-SG-S"))
 _APRON_WEST = dict(_APRON_WASHED, **_CAPPED, srw=_chart("FB-SG-W2"))
+_APRON_EAST = dict(_APRON_WASHED, **_CAPPED, srw=_chart("FB-SG-E2"))
 
 # ** THE RETURNS RETAIN TO THE NORTH YARD, NOT THE SOUTH ONE (2026-09-22). ** `_APRON`'s
 # differential is the south yard's at -3'-4"; each return's yard face looks at the north bench
@@ -405,7 +404,7 @@ WALLS = [
     FoundationWall(uid="RGW103AAAA", tag="W-RG-WEST",
                    start_node="N-RG-NW", end_node="N-RG-SW", **_APRON_WEST),
     FoundationWall(uid="RGW104AAAA", tag="W-RG-EAST",
-                   start_node="N-RG-SE", end_node="N-RG-NE", **_APRON_WASHED),
+                   start_node="N-RG-SE", end_node="N-RG-NE", **_APRON_EAST),
     FoundationWall(uid="RGW105AAAA", tag="W-RG-WEST-BALCONY",
                    start_node="N-RG-NW", end_node="N-RG-WEST-BALCONY", **_APRON_RETURN_W),
     FoundationWall(uid="RGW106AAAA", tag="W-RG-EAST-BALCONY",
@@ -435,6 +434,9 @@ BEDDINGS = [
         # crushed base. The ground under it (27.8°-32.0°, read off IBC 1610.1) governs.
         friction_angle_deg=36.0,
         geotextile=True,
+        # AB's drain pipe (p.22 Step 3) is NOT the bed's tile: `drain_tile=True` makes the drainage
+        # graph demand authored leads and `inlet_refs` on the court beds (L1's band), so the pipe
+        # is `SegmentalWallSpec.chart.drain`, graded by outlet and not yet billed (~86 LF of 4").
         drain_tile=False,
     )
     for i, w in enumerate(WALLS, start=1)

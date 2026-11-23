@@ -158,7 +158,7 @@ heel with the rafters' true plumb depth, decision #109, and dropped 0.973" — e
 > and head pull-through d/c 0.118. The working below is at the prior plane; the method
 > is unchanged. `test_cladding_read.py` pins the current plane's values.
 
-> **Re-struck 2026-11-22 (review C-7): h is measured from the LOWEST ground, not the datum.**
+> **Re-struck 2026-11-22 (review C-7): h is measured from the LOWEST ADJACENT ground (within 30 ft of the walls; the sunken court governs), not the datum.**
 > The roof heights above are main-floor-datum heights; the site grade is 2'-10" below the
 > datum and the sunken garden floor 9'-1-7/16" below. The canopy calcs always measured from
 > the lowest ground; this one now does too (`wind.mean_roof_height_ft`), worked by hand in
@@ -169,8 +169,8 @@ heel with the rafters' true plumb depth, decision #109, and dropped 0.973" — e
 > withdrawal d/c 0.198 against 201.09 lb, head pull-through d/c 0.128 against 310.7 lb. The
 > row's `demand_psf` was re-authored 18.27 -> 19.94 (the row was judged at the old height and
 > refuses a higher demand). The working below is at the old plane; the method is unchanged.
-> The girt screw behind this panel carries the same suction times the girt and panel
-> continuity (`catlin_truss_engineering.md` §3.5).
+> The girt screw behind this panel carries the same suction times the girt (1.25) and panel
+> (8/7) continuity, plus gravity prying (`catlin_truss_engineering.md` §3.5, §3.5a).
 
 K_z, Table 26.10-1, Exposure B (z_g = 1200 ft, alpha = 7):
 

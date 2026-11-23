@@ -18,11 +18,14 @@ from shapely.geometry import LineString, Polygon
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.framing.profiles import cross_section, plan_cross_section_m
 from typehaus.resolve.geometry_walls import cuts_layer
+from typehaus.resolve.layout_lines import collinear_overlap
 
 _TOUCH_TOL_M = 0.125 * M_PER_IN  # a member this close to the sheathing's back bears it
 _PARALLEL = 0.99
 _RAKE_STEP_M = 6.0 * M_PER_IN  # a raked member is stepped into rectangles this long
 _EPS = 1e-6
+_AXIS_TOL_M = 0.5 * M_PER_IN  # stacking's raw-axis tolerance
+_OVERLAP_M = 2.0 * M_PER_IN  # a run shorter than this touches, it does not stand on
 # A joint's end may run this far past the last member: at a through corner the panel laps
 # the other wall's sheathing edge, and the end nail sits 3/8" in, on the member.
 _END_ALLOWANCE_M = 0.75 * M_PER_IN
@@ -135,6 +138,18 @@ def backing_rects(model, wall, frame: Frame, z0: float, z1: float, lo: float,
     rects = [r for w in (wall, *neighbours(model, wall)) for m in w.members
              for r in _member_rects(frame, m, m.child_key if w is wall
                                     else f"{w.tag}:{m.child_key}")]
+    # A wall below this one on the same line (a framed court wall under a main-storey wall):
+    # its top plate backs the sheathing where it runs down over it, as a floor's rim backs it
+    # at the band. Read by geometry, since sheet layout runs before ``stack_edges``.
+    for lower in model.walls:
+        run = (collinear_overlap(wall.axis, lower.axis, _AXIS_TOL_M)
+               if lower.tag != wall.tag and lower.z0_m < wall.z0_m - _EPS else None)
+        if run is None or run[1] - run[0] < _OVERLAP_M:
+            continue
+        for member in lower.members:
+            if member.z1_m < z0 - _EPS or member.z0_m > z1 + _EPS:
+                continue
+            rects.extend(_member_rects(frame, member, f"{lower.tag}:{member.child_key}"))
     for floor in model.floors:
         for member in floor.members:
             if member.z1_m < z0 - _EPS or member.z0_m > z1 + _EPS:

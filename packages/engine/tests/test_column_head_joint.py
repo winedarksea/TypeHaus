@@ -70,10 +70,15 @@ def test_section_capacities_reproduce_9d_9e_9f(catlin_cast_ctx):
     assert _state(record, "bearing at the seat").capacity == pytest.approx(67_681.25)
 
 
-def test_the_head_is_asked_for_no_moment_and_says_so(catlin_cast_ctx):
-    state = _state(_record(catlin_cast_ctx, "PT-BW-RE"), "head moment")
-    assert state.is_detailing and state.ratio == pytest.approx(0.952, abs=1e-3)
-    assert "R6.2.5" in state.citation
+def test_the_head_is_asked_for_no_moment_and_it_is_an_assumption_not_a_ratio(catlin_cast_ctx):
+    """B-11: 2.0 / 2.1 is a k-factor consistency statement, not the sheet's nearest-to-limit
+    row. It moved from a limit state (0.952) to a note, and the design method is declared."""
+    record = _record(catlin_cast_ctx, "PT-BW-RE")
+    assert not any(s.name.startswith("head moment") for s in record.limit_states)
+    notes = " ".join(record.notes)
+    assert "HEAD MOMENT TRANSFER, an assumption and not a row" in notes
+    assert "R6.2.5" in notes and "k = 2.1" in notes
+    assert "DESIGN METHOD" in notes and "ALLOWABLE STRESS" in notes and "STRENGTH design" in notes
 
 
 def test_canopy_columns_reproduce_9b_9c_9e(catlin_cast_ctx):
@@ -111,15 +116,28 @@ def test_canopy_columns_reproduce_9b_9c_9e(catlin_cast_ctx):
 
 
 def test_guard_columns_grade_the_guard_at_cd_one(catlin_cast_ctx):
+    """The balcony pair is graded on FL11473 R6 Table 3's 1-PLY row (owner decision 8): uplift
+    1,920, F1 1,115, F2 900 for the pair, the lower lateral (900) the capacity. §23."""
     for tag in ("PT-SG-BF1", "PT-SG-BR3"):
         record = _record(catlin_cast_ctx, tag)
         assert record.status == Status.OK
         guard = _state(record, "connector lateral, guard")
-        assert guard.capacity == pytest.approx(843.75)
-        assert guard.ratio == pytest.approx(0.2370, abs=1e-4)
-        assert not any(s.name == "connector uplift" for s in record.limit_states)
+        assert guard.capacity == pytest.approx(562.5)               # 900 / C_D 1.6
+        assert guard.ratio == pytest.approx(0.3556, abs=1e-4)
+        wind = _state(record, "connector lateral, wind")
+        # (deck 363 + guard 208 + curtains 1,092) / 4 columns, ASD: the shaft's own wind acts
+        # below the head and is not on the tie.
+        assert wind.demand == pytest.approx(415.6, abs=0.2) and wind.capacity == 900.0
+        # B-06: a sealed deck takes wind uplift, 0.6 q G C_f less 0.6 D on 47.12 ft2.
+        uplift = _state(record, "connector uplift")
+        assert uplift.demand == pytest.approx(519.0, abs=1.0) and uplift.capacity == 1920.0
+        assert "sealed deck" in uplift.citation
+        combined = _state(record, "connector combined")
+        assert combined.ratio == pytest.approx(0.732, abs=1e-3)
+        assert "SEALED" in " ".join(record.notes)
     sg = _record(catlin_cast_ctx, "PT-SG-BR1")
-    assert _state(sg, "column torsion").demand == pytest.approx(46.67, abs=0.01)
+    # 415.6 lb ASD / 0.6 = 692.7 lb at strength, x the 1.75" beam-face lever / 12.
+    assert _state(sg, "column torsion").demand == pytest.approx(101.01, abs=0.02)
 
 
 def test_bearing_demand_is_the_head_reaction(catlin_cast_ctx):

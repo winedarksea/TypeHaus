@@ -4,10 +4,11 @@
 hands the column its load, was deferred to a seal until 2026-09-20. It is computed here, six
 limit states per column:
 
-* **Head moment transfer** — a detailing row. ``deck_post`` sways every lateral column at
-  ``k = 2.1`` (ACI 318-19 Table R6.2.5, fixed base / free top), so the adopted model asks the
-  joint for no moment. Graded as ``2.0 / k_adopted``, which goes over the day somebody adopts
-  a ``k`` that assumes the head restrains rotation.
+* **Head moment transfer** — an ASSUMPTION, printed in the notes and not graded: ``deck_post``
+  sways every lateral column at ``k = 2.1`` (ACI 318-19 Table R6.2.5, fixed base / free top),
+  so the adopted model asks the joint for no moment. It was a row (``2.0 / 2.1``, d/c 0.95)
+  until 2026-11-23, and read as the sheet's nearest-to-limit ratio though it is a k-factor
+  consistency statement and structurally nothing (review B-11).
 * **Connector lateral** against ``Post.head_connector.lateral_lb`` — the lower directional
   figure, never doubled for a pair (a ``set_rated`` pair's value is already the set's). The
   published value carries C_D = 1.6, so wind grades against it as printed and a guard load
@@ -53,11 +54,17 @@ KIND = "column_head_joint"
 BASIS = ("ACI 318-19 §22.5, §22.7.4, §22.8.3, Table R6.2.5; the head connector's published "
          "allowables (Post.head_connector)")
 #: 1: the kind as introduced, 2026-09-20. 2: the connector's own combined-load rule is a
-#: graded row where its document states one (FL11473 §9 item 4), 2026-09-21.
-BASIS_VERSION = "2"
+#: graded row where its document states one (FL11473 §9 item 4), 2026-09-21. 3: 2026-11-23
+#: (review B-06/B-09/B-11): a sealed deck takes a wind uplift row and the interaction, the
+#: balcony's pair is graded on the 1-ply row, the k-consistency statement is an assumption and
+#: not a ratio, and the design method of every row is declared.
+BASIS_VERSION = "3"
 
-oracled_by(KIND, Oracle(note="north_entry_piers.md", section="§9",
-                        test="tests/test_column_head_joint.py"))
+oracled_by(KIND,
+           Oracle(note="north_entry_piers.md", section="§9",
+                  test="tests/test_column_head_joint.py"),
+           Oracle(note="balcony_moment_columns.md", section="§23",
+                  test="tests/test_column_head_joint.py"))
 
 #: IRC R301.5 / Table R301.5 note f — the guard's concentrated load, the same 200 lb
 #: ``pier_basis._base_moments`` puts on the base.
@@ -72,12 +79,23 @@ FREE_HEAD_K = 2.0
 
 #: The deliverable of the retired deferral, kept (plan rule 12): what is still a seal's.
 _NOT_GRADED = (
-    "NOT GRADED — what the retired deferral asked for and this record does not compute: a "
-    "sealed connection detail at each cast column head, meaning the FASTENER schedule "
-    "through the standoff pack and the gusset's anchor edge distance on the round (only the "
-    "published part allowables are graded here), and whether the shim stack and gussets "
-    "deliver the free head this analysis assumes rather than a partial fixity it does not. "
-    "Wood crushing on the pack (NDS F_c-perp) belongs to the beam, not to this joint.")
+    "NOT GRADED — what the retired deferral asked for and this record does not compute: the "
+    "FASTENER schedule is the connector's own (the nails of the HETA20Z row it quotes, "
+    "`AN-SG-HETA-TRIM`), and the strap pair's rotational stiffness is bounded as negligible "
+    "against the column's own, so the head is the free head this analysis assumes. Wood "
+    "crushing on the pack (NDS F_c-perp) belongs to the beam, not to this joint.")
+#: The design method of each row, declared (review B-11): the connector rows are ASD against
+#: the published allowables; the concrete rows are strength design against factored loads.
+_DESIGN_METHOD = (
+    "DESIGN METHOD: the connector rows (lateral, uplift, combined) are ALLOWABLE STRESS — "
+    "service loads against the document's allowables, which already carry C_D 1.6 for wind; "
+    "the column shear, torsion and seat bearing rows are STRENGTH design (ACI 318-19) — "
+    "factored loads (1.0W, 1.6 x the guard, 1.2D + 1.6L) against phi times the nominal.")
+_FREE_HEAD_NOTE = (
+    "HEAD MOMENT TRANSFER, an assumption and not a row: `deck_post` sways this column at k = "
+    "{k:g} (ACI 318-19 Table R6.2.5, fixed base and FREE top), so the model restrains no "
+    "rotation at the head and asks the joint for no moment; {free:g} / {k:g} would pass 1.0 "
+    "only a k assuming the head restrains rotation.")
 
 
 @keys(KIND)
@@ -117,13 +135,7 @@ def _one(ctx: EngineeringContext, pier: Any, frame_forces: dict[str, float] | No
     inputs: list[Quantity] = []
     height_ft = pier.height_in / 12.0
 
-    states.append(LimitState(
-        "head moment transfer (none asked of the joint)", FREE_HEAD_K,
-        CANTILEVER_EFFECTIVE_LENGTH_FACTOR, "",
-        f"ACI 318-19 Table R6.2.5: deck_post sways this column at k = "
-        f"{CANTILEVER_EFFECTIVE_LENGTH_FACTOR:g}, fixed base and FREE top, so the adopted "
-        f"model restrains no rotation at the head; over 1.0 would mean a k assuming it does",
-        is_detailing=True))
+    notes.append(_FREE_HEAD_NOTE.format(k=CANTILEVER_EFFECTIVE_LENGTH_FACTOR, free=FREE_HEAD_K))
 
     # ── what the beam hands the head, ASD ──
     guard = GUARD_LOAD_LB if pier.guard_base_moment_lb_ft > 0.0 else 0.0
@@ -132,9 +144,13 @@ def _one(ctx: EngineeringContext, pier: Any, frame_forces: dict[str, float] | No
         wind_how = ("the column's share of the diaphragm shear "
                     "(lateral_system.column_head_reactions), not netted against its own drag")
     else:
-        wind_by_axis = {"any": pier.wind_base_moment_lb_ft / height_ft} if height_ft else {}
-        wind_how = ("the storey shear at the head, M_wind / H — exact for a deck column, an "
-                    "upper bound on a free-headed roof column")
+        head = pier.wind_head_shear_lb or (
+            pier.wind_base_moment_lb_ft / height_ft if height_ft else 0.0)
+        wind_by_axis = {"any": head} if head else {}
+        wind_how = ("the wind shear the deck, guard and closed curtains put on the head "
+                    "(the shaft's own wind acts below it)" if pier.wind_head_shear_lb else
+                    "the storey shear at the head, M_wind / H — an upper bound on a "
+                    "free-headed roof column")
     wind = max(wind_by_axis.values(), default=0.0)
     inputs += [Quantity("head_lateral_wind", wind, "lb", 1.0),
                Quantity("head_lateral_guard", guard, "lb", 1.0)]
@@ -159,7 +175,7 @@ def _one(ctx: EngineeringContext, pier: Any, frame_forces: dict[str, float] | No
         if connector is not None:
             _seat_states(ctx, pier, frames, connector, fc, states, missing, notes, inputs)
     inputs.append(Quantity("fc", fc, "psi", 1.0))
-    notes += [_NOT_GRADED,
+    notes += [_DESIGN_METHOD, _NOT_GRADED,
               "The guard's lever above the deck: deck_post charges the base with 200 lb x "
               "(H + guard height). A free head cannot pass that couple; it returns through "
               "the deck's bearings as an axial pair, which is not graded here.",
@@ -225,7 +241,9 @@ def _connector_states(ctx: EngineeringContext, pier: Any, connector: Any, wind: 
         "connector uplift", uplift, connector.uplift_lb, "lb",
         f"{connector.tie} {connector.uplift_lb:,.0f} lb, "
         f"{'the rated set' if connector.set_rated else 'ONE part'} credited; ASCE 7-16 "
-        f"§2.4.1(7) 0.6D + 0.6W on {pier.roof_tributary_ft2:.1f} ft2 of roof"))
+        f"§2.4.1(7) 0.6D + 0.6W on "
+        + (f"{pier.roof_tributary_ft2:.1f} ft2 of roof" if pier.roof_tributary_ft2 > 0.0
+           else f"{pier.tributary_ft2:.1f} ft2 of sealed deck")))
     if lateral is not None and wind > 0.0:
         share = 1 if connector.set_rated else connector.tie_count
         up_ratio = (max(uplift, 0.0) / share) / connector.uplift_lb
@@ -264,10 +282,7 @@ def _net_uplift(ctx: EngineeringContext, pier: Any, notes: list[str]) -> float |
     )
 
     if pier.roof_tributary_ft2 <= 0.0:
-        notes.append(
-            "NO UPLIFT ROW: this column carries no roof (roof tributary 0 ft2, computed), and "
-            "ASCE 7-16 assigns an open-jointed walking surface no uplift coefficient.")
-        return None
+        return _sealed_deck_uplift(ctx, pier, notes)
     q_h = _roof_q_h(ctx, pier.tag)
     if q_h is None:
         return None
@@ -278,6 +293,44 @@ def _net_uplift(ctx: EngineeringContext, pier: Any, notes: list[str]) -> float |
         f"{GUST_EFFECT_RIGID} x {MAX_VERIFIED_CASE_AB} = {up:.3f} psf, a bound on any "
         f"published free-roof C_N, less 0.6 x {roof_dead:g} psf of roof dead.")
     return (up - 0.6 * roof_dead) * pier.roof_tributary_ft2
+
+
+def _sealed_deck_uplift(ctx: EngineeringContext, pier: Any, notes: list[str]) -> float | None:
+    """0.6D + 0.6W uplift on a SEALED deck, ASD lb per column; ``None`` for an open-jointed one.
+
+    ASCE 7-16 gives an open-jointed walking surface no uplift. A watertight plank (an aluminium
+    deck system) is a roof over the space below, so the same surrogate the roof columns use
+    applies — ``0.6 q G C_f`` at the Case A/B bound, less 0.6 of the deck's dead — spent on
+    the column's tributary (review B-06). The reviewer's hand estimate with C_N -1.5 was 380 lb.
+    """
+    from typehaus.engineering.deck_tie_basis import deck_wind
+    from typehaus.engineering.pier_basis import DECK_DEAD_LOAD_PSF
+    from typehaus.model.floors import FloorSystem
+    from typehaus.wind_tables import asd_solid_band_psf
+
+    post = ctx.plan.by_tag(pier.tag)
+    deck = next((d for d in ctx.plan.all_elements() if isinstance(d, FloorSystem)
+                 and d.service == "deck"
+                 and any(pier.tag in (getattr(ctx.plan.by_tag(r), "bearing_refs", ()) or ())
+                         for r in d.joists.bearing_refs or ())), None)
+    plank = getattr(getattr(deck, "subfloor", None), "material_ref", "") or ""
+    if deck is None or not plank.startswith("aluminum-deck"):
+        notes.append(
+            "NO UPLIFT ROW: this column carries no roof (roof tributary 0 ft2, computed) and "
+            "its deck is an open-jointed walking surface, which ASCE 7-16 assigns no uplift.")
+        return None
+    wind = deck_wind(ctx, deck, [post])
+    if wind is None:
+        return None
+    up = asd_solid_band_psf(wind.q_h_psf)
+    notes.append(
+        f"UPLIFT: this deck's plank ({plank}) is SEALED — the porch's roof — so ASCE 7-16's "
+        f"no-uplift rule for an open-jointed surface does not hold. The same bound the roof "
+        f"columns use: 0.6 x {wind.q_h_psf:.2f} psf x G x C_f 1.8 = {up:.2f} psf up, less "
+        f"0.6 x {DECK_DEAD_LOAD_PSF:g} psf of deck dead (planters excluded: they may be "
+        f"absent), on this column's {pier.tributary_ft2:.1f} ft2. The joist ties and the "
+        f"plank's own fastening see this uplift too; they are outside this record.")
+    return (up - 0.6 * DECK_DEAD_LOAD_PSF) * pier.tributary_ft2
 
 
 def _roof_q_h(ctx: EngineeringContext, tag: str) -> float | None:

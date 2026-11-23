@@ -10,27 +10,11 @@ reproduces §2–§8 against it.
 
 **Result: PASSES on all five legs, at both ends of the soil band.**
 
-**Since 2026-11-22 (owner decision 4) four legs leave this register**: IRC R404.4 does not
-engage at <= 48" of fill, and the legs drawn to Allan Block Table 1.3 (§10) are read off the
-chart by `structural.srw_gravity_chart`. §1-§9 are the free body of the unit and remain the
-record of `tiered_retaining/W-RG-EAST` (gate G9) and the corroboration of the rest.
-
-| | 110 pcf (loose, governs) | 130 pcf |
-|---|---|---|
-| sliding FS | **1.538** (d/c 0.975) | 1.806 |
-| overturning FS | **2.020** | 2.018 |
-| toe bearing | 604 psf of 2,000 | 606 psf |
-| course interface shear FS | 5.35 | 5.13 |
-
-Only the setback moved. AB publishes AB Stones at the same 8" × 12" × 18", 75 lb as AB
-Classic (§1), and AB's own gravity sample is a 12° wall at d 0.97 ft, 130 pcf. Doubling the
-lean does two things: it shrinks the wedge (Coulomb on a face at β = 78°) and moves the
-unit's weight back over its heel (arm 0.695' → 0.910'). Sliding is the tight row at the
-loose end, 2.5% clear; overturning is not close.
-
-**Superseded — AB Classic (6°), same day:** sliding 1.38 / overturning 1.44 at 110 pcf,
-1.61 / 1.43 at 130, OVER at both ends (§3c). The tier row (d/c 6.13) was dropped by the
-audit, not by this change (§6).
+**`tiered_retaining` is retired (2026-11-23, owner decision 4)**: IRC R404.4 does not engage at
+<= 48" of fill, and all five legs are drawn to Allan Block Table 1.3 (§10) and read off the
+chart by `structural.srw_gravity_chart`. §1-§9 are the NCMA free body of the unit as it stood
+(base -4'-0", no cap): the hand oracle `tests/test_segmental_wall.py` pins `srw_gravity`'s
+arithmetic against, and the corroboration of the chart (§7), not a register item.
 
 ## 1. Geometry — the premise everything else rests on
 
@@ -472,8 +456,9 @@ Required: FS 1.5 on sliding and overturning, bearing within 2,000 psf, at both s
 
 ## 9. Not graded here
 
-* Global stability of the apron and court on a common failure surface — the geotechnical
-  engineer's (§6; `sunken_garden_court_free_body.md` §9).
+* Global stability: the SRW's own case is closed by AB p.11 ("on sites with slopes or
+  surcharges"; this bed is level and unloaded). The coupled slip under the apron and the court
+  belongs on `retaining_system/W-SG-ARCH` (`sunken_garden_court_free_body.md` §9), not here.
 * The balcony returns' load on `W-SG-W1`/`E1`, and `P_v` onto any court wall (§6).
 * Hydrostatic, seismic and frost-heave cases. The drained presumption now rests on the
   authored wall rock (`SegmentalWallSpec.drainage_zone`), but **AB's drain pipe is not
@@ -496,8 +481,8 @@ row (R404.4's "1.5" lives inside the section that does not apply). Where Allan B
 a gravity row for the unit, reading it is a prescriptive act (the `wall_panel` precedent,
 commit `bf7b974ea`): `SegmentalWallSpec.published` + `.chart` author the row and its section,
 `structural.srw_gravity_chart` prints each condition beside what is drawn, and any condition
-off the row FAILs. §2–§8 stay as the free-body corroboration and as the record of
-`tiered_retaining/W-RG-EAST`, the one leg off the chart.
+off the row FAILs. A footingless wall with no chart row is UNKNOWN there. §2–§8 stay as the
+free-body corroboration.
 
 **The row** (AB Commercial Installation Manual, Table 1.3 p.10, "12° (Ref) AB Stones only of AB
 Collection"): Level, Clay 27°: **3'-6"**; Silty Sand 32°: 5'-4"; Sand/Gravel 36°: 5'-10". "All
@@ -516,7 +501,7 @@ has none. AB Capstone: 4" H x 12" D x 18" L, 55 lb (allanblock.com AB Collection
 | W-RG-WEST | 13, -3'-4" | 40" | 2" clear | 12" | none |
 | W-RG-WEST-BALCONY | 0, -3'-0" | 36" | 6" clear | 16" | none |
 | W-RG-EAST-BALCONY | 1, -3'-1" | 37" | 5" clear | 15" | runnel on the cap, toe faces the north yard |
-| W-RG-EAST | 14, -3'-4" | 40" | 2" clear | (8", old section) | **spout and basin at the toe: misses** |
+| W-RG-EAST | 14, -3'-4" | 40" | 2" clear | 12" | runnel on the cap at its north 1'-6"; spout 4'-0" off the toe |
 
 Exposure is the authored top less the nearest grade station (6.7-10.6 ft from the leg; A2-F11).
 The heat-pump pad's excavation versus the east return's toe is still unchecked (A2-F11).
@@ -559,13 +544,13 @@ W = 130 x 0.97 x 52/12 = 546 plf on the 0.97' unit, gross 563.3 psf, net of the 
 (110 pcf x 52/12 = 476.7) **86.67 psf** (was 80) at the loose end, 0 at 130 pcf. Strip on the
 court wall's virtual back (a 0, b 1.0', h 10.1198' - 4.333' = 5.787'): **54.63 plf at 5.108'**
 (was 50.48 at 5.436'); stem moment 83.09 ft-lb/ft (was 88.02). Reproduced to the digit by a
-Gauss-Legendre integration in `tests/test_tier_surcharge.py`. The court's sliding moves 1.735 ->
-1.732 and W-SG-S/W2 flip their governing row from stem flexure to base restraint (both 0.87).
+Gauss-Legendre integration in `tests/test_tier_surcharge.py`. All three parallel aprons (BLOCK,
+WEST, EAST, since 2026-11-23) carry the same 54.63 plf; the court's own rows are L1's note.
 
-**Gate G9 - W-RG-EAST.** TR-SG-RUNNEL runs south 1'-6" along its top and lets go through a
-scupper 12" past its yard face onto FURN-SG-SPLASH-BASIN, 6" off the face: concentrated water at
-the toe, the one condition above that is off the row. It keeps its 4'-0" section and the 1.54 free
-body (§3b) until the owner picks: (a) move the spout and basin 3'-0" off the toe (runnel end
-32'-6" -> 35'-6", basin 33'-0" -> 36'-0"), after which W-RG-EAST lowers 4" and takes a cap;
-(b) replace the basin with a pop-up emitter on a solid `DischargeExtension` to 3'+ out; (c) leave
-it engineered. Lowering it before a choice would raise its free body to H = 4.33' and fail it.
+**G9, W-RG-EAST, resolved (owner, 2026-11-23, option a).** TR-SG-RUNNEL used to let go 12" past
+W-RG-EAST's yard face onto FURN-SG-SPLASH-BASIN 6" off it: concentrated water at the toe, the one
+condition off the row. Its end moved 32'-6" -> 35'-6" (spout 4'-0" off the toe) and the basin
+33'-0" -> 36'-0" (3'-6" off), and W-RG-EAST dropped 4" and took a capstone like the others, so
+all five legs read the same row. The three parallel aprons are now identical to the court.
+Open detail: the 3'-0" tail of the channel past the scupper needs its own support; nothing
+carries it in the model.

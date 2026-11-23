@@ -139,6 +139,9 @@ def test_a_bearing_two_by_six_takes_the_suite_wets_one_and_a_half_inch_vents(
     assert wall.assembly == "INT_2X6_BRG_HALF"
     assert stud_bore("2x6", 1.90, bearing=True).ok is True
     assert stud_bore("2x6", 2.375, bearing=True).ok is False
+    # R602.6 grades the DRILLED hole: the 1 1/2" vents take a 2 1/8" bit at most (0.97).
+    assert stud_bore("2x6", 2.125, bearing=True).ok is True
+    assert stud_bore("2x6", 2.25, bearing=True).ok is False
 
 
 # --- §3 top plates ---------------------------------------------------------------------

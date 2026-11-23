@@ -10,7 +10,7 @@ import re
 from collections.abc import Callable, Mapping
 from typing import TYPE_CHECKING
 
-from typehaus.takeoff.calc_markdown import Table_, inline
+from typehaus.takeoff.calc_markdown import CODE_PT, Table_, inline
 from typehaus.takeoff.calc_sheet import is_member_sheet
 
 if TYPE_CHECKING:
@@ -31,6 +31,13 @@ MARGIN_R = 2.10
 MARGIN_T = 1.10
 MARGIN_B = 0.90
 
+#: A table of this many columns or more may run into the right margin, to the title block's
+#: edge: nine columns in the 5.5" frame wrap every element tag mid-token.
+WIDE_COLUMNS = 7
+WIDE_MARGIN_R = 0.5
+#: Most width, in points, a column reserves for one plain (non-code) word.
+PLAIN_WORD_CAP = 40.0
+
 BODY_PT = 8.5
 LINE_PT = BODY_PT * 1.55
 
@@ -41,9 +48,8 @@ LINK_COLOUR = "#1a4f8a"
 #: applies a seal to the flattened file — which this engine has no way to do and must not.
 _NOT_SEALED = (
     "NOT FOR CONSTRUCTION — this package carries no professional seal. Every result in it "
-    "is this engine's own draft calculation, oracled against a hand-worked note. Nothing "
-    "here may be built from until a licensed engineer has reviewed it and applied a seal "
-    "to this document."
+    "is a draft calculation, checked against a hand-worked note. Nothing here may be built "
+    "from until a licensed engineer has reviewed it and applied a seal to this document."
 )
 
 
@@ -105,18 +111,23 @@ def _table(block: Table_, styles, width: float, link=None):  # type: ignore[no-u
              for i in range(columns)]
 
     def word_width(text: str, header: bool) -> float:
-        """The widest unbreakable token in one cell, in the font it will be DRAWN in.
+        """The widest unbreakable token in one cell, each in the font it will be DRAWN in.
 
-        Backticks become Courier in :func:`inline`, and Courier is a third wider than
-        Helvetica at the same size — measuring a monospaced element tag in Helvetica
-        under-reserves its column by exactly the amount that makes it wrap.
+        A backtick span is Courier at :data:`CODE_PT` (see :func:`inline`), a third wider than
+        Helvetica; measuring an element tag in Helvetica at the table's 7.4 pt under-reserves
+        its column by exactly the amount that makes the tag break mid-token.
         """
-        mono = "`" in text
-        font = ("Courier-Bold" if header else "Courier") if mono else (
-            "Helvetica-Bold" if header else "Helvetica")
         widest = 0.0
-        for word in text.replace("`", "").split() or [""]:
-            widest = max(widest, stringWidth(word, font, 7.4))
+        for index, part in enumerate(text.split("`")):
+            mono = index % 2 == 1
+            font = ("Courier-Bold" if header else "Courier") if mono else (
+                "Helvetica-Bold" if header else "Helvetica")
+            size = CODE_PT if mono else 7.4
+            for word in part.split() or [""]:
+                # A body word that is not a code span (a file name, say) may break mid-token
+                # if it must; a header word, an element tag or an item id may not.
+                width = stringWidth(word, font, size)
+                widest = max(widest, width if mono or header else min(width, PLAIN_WORD_CAP))
         return widest
 
     floors = [min(padding + max(
@@ -148,6 +159,43 @@ def _table(block: Table_, styles, width: float, link=None):  # type: ignore[no-u
         ("RIGHTPADDING", (0, 0), (-1, -1), 3),
         ("TOPPADDING", (0, 0), (-1, -1), 2),
         ("BOTTOMPADDING", (0, 0), (-1, -1), 2),
+    ]))
+    return table
+
+
+_KEY_VALUE = re.compile(r"^\*\*([^*]+?):\*\*\s*(.*)$")
+
+
+def key_value_run(blocks, start: int) -> list[tuple[str, str]]:  # type: ignore[no-untyped-def]
+    """The run of ``**Key:** value`` paragraphs beginning at ``blocks[start]``."""
+    from typehaus.takeoff.calc_markdown import Paragraph_
+
+    pairs: list[tuple[str, str]] = []
+    for block in blocks[start:]:
+        match = _KEY_VALUE.match(block.text) if isinstance(block, Paragraph_) else None
+        if match is None:
+            break
+        pairs.append((match.group(1), match.group(2)))
+    return pairs
+
+
+def _kv_table(pairs: list[tuple[str, str]], styles, width: float, link=None):  # type: ignore[no-untyped-def]
+    """A run of ``**Key:** value`` lines (a sheet's header block) as one two-column table.
+
+    They parse as one paragraph each, so nine header fields were nine stacked paragraphs and
+    half a page; here they are nine rows of a table with the keys in a narrow first column.
+    """
+    from reportlab.lib import colors
+    from reportlab.platypus import Paragraph, Table, TableStyle
+
+    data = [[Paragraph(inline(key), styles["cellhead"]),
+             Paragraph(inline(value, link), styles["cell"])] for key, value in pairs]
+    table = Table(data, colWidths=[1.35 * 72, width - 1.35 * 72], hAlign="LEFT")
+    table.setStyle(TableStyle([
+        ("LINEBELOW", (0, 0), (-1, -1), 0.25, colors.HexColor("#dddddd")),
+        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ("LEFTPADDING", (0, 0), (-1, -1), 2), ("RIGHTPADDING", (0, 0), (-1, -1), 3),
+        ("TOPPADDING", (0, 0), (-1, -1), 1.5), ("BOTTOMPADDING", (0, 0), (-1, -1), 1.5),
     ]))
     return table
 
@@ -316,12 +364,13 @@ def appendix_divider(files: Mapping[str, str], include_appendix: bool) -> str:
              "`haus handoff` bundle")
     lines = [f"# {APPENDIX_TITLE}", ""]
     if include_appendix:
-        lines += [f"The per-family tables follow, {len(tables)} of them: every input and "
-                  "limit state of every member, one column per member."]
+        lines += [f"The per-family tables follow in this document, {len(tables)} of them: every "
+                  "input and limit state of every member, one column per member. They are "
+                  "part of what the seal binds to."]
     else:
         lines += [f"**Not printed in this document.** The per-member data behind every "
                   f"schedule is in {where}. Print it here with `haus calcs --pdf "
-                  f"--appendix` (or `haus handoff --full`)."]
+                  f"--appendix`; `haus handoff` prints it unless run with `--no-appendix`."]
     lines += ["", *[f"- `{name}`" for name in tables], "",
               "Each table is one design family, member by member: the summaries, the "
               "inputs with their fingerprint quanta, and every limit state as "

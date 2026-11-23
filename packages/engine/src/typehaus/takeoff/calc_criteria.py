@@ -12,6 +12,8 @@ from typing import TYPE_CHECKING, Any
 
 from typehaus.emit.md_writer import document, heading, table
 from typehaus.engineering.item import Status
+from typehaus.takeoff.calc_criteria_loads import deck_snow_block, gravity_block, seismic_text
+from typehaus.takeoff.calc_criteria_materials import materials_block
 
 if TYPE_CHECKING:  # pragma: no cover — typing only
     from collections.abc import Sequence
@@ -34,13 +36,16 @@ def _criteria(inputs: PackageInputs) -> str:
         _wind_block(wind, site, inputs),
         heading("2. Snow", 2),
         _snow_block(site, inputs),
-        heading("3. Ground", 2),
+        heading("3. Gravity loads and seismic", 2),
+        gravity_block(inputs),
+        seismic_text(inputs),
+        heading("4. Ground", 2),
         _soil_block(soil_module, site),
-        heading("4. Materials", 2),
-        _materials_block(inputs),
-        heading("5. Codes and standards, by kind", 2),
+        heading("5. Materials", 2),
+        materials_block(inputs),
+        heading("6. Codes and standards, by kind", 2),
         _service_block(inputs),
-        heading("6. Load combinations", 2),
+        heading("7. Load combinations and design method", 2),
         _combinations_block(inputs),
     ]
     return document(*blocks)
@@ -80,8 +85,6 @@ DESIGN_METHOD: dict[str, str] = {
     "roof_beam": "ASD (published beam allowables against a service demand)",
     "veneer_beam": "LRFD (ACI 318-19 strength design at 1.4D); deflection at service loads "
                    "(Table 24.2.2)",
-    "tiered_retaining": "ASD (IRC R404.4 safety factors on service loads; IBC Table 1806.2 "
-                        "allowable bearing)",
     "thermal_break_transfer": "MIXED — ASD for soil, sliding and the foam's sustained-load "
                               "rule; LRFD for the plain-concrete near line and the "
                               "winter-tension bars (ACI 318-19, phi 0.60 / 0.90, 1.0T)",
@@ -117,7 +120,6 @@ LOAD_COMBINATIONS: dict[str, tuple[str, str]] = {
     "retaining_wall": ("1.6H (flexure and shear); service loads, FS >= 1.5 (stability)",
                        "ASCE 7-16 §2.3.1(6) / IBC 2018 §1605.2; IBC §1807.2.3"),
     "retaining_system": ("service loads, FS >= 1.5", "IBC 2018 §1807.2.3"),
-    "tiered_retaining": ("service loads, FS >= 1.5", "IRC R404.4"),
     "post_bearing": ("D + L, allowable stress design",
                      "AWC NDS 2018 §3.10; IRC R507.1 loads"),
     "spread_footing": ("D + L, allowable stress design against presumptive bearing",
@@ -152,7 +154,7 @@ def _combinations_block(inputs: PackageInputs) -> str:
             citation = "see `03-open-items.md`"
         else:
             combination = "not recorded on the limit states"
-            citation = "see the kind's sheet, §4"
+            citation = "see the kind's sheet, section 4"
         method = design_method(kind, records)
         rows.append([f"`{kind}`", len(records), combination, method, citation or "—"])
     return table(["Kind", "Items", "Combination", "Design method", "From"], rows) + (
@@ -194,7 +196,7 @@ def _wind_block(wind: Any, site: Any, inputs: PackageInputs) -> str:
         # demand is divided back out by where a calculation grades at strength. Which
         # method each kind uses is the "Design method" column beside the combinations.
         ["ASD wind factor", wind.ASD_WIND_FACTOR, "", "ASCE 7-16 §2.4.1 combination 5/6 — "
-         "the factor an ASD wind demand carries; see the design-method column above for "
+         "the factor an ASD wind demand carries; see section 7 for "
          "which kinds are ASD and which are LRFD"],
     ]
     for height in heights:
@@ -211,7 +213,7 @@ def _snow_block(site: Any, inputs: PackageInputs) -> str:
     wind block has taken ``inputs`` since it was written, so a reviewer can see the
     velocity pressure at each mean roof height the package actually contains; the snow
     block printed one jurisdictional number and stopped. On this house the governing case
-    is an ASCE 7 §7.7 roof-step drift the engine derives no part of — the house AUTHORS it
+    is an ASCE 7 §7.7 roof-step drift that is derived nowhere — the house AUTHORS it
     — and every roof beam and every pier under one is designed at that figure and not at
     ``p_g``. A cover page that shows 50 psf beside records computed at 73.7 invites exactly
     one conclusion, and it is the wrong one.
@@ -237,13 +239,14 @@ def _snow_block(site: Any, inputs: PackageInputs) -> str:
     body = table(["Quantity", "Value", "Unit", "Source"], rows)
     if any(ground is not None and abs(value - float(ground)) > 0.01 for value in design):
         body += ("\n\n**The design snow is not p_g, and the difference is authored rather "
-                 "than derived.** This engine computes no part of drift, unbalanced or "
+                 "than derived.** No part of drift is computed here, unbalanced or "
                  "sliding snow: where a roof's governing case is one of those, the house "
-                 "states the figure (`preferences.toml [structural] roof_beam_snow_psf`) "
+                 "states the figure (an authored roof-snow input) "
                  "and every member under that roof is graded at it. A reviewer disagreeing "
                  "with the drift magnitude is disagreeing with an input, not with a "
                  "calculation — which is exactly why it is on this page.")
-    return body
+    deck = deck_snow_block(site, inputs)
+    return body + ("\n\n" + deck if deck else "")
 
 
 def _soil_block(soil_module: Any, site: Any) -> str:
@@ -285,44 +288,6 @@ def _soil_block(soil_module: Any, site: Any) -> str:
     ]
     return (table(["Quantity", "Value", "Unit", "Source"], rows) + "\n\n"
             + soil_module.soil_provenance_note(presumptive))
-
-
-#: Input names that describe a *material*, and the row each becomes. Derived from what the
-#: calculations actually consumed, so a material nothing is designed against never appears.
-_MATERIAL_INPUTS = {
-    "fc": ("f'c, specified concrete compressive strength", "psi"),
-    "fy": ("f_y, specified yield strength of reinforcement", "psi"),
-    "Fb_adjusted": ("F_b', adjusted bending design value", "psi"),
-    "E_adjusted": ("E', adjusted modulus of elasticity", "psi"),
-    "concrete_unit_weight": ("Concrete unit weight", "pcf"),
-}
-
-
-def _materials_block(inputs: PackageInputs) -> str:
-    """Material properties, collected from the values the calculations actually consumed.
-
-    Not read off the assemblies: an assembly a calculation never looked at would then be
-    printed as a design criterion, which is precisely the drift this page exists to
-    prevent. Where one calc used 3,000 psi and another 5,000, both appear, with the items
-    that used each — that disagreement is a fact a reviewer needs, not a thing to average.
-    """
-    seen: dict[tuple[str, float], list[str]] = {}
-    for record in inputs.records:
-        for quantity in record.inputs:
-            if quantity.name in _MATERIAL_INPUTS:
-                seen.setdefault((quantity.name, round(float(quantity.value), 6)),
-                                []).append(record.item_id)
-    if not seen:
-        return "_No calculation in this package consumed a declared material property._"
-    rows = []
-    for (name, value), items in sorted(seen.items()):
-        label, unit = _MATERIAL_INPUTS[name]
-        rows.append([label, value, unit, len(items),
-                     ", ".join(f"`{i}`" for i in sorted(items)[:4])
-                     + (", …" if len(items) > 4 else "")])
-    return table(["Property", "Value", "Unit", "Items", "Used by"], rows) + \
-        "\n\nWhere one value appears twice, two calculations were run against two different " \
-        "strengths. That is reported and not reconciled."
 
 
 def _service_block(inputs: PackageInputs) -> str:

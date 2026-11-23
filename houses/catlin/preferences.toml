@@ -60,12 +60,39 @@ max_window_ro_nonbearing_in = 30
 max_window_ro_bearing_in = 27.5
 
 [structural]
-# Design snow on the two garden decks (owner, 2026-09-22): the MN roof snow, 35 psf. IRC
-# Table R507.6 is 40 psf live with snow not concurrent, so the live load governs and the
-# table covers both decks (structural.deck_joist_span). Over 40 and it would not. MN Rule
-# 1309.0507 rewrites the table's footnotes b/c to "Live load = 40 psf", dropping the 2018
-# IRC's "Ground snow load", so the site's 50 psf ground snow is not the gate here.
+# ** DECK SNOW BASIS, STATED ONCE (owner, 2026-09-22, re-stated 2026-11-22 decision 5). **
+# The balcony and the porch are designed on the Minnesota deck basis AS ADOPTED: 40 psf live
+# + 10 psf dead (IRC Table R301.5 / R507, MN Rule 1309.0507 rewriting the table's footnotes
+# b/c to "Live load = 40 psf"), NO snow, NO drift. The owner's reasoning: the decks are
+# elevated and wind-swept, and occupancy live load, not snow, is what they are used under.
+# That is a judgement about the site, not a calculation, so it is printed as the stated
+# basis and listed under "not covered -- owner" (`engineering/balcony_loads.deck_basis_text`),
+# and no snow path is built into the deck members.
+#
+# What it is compared against, once: ASCE 7-16 §7.3 balanced flat-roof snow at the site's
+# 50 psf ground snow, Ct 1.2 (unheated open), Ce = Is = 1.0 is 0.7 x 1.2 x 50 = 42 psf
+# (`deck_balanced_snow_psf`, the same figure `roof_beam_balanced_snow_psf` averages below).
+# `deck_snow_psf = 35` is the figure the house states for the MN roof snow on these decks:
+# IRC Table R507.6 is 40 psf live with snow not concurrent, so 35 is under the table's 40
+# and the table's live load governs (structural.deck_joist_span). Over 40 it would not.
+# The balanced 42 is above the 40 live; the reconciliation is the owner's basis above, not
+# a derived coverage. The 2.45 ft leeward drift off the house's south gable that the review
+# computes (50.3 psf at the wall) is not applied to these decks, by the same decision.
 deck_snow_psf = 35.0
+deck_balanced_snow_psf = 42.0
+
+# ** THE BALCONY'S PLANTERS (owner, 2026-11-22 decision 6). ** Over the two beam lines ONLY,
+# each on a dimensioned support bearing directly on the beam (a continuous 3 1/2" treated
+# sleeper through the plank's blocking pocket between joists), so no planter weight enters
+# the decking or the joists. The saturated weight is a DEAD load carried through beam, seat,
+# column and stem (`engineering/balcony_loads.py`), cased with a planter over neither beam,
+# one beam, or both, as a line load over the whole back span. The soil weight is the
+# HOUSE'S allowance (a saturated loam; handbooks print about 100-120 pcf), replaced by the
+# supplier's saturated figure at purchase.
+balcony_planter.soil_width_in = 11.0
+balcony_planter.soil_depth_in = 16.0
+balcony_planter.soil_saturated_pcf = 120.0
+balcony_planter.box_and_support_plf = 25.0
 # The dead load a guard may put on ordinary wood framing (structural.masonry_guard_bearing).
 # A guard's own weight is derived from its assembly's layers and their material densities, so
 # this is the only authored number in that rule: roughly a heavy wood guard with 6x6 posts,

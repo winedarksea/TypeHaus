@@ -188,11 +188,13 @@ sealed component design) and the brick veneer anchors (the supplier's), and a se
 pins the designer's own document, not a model fingerprint (`engineering.toml.draft` has the
 form, `engineering-external.toml.draft` the blocks).
 
-**Whose they are is read off the table, not off this document.** A reviewer told "these are not
-yours" about items that are theirs is the one sentence in a handoff that can cost a whole review
-cycle, so the designer is always the table's. **No count belongs here:** a figure about one
-house, written into the format's own specification, went stale four times. `haus engineering`
-and `03-open-items.md` are generated and are always right; trust the CLI.
+**Most of them are the structural engineer of record's**, not the supplier's, and the
+designer is always the table's: a reviewer told "these are not yours" about items that are
+theirs is the one sentence in a handoff that can cost a whole review cycle.
+
+**An exact count does not belong in this document.** A figure about one house, written into
+the format's own specification, went stale four times. `haus engineering` and
+`03-open-items.md` are generated and are always right; trust the CLI.
 
 **A deferral is not the only alternative to a calculation.** Where a manufacturer publishes
 a span table, reading a row is a *prescriptive* act and belongs in neither lane: the element

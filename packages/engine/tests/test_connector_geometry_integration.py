@@ -198,9 +198,10 @@ def test_lateral_plate_bodies_clear_the_bedroom_door(catlin_model_ro):
 
 def test_wall_end_angles_have_vertical_heels(catlin_model_ro):
     solids = {solid.tag: solid for solid in catlin_model_ro.solids}
-    for tag in ("CN-BW-GWTIE-LO", "CN-BW-GWTIE-HI"):
+    # The FE angles (HL43HDG, L 3"), one per face (G5, 2026-11-23).
+    for tag in ("CN-BW-GSTIE-LO", "CN-BW-GSTIE-HI"):
         solid = solids[tag]
-        assert solid.z1_m - solid.z0_m == pytest.approx(2.5 * M_PER_IN)
+        assert solid.z1_m - solid.z0_m == pytest.approx(3.0 * M_PER_IN)
         assert min(y for _, y, _ in solid.body_mesh.positions) < (
             catlin_model_ro.plan.by_tag(tag).position.xy_m[1] - 3 * M_PER_IN)
 

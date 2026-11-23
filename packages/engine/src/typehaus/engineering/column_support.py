@@ -26,6 +26,7 @@ from __future__ import annotations
 import dataclasses
 import math
 
+from typehaus.engineering.column_stem import StemDemand, stem_states
 from typehaus.engineering.item import (
     EngineeringRecord,
     LimitState,
@@ -41,8 +42,12 @@ from typehaus.engineering.retaining_basis import _BAR, PRESUMPTIVE_FC_PSI, REINF
 from typehaus.wind import ASD_WIND_FACTOR
 
 KIND = "column_support"
-BASIS_VERSION = "1"
-BASIS = "ACI 318-19 §22.8.3 (bearing), §22.9 (shear friction), Table 25.4.2.3 (development)"
+#: 2: 2026-11-23 (review B-04/B-05/B-08): the joint is graded on the flexible base's delta, the
+#: dowel development is §25.4.2.4's general equation, and the stem below the joint, the head
+#: prop, the strut and the footing under the column point are rows, not exclusions.
+BASIS_VERSION = "2"
+BASIS = ("ACI 318-19 §22.8.3 (bearing), §22.9 (shear friction), §25.4.2.4 (development), "
+         "§14.5.2.1 (the stem, plain concrete)")
 
 #: ACI 318-19 Table 21.2.2: bearing 0.65, shear 0.75, tension-controlled 0.90.
 PHI_BEARING = 0.65
@@ -136,7 +141,8 @@ def _couple(mu_lb_in: float, pu_lb: float, ybar_in: float,
 
 
 def _column_states(ctx: EngineeringContext, pier: _Pier, wall_tag: str,
-                   missing: list[str], inputs: list[Quantity]) -> list[LimitState]:
+                   missing: list[str], inputs: list[Quantity],
+                   prop_sentences: list[str]) -> list[LimitState]:
     from typehaus.engineering import deck_post as dp
 
     cage = dp.cage_for(pier)
@@ -171,9 +177,16 @@ def _column_states(ctx: EngineeringContext, pier: _Pier, wall_tag: str,
     wind_mu = pier.wind_base_moment_lb_ft * dp.STRENGTH_FROM_ASD_WIND
     guard_mu = pier.guard_base_moment_lb_ft * dp.GUARD_LOAD_FACTOR
 
+    from typehaus.engineering.base_rotation import flexible_magnifier
+
+    flexible = flexible_magnifier(ctx, pier)
     worst: dict[str, tuple[float, float, float, object, str]] = {}
+    stem_demand: StemDemand | None = None
     for case in dp._combinations(pier, wind_mu, guard_mu):
-        _slender, delta = dp._sway_magnifier(pier, case.axial_lb)
+        # The joint sits on a base that turns: the flexible delta where the spring forms,
+        # the rigid base's (k 2.1) otherwise. The larger governs; it is the flexible one.
+        delta = max(dp._sway_magnifier(pier, case.axial_lb)[1],
+                    flexible(case.axial_lb) if flexible else 1.0)
         mu_in = case.moment_lb_ft * delta * 12.0
         _phi_mn, _phi, c = dp._pm_point(pier, cage, cover, case.axial_lb)
         block, ybar = dp._segment(radius, min(dp._beta_1(col_fc) * c, 2.0 * radius))
@@ -183,6 +196,8 @@ def _column_states(ctx: EngineeringContext, pier: _Pier, wall_tag: str,
         per_bar = max(k[1] / k[2] for k in couples)
         factors = dict(case.factors)
         vu = factors.get("W", 0.0) / ASD_WIND_FACTOR * wind_v + factors.get("L", 0.0) * guard_v
+        if stem_demand is None or mu_in > stem_demand.mu_lb_in:
+            stem_demand = StemDemand(case.label, mu_in, vu)
         bearing_cap = PHI_BEARING * 0.85 * wall_fc * block * root_a2_a1
         sf_cap = min(mu * (PHI_SHEAR * count * dowel_area * REINFORCEMENT_FY_PSI - pull),
                      PHI_SHEAR * vn_max)
@@ -227,6 +242,8 @@ def _column_states(ctx: EngineeringContext, pier: _Pier, wall_tag: str,
     else:
         states.append(dataclasses.replace(anchorage,
                                           name=f"{pier.tag}: dowel development into the stem"))
+    states += _stem_rows(ctx, pier, wall_tag, dowel, wall_fc, clear, stem_demand, inputs,
+                         prop_sentences)
     states.append(LimitState(f"{pier.tag}: footprint on the wall top", radius, clear, "in",
                              "the column's radius against the clear wall top each side of "
                              "its centre — a round wider than the stem overhangs its face",
@@ -250,12 +267,51 @@ def _column_states(ctx: EngineeringContext, pier: _Pier, wall_tag: str,
     return states
 
 
+def _stem_rows(ctx: EngineeringContext, pier: _Pier, wall_tag: str, dowel, wall_fc: float,  # type: ignore[no-untyped-def]
+               clear_in: float, demand: StemDemand | None, inputs: list[Quantity],
+               prop_sentences: list[str]) -> list[LimitState]:
+    """The stem below the joint, the head prop and strut, and the footing under the column."""
+    if demand is None or dowel.embedment is None:
+        return []
+    states, quantities, sentence = stem_states(
+        tag=pier.tag, wall_tag=wall_tag, fc_psi=wall_fc, thickness_in=2.0 * clear_in,
+        height_in=pier.base_thickness_in, column_width_in=pier.diameter_in,
+        embedment_in=float(dowel.embedment.inches), demand=demand)
+    inputs += quantities
+    prop_sentences.append(sentence)
+    footing = _footing_row(ctx, pier)
+    if footing is not None:
+        states.append(footing)
+    return states
+
+
+def _footing_row(ctx: EngineeringContext, pier: _Pier) -> LimitState | None:
+    """The column's service load spread through the stem at 45 deg onto the strip footing,
+    against the site soil's allowable pressure (B-05 (3)): the INCREMENT the column adds, not
+    the wall's own load, which `retaining_wall/<tag>` grades."""
+    from typehaus.engineering.soil import presumptive
+
+    soil = presumptive(getattr(ctx, "soil_class", None), basis=getattr(ctx, "soil_basis", None))
+    if soil is None or not pier.footing_width_in:
+        return None
+    spread_in = pier.diameter_in + 2.0 * pier.base_thickness_in
+    pressure = pier.service_lb / (pier.footing_width_in / 12.0 * spread_in / 12.0)
+    return LimitState(
+        f"{pier.tag}: footing bearing under the column point", pressure,
+        soil.allowable_bearing_psf, "psf",
+        f"the column's {pier.service_lb:,.0f} lb service load spread at 45 deg through the "
+        f"{pier.base_thickness_in:.0f}\" stem over {spread_in:.0f}\" of a "
+        f"{pier.footing_width_in:g}\" footing, against the presumptive allowable of the site's "
+        f"soil class — the increment alone; the wall's own load is `retaining_wall/<tag>`'s")
+
+
 def _one(ctx: EngineeringContext, wall_tag: str, piers: list[_Pier]) -> EngineeringRecord:
     missing: list[str] = []
     inputs: list[Quantity] = []
     states: list[LimitState] = []
+    props: list[str] = []
     for pier in piers:
-        states += _column_states(ctx, pier, wall_tag, missing, inputs)
+        states += _column_states(ctx, pier, wall_tag, missing, inputs, props)
     tags = ", ".join(p.tag for p in piers)
     notes = (
         f"{wall_tag} is a basement wall graded prescriptively by IRC Table R404.1.2(8), "
@@ -275,17 +331,27 @@ def _one(ctx: EngineeringContext, wall_tag: str, piers: list[_Pier]) -> Engineer
         "`joint_surface=\"roughened\"` (ACI's intentional 1/4-in. amplitude); otherwise "
         "0.6λ. The couple's dowel tension is deducted from Avf, and no clamping from the "
         "axial load is credited.",
-        "NOT GRADED here, and each is real: (1) ROTATIONAL RESTRAINT — the foundation "
-        "stiffness the fixed base assumes is graded as `base_rotation/<column>` for "
-        f"{tags}, one question and one item; (2) the stem's own flexure, out of plane and "
-        "along its length, under the base moment it receives — whether a PILASTER or a "
-        "LOCAL THICKENING is needed; (3) the strip footing's bearing under the column "
-        "points, which `spread_footing` scopes off a shared wall footing; (4) torsion "
-        "through the joint. The retired deferral's deliverable — \"a wall-top connection "
-        "detail carrying the column's axial and base moment — dowel size, embedment and "
-        "development into the stem, any pilaster or local thickening, and the bearing "
-        "pressure under the point\" — is answered above except for the pilaster question, "
-        "which stays with the structural engineer of record.",
+        "THE STEM, closed (review B-05 / D-R3): below the dowels the head moment is taken "
+        "down the wall as a cantilever with no prop, in plain concrete over the column's "
+        "width plus a 45 deg spread (ACI 318-19 §14.5.2.1); the dowels, developed over the "
+        "authored embedment, reinforce the head. No pilaster or local thickening is owed "
+        "where those rows pass. " + " ".join(props and (
+            "THE HEAD PROP the porch diaphragm must deliver, per column — "
+            + "; ".join(props) + ". The porch ledger's Titen HD anchors carry it into the "
+            "stem: skip or relocate a ledger anchor within 8\" of a column centreline (a "
+            "drill will strike a #5 dowel) — a drawing note on the porch ledger detail. The "
+            "anchors' own capacity against this pull is NOT graded: no THD50600H6SS "
+            "allowable is catalogued and ESR-2713 does not list the Type 316 stainless anchor.",)),
+        "FOOTPRINT: the 12\" round is flush with both faces of the 12\" stem, so the row reads "
+        "1.000 and allows no placement tolerance — a detailing row, not a margin. The column "
+        "form is set from the stem's own face lines (`AN-SG-PLACEMENTS`); a round set off-centre "
+        "overhangs a face by the offset, and none is accepted.",
+        "FOOTING under the column point, and the joint's torsion: the footing row above is "
+        "the increment the column adds; the torque through the joint is `column_head_joint`'s "
+        "(about 3% of the cracking threshold) and rides the same shear-friction dowels.",
+        "NOT GRADED here: (1) ROTATIONAL RESTRAINT of the foundation is "
+        f"`base_rotation/<column>` for {tags}; (2) the retained soil's moment in the stem, "
+        "which Table R404.1.2(8) grades and which is zero near the propped head.",
     )
     over = any(not state.ok for state in states)
     status = Status.INCOMPLETE if missing else (Status.OVER if over else Status.OK)

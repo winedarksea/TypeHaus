@@ -38,6 +38,10 @@ def calcs(
         False, "--pdf",
         help="Also write a flattened, page-anchored PDF beside the markdown. No "
              "jurisdiction accepts Markdown, and a seal has to bind to a flattened file."),
+    since: Path | None = typer.Option(
+        None, "--since",
+        help="An earlier package folder (or handoff bundle) to list what changed against "
+             "(default: <house>/out/issued, if present; else 'first issue')."),
     appendix: bool = typer.Option(
         False, "--appendix",
         help="With --pdf, also print the per-family appendix tables. Off by default: the "
@@ -53,6 +57,7 @@ def calcs(
     from typehaus._meta import engine_version
     from typehaus.cli.engineering_load import load_engineering, require_item
     from typehaus.takeoff.calc_package import PackageInputs, calc_package
+    from typehaus.takeoff.calc_summary import read_previous
     from typehaus.takeoff.handoff import MANIFEST, prune_unlisted, write_manifest
 
     load = load_engineering(house, profile)
@@ -73,6 +78,10 @@ def calcs(
         content_hash=loaded.content_hash,
         profile_name=ctx.profile.name,
         checklist=checklist,
+        profile=ctx.profile,
+        preferences=ctx.preferences,
+        previous=read_previous(since if since is not None
+                               else directory / "out" / "issued"),
     ), only=item)
 
     root = out if out is not None else directory / "out" / "calcs"

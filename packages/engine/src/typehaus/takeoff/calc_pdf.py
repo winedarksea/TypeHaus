@@ -75,13 +75,17 @@ from typehaus.takeoff.calc_pdf_layout import (
     MARGIN_R,
     MARGIN_T,
     PAGE,
+    WIDE_COLUMNS,
+    WIDE_MARGIN_R,
     _cover,
+    _kv_table,
     _linker,
     _styles,
     _table,
     _title_block,
     appendix_divider,
     file_anchor,
+    key_value_run,
 )
 from typehaus.takeoff.calc_sheet import is_member_sheet
 
@@ -89,6 +93,7 @@ from typehaus.takeoff.calc_sheet import is_member_sheet
 #: order here is the order of the package.
 SECTIONS: tuple[tuple[str, str, str], ...] = (
     ("00-cover.md", "C", "COVER"),
+    ("00-summary.md", "SUM", "REVIEWER'S SUMMARY"),
     ("01-design-criteria.md", "D", "DESIGN CRITERIA"),
     ("02-item-register.md", "R", "ITEM REGISTER"),
     ("03-open-items.md", "O", "OPEN ITEMS"),
@@ -251,7 +256,17 @@ def _flowables(markdown: str, name: str, styles, width: float,  # type: ignore[n
     from reportlab.platypus import HRFlowable, Paragraph, Spacer
 
     out: list = []
-    for block in parse(markdown, source=name):
+    blocks = parse(markdown, source=name)
+    index = 0
+    while index < len(blocks):
+        block = blocks[index]
+        index += 1
+        # Three or more `**Key:** value` lines in a row are a header block: one table.
+        pairs = key_value_run(blocks, index - 1)
+        if len(pairs) >= 3:
+            out.extend([Spacer(1, 2), _kv_table(pairs, styles, width, link), Spacer(1, 6)])
+            index += len(pairs) - 1
+            continue
         if isinstance(block, Heading):
             style = styles["h1" if block.level == 1 else
                            "h2" if block.level == 2 else "h3"]
@@ -264,7 +279,9 @@ def _flowables(markdown: str, name: str, styles, width: float,  # type: ignore[n
                        for item in block.items)
             out.append(Spacer(1, 3))
         elif isinstance(block, Table_):
-            table = _table(block, styles, width, link)
+            wide = len(block.header) >= WIDE_COLUMNS
+            table = _table(block, styles,
+                           (PAGE[0] - MARGIN_L - WIDE_MARGIN_R) * 72 if wide else width, link)
             if table is not None:
                 out.extend([Spacer(1, 2), table, Spacer(1, 6)])
         elif isinstance(block, Code):

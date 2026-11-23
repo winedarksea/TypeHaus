@@ -78,15 +78,14 @@ def test_the_record_reproduces_sections_3_and_4(record) -> None:
 
 
 def test_the_screen_boundary_governs(record) -> None:
-    """§4d: the envelope row over the envelope share — 0.496 against the table's 347.3 plf
-    (was 0.907 against a 190 round-down, C-3). The chord piers' pull-out rows
-    (north_entry_piers.md §6d, decision 15) sit above it: W 0.978, GW 0.942."""
+    """§4d: the envelope row over the envelope share, 0.496 against the table's 347.3 plf (was
+    0.907 against a 190 round-down, C-3). After G5 the screen chord rows and the pier pull-out
+    rows are gone (north_entry_piers.md §10p), so the closest rows are the end straps' N-S
+    couple (0.774, §12c) and the screen panel's own."""
     ratios = {s.name: s.demand / s.capacity for s in record.limit_states}
     assert ratios["diaphragm unit shear at W-BW-SCREEN"] == pytest.approx(0.496, abs=0.001)
-    pull = "pier pull-out under the tension chord"
-    assert ratios[f"PT-BW-W {pull}"] == pytest.approx(0.978, abs=0.001)
-    assert ratios[f"PT-BW-GW {pull}"] == pytest.approx(0.942, abs=0.001)
-    assert max(ratios.values()) == ratios[f"PT-BW-W {pull}"]
+    assert not any("pull-out" in name for name in ratios)
+    assert max(ratios.values()) == ratios["LSTA24 end straps, N-S couple + chord"]
 
 
 def test_the_old_four_to_one_row_is_gone_with_the_second_line(record) -> None:
@@ -103,15 +102,15 @@ def test_the_receivers_are_on_the_record_and_graded_by_nobody_else(catlin_ctx) -
 
 
 def test_the_landing_tie_reads_the_envelope_share(catlin_ctx) -> None:
-    """§4e: the tie's N-S panel load is the whole 1,034.57 lb (11-18). E-W at the screen's
-    joint governs, 0.784 (north_entry_piers.md §10o)."""
+    """§4e: the tie's N-S panel load is the whole 1,034.57 lb (11-18); N-S at the screen's
+    MSTA49Z governs, 0.734 (north_entry_piers.md §10p)."""
     record = catlin_ctx.engineering["deck_tie/FS-BW-FLOOR"]
     loads = {q.name: q.value for q in record.inputs}
     assert loads["y:W-BW-SCREEN panel share of RF-BW-CANOPY"] == pytest.approx(1034.57, abs=0.1)
     assert record.status is Status.OK
     worst = max(record.limit_states, key=lambda s: s.demand / s.capacity)
-    assert "E-W" in worst.name
-    assert worst.demand / worst.capacity == pytest.approx(0.7838, abs=0.002)
+    assert "N-S" in worst.name
+    assert worst.demand / worst.capacity == pytest.approx(0.7338, abs=0.002)
 
 
 class _Swapped:

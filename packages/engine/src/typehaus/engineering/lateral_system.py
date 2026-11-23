@@ -76,7 +76,10 @@ BASIS = ("AWC SDPWS-2015 §4.2 (diaphragms, §4.2.5.2 open front) and §4.3 (she
 #: 8: the N-S chord force over the chords' own spacing and the end-strap couple row
 #:    (``diaphragm_chord``); the canopy and garage decks graded at their SDPWS table
 #:    allowables (347.3 / 308.2 plf); the pier pull-out rows of ``lateral_band`` (2026-11-23).
-BASIS_VERSION = "8"
+#: 9: G5 — the screen's shear leaves at its top plate through its strap, so the screen chord
+#:    rows and the pier pull-out rows are retired (north_entry_piers.md §10p); the N-S couple
+#:    and garage-wall couple rows still read the screen panel's line (2026-11-23).
+BASIS_VERSION = "9"
 
 oracled_by(
     KIND,
@@ -89,9 +92,12 @@ oracled_by(
     # §3/§4 — the delivery to a neighbour (`diaphragm_delivery`), and the envelope.
     Oracle(note="canopy_garage_diaphragm.md", section="§3-§4",
            test="tests/test_diaphragm_delivery_calcs.py"),
-    # §6d — the pier pull-out rows under the screen's tension chord (`lateral_band`).
+    # §6d — the pier pull-out rows under the screen's tension chord (`lateral_band`); §10p
+    # retires them: the screen strap, the DTT rod tie and the HL43 E-W reading.
     Oracle(note="north_entry_piers.md", section="§6d",
            test="tests/test_diaphragm_delivery_calcs.py"),
+    Oracle(note="north_entry_piers.md", section="§10p",
+           test="tests/test_lateral_system_calcs.py"),
 )
 
 

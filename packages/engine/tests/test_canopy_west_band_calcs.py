@@ -35,9 +35,9 @@ _ROWS = {
     "W-BW-SCREEN top plate end bearing on a chord": (98.53, 251.25),
     "W-BW-SCREEN base plate and sill end bearing on a chord": (64.16, 251.25),
     "BM-BW-RW eave collector clips": (172.43, 450.0),
-    # The chord bases one pack lower, 2026-10-31: H 8.620 -> 8.6825' (amendment (2)).
-    "W-BW-SCREEN chord hold-down, full height": (2230.5, 3060.0),
-    "W-BW-SCREEN chord base shear, one base": (1034.57, 1270.0),
+    # G5 (2026-11-23): the screen's shear leaves at its top plate through CN-BW-SCREEN-STRAP;
+    # the chord hold-down and base shear rows carry no N-S (north_entry_piers.md §10p).
+    # The deck row reads the SDPWS table allowable, 347.3 plf (canopy_garage_diaphragm.md §12a).
     "diaphragm unit shear at W-BW-SCREEN": (172.43, 347.3),
     "LSTA24 end straps, chord force + across share": (260.389, 823.3333333333334),
     "BM-BW-RW chord into CN-BW-JOINT-1's block": (216.408, 450.0),
@@ -66,7 +66,7 @@ def test_the_band_rows_reproduce_the_note(record) -> None:
 def test_the_band_inputs_reproduce_section_1_and_4b(record) -> None:
     values = {q.name: q.value for q in record.inputs}
     assert values["band_height_W-BW-SCREEN"] == pytest.approx(2.34375, abs=1e-4)
-    assert values["overturning_height_W-BW-SCREEN"] == pytest.approx(8.6825, abs=1e-3)
+    assert "overturning_height_W-BW-SCREEN" not in values
     assert values["joint_couple_lb_ft"] == pytest.approx(2064.35, abs=1.0)
     assert values["chord_force_open_front_lb"] == pytest.approx(87.961, abs=0.1)
 
@@ -82,9 +82,9 @@ def test_the_slat_band_reproduces_section_3a_and_3b(record) -> None:
 
 
 def test_the_old_anchor_rows_are_gone_with_the_bolt(record) -> None:
-    """§4b: the CBSTQ's cracked row is measured through the concrete; no ACI Ch. 17 row."""
+    """§4b: no ACI Ch. 17 row; since G5 the chord bases carry no N-S (§10p) at all."""
     assert not any("anchor tension" in s.name for s in record.limit_states)
-    assert any("CBSTQ66Z-SDS2 is cast in" in note for note in record.notes)
+    assert any("CN-BW-SCREEN-STRAP" in note for note in record.notes)
 
 
 def test_the_drift_limit_is_not_applicable_on_evidence(record) -> None:

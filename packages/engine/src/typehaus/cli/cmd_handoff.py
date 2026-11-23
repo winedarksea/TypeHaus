@@ -59,6 +59,10 @@ def handoff(
         None, "--license", help="Pre-fill the seal form's license (e.g. 'MN 12345')."),
     sealed_on: str | None = typer.Option(
         None, "--sealed-on", help="Pre-fill the seal form's date, YYYY-MM-DD."),
+    since: Path | None = typer.Option(
+        None, "--since",
+        help="An earlier package folder or bundle to list what changed against "
+             "(default: <house>/out/issued, if present; else 'first issue')."),
 ) -> None:
     """Assemble the engineering handoff bundle: calcs, notes, models and a seal form."""
     _pin_hash_seed()
@@ -66,6 +70,7 @@ def handoff(
     from typehaus.cli.engineering_load import load_engineering
     from typehaus.engineering.scaffold import SealDefaults, scaffold_external, scaffold_register
     from typehaus.takeoff.calc_package import PackageInputs, calc_package
+    from typehaus.takeoff.calc_summary import read_previous
     from typehaus.takeoff.handoff import (
         cited_notes,
         pe_readme,
@@ -100,7 +105,10 @@ def handoff(
         house=directory.name, model=load.ctx.model, item_ids=load.item_ids,
         results=load.results, register=load.register, generated=generated,
         engine_version=version, content_hash=load.loaded.content_hash,
-        profile_name=load.ctx.profile.name, checklist=load.checklist))
+        profile_name=load.ctx.profile.name, checklist=load.checklist,
+        profile=load.ctx.profile, preferences=load.ctx.preferences,
+        previous=read_previous(since if since is not None
+                               else directory / "out" / "issued")))
     for relative, text in files.items():
         written.append(_write_text(root / "calcs" / relative, text, root))
 

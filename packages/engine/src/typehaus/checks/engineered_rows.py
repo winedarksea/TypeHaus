@@ -98,14 +98,6 @@ ROWS: tuple[ItemRow, ...] = (
             "no isolation board in this plan separates two pours",
             "Isolation joint between separately founded pours",
             ("ACI 347R-14", "ACI 318-19 §22.3", "ASTM C578")),
-    ItemRow("tiered_retaining", "tiered_retaining",
-            "A footingless gravity wall retaining fill above a taller cut.",
-            "a segmental gravity wall retaining fill — sliding, overturning, "
-            "bearing, and its interaction with the wall below",
-            "IRC R404.4; IBC 2018 §1807.2",
-            "no footingless segmental wall in this plan stands outside a published chart row",
-            "Segmental gravity retaining walls (tiered)",
-            ("IRC R404.4", "IBC 2018 §1807.2")),
     ItemRow("band_header", "band_header",
             "A flush LVL header in a floor band over a wall opening (Door.header_in_band).",
             "the flush LVL header in the floor band — bending, shear and deflection under "

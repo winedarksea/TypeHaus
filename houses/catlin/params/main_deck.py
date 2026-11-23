@@ -373,6 +373,17 @@ STAIR_FLOOR = FloorSystem(
                        nailing=SUBFLOOR_FASTENING),
     published_span=TJI_230_FLOOR_SPAN,
     ceiling_below=_CEILING_GWB,
+    # W-B-N2's wall-top restraint (decision 23): FO-M-STAIR's north trimmer pack is a FLAT beam
+    # (`code.MN_1309_0404_wall_top`, notes/main_floor_truss_basis.md §4a). Plies bent flatwise do
+    # not act as one section, so two 1 3/4" plies fail it (d/c 1.29); a third, in the 1 7/8" gap
+    # between the pack and the LSL rim, passes it (0.86). Its 3 plies are tied by two rows of
+    # Simpson SDW22500 (5") screws through the south face at 19.2" o.c. (TJ-9000 p.28 L17, 3-ply).
+    reinforcements=(JoistReinforcement(
+        at=pt(inch(168), inch(429.5)), plies=2, member="1.75x11.875 LVL", blocking=False,
+        extent=(inch(120), inch(215.25)),
+        source="third ply of FO-M-STAIR's north trimmer pack, laid against the LSL rim: the wall-top "
+               "restraint of W-B-N2 as a flat beam; Microllam 2.0E, ESR-1387 plank orientation",
+        fastening=PlyFastening(fastener="screw", rows=2, spacing=inch(19.2), faces="one")),),
     outline=_rect(_STR_X, _MECH_Y, _CENTRE_X, _HOUSE),
     openings=("FO-M-STAIR",),
     source="catlin main floor, over the stair shaft — same joists as FS-M-WEST, spanning "

@@ -1,7 +1,7 @@
 """An upper segmental wall's bearing, delivered to a parallel lower wall as a lateral surcharge.
 
-The raised-garden apron (``tiered_retaining/W-RG-*``) is founded on its levelling pad inside
-the soil the court walls retain — the court wall's active wedge crosses the pad
+The raised-garden apron (``W-RG-*``, read off the AB chart: ``srw_chart``) is founded on its
+levelling pad inside the soil the court walls retain — the court wall's active wedge crosses the pad
 (``notes/raised_garden_srw.md`` §6). IBC 2018 §1610.1 adds surcharge pressure to the earth
 pressure; this module turns the apron's weight into that surcharge and hands it to
 ``retaining_basis.Surcharge``, which ``retaining_wall`` and ``retaining_system`` both read.
@@ -25,6 +25,7 @@ overturning, bearing, the loop) and the **stem face** (stem flexure).
 
 Oracle: ``notes/sunken_garden_court_free_body.md`` §4c (closed form, by hand), reproduced by
 ``tests/test_retaining_court.py``; the apron's reading is ``segmental_wall.reading``.
+The apron's weight is the 52" chart section (six 8" courses + 4" cap), 130 pcf.
 """
 
 from __future__ import annotations
@@ -32,10 +33,9 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
-from typehaus.engineering.item import Quantity, item_id
+from typehaus.engineering.item import Quantity
 from typehaus.engineering.registry import EngineeringContext
 from typehaus.engineering.retaining_basis import Surcharge, _geometry
-from typehaus.engineering.segmental_wall import KIND as TIER_KIND
 from typehaus.engineering.segmental_wall import lower_tiers, reading, segmental_walls
 
 _M_PER_FT = 0.3048
@@ -91,7 +91,7 @@ def _structure(resolved):  # type: ignore[no-untyped-def]
 
 def _one(ctx: EngineeringContext, apron, court, soil_pcf: float
          ) -> tuple[TierLoad | None, str | None]:  # type: ignore[no-untyped-def]
-    source = item_id(TIER_KIND, apron.tag)
+    source = f"SRW apron {apron.tag}"
     read, missing = reading(ctx, apron)
     if read is None:
         return None, f"{source}'s weight on its pad ({'; '.join(missing)})"

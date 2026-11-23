@@ -43,12 +43,13 @@ from .entry_screen import ENTRY_SCREEN_WALL  # re-export for catalog/source comp
 # under the balcony. So they stay on plain `RETAINING_BLOCK_12` — a faithful reading of
 # "exterior side, to reflect more light into the lawn", not a narrowing of it.
 #
-# ** THE BAND IS WALL_BASE + 8", AND IT MUST NOT BE "SIMPLIFIED" TO GRADE. ** Only the exposed
-# 3'-4" gets coated; the buried 8" of embedment is backfill, not a reflector.
+# ** THE BAND IS WALL_BASE + 12", AND IT MUST NOT BE "SIMPLIFIED" TO GRADE. ** Only the exposed
+# 3'-4" gets coated; the buried 12" of embedment (8" until the 4" AB capstone, 2026-11-22) is
+# backfill, not a reflector.
 # `LayerDatum.GRADE` resolves to `plan.project.site.grade` — the SINGLE GLOBAL site grade,
 # authored at -2'-10" — and the yard this wall actually stands in is -3'-4", so a GRADE band
 # would sit 6" too high. That is the "grade cannot see a terrace" problem. The wall-relative
-# datum is exact here instead: the wall runs 0'-0" to -4'-0", so WALL_BASE + 8" lands precisely
+# datum is exact here instead: the wall runs 0'-0" to -4'-4", so WALL_BASE + 12" lands precisely
 # on the authored -3'-4" yard.
 #
 # ** THE MATERIAL IS THE `-block` TAG, AND THAT IS A RENDER DECISION. ** Same product, same
@@ -69,7 +70,7 @@ RETAINING_BLOCK_12_WASHED = Assembly(
         Layer(name="wash", material_ref="silicate-wash-white-block", thickness=_WASH_FILM,
               function=LayerFunction.FINISH,
               extent=LayerExtent(
-                  bottom=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(8)))),
+                  bottom=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(12)))),
         Layer(name="srw-block", material_ref="retaining-block", thickness=inch(12.0),
               function=LayerFunction.STRUCTURE,
               masonry=MasonrySpec(unit_size="AB Stones 8x12x18 SRW unit", coursing=inch(8.0),

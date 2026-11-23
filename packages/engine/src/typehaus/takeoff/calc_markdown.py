@@ -22,6 +22,9 @@ import re
 from collections.abc import Callable
 from dataclasses import dataclass
 
+#: Point size of an inline code span; the PDF table measures its columns against it.
+CODE_PT = 8.2
+
 _HEADING = re.compile(r"^(#{1,6})\s+(.*)$")
 _RULE = re.compile(r"^\s*([-*_])\1{2,}\s*$")
 _BULLET = re.compile(r"^(\s*)[-*•]\s+(.*)$")
@@ -195,7 +198,7 @@ def inline(text: str, link: Callable[[str], str | None] | None = None) -> str:
     out = _ITALIC.sub(r"<i>\1</i>", out)
 
     def code(match: re.Match[str]) -> str:
-        html = f'<font face="Courier" size="8.2">{match.group(1)}</font>'
+        html = f'<font face="Courier" size="{CODE_PT}">{match.group(1)}</font>'
         wrapper = link(match.group(1)) if link is not None else None
         return wrapper.replace("{}", html) if wrapper else html
 

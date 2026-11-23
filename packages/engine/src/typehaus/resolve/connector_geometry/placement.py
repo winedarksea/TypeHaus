@@ -20,6 +20,7 @@ from typehaus.resolve.connector_geometry.embedded_straps import on_sill_face, st
 from typehaus.resolve.connector_geometry.mesh import box_mesh, transform_mesh
 from typehaus.resolve.connector_geometry.plate_angle import is_plate_angle, plate_angle_body
 from typehaus.resolve.connector_geometry.roof_straps import roof_strap_mesh
+from typehaus.resolve.connector_geometry.tie_frames import tie_frame
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry_ir import GMesh, Vec2, Vec3
 from typehaus.resolve.kbs_geometry import kbs_mesh
@@ -310,8 +311,7 @@ def _body_at_joint(index: ConnectorPlacementIndex, solid: ResolvedSolid,
     point = joint.point if joint is not None else _centroid(solid.outline)
     z_m = joint.z_m if joint is not None else (solid.z0_m + solid.z1_m) / 2
     axis = joint.axis if joint is not None else getattr(element, "axis", None)
-    # A leading "-" turns the part to the opposite face: a face plate on "-y" lands on the
-    # beam's west face where "y" lands on its east.
+    # A leading "-" turns the part to the opposite face ("-y": the beam's west face).
     tangent = {"y": (0.0, 1.0), "-y": (0.0, -1.0), "-x": (-1.0, 0.0)}.get(axis, (1.0, 0.0))
     if axis is None:
         beam = _connected_beam(index, references)
@@ -344,9 +344,7 @@ def _body_at_joint(index: ConnectorPlacementIndex, solid: ResolvedSolid,
                  _connected_beam(index, references)), references[0])
             support_width_m = index.support_width(support_ref, tangent)
             if joint is not None and outward is not None and support_width_m is not None:
-                # The catalog's y=0 is the carrier face. A hung end may stop on the carrier
-                # centreline (a beam) or at its face (a header, trimmer, ridge beam), so
-                # move the datum by what is left to the face, not a blind half width.
+                # y=0 is the carrier face; move the datum by what is left to it.
                 point = _onto_face(index, support_ref, point, outward, support_width_m)
     elif part.startswith(BASE_PREFIXES):
         if joint is not None and len(references) > 1:
@@ -464,9 +462,7 @@ def _body_at_joint(index: ConnectorPlacementIndex, solid: ResolvedSolid,
         elif axis is None and len(references) == 2 and index.model.wall(references[1]) \
                 is not None and (index.model.wall(references[0]) is not None
                                  or beam is not None):
-            # A wall face meeting another wall's end has a vertical heel, even when
-            # their centreline axes are parallel (the screen/garage corner); so does a
-            # beam running into a wall face (catlin's BM-BW-FE into W-G-S).
+            # A wall end or a beam meeting a wall face: a vertical heel (BM-BW-FE/W-G-S).
             wall_axis = cast(Vec2, index.direction(references[0]))
             x_axis = z_axis
             centre = _centroid(cast(ResolvedWall, index.model.wall(references[0])).axis
@@ -474,6 +470,11 @@ def _body_at_joint(index: ConnectorPlacementIndex, solid: ResolvedSolid,
             sign = 1.0 if sum((centre[i] - point[i]) * wall_axis[i] for i in range(2)) > 0 else -1.0
             y_axis = (sign * wall_axis[0], sign * wall_axis[1], 0.0)
             z_axis = (wall_axis[1], -wall_axis[0], 0.0)
+            if beam is not None and sum((point[i] - centre[i]) * z_axis[i]
+                                        for i in range(2)) < 0:  # the beam's other face
+                z_axis = (-z_axis[0], -z_axis[1], 0.0)
+    elif joint is None and (frame := tie_frame(index, part, references, point, axis, tangent)):
+        x_axis, y_axis, z_axis = frame
 
     body = connector_mesh(part, member_width_in=member_width_m / M_PER_IN
                           if member_width_m is not None else None,

@@ -309,8 +309,9 @@ an item id `<kind>/<element-tag>` that a professional seal can cover (decision #
 - `haus calcs` writes `out/calcs/` — cover, derived design criteria, item register, gap
   register, collapsed assumptions, one calculation per design FAMILY, and an appendix:
   `appendix/<kind>.md` (the per-member data as a table) over one nine-section sheet per
-  item. **The PDF prints the calculations, not the appendix** — `--appendix` (or
-  `haus handoff --full`) prints it, and the divider page always says where it is.
+  item. **`haus calcs --pdf` prints the calculations, not the appendix** — `--appendix`
+  prints it, and the divider page says where it is; `haus handoff` prints it by default
+  (`--no-appendix` drops it), because a seal binds to that PDF.
   Byte-deterministic and regenerated rather than maintained
   (`docs/calc-package-format.md`). Each kind declares its oracle note with
   `oracled_by(KIND, Oracle(...))`, and a test lints that every kind names one that exists.

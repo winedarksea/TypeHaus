@@ -2348,12 +2348,13 @@ _JAMB_Z = inch(-13.4375)
 _BAND_Z = inch(-6.75)
 _CURB_Z = inch(-102.1875)
 # W-B-N2's wall-top restraint (Minn. R. 1309.0404 Table R404.1(1) fn. f, decision 23): FO-M-STAIR
-# fills the first three joist spaces, so its north trimmer pack (2-ply 1.75x11.875 LVL, x 120"..
-# 215.3") takes 400 plf as a flat beam, 7.94' x 400 = 3,177 lb, tied to the sill by these six
-# A35Z, 625 lb each at C_D 0.9, ~16" apart on the pack's north face, and the 1,588 lb end
+# fills the first three joist spaces, so its north trimmer pack (3 plies of 1.75x11.875 LVL: the
+# two trimmers + one sistered in `STAIR_FLOOR`, x 120".. 215.3") takes 400 plf as a flat beam,
+# 7.94' x 400 = 3,177 lb, tied to the sill by these six A35Z (6-SD9112 screws each leg, the F1 695
+# lb row; PT-SYP sill, LVL pack: 625 lb each at C_D 0.9), ~16" apart on the pack's south face, and the 1,588 lb end
 # reaction into FS-M-MECH / FS-M-NE by three more at each end (notes/main_floor_truss_basis.md §4a).
 # `code.MN_1309_0404_wall_top` counts the ties that name the floor and the wall, and the ends'.
-_PACK_TIE_Y = inch(429)
+_PACK_TIE_Y = inch(424.9)
 _PACK_TIE_Z = inch(-6)
 CONNECTORS = [
     Connector(uid="F4129D9A2N", tag="CN-M-N2-PACK-1", kind=ConnectorKind.TENSION_TIE,

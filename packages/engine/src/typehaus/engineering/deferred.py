@@ -64,39 +64,27 @@ def _declare(deferral: Deferral) -> Deferral:
 
 _declare(Deferral(
     kind="rafter",
-    reason="the roof resolves no rafter member at all — it is trussed, or framed on a "
-           "ridge beam — so there is no member for any span table to describe and the "
-           "component manufacturer's sealed design governs. A roof framed in an ENGINEERED "
-           "PROFILE is not here: its maker publishes a span table, reading one is a "
-           "prescriptive act, and `structural.rafter_span` grades it against an authored "
-           "`Roof.published_span` instead (2026-09-11). RF-BW-CANOPY carries a DRIFT "
-           "case the fabricator has to be quoted against — a quote priced on \"50 psf "
-           "ground snow\" buys ordinary trusses (notes/north_entry_piers.md §3, and "
-           "preferences.toml [structural] roof_beam_snow_psf)",
-    designer="truss or I-joist manufacturer's engineer of record — the component design "
-             "only. The chain below the heel is no longer a second role here: the fabricator "
-             "PUBLISHES its reactions, and `structural.truss_reactions` grades that chain "
-             "against published connector allowables once they are quoted into the model "
-             "(`Roof.published_reactions`, 2026-09-20)",
+    reason="the roof resolves no rafter member at all (it is trussed, or framed on a ridge "
+           "beam), so no span table describes it and the component manufacturer's design "
+           "governs. A roof framed in an engineered profile is not here: its maker's "
+           "published span table is read directly. RF-BW-CANOPY carries a drift case the "
+           "fabricator has to be quoted against; a quote on ground snow alone buys "
+           "ordinary trusses (notes/north_entry_piers.md §3)",
+    designer="truss or I-joist manufacturer's engineer of record, for the component only. "
+             "The truss fabricator's design is the component only; the chain below the heel "
+             "is checked against its published reactions once they are entered",
     deliverable="a sealed component design and placement plan for the roof, covering the "
-                "profile, the web stiffener and hanger schedule, and the ground-snow AND "
-                "drift case this site carries. **Where the roof declares a diaphragm, the "
-                "end trusses' TOP CHORDS are its chords** and carry the axial force "
-                "`lateral_system/<roof>` prints as `chord_force_*` IN ADDITION TO the "
-                "gravity case — combined axial and bending at that section is the "
-                "fabricator's own chart, and the plated splice has to carry the full force "
-                "in tension. No splice-slip value is asked for: both N-S paths are graded "
-                "at 100%, so the rigid/flexible split enters no ratio (2026-11-23). The "
-                "reactions are DECIDED, not waited for: `Roof.specified_reactions` states "
-                "the maximum net uplift per heel (450 lb), the S-001 TRUSS CRITERIA block "
-                "prints the loads, drift per truss, bearings, chord force, deflection and "
-                "maximum reactions, and the chain below the heel is graded against them "
-                "now (\"supporting structure closed\"). What stays open is only \"component "
-                "confirmed\": the supplier's reaction schedule, quoted into "
-                "`Roof.published_reactions`, checked against the specified one",
-    unblocks="Roof framing — the S-603 rafter/truss line and the roof-load permit item; "
-             "the component line of structural.truss_reactions closes on the quoted "
-             "reactions (the supporting-structure line closed on the specified ones)",
+                "profile, the web stiffener and hanger schedule, and the ground-snow and "
+                "drift case this site carries, within the criteria the order states: the "
+                "loads, the drift on each truss, the bearings, the deflection limits and the "
+                "maximum net uplift per heel. Where the roof declares a diaphragm, the first "
+                "and last trusses' top chords carry the chord force the lateral calculation "
+                "prints, in addition to gravity, with the plated splice in tension. No "
+                "splice-slip value is asked for. The supplier's reaction schedule is quoted "
+                "onto the roof and checked against the specified reactions",
+    unblocks="Roof framing, the S-603 rafter/truss line and the roof-load permit item; the "
+             "supplier's reactions close the component line once entered, the supporting "
+             "structure being already checked on the specified ones",
     oracle=(Oracle(note="catlin_truss_engineering.md",
                    test="tests/test_wind_loads.py"),
             Oracle(note="canopy_truss_criteria.md",
@@ -215,10 +203,9 @@ def _veneer_anchor_keys(ctx: EngineeringContext) -> list[str]:
 # ``engineering/thermal_break.py``, as a reserve. Its deliverable prose is that module's
 # NOT-GRADED note; settlement keeps every item INCOMPLETE until a measured modulus exists.
 
-# NOTE — ``tiered_retaining`` is COMPUTED since 2026-09-20: ``engineering/segmental_wall.py``
-# grades the unit's own free body, and its NOT-GRADED note carries this deferral's deliverable
-# (global stability of the pair with the geotechnical engineer; the unit, reinforcement and
-# levelling pad with the SRW supplier's engineer).
+# NOTE — ``tiered_retaining`` is RETIRED (2026-11-23): R404.4 does not engage at <= 48" of fill,
+# and the raised-garden legs are read off Allan Block's Table 1.3 by
+# ``structural.srw_gravity_chart`` (``engineering/srw_chart``). Nothing is deferred for them.
 
 
 def _footingless_walls(ctx: EngineeringContext) -> list:

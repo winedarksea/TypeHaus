@@ -515,17 +515,21 @@ WALLS = [
     # `interior_room` is authored on both rather than left to the storey's outward sign:
     # there are two wall edges on each of these node pairs now (the curb and the framing),
     # and an asymmetric stack should not depend on how the loop happens to wind.
+    # top=90 5/16" lands the double top plate on the main floor's joists (z -11 7/8"): these are
+    # BEARING walls and the floor bears on the plate. It stood at 88 3/4", 1 9/16" short, a
+    # modelling gap with nothing in it (the concrete walls fill that band with a sill plate).
+    # None (underside of the floor above) would stop at the finished ceiling, -12.5", 5/8" short.
     Wall(uid="3BF9ZDQPT1", tag="W-B-S2-FR", start_node="N-B-S1F", end_node="N-B-S2F",
          assembly="SAUNA_LINER_ON_GARDEN_FRAMED",
          alignment=face("sheathing-ext"),
          interior_room="RM-B-SAUNA",
-         base_elevation=inch(-102.1875), top=inch(88.75),
+         base_elevation=inch(-102.1875), top=inch(90.3125),
          structural_role=StructuralRole.BEARING),
     Wall(uid="Z4NRTGEDY5", tag="W-B-S3-FR", start_node="N-B-S2F", end_node="N-B-S3F",
          assembly="GARDEN_FRAMED_2X6",
          alignment=face("sheathing-ext"),
          interior_room="RM-B-GYM",
-         base_elevation=inch(-102.1875), top=inch(88.75),
+         base_elevation=inch(-102.1875), top=inch(90.3125),
          structural_role=StructuralRole.BEARING),
     # The east 8'-10" of the old W-B-S3, split off 4" west of the court's east face
     # (see N-B-S3 — the split used to sit on the wall AXIS, half a wall inside the soil).
