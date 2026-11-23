@@ -162,15 +162,21 @@ def test_not_applicable_is_earned() -> None:
 
 
 def test_catlin(catlin_plan) -> None:
-    """Catlin authors chromate (passivated) and its SCM fractions; the cement, chloride,
-    sulfate class and aggregate reactivity are unsourced and stay UNKNOWN."""
+    """Catlin authors chromate, SCM fractions, chloride ceilings, a C150 I/II cement and the S1
+    design bound (decision 25, 2026-11-22); only the aggregate reactivity is unsourced and
+    stays UNKNOWN until the plant's submittal."""
     class _Ctx:
         plan = catlin_plan
 
     assert all(f.result is Result.PASS for f in cm.galvanized_bar_chromate(_Ctx()))
-    for rule in (cm.concrete_chloride_limit, cm.concrete_scm_caps, cm.concrete_asr,
-                 cm.concrete_sulfate_cement):
+    for rule in (cm.concrete_chloride_limit, cm.concrete_scm_caps, cm.concrete_sulfate_cement):
         findings = rule(_Ctx())
-        assert findings and all(f.result is Result.UNKNOWN for f in findings)
-    (scm,) = cm.concrete_scm_caps(_Ctx())
-    assert "cement is not named" in scm.message
+        assert findings and all(f.result is Result.PASS for f in findings), (
+            rule.__name__, [f.message for f in findings])
+    # Chloride ceilings by class (ACI 318-19 Table 19.3.2.1): C1 0.30, C2 0.15, C0 1.00.
+    assert {"chloride 0.30% against class C1's 0.30%", "chloride 0.15% against class C2's 0.15%",
+            "chloride 1.00% against class C0's 1.00%"} <= {
+        m for f in cm.concrete_chloride_limit(_Ctx()) for m in
+        [f.message.split(": ", 1)[1].split(" [")[0]]}
+    findings = cm.concrete_asr(_Ctx())
+    assert findings and all(f.result is Result.UNKNOWN for f in findings)

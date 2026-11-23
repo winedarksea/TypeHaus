@@ -73,8 +73,11 @@ alternating between two rows) and not bearing. FO-A-HALL's south trimmer lies on
 W-M-HS3/HS4, so it is now `INT_2X6_BRG_HALF`: continuous 2x6 studs, BEARING
 (`notes/header_spans_r602_7.md` §4b). The same 6 1/2" wall thickness, so no face moved.
 
-**The limit, read as the engine reads it** (R602.6, as R602.6.1's neighbour): a bored hole in a
-bearing-wall stud may take 40% of the stud's depth, and 5/8" of stud must remain each side.
+**The limit, read as the engine reads it** (R602.6(2), read 2026-11-23 in the City of Minneapolis's
+*Cutting, Notching, Boring Wood Frame Members* guide, which quotes it, and on jaspector.com's 2018
+page): any stud may be bored to 60% of its width with 5/8" left at each edge, but a stud in an
+exterior wall or bearing partition over 40% must also be doubled (no more than two successive
+doubled studs bored). So a single bearing stud takes 40% of its depth.
 
 | | stud | 40% | widest bore through the wall | stud left each side |
 |---|---|---|---|---|

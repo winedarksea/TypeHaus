@@ -23,8 +23,8 @@ from __future__ import annotations
 import math
 
 from typehaus.checks.code.mn_residential._common import _fail, _na, _pass, _unknown
-from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.checks.code.mn_residential.wall_top_edge_pack import edge_pack_lines
+from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.checks.soil import site_soil_class
 from typehaus.checks.structural._mn_r404_1_table import SOIL_GROUP_PCF, top_of_wall_row
 from typehaus.checks.structural.foundation import _unbalanced_fill_ft, _wall_height_ft
