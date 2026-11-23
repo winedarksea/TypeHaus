@@ -26,6 +26,12 @@ the future.
 - **Sheet layout (decision #146).** D-M-ENTRY's flat head has no cripples above it. Gypsum is
   not laid sheet by sheet.
 
+- **SRW drain pipe and capstone adhesive are not billed (review A2-F8).** `SrwChartSection.drain`
+  (`model/srw_chart.py`) is authored on the five raised-garden legs but no takeoff reads it:
+  ~86 LF of 4" perforated pipe in sock (legs plus stubs to the outlet bedding's wall column)
+  and ~2 tubes of capstone adhesive. Bill them off the wall axes and outlet distance, then price
+  them in `prices.toml` beside `RETAINING_BLOCK_12`.
+
 - **Emit nondeterminism (found 2026-11-23).** The S-100 LOCATING dimension chain
   (`emit/draw/structural_dimensions.py`) and the IFCRELCOVERSBLDGELEMENTS GUIDs
   (`emit/ifc/lowlevel_guids.py`) vary with the hash seed. `haus handoff` works around it by
