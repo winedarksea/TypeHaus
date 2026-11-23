@@ -342,6 +342,10 @@ def _one(ctx: EngineeringContext, wall_tag: str, piers: list[_Pier]) -> Engineer
             "drill will strike a #5 dowel) — a drawing note on the porch ledger detail. The "
             "anchors' own capacity against this pull is NOT graded: no THD50600H6SS "
             "allowable is catalogued and ESR-2713 does not list the Type 316 stainless anchor.",)),
+        "OWNER-ACCEPTED (2026-11-23): the dowel tension governs this joint at about 0.92, over "
+        "the owner's 0.85 cost-review trigger (the printed limit is phi As fy). It was reviewed "
+        "there on the repository's conservative C_f 1.80 for every wind band and the guard taken "
+        "concurrently with full design wind, and ACCEPTED AS IS: no dowel change.",
         "FOOTPRINT: the 12\" round is flush with both faces of the 12\" stem, so the row reads "
         "1.000 and allows no placement tolerance — a detailing row, not a margin. The column "
         "form is set from the stem's own face lines (`AN-SG-PLACEMENTS`); a round set off-centre "

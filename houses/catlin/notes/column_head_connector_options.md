@@ -46,9 +46,19 @@ tied down by a pair of parts, one each beam face. All eight are **exterior**.
 
 ### Open items for the pour — verify, not assumed
 
-- **The glulam is "2- or 3-ply" by WIDTH, not by ply count.** The seat beams (2-ply) and
-  header (3-ply) are Table 3's row as printed. Read as 1-ply, the balcony pair's lateral is
-  Table 2's 340 lb, and the guard still clears at 200 / 212.5 = 0.94.
+- **The balcony's 3-1/2" glulam is ONE ply, and its pair is graded on Table 3's 1-ply row
+  (2026-11-23, owner decision 8; supersedes the 2-/3-ply-by-width reading).** FL11473 R6
+  (SIM202301, sealed 2023-10-17) p. 10 of 14, Table 3, double HETA, concrete, 1-ply: 10 nails,
+  uplift 1,920, F1 1,115, F2 900 lb for the pair (lateral 900), straps WRAPPED over the beam
+  top, not trimmed, so no Simpson confirmation is owed. **The document conflicts with itself:**
+  note 6 reads "Lateral loads for double META, HETA, and HHETA apply only to 2- or 3-ply
+  applications with anchors spaced a minimum of 3 in apart" while the table prints F1/F2 cells
+  in its 1-ply columns, and note 7 is the 1/16" deflection note for an UNWRAPPED strap. **The
+  owner accepts the printed 1-ply row as the reading of this self-conflicting document**
+  (Simpson C-C-2026, whose footnote numbering the owner quoted, was not read). The guard
+  clears at 200 / 562.5 = 0.36; the pair's combined row with sealed-deck uplift is 0.73
+  (`balcony_moment_columns.md` §23). The seat beams of the north entry (2-ply, 3-ply) stay on
+  the 2-/3-ply row.
 - **The lowest nail holes vs the standoff gap.** Table 2 note 2 requires the lowest four
   holes filled; the beam soffit stands 1/2"-1" off the pour on the shim pack. Check the
   HETA20's lowest hole height against the pack before setting it; hold the pack to 1/2" if

@@ -71,20 +71,25 @@ def test_every_lateral_system_column_is_fixed_and_nothing_else_is(solved):
 #: (3-5 %, balcony_moment_columns.md §12). The record errs LONG, so the model must be shorter.
 #: 3" lower on 2026-09-23: 8.38' vs 8.76' front, 8.43' vs 8.91' rear (3-6 %).
 LEVER_TOLERANCE = 0.06
+#: Wind runs N-S, where the beam ties each pair of column tops: the stiffer front column draws
+#: more of an equal push than the rear one, on top of the 3-6 % lever shortfall (balcony note §24).
+WIND_TOLERANCE = 0.10
 
 
 @pytest.mark.parametrize("tag", BALCONY)
 def test_balcony_wind_base_moment_matches_the_note(solved, tag):
-    """§3a / balcony note §15a, §17-§19: 126.9 lb at the deck plane x the column = 1,104 lb-ft
-    (front), 1,123 (rear), since the rear rim oversail went to 2 1/8" (2026-11-18)."""
+    """Balcony note §24 (2026-11-23): the deck, guard, shafts and closed curtains, each band at
+    its own lever, N-S wind 363 + 208 + 597 + 1,092 = 2,259 lb ASD over four columns:
+    4,412 lb-ft at the front columns, 4,479 at the rear (hand: q_h 18.52 psf from Kz 0.644 at
+    22.3', 0.6 q G C_f = 17.0 psf, over 21.4 + 12.2 + 35.1 + 64.2 sq ft)."""
     _, model, result, piers = solved
     reaction = result.reactions[(_support(model, tag).node, LoadCaseKind.WIND.value)]
     solved_moment = _moment_lb_ft(reaction)
     assert solved_moment == pytest.approx(piers[tag].wind_base_moment_lb_ft,
-                                          rel=LEVER_TOLERANCE)
+                                          rel=WIND_TOLERANCE)
     assert solved_moment < piers[tag].wind_base_moment_lb_ft, "the record must err long"
     assert piers[tag].wind_base_moment_lb_ft == pytest.approx(
-        1104 if tag.startswith("PT-SG-BF") else 1123, abs=5)
+        4412 if tag.startswith("PT-SG-BF") else 4479, abs=5)
 
 
 @pytest.mark.parametrize("tag", BALCONY)
@@ -116,15 +121,22 @@ def test_balcony_gravity_reactions_match_the_records(solved, front, rear):
         self_weight = pier.gross_area_in2 / 144 * pier.height_in / 12 * 150.0
         dead = result.reactions[(node, LoadCaseKind.DEAD.value)].fz_n * N_TO_LB + self_weight
         live = result.reactions[(node, LoadCaseKind.LIVE.value)].fz_n * N_TO_LB
-        assert dead == pytest.approx(inputs["dead_load"], rel=0.15)
+        planted = inputs["dead_load"] + inputs["planter_dead"]   # the graph carries the planter
+        assert dead == pytest.approx(planted, rel=0.15)
         assert live == pytest.approx(inputs["live_load"], rel=0.15)
         pair_model["dead"] += dead
         pair_model["live"] += live
-        pair_record["dead"] += inputs["dead_load"]
+        pair_record["dead"] += planted
         pair_record["live"] += inputs["live_load"]
-    for case in ("dead", "live"):
-        assert pair_model[case] == pytest.approx(pair_record[case], rel=0.01)
-    # By hand: 40 psf x 9.75' strip = 390 plf over 9.667', 4.167' of 7.333' toward the rear.
+    assert pair_model["dead"] == pytest.approx(pair_record["dead"], rel=0.01)
+    # Live: the graph carries the FULL pattern, 390 plf x 9.667' = 3,770 lb between the pair
+    # (hand, note §20). Each record column takes ITS OWN worst of the eight patterns (1,702 /
+    # 2,154), so the records' pair is the sum of two maxima: above the total, by 2.2 %.
+    assert pair_model["live"] == pytest.approx(390.0 * 9.6667, rel=0.005)
+    assert pair_model["live"] <= pair_record["live"] <= 1.03 * pair_model["live"]
+    # By hand (balcony note §20): the planter, 171.67 plf over the 7.333' back span, 629.4 lb
+    # on each bearing, is in the dead case; the sealed pair's dead is deck + shaft + planter.
+    # Live by hand: 40 psf x 9.75' strip = 390 plf over 9.667', 4.167' of 7.333' toward the rear.
     rear_live = result.reactions[(_support(model, rear).node, LoadCaseKind.LIVE.value)].fz_n
     assert rear_live * N_TO_LB == pytest.approx(390.0 * 9.667 * 4.167 / 7.333, rel=0.01)
 

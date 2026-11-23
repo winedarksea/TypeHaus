@@ -115,6 +115,7 @@ def _deck_gravity(ctx: Any, scope: Any, graph: Any, loads: LoadSet) -> None:
                 strips[beam] = width
         if not strips:
             continue
+        _planter(ctx, deck, graph, loads)
         widths = ", ".join(f"{beam} {width:.2f} ft" for beam, width in strips.items())
         loads.assumptions.append(
             f"{tag}: carried as a line load on each beam rather than as its joists — half "
@@ -132,6 +133,31 @@ def _deck_gravity(ctx: Any, scope: Any, graph: Any, loads: LoadSet) -> None:
                         w1_n_m=w_n_m,
                         source=(f"{tag} {psf:.0f} psf x {strip_ft:.2f} ft tributary strip "
                                 f"({citation})")))
+
+
+def _planter(ctx: Any, deck: Any, graph: Any, loads: LoadSet) -> None:
+    """The house's saturated planter, a DEAD line load over each deck beam's back span — the
+    PLANTED case; the planter-off case is the lower axial the records also grade."""
+    from typehaus.engineering.balcony_loads import planter_allowance
+
+    allowance = planter_allowance(ctx)
+    if allowance is None:
+        return
+    for beam in sorted(set(deck.joists.bearing_refs or ()) & set(graph.beam_spans)):
+        pieces = graph.beam_spans[beam]
+        if len(pieces) != 3:        # overhang, back span, overhang
+            loads.assumptions.append(
+                f"{beam}: not three pieces, so the planter allowance is not placed on it")
+            continue
+        w_n_m = -allowance.plf * PLF_TO_N_M
+        loads.case(LoadCaseKind.DEAD, _CASE_TEXT[LoadCaseKind.DEAD])
+        loads.member_loads.append(MemberLoad(
+            case=LoadCaseKind.DEAD, member=pieces[1], direction="GZ", w0_n_m=w_n_m,
+            w1_n_m=w_n_m,
+            source=f"{beam} {allowance.describe()} (preferences.toml balcony_planter)"))
+    loads.assumptions.append(
+        "the balcony's planters are in the DEAD case, over each beam's back span (the planted "
+        "case of balcony_loads; the records also grade the planter off, a lower axial)")
 
 
 def _lateral_column_loads(ctx: Any, scope: Any, graph: Any, loads: LoadSet) -> None:
@@ -153,25 +179,68 @@ def _lateral_column_loads(ctx: Any, scope: Any, graph: Any, loads: LoadSet) -> N
         height_ft = pier.height_in / 12.0
         axis = "GX" if pier.moment_basis.startswith("E-W") else "GY"
         if pier.wind_base_moment_lb_ft:
-            shear_n = pier.wind_base_moment_lb_ft / height_ft * LB_TO_N
             loads.case(LoadCaseKind.WIND, _CASE_TEXT[LoadCaseKind.WIND])
-            loads.node_loads.append(_horizontal(
-                LoadCaseKind.WIND, node, axis, shear_n, 0.0,
-                source=(f"{item} wind_base_moment {pier.wind_base_moment_lb_ft:,.0f} lb-ft "
-                        f"/ {height_ft:.2f} ft column = {shear_n / LB_TO_N:,.0f} lb at the "
-                        f"column top, {axis}")))
+            _wind_on_column(pier, item, node, axis, height_ft, graph, loads)
         if pier.guard_base_moment_lb_ft:
             # IRC R301.5's 200 lb acts at the top of the GUARD, above the column top; the
             # extra lever rides as a node moment so the base moment matches the record.
+            # Applied in the E-W direction whatever the wind's axis: the record takes the
+            # guard WHOLLY on one column, and only E-W is a true cantilever — N-S, the beam
+            # (hinged on its cap, but axially stiff) shares a push with the column at its
+            # far end, which would give back part of the bound the record spends.
+            guard_axis = "GX"
             guard_arm_ft = pier.guard_base_moment_lb_ft / 200.0
             extra_ft = max(guard_arm_ft - height_ft, 0.0)
             force_n = 200.0 * LB_TO_N
             loads.case(LoadCaseKind.GUARD, _CASE_TEXT[LoadCaseKind.GUARD])
             loads.node_loads.append(_horizontal(
-                LoadCaseKind.GUARD, node, axis, force_n, force_n * extra_ft * 0.3048,
+                LoadCaseKind.GUARD, node, guard_axis, force_n, force_n * extra_ft * 0.3048,
                 source=(f"{item} guard_base_moment {pier.guard_base_moment_lb_ft:,.0f} "
                         f"lb-ft: 200 lb at the column top plus its {extra_ft:.2f} ft of "
-                        f"guard above, as a node moment")))
+                        f"guard above, as a node moment, {guard_axis}")))
+
+
+def _wind_on_column(pier: Any, item: str, node: str, axis: str, height_ft: float,
+                    graph: Any, loads: LoadSet) -> None:
+    """Wind where each band of the record acts: the deck and curtains at the column top, the
+    guard's share with its lever above it, the shaft's own wind along the column.
+
+    The record sums these at their own levers into ``wind_base_moment_lb_ft``; one shear
+    ``M / h`` at the top would be a different load. Records without components (a roof
+    column) keep the single shear."""
+    if not pier.wind_head_shear_lb:
+        shear_n = pier.wind_base_moment_lb_ft / height_ft * LB_TO_N
+        loads.node_loads.append(_horizontal(
+            LoadCaseKind.WIND, node, axis, shear_n, 0.0,
+            source=(f"{item} wind_base_moment {pier.wind_base_moment_lb_ft:,.0f} lb-ft / "
+                    f"{height_ft:.2f} ft column = {shear_n / LB_TO_N:,.0f} lb at the column "
+                    f"top, {axis}")))
+        return
+    top_lb = pier.wind_head_shear_lb - pier.wind_guard_shear_lb
+    loads.node_loads.append(_horizontal(
+        LoadCaseKind.WIND, node, axis, top_lb * LB_TO_N, 0.0,
+        source=(f"{item} wind: deck and closed curtains {top_lb:,.0f} lb ASD at the column "
+                f"top, {axis}")))
+    extra_ft = max(pier.wind_guard_arm_ft - height_ft, 0.0)
+    guard_n = pier.wind_guard_shear_lb * LB_TO_N
+    loads.node_loads.append(_horizontal(
+        LoadCaseKind.WIND, node, axis, guard_n, guard_n * extra_ft * 0.3048,
+        source=(f"{item} wind: guard {pier.wind_guard_shear_lb:,.0f} lb ASD at the column top "
+                f"plus its centroid {extra_ft:.2f} ft above, as a node moment, {axis}")))
+    nodes = {n.id: n for n in graph.nodes}
+    for member in graph.members:
+        if member.tag != pier.tag or not member.is_vertical:
+            continue
+        a, b = nodes[member.n0], nodes[member.n1]
+        length_m = abs(b.z_m - a.z_m)
+        if length_m <= 0.0:
+            continue
+        w_n_m = pier.wind_shaft_shear_lb * LB_TO_N / length_m
+        loads.member_loads.append(MemberLoad(
+            case=LoadCaseKind.WIND, member=member.id, direction=axis, w0_n_m=w_n_m,
+            w1_n_m=w_n_m,
+            source=(f"{item} wind: the shaft's own {pier.wind_shaft_shear_lb:,.0f} lb ASD "
+                    f"spread over the column, {axis}")))
 
 
 def _horizontal(kind: LoadCaseKind, node: str, axis: str, force_n: float,
