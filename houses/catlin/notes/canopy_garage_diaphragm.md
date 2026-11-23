@@ -574,22 +574,23 @@ strap line is x 6.3698..29.6302 = 23.2604'; the chords are the canopy's first an
 chord because it would carry a canopy force through a nailed deck edge, and the deck stays continuous over it):
 
 ```
-T = V L / (8 d) = 1,034.565 x 23.2604 / (8 x 4.000) = 752.0 lb      (was 1,034.49 x 24 / (8 x 6) = 517.2: the deck's depth, not the chords')
+T = V L / (8 d) = 1,051.72 x 23.2604 / (8 x 4.000) = 764.5 lb      (was 1,034.49 x 24 / (8 x 6) = 517.2: the deck's depth, not the chords')
 ```
 
 Tension in one chord, compression in the other, on top of gravity; the peak splice carries it in tension; it goes on
 EVERY canopy truss (decision 19). The 0.03" splice slip is dropped from the order (C-8): both N-S paths are graded at
 100%, the split never enters a ratio; the field survives only for the `cast` variant's deflection.
 
-**12c. The end-strap couple.** V acts at the deck resultant x_V = 18.5346'; the screen panel's line is x 6.1823'; the
-lever is 12.3523', M = 1,034.565 x 12.3523 = 12,779 lb-ft, closed by opposite N-S forces at the two end straps:
+**12c. The end-strap couple** (re-worked 2026-11-23 on V = 1,051.72 lb, the jacketed posts). V acts at the deck resultant
+(x_V = 18.717'); the screen panel's line is x 6.1823'; the lever is 12.535', M = 1,051.72 x 12.535 = 13,184 lb-ft, closed by
+opposite N-S forces at the two end straps:
 
 ```
-F = M / L_strap = 12,779 / 23.2604 = 549.4 lb     (the review's 517 used V/2)
-end strap, F + the E-W chord force 88.0 (added linearly)   637.4 / 823.33 = 0.774     (was 0.316)
-(a conservative bound: an elastic distribution over the six straps, M x 11.63 / 423.4 = 351 lb, reads 0.43, or 0.53 with the chord force)
-RF-GARAGE torque, M / 24.000' = 532.5 lb on each of W-G-W, W-G-E
-  W-G-W  532.5 / 18.675' = 28.51 plf vs 182.5   0.156       W-G-E  532.5 / 21.008' = 25.35 plf   0.139
+F = M / L_strap = 13,184 / 23.2604 = 566.8 lb     (the review's 517 used V/2)
+end strap, F + the E-W chord force 90.3 (added linearly)   657.1 / 823.33 = 0.798     (was 0.316)
+(a conservative bound: an elastic distribution over the six straps, M x 11.63 / 423.4 = 362 lb, reads 0.44, or 0.55 with the chord force)
+RF-GARAGE torque, M / 24.000' = 549.3 lb on each of W-G-W, W-G-E
+  W-G-W  549.3 / 18.675' = 29.4 plf vs 182.5   0.161       W-G-E  549.3 / 21.008' = 26.1 plf   0.143
 ```
 
 ## Sources

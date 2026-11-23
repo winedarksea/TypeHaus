@@ -52,6 +52,8 @@ class DeliveryRows:
     element_tags: list[str] = field(default_factory=list)
     #: Each collector plate's own N-S share, by collector tag, from the band's row.
     collector_shares: dict[str, float] = field(default_factory=dict)
+    #: The joint strap's installed axial rating, lb, read once from the catalog in ``_straps``.
+    strap_capacity_lb: float | None = None
 
 
 def _xy_ft(element: Any) -> tuple[float, float] | None:
@@ -225,6 +227,7 @@ def _straps(ctx: Any, rows: DeliveryRows, joints: list[Any], v_along: float, v_a
     if allowable is None or capacity is None:
         rows.missing.append(f"a published allowable for the joint strap `{joints[0].size}`")
         return
+    rows.strap_capacity_lb = capacity
     n = len(joints)
     cite = allowable.citation.split(":")[0]
     rows.states += [

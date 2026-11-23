@@ -32,7 +32,7 @@ def test_uplift_is_specified_and_the_nail_is_on_the_schedule(block) -> None:
     # The truss's own chord bearing is the supplier's, said aloud with the number it accepts.
     assert "CHORD BEARING ON BM-BW-RW: THE SUPPLIER CHECKS THE TRUSS CHORD'S OWN FC-PERP" in block
     assert "AT MAX 2,353 LB, 1.5 IN CHORD ON 5.5 IN OF BEARING = 285 PSI" in block
-    assert "N-S 752 LB AXIAL" in block
+    assert "N-S 764 LB AXIAL" in block
 
 
 def test_floor_orders_carry_their_applied_loads(block) -> None:

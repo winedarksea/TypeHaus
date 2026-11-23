@@ -45,7 +45,7 @@ gives the same two cells. The 23.93' span reads the 24' column (rounded up, neve
 (~12 ft here), overhang <= 24" (16"), a 15 psf roof + ceiling dead allowance (10 + 6), corner-zone value kept. 178 / 615 = 0.29 (0.68 at the 260 lb three-nail row).
 The canopy is an open structure and keeps its engineered `wood_roof_post` uplift.
 
-**N-S diaphragm chord:** 752 lb on every canopy truss (`canopy_garage_diaphragm.md` §12b). **Deflection:** IRC Table R301.7
+**N-S diaphragm chord:** 764 lb (V 1,051.72 lb, jacketed posts) on every canopy truss (`canopy_garage_diaphragm.md` §12b). **Deflection:** IRC Table R301.7
 L/240 snow (no ceiling on the canopy, ceiling on the garage per the order), L/180 total.
 
 ## 2. The floor trusses (statics: P a b / L, patch at its centroid)
@@ -73,8 +73,8 @@ supplier to confirm both doubled pairs.
 
 The truss's own bottom chord bearing on `BM-BW-RW`/`-RE` (SPF Fc-perp) is the fabricator's. The schedule prints the maximum
 reaction and the bearing it must accept: T2 2,353 lb on 1.5" x 5.5" = 285 psi (the glulam's side of it is `roof_beam`, 0.662). On the
-garage plates the same check is the supplier's at 1,916 lb. The end-strap couple row (0.774) is a conservative bound: an elastic
-distribution over the six straps puts 351 lb on an end strap (0.53 with the chord force).
+garage plates the same check is the supplier's at 1,916 lb. The end-strap couple row (0.798) is a conservative bound: an elastic
+distribution over the six straps puts 362 lb on an end strap (0.55 with the chord force).
 
 ## 4. Catalog routes to close the canopy heel without the five-nail condition: none found (2026-11-23)
 

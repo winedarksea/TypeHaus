@@ -528,7 +528,7 @@ Two other bracings of the same band are carried as documented backups; neither i
 
 ## 9. Not graded here / still open
 
-* **The truss end chords (N-S), 752 lb**: the truss order (`rafter/RF-BW-CANOPY`; no splice-slip value is asked for). The truss fabricator's sealed component design and reaction schedule is an external
+* **The truss end chords (N-S), 764 lb**: the truss order (`rafter/RF-BW-CANOPY`; no splice-slip value is asked for). The truss fabricator's sealed component design and reaction schedule is an external
   deliverable; when it arrives, author `Roof.published_reactions` on both roofs and record the component seal in
   `engineering.toml`. `rafter/*`, `structural.truss_reactions` and `uplift_capacity` stay UNKNOWN until then.
 * **The soils report**: 2,000 psf is presumptive and the soil class is presumed, so every record prints it.
