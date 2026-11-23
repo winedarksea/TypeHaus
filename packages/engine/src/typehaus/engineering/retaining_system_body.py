@@ -70,6 +70,10 @@ class Water:
     both_sides: bool = False
     #: Ground snow on the retained terrace, psf, carried as a K0 surcharge.
     snow_psf: float = 0.0
+    #: A lateral load delivered INTO the body (a structure standing on it), lb, along
+    #: ``wind_dir``; added the adverse way to the soil's resultant.
+    wind_lb: float = 0.0
+    wind_dir: tuple[float, float] = (1.0, 0.0)
 
 
 DRY = Water("dry")
@@ -121,6 +125,10 @@ class Body:
     def resultant_vector(self, water: Water = DRY) -> tuple[float, float]:
         rx = sum(self.thrust_per_ft(p, water) * p.width_ft * p.direction[0] for p in self.pushes)
         ry = sum(self.thrust_per_ft(p, water) * p.width_ft * p.direction[1] for p in self.pushes)
+        if water.wind_lb:
+            dx, dy = water.wind_dir
+            sign = 1.0 if rx * dx + ry * dy >= 0.0 else -1.0
+            rx, ry = rx + sign * water.wind_lb * dx, ry + sign * water.wind_lb * dy
         return rx, ry
 
     def resultant(self, water: Water = DRY) -> float:

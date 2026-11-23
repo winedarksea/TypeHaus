@@ -125,6 +125,11 @@ def test_the_court_reproduces_the_hand_worked_free_body(catlin_plan) -> None:
         1.543, abs=0.002)
     assert states["sliding, ground snow on the terrace"].capacity == pytest.approx(
         1.773, abs=0.002)
+    # The balcony columns' ASD E-W base shear, read from pier_basis (4 x 492.8 lb at this
+    # commit), in quadrature with the soil's 78,173: negligible, 1.930 -> 1.929.
+    wind = states["sliding, dry with the structure's wind on the court (D + H + 0.6W)"]
+    assert wind.capacity == pytest.approx(_NOTE_DRY_FS, abs=0.01)
+    assert "E-W base shear" in wind.citation
     assert any("NOT YET CONFIRMED" in n for n in record.notes)
 
 
