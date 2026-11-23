@@ -42,7 +42,19 @@ def _lag(dia_in: float, label: str, code: str) -> StructuralHardware:
                "replace the bolt.")
 
 
+#: A DTT pair's rod (catlin's landing, G5): the catalog's deck-to-house lateral detail names
+#: "1/2" diameter HDG threaded rod with nuts and washers" (C-C-2026 p. 326). Cut from stock.
+TENSION_ROD_12 = StructuralHardware(
+    tag="threaded-rod-12-hdg-site", name="1/2 in HDG threaded rod with two nuts and washers",
+    role="site_tension_rod", manufacturer="generic", model="ROD-12-HDG",
+    part_number_by_length_in={length: f"ROD-12X{length:g}-HDG"
+                              for length in (12.0, 18.0, 24.0, 36.0)},
+    exposure=EXPOSURE_TREATED, finish="hdg", bolt_diameter_in=0.5,
+    source="Hot-dip galvanized 1/2-13 threaded rod (ASTM A307 / F2329), cut to length, two "
+           "heavy-hex nuts and two USS washers over the DTT seats' own washers; the length "
+           "runs seat to seat plus a washer, nut and two threads past each (decision #147).")
+
 SITE_BOLTS = (
     _bolt(0.5, "1/2", "12"), _bolt(0.75, "3/4", "34"),
-    _lag(0.5, "1/2", "12"), _lag(0.75, "3/4", "34"),
+    _lag(0.5, "1/2", "12"), _lag(0.75, "3/4", "34"), TENSION_ROD_12,
 )
