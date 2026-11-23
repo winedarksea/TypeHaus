@@ -23,10 +23,14 @@ the future.
   inspection. Galvashield XPX anodes for the salt-splash court walls are undecided. Curing,
   cold-weather placement and slab joint layout exist only in prose.
 
-- **Sheet layout gaps (decision #146).** Two framing gaps the layout reports UNKNOWN: W-B-S2-FR/
-  -S3-FR top out 1 9/16" under FS-M-WEST's rim with no sill modelled (W-M-S1/S2 joints), and
-  FO-S-STAIR's edge trimmer stands 1 7/8" inboard of W-M-N2/N3B's sheathing with no rim at the
-  wall. D-M-ENTRY's flat head has no cripples above it. Gypsum is not laid sheet by sheet.
+- **Sheet layout (decision #146).** D-M-ENTRY's flat head has no cripples above it. Gypsum is
+  not laid sheet by sheet.
+
+- **Emit nondeterminism (found 2026-11-23).** The S-100 LOCATING dimension chain
+  (`emit/draw/structural_dimensions.py`) and the IFCRELCOVERSBLDGELEMENTS GUIDs
+  (`emit/ifc/lowlevel_guids.py`) vary with the hash seed. `haus handoff` works around it by
+  re-execing under `PYTHONHASHSEED=0` (`cli/cmd_handoff.py`). Find the set iteration and sort
+  it, then drop the re-exec.
 
 ### Left out of decision #142 (metal-wall penetrations)
 
