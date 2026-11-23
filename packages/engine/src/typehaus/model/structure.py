@@ -12,6 +12,7 @@ from typehaus.model.rebar import ReinforcementSpec
 from typehaus.model.refs import FaceRef, HeadConnector, InServiceMoisture, PublishedSpan
 from typehaus.model.registry import register_constructor, register_element
 from typehaus.model.snow_retention import SnowRetentionSpec
+from typehaus.model.srw_chart import SrwChartSection
 from typehaus.model.surface_mount import SurfacePostMount
 from typehaus.quantities import Length, Point2D, inch
 
@@ -55,6 +56,9 @@ class SegmentalWallSpec(HausModel):
     cap: str | None = None
     #: A published gravity-wall chart row for this unit — see the class docstring.
     published: PublishedSpan | None = None
+    #: The section that row assumes (cap, buried course, wall rock, drain, compaction). A wall
+    #: carrying it takes the chart path (``engineering/srw_chart``), not an engineered item.
+    chart: SrwChartSection | None = None
     #: The drainage aggregate behind the unit. None = the native soil is at the face.
     drainage_zone: SrwDrainageZone | None = None
 

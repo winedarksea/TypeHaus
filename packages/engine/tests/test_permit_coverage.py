@@ -459,7 +459,6 @@ def test_a_prescriptive_failure_is_not_sealed_either() -> None:
 # `haus engineering` lists must reach the checklist through some check's findings, or its
 # item is invisible to the permit gate — which is how 26 deferred items sat outside it.
 _REGISTER_ONLY = {
-    "girt_screw": "a component of the truss wall; no prescriptive check for it to answer",
     "roof_beam": "graded against the authored snow; its roof's lines carry the frame",
     "retaining_system": "the court's closed loop; its walls' own line carries each member",
 }

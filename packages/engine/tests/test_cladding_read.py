@@ -21,32 +21,33 @@ import pytest
 
 from typehaus.findings import Result, Severity
 
-#: §2-§6.2 and §5b, with §2's 2026-11-10 double-eave-plate height correction.
+#: §2-§6.2 and §5b, with §2's 2026-11-10 double-eave-plate height correction and its
+#: 2026-11-22 correction of h to the LOWEST ground (the §2a block).
 _ORACLE = {
-    "mean_roof_height_ft": 25.6428,
-    "q_h_psf": 19.2773,
+    "mean_roof_height_ft": 34.7626,
+    "q_h_psf": 21.0282,
     "effective_wind_area_ft2": 1.3333,
     "gcp_zone5": -1.4,
     "gcp_positive": 1.0,
     "gcpi": 0.18,
-    "strength_zone5_psf": 30.4581,
-    "asd_zone5_psf": 18.2749,
-    "asd_zone4_psf": 14.8050,
-    "outward_ratio": 0.3151,
+    "strength_zone5_psf": 33.2246,
+    "asd_zone5_psf": 19.9348,
+    "asd_zone4_psf": 16.1497,
+    "outward_ratio": 0.3437,
     # §5b's same q_h (1.0 + 0.18), against 43 inward.
-    "strength_inward_psf": 22.7472,
-    "asd_inward_psf": 13.6483,
-    "inward_ratio": 0.3174,
+    "strength_inward_psf": 24.8133,
+    "asd_inward_psf": 14.8880,
+    "inward_ratio": 0.3462,
     # §6: NDS 2018 §12.2 at G 0.55, D 0.190", C_D 1.6, C_M 0.7, the 1-1/2" screw (D3).
     "w": 163.80,
     "w_adjusted": 183.46,
     "thread_penetration_in": 1.0961,
     "capacity_lb": 201.09,
-    "demand_lb": 36.5498,
-    "withdrawal_ratio": 0.18176,
+    "demand_lb": 39.8695,
+    "withdrawal_ratio": 0.19827,
     # §6.2: AISI S100 Pnov = 1.5 t d'w Fu / 3.0.
     "pull_through_capacity_lb": 310.7,
-    "pull_through_ratio": 0.11764,
+    "pull_through_ratio": 0.12832,
 }
 
 #: The twenty north/south walls the board & batten lands on (§1 of the note).
@@ -121,7 +122,8 @@ def test_the_item_left_the_register(catlin_ctx):
 
     assert "wall_panel" not in registered_kinds()
     assert not any(item.startswith("wall_panel/") for item in catlin_ctx.engineering)
-    assert "girt_screw/W-A-N1" in catlin_ctx.engineering
+    # `girt_screw` followed on 2026-11-22 (`tests/test_girt_fastening.py`).
+    assert "girt_screw" not in registered_kinds()
 
 
 # --- the demand, against the note ------------------------------------------------------------
@@ -223,7 +225,7 @@ def test_another_coverage_drifts(tmp_path):
 
 
 def test_a_higher_judged_demand_is_required(tmp_path):
-    ctx = _variant(tmp_path, _replace("demand_psf=18.27,", "demand_psf=15.0,"))
+    ctx = _variant(tmp_path, _replace("demand_psf=19.94,", "demand_psf=15.0,"))
     _all_unknown(ctx, "judged against 15.00 psf")
 
 
@@ -292,12 +294,14 @@ def test_the_whole_screw_ladder_is_printed_once_each(catlin_ctx):
 
 
 def test_the_stocked_1in_screw_moves_withdrawal_and_nothing_else(tmp_path):
-    """The pre-D3 spec: the maker's own named 1" still reads, at the note's history 0.334."""
+    """The pre-D3 spec: the maker's own named 1" still reads, at withdrawal 0.365.
+
+    (0.334 at h 25.64 ft above the datum, before the 2026-11-22 height correction.)"""
     ctx = _variant(tmp_path, lambda text: _replace(
         "panel_fastener_length_in=1.5,", "panel_fastener_length_in=1.0,")(_replace(
             'panel_fastener="#10-12 x 1-1/2\\"', 'panel_fastener="#10-12 x 1\\"')(text)))
     [finding] = _fastener(ctx)
-    assert "d/c 0.334" in finding.message
+    assert "d/c 0.365" in finding.message
     assert f"d/c {_ORACLE['pull_through_ratio']:.3f}" in finding.message
     assert all(f.result is Result.PASS for f in _wind(ctx))
 

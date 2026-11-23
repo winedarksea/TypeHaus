@@ -103,7 +103,7 @@ ROWS: tuple[ItemRow, ...] = (
             "a segmental gravity wall retaining fill — sliding, overturning, "
             "bearing, and its interaction with the wall below",
             "IRC R404.4; IBC 2018 §1807.2",
-            "no footingless wall in this plan retains fill",
+            "no footingless segmental wall in this plan stands outside a published chart row",
             "Segmental gravity retaining walls (tiered)",
             ("IRC R404.4", "IBC 2018 §1807.2")),
     ItemRow("band_header", "band_header",

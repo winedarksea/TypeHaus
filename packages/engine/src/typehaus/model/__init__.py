@@ -284,6 +284,7 @@ from typehaus.model.spatial import (
     Stair,
     WallLiningException,
 )
+from typehaus.model.srw_chart import SrwChartSection, SrwDrain
 from typehaus.model.stair_winders import WinderFramingSpec, WinderTurnSpec
 from typehaus.model.stormwater import AreaDrain
 from typehaus.model.structure import (
@@ -412,6 +413,7 @@ for _name, _obj in (
     ("JoistFlangeAllowance", JoistFlangeAllowance), ("EquipmentHangers", EquipmentHangers),
     ("AirHandlerInstallation", AirHandlerInstallation), ("DrainFittings", DrainFittings),
     ("SegmentalWallSpec", SegmentalWallSpec), ("SrwDrainageZone", SrwDrainageZone),
+    ("SrwChartSection", SrwChartSection), ("SrwDrain", SrwDrain),
     ("EndRestraint", EndRestraint),
     ("ShearPanelSpec", ShearPanelSpec), ("DiaphragmSpec", DiaphragmSpec),
     ("DiaphragmDelivery", DiaphragmDelivery), ("ReceivingLine", ReceivingLine),
@@ -446,7 +448,7 @@ __all__ = [
     "Element", "HausModel",
     "Node", "Wall", "Door", "Window", "RoughOpening",
     "FoundationWall", "Footing", "CrushedStoneSpec", "Pad", "FootingBedding", "DrainTile",
-    "SegmentalWallSpec", "SrwDrainageZone", "EndRestraint",
+    "SegmentalWallSpec", "SrwDrainageZone", "SrwChartSection", "SrwDrain", "EndRestraint",
     "Post", "Beam", "SlatScreen",
     "FrenchDrain", "Drywell", "AreaDrain", "DrainColumn", "Excavation", "SideSlope", "SoilFactor",
     "Dowel", "IsolationBoard", "Connector", "PlateTie", "KneeBrace", "SlatBrace", "StrapBrace",
