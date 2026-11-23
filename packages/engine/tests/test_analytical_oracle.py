@@ -199,10 +199,11 @@ def test_the_landing_ties_are_springs_on_their_members(solved):
     ectx = load.ctx.engineering.context
     joints = wall_ties(ectx, ectx.plan.by_tag("FS-BW-FLOOR"))
     springs = [s for s in model.support_springs if "deck_tie/FS-BW-FLOOR" in s.basis]
-    assert len(springs) == 2 * len(joints) == 4
-    assert {s.dof for s in springs} == {"DX", "DY"}
-    lb_per_in = {round(s.stiffness_n_m * N_TO_LB * 0.0254) for s in springs}
-    assert lb_per_in == {190_919}  # 2 x 270,000 x 0.5^1.5
+    # §10p: each joint springs only on the direction its part carries — FE's HL43 pair DX,
+    # its DTT pair DY, the screen's one MSTA49Z DY.
+    assert len(joints) == 3
+    assert sorted((s.dof, round(s.stiffness_n_m * N_TO_LB * 0.0254)) for s in springs) == [
+        ("DX", 190_919), ("DY", 95_459), ("DY", 190_919)]  # parts x 270,000 x 0.5^1.5
     nodes = {s.node for s in springs}
     # Since 2026-10-13 line 1 is FE's tip into W-G-S, wood to wood (§3e addendum).
     assert any("BM-BW-FE:tie:W-G-S" in n for n in nodes)

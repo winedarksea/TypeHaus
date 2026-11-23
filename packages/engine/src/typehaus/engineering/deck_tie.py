@@ -14,14 +14,15 @@ and any moment is a mechanism; the record says so rather than grading it.
 
 * a masonry gusset (HGAM): F1 along the wall, one part; F2 across it, every part.
 * a heavy angle (HL): read by its HEEL (``Connector.axis``). Along the heel is F1, one part
-  (C-C-2024 fn 6: lateral may not be doubled). Perpendicular to the heel is the published
-  UPLIFT case — for a horizontal heel, mirrored into the other leg (equal legs, equal
-  bolting); for a vertical heel, the force in the tied member's leg plane, which fn 6 lets a
-  pair double, and the force across it, one part. That plane runs with the MEMBER (its leg
-  is on the member's side face): along the wall for a screen parallel to it, across the wall
-  for a beam that runs into it. Published dry at C_D 1.6: x NDS C_M 0.70,
-  or 1.0 where the parts author dry service (``Connector.service``) — a judgement the
-  record names for the engineer of record.
+  (fn 6: lateral may not be doubled); perpendicular to it the published UPLIFT, mirrored into
+  the other leg. A VERTICAL heel carries F1 along the wall only — an owner-accepted catalog
+  reading (2026-11-23: the figure's F1 bears along the grain, a vertical stud's is across it)
+  — and nothing across the wall, which is a tension tie's;
+* a tension tie (a strap, a DTT pair): its published tension along ``Connector.axis`` only;
+  the opposite sense bears.
+
+Published dry at C_D 1.6: x NDS C_M 0.70, or 1.0 where the parts author dry service
+(``Connector.service``). Each plan direction is shared among the joints that carry it.
 
 Where two directions act at once the linear interaction governs: FL11473 §9 item 4 for the
 gusset, Simpson's General Notes for the angle — ``F_along/allow + F_across/allow <= 1``.
@@ -69,13 +70,18 @@ BASIS = ("the tie part's published allowables with the linear interaction its do
 #: 4: the anchor's edges read off each angle's authored position against the resolved core
 #: (the hole nearest the centreline is the one anchored), not an angle assumed centred.
 #: 5: a vertical heel's leg plane runs with the tied member, not always along the wall.
-BASIS_VERSION = "5"
+#: 6: tension ties (strap, DTT) carry their own axis only; a vertical-heel angle carries F1
+#:    along the wall only (owner-accepted reading, 2026-11-23); the distribution shares each
+#:    plan direction among the joints that carry it.
+BASIS_VERSION = "6"
 #: ESR-2713 §1.0 / FL11473 fn 8: the least f'c the concrete anchors are published for.
 MIN_FC_PSI = 2_500.0
 #: NDS 2018 Table 11.3.3, dowel-type fasteners, in-service moisture > 19 %: an exterior tie.
 WET_SERVICE_CM = 0.70
 #: The same table at <= 19 %: only where the joint's parts AUTHOR dry service, with a basis.
 DRY_SERVICE_CM = 1.0
+#: Hardware roles read as a tension tie along ``Connector.axis`` (a strap, a DTT pair).
+TENSION_TIE_ROLES = frozenset({"post_tension_tie", "floor_tie_holdown"})
 #: ASCE 7-16 §2.3 / §2.4: strength wind is ASD wind / 0.6; a guard (live) takes 1.6.
 STRENGTH_FROM_ASD_WIND = 1.0 / 0.6
 STRENGTH_FROM_GUARD = 1.6
@@ -119,21 +125,43 @@ def compute(ctx: EngineeringContext) -> list[EngineeringRecord]:
     return [_one(ctx, deck) for deck in _tied_decks(ctx)]
 
 
-def distribute(joints: list[TieJoint], loads: list[Load], sign: float = 1.0
-               ) -> list[tuple[float, float]]:
-    """``(X_i, Y_i)`` per joint under ``sign`` times ``loads``; ``[]`` for a mechanism."""
+def distribute(joints: list[TieJoint], loads: list[Load], sign: float = 1.0,
+               carries: list[tuple[bool, bool]] | None = None) -> list[tuple[float, float]]:
+    """``(X_i, Y_i)`` per joint under ``sign`` times ``loads``; ``[]`` for a mechanism.
+
+    ``carries[i] = (x, y)``: the plan directions joint ``i`` resists (default both). Each
+    direction is shared among its own joints, about the centre of those joints, and the
+    moment by ``J = sum_x dy^2 + sum_y dx^2`` (equal stiffness where a joint carries)."""
     n = len(joints)
-    xb = sum(j.x_ft for j in joints) / n
-    yb = sum(j.y_ft for j in joints) / n
+    carries = carries or [(True, True)] * n
+    kx = [1.0 if c[0] else 0.0 for c in carries]
+    ky = [1.0 if c[1] else 0.0 for c in carries]
     fx = sign * sum(load.fx for load in loads)
     fy = sign * sum(load.fy for load in loads)
-    moment = sign * sum((load.x_ft - xb) * load.fy - (load.y_ft - yb) * load.fx
+    if (sum(kx) == 0.0 and abs(fx) > 1e-9) or (sum(ky) == 0.0 and abs(fy) > 1e-9):
+        return []
+    xr = sum(k * j.x_ft for k, j in zip(ky, joints, strict=True)) / (sum(ky) or 1.0)
+    yr = sum(k * j.y_ft for k, j in zip(kx, joints, strict=True)) / (sum(kx) or 1.0)
+    moment = sign * sum((load.x_ft - xr) * load.fy - (load.y_ft - yr) * load.fx
                         for load in loads)
-    polar = sum((j.x_ft - xb) ** 2 + (j.y_ft - yb) ** 2 for j in joints)
+    polar = (sum(k * (j.y_ft - yr) ** 2 for k, j in zip(kx, joints, strict=True))
+             + sum(k * (j.x_ft - xr) ** 2 for k, j in zip(ky, joints, strict=True)))
     if polar <= 1e-9:
-        return [] if abs(moment) > 1e-6 else [(fx / n, fy / n)] * n
-    return [(fx / n - moment * (j.y_ft - yb) / polar, fy / n + moment * (j.x_ft - xb) / polar)
-            for j in joints]
+        if abs(moment) > 1e-6:
+            return []
+        polar = 1.0
+    return [(a * (fx / (sum(kx) or 1.0) - moment * (j.y_ft - yr) / polar),
+             b * (fy / (sum(ky) or 1.0) + moment * (j.x_ft - xr) / polar))
+            for a, b, j in zip(kx, ky, joints, strict=True)]
+
+
+def carries_of(joints: list[TieJoint], caps: list[Capacity]) -> list[tuple[bool, bool]]:
+    """``(x, y)`` per joint: the directions its capacity is non-zero in."""
+    out = []
+    for joint, cap in zip(joints, caps, strict=True):
+        along, across = cap.along_lb > 0.0, cap.across_lb > 0.0
+        out.append((along, across) if joint.wall_axis == "x" else (across, along))
+    return out
 
 
 @dataclass(frozen=True)
@@ -165,22 +193,36 @@ def capacity(joint: TieJoint) -> Capacity | str:
     if item.role == ROLE_MASONRY_GUSSET_ANGLE and allow.lateral_f1_lb and allow.lateral_f2_lb:
         return Capacity(allow.lateral_f1_lb, allow.lateral_f2_lb * n, cd,
                         f"F1 one part / F2 x {n}", cite, False)
+    if joint.service_condition == "mixed":
+        return f"one service condition for the parts at {joint.member}/{joint.wall}"
+    c_m = service_cm(joint)
+    wet = "dry, authored" if joint.service_condition == "dry" else "wet"
+    if item.role in TENSION_TIE_ROLES and allow.uplift_lb:
+        # Tension along the part's axis (a strap's run, a tie's rod), the pair counted
+        # once: the opposite sense is bearing of the member on the wall.
+        if joint.heel_axis not in ("x", "y"):
+            return f"the axis of `{joint.model}` at {joint.member}/{joint.wall}"
+        t = allow.uplift_lb * c_m
+        along = joint.heel_axis == joint.wall_axis
+        return Capacity(t if along else 0.0, 0.0 if along else t, cd,
+                        f"tension along {joint.heel_axis} only, C_M {c_m:g} ({wet}); the "
+                        f"other sense bears", cite, False)
     if item.role != ROLE_HEAVY_ANGLE or not allow.lateral_f1_lb or not allow.uplift_lb:
         return f"a reading of `{joint.model}` ({item.role}) as a tie joint"
     if joint.heel_axis == "mixed":
         return f"one heel direction for the parts at {joint.member}/{joint.wall}"
-    if joint.service_condition == "mixed":
-        return f"one service condition for the parts at {joint.member}/{joint.wall}"
-    c_m = service_cm(joint)
     f1, up = allow.lateral_f1_lb * c_m, allow.uplift_lb * c_m
-    wet = "dry, authored" if joint.service_condition == "dry" else "wet"
     if joint.heel_axis is None:
-        in_plane = "along" if joint.member_axis in (None, joint.wall_axis) else "across"
-        return Capacity(up * n if in_plane == "along" else up,
-                        up if in_plane == "along" else up * n, cd,
-                        f"heel vertical: uplift x {n} in the member's leg plane ({in_plane} "
-                        f"the wall, fn 6), uplift x 1 out of it, C_M {c_m:g} ({wet})",
-                        cite, True)
+        # OWNER-ACCEPTED READING (2026-11-23): installed heel-vertical, the force along the
+        # wall lies in the wall leg's plane — the catalog's F1 case, except that the wall
+        # member's grain is vertical, not parallel to the load as in the figure. One part
+        # per sense (fn 6: parts on both sides, lateral not doubled). Across the wall it is
+        # given no capacity: that direction is a tension tie's.
+        return Capacity(f1, 0.0, cd,
+                        f"heel vertical: F1 along the wall, one part per sense, an "
+                        f"owner-accepted catalog reading (the figure's grain is parallel "
+                        f"to the load, here it is across it), C_M {c_m:g} ({wet}); nothing "
+                        f"across", cite, True)
     along_heel = joint.heel_axis == joint.wall_axis
     return Capacity(f1 if along_heel else up, up if along_heel else f1, cd,
                     f"heel {joint.heel_axis}: F1 along it, uplift (mirrored) across, one "
@@ -204,13 +246,14 @@ def _worst(joints: list[TieJoint], caps: list[Capacity], cases: list[list[Load]]
     best: tuple[float, str] | None = None
     for loads in cases:
         for sign in (1.0, -1.0):
-            forces = distribute(joints, loads, sign)
+            forces = distribute(joints, loads, sign, carries_of(joints, caps))
             if not forces:
                 return None
             label = " + ".join(load.label for load in loads)
             for joint, cap, force in zip(joints, caps, forces, strict=True):
                 along, across = (abs(v) for v in _split(joint, force))
-                ratio = along * divisor / cap.along_lb + across * divisor / cap.across_lb
+                ratio = sum(f * divisor / c for f, c in ((along, cap.along_lb),
+                                                          (across, cap.across_lb)) if c > 0.0)
                 if joint.on_concrete and cap.angle:
                     heel_is_along = joint.heel_axis == joint.wall_axis
                     demands.setdefault(joint.member, []).append(anchor.Demand(
@@ -221,7 +264,8 @@ def _worst(joints: list[TieJoint], caps: list[Capacity], cases: list[list[Load]]
                         f"{joint.member} at {joint.wall} ({len(joint.parts)} x "
                         f"{joint.model}, {cap.how}): {along:,.1f} lb along the wall / "
                         f"{cap.along_lb / divisor:,.1f} + {across:,.1f} lb across it / "
-                        f"{cap.across_lb / divisor:,.1f}, under {label}"))
+                        f"{cap.across_lb / divisor:,.1f} (0 = not carried here), under "
+                        f"{label}"))
     return best
 
 

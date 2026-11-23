@@ -311,15 +311,13 @@ def test_the_screen_and_garage_are_both_graded_at_the_full_kdat_load(catlin_ctx)
     inputs = _inputs(record)
     assert inputs["panel_shear_W-BW-SCREEN"] == pytest.approx(
         inputs["delivered_shear_y"], rel=1e-9)
-    assert states["W-BW-SCREEN chord hold-down, full height"].ok
-    assert states["W-BW-SCREEN chord base shear, one base"].ok
+    # G5: the screen is strapped out at its top plate; no chord rows (§10p).
+    assert "W-BW-SCREEN chord hold-down, full height" not in states
+    assert any("CN-BW-SCREEN-STRAP" in n for n in record.notes)
     assert states["W-G-S overturning, delivered increment"].ok
     assert states["diaphragm unit shear at W-BW-SCREEN"].ratio == pytest.approx(0.907, abs=0.005)
-    # Decision 15: the chord piers' pull-out (north_entry_piers.md §6d) now governs.
-    assert record.governing.name == "PT-BW-W pier pull-out under the tension chord"
-    assert record.governing.ratio == pytest.approx(0.978, abs=0.005)
-    assert states["PD-BW-W bearing under the compression chord"].ratio == pytest.approx(
-        0.821, abs=0.005)
+    assert record.governing.name == "diaphragm unit shear at W-BW-SCREEN"
+    assert not any("pull-out" in name for name in states)
 
 
 def test_the_kdat_collectors_and_open_front_chord_are_drawn(catlin_ctx) -> None:

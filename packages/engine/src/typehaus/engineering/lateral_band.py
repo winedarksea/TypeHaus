@@ -114,6 +114,8 @@ def band_rows(ctx: Any, roof_tag: str, wall: Any, spec: Any, shear_lb: float,
             slat_rows(ctx, wall, collector, band, states, notes, missing, inputs)
             _end_bearing(ctx, wall, collector, shear_lb, panel_top_ft, states)
             _collector_clips(ctx, roof_tag, collector, shear_lb, states, missing, inputs)
+            if _strapped_out(ctx, wall, notes):
+                return BandResult(handled=True)
             return BandResult(handled=_holdown_rows(ctx, wall, wall.shear_panel, shear_lb,
                                                     top_ft, states, notes, missing, inputs))
         missing.append(
@@ -127,6 +129,8 @@ def band_rows(ctx: Any, roof_tag: str, wall: Any, spec: Any, shear_lb: float,
     _strap_rows(wall, straps, shear_lb, states, notes, inputs)
     _end_bearing(ctx, wall, collector, shear_lb, panel_top_ft, states)
     _collector_clips(ctx, roof_tag, collector, shear_lb, states, missing, inputs)
+    if _strapped_out(ctx, wall, notes):
+        return BandResult(handled=True)
     return BandResult(handled=_holdown_rows(ctx, wall, wall.shear_panel, shear_lb, top_ft,
                                             states, notes,
                                             missing, inputs))
@@ -176,6 +180,30 @@ def _strap_rows(wall, straps, shear_lb, states, notes, inputs) -> None:
             f"{shear_lb * math.tan(theta):,.1f} lb lifts the bottom-end chord and presses the "
             f"collector down — internal to the frame, and inside the full-height overturning "
             f"below. Compression straps are slack by assumption.")
+
+
+def _strapped_out(ctx, wall, notes) -> bool:
+    """A tension strap at the panel's top, along its line, into another wall: the shear
+    leaves there and never reaches the chords' bases (G5, 2026-11-23). It is graded as a
+    tie joint of the deck the panel stands on (``deck_tie``), with the panel's share in it."""
+    from typehaus.engineering.deck_tie import TENSION_TIE_ROLES
+    from typehaus.hardware.catalog import hardware_by_model
+    from typehaus.model.elements import Wall
+
+    for el in ctx.plan.all_elements():
+        connects = getattr(el, "connects", ()) or ()
+        item = hardware_by_model(getattr(el, "size", "") or "")
+        if wall.tag not in connects or item is None or item.role not in TENSION_TIE_ROLES:
+            continue
+        others = [t for t in connects if t != wall.tag and isinstance(ctx.plan.by_tag(t), Wall)]
+        if others and getattr(el, "axis", None) == _axis_of(ctx, wall):
+            notes.append(
+                f"{wall.tag}'s shear leaves at its top plate through {el.tag} ({el.size}) "
+                f"into {others[0]}, graded with the panel's share in deck_tie; the chords' "
+                f"overturning, base shear, pier pull-out and pad rows carry no N-S and are "
+                f"not graded here (notes/north_entry_piers.md §10p).")
+            return True
+    return False
 
 
 def _members_bearing_on(wall, prefix: str, face: float, line) -> float:

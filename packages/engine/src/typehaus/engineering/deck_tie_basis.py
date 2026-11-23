@@ -113,7 +113,7 @@ def _tie_targets(ctx: EngineeringContext, on_deck: set[str]) -> dict[str, Any]:
 
 
 def wall_ties(ctx: EngineeringContext, deck: Any) -> list[TieJoint]:
-    """Every joint tying this deck to another structure's wall, one per (member, wall)."""
+    """Every joint tying this deck to another structure's wall, one per (member, wall, part)."""
     from typehaus.model.enums import ConnectorKind
     from typehaus.model.structure import Connector
 
@@ -129,9 +129,11 @@ def wall_ties(ctx: EngineeringContext, deck: Any) -> list[TieJoint]:
         members = [t for t in part.connects if t in framing]
         targets = [t for t in part.connects if t in walls and t not in framing]
         if members and targets:
-            groups.setdefault((members[0], targets[0]), []).append(part)
+            # One joint per PART MODEL: a tension tie and an angle at one member/wall
+            # carry different directions (deck_tie.capacity).
+            groups.setdefault((members[0], targets[0], part.size or ""), []).append(part)
     out = []
-    for (member, wall_tag), parts in sorted(groups.items()):
+    for (member, wall_tag, _model), parts in sorted(groups.items()):
         points = [_xy_ft(p.position) for p in parts]
         wall = walls[wall_tag]
         (x0, y0), (x1, y1) = (_xy_ft(ctx.plan.by_tag(wall.start_node).position),
