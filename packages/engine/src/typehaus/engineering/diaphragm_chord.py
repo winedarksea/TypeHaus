@@ -71,6 +71,9 @@ def chord_rows(ctx: Any, rows: Any, element: Any, resolved_roof: Any, joints: li
     capacity = installed_strap_capacity(element.diaphragm.delivers_to,
                                         getattr(allowable, "uplift_lb", None))
     chord_ew = next((q.value for q in rows.inputs if q.name == "chord_force_open_front_lb"), 0.0)
+    centre = sum(stations) / len(stations)
+    second = sum((x - centre) ** 2 for x in stations)
+    linear = couple * max(abs(x - centre) for x in stations) / second if second else pair
     if capacity:
         ends_j = sorted(joints, key=lambda j: j.position.xy_m[along_i])
         rows.states.append(LimitState(
@@ -80,7 +83,10 @@ def chord_rows(ctx: Any, rows: Any, element: Any, resolved_roof: Any, joints: li
             f"the {strap_line:.3f}' strap line, F = {pair:,.1f} lb at {ends_j[0].tag} and "
             f"{ends_j[-1].tag}, plus the E-W chord force {chord_ew:,.1f} lb added LINEARLY "
             f"(a conservative combination of the separate wind cases); reduced installed "
-            f"nail schedule"))
+            f"nail schedule. A CONSERVATIVE BOUND: an elastic distribution of the couple over "
+            f"all {len(stations)} straps puts {linear:,.1f} lb on an end strap "
+            f"({(linear + chord_ew) / capacity:.2f} with the chord force); the end-strap pair "
+            f"is kept because it needs no stiffness judgement across the joint"))
     placed = []
     for wall, line in far:
         e = [ctx.plan.by_tag(getattr(wall, n)) for n in ("start_node", "end_node")]

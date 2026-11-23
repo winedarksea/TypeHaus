@@ -4,7 +4,8 @@
 AB Table 1.3 (12° AB Stones, level, clay 27°): 3'-6" exposed, cap included. Each leg's exposure
 is its authored top less the nearest grade station: 40" south/west/east (-3'-4"), 36" west
 return (-3'-0"), 37" east return (-3'-1"); every one is under 42". W-RG-EAST fitted when the
-runnel's spout and the basin moved 3'-0" off its toe (owner, 2026-11-23).
+runnel was shortened onto its bracket and a river-rock splash pad took the landing ~1.8' off its
+toe (owner, 2026-11-24).
 """
 
 from __future__ import annotations
@@ -60,42 +61,16 @@ def test_every_chart_leg_passes_its_sheet(ctx, tag, exposed_in) -> None:
 def test_the_east_return_carries_the_runnel_on_its_cap_and_still_fits(ctx) -> None:
     sheet = _sheet(ctx, ctx.plan.by_tag("W-RG-EAST-BALCONY"))
     assert "TR-SG-RUNNEL seated on the cap" in sheet["cap on the top course"].drawn
-    assert sheet["water kept off the toe"].ok          # its toe faces the north yard
-
-
-def test_the_runnel_back_at_the_toe_fails(ctx) -> None:
-    """The spout and the basin used to stand 1'-0" and 6" off W-RG-EAST's yard face (G9)."""
-    from typehaus import ft, pt
-    from typehaus.model.trim import Gutter
-
-    class _Moved:
-        """The same plan with TR-SG-RUNNEL's spout back at 32'-6"."""
-
-        def __init__(self, plan):
-            self._plan = plan
-
-        def __getattr__(self, name):
-            return getattr(self._plan, name)
-
-        def all_elements(self):
-            for el in self._plan.all_elements():
-                if isinstance(el, Gutter) and el.tag == "TR-SG-RUNNEL":
-                    el = el.model_copy(update={"path": (*el.path[:-1], pt(ft(32, 6), ft(-12)))})
-                yield el
-
-    import dataclasses
-
-    old = dataclasses.replace(ctx, plan=_Moved(ctx.plan))
-    sheet = _sheet(old, ctx.plan.by_tag("W-RG-EAST"))
-    assert sheet["water kept off the toe"].ok is False
-    assert "TR-SG-RUNNEL" in sheet["water kept off the toe"].drawn
-    assert graded_wall(old, ctx.plan.by_tag("W-RG-EAST")).result is Result.FAIL
+    assert sheet["water landed clear of the toe"].ok     # it lands south, on the retained side
 
 
 def test_the_toe_is_graded_on_where_the_water_lands(ctx) -> None:
-    """A gutter's water lands THROW_FT (0.8', by hand) past its lip: the spout alone 2'-0" off
-    the face would still pass; a lip 2'-4" off the face lands 3'-1" out and passes, one at 1'-0"
-    lands 1'-10" out and FAILs (the owner's 'shorten' leaves it there: see the note §10)."""
+    """The runnel's lip is 1'-0" off W-RG-EAST's face; the water lands THROW_FT (0.8', by hand,
+    note §10) past it, 1.8' off the toe, on the river-rock pad: that passes (>= 1'-6" and
+    protected). A lip 0'-4" off lands 1.1' out and FAILs; one 5'-0" off lands 5.8' out, past
+    the pad, and FAILs for want of one."""
+    import dataclasses
+
     from typehaus import ft, pt
     from typehaus.model.trim import Gutter
 
@@ -112,14 +87,15 @@ def test_the_toe_is_graded_on_where_the_water_lands(ctx) -> None:
                     el = el.model_copy(update={"path": (*el.path[:-1], pt(ft(self._x), ft(-12)))})
                 yield el
 
-    import dataclasses
-
-    east = ctx.plan.by_tag("W-RG-EAST")
-    face = 31.5                         # W-RG-EAST's yard face, x ft
-    near = dataclasses.replace(ctx, plan=_Moved(ctx.plan, face + 1.0))       # bracketed scupper
-    far = dataclasses.replace(ctx, plan=_Moved(ctx.plan, face + 2.34))
-    assert _sheet(near, east)["water kept off the toe"].ok is False
-    assert _sheet(far, east)["water kept off the toe"].ok is True
+    east, face = ctx.plan.by_tag("W-RG-EAST"), 31.5        # W-RG-EAST's yard face, x ft
+    name = "water landed clear of the toe"
+    assert _sheet(ctx, east)[name].ok is True
+    too_near = _sheet(dataclasses.replace(ctx, plan=_Moved(ctx.plan, face + 1.0 / 3.0)), east)
+    assert too_near[name].ok is False and "1.1' off the toe" in too_near[name].drawn
+    bare = _sheet(dataclasses.replace(ctx, plan=_Moved(ctx.plan, face + 5.0)), east)
+    assert bare[name].ok is False and "on no splash pad" in bare[name].drawn
+    assert graded_wall(dataclasses.replace(ctx, plan=_Moved(ctx.plan, face + 5.0)),
+                       east).result is Result.FAIL
 
 
 def test_a_wall_with_no_chart_row_is_unknown_not_silent(ctx) -> None:

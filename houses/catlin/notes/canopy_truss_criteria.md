@@ -26,19 +26,23 @@ canopy  T1 (88.5+10) x 1.1146 x 13.333 = 1,464 lb    T2 (78.25+10) x 2.0 x 13.33
 garage  truss-000  (58.0 + 16.0 + 6.0 + 10 ... ) 1,916 lb (joint-bay half 0.974' + 1.0')   truss-001 1,681   002..010 1,547   011 1,523   012 1,829
 ```
 
-**Uplift: 450 lb net per heel, every truss, both roofs (specified).** The widest truss is 2.0' x 13.333' = 26.67 sf. Free-roof
-net pressure 21.3 psf (`north_entry_piers.md` §4): gross 568 lb, **0.6W = 341 lb**, net of 0.6D (10 psf) 181 lb; the engine's
-own 16.8 psf surrogate gives 289 lb. 450 covers the gross 0.6W with 32% to spare. `north_entry_piers.md` §4a's "4 truss
-stations" was stale: there are three. Heel ties: canopy **H2.5ASS 700 lb** (DF/SP, the treated headers) with **SSA8D stainless
-ring-shank nails, 5 + 5**: 450 / 700 = 0.64; with smooth-shank stainless nails the same tie is 440 lb (Simpson C-C-2021 p.277
-fn. 12, L-F-SSNAILS), so the nail is on the order. Garage **H2.5A 615 lb** (SPF/HF): 0.73. Simpson C-C-2021 p.277 fn. 14: an
-H2.5A reaching a 2x4 bottom chord with only its three lowest holes is 260 lb, which the order rules out by asking all five
-truss nails into the heel (260 still covers the garage's 178).
+**Uplift: 450 lb net per heel, every truss, both roofs (specified).** The widest truss is 2.0' x 13.333' = 26.67 sf. The engine's
+uplift surrogate is 16.832 psf (`north_entry_piers.md` §8): **449 lb gross, no dead relief**, which is the 450; **289 lb net** of
+0.6D (6 psf) is the design uplift. (The free-roof C_N 1.3 route of `north_entry_piers.md` §4 gives 0.6W 341 lb gross, 181 lb net:
+lower, so the surrogate governs.) `north_entry_piers.md` §4a's "4 truss stations" was stale: there are three.
+
+**The heel tie stands on its nailing (review verifier, 2026-11-23).** Simpson C-C-2021 p.277: H2.5A 700 lb DF/SP, **615 lb SPF/HF**, five
+0.131x2-1/2 nails each side; fn. 12: H2.5ASS matches the carbon values only with SCNR/SSA8D ring-shank nails (smooth-shank stainless is
+440 lb); **fn. 14: three nails into a 2x4 bottom chord is 260 lb**. The truss is the supplier's, SPF in Minnesota, so the weaker
+member's column is SPF (615), not the SP header's 700. Canopy: 450 / 615 = 0.73 with all five nails landing; but design 289 / 260 =
+**1.11** at the three-nail row, so the canopy heel is NOT closed until the supplier's drawing shows five truss nails in the heel
+(`structural.truss_reactions` is UNKNOWN, not PASS). Garage: design 178 / 260 = 0.68, closed either way; its specified 450 rests on
+the five-nail row (0.73). Options if the five nails cannot land: a raised or energy heel, a second tie per heel, or an engineered tie.
 
 **The garage is an IRC R802.11 read (decision 24).** 2018 IRC Table R802.11 (Minnesota 2020), UpCodes, read 2026-11-23:
 Exposure B, 115 mph, 24' span, 24" o.c., pitch < 5:12: **178 lb per connection** (>= 5:12: 158); the engine's `wind_tables` grid
 gives the same two cells. The 23.93' span reads the 24' column (rounded up, never interpolated). Footnotes: 33 ft mean roof height
-(~12 ft here), overhang <= 24" (16"), a 15 psf roof + ceiling dead allowance (10 + 6), corner-zone value kept. 178 / 615 = 0.29.
+(~12 ft here), overhang <= 24" (16"), a 15 psf roof + ceiling dead allowance (10 + 6), corner-zone value kept. 178 / 615 = 0.29 (0.68 at the 260 lb three-nail row).
 The canopy is an open structure and keeps its engineered `wood_roof_post` uplift.
 
 **N-S diaphragm chord:** 752 lb on every canopy truss (`canopy_garage_diaphragm.md` §12b). **Deflection:** IRC Table R301.7
@@ -64,3 +68,19 @@ supplier to confirm both doubled pairs.
 = 1,700 lb at centroid 173.5" (W 334, E 1,366), plus the squash block's 570 lb at x = 120" (W 256, E 314): east max
 646 + 1,366 + 314 = **2,327 lb** against J12's published 3,500 lb at 3 1/2" of bearing (3,000 / 3,500 / 4,000 at 1 3/4 / 3 1/2 / 5 1/2"):
 0.66, supporting structure closed; the component stays open until TrimJoist's drawing carries the line-272 loads.
+
+## 3. Not graded here, said aloud
+
+The truss's own bottom chord bearing on `BM-BW-RW`/`-RE` (SPF Fc-perp) is the fabricator's. The schedule prints the maximum
+reaction and the bearing it must accept: T2 2,353 lb on 1.5" x 5.5" = 285 psi (the glulam's side of it is `roof_beam`, 0.662). On the
+garage plates the same check is the supplier's at 1,916 lb. The end-strap couple row (0.774) is a conservative bound: an elastic
+distribution over the six straps puts 351 lb on an end strap (0.53 with the chord force).
+
+## 4. Catalog routes to close the canopy heel without the five-nail condition: none found (2026-11-23)
+
+Read: Simpson C-C-2021 p.277 (H/TSP rows and fn. 1-17) and ICC-ES ESR-2613 (Table 1 fn. 1). Every candidate tie still takes its truss-side
+nails into the 1.5" truss (H2.5T SPF/HF 565, H8 710, H10A 1,015, H10A-2 930), so none is independent of the heel geometry, and none prints a
+row for a 2x4 bottom chord other than the H2.5A's fn. 14 (260 lb). "Allowable loads are for one anchor" (catalog fn. 2, ESR fn. 1) and a
+pair on opposite faces needs a 2-1/2" member unless the nails do not interfere; neither document publishes a summed value for two ties on
+a 1.5" truss. The girder brackets (VGT) are for 2-ply trusses. So the canopy heel stays UNKNOWN and rides the supplier-truss open item: the
+supplier's drawing shows the five-nail heel (or a tie and nailing it will certify).

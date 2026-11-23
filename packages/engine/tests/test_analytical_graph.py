@@ -125,25 +125,37 @@ def test_a_roof_beam_carries_its_records_own_uniform_load(analytical, catlin_eng
         assert cases == {LoadCaseKind.DEAD, LoadCaseKind.SNOW}
 
 
-def test_a_fixed_column_carries_the_shear_that_makes_its_record_s_base_moment(
+def test_a_fixed_column_carries_the_loads_that_make_its_record_s_base_moment(
         analytical, catlin_engineering) -> None:
-    """``V x h`` at the top must reproduce the ``wind_base_moment`` the record graded."""
+    """Each band at its own lever reproduces the ``wind_base_moment`` the record graded: the
+    deck and curtains' shear at the top, the guard's share with its lever above it as a node
+    moment, and the shaft's own wind along the column (balcony note §24). A roof column with
+    no components keeps ``V x h``."""
+    lb = 4.4482216152605
+    nm_to_lb_ft = lb ** -1 / 0.3048
     tops = {support.element_tag: support for support in analytical.supports}
     for pier in cast_piers(catlin_engineering.ctx):
         if not pier.lateral_system or not pier.wind_base_moment_lb_ft:
             continue
         assert pier.tag in tops
         item = f"deck_post/{pier.tag} "
-        load = next((load for load in analytical.node_loads
-                     if load.case is LoadCaseKind.WIND and load.source.startswith(item)),
-                    None)
-        assert load is not None, f"{pier.tag} carries no wind load at its top"
-        # The load must land on the column's OWN top, not on some other node of the graph.
+        loads = [load for load in analytical.node_loads
+                 if load.case is LoadCaseKind.WIND and load.source.startswith(item)]
+        assert loads, f"{pier.tag} carries no wind load at its top"
+        # The loads must land on the column's OWN top, not on some other node of the graph.
         column = [member for member in analytical.members if member.tag == pier.tag]
-        assert any(load.node in (member.n0, member.n1) for member in column)
-        shear_lb = (abs(load.fx_n) + abs(load.fy_n)) / 4.4482216152605
-        moment = shear_lb * pier.height_in / 12.0
+        for load in loads:
+            assert any(load.node in (member.n0, member.n1) for member in column)
+        height_ft = pier.height_in / 12.0
+        moment = sum((abs(load.fx_n) + abs(load.fy_n)) / lb * height_ft
+                     + (abs(load.mx_nm) + abs(load.my_nm)) * nm_to_lb_ft for load in loads)
+        shafts = [load for load in analytical.member_loads
+                  if load.case is LoadCaseKind.WIND and load.source.startswith(item)]
+        for load in shafts:       # uniform over the column: its resultant acts at mid-height
+            member = analytical.member(load.member)
+            moment += (abs(load.w0_n_m) * analytical.length_m(member) / lb) * height_ft / 2.0
         assert moment == pytest.approx(pier.wind_base_moment_lb_ft, rel=1e-6)
+        assert bool(shafts) == bool(pier.wind_shaft_shear_lb)
 
 
 def test_every_member_reaches_two_real_nodes_and_has_length(analytical) -> None:

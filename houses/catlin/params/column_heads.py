@@ -42,6 +42,8 @@ HETA20Z_PAIR_HEAD = HeadConnector(
 #: only to 2- or 3-ply applications with anchors spaced a minimum of 3 in apart" while the
 #: table prints 1-ply F1/F2 cells; the owner's reading takes the printed row.** Read in FL11473
 #: R6 (SIM202301, sealed 2023-10-17) p. 10 of 14; the catalog edition (C-C-2026) is not read.
+#: **OWNER-ACCEPTED READING of a self-conflicting document (2026-11-23): grade on the PRINTED
+#: 1-ply F1/F2 cells.** Notes 6 and 7 are both quoted on the source below.
 HETA20Z_PAIR_HEAD_1_PLY = HeadConnector(
     tie="HETA20Z-1PLY", tie_count=2, set_rated=True, uplift_lb=1920.0, lateral_lb=900.0,
     load_duration_factor=1.6,
