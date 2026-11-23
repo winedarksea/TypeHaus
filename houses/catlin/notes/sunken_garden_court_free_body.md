@@ -3310,6 +3310,51 @@ lowered lip). If the owner declines a report, **A alone** closes G1 (4.2 cy lean
 pour). G2 then rests on accepting the deep plane at 1.12 dry / 0.85 soakaway full under the
 presumptive μ 0.25, which is an owner decision, not a row that passes.
 
+### 15h. Closed on specified soil parameters, with a printed fallback (owner, 2026-11-23)
+
+The owner chose the soil report, with the lean wall as the fallback. The court follows the truss
+pattern, with two statuses.
+
+1. **Design closed on specified soil parameters.** `Site.specified_soil` holds bed friction
+   **0.43** (concrete on compacted washed #57) and native φ′ **25°** (tan 0.4663) at the bed
+   bottom. These are rounded up from §15g's needs of 0.422 (staged backfill) and 23.7°
+   (deep plane, soakaway full). Every row grades on them:
+
+```
+sliding dry        0.43 x 350,788 / 78,173                    = 1.930
+perched H/2        0.43 x 350,788 / 96,201                    = 1.568
+flooded court      0.43 x 317,882 / 77,884                    = 1.755
+staged at H/2      1.245 x 0.43/0.35 (friction scales)         = 1.529   (one side empty 1.28)
+deep, lip          0.4663 x 536,996 / 157,044                 = 1.594   (dry 2.09; flooded 1.39 reported)
+retained full      reported                                   = 1.17
+corner delivery    (78,173 − 0.43 x its 174,812) / 25 = 120 plf -> 0.12
+```
+
+2. **Soil parameters confirmed.** This stays open until the report's values go in
+   `Site.confirmed_soil`. While it is open, `structural.soil_parameters_confirmed` is UNKNOWN
+   (not FAIL) and the record says "NOT YET CONFIRMED". Once values are entered, every row grades
+   on them. A value below the specified one FAILs the check, and the rows go OVER.
+
+**The restraint side reads the same friction.** The winter tension in W1/E1's side run is
+(0.43 x 377,384 − 0.60 x 76,808) / 2 = 58,095 against 64,800, so **0.897**. A report friction
+above about 0.466 overloads that run (6 #4), so a higher value needs the side steel rechecked.
+The rows grade the entered value either way.
+
+**Printed fallback (AN-SG-SOIL), pre-checked on the presumptions (bed 0.35).** The trigger is
+the report coming in short, or the bed bottom being clay or silt at the owner's ASTM D2488
+visual-manual check. The fallback is a 12" x 4'-6" x 25' plain lean wall under FT-SG-S:
+- f'c 2,500, 4.2 cy;
+- formed in the open dig before any stone, stone plated both sides, #5 dowels into FT-SG-S;
+- credit = the lesser of 2,925 plf of class-3 lateral bearing and 1,300 plf of plain
+  cantilever, x 25' = **32,500 lb**.
+
+Fallback FS: perched **1.61**, flooded **1.85**, staged at H/2 **1.61**. G2 under the fallback
+returns to the owner with the measured φ′.
+
+**G8 field.** `IsolationBoard.set_after_backfill` replaces the text search. On the specified
+friction the joint row reads 0.0533 + (96,201 − 76,808) / 150,839 x 0.25 = 0.0854" against
+0.125", so 0.68.
+
 ## Sources
 
 Every standard and document this note rests on, collected from the citations above.

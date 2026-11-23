@@ -46,6 +46,7 @@ from typehaus.checks.structural import (
     snow,  # noqa: F401 - registers checks
     snow_retention,  # noqa: F401 - registers checks
     soffit,  # noqa: F401 - registers checks
+    soil_parameters,  # noqa: F401 - registers checks
     srw_chart,  # noqa: F401 - registers checks
     stacked_ladder,  # noqa: F401 - registers checks
     stair_stringers,  # noqa: F401 - registers checks

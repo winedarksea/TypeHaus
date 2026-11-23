@@ -2830,6 +2830,9 @@ _BOARD_PRODUCT = dict(
     # blockout, never cast against. AN-SG-PLACEMENTS / AN-SG-BLOCKOUTS say so on the drawing,
     # which is why the ref is now load-bearing: stripped without it is a named missing input.
     formed_and_stripped=True,
+    # G8 (owner, 2026-11-23): set, with the veneer ties, after the three retained sides are
+    # backfilled, cut to the as-built slot (AN-SG-PLACEMENTS / AN-SG-BLOCKOUTS print it).
+    set_after_backfill=True,
     placement_sequence_ref="AN-SG-PLACEMENTS",
     # Basis 9 (2026-09-22, owner; free body §11l): 1/2" of it is a closed-cell EPDM sponge
     # whose sheet caps the stress, so no verdict reads the ESTIMATED modulus above. The beam's
@@ -3200,6 +3203,10 @@ SEQUENCE_NOTES = [
     Annotation(
         uid="SJXPPQJKRE", tag="AN-SG-LEDGER-DOWELS", position=pt(ft(_cx), ft(-38)),
         text="PORCH LEDGER ANCHORS AT THE CORNER COLUMNS (W-SG-W1/E1): the four corner columns are doweled 48in into the stem with #5 bars 3.3in to 4.1in off the court face. SKIP OR RELOCATE any ledger anchor within 8in of a column centre line, or locate the dowels with a scanner before drilling: a 1/2in x 6in Titen HD drilled from the court face reaches the dowel zone and will strike a #5."),
+    # Minted 2026-11-23 with typehaus.model.ids.new_uid(). Free body §15h (G1/G2, owner).
+    Annotation(
+        uid="WATAHVD68H", tag="AN-SG-SOIL", position=pt(ft(_cx), ft(-38)),
+        text="SOIL REPORT REQUIRED BEFORE PLACEMENT 1 — THE COURT IS DESIGNED ON SPECIFIED SOIL PARAMETERS (free body 15h). The report must CONFIRM: design friction for concrete on the compacted washed #57 bed >= 0.43, and drained phi' (and interface angle) of the native at the bed bottom, -14ft 7-7/16in, >= 25 deg. Scope: 1-2 borings at the court to about 20ft below the terrace, groundwater observation, ASTM D2487 lab classification of the native at the bed bottom, drained phi' and the design friction above. ACCEPTANCE AT EXCAVATION (owner-checked, ASTM D2488 visual-manual): the bed bottom is granular (GW, GP, SW, SP, GM or SM), firm under the plate, with no standing water or seepage 48 h after rain. FALLBACK, built only if the report is short of either value or the bed bottom is clay or silt (CL, ML, CH, MH): a 12in x 4ft 6in x 25ft plain lean-concrete wall (f'c 2,500 psi, 4.2 cy) under FT-SG-S, standing on the native at the bed bottom and rising to the footing underside, formed with removable forms in the open dig BEFORE any stone, stripped, stone placed and plated both sides in lifts, #5 x 18in dowels at 24in into FT-SG-S (placement 1). If the native phi' is short, the deep plane returns to the owner with the measured value"),
     # Minted 2026-10-11 with typehaus.model.ids.new_uid(). Free body §13.
     Annotation(
         uid="90QCKCV758", tag="AN-SG-BACKFILL", position=pt(ft(_cx), ft(-32)),
