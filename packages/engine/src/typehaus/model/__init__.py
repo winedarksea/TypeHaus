@@ -328,6 +328,7 @@ from typehaus.model.trim import (
     MovementJoint,
 )
 from typehaus.model.trim_fastening import TrimFastening
+from typehaus.model.truss_order import SpecifiedReaction, TrussAppliedLoad, TrussOrder
 from typehaus.model.tub_enclosure import TubEnclosureSpec
 from typehaus.model.types import (
     ApplianceType,
@@ -418,6 +419,8 @@ for _name, _obj in (
     ("ShearPanelSpec", ShearPanelSpec), ("DiaphragmSpec", DiaphragmSpec),
     ("DiaphragmDelivery", DiaphragmDelivery), ("ReceivingLine", ReceivingLine),
     ("CollectorBlocking", CollectorBlocking), ("JointNailing", JointNailing),
+    ("SpecifiedReaction", SpecifiedReaction), ("TrussAppliedLoad", TrussAppliedLoad),
+    ("TrussOrder", TrussOrder),
     ("PanelEdgeBlocking", PanelEdgeBlocking),
     ("HeadConnector", HeadConnector), ("InServiceMoisture", InServiceMoisture),
     ("Library", Library), ("PlanModel", PlanModel),
@@ -503,6 +506,7 @@ __all__ = [
     "SheathingNailing", "TrimFastening", "WindowInstallFastening",
     "ShearPanelSpec", "DiaphragmSpec", "DiaphragmDelivery", "ReceivingLine", "HeadConnector",
     "CollectorBlocking", "JointNailing", "PanelEdgeBlocking",
+    "SpecifiedReaction", "TrussAppliedLoad", "TrussOrder",
     "InServiceMoisture",
     "Embed", "outside_of", "inside_of", "layers", "from_node", "centered",
     "in_slab", "under_subfloor",

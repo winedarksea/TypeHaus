@@ -29,7 +29,7 @@ from typehaus.engineering.item import (
     Status,
     item_id,
 )
-from typehaus.engineering.truss_on_beam import truss_bearing_on, truss_bearing_state
+from typehaus.engineering.truss_on_beam import beam_bearing, truss_bearing_state, truss_seats
 
 KIND = "roof_beam"
 
@@ -150,9 +150,9 @@ def glulam(ctx: Any, roof: Any, beam: Any, tributary_ft2: float,
     )
     uniform_plf = per_ft * (snow_psf + dead_psf)  # type: ignore[operator]
     truss_inputs: tuple[Quantity, ...] = ()
-    if (truss := truss_bearing_on(ctx, roof, beam)) is not None:
-        truss_state, truss_inputs = truss_bearing_state(truss, uniform_plf, FC_PERP_PSI,
-                                                        CM_FC_PERP)
+    if (chord := beam_bearing(ctx, roof, beam)) is not None and (
+            seats := truss_seats(ctx, roof, beam, snow_psf, dead_psf)):  # type: ignore[arg-type]
+        truss_state, truss_inputs = truss_bearing_state(seats, *chord, FC_PERP_PSI, CM_FC_PERP)
         states = (*states, truss_state)
     governing = max(states, key=lambda state: state.ratio)
     return EngineeringRecord(

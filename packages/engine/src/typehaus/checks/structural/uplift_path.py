@@ -541,6 +541,11 @@ def uplift_capacity_items(ctx: CheckContext) -> list[Finding]:
       naming one designer and one document was the redundancy; the finding still blocks,
       still UNKNOWN, and now points at the item somebody is actually going to seal.
 
+    **Amended 2026-11-23 (decision 24):** a trussed roof that DOES author ``published_uplift`` is
+    read against R802.11 too, its span and spacing taken off the trusses (RF-GARAGE); the
+    supplier's component design stays ``rafter/<tag>``. An open canopy authors none and keeps
+    the engineered item.
+
     The third case — a rafter-framed roof that authors no row — is an **UNKNOWN with the
     authoring hint**, and pointedly NOT an item of its own. ``lateral_uplift`` is a retired
     kind: nothing registers it any more, so minting one would produce exactly the bare
@@ -552,7 +557,14 @@ def uplift_capacity_items(ctx: CheckContext) -> list[Finding]:
 
     out: list[Finding] = []
     for roof in sorted(ctx.model.roofs, key=lambda r: r.tag):
-        if not any(member.category == "rafter" for member in roof.members):
+        # ** A TRUSSED ROOF THAT AUTHORS ``published_uplift`` IS AN R802.11 READ TOO (decision
+        # 24). ** Its truss span and spacing ARE known, and the table is indexed by exactly
+        # those; the supplier's component design stays `rafter/<tag>`. An open canopy authors
+        # none and keeps the engineered path (its posts carry an engineered uplift).
+        trussed_read = (any(m.category == "roof_truss" for m in roof.members)
+                        and bool(_authored_uplift(ctx, roof.tag)))
+        if not any(member.category == "rafter" for member in roof.members) \
+                and not trussed_read:
             out.append(_engineered(
                 ctx, "structural.uplift_capacity", item_id("rafter", roof.tag),
                 f"the uplift connection schedule over {roof.tag} is covered joint by joint "
@@ -586,7 +598,8 @@ def _published_uplift_findings(ctx: CheckContext, roof, published: tuple) -> lis
     the same cell. Where any of those falls outside the table the answer is UNKNOWN naming
     the lookup, never the nearest cell.
     """
-    rafters = [member for member in roof.members if member.category == "rafter"]
+    rafters = [member for member in roof.members if member.category == "rafter"] or [
+        member for member in roof.members if member.category == "roof_truss"]
     site = getattr(getattr(ctx.plan, "project", None), "site", None)
     exposure = getattr(site, "wind_exposure", None)
     speed = getattr(site, "design_wind_speed_mph", None)

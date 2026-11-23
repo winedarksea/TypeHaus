@@ -64,39 +64,31 @@ def _declare(deferral: Deferral) -> Deferral:
 
 _declare(Deferral(
     kind="rafter",
-    reason="the roof resolves no rafter member at all — it is trussed, or framed on a "
-           "ridge beam — so there is no member for any span table to describe and the "
-           "component manufacturer's sealed design governs. A roof framed in an ENGINEERED "
-           "PROFILE is not here: its maker publishes a span table, reading one is a "
-           "prescriptive act, and `structural.rafter_span` grades it against an authored "
-           "`Roof.published_span` instead (2026-09-11). RF-BW-CANOPY carries a DRIFT "
-           "case the fabricator has to be quoted against — a quote priced on \"50 psf "
-           "ground snow\" buys ordinary trusses (notes/north_entry_piers.md §3, and "
-           "preferences.toml [structural] roof_beam_snow_psf)",
-    designer="truss or I-joist manufacturer's engineer of record — the component design "
-             "only. The chain below the heel is no longer a second role here: the fabricator "
-             "PUBLISHES its reactions, and `structural.truss_reactions` grades that chain "
-             "against published connector allowables once they are quoted into the model "
-             "(`Roof.published_reactions`, 2026-09-20)",
+    reason="the roof resolves no rafter member at all (it is trussed, or framed on a ridge "
+           "beam), so no span table describes it and the component manufacturer's design "
+           "governs. A roof framed in an engineered profile is not here: its maker's "
+           "published span table is read directly. RF-BW-CANOPY carries a drift case the "
+           "fabricator has to be quoted against; a quote on ground snow alone buys "
+           "ordinary trusses (notes/north_entry_piers.md §3)",
+    designer="truss or I-joist manufacturer's engineer of record, for the component only. "
+             "The truss fabricator's design is the component only; the chain below the heel "
+             "is checked against its published reactions once they are entered",
     deliverable="a sealed component design and placement plan for the roof, covering the "
-                "profile, the web stiffener and hanger schedule, and the ground-snow AND "
-                "drift case this site carries. **Where the roof declares a diaphragm, the "
-                "end trusses' TOP CHORDS are its chords** and carry the axial force "
-                "`lateral_system/<roof>` prints as `chord_force_*` IN ADDITION TO the "
-                "gravity case — combined axial and bending at that section is the "
-                "fabricator's own chart, and the plated splice has to carry the full force "
-                "in tension. The splice SLIP the engine assumed "
-                "(`DiaphragmSpec.chord_splice_slip`) is the third term of SDPWS 4.2.2 and "
-                "decides the rigid/flexible call, so a detail that slips materially more "
-                "moves the shear split: confirm it or state the real value. Its bearing and "
-                "uplift reaction schedule is "
-                "the intake half: quote each row into `Roof.published_reactions` and the "
-                "chain below the heel is graded as a published read, not sealed here",
-    unblocks="Roof framing — the S-603 rafter/truss line and the roof-load permit item; "
-             "the uplift line (structural.uplift_capacity, structural.truss_reactions) "
-             "closes on the quoted reactions",
+                "profile, the web stiffener and hanger schedule, and the ground-snow and "
+                "drift case this site carries, within the criteria the order states: the "
+                "loads, the drift on each truss, the bearings, the deflection limits and the "
+                "maximum net uplift per heel. Where the roof declares a diaphragm, the first "
+                "and last trusses' top chords carry the chord force the lateral calculation "
+                "prints, in addition to gravity, with the plated splice in tension. No "
+                "splice-slip value is asked for. The supplier's reaction schedule is quoted "
+                "onto the roof and checked against the specified reactions",
+    unblocks="Roof framing, the S-603 rafter/truss line and the roof-load permit item; the "
+             "supplier's reactions close the component line once entered, the supporting "
+             "structure being already checked on the specified ones",
     oracle=(Oracle(note="catlin_truss_engineering.md",
                    test="tests/test_wind_loads.py"),
+            Oracle(note="canopy_truss_criteria.md",
+                   test="tests/test_truss_criteria.py"),
             Oracle(note="uplift_load_path.md",
                    test="tests/test_uplift_load_path.py")),
 ))

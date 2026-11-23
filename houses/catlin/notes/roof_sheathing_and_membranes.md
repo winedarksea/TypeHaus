@@ -34,10 +34,11 @@ Lay strength axis across framing, provide approximately 1/8 inch panel gaps per 
 follow the panel maker's instructions. Keep the canopy's existing solid panel-edge blocking,
 collectors and joint nailing; the garage diaphragm remains unblocked.
 
-The garage diaphragm retains the conservative SDPWS-2015 Table 4.2A 15/32 inch
-Structural I unblocked row: **167.5 plf ASD, G_a 7 kip/in**. The blocked canopy retains
-**190 plf ASD, G_a 12 kip/in** and its existing chord/collector assumptions. Both decks
-remain thicker than the credited minimum; no increased table capacity is claimed.
+The garage diaphragm is graded at the SDPWS-2015 Table 4.2C unblocked row, Structural I, 8d at 6", Case 1,
+wind column: **308.2 plf ASD** (670 x 0.92 SPF / 2.0), G_a 7 kip/in. The blocked canopy is graded at Table 4.2A,
+**347.3 plf ASD** (755 x 0.92 / 2.0), G_a 12 kip/in, with its existing chord/collector assumptions
+(`canopy_garage_diaphragm.md` §12a). Both decks remain thicker than the credited minimum; no increased table
+capacity is claimed.
 
 NDS 2018 single-shear nail yield with D=0.131, L=2.5, F_yb=100,000 psi, deck G=0.50,
 SPF G=0.42, l_s=0.59375 and l_m=1.90625 inches gives **Z=74.957994 lb (IIIs)**.

@@ -239,15 +239,20 @@ two, so the per-column net above halves again to about 136 lb.
 
 ### 4a. The truss-to-header ties
 
+**Corrected 2026-11-23 (review C-9, decision 20).** The canopy has **three** truss stations per header, not four, and
+they are not equal: the widest (T2, 2.0') has 2.0 x 13.333 = 26.67 sf. The order SPECIFIES **450 lb of net uplift per
+heel** (`Roof.specified_reactions`); the table is `canopy_truss_criteria.md` §1.
+
 | term | working | value |
 |---|---|---|
-| bearings per header | 4 truss stations | 4 |
-| gross wind uplift per bearing | 1,706 / 4 | 427 lb |
-| 0.6W, no dead relief | 0.6 (427) | **256 lb** |
-| 0.6W − 0.6D | 0.6 (427 − 200) | 136 lb |
+| bearings per header | 3 truss stations (T1 1.115', T2 2.0', T3 1.974' tributary) | 3 |
+| gross wind uplift, widest truss | 21.3 psf x 26.67 sf | 568 lb |
+| 0.6W, no dead relief | 0.6 (568) | **341 lb** |
+| 0.6W - 0.6D | 0.6 (568 - 10 x 26.67) | 181 lb |
+| specified | covers the gross 0.6W + 32% | **450 lb** |
 
-Eight authored `H2.5ASS`, one per bearing — stainless because these land on treated southern
-pine at an entry salted every winter, and the house buys stainless at every KDAT joint.
+Six authored `H2.5ASS`, one per bearing (three on each header) — stainless because these land on treated southern
+pine at an entry salted every winter, and the house buys stainless at every KDAT joint. 450 / 700 = 0.64.
 
 > ⚠ **CLOSED 2026-09-11, and the number that looked wrong is what closed it.** This note
 > said for a day that the stainless H2.5ASS was not the galvanized tie's 700 lbf, because the
@@ -273,7 +278,7 @@ pine at an entry salted every winter, and the house buys stainless at every KDAT
 > take the catalog's 615. **Stainless parity is a claim about steel and nails and says nothing
 > about species**, so it rides across unchanged in both directions.
 >
-> ⚠ **THE NAIL IS NOW A SPECIFICATION ITEM.** That 700 lbf is conditional on **SSA8D**
+> ⚠ **THE NAIL IS A SPECIFICATION ITEM, ON THE ORDER AND S-001 (2026-11-23).** That 700 lbf is conditional on **SSA8D**
 > stainless ring-shank nails, five to the rafter and five to the plates, substituting for the
 > catalog's 8d common 0.131 x 2-1/2 in. Drive these eight ties with stainless SMOOTH-shank
 > nails and each is worth 440 lbf instead, at 0 FAIL, with nothing in the model able to see

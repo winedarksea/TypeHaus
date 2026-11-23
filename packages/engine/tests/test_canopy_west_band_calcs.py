@@ -37,7 +37,8 @@ _ROWS = {
     "BM-BW-RW eave collector clips": (172.43, 450.0),
     # G5 (2026-11-23): the screen's shear leaves at its top plate through CN-BW-SCREEN-STRAP;
     # the chord hold-down and base shear rows carry no N-S (north_entry_piers.md §10p).
-    "diaphragm unit shear at W-BW-SCREEN": (172.43, 190.0),
+    # The deck row reads the SDPWS table allowable, 347.3 plf (canopy_garage_diaphragm.md §12a).
+    "diaphragm unit shear at W-BW-SCREEN": (172.43, 347.3),
     "LSTA24 end straps, chord force + across share": (260.389, 823.3333333333334),
     "BM-BW-RW chord into CN-BW-JOINT-1's block": (216.408, 450.0),
     "BM-BW-RE chord into CN-BW-JOINT-7's block": (87.961, 450.0),
@@ -187,20 +188,28 @@ def test_the_glulam_header_reproduces_section_7(catlin_ctx) -> None:
     assert states["bearing on the post"].capacity == pytest.approx(344.5, abs=0.1)
     assert states["bending"].demand / states["bending"].capacity == pytest.approx(0.162,
                                                                                 abs=0.002)
-    # §7, 2026-10-31: 1,245.77 plf x 2' = 2,491.5 lb over 1.5" x 5.5" = 302.0 psi.
+    # §7c, 2026-11-23 (C-4): per truss, the drift triangle placed. Truss-001 (T2) governs:
+    # (78.25 + 10) psf x 2.0' x 13.333' = 2,353 lb over 1.5" x 5.5" = 285.2 psi against
+    # 650 x 0.53 x C_b 1.25 = 430.6 (it is over 3" from the beam end).
     assert inputs["truss_bearing_length"] == pytest.approx(5.5)
-    assert states["truss bearing on the beam"].demand == pytest.approx(302.0, abs=0.1)
-    assert states["truss bearing on the beam"].capacity == pytest.approx(344.5, abs=0.1)
+    assert inputs["truss_reaction_max"] == pytest.approx(2353.2, abs=1.0)
+    assert states["truss bearing on the beam"].demand == pytest.approx(285.2, abs=0.2)
+    assert states["truss bearing on the beam"].capacity == pytest.approx(430.6, abs=0.2)
 
 
 def test_a_chord_stopped_at_the_header_centreline_is_over() -> None:
-    """§7 2026-10-31, the pre-move geometry: 2 3/4" of chord on the header is 604 psi, 1.75."""
-    from typehaus.engineering.truss_on_beam import truss_bearing_state
+    """§7c, the pre-move geometry: 2 3/4" of chord on the header doubles the pressure."""
+    from typehaus.engineering.truss_on_beam import TrussSeat, truss_bearing_state
 
-    before, _ = truss_bearing_state((1.5, 2.75, 24.0), 1245.77, 650.0, 0.53)
-    after, _ = truss_bearing_state((1.5, 5.5, 24.0), 1245.77, 650.0, 0.53)
-    assert before.ratio == pytest.approx(1.753, abs=0.001)
-    assert after.ratio == pytest.approx(0.877, abs=0.001)
+    seat = TrussSeat("truss-001", 39.333, 2.0, 78.25, 2353.2, 10.0)
+    before, _ = truss_bearing_state([seat], 1.5, 2.75, 650.0, 0.53)
+    after, _ = truss_bearing_state([seat], 1.5, 5.5, 650.0, 0.53)
+    assert before.ratio == pytest.approx(1.325, abs=0.002)
+    assert after.ratio == pytest.approx(0.662, abs=0.002)
+    # The end truss is flush with the beam end, so C_b does not apply: 1,464 lb, 0.515.
+    end = TrussSeat("truss-000", 37.333, 1.1146, 88.51, 1464.0, 0.0)
+    assert truss_bearing_state([end], 1.5, 5.5, 650.0, 0.53)[0].ratio == pytest.approx(
+        0.515, abs=0.002)
 
 
 def test_the_cbsq_piers_are_14_inches_for_the_side_cover(catlin_plan) -> None:

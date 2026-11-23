@@ -25,18 +25,23 @@ _DELIVERED = {"x": 670.82, "y": 1034.57}
 _ROWS = {
     "open front, L'": (6.000, 25.0),
     "open front, L'/W'": (0.2250, 1.0),
-    "joint boundary nailing, along": (28.839, 190.0),
+    "joint boundary nailing, along": (28.839, 347.3),
     "LSTA24 joint straps, across": (172.43, 823.3333333333334),
     "LSTA24 joint straps, rotation couple": (56.689, 823.3333333333334),
     "CN-BW-JOINT-2 RF-BW-CANOPY nailer into deck": (261.177, 1079.3951163681184),
     "CN-BW-JOINT-2 RF-GARAGE nailer into deck": (261.177, 959.4623256605497),
     "LTP4 plate clips, frame into wall": (95.831, 450.0),
-    "RF-GARAGE unit-shear increment": (22.51, 167.5),
+    "RF-GARAGE unit-shear increment": (22.51, 308.2),
     "W-G-S delivered shear on the surplus": (38.777, 182.5),
     "W-G-E delivered shear on the surplus": (25.72, 182.5),
     "W-G-W delivered shear on the surplus": (26.46, 182.5),
     "W-G-S overturning, delivered increment": (275.47, 2580.0),  # HTT4 (was STHD14 3,065)
-    "diaphragm unit shear at W-BW-SCREEN": (172.43, 190.0),
+    "diaphragm unit shear at W-BW-SCREEN": (172.43, 347.3),
+    # §12 (2026-11-23): the screen at 100% closes by a couple at the end straps; the garage
+    # walls take the same couple over their 24.0' spacing.
+    "LSTA24 end straps, N-S couple + chord": (637.36, 823.3333333333334),
+    "W-G-W joint couple, N-S case": (28.51, 182.5),
+    "W-G-E joint couple, N-S case": (25.35, 182.5),
 }
 
 
@@ -73,10 +78,14 @@ def test_the_record_reproduces_sections_3_and_4(record) -> None:
 
 
 def test_the_screen_boundary_governs(record) -> None:
-    """§4d: the envelope row over the envelope share — 0.907, and nothing else is closer."""
-    worst = max(record.limit_states, key=lambda s: s.demand / s.capacity)
-    assert worst.name == "diaphragm unit shear at W-BW-SCREEN"
-    assert worst.demand / worst.capacity == pytest.approx(0.907, abs=0.001)
+    """§4d: the envelope row over the envelope share, 0.496 against the table's 347.3 plf (was
+    0.907 against a 190 round-down, C-3). After G5 the screen chord rows and the pier pull-out
+    rows are gone (north_entry_piers.md §10p), so the closest rows are the end straps' N-S
+    couple (0.774, §12c) and the screen panel's own."""
+    ratios = {s.name: s.demand / s.capacity for s in record.limit_states}
+    assert ratios["diaphragm unit shear at W-BW-SCREEN"] == pytest.approx(0.496, abs=0.001)
+    assert not any("pull-out" in name for name in ratios)
+    assert max(ratios.values()) == ratios["LSTA24 end straps, N-S couple + chord"]
 
 
 def test_the_old_four_to_one_row_is_gone_with_the_second_line(record) -> None:
@@ -191,3 +200,11 @@ def test_a_pinned_post_mints_no_column_base(catlin_ctx) -> None:
         assert f"base_rotation/{tag}" not in keys, "a short pole has no P-delta to magnify"
 
 
+
+
+def test_the_n_s_chord_force_is_over_the_chords_own_spacing(catlin_ctx) -> None:
+    """§12: T = V L / (8 d) = 1,034.565 x 23.2604 / (8 x 4.000) = 752.0 lb, not the deck's 6 ft
+    depth (517 lb, C-2); the end-strap couple is V (x_V - x_screen) / L_strap = 549.4 lb."""
+    inputs = {q.name: q.value for q in catlin_ctx.engineering[_ITEM].inputs}
+    assert inputs["chord_force_y"] == pytest.approx(752.01, abs=0.05)
+    assert inputs["joint_couple_ns_lb_ft"] == pytest.approx(12779.3, abs=2.0)

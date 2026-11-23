@@ -28,6 +28,7 @@ from typehaus.model.refs import (
 from typehaus.model.registry import register_constructor, register_element
 from typehaus.model.stair_winders import WinderFramingSpec, WinderTurnSpec
 from typehaus.model.trim import EaveTrim
+from typehaus.model.truss_order import SpecifiedReaction
 from typehaus.model.tub_enclosure import TubEnclosureSpec
 from typehaus.quantities import Length, Pitch, Point2D, inch
 
@@ -305,19 +306,15 @@ class Roof(Element):
     overhang: Length | None = None
     edge_overhangs: tuple[tuple[str, Length], ...] = ()  # per-edge overrides
     ridge_direction: str = "x"
-    # The published table row that answers this member's span, where one does. A
-    # manufacturer's table is a PRESCRIPTIVE read — a reviewer opens the document and the
-    # question is closed — so authoring one here takes the requirement out of the
-    # engineering register rather than into it. See ``model/refs.PublishedSpan``, which
-    # carries the drift guards that stop a quotation outliving the model it was read for.
+    # The published table row that answers this member's span, where one does: a PRESCRIPTIVE
+    # read, so authoring one takes the requirement out of the engineering register
+    # (``model/refs.PublishedSpan`` carries the drift guards).
     published_span: PublishedSpan | None = None
-    # The published rows that answer this roof's UPLIFT connections, where they exist. A
-    # TUPLE and not one row: a roof has a single rafter span and as many uplift joints as it
-    # has bearing lines, read from different documents and answered by different parts —
-    # catlin's RF-HOUSE has an eave tie against a code table and a ridge hanger against a
-    # manufacturer's. See ``model/refs.PublishedCapacity`` for the drift guards, and
-    # ``checks/structural/published.graded_against_published_capacity`` for the grading. A
-    # roof that authors these takes its uplift capacity OUT of the engineering register.
+    # The published rows that answer this roof's UPLIFT connections, where they exist: a TUPLE
+    # because a roof has one rafter span and as many uplift joints as bearing lines (an eave
+    # tie against a code table, a ridge hanger against a maker's). Drift guards are in
+    # ``model/refs.PublishedCapacity``; a roof that authors them takes its uplift capacity OUT
+    # of the engineering register (``published.graded_against_published_capacity``).
     published_uplift: tuple[PublishedCapacity, ...] = ()
     # How a rafter roof's joists meet an authored ridge Beam: ``"hung"`` on face-mount hangers,
     # or ``"bearing"`` on the Beam as a double-beveled plate over a continuous wall.
@@ -325,6 +322,9 @@ class Roof(Element):
     # A trussed roof's bearing reactions off the fabricator's sealed design, one row per
     # bearing — the demand ``structural.truss_reactions`` grades the chain below the heel at.
     published_reactions: tuple[PublishedReaction, ...] = ()
+    # The reactions the ORDER specifies (``model/truss_order``): the chain below the heel is
+    # graded against them now, and a published row is checked against them when it arrives.
+    specified_reactions: tuple[SpecifiedReaction, ...] = ()
     # Which of the two ridge-axis ends may be a GABLE END, by compass name. A gable end
     # takes a drop/gable-end frame instead of a field truss, and SBCA's own definition is
     # that such a frame has continuous vertical support from the end wall or beam under its

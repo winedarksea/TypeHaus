@@ -315,9 +315,11 @@ def test_the_screen_and_garage_are_both_graded_at_the_full_kdat_load(catlin_ctx)
     assert "W-BW-SCREEN chord hold-down, full height" not in states
     assert any("CN-BW-SCREEN-STRAP" in n for n in record.notes)
     assert states["W-G-S overturning, delivered increment"].ok
-    assert states["diaphragm unit shear at W-BW-SCREEN"].ratio == pytest.approx(0.907, abs=0.005)
-    assert record.governing.name == "diaphragm unit shear at W-BW-SCREEN"
+    assert states["diaphragm unit shear at W-BW-SCREEN"].ratio == pytest.approx(0.496, abs=0.005)
     assert not any("pull-out" in name for name in states)
+    # After G5 the closest row is the end straps' N-S couple (canopy_garage_diaphragm.md §12c).
+    assert record.governing.name == "LSTA24 end straps, N-S couple + chord"
+    assert record.governing.ratio == pytest.approx(0.774, abs=0.005)
 
 
 def test_the_kdat_collectors_and_open_front_chord_are_drawn(catlin_ctx) -> None:

@@ -62,7 +62,8 @@ KIND = "roof_beam"
 #: Bumped whenever the arithmetic below changes — it rides in the fingerprint.
 #: 2: a GLULAM section is graded (``roof_beam_glulam``), 2026-09-30.
 #: 3: a glulam grades its trusses' bottom-chord bearing (``truss_on_beam``), 2026-10-31.
-BASIS_VERSION = "3"
+#: 4: per-truss reactions at their own drift, C_b per NDS 3.10.4 (review C-4), 2026-11-23.
+BASIS_VERSION = "4"
 BASIS = ("AWC NDS 2018 Ch. 3 and 4 (sawn) and Ch. 5 (glulam); design snow authored per "
          "ASCE 7 §7.7")
 

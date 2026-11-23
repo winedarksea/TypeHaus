@@ -401,8 +401,10 @@ COLUMN_BASES = [
 # Truss bearings are authored (stainless H2.5ASS), not derived: `takeoff/uplift.py::
 # bearing_uplift_tie_rows` would derive commodity H2.5A, the wrong part for treated wood at a
 # salted entry, and a derived row draws nothing. Authoring all of them stands the derived rule
-# down (`authored_joints` is pairwise). One tie per truss per header; gross uplift is in
-# notes/north_entry_piers.md Sec 4. The stainless tie has no allowable in `library/hardware/`.
+# down (`authored_joints` is pairwise). One tie per truss per header (three, not four:
+# north_entry_piers.md §4a), graded against the order's 450 lb/heel
+# (`RF-BW-CANOPY.specified_reactions`): H2.5ASS 700 lb with SSA8D stainless RING-SHANK nails,
+# 5 + 5 (smooth-shank is 440 lb; Simpson C-C-2021 p.277 fn. 12).
 #
 # Three trusses at the layout's 24" stations from TRUSS_DATUM_Y_FT. `RF-BW-CANOPY` authors
 # `gable_ends=()`, so no fourth station stands at the headers' north ends; the deck bridges the

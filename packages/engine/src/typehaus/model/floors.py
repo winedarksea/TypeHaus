@@ -14,6 +14,7 @@ from typehaus.model.refs import Embed, PublishedHole, PublishedSpan
 from typehaus.model.registry import register_constructor, register_element
 from typehaus.model.sheathing_nailing import SheathingNailing
 from typehaus.model.slabs import Slab, SlabThermalBreak
+from typehaus.model.truss_order import TrussOrder
 from typehaus.quantities import Length, Point2D, inch
 
 
@@ -335,6 +336,9 @@ class FloorSystem(Element):
     # The joist maker's span-table row for this field, where one is read (``Slab``'s field,
     # same drift guards). ``structural.ijoist_span`` grades it in place of its own table.
     published_span: PublishedSpan | None = None
+    # A truss field's order criteria: bearing centres and the loads beyond the published
+    # row's uniform one (``model/truss_order``), printed on S-001 and graded nowhere else.
+    truss_order: TrussOrder | None = None
     source: str | None = None
 
 
