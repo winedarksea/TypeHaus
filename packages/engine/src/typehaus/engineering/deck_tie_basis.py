@@ -153,6 +153,31 @@ def wall_ties(ctx: EngineeringContext, deck: Any) -> list[TieJoint]:
     return out
 
 
+def _chord_push_loads(ctx: EngineeringContext, panels: dict, wind_loads: dict) -> None:
+    """A strapped-out panel's band still pushes a chord outward through its slats; the base
+    share of that push leaves through the chord's base into its pier and the landing (review
+    M4). Taken in the panel's own direction, at the chord, the sense that adds to its share."""
+    from typehaus.engineering.wood_roof_post import compute as post_records
+    from typehaus.model.structure import Post
+
+    strapped = {tag for tag in panels if strap_point(ctx, tag)}
+    worst: dict[str, tuple[float, Any]] = {}
+    for record in post_records(ctx):
+        post = ctx.plan.by_tag(record.key)
+        wall = getattr(post, "within_wall", None) if isinstance(post, Post) else None
+        base = next((q.value for q in record.inputs if q.name == "band_push_base_lb"), 0.0)
+        # One compression bay per sense pushes ONE chord: the larger, not both.
+        if wall in strapped and base > worst.get(wall, (0.0, None))[0]:
+            worst[wall] = (base, post)
+    for wall, (base, post) in sorted(worst.items()):
+        (x0, y0), (x1, y1) = panels[wall]
+        axis = "y" if abs(y1 - y0) >= abs(x1 - x0) else "x"
+        x, y = _xy_ft(post.position)
+        wind_loads[axis].append(Load(
+            f"{post.tag} band push base share ({wall}'s slats)",
+            base if axis == "x" else 0.0, base if axis == "y" else 0.0, x, y))
+
+
 def strap_point(ctx: EngineeringContext, wall_tag: str) -> tuple[float, float] | None:
     """Plan point (ft) of a tension strap tying ``wall_tag`` to another wall, else ``None``."""
     from typehaus.engineering.deck_tie import TENSION_TIE_ROLES
@@ -331,6 +356,7 @@ def loads_on(ctx: EngineeringContext, deck: Any, wind: DeckWind
                     f"{tag} panel share of {roof.tag}",
                     force if axis == "x" else 0.0, force if axis == "y" else 0.0, *at))
 
+    _chord_push_loads(ctx, panels, wind_loads)
     for wall, (x0, y0), (x1, y1) in on_deck:
         resolved = ctx.model.wall(wall.tag)
         height = (resolved.z1_m - resolved.z0_m) / _FT

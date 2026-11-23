@@ -25,7 +25,8 @@ KIND = "wood_roof_post"
 #: 3: a slat band's outward push on its chords, N-S (2026-10-04).
 #: 4: chord push acts at the centroid of its actual brace landings (2026-10-25).
 #: 5: drag on the face the wind sees, jacket and cavity included (2026-11-23).
-BASIS_VERSION = "5"
+#: 6: every connector wet, C_M 0.70, by the canopy's exposure rule (2026-11-23).
+BASIS_VERSION = "6"
 BASIS = ("AWC NDS 2018 Supplement Table 4D, Southern Pine No. 2 timbers, wet-service row; "
          "NDS §3.7 column stability and §3.9 combined stress; ICC-ES ESR-2604 Table 3 "
          "(AC/ACE); ICC-ES ESR-3096 Table 5 (A35); ICC-ES ESR-3050 Table 2 (CBSTQ)")
@@ -289,20 +290,23 @@ def _one(ctx: EngineeringContext, case: _Case) -> EngineeringRecord:
                 Quantity("head_uplift_lb", head_uplift, "lb", 1.0),
                 Quantity("plate_load_lb", plate, "lb", 1.0),
                 Quantity("band_push_lb", push, "lb", 1.0),
+                Quantity("band_push_base_lb", push_base, "lb", 1.0),
                 Quantity("band_push_height_ft", push_height_ft, "ft", 0.001)),
         limit_states=tuple(states), element_tags=tags,
         notes=(("The wrap is a nonstructural finish. It needs an open, drained base and "
                 "an inspectable/removable panel; it contributes no column capacity."
                 if _wrapped(ctx, element.assembly) else
-                f"{case.tag} is a chord of {case.wall.tag}; its IN-PLANE hold-down and base "
-                f"shear are graded on the lateral_system record, and this one grades its "
-                f"out-of-plane (E-W) ends and any band push across it (N-S)."
+                f"{case.tag} is a chord of {case.wall.tag}, whose N-S shear leaves at its top "
+                f"plate through a collector strap (north_entry_piers.md §10p): no in-plane "
+                f"hold-down or base shear reaches this post. This record grades its "
+                f"out-of-plane (E-W) ends and the band push across it (N-S)."
                 if case.wall is not None else ""),
                f"Head uplift is the net roof uplift {uplift:.1f} lb{couple_note}.",
-               "DRY SERVICE at every connector: the caps, angles and base are rated for wood "
-               "at or under 19% moisture (ESR-2604 §3.2.2, ESR-3050 §4.1). The posts stand "
-               "on 1in drained standoffs under the roof; verify MC before the parts go on. "
-               "The column itself is graded on the WET row."))
+               "WET SERVICE at every connector, the canopy's one exposure rule "
+               "(engineering/canopy_service.py): the caps, angles and base take C_M 0.70 on "
+               "their dry rows. Their reports (ESR-2604 §3.2.2, ESR-3096, ESR-3050 §4.1) cover "
+               "MC <= 19% only, so the wet values are a reading outside them. The column "
+               "itself is graded on the WET row."))
 
 
 def _beam_axis(ctx: EngineeringContext, beam: Any) -> str:

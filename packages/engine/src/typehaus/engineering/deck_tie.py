@@ -230,6 +230,31 @@ def capacity(joint: TieJoint) -> Capacity | str:
                     f"part each (fn 6), C_M {c_m:g} ({wet})", cite, True)
 
 
+def _role(joint: TieJoint) -> str | None:
+    from typehaus.hardware.catalog import hardware_by_model
+
+    item = hardware_by_model(joint.model)
+    return item.role if item is not None else None
+
+
+def _deliveries(joints: list[TieJoint], caps: list[Capacity], wind_cases: dict
+                ) -> list[Quantity]:
+    """Per tied wall, the worst ASD force the ties put along and across it (review M9)."""
+    worst: dict[tuple[str, str], float] = {}
+    for loads in wind_cases.values():
+        for sign in (1.0, -1.0):
+            case: dict[tuple[str, str], float] = {}
+            for joint, force in zip(joints, distribute(joints, loads, sign,
+                                                       carries_of(joints, caps)), strict=True):
+                along, across = _split(joint, force)
+                for side, value in (("along", along), ("across", across)):
+                    case[(joint.wall, side)] = case.get((joint.wall, side), 0.0) + value
+            for key, value in case.items():
+                worst[key] = max(worst.get(key, 0.0), abs(value))
+    return [Quantity(f"delivered_{side}_{wall}", value, "lb", 0.1)
+            for (wall, side), value in sorted(worst.items())]
+
+
 def service_cm(joint: TieJoint) -> float:
     """NDS 2018 Table 11.3.3: 1.0 where the parts author dry service, else 0.70."""
     return DRY_SERVICE_CM if joint.service_condition == "dry" else WET_SERVICE_CM
@@ -314,6 +339,8 @@ def _one(ctx: EngineeringContext, deck: Any) -> EngineeringRecord:
                 "tie interaction, guard", worst[0], 1.0, "",
                 f"IRC R301.5's 200 lb at C_D 1.0 against the row over its C_D "
                 f"{good[0].duration:g}; {worst[1]}"))
+    if not missing:
+        inputs.extend(_deliveries(joints, good, wind_cases))
     groups: list[anchor.Group] = []
     states += _concrete_states(ctx, joints, good, demands, missing, groups)
     inputs.extend(Quantity(f"anchor_fc_{state.name.split()[0]}", state.capacity, "psi", 1.0)
@@ -328,6 +355,19 @@ def _one(ctx: EngineeringContext, deck: Any) -> EngineeringRecord:
         "distribution treats the deck as rigid in plan and every joint as equally stiff.",
     ]
     notes += anchor.layout_notes(groups)
+    notes.append(
+        f"WIND HEIGHT: q_h {wind.q_h_psf:.2f} psf is read at the top of what stands on the "
+        f"deck ({wind.basis_text}), the appurtenance basis the deck's own storey shear uses; "
+        f"the canopy roof's share arrives already graded at the roof's own height.")
+    notes.append(
+        "DELIVERED: the delivered_* quantities are each tie's worst force along and across "
+        "the wall it lands on; that wall's own bracing record sums them (review M9).")
+    if any(_role(j) == "floor_tie_holdown" for j in joints):
+        notes.append(
+            "DTT2Z: ESR-2330 §4.1 covers dry interior service and excludes treated lumber; the "
+            "catalog's deck-to-house lateral detail (C-C-2026 p. 326) sells it for decks but "
+            "publishes no wet row. Graded on the dry row x C_M 0.70 — a reading outside the "
+            "report.")
     notes += [f"DRY SERVICE at {j.member}/{j.wall} (C_M {DRY_SERVICE_CM:g}, NDS 2018 "
               f"§11.3.3 / Table 11.3.3): a service-condition judgement the engineer of "
               f"record confirms. Basis: {j.service_basis}"

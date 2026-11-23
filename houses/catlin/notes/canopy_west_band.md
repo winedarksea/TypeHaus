@@ -377,10 +377,27 @@ Fc' = 559.94 psi; M = 7.636 x 6.1771²/8 = 36.4 lb-ft, fb = 15.76 psi.
 
 The west heads govern at the cap, 0.550, ahead of the column's 0.538; the deck's 0.907 still governs the record.
 
-### 5d. Dry service at the connectors, wet in the column
+### 5d. ~~Dry service at the connectors~~ — WET by one exposure rule (2026-11-23, review M2)
 
-ESR-2604 §3.2.2 and ESR-3050 §4.1 rate the parts at MC <= 19%: the posts are KDAT on 1" drained standoffs under
-the roof, and the record prints the condition. The column is graded on Table 4D's wet row.
+The canopy zone takes ONE rule (`engineering/canopy_service.py`): exposed to weather under the open canopy →
+WET; under roofing → dry, stated. Every connector here is exposed, so: where the catalog publishes a > 19% column it
+is read; otherwise C_M 0.70 on the dry row. ESR-2604 §3.2.2 (ACE6Z), ESR-3096 (A35Z) and ESR-3050 §4.1 (CBSTQ)
+cover MC <= 19% only, so their wet values are a reading OUTSIDE the reports, said on the record.
+
+```
+KBS1Z slat end   C-C-2026 p. 324, MC > 19%, DF/SP (KDAT SP), type 1: 1,055 @ 45°, 835 @ 30/60
+                 at 45.868°: 1,055 - 220 x 0.868/15 = 1,042.3;  755.2 / 1,042.3          = 0.725
+SDWS plate screws Z' and W' x C_M 0.70                          top 0.406, sill 0.290
+ACE6Z head (CW)  635.5 / (1,950 x 0.70 = 1,365) + 403.5 / (1,760 x 0.70 = 1,232)
+                 = 0.4656 + 0.3275                                                         = 0.793
+ACE6Z head (RE)                                                                            = 0.339
+CBSTQ base       every term x 0.70                       CW along 0.403, RE across 0.294
+A35Z             lower of F1/F2 x 0.70                   CW head 0.233, plate 0.249
+LTP4Z eave clips DRY — on the nailers under the roof sheathing and roofing                 = 0.390
+```
+
+The dry SPF column read 0.760 at the KBS1Z; the wet DF/SP column is the published row for the species and moisture
+actually there. The column itself is still graded on Table 4D's wet row.
 
 ### 5e. The piers are 14" round under a CBSTQ
 

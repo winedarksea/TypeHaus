@@ -60,14 +60,21 @@ def test_the_loads_reproduce_section_10b(catlin_ctx):
 
 
 def test_the_verdicts_reproduce_section_10p(catlin_ctx):
-    """§10p: the screen's strap governs N-S at 0.775 (its share entering at the strap, the
+    """§10p: the screen's strap governs N-S at 0.876 (its share entering at the strap, the band
+    push base share at PT-BW-CNW, the
     canopy posts' jacketed drag); E-W is the HL43's at 0.574 — an owner-accepted reading
     outside the published condition."""
     record = catlin_ctx.engineering[_ITEM]
     assert record.status is Status.OK
     assert record.governing.name == "tie interaction, N-S wind"
     ns = _state(record, "tie interaction, N-S wind")
-    assert ns.ratio == pytest.approx(0.7749, abs=5e-4)
+    assert ns.ratio == pytest.approx(0.8755, abs=5e-4)  # + the band push base share (M4)
+    loads = {q.name: q.value for q in record.inputs}
+    assert loads["y:PT-BW-CNW band push base share (W-BW-SCREEN's slats)"] == pytest.approx(
+        151.67, abs=0.1)
+    # M9: what the ties deliver into each garage wall, for that wall's own record.
+    assert loads["delivered_along_W-G-W"] == pytest.approx(1237.97, abs=0.2)
+    assert loads["delivered_along_W-G-S"] == pytest.approx(580.32, abs=0.2)
     assert "W-BW-SCREEN at W-G-W" in ns.citation
     ew = _state(record, "tie interaction, E-W wind")
     assert ew.ratio == pytest.approx(0.5737, abs=5e-4)

@@ -28,9 +28,9 @@ def test_east_wood_post_carries_roof_and_owns_its_connections(catlin_ctx) -> Non
     assert states["NDS wet-service axial"].ratio == pytest.approx(0.201, abs=0.001)
     assert states["NDS combined axial and bending"].ratio == pytest.approx(0.229, abs=0.001)
     # canopy_west_band.md §5: 426.44 / 1,950 + 32.16 / 1,760 (the 7 1/2" jacket, 11-23).
-    assert states["ACE6Z head uplift"].capacity == 1950
+    assert states["ACE6Z head uplift"].capacity == pytest.approx(1950 * 0.70)  # wet (M2)
     assert states["ACE6Z head, uplift + lateral along the beam"].ratio == pytest.approx(
-        0.237, abs=0.001)
+        0.339, abs=0.001)
     # A cast-in base carries its own anchorage: no ACI Ch. 17 row stands in for it.
     assert not any("anchor tension" in name for name in states)
 

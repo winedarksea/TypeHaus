@@ -26,6 +26,7 @@ import math
 from dataclasses import dataclass
 from typing import Any
 
+from typehaus.engineering.canopy_service import DRY_UNDER_ROOFING
 from typehaus.engineering.item import LimitState, Quantity
 
 _M_PER_FT = 0.3048
@@ -112,9 +113,10 @@ def band_rows(ctx: Any, roof_tag: str, wall: Any, spec: Any, shear_lb: float,
         band = slat_band_on(ctx, wall, line, panel_top_ft, soffit_ft, shear_lb)
         if band is not None:
             slat_rows(ctx, wall, collector, band, states, notes, missing, inputs)
-            _end_bearing(ctx, wall, collector, shear_lb, panel_top_ft, states)
+            strapped = _strapped_out(ctx, wall, notes)
+            _end_bearing(ctx, wall, collector, shear_lb, panel_top_ft, states, strapped)
             _collector_clips(ctx, roof_tag, collector, shear_lb, states, missing, inputs)
-            if _strapped_out(ctx, wall, notes):
+            if strapped:
                 return BandResult(handled=True)
             return BandResult(handled=_holdown_rows(ctx, wall, wall.shear_panel, shear_lb,
                                                     top_ft, states, notes, missing, inputs))
@@ -127,9 +129,10 @@ def band_rows(ctx: Any, roof_tag: str, wall: Any, spec: Any, shear_lb: float,
             f"the collector")
         return BandResult(handled=True)
     _strap_rows(wall, straps, shear_lb, states, notes, inputs)
-    _end_bearing(ctx, wall, collector, shear_lb, panel_top_ft, states)
+    strapped = _strapped_out(ctx, wall, notes)
+    _end_bearing(ctx, wall, collector, shear_lb, panel_top_ft, states, strapped)
     _collector_clips(ctx, roof_tag, collector, shear_lb, states, missing, inputs)
-    if _strapped_out(ctx, wall, notes):
+    if strapped:
         return BandResult(handled=True)
     return BandResult(handled=_holdown_rows(ctx, wall, wall.shear_panel, shear_lb, top_ft,
                                             states, notes,
@@ -222,7 +225,8 @@ def _members_bearing_on(wall, prefix: str, face: float, line) -> float:
     return area
 
 
-def _end_bearing(ctx, wall, collector, shear_lb, panel_top_ft, states) -> None:
+def _end_bearing(ctx, wall, collector, shear_lb, panel_top_ft, states,
+                 strapped: bool = False) -> None:
     """The top and base plates bear END-ON on a chord's inner face: compression only, and
     the two chords are the same section, so one face answers for either direction."""
     from typehaus.model.structure import Beam
@@ -244,8 +248,10 @@ def _end_bearing(ctx, wall, collector, shear_lb, panel_top_ft, states) -> None:
     sill_in2 = sum(((cross_section(b.size).width_m or 0.0) / 0.0254)
                    * ((cross_section(b.size).depth_m or 0.0) / 0.0254) for b in sills)
     fc_perp = POST_FC_PERP_PSI * POST_FC_PERP_CM
-    for label, prefix, extra in (("top plate", "plate-top", 0.0),
-                                 ("base plate and sill", "plate-bottom", sill_in2)):
+    # Strapped out at the top plate, the base plate and sill carry no N-S to a chord.
+    rows = (("top plate", "plate-top", 0.0),) + (
+        () if strapped else (("base plate and sill", "plate-bottom", sill_in2),))
+    for label, prefix, extra in rows:
         area = _members_bearing_on(resolved, prefix, face, line) + extra
         if area <= 0.0:
             continue
@@ -290,7 +296,7 @@ def _collector_clips(ctx, roof_tag, collector, shear_lb, states, missing, inputs
     states.append(LimitState(
         f"{collector.tag} eave collector clips", each, worst[1], "lb",
         f"{len(rated)} x {worst[0].size} blocking to {collector.tag}, the lower lateral "
-        f"direction of the catalog row, {shear_lb:,.1f} lb shared equally"
+        f"direction of the catalog row, {shear_lb:,.1f} lb shared equally; {DRY_UNDER_ROOFING}"
         + ("; NOMINAL ONLY — the blocking attachment is missing" if attachment_missing else "")))
 
 

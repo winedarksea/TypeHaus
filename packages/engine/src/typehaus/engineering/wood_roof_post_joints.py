@@ -21,6 +21,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
+from typehaus.engineering.canopy_service import OUTSIDE_REPORT, WET_CM, WET_RULE
 from typehaus.engineering.item import LimitState
 
 
@@ -57,16 +58,19 @@ def joint_rows(ctx: Any, post_tag: str, beam_axis: str, demands: EndDemands,
     if cap_allow is None or cap_allow.uplift_lb is None:
         missing.append(f"a post cap with published uplift on {post_tag}")
     else:
-        up = demands.head_uplift / cap_allow.uplift_lb
-        states.append(LimitState(f"{cap.size} head uplift", demands.head_uplift,
-                                 cap_allow.uplift_lb, "lb", cap_allow.citation.split(":")[0]))
+        cap_up = cap_allow.uplift_lb * WET_CM
+        up = demands.head_uplift / cap_up
+        states.append(LimitState(f"{cap.size} head uplift", demands.head_uplift, cap_up, "lb",
+                                 f"{cap_allow.citation.split(':')[0]}; {WET_RULE}; "
+                                 f"{OUTSIDE_REPORT}"))
         if cap_allow.lateral_f1_lb:
-            lat = demands.head_along / cap_allow.lateral_f1_lb
+            cap_lat = cap_allow.lateral_f1_lb * WET_CM
+            lat = demands.head_along / cap_lat
             states.append(LimitState(
                 f"{cap.size} head, uplift + lateral along the beam", up + lat, 1.0, "",
-                f"linear: {demands.head_uplift:,.1f} / {cap_allow.uplift_lb:,.0f} + "
-                f"{demands.head_along:,.1f} / {cap_allow.lateral_f1_lb:,.0f} (ESR-2604 Table 3 "
-                f"fn. 6, lateral parallel to the beam)"))
+                f"linear: {demands.head_uplift:,.1f} / {cap_up:,.0f} + "
+                f"{demands.head_along:,.1f} / {cap_lat:,.0f} (ESR-2604 Table 3 fn. 6, lateral "
+                f"parallel to the beam; x C_M {WET_CM:g}, wet, outside the report)"))
         else:
             missing.append(f"a lateral row along the beam for {cap.size} on {post_tag}")
     from typehaus.model.elements import Wall
@@ -91,12 +95,14 @@ def joint_rows(ctx: Any, post_tag: str, beam_axis: str, demands: EndDemands,
     if not along_cap or not across_cap:
         missing.append(f"lateral rows for {base.size} on {post_tag}")
         return states
-    up = demands.base_uplift / base_allow.uplift_lb
-    for label, lateral, allow in (("along the beam", demands.base_along, along_cap),
-                                  ("across the beam", demands.base_across, across_cap)):
+    base_up = base_allow.uplift_lb * WET_CM
+    up = demands.base_uplift / base_up
+    for label, lateral, allow in (("along the beam", demands.base_along, along_cap * WET_CM),
+                                  ("across the beam", demands.base_across, across_cap * WET_CM)):
         states.append(LimitState(
             f"{base.size} base, uplift + lateral {label}", up + lateral / allow, 1.0, "",
-            f"linear unity: {demands.base_uplift:,.1f} / {base_allow.uplift_lb:,.0f} (cracked) "
+            f"wet, x C_M {WET_CM:g} on every term, outside the report; "
+            f"linear unity: {demands.base_uplift:,.1f} / {base_up:,.0f} (cracked) "
             f"+ {lateral:,.1f} / {allow:,.0f}; F2 along Connector.axis "
             f"{getattr(base, 'axis', None) or 'unset'}. {base_allow.citation.split(';')[0]}"))
     return states
@@ -115,6 +121,6 @@ def _angle_row(states, angles, demand, label, post_tag, missing, required) -> No
         missing.append(f"a lateral row for {angles[0].size}")
         return
     states.append(LimitState(
-        f"{angles[0].size} {label}", demand / len(angles), min(values), "lb",
-        f"{demand:,.1f} lb over {len(angles)} angle(s) at the lower of F1/F2 — "
-        f"{allow.citation.split(':')[0]}"))
+        f"{angles[0].size} {label}", demand / len(angles), min(values) * WET_CM, "lb",
+        f"{demand:,.1f} lb over {len(angles)} angle(s) at the lower of F1/F2 x C_M "
+        f"{WET_CM:g} (wet, outside the report) — {allow.citation.split(':')[0]}"))
