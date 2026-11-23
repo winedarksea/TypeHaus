@@ -151,7 +151,9 @@ def site_bolt_rows(model: ResolvedModel) -> list:
             dims = ANGLE_DIMENSIONS.get(connector.size.removesuffix("HDG"))
             steel_in = STEEL_GAUGE_THICKNESS_IN[dims.gauge] if dims else 0.0
             solid = solids.get(connector.tag)
-            z_m = (solid.z0_m + solid.z1_m) / 2 if solid else connector.elevation.meters
+            if solid is None and not any(model.wall(t) or t in solids for t in connector.connects):
+                continue  # ablated with everything it ties (a study model): nothing to bolt
+            z_m =(solid.z0_m + solid.z1_m) / 2 if solid else connector.elevation.meters
             for bolt in schedule.site_bolts:
                 role = ROLE_SITE_BOLT if bolt.kind == "bolt" else ROLE_SITE_LAG
                 item = next(i for i in catalog
