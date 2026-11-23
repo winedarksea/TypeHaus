@@ -2,6 +2,7 @@
 
 import math
 
+from typehaus.engineering import delivery_working as DW
 from typehaus.engineering.blocking_geometry import nailing_margins, top_at
 from typehaus.engineering.item import LimitState
 from typehaus.engineering.nail_yield import nail_single_shear_lb
@@ -66,9 +67,10 @@ def _backing(ctx, roof, recipe, centre, sign, index, across):
     return None, None
 
 
-def joint_attachment_rows(ctx, rows, element, joints, along, demand):
+def joint_attachment_rows(ctx, rows, element, joints, along, demand, parts=()):
     delivery = element.diaphragm.delivers_to
     recipe = delivery.joint_nailing
+    parts = parts or (demand, None, None)
     if recipe is None:
         rows.missing.append(f"joint attachment for {element.tag}: longitudinal nailing "
                             "members and their installed fastening schedule")
@@ -127,7 +129,12 @@ def joint_attachment_rows(ctx, rows, element, joints, along, demand):
                 f"(mode {mode}: {recipe.deck_nail_diameter.inches:g}in nail, "
                 f"{thickness_in:g}in deck G={deck_gravity:.2f}, {main_in:g}in into G={wood:.2f}) "
                 f"x C_D {WIND_LOAD_DURATION}; {recipe.fastening}. Across-joint share plus the "
-                "larger of the two readings of the same couple"))
+                "larger of the two readings of the same couple",
+                **DW.cw(DW.WIND_ASD),
+                working=DW.nailer(parts[0], parts[1], parts[2], demand, usable_in,
+                                  recipe.deck_nail_spacing.inches, nails, z, mode,
+                                  WIND_LOAD_DURATION, nails * z * WIND_LOAD_DURATION,
+                                  "nail")))
 
 
 def _deck(ctx, tag):

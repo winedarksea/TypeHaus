@@ -9,14 +9,17 @@ import math
 from dataclasses import dataclass
 from typing import Any
 
+from typehaus.engineering import wood_roof_post_working as WRP
 from typehaus.engineering.item import (
     EngineeringRecord,
     LimitState,
     Oracle,
     Quantity,
     Status,
+    declare_sheet,
     item_id,
 )
+from typehaus.engineering.owner_bases import DESIGN_SNOW_DRIFT
 from typehaus.engineering.registry import EngineeringContext, calc, keys, oracled_by
 from typehaus.engineering.retaining_basis import PRESUMPTIVE_FC_PSI
 
@@ -201,9 +204,10 @@ def _one(ctx: EngineeringContext, case: _Case) -> EngineeringRecord:
     base_ft = base.elevation.inches / 12.0
     plate, a_ft, plate_basis = _plate_load(ctx, case, header, base_ft)
     b_ft = case.length_ft - a_ft
-    moment_lb_ft = drag_plf * case.length_ft ** 2 / 8.0
-    if plate:
-        moment_lb_ft += plate * a_ft * b_ft / case.length_ft
+    m_drag = drag_plf * case.length_ft ** 2 / 8.0
+    m_plate = plate * a_ft * b_ft / case.length_ft if plate else 0.0
+    moment_lb_ft = m_drag + m_plate
+    m_ns = a_p = couple = lever = 0.0
     uplift = max(trib * (case.pressure_psf - 0.6 * roof_dead), 0.0)
     head_uplift = uplift
     couple_note = ""
@@ -215,6 +219,7 @@ def _one(ctx: EngineeringContext, case: _Case) -> EngineeringRecord:
         shear = case.wind.delivered_lb(axis)
         depth_ft = (cross_section(header.size).depth_m or 0.0) / 0.3048
         couple = shear * depth_ft
+        lever = chords[0]
         couple_note = (f" plus the band's couple {shear:,.1f} lb x {depth_ft:.3f}' header "
                        f"depth / {chords[0]:.3f}'")
         band = band_for_wall(ctx, case.wall, case.wind.roof_tag, shear)
@@ -235,7 +240,7 @@ def _one(ctx: EngineeringContext, case: _Case) -> EngineeringRecord:
             ns_moment = (drag_plf * case.length_ft ** 2 / 8.0
                          + push * a_p * (case.length_ft - a_p) / case.length_ft)
             if ns_moment > moment_lb_ft:
-                moment_lb_ft = ns_moment
+                moment_lb_ft = m_ns = ns_moment
                 moment_basis = (f"N-S: own drag + {band.band.tag}'s push {push:,.1f} lb at "
                                 f"{a_p:.4f}' above the base")
         head_uplift += couple / chords[0]
@@ -250,19 +255,37 @@ def _one(ctx: EngineeringContext, case: _Case) -> EngineeringRecord:
         head_across=own_half + (plate * a_ft / case.length_ft if plate else 0.0),
         base_across=own_half + (plate * b_ft / case.length_ft if plate else 0.0),
         head_uplift=head_uplift, base_uplift=uplift, plate_lb=plate)
+    demands.steps.update(WRP.demand_steps(
+        trib, case.pressure_psf, roof_dead, uplift, head_uplift, couple, lever,
+        WRP.drag_half(drag_plf, case.length_ft, own_half), plate, a_ft, b_ft, case.length_ft,
+        push, a_p, push_head, push_base, demands.head_along, demands.base_along,
+        demands.head_across, demands.base_across))
     states = [
         LimitState("NDS column slenderness", length_in / SIDE_IN, SLENDERNESS_LIMIT, "",
-                   "NDS 2018 §3.7.1.4, pinned K = 1", is_detailing=True),
+                   "NDS 2018 §3.7.1.4, pinned K = 1", is_detailing=True,
+                   **WRP.cw(WRP.GEOMETRY),
+                   working=WRP.slenderness(length_in, SIDE_IN, SLENDERNESS_LIMIT)),
         LimitState("NDS wet-service axial", axial, fc_prime * area, "lb",
                    f"Table 4D Fc {FC_WET_PSI:g} psi (wet row) x C_D {CD_SNOW:g} x "
-                   f"C_P {cp:.3f}; FcE {fce:.0f} psi, D + S ({snow_basis})"),
+                   f"C_P {cp:.3f}; FcE {fce:.0f} psi, D + S ({snow_basis})",
+                   **WRP.cw(WRP.SNOW_GRAVITY),
+                   working=WRP.axial(trib, roof_dead, snow, weight_plf, case.length_ft, axial,
+                                     FC_WET_PSI, CD_SNOW, length_in, SIDE_IN, EMIN_WET_PSI,
+                                     SAWN_C, fce, cp, fc_prime, area)),
         LimitState("NDS combined axial and bending", interaction, 1.0, "",
                    f"§3.9 conservative uniaxial screen; axial stress {fc_actual:.1f} psi, "
                    f"moment {moment_lb_ft:.1f} lb-ft ({moment_basis}), bending stress "
-                   f"{fb_actual:.1f} psi, wet Fb {FB_WET_PSI:g} x C_D {CD_WIND:g}"),
+                   f"{fb_actual:.1f} psi, wet Fb {FB_WET_PSI:g} x C_D {CD_WIND:g}",
+                   **WRP.cw(WRP.WIND_COMBINED),
+                   working=WRP.combined(fc_actual, fc_prime, fb_actual, FB_WET_PSI * CD_WIND,
+                                        fce, interaction, moment_lb_ft, moment_basis,
+                                        section_modulus, drag_plf, case.length_ft, m_drag,
+                                        m_plate, m_ns, axial, area, FB_WET_PSI, CD_WIND,
+                                        (plate, a_ft, b_ft), (push, a_p))),
         LimitState("IRC R507.4 height cross-check", case.length_ft, R507_4_HEIGHT_FT, "ft",
                    "2018 IRC Table R507.4, 6x6; the NDS snow check governs this roof",
-                   is_detailing=True),
+                   is_detailing=True, **WRP.cw(WRP.GEOMETRY),
+                   working=WRP.height_cross_check(case.length_ft, R507_4_HEIGHT_FT)),
     ]
     states += joint_rows(ctx, case.tag, beam_axis, demands, missing)
     base_item = hardware_by_model(base.size or "")
@@ -302,11 +325,15 @@ def _one(ctx: EngineeringContext, case: _Case) -> EngineeringRecord:
                 f"out-of-plane (E-W) ends and the band push across it (N-S)."
                 if case.wall is not None else ""),
                f"Head uplift is the net roof uplift {uplift:.1f} lb{couple_note}.",
-               "WET SERVICE at every connector, the canopy's one exposure rule "
-               "(engineering/canopy_service.py): the caps, angles and base take C_M 0.70 on "
+               "WET SERVICE at every connector, the canopy's one exposure rule: the caps, "
+               "angles and base take C_M 0.70 (NDS 2018 Table 11.3.3) on "
                "their dry rows. Their reports (ESR-2604 §3.2.2, ESR-3096, ESR-3050 §4.1) cover "
                "MC <= 19% only, so the wet values are a reading outside them. The column "
                "itself is graded on the WET row."))
+
+
+declare_sheet(KIND, not_covered=WRP.NOT_COVERED, bases=(DESIGN_SNOW_DRIFT,),
+              labels=WRP.LABELS, figure=WRP.figure)
 
 
 def _beam_axis(ctx: EngineeringContext, beam: Any) -> str:
