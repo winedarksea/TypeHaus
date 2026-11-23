@@ -1700,7 +1700,7 @@ the two service moments at the factored axial (0.178). It is applied to every §
 `P L³/3EI + P L²/k_theta` and the SDC A statement of §9 (F_x = 0.01 W); no code drift limit is
 claimed for a deck column.
 
-## 27. The verifier's corrections (2026-11-23): wind bands, the joint's own block, the stem, the load path, uplift
+## 27. The verifier's corrections (2026-11-23): wind bands, the joint's own block, the stem, the load path, uplift — curtain numbers withdrawn by §28
 
 An independent verifier reproduced §24-§26 and found gaps. **§27 supersedes the numbers of §22,
 §24, §25 and §26 where they differ; the method is theirs.**
@@ -1773,6 +1773,42 @@ graded as a state.
 bearing centre the statics are taken at), NDS §3.4.3.1(a): 2,689 - 812.5 - 487.5 x 1.115 = 1,333 lb
 (3" test case), `f_v` 63.4 psi (0.24) with the planter. It had been measured from the centre line,
 5% conservative. The record's summary now says planter ON (bearing 0.624 ON, 0.51 OFF).
+
+## 28. The porch curtains are not a wind band (2026-11-23, owner)
+
+**Owner basis: the curtains are retractable soft goods and are NOT wind-rated.** They are retracted
+and stowed above the curtain maker's rated wind speed (the specification), so the porch is OPEN for
+wind design and the curtains are not a wind-resisting element. §24's curtain band (1,191 lb N-S, the
+16' face) and every number that used it are withdrawn; §27's other corrections stand. Listed under
+"not covered — owner" on `glulam_beam` and `deck_post` (`balcony_loads.CURTAIN_OWNER_BASIS`): the
+design neither relies on nor grades closed curtains in design wind, **and a reviewer may question
+reliance on an operable closure being retracted.** The track and its header screw to the balcony
+joists' soffit; no closed-in-moderate-wind load is published in the sources held, so none is carried
+by joists, beams, columns, stems or head ties, and no internal pressure is taken under the sealed
+deck (the head-uplift row stays the open-structure reading; §27's "enclosure not graded" bound is
+deleted).
+
+**Wind, ASD, 17.00 psf.** The governing axis is E-W again: deck 508 + plank edge 21 + guard 286 +
+shafts 533 = **1,348 lb** (N-S 363 + 41 + 279 + 533 = 1,216). Per column the base moment is
+132 x 9.33' + 71.5 x 11.55' + 133 x 3.88' = 2,577 by hand, engine **2,578.6 BF / 2,588.8 BR**
+(guard 2,643.75 still governs the ASD moment; at strength wind 4,298 edges guard 4,230). Head shear
+(508 + 21 + 286)/4 = **203.6 lb**.
+
+**Final ratios (prefs context; the planter on and off both run):**
+
+```
+deck_post P-M envelope   0.294 / 0.294   (10,853 -> 7,012 lb-ft / 23,857 floor-empty wind + guard)
+base_rotation            0.295 / 0.296
+column_head_joint        lateral wind 0.226, guard 0.356, uplift 0.233 / 0.307, combined 0.460 / 0.533
+column_support           dowel tension 0.540 / 0.536 (hand couple, own block, 8,962 lb per bar BR),
+                         bearing 0.32, development 0.265, stem below dowels 0.22 / 0.31,
+                         stem as an E-W cantilever with the retained soil 0.774
+                         (wind 1,531 + soil 2,650 = 4,131 lb-ft/ft against 5,340)
+glulam_beam              bearing 0.624 (planter ON), bending 0.33, shear 0.24
+```
+
+The dowel tension (0.54) is far under the 0.92 the owner accepted; the OWNER-ACCEPTED note is
+reworded on the record (it names no figure above what is printed).
 
 ---
 

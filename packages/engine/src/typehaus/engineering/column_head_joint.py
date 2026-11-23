@@ -32,6 +32,7 @@ from __future__ import annotations
 import math
 from typing import Any
 
+from typehaus.engineering.balcony_loads import CURTAIN_OWNER_BASIS
 from typehaus.engineering.column_head_geometry import (
     BeamFrame,
     beam_frame,
@@ -147,7 +148,7 @@ def _one(ctx: EngineeringContext, pier: Any, frame_forces: dict[str, float] | No
         head = pier.wind_head_shear_lb or (
             pier.wind_base_moment_lb_ft / height_ft if height_ft else 0.0)
         wind_by_axis = {"any": head} if head else {}
-        wind_how = ("the wind shear the deck, guard and closed curtains put on the head "
+        wind_how = ("the wind shear the deck band, plank edge and guard put on the head "
                     "(the shaft's own wind acts below it)" if pier.wind_head_shear_lb else
                     "the storey shear at the head, M_wind / H — an upper bound on a "
                     "free-headed roof column")
@@ -325,32 +326,17 @@ def _sealed_deck_uplift(ctx: EngineeringContext, pier: Any, notes: list[str]) ->
     up = asd_solid_band_psf(wind.q_h_psf)
     area = pier.statics_area_ft2 or pier.tributary_ft2
     uplift = (up - 0.6 * DECK_DEAD_LOAD_PSF) * area
-    # Internal pressure: with the porch curtains closed (the lateral design case) the sealed
-    # deck roofs a mostly enclosed space. C&C roof pressure p = q_h (GCp - GCpi); the cited
-    # figures are GAF, "A Guide to Using ASCE 7-16" (June 2020) p. 46: flat roof GCp at <= 10 ft2
-    # zone 2 -2.3 (zone 3 -3.2), GCpi -0.55 partially enclosed (-0.18 enclosed). That is a
-    # SECONDARY summary at the smallest effective area; the figure's reduction to this
-    # column's ~50 ft2 is not held, so the result is a BOUND and is not graded as a state.
-    bound = {name: (0.6 * wind.q_h_psf * (gcp + gcpi) - 0.6 * DECK_DEAD_LOAD_PSF) * area
-             for name, gcp, gcpi in (("zone 2, partially enclosed", 2.3, 0.55),
-                                     ("zone 2, enclosed", 2.3, 0.18),
-                                     ("zone 3, partially enclosed", 3.2, 0.55))}
     notes.append(
         f"UPLIFT: this deck's plank ({plank}) is SEALED — the porch's roof — so ASCE 7-16's "
-        f"no-uplift rule for an open-jointed surface does not hold. GRADED (the open-structure "
-        f"bound the roof columns use): 0.6 x {wind.q_h_psf:.2f} psf x G x C_f 1.8 = {up:.2f} "
-        f"psf up, less 0.6 x {DECK_DEAD_LOAD_PSF:g} psf of deck dead (planters excluded), on "
-        f"this column's {area:.1f} ft2 (the beam's STATICS area under full load, as gravity "
-        f"takes it; the equal-split {pier.tributary_ft2:.1f} ft2 was lower at the rear). The "
-        f"joist ties and the plank's own fastening see the same uplift.")
+        f"no-uplift rule for an open-jointed surface does not hold. GRADED as an OPEN structure "
+        f"(the bound the roof columns use): 0.6 x {wind.q_h_psf:.2f} psf x G x C_f 1.8 = "
+        f"{up:.2f} psf up, less 0.6 x {DECK_DEAD_LOAD_PSF:g} psf of deck dead (planters "
+        f"excluded), on this column's {area:.1f} ft2 (the beam's STATICS area under full "
+        f"load, as gravity takes it). The joist ties and the plank's own fastening see the "
+        f"same uplift.")
     notes.append(
-        "ENCLOSURE NOT GRADED (open item): with the curtains closed the space below is "
-        "partially enclosed at best, and internal pressure adds to the roof's uplift. At the "
-        f"cited <= 10 ft2 C&C coefficients, on {area:.1f} ft2, the head uplift would be "
-        + "; ".join(f"{k} {v:,.0f} lb" for k, v in bound.items())
-        + " against the 1,920 lb pair — an UPPER bound, because GCp falls with the effective "
-        "area and the figure's values for ~50 ft2 are not held here. Grade it on Fig. 30.3-2A "
-        "at the true area, or decide the curtains' enclosure class, before the row closes.")
+        "OWNER BASIS, no internal pressure: the porch curtains are stowed in high wind, so the "
+        "porch is OPEN and no GC_pi is taken under the sealed deck. " + CURTAIN_OWNER_BASIS)
     return uplift
 
 

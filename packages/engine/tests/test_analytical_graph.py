@@ -128,7 +128,7 @@ def test_a_roof_beam_carries_its_records_own_uniform_load(analytical, catlin_eng
 def test_a_fixed_column_carries_the_loads_that_make_its_record_s_base_moment(
         analytical, catlin_engineering) -> None:
     """Each band at its own lever reproduces the ``wind_base_moment`` the record graded: the
-    deck and curtains' shear at the top, the guard's share with its lever above it as a node
+    deck band's shear at its centroid, the guard's share with its lever above it as a node
     moment, and the shaft's own wind along the column (balcony note §24). A roof column with
     no components keeps ``V x h``."""
     lb = 4.4482216152605
