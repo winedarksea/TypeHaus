@@ -23,6 +23,7 @@ from typehaus.checks.structural import (
     footing_size,  # noqa: F401 - registers checks
     fortified_roof,  # noqa: F401 - registers checks
     foundation,  # noqa: F401 - registers checks
+    girt_fastening,  # noqa: F401 - registers checks
     guards,  # noqa: F401 - registers checks
     hanger_seat_fit,  # noqa: F401 - registers checks
     header_prescriptive,  # noqa: F401 - registers checks
@@ -45,6 +46,7 @@ from typehaus.checks.structural import (
     snow,  # noqa: F401 - registers checks
     snow_retention,  # noqa: F401 - registers checks
     soffit,  # noqa: F401 - registers checks
+    srw_chart,  # noqa: F401 - registers checks
     stacked_ladder,  # noqa: F401 - registers checks
     stair_stringers,  # noqa: F401 - registers checks
     stair_winders,  # noqa: F401 - registers checks

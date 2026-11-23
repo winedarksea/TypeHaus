@@ -1,5 +1,8 @@
 """``tiered_retaining`` — the SRW apron's own gravity free body.
 
+Since 2026-11-22 only W-RG-EAST is a register item: the four legs drawn to AB Table 1.3 are
+read off the chart (``test_srw_chart.py``); the free body here still runs on any wall.
+
 Oracle: ``houses/catlin/notes/raised_garden_srw.md``, hand-worked separately. §3–§8 are
 reproduced here (AB Stones, 12°; §3c's superseded AB Classic is still pinned) against
 ``engineering/segmental_wall.analyse``; the catlin tests read the
@@ -18,6 +21,8 @@ from typehaus import (
     PublishedSpan,
     SegmentalWallSpec,
     SoilBasis,
+    SrwChartSection,
+    SrwDrain,
     SrwDrainageZone,
     ft,
     inch,
@@ -28,6 +33,7 @@ from typehaus.engineering.retaining_wall import enumerate_walls
 from typehaus.engineering.segmental_wall import (
     KIND,
     Section,
+    Tier,
     _one,
     analyse,
     lower_tiers,
@@ -41,7 +47,8 @@ from typehaus.engineering.srw_gravity import (
     trial_wedge,
 )
 
-_APRON = ("W-RG-BLOCK", "W-RG-WEST", "W-RG-EAST", "W-RG-WEST-BALCONY", "W-RG-EAST-BALCONY")
+_ALL = ("W-RG-BLOCK", "W-RG-WEST", "W-RG-EAST", "W-RG-WEST-BALCONY", "W-RG-EAST-BALCONY")
+_APRON = ("W-RG-EAST",)     # the register's scope: the leg that misses Table 1.3 (gate G9)
 _RETAINED_FT = {"W-RG-BLOCK": 40 / 12, "W-RG-WEST": 40 / 12, "W-RG-EAST": 40 / 12,
                 "W-RG-WEST-BALCONY": 36 / 12, "W-RG-EAST-BALCONY": 37 / 12}
 #: The note's §1 section: AB Stones, 3'-4" retained over one 8" course, 0.97' deep, 130 pcf,
@@ -192,10 +199,14 @@ def records(ctx):
 
 
 def test_the_kind_is_computed_not_deferred(ctx) -> None:
+    from typehaus.engineering.registry import keys_of
+
     assert KIND not in DEFERRALS
-    assert [w.tag for w in segmental_walls(ctx)] == sorted(_APRON)
+    # tier_surcharge reads all five; the register holds only the leg off the chart.
+    assert [w.tag for w in segmental_walls(ctx)] == sorted(_ALL)
+    assert keys_of(KIND, ctx) == list(_APRON)
     # Disjoint from the cantilever suite: _retaining_walls is not widened to the apron.
-    assert not set(_APRON) & set(enumerate_walls(ctx))
+    assert not set(_ALL) & set(enumerate_walls(ctx))
 
 
 def test_every_leg_passes_at_the_notes_numbers(records) -> None:
@@ -226,25 +237,22 @@ def test_every_leg_passes_at_the_notes_numbers(records) -> None:
 def test_embedment_reads_the_nearest_station(records) -> None:
     ratios = {tag: next(s.ratio for s in r.limit_states if s.name == "base-course embedment")
               for tag, r in records.items()}
-    assert ratios["W-RG-BLOCK"] == pytest.approx(0.75, abs=1e-3)
-    assert ratios["W-RG-WEST"] == pytest.approx(0.75, abs=1e-3)
+    # The four chart legs sit 4" deeper; their embedment is a row of the chart sheet.
     assert ratios["W-RG-EAST"] == pytest.approx(0.75, abs=1e-3)
-    assert ratios["W-RG-WEST-BALCONY"] == pytest.approx(0.50, abs=1e-3)
-    assert ratios["W-RG-EAST-BALCONY"] == pytest.approx(6 / 11, abs=1e-3)
     # The returns' fill is the north bench's differential, so neither overtops its wall.
     for record in records.values():
         assert not any(n.startswith("MISMATCH") for n in record.notes), record.key
 
 
 def test_an_overtopping_wall_is_incomplete_and_names_both_inputs(ctx) -> None:
-    """The south yard's 40" on a return puts fill 4" over the wall top: the capped free body
+    """44" of fill on a 48" wall with 8" buried puts fill 4" over the wall top: the capped free body
     describes neither input, so the record cannot be OK (§4)."""
-    wall = ctx.plan.by_tag("W-RG-WEST-BALCONY")
-    record = _one(ctx, wall.model_copy(update={"unbalanced_fill": inch(40)}))
+    wall = ctx.plan.by_tag("W-RG-EAST")
+    record = _one(ctx, wall.model_copy(update={"unbalanced_fill": inch(44)}))
     assert record.status is Status.INCOMPLETE
     assert any(n.startswith("MISMATCH") for n in record.notes)
     missing = " ".join(record.missing)
-    assert "unbalanced_fill" in missing and "grade station 0" in missing
+    assert "unbalanced_fill" in missing and "grade station 14" in missing
     # The graded numbers are the capped section's, unchanged.
     assert record.governing.ratio == pytest.approx(0.975, abs=0.001)
 
@@ -266,7 +274,7 @@ def test_the_houses_own_basis_reaches_the_record(ctx) -> None:
     authored = ctx.plan.project.site.soil_basis
     assert authored is not None and authored.provenance == "presumed"
     record = _one(dataclasses.replace(ctx, soil_basis=authored),
-                  ctx.plan.by_tag("W-RG-BLOCK"))
+                  ctx.plan.by_tag("W-RG-EAST"))
     note = next(n for n in record.notes if n.startswith("THE SOIL IS PRESUMED"))
     assert "Ramsey County" in note and "no geotechnical investigation on this parcel" in note
 
@@ -279,7 +287,7 @@ def test_a_geotechnical_basis_clears_the_flag_and_moves_nothing(ctx) -> None:
                       basis="split-spoon sampling, USCS classification",
                       report_date="2026-09-22", investigated_by="A. Tester, PE")
     record = _one(dataclasses.replace(ctx, soil_basis=basis),
-                  ctx.plan.by_tag("W-RG-BLOCK"))
+                  ctx.plan.by_tag("W-RG-EAST"))
     inputs = {q.name: q.value for q in record.inputs}
     assert inputs["soil_presumed"] == 0.0
     assert not any(n.startswith("THE SOIL IS PRESUMED") for n in record.notes)
@@ -298,6 +306,8 @@ def test_the_perimeter_legs_stand_back_to_back(ctx, records, tag, lower) -> None
     assert tier.parallel and tier.back_to_back is True
     assert tier.clear_ft == pytest.approx(2.974, abs=0.005)
     assert "corroborated by grade station" in tier.facing_basis
+    if tag not in records:      # a chart leg has no record; the tier facts hold regardless
+        return
     assert not [s for s in records[tag].limit_states if s.name.startswith("tier")]
     inputs = {q.name: q.value for q in records[tag].inputs}
     assert inputs[f"tier_{lower}_facing"] == -1.0
@@ -309,29 +319,30 @@ def test_the_perimeter_legs_stand_back_to_back(ctx, records, tag, lower) -> None
 def test_a_same_facing_tier_still_grades_the_row(ctx, monkeypatch) -> None:
     import typehaus.engineering.segmental_wall as module
 
-    real = lower_tiers(ctx, ctx.plan.by_tag("W-RG-BLOCK"))
+    real = lower_tiers(ctx, ctx.plan.by_tag("W-RG-EAST"))
     same = [t.__class__(t.tag, t.lower_height_ft, t.clear_ft, t.parallel,
                         False if t.parallel else None, "test") for t in real]
     monkeypatch.setattr(module, "lower_tiers", lambda _ctx, _wall: same)
-    record = _one(ctx, ctx.plan.by_tag("W-RG-BLOCK"))
+    record = _one(ctx, ctx.plan.by_tag("W-RG-EAST"))
     row = next(s for s in record.limit_states if s.name.startswith("tier"))
-    assert row.name == "tier independence vs W-SG-S"
+    assert row.name == "tier independence vs W-SG-E2"
     assert row.ratio == pytest.approx(6.13, abs=0.01)
 
 
-def test_the_returns_have_no_parallel_tier(records) -> None:
+def test_the_returns_have_no_parallel_tier(ctx) -> None:
     for tag in ("W-RG-WEST-BALCONY", "W-RG-EAST-BALCONY"):
-        assert not [s for s in records[tag].limit_states if s.name.startswith("tier")]
+        assert not [t for t in lower_tiers(ctx, ctx.plan.by_tag(tag)) if t.parallel]
 
 
 def test_ab_stones_is_authored_on_every_leg(records) -> None:
     for record in records.values():
         shear = next(s for s in record.limit_states if s.name == "course interface shear")
         assert "AB Stones" in shear.citation and "12 deg setback" in shear.citation
-    notes = " ".join(records["W-RG-BLOCK"].notes)
+    notes = " ".join(records["W-RG-EAST"].notes)
     assert "Unit weight from the product data" in notes
     assert "NOT GRADED: global stability" in notes
-    assert records["W-RG-BLOCK"].missing == ()
+    assert "pad's own underside is not separately checked" in notes
+    assert records["W-RG-EAST"].missing == ()
 
 
 def test_a_passing_wall_on_a_fallback_is_incomplete_then_ok(ctx, monkeypatch) -> None:
@@ -339,7 +350,7 @@ def test_a_passing_wall_on_a_fallback_is_incomplete_then_ok(ctx, monkeypatch) ->
     import typehaus.engineering.segmental_wall as module
 
     monkeypatch.setattr(module, "lower_tiers", lambda _ctx, _wall: [])  # no court beside it
-    wall = ctx.plan.by_tag("W-RG-BLOCK")
+    wall = ctx.plan.by_tag("W-RG-EAST")
     low = wall.model_copy(update={"unbalanced_fill": inch(2),
                                   "srw": SegmentalWallSpec(source="test", unit_depth=ft(3))})
     record = _one(ctx, low)
@@ -357,7 +368,7 @@ def test_a_verdict_inside_the_soil_band_is_incomplete(ctx, monkeypatch) -> None:
     import typehaus.engineering.segmental_wall as module
 
     monkeypatch.setattr(module, "lower_tiers", lambda _ctx, _wall: [])
-    wall = ctx.plan.by_tag("W-RG-BLOCK")
+    wall = ctx.plan.by_tag("W-RG-EAST")
     native = wall.srw.model_copy(update={"drainage_zone": None})
     record = _one(ctx, wall.model_copy(update={"srw": native}))
     assert record.status is Status.INCOMPLETE
@@ -389,7 +400,13 @@ def test_the_published_row_is_refused_until_every_guard_is_answered(ctx) -> None
     battered = SegmentalWallSpec(source="s", batter_deg=9.5, published=_row(5))
     assert "cap" in refusal(battered, drained)
     capped = battered.model_copy(update={"cap": "cap unit"})
-    assert "inside 2H" in refusal(capped, drained)
+    # F9: a back-to-back wall (BLOCK's court wall) is not this rule's tier; a same-facing one is.
+    assert refusal(capped, drained) is None
+    same = Tier("W-SG-S", 9.12, 2.97, True, False, "t")
+    assert "faces the same way" in refusal(capped, drained, [same])
+    assert "facing is not established" in refusal(
+        capped, drained, [Tier("W-SG-S", 9.12, 2.97, True, None, "t")])
+    assert refusal(capped, drained, [Tier("X", 9.12, 2.97, False, None, "")]) is None
     assert "publishes 3.00'" in refusal(
         capped.model_copy(update={"published": _row(3)}), drained, [])
     assert refusal(capped, drained, []) is None
@@ -399,6 +416,11 @@ def test_the_spec_round_trips() -> None:
     spec = SegmentalWallSpec(source="doc", batter_deg=9.5, unit_depth=inch(12),
                              unit_weight_pcf=120.0, interface_shear_lb_per_ft=900.0,
                              cap="cap", published=_row(3),
+                             chart=SrwChartSection(
+                                 batter_deg=12.0, soil_phi_deg=27.0, cap_height=inch(4),
+                                 min_buried=inch(6), min_wall_rock=inch(12),
+                                 founding_compaction_pct=95.0, lift=inch(8),
+                                 drain=SrwDrain(pipe="p", outlet_ref="FB-X")),
                              drainage_zone=SrwDrainageZone(width=inch(12),
                                                            friction_angle_deg=36.0, source="s"))
     wall = FoundationWall(uid="X", tag="W-X", start_node="a", end_node="b",

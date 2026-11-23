@@ -50,7 +50,7 @@ def _criteria(inputs: PackageInputs) -> str:
 #:
 #: Every entry is read off the calculation module that applies it — ``pier_basis``'s
 #: ``DEAD_LOAD_FACTOR``/``LIVE_LOAD_FACTOR``, ``retaining_basis``'s
-#: ``EARTH_PRESSURE_LOAD_FACTOR``, ``girt_screw``'s 0.6W — not chosen here. A kind absent
+#: ``EARTH_PRESSURE_LOAD_FACTOR`` — not chosen here. A kind absent
 #: from this table prints "not stated", which is the honest answer for a kind whose
 #: arithmetic combines nothing: a numbered combination beside a demand that was never
 #: combined is a claim the arithmetic does not support (see ``LimitState.combination``).
@@ -73,7 +73,6 @@ DESIGN_METHOD: dict[str, str] = {
                       "loads). The two are different questions on one wall and the sheet "
                       "labels each state.",
     "retaining_system": "ASD (IBC §1807.2.3 safety factors on service loads)",
-    "girt_screw": "ASD (published withdrawal and pull-through allowables)",
     "post_bearing": "ASD (AWC NDS 2018 reference design values)",
     "glulam_beam": "ASD (AWC NDS 2018 reference design values x C_M, C_D, C_V)",
     "spread_footing": "MIXED — ASD against presumptive bearing, LRFD for the bell's own "
@@ -119,7 +118,6 @@ LOAD_COMBINATIONS: dict[str, tuple[str, str]] = {
                        "ASCE 7-16 §2.3.1(6) / IBC 2018 §1605.2; IBC §1807.2.3"),
     "retaining_system": ("service loads, FS >= 1.5", "IBC 2018 §1807.2.3"),
     "tiered_retaining": ("service loads, FS >= 1.5", "IRC R404.4"),
-    "girt_screw": ("0.6W", "ASCE 7-16 §2.4.1(7), C&C pressures per §30.3"),
     "post_bearing": ("D + L, allowable stress design",
                      "AWC NDS 2018 §3.10; IRC R507.1 loads"),
     "spread_footing": ("D + L, allowable stress design against presumptive bearing",
@@ -174,8 +172,8 @@ def _wind_block(wind: Any, site: Any, inputs: PackageInputs) -> str:
         return ("This model carries no complete wind basis (a speed, an exposure and a risk "
                 "category are all required). Every wind-driven item reports it as a missing "
                 "input rather than assuming one.")
-    heights = sorted({round(float(q.value), 2) for record in inputs.records
-                      for q in record.inputs if q.name == "mean_roof_height"})
+    h = wind.mean_roof_height_ft(inputs.model)
+    heights = [] if h is None else [round(float(h), 2)]
     rows = [
         ["V_ult, basic wind speed", basis.speed_mph, "mph",
          "ASCE 7-16 Fig. 26.5-1 via MN Rules 1309.0301 (115 mph statewide)"],

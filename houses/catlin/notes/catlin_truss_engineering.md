@@ -5,9 +5,11 @@
 carried on 4-1/2" blocks, standing in free air outboard of 4" of closed-cell spray foam.
 Every number below is recomputed here from first principles, with the arithmetic shown, so a
 reviewer can check the whole chain without opening the model.
-**Oracle for:** `typehaus/wind.py`, reproduced by `tests/test_wind_loads.py`; the
-`rafter/RF-*` deferral in `engineering/deferred.py`; and **§3 for
-`typehaus/engineering/girt_screw.py`**, reproduced by `tests/test_girt_screw_calcs.py`.
+**Oracle for:** `typehaus/wind.py`, reproduced by `tests/test_wind_loads.py` (§2, including
+§2's mean-roof-height-above-lowest-ground); the `rafter/RF-*` deferral in
+`engineering/deferred.py`; and **§3 for `checks/structural/girt_fastening.py`**
+(`structural.girt_fastening`, a published read since 2026-11-22; no engineering item),
+reproduced by `tests/test_girt_fastening.py`.
 **What is asked of the reviewer:** this is a plain NDS connection design under IRC R301.1.3
 engineered design. It is not a prescriptive furring schedule and does not claim to be one.
 See §6 (Code path) for why IRC Table R703.15.1 is not the applicable provision.
@@ -144,6 +146,29 @@ p_ASD = 0.6 · p_ult                                 = −26.7 psf   ← used ev
 That is deliberately conservative: the corner zone is a fraction of the wall area and the
 field is 19 % lower.
 
+### Mean roof height is above the LOWEST ground (2026-11-22)
+
+ASCE 7's z is height above the ground where the wall stands. The model's roof heights are
+main-floor-datum heights, and the datum is not the ground: the site grade is 2'-10" below it
+and the sunken garden floor (the lowest spot elevation) is 9'-1-7/16" below. The engine takes
+the **lowest** ground, the way the canopy calcs always did, so h is not measured two ways in
+one package. Exposure B, by hand:
+
+```
+eave 20.9918 ft, ridge 30.2939 ft above datum     mean = 25.6428 ft
+lowest ground = -(9 + 1.4375/12)                   = -9.1198 ft
+h = 25.6428 + 9.1198                               = 34.7626 ft
+K_h = 2.01 (34.7626 / 1200)^(2/7)                  = 0.73071     (was 0.66987 at 25.64 ft)
+q_h = 0.00256 x 0.73071 x 0.85 x 115^2             = 21.0282 psf (was 19.2773)
+zone 5 suction   21.0282 x (1.4 + 0.18) = 33.2246 psf ult  -> ASD 0.6 x = 19.9348 psf (was 18.2749)
+zone 5 inward    21.0282 x (1.0 + 0.18) = 24.8133 psf ult  -> ASD 0.6 x = 14.8880 psf (was 13.6483)
+zone 4 suction   21.0282 x (1.1 + 0.18) = 26.9161 psf ult  -> ASD 0.6 x = 16.1497 psf
+```
+
++9.1 % on every wall C&C pressure. It moves `structural.cladding_wind` (outward 0.3437 against
+58 psf, inward 0.3462 against 43) and `structural.veneer_cavity_width`'s pressure (19.93 psf,
+still under R703.8.4.1's 30 psf, so the one-tie-per-2.67-sf area does not change).
+
 ### Dead
 
 - 24 ga snap-lock standing seam ≈ **1.2 psf**; 26 ga exposed-fastener ribbed ≈ **0.9 psf**
@@ -177,6 +202,31 @@ well under one.
 **FastenMaster TimberLOK, 8", part TLOK08** — 0.189" shank, **2" thread** (ICC-ES ESR-1078,
 reissued 2026-01, Table 1A). Coating rated for ACQ-D at or below 0.40 pcf (§4.1.7 / Table 6),
 which is what the KDAT girt it passes through requires.
+
+**ESR-1078 as opened 2026-11-22** (icc-es.org report directory, "Reissued January 2026, subject
+to renewal January 2027", OMG, Inc. / MiTek, FastenMaster LOK Series Structural Wood Screws),
+the rows this section reads, in the report's own words:
+
+- **Table 1A**, OlyLog and TimberLOK dimensions and strengths: TLOK08 or LOG008, head marking F8.0,
+  overall length 8", length of thread 2", unthreaded shank diameter 0.189", allowable fastener
+  strength tensile 1,300 lbf, shear 940 lbf (shear "only to shearing in the unthreaded shank").
+- **Table 2**, reference withdrawal design values W90 for installation into the face of the wood
+  member, OlyLog/TimberLOK, minimum embedded thread length 1.25": 270 / 260 / 220 / 200 / 180 / 170
+  lbf/in at specific gravities 0.57 / 0.55 / 0.5 / 0.46 / 0.43 / 0.42.
+- **Table 3**, reference head pull-through design values (WH), OlyLog/TimberLOK, minimum side member
+  thickness 1.5": 220 / 200 / 160 / 130 / 110 / 110 lbf at the same specific gravities.
+- **§4.1.3**: the allowable load for a single-screw connection in tension is "the least of (a) the
+  reference withdrawal design value given in Table 2, multiplied by the embedded thread length,
+  and adjusted by all applicable adjustment factors; (b) the reference head pull-through design
+  value given in Table 3, adjusted ...; and (c) the allowable screw tension strength given in
+  Tables 1A through 1E."
+- **§4.1.7**: the fasteners "may be used as alternates to hot-dip galvanized fasteners ... in wood
+  chemically treated with waterborne alkaline copper quaternary, type D (ACQ-D), with a maximum
+  retention of 0.40 pcf", limited to the exposure conditions of Table 6 (1: treated wood in dry
+  use; 3: general construction, "no saltwater exposure"). **The girt order is KDAT at ACQ-D
+  retention of 0.40 pcf or less.**
+- **§3.2**: "Use of the screws in engineered wood products (EWP) other than those addressed above is
+  outside the scope of this report" (the LSL studs, §3.6).
 
 **Superseded 2026-09-12:** this was the Simpson SDWS22800DB. It is not a preference change —
 see "the engagement check" below; the SDWS cannot clamp this stack, and nothing in the house
@@ -238,15 +288,20 @@ p      = 1-1/2" of embedded thread          (§3.1)
 Z      = 170 x 1.5 x C_D(1.0)  =  255 lb
 ```
 
-**C_D is 1.0 and that is deliberate.** NDS Table 2.3.2 would give 1.6 for wind, but that
-factor belongs to the NDS equation; applying it to a *tested* allowable whose report does
-not authorise it would inflate this capacity by 60 % on a clause nobody has read. **The
-reviewer is asked to check ESR-1078 §4 and restore 1.6 if the report permits it** — the
-design passes either way and this note states the conservative reading.
+**C_D is 1.0 and that is deliberate.** ESR-1078 §4.1.2, read 2026-11-22: "The reference
+design values given in Tables 2 through 4 must be adjusted in accordance with the
+requirements for dowel-type fasteners in Section 11.3 of the NDS ... including the wet
+service factor, C_M, where applicable." The report names NDS 11.3 and does not itself grant a
+duration increase; whether Table 11.3.1 applies C_D to withdrawal and pull-through (and the
+1.6 for wind) is in NDS text this note has not opened, so **UNVERIFIED and not taken**. The
+house reads the same factor the same way on the door-sill course. If it applies, both
+capacities rise 1.6x; the design passes either way and this note states the conservative
+reading.
 
 **C_M is 1.0, dry service.** The embedded thread lands in a stud inside a continuous
 closed-cell foam air and water barrier. 0.7 (wet service) is the alternate if a reviewer
-disagrees, and would put the capacity at 179 lb — still passing.
+disagrees, and would put the capacity at 179 lb — still passing. (The girt's head
+pull-through is the other member, §3.4.)
 
 **Cross-check against the code's own equation**, printed the way
 `notes/board_batten_girt_span.md` prints ER-309's DFL row:
@@ -258,8 +313,9 @@ NDS 2018 §12.2.1   W = 2,850 G² D = 2,850 x 0.42² x 0.189 = 95.0 lb/in   (una
 The tested 170 lb/in governs; the general equation is here so a reviewer can see the two are
 the same order and the report is not an outlier.
 
-**NDS §12.1.4.6 minimum penetration:** 6 D = 6 x 0.189" = **1.134"**, against 1.5" embedded.
-Satisfied with margin.
+**Minimum embedded thread.** Table 2's TimberLOK row is for at least **1.25"** of embedded
+thread (it subsumes NDS §12.1.4.6's 6 D = 6 x 0.189" = 1.134"), against 1.5" embedded.
+Satisfied; the check refuses the row below it.
 
 ### 3.4 Head pull-through of the girt
 
@@ -267,8 +323,17 @@ ESR-1078 **Table 3**, 1-1/2" side member. The girt IS that side member — a sin
 of KDAT at SG 0.55 — so the table's assumption is the built condition and not an analogy:
 
 ```
-head pull-through = 200 lb
+head pull-through = 200 lb          (Table 3, OlyLog/TimberLOK, 1-1/2" side member, SG 0.55)
 ```
+
+The row is indexed by the SIDE member's specific gravity: 220/200/160/130/110/110 lb at SG
+0.57/0.55/0.50/0.46/0.43/0.42. KDAT is Southern Pine (SG 0.55, NDS Table 12.3.3A), so 200. A
+girt in SPF (0.42) would read **110 lb**, and `structural.girt_fastening` refuses an authored
+value the row at the girt's SG does not support. **Wet service:** the report's values are dry
+(§4.1.2 names C_M); the girt stands in the vented gap behind the panel and is taken dry. At
+the house's 0.70 wet factor (the door-sill course reads the same) the allowable is 140 lb, and
+against §3.5's demand that is d/c 1.04, so the dry reading carries the pass and is the one
+judgement here an owner should confirm.
 
 This is the *lowest* of the three capacities and it is what governs. HeadLOK 8" (HLGM8) is
 the recorded alternate: same 2" thread, flat head, 600 lb pull-through at SG 0.55 — three
@@ -276,38 +341,58 @@ times the margin. It is not specified because ESR-1078 Table 2 wants **2.0"** of
 thread for it, which needs the 1/2" ply counted on the stud side, and the report is silent
 on sheathing. If the reviewer is willing to count it, HeadLOK is the better screw.
 
-### 3.5 The demand, and the three ratios
+### 3.5 The demand, and the ratios
 
 The site's own basis — **115 mph V_ult, Exposure B, Risk Category II** — at the building's
-mean roof height of 25.52 ft (2026-11-01, decision #109's plane; 25.64 ft and 18.27 psf since the 1-1/2" rise of 2026-11-10, a 97.5 lb crossing), worked in full in `notes/board_batten_girt_span.md` §2-§4 and
+mean roof height **above the lowest ground, 34.76 ft** (§2; it was 25.64 ft above the
+datum until 2026-11-22), worked in full in `notes/board_batten_girt_span.md` §2-§4 and
 recomputed identically here because the panel and the screw carry **one** suction:
 
 ```
-q_h      = 19.25 psf
-GC_p     = -1.4   (ASCE 7-16 Fig. 30.3-1, Zone 5 corner, at 1.33 ft² effective area)
+q_h      = 21.0282 psf
+GC_p     = -1.4   (ASCE 7-16 Fig. 30.3-1, Zone 5 corner, at 1.33 ft^2 effective area)
 GC_pi    =  0.18  (Table 26.13-1, enclosed)
-strength = 19.25 x (1.4 + 0.18)         = 30.42 psf
-ASD      = 0.6 x 30.42                  = 18.25 psf      (ASCE 7-16 §2.4.1)
+strength = 21.0282 x (1.4 + 0.18)       = 33.2246 psf
+ASD      = 0.6 x 33.2246                = 19.9348 psf      (ASCE 7-16 §2.4.1)
 
-tributary = 32" x 24"                   = 5.33 ft²
-demand    = 18.25 x 5.33                = 97.3 lb per crossing
+tributary = 32" x 24"                   = 5.3333 ft^2
+simple    = 19.9348 x 5.3333            = 106.32 lb per crossing
+```
+
+**Continuity (2026-11-22, review C-7).** 106.32 lb is the SIMPLE-span reaction. The 2x4 girt is
+continuous over the blocks and the panel is continuous over the girts, and from statics an
+interior support takes more than wL: **1.25 wL** at the interior support of two equal spans
+(5wL/4) and **1.10 wL** of three or more (11wL/10). Both are taken, on the girt and then the
+panel, and the screw is the interior support:
+
+```
+demand = 106.32 x 1.25 x 1.10          = 146.19 lb per crossing   (was 97.47 lb, simple, h 25.64 ft)
 ```
 
 | limit state | demand | capacity | d/c |
 |---|---|---|---|
 | thread engagement (shank across the clamped stack) | 6.0 in | 6.0 in | **1.000** |
-| withdrawal from the stud | 97.3 lb | 255 lb | 0.382 |
-| **head pull-through of the girt** | 97.3 lb | **200 lb** | **0.487** |
-| minimum penetration, 6 D | 1.134 in | 1.500 in | 0.756 |
+| withdrawal from the stud (Table 2) | 146.19 lb | 255 lb | 0.573 |
+| **head pull-through of the girt (Table 3)** | 146.19 lb | **200 lb** | **0.731** |
+| screw tension (Table 1A, TLOK08) | 146.19 lb | 1,300 lb | 0.112 |
 
 Engagement is a *detailing* row: it reads 1.000 because the screw fits exactly, which is the
 right answer and not a margin to be spent. The governing strength state is head pull-through
-at **d/c 0.487**.
+at **d/c 0.731** (it was 0.487). At the 0.70 wet factor (§3.4) it would read 1.044.
 
-**Exposure C, printed as the alternate.** §2 works the same wall at Exposure C (26.7 psf
-suction, 142 lb per crossing) as a conservatism on a site that is Exposure B by its
-surroundings. At C the ratios are 0.558 withdrawal and **0.712 pull-through** — still
-passing, on a basis the site does not need.
+**Exposure C, printed as the alternate.** §2 works the same wall at Exposure C as a
+conservatism on a site that is Exposure B by its surroundings; it is not the design basis
+and its old 142 lb simple-span figure is not comparable to the 146 lb above.
+
+**What this is graded against, and how.** Table 1A (TLOK08: 8" long, 2" thread, 0.189" shank,
+tensile 1,300 lbf), Table 2 and Table 3 are quoted in the report's own words in §3's heading
+and above; `structural.girt_fastening` reads them as a published row and refuses the authored
+values when the part, its length and thread, the stud's or girt's SG, the 1.25" embedded
+thread or the 1-1/2" side member stop matching. Report conditions it cannot see and prints:
+reference values are dry service (§3.4); installed perpendicular to the face, head flush, no
+lead hole, not overdriven (§4.2); ACQ-D retention at most 0.40 pcf and Table 6 exposure
+conditions 1 and 3 (no salt water, §4.1.7 and §5.5); §3.2's sawn-lumber SG, 19 percent
+moisture or less.
 
 ### 3.6 What a reviewer should know about the wood
 
@@ -334,10 +419,11 @@ carries the SDWS's 3" thread and therefore fails §3.2 for the same reason, befo
 driving torque or thermal bridging is reached. The full cost and thermal argument is recorded
 against the screw row in `prices.toml`.
 
-**This section is oracled by `typehaus/engineering/girt_screw.py`**, item
-`girt_screw/W-A-N1`, and reproduced by `tests/test_girt_screw_calcs.py`. Run
-`haus engineering houses/catlin --item girt_screw/W-A-N1` to see every term above printed
-from the model.
+**This section is oracled by `checks/structural/girt_fastening.py`** (`structural.girt_fastening`),
+reproduced by `tests/test_girt_fastening.py`. The engineering item `girt_screw/W-A-N1` was
+retired on 2026-11-22 (owner decision 21): a published report's row is a prescriptive read, not
+something a seal adds to. Run `haus check houses/catlin --plain --only all | grep girt_fastening`
+to see every term above printed from the model.
 
 ---
 
