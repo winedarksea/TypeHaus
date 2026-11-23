@@ -57,6 +57,7 @@ from typehaus.engineering.retaining_basis import (
 from typehaus.engineering.retaining_system import KIND as SYSTEM_KIND
 from typehaus.engineering.retaining_system import _loops, system_factors
 from typehaus.engineering.retaining_system_cases import soil_inputs as court_soil_inputs
+from typehaus.engineering.retaining_system_cases import soil_stated_basis
 from typehaus.engineering.soil import (
     CONCRETE_UNIT_WEIGHT_PCF,
     SOIL_UNIT_WEIGHT_BAND_PCF,
@@ -437,6 +438,8 @@ def _one(ctx: EngineeringContext, wall,  # type: ignore[no-untyped-def]
         "comparable row for row.",
     ) if system is not None else ()) + (tier_low.notes if tier_low is not None else ())
 
+    stated = soil_stated_basis(ctx, soil) if restrained else None
+    bases = (stated,) if stated is not None else ()
     if over_low != over_high:
         return EngineeringRecord(
             item_id=item_id(KIND, tag), kind=KIND, key=tag,
@@ -446,7 +449,7 @@ def _one(ctx: EngineeringContext, wall,  # type: ignore[no-untyped-def]
             inputs=inputs, limit_states=states_low,
             missing=("a measured soil unit weight (no code table publishes one, and this "
                      "wall's answer depends on it)",),
-            notes=notes, element_tags=(tag,),
+            notes=notes, element_tags=(tag,), bases=bases,
         )
 
     # Report the conservative end. Both ends agree on the verdict, so this is the honest
@@ -465,4 +468,5 @@ def _one(ctx: EngineeringContext, wall,  # type: ignore[no-untyped-def]
                  if governing.is_safety_factor else
                  f"{tag}: {governing.name} governs"),
         inputs=inputs, limit_states=states_low, notes=notes, element_tags=(tag,),
+        bases=bases,
     )

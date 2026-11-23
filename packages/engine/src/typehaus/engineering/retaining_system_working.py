@@ -39,12 +39,15 @@ def sliding_steps(body, water, fs: float) -> tuple[Step, ...]:  # type: ignore[n
         earth, wat, snow, lat = body.thrust_terms(p, water)
         depth = p.top_ft - body.plane_ft
         t = body.thrust_per_ft(p, water)
+        head = 0.0 if water.level_ft is None else min(depth, max(0.0, water.level_ft
+                                                                  - body.plane_ft))
         out.append(Step(
             f"T_{p.tag}", f"thrust per foot on {p.tag}'s face", t, "plf",
-            "K d^2 / 2 (+ water, snow, apron surcharge)",
-            f"{num(earth)} earth + {num(wat)} unbalanced water + {num(snow)} snow + "
-            f"{num(lat)} apron; K {num(p.efp)} psf/ft over d {num(depth)} ft",
-            "at-rest pressure; water and snow only where the case has them"))
+            "earth + unbalanced water + snow + apron surcharge",
+            f"{num(earth)} earth + {num(wat)} water + {num(snow)} snow + {num(lat)} apron; "
+            f"K {num(p.efp)} psf/ft, depth d {num(depth)} ft, water head {num(head)} ft",
+            "earth K d^2 / 2 when dry; below water K0 x (gamma - 62.4) and the water's own "
+            "62.4 h^2 / 2 (retained side only); snow K0 x ground snow x d"))
         forces.append(t * p.width_ft)
         out.append(Step(f"w_{p.tag}", f"width {p.tag}'s push acts over", p.width_ft, "ft",
                         source="the body's projected width, corner squares included"))
@@ -60,7 +63,7 @@ def sliding_steps(body, water, fs: float) -> tuple[Step, ...]:  # type: ignore[n
         " + ".join(f"{k} {num(v)}" for k, v in parts.items()),
         "volumes read off the resolved solids; concrete 150 pcf, stone 100 pcf"))
     out += [Step("mu", f"friction on the {body.label}", body.friction, "",
-                 source="the court's stated soil basis (assumptions)"),
+                 source="the court's soil basis, section 6"),
             Step("F", "base friction", body.friction * body.weight(water), "lb", "mu N'",
                  f"{num(body.friction)} x {num(body.weight(water))}"),
             Step("FS_req", "safety factor required", REQUIRED_FS, "", source="IRC R404.4"),

@@ -100,7 +100,7 @@ def test_the_court_reproduces_the_hand_worked_free_body(catlin_plan) -> None:
     staged = next(s for name, s in states.items() if name.startswith("staged backfill"))
     assert staged.capacity == pytest.approx(_NOTE_STAGED_FS["rule"], abs=0.002)
     assert f"one side empty and two full {_NOTE_STAGED_FS['empty']:.2f}" in staged.citation
-    basis = next(n for n in record.notes if n.startswith("OWNER BASIS"))
+    basis = next(b.statement for b in record.bases if "snow and perched water" in b.subject)
     assert "NOT concurrent" in basis and "FS 1.46" in basis   # §15k, printed once
     assert "under snowmelt" not in states
     reported = " ".join(n for n in record.notes if n.startswith("REPORTED"))
@@ -134,7 +134,7 @@ def test_the_court_reproduces_the_hand_worked_free_body(catlin_plan) -> None:
     assert inputs["bed_friction"] == pytest.approx(0.43)
     assert inputs["restraint_friction"] == pytest.approx(1.00)
     assert inputs["at_rest_efp"] == pytest.approx(60.0)
-    assert any("NOT YET CONFIRMED" in n for n in record.notes)
+    assert any("NOT YET CONFIRMED" in b.statement for b in record.bases)
 
 
 def test_the_east_west_thrusts_cancel_and_the_south_face_is_the_body_s(catlin_plan) -> None:

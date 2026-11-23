@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from typehaus.engineering import thermal_break_working as W
 from typehaus.engineering.item import LimitState, Quantity
 from typehaus.engineering.thermal_break_geometry import Board
 
@@ -123,7 +124,9 @@ def pressure(ctx, board: Board, product: Product, states, missing, inputs) -> fl
     states.append(LimitState(
         "fresh-concrete pressure", psi, product.psi, "psi",
         f"ACI 347R-14 capped at wh — {CONCRETE_PCF:.0f} pcf x {head_in / 12:.3f}' of head, "
-        f"{how}; vs the board's {product.psi:.0f} psi"))
+        f"{how}; vs the board's {product.psi:.0f} psi",
+        combination=W.POUR[0], combination_factors=W.POUR[1],
+        working=W.pour_pressure(psi, head_in, CONCRETE_PCF, product.psi, how)))
     return psi
 
 
@@ -142,7 +145,13 @@ def movement(board: Board, product: Product, t: Temps, run: float, closure_in: f
         f"locked-in pour {pour_psi or 0:.3f} psi x {board.t_in:.2f}\"/E {pour:.5f}\" + closing "
         f"{closure_in:.5f}\" at the neutral point ({t.max_f:.0f} - {t.set_f:.0f} F specified "
         f"set); vs {board.t_in:.2f}\" x sigma_y/E = {product.psi:.0f}/{e:,.0f}{est} — "
-        f"{product.source}; service range: {t.source}"))
+        f"{product.source}; service range: {t.source}",
+        combination=W.THERMAL[0], combination_factors=W.THERMAL[1],
+        working=W.board_strain(
+            pour_psi or 0.0, board.t_in, e, pour, closure_in, pour + closure_in, product.psi,
+            board.t_in * product.psi / e, product.estimated,
+            "sigma t / E at the compliant layer's cap" if product.compliant is not None
+            else "closing strain x the neutral point's distance from the far end")))
 
 
 def house_insulation_row(board: Board, layers, sigma: float, pour_psi: float | None,
@@ -159,7 +168,9 @@ def house_insulation_row(board: Board, layers, sigma: float, pour_psi: float | N
         states.append(LimitState(
             "house insulation bearing", demand, psi, "psi",
             f"locked-in pour {pour_psi or 0:.2f} + closing {sigma:.2f} psi at the board's base "
-            f"through {board.house_tag}'s `{name}`: {how}"))
+            f"through {board.house_tag}'s `{name}`: {how}",
+            combination=W.THERMAL[0], combination_factors=W.THERMAL[1],
+            working=W.insulation_bearing(sigma, pour_psi or 0.0, demand, psi, how)))
         return
 
 
@@ -176,4 +187,8 @@ def compliant_row(board: Board, product: Product, t: Temps, run: float, states,
         "compliant layer strain", delta, layer.at_strain * layer.thickness.inches, "in",
         f"{ALPHA_C_PER_F:g} x {t.closing:.0f} F x the full {run:.1f}\" run = {delta:.4f}\" vs "
         f"{layer.at_strain:.0%} of {layer.thickness.inches:g}\" {layer.material}, where its "
-        f"sheet caps the stress at {layer.max_psi:g} psi — {layer.source}"))
+        f"sheet caps the stress at {layer.max_psi:g} psi — {layer.source}",
+        combination=W.THERMAL[0], combination_factors=W.THERMAL[1],
+        working=W.compliant_strain(
+            ALPHA_C_PER_F, t.closing, run, delta, layer.at_strain, layer.thickness.inches,
+            layer.at_strain * layer.thickness.inches, layer.source)))

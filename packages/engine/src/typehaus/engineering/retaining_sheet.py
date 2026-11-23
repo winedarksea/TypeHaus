@@ -31,7 +31,7 @@ class PrefixLabels(dict):
                 return text.format(tag=name[len(prefix):])
         for suffix, text in self._suffixes.items():
             if name.endswith(suffix):
-                return text.format(tag=name[:-len(suffix)])
+                return text.format(tag=name[:-len(suffix)].removeprefix("surcharge_"))
         return default
 
 
@@ -51,7 +51,7 @@ _WALL_LABELS = PrefixLabels({
     "column_base_moment": "base moment of those columns, per foot",
 }, suffixes={
     "_q_net": "net pressure of the apron {tag} over the soil it displaces",
-    "_lateral": "lateral thrust of the apron {tag} on this wall",
+    "_lateral": "lateral thrust of the apron {tag} on this wall (as a strip load)",
     "_arm": "height of that thrust above the footing underside",
 })
 
@@ -150,9 +150,9 @@ def system_figure(record: EngineeringRecord) -> Figure | None:
     tags = sorted(q.name[len("thrust_"):] for q in record.inputs if q.name.startswith("thrust_"))
     if len(tags) != 3:
         return None
-    sides = [t for t in tags if any(
+    sides = sorted((t for t in tags if any(
         s.name.startswith("footing plan bending") and s.name.endswith(t.split("-", 1)[1])
-        for s in record.limit_states)]
+        for s in record.limit_states)), key=lambda t: "-W" not in t)
     if len(sides) != 2:
         return None
     base = next(t for t in tags if t not in sides)

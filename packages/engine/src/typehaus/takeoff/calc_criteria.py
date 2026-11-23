@@ -85,9 +85,11 @@ DESIGN_METHOD: dict[str, str] = {
     "roof_beam": "ASD (published beam allowables against a service demand)",
     "veneer_beam": "LRFD (ACI 318-19 strength design at 1.4D); deflection at service loads "
                    "(Table 24.2.2)",
-    "thermal_break_transfer": "MIXED — ASD for soil, sliding and the foam's sustained-load "
-                              "rule; LRFD for the plain-concrete near line and the "
-                              "winter-tension bars (ACI 318-19, phi 0.60 / 0.90, 1.0T)",
+    "thermal_break_transfer": "MIXED — ASD (service loads) for soil, sliding, the foam's "
+                              "sustained-load rule and the near footing line's elastic-"
+                              "foundation analysis; LRFD for the plain-concrete near-line "
+                              "sections and the winter-tension bars (ACI 318-19, phi 0.60 / "
+                              "0.90, 1.0T)",
     "lateral_system": "ASD (SDPWS-2015 nominal unit shear / 2.0; wind at 0.6W; NDS 2018 and "
                       "published connector allowables)",
     "wood_roof_post": "ASD (AWC NDS 2018 reference design values x adjustment factors; "
