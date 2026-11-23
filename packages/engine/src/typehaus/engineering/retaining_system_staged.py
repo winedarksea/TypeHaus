@@ -50,10 +50,11 @@ def _keys(n: int):  # type: ignore[no-untyped-def]
         yield from itertools.combinations(range(n), size)
 
 
-def staged(body: Body, members, footing_top_ft: float, stem_ft: float  # type: ignore[no-untyped-def]
-           ) -> tuple[float, float, float]:
+def staged(body: Body, members, footing_top_ft: float, stem_ft: float,  # type: ignore[no-untyped-def]
+           key: tuple[float, tuple[float, float]] | None = None) -> tuple[float, float, float]:
     """``(worst FS under the rule, worst with one side empty, worst under the rule with the
-    spliced braced walls' concrete left out)``."""
+    spliced braced walls' concrete left out)``. ``key``: a resistance ``(K lb, unit
+    direction)`` that acts along one direction only (``directional_fs``)."""
     regions, rest = _split(body, members, stem_ft)
     pushes = list(body.pushes)
     heights = [p.top_ft - body.plane_ft for p in pushes]
@@ -75,7 +76,10 @@ def staged(body: Body, members, footing_top_ft: float, stem_ft: float  # type: i
             rise = max(0.0, min(heights[k] * fills[k] for k in keys) - depth)
             soil += area * body.soil_pcf * rise + col * (STONE_PCF - body.soil_pcf) * min(
                 rise, col_h)
-        return body.friction * (rest - credit + soil) / demand
+        friction = body.friction * (rest - credit + soil)
+        if key is not None:
+            return directional_fs((rx, ry), friction, *key)
+        return friction / demand
 
     spliced = sum(p.weight() for p in body.prisms
                   if p.label.partition(":")[2] in body.spliced)
@@ -87,3 +91,15 @@ def staged(body: Body, members, footing_top_ft: float, stem_ft: float  # type: i
                     if max(c) - min(c) <= RULE + 1e-9 and max(c) > 0)
     return worst, empty, loop_only
 
+
+
+def directional_fs(thrust, friction: float, k: float, direction) -> float:  # type: ignore[no-untyped-def]
+    """FS where friction (a disc) and a one-way resistance ``k`` along ``direction`` resist
+    the thrust vector: the root of |FS T − k d| = friction."""
+    tx, ty = thrust
+    tt = tx * tx + ty * ty
+    if tt < 1.0:
+        return float("inf")
+    td = tx * direction[0] + ty * direction[1]
+    disc = (k * td) ** 2 - tt * (k * k - friction * friction)
+    return (k * td + max(0.0, disc) ** 0.5) / tt

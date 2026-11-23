@@ -1270,18 +1270,7 @@ def _spliced_mat(*into: str) -> ReinforcementSpec:
     return _RETAINING_FOOTING_MAT.model_copy(update={"bars": bars})
 
 
-# ** 2 #5 PER EDGE THROUGH FT-SG-W1/E1 (2026-11-23, owner; free body §15i). ** The side run's
-# winter tension grades at the report's upper bed friction; with these the run holds to 0.82
-# (AN-SG-SOIL prints it). Lapped by FT-SG-W2/E2's own G3 splice bars at the joint.
-_SIDE_RUN_MAT = _RETAINING_FOOTING_MAT.model_copy(update={"bars": (
-    *_RETAINING_FOOTING_MAT.bars[:2],
-    BarSpec(role="bottom-y", bar=5, count=2,
-            note="2 #5 bundled at EACH edge: the side run's winter tension"),
-    *_RETAINING_FOOTING_MAT.bars[2:])})
-
 _STRIP_BY_WALL = {
-    "W-SG-W1": _STRIP[:2] + (_SIDE_RUN_MAT,),
-    "W-SG-E1": _STRIP[:2] + (_SIDE_RUN_MAT,),
     "W-SG-S": (_RETAINING_FOOTING_WIDTH_IN + _SOUTH_EXT_IN,
                _RETAINING_FOOTING_OFFSET_IN + _SOUTH_EXT_IN / 2.0, _SOUTH_FOOTING_MAT),
     "W-SG-W2": _STRIP[:2] + (_spliced_mat("FT-SG-W1", "FT-SG-S"),),
@@ -3206,7 +3195,7 @@ SEQUENCE_NOTES = [
     # Hand-minted 2026-09-22 (`haus fmt` does not visit params/); unique by grep.
     Annotation(
         uid="SGAN04AAAA", tag="AN-SG-BLOCKOUTS", position=pt(ft(_cx), ft(-29)),
-        text="THERMAL-BREAK BLOCKOUTS — NO BOARD IS CAST AGAINST (basis 7, free body 11j). Every court face that meets an isolation board is formed against a greased, pull-rodded blockout of the board's own thickness, stripped, and the board set into the slot afterwards: TB-SG-W1/E1 2in x 8in x 84in (placement 1, left in until the walls strip), TB-SG-W1/E1-STEM 2-1/2in x 12in x 9ft 1-7/16in and W-SG-BRKBM's 2in x 17-3/4in x 18ft 0in (placement 2, against the house strips' south face). Boards are set after the three retained sides (W-SG-W2, W-SG-S, W-SG-E2) are backfilled, so the court has taken up its sliding before the joint exists, each cut to its as-built slot width so nothing is pre-compressed, with the veneer ties; the owner walks the empty slots first (inspection break_blockouts_stripped). The board is FOAMULAR-class XPS as scheduled; nothing holds it but the slot. A board cast against the pour locks in its fresh-concrete squeeze for good — the beam's alone was 41,162 lb — and puts the house's slab edge and global sliding back over"),
+        text="THERMAL-BREAK BLOCKOUTS — NO BOARD IS CAST AGAINST (basis 7, free body 11j). Every court face that meets an isolation board is formed against a greased, pull-rodded blockout of the board's own thickness, stripped, and the board set into the slot afterwards: TB-SG-W1/E1 2in x 8in x 84in (placement 1, left in until the walls strip), TB-SG-W1/E1-STEM 2-1/2in x 12in x 9ft 1-7/16in and W-SG-BRKBM's 2in x 17-3/4in x 18ft 0in (placement 2, against the house strips' south face). Boards are set after the three retained sides (W-SG-W2, W-SG-S, W-SG-E2) are backfilled, so the court has taken up its sliding before the joint exists, each cut to its as-built slot width so nothing is pre-compressed and FITTED WITH THE CONCRETE AT OR ABOVE 50 F (fitted colder, summer closes the joint past its cap), with the veneer ties; the owner walks the empty slots first (inspection break_blockouts_stripped). The board is FOAMULAR-class XPS as scheduled; nothing holds it but the slot. A board cast against the pour locks in its fresh-concrete squeeze for good — the beam's alone was 41,162 lb — and puts the house's slab edge and global sliding back over"),
     # Minted 2026-10-31 with typehaus.model.ids.new_uid() (C3-E14).
     Annotation(
         uid="5N3QKZFZ9Y", tag="AN-SG-HETA-TRIM", position=pt(ft(_cx), ft(-35)),
@@ -3218,7 +3207,7 @@ SEQUENCE_NOTES = [
     # Minted 2026-11-23 with typehaus.model.ids.new_uid(). Free body §15h (G1/G2, owner).
     Annotation(
         uid="WATAHVD68H", tag="AN-SG-SOIL", position=pt(ft(_cx), ft(-38)),
-        text="SOIL REPORT REQUIRED BEFORE PLACEMENT 1 — THE COURT IS DESIGNED ON SPECIFIED SOIL PARAMETERS (free body 15h). The report must CONFIRM: design friction for concrete on the compacted washed #57 bed >= 0.43 (a report bed friction above 0.82 requires the court's winter-tension rows to be re-checked), and drained phi' (and interface angle) of the native at the bed bottom, -14ft 7-7/16in, >= 25 deg. Scope: 1-2 borings at the court to about 20ft below the terrace, groundwater observation, ASTM D2487 lab classification of the native at the bed bottom, drained phi' and the design friction above. ACCEPTANCE AT EXCAVATION (owner-checked, ASTM D2488 visual-manual): the bed bottom is granular (GW, GP, SW, SP, GM or SM), firm under the plate, with no standing water or seepage 48 h after rain. FALLBACK, built only if the report is short of either value or the bed bottom is clay or silt (CL, ML, CH, MH): a 12in x 4ft 6in x 25ft plain lean-concrete wall (f'c 2,500 psi, 4.2 cy) under FT-SG-S, standing on the native at the bed bottom and rising to the footing underside, formed with removable forms in the open dig BEFORE any stone, stripped, stone placed and plated both sides in lifts, #5 x 18in dowels at 24in into FT-SG-S (placement 1). If the native phi' is short, the deep plane returns to the owner with the measured value"),
+        text="SOIL REPORT REQUIRED BEFORE PLACEMENT 1 — THE COURT IS DESIGNED ON SPECIFIED SOIL PARAMETERS (free body 15h). The report must CONFIRM: design friction for concrete on the compacted washed #57 bed >= 0.43 (a report bed friction above 1.00 requires the court's winter-tension rows to be re-checked), and drained phi' (and interface angle) of the native at the bed bottom, -14ft 7-7/16in, >= 25 deg. Scope: 1-2 borings at the court to about 20ft below the terrace, groundwater observation, ASTM D2487 lab classification of the native at the bed bottom, drained phi' and the design friction above. ACCEPTANCE AT EXCAVATION (owner-checked, ASTM D2488 visual-manual): the bed bottom is granular (GW, GP, SW, SP, GM or SM), firm under the plate, with no standing water or seepage 48 h after rain. FALLBACK, built only if the report is short of either value or the bed bottom is clay or silt (CL, ML, CH, MH): a 12in x 4ft 6in x 25ft plain lean-concrete wall (f'c 2,500 psi, 4.2 cy) under FT-SG-S, standing on the native at the bed bottom and rising to the footing underside, formed with removable forms in the open dig BEFORE any stone, stripped, stone placed and plated both sides in lifts, #5 dowels at 24in, 30in straight into the lean wall (ld at 2,500 psi) with a standard 90-degree hook into FT-SG-S's bottom mat (placement 1). The wall reaches no deeper than the bed, so it does not answer the deep plane. If the native phi' is short, the deep plane returns to the owner with the measured value"),
     # Minted 2026-10-11 with typehaus.model.ids.new_uid(). Free body §13.
     Annotation(
         uid="90QCKCV758", tag="AN-SG-BACKFILL", position=pt(ft(_cx), ft(-32)),

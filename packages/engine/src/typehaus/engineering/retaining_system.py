@@ -322,8 +322,8 @@ def loop_mobilisation(ctx: EngineeringContext) -> dict[str, dict[float, tuple[fl
 
 def loop_free_bodies(ctx: EngineeringContext, *, restraint: bool = False
                      ) -> dict[str, dict[str, tuple[float, float]]]:
-    """``{loop ref: {soil_pcf: (soil resultant, base friction)}}`` at the design friction,
-    or at the upper restraint friction — what ``thermal_break`` pushes the court against."""
+    """``{loop ref: {soil_pcf: (soil resultant, base friction)}}`` at the design friction, or
+    the 4-tuple ``Graded.restraint`` at the upper friction (the winter rows read it)."""
     return {ref: {f"{pcf:.0f}": v for pcf, v in (g.restraint if restraint else g.dry).items()}
             for ref, g in _graded_loops(ctx).items()}
 

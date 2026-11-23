@@ -16,8 +16,6 @@ passive's centroid.
 
 from __future__ import annotations
 
-import dataclasses
-
 from typehaus.engineering.item import LimitState
 from typehaus.engineering.retaining_basis import REQUIRED_FS
 from typehaus.engineering.soil import SOIL_UNIT_WEIGHT_BAND_PCF
@@ -51,17 +49,19 @@ def _wall(ctx, body):  # type: ignore[no-untyped-def]
         return None
     floor = max(p.z1_ft for p in body.prisms if p.label.startswith("footing:"))
     bottom = (bed.soakaway_z0_m if bed.soakaway_z0_m is not None else bed.z0_m) / 0.3048
-    return lone[0].width_ft, floor - bed.z1_m / 0.3048, floor - bottom, footing.tag
+    return (lone[0].width_ft, floor - bed.z1_m / 0.3048, floor - bottom, footing.tag,
+            lone[0].direction)
 
 
 def fallback_rows(ctx, body, members, cases_levels, staged_fn, lateral_psf_per_ft: float):  # type: ignore[no-untyped-def]
-    """Rows for the fallback on a presumptive ``body`` (bed friction 0.35)."""
-    from typehaus.engineering.retaining_system_body import Prism
+    """Rows for the fallback on a presumptive ``body`` (bed friction 0.35). The wall resists
+    along the unopposed member's push only, so each FS is the directional root."""
+    from typehaus.engineering.retaining_system_staged import directional_fs
 
     wall = _wall(ctx, body)
     if wall is None:
         return []
-    length, z1, z2, tag = wall
+    length, z1, z2, tag, along = wall
     passive = 0.5 * lateral_psf_per_ft * (z2 * z2 - z1 * z1)
     section = 12.0 * WIDTH_IN ** 2 / 6.0
     phi_mn = _PHI_PLAIN * 5.0 * FALLBACK_FC_PSI ** 0.5 * section / 12.0
@@ -71,12 +71,12 @@ def fallback_rows(ctx, body, members, cases_levels, staged_fn, lateral_psf_per_f
     for key, label in (("perched", "perched at H/2"), ("flooded court", "flooded court")):
         water = cases_levels[key]
         credit = min(passive * (SUBMERGED_FACTOR if water.both_sides else 1.0), cap) * length
-        fs = (body.friction * body.weight(water) + credit) / body.resultant(water)
+        fs = directional_fs(body.resultant_vector(water), body.friction * body.weight(water),
+                            credit, along)
         rows.append(_row(f"fallback lean wall under {tag}: sliding, {label}", fs, credit,
                          passive, cap, length, z1, z2))
     credit = min(passive, cap) * length
-    key = Prism("fallback wall credit", 1.0, 0.0, 1.0, credit / body.friction)
-    fs = staged_fn(dataclasses.replace(body, prisms=(*body.prisms, key)))
+    fs = staged_fn(body, (credit, along))
     rows.append(_row(f"fallback lean wall under {tag}: staged backfill", fs, credit,
                      passive, cap, length, z1, z2))
     return rows
@@ -108,6 +108,6 @@ def fallback_states(ctx, ref: str, walls: list, members, floor_ft: float, stem_f
         return []
     levels, _ = waters(ctx, body)
     return fallback_rows(ctx, body, members, levels,
-                         lambda b: staged.staged(b, members, floor_ft, stem_ft)[0],
+                         lambda b, key: staged.staged(b, members, floor_ft, stem_ft, key)[0],
                          bed.lateral_bearing_psf_per_ft)
 

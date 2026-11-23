@@ -47,14 +47,14 @@ _NOTE_DRY_FS = 1.930
 # Perched at H/2 (water 5.06' over the footing top, bed draining): 3,843.9 plf -> 96,097 lb.
 _NOTE_PERCHED_FS = 1.568
 # Flooded to the court floor, both sides, uplift 527.33 sf x 62.4 = 32,905: 317,883 / 77,781.
-_NOTE_FLOODED_FS = 1.755
+_NOTE_FLOODED_FS = 1.702   # to D-B-SUNKEN's threshold crest, -102.14" (§15j)
 # Retained water to the terrace, court empty (reported): 128,344 lb.
 _NOTE_RETAINED_FULL_FS = 1.17
 # Deep plane at -175.4375", mu 0.25: + bed stone 2,364.65 cf x 100 = 236,465, native under
 # the W1/E1/BRKBM beds 158 cf = 17,380, native core 121,644 -> 726,276 lb; dry thrust
 # 1/2 x 60 x 14.6198^2 + 50.48 = 6,462.7 x 25 = 161,567. Soakaway full to -127.4375":
 # uplift 4.0' x 758.33 sf x 62.4 = 189,280, thrust 6,277.5 x 25 = 156,937.
-_NOTE_DEEP_FS = {"dry": 2.09, "lip": 1.594, "flooded": 1.39}
+_NOTE_DEEP_FS = {"dry": 2.09, "lip": 1.594, "flooded": 1.37}
 # Strut: two-span continuous reaction, E2 3,122.79 plf over 16.333' and E1's footing 1,593.9
 # plf (1/2 x 60 x 7.289^2) over 10.5'. M_B = 71,965; R 45,126 -> Pu 72,201; phi Pn at the
 # strut's 5,000 psi: 0.60 x 0.45 x 5,000 x 144 x 0.6836 = 132,890.
@@ -87,8 +87,8 @@ def test_the_court_reproduces_the_hand_worked_free_body(catlin_plan) -> None:
     assert states["sliding, dry"].capacity == pytest.approx(_NOTE_DRY_FS, abs=0.002)
     assert states["sliding, perched at H/2"].capacity == pytest.approx(_NOTE_PERCHED_FS,
                                                                        abs=0.002)
-    assert states["sliding, flooded court"].capacity == pytest.approx(_NOTE_FLOODED_FS,
-                                                                      abs=0.002)
+    flooded = states["sliding, court flooded to its lowest threshold"]
+    assert flooded.capacity == pytest.approx(_NOTE_FLOODED_FS, abs=0.002)
     deep = states["deep plane, soakaway full to its lip"]
     assert deep.capacity == pytest.approx(_NOTE_DEEP_FS["lip"], abs=0.002)
     strut = states["strut compression"]
@@ -116,9 +116,12 @@ def test_the_court_reproduces_the_hand_worked_free_body(catlin_plan) -> None:
     assert fallback["fallback lean wall under FT-SG-S: sliding, perched at H/2"] == \
         pytest.approx(1.614, abs=0.002)
     assert fallback["fallback lean wall under FT-SG-S: sliding, flooded court"] == \
-        pytest.approx(1.846, abs=0.002)
+        pytest.approx(1.805, abs=0.002)
+    # The wall resists north-south only: |FS T - K y| = mu N (verifier, 2026-11-23).
     assert fallback["fallback lean wall under FT-SG-S: staged backfill"] == pytest.approx(
-        1.608, abs=0.002)
+        1.543, abs=0.002)
+    assert states["sliding, ground snow on the terrace"].capacity == pytest.approx(
+        1.773, abs=0.002)
     assert any("NOT YET CONFIRMED" in n for n in record.notes)
 
 
@@ -552,10 +555,10 @@ def test_the_specified_soil_is_pending_until_the_report_and_fails_below_it(catli
     plan = catlin_plan.model_copy(update={"project": catlin_plan.project.model_copy(
         update={"site": site.model_copy(update={"confirmed_soil": short})})})
     assert run(plan) is Result.FAIL
-    high = SoilParameters(bed_friction=0.90, native_phi_deg=30.0, source="report")
+    high = SoilParameters(bed_friction=1.10, native_phi_deg=30.0, source="report")
     over = catlin_plan.model_copy(update={"project": catlin_plan.project.model_copy(
         update={"site": site.model_copy(update={"confirmed_soil": high})})})
-    assert run(over) is Result.FAIL   # above bed_friction_max 0.82: the winter rows
+    assert run(over) is Result.FAIL   # above bed_friction_max 1.00: the winter rows
     from typehaus.engineering import EngineeringContext, EngineeringResults
 
     record = EngineeringResults(EngineeringContext(plan=plan, model=model, soil_class="GM"))[
