@@ -84,7 +84,12 @@ doubled studs bored). So a single bearing stud takes 40% of its depth.
 | before | 2x4 non-bearing | 60% = 2.10" | 1.90" (the 1 1/2" vents) | 0.80" |
 | now | 2x6 bearing | 40% = 2.20" | 1.90" (same vents) | 1.80" |
 
-0.86 of the limit; a 2" vent (2.375" outside) would not pass, a 1 1/2" one does. Nothing through
+0.86 of the limit on the PIPE; the DRILLED HOLE is what R602.6 grades. A 1 1/2" vent (1.90" OD)
+takes a hole of **2 1/8" at most** (2.125 / 2.20 = **0.97**, 1.69" of stud each side), bored with a
+2 1/8" bit or smaller, not a 2 1/4" or a hole saw cut oversize; state it on the drawing. A 2" vent
+(2.375" outside) would not pass, a 1 1/2" one does. The engine grades the pipe's outside diameter
+(`mep.run_through_stud`); it has no drilled-hole allowance, so the 2 1/8" bit is the field rule that
+keeps the 0.86 it prints true, pinned in `test_mep_bores.py`. Nothing through
 this wall is larger: the supplies are 0.62"/0.88", the lav drain 1.90". (A bore of 2.375" in a
 2x6 bearing stud is over by 0.175" — §1.) Stud positions are now a 16" grid from the wall start
 (0, 12 1/2, 28 1/2, 44 1/2, ... 92 1/2, 97"), so the five backing bands that were cut for the

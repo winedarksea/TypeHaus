@@ -21,9 +21,14 @@ def test_catlin_wall_tops_match_the_basis_note(catlin_model_ro) -> None:
     # FO-M-STAIR fills W-B-N2's first three joist spaces: its north trimmer pack is the
     # restraint, a flat beam, worked by hand in note §4a (decision 23).
     n2 = findings["W-B-N2"].message
-    assert "M 3150 lb-ft, fb 1559 / 2203 psi (d/c 0.71), fv 57 / 171 psi (d/c 0.34)" in n2
-    assert "6 ties x 626 lb = 3753 lb against 3175 lb wall-top load" in n2
-    assert n2.count("3 ties x 626 lb = 1876 lb against 1588 lb end reaction") == 2
+    assert ("3 x 1.75x11.875 LVL plies, not composite, spans 7.94 ft flat under 400 plf: "
+            "M 3150 lb-ft, S 18.18 in^3, fb 2079 / 2421 psi (d/c 0.86), fv 38 / 171 psi") in n2
+    assert "delta 1.13\" = L/84" in n2
+    assert "SDW22 5\" screws, 2 rows one face at 19.2\": 565 x 0.9 = 508 plf against 400 plf" in n2
+    assert "6 ties = 3753 lb against 3175 lb wall-top load" in n2 and "southern pine" in n2
+    assert "3 ties = 1614 lb against 1588 lb end reaction" in n2   # FS-M-NE sawn chords, x 0.86
+    assert "3 ties = 1689 lb against 1588 lb end reaction" in n2   # FS-M-MECH TJI, x 0.90
+    assert "A35Z with SD9112 screws" in n2
     for f in findings.values():
         assert "row 8'/7.5' gives 400 plf" in f.message
     # Perpendicular: 538 lb a truss end, 563 lb a TJI end (note §4).

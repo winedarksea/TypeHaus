@@ -203,7 +203,8 @@ WEST_FLOOR = FloorSystem(
     ceiling_below=_CEILING_GWB,
     published_span=J12_FLOOR_SPAN,
     # W-S-SN3 and FO-A-HALL's south trimmer load W-M-HS3/HS4 as a line (~240 plf) along the
-    # trusses, between the y=256 and y=272 lines. A 1 1/4" LSL rim board on edge, full depth,
+    # trusses, between the y=256 and y=272 lines. ONE 1 1/4" LSL rim board on edge (`plies=2` is
+    # the y=272 truss plus this one sister), full depth,
     # nailed to the y=272 truss's chord, lies on the plate under the wall (y 269..270 1/4",
     # clear of the chords' faces at 257 3/4"/270 1/4"). TJ-8000 vertical 5,400 plf (decision 22);
     # TrimJoist's layout carries it (notes/header_spans_r602_7.md §4b). It starts at x=131":
