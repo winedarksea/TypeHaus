@@ -101,10 +101,10 @@ def winter_rows(ctx, board, free_bodies: dict, soil, states, missing, inputs,
         return
     demand = total / len(lines)
     inputs += [Quantity("winter_tension", demand, "lb", 1.0)]
-    head = (f"80 °F below set, the joint open, rigid-plastic at {pcf:.0f} pcf: min(house side "
-            f"{house:,.0f}, far side {friction - house:,.0f} less {relax:.2f} x the retained "
-            f"soil {h:,.0f} = {far:,.0f}) = {total:,.0f} lb over {len(lines)} side lines "
-            f"({how})")
+    head = (f"80 °F below set, the joint open, rigid-plastic: min(house side {house:,.0f} "
+            f"(its heel soil at the band's top), far side {friction - house:,.0f} at {pcf:.0f} "
+            f"pcf less {relax:.2f} x the retained soil {h:,.0f} = {far:,.0f}) = {total:,.0f} lb "
+            f"over {len(lines)} side lines ({how})")
     runs, joints, spliced = [], [], []
     for members in lines.values():
         for lo, hi, wall, foot in members:

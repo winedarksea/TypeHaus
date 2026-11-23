@@ -53,6 +53,7 @@ from typehaus.engineering.retaining_basis import (
 )
 from typehaus.engineering.retaining_system import KIND as SYSTEM_KIND
 from typehaus.engineering.retaining_system import _loops, system_factors
+from typehaus.engineering.retaining_system_cases import soil_inputs as court_soil_inputs
 from typehaus.engineering.soil import (
     CONCRETE_UNIT_WEIGHT_PCF,
     SOIL_UNIT_WEIGHT_BAND_PCF,
@@ -85,7 +86,9 @@ KIND = "retaining_wall"
 #: (``tier_surcharge``) — thrust, overturning, bearing and stem flexure all moved.
 #: 5 -> 6: IBC Table 1610.1 re-read row by row (``soil.py``) — GM active 45 -> 40. The
 #: at-rest case catlin grades did not move; the fingerprinted active EFP did.
-BASIS_VERSION = "6"
+#: 6 -> 7 (2026-11-23): a restrained wall fingerprints the EFP and soil basis it is graded
+#: on (at-rest; the court's specified/confirmed friction), not the free branch's.
+BASIS_VERSION = "7"
 
 
 def _drainage_note(ctx: EngineeringContext, wall) -> str:  # type: ignore[no-untyped-def]
@@ -366,9 +369,15 @@ def _one(ctx: EngineeringContext, wall,  # type: ignore[no-untyped-def]
         Quantity("toe", geometry.toe_ft, "ft", 0.01),
         Quantity("heel", geometry.heel_ft, "ft", 0.01),
         Quantity("toe_embedment", geometry.toe_embedment_ft, "ft", 0.01),
-        Quantity("active_efp", soil.active_efp_psf_per_ft, "psf/ft", 1.0),
+        # The EFP the rows grade at: at-rest for a base-restrained wall, active otherwise.
+        Quantity("at_rest_efp" if restrained else "active_efp",
+                 soil.at_rest_efp_psf_per_ft if restrained else soil.active_efp_psf_per_ft,
+                 "psf/ft", 1.0),
         Quantity("soil_presumed", 1.0 if soil_is_presumed(soil) else 0.0, "-", 0.5),
-        Quantity("friction_coefficient", base.friction_coefficient, "", 0.01),
+        # A restrained wall's sliding is the court's, on the court's soil basis (incl. the
+        # specified/confirmed soil); a free one slides on its own base.
+        *(court_soil_inputs(ctx, soil) if restrained else
+          (Quantity("friction_coefficient", base.friction_coefficient, "", 0.01),)),
         Quantity("allowable_bearing", base.allowable_bearing_psf, "psf", 1.0),
         Quantity("concrete_unit_weight", CONCRETE_UNIT_WEIGHT_PCF, "pcf", 1.0),
         # ** WHAT MAKES CHANGING THE CONCRETE OR THE STEEL STALE THIS WALL'S SEAL. ** f'c,
