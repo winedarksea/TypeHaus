@@ -4,14 +4,18 @@ R325.6 reads "A habitable attic shall not be considered a story where complying 
 the following": (1) occupiable floor area >= 70 sf per R304; (2) that area has a ceiling
 height per R305; (3) the space is enclosed by the roof assembly above, knee walls (if
 applicable) on the sides and the floor-ceiling assembly below; (4) the attic floor does not
-extend beyond the exterior walls of the floor below. Text read on UpCodes (Texas 2018 IRC)
-and in WABO's 2019 comment ("maintains the existing specifications"). It carries NO area
+extend beyond the exterior walls of the floor below. Text read 2026-11-23 on UpCodes
+(up.codes/s/habitable-attic, "2018 R325.6", a republication under the Texas 2018 IRC; the ICC's own
+page is a 403, so a primary read is still owed) and in WABO's 2019 comment ("maintains the
+existing specifications"). It carries NO area
 fraction: the 1/3 (1/2 sprinklered) cap is the 2021 IRC R326.3, which Minnesota has not
 adopted (Minn. R. 1309.0010 adopts the 2018 IRC; ch. 1309 has no part amending R325; read
 2026-11-23 at revisor.mn.gov; ``notes/wall_bracing_layout.md`` §2).
 
 Conditions 1-2 replay ``code.R304_1_floor_area`` / ``code.R305_ceiling_height``'s own
-arithmetic; a condition that cannot be shown counts the attic as a story (conservative).
+arithmetic (R305.1's sloped-ceiling exception: half of the REQUIRED floor area, R304.1's 70 sf, at
+7'-0" and none under 5'-0"); a condition that cannot be shown counts the attic as a story
+(conservative).
 """
 
 from __future__ import annotations

@@ -118,6 +118,18 @@ def test_catlin_garage_south_matches_the_oracle(catlin_model_ro):
     assert pack_layouts([layout], layout_standard(catlin_model_ro.plan)).sheets == 7
 
 
+def test_the_wall_below_backs_the_sheathing_over_the_floor_band(catlin_model_ro):
+    """W-M-S1/S2 stand over the framed court walls W-B-S2-FR/S3-FR (x 118..314): their double
+    top plate, now landed on the joists (z -13 3/8"..-11 7/8"), backs the five vertical joints
+    that were bare for 1 9/16" there. Without the plate the band is air (review D §2.2)."""
+    plan_tops = {w.tag: w.z1_m for w in catlin_model_ro.walls if w.tag.endswith("-FR")}
+    assert plan_tops["W-B-S2-FR"] == pytest.approx(plan_tops["W-B-S3-FR"])
+    assert plan_tops["W-B-S2-FR"] == pytest.approx(-11.875 * 0.0254, abs=1e-4)
+    lay = next(lay for lay in catlin_model_ro.sheet_layouts if "W-M-S2" in lay.wall_tags)
+    court = [b for b in lay.vertical_breaks if 118 * 0.0254 < b.at < 314 * 0.0254]
+    assert court and all(b.backed for b in court)
+
+
 def test_an_unstated_sheet_length_is_unknown(catlin_model_ro, monkeypatch):
     """Catlin states every sheet_length and grades clean; unstate one and it is UNKNOWN."""
     import typehaus.checks.structural.sheathing_edge_support as module

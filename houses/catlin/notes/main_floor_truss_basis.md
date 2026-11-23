@@ -346,30 +346,49 @@ ducts or pipes". The owner's bounce goal, so two:
 
 ### 4a. W-B-N2's edge pack by hand
 
+Revised 2026-11-23 after an independent re-derivation: **plies bent flatwise do not act as one
+section**, so the first draft (two plies as a 3.5" billet, d/c 0.71) was wrong, and two plies fail.
+
 Load: Table R404.1(1) 8'/7'-6", 45 pcf, **w = 400 plf** at the top of the wall (row above). Span
 L = 95.25" = **7.9375'** (the pack's length, simply supported at its two ends).
 - M = wL^2/8 = 400 x 7.9375^2 / 8 = **3,150 lb-ft** = 37,800 lb-in. V = R = 400 x 7.9375 / 2 =
   **1,587.5 lb** a end. Wall-top load into the pack: 400 x 7.9375 = **3,175 lb**.
-- Section in the bending plane: thickness t = 2 x 1.75 = 3.50", depth of the face b = 11.875".
-  S = b t^2 / 6 = 11.875 x 12.25 / 6 = **24.24 in^3**. fb = 37,800 / 24.24 = **1,559 psi**.
 - Capacity, ICC-ES ESR-1387 Table 1 (read from the report 2026-11-23): Microllam 2.0E-2600Fb WS,
-  FACE/PLANK ORIENTATION, **Fb 2,690 psi, Fv 190 psi**, E 2.0e6; footnote 7, plank Fb size factor
-  C_V = (1.75/t)^0.136 = (0.5)^0.136 = **0.910** at t = 3.5" (the table's own 3.5" column reads
-  0.91). C_D 0.9 (soil pressure is permanent, NDS Table 2.3.2). F'b = 2,690 x 0.910 x 0.9 =
-  **2,203 psi**: d/c = 1,559 / 2,203 = **0.71**. No repetitive-member or load-sharing credit.
-- Shear: fv = 1.5 V / (t b) = 1.5 x 1,587.5 / 41.56 = **57 psi**; F'v = 190 x 0.9 = 171: **0.34**.
-- Deflection (ESR-1387 fn. 5, bending + shear; printed, not graded: Table R404.1(1) states no
-  limit): 270 W L^4 / (E b d^3) + 28.8 W L^2 / (E b d) with d = 3.5, b = 11.875, W = 400, L = 7.9375:
-  0.42" + 0.01" = **0.43" = L/222**.
-- **Ties, sill to pack:** A35Z, ESR-3096 Table 5 F1 695 lb (the lesser of F1/F2; same at every C_D),
-  x 0.9 C_D = 625.5 lb on LVL (species factor 1.0, C-C-2026 p. 20 note f). 3,175 / 625.5 = 5.08, so
-  **six** (3,753 lb, d/c **0.85**), `CN-M-N2-PACK-1..6`, ~16" apart on the pack's north face.
-- **End reactions:** 1,587.5 lb into each neighbouring floor's framing (`FS-M-MECH` west,
-  `FS-M-NE` east): 1,587.5 / 625.5 = 2.54, so **three** A35Z at each end, naming both floors
-  (1,876.5 lb, d/c **0.85**), `CN-M-N2-PACK-END-1..6`. The ends bear on the neighbours' end members
-  and the glued subfloor carries the rest; that detail is the framer's, not graded.
+  FACE/PLANK ORIENTATION, **Fb 2,690 psi, Fv 190 psi**, E 2.0e6; fn. 7 C_V = (1.75/t)^0.136 = 1.0
+  at t = 1.75" (ONE ply; the 3.5" column of that table is a single billet). C_D 0.9 (soil pressure
+  is permanent, NDS Table 2.3.2). F'b = 2,690 x 1.0 x 0.9 = **2,421 psi**; F'v = 190 x 0.9 = 171.
+- **Two plies, as built before:** S = 2 x 11.875 x 1.75^2 / 6 = 12.12 in^3; fb = 37,800 / 12.12 =
+  3,119 psi: d/c **1.29 FAIL** (deflection L/56).
+- **Three plies (a third, 1 3/4" LVL, laid in the 1 7/8" gap between the pack and the LSL rim —
+  `STAIR_FLOOR.reinforcements`, 1.75" x 11 7/8", x 120"..215 1/4"):** S = 3 x 11.875 x 3.0625 / 6 =
+  **18.18 in^3**; fb = 37,800 / 18.18 = **2,079 psi**: d/c **0.86**. Shear fv = 1.5 x 1,587.5 /
+  (3 x 1.75 x 11.875) = **38 psi**, 0.22. Deflection (ESR-1387 fn. 5, bending + shear; printed, not
+  graded: Table R404.1(1) states no limit): I = 3 x 11.875 x 1.75^3 / 12 = 15.91 in^4, 5 W L^4 /
+  (384 E I) = **1.12"** + 0.01" = **1.13" = L/84**. That is a flexible edge; a single 3 1/2" x
+  11 7/8" 2.0E Parallam PSL billet (stocked: TJ-9000 July 2026 contents page, 2.0E PSL widths 3 1/2", 5 1/4",
+  7", depth 11 7/8"; ESR-1387 plank Fb 2,650 x C_V 1.147 x 0.9 = 2,734 psi, d/c 0.57; S = 24.2 in^3)
+  would be L/222 and need no ply fastening, but the engine derives the trimmer pack and has no
+  PSL profile; recorded as the stiffer alternative, not built.
+- **Ply fastening.** The outside ply takes the whole 400 plf and its fasteners hand it to the
+  others: TJ-9000 July 2026 p.28, L17 "Maximum Uniform Load Applied to Either Outside Member",
+  Assembly B (5 1/4" wide, 3-ply), Simpson SDW22 5" screws, 2 rows, ONE face, 19.2" o.c.: **565 plf**
+  at 100% stress x 0.9 = 508 plf: d/c **0.79**. (Nails on both faces cannot be driven: one face is
+  against the rim.) Authored as `PlyFastening(fastener="screw", rows=2, spacing=19.2", faces="one")`.
+- **Ties, sill to pack:** A35Z, ESR-3096 Table 5 **F1 695 lb with 6-SD9112 + 6-SD9112** (the lesser
+  of F1/F2; same at every C_D). The plan's A35Z connector installs exactly that fastener (the
+  connector schedule bills SD9112 screws, and the check refuses a part whose schedule disagrees with
+  its row); with nails the row would be 590 lb. Species of BOTH members: the sill is **pt-syp**
+  (southern pine, SG 0.55 >= 0.50, ESR-3096 s.3.2.2: DF/SP column, x 1.0) and the pack is LVL (C-C-2026
+  p.20 note f, x 1.0): 695 x 0.9 = **625.5 lb** each. 3,175 / 625.5 = 5.08, so **six** (3,753 lb,
+  d/c **0.85**), `CN-M-N2-PACK-1..6`, ~16" apart on the pack's south face.
+- **End reactions:** 1,587.5 lb into each neighbouring floor's framing, three A35Z at each end naming
+  both floors, at the LESSER species of the two members the tie joins (the engine's own rule for
+  every other tie): `FS-M-NE`'s floor-truss chords are sawn SPF, x 0.86: 538 lb a tie, 3 x 538 =
+  1,614 lb, d/c **0.98**; `FS-M-MECH`'s TJI 230 flange meets LSL, x 0.90: 563 lb, 3 x 563 = 1,689 lb,
+  d/c **0.94** (`CN-M-N2-PACK-END-1..6`). Neither exceeds 1.0, so no fourth tie. The ends bear on the
+  neighbours' end members and the glued subfloor carries the rest; that detail is the framer's.
 - Not read: the pack's bearing at its ends beyond the A35Z, and the LVL's own tie-down nailing
-  (the 6-SD9112 + 6-SD9112 pattern is the part's). Species factor for the tie on LVL: DF/SP column.
+  (the 6-SD9112 + 6-SD9112 pattern is the part's).
 
 ## 5. The framed centreline (W-B-CS2 / -CN2 / -CN)
 

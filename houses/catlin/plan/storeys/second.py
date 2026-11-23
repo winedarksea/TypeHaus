@@ -421,6 +421,7 @@ WALLS = [
     # (~240 plf, notes/header_spans_r602_7.md §4). Continuous studs so the plates carry it
     # (`structural.wet_wall_bearing` refuses a bearing staggered wall); every bore through it
     # is graded at R602.6's bearing limit, 40% of 5 1/2" = 2.20" (notes/framing_bore_limits.md).
+    # THE DRILLED HOLE IS WHAT COUNTS: bore the 1 1/2" vents with a 2 1/8" bit at most (0.97).
     # The 1 1/4" LSL strip under it in FS-S-WEST's open-web deck is `WEST_FLOOR.reinforcements`.
     # `FX-S-SUITEBATH-WC`/`-LAV` back onto it and `PR-S-SUITEBATH-VENT` takes off on it: this is
     # the suite bath's wet wall. Faces are 264.74" (bath) and 271.26" (hall), 6.52" thick.
