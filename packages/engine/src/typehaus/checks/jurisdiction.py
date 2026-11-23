@@ -94,6 +94,8 @@ class JurisdictionProfile:
     # The NEC edition the electrical rules rest on, where it differs from the cycle
     # ``edition``/``irc_base`` name. Empty when the profile makes no electrical claim.
     nec_base: str = ""
+    # The load standard the adopted code cycle references (printed on the calc package cover).
+    asce_edition: str = ""
     frost_depth_in: float | None = None
     # Presumptive load-bearing value of the soil (IRC Table R401.4.1). Footing *sizing* is
     # meaningless without it — required area is tributary load divided by this — so the
