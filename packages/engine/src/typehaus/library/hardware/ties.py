@@ -14,6 +14,7 @@ from typehaus.hardware.catalog import (
     AllowableLoads,
     StructuralHardware,
 )
+from typehaus.hardware.roles import ROLE_POST_TENSION_TIE
 
 #: Simpson C-C-2024 p. 303, the HL page (excerpt as distributed by a Simpson dealer).
 HL_CATALOG_URL = ("https://cdn.shopify.com/s/files/1/0398/5188/4705/files/"
@@ -112,7 +113,8 @@ HL43HDG_HEAVY_ANGLE = StructuralHardware(
                   "table, HL43 row, read 2026-10-13: 3 ga, W1/W2 4-1/4, L 3, D1 1-1/2, "
                   "D3 2-3/4, (2) 3/4\" bolts; DF/SP uplift 1,275, F1 1,445 lb at C_D 1.6. "
                   "Fn 6: allowable loads are for a single connector; uplift may be doubled "
-                  "for two, lateral may NOT be doubled. Wood-to-wood only. "
+                  "for two, lateral may NOT be doubled. Wood-to-wood only. Re-read in "
+                  "C-C-2026 p. 315 (2026-11-23): same row; Code Ref. '—'. "
                   + HL_CATALOG_URL),
     ),
 )
@@ -151,6 +153,31 @@ FILLER_4X_KDAT = StructuralHardware(
            "3-1/2\" face where two 2x plies give 3\" (HL fn 3). Its nailing is not graded",
 )
 
+#: Simpson C-C-2026 p. 290, the straight-strap table (read 2026-11-23).
+MSTA49Z_COLLECTOR_STRAP = StructuralHardware(
+    tag="simpson-msta49z-collector-strap",
+    name="MSTA49Z strap tie, 18 ga, 1-1/4\" x 49\", ZMAX",
+    role=ROLE_POST_TENSION_TIE,
+    manufacturer="Simpson Strong-Tie",
+    model="MSTA49Z",
+    source="Simpson Strong-Tie MSTA49, ZMAX (G185). A straight strap in tension, laid flat "
+           "across a joint between two coplanar framing faces, over up to 5/8\" structural "
+           "panel sheathing (General Note b: 2-1/2\" nails). ZMAX with HDG nails is the "
+           "catalog's Medium class, which Wet Service on treated wood <= AWPA UC4A requires "
+           "(C-C-2026 pp. 14-17)",
+    allowable=AllowableLoads(
+        uplift_lb=2020.0,
+        load_duration_factor=1.6,
+        species="DF/SP (SPF/HF 2,020, same)",
+        fasteners="(26) 0.148\" x 2-1/2\" HDG nails, half in each member (General Note d)",
+        citation=("Simpson Strong-Tie Wood Construction Connectors C-C-2026 p. 290, strap "
+                  "table, MSTA49 row: DF/SP allowable tension (160) 2,020 lb. General Notes "
+                  "(p. 288) a: the (160) loads are increased for wind, no further increase; "
+                  "b: over <= 5/8\" WSP sheathing use 2-1/2\" nails; d: half the fasteners in "
+                  "each member; e: tension loads apply for uplift when installed vertically"),
+    ),
+)
+
 TIE_HARDWARE: tuple = (HL33HDG_HEAVY_ANGLE, HL35HDG_HEAVY_ANGLE, HL43HDG_HEAVY_ANGLE,
-                       TIE_BLOCK_KDAT,
+                       MSTA49Z_COLLECTOR_STRAP, TIE_BLOCK_KDAT,
                        TIE_BLOCK_KDAT_5, FILLER_4X_KDAT)

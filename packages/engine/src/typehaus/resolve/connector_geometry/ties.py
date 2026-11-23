@@ -67,6 +67,7 @@ STRAPS = {
     "LSTA18": StrapDimensions(1.25, 18.0, 20),
     "LSTA24": StrapDimensions(1.25, 24.0, 20),
     "MSTA12": StrapDimensions(1.25, 12.0, 18),
+    "MSTA49": StrapDimensions(1.25, 49.0, 18),
     "CS16": StrapDimensions(1.25, 0.0, 16),
     "MSTC52": StrapDimensions(3.0, 52.0, 16),
 }
@@ -91,7 +92,8 @@ EMBEDDED_STRAPS = {
 
 
 _COATING_ALIASES = {"H2.5AZ": "H2.5A", "H2.5ASS": "H2.5A", "H10ASS": "H10A", "A35Z": "A35",
-                    "A35SS": "A35", "LS30Z": "LS30", "MSTA12Z": "MSTA12", "LTP4Z": "LTP4",
+                    "A35SS": "A35", "LS30Z": "LS30", "MSTA12Z": "MSTA12", "MSTA49Z": "MSTA49",
+                    "LTP4Z": "LTP4",
                     "HETA20Z": "HETA20", "STHD": "STHD14", "SP4Z": "SP4", "MASAZ": "MASA"}
 
 

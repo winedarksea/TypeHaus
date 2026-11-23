@@ -125,7 +125,7 @@ def test_a_90_degree_stop_meets_the_band(catlin_model_ro):
     door = next(o for o in catlin_model_ro.openings if o.tag == "D-G-SERVICE")
     results = clearance_results(catlin_model_ro, door, 90, service_door_envelope())
     hit = {r.obstacle for r in results if r.clearance_m < 0}
-    assert "SB-BW-BAND" in hit and "CN-BW-GWTIE-LO" not in hit
+    assert "SB-BW-BAND" in hit and "CN-BW-SCREEN-STRAP" not in hit
 
 
 def test_a_flush_hinge_is_the_thinnest_margin(catlin_model_ro):

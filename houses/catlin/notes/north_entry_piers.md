@@ -734,6 +734,12 @@ landing that props them (to the sill, T = 1,540 + 426.5 = 1,966.5, W 0.86), and 
 dead hung on the chord through the LUS26-2Z is not credited. Rows in `lateral_system/
 RF-BW-CANOPY` (`engineering/lateral_band._pullout_rows`).
 
+> **Superseded for N-S 2026-11-23 (§10p).** The MSTA49Z collector takes the screen's shear
+> out at its top plate, so the chords' overturning never reaches their bases: the pull-out,
+> pad-bearing, hold-down and base-shear rows are no longer graded (`_strapped_out`). The
+> arithmetic above stays as the case the rows would grade without the strap; the pads stay
+> as drawn (decision 15).
+
 **The compression chord's pad (review C-6)**, ASCE 7-16 §2.4.1 D + 0.75(L+S) + 0.75(0.6W),
 gross on the pad, no displaced-soil credit, against 2,000 psf (Table 1806.2 class 4):
 overturning compression 1,034.6 x 8.6825 / 4.979 = 1,804.1 lb, x 0.75 = 1,353 lb. PD-BW-W
@@ -1316,6 +1322,45 @@ guard Y = 1,300.0 / 3.255208 = 399.4 lb
 ```
 
 §10b-§10n above are the 11-17 working; these rows supersede theirs.
+
+### 10p. 2026-11-23 — G5: a strap, a DTT pair and an accepted HL43 reading (supersedes §10o's parts)
+
+Owner (2026-11-23): the HL43 catalog values may be read for the as-installed direction; the
+MSTA/DTT swap where it is better. Every part graded WET, C_M 0.70 (decision 17). Each part
+carries only the direction it is published for, and each plan direction is shared among the
+joints that carry it (`deck_tie.distribute`, basis 6).
+
+| Joint | Part (C-C-2026) | Carries | Published (160) | Wet |
+|---|---|---|---|---|
+| W, `CN-BW-SCREEN-STRAP` | MSTA49Z, p. 290, 26 nails, half per member (note d), over ZIP (note b) | N-S tension | 2,020 | 1,414.0 |
+| FE, `CN-BW-GSDTT-S/-N` | DTT2Z pair + 1/2" HDG rod, deck-to-house detail, holdown note h | N-S tension | 1,825 (1 1/2" row, ESR-2330) | 1,277.5 |
+| FE, `CN-BW-GSTIE-LO/-HI` | HL43HDG, one per face, heel vertical, p. 315 F1 (fn 6: one per sense) | E-W only | 1,445 | 1,011.5 |
+
+The opposite sense of each tension tie bears (the filler at the strap line; FE's tip).
+
+```
+joints  strap x 6.036458 (W face of the screen, over the ZIP), DTT rod x 9.718750, y 43.3125
+        N-S joints: xr 7.877604, dx -/+1.841146, J = 2 x 1.841146^2 = 6.779637
+N-S   ΣFy 1,124.92; M = 1,034.57 (6.182292 - 7.877604) + 90.35 (7.924479 - 7.877604) = -1,749.69 lb-ft
+      strap: 562.46 + 1,749.69 x 1.841146 / 6.779637 = 1,037.6 lb / 1,414.0      0.734 (governs)
+      DTT:   562.46 - 475.2 = 87.3 lb / 1,277.5                                 0.068
+E-W   ΣFx 580.3 lb, all to the HL43: 580.3 / 1,011.5                              0.574
+      M 1,887.1 lb-ft: ±1,887.1 x 1.841146 / 6.779637 = ±512.5 lb N-S (strap 0.36, DTT 0.40)
+guard 200 lb at the screen's south end: DTT 353.0 / (1,277.5 / 1.6)               0.442
+```
+
+`deck_tie/FS-BW-FLOOR` 0.784 → **0.734**, N-S at the strap. It stays in the register: the
+demand is an elastic distribution with plan torsion, not a table read. Named on the record:
+the HL43's E-W row is an OWNER-ACCEPTED catalog reading — the figure's F1 bears along the
+grain, here the garage leg's lags bear across a vertical stud's grain. ESR-2330 §4.1 scopes the
+DTT2 to dry interior service; the catalog sells it for deck lateral ties and it is graded wet.
+
+**The screen's chords carry no N-S.** The canopy's screen share runs SB-BW-BAND → top plate →
+MSTA49Z → W-G-W; `lateral_band._strapped_out` drops the chord overturning, base shear,
+pull-out and pad rows (§6d), and `lateral_system/RF-BW-CANOPY` returns to the diaphragm row,
+0.907. Line 2's HL33HDG pair and tie block are retired. **Open detail:** the DTT's rod line
+1 5/8" off FE's east face meets the D-G-SERVICE east jamb pack; the garage-side tie needs a
+nailer or filler on the drawing, set before drywall.
 
 ## Sources
 
