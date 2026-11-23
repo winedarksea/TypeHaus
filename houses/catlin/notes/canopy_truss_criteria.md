@@ -75,3 +75,12 @@ The truss's own bottom chord bearing on `BM-BW-RW`/`-RE` (SPF Fc-perp) is the fa
 reaction and the bearing it must accept: T2 2,353 lb on 1.5" x 5.5" = 285 psi (the glulam's side of it is `roof_beam`, 0.662). On the
 garage plates the same check is the supplier's at 1,916 lb. The end-strap couple row (0.774) is a conservative bound: an elastic
 distribution over the six straps puts 351 lb on an end strap (0.53 with the chord force).
+
+## 4. Catalog routes to close the canopy heel without the five-nail condition: none found (2026-11-23)
+
+Read: Simpson C-C-2021 p.277 (H/TSP rows and fn. 1-17) and ICC-ES ESR-2613 (Table 1 fn. 1). Every candidate tie still takes its truss-side
+nails into the 1.5" truss (H2.5T SPF/HF 565, H8 710, H10A 1,015, H10A-2 930), so none is independent of the heel geometry, and none prints a
+row for a 2x4 bottom chord other than the H2.5A's fn. 14 (260 lb). "Allowable loads are for one anchor" (catalog fn. 2, ESR fn. 1) and a
+pair on opposite faces needs a 2-1/2" member unless the nails do not interfere; neither document publishes a summed value for two ties on
+a 1.5" truss. The girder brackets (VGT) are for 2-ply trusses. So the canopy heel stays UNKNOWN and rides the supplier-truss open item: the
+supplier's drawing shows the five-nail heel (or a tie and nailing it will certify).
