@@ -220,7 +220,7 @@ def test_a_filled_scaffold_seals_every_computed_item(bundle, tmp_path, catlin_ct
     assert refused == set(), (
         "a kind went over capacity — the scaffold will comment its whole block out, which is "
         "correct, but this test then stops exercising the sealing path for it", refused)
-    assert register.covering("tiered_retaining/W-RG-BLOCK") is not None
+    assert register.covering("tiered_retaining/W-RG-EAST") is not None
     assert register.covering("deck_tie/FS-BW-FLOOR") is not None
     computed = [ctx.engineering[i] for i in every
                 if ctx.engineering[i].inputs and ctx.engineering[i].kind not in refused]
