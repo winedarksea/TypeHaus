@@ -69,6 +69,8 @@ TIE_FORCE_FACTOR_STIFF = 2.5
 #: hook (below). Table 6 allows it 200 lb; the product's own working load at a 1 1/4" offset and
 #: 0.05" deflection is 235-332 lb in tension and compression at 4 1/2" and 7 1/2" cavities.
 DETAIL_TIE_KIND = "adjustable_slotted"
+#: A READING: H&B's sheet does not call the plate "slotted"; the product is tested by its maker at
+#: over 200 lbf, tension and compression, at the 1 1/4" maximum offset, equal to Table 6's 200 lb.
 DETAIL_TIE_PRODUCT = ("Hohmann & Barnard HB-213-2X adjustable veneer anchor, 14 ga plate 4\" "
                       "(the foam's thickness) with 400H-2X hooks, 3/16\" compressed legs; data "
                       "sheet (c) MiTek / H&B 2013-2021, buildsite.com HB-213-2X 2281554")

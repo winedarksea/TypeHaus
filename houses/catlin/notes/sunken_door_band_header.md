@@ -108,25 +108,20 @@ jack studs (provided: 2) and Table R602.7.5's full-height studs each end: for a 
 rim over `D-B-SUNKEN` takes the whole 1,708 lb). It is a published table row, so it is a prescriptive
 read and not a seal. Under the 0.85 cost-review trigger (decision 30).
 
-## The rim joint (TJ-8000 p.5), open
+## The rim joint (TJ-8000 p.5), closed
 
-p.5's header application: "Locate joint a minimum of 12" beyond opening". `FS-M-WEST`'s edge rim ends at
-x=215.25" and `FS-M-EAST`'s begins at 216": the floors' seam at the 18' bearing line, **8.34" from the
-west jamb** (224.34"), 2.34" outside the pack. The header ply stops at the floor's outline (216") too,
-so nothing bridges the joint, and a floor's rim cannot be lengthened over its neighbour's.
-`structural.rim_header` grades it UNKNOWN. Options: move the seam 3.7" west (the bearing line moves);
-move the opening 3.7" east (the door, its RO and the PORCH packs above); or Weyerhaeuser confirms the
-splice (ForteWEB models one continuous piece).
+p.5's header application: "Locate joint a minimum of 12" beyond opening". `FS-M-WEST`'s edge rim ended at
+x=215.25" and `FS-M-EAST`'s began at 216": the floors' seam at the 18' bearing line, **8.34" from the west
+jamb** (224.34"), 2.34" outside the pack. Moving the seam (20 walls on four storeys, 6 floor fields) or the
+door (8 stacked openings and what hangs on them) was large, and the rim is physically one long board, so
+(coordinator, 2026-11-23, "the model follows the crew") **one board runs past the seam**:
+`JoistSpec.edge_rim_extend` lengthens `FS-M-EAST`'s edge rim 12" west and `edge_rim_trim` stops
+`FS-M-WEST`'s where it starts, so the splice is at x=204" (17'-0"), **20.34"** from the west jamb; the east
+end has no rim joint within 24". `structural.rim_header` reads the real splice (where two edge rims' ends meet)
+and PASSes at 12" or more; the takeoff and framing read the same two members. The second ply is clipped to the
+floor outline and extends 6" past each jamb, 4 1/2" or more as p.5 asks.
 
-**Both moves are large (compared 2026-11-23, owner: "the cheapest").** The seam is the 18' bearing line:
-20 walls on x=216" over four storeys (`W-B-CS/CS2/CS3/CN/CN2`, `W-M-C1/C2/C3/C5/C5B`, `W-S-C1/C2/C2B/C2C/C4B`,
-`W-A-C1/C1B/C2/C2M/C2B`), six floor fields with an edge on it (`FS-M-WEST/EAST/STAIR/NE`, `FS-S-WEST/EAST`), and
-the MEP, lighting and casework keyed to the grid (287 authored references to the 18' line). The door is eight
-stacked openings (`D-B-SUNKEN`, `AO-B-SUNKEN-SEAT`, `-TREAD-BED`, `AO-B-BRICK-DOOR` with its lintel, flashing
-and ties, `D-M-PORCH`, `D-S-BALCONY`, `AO-SG-BRKBM-TREAD-BED`), the PORCH sill beam's seats and backers, the
-two seat packs, `params/sunken_garden.py`, `main_deck.py` and `sill_seat_backers.py` coordinates, the porch
-lighting and window coverings at the door, and the owner's door centring over the stud module. Neither is
-small: this is reported to the owner, not done.
+## Not graded here
 
 Dry-use service (the band is inside the envelope; TJ-8000 p.5: dry-use only). Lateral support: the
 subfloor sheathes the top edge. The ply's nails are not billed as a separate line.

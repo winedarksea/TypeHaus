@@ -1064,7 +1064,7 @@ section at x=10' cuts where neither reveal is, so it could not show the lintel f
 `TR-CATLIN-VENEER-OPENING` (its old "arch, no lintel" reason gone) is un-suppressed.
 
 **The ties on force.** The court slides under the wythe, so each tie carries friction drag in both
-directions (summer closing 0.0854", winter opening about 0.124" on the record's thermal term over 70 F),
+directions (summer closing 0.0854", winter opening about 0.089" on the court record's own thermal basis, the 50 F set to the 0 F minimum; §6m first read 70 F, a local range, and the load-path review M8 corrected it),
 not stiffness x displacement (which would be 2,500 lb/in x 0.0854" = 214 lb a tie, over the 125 lb
 allowable and the 210 lb design strength: the check FAILs a wythe with no bond break). The table is
 TMS 402-22 Table 6 as BIA TN 3C (2022) prints it: adjustable two-leg pintle 2,500 lb/in, 125 lb
@@ -1129,8 +1129,7 @@ angle's top, its ends 1/2" past the sheet**, and is fixed with 316 screws; the s
 The base sheet lies on concrete, under mortar and a dry bed; the HDG tie plates and hooks are in the mortar
 joints and the studs, not on the sheet.  No price is entered.
 
-**The rim joint (open, G-new).** Both moves (the seam, the door) are large and are the owner's to choose; see
-`sunken_door_band_header.md`.
+**The rim joint is closed** by running one rim board past the seam (`sunken_door_band_header.md`). **The tie's reading:** H&B's sheet does not call the HB-213 plate slotted; Table 6's adjustable slotted row is read onto it, and the maker's own test (over 200 lbf, tension and compression, at the 1 1/4" maximum offset) equals the row's 200 lb.
 
 ## Sources
 

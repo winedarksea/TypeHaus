@@ -88,7 +88,8 @@ def test_the_slotted_tie_takes_drag_and_wind_on_a_bond_break(catlin_ctx) -> None
     force = next(f for f in _grade(catlin_ctx, "2024 IRC") if "bond break" in f.message)
     assert force.result is Result.PASS
     msg = force.message
-    assert "adjustable slotted tie (Hohmann & Barnard HB-213-2X" in msg
+    assert "adjustable slotted tie, a READING of Hohmann & Barnard HB-213-2X" in msg
+    assert "does not use the word slotted" in msg and "over 200 lbf" in msg
     assert "FL-B-BRICK-BASE-E, FL-B-BRICK-BASE-W" in msg
     assert "3,204 lb on 65 ties (13 stations x 5 rows) = 49.3 lb" in msg
     assert "wind 2.5 p At = 2.5 x 19.93 psf x 2.67 sf = 133.1 lb" in msg

@@ -90,7 +90,8 @@ def _joint_finding(ctx: CheckContext, door: str, tags, wall, header, floor) -> F
              f"from the opening's jamb (outside the pack), under TJ-8000 p.5's {_JOINT_MIN_IN:g}\" "
              f"for a rim header; the header ply stops at the floor outline too, so nothing "
              f"bridges it", tags, code=_CODE,
-        fix="move the seam, or have Weyerhaeuser confirm the splice (ForteWEB models one piece)")
+        fix="lengthen one floor's edge rim past the seam (JoistSpec.edge_rim_extend, and "
+            "the neighbour's edge_rim_trim) so the splice stands 12\" or more from the opening")
 
 
 def _one(ctx: CheckContext, door) -> list[Finding]:

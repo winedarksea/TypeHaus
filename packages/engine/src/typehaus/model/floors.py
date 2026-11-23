@@ -105,11 +105,22 @@ class JoistSpec(HausModel):
     # end, where the edge line stands on a wall and spans nothing. Emitted as ``rim``
     # members keyed ``edge-rim-*`` (``resolve/model.EDGE_RIM_PREFIX``).
     edge_rims: tuple[Literal["lo", "hi"], ...] = ()
+    # WHERE AN EDGE RIM'S SPLICE IS. Two floor fields meeting at a bearing line each derive an
+    # edge rim ending at the seam, so the joint stands on the seam; the crew runs one board
+    # past it. ``edge_rim_extend`` lengthens this field's edge rim past the field's low / high
+    # END (along the joist axis) onto the neighbour's edge; the neighbour's ``edge_rim_trim``
+    # shortens its own rim by the same stretch, so the splice stands where the extension ends
+    # (TJ-8000 p.5: at least 12" beyond a rim-header opening, ``structural.rim_header``).
+    edge_rim_extend: tuple[Length, Length] | None = None
+    edge_rim_trim: tuple[Length, Length] | None = None
 
     @model_validator(mode="after")
     def validate_rim_extensions(self):
         if self.rim_end_extensions and any(v.meters < 0 for v in self.rim_end_extensions):
             raise ValueError("rim end extensions must be nonnegative")
+        for pair in (self.edge_rim_extend, self.edge_rim_trim):
+            if pair and any(v.meters < 0 for v in pair):
+                raise ValueError("edge rim extend/trim must be nonnegative")
         if self.station_ties > 0 and not self.sill_tie:
             raise ValueError("station_ties names no part: set sill_tie")
         return self

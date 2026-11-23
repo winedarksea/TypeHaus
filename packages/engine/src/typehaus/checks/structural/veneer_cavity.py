@@ -40,9 +40,6 @@ from typehaus.findings import Finding, failed, not_applicable, passed, unknown
 
 _ID = "structural.veneer_cavity_width"
 _CODE = "IRC R703.8.4, R703.8.4.1, R703.8.4.1.1, Table R703.8.4(1)"
-#: Winter opening as a multiple of the record's thermal closure: the same strain over the
-#: 70 F from the pour's 50 F to -20 F, against the 30 F of closing (a stated estimate).
-_OPENING_PER_CLOSING = 70.0 / 30.0
 _TIE_AREA_FT2 = veneer_ties.TIE_AREA_SF
 
 
@@ -170,6 +167,11 @@ def _force(ctx: CheckContext, wythe: Any, pressure: float | None, lay: Any) -> F
                    if key.startswith("thermal_break_transfer/")
                    for q in ctx.engineering[key].inputs if q.name == "joint_thermal"),
                   default=None)
+    from typehaus.engineering.thermal_break_board import temps
+
+    tbasis = temps(ctx)
+    opening = (thermal * (tbasis.set_f - tbasis.min_f) / tbasis.closing
+               if thermal is not None and tbasis is not None and tbasis.closing > 0 else None)
     runs, bare = veneer_ties.base_flashing(ctx.model, wythe)
     if closure is not None and (not runs or bare > 1.0):
         return failed(
@@ -195,17 +197,20 @@ def _force(ctx: CheckContext, wythe: Any, pressure: float | None, lay: Any) -> F
     basis = ("sourced" if sourced is not None else "a stated UPPER BOUND, unverified (no maker "
              "publishes it; McGinley and Borchelt, TMS J. 9(2), tested it and was not opened)")
     drag = mu * per_mu
+    span = '' if tbasis is None else f'{tbasis.set_f:g} F set to {tbasis.min_f:g} F'
     total = wind + drag
-    text = (f"{wythe.tag}: {veneer_ties.DETAIL_TIE_KIND.replace('_', ' ')} tie "
-            f"({veneer_ties.DETAIL_TIE_PRODUCT.split(',')[0]}); bond break and flashing "
+    text = (f"{wythe.tag}: {veneer_ties.DETAIL_TIE_KIND.replace('_', ' ')} tie, a READING of "
+            f"{veneer_ties.DETAIL_TIE_PRODUCT.split(',')[0]} (H&B's sheet does not use the word "
+            f"slotted; its own test is over 200 lbf at the 1 1/4\" maximum offset); bond break "
+            f"and flashing "
             f"{', '.join(runs)} under the first course; wythe {weight:,.0f} lb on {ties} ties "
             f"({len(lay.stations_in)} stations x {len(lay.rows_in)} rows) = {per_mu:.1f} lb of "
             f"drag per tie per unit friction; wind {factor:g} p At = {factor:g} x {pressure:.2f} "
             f"psf x {at:g} sf = {wind:.1f} lb (TN 3C Table 7, k {k:,.0f} lb/in); friction "
             f"{mu:g} is {basis}, in either direction: summer closing "
             f"{'' if closure is None else f'{closure:.4f}'}\", winter opening about "
-            f"{'' if thermal is None else f'{thermal * _OPENING_PER_CLOSING:.3f}'}\" (the "
-            f"record's thermal term over 70 F, an estimate): drag {drag:.1f} + wind {wind:.1f} = "
+            f"{'' if opening is None else f'{opening:.3f}'}\" (the court record's own thermal "
+            f"basis, {span}): drag {drag:.1f} + wind {wind:.1f} = "
             f"{total:.1f} lb against {allow:g} lb allowable, {design:g} lb design (TMS 402-22 "
             f"Table 6 via BIA TN 3C), d/c {total / allow:.2f}")
     if total <= allow + 1e-6:
