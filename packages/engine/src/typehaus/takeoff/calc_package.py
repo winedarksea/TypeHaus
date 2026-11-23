@@ -208,7 +208,7 @@ def _cover(inputs: PackageInputs) -> str:
         bullets([
             "**draft** — the item has been computed and every limit state listed on its sheet "
             "is within capacity. A limit state the sheet does not list is not evaluated and is "
-            "not implied to pass (section 9 of each calculation). `haus print` gates here.",
+            "not implied to pass (section 10 of each calculation). `haus print` gates here.",
             "**sealed** — a licensed professional stamped the item *and* the fingerprint "
             "pinned in `engineering.toml` still matches the model in front of you. "
             "`haus print --sealed` gates here.",

@@ -1514,5 +1514,9 @@ def test_the_glulam_record_reads_the_authored_seat_and_the_house_planter(catlin_
     assert bearing.demand == pytest.approx(270.9, abs=0.1)          # 3,319 lb / (3.5 x 3.5)
     assert bearing.ratio == pytest.approx(0.624, abs=0.001) and record.governing is bearing
     notes = " ".join(record.notes)
-    assert "NOT COVERED (owner)" in notes and "no snow, no drift" in notes
+    # The deck basis is a stated basis now (printed in section 6), not a note.
+    from typehaus.engineering.item import sheet_spec
+
+    bases = " ".join(b.statement for b in sheet_spec(record.kind).bases)
+    assert "no snow, no drift" in bases
     assert "OVERHANGS, accepted (owner decision 9)" in notes and "12\" o.c." in notes

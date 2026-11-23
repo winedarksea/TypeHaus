@@ -5,7 +5,8 @@ kind's references, exclusions and table keys, and eleven of twelve cast columns 
 element tag and a few numbers to the first. The numbers are what an appendix is for, so
 this prints them side by side: the inputs and limit states as rows, the members as
 columns, and every per-member string (summary, citation, result, open input) once, with
-the numbers that vary collapsed through :mod:`typehaus.takeoff.calc_collapse`.
+the numbers that vary collapsed through :mod:`typehaus.takeoff.calc_collapse`; "R4" is
+the family calculation's collapsed reference number.
 
 The per-member nine-section sheets (:mod:`typehaus.takeoff.calc_sheet`) are still written
 as diffable machine data; they stopped being printed. Every field they hold is here or on
@@ -19,8 +20,9 @@ from collections.abc import Sequence
 from typehaus.emit.md_writer import document, heading, table
 from typehaus.engineering.item import EngineeringRecord, LimitState
 from typehaus.takeoff.calc_collapse import collapse, collapsed_tables
-from typehaus.takeoff.calc_family import family_filename, references
-from typehaus.takeoff.calc_numfmt import num
+from typehaus.takeoff.calc_family import family_filename, ref_index
+from typehaus.takeoff.calc_labels import label, unit_text, value_text
+from typehaus.takeoff.calc_numfmt import num, ratio_text
 
 #: Members per value table. Five columns of "4,947 / 285,893 = 0.017" is what a 5.5"
 #: measure holds beside the row labels without wrapping every cell.
@@ -60,16 +62,22 @@ def _given(records: Sequence[EngineeringRecord]) -> str:
             if key not in keys:
                 keys.append(key)
     if not keys:
-        return "_No member consumed an input — this engine computes nothing here._"
+        return "_No member consumed an input; nothing is computed here._"
+    first = {}
+    for record in records:
+        for q in record.inputs:
+            first.setdefault((q.name, q.unit, "exact" if q.quantum is None
+                              else f"{q.quantum:g}"), q)
     blocks = []
     for chunk in _chunks(records):
         values = [{(q.name, q.unit, "exact" if q.quantum is None else f"{q.quantum:g}"):
-                   q.value for q in record.inputs} for record in chunk]
-        rows = [[f"`{name}`", unit or "—", quantum,
+                   value_text(q, num) for q in record.inputs} for record in chunk]
+        rows = [[f"`{name}`", label(records[0].kind, first[(name, unit, quantum)]) or "—",
+                 unit_text(first[(name, unit, quantum)]) or "—",
                  *[by_key.get((name, unit, quantum), "—") for by_key in values]]
                 for name, unit, quantum in keys
                 if any((name, unit, quantum) in by_key for by_key in values)]
-        blocks.append(table(["Quantity", "Unit", "Quantum",
+        blocks.append(table(["Quantity", "Meaning", "Unit",
                              *[f"`{_tag(r)}`" for r in chunk]], rows))
     return "\n\n".join(blocks)
 
@@ -84,7 +92,7 @@ def _states(records: Sequence[EngineeringRecord]) -> str:
     ``R4`` is the citation's number in the family calculation's §2, so every member's own
     citation is recoverable without printing 400 characters of it in each column.
     """
-    refs = references(records)
+    refs = ref_index(records)
     keys: list[tuple[str, str, str]] = []
     for record in records:
         for state in record.limit_states:
@@ -98,10 +106,10 @@ def _states(records: Sequence[EngineeringRecord]) -> str:
         for record in chunk:
             by_key = {}
             for state in record.limit_states:
-                cite = (f" (R{refs.index(state.citation) + 1})"
-                        if state.citation in refs else "")
+                cite = (f" ({refs.cite(state.citation)})"
+                        if state.citation in refs.number else "")
                 text = (f"{num(state.demand)} / {num(state.capacity)} "
-                        f"= {state.ratio:.3f}{cite}")
+                        f"= {ratio_text(state.ratio)}{cite}")
                 by_key[_state_key(state)] = (f"**{text}**" if state is record.governing
                                              else text)
             cells.append(by_key)

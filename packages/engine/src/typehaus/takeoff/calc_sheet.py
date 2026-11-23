@@ -19,18 +19,27 @@ from collections.abc import Mapping
 
 from typehaus.emit.md_writer import bullets, callout, document, heading, kv_block, table
 from typehaus.engineering.fingerprint import Freshness, fingerprint
-from typehaus.engineering.item import EngineeringRecord, Scope, Status
+from typehaus.engineering.item import EngineeringRecord, Scope, Status, sheet_spec
 from typehaus.engineering.register import EngineeringRegister, Signoff
+from typehaus.takeoff.calc_labels import label, unit_text, value_text
+from typehaus.takeoff.calc_numfmt import num, ratio_text
+from typehaus.takeoff.calc_summary import STATE_NAME
 
-#: How each local status letters on a sheet. Deliberately the same four words the CLI uses
-#: (``cli/cmd_engineering.py::_LOCAL``), so a reader moving between the terminal and the
-#: package is not learning a second vocabulary.
+__all__ = ["SCOPE_LABEL", "SEAL_LABEL", "STATE_NAME", "STATUS_LABEL", "UNPINNED_TEXT",
+           "is_member_sheet", "render_sheet", "sheet_filename"]
+
+#: The front matter's four state names (``calc_summary.STATE_NAME``), with what each means.
 STATUS_LABEL: Mapping[Status, str] = {
-    Status.OK: "draft — this engine's calculation checks out",
-    Status.OVER: "OVER — a limit state exceeds its capacity",
-    Status.INCOMPLETE: "INCOMPLETE — the calculation exists and an input it needs is absent",
-    Status.NO_CALC: "NO LOCAL CALC — a designer of record owns this",
+    Status.OK: f"{STATE_NAME[Status.OK]} — every graded limit state is within capacity",
+    Status.OVER: f"{STATE_NAME[Status.OVER]} — a limit state exceeds its capacity",
+    Status.INCOMPLETE: f"{STATE_NAME[Status.INCOMPLETE]} — an input the calculation needs "
+                       "is absent",
+    Status.NO_CALC: f"{STATE_NAME[Status.NO_CALC]} — an outside designer owns this",
 }
+
+#: Review 6A-10 / E-13 (iv): a deferred item is accepted against a document, never pinned.
+UNPINNED_TEXT = ("— (not pinned to the model; an outside designer's sealed document is "
+                 "recorded instead, see `engineering.toml.draft`)")
 
 #: What ``Scope`` means on a sheet, in the words a reviewer needs. Orthogonal to the status
 #: above it: "every limit state this engine enumerated is under 1" and "this engine
@@ -40,8 +49,8 @@ SCOPE_LABEL: Mapping[Scope, str] = {
     Scope.COMPLETE: "COMPLETE — this module enumerates every limit state this design needs",
     Scope.SCREENING: "SCREENING — a real subset of the limit states, listed in section 9. "
                      "What is not enumerated is not evaluated and is not implied to pass",
-    Scope.EXTERNAL: "EXTERNAL — somebody else designs this; the engine holds a name and a "
-                    "deliverable, not numbers",
+    Scope.EXTERNAL: "EXTERNAL — somebody else designs this; the package holds a name and "
+                    "a deliverable, not numbers",
 }
 
 SEAL_LABEL: Mapping[Freshness, str] = {
@@ -53,8 +62,8 @@ SEAL_LABEL: Mapping[Freshness, str] = {
     Freshness.ACCEPTED: "accepted against an outside designer's sealed document — pinned "
                         "to that document's revision and sha256, not to this model, and "
                         "the envelope it was issued for is a reviewer's check by hand",
-    Freshness.UNPINNABLE: "stamped over a NO_CALC item — this engine computes nothing here, "
-                          "so the pinned fingerprint is a statement about nothing and "
+    Freshness.UNPINNABLE: "stamped over a deferred item — nothing is computed here, so "
+                          "the pinned fingerprint is a statement about nothing and "
                           "satisfies no gate",
 }
 
@@ -100,10 +109,11 @@ def _references(record: EngineeringRecord) -> list[str]:
 
 def _given(record: EngineeringRecord) -> str:
     if not record.inputs:
-        return "_No inputs were consumed — this engine computes nothing for this item._"
+        return "_No inputs were consumed; nothing is computed for this item._"
     return table(
-        ["Quantity", "Value", "Unit", "Fingerprint quantum"],
-        [[q.name, q.value, q.unit, "exact" if q.quantum is None else q.quantum]
+        ["Quantity", "Meaning", "Value", "Unit", "Fingerprint quantum"],
+        [[q.name, label(record.kind, q) or "—", value_text(q, num), unit_text(q) or "—",
+          "exact" if q.quantum is None else num(q.quantum)]
          for q in record.inputs])
 
 
@@ -125,8 +135,8 @@ def _analysis(record: EngineeringRecord) -> str:
             kind = "demand / capacity"
         rows.append([
             ("**" + state.name + "**") if state is governing else state.name,
-            state.demand, state.capacity, state.unit,
-            f"{state.ratio:.3f}", kind,
+            num(state.demand), num(state.capacity), state.unit,
+            ratio_text(state.ratio), kind,
             # A numbered load combination is what makes a demand checkable — a reviewer can
             # reproduce the factors from the standard without asking what was assumed. Most
             # states here carry none and print "—" rather than a guess: see
@@ -140,6 +150,10 @@ def _analysis(record: EngineeringRecord) -> str:
         body += ("\n\nThe **bold** row governs — it is the worst ratio among the states "
                  "that carry load, and the one an engineer would name if asked what "
                  "controls this item.")
+        working = [f"**{state.name}**\n\n" + bullets(step.text() for step in state.working)
+                   for state in record.limit_states if state.working]
+        if working:
+            body += "\n\n" + "\n\n".join(working)
     else:
         body += ("\n\n**No row is bold, because no load-carrying limit state could be "
                  "computed here.** Every row above is a detailing rule, and detailing "
@@ -159,7 +173,7 @@ def _result(record: EngineeringRecord) -> str:
         return f"**{STATUS_LABEL[record.status]}.** {record.summary}"
     verdict = "PASS" if governing.ok else "**OVER CAPACITY**"
     combination = f", {governing.combination}" if governing.combination else ""
-    line = (f"**d/c = {governing.ratio:.3f}, governed by {governing.name} "
+    line = (f"**d/c = {ratio_text(governing.ratio)}, governed by {governing.name} "
             f"({governing.citation}{combination}) — {verdict}.**")
     if record.status is Status.INCOMPLETE:
         line += ("\n\nThis ratio is **not the whole answer**: the item is INCOMPLETE, and "
@@ -185,9 +199,7 @@ def _independent_check(record: EngineeringRecord) -> str:
             for oracle in record.oracle]
     return table(["Note (houses/<house>/notes/)", "Section", "Test that reproduces it"],
                  rows) + \
-        "\n\nEach note is an independent hand pass, worked without reference to this " \
-        "engine's code. Where a test is named, it re-derives the note's own numbers, so a " \
-        "change to the calculation that drifts from the note fails the suite."
+        "\n\nEach note is an independent hand pass, re-derived by the named test."
 
 
 def render_sheet(record: EngineeringRecord, register: EngineeringRegister, *,
@@ -195,8 +207,7 @@ def render_sheet(record: EngineeringRecord, register: EngineeringRegister, *,
     """The whole sheet for one item."""
     seal, _signoff = _seal_line(record, register)
     print_fingerprint = (fingerprint(record) if record.status is not Status.NO_CALC
-                         else "— (no inputs to fingerprint; a seal over this item can be "
-                              "recorded but never pinned)")
+                         else UNPINNED_TEXT)
     header = kv_block([
         ("Item", f"`{record.item_id}`"),
         ("Elements covered", ", ".join(record.element_tags) or record.key),
@@ -226,6 +237,11 @@ def render_sheet(record: EngineeringRecord, register: EngineeringRegister, *,
         (bullets(record.notes) if record.notes else
          "_The record records no assumption beyond the citations above._"),
     ]
+    bases = (*sheet_spec(record.kind).bases, *record.bases)
+    if bases:
+        blocks.append(bullets(f"**{b.kind.value}: {b.subject}.** {b.statement}"
+                              + (f" Reopens if: {b.reopens_if}" if b.reopens_if else "")
+                              for b in bases))
     if record.missing:
         blocks += [
             heading("7. Open inputs", 2),
@@ -248,13 +264,15 @@ def _exclusions(record: EngineeringRecord) -> str:
     two exclusions below are true of every record this engine produces: the limit states
     are the ones the calc module enumerated, and the seal is a separate act.
     """
+    rows = (*sheet_spec(record.kind).not_covered, *record.not_covered)
     return bullets([
         f"**This sheet is {SCOPE_LABEL[record.scope].split(' — ')[0]}.** Only the limit "
-        f"states listed in §4 are graded. A failure mode this engine does not enumerate "
-        f"for `{record.kind}` is not evaluated here and is not implied to pass — and the "
+        f"states listed in §4 are graded. A failure mode not enumerated for "
+        f"`{record.kind}` is not evaluated here and is not implied to pass — and the "
         f"header's *Local status* is a statement about the graded ones only.",
+        *(f"Not graded: {r.what} ({r.why}). Owner: {r.owner}." for r in rows),
         "Load cases are those the record's inputs state. No combination beyond them is "
         "searched.",
-        "This engine computing a PASS is the **draft** gate. It is not a professional "
-        "seal, and it does not become one by being printed.",
+        "A computed PASS is the **draft** gate. It is not a professional seal, and it "
+        "does not become one by being printed.",
     ])

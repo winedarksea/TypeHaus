@@ -1,23 +1,9 @@
 """The NDS pass on a structural glulam carrying a deck.
 
-**An engineering item again, since 2026-09-18, and the round trip is the point.** It was
-one until 2026-09-11, when it was retired on the reasoning that the *supplier* publishes a
-table — Anthony/Canfor's Power Preserved Glulam Deck Guide tabulates exactly this beam
-against exactly this joist span — and reading a published table is a prescriptive act, not
-something a seal adds to. That reasoning is still right about the table. What it got wrong
-is which member the table describes.
-
-** THE PUBLISHED ROW IS DRY-USE AND THESE BEAMS STAND IN WEATHER. ** That was known on the
-day the kind was retired — it is written into the row's own ``condition`` string, and this
-module's wet-service arithmetic ran beside the PASS as an *advisory*. So the verdict came
-from a row that does not cover the member, and the only calculation modelling the real
-service condition was the one carrying no weight. Worse, in leaving the registered-kind
-tuple it left the seal machinery entirely: no record, no fingerprint, and — the part that
-would have caught it — **no oracle lint**, so nothing checked that its hand-worked note
-still existed or still agreed.
-
-``PublishedSpan.service_condition`` now makes the mismatch loud: the published read goes
-UNKNOWN naming it, and this record carries the verdict.
+**Why it is engineered and not a table read.** The supplier's deck guide tabulates this beam
+against this joist span, but its row is DRY-USE and these beams stand in weather, so the
+published read goes UNKNOWN (``PublishedSpan.service_condition``) and this record carries the
+verdict.
 
 **What governs, and what does not.** These are catlin's two balcony beams: 3-1/2" x
 11-7/8" preservative-treated southern yellow pine, 24F-V5M1/SP, on two bearings with 8" and
@@ -27,20 +13,15 @@ span. Bearing on the 3.5" pack governs; bending, shear and deflection are not cl
 member is that deep because the owner wanted planter margin, and the record says so rather
 than implying the depth was solved for.
 
-**Wet service.** Every one of these stands in weather with no enclosure above it, so
-AWC NDS Table 5.3.1's wet-service factors apply and are applied: ``C_M`` 0.80 on Fb, 0.875
-on Fv, 0.53 on Fc-perp and 0.833 on E. A glulam design value quoted dry and used outdoors
-is the single most common way to overstate one of these by a quarter.
-
-**Hand-worked basis.** ``houses/catlin/notes/balcony_moment_columns.md`` §5, §5b;
-``tests/test_pier_calcs.py`` reproduces it. It is a registered ``Oracle`` again, which is
-what ``tests/test_calc_package.py``'s lint checks.
+**Wet service**: AWC NDS Table 5.3.1's ``C_M`` (0.80 Fb, 0.875 Fv, 0.53 Fc-perp, 0.833 E).
+The working and the sheet declaration are ``glulam_beam_working``.
 """
 
 from __future__ import annotations
 
 from typing import Any
 
+from typehaus.engineering import glulam_beam_working as W
 from typehaus.engineering.deck_tributary import beam_tributary_ft as _beam_tributary_ft
 from typehaus.engineering.deck_tributary import joist_span_ft as _joist_span_ft
 from typehaus.engineering.item import (
@@ -49,6 +30,7 @@ from typehaus.engineering.item import (
     Oracle,
     Quantity,
     Status,
+    declare_sheet,
     item_id,
 )
 from typehaus.engineering.registry import EngineeringContext, calc, keys, oracled_by
@@ -59,16 +41,9 @@ BASIS = "AWC NDS 2018 Ch. 3 and 5, ANSI 117 combination values, wet service"
 
 #: Bumped whenever the arithmetic below changes.
 #:
-#: 1: the kind as it stood before 2026-09-11.
-#: 2: re-registered 2026-09-18, with ``C_D`` a parameter rather than a frozen 1.0.
-#: 3: 2026-09-22, each beam loaded with its own tributary (``_beam_tributary_ft``), not the
-#:    full joist span.
-#: 4: 2026-09-22, the beam's own two bearings and overhangs by statics under patterned live
-#:    load (``overhang_beam``), not ``wL/2`` over the node-to-node length.
-#: 5: 2026-11-23 (review B-01/B-02/B-10): the seat is the AUTHORED
-#:    ``HeadConnector.bearing_length_in`` with NDS §3.10.4 ``C_b`` (it was a hard-coded 3.0"),
-#:    the house's planter is a dead line load on the back span, and the record states the
-#:    load basis, creep, uplift and stability.
+#: 2: ``C_D`` a parameter. 3: each beam's own tributary. 4: two bearings and overhangs by
+#: statics under patterned live load. 5: the authored seat with ``C_b``, the planter as dead
+#: load, and the load basis, creep, uplift and stability stated (review B-01/B-02/B-10).
 BASIS_VERSION = "5"
 
 #: IRC R507.1 / Table R301.5 — 40 psf live plus 10 psf dead, re-exported from
@@ -211,6 +186,13 @@ def nds_states(width_in: float, depth_in: float, span_ft: float,
     deflection_in, length_in, where = max(
         deflections, key=lambda d: d[0] / (d[1] / LIVE_DEFLECTION_DENOMINATOR))
     deflection_limit_in = length_in / LIVE_DEFLECTION_DENOMINATOR
+    work = W.nds_working(
+        b=width_in, d=depth_in, a=a_ft, s=span_ft, c=b_ft, trib=tributary_ft, live=live_psf,
+        dead=dead_psf, planter=planter_plf, cd=load_duration_factor, cv=volume, cb=c_b,
+        seat=bearing_length_in, env=env, sm=section_modulus, ei=modulus * inertia,
+        where=where, defl=deflection_in, span_in=length_in, limit_in=deflection_limit_in,
+        fb=fb, fv=fv, fcp=fc_perp)
+    combo = dict(combination=W.D_PLUS_L[0], combination_factors=W.D_PLUS_L[1])
 
     return (
         LimitState("bending", bending_psi, fb, "psi",
@@ -218,20 +200,21 @@ def nds_states(width_in: float, depth_in: float, span_ft: float,
                    f"Fb {GLULAM_FB_PSI:,.0f} psi (24F-V5M1/SP) x C_M "
                    f"{WET_FB:.2f} (Table 5.3.1, wet service) x C_D "
                    f"{load_duration_factor:.2f} (Table 2.3.2) x C_V "
-                   f"{volume:.3f} (§5.3.6 volume factor, x = 20)"),
+                   f"{volume:.3f} (§5.3.6 volume factor, x = 20)", working=work[0], **combo),
         LimitState("shear parallel to grain", shear_psi, fv, "psi",
                    f"AWC NDS 2018 §3.4.3.1(a), V taken at d from the FACE of the "
                    f"{bearing_length_in:g}\" seat (d + half the seat from its centre) — Fv "
-                   f"{GLULAM_FV_PSI:,.0f} psi x C_M {WET_FV:.3f}"),
+                   f"{GLULAM_FV_PSI:,.0f} psi x C_M {WET_FV:.3f}", working=work[1], **combo),
         LimitState("bearing, compression perpendicular", bearing_psi, fc_perp, "psi",
                    f"AWC NDS 2018 §3.10, the larger reaction by statics, over the "
                    f"{bearing_length_in:g}\" seat — Fc-perp {GLULAM_FC_PERP_PSI:,.0f} psi x "
                    f"C_M {WET_FC_PERP:.2f} x C_b {c_b:.3f} (§3.10.4"
-                   f"{'' if c_b != 1.0 else ', not claimed'})"),
+                   f"{'' if c_b != 1.0 else ', not claimed'})", working=work[2], **combo),
         LimitState("live-load deflection", deflection_in, deflection_limit_in, "in",
                    f"IRC Table R301.7 L/{LIVE_DEFLECTION_DENOMINATOR:.0f} on the "
                    f"{live_psf:.0f} psf live load alone, at {where} — E "
-                   f"{GLULAM_E_PSI:,.0f} psi x C_M {WET_E:.3f}"),
+                   f"{GLULAM_E_PSI:,.0f} psi x C_M {WET_E:.3f}", working=work[3],
+                   combination=W.L_ALONE[0], combination_factors=W.L_ALONE[1]),
     )
 
 
@@ -257,6 +240,16 @@ oracled_by(
     Oracle(note="balcony_moment_columns.md", section="§5, §5b, §20",
            test="tests/test_pier_calcs.py"),
 )
+
+
+def _sheet() -> None:
+    from typehaus.engineering.owner_bases import CURTAINS, DECK_SNOW, OVERHANGS
+
+    declare_sheet(KIND, not_covered=W.NOT_COVERED, bases=(DECK_SNOW, CURTAINS, OVERHANGS),
+                  figure=W.figure)
+
+
+_sheet()
 
 
 def _glulam_deck_beams(ctx: EngineeringContext) -> dict[str, tuple[Any, Any]]:
@@ -353,13 +346,7 @@ def _seat(ctx: EngineeringContext, beam: Any) -> tuple[float, str] | None:
 
 
 def _one(ctx: EngineeringContext, tag: str, beam: Any, deck: Any) -> EngineeringRecord:
-    from typehaus.engineering.balcony_loads import (
-        CURTAIN_OWNER_BASIS,
-        DECK_BASIS_STATED,
-        NOT_COVERED_OWNER,
-        beam_reactions,
-        planter_allowance,
-    )
+    from typehaus.engineering.balcony_loads import beam_reactions, planter_allowance
 
     ident = item_id(KIND, tag)
     tags = (tag, deck.tag)
@@ -441,8 +428,6 @@ def _one(ctx: EngineeringContext, tag: str, beam: Any, deck: Any) -> Engineering
     neg_fb = neg_moment * 12.0 / (width_in * depth_in ** 2 / 6.0)
     fb_adj = GLULAM_FB_PSI * WET_FB * LOAD_DURATION_FACTOR * volume
     notes = (
-        f"DECK BASIS, as stated by the owner: {DECK_BASIS_STATED} NOT COVERED (owner): "
-        f"{NOT_COVERED_OWNER} {CURTAIN_OWNER_BASIS}",
         f"WET SERVICE, and it is the whole reason this is an engineered item rather than a "
         f"table read. The supplier's deck-guide row that covers this beam is published "
         f"DRY-USE (AWC NDS 2018 Table 5.3.1 C_M: {WET_FB:.2f} on Fb, {WET_FV:.3f} on Fv, "

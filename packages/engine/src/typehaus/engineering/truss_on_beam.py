@@ -29,7 +29,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from typehaus.engineering.item import LimitState, Quantity
+from typehaus.engineering.item import LimitState, Quantity, Step, num
 
 _M_PER_IN = 0.0254
 _M_PER_FT = 0.3048
@@ -202,7 +202,8 @@ def beam_bearing(ctx: Any, roof: Any, beam: Any) -> tuple[float, float] | None:
 
 
 def truss_bearing_state(seats: list[TrussSeat], chord_in: float, length_in: float,
-                        fc_perp_psi: float, cm: float) -> tuple[LimitState, tuple[Quantity, ...]]:
+                        fc_perp_psi: float, cm: float, half_ft: float = 0.0,
+                        ) -> tuple[LimitState, tuple[Quantity, ...]]:
     """The governing truss's limit state and the inputs it reads, for ``fingerprint``."""
     rows = []
     for seat in seats:
@@ -212,13 +213,31 @@ def truss_bearing_state(seats: list[TrussSeat], chord_in: float, length_in: floa
     _, worst, cb = max(rows, key=lambda row: row[0])
     everyone = "; ".join(f"{s.key} {s.reaction_lb:,.0f} lb on {s.width_ft:.3f}' at "
                          f"{s.snow_psf:.1f} psf snow" for s in seats)
+    load_psf = worst.reaction_lb / (worst.width_ft * half_ft) if half_ft else 0.0
+    stress = worst.reaction_lb / (chord_in * length_in)
+    working = (
+        Step("R_t", f"reaction of {worst.key}, the governing truss", worst.reaction_lb, "lb",
+             "(q_S + q_D) w_t l", f"{num(load_psf)} x {num(worst.width_ft)} x {num(half_ft)}",
+             f"snow {num(worst.snow_psf)} psf at its station; w_t its tributary width, l the "
+             f"beam's share of the span"),
+        Step("f_c,perp", "chord bearing stress on the beam top", stress, "psi",
+             "R_t / (b_chord l_b)", f"{num(worst.reaction_lb)} / ({num(chord_in)} x "
+             f"{num(length_in)})"),
+        Step("C_b", "bearing area factor", cb, "", "(l_b + 0.375) / l_b, or 1.0 within 3 in. "
+             "of the beam end", f"({num(chord_in)} + 0.375) / {num(chord_in)}" if cb != 1.0
+             else "chord face under 3 in. from the beam end", "NDS §3.10.4"),
+        Step("F_c,perp'", "allowable bearing stress on the beam", fc_perp_psi * cm * cb, "psi",
+             "F_c,perp C_M C_b", f"{num(fc_perp_psi)} x {cm} x {num(cb)}",
+             "NDS Supplement Table 5A; Table 5.3.1 wet"))
     state = LimitState(
-        "truss bearing on the beam", worst.reaction_lb / (chord_in * length_in),
+        "truss bearing on the beam", stress,
         fc_perp_psi * cm * cb, "psi",
         f"AWC NDS 2018 §3.10 — {worst.key} governs, {worst.reaction_lb:,.0f} lb over the "
         f"{chord_in:g}\" chord x {length_in:.3f}\" on the beam ({everyone}); Fc-perp "
         f"{fc_perp_psi:.0f} psi x C_M {cm} x C_b {cb:.3f} (§3.10.4"
-        f"{', chord face under 3 in. from the beam end' if cb == 1.0 else ''})")
+        f"{', chord face under 3 in. from the beam end' if cb == 1.0 else ''})",
+        combination="D + S, unfactored (ASD), C_D 1.15 for snow",
+        combination_factors=(("D", 1.0), ("S", 1.0)), working=working)
     inputs = (Quantity("truss_chord_width", chord_in, "in", 0.01),
               Quantity("truss_bearing_length", length_in, "in", 0.01),
               Quantity("truss_reaction_max", max(s.reaction_lb for s in seats), "lb", 1.0))
