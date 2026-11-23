@@ -196,9 +196,11 @@ def nds_states(width_in: float, depth_in: float, span_ft: float,
     modulus = GLULAM_E_PSI * WET_E
 
     env = envelope(a_ft, span_ft, b_ft, dead_psf * tributary_ft, live_psf * tributary_ft,
-                   modulus * inertia, depth_in / 12.0, extra_dead_plf=(0.0, planter_plf, 0.0))
+                   modulus * inertia, depth_in / 12.0 + bearing_length_in / 24.0,
+                   extra_dead_plf=(0.0, planter_plf, 0.0))
     bending_psi = env.moment_lb_ft * 12.0 / section_modulus
-    # NDS §3.4.3.1(a): V at d from the support; 1.5 V / A on a rectangle.
+    # NDS §3.4.3.1(a): V at d from the FACE of the support (the seat's edge, half its length
+    # in from the bearing centre the statics are taken at); 1.5 V / A on a rectangle.
     shear_psi = 1.5 * env.shear_at_d_lb / (width_in * depth_in)
     bearing_psi = max(env.reactions_lb) / (width_in * bearing_length_in)
     # IRC Table R301.7 note b: a cantilever's L is twice its length. The worst ratio governs.
@@ -218,7 +220,8 @@ def nds_states(width_in: float, depth_in: float, span_ft: float,
                    f"{load_duration_factor:.2f} (Table 2.3.2) x C_V "
                    f"{volume:.3f} (§5.3.6 volume factor, x = 20)"),
         LimitState("shear parallel to grain", shear_psi, fv, "psi",
-                   f"AWC NDS 2018 §3.4.3.1(a), V taken at d from the support — Fv "
+                   f"AWC NDS 2018 §3.4.3.1(a), V taken at d from the FACE of the "
+                   f"{bearing_length_in:g}\" seat (d + half the seat from its centre) — Fv "
                    f"{GLULAM_FV_PSI:,.0f} psi x C_M {WET_FV:.3f}"),
         LimitState("bearing, compression perpendicular", bearing_psi, fc_perp, "psi",
                    f"AWC NDS 2018 §3.10, the larger reaction by statics, over the "
@@ -448,8 +451,9 @@ def _one(ctx: EngineeringContext, tag: str, beam: Any, deck: Any) -> Engineering
         f"THE SEAT is the authored one, {seat_in:g}\" ({seat_where}), not R507.6's 3\" minimum "
         f"that this record used to divide by: C_b {c_b:.3f} (NDS §3.10.4, a bearing under 6\" "
         f"at least 3\" in from the end — here {end_in:.2f}\" — and a flat plate, so the whole "
-        f"length counts). Without the planters the bearing ratio is "
-        f"{_ratio(bare, 'bearing, compression perpendicular'):.2f}.",
+        f"length counts). Bearing is {_ratio(states, 'bearing, compression perpendicular'):.2f} "
+        f"with the planter ON (this record) and "
+        f"{_ratio(bare, 'bearing, compression perpendicular'):.2f} with it OFF.",
         f"C_V {volume:.3f} (NDS §5.3.6, x = 20) and C_L are NOT cumulative — §5.3.6 takes "
         f"the LESSER. The joist field holds the compression edge every {spacing_in:g}\" o.c. "
         f"(not 16\"). Over the north bearing the bottom edge is in compression, unbraced "
@@ -493,7 +497,7 @@ def _one(ctx: EngineeringContext, tag: str, beam: Any, deck: Any) -> Engineering
         summary=(f"{tag}: a {width_in:g}\" x {depth_in:g}\" glulam spanning "
                  f"{span_ft:.2f}' ({a_ft:.2f}' and {b_ft:.2f}' over) carrying "
                  f"{tributary_ft:.2f}' of a {joist_span_ft:.2f}' "
-                 f"joist span and a planter, WET service — "
+                 f"joist span with the planter ON, WET service — "
                  f"{describe_states(states)}"),
         inputs=inputs, limit_states=states, notes=notes, element_tags=tags)
 

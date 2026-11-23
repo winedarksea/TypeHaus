@@ -26,7 +26,13 @@ from __future__ import annotations
 import dataclasses
 import math
 
-from typehaus.engineering.column_stem import StemDemand, stem_states
+from typehaus.engineering.column_stem import (
+    SOIL_LOAD_FACTOR,
+    StemDemand,
+    reinforced_flexure_lb_in_per_ft,
+    spread_width_in,
+    stem_states,
+)
 from typehaus.engineering.item import (
     EngineeringRecord,
     LimitState,
@@ -118,6 +124,8 @@ def _shear_asd_lb(pier: _Pier) -> tuple[float, float]:
     from typehaus.engineering.roof_moment import base_shear_of
 
     guard = GUARD_LOAD_LB if pier.guard_base_moment_lb_ft > 0.0 else 0.0
+    if pier.wind_head_shear_lb:       # the bands' own total: the shaft's wind is below the head
+        return pier.wind_head_shear_lb + pier.wind_shaft_shear_lb, guard
     recorded = base_shear_of(pier.tag)
     if not guard and recorded is not None:
         return recorded[0], 0.0
@@ -125,15 +133,37 @@ def _shear_asd_lb(pier: _Pier) -> tuple[float, float]:
     return (pier.wind_base_moment_lb_ft / height_ft if height_ft else 0.0), guard
 
 
-def _couple(mu_lb_in: float, pu_lb: float, ybar_in: float,
+def _couple(mu_lb_in: float, pu_lb: float, radius_in: float, fc_psi: float,
             offsets: tuple[float, ...]) -> tuple[float, float, int]:
     """``(C, T, bars in tension)``: the compression on the block and the dowel tension that
     balance (Pu, Mu), T at the centroid of the dowels below the centre. Compression dowels
-    are not credited, which puts every pound of compression on the concrete. Where no tension
-    is needed, C = Pu, still on the block (conservative)."""
+    are not credited, which puts every pound of compression on the concrete.
+
+    The block is the one THIS force produces, ``0.85 f'c`` over the segment of area
+    ``C / 0.85 f'c`` (iterated), not the column's P-M block: a smaller force bears on a
+    shallower segment whose centroid is further out, which lengthens the lever. (Taking the
+    P-M point's own block, a different force's, overstated the tension, review 2026-11-23.)
+    Where no tension is needed, C = Pu."""
+    from typehaus.engineering import deck_post as dp
+
     tension = [-o for o in offsets if o < -1e-9]
     lever = sum(tension) / len(tension)
-    compression = (mu_lb_in + pu_lb * lever) / (ybar_in + lever)
+    compression = pu_lb
+    for _ in range(60):
+        area = min(compression / (0.85 * fc_psi), math.pi * radius_in ** 2 * 0.999)
+        lo, hi = 0.0, 2.0 * radius_in
+        for _ in range(60):
+            mid = 0.5 * (lo + hi)
+            if dp._segment(radius_in, mid)[0] < area:
+                lo = mid
+            else:
+                hi = mid
+        ybar = dp._segment(radius_in, 0.5 * (lo + hi))[1]
+        updated = (mu_lb_in + pu_lb * lever) / (ybar + lever)
+        if abs(updated - compression) < 0.01:
+            compression = updated
+            break
+        compression = 0.5 * (compression + updated)      # damped: the block and C chase each other
     pull = compression - pu_lb
     if pull <= 0.0:
         return pu_lb, 0.0, len(tension)
@@ -142,7 +172,7 @@ def _couple(mu_lb_in: float, pu_lb: float, ybar_in: float,
 
 def _column_states(ctx: EngineeringContext, pier: _Pier, wall_tag: str,
                    missing: list[str], inputs: list[Quantity],
-                   prop_sentences: list[str]) -> list[LimitState]:
+                   extents: dict[str, tuple[float, float]]) -> list[LimitState]:
     from typehaus.engineering import deck_post as dp
 
     cage = dp.cage_for(pier)
@@ -190,7 +220,7 @@ def _column_states(ctx: EngineeringContext, pier: _Pier, wall_tag: str,
         mu_in = case.moment_lb_ft * delta * 12.0
         _phi_mn, _phi, c = dp._pm_point(pier, cage, cover, case.axial_lb)
         block, ybar = dp._segment(radius, min(dp._beta_1(col_fc) * c, 2.0 * radius))
-        couples = [_couple(mu_in, case.axial_lb, ybar, offs) for offs in layouts]
+        couples = [_couple(mu_in, case.axial_lb, radius, col_fc, offs) for offs in layouts]
         comp = max(k[0] for k in couples)
         pull = max(k[1] for k in couples)
         per_bar = max(k[1] / k[2] for k in couples)
@@ -243,7 +273,7 @@ def _column_states(ctx: EngineeringContext, pier: _Pier, wall_tag: str,
         states.append(dataclasses.replace(anchorage,
                                           name=f"{pier.tag}: dowel development into the stem"))
     states += _stem_rows(ctx, pier, wall_tag, dowel, wall_fc, clear, stem_demand, inputs,
-                         prop_sentences)
+                         extents)
     states.append(LimitState(f"{pier.tag}: footprint on the wall top", radius, clear, "in",
                              "the column's radius against the clear wall top each side of "
                              "its centre — a round wider than the stem overhangs its face",
@@ -267,51 +297,205 @@ def _column_states(ctx: EngineeringContext, pier: _Pier, wall_tag: str,
     return states
 
 
+def _pour_extents_in(ctx: EngineeringContext, wall_tag: str, pier: _Pier
+                     ) -> tuple[float, float, float, float] | None:
+    """``(to the far end, to the near end, chain start, chain end)`` along the wall's axis, in
+    inches: the pour a column stands on runs through every concrete wall that continues it in a
+    straight line (W-SG-W1 and W2 are one pour), so a 45 deg spread stops at the END of that
+    chain, not at the wall element's own end. Positions are along the first wall's axis."""
+    from typehaus.model.elements import Wall
+    from typehaus.resolve.assembly_material import assembly_structure_material
+
+    walls = {e.tag: e for e in ctx.plan.all_elements() if isinstance(e, Wall)
+             and assembly_structure_material(ctx.plan, e.assembly) == "concrete"}
+    first = walls.get(wall_tag)
+    if first is None:
+        return None
+
+    def end(node: str) -> tuple[float, float] | None:
+        el = ctx.plan.by_tag(node)
+        return el.position.xy_m if el is not None and hasattr(el, "position") else None
+
+    a0, a1 = end(first.start_node), end(first.end_node)
+    if a0 is None or a1 is None:
+        return None
+    length = math.dist(a0, a1)
+    ux, uy = (a1[0] - a0[0]) / length, (a1[1] - a0[1]) / length
+    points = [a0, a1]
+    changed = True
+    chain = {wall_tag}
+    while changed:
+        changed = False
+        for tag, other in walls.items():
+            if tag in chain:
+                continue
+            p0, p1 = end(other.start_node), end(other.end_node)
+            if p0 is None or p1 is None or math.dist(p0, p1) <= 0.0:
+                continue
+            vx, vy = (p1[0] - p0[0]), (p1[1] - p0[1])
+            norm = math.hypot(vx, vy)
+            collinear = abs(vx * uy - vy * ux) / norm < 0.02
+            off_axis = abs((p0[0] - a0[0]) * uy - (p0[1] - a0[1]) * ux)
+            touches = any(math.dist(q, r) < 0.01 for q in (p0, p1) for r in points)
+            if collinear and off_axis < 0.02 and touches:
+                chain.add(tag)
+                points += [p0, p1]
+                changed = True
+    ts = [((x - a0[0]) * ux + (y - a0[1]) * uy) / 0.0254 for x, y in points]
+    post = ctx.plan.by_tag(pier.tag)
+    px, py = post.position.xy_m
+    at = ((px - a0[0]) * ux + (py - a0[1]) * uy) / 0.0254
+    return at - min(ts), max(ts) - at, min(ts), max(ts)
+
+
 def _stem_rows(ctx: EngineeringContext, pier: _Pier, wall_tag: str, dowel, wall_fc: float,  # type: ignore[no-untyped-def]
                clear_in: float, demand: StemDemand | None, inputs: list[Quantity],
-               prop_sentences: list[str]) -> list[LimitState]:
-    """The stem below the joint, the head prop and strut, and the footing under the column."""
+               extents: dict[str, tuple[float, float]]) -> list[LimitState]:
+    """The stem below the dowels and the footing under the column, spreads stopped at the
+    pour's ends. ``extents`` collects each column's ``(to one end, to the other)``."""
     if demand is None or dowel.embedment is None:
         return []
-    states, quantities, sentence = stem_states(
-        tag=pier.tag, wall_tag=wall_tag, fc_psi=wall_fc, thickness_in=2.0 * clear_in,
-        height_in=pier.base_thickness_in, column_width_in=pier.diameter_in,
-        embedment_in=float(dowel.embedment.inches), demand=demand)
+    ends = _pour_extents_in(ctx, wall_tag, pier)
+    if ends is None:
+        return []
+    near, far = ends[0], ends[1]
+    extents[pier.tag] = (near, far)
+    states, quantities = stem_states(
+        tag=pier.tag, fc_psi=wall_fc, thickness_in=2.0 * clear_in,
+        column_width_in=pier.diameter_in, embedment_in=float(dowel.embedment.inches),
+        north_in=near, south_in=far, demand=demand)
     inputs += quantities
-    prop_sentences.append(sentence)
-    footing = _footing_row(ctx, pier)
+    footing = _footing_row(ctx, pier, near, far)
     if footing is not None:
         states.append(footing)
     return states
 
 
-def _footing_row(ctx: EngineeringContext, pier: _Pier) -> LimitState | None:
+def _footing_row(ctx: EngineeringContext, pier: _Pier, near_in: float, far_in: float
+                 ) -> LimitState | None:
     """The column's service load spread through the stem at 45 deg onto the strip footing,
     against the site soil's allowable pressure (B-05 (3)): the INCREMENT the column adds, not
-    the wall's own load, which `retaining_wall/<tag>` grades."""
+    the wall's own load, which `retaining_wall/<tag>` grades. The spread stops at the pour's
+    ends."""
     from typehaus.engineering.soil import presumptive
 
     soil = presumptive(getattr(ctx, "soil_class", None), basis=getattr(ctx, "soil_basis", None))
     if soil is None or not pier.footing_width_in:
         return None
-    spread_in = pier.diameter_in + 2.0 * pier.base_thickness_in
+    spread_in = spread_width_in(pier.diameter_in / 2.0, pier.base_thickness_in, near_in, far_in)
     pressure = pier.service_lb / (pier.footing_width_in / 12.0 * spread_in / 12.0)
     return LimitState(
         f"{pier.tag}: footing bearing under the column point", pressure,
         soil.allowable_bearing_psf, "psf",
         f"the column's {pier.service_lb:,.0f} lb service load spread at 45 deg through the "
-        f"{pier.base_thickness_in:.0f}\" stem over {spread_in:.0f}\" of a "
-        f"{pier.footing_width_in:g}\" footing, against the presumptive allowable of the site's "
-        f"soil class — the increment alone; the wall's own load is `retaining_wall/<tag>`'s")
+        f"{pier.base_thickness_in:.0f}\" stem over {spread_in:.0f}\" (stopped at the pour's "
+        f"ends) of a {pier.footing_width_in:g}\" footing, against the presumptive allowable "
+        f"of the site's soil class — the increment alone; the wall's own load is "
+        f"`retaining_wall/<tag>`'s")
+
+
+def _unbalanced_fill_m(ctx: EngineeringContext, wall) -> float | None:  # type: ignore[no-untyped-def]
+    """The backfill the wall retains, as `structural.foundation_unbalanced_fill` reads it:
+    authored, else from the site grade (or the wall top, if lower) down to the wall's bottom —
+    a conservative proxy for a wall whose grade falls away."""
+    if getattr(wall, "unbalanced_fill", None) is not None:
+        return wall.unbalanced_fill.meters
+    grade = getattr(ctx.plan.project.site, "grade", None)
+    top, bottom = getattr(wall, "top_elevation", None), getattr(wall, "bottom_elevation", None)
+    if grade is None or top is None or bottom is None:
+        return None
+    return max(0.0, min(grade.meters, top.meters) - bottom.meters)
+
+
+def _cantilever_row(ctx: EngineeringContext, wall_tag: str, piers: list[_Pier], flexible,  # type: ignore[no-untyped-def]
+                    wall_fc: float, thickness_in: float, extents: dict[str, tuple[float, float]],
+                    inputs: list[Quantity], missing: list[str]) -> list[LimitState]:
+    """The stem as the cantilever it is under E-W wind (see ``column_stem``): its columns'
+    ``M + V H`` over the union of their spreads, plus the retained soil, against the wall's own
+    bars on the earth face."""
+    from typehaus.engineering import deck_post as dp
+    from typehaus.engineering.soil import presumptive
+
+    wall = ctx.plan.by_tag(wall_tag)
+    fill = _unbalanced_fill_m(ctx, wall)
+    reinforcement = getattr(wall, "reinforcement", None)
+    vertical = next((e for e in getattr(reinforcement, "bars", ()) or ()
+                     if e.role == "vertical" and e.spacing is not None), None)
+    soil = presumptive(getattr(ctx, "soil_class", None), basis=getattr(ctx, "soil_basis", None))
+    if fill is None or vertical is None or soil is None or not extents:
+        missing.append(f"{wall_tag}: its authored unbalanced_fill, its vertical bars "
+                       f"(a spacing) and the site soil class, for the stem as a cantilever")
+        return []
+    height = piers[0].base_thickness_in
+    total_moment = 0.0
+    spans: list[tuple[float, float]] = []
+    parts: list[str] = []
+    for pier in piers:
+        if pier.tag not in extents:
+            continue
+        near, far = extents[pier.tag]
+        at = near                          # position along the pour from its near end
+        reach = pier.diameter_in / 2.0 + height
+        spans.append((max(at - reach, 0.0), min(at + reach, near + far)))
+        axial = 1.2 * pier.dead_unplanted_lb
+        delta = max(dp._sway_magnifier(pier, axial)[1], flexible(axial) if flexible else 1.0)
+        mu = (pier.wind_ew_base_moment_lb_ft * dp.STRENGTH_FROM_ASD_WIND
+              + pier.guard_base_moment_lb_ft) * delta * 12.0
+        vu = pier.wind_ew_base_shear_lb * dp.STRENGTH_FROM_ASD_WIND + GUARD_LOAD_LB
+        base = mu + vu * height
+        total_moment += base
+        parts.append(f"{pier.tag} M {mu / 12.0:,.0f} lb-ft + V {vu:,.0f} lb x "
+                     f"{height / 12.0:.2f}' = {base / 12.0:,.0f}")
+    spans.sort()
+    union = 0.0
+    top = -math.inf
+    for lo, hi in spans:
+        union += max(hi - max(lo, top), 0.0)
+        top = max(top, hi)
+    union_ft = union / 12.0
+    h_fill = fill / 0.3048
+    soil_per_ft = (SOIL_LOAD_FACTOR * soil.active_efp_psf_per_ft * h_fill ** 3 / 6.0)
+    wind_per_ft = total_moment / 12.0 / union_ft
+    area = _BAR[vertical.bar][0] * 12.0 / float(vertical.spacing.inches)
+    cover = float(getattr(reinforcement, "cover", None).inches) if getattr(
+        reinforcement, "cover", None) is not None else 3.0
+    capacity = reinforced_flexure_lb_in_per_ft(
+        wall_fc, thickness_in, cover, _BAR[vertical.bar][1], area) / 12.0
+    inputs += [Quantity(f"{wall_tag}.ew_base_moment", total_moment / 12.0, "lb-ft", 1.0),
+               Quantity(f"{wall_tag}.ew_spread_ft", union_ft, "ft", 0.05),
+               Quantity(f"{wall_tag}.soil_moment_per_ft", soil_per_ft, "lb-ft/ft", 1.0)]
+    return [LimitState(
+        f"{wall_tag}: stem as a cantilever under E-W wind and the retained soil",
+        wind_per_ft + soil_per_ft, capacity, "lb-ft/ft",
+        f"E-W wind pushes all four columns, and so both stems, the same way: the porch "
+        f"diaphragm cannot prop one against the other, so each stem is a cantilever from its "
+        f"footing under 1.2D + 1.0W + L_g + 1.6H. Columns ({'; '.join(parts)}) lb-ft over "
+        f"{union_ft:.1f}' of 45 deg spread stopped at the pour's ends = {wind_per_ft:,.0f} "
+        f"lb-ft/ft, plus the retained soil {SOIL_LOAD_FACTOR} x {soil.active_efp_psf_per_ft:g} "
+        f"psf/ft x {h_fill:.2f}'^3 / 6 = {soil_per_ft:,.0f} lb-ft/ft (active, the unbalanced "
+        f"fill as `structural.foundation_unbalanced_fill` reads it, from the site grade), "
+        f"against phi M_n {capacity:,.0f} lb-ft/ft of #{vertical.bar} "
+        f"@ {float(vertical.spacing.inches):g}\" on the earth face at d = "
+        f"{thickness_in - cover - _BAR[vertical.bar][1] / 2.0:.2f}\" (a single curtain, "
+        f"assumed on the retained face); the wind and the soil are taken adding, the case that "
+        f"governs")]
 
 
 def _one(ctx: EngineeringContext, wall_tag: str, piers: list[_Pier]) -> EngineeringRecord:
     missing: list[str] = []
     inputs: list[Quantity] = []
     states: list[LimitState] = []
-    props: list[str] = []
+    extents: dict[str, tuple[float, float]] = {}
     for pier in piers:
-        states += _column_states(ctx, pier, wall_tag, missing, inputs, props)
+        states += _column_states(ctx, pier, wall_tag, missing, inputs, extents)
+    wall_fc = next((p.base_fc_psi for p in piers if p.base_fc_psi), PRESUMPTIVE_FC_PSI)
+    clear = _clear_side_in(ctx, piers[0], wall_tag)
+    if clear is not None:
+        from typehaus.engineering.base_rotation import flexible_magnifier
+
+        flexible = flexible_magnifier(ctx, piers[0])
+        states += _cantilever_row(ctx, wall_tag, piers, flexible, wall_fc, 2.0 * clear,
+                                  extents, inputs, missing)
     tags = ", ".join(p.tag for p in piers)
     notes = (
         f"{wall_tag} is a basement wall graded prescriptively by IRC Table R404.1.2(8), "
@@ -331,21 +515,28 @@ def _one(ctx: EngineeringContext, wall_tag: str, piers: list[_Pier]) -> Engineer
         "`joint_surface=\"roughened\"` (ACI's intentional 1/4-in. amplitude); otherwise "
         "0.6λ. The couple's dowel tension is deducted from Avf, and no clamping from the "
         "axial load is credited.",
-        "THE STEM, closed (review B-05 / D-R3): below the dowels the head moment is taken "
-        "down the wall as a cantilever with no prop, in plain concrete over the column's "
-        "width plus a 45 deg spread (ACI 318-19 §14.5.2.1); the dowels, developed over the "
-        "authored embedment, reinforce the head. No pilaster or local thickening is owed "
-        "where those rows pass. " + " ".join(props and (
-            "THE HEAD PROP the porch diaphragm must deliver, per column — "
-            + "; ".join(props) + ". The porch ledger's Titen HD anchors carry it into the "
-            "stem: skip or relocate a ledger anchor within 8\" of a column centreline (a "
-            "drill will strike a #5 dowel) — a drawing note on the porch ledger detail. The "
-            "anchors' own capacity against this pull is NOT graded: no THD50600H6SS "
-            "allowable is catalogued and ESR-2713 does not list the Type 316 stainless anchor.",)),
-        "OWNER-ACCEPTED (2026-11-23): the dowel tension governs this joint at about 0.92, over "
-        "the owner's 0.85 cost-review trigger (the printed limit is phi As fy). It was reviewed "
-        "there on the repository's conservative C_f 1.80 for every wind band and the guard taken "
-        "concurrently with full design wind, and ACCEPTED AS IS: no dowel change.",
+        "THE STEM (review B-05 / D-R3, verifier 2026-11-23). Below the dowels the head moment "
+        "AND its shear's lever (M_u + V_u x over the embedment) are taken down the wall in "
+        "plain concrete over the column's width plus a 45 deg spread, stopped at the pour's ends "
+        "(W-SG-W1/W2 are one pour; the rear column stands 23\" from the north end). The "
+        "dowels, developed over the authored embedment, reinforce the head.",
+        "WHAT CARRIES THE E-W LATERAL: under E-W wind all four columns push BOTH stems the same "
+        "way, so the porch diaphragm cannot prop each stem against the other. The load goes to "
+        "the ground through the stems as cantilevers from their footings (the "
+        "\"stem as a cantilever\" row: each column's M + V H over its spread, plus the retained "
+        "soil's active moment, against the wall's own bars), and the footings take the base "
+        "shear. The porch ledgers, the LUS210SS hangers and the plank are NOT in that path and "
+        "are not asked to prop a column; they keep the props Table R404.1.2(8) assumes for the "
+        "SOIL's thrust, which is that table's and not graded here. The footings' sliding under "
+        "this E-W shear (about 4 kip at strength) is a court-sliding input that no sliding case "
+        "carries yet — reported, not graded here. A drawing note, `AN-SG-LEDGER-DOWELS`, keeps "
+        "the ledger's Titen HD anchors off the dowels.",
+        "DOWEL TENSION is the governing row of this joint. OWNER-ACCEPTED (2026-11-23): it was "
+        "reviewed at the owner's 0.85 cost-review trigger on the repository's conservative C_f "
+        "1.80 for every wind band, the guard taken concurrently with full design wind, and the "
+        "one-bar couple on the block that force itself produces, and ACCEPTED AS IS at the "
+        "printed ratio: no dowel change. If it ever rises above the number accepted, it comes "
+        "back to the owner.",
         "FOOTPRINT: the 12\" round is flush with both faces of the 12\" stem, so the row reads "
         "1.000 and allows no placement tolerance — a detailing row, not a margin. The column "
         "form is set from the stem's own face lines (`AN-SG-PLACEMENTS`); a round set off-centre "
@@ -354,8 +545,8 @@ def _one(ctx: EngineeringContext, wall_tag: str, piers: list[_Pier]) -> Engineer
         "the increment the column adds; the torque through the joint is `column_head_joint`'s "
         "(about 3% of the cracking threshold) and rides the same shear-friction dowels.",
         "NOT GRADED here: (1) ROTATIONAL RESTRAINT of the foundation is "
-        f"`base_rotation/<column>` for {tags}; (2) the retained soil's moment in the stem, "
-        "which Table R404.1.2(8) grades and which is zero near the propped head.",
+        f"`base_rotation/<column>` for {tags}; (2) the stem's in-plane (N-S) wind, which runs "
+        "along the wall's strong axis.",
     )
     over = any(not state.ok for state in states)
     status = Status.INCOMPLETE if missing else (Status.OVER if over else Status.OK)

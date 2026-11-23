@@ -21,9 +21,10 @@ _AT_PU = ((2.0, 2.742, 0.900, 24_570.0), (2.5, 2.859, 0.900, 24_555.8),
 _ENVELOPE = ((2.0, 23_856.6), (2.5, 23_889.9), (3.0, 23_776.7))
 #: §26's joint, PT-SG-BR1, the worst case of each state (bearing at 1.2D + 1.0W + L, tension at
 #: the floor-empty guard pair), flexible-base delta: (cover, bearing C, φBn, T per bar). The
-#: dowel ring shrinks with the cage, so T rises 18% at 3" — past φAs fy (16,740) there.
-_JOINT = ((2.0, 20_156.0, 38_943.0, 15_418.0), (2.5, 21_254.0, 41_363.0, 16_682.0),
-          (3.0, 22_500.0, 43_748.0, 18_160.0))
+#: dowel ring shrinks with the cage, so T rises 15% at 3" — past φAs fy (16,740) there. §27's
+#: couple is on the block the dowel force itself produces.
+_JOINT = ((2.0, 19_481.0, 38_943.0, 14_957.0), (2.5, 20_318.0, 41_363.0, 15_988.0),
+          (3.0, 21_256.0, 43_748.0, 17_180.0))
 
 
 @pytest.fixture(scope="module")
@@ -64,7 +65,7 @@ def test_the_envelope_at_each_cover(corner, cover, phi_mn) -> None:
     record = _one(dataclasses.replace(pier, specified_cover_in=cover))
     envelope = next(s for s in record.limit_states if s.name.startswith("P-M envelope"))
     assert envelope.capacity == pytest.approx(phi_mn, rel=5e-4)
-    assert envelope.demand / envelope.capacity < 0.45     # wind + guard, §26
+    assert envelope.demand / envelope.capacity < 0.50     # wind + guard, §26/§27
 
 
 @pytest.mark.parametrize("cover,comp,phi_bn,pull", _JOINT)
@@ -78,7 +79,7 @@ def test_the_wall_top_joint_at_each_cover(catlin_plan, cover, comp, phi_bn, pull
     ctx = EngineeringContext(plan=catlin_plan, model=model, soil_class="GM")
     pier = next(p for p in cast_piers(ctx) if p.tag == "PT-SG-BR1")
     states = {s.name: s for s in column_support._column_states(
-        ctx, dataclasses.replace(pier, specified_cover_in=cover), "W-SG-W1", [], [], [])}
+        ctx, dataclasses.replace(pier, specified_cover_in=cover), "W-SG-W1", [], [], {})}
     bearing = states["PT-SG-BR1: bearing on the wall top"]
     tension = states["PT-SG-BR1: dowel tension across the joint"]
     assert bearing.demand == pytest.approx(comp, rel=0.003)

@@ -318,13 +318,13 @@ and the record stays long by the margins above.
 **Wind (§3a).** The record's base moment is no longer one shear at the deck plane: it sums the
 deck and the closed curtains (at the deck plane), the guard's balusters and rails (at their
 centroid, above the column top) and the shaft's own wind (spread over the column), N-S, 2,259 lb
-ASD over four columns: **4,412 lb-ft front, 4,479 rear** (hand, §24: q_h 18.52 psf from K_z 0.644 at
-22.3', 0.6 q G C_f = 17.0 psf over 21.4 + 12.2 + 35.1 + 64.2 sq ft). The graph applies each band
+ASD over four columns: **4,860 lb-ft front, 4,916 rear** (hand, §24/§27: q_h 18.52 psf from K_z 0.644 at
+22.3', 0.6 q G C_f = 17.0 psf; deck and plank edge at the deck's centroid, guard with posts at its
+centroid, the shaft over its own 7.76' / 7.91', the curtains at the top track). The graph applies each band
 where it acts, as a node shear, a node moment for the guard's lever, and a uniform member load on
 the column, so the base moment it produces is the record's over the record's own height. The model's
 columns are 3-6 % shorter (the beam centreline) and the N-S beam ties each pair of tops, so the
-stiffer front column draws more: the solve reads 4,191 front and 4,052 rear lb-ft, 5 % and 10 %
-under the record, which errs long. The oracle tolerance for wind is 10 % (6 % for the lever-only
+stiffer front column draws more: the solve reads about 5 % and 10 % under the record, which errs long. The oracle tolerance for wind is 12 % (6 % for the lever-only
 guard).
 
 **Guard (§3b).** Applied E-W whatever the wind's axis. The record takes the 200 lb wholly on one

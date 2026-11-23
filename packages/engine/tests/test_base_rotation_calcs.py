@@ -157,12 +157,12 @@ def test_the_presumed_n_h_reproduces_section_10(tag, catlin_cast_ctx) -> None:
     assert any("THE SOIL IS PRESUMED" in n for n in record.notes)
 
 
-@pytest.mark.parametrize("tag,ratio", [("PT-SG-BF1", 0.4251), ("PT-SG-BR1", 0.4297)])
+@pytest.mark.parametrize("tag,ratio", [("PT-SG-BF1", 0.4569), ("PT-SG-BR1", 0.4607)])
 def test_the_flexible_delta_magnifies_every_pair_and_the_worst_governs(
         tag, ratio, catlin_cast_ctx) -> None:
     """B-04: 0.178 was the flexible delta on one non-governing pair (the guard at 1.6L). Every
     §2.3.1 pair now takes it against its own phi*Mn; the floor-empty wind + guard pair at
-    the lowest axial governs, 10,142 lb-ft against 23,857."""
+    the lowest axial governs, 10,900 lb-ft against 23,857 (§27's wind)."""
     record = catlin_cast_ctx.engineering[f"{KIND}/{tag}"]
     assert record.governing.name == "magnified moment (sway), flexible base"
     assert record.governing.ratio == pytest.approx(ratio, abs=0.0005)

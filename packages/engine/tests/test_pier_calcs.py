@@ -224,6 +224,10 @@ _TIER_PIERS = tuple(f"PT-BW-T{_n}{_s}" for _n in (1, 2, 3, 4) for _s in ("W", "E
 # ** 5/8" MORE REAR OVERSAIL ON 2026-11-18 (note §19). ** D-S-BALCONY's 3/8" joint: A_s
 # 29.780 -> 29.836 sf, wind 1,101.9 -> 1,103.9 front, 1,121.2 -> 1,123.3 rear.
 #
+# ** WIND 4,411.8 -> 4,860.4 (BF) / 4,916.1 (BR) LATER ON 2026-11-23 (note §27): the guard's 3x3
+# posts (+71 lb), the corner curves of the curtains (16' face, +99), the plank edge (+41), the shafts
+# ending under the beam at 7.76'/7.91' (-64) and the deck band at its centroid 9.33'; independent
+# verifier 4,832/4,853.
 # ** WIND 1,103.9 -> 4,411.8 ON 2026-11-23 (note §24, review B-06). ** The bands were the fascia
 # and the beams; the guard's balusters, the four 12" shafts and the porch's closed curtains
 # (top-track half) stand in the wind too: N-S 363 + 208 + 597 + 1,092 = 2,259 lb ASD over four
@@ -232,14 +236,14 @@ _TIER_PIERS = tuple(f"PT-BW-T{_n}{_s}" for _n in (1, 2, 3, 4) for _s in ("W", "E
 # 1,514) and 1,701.8 / 2,153.9 of live, and the factored P_u is 4,440.9 / 5,340.0 with no planter
 # (this context) and 5,196.3 / 6,095.4 with the house's planter (the cast-variant context).
 _CORNER_ORACLE = {
-    "PT-SG-BF1": {"height_in": 104.375, "wind_lb_ft": 4411.8, "guard_lb_ft": 2643.75,
+    "PT-SG-BF1": {"height_in": 104.375, "wind_lb_ft": 4860.4, "guard_lb_ft": 2643.75,
                   "phi_mn": 24_768.0},
-    "PT-SG-BF3": {"height_in": 104.375, "wind_lb_ft": 4411.8, "guard_lb_ft": 2643.75,
+    "PT-SG-BF3": {"height_in": 104.375, "wind_lb_ft": 4860.4, "guard_lb_ft": 2643.75,
                   "phi_mn": 24_768.0},
     # The rear row runs 2" proud for the deck's drainage crown (fall 1/4" per foot).
-    "PT-SG-BR1": {"height_in": 106.208, "wind_lb_ft": 4478.8, "guard_lb_ft": 2643.75,
+    "PT-SG-BR1": {"height_in": 106.208, "wind_lb_ft": 4916.1, "guard_lb_ft": 2643.75,
                   "phi_mn": 25_003.0},
-    "PT-SG-BR3": {"height_in": 106.208, "wind_lb_ft": 4478.8, "guard_lb_ft": 2643.75,
+    "PT-SG-BR3": {"height_in": 106.208, "wind_lb_ft": 4916.1, "guard_lb_ft": 2643.75,
                   "phi_mn": 25_003.0},
 }
 #: §4 of the note: phi*Mn at the column's own axial load, hand-worked term by term.
@@ -1004,7 +1008,8 @@ def test_the_nds_pass_on_a_balcony_glulam(tag, bearings) -> None:
     assert states["bearing, compression perpendicular"].capacity == pytest.approx(392.2,
                                                                                   abs=0.5)
     assert states["bending"].demand == pytest.approx(466.6, abs=0.5)
-    assert states["shear parallel to grain"].demand == pytest.approx(50.3, abs=0.1)
+    # V at d from the FACE of the 3" seat (d + 1.5"): 2,689 - 812.5 - 487.5 x 1.115 = 1,333 lb
+    assert states["shear parallel to grain"].demand == pytest.approx(48.1, abs=0.1)
     assert states["bearing, compression perpendicular"].demand == pytest.approx(256.1, abs=0.3)
     assert states["live-load deflection"].demand == pytest.approx(0.0347, abs=0.0003)
     worst = max(states.values(), key=lambda s: s.demand / s.capacity)
@@ -1077,7 +1082,7 @@ def test_an_edge_glulam_carries_its_own_strip_not_the_whole_span() -> None:
 
     states = {s.name: s for s in nds_states(3.5, 11.875, 9.667, 5.75)}
     assert states["bending"].demand == pytest.approx(490.0, abs=1.0)
-    assert states["shear parallel to grain"].demand == pytest.approx(39.9, abs=0.2)
+    assert states["shear parallel to grain"].demand == pytest.approx(38.6, abs=0.2)
     bearing = states["bearing, compression perpendicular"]
     assert bearing.demand == pytest.approx(132.3, abs=0.2)
     assert bearing.demand / bearing.capacity == pytest.approx(0.34, abs=0.005)

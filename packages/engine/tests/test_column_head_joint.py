@@ -125,19 +125,24 @@ def test_guard_columns_grade_the_guard_at_cd_one(catlin_cast_ctx):
         assert guard.capacity == pytest.approx(562.5)               # 900 / C_D 1.6
         assert guard.ratio == pytest.approx(0.3556, abs=1e-4)
         wind = _state(record, "connector lateral, wind")
-        # (deck 363 + guard 208 + curtains 1,092) / 4 columns, ASD: the shaft's own wind acts
-        # below the head and is not on the tie.
-        assert wind.demand == pytest.approx(415.6, abs=0.2) and wind.capacity == 900.0
+        # (deck 363 + plank edge 41 + guard 279 + curtains 1,191) / 4 columns, ASD: the shaft's own
+        # wind acts below the head and is not on the tie.
+        assert wind.demand == pytest.approx(468.6, abs=0.2) and wind.capacity == 900.0
         # B-06: a sealed deck takes wind uplift, 0.6 q G C_f less 0.6 D on 47.12 ft2.
         uplift = _state(record, "connector uplift")
-        assert uplift.demand == pytest.approx(519.0, abs=1.0) and uplift.capacity == 1920.0
-        assert "sealed deck" in uplift.citation
+        # By the beam's STATICS area (gravity's): BF 40.70, BR 53.55 ft2, (17.00 - 6.0) psf up.
+        assert uplift.demand == pytest.approx(
+            448.2 if tag.startswith("PT-SG-BF") else 589.7, abs=1.0)
+        assert uplift.capacity == 1920.0 and "sealed deck" in uplift.citation
         combined = _state(record, "connector combined")
-        assert combined.ratio == pytest.approx(0.732, abs=1e-3)
+        assert combined.ratio == pytest.approx(
+            0.754 if tag.startswith("PT-SG-BF") else 0.828, abs=2e-3)
+        notes = " ".join(record.notes)
+        assert "ENCLOSURE NOT GRADED" in notes and "partially enclosed" in notes
         assert "SEALED" in " ".join(record.notes)
     sg = _record(catlin_cast_ctx, "PT-SG-BR1")
-    # 415.6 lb ASD / 0.6 = 692.7 lb at strength, x the 1.75" beam-face lever / 12.
-    assert _state(sg, "column torsion").demand == pytest.approx(101.01, abs=0.02)
+    # 468.6 lb ASD / 0.6 = 780.9 lb at strength, x the 1.75" beam-face lever / 12.
+    assert _state(sg, "column torsion").demand == pytest.approx(113.9, abs=0.05)
 
 
 def test_bearing_demand_is_the_head_reaction(catlin_cast_ctx):

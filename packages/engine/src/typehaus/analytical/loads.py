@@ -216,29 +216,35 @@ def _wind_on_column(pier: Any, item: str, node: str, axis: str, height_ft: float
                     f"{height_ft:.2f} ft column = {shear_n / LB_TO_N:,.0f} lb at the column "
                     f"top, {axis}")))
         return
-    top_lb = pier.wind_head_shear_lb - pier.wind_guard_shear_lb
+    top_lb = pier.wind_head_shear_lb - pier.wind_guard_shear_lb - pier.wind_deck_shear_lb
     loads.node_loads.append(_horizontal(
         LoadCaseKind.WIND, node, axis, top_lb * LB_TO_N, 0.0,
-        source=(f"{item} wind: deck and closed curtains {top_lb:,.0f} lb ASD at the column "
-                f"top, {axis}")))
-    extra_ft = max(pier.wind_guard_arm_ft - height_ft, 0.0)
-    guard_n = pier.wind_guard_shear_lb * LB_TO_N
-    loads.node_loads.append(_horizontal(
-        LoadCaseKind.WIND, node, axis, guard_n, guard_n * extra_ft * 0.3048,
-        source=(f"{item} wind: guard {pier.wind_guard_shear_lb:,.0f} lb ASD at the column top "
-                f"plus its centroid {extra_ft:.2f} ft above, as a node moment, {axis}")))
+        source=(f"{item} wind: the closed curtains' top track {top_lb:,.0f} lb ASD at the "
+                f"column top, {axis}")))
+    for label, shear_lb, arm_ft in (
+            ("deck band at its centroid", pier.wind_deck_shear_lb, pier.wind_deck_arm_ft),
+            ("guard at its centroid", pier.wind_guard_shear_lb, pier.wind_guard_arm_ft)):
+        extra_ft = max(arm_ft - height_ft, 0.0)
+        force_n = shear_lb * LB_TO_N
+        loads.node_loads.append(_horizontal(
+            LoadCaseKind.WIND, node, axis, force_n, force_n * extra_ft * 0.3048,
+            source=(f"{item} wind: {label}, {shear_lb:,.0f} lb ASD at the column top plus its "
+                    f"{extra_ft:.2f} ft above, as a node moment, {axis}")))
     nodes = {n.id: n for n in graph.nodes}
     for member in graph.members:
         if member.tag != pier.tag or not member.is_vertical:
             continue
         a, b = nodes[member.n0], nodes[member.n1]
         length_m = abs(b.z_m - a.z_m)
-        if length_m <= 0.0:
+        shaft_m = pier.wind_shaft_height_ft * 0.3048
+        if length_m <= 0.0 or shaft_m <= 0.0:
             continue
-        w_n_m = pier.wind_shaft_shear_lb * LB_TO_N / length_m
+        # The shaft ends under the beam; the member runs on to the beam's centreline.
+        reach = min(1.0, shaft_m / length_m)
+        w_n_m = pier.wind_shaft_shear_lb * LB_TO_N / (reach * length_m)
         loads.member_loads.append(MemberLoad(
             case=LoadCaseKind.WIND, member=member.id, direction=axis, w0_n_m=w_n_m,
-            w1_n_m=w_n_m,
+            w1_n_m=w_n_m, x0=0.0, x1=reach,
             source=(f"{item} wind: the shaft's own {pier.wind_shaft_shear_lb:,.0f} lb ASD "
                     f"spread over the column, {axis}")))
 

@@ -20,10 +20,10 @@ CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 #: guard pair, the flexible base's delta, and the general-equation development of §21.
 #: (demand, capacity) of the worst §2.3.1 case of each state.
 _ORACLE = {
-    "PT-SG-BR1": {"bearing": (20_156, 38_943), "tension": (15_418, 16_740),
-                  "shear": (1_043.4, 38_549), "development": (12.73, 48.0)},
-    "PT-SG-BF1": {"bearing": (19_644, 38_697), "tension": (15_316, 16_740),
-                  "shear": (1_045.4, 38_664), "development": (12.73, 48.0)},
+    "PT-SG-BR1": {"bearing": (19_481, 38_943), "tension": (14_957, 16_740),
+                  "shear": (1_203.1, 39_150), "development": (12.73, 48.0)},
+    "PT-SG-BF1": {"bearing": (19_033, 38_697), "tension": (14_899, 16_740),
+                  "shear": (1_203.1, 39_216), "development": (12.73, 48.0)},
 }
 _LABELS = {"bearing": "bearing on the wall top", "tension": "dowel tension across the joint",
            "shear": "shear friction across the cold joint",
@@ -92,23 +92,39 @@ def test_the_development_is_graded_once_here_and_deck_post_points_to_it(results)
     assert any("graded once" in n for n in record.notes)
 
 
-@pytest.mark.parametrize("column,tension_stem,strut,footing", [
-    ("PT-SG-BR1", 10_450.0, 25_190.5, 27.71), ("PT-SG-BF1", 10_276.9, 24_948.9, 23.27)])
-def test_the_stem_the_strut_and_the_footing_are_rows_not_exclusions(
-        results, column, tension_stem, strut, footing) -> None:
-    """§22 / §25 (B-05, D-R3): plain concrete below the 48" dowels over a 45 deg spread
-    (phi M_n 45,820 lb-ft), the prop's strut on the opposite stem (97,952), the footing."""
+@pytest.mark.parametrize("column,stem,capacity,footing", [
+    ("PT-SG-BR1", 16_016.0, 32_802.0, 46.11), ("PT-SG-BF1", 15_858.0, 45_820.5, 23.69)])
+def test_the_stem_and_the_footing_are_rows_with_the_spread_stopped_at_the_pour(
+        results, column, stem, capacity, footing) -> None:
+    """§22 / §27 (B-05, D-R3): plain concrete below the 48" dowels over a 45 deg spread, the
+    moment AND its shear's lever (M_u + V_u x, x = 48") and the spread stopped at the pour's
+    free end: the rear column stands 23.3" from it (spread 77", phi M_n 32,802 lb-ft), the front
+    one is unclipped (108", 45,820)."""
     record = results["column_support/W-SG-W1"]
     below = _state_named(record, f"{column}: stem flexure below the dowels")
-    assert below.demand == pytest.approx(tension_stem, rel=0.003)
-    assert below.capacity == pytest.approx(45_820.5, rel=1e-4)
-    opposite = _state_named(record, f"{column}: opposite stem under the head prop (strut)")
-    assert opposite.demand == pytest.approx(strut, rel=0.003)
-    assert opposite.capacity == pytest.approx(97_952.0, rel=1e-4)
+    assert below.demand == pytest.approx(stem, rel=0.003)
+    assert below.capacity == pytest.approx(capacity, rel=0.002)
+    assert "M_u + V_u x" in below.citation
     under = _state_named(record, f"{column}: footing bearing under the column point")
     assert under.demand == pytest.approx(footing, rel=0.01) and under.capacity == 2_000.0
-    notes = " ".join(record.notes)
-    assert "THE HEAD PROP" in notes and "skip or relocate" in notes
+    assert not any("strut" in s.name for s in record.limit_states)   # no prop to receive
+
+
+def test_each_stem_is_a_cantilever_under_e_w_wind_plus_the_retained_soil(results) -> None:
+    """§27 (verifier 2026-11-23): all four columns push both stems the same way, so the
+    porch cannot prop one against the other. Per foot: the columns' M + V H over the union
+    of their spreads (18.9'), plus 1.6 x 40 psf/ft x 6.29'^3 / 6 of soil, against #6 @ 38" on
+    the earth face, d 8.625": phi M_n = 0.9 x 0.1389 x 60,000 x (8.625 - 0.0817) / 12 = 5,340."""
+    for wall in ("W-SG-W1", "W-SG-E1"):
+        record = results[f"column_support/{wall}"]
+        state = _state_named(record, f"{wall}: stem as a cantilever under E-W wind and the "
+                                     f"retained soil")
+        assert state.capacity == pytest.approx(5_340.0, rel=0.002)
+        assert state.demand == pytest.approx(4_627.0, rel=0.01)
+        assert "cannot prop one against the other" in state.citation
+        notes = " ".join(record.notes)
+        assert "WHAT CARRIES THE E-W LATERAL" in notes
+        assert "OWNER-ACCEPTED" in notes
 
 
 def _mutated(tmp_path, old, new):
@@ -143,7 +159,7 @@ def test_no_roughening_is_graded_at_0_6(tmp_path) -> None:
     assert mu.value == 0.6
     state = _state(record, "PT-SG-BR1", "shear")
     # mu 0.6 on the same (Avf fy - tension) the roughened 1.0 reads: 38,549 x 0.6.
-    assert state.capacity == pytest.approx(0.6 * 38_549, rel=0.003)
+    assert state.capacity == pytest.approx(0.6 * 39_150, rel=0.003)
 
 
 def test_no_embedment_is_incomplete_naming_the_field(tmp_path) -> None:

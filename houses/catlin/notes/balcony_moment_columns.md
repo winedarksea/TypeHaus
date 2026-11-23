@@ -1532,7 +1532,7 @@ Constructability: the porch ledger's 1/2" x 6" Titen HD anchors drill into the w
 11" through the dowel zone (dowels 3.3-4.1" off the court face), so `AN-SG-LEDGER-DOWELS`
 tells the crew to skip or relocate any anchor within 8" of a column centre line.
 
-## 22. The stem, the head prop and the strut (2026-11-23, B-05 / D-R3, decision 7)
+## 22. The stem, the head prop and the strut (2026-11-23, B-05 / D-R3, decision 7) — SUPERSEDED by §27
 
 W-SG-W1/E1 pass IRC Table R404.1.2(8), which has no surcharge column. Each column hands
 its stem the moment M_u of the §2.3.1 case that governs it. `engineering/column_stem.py`:
@@ -1699,6 +1699,80 @@ the two service moments at the factored axial (0.178). It is applied to every §
 **Head drift and seismic (B-12).** `base_rotation` prints the service head displacement by
 `P L³/3EI + P L²/k_theta` and the SDC A statement of §9 (F_x = 0.01 W); no code drift limit is
 claimed for a deck column.
+
+## 27. The verifier's corrections (2026-11-23): wind bands, the joint's own block, the stem, the load path, uplift
+
+An independent verifier reproduced §24-§26 and found gaps. **§27 supersedes the numbers of §22,
+§24, §25 and §26 where they differ; the method is theirs.**
+
+**Wind (§24).** Five corrections to the bands, each from the model: the guard's 3x3 posts
+(5 on the front leg, one every 60 1/4": +4.2 sq ft = +71 lb), the curtains' corner curves, which
+carry the face out to the flank tracks' lines, 10'-0" to 26'-0" = **16'** not the straight run's
+14.67' (64.2 -> 70.0 sq ft: +99 lb), the 1 1/2" plank edge above the fascia (+41 lb), the shafts,
+which end under the beam at **7.76' / 7.91'** and not at the authored Post.height 8.70' / 8.85'
+(-64 lb), and the deck band's lever, its centroid (walking surface 9.875' less half the 13"
+fascia) **9.33'**, not the deck plane. N-S, ASD, 17.00 psf: deck 363 + plank edge 41 + guard 279
++ columns 533 + curtains 1,191 = **2,408 lb**; head shear (deck + plank + guard + curtains)/4 =
+**468.6 lb** (verifier 465.5); base moment per column BF 101 x 9.33' + 298 x 8.70' + 70 x 11.55'
++ 133 x 3.88' = 4,854, engine **4,860 BF / 4,916 BR** (verifier 4,832 / 4,853, within 1.3%).
+The statics areas are 40.70 / 53.55 sq ft.
+
+**The joint's own block (`column_support`).** The couple took the compression block from the
+column's P-M point, which belongs to a different force. The block THIS force produces is
+`A = C / 0.85 f'c`, iterated with `C (y_bar + y_s) = M_u + P_u y_s`. BR1 floor-empty wind + guard,
+P_u 1,894, M_u 11,006 lb-ft (delta 1.016): C 16,852, **T 14,958 per bar** (hand script and engine
+14,957) = **0.894** on phi A_s f_y 16,740; bearing C at 1.2D + 1.0W + L, P_u 4,048,
+M_u 11,204: 19,482 (engine 19,481), 0.50. **The final number, 0.894, is under the 0.92 the owner
+accepted**; the corrected wind alone, on the old block, would have been about 0.99.
+
+**The stem (`column_stem`).** Below the dowels the moment at the tips is `M_u + V_u x`, the head
+shear's lever, x = 48": BF 11,046 + 1,203 x 4' = 15,858 lb-ft; and the 45 deg spread stops at
+the pour's end. W-SG-W1 and W2 are one pour; the rear column stands 23.3" from its north end,
+so the spread is 23.3 + 54 = **77"** (phi M_n 32,802 lb-ft, 0.49), the front column's 108"
+(45,820, 0.35). The footing row takes the same clipped spread (139" rear): 54 / 28 psf of 2,000.
+**The strut row is gone**: it assumed the porch diaphragm delivers each column's prop to the
+opposite stem.
+
+**The load path (the finding that matters).** Under E-W wind all four columns push both stems
+the same way, so the porch cannot prop one stem against the other. The E-W lateral reaches the
+ground through the stems as cantilevers from their footings. Per stem, 1.2D + 1.0W + L_g + 1.6H
+(`column_support`, "stem as a cantilever"):
+
+```
+column  M_u = (E-W wind 3,934 / 0.6 + guard 2,644) x delta 1.015 = 9,334 lb-ft (BF), 9,405 (BR)
+        V_u = 492.8 / 0.6 + 200 = 1,021 lb
+base    M + V H = 9,334 + 1,021 x 9.12' = 18,648 (BF), 18,720 (BR)  -> 37,368 lb-ft per stem
+spread  union of the two columns' 45 deg spreads, clipped = 18.9'  -> 1,978 lb-ft/ft
+soil    1.6 x 40 psf/ft x 6.29'^3 / 6 (active; fill as foundation_unbalanced_fill reads it) = 2,650
+total   4,628 lb-ft/ft  against #6 @ 38" on the earth face, d 8.625":
+        phi M_n = 0.9 x 0.1389 x 60,000 x (8.625 - 0.082) / 12 = 5,340     d/c 0.87
+```
+
+**0.87 is over the owner's 0.85 cost trigger and under 1.0.** It assumes a single curtain of
+the wall's #6 bars on the retained face (its placement is not authored), and the soil active
+(a cantilever stem, not R404.1.2(8)'s propped at-rest 60 pcf). The plain-concrete section alone (no bars) would be 0.39 before soil and 0.91 with it (the verifier,
+on narrower spreads, estimated 0.56 before soil). **What does NOT carry the E-W lateral: the ledger Titen HD anchors
+(no stainless allowable is published), the LUS210SS hangers, the plank as a strut.** They keep the
+props R404.1.2(8) assumes for the soil's thrust, which that table grades. The footings take the
+E-W base shear, about 4 kip at strength, a court-sliding input no sliding case carries yet.
+
+**Uplift (column_head_joint).** Graded by the beam's statics area, as gravity takes it: BF 448 lb,
+BR **590** lb ((17.00 - 6.0) x 53.55), interaction 0.754 / **0.828**. **Not graded, open:** with the
+curtains closed (the lateral design case) the deck roofs a mostly enclosed space, and internal
+pressure adds. Source read: GAF, "A Guide to Using ASCE 7-16" (June 2020) p. 46, a secondary
+summary of the standard: flat-roof C&C GC_p at 10 sq ft, zone 1' -0.9, zone 1 -1.7, zone 2 -2.3,
+zone 3 -3.2; GC_pi -0.18 enclosed, -0.55 partially enclosed. At those 10 sq ft values, q_h 18.52:
+zone 2 partially enclosed `(0.6 x 18.52 x 2.85 - 6) x 53.55 = 1,376 lb` (interaction 1.24),
+zone 2 enclosed 1,155 lb (1.12), zone 3 partially enclosed 1,912 lb. These are UPPER bounds: GC_p
+falls with the effective area and the standard's values at ~50 sq ft are not held in the repo or
+in the source read. The reviewer's 750-920 lb sits between. **This row cannot be closed without
+Fig. 30.3-2A at the true area or a decision on the curtains' enclosure class**; it is reported, not
+graded as a state.
+
+**Shear at d (glulam).** d is now measured from the FACE of the 3.5" seat (d + 1.75" from the
+bearing centre the statics are taken at), NDS §3.4.3.1(a): 2,689 - 812.5 - 487.5 x 1.115 = 1,333 lb
+(3" test case), `f_v` 63.4 psi (0.24) with the planter. It had been measured from the centre line,
+5% conservative. The record's summary now says planter ON (bearing 0.624 ON, 0.51 OFF).
 
 ---
 
