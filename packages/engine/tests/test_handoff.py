@@ -70,7 +70,7 @@ def test_only_the_notes_these_calculations_cite_are_copied(bundle):
     copied = {path.name for path in (bundle / "notes").glob("*.md")}
     everything = {path.name for path in (CATLIN / "notes").glob("*.md")}
     assert copied < everything, "the whole notes folder was copied"
-    assert "board_batten_girt_span.md" in copied
+    assert "catlin_truss_engineering.md" in copied
     # A note about a design decision, oracling nothing, must not be in a calc bundle.
     assert "interior_selections.md" not in copied
 
