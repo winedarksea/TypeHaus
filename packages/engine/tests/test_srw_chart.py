@@ -92,6 +92,36 @@ def test_the_runnel_back_at_the_toe_fails(ctx) -> None:
     assert graded_wall(old, ctx.plan.by_tag("W-RG-EAST")).result is Result.FAIL
 
 
+def test_the_toe_is_graded_on_where_the_water_lands(ctx) -> None:
+    """A gutter's water lands THROW_FT (0.8', by hand) past its lip: the spout alone 2'-0" off
+    the face would still pass; a lip 2'-4" off the face lands 3'-1" out and passes, one at 1'-0"
+    lands 1'-10" out and FAILs (the owner's 'shorten' leaves it there: see the note §10)."""
+    from typehaus import ft, pt
+    from typehaus.model.trim import Gutter
+
+    class _Moved:
+        def __init__(self, plan, x_ft):
+            self._plan, self._x = plan, x_ft
+
+        def __getattr__(self, name):
+            return getattr(self._plan, name)
+
+        def all_elements(self):
+            for el in self._plan.all_elements():
+                if isinstance(el, Gutter) and el.tag == "TR-SG-RUNNEL":
+                    el = el.model_copy(update={"path": (*el.path[:-1], pt(ft(self._x), ft(-12)))})
+                yield el
+
+    import dataclasses
+
+    east = ctx.plan.by_tag("W-RG-EAST")
+    face = 31.5                         # W-RG-EAST's yard face, x ft
+    near = dataclasses.replace(ctx, plan=_Moved(ctx.plan, face + 1.0))       # bracketed scupper
+    far = dataclasses.replace(ctx, plan=_Moved(ctx.plan, face + 2.34))
+    assert _sheet(near, east)["water kept off the toe"].ok is False
+    assert _sheet(far, east)["water kept off the toe"].ok is True
+
+
 def test_a_wall_with_no_chart_row_is_unknown_not_silent(ctx) -> None:
     from typehaus.checks.structural.srw_chart import _unclaimed
 
