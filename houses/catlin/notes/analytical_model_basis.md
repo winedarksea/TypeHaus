@@ -349,3 +349,14 @@ columns: **2,579 lb-ft front, 2,589 rear** (hand: 132 x 9.33' + 71.5 x 11.55' + 
 2,577). The wind axis is E-W again, so it and the guard share the axis; the oracle tolerances
 (6 % lever, 12 % wind) are unchanged. The earlier addendum's 4,860 / 4,916 figures are withdrawn.
 
+
+## Addendum 2026-11-23c — the landing's ties after G5 (§3e)
+
+The 2026-10-13 joints are re-parted (`params/landing_tie.py`, north_entry_piers.md §10p).
+Joint W is one `MSTA49Z` strap, a tension tie along its run (N-S), so its node takes a **DY
+spring only**. Joint FE is a `DTT2Z` pair on a rod (N-S) plus one `HL43HDG` per face (E-W), so
+it springs both ways. `analytical/ties.py` reads the direction from `deck_tie.carries_of`, so
+a part springs only the way it is published to carry. Stiffness stays at the 1/2" γ, 95,459
+lb/in per part, for the same equal-distribution reason as before. That is a question for the
+engineer of record, not a gap. `test_the_landing_ties_are_springs_on_their_members` passes as
+built.

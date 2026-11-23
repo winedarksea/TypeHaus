@@ -141,8 +141,9 @@
 > flush; owner, 2026-11-18), open, no cover. ENTRY's crest is 1.20" over the
 > LVP (1.45" with 1/4"). D-B-SUNKEN's Trex tread lies on a 1/4" FRP plate over 60 psi XPS, its slot
 > draining down W-SG-BRKBM's isolation joint. D-G-SERVICE keeps its UHMW pad. Oracle:
-> `notes/exterior_door_sill_beam.md`. The band header's stacked jambs cross FS-S-EAST on its LSL edge
-> rim, TJ-8000's rows (`band_header/D-B-SUNKEN`, governing 0.434; `sunken_door_band_header.md` §5).
+> `notes/exterior_door_sill_beam.md`. Over D-B-SUNKEN the floor's LSL rim runs CONTINUOUS as a 2-ply
+> rim header (no band header since 2026-11-23), its splice 20.34" from the jamb; prescriptive on
+> TJ-8000's rows, `structural.rim_header` (seat screws 0.965; `sunken_door_band_header.md`).
 
 > **Exterior door hardening, 2026-10-25:** `plan/door_types.py` owns hardware, doubled
 > jamb packs, local ccSPF and entry field finish. `notes/exterior_door_hardening.md`
@@ -470,8 +471,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   its chords, 5.4375' out to out, not its 6.573' run: at the old 8d @ 6" it was OVER (1.05); it
   is nailed at 4" edges: 7/16" ZIP, SDPWS Table 4.3A's own row, 490 plf ASD, 0.388 (2026-11-18; the old
   265 plf was half the 15/32" row).** A panel whose top stops short of its collector with
-  nothing authored across the band is INCOMPLETE (`engineering/lateral_band.py`). The deck's
-  0.908 at the screen line still governs. Oracles: `notes/canopy_west_band.md` (band, heads,
+  nothing authored across the band is INCOMPLETE (`engineering/lateral_band.py`). The entry's
+  governing item is the landing tie, `deck_tie/FS-BW-FLOOR` 0.876 (N-S wind); the canopy's own
+  is its LSTA24 end straps, `lateral_system/RF-BW-CANOPY` 0.798 (2026-11-23). Oracles: `notes/canopy_west_band.md` (band, heads,
   bases, open front, glulam) and `notes/canopy_garage_diaphragm.md` (the garage delivery).
 - **North-entry snow retention, 2026-11-10:** `CN-BW-SNOW-E-1` is one continuous,
   dimensioned ColorGard 2.0 run on `RF-BW-CANOPY`'s east eave, replacing two point markers.
@@ -480,7 +482,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   final section); rail reactions and panel attachment remain open. South setback 7-5/8 inches satisfies the 8-inch end-cantilever limit;
   north setback 2 inches. No west-side run (`notes/north_entry_structure.md` §5).
 - Four structures: house, garage (4' north gap), sunken-garden/porch/balcony concrete structure (3 1/4" south gap to the cladding), and the north-entry bridge (4' gap).
-- **North entry as it stands (2026-11-14; the 2026-09-10 text is in DESIGN-LOG.md, "North entry, 2026-09-10 record").** `RF-BW-CANOPY` spans 24' between `BM-BW-RW`/`-RE`, which top out at +7'-4", the garage plate, so the two roofs are ONE plane; change either and they step apart. The canopy carries its own gravity and braces two ways, each graded at 100% of the N-S shear on purpose (owner kept the double envelope, 2026-11-14): across the joint into `RF-GARAGE` (six `LSTA24`, `CN-BW-JOINT-*`; seven `LTP4` gable clips into `W-G-S`) and through `W-BW-SCREEN`. The garage joint is a TIE and the roofs move together; the only movement joint is at the HOUSE end. `W-BW-SCREEN` is the guard, the closure over the deck framing and a declared shear panel: WEST 7/16" taped ZIP (the garage's panel) under `corrugated-panel-24` carries the shear alone, EAST is white 3/4" MDO, finish only (`notes/entry_screen_mdo.md`). Its `alignment=face("stud-ext", offset=inch(-1.75))` keeps the west corrugated in the garage panel's plane, and both chord columns carry `within_wall` so the plates cut flush at their faces. `W-BW-SCREEN-SKIRT` carries the west sheet down over the sill and seat beams as its own element and stops 1" ABOVE the pier tops: that edge stays open, it is how the flutes drain and the bases dry. Every truss ties to its header with an `H2.5ASS` at both ends (authored). Both eaves carry the garage's fascia and a continuous trough falling north to `TR-G-LEADER-E`/`-W`; no leader at the south end, no soffit. **Six cast piers on TWO pad planes:** house side (`PD-BW-W`/`-E`/`-RE`) bottoms at -9'-11 7/16" beside the house footings, so cast them in the open basement excavation; garage side (`PD-BW-GW`/`-GE`/`-RNE`) bottoms at -7'-4", cast with the garage foundation. **The landing has ONE tier of beams**: two east-west seat beams on the piers, 2x8 joists north-south on them, `BM-BW-FE` (3-ply) in the joist plane on the RO jamb line; nothing crosses the stem into the garage. The west board ends bear on a 2-ply 2x8 nailed to the westmost joist, the rims run onto it (`params/entry_landing_edge.py`). `W-BW-SCREEN` is filed on the **garage** storey with the roof it braces. See notes/north_entry_structure.md and notes/north_entry_piers.md.
+- **North entry as it stands (2026-11-14; the 2026-09-10 text is in DESIGN-LOG.md, "North entry, 2026-09-10 record").** `RF-BW-CANOPY` spans 24' between `BM-BW-RW`/`-RE`, which top out at +7'-4", the garage plate, so the two roofs are ONE plane; change either and they step apart. The canopy carries its own gravity and braces two ways, each graded at 100% of the N-S shear on purpose (owner kept the double envelope, 2026-11-14): across the joint into `RF-GARAGE` (six `LSTA24`, `CN-BW-JOINT-*`; seven `LTP4` gable clips into `W-G-S`) and, on the west line, by one `MSTA49Z` collector strap from `SB-BW-BAND` straight into `W-G-W` (G5, 2026-11-23), so the screen's chords, bases and piers carry no N-S. The garage joint is a TIE and the roofs move together; the only movement joint is at the HOUSE end. `W-BW-SCREEN` is the guard, the closure over the deck framing and a declared shear panel: WEST 7/16" taped ZIP (the garage's panel) under `corrugated-panel-24` carries the shear alone, EAST is white 3/4" MDO, finish only (`notes/entry_screen_mdo.md`). Its `alignment=face("stud-ext", offset=inch(-1.75))` keeps the west corrugated in the garage panel's plane, and both chord columns carry `within_wall` so the plates cut flush at their faces. `W-BW-SCREEN-SKIRT` carries the west sheet down over the sill and seat beams as its own element and stops 1" ABOVE the pier tops: that edge stays open, it is how the flutes drain and the bases dry. Every truss ties to its header with an `H2.5ASS` at both ends (authored). Both eaves carry the garage's fascia and a continuous trough falling north to `TR-G-LEADER-E`/`-W`; no leader at the south end, no soffit. **Six cast piers on TWO pad planes:** house side (`PD-BW-W`/`-E`/`-RE`) bottoms at -9'-11 7/16" beside the house footings, so cast them in the open basement excavation; garage side (`PD-BW-GW`/`-GE`/`-RNE`) bottoms at -7'-4", cast with the garage foundation. **The landing has ONE tier of beams**: two east-west seat beams on the piers, 2x8 joists north-south on them, `BM-BW-FE` (3-ply) in the joist plane on the RO jamb line; nothing crosses the stem into the garage. The west board ends bear on a 2-ply 2x8 nailed to the westmost joist, the rims run onto it (`params/entry_landing_edge.py`). `W-BW-SCREEN` is filed on the **garage** storey with the roof it braces. See notes/north_entry_structure.md and notes/north_entry_piers.md.
 - **All six north-entry pier bases are `Pad`s** (2026-09-14, and the second half of this line was stale until 2026-09-20). `PD-BW-W`/`-E`/`-RE` are 2'-6" x 1'-6" rectangles, graded prescriptively against IRC Table R507.3.1 — their `spread_footing/` items have left the register. **The rectangle is not a preference**: `FT-B-N1`..`-N4` sit on the same plane and a 24" square reached 2 1/8" into them, a lap that was invisible while these were Footings because `structural.concrete_interference` scopes every `Pad` and only a wall-less `Footing`. **One size for all three** — three pad sizes are three rows in S-100's FOUNDATION SCHEDULE, and that sheet is one row from its schedule governing its height. `PD-BW-GW`/`-GE`/`-RNE` are `Pad`s too and have been since the garage strip footings were retyped to consolidated crushed stone (IRC R403.5): nothing is cast monolithically with stone, so the `Footing.under` argument that kept them Footings is gone along with their `cast_with`, and `concrete_interference` drops a non-concrete footing before it picks its bodies. **`_MOMENT_PIERS` is what sets a pad's THICKNESS and bottom**, not the plane: a moment pier takes `ENTRY_MOMENT_CAGE`'s base dowels and a 12" pad to develop them (ACI 318-19 §25.4.3.1, ℓ_dh 7.115" for a #5 against thickness less 3" of cover), and only the bottom drops — every pad TOP is held, which is what keeps `column_base`'s embedment and the hydrant clearances where they were. All six are moment piers as of 2026-09-20; `PT-BW-W`/`-GW` were the last two in, and the reason nobody noticed they were missing is `BM-BW-SCSILL`. (→ notes/north_entry_piers.md §6)
 - **A post that carries only a ROOF is now reached by `structural.deck_footing_size`** (2026-09-14). `_roof_borne_posts` converts a post's roof-footprint share into R507.3.1's deck currency — `(10 + design snow) / 50`, **1.674** here — and hands it down the post chain, so `PT-BW-CW`/`-CNW`'s canopy share lands on the piers under them. **`PT-BW-RE`/`-RNE` were invisible before this, not light**: they carry `BM-BW-RE` and no deck, so no deck's post list held them. It is **not** a restatement any more (2026-09-18): the rule is `engineering/pier_basis.landed_roof_tributaries`'s and the check reads it through `checks/structural/_engineering.py`. Checks may import engineering; the copy was unnecessary, not forced, and it had drifted twice over — it knew nothing of `_rafter_fields`, and it scaled at the 50 psf **ground** snow while `BM-BW-RE` overhead was designed at the authored 73.7 psf drift.
 - **A pad carries its own weight and the shaft on it, net of displaced soil** (2026-09-18). `deck_footing_size` adds both as equivalent R507.3.1 tributary; `engineering/soil.displaced_soil_credit_lb` credits back the soil the pad replaced at the low end of the 110–130 pcf band, because a presumptive allowable is a **net** pressure. Gross was what put `PD-BW-RE` 1.5% over an allowable it is not over. Every house-side pad passes at one size, so S-100's FOUNDATION SCHEDULE stays one row.
@@ -578,10 +580,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   inside the stack and jacked the girt off its blocks. **Never substitute a screw here
   without reading its thread length.** The part is authored on the girt band's `FramingSpec`
   (`standoff_fastener_*`), and the takeoff bills exactly it.
-- THE SCREW IS THE ONLY LOAD PATH per crossing, no second tier, no nail. Graded as
-  `girt_screw/W-A-N1` — the one engineered item left on this wall, the panel over it being a
-  published read since 2026-09-22 — three states, head pull-through governing
-  at d/c 0.487 (Exposure B, the site's basis; 0.712 at Exposure C). Mark the stud line across
+- THE SCREW IS THE ONLY LOAD PATH per crossing, no second tier, no nail. Since 2026-11-23 a
+  PRESCRIPTIVE read of ESR-1078 (`structural.girt_fastening`, every girt wall; no engineered
+  item left on these walls): D + 0.6W with prying, girt wet (C_M 0.70) at C_D 1.6, head
+  pull-through governing at 0.842; LSL walls read withdrawal by NDS 12.2-2 at ESR-1387's SG. Mark the stud line across
   the girt face as it's laid: the screw is blind through 6" of wood into a 1-1/2" target,
   invisible once the foam is on — inspect the pattern before the sprayer arrives. Head seats
   FLUSH; a head that will not pull down means the wrong screw.
@@ -901,9 +903,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     toe-nailed again (no net uplift). Parallel walls `W-B-N1`/`-N3`/`-N4`/`-S1`/`-S4` take
     blocking stations (first three spaces, ≤72") with five A35Z each, derived beside the block
     (`JoistSpec.station_ties=5`; a tie never lies on framing; `FO-M-ERV-OA`'s north pack stands on the N3/N4 sill, so it stops 3" past its header, `resolve/floor_opening_packs.py`);
-    a MASA is added at each with none within 8" (`joints/sills._snap_to_blocking`). **`W-B-N2` is UNKNOWN**:
-    `FO-M-STAIR` fills its first three joist spaces, so its restraint is the well's edge framing,
-    a design (`plans/TODO.md`). Basis note §4.
+    a MASA is added at each with none within 8" (`joints/sills._snap_to_blocking`). **`W-B-N2`'s top**
+    is restrained by `FO-M-STAIR`'s edge pack, 3 LVL plies spanning flat under R404.1(1)'s 400 plf
+    (fb 0.86), screwed SDW22 and tied with A35Z/SD9112 (end ties 0.98), graded in
+    `code.MN_1309_0404_wall_top` (`engineering/wall_top_edge_pack.py`, 2026-11-23). Basis note §4.
   - Ceiling is 5/8" gypsum end to end, ONE plane: the TJI/truss seam at y=13' is a doubled member,
     not a step, and `RM-B-GYM` resolves one ceiling. `RM-B-PLAY-N` (the theater) hangs its board on
     resilient channel at 24" o.c. (`CR-PLAY-CEIL-RC`, `notes/theater_ceiling_acoustics.md`): 1"
@@ -2067,7 +2070,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     between `FS-S-WEST`'s parallel trusses): the 2-ply 7 1/4" LVL header carries uniform load
     only and reads Boise's Floor - 1 Story row (`notes/header_spans_r602_7.md` §4). The tower
     stands under the opening, the tub west of it; the washer box and standpipe are on
-    `W-M-BA2E` at y=20'-7", the switch inside the strike jamb.
+    `W-M-BA2E` at y=20'-7", the switch inside the strike jamb. `W-S-SN3` above is BEARING since
+    2026-11-22: its ~240 plf reaches `W-M-HS3`/`HS4` through one 1 1/4" LSL rim on edge
+    sistered to the y=272 truss (`params/second_deck.py`; header note §4b).
   - **A split stud that ever reaches the top plate destroys the `W-M-LS` plate tie** — a
     pocket occupies floor to 6'-8" only, so the tie's plates run continuous over/under it and
     only its vertical edge floats.
@@ -3554,16 +3559,11 @@ haus analysis . --solve                     # the engineered frame, solved in Py
     submerged loose row (4.63 pci) would condemn both — a soils report still closes it.
     `column_head_joint/*` grades the head on the HETA20Z pair with FL11473 §9 item 4's
     combined rule as a row (RE/RNE 0.473).
-  - **✅ 2026-09-21: THE LANDING IS TIED ON TWO LINES AND CLOSES AT 0.966** (E-W wind at
-    `BM-BW-FE`; `deck_tie/FS-BW-FLOOR` draft, unsuppressed, permit line PASS).
-    `params/landing_tie.py`: an `HL35HDG` pair per 5"-long KDAT tie block on the garage stem,
-    wet (C_M 0.70); an `HL33HDG` pair into `W-G-W` graded DRY — `Connector.service`, a
-    judgement the EOR confirms — with a 4x KDAT filler for fn 3. The HL35's two concrete-leg
-    holes are 2-1/2" apart (< ESR-2713's 3" s_min), so ONE Titen HD per leg, and **angle and
-    block sit 1-1/4" north** so that hole is on the core centreline (anchors 0.750;
-    centred it was 1.13). `deck_tie_anchor` reads the edges off the authored position — move
-    the angle and the grade moves. The leg's 3/4" north overhang is on the interior EPS:
-    non-bearing, trim flush, don't crush. `notes/north_entry_piers.md` §10.
+  - **THE LANDING IS TIED ON TWO JOINTS, 0.876 (2026-11-23, G5)** (`deck_tie/FS-BW-FLOOR`, N-S
+    wind). `params/landing_tie.py`: joint W, one `MSTA49Z` strap from the screen's top plate into
+    `W-G-W`; joint FE, a `DTT2Z` pair on a 1/2" HDG rod (N-S) and an `HL43HDG` per face of
+    `BM-BW-FE` (E-W, an owner-accepted reading of F1 across the stud's grain). All parts WET.
+    The 2026-09-21 HL35/HL33 tie blocks are gone. `notes/north_entry_piers.md` §10p.
 - **A fixed-base column's P-M check is a §2.3.1 ENVELOPE** (2026-09-18), each combination at
   its own axial load. A larger axial is not automatically conservative on an interaction
   curve — below the balance point compression RAISES moment capacity — so grading the wind
