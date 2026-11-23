@@ -838,11 +838,12 @@ WALLS = [
     # joists hung between them in LUS210SS hangers, and FS-SG-PORCH's plank tying the field
     # together, 16'-9" face to face. (The back and front beams, their HUCQ410-SDS hangers and
     # the beam pockets this comment used to describe were retired 2026-09-22.) The bottom is
-    # the garden slab bearing at their foot. The same head is the PROP of each balcony
-    # column's base moment (`column_support`, review B-05): 3M/2H plus the shear, about 760 lb
-    # factored per column, delivered through those ledgers and the porch plank in compression
-    # to the opposite wall; the ledger anchors' pull-out under it is not graded (no allowable
-    # is catalogued for THD50600H6SS), and `AN-SG-LEDGER-DOWELS` keeps the drill off the dowels.
+    # the garden slab bearing at their foot. The same head props the RETAINED SOIL's thrust
+    # (`column_support`): both walls are pushed INWARD, so each stem presses on its ledger, the
+    # ledger on the joist ends, and the joists carry it across as struts, in COMPRESSION, by
+    # direct bearing; the ledger anchors and hanger fasteners take none of it. No balcony column
+    # props on this head (E-W wind has no prop). `AN-SG-LEDGER-DOWELS` keeps the drill off the
+    # dowels, and the porch must be framed before the two sides are backfilled together.
     # That is a continuous load path in both directions at both ends, which is what R404.1.2(8)
     # presumes and what the free retaining walls south of here (W2/E2/S) do not have.
     #

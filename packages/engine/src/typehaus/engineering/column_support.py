@@ -476,7 +476,7 @@ def _cantilever_row(ctx: EngineeringContext, wall_tag: str, piers: list[_Pier], 
                Quantity(f"{wall_tag}.soil_moment_per_ft", soil_per_ft, "lb-ft/ft", 1.0),
                Quantity(f"{wall_tag}.soil_prop_per_ft", prop_lb_per_ft, "lb/ft", 1.0),
                *soil_inputs(ctx, soil)]
-    return [LimitState(
+    states = [LimitState(
         f"{wall_tag}: stem as a cantilever under E-W wind and the retained soil",
         wind_per_ft + soil_per_ft, capacity, "lb-ft/ft",
         f"E-W wind pushes all four columns, and so both stems, the same way: the porch "
@@ -495,6 +495,65 @@ def _cantilever_row(ctx: EngineeringContext, wall_tag: str, piers: list[_Pier], 
         f"{thickness_in - cover - _BAR[vertical.bar][1] / 2.0:.2f}\" (a single curtain, "
         f"assumed on the retained face); the wind and the soil are taken adding, the case that "
         f"governs")]
+    prop_service = efp_value * h_fill ** 2 / 10.0
+    states += _porch_strut_rows(ctx, wall_tag, prop_service, inputs, missing)
+    return states
+
+
+def _porch_strut_rows(ctx: EngineeringContext, wall_tag: str, prop_lb_per_ft: float,
+                      inputs: list[Quantity], missing: list[str]) -> list[LimitState]:
+    """Where the soil's prop goes: through the porch, in COMPRESSION, not through the anchors.
+
+    The soil pushes W1 and E1 INWARD (toward each other), so each stem's head presses on its
+    ledger, the ledger on the joist ends, and the joists carry the thrust across the porch as
+    struts to the other ledger and stem. The ledger bears flat on the wall's court face and
+    each joist end bears on the ledger's face (the hanger only seats it), so the load is direct
+    bearing and the ledger's Titen HD anchors and the LUS210SS fasteners take NONE of it: the
+    anchors keep gravity shear (Simpson letter L-A-THDSSLDGR23, `structural.deck_ledger`) and
+    would see tension only if the soil's thrust reversed, which a retained wall does not do.
+    The porch's composite plank is not a strut and is not relied on.
+
+    Graded at SERVICE against ASD values (NDS): the joist end's bearing on the ledger face,
+    Fc-perp of the porch's southern pine No. 2 (`library/member_grades`); and the joist as a
+    column, reported as the E_min' below which it would buckle (this record holds no E_min)."""
+    from typehaus.engineering.deck_tributary import joist_span_ft
+    from typehaus.library.member_grades import SOUTHERN_PINE_NO2_2X12_WET as grade
+    from typehaus.model.floors import FloorSystem
+    from typehaus.model.structure import Beam
+    from typehaus.resolve.framing.profiles import cross_section
+
+    deck = next((d for d in ctx.plan.all_elements() if isinstance(d, FloorSystem)
+                 and d.service == "deck"
+                 and any(getattr(ctx.plan.by_tag(r), "ledger_on", None) == wall_tag
+                         for r in d.joists.bearing_refs or ()
+                         if isinstance(ctx.plan.by_tag(r), Beam))), None)
+    span_ft = joist_span_ft(ctx, deck) if deck is not None else None
+    if deck is None or span_ft is None:
+        missing.append(f"the porch deck whose ledger is on {wall_tag}, to carry the soil's prop")
+        return []
+    section = cross_section(deck.joists.member)
+    width_in, depth_in = section.width_m / 0.0254, section.depth_m / 0.0254
+    spacing_ft = float(deck.joists.spacing.inches) / 12.0
+    per_joist = prop_lb_per_ft * spacing_ft
+    bearing = per_joist / (width_in * depth_in)
+    span_in = span_ft * 12.0
+    strong = width_in * depth_in ** 3 / 12.0
+    e_needed = per_joist * 3.0 * span_in ** 2 / (math.pi ** 2 * strong)
+    inputs += [Quantity(f"{wall_tag}.prop_per_joist", per_joist, "lb", 1.0),
+               Quantity(f"{wall_tag}.joist_span", span_ft, "ft", 0.01)]
+    return [LimitState(
+        f"{wall_tag}: soil prop, joist end bearing on the ledger", bearing, grade.fc_perp_psi,
+        "psi",
+        f"NDS ASD, the {prop_lb_per_ft:,.0f} lb/ft SERVICE prop (efp H^2 / 10) x {spacing_ft:g}' "
+        f"= {per_joist:,.0f} lb on each {width_in:g}\" x {depth_in:g}\" joist end bearing "
+        f"directly on the ledger's face, Fc-perp {grade.fc_perp_psi:,.0f} psi "
+        f"({grade.source.split(':')[0]}, wet service). The thrust is COMPRESSION through ledger "
+        f"and joists: the ledger anchors and the LUS210SS fasteners carry none of it. The joist "
+        f"as a column ({span_ft:.2f}' strong-axis, the plank bracing the weak axis) buckles only "
+        f"if E_min' falls below {e_needed:,.0f} psi at a factor of 3 (this record holds no "
+        f"E_min; the apparent E is {grade.e_psi:,.0f}); the plank is not a strut")]
+
+
 
 
 def _one(ctx: EngineeringContext, wall_tag: str, piers: list[_Pier]) -> EngineeringRecord:
@@ -544,11 +603,17 @@ def _one(ctx: EngineeringContext, wall_tag: str, piers: list[_Pier]) -> Engineer
         "base shear (the court's sliding cases now read the balcony's E-W wind, 1,348 lb ASD, "
         "live). The soil is propped because it pushes INWARD on both stems, opposite ways, so "
         "the porch floor spanning between them takes each stem's top reaction against the "
-        "other's: that is Table R404.1.2(8)'s standard top-support assumption. Its path is the "
-        "porch ledgers' Titen HD anchors, the LUS210SS hangers and the plank; **that path is NOT "
-        "graded** (no stainless THD50600H6SS allowable is published) and is named here as an "
-        "open gap. No column prop rides it. A drawing note, `AN-SG-LEDGER-DOWELS`, keeps the "
-        "ledger's Titen HD anchors off the dowels.",
+        "other's: that is Table R404.1.2(8)'s standard top-support assumption. THE SOIL'S PROP "
+        "IS COMPRESSION: each stem presses on its ledger, the ledger on the joist ends, and the "
+        "joists carry it across the porch as struts to the other ledger and stem (the "
+        "\"soil prop, joist end bearing\" row: direct bearing on the ledger face, Fc-perp, the "
+        "joist's buckling E_min' reported). The ledger's Titen HD anchors, the LUS210SS "
+        "fasteners and the plank carry NONE of it: the anchors keep the gravity shear the "
+        "Simpson letter L-A-THDSSLDGR23 grades (`structural.deck_ledger`) and would see tension "
+        "only if the soil's thrust reversed. That needs the porch framed before backfill and "
+        "the two sides backfilled together (`AN-SG-BACKFILL` (b), L1's sequence): a one-sided "
+        "stage would load the far stem through the strut. No column prop rides it. A drawing "
+        "note, `AN-SG-LEDGER-DOWELS`, keeps the ledger's Titen HD anchors off the dowels.",
         "DOWEL TENSION on the conservative C_f 1.80 for every wind band, the guard taken "
         "concurrently with full design wind and the one-bar couple on the block that force "
         "itself produces. It was OWNER-ACCEPTED at 0.92 (2026-11-23) when the porch curtains were "

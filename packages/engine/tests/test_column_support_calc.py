@@ -131,6 +131,18 @@ def test_each_stem_is_a_cantilever_under_e_w_wind_plus_the_retained_soil(results
         assert "OWNER-ACCEPTED" in notes
 
 
+def test_the_soil_prop_is_compression_through_the_joists_not_the_anchors(results) -> None:
+    """§30: 237 lb/ft service (60 x 6.29'^2 / 10) x 1.0' o.c. on a 1.5" x 11.25" joist end
+    bearing on the ledger face: 14.0 psi against Fc-perp 565 x 0.67 = 378.6 (0.04)."""
+    for wall in ("W-SG-W1", "W-SG-E1"):
+        record = results[f"column_support/{wall}"]
+        state = _state_named(record, f"{wall}: soil prop, joist end bearing on the ledger")
+        assert state.demand == pytest.approx(237.4 / (1.5 * 11.25), rel=0.01)
+        assert state.capacity == pytest.approx(565.0 * 0.67, rel=1e-6)
+        assert "COMPRESSION" in state.citation and "carry none of it" in state.citation
+        assert "THE SOIL'S PROP IS COMPRESSION" in " ".join(record.notes)
+
+
 def _mutated(tmp_path, old, new):
     from _helpers import copy_house
 
