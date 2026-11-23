@@ -122,7 +122,7 @@ def velocity_pressure_psf(basis: WindBasis, height_ft: float, *,
 
 
 # --- ASCE 7-16 Chapter 30 Part 1: C&C wall pressures -------------------------------------
-# Shared by ``engineering/girt_screw.py`` and ``checks/structural/cladding.py``: the panel
+# Shared by ``checks/structural/girt_fastening.py`` and ``cladding.py``: the panel
 # and the screw behind it carry ONE suction, and two numbers for it would mean one is wrong.
 
 #: ASCE 7-16 Table 26.13-1, enclosed building, applied with the sign that worsens the case.
@@ -165,17 +165,33 @@ def effective_wind_area_ft2(span_in: float) -> float:
     return span_ft * (span_ft / 3.0)
 
 
+def lowest_ground_ft(site) -> float:
+    """Lowest ground the building stands over, ft in the main-floor datum frame.
+
+    The minimum of the site grade and every spot elevation: z in ASCE 7's K_z is height above
+    the ground *there*, and a sunken court shortens z if the grade is used instead, which is
+    the wrong direction to be wrong in. The same rule as ``engineering/balcony_wind``'s
+    ``ground_below_ft``. No grade and no spots: the datum (0.0).
+    """
+    candidates = [spot.elevation.meters for spot in getattr(site, "spot_elevations", ())]
+    grade = getattr(site, "grade", None)
+    if grade is not None:
+        candidates.append(grade.meters)
+    return min(candidates) / 0.3048 if candidates else 0.0
+
+
 def mean_roof_height_ft(model) -> float | None:
-    """h for q_h — the mean of eave and ridge over the tallest roof in the resolved model.
+    """h for q_h: mean of eave and ridge over the tallest roof, above the lowest ground.
 
     The model has no building grouping to ask, so the tallest roof is the conservative
-    reading.
+    reading. ``roof.eave_z_m`` / ``ridge_z_m`` are main-floor-datum heights, so the lowest
+    ground (:func:`lowest_ground_ft`) is taken off; catlin's is the sunken garden, -9.12 ft.
     """
     heights = [(roof.eave_z_m + roof.ridge_z_m) / 2.0 for roof in model.roofs
                if roof.eave_z_m is not None and roof.ridge_z_m is not None]
     if not heights:
         return None
-    return max(heights) / 0.3048
+    return max(heights) / 0.3048 - lowest_ground_ft(model.plan.project.site)
 
 
 def cladding_pressure_asd_psf(q_h: float, area_ft2: float, zone: str = "5", *,

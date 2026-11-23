@@ -23,6 +23,7 @@ from typehaus.checks.structural import (
     footing_size,  # noqa: F401 - registers checks
     fortified_roof,  # noqa: F401 - registers checks
     foundation,  # noqa: F401 - registers checks
+    girt_fastening,  # noqa: F401 - registers checks
     guards,  # noqa: F401 - registers checks
     hanger_seat_fit,  # noqa: F401 - registers checks
     header_prescriptive,  # noqa: F401 - registers checks

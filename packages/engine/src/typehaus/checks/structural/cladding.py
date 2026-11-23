@@ -4,7 +4,7 @@ Two checks, one scope. A wall is in scope when its outermost skin declares ``ski
 (one of the building's metal skins), does NOT declare ``exposed_fastener`` (so no
 face-fastened span table reaches it — PBR and the garage corrugated stay out), and stands
 on a block-standoff girt band with a spacing (``truss_girt_bands``, the one reading
-``engineering/girt_screw.py`` shares).
+``structural.girt_fastening`` shares).
 
 * ``structural.cladding_wind`` — **the prescriptive read.** ASCE 7-16 C&C wall pressure
   (``typehaus.wind``), zone 5, at 0.6W, graded in BOTH directions against the
@@ -15,6 +15,9 @@ on a block-standoff girt band with a spacing (``truss_girt_bands``, the one read
   excludes fasteners by its own footnote, so the NDS 2018 §12.2 withdrawal and AISI S100
   head pull-through the retired item graded are kept as arithmetic a reviewer can read.
   FAIL at WARN severity when either exceeds 1.
+
+The demand's h is the mean roof height above the LOWEST ground (``wind.mean_roof_height_ft``,
+2026-11-22), so a row's authored ``demand_psf`` is the most the check accepts.
 
 One finding set per (material, girt spacing) group, keyed by the lowest wall tag and
 naming every member wall — twenty walls in one product over one girt course are one read.

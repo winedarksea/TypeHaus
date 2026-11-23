@@ -167,3 +167,47 @@ def test_the_asd_and_directionality_constants_are_the_standards():
     """Pinned so a "tuning" edit to either has to argue with a citation, not a diff."""
     assert K_D_BUILDINGS == 0.85     # Table 26.6-1
     assert ASD_WIND_FACTOR == 0.6    # §2.4.1 combinations 5 and 6
+
+
+# --- mean roof height above the LOWEST ground (note §2, 2026-11-22) --------------------------
+
+def _roofs_site(*elevations_ft, grade_ft=None):
+    from types import SimpleNamespace
+
+    from typehaus import ft
+
+    site = SimpleNamespace(
+        spot_elevations=[SimpleNamespace(elevation=ft(e)) for e in elevations_ft],
+        grade=ft(grade_ft) if grade_ft is not None else None)
+    roof = SimpleNamespace(eave_z_m=20.9918 * 0.3048, ridge_z_m=30.2939 * 0.3048)
+    plan = SimpleNamespace(project=SimpleNamespace(site=site))
+    return site, SimpleNamespace(roofs=[roof], plan=plan)
+
+
+def test_lowest_ground_is_the_minimum_of_grade_and_spots():
+    from typehaus.wind import lowest_ground_ft
+
+    site, _ = _roofs_site(-3.0, -9.0 - 1.4375 / 12, 0.0, grade_ft=-2.0 - 10.0 / 12)
+    assert lowest_ground_ft(site) == pytest.approx(-9.1198, abs=1e-3)
+    assert lowest_ground_ft(_roofs_site()[0]) == 0.0
+
+
+def test_mean_roof_height_is_measured_from_the_lowest_ground():
+    """§2: mean 25.6428 ft above datum + 9.1198 ft of garden = 34.7626 ft, K_h 0.73071,
+    q_h 21.0282 psf at 115 mph, Exposure B — worked by hand, not read from the code."""
+    from typehaus.wind import mean_roof_height_ft
+
+    _, model = _roofs_site(-3.0, -9.0 - 1.4375 / 12, grade_ft=-2.0 - 10.0 / 12)
+    height = mean_roof_height_ft(model)
+    assert height == pytest.approx(34.7626, abs=1e-3)
+    assert velocity_pressure_coefficient(height, "B") == pytest.approx(0.73071, abs=1e-4)
+    basis = wind_basis(_site(design_wind_speed_mph=_V_ULT, wind_exposure="B",
+                             risk_category="II"))
+    assert velocity_pressure_psf(basis, height) == pytest.approx(21.0282, abs=1e-3)
+
+
+def test_a_site_with_no_grade_measures_from_the_datum():
+    from typehaus.wind import mean_roof_height_ft
+
+    _, model = _roofs_site()
+    assert mean_roof_height_ft(model) == pytest.approx(25.6428, abs=1e-3)
