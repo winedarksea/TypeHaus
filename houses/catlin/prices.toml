@@ -3416,10 +3416,10 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # blank (material = milling), then seven stud notches scribed to the as-built stations,
 # eased arris, oil, and screwing down through the fingers (labour).
 "FT-MUD-STRW-BENCH" = { material = { low = 80, high = 200 }, labour = { low = 300, high = 700 } }  # 1 ea
-# TR-SG-LEADER-SE's splash basin (2026-09-23): a ~24" granite boulder basin from a stone yard,
-# set on 4" of compacted stone, plus the 2' x 6' river-rock apron on fabric beyond its notch.
-# Placement is two people and a dolly for a ~250-400 lb stone — the rate, not a machine.
-"FT-SPLASH-BASIN-GRANITE-24" = { material = { low = 250, high = 800 }, labour = { low = 150, high = 400 } }  # 1 ea
+# TR-SG-LEADER-SE's splash pad (2026-11-24; a ~24" granite basin, 2026-09-23, before it): 4' x 3' of
+# washed river rock 4" deep on fabric (~0.15 cy). An estimate, not a quote: stone-yard material and one
+# person with a wheelbarrow; no machine.
+"FT-SPLASH-PAD-RIVER-ROCK" = { material = { low = 40, high = 120 }, labour = { low = 60, high = 160 } }  # 1 ea
 # The fold-down leaf is now 19 7/8" x 16" against the fixed desk's 29"; its allowance
 # is nearly the desk's, because on a leaf the BOARD is the cheap half. Material carries a pair
 # of Sugatsune EB-303/EP-BL folding table brackets (revised quote pending), a full-length

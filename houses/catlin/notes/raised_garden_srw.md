@@ -547,17 +547,26 @@ court wall's virtual back (a 0, b 1.0', h 10.1198' - 4.333' = 5.787'): **54.63 p
 Gauss-Legendre integration in `tests/test_tier_surcharge.py`. All three parallel aprons (BLOCK,
 WEST, EAST, since 2026-11-23) carry the same 54.63 plf; the court's own rows are L1's note.
 
-**G9, W-RG-EAST, resolved (owner, 2026-11-23, option a).** TR-SG-RUNNEL used to let go 12" past
-W-RG-EAST's yard face onto FURN-SG-SPLASH-BASIN 6" off it: concentrated water at the toe, the one
-condition off the row. Its end moved 32'-6" -> 35'-6" (spout 4'-0" off the toe) and the basin
-33'-0" -> 36'-0" (3'-6" off), and W-RG-EAST dropped 4" and took a capstone like the others, so
-all five legs read the same row. The three parallel aprons are now identical to the court.
-**Where the water lands (assumption, 2026-11-23).** The throw is not modelled; the check adds
+**G9, W-RG-EAST, resolved (owner, 2026-11-23/24).** TR-SG-RUNNEL used to let go 12" past
+W-RG-EAST's yard face onto a granite basin 6" off it: concentrated water at the toe. It first
+grew a 3'-0" tail (an unsupported cantilever), then, owner 2026-11-24 ("not an engineering item;
+it just spreads the water across the grass without major erosion risk"), was **shortened onto its
+bracketed scupper** (end 32'-6", 12" past the face, the last support) and the basin was replaced
+by `FURN-SG-SPLASH-PAD`, a 4' x 3' river-rock pad 4" deep on fabric, 2" proud, centred 2.5' east
+of the face and 1.5' south of the runnel line (x 32'-0".. 36'-0"). W-RG-EAST dropped 4" and took a
+capstone like the others, so all five legs read the same row, and the three parallel aprons are
+identical to the court.
+
+**Where the water lands (assumption).** The throw is not modelled; the check adds
 `THROW_FT = 0.80'` to a free-ended gutter's lip along its last leg. By hand: 17 gpm design in
 the 4" x 3" channel at 1/4 in/ft, Manning n 0.012: depth 0.645", v = Q/A = 2.11 ft/s; fall from
-the channel floor (0'-0") to the basin dish (about -2'-4"), 28" = 2.33 ft, t = sqrt(2h/g) = 0.38 s,
-throw 0.80 ft. So the lip must stand 2.2' off the face for 3'-0" of landing clearance. The
-existing bracketed scupper puts it 1'-0" off (landing 1.8'), so the owner's "shorten onto the
-existing supports AND land 3'-0" off the toe" cannot both hold: the model keeps the 3'-0" tail
-(landing 4.8' off, basin 3'-6" off) until the owner picks one. Open detail: that tail has no
-support in the model.
+the channel floor (0'-0") to the pad (about -3'-2"), 2.33 ft with the pad's 2" proud, t =
+sqrt(2h/g) = 0.38 s, throw 0.80 ft. Lip 1'-0" off the face + 0.8' = **1.8' off the toe**.
+
+**The condition is a house clearance, not AB's.** AB Table 2.1 (p.16) says only "When moisture
+is present, extra precautions may be required". The pad is that precaution, so
+`water landed clear of the toe` requires every free-ended gutter lip or leader foot landing on
+the yard side within 10' of a leg to land **>= 1'-6" off the toe AND on a ground-level pad (an
+object <= 4" proud)**. The reviewer's 3'-0" (A2-F8) was not AB's number and is dropped. Not
+modelled: the pad's scour performance. The balcony returns' landing is on the retained side and
+is not graded against them.

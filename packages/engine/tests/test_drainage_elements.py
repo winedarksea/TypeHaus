@@ -113,11 +113,11 @@ def test_the_balcony_leader_hangs_outside_the_east_retaining_wall(catlin_model):
         "and it stops just above the terrace, whose surface is level with the retaining top"
 
 
-def test_the_balcony_leader_runs_east_to_a_basin_in_the_yard(catlin_model):
+def test_the_balcony_leader_runs_east_to_a_splash_pad_in_the_yard(catlin_model):
     """TR-SG-LEADER-SE drops into TR-SG-RUNNEL on W-RG-EAST-BALCONY's top, whose spout lets
-    go past W-RG-EAST into FURN-SG-SPLASH-BASIN — never onto the terrace (the court's
+    go past W-RG-EAST onto FURN-SG-SPLASH-PAD — never onto the terrace (the court's
     soakaway) and clear of SL-SG-STAIRPAD (no icy walkway). Nothing in `haus check` grades a
-    runnel or a basin, so this is the guard."""
+    runnel or a pad, so this is the guard (`structural.srw_gravity_chart` grades the landing)."""
     ft_m = 0.3048
     plan_leader = catlin_model.plan.by_tag("TR-SG-LEADER-SE")
     assert plan_leader.discharge_ref == "daylight"
@@ -128,7 +128,7 @@ def test_the_balcony_leader_runs_east_to_a_basin_in_the_yard(catlin_model):
     assert runnel
     ret = next(w for w in catlin_model.walls if w.tag == "W-RG-EAST-BALCONY")
     assert min(s.z0_m for s in runnel) == pytest.approx(ret.z1_m, abs=1e-6), \
-        "the channel sits on the return's top course, in place of its cap"
+        "the channel sits on the return's capstone line"
     rim = max(s.z1_m for s in runnel)
     assert rim < leader.z0_m <= rim + 0.05, "the leader lets go just over the channel"
 
@@ -137,20 +137,24 @@ def test_the_balcony_leader_runs_east_to_a_basin_in_the_yard(catlin_model):
     east_face = east.axis[0][0] + east.thickness_m / 2
     assert spout[0] > east_face, "the spout clears W-RG-EAST's yard face"
 
-    basin = next(c for c in catlin_model.canvas_objects if c.tag == "FURN-SG-SPLASH-BASIN")
-    xs = [p[0] for p in basin.footprint]
-    ys = [p[1] for p in basin.footprint]
-    assert min(xs) <= spout[0] <= max(xs) and min(ys) <= spout[1] <= max(ys), \
-        "the spout lands in the basin"
-    assert min(xs) > east_face, "the basin stands clear of the SRW face"
+    # The water lands ~0.8' past the lip (the chart check's throw assumption) and must land on
+    # the pad, which stands clear of the SRW face.
+    landing = (spout[0] + 0.8 * ft_m, spout[1])
+    splash = next(c for c in catlin_model.canvas_objects if c.tag == "FURN-SG-SPLASH-PAD")
+    xs = [p[0] for p in splash.footprint]
+    ys = [p[1] for p in splash.footprint]
+    assert min(xs) <= landing[0] <= max(xs) and min(ys) <= landing[1] <= max(ys), \
+        "the water lands on the pad"
+    assert min(xs) > east_face, "the pad stands clear of the SRW face"
+    assert landing[0] - east_face >= 1.5 * ft_m, "and the water lands 1'-6\" or more off the toe"
     pad = next(s for s in catlin_model.solids if s.tag == "SL-SG-STAIRPAD")
     pad_surface = next(s for s in catlin_model.plan.project.site.impervious_surfaces
                        if s.label == "porch stair pad")
     assert pad_surface.near_elevation.meters == pytest.approx(pad.z1_m)
     assert (pad_surface.near_elevation - pad_surface.far_elevation).inches == pytest.approx(3.0)
     assert min(p[1] for p in pad.outline) - max(ys) >= 2.0 * ft_m - 1e-6, \
-        "the basin stays 2'-0\" off the stair pad"
-    assert basin.z_m == pytest.approx(-40 * 0.0254, abs=1e-6), "set on the yard at -3'-4\""
+        "the splash pad stays 2'-0\" off the stair pad"
+    assert splash.z_m == pytest.approx(-40 * 0.0254, abs=1e-6), "set on the yard at -3'-4\""
 
 
 def test_the_hydrant_pit_is_a_drywell_and_no_longer_bills_phantom_tile(catlin_model):
