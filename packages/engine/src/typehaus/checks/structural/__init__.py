@@ -40,6 +40,7 @@ from typehaus.checks.structural import (
     rafter_birdsmouth,  # noqa: F401 - registers checks
     rake_overhang,  # noqa: F401 - registers checks
     ridge,  # noqa: F401 - registers checks
+    rim_header,  # noqa: F401 - registers checks
     sheathing_edge_support,  # noqa: F401 - registers checks
     sill_bearing,  # noqa: F401 - registers checks
     slab_span,  # noqa: F401 - registers checks

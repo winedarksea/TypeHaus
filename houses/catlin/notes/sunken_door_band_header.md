@@ -1,146 +1,124 @@
-# `D-B-SUNKEN` flush band header — hand check
+# `D-B-SUNKEN` rim header — hand check
 
-**House:** catlin. **Element:** `D-B-SUNKEN` (63 5/16" RO French pair) in `W-B-S3-FR`, headed
-in `FS-M-EAST`'s band (`Door.header_in_band`). **Written:** 2026-10-31, by hand from the maker's
-document, before the record was compared against it.
-**Oracle for:** `typehaus/engineering/band_header.py` (`band_header/D-B-SUNKEN`), reproduced by
-`tests/test_band_header.py`.
+**House:** catlin. **Element:** `D-B-SUNKEN` (63 5/16" RO French pair) in `W-B-S3-FR`, headed in
+`FS-M-EAST`'s band (`Door.header_in_band`). **Written:** 2026-10-31 by hand for the LVL plies;
+**rewritten 2026-11-23 (decision 12)** for the 2-ply LSL rim header, which replaces them.
+**Oracle for:** `checks/structural/rim_header.py` and `engineering/band_header*.py`, reproduced
+by `tests/test_rim_header.py`; the arithmetic is `notes/engineering_review_2026-11-22/scratch/L3/hand.py`.
+**Retired:** `band_header/D-B-SUNKEN` (an engineered item, 0.434). The header is a published read
+now, so nothing of it is left on the engineering register.
+**Open:** the ForteWEB report. The exact input is `notes/engineering_review_2026-11-22/forteweb_D-B-SUNKEN.md`;
+**ForteWEB report: owner to run and retain.**
 
-## 1. Why the header is in the band
+## 1. Why the header is in the band, and what it is now
 
-The RO is 82 7/8" with a -1 3/4" sill, so the rough head stands 4 5/8" under the plates. The
-R602.7 2-2x10 grew 9 1/4" up from it, through both top plates and 1 5/8" past the wall top
-(geometry review C3-E2). `W-B-S3-FR` is BEARING but runs PARALLEL to `FS-M-EAST`'s joists:
-the member over the opening is the y=0 edge-joist line. So the beam goes there, flush:
-two 1 3/4" x 11 7/8" Microllam LVL plies beside the edge line (an LSL rim board since 2026-11-18), x 18'-2 11/32" to
-24'-5 21/32" — the outer faces of the two 2-jack + 2-king packs, which run up to the plates.
-It is NOT a bearing ref: `resolve/floors.py` would cut every joist at that line.
+The RO is 82 7/8" with a -1 3/4" sill, so the rough head stands 4 5/8" under the plates and no
+R602.7 header fits (geometry review C3-E2). `W-B-S3-FR` is BEARING but runs PARALLEL to
+`FS-M-EAST`'s joists, so the member over the opening is the y=0 edge-joist line: the floor's
+1 1/4" x 11 7/8" TimberStrand LSL edge rim. The review (F-08) found that rim alone is a published
+header for the span (TJ-8000 p.6, 6'-0" row, 792 plf; d/c 0.060) and that the two 1 3/4" LVL plies
+beside it did no work the rim could not. They are deleted. **One ply of the same rim stock sits behind
+the rim, pack to pack (x 18'-2 11/32" to 24'-5 21/32", the outer faces of the two 4-stud packs)**: a
+2-ply 1 1/4" LSL header, **Weyerhaeuser TJ-8000 (March 2025) p.7, *Load tables: 2-ply rim board*,
+1 1/4" 1.3E TimberStrand LSL, 11 7/8"** (a row, so a prescriptive read). The ply is also
+`D-M-PORCH`'s HeadLOK backer (`exterior_door_sill_beam.md` §3: 1 1/4" in the rim + 3/4" in the
+ply = 2.0" of thread). It is not a bearing ref: `resolve/floors.py` would cut every joist at that line.
 
-## 2. What it carries
+## 2. What loads it
 
 | Term | Working | Value |
 |---|---|---|
 | Clear span | the RO | 63.3125" = 5.276 ft |
-| Seats | 4 x 1 1/2" pack each end | 6" each |
-| Design span L | 63.3125 + 6/2 + 6/2 = 69.3125" | **5.776 ft** |
-| Floor strip | the deck edge (y=0) to half-way from the edge rim's line (y=1.125", flush with the stud face at 0.5") to the y=16" line: 1.125 + 14.875/2 | **8.5625" = 0.71354 ft** |
-| Floor load | IRC R301.5, 40 live + 10 dead | 50 psf |
-| Ply weight | TJ-9000 p.4, 1 3/4" x 11 7/8": 6.1 plf, x 2 | 12.2 plf |
-| w total | 50 x 0.71354 + 12.2 | **47.88 plf** |
-| w live | 40 x 0.71354 | **28.54 plf** |
+| Bearings | 4 x 1 1/2" pack each end (TJ-8000 p.6 wants 4 1/2" minimum) | 6" each |
+| Span c-c of bearing | 63.3125 + 6 | 69.3125" = **5.776 ft** (read up to the 6'-0" row) |
+| Floor strip | 1.125 + 14.875 / 2 | 8.5625" = 0.71354 ft |
+| Floor load | IRC R301.5, 40 live + 10 dead | 50 psf -> **35.68 plf** (the header's weight neglected: TJ-8000 p.6) |
+| Door seats (F-07) | `D-M-PORCH`'s sill beam, two seats, `exterior_door_sill_beam.md` §3 | **325.73 lb each**, at the seat screw groups, 4.969" in from the RO edge (7.969" from the bearing's centre), both at once |
 
-**The jamb loads are not in the span.** `D-M-PORCH` above is the same 63 5/16" RO on the same
-centre, so its 2-jack + 2-king packs stand on these seats exactly (x 18'-2 11/32"..18'-8 11/32"
-and 23'-11 21/32"..24'-5 21/32"). The review's "west jamb at x≈19'-1"" was the stale
-`CN-M-HD-PORCH-W` strap station, from before the 2026-10-29 re-centring; it is re-stationed onto
-the pack. Nothing else of `W-M-S2` stands on its bottom plate inside the RO.
+The packs of `D-M-PORCH` above are the same 63 5/16" RO on the same centre, so its stacked jamb
+loads stand on the bearings and not in the span. The seat reactions DO sit in the span (F-07, which
+the LVL record left out), 7.25" outboard of the rim's face: a vertical load plus a couple.
 
-## 3. The check (Weyerhaeuser TJ-9000, July 2026)
+## 3. The header, and why the table's uniform-load row needs a cross-check
 
-p.5, Microllam LVL 2.0E beam, 100% duration: Fb 2,600 psi at 12" x (12/d)^0.136,
-Fv 285 psi, E 2.0 x 10^6 psi. b = 2 x 1.75 = 3.5", d = 11.875".
+TJ-8000's rows are **uniform load, simple span** (p.6 general notes). The seat loads are point loads
+near the bearings, so they are carried as the uniform load with the same end shear, midspan moment and
+midspan deflection (the largest of the three, so each limit state is covered):
+
+    R  = wL/2 + P          = 35.677/12 x 69.3125/2 + 325.73               = 428.77 lb
+    M  = wL^2/8 + P a      = 1,785.4 + 325.73 x 7.96875                  = 4,381 lb-in (365 lb-ft)
+    equivalent uniform:    shear 2R/L = 148.5 plf, moment 8M/L^2 = 87.5 plf, deflection 96.8 plf
+    148.5 plf against the table's 1,582 plf at 6'-0": d/c 0.094   (`structural.rim_header`, "header")
+
+An independent cross-check from the design values, not the table (ESR-1387 Table 1, 1.3E, joist/beam
+orientation: E 1.3e6, Fb 1,700 x C_v (12/d)^0.092 = 1,701 psi, Fv 425 psi; b = 2.5", d = 11.875",
+S = 58.76 in^3):
 
 | Limit state | Demand | Capacity | d/c |
 |---|---|---|---|
-| Bending | 47.88 x 5.776² / 8 = **199.66 lb-ft** | 2600 x 1.00142 x (3.5 x 11.875² / 6 = 82.26) / 12 = **17,849 lb-ft** (p.4: 2 x 8,925 = 17,850) | 0.011 |
-| Shear | 47.88 x 5.776 / 2 = **138.27 lb** | 2/3 x 285 x 3.5 x 11.875 = **7,897 lb** (p.4: 2 x 3,950) | **0.018** |
-| Deflection, live | 270 x 28.54 x 5.776⁴ / (2e6 x 3.5 x 11.875³) = 0.000732, + 28.8 x 28.54 x 5.776² / (2e6 x 3.5 x 11.875) = 0.000330: **0.00106"** | L/360 = 69.3125 / 360 = **0.1925"** | 0.006 |
+| Bending | 4,381 lb-in | 1,701 x 58.76 = 99,982 lb-in | 0.044 |
+| Shear (end reaction) | 428.8 lb | 2/3 x 425 x 2.5 x 11.875 = 8,411 lb | 0.051 |
+| Deflection | strip 0.0029" + seats 0.0068" = 0.0096" | L/240 = 0.289" | 0.033 |
+| Bearing | 428.8 / (6 x 2.5) = 28.6 psi | 360 psi (TJ-8000 p.5, D7672) | 0.079 |
 
-Governs: shear, d/c 0.018. The 2-ply is sized by the bearing it must give the stacked jambs,
-not by this span.
+The same design values, as a uniform load at 6'-0": 1,852 plf in moment, 2,804 plf in shear, against
+the table's **1,582**: the table is the more conservative number, so the equivalent-uniform read is on
+the safe side. ForteWEB takes the vertical loads only (not the couple), so it is the closure for the
+table's uniform-load condition and nothing more; its input is retained (see the top).
 
-## 4. Not graded here
+## 4. Fastening and seat load introduction (graded apart from the header)
 
-- Dry-use service (the band is inside the envelope; TJ-9000 p.5: Microllam is for dry use).
-- Lateral support: the subfloor sheathes the top edge.
-- The plies' nails into the edge rim are not billed as a separate line.
+- **Ply fastening**, TJ-8000 p.7 (2-ply connections), 1 1/4" plies, **top load**: 10d (0.128"-0.131" x
+  3") nails in **3 rows at 12" o.c., one face**, clinched. Authored exactly that (`PlyFastening`).
+- **Seat load into the ply, side load**, p.7: the same nails, 3 rows, **560 plf on either outside
+  member**. The seat's reaction over its own 10" (the whole of it taken as reaching the ply):
+  325.73 / (10/12) = **390.9 plf, 0.698**.
+- **The couple**: 325.73 x 7.25" = 2,361.6 lb-in per seat, carried by the seat screws in
+  tension and the sheathing in compression, as `exterior_door_sill_beam.md` §3 grades it: NDS 12.4.1
+  combined lateral and withdrawal, **0.965** on the G 0.42 column. `structural.rim_header` reads it
+  from the door's own placement record and does not redo it.
 
-## 5. The stacked jambs, by hand (2026-11-13; graded since BASIS_VERSION 2)
+## 5. The stacked jambs, and the jamb pack down to the foundation (F-09)
 
-**Takedown, per seat.** One tributary length along the wall line, the same on every storey
-the stack climbs: half the RO plus the seat (the seated pack is 4 x 1 1/2" = 6", and the
-openings above share this RO and centre):
+**Takedown, per seat**, as before (stated 15 psf wall, 50 psf floors, the gable's roof strip over half a
+24" rafter spacing; `engineering/jamb_takedown.py`): L = 63.3125 / 2 + 6.0 = 37.65625" = 3.13802 ft
+and the west seat governs at **1,708.35 lb**, of which 1,171.13 lb is above `FS-S-EAST`. The header's own
+end reaction is **428.77 lb** (§3), so **2,137.1 lb** goes down through the band into the host
+wall's pack (it was 1,846.6 lb with the strip alone; the seats are the difference).
 
-    L = 63.3125 / 2 + 6.0 = 37.65625" = 3.13802 ft
+Bearing, NDS §3.10.2 (no C_D, C_b 1.0), SPF plates Fc-perp 425 psi, the rim's own 360 psi (TJ-8000
+p.5 note 2, ASTM D7672):
 
-Wall dead load is a stated **15 psf** on the framed height at the pack's outer face (the
-truss wall: 1/2" gypsum 2.2, 2x6 at 16" 1.6, 1/2" CDX 1.5, 4" ccSPF at 2 pcf 0.7, blocks and
-girts 1.5, 24 ga panel 1.3, batts 0.4, trim/fasteners 0.8 = 10.0 psf, carried at 15). Glass
-in the openings is lighter and is not deducted. Floors at 40 + 10 psf over half the way to
-the next joist line plus the deck outboard of it (FS-S-EAST and FS-ATTIC both carry an extra
-line at y = 9 1/2" and an edge rim at y = 1 1/8", so their edge strips are 1.125 + 8.375 / 2 =
-**5.3125" = 0.44271 ft**). The gable carries half of RF-HOUSE's 24" rafter
-spacing at 15 dead + 35 snow (`loads.ROOF_TOTAL_LOAD_PSF`, Pg 50 psf).
-
-West seat (the gable is tallest there; W-A-S3 frames 362.355 - 240.75 = 121.605" at x =
-218.34"):
-
-| Term | Working | lb |
-|---|---|---|
-| W-A-S3 gable | 15 x (121.605 / 12) x 3.13802 | 477.00 |
-| RF-HOUSE gable strip | 50 x 1.0 x 3.13802 | 156.90 |
-| FS-ATTIC edge strip | 50 x 0.44271 x 3.13802 | 69.46 |
-| W-S-S2 | 15 x (119.25 / 12) x 3.13802 | 467.76 |
-| FS-S-EAST edge strip | 50 x 0.44271 x 3.13802 | 69.46 |
-| W-M-S2 | 15 x (119.25 / 12) x 3.13802 | 467.76 |
-| **On the seat** | | **1,708.35** |
-| of which above FS-S-EAST | the first four | 1,171.13 |
-
-The east seat's gable frames 83.95": 1,560.6 lb on that seat. The west governs.
-
-**Bearing, NDS §3.10.2** (no C_D; C_b taken as 1.0). Sawn plates are SPF at Fc-perp
-**425 psi**, dry (TJ-9000's own bearing tables use 425 for sawn plates); Microllam is 750 psi
-(TJ-9000 p.5, not increased for duration). A plate on an LVL is governed by the plate.
-
-| Interface | Demand | Area | Stress | Capacity | d/c |
-|---|---|---|---|---|---|
-| D-M-PORCH pack on W-M-S2's plate | 1,708.35 | 6.0 x 5.5 = 33.0 | 51.77 | 425 | 0.122 |
-| W-M-S2's plate on the two plies | 1,708.35 | 6.0 x 3.5 = 21.0 | 81.35 | 425 | 0.191 |
-| plies on W-B-S3-FR's plates | 1,708.35 + 138.27 = 1,846.62 | 21.0 | 87.93 | 425 | **0.207** |
-| D-S-BALCONY pack on FS-S-EAST's edge rim | 1,171.13 | 6.0 x 1.25 = 7.5 | 156.15 | 425 | 0.367 |
-
-138.27 lb is the band's own end reaction (§3).
-
-**The load crosses FS-S-EAST on its LSL edge rim (2026-11-18).** The gable-end edge lines are
-1 1/4" x 11 7/8" TimberStrand LSL rim boards now, not TJI 230s, so TJ-4000 detail CS's squash
-plies (two 1 3/4" Microllam plies under each D-S-BALCONY pack, 2026-11-13) are gone: the rim is
-rated for vertical load. Each rim lies flush with its wall's stud face (y 0.5"..1.75"), wholly
-under the plates. Read off Weyerhaeuser TJ-8000 (March 2025; ESR-1387 Table 4), 1 1/4" 1.3E x
-11 7/8":
-
-| Read | Demand | Published | d/c |
+| Interface | Demand | Capacity | d/c |
 |---|---|---|---|
-| concentrated vertical load (p.5; needs 4 1/2" of bearing, the pack gives 6") | 1,171.13 lb | 3,760 lb | 0.311 |
-| vertical load, the pack over its 6" seat (p.5) | 1,171.13 / 0.5 ft = 2,342.25 plf | 5,400 plf | **0.434** |
-| the rim over the 63 5/16" RO as a 1-ply header, uniform only (p.6) | the whole strip, 47.88 plf (§2) | 792 plf (the 6'-0" row: p.6 reads the span c-c of bearing, 5.776 ft; 4 1/2" end bearing, 6" given) | 0.060 |
+| `D-M-PORCH` pack on `W-M-S2`'s plate | 1,708.35 / (6 x 5.5) = 51.8 psi | 425 | 0.122 |
+| `W-M-S2`'s plate on the rim and its ply | 1,708.35 / (6 x 2.5) = 113.9 psi | min(425, 360) | 0.316 |
+| rim and ply on `W-B-S3-FR`'s plates | 2,137.1 / (6 x 2.5) = 142.5 psi | 360 | 0.396 |
+| rim, concentrated vertical load under the pack (TJ-8000 p.5; **the ply behind is not credited**) | 1,708 lb | 3,760 lb | 0.454 |
+| rim, vertical load under the pack (p.5) | 1,708 / 0.5 ft = 3,417 plf | 5,400 plf | **0.633** |
+| the pack's 4 studs on the plate under them (F-09) | 2,137.1 / (4 x 1.5 x 5.5) = 64.8 psi | 425 (the PT sill taken at SPF's value) | 0.152 |
+| `D-S-BALCONY` pack on `FS-S-EAST`'s edge rim | 1,171.13 lb: 0.311 concentrated, 2,342 plf **0.434** | 3,760 lb, 5,400 plf | |
 
-The header table assumes uniform load: D-M-PORCH's packs stand over the seats, not the span (§2),
-and no joist hangs on this rim (it runs parallel to them), so its face-mount-hanger note is moot.
+**IRC R602.7.5** (read on UpCodes, MN 2018, 2026-11-23): headers are supported at each end by one or more
+jack studs (provided: 2) and Table R602.7.5's full-height studs each end: for a header span up to 6 ft,
+**2 at less than 140 mph Exposure B, 1 at 115 mph or less Exposure B** (the site is V_ult 115, Exposure B:
+1; provided: 2 kings each end).
 
-**Governs: the edge rim under the pack, d/c 0.434** (it was the plies on W-B-S3-FR's plates,
-0.204). The rim over the opening is a companion to the plies, not counted in them; the plies
-still carry the whole strip in §3.
+**Governs: the rim under the pack, d/c 0.633** (it was 0.434 with a 1,171 lb pack on FS-S-EAST's rim; the
+rim over `D-B-SUNKEN` takes the whole 1,708 lb). It is a published table row, so it is a prescriptive
+read and not a seal. Under the 0.85 cost-review trigger (decision 30).
 
-**Published reads, not calculations:**
+## Not graded here
 
-- Ply fastening, TJ-9000 (July 2026) p.30, *multiple-member connections for top-loaded
-  beams*, 1 3/4" pieces, 2 plies: 10d (0.128-0.131 x 3") nails in **3 rows at 12" o.c.** from
-  one face (an extra row only at depths of 14" or more), or 12d-16d in 2 rows at 12", or
-  SDS/WS screws in 2 rows at 24". The load enters evenly across the plies' width through the
-  subfloor and the wall plate, which is the table's condition. Authored: 10d, 3 rows at 12".
-- No filler since 2026-11-18: TJ-4000 p.28's *Filler and Backer Block Sizes* (2x6 + 1/2"
-  sheathing for a TJI 230) fills an I-joist's web recess; the LSL rim is solid, so the plies
-  nail straight to its face.
+Dry-use service (the band is inside the envelope; TJ-8000 p.5: dry-use only). Lateral support: the
+subfloor sheathes the top edge. The ply's nails are not billed as a separate line.
 
 ## Sources
 
-- Weyerhaeuser **TJ-9000** *Trus Joist Beam, Header and Column Specifier's Guide*, July 2026,
-  pp.4-5 (Allowable Design Properties; Design Stresses), p.30 (multiple-member connections
-  for top-loaded beams).
-- Weyerhaeuser **TJ-4000** *TJI Joist Specifier's Guide*, July 2025, p.27 detail CS (squash
-  blocks), p.28 (filler and backer block sizes) — history since the LSL rim.
-- Weyerhaeuser **TJ-8000** *Trus Joist Rim Board Specifier's Guide*, March 2025, p.5 (vertical
-  load transfer at bearing), p.6 (1-ply rim board headers, floor 100%); ICC-ES **ESR-1387**
-  Table 4 (the same 5,400 plf / 3,760 lb for 1 1/4" 1.3E).
-- AWC NDS 2018 §3.10.2 (compression perpendicular to grain).
-- IRC 2018 R301.5 (floor loads), Table R301.7 (L/360).
+- Weyerhaeuser **TJ-8000** *Trus Joist Rim Board Specifier's Guide*, March 2025 (read 2026-11-23,
+  `weyerhaeuser.com/woodproducts/document-library/tj-8000/`): p.5 header application and allowable
+  vertical loads (note 2: 360 psi), p.6 1-ply and how-to-use (4 1/2" bearing, neglect header weight,
+  "use ForteWEB ... for loading conditions not shown"), p.7 2-ply table and connections.
+- ICC-ES **ESR-1387** Table 1 (TimberStrand 1.3E, joist/beam orientation) for the cross-check.
+- IRC 2018 R602.7.5, Table R602.7.5, R301.5, Table R301.7 (MN, UpCodes).
+- AWC NDS 2018 §3.10.2. `notes/exterior_door_sill_beam.md` §3 (the seat reactions).

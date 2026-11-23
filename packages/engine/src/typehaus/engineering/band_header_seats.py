@@ -1,207 +1,218 @@
-"""The band header's seats and connections (``band_header``, BASIS_VERSION 2).
+"""The rim header's fastening, seats and jamb bearing (``structural.rim_header``).
 
-The stacked jambs' load is taken down by ``jamb_takedown`` and graded in bearing (NDS
-§3.10.2, no C_D) at every interface it crosses; the plies' fastening and the filler to the
-I-joist beside them are published reads (Weyerhaeuser TJ-9000 p.30, TJ-4000 p.28); an LSL edge
-rim, under a stacked pack or beside the plies over the opening, reads TJ-8000's own rows.
-Oracle: ``houses/catlin/notes/sunken_door_band_header.md`` §5.
+Separate grades, each a table read or stated arithmetic (``band_header`` carries the header):
+
+* **Ply fastening**, TJ-8000 (March 2025) p.7, 1 1/4" plies, 10d (0.128-0.131" x 3"), 3 rows at
+  12" o.c. from one face: TOP load for the floor over the header, and SIDE load (560 plf on
+  either outside member) for what a door seat puts on the rim's face.
+* **Seat load introduction**: each seat's reaction over its own length against the side row,
+  and the screws' own combined-load grade (the door's placement record, NDS 12.4.1).
+* **Jamb bearing** from the band down to the foundation (NDS §3.10.2 Fc-perp, SPF 425 psi, C_b
+  1.0): the stacked pack on the plate above, that plate on the rim and its ply, the rim and ply
+  on the host plates, the rim's TJ-8000 p.5 vertical rows under the pack (rim alone, the ply
+  behind not credited), and the pack's own studs on the plate under them.
+* **IRC R602.7.5**: full-height studs at each end of the header, and a jack stud each end.
+
+Oracle: ``houses/catlin/notes/sunken_door_band_header.md`` §4-§6.
 """
 
 from __future__ import annotations
 
+from typehaus.engineering.band_header import RIM_DEPTH_IN, RIM_THICKNESS_IN, SeatLoad
 from typehaus.engineering.item import LimitState, Quantity
 from typehaus.engineering.jamb_takedown import GABLE_ROOF_STRIP_FT, WALL_DEAD_PSF, seat_takedown
-from typehaus.library.rim_boards import MIN_BEARING_IN, TJ8000, header_row, rim_board
+from typehaus.library.rim_boards import MIN_BEARING_IN, TJ8000, rim_board
+from typehaus.resolve.band_headers import _frame
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import EDGE_RIM_PREFIX
 
 _IN = 0.0254
 #: Sawn plates (SPF), dry: NDS Supplement Table 4A; TJ-9000's own bearing tables use it too.
 SAWN_FC_PERP_PSI = 425.0
-#: TJ-9000 (July 2026) p.5, 2.0E Microllam beam; not increased for load duration.
-LVL_FC_PERP_PSI = 750.0
+#: TJ-8000 p.5 note 2: the rim's vertical load capacity is limited to 360 psi (ASTM D7672).
+RIM_BEARING_PSI = 360.0
 _NDS = "AWC NDS 2018 §3.10.2"
-_TJ9000 = "Weyerhaeuser TJ-9000 (July 2026)"
-_TJ4000 = "Weyerhaeuser TJ-4000 (July 2025)"
-#: TJ-9000 p.30, multiple-member connections for top-loaded beams, 1 3/4" pieces:
-#: plies -> fastener -> (rows, max o.c. in, faces). Nails take one more row at d >= 14".
-_TOP_LOADED = {
-    2: {"10d": (3, 12.0, "one"), "12d-16d": (2, 12.0, "one"), "screw": (2, 24.0, "one")},
-    3: {"10d": (3, 12.0, "both"), "12d-16d": (2, 12.0, "both"), "screw": (2, 24.0, "both")},
-}
-#: TJ-4000 p.28, filler blocks for the 9 1/2"-11 7/8" and 14"-16" depths: series ->
-#: (shallow stock, deep stock); 15 nails (0.131" x 3") for every series listed here.
-_FILLER = {"110": ("2x6", "2x8"), "210": ("2x6 + 3/8\" sheathing", "2x8 + 3/8\" sheathing"),
-           "230": ("2x6 + 1/2\" sheathing", "2x8 + 1/2\" sheathing"),
-           "360": ("2x6 + 1/2\" sheathing", "2x8 + 1/2\" sheathing")}
-_FILLER_NAILS = 15
+_VERTICALS = ("stud", "king", "jack", "cripple")
+_STUD_REACH_M = 2.75 * _IN
+#: TJ-8000 p.7, 2-ply connection: (1 1/4" plies, 10d) top load rows and o.c.; side load plf by rows.
+TOP_ROWS, TOP_SPACING_IN = 3, 12.0
+SIDE_PLF = {2: 370.0, 3: 560.0}
+_R602_7_5 = ((6.0, 2, 1),)  # (header span ft, full-height studs: <140 mph Exp B, <=115 mph Exp B)
 
 
-def seat_states(ctx, header, wall, floor, seated, shear_lb, along, frame):
-    """``(states, inputs, missing, notes)`` for the seats under the stacked jambs."""
+def loads_on_band(ctx, wall, header):
+    """``(inside, seated)``: members of walls standing on the band, inside the clear span or on
+    a seat (a seat's load bypasses the span)."""
+    _u, along, across = _frame(wall.axis)
+    faces = [across(p.p0) + s * cross_section(p.profile).width_m / 2 for p in header.plies
+             for s in (-1, 1)]
+    lo, hi = min(faces) - _STUD_REACH_M, max(faces) + _STUD_REACH_M
+    top = max(p.z1_m for p in header.plies)
+    inside, seated = [], []
+    for other in ctx.model.walls:
+        if other.is_foundation or abs(other.frame_base_z_m - top) > 2 * _IN:
+            continue
+        for member in other.members:
+            if (member.category not in _VERTICALS or not lo <= across(member.p0) <= hi
+                    or member.z0_m > other.frame_base_z_m + 2 * _IN):
+                continue
+            station = along(member.p0)
+            if header.ro_lo + 1e-4 < station < header.ro_hi - 1e-4:
+                inside.append(f"{other.tag}:{member.child_key}")
+            elif header.pack_lo - 1e-4 <= station <= header.pack_hi + 1e-4:
+                seated.append(f"{other.tag}:{member.child_key}")
+    return inside, seated
+
+
+def fastening_states(ctx, header, floor_tag, seats: list[SeatLoad]) -> tuple[list, list[str]]:
+    """``(states, missing)``: the ply fastening, top and side, and the seat's nailing share."""
+    spec = next((f for f in ctx.plan.all_elements() if getattr(f, "tag", None) == floor_tag),
+                None)
+    fastening = next((r.fastening for r in getattr(spec, "reinforcements", ()) or ()
+                      if r.fastening is not None and r.member and "rim" in r.member), None)
+    if fastening is None or fastening.fastener != "10d":
+        return [], [f"the plies' 10d fastening per {TJ8000} p.7 (1 1/4\" plies)"]
+    states = [
+        LimitState("ply fastening rows", TOP_ROWS, fastening.rows, "rows",
+                   f"{TJ8000} p.7, top load, 1 1/4\" plies: 10d in {TOP_ROWS} rows, one face",
+                   is_detailing=True),
+        LimitState("ply fastening spacing", fastening.spacing.meters / _IN, TOP_SPACING_IN,
+                   "in o.c.", f"{TJ8000} p.7: {TOP_SPACING_IN:g}\" o.c. maximum",
+                   is_detailing=True)]
+    side = SIDE_PLF.get(fastening.rows)
+    if side and seats:
+        worst = max(seats, key=lambda s: s.lb)
+        states.append(LimitState(
+            "seat load into the ply, nailing (side load)", worst.lb / (worst.nailing_in / 12.0),
+            side, "plf", f"{TJ8000} p.7, side load, 10d, {fastening.rows} rows: {side:g} plf on "
+                         f"either outside member; the whole seat reaction over its "
+                         f"{worst.nailing_in:g}\" is taken as reaching the ply"))
+    return states, []
+
+
+def seat_screw_state(seats: list[SeatLoad]) -> list:
+    """The door's own combined lateral + withdrawal grade at its seat screws, read not redone."""
+    rot = [s.rotation_dcr for s in seats if s.rotation_dcr is not None]
+    if not rot:
+        return []
+    return [LimitState("seat screws, combined lateral and withdrawal", max(rot), 1.0, "d/c",
+                       "the door's placement record (notes/exterior_door_sill_beam.md §3, "
+                       "NDS 12.4.1, ESR-1078 §4.1.6)")]
+
+
+def stud_states(ctx, header, wall, span_ft: float) -> tuple[list, list[str]]:
+    """IRC R602.7.5: the full-height studs each end, and the jack(s) holding the header."""
+    from typehaus import wind
+
+    basis = wind.wind_basis(ctx.plan.project.site)
+    if basis is None:
+        return [], ["the site's ultimate design wind speed and exposure for IRC Table R602.7.5"]
+    row = next((r for r in _R602_7_5 if r[0] >= span_ft - 1e-9), None)
+    if row is None:
+        return [], [f"IRC Table R602.7.5 past {_R602_7_5[-1][0]:g} ft"]
+    mild = basis.speed_mph <= 115 and str(basis.exposure).upper().startswith("B")
+    need = row[2] if mild else row[1]
+    _u, along, _across = _frame(wall.axis)
+    states = []
+    for name, lo, hi in (("west", header.pack_lo, header.ro_lo), ("east", header.ro_hi,
+                                                                  header.pack_hi)):
+        kings = jacks = 0
+        for m in wall.members:
+            if m.opening_tag == header.door and lo - 1e-4 <= along(m.p0) <= hi + 1e-4:
+                kings += m.category == "king"
+                jacks += m.category == "jack"
+        states += [
+            LimitState(f"full-height studs, {name} end", need, kings, "studs",
+                       f"IRC R602.7.5, Table R602.7.5: {need} at {basis.speed_mph:g} mph "
+                       f"Exposure {basis.exposure}, header span up to {row[0]:g} ft",
+                       is_detailing=True),
+            LimitState(f"jack stud holding the header, {name} end", 1, jacks, "studs",
+                       "IRC R602.7.5: one or more jack studs", is_detailing=True)]
+    return states, []
+
+
+def jamb_states(ctx, header, wall, floor, seated, end_reaction_lb, along, frame):
+    """``(states, inputs, missing, notes)`` for the stacked jamb under the heavier seat."""
     states, inputs, missing, notes = [], [], [], []
     if not seated:
         return states, inputs, missing, ["no framing above stands on the seats"]
     seated_wall = ctx.model.wall(seated[0].split(":")[0])
     king = next(m for m in seated_wall.members if m.child_key == seated[0].split(":")[1])
     wall_depth = cross_section(king.profile).depth_m
-    ply_width = sum(cross_section(p.profile).width_m for p in header.plies)
-    seats = ((header.pack_lo, header.ro_lo, header.pack_lo),
-             (header.ro_hi, header.pack_hi, header.pack_hi))
+    band_in = (len(header.plies) + 1) * RIM_THICKNESS_IN
     best = None
-    for lo, hi, outer in seats:
-        point = _project(seated_wall, frame(outer))
+    for lo, hi, outer in ((header.pack_lo, header.ro_lo, header.pack_lo),
+                          (header.ro_hi, header.pack_hi, header.pack_hi)):
         trib = (header.ro_hi - header.ro_lo) / 2 + (hi - lo)
-        terms, crossings = seat_takedown(ctx.plan, ctx.model, seated_wall, point, along,
+        terms, crossings = seat_takedown(ctx.plan, ctx.model, seated_wall,
+                                         _project(seated_wall, frame(outer)), along,
                                          (lo, hi), trib)
         total = sum(t.lb for t in terms)
         if best is None or total > best[0]:
             best = (total, hi - lo, terms, crossings, trib)
     total, seat, terms, crossings, trib = best
     seat_in = seat / _IN
-    pack_area = seat_in * wall_depth / _IN
-    ply_area = seat_in * ply_width / _IN
+    cap = min(SAWN_FC_PERP_PSI, RIM_BEARING_PSI)
+    below = total + end_reaction_lb
+    rim = rim_board(RIM_THICKNESS_IN, RIM_DEPTH_IN)
     states += [
-        LimitState(name="bearing, jamb pack on the wall plate above", demand=total / pack_area,
-                   capacity=SAWN_FC_PERP_PSI, unit="psi",
-                   citation=f"{_NDS}: Fc-perp {SAWN_FC_PERP_PSI:.0f} psi SPF plate, C_b 1.0"),
-        LimitState(name="bearing, wall plate on the plies", demand=total / ply_area,
-                   capacity=min(SAWN_FC_PERP_PSI, LVL_FC_PERP_PSI), unit="psi",
-                   citation=f"{_NDS}: the plate ({SAWN_FC_PERP_PSI:.0f} psi) governs the "
-                            f"plies ({_TJ9000} p.5, {LVL_FC_PERP_PSI:.0f} psi)"),
-        LimitState(name="bearing, plies on the seat's plates",
-                   demand=(total + shear_lb) / ply_area, capacity=SAWN_FC_PERP_PSI, unit="psi",
-                   citation=f"{_NDS}: Fc-perp {SAWN_FC_PERP_PSI:.0f} psi SPF plate, C_b 1.0"),
-    ]
+        LimitState("bearing, jamb pack on the wall plate above",
+                   total / (seat_in * wall_depth / _IN), SAWN_FC_PERP_PSI, "psi",
+                   f"{_NDS}: Fc-perp {SAWN_FC_PERP_PSI:.0f} psi SPF plate, C_b 1.0"),
+        LimitState("bearing, wall plate on the rim and its ply", total / (seat_in * band_in),
+                   cap, "psi", f"{_NDS}: the plate ({SAWN_FC_PERP_PSI:.0f} psi) and "
+                               f"{TJ8000} p.5 ({RIM_BEARING_PSI:.0f} psi, D7672) govern"),
+        LimitState("bearing, rim and ply on the host wall's plates", below / (seat_in * band_in),
+                   cap, "psi", f"{_NDS}; {TJ8000} p.5 note 2: {cap:.0f} psi")]
+    if rim is not None and seat_in >= MIN_BEARING_IN - 1e-6:
+        states += [
+            LimitState("rim, concentrated vertical load under the pack", total,
+                       rim.concentrated_lb, "lb", rim.source),
+            LimitState("rim, vertical load under the pack", total / (seat_in / 12.0),
+                       rim.vertical_plf, "plf",
+                       rim.source + "; the ply behind is not credited")]
+    else:
+        missing.append(f"a published vertical capacity for the rim under a {seat_in:.2f}\" pack "
+                       f"({TJ8000} p.5 wants {MIN_BEARING_IN:g}\" of bearing)")
+    packs = sum(1 for m in wall.members if m.opening_tag == header.door
+                and m.category in ("king", "jack")
+                and header.pack_lo - 1e-4 <= along_of(wall, m) <= header.ro_lo + 1e-4)
+    if packs:
+        states.append(LimitState(
+            "bearing, jamb pack studs on the plate under them", below
+            / (packs * 1.5 * (wall_depth / _IN)), SAWN_FC_PERP_PSI, "psi",
+            f"{_NDS}: {packs} studs of {wall_depth / _IN:g}\" x 1 1/2\" on the plate, "
+            f"Fc-perp {SAWN_FC_PERP_PSI:.0f} psi, C_b 1.0 (the PT sill is taken at SPF's value)"))
     for crossing in crossings:
         if crossing.solid_width_m <= 0:
-            missing.append(f"squash blocks under the stacked jamb packs in {crossing.floor} "
-                           f"({_TJ4000} p.27 detail CS: a TJI loaded from above)")
+            missing.append(f"squash blocks under the stacked jamb packs in {crossing.floor}")
             continue
         area = seat_in * min(crossing.solid_width_m, wall_depth) / _IN
         rims = [m for m in crossing.members if m.startswith(EDGE_RIM_PREFIX)]
-        solid = "edge rim" if rims else "squash plies"
         states.append(LimitState(
-            name=f"bearing, upper jamb pack on {crossing.floor}'s {solid}",
-            demand=crossing.above_lb / area, capacity=SAWN_FC_PERP_PSI, unit="psi",
-            citation=(f"{_NDS}: the SPF plate on {', '.join(rims)}" if rims else
-                      f"{_NDS}; {_TJ4000} p.27 detail CS ({', '.join(crossing.members)})")))
-        if rims:
-            row = _rim_row(floor_members(ctx, crossing.floor, rims[0]))
-            if row is None or seat_in < MIN_BEARING_IN - 1e-6:
-                missing.append(f"a published vertical capacity for {crossing.floor}'s edge rim"
-                               f" (a {seat_in:.2f}\" pack; {TJ8000} p.5 wants "
-                               f"{MIN_BEARING_IN:g}\" of bearing)")
-                continue
+            f"bearing, upper jamb pack on {crossing.floor}'s "
+            f"{'edge rim' if rims else 'squash plies'}", crossing.above_lb / area,
+            SAWN_FC_PERP_PSI, "psi", f"{_NDS}: the SPF plate on {', '.join(crossing.members)}"))
+        row = rim_board(RIM_THICKNESS_IN, RIM_DEPTH_IN) if rims else None
+        if rims and row is not None and seat_in >= MIN_BEARING_IN - 1e-6:
             states += [
-                LimitState(name=f"{crossing.floor}'s edge rim, concentrated vertical load",
-                           demand=crossing.above_lb, capacity=row.concentrated_lb, unit="lb",
-                           citation=row.source),
-                LimitState(name=f"{crossing.floor}'s edge rim, vertical load under the pack",
-                           demand=crossing.above_lb / (seat_in / 12.0),
-                           capacity=row.vertical_plf, unit="plf", citation=row.source)]
+                LimitState(f"{crossing.floor}'s edge rim, concentrated vertical load",
+                           crossing.above_lb, row.concentrated_lb, "lb", row.source),
+                LimitState(f"{crossing.floor}'s edge rim, vertical load under the pack",
+                           crossing.above_lb / (seat_in / 12.0), row.vertical_plf, "plf",
+                           row.source)]
     inputs += [Quantity("wall_dead", WALL_DEAD_PSF, "psf", 0.1),
                Quantity("gable_roof_strip", GABLE_ROOF_STRIP_FT, "ft", 0.01),
                Quantity("jamb_tributary", trib / _IN, "in", 0.01),
-               Quantity("seat_load", total, "lb", 1.0),
-               Quantity("fc_perp_plate", SAWN_FC_PERP_PSI, "psi", 1.0)]
+               Quantity("seat_load", total, "lb", 1.0)]
     notes.append("stacked jamb takedown on the governing seat: "
                  + "; ".join(f"{t.label} {t.lb:,.1f} lb" for t in terms))
     return states, inputs, missing, notes
 
 
-def connection_states(ctx, header, floor, across, w_total_plf, span_ft):
-    """``(states, missing)``: the ply fastening and the filler (or the edge rim beside the
-    plies, over the opening as a 1-ply header on the whole strip), read against the maker."""
-    states, missing = [], []
-    reinforcement = _authored(ctx, header)
-    plies = len(header.plies)
-    depth_in = cross_section(header.plies[0].profile).depth_m / _IN
-    row = _TOP_LOADED.get(plies, {})
-    fastening = reinforcement.fastening if reinforcement else None
-    if fastening is None or fastening.fastener not in row:
-        missing.append(f"the plies' fastening per {_TJ9000} p.30 (top-loaded)")
-    else:
-        rows, spacing, faces = row[fastening.fastener]
-        rows += 1 if depth_in >= 14 and fastening.fastener != "screw" else 0
-        provided = fastening.rows * (1.0 if faces == "one" or fastening.faces == "both" else 0.5)
-        states += [
-            LimitState(name="ply fastening rows", demand=rows, capacity=provided, unit="rows",
-                       citation=f"{_TJ9000} p.30: {plies} plies of 1 3/4\", "
-                                f"{fastening.fastener} in {rows} rows, {faces} face",
-                       is_detailing=True),
-            LimitState(name="ply fastening spacing", demand=fastening.spacing.meters / _IN,
-                       capacity=spacing, unit="in o.c.",
-                       citation=f"{_TJ9000} p.30: {spacing:g}\" o.c. maximum",
-                       is_detailing=True)]
-    rim = _edge_rim_beside(floor, header, across)
-    if rim is not None:
-        row = _rim_row(rim)
-        seat_in = min(header.ro_lo - header.pack_lo, header.pack_hi - header.ro_hi) / _IN
-        read = header_row(row, span_ft) if row is not None else None
-        if read is None or seat_in < MIN_BEARING_IN - 1e-6:
-            missing.append(f"a {TJ8000} header row for {rim.profile} over {span_ft:.2f} ft "
-                           f"on {MIN_BEARING_IN:g}\" seats")
-        else:
-            states.append(LimitState(
-                name="edge rim over the opening, 1-ply header", demand=w_total_plf,
-                capacity=read[1], unit="plf",
-                citation=f"{row.source}: the {read[0]:g} ft row (c-c of bearing), uniform "
-                         "load only"))
-    beside = _ijoist_beside(floor, header, across)
-    if beside is not None:
-        series = beside.profile.split("TJI")[-1].strip()
-        stocks = _FILLER.get(series)
-        want = stocks[0 if cross_section(beside.profile).depth_m / _IN <= 11.875 + 1e-6
-                      else 1] if stocks else None
-        filler = reinforcement.filler if reinforcement else None
-        if want is None or filler is None or filler.stock != want:
-            missing.append(f"the filler to {beside.profile} beside the plies per {_TJ4000} "
-                           f"p.28 ({want or 'no published row'})")
-        else:
-            states.append(LimitState(
-                name="filler block nails", demand=_FILLER_NAILS, capacity=filler.nails,
-                unit="nails", citation=f"{_TJ4000} p.28: {want}, ({_FILLER_NAILS}) "
-                                       "0.131\" x 3\"", is_detailing=True))
-    return states, missing
-
-
-def _authored(ctx, header):
-    spec = next((f for f in ctx.plan.all_elements() if getattr(f, "tag", None) == header.floor),
-                None)
-    for reinforcement in getattr(spec, "reinforcements", ()) or ():
-        if reinforcement.fastening is not None or reinforcement.filler is not None:
-            return reinforcement
-    return None
-
-
-def _ijoist_beside(floor, header, across):
-    faces = [across(p.p0) for p in header.plies]
-    for member in floor.members:
-        if member.category == "joist" and "TJI" in member.profile and \
-                min(abs(across(member.p0) - f) for f in faces) < 3 * _IN and \
-                abs(across(member.p0) - across(member.p1)) < 1e-6:
-            return member
-    return None
-
-
-def _edge_rim_beside(floor, header, across):
-    faces = [across(p.p0) for p in header.plies]
-    for member in floor.members:
-        if member.child_key.startswith(EDGE_RIM_PREFIX) and \
-                min(abs(across(member.p0) - f) for f in faces) < 3 * _IN:
-            return member
-    return None
-
-
-def _rim_row(member):
-    section = cross_section(member.profile)
-    return rim_board(section.width_m / _IN, section.depth_m / _IN)
-
-
-def floor_members(ctx, floor_tag, key):
-    floor = next(f for f in ctx.model.floors if f.tag == floor_tag)
-    return next(m for m in floor.members if m.child_key == key)
+def along_of(wall, member) -> float:
+    _u, along, _across = _frame(wall.axis)
+    return along(member.p0)
 
 
 def _project(wall, point):
