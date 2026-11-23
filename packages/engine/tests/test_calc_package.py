@@ -440,7 +440,10 @@ def test_draft_gate_opens_but_sealed_gate_still_requires_the_register(catlin_eng
 
 
 #: The kinds that show their working (review E-02); the LA-fill lanes add theirs here.
-WORKED_KINDS = ("roof_beam", "glulam_beam", "column_head_joint")
+WORKED_KINDS = (
+    "roof_beam", "glulam_beam", "column_head_joint",
+    "deck_tie",
+)
 
 
 def test_a_worked_kind_shows_the_working_of_every_state_it_grades(catlin_engineering):

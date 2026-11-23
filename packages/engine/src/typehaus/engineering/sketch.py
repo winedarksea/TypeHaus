@@ -88,3 +88,65 @@ def pinned_post(*, title: str, length_ft: float, axial: str, lateral: str,
         "      //////  pier",
     ]
     return Figure(title, _fit(lines), caption)
+
+
+def tie_line(*, title: str, case: str, fx: str, fy: str, moment: str, centre: str,
+             joints: str, joint: str, forces: str, caption: str = "") -> Figure:
+    """A deck held to a wall by tie joints, in plan: the case's resultant force and torque
+    on a deck taken rigid, shared over the joints; the governing joint's share below."""
+    lines = [
+        "  plan view, x across, y up the page; " + case,
+        "",
+        "            F_y = " + fy,
+        "               |",
+        "               v        torque M = " + moment,
+        "      +------------------------+   about " + centre,
+        "      |  deck, rigid in plan   | --> F_x = " + fx,
+        "      +--o-------o--------o----+",
+        "         ^       ^        ^   tie joints: " + joints,
+        "  wall ==========================  shared by the elastic method",
+        "",
+        "  governing joint: " + joint,
+        "    " + forces,
+    ]
+    return Figure(title, _fit(lines), caption)
+
+
+def wall_top_joint(*, title: str, axial: str, moment: str, shear: str, round_in: float,
+                   couple: str, base: str, caption: str = "") -> Figure:
+    """A round column fixed on a foundation-wall top: its factored loads, the dowel couple
+    across the joint, and the stem below."""
+    lines = [
+        "         P_u = " + axial,
+        "           |",
+        "           v",
+        "      M_u = " + moment + " (at the joint)",
+        "     [=========]   V_u = " + shear,
+        f"     [{num(round_in):>4} in. ]  -->",
+        "     [  round  ]",
+        "  ===+====+====+===  joint on the wall top: bearing C, dowels T",
+        "     T ^       v C   " + couple,
+        "  ###|          |###  stem below: plain concrete, spread at 45 deg",
+        "  ###|__________|###  " + base,
+        "  ########################  footing",
+    ]
+    return Figure(title, _fit(lines), caption)
+
+
+def fixed_column(*, title: str, height_ft: float, axial: str, wind: str, guard: str,
+                 base_moment: str, k: str, base: str, caption: str = "") -> Figure:
+    """A column fixed at its base and free at its head: the cantilever a moment column is."""
+    lines = [
+        "        | P_u = " + axial,
+        "        v",
+        "      [====]  head: free (no moment restrained), k = " + k,
+        "        ||",
+        "   -->  ||   wind, 1.0W: " + wind,
+        "   -->  ||   guard: " + guard,
+        "   -->  ||   H = " + num(height_ft) + " ft above the joint",
+        "        ||",
+        "        ||",
+        "      [====]  base: " + base,
+        "     (  M_u  )  base moment " + base_moment,
+    ]
+    return Figure(title, _fit(lines), caption)

@@ -1,17 +1,53 @@
 """Uplift at a column head for ``column_head_joint``: the roof q_h and a sealed deck.
 
-Split out of ``column_head_joint`` (file size); arithmetic unchanged.
+Split out of ``column_head_joint`` (file size); arithmetic unchanged. ``UpliftBuild`` carries
+the surrogate's own numbers to the sheet.
 """
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Any
 
 from typehaus.engineering.balcony_loads import CURTAIN_OWNER_BASIS
+from typehaus.engineering.item import Step, num
 from typehaus.engineering.registry import EngineeringContext
 
 
-def sealed_deck_uplift(ctx: EngineeringContext, pier: Any, notes: list[str]) -> float | None:
+@dataclass(frozen=True)
+class UpliftBuild:
+    """The surrogate's own numbers, so the sheet prints the build-up and not only the total."""
+
+    what: str          # "roof" or "sealed deck"
+    q_h: float         # velocity pressure at the height the pressure is taken, psf
+    wind_psf: float    # 0.6 q G C_f
+    dead_psf: float    # the dead load the uplift is relieved by (unfactored)
+    area_ft2: float
+    net: float         # (wind_psf - 0.6 dead_psf) x area, lb
+
+    def steps(self) -> tuple[Step, ...]:
+        from typehaus.wind import ASD_WIND_FACTOR
+        from typehaus.wind_tables import GUST_EFFECT_RIGID, MAX_VERIFIED_CASE_AB
+
+        net_psf = self.wind_psf - ASD_WIND_FACTOR * self.dead_psf
+        return (
+            Step("q_h", f"velocity pressure at the {self.what}'s top", self.q_h, "psf",
+              source="ASCE 7-16 eq. 26.10-1 at the site's wind basis"),
+            Step("p_up", "uplift pressure on a solid band, at the bound on any published "
+              "free-roof coefficient", self.wind_psf, "psf", "0.6 q_h G C_f",
+              f"{num(ASD_WIND_FACTOR)} x {num(self.q_h)} x {num(GUST_EFFECT_RIGID)} x "
+              f"{num(MAX_VERIFIED_CASE_AB)}",
+              "ASCE 7-16 §29.3 solid-sign C_f at its Case A/B ceiling; ASD 0.6"),
+            Step("p_dead", "dead load that holds it down (0.6D)", ASD_WIND_FACTOR * self.dead_psf,
+              "psf", "0.6 D", f"{num(ASD_WIND_FACTOR)} x {num(self.dead_psf)}"),
+            Step("A_trib", f"{self.what} area the column carries", self.area_ft2, "ft2"),
+            Step("U_net", "net uplift per unit area", net_psf, "psf", "p_up - p_dead",
+              f"{num(self.wind_psf)} - {num(ASD_WIND_FACTOR * self.dead_psf)}"),
+        )
+
+
+def sealed_deck_uplift(ctx: EngineeringContext, pier: Any, notes: list[str]
+                       ) -> tuple[float, UpliftBuild] | None:
     """0.6D + 0.6W uplift on a SEALED deck, ASD lb per column; ``None`` for an open-jointed one.
 
     ASCE 7-16 gives an open-jointed walking surface no uplift. A watertight plank (an aluminium
@@ -41,6 +77,7 @@ def sealed_deck_uplift(ctx: EngineeringContext, pier: Any, notes: list[str]) -> 
     up = asd_solid_band_psf(wind.q_h_psf)
     area = pier.statics_area_ft2 or pier.tributary_ft2
     uplift = (up - 0.6 * DECK_DEAD_LOAD_PSF) * area
+    build = UpliftBuild("sealed deck", wind.q_h_psf, up, DECK_DEAD_LOAD_PSF, area, uplift)
     notes.append(
         f"UPLIFT: this deck's plank ({plank}) is SEALED — the porch's roof — so ASCE 7-16's "
         f"no-uplift rule for an open-jointed surface does not hold. GRADED as an OPEN structure "
@@ -63,7 +100,7 @@ def sealed_deck_uplift(ctx: EngineeringContext, pier: Any, notes: list[str]) -> 
     notes.append(
         "OWNER BASIS, no internal pressure: the porch curtains are stowed in high wind, so the "
         "porch is OPEN and no GC_pi is taken under the sealed deck. " + CURTAIN_OWNER_BASIS)
-    return uplift
+    return uplift, build
 
 
 def roof_q_h(ctx: EngineeringContext, tag: str) -> float | None:

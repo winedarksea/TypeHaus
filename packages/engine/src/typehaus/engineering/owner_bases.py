@@ -41,3 +41,19 @@ def connector_reading(tie: str, source: str) -> StatedBasis | None:
         BasisKind.OWNER_READING, f"{tie}: the published row it is graded on", source,
         reopens_if="the maker's current catalog edition printing a different row",
         reference="owner decision 8")
+
+
+# --- deck_tie (LA-fill) ---------------------------------------------------------------------
+
+HL43_EAST_WEST = StatedBasis(
+    BasisKind.OWNER_ACCEPTED, "HL43HDG read east-west (heel vertical)",
+    "Owner (2026-11-23): the HL43 catalog values may be read for the as-installed direction. "
+    "Installed heel vertical, the force along the wall lies in the wall leg's plane, the "
+    "catalog's F1 case (Simpson C-C-2024 p. 303, HL43 row: uplift 1,275 lb and F1 1,445 lb, "
+    "DF/SP, C_D 1.6; one part per sense, footnote 6: lateral not doubled), graded wet "
+    "(C_M 0.70). The figure's F1 bears along the grain; here the garage leg's lags bear "
+    "across a vertical stud's grain, and that bearing may be materially lower than the row. "
+    "Nothing is credited across the wall: that direction is a tension tie's.",
+    reopens_if="lag bearing across the grain shown materially lower than the published F1, "
+               "or the maker publishing a row for this installation",
+    reference="owner decision, 2026-11-23 (north_entry_piers.md §10p)")
