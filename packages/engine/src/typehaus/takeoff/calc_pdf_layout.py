@@ -124,10 +124,10 @@ def _table(block: Table_, styles, width: float, link=None):  # type: ignore[no-u
                 "Helvetica-Bold" if header else "Helvetica")
             size = CODE_PT if mono else 7.4
             for word in part.split() or [""]:
-                # A plain word (a file name, say) may break mid-token if it must; an element
-                # tag or item id, which is a code span, may not.
+                # A body word that is not a code span (a file name, say) may break mid-token
+                # if it must; a header word, an element tag or an item id may not.
                 width = stringWidth(word, font, size)
-                widest = max(widest, width if mono else min(width, PLAIN_WORD_CAP))
+                widest = max(widest, width if mono or header else min(width, PLAIN_WORD_CAP))
         return widest
 
     floors = [min(padding + max(

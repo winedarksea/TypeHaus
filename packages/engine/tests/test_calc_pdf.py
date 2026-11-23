@@ -22,7 +22,7 @@ from typehaus.takeoff.calc_pdf import (
     pdf_sources,
     sheet_order,
 )
-from typehaus.takeoff.calc_pdf_layout import MARGIN_R, PAGE
+from typehaus.takeoff.calc_pdf_layout import MARGIN_L, MARGIN_R, PAGE, WIDE_MARGIN_R
 
 FILES = {
     "README.md": "# repo navigation, not package content\n",
@@ -337,7 +337,10 @@ def test_the_real_catlin_package_never_overhangs_the_frame(catlin_ctx):
     width, story = _measured(files)
     widest = max((f.wrap(width, 10_000)[0] for f in story if hasattr(f, "wrap")),
                  default=0.0)
-    assert widest <= width + 0.5, f"{widest:.1f}pt into a {width:.1f}pt frame"
+    # A table of WIDE_COLUMNS or more (the register's nine) may run into the right margin, to
+    # the title block's edge, and no further.
+    limit = max(width, (PAGE[0] - MARGIN_L - WIDE_MARGIN_R) * 72)
+    assert widest <= limit + 0.5, f"{widest:.1f}pt into a {limit:.1f}pt limit"
 
 
 def test_an_overflowing_table_takes_it_out_of_the_wide_columns_only():
