@@ -287,7 +287,40 @@ def _soil_block(soil_module: Any, site: Any) -> str:
           "`Site.soil_basis` states none, so the class is taken as presumed")],
     ]
     return (table(["Quantity", "Value", "Unit", "Source"], rows) + "\n\n"
-            + soil_module.soil_provenance_note(presumptive))
+            + soil_module.soil_provenance_note(presumptive) + _court_soil(site))
+
+
+def _court_soil(site: Any) -> str:
+    """The soil parameters a retaining court is closed on, and whether a report confirms them."""
+    specified = getattr(site, "specified_soil", None)
+    confirmed = getattr(site, "confirmed_soil", None)
+    if specified is None and confirmed is None:
+        return ""
+    shown = specified or confirmed
+    source = getattr(shown, "source", None) or "the drawing note"
+    upper = getattr(shown, "bed_friction_max", None)
+    text = (f"\n\n**Soil parameters (retaining court).** The design is closed on "
+            f"{'SPECIFIED' if specified is not None else 'CONFIRMED'} values a site report "
+            f"must confirm ({source}): design friction, concrete on the compacted washed-stone "
+            f"bed, at least {shown.bed_friction:.2f}")
+    if upper is not None:
+        text += (f" and at most {upper:.2f} (a higher value requires the court's "
+                 f"winter-tension rows to be re-checked)")
+    text += f"; drained friction angle of the native at the bed bottom at least " \
+            f"{shown.native_phi_deg:g} degrees."
+    scope = getattr(specified, "report_scope", None)
+    if scope:
+        text += f" Report scope: {scope}."
+    if confirmed is not None:
+        text += (f" **Status: CONFIRMED** by {confirmed.source or 'the site report'}: bed "
+                 f"friction {confirmed.bed_friction:.2f}, native {confirmed.native_phi_deg:g} "
+                 f"degrees.")
+    else:
+        text += " **Status: NOT YET CONFIRMED** — no site report is entered."
+    text += (f" Where the report is short of either value, or the bed bottom is clay or silt at "
+             f"the excavation check (ASTM D2488), the printed fallback detail ({source}) is "
+             f"built. Elsewhere the IBC Table 1806.2 presumptions still apply.")
+    return text
 
 
 def _service_block(inputs: PackageInputs) -> str:

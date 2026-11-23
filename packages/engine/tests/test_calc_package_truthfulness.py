@@ -232,7 +232,7 @@ def test_the_cover_states_what_is_true_and_names_both_editions(catlin_engineerin
     assert "every ratio is within capacity" not in cover
     assert "ASCE/SEI 7-16" in cover
     assert "Minnesota Residential Code 2020" in cover
-    assert "computed" in cover and "incomplete" in cover
+    assert "computed" in cover and "deferred" in cover
 
 
 def test_the_summary_front_page_carries_what_a_reviewer_decides_on(catlin_engineering) -> None:
@@ -255,12 +255,16 @@ def test_the_criteria_page_is_complete_and_reconciles_the_deck_snow(catlin_engin
     for expected in ("## 3. Gravity loads and seismic", "Live load, floors and decks",
                      "Guard, concentrated load", "Seismic Design Category",
                      "## 5. Materials", "f'c, slab concrete", "Grade 60",
-                     "## 6. Codes and standards, by kind", "Balanced snow comparison",
-                     "no snow load and no drift", "not a calculation"):
+                     "## 6. Codes and standards, by kind", "Soil parameters (retaining court)",
+                     "NOT YET CONFIRMED"):
         assert expected in page, expected
-    assert page.count("Balanced snow comparison") == 1, "the comparison prints once"
-    snow = ctx.preferences.structural.deck_snow_psf
-    assert f"deck_snow_psf = {snow:g}" in page
+    # One source for the deck basis wording: the balcony records' own function.
+    from types import SimpleNamespace
+
+    from typehaus.engineering.balcony_loads import deck_basis_text
+
+    assert deck_basis_text(SimpleNamespace(preferences=ctx.preferences)) in page
+    assert page.count("Minnesota deck basis as adopted") == 1, "the basis prints once"
     assert "Service conditions" not in page
 
 

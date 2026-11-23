@@ -42,7 +42,7 @@ def calculation_report(
         engine_version=engine_version(), profile_name=ctx.profile.name,
         checklist=evaluate_permit_checklist(report, ctx.profile), model_revision=revision,
         # A live edit can precede disk writeback, so a source hash would name another model.
-        content_hash="",
+        content_hash="", profile=ctx.profile, preferences=ctx.preferences,
     )
     groups = []
     for kind, records in families(inputs.records).items():

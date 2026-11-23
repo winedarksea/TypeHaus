@@ -28,6 +28,9 @@ register. Use the CLI for exported packages and PDFs.
 ```
 out/calcs/
   README.md               index + how to read this package
+  00-summary.md           the reviewer's summary: criteria, the ten highest d/c, counts,
+                          presumed/authored inputs, what changed since the last issue, open
+                          items, and where each family lists what it does not cover
   00-cover.md             project, jurisdiction, date, model content hash, engine version,
                           where both gates stand, NOT-FOR-CONSTRUCTION banner
   01-design-criteria.md   wind / snow / ground / materials / bases
@@ -191,6 +194,13 @@ form, `engineering-external.toml.draft` the blocks).
 **Most of them are the structural engineer of record's**, not the supplier's, and the
 designer is always the table's: a reviewer told "these are not yours" about items that are
 theirs is the one sentence in a handoff that can cost a whole review cycle.
+
+**What changed since the last issue** is diffed against an earlier package, never against the
+folder being overwritten (two runs of one model must stay byte-identical): `haus calcs --since
+<earlier package>` or `haus handoff --since <earlier package or bundle>`, defaulting to
+`houses/<name>/out/issued/` when a released package is kept there. With none, the summary says
+"First issue". The register page is sorted by d/c and carries each item's level and plan
+position and the number of limit states graded.
 
 **An exact count does not belong in this document.** A figure about one house, written into
 the format's own specification, went stale four times. `haus engineering` and
