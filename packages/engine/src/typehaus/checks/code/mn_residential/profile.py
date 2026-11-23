@@ -764,6 +764,11 @@ MN_2020 = JurisdictionProfile(
                        ("structural.cladding_wind", "structural.cladding_fastener",
                         "structural.girt_fastening"),
                        ("IRC R703.1.2", "ASCE 7-16 §30.3", "ICC-ES ESR-1078")),
+        # Added 2026-11-22, when the `tiered_retaining` walls Table 1.3 describes left the
+        # register as a manufacturer read (the same shape as the cladding line above).
+        PermitItemSpec("Segmental gravity retaining walls — published chart row",
+                       ("structural.srw_gravity_chart",),
+                       ("IRC R404.4", "Allan Block Commercial Installation Manual Table 1.3")),
         PermitItemSpec("Roof framing outside the rafter span table",
                        ("structural.rafter_span",),
                        ("IRC R802.4",), blocking=False),

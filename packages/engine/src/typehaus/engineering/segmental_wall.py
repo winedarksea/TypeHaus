@@ -18,8 +18,12 @@ taller parallel wall within 2H that faces the SAME way (``srw_tiers``); a back-t
 is named, not graded on that row.
 
 **What this is not.** Not ``retaining_wall``: its ``_retaining_walls`` is deliberately not
-widened here. Not a published chart read either: ``SegmentalWallSpec.published`` corroborates
-at most, and is refused unless its guards are answered (:func:`published_refusal`).
+widened here. And not every segmental wall: IRC R404.4 does not engage on one retaining
+<= 48" with no added lateral load, so a wall the house authors a published gravity-chart row
+and its section for (``SegmentalWallSpec.chart``) leaves this register and is graded by
+``structural.srw_gravity_chart`` (``srw_chart``, the ``wall_panel`` precedent). The free body
+stays for the walls without one, and ``segmental_walls``/``reading`` stay callable for
+``tier_surcharge``, which carries every apron's weight onto the court either way.
 
 **NOT GRADED**: global stability of both tiers on a common failure surface — the geotechnical
 engineer's; any reinforcement — the SRW supplier's engineer's. The surcharge on a parallel lower
@@ -51,6 +55,8 @@ from typehaus.engineering.soil import (
     soil_provenance_note,
 )
 from typehaus.engineering.srw_backfill import confined_note, drainage_zone, zone_note
+from typehaus.engineering.srw_chart import drainage_layers as _drainage_layers
+from typehaus.engineering.srw_chart import published_refusal
 from typehaus.engineering.srw_gravity import (
     WALL_FRICTION_RATIO,
     FreeBody,
@@ -58,18 +64,21 @@ from typehaus.engineering.srw_gravity import (
     analyse,
     phi_from_efp,
 )
+from typehaus.engineering.srw_scope import on_chart_path
 from typehaus.engineering.srw_tiers import TIER_FACTOR, Tier, lower_tiers
 
 __all__ = ["KIND", "TIER_FACTOR", "FreeBody", "Section", "Tier", "analyse", "lower_tiers",
            "published_refusal", "reading", "segmental_walls"]
 
 KIND = "tiered_retaining"
-BASIS = ("IRC R404.4; NCMA/Allan Block gravity method (Coulomb, δ = 2/3 φ, battered face); "
-         "IBC 1610.1 / 1806.2 presumptive values")
+BASIS = ("NCMA/Allan Block gravity method, two-zone Culmann wedge, allowable-stress FS 1.5 "
+         "(IRC R404.4 not engaged at <= 48\" of fill: a corroboration, not a code row); "
+         "Coulomb δ = 2/3 φ, battered face; φ back-solved off IBC 1610.1, 1806.2 bearing")
 #: 1 -> 2: GM active EFP 45 -> 40 (IBC Table 1610.1, ``soil.py``).
 #: 2 -> 3: Rankine EFP on a vertical face -> the NCMA gravity method (``srw_gravity``).
 #: 3 -> 4: the drainage zone as a two-zone trial wedge; the 2H row for same-facing tiers only.
-BASIS_VERSION = "4"
+#: 4 -> 5: citations only (R404.4 is not the basis at <= 48"); no ratio moves.
+BASIS_VERSION = "5"
 
 #: Base-course embedment floor, and the H/10 rule beside it.
 MIN_EMBEDMENT_IN = 6.0
@@ -92,7 +101,8 @@ def _footingless_walls(ctx: EngineeringContext) -> list:
 
 def segmental_walls(ctx: EngineeringContext) -> list:
     """Retains fill, declares no restraint, has no footing — disjoint from
-    ``retaining_wall``'s ``lateral_support`` scope by construction."""
+    ``retaining_wall``'s ``lateral_support`` scope by construction. EVERY such wall: the court
+    reads its weight (``tier_surcharge``) whether or not it is a register item."""
     out = []
     for wall in _footingless_walls(ctx):
         if getattr(wall, "lateral_support", None) is not None:
@@ -103,9 +113,14 @@ def segmental_walls(ctx: EngineeringContext) -> list:
     return sorted(out, key=lambda w: w.tag)
 
 
+def engineered_walls(ctx: EngineeringContext) -> list:
+    """The register's scope: segmental walls NOT read off a published chart (``srw_scope``)."""
+    return [w for w in segmental_walls(ctx) if not on_chart_path(w)]
+
+
 @keys(KIND)
 def _keys(ctx: EngineeringContext) -> list[str]:
-    return [wall.tag for wall in segmental_walls(ctx)]
+    return [wall.tag for wall in engineered_walls(ctx)]
 
 
 # --- geometry off the model ----------------------------------------------------------------
@@ -136,41 +151,6 @@ def _structure_layer(ctx: EngineeringContext, wall):  # type: ignore[no-untyped-
     return None
 
 
-def _drainage_layers(ctx: EngineeringContext, wall) -> list[str]:  # type: ignore[no-untyped-def]
-    from typehaus.model.enums import LayerFunction
-
-    assembly = ctx.plan.library.resolve_assembly(wall.assembly)
-    return [layer.name for layer in (assembly.layers if assembly is not None else ())
-            if layer.function is LayerFunction.DRAINAGE]
-
-
-def published_refusal(ctx: EngineeringContext, wall, tiers: list[Tier]) -> str | None:  # type: ignore[no-untyped-def]
-    """Why the authored chart row cannot describe this wall, or ``None``.
-
-    Every guard a gravity chart assumes and the model can answer; an unanswered guard is a
-    mismatch, not agreement (``published._drift``).
-    """
-    spec = getattr(wall, "srw", None)
-    row = getattr(spec, "published", None)
-    if row is None:
-        return None
-    if not _drainage_layers(ctx, wall) and spec.drainage_zone is None:
-        return (f"assembly {wall.assembly} declares no DRAINAGE layer and the spec no "
-                "drainage_zone behind the unit")
-    if spec.batter_deg is None:
-        return "no batter is stated on the SegmentalWallSpec"
-    if not spec.cap:
-        return "no cap unit is modelled"
-    height = (wall.top_elevation.meters - wall.bottom_elevation.meters) / _M_PER_FT
-    near = [t for t in tiers if t.clear_ft < TIER_FACTOR * height]
-    if near:
-        return (f"{near[0].tag} ({near[0].lower_height_ft:.2f}' retained) stands "
-                f"{near[0].clear_ft:.2f}' away, inside 2H = {TIER_FACTOR * height:.2f}'")
-    if row.span.feet + 1e-6 < height:
-        return f"the row publishes {row.span.feet:.2f}' and the wall is {height:.2f}'"
-    return None
-
-
 # --- the record -------------------------------------------------------------------------------
 
 def _incomplete(tag: str, missing: list[str]) -> EngineeringRecord:
@@ -182,7 +162,7 @@ def _incomplete(tag: str, missing: list[str]) -> EngineeringRecord:
 
 @calc(KIND)
 def compute(ctx: EngineeringContext) -> list[EngineeringRecord]:
-    return [_one(ctx, wall) for wall in segmental_walls(ctx)]
+    return [_one(ctx, wall) for wall in engineered_walls(ctx)]
 
 
 @dataclass(frozen=True)
@@ -280,18 +260,18 @@ def _end(read: Reading, soil_pcf: float, spec) -> _End:  # type: ignore[no-untyp
     if read.pad_phi_deg is not None:
         base_phi = min(read.pad_phi_deg, phi)
         mu = math.tan(math.radians(base_phi))
-        slide_cite = (f"IRC R404.4; μ = tan {base_phi:.1f}°, the weaker of {read.pad_tag}'s "
+        slide_cite = (f"NCMA/AB FS 1.5; μ = tan {base_phi:.1f}°, the weaker of {read.pad_tag}'s "
                       f"{read.pad_phi_deg:g}° and the ground's {phi:.1f}° (NCMA)")
     else:
         base_phi, mu = None, base.friction_coefficient
-        slide_cite = (f"IRC R404.4; friction {mu:.2f}, IBC Table 1806.2 class {base.ibc_class} "
+        slide_cite = (f"NCMA/AB FS 1.5; friction {mu:.2f}, IBC Table 1806.2 class {base.ibc_class} "
                       "— no pad φ is authored, so the table stands in for tan φ")
     body = analyse(section, soil_pcf, phi, mu, drainage_zone(spec))
     states = [
         LimitState("sliding", REQUIRED_FS, body.fs_sliding, "", slide_cite,
                    is_safety_factor=True),
         LimitState("overturning", REQUIRED_FS, body.fs_overturning, "",
-                   "IRC R404.4, about the toe", is_safety_factor=True),
+                   "NCMA/AB FS 1.5, about the toe", is_safety_factor=True),
         LimitState("bearing", body.bearing_psf, base.allowable_bearing_psf, "psf",
                    f"IBC Table 1806.2 class {base.ibc_class} (an allowable)")
         if body.bearing_psf is not None else
@@ -303,7 +283,7 @@ def _end(read: Reading, soil_pcf: float, spec) -> _End:  # type: ignore[no-untyp
     if shear is not None and body.course_shear_plf > 0.0:
         states.append(LimitState("course interface shear", REQUIRED_FS,
                                  shear / body.course_shear_plf, "",
-                                 f"IRC R404.4 on {spec.source}", is_safety_factor=True))
+                                 f"NCMA/AB FS 1.5 on {spec.source}", is_safety_factor=True))
     return _End(soil_pcf, body, base_phi, tuple(states))
 
 
@@ -374,7 +354,7 @@ def _one(ctx: EngineeringContext, wall) -> EngineeringRecord:  # type: ignore[no
     summary = (f"{tag}: {depth_ft * 12:.1f}\" SRW unit, {section.height_ft:.2f}' free body "
                f"({retained:.2f}' retained + {section.embedment_ft * 12:.0f}\" embedded, "
                f"batter {batter:g}°) — at {shown.soil_pcf:.0f} pcf sliding FS "
-               f"{body.fs_sliding:.2f}, overturning FS {body.fs_overturning:.2f} (IRC R404.4 "
+               f"{body.fs_sliding:.2f}, overturning FS {body.fs_overturning:.2f} (NCMA/AB "
                f"wants {REQUIRED_FS:g})")
     over = [e.over for e in ends]
     missing_out: tuple[str, ...] = ()
@@ -435,6 +415,9 @@ def _notes(ctx, wall, read, ends, tiers, refusal) -> tuple[str, ...]:  # type: i
          f"{read.pad_phi_deg:g}° authored) and the ground." if read.pad_phi_deg is not None
          else f"Base: no pad φ is authored, so IBC Table 1806.2's {base.soil_class} "
               f"coefficient {base.friction_coefficient:.2f} stands in for tan φ."),
+        "Sliding is checked at the base-course underside (AB/NCMA simplified method); the "
+        "pad's own underside is not separately checked. Tier symbols: facing -1 = back to back, "
+        "1 = same way, 0 = perpendicular (not evaluated).",
         ("Unit weight from the product data (unit plus core infill)." if read.weight_authored
          else f"Unit weight {section.unit_weight_pcf:.1f} pcf is the material's SOLID density "
               "— an upper bound for a hollow or infilled unit, so a lighter real unit only "

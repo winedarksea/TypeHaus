@@ -10,6 +10,11 @@ reproduces §2–§8 against it.
 
 **Result: PASSES on all five legs, at both ends of the soil band.**
 
+**Since 2026-11-22 (owner decision 4) four legs leave this register**: IRC R404.4 does not
+engage at <= 48" of fill, and the legs drawn to Allan Block Table 1.3 (§10) are read off the
+chart by `structural.srw_gravity_chart`. §1-§9 are the free body of the unit and remain the
+record of `tiered_retaining/W-RG-EAST` (gate G9) and the corroboration of the rest.
+
 | | 110 pcf (loose, governs) | 130 pcf |
 |---|---|---|
 | sliding FS | **1.538** (d/c 0.975) | 1.806 |
@@ -260,7 +265,7 @@ Table 1610.1's 40 psf/ft at each end of the 110–130 pcf band; μ at the base i
 tan(min φ_pad, φ_ground), the NCMA/Allan Block method, which is what gives 0.5276 at the
 loose end and sliding 1.538. **The sensitivity that shows what is at stake is already
 below** (§3c's pinned list): drop the NCMA reading and take IBC 1806.2's no-pad coefficient
-`μ = 0.25` instead and sliding falls to **0.575** — a wall that does not stand. The graded
+`μ = 0.25` instead and sliding falls to **0.729** (0.25 x 525.06 / 180.09; 0.575 is AB Classic's number) — a wall that does not stand. The graded
 case is not that one, and the reason it is not is a *method* argument, not a measurement.
 So every `tiered_retaining` record now carries a `soil_presumed` input and prints the
 sentence, and the calc package's gap register section D lists all five legs as graded on a
@@ -472,11 +477,95 @@ Required: FS 1.5 on sliding and overturning, bearing within 2,000 psf, at both s
 * The balcony returns' load on `W-SG-W1`/`E1`, and `P_v` onto any court wall (§6).
 * Hydrostatic, seismic and frost-heave cases. The drained presumption now rests on the
   authored wall rock (`SegmentalWallSpec.drainage_zone`), but **AB's drain pipe is not
-  modelled**: manual p.22, "Drain pipe is required for walls over 4 ft (1.2 m) tall or are
+  modelled on the free-body leg**: manual p.22, "Drain pipe is required for walls over 4 ft (1.2 m) tall or are
   constructed in silty or clay soils" — the clay end of this band. Nor is the wall rock
   billed: it is on the spec, not in an assembly.
-* The cap unit — not modelled, its weight not credited.
+* The cap unit — drawn only as the 4" the chart sheet counts (§10); its weight is in the 130 pcf.
 * The batter's geometry — the model draws the wall plumb; the 12° lean lives on the spec (§1).
-* A published chart row cannot close any of this; one authored on `srw.published` is refused
-  unless drainage (a DRAINAGE layer or the spec's `drainage_zone`), a batter and a cap are
-  stated and no taller wall stands within 2H — and the court walls still stand within 2H.
+* **AB's drain pipe** is authored on the four chart legs (§10) and graded by outlet; its LF and
+  the capstones' are not yet billed. The 2H tier guard measures same-facing walls only (§10).
+
+## 10. The Table 1.3 applicability sheet (owner decision, 2026-11-22)
+
+**Why the item leaves the register.** IRC R404.4 (2018, unamended in MN 2020; read on UpCodes
+2026-11-22) engages for walls "not laterally supported at the top and that retain in excess of
+48 inches of unbalanced fill, or retaining walls exceeding 24 inches in height that resist
+lateral loads in addition to soil". These walls retain 40", 36", 37" of fill with a planting
+bed on top and no added load, so neither limb is met, and the FS 1.5 of §2–§8 was never a code
+row (R404.4's "1.5" lives inside the section that does not apply). Where Allan Block publishes
+a gravity row for the unit, reading it is a prescriptive act (the `wall_panel` precedent,
+commit `bf7b974ea`): `SegmentalWallSpec.published` + `.chart` author the row and its section,
+`structural.srw_gravity_chart` prints each condition beside what is drawn, and any condition
+off the row FAILs. §2–§8 stay as the free-body corroboration and as the record of
+`tiered_retaining/W-RG-EAST`, the one leg off the chart.
+
+**The row** (AB Commercial Installation Manual, Table 1.3 p.10, "12° (Ref) AB Stones only of AB
+Collection"): Level, Clay 27°: **3'-6"**; Silty Sand 32°: 5'-4"; Sand/Gravel 36°: 5'-10". "All
+heights based on exposed wall heights and include a cap block"; no seismic; the surcharge rows
+(100 psf, 1'-8" in clay) are for a solid hard surface and do not apply (the terrace is
+planting, owner rule 2026-09-14). The footnote "Final designs ... by a local registered
+Professional Engineer" is the maker's disclaimer; it makes no code requirement where R404.4
+has none. AB Capstone: 4" H x 12" D x 18" L, 55 lb (allanblock.com AB Collection page).
+
+**The section, per leg** (top 0'-0" = the court datum, unchanged; six 8" courses = 48" plus the
+4" capstone = 52", so the base drops from -4'-0" to -4'-4" and the pad underside to -4'-10"):
+
+| leg | grade station | exposed incl. cap | row 42" | buried | water |
+|---|---|---|---|---|---|
+| W-RG-BLOCK | 15, -3'-4" | 40" | 2" clear | 12" | none |
+| W-RG-WEST | 13, -3'-4" | 40" | 2" clear | 12" | none |
+| W-RG-WEST-BALCONY | 0, -3'-0" | 36" | 6" clear | 16" | none |
+| W-RG-EAST-BALCONY | 1, -3'-1" | 37" | 5" clear | 15" | runnel on the cap, toe faces the north yard |
+| W-RG-EAST | 14, -3'-4" | 40" | 2" clear | (8", old section) | **spout and basin at the toe: misses** |
+
+Exposure is the authored top less the nearest grade station (6.7-10.6 ft from the leg; A2-F11).
+The heat-pump pad's excavation versus the east return's toe is still unchecked (A2-F11).
+
+**Every other condition**, from the model, each a line of the finding:
+
+* **Unit and setback**: AB Stones 8x12x18, batter 12° (the column's own).
+* **Cap**: a capstone on the top course; wall height less 4" is a whole number of 8" courses
+  (6.00). TR-SG-RUNNEL (a sealed 4" x 3" channel, ~17 gpm design) sits on the cap of the east
+  return at the same elevation it sat on the top course (cap top = 0'-0"); the chart is silent
+  on water on the cap line, and the finding prints that it is there.
+* **Buried block** >= 6" (AB p.22, Step 1); **wall rock** >= 12" behind the unit (p.22 Step 4).
+* **Soil**: the row's floor is 27°. The presumed GM back-solves to 27.8° (110 pcf) .. 32.0°
+  (130 pcf) off IBC 1610.1's 40 psf/ft: 0.8° of margin at the loose end, and PRESUMED (printed).
+* **Drain pipe** (p.22 Step 3: "required for walls over 4 ft tall or ... constructed in silty or
+  clay soils"; this site is the clay end of the band). 4" perforated, in sock, level at the back of
+  the wall-rock base. A pipe at -4'-4" cannot daylight to a -3'-4" yard, so it lets go into an
+  underground system (p.31 "vented to daylight or connected to a storm sewer system"): the
+  12" #57 `wall_column` against the court's retained face (FB-SG-W2/E2/S), continuous to the
+  court's soakaway course, by a stub through the terrace at each leg. It adds no water the
+  terrace did not already shed to that column. W-SG-W1/E1 have no column, so the check names the
+  outlet bed and FAILs on one without it. The returns tie into their leg's pipe at the corner.
+* **Founding fill** (A2-F6): the apron stands on 4-5 ft of re-placed court spoil. Excavate to
+  firm native or replace with granular; compact to **95% Standard Proctor in <= 8" lifts**
+  (AB p.20 "Foundation Soil Preparation" and p.24 Step 5), field-tested by the soils engineer
+  (p.22 "Site Soils Engineer should verify"). Spec text; the check prints it.
+* **Level bed, no surcharge**: no slab or stair in a strip one exposed height behind the wall.
+* **Water off the toe**: no free-ended gutter or leader lets go within 3'-0" of the toe on the
+  yard side (a house clearance, A2-F8, not AB's number; AB p.16 only says "extra precautions").
+* **Tier (2H)**: a TERRACE rule, same-facing walls only (AB p.60). The pairs here are back to
+  back (§6), so it is not tripped; an unknown facing still refuses (guard fix, A2-F9).
+
+**Dropped from the free body** with the item: A2-F2's 0.25 versus tan φ (the record already
+prints the μ it used; the 0.575 in §3 above is AB Classic's number, 0.729 for AB Stones), F3's
+method mixing and F7's three fragile inputs (they described a design the chart replaces), and F5's
+pad-base plane (the AB simplified method; the record now says so).
+
+**What the court sees** (`tier_surcharge`): the capped apron is heavier and sits 4" deeper:
+W = 130 x 0.97 x 52/12 = 546 plf on the 0.97' unit, gross 563.3 psf, net of the soil it displaces
+(110 pcf x 52/12 = 476.7) **86.67 psf** (was 80) at the loose end, 0 at 130 pcf. Strip on the
+court wall's virtual back (a 0, b 1.0', h 10.1198' - 4.333' = 5.787'): **54.63 plf at 5.108'**
+(was 50.48 at 5.436'); stem moment 83.09 ft-lb/ft (was 88.02). Reproduced to the digit by a
+Gauss-Legendre integration in `tests/test_tier_surcharge.py`. The court's sliding moves 1.735 ->
+1.732 and W-SG-S/W2 flip their governing row from stem flexure to base restraint (both 0.87).
+
+**Gate G9 - W-RG-EAST.** TR-SG-RUNNEL runs south 1'-6" along its top and lets go through a
+scupper 12" past its yard face onto FURN-SG-SPLASH-BASIN, 6" off the face: concentrated water at
+the toe, the one condition above that is off the row. It keeps its 4'-0" section and the 1.54 free
+body (§3b) until the owner picks: (a) move the spout and basin 3'-0" off the toe (runnel end
+32'-6" -> 35'-6", basin 33'-0" -> 36'-0"), after which W-RG-EAST lowers 4" and takes a cap;
+(b) replace the basin with a pop-up emitter on a solid `DischargeExtension` to 3'+ out; (c) leave
+it engineered. Lowering it before a choice would raise its free body to H = 4.33' and fail it.
