@@ -46,8 +46,10 @@ from typehaus.resolve.framing.truss_girts import truss_girt_bands
 _ID = "structural.girt_fastening"
 _CODE = "ICC-ES ESR-1078 (reissued 2026-01), Tables 1A, 2, 3, 4; AWC NDS 2018 11.3, 12.4.1"
 #: Engineered wood the report's §3.2 leaves out ("Use of the screws in engineered wood
-#: products ... is outside the scope"), by library tag.
-_EWP_STUDS = frozenset({"lsl", "lvl", "psl"})
+#: products ... is outside the scope"), by library tag, with no other published route here.
+#: LSL has one (ESR-1387 Table 2 + NDS 12.2.2.1, ``girt_fastening_table``), so it is not listed.
+_EWP_STUDS = frozenset({"lvl", "psl"})
+_LSL = "lsl"
 #: The stud module's default when a STRUCTURE layer leaves it unset (``framing/tables``).
 _DEFAULT_STUD_SPACING_IN = 16.0
 
@@ -199,7 +201,9 @@ def _drift(crossing: _Crossing, thread_in_stud: float) -> str | None:
     if w_row is None or p_row is None:
         return (f"stud SG {crossing.stud_sg:g} or girt SG {crossing.girt_sg:g} is below "
                 f"Table 2/3's lowest row (0.42)")
-    if crossing.withdrawal > w_row + 1e-6:
+    if crossing.stud_material == _LSL:
+        pass  # withdrawal is NDS 12.2.2.1 at ESR-1387's G, not an ESR-1078 row
+    elif crossing.withdrawal > w_row + 1e-6:
         return (f"authored withdrawal {crossing.withdrawal:g} lb/in exceeds Table 2's "
                 f"{w_row:g} at the stud's SG {crossing.stud_sg:g}")
     if crossing.pull_through > p_row + 1e-6:
@@ -283,11 +287,18 @@ def _one(ctx: CheckContext, key: str, members: list[_Crossing]) -> Finding:
 
     # Capacities, NDS 11.3 applied: C_D 1.6 for wind on wood-controlled states (never the
     # screw's own tension), C_M 0.70 on the wet-cycling girt's pull-through, stud dry.
-    w_ref = crossing.withdrawal * embedded
+    lsl = crossing.stud_material == _LSL
+    w_unit = (table.nds_wood_screw_withdrawal_per_in(table.LSL_WITHDRAWAL_EDGE_SG,
+                                                     crossing.diameter_in)
+              if lsl else crossing.withdrawal)
+    w_ref = w_unit * embedded
     withdrawal = w_ref * table.C_D_WIND
     pull = crossing.pull_through * table.WET_SERVICE_FACTOR * table.C_D_WIND
+    # LSL is outside Tables 2-4 as well: its lateral column is held at the 0.42 floor.
     lateral_row = table.row_at(table.LATERAL_LB, min(crossing.stud_sg or 0.0,
-                                                     crossing.girt_sg or 0.0))
+                                                     crossing.girt_sg or 0.0,
+                                                     table.LSL_WITHDRAWAL_EDGE_SG if lsl
+                                                     else 1.0))
     # Gravity: parallel to the sheathing, hung off its face, so it shears the joint and pries
     # each block onto its screw (note §3.5a). Combination 5 adds it to 0.6W; dead alone is D.
     weight, moment, pry = table.prying(
@@ -311,6 +322,16 @@ def _one(ctx: CheckContext, key: str, members: list[_Crossing]) -> Finding:
     ratios.update(dead)
     governing = max(ratios, key=ratios.__getitem__)
     over = ratios[governing] > 1.0 + 1e-9
+    withdrawal_basis = (
+        f"NDS 12.2.2.1 W = 2850 G^2 D at ESR-1387 Table 2's TimberStrand LSL equivalent SG "
+        f"{table.LSL_WITHDRAWAL_EDGE_SG:g} (installed in edge; ESR-1078 §3.2 leaves LSL out, "
+        f"so no Table 2 row)," if lsl else
+        f"Table 2 withdrawal at SG {crossing.stud_sg:g},")
+    lsl_note = (
+        "the LSL stud's withdrawal applies the NDS wood-screw equation, written for ASME "
+        "B18.6.1 screws, to this proprietary rolled-thread screw (it gives 95 lb/in against "
+        "ESR-1078 Table 2's tested 170 at the same SG, so it is the lower bound), and "
+        "the screw enters the stud's narrow edge; " if lsl else "")
     text = (
         f"{subject}: D + 0.6W, ASCE 7-16 §2.4.1(5), {tension:.1f} lb of screw tension = "
         f"{load:.1f} lb suction ({suction:.2f} psf Zone 5 at q_h {q_h:.2f} psf x "
@@ -318,7 +339,7 @@ def _one(ctx: CheckContext, key: str, members: list[_Crossing]) -> Finding:
         f"{table.GIRT_CONTINUITY:g} x panel {table.PANEL_CONTINUITY:.3f}) + {pry:.1f} lb prying "
         f"({weight:.1f} lb of cladding, girt and block hung off the sheathing, "
         f"{moment:.1f} in-lb over {table.BLOCK_FACE_IN / 2.0:g}\"), with {weight:.1f} lb "
-        f"of shear. Table 2 withdrawal {crossing.withdrawal:g} lb/in at SG {crossing.stud_sg:g} "
+        f"of shear. {withdrawal_basis} {w_unit:.1f} lb/in "
         f"x {embedded:g}\" embedded x C_D {table.C_D_WIND:g} = {withdrawal:.0f} lb (d/c "
         f"{ratios['withdrawal']:.3f}); Table 3 pull-through {crossing.pull_through:g} lb at a "
         f"{crossing.girt_in:g}\" side member, SG {crossing.girt_sg:g}, x C_M "
@@ -335,7 +356,7 @@ def _one(ctx: CheckContext, key: str, members: list[_Crossing]) -> Finding:
             code=_CODE, fix_hint="a tighter girt course or block module, or a heavier row")
     return structural_advisory(
         _ID, f"{text} — a prescriptive read of a published report. Conditions the engine does "
-             f"not check: the stud stays dry behind the foam, the girt wet-cycles (the "
+             f"not check: {lsl_note}the stud stays dry behind the foam, the girt wet-cycles (the "
              f"0.70 is applied to it); the lateral value is Table 4's 2-1/2\" row read for a "
              f"thicker side member as its footnote 2 permits; ACQ-D girt stock at retention "
              f"<= 0.40 pcf, exposure conditions 1 and 3 of Table 6 (§4.1.7); installed "

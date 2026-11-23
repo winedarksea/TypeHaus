@@ -470,13 +470,47 @@ salt water, §4.1.7 and §5.5); §3.2's sawn-lumber SG, 19 percent moisture or l
 
 ### 3.6 What a reviewer should know about the wood
 
-**The main-storey studs are LSL (14 of the 36 girt walls), which is outside ESR-1078 §3.2's
-scope** ("Use of the screws in engineered wood products (EWP) other than those addressed above is
-outside the scope of this report"). `structural.girt_fastening` reads the RESOLVED stud, groups on
-it, and reports those 14 walls **UNKNOWN naming the scope**; it does not give them the prescriptive
-PASS. The second-storey and attic studs, W-A-N1 among them (attic, SPF), are ordinary dimensional
-SPF and carry the read at SG 0.42. Closing the LSL walls takes the manufacturer's own screw-withdrawal
-value for the LSL (ESR-1387, not opened) or an engineered design.
+**The main-storey studs are LSL (14 of the 36 girt walls), which ESR-1078 §3.2 leaves out** ("Use
+of the screws in engineered wood products (EWP) other than those addressed above is outside the
+scope of this report"). Only the WITHDRAWAL into the stud is affected: the head pull-through is in
+the KDAT girt (sawn, in scope) and the tension is steel. Searched 2026-11-23, in this order:
+
+1. **A FastenMaster bulletin giving TimberLOK withdrawal in LSL or any SCL: none found.** The
+   catalog and ESR-1078 give sawn-lumber SG rows only. The one FastenMaster document that touches SCL
+   is DrJ TER 1105-02 (TimberLOK uplift of trusses and rafters at wall tops, revised 2023-02-20),
+   Table 2 note 2: "Equivalent specific gravity of structural composite lumber (SCL) shall be equal
+   to or greater than the specific gravities provided in this table. Refer to product information
+   from SCL manufacturer." That is the principle (an SCL takes the row at its manufacturer's
+   equivalent SG) for a different connection, not a withdrawal value; it is cited, not relied on.
+2. **ESR-1387 (Weyerhaeuser SCL, reissued February 2025, revised July 2026), §4.2:** "The design of
+   mechanical connections for ... TimberStrand LSL ... must be in accordance with the NDS.
+   Equivalent specific gravities for nailed, screwed, bolted and lag screwed connections are given
+   in Table 2." **Table 2, TimberStrand LSL, Nails and Screws, Withdrawal: installed in edge 0.42,
+   installed in face 0.50** (dowel bearing 0.50 both). Note 1: "Connection design values must be
+   calculated in accordance with NDS Chapters 11 and 12, using the tabulated equivalent specific
+   gravities". Neither ESR-1078 nor a bulletin permits dropping that SG into ESR-1078's Table 2,
+   so **the ESR-1078 row is not used for LSL.** The route the NDS and ESR-1387 do publish is
+   NDS 2018 12.2.2.1 (wood screw, cut or rolled thread, side grain), eq. 12.2-2:
+
+```
+W = 2850 G^2 D = 2850 x 0.42^2 x 0.189 = 95.02 lb/in      (G 0.42: the wall stud's sheathing side is its EDGE)
+W'p = 95.02 x 1.5" x C_D 1.6 x C_M 1.0 (dry)               = 228.05 lb       d/c 188.57 / 228.05 = 0.827
+```
+
+   At the same SG the tested ESR-1078 Table 2 value for sawn lumber is 170 lb/in, so the NDS
+   equation (written for ASME B18.6.1 wood screws; TimberLOK is an alternate threaded fastener) is
+   the LOWER bound and the reading is conservative. NDS 12.4.1's combined check with W'p 228 lb:
+   Z'a = 228.05 x 201.6 / (228.05 cos^2 + 201.6 sin^2) = 227.9 lb at 86.59 deg, R / Z'a = 0.829
+   (the lateral value is held at ESR-1078 Table 4's SG 0.42 column, a stated reading that does not
+   govern). The girt's head pull-through, 0.842, still governs both groups.
+3. LVL and PSL have no route here (ESR-1387 gives them 0.50 for screws, but nothing reads it for
+   this screw); `structural.girt_fastening` still reports a wall on them **UNKNOWN**. Closing the
+   LSL reading further would take a FastenMaster letter giving TimberLOK withdrawal in
+   TimberStrand; the owner rule is no written approvals, so the NDS + ESR-1387 route above is the
+   published one.
+
+The second-storey and attic studs, W-A-N1 among them (attic, SPF), are ordinary dimensional SPF
+and carry the ESR-1078 Table 2 read at SG 0.42.
 
 **Lateral support.** The screw is wood-to-wood over its whole through-length with no gap, no
 foam and no standoff in the path. This is an ordinary connection, not a cantilevered

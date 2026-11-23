@@ -33,6 +33,21 @@ MIN_SIDE_MEMBER_IN = 1.5
 PULL_THROUGH_LB = {0.57: 220.0, 0.55: 200.0, 0.50: 160.0, 0.46: 130.0,
                    0.43: 110.0, 0.42: 110.0}
 
+#: TimberStrand LSL studs. ESR-1078 §3.2 leaves engineered wood out of Tables 2-4, so the stud's
+#: withdrawal is read the way ESR-1387 §4.2 sends it: "designed in accordance with the NDS ...
+#: Equivalent specific gravities for nailed, screwed ... connections are given in Table 2".
+#: ESR-1387 Table 2, TimberStrand LSL, nails and screws, withdrawal: 0.42 installed in the EDGE
+#: (0.50 in the face); a wall stud's sheathing side is its edge. NDS 2018 12.2.2.1 (wood screw,
+#: cut or rolled thread, side grain) W = 2850 G^2 D, lb per inch of thread penetration.
+LSL_WITHDRAWAL_EDGE_SG = 0.42
+NDS_WOOD_SCREW_COEFFICIENT = 2850.0
+
+
+def nds_wood_screw_withdrawal_per_in(specific_gravity: float, diameter_in: float) -> float:
+    """NDS 2018 eq. 12.2-2, reference W (lb/in of thread), before C_D and C_M."""
+    return NDS_WOOD_SCREW_COEFFICIENT * specific_gravity ** 2 * diameter_in
+
+
 #: Table 4, OlyLog/TimberLOK, minimum overall length 2-1/2", 1-1/2" side member, 1" main member
 #: penetration (note 4: full thread embedment not required): Z (lbf) at the lower of the two
 #: members' SG 0.50 / 0.46 / 0.42. Footnote 2 lets a thicker side member be used where the

@@ -38,6 +38,11 @@ _ORACLE = {
     "z_alpha_lb": 406.53,
     "combined_ratio": 0.465,
     "dead_ratio": 0.291,
+    "nds_w_per_in": 95.02,        # 2850 x 0.42^2 x 0.189
+    "lsl_withdrawal_lb": 228.05,  # 95.02 x 1.5 x 1.6
+    "lsl_withdrawal_ratio": 0.827,
+    "lsl_z_alpha_lb": 228.0,      # 228.05 x 201.6 / (228.05 cos^2 + 201.6 sin^2) at 86.59 deg
+    "lsl_combined_ratio": 0.829,
 }
 
 _CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
@@ -81,21 +86,54 @@ def _replace(old: str, new: str):
 
 # --- scope, and the retirement ------------------------------------------------------------
 
-def _spf(findings):
-    [read] = [f for f in findings if f.result is not Result.UNKNOWN]
+def _group(findings, tag):
+    [read] = [f for f in findings if tag in f.element_tags]
     return read
 
 
-def test_the_spf_walls_are_one_read_and_the_lsl_walls_are_unknown(findings):
+def _spf(findings):
+    return _group(findings, "W-A-N1")          # attic: SPF studs
+
+
+def test_the_spf_and_lsl_walls_are_two_reads(findings):
+    """SPF studs read ESR-1078 Table 2; the main storey's LSL, outside §3.2, reads NDS 12.2.2.1
+    at ESR-1387's equivalent SG (below). Neither is UNKNOWN, neither is an engineering item."""
     assert len(findings) == 2
-    read = _spf(findings)
-    assert read.result is Result.PASS and read.engineering_item is None
-    assert len(read.element_tags) == _SPF_WALLS
-    assert "W-A-N1" in read.element_tags            # attic: SPF studs
-    [lsl] = [f for f in findings if f.result is Result.UNKNOWN]
-    assert len(lsl.element_tags) == _LSL_WALLS
-    assert "W-M-S1" in lsl.element_tags             # main storey: LSL studs
-    assert "engineered wood product" in lsl.message and "§3.2" in lsl.message
+    spf, lsl = _spf(findings), _group(findings, "W-M-S1")
+    assert spf.result is Result.PASS and lsl.result is Result.PASS
+    assert spf.engineering_item is None and lsl.engineering_item is None
+    assert len(spf.element_tags) == _SPF_WALLS and len(lsl.element_tags) == _LSL_WALLS
+
+
+def test_lsl_withdrawal_is_the_nds_equation_at_esr_1387s_edge_sg(findings):
+    """ESR-1387 Table 2: TimberStrand LSL nails and screws, withdrawal, installed in edge 0.42.
+    NDS 12.2.2.1 W = 2850 G^2 D = 2850 x 0.42^2 x 0.189 = 95.02 lb/in; x 1.5" x C_D 1.6 = 228.05."""
+    from typehaus.checks.structural import girt_fastening_table as table
+
+    assert table.LSL_WITHDRAWAL_EDGE_SG == 0.42
+    assert table.nds_wood_screw_withdrawal_per_in(0.42, 0.189) == pytest.approx(
+        _ORACLE["nds_w_per_in"], abs=0.01)
+    text = _group(findings, "W-M-S1").message
+    assert "NDS 12.2.2.1" in text and "ESR-1387" in text and "installed in edge" in text
+    wd = f"= {_ORACLE['lsl_withdrawal_lb']:.0f} lb (d/c {_ORACLE['lsl_withdrawal_ratio']:.3f})"
+    assert wd in text
+    assert f"Z'a {_ORACLE['lsl_z_alpha_lb']:.0f} lb" in text
+    assert f"(d/c {_ORACLE['lsl_combined_ratio']:.3f})" in text
+    # The girt's pull-through (in scope) still governs both groups.
+    assert "Governing: head pull-through" in text
+
+
+def test_another_engineered_wood_has_no_published_route_and_is_unknown(catlin_ctx):
+    """LVL and PSL are not in ESR-1078 §3.2 and nothing here reads them: refused, not passed."""
+    import dataclasses
+
+    from typehaus.checks.structural.girt_fastening import _crossings, _drift
+
+    crossing = next(c for c in _crossings(catlin_ctx) if c.stud_material == "lsl")
+    for tag in ("lvl", "psl"):
+        reason = _drift(dataclasses.replace(crossing, stud_material=tag), 1.5)
+        assert reason is not None and "engineered wood product" in reason and "§3.2" in reason
+    assert _drift(crossing, 1.5) is None
 
 
 def test_the_item_left_the_register(catlin_ctx):
