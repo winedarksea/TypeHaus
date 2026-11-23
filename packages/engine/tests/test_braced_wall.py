@@ -22,6 +22,7 @@ from typehaus.checks.structural.braced_wall_panels import braced_wall_panel_rule
 from typehaus.checks.structural.bracing_eval import braced_storeys, evaluate_storey, story_location
 from typehaus.checks.structural.bracing_tables import (
     MAX_LINE_SPACING_FT,
+    STORY_FIRST_OF_THREE,
     STORY_FIRST_OF_TWO,
     STORY_TOP,
 )
@@ -146,6 +147,27 @@ def test_a_habitable_attic_is_not_a_story_and_the_count_says_so(catlin_model_ro)
     assert story_location(catlin_model_ro, "basement")[0] is None
     row, words = story_location(catlin_model_ro, "main")
     assert "2 story" in words and "main, second" in words
+
+
+def test_the_attic_is_graded_against_r325_6_not_assumed(catlin_model):
+    """R325.6's four conditions hold at catlin (the reading is printed on every line); an
+    attic deck hanging past the storey below fails condition 4 and the attic is a story."""
+    import dataclasses
+
+    from typehaus.checks.structural.habitable_attic import attic_reading
+
+    reading = attic_reading(catlin_model, "attic")
+    assert [c.number for c in reading.conditions] == [1, 2, 3, 4]
+    assert not reading.is_story, reading.describe()
+    first = evaluate_storey(catlin_model, "main")[0]
+    assert any("counting the attic as a story is NOT taken" in n for n in first.not_taken)
+    index = next(i for i, f in enumerate(catlin_model.floors) if f.storey == "attic")
+    deck = catlin_model.floors[index]
+    wide = tuple((x + (1.0 if x > 5 else 0.0), y) for x, y in deck.deck_outline)
+    catlin_model.floors[index] = dataclasses.replace(deck, deck_outline=wide)
+    assert not attic_reading(catlin_model, "attic").conditions[3].holds
+    assert braced_storeys(catlin_model, "house") == ["main", "second", "attic"]
+    assert story_location(catlin_model, "main")[0] == STORY_FIRST_OF_THREE
 
 
 # --- the panels -------------------------------------------------------------------------

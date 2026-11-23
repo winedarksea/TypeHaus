@@ -201,6 +201,19 @@ WEST_FLOOR = FloorSystem(
                        nailing=SUBFLOOR_FASTENING),
     ceiling_below=_CEILING_GWB,
     published_span=J12_FLOOR_SPAN,
+    # W-S-SN3 and FO-A-HALL's south trimmer load W-M-HS3/HS4 as a line (~240 plf) along the
+    # trusses, between the y=256 and y=272 lines. A 1 1/4" LSL rim board on edge, full depth,
+    # nailed to the y=272 truss's chord, lies on the plate under the wall (y 269..270 1/4",
+    # clear of the chords' faces at 257 3/4"/270 1/4"). TJ-8000 vertical 5,400 plf (decision 22);
+    # TrimJoist's layout carries it (notes/header_spans_r602_7.md §4b). It starts at x=131":
+    # P-S-SN3-SQUASH carries the line to 121 3/4", and 128.4" is ED-M-LAUNDRY-TRACK's bar, which
+    # needs the full 16" bay; the ladder's 16" module is met (121 3/4 -> 137 3/4).
+    reinforcements=(
+        JoistReinforcement(at=pt(inch(157), inch(269.5)), plies=2, member="1.25x11.875 rim",
+                           blocking=False, extent=(inch(131), inch(216)),
+                           source="TJ-8000 1 1/4\" 1.3E rim on edge under W-S-SN3 on "
+                                  "W-M-HS3/HS4's plate; 5,400 plf vertical against ~240 plf"),
+    ),
     outline=_rect(_ZERO, _ZERO, _CENTRE_X, _HOUSE),
     openings=("FO-S-STAIR", "FO-S-ERV-CHASE", "FO-S-ERV-LAUNDRY", "FO-S-BATH1-WC-DRAIN", "FO-S-BATH1-TUB-DRAIN",
               "FO-S-ERV-SUITEBATH"),

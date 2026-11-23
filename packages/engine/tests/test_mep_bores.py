@@ -104,31 +104,41 @@ def test_a_notch_is_a_quarter_of_a_bearing_stud_and_two_fifths_of_a_partition() 
 # --- §2 the staggered wall -------------------------------------------------------------
 
 def test_the_staggered_wall_is_counted_stud_by_stud(catlin_model_ro) -> None:
-    """§2's table: 11 studs at the axis, 5 on the north row, 6 on the south.
+    """§2b's table: 6 studs at the axis, 3 on the east row, 3 on the west.
 
-    Six against eleven from a two-inch move. That is the number a rule applied to "the
-    wall" cannot produce, and the reviewer's framing policy names this case: a staggered
-    wall uses the actual stud positions, never "the wall is empty".
+    Twice as many from a two-inch move. That is the number a rule applied to "the wall"
+    cannot produce, and the reviewer's framing policy names this case: a staggered wall uses
+    the actual stud positions, never "the wall is empty". W-S-SN3 was the worked case until
+    2026-11-22; it is continuous and bearing now, so W-M-BA2E (x=98", y 216..268") stands in.
     """
-    wall = next(w for w in catlin_model_ro.walls if w.tag == "W-S-SN3")
+    wall = next(w for w in catlin_model_ro.walls if w.tag == "W-M-BA2E")
     assert wall.assembly == "INT_2X6_STAGGERED_PLUMBING_HALF"
     counts = {}
-    for y in (268.0, 270.0, 266.0):
-        cuts = leg_crossings(wall, (120.0 * IN, y * IN), (210.0 * IN, y * IN),
-                             180.0 * IN, 180.0 * IN, (VENT_IN / 2.0) * IN)
-        counts[y] = len([c for c in cuts if c.category == "stud"])
-    assert counts == {268.0: 11, 270.0: 5, 266.0: 6}, counts
+    for x in (98.0, 100.0, 96.0):
+        cuts = leg_crossings(wall, (x * IN, 218.0 * IN), (x * IN, 262.0 * IN),
+                             60.0 * IN, 60.0 * IN, (VENT_IN / 2.0) * IN)
+        counts[x] = len([c for c in cuts if c.category == "stud"])
+    assert counts == {98.0: 6, 100.0: 3, 96.0: 3}, counts
 
 
 def test_every_stud_of_that_wall_is_still_over_the_limit(catlin_model_ro) -> None:
     """The stagger changes how MANY studs are cut and not whether the hole fits."""
-    wall = next(w for w in catlin_model_ro.walls if w.tag == "W-S-SN3")
-    cuts = leg_crossings(wall, (120.0 * IN, 270.0 * IN), (210.0 * IN, 270.0 * IN),
-                         180.0 * IN, 180.0 * IN, (VENT_IN / 2.0) * IN)
+    wall = next(w for w in catlin_model_ro.walls if w.tag == "W-M-BA2E")
+    cuts = leg_crossings(wall, (100.0 * IN, 218.0 * IN), (100.0 * IN, 262.0 * IN),
+                         60.0 * IN, 60.0 * IN, (VENT_IN / 2.0) * IN)
     studs = [c for c in cuts if c.category == "stud"]
     assert studs and all(c.profile == "2x4" for c in studs)
     assert all(stud_bore(c.profile, c.diameter_in, bearing=False).ok is False
                for c in studs)
+
+
+def test_a_bearing_two_by_six_takes_the_suite_wets_one_and_a_half_inch_vents(
+        catlin_model_ro) -> None:
+    """W-S-SN3 (decision 22): 40% of 5 1/2" is 2.20"; the widest bore through it is 1.90"."""
+    wall = next(w for w in catlin_model_ro.walls if w.tag == "W-S-SN3")
+    assert wall.assembly == "INT_2X6_BRG_HALF"
+    assert stud_bore("2x6", 1.90, bearing=True).ok is True
+    assert stud_bore("2x6", 2.375, bearing=True).ok is False
 
 
 # --- §3 top plates ---------------------------------------------------------------------

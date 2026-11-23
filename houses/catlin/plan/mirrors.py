@@ -158,7 +158,7 @@ SECOND_MIRRORS = [
         elevation=inch(78), height=inch(7.25), profile="2x8",
         material_ref="spf", purpose="Karlie junction box at 79 9/16 in. AFF"),
     WallBacking(uid="18CE157467", tag="BK-S-SN3-MIRROR-LIGHT", wall_ref="W-S-SN3", face="right",
-        start=inch(40.75), length=inch(22.5),
+        start=inch(29.25), length=inch(46.5),
         elevation=inch(80), height=inch(7.25), profile="2x8",
         material_ref="spf", purpose="suite 3-light Karlie junction box at 81.5 in. AFF"),
 

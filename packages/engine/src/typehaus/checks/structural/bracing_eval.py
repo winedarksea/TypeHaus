@@ -42,6 +42,10 @@ from typehaus.checks.structural.bracing_tables import (
     required_bracing_length_ft,
     wall_height_factor,
 )
+from typehaus.checks.structural.habitable_attic import (
+    attic_reading,
+    habitable_attic_storeys,
+)
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.braced_walls import (
     KIND_BRACED,
@@ -108,15 +112,23 @@ def braced_storeys(model, building: str) -> list[str]:
     """The storeys of one building that owe R602.10 a braced wall length, low to high.
 
     This is the STORY COUNT the tables are indexed on, and it is derived: a concrete
-    basement box, a rafter-plate attic and a habitable attic (IRC R325.6: "shall not be
-    considered a story") all drop out of it because none of them carries a ``braced`` line.
+    basement box and a rafter-plate attic drop out because they carry no ``braced`` line.
+    A habitable attic drops out only where IRC R325.6's four conditions are shown
+    (``habitable_attic.py``); one that fails any of them counts as the top story.
     """
-    storeys = [s for s in model.plan.storeys if s.building == building]
-    out = []
-    for storey in sorted(storeys, key=lambda s: s.elevation.meters):
-        if any(line.kind == KIND_BRACED for line in braced_wall_lines(model, storey.tag)):
-            out.append(storey.tag)
+    out = _line_storeys(model, building)
+    for attic in habitable_attic_storeys(model, building, out[-1] if out else None):
+        if attic_reading(model, attic).is_story:
+            out.append(attic)
     return out
+
+
+def _line_storeys(model, building: str) -> list[str]:
+    """Storeys carrying a ``braced`` line, low to high."""
+    storeys = sorted((s for s in model.plan.storeys if s.building == building),
+                     key=lambda s: s.elevation.meters)
+    return [s.tag for s in storeys
+            if any(line.kind == KIND_BRACED for line in braced_wall_lines(model, s.tag))]
 
 
 def story_location(model, storey: str) -> tuple[str | None, str]:
@@ -182,10 +194,23 @@ def evaluate_line(model, line: BracedWallLine, lines: list[BracedWallLine],
         else:
             factors = _factors(model, line, mine, basis, row, eave or 0.0, wall_height_in,
                                count, method, not_taken, gaps)
+    not_taken.extend(_attic_notes(model, line.storey))
     graded = tuple(_grade_panel(p, wall_height_in) for p in mine)
     return LineEvaluation(line=line, story_location=row or "", base=base,
                           factors=tuple(factors), not_taken=tuple(not_taken),
                           panels=graded, gaps=tuple(gaps))
+
+
+def _attic_notes(model, storey: str) -> list[str]:
+    """The R325.6 reading behind the story count, printed on every line that rides on it."""
+    building = model.plan.storey(storey).building
+    out = []
+    lines = _line_storeys(model, building)
+    for attic in habitable_attic_storeys(model, building, lines[-1] if lines else None):
+        reading = attic_reading(model, attic)
+        out.append(("the attic IS counted as a story: " if reading.is_story
+                    else "counting the attic as a story is NOT taken: ") + reading.describe())
+    return out
 
 
 def _factors(model, line, panels, basis, row, eave_ft, wall_height_in, count, method,
