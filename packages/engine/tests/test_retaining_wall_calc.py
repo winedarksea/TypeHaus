@@ -184,7 +184,8 @@ def test_catlin_grades_the_three_court_walls_through_their_base_restraint(
         # pinned against did, which is the same class of change and takes the same bump.
         # 4 -> 5 on 2026-09-20: the apron's lateral surcharge (engineering/tier_surcharge.py).
         # 5 -> 6 on 2026-09-21: GM active EFP 45 -> 40 (IBC Table 1610.1).
-        assert record.basis_version == "6"
+        # 6 -> 7 on 2026-11-23: the restrained wall fingerprints the court's soil basis.
+        assert record.basis_version == "7"
 
     # Every wall the register computes is one a signoff can cover, one at a time.
     assert sorted(results[f"{KIND}/{t}"].item_id for t in ("W-SG-E2",)) == [

@@ -109,26 +109,29 @@ def _lip_ft(ctx, body: Body) -> float | None:  # type: ignore[no-untyped-def]
     return max(lips) if lips else None
 
 
-def court_wind(ctx, body: Body) -> tuple[float, tuple[float, float]]:  # type: ignore[no-untyped-def]
-    """``(lb, direction)``: the ASD (0.6W) E-W base shear of every cast column standing on
-    the court (``pier_basis.cast_piers``, read, never copied), along the side walls' push
-    axis. IBC §1807.2.3's FS 1.5 is a service check, so the wind enters at ASCE 7 §2.4.1's
-    0.6W with the dead load whole; wet and snow cases are not taken concurrent with it."""
+def court_wind(ctx, body: Body) -> tuple[tuple[float, float], tuple[float, float]]:  # type: ignore[no-untyped-def]
+    """``((E-W lb, N-S lb), E-W direction)``: the ASD (0.6W) base shears of every cast column
+    standing on the court (``pier_basis.cast_piers``, read, never copied). E-W runs along the
+    side walls' push axis; the other axis is the column's governing-axis shear (head + shaft,
+    an upper bound for N-S), added along the soil's resultant. IBC §1807.2.3's FS 1.5 is a
+    service check, so the wind enters at ASCE 7 §2.4.1's 0.6W with the dead load whole; wet
+    and snow cases are not taken concurrent with it."""
     from shapely.geometry import Point, Polygon
 
     from typehaus.engineering.pier_basis import cast_piers
 
     hull = Polygon([pt for p in body.prisms if p.label.startswith("footing:") and p.shape
                     is not None for pt in p.shape.exterior.coords]).convex_hull
-    total = 0.0
+    total = along = 0.0
     for pier in cast_piers(ctx):
         post = ctx.plan.by_tag(pier.tag)
         where = getattr(post, "position", None)
         if where is not None and hull.contains(Point(where.x.meters / _M, where.y.meters / _M)):
             total += pier.wind_ew_base_shear_lb
+            along += pier.wind_head_shear_lb + pier.wind_shaft_shear_lb
     opposed = [p.direction for p in body.pushes for o in body.pushes if o is not p
                and abs(p.direction[0] * o.direction[0] + p.direction[1] * o.direction[1]) > 0.99]
-    return total, (opposed[0] if opposed else (1.0, 0.0))
+    return (total, along), (opposed[0] if opposed else (1.0, 0.0))
 
 
 def _threshold_ft(ctx, body: Body) -> float | None:  # type: ignore[no-untyped-def]
@@ -163,7 +166,7 @@ def waters(ctx, body: Body) -> tuple[dict[str, Water], list[str]]:  # type: igno
     out = {"dry": DRY, "deep dry": DRY,
            "perched": Water("perched", floor + height / 2.0),
            "snow": Water("snow", snow_psf=snow),
-           "wind": Water("wind", wind_lb=wind, wind_dir=wind_dir),
+           "wind": Water("wind", wind_lb=wind[0], wind_dir=wind_dir, wind_along_lb=wind[1]),
            "perched snow": Water("perched snow", floor + height / 2.0, snow_psf=snow),
            "retained full": Water("retained full", top),
            "flooded court": Water("flooded court", flood, both_sides=True),
@@ -265,8 +268,9 @@ def _how(case: Case, body: Body, water: Water, pcf: float) -> str:
     return (f"IRC R404.4 — {body.label} at {body.plane_ft * 12:.2f}\", mu {body.friction:.2f}"
             f": {body.friction:.2f} x N' {body.weight(water):,.0f} lb / H "
             f"{body.resultant(water):,.0f} lb at {pcf:.0f} pcf; water {level}"
-            + (f"; the columns' ASD E-W base shear {water.wind_lb:,.0f} lb added the adverse "
-               f"way (IBC §1807.2.3 at service, ASCE 7 §2.4.1 0.6W)" if water.wind_lb else ""))
+            + (f"; the columns' ASD base shears, E-W {water.wind_lb:,.0f} lb and "
+               f"{water.wind_along_lb:,.0f} lb along the resultant, added the adverse way "
+               f"(IBC §1807.2.3 at service, ASCE 7 §2.4.1 0.6W)" if water.wind_lb else ""))
 
 
 def _table(pcf: float, body: Body, deep: Body | None, levels: dict[str, Water]) -> str:
@@ -316,3 +320,27 @@ def restraint_friction(ctx, soil) -> float:  # type: ignore[no-untyped-def]
     if specified is not None and specified.bed_friction_max is not None:
         return specified.bed_friction_max
     return design_friction(ctx, soil)[0]
+
+
+def court_soil_basis(ctx, soil) -> dict:  # type: ignore[no-untyped-def]
+    """The one source for the court's soil basis — what its rows grade on and what a
+    neighbouring record (the braced stems) must read: at-rest EFP, the bed friction (design
+    and restraint), the native friction, and where they came from."""
+    bed, native, state, how = design_friction(ctx, soil)
+    return {"at_rest_efp": soil.at_rest_efp_psf_per_ft, "bed_friction": bed,
+            "restraint_friction": restraint_friction(ctx, soil), "native_friction": native,
+            "state": state, "how": how}
+
+
+def soil_inputs(ctx, soil) -> tuple[Quantity, ...]:  # type: ignore[no-untyped-def]
+    """The soil values the rows actually use, as fingerprinted inputs: a changed specified or
+    confirmed value stales the seal."""
+    basis = court_soil_basis(ctx, soil)
+    site = getattr(getattr(ctx.plan, "project", None), "site", None)
+    return (Quantity("at_rest_efp", basis["at_rest_efp"], "psf/ft", 1.0),
+            Quantity("bed_friction", basis["bed_friction"], "", 0.001),
+            Quantity("restraint_friction", basis["restraint_friction"], "", 0.001),
+            Quantity("native_friction", basis["native_friction"], "", 0.001),
+            Quantity("soil_confirmed",
+                     1.0 if getattr(site, "confirmed_soil", None) is not None else 0.0,
+                     "-", 0.5))

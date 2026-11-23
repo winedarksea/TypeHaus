@@ -3475,6 +3475,20 @@ and snow cases are not taken concurrent with wind.
 sqrt(78,173² + (82 + 1,971)²) = 78,200 lb;  0.43 x 350,788 / 78,200 = 1.929   (dry 1.930)
 ```
 
+**Load-path review (2026-11-23).** The case now carries both axes, read live: the E-W shear
+in quadrature, and the columns' governing-axis shear (head + shaft, an upper bound for N-S)
+along the soil's own resultant. After L2 took the curtains out of the wind area each is
+4 x 337 = 1,348 lb:
+
+```
+sqrt((78,173 + 1,348)² + (82 + 1,348)²) = 79,533 lb;  0.43 x 350,788 / 79,533 = 1.897
+```
+
+The record and the per-wall records now fingerprint the soil basis the rows use: at-rest EFP
+60, bed friction 0.43, restraint friction 1.00, native friction tan 25°, and whether the
+report is confirmed. `retaining_system_cases.court_soil_basis` is the one source for a
+neighbouring record that must read it.
+
 ## Sources
 
 Every standard and document this note rests on, collected from the citations above.

@@ -67,8 +67,8 @@ KIND = "retaining_system"
 
 #: Bumped whenever the arithmetic moves; it rides in the fingerprint. "2" derived strut
 #: reaction (2026-09-14); "3" apron surcharge (2026-09-20); "4" one body, the case set, plan
-#: bending, strut at its f'c, staged backfill (2026-11-22).
-BASIS_VERSION = "4"
+#: bending, strut at its f'c, staged backfill (2026-11-22); "5" soil basis fingerprinted.
+BASIS_VERSION = "5"
 
 #: At-rest, not active: a permanent base restraint concedes the walls cannot move enough to
 #: mobilise the active wedge (a 12" stem moves ~0.0013H, the bottom of 0.001H-0.004H).
@@ -431,9 +431,8 @@ def _one(ctx: EngineeringContext, ref: str, members: list) -> EngineeringRecord:
             Quantity(f"thrust_{member.tag}", member.thrust_plf, "plf", 1.0),
             Quantity(f"weight_{member.tag}", member.weight_plf, "plf", 1.0),
             Quantity(f"length_{member.tag}", member.length_ft, "ft", 0.01),
-            Quantity(f"friction_{member.tag}", member.friction, "", 0.01),
         )
-    ) + graded.inputs + (
+    ) + cases.soil_inputs(ctx, soil) + graded.inputs + (
         Quantity("cross_thickness", rows.cross_section_in(ctx, cross)[0], "in", 0.5),
         Quantity("cross_height", rows.cross_section_in(ctx, cross)[1], "in", 0.01),
         Quantity("cross_fc", rows.cross_fc(ctx, cross)[0], "psi", 1.0),
