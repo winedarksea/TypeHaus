@@ -32,6 +32,10 @@ MN_2020 = JurisdictionProfile(
     # than being folded into the name — and why the name states the RESIDENTIAL edition,
     # the one the great majority of these rules come from.
     nec_base=f"{NEC.EDITION} (MN adoption effective 2026-08-17)",
+    # MN Rules 1309.0010 adopts the 2018 IRC and 1305.0011 the 2018 IBC; the 2018 IRC's
+    # Chapter 44 lists ASCE/SEI 7-16 (read on UpCodes, 2026-11-23). Neither rule names ASCE 7.
+    asce_edition="ASCE/SEI 7-16 (referenced by the 2018 IRC and IBC adopted in "
+                 "MN Rules 1309.0010 and 1305.0011)",
     coverage_statement=(
         "Encodes a declared subset. "
         "Habitability, egress and circulation: R304.1 habitable floor area, R305 ceiling "

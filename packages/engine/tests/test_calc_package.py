@@ -92,7 +92,8 @@ def package(catlin_engineering):
         house="catlin", model=ctx.model, item_ids=item_ids, results=ctx.engineering,
         register=ctx.engineering_register, generated=date(2026, 1, 1).isoformat(),
         engine_version="test", content_hash="deadbeefdeadbeef",
-        profile_name=ctx.profile.name, checklist=checklist))
+        profile_name=ctx.profile.name, checklist=checklist,
+        profile=ctx.profile, preferences=ctx.preferences))
 
 
 # --- the oracle lint (Phase 1d) ----------------------------------------------------------
@@ -266,8 +267,8 @@ def test_every_item_gets_exactly_one_sheet_and_the_index_lists_it(package, catli
 
 def test_the_front_matter_is_complete(package):
     assert set(package) >= {
-        "README.md", "00-cover.md", "01-design-criteria.md", "02-item-register.md",
-        "03-open-items.md", "04-assumptions.md"}
+        "README.md", "00-cover.md", "00-summary.md", "01-design-criteria.md",
+        "02-item-register.md", "03-open-items.md", "04-assumptions.md"}
     assert "NOT FOR CONSTRUCTION" in package["00-cover.md"]
     assert "deadbeefdeadbeef" in package["00-cover.md"], "the model content hash is the "\
         "only thing on the cover that says which model this is a calculation for"
