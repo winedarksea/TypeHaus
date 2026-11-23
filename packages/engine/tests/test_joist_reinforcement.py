@@ -231,7 +231,8 @@ def test_no_deck_sisters_a_joist_and_one_floor_does(catlin_model):
     # third ply on the two end pieces under W-BW-SCREEN's plate stubs.
     # 2026-11-23: FS-M-EAST's band header is ONE ply of rim stock (the 2-ply LSL rim header over
     # D-B-SUNKEN, TJ-8000 p.7), not two LVL plies. FS-M-STAIR's and FS-S-WEST's single plies are
-    # the load-path lanes' (STAIR_FLOOR's third ply; FS-S-WEST's), already on the integration branch.
+    # the load-path lanes' (STAIR_FLOOR's third ply; FS-S-WEST's), already on the integration
+    # branch.
     assert sorted(tag for tag, _ in sisters) == ["FS-BW-FLOOR"] * 8 + [
         "FS-M-EAST"] + ["FS-M-MECH"] * 2 + [
         "FS-M-NE", "FS-M-NE", "FS-M-STAIR", "FS-M-WEST"] + ["FS-S-EAST"] * 4 + [
