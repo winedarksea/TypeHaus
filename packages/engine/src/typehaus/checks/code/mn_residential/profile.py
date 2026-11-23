@@ -761,8 +761,9 @@ MN_2020 = JurisdictionProfile(
         # Added 2026-09-22, when `wall_panel` left the register as a manufacturer read:
         # without a line the question would vanish from every register.
         PermitItemSpec("Exterior wall covering — wind pressure",
-                       ("structural.cladding_wind", "structural.cladding_fastener"),
-                       ("IRC R703.1.2", "ASCE 7-16 §30.3")),
+                       ("structural.cladding_wind", "structural.cladding_fastener",
+                        "structural.girt_fastening"),
+                       ("IRC R703.1.2", "ASCE 7-16 §30.3", "ICC-ES ESR-1078")),
         PermitItemSpec("Roof framing outside the rafter span table",
                        ("structural.rafter_span",),
                        ("IRC R802.4",), blocking=False),
