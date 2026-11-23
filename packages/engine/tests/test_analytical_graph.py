@@ -83,8 +83,20 @@ def test_lateral_system_columns_are_fixed_and_say_why(analytical, catlin_enginee
 
 
 def test_every_other_post_base_is_pinned(analytical, catlin_engineering) -> None:
-    """A base connector that transfers no moment must not be modelled as if it did."""
+    """A base connector that transfers no moment must not be modelled as if it did.
+
+    Exempt besides the lateral system: a short pole under a pinned post (decision 16). It has
+    no base connector; it is embedded in soil, which IBC 1807.3.2.1 grades as fixity in the
+    ground, and its basis must say so.
+    """
+    from typehaus.engineering.roof_moment import pinned_pier_poles
+
     lateral = {pier.tag for pier in cast_piers(catlin_engineering.ctx) if pier.lateral_system}
+    poles = set(pinned_pier_poles(catlin_engineering.ctx))
+    for support in analytical.supports:
+        if support.element_tag in poles:
+            assert support.fixity is Fixity.FIXED and "1807.3.2.1" in support.basis
+    lateral |= poles
     columns = {member.tag for member in analytical.members if member.category == "column"}
     for support in analytical.supports:
         if support.element_tag in columns and support.element_tag not in lateral:
