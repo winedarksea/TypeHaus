@@ -30,9 +30,7 @@ def chord_rows(ctx: Any, rows: Any, element: Any, resolved_roof: Any, joints: li
                along: str, resultant_across_ft: float | None, far: list[tuple[Any, Any]],
                readings: dict) -> None:
     """Append the chord-force input, the end-strap couple row and the far-wall couple rows."""
-    from typehaus.engineering.joint_attachment import installed_strap_capacity
     from typehaus.engineering.lateral_lines import panel_runs_along, panels_under
-    from typehaus.hardware.catalog import allowable_for_model
 
     across = "y" if along == "x" else "x"
     v = next((q.value for q in rows.inputs if q.name == f"delivered_shear_{across}"), 0.0)
@@ -67,9 +65,7 @@ def chord_rows(ctx: Any, rows: Any, element: Any, resolved_roof: Any, joints: li
     couple = v * lever
     pair = couple / strap_line
     rows.inputs.append(Quantity("joint_couple_ns_lb_ft", couple, "lb-ft", 1.0))
-    allowable = allowable_for_model(joints[0].size or "")
-    capacity = installed_strap_capacity(element.diaphragm.delivers_to,
-                                        getattr(allowable, "uplift_lb", None))
+    capacity = rows.strap_capacity_lb
     chord_ew = next((q.value for q in rows.inputs if q.name == "chord_force_open_front_lb"), 0.0)
     centre = sum(stations) / len(stations)
     second = sum((x - centre) ** 2 for x in stations)

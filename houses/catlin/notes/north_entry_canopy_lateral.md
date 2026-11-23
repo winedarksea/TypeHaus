@@ -14,7 +14,7 @@ adds nothing to them); `canopy_west_band.md` (the built west line); `canopy_gara
 
 ## §8a. What §8 grades, and where each stands on the built canopy
 
-1. **The chord force.** N-S: the first and last canopy trusses' top chords, 752 lb (§8b). E-W: the glulam headers, 88.07 lb
+1. **The chord force.** N-S: the first and last canopy trusses' top chords, 764 lb (§8b). E-W: the glulam headers, 88.07 lb
    (`canopy_west_band.md` §6).
 2. **The collectors.** `DiaphragmSpec.collector_refs` names `BM-BW-RW` and `BM-BW-RE`; what is graded is the
    connection at each end, not the member (§8c-§8e).
@@ -34,7 +34,7 @@ addition to the gravity and drift case the chord is already designed for**. L is
 end to the east end strap, 23.2604' (the screen at 100% is in equilibrium only as that simple span):
 
 ```
-N-S, built canopy      1,034.565 x 23.2604 / (8 x 4.000) = 752.0 lb       (was 1,034.49 x 24.0 / (8 x 6.0) = 517.2)
+N-S, built canopy      1,051.72 x 23.2604 / (8 x 4.000) = 764.5 lb       (was 1,034.49 x 24.0 / (8 x 6.0) = 517.2)
 unit test (§7f of the cast frame's V 1,189.4 lb)                           = 594.7 lb
 ```
 
@@ -274,7 +274,7 @@ The N-S column demand is 342.5 lb at the roof plane; `north_entry_piers.md` §9e
 
 ## Not graded here / still open
 
-* The truss end chords (§8b, 752 lb): the truss fabricator's sealed design, an external deliverable; the splice
+* The truss end chords (§8b, 764 lb): the truss fabricator's sealed design, an external deliverable; the splice
   slip is not asked for.
 * The cast and steel variants' current shears and base moments: `canopy_garage_diaphragm.md`.
 * The soils report: the soil class is presumed, and every record that reads it says so.
