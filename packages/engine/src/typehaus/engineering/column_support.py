@@ -458,13 +458,13 @@ def _cantilever_row(ctx: EngineeringContext, wall_tag: str, piers: list[_Pier], 
     # spanning between them takes each one's top reaction against the other; only the E-W wind,
     # which pushes both the same way, has no prop. Propped (fixed base, pinned top) triangular
     # load: base moment q H^2 / 15 with q = efp H, i.e. efp H^3 / 15; top reaction efp H^2 / 10.
-    # The pressure is the COURT'S own: the at-rest equivalent fluid its retaining-wall design
-    # reads (`retaining_court.inputs`), not a second copy.
-    from typehaus.engineering.retaining_court.inputs import default_design_input
+    # The pressure is the COURT'S own, from its single soil-basis source (read, not copied).
+    from typehaus.engineering.retaining_system_cases import court_soil_basis, soil_inputs
 
-    efp = default_design_input().soil.at_rest_efp_pcf
-    soil_per_ft = SOIL_LOAD_FACTOR * efp.value * h_fill ** 3 / 15.0
-    prop_lb_per_ft = SOIL_LOAD_FACTOR * efp.value * h_fill ** 2 / 10.0
+    basis = court_soil_basis(ctx, soil)
+    efp_value = basis["at_rest_efp"]
+    soil_per_ft = SOIL_LOAD_FACTOR * efp_value * h_fill ** 3 / 15.0
+    prop_lb_per_ft = SOIL_LOAD_FACTOR * efp_value * h_fill ** 2 / 10.0
     wind_per_ft = total_moment / 12.0 / union_ft
     area = _BAR[vertical.bar][0] * 12.0 / float(vertical.spacing.inches)
     cover = float(getattr(reinforcement, "cover", None).inches) if getattr(
@@ -474,7 +474,8 @@ def _cantilever_row(ctx: EngineeringContext, wall_tag: str, piers: list[_Pier], 
     inputs += [Quantity(f"{wall_tag}.ew_base_moment", total_moment / 12.0, "lb-ft", 1.0),
                Quantity(f"{wall_tag}.ew_spread_ft", union_ft, "ft", 0.05),
                Quantity(f"{wall_tag}.soil_moment_per_ft", soil_per_ft, "lb-ft/ft", 1.0),
-               Quantity(f"{wall_tag}.soil_prop_per_ft", prop_lb_per_ft, "lb/ft", 1.0)]
+               Quantity(f"{wall_tag}.soil_prop_per_ft", prop_lb_per_ft, "lb/ft", 1.0),
+               *soil_inputs(ctx, soil)]
     return [LimitState(
         f"{wall_tag}: stem as a cantilever under E-W wind and the retained soil",
         wind_per_ft + soil_per_ft, capacity, "lb-ft/ft",
@@ -483,8 +484,8 @@ def _cantilever_row(ctx: EngineeringContext, wall_tag: str, piers: list[_Pier], 
         f"footing under 1.2D + 1.0W + L_g + 1.6H, while the SOIL, which pushes inward on both "
         f"stems, is propped by the porch between them. Columns ({'; '.join(parts)}) lb-ft over "
         f"{union_ft:.1f}' of 45 deg spread stopped at the pour's ends = {wind_per_ft:,.0f} "
-        f"lb-ft/ft, plus the PROPPED retained soil {SOIL_LOAD_FACTOR} x {efp.value:g} psf/ft "
-        f"({efp.basis}, the court's own at-rest basis, IBC 2018 Table 1610.1) x "
+        f"lb-ft/ft, plus the PROPPED retained soil {SOIL_LOAD_FACTOR} x {efp_value:g} psf/ft "
+        f"(the court's own at-rest basis, `court_soil_basis`: {basis['state']}) x "
         f"{h_fill:.2f}'^3 / 15 = {soil_per_ft:,.0f} lb-ft/ft over the unbalanced fill as "
         f"`structural.foundation_unbalanced_fill` reads it (from the site grade); the soil's "
         f"top reaction {prop_lb_per_ft:,.0f} lb/ft factored goes into the porch floor, "
