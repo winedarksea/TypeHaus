@@ -66,6 +66,16 @@ def _zoned(a, b, hooks, zone):
     return [((a, a2), (hooks[0], None)), ((b2, b), (None, hooks[1]))]
 
 
+def _lines(entry, q_lo: float, q_hi: float, db: float) -> list[float]:
+    """Bar lines across the mat: a ``spacing`` row fenced edge to edge; a ``count`` row is
+    that many bars bundled in contact at EACH edge (edge ties, ACI 318-19 §25.6.1)."""
+    if entry.spacing is not None:
+        return list(fence(q_lo + db / 2, q_hi - db / 2, entry.spacing.meters))
+    lo = [q_lo + db / 2 + k * db for k in range(entry.count)]
+    hi = [q_hi - db / 2 - k * db for k in range(entry.count)]
+    return lo + hi
+
+
 def lay_mat(sink: Sink, spec, solid, cover: float, *, ey=(0.0, 1.0),
             cap_thickness: float | None = None, earlier=()) -> None:
     """``earlier``: plan outlines of pours already reinforced — this mat stops at them."""
@@ -83,7 +93,7 @@ def lay_mat(sink: Sink, spec, solid, cover: float, *, ey=(0.0, 1.0),
     z_bot = solid.z0_m if cap_thickness is None or ribs is None else z_top - cap_thickness
     acc = {"bottom": 0.0, "top": 0.0}
     for entry in spec.bars:
-        if entry.role not in MAT_ROLES or entry.spacing is None:
+        if entry.role not in MAT_ROLES or (entry.spacing is None and not entry.count):
             continue
         db = BARS[entry.bar].diameter_in * _IN
         level, axis = entry.role.split("-")
@@ -97,7 +107,7 @@ def lay_mat(sink: Sink, spec, solid, cover: float, *, ey=(0.0, 1.0),
             z = (z_bot + cover + acc["bottom"] + db / 2 if level == "bottom"
                  else z_top - cover - acc["top"] - db / 2)
             acc[level] += db
-            for q in fence(q_lo + db / 2, q_hi - db / 2, entry.spacing.meters):
+            for q in _lines(entry, q_lo, q_hi, db):
                 for a, b in _segments(region, runs_x, q, lo, hi):
                     for (a1, b1), hk in _zoned(a, b, hooks, entry.zone):
                         sink.straight(entry, frame.world(*a1, z), frame.world(*b1, z),

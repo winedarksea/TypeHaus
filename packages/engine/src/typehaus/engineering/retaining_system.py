@@ -64,15 +64,9 @@ from typehaus.engineering.tier_surcharge import court_surcharges
 
 KIND = "retaining_system"
 
-#: Bumped whenever the arithmetic below changes — it rides in the fingerprint.
-#: ``"2"``: the strut force stopped being ``0.5 * max(member thrust)`` and became a derived
-#: reaction projected onto the cross-member's own axis (2026-09-14). Every seal on this kind
-#: stales, which is correct — the graded demand moved.
-#: ``"3"``: the raised-garden apron's bearing enters each member's thrust as a lateral
-#: strip surcharge (``tier_surcharge``, 2026-09-20). The resultant and the strut force moved.
-#: ``"4"``: one body off the resolved solids (25'-0" of south face, the corner squares and the
-#: spliced walls), the wet and deep cases, plan bending, the strut at the specified f'c with
-#: the braced leg, and the staged backfill row (2026-11-22).
+#: Bumped whenever the arithmetic moves; it rides in the fingerprint. "2" derived strut
+#: reaction (2026-09-14); "3" apron surcharge (2026-09-20); "4" one body, the case set, plan
+#: bending, strut at its f'c, staged backfill (2026-11-22).
 BASIS_VERSION = "4"
 
 #: **The graded case is at-rest, not active, and that is a consequence of the restraint and
@@ -312,6 +306,21 @@ def system_factors(ctx: EngineeringContext, ref: str, members: list
     return {f"{pcf:.0f}": value for pcf, value in graded.dry.items()}
 
 
+def loop_mobilisation(ctx: EngineeringContext) -> dict[str, dict[float, tuple[float, float]]]:
+    """``{loop ref: Graded.mobilised}`` for every verified loop (the joint row reads it)."""
+    soil = presumptive(getattr(ctx, "soil_class", None),
+                       basis=getattr(ctx, "soil_basis", None))
+    out = {}
+    for ref, members in _loops(ctx).items():
+        if soil is None or _verify(ctx, ref, members):
+            continue
+        built, missing = _built(ctx, members, soil)
+        graded, gap = (None, True) if missing else cases.grade(ctx, ref, members, built, soil)
+        if graded is not None and not gap:
+            out[ref] = graded.mobilised
+    return out
+
+
 def loop_free_bodies(ctx: EngineeringContext) -> dict[str, dict[str, tuple[float, float]]]:
     """``{loop ref: {soil_pcf: (soil resultant lb, base friction lb)}}`` for every verified
     loop — what ``thermal_break`` pushes the court against."""
@@ -325,9 +334,7 @@ def loop_free_bodies(ctx: EngineeringContext) -> dict[str, dict[str, tuple[float
 
 def footing_shortfalls(ctx: EngineeringContext
                        ) -> dict[str, dict[float, dict[str, float]]]:
-    """``{loop ref: {soil_pcf: {member tag: shortfall lb}}}`` — each member's own thrust
-    less its own base friction, the PER FOOTING figures ``_one`` prints. A loop that does
-    not verify is omitted; ``thermal_break`` reads its reserve demand here."""
+    """``{loop ref: {soil_pcf: {member tag: own thrust less own friction}}}``."""
     soil = presumptive(getattr(ctx, "soil_class", None),
                        basis=getattr(ctx, "soil_basis", None))
     if soil is None:
@@ -349,7 +356,6 @@ def footing_shortfalls(ctx: EngineeringContext
 
 def _surcharge_notes(ctx: EngineeringContext, built: list[_Member], pcf: float
                      ) -> tuple[str, ...]:
-    """Name each apron surcharge the members' thrusts now carry, by its source item."""
     tiers, _ = court_surcharges(ctx, pcf)
     parts = [f"{m.tag} +{tiers[m.tag].surcharge.lateral_plf:,.0f} plf via "
              f"{tiers[m.tag].surcharge.source}" for m in built if m.tag in tiers]
@@ -423,8 +429,7 @@ def _one(ctx: EngineeringContext, ref: str, members: list) -> EngineeringRecord:
     pending += [(s.name, f"a design answer for {s.name} "
                          + (f"(FS {s.capacity:.2f})" if s.is_safety_factor
                             else f"(d/c {s.ratio:.2f})"))
-                for s in states if not s.ok and s.name.startswith(
-                    ("footing plan bending", "staged backfill"))]
+                for s in states if not s.ok and s.name.startswith("staged backfill")]
     inputs = tuple(
         item for member in built for item in (
             Quantity(f"thrust_{member.tag}", member.thrust_plf, "plf", 1.0),

@@ -238,6 +238,15 @@ def test_every_row_reproduces_section_11l(records, tag) -> None:
     assert _input(records[tag], "house_thrust") == pytest.approx(_CAPPED_TOTAL_LB, rel=1e-6)
 
 
+def test_the_joint_takes_only_post_backfill_movement(records) -> None:
+    """§11r: boards set after backfill — thermal 0.0533" + (0.7836 − 0.6256) x 1/4" of
+    sliding = 0.0928" against 25% of the 1/2" EPDM, 0.125"."""
+    joint = _state(records["W-SG-ARCH"], "court-to-house joint closure")
+    assert joint.demand == pytest.approx(0.0928, abs=0.0005)
+    assert joint.capacity == pytest.approx(0.125)
+    assert "boards set after backfill" in joint.citation
+
+
 def test_without_the_cap_basis_8_comes_back(ctx, monkeypatch) -> None:
     """§11j-§11k: the uncapped spring, E and the neutral point back in every row."""
     out = _compute_with(ctx, monkeypatch, compliant=None)
@@ -265,11 +274,11 @@ def test_without_the_cap_basis_8_comes_back(ctx, monkeypatch) -> None:
 
 @pytest.mark.parametrize("tag", _ALL)
 def test_basis_9_is_ok_with_nothing_open(records, tag) -> None:
-    """Every board row passes; the loop is open only on decision 29's joint (§11r)."""
+    """Every row passes, the joint (§11r, boards set after backfill) included."""
     record = records[tag]
     assert all(s.ok for s in record.limit_states), tag
-    assert record.status is Status.INCOMPLETE
-    assert all("joint" in m or "slot" in m or "ties" in m for m in record.missing)
+    assert record.status is Status.OK
+    assert record.missing == ()
     assert record.basis_version == "11"
     notes = " ".join(record.notes)
     for flag in ("RETIRED WITH THE BARS", "RETIRED WITH THE STRIP", "ESTIMATED MODULUS",
@@ -425,8 +434,7 @@ def test_the_slab_edge_reads_the_authored_grade(ctx, monkeypatch) -> None:
         assert _state(record, name).demand == pytest.approx(demand, rel=5e-4), name
         assert _state(record, name).ratio == pytest.approx(ratio, abs=6e-4), name
     assert "ESTIMATED" in _state(record, "house near-line plan flexure").citation
-    assert record.status is Status.OVER and all("joint" in m or "slot" in m or "ties" in m
-                                                for m in record.missing)
+    assert record.status is Status.OVER and record.missing == ()
     # Uncapped, the same fallback reads OVER — the row is graded, not silently dropped.
     uncapped = _compute_with(ctx, monkeypatch, compliant=None)["TB-SG-W1"]
     edge = _state(uncapped, "house slab-edge bearing")

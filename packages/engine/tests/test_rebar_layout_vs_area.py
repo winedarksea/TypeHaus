@@ -90,8 +90,10 @@ def test_every_spaced_role_is_within_one_bar_per_layer_of_area_over_spacing(
             below = 0.0
             if wall is not None and bar.role == "vertical":
                 below = max(0.0, wall.z0_m - min(p[2] for p in bar.path))
-            placed[bar.role] += bar.placed_length_m - below
-            longest[bar.role] = max(longest[bar.role], bar.placed_length_m + bar.lap_length_m)
+            # By role AND size: a mat's ``count`` edge row shares its role with the spaced one.
+            key = (bar.role, bar.bar)
+            placed[key] += bar.placed_length_m - below
+            longest[key] = max(longest[key], bar.placed_length_m + bar.lap_length_m)
         if wall is not None:
             area = _wall_area_m2(model, wall)
         else:
@@ -103,10 +105,10 @@ def test_every_spaced_role_is_within_one_bar_per_layer_of_area_over_spacing(
                 continue
             area_here = area
             layers = max(1, entry.layers)
-            bar = longest[entry.role]
+            bar = longest[(entry.role, entry.bar)]
             expected = area_here / entry.spacing.meters * layers
             tolerance = layers * bar
-            got = placed[entry.role]
+            got = placed[(entry.role, entry.bar)]
             checked += 1
             if not expected - tolerance - 1e-6 <= got <= expected + 2 * tolerance + 1e-6:
                 misses.append(f"{rebar_set.host_tag} {entry.role} #{entry.bar}: laid "

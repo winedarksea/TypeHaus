@@ -21,6 +21,7 @@ the body, so the perched case takes it as blocked and nothing else is changed by
 
 from __future__ import annotations
 
+import dataclasses
 from dataclasses import dataclass
 
 from typehaus.engineering.item import LimitState, Quantity
@@ -116,6 +117,9 @@ class Graded:
     notes: tuple[str, ...]
     inputs: tuple[Quantity, ...]
     dry: dict[float, tuple[float, float]]
+    #: ``{pcf: (friction mobilised once backfilled, before the apron; the most any graded
+    #: service case mobilises)}`` — what the joint row's post-backfill movement reads.
+    mobilised: dict[float, tuple[float, float]] = dataclasses.field(default_factory=dict)
 
 
 def grade(ctx, ref: str, walls: list, built_by_pcf: dict, soil) -> tuple[Graded | None, list[str]]:  # type: ignore[no-untyped-def]
@@ -126,6 +130,7 @@ def grade(ctx, ref: str, walls: list, built_by_pcf: dict, soil) -> tuple[Graded 
     fs: dict[str, list[tuple[float, float, Body, Water]]] = {c.key: [] for c in CASES}
     missing: list[str] = []
     dry: dict[float, tuple[float, float]] = {}
+    mobilised: dict[float, tuple[float, float]] = {}
     tables = []
     for pcf, built in built_by_pcf.items():
         members = members_for(ctx, walls, built, soil, pcf)
@@ -140,6 +145,11 @@ def grade(ctx, ref: str, walls: list, built_by_pcf: dict, soil) -> tuple[Graded 
         levels, gap = waters(ctx, body)
         missing.extend(gap)
         dry[pcf] = (body.resultant(), body.friction * body.weight())
+        bare = dataclasses.replace(body, pushes=tuple(
+            dataclasses.replace(p, lateral_plf=0.0) for p in body.pushes))
+        service = [levels[k] for k in ("dry", "perched", "flooded court") if k in levels]
+        mobilised[pcf] = (1.0 / bare.fs(DRY) if bare.fs(DRY) else 0.0,
+                          max(1.0 / body.fs(w) for w in service))
         for case in CASES:
             on = body if case.plane == "footing" else deep
             water = levels.get(case.key)
@@ -170,7 +180,8 @@ def grade(ctx, ref: str, walls: list, built_by_pcf: dict, soil) -> tuple[Graded 
     inputs = (Quantity("stone_unit_weight", STONE_PCF, "pcf", 1.0),
               Quantity("body_weight_110", body110.weight(), "lb", 1.0),
               Quantity("body_resultant_110", body110.resultant(), "lb", 1.0))
-    return Graded(tuple(states), tuple(pending), tuple(notes + tables), inputs, dry), []
+    return Graded(tuple(states), tuple(pending), tuple(notes + tables), inputs, dry,
+                  mobilised), []
 
 
 def _how(case: Case, body: Body, water: Water, pcf: float) -> str:
