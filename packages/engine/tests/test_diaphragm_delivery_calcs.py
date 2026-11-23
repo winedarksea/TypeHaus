@@ -40,6 +40,13 @@ _ROWS = {
     # §12 (2026-11-23): the screen at 100% closes by a couple at the end straps; the garage
     # walls take the same couple over their 24.0' spacing.
     "LSTA24 end straps, N-S couple + chord": (657.111, 823.3333333333334),
+    # §12d: every delivery into a garage wall summed, worst wind direction (landing ties from
+    # deck_tie's own distribution: 1,095.7 lb strap along W-G-W, 580.3 lb HL43 into W-G-S).
+    "W-G-W delivered shear, all deliveries summed": (114.57, 182.5),
+    "W-G-E delivered shear, all deliveries summed": (52.68, 182.5),
+    "W-G-S delivered shear, all deliveries summed": (73.32, 182.5),
+    "W-G-W overturning, all deliveries summed": (822.9, 2580.0),
+    "W-G-S overturning, all deliveries summed": (520.9, 2580.0),
     "W-G-W joint couple, N-S case": (29.416, 182.5),
     "W-G-E joint couple, N-S case": (26.149, 182.5),
 }

@@ -510,8 +510,11 @@ It governs both headers at **0.662** (was 0.877), ahead of the post bearing's 0.
 (SPF Fc-perp 425 psi, dry, under the roof) is the supplier's and is in the criteria schedule. A chord that stopped at
 the header centreline, 2.75", would read 570.5 / 430.6 = 1.325 on T2
 (`test_a_chord_stopped_at_the_header_centreline_is_over`): that is why the heel is at the outside face of bearing and
-the bottom chord crosses the full 5 1/2". The beam's own bending, shear and post bearing keep the uniform 80 sf load,
-which bounds the three truss lines and the joint bay's strip that lands on the garage gable truss.
+the bottom chord crosses the full 5 1/2". The beam's own bending and shear keep the uniform 80 sf load, which bounds the three truss lines and the
+joint bay's strip that lands on the garage gable truss. The POSTS take the larger of the uniform model and the truss
+reactions by statics (posts at y 37.5 / 42.479): with R = 1,464 / 2,353 / 2,052 at y 37.333 / 39.333 / 41.333,
+north post = (-1,464 x 0.167 + 2,353 x 1.833 + 2,052 x 3.833)/4.979 = 2,471 lb, south post 5,869 - 2,471 = 3,398 lb against
+the uniform model's 3,393: the drift's +205 lb on the south supports, now modelled (0.326 -> 0.326, bearing 112.3 psi).
 
 ## 8. Backups
 

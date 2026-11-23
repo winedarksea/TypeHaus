@@ -593,6 +593,24 @@ RF-GARAGE torque, M / 24.000' = 549.3 lb on each of W-G-W, W-G-E
   W-G-W  549.3 / 18.675' = 29.4 plf vs 182.5   0.161       W-G-E  549.3 / 21.008' = 26.1 plf   0.143
 ```
 
+**12d. Every delivery into a garage wall, summed (integrated review M9, 2026-11-23).** One wind direction at a time, every
+delivery in it added (the garage-100% and screen-100% canopy cases never act together either, so this is a bound). The landing's
+ties come from `deck_tie`'s own distribution of its wind cases onto the joints at each wall (the collector strap along W-G-W
+1,095.7 lb; the HL43 angles into W-G-S 580.3 lb). Surpluses: W-G-W 18.674', W-G-E 21.008', W-G-S 17.299' (R301.1.3), carried at 182.5 plf:
+
+```
+W-G-W  N-S wind  494.4 (lever rule) + 549.3 (N-S couple) + 1,095.7 (strap) = 2,139.5 lb   2,139.5 / 18.674 = 114.6 plf   0.628
+       HTT4 CN-G-BWHD-SW  2,139.5 / 21.667' x 8.333' = 822.9 lb vs 2,580                                                0.319
+W-G-E  N-S wind  557.3 (lever rule) + 549.3 (couple)                      = 1,106.6 lb   1,106.6 / 21.008 = 52.7 plf    0.289
+W-G-S  E-W wind  688.0 (deck share) + 580.3 (HL43)                        = 1,268.3 lb   1,268.3 / 17.299 = 73.3 plf    0.402
+       HTT4 CN-G-BWHD-S-DR  1,268.3 / 20.292' x 8.333' = 520.9 lb vs 2,580                                              0.202
+```
+
+(The reviewer's ~88 plf for W-G-W divides the same 2,139 lb by the 24' wall; the repo grades on the surplus.)
+
+**12e. Service condition of the end straps.** The LSTA24 straps and their nailers sit under the roof deck, below the membrane and
+roofing, out of the rain: the stated basis is DRY service (C_M 1.0). At wet service (0.70) the end-strap row, 0.798, would read 1.14.
+
 ## Sources
 
 - ASCE 7-16 §26.2, §29.3, §2.4.1.

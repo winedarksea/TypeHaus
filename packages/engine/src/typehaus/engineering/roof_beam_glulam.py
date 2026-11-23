@@ -150,10 +150,28 @@ def glulam(ctx: Any, roof: Any, beam: Any, tributary_ft2: float,
     )
     uniform_plf = per_ft * (snow_psf + dead_psf)  # type: ignore[operator]
     truss_inputs: tuple[Quantity, ...] = ()
+    notes: tuple[str, ...] = ("Graded as treated 24F-V4 DF (BEAM_GLULAM_TREATED_DF); a "
+                              "substitute must be at least that layup.",)
     if (chord := beam_bearing(ctx, roof, beam)) is not None and (
             seats := truss_seats(ctx, roof, beam, snow_psf, dead_psf)):  # type: ignore[arg-type]
         truss_state, truss_inputs = truss_bearing_state(seats, *chord, FC_PERP_PSI, CM_FC_PERP)
         states = (*states, truss_state)
+        # The beam and its posts are graded at the UNIFORM design snow; the drift gradient puts
+        # more on the south post. Model it: the post reactions with each truss at its own load.
+        placed = _placed_post_reactions(ctx, beam, seats, a_ft, s_ft)
+        uniform_max = max(env.reactions_lb)
+        if placed is not None and max(placed) > uniform_max:
+            states = tuple(
+                LimitState(st.name, max(placed) / (width_in * post_in), st.capacity, st.unit,
+                           st.citation + f"; the drift placed per truss puts "
+                           f"{placed[0]:,.0f} / {placed[1]:,.0f} lb on the south / north post, "
+                           f"over the uniform model's {uniform_max:,.0f}, and governs")
+                if st.name == "bearing on the post" else st for st in states)
+        notes = notes + (
+            "Bending, shear and deflection take the UNIFORM design snow over the roof-bearing "
+            "run, which bounds the drift's gradient; the posts take the larger of that and the "
+            "reactions of each truss at its own load" + (
+                f" (south {placed[0]:,.0f} lb, north {placed[1]:,.0f} lb)." if placed else "."),)
     governing = max(states, key=lambda state: state.ratio)
     return EngineeringRecord(
         item_id=item_id(KIND, beam.tag), kind=KIND, key=beam.tag,
@@ -172,5 +190,29 @@ def glulam(ctx: Any, roof: Any, beam: Any, tributary_ft2: float,
                 Quantity("design_dead", dead_psf, "psf", 0.1),
                 Quantity("uniform_load", uniform_plf, "plf", 0.1), *truss_inputs),
         limit_states=states, element_tags=(roof.tag, beam.tag),
-        notes=("Graded as treated 24F-V4 DF (BEAM_GLULAM_TREATED_DF); a substitute must be "
-               "at least that layup.",))
+        notes=notes)
+
+
+def _placed_post_reactions(ctx: Any, beam: Any, seats: list, a_ft: float, s_ft: float
+                           ) -> tuple[float, float] | None:
+    """``(first post, second post)`` lb with each truss at its own reaction, by statics.
+
+    ``a_ft``/``s_ft`` are the first post's station from the beam start and the post spacing."""
+    start = ctx.plan.by_tag(beam.start_node)
+    end = ctx.plan.by_tag(beam.end_node)
+    if start is None or end is None or s_ft <= 0.0:
+        return None
+    (x0, y0), (x1, y1) = start.position.xy_m, end.position.xy_m
+    dx, dy = x1 - x0, y1 - y0
+    if min(abs(dx), abs(dy)) > 1e-6:
+        return None
+    origin, sign = (y0, 1.0 if dy > 0 else -1.0) if abs(dy) > abs(dx) else (
+        x0, 1.0 if dx > 0 else -1.0)
+    second = a_ft + s_ft
+    first = 0.0
+    total = 0.0
+    for seat in seats:
+        at = sign * (seat.station_ft * _M_PER_FT - origin) / _M_PER_FT
+        first += seat.reaction_lb * (second - at) / s_ft
+        total += seat.reaction_lb
+    return first, total - first
