@@ -5,7 +5,8 @@
 `FT-B-S3` (the footings it is isolated from), `SG_VENEER_BEAM_14` (the assembly).
 **Written:** 2026-09-05, by hand. §6e re-worked 2026-09-21 (hooks, enclosing ties, footing
 dowels); §6f added 2026-09-22 (TMS ℓ/600, end fixity, the joint rows) and §6d superseded by it.
-**§6k (2026-11-04) is the basis now:** the beam is bedded on stone (`FB-SG-BRKBM`) flush on
+**§6l (2026-11-23, decisions 10/11/29) refines §6k:** ties on the 2024 IRC's W2.8 row and on the studs only, steel
+lintels over flat-headed reveals, the beam graded on its bed. **§6k (2026-11-04) is the basis now:** the beam is bedded on stone (`FB-SG-BRKBM`) flush on
 the house strips, a soil-supported veneer footing; `veneer_beam/W-SG-BRKBM` retired, and the
 brick stands 6 1/2" off the studs, inside the 2024 IRC's W2.8 tie row. §6j (the 11'-0" span
 on the toes) is kept as the record of the member as it was graded.
@@ -28,10 +29,11 @@ one that needs a seal.
 > `structural.foundation_unbalanced_fill` on the last published row of IRC Table
 > R404.1.2(8). This beam is a thermal device that happens to be made of concrete.
 
-> ⚠ **The ties are prescriptive on the 2024 IRC, an alternate under the adopted 2018 one
-> (§6k).** 6 1/2" back of brick to face of stud: W2.8 adjustable wire reaches 6 5/8"; the
-> 2018 table stops at 4 1/2". `veneer_anchor/W-B-BRICK` is the R104.11 request. §5.1's
-> reasons not to anchor the wythe to the side walls, and why R703.15 does not govern, stand.
+> ⚠ **The ties are prescriptive on the 2024 IRC, and the permit application waits for Minnesota's
+> 2024-based code (§6k, §6l).** 6 1/2" back of brick to face of stud: W2.8 adjustable wire reaches
+> 6 5/8"; the 2018 table stops at 4 1/2". `veneer_anchor/W-B-BRICK` is the dated dependency (an
+> R104.11 request is the fallback). §5.1's reasons not to anchor the wythe to the side walls, and
+> why R703.15 does not govern, stand.
 
 ---
 
@@ -960,6 +962,92 @@ footing-level boards' thickness (2.5" → 2"), which `notes/sunken_garden_court_
 §11o records. The sunken-garden door's tread over the cavity is
 `notes/french_door_catalog_installation.md` §6.
 
+### 6l. Ties on the 2024 row, steel lintels, the bed graded (2026-11-23, decisions 10, 11, 29; review F-01..F-04)
+
+**Table R703.8.4(1), read on UpCodes for every edition** (MN 2018, Colorado 2021, Oklahoma 2024,
+2026-11-23; the 2024 text is the model code's as the Oklahoma mirror prints it). Wood-stud rows only,
+in every edition: no row has concrete or masonry backing, so **no tie goes into concrete** (F-02).
+
+| edition | rows (maximum back of brick to the backing) | footnotes on the W2.8 row |
+|---|---|---|
+| 2018 (MN 2020, adopted) | corrugated (nominal 1" air); adjustable W1.7, 4 1/2" | none; no W2.8 row |
+| 2021 | W1.7 4 5/8"; **W2.8 "greater than 4 5/8" ... maximum 6 5/8""** | pintle: at least 2 legs, offset at most 1 1/4"; brick face to pintle end at most 2"; backing eye W2.8, barrel at least 1/4" OD or plate at least 0.074" x 1 1/4" |
+| 2024 | the same two rows | the same; 2024 adds R703.8.3.1's 3x3x3/16 angle alternatives (§6l lintels) |
+
+R703.8.4.1 (all three): 2.67 sf a tie, 32" o.c. horizontally and 24" vertically (2 sf over 30 psf).
+R703.8.4.1.1 (2021 and 2024): openings over 16" in either dimension take extra ties within 12", at most
+3 ft o.c.
+
+**The detail names the edition** (it prints on the finding and the wall section): *2024 IRC Table
+R703.8.4(1), W2.8 (3/16") adjustable wire tie, 2 pintle legs, offset at most 1 1/4", brick face to pintle
+end at most 2", backing eye or barrel per the table; fastener not smaller than an 8d common nail, long
+enough to seat in the stud through the 4" foam and 1/2" sheathing.* 6.500" against 6.625": 0.125".
+
+**Dependency, not a design left undone.** Minnesota's code is the 2018 IRC (MN Rules 1309.0010); the 2024
+row is not in the book the building official holds today. The owner files the permit application on or
+after the date Minnesota's 2024-based residential code takes effect (the engine's profile then carries the
+row and `veneer_anchor/W-B-BRICK` retires with no house edit); failing that, the written R104.11 request is
+made before the application. Decision 31: the adoption date is the one open item of this lane.
+
+**Where the ties go, derived** (`veneer_tie_layout.py`). Studs of the framed backing, projected on the
+wythe (inches from its east end, x = 317.5" minus that): 4.25, 13.5 (`W-B-S3-FR`'s end studs), 27.6,
+24.6 (the east pack's kings), 93.9, 96.9 (the west pack), then 109.5, 125.5, 141.5, 157.5, 173.5, 189.5,
+198.75 (`W-B-S2-FR` at 16"): **13 stations** over the 203.0" wythe. A tie carries 2.67 x 144 / 24 =
+**16.02"** of width on 24" rows; the widest tributary is **16.00"** (a full 16" stud bay), so every
+station is within it. **The concrete ends** are 3.5" each (`W-B-S1`, `W-B-S4`, x 114.5"-118.0" and
+314.0"-317.5"): tied from the first stud 4.25" in, so none goes into the pour, and the end strip is
+4.25" + half a 9.25" bay = 8.9" of one tie. Openings over 16": `AO-B-BRICK-WIN` (14" x 20", tall enough)
+has a stud tie 1.0" from each jamb, `AO-B-BRICK-DOOR` 2.25" and 0.75". The head over the door lands on
+the head cripples (`W-B-S3-FR`, 16" o.c.).
+
+**Wind (re-pinned after L7):** mean roof height 34.76 ft from adjacent ground, q_h 21.03 psf; ASD Zone 5
+wall suction at the tie's 2.67 sf, x (1.4 + 0.18) x 0.6 = **19.93 psf** (it was 18.25), under 30: still
+2.67 sf a tie, the 16.02" bay.
+
+**What the ties must take (decision 29).** The boards and the ties go in after the three retained sides
+are backfilled (`IsolationBoard.set_after_backfill`), so the ties take only the closure the thermal-break
+record bounds: thermal 0.0533" + sliding 0.0321" = **0.0854"** against the board's 0.125" (read from
+`thermal_break_transfer/W-SG-ARCH`'s "court-to-house joint closure", not copied). An adjustable tie is
+rigid along its own axis, which is the wall's normal: its pintle and eye are held to **at most 1/16"
+(0.0625") of movement between the two parts** (TMS 402-16 as summarized in Heckmann's 2018 catalog p.70),
+and its published travel is VERTICAL (Heckmann Pos-I-Tie: 1 1/4" above and below the barrel; H&B's
+joint-reinforcement ties disengage at 1 1/4"). No maker publishes travel normal to the wall. 0.0854 / 0.0625
+= 1.37, so the finding is UNKNOWN and **gate G8** is reported to the coordinator with the options
+(a tie with published wall-normal travel; a different joint width or board; the brick's own tilt about its
+ties, 0.0854 x (1 - z / 89.1") against 0.0625" above the 24" row, not a code basis).
+
+**Lintels (F-01, decision 11).** R703.8.3 (2018 and 2024 text the same): veneer over an opening is on a
+noncombustible lintel, 4" of bearing; a steel one is shop-painted or galvanized or corrosion-resistant;
+spans per Table R703.8.3.1. Both reveals are flat-headed now (the arches are gone: R703.8.3 has no arch
+alternative) on **L3x3x1/4, long leg vertical, hot-dip galvanized (ASTM A123)**, 4" of bearing a side, a
+22" angle over the 14" window and a 71 5/16" one over the 63 5/16" door; the table's 3x3x1/4 row is
+**6'-0" with no story above**, and 63 5/16" = 5.276 ft. Nothing bears on the wythe (the porch joists'
+soffit -11 1/4" is 2 1/12" over its top). The horizontal leg is 3" under a 3 5/8" brick: the brick overhangs
+it 5/8". **Options for G7, and why none was needed:**
+
+| option | a table read? | long-lived? | verdict |
+|---|---|---|---|
+| **HDG carbon angle** | **yes: the row IS the angle** | A123 Table 1: structural shapes 1/4" to under 5/8" take **grade 100 = 3.9 mils (100 microns)**; AGA: a 3.9-5.0 mil coating on structural steel is **70 to 90+ years to first maintenance in an industrial atmosphere** (time to first maintenance is not service life) | **chosen** |
+| stainless angle | no: Table R703.8.3.1 lists carbon-steel angles; stainless is "other steel members meeting structural design" (note 3), a design not a read | longest | not a read |
+| precast concrete | no: the table's reinforced lintel is a masonry lintel with bars; a precast lintel is the maker's own load table | longest | not the table |
+
+The cavity is wetter than the AGA atmospheric chart (wet alkaline mortar over the angle): the flashing over
+every lintel (R703.8.5) and the weeps (R703.8.6) keep it drained, and the chart's age (AGA says it
+understates today's lives) and that caveat are stated. Cost: 7.8 ft of angle in all (22" + 71 5/16"), billed by the foot
+in `[steel_members]` with a galvanizing lot, against an arch's masonry labour. `structural.veneer_lintel` grades the read.
+
+**The bed (F-04), at each real interface** (`structural.veneer_bed_bearing`, `scratch/L3/hand.py`). Wythe
+268.86 plf (7.424 ft x 3.625" x 120 pcf) at y -7.8125"; beam 12" x 17.75" x 150 pcf = 221.9 plf at -12";
+total **490.7 plf**; resultant 2.29" north of the beam's centre; kern of the 12" contact 2.00":
+**outside the kern**, so contact is partial. a = 6 - 2.29 = 3.71"; contact 3a = 11.1"; peak 2P / 3a =
+**1,059 psf** against the site's presumptive 2,000 psf (R401.4.1, GM): **0.53**. The soil under the 43 1/4"
+stone sees 491 psf on the 12" with no spread credited: 0.25. **Widening the stone 4" south (review option
+1) changes nothing**: the contact is the beam's own bottom, still 12", still 2.29" off its centre; the
+bed's centroid moves 2" south, away from the load. A beam widened 4" south (16": 295.8 plf of its own)
+lowers the peak to 894 psf (0.45) for 74 plf more concrete and a form change; not needed at 0.53. The
+tilt a one-sided peak settles into is not graded (the beam is cast with the court walls' toes, which hold
+it); the wythe's own bearing on the beam top (6.2 psi) is not graded.
+
 ## Sources
 
 - IRC 2018 R703.8.4 — anchored masonry veneer, airspace and tie spacing.
@@ -977,6 +1065,11 @@ footing-level boards' thickness (2.5" → 2"), which `notes/sunken_garden_court_
   1" nominal airspace, 2.67 sf per tie (2 sf over 30 psf), 32"/24" o.c.; IRC R104.11
   (alternative materials and methods). TMS 402-22 / BIA TN 3C measure 6" to the face of
   ≥100 psi sheathing instead; not the basis here.
+- IRC 2018 (MN, UpCodes), 2021 (Colorado, UpCodes), 2024 (Oklahoma, UpCodes; model text) R703.8.3, Table
+  R703.8.3.1, R703.8.4, Table R703.8.4(1), R703.8.4.1, R703.8.4.1.1, R703.8.5, R703.8.6 — §6l. Table R602.7.5 is
+  `sunken_door_band_header.md`'s. Heckmann Building Products catalog (2018 TMS 402-16 anchor summary p.70;
+  Pos-I-Tie ThermalClip p.71; ties p.81), buildsite.com. ASTM A123 Tables 1 and 2 and AGA's "Estimating the
+  Life of Hot-Dip Galvanized Coatings" (galvanizeit.org), §6l.
 - BIA Technical Note 18 — clay masonry movement; the basis for the end soft joints in §5.1.
 - BIA Technical Note 18A, *Accommodating Expansion of Brickwork* (May 2019), Eq. 1, sealant
   and backer-rod guidance — §6g.

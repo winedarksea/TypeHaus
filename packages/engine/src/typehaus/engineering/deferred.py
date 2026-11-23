@@ -171,21 +171,20 @@ def _rafter_keys(ctx: EngineeringContext) -> list[str]:
 
 _declare(Deferral(
     kind="veneer_anchor",
-    reason="an anchored masonry wythe stands farther off its backing than any row of the "
-           "adopted IRC Table R703.8.4(1) — catlin's W-B-BRICK is 6 1/2in back of brick to "
-           "face of stud, where the 2018 IRC (MN 2020) stops at 4 1/2in for W1.7 wire and "
-           "publishes no W2.8 row. The 2021/2024 IRC's W2.8 adjustable wire row reaches 6 "
-           "5/8in, so the same wall is prescriptive there; under the adopted edition it is "
-           "an alternate. This engine computes no masonry anchor",
-    designer="the owner, asking the building official to accept the 2024 IRC row under "
-             "R104.11; failing that, the structural engineer of record (or the anchor "
-             "supplier's engineer) for a TMS 402 anchor design",
-    deliverable="AHJ acceptance under R104.11 of IRC 2024 Table R703.8.4(1)'s W2.8 "
-                "adjustable wire row (6 5/8in max to the backing) with R703.8.4.1's "
-                "spacing, or a TMS 402 anchor design for the measured standoff. Retires "
-                "with no house edit once the profile adopts the 2021 or 2024 IRC",
+    reason="the anchored brick stands 6 1/2in back of its backing's studs, past the 4 1/2in the "
+           "adopted Minnesota edition's tie table (IRC Table R703.8.4(1), 2018 base) allows and "
+           "with no W2.8 row. The 2024 IRC's table carries a W2.8 adjustable-wire row to "
+           "6 5/8in, and the ties are detailed to it: every tie on a stud, none into a "
+           "concrete end, W2.8 with two pintle legs. The item is a dependency on the code in "
+           "force on the permit application date, not a design left undone",
+    designer="the owner, as the permit applicant: the application date is the owner's to set",
+    deliverable="the permit application filed on or after the date Minnesota's 2024-based "
+                "residential code takes effect, when the profile's edition carries the row and "
+                "this item retires with no house edit; failing that, a written request to the "
+                "building official under IRC R104.11 to accept the 2024 row, made before the "
+                "application",
     unblocks="the veneer anchorage detail and the wall section through the wythe",
-    oracle=(Oracle(note="sunken_garden_veneer_beam.md", section="§6k",
+    oracle=(Oracle(note="sunken_garden_veneer_beam.md", section="§6k, §6l",
                    test="tests/test_veneer_cavity.py"),),
 ))
 

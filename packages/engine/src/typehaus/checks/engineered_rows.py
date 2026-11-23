@@ -83,13 +83,14 @@ ROWS: tuple[ItemRow, ...] = (
              "ACI 318-19 §25.4.3", "TMS 402-22 §13.1.2.3")),
     ItemRow("veneer_anchor", "veneer_anchor",
             "The ties of an anchored masonry wythe standing past the adopted IRC tie table.",
-            "masonry veneer ties past the adopted IRC Table R703.8.4(1) — an R104.11 "
-            "alternate on a later edition's row, or a TMS 402 anchor design",
-            "IRC R703.8.4, Table R703.8.4(1); IRC R104.11; TMS 402-16 §12.2",
+            "masonry veneer ties past the adopted IRC Table R703.8.4(1) — detailed to the 2024 "
+            "edition's W2.8 row, a dependency on the code in force at permit application, "
+            "else an R104.11 request",
+            "IRC R703.8.4, Table R703.8.4(1); IRC R104.11",
             "every anchored masonry wythe in this plan is inside the adopted IRC's "
             "Table R703.8.4(1)",
             "Masonry veneer ties beyond the IRC tie table",
-            ("IRC R703.8.4", "IRC Table R703.8.4(1)", "IRC R104.11", "TMS 402-16 §12.2")),
+            ("IRC R703.8.4", "IRC Table R703.8.4(1)", "IRC R104.11")),
     ItemRow("thermal_break", "thermal_break_transfer",
             "An isolation joint between two separately founded pours — the board and its thrust.",
             "an isolation board between separately founded pours — the board's "
@@ -98,15 +99,6 @@ ROWS: tuple[ItemRow, ...] = (
             "no isolation board in this plan separates two pours",
             "Isolation joint between separately founded pours",
             ("ACI 347R-14", "ACI 318-19 §22.3", "ASTM C578")),
-    ItemRow("band_header", "band_header",
-            "A flush LVL header in a floor band over a wall opening (Door.header_in_band).",
-            "the flush LVL header in the floor band — bending, shear and deflection under "
-            "the band's floor strip, with every jamb load above landing on its seats",
-            "AWC NDS 2018 §3.3-3.4; Weyerhaeuser TJ-9000 p.5; IRC Table R301.7",
-            "no opening in this plan names a floor band as its header",
-            "Flush band headers over wall openings",
-            ("AWC NDS 2018 §3.3", "IRC R602.7", "IRC Table R301.7",
-             "Weyerhaeuser TJ-9000 (Microllam LVL)")),
 )
 
 

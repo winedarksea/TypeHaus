@@ -31,11 +31,11 @@ Depths are inches outward from the sheathing's outer face; elevations are off th
 - **Edge member.** An LSL rim board, 1 1/4" × 11 7/8" (Weyerhaeuser TimberStrand 1.3E, the house
   rim; `JoistSpec.edge_rims`, owner 2026-11-18) in place of the edge TJI 230 at all three doors,
   its outer face on the sheathing's back (flush with the stud face, as an end rim's is):
-  FS-M-EAST `edge-rim-0-000-0` (PORCH, D-B-SUNKEN's LVL band plies nailed to its inner face),
+  FS-M-EAST `edge-rim-0-000-0` (PORCH, D-B-SUNKEN's header ply, the same rim stock, nailed to its inner face since 2026-11-23),
   FS-M-MECH `edge-rim-0-011-0` (ENTRY, on W-B-N3's mudsill) and FS-S-EAST `edge-rim-0-000-0`
   (BALCONY, on W-M-S2's plates). The SPF web backers and their flange question are gone.
 - **Backer behind the rim** (owner, 2026-11-18; `params/sill_seat_backers.py`), so the HeadLOK's
-  2.0" of thread embeds (§3): PORCH, D-B-SUNKEN's 1 3/4" LVL plies already nailed to the rim;
+  2.0" of thread embeds (§3): PORCH, D-B-SUNKEN's header ply (1 1/4" rim stock, a 2-ply LSL rim header) already nailed to the rim;
   BALCONY, a 10" piece of the 1 1/4" rim stock on the rim's inner face behind each seat (a 2-ply
   rim board), alone in its bay (y 1 3/4"..3", the next line at 8 11/32"); ENTRY, the same
   rim-stock ply (2026-11-20; it was a 1/2" filler closing onto FO-M-ERV-OA's north trimmer
@@ -85,7 +85,7 @@ it is on the main member's side):
     through         + sheathing 0.5                         = 8.0"
     HLGM10          10", 2" thread → plain shank 8.0" ≥ 7.5"                     ✓ 0.5"
     thread          8.0" to 10.0": starts at the rim's face, 1.25" in the rim, 0.75" in the backer
-                    PORCH  LVL ply 1 (1.75", tip 1.0" short of its far face)
+                    PORCH  header ply, rim stock (1.25", tip 0.5" short), as BALCONY
                     BALCONY rim-stock backer (1.25", tip 0.5" short)
                     ENTRY  rim-stock backer (1.25", tip 0.5" short), as BALCONY
     in wood         1.25 + 0.75 = 2.00" ≥ 2.0" (ESR-1078 Table 2)                ✓ exactly
@@ -181,8 +181,9 @@ filler + 1/4" of the ERV trimmer until 2026-11-20; the trimmer no longer reaches
   end-loaded seat's reaction is the larger: 348.67 / (10/12) = 418.4 plf against 560 → **0.75**.
   (The retired filler took IRC R602.3(1) item 10's 16d pattern into the LVL trimmer, 0.62 by
   NDS 12.3.)
-- PORCH: the LVL plies' own band-header fastening (TJ-9000 p.30, 3 rows of 10d at 12", nailed to
-  the rim, `sunken_door_band_header.md`); nothing added.
+- PORCH: the header ply's own fastening (TJ-8000 p.7 top load, 3 rows of 10d at 12", nailed to the
+  rim, `sunken_door_band_header.md` §4, which grades this seat's 390.9 plf against the same 560 plf
+  side-load row: 0.698); nothing added.
 
 The screws' tension pulls each backer toward the rim, so no nail is in withdrawal.
 
