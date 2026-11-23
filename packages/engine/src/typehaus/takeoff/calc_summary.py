@@ -240,6 +240,13 @@ def _input_rows(inputs: PackageInputs) -> list[list[str]]:
         if ground is not None and abs(value - float(ground)) > 0.01:
             rows.append(["roof beams and piers under the drift", f"design snow {value:g} psf",
                          f"authored (drift case), not derived from p_g {float(ground):g} psf"])
+    court = getattr(site, "specified_soil", None)
+    if court is not None and getattr(site, "confirmed_soil", None) is None:
+        rows.append(["retaining court (criteria, section 4)",
+                     f"soil: bed friction {court.bed_friction:.2f}, native phi' "
+                     f"{court.native_phi_deg:g} deg",
+                     f"SPECIFIED ({court.source or 'drawing note'}); not yet confirmed: no site "
+                     "report is entered"])
     return rows
 
 
@@ -313,22 +320,38 @@ def render_summary(inputs: PackageInputs, previous: PreviousIssue | None) -> str
         grouped: dict[str, list[str]] = {}
         for r in open_rows:
             grouped.setdefault(STATE_NAME[r.status], []).append(f"`{r.item_id}`")
-        blocks.append(bullets([f"**{state}** — {', '.join(items)}"
-                               for state, items in grouped.items()]))
+        lines = [f"**{state}** — {', '.join(items)}" for state, items in grouped.items()]
+        if _court_unconfirmed(inputs):
+            lines.append("**Soil confirmation** — the court is closed on specified soil "
+                         "parameters; a site report must confirm them (criteria, section 4).")
+        blocks.append(bullets(lines))
+    elif _court_unconfirmed(inputs):
+        blocks.append("**Soil confirmation** — the court is closed on specified soil "
+                      "parameters; a site report must confirm them (criteria, section 4).")
     else:
         blocks.append("None. Every item is computed.")
     blocks += [heading("Not covered, and who owns it", 2),
                "Per family: where its calculation lists what it does not grade.",
                table(["Family", "Where it lists what it does not grade", "Owner"],
                      _family_rows(records))]
-    if _owner_snow(inputs):
-        blocks += [heading("Not covered — owner", 2), bullets([
-            "**Balcony snow.** The decks carry the Minnesota deck basis (40 live + 10 dead, "
-            "no snow, no drift). The reason is the owner's: elevated and wind-swept. The "
-            "comparison is on `01-design-criteria.md`, section 2."])]
+    owner = _owner_lines(inputs)
+    if owner:
+        blocks += [heading("Not covered — owner", 2), bullets(owner)]
     return document(*blocks)
 
 
-def _owner_snow(inputs: PackageInputs) -> bool:
+def _court_unconfirmed(inputs: PackageInputs) -> bool:
+    site = getattr(getattr(getattr(inputs.model, "plan", None), "project", None), "site", None)
+    return (getattr(site, "specified_soil", None) is not None
+            and getattr(site, "confirmed_soil", None) is None)
+
+
+def _owner_lines(inputs: PackageInputs) -> list[str]:
+    """The owner's stated bases that no calculation here grades."""
+    from typehaus.engineering.balcony_loads import NOT_COVERED_OWNER
+
     structural = getattr(getattr(inputs, "preferences", None), "structural", None)
-    return getattr(structural, "deck_snow_psf", None) is not None
+    if getattr(structural, "deck_snow_psf", None) is None:
+        return []
+    return [f"**Balcony snow.** {NOT_COVERED_OWNER} The comparison is on "
+            "`01-design-criteria.md`, section 2."]
