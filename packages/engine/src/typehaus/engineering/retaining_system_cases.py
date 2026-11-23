@@ -52,14 +52,24 @@ class Case:
     graded: bool
 
 
+#: Cases the owner has excluded by a stated basis: printed once, never graded.
+OWNER_BASIS = {
+    "perched snow": (
+        "OWNER BASIS, stated: full ground snow on the terrace and perched water at H/2 (a "
+        "blinded drain) are taken as NOT concurrent; each is graded alone. Combined they would "
+        "read FS {fs:.2f} at {pcf:.0f} pcf, printed for transparency. NOT COVERED (owner): that "
+        "combination; lateral frost thrust in the top 42\" of retained fill; seasonal thermal "
+        "ratcheting under the sustained thrust."),
+}
+
 CASES = (
     Case("dry", "sliding, dry", "footing", True),
     Case("perched", "sliding, perched at H/2", "footing", True),
     Case("retained full", "sliding, retained water to the terrace, court empty", "footing",
          False),
     Case("snow", "sliding, ground snow on the terrace", "footing", True),
-    # Whether the 50-year ground snow stands on the terrace while a blinded drain perches
-    # water at H/2 is an owner decision (free body §15j); reported until it is made.
+    # Owner's stated basis (2026-11-23): full ground snow and perched water at H/2 are not
+    # concurrent. The combination is printed once, never graded (free body §15k).
     Case("perched snow", "sliding, perched at H/2 under snowmelt", "footing", False),
     Case("flooded court", "sliding, court flooded to its lowest threshold", "footing", True),
     Case("deep dry", "deep plane, dry", "deep", False),
@@ -210,6 +220,9 @@ def grade(ctx, ref: str, walls: list, built_by_pcf: dict, soil) -> tuple[Graded 
                     f"against {REQUIRED_FS:.2f} at {pcf:.0f} pcf (more resistance, a key, or "
                     f"an owner-accepted basis)")))
         else:
+            if case.key in OWNER_BASIS:
+                notes.append(OWNER_BASIS[case.key].format(fs=value, pcf=pcf))
+                continue
             notes.append(f"REPORTED, not graded — {case.label}: FS {value:.2f} at "
                          f"{pcf:.0f} pcf. {how}")
     body110 = fs["dry"][0][2]

@@ -100,6 +100,9 @@ def test_the_court_reproduces_the_hand_worked_free_body(catlin_plan) -> None:
     staged = next(s for name, s in states.items() if name.startswith("staged backfill"))
     assert staged.capacity == pytest.approx(_NOTE_STAGED_FS["rule"], abs=0.002)
     assert f"one side empty and two full {_NOTE_STAGED_FS['empty']:.2f}" in staged.citation
+    basis = next(n for n in record.notes if n.startswith("OWNER BASIS"))
+    assert "NOT concurrent" in basis and "FS 1.46" in basis   # §15k, printed once
+    assert "under snowmelt" not in states
     reported = " ".join(n for n in record.notes if n.startswith("REPORTED"))
     assert f"court empty: FS {_NOTE_RETAINED_FULL_FS:.2f}" in reported
     assert f"deep plane, dry: FS {_NOTE_DEEP_FS['dry']:.2f}" in reported
