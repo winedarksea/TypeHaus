@@ -75,8 +75,12 @@ def _deflections(loads: tuple[float, float, float], a: float, s: float, b: float
 
 
 def envelope(a_ft: float, s_ft: float, b_ft: float, dead_plf: float, live_plf: float,
-             ei_lb_in2: float, d_ft: float) -> Envelope:
-    """Envelope over the eight live patterns. ``a``/``b`` may be 0 (a simple span)."""
+             ei_lb_in2: float, d_ft: float,
+             extra_dead_plf: tuple[float, float, float] = (0.0, 0.0, 0.0)) -> Envelope:
+    """Envelope over the eight live patterns. ``a``/``b`` may be 0 (a simple span).
+
+    ``extra_dead_plf`` is dead load per segment on top of ``dead_plf`` (a planter on the back
+    span); dead load is in every pattern, so it is never patterned."""
     x1, x2, length = a_ft, a_ft + s_ft, a_ft + s_ft + b_ft
     grid = [length * i / _STEPS for i in range(_STEPS + 1)]
     faces = [x for x in (x1 - d_ft, x1 + d_ft, x2 - d_ft, x2 + d_ft) if 0.0 < x < length]
@@ -85,7 +89,8 @@ def envelope(a_ft: float, s_ft: float, b_ft: float, dead_plf: float, live_plf: f
     m_max = v_max = sag = 0.0
     tips = [0.0, 0.0]
     for pattern in product((0.0, 1.0), repeat=3):
-        loads = tuple(dead_plf + live_plf * on for on in pattern)
+        loads = tuple(dead_plf + extra + live_plf * on
+                      for extra, on in zip(extra_dead_plf, pattern, strict=True))
         r1, r2, shear, moment = _state(loads, a_ft, s_ft, b_ft)  # type: ignore[arg-type]
         r_max = [max(r_max[0], r1), max(r_max[1], r2)]
         r_min = min(r_min, r1, r2)

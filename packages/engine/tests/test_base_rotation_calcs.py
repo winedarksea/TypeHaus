@@ -30,13 +30,14 @@ _WORKED = {
     "PT-BW-RNE": (1.2892, 1.8486, Status.OK),
     # The four landing rows (W, E, GW, GE) went 2026-11-22: decision 16 pins and props
     # those piers as footing piers, so a fixed-base sway reading of them describes nothing.
-    # The balcony at the same date: each edge beam carries 9.75' (not 18'), P_u 7,886 ->
-    # 4,855 lb (front), 4,877 (rear); wall-top k_θ unchanged. Front R 6.616 / 6.242.
-    # 3" lower on 2026-09-23 (addendum 2026-09-23b): L 105.125", P_u 4,820.0; R 6.412 / 6.049.
-    "PT-SG-BF1": (1.0406, 1.0414, Status.OK),
-    "PT-SG-BF3": (1.0406, 1.0414, Status.OK),
-    "PT-SG-BR1": (1.0421, 1.0429, Status.OK),
-    "PT-SG-BR3": (1.0421, 1.0429, Status.OK),
+    # The balcony, re-worked 2026-11-23 (note balcony_moment_columns.md §26): each column on its
+    # beam's STATICS reaction plus the planter, P_u 5,196.3 (front) / 6,095.4 (rear). The hand
+    # script (scratchpad hand_delta.py, from §4's wall-top spring, Pc = Pc_rigid/(1 + 3/R)
+    # with the exact-spring root as the cap) reads R 6.838 / 6.450 front, 6.763 / 6.379 rear.
+    "PT-SG-BF1": (1.0456, 1.0465, Status.OK),
+    "PT-SG-BF3": (1.0456, 1.0465, Status.OK),
+    "PT-SG-BR1": (1.0545, 1.0556, Status.OK),
+    "PT-SG-BR3": (1.0545, 1.0556, Status.OK),
 }
 _LANDING = ("PT-BW-W", "PT-BW-E", "PT-BW-GW", "PT-BW-GE")
 _ORACLE = {tag: row for tag, row in _WORKED.items() if tag not in _LANDING}
@@ -154,6 +155,21 @@ def test_the_presumed_n_h_reproduces_section_10(tag, catlin_cast_ctx) -> None:
     assert increment.demand == pytest.approx(delta - 1.0, abs=5e-4)
     assert record.governing.name == "second-order increment"
     assert any("THE SOIL IS PRESUMED" in n for n in record.notes)
+
+
+@pytest.mark.parametrize("tag,ratio", [("PT-SG-BF1", 0.4251), ("PT-SG-BR1", 0.4297)])
+def test_the_flexible_delta_magnifies_every_pair_and_the_worst_governs(
+        tag, ratio, catlin_cast_ctx) -> None:
+    """B-04: 0.178 was the flexible delta on one non-governing pair (the guard at 1.6L). Every
+    §2.3.1 pair now takes it against its own phi*Mn; the floor-empty wind + guard pair at
+    the lowest axial governs, 10,142 lb-ft against 23,857."""
+    record = catlin_cast_ctx.engineering[f"{KIND}/{tag}"]
+    assert record.governing.name == "magnified moment (sway), flexible base"
+    assert record.governing.ratio == pytest.approx(ratio, abs=0.0005)
+    assert "L_guard, floor live absent" in record.governing.citation
+    notes = " ".join(record.notes)
+    assert "HEAD DRIFT" in notes and "SEISMIC" in notes and "SDC A" in notes
+    assert "WHICH Pc IS GRADED" in notes
 
 
 def test_the_keys_are_column_bases_plus_the_wall_borne_columns(catlin_cast_ctx, ectx) -> None:

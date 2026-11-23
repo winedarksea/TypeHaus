@@ -94,7 +94,7 @@ from typehaus.resolve.railings.fascia_layout import fascia_stations
 from typehaus.resolve.railings.guard_line import offset_path
 from typehaus.quantities import m
 from typehaus.model.structure import CompliantLayer
-from params.column_heads import HETA20Z_PAIR_HEAD, STANDOFF_PACK_IN
+from params.column_heads import HETA20Z_PAIR_HEAD_1_PLY, STANDOFF_PACK_IN
 from params.cladding import HOUSE_NS_OUTBOARD_IN
 from plan.assemblies.board_batten import BBD_BAND_JOINT, BOARD_BATTEN_DEPTH
 from params.landscape_walk import D_X0 as WALK_D_X0
@@ -676,16 +676,21 @@ _CAST_COLUMN_CAGE = ReinforcementSpec(
     source='8" cage, (4) #5 + #3 rings @ 10", one of ten house-wide; notes/sunken_garden_piers.md §4, balcony_moment_columns.md §7',
 )
 # The four CORNER columns are fixed at the base, so the same cage plus the dowels that fix it:
-# a #5 L at each vertical, hooked into the W-SG-W1/E1 wall top and lapped class B above it
-# (balcony_moment_columns.md §7; laid out by resolve/rebar, decision #75 D6).
-# `embedment` 24" clears straight ld 21.2" at 5,000 psi and `joint_surface` is §7's 1/4"
-# roughening — both graded in §11 (`column_support/W-SG-W1`/`-E1`).
+# a STRAIGHT #5 at each vertical (no hook is credited), cast 48" into the W-SG-W1/E1 stem and
+# standing 30" above it to lap class B into the column (balcony_moment_columns.md §7, §21;
+# laid out by resolve/rebar, decision #75 D6). `embedment` is 48" since 2026-11-23 (owner
+# decision 7, review B-05): the developed length is 12.7" on §25.4.2.4's general equation
+# (21.2" on Table 25.4.2.3's simplified row) and the longer bar carries the column moment
+# well below the head, which `column_support`'s stem rows grade. `projection` 30" is the lap
+# the class B splice (16.6") is graded against. `joint_surface` is §7's 1/4" roughening —
+# graded in §11 (`column_support/W-SG-W1`/`-E1`).
 _MOMENT_COLUMN_CAGE = ReinforcementSpec(
     bars=(
         BarSpec(role="vertical", bar=5, count=4),
         BarSpec(role="ties", bar=3, spacing=inch(10.0)),
-        BarSpec(role="dowels", bar=5, embedment=inch(24.0), joint_surface="roughened",
-                note="one per vertical, class B lap into the column"),
+        BarSpec(role="dowels", bar=5, embedment=inch(48.0), projection=inch(30.0),
+                joint_surface="roughened",
+                note="one per vertical, straight, class B lap into the column"),
     ),
     cover=inch(2.0),
     lap_class="B",
@@ -828,13 +833,18 @@ WALLS = [
     #
     # W-SG-W1/E1 are SUPPORTED TOP AND BOTTOM. Whether a porch deck counts as *permanent
     # lateral support* at the head of a wall holding 9'-9" of fill is a judgment about the
-    # real structure: this head is not a deck edge resting alongside a wall — it is a beam
-    # pocket cast INTO it. Both back beams and both front beams die into these two walls in
-    # HUCQ410-SDS concealed-flange hangers (CN-SG-HGR-W/E, -FW/-FE), the porch joists span
-    # between those beams, and FS-SG-PORCH's plank sheet ties the whole diaphragm together.
-    # The bottom is the garden slab bearing at their foot. That is a continuous load path in
-    # both directions at both ends, which is what R404.1.2(8) presumes and what the free
-    # retaining walls south of here (W2/E2/S) do not have.
+    # real structure. The head is held by the PORCH DIAPHRAGM: two treated 2x12 ledgers
+    # (`BM-SG-LDGW`/`-LDGE`) on these walls' court faces, 9 stainless Titen HD each, the porch
+    # joists hung between them in LUS210SS hangers, and FS-SG-PORCH's plank tying the field
+    # together, 16'-9" face to face. (The back and front beams, their HUCQ410-SDS hangers and
+    # the beam pockets this comment used to describe were retired 2026-09-22.) The bottom is
+    # the garden slab bearing at their foot. The same head is the PROP of each balcony
+    # column's base moment (`column_support`, review B-05): 3M/2H plus the shear, about 760 lb
+    # factored per column, delivered through those ledgers and the porch plank in compression
+    # to the opposite wall; the ledger anchors' pull-out under it is not graded (no allowable
+    # is catalogued for THD50600H6SS), and `AN-SG-LEDGER-DOWELS` keeps the drill off the dowels.
+    # That is a continuous load path in both directions at both ends, which is what R404.1.2(8)
+    # presumes and what the free retaining walls south of here (W2/E2/S) do not have.
     #
     # These walls resolve 9'-1 7/16" tall over 6.3' of unbalanced fill, which the check
     # answers on Table R404.1.2(8)'s 10' wall x 7' backfill row — the last one it publishes,
@@ -2369,7 +2379,7 @@ for _i, _x in _PILLAR_X.items():
                             supported_by=_bears_on,
                             vertical_reinforcement=SPEC.corner_column_cage,
                             reinforcement=_MOMENT_COLUMN_CAGE,
-                            head_connector=HETA20Z_PAIR_HEAD,
+                            head_connector=HETA20Z_PAIR_HEAD_1_PLY,
                             assembly="SUNKEN_GARDEN_COLUMN_12"))
 
 # --- public geometry for params/porch_guards.py ---------------------------------------------
@@ -2896,16 +2906,16 @@ CONNECTORS = []
 # to the exterior environment (`notes/column_head_connector_options.md`).
 #
 # ``elevation`` is the column TOP, the pour the spoons are cast into and the HETA's own datum
-# (one pack under the soffit since 2026-10-31). The straps are field-trimmed at the glulam top
-# (`AN-SG-HETA-TRIM`).
+# (one pack under the soffit since 2026-10-31). Each strap is WRAPPED over the glulam top, not
+# trimmed (owner decision 8, 2026-11-22; `AN-SG-HETA-TRIM`).
 _CORNER_SEAT_BEAM = {("R", 1): "BM-SG-BLW", ("F", 1): "BM-SG-BLW",
                      ("R", 3): "BM-SG-BLE", ("F", 3): "BM-SG-BLE"}
 #
 # ** TWO ANCHORS PER COLUMN, ONE EACH FACE OF THE BEAM, SINCE 2026-09-14. ** A one-sided tie
 # is an ECCENTRIC rotation restraint and NDS 3.3.3 wants beam ends restrained. FL11473 Table
-# 3 rates the HETA pair as ONE installation on a "2- or 3-ply" member; a 3-1/2" glulam is
-# that by width, not ply count — a reading the options note flags. Read as 1-ply, the
-# lateral drops to Table 2's 340 lb and the guard still clears (200 / 212.5).
+# 3 rates the HETA pair as ONE installation; a 3-1/2" glulam is ONE PLY, so the pair is graded
+# on Table 3's 1-ply columns (1,920 / F1 1,115 / F2 900 — `params/column_heads.py`, owner
+# decision 8) and its straps are wrapped over the beam top.
 #
 # Each spoon sits 1-3/4" off the axis, 4-1/4" from the edge of the 12" round (min 1-1/2").
 # Authored at the beam FACES, where each strap nails on; two markers at one point would
@@ -3185,7 +3195,11 @@ SEQUENCE_NOTES = [
     # Minted 2026-10-31 with typehaus.model.ids.new_uid() (C3-E14).
     Annotation(
         uid="5N3QKZFZ9Y", tag="AN-SG-HETA-TRIM", position=pt(ft(_cx), ft(-35)),
-        text="HOLD POINT, HETA20Z SEAT TIES (CN-SG-SEAT-*): the four corner columns are cast 3/4in under the balcony glulam soffits so the SS316 pack is a real 3/4in; set each pair's spoons from a template of the beam faces. After the glulam is set, FIELD-TRIM each 16in strap at or below the beam top before the joists go on (no HETA12/16 in ZMAX or stainless). Nail 6 - 16d HDG per strap (FL11473 Table 3), the LOWEST FOUR holes first (Table 2 note 2), all on the glulam face above the pack; confirm the trim with Simpson before the pour."),
+        text="HOLD POINT, HETA20Z SEAT TIES (CN-SG-SEAT-*): the four corner columns are cast 3/4in under the balcony glulam soffits so the SS316 pack is a real 3/4in; set each pair's spoons from a template of the beam faces. After the glulam is set, WRAP each 16in strap over the beam top and nail it there (do not trim it): the strap rises the beam's 11-7/8in face and the 3/4in pack and lies 3-3/8in across the top, the two straps overlapping at the centre line; the pair is graded on FL11473 Table 3's 1-ply columns, single glulam. Nail the 10 0.148x1-1/2in nails of the row, the LOWEST FOUR holes of each strap first (Table 2 note 2), on the glulam face above the pack. No confirmation from Simpson is owed."),
+    # Minted 2026-11-23 with typehaus.model.ids.new_uid(). Review B-05.
+    Annotation(
+        uid="SJXPPQJKRE", tag="AN-SG-LEDGER-DOWELS", position=pt(ft(_cx), ft(-38)),
+        text="PORCH LEDGER ANCHORS AT THE CORNER COLUMNS (W-SG-W1/E1): the four corner columns are doweled 48in into the stem with #5 bars 3.3in to 4.1in off the court face. SKIP OR RELOCATE any ledger anchor within 8in of a column centre line, or locate the dowels with a scanner before drilling: a 1/2in x 6in Titen HD drilled from the court face reaches the dowel zone and will strike a #5."),
     # Minted 2026-10-11 with typehaus.model.ids.new_uid(). Free body §13.
     Annotation(
         uid="90QCKCV758", tag="AN-SG-BACKFILL", position=pt(ft(_cx), ft(-32)),
