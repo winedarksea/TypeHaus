@@ -171,7 +171,7 @@ def sizing_study(planting: PlantingProfile,
                 candidate = replace(base, geometry=geometry)
                 cases = _cases(candidate, planting)
                 ratios = [
-                    max(1.5 / case.sliding_fs, 1.5 / case.overturning_fs,
+                    max(1.5 / case.overturning_fs,
                         case.bearing_max_psf / candidate.soil.allowable_bearing_psf.value,
                         1.01 if case.contact_loss else 0.0)
                     for case in cases

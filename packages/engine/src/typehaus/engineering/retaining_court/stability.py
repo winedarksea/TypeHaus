@@ -37,15 +37,22 @@ def analyse_stability(design: CourtDesignInput, planting: PlantingProfile, *,
                       case: str = "ordinary", wet: bool = False,
                       compaction_surcharge_psf: float = 0.0,
                       full_height_comparison: bool = False) -> StabilityResult:
-    """Per-foot free body; stability uses service loads and effective wet weight."""
+    """Per-foot free body at service loads.
+
+    Wet is the perched case the court's own record grades: the bed under the footing still
+    drains, so nothing is buoyant (A1-06: the old sweep took the whole wall and soil buoyant
+    and the water on top of a total-stress EFP). ``sliding_fs`` is ONE FOOT OF ONE WALL with
+    no loop — the arithmetic of a wall nobody built — so it is printed and never decides
+    ``passes_screening``; the court's sliding is ``retaining_system``'s case set.
+    """
 
     geometry = design.geometry
     pressure = integrate_pressure(
         design, planting, wet=wet, compaction_surcharge_psf=compaction_surcharge_psf,
         full_height_comparison=full_height_comparison,
     )
-    concrete_density = CONCRETE_PCF - (62.4 if wet else 0.0)
-    soil_density = design.soil.unit_weight_pcf.value - (62.4 if wet else 0.0)
+    concrete_density = CONCRETE_PCF
+    soil_density = design.soil.unit_weight_pcf.value
     stem_weight = (geometry.stem_thickness_in / 12.0
                    * geometry.concrete_stem_height_ft * concrete_density)
     footing_weight = geometry.footing_width_ft * geometry.footing_depth_ft * concrete_density
@@ -73,7 +80,7 @@ def analyse_stability(design: CourtDesignInput, planting: PlantingProfile, *,
     sliding = weight * design.soil.interface_friction.value / pressure.thrust_plf
     overturning_fs = resisting / overturning
     passes = (
-        sliding >= 1.5 and overturning_fs >= 1.5 and bearing_min >= 0
+        overturning_fs >= 1.5 and bearing_min >= 0
         and bearing_max <= design.soil.allowable_bearing_psf.value
     )
     return StabilityResult(

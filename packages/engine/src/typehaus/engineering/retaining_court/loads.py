@@ -67,8 +67,11 @@ def pressure_at_height_psf(design: CourtDesignInput, planting: PlantingProfile,
             soil.at_rest_efp_pcf.value / soil.unit_weight_pcf.value)
     water = 0.0
     if wet:
+        # Below the water line the soil is K0 γ' and the water γw (IBC 1610.1: buoyant soil
+        # plus hydrostatic), never water added to a total-stress EFP (A1-06, 2026-11-22).
         water_height = design.drainage.blocked_drain_water_height_ft.value
-        water = 62.4 * max(water_height - height_above_footing_ft, 0.0)
+        k0 = soil.at_rest_efp_pcf.value / soil.unit_weight_pcf.value
+        water = 62.4 * (1.0 - k0) * max(water_height - height_above_footing_ft, 0.0)
     return direct + surcharge + water
 
 

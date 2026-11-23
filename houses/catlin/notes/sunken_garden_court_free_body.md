@@ -126,6 +126,11 @@ Everything below uses that. `retaining_wall.BASIS_VERSION` went 1 → 2 for it.
 
 ## 1. The free body — what is actually built
 
+> **HISTORY (2026-11-22).** The graded numbers are §15's: one body off the resolved solids,
+> 17'-0" clear, S 18.0' on axes, W-SG-ARCH 12" x 12" in the footing plane, `#5 @ 10"`, dry FS
+> **1.571** (no-stone 1.12). Figures below (19'-0" x 26'-0", 20'-0" S, 12" x 17 1/2", `#5 @ 7"`,
+> FS 1.63 / 1.735, no-stone 1.16-1.24) are the record of how the design got here.
+
 Plan, at the footing level. The court is 19'-0" clear × 26'-0", walls 12" cast concrete:
 
 ```
@@ -264,6 +269,11 @@ neither reaches catlin). No number in this note moves: the court is graded at-re
 
 ## 3. The geometry, as it now stands
 
+> **HISTORY (2026-11-22).** The graded numbers are §15's: one body off the resolved solids,
+> 17'-0" clear, S 18.0' on axes, W-SG-ARCH 12" x 12" in the footing plane, `#5 @ 10"`, dry FS
+> **1.571** (no-stone 1.12). Figures below (19'-0" x 26'-0", 20'-0" S, 12" x 17 1/2", `#5 @ 7"`,
+> FS 1.63 / 1.735, no-stone 1.16-1.24) are the record of how the design got here.
+
 | | |
 |---|---|
 | stem | 12" cast concrete, **9'-1 7/16"** above the footing |
@@ -324,6 +334,11 @@ factor of safety it costs off the toe.
 ---
 
 ## 4. The calculation
+
+> **HISTORY (2026-11-22).** The graded numbers are §15's: one body off the resolved solids,
+> 17'-0" clear, S 18.0' on axes, W-SG-ARCH 12" x 12" in the footing plane, `#5 @ 10"`, dry FS
+> **1.571** (no-stone 1.12). Figures below (19'-0" x 26'-0", 20'-0" S, 12" x 17 1/2", `#5 @ 7"`,
+> FS 1.63 / 1.735, no-stone 1.16-1.24) are the record of how the design got here.
 
 Per lineal foot, moments about the toe, service loads.
 
@@ -683,6 +698,13 @@ The apron's own thrust also presses its pad down (`P_v`, 54–65 plf); that is n
 the court and is named as an ungraded remainder in `raised_garden_srw.md` §6.
 
 ---
+
+### 4e. The capped apron (2026-11-22, lane L6)
+
+The four SRW legs came down 4" and took AB capstones. On W-SG-S and W-SG-W2 the apron's net
+bearing is now 86.67 psf at 110 pcf: 54.63 plf at 5.108' above the footing underside (worked
+on `notes/raised_garden_srw.md`). W-RG-EAST keeps its old section, 50.48 plf on W-SG-E2, until
+the owner's G9 decision. §15 carries both.
 
 ## 5. ⚠ The corner that does not clear, and what the design therefore depends on
 
@@ -3042,6 +3064,182 @@ basis 8   788.5 / 5,475                                             d/c 0.144 �
 The corner anchor on the cross wall's sill is not counted: it takes this
 load along its own plate, not at F2. With the floor line at 0.471 the stems' governing row is
 §11m's slab-edge peak sustained load, 0.680. Every verdict above is unchanged.
+
+## 11r. The court-to-house joint (2026-11-22, decision 29)
+
+No structural member crosses the break. The veneer's ties and the boards' compliance do, and the
+joint has to take the court's movement. The 3.5 psi cap holds only while the 1/2" EPDM stays
+inside 25% (0.125"). A conservative bound on movement toward the house:
+
+```
+thermal closure, the whole run        5.5e-6 x 30 x 323.0               = 0.0533"
+sliding: friction mobilised at 110    78,174 / 122,776                  = 0.637
+         x the motion at which a presumptive allowable is mobilised
+         (soil.MOTION_AT_ALLOWABLE_BAND_IN, 0.25-1.0")   0.159" .. 0.637"
+bound (band top)                      0.0533 + 0.637                    = 0.690"
+capacity, as drawn                    0.25 x 0.5                        = 0.125"   (0.072" left after thermal)
+```
+
+The foam board's own squeeze at the cap (up to 10% x 3.5/15 x 2.5" = 0.058" off its C578 rating)
+would add room. No published modulus bounds it from below, so it is not credited. Slot
+tolerance and the veneer ties' travel are not stated on the model yet: the ties come from the
+veneer lane. Even at the band's low end, 0.212" against 0.125", the joint as drawn does not take
+the bound. **Gate G8.**
+
+## 15. The case set on one body (2026-11-22, decisions 1-3)
+
+Supersedes §4 and §13's arithmetic. Hand-worked from the solids (`haus build` geometry). The
+engine (`retaining_system_body/_cases/_rows/_staged`) is pinned against it.
+
+### 15a. The body on the footing plane (110 pcf, mu 0.35 on the stone, class 3)
+
+The body that moves is the cast loop: placements 1-2, every footing and stem, the strut, and
+W1/E1, which are spliced to W2/E2 (`continues_into`) and have their own thrusts carried by their
+braces. The retained soil on the three retaining heels moves with it, corner squares included.
+W1/E1's heel soil is not credited.
+
+```
+footings  W1/E1 7 x 10.5, W2/E2 7 x 11.5, S 8.333 x 25 (out to out), x 1' x 150     77,450
+strut     18' less 2 x 3.5' inside the side footings, 11 x 1 x 1 x 150             1,650
+stems     27.276' per side line + 17.0' between = 71.552 sf x 9.1198 x 150       97,882
+heel soil 2 x 3 x 16.833 + 3 x 25 = 176 sf x 9.1198 x 110                        176,559
+drain col 53.77 sf x (−48" − −109.4375" = 5.1198') x (100 − 110)                  −2,753
+W                                                                                350,788
+mu W      0.35 x 350,788                                                         122,776
+```
+
+**The south face is 25'-0", not 18'-0".** The soil pushes on every soil face of the body. FT-SG-S
+and its corner squares run out to out, so the net north push acts on the body's projected
+width. Favourable at-rest pressure on the side heels' north ends is not credited. The old unit
+section (18' of thrust against the S wall's axis) understated the demand by 7' of face. That is
+why 1.735 falls even with the new credits.
+
+```
+thrust   ½ x 60 x 10.1198² = 3,072.31 + apron 54.63 (§4e) = 3,126.94 plf x 25.00'  = 78,174 lb
+         (W2 3,126.94 vs E2 3,122.79 over 19.83' each: 82 lb east-west, negligible)
+dry FS   122,776 / 78,174                                                       = 1.571
+no stone (mu 0.25)  0.25/0.35 x 1.571                                           = 1.12
+```
+
+### 15b. Water
+
+K0 = 60/110 = 0.5455. Below water the soil thrust is K0 γ' with γ' = 130 − 62.4 = 67.6 (the
+band's top, the largest). Weights below water are γ − 62.4 (the smallest).
+
+```
+perched H/2: water 5.06' over the footing top (−48.72"), bed draining, no uplift
+  above  ½ x 0.5455 x 110 x 4.0599²                          =   494.5
+  below  0.5455 x (110 x 4.0599 x 6.0599 + ½ x 67.6 x 6.0599²) = 2,153.2
+  water  ½ x 62.4 x 6.0599²                                  = 1,145.7
+  + apron 54.63 = 3,848.1 plf x 25 = 96,201      FS 122,776 / 96,201 = 1.276
+retained water to the terrace, court empty (reported): 128,448 lb  FS 0.96
+flooded court: both sides at the court floor (−109.4375"), uplift on 527.33 sf
+  W' = 350,788 − 62.4 x 527.33 x 1.0 = 317,883;  thrust 3,115.2 x 25 = 77,884
+  FS 0.35 x 317,883 / 77,884 = 1.429
+```
+
+A drained zone is credited only the pressure change its geometry gives. A vertical column moves
+a perched head from pore pressure to seepage force, and the same force reaches the body. So the
+perched case takes the drain as blocked.
+
+### 15c. Deep plane: stone and native on native, −175.4375", mu 0.25 (class 4)
+
+The plane runs at the soakaway's bottom under the hull of the loop (25 x 30.333 = 758.33 sf).
+The enclosed court core moves with the ring. The porch core is credited its base shear only,
+with no frontal resistance against the house.
+
+```
++ bed stone  W1/E1 2 x 73.5 x 3.5, W2/E2 2 x 80.5 x 4.5, S 208.33 x 4.5,
+             ARCH 33 x 4.5 (net of the side beds), BRKBM 11 x 3.604 = 2,364.65 cf x 100  236,465
++ native under W1/E1/BRKBM beds (1.0')  158 cf x 110                                     17,380
++ native core 198 sf x 5.5' x 110 = 119,790; + over the ARCH bed wings 22 sf x 1' 2,420;
+  + over FB-SG-BRKBM 1,084; field gravel 110 sf x 1.5' x (100 − 110) −1,650             121,644
+W                                                                                     726,276
+dry   0.25 x 726,276 / (½ x 60 x 14.6198² + 54.63 = 6,466.8 x 25 = 161,671)  = 1.12
+lip   (−127.4375", soakaway full, both sides) uplift 4.0 x 758.33 x 62.4 = 189,280
+      0.25 x 536,996 / 157,044                                               = 0.855   GRADED
+flooded to the court floor                                                   = 0.75
+```
+
+### 15d. Load path rows (1.6H)
+
+```
+strut   two-span continuous over W-SG-ARCH: W2 3,126.94 plf over 16.333' (pinned at the
+        corner), W1's footing ½ x 60 x 7.289² = 1,593.9 plf over 10.5'
+        M_B = (3,126.94 x 16.333³ + 1,593.9 x 10.5³) / (8 x 26.833) = 72,066
+        R = 25,536 + 8,368 + 72,066/16.333 + 72,066/10.5 = 45,180;  Pu 72,288
+        phi Pn at the strut's own 5,000 psi: 0.60 x 0.45 x 5,000 x 144 x 0.6836 = 132,890  -> 0.54
+plan bending FT-SG-W2/E2: the footing spans 11.5' from FT-SG-S to the strut, carrying the
+        wall's whole thrust (its friction is spent north-south). Mu = 1.6 x 3,126.94 x 11.5²/8
+        = 82,708 ft-lb; the arch rises from the stem line (42" off the toe edge) to the edge
+        bar (3.25"): z 38.75", Tu 25,613 vs 0.75 x 0.20 x 60,000 = 9,000 -> 2.85 (1 #4)
+        Favourable bound (tie spread over the toe half's 3 #4, hangers through the transverse
+        mat, deep-beam z 0.2(L+2h) = 61.2"): 0.60.   GATE G3
+corner delivery FT-SG-S: (78,174 − its own friction 61,184) / 25 = 680 plf over 18';
+        Mu 44,038; z 54.7"; Tu 9,663 vs 13,950 (1 #5) -> 0.69
+```
+
+### 15e. Staged backfill on the body
+
+Grid of twelfths of H per side, earth only, W1/E1 empty (concrete only), 110 pcf.
+
+| rule (no side more than ... above another) | worst FS |
+|---|---|
+| H/12 (10") | 1.55 |
+| H/6 (1'-8") | 1.50 |
+| H/4 | 1.44 |
+| H/3 | 1.37 |
+| **H/2 (AN-SG-BACKFILL as drawn)** | **1.24** |
+| one side empty, two full | 1.04 |
+
+The south face is wider than §13 counted, so the drawn rule no longer reaches 1.50.
+AN-SG-BACKFILL's printed 1.64/1.37 is stale and waits on gate G1.
+
+### 15f. Gate options (for the owner; nothing is drawn)
+
+**G1, sliding below 1.5.** Graded cases: perched 1.28, flooded 1.43, staged at H/2 1.24.
+Reported: retained full height 0.96.
+
+* **Key under FT-SG-S, 12" x D x 25'.** Lateral bearing in the stone is IBC Table 1806.2 class
+  3, 200 psf/ft from the court floor. It is combined with friction (IBC 1806.3.1, read on the
+  2024 text; the 2018 wording is still to confirm). Submerged at 0.6 in the flooded case.
+
+| D | cy | perched | flooded | staged H/2 | retained full |
+|---|---|---|---|---|---|
+| 2'-0" | 1.85 | 1.51 | 1.60 | 1.50 | 1.13 |
+| **2'-6"** | **2.31** | **1.60** | **1.67** | **1.60** | 1.20 |
+| 3'-0" | 2.78 | 1.71 | 1.75 | 1.71 | 1.28 |
+| 4'-6" | 4.17 | 2.10 | 2.04 | 2.13 | 1.57 |
+
+* **Drained zone at the wall.** Its geometry is credited only where the drained stone beyond the
+  heel carries the seepage force on its own base. Perched needs 14,350 lb removed, which takes a
+  zone about 6'-2" wide (about 3.2' beyond the heel) to −48": roughly 64 cy more #57. It does
+  nothing for the flooded case (equal heads).
+* **Tighter backfill rule** (H/6 lifts, 1.50) answers the staged row only.
+* **Acceptance at excavation (draft, owner-checked, not printed).** The bed bottom at
+  −14'-7 7/16" must be granular (GM/SM/GP/SW by ASTM D2488 visual-manual, not CL/ML) and firm
+  under the plate. There must be no standing water or seepage into the dig 48 h after a rain.
+  If either fails, the fallback is the 2'-6" key (above), detailed with 2 #5 continuous and
+  cast in placement 1.
+
+**G2, deep plane 0.855 with the soakaway full** (dry 1.12, flooded 0.75). mu 0.25 is the IBC
+concrete-on-soil row applied to a native-on-native shear plane.
+
+* **Native key under FB-SG-S**, lean, 12" x D x 25', class 4 150 psf/ft from the court floor,
+  x 0.43 submerged: D 7'-0" (6.5 cy) reaches 1.51 with the soakaway full; D 4' reaches 1.82 dry.
+* **Lower overflow lip.** Even with no stored water the dry row is 1.12, so the lip alone does
+  not close it.
+* **Whole-block mechanism.** Crediting frontal resistance against the house undoes the isolation.
+  A measured phi' for the native (a boring) is the input that would close it, against the
+  owner's no-geotech decision.
+
+**G3, plan bending 2.85 on 1 #4.** Three #5 per edge, bundled at the edge, give a tie of
+3 x 0.31 + 0.20 = 1.13 in² at z ≈ 38.7": 0.50. That is about 390 LF / 410 lb.
+
+**G8, the joint (§11r).** The options are a 3/4" or 1" EPDM layer (0.1875" / 0.25" at 25%, still
+short of the 0.69" band-top bound), or setting the boards after the three retained sides are
+backfilled, so that only thermal closure and later creep remain. A thicker layer moves the court
+line or the board plane.
 
 ## Sources
 

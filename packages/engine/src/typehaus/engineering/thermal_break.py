@@ -1,10 +1,14 @@
-"""A compressible board between two separately founded pours — a pure isolation joint.
-``thermal_break_transfer/<board tag>``.
+"""Compressible boards between two separately founded pours — an isolation joint.
+``thermal_break_transfer/<the loop's cross-member>``: ONE item per court loop, every board in
+it (decision 13, 2026-11-22). The loop-level rows (the thrust into the house, its lateral path,
+the near line, the court's winter tension) are graded once; each board's own rows carry its
+tag. A board on no loop is its own item.
 
-**Nothing crosses the break, and no row grades a shear across it**: the court holds its own
-thrust (``retaining_system``) and the board keeps the house out of that free body. What is
-graded is what the board and the house behind it must survive — free body §11j-§11l (basis 9),
-hand-worked first:
+**No structural member crosses the break.** The masonry ties of a veneer founded on the court
+and the boards' own compliance do, and both are named and bounded (free body §11r): the court
+holds its own thrust (``retaining_system``) and the board keeps the house out of that free
+body. What is graded is what the boards and the house behind them must survive — free body
+§11j-§11l (basis 9), hand-worked first:
 
 * the board — fresh-concrete pressure on the AUTHORED placement (ACI 347R-14, capped at wh)
   where it is a form face, and its summer strain, any locked-in pour plus the closing at the
@@ -23,6 +27,8 @@ while an input is still missing. An ESTIMATED modulus adds a sensitivity note on
 
 from __future__ import annotations
 
+import dataclasses
+
 from typehaus.engineering import thermal_break_board as brd
 from typehaus.engineering import thermal_break_demand as dem
 from typehaus.engineering import thermal_break_geometry as geo
@@ -40,13 +46,16 @@ from typehaus.engineering.item import (
 )
 from typehaus.engineering.registry import EngineeringContext, calc, keys, oracled_by
 from typehaus.engineering.retaining_system import footing_shortfalls, loop_free_bodies
+from typehaus.engineering.thermal_break_joint import NAME as JOINT
+from typehaus.engineering.thermal_break_joint import joint_row
 from typehaus.resolve.slab_clip import floor_outline
 
 KIND = "thermal_break_transfer"
 BASIS = ("ACI 347R-14 (fresh-concrete pressure); ACI 209R-92 (stem shrinkage); ACI 318-19 "
          "(house wall, slab strut); IBC 1610.1/1806.2 (house sliding, soil); IRC R404.4 loop")
 #: Bumped whenever the arithmetic below changes — it rides in the fingerprint.
-BASIS_VERSION = "10"
+#: ``"11"``: one record per loop; the court body is ``retaining_system``'s (2026-11-22).
+BASIS_VERSION = "11"
 #: Multiples of an ESTIMATED modulus the sensitivity note re-grades at (free body §11i).
 E_SENSITIVITY = (2.0 / 3.0, 1.5, 2.0)
 
@@ -54,11 +63,14 @@ oracled_by(KIND, Oracle(note="sunken_garden_court_free_body.md", section="§11l,
                         test="tests/test_thermal_break.py"))
 
 _NOTES = (
-    "A PURE ISOLATION JOINT: nothing crosses it and no row grades a shear across it. The "
-    "court closes its own free body (`retaining_system`); every row below is the board's own "
-    "survival or the thrust it passes.",
-    "RETIRED WITH THE BARS (free body §11e): shear reserve, differential settlement, racking "
-    "drift, joint opening and development — there is no tie to grade.",
+    "AN ISOLATION JOINT: no structural member crosses it and no row grades a shear across "
+    "it. The court closes its own free body (`retaining_system`); every row below is a "
+    "board's own survival or the thrust the boards pass. What does cross is named and "
+    "bounded: the veneer's ties (tie travel) and the boards' compliance (the joint "
+    "movement row).",
+    "RETIRED WITH THE BARS (free body §11e): shear reserve, racking drift and development — "
+    "there is no bar to grade. Differential movement and joint closure are the joint "
+    "movement row's.",
     "RETIRED WITH THE STRIP (free body §11i): sliding and bearing of one isolated house strip "
     "— replaced by the house's lateral path through its slab on grade.",
     "NO FLOTATION ROW: nothing restrains a board with no bars. A form-face board is held by "
@@ -83,11 +95,9 @@ def _boards(ctx: EngineeringContext, loops: dict) -> list[geo.Board]:
 
 @keys(KIND)
 def enumerate_breaks(ctx: EngineeringContext) -> list[str]:
-    """Every ``IsolationBoard``, and every cast wall or beam in a retaining loop whose
-    assembly carries an insulating layer facing a house footing."""
+    """One key per court loop with a board on it, and one per board on no loop."""
     loops = footing_shortfalls(ctx)
-    return sorted({e.tag for e in geo.isolation_boards(ctx)}
-                  | {b.tag for b in geo.layer_boards(ctx, loops)})
+    return sorted({b.loop_ref or b.tag for b in _boards(ctx, loops)})
 
 
 @calc(KIND)
@@ -110,7 +120,18 @@ def compute(ctx: EngineeringContext) -> list[EngineeringRecord]:
         for tag, (states, _missing, _inputs, notes) in graded.items():
             if states:
                 notes.append(_sensitivity(tag, states, sens))
-    return [_record(b, *graded[b.tag]) for b in sorted(boards, key=lambda b: b.tag)]
+    groups: dict[str, list] = {}
+    for b in sorted(boards, key=lambda b: b.tag):
+        groups.setdefault(b.loop_ref or b.tag, []).append(b)
+    temps = brd.temps(ctx)
+    out = []
+    for key, mine in sorted(groups.items()):
+        joint = None
+        if mine[0].loop_ref is not None:
+            runs = {b.tag: geo.court_run_in(ctx, b) for b in mine}
+            joint = joint_row(mine, products, temps, runs, bodies.get(mine[0].loop_ref))
+        out.append(_record(key, mine, graded, joint))
+    return out
 
 
 def _sensitivity(tag, states, sens) -> str:
@@ -271,20 +292,63 @@ def brk_rating(brk):
     return rated(brk.material_ref, brk.psi, brk.source)
 
 
-def _record(board, states, missing, inputs, notes) -> EngineeringRecord:
-    element = board.element
-    tags = tuple(dict.fromkeys((board.tag, *(element.connects if element else ()))))
+def _merge(mine, graded):
+    """One record's rows from its boards': a row every board grades identically is the
+    loop's and appears once; a row that differs is the board's and carries its tag."""
+    lists = [graded[b.tag] for b in mine]
+    key = lambda st: (st.name, round(st.demand, 6), round(st.capacity, 6))  # noqa: E731
+    shared = set.intersection(*({key(st) for st in states} for states, *_ in lists)) \
+        if len(lists) > 1 else set()
+    states, inputs, notes, missing, seen = [], [], [], [], set()
+    for b, (b_states, b_missing, b_inputs, b_notes) in zip(mine, lists, strict=True):
+        for st in b_states:
+            if key(st) in shared:
+                if key(st) not in seen:
+                    seen.add(key(st))
+                    states.append(st)
+                continue
+            states.append(st if len(mine) == 1 else
+                          dataclasses.replace(st, name=f"{b.tag}: {st.name}"))
+        for q in b_inputs:
+            inputs.append(q if len(mine) == 1 else
+                          dataclasses.replace(q, name=f"{b.tag}:{q.name}"))
+        notes.extend(n for n in b_notes if n not in notes)
+        missing.extend(m for m in b_missing if m not in missing)
+    return states, missing, inputs, notes
+
+
+def _record(key, mine, graded, joint=None) -> EngineeringRecord:
+    states, missing, inputs, notes = _merge(mine, graded)
+    pending = []
+    if joint is not None and joint[0] is not None:
+        row, gaps, more = joint
+        states.append(row)
+        inputs += more
+        missing += [g for g in gaps if g not in missing]
+        if not row.ok:
+            # Decision 29 is open: the detail has to take the bounded movement, and how
+            # (thicker layer, set after backfill, wider joint) is the owner's choice.
+            pending.append(f"a joint detail that takes the bounded court movement "
+                           f"({row.demand:.3f}\" against {row.capacity:.3f}\")")
+            states_over = [s for s in states if not s.ok and s is not row]
+            if not states_over:
+                missing += pending
+    tags = tuple(dict.fromkeys(t for b in mine for t in (
+        b.tag, *(b.element.connects if b.element else ()))))
     # OVER outranks INCOMPLETE, as on the other kinds: a graded shortfall is the finding.
-    over = [s for s in states if not s.ok]
+    over = [s for s in states if not s.ok and not (pending and s.name == JOINT)]
     status = Status.OVER if over else (Status.INCOMPLETE if missing else Status.OK)
-    graded = ", ".join(f"{s.name} {s.ratio:.2f}" for s in states) or "nothing"
-    summary = f"{board.tag}: {graded}"
+    governing = max(states, key=lambda s: s.ratio, default=None)
+    boards = ", ".join(b.tag for b in mine)
+    summary = (f"{key}: {len(mine)} board(s) ({boards}); "
+               + (f"{governing.name} governs at {governing.ratio:.2f}" if governing
+                  else "nothing graded"))
     if over:
         summary += " — OVER on " + ", ".join(s.name for s in over)
     if missing:
         summary += f"; open: {len(missing)} item(s)"
     return EngineeringRecord(
-        item_id=item_id(KIND, board.tag), kind=KIND, key=board.tag,
+        item_id=item_id(KIND, key), kind=KIND, key=key,
         basis_version=BASIS_VERSION, basis=BASIS, status=status, summary=summary,
         inputs=tuple(inputs), limit_states=tuple(states),
-        missing=tuple(dict.fromkeys(missing)), notes=tuple(notes), element_tags=tags)
+        missing=tuple(missing), notes=tuple(notes), element_tags=tags)
