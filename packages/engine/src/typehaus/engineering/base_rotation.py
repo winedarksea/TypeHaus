@@ -57,7 +57,10 @@ BASIS = ("ACI 318-19 §6.6.4.5.2 and §6.2.5.3 on a base spring; a rigid pole on
          "profile anchored on IBC 2018 §1806.3.4; ACI 318-19 Table 6.6.3.1.1(a) for a wall")
 #: 1: the kind as introduced, 2026-09-20. 2: a stated n_h (report or presumed table row)
 #: is Terzaghi's, width-independent — the pole is integrated at 1 ft (2026-09-21).
-BASIS_VERSION = "2"
+#: 3: 2026-11-23 (review B-04): the flexible-base delta magnifies EVERY §2.3.1 pair
+#: ``deck_post`` grades, each against its own phi*Mn, and the worst is reported; before it
+#: magnified the larger of the two service moments at the factored axial.
+BASIS_VERSION = "3"
 
 #: ACI 318-19 §6.2.5.3 — Mu including second-order effects may not exceed 1.4 Mu first-order.
 MOMENT_RATIO_LIMIT = 1.4
@@ -100,6 +103,16 @@ def compute(ctx: EngineeringContext) -> list[EngineeringRecord]:
 # --- the column --------------------------------------------------------------------------
 
 @dataclass(frozen=True)
+class _Case:
+    """One ASCE 7-16 §2.3.1 pair ``deck_post`` grades: its axial, first-order moment, phi*Mn."""
+
+    label: str
+    pu_lb: float
+    mu_lb_ft: float
+    phi_mn_lb_ft: float
+
+
+@dataclass(frozen=True)
 class _Column:
     """``deck_post``'s own column, read through its own functions: the rigid-base bound."""
 
@@ -109,6 +122,7 @@ class _Column:
     mu_lb_ft: float
     phi_mn_lb_ft: float
     pc_rigid_lb: float
+    cases: tuple[_Case, ...] = ()
 
     @classmethod
     def of(cls, pier: _Pier) -> _Column | None:
@@ -122,11 +136,18 @@ class _Column:
         inertia = math.pi * pier.diameter_in ** 4 / 64.0
         ei = 0.4 * modulus * inertia / (1.0 + 1.2 * pier.dead_lb / pier.factored_lb)
         effective = dp.CANTILEVER_EFFECTIVE_LENGTH_FACTOR * pier.height_in
-        mu = max(pier.wind_base_moment_lb_ft * dp.STRENGTH_FROM_ASD_WIND,
-                 pier.guard_base_moment_lb_ft * dp.GUARD_LOAD_FACTOR)
-        phi_mn = dp._pm_point(pier, cage, dp._cover_in(pier), pier.factored_lb)[0]
+        wind_mu = pier.wind_base_moment_lb_ft * dp.STRENGTH_FROM_ASD_WIND
+        guard_mu = pier.guard_base_moment_lb_ft * dp.GUARD_LOAD_FACTOR
+        cover = dp._cover_in(pier)
+        cases = tuple(_Case(c.label, c.axial_lb, c.moment_lb_ft,
+                            dp._pm_point(pier, cage, cover, c.axial_lb)[0])
+                      for c in dp._combinations(pier, wind_mu, guard_mu) if c.moment_lb_ft > 0.0)
+        first = max(cases, key=lambda c: c.mu_lb_ft / c.phi_mn_lb_ft, default=None)
+        mu = first.mu_lb_ft if first else max(wind_mu, guard_mu)
+        phi_mn = first.phi_mn_lb_ft if first else dp._pm_point(
+            pier, cage, cover, pier.factored_lb)[0]
         return cls(pier.height_in, ei, pier.factored_lb, mu, phi_mn,
-                   math.pi ** 2 * ei / effective ** 2)
+                   math.pi ** 2 * ei / effective ** 2, cases)
 
 
 @dataclass(frozen=True)
@@ -157,6 +178,7 @@ class _Point:
             f"ACI 318-19 §6.6.4.5.2: Pu < 0.75 Pc, Pc = {column.pc_rigid_lb:,.0f} lb at "
             f"deck_post's k 2.1 x 1/(1 + 3/R) {where}")]
         if self.delta is not None:
+            worst = max(column.cases, key=lambda c: self._ratio(c), default=None)
             states += [
                 # The INCREMENT over first order, so a column at delta 1.0 reads 0.00, not
                 # 0.71 — the limit is "at most 40% more", and that is what is graded.
@@ -164,11 +186,22 @@ class _Point:
                            MOMENT_RATIO_LIMIT - 1.0, "",
                            f"ACI 318-19 §6.2.5.3 — Mu with second-order effects at most "
                            f"{MOMENT_RATIO_LIMIT} Mu first-order; delta {self.delta:.3f} {where}"),
-                LimitState("magnified moment (sway), flexible base",
-                           column.mu_lb_ft * self.delta, column.phi_mn_lb_ft, "lb-ft",
-                           f"ACI 318-19 §6.6.4.5.2 delta {self.delta:.3f} on deck_post's "
-                           f"governing Mu {column.mu_lb_ft:,.0f} lb-ft {where}")]
+            ]
+            if worst is not None:
+                delta = spring.magnifier(worst.pu_lb, self.pc_flex_lb)
+                states.append(LimitState(
+                    "magnified moment (sway), flexible base",
+                    worst.mu_lb_ft * (delta or math.inf), worst.phi_mn_lb_ft, "lb-ft",
+                    f"ACI 318-19 §6.6.4.5.2 delta {delta or math.inf:.3f} on EVERY §2.3.1 pair "
+                    f"deck_post grades, each against its own phi*Mn, the worst reported: "
+                    f"{worst.label} at Pu {worst.pu_lb:,.0f} lb, Mu {worst.mu_lb_ft:,.0f} "
+                    f"lb-ft, phi*Mn {worst.phi_mn_lb_ft:,.0f} lb-ft {where}",
+                    combination=f"ASCE 7-16 §2.3.1 {worst.label}"))
         return tuple(states)
+
+    def _ratio(self, case: _Case) -> float:
+        delta = spring.magnifier(case.pu_lb, self.pc_flex_lb)
+        return case.mu_lb_ft * (delta or math.inf) / case.phi_mn_lb_ft
 
     def ok(self, column: _Column) -> bool:
         return all(s.ok for s in self.states(column))
@@ -188,6 +221,20 @@ def _moduli(ctx: EngineeringContext) -> list[tuple[str, float | None]]:
     if report is not None:
         return [("the presumed n_h" if _presumed(report) else "the measured modulus", None)]
     return [(f"δ_ref {d:g}\"", d) for d in MOTION_AT_ALLOWABLE_BAND_IN]
+
+
+def flexible_magnifier(ctx: EngineeringContext, pier: _Pier):  # type: ignore[no-untyped-def]
+    """``Pu -> delta`` on the wall-borne column's own base spring, at the SOFT end of the
+    presumptive band (the measured modulus where a report is on file); ``None`` where the
+    spring cannot be formed. ``column_support`` grades its joint on this, not on the rigid
+    base's 1.02 (review B-04)."""
+    if not (pier.lateral_system and pier.base_kind == "wall"):
+        return None
+    column, base = _Column.of(pier), WallBase.build(ctx, pier)
+    if column is None or base.missing:
+        return None
+    point = _Point.at("", column, base.k_theta(ctx, _moduli(ctx)[-1][1], column))
+    return lambda pu_lb: spring.magnifier(pu_lb, point.pc_flex_lb) or math.inf
 
 
 # --- the record --------------------------------------------------------------------------
@@ -237,6 +284,7 @@ def _record(ctx: EngineeringContext, pier: _Pier, base) -> EngineeringRecord:  #
                      + (f"The verdict turns at δ_ref ≈ {turn:.2f}\"." if turn else
                         "The verdict does not turn anywhere from 0.05\" to 20\"."))
     notes.append(base.not_graded)
+    notes += _serviceability_notes(pier, column, graded)
 
     inputs = (
         Quantity("column_height", column.length_in, "in", 0.125),
@@ -275,6 +323,38 @@ def _record(ctx: EngineeringContext, pier: _Pier, base) -> EngineeringRecord:  #
         limit_states=states, notes=tuple(notes),
         summary=(f"{pier.tag}: the fixed base as a SPRING — R {graded.r:.2f} at "
                  f"{graded.label}; {worst.name} governs at {worst.ratio:.2f}"))
+
+
+def _serviceability_notes(pier: _Pier, column: _Column, graded: _Point) -> list[str]:
+    """Head drift and the seismic statement (review B-12), and which Pc is graded (B-11)."""
+    length = column.length_in
+
+    def drift_in(shear_lb: float) -> float:
+        # A cantilever column on the base spring: P L^3 / 3EI of bending + P L^2 / k_theta of
+        # base rotation, the head's lateral movement under a SERVICE shear at the head.
+        return (shear_lb * length ** 3 / (3.0 * column.ei_lb_in2)
+                + shear_lb * length ** 2 / graded.k_theta_lb_in)
+
+    guard = drift_in(200.0)
+    wind_shear = pier.wind_head_shear_lb or (
+        pier.wind_base_moment_lb_ft / (length / 12.0) if length else 0.0)
+    wind = drift_in(wind_shear)
+    return [
+        f"HEAD DRIFT, service loads, flexible base: {guard:.3f}\" under the 200 lb guard load "
+        f"(H/{length / guard:,.0f}) and {wind:.3f}\" under the {wind_shear:,.0f} lb ASD wind "
+        f"shear at the head (H/{length / wind:,.0f}), by P L^3/3EI + P L^2/k_theta on the "
+        f"authored EI and the graded spring; the movement gap to the house is in the "
+        f"N-S direction, where the base is in-plane and stiffer still. No code drift limit is "
+        f"applied: IRC R301 sets none for a deck column.",
+        "SEISMIC: the lot is SDC A (`notes/balcony_moment_columns.md` §9), where ASCE 7-16 §11.7 "
+        "sends the structure to §1.4's minimum lateral force 0.01 W — about 50 lb per column "
+        "(§9 there) — against the wind and guard shears above; wind governs and no seismic "
+        "case is graded.",
+        "WHICH Pc IS GRADED: the series form Pc = Pc_rigid / (1 + 3/R), which keeps deck_post's "
+        "k 2.1 as the rigid end and so counts the real-fixity allowance twice. The exact "
+        f"flagpole-on-spring root (k {graded.k_exact:.2f}) is printed beside it and is the less "
+        "conservative of the two; the conservative one is graded.",
+    ]
 
 
 def _presumed(report) -> bool:  # type: ignore[no-untyped-def]

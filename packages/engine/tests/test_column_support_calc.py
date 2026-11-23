@@ -15,19 +15,15 @@ from typehaus.engineering.item import Status
 
 CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 
-#: §11a-§11d as re-worked in §13c (2026-09-23, each edge beam on its own 9.75' strip):
-#: (bearing C, φBn), (T per bar, φAs fy), (Vu, φVn), (ld, embedment). P_u fell, so the
-#: couple needs MORE dowel and the block is a little shallower.
-#: §15c (2026-09-23): the balcony 3" lower — shorter columns, a little less axial and moment.
-#: §16 (2026-09-23): the guard's lever reaches the column base, so M_u and the couple rise.
-#: §17 (2026-10-31): the columns cast one 3/4" pack short — less wind lever and self weight.
-#: §18 (2026-11-05): the 40 1/8" fascia guard and the 1 1/2" rear rim oversail.
-#: §19 (2026-11-18): the 2 1/8" rear rim oversail; V_u re-struck (it had stayed at §15c's).
+#: §11a-§11d as re-worked through §13c-§19, and again in §25 (2026-11-23): beam statics and the
+#: planter (off here: this context carries no preferences), the wind of §24, the floor-empty
+#: guard pair, the flexible base's delta, and the general-equation development of §21.
+#: (demand, capacity) of the worst §2.3.1 case of each state.
 _ORACLE = {
-    "PT-SG-BR1": {"bearing": (9_443, 38_811), "tension": (5_129, 16_740),
-                  "shear": (411.5, 50_059), "development": (21.2, 24.0)},
-    "PT-SG-BF1": {"bearing": (9_369, 38_803), "tension": (5_083, 16_740),
-                  "shear": (411.5, 50_111), "development": (21.2, 24.0)},
+    "PT-SG-BR1": {"bearing": (20_156, 38_943), "tension": (15_418, 16_740),
+                  "shear": (1_043.4, 38_549), "development": (12.73, 48.0)},
+    "PT-SG-BF1": {"bearing": (19_644, 38_697), "tension": (15_316, 16_740),
+                  "shear": (1_045.4, 38_664), "development": (12.73, 48.0)},
 }
 _LABELS = {"bearing": "bearing on the wall top", "tension": "dowel tension across the joint",
            "shear": "shear friction across the cold joint",
@@ -65,8 +61,10 @@ def test_both_walls_are_computed_and_pass(results) -> None:
     for wall in ("W-SG-W1", "W-SG-E1"):
         record = results[f"column_support/{wall}"]
         assert record.status is Status.OK, record.missing
-        assert record.governing.name.endswith("dowel development into the stem")
+        assert record.governing.name.endswith("dowel tension across the joint")
         assert any("base_rotation/<column>" in note for note in record.notes)
+        # B-05: nothing is handed to "the engineer of record" any more.
+        assert not any("engineer of record" in note for note in record.notes)
 
 
 def test_a_flush_round_takes_no_confinement_credit(results) -> None:
@@ -82,11 +80,35 @@ def _state_named(record, name):
     return next(s for s in record.limit_states if s.name == name)
 
 
-def test_deck_post_grades_the_same_development(results) -> None:
-    """One arithmetic, two records: the column's own anchorage state is the joint's."""
-    state = next(s for s in results["deck_post/PT-SG-BR1"].limit_states
-                 if s.name == "dowel anchorage into the base")
-    assert (state.demand, state.capacity) == pytest.approx((21.21, 24.0), abs=0.01)
+def test_the_development_is_graded_once_here_and_deck_post_points_to_it(results) -> None:
+    """B-08: one limit state, one row. `column_support` carries the dowel development (the
+    general equation, 12.73" of 48"); `deck_post` no longer prints it for a wall base."""
+    state = _state_named(results["column_support/W-SG-W1"],
+                         "PT-SG-BR1: dowel development into the stem")
+    assert (state.demand, state.capacity) == pytest.approx((12.73, 48.0), abs=0.01)
+    assert "§25.4.2.4" in state.citation and "26.0" not in state.citation
+    record = results["deck_post/PT-SG-BR1"]
+    assert not any(s.name == "dowel anchorage into the base" for s in record.limit_states)
+    assert any("graded once" in n for n in record.notes)
+
+
+@pytest.mark.parametrize("column,tension_stem,strut,footing", [
+    ("PT-SG-BR1", 10_450.0, 25_190.5, 27.71), ("PT-SG-BF1", 10_276.9, 24_948.9, 23.27)])
+def test_the_stem_the_strut_and_the_footing_are_rows_not_exclusions(
+        results, column, tension_stem, strut, footing) -> None:
+    """§22 / §25 (B-05, D-R3): plain concrete below the 48" dowels over a 45 deg spread
+    (phi M_n 45,820 lb-ft), the prop's strut on the opposite stem (97,952), the footing."""
+    record = results["column_support/W-SG-W1"]
+    below = _state_named(record, f"{column}: stem flexure below the dowels")
+    assert below.demand == pytest.approx(tension_stem, rel=0.003)
+    assert below.capacity == pytest.approx(45_820.5, rel=1e-4)
+    opposite = _state_named(record, f"{column}: opposite stem under the head prop (strut)")
+    assert opposite.demand == pytest.approx(strut, rel=0.003)
+    assert opposite.capacity == pytest.approx(97_952.0, rel=1e-4)
+    under = _state_named(record, f"{column}: footing bearing under the column point")
+    assert under.demand == pytest.approx(footing, rel=0.01) and under.capacity == 2_000.0
+    notes = " ".join(record.notes)
+    assert "THE HEAD PROP" in notes and "skip or relocate" in notes
 
 
 def _mutated(tmp_path, old, new):
@@ -104,27 +126,28 @@ def _mutated(tmp_path, old, new):
     return loaded.plan
 
 
-_DOWEL = 'embedment=inch(24.0), joint_surface="roughened"'
+_DOWEL = 'embedment=inch(48.0), projection=inch(30.0),\n                joint_surface="roughened"'
 
 
 def test_an_embedment_past_the_stem_is_refused(tmp_path) -> None:
-    plan = _mutated(tmp_path, _DOWEL, 'embedment=inch(200.0), joint_surface="roughened"')
+    plan = _mutated(tmp_path, _DOWEL, _DOWEL.replace("48.0", "200.0"))
     state = _state(_results(plan)["column_support/W-SG-W1"], "PT-SG-BR1", "development")
     assert state.capacity == pytest.approx(109.4375 - 3.0, abs=0.01)
     assert "REFUSED" in state.citation
 
 
 def test_no_roughening_is_graded_at_0_6(tmp_path) -> None:
-    plan = _mutated(tmp_path, _DOWEL, "embedment=inch(24.0)")
+    plan = _mutated(tmp_path, _DOWEL, "embedment=inch(48.0), projection=inch(30.0)")
     record = _results(plan)["column_support/W-SG-W1"]
     mu = next(q for q in record.inputs if q.name == "PT-SG-BR1.shear_friction_mu")
     assert mu.value == 0.6
     state = _state(record, "PT-SG-BR1", "shear")
-    assert state.capacity == pytest.approx(0.6 * 50_001, rel=0.003)
+    # mu 0.6 on the same (Avf fy - tension) the roughened 1.0 reads: 38,549 x 0.6.
+    assert state.capacity == pytest.approx(0.6 * 38_549, rel=0.003)
 
 
 def test_no_embedment_is_incomplete_naming_the_field(tmp_path) -> None:
-    plan = _mutated(tmp_path, _DOWEL, 'joint_surface="roughened"')
+    plan = _mutated(tmp_path, _DOWEL, 'projection=inch(30.0), joint_surface="roughened"')
     record = _results(plan)["column_support/W-SG-W1"]
     assert record.status is Status.INCOMPLETE
     assert any("BarSpec.embedment" in m for m in record.missing)

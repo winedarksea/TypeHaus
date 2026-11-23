@@ -274,3 +274,58 @@ def nearest(plan: PlanModel, anchors: Any, kind: type, storey: str | None = None
         if best_d is None or distance < best_d:
             best, best_d = element, distance
     return best
+
+# --- what stands on the deck and was left out of the bands above (review B-06) ------------
+
+def guard_band(plan: PlanModel, axis: str, guard: Any) -> Band | None:
+    """The guard's solid share across the wind: balusters at the authored gap plus the two
+    rails' depth, over the plan run presented to ``axis``. A bound, taken at the same C_f
+    ceiling as every other band; its top is the ``q_h`` datum so no lever is added."""
+    if guard is None or len(guard.path) < 2:
+        return None
+    index = 0 if axis == "y" else 1     # wind along y meets a leg's E-W extent
+    run = sum(abs(b.xy_m[index] - a.xy_m[index])
+              for a, b in zip(guard.path, guard.path[1:], strict=False)) / _FT
+    rtype = next((t for t in plan.library.railing_types if t.tag == getattr(guard, "type_ref", "")),
+                 None)
+    width = ft(rtype.baluster_width) if rtype is not None and rtype.baluster_width else 0.0
+    gap = ft(guard.baluster_spacing) if guard.baluster_spacing is not None else 0.0
+    solidity = min(1.0, width / (width + gap)) if width + gap > 0.0 else 1.0
+    height = ft(guard.height)
+    return Band(f"{guard.tag} balusters (solidity {solidity:.2f}) and rails",
+                height * solidity + 2.0 * 0.125, run, guard.tag)
+
+
+def column_bands(columns: Any) -> tuple[Band, ...]:
+    """Each cast column's own face: its diameter by its height. ``columns`` are
+    ``(tag, diameter_ft, height_ft)``; both axes see the same round."""
+    return tuple(Band(f"{tag} shaft", height, diameter, tag) for tag, diameter, height in columns)
+
+
+def curtain_bands(plan: PlanModel, axis: str) -> tuple[Band, ...]:
+    """The porch's closed enclosure curtains, hung on the balcony joists. A curtain panel
+    spans from its track to the porch deck; HALF its load reaches the top track (the other
+    half goes to the floor), so a band carries half the drop. Closed is the design case: the
+    enclosure is in use in spring and autumn (``notes/porch_enclosure.md``)."""
+    from typehaus.model.spatial import Furniture
+
+    types = {t.tag: t for t in plan.library.furniture_types}
+    out = []
+    for element in plan.all_elements():
+        if not isinstance(element, Furniture):
+            continue
+        ftype = types.get(element.type_ref)
+        track = getattr(ftype, "curtain_track", None)
+        if track is None or not track.outdoor_hardware:
+            continue
+        mount = element.mount
+        drop_ft = ft(mount.elevation) if mount.elevation is not None else 0.0
+        run_ft = ft(ftype.footprint[0])
+        turn = element.rotation.radians if element.rotation is not None else 0.0
+        along = "x" if abs(math.sin(turn)) < 0.5 else "y"
+        if along != axis:                   # a run along x presents its face to wind along y
+            out.append(Band(f"{element.tag} curtain, top-track half", drop_ft / 2.0, run_ft,
+                            element.tag))
+    # A closed enclosure's windward and leeward panels are one C_f (the figure's net), so
+    # only the largest panel across the wind counts.
+    return (max(out, key=lambda band: band.area_sf),) if out else ()

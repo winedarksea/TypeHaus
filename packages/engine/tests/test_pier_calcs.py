@@ -223,17 +223,24 @@ _TIER_PIERS = tuple(f"PT-BW-T{_n}{_s}" for _n in (1, 2, 3, 4) for _s in ("W", "E
 #
 # ** 5/8" MORE REAR OVERSAIL ON 2026-11-18 (note §19). ** D-S-BALCONY's 3/8" joint: A_s
 # 29.780 -> 29.836 sf, wind 1,101.9 -> 1,103.9 front, 1,121.2 -> 1,123.3 rear.
+#
+# ** WIND 1,103.9 -> 4,411.8 ON 2026-11-23 (note §24, review B-06). ** The bands were the fascia
+# and the beams; the guard's balusters, the four 12" shafts and the porch's closed curtains
+# (top-track half) stand in the wind too: N-S 363 + 208 + 597 + 1,092 = 2,259 lb ASD over four
+# columns, each band at its own lever. The deck's gravity moved with it: each column carries its
+# beam's STATICS reaction (§20), so BF1 / BR1 carry 1,431.7 / 1,578.2 lb of dead (not 1,496 /
+# 1,514) and 1,701.8 / 2,153.9 of live, and the factored P_u is 4,440.9 / 5,340.0 with no planter
+# (this context) and 5,196.3 / 6,095.4 with the house's planter (the cast-variant context).
 _CORNER_ORACLE = {
-    "PT-SG-BF1": {"height_in": 104.375, "wind_lb_ft": 1103.9, "guard_lb_ft": 2643.75},
-    "PT-SG-BF3": {"height_in": 104.375, "wind_lb_ft": 1103.9, "guard_lb_ft": 2643.75},
-    # The rear row runs 2" proud for the deck's drainage crown.
-    # ** THE REAR PAIR LOST 1/6" ON 2026-09-14. ** ``SPEC.rear_pillar_rise_in = 2.0`` became
-    # ``SPEC.balcony_fall_in_per_ft = 0.25``: the FALL is the authored number now and the rise
-    # follows the run between the bearing rows, which over 7'-4" is 1.833" rather than 2.000".
-    # Both base moments are ``shear x height``, so they follow it exactly and by the same
-    # 0.15%. Nothing else about the rear row moved.
-    "PT-SG-BR1": {"height_in": 106.208, "wind_lb_ft": 1123.3, "guard_lb_ft": 2643.75},
-    "PT-SG-BR3": {"height_in": 106.208, "wind_lb_ft": 1123.3, "guard_lb_ft": 2643.75},
+    "PT-SG-BF1": {"height_in": 104.375, "wind_lb_ft": 4411.8, "guard_lb_ft": 2643.75,
+                  "phi_mn": 24_768.0},
+    "PT-SG-BF3": {"height_in": 104.375, "wind_lb_ft": 4411.8, "guard_lb_ft": 2643.75,
+                  "phi_mn": 24_768.0},
+    # The rear row runs 2" proud for the deck's drainage crown (fall 1/4" per foot).
+    "PT-SG-BR1": {"height_in": 106.208, "wind_lb_ft": 4478.8, "guard_lb_ft": 2643.75,
+                  "phi_mn": 25_003.0},
+    "PT-SG-BR3": {"height_in": 106.208, "wind_lb_ft": 4478.8, "guard_lb_ft": 2643.75,
+                  "phi_mn": 25_003.0},
 }
 #: §4 of the note: phi*Mn at the column's own axial load, hand-worked term by term.
 #:
@@ -253,13 +260,16 @@ _CORNER_ORACLE = {
 #: strip, not the 18' joist span: P_u 7,886 -> 4,855 lb, c 2.809" -> 2.750". Rear 24,684.
 #:
 #: ** 24,678 -> 24,669 ON 2026-09-23 (note §15). ** 3" of column self weight: P_u 4,820.0.
-_CORNER_PHI_MN_LB_FT = 24_669.0
-#: §7: ld = (60,000 / (25 sqrt(5,000))) x 0.625 = 21.2", x 1.3 for a class B splice.
+# ** 24,669 -> 24,768 / 25,003 ON 2026-11-23 (note §25): the beam's statics and the planter raise
+# P_u to 5,196 / 6,095 lb, and below balance that is more phi*Mn. Per column: `_CORNER_ORACLE`.
+#: §21 (2026-11-23): the general equation, ld 12.73", x 1.3 = 16.55" against the authored 30"
+#: projection; the simplified row's 21.2" x 1.3 = 27.6" is the bound. §7 (superseded):
+#: ld = (60,000 / (25 sqrt(5,000))) x 0.625 = 21.2".
 #: 35.6" at the presumptive 3,000 psi — development length goes as 1/sqrt(f'c), so reading
 #: the real mix SHORTENS the required lap. The assembly's own source text still specifies
 #: "~30in", which is longer than required and is what gets built; this is the requirement,
 #: not the detail.
-_CLASS_B_LAP_IN = 27.6
+_CLASS_B_LAP_IN = 16.55
 
 _PRESUMPTIVE_ALLOWABLE_PSF = 2000.0
 
@@ -863,8 +873,9 @@ def test_the_base_moments_reproduce_the_note(tag, piers) -> None:
     lever_ft = want["guard_lb_ft"] / 200.0
     assert lever_ft == pytest.approx(13.219, abs=0.01)
     assert lever_ft > want["height_in"] / 12.0 + 40.125 / 12.0, "the deck build-up is lever too"
-    # The guard governs, which is the whole reason it is computed at all.
-    assert pier.guard_base_moment_lb_ft > pier.wind_base_moment_lb_ft
+    # Wind governs the MOMENT since §24 (4,412 > 2,644 ASD), where the guard did before; both
+    # stay in the envelope because the guard's lever and the wind's differ in the combinations.
+    assert pier.wind_base_moment_lb_ft > pier.guard_base_moment_lb_ft
 
 
 @pytest.mark.parametrize("tag", _CORNER_PIERS)
@@ -881,7 +892,7 @@ def test_the_corner_column_is_graded_in_bending_and_it_checks_out(tag, results) 
     assert all(state.ok for state in record.limit_states)
 
     for name in ("bending at base, wind", "bending at base, guard"):
-        assert states[name].capacity == pytest.approx(_CORNER_PHI_MN_LB_FT, rel=0.01)
+        assert states[name].capacity == pytest.approx(_CORNER_ORACLE[tag]["phi_mn"], rel=5e-4)
     guard = states["bending at base, guard"]
     # 0.12 until 2026-09-10; the denominator rose 17% when the assembly's 5,000 psi mix
     # became readable. Not one demand moved: wind is a pressure on a guard and a deck, and
@@ -905,7 +916,7 @@ def test_the_corner_column_is_graded_in_bending_and_it_checks_out(tag, results) 
     # Magnification is real (k*lu/r 76, past §6.2.5's SWAY limit of 22) and nearly nothing,
     # because P-delta needs P to bite and P is ~2% of capacity.
     magnified = states["magnified moment (sway)"]
-    assert 1.02 < magnified.demand / guard.demand < 1.05
+    assert 1.02 < magnified.demand / states["bending at base, wind"].demand < 1.05
 
 
 @pytest.mark.parametrize("tag", _CORNER_PIERS)
@@ -933,8 +944,9 @@ def test_the_dowel_lap_reads_the_galvanized_row_not_the_epoxy_one(tag, results) 
     1.2-1.5. Reading the epoxy row for a galvanized bar lengthens every lap by half."""
     record = results[f"deck_post/{tag}"]
     lap = next(s for s in record.limit_states if s.name == "dowel lap, class B")
-    assert lap.demand == pytest.approx(_CLASS_B_LAP_IN, abs=0.2)
-    assert lap.ok, "the lap does not fit inside the column it is lapped into"
+    assert lap.demand == pytest.approx(_CLASS_B_LAP_IN, abs=0.02)
+    assert lap.capacity == 30.0, "graded against the AUTHORED projection, not the column height"
+    assert lap.ok, "the lap does not fit inside the projection it is lapped into"
     note = next(n for n in record.notes if n.startswith("DOWELS"))
     assert "GALVANIZED" in note and "1.0" in note
 
@@ -1478,3 +1490,20 @@ def test_a_pier_whose_demand_is_short_publishes_no_ratio() -> None:
     unmodelled = next(n for n in record.notes if n.startswith("UNMODELLED:"))
     assert "BM-X, BM-Y" in unmodelled
     assert "multiwall" not in unmodelled and "shelter" not in unmodelled
+
+
+def test_the_glulam_record_reads_the_authored_seat_and_the_house_planter(catlin_ctx) -> None:
+    """§20 (B-01, B-02): the seat is the authored 3.5" pack with NDS §3.10.4 C_b, no longer a
+    hard-coded 3.0", and the planter is a dead line load on the back span."""
+    record = catlin_ctx.engineering["glulam_beam/BM-SG-BLW"]
+    inputs = {q.name: q.value for q in record.inputs}
+    assert inputs["bearing_length"] == pytest.approx(3.5)
+    assert inputs["C_b"] == pytest.approx(1.1071, abs=1e-4)
+    assert inputs["planter_line_load"] == pytest.approx(171.667, abs=0.001)
+    bearing = next(s for s in record.limit_states if s.name.startswith("bearing"))
+    assert bearing.capacity == pytest.approx(434.2, abs=0.1)        # 740 x 0.53 x 1.107
+    assert bearing.demand == pytest.approx(270.9, abs=0.1)          # 3,319 lb / (3.5 x 3.5)
+    assert bearing.ratio == pytest.approx(0.624, abs=0.001) and record.governing is bearing
+    notes = " ".join(record.notes)
+    assert "NOT COVERED (owner)" in notes and "no snow, no drift" in notes
+    assert "OVERHANGS, accepted (owner decision 9)" in notes and "12\" o.c." in notes

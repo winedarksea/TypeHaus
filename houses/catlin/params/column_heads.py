@@ -16,11 +16,10 @@ from typehaus import HeadConnector
 #: and cast columns and the garden's four corner columns all read this one number.
 STANDOFF_PACK_IN = 0.75
 
-#: The cast-in HETA20Z pair over an SS316-SHIM-35 pack: PT-BW-E/-GE/-RE/-RNE and
-#: PT-SG-B{R,F}{1,3}. FL11473 Table 3 rates the PAIR, so the numbers are the set's
-#: (`set_rated`), SP because every beam here is southern pine. Lateral is the lower of
-#: F1 1,350 / F2 1,430. C_D 1.6 is already in both. Replaced the HGAM10 pair 2026-09-21,
-#: whose Titen Turbo screws Simpson forbids exposed to the exterior environment
+#: The cast-in HETA20Z pair over an SS316-SHIM-35 pack: PT-BW-E/-GE/-RE/-RNE (2- or 3-ply
+#: beams, Table 3's 2-/3-ply row); the garden's PT-SG-B{R,F}{1,3} use the 1-ply row below.
+#: Lateral is the lower of F1 / F2. C_D 1.6 is already in both. Replaced the HGAM10 pair
+#: 2026-09-21, whose Titen Turbo screws Simpson forbids exposed to the exterior environment
 #: (`notes/column_head_connector_options.md`).
 HETA20Z_PAIR_HEAD = HeadConnector(
     tie="HETA20Z", tie_count=2, set_rated=True, uplift_lb=2560.0, lateral_lb=1350.0,
@@ -29,6 +28,31 @@ HETA20Z_PAIR_HEAD = HeadConnector(
     source="Simpson Strong-Tie FL11473 Table 3, double HETA, concrete, 2- or 3-ply, SP: "
            "uplift 2,560, F1 1,350, F2 1,430 lb for the pair; note 1 already +60% for wind",
     interaction_rule="FL11473-R4 §9 Limitations item 4: (Design Uplift / Allowable Uplift) + "
+                     "(Lateral Parallel / Allowable) + (Lateral Perpendicular / Allowable) "
+                     "< 1.0, for more than one direction on a single connection")
+
+#: ** THE BALCONY'S BEAMS ARE ONE PLY, WRAPPED OVER THE TOP (owner decision 8, 2026-11-22). **
+#: A 3-1/2" glulam is a single member, so its pair is graded on Table 3's **1-ply** columns, not
+#: the 2- or 3-ply ones: uplift 1,920, F1 1,115, F2 900 lb (the lower, 900, is the lateral).
+#: Each 16" strap is NOT field-trimmed any more: it rises the beam's 11-7/8" face and the
+#: 3/4" pack, then wraps 3-3/8" over the top, so no written confirmation from Simpson is
+#: owed. Table 3 note 7 (F1 may add 1/16" of deflection on 2-/3-ply when the straps are not
+#: wrapped over the heel) is a deflection note for an UNWRAPPED strap; these are wrapped.
+#: **Note 6 of the same table reads "Lateral loads for double META, HETA, and HHETA apply
+#: only to 2- or 3-ply applications with anchors spaced a minimum of 3 in apart" while the
+#: table prints 1-ply F1/F2 cells; the owner's reading takes the printed row.** Read in FL11473
+#: R6 (SIM202301, sealed 2023-10-17) p. 10 of 14; the catalog edition (C-C-2026) is not read.
+HETA20Z_PAIR_HEAD_1_PLY = HeadConnector(
+    tie="HETA20Z-1PLY", tie_count=2, set_rated=True, uplift_lb=1920.0, lateral_lb=900.0,
+    load_duration_factor=1.6,
+    bearing="SS316-SHIM-35", bearing_width_in=3.5, bearing_length_in=3.5,
+    source="Simpson Strong-Tie FL11473 R6 (sealed 2023-10-17) p. 10 of 14, Table 3, double "
+           "HETA, concrete, 1-PLY columns, SP: uplift 1,920, F1 1,115, F2 900 lb for the pair, "
+           "10 nails 0.148x1-1/2 (5 per strap), straps wrapped over the beam top; note 1 "
+           "already +60% for wind; note 7 = the 1/16\" deflection note for unwrapped straps; "
+           "note 6 limits double-anchor lateral to 2-/3-ply (the table prints the 1-ply cells "
+           "regardless) — owner reading, C-C-2026 not read",
+    interaction_rule="FL11473 R6 §9 Limitations item 4: (Design Uplift / Allowable Uplift) + "
                      "(Lateral Parallel / Allowable) + (Lateral Perpendicular / Allowable) "
                      "< 1.0, for more than one direction on a single connection")
 
