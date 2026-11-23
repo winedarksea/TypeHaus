@@ -395,10 +395,9 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model_ro):
         # N-B-WELL-HEAD: the framed stub under the deck (W-B-WELL-HEAD, framed 2026-11-20)
         # hands off to W-B-WELL's stair-framed faces at the opening edge.
         "assembly_change:INT_2X4_PARTITION_HALF|STAIRWELL_PARTITION_4H",
-        # N-S-D4, W-S-SN2 -> W-S-SN3 (see the docstring above): a wet wall meeting a
-        # staggered sound wall, the one node where this key still fires against a plain
-        # INT_2X4_PARTITION neighbour.
-        "assembly_change:INT_2X4_STAGGERED_X_HALF|INT_2X6_STAGGERED_PLUMBING_HALF",
+        # N-S-D4, W-S-SN2 -> W-S-SN3 (see the docstring above): a continuous bearing wet wall
+        # meeting a staggered sound wall (W-S-SN3 is INT_2X6_BRG_HALF since 2026-11-22).
+        "assembly_change:INT_2X4_STAGGERED_X_HALF|INT_2X6_BRG_HALF",
         # N-B-BA-NW. W-B-STR3 (the closet's Type X face) hands off to W-B-STR3B, which keeps
         # the family's stair plywood — the leaf stops here because the closet does. The base
         # tag was STAIRWALL_INT_2X6_BRG until 2026-09-12, when it merged with the mudroom's

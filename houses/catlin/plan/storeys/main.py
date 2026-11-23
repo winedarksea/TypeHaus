@@ -2347,7 +2347,51 @@ _CURB_Y = inch(6)
 _JAMB_Z = inch(-13.4375)
 _BAND_Z = inch(-6.75)
 _CURB_Z = inch(-102.1875)
+# W-B-N2's wall-top restraint (Minn. R. 1309.0404 Table R404.1(1) fn. f, decision 23): FO-M-STAIR
+# fills the first three joist spaces, so its north trimmer pack (2-ply 1.75x11.875 LVL, x 120"..
+# 215.3") takes 400 plf as a flat beam, 7.94' x 400 = 3,177 lb, tied to the sill by these six
+# A35Z, 625 lb each at C_D 0.9, ~16" apart on the pack's north face, and the 1,588 lb end
+# reaction into FS-M-MECH / FS-M-NE by three more at each end (notes/main_floor_truss_basis.md §4a).
+# `code.MN_1309_0404_wall_top` counts the ties that name the floor and the wall, and the ends'.
+_PACK_TIE_Y = inch(429)
+_PACK_TIE_Z = inch(-6)
 CONNECTORS = [
+    Connector(uid="F4129D9A2N", tag="CN-M-N2-PACK-1", kind=ConnectorKind.TENSION_TIE,
+              position=pt(inch(128), _PACK_TIE_Y), elevation=_PACK_TIE_Z, size="A35Z",
+              connects=("FS-M-STAIR", "W-B-N2")),
+    Connector(uid="P6V7YHYKFF", tag="CN-M-N2-PACK-2", kind=ConnectorKind.TENSION_TIE,
+              position=pt(inch(144), _PACK_TIE_Y), elevation=_PACK_TIE_Z, size="A35Z",
+              connects=("FS-M-STAIR", "W-B-N2")),
+    Connector(uid="XHA0VRSWMW", tag="CN-M-N2-PACK-3", kind=ConnectorKind.TENSION_TIE,
+              position=pt(inch(160), _PACK_TIE_Y), elevation=_PACK_TIE_Z, size="A35Z",
+              connects=("FS-M-STAIR", "W-B-N2")),
+    Connector(uid="4MRJFJH8C7", tag="CN-M-N2-PACK-4", kind=ConnectorKind.TENSION_TIE,
+              position=pt(inch(176), _PACK_TIE_Y), elevation=_PACK_TIE_Z, size="A35Z",
+              connects=("FS-M-STAIR", "W-B-N2")),
+    Connector(uid="N1CSMHCRDQ", tag="CN-M-N2-PACK-5", kind=ConnectorKind.TENSION_TIE,
+              position=pt(inch(192), _PACK_TIE_Y), elevation=_PACK_TIE_Z, size="A35Z",
+              connects=("FS-M-STAIR", "W-B-N2")),
+    Connector(uid="22EP86JJ4Q", tag="CN-M-N2-PACK-6", kind=ConnectorKind.TENSION_TIE,
+              position=pt(inch(208), _PACK_TIE_Y), elevation=_PACK_TIE_Z, size="A35Z",
+              connects=("FS-M-STAIR", "W-B-N2")),
+    Connector(uid="3YJ57A701F", tag="CN-M-N2-PACK-END-1", kind=ConnectorKind.TENSION_TIE,
+              position=pt(inch(122.5), inch(426.6)), elevation=_PACK_TIE_Z, size="A35Z",
+              connects=("FS-M-STAIR", "FS-M-MECH")),
+    Connector(uid="JT1ZECAEWG", tag="CN-M-N2-PACK-END-2", kind=ConnectorKind.TENSION_TIE,
+              position=pt(inch(125.5), inch(426.6)), elevation=_PACK_TIE_Z, size="A35Z",
+              connects=("FS-M-STAIR", "FS-M-MECH")),
+    Connector(uid="M0A12SREVJ", tag="CN-M-N2-PACK-END-3", kind=ConnectorKind.TENSION_TIE,
+              position=pt(inch(131.0), inch(426.6)), elevation=_PACK_TIE_Z, size="A35Z",
+              connects=("FS-M-STAIR", "FS-M-MECH")),
+    Connector(uid="QSE8YK0EAK", tag="CN-M-N2-PACK-END-4", kind=ConnectorKind.TENSION_TIE,
+              position=pt(inch(213.0), inch(426.6)), elevation=_PACK_TIE_Z, size="A35Z",
+              connects=("FS-M-STAIR", "FS-M-NE")),
+    Connector(uid="6WY7YYP1B2", tag="CN-M-N2-PACK-END-5", kind=ConnectorKind.TENSION_TIE,
+              position=pt(inch(210.0), inch(426.6)), elevation=_PACK_TIE_Z, size="A35Z",
+              connects=("FS-M-STAIR", "FS-M-NE")),
+    Connector(uid="C6PAZ5WY1C", tag="CN-M-N2-PACK-END-6", kind=ConnectorKind.TENSION_TIE,
+              position=pt(inch(204.5), inch(426.6)), elevation=_PACK_TIE_Z, size="A35Z",
+              connects=("FS-M-STAIR", "FS-M-NE")),
     Connector(uid="RYMM0XWNBM", tag="CN-M-HD-ENTRY-E", kind=ConnectorKind.HOLD_DOWN,
               position=pt(ft(9, 9), _JAMB_Y_NORTH), elevation=_JAMB_Z,
               size="STHD14RJ", connects=("W-M-N3", "W-B-N3")),

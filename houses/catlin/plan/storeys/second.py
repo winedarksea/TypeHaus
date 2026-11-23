@@ -413,49 +413,20 @@ WALLS = [
          assembly="INT_2X4_STAGGERED_X_HALF", top=ft(9)),
     Wall(uid="CSW146AAAA", tag="W-S-SN2", start_node="N-S-V1", end_node="N-S-D4",
          assembly="INT_2X4_STAGGERED_X_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar", extent=AR_LOWER_BAND),), top=ft(9)),
-    # NOT BEARING (reverted 2026-08-30; was BEARING from 2026-08-29 to 2026-08-30). The
-    # BEARING call was reasoned from FO-A-HALL's doubled trimmer pair delivering the attic
-    # floor opening's south edge to "two points" — one on BM-S-BATH-E, whose own south end
-    # sits at (10', 22'-4"), directly on this wall's run. But BM-S-BATH-E's ~600 lb reaction
-    # (RM-A-POCKET above it is STORAGE, not habitable, so its live load is the lighter
-    # storage rate, not a habitable one) does not need a dedicated wall-bearing load path at
-    # all: the floor opening's own south edge is closed by a doubled trimmer joist running
-    # the full 8' from x=10' to x=18' (the "south trimmer pair" the FloorOpening comment
-    # already names), and BM-S-BATH-E's south end is the ordinary case of a header hung by
-    # joist hanger into that trimmer, exactly the way its own north end already lands on a
-    # real bearing wall (W-S-BD-N1B) rather than needing one at both ends. A hung header
-    # does not push its reaction down through the wall under it — it rides the trimmer to
-    # wherever THAT joist actually bears, which is not this wall. (The model has no field
-    # for "hung on a trimmer" — `Beam.bearing_refs` only resolves Wall/Beam tags — so this
-    # is a framing call recorded here in prose, not something a check can verify either way.)
-    #
-    # Back to INT_2X6_STAGGERED_PLUMBING_HALF accordingly — the original ask, and valid again now
-    # that nothing requires continuous studs: `FX-S-SUITEBATH-WC` and `FX-S-SUITEBATH-LAV`
-    # both back onto this wall and `PR-S-SUITEBATH-VENT` takes off on it
-    # (`plan/fixtures.py`, `plan/mep_venting.py`), so this is the suite bath's real wet wall,
-    # not W-S-SBS across the room — and SBS gave up its own staggered assembly in the same
-    # pass, because nothing was ever against it.
-    #
-    # ** THE 6.52" WALL IS 2.02" THICKER THAN THE 4.5" PARTITION. ** With the axis fixed at
-    # y=22'-4", its finished faces are at 264.74" (bath) and 271.26" (hall). Those are
-    # 0.125" inward from the formerly documented 6.77" faces; check attached fixtures and
-    # devices against this current geometry. Only the vanity is caught by a test. The four
-    # devices were found by
-    # `integrity.wall_mount_on_face`, which grades the resolved body
-    # against the wall solid, and a fixture other than a vanity is graded by nothing at all —
-    # which is how FX-S-SUITEBATH-WC turned out to have been standing 1.92" off this wall
-    # since long before any of this. It is flush now.
-    #
-    # `stacks_on` still names W-M-HS3, but for an unrelated reason: `resolve/stacking.py`
-    # derives a `storey_stack:rim` boundary condition for EVERY wall with a collinear overlap
-    # below it, bearing or not, and this wall overlaps both W-M-HS3 and W-M-HS4 on the main
-    # storey's unbroken y=22'-4" band — `integrity.stack_ambiguous` is a hard ERROR on that
-    # overlap without a tiebreaker regardless of structural_role. W-M-HS3 runs x
-    # 8'-0"..13'-4", which is also where W-M-HS4 (D-M-LAUN's 3'-0" pocket, off-limits per
-    # CLAUDE.md) would otherwise have been the only other candidate.
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar", extent=AR_LOWER_BAND),), top=ft(9),
+         structural_role=StructuralRole.NONBEARING),
+    # BEARING, continuous 2x6 studs (decision 22, 2026-11-22). FO-A-HALL's doubled south trimmer
+    # (x 10'..18') lies on this wall's plate and `P-S-SN3-SQUASH` carries BM-S-BATH-E's hung
+    # end, so the attic floor's south edge, W-A-HALL-S and this wall load W-M-HS3/HS4 as a line
+    # (~240 plf, notes/header_spans_r602_7.md §4). Continuous studs so the plates carry it
+    # (`structural.wet_wall_bearing` refuses a bearing staggered wall); every bore through it
+    # is graded at R602.6's bearing limit, 40% of 5 1/2" = 2.20" (notes/framing_bore_limits.md).
+    # The 1 1/4" LSL strip under it in FS-S-WEST's open-web deck is `WEST_FLOOR.reinforcements`.
+    # `FX-S-SUITEBATH-WC`/`-LAV` back onto it and `PR-S-SUITEBATH-VENT` takes off on it: this is
+    # the suite bath's wet wall. Faces are 264.74" (bath) and 271.26" (hall), 6.52" thick.
+    # `stacks_on` names W-M-HS3 (W-M-HS4 also overlaps; `integrity.stack_ambiguous` needs a pick).
     Wall(uid="CSW147AAAA", tag="W-S-SN3", start_node="N-S-D4", end_node="N-S-C2C",
-         assembly="INT_2X6_STAGGERED_PLUMBING_HALF",
+         assembly="INT_2X6_BRG_HALF", structural_role=StructuralRole.BEARING,
          layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar", extent=AR_LOWER_BAND), LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(9), stacks_on="W-M-HS3"),
     # FX-S-SUITEBATH-TUBSH's plumbing end (owner, 2026-11-08): a 4 1/2" 2x4 wall on W-S-SN3's
     # face, the tub's width, so the one-piece unit's drain (8 1/4" off the end studs) lands at

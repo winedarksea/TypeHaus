@@ -2,6 +2,7 @@
 # Catlin assemblies — the concrete mixes this house pours, named by every concrete assembly.
 # Split out of plan/assemblies.py verbatim.
 from typehaus import (
+    CementSpec,
     ConcreteSpec,
     FiberSpec,
     ScmFractions,
@@ -31,8 +32,31 @@ from typehaus import (
 # three sunken-garden-face strips are the exception that proves it — they bottom out 8"
 # below the garden floor and are frost-protected by wings under IRC R403.3
 # (FOOTING_EXPOSED_25 below), which is a detail precisely because the concrete there IS in the
-# freezing zone. ``exposure_s`` is left UNSET on all three: nobody has run a soil sulfate
-# test, and "S0" would be an assumption wearing a measurement's clothes.
+# freezing zone.
+#
+# ** DURABILITY FIELDS ARE SPEC STATEMENTS, AND THE PLANT CONFIRMS THEM (owner, 2026-11-22). **
+#   * Chloride: the ceiling ACI 318-19 Table 19.3.2.1 sets for the mix's C class (C0 1.00, C1
+#     0.30, C2 0.15 % water-soluble Cl- by mass of cement, nonprestressed), ordered as the
+#     limit and confirmed by the ASTM C1218 result on the mix submittal.
+#   * Cement: "ASTM C150 Type II, Type I/II, or ASTM C595 Type IL(MS)" is what goes on the
+#     order; `CementSpec` carries C150 I/II, which the S1 rule reads as moderate-sulfate
+#     resistant. Never a plain IL: it carries no (MS) designation.
+#   * Sulfate: S1 is a DESIGN BOUND, not a measurement. Nobody has run a soil sulfate test
+#     (ASTM C1580), and S1 covers S0 and S1 soil without one; every mix here already meets
+#     S1's 0.50 w/cm and 4,000 psi. The geotechnical report the soil gap owes can only
+#     lower it. S2 or worse in that report reopens the cement (Type V / (HS)).
+#   * ASR: W1 asks for evidence the aggregate is not reactive or that ASR is mitigated
+#     (ACI 318-19 26.4.2.2(d)). The plant's aggregate data is not in hand, so `asr` stays
+#     unauthored and `structural.concrete_asr` UNKNOWN until the submittal; the ORDER states
+#     the route (ACI SPEC-301-20 4.2.2.6(a), as ASTM C1778 allows): each aggregate <= 0.04%
+#     expansion at 1 year (ASTM C1293), OR the aggregate + cementitious combination <= 0.10%
+#     at 16 days (ASTM C1567), OR concrete alkali <= 4 lb/yd3 (aggregate 0.04-<0.12%) / 3
+#     lb/yd3 (0.12-<0.24%), with the data submitted with the mix design.
+#   Sources read 2026-11-23: ACI 318-19 Table 19.3.2.1 as reproduced in Concrete International,
+#   May 2023 (NRMCA, "Guide to Selecting Exposure Classes"), pp. 46-47.
+_CEMENT = CementSpec(
+    standard="ASTM C150", designation="I/II",
+    source="order: ASTM C150 Type II or Type I/II, or ASTM C595 Type IL(MS); no other cement, and no plain IL, which carries no (MS) designation")
 # ** 5,000 psi, AND THAT SETTLES A STANDING OPEN QUESTION. ** IRC Table R402.2's basement-
 # wall row is 3,000 psi, which is what every calc in this engine presumed and what
 # `notes/sunken_garden_court_free_body.md` §9, `notes/sunken_garden_piers.md` §6 and
@@ -65,11 +89,13 @@ BURIED_MIX = ConcreteSpec(
     chromate_treatment="passivated",
     fiber=FiberSpec(kind="macro-synthetic", dose_pcy=4.0),
     scm="25% class F fly ash",
-    # The `scm` line read as a whole statement: fly ash only. The cement is still unnamed,
-    # so the F3 cap grade on EXPOSED_MIX stays UNKNOWN until the mix design names it.
+    # The `scm` line read as a whole statement: fly ash only, on a non-blended cement.
     scm_fractions=ScmFractions(fly_ash_pct=25.0, slag_pct=0.0, silica_fume_pct=0.0),
+    chloride_ion_max_pct=0.30,
+    cement=_CEMENT,
+    exposure_s="S1",
     max_aggregate=inch(0.75),
-    source="strip footings and buried stems below frost depth: MN Rules 1309.0402's 5,000 psi FOOTINGS amendment to IRC Table R402.2, ACI 318-19 Table 19.3.2.1 for F0/W1/C1, and 3\" cover per Table 20.5.1.3.1(a) cast against and permanently in contact with ground",
+    source="strip footings and buried stems below frost depth: MN Rules 1309.0402's 5,000 psi FOOTINGS amendment to IRC Table R402.2, ACI 318-19 Table 19.3.2.1 for F0/W1/C1, and 3\" cover per Table 20.5.1.3.1(a) cast against and permanently in contact with ground. Water-soluble chloride <= 0.30% (C1, specified ceiling, confirmed by ASTM C1218 on the submittal); cement per the order's C150 II / I/II / C595 IL(MS); designed to sulfate class S1 pending the geotech; ASR evidence per the order (ACI SPEC-301 4.2.2.6(a))",
 )
 
 EXPOSED_MIX = ConcreteSpec(
@@ -86,8 +112,11 @@ EXPOSED_MIX = ConcreteSpec(
     scm="25% class F fly ash",
     # At Table 26.4.2.2(b)'s 25% fly ash cap exactly, not under it.
     scm_fractions=ScmFractions(fly_ash_pct=25.0, slag_pct=0.0, silica_fume_pct=0.0),
+    chloride_ion_max_pct=0.15,
+    cement=_CEMENT,
+    exposure_s="S1",
     max_aggregate=inch(0.75),
-    source="every exterior and salt-splash pour: ACI 318-19 Table 19.3.2.1 class F3 + C2 — w/cm 0.40, f'c 5,000, 6%+/-1.5 air — with ASTM A767 class 1 galvanized bar. Cover is authored per pour, because on a 12\" round column it costs moment and on a footing it is free",
+    source="every exterior and salt-splash pour: ACI 318-19 Table 19.3.2.1 class F3 + C2 — w/cm 0.40, f'c 5,000, 6%+/-1.5 air — with ASTM A767 class 1 galvanized bar. Cover is authored per pour, because on a 12\" round column it costs moment and on a footing it is free. Water-soluble chloride <= 0.15% (C2, specified ceiling, confirmed by ASTM C1218 on the submittal); cement per the order's C150 II / I/II / C595 IL(MS); designed to sulfate class S1 pending the geotech; ASR evidence per the order (ACI SPEC-301 4.2.2.6(a))",
 )
 
 # ** TWO INTERIOR MIXES, BECAUSE MICRO AND MACRO FIBRE ARE NOT THE SAME PURCHASE. ** These
@@ -123,6 +152,7 @@ DECK_CAP_MIX = ConcreteSpec(
     exposure_w="W0",
     exposure_c="C0",
     bar_coating="black",
+    chloride_ion_max_pct=1.00,
     fiber=FiberSpec(kind="micro-synthetic", dose_pcy=1.5,
                     product="monofilament PP, 1/2\" - confirm the dose against the supplier TDS and the finisher before ordering"),
     max_aggregate=inch(0.75),
@@ -155,9 +185,12 @@ INTERIOR_SLAB_MIX = ConcreteSpec(
     exposure_w="W0",
     exposure_c="C0",
     bar_coating="black",
+    chloride_ion_max_pct=1.00,
+    cement=_CEMENT,
+    exposure_s="S1",
     fiber=FiberSpec(kind="macro-synthetic", dose_pcy=4.0),
     max_aggregate=inch(0.75),
-    source="the basement slab on grade SL-B-FLOOR: same 4,000 psi F0/W0/C0 as the polished cap, and the same dose of the same macro-synthetic fibre EXPOSED_MIX carries, so the house buys one macro product and not two. Macro rather than micro because this slab has no mesh and something has to carry drying shrinkage and thermal movement (ACI 544.4R); it is a service floor with a covering over it, so the surface visibility that rules macro out of SL-M-DECK does not apply. Control joints are still required and are not modelled here",
+    source="the basement slab on grade SL-B-FLOOR: same 4,000 psi F0/W0/C0 as the polished cap, and the same dose of the same macro-synthetic fibre EXPOSED_MIX carries, so the house buys one macro product and not two. Macro rather than micro because this slab has no mesh and something has to carry drying shrinkage and thermal movement (ACI 544.4R); it is a service floor with a covering over it, so the surface visibility that rules macro out of SL-M-DECK does not apply. Control joints are still required and are not modelled here. Water-soluble chloride <= 1.00% (C0 ceiling, confirmed by ASTM C1218); it lies on soil, so the cement is the order's C150 II / I/II / C595 IL(MS) and the sulfate class is the S1 design bound",
 )
 
 # The wash's authored film: two coats plus, on the SRW block, the whole-face Quartz Filler or

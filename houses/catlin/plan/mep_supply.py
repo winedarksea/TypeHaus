@@ -1017,14 +1017,17 @@ STUDIO_SUPPLY = [
             # 2026-11-06: the south leg is at x=10'-2" (TrimJoist pocket D8), not 10'-0" at its edge.
             # North 1 1/2" between x=10'-11" and 12'-2" round PR-M-S-SUITE-WC-DRAIN's north
             # corner (2026-11-08), back on 22'-4" clear of P-S-SN3-SQUASH.
-            path=(pt(ft(13, 7.2), ft(22, 4)), pt(inch(146), ft(22, 4)), pt(inch(146), inch(269.5)),
-                  pt(inch(131), inch(269.5)), pt(inch(131), ft(22, 4)),
+            # 2026-11-22: the jog over PR-M-S-SUITE-WC-DRAIN's north corner goes OVER it, at
+            # 117 5/8" (the band above its crown), not 1 1/2" north: y=269.5 is where the 1 1/4"
+            # LSL strip under W-S-SN3 now lies (`FS-S-WEST` reinforcement, x 122"..216").
+            path=(pt(ft(13, 7.2), ft(22, 4)), pt(inch(146), ft(22, 4)), pt(inch(146), ft(22, 4)),
+                  pt(inch(131), ft(22, 4)), pt(inch(131), ft(22, 4)),
                   pt(ft(10, 2), ft(22, 4)), pt(ft(10, 2), ft(20, 6)),
                   pt(ft(9, 5.5), ft(20, 6)), pt(ft(9, 5.5), ft(20, 6)),
                   pt(ft(9, 5.5), ft(20, 6))),
             diameter=inch(0.75), material="pex",
             # The 248.87" vertex is PR-A-STUBATH-WC-CW's tee, at the WC stop's height.
-            elevations=(ft(9, 6.0625), ft(9, 6.0625), ft(9, 6.0625), ft(9, 6.0625), ft(9, 6.0625),
+            elevations=(ft(9, 6.0625), ft(9, 6.0625), inch(117.625), inch(117.625), ft(9, 6.0625),
                         ft(9, 6.0625), ft(9, 6.0625), ft(9, 6.0625), inch(248.87), ft(22, 6)),
             serves=("FX-A-STUBATH-WC", "FX-A-STUBATH-LAV", "FX-A-STUBATH-SH",
                     "FX-A-STUDIO-BAR-SINK")),

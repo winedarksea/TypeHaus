@@ -16,10 +16,14 @@ def test_catlin_wall_tops_match_the_basis_note(catlin_model_ro) -> None:
     findings = {f.element_tags[0] if f.element_tags else re.match(r"(W-B-\w+)", f.message)[1]: f
                 for f in foundation_wall_top(check_context(model=catlin_model_ro))}
     assert {tag for tag, f in findings.items() if f.result is Result.PASS} == {
-        "W-B-E1", "W-B-E2", "W-B-W1", "W-B-W2", "W-B-N1", "W-B-N3", "W-B-N4", "W-B-S1",
-        "W-B-S4"}
-    # FO-M-STAIR fills W-B-N2's first three joist spaces: a design, not a table read.
-    assert findings["W-B-N2"].result is Result.UNKNOWN
+        "W-B-E1", "W-B-E2", "W-B-W1", "W-B-W2", "W-B-N1", "W-B-N2", "W-B-N3", "W-B-N4",
+        "W-B-S1", "W-B-S4"}
+    # FO-M-STAIR fills W-B-N2's first three joist spaces: its north trimmer pack is the
+    # restraint, a flat beam, worked by hand in note §4a (decision 23).
+    n2 = findings["W-B-N2"].message
+    assert "M 3150 lb-ft, fb 1559 / 2203 psi (d/c 0.71), fv 57 / 171 psi (d/c 0.34)" in n2
+    assert "6 ties x 626 lb = 3753 lb against 3175 lb wall-top load" in n2
+    assert n2.count("3 ties x 626 lb = 1876 lb against 1588 lb end reaction") == 2
     for f in findings.values():
         assert "row 8'/7.5' gives 400 plf" in f.message
     # Perpendicular: 538 lb a truss end, 563 lb a TJI end (note §4).

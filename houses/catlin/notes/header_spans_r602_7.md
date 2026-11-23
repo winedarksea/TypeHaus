@@ -95,16 +95,30 @@ bearing on the jack. **The hanger's x = 120" is the king/jack seam: the pack is 
 it** (and inside the 3-ply beam's 117 3/8..122 5/8" bearing above). P goes down the pack to
 the floor; the header's clear span is 121 1/2..196", **L = 74.5" = 6.21'**, uniform only.
 
-**Through the floor.** `FS-S-WEST`'s trusses run in x at y = 256"/272", parallel to this line,
-so nothing in the floor stood between `W-S-SN3`'s plate and this wall's top plate at x = 120".
-`P-S-SN3-SQUASH` (2026-11-07 review) is that path: a 4x4 block, 11 7/8" (top plate 108 1/8" to
-the 120" datum), at (120", 268 1/2"), clear of both chords (257 3/4" / 270 1/4"), 3" onto this
-wall's plate, centred on the king/jack seam. 570 / (3.5 x 3.5) = 47 psi on its end grain.
-The UNIFORM part has no such path yet: no blocking stands between the trusses over this wall,
-so the ~240 plf reaches truss 272 through the subfloor rather than this header. The engine
-records the line (`resolve/stacked_ladder.py`) and lays no solid block between open-web
-trusses; `structural.stacked_line_ladder` stays UNKNOWN until TrimJoist's layout carries it
-(open in `plans/TODO.md`; the header row is conservative either way).
+**Through the floor (decision 22, 2026-11-22).** `FS-S-WEST`'s trusses run in x at y = 256"/272",
+parallel to this line, so nothing in the floor stood between `W-S-SN3`'s plate and this wall's top
+plate. Two parts now do:
+
+- **The point.** `P-S-SN3-SQUASH` (2026-11-07 review): a 4x4 block, 11 7/8" (top plate 108 1/8" to
+  the 120" datum), at (120", 268 1/2"), clear of both chords (257 3/4" / 270 1/4"), 3" onto this
+  wall's plate, centred on the king/jack seam. 570 / (3.5 x 3.5) = 47 psi on its end grain.
+- **The uniform part (~240 plf).** `W-S-SN3` is a BEARING wall of continuous 2x6 studs
+  (`INT_2X6_BRG_HALF`; it was staggered and "not bearing" until 2026-11-22, which contradicted
+  `main.py` calling `W-M-HS3`/`HS4` BEARING for it). Under it, between the chords, lies a 1 1/4"
+  LSL rim board on edge, full depth 11 7/8", x 131"..216" (`FS-S-WEST.reinforcements`, a
+  `JoistReinforcement` sistered to the y=272 truss at y 269"..270 1/4"): TJ-8000 vertical load
+  **5,400 plf** (`library/rim_boards.py`, ESR-1387 Table 4, 1 1/4" 1.3E) against **240 plf**, d/c
+  **0.04**; 1.25" of it lies on the 3 1/2" plate. The squash block carries the line to x = 121 3/4",
+  the strip from 131": the ladder's 16" module is met (121 3/4 -> 137 3/4). It starts at 131" so
+  `ED-M-LAUNDRY-TRACK`'s bar (x = 128.4") keeps its 16" bay. It must go on TrimJoist's layout.
+  `structural.stacked_line_ladder` PASSes: "carried by P-S-SN3-SQUASH, sister-0-0 (1.25x11.875 rim,
+  TJ-8000 vertical 5,400 plf)". `W-S-SN2` (staggered, now authored NONBEARING) is off the ladder
+  on an open-web deck: R502.4 asks parallel *bearing* partitions to be supported.
+
+**R602.6 on the retyped wall.** A bearing 2x6 stud may be bored 40% = 2.20" (5/8" of stud left each
+side). The widest bore through `W-S-SN3` is the 1 1/2" vents' 1.90" outside (`PR-S-SUITEBATH-VENT`,
+`-LAV-VENT`, `-WC-VENT`): 0.86 of the limit, 1.80" of stud either side; nothing is 2" or larger.
+`mep.run_through_stud` PASSes every one (`notes/framing_bore_limits.md` §2).
 
 Pack in bearing on the bottom plate: (570 + header end 745) / (2 x 1.5 x 3.5) = 125 psi
 against SPF Fc⊥ 425 psi — 0.29.

@@ -11,8 +11,10 @@ Each line is read off the RESOLVED deck (its outline less its voids) and left on
 rim, header, beam, bearing block or post already stands on the plate; ``block`` where a
 block (or a 2x6 box with a cheek on the plate) was laid; ``missing`` where nothing fits.
 A partition stopped a deflection gap under the deck takes no ladder; an outdoor wall has
-its rim. An open-web truss deck gets the line and no lumber: a block between trusses is no
-published detail, so ``structural.stacked_line_ladder`` sends it to the truss designer.
+its rim. An open-web truss deck gets no lumber from here: a block between trusses is no published
+detail. Its line is carried only by what the deck's author put on the plate (a truss line, or
+a ``JoistReinforcement`` strip of rim board on edge, read at its TJ-8000 vertical row); else
+``structural.stacked_line_ladder`` sends it to the truss designer.
 """
 
 from __future__ import annotations
@@ -21,6 +23,7 @@ import dataclasses
 import math
 from dataclasses import dataclass
 
+from typehaus.model.enums import StructuralRole
 from typehaus.quantities import inch
 from typehaus.resolve.blocking_parts import (
     BASE_TOL_M,
@@ -53,6 +56,7 @@ class LadderStation:
     at_m: float  # plan coordinate along the joists
     status: str  # "block" | "carried" | "missing"
     by: str = ""  # what carries it, or why nothing fits
+    detail: str = ""  # a carrier's section and published vertical row, where it has one
 
 
 @dataclass(frozen=True)
@@ -92,7 +96,7 @@ def ladder_note(model, wall, upper, lo_pt, hi_pt) -> str | None:
         if wall.tag in line.lowers and upper.tag in line.uppers:
             floor = next((f for f in model.floors if f.tag == line.floor), None)
             axis = 0 if floor is None or floor.direction == "x" else 1
-            near = [] if line.open_web else line.near(*sorted((lo_pt[axis], hi_pt[axis])))
+            near = line.near(*sorted((lo_pt[axis], hi_pt[axis])))
             if not near or any(s.status == "missing" for s in near):
                 return f"assumes a ladder in {line.floor} under {upper.tag}"
             if any(s.status == "block" for s in near):
@@ -117,12 +121,10 @@ def resolve_stacked_ladders(model: ResolvedModel, runs) -> None:
         spacing = spec.spacing.meters if spec.spacing is not None else inch(16).meters
         open_web = cross_section(spec.member).shape == "floor_truss"
         laid: list[FramedMember] = []
-        for lowers, uppers, spans in _lines(model, floor, joists):
-            stations: tuple[LadderStation, ...] = ()
-            if not open_web:
-                found, laid_here, spans = _ladder(model, floor, spec.member, spacing, joists,
-                                                  lowers, spans, runs, laid)
-                stations, laid = tuple(found), laid + laid_here
+        for lowers, uppers, spans in _lines(model, floor, joists, open_web):
+            found, laid_here, spans = _ladder(model, floor, spec.member, spacing, joists,
+                                              lowers, spans, runs, laid, lay_blocks=not open_web)
+            stations, laid = tuple(found), laid + laid_here
             model.stacked_ladders.append(LadderLine(
                 floor.tag, tuple(w.tag for w in lowers), uppers, spec.member, spacing,
                 tuple(spans), open_web, stations))
@@ -130,7 +132,7 @@ def resolve_stacked_ladders(model: ResolvedModel, runs) -> None:
             model.floors[index] = dataclasses.replace(floor, members=(*floor.members, *laid))
 
 
-def _lines(model, floor: ResolvedFloor, joists):
+def _lines(model, floor: ResolvedFloor, joists, open_web: bool = False):
     """``(lower walls, upper tags, merged runs)`` per stacked line along this deck's joists."""
     from shapely.geometry import LineString, Polygon
 
@@ -157,8 +159,12 @@ def _lines(model, floor: ResolvedFloor, joists):
                 or abs(a[axis_i] - b[axis_i]) <= _AXIS_TOL_M
                 or abs(framing_top_z_m(wall) - z0) > BASE_TOL_M):
             continue
+        # On an open-web deck nothing is laid, so only what must be carried is asked for: R502.4
+        # wants parallel BEARING partitions supported, and an authored NONBEARING wall is not.
         uppers = [(u, run) for u, run in walls_over(model.plan, model.walls, wall)
-                  if u.storey == floor.storey]
+                  if u.storey == floor.storey and not (open_web and getattr(
+                      model.plan.by_tag(u.tag), "structural_role", None)
+                      is StructuralRole.NONBEARING)]
         if not uppers or takes_a_deflection_gap(model, wall, refs):
             continue
         length = math.dist(a, b)
@@ -178,8 +184,10 @@ def _lines(model, floor: ResolvedFloor, joists):
             for lowers, ups, spans in groups.values()]
 
 
-def _ladder(model, floor, profile, spacing, joists, lowers, spans, runs, placed):
-    """Greedy along each run: the furthest station within a module of the last that bears."""
+def _ladder(model, floor, profile, spacing, joists, lowers, spans, runs, placed, *,
+            lay_blocks=True):
+    """Greedy along each run: the furthest station within a module of the last that bears.
+    ``lay_blocks=False`` (an open-web deck) accepts only what already stands on the plate."""
     from typehaus.resolve.floor_ends import structure_span
     from typehaus.resolve.framing.profiles import cross_section
 
@@ -223,8 +231,12 @@ def _ladder(model, floor, profile, spacing, joists, lowers, spans, runs, placed)
                     carrier = (_carried(edges, across, posts, c, width, plate, axis_i, perp_i)
                                or _beam(model, c, z0, z1, axis_i, perp_i, plate))
                     if carrier:
-                        found = LadderStation(c, "carried", carrier)
+                        found = LadderStation(c, "carried", *carrier)
                         break
+                    if not lay_blocks:
+                        why = "a block between open-web trusses is no published detail"
+                        c -= _STEP_M
+                        continue
                     key = f"{LADDER_BLOCK_PREFIX}{tag}-{c / _IN:.2f}"
                     block, why = _block_at(model, floor, key, profile, c, width, plate, edges,
                                            spacing, runs, (*placed, *members), z0, z1)
@@ -277,38 +289,52 @@ def seated(floor, key, profile, along_x, c, gap, plate, z0, z1, crossing, runs=(
     return None, f"{', '.join(runs)} along the plate leave(s) no cheek on it"
 
 
-def _carried(edges, across, posts, c, width, plate, axis_i, perp_i) -> str:
+def _carrier_detail(profile: str) -> str:
+    """The section, with its TJ-8000 vertical row where it is a stock rim board."""
+    from typehaus.library.rim_boards import rim_board
+
+    thickness, _, depth = profile.removesuffix(" rim").partition("x")
+    try:
+        row = rim_board(float(thickness), float(depth)) if profile.endswith(" rim") else None
+    except ValueError:
+        row = None
+    return profile if row is None else f"{profile}, TJ-8000 vertical {row.vertical_plf:,.0f} plf"
+
+
+def _carried(edges, across, posts, c, width, plate, axis_i, perp_i) -> tuple[str, str] | None:
     """What already stands on the plate at ``c``: a joist, trimmer or rim along it, a block,
     header or rim across it, or a post."""
     from typehaus.resolve.framing.profiles import cross_section
 
     def bears(lo, hi):
-        return min(hi, plate[1]) - max(lo, plate[0]) >= MIN_BEARING_OVERLAP_M - 1e-9
+        # A member narrower than the minimum (a 1 1/4" rim on edge) bears with its whole face.
+        need = min(MIN_BEARING_OVERLAP_M, hi - lo)
+        return min(hi, plate[1]) - max(lo, plate[0]) >= need - 1e-9
 
     for m in edges:
         lo, hi = sorted((m.p0[axis_i], m.p1[axis_i]))
         half = cross_section(m.profile).width_m / 2
         if lo <= c <= hi and bears(m.p0[perp_i] - half, m.p0[perp_i] + half):
-            return m.child_key
+            return m.child_key, _carrier_detail(m.profile)
     for m in across:
         lo, hi = sorted((m.p0[perp_i], m.p1[perp_i]))
         if lo == hi:
             lo, hi = lo - BOX_T_M / 2, hi + BOX_T_M / 2  # a box cheek
         if abs(m.p0[axis_i] - c) <= width / 2 + _IN / 2 and bears(lo, hi):
-            return m.child_key
+            return m.child_key, ""
     for solid in posts:
         along = [p[axis_i] for p in solid.outline]
         if min(along) <= c <= max(along) and bears(min(p[perp_i] for p in solid.outline),
                                                     max(p[perp_i] for p in solid.outline)):
-            return solid.tag
-    return ""
+            return solid.tag, ""
+    return None
 
 
-def _beam(model, c, z0, z1, axis_i, perp_i, plate) -> str:
+def _beam(model, c, z0, z1, axis_i, perp_i, plate) -> tuple[str, str] | None:
     spans = carrier_spans(model, c, z0, z1, axis_i, perp_i)
     if any(min(hi, plate[1]) - max(lo, plate[0]) >= MIN_BEARING_OVERLAP_M for lo, hi in spans):
-        return "a beam or opening header"
-    return ""
+        return "a beam or opening header", ""
+    return None
 
 
 def _merged(spans):

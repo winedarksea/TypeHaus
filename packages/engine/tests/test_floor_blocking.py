@@ -76,9 +76,17 @@ def test_a_wall_over_a_wall_along_the_joists_reads_its_ladder(catlin_model_ro) -
     from typehaus.findings import Result
 
     lines = {line.lowers: line for line in catlin_model_ro.stacked_ladders}
-    # W-S-SN3 over W-M-HS3/HS4 along FS-S-WEST's trusses: recorded, nothing laid or billed.
+    # W-S-SN3 over W-M-HS3/HS4 along FS-S-WEST's trusses: no block is laid (none is published);
+    # the line is carried by the squash block, then the authored 1 1/4" LSL strip (TJ-8000 row).
+    # Nonbearing SN2 is not on it (decision 22).
     west = lines[("W-M-HS3", "W-M-HS4")]
-    assert west.open_web and not west.stations
+    assert west.open_web and west.uppers == ("W-S-SN3",)
+    assert {s.status for s in west.stations} == {"carried"}
+    assert {s.by for s in west.stations} == {"P-S-SN3-SQUASH", "sister-0-0"}
+    assert all("5,400 plf" in s.detail for s in west.stations if s.by == "sister-0-0")
+    assert max(b - a for a, b in zip([s.at_m for s in west.stations],
+                                     [s.at_m for s in west.stations][1:], strict=False)
+               ) <= west.spacing_m + 1e-9
     assert not any(m.child_key.startswith("ladder-block")
                    for m in _floor(catlin_model_ro, "FS-S-WEST").members)
     # FO-A-HALL's trimmer stands on W-S-SN3's plate, station by station.
@@ -86,7 +94,7 @@ def test_a_wall_over_a_wall_along_the_joists_reads_its_ladder(catlin_model_ro) -
     findings = stacked_line_ladder(SimpleNamespace(plan=catlin_model_ro.plan,
                                                    model=catlin_model_ro))
     by_floor = {f.element_tags[0]: f.result for f in findings}
-    assert by_floor["FS-S-WEST"] is Result.UNKNOWN and by_floor["FS-ATTIC"] is Result.PASS
+    assert by_floor["FS-S-WEST"] is Result.PASS and by_floor["FS-ATTIC"] is Result.PASS
 
 
 def test_a_box_bears_only_where_a_cheek_stands_on_the_plate() -> None:

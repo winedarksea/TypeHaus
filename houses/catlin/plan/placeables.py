@@ -672,7 +672,7 @@ SECOND_PLACEABLES = [
     Furniture(uid="NHFPDD49RB", tag="FURN-S-SUITEBATH-AP", type_ref="FT-ACCESS-PANEL-1414", room="RM-S-HALL",
               mount=Mount(kind=MountKind.WALL, elevation=ft(0, 6), recessed_into_host_surface=True),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-S-SN3", face="left", distance_from_start=inch(81),
+                  wall_ref="W-S-SN3", face="left", distance_from_start=inch(84.5),
                   normal_gap=inch(-1.5), rotation_offset=deg(-180)))),
     # --- mechanical-shaft access panel --------------------------
     # The NW shaft (W-S-CH-W/CH-S) is the house's basement-to-attic pipe highway, not a

@@ -123,6 +123,26 @@ Closer to the row, but it does not clear it, and the stool load is an assumption
 grade this (the row is uniform only); the fabricator's drawing carries the point loads and
 confirms both doubled pairs (`plans/TODO.md`).
 
+### 3c. The point-load list for the TRIFORCE order (D-R6, 2026-11-23)
+
+The OJ418S row is for UNIFORM load (40/25 psf, L/480), and it covers fields with doubled lines
+only as a uniform. The fabricator's truss drawing must carry these, as the J12 tile dead load is
+on TrimJoist's order; the numbers are §3a's, restated for the order:
+
+| line (y, c-c) | member | load at the box | worked from |
+|---|---|---|---|
+| 316" | doubled (sister on the box side, 319.5") | **616 lb**, 308 lb a ply | back legs, 8.85/14.25 of 991 lb |
+| 328.5"/332" | doubled pair, effective 330.25" | **443 lb**, 221 lb a ply | back legs 0.379 x 991 + front 0.372 x 181 |
+| 348" | single | **114 lb** | front legs, 0.628 x 181 |
+
+Each is a patch over the box's 84" (x 303.4"..387.4", centroid x = 345"): from the west bearing
+(217") a = 128", from the east (425") b = 80", span L = 208". Total 1,173 lb = 872 lb dead (stone
+350, bars 43, sub-top 31, bases/fronts/contents 448) + 300 lb of stool users at the cantilever tip
+(three at ~100 lb each on the stone's 15" back edge; an assumption, not a code number). Mark on
+the order: the 316 and 332 lines doubled, confirm both pairs, and the 40 psf live is on top of
+this dead mass. The fridge/freezer (~700 lb over four lines 332-380, ~175 lb a truss within 2'-3"
+of the x=18' seat) are on the same list (§2).
+
 ## 3b. Strongbacks (TRIFORCE pp. 20-22)
 
 TRIFORCE pp. 20-22, "Strongbacks", Detail 5 Option #1: a 2x6 on edge on the bottom chords,
@@ -300,11 +320,14 @@ ducts or pipes". The owner's bounce goal, so two:
     tributary in this table takes. The header carries floor load only.
   Each station has a MASA within 8": where the pitch left none, one is added (eight in all,
   69 -> 77 billed; `joints/sills._snap_to_blocking`). Moving one instead stranded the plate ends.
-- **W-B-N2 — UNKNOWN, a design.** `FO-M-STAIR` runs y 26'..35'-4 7/8" against the 36' wall, so
-  its first three joist spaces are the stair well for x 10'-3"..17'-6" and no footnote f
-  block can stand there. The wall top (400 x 8' = 3,200 lb) goes into the well's edge
-  framing, which spans flat between the headers: an approved-equivalent design for the EOR
-  (plans/TODO.md).
+- **W-B-N2 — CLOSED 2026-11-23 by a house calc (decision 23), graded by
+  `code.MN_1309_0404_wall_top`** (`wall_top_edge_pack.py`; no register item). `FO-M-STAIR` runs
+  y 26'..35'-4 7/8" against the 36' wall, so its first three joist spaces are the stair well for
+  x 10'-3"..17'-6" and no footnote f block can stand there. Footnote f's "approved equivalent" is the
+  well's north trimmer pack: **2 plies of 1.75 x 11.875 LVL** (`trimmer-FO-M-STAIR-1-0/-1-1`, y
+  425 13/16"/427 1/2", x 120"..215 1/4"), laid FLAT as a beam between the two neighbouring floors.
+  See §4a.
+
 - With trusses, "full depth" blocking is the fabricator's truss blocking panel.
 - **Kitchen drain bores the 27' and 21' blocks** (`PR-B-KITCH-DRAIN`, 2" PVC, OD 2.375", in
   the 34'-35' bay). Assumes the panel is solid lumber, 1.5" x 11 7/8" in section, 8 1/2"
@@ -320,6 +343,33 @@ ducts or pipes". The owner's bounce goal, so two:
     against Fb ~875 psi. Combined 0.15 + 0.04 = **0.19**. Passes with margin; the load goes
     in at the subfloor nailing, not through the hole. The slope there is 0.43"/ft (>= 1/4").
   - Not engine-graded: `mep.run_through_floor_member` reports it UNKNOWN (the truss chart).
+
+### 4a. W-B-N2's edge pack by hand
+
+Load: Table R404.1(1) 8'/7'-6", 45 pcf, **w = 400 plf** at the top of the wall (row above). Span
+L = 95.25" = **7.9375'** (the pack's length, simply supported at its two ends).
+- M = wL^2/8 = 400 x 7.9375^2 / 8 = **3,150 lb-ft** = 37,800 lb-in. V = R = 400 x 7.9375 / 2 =
+  **1,587.5 lb** a end. Wall-top load into the pack: 400 x 7.9375 = **3,175 lb**.
+- Section in the bending plane: thickness t = 2 x 1.75 = 3.50", depth of the face b = 11.875".
+  S = b t^2 / 6 = 11.875 x 12.25 / 6 = **24.24 in^3**. fb = 37,800 / 24.24 = **1,559 psi**.
+- Capacity, ICC-ES ESR-1387 Table 1 (read from the report 2026-11-23): Microllam 2.0E-2600Fb WS,
+  FACE/PLANK ORIENTATION, **Fb 2,690 psi, Fv 190 psi**, E 2.0e6; footnote 7, plank Fb size factor
+  C_V = (1.75/t)^0.136 = (0.5)^0.136 = **0.910** at t = 3.5" (the table's own 3.5" column reads
+  0.91). C_D 0.9 (soil pressure is permanent, NDS Table 2.3.2). F'b = 2,690 x 0.910 x 0.9 =
+  **2,203 psi**: d/c = 1,559 / 2,203 = **0.71**. No repetitive-member or load-sharing credit.
+- Shear: fv = 1.5 V / (t b) = 1.5 x 1,587.5 / 41.56 = **57 psi**; F'v = 190 x 0.9 = 171: **0.34**.
+- Deflection (ESR-1387 fn. 5, bending + shear; printed, not graded: Table R404.1(1) states no
+  limit): 270 W L^4 / (E b d^3) + 28.8 W L^2 / (E b d) with d = 3.5, b = 11.875, W = 400, L = 7.9375:
+  0.42" + 0.01" = **0.43" = L/222**.
+- **Ties, sill to pack:** A35Z, ESR-3096 Table 5 F1 695 lb (the lesser of F1/F2; same at every C_D),
+  x 0.9 C_D = 625.5 lb on LVL (species factor 1.0, C-C-2026 p. 20 note f). 3,175 / 625.5 = 5.08, so
+  **six** (3,753 lb, d/c **0.85**), `CN-M-N2-PACK-1..6`, ~16" apart on the pack's north face.
+- **End reactions:** 1,587.5 lb into each neighbouring floor's framing (`FS-M-MECH` west,
+  `FS-M-NE` east): 1,587.5 / 625.5 = 2.54, so **three** A35Z at each end, naming both floors
+  (1,876.5 lb, d/c **0.85**), `CN-M-N2-PACK-END-1..6`. The ends bear on the neighbours' end members
+  and the glued subfloor carries the rest; that detail is the framer's, not graded.
+- Not read: the pack's bearing at its ends beyond the A35Z, and the LVL's own tie-down nailing
+  (the 6-SD9112 + 6-SD9112 pattern is the part's). Species factor for the tie on LVL: DF/SP column.
 
 ## 5. The framed centreline (W-B-CS2 / -CN2 / -CN)
 

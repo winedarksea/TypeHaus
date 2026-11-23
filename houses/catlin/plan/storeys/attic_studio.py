@@ -253,16 +253,12 @@ WALLS = [
              condition="a 3/4\" gap inside the part's published 0-1-1/2\" range; 3/8\" predrill through the top plate only and the polymer sleeve never entering the supporting member; the screw driven into the WIDE face of an I-joist flange or a floor-truss chord, centred on the member; lateral only, ASD with C_D 1.6 and a safety factor of 5.0 at SPF G=0.42, and NO uplift or withdrawal claimed - this joint releases vertically on purpose; and the open-web truss deck FS-S-WEST's own fabricator must have been given the partition's out-of-plane reaction on the truss design drawing")),
     # VOID | STUDIO (and, east of x=9'-7 1/2", void | bath).
     #
-    # ** THIS IS NOT A LINE LOAD ON W-S-SN3, and it is what a reader will worry about. ** It stands
-    # on the opening's doubled trimmer pair, which spans the 8'-0" from x=10' to x=18' and delivers
-    # the wall to TWO POINTS — and neither of those two points reaches W-S-SN3 at
-    # all: the trimmer is an ordinary doubled joist in the x-direction, and both the x=10' point
-    # (BM-S-BATH-E, hung on it by joist hanger) and the x=18' point ride it to wherever the joist
-    # itself already bears, not down through whatever wall happens to sit under a point along its
-    # span. It remains true, and worth keeping, that the east half of W-S-SN3 sits over W-M-HS4 —
-    # D-M-LAUN's 3'-0" pocket, which could not have taken a continuous line load at all — so even
-    # the earlier (2026-08-29 to 2026-08-30) reading, which did send BM-S-BATH-E's reaction into
-    # W-S-SN3, was never going to land it over the pocket.
+    # ** THIS DOES LOAD W-S-SN3 AS A LINE (decision 22, 2026-11-22; it read "not a line load" from
+    # 2026-08-30 until then, which contradicted main.py's BEARING W-M-HS3/HS4). ** It stands on the
+    # opening's doubled south trimmer pair, which spans the 8'-0" from x=10' to x=18' and lies on
+    # W-S-SN3's plate; BM-S-BATH-E's hung end (~570 lb) rides it to x=10'. SN3 is a BEARING wall of
+    # continuous 2x6 studs, and the line (~240 plf, notes/header_spans_r602_7.md §4) goes to
+    # W-M-HS3/HS4 through P-S-SN3-SQUASH (the point) and a 1 1/4" LSL strip in FS-S-WEST (the rest).
     #
     # A 42" RAILING-INT-STAIR-GUARD (the RL-A-STAIR product at base_elevation=ft(20)) was priced
     # here instead and rejected: it satisfies R312.1 identically, cuts the trimmer's load, and turns

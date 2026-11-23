@@ -66,39 +66,35 @@ the nineteen findings before the rule was stated.
 
 ---
 
-## 2. `W-S-SN3`, the staggered wet wall — counted stud by stud
+## 2. `W-S-SN3`, the suite bath's wet wall — bored as a BEARING wall
 
-The case the reviewer's framing policy names: *"a staggered wall uses the actual stud
-positions, never 'the wall is empty'."* This wall is `INT_2X6_STAGGERED_PLUMBING` — a 2x6
-plate with 2x4 studs alternating between two rows — and it is the wall the suite bath was
-laid out around.
+**Retyped 2026-11-22 (decision 22).** It was `INT_2X6_STAGGERED_PLUMBING` (2x6 plates, 2x4 studs
+alternating between two rows) and not bearing. FO-A-HALL's south trimmer lies on its plate and loads
+W-M-HS3/HS4, so it is now `INT_2X6_BRG_HALF`: continuous 2x6 studs, BEARING
+(`notes/header_spans_r602_7.md` §4b). The same 6 1/2" wall thickness, so no face moved.
 
-**What resolves.** Axis on **y = 268"**, from x = 115.5" to x = 216.0". Thirteen studs:
-`stud-000` is a 2x6 at the end, and `stud-001`…`stud-012` are 2x4s at x = 123.5, 131.5,
-139.5, … every 8", alternating **y = 267"** (odd) and **y = 269"** (even).
+**The limit, read as the engine reads it** (R602.6(2), read 2026-11-23 in the City of Minneapolis's
+*Cutting, Notching, Boring Wood Frame Members* guide, which quotes it, and on jaspector.com's 2018
+page): any stud may be bored to 60% of its width with 5/8" left at each edge, but a stud in an
+exterior wall or bearing partition over 40% must also be doubled (no more than two successive
+doubled studs bored). So a single bearing stud takes 40% of its depth.
 
-**Each 2x4's plan footprint.** `orient` is (1, 0), the wall direction, so the 1 1/2" face
-lies along the wall and the 3 1/2" depth across it. A stud centred at y = 267 therefore
-occupies **265.25 … 268.75**, and one at y = 269 occupies **267.25 … 270.75**. The two rows
-overlap over 267.25 … 268.75, which is 1 1/2" of shared band down the middle of the wall.
+| | stud | 40% | widest bore through the wall | stud left each side |
+|---|---|---|---|---|
+| before | 2x4 non-bearing | 60% = 2.10" | 1.90" (the 1 1/2" vents) | 0.80" |
+| now | 2x6 bearing | 40% = 2.20" | 1.90" (same vents) | 1.80" |
 
-**A 2" vent travelling along the wall, at three stations.** Its swept plan band is its
-centreline ±1.1875".
+0.86 of the limit; a 2" vent (2.375" outside) would not pass, a 1 1/2" one does. Nothing through
+this wall is larger: the supplies are 0.62"/0.88", the lav drain 1.90". (A bore of 2.375" in a
+2x6 bearing stud is over by 0.175" — §1.) Stud positions are now a 16" grid from the wall start
+(0, 12 1/2, 28 1/2, 44 1/2, ... 92 1/2, 97"), so the five backing bands that were cut for the
+old 8" stagger end on stud faces: `BK-S-SN3-MID/-HIGH/-MIRROR-LIGHT` run 29 1/4"..75 3/4"
+(stud-002's right face to stud-005's left), and `BK-S-SN3-AP`'s access-panel frame sits in the
+14 1/2" bay 77 1/4"..91 3/4" (`FURN-S-SUITEBATH-AP` moved 81" -> 84 1/2" with it).
 
-| centreline | band | rows it meets | studs bored |
-|---|---|---|---|
-| **y = 268"** (the axis) | 266.81 … 269.19 | both | **11** |
-| **y = 270"** (north row) | 268.81 … 271.19 | 269 only | **5** |
-| **y = 266"** (south row) | 264.81 … 267.19 | 267 only | **6** |
-
-Six against eleven, from a two-inch move. That is the number a rule applied to "the wall"
-cannot produce, and it is the number that decides whether this run is buildable: eleven 2x4
-bores at 2.375" are eleven findings, and five are five — all of them still over the 2.100"
-limit, because the stagger changes how MANY studs are cut and not whether the hole fits.
-
-(The counts are 5 and 6 rather than 6 and 6 because the leg is worked from x = 120" to
-x = 210", which starts past `stud-001` on one row and stops short of `stud-012` on the
-other. The point is the ratio, and it is exact.)
+**What the stagger used to decide, and no longer does.** A 2" vent travelling along the old wall hit
+11, 5 or 6 studs depending on its y; on a continuous grid it hits one stud per 16" wherever it
+lies. Each is a 1.90" bore at 86% of the limit, which is legal and needs no rerouting.
 
 ---
 
