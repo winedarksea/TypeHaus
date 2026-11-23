@@ -354,6 +354,7 @@ def _seat(ctx: EngineeringContext, beam: Any) -> tuple[float, str] | None:
 
 def _one(ctx: EngineeringContext, tag: str, beam: Any, deck: Any) -> EngineeringRecord:
     from typehaus.engineering.balcony_loads import (
+        CURTAIN_OWNER_BASIS,
         DECK_BASIS_STATED,
         NOT_COVERED_OWNER,
         beam_reactions,
@@ -441,7 +442,7 @@ def _one(ctx: EngineeringContext, tag: str, beam: Any, deck: Any) -> Engineering
     fb_adj = GLULAM_FB_PSI * WET_FB * LOAD_DURATION_FACTOR * volume
     notes = (
         f"DECK BASIS, as stated by the owner: {DECK_BASIS_STATED} NOT COVERED (owner): "
-        f"{NOT_COVERED_OWNER}",
+        f"{NOT_COVERED_OWNER} {CURTAIN_OWNER_BASIS}",
         f"WET SERVICE, and it is the whole reason this is an engineered item rather than a "
         f"table read. The supplier's deck-guide row that covers this beam is published "
         f"DRY-USE (AWC NDS 2018 Table 5.3.1 C_M: {WET_FB:.2f} on Fb, {WET_FV:.3f} on Fv, "

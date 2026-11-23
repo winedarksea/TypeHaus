@@ -27,7 +27,11 @@ import math
 import re
 from dataclasses import dataclass
 
-from typehaus.engineering.balcony_loads import DECK_BASIS_STATED, NOT_COVERED_OWNER
+from typehaus.engineering.balcony_loads import (
+    CURTAIN_OWNER_BASIS,
+    DECK_BASIS_STATED,
+    NOT_COVERED_OWNER,
+)
 from typehaus.engineering.dowel_development import confinement_term, general_development_in
 from typehaus.engineering.item import (
     EngineeringRecord,
@@ -80,7 +84,8 @@ KIND = "deck_post"
 #: a pedestal above grade) left the scope for a prescriptive read (decision 16).
 #: "11" on 2026-11-23 (review B-03/B-04/B-06/B-07/B-08): each column carries its beam's STATICS
 #: reaction and the planter's dead weight, the §2.3.1 envelope runs with the planter on and off
-#: and adds the floor-empty guard patterns, wind includes the guard, shafts and curtains, the lap
+#: and adds the floor-empty guard patterns, wind includes the guard, shafts and plank edge
+#: (the porch curtains are stowed: owner basis), the lap
 #: is graded against the authored projection, and a wall-borne dowel's development is the
 #: general equation, graded once in ``column_support``.
 BASIS_VERSION = "11"
@@ -899,7 +904,8 @@ def _moment_column(pier: _Pier, area: float, ratio: float, shape: str, demand: f
          f"saturated dead weight where one stands over the beam. Every combination runs with "
          f"the planter on and off (the lower axial is the threat below the balance point), "
          f"and two more run with the floor live load absent and only the guard on (ASCE 7-16 "
-         f"§4.3.3). {DECK_BASIS_STATED} NOT COVERED (owner): {NOT_COVERED_OWNER}"
+         f"§4.3.3). {DECK_BASIS_STATED} NOT COVERED (owner): {NOT_COVERED_OWNER} "
+         f"{CURTAIN_OWNER_BASIS}"
          if pier.deck_dead_lb is not None else ""),
         ("DOWEL DEVELOPMENT into the wall is graded once, as `column_support/<wall>`'s "
          "\"dowel development into the stem\" for all four columns, not repeated here."

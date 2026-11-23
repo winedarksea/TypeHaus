@@ -34,11 +34,23 @@ DECK_BASIS_STATED = (
     f"1309.0507's \"Live load = 40 psf\" footnote). The owner's reasoning is that the decks "
     f"are elevated and wind-swept, so occupancy live load and not snow is what they carry."
 )
+#: The porch curtains (owner, 2026-11-23): retractable soft goods, not wind-rated.
+CURTAIN_OWNER_BASIS = (
+    "The porch curtains are retractable soft goods and are NOT wind-rated. Owner basis: they "
+    "are retracted and stowed above the curtain maker's rated wind speed (the specification: "
+    "retract and stow before that wind), so the porch is OPEN for wind design and the curtains "
+    "are not a wind-resisting element. No curtain load is carried by the balcony's joists, "
+    "beams, columns, stems or head ties, and no internal pressure is taken under the sealed "
+    "deck. The maker publishes no closed-in-wind load held here, so none is graded."
+)
 #: What that basis does not cover, for a "not covered — owner" list.
 NOT_COVERED_OWNER = (
     "Snow on the balcony and porch decks, balanced or drifted against the house's south gable: "
     "the owner's judgement (wind-swept, elevated) is the stated basis; no snow load path is "
-    "built into the joists, beams, columns or stems."
+    "built into the joists, beams, columns or stems. ALSO NOT COVERED: the design neither "
+    "relies on nor grades closed porch curtains in design wind (they are stowed, "
+    "see the curtain basis); a reviewer may question reliance on an "
+    "operable closure being retracted."
 )
 
 _PLANTER_KEYS = ("soil_width_in", "soil_depth_in", "soil_saturated_pcf", "box_and_support_plf")
@@ -92,7 +104,7 @@ def deck_basis_text(ctx: Any) -> str:
         text += (f" The owner's stated deck snow is {authored:g} psf, under the table's "
                  f"{DECK_LIVE_LOAD_PSF:g} psf live, which is why IRC Table R507.6 is read at "
                  f"its live load.")
-    return text + " " + NOT_COVERED_OWNER
+    return text + " " + NOT_COVERED_OWNER + " " + CURTAIN_OWNER_BASIS
 
 
 @dataclass(frozen=True)

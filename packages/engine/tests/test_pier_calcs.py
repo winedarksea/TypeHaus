@@ -224,8 +224,12 @@ _TIER_PIERS = tuple(f"PT-BW-T{_n}{_s}" for _n in (1, 2, 3, 4) for _s in ("W", "E
 # ** 5/8" MORE REAR OVERSAIL ON 2026-11-18 (note §19). ** D-S-BALCONY's 3/8" joint: A_s
 # 29.780 -> 29.836 sf, wind 1,101.9 -> 1,103.9 front, 1,121.2 -> 1,123.3 rear.
 #
+# ** CURTAINS OUT 2026-11-23 (note §28, owner: not wind-rated, stowed in high wind): wind is now
+# E-W, 1,348 lb ASD (deck 508 + plank edge 21 + guard 286 + shafts 533), 2,578.6 BF / 2,588.8 BR
+# lb-ft per column, head shear 203.6 lb.
 # ** WIND 4,411.8 -> 4,860.4 (BF) / 4,916.1 (BR) LATER ON 2026-11-23 (note §27): the guard's 3x3
-# posts (+71 lb), the corner curves of the curtains (16' face, +99), the plank edge (+41), the shafts
+# posts (+71 lb), the corner curves of the curtains (16' face, +99), the plank edge (+41), the
+# shafts
 # ending under the beam at 7.76'/7.91' (-64) and the deck band at its centroid 9.33'; independent
 # verifier 4,832/4,853.
 # ** WIND 1,103.9 -> 4,411.8 ON 2026-11-23 (note §24, review B-06). ** The bands were the fascia
@@ -236,14 +240,14 @@ _TIER_PIERS = tuple(f"PT-BW-T{_n}{_s}" for _n in (1, 2, 3, 4) for _s in ("W", "E
 # 1,514) and 1,701.8 / 2,153.9 of live, and the factored P_u is 4,440.9 / 5,340.0 with no planter
 # (this context) and 5,196.3 / 6,095.4 with the house's planter (the cast-variant context).
 _CORNER_ORACLE = {
-    "PT-SG-BF1": {"height_in": 104.375, "wind_lb_ft": 4860.4, "guard_lb_ft": 2643.75,
+    "PT-SG-BF1": {"height_in": 104.375, "wind_lb_ft": 2578.6, "guard_lb_ft": 2643.75,
                   "phi_mn": 24_768.0},
-    "PT-SG-BF3": {"height_in": 104.375, "wind_lb_ft": 4860.4, "guard_lb_ft": 2643.75,
+    "PT-SG-BF3": {"height_in": 104.375, "wind_lb_ft": 2578.6, "guard_lb_ft": 2643.75,
                   "phi_mn": 24_768.0},
     # The rear row runs 2" proud for the deck's drainage crown (fall 1/4" per foot).
-    "PT-SG-BR1": {"height_in": 106.208, "wind_lb_ft": 4916.1, "guard_lb_ft": 2643.75,
+    "PT-SG-BR1": {"height_in": 106.208, "wind_lb_ft": 2588.8, "guard_lb_ft": 2643.75,
                   "phi_mn": 25_003.0},
-    "PT-SG-BR3": {"height_in": 106.208, "wind_lb_ft": 4916.1, "guard_lb_ft": 2643.75,
+    "PT-SG-BR3": {"height_in": 106.208, "wind_lb_ft": 2588.8, "guard_lb_ft": 2643.75,
                   "phi_mn": 25_003.0},
 }
 #: §4 of the note: phi*Mn at the column's own axial load, hand-worked term by term.
@@ -877,9 +881,9 @@ def test_the_base_moments_reproduce_the_note(tag, piers) -> None:
     lever_ft = want["guard_lb_ft"] / 200.0
     assert lever_ft == pytest.approx(13.219, abs=0.01)
     assert lever_ft > want["height_in"] / 12.0 + 40.125 / 12.0, "the deck build-up is lever too"
-    # Wind governs the MOMENT since §24 (4,412 > 2,644 ASD), where the guard did before; both
-    # stay in the envelope because the guard's lever and the wind's differ in the combinations.
-    assert pier.wind_base_moment_lb_ft > pier.guard_base_moment_lb_ft
+    # The guard governs the ASD moment (2,644 > 2,579), as it did before §24; at STRENGTH the wind
+    # (x 1/0.6 = 4,298) edges the guard (x 1.6 = 4,230), so both stay in the envelope.
+    assert pier.guard_base_moment_lb_ft > pier.wind_base_moment_lb_ft
 
 
 @pytest.mark.parametrize("tag", _CORNER_PIERS)

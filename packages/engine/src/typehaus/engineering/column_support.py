@@ -531,12 +531,11 @@ def _one(ctx: EngineeringContext, wall_tag: str, piers: list[_Pier]) -> Engineer
         "this E-W shear (about 4 kip at strength) is a court-sliding input that no sliding case "
         "carries yet — reported, not graded here. A drawing note, `AN-SG-LEDGER-DOWELS`, keeps "
         "the ledger's Titen HD anchors off the dowels.",
-        "DOWEL TENSION is the governing row of this joint. OWNER-ACCEPTED (2026-11-23): it was "
-        "reviewed at the owner's 0.85 cost-review trigger on the repository's conservative C_f "
-        "1.80 for every wind band, the guard taken concurrently with full design wind, and the "
-        "one-bar couple on the block that force itself produces, and ACCEPTED AS IS at the "
-        "printed ratio: no dowel change. If it ever rises above the number accepted, it comes "
-        "back to the owner.",
+        "DOWEL TENSION on the conservative C_f 1.80 for every wind band, the guard taken "
+        "concurrently with full design wind and the one-bar couple on the block that force "
+        "itself produces. It was OWNER-ACCEPTED at 0.92 (2026-11-23) when the porch curtains were "
+        "a wind band; with the curtains stowed (owner basis) it is well under that, and it comes "
+        "back to the owner only if it rises above 0.92.",
         "FOOTPRINT: the 12\" round is flush with both faces of the 12\" stem, so the row reads "
         "1.000 and allows no placement tolerance — a detailing row, not a margin. The column "
         "form is set from the stem's own face lines (`AN-SG-PLACEMENTS`); a round set off-centre "

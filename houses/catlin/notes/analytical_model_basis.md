@@ -340,3 +340,12 @@ carries the full pattern, 390 x 9.667' = 3,770 lb between the pair; each record 
 own worst of the eight patterns (1,702 / 2,154 lb), so the records' pair is the sum of two maxima,
 3,856 lb, 2.2 % above.
 
+## Addendum 2026-11-23b — the porch curtains are not a wind band (§3a)
+
+Owner basis: the curtains are retractable soft goods, stowed in high wind, so the porch is open and
+no curtain load is applied anywhere. The wind case is the deck band at its centroid, the guard with
+its posts at its centroid and the shaft over its own 7.76' / 7.91', **E-W**, 1,348 lb ASD over four
+columns: **2,579 lb-ft front, 2,589 rear** (hand: 132 x 9.33' + 71.5 x 11.55' + 133 x 3.88' =
+2,577). The wind axis is E-W again, so it and the guard share the axis; the oracle tolerances
+(6 % lever, 12 % wind) are unchanged. The earlier addendum's 4,860 / 4,916 figures are withdrawn.
+

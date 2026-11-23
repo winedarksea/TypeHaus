@@ -79,11 +79,11 @@ WIND_TOLERANCE = 0.12
 
 @pytest.mark.parametrize("tag", BALCONY)
 def test_balcony_wind_base_moment_matches_the_note(solved, tag):
-    """Balcony note §24/§27 (2026-11-23): the deck and plank edge, guard with posts, shafts and
-    closed curtains, each band at its own lever, N-S wind 363 + 41 + 279 + 533 + 1,191 =
-    2,408 lb ASD over four columns: 4,860 lb-ft at the front columns, 4,916 at the rear (hand:
-    q_h 18.52 psf from Kz 0.644 at 22.3', 0.6 q G C_f = 17.0 psf; BF: 101 x 9.33' + 298 x 8.70'
-    + 70 x 11.55' + 133 x 3.88' = 4,854; independent verifier 4,832 / 4,853)."""
+    """Balcony note §24/§27/§28 (2026-11-23): the deck and plank edge, guard with posts and
+    shafts, each band at its own lever; the porch curtains are stowed in high wind (owner basis)
+    and are not a band. E-W wind 508 + 21 + 286 + 533 = 1,348 lb ASD over four columns: 2,579
+    lb-ft at the front columns, 2,589 at the rear (hand: q_h 18.52 psf from Kz 0.644 at 22.3',
+    0.6 q G C_f = 17.0 psf; BF: 132 x 9.33' + 71.5 x 11.55' + 133 x 3.88' = 2,577)."""
     _, model, result, piers = solved
     reaction = result.reactions[(_support(model, tag).node, LoadCaseKind.WIND.value)]
     solved_moment = _moment_lb_ft(reaction)
@@ -91,7 +91,7 @@ def test_balcony_wind_base_moment_matches_the_note(solved, tag):
                                           rel=WIND_TOLERANCE)
     assert solved_moment < piers[tag].wind_base_moment_lb_ft, "the record must err long"
     assert piers[tag].wind_base_moment_lb_ft == pytest.approx(
-        4860 if tag.startswith("PT-SG-BF") else 4916, abs=6)
+        2579 if tag.startswith("PT-SG-BF") else 2589, abs=4)
 
 
 @pytest.mark.parametrize("tag", BALCONY)

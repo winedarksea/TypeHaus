@@ -202,7 +202,7 @@ def _lateral_column_loads(ctx: Any, scope: Any, graph: Any, loads: LoadSet) -> N
 
 def _wind_on_column(pier: Any, item: str, node: str, axis: str, height_ft: float,
                     graph: Any, loads: LoadSet) -> None:
-    """Wind where each band of the record acts: the deck and curtains at the column top, the
+    """Wind where each band of the record acts: the deck band at its centroid, the
     guard's share with its lever above it, the shaft's own wind along the column.
 
     The record sums these at their own levers into ``wind_base_moment_lb_ft``; one shear
@@ -216,11 +216,6 @@ def _wind_on_column(pier: Any, item: str, node: str, axis: str, height_ft: float
                     f"{height_ft:.2f} ft column = {shear_n / LB_TO_N:,.0f} lb at the column "
                     f"top, {axis}")))
         return
-    top_lb = pier.wind_head_shear_lb - pier.wind_guard_shear_lb - pier.wind_deck_shear_lb
-    loads.node_loads.append(_horizontal(
-        LoadCaseKind.WIND, node, axis, top_lb * LB_TO_N, 0.0,
-        source=(f"{item} wind: the closed curtains' top track {top_lb:,.0f} lb ASD at the "
-                f"column top, {axis}")))
     for label, shear_lb, arm_ft in (
             ("deck band at its centroid", pier.wind_deck_shear_lb, pier.wind_deck_arm_ft),
             ("guard at its centroid", pier.wind_guard_shear_lb, pier.wind_guard_arm_ft)):
