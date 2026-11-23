@@ -165,6 +165,13 @@ class _Pier:
     #: the shaft's own wind, which acts below the head. 0.0 where it is not derived (the head
     #: then reads ``M_wind / H``, exact only without a shaft term).
     wind_head_shear_lb: float = 0.0
+    #: Its components, per column, ASD lb: the guard's share (acting at ``wind_guard_arm_ft``
+    #: above the column base) and the shaft's own wind (uniform over the column). The deck and
+    #: curtains are the head shear less the guard. ``analytical/loads`` applies each where it
+    #: acts so its base moment is this record's.
+    wind_guard_shear_lb: float = 0.0
+    wind_shaft_shear_lb: float = 0.0
+    wind_guard_arm_ft: float = 0.0
 
     @property
     def deck_dead_effective_lb(self) -> float:
@@ -991,6 +998,8 @@ def _base_moments(ctx: EngineeringContext) -> dict[str, tuple]:
             else:
                 record_base_shear(tag, per_column, wind_moment / per_column)
             head_shear = (comps["deck"] + comps["guard"] + comps["curtains"]) / len(columns)
+            parts_per_column = (head_shear, comps["guard"] / len(columns),
+                                comps["columns"] / len(columns), lever["guard"])
             out[tag] = (wind_moment, guard_moment, (
                 f"{'E-W' if worst_axis == 'x' else 'N-S'} wind on {deck.tag}: q_h "
                 f"{q_h:.1f} psf at {top_ft - ground_ft:.1f}' above the ground beneath "
@@ -1003,7 +1012,7 @@ def _base_moments(ctx: EngineeringContext) -> dict[str, tuple]:
                 f"{column_ft:.2f}' above this column's base, for the deck and the closed "
                 f"curtains' top track). GUARD: IRC R301.5's 200 lb at the top of {guard.tag}, "
                 f"{guard_arm_ft:.2f}' above this column's base, taken wholly on one column "
-                f"rather than shared"), head_shear)
+                f"rather than shared"), parts_per_column)
     from typehaus.engineering.roof_moment import roof_base_moments
 
     # ** THE WORSE OF THE TWO, NOT THE LAST ONE WRITTEN. ** A column can carry a deck AND
@@ -1091,6 +1100,13 @@ def _point_to_segment(point, a, b) -> float:
     span = dx * dx + dy * dy
     t = 0.0 if span <= 1e-12 else max(0.0, min(1.0, ((px - ax) * dx + (py - ay) * dy) / span))
     return math.hypot(px - (ax + dx * t), py - (ay + dy * t))
+
+
+def _wind_parts(case: tuple | None) -> dict[str, float]:
+    """The ``_Pier`` wind-component fields from a ``_base_moments`` entry's fourth element."""
+    parts = case[3] if case is not None and len(case) > 3 else (0.0, 0.0, 0.0, 0.0)
+    return {"wind_head_shear_lb": parts[0], "wind_guard_shear_lb": parts[1],
+            "wind_shaft_shear_lb": parts[2], "wind_guard_arm_ft": parts[3]}
 
 
 def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
@@ -1255,8 +1271,7 @@ def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
             shared_wall_footing=on_wall,
             lateral_system=post.tag in moments,
             wind_base_moment_lb_ft=moments.get(post.tag, (0.0, 0.0, ""))[0],
-            wind_head_shear_lb=(moments[post.tag][3] if post.tag in moments
-                                and len(moments[post.tag]) > 3 else 0.0),
+            **_wind_parts(moments.get(post.tag)),
             guard_base_moment_lb_ft=moments.get(post.tag, (0.0, 0.0, ""))[1],
             moment_basis=moments.get(post.tag, (0.0, 0.0, ""))[2],
             footing_width_in=footing.width.inches if footing is not None else 0.0,
