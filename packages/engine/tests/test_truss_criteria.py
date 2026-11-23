@@ -21,8 +21,17 @@ def test_roof_reactions_follow_the_drift_triangle(block) -> None:
 
 def test_uplift_is_specified_and_the_nail_is_on_the_schedule(block) -> None:
     assert "MAX NET UPLIFT 450 LB PER HEEL AT BM-BW-RW, BM-BW-RE" in block
-    assert "H2.5ASS 700 LB, 0.64" in block and "SSA8D stainless ring-shank" in block
-    assert "H2.5A 615 LB, 0.73" in block
+    assert "H2.5ASS, SPF COLUMN 615 LB WITH ALL TRUSS NAILS LANDING (0.73)" in block
+    assert "SSA8D stainless ring-shank" in block
+    # Simpson fn. 14: design 289 against the 260 lb three-nail row is 1.11 on the canopy.
+    assert "DESIGN UPLIFT 289 LB AGAINST THE THREE-NAIL 2x4 CHORD ROW 260 LB" in block
+    assert "1.11, SO THE HEEL STANDS ONLY WITH ALL FIVE TRUSS NAILS LANDING" in block
+    assert "DESIGN UPLIFT 178 LB AGAINST THE THREE-NAIL 2x4 CHORD ROW 260 LB" in block
+    assert "CLOSED EITHER WAY" in block
+    assert "CLOSED ONLY IF THE HEEL CONDITION ABOVE IS CONFIRMED" in block
+    # The truss's own chord bearing is the supplier's, said aloud with the number it accepts.
+    assert "CHORD BEARING ON BM-BW-RW: THE SUPPLIER CHECKS THE TRUSS CHORD'S OWN FC-PERP" in block
+    assert "AT MAX 2,353 LB, 1.5 IN CHORD ON 5.5 IN OF BEARING = 285 PSI" in block
     assert "N-S 752 LB AXIAL" in block
 
 
@@ -38,15 +47,19 @@ def test_the_two_statuses_never_merge(block) -> None:
 
 
 def test_supporting_structure_closes_and_the_component_stays_open(catlin_ctx) -> None:
-    """Decisions 20 and 24: the specified heel ties PASS, the supplier's design is UNKNOWN, and
-    RF-GARAGE's uplift is the R802.11 read (178 lb against 615), not an engineered item."""
+    """Decisions 20 and 24: RF-GARAGE's heel closes on its R802.11 178 lb even at the three-nail
+    row; the canopy's 289 lb does NOT (260 lb, fn. 14) and stays UNKNOWN until the heel nailing is
+    confirmed, never a PASS at the specified 450 lb. The supplier's design is UNKNOWN on both."""
     from typehaus.checks.structural.truss_reactions import truss_reactions
     from typehaus.checks.structural.uplift_path import uplift_capacity_items
 
     truss = truss_reactions(catlin_ctx)
     passed = [f for f in truss if f.result.name == "PASS"]
-    assert len(passed) == 4 and all("supporting structure" in f.message for f in passed)
+    assert len(passed) == 2 and all(f.element_tags == ("RF-GARAGE",) for f in passed)
     unknown = [f for f in truss if f.result.name == "UNKNOWN"]
-    assert len(unknown) == 2 and all("NOT YET CONFIRMED" in f.message for f in unknown)
+    open_heel = [f for f in unknown if "NOT CLOSED until the heel condition" in f.message]
+    assert len(open_heel) == 2 and all(f.element_tags == ("RF-BW-CANOPY",) for f in open_heel)
+    assert all("1.11" in f.message and "SPF column" in f.message for f in open_heel)
+    assert len([f for f in unknown if "NOT YET CONFIRMED" in f.message]) == 2
     uplift = [f for f in uplift_capacity_items(catlin_ctx) if "RF-GARAGE" in f.element_tags]
     assert any(f.result.name == "PASS" and "178 lb" in f.message for f in uplift)

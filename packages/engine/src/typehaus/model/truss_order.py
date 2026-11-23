@@ -29,8 +29,23 @@ class SpecifiedReaction(HausModel):
     uplift_lb: float
     #: Where the number comes from, in the house's own words.
     basis: str
-    #: The heel connector's catalog model, graded against ``uplift_lb``.
+    #: The heel connector's catalog model.
     connector: str | None = None
+    #: The truss's species (the supplier's; the order states it). The connector's capacity
+    #: column is the WEAKER member's, so an SPF truss on an SP header reads the SPF column.
+    truss_species: str | None = None
+    #: The connector's catalog row for ``truss_species`` with every truss-side nail landing in
+    #: the truss (pounds): what ``uplift_lb`` rests on. Never above the catalog's own value.
+    capacity_lb: float | None = None
+    #: The catalog's reduced row when fewer nails land in the truss (Simpson C-C-2021 p.277
+    #: fn. 14: three nails into a 2x4 bottom chord), pounds. Until ``heel_condition`` is
+    #: confirmed the heel is graded at THIS row against ``design_uplift_lb``.
+    reduced_capacity_lb: float | None = None
+    #: The net design uplift at the heel the house derives, pounds (the load the reduced row
+    #: has to carry while the condition is unconfirmed).
+    design_uplift_lb: float | None = None
+    #: What the supplier's drawing must show for ``capacity_lb`` to stand.
+    heel_condition: str = ""
     #: The dead load on the bottom chord the order carries here, psf (a ceiling), if any.
     bottom_chord_dead_psf: float | None = None
     #: Deflection limits the order states, e.g. ``("L/240 snow", "L/180 total")``.

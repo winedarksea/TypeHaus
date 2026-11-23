@@ -585,6 +585,7 @@ lever is 12.3523', M = 1,034.565 x 12.3523 = 12,779 lb-ft, closed by opposite N-
 ```
 F = M / L_strap = 12,779 / 23.2604 = 549.4 lb     (the review's 517 used V/2)
 end strap, F + the E-W chord force 88.0 (added linearly)   637.4 / 823.33 = 0.774     (was 0.316)
+(a conservative bound: an elastic distribution over the six straps, M x 11.63 / 423.4 = 351 lb, reads 0.43, or 0.53 with the chord force)
 RF-GARAGE torque, M / 24.000' = 532.5 lb on each of W-G-W, W-G-E
   W-G-W  532.5 / 18.675' = 28.51 plf vs 182.5   0.156       W-G-E  532.5 / 21.008' = 25.35 plf   0.139
 ```
