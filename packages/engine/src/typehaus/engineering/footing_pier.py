@@ -2,8 +2,12 @@
 
 A pinned, laterally propped pier standing on its own ``Pad`` and standing out of grade no more
 than a pedestal (exposed height / diameter <= 3, ACI 318-19 §2.3 and §14.3.3.1) is the deck
-footing of IRC R507.3 ("concrete footings ... as shown in Figure R507.3"), its depth set by
-R403.1.4 and its pad by Table R507.3.1. Below grade it is a soil-embedded pier; above grade a
+footing of IRC R507.3 (MN 2020 / IRC 2018, read on UpCodes 2026-11-23): "Decks shall be
+supported on concrete footings or other approved structural systems ... sized ... as shown in
+Figure R507.3"; depth by R403.1.4, pad by Table R507.3.1. Figure R507.3 draws a concrete pier
+from the footing to a manufactured post connector, its top above grade with NO stated height —
+so the exposed height is held to ACI's pedestal limit, which the IRC itself does not state.
+Below grade it is a soil-embedded pier; above grade a
 pedestal. It carries no base moment of its own (``_Pier.lateral_system`` is False: its deck is
 tied or braced, or the post above it is pinned).
 
