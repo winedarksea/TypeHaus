@@ -86,6 +86,56 @@ def test_a_malformed_file_raises_naming_the_key(tmp_path, body, needle) -> None:
     assert needle in str(exc.value)
 
 
+_DEFAULTS = ('[defaults]\nengineer="A. Engineer, PE"\nlicense="MN 12345"\n'
+             'sealed_on="2026-01-01"\ndocument="calcs.pdf"\n')
+
+
+def test_defaults_are_inherited_and_a_block_may_override(tmp_path) -> None:
+    """A PE types name, licence and date once; a block that sets its own keeps it."""
+    body = (_DEFAULTS
+            + '[[signoff]]\nid="A"\nscope="s"\ncovers=["k/x"]\n'
+            + '[[signoff]]\nid="B"\nscope="s"\ncovers=["k/y"]\nengineer="Other, PE"\n')
+    register = _write(tmp_path, body)
+    first, second = register.signoffs
+    assert first.engineer == "A. Engineer, PE" and first.license == "MN 12345"
+    assert first.document == "calcs.pdf" and first.sealed_on.isoformat() == "2026-01-01"
+    assert second.engineer == "Other, PE" and second.license == "MN 12345"
+
+
+def test_a_placeholder_in_defaults_is_refused_naming_the_field(tmp_path) -> None:
+    body = _DEFAULTS.replace("A. Engineer, PE", "<<ENGINEER NAME, PE>>") + (
+        '[[signoff]]\nid="A"\nscope="s"\ncovers=["k/x"]\n')
+    with pytest.raises(ValueError, match=r"\[defaults\].*engineer.*placeholder"):
+        _write(tmp_path, body)
+
+
+def test_a_signoff_with_no_default_and_no_key_still_names_the_gap(tmp_path) -> None:
+    with pytest.raises(ValueError, match=r"missing required key `engineer`.*\[defaults\]"):
+        _write(tmp_path, '[[signoff]]\nid="A"\nscope="s"\ncovers=["k/x"]\n')
+
+
+def test_unknown_defaults_key_is_refused(tmp_path) -> None:
+    with pytest.raises(ValueError, match="unknown key"):
+        _write(tmp_path, '[defaults]\nengineer="e"\nlicence="typo"\n')
+
+
+def test_the_scaffold_pre_fills_typed_values_and_splits_out_deferrals() -> None:
+    """Typed values replace the blanks in [defaults]; deferred kinds go to the second file."""
+    from typehaus.engineering.scaffold import SealDefaults, scaffold_external, scaffold_register
+
+    records = [_record(), no_calc("rafter", "RF-GARAGE")]
+    common = dict(house="h", generated="2026-01-01", engine_version="0", content_hash="x")
+    seal = SealDefaults(engineer="A. Engineer, PE", license="MN 12345",
+                        sealed_on="2026-01-01", document="calcs.pdf")
+    main = scaffold_register(records, defaults=seal, **common)
+    assert "<<" not in main.split("[defaults]")[1].split("[[signoff]]")[0]
+    assert 'id = "retaining_wall"' in main and 'id = "rafter"' not in main
+    external = scaffold_external(records, defaults=seal, **common)
+    assert 'id = "rafter"' in external and 'engineer = "A. Engineer, PE"' in external
+    assert '[signoff.external."rafter/RF-GARAGE"]' in external
+    assert scaffold_external([_record()], **common) == ""
+
+
 def test_one_item_may_carry_only_one_seal(tmp_path) -> None:
     """Two stamps over one wall is a question for a person, not a tie-break rule."""
     body = ('[[signoff]]\nid="A"\nscope="s"\ncovers=["k/x"]\nengineer="e"\nlicense="l"\n'

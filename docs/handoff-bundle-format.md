@@ -8,12 +8,24 @@ manifest.
 out/handoff/
   README.md                 the route through the bundle — five minutes, in order
   MANIFEST.json             every file, with its sha256
-  engineering.toml.draft    the seal register as a FORM (see docs/engineering-toml-format.md)
+  engineering.toml.draft    the seal register as a FORM (see docs/engineering-toml-format.md):
+                            [defaults] typed once, one block per kind, fingerprints filled
+  engineering-external.toml.draft   the deferred kinds' acceptance blocks, kept apart so a
+                            PE with no supplier document never deletes them (omitted when
+                            the house has none)
   calcs/                    the calculation package, verbatim from `haus calcs`
   calcs.pdf                 the same, flattened and page-anchored — what a seal binds to.
-                            The calculations; the per-member appendix tables are in
-                            calcs/appendix/ and print into the PDF with `--full`
+                            Every member's appendix table is in it; `--no-appendix` drops them
+  drawings/
+    structural_sheets.pdf   the permit set's S-sheets (ARCH D), so the sheet ids the open
+                            items and the register cite are pages in the bundle
+    key_plan.pdf            K-1..K-n: one plan per level, each engineered item's element
+                            coloured by kind and labelled by tag, on a 10 ft grid
   notes/                    ONLY the hand-worked notes these records are checked against
+  evidence/                 the owner's tracked review evidence, byte for byte: every file
+                            under houses/<name>/notes/engineering_review_* (reports, the
+                            scripts behind their numbers, supplier run reports, verifier
+                            calculations). Evidence to weigh, not part of the stamped PDF
   model.ifc                 IFC4, framed LOD, with sections, records, a bar schedule AND the
                             structural analysis view (see below)
   model.glb                 the same building, for a viewer that does not read IFC
@@ -24,6 +36,12 @@ out/handoff/
     README.md               which file opens in which tool, and the claims every file makes
 out/handoff.zip             --zip: the file you actually send
 ```
+
+`--engineer`, `--license` and `--sealed-on` pre-fill the form's `[defaults]` (the engine
+still writes only into `out/`); `--no-drawings` skips `drawings/`, the slowest step after the
+models. `drawings/` and `evidence/` ride in the manifest like every other file, so a changed
+report or a re-drawn sheet is a changed hash. The PDFs carry no creation date, which is what
+keeps them byte-deterministic.
 
 `out/handoff-architect/` is a different bundle for a different reader — drawings, DXFs and
 the decision log, written by `haus print --handoff`. Two bundles, two folders, deliberately:
@@ -36,7 +54,7 @@ the manifest worth shipping: a changed sha256 is then a *changed model*, not a r
 reviewer can tell a regenerated bundle from an edited one.
 
 Getting there took four fixes, all of them in the emitters rather than here. The calc PDF's
-`CreationDate`/`ModDate` are pinned. The IFC's STEP header timestamp is pinned, every GUID
+`CreationDate`/`ModDate` are pinned (and the drawings' PDFs carry none). The IFC's STEP header timestamp is pinned, every GUID
 ifcopenshell mints for us — relationships, property sets, the site, the building, the
 storeys, the systems — is rewritten as a `uuid5` of what it identifies
 (`emit/ifc/lowlevel_guids.py`), and the member lists ifcopenshell collects through `set()`
@@ -48,7 +66,7 @@ are sorted. Set `SOURCE_DATE_EPOCH` to pin the generation date printed on the co
 calculation in this engine is checked against an independent hand pass — that is the root
 `CLAUDE.md` rule, *a calc that only agrees with itself is not verified* — and section 8 of
 each sheet names its own. Copying the whole house's design log would bury the four that
-matter under forty that do not.
+matter under the many that do not.
 
 ## What the IFC carries beyond geometry
 
