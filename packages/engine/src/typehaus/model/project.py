@@ -18,6 +18,7 @@ from typehaus.model.site import (
     MonthlyNormal,
     SetbackSpec,
     SoilBasis,
+    SoilParameters,
     SpotElevation,
     StreetFrontage,
     SubgradeModulus,
@@ -97,6 +98,11 @@ class Site(HausModel):
     # PRESUMED and says so — saying nothing is not evidence. A ``provenance="geotechnical"``
     # basis is what an investigation on this parcel writes, and it clears the flag.
     soil_basis: SoilBasis | None = None
+    # Soil parameters a retaining court's design is closed on (``specified_soil``), and the
+    # report's values once it is in (``confirmed_soil``); records grade on the confirmed
+    # values where given, else the specified, else the IBC Table 1806.2 presumptions.
+    specified_soil: SoilParameters | None = None
+    confirmed_soil: SoilParameters | None = None
     # A geotechnical report's subgrade stiffness. Absent, ``engineering/base_rotation`` runs a
     # presumptive band anchored on IBC §1806.3.4; present, the measured value governs.
     lateral_subgrade_modulus: SubgradeModulus | None = None

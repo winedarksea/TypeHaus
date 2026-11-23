@@ -779,6 +779,10 @@ class IsolationBoard(Element):
     #: False is the conservative case (the board is a form face). True needs
     #: ``placement_sequence_ref`` — the annotation that says so on the drawing.
     formed_and_stripped: bool = False
+    #: True where the board (and any tie across the joint) goes in AFTER the court's
+    #: retained sides are backfilled, cut to its as-built slot: the backfill's sliding is
+    #: spent before the joint exists. Needs ``placement_sequence_ref``, which prints it.
+    set_after_backfill: bool = False
     #: The stress cap in series with the foam; ``None`` grades the foam's own spring.
     compliant: CompliantLayer | None = None
 

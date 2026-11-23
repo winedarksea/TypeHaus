@@ -53,6 +53,7 @@ from typehaus.engineering.retaining_basis import (
     _structure_thickness_in,
     analyse,
 )
+from typehaus.engineering.retaining_system_fallback import fallback_states
 from typehaus.engineering.retaining_system_loop import _cycle_components
 from typehaus.engineering.soil import (
     SOIL_UNIT_WEIGHT_BAND_PCF,
@@ -69,13 +70,8 @@ KIND = "retaining_system"
 #: bending, strut at its f'c, staged backfill (2026-11-22).
 BASIS_VERSION = "4"
 
-#: **The graded case is at-rest, not active, and that is a consequence of the restraint and
-#: not a preference.** You cannot cite a permanent base restraint in the resistance term and
-#: simultaneously claim the walls are free enough to shed to the active wedge in the demand
-#: term; crediting one concedes the other. Worked in the note: a base-restrained, top-free
-#: 12" stem deflects about 0.16" at the head, roughly 0.0013H, which is at the very bottom
-#: of the 0.001H-0.004H a granular backfill needs to mobilise the active state. Active is
-#: *arguable*. At-rest is *defensible*, and a screening should be the second thing.
+#: At-rest, not active: a permanent base restraint concedes the walls cannot move enough to
+#: mobilise the active wedge (a 12" stem moves ~0.0013H, the bottom of 0.001H-0.004H).
 AT_REST_IS_THE_GRADED_CASE = True
 
 _M_PER_FT = 0.3048
@@ -425,11 +421,11 @@ def _one(ctx: EngineeringContext, ref: str, members: list) -> EngineeringRecord:
             f"FS {worst:.2f}; one side empty and two full {empty:.2f}; the loop alone without "
             f"the spliced walls' concrete {loop_only:.2f}"), is_safety_factor=True))
 
+    soil_state, soil_how = cases.design_friction(ctx, soil)[2:]
+    if soil_state == "specified":
+        states.extend(fallback_states(ctx, ref, members, members_low, floor,
+                                      geometry.stem_thickness_ft if geometry else 1.0))
     pending = list(graded.pending)
-    pending += [(s.name, f"a design answer for {s.name} "
-                         + (f"(FS {s.capacity:.2f})" if s.is_safety_factor
-                            else f"(d/c {s.ratio:.2f})"))
-                for s in states if not s.ok and s.name.startswith("staged backfill")]
     inputs = tuple(
         item for member in built for item in (
             Quantity(f"thrust_{member.tag}", member.thrust_plf, "plf", 1.0),
@@ -462,6 +458,12 @@ def _one(ctx: EngineeringContext, ref: str, members: list) -> EngineeringRecord:
         f"{low:.0f} pcf. The 130 pcf end is adverse to the thermal break's restraint rows "
         f"(more heel soil, more friction) and that record reads it; this one reads 110.",
         soil_provenance_note(soil),
+        f"SOIL BASIS — {soil_how}. " + {
+            "specified": "DESIGN CLOSED ON SPECIFIED SOIL PARAMETERS; NOT YET CONFIRMED by "
+                         "the site report (structural.soil_parameters_confirmed). The "
+                         "fallback rows pre-check the printed lean wall on the presumptions.",
+            "confirmed": "Soil parameters CONFIRMED by the site report.",
+            "presumptive": "No site report and no specified parameters."}[soil_state],
         "CORNERS: the footings' longitudinal bars are spliced through both joints of each "
         "side footing (BarSpec.continues_into), and the south footing runs out to out under "
         "both corners; the side footings' plan bending and the south footing's corner "
@@ -494,6 +496,5 @@ def _one(ctx: EngineeringContext, ref: str, members: list) -> EngineeringRecord:
 
 
 def graded_friction(ctx: EngineeringContext, members: list) -> float:
-    base = _base_interface(ctx, members[0])
-    return base.friction_coefficient if base is not None else presumptive(
-        getattr(ctx, "soil_class", None)).friction_coefficient
+    soil = presumptive(getattr(ctx, "soil_class", None))
+    return cases.design_friction(ctx, soil)[0]

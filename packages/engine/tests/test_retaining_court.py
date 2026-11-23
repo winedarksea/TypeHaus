@@ -37,22 +37,24 @@ _M_PER_FT = 0.3048
 #   25.00' south face (W2/E2's 19.83' cancel but for W-RG-EAST's old 50.48) = 78,174 lb
 #   -> dry FS 1.571.
 _NOTE_BODY_LB = 350_788.0
-_NOTE_FRICTION_LB = 122_776.0
 _NOTE_RESULTANT_LB = 78_174.0
 _NOTE_SOUTH_FACE_FT = 25.0
 _NOTE_SIDE_FACE_FT = 19.8333
-_NOTE_DRY_FS = 1.571
+# §15h: graded on the SPECIFIED bed friction 0.43 and native phi' 25 deg (tan 0.4663);
+# presumptive (0.35) dry is 1.571, scaled x 0.43/0.35.
+_NOTE_FRICTION_LB = 150_839.0   # 0.43 x 350,788
+_NOTE_DRY_FS = 1.930
 # Perched at H/2 (water 5.06' over the footing top, bed draining): 3,843.9 plf -> 96,097 lb.
-_NOTE_PERCHED_FS = 1.276
+_NOTE_PERCHED_FS = 1.568
 # Flooded to the court floor, both sides, uplift 527.33 sf x 62.4 = 32,905: 317,883 / 77,781.
-_NOTE_FLOODED_FS = 1.429
+_NOTE_FLOODED_FS = 1.755
 # Retained water to the terrace, court empty (reported): 128,344 lb.
-_NOTE_RETAINED_FULL_FS = 0.957
+_NOTE_RETAINED_FULL_FS = 1.17
 # Deep plane at -175.4375", mu 0.25: + bed stone 2,364.65 cf x 100 = 236,465, native under
 # the W1/E1/BRKBM beds 158 cf = 17,380, native core 121,644 -> 726,276 lb; dry thrust
 # 1/2 x 60 x 14.6198^2 + 50.48 = 6,462.7 x 25 = 161,567. Soakaway full to -127.4375":
 # uplift 4.0' x 758.33 sf x 62.4 = 189,280, thrust 6,277.5 x 25 = 156,937.
-_NOTE_DEEP_FS = {"dry": 1.124, "lip": 0.855, "flooded": 0.75}
+_NOTE_DEEP_FS = {"dry": 2.09, "lip": 1.594, "flooded": 1.39}
 # Strut: two-span continuous reaction, E2 3,122.79 plf over 16.333' and E1's footing 1,593.9
 # plf (1/2 x 60 x 7.289^2) over 10.5'. M_B = 71,965; R 45,126 -> Pu 72,201; phi Pn at the
 # strut's 5,000 psi: 0.60 x 0.45 x 5,000 x 144 x 0.6836 = 132,890.
@@ -65,7 +67,7 @@ _NOTE_PLAN_DC = 0.51
 # Staged backfill at the drawn H/2 rule: 1.24; one side empty 1.04 (§15e).
 _NOTE_EXPOSURE_IN = 40.0
 _NOTE_EXPOSURE_BAND_IN = (36.0, 48.0)
-_NOTE_STAGED_FS = {"rule": 1.245, "empty": 1.042}
+_NOTE_STAGED_FS = {"rule": 1.529, "empty": 1.28}
 
 
 def _results(plan):
@@ -108,11 +110,16 @@ def test_the_court_reproduces_the_hand_worked_free_body(catlin_plan) -> None:
     inputs = {q.name: q.value for q in record.inputs}
     assert inputs["body_weight_110"] == pytest.approx(_NOTE_BODY_LB, abs=2.0)
     assert inputs["body_resultant_110"] == pytest.approx(_NOTE_RESULTANT_LB, abs=2.0)
-    # Every under-limit row is named as open; none is hidden behind an OK.
-    assert record.status is Status.INCOMPLETE, record.summary
-    for state in record.limit_states:
-        if not state.ok:
-            assert any(state.name in m for m in record.missing), state.name
+    # Closed on the specified soil parameters; the fallback rows pre-check the lean wall.
+    assert record.status is Status.OK, record.summary
+    fallback = {n: s.capacity for n, s in states.items() if n.startswith("fallback")}
+    assert fallback["fallback lean wall under FT-SG-S: sliding, perched at H/2"] == \
+        pytest.approx(1.614, abs=0.002)
+    assert fallback["fallback lean wall under FT-SG-S: sliding, flooded court"] == \
+        pytest.approx(1.846, abs=0.002)
+    assert fallback["fallback lean wall under FT-SG-S: staged backfill"] == pytest.approx(
+        1.608, abs=0.002)
+    assert any("NOT YET CONFIRMED" in n for n in record.notes)
 
 
 def test_the_east_west_thrusts_cancel_and_the_south_face_is_the_body_s(catlin_plan) -> None:
@@ -135,8 +142,9 @@ def test_the_no_stone_sensitivity_is_the_designs_real_dependency(catlin_plan) ->
     it."""
     record = _results(catlin_plan)[f"{KIND}/W-SG-ARCH"]
     dry = next(s for s in record.limit_states if s.name == "sliding, dry")
-    assert 0.25 / 0.35 * dry.capacity == pytest.approx(1.12, abs=0.01)
-    assert 0.25 / 0.35 * dry.capacity < 1.5
+    assert 0.35 / 0.43 * dry.capacity == pytest.approx(1.571, abs=0.005)
+    assert 0.25 / 0.43 * dry.capacity == pytest.approx(1.12, abs=0.01)
+    assert 0.25 / 0.43 * dry.capacity < 1.5
 
 
 def test_every_member_quotes_the_courts_answer_and_carries_it_in_its_fingerprint(
@@ -521,6 +529,34 @@ def test_the_restrained_walls_stay_in_the_engineering_suite(catlin_plan) -> None
     model, _ = resolve(catlin_plan)
     tags = set(enumerate_walls(EngineeringContext(plan=catlin_plan, model=model)))
     assert tags == {"W-SG-E2", "W-SG-S", "W-SG-W2"}
+
+
+def test_the_specified_soil_is_pending_until_the_report_and_fails_below_it(catlin_plan) -> None:
+    """§15h, the truss pattern: UNKNOWN until Site.confirmed_soil is entered; a report short
+    of the specified values FAILs the confirmation and the court's rows grade on it."""
+    from types import SimpleNamespace
+
+    from typehaus.checks.structural.soil_parameters import soil_parameters_confirmed
+    from typehaus.findings import Result
+    from typehaus.model.site import SoilParameters
+    from typehaus.resolve import resolve
+
+    site = catlin_plan.project.site
+    model, _ = resolve(catlin_plan)
+
+    def run(plan):
+        return soil_parameters_confirmed(SimpleNamespace(plan=plan))[0].result
+
+    assert run(catlin_plan) is Result.UNKNOWN
+    short = SoilParameters(bed_friction=0.40, native_phi_deg=30.0, source="report")
+    plan = catlin_plan.model_copy(update={"project": catlin_plan.project.model_copy(
+        update={"site": site.model_copy(update={"confirmed_soil": short})})})
+    assert run(plan) is Result.FAIL
+    from typehaus.engineering import EngineeringContext, EngineeringResults
+
+    record = EngineeringResults(EngineeringContext(plan=plan, model=model, soil_class="GM"))[
+        f"{KIND}/W-SG-ARCH"]
+    assert record.status is Status.OVER, record.summary
 
 
 pytestmark = pytest.mark.slow

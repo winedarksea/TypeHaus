@@ -11,12 +11,12 @@ inside the strain its sheet publishes that cap at. What closes the joint:
   ``soil.MOTION_AT_ALLOWABLE_BAND_IN`` (IBC §1806.3.4 pairs twice the tabular lateral value
   with 1/2", the tabular value with 1/4"); the band's top is printed as a sensitivity.
 
-**Boards set after backfill** (owner, 2026-11-23): where the boards' placement annotation
-says they go in after the retained sides are backfilled, the backfill's own sliding is spent
-before the joint exists and only the increment to the worst graded service case counts, and
-the boards are cut to the as-built slot (no construction pre-closure). Otherwise the whole
-mobilisation counts and the slot tolerance is an open input. The veneer ties go in with the
-boards and must take the same bound; that is graded on the tie's own record.
+**Boards set after backfill** (owner, 2026-11-23): where the boards state
+``IsolationBoard.set_after_backfill`` (printed by their placement annotation), the
+backfill's own sliding is spent before the joint exists and only the increment to the
+worst graded service case counts; the boards are cut to the as-built slot (no
+pre-closure). Otherwise the whole mobilisation counts and the slot tolerance is open.
+The veneer ties go in with the boards and must take the same bound (the tie's own record).
 
 Capacity: the compliant layer's thickness x the strain its cap is published at. The foam
 board in series compresses too; no published modulus bounds that from below, so it is
@@ -25,24 +25,20 @@ printed (off the C578 rating, linear to 10%) and not credited.
 
 from __future__ import annotations
 
-import re
-
 from typehaus.engineering.item import LimitState, Quantity
 from typehaus.engineering.soil import MOTION_AT_ALLOWABLE_BAND_IN
 
 NAME = "court-to-house joint closure"
 #: The rating strain ASTM C578 reads a board's compressive strength at ("at yield or 10%").
 RATING_STRAIN = 0.10
-_AFTER_BACKFILL = re.compile(r"\bafter\b[^.]*\bbackfill", re.IGNORECASE)
 
 
 def set_after_backfill(ctx, boards) -> bool:  # type: ignore[no-untyped-def]
-    """Every authored board's placement annotation says it goes in after backfill."""
-    refs = {b.element.placement_sequence_ref for b in boards if b.element is not None}
-    if not refs or None in refs:
-        return False
-    texts = [getattr(ctx.plan.by_tag(r), "text", "") or "" for r in refs]
-    return all("BOARD" in t.upper() and _AFTER_BACKFILL.search(t) for t in texts)
+    """Every authored board states ``set_after_backfill`` and names the annotation that
+    prints it (a layer board inherits its loop's authored boards)."""
+    authored = [b.element for b in boards if b.element is not None]
+    return bool(authored) and all(
+        e.set_after_backfill and e.placement_sequence_ref for e in authored)
 
 
 def joint_row(ctx, boards, products, temps, runs: dict, mobilised: dict | None):  # type: ignore[no-untyped-def]

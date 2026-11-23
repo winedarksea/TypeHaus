@@ -38,10 +38,9 @@ from typehaus.engineering.retaining_system_body import (
 
 _M = 0.3048
 
-#: Cases whose row is new in the 2026-11-22 set and whose answer is an owner decision still
-#: open: under 1.50 they hold the record INCOMPLETE (named) instead of OVER. Take a case out
-#: once the design answers it, and an under-limit row grades OVER like any other.
-PENDING_CASES = frozenset({"perched", "flooded court", "deep, soakaway full"})
+#: Cases whose answer is an owner decision still open: under 1.50 they hold the record
+#: INCOMPLETE (named) instead of OVER. Empty since the soil decision (2026-11-23).
+PENDING_CASES: frozenset[str] = frozenset()
 
 
 @dataclass(frozen=True)
@@ -124,9 +123,7 @@ class Graded:
 
 def grade(ctx, ref: str, walls: list, built_by_pcf: dict, soil) -> tuple[Graded | None, list[str]]:  # type: ignore[no-untyped-def]
     """Every case at both ends of the band; each row reports its worse end."""
-    from typehaus.engineering.soil import aggregate_bed
-
-    bed = aggregate_bed()
+    bed_mu, native_mu, _state, _basis = design_friction(ctx, soil)
     fs: dict[str, list[tuple[float, float, Body, Water]]] = {c.key: [] for c in CASES}
     missing: list[str] = []
     dry: dict[float, tuple[float, float]] = {}
@@ -135,11 +132,11 @@ def grade(ctx, ref: str, walls: list, built_by_pcf: dict, soil) -> tuple[Graded 
     for pcf, built in built_by_pcf.items():
         members = members_for(ctx, walls, built, soil, pcf)
         body, gap = footing_plane_body(ctx, ref, walls, members, soil_pcf=pcf,
-                                       friction=bed.friction_coefficient)
+                                       friction=bed_mu)
         missing.extend(gap)
         if body is None:
             return None, missing
-        deep, gap = deep_plane_body(ctx, body, friction=soil.friction_coefficient,
+        deep, gap = deep_plane_body(ctx, body, friction=native_mu,
                                     native_pcf=pcf)
         missing.extend(gap)
         levels, gap = waters(ctx, body)
@@ -205,3 +202,24 @@ def _table(pcf: float, body: Body, deep: Body | None, levels: dict[str, Water]) 
             f"its projected width ({widths}). Deep body adds (lb): {deep_parts}. FS: "
             + ", ".join(row(body if c.plane == "footing" else deep, c.key) for c in CASES))
 
+
+def design_friction(ctx, soil) -> tuple[float, float, str, str]:  # type: ignore[no-untyped-def]
+    """``(bed mu, deep-plane mu, state, how)``: the report's confirmed values, else the
+    specified ones the design is closed on, else IBC Table 1806.2 (class 3 on the washed
+    stone, the site's class on the native). ``state`` is "confirmed", "specified" or
+    "presumptive"."""
+    import math
+
+    from typehaus.engineering.soil import aggregate_bed
+
+    site = getattr(getattr(ctx.plan, "project", None), "site", None)
+    for state in ("confirmed", "specified"):
+        params = getattr(site, f"{state}_soil", None)
+        if params is not None:
+            native = math.tan(math.radians(params.native_phi_deg))
+            return params.bed_friction, native, state, (
+                f"{state.upper()} soil parameters: bed friction {params.bed_friction:.2f}, "
+                f"native phi' {params.native_phi_deg:g} deg (tan {native:.3f})"
+                + (f" — {params.source}" if params.source else ""))
+    return aggregate_bed().friction_coefficient, soil.friction_coefficient, "presumptive", (
+        "PRESUMPTIVE IBC Table 1806.2: class 3 on the stone, the site's class on the native")

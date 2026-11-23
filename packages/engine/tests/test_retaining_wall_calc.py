@@ -154,10 +154,10 @@ def test_catlin_grades_the_three_court_walls_through_their_base_restraint(
         record = results[f"{KIND}/{tag}"]
         assert record.status is Status.OK, record.summary
         assert record.governing is not None
-        # The base restraint governs since 2026-11-22 (free body §15: the body's 25'-0" south
-        # face, FS 1.571, d/c 0.955), over stem flexure's 0.866.
-        assert record.governing.name == "base restraint", record.summary
-        assert record.ratio == pytest.approx(1.5 / 1.571, abs=0.005)
+        # Stem flexure governs (#5 @ 10", d/c 0.866) over the base restraint's 0.777 since the
+        # court closed on its specified soil parameters (free body §15h, FS 1.930).
+        assert record.governing.name == "stem flexure", record.summary
+        assert record.ratio == pytest.approx(0.866, abs=0.005)
         # 1.63 against 1.50. Carried as required/achieved, so the ratio is under 1.
         # It was 1.77, then 1.80 with the flush tops, and 1.63 since the court shortened
         # 28'-0" -> 26'-0" and the strips narrowed 8'-0" -> 7'-0" (2026-09-10). That is a
@@ -170,7 +170,7 @@ def test_catlin_grades_the_three_court_walls_through_their_base_restraint(
         by_name = {state.name: state for state in record.limit_states}
         # 1.573 since §15 (2026-11-22): one body off the solids, corner squares and spliced
         # walls in, and the soil pushing on its 25'-0" south face, not the 18'-0" axis.
-        assert by_name["base restraint"].ratio == pytest.approx(1.5 / 1.571, abs=0.005)
+        assert by_name["base restraint"].ratio == pytest.approx(1.5 / 1.930, abs=0.005)
         # Per-wall sliding is not a meaningful number once the free body is wrong, so it is
         # gone rather than reported alongside a contradicting one.
         assert "sliding" not in by_name
