@@ -39,7 +39,7 @@ def _ratio(case, allowable_psf: float | None) -> float:
     """**A max-of-three proxy for which case presses hardest — not a utilization.**
 
     It ranks three unlike quantities on one scale so the table can name a governing case:
-    the shortfall against the 1.5 sliding and overturning factors, and bearing against the
+    the shortfall against the 1.5 overturning factor, and bearing against the
     site's own allowable. A value of 1.0 is the screening threshold on each of the three,
     and a value above it says *which* of them is short, not by how much anything is
     overstressed. Nothing downstream may read it as a demand/capacity.
@@ -59,7 +59,8 @@ def _ratio(case, allowable_psf: float | None) -> float:
     """
 
     bearing = math.inf if allowable_psf is None else case.bearing_max_psf / allowable_psf
-    return max(1.5 / case.sliding_fs, 1.5 / case.overturning_fs, bearing)
+    # Per-foot sliding is not the court's check (retaining_system grades the loop).
+    return max(1.5 / case.overturning_fs, bearing)
 
 
 def _rank(case, allowable_psf: float | None) -> tuple[bool, float]:
@@ -94,8 +95,9 @@ def layout_table(results: tuple[LayoutResult, ...], priced: bool,
                      f"{governing.case} ({_ratio_cell(governing, allowable_psf)}) | "
                      f"{status} |")
     lines += ["", "The parenthesised number beside the governing case is a **ranking proxy**: "
-              "the worst of 1.5/FS-sliding, 1.5/FS-overturning and bearing over the site's "
-              "allowable. It says which of the three governs, not how far anything is "
+              "the worse of 1.5/FS-overturning and bearing over the site's allowable "
+              "(sliding is the closed court's, graded by retaining_system/W-SG-ARCH's case "
+              "set, never one foot of one wall). It says which governs, not how far anything is "
               "overstressed, and it is not a demand/capacity ratio."]
     if allowable_psf is not None:
         lines[-1] += f" Bearing is taken against {allowable_psf:,.0f} psf."

@@ -69,11 +69,15 @@ def test_partial_height_soil_is_less_than_frozen_full_height_comparison() -> Non
 
 
 def test_blocked_drain_adds_the_independent_five_foot_water_triangle() -> None:
+    """A1-06: below 5' of water the soil is K0 γ' and the water γw, so the increment over
+    dry is (1 − K0) γw hw² / 2 — K0 60/120 here — not a full water triangle on top."""
     design = default_design_input()
     layout = PlantingProfile("yard-grade", 0.0, 0.0, 0.0)
     dry = integrate_pressure(design, layout)
     wet = integrate_pressure(design, layout, wet=True)
-    assert wet.thrust_plf - dry.thrust_plf == pytest.approx(62.4 * 5.0 ** 2 / 2.0, rel=2e-3)
+    k0 = design.soil.at_rest_efp_pcf.value / design.soil.unit_weight_pcf.value
+    assert wet.thrust_plf - dry.thrust_plf == pytest.approx(
+        (1.0 - k0) * 62.4 * 5.0 ** 2 / 2.0, rel=2e-3)
 
 
 def test_corrected_veneer_beam_uses_strength_load_and_aci_minimum() -> None:
