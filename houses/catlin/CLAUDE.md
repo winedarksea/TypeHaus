@@ -3368,12 +3368,13 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **`TR-SG-LEADER-SE` discharges EAST, never onto the terrace** (owner, 2026-09-23). The
   terrace bed is `W-SG-E2`'s drained fill and its surface is the court's rim, so balcony
   water there reaches the court soakaway (27 cf of margin against ~160 cf of balcony melt).
-  The leader drops 1" over `TR-SG-RUNNEL`, a dark 4"x3" U-channel in place of the AB cap on
-  `W-RG-EAST-BALCONY`, turning 1'-6" south on `W-RG-EAST` to a 12" scupper into
-  `FURN-SG-SPLASH-BASIN` (granite, doubles as a bird bath), which spills south onto lawn:
-  `discharge_ref="daylight"`.
-  The basin stays 2'-6" off `SL-SG-STAIRPAD` (St Paul DSI: no icy walkway). Nothing grades
-  the runnel or the basin — `test_drainage_elements.py` pins both. A rain barrel was
+  The leader drops 1" over `TR-SG-RUNNEL`, a dark 4"x3" U-channel seated on the AB capstones
+  of `W-RG-EAST-BALCONY`, turning 1'-6" south on `W-RG-EAST` to a 12" scupper (its last support)
+  that lands ~1.8' off the toe on `FURN-SG-SPLASH-PAD`, a river-rock pad that spreads it onto
+  lawn (AB Table 2.1's "extra precautions"; `structural.srw_gravity_chart` grades the landing,
+  note `raised_garden_srw.md` §10): `discharge_ref="daylight"`.
+  The pad stays 2'-6" off `SL-SG-STAIRPAD` (St Paul DSI: no icy walkway). Nothing grades
+  the runnel itself — `test_drainage_elements.py` pins it and the pad. A rain barrel was
   deferred; a diverter can go on the leader later.
 - **Sidewalk** (`params/landscape_walk.py`): four `SIDEWALK_FRC_CLASS5` slabs, 92" full
   section in front of the garage (leg A), 64" one-sided down the garage's east side (leg B,

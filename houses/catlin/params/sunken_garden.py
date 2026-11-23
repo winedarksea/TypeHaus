@@ -3078,19 +3078,20 @@ BALCONY_LEADER = Downspout(
 # ** TR-SG-RUNNEL: A 4" x 3" OPEN U-CHANNEL SEATED ON THE AB CAPSTONES OF W-RG-EAST-BALCONY. **
 # Seated on the cap (rim +3"; the cap top is the court datum), closed at its west end clear of
 # PT-SG-BF3, falling 1/4 in/ft east along the return to the corner block, south 1'-6" along
-# W-RG-EAST's cap, then east through a bracketed 12" scupper past its yard face and on 3'-0"
-# more, so it lets go 4'-0" off the toe (AB Table 1.3's water-off-the-toe row, owner
-# 2026-11-23) and 3'-0" south of
+# W-RG-EAST's cap, then east through a bracketed 12" scupper past its yard face and no further
+# (nothing unsupported, owner 2026-11-24). The water lands ~0.8' past the lip, ~1.8' off the
+# toe, on FURN-SG-SPLASH-PAD (plan/landscape.py), a river-rock pad that spreads it onto the
+# lawn: the AB Table 2.1 "extra precautions" (`structural.srw_gravity_chart`). Lets go 3'-0"
+# south of
 # SL-SG-STAIRPAD's edge rather than 1'-6" (St Paul DSI: no icy hazard on a walkway). Square
 # legs, not a diagonal: the open-channel resolver bands each leg on its own axis. ~17 gpm off 200 sf at 8 in/hr against
-# ~35 gpm at half depth. It lands in FURN-SG-SPLASH-BASIN (plan/landscape.py), which spills
-# south onto lawn. Winter icing is accepted; heat trace was refused for the leader already.
+# ~35 gpm at half depth. Winter icing is accepted; heat trace was refused for the leader already.
 # No host_ref: integrity.edge_run_host wants a hosted run's top within 1" of the wall top,
-# and this rim is 3" over it. Nothing grades the runnel or the basin; tests pin both
+# and this rim is 3" over it. Nothing grades the runnel itself; tests pin it and the pad
 # (test_drainage_elements.py).
 _RUNNEL_Y = _SG_GUTTER_Y
 _RUNNEL_PATH = (pt(ft(27, 7), ft(_RUNNEL_Y)), pt(ft(31), ft(_RUNNEL_Y)),
-                pt(ft(31), ft(-12)), pt(ft(35, 6), ft(-12)))
+                pt(ft(31), ft(-12)), pt(ft(32, 6), ft(-12)))
 BALCONY_RUNNEL = Gutter(
     uid="41MPFYS8T8", tag="TR-SG-RUNNEL", kind=TrimKind.GUTTER, path=_RUNNEL_PATH,
     top_elevation=_ret_top + inch(3), depth=inch(3), thickness=inch(4),

@@ -13,6 +13,7 @@ Oracle: ``notes/raised_garden_srw.md`` §10 (the sheet, by hand per leg).
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 
 from typehaus.engineering.registry import EngineeringContext
@@ -22,8 +23,19 @@ from typehaus.engineering.srw_scope import R404_4_FILL_LIMIT_FT
 from typehaus.engineering.srw_tiers import TIER_FACTOR, Tier, _direction, _footprint
 
 _M_PER_FT = 0.3048
-#: House clearance for concentrated gutter water from a wall's toe (A2-F8; not a maker's number).
-TOE_CLEAR_FT = 3.0
+#: House clearance (NOT a maker's number): concentrated gutter water must land at least this far
+#: off a wall's toe, on an erosion-protected pad (AB Table 2.1, p.16: "When moisture is present,
+#: extra precautions may be required" - the pad is that precaution), within ``TOE_ZONE_FT``.
+#: The reviewer's 3'-0" (A2-F8) was not AB's either; the owner relaxed it 2026-11-24.
+TOE_CLEAR_FT = 1.5
+TOE_ZONE_FT = 10.0
+#: A ground-level object no more than this proud (m, 4") counts as the splash pad.
+PAD_MAX_PROUD_M = 0.1016
+#: How far a free-ended gutter's water travels past its lip before it lands. Not modelled: a
+#: stated assumption, by hand (notes/raised_garden_srw.md §10): 17 gpm design in the 4" x 3"
+#: channel at 1/4 in/ft (Manning n 0.012) runs 0.645" deep at 2.11 ft/s and falls ~28" (channel
+#: floor to the basin dish): 0.38 s, 0.80 ft out.
+THROW_FT = 0.8
 #: A trim run whose underside is within this of a wall's top is seated on it.
 _SEAT_TOL_M = 0.15
 
@@ -114,26 +126,40 @@ def _face_side(ctx: EngineeringContext, here):  # type: ignore[no-untyped-def]
 
 
 def _toe_discharges(ctx: EngineeringContext, shape, here, face):  # type: ignore[no-untyped-def]
-    """Free-ended gutters' spouts and leader feet on the yard side, within TOE_CLEAR_FT."""
-    from shapely.geometry import Point
+    """What is wrong with where yard-side water lands, as sentences: a free-ended gutter's lip plus
+    ``THROW_FT`` along its last leg, or a leader's foot, inside ``TOE_ZONE_FT`` of the toe. It
+    must land >= TOE_CLEAR_FT off the wall AND on a flat ground-level pad."""
+    from shapely.geometry import Point, Polygon
 
     from typehaus.model.trim import Downspout, Gutter
 
     (ax, ay), _ = here.axis
-    near, limit = [], TOE_CLEAR_FT * _M_PER_FT
+    pads = [(o.tag, Polygon(o.footprint)) for o in ctx.model.canvas_objects
+            if len(o.footprint) >= 3 and o.body_z1_m is not None and o.body_z0_m is not None
+            and o.body_z1_m - o.body_z0_m <= PAD_MAX_PROUD_M]
+    problems: list[str] = []
     for el in ctx.plan.all_elements():
         if isinstance(el, Gutter) and len(el.path) >= 2:
             if el.downspout_ref is not None:    # it lets go at a leader, tested below
                 continue
-            xy = el.path[-1].xy_m
+            (px, py), (qx, qy) = el.path[-2].xy_m, el.path[-1].xy_m
+            run = math.hypot(qx - px, qy - py) or 1.0
+            throw = THROW_FT * _M_PER_FT
+            xy = (qx + (qx - px) / run * throw, qy + (qy - py) / run * throw)
         elif isinstance(el, Downspout):
             xy = el.position.xy_m
         else:
             continue
-        outboard = (xy[0] - ax) * face[0] + (xy[1] - ay) * face[1] > 0.0
-        if outboard and shape.distance(Point(xy)) <= limit:
-            near.append(el.tag)
-    return near
+        if (xy[0] - ax) * face[0] + (xy[1] - ay) * face[1] <= 0.0:
+            continue                            # on the retained side
+        off = shape.distance(Point(xy)) / _M_PER_FT
+        if off > TOE_ZONE_FT:
+            continue
+        if off < TOE_CLEAR_FT:
+            problems.append(f"{el.tag} lands {off:.1f}' off the toe")
+        elif not any(poly.contains(Point(xy)) for _tag, poly in pads):
+            problems.append(f"{el.tag} lands {off:.1f}' off the toe on no splash pad")
+    return problems
 
 
 def _surcharge(ctx: EngineeringContext, wall, here, face, height_ft: float):  # type: ignore[no-untyped-def]
@@ -225,9 +251,10 @@ def applicability(ctx: EngineeringContext, wall, tiers: list[Tier]) -> list[Cond
         None if hits is None else not hits))
     wet = _toe_discharges(ctx, shape, resolved, face) if face is not None else None
     out.append(Condition(
-        "water kept off the toe", f"no gutter or leader lets go within {TOE_CLEAR_FT:g}' of "
-        "the toe", "yard side not established" if wet is None else
-        (", ".join(wet) + " lets go near the toe" if wet else "none"),
+        "water landed clear of the toe", f"lands >= {TOE_CLEAR_FT * 12:g}\" off the toe on an "
+        f"erosion-protected pad (a gutter's water lands {THROW_FT:g}' past its lip)",
+        "yard side not established" if wet is None else (", ".join(wet) if wet else
+                                                          "none lands on the yard side"),
         None if wet is None else not wet))
     refusal = published_refusal(ctx, wall, tiers)
     out.append(Condition("tier independence (2H)", "no same-facing taller wall within 2H",
