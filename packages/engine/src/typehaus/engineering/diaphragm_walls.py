@@ -7,8 +7,8 @@ sat in no wall row. This module adds, per wall, the in-plane force of
 
 * the canopy deck: the receiving share (lever rule, or the E-W share on the boundary wall),
   the E-W couple and the N-S couple over the far lines' spacing;
-* the landing's ties: ``deck_tie``'s own distribution of its wind cases onto the joints at
-  that wall, the along-wall component of each, worst sense, per wind direction;
+* the landing's ties: ``deck_tie``'s exported worst force along each wall (and across it,
+  which the roof carries on to the perpendicular walls);
 
 and grades the sum as a unit shear on the wall's surplus and as an end tension at its
 hold-down. One wind direction at a time (the worst); within it the garage-100% and
@@ -24,52 +24,32 @@ from typehaus.engineering.item import LimitState, Quantity
 _M_PER_FT = 0.3048
 
 
-def landing_in_plane(ctx: Any) -> dict[str, dict[str, float]]:
-    """``wind axis -> {wall tag: lb}`` along that wall from every tied deck's joints, worst
-    sense per wind axis."""
-    from typehaus.engineering.deck_tie import (
-        Capacity,
-        _bearing_posts,
-        _split,
-        _tied_decks,
-        capacity,
-        carries_of,
-        distribute,
-    )
-    from typehaus.engineering.deck_tie_basis import deck_wind, loads_on, wall_ties
+def landing_deliveries(ctx: Any) -> tuple[dict[str, float], dict[str, float], dict[str, float]]:
+    """``(along, across, x_ft)`` per tied wall: ``deck_tie``'s exported worst force the ties put
+    along and across it (``delivered_along_<wall>`` / ``delivered_across_<wall>``), and the
+    mean plan x of the joints on it (where an across force enters the roof)."""
+    from typehaus.engineering import deck_tie
+    from typehaus.engineering.deck_tie_basis import wall_ties
 
-    out: dict[str, dict[str, float]] = {}
-    for deck in _tied_decks(ctx):
-        joints = wall_ties(ctx, deck)
-        caps = [capacity(j) for j in joints]
-        if not joints or not all(isinstance(c, Capacity) for c in caps):
-            continue
-        anchors = [ctx.plan.by_tag(t) for t in sorted(_bearing_posts(ctx, deck))]
-        wind = deck_wind(ctx, deck, anchors) if anchors else None
-        if wind is None:
-            continue
-        cases, _guards = loads_on(ctx, deck, wind)
-        for axis, loads in cases.items():
-            worst: dict[str, float] = {}
-            for sign in (1.0, -1.0):
-                forces = distribute(joints, loads, sign, carries_of(joints, caps))
-                for joint, force in zip(joints, forces, strict=False):
-                    along, _across = (abs(v) for v in _split(joint, force))
-                    worst[joint.wall] = worst.get(joint.wall, 0.0) + along
-                if sign == 1.0:
-                    first, worst = worst, {}
-            here = out.setdefault(axis, {})
-            for wall in set(first) | set(worst):
-                here[wall] = here.get(wall, 0.0) + max(first.get(wall, 0.0),
-                                                       worst.get(wall, 0.0))
-    return out
+    along: dict[str, float] = {}
+    across: dict[str, float] = {}
+    at: dict[str, float] = {}
+    for deck in deck_tie._tied_decks(ctx):
+        for joint in wall_ties(ctx, deck):
+            at.setdefault(joint.wall, joint.x_ft)
+    for record in deck_tie.compute(ctx):
+        for q in record.inputs:
+            for prefix, into in (("delivered_along_", along), ("delivered_across_", across)):
+                if q.name.startswith(prefix):
+                    into[q.name.removeprefix(prefix)] = q.value
+    return along, across, at
 
 
 def wall_sum_rows(ctx: Any, rows: Any, lines: tuple, far_walls: list[Any], along: str) -> None:
     """The summed delivered shear and end tension for every receiving wall."""
     from typehaus.engineering.diaphragm_delivery import _overturning, _surplus
 
-    landing = landing_in_plane(ctx)
+    land_along, land_across, land_x = landing_deliveries(ctx)
     index = 0 if along == "x" else 1
     spacing = None
     if len(far_walls) >= 2:
@@ -79,6 +59,9 @@ def wall_sum_rows(ctx: Any, rows: Any, lines: tuple, far_walls: list[Any], along
         spacing = at[-1] - at[0]
     inputs = {q.name: q.value for q in rows.inputs}
     far_tags = {w.tag for w in far_walls}
+    far_x = {w.tag: sum(ctx.plan.by_tag(getattr(w, n)).position.xy_m[index]
+                        for n in ("start_node", "end_node")) / 2.0 / _M_PER_FT
+             for w in far_walls}
     for line in lines:
         wall = ctx.plan.by_tag(line.wall)
         reading = _surplus(ctx, rows, line.wall)
@@ -92,15 +75,29 @@ def wall_sum_rows(ctx: Any, rows: Any, lines: tuple, far_walls: list[Any], along
         # share, the screen-at-100% couple and the landing's N-S case; E-W wind loads the
         # boundary wall with the deck's E-W share and the far walls with the E-W couple. Each
         # case adds every delivery in it; the worst case is graded.
+        # An across force at a tied wall enters the garage roof and leaves by the walls
+        # perpendicular to it: a N-S force on an E-W wall splits to the far N-S walls by the
+        # lever rule on where it entered; an E-W force on a N-S wall goes to the boundary wall.
+        to_far = 0.0
+        if on_far and len(far_walls) >= 2:
+            xs = sorted(far_x.values())
+            for tag, force in land_across.items():
+                if tag not in far_tags and tag in land_x and xs[-1] > xs[0]:
+                    toward = xs[-1] - land_x[tag] if far_x[line.wall] == xs[0] else (
+                        land_x[tag] - xs[0])
+                    to_far += force * max(0.0, min(1.0, toward / (xs[-1] - xs[0])))
+        to_boundary = (0.0 if on_far else sum(f for t, f in land_across.items() if t in far_tags))
         cases = {
             "N-S wind": {"canopy deck share": receiving if on_far else 0.0,
                          "N-S couple": (inputs.get("joint_couple_ns_lb_ft", 0.0) / spacing
                                         if on_far and spacing else 0.0),
-                         "landing ties": landing.get("y", {}).get(line.wall, 0.0)},
+                         "landing ties along": land_along.get(line.wall, 0.0),
+                         "landing ties across the E-W wall, by the roof": to_far},
             "E-W wind": {"canopy deck share": 0.0 if on_far else receiving,
                          "E-W couple": (inputs.get("joint_couple_lb_ft", 0.0) / spacing
                                         if on_far and spacing else 0.0),
-                         "landing ties": landing.get("x", {}).get(line.wall, 0.0)},
+                         "landing ties along": land_along.get(line.wall, 0.0),
+                         "landing ties across the N-S walls, by the roof": to_boundary},
         }
         name, parts = max(cases.items(), key=lambda kv: sum(kv[1].values()))
         total = sum(parts.values())

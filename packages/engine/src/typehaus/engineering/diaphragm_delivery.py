@@ -32,6 +32,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
+from typehaus.engineering.canopy_service import DRY_UNDER_ROOFING
 from typehaus.engineering.item import LimitState, Quantity
 
 _M_PER_FT = 0.3048
@@ -235,7 +236,8 @@ def _straps(ctx: Any, rows: DeliveryRows, joints: list[Any], v_along: float, v_a
     rows.states += [
         LimitState(f"{joints[0].size} joint straps, across", v_across / n, capacity, "lb",
                    f"{cite}; {v_across:,.1f} lb of strap tension over {n} straps; "
-                   "capacity reduced for the installed end nail schedule")]
+                   f"capacity reduced for the installed end nail schedule; the straps are "
+                   f"{DRY_UNDER_ROOFING}")]
     if resultant is None:
         joint_attachment_rows(ctx, rows, element, joints, along, v_across / n)
         return
@@ -252,7 +254,7 @@ def _straps(ctx: Any, rows: DeliveryRows, joints: list[Any], v_along: float, v_a
         f"{joints[0].size} joint straps, rotation couple", worst, capacity, "lb",
         f"the {_direction(along)} resultant stands {lever:.3f}' off the joint, M = "
         f"{v_along:,.1f} x {lever:.3f} = {couple:,.1f} lb-ft, taken as a linear couple over "
-        f"the strap stations (sum x^2 = {second:.1f} ft2)"))
+        f"the strap stations (sum x^2 = {second:.1f} ft2); the straps are {DRY_UNDER_ROOFING}"))
     chord_bound = couple / joint_len
     joint_attachment_rows(ctx=ctx, rows=rows, element=element, joints=joints,
                           along=along, demand=v_across / n + max(worst, chord_bound))
