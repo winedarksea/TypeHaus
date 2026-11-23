@@ -24,16 +24,15 @@ _ITEM = "lateral_system/RF-BW-CANOPY"
 _ROWS = {
     "W-BW-SCREEN unit shear": (193.420, 490.0),
     "W-BW-SCREEN aspect ratio": (0.751, 3.5),
-    "SB-BW-BAND slat end, KBS1Z": (755.206, 993.218),
+    "SB-BW-BAND slat end, KBS1Z": (755.206, 1042.269),
     "SB-BW-BAND slat buckling": (755.206, 24904.1),
     "SB-BW-BAND clipped end bearing on a post": (24.209, 251.25),
     "SB-BW-BAND clipped end bearing on a plate": (25.722, 251.25),
     "SB-BW-BAND centre post bending": (34.505, 1360.0),
     "SB-BW-BAND centre post end ties": (484.530, 1390.0),
-    "SB-BW-BAND top plate screws into BM-BW-RW": (188.801, 664.099),
-    "SB-BW-BAND sill screws into W-BW-SCREEN's top plate": (131.465, 648.0),
+    "SB-BW-BAND top plate screws into BM-BW-RW": (188.801, 464.869),
+    "SB-BW-BAND sill screws into W-BW-SCREEN's top plate": (131.465, 453.600),
     "W-BW-SCREEN top plate end bearing on a chord": (100.164, 251.25),
-    "W-BW-SCREEN base plate and sill end bearing on a chord": (65.223, 251.25),
     "BM-BW-RW eave collector clips": (175.287, 450.0),
     # G5 (2026-11-23): the screen's shear leaves at its top plate through CN-BW-SCREEN-STRAP;
     # the chord hold-down and base shear rows carry no N-S (north_entry_piers.md §10p).
@@ -127,29 +126,30 @@ def test_an_unbridged_band_is_incomplete_by_name(catlin_ctx) -> None:
 
 
 def test_the_corner_band_is_graded_on_the_interpolated_open_knee(record) -> None:
-    """§3b: 993.2 lb at 45.868°, 0.748 (10-31); nothing about the corner left INCOMPLETE."""
+    """§3b/§5d: the WET DF/SP column (C-C-2026 p. 324), 1,042.3 lb at 45.868°, 0.725 (11-23);
+    nothing about the corner left INCOMPLETE."""
     state = next(s for s in record.limit_states if s.name == "SB-BW-BAND slat end, KBS1Z")
-    assert state.demand / state.capacity == pytest.approx(0.760, abs=5e-4)
-    assert "45.868° interpolated" in state.citation
+    assert state.demand / state.capacity == pytest.approx(0.725, abs=5e-4)
+    assert "45.868° interpolated" in state.citation and "MC > 19%" in state.citation
 
 
 #: §5c, ``post -> {row: ratio}``; a chord's along rows and its column carry the band push.
 #: ACE6Z end caps at all four heads since 2026-10-28.
 _POSTS = {
-    "PT-BW-CW": {"ACE6Z head, uplift + lateral along the beam": 0.555,
-                 "A35Z head, across the beam": 0.163,
-                 "A35Z panel top plate into the post": 0.175,
-                 "CBSTQ66Z-SDS2 base, uplift + lateral across the beam": 0.276,
-                 "CBSTQ66Z-SDS2 base, uplift + lateral along the beam": 0.281,
+    "PT-BW-CW": {"ACE6Z head, uplift + lateral along the beam": 0.793,
+                 "A35Z head, across the beam": 0.233,
+                 "A35Z panel top plate into the post": 0.249,
+                 "CBSTQ66Z-SDS2 base, uplift + lateral across the beam": 0.394,
+                 "CBSTQ66Z-SDS2 base, uplift + lateral along the beam": 0.403,
                  "NDS combined axial and bending": 0.543},
-    "PT-BW-CNW": {"ACE6Z head, uplift + lateral along the beam": 0.555,
-                  "A35Z head, across the beam": 0.163,
+    "PT-BW-CNW": {"ACE6Z head, uplift + lateral along the beam": 0.793,
+                  "A35Z head, across the beam": 0.233,
                   "NDS combined axial and bending": 0.543},
-    "PT-BW-RE": {"ACE6Z head, uplift + lateral along the beam": 0.237,
-                 "CBSTQ66Z-SDS2 base, uplift + lateral across the beam": 0.206,
+    "PT-BW-RE": {"ACE6Z head, uplift + lateral along the beam": 0.339,
+                 "CBSTQ66Z-SDS2 base, uplift + lateral across the beam": 0.294,
                  "NDS combined axial and bending": 0.229},
-    "PT-BW-RNE": {"ACE6Z head, uplift + lateral along the beam": 0.237,
-                  "CBSTQ66Z-SDS2 base, uplift + lateral along the beam": 0.165},
+    "PT-BW-RNE": {"ACE6Z head, uplift + lateral along the beam": 0.339,
+                  "CBSTQ66Z-SDS2 base, uplift + lateral along the beam": 0.235},
 }
 
 

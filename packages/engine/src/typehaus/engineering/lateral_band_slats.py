@@ -24,6 +24,7 @@ import math
 from dataclasses import dataclass
 from typing import Any
 
+from typehaus.engineering.canopy_service import WET_CM
 from typehaus.engineering.item import LimitState, Quantity
 from typehaus.engineering.wood_roof_post import EMIN_WET_PSI, FC_WET_PSI
 
@@ -165,6 +166,11 @@ def slat_rows(ctx: Any, wall: Any, collector: Any, sb: SlatBand, states: list[Li
         f"or compression.")
     role = ROLE_KNEE_BRACE_EQUAL_WIDTH if el.connectors_per_end == 2 else ROLE_KNEE_BRACE
     allow = allowable_for_model(el.connector, role=role)
+    wet = _KBS1Z_WET_DFSP.get(role) if el.connector == "KBS1Z" else None
+    if wet is not None:
+        # The canopy's exposure rule: WET. C-C-2026 publishes the > 19% column; the slats and
+        # posts are KDAT Southern Pine, the DF/SP column.
+        allow = _with_f1(allow, *wet)
     capacity, basis = _f1_at_angle(allow, sb.angle_degrees)
     if capacity is None:
         missing.append(f"a published F1 along the brace for {el.connector!r} at "
@@ -172,9 +178,9 @@ def slat_rows(ctx: Any, wall: Any, collector: Any, sb: SlatBand, states: list[Li
     else:
         states.append(LimitState(
             f"{el.tag} slat end, {el.connector}", p, capacity, "lb",
-            f"{'two' if el.connectors_per_end == 2 else 'one'} {el.connector} each end, "
-            f"{allow.citation.split(';')[0]}; {basis}; {allow.species}; "
-            f"in-service MC <= 19% (the canopy's dry-service condition)"))
+            f"{'two' if el.connectors_per_end == 2 else 'one'} {el.connector} each end; "
+            + (f"{_KBS1Z_WET_CITATION}; {basis}" if wet is not None else
+               f"{allow.citation.split(';')[0]}; {basis}; {allow.species}; NOT read wet")))
     _slat_buckling(el, lay, p, states, missing)
     if el.corner_to_corner:
         _corner_bearing(el, lay, sb, states, missing)
@@ -185,6 +191,20 @@ def slat_rows(ctx: Any, wall: Any, collector: Any, sb: SlatBand, states: list[Li
         f"its bay (outward from a compression bay; wood_roof_post grades it); the header "
         f"couple from the slats is {sb.couple_lb_ft():,.1f} lb-ft. Vertical components on "
         f"the centre post cancel; h = {h:,.2f} lb an end.")
+
+
+#: C-C-2026 p. 324, KBS1Z table, in-service MC > 19%, DF/SP: connection type 1 (two per end,
+#: equal width) 1,055 lb at 45°, 835 at 30°/60°; type 2 (one per end) 470 / 395 (read
+#: 2026-11-23). Fn 1: (160), no further increase; fn 2: interpolate between the angles.
+_KBS1Z_WET_DFSP = {"knee_brace_equal_width": (1055.0, 835.0), "knee_brace": (470.0, 395.0)}
+_KBS1Z_WET_CITATION = ("Simpson C-C-2026 p. 324 KBS1Z, in-service MC > 19% (wet, the canopy's "
+                       "exposure rule), DF/SP column (KDAT SP members)")
+
+
+def _with_f1(allow, f1_45: float, f1_30_60: float):  # type: ignore[no-untyped-def]
+    import dataclasses
+
+    return dataclasses.replace(allow, lateral_f1_lb=f1_45, lateral_f1_30_60_lb=f1_30_60)
 
 
 def _f1_at_angle(allow, angle: float) -> tuple[float | None, str]:
@@ -308,8 +328,8 @@ def _plate_screws(el, collector, wall, sb, states, missing) -> None:
         missing.append(f"an ER-192 wood row for {el.plate_fastener!r}, {el.tag}'s plate screws")
         return
     z, _side, w_per_in, thread, w_max = row
-    z_prime = z * CD_WIND
-    w_prime = min(w_per_in * thread, w_max) * CD_WIND
+    z_prime = z * CD_WIND * WET_CM
+    w_prime = min(w_per_in * thread, w_max) * CD_WIND * WET_CM
     half = el.plate_fasteners / 2.0
     lateral = sb.shear_lb / el.plate_fasteners
     contact = (f" The compression bay's clipped end presses {sb.vertical_per_end_lb:.2f} lb "
@@ -326,4 +346,5 @@ def _plate_screws(el, collector, wall, sb, states, missing) -> None:
             f"{el.plate_fasteners} {el.plate_fastener}: {lateral:.2f} lb lateral each, and the "
             f"tension bay's {sb.landings(which)} landings pull {withdrawal:.2f} lb out of each "
             f"of its {half:g}; NDS §12.4.1 at {math.degrees(alpha):.2f}° with Z' {z_prime:g}, "
-            f"W'p {w_prime:g} (C_D {CD_WIND}, dry service).{contact} {SDWS22_WOOD_CITATION}"))
+            f"W'p {w_prime:g} (C_D {CD_WIND}, C_M {WET_CM:g} wet by the canopy's exposure "
+            f"rule).{contact} {SDWS22_WOOD_CITATION}"))

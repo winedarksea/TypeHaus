@@ -1359,7 +1359,15 @@ E-W   ΣFx 580.3 lb, all to the HL43: 580.3 / 1,011.5                    0.574 (
 guard 200 lb at the screen's south end: DTT 353.0 / (1,277.5 / 1.6)               0.442
 ```
 
-`deck_tie/FS-BW-FLOOR` 0.784 → **0.775**, N-S at the strap. It stays in the register: the
+**Band push base share (review M4, 11-23).** The slat band still pushes ONE chord outward
+through its slats; the base share, 151.67 lb at PT-BW-CNW (`wood_roof_post` band_push_base),
+leaves through the CBSTQ into PT-BW-GW and the landing. It is a deck_tie N-S load, in the
+sense that adds: ΣFy 1,293.74; M = -1,936.40 + 4.24 + 151.67 (6.265625 - 7.877604) = -2,176.66;
+strap 646.87 + 2,176.66 x 1.841146 / 6.779637 = **1,238.0 lb / 1,414.0 = 0.876** (past the 0.85
+cost trigger, limit 1.0). Delivered into the walls (`delivered_*` inputs, for W-G-W / W-G-S's
+own rows): along W-G-W 1,238.0; along W-G-S 580.3; across W-G-S 512.5.
+
+`deck_tie/FS-BW-FLOOR` 0.784 → **0.876**, N-S at the strap. It stays in the register: the
 demand is an elastic distribution with plan torsion, not a table read. Named on the record:
 the HL43's E-W 0.574 is an OWNER-ACCEPTED reading OUTSIDE the published condition — the
 figure's F1 bears along the grain, here the garage leg's lags bear across a vertical stud's
