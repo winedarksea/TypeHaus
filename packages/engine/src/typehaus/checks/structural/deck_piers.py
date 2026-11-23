@@ -39,7 +39,9 @@ def footing_pier_finding(ctx: CheckContext, deck_tag: str, post) -> Finding | No
         f"deck {deck_tag} bears on {post.tag}, a {post.size} cast pier standing {out:.2f}' "
         f"out of grade ({out * 12.0 / pier.diameter_in:.2f} x its diameter, a pedestal at "
         f"<= {PEDESTAL_RATIO:.0f}, ACI 318-19 §14.3.3.1) on its own pad, laterally braced at its "
-        f"head by the tied deck: it is the deck's R507.3 footing, not an R507.4 post. Its pad "
+        f"head by the tied deck: it is the deck's R507.3 footing (Figure R507.3's pier from the "
+        f"footing to the bearing, no height stated, held to ACI's pedestal), not an R507.4 "
+        f"post. Its pad "
         f"is graded by structural.deck_footing_size, its depth by structural.frost_depth",
         (deck_tag, post.tag), code="IRC R507.3")
 
