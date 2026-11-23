@@ -8,22 +8,17 @@ integrates the pressure numerically — two routes to one number.
 from __future__ import annotations
 
 import pytest
-from test_retaining_court import (
-    _NOTE_APRON_ARM_FT,
-    _NOTE_APRON_GROSS_LATERAL_PLF,
-    _NOTE_APRON_LATERAL_PLF,
-    _NOTE_APRON_NET_PSF,
-    _NOTE_APRON_SOURCE,
-    _NOTE_APRON_STEM_MOMENT,
-)
 
 from typehaus.engineering.item import Status
 
-#: Since 2026-11-22 the four chart legs are 52" (six 8" courses + a 4" capstone) on a base 4"
-#: lower: the court sees W = 130 pcf x 0.97' x 52"/12 on its pad, and the pad 4" deeper
-#: (raised_garden_srw.md §10). W-RG-EAST, off the chart, keeps the old 4'-0" section.
+#: Since 2026-11-23 every apron leg is the 52" chart section (six 8" courses + a 4" capstone) on
+#: a base 4" lower (raised_garden_srw.md §10): the court sees W = 130 pcf x 0.97' x 52"/12 on
+#: its pad. The three parallel aprons are identical; the two returns meet the court end-on.
 _CAPPED_FT = 52.0 / 12.0
-_COURT_RETAINED_FT = 10.1198       # §4c: the court's retained height, 6.1198' + the 4'-0" drop
+_COURT_RETAINED_FT = 10.1198       # the court's retained height, 6.1198' + the old 4'-0" drop
+_NOTE_APRON_SOURCE = {"W-SG-S": "W-RG-BLOCK", "W-SG-W2": "W-RG-WEST", "W-SG-E2": "W-RG-EAST"}
+#: Gross strip thrust on the same plane, the sensitivity the record prints (520 psf: 328 plf
+#: on the old 4'-0" apron; 563.3 psf here).
 
 
 def _rigid_strip(q, a, b, h):
@@ -58,8 +53,7 @@ def test_the_strip_integral_reproduces_the_closed_form() -> None:
     stem, stem_arm = strip_load(109.37, 3.0, 1.0, 5.1198)
     assert stem == pytest.approx(0.43411 * 109.37, rel=1e-4)
     assert stem_arm == pytest.approx(2.5346, abs=1e-3)
-    assert strip_load(520.0, 0.0, 1.0, 6.1198)[0] == pytest.approx(
-        _NOTE_APRON_GROSS_LATERAL_PLF, abs=0.1)
+    assert strip_load(520.0, 0.0, 1.0, 6.1198)[0] == pytest.approx(328.1, abs=0.1)
     # An infinite strip against the wall is q over the depth: the rigid-wall doubling.
     assert strip_load(100.0, 0.0, 1e6, 5.0)[0] == pytest.approx(500.0, rel=1e-3)
     assert strip_load(0.0, 0.0, 1.0, 5.0) == (0.0, 0.0)
@@ -95,49 +89,36 @@ def test_each_court_wall_carries_its_own_apron(catlin_plan, pcf) -> None:
     assert set(loads) == set(_NOTE_APRON_SOURCE)
     for wall, apron in _NOTE_APRON_SOURCE.items():
         load = loads[wall]
-        assert load.surcharge.source == f"tiered_retaining/{apron}"
+        assert load.surcharge.source == f"SRW apron {apron}"
         assert "BALCONY" not in load.surcharge.source
-        q_net_key = {q.name: q.value for q in load.inputs}[f"surcharge_{apron}_q_net"]
-        if apron == "W-RG-EAST":
-            lateral, arm, stem, q_net = (_NOTE_APRON_LATERAL_PLF[pcf], _NOTE_APRON_ARM_FT,
-                                         _NOTE_APRON_STEM_MOMENT[pcf], _NOTE_APRON_NET_PSF[pcf])
-        else:       # a 52" apron: net = (130 - soil) pcf x 4.333', on a plane 4" shorter
-            q_net = max((130.0 - pcf) * _CAPPED_FT, 0.0)
-            drop = _CAPPED_FT
-            lateral = arm = stem = 0.0
-            if q_net > 0.0:
-                lateral, arm = _rigid_strip(q_net, 0.0, 1.0, _COURT_RETAINED_FT - drop)
-                sp, sarm = _rigid_strip(q_net, 3.0, 1.0, _COURT_RETAINED_FT - 1.0 - drop)
-                stem = sp * sarm
-        assert q_net_key == pytest.approx(q_net, abs=0.01)
-        assert load.surcharge.lateral_plf == pytest.approx(lateral, abs=0.02)
+        q_net = max((130.0 - pcf) * _CAPPED_FT, 0.0)       # net of the displaced soil
+        q_key = {q.name: q.value for q in load.inputs}[f"surcharge_{apron}_q_net"]
+        assert q_key == pytest.approx(q_net, abs=0.01)
         if q_net > 0.0:
+            drop = _CAPPED_FT
+            lateral, arm = _rigid_strip(q_net, 0.0, 1.0, _COURT_RETAINED_FT - drop)
+            sp, sarm = _rigid_strip(q_net, 3.0, 1.0, _COURT_RETAINED_FT - 1.0 - drop)
+            assert load.surcharge.lateral_plf == pytest.approx(lateral, abs=0.02)
             assert load.surcharge.lateral_arm_ft == pytest.approx(arm, abs=1e-3)
-        else:   # §4d: no net load at 130 pcf, and the relief is not credited
+            assert load.surcharge.stem_moment_plf == pytest.approx(sp * sarm, abs=0.1)
+        else:   # no net load at 130 pcf, and the relief is not credited
+            assert load.surcharge.lateral_plf == 0.0
             assert any("relief and is not credited" in n for n in load.notes)
-        assert load.surcharge.stem_moment_plf == pytest.approx(stem, abs=0.1)
 
 
-def test_the_wall_records_restate_section_4d(catlin_plan) -> None:
-    """Overturning 2.35, e 0.851', q 1,341 psf, stem Mu 12,277 — and the citation.
-
-    W-SG-S reads §12a's row instead: its 4'-4" toe gives 3.044, 0.3022', 822.2 psf and a
-    toe Mu of 11,587; the stem is the same wall and does not move.
-    """
+def test_the_wall_records_carry_the_apron_surcharge(catlin_plan) -> None:
+    """Each court wall's record quotes its apron by name, with the gross sensitivity and the
+    capped section's moved rows (re-pinned 2026-11-23 from the engine: overturning, e, q,
+    stem and toe Mu on the three identical 52" aprons; W-SG-S has its own 4'-4" toe)."""
     from typehaus.engineering import EngineeringResults
 
-    # E2 still sits behind the 4'-0" W-RG-EAST (§4d as written). S and W2 sit behind the 52"
-    # chart legs (re-pinned 2026-11-22 from the engine; L1 owns the §4d note): the heavier,
-    # deeper apron moves the stem 12,277 -> 12,269 and the toe a few ft-lb.
     rows = {
-        "W-SG-E2": {"overturning": 2.35, "e": 0.8511, "q": 1_341.0, "toe": 8_491.0,
-                    "stem": 12_277.0},
-        "W-SG-W2": {"overturning": 2.3504, "e": 0.8519, "q": 1_341.53, "toe": 8_494.3,
-                    "stem": 12_268.9},
-        "W-SG-S": {"overturning": 3.0429, "e": 0.3030, "q": 822.65, "toe": 11_590.6,
-                   "stem": 12_268.9},
+        "W-SG-E2": {"overturning": 2.3504, "e": 0.8519, "q": 1_341.5, "toe": 8_494.3},
+        "W-SG-W2": {"overturning": 2.3504, "e": 0.8519, "q": 1_341.5, "toe": 8_494.3},
+        "W-SG-S": {"overturning": 3.0429, "e": 0.3030, "q": 822.65, "toe": 11_590.6},
     }
     results = EngineeringResults(_ctx(catlin_plan))
+    gross = _rigid_strip(130.0 * _CAPPED_FT, 0.0, 1.0, _COURT_RETAINED_FT - _CAPPED_FT)[0]
     for wall, apron in _NOTE_APRON_SOURCE.items():
         record = results[f"retaining_wall/{wall}"]
         assert record.status is Status.OK, record.summary
@@ -146,12 +127,9 @@ def test_the_wall_records_restate_section_4d(catlin_plan) -> None:
         assert states["overturning"].capacity == pytest.approx(row["overturning"], abs=0.005)
         assert states["eccentricity"].demand == pytest.approx(row["e"], abs=1e-3)
         assert states["bearing"].demand == pytest.approx(row["q"], abs=0.5)
-        assert states["stem flexure"].demand == pytest.approx(row["stem"], abs=2.0)
+        assert states["stem flexure"].demand == pytest.approx(12_268.9, abs=2.0)
         assert states["toe flexure"].demand == pytest.approx(row["toe"], abs=2.0)
         note = next(n for n in record.notes if n.startswith("APRON SURCHARGE"))
-        assert f"via tiered_retaining/{apron}" in note
-        capped_gross = _rigid_strip(130.0 * _CAPPED_FT, 0.0, 1.0,
-                                    _COURT_RETAINED_FT - _CAPPED_FT)[0]
-        gross = "328" if apron == "W-RG-EAST" else f"{capped_gross:,.0f}"
-        assert f"{gross} plf" in note     # the gross sensitivity is printed, not hidden
+        assert f"via SRW apron {apron}" in note
+        assert f"{gross:,.0f} plf" in note     # the gross sensitivity is printed, not hidden
         assert any(q.name == f"surcharge_{apron}_lateral" for q in record.inputs)

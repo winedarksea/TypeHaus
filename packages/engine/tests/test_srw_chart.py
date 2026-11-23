@@ -2,8 +2,9 @@
 ``houses/catlin/notes/raised_garden_srw.md`` §10 (the applicability sheet, by hand per leg).
 
 AB Table 1.3 (12° AB Stones, level, clay 27°): 3'-6" exposed, cap included. Each leg's exposure
-is its authored top less the nearest grade station: 40" south/west (-3'-4"), 36" west return
-(-3'-0"), 37" east return (-3'-1"); every one is under 42".
+is its authored top less the nearest grade station: 40" south/west/east (-3'-4"), 36" west
+return (-3'-0"), 37" east return (-3'-1"); every one is under 42". W-RG-EAST fitted when the
+runnel's spout and the basin moved 3'-0" off its toe (owner, 2026-11-23).
 """
 
 from __future__ import annotations
@@ -19,7 +20,8 @@ from typehaus.engineering.srw_scope import on_chart_path
 from typehaus.engineering.srw_tiers import lower_tiers
 from typehaus.findings import Result
 
-_CHART = {"W-RG-BLOCK": 40, "W-RG-WEST": 40, "W-RG-WEST-BALCONY": 36, "W-RG-EAST-BALCONY": 37}
+_CHART = {"W-RG-BLOCK": 40, "W-RG-WEST": 40, "W-RG-EAST": 40, "W-RG-WEST-BALCONY": 36,
+          "W-RG-EAST-BALCONY": 37}
 
 
 @pytest.fixture(scope="module")
@@ -34,8 +36,9 @@ def _sheet(ctx, wall):
 def test_the_scope_rule_is_per_leg(ctx) -> None:
     on = {w.tag for w in segmental_walls(ctx) if on_chart_path(w)}
     assert on == set(_CHART)
-    # W-RG-EAST authors no chart row: its toe takes TR-SG-RUNNEL's spout (gate G9).
-    assert not on_chart_path(ctx.plan.by_tag("W-RG-EAST"))
+    srw = ctx.plan.by_tag("W-RG-EAST").srw
+    assert not on_chart_path(ctx.plan.by_tag("W-RG-EAST").model_copy(
+        update={"srw": srw.model_copy(update={"chart": None})}))
     over = ctx.plan.by_tag("W-RG-BLOCK").model_copy(update={"unbalanced_fill": inch(49)})
     assert not on_chart_path(over)      # R404.4 limb 1: "in excess of 48 inches"
 
@@ -60,18 +63,44 @@ def test_the_east_return_carries_the_runnel_on_its_cap_and_still_fits(ctx) -> No
     assert sheet["water kept off the toe"].ok          # its toe faces the north yard
 
 
-def test_the_east_leg_misses_on_its_toe(ctx) -> None:
-    """G9: the runnel's spout and the basin stand at W-RG-EAST's yard face."""
-    east = ctx.plan.by_tag("W-RG-EAST")
-    donor = ctx.plan.by_tag("W-RG-BLOCK")
-    wall = east.model_copy(update={
-        "srw": east.srw.model_copy(update={"chart": donor.srw.chart, "cap": "AB Capstone",
-                                           "published": donor.srw.published}),
-        "bottom_elevation": donor.bottom_elevation})
-    sheet = _sheet(ctx, wall)
-    assert [n for n, c in sheet.items() if c.ok is False] == ["water kept off the toe"]
+def test_the_runnel_back_at_the_toe_fails(ctx) -> None:
+    """The spout and the basin used to stand 1'-0" and 6" off W-RG-EAST's yard face (G9)."""
+    from typehaus import ft, pt
+    from typehaus.model.trim import Gutter
+
+    class _Moved:
+        """The same plan with TR-SG-RUNNEL's spout back at 32'-6"."""
+
+        def __init__(self, plan):
+            self._plan = plan
+
+        def __getattr__(self, name):
+            return getattr(self._plan, name)
+
+        def all_elements(self):
+            for el in self._plan.all_elements():
+                if isinstance(el, Gutter) and el.tag == "TR-SG-RUNNEL":
+                    el = el.model_copy(update={"path": (*el.path[:-1], pt(ft(32, 6), ft(-12)))})
+                yield el
+
+    import dataclasses
+
+    old = dataclasses.replace(ctx, plan=_Moved(ctx.plan))
+    sheet = _sheet(old, ctx.plan.by_tag("W-RG-EAST"))
+    assert sheet["water kept off the toe"].ok is False
     assert "TR-SG-RUNNEL" in sheet["water kept off the toe"].drawn
-    assert graded_wall(ctx, wall).result is Result.FAIL
+    assert graded_wall(old, ctx.plan.by_tag("W-RG-EAST")).result is Result.FAIL
+
+
+def test_a_wall_with_no_chart_row_is_unknown_not_silent(ctx) -> None:
+    from typehaus.checks.structural.srw_chart import _unclaimed
+
+    east = ctx.plan.by_tag("W-RG-EAST")
+    bare = east.model_copy(update={"srw": east.srw.model_copy(update={"chart": None})})
+    assert _unclaimed(bare).result is Result.UNKNOWN
+    tall = east.model_copy(update={"unbalanced_fill": inch(60)})
+    finding = _unclaimed(tall)
+    assert finding.result is Result.UNKNOWN and "R404.4 is engaged" in finding.message
 
 
 def test_a_drifted_condition_fails(ctx) -> None:
@@ -107,7 +136,7 @@ def test_soil_below_the_rows_floor_fails(ctx) -> None:
     assert sheet["soil friction"].ok is False
 
 
-def test_the_register_holds_only_the_leg_off_the_chart(ctx) -> None:
-    from typehaus.engineering.registry import keys_of
+def test_tiered_retaining_is_retired() -> None:
+    from typehaus.engineering.registry import registered_kinds
 
-    assert keys_of("tiered_retaining", ctx) == ["W-RG-EAST"]
+    assert "tiered_retaining" not in registered_kinds()

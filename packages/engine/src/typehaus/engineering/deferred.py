@@ -211,10 +211,9 @@ def _veneer_anchor_keys(ctx: EngineeringContext) -> list[str]:
 # ``engineering/thermal_break.py``, as a reserve. Its deliverable prose is that module's
 # NOT-GRADED note; settlement keeps every item INCOMPLETE until a measured modulus exists.
 
-# NOTE — ``tiered_retaining`` is COMPUTED since 2026-09-20: ``engineering/segmental_wall.py``
-# grades the unit's own free body, and its NOT-GRADED note carries this deferral's deliverable
-# (global stability of the pair with the geotechnical engineer; the unit, reinforcement and
-# levelling pad with the SRW supplier's engineer).
+# NOTE — ``tiered_retaining`` is RETIRED (2026-11-23): R404.4 does not engage at <= 48" of fill,
+# and the raised-garden legs are read off Allan Block's Table 1.3 by
+# ``structural.srw_gravity_chart`` (``engineering/srw_chart``). Nothing is deferred for them.
 
 
 def _footingless_walls(ctx: EngineeringContext) -> list:

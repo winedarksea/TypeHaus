@@ -5398,8 +5398,13 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # 27 SF/cy) is therefore historical — it is 11.36 cy today — and the $/SF-of-face rate it argues
 # for is unaffected, which is the point of having re-united the unit.
 # 2026-10-29: labour 15-34 -> 10-25/SF: 3-man crew + compactor/skid steer $1.5-2.3k/day at 100-150 SF face/day (judgement); dig and pad bill elsewhere. Keep the two rows identical.
-"RETAINING_BLOCK_12" = { material = { low = 15, high = 26 }, labour = { low = 10, high = 25 }, unit = "SF" }  # 28.0 SF of face — the two balcony returns only
-"RETAINING_BLOCK_12_WASHED" = { material = { low = 15, high = 26 }, labour = { low = 10, high = 25 }, unit = "SF" }  # 278.7 SF of face — the three perimeter legs; the WASH itself is in [envelope_layers], not here
+# 2026-11-23: all five legs are 52" (six 8" courses + a 4" AB Capstone, base 4" lower, owner decision 4), so the
+# face is 52/48 of the above: 30.3 + 301.9 = 332.2 SF. The CAPSTONES bill inside that face at the block rate
+# (no separate cap price exists): no separate cap row.
+# NOT BILLED: the 4" perforated drain pipe in its sock (~86 LF: 76.7 LF of legs and returns plus three 3' stubs
+# into the court's wall column) and the capstone adhesive (one 29 oz tube per 60 LF, ~2 tubes).
+"RETAINING_BLOCK_12" = { material = { low = 15, high = 26 }, labour = { low = 10, high = 25 }, unit = "SF" }  # 30.3 SF of face — the two balcony returns only
+"RETAINING_BLOCK_12_WASHED" = { material = { low = 15, high = 26 }, labour = { low = 10, high = 25 }, unit = "SF" }  # 301.9 SF of face — the three perimeter legs; the WASH itself is in [envelope_layers], not here
 # THE NORTH ENTRY SCREEN'S SKIRT (2026-09-11), and it is in this table only because its one
 # layer is STRUCTURE — a self-supporting single skin bills through takeoff/wall_structure.py
 # rather than envelope_layers, on the same footing as RETAINING_BLOCK_12 above it. Priced per

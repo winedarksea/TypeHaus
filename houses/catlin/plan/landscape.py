@@ -14,11 +14,12 @@ APPLES = [
           training="espalier", trellis_ref="TRL-W-N"),
 ]
 
-# TR-SG-LEADER-SE's basin, under TR-SG-RUNNEL's spout (params/sunken_garden.py): 6" off
-# W-RG-EAST's yard face, 2'-6" south of SL-SG-STAIRPAD. The storey is yard-grade at the
-# main datum, so the mount is the yard's -3'-4". Illustrative placement; stone yard pick.
+# TR-SG-LEADER-SE's basin, under TR-SG-RUNNEL's spout (params/sunken_garden.py): 3'-6" off
+# W-RG-EAST's yard face (AB Table 1.3: no water at the toe), 2'-6" south of SL-SG-STAIRPAD.
+# The storey is yard-grade at the main datum, so the mount is the yard's -3'-4".
+# Illustrative placement; stone yard pick.
 SITE_FURNITURE = [
     Furniture(uid="247ETCTJ2N", tag="FURN-SG-SPLASH-BASIN", type_ref="FT-SPLASH-BASIN-GRANITE-24",
-              position=pt(ft(33), ft(-12, -6)), rotation=deg(0),
+              position=pt(ft(36), ft(-12, -6)), rotation=deg(0),
               mount=Mount(kind=MountKind.FLOOR, elevation=ft(-3, -4))),
 ]
