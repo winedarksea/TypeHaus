@@ -326,7 +326,7 @@ def test_active_kdat_roof_posts_stand_on_separate_pinned_piers(catlin_ctx) -> No
         # Decision 16: a short pole under a pinned post, not a moment column.
         assert not pier.lateral_system and is_footing_pier(ctx, pier)
         assert pier.diameter_in == pytest.approx(14.0)
-        assert poles[tag][0] == pytest.approx(81.9, abs=0.1), "the post still sends base drag"
+        assert poles[tag][0] == pytest.approx(90.48, abs=0.1), "the post still sends base drag"
         assert "RF-BW-CANOPY" in poles[tag][2]
 
 

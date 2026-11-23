@@ -20,8 +20,9 @@ east face low, one inside the garage on the D-G-SERVICE east jamb framing, set B
 Open detail: the rod line (1 5/8" off FE's face) meets the 2-ply jamb pack, so the garage tie
 wants a nailer or filler the drawing must show. E-W: one HL43HDG per face of FE, heel
 vertical, high (fn 6: both sides for both senses), on its published F1 — an OWNER-ACCEPTED
-catalog reading (2026-11-23): the figure's F1 bears along the grain, here the garage leg's
-lags bear across a vertical stud's grain. Line 2's HL33HDG pair and tie block are gone.
+reading outside the published condition (2026-11-23): the figure's F1 bears along the grain,
+here the garage leg's lags bear across a vertical stud's grain, which may be materially
+lower. Line 2's HL33HDG pair and tie block are gone.
 
 All parts graded WET (C_M 0.70, NDS Table 11.3.3; decision 17). ZMAX/HDG is the catalog's
 Medium class, which Wet Service on treated wood <= UC4A takes (C-C-2026 pp. 14-17).

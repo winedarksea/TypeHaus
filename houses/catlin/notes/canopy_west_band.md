@@ -67,11 +67,13 @@ name (`test_an_unbridged_band_is_incomplete_by_name`).
 ## 3. The band brace — `SB-BW-BAND`
 
 **Demand.** N-S at the deck: the gable triangle 59.259 sf x 16.661 = 987.32 lb plus each east post's head
-half, 16.661 x 5.5/12 x 6.1771 / 2 = 23.585 lb:
+half on its 7 1/2" PVC jacket (2026-11-23; it was the bare 5.5" core), 16.661 x 7.5/12 x 6.1771 / 2
+= 32.16 lb:
 
 ```
-V = 987.32 + 2 x 23.585 = 1,034.49 lb       (100% on this line: the envelope)
+V = 987.32 + 2 x 32.16 = 1,051.64 lb        (engine 1,051.72; 100% on this line: the envelope)
 ```
+Rows below that quote 1,034.49 are the 11-22 working and scale by 1.0166.
 
 The garage path (`canopy_garage_diaphragm.md`) is ALSO graded at 100% of V. That is a deliberate double
 envelope, confirmed by the owner (2026-11-14), not a sum to be reduced.
@@ -316,7 +318,7 @@ anywhere on these posts.
 Own drag, 16.661 psf on 5.5" (w = 7.636 plf), half at each end:
 
 ```
-west   7.636 x 7.6929 / 2 = 29.37 lb        east  7.636 x 6.1771 / 2 = 23.585 lb
+west   7.636 x 7.6929 / 2 = 29.37 lb        east (7 1/2" jacket, 10.413 plf)  10.413 x 6.1771 / 2 = 32.16 lb
 ```
 
 The west posts also take the screen's out-of-plane E-W load at the top plate: the panel spans sill to plate and
@@ -358,7 +360,7 @@ N-S moment = 873.13 lb-ft, fb = 873.13 x 12 / (5.5³/6) = 377.85 psi
 | CBSTQ base uplift + across | 426.44/3,060 + 66.22/485 = 0.1394 + 0.1365 | 0.276 |
 | CBSTQ base uplift + along | 426.44/3,060 + 178.55/1,270 = 0.1394 + 0.1406 | **0.280** |
 | NDS column, combined | below | 0.538 |
-| ACE6Z, RE / RNE | 426.44/1,950 + 23.585/1,760 = 0.2187 + 0.0134 | **0.232** |
+| ACE6Z, RE / RNE | 426.44/1,950 + 32.16/1,760 = 0.2187 + 0.0183 (jacket, 11-23) | **0.237** |
 | A35Z head across, RNE | 23.585/695 | 0.034 |
 | CBSTQ base, RE across | 426.44/3,060 + 23.585/485 = 0.1394 + 0.0486 | 0.188 |
 | CBSTQ base, RNE along | 426.44/3,060 + 23.585/1,270 = 0.1394 + 0.0186 | 0.158 |

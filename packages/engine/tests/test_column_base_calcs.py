@@ -234,7 +234,7 @@ def test_pinned_piers_left_the_register_for_ibc_1807_3(catlin_ctx) -> None:
     found = {f.element_tags[0]: f for f in pinned_pier_embedment(catlin_ctx)
              if f.result is Result.PASS}
     assert set(found) == {"PT-BW-PE", "PT-BW-PNE"}
-    assert "needs d 2.47'" in found["PT-BW-PNE"].message
+    assert "needs d 2.59'" in found["PT-BW-PNE"].message  # jacketed post drag
     assert "against 3.50'" in found["PT-BW-PNE"].message
 
 

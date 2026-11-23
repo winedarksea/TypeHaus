@@ -18,30 +18,30 @@ _ITEM = "lateral_system/RF-BW-CANOPY"
 #: Re-worked 2026-10-31 (the note's §2 amendment): ridge 11.644', q_h 18.149 psf; and
 #: 2026-11-18 (§11, the garage's 7/16" ZIP): ridge 1/16" higher, q_h 18.151 psf.
 _PRESSURE_PSF = 16.6622
-_DELIVERED = {"x": 670.82, "y": 1034.57}
+_DELIVERED = {"x": 687.97, "y": 1051.72}  # posts on their 7 1/2" jackets (11-23)
 
 #: §3-§4, the kdat column of every table: ``row name -> (demand, capacity)``. The panel and
 #: everything under it moved to ``canopy_west_band.md`` (``test_canopy_west_band_calcs``).
 _ROWS = {
     "open front, L'": (6.000, 25.0),
     "open front, L'/W'": (0.2250, 1.0),
-    "joint boundary nailing, along": (28.839, 347.3),
-    "LSTA24 joint straps, across": (172.43, 823.3333333333334),
-    "LSTA24 joint straps, rotation couple": (56.689, 823.3333333333334),
-    "CN-BW-JOINT-2 RF-BW-CANOPY nailer into deck": (261.177, 1079.3951163681184),
-    "CN-BW-JOINT-2 RF-GARAGE nailer into deck": (261.177, 959.4623256605497),
-    "LTP4 plate clips, frame into wall": (95.831, 450.0),
-    "RF-GARAGE unit-shear increment": (22.51, 308.2),
-    "W-G-S delivered shear on the surplus": (38.777, 182.5),
-    "W-G-E delivered shear on the surplus": (25.72, 182.5),
+    "joint boundary nailing, along": (29.577, 347.3),
+    "LSTA24 joint straps, across": (175.287, 823.3333333333334),
+    "LSTA24 joint straps, rotation couple": (58.210, 823.3333333333334),
+    "CN-BW-JOINT-2 RF-BW-CANOPY nailer into deck": (266.417, 1079.3951163681184),
+    "CN-BW-JOINT-2 RF-GARAGE nailer into deck": (266.417, 959.4623256605497),
+    "LTP4 plate clips, frame into wall": (98.281, 450.0),
+    "RF-GARAGE unit-shear increment": (23.221, 308.2),
+    "W-G-S delivered shear on the surplus": (39.769, 182.5),
+    "W-G-E delivered shear on the surplus": (26.529, 182.5),
     "W-G-W delivered shear on the surplus": (26.46, 182.5),
-    "W-G-S overturning, delivered increment": (275.47, 2580.0),  # HTT4 (was STHD14 3,065)
-    "diaphragm unit shear at W-BW-SCREEN": (172.43, 347.3),
+    "W-G-S overturning, delivered increment": (282.533, 2580.0),  # HTT4 (was STHD14 3,065)
+    "diaphragm unit shear at W-BW-SCREEN": (175.287, 347.3),
     # §12 (2026-11-23): the screen at 100% closes by a couple at the end straps; the garage
     # walls take the same couple over their 24.0' spacing.
-    "LSTA24 end straps, N-S couple + chord": (637.36, 823.3333333333334),
-    "W-G-W joint couple, N-S case": (28.51, 182.5),
-    "W-G-E joint couple, N-S case": (25.35, 182.5),
+    "LSTA24 end straps, N-S couple + chord": (657.111, 823.3333333333334),
+    "W-G-W joint couple, N-S case": (29.416, 182.5),
+    "W-G-E joint couple, N-S case": (26.149, 182.5),
 }
 
 
@@ -59,12 +59,12 @@ def test_the_pinned_posts_split_their_drag_half_to_each_end(catlin_ctx) -> None:
     posts = {p.tag: p for p in wind.pinned}
     assert set(posts) == {"PT-BW-RE", "PT-BW-RNE"}, "a within_wall post is the wall's face"
     for post in posts.values():
-        assert post.drag_lb == pytest.approx(47.17, abs=0.02)
-        assert post.head_lb == pytest.approx(post.base_lb) == pytest.approx(23.587, abs=0.01)
+        assert post.drag_lb == pytest.approx(64.33, abs=0.02)
+        assert post.head_lb == pytest.approx(post.base_lb) == pytest.approx(32.164, abs=0.01)
     for axis, lb in _DELIVERED.items():
         assert wind.delivered_lb(axis) == pytest.approx(lb, abs=0.1)
     # §3b: the E-W resultant 3.077' off the joint, headers at their own centroid.
-    assert wind.resultant_ft("x") == pytest.approx(40.141, abs=0.002)
+    assert wind.resultant_ft("x") == pytest.approx(40.1376, abs=0.002)  # jacketed posts, 11-23
 
 
 def test_the_record_reproduces_sections_3_and_4(record) -> None:
@@ -78,12 +78,12 @@ def test_the_record_reproduces_sections_3_and_4(record) -> None:
 
 
 def test_the_screen_boundary_governs(record) -> None:
-    """§4d: the envelope row over the envelope share, 0.496 against the table's 347.3 plf (was
+    """§4d: the envelope row over the envelope share, 0.505 against the table's 347.3 plf (was
     0.907 against a 190 round-down, C-3). After G5 the screen chord rows and the pier pull-out
     rows are gone (north_entry_piers.md §10p), so the closest rows are the end straps' N-S
-    couple (0.774, §12c) and the screen panel's own."""
+    couple (0.798, §12c) and the screen panel's own."""
     ratios = {s.name: s.demand / s.capacity for s in record.limit_states}
-    assert ratios["diaphragm unit shear at W-BW-SCREEN"] == pytest.approx(0.496, abs=0.001)
+    assert ratios["diaphragm unit shear at W-BW-SCREEN"] == pytest.approx(0.505, abs=0.001)
     assert not any("pull-out" in name for name in ratios)
     assert max(ratios.values()) == ratios["LSTA24 end straps, N-S couple + chord"]
 
@@ -102,15 +102,15 @@ def test_the_receivers_are_on_the_record_and_graded_by_nobody_else(catlin_ctx) -
 
 
 def test_the_landing_tie_reads_the_envelope_share(catlin_ctx) -> None:
-    """§4e: the tie's N-S panel load is the whole 1,034.57 lb (11-18); N-S at the screen's
-    MSTA49Z governs, 0.734 (north_entry_piers.md §10p)."""
+    """§4e: the tie's N-S panel load is the whole 1,051.72 lb (jacketed posts, 11-23); N-S at the screen's
+    MSTA49Z governs, 0.775 (north_entry_piers.md §10p)."""
     record = catlin_ctx.engineering["deck_tie/FS-BW-FLOOR"]
     loads = {q.name: q.value for q in record.inputs}
-    assert loads["y:W-BW-SCREEN panel share of RF-BW-CANOPY"] == pytest.approx(1034.57, abs=0.1)
+    assert loads["y:W-BW-SCREEN panel share of RF-BW-CANOPY"] == pytest.approx(1051.72, abs=0.1)
     assert record.status is Status.OK
     worst = max(record.limit_states, key=lambda s: s.demand / s.capacity)
     assert "N-S" in worst.name
-    assert worst.demand / worst.capacity == pytest.approx(0.7338, abs=0.002)
+    assert worst.demand / worst.capacity == pytest.approx(0.7749, abs=0.002)
 
 
 class _Swapped:
@@ -203,8 +203,8 @@ def test_a_pinned_post_mints_no_column_base(catlin_ctx) -> None:
 
 
 def test_the_n_s_chord_force_is_over_the_chords_own_spacing(catlin_ctx) -> None:
-    """§12: T = V L / (8 d) = 1,034.565 x 23.2604 / (8 x 4.000) = 752.0 lb, not the deck's 6 ft
+    """§12: T = V L / (8 d) = 1,051.72 x 23.2604 / (8 x 4.000) = 764.5 lb, not the deck's 6 ft
     depth (517 lb, C-2); the end-strap couple is V (x_V - x_screen) / L_strap = 549.4 lb."""
     inputs = {q.name: q.value for q in catlin_ctx.engineering[_ITEM].inputs}
-    assert inputs["chord_force_y"] == pytest.approx(752.01, abs=0.05)
-    assert inputs["joint_couple_ns_lb_ft"] == pytest.approx(12779.3, abs=2.0)
+    assert inputs["chord_force_y"] == pytest.approx(764.48, abs=0.05)
+    assert inputs["joint_couple_ns_lb_ft"] == pytest.approx(13183.75, abs=2.0)

@@ -219,10 +219,11 @@ def capacity(joint: TieJoint) -> Capacity | str:
         # per sense (fn 6: parts on both sides, lateral not doubled). Across the wall it is
         # given no capacity: that direction is a tension tie's.
         return Capacity(f1, 0.0, cd,
-                        f"heel vertical: F1 along the wall, one part per sense, an "
-                        f"owner-accepted catalog reading (the figure's grain is parallel "
-                        f"to the load, here it is across it), C_M {c_m:g} ({wet}); nothing "
-                        f"across", cite, True)
+                        f"heel vertical: F1 along the wall, one part per sense — an "
+                        f"owner-accepted reading OUTSIDE the published condition (the "
+                        f"figure bears along the grain; lag bearing across a vertical "
+                        f"stud's grain may be materially lower), C_M {c_m:g} ({wet}); "
+                        f"nothing across", cite, True)
     along_heel = joint.heel_axis == joint.wall_axis
     return Capacity(f1 if along_heel else up, up if along_heel else f1, cd,
                     f"heel {joint.heel_axis}: F1 along it, uplift (mirrored) across, one "
