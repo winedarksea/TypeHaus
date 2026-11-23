@@ -151,7 +151,7 @@ def test_the_tie_takes_the_landing_piers_out_of_every_lateral_register(catlin_ct
     ectx = catlin_ctx.engineering.context
     lateral = {p.tag for p in cast_piers(ectx) if p.lateral_system}
     assert not lateral & set(_LANDING)
-    assert {"PT-BW-PE", "PT-BW-PNE"} <= lateral
+    assert not {"PT-BW-PE", "PT-BW-PNE"} & lateral, "short poles since decision 16"
     for kind in ("base_rotation", "column_base", "column_head_joint"):
         assert not set(keys_of(kind, ectx)) & set(_LANDING), kind
     # The interior landing (retired 2026-10-13) relieved no column and never had an item.

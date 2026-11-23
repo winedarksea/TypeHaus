@@ -57,7 +57,9 @@ def test_every_lateral_system_column_is_fixed_and_nothing_else_is(solved):
     _, model, _, piers = solved
     for tag, pier in piers.items():
         support = _support(model, tag)
-        expected = Fixity.FIXED if pier.lateral_system else Fixity.PINNED
+        # A short pole under a pinned post is fixed in the soil (decision 16).
+        pole = "short pole" in support.basis
+        expected = Fixity.FIXED if pier.lateral_system or pole else Fixity.PINNED
         assert support.fixity is expected, (tag, support.basis)
         if pier.lateral_system:
             assert "wind" in support.basis.lower()

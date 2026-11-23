@@ -322,12 +322,13 @@ PIER_CAGES = {
     "12 round": (ENTRY_PIER_CAGE, ENTRY_MOMENT_CAGE, '(4) #5 vertical, #3 ties @ 10" o.c.'),
     "14 round": (ENTRY_PIER_CAGE_14, ENTRY_MOMENT_CAGE_14, '(6) #5 vertical, #3 ties @ 10" o.c.'),
 }
-#: Moment piers (fixed-base columns: `pier_basis._base_moments`, `structural.lateral_racking`) take
-#: the moment cage and a 12" pad: the four landing piers plus the east posts' set. Tops are
-#: unchanged and only bottoms drop, so `column_base`'s embedment (grade to PAD TOP) holds.
-_MOMENT_PIERS = frozenset({"PT-BW-W", "PT-BW-E", "PT-BW-GW", "PT-BW-GE"}
-                          | moment_piers(EAST_POST_SYSTEM))
-#: 12" under every moment pier: the #5 dowel foot rests at 3" bottom cover, so embedment is
+#: Doweled piers take the dowel cage and a 12" pad. The landing piers are PINNED and propped by
+#: the tied landing (decision 16): no base moment. The dowels hold pad and shaft together, so the
+#: pad and the soil over it resist a screen chord's pull-out (`lateral_band`'s pull-out row, W
+#: and GW; E/GE kept as drawn). Tops unchanged; only bottoms drop.
+_DOWELED_PIERS = frozenset({"PT-BW-W", "PT-BW-E", "PT-BW-GW", "PT-BW-GE"}
+                           | moment_piers(EAST_POST_SYSTEM))
+#: 12" under every doweled pier: the #5 dowel foot rests at 3" bottom cover, so embedment is
 #: thickness - 3" (9" at 12" vs ldh 7.11", ACI 318-19 §25.4.3.1). Tops stay put: pier heights, the
 #: hydrant's 1 7/16" over the house-side tops, the garage strip's aligned top.
 MOMENT_PAD_DEPTH_FT = 1.0
@@ -337,12 +338,9 @@ MOMENT_PAD_DEPTH_FT = 1.0
 #: PD-BW-RNE on the garage strip's own plane. The deep -10'-2" plane survives only in
 #: `_EAST_VARIANTS["cast"]` (params/east_posts.py), with two sequencing notes: house side, the pad
 #: bears below FT-B-N1..-N4 close beside them (dig and cast it BEFORE the strip bears); garage
-#: side, PD-BW-RNE laps under FT-GF-S1/-S3 and sits well below (pad first, stone compacted
-#: round it).
+#: side, PD-BW-RNE laps under FT-GF-S1/-S3 (pad first, stone compacted round it).
 
-#: No column here claims IBC §1806.3.4: `column_base` basis 4 counts the doweled, monolithic pad as
-#: part of the pole (embedment to the pad bottom), and all pass Eq. 18-1 on Table 1806.2's S1
-#: (notes/entry_column_base_fixity.md 6e).
+#: No pier claims IBC §1806.3.4; PE/PNE pass Eq. 18-1 on the shaft alone (`structural.column_base`).
 
 PIERS = []
 def _pad_outline(x_ft, y_ft, side_in, along_in=None):
@@ -406,21 +404,22 @@ for _uid, _tag, _x, _height in (
         # four-bar minimum; #3 ties at the §25.7.2.2 maximum, 10". The floor is load-independent.
         # Galvanized house-wide (EXPOSED_MIX, A767). The 14" rounds take (6) #5 (`PIER_CAGES`).
         vertical_reinforcement=_cage(_tag)[2],
-        reinforcement=_cage(_tag)[1 if _tag in _MOMENT_PIERS else 0],
+        reinforcement=_cage(_tag)[1 if _tag in _DOWELED_PIERS else 0],
         supported_by=f"PD-BW-{_tag.split('-')[-1]}"))
     FOOTINGS.append(Pad(
         uid=f"BWF{_uid[4:8]}AA", tag=f"PD-BW-{_tag.split('-')[-1]}",
         outline=_pad_outline(_x, PIER_LINE_Y_FT, _PAD_WIDE_IN, _PAD_DEPTH_IN),
-        thickness=ft(MOMENT_PAD_DEPTH_FT if _tag in _MOMENT_PIERS else FOOTING_DEPTH_FT),
+        thickness=ft(MOMENT_PAD_DEPTH_FT if _tag in _DOWELED_PIERS else FOOTING_DEPTH_FT),
         assembly="PIER_BASE_12",
         # PT-BW-W/-E keep FOOTING_TOP_FT: the hydrant clearance at PIER_BOTTOM_FT is written
         # against that plane. Only the moment pads' bottoms move.
-        bottom_elevation=ft(FOOTING_TOP_FT - MOMENT_PAD_DEPTH_FT if _tag in _MOMENT_PIERS
+        bottom_elevation=ft(FOOTING_TOP_FT - MOMENT_PAD_DEPTH_FT if _tag in _DOWELED_PIERS
                             else PIER_BOTTOM_FT)))
 
 # Garage side: two piers of their own, at the same elevation and span as the house side, so
 # `structural.deck_beam_span` grades both seat beams alike. Pad width is per pier: PT-BW-GE carries
-# landing load only (18"); PT-BW-GW and PT-BW-RNE also carry a canopy column and take 2'-0".
+# landing load only (18"); PT-BW-GW and PT-BW-RNE carry a canopy column and are 2'-6" x 2'-6" x 12"
+# (decision 15): GW's pad and the soil over it hold the screen's tension chord down.
 #
 # These stop at the garage strip footing's plane (-7'-0"), cast with the garage foundation in the
 # same excavation and visit; the house-side piers reach deeper only because the basement
@@ -439,7 +438,7 @@ GARAGE_PIER_BOTTOM_FT = -7.0
 GARAGE_FOOTING_TOP_FT = GARAGE_PIER_BOTTOM_FT + GARAGE_FOOTING_THICKNESS_FT
 PEDESTALS = []
 for _uid, _tag, _x, _pad_in, _top in (
-    ("BWPT05AAAA", "PT-BW-GW", LANDING_WEST_FT, 24.0, PIER_TOP_FT),
+    ("BWPT05AAAA", "PT-BW-GW", LANDING_WEST_FT, 30.0, PIER_TOP_FT),
     ("BWPT06AAAA", "PT-BW-GE", LANDING_EAST_FT, 18.0, PIER_TOP_FT),
 ):
     PEDESTALS.append(Post(
@@ -449,7 +448,7 @@ for _uid, _tag, _x, _pad_in, _top in (
         height=ft(_top - GARAGE_FOOTING_TOP_FT),
         assembly=pier_assembly(_PIER_SIZE.get(_tag, "12 round")),
         vertical_reinforcement=_cage(_tag)[2],
-        reinforcement=_cage(_tag)[1 if _tag in _MOMENT_PIERS else 0],
+        reinforcement=_cage(_tag)[1 if _tag in _DOWELED_PIERS else 0],
         supported_by=f"PD-BW-{_tag.split('-')[-1]}"))
     # These lap the garage strip footing `FT-GF-S1`/`-S3` and cannot be pulled clear: the pier line
     # is south of that footing's face and the column overhangs any pad that stops at it. The strip
@@ -457,12 +456,12 @@ for _uid, _tag, _x, _pad_in, _top in (
     FOOTINGS.append(Pad(
         uid=f"BWFG{_uid[4:6]}AAAA"[:10], tag=f"PD-BW-{_tag.split('-')[-1]}",
         outline=_pad_outline(_x, GARAGE_SEAT_Y_FT, _pad_in),
-        thickness=ft(MOMENT_PAD_DEPTH_FT if _tag in _MOMENT_PIERS
+        thickness=ft(MOMENT_PAD_DEPTH_FT if _tag in _DOWELED_PIERS
                      else GARAGE_FOOTING_THICKNESS_FT),
         assembly="PIER_BASE_12",
         # Moment pads keep the strip's top; their bottom is 4" below its plane (-7'-4").
         bottom_elevation=ft(GARAGE_FOOTING_TOP_FT - MOMENT_PAD_DEPTH_FT
-                            if _tag in _MOMENT_PIERS else GARAGE_PIER_BOTTOM_FT)))
+                            if _tag in _DOWELED_PIERS else GARAGE_PIER_BOTTOM_FT)))
 
 # The two west roof columns: 6x6 KDAT on cast-in CBSTQ66Z-SDS2 bases, with ACE6Z end caps at the
 # header (k*lu/d under 17; NDS §3.7.1.4's limit is 50). `engineering/wood_roof_post` grades them,
@@ -480,7 +479,8 @@ _EAST_POSTS, _EAST_PIERS, _EAST_PADS = east_supports(
     house_pad=("BWF03AAAA",
                lambda y: _pad_outline(ROOF_COLUMN_EAST_X_FT, y, _PAD_WIDE_IN, _PAD_DEPTH_IN),
                FOOTING_TOP_FT, MOMENT_PAD_DEPTH_FT),
-    garage_pad=("BWFG04AAAA", lambda y: _pad_outline(ROOF_COLUMN_EAST_X_FT, y, 24.0),
+    garage_pad=("BWFG04AAAA", lambda y: _pad_outline(  # 30" pinned (decision 15); cast keeps 24"
+        ROOF_COLUMN_EAST_X_FT, y, 24.0 if EAST_POST_SYSTEM == "cast" else 30.0),
                 GARAGE_FOOTING_TOP_FT, MOMENT_PAD_DEPTH_FT))
 FOOTINGS.extend(_EAST_PADS)
 ROOF_COLUMNS = [

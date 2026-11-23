@@ -689,6 +689,66 @@ move with the snow: `L` rose 2,000 → 2,948 lb on `PT-BW-RE` / `-RNE`, which st
 pinned to them and correctly so. `integrity.reinforcement_layout`'s four anchorage FAILs
 (7.00" / 5.00" against 7.11") are gone.
 
+### 6c. 2026-11-22 — footing piers, graded prescriptively (decision 16; review C-11, D4)
+
+All six piers are PINNED. The four landing piers are propped at the head by the tied landing
+(§10); `PT-BW-PE`/`-PNE` stand free under the pinned east posts. Each stands out of grade
+no more than a pedestal: tops at −1'-4 3/16" (landing) and +0'-2" (PE/PNE) against grade
+−2'-10", so exposed 1.48' (h/d 1.27 on 14", 1.48 on 12") and 3.00' (2.57 on 14"), all <= 3
+(ACI 318-19 §2.3, §14.3.3.1). Below grade the shaft is soil-embedded. Each is therefore the
+deck's R507.3 footing, not an R507.4 post: pad by `structural.deck_footing_size`, depth by
+`structural.frost_depth` (`engineering/footing_pier.py`). The eight items `deck_post/PT-BW-*`
+(6) and `column_base/PT-BW-PE`/`-PNE` leave the register.
+
+**PE/PNE as short poles — IBC 2018 §1807.3.2.1, Eq. 18-1** (non-constrained: no rigid floor
+at grade, no diaphragm above). Load §8 / canopy_garage_diaphragm.md §6: post half-drag 23.6 +
+pier drag 58.3 = **P 81.9 lb ASD at h 1.932'** above grade. b = 14" = 1.1667'; S1 = 150 psf/ft
+x d/3 (Table 1806.2 class 4, GM, presumptive); no §1806.3.4 doubling; the pad is NOT credited
+— embedment is the shaft only, grade to pad top.
+
+    d = 2.47': S1 = 150 x 2.47/3 = 123.5 psf; A = 2.34 x 81.9 / (123.5 x 1.1667) = 1.330
+    d = 0.5 x 1.330 x (1 + sqrt(1 + 4.36 x 1.932 / 1.330)) = 0.665 x 3.708 = 2.466'  (converged)
+    PE : shaft grade -2.833' to pad top -8.953' = 6.12'   d/c 2.47/6.12 = 0.40
+    PNE: shaft grade -2.833' to pad top -6.333' = 3.50'   d/c 2.47/3.50 = 0.71
+
+Graded in `structural.column_base` (`checks/structural/deck_piers.py`), PRESCRIPTIVE.
+**Bond breaker:** the top 42" of all six shafts are wrapped (two layers 6-mil poly, or a slip
+sleeve), closing §7's adfreeze and skin-friction items by detail (AN-BW-STRUCTURE).
+
+### 6d. 2026-11-22 — pull-out of the screen's chord piers (decision 15; review C-1)
+
+`PD-BW-GW` and `PD-BW-RNE` are 2'-6" x 2'-6" x 12". The tension chord's pier must hold the
+full-height overturning: T = 1,034.6 x 8.6825 / 4.979 + 426.5 (net roof uplift, 0.6D + 0.6W)
+= **2,230.6 lb**, the hold-down row's own number. Held down at 0.6D by shaft + doweled pad +
+soil on the pad's projection (110 pcf, the low end of the band) + post 57 + screen wall 157;
+no deck or roof dead (the roof's 0.6D is already in T).
+
+    GW: shaft 1.069 ft2 x 4.984' x 150 = 799; pad 6.25 x 1.0 x 150 = 937.5;
+        soil (6.25 - 1.069) x 3.50' x 110 = 1,995;  sum 3,945.5 x 0.6 = 2,367  d/c 0.942
+    W : shaft 1.069 x 7.604' x 150 = 1,219; pad 3.75 x 1.0 x 150 = 562.5;
+        soil (3.75 - 1.069) x 6.12' x 110 = 1,805;  sum 3,800.5 x 0.6 = 2,280  d/c 0.978
+
+Both pass and both sit past the 0.85 owner cost-review trigger (decision 30; limit 1.0).
+Conservative on two counts not taken: the overturning arm runs to the chord bases, not the
+landing that props them (to the sill, T = 1,540 + 426.5 = 1,966.5, W 0.86), and the landing
+dead hung on the chord through the LUS26-2Z is not credited. Rows in `lateral_system/
+RF-BW-CANOPY` (`engineering/lateral_band._pullout_rows`).
+
+**The compression chord's pad (review C-6)**, ASCE 7-16 §2.4.1 D + 0.75(L+S) + 0.75(0.6W),
+gross on the pad, no displaced-soil credit, against 2,000 psf (Table 1806.2 class 4):
+overturning compression 1,034.6 x 8.6825 / 4.979 = 1,804.1 lb, x 0.75 = 1,353 lb. PD-BW-W
+(3.75 ft2): D + pad + 0.75(L+S) = 4,804 lb (the pier's own record), total 6,157.5 lb =
+**1,642 psf, d/c 0.82** (`_pad_bearing_rows`). The reviewer's independent 6,312 lb (1,683 psf,
+0.84) differs by 0.75 x 205 = 154 lb, the drift gradient below.
+
+**The drift gradient on the house-side supports (review C-5) — recorded, not modelled.**
+`pier_basis` splits each 6-ft header by halves on the average surcharge. By statics the south
+support takes L(2p_s + p_n)/6 = 110.5 psf-ft of surcharge against 95.1: **+205 lb (+6%)** on
+PT-BW-RE/-CW, piers PE/W and pads PD-BW-RE/W; the north ones are 205 lb lighter. No verdict
+moves: post axial 0.213 → 0.226, PD-BW-W D+S+L 1,546 psf, the C-6 row 0.84. A known, bounded
+approximation; `pier_basis.landed_roof_tributaries` is the place to split it if a row ever
+gets close.
+
 ## 7. What is NOT graded here
 
 - **Adfreeze jacking.** A 12" shaft through this parcel's 42" frost depth (Minn. R.

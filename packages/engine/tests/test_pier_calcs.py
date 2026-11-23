@@ -306,12 +306,18 @@ def test_active_kdat_roof_posts_stand_on_separate_pinned_piers(catlin_ctx) -> No
     active = {pier.tag: pier for pier in cast_piers(catlin_ctx.engineering.context)}
     assert {"PT-BW-PE", "PT-BW-PNE"} <= set(active)
     assert not {"PT-BW-RE", "PT-BW-RNE"} & set(active)
+    from typehaus.engineering.footing_pier import is_footing_pier
+    from typehaus.engineering.roof_moment import pinned_pier_poles
+
+    ctx = catlin_ctx.engineering.context
+    poles = pinned_pier_poles(ctx)
     for tag in ("PT-BW-PE", "PT-BW-PNE"):
         pier = active[tag]
-        assert pier.lateral_system
+        # Decision 16: a short pole under a pinned post, not a moment column.
+        assert not pier.lateral_system and is_footing_pier(ctx, pier)
         assert pier.diameter_in == pytest.approx(14.0)
-        assert pier.wind_base_moment_lb_ft > 0.0, "the pinned post still sends base drag"
-        assert "RF-BW-CANOPY" in pier.moment_basis
+        assert poles[tag][0] == pytest.approx(81.9, abs=0.1), "the post still sends base drag"
+        assert "RF-BW-CANOPY" in poles[tag][2]
 
 
 def test_every_cast_concrete_pier_on_its_own_base_is_in_scope(piers) -> None:
@@ -588,8 +594,8 @@ def test_a_column_with_no_cage_is_incomplete_and_names_the_field(tmp_path) -> No
         assert record.status is Status.INCOMPLETE, record.summary
         assert any("vertical_reinforcement" in m for m in record.missing), record.missing
         assert any("14.1.5" in m for m in record.missing), record.missing
-    # A north-entry pier still has its cage, so this is the field and not a global break.
-    assert results["deck_post/PT-BW-W"].status is Status.OK
+    # The north-entry piers left the kind (decision 16); none of them breaks with the field.
+    assert "deck_post/PT-BW-W" not in set(results)
 
 
 def test_a_cage_that_does_not_parse_reads_as_no_steel(tmp_path) -> None:

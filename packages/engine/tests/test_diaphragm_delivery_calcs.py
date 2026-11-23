@@ -73,10 +73,14 @@ def test_the_record_reproduces_sections_3_and_4(record) -> None:
 
 
 def test_the_screen_boundary_governs(record) -> None:
-    """§4d: the envelope row over the envelope share — 0.907, and nothing else is closer."""
-    worst = max(record.limit_states, key=lambda s: s.demand / s.capacity)
-    assert worst.name == "diaphragm unit shear at W-BW-SCREEN"
-    assert worst.demand / worst.capacity == pytest.approx(0.907, abs=0.001)
+    """§4d: the envelope row over the envelope share — 0.907. The chord piers' pull-out rows
+    (north_entry_piers.md §6d, decision 15) sit above it: W 0.978, GW 0.942."""
+    ratios = {s.name: s.demand / s.capacity for s in record.limit_states}
+    assert ratios["diaphragm unit shear at W-BW-SCREEN"] == pytest.approx(0.907, abs=0.001)
+    pull = "pier pull-out under the tension chord"
+    assert ratios[f"PT-BW-W {pull}"] == pytest.approx(0.978, abs=0.001)
+    assert ratios[f"PT-BW-GW {pull}"] == pytest.approx(0.942, abs=0.001)
+    assert max(ratios.values()) == ratios[f"PT-BW-W {pull}"]
 
 
 def test_the_old_four_to_one_row_is_gone_with_the_second_line(record) -> None:
@@ -183,21 +187,11 @@ def test_a_pinned_post_mints_no_column_base(catlin_ctx) -> None:
     """The pier under it is graded as a short pole; the post itself is not a column base."""
     keys = set(catlin_ctx.engineering)
     assert "column_base/PT-BW-RE" not in keys and "column_base/PT-BW-RNE" not in keys
-    assert {"column_base/PT-BW-PE", "column_base/PT-BW-PNE"} <= keys
+    # Decision 16: the pier is a short pole graded by IBC 1807.3.2.1 in structural.column_base
+    # (test_column_base_calcs::test_pinned_piers_left_the_register_for_ibc_1807_3).
+    assert not {"column_base/PT-BW-PE", "column_base/PT-BW-PNE"} & keys
     for tag in ("PT-BW-PE", "PT-BW-PNE"):
         assert f"column_head_joint/{tag}" not in keys, "the head is the post's base plate"
         assert f"base_rotation/{tag}" not in keys, "a short pole has no P-delta to magnify"
 
 
-@pytest.mark.parametrize(("tag", "shaft"), [("PT-BW-PE", 6.120), ("PT-BW-PNE", 3.500)])
-def test_the_pier_is_a_short_pole(catlin_ctx, tag, shaft) -> None:
-    """§6: 81.90 lb (10-31) at 1.932' above grade on the 14" pier; 2.47' of shaft needed,
-    the pad credited below."""
-    record = catlin_ctx.engineering[f"column_base/{tag}"]
-    inputs = {q.name: q.value for q in record.inputs}
-    assert inputs["lateral_shear_asd"] == pytest.approx(81.90, abs=0.05)
-    assert inputs["shear_height_above_grade"] == pytest.approx(1.932, abs=0.002)
-    assert inputs["shaft_embedment"] == pytest.approx(shaft, abs=0.002)
-    embedment = record.limit_states[0]
-    assert embedment.demand <= 2.471 + 1e-3, "basis 4's pad credit only ever reads lower"
-    assert record.status is Status.OK

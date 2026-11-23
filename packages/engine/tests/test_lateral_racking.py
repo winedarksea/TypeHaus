@@ -363,15 +363,11 @@ def test_the_corner_columns_are_delegated_not_graded_here(catlin_findings,
     decks = {t for f in catlin_findings for t in f.element_tags if t.startswith("FS-")}
     assert decks == {"FS-SG-BALCONY"}
 
-    # The active KDAT canopy posts are pinned gravity supports. Their concrete piers
-    # receive base drag, while the canopy diaphragm delivers lateral load to the garage.
+    # The active KDAT canopy posts are pinned; their piers are short poles graded
+    # prescriptively by IBC 1807.3.2.1 (decision 16) and name no item.
     ground = catlin_base_findings
-    assert ground
+    assert {f.element_tags[0] for f in ground} == {"PT-BW-PE", "PT-BW-PNE"}
     for finding in ground:
-        assert finding.engineering_item.startswith(("column_base/", "deck_post/"))
-        assert "pinned" in finding.message
-        if finding.engineering_item.startswith("column_base/"):
-            assert "1807.3.2.1" in finding.message
-    assert {f.engineering_item for f in ground} == {
-        "column_base/PT-BW-PE", "column_base/PT-BW-PNE",
-        "deck_post/PT-BW-PE", "deck_post/PT-BW-PNE"}
+        assert finding.engineering_item is None
+        assert "§1806.3.4" in finding.message
+        assert "1807.3.2.1" in (finding.code_ref or "")

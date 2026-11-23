@@ -22,36 +22,14 @@ from typehaus.model.registry import constructor_names
 
 #: §0: ``(δ at δ_ref 0.25", δ at 1.0" or None for a mechanism, status)``.
 #:
-#: ** `_WORKED` KEEPS THE FOUR LANDING ROWS AS ARITHMETIC ONLY SINCE 2026-09-21. ** The
-#: landing is tied to the garage stem (`north_entry_piers.md` §10) and its piers left the
-#: register; the band-end reproductions still run on them, the record tests do not.
 #: RE/RNE straddle the band and CLOSE on catlin's presumed n_h (§10), hence OK.
 _WORKED = {
     # Every north-entry column cast one 3/4" pack low, 2026-10-31 (addendum 2026-10-31b): the
     # head 3/4" nearer grade, the shafts 3/4" shorter. GW's soft end closes at 1/δ 0.0076.
     "PT-BW-RE": (1.2988, 1.9309, Status.OK),
     "PT-BW-RNE": (1.2892, 1.8486, Status.OK),
-    # ** RE-WORKED 2026-09-23 (note addendum 2026-09-23) ** with each deck beam on its own
-    # half-bay strip: the landing's deck share fell 17.03 -> 9.93 ft2 (W/E), 9.60 (GW/GE).
-    # Seat beams from the column's east face, 2026-09-23 (addendum 2026-09-23c): 3.3542' long.
-    # Carriers 4.5" shorter at the landing header, 2026-09-24 (addendum 2026-09-24).
-    # W/GW 14" round since 2026-09-30 (the CBSTQ's 3" side cover, canopy_west_band.md §5e).
-    # The garage landing went 2026-10-13 (addendum 2026-10-13): 3.91 ft2 off each; GW's soft
-    # end is a hair inside 0.75 Pc. The 0.06 inch raised bearing (2026-10-15 addendum)
-    # makes L=60.56 inch and the soft-end magnifier 48.8372, still arithmetic only.
-    # Reworked 2026-11-02 with the direct-mounted MDO and edge-nailer inventory.
-    # These retired landing rows remain arithmetic only; GW is still near singular.
-    "PT-BW-W": (1.0781, 1.3210, Status.INCOMPLETE),
-    "PT-BW-E": (1.0212, 1.0632, Status.OK),
-    # The screen stops on the garage cladding (2026-11-06): chord -1.18 lb, GW 35.25 -> 35.00;
-    # the seat beam stops off the base strap the same day: P_u -4.40 lb, 35.00 -> 34.24.
-    # MDO stops at the north chord post, timber nailed (2026-11-14): chord -5.55 lb, -> 33.64.
-    # The screen's south end 1/2" north (2026-11-18): chord -0.66 lb, -> 33.52.
-    # 7/16" ZIP for 5/8" CDX the same day: chord -6.25 lb, landing 3/16" wider -> 32.63
-    # (the engine's reading; arithmetic only, as above).
-    "PT-BW-GW": (1.3277, 32.63, Status.OVER),
-    # GE's P_u fell 1,107.8 -> 1,074.7 lb when the landing came in 3 3/8" (2026-10-31).
-    "PT-BW-GE": (1.0502, 1.2254, Status.INCOMPLETE),
+    # The four landing rows (W, E, GW, GE) went 2026-11-22: decision 16 pins and props
+    # those piers as footing piers, so a fixed-base sway reading of them describes nothing.
     # The balcony at the same date: each edge beam carries 9.75' (not 18'), P_u 7,886 ->
     # 4,855 lb (front), 4,877 (rear); wall-top k_θ unchanged. Front R 6.616 / 6.242.
     # 3" lower on 2026-09-23 (addendum 2026-09-23b): L 105.125", P_u 4,820.0; R 6.412 / 6.049.

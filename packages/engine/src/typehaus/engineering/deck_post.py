@@ -75,8 +75,9 @@ KIND = "deck_post"
 #: to "8" when a WALL-borne column's dowels started being graded for straight development
 #: against the authored ``BarSpec.embedment``; to "9" on 2026-09-30, when an axially loaded
 #: column larger than its load needs, and whose cage misses the gross 1% floor, took ACI 318-19
-#: §10.3.1.2's reduced area for it.
-BASIS_VERSION = "9"
+#: §10.3.1.2's reduced area for it; to "10" on 2026-11-22, when a footing pier (pinned, propped,
+#: a pedestal above grade) left the scope for a prescriptive read (decision 16).
+BASIS_VERSION = "10"
 BASIS = "IRC R507.4 (no row); ACI 318-19 Ch. 10, 22.4, 25.7 (reinforced) / 14.5 (plain)"
 
 #: ACI 318-19 §2.3 defines a PEDESTAL as a member with a ratio of height to least lateral
@@ -272,14 +273,22 @@ oracled_by(
 )
 
 
+def _in_scope(ctx: EngineeringContext) -> list[_Pier]:
+    """Cast piers that are COLUMNS. A footing pier (pinned, propped, a pedestal above grade)
+    is part of its footing and graded prescriptively (``engineering/footing_pier.py``)."""
+    from typehaus.engineering.footing_pier import is_footing_pier
+
+    return [pier for pier in cast_piers(ctx) if not is_footing_pier(ctx, pier)]
+
+
 @keys(KIND)
 def enumerate_posts(ctx: EngineeringContext) -> list[str]:
-    return [pier.tag for pier in cast_piers(ctx)]
+    return [pier.tag for pier in _in_scope(ctx)]
 
 
 @calc(KIND)
 def compute(ctx: EngineeringContext) -> list[EngineeringRecord]:
-    return [_one(pier) for pier in cast_piers(ctx)]
+    return [_one(pier) for pier in _in_scope(ctx)]
 
 
 def _one(pier: _Pier) -> EngineeringRecord:
