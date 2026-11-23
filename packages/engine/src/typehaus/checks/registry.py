@@ -222,6 +222,12 @@ class StructuralPreferences:
     #: Dynamic factor on a hung seat's rated load (``structural.suspension_anchor``): a
     #: swing, a drop into the seat. ``None`` is an UNKNOWN naming this key, never a default.
     hanging_seat_impact_factor: float | None = None
+    #: The balcony's planter allowance (``engineering/balcony_loads.py`` reads and validates
+    #: it): the house's own saturated planter over each beam line. ``{}`` is "none authored".
+    balcony_planter: dict = field(default_factory=dict)
+    #: ASCE 7-16 §7.3 balanced flat-roof snow, psf, printed once beside the deck's authored
+    #: basis so a reader sees what 40 live + 10 dead without snow is compared against.
+    deck_balanced_snow_psf: float | None = None
     #: Modulus of subgrade reaction under a retaining wall's mat, pci, and the same number
     #: lying on its side for the buried face. **Only the analytical SHELL export reads
     #: these** (``analytical/shells.py``): a shell model of a retaining wall is a wall on
