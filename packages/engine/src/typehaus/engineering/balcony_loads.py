@@ -103,6 +103,9 @@ class ColumnStatics:
     dead_lb: float
     live_lb: float
     planter_lb: float
+    #: The deck area this column carries by the beam's statics under the FULL uniform load
+    #: (reaction / 50 psf), the area an uplift on the plank reaches the column through.
+    area_ft2: float = 0.0
 
 
 def beam_reactions(a_ft: float, span_ft: float, b_ft: float, tributary_ft: float,
@@ -143,6 +146,11 @@ def column_statics(ctx: Any) -> dict[str, ColumnStatics]:
         (_lo_t, lo_post), (_hi_t, hi_post), (a_ft, span_ft, b_ft) = stations
         dead, live, planter = beam_reactions(a_ft, span_ft, b_ft, trib,
                                              allowance.plf if allowance else 0.0)
+        from typehaus.engineering.overhang_beam import _state
+
+        total_plf = (DECK_DEAD_LOAD_PSF + DECK_LIVE_LOAD_PSF) * trib
+        full = _state((total_plf,) * 3, a_ft, span_ft, b_ft)[:2]
+        total_psf = DECK_DEAD_LOAD_PSF + DECK_LIVE_LOAD_PSF
         for i, post in enumerate((lo_post, hi_post)):
-            out[post] = ColumnStatics(tag, dead[i], live[i], planter[i])
+            out[post] = ColumnStatics(tag, dead[i], live[i], planter[i], full[i] / total_psf)
     return out

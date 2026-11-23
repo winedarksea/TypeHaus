@@ -161,6 +161,9 @@ class _Pier:
     deck_dead_lb: float | None = None
     deck_live_lb: float | None = None
     planter_lb: float = 0.0
+    #: The deck area this column carries by statics under full uniform load, ft2; 0.0 where the
+    #: beam is not graded by statics (the tributary stands).
+    statics_area_ft2: float = 0.0
     #: The ASD wind shear this column's HEAD receives from the deck, guard and curtains — not
     #: the shaft's own wind, which acts below the head. 0.0 where it is not derived (the head
     #: then reads ``M_wind / H``, exact only without a shaft term).
@@ -172,6 +175,17 @@ class _Pier:
     wind_guard_shear_lb: float = 0.0
     wind_shaft_shear_lb: float = 0.0
     wind_guard_arm_ft: float = 0.0
+    #: The E-W wind on one column whatever the governing axis, ASD: base moment and total base
+    #: shear. Under E-W wind all four columns push both stems the same way, so the porch cannot
+    #: prop each stem against the other (`column_support`'s cantilever row).
+    wind_ew_base_moment_lb_ft: float = 0.0
+    wind_ew_base_shear_lb: float = 0.0
+    #: The deck band's share (fascia, beams, plank edge) and its centroid's height above the
+    #: column base, ft: that band acts above the column top, at the deck's centroid.
+    wind_deck_shear_lb: float = 0.0
+    wind_deck_arm_ft: float = 0.0
+    #: The resolved shaft's height, ft: the shaft's own wind acts over it, from the base.
+    wind_shaft_height_ft: float = 0.0
 
     @property
     def deck_dead_effective_lb(self) -> float:
@@ -861,6 +875,34 @@ def record_base_shear(tag: str, shear_lb: float, arm_ft: float) -> None:
     _SHEARS[tag] = (shear_lb, arm_ft)
 
 
+def _shaft_ft(ctx: EngineeringContext, posts: dict, tag: str) -> float:
+    """The resolved shaft's height, which ends under the beam, not the authored Post.height."""
+    solid = ctx.model.by_tag(tag)
+    if solid is not None and getattr(solid, "z1_m", None) is not None:
+        return (solid.z1_m - solid.z0_m) / 0.3048
+    return posts[tag].height.inches / 12.0
+
+
+def _wind_moment(comps: dict[str, float], ctx: EngineeringContext, posts: dict, tag: str,
+                 n: int, top_ft: float, guard_h: float, walking_ft: float, fascia_ft: float,
+                 deck: Any) -> tuple[float, dict[str, float], float]:
+    """``(moment, lever by band, guard arm)`` of one column's share of ``comps``, ASD lb-ft,
+    each band at its own lever above this column's resolved base: the deck band at its
+    centroid (walking surface less half the fascia), the plank edge, the curtains' top track
+    at the column height, the shaft at half its own height, the guard at its centroid."""
+    column_ft = posts[tag].height.inches / 12.0
+    base_m = getattr(ctx.model.by_tag(tag), "z0_m", None)
+    base_ft = base_m / 0.3048 if base_m is not None else 0.0
+    guard_arm = top_ft - base_ft if base_m is not None else column_ft + guard_h
+    walk_rel = (walking_ft - base_ft) if base_m is not None else column_ft
+    plank_half = (deck.subfloor.thickness.meters / 0.3048 / 2.0
+                  if getattr(deck, "subfloor", None) else 0.0)
+    lever = {"deck": walk_rel - fascia_ft / 2.0, "plank edge": walk_rel - plank_half,
+             "curtains": column_ft, "columns": _shaft_ft(ctx, posts, tag) / 2.0,
+             "guard": guard_arm - guard_h / 2.0}
+    return sum(comps[k] * lever[k] for k in comps) / n, lever, guard_arm
+
+
 def _base_moments(ctx: EngineeringContext) -> dict[str, tuple]:
     """Post tag -> ``(wind ASD base moment, guard ASD base moment, how)``, in lb-ft.
 
@@ -943,18 +985,26 @@ def _base_moments(ctx: EngineeringContext) -> dict[str, tuple]:
         guard = wind.guard
         q_h, top_ft, ground_ft = wind.q_h_psf, wind.top_ft, wind.ground_ft
         # The deck's own bands (fascia, beams) and what stands on it that they omit — the
-        # guard, the column shafts and the porch's closed curtains (review B-06) — each at
-        # its own lever, per axis. Only the deck bands were counted until 2026-11-23.
+        # guard with its posts, the column shafts, the plank edge and the porch's closed
+        # curtains (review B-06) — each at its own lever, per axis.
         from typehaus.engineering.balcony_wind import (
             Demand,
             column_bands,
             curtain_bands,
             guard_band,
+            nearest,
+            plank_edge_band,
         )
+        from typehaus.engineering.deck_tie_basis import deck_storey
+        from typehaus.model.trim import Fascia
 
-        shafts = [(t, size[0] / 12.0, posts[t].height.inches / 12.0) for t in columns
+        shafts = [(t, size[0] / 12.0, _shaft_ft(ctx, posts, t)) for t in columns
                   if (size := _round_size(posts[t].size)) is not None and posts[t].height]
         guard_h = _bw_ft(guard.height)
+        fascia = nearest(ctx.plan, [posts[t] for t in columns], Fascia,
+                         deck_storey(ctx, deck))
+        fascia_ft = _bw_ft(fascia.depth) if fascia is not None else 0.0
+        walking_ft = _bw_ft(guard.base_elevation)
         parts: dict[str, dict[str, float]] = {}
         for axis, deck_shear in wind.shear_lb.items():
             def shear(bands, axis=axis, q_h=q_h, height=top_ft - ground_ft):
@@ -962,32 +1012,27 @@ def _base_moments(ctx: EngineeringContext) -> dict[str, tuple]:
                               bands=tuple(bands)).storey_shear_lb(MAX_VERIFIED_CASE_AB)
             parts[axis] = {
                 "deck": deck_shear,
+                "plank edge": shear(filter(None, [plank_edge_band(deck, axis)])),
                 "guard": shear(filter(None, [guard_band(ctx.plan, axis, guard)])),
                 "columns": shear(column_bands(shafts)),
                 "curtains": shear(curtain_bands(ctx.plan, axis)),
             }
-        # The worse axis, and x on a tie: the first strict maximum, as it always was.
         totals = {axis: sum(comps.values()) for axis, comps in parts.items()}
+        # The worse axis, and x on a tie: the first strict maximum, as it always was.
         worst_axis = "x" if totals["x"] > 0.0 and totals["x"] >= totals["y"] else "y"
-        comps = parts[worst_axis]
-        worst_shear = totals[worst_axis]
+        n = len(columns)
 
         for tag in columns:
             column = posts[tag]
             if column.height is None:
                 continue
-            column_ft = column.height.inches / 12.0
-            per_column = worst_shear / len(columns)
-            # Guard top down to the RESOLVED column base: beam, joists and plank stand
-            # between the column top and the walking surface, and all of it is lever.
-            solid = ctx.model.by_tag(tag)
-            base_m = getattr(solid, "z0_m", None)
-            guard_arm_ft = (top_ft - base_m / 0.3048 if base_m is not None
-                            else column_ft + guard_h)
-            lever = {"deck": column_ft, "curtains": column_ft, "columns": column_ft / 2.0,
-                     "guard": guard_arm_ft - guard_h / 2.0}
-            wind_moment = sum(comps[name] * lever[name] for name in comps) / len(columns)
+            comps = parts[worst_axis]
+            worst_shear = totals[worst_axis]
+            per_column = worst_shear / n
+            geometry = (ctx, posts, tag, n, top_ft, guard_h, walking_ft, fascia_ft, deck)
+            wind_moment, lever, guard_arm_ft = _wind_moment(comps, *geometry)
             guard_moment = 200.0 * guard_arm_ft
+            ew_moment = _wind_moment(parts["x"], *geometry)[0]
             # The force and the arm behind that moment, for `engineering/column_base.py`.
             # IBC 1807.3.2.1 takes a FORCE and the height it acts at, and `P x h` has
             # infinitely many factorisations — this is the one the demand was built from.
@@ -997,9 +1042,15 @@ def _base_moments(ctx: EngineeringContext) -> dict[str, tuple]:
                 record_base_shear(tag, 200.0, guard_arm_ft)
             else:
                 record_base_shear(tag, per_column, wind_moment / per_column)
-            head_shear = (comps["deck"] + comps["guard"] + comps["curtains"]) / len(columns)
-            parts_per_column = (head_shear, comps["guard"] / len(columns),
-                                comps["columns"] / len(columns), lever["guard"])
+            head_shear = (comps["deck"] + comps["plank edge"] + comps["guard"]
+                          + comps["curtains"]) / n
+            parts_per_column = (head_shear, comps["guard"] / n, comps["columns"] / n,
+                                lever["guard"], ew_moment, totals["x"] / n,
+                                (comps["deck"] + comps["plank edge"]) / n,
+                                (comps["deck"] * lever["deck"]
+                                 + comps["plank edge"] * lever["plank edge"])
+                                / (comps["deck"] + comps["plank edge"]),
+                                _shaft_ft(ctx, posts, tag))
             out[tag] = (wind_moment, guard_moment, (
                 f"{'E-W' if worst_axis == 'x' else 'N-S'} wind on {deck.tag}: q_h "
                 f"{q_h:.1f} psf at {top_ft - ground_ft:.1f}' above the ground beneath "
@@ -1007,12 +1058,13 @@ def _base_moments(ctx: EngineeringContext) -> dict[str, tuple]:
                 f"{MAX_VERIFIED_CASE_AB:.2f} (the Fig. 29.3-1 Case A/B ceiling, taken "
                 f"because the figure's own cell is not a value this repository holds) = "
                 + " + ".join(f"{name} {comps[name]:,.0f}" for name in comps)
-                + f", split over {len(columns)} fixed column(s) = {per_column:,.0f} lb each, "
-                f"moment {wind_moment:,.0f} lb-ft at each band's own lever (the deck plane, "
-                f"{column_ft:.2f}' above this column's base, for the deck and the closed "
-                f"curtains' top track). GUARD: IRC R301.5's 200 lb at the top of {guard.tag}, "
-                f"{guard_arm_ft:.2f}' above this column's base, taken wholly on one column "
-                f"rather than shared"), parts_per_column)
+                + f", split over {n} fixed column(s) = {per_column:,.0f} lb each, "
+                f"moment {wind_moment:,.0f} lb-ft at each band's own lever (the deck band "
+                f"at its centroid {lever['deck']:.2f}' above this column's base, the curtains' "
+                f"top track at {lever['curtains']:.2f}', each shaft at half its own "
+                f"{_shaft_ft(ctx, posts, tag):.2f}'). GUARD: IRC R301.5's 200 lb at the top of "
+                f"{guard.tag}, {guard_arm_ft:.2f}' above this column's base, taken wholly on "
+                f"one column rather than shared"), parts_per_column)
     from typehaus.engineering.roof_moment import roof_base_moments
 
     # ** THE WORSE OF THE TWO, NOT THE LAST ONE WRITTEN. ** A column can carry a deck AND
@@ -1104,9 +1156,12 @@ def _point_to_segment(point, a, b) -> float:
 
 def _wind_parts(case: tuple | None) -> dict[str, float]:
     """The ``_Pier`` wind-component fields from a ``_base_moments`` entry's fourth element."""
-    parts = case[3] if case is not None and len(case) > 3 else (0.0, 0.0, 0.0, 0.0)
+    parts = case[3] if case is not None and len(case) > 3 else (0.0,) * 9
     return {"wind_head_shear_lb": parts[0], "wind_guard_shear_lb": parts[1],
-            "wind_shaft_shear_lb": parts[2], "wind_guard_arm_ft": parts[3]}
+            "wind_shaft_shear_lb": parts[2], "wind_guard_arm_ft": parts[3],
+            "wind_ew_base_moment_lb_ft": parts[4], "wind_ew_base_shear_lb": parts[5],
+            "wind_deck_shear_lb": parts[6], "wind_deck_arm_ft": parts[7],
+            "wind_shaft_height_ft": parts[8]}
 
 
 def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
@@ -1294,5 +1349,7 @@ def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
                           if post.tag in statics and not handed_trib.get(post.tag) else None),
             planter_lb=(statics[post.tag].planter_lb
                         if post.tag in statics and not handed_trib.get(post.tag) else 0.0),
+            statics_area_ft2=(statics[post.tag].area_ft2
+                              if post.tag in statics and not handed_trib.get(post.tag) else 0.0),
         ))
     return sorted(out, key=lambda pier: pier.tag)

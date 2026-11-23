@@ -14,7 +14,13 @@ from typehaus.engineering.balcony_loads import (
     beam_reactions,
     deck_basis_text,
 )
-from typehaus.engineering.column_stem import StemDemand, plain_flexure_lb_in, prop_lb, stem_states
+from typehaus.engineering.column_stem import (
+    StemDemand,
+    plain_flexure_lb_in,
+    reinforced_flexure_lb_in_per_ft,
+    spread_width_in,
+    stem_states,
+)
 from typehaus.engineering.dowel_development import confinement_term, general_development_in
 from typehaus.engineering.glulam_beam import bearing_adjustment
 
@@ -60,20 +66,27 @@ def test_dowel_development_on_the_general_equation() -> None:
 
 
 def test_the_stem_rows_are_the_note_22_hand_numbers() -> None:
-    """§22: M_u 4,612 lb-ft, V_u 320 lb, a 109.4" stem: prop = V + 3M/2H."""
+    """§22/§27: plain concrete, phi 0.60, 5 sqrt(f'c) S, the moment AND V x over the 48",
+    the spread stopped at the pour's end; and the cantilever section per foot."""
     demand = StemDemand("1.2D + 1.0W + L", 4_612.0 * 12.0, 320.0)
-    assert prop_lb(demand, 109.4375) == pytest.approx(320.0 + 1.5 * 4_612.0 * 12.0 / 109.4375,
-                                                      abs=0.01)
-    # Plain concrete, phi 0.60, 5 sqrt(f'c) S over 12 + 2 x 48 = 108" of a 12" stem.
     assert plain_flexure_lb_in(5000.0, 108.0, 12.0) == pytest.approx(
         0.6 * 5 * math.sqrt(5000) * 108 * 144 / 6, rel=1e-12)
-    states, inputs, sentence = stem_states(
-        tag="PT-X", wall_tag="W-X", fc_psi=5000.0, thickness_in=12.0, height_in=109.4375,
-        column_width_in=12.0, embedment_in=48.0, demand=demand)
-    below, strut = states
-    assert below.capacity == pytest.approx(45_820.5, abs=1.0)          # lb-ft
-    assert below.demand == pytest.approx(4_612.0, abs=0.01)
-    assert below.ok and strut.ok and "PT-X" in sentence and inputs
+    # 6" radius + 48" spread = 54" each way; a pour end 23.3" north stops that side.
+    assert spread_width_in(6.0, 48.0, 1e9, 1e9) == 108.0
+    assert spread_width_in(6.0, 48.0, 23.3, 1e9) == pytest.approx(77.3)
+    for north, width in ((1e9, 108.0), (23.3, 77.3)):
+        states, inputs = stem_states(
+            tag="PT-X", fc_psi=5000.0, thickness_in=12.0, column_width_in=12.0,
+            embedment_in=48.0, north_in=north, south_in=1e9, demand=demand)
+        (below,) = states
+        # M_u + V_u x = 4,612 + 320 x 4' = 5,892 lb-ft (the shear's lever is in it)
+        assert below.demand == pytest.approx(4_612.0 + 320.0 * 4.0, abs=0.01)
+        assert below.capacity == pytest.approx(
+            0.6 * 5 * math.sqrt(5000) * width * 144 / 6 / 12, rel=1e-9)
+        assert inputs
+    # #6 @ 38" on the earth face of a 12" stem, 3" cover: d 8.625, 0.1389 in2/ft
+    assert reinforced_flexure_lb_in_per_ft(5000.0, 12.0, 3.0, 0.75, 0.44 * 12 / 38) / 12.0 \
+        == pytest.approx(5_340.0, rel=0.001)
 
 
 def test_the_deck_basis_is_stated_once_with_the_balanced_snow_comparison() -> None:

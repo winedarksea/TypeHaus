@@ -243,7 +243,7 @@ def _connector_states(ctx: EngineeringContext, pier: Any, connector: Any, wind: 
         f"{'the rated set' if connector.set_rated else 'ONE part'} credited; ASCE 7-16 "
         f"§2.4.1(7) 0.6D + 0.6W on "
         + (f"{pier.roof_tributary_ft2:.1f} ft2 of roof" if pier.roof_tributary_ft2 > 0.0
-           else f"{pier.tributary_ft2:.1f} ft2 of sealed deck")))
+           else f"{pier.statics_area_ft2 or pier.tributary_ft2:.1f} ft2 of sealed deck")))
     if lateral is not None and wind > 0.0:
         share = 1 if connector.set_rated else connector.tie_count
         up_ratio = (max(uplift, 0.0) / share) / connector.uplift_lb
@@ -323,14 +323,35 @@ def _sealed_deck_uplift(ctx: EngineeringContext, pier: Any, notes: list[str]) ->
     if wind is None:
         return None
     up = asd_solid_band_psf(wind.q_h_psf)
+    area = pier.statics_area_ft2 or pier.tributary_ft2
+    uplift = (up - 0.6 * DECK_DEAD_LOAD_PSF) * area
+    # Internal pressure: with the porch curtains closed (the lateral design case) the sealed
+    # deck roofs a mostly enclosed space. C&C roof pressure p = q_h (GCp - GCpi); the cited
+    # figures are GAF, "A Guide to Using ASCE 7-16" (June 2020) p. 46: flat roof GCp at <= 10 ft2
+    # zone 2 -2.3 (zone 3 -3.2), GCpi -0.55 partially enclosed (-0.18 enclosed). That is a
+    # SECONDARY summary at the smallest effective area; the figure's reduction to this
+    # column's ~50 ft2 is not held, so the result is a BOUND and is not graded as a state.
+    bound = {name: (0.6 * wind.q_h_psf * (gcp + gcpi) - 0.6 * DECK_DEAD_LOAD_PSF) * area
+             for name, gcp, gcpi in (("zone 2, partially enclosed", 2.3, 0.55),
+                                     ("zone 2, enclosed", 2.3, 0.18),
+                                     ("zone 3, partially enclosed", 3.2, 0.55))}
     notes.append(
         f"UPLIFT: this deck's plank ({plank}) is SEALED — the porch's roof — so ASCE 7-16's "
-        f"no-uplift rule for an open-jointed surface does not hold. The same bound the roof "
-        f"columns use: 0.6 x {wind.q_h_psf:.2f} psf x G x C_f 1.8 = {up:.2f} psf up, less "
-        f"0.6 x {DECK_DEAD_LOAD_PSF:g} psf of deck dead (planters excluded: they may be "
-        f"absent), on this column's {pier.tributary_ft2:.1f} ft2. The joist ties and the "
-        f"plank's own fastening see this uplift too; they are outside this record.")
-    return (up - 0.6 * DECK_DEAD_LOAD_PSF) * pier.tributary_ft2
+        f"no-uplift rule for an open-jointed surface does not hold. GRADED (the open-structure "
+        f"bound the roof columns use): 0.6 x {wind.q_h_psf:.2f} psf x G x C_f 1.8 = {up:.2f} "
+        f"psf up, less 0.6 x {DECK_DEAD_LOAD_PSF:g} psf of deck dead (planters excluded), on "
+        f"this column's {area:.1f} ft2 (the beam's STATICS area under full load, as gravity "
+        f"takes it; the equal-split {pier.tributary_ft2:.1f} ft2 was lower at the rear). The "
+        f"joist ties and the plank's own fastening see the same uplift.")
+    notes.append(
+        "ENCLOSURE NOT GRADED (open item): with the curtains closed the space below is "
+        "partially enclosed at best, and internal pressure adds to the roof's uplift. At the "
+        f"cited <= 10 ft2 C&C coefficients, on {area:.1f} ft2, the head uplift would be "
+        + "; ".join(f"{k} {v:,.0f} lb" for k, v in bound.items())
+        + " against the 1,920 lb pair — an UPPER bound, because GCp falls with the effective "
+        "area and the figure's values for ~50 ft2 are not held here. Grade it on Fig. 30.3-2A "
+        "at the true area, or decide the curtains' enclosure class, before the row closes.")
+    return uplift
 
 
 def _roof_q_h(ctx: EngineeringContext, tag: str) -> float | None:

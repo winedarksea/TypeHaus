@@ -153,7 +153,8 @@ def test_a_fixed_column_carries_the_loads_that_make_its_record_s_base_moment(
                   if load.case is LoadCaseKind.WIND and load.source.startswith(item)]
         for load in shafts:       # uniform over the column: its resultant acts at mid-height
             member = analytical.member(load.member)
-            moment += (abs(load.w0_n_m) * analytical.length_m(member) / lb) * height_ft / 2.0
+            span_m = analytical.length_m(member) * (load.x1 - load.x0)
+            moment += (abs(load.w0_n_m) * span_m / lb) * pier.wind_shaft_height_ft / 2.0
         assert moment == pytest.approx(pier.wind_base_moment_lb_ft, rel=1e-6)
         assert bool(shafts) == bool(pier.wind_shaft_shear_lb)
 

@@ -278,54 +278,106 @@ def nearest(plan: PlanModel, anchors: Any, kind: type, storey: str | None = None
 # --- what stands on the deck and was left out of the bands above (review B-06) ------------
 
 def guard_band(plan: PlanModel, axis: str, guard: Any) -> Band | None:
-    """The guard's solid share across the wind: balusters at the authored gap plus the two
-    rails' depth, over the plan run presented to ``axis``. A bound, taken at the same C_f
-    ceiling as every other band; its top is the ``q_h`` datum so no lever is added."""
+    """The guard's solid share across the wind: balusters at the authored gap, the two rails
+    (1-1/2" deep each, taken) and the posts, over the plan run presented to ``axis``. A bound,
+    at the same C_f ceiling as every other band; the guard's centroid is the lever."""
     if guard is None or len(guard.path) < 2:
         return None
     index = 0 if axis == "y" else 1     # wind along y meets a leg's E-W extent
-    run = sum(abs(b.xy_m[index] - a.xy_m[index])
-              for a, b in zip(guard.path, guard.path[1:], strict=False)) / _FT
+    legs = [(a, b) for a, b in zip(guard.path, guard.path[1:], strict=False)
+            if abs(b.xy_m[index] - a.xy_m[index]) > 1e-6]
+    run = sum(abs(b.xy_m[index] - a.xy_m[index]) for a, b in legs) / _FT
     rtype = next((t for t in plan.library.railing_types if t.tag == getattr(guard, "type_ref", "")),
                  None)
     width = ft(rtype.baluster_width) if rtype is not None and rtype.baluster_width else 0.0
     gap = ft(guard.baluster_spacing) if guard.baluster_spacing is not None else 0.0
     solidity = min(1.0, width / (width + gap)) if width + gap > 0.0 else 1.0
     height = ft(guard.height)
-    return Band(f"{guard.tag} balusters (solidity {solidity:.2f}) and rails",
-                height * solidity + 2.0 * 0.125, run, guard.tag)
+    # The posts stand in the same legs, one every ``post_spacing`` and one at each end.
+    post_ft = _nominal_in(getattr(guard, "post_size", "")) / 12.0
+    spacing = ft(guard.post_spacing) if getattr(guard, "post_spacing", None) else 0.0
+    posts = sum(math.ceil(math.dist(a.xy_m, b.xy_m) / _FT / spacing) + 1
+                for a, b in legs) if spacing > 0.0 else 0
+    area_sf = run * (solidity * height + 2.0 * 0.125) + posts * post_ft * height
+    return Band(f"{guard.tag} balusters (solidity {solidity:.2f}), rails and {posts} posts",
+                height, area_sf / height, guard.tag)
+
+
+def _nominal_in(size: str) -> float:
+    """``"3x3"`` -> 3.0, the post's face in inches (nominal, the product's tube)."""
+    try:
+        return float(str(size).lower().split("x")[0])
+    except ValueError:
+        return 0.0
 
 
 def column_bands(columns: Any) -> tuple[Band, ...]:
-    """Each cast column's own face: its diameter by its height. ``columns`` are
-    ``(tag, diameter_ft, height_ft)``; both axes see the same round."""
+    """Each cast column's own face: its diameter by the height of its SHAFT (the resolved
+    solid, which ends under the beam). ``columns`` are ``(tag, diameter_ft, shaft_ft)``."""
     return tuple(Band(f"{tag} shaft", height, diameter, tag) for tag, diameter, height in columns)
 
 
+def plank_edge_band(deck: Any, axis: str) -> Band | None:
+    """The 1-1/2" plank edge above the fascia, over the deck's run across the wind."""
+    outline = deck.subfloor_outline or deck.outline
+    if not getattr(deck, "subfloor", None):
+        return None
+    xs = [p.xy_m[0] / _FT for p in outline]
+    ys = [p.xy_m[1] / _FT for p in outline]
+    run = (max(xs) - min(xs)) if axis == "y" else (max(ys) - min(ys))
+    return Band("plank edge above the fascia", ft(deck.subfloor.thickness), run, deck.tag)
+
+
 def curtain_bands(plan: PlanModel, axis: str) -> tuple[Band, ...]:
-    """The porch's closed enclosure curtains, hung on the balcony joists. A curtain panel
-    spans from its track to the porch deck; HALF its load reaches the top track (the other
-    half goes to the floor), so a band carries half the drop. Closed is the design case: the
-    enclosure is in use in spring and autumn (``notes/porch_enclosure.md``)."""
+    """The porch's closed enclosure curtains, hung on the balcony joists. HALF a panel's load
+    reaches the top track (the other half goes to the floor), so the band carries half the
+    drop. The face across the wind is the whole enclosure's extent — the straight runs AND the
+    corner curves that join them, which project past the straight track. A closed enclosure's
+    windward and leeward panels are one net C_f, so one face counts. Closed is the design case:
+    the enclosure is in use in spring and autumn (``notes/porch_enclosure.md``)."""
     from typehaus.model.spatial import Furniture
 
     types = {t.tag: t for t in plan.library.furniture_types}
-    out = []
+    low, high, drop = math.inf, -math.inf, 0.0
+    index = 0 if axis == "y" else 1          # wind along y meets the enclosure's x extent
+    found = []
     for element in plan.all_elements():
-        if not isinstance(element, Furniture):
+        if not isinstance(element, Furniture) or element.position is None:
             continue
         ftype = types.get(element.type_ref)
         track = getattr(ftype, "curtain_track", None)
         if track is None or not track.outdoor_hardware:
             continue
-        mount = element.mount
-        drop_ft = ft(mount.elevation) if mount.elevation is not None else 0.0
-        run_ft = ft(ftype.footprint[0])
         turn = element.rotation.radians if element.rotation is not None else 0.0
-        along = "x" if abs(math.sin(turn)) < 0.5 else "y"
-        if along != axis:                   # a run along x presents its face to wind along y
-            out.append(Band(f"{element.tag} curtain, top-track half", drop_ft / 2.0, run_ft,
-                            element.tag))
-    # A closed enclosure's windward and leeward panels are one C_f (the figure's net), so
-    # only the largest panel across the wind counts.
-    return (max(out, key=lambda band: band.area_sf),) if out else ()
+        half = ft(ftype.footprint[0]) / 2.0
+        centre = element.position.xy_m[index] / _FT
+        reach = half * abs(math.cos(turn) if index == 0 else math.sin(turn))
+        low, high = min(low, centre - reach), max(high, centre + reach)
+        drop = max(drop, ft(element.mount.elevation) if element.mount.elevation is not None
+                   else 0.0)
+        found.append(element.tag)
+    if not found:
+        return ()
+    # The curves each stand in for about 8" of both legs (porch_enclosure.md): the face reaches
+    # the flank tracks' lines, which the straight run stops short of.
+    return (Band("porch curtains, top-track half (straight runs and corner curves)",
+                 drop / 2.0, _enclosure_face_ft(plan, axis, (low, high)), ",".join(found)),)
+
+
+def _enclosure_face_ft(plan: PlanModel, axis: str, straight: tuple[float, float]) -> float:
+    """The enclosure's extent across the wind: the straight runs' span, widened to the lines
+    of the tracks that run the other way (the flanks), which the corner curves join."""
+    from typehaus.model.spatial import Furniture
+
+    types = {t.tag: t for t in plan.library.furniture_types}
+    low, high = straight
+    index = 0 if axis == "y" else 1
+    for element in plan.all_elements():
+        if not isinstance(element, Furniture) or element.position is None:
+            continue
+        track = getattr(types.get(element.type_ref), "curtain_track", None)
+        if track is None or not track.outdoor_hardware:
+            continue
+        at = element.position.xy_m[index] / _FT
+        low, high = min(low, at), max(high, at)
+    return high - low
