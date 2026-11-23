@@ -1198,7 +1198,9 @@ def _inputs(pier: _Pier, area: float, steel: float, cage: _Cage | None) -> tuple
         # fingerprint, which is the point: retype that wall's cladding and the seal stales,
         # because the demand this record published moved with it.
         Quantity("wall_dead", pier.wall_dead_lb, "lb", 1.0),
-        Quantity("dead_load", pier.dead_lb, "lb", 1.0),
+        # Dead load WITHOUT the planter: a reader reconciling it against the beam's own statics
+        # (and the analytical graph's dead case) finds the planter on the next line, a case.
+        Quantity("dead_load", pier.dead_unplanted_lb, "lb", 1.0),
         Quantity("live_load", pier.live_lb, "lb", 1.0),
         Quantity("planter_dead", pier.planter_lb, "lb", 1.0),
         Quantity("fc", _fc_psi(pier), "psi", 1.0),

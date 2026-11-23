@@ -19,12 +19,13 @@ still existed or still agreed.
 ``PublishedSpan.service_condition`` now makes the mismatch loud: the published read goes
 UNKNOWN naming it, and this record carries the verdict.
 
-**What governs, and what does not.** These are catlin's three balcony beams: 3-1/2" x
-11-7/8" preservative-treated southern yellow pine, 24F-V5M1/SP, spanning 8'-8" between the
-corner columns at 50 psf over a 10'-0" joist span. Bending governs at about a third of
-capacity; shear and bearing are not close, and deflection is nowhere near L/360. The member
-is that deep because the owner wanted planter margin, not because a span demanded it, and
-the record says so rather than implying the depth was solved for.
+**What governs, and what does not.** These are catlin's two balcony beams: 3-1/2" x
+11-7/8" preservative-treated southern yellow pine, 24F-V5M1/SP, on two bearings with 8" and
+20" overhangs, carrying a 9.75' strip at the Minnesota deck basis (40 + 10 psf, no snow — the
+owner's stated basis, ``balcony_loads``) and a house-authored saturated planter over the back
+span. Bearing on the 3.5" pack governs; bending, shear and deflection are not close. The
+member is that deep because the owner wanted planter margin, and the record says so rather
+than implying the depth was solved for.
 
 **Wet service.** Every one of these stands in weather with no enclosure above it, so
 AWC NDS Table 5.3.1's wet-service factors apply and are applied: ``C_M`` 0.80 on Fb, 0.875
