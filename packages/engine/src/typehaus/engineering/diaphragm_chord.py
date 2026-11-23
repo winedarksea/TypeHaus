@@ -82,7 +82,10 @@ def chord_rows(ctx: Any, rows: Any, element: Any, resolved_roof: Any, joints: li
             f"nail schedule. A CONSERVATIVE BOUND: an elastic distribution of the couple over "
             f"all {len(stations)} straps puts {linear:,.1f} lb on an end strap "
             f"({(linear + chord_ew) / capacity:.2f} with the chord force); the end-strap pair "
-            f"is kept because it needs no stiffness judgement across the joint"))
+            f"is kept because it needs no stiffness judgement across the joint. DRY SERVICE "
+            f"(C_M 1.0) is the stated basis: the straps and their nailers sit under the roof "
+            f"deck, below the membrane and roofing; read at wet service (0.70) this row is "
+            f"{(pair + chord_ew) / (capacity * 0.70):.2f}"))
     placed = []
     for wall, line in far:
         e = [ctx.plan.by_tag(getattr(wall, n)) for n in ("start_node", "end_node")]

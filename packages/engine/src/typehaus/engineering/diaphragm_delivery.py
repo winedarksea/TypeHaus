@@ -187,9 +187,11 @@ def delivery_rows(ctx: Any, element: Any, resolved_roof: Any, wind: Any,
                         if (r := _surplus(ctx, rows, ln.wall)) is not None}
         open_front_rows(ctx, rows, element, joints, v_along, along, far, far_readings)
         from typehaus.engineering.diaphragm_chord import chord_rows
+        from typehaus.engineering.diaphragm_walls import wall_sum_rows
 
         chord_rows(ctx, rows, element, resolved_roof, joints, along, resultants.get(across),
                    far, far_readings)
+        wall_sum_rows(ctx, rows, delivery.lines, [w for w, _l in far], along)
 
     rows.states.append(LimitState(
         "torsional stability, delivered", 0.0 if (boundary and len(far) >= 2) else 1.0, 1.0,
@@ -304,8 +306,12 @@ def _line_rows(ctx: Any, rows: DeliveryRows, wall: Any, line: Any, force: float,
 
 
 def _overturning(ctx: Any, rows: DeliveryRows, wall: Any, force: float,
-                 provided_ft: float) -> None:
-    """The delivered increment's end tension at the line's authored hold-down."""
+                 provided_ft: float, label: str = "delivered increment",
+                 required: bool = True) -> None:
+    """The delivered increment's end tension at the line's authored hold-down.
+
+    ``label`` names the row; ``required=False`` skips a wall with no hold-down instead of
+    reporting one missing (``diaphragm_walls`` sums onto walls that need none)."""
     from typehaus.hardware.catalog import allowable_for_model
     from typehaus.model.enums import ConnectorKind
 
@@ -317,10 +323,13 @@ def _overturning(ctx: Any, rows: DeliveryRows, wall: Any, force: float,
     devices = [c for c in ctx.plan.all_elements()
                if getattr(c, "kind", None) is ConnectorKind.HOLD_DOWN
                and wall.tag in (getattr(c, "connects", ()) or ())]
-    rows.inputs.append(Quantity(f"receiving_{wall.tag}_end_tension_lb", tension, "lb", 1.0))
+    if required:
+        rows.inputs.append(Quantity(f"receiving_{wall.tag}_end_tension_lb", tension, "lb", 1.0))
     capacities = [(c, getattr(allowable_for_model(c.size or ""), "uplift_lb", None))
                   for c in devices]
     capacities = [(c, cap) for c, cap in capacities if cap]
+    if not capacities and not required:
+        return
     if not capacities:
         rows.missing.append(
             f"a hold-down on `{wall.tag}` for the delivered increment: "
@@ -331,7 +340,7 @@ def _overturning(ctx: Any, rows: DeliveryRows, wall: Any, force: float,
     device, capacity = min(capacities, key=lambda row: row[1])
     rows.element_tags.append(device.tag)
     rows.states.append(LimitState(
-        f"{wall.tag} overturning, delivered increment", tension, capacity, "lb",
+        f"{wall.tag} overturning, {label}", tension, capacity, "lb",
         f"{device.size} ({device.tag}); v = {force:,.1f} / {provided_ft:.3f} = "
         f"{force / provided_ft:.2f} plf over h {height:.3f}', NO dead load credited. The "
         f"line's corner ends are R602.10.7 returns and take the same increment as detailing"))
