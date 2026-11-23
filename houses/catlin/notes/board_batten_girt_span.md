@@ -5,8 +5,8 @@
 **Written:** by hand, from the standards, before the modules were encoded.
 **Oracle for:** `checks/structural/cladding.py` (`structural.cladding_wind` and the
 `structural.cladding_fastener` advisory) and `checks/structural/cladding_fastener.py`;
-reproduced by `tests/test_cladding_read.py`. §2-§4 also oracle `engineering/girt_screw.py`'s
-demand. A calculation that only agrees with itself is not verified.
+reproduced by `tests/test_cladding_read.py`. §2-§4 also oracle `checks/structural/girt_fastening.py`'s
+demand (`engineering/girt_screw.py` until 2026-11-22). A calculation that only agrees with itself is not verified.
 **Since 2026-09-22 this is a manufacturer read, not an engineered item (§8).** What a
 reviewer checks is §5 and §5b — the guide's own row, both directions; §6 and §6.2 remain as
 the advisory arithmetic behind the fastener condition.
@@ -157,6 +157,20 @@ heel with the rafters' true plumb depth, decision #109, and dropped 0.973" — e
 > inward (d/c 0.317 against 43); §6 gives 36.5498 lb per screw, withdrawal d/c 0.182
 > and head pull-through d/c 0.118. The working below is at the prior plane; the method
 > is unchanged. `test_cladding_read.py` pins the current plane's values.
+
+> **Re-struck 2026-11-22 (review C-7): h is measured from the LOWEST ground, not the datum.**
+> The roof heights above are main-floor-datum heights; the site grade is 2'-10" below the
+> datum and the sunken garden floor 9'-1-7/16" below. The canopy calcs always measured from
+> the lowest ground; this one now does too (`wind.mean_roof_height_ft`), worked by hand in
+> `notes/catlin_truss_engineering.md` §2: h = 25.6428 + 9.1198 = **34.7626 ft**, K_h = 0.73071,
+> q_h = **21.0282 psf**, zone 5 33.2246 psf strength, **19.9348 psf ASD** (d/c 0.344 against
+> 58), zone 4 16.1497 psf ASD. §5b: 24.8133 psf strength / **14.8880 psf ASD** inward (d/c
+> 0.346 against 43, and it still governs). §6: 19.9348 x 2' x 1' = **39.8695 lb** per screw,
+> withdrawal d/c 0.198 against 201.09 lb, head pull-through d/c 0.128 against 310.7 lb. The
+> row's `demand_psf` was re-authored 18.27 -> 19.94 (the row was judged at the old height and
+> refuses a higher demand). The working below is at the old plane; the method is unchanged.
+> The girt screw behind this panel carries the same suction times the girt and panel
+> continuity (`catlin_truss_engineering.md` §3.5).
 
 K_z, Table 26.10-1, Exposure B (z_g = 1200 ft, alpha = 7):
 
