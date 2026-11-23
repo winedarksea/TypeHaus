@@ -33,29 +33,30 @@ _M_PER_FT = 0.3048
 #   stems 71.552 sf (27.276' each side line + 17' between) x 9.1198 x 150 = 97,882;
 #   heel soil 176 sf (2 x 3' x 16.833' + 3' x 25') x 9.1198 x 110 = 176,559, less the drain
 #   columns' 53.77 sf x 5.1198' x (110 - 100) = 2,753 -> W 350,788, mu W 122,776.
-#   Thrust 1/2 x 60 x 10.1198^2 + apron 50.48 = 3,122.79 plf over the 25.00' south face
-#   (W2/E2's 19.83' cancel) = 78,070 lb -> dry FS 1.573.
+#   Thrust 1/2 x 60 x 10.1198^2 + apron 54.63 (L6's capped AB legs) = 3,126.94 plf over the
+#   25.00' south face (W2/E2's 19.83' cancel but for W-RG-EAST's old 50.48) = 78,174 lb
+#   -> dry FS 1.571.
 _NOTE_BODY_LB = 350_788.0
 _NOTE_FRICTION_LB = 122_776.0
-_NOTE_RESULTANT_LB = 78_070.0
+_NOTE_RESULTANT_LB = 78_174.0
 _NOTE_SOUTH_FACE_FT = 25.0
 _NOTE_SIDE_FACE_FT = 19.8333
-_NOTE_DRY_FS = 1.573
+_NOTE_DRY_FS = 1.571
 # Perched at H/2 (water 5.06' over the footing top, bed draining): 3,843.9 plf -> 96,097 lb.
-_NOTE_PERCHED_FS = 1.278
+_NOTE_PERCHED_FS = 1.276
 # Flooded to the court floor, both sides, uplift 527.33 sf x 62.4 = 32,905: 317,883 / 77,781.
-_NOTE_FLOODED_FS = 1.430
+_NOTE_FLOODED_FS = 1.429
 # Retained water to the terrace, court empty (reported): 128,344 lb.
 _NOTE_RETAINED_FULL_FS = 0.957
 # Deep plane at -175.4375", mu 0.25: + bed stone 2,364.65 cf x 100 = 236,465, native under
 # the W1/E1/BRKBM beds 158 cf = 17,380, native core 121,644 -> 726,276 lb; dry thrust
 # 1/2 x 60 x 14.6198^2 + 50.48 = 6,462.7 x 25 = 161,567. Soakaway full to -127.4375":
 # uplift 4.0' x 758.33 sf x 62.4 = 189,280, thrust 6,277.5 x 25 = 156,937.
-_NOTE_DEEP_FS = {"dry": 1.124, "lip": 0.855, "flooded": 0.746}
+_NOTE_DEEP_FS = {"dry": 1.124, "lip": 0.855, "flooded": 0.75}
 # Strut: two-span continuous reaction, E2 3,122.79 plf over 16.333' and E1's footing 1,593.9
 # plf (1/2 x 60 x 7.289^2) over 10.5'. M_B = 71,965; R 45,126 -> Pu 72,201; phi Pn at the
 # strut's 5,000 psi: 0.60 x 0.45 x 5,000 x 144 x 0.6836 = 132,890.
-_NOTE_STRUT_PU_LB = 72_201.0
+_NOTE_STRUT_PU_LB = 72_278.0
 _NOTE_STRUT_PHI_PN_LB = 132_890.0
 # Plan bending FT-SG-E2: 1.6 x 3,122.79 x 11.5^2 / 8 = 82,598 ft-lb over z 38.75"
 # (stem line 42" from the toe edge less the edge bar at 3.25") = 25,579 lb on 1 #4: 2.84.
@@ -118,7 +119,8 @@ def test_the_east_west_thrusts_cancel_and_the_south_face_is_the_body_s(catlin_pl
     25'-0" projected width, corner squares included, not the south wall's 18'-0" axis."""
     record = _results(catlin_plan)[f"{KIND}/W-SG-ARCH"]
     inputs = {q.name: q.value for q in record.inputs}
-    assert inputs["thrust_W-SG-W2"] == pytest.approx(inputs["thrust_W-SG-E2"])
+    # Mirror images but for the apron: W-RG-EAST keeps its old section until gate G9.
+    assert inputs["thrust_W-SG-W2"] == pytest.approx(inputs["thrust_W-SG-E2"], abs=5.0)
     widths = next(n for n in record.notes if n.startswith("EACH PUSH"))
     assert f"W-SG-S {_NOTE_SOUTH_FACE_FT:.2f}'" in widths, widths
     assert f"W-SG-E2 {_NOTE_SIDE_FACE_FT:.2f}'" in widths, widths
