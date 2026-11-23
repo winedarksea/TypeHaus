@@ -184,6 +184,10 @@ def delivery_rows(ctx: Any, element: Any, resolved_roof: Any, wind: Any,
         far_readings = {ln.wall: r for _w, ln in far
                         if (r := _surplus(ctx, rows, ln.wall)) is not None}
         open_front_rows(ctx, rows, element, joints, v_along, along, far, far_readings)
+        from typehaus.engineering.diaphragm_chord import chord_rows
+
+        chord_rows(ctx, rows, element, resolved_roof, joints, along, resultants.get(across),
+                   far, far_readings)
 
     rows.states.append(LimitState(
         "torsional stability, delivered", 0.0 if (boundary and len(far) >= 2) else 1.0, 1.0,

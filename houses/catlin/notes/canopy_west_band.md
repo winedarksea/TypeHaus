@@ -486,19 +486,30 @@ little; bearing on the post is 0.326.
 
 ### 7c. The trusses' chord bearing on the header
 
-The beam's own design load times the truss spacing is the field truss's reaction, on the chord's 1.5" width times
-the length of chord on the beam (the bottom chord crosses the whole 5 1/2" of bearing):
+**Amended 2026-11-23 (review C-4).** The old reading put the beam's uniform load x 2.0' on every truss, which spreads
+the deck's 6.0' over the 5.375' bearing run (x 1.116) and puts the drift's average on each truss. Each truss now takes
+the load at ITS station, on its own tributary, with NDS 2018 §3.10.4's bearing-area factor.
+
+Trusses at y 37.3333 / 39.3333 / 41.3333; the garage's gable truss stands at 43.2812 and shares the joint bay. Tributary
+widths: T1 (37.3333 - 37.2188) + 1.0 = 1.1146'; T2 2.0'; T3 1.0 + (43.2812 - 41.3333)/2 = 1.974'. The drift triangle is
+the preferences' own: design snow 73.7 = balanced 42 + a mean surcharge 31.7, slope 50.3 / 9.8 = 5.133 psf/ft, so the
+surcharge at a truss is 31.7 + 5.133 (40.219 - y) (the canopy's mid-depth y 40.219):
 
 ```
-R = 1,245.77 plf x 2.0' = 2,491.5 lb
-on 5.50" (outside face to inboard face):  2,491.5 / (1.5 x 5.50) = 302.0 psi
-Fc-perp 650 x C_M 0.53 = 344.5 psi (C_b 1.0, conservative)   ->   0.877
+T1  surcharge 46.5   snow 88.5 psf   R = (88.5 + 10) x 1.1146 x 13.333 = 1,464 lb   1,464 / (1.5 x 5.5) = 177.5 psi
+T2  surcharge 36.2   snow 78.2 psf   R = (78.2 + 10) x 2.0    x 13.333 = 2,353 lb   2,353 / 8.25       = 285.2 psi
+T3  surcharge 26.0   snow 68.0 psf   R = (68.0 + 10) x 1.974  x 13.333 = 2,052 lb   2,052 / 8.25       = 248.8 psi
+Fc-perp 650 x C_M 0.53 = 344.5 psi.  C_b = (1.5 + 0.375) / 1.5 = 1.25 where the chord face is >= 3" from the beam
+end (T2, T3); T1's chord is flush with the end, C_b 1.0.
+T1 177.5 / 344.5 = 0.515    T2 285.2 / 430.6 = 0.662 (governs)    T3 248.8 / 430.6 = 0.578
 ```
 
-It governs both headers at **0.877**, ahead of the post bearing's 0.326. The fabricator's own chord check (SPF
-Fc-perp 425 psi, dry, under the roof) reads 302.0 / 425 = 0.71. A chord that stopped at the header centreline,
-2.75", would read 604.0 psi, 1.753 OVER (`test_a_chord_stopped_at_the_header_centreline_is_over`): that is why
-the heel is at the outside face of bearing and the bottom chord crosses the full 5 1/2".
+It governs both headers at **0.662** (was 0.877), ahead of the post bearing's 0.326. The fabricator's own chord check
+(SPF Fc-perp 425 psi, dry, under the roof) is the supplier's and is in the criteria schedule. A chord that stopped at
+the header centreline, 2.75", would read 570.5 / 430.6 = 1.325 on T2
+(`test_a_chord_stopped_at_the_header_centreline_is_over`): that is why the heel is at the outside face of bearing and
+the bottom chord crosses the full 5 1/2". The beam's own bending, shear and post bearing keep the uniform 80 sf load,
+which bounds the three truss lines and the joint bay's strip that lands on the garage gable truss.
 
 ## 8. Backups
 
@@ -515,8 +526,7 @@ Two other bracings of the same band are carried as documented backups; neither i
 
 ## 9. Not graded here / still open
 
-* **The truss end chords (N-S) and their splice slip**: the truss order (`rafter/RF-BW-CANOPY`; the lateral design
-  assumes 0.03" of slip). The truss fabricator's sealed component design and reaction schedule is an external
+* **The truss end chords (N-S), 752 lb**: the truss order (`rafter/RF-BW-CANOPY`; no splice-slip value is asked for). The truss fabricator's sealed component design and reaction schedule is an external
   deliverable; when it arrives, author `Roof.published_reactions` on both roofs and record the component seal in
   `engineering.toml`. `rafter/*`, `structural.truss_reactions` and `uplift_capacity` stay UNKNOWN until then.
 * **The soils report**: 2,000 psf is presumptive and the soil class is presumed, so every record prints it.

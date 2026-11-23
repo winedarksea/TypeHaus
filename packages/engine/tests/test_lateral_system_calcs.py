@@ -314,7 +314,7 @@ def test_the_screen_and_garage_are_both_graded_at_the_full_kdat_load(catlin_ctx)
     assert states["W-BW-SCREEN chord hold-down, full height"].ok
     assert states["W-BW-SCREEN chord base shear, one base"].ok
     assert states["W-G-S overturning, delivered increment"].ok
-    assert states["diaphragm unit shear at W-BW-SCREEN"].ratio == pytest.approx(0.907, abs=0.005)
+    assert states["diaphragm unit shear at W-BW-SCREEN"].ratio == pytest.approx(0.496, abs=0.005)
     # Decision 15: the chord piers' pull-out (north_entry_piers.md §6d) now governs.
     assert record.governing.name == "PT-BW-W pier pull-out under the tension chord"
     assert record.governing.ratio == pytest.approx(0.978, abs=0.005)
