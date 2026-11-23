@@ -89,8 +89,7 @@ def deck_basis_text(ctx: Any) -> str:
                  f"ground snow is {balanced:g} psf, above the {DECK_LIVE_LOAD_PSF:g} psf live "
                  f"load.")
     if authored is not None:
-        text += (f" The house's authored deck snow is {authored:g} psf "
-                 f"(preferences.toml [structural] deck_snow_psf), under the table's "
+        text += (f" The owner's stated deck snow is {authored:g} psf, under the table's "
                  f"{DECK_LIVE_LOAD_PSF:g} psf live, which is why IRC Table R507.6 is read at "
                  f"its live load.")
     return text + " " + NOT_COVERED_OWNER
