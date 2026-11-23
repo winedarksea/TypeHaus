@@ -5,7 +5,7 @@
 `FT-B-S3` (the footings it is isolated from), `SG_VENEER_BEAM_14` (the assembly).
 **Written:** 2026-09-05, by hand. §6e re-worked 2026-09-21 (hooks, enclosing ties, footing
 dowels); §6f added 2026-09-22 (TMS ℓ/600, end fixity, the joint rows) and §6d superseded by it.
-**§6l (2026-11-23, decisions 10/11/29) refines §6k:** ties on the 2024 IRC's W2.8 row and on the studs only, steel
+**§6m (2026-11-23, owner G8: a bond break at the base) refines §6l:** the ties are graded on drag and wind, not travel. **§6l (2026-11-23, decisions 10/11/29) refines §6k:** ties on the 2024 IRC's W2.8 row and on the studs only, steel
 lintels over flat-headed reveals, the beam graded on its bed. **§6k (2026-11-04) is the basis now:** the beam is bedded on stone (`FB-SG-BRKBM`) flush on
 the house strips, a soil-supported veneer footing; `veneer_beam/W-SG-BRKBM` retired, and the
 brick stands 6 1/2" off the studs, inside the 2024 IRC's W2.8 tie row. §6j (the 11'-0" span
@@ -997,7 +997,7 @@ wythe (inches from its east end, x = 317.5" minus that): 4.25, 13.5 (`W-B-S3-FR`
 station is within it. **The concrete ends** are 3.5" each (`W-B-S1`, `W-B-S4`, x 114.5"-118.0" and
 314.0"-317.5"): tied from the first stud 4.25" in, so none goes into the pour, and the end strip is
 4.25" + half a 9.25" bay = 8.9" of one tie. Openings over 16": `AO-B-BRICK-WIN` (14" x 20", tall enough)
-has a stud tie 1.0" from each jamb, `AO-B-BRICK-DOOR` 2.25" and 0.75". The head over the door lands on
+has a stud tie 1.0" from each jamb, `AO-B-BRICK-DOOR` 2.25" from its west jamb and 0.75" from its east (the packs' nearest studs). The head over the door lands on
 the head cripples (`W-B-S3-FR`, 16" o.c.).
 
 **Wind (re-pinned after L7):** mean roof height 34.76 ft from adjacent ground, q_h 21.03 psf; ASD Zone 5
@@ -1047,6 +1047,57 @@ bed's centroid moves 2" south, away from the load. A beam widened 4" south (16":
 lowers the peak to 894 psf (0.45) for 74 plf more concrete and a form change; not needed at 0.53. The
 tilt a one-sided peak settles into is not graded (the beam is cast with the court walls' toes, which hold
 it); the wythe's own bearing on the beam top (6.2 psi) is not graded.
+
+### 6m. A bond break at the base, the ties on force, the perimeter and the bed's wind (2026-11-23, owner: "bond break at the base")
+
+**The bond break (model fact).** The wythe stands on a brake-formed steel flashing sheet on the beam's
+top (`FL-B-BRICK-BASE-W` x 114.5"-224.34", `-E` x 287.66"-317.5"; none under the door's reveal), dry,
+the first course bedded on it, the inboard leg turned up the backup 2", the drip 3/8" past the face:
+IRC R703.8.5's flashing beneath the first course and BIA TN 28D's bond break in one ("A bond break is
+recommended between the exterior brick wythe and the foundation. This permits differential movement
+among the materials", TN 28D). The same sheet is lapped over each lintel (`FL-B-BRICK-WIN-HEAD`,
+`-DOOR-HEAD`). Weeps (R703.8.6, at least 3/16", at most 33" o.c., immediately over the flashing) are
+open head joints, in `notes/veneer_opening_detail.md` and on the sheet; the model carries none.
+`structural.veneer_cavity_width` reads the base runs and FAILs a wythe whose base they leave bare.
+Drawn on `SL-D-VENEER-HEAD` (through the door's centre, x 21'-4") and `SL-D-VENEER-BASE`; the wall
+section at x=10' cuts where neither reveal is, so it could not show the lintel flashing, and
+`TR-CATLIN-VENEER-OPENING` (its old "arch, no lintel" reason gone) is un-suppressed.
+
+**The ties on force.** The court slides under the wythe, so each tie carries friction drag in both
+directions (summer closing 0.0854", winter opening about 0.124" on the record's thermal term over 70 F),
+not stiffness x displacement (which would be 2,500 lb/in x 0.0854" = 214 lb a tie, over the 125 lb
+allowable and the 210 lb design strength: the check FAILs a wythe with no bond break). The table is
+TMS 402-22 Table 6 as BIA TN 3C (2022) prints it: adjustable two-leg pintle 2,500 lb/in, 125 lb
+allowable, 210 lb design; adjustable slotted 3,000 lb/in, 200 / 330 lb. Wind by TN 3C's tributary method
+(Table 7, k <= 2,500 lb/in: 2 p At): 2 x 19.93 x 2.67 = **106.4 lb** of 125. Drag: net wythe weight
+268.86 plf / 7.425 ft x (203" x 89.1" - 14" x 20" - 63.3" x 80") / 144 = **3,204 lb** over
+**65 ties** (13 stations x 5 rows) = **49.3 lb per tie per unit of friction**. Drag plus wind stays
+under 125 lb for a friction up to **0.38**; drag alone for up to 2.54; the slotted 200 lb tie allows
+1.90 with wind. **The friction of brick and mortar on the flashing is not sourced**: no maker publishes
+it, and the study that tested it with common flashings (McGinley and Borchelt, "Friction at Supports of
+Clay Brick Walls", TMS Journal 9(2), 1991, DOI 10.70803/001c.141510) is paywalled (abstract only);
+a 2025 Canadian masonry symposium paper puts clay-brick friction at about 0.25 to over 1.0 with design
+standards at about 0.25-0.45 (a search summary, unverified). So the row is **UNKNOWN naming that input**
+(`veneer_ties.FRICTION_BRICK_ON_FLASHING`), with the bound printed. Over 0.38, the options are the
+slotted tie (a Table 6 row, a tie-type swap) or 12" stud bays (2 sf a tie, 1.22).
+
+**The perimeter (verifier defect).** R703.8.4.1.1 takes ties around the WHOLE perimeter, within 12" and
+at most 3 ft o.c. The door's jambs are 64.8" apart; its head band over the lintel (the angle's top
+at 83" over the base, up 12" and to the wythe's top) holds the three head cripples at 16" o.c. and the
+packs: 7 stations, widest 17.6" o.c., on the head cripples' range 83"-87.6" over the base. The window's
+head and sill bands hold its two jamb studs. Rows are bed joints (a 2 2/3" course module), at most 24"
+apart: **16", 34 2/3" (the window sill band), 48", 61 1/3" (its head band) and 85 1/3" (the door head, on
+the cripples)** over the base. `veneer_tie_layout` now stations cripples for the head and sill bands
+and grades the rows.
+
+**The bed under wind (verifier defect).** The strip between the flashing (a pin) and the first tie row
+at 16" takes half of p x its height at the base: 19.93 x (16/12) / 2 = 13.3 plf, acting at the beam's top
+17.75" over the bed: 236 lb-in per ft, which moves the resultant 0.48" (worst sign): e 2.29" -> **2.77"**,
+contact 9.7" of 12", peak **1,217 psf, 0.61** of 2,000. At 130 pcf brick (the house's is 1920 kg/m3 =
+120 pcf) it is 1,298 psf, 0.65 (dead alone 0.57); `scratch/L3/hand.py` section 4.
+
+**Not closed here:** the TJ-8000 rim joint 8.34" from the door's west jamb (see
+`sunken_door_band_header.md`).
 
 ## Sources
 

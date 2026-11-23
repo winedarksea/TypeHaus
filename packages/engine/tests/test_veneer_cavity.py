@@ -81,28 +81,53 @@ def test_the_layout_finding_passes_and_names_the_concrete_ends(catlin_ctx) -> No
     assert "none into the pour" in layout.message and "R703.8.4.1.1" in layout.message
 
 
-def test_tie_travel_reads_the_courts_closure_from_the_thermal_break_record(catlin_ctx) -> None:
-    """The ties take the closure L1's record bounds (0.0854"), and no tie maker publishes
-    travel normal to the wall (only the 1/16" fit TMS 402-16 allows): UNKNOWN, gate G8."""
-    from typehaus.engineering.thermal_break_joint import NAME
+def test_the_ties_take_drag_and_wind_on_a_bond_break(catlin_ctx, catlin_model_ro) -> None:
+    """Owner, G8: a bond break at the base. Each tie carries wind (TN 3C Table 7, 2 p At) and the
+    wythe's friction drag over 65 ties; the friction is unsourced, so UNKNOWN naming it, with
+    the bound printed. Without the flashing runs the ties take k x the closure and it FAILs."""
+    force = next(f for f in _grade(catlin_ctx, "2024 IRC") if "bond break" in f.message)
+    assert force.result is Result.UNKNOWN
+    msg = force.message
+    assert "FL-B-BRICK-BASE-E, FL-B-BRICK-BASE-W" in msg
+    assert "3,204 lb on 65 ties (13 stations x 5 rows) = 49.3 lb" in msg
+    assert "106.5 lb of 125" in msg and "friction up to 0.38" in msg
+    assert "drag alone for up to 2.54" in msg and "slotted tie" in msg
+    runs, bare = veneer_ties.base_flashing(catlin_model_ro, catlin_model_ro.wall("W-B-BRICK"))
+    assert runs == ["FL-B-BRICK-BASE-E", "FL-B-BRICK-BASE-W"] and bare < 1.0
 
-    closure = max(ls.demand for key in catlin_ctx.engineering
-                  if key.startswith("thermal_break_transfer/")
-                  for ls in catlin_ctx.engineering[key].limit_states if ls.name == NAME)
-    travel = next(f for f in _grade(catlin_ctx, "2024 IRC") if "closure" in f.message)
-    assert travel.result is Result.UNKNOWN
-    assert f"{closure:.4f}" in travel.message and "0.0625" in travel.message
+
+def test_a_wythe_with_no_flashing_runs_leaves_its_base_bare(catlin_model_ro) -> None:
+    """Without the runs the check FAILs: the brick follows the court and each tie takes
+    2,500 lb/in x the closure (214 lb against 125)."""
+    plan = catlin_model_ro.plan
+
+    class _Plan:
+        def all_elements(self):
+            return [e for e in plan.all_elements()
+                    if not getattr(e, "tag", "").startswith("FL-B-BRICK")]
+
+    class _Model:
+        openings = catlin_model_ro.openings
+
+    _Model.plan = _Plan()
+    runs, bare = veneer_ties.base_flashing(_Model, catlin_model_ro.wall("W-B-BRICK"))
+    assert runs == [] and bare == pytest.approx(203.0 - 63.3125, abs=1e-3)
 
 
-def test_the_veneer_anchor_item_retires_on_the_2024_irc(catlin_model_ro) -> None:
-    from typehaus.engineering.deferred import _veneer_anchor_keys
-    from typehaus.engineering.registry import EngineeringContext
+def test_the_perimeter_and_rows_are_graded(catlin_model_ro) -> None:
+    from typehaus import veneer_tie_layout
 
-    def keyed(irc_base):
-        return _veneer_anchor_keys(EngineeringContext(
-            plan=catlin_model_ro.plan, model=catlin_model_ro, irc_base=irc_base))
-
-    assert keyed("2018 IRC + MN amendments") == ["W-B-BRICK"]
-    assert keyed("2021 IRC") == [] and keyed("2024 IRC") == []
-    # An edition the table is not transcribed for is never read as covered.
-    assert keyed(None) == ["W-B-BRICK"]
+    wythe = catlin_model_ro.wall("W-B-BRICK")
+    lay = veneer_tie_layout.layout(catlin_model_ro, wythe,
+                                   veneer_ties.measure(catlin_model_ro, wythe), 2.67)
+    # Bed-joint rows at most 24" apart; each head and sill band holds one (R703.8.4.1.1).
+    assert lay.rows_in == pytest.approx((16.0, 34.667, 48.0, 61.333, 85.333), abs=1e-3)
+    assert lay.rows_met and lay.met
+    win = next(o for o in lay.openings if o.tag == "AO-B-BRICK-WIN")
+    door = next(o for o in lay.openings if o.tag == "AO-B-BRICK-DOOR")
+    assert win.head.row_in == pytest.approx(61.333, abs=1e-3)
+    assert win.sill.row_in == pytest.approx(34.667, abs=1e-3)
+    # The door's head band, over the 3" angle: 83"-87.6", on the head cripples and the packs.
+    assert door.sill is None and door.head.stations == 7 and door.head.max_gap_in <= 36.0
+    assert door.head.z_in == pytest.approx((83.0, 87.5625), abs=1e-3)
+    assert door.head.row_in == pytest.approx(85.333, abs=1e-3)

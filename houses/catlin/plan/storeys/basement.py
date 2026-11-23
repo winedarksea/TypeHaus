@@ -16,6 +16,8 @@ from typehaus import (
     Door,
     DrainDish,
     FloorOpening,
+    Flashing,
+    FormedFlashingSection,
     FoundationWall,
     FramingSpec,
     HumidityClass,
@@ -35,6 +37,7 @@ from typehaus import (
     SlabThermalBreak,
     Soffit,
     StructuralRole,
+    TrimKind,
     Wall,
     WallPaneling,
     Window,
@@ -1636,5 +1639,43 @@ BEAMS = [
          engineering_note="L3x3x1/4 hot-dip galvanized (ASTM A123) steel angle lintel over AO-B-BRICK-DOOR, 4 in bearing each side: IRC Table R703.8.3.1, 3x3x1/4, no story above, 6 ft"),
 ]
 
-ELEMENTS = [*NODES, *WALLS, *OPENINGS, *BEAMS, *ROOMS, *ALARMS, *SLABS, *PADS, *FLOOR_OPENINGS,
+# --- the veneer's base bond break and its flashing (2026-11-23, owner: "bond break at the base") ---
+#
+# The wythe stands on W-SG-BRKBM, which moves with the court (thermal closure and opening, the
+# backfill's sliding). IRC R703.8.5 flashes beneath the first course; BIA TN 28D recommends a
+# bond break there ("permits differential movement among the materials"). One run is both: a
+# brake-formed steel sheet on the beam's top, dry (no mortar bond to the beam), the first course
+# bedded on it, its inboard leg turned up the backup 2" behind the foam, its drip hanging 3/8"
+# past the face. The court slides under the wythe, so each tie takes friction drag and not
+# stiffness x displacement (`structural.veneer_cavity_width`, notes/sunken_garden_veneer_beam.md
+# §6m). Two runs: none under the door's reveal, where there is no brick. WEEPS (R703.8.6, 3/16"
+# every 33" at most, immediately over this flashing) are open head joints over each run:
+# notes/veneer_opening_detail.md; the model carries none. Over each lintel the same sheet
+# (R703.8.5), lapped up the backup and out over the angle, so the water an opening head sheds
+# leaves at its weeps. The sheet's material is the house's brake-formed steel; stainless is the
+# upgrade for wet alkaline mortar (owner to confirm).
+FLASHINGS = [
+    Flashing(uid="0WA1308RE7", tag="FL-B-BRICK-BASE-W", kind=TrimKind.DRIP_FLASHING, host_ref="W-B-BRICK",
+             path=(pt(inch(114.5), inch(-6.0)), pt(inch(224.34375), inch(-6.0))),
+             top_elevation=inch(-102.4375), depth=inch(0.375), thickness=inch(4.0),
+             material="formed-steel-flashing", back_side="right",
+             section=FormedFlashingSection(profile="counter", upstand=inch(2), drip=inch(0.375))),
+    Flashing(uid="8E5HFJYK0Q", tag="FL-B-BRICK-BASE-E", kind=TrimKind.DRIP_FLASHING, host_ref="W-B-BRICK",
+             path=(pt(inch(287.65625), inch(-6.0)), pt(inch(317.5), inch(-6.0))),
+             top_elevation=inch(-102.4375), depth=inch(0.375), thickness=inch(4.0),
+             material="formed-steel-flashing", back_side="right",
+             section=FormedFlashingSection(profile="counter", upstand=inch(2), drip=inch(0.375))),
+    Flashing(uid="X5DHN3YANZ", tag="FL-B-BRICK-WIN-HEAD", kind=TrimKind.DRIP_FLASHING, host_ref="W-B-BRICK",
+             path=(pt(inch(157), inch(-6.0)), pt(inch(179), inch(-6.0))),
+             top_elevation=inch(-42.4375), depth=inch(0.375), thickness=inch(4.0),
+             material="formed-steel-flashing", back_side="right",
+             section=FormedFlashingSection(profile="counter", upstand=inch(2), drip=inch(0.375))),
+    Flashing(uid="D9RT7NGEG8", tag="FL-B-BRICK-DOOR-HEAD", kind=TrimKind.DRIP_FLASHING, host_ref="W-B-BRICK",
+             path=(pt(inch(220.34375), inch(-6.0)), pt(inch(291.65625), inch(-6.0))),
+             top_elevation=inch(-19.4375), depth=inch(0.375), thickness=inch(4.0),
+             material="formed-steel-flashing", back_side="right",
+             section=FormedFlashingSection(profile="counter", upstand=inch(2), drip=inch(0.375))),
+]
+
+ELEMENTS = [*NODES, *WALLS, *OPENINGS, *BEAMS, *FLASHINGS, *ROOMS, *ALARMS, *SLABS, *PADS, *FLOOR_OPENINGS,
             *PANELING, *SOFFITS]

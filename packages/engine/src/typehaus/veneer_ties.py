@@ -54,6 +54,20 @@ HIGH_WIND_PSF = 30.0
 TIE_SPACING_H_IN = 32.0
 TIE_SPACING_V_IN = 24.0
 
+#: TMS 402-22 Table 6 as BIA TN 3C (2022) prints it, "veneer ties meeting the prescriptive tie
+#: type and backing requirements": (axial stiffness lb/in, allowable lb, design strength lb).
+#: ``adjustable_pintle`` is the two-leg eye-and-pintle the W2.8 row needs.
+TIE_TABLE_6 = {"adjustable_pintle": (2500.0, 125.0, 210.0),
+               "adjustable_slotted": (3000.0, 200.0, 330.0)}
+#: TN 3C Table 7, the tributary-area method: tie force = factor x p x At, by tie stiffness
+#: (k <= 2,500 lb/in: 2; <= 5,000: 2.5).
+TIE_FORCE_FACTOR_SOFT = 2.0
+#: Friction of brick and mortar on the base flashing sheet, the input the drag row needs. No
+#: maker publishes it; McGinley and Borchelt, "Friction at Supports of Clay Brick Walls" (TMS
+#: Journal 9(2), 1991) tested it with common flashing and its values were not opened (paywalled).
+#: ``None`` keeps ``structural.veneer_tie_force`` UNKNOWN; set it from a source, never a guess.
+FRICTION_BRICK_ON_FLASHING: float | None = None
+
 
 @dataclass(frozen=True)
 class TieRow:
@@ -204,3 +218,45 @@ def beyond_table(model: Any, irc_base: str | None) -> list[str]:
         if reach is None or covering_row(irc_base, reach.to_structure_in) is None:
             out.append(wythe.tag)
     return out
+
+
+def base_flashing(model: Any, wythe: Any) -> tuple[list[str], float]:
+    """``(flashing runs, brick base left bare in)``: the authored ``Flashing`` runs hosted on
+    the wythe with their top at its base (the bond break and R703.8.5 flashing in one), and
+    the length of base along the wythe they do not cover, net of an opening that reaches the
+    base (a door's reveal has no brick to flash under)."""
+    (ax, ay), (bx, by) = wythe.axis
+    length = math.hypot(bx - ax, by - ay)
+    u = ((bx - ax) / length, (by - ay) / length)
+
+    def along(p) -> float:
+        return ((p[0] - ax) * u[0] + (p[1] - ay) * u[1]) / _M_PER_IN
+
+    brick = next(ly for ly in wythe.layers if ly.function == "structure" and ly.polygon)
+    us = [along(p) for p in brick.polygon]
+    lo, hi = max(0.0, min(us)), min(length / _M_PER_IN, max(us))
+    spans = [(wythe_u(model, o, -1), wythe_u(model, o, 1)) for o in model.openings
+             if o.host_wall == wythe.tag and o.sill_m <= 1e-4]
+    covered, tags = [], []
+    for el in model.plan.all_elements():
+        path = getattr(el, "path", None)
+        if (getattr(el, "host_ref", None) != wythe.tag or path is None
+                or abs(el.top_elevation.meters - wythe.z0_m) > 0.5 * _M_PER_IN):
+            continue
+        pts = [along((p.x.meters, p.y.meters)) for p in path]
+        covered.append((min(pts), max(pts)))
+        tags.append(el.tag)
+    bare = 0.0
+    cuts = sorted({lo, hi, *(c for pair in covered + spans for c in pair)})
+    for a, b in zip(cuts, cuts[1:], strict=False):
+        mid = (a + b) / 2.0
+        if not lo <= mid <= hi:
+            continue
+        if not any(x <= mid <= y for x, y in covered + spans):
+            bare += b - a
+    return sorted(tags), bare
+
+
+def wythe_u(model: Any, opening: Any, side: int) -> float:
+    """An opening's edge along its wythe, in from the wall's start."""
+    return opening.center_along_m / _M_PER_IN + side * opening.width_m / _M_PER_IN / 2.0

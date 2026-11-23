@@ -29,6 +29,8 @@ def test_both_reveals_pass_on_the_3x3x1_4_row(catlin_ctx) -> None:
     # clear the wythe's top by 2"); 63 5/16" is the RO's clear width.
     assert "63.31\" clear under BM-B-BRICK-LINTEL-DOOR" in door.message
     assert "spans 6' with no story above, 4.00\" of bearing a side" in door.message
+    # R703.8.5: the head flashing is a model fact now, not a note about a wall section.
+    assert "flashed over per R703.8.5 by FL-B-BRICK-DOOR-HEAD" in door.message
 
 
 def test_an_opening_with_no_lintel_is_a_fail(catlin_ctx) -> None:

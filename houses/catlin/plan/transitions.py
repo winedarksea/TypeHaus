@@ -215,24 +215,20 @@ TRANSITIONS = (
     # the jamb gets 4" shallower), and one sheet is what draws them.
     Transition(uid="CATR007AAAA", tag="TR-CATLIN-BASEMENT-OPENING", title="Basement opening",
                # The [0-9] is load-bearing, not decoration: a bare ``BASEMENT_*`` also
-               # swallows BASEMENT_BRICK_VENEER, whose perimeter is an open segmental arch
-               # that TR-CATLIN-VENEER-OPENING deliberately SUPPRESSES. Widening this glob
-               # silently re-adds a detail sheet for a perimeter with no perimeter work.
+               # swallows BASEMENT_BRICK_VENEER, which TR-CATLIN-VENEER-OPENING draws with
+               # its own notes (lintel, flashing, weeps) and not the foundation window's.
                condition_pattern="opening_perimeter:BASEMENT_[0-9]*",
                notes="notes/basement_to_framed_wall_detail.md", overlay="foundation-window"),
     # Starred: the garage/breezeway threshold condition — the overhead door opens onto the
     # slab at grade, with the ICF stem gapped under it, so the perimeter
     # flashing here is nothing like a standard framed opening.
-    # Same reasoning as the garden arch above, one wall further north: the reveals through
-    # W-B-BRICK are open arched holes in a freestanding wythe, and the flashed, bucked,
-    # sealed opening is the one in the framed wall behind them (TR-CATLIN-GARDEN-FRAMED-
-    # OPENING draws that). A second sheet here would detail a perimeter
-    # that has no perimeter work.
+    # The reveals through W-B-BRICK are flat-headed on a steel lintel each since 2026-11-23, with
+    # flashed heads, a flashed base bond break and weeps (IRC R703.8.3, R703.8.5, R703.8.6), so
+    # their perimeter has work and draws its own sheet. The flashed, bucked, sealed opening in
+    # the framed wall behind is TR-CATLIN-GARDEN-FRAMED-OPENING's.
     Transition(uid="CATR015AAAA", tag="TR-CATLIN-VENEER-OPENING", title="Veneer opening",
                condition_pattern="opening_perimeter:BASEMENT_BRICK_VENEER",
-               suppress=True,
-               # (single literal: the editable dialect forbids concatenated strings)
-               suppress_reason="the veneer reveal is a self-supporting segmental arch in a wythe on its own beam, under the porch — no lintel, buck or frame, so nothing is flashed at its perimeter; the opening behind it is flashed on the backup wall, detailed by TR-CATLIN-GARDEN-FRAMED-OPENING"),
+               notes="notes/veneer_opening_detail.md"),
     # The sunken garden's framed walkout. D-B-SUNKEN is an ordinary innie opening in a 2x6
     # wall — buck, pan, jamb flashing — standing on the 7 1/4" concrete curb.
     # `window-head-jamb-sill` rather than the `outie-window-truss` the above-grade

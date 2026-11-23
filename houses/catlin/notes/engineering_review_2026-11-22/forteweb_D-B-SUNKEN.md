@@ -28,9 +28,12 @@ on the `W-B-S3-FR` top plates (SPF).
 | Rough opening (clear span) | 63 5/16" = 5.276 ft |
 | Bearing length, each end | 6" (TJ-8000 p.6 minimum 4 1/2"; plies extend 6" past the opening) |
 | Span, centre to centre of bearing | 63.3125 + 6 = 69.3125" = **5.776 ft** |
-| Bearing, west end centre to east end centre | x 218.34"..293.66" ply, supports at x 221.34" and 290.66" |
+| Bearing, each end | the member's first and last 6": supports centred at 3.00" and 72.3125" from the left end (x 221.34" and 290.66") |
 
 ## Loads (IRC R301.5, Table R301.7; TJ-8000 p.6: neglect the header's own weight)
+
+Positions are measured **from the member's left end** (the west end, the outer face of the west
+jamb pack, x = 218.34"); the member is 75.3125" long, bearing 0"-6" and 69.3125"-75.3125".
 
 Floor strip = 1.125" (rim line to the outer edge) + 14.875"/2 (half-way to the next joist line
 at y = 16") = 8.5625" = **0.71354 ft**.
@@ -39,12 +42,26 @@ at y = 16") = 8.5625" = **0.71354 ft**.
 |---|---|---|---|
 | Uniform, full span | Dead | **7.135 plf** (10 psf x 0.71354 ft) | R301.5 floor dead |
 | Uniform, full span | Live (floor) | **28.542 plf** (40 psf x 0.71354 ft) | R301.5 |
-| Point, west | Live | **325.73 lb** at **7.969" from the west bearing's centre** (3.000" to the opening edge + 4.969" to the seat's screw-group centroid), i.e. x = 229.31" | `D-M-PORCH` sill beam seat reaction, `notes/exterior_door_sill_beam.md` §3 (worst reaction, PyNite spring model) |
-| Point, east | Live | **325.73 lb** at **7.969" from the east bearing's centre**, x = 282.69" | same, both seats at their worst at once (conservative: one 300 lb load gives 325.73 + about -26 lb) |
+| Point, west seat | Live | **325.73 lb** at **10.97" from the left end** (6.00" bearing + 4.97" to the screw group's centroid; x = 229.31") | `D-M-PORCH` sill beam seat reaction, `notes/exterior_door_sill_beam.md` §3 (worst reaction, PyNite spring model) |
+| Point, east seat | Live | **325.73 lb** at **64.34" from the left end** (x = 282.69") | same; both seats at their worst at once (conservative: one 300 lb load gives 325.73 and about -26 lb) |
+
+**Seat loads are SIDE loads on the outer ply**, the 1 1/4" rim (the ply on the exterior face);
+they are not top loads. The seat's HeadLOK screws bear on the rim's outer face and into the
+backing ply behind it, so enter each as a side-applied (face) load on ply 1 and not as a load on
+the member's top. **The dead/live split of the seat loads is conservatively all live**: the sill
+beam's 300 lb is an approach live load, and no dead component is separated out.
 
 Deflection limits: L/360 live, L/240 total (IRC Table R301.7; the table's own basis).
 
 ## What ForteWEB cannot take, and where it is graded instead
+
+**Torsional restraint assumption at the bearings.** Each seat's couple is 325.73 lb x 7.25" =
+**2,362 lb-in** (2,361.6), two of them. ForteWEB takes no torsion, so the run assumes the header
+is restrained against rolling at both bearings (the wall plates under it, and the subfloor
+nailed to its top edge), and that the couple is self-equilibrated in the seat (screw tension
+against the sheathing's bearing, `exterior_door_sill_beam.md` §3) before it reaches the header.
+Whatever residual rolling reaches the header is resisted at the bearings by the plates and the
+subfloor sheathing. This is an assumption the run cannot test; Weyerhaeuser can confirm it.
 
 The seat reactions act **7.25" outboard of the rim's face** (0.5" sheathing + 6.0" seat +
 0.75"), so each is a vertical load plus a couple (2,361.6 lb-in at 325.73 lb). ForteWEB takes

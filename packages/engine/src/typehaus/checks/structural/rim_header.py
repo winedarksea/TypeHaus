@@ -54,6 +54,45 @@ def _finding(door: str, tags, title: str, states: list[LimitState], detail: str 
     return passed(_ID, text, tags, code=_CODE)
 
 
+_JOINT_MIN_IN = 12.0
+
+
+def _joint_finding(ctx: CheckContext, door: str, tags, wall, header, floor) -> Finding:
+    """TJ-8000 p.5: a rim board joint stands at least 12" beyond the opening. A joint is where
+    two edge rims on the band line meet (the floors' seam), within 24" of the opening."""
+    _u, along, across = _frame(wall.axis)
+    band = sum(across(p.p0) for p in header.plies) / len(header.plies)
+    ends = []
+    z0 = min(p.z0_m for p in header.plies)
+    for other in ctx.model.floors:
+        for m in other.members:
+            if (m.child_key.startswith("edge-rim-") and abs(m.z0_m - z0) < 1.5 * _IN
+                    and abs(across(m.p0) - band) < 3 * _IN
+                    and abs(across(m.p0) - across(m.p1)) < 1e-6):
+                ends += [(along(m.p0), other.tag, m.child_key), (along(m.p1), other.tag,
+                                                                  m.child_key)]
+    joints = []
+    for i, (s, ftag, key) in enumerate(ends):
+        if any(abs(s - t) < 2 * _IN and (ftag, key) != (f2, k2)
+               for j, (t, f2, k2) in enumerate(ends) if j != i):
+            d = ((header.ro_lo - s) if s <= header.ro_lo else (s - header.ro_hi)) / _IN
+            if abs(d) < 24.0 and s not in [x for x, _ in joints]:
+                joints.append((s, d))
+    if not joints:
+        return passed(_ID, f"{door} rim joints: none within 24\" of the opening", tags,
+                      code=_CODE)
+    near = min(joints, key=lambda j: j[1])
+    if near[1] >= _JOINT_MIN_IN - 1e-6:
+        return passed(_ID, f"{door} rim joint {near[1]:.2f}\" from the opening, at least "
+                           f"{_JOINT_MIN_IN:g}\" (TJ-8000 p.5)", tags, code=_CODE)
+    return unknown(
+        _ID, f"{door} rim joint: the floors' seam puts two edge rims' ends {near[1]:.2f}\" "
+             f"from the opening's jamb (outside the pack), under TJ-8000 p.5's {_JOINT_MIN_IN:g}\" "
+             f"for a rim header; the header ply stops at the floor outline too, so nothing "
+             f"bridges it", tags, code=_CODE,
+        fix="move the seam, or have Weyerhaeuser confirm the splice (ForteWEB models one piece)")
+
+
 def _one(ctx: CheckContext, door) -> list[Finding]:
     tags = (door.tag, door.header_in_band)
     header = band_header(ctx.model, door.tag)
@@ -100,6 +139,7 @@ def _one(ctx: CheckContext, door) -> list[Finding]:
             + (f"{len(points)} seat loads of {', '.join(f'{p:,.1f}' for _x, p in points)} lb "
                f"=> equivalent uniform {shear:.1f} (shear) / {moment:.1f} (moment) / "
                f"{delta:.1f} (deflection) plf" if points else "no seat loads"))
+    out.append(_joint_finding(ctx, door.tag, tags, wall, header, floor))
     out.append(_finding(door.tag, tags, f"2-ply 1 1/4\" LSL rim header over {clear_in:.2f}\" "
                                         f"({span_in / 12:.3f} ft c-c, the {row[0]:g} ft row)",
                         [LimitState("header, total load", equivalent, row[1], "plf",

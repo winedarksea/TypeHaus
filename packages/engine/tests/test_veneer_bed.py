@@ -15,10 +15,12 @@ def test_the_resultant_sits_outside_the_kern_and_the_peak_is_graded(catlin_ctx) 
     msg = finding.message
     # 268.9 plf of brick + 221.6 plf of beam = 490.5 plf, 2.30" off the 12" centre (kern 2.00").
     assert "W-B-BRICK 268.9 + beam 221.6 = 490.5 plf" in msg
-    assert "resultant 2.30\" off" in msg and "kern 2.00\"" in msg
-    # Partial contact over 11.1", peak 1,059 psf of the site's 2,000 psf (R401.4.1, GM).
-    assert "partial contact over 11.11\" of 12\"" in msg and "peak 1,059 psf" in msg
-    assert "(0.53)" in msg
+    assert "resultant 2.30\"" in msg and "kern 2.00\"" in msg
+    # The veneer's wind base shear, 13.3 plf at the beam top 17.75" over the bed (236 lb-in/ft),
+    # moves it 0.48" to 2.78": partial contact over 9.67", peak 1,217 psf of 2,000 (R401.4.1).
+    assert "wind base shear 13.3 plf x 17.75\" = 236 lb-in/ft moves it 0.48\"" in msg
+    assert "= 2.78\" off" in msg and "partial contact over 9.67\" of 12\"" in msg
+    assert "peak 1,217 psf" in msg and "(0.61)" in msg
 
 
 def test_widening_the_stone_does_not_widen_the_contact() -> None:
