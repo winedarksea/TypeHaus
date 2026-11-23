@@ -74,6 +74,8 @@ class Water:
     #: ``wind_dir``; added the adverse way to the soil's resultant.
     wind_lb: float = 0.0
     wind_dir: tuple[float, float] = (1.0, 0.0)
+    #: The same structure's other-axis wind, lb, added along the soil's own resultant.
+    wind_along_lb: float = 0.0
 
 
 DRY = Water("dry")
@@ -129,6 +131,9 @@ class Body:
             dx, dy = water.wind_dir
             sign = 1.0 if rx * dx + ry * dy >= 0.0 else -1.0
             rx, ry = rx + sign * water.wind_lb * dx, ry + sign * water.wind_lb * dy
+        if water.wind_along_lb:
+            norm = (rx * rx + ry * ry) ** 0.5 or 1.0
+            rx, ry = rx * (1 + water.wind_along_lb / norm), ry * (1 + water.wind_along_lb / norm)
         return rx, ry
 
     def resultant(self, water: Water = DRY) -> float:
