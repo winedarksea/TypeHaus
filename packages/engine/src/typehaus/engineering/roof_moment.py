@@ -179,9 +179,8 @@ def roof_base_moments(ctx: EngineeringContext) -> dict[str, tuple[float, float, 
         if any(isinstance(ctx.plan.by_tag(t), Wall)
                for beam in beams for t in beam.bearing_refs or ()):
             continue
-        # ** A PINNED POST'S BASE HALF GOES DOWN ITS PIER, WHATEVER CARRIES THE ROOF. **
-        # Graded as a short pole by `column_base` (canopy_garage_diaphragm.md §6).
-        out.update(_pinned_piers(ctx, posts, wind))
+        # A pinned post's base drag goes down its pier as a short pole, not a moment column:
+        # `pinned_pier_poles` and `structural.column_base` (decision 16, 2026-11-22).
         columns = sorted({t for beam in beams for t in beam.bearing_refs or ()
                           if t in posts
                           and assembly_structure_material(
@@ -248,16 +247,29 @@ def roof_base_moments(ctx: EngineeringContext) -> dict[str, tuple[float, float, 
     return out
 
 
+def pinned_pier_poles(ctx: EngineeringContext) -> dict[str, tuple[float, float, str]]:
+    """``pier tag -> (ASD shear lb, moment about the pad top lb-ft, basis)`` for every cast
+    pier under a PINNED roof post — a short pole graded prescriptively by IBC 1807.3.2.1 in
+    ``structural.column_base`` (decision 16), never a moment column of the register."""
+    from typehaus.engineering.roof_lateral import roof_winds
+    from typehaus.model.structure import Post
+
+    posts = {e.tag: e for e in ctx.plan.all_elements() if isinstance(e, Post)}
+    out: dict[str, tuple[float, float, str]] = {}
+    for wind in roof_winds(ctx).values():
+        for tag, case in _pinned_piers(ctx, posts, wind).items():
+            if tag not in out or case[1] > out[tag][1]:
+                out[tag] = case
+    return out
+
+
 def _pinned_piers(ctx: EngineeringContext, posts: dict[str, Any],
                   wind: Any) -> dict[str, tuple[float, float, str]]:
-    """The cast pier under each PINNED roof post: a short pole, not a moment column.
+    """The cast pier under each PINNED roof post: ``(shear, moment, basis)``.
 
     ``notes/canopy_garage_diaphragm.md`` §6. The post returns half its own drag to its base
     (``roof_lateral.PinnedPost``) and the pier adds its own drag over the length it stands
-    out of grade. Both are applied to the pier as a cantilever off its pad top, which is the
-    ``(moment, arm)`` factorisation ``column_base`` turns back into ``P`` at ``h`` above
-    grade for IBC 1807.3.2.1 — the arm less the buried shaft is exactly the short-pole
-    height. No guard case: a roof post is not a guard.
+    out of grade, both as a cantilever off its pad top. No guard case.
     """
     from typehaus.engineering.pier_basis import _round_size
     from typehaus.model.structure import Pad
@@ -282,7 +294,6 @@ def _pinned_piers(ctx: EngineeringContext, posts: dict[str, Any],
         moment = post.base_lb * height_ft + pier_drag * (height_ft - exposed_ft / 2.0)
         if shear <= 0.0:
             continue
-        _SHEARS[pier.tag] = (shear, moment / shear)
         basis = (
             f"wind on {wind.roof_tag}: q_h {wind.q_h_psf:.1f} psf ({wind.basis_text}), "
             f"{wind.pressure_psf:.3f} psf ASD on any band at the §29.3 solid-sign "
@@ -292,12 +303,11 @@ def _pinned_piers(ctx: EngineeringContext, posts: dict[str, Any],
             f"top: {post.base_lb:,.2f} lb. The pier adds its own drag over the "
             f"{exposed_ft:.3f}' it stands out of grade, {pier_drag:,.2f} lb at mid-height. "
             f"{shear:,.2f} lb of ASD shear at an effective {moment / shear:.3f}' above the "
-            f"pad top — a SHORT POLE in the soil, graded by `column_base`; the roof's own "
-            f"shear goes to the structure the deck delivers to, not here. "
-            f"GUARD: none — a roof post is not a guard")
+            f"pad top — a SHORT POLE in the soil; the roof's own shear goes to the "
+            f"structure the deck delivers to, not here")
         previous = out.get(pier.tag)
-        if previous is None or moment > previous[0]:
-            out[pier.tag] = (moment, 0.0, basis)
+        if previous is None or moment > previous[1]:
+            out[pier.tag] = (shear, moment, basis)
     return out
 
 

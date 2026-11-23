@@ -311,12 +311,85 @@ def _holdown_rows(ctx, wall, spec, shear_lb, top_ft, states, notes, missing, inp
             f"{spec.holdown} {'F2, oriented along the panel' if along else 'lower lateral'}: "
             f"the base plates bear on ONE chord in compression, so the whole in-plane shear "
             f"reaches one base, which is the compression chord — no uplift on it to combine"))
+    _pullout_rows(ctx, bases, piers, tension, states, missing)
+    _pad_bearing_rows(ctx, bases, piers, shear_lb * height / lever, states, missing)
     item = hardware_by_model(spec.holdown)
     if getattr(item, "anchorage_in_rating", False):
         notes.append(f"{spec.holdown} is cast in and its uplift row is measured through the "
                      f"concrete (cracked), so no separate anchor and no ACI 318 Ch. 17 row "
                      f"stands in for it; the straps want >= 3in to the pier edge.")
     return True
+
+
+#: The low end of ``soil.SOIL_UNIT_WEIGHT_BAND_PCF``: the band end that holds LESS down.
+_PRISM_PCF = 110.0
+
+
+def _pullout_rows(ctx, bases, piers, tension, states, missing) -> None:
+    """Each chord's pier against the full chord tension, at ASCE 7-16 §2.4.1's 0.6D.
+
+    Decision 15 (review C-1). Held down by the shaft, the doweled pad, the soil prism standing
+    on the pad's projection (grade to pad top, the low end of the unit-weight band), and the
+    post and wall dead the pier carries; never the roof or deck dead (the net roof uplift in
+    the tension already spends the roof's 0.6D). ``north_entry_piers.md`` §6d.
+    """
+    from typehaus.engineering.footing_pier import grade_ft
+    from typehaus.engineering.soil import CONCRETE_UNIT_WEIGHT_PCF
+    from typehaus.model.structure import Pad
+
+    grade = grade_ft(ctx)
+    for tag in sorted({t for b in bases for t in b.connects if t in piers}):
+        pier = piers[tag]
+        pad = ctx.plan.by_tag(getattr(ctx.plan.by_tag(tag), "supported_by", "") or "")
+        if grade is None or not isinstance(pad, Pad) or pad.bottom_elevation is None:
+            missing.append(f"the pad under {tag} and Site.grade, for its pull-out row")
+            continue
+        area = _pad_area_ft2(pad)
+        thick = pad.thickness.inches / 12.0
+        top = pad.bottom_elevation.inches / 12.0 + thick
+        shaft_ft2 = pier.gross_area_in2 / 144.0
+        pad_lb = area * thick * CONCRETE_UNIT_WEIGHT_PCF
+        prism_lb = max(area - shaft_ft2, 0.0) * max(grade - top, 0.0) * _PRISM_PCF
+        held = pier.self_weight_lb + pad_lb + prism_lb + pier.carried_dead_lb \
+            + pier.wall_dead_lb
+        states.append(LimitState(
+            f"{tag} pier pull-out under the tension chord", tension, 0.6 * held, "lb",
+            f"0.6 x (shaft {pier.self_weight_lb:,.0f} + doweled pad {pad.tag} "
+            f"{area:.2f} ft2 x {thick * 12:.0f}\" {pad_lb:,.0f} + soil over the pad "
+            f"{grade - top:.2f}' at {_PRISM_PCF:.0f} pcf {prism_lb:,.0f} + post "
+            f"{pier.carried_dead_lb:,.0f} + wall {pier.wall_dead_lb:,.0f}) lb, ASCE 7-16 "
+            f"§2.4.1 0.6D + 0.6W; no deck or roof dead credited"))
+
+
+def _pad_area_ft2(pad) -> float:
+    ring = [p.xy_m for p in pad.outline]
+    return abs(sum(a[0] * b[1] - b[0] * a[1]
+                   for a, b in zip(ring, ring[1:] + ring[:1], strict=False))) / 2.0 / _M_PER_FT ** 2
+
+
+def _pad_bearing_rows(ctx, bases, piers, overturning, states, missing) -> None:
+    """The compression chord's pad, ASCE 7-16 §2.4.1 D + 0.75L + 0.75S + 0.75(0.6W) (review
+    C-6): gravity plus the overturning couple, gross on the pad against the presumptive
+    allowable (IBC Table 1806.2). The gravity-only case is ``structural.deck_footing_size``'s."""
+    from typehaus.engineering.soil import CONCRETE_UNIT_WEIGHT_PCF, presumptive
+    from typehaus.model.structure import Pad
+
+    soil = presumptive(getattr(ctx, "soil_class", None), basis=getattr(ctx, "soil_basis", None))
+    for tag in sorted({t for b in bases for t in b.connects if t in piers}):
+        pier = piers[tag]
+        pad = ctx.plan.by_tag(getattr(ctx.plan.by_tag(tag), "supported_by", "") or "")
+        if soil is None or not isinstance(pad, Pad):
+            missing.append(f"a soil class and the pad under {tag}, for its bearing row")
+            continue
+        area = _pad_area_ft2(pad)
+        pad_lb = area * pad.thickness.inches / 12.0 * CONCRETE_UNIT_WEIGHT_PCF
+        load = pier.dead_lb + pad_lb + 0.75 * pier.live_lb + 0.75 * overturning
+        states.append(LimitState(
+            f"{pad.tag} bearing under the compression chord", load / area,
+            soil.allowable_bearing_psf, "psf",
+            f"(D {pier.dead_lb:,.0f} + pad {pad_lb:,.0f} + 0.75 x L+S {pier.live_lb:,.0f} + "
+            f"0.75 x overturning {overturning:,.0f}) lb / {area:.2f} ft2, gross, no displaced "
+            f"soil credited; {soil.citation}"))
 
 
 def _axis_of(ctx, wall) -> str:

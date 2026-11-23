@@ -27,6 +27,7 @@ from typehaus.checks._authoring import unknown as _unknown
 from typehaus.checks.guard_lines import guard_lines
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.checks.soil import site_soil_bearing_psf
+from typehaus.checks.structural.deck_piers import footing_pier_finding
 from typehaus.checks.structural.deck_tables import (
     DECK_DEAD_LOAD_PSF,
     DECK_TABLE_LIVE_PSF,
@@ -580,6 +581,9 @@ def deck_post_size(ctx: CheckContext) -> list[Finding]:
                 continue
             height_ft = (solid.z1_m - solid.z0_m) / _M_PER_FT
             limit = deck_post_height_limit(post.size, tributary)
+            if limit is None and (pier := footing_pier_finding(ctx, deck.tag, post)):
+                out.append(pier)
+                continue
             if limit is None:
                 # Off the end of R507.4 — a round column, or a tributary the table stops
                 # short of. The table not publishing a row is not the same as the post
