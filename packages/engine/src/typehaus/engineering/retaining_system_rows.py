@@ -20,6 +20,7 @@ All three are strength rows at 1.6H (IBC §1605.2); the sliding rows are service
 
 from __future__ import annotations
 
+from typehaus.engineering import retaining_system_working as W
 from typehaus.engineering.item import LimitState
 from typehaus.engineering.retaining_basis import (
     EARTH_PRESSURE_LOAD_FACTOR,
@@ -143,10 +144,10 @@ def strut(ctx, cross, body, braced: list, members) -> LimitState | None:  # type
         moment = (w1 * l1 ** 3 + w2 * l2 ** 3) / (8.0 * (l1 + l2)) if l2 else 0.0
         reaction = simple + (moment / l1 + moment / l2 if l2 else 0.0)
         if best is None or reaction > best[0]:
-            best = (reaction, simple, member.tag, tag2, w1, l1, w2, l2)
+            best = (reaction, simple, member.tag, tag2, w1, l1, w2, l2, moment)
     if best is None:
         return None
-    reaction, simple, tag1, tag2, w1, l1, w2, l2 = best
+    reaction, simple, tag1, tag2, w1, l1, w2, l2, moment = best
     span = cross_span_ft(ctx, cross)
     slender = max(0.0, 1.0 - (span * 12.0 / (32.0 * thickness)) ** 2)
     capacity = PHI_PLAIN * STRUT_STRESS_COEFFICIENT * fc * thickness * height * slender
@@ -157,7 +158,14 @@ def strut(ctx, cross, body, braced: list, members) -> LimitState | None:  # type
         f"ACI 318-19 §14.5.4, phi {PHI_PLAIN} at 1.6H — two-span continuous reaction "
         f"{reaction:,.0f} lb (simple spans {simple:,.0f}) from {tag1} ({w1:,.0f} plf over "
         f"{l1:.2f}', pinned at the corner){leg}; on {thickness:.0f}\" x {height:.1f}\", "
-        f"{fc_how}, {span:.1f}' clear, slenderness factor {slender:.2f}")
+        f"{fc_how}, {span:.1f}' clear, slenderness factor {slender:.2f}",
+        combination=W.STRENGTH[0], combination_factors=W.STRENGTH[1],
+        working=W.strut_steps(
+            w1=w1, l1=l1, w2=w2, l2=l2, tag1=tag1, tag2=tag2, simple=simple, moment=moment,
+            reaction=reaction, demand=EARTH_PRESSURE_LOAD_FACTOR * reaction,
+            factor=EARTH_PRESSURE_LOAD_FACTOR, thickness=thickness, height=height, fc=fc,
+            span=span, slender=slender, phi=PHI_PLAIN, coefficient=STRUT_STRESS_COEFFICIENT,
+            capacity=capacity))
 
 
 def _shares_line(ctx, braced, member_tag: str) -> bool:  # type: ignore[no-untyped-def]
@@ -240,5 +248,11 @@ def plan_bending(ctx, body, members, built) -> list[LimitState]:  # type: ignore
             name, demand, capacity, "lb",
             f"ACI 318-19 Ch. 23 strut and tie, phi {PHI_STM} at 1.6H — {basis}, simple span "
             f"{span:.2f}' (Mu {moment:,.0f} ft-lb; fixed ends 2/3 of it); the arch rises from "
-            f"the stem line to the toe-edge tie, z {lever:.1f}\"; tie {bars}, As {area:.2f} in²"))
+            f"the stem line to the toe-edge tie, z {lever:.1f}\"; tie {bars}, As {area:.2f} in²",
+            combination=W.STRENGTH[0], combination_factors=W.STRENGTH[1],
+            working=W.plan_steps(
+                side=side, w=w, width=push.width_ft, own=0.0 if side else own, load=load,
+                span=span, factor=EARTH_PRESSURE_LOAD_FACTOR, moment=moment, lever=lever,
+                demand=demand, tie_area=area, fy=REINFORCEMENT_FY_PSI, phi=PHI_STM,
+                capacity=capacity, tag=member.tag)))
     return rows

@@ -25,12 +25,15 @@ row is told. `_Geometry` and `analyse` are re-exported here under their old name
 
 from __future__ import annotations
 
+from typehaus.engineering import retaining_sheet
+from typehaus.engineering import retaining_working as W
 from typehaus.engineering.item import (
     EngineeringRecord,
     LimitState,
     Oracle,
     Quantity,
     Status,
+    declare_sheet,
     item_id,
 )
 from typehaus.engineering.registry import (
@@ -70,6 +73,7 @@ __all__ = ["KIND", "BASIS", "BASIS_VERSION", "REQUIRED_FS", "_Case", "_Geometry"
            "compute", "enumerate_walls"]
 
 KIND = "retaining_wall"
+declare_sheet(KIND, **retaining_sheet.WALL_SHEET)
 
 #: Bumped whenever the arithmetic below changes. It rides in the fingerprint, so a seal goes
 #: stale when the *calculation* changes and not only when the model does.
@@ -299,7 +303,8 @@ def _restate(states: tuple, system: tuple[float, float, float, str] | None) -> t
     fs, _demand, _capacity, item = system
     return tuple(
         LimitState("base restraint", REQUIRED_FS, fs, "", f"IRC R404.4 via {item}",
-                   is_safety_factor=True)
+                   is_safety_factor=True, combination=W.SERVICE[0],
+                   combination_factors=W.SERVICE[1], working=W.base_restraint(system))
         if state.name == "sliding" else state
         for state in states)
 

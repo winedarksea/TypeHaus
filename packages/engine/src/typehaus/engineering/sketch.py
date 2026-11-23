@@ -88,3 +88,61 @@ def pinned_post(*, title: str, length_ft: float, axial: str, lateral: str,
         "      //////  pier",
     ]
     return Figure(title, _fit(lines), caption)
+
+
+def column_on_spring(*, title: str, length_in: float, axial: str, moment: str, spring: str,
+                     stiffness: str, caption: str = "") -> Figure:
+    """A cantilever column standing on a rotational spring at its base, free at the head."""
+    lines = [
+        "        | " + axial,
+        "        v",
+        "      [====]  head free to sway",
+        "        ||",
+        "        ||",
+        "        ||   L = " + num(length_in) + " in",
+        "        ||   " + stiffness,
+        "        ||",
+        "      __||__  base turns by M / k_theta",
+        "      ((@@))  " + spring,
+        "      //////  " + moment + " at the base",
+    ]
+    return Figure(title, _fit(lines), caption)
+
+
+def court_loop_plan(*, title: str, left: tuple[str, str], right: tuple[str, str],
+                    base: tuple[str, str], strut: str, summary: tuple[str, ...],
+                    caption: str = "") -> Figure:
+    """A court closed into a U in plan, north up: two side walls facing across it, the cross
+    strut between them at the house end and the lone wall at the far end. Each wall is
+    ``(tag, "thrust x width")``; the retained soil is outside the U."""
+    lines = [
+        "                   N  (the house side)",
+        f"   {left[0]}        strut {strut}        {right[0]}",
+        "  soil->  #=================================#  <-soil",
+        "          #                                 #",
+        "          #           the court             #",
+        "          #                                 #",
+        "          ###################################",
+        f"                   {base[0]}      ^ soil",
+        f"  {left[0]}: {left[1]}",
+        f"  {right[0]}: {right[1]}",
+        f"  {base[0]}: {base[1]}",
+        *("  " + line for line in summary),
+    ]
+    return Figure(title, _fit(lines), caption)
+
+
+def joint_section(*, title: str, stack: tuple[str, ...], path: tuple[str, ...],
+                  caption: str = "") -> Figure:
+    """The court-to-house isolation joint in plan section, and the load path behind it."""
+    lines = [
+        "   court stem        board            house basement wall",
+        "  ###########|  [layer|foam]  |###################",
+        "  ###########|=>[layer|foam]=>|###################  thrust T",
+        "  ###########|  [layer|foam]  |###################",
+        "  the court warms and slides toward the house; the joint closes",
+        *("  " + line for line in stack),
+        "  thrust path, board to far footing line:",
+        *("    " + line for line in path),
+    ]
+    return Figure(title, _fit(lines), caption)

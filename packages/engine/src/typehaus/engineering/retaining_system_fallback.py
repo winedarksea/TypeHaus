@@ -16,6 +16,7 @@ passive's centroid.
 
 from __future__ import annotations
 
+from typehaus.engineering import retaining_system_working as W
 from typehaus.engineering.item import LimitState
 from typehaus.engineering.retaining_basis import REQUIRED_FS
 from typehaus.engineering.soil import SOIL_UNIT_WEIGHT_BAND_PCF
@@ -74,22 +75,34 @@ def fallback_rows(ctx, body, members, cases_levels, staged_fn, lateral_psf_per_f
         fs = directional_fs(body.resultant_vector(water), body.friction * body.weight(water),
                             credit, along)
         rows.append(_row(f"fallback lean wall under {tag}: sliding, {label}", fs, credit,
-                         passive, cap, length, z1, z2))
+                         passive, cap, length, z1, z2, lateral_psf_per_ft, phi_mn, arm,
+                         section, water.both_sides, body.friction * body.weight(water),
+                         body.resultant(water), key))
     credit = min(passive, cap) * length
     fs = staged_fn(body, (credit, along))
     rows.append(_row(f"fallback lean wall under {tag}: staged backfill", fs, credit,
-                     passive, cap, length, z1, z2))
+                     passive, cap, length, z1, z2, lateral_psf_per_ft, phi_mn, arm, section,
+                     False, None, None, "staged"))
     return rows
 
 
-def _row(name, fs, credit, passive, cap, length, z1, z2) -> LimitState:  # type: ignore[no-untyped-def]
+def _row(name, fs, credit, passive, cap, length, z1, z2, lateral, phi_mn, arm, section,
+         submerged, friction, resultant, key) -> LimitState:  # type: ignore[no-untyped-def]
     return LimitState(
         name, REQUIRED_FS, fs, "",
         f"IRC R404.4 on IBC Table 1806.2 presumptions (bed friction 0.35) + the wall's "
         f"{credit:,.0f} lb: the lesser of class-3 lateral bearing {passive:,.0f} plf "
         f"({z1:.2f}'-{z2:.2f}' below the court floor, IBC §1806.3.1) and the plain "
         f"{WIDTH_IN:.0f}\" wall's cantilever {cap:,.0f} plf (0.60 x 5 sqrt({FALLBACK_FC_PSI:,.0f}"
-        f") S over the passive centroid), over {length:.2f}'", is_safety_factor=True)
+        f") S over the passive centroid), over {length:.2f}'", is_safety_factor=True,
+        combination=W.COMBINATIONS[key][0] if key in W.COMBINATIONS else W.SERVICE_BACKFILL[0],
+        combination_factors=(W.COMBINATIONS[key][1] if key in W.COMBINATIONS
+                             else W.SERVICE_BACKFILL[1]),
+        working=W.fallback_steps(
+            passive=passive, submerged=SUBMERGED_FACTOR if submerged else 1.0, cap=cap,
+            phi_mn=phi_mn, arm=arm, section=section, width_in=WIDTH_IN, fc=FALLBACK_FC_PSI,
+            credit=credit, length=length, z1=z1, z2=z2, lateral=lateral, friction=friction,
+            resultant=resultant, fs=fs))
 
 
 def fallback_states(ctx, ref: str, walls: list, members, floor_ft: float, stem_ft: float  # type: ignore[no-untyped-def]
