@@ -3459,6 +3459,22 @@ record and not graded. μ stays 0.43.
 **NOT COVERED (owner):** that combination; lateral frost thrust in the top 42" of retained
 fill; seasonal thermal ratcheting under the sustained thrust.
 
+### 15l. The balcony's E-W wind on the court (2026-11-23)
+
+Under E-W wind the four balcony columns push both side stems the same way, so their base shear
+reaches the court's footings (lane L2's cantilever stems). The court record reads it from
+`pier_basis.cast_piers`: ASD per column, summed over the columns standing on the court. At
+this commit that is 4 x 492.8 = 1,971 lb, and it drops when L2 takes the porch curtains out of
+the wind area.
+
+The combination: IBC §1807.2.3's FS 1.5 is a service check, so the wind enters at ASCE 7
+§2.4.1's 0.6W with the dead load whole, added the adverse way along the side walls' axis. Wet
+and snow cases are not taken concurrent with wind.
+
+```
+sqrt(78,173² + (82 + 1,971)²) = 78,200 lb;  0.43 x 350,788 / 78,200 = 1.929   (dry 1.930)
+```
+
 ## Sources
 
 Every standard and document this note rests on, collected from the citations above.

@@ -68,6 +68,8 @@ CASES = (
     Case("retained full", "sliding, retained water to the terrace, court empty", "footing",
          False),
     Case("snow", "sliding, ground snow on the terrace", "footing", True),
+    Case("wind", "sliding, dry with the structure's wind on the court (D + H + 0.6W)",
+         "footing", True),
     # Owner's stated basis (2026-11-23): full ground snow and perched water at H/2 are not
     # concurrent. The combination is printed once, never graded (free body §15k).
     Case("perched snow", "sliding, perched at H/2 under snowmelt", "footing", False),
@@ -107,6 +109,28 @@ def _lip_ft(ctx, body: Body) -> float | None:  # type: ignore[no-untyped-def]
     return max(lips) if lips else None
 
 
+def court_wind(ctx, body: Body) -> tuple[float, tuple[float, float]]:  # type: ignore[no-untyped-def]
+    """``(lb, direction)``: the ASD (0.6W) E-W base shear of every cast column standing on
+    the court (``pier_basis.cast_piers``, read, never copied), along the side walls' push
+    axis. IBC §1807.2.3's FS 1.5 is a service check, so the wind enters at ASCE 7 §2.4.1's
+    0.6W with the dead load whole; wet and snow cases are not taken concurrent with it."""
+    from shapely.geometry import Point, Polygon
+
+    from typehaus.engineering.pier_basis import cast_piers
+
+    hull = Polygon([pt for p in body.prisms if p.label.startswith("footing:") and p.shape
+                    is not None for pt in p.shape.exterior.coords]).convex_hull
+    total = 0.0
+    for pier in cast_piers(ctx):
+        post = ctx.plan.by_tag(pier.tag)
+        where = getattr(post, "position", None)
+        if where is not None and hull.contains(Point(where.x.meters / _M, where.y.meters / _M)):
+            total += pier.wind_ew_base_shear_lb
+    opposed = [p.direction for p in body.pushes for o in body.pushes if o is not p
+               and abs(p.direction[0] * o.direction[0] + p.direction[1] * o.direction[1]) > 0.99]
+    return total, (opposed[0] if opposed else (1.0, 0.0))
+
+
 def _threshold_ft(ctx, body: Body) -> float | None:  # type: ignore[no-untyped-def]
     """The lowest door threshold opening onto a floor inside the loop: where a flooded court
     overflows (into the house). None where no door opens onto it."""
@@ -135,9 +159,11 @@ def waters(ctx, body: Body) -> tuple[dict[str, Water], list[str]]:  # type: igno
     site = getattr(getattr(ctx.plan, "project", None), "site", None)
     snow = getattr(site, "ground_snow_load_psf", None) or 0.0
     flood = _threshold_ft(ctx, body) or floor
+    wind, wind_dir = court_wind(ctx, body)
     out = {"dry": DRY, "deep dry": DRY,
            "perched": Water("perched", floor + height / 2.0),
            "snow": Water("snow", snow_psf=snow),
+           "wind": Water("wind", wind_lb=wind, wind_dir=wind_dir),
            "perched snow": Water("perched snow", floor + height / 2.0, snow_psf=snow),
            "retained full": Water("retained full", top),
            "flooded court": Water("flooded court", flood, both_sides=True),
@@ -238,7 +264,9 @@ def _how(case: Case, body: Body, water: Water, pcf: float) -> str:
     level = ("none" if water.level_ft is None else f"{water.level_ft * 12:.2f}\" ({where})")
     return (f"IRC R404.4 — {body.label} at {body.plane_ft * 12:.2f}\", mu {body.friction:.2f}"
             f": {body.friction:.2f} x N' {body.weight(water):,.0f} lb / H "
-            f"{body.resultant(water):,.0f} lb at {pcf:.0f} pcf; water {level}")
+            f"{body.resultant(water):,.0f} lb at {pcf:.0f} pcf; water {level}"
+            + (f"; the columns' ASD E-W base shear {water.wind_lb:,.0f} lb added the adverse "
+               f"way (IBC §1807.2.3 at service, ASCE 7 §2.4.1 0.6W)" if water.wind_lb else ""))
 
 
 def _table(pcf: float, body: Body, deep: Body | None, levels: dict[str, Water]) -> str:
