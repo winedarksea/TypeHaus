@@ -218,7 +218,7 @@ def test_no_deck_sisters_a_joist_and_one_floor_does(catlin_model):
         assert floor.tag not in unsistered or found == [], floor.tag
         sisters.extend((floor.tag, m) for m in found)
     # Two additional full-span plies carry ST-S2A's departing-rim reactions on FS-S-EAST;
-    # FS-M-EAST's two LVL plies are D-B-SUNKEN's flush band header (``extent``-clipped);
+    # FS-M-EAST's ply is D-B-SUNKEN's rim-header ply (``extent``-clipped);
     # FS-M-NE's two are the doubled 316/332 trusses under the peninsula.
     # FS-SG-BALCONY (2026-11-05): two 20" plies behind each front guard bracket and the
     # doubled north edge joist, fastener backing for RL-SG-BALCONY's 6" screws; since
@@ -229,9 +229,13 @@ def test_no_deck_sisters_a_joist_and_one_floor_does(catlin_model):
     # Sill seat backers (2026-11-18): BALCONY's two rim-stock plies on FS-S-EAST, ENTRY's two
     # 1/2" fillers on FS-M-MECH. FS-BW-FLOOR's west edge: a 2-ply 2x8 in three pieces, a
     # third ply on the two end pieces under W-BW-SCREEN's plate stubs.
+    # 2026-11-23: FS-M-EAST's band header is ONE ply of rim stock (the 2-ply LSL rim header over
+    # D-B-SUNKEN, TJ-8000 p.7), not two LVL plies. FS-M-STAIR's and FS-S-WEST's single plies are
+    # the load-path lanes' (STAIR_FLOOR's third ply; FS-S-WEST's), already on the integration branch.
     assert sorted(tag for tag, _ in sisters) == ["FS-BW-FLOOR"] * 8 + [
-        "FS-M-EAST", "FS-M-EAST"] + ["FS-M-MECH"] * 2 + [
-        "FS-M-NE", "FS-M-NE", "FS-M-WEST"] + ["FS-S-EAST"] * 4 + ["FS-SG-BALCONY"] * 7
+        "FS-M-EAST"] + ["FS-M-MECH"] * 2 + [
+        "FS-M-NE", "FS-M-NE", "FS-M-STAIR", "FS-M-WEST"] + ["FS-S-EAST"] * 4 + [
+        "FS-S-WEST"] + ["FS-SG-BALCONY"] * 7
     # Full span, tip to tip: a sister that stops short carries nothing where the load is
     # (``resolve/floors.py::_reinforcement_members``). 17.79' and not the 18'-0" bearing grid
     # — the joist it doubles starts 1 3/4" in, behind the west rim board, and since decision

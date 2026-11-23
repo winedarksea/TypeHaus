@@ -192,6 +192,16 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey, anchors=()
                 a = ends.tip_lo
             if span_index == len(boundaries) - 2:
                 b = ends.tip_hi
+            if rim:
+                # The edge rim's splice is the crew's (``JoistSpec.edge_rim_extend``/``_trim``).
+                lo_move = (spec.edge_rim_trim[0].meters if spec.edge_rim_trim else 0.0) - (
+                    spec.edge_rim_extend[0].meters if spec.edge_rim_extend else 0.0)
+                hi_move = (spec.edge_rim_extend[1].meters if spec.edge_rim_extend else 0.0) - (
+                    spec.edge_rim_trim[1].meters if spec.edge_rim_trim else 0.0)
+                if span_index == 0:
+                    a += lo_move
+                if span_index == len(boundaries) - 2:
+                    b += hi_move
             segments = [(a, b)]
             for frame in opening_boxes:
                 # An edge rim is cut only by an opening it crosses, never absorbed in a pack.

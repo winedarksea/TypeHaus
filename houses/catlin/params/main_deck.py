@@ -312,7 +312,12 @@ WEST_FLOOR = FloorSystem(
                      # The x=18' plate is shared with FS-M-NE's trusses north of y=13'.
                      end_bearing=(("W-B-CS2", _JOIST_BEARING), ("W-B-CN2", _JOIST_BEARING)),
                      # The gable-end edge line is a 1 1/4" LSL rim board (owner, 2026-11-18).
-                     edge_rims=("lo",), sill_tie="A35Z", station_ties=5),
+                     edge_rims=("lo",), sill_tie="A35Z", station_ties=5,
+                     # ONE RIM BOARD RUNS PAST THE 18' SEAM (2026-11-23): FS-M-EAST's carries on
+                     # 12" west, to x 17'-0", so the splice is 20 1/3" from D-B-SUNKEN's west jamb
+                     # (TJ-8000 p.5: 12" or more beyond a rim-header opening) and not on the seam,
+                     # 8 1/3" from it. This field's rim stops where that one starts.
+                     edge_rim_trim=(inch(0), inch(11.25))),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR,
                        nailing=SUBFLOOR_FASTENING),
     published_span=TJI_230_FLOOR_SPAN,
@@ -405,7 +410,8 @@ EAST_FLOOR = FloorSystem(
                      # (y 0..10'-0") and W-B-CS3 (10'-0"..13'-10").
                      bearing_refs=("W-B-CS", "W-B-CS3", "W-B-E1"),
                      # The gable-end edge line is a 1 1/4" LSL rim board (owner, 2026-11-18).
-                     edge_rims=("lo",), sill_tie="A35Z", station_ties=5),
+                     edge_rims=("lo",), sill_tie="A35Z", station_ties=5,
+                     edge_rim_extend=(inch(12), inch(0))),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR,
                        nailing=SUBFLOOR_FASTENING),
     published_span=TJI_230_FLOOR_SPAN,

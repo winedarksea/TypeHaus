@@ -32727,29 +32727,11 @@
 2,
 "6dc455ea4c5e"
 ],
-"geometry/CMFS01AAAA::framing/member:bearing-block-1-000-cheek-hi": [
--0.263525,
--0.0381,
-8,
-"019dcc357ddd"
-],
-"geometry/CMFS01AAAA::framing/member:bearing-block-1-000-cheek-lo": [
--0.263525,
--0.0381,
-8,
-"019dcc357ddd"
-],
-"geometry/CMFS01AAAA::framing/member:bearing-block-1-000-rail-bottom": [
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-000": [
 -0.301625,
--0.263525,
-8,
-"6d029dbcf714"
-],
-"geometry/CMFS01AAAA::framing/member:bearing-block-1-000-rail-top": [
--0.0381,
 0.0,
 8,
-"7bbc6bf9443f"
+"80db91a70531"
 ],
 "geometry/CMFS01AAAA::framing/member:bearing-block-1-001": [
 -0.301625,
@@ -32805,65 +32787,65 @@
 8,
 "80db91a70531"
 ],
-"geometry/CMFS01AAAA::framing/member:bearing-block-1-010": [
--0.301625,
-0.0,
-8,
-"80db91a70531"
-],
-"geometry/CMFS01AAAA::framing/member:bearing-block-1-011-cheek-hi": [
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-010-cheek-hi": [
 -0.263525,
 -0.0381,
 8,
 "019dcc357ddd"
 ],
-"geometry/CMFS01AAAA::framing/member:bearing-block-1-011-cheek-lo": [
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-010-cheek-lo": [
 -0.263525,
 -0.0381,
 8,
 "019dcc357ddd"
 ],
-"geometry/CMFS01AAAA::framing/member:bearing-block-1-011-rail-bottom": [
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-010-rail-bottom": [
 -0.301625,
 -0.263525,
 8,
 "6d029dbcf714"
 ],
-"geometry/CMFS01AAAA::framing/member:bearing-block-1-011-rail-top": [
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-010-rail-top": [
 -0.0381,
 0.0,
 8,
 "7bbc6bf9443f"
 ],
-"geometry/CMFS01AAAA::framing/member:bearing-block-1-012": [
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-011": [
 -0.301625,
 0.0,
 8,
 "80db91a70531"
 ],
-"geometry/CMFS01AAAA::framing/member:bearing-block-1-013-cheek-hi": [
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-012-cheek-hi": [
 -0.263525,
 -0.0381,
 8,
 "019dcc357ddd"
 ],
-"geometry/CMFS01AAAA::framing/member:bearing-block-1-013-cheek-lo": [
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-012-cheek-lo": [
 -0.263525,
 -0.0381,
 8,
 "019dcc357ddd"
 ],
-"geometry/CMFS01AAAA::framing/member:bearing-block-1-013-rail-bottom": [
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-012-rail-bottom": [
 -0.301625,
 -0.263525,
 8,
 "6d029dbcf714"
 ],
-"geometry/CMFS01AAAA::framing/member:bearing-block-1-013-rail-top": [
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-012-rail-top": [
 -0.0381,
 0.0,
 8,
 "7bbc6bf9443f"
+],
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-013": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
 ],
 "geometry/CMFS01AAAA::framing/member:bearing-block-1-014": [
 -0.301625,
@@ -32871,13 +32853,7 @@
 8,
 "80db91a70531"
 ],
-"geometry/CMFS01AAAA::framing/member:bearing-block-1-015": [
--0.301625,
-0.0,
-8,
-"80db91a70531"
-],
-"geometry/CMFS01AAAA::framing/member:bearing-block-1-017": [
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-016": [
 -0.301625,
 0.0,
 8,
@@ -96181,29 +96157,11 @@
 2,
 "eaca74db251b"
 ],
-"member/CMFS01AAAA/bearing-block-1-000-cheek-hi": [
--0.263525,
--0.0381,
-2,
-"b8f15f8c2970"
-],
-"member/CMFS01AAAA/bearing-block-1-000-cheek-lo": [
--0.263525,
--0.0381,
-2,
-"b8f15f8c2970"
-],
-"member/CMFS01AAAA/bearing-block-1-000-rail-bottom": [
+"member/CMFS01AAAA/bearing-block-1-000": [
 -0.301625,
--0.263525,
-2,
-"0d85c1985bcb"
-],
-"member/CMFS01AAAA/bearing-block-1-000-rail-top": [
--0.0381,
 0.0,
 2,
-"94aa84910cbe"
+"07a4d7ea6917"
 ],
 "member/CMFS01AAAA/bearing-block-1-001": [
 -0.301625,
@@ -96259,65 +96217,65 @@
 2,
 "07a4d7ea6917"
 ],
-"member/CMFS01AAAA/bearing-block-1-010": [
--0.301625,
-0.0,
-2,
-"07a4d7ea6917"
-],
-"member/CMFS01AAAA/bearing-block-1-011-cheek-hi": [
+"member/CMFS01AAAA/bearing-block-1-010-cheek-hi": [
 -0.263525,
 -0.0381,
 2,
 "b8f15f8c2970"
 ],
-"member/CMFS01AAAA/bearing-block-1-011-cheek-lo": [
+"member/CMFS01AAAA/bearing-block-1-010-cheek-lo": [
 -0.263525,
 -0.0381,
 2,
 "b8f15f8c2970"
 ],
-"member/CMFS01AAAA/bearing-block-1-011-rail-bottom": [
+"member/CMFS01AAAA/bearing-block-1-010-rail-bottom": [
 -0.301625,
 -0.263525,
 2,
 "0d85c1985bcb"
 ],
-"member/CMFS01AAAA/bearing-block-1-011-rail-top": [
+"member/CMFS01AAAA/bearing-block-1-010-rail-top": [
 -0.0381,
 0.0,
 2,
 "94aa84910cbe"
 ],
-"member/CMFS01AAAA/bearing-block-1-012": [
+"member/CMFS01AAAA/bearing-block-1-011": [
 -0.301625,
 0.0,
 2,
 "07a4d7ea6917"
 ],
-"member/CMFS01AAAA/bearing-block-1-013-cheek-hi": [
+"member/CMFS01AAAA/bearing-block-1-012-cheek-hi": [
 -0.263525,
 -0.0381,
 2,
 "b8f15f8c2970"
 ],
-"member/CMFS01AAAA/bearing-block-1-013-cheek-lo": [
+"member/CMFS01AAAA/bearing-block-1-012-cheek-lo": [
 -0.263525,
 -0.0381,
 2,
 "b8f15f8c2970"
 ],
-"member/CMFS01AAAA/bearing-block-1-013-rail-bottom": [
+"member/CMFS01AAAA/bearing-block-1-012-rail-bottom": [
 -0.301625,
 -0.263525,
 2,
 "0d85c1985bcb"
 ],
-"member/CMFS01AAAA/bearing-block-1-013-rail-top": [
+"member/CMFS01AAAA/bearing-block-1-012-rail-top": [
 -0.0381,
 0.0,
 2,
 "94aa84910cbe"
+],
+"member/CMFS01AAAA/bearing-block-1-013": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
 ],
 "member/CMFS01AAAA/bearing-block-1-014": [
 -0.301625,
@@ -96325,13 +96283,7 @@
 2,
 "07a4d7ea6917"
 ],
-"member/CMFS01AAAA/bearing-block-1-015": [
--0.301625,
-0.0,
-2,
-"07a4d7ea6917"
-],
-"member/CMFS01AAAA/bearing-block-1-017": [
+"member/CMFS01AAAA/bearing-block-1-016": [
 -0.301625,
 0.0,
 2,
