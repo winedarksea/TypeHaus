@@ -13,7 +13,7 @@ import pytest
 
 from typehaus.checks.structural._engineering import engineering_context
 from typehaus.engineering import base_spring as spring
-from typehaus.engineering.base_rotation import KIND, _Column, _Point, compute
+from typehaus.engineering.base_rotation import KIND, _Column, _k_theta, _Point, compute
 from typehaus.engineering.base_supports import PoleBase, WallBase
 from typehaus.engineering.item import Status
 from typehaus.engineering.pier_basis import cast_piers
@@ -34,10 +34,12 @@ _WORKED = {
     # beam's STATICS reaction plus the planter, P_u 5,196.3 (front) / 6,095.4 (rear). The hand
     # script (scratchpad hand_delta.py, from §4's wall-top spring, Pc = Pc_rigid/(1 + 3/R)
     # with the exact-spring root as the cap) reads R 6.838 / 6.450 front, 6.763 / 6.379 rear.
-    "PT-SG-BF1": (1.0456, 1.0465, Status.OK),
-    "PT-SG-BF3": (1.0456, 1.0465, Status.OK),
-    "PT-SG-BR1": (1.0545, 1.0556, Status.OK),
-    "PT-SG-BR3": (1.0545, 1.0556, Status.OK),
+    # §28 (2026-11-23): the stem is FREE at its top for the E-W wind, k_theta = 1/(H/EI + 1/k_f)
+    # (hand_delta, the same script with that spring): R 1.247 / 0.564 front, 1.234 / 0.558 rear.
+    "PT-SG-BF1": (1.1152, 1.2370, Status.OK),
+    "PT-SG-BF3": (1.1152, 1.2370, Status.OK),
+    "PT-SG-BR1": (1.1401, 1.2959, Status.OK),
+    "PT-SG-BR3": (1.1401, 1.2959, Status.OK),
 }
 _LANDING = ("PT-BW-W", "PT-BW-E", "PT-BW-GW", "PT-BW-GE")
 _ORACLE = {tag: row for tag, row in _WORKED.items() if tag not in _LANDING}
@@ -52,7 +54,7 @@ def _points(ectx, tag):
     pier = next(p for p in cast_piers(ectx) if p.tag == tag)
     base = (WallBase if pier.base_kind == "wall" else PoleBase).build(ectx, pier)
     column = _Column.of(pier)
-    return pier, column, [_Point.at("", column, base.k_theta(ectx, d, column))
+    return pier, column, [_Point.at("", column, _k_theta(ectx, base, d, column))
                           for d in (0.25, 1.0)]
 
 
@@ -157,7 +159,7 @@ def test_the_presumed_n_h_reproduces_section_10(tag, catlin_cast_ctx) -> None:
     assert any("THE SOIL IS PRESUMED" in n for n in record.notes)
 
 
-@pytest.mark.parametrize("tag,ratio", [("PT-SG-BF1", 0.2952), ("PT-SG-BR1", 0.2958)])
+@pytest.mark.parametrize("tag,ratio", [("PT-SG-BF1", 0.3060), ("PT-SG-BR1", 0.3089)])
 def test_the_flexible_delta_magnifies_every_pair_and_the_worst_governs(
         tag, ratio, catlin_cast_ctx) -> None:
     """B-04: 0.178 was the flexible delta on one non-governing pair (the guard at 1.6L). Every
@@ -166,7 +168,7 @@ def test_the_flexible_delta_magnifies_every_pair_and_the_worst_governs(
     record = catlin_cast_ctx.engineering[f"{KIND}/{tag}"]
     assert record.governing.name == "magnified moment (sway), flexible base"
     assert record.governing.ratio == pytest.approx(ratio, abs=0.0005)
-    assert "L_guard, floor live absent" in record.governing.citation
+    assert "1.2D + 1.0W + L + 0.5S" in record.governing.combination   # planter on, Pu 4,175
     notes = " ".join(record.notes)
     assert "HEAD DRIFT" in notes and "SEISMIC" in notes and "SDC A" in notes
     assert "WHICH Pc IS GRADED" in notes

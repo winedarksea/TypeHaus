@@ -23,8 +23,8 @@ _ENVELOPE = ((2.0, 23_856.6), (2.5, 23_889.9), (3.0, 23_776.7))
 #: the floor-empty guard pair), flexible-base delta: (cover, bearing C, φBn, T per bar). The
 #: dowel ring shrinks with the cage, so T rises 14% at 3" (still under φAs fy 16,740, §28). §27's
 #: couple is on the block the dowel force itself produces.
-_JOINT = ((2.0, 12_621.0, 38_943.0, 8_962.0), (2.5, 13_067.0, 41_363.0, 9_560.0),
-          (3.0, 13_565.0, 43_748.0, 10_246.0))
+_JOINT = ((2.0, 13_128.0, 38_943.0, 9_162.0), (2.5, 13_602.0, 41_363.0, 9_774.0),
+          (3.0, 14_131.0, 43_748.0, 10_476.0))
 
 
 @pytest.fixture(scope="module")
