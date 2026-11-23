@@ -15,7 +15,9 @@ over the wythe's top is a story the no-story column cannot answer, and the findi
 
 **Flashing (R703.8.5):** an authored ``Flashing`` run hosted on the wythe, its top on the lintel's
 top and as long as the angle, must lie over each lintel; weeps (R703.8.6) are open joints named
-in ``notes/veneer_opening_detail.md``, not modelled.
+in ``notes/veneer_opening_detail.md``, not modelled. **Separation:** a stainless sheet never lies
+on a galvanized angle: an ``epdm`` run as long as the sheet must lie between them (the house keeps
+stainless and zinc out of one joint).
 Oracle: ``houses/catlin/notes/sunken_garden_veneer_beam.md`` §6l, ``tests/test_veneer_lintel.py``.
 """
 
@@ -39,6 +41,7 @@ MIN_BEARING_IN = 4.0
 #: Table R703.8.3.1, steel angles, "no story above" span (in): (long leg, short leg, thickness).
 _ROWS = (((3.0, 3.0, 0.25), 72.0), ((4.0, 3.0, 0.25), 96.0), ((5.0, 3.5, 0.3125), 120.0),
          ((6.0, 3.5, 0.3125), 168.0))
+_ON_STRIP = " on the EPDM strip {}, so stainless and zinc never touch"
 _COATING = re.compile(r"galvaniz|stainless|corrosion-resistant", re.I)
 #: A beam's soffit this near an opening's head is the lintel of that opening (the masonry band
 #: starts at the soffit, as ``masonry_interference`` reads it).
@@ -74,15 +77,18 @@ def _framed_over(ctx: CheckContext, wythe: Any, brick: Polygon) -> list[str]:
     return out
 
 
-def _head_flashing(ctx: CheckContext, wythe: Any, top_z: float, lo: float, hi: float):
-    """The tag of a Flashing run on the wythe at the lintel's top and as long as the angle."""
+def _head_flashing(ctx: CheckContext, wythe: Any, top_z: float, lo: float, hi: float,
+                   material: str | None = None):
+    """The tag of a Flashing run on the wythe at the lintel's top and as long as the angle,
+    of ``material`` where named (the run's material tag contains it)."""
     (ax, ay), (bx, by) = wythe.axis
     length = math.hypot(bx - ax, by - ay)
     u = ((bx - ax) / length, (by - ay) / length)
     for el in ctx.plan.all_elements():
         path = getattr(el, "path", None)
         if (getattr(el, "host_ref", None) != wythe.tag or path is None
-                or abs(el.top_elevation.meters - top_z) > _HEAD_TOL_M):
+                or abs(el.top_elevation.meters - top_z) > _HEAD_TOL_M
+                or (material and material not in (getattr(el, "material", "") or ""))):
             continue
         along = [(p.x.meters - ax) * u[0] + (p.y.meters - ay) * u[1] for p in path]
         if min(along) <= lo + _IN and max(along) >= hi - _IN:
@@ -129,7 +135,10 @@ def veneer_lintel(ctx: CheckContext) -> list[Finding]:
                 fix="author a Beam angle lintel, soffit on the head, bearing 4\" past each jamb"))
             continue
         beam, west_m, east_m, top_z, (lintel_lo, lintel_hi) = found
-        flashing = _head_flashing(ctx, wythe, top_z, lintel_lo, lintel_hi)
+        flashing = _head_flashing(ctx, wythe, top_z + 0.0625 * _IN, lintel_lo, lintel_hi,
+                                  "stainless")
+        sheet = flashing or _head_flashing(ctx, wythe, top_z + 0.0625 * _IN, lintel_lo, lintel_hi)
+        strip = _head_flashing(ctx, wythe, top_z + 0.0625 * _IN, lintel_lo, lintel_hi, "epdm")
         tags += (beam.tag,)
         bearing = min(west_m, east_m) / _IN
         row = table_row(beam.size)
@@ -150,9 +159,14 @@ def veneer_lintel(ctx: CheckContext) -> list[Finding]:
             out.append(failed(_ID, f"{head} spans past the {row[1] / 12:g}' the table allows "
                                    f"that angle with no story above", tags, code=_CODE,
                               fix="a larger angle's row, or a lintel for the span"))
-        elif flashing is None:
+        elif sheet is None:
             out.append(unknown(_ID, f"{head}: no flashing run lies over the lintel (R703.8.5)",
                                tags, code=_CODE))
+        elif flashing and "galvaniz" in (getattr(beam, "engineering_note", "") or "").lower() \
+                and strip is None:
+            out.append(failed(_ID, f"{head}: stainless flashing {flashing} lies on a galvanized "
+                                   f"angle with no EPDM strip between", tags, code=_CODE,
+                              fix="author an epdm Flashing run under the sheet, over the angle"))
         elif not _COATING.search(getattr(beam, "engineering_note", "") or ""):
             out.append(unknown(_ID, f"{head}: no corrosion protection is stated (R703.8.3: "
                                     f"rust-inhibitive paint, or galvanized or corrosion-"
@@ -162,6 +176,7 @@ def veneer_lintel(ctx: CheckContext) -> list[Finding]:
                 _ID, f"{head}: Table R703.8.3.1's {row[0][0]:g}x{row[0][1]:g}x{row[0][2]:g} "
                      f"row spans {row[1] / 12:g}' with no story above, {bearing:.2f}\" of "
                      f"bearing a side (4\" minimum), long leg vertical, galvanized or "
-                     f"corrosion-resistant; flashed over per R703.8.5 by {flashing}, weeps "
-                     f"per R703.8.6 in the detail notes", tags, code=_CODE))
+                     f"corrosion-resistant; flashed over per R703.8.5 by {sheet}"
+                     f"{'' if strip is None else _ON_STRIP.format(strip)}"
+                     f", weeps per R703.8.6 in the detail notes", tags, code=_CODE))
     return out

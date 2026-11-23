@@ -17,12 +17,13 @@ Never a silent FAIL.
 
 **Where the ties land** (``veneer_tie_layout``): on studs, never into a concrete stretch, each
 within the 2.67 sf (or 2 sf) a tie carries and within 12" of an opening over 16" (R703.8.4.1.1).
-**What they must take (owner, G8: a bond break at the base):** the wythe stands on flashing
-over the court's beam, so the court slides under it and each tie carries only friction drag,
-mu x the wythe's weight / the tie count, in both directions of movement, with wind (TN 3C's
-tributary method, 2 p At) against TMS 402-22 Table 6's 125 lb for a two-leg pintle. UNKNOWN until
-the friction of brick on the flashing sheet is sourced (``veneer_ties.FRICTION_BRICK_ON_FLASHING``);
-FAIL with no bond break (the ties would take stiffness x the court's closure).
+**What they must take (owner, G8: a bond break at the base, an adjustable slotted tie):** the
+wythe stands on flashing over the court's beam, so the court slides under it and each tie carries
+only friction drag, mu x the wythe's weight / the tie count, in both directions of movement, with
+wind (TN 3C's tributary method, 2.5 p At for the slotted tie's 3,000 lb/in) against TMS 402-22
+Table 6's 200 lb. The friction is a stated upper bound of 1.0 (unverified) until one is sourced
+(``veneer_ties.FRICTION_BRICK_ON_FLASHING``); FAIL with no bond break (the ties would take
+stiffness x the court's closure).
 
 Oracle: ``houses/catlin/notes/sunken_garden_veneer_beam.md`` §6k, reproduced by
 ``tests/test_veneer_cavity.py``.
@@ -158,7 +159,9 @@ def _force(ctx: CheckContext, wythe: Any, pressure: float | None, lay: Any) -> F
     if lay is None or pressure is None:
         return None
     tags = (wythe.tag,)
-    k, allow, design = veneer_ties.TIE_TABLE_6["adjustable_pintle"]
+    k, allow, design = veneer_ties.TIE_TABLE_6[veneer_ties.DETAIL_TIE_KIND]
+    factor = (veneer_ties.TIE_FORCE_FACTOR_SOFT if k <= 2500.0
+              else veneer_ties.TIE_FORCE_FACTOR_STIFF)
     closure = max((ls.demand for key in ctx.engineering
                    if key.startswith("thermal_break_transfer/")
                    for ls in ctx.engineering[key].limit_states if ls.name == NAME),
@@ -185,41 +188,30 @@ def _force(ctx: CheckContext, wythe: Any, pressure: float | None, lay: Any) -> F
     weight = plf / height_ft * area_sf
     ties = len(lay.stations_in) * len(lay.rows_in)
     at = veneer_ties.tie_area_sf(pressure)
-    wind = veneer_ties.TIE_FORCE_FACTOR_SOFT * pressure * at
-    room = allow - wind
+    wind = factor * pressure * at
     per_mu = weight / ties
-    base = (f"{wythe.tag}: bond break and flashing {', '.join(runs)} under the first course; "
-            f"wythe {weight:,.0f} lb on {ties} ties ({len(lay.stations_in)} stations x "
-            f"{len(lay.rows_in)} rows) = {per_mu:.1f} lb of drag per tie per unit friction; "
-            f"wind 2 p At = 2 x {pressure:.2f} psf x {at:g} sf = {wind:.1f} lb of "
-            f"{allow:g} lb allowable (TMS 402-22 Table 6, two-leg pintle; TN 3C Table 7); the "
-            f"drag moves the same either way: summer closing "
+    sourced = veneer_ties.FRICTION_BRICK_ON_FLASHING
+    mu = sourced if sourced is not None else veneer_ties.FRICTION_UPPER_BOUND
+    basis = ("sourced" if sourced is not None else "a stated UPPER BOUND, unverified (no maker "
+             "publishes it; McGinley and Borchelt, TMS J. 9(2), tested it and was not opened)")
+    drag = mu * per_mu
+    total = wind + drag
+    text = (f"{wythe.tag}: {veneer_ties.DETAIL_TIE_KIND.replace('_', ' ')} tie "
+            f"({veneer_ties.DETAIL_TIE_PRODUCT.split(',')[0]}); bond break and flashing "
+            f"{', '.join(runs)} under the first course; wythe {weight:,.0f} lb on {ties} ties "
+            f"({len(lay.stations_in)} stations x {len(lay.rows_in)} rows) = {per_mu:.1f} lb of "
+            f"drag per tie per unit friction; wind {factor:g} p At = {factor:g} x {pressure:.2f} "
+            f"psf x {at:g} sf = {wind:.1f} lb (TN 3C Table 7, k {k:,.0f} lb/in); friction "
+            f"{mu:g} is {basis}, in either direction: summer closing "
             f"{'' if closure is None else f'{closure:.4f}'}\", winter opening about "
-            f"{'' if thermal is None else f'{thermal * _OPENING_PER_CLOSING:.3f}'}\" "
-            f"(the record's thermal term over 70 F, an estimate)")
-    mu = veneer_ties.FRICTION_BRICK_ON_FLASHING
-    if mu is None:
-        return unknown(
-            _ID, f"{base}. NEEDS the friction of brick and mortar on the flashing sheet, which no "
-                 f"maker publishes (McGinley and Borchelt, TMS J. 9(2), tested it; not opened). "
-                 f"Bound: drag plus wind stays under {allow:g} lb for a friction up to "
-                 f"{room / per_mu:.2f}, and drag alone for up to {allow / per_mu:.2f}; clay "
-                 f"brick masonry friction runs about 0.25 to over 1.0 in the literature "
-                 f"(unverified). Over the bound: the adjustable slotted tie "
-                 f"({veneer_ties.TIE_TABLE_6['adjustable_slotted'][1]:g} lb, Table 6) allows "
-                 f"{(veneer_ties.TIE_TABLE_6['adjustable_slotted'][1] - wind) / per_mu:.2f}, "
-                 f"or 12\" stud bays (2 sf a tie) allow "
-                 f"{(allow - 2.0 * 2.0 * pressure) / (weight / (ties * 1.33)):.2f}",
-            tags, code=_CODE,
-            fix="source the friction coefficient (flashing maker data, or the paper's table) "
-                "and set veneer_ties.FRICTION_BRICK_ON_FLASHING")
-    total = wind + mu * per_mu
-    text = f"{base}; at friction {mu:g}: {mu * per_mu:.1f} + {wind:.1f} = {total:.1f} lb"
+            f"{'' if thermal is None else f'{thermal * _OPENING_PER_CLOSING:.3f}'}\" (the "
+            f"record's thermal term over 70 F, an estimate): drag {drag:.1f} + wind {wind:.1f} = "
+            f"{total:.1f} lb against {allow:g} lb allowable, {design:g} lb design (TMS 402-22 "
+            f"Table 6 via BIA TN 3C), d/c {total / allow:.2f}")
     if total <= allow + 1e-6:
-        return passed(_ID, f"{text} of {allow:g} ({total / allow:.2f}; design strength {design:g})",
-                      tags, code=_CODE)
-    return failed(_ID, f"{text} over {allow:g}", tags, code=_CODE,
-                  fix="the adjustable slotted tie (200 lb, Table 6), or tighter tie spacing")
+        return passed(_ID, text, tags, code=_CODE)
+    return failed(_ID, text, tags, code=_CODE,
+                  fix="tighter tie spacing, or a tie with a higher Table 6 row")
 
 
 @check(Tier.CODE, _ID)

@@ -118,7 +118,15 @@ so nothing bridges the joint, and a floor's rim cannot be lengthened over its ne
 move the opening 3.7" east (the door, its RO and the PORCH packs above); or Weyerhaeuser confirms the
 splice (ForteWEB models one continuous piece).
 
-## Not graded here
+**Both moves are large (compared 2026-11-23, owner: "the cheapest").** The seam is the 18' bearing line:
+20 walls on x=216" over four storeys (`W-B-CS/CS2/CS3/CN/CN2`, `W-M-C1/C2/C3/C5/C5B`, `W-S-C1/C2/C2B/C2C/C4B`,
+`W-A-C1/C1B/C2/C2M/C2B`), six floor fields with an edge on it (`FS-M-WEST/EAST/STAIR/NE`, `FS-S-WEST/EAST`), and
+the MEP, lighting and casework keyed to the grid (287 authored references to the 18' line). The door is eight
+stacked openings (`D-B-SUNKEN`, `AO-B-SUNKEN-SEAT`, `-TREAD-BED`, `AO-B-BRICK-DOOR` with its lintel, flashing
+and ties, `D-M-PORCH`, `D-S-BALCONY`, `AO-SG-BRKBM-TREAD-BED`), the PORCH sill beam's seats and backers, the
+two seat packs, `params/sunken_garden.py`, `main_deck.py` and `sill_seat_backers.py` coordinates, the porch
+lighting and window coverings at the door, and the owner's door centring over the stud module. Neither is
+small: this is reported to the owner, not done.
 
 Dry-use service (the band is inside the envelope; TJ-8000 p.5: dry-use only). Lateral support: the
 subfloor sheathes the top edge. The ply's nails are not billed as a separate line.

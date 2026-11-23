@@ -31,6 +31,9 @@ def test_both_reveals_pass_on_the_3x3x1_4_row(catlin_ctx) -> None:
     assert "spans 6' with no story above, 4.00\" of bearing a side" in door.message
     # R703.8.5: the head flashing is a model fact now, not a note about a wall section.
     assert "flashed over per R703.8.5 by FL-B-BRICK-DOOR-HEAD" in door.message
+    # Owner: stainless flashing, kept off the HDG angle by a 1/16" EPDM strip.
+    assert ("on the EPDM strip FL-B-BRICK-DOOR-ISOL, so stainless and zinc never touch"
+            in door.message)
 
 
 def test_an_opening_with_no_lintel_is_a_fail(catlin_ctx) -> None:
@@ -49,3 +52,22 @@ def test_framing_over_the_wythe_makes_the_no_story_column_unanswerable(catlin_ct
     brick = next(ly for ly in wythe.layers if ly.function == "structure" and ly.polygon)
     assert veneer_lintel._framed_over(catlin_ctx, wythe, Polygon(brick.polygon)) == []
     assert wythe.z1_m == pytest.approx(-13.333 * 0.0254, abs=1e-3)
+
+
+def test_stainless_on_the_galvanized_angle_with_no_strip_is_a_fail(catlin_ctx) -> None:
+    model = replace(catlin_ctx.model)
+    plan = catlin_ctx.model.plan
+
+    class _Plan:
+        def __getattr__(self, name):
+            return getattr(plan, name)
+
+        def all_elements(self):
+            return [e for e in plan.all_elements()
+                    if getattr(e, "tag", "") != "FL-B-BRICK-DOOR-ISOL"]
+
+    ctx = replace(catlin_ctx, plan=_Plan(), model=model)
+    results = {f.message.split(":")[0]: f for f in veneer_lintel.veneer_lintel(ctx)}
+    assert results["AO-B-BRICK-DOOR"].result is Result.FAIL
+    assert "no EPDM strip" in results["AO-B-BRICK-DOOR"].message
+    assert results["AO-B-BRICK-WIN"].result is Result.PASS

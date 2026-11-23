@@ -62,6 +62,20 @@ TIE_TABLE_6 = {"adjustable_pintle": (2500.0, 125.0, 210.0),
 #: TN 3C Table 7, the tributary-area method: tie force = factor x p x At, by tie stiffness
 #: (k <= 2,500 lb/in: 2; <= 5,000: 2.5).
 TIE_FORCE_FACTOR_SOFT = 2.0
+#: ... and 2.5 for 2,500 < k <= 5,000 lb/in (the adjustable slotted row's 3,000).
+TIE_FORCE_FACTOR_STIFF = 2.5
+#: The tie the wythe is detailed with (owner, G8: "adjustable slotted tie"): Table 6's
+#: adjustable slotted row, read as the maker's HB-213 anchor plate with a 3/16" 2-leg compressed
+#: hook (below). Table 6 allows it 200 lb; the product's own working load at a 1 1/4" offset and
+#: 0.05" deflection is 235-332 lb in tension and compression at 4 1/2" and 7 1/2" cavities.
+DETAIL_TIE_KIND = "adjustable_slotted"
+DETAIL_TIE_PRODUCT = ("Hohmann & Barnard HB-213-2X adjustable veneer anchor, 14 ga plate 4\" "
+                      "(the foam's thickness) with 400H-2X hooks, 3/16\" compressed legs; data "
+                      "sheet (c) MiTek / H&B 2013-2021, buildsite.com HB-213-2X 2281554")
+#: The friction taken for brick and mortar on the flashing when none is sourced: an UPPER BOUND
+#: (unverified), not a measurement. McGinley and Borchelt (TMS Journal 9(2), 1991) tested it and
+#: was not opened; a sourced value in ``FRICTION_BRICK_ON_FLASHING`` replaces this.
+FRICTION_UPPER_BOUND = 1.0
 #: Friction of brick and mortar on the base flashing sheet, the input the drag row needs. No
 #: maker publishes it; McGinley and Borchelt, "Friction at Supports of Clay Brick Walls" (TMS
 #: Journal 9(2), 1991) tested it with common flashing and its values were not opened (paywalled).
@@ -86,9 +100,10 @@ _ROWS = {2015: _ROWS_2018, 2018: _ROWS_2018, 2021: _ROWS_2021, 2024: _ROWS_2024}
 #: The edition the ties are DETAILED to (decision 10): the W2.8 row, in force in a 2024-based code.
 DETAIL_EDITION = 2024
 TIE_DETAIL = ("W2.8 (3/16\") adjustable wire tie, 2 pintle legs, offset at most 1 1/4\", brick "
-              "face to pintle end at most 2\"; backing eye or barrel per Table R703.8.4(1) "
-              "(eye W2.8, barrel 1/4\" OD or plate 0.074\" x 1 1/4\"); fastener not smaller than "
-              "an 8d common nail, long enough to seat in the stud through the foam and sheathing")
+              "face to pintle end at most 2\"; backing plate at least 0.074\" x 1 1/4\" "
+              "(Table R703.8.4(1)); fastener not smaller than an 8d common nail, long enough to "
+              "seat in the stud through the foam and sheathing. Product: "
+              "H&B HB-213-2X plate with 400H-2X hooks (adjustable slotted, TMS 402-22 Table 6)")
 
 
 def irc_edition(irc_base: str | None) -> int | None:
