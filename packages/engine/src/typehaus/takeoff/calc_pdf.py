@@ -285,13 +285,20 @@ def _flowables(markdown: str, name: str, styles, width: float,  # type: ignore[n
             if table is not None:
                 out.extend([Spacer(1, 2), table, Spacer(1, 6)])
         elif isinstance(block, Code):
-            out.extend(Paragraph(inline(line) or "&nbsp;", styles["code"])
+            # Fenced text is literal: no markup, and runs of spaces kept (sketches align).
+            out.extend(Paragraph(_literal(line) or "&nbsp;", styles["code"])
                        for line in block.lines)
             out.append(Spacer(1, 4))
         elif isinstance(block, Rule):
             out.append(HRFlowable(width="100%", thickness=0.4, color="#cccccc",
                                   spaceBefore=4, spaceAfter=6))
     return out
+
+
+def _literal(line: str) -> str:
+    from xml.sax.saxutils import escape
+
+    return re.sub(r"^ +| {2,}", lambda m: "&nbsp;" * len(m.group()), escape(line))
 
 
 class _Doc:

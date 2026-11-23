@@ -67,28 +67,26 @@ columns that was twelve copies of ACI 318-19 §22.4.2.1 with an element tag and 
 changed. A reviewer checking a family of members wants the clause once, the arithmetic
 once, and a **schedule** saying which member is which and which one governs.
 
-So `calcs/<kind>.md` carries:
+So `calcs/<kind>.md` carries a header table, then (the per-kind authoring rules are in
+[calc-sheet-pattern.md](calc-sheet-pattern.md)):
 
 1. **Scope** — what this family is
-2. **References** — every citation the whole family rests on, deduped, printed once and
-   numbered `R1`, `R2` …, which is how the appendix's limit-state tables cite one without
-   reprinting 400 characters of it per member
-3. **Member schedule** — one row per member: elements, governing limit state, demand,
-   capacity, d/c, status, coverage, seal — and under it, the pointer to
-   `appendix/<kind>.md`
-4. **The calculation, worked at the governing member** — the inputs as
-   `symbol = value unit`, then each limit state as its own substitution beside its ratio
-   and citation. Substitutions with units, because a row reading `9,461 / 7,150 = 1.32` is
-   checkable only by somebody who already knows what went into the 9,461
-5. **Result** — the family's counts, and the member the verdict comes from
-6. **Assumptions and exclusions** — a pointer to `04-assumptions.md` under this kind,
-   where the family's notes are printed collapsed with the items each reaches. Printed
-   there and here was 20 pages of one 108-page PDF
-7. **Open inputs** — per member, only the members that have any
-8. **Independent check** — the family's oracle notes and the tests that reproduce them
-9. **What this calculation does not cover** — this family's coverage word, over the
-   standing exclusions on `06-conventions.md`
-10. **Per-member fingerprints** — what a seal on any one member would be pinned against
+2. **References** — every citation the family rests on, near-duplicates collapsed into one
+   numbered `R<n>` with a values table, which is how the schedule, section 4 and the
+   appendix cite one without reprinting it
+3. **Member schedule** — one row per member: governing limit state, demand, capacity, d/c;
+   status, coverage and seal only when they differ between members (else in the header)
+4. **The calculation, worked at the governing member** — once per *template* (members
+   running the same limit states): the symbols in plain words, a free-body sketch, the
+   limit-state table, each state's steps (equation = numbers = result, with the clause),
+   and the load combinations used
+5. **Result** — the family's counts, the governing member, and the 1.000 limit
+6. **Stated bases and owner acceptances** — inputs resting on a decision, not a code row
+7. **Assumptions** — a pointer to `04-assumptions.md` under this kind
+8. **Open inputs** — per member; a deferred kind's designer and deliverable
+9. **Independent check** — the family's oracle notes
+10. **What this calculation does not cover** — what is not graded, why, who owns it and
+    what closes it; then one line of fingerprints for the seal form
 
 The governing member is picked by status first and ratio second: an INCOMPLETE member has
 no ratio to lose with and is a bigger fact about the family than an OK member at 0.98.

@@ -15,7 +15,6 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from typehaus.emit.md_writer import bullets, document, heading, table
-from typehaus.engineering.deferred import DEFERRALS
 from typehaus.engineering.item import EngineeringRecord, Scope, Status
 from typehaus.takeoff.calc_criteria_loads import consumed, input_name
 from typehaus.takeoff.calc_criteria_materials import material_rows
@@ -259,21 +258,23 @@ def _short(text: str, limit: int = 110) -> str:
 
 
 def _family_rows(records: Sequence[EngineeringRecord]) -> list[list[Any]]:
-    """Screening families share one row; each external family has its own owner."""
-    from typehaus.takeoff.calc_family import families, family_filename
+    """Per family: each declared not-covered row and its owner (``NotCovered``, review E-01);
+    families that have itemised nothing yet share one row."""
+    from typehaus.takeoff.calc_family import families, family_filename, not_covered
 
-    screening: list[str] = []
+    pending: list[str] = []
     rows: list[list[Any]] = []
     for kind, group in families(list(records)).items():
-        deferral = DEFERRALS.get(kind)
-        if deferral is None:
-            screening.append(f"`{kind}`")
+        declared = not_covered(group)
+        if not declared:
+            pending.append(f"`{kind}`")
             continue
-        rows.append([f"`{kind}` ({len(group)})", f"`calcs/{family_filename(kind)}` section 9",
-                     _short(deferral.designer)])
-    if screening:
-        rows.insert(0, [", ".join(screening), "section 9 of each calculation, `calcs/<family>.md`",
-                        "the sealing engineer, unless section 9 names another party"])
+        for i, row in enumerate(declared):
+            rows.append([f"`{kind}` (`calcs/{family_filename(kind)}`)" if not i else "",
+                         row.what, _short(row.owner)])
+    if pending:
+        rows.append([", ".join(pending), "not yet itemised: only each sheet's section 4 "
+                     "states are graded", "the sealing engineer"])
     return rows
 
 
@@ -331,12 +332,12 @@ def render_summary(inputs: PackageInputs, previous: PreviousIssue | None) -> str
     else:
         blocks.append("None. Every item is computed.")
     blocks += [heading("Not covered, and who owns it", 2),
-               "Per family: where its calculation lists what it does not grade.",
-               table(["Family", "Where it lists what it does not grade", "Owner"],
+               "Per family, from each calculation's section 10.",
+               table(["Family", "Not graded there", "Owner"],
                      _family_rows(records))]
     owner = _owner_lines(inputs)
     if owner:
-        blocks += [heading("Not covered — owner", 2), bullets(owner)]
+        blocks += [heading("Stated bases and owner acceptances", 2), bullets(owner)]
     return document(*blocks)
 
 
@@ -347,11 +348,20 @@ def _court_unconfirmed(inputs: PackageInputs) -> bool:
 
 
 def _owner_lines(inputs: PackageInputs) -> list[str]:
-    """The owner's stated bases that no calculation here grades."""
+    """The owner's stated bases that no calculation here grades, and the records' own."""
     from typehaus.engineering.balcony_loads import NOT_COVERED_OWNER
+    from typehaus.takeoff.calc_family import families, stated_bases
 
+    lines: list[str] = []
+    by_basis: dict[object, list[str]] = {}
+    for kind, group in families(list(inputs.records)).items():
+        for basis in stated_bases(group):
+            by_basis.setdefault(basis, []).append(f"`{kind}`")
     structural = getattr(getattr(inputs, "preferences", None), "structural", None)
-    if getattr(structural, "deck_snow_psf", None) is None:
-        return []
-    return [f"**Balcony snow.** {NOT_COVERED_OWNER} The comparison is on "
-            "`01-design-criteria.md`, section 2."]
+    deck_basis = any("deck" in getattr(b, "subject", "") for b in by_basis)
+    if getattr(structural, "deck_snow_psf", None) is not None and not deck_basis:
+        lines.append(f"**Balcony snow.** {NOT_COVERED_OWNER} The comparison is on "
+                     "`01-design-criteria.md`, section 2.")
+    lines += [f"**{b.subject}** ({b.kind.value}; {', '.join(kinds)}). {b.statement}"  # type: ignore[attr-defined]
+              for b, kinds in by_basis.items()]
+    return lines

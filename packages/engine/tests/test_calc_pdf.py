@@ -484,7 +484,8 @@ def test_no_boilerplate_line_is_printed_twice(catlin_ctx):
     records = [catlin_ctx.engineering[i] for i in item_ids]
     authored = {text for record in records for text in
                 (*record.notes, *record.missing, record.summary, record.basis,
-                 *[state.citation for state in record.limit_states])}
+                 *[state.citation for state in record.limit_states],
+                 *[step.text() for state in record.limit_states for step in state.working])}
     kinds = sorted({record.kind for record in records}, key=len, reverse=True)
 
     def mask(line: str) -> str:

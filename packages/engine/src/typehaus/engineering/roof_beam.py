@@ -42,11 +42,15 @@ from typing import Any
 
 from typehaus.engineering.item import (
     EngineeringRecord,
+    Figure,
     LimitState,
+    NotCovered,
     Oracle,
     Quantity,
     Status,
+    declare_sheet,
     item_id,
+    num,
 )
 from typehaus.engineering.registry import (
     EngineeringContext,
@@ -265,6 +269,48 @@ oracled_by(
     Oracle(note="canopy_west_band.md", section="§7",
            test="tests/test_canopy_west_band_calcs.py"),
 )
+
+
+def _figure(record: EngineeringRecord) -> Figure | None:
+    """The beam on its two posts, under the dead + snow line load, from the record."""
+    from typehaus.engineering.sketch import beam_on_two_posts
+
+    s_ft = record.value("back_span")
+    if s_ft is None:
+        return None
+    bearing = next((st for st in record.limit_states if st.name == "bearing on the post"),
+                   None)
+    r_max = next((step.value for step in (bearing.working if bearing else ())
+                  if step.symbol == "R"), None)
+    reaction = f"up to {num(r_max)} lb" if r_max is not None else "see bearing"
+    return beam_on_two_posts(
+        title=f"{record.key} on its two posts", a_ft=record.value("overhang_a") or 0.0,
+        s_ft=s_ft, b_ft=record.value("overhang_b") or 0.0,
+        load=f"w = {num(record.value('uniform_load') or 0.0)} plf (D + S)",
+        reactions=(reaction, reaction),
+        caption="Trusses bear on the beam top at their own stations; the line load is "
+                "their sum spread over the roof-bearing run. Snow is patterned span by span.")
+
+
+declare_sheet(
+    KIND,
+    figure=_figure,
+    not_covered=(
+        NotCovered("the drift load itself",
+                   "the design snow (drift included) is authored, not derived by this "
+                   "calculation; its derivation is hand-worked in the oracle note",
+                   "the sealing engineer", "review of north_entry_piers.md §3"),
+        NotCovered("lateral-torsional stability",
+                   "C_L is taken as 1.0 because the roof deck sheathes the compression "
+                   "edge continuously", "the sealing engineer",
+                   "confirming the deck is fastened to the beam's top edge"),
+        NotCovered("the beam-to-post connection and wind uplift on the beam",
+                   "not graded on this sheet; the post caps are graded on wood_roof_post",
+                   "the sealing engineer", "the wood_roof_post sheet"),
+        NotCovered("the truss bottom chord's own bearing",
+                   "the chord's Fc-perp belongs to the truss design",
+                   "the truss fabricator", "the truss design submittal"),
+    ))
 
 
 @keys(KIND)

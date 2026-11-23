@@ -1,0 +1,81 @@
+"""Uplift at a column head for ``column_head_joint``: the roof q_h and a sealed deck.
+
+Split out of ``column_head_joint`` (file size); arithmetic unchanged.
+"""
+
+from __future__ import annotations
+
+from typing import Any
+
+from typehaus.engineering.balcony_loads import CURTAIN_OWNER_BASIS
+from typehaus.engineering.registry import EngineeringContext
+
+
+def sealed_deck_uplift(ctx: EngineeringContext, pier: Any, notes: list[str]) -> float | None:
+    """0.6D + 0.6W uplift on a SEALED deck, ASD lb per column; ``None`` for an open-jointed one.
+
+    ASCE 7-16 gives an open-jointed walking surface no uplift. A watertight plank (an aluminium
+    deck system) is a roof over the space below, so the same surrogate the roof columns use
+    applies — ``0.6 q G C_f`` at the Case A/B bound, less 0.6 of the deck's dead — spent on
+    the column's tributary (review B-06). The reviewer's hand estimate with C_N -1.5 was 380 lb.
+    """
+    from typehaus.engineering.deck_tie_basis import deck_wind
+    from typehaus.engineering.pier_basis import DECK_DEAD_LOAD_PSF
+    from typehaus.model.floors import FloorSystem
+    from typehaus.wind_tables import asd_solid_band_psf
+
+    post = ctx.plan.by_tag(pier.tag)
+    deck = next((d for d in ctx.plan.all_elements() if isinstance(d, FloorSystem)
+                 and d.service == "deck"
+                 and any(pier.tag in (getattr(ctx.plan.by_tag(r), "bearing_refs", ()) or ())
+                         for r in d.joists.bearing_refs or ())), None)
+    plank = getattr(getattr(deck, "subfloor", None), "material_ref", "") or ""
+    if deck is None or not plank.startswith("aluminum-deck"):
+        notes.append(
+            "NO UPLIFT ROW: this column carries no roof (roof tributary 0 ft2, computed) and "
+            "its deck is an open-jointed walking surface, which ASCE 7-16 assigns no uplift.")
+        return None
+    wind = deck_wind(ctx, deck, [post])
+    if wind is None:
+        return None
+    up = asd_solid_band_psf(wind.q_h_psf)
+    area = pier.statics_area_ft2 or pier.tributary_ft2
+    uplift = (up - 0.6 * DECK_DEAD_LOAD_PSF) * area
+    notes.append(
+        f"UPLIFT: this deck's plank ({plank}) is SEALED — the porch's roof — so ASCE 7-16's "
+        f"no-uplift rule for an open-jointed surface does not hold. GRADED as an OPEN structure "
+        f"(the bound the roof columns use): 0.6 x {wind.q_h_psf:.2f} psf x G x C_f 1.8 = "
+        f"{up:.2f} psf up, less 0.6 x {DECK_DEAD_LOAD_PSF:g} psf of deck dead (planters "
+        f"excluded), on this column's {area:.1f} ft2 (the beam's STATICS area under full "
+        f"load, as gravity takes it). The joist ties and the plank's own fastening see the "
+        f"same uplift.")
+    notes.append(
+        "OWNER BASIS, no internal pressure: the porch curtains are stowed in high wind, so the "
+        "porch is OPEN and no GC_pi is taken under the sealed deck. " + CURTAIN_OWNER_BASIS)
+    return uplift
+
+
+def roof_q_h(ctx: EngineeringContext, tag: str) -> float | None:
+    """q_h at the ridge of the roof(s) this column carries, the ``roof_moment`` datum."""
+    from typehaus.engineering.balcony_wind import ground_below_ft
+    from typehaus.model.spatial import Roof
+    from typehaus.model.structure import Beam, Post
+    from typehaus.wind import velocity_pressure_psf, wind_basis
+
+    basis = wind_basis(ctx.plan.project.site)
+    if basis is None:
+        return None
+    standing = {e.tag for e in ctx.plan.all_elements()
+                if isinstance(e, Post) and e.supported_by == tag}
+    ground = ground_below_ft(ctx.plan)
+    best = None
+    for roof in ctx.model.roofs:
+        element = ctx.plan.by_tag(roof.tag)
+        if not isinstance(element, Roof):
+            continue
+        beams = [b for b in (ctx.plan.by_tag(r) for r in element.bearing_refs)
+                 if isinstance(b, Beam)]
+        if any({tag, *standing} & set(b.bearing_refs or ()) for b in beams):
+            q_h = velocity_pressure_psf(basis, roof.ridge_z_m / 0.3048 - ground)
+            best = q_h if best is None else max(best, q_h)
+    return best

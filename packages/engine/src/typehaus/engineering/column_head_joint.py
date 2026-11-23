@@ -6,9 +6,7 @@ limit states per column:
 
 * **Head moment transfer** — an ASSUMPTION, printed in the notes and not graded: ``deck_post``
   sways every lateral column at ``k = 2.1`` (ACI 318-19 Table R6.2.5, fixed base / free top),
-  so the adopted model asks the joint for no moment. It was a row (``2.0 / 2.1``, d/c 0.95)
-  until 2026-11-23, and read as the sheet's nearest-to-limit ratio though it is a k-factor
-  consistency statement and structurally nothing (review B-11).
+  so the adopted model asks the joint for no moment.
 * **Connector lateral** against ``Post.head_connector.lateral_lb`` — the lower directional
   figure, never doubled for a pair (a ``set_rated`` pair's value is already the set's). The
   published value carries C_D = 1.6, so wind grades against it as printed and a guard load
@@ -21,7 +19,8 @@ limit states per column:
   authored tie. A lever that does not resolve is INCOMPLETE, never zero.
 * **Bearing at the seat**, §22.8.3.2, the authored pack on the column top.
 
-The pack's seat eccentricity is printed as the bending moment it is.
+The pack's seat eccentricity is printed as the bending moment it is. Each row's working and
+the sheet declaration are ``column_head_working``.
 
 **Oracle.** ``houses/catlin/notes/north_entry_piers.md`` §9, hand-worked first;
 ``tests/test_column_head_joint.py`` reproduces it.
@@ -32,6 +31,7 @@ from __future__ import annotations
 import math
 from typing import Any
 
+from typehaus.engineering import column_head_working as W
 from typehaus.engineering.balcony_loads import CURTAIN_OWNER_BASIS
 from typehaus.engineering.column_head_geometry import (
     BeamFrame,
@@ -47,6 +47,7 @@ from typehaus.engineering.item import (
     Oracle,
     Quantity,
     Status,
+    declare_sheet,
     item_id,
 )
 from typehaus.engineering.registry import EngineeringContext, calc, keys, oracled_by
@@ -66,6 +67,8 @@ oracled_by(KIND,
                   test="tests/test_column_head_joint.py"),
            Oracle(note="balcony_moment_columns.md", section="§23",
                   test="tests/test_column_head_joint.py"))
+
+declare_sheet(KIND, not_covered=W.NOT_COVERED, labels=W.LABELS)
 
 #: IRC R301.5 / Table R301.5 note f — the guard's concentrated load, the same 200 lb
 #: ``pier_basis._base_moments`` puts on the base.
@@ -194,13 +197,21 @@ def _one(ctx: EngineeringContext, pier: Any, frame_forces: dict[str, float] | No
         item_id=ident, kind=KIND, key=pier.tag, basis_version=BASIS_VERSION, basis=BASIS,
         status=Status.OVER if any(not s.ok for s in states) else Status.OK,
         inputs=tuple(inputs), limit_states=tuple(states), notes=tuple(notes),
-        element_tags=(pier.tag,))
+        element_tags=(pier.tag,), bases=_bases(connector, notes))
     governing = record.governing
     summary = (f"{pier.tag}: head joint — {governing.name} governs at {governing.ratio:.2f}"
                if governing is not None else f"{pier.tag}: head joint")
     from dataclasses import replace
 
     return replace(record, summary=summary)
+
+
+def _bases(connector: Any, notes: list[str]) -> tuple:
+    from typehaus.engineering.owner_bases import CURTAINS, connector_reading
+
+    reading = connector_reading(connector.tie, connector.source) if connector else None
+    curtains = any(CURTAIN_OWNER_BASIS in note for note in notes)
+    return tuple(b for b in (reading, CURTAINS if curtains else None) if b is not None)
 
 
 def _presumptive_fc() -> float:
@@ -224,12 +235,16 @@ def _connector_states(ctx: EngineeringContext, pier: Any, connector: Any, wind: 
             states.append(LimitState(
                 "connector lateral, wind", wind, lateral, "lb",
                 f"{connector.tie} {lateral:,.0f} lb as published (C_D {cd:g} already in it; "
-                f"{_credit(connector)}); {wind_how}; 0.6W"))
+                f"{_credit(connector)}); {wind_how}; 0.6W",
+                combination=W.WIND_ASD[0], combination_factors=W.WIND_ASD[1],
+                working=W.lateral_wind(wind, lateral, connector.tie)))
         if guard > 0.0:
             states.append(LimitState(
                 "connector lateral, guard", guard, lateral / cd, "lb",
                 f"{connector.tie} {lateral:,.0f} lb / C_D {cd:g} = {lateral / cd:,.1f} lb for "
-                f"an occupancy live load (NDS Table 2.3.2, C_D 1.0); IRC R301.5's 200 lb"))
+                f"an occupancy live load (NDS Table 2.3.2, C_D 1.0); IRC R301.5's 200 lb",
+                combination=W.GUARD_ASD[0], combination_factors=W.GUARD_ASD[1],
+                working=W.lateral_guard(guard, lateral, cd, connector.tie)))
 
     uplift = _net_uplift(ctx, pier, notes)
     if uplift is None:
@@ -244,7 +259,9 @@ def _connector_states(ctx: EngineeringContext, pier: Any, connector: Any, wind: 
         f"{'the rated set' if connector.set_rated else 'ONE part'} credited; ASCE 7-16 "
         f"§2.4.1(7) 0.6D + 0.6W on "
         + (f"{pier.roof_tributary_ft2:.1f} ft2 of roof" if pier.roof_tributary_ft2 > 0.0
-           else f"{pier.statics_area_ft2 or pier.tributary_ft2:.1f} ft2 of sealed deck")))
+           else f"{pier.statics_area_ft2 or pier.tributary_ft2:.1f} ft2 of sealed deck"),
+        combination=W.UPLIFT_ASD[0], combination_factors=W.UPLIFT_ASD[1],
+        working=W.uplift(uplift, connector.uplift_lb, connector.tie)))
     if lateral is not None and wind > 0.0:
         share = 1 if connector.set_rated else connector.tie_count
         up_ratio = (max(uplift, 0.0) / share) / connector.uplift_lb
@@ -257,7 +274,10 @@ def _connector_states(ctx: EngineeringContext, pier: Any, connector: Any, wind: 
                 "connector combined, uplift + lateral", unity, 1.0, "",
                 f"{rule}; ({uplift:,.1f} / {share}) / {connector.uplift_lb:,.0f} = "
                 f"{up_ratio:.3f} + {wind:,.1f} / {lateral:,.0f} = {wind / lateral:.3f}, "
-                f"the lateral at the lower of F1/F2 so no direction needs knowing"))
+                f"the lateral at the lower of F1/F2 so no direction needs knowing",
+                combination=W.UPLIFT_ASD[0], combination_factors=W.UPLIFT_ASD[1],
+                working=W.combined(uplift, share, connector.uplift_lb, wind, lateral,
+                                   unity)))
             return
         inputs.append(Quantity("combined_unity_unverified", unity, "", 0.001))
         notes.append(
@@ -275,6 +295,7 @@ def _credit(connector: Any) -> str:
 
 def _net_uplift(ctx: EngineeringContext, pier: Any, notes: list[str]) -> float | None:
     """0.6D + 0.6W on the roof this column carries, ASD lb up; ``None`` with no roof."""
+    from typehaus.engineering.column_head_uplift import roof_q_h, sealed_deck_uplift
     from typehaus.engineering.pier_basis import design_roof_dead_psf
     from typehaus.wind_tables import (
         GUST_EFFECT_RIGID,
@@ -283,8 +304,8 @@ def _net_uplift(ctx: EngineeringContext, pier: Any, notes: list[str]) -> float |
     )
 
     if pier.roof_tributary_ft2 <= 0.0:
-        return _sealed_deck_uplift(ctx, pier, notes)
-    q_h = _roof_q_h(ctx, pier.tag)
+        return sealed_deck_uplift(ctx, pier, notes)
+    q_h = roof_q_h(ctx, pier.tag)
     if q_h is None:
         return None
     up = asd_solid_band_psf(q_h)
@@ -294,76 +315,6 @@ def _net_uplift(ctx: EngineeringContext, pier: Any, notes: list[str]) -> float |
         f"{GUST_EFFECT_RIGID} x {MAX_VERIFIED_CASE_AB} = {up:.3f} psf, a bound on any "
         f"published free-roof C_N, less 0.6 x {roof_dead:g} psf of roof dead.")
     return (up - 0.6 * roof_dead) * pier.roof_tributary_ft2
-
-
-def _sealed_deck_uplift(ctx: EngineeringContext, pier: Any, notes: list[str]) -> float | None:
-    """0.6D + 0.6W uplift on a SEALED deck, ASD lb per column; ``None`` for an open-jointed one.
-
-    ASCE 7-16 gives an open-jointed walking surface no uplift. A watertight plank (an aluminium
-    deck system) is a roof over the space below, so the same surrogate the roof columns use
-    applies — ``0.6 q G C_f`` at the Case A/B bound, less 0.6 of the deck's dead — spent on
-    the column's tributary (review B-06). The reviewer's hand estimate with C_N -1.5 was 380 lb.
-    """
-    from typehaus.engineering.deck_tie_basis import deck_wind
-    from typehaus.engineering.pier_basis import DECK_DEAD_LOAD_PSF
-    from typehaus.model.floors import FloorSystem
-    from typehaus.wind_tables import asd_solid_band_psf
-
-    post = ctx.plan.by_tag(pier.tag)
-    deck = next((d for d in ctx.plan.all_elements() if isinstance(d, FloorSystem)
-                 and d.service == "deck"
-                 and any(pier.tag in (getattr(ctx.plan.by_tag(r), "bearing_refs", ()) or ())
-                         for r in d.joists.bearing_refs or ())), None)
-    plank = getattr(getattr(deck, "subfloor", None), "material_ref", "") or ""
-    if deck is None or not plank.startswith("aluminum-deck"):
-        notes.append(
-            "NO UPLIFT ROW: this column carries no roof (roof tributary 0 ft2, computed) and "
-            "its deck is an open-jointed walking surface, which ASCE 7-16 assigns no uplift.")
-        return None
-    wind = deck_wind(ctx, deck, [post])
-    if wind is None:
-        return None
-    up = asd_solid_band_psf(wind.q_h_psf)
-    area = pier.statics_area_ft2 or pier.tributary_ft2
-    uplift = (up - 0.6 * DECK_DEAD_LOAD_PSF) * area
-    notes.append(
-        f"UPLIFT: this deck's plank ({plank}) is SEALED — the porch's roof — so ASCE 7-16's "
-        f"no-uplift rule for an open-jointed surface does not hold. GRADED as an OPEN structure "
-        f"(the bound the roof columns use): 0.6 x {wind.q_h_psf:.2f} psf x G x C_f 1.8 = "
-        f"{up:.2f} psf up, less 0.6 x {DECK_DEAD_LOAD_PSF:g} psf of deck dead (planters "
-        f"excluded), on this column's {area:.1f} ft2 (the beam's STATICS area under full "
-        f"load, as gravity takes it). The joist ties and the plank's own fastening see the "
-        f"same uplift.")
-    notes.append(
-        "OWNER BASIS, no internal pressure: the porch curtains are stowed in high wind, so the "
-        "porch is OPEN and no GC_pi is taken under the sealed deck. " + CURTAIN_OWNER_BASIS)
-    return uplift
-
-
-def _roof_q_h(ctx: EngineeringContext, tag: str) -> float | None:
-    """q_h at the ridge of the roof(s) this column carries, the ``roof_moment`` datum."""
-    from typehaus.engineering.balcony_wind import ground_below_ft
-    from typehaus.model.spatial import Roof
-    from typehaus.model.structure import Beam, Post
-    from typehaus.wind import velocity_pressure_psf, wind_basis
-
-    basis = wind_basis(ctx.plan.project.site)
-    if basis is None:
-        return None
-    standing = {e.tag for e in ctx.plan.all_elements()
-                if isinstance(e, Post) and e.supported_by == tag}
-    ground = ground_below_ft(ctx.plan)
-    best = None
-    for roof in ctx.model.roofs:
-        element = ctx.plan.by_tag(roof.tag)
-        if not isinstance(element, Roof):
-            continue
-        beams = [b for b in (ctx.plan.by_tag(r) for r in element.bearing_refs)
-                 if isinstance(b, Beam)]
-        if any({tag, *standing} & set(b.bearing_refs or ()) for b in beams):
-            q_h = velocity_pressure_psf(basis, roof.ridge_z_m / 0.3048 - ground)
-            best = q_h if best is None else max(best, q_h)
-    return best
 
 
 def _shear_state(pier: Any, fc: float, wind: float, guard: float, states: list[LimitState],
@@ -385,7 +336,10 @@ def _shear_state(pier: Any, fc: float, wind: float, guard: float, states: list[L
     states.append(LimitState(
         "column shear", v_u, PHI_SHEAR_TORSION * v_c, "lb",
         f"ACI 318-19 Table 22.5.5.1(a) with N_u = 0, b_w {b_w:g}\" and d {d:g}\" "
-        f"(§22.5.2.2); V_u the larger of base wind / 0.6 and 1.6 x the guard"))
+        f"(§22.5.2.2); V_u the larger of base wind / 0.6 and 1.6 x the guard",
+        combination=W.STRENGTH_LATERAL[0], combination_factors=W.STRENGTH_LATERAL[1],
+        working=W.shear(v_u, base_wind, wind_factor, guard, guard_factor, b_w, d, fc,
+                        PHI_SHEAR_TORSION)))
     cage = cage_for(pier)
     if cage is None:
         missing.append(f"a tied cage on {pier.tag} (Post.reinforcement) for A_v,min")
@@ -450,7 +404,9 @@ def _torsion_state(ctx: EngineeringContext, pier: Any, frames: list[BeamFrame], 
         f"ACI 318-19 §22.7.4.1(a), T_th = sqrt(f'c) A_cp^2 / p_cp = {t_th:,.1f} lb-ft, N_u "
         f"= 0; T_u = {force:,.1f} lb ({case}) x {lever:.3f}\" — the bound |r x F| over each "
         f"beam face and tie at the head. Under it, §22.7.1.1 permits torsion to be "
-        f"neglected and §9.6.4's closed hoops are not owed"))
+        f"neglected and §9.6.4's closed hoops are not owed",
+        combination=W.STRENGTH_LATERAL[0], combination_factors=W.STRENGTH_LATERAL[1],
+        working=W.torsion(force, lever, t_u, fc, area, perimeter, t_th, PHI_SHEAR_TORSION)))
 
 
 def _seat_states(ctx: EngineeringContext, pier: Any, frames: list[BeamFrame], connector: Any,
@@ -489,7 +445,10 @@ def _seat_states(ctx: EngineeringContext, pier: Any, frames: list[BeamFrame], co
         f"ACI 318-19 §22.8.3.2, {connector.bearing} {width:g}\" x {length:g}\" = "
         f"{a_1:g} in2, sqrt(A2/A1) = {k:.3f} capped at {BEARING_CONFINEMENT_CAP:g} (A2 the "
         f"largest similar concentric area inside the column top); P_u = 1.2(D - shaft) + "
-        f"1.6(L or S)"))
+        f"1.6(L or S)",
+        combination=W.STRENGTH_GRAVITY[0], combination_factors=W.STRENGTH_GRAVITY[1],
+        working=W.seat(p_u, pier.dead_lb - pier.self_weight_lb, pier.live_lb, width, length,
+                       k, BEARING_CONFINEMENT_CAP, fc, PHI_BEARING)))
     notes.append(
         f"SEAT ECCENTRICITY {ecc:.3f}\": the pack's centroid under {frame.tag} stands that "
         f"far off the axis, so the head takes P_u x e = {p_u * ecc / 12.0:,.1f} lb-ft of "
