@@ -140,17 +140,28 @@ def _roof(ctx: Any, model: ResolvedModel, roof: Any, preferences: object) -> lis
     out.append("  MAX GRAVITY REACTION AT EACH BEARING: " + _runs(gravity))
     grouped: dict[tuple, list[str]] = {}
     for row in specified:
-        grouped.setdefault((row.member, row.uplift_lb, row.connector, row.basis), []).append(
-            row.bearing)
-    for (member, uplift, connector, basis), bearings in grouped.items():
+        grouped.setdefault((row.member, row.uplift_lb, row.connector, row.basis, row.truss_species,
+                            row.capacity_lb, row.reduced_capacity_lb, row.design_uplift_lb),
+                           []).append(row.bearing)
+    for key, bearings in grouped.items():
+        member, uplift, connector, basis, species, full, reduced, design = key
         allowable = allowable_for_model(connector or "")
-        capacity = getattr(allowable, "uplift_lb", None)
-        nails = (allowable.fasteners.split(" — ")[0].split(" (")[0] if capacity else "")
-        tie = (f"{connector} {capacity:,.0f} LB, {uplift / capacity:.2f}; FASTENERS {nails}"
-               if capacity else f"{connector or 'no connector'}: no catalog allowable")
+        nails = (allowable.fasteners.split(" — ")[0].split(" (")[0] if allowable else "")
+        tie = (f"{connector}, {species or 'SPECIES NOT STATED'} COLUMN {full:,.0f} LB WITH ALL "
+               f"TRUSS NAILS LANDING ({uplift / full:.2f}); FASTENERS {nails}" if full
+               else f"{connector or 'no connector'}: no row stated")
         out.append(f"  MAX NET UPLIFT {uplift:,.0f} LB PER HEEL AT {', '.join(bearings)}, "
                    f"{'EVERY TRUSS' if member == '*' else member.upper()} ({basis}); "
                    f"HEEL TIE {tie}")
+        if reduced and design:
+            out.append(f"    DESIGN UPLIFT {design:,.0f} LB AGAINST THE THREE-NAIL 2x4 CHORD ROW "
+                       f"{reduced:,.0f} LB (SIMPSON C-C-2021 P.277 FN. 14): "
+                       + ("CLOSED EITHER WAY" if design <= reduced else
+                          f"{design / reduced:.2f}, SO THE HEEL STANDS ONLY WITH ALL FIVE TRUSS "
+                          "NAILS LANDING"))
+    conditions = sorted({r.heel_condition for r in specified if r.heel_condition})
+    out.extend(f"  HEEL CONDITION (ORDER): {c.upper()}" for c in conditions)
+    out += _chord_bearing(ctx, model, roof, element, tcdl + bcdl, flat, surcharge)
     chord = _chord_force(ctx, roof.tag) if getattr(
         getattr(element, "diaphragm", None), "delivers_to", None) is not None else None
     if chord:
@@ -160,16 +171,44 @@ def _roof(ctx: Any, model: ResolvedModel, roof: Any, preferences: object) -> lis
     deflection = next((r.deflection for r in specified if r.deflection), ())
     out.append("  DEFLECTION  " + (", ".join(deflection) if deflection else NOT_STATED))
     closed = bool(specified) and all(
-        (getattr(allowable_for_model(r.connector or ""), "uplift_lb", 0.0) or 0.0) >= r.uplift_lb
-        for r in specified)
+        r.design_uplift_lb is not None and r.reduced_capacity_lb is not None
+        and r.design_uplift_lb <= r.reduced_capacity_lb for r in specified)
+    conditional = bool(specified) and all(
+        r.design_uplift_lb is not None and r.capacity_lb is not None
+        and r.design_uplift_lb <= r.capacity_lb for r in specified)
     out.append("  SUPPORTING STRUCTURE: "
-               + ("CLOSED ON THESE REACTIONS" if closed else "NOT CLOSED") + " (HEEL TIES; "
-               "BEARING ON THE SUPPORT GRADED IN THE CALCS)")
+               + ("CLOSED ON THESE REACTIONS" if closed else
+                  "CLOSED ONLY IF THE HEEL CONDITION ABOVE IS CONFIRMED" if conditional
+                  else "NOT CLOSED") + " (HEEL TIES; BEARING ON THE SUPPORT GRADED IN THE CALCS)")
     supplied = bool(getattr(element, "published_reactions", ()))
     out.append("  COMPONENT: " + ("SUPPLIER'S SCHEDULE QUOTED; structural.truss_reactions CHECKS "
                                   "IT AGAINST THESE" if supplied else
                                   "OPEN UNTIL THE SUPPLIER'S SEALED DESIGN IS CHECKED AGAINST "
                                   "THESE CRITERIA"))
+    return out
+
+
+def _chord_bearing(ctx: Any, model: ResolvedModel, roof: Any, element: Any, dead: float,
+                   flat: float | None, surcharge: dict[str, float]) -> list[str]:
+    """The truss's own bottom-chord bearing on its support: the supplier's check, said aloud."""
+    from typehaus.engineering.truss_on_beam import beam_bearing, half_span_ft, truss_widths
+
+    half = half_span_ft(ctx, roof)
+    peak = max(((flat or 0.0) + surcharge[m.child_key] + dead) * w * half
+               for m, w in truss_widths(ctx, roof))
+    out = []
+    for tag in element.bearing_refs:
+        support = model.plan.by_tag(tag)
+        if getattr(support, "element_kind", "") == "Beam":
+            found = beam_bearing(ctx, roof, support)
+            width = (f"{found[0]:g} IN CHORD ON {found[1]:.1f} IN OF BEARING = "
+                     f"{peak / (found[0] * found[1]):.0f} PSI" if found else "")
+            out.append(f"  CHORD BEARING ON {tag}: THE SUPPLIER CHECKS THE TRUSS CHORD'S OWN "
+                       f"FC-PERP (SPF) AT MAX {peak:,.0f} LB, {width}; NOT GRADED HERE "
+                       "(THE GLULAM'S OWN BEARING IS)")
+        else:
+            out.append(f"  CHORD BEARING ON {tag}: THE SUPPLIER CHECKS THE TRUSS CHORD'S OWN "
+                       f"FC-PERP (SPF) AT MAX {peak:,.0f} LB ON THE PLATE; NOT GRADED HERE")
     return out
 
 
