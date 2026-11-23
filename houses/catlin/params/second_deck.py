@@ -193,9 +193,10 @@ WEST_FLOOR = FloorSystem(
                      bearing_refs=("W-M-W2", "W-M-C2", "BM-M-HALL"),
                      web_openings=J12_WEB_OPENINGS,
                      line_overrides=_LINE_MOVES,
-                     # The south gable-end edge line is a 1 1/4" LSL rim board, as on every
-                     # TJI field (owner, 2026-11-18); the north one is opening trimmer packs.
-                     edge_rims=("lo",),
+                     # Both gable-end edge lines are a 1 1/4" LSL rim board, as on every TJI
+                     # field (owner, 2026-11-18; north added 2026-11-22: the main wall's 4x10
+                     # sheet laps the band, and a joint there needs backing at its face).
+                     edge_rims=("lo", "hi"),
                      end_bearing=(("W-M-C2", _TRUSS_BEARING),)),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR,
                        nailing=SUBFLOOR_FASTENING),

@@ -24,6 +24,7 @@ import math
 
 from typehaus.checks.code.mn_residential._common import _fail, _na, _pass, _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
+from typehaus.checks.code.mn_residential.wall_top_edge_pack import edge_pack_lines
 from typehaus.checks.soil import site_soil_class
 from typehaus.checks.structural._mn_r404_1_table import SOIL_GROUP_PCF, top_of_wall_row
 from typehaus.checks.structural.foundation import _unbalanced_fill_ft, _wall_height_ft
@@ -175,14 +176,14 @@ def _station_key(floor_tag: str, point) -> tuple:
 def _parallel(ctx, run, reaction_plf, blocking_in, connectors, anchors) -> tuple[list, list]:
     """``(ok lines, short lines)`` for one parallel floor over the wall."""
     head = f"{run.floor_tag} parallel"
+    # A station past this run's span stands on its neighbour's sill, whose ties this sill's
+    # thrust cannot reach: the run grades only its own (``station_tie_points``' rule).
+    stations = [s for s in run.stations if in_span(run, s)]
     if run.voids:
         cut = ", ".join(f"{a / _M_PER_FT:.1f}-{b / _M_PER_FT:.1f} ft" for a, b in run.voids)
         return [], [f"{head}: UNKNOWN — a floor opening fills the first three joist spaces "
                     f"along {cut}, so no footnote f blocking can stand there; the restraint "
                     "is an approved-equivalent design (the opening's edge framing)"]
-    # A station past this run's span stands on its neighbour's sill, whose ties this sill's
-    # thrust cannot reach: the run grades only its own (``station_tie_points``' rule).
-    stations = [s for s in run.stations if in_span(run, s)]
     if not stations:
         return [], [f"{head}: no blocking stations (footnote f, {blocking_in}\" o.c.)"]
     limit_m = blocking_in * _M_PER_IN
@@ -287,7 +288,13 @@ def foundation_wall_top(ctx: CheckContext) -> list[Finding]:
         on_wall = [along_wall(resolved, a.point_m) for a in anchors]
         on_wall = [a for a, offset in on_wall if offset <= resolved.thickness_m]
         for run in runs.get(tag, ()):
-            more_ok, more_short = _parallel(ctx, run, reaction, blocking, connectors, on_wall)
+            if run.voids and not [s for s in run.stations if in_span(run, s)]:
+                # The opening fills the run whole: its edge pack is the restraint.
+                more_ok, more_short = edge_pack_lines(ctx, run, reaction, connectors,
+                                                      tie_capacity_lb)
+            else:
+                more_ok, more_short = _parallel(ctx, run, reaction, blocking, connectors,
+                                                on_wall)
             ok, short = ok + more_ok, short + more_short
         head = (f"{tag} ({height:.1f}' wall, {fill:.1f}' fill, {soil}): Table R404.1(1) row "
                 f"{row_h:g}'/{row_b:g}' gives {reaction} plf at the top")
