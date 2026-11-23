@@ -38,7 +38,7 @@ def test_the_tie_is_derived_from_the_authored_hardware(catlin_ctx):
         ("BM-BW-FE", "W-G-S", 2, "DTT2Z", "x", "y", False, None),
         ("BM-BW-FE", "W-G-S", 2, "HL43HDG", "x", None, False, None),
         ("W-BW-SCREEN", "W-G-W", 1, "MSTA49Z", "y", "y", False, None)]
-    assert [round(j.x_ft, 4) for j in joints] == [9.7187, 9.3958, 6.0365]
+    assert [round(j.x_ft, 4) for j in joints] == [9.7187, 9.3333, 6.0365]
     assert [round(j.y_ft, 4) for j in joints] == [43.3125, 43.1458, 43.1458]
 
 

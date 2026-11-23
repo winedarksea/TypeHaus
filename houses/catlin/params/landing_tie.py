@@ -35,13 +35,16 @@ from params.north_entry_frame import (
     EDGE_BEAM_X_FT,
     GARAGE_CLADDING_Y_FT,
     JOIST_DEPTH_IN,
+    JOIST_MEMBER_WIDTH_IN,
     SCREEN_AXIS_X_FT,
     SCREEN_PANEL_TOP_FT,
 )
 from typehaus import Connector, ConnectorKind, ft, inch, pt
 
 _FE_EAST_FACE_FT = EDGE_BEAM_X_FT + EDGE_BEAM_WIDTH_IN / 24
-_FE_WEST_FACE_FT = EDGE_BEAM_X_FT - EDGE_BEAM_WIDTH_IN / 24
+#: The west angle sits on the deck's east rim joist, against FE's west face, so its bolt
+#: passes rim + FE = 6" (HL fn 5: >= 5 1/8" for the 4-series).
+_FE_WEST_FACE_FT = EDGE_BEAM_X_FT - EDGE_BEAM_WIDTH_IN / 24 - JOIST_MEMBER_WIDTH_IN / 12
 #: Angles high in FE's 7 1/4", the DTT low beside them.
 _FE_HIGH_Z_FT = DECK_JOIST_TOP_FT - 1.75 / 12
 _FE_LOW_Z_FT = DECK_JOIST_TOP_FT - (JOIST_DEPTH_IN - 1.75) / 12
