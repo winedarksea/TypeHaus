@@ -179,3 +179,46 @@ def site_bolt_rows(model: ResolvedModel) -> list:
             by_storey=dict(sorted(by_storey.items())),
             basis="next stocked length over the need: " + "; ".join(notes[(model_name, length)])))
     return rows
+
+
+#: A DTT2's seat (C-C-2026 p. 60: 14 ga), the steel the rod crosses at each end.
+_DTT_SEAT_IN = 0.0747
+
+
+def tension_rod_rows(model: ResolvedModel) -> list:
+    """One 1/2" rod per DTT2Z pair on a common rod line (a tie each side of a wall): seat to
+    seat, plus each seat's steel and a washer, nut and two threads past it."""
+    from typehaus.library.hardware.site_bolts import TENSION_ROD_12
+
+    by_line: dict[tuple, list] = defaultdict(list)
+    storeys: dict[tuple, str] = {}
+    for storey in model.plan.storeys:
+        for el in model.plan.storey_elements(storey.tag):
+            if isinstance(el, Connector) and el.size == "DTT2Z" and el.axis in ("x", "y"):
+                x, y = el.position.xy_m
+                across = round((y if el.axis == "x" else x) / M_PER_IN, 1)
+                key = (tuple(el.connects), el.axis, across,
+                       round(el.elevation.meters / M_PER_IN, 1) if el.elevation else None)
+                by_line[key].append(el)
+                storeys[key] = storey.tag
+    counts: Counter = Counter()
+    notes: dict[float, list[str]] = defaultdict(list)
+    by_storey: dict[float, Counter] = defaultdict(Counter)
+    allowance = bolt_allowance_in(0.5) + _DTT_SEAT_IN
+    for key, ties in sorted(by_line.items(), key=lambda kv: str(kv[0])):
+        if len(ties) != 2:
+            continue
+        a, b = (t.position.xy_m for t in ties)
+        span = math.dist(a, b) / M_PER_IN
+        need = span + 2 * allowance
+        length = stocked_length_in(need, TENSION_ROD_12.part_number_by_length_in)
+        counts[length] += 1
+        by_storey[length][storeys[key]] += 1
+        notes[length].append(f"{ties[0].tag} to {ties[1].tag}: {span:.3f} seat to seat + "
+                             f"2 x {allowance:.3f} seat/washer/nut/2 threads = {need:.3f} in")
+    return [hardware_row(
+        TENSION_ROD_12, scope="connector site bolts", count=n,
+        part_number=TENSION_ROD_12.part_number_by_length_in[length], size=f'{length:g}"',
+        by_storey=dict(sorted(by_storey[length].items())),
+        basis="next stock cut over the need: " + "; ".join(notes[length]))
+        for length, n in sorted(counts.items())]

@@ -27,7 +27,7 @@ from typehaus.takeoff.hangers import joist_hanger_rows, ridge_tie_strap_rows
 from typehaus.takeoff.panel_fasteners import concealed_panel_screw_rows
 from typehaus.takeoff.partition_fasteners import partition_deflection_screw_rows
 from typehaus.takeoff.sheathing_nails import sheathing_nail_rows
-from typehaus.takeoff.site_bolts import site_bolt_rows
+from typehaus.takeoff.site_bolts import site_bolt_rows, tension_rod_rows
 from typehaus.takeoff.slat_braces import slat_brace_rows
 from typehaus.takeoff.snow_retention import snow_retention_rows
 from typehaus.takeoff.stair_spacers import stair_spacer_screw_rows
@@ -70,6 +70,7 @@ def hardware_takeoff(model: ResolvedModel,
         *rows,
         *connector_fastener_rows(rows),
         *site_bolt_rows(model),
+        *tension_rod_rows(model),
         *treated_framing_fastener_rows(model, config.treated_framing),
         *sheathing_nail_rows(model),
         *trim_fastener_rows(model),
