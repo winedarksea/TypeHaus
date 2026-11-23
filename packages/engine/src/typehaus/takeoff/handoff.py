@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import textwrap
 import zipfile
 from collections.abc import Iterable, Mapping, Sequence
 from pathlib import Path
@@ -163,7 +164,10 @@ def manifest_table(digests: Mapping[str, str]) -> str:
 
 
 def pe_readme(*, house: str, generated: str, engine_version: str, content_hash: str,
-              records, notes: Sequence[str], checklist, has_pdf: bool) -> str:
+              records, notes: Sequence[str], checklist, has_pdf: bool,
+              full_pdf: bool = True, sheets: Sequence[str] = (),
+              key_plan: Sequence[str] = (), evidence: int = 0,
+              has_external: bool = False) -> str:
     """The page a reviewing engineer opens first — five minutes, in order.
 
     Written as a route through the bundle rather than a description of it. A PE handed forty
@@ -213,9 +217,9 @@ def pe_readme(*, house: str, generated: str, engine_version: str, content_hash: 
         "",
         "## Five minutes, in order",
         "",
-        "1. **`calcs/00-cover.md`** (status) and **`calcs/01-design-criteria.md`** — the",
-        "   wind, snow, soil, materials and load combinations every calculation shares.",
-        "   If a criterion is wrong, stop here.",
+        "1. **`calcs/00-cover.md`** (status) and **`calcs/01-design-criteria.md`** (the",
+        "   criteria every calculation shares): wind, snow, soil, materials and load",
+        "   combinations. If a criterion is wrong, stop here.",
         "2. **`calcs/02-item-register.md`** — every item, its governing limit state and its",
         "   demand/capacity ratio, on one page.",
         "3. **`calcs/03-open-items.md`** — what is *not* finished, and who owns each one.",
@@ -229,13 +233,31 @@ def pe_readme(*, house: str, generated: str, engine_version: str, content_hash: 
         "   is checked against an independent hand pass, and section 8 of every sheet names",
         "   the note that checks it. A calculation that only agrees with itself is not",
         "   verified, and these are how that rule is kept.",
-        "",
     ]
+    if sheets or key_plan:
+        out += ["6. **`drawings/`** — to find a tag on paper."]
+        if key_plan:
+            out += [f"   `key_plan.pdf` ({', '.join(key_plan)}) is one plan per level with every",
+                    "   engineered item's element coloured by kind and labelled by tag."]
+        if sheets:
+            out += ["   `structural_sheets.pdf` is the permit set's structural sheets, the",
+                    "   sheet ids the open items and the register cite:",
+                    *textwrap.wrap(", ".join(sheets), 84, initial_indent="   ",
+                                   subsequent_indent="   ")]
+    if evidence:
+        out += [f"{7 if (sheets or key_plan) else 6}. **`evidence/`** — {evidence} file(s): the",
+                "   owner's engineering review (reports and the scripts behind their numbers)",
+                "   and any supplier run reports or independent verifier calculations. It is",
+                "   evidence for you to weigh, not part of the stamped document."]
+    out.append("")
     if has_pdf:
         out += ["`calcs.pdf` is the same content flattened and page-anchored — the file to",
-                "mark up and stamp, because no jurisdiction accepts Markdown. It carries the",
-                "calculations; the per-member appendix tables are in the markdown above, and",
-                "`haus handoff --full` prints them into the PDF too.", ""]
+                "mark up and stamp, because no jurisdiction accepts Markdown. "
+                + ("It carries every member's data (the appendix tables)."
+                   if full_pdf else
+                   "It carries the calculations; the per-member appendix tables are in the "
+                   "markdown above, and `haus handoff --full` prints them into the PDF too."),
+                ""]
 
     out += [
         "## Where the permit gate stands",
@@ -247,9 +269,9 @@ def pe_readme(*, house: str, generated: str, engine_version: str, content_hash: 
         f"- **{len(ok)} item(s) are computed, and every limit state this engine enumerated",
         "  for them is under 1.** That is a narrower claim than \"they check out\", and the",
         f"  difference is the review: {len(screening)} of them are **screening** rather than",
-        "  complete. Section 9 of each family sheet names the rows of",
-        "  `calcs/04-assumptions.md` that state, in that family's own terms, what is not",
-        "  graded — those failure modes are not evaluated and are not implied to pass.",
+        "  complete. The failure modes not graded for each family are listed in",
+        "  `calcs/04-assumptions.md` (rows beginning NOT GRADED or SCREENING). They are",
+        "  not evaluated and not implied to pass.",
     ]
     if incomplete:
         out.append(f"- **{len(incomplete)} item(s) are INCOMPLETE** — computed, but an input")
@@ -268,12 +290,13 @@ def pe_readme(*, house: str, generated: str, engine_version: str, content_hash: 
         out.append("  structural engineer of record owns the rest. They carry no model")
         out.append("  fingerprint — there is nothing to hash — so a seal over one is pinned")
         out.append("  to the designer's own document instead: its revision, its sha256 and")
-        out.append("  the envelope it was issued for. `engineering.toml.draft` has the form.")
+        out.append("  the envelope it was issued for. `engineering-external.toml.draft` has the")
+        out.append("  form; it is separate so you never have to delete it from the main one.")
     out += [
         "",
         "**Not in this bundle, and not covered by any stamp on it:** anything answered by a",
         "prescriptive table (the IRC's, or a manufacturer's published span table read on the",
-        "element) and anything the sheets' section 9 lists as out of scope.",
+        "element) and anything `calcs/04-assumptions.md` lists as not graded.",
         "",
         "## Pinning, and why the fingerprints matter",
         "",
@@ -289,9 +312,15 @@ def pe_readme(*, house: str, generated: str, engine_version: str, content_hash: 
         "1. Stamp `calcs.pdf` (or the sheets you reviewed).",
         "2. Fill in `engineering.toml.draft` — it is a form, with every blank marked",
         "   `<<LIKE THIS>>`, and the fingerprints already filled in. Do not edit those.",
+        "   Type the engineer, the license and the date once, in its `[defaults]` table",
+        "   (`document` is already `calcs.pdf`); every block inherits them. Delete the",
+        "   blocks you did not seal.",
         "3. Return both. The owner copies the draft to `houses/<name>/engineering.toml` and",
         "   runs `haus engineering --require-seal` and `haus print --sealed`.",
         "",
+        *(["Items an outside designer owns are in `engineering-external.toml.draft`: append",
+           "its blocks to the file above once that designer's document exists.", ""]
+          if has_external else []),
         "The engine refuses to load that file while any `<<placeholder>>` remains, so an",
         "unedited form cannot become a seal by being copied.",
         "",

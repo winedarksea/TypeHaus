@@ -105,8 +105,9 @@ between two runs is taken over — they are machine data rather than the documen
 
 `haus calcs --pdf` leaves the appendix out and says so on its divider page, which names the
 folder the data is in: **a silent omission is exactly the defect `sheet_order`'s docstring
-exists to prevent.** `haus calcs --pdf --appendix` and `haus handoff --full` print the
-per-family tables (X-33 on catlin against the old X-192).
+exists to prevent.** `haus calcs --pdf --appendix` prints the per-family tables, and
+`haus handoff` does by default (`--no-appendix` drops them): a seal binds to the PDF, so the
+members' data has to be in it.
 
 **The boilerplate is said once.** Five strings — the draft-gate sentence, the load-case
 sentence, the "bold row governs" key, the limit-state table key and the coverage
@@ -178,26 +179,20 @@ mean less, not more.
 
 ## Deferred items
 
-**Thirty items in catlin** are computed by nothing, by decision. `engineering/deferred.py`
-declares each kind's designer of record, what they must produce and which permit-set line it
-unblocks, and `03-open-items.md` is generated straight off that table. They are exactly as
-blocking as they were before they had names; what changed is that the outstanding work is now
-an assignment rather than an absence.
+An item this engine computes nothing for has a kind in `engineering/deferred.py`: the designer
+of record, what they must produce and which permit-set line it unblocks. `03-open-items.md` is
+generated straight off that table, and `calcs/<kind>.md` for such a kind says the same. They
+are exactly as blocking as they were before they had names; the outstanding work is an
+assignment rather than an absence. Today catlin's are the trussed roofs (the fabricator's
+sealed component design) and the brick veneer anchors (the supplier's), and a seal over one
+pins the designer's own document, not a model fingerprint (`engineering.toml.draft` has the
+form, `engineering-external.toml.draft` the blocks).
 
-**Most of them are NOT the supplier's**, and this paragraph said the opposite until
-2026-09-18 — it read "a fabricator's or a supplier's sealed design governs" and named seven
-items, a count that had been stale through four separate expansions. Today: two trussed roofs
-and their uplift path are a fabricator's; the rest — the wall tops under the balcony's
-fixed-base columns, the court's veneer beam, the thermal-break transfer, the tiered apron,
-and (2026-09-18) the fixed bases' rotational stiffness and the column head joints — name the
-**structural engineer of record**, which is to say the person the handoff bundle is addressed
-to. A reviewer told "these are not yours" about twelve items that are theirs is the one
-sentence in a handoff that can cost a whole review cycle.
-
-**An exact count does not belong in this document.** It went stale four times because a
-number about one house was written into the format's own specification; `haus engineering`
-and `03-open-items.md` are generated and are always right. The figure above is a sense of
-scale, and the day it disagrees with the CLI, trust the CLI.
+**Whose they are is read off the table, not off this document.** A reviewer told "these are not
+yours" about items that are theirs is the one sentence in a handoff that can cost a whole review
+cycle, so the designer is always the table's. **No count belongs here:** a figure about one
+house, written into the format's own specification, went stale four times. `haus engineering`
+and `03-open-items.md` are generated and are always right; trust the CLI.
 
 **A deferral is not the only alternative to a calculation.** Where a manufacturer publishes
 a span table, reading a row is a *prescriptive* act and belongs in neither lane: the element

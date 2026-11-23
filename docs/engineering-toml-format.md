@@ -97,8 +97,8 @@ it too.
 
 ### An item somebody else designed
 
-An item this engine computes nothing for — a trussed roof, a manufactured stair, a tiered
-retaining wall — has no inputs and so cannot be pinned to the model. What it **can** be
+An item this engine computes nothing for — a trussed roof, a manufactured stair, a veneer
+anchor system — has no inputs and so cannot be pinned to the model. What it **can** be
 pinned to is the outside designer's own paper:
 
 ```toml
@@ -156,7 +156,8 @@ number, not for preparing a handover.
 
 ```
 haus handoff houses/catlin --zip                  # -> out/handoff/ and out/handoff.zip
-# ... send the zip. The PE stamps calcs.pdf and fills in engineering.toml.draft.
+# ... send the zip. The PE stamps calcs.pdf and fills in engineering.toml.draft:
+# engineer, license and date once, in [defaults].
 cp out/handoff/engineering.toml.draft houses/catlin/engineering.toml
 haus engineering houses/catlin --require-seal     # every computed item FRESH?
 haus print houses/catlin --sealed                 # the submittal gate
@@ -168,8 +169,14 @@ the field, so the reader fixes the right one. That is what keeps the engine's sc
 from becoming a seal by being copied: the engine writes into `out/`, never into the house,
 and decision #65's rule that pinning a seal is a human act is unchanged.
 
+**Name, licence and date are typed once.** The draft opens with a `[defaults]` table
+(`engineer`, `license`, `sealed_on`, `document`) that every `[[signoff]]` inherits; a block
+that sets its own key keeps it. `document` is already `calcs.pdf`. `haus handoff --engineer
+"Jane Doe, PE" --license "MN 12345" --sealed-on 2026-12-01` writes them in, and the loader
+refuses a placeholder left in `[defaults]` the same way it refuses one in a block.
+
 **The fingerprints in the draft are already filled in and must not be edited.** Obtaining
-forty of them one at a time was the part of this workflow that invited transcription error,
+every one of them one at a time was the part of this workflow that invited transcription error,
 and a mistyped fingerprint produces a seal that reads FRESH against nothing.
 
 **One `[[signoff]]` per kind, and blocks may be split.** A professional stamps a scope, not
@@ -178,9 +185,12 @@ the block and give each its own `id` — every item must appear in exactly one, 
 loader refuses a duplicate. Delete the blocks nobody sealed rather than leaving them
 half-filled.
 
-Deferred kinds arrive **commented out**, with their designer and deliverable in the comment
-and no fingerprint. There is nothing to pin, and an unpinned seal never satisfies
-`--require-seal`, so a live block would only invite a stamp that cannot work.
+Deferred kinds are in a second file, `engineering-external.toml.draft`, so a PE who holds
+no supplier document never has to delete them. Each block names its designer and deliverable
+in a comment and carries a live `[signoff.external."<item>"]` acceptance in place of a
+fingerprint; append the blocks to `engineering.toml` once the designer's sealed document
+exists and its four keys are filled in. Its supplier fields are always blanks, because only
+someone holding the document can fill them.
 
 ### Looking at one item
 

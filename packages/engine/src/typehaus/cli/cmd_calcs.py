@@ -104,6 +104,7 @@ def calcs(
             engine_version=engine_version(),
             content_hash=loaded.content_hash,
             code_edition=ctx.profile.edition,
+            asce_edition=getattr(ctx.profile, "asce_edition", ""),
             scope=f"Structural calculations for {len(item_ids)} engineered requirement(s) "
                   f"outside the prescriptive tables.",
             include_appendix=appendix,
