@@ -15,8 +15,16 @@ minimum embedded thread; the 1-1/2" minimum side member; the report named. Any m
 UNKNOWN naming it, never a PASS off a stale quotation.
 
 **Demand is ``typehaus.wind``'s, term for term with ``structural.cladding_wind``** (one suction
-for the panel and the screw behind it): q_h at the mean roof height above the lowest ground,
-Zone 5 GC_p, GC_pi, 0.6W; times the girt's and the panel's continuity over a simple span.
+for the panel and the screw behind it): q_h at the mean roof height above the lowest adjacent
+ground, Zone 5 GC_p, GC_pi, 0.6W; times the girt's and the panel's continuity over a simple
+span. **ASCE 7-16 §2.4.1 combination 5 (D + 0.6W)** adds the gravity prying: the weight acts
+parallel to the sheathing, hung off its face, and tips each block onto its screw.
+
+**Capacities carry the NDS 11.3 factors the report sends its values to** (ESR-1078 §4.1.2):
+C_D 1.6 for wind on withdrawal and pull-through, never on the 1,300 lbf Table 1A tension; C_M
+0.70 on the girt's pull-through (the KDAT girt wet-cycles, as ``cladding_fastener`` already
+reads it), the stud's withdrawal dry. Lateral + withdrawal is NDS 12.4.1 (ESR §4.1.6).
+**LSL studs are outside ESR-1078 §3.2 and take no read** (UNKNOWN naming the scope).
 
 **Oracle.** ``houses/catlin/notes/catlin_truss_engineering.md`` §3-§4;
 ``tests/test_girt_fastening.py`` reproduces it.
@@ -24,6 +32,7 @@ Zone 5 GC_p, GC_pi, 0.6W; times the girt's and the panel's continuity over a sim
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 
 from typehaus import wind
@@ -35,7 +44,10 @@ from typehaus.model.enums import LayerFunction
 from typehaus.resolve.framing.truss_girts import truss_girt_bands
 
 _ID = "structural.girt_fastening"
-_CODE = "ICC-ES ESR-1078 (reissued 2026-01), Tables 1A, 2, 3"
+_CODE = "ICC-ES ESR-1078 (reissued 2026-01), Tables 1A, 2, 3, 4; AWC NDS 2018 11.3, 12.4.1"
+#: Engineered wood the report's §3.2 leaves out ("Use of the screws in engineered wood
+#: products ... is outside the scope"), by library tag.
+_EWP_STUDS = frozenset({"lsl", "lvl", "psl"})
 #: The stud module's default when a STRUCTURE layer leaves it unset (``framing/tables``).
 _DEFAULT_STUD_SPACING_IN = 16.0
 
@@ -61,6 +73,9 @@ class _Crossing:
     source: str | None
     girt_sg: float | None
     stud_sg: float | None
+    stud_material: str
+    girt_density: float
+    panel_in: float
 
     @property
     def stack_in(self) -> float:
@@ -101,6 +116,12 @@ def _crossings(ctx: CheckContext) -> list[_Crossing]:
                           if lay.function is LayerFunction.STRUCTURE), None)
         if structure is None:
             continue
+        # The RESOLVED stud: a wall may override the assembly's (the main-storey studs are LSL).
+        resolved = next((lay for lay in wall.layers
+                         if lay.function == LayerFunction.STRUCTURE.value), None)
+        stud_ref = (resolved.material_ref if resolved is not None
+                    else structure.material_ref) or ""
+        panel = [lay for lay in assembly.layers if lay.function is LayerFunction.CLADDING]
         stud_spacing = getattr(getattr(structure, "framing", None), "spacing", None)
         stud_in = (float(stud_spacing.inches) if stud_spacing is not None
                    else _DEFAULT_STUD_SPACING_IN)
@@ -121,8 +142,11 @@ def _crossings(ctx: CheckContext) -> list[_Crossing]:
             pull_through=spec.standoff_fastener_pull_through_lb,
             source=spec.standoff_fastener_source,
             girt_sg=getattr(catalog.get(outer.material_ref or ""), "specific_gravity", None),
-            stud_sg=getattr(catalog.get(structure.material_ref or ""), "specific_gravity",
-                            None)))
+            stud_sg=getattr(catalog.get(stud_ref), "specific_gravity", None),
+            stud_material=stud_ref,
+            girt_density=float(getattr(catalog.get(outer.material_ref or ""), "density",
+                                       None) or 0.0),
+            panel_in=float(panel[-1].thickness.inches) if panel else 0.0))
     return out
 
 
@@ -133,7 +157,7 @@ def _groups(ctx: CheckContext) -> dict[str, list[_Crossing]]:
         signature = (crossing.course_in, crossing.block_in, crossing.girt_in,
                      crossing.block_depth_in, crossing.sheathing_in, crossing.part,
                      crossing.length_in, crossing.thread_in, crossing.girt_sg,
-                     crossing.stud_sg)
+                     crossing.stud_sg, crossing.stud_material)
         buckets.setdefault(signature, []).append(crossing)
     return {min(c.wall_tag for c in members): sorted(members, key=lambda c: c.wall_tag)
             for members in buckets.values()}
@@ -165,6 +189,9 @@ def _drift(crossing: _Crossing, thread_in_stud: float) -> str | None:
         return (f"Table 1A has {crossing.part} at {dims[0]:g}\" overall, {dims[1]:g}\" thread, "
                 f"{table.SHANK_DIAMETER_IN:g}\" shank; authored {crossing.length_in:g}\", "
                 f"{crossing.thread_in:g}\", {crossing.diameter_in:g}\"")
+    if crossing.stud_material in _EWP_STUDS:
+        return (f"the studs are {crossing.stud_material}, an engineered wood product, and "
+                f"ESR-1078 §3.2 puts engineered wood outside the report's scope")
     if crossing.stud_sg is None or crossing.girt_sg is None:
         return "the stud or girt Material declares no specific_gravity to index the rows by"
     w_row = table.row_at(table.WITHDRAWAL_LB_PER_IN, crossing.stud_sg)
@@ -254,33 +281,63 @@ def _one(ctx: CheckContext, key: str, members: list[_Crossing]) -> Finding:
             fix_hint="re-read ESR-1078 Tables 1A, 2 and 3 at the model's own screw, stud and "
                      "girt, and re-author the standoff_fastener_* values")
 
-    withdrawal = crossing.withdrawal * embedded
-    pull = crossing.pull_through
-    ratios = {"withdrawal": load / withdrawal, "head pull-through": load / pull,
-              "screw tension": load / table.TENSILE_LB}
+    # Capacities, NDS 11.3 applied: C_D 1.6 for wind on wood-controlled states (never the
+    # screw's own tension), C_M 0.70 on the wet-cycling girt's pull-through, stud dry.
+    w_ref = crossing.withdrawal * embedded
+    withdrawal = w_ref * table.C_D_WIND
+    pull = crossing.pull_through * table.WET_SERVICE_FACTOR * table.C_D_WIND
+    lateral_row = table.row_at(table.LATERAL_LB, min(crossing.stud_sg or 0.0,
+                                                     crossing.girt_sg or 0.0))
+    # Gravity: parallel to the sheathing, hung off its face, so it shears the joint and pries
+    # each block onto its screw (note §3.5a). Combination 5 adds it to 0.6W; dead alone is D.
+    weight, moment, pry = table.prying(
+        crossing.block_in, crossing.course_in, crossing.girt_in, crossing.block_depth_in,
+        max(m.panel_in for m in members), crossing.girt_density)
+    tension = load + pry
+    ratios = {"withdrawal": tension / withdrawal, "head pull-through": tension / pull,
+              "screw tension": tension / table.TENSILE_LB}
+    dead = {"dead alone, withdrawal": pry / (w_ref * table.C_D_DEAD),
+            "dead alone, pull-through": pry / (crossing.pull_through
+                                               * table.WET_SERVICE_FACTOR * table.C_D_DEAD)}
+    if lateral_row is None:
+        return structural_advisory(
+            _ID, f"{subject}: the stud's and girt's SG is below Table 4's lowest row (0.42)",
+            tags, Result.UNKNOWN, code=_CODE)
+    lateral = min(lateral_row) * table.C_D_WIND * table.WET_SERVICE_FACTOR
+    alpha = math.atan2(tension, weight)
+    resultant = math.hypot(tension, weight)
+    z_alpha = table.combined_allowable_lb(withdrawal, lateral, alpha)
+    ratios["combined lateral + withdrawal"] = resultant / z_alpha
+    ratios.update(dead)
     governing = max(ratios, key=ratios.__getitem__)
     over = ratios[governing] > 1.0 + 1e-9
-    wet = load / (pull * table.WET_SERVICE_FACTOR)
     text = (
-        f"{subject}: {load:.1f} lb ASD ({suction:.2f} psf Zone 5 suction at q_h {q_h:.2f} psf "
-        f"x {table.tributary_area_ft2(crossing.block_in, crossing.course_in):.2f} sf x girt "
-        f"{table.GIRT_CONTINUITY:g} x panel {table.PANEL_CONTINUITY:g}). Table 2 withdrawal "
-        f"{crossing.withdrawal:g} lb/in at SG {crossing.stud_sg:g} x {embedded:g}\" embedded = "
-        f"{withdrawal:.0f} lb (d/c {ratios['withdrawal']:.3f}); Table 3 pull-through "
-        f"{pull:g} lb at a {crossing.girt_in:g}\" side member, SG {crossing.girt_sg:g} "
-        f"(d/c {ratios['head pull-through']:.3f}); Table 1A tension {table.TENSILE_LB:g} lb "
-        f"(d/c {ratios['screw tension']:.3f}). Plain shank {shank:g}\" spans the "
-        f"{crossing.stack_in:g}\" stack. Governing: {governing}")
+        f"{subject}: D + 0.6W, ASCE 7-16 §2.4.1(5), {tension:.1f} lb of screw tension = "
+        f"{load:.1f} lb suction ({suction:.2f} psf Zone 5 at q_h {q_h:.2f} psf x "
+        f"{table.tributary_area_ft2(crossing.block_in, crossing.course_in):.2f} sf x girt "
+        f"{table.GIRT_CONTINUITY:g} x panel {table.PANEL_CONTINUITY:.3f}) + {pry:.1f} lb prying "
+        f"({weight:.1f} lb of cladding, girt and block hung off the sheathing, "
+        f"{moment:.1f} in-lb over {table.BLOCK_FACE_IN / 2.0:g}\"), with {weight:.1f} lb "
+        f"of shear. Table 2 withdrawal {crossing.withdrawal:g} lb/in at SG {crossing.stud_sg:g} "
+        f"x {embedded:g}\" embedded x C_D {table.C_D_WIND:g} = {withdrawal:.0f} lb (d/c "
+        f"{ratios['withdrawal']:.3f}); Table 3 pull-through {crossing.pull_through:g} lb at a "
+        f"{crossing.girt_in:g}\" side member, SG {crossing.girt_sg:g}, x C_M "
+        f"{table.WET_SERVICE_FACTOR:g} x C_D {table.C_D_WIND:g} = {pull:.0f} lb (d/c "
+        f"{ratios['head pull-through']:.3f}); Table 1A tension {table.TENSILE_LB:g} lb, no "
+        f"factor (d/c {ratios['screw tension']:.3f}); NDS 12.4.1 combined, Table 4 "
+        f"Z {min(lateral_row):g} x C_D x C_M = {lateral:.0f} lb, Z'a {z_alpha:.0f} lb at "
+        f"{math.degrees(alpha):.1f} deg (d/c {ratios['combined lateral + withdrawal']:.3f}); "
+        f"dead alone at C_D {table.C_D_DEAD:g} d/c {max(dead.values()):.3f}. Plain shank "
+        f"{shank:g}\" spans the {crossing.stack_in:g}\" stack. Governing: {governing}")
     if over:
         return structural_advisory(
             _ID, f"{text}, past its published row ({crossing.source})", tags, Result.FAIL,
             code=_CODE, fix_hint="a tighter girt course or block module, or a heavier row")
     return structural_advisory(
         _ID, f"{text} — a prescriptive read of a published report. Conditions the engine does "
-             f"not check: reference values are dry service and normal load duration (C_D "
-             f"1.0, not the NDS 1.6), and at the 0.70 wet-service factor the pull-through is "
-             f"{pull * table.WET_SERVICE_FACTOR:.0f} lb (d/c {wet:.2f}); LSL studs are "
-             f"outside ESR-1078 §3.2 and are read at the SPF row; ACQ-D girt stock at "
-             f"retention <= 0.40 pcf, exposure conditions 1 and 3 of Table 6 (§4.1.7); "
-             f"installed perpendicular, head flush, no lead hole ({crossing.source})",
+             f"not check: the stud stays dry behind the foam, the girt wet-cycles (the "
+             f"0.70 is applied to it); the lateral value is Table 4's 2-1/2\" row read for a "
+             f"thicker side member as its footnote 2 permits; ACQ-D girt stock at retention "
+             f"<= 0.40 pcf, exposure conditions 1 and 3 of Table 6 (§4.1.7); installed "
+             f"perpendicular, head flush, no lead hole ({crossing.source})",
         tags, Result.PASS, code=_CODE)

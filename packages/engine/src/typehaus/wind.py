@@ -165,15 +165,47 @@ def effective_wind_area_ft2(span_in: float) -> float:
     return span_ft * (span_ft / 3.0)
 
 
-def lowest_ground_ft(site) -> float:
-    """Lowest ground the building stands over, ft in the main-floor datum frame.
+#: How far from the building a spot elevation may stand and still be the ground its walls
+#: stand beside. ASCE 7-16 §26.2 measures the mean roof height above the ground at the
+#: building, so a far-off low spot (a neighbour's swale, a pond) is not it. 30 ft is a stated
+#: judgement, about the building's own eave height and a court's width; a station beyond it
+#: is ignored. Catlin's sunken-court floor stations are 20 ft off its south wall.
+ADJACENT_GROUND_FT = 30.0
 
-    The minimum of the site grade and every spot elevation: z in ASCE 7's K_z is height above
-    the ground *there*, and a sunken court shortens z if the grade is used instead, which is
-    the wrong direction to be wrong in. The same rule as ``engineering/balcony_wind``'s
-    ``ground_below_ft``. No grade and no spots: the datum (0.0).
+
+def footprint_bounds_m(model) -> tuple[float, float, float, float] | None:
+    """(x0, x1, y0, y1) of the above-grade wall axes, metres, or ``None`` with no walls."""
+    xs: list[float] = []
+    ys: list[float] = []
+    for wall in getattr(model, "walls", ()):
+        if getattr(wall, "is_foundation", False):
+            continue
+        for x, y in wall.axis:
+            xs.append(x)
+            ys.append(y)
+    return (min(xs), max(xs), min(ys), max(ys)) if xs else None
+
+
+def lowest_ground_ft(site, footprint: tuple[float, float, float, float] | None = None) -> float:
+    """Lowest ground adjacent to the building, ft in the main-floor-datum frame.
+
+    The minimum of the site grade and every spot elevation within :data:`ADJACENT_GROUND_FT`
+    of ``footprint`` (all of them when it is ``None``). z in ASCE 7's K_z is height above the
+    ground *there*, and a sunken court shortens z if the grade is used instead — the wrong
+    direction to be wrong in. A ``kind="structure"`` station (a court floor) counts: it is the
+    ground the court-facing wall stands on. The same rule as ``engineering/balcony_wind``'s
+    ``ground_below_ft``, less its reach past the site. No grade and no spots: the datum (0.0).
     """
-    candidates = [spot.elevation.meters for spot in getattr(site, "spot_elevations", ())]
+    limit_m = ADJACENT_GROUND_FT * 0.3048
+    candidates = []
+    for spot in getattr(site, "spot_elevations", ()):
+        if footprint is not None:
+            x0, x1, y0, y1 = footprint
+            px, py = spot.position.x.meters, spot.position.y.meters
+            reach = math.hypot(max(x0 - px, 0.0, px - x1), max(y0 - py, 0.0, py - y1))
+            if reach > limit_m:
+                continue
+        candidates.append(spot.elevation.meters)
     grade = getattr(site, "grade", None)
     if grade is not None:
         candidates.append(grade.meters)
@@ -185,13 +217,15 @@ def mean_roof_height_ft(model) -> float | None:
 
     The model has no building grouping to ask, so the tallest roof is the conservative
     reading. ``roof.eave_z_m`` / ``ridge_z_m`` are main-floor-datum heights, so the lowest
-    ground (:func:`lowest_ground_ft`) is taken off; catlin's is the sunken garden, -9.12 ft.
+    adjacent ground (:func:`lowest_ground_ft`) is taken off; catlin's is the sunken court,
+    -9.12 ft, which governs conservatively.
     """
     heights = [(roof.eave_z_m + roof.ridge_z_m) / 2.0 for roof in model.roofs
                if roof.eave_z_m is not None and roof.ridge_z_m is not None]
     if not heights:
         return None
-    return max(heights) / 0.3048 - lowest_ground_ft(model.plan.project.site)
+    ground = lowest_ground_ft(model.plan.project.site, footprint_bounds_m(model))
+    return max(heights) / 0.3048 - ground
 
 
 def cladding_pressure_asd_psf(q_h: float, area_ft2: float, zone: str = "5", *,

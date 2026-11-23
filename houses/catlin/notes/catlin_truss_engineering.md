@@ -17,8 +17,10 @@ See §6 (Code path) for why IRC Table R703.15.1 is not the applicable provision.
 **And one thing to read first, because it changes where a reviewer's attention belongs.**
 This wall now has a **single load path**: one screw per crossing, and nothing else holds the
 cladding to the building. There is no second tier, no second fastener pass and no nail. The
-compensation is that the screw carries no gravity at all — the block bears the cladding's
-weight in direct compression on the sheathing — so it is a pure withdrawal element, and §3
+compensation is that the load is small and simple: the wall is vertical, so the cladding's
+weight (~11 lb per crossing) acts PARALLEL to the sheathing, hung ~5-6" off its face. It
+shears the block joint and **pries each block onto its screw** (§3.5a), on top of the wind
+suction, so the screw is a withdrawal element with a small shear and a prying term, and §3
 is the whole of the design. **The screw pattern is the one thing this wall cannot miss.**
 
 ---
@@ -63,9 +65,9 @@ mandatory.**
 
 **The block is a stack of three loose offcuts, not a machined spacer.** 3-1/2" x 3-1/2" x
 1-1/2" pieces dropped on a snapped stud line and clamped by the girt screw — no tack, no
-glue. Four things follow: the plies are cut from the girt stock at the saw; the block bears
-the cladding's gravity in direct compression on the sheathing (§4), so the screw is pure
-withdrawal; the block's **proud 1/2"** is what holds the girt off the foam and IS the vent
+glue. Four things follow: the plies are cut from the girt stock at the saw; the block takes
+the cladding's gravity as shear at its joint and a prying moment onto the screw (§3.5a, §4),
+which the screw is graded for; the block's **proud 1/2"** is what holds the girt off the foam and IS the vent
 gap; and its depth is read off the resolved stack by
 `resolve/framing/truss_girts.py`, never authored, so moving the girt out in the assembly
 moves the ply count, the screw length and the BOM row with it.
@@ -146,13 +148,17 @@ p_ASD = 0.6 · p_ult                                 = −26.7 psf   ← used ev
 That is deliberately conservative: the corner zone is a fraction of the wall area and the
 field is 19 % lower.
 
-### Mean roof height is above the LOWEST ground (2026-11-22)
+### Mean roof height is above the LOWEST ADJACENT ground (2026-11-22)
 
-ASCE 7's z is height above the ground where the wall stands. The model's roof heights are
-main-floor-datum heights, and the datum is not the ground: the site grade is 2'-10" below it
-and the sunken garden floor (the lowest spot elevation) is 9'-1-7/16" below. The engine takes
-the **lowest** ground, the way the canopy calcs always did, so h is not measured two ways in
-one package. Exposure B, by hand:
+ASCE 7-16 §26.2 measures the mean roof height above the ground at the building. The model's
+roof heights are main-floor-datum heights, and the datum is not the ground: the site grade is
+2'-10" below it and the sunken court floor (a `structure` spot elevation) is 9'-1-7/16"
+below. The engine takes the lowest of the grade and every spot elevation **within 30 ft of the
+above-grade wall footprint** (`wind.ADJACENT_GROUND_FT`; a far-off low spot cannot drive h).
+The court floor stations stand 20 ft south of the south wall, so they count, and the court
+**governs conservatively**: the court-facing wall really does stand on that floor, and the
+canopy calcs always measured from it, so h is not measured two ways in one package. (Taking
+`grade` stations only would give h = 25.64 + 3.33 = 28.97 ft.) Exposure B, by hand:
 
 ```
 eave 20.9918 ft, ridge 30.2939 ft above datum     mean = 25.6428 ft
@@ -184,7 +190,7 @@ A = 32" x 24" = 768 in² = 5.33 ft²
 
 suction  = 26.7 psf x 5.33 ft² = 142 lb   (Exposure C, the design basis — withdrawal)
 suction  = 19.1 psf x 5.33 ft² = 102 lb   (Exposure B, what the site actually is)
-pressure = 20.0 psf x 5.33 ft² = 107 lb   (bearing, block on sheathing)
+pressure = 20.0 psf x 5.33 ft² = 107 lb   (bearing, block on sheathing; inward)
 gravity  ≈ 1.2 psf x 5.33 ft² + a course's share of the girt's 1.3 plf ≈ 10 lb
 ```
 
@@ -285,23 +291,35 @@ ESR-1078 **Table 2**, withdrawal per inch of embedded thread, SPF G = 0.42:
 ```
 W      = 170 lb/in                          (ESR-1078 Table 2, published test value)
 p      = 1-1/2" of embedded thread          (§3.1)
-Z      = 170 x 1.5 x C_D(1.0)  =  255 lb
+W'p    = 170 x 1.5 x C_D(1.6) x C_M(1.0)    =  408 lb
 ```
 
-**C_D is 1.0 and that is deliberate.** ESR-1078 §4.1.2, read 2026-11-22: "The reference
-design values given in Tables 2 through 4 must be adjusted in accordance with the
+**Adjustment factors, read 2026-11-23 from the NDS 2018 itself** (AWC, "NDS 2018 with
+commentary", Chapter 11 pp. 66-67 on awc.org, and the full 2018 text; the C_D table is
+Table 2.3.2). ESR-1078 §4.1.2: the reference values "must be adjusted in accordance with the
 requirements for dowel-type fasteners in Section 11.3 of the NDS ... including the wet
-service factor, C_M, where applicable." The report names NDS 11.3 and does not itself grant a
-duration increase; whether Table 11.3.1 applies C_D to withdrawal and pull-through (and the
-1.6 for wind) is in NDS text this note has not opened, so **UNVERIFIED and not taken**. The
-house reads the same factor the same way on the door-sill course. If it applies, both
-capacities rise 1.6x; the design passes either way and this note states the conservative
-reading.
+service factor, C_M, where applicable." And §4.1.3: the screw's tensile strength in Table 1A
+is the third limit, and "when the capacity of a connection is controlled by the fastener
+strength, the allowable connection strength must not be increased".
 
-**C_M is 1.0, dry service.** The embedded thread lands in a stud inside a continuous
-closed-cell foam air and water barrier. 0.7 (wet service) is the alternate if a reviewer
-disagrees, and would put the capacity at 179 lb — still passing. (The girt's head
-pull-through is the other member, §3.4.)
+- **Table 11.3.1** (applicability): *withdrawal*, W' = W x C_D C_M C_t C_eg C_tn; *pull-through*
+  (fasteners with round heads), W'H = WH x C_D C_M C_t; *lateral* Z' = Z x C_D C_M C_t C_g
+  C_delta C_eg C_di C_tn. So C_D applies to all three.
+- **Table 2.3.2**: ten-minute load, "Wind/Earthquake Load", C_D = **1.6**; permanent (dead)
+  0.9. **11.3.2** caps connections at 1.6 "except when the capacity of the connection is
+  controlled by metal strength", and 2.3.2's footnote 2 bars more than 1.6 for connections
+  and water-borne-preservative-treated members. 1.6 is exactly the cap, never over it. The
+  1,300 lbf Table 1A tension is metal strength: **no C_D**.
+- **Table 11.3.3** (wet service, in-service moisture content over 19 percent): lag screws and
+  wood screws in withdrawal **0.7**; "fasteners with round heads" in pull-through **0.7**;
+  dowel-type lateral **0.7**.
+
+**C_D is 1.6 (wind, combination 5) for this connection**, and this note originally kept 1.0 on
+"a clause nobody has read". Now it is read; §3.5 applies it.
+
+**C_M is 1.0 for withdrawal: the stud is dry.** The embedded thread lands in a stud inside a
+continuous closed-cell foam air and water barrier (inboard of the sheathing, behind the
+ccSPF). The girt is the other member and is wet-cycling (§3.4).
 
 **Cross-check against the code's own equation**, printed the way
 `notes/board_batten_girt_span.md` prints ER-309's DFL row:
@@ -329,13 +347,18 @@ head pull-through = 200 lb          (Table 3, OlyLog/TimberLOK, 1-1/2" side memb
 The row is indexed by the SIDE member's specific gravity: 220/200/160/130/110/110 lb at SG
 0.57/0.55/0.50/0.46/0.43/0.42. KDAT is Southern Pine (SG 0.55, NDS Table 12.3.3A), so 200. A
 girt in SPF (0.42) would read **110 lb**, and `structural.girt_fastening` refuses an authored
-value the row at the girt's SG does not support. **Wet service:** the report's values are dry
-(§4.1.2 names C_M); the girt stands in the vented gap behind the panel and is taken dry. At
-the house's 0.70 wet factor (the door-sill course reads the same) the allowable is 140 lb, and
-against §3.5's demand that is d/c 1.04, so the dry reading carries the pass and is the one
-judgement here an owner should confirm.
+value the row at the girt's SG does not support. **Wet service: C_M 0.70 on the girt's pull-through.** The report's values are dry (§4.1.2 names
+C_M). The girt is a 3-1/2" ledge in the vented gap behind the panel that wet-cycles for the life of
+the wall (the assembly says so, and `cladding_fastener` already grades the same girt at C_M
+0.7), and the door-sill course reads the same factor on the same KDAT: one member is not graded
+under opposite conditions by two checks. Table 11.3.3, "fasteners with round heads", pull-through,
+in-service moisture content over 19 percent: **0.7**. With C_D 1.6 for wind (§3.3):
 
-This is the *lowest* of the three capacities and it is what governs. HeadLOK 8" (HLGM8) is
+```
+head pull-through = 200 x 0.70 x 1.6 = 224 lb
+```
+
+This is the *lowest* of the capacities and it is what governs. HeadLOK 8" (HLGM8) is
 the recorded alternate: same 2" thread, flat head, 600 lb pull-through at SG 0.55 — three
 times the margin. It is not specified because ESR-1078 Table 2 wants **2.0"** of embedded
 thread for it, which needs the 1/2" ply counted on the stud side, and the report is silent
@@ -362,44 +385,98 @@ simple    = 19.9348 x 5.3333            = 106.32 lb per crossing
 **Continuity (2026-11-22, review C-7).** 106.32 lb is the SIMPLE-span reaction. The 2x4 girt is
 continuous over the blocks and the panel is continuous over the girts, and from statics an
 interior support takes more than wL: **1.25 wL** at the interior support of two equal spans
-(5wL/4) and **1.10 wL** of three or more (11wL/10). Both are taken, on the girt and then the
-panel, and the screw is the interior support:
+(5wL/4) for the girt, and for the panel, which runs over five or more girts, the worst
+interior reaction over three or more equal spans: 3 spans 1.100, **4 spans 8/7 = 1.143**,
+5 spans 1.132, many 1.134 (verifier, 2026-11-23: it first read 1.10, the 3-span value). The
+screw is the interior support:
 
 ```
-demand = 106.32 x 1.25 x 1.10          = 146.19 lb per crossing   (was 97.47 lb, simple, h 25.64 ft)
+demand = 106.32 x 1.25 x 8/7           = 151.88 lb per crossing   (0.6W; was 97.47 lb, simple, h 25.64 ft)
 ```
 
-| limit state | demand | capacity | d/c |
+### 3.5a Gravity prying, and the load combination (2026-11-23)
+
+The wall is vertical, so the cladding's weight acts **parallel** to the sheathing, hung off its
+face. It is not carried in bearing; each block tips about its bottom edge and the screw (at the
+block's mid-height, 3.5"/2 = 1.75" above that edge) takes the moment as tension. Hand weights and
+arms, measured off the sheathing face (stack: block 4.5", girt 1.5", panel profile up to 1.25"):
+
+```
+panel   1.2 psf x 5.333 sf                       =  6.400 lb  at 6.0 + 1.25/2 = 6.625"   42.40 in-lb
+girt    1.5 x 3.5 x 32 in3 x 0.021676 lb/in3     =  3.642 lb  at 4.5 + 0.75   = 5.25"    19.12
+block   3.5 x 3.5 x 4.5 in3 x 0.021676 (KDAT 600 kg/m3) = 1.195 lb  at 2.25"             2.69
+                                                  ------                                -----
+                                                  11.237 lb                              64.21 in-lb
+screw tension from prying  = 64.21 / 1.75        = 36.69 lb
+```
+
+**ASCE 7-16 §2.4.1 combination 5, D + 0.6W**: the suction (tension) and the prying (also tension)
+add, and the gravity shears the joint:
+
+```
+T = 151.88 + 36.69 = 188.57 lb tension          V = 11.24 lb shear
+```
+
+(Combination 7, 0.6D + 0.6W, has 0.6 x 36.69 = 22.0 lb of prying and is enveloped. Dead alone is
+36.69 lb at C_D 0.9, shown as its own d/c.)
+
+**Combined lateral and withdrawal, ESR-1078 §4.1.6 -> NDS 2018 eq. 12.4-1** (read 2026-11-23):
+
+```
+Z'a = W'p Z' / (W'p cos^2 a + Z' sin^2 a)     a = angle between the wood surface and the load
+a   = atan(188.57 / 11.24) = 86.59 deg        W'p = 408 lb (above)      resultant R = 188.91 lb
+Z'  = Table 4 lateral x C_D 1.6 x C_M 0.70
+```
+
+Table 4's row for a TimberLOK of minimum overall length 2-1/2" (footnote 4: full thread embedment not
+required) has a 1-1/2" side member and 1" of main-member penetration; footnote 2 allows a thicker
+side member where the row's main penetration is still achieved, and the stud takes 2" (1.5" of
+thread plus the 1/2" sheathing). At SG 0.42 (the lower of stud 0.42 and girt 0.55) Z is 200 (parallel)
+and **180 (perpendicular, the lower)**. ESR-1078 §5.4 puts NDS-*designed* lateral connections outside
+the report; this reads the report's tabulated row, not an NDS yield calculation. It is a stated
+reading of the table's footnote, and the one judgement in this subsection a reviewer should confirm.
+`Z' = 180 x 1.6 x 0.70 = 201.6 lb`:
+
+```
+Z'a = 408 x 201.6 / (408 x 0.00354 + 201.6 x 0.99646) = 406.5 lb       R / Z'a = 188.91 / 406.5 = 0.465
+```
+
+| limit state (D + 0.6W) | demand | capacity | d/c |
 |---|---|---|---|
 | thread engagement (shank across the clamped stack) | 6.0 in | 6.0 in | **1.000** |
-| withdrawal from the stud (Table 2) | 146.19 lb | 255 lb | 0.573 |
-| **head pull-through of the girt (Table 3)** | 146.19 lb | **200 lb** | **0.731** |
-| screw tension (Table 1A, TLOK08) | 146.19 lb | 1,300 lb | 0.112 |
+| withdrawal from the stud (Table 2 x C_D 1.6) | 188.57 lb | 408 lb | 0.462 |
+| **head pull-through of the girt (Table 3 x C_M 0.70 x C_D 1.6)** | 188.57 lb | **224 lb** | **0.842** |
+| screw tension (Table 1A TLOK08, no factor) | 188.57 lb | 1,300 lb | 0.145 |
+| combined lateral + withdrawal (NDS 12.4-1) | 188.91 lb | 406.5 lb | 0.465 |
+| dead alone, pull-through (C_D 0.9) | 36.69 lb | 126 lb | 0.291 |
 
 Engagement is a *detailing* row: it reads 1.000 because the screw fits exactly, which is the
-right answer and not a margin to be spent. The governing strength state is head pull-through
-at **d/c 0.731** (it was 0.487). At the 0.70 wet factor (§3.4) it would read 1.044.
+right answer and not a margin to be spent. The governing strength state is head pull-through at
+**d/c 0.842** (it was 0.487 on the simple-span, unfactored read), just under the 0.85 owner
+cost-review trigger.
 
 **Exposure C, printed as the alternate.** §2 works the same wall at Exposure C as a
 conservatism on a site that is Exposure B by its surroundings; it is not the design basis
 and its old 142 lb simple-span figure is not comparable to the 146 lb above.
 
 **What this is graded against, and how.** Table 1A (TLOK08: 8" long, 2" thread, 0.189" shank,
-tensile 1,300 lbf), Table 2 and Table 3 are quoted in the report's own words in §3's heading
+tensile 1,300 lbf), Table 2, Table 3 and Table 4 are quoted in the report's own words in §3's heading
 and above; `structural.girt_fastening` reads them as a published row and refuses the authored
-values when the part, its length and thread, the stud's or girt's SG, the 1.25" embedded
-thread or the 1-1/2" side member stop matching. Report conditions it cannot see and prints:
-reference values are dry service (§3.4); installed perpendicular to the face, head flush, no
-lead hole, not overdriven (§4.2); ACQ-D retention at most 0.40 pcf and Table 6 exposure
-conditions 1 and 3 (no salt water, §4.1.7 and §5.5); §3.2's sawn-lumber SG, 19 percent
-moisture or less.
+values when the part, its length and thread, the stud's or girt's SG, the stud being engineered
+wood, the 1.25" embedded thread or the 1-1/2" side member stop matching. Report conditions it
+cannot see and prints: installed perpendicular to the face, head flush, no lead hole, not
+overdriven (§4.2); ACQ-D retention at most 0.40 pcf and Table 6 exposure conditions 1 and 3 (no
+salt water, §4.1.7 and §5.5); §3.2's sawn-lumber SG, 19 percent moisture or less.
 
 ### 3.6 What a reviewer should know about the wood
 
-**The main-storey studs are LSL, which is outside ESR-1078 §3.2's scope.** They are graded
-here at SPF, **G 0.42** — conservative against LP's ~0.50 equivalent — and a reviewer is
-asked to confirm or replace that reading. The second-storey and attic studs are ordinary
-dimensional SPF and the value is exact for them.
+**The main-storey studs are LSL (14 of the 36 girt walls), which is outside ESR-1078 §3.2's
+scope** ("Use of the screws in engineered wood products (EWP) other than those addressed above is
+outside the scope of this report"). `structural.girt_fastening` reads the RESOLVED stud, groups on
+it, and reports those 14 walls **UNKNOWN naming the scope**; it does not give them the prescriptive
+PASS. The second-storey and attic studs, W-A-N1 among them (attic, SPF), are ordinary dimensional
+SPF and carry the read at SG 0.42. Closing the LSL walls takes the manufacturer's own screw-withdrawal
+value for the LSL (ESR-1387, not opened) or an engineered design.
 
 **Lateral support.** The screw is wood-to-wood over its whole through-length with no gap, no
 foam and no standoff in the path. This is an ordinary connection, not a cantilevered
@@ -409,7 +486,7 @@ fastener through insulation.
 
 The two-tier wall put two independent screws at every station on two different modules. This
 one puts one, and it is the only thing tying the cladding assembly to the structure. What
-buys it back: the screw carries **no gravity at all** (§4), the pattern is simple enough to
+buys it back: the gravity it carries is ~11 lb of shear and ~37 lb of prying (§3.5a), the pattern is simple enough to
 inspect from the ground before the foam goes on, and the girt lying across the blocks is
 continuous and screwed at every block along its run, so no single screw resists a rotation on
 its own.
@@ -465,16 +542,20 @@ gravity:           10 lb / 12.25 in² = 0.8 psi
 F_c⊥ = 425 psi (SPF sheathing face / SPF stud behind it)   ->  2 % utilised
 ```
 
-**This is the reason the fastener schedule can be one screw.** The cladding's weight arrives
-at the block and goes straight into the sheathing and the stud behind it in compression; the
-screw never sees it. A furring strip standing off 4" of rigid board has no such bearing and
-must carry the same weight in bending across a compressible span, which is what sets that
-wall's screw spacing (§7.1).
+**CORRECTED 2026-11-23: this paragraph used to say the screw never sees gravity.** That is
+true of a horizontal bearing and false here: the wall is vertical, the block stands against
+the sheathing face and the cladding's weight is a load PARALLEL to that face, not
+perpendicular to it. Nothing bears it in compression. It is carried as shear across the
+block-to-sheathing joint (friction plus the screw) and, because it hangs 5-6" off the face,
+as a moment about each block's bottom edge that the screw takes as tension. §3.5a grades both.
+The block's bearing above (inward pressure and the 0.8 psi of dead load seen on its face) is
+still real and still 2 %.
 
 ### Shear on the screw
 
-~10 lb per crossing of gravity, against a lateral design value in the hundreds of pounds.
-Not close, and it is incidental rather than designed-for: the block bears.
+~11.2 lb per crossing of gravity (§3.5a), against a lateral design value in the hundreds of
+pounds. Not close, but it is designed-for: the same weight pries the screw (§3.5a) and the two
+are combined per NDS 12.4.1 there.
 
 **Nothing in the wood is above 21 % utilised.** The design is governed by the screw
 withdrawal at 54 % (Exposure C) / 38 % (Exposure B), and that is where a reviewer's attention
@@ -690,8 +771,8 @@ The three terms, in size order:
    labelled R-6/in is measured at 75 °F mean and falls through a Minnesota winter; 6.5/in
    aged for ccSPF does not.
 2. **Half the screw density is worth ≈ +1 R, and it is a consequence of the BLOCK, not of
-   the fastener.** The block bears the cladding's gravity in direct compression (§4), so this
-   screw is a pure withdrawal element at 54 % of allowable. A furring screw over rigid board
+   the fastener.** The block carries the cladding's gravity as shear and a small prying
+   moment (§3.5a), so this screw is nearly a pure withdrawal element. A furring screw over rigid board
    carries that same gravity in bending across a compressible 4" span, and **its spacing is
    set by that**, not by withdrawal.
 3. **The blocks cost ≈ −1.6 R.** This is the owner's objection, and it is real.
