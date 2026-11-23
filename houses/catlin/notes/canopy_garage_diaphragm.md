@@ -593,23 +593,28 @@ RF-GARAGE torque, M / 24.000' = 549.3 lb on each of W-G-W, W-G-E
   W-G-W  549.3 / 18.675' = 29.4 plf vs 182.5   0.161       W-G-E  549.3 / 21.008' = 26.1 plf   0.143
 ```
 
-**12d. Every delivery into a garage wall, summed (integrated review M9, 2026-11-23).** One wind direction at a time, every
-delivery in it added (the garage-100% and screen-100% canopy cases never act together either, so this is a bound). The landing's
-ties come from `deck_tie`'s own distribution of its wind cases onto the joints at each wall (the collector strap along W-G-W
-1,095.7 lb; the HL43 angles into W-G-S 580.3 lb). Surpluses: W-G-W 18.674', W-G-E 21.008', W-G-S 17.299' (R301.1.3), carried at 182.5 plf:
+**12d. Every delivery into a garage wall, summed (integrated review M9; re-worked 2026-11-23 on L5's exported tie deliveries).**
+One wind direction at a time, every delivery in it added (the garage-100% and screen-100% canopy cases never act together either,
+so this is a bound). The landing's ties come from `deck_tie/FS-BW-FLOOR`'s own export (`delivered_along_<wall>` /
+`delivered_across_<wall>`): along W-G-W 1,238.0 lb (the MSTA49Z collector strap 1,095.7 plus the canopy posts' band-push base share
+151.67 at PT-BW-CNW); into W-G-S along 580.3 (HL43) and ACROSS 512.5. An across force enters the garage roof at the joints (mean
+x 9.7') and leaves by the perpendicular N-S walls by the lever rule on x: W-G-W (30 - 9.7)/24 = 0.846, W-G-E 0.154. Surpluses
+(R301.1.3): W-G-W 18.674', W-G-E 21.008', W-G-S 17.299', carried at 182.5 plf:
 
 ```
-W-G-W  N-S wind  494.4 (lever rule) + 549.3 (N-S couple) + 1,095.7 (strap) = 2,139.5 lb   2,139.5 / 18.674 = 114.6 plf   0.628
-       HTT4 CN-G-BWHD-SW  2,139.5 / 21.667' x 8.333' = 822.9 lb vs 2,580                                                0.319
-W-G-E  N-S wind  557.3 (lever rule) + 549.3 (couple)                      = 1,106.6 lb   1,106.6 / 21.008 = 52.7 plf    0.289
-W-G-S  E-W wind  688.0 (deck share) + 580.3 (HL43)                        = 1,268.3 lb   1,268.3 / 17.299 = 73.3 plf    0.402
-       HTT4 CN-G-BWHD-S-DR  1,268.3 / 20.292' x 8.333' = 520.9 lb vs 2,580                                              0.202
+W-G-W  N-S wind  494.4 (lever rule) + 549.3 (N-S couple) + 1,238.0 (strap) + 512.5 x 0.846 = 433.5     = 2,715 lb   2,715 / 18.674 = 145.4 plf   0.797
+       HTT4 CN-G-BWHD-SW  2,715 / 21.667' x 8.333' = 1,044 lb vs 2,580                                                       0.405
+W-G-E  N-S wind  557.3 (lever rule) + 549.3 (couple) + 512.5 x 0.154 = 78.9                              = 1,186 lb   1,186 / 21.008 = 56.5 plf    0.309
+W-G-S  E-W wind  688.0 (deck share) + 580.3 (HL43 along)                                                = 1,268 lb   1,268 / 17.299 = 73.3 plf    0.402
+       HTT4 CN-G-BWHD-S-DR  1,268 / 20.292' x 8.333' = 520.9 lb vs 2,580                                                    0.202
 ```
 
-(The reviewer's ~88 plf for W-G-W divides the same 2,139 lb by the 24' wall; the repo grades on the surplus.)
+(The reviewer divides the same sums by the 24' wall; the repo grades on the surplus.) The 512.5 lb across W-G-S is also a
+N-S load on that wall's top, carried to W-G-W/E by the roof, which is what the lever split does.
 
-**12e. Service condition of the end straps.** The LSTA24 straps and their nailers sit under the roof deck, below the membrane and
-roofing, out of the rain: the stated basis is DRY service (C_M 1.0). At wet service (0.70) the end-strap row, 0.798, would read 1.14.
+**12e. Service condition of the end straps.** The LSTA24 straps and their nailers sit on the nailer under the roof sheathing and roofing:
+the canopy's one exposure rule (`canopy_service.DRY_UNDER_ROOFING`) reads them DRY (C_M 1.0), stated on the joint, rotation and
+end-strap rows. At wet service (0.70) the end-strap row, 0.798, would read 1.14.
 
 ## Sources
 
