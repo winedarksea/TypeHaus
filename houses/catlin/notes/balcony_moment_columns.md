@@ -1754,7 +1754,7 @@ the wall's #6 bars on the retained face (its placement is not authored), and the
 on narrower spreads, estimated 0.56 before soil). **What does NOT carry the E-W lateral: the ledger Titen HD anchors
 (no stainless allowable is published), the LUS210SS hangers, the plank as a strut.** They keep the
 props R404.1.2(8) assumes for the soil's thrust, which that table grades. The footings take the
-E-W base shear, about 4 kip at strength, a court-sliding input no sliding case carries yet.
+E-W base shear, about 4 kip at strength; L1's court-sliding cases now read the balcony's E-W wind (1,348 lb ASD) live.
 
 **Uplift (column_head_joint).** Graded by the beam's statics area, as gravity takes it: BF 448 lb,
 BR **590** lb ((17.00 - 6.0) x 53.55), interaction 0.754 / **0.828**. **Not graded, open:** with the
@@ -1802,13 +1802,49 @@ base_rotation            0.295 / 0.296
 column_head_joint        lateral wind 0.226, guard 0.356, uplift 0.233 / 0.307, combined 0.460 / 0.533
 column_support           dowel tension 0.540 / 0.536 (hand couple, own block, 8,962 lb per bar BR),
                          bearing 0.32, development 0.265, stem below dowels 0.22 / 0.31,
-                         stem as an E-W cantilever with the retained soil 0.774
-                         (wind 1,531 + soil 2,650 = 4,131 lb-ft/ft against 5,340)
+                         stem as an E-W cantilever with the retained soil 0.774 (superseded by
+                         §29: soil propped at 60 psf/ft, 0.58)
 glulam_beam              bearing 0.624 (planter ON), bending 0.33, shear 0.24
 ```
 
 The dowel tension (0.54) is far under the 0.92 the owner accepted; the OWNER-ACCEPTED note is
 reworded on the record (it names no figure above what is printed).
+
+## 29. The retained soil is propped; the stem is free at its top for wind (2026-11-23, load-path review)
+
+**Soil (`column_support`, "stem as a cantilever").** The retained soil pushes INWARD on both W1 and E1
+(opposite ways), so the porch spanning between them takes each stem's top reaction against the
+other's: the soil is PROPPED, the standard top-support assumption of Table R404.1.2(8) (the 40 psf/ft
+active cantilever of §27 is withdrawn). The pressure is the court's own at-rest equivalent fluid
+(`retaining_court.inputs.default_design_input()`, 60 psf/ft, IBC 2018 Table 1610.1), read, not
+copied. Fixed base, pinned top, triangular load: base moment `efp H^3 / 15`, top reaction `efp H^2 /
+10`, H = 6.29' (fill as `foundation_unbalanced_fill` reads it):
+
+```
+soil moment   1.6 x 60 x 6.29^3 / 15 = 1,590 lb-ft/ft      (1,593 by the verifier's hand)
+soil prop     1.6 x 60 x 6.29^2 / 10 =   379 lb/ft factored, into the porch floor
+wind (E-W)    columns M + V H = 14,106 + 14,146 lb-ft over 18.9' = 1,495 lb-ft/ft, NO prop
+total         3,085 lb-ft/ft against phi M_n 5,340                    d/c 0.58
+```
+
+**What carries the soil's prop:** the porch ledgers' Titen HD anchors, the LUS210SS hangers and the
+plank, spanning between W1 and E1. **That path is not graded** (no THD50600H6SS allowable is
+published) and is named as a gap; no column prop rides it. The footings' E-W base shear is read live
+by L1's court-sliding cases (1,348 lb ASD), which replaces §27's "no case carries it".
+
+**Base spring (`base_rotation`).** For E-W wind the stem has no prop, so it is a free-top cantilever:
+`k_theta = 1 / (H/EI + 1/k_f)`, EI/H in series with the footing's rocking, in place of the propped
+stem's 4EI/H and 3EI/H. Hand script, same footing spring as §26: R 1.247 / 0.564 at delta_ref
+0.25" / 1.0" (BF1), delta **1.1152 / 1.2370**; BR1 R 1.234 / 0.558, delta **1.1401 / 1.2959**.
+`base_rotation` reads **0.306 BF / 0.309 BR** (was 0.295 / 0.296); the joint's flexible delta,
+`column_support`'s dowel tension rises to **0.551 / 0.548**, bearing 0.34.
+
+**Other.** The head-joint column-shear label read "base wind / 0.6" and uses the head wind (203.6 lb);
+corrected. `deck_post` no longer prints `tributary_area`, `roof_tributary_area` or `roof_snow` for a
+column on its beam's statics (unused; fingerprint hygiene). **The joist-to-beam uplift ties** on the
+sealed deck (net 11.0 psf up) are named on `column_head_joint`: 11.0 x 1' x 9.75' = 107 lb per tie
+against the catalog's H10ASS 1,040 lb (Simpson C-C-2026 p.300), about 0.10; no check grades them and
+the H2.5ASS at the end joists is not compared.
 
 ---
 

@@ -334,6 +334,17 @@ def _sealed_deck_uplift(ctx: EngineeringContext, pier: Any, notes: list[str]) ->
         f"excluded), on this column's {area:.1f} ft2 (the beam's STATICS area under full "
         f"load, as gravity takes it). The joist ties and the plank's own fastening see the "
         f"same uplift.")
+    spacing_ft = float(deck.joists.spacing.inches) / 12.0
+    net_psf = up - 0.6 * DECK_DEAD_LOAD_PSF
+    notes.append(
+        f"JOIST-TO-BEAM UPLIFT TIES (named, not a state of this record): the sealed deck's net "
+        f"{net_psf:.1f} psf up reaches each beam through the ties at every joist crossing, "
+        f"{net_psf:.1f} psf x {spacing_ft:g}' joist spacing x the beam's 9.75' strip = "
+        f"{net_psf * spacing_ft * 9.75:,.0f} lb per tie, against the catalog's H10ASS uplift "
+        f"1,040 lb (Simpson C-C-2026 p.300, `library/hardware/roof_ties.py`; read there, since "
+        f"this package may not read the catalog): about 0.10. No check grades it yet, and the "
+        f"H2.5ASS on each beam's two end joists (a half strip) is not compared; the plank's own "
+        f"fastening to the joists is outside this record too.")
     notes.append(
         "OWNER BASIS, no internal pressure: the porch curtains are stowed in high wind, so the "
         "porch is OPEN and no GC_pi is taken under the sealed deck. " + CURTAIN_OWNER_BASIS)
@@ -385,7 +396,8 @@ def _shear_state(pier: Any, fc: float, wind: float, guard: float, states: list[L
     states.append(LimitState(
         "column shear", v_u, PHI_SHEAR_TORSION * v_c, "lb",
         f"ACI 318-19 Table 22.5.5.1(a) with N_u = 0, b_w {b_w:g}\" and d {d:g}\" "
-        f"(§22.5.2.2); V_u the larger of base wind / 0.6 and 1.6 x the guard"))
+        f"(§22.5.2.2); V_u the larger of the HEAD wind (deck, plank edge, guard) / 0.6 and "
+        f"1.6 x the guard"))
     cage = cage_for(pier)
     if cage is None:
         missing.append(f"a tied cage on {pier.tag} (Post.reinforcement) for A_v,min")

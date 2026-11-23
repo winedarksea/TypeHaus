@@ -1179,23 +1179,27 @@ def _plain_capacity(pier: _Pier, area: float) -> float:
 
 
 def _inputs(pier: _Pier, area: float, steel: float, cage: _Cage | None) -> tuple[Quantity, ...]:
+    # A column on its beam's STATICS reaction carries no roof and no tributary-area demand: the
+    # three unused areas are not inputs (fingerprint hygiene), while the loads are.
+    statics = pier.deck_dead_lb is not None and pier.roof_tributary_ft2 == 0.0
     base = (
         Quantity("column_diameter", pier.diameter_in, "in", 0.5),
         Quantity("column_height", pier.height_in, "in", 0.01),
         Quantity("gross_area", area, "in2", 0.1),
-        Quantity("tributary_area", pier.tributary_ft2, "ft2", 0.01),
+        *(() if statics else (Quantity("tributary_area", pier.tributary_ft2, "ft2", 0.01),)),
         # ** PUBLISHED SEPARATELY, AND NOT SUMMED INTO THE LINE ABOVE. ** A deck carries IRC
         # Table R301.5's 40 psf; a roof carries SNOW, which on this site is 50 and therefore
         # the LARGER. Folding them together would grade the roof's share at 40. It is printed
         # because a reader seeing "tributary_area 0 ft2" beside a four-figure demand would
         # reasonably conclude the demand was invented -- which is the failure this pair of
         # terms exists to make visible.
-        Quantity("roof_tributary_area", pier.roof_tributary_ft2, "ft2", 0.01),
+        *(() if statics else (
+            Quantity("roof_tributary_area", pier.roof_tributary_ft2, "ft2", 0.01),)),
         # The DESIGN snow, which on a house authoring `roof_beam_snow_psf` is the drifted
         # case the beam overhead was designed for and not the ground snow. It is a
         # fingerprint input, so raising the design snow stales a seal — correctly: the
         # demand this record published moved with it.
-        Quantity("roof_snow", pier.roof_snow_psf, "psf", 0.1),
+        *(() if statics else (Quantity("roof_snow", pier.roof_snow_psf, "psf", 0.1),)),
         Quantity("carried_dead", pier.carried_dead_lb, "lb", 1.0),
         # ** PUBLISHED SEPARATELY FOR THE REASON THE ROOF TRIBUTARY IS. ** A wall bearing
         # along a beam this pier carries is POUNDS, not an area, so it appears in no

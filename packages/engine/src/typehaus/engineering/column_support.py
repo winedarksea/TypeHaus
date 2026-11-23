@@ -454,7 +454,17 @@ def _cantilever_row(ctx: EngineeringContext, wall_tag: str, piers: list[_Pier], 
         top = max(top, hi)
     union_ft = union / 12.0
     h_fill = fill / 0.3048
-    soil_per_ft = (SOIL_LOAD_FACTOR * soil.active_efp_psf_per_ft * h_fill ** 3 / 6.0)
+    # The retained soil is PROPPED: it pushes INWARD on both stems (opposite ways), so the porch
+    # spanning between them takes each one's top reaction against the other; only the E-W wind,
+    # which pushes both the same way, has no prop. Propped (fixed base, pinned top) triangular
+    # load: base moment q H^2 / 15 with q = efp H, i.e. efp H^3 / 15; top reaction efp H^2 / 10.
+    # The pressure is the COURT'S own, from its single soil-basis source (read, not copied).
+    from typehaus.engineering.retaining_system_cases import court_soil_basis, soil_inputs
+
+    basis = court_soil_basis(ctx, soil)
+    efp_value = basis["at_rest_efp"]
+    soil_per_ft = SOIL_LOAD_FACTOR * efp_value * h_fill ** 3 / 15.0
+    prop_lb_per_ft = SOIL_LOAD_FACTOR * efp_value * h_fill ** 2 / 10.0
     wind_per_ft = total_moment / 12.0 / union_ft
     area = _BAR[vertical.bar][0] * 12.0 / float(vertical.spacing.inches)
     cover = float(getattr(reinforcement, "cover", None).inches) if getattr(
@@ -463,17 +473,23 @@ def _cantilever_row(ctx: EngineeringContext, wall_tag: str, piers: list[_Pier], 
         wall_fc, thickness_in, cover, _BAR[vertical.bar][1], area) / 12.0
     inputs += [Quantity(f"{wall_tag}.ew_base_moment", total_moment / 12.0, "lb-ft", 1.0),
                Quantity(f"{wall_tag}.ew_spread_ft", union_ft, "ft", 0.05),
-               Quantity(f"{wall_tag}.soil_moment_per_ft", soil_per_ft, "lb-ft/ft", 1.0)]
+               Quantity(f"{wall_tag}.soil_moment_per_ft", soil_per_ft, "lb-ft/ft", 1.0),
+               Quantity(f"{wall_tag}.soil_prop_per_ft", prop_lb_per_ft, "lb/ft", 1.0),
+               *soil_inputs(ctx, soil)]
     return [LimitState(
         f"{wall_tag}: stem as a cantilever under E-W wind and the retained soil",
         wind_per_ft + soil_per_ft, capacity, "lb-ft/ft",
         f"E-W wind pushes all four columns, and so both stems, the same way: the porch "
         f"diaphragm cannot prop one against the other, so each stem is a cantilever from its "
-        f"footing under 1.2D + 1.0W + L_g + 1.6H. Columns ({'; '.join(parts)}) lb-ft over "
+        f"footing under 1.2D + 1.0W + L_g + 1.6H, while the SOIL, which pushes inward on both "
+        f"stems, is propped by the porch between them. Columns ({'; '.join(parts)}) lb-ft over "
         f"{union_ft:.1f}' of 45 deg spread stopped at the pour's ends = {wind_per_ft:,.0f} "
-        f"lb-ft/ft, plus the retained soil {SOIL_LOAD_FACTOR} x {soil.active_efp_psf_per_ft:g} "
-        f"psf/ft x {h_fill:.2f}'^3 / 6 = {soil_per_ft:,.0f} lb-ft/ft (active, the unbalanced "
-        f"fill as `structural.foundation_unbalanced_fill` reads it, from the site grade), "
+        f"lb-ft/ft, plus the PROPPED retained soil {SOIL_LOAD_FACTOR} x {efp_value:g} psf/ft "
+        f"(the court's own at-rest basis, `court_soil_basis`: {basis['state']}) x "
+        f"{h_fill:.2f}'^3 / 15 = {soil_per_ft:,.0f} lb-ft/ft over the unbalanced fill as "
+        f"`structural.foundation_unbalanced_fill` reads it (from the site grade); the soil's "
+        f"top reaction {prop_lb_per_ft:,.0f} lb/ft factored goes into the porch floor, "
+        f""
         f"against phi M_n {capacity:,.0f} lb-ft/ft of #{vertical.bar} "
         f"@ {float(vertical.spacing.inches):g}\" on the earth face at d = "
         f"{thickness_in - cover - _BAR[vertical.bar][1] / 2.0:.2f}\" (a single curtain, "
@@ -524,13 +540,15 @@ def _one(ctx: EngineeringContext, wall_tag: str, piers: list[_Pier]) -> Engineer
         "way, so the porch diaphragm cannot prop each stem against the other. The load goes to "
         "the ground through the stems as cantilevers from their footings (the "
         "\"stem as a cantilever\" row: each column's M + V H over its spread, plus the retained "
-        "soil's active moment, against the wall's own bars), and the footings take the base "
-        "shear. The porch ledgers, the LUS210SS hangers and the plank are NOT in that path and "
-        "are not asked to prop a column; they keep the props Table R404.1.2(8) assumes for the "
-        "SOIL's thrust, which is that table's and not graded here. The footings' sliding under "
-        "this E-W shear (about 4 kip at strength) is a court-sliding input that no sliding case "
-        "carries yet — reported, not graded here. A drawing note, `AN-SG-LEDGER-DOWELS`, keeps "
-        "the ledger's Titen HD anchors off the dowels.",
+        "soil's PROPPED at-rest moment, against the wall's own bars), and the footings take the "
+        "base shear (the court's sliding cases now read the balcony's E-W wind, 1,348 lb ASD, "
+        "live). The soil is propped because it pushes INWARD on both stems, opposite ways, so "
+        "the porch floor spanning between them takes each stem's top reaction against the "
+        "other's: that is Table R404.1.2(8)'s standard top-support assumption. Its path is the "
+        "porch ledgers' Titen HD anchors, the LUS210SS hangers and the plank; **that path is NOT "
+        "graded** (no stainless THD50600H6SS allowable is published) and is named here as an "
+        "open gap. No column prop rides it. A drawing note, `AN-SG-LEDGER-DOWELS`, keeps the "
+        "ledger's Titen HD anchors off the dowels.",
         "DOWEL TENSION on the conservative C_f 1.80 for every wind band, the guard taken "
         "concurrently with full design wind and the one-bar couple on the block that force "
         "itself produces. It was OWNER-ACCEPTED at 0.92 (2026-11-23) when the porch curtains were "

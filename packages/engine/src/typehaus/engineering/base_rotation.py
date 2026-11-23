@@ -223,6 +223,19 @@ def _moduli(ctx: EngineeringContext) -> list[tuple[str, float | None]]:
     return [(f"δ_ref {d:g}\"", d) for d in MOTION_AT_ALLOWABLE_BAND_IN]
 
 
+def _k_theta(ctx: EngineeringContext, base, delta_in,  # type: ignore[no-untyped-def]
+             column: _Column) -> float:
+    """The base spring. A wall-borne column's stem is NOT held at its head for the E-W wind that
+    governs: all four columns push both stems the same way, so the porch cannot prop either
+    (`column_support`). The stem is then a FREE-TOP cantilever, ``EI/H`` in series with the
+    footing's rocking: ``1 / (H/EI + 1/k_f)``. (`WallBase.k_theta` is the propped stem, 4EI/H and
+    3EI/H, which a soil-propped stem has but a wind-loaded one does not.) A pole base is
+    unchanged."""
+    if not isinstance(base, WallBase):
+        return base.k_theta(ctx, delta_in, column)
+    return 1.0 / (base.height_in / base.ei_lb_in2 + 1.0 / base.footing_spring(ctx, delta_in))
+
+
 def flexible_magnifier(ctx: EngineeringContext, pier: _Pier):  # type: ignore[no-untyped-def]
     """``Pu -> delta`` on the wall-borne column's own base spring, at the SOFT end of the
     presumptive band (the measured modulus where a report is on file); ``None`` where the
@@ -233,7 +246,7 @@ def flexible_magnifier(ctx: EngineeringContext, pier: _Pier):  # type: ignore[no
     column, base = _Column.of(pier), WallBase.build(ctx, pier)
     if column is None or base.missing:
         return None
-    point = _Point.at("", column, base.k_theta(ctx, _moduli(ctx)[-1][1], column))
+    point = _Point.at("", column, _k_theta(ctx, base, _moduli(ctx)[-1][1], column))
     return lambda pu_lb: spring.magnifier(pu_lb, point.pc_flex_lb) or math.inf
 
 
@@ -251,7 +264,7 @@ def _record(ctx: EngineeringContext, pier: _Pier, base) -> EngineeringRecord:  #
             status=Status.INCOMPLETE, summary=f"{pier.tag}: the base spring could not be formed",
             missing=tuple(missing), element_tags=base.tags)
 
-    points = [(d, _Point.at(label, column, base.k_theta(ctx, d, column)))
+    points = [(d, _Point.at(label, column, _k_theta(ctx, base, d, column)))
               for label, d in _moduli(ctx)]
     verdicts = [p.ok(column) for _d, p in points]
     rigid = spring.magnifier(column.pu_lb, column.pc_rigid_lb) or math.inf
@@ -279,10 +292,17 @@ def _record(ctx: EngineeringContext, pier: _Pier, base) -> EngineeringRecord:  #
     ]
     if report is None:
         sens = _Point.at(f"δ_ref {MOTION_AT_ALLOWABLE_SENSITIVITY_IN:g}\"", column,
-                         base.k_theta(ctx, MOTION_AT_ALLOWABLE_SENSITIVITY_IN, column))
+                         _k_theta(ctx, base, MOTION_AT_ALLOWABLE_SENSITIVITY_IN, column))
         notes.append(f"SENSITIVITY, never a band end — {sens.says()}. "
                      + (f"The verdict turns at δ_ref ≈ {turn:.2f}\"." if turn else
                         "The verdict does not turn anywhere from 0.05\" to 20\"."))
+    if isinstance(base, WallBase):
+        notes.append(
+            "THE STEM IS FREE AT ITS TOP for the E-W wind that governs (`column_support`: all four "
+            "columns push both stems the same way, so the porch cannot prop either): the spring "
+            "is EI/H in series with the footing's rocking, 1 / (H/EI + 1/k_f), softer than the "
+            "propped stem's 4EI/H and 3EI/H that the wall-top note below describes. The soil's "
+            "own prop does not restrain a wind-loaded stem.")
     notes.append(base.not_graded)
     notes += _serviceability_notes(pier, column, graded)
 
@@ -378,7 +398,7 @@ def _stated_soil(report) -> str:  # type: ignore[no-untyped-def]
 def _turning_point(ctx: EngineeringContext, base, column: _Column) -> float | None:  # type: ignore[no-untyped-def]
     """The δ_ref at which the verdict turns, by bisection, or ``None`` if it never does."""
     def ok(d: float) -> bool:
-        return _Point.at("", column, base.k_theta(ctx, d, column)).ok(column)
+        return _Point.at("", column, _k_theta(ctx, base, d, column)).ok(column)
 
     low, high = 0.05, 20.0
     if ok(low) == ok(high):

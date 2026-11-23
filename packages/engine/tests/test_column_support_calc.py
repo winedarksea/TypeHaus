@@ -20,10 +20,10 @@ CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 #: guard pair, the flexible base's delta, and the general-equation development of §21.
 #: (demand, capacity) of the worst §2.3.1 case of each state.
 _ORACLE = {
-    "PT-SG-BR1": {"bearing": (12_620.5, 38_943), "tension": (8_962, 16_740),
-                  "shear": (761.6, 45_858), "development": (12.73, 48.0)},
-    "PT-SG-BF1": {"bearing": (12_357, 38_697), "tension": (9_036, 16_740),
-                  "shear": (761.6, 45_776), "development": (12.73, 48.0)},
+    "PT-SG-BR1": {"bearing": (13_127.7, 38_943), "tension": (9_162, 16_740),
+                  "shear": (761.6, 45_635), "development": (12.73, 48.0)},
+    "PT-SG-BF1": {"bearing": (12_768.7, 38_697), "tension": (9_212.5, 16_740),
+                  "shear": (761.6, 45_580), "development": (12.73, 48.0)},
 }
 _LABELS = {"bearing": "bearing on the wall top", "tension": "dowel tension across the joint",
            "shear": "shear friction across the cold joint",
@@ -94,7 +94,7 @@ def test_the_development_is_graded_once_here_and_deck_post_points_to_it(results)
 
 
 @pytest.mark.parametrize("column,stem,capacity,footing", [
-    ("PT-SG-BR1", 10_240.0, 32_802.0, 46.11), ("PT-SG-BF1", 10_182.0, 45_820.5, 23.69)])
+    ("PT-SG-BR1", 10_541.5, 32_802.0, 46.11), ("PT-SG-BF1", 10_427.5, 45_820.5, 23.69)])
 def test_the_stem_and_the_footing_are_rows_with_the_spread_stopped_at_the_pour(
         results, column, stem, capacity, footing) -> None:
     """§22 / §27 (B-05, D-R3): plain concrete below the 48" dowels over a 45 deg spread, the
@@ -113,16 +113,19 @@ def test_the_stem_and_the_footing_are_rows_with_the_spread_stopped_at_the_pour(
 
 def test_each_stem_is_a_cantilever_under_e_w_wind_plus_the_retained_soil(results) -> None:
     """§27 (verifier 2026-11-23): all four columns push both stems the same way, so the
-    porch cannot prop one against the other. Per foot: the columns' M + V H over the union
-    of their spreads (18.9'), plus 1.6 x 40 psf/ft x 6.29'^3 / 6 of soil, against #6 @ 38" on
-    the earth face, d 8.625": phi M_n = 0.9 x 0.1389 x 60,000 x (8.625 - 0.0817) / 12 = 5,340."""
+    porch cannot prop one against the other; the SOIL pushes inward on both, so the porch DOES
+    prop it. Per foot: the columns' M + V H over the union of their spreads (18.9') = 1,495, plus
+    the PROPPED soil 1.6 x 60 psf/ft (the court's at-rest basis) x 6.29'^3 / 15 = 1,590, against
+    #6 @ 38" on the earth face, d 8.625": phi M_n = 0.9 x 0.1389 x 60,000 x (8.625 - 0.0817) / 12
+    = 5,340; d/c 0.58."""
     for wall in ("W-SG-W1", "W-SG-E1"):
         record = results[f"column_support/{wall}"]
         state = _state_named(record, f"{wall}: stem as a cantilever under E-W wind and the "
                                      f"retained soil")
         assert state.capacity == pytest.approx(5_340.0, rel=0.002)
-        assert state.demand == pytest.approx(4_131.5, rel=0.01)
+        assert state.demand == pytest.approx(3_085.0, rel=0.01)
         assert "cannot prop one against the other" in state.citation
+        assert "PROPPED retained soil 1.6 x 60" in state.citation
         notes = " ".join(record.notes)
         assert "WHAT CARRIES THE E-W LATERAL" in notes
         assert "OWNER-ACCEPTED" in notes
@@ -160,7 +163,7 @@ def test_no_roughening_is_graded_at_0_6(tmp_path) -> None:
     assert mu.value == 0.6
     state = _state(record, "PT-SG-BR1", "shear")
     # mu 0.6 on the same (Avf fy - tension) the roughened 1.0 reads: 38,549 x 0.6.
-    assert state.capacity == pytest.approx(0.6 * 45_858, rel=0.003)
+    assert state.capacity == pytest.approx(0.6 * 45_635, rel=0.003)
 
 
 def test_no_embedment_is_incomplete_naming_the_field(tmp_path) -> None:
