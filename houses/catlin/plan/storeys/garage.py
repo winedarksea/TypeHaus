@@ -38,6 +38,7 @@ from typehaus import (
     Node,
     Occupancy,
     Pitch,
+    PublishedCapacity,
     PublishedSpan,
     Railing,
     RailingKind,
@@ -45,6 +46,7 @@ from typehaus import (
     Roof,
     RoofForm,
     Room,
+    SpecifiedReaction,
     Stair,
     StructuralRole,
     TrimKind,
@@ -578,13 +580,50 @@ ROOFS = [
          diaphragm=DiaphragmSpec(
              sheathing_layer="deck",
              fastening='8d common (0.131" x 2 1/2") at 6" o.c. at the boundary and panel edges, 12" o.c. in the field; UNBLOCKED, Case 1',
-             source="AWC SDPWS-2015 Table 4.2C (unblocked), Case 1, Structural I, 8d at 6in boundary and supported edges, 2in framing: v_w 670 plf nominal; x 0.92 SPF (fn. 2, G 0.42) / 2.0 ASD = 308 plf. Carried at 167.5 plf, half the unadjusted 335, a deliberate round-down for this 19/32in deck",
-             unit_shear_asd_plf=167.5,
+             source="AWC SDPWS-2015 Table 4.2C (unblocked), Column B (wind), Structural I, 8d common, 2in nominal framing, 3/8in minimum nominal panel thickness (this 19/32in deck exceeds it), 6in nails at the boundary and supported edges, Case 1: v_w 670 plf nominal; x 0.92 SPF (fn. 2, G 0.42) / 2.0 ASD (4.2.3) = 308.2 plf. Read in the AWC SDPWS-2015 with Commentary, Ch. 4 (2026-11-23); G_a 7 kip/in is the row's plywood value",
+             unit_shear_asd_plf=308.2,
              apparent_stiffness_kips_per_in=7.0,
              blocked=False,
              chords="the 2x6 double top plates of W-G-E and W-G-W, lapped per R602.3.2",
              chord_member="2x6", chord_plies=2,
              collector_refs=("W-G-E", "W-G-W"),
+         ),
+         # ** THE GARAGE'S UPLIFT IS AN IRC R802.11 READ (decision 24, 2026-11-23). ** The
+         # table is indexed by exactly what this roof has: Exposure B, 24" o.c., a 24' truss
+         # span (23.93' reads the 24' column; the engine rounds UP, never interpolates), 115 mph,
+         # pitch under 5:12: **178 lb per connection** (2018 IRC Table R802.11 as adopted in
+         # Minnesota, read on UpCodes 2026-11-23 and equal to `wind_tables`). Its footnotes:
+         # 33 ft mean roof height (this is ~12 ft), overhang up to 24" (this is 16"), a 15 psf
+         # roof+ceiling dead allowance (10 psf top + 6 psf ceiling), full corner-zone value kept.
+         # The tie is the H2.5A the derived rule lands on the SPF plates: 615 lb SPF/HF, five
+         # 0.131x2-1/2 nails each side (Simpson C-C-2021 p.277 H/TSP, read 2026-11-23; ESR-2613
+         # and C-C-2024 p.288 agree). Simpson's fn. 14 row for a 2x4 BOTTOM chord reached by only
+         # three nails is 260 lb: still over 178, and the order asks all five into the heel.
+         published_uplift=(
+             PublishedCapacity(
+                 source="IRC 2018 Table R802.11 (Minnesota 2020 code); Simpson Strong-Tie C-C-2021 p.277, H/TSP, H2.5A row",
+                 table="the truss heel tie at both bearings; H2.5A, SPF/HF, uplift 615 lbf (160); R802.11 Exposure B, 24in o.c., 24ft span, 115 mph, pitch < 5:12: 178 lb per connection",
+                 member="H2.5A",
+                 capacity_lb=615.0,
+                 demand_lb=178.0,
+                 spacing=inch(24),
+                 wind_speed_mph=115.0,
+                 exposure="B",
+                 condition="five 0.131x2-1/2in nails to the truss heel and five to the double top plate; all five truss nails in the heel (fn. 14's 3-nail 2x4 bottom-chord row is 260 lb, also over 178); R802.11 fn. b's 15 psf dead allowance covers 10 psf roof + 6 psf ceiling; mean roof height < 33ft; overhang 16in < 24in"),
+         ),
+         # The order's reactions (decision 20): 450 lb net uplift per heel on every truss, the
+         # criteria S-001 prints; the H2.5A is graded against it in `structural.truss_reactions`.
+         specified_reactions=(
+             SpecifiedReaction(
+                 member="*", bearing="W-G-W", uplift_lb=450.0, connector="H2.5A",
+                 bottom_chord_dead_psf=6.0,
+                 basis="the canopy's 450 lb/heel, one truss for both roofs; the R802.11 read is 178 lb",
+                 deflection=("L/240 snow", "L/180 total")),
+             SpecifiedReaction(
+                 member="*", bearing="W-G-E", uplift_lb=450.0, connector="H2.5A",
+                 bottom_chord_dead_psf=6.0,
+                 basis="the canopy's 450 lb/heel, one truss for both roofs; the R802.11 read is 178 lb",
+                 deflection=("L/240 snow", "L/180 total")),
          ),
          eave_trim=_GARAGE_EAVE_TRIM),
     # The passage canopy is its own `Roof` for a takeoff reason: `roof_ceiling_area_m2` bills off
@@ -627,18 +666,21 @@ ROOFS = [
              # purpose — a softer deck is the one more likely to read FLEXIBLE, which hands
              # the cast columns the larger share and is the direction that does not flatter
              # the member this whole calculation exists to grade.
-             source='AWC SDPWS-2015 Table 4.2A (blocked), Structural I, 8d at 6in boundary and all edges, 6in other edges, 2in framing, Case 1: v_w 755 plf nominal; x 0.92 SPF (fn. 2, G 0.42) / 2.0 ASD = 347 plf. Carried at 190 plf, a deliberate round-down for this 19/32in deck, and G_a at the soft end of the band',
-             unit_shear_asd_plf=190.0,
+             source='AWC SDPWS-2015 Table 4.2A (blocked), Column B (wind), Structural I, 8d common, 2in nominal framing, 3/8in minimum nominal panel thickness (this 19/32in deck exceeds it), nails at 6in on boundaries and continuous edges and 6in at other edges, Case 1: v_w 755 plf nominal; x 0.92 SPF (fn. 2, G 0.42) / 2.0 ASD (4.2.3) = 347.3 plf. Read in the AWC SDPWS-2015 with Commentary, Ch. 4 (2026-11-23); G_a 12 kip/in sits between the row\'s 11 (ply) and 14 (OSB)',
+             unit_shear_asd_plf=347.3,
              apparent_stiffness_kips_per_in=12.0,
              blocked=True,
-             # N-S wind: the first and last TRUSS, whose 2x4 top chord runs the full 24'
-             # between the headers and splices once at the peak — that splice is
-             # `chord_splice_slip`, a plated joint and not a continuous member. E-W wind:
-             # BM-BW-RW and BM-BW-RE themselves, 5-1/2x11-7/8 glulam each, many times this section;
-             # quoting the 2x4 for both axes is the conservative half of that pair.
-             chords="N-S: the end trusses' 2x4 top chords, continuous 24ft with one plated splice at the peak. E-W: the 5-1/2x11-7/8 glulam headers BM-BW-RW/-RE, whose chord force (the open front's 2,064 lb-ft couple over the headers' 23ft 5-1/4in) is graded on lateral_system/RF-BW-CANOPY. The 2x4 is quoted for both. TRUSS ORDER: the design assumes the peak splice slips 0.03in at most, 30% of the deck's N-S deflection and the rigid/flexible call at 0.68x of the 2.0 threshold; the fabricator confirms 0.03in or supplies its value",
+             # N-S wind: the first and last CANOPY truss (y 37.333 and 41.333, 4.0 ft apart),
+             # whose 2x4 top chord runs the full 24' between the headers and splices once at
+             # the peak. The chord pair is what the drawing builds: the deck bridges on to the
+             # garage's gable truss (8d at 6", no break), but naming it as the north chord
+             # would make a garage truss carry a canopy force through a nailed deck edge.
+             # Force: V L / (8 d) over the screen-to-east-end-strap span (§8b). E-W wind:
+             # BM-BW-RW and BM-BW-RE themselves, 5-1/2x11-7/8 glulam each, many times this
+             # section; quoting the 2x4 for both axes is the conservative half of that pair.
+             chords="N-S: the first and last canopy trusses' 2x4 top chords, 4.0ft apart, continuous 24ft with one plated splice at the peak; the splice carries the chord force in tension, `chord_force_y` on lateral_system/RF-BW-CANOPY, and every canopy truss is ordered for it. E-W: the 5-1/2x11-7/8 glulam headers BM-BW-RW/-RE, whose chord force (the open front's 2,064 lb-ft couple over the headers' 23ft 5-1/4in) is graded on lateral_system/RF-BW-CANOPY. The 2x4 is quoted for both. The splice slip is not a truss-order input: both N-S paths are graded at 100% so the rigid/flexible split never enters a ratio",
              chord_member="2x4", chord_plies=1,
-             chord_splice_slip=inch(0.03),
+             chord_splice_slip=inch(0.03),  # the `cast` variant's deflection only (C-8)
              collector_refs=("BM-BW-RW", "BM-BW-RE"),
              collector_blocking=(
                  CollectorBlocking(
@@ -711,6 +753,23 @@ ROOFS = [
          # carrying half a garage bay -- trivial, but real. Sec 1a's "never gravity" is about
          # the STRAP line, not the deck edge; the drawings say so.
          gable_ends=(),
+         # ** 450 lb NET UPLIFT PER HEEL IS SPECIFIED, NOT WAITED FOR (decision 20). ** The
+         # widest truss (2.0ft x 13.33ft = 26.7 sf) sees 0.6W of 341 lb gross at the free-roof
+         # 21.3 psf (north_entry_piers.md §4a, corrected from 4 stations to 3), 181 lb net of
+         # 0.6D; 450 covers the gross with 32% to spare. The H2.5ASS carries 700 lb (DF/SP, the
+         # treated SP headers, SSA8D ring-shank nails); it is graded against 450 now, and the
+         # supplier's design is checked against 450 when it arrives. The canopy is an open
+         # structure, so it is NOT an R802.11 read; it keeps its engineered wood_roof_post uplift.
+         specified_reactions=(
+             SpecifiedReaction(
+                 member="*", bearing="BM-BW-RW", uplift_lb=450.0, connector="H2.5ASS",
+                 basis="0.6W gross 341 lb on the widest truss plus margin; north_entry_piers.md §4a",
+                 deflection=("L/240 snow", "L/180 total")),
+             SpecifiedReaction(
+                 member="*", bearing="BM-BW-RE", uplift_lb=450.0, connector="H2.5ASS",
+                 basis="0.6W gross 341 lb on the widest truss plus margin; north_entry_piers.md §4a",
+                 deflection=("L/240 snow", "L/180 total")),
+         ),
          # The bearing run is post face to post face less 3/4" at the south (2026-10-28).
          # The deck edges do not move: north oversails 6 1/8" to meet the garage, south
          # stays 7 3/8" off the house cladding, 5/8" past the flush beam ends. Keep the
@@ -867,7 +926,7 @@ RAILINGS = [
 # engineering.toml (notes/canopy_west_band.md §9, canopy_garage_diaphragm.md §10).
 TRUSS_ORDER = [
     Annotation(uid="7FTJXBJ6NP", tag="AN-G-TRUSS-ORDER", position=pt(ft(18), ft(55)),
-               text="TRUSS ORDER — RF-GARAGE and RF-BW-CANOPY, one fabricator, SEALED component design and reaction schedule. ONE truss for both roofs: 4:12 2x4 fink at 24in o.c., span 23ft 11-1/8in out to out of bearing with the bottom chord across the full 5-1/2in bearing at both ends (garage 2x6 plates; canopy glulam headers on the same lines), 1ft 4-5/8in tails both ends, STANDARD HEEL 3-15/16in measured at the OUTSIDE FACE OF BEARING (top-chord plumb depth 3-11/16in + 1/4in butt cut), no raised or energy heel. (1) A reaction at EVERY bearing, gravity and uplift, stating its basis: ground snow 50 psf, flat 42 psf balanced, the roof-step DRIFT surcharge of 50 psf peak over 9.8ft off the house gable (ASCE 7-16 §7.7), wind V_ult 115 mph Exposure B Risk Category II, 10 psf dead. (2) DRIFT TRUSSES: all three canopy trusses and RF-GARAGE's two southernmost (truss-000/-001) carry the drift case, not ground snow. (3) The canopy's SOUTH-END truss stands at the open south edge with no wall under it: design it for the out-of-plane wind on the gable-end triangle (2.22ft x 26.67ft, 16.8 psf ASD) braced at the deck, and say how it is braced. (4) The N-S diaphragm CHORD: both canopy end trusses' top chords, combined with gravity, and the peak splice's slip — the lateral design assumes 0.03in. (5) The heel ties are H2.5ASS stainless on the canopy (CN-BW-TRTIE-*) and H2.5A on the garage; confirm or supersede from the uplift reactions. (6) PERMANENT BRACING per BCSI-B3: show every web continuous lateral restraint and its diagonal brace, and the gable-end bracing at RF-GARAGE's north gable (W-G-N, over the 16ft overhead door) and south gable; state whether the 5/8in gypsum ceiling is relied on as bottom-chord restraint"),
+               text="TRUSS ORDER — RF-GARAGE and RF-BW-CANOPY, one fabricator, SEALED component design and reaction schedule. ONE truss for both roofs: 4:12 2x4 fink at 24in o.c., span 23ft 11-1/8in out to out of bearing with the bottom chord across the full 5-1/2in bearing at both ends (garage 2x6 plates; canopy glulam headers on the same lines), 1ft 4-5/8in tails both ends, STANDARD HEEL 3-15/16in measured at the OUTSIDE FACE OF BEARING (top-chord plumb depth 3-11/16in + 1/4in butt cut), no raised or energy heel. (1) A reaction at EVERY bearing, gravity and uplift, stating its basis: ground snow 50 psf, flat 42 psf balanced, the roof-step DRIFT surcharge of 50 psf peak over 9.8ft off the house gable (ASCE 7-16 §7.7), wind V_ult 115 mph Exposure B Risk Category II, 10 psf dead. (2) DRIFT TRUSSES: all three canopy trusses and RF-GARAGE's two southernmost (truss-000/-001) carry the drift case, not ground snow. (3) The canopy's SOUTH-END truss stands at the open south edge with no wall under it: design it for the out-of-plane wind on the gable-end triangle (2.22ft x 26.67ft, 16.8 psf ASD) braced at the deck, and say how it is braced. (4) The N-S diaphragm CHORD: the first and last canopy truss (4.0ft apart) are the deck's chords; order EVERY canopy truss for 752 lb of top-chord axial force (V L / 8 d, lateral_system/RF-BW-CANOPY `chord_force_y`) in tension in one and compression in the other, in addition to gravity, with the peak splice carrying it in tension. No splice-slip value is asked for. (5) MAX NET UPLIFT 450 lb at EVERY heel, both roofs (specified; state yours at or under it). Heel ties are H2.5ASS stainless on the canopy, nailed with SSA8D stainless RING-SHANK nails, five to the truss and five to the header (smooth-shank stainless is a 440 lb tie, not 700), and H2.5A on the garage; all five truss nails land in the heel. The supplier's reaction schedule is checked against the TRUSS CRITERIA SCHEDULE on S-001. (6) PERMANENT BRACING per BCSI-B3: show every web continuous lateral restraint and its diagonal brace, and the gable-end bracing at RF-GARAGE's north gable (W-G-N, over the 16ft overhead door) and south gable; state whether the 5/8in gypsum ceiling is relied on as bottom-chord restraint"),
 ]
 
 # `Door` and `DoorType` carry no hardware field, so the stop is a drawing note (2026-10-13).

@@ -48,6 +48,7 @@ the fabricator's order, which ``haus takeoff``'s fabrication schedule states.
 from typehaus.geometry import rect
 from plan.framing_standards import SUBFLOOR_FASTENING
 from params.sill_seat_backers import BALCONY_SEAT_BACKERS
+from params.truss_orders import WEST_FLOOR_TRUSS_ORDER
 from typehaus import (DeckLayer, FloorSystem, JoistSpec, JoistReinforcement, Layer,
                       LayerFunction, PublishedSpan, PublishedWebOpenings, ft, inch, pt)
 
@@ -202,6 +203,7 @@ WEST_FLOOR = FloorSystem(
                        nailing=SUBFLOOR_FASTENING),
     ceiling_below=_CEILING_GWB,
     published_span=J12_FLOOR_SPAN,
+    truss_order=WEST_FLOOR_TRUSS_ORDER,
     # W-S-SN3 and FO-A-HALL's south trimmer load W-M-HS3/HS4 as a line (~240 plf) along the
     # trusses, between the y=256 and y=272 lines. A 1 1/4" LSL rim board on edge, full depth,
     # nailed to the y=272 truss's chord, lies on the plate under the wall (y 269..270 1/4",

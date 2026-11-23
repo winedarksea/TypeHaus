@@ -54,6 +54,7 @@ from typehaus import (
 )
 
 from params.flooring import LVP_THICKNESS_IN
+from params.truss_orders import NE_FLOOR_TRUSS_ORDER
 from params.sill_seat_backers import ENTRY_SEAT_BACKERS
 from params.second_deck import _DEPTH as _JOIST_DEPTH
 from params.second_deck import (_JOIST, _JOIST_BEARING, _SUBFLOOR, _TRUSS, _TRUSS_BEARING,
@@ -513,6 +514,7 @@ NE_FLOOR = FloorSystem(
     reinforcements=(*_N_WALL_BLOCKING, _PENINSULA_TRUSS, _PENINSULA_BACK_TRUSS),
     strongbacks=_STRONGBACKS,
     published_span=TRIFORCE_OJ418S_FLOOR_SPAN,
+    truss_order=NE_FLOOR_TRUSS_ORDER,
     ceiling_below=_CEILING_GWB,
     outline=_rect(_CENTRE_X, _SEAM_Y, _HOUSE, _HOUSE),
     source="catlin main floor, east half north of y=13' — 11 7/8\" open-web floor trusses "

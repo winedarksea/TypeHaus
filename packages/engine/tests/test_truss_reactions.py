@@ -52,14 +52,30 @@ def _with_rows(ctx, tag: str, *rows: PublishedReaction):
 
 
 def _finding(ctx, tag):
-    return next(f for f in truss_reactions(ctx) if tag in f.element_tags)
+    """The first finding about the roof's PUBLISHED rows (not the specified-reaction ones)."""
+    return next(f for f in truss_reactions(ctx)
+                if tag in f.element_tags and "supporting structure" not in f.message)
 
 
-def test_catlin_authors_no_reaction_and_is_unknown(ctx) -> None:
+def test_catlin_specifies_reactions_and_the_component_is_unknown(ctx) -> None:
+    """Decision 20: supporting structure closed on the specified 450 lb (PASS, two bearings a
+    roof); component not yet confirmed (UNKNOWN) until a supplier row is quoted."""
     findings = truss_reactions(ctx)
-    assert {f.result for f in findings} == {Result.UNKNOWN}
-    assert {f.element_tags for f in findings} == {("RF-BW-CANOPY",), ("RF-GARAGE",)}
+    assert {f.result for f in findings} == {Result.UNKNOWN, Result.PASS}
+    passes = [f for f in findings if f.result is Result.PASS]
+    assert len(passes) == 4 and all("supporting structure" in f.message for f in passes)
+    unknown = [f for f in findings if f.result is Result.UNKNOWN]
+    assert {f.element_tags for f in unknown} == {("RF-BW-CANOPY",), ("RF-GARAGE",)}
+    assert all("NOT YET CONFIRMED" in f.message for f in unknown)
     assert not any(f.engineering_item for f in findings)
+
+
+def test_a_supplier_row_over_the_specified_uplift_fails(ctx) -> None:
+    findings = truss_reactions(_with_rows(ctx, "RF-BW-CANOPY", _row(uplift_lb=520.0)))
+    over = [f for f in findings if f.result is Result.FAIL and "over the 450 lb" in f.message]
+    assert over, [f.message for f in findings]
+    ok = truss_reactions(_with_rows(ctx, "RF-BW-CANOPY", _row(uplift_lb=430.0)))
+    assert any(f.result is Result.PASS and "component confirmed" in f.message for f in ok)
 
 
 def test_a_covered_heel_passes_and_names_no_item(ctx) -> None:

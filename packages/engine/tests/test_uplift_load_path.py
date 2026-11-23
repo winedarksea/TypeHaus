@@ -115,8 +115,13 @@ def test_the_capacity_question_moved_rather_than_vanished(ctx) -> None:
     named = {f.engineering_item for f in items if f.engineering_item}
     assert not [item for item in named if item.startswith("lateral_uplift/")]
 
-    # The two TRUSSED roofs, on the item their fabricator seals.
-    assert named == {"rafter/RF-GARAGE", "rafter/RF-BW-CANOPY"}
+    # The open canopy, on the item its fabricator seals. RF-GARAGE authors an R802.11 read
+    # (decision 24, 2026-11-23) and names no item here; its supplier's design stays
+    # `rafter/RF-GARAGE` on the register through the deferral.
+    assert named == {"rafter/RF-BW-CANOPY"}
+    garage = [f for f in items if "RF-GARAGE" in f.element_tags]
+    assert garage and all(f.engineering_item is None for f in garage)
+    assert any(f.result is Result.PASS and "178 lb" in f.message for f in garage)
     deferred = [f for f in items if f.engineering_item]
     assert all(f.authority is Authority.ENGINEERED for f in deferred)
     # Still blocking, exactly as before. The fold moved no gate.

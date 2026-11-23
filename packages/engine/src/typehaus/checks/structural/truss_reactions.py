@@ -15,6 +15,12 @@ model, and this check does two things with them:
 2. **Grades the first link below** — the heel connector's published allowable against the
    row's uplift, through ``published.graded_against_published_capacity``.
 
+**Two statuses per roof (decision 20).** ``Roof.specified_reactions`` are the criteria the
+truss ORDER states. *Supporting structure closed*: the heel connector named on each is graded
+against its specified uplift now, from the catalog. *Component confirmed*: the supplier's
+published rows must stay within the specified ones; until a row is authored it is an UNKNOWN
+that says so, the one thing left open once the supporting structure closes.
+
 Its own check id, never ``structural.uplift_capacity``'s: a permit line folds by id, and two
 subjects sharing one sent a blocking line red on the other's findings (``profile.py``,
 2026-09-20). Nothing here is an ``engineering_item``: the component design stays
@@ -47,17 +53,81 @@ def truss_reactions(ctx: CheckContext) -> list[Finding]:
     for roof in roofs:
         element = ctx.plan.by_tag(roof.tag)
         rows = tuple(getattr(element, "published_reactions", ()) or ())
+        specified = tuple(getattr(element, "specified_reactions", ()) or ())
+        out.extend(_specified_finding(roof, row) for row in specified)
         if not rows:
-            out.append(structural_advisory(
-                CID, f"{roof.tag} is trussed and no published reaction is authored for it, "
-                     f"so the uplift chain below its heels has no demand to be graded at",
-                (roof.tag,), Result.UNKNOWN,
-                fix_hint=f"author Roof.published_reactions on {roof.tag} from the truss "
-                         f"fabricator's SEALED reaction schedule — one row per bearing, "
-                         f"with the ground snow, drift and wind basis it was run at"))
+            out.append(_awaiting(roof, specified))
             continue
         out.extend(_row_findings(ctx, roof, row) for row in rows)
+        out.extend(_within_specified(roof, row, specified) for row in rows if specified)
     return out
+
+
+def _awaiting(roof, specified: tuple) -> Finding:
+    if specified:
+        return structural_advisory(
+            CID, f"{roof.tag} component NOT YET CONFIRMED: the supplier's reaction schedule is "
+                 f"not supplied. The supporting structure is graded on the specified reactions "
+                 f"({_summary(specified)}); the supplier's design must stay within them and "
+                 f"state its snow, drift and wind basis",
+            (roof.tag,), Result.UNKNOWN,
+            fix_hint=f"author Roof.published_reactions on {roof.tag} from the truss "
+                     f"fabricator's SEALED reaction schedule, one row per bearing")
+    return structural_advisory(
+        CID, f"{roof.tag} is trussed and no published reaction is authored for it, "
+             f"so the uplift chain below its heels has no demand to be graded at",
+        (roof.tag,), Result.UNKNOWN,
+        fix_hint=f"author Roof.published_reactions on {roof.tag} from the truss "
+                 f"fabricator's SEALED reaction schedule — one row per bearing, "
+                 f"with the ground snow, drift and wind basis it was run at")
+
+
+def _summary(specified: tuple) -> str:
+    return "; ".join(f"{row.member} on {row.bearing}: {row.uplift_lb:,.0f} lb uplift"
+                     for row in specified)
+
+
+def _specified_finding(roof, row) -> Finding:
+    """The heel connector against the specified uplift — supporting structure closed."""
+    from typehaus.hardware.catalog import allowable_for_model
+    from typehaus.model.refs import PublishedCapacity
+
+    allowable = allowable_for_model(row.connector or "")
+    capacity = getattr(allowable, "uplift_lb", None)
+    subject = (f"{roof.tag} supporting structure, {row.member} on {row.bearing}: the "
+               f"{row.connector} heel tie under the specified {row.uplift_lb:,.0f} lb "
+               f"({row.basis})")
+    if allowable is None or not capacity:
+        return structural_advisory(
+            CID, f"{subject} has no published uplift in the hardware catalog", (roof.tag,),
+            Result.UNKNOWN, fix_hint="name a heel connector the catalog holds an allowable for")
+    published = PublishedCapacity(
+        source=allowable.citation.split(":")[0], table=f"{row.connector} uplift (160)",
+        member=row.connector, capacity_lb=float(capacity),
+        condition=f"{allowable.species}; fasteners {allowable.fasteners}")
+    return graded_against_published_capacity(
+        CID, subject, (roof.tag,), row.uplift_lb, published, row.connector,
+        fix=f"respec the heel connector on {roof.tag} or lower the specified reaction")
+
+
+def _within_specified(roof, row, specified: tuple) -> Finding:
+    """A supplier's row against the order's: component confirmed, or over what was specified."""
+    mine = [s for s in specified if s.member in ("*", row.member) or s.member.lower()
+            == (row.member or "").lower()]
+    limit = max((s.uplift_lb for s in mine), default=None)
+    subject = f"{roof.tag} bearing '{row.table}' (the supplier's {row.uplift_lb:,.0f} lb uplift)"
+    if limit is None:
+        return structural_advisory(CID, f"{subject} names no truss the order specifies",
+                                   (roof.tag,), Result.UNKNOWN)
+    if row.uplift_lb > limit + 0.5:
+        return structural_advisory(
+            CID, f"{subject} is over the {limit:,.0f} lb the order specifies — the supporting "
+                 f"structure was closed on the specified number", (roof.tag,), Result.FAIL,
+            fix_hint="have the supplier re-run to the specified reactions, or re-grade the "
+                     "chain below the heel at the supplier's")
+    return structural_advisory(
+        CID, f"{subject}: component confirmed, within the {limit:,.0f} lb specified",
+        (roof.tag,), Result.PASS)
 
 
 def _row_findings(ctx: CheckContext, roof, row) -> Finding:

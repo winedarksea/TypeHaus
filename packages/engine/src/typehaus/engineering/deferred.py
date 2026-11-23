@@ -85,18 +85,22 @@ _declare(Deferral(
                 "`lateral_system/<roof>` prints as `chord_force_*` IN ADDITION TO the "
                 "gravity case — combined axial and bending at that section is the "
                 "fabricator's own chart, and the plated splice has to carry the full force "
-                "in tension. The splice SLIP the engine assumed "
-                "(`DiaphragmSpec.chord_splice_slip`) is the third term of SDPWS 4.2.2 and "
-                "decides the rigid/flexible call, so a detail that slips materially more "
-                "moves the shear split: confirm it or state the real value. Its bearing and "
-                "uplift reaction schedule is "
-                "the intake half: quote each row into `Roof.published_reactions` and the "
-                "chain below the heel is graded as a published read, not sealed here",
+                "in tension. No splice-slip value is asked for: both N-S paths are graded "
+                "at 100%, so the rigid/flexible split enters no ratio (2026-11-23). The "
+                "reactions are DECIDED, not waited for: `Roof.specified_reactions` states "
+                "the maximum net uplift per heel (450 lb), the S-001 TRUSS CRITERIA block "
+                "prints the loads, drift per truss, bearings, chord force, deflection and "
+                "maximum reactions, and the chain below the heel is graded against them "
+                "now (\"supporting structure closed\"). What stays open is only \"component "
+                "confirmed\": the supplier's reaction schedule, quoted into "
+                "`Roof.published_reactions`, checked against the specified one",
     unblocks="Roof framing — the S-603 rafter/truss line and the roof-load permit item; "
-             "the uplift line (structural.uplift_capacity, structural.truss_reactions) "
-             "closes on the quoted reactions",
+             "the component line of structural.truss_reactions closes on the quoted "
+             "reactions (the supporting-structure line closed on the specified ones)",
     oracle=(Oracle(note="catlin_truss_engineering.md",
                    test="tests/test_wind_loads.py"),
+            Oracle(note="canopy_truss_criteria.md",
+                   test="tests/test_truss_criteria.py"),
             Oracle(note="uplift_load_path.md",
                    test="tests/test_uplift_load_path.py")),
 ))
