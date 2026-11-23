@@ -552,5 +552,12 @@ W-RG-EAST's yard face onto FURN-SG-SPLASH-BASIN 6" off it: concentrated water at
 condition off the row. Its end moved 32'-6" -> 35'-6" (spout 4'-0" off the toe) and the basin
 33'-0" -> 36'-0" (3'-6" off), and W-RG-EAST dropped 4" and took a capstone like the others, so
 all five legs read the same row. The three parallel aprons are now identical to the court.
-Open detail: the 3'-0" tail of the channel past the scupper needs its own support; nothing
-carries it in the model.
+**Where the water lands (assumption, 2026-11-23).** The throw is not modelled; the check adds
+`THROW_FT = 0.80'` to a free-ended gutter's lip along its last leg. By hand: 17 gpm design in
+the 4" x 3" channel at 1/4 in/ft, Manning n 0.012: depth 0.645", v = Q/A = 2.11 ft/s; fall from
+the channel floor (0'-0") to the basin dish (about -2'-4"), 28" = 2.33 ft, t = sqrt(2h/g) = 0.38 s,
+throw 0.80 ft. So the lip must stand 2.2' off the face for 3'-0" of landing clearance. The
+existing bracketed scupper puts it 1'-0" off (landing 1.8'), so the owner's "shorten onto the
+existing supports AND land 3'-0" off the toe" cannot both hold: the model keeps the 3'-0" tail
+(landing 4.8' off, basin 3'-6" off) until the owner picks one. Open detail: that tail has no
+support in the model.

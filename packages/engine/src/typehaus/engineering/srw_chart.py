@@ -13,6 +13,7 @@ Oracle: ``notes/raised_garden_srw.md`` §10 (the sheet, by hand per leg).
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 
 from typehaus.engineering.registry import EngineeringContext
@@ -24,6 +25,11 @@ from typehaus.engineering.srw_tiers import TIER_FACTOR, Tier, _direction, _footp
 _M_PER_FT = 0.3048
 #: House clearance for concentrated gutter water from a wall's toe (A2-F8; not a maker's number).
 TOE_CLEAR_FT = 3.0
+#: How far a free-ended gutter's water travels past its lip before it lands. Not modelled: a
+#: stated assumption, by hand (notes/raised_garden_srw.md §10): 17 gpm design in the 4" x 3"
+#: channel at 1/4 in/ft (Manning n 0.012) runs 0.645" deep at 2.11 ft/s and falls ~28" (channel
+#: floor to the basin dish): 0.38 s, 0.80 ft out.
+THROW_FT = 0.8
 #: A trim run whose underside is within this of a wall's top is seated on it.
 _SEAT_TOL_M = 0.15
 
@@ -114,7 +120,8 @@ def _face_side(ctx: EngineeringContext, here):  # type: ignore[no-untyped-def]
 
 
 def _toe_discharges(ctx: EngineeringContext, shape, here, face):  # type: ignore[no-untyped-def]
-    """Free-ended gutters' spouts and leader feet on the yard side, within TOE_CLEAR_FT."""
+    """Where water LANDS on the yard side, within TOE_CLEAR_FT: a free-ended gutter's lip plus
+    ``THROW_FT`` along its last leg, a leader's foot."""
     from shapely.geometry import Point
 
     from typehaus.model.trim import Downspout, Gutter
@@ -125,7 +132,10 @@ def _toe_discharges(ctx: EngineeringContext, shape, here, face):  # type: ignore
         if isinstance(el, Gutter) and len(el.path) >= 2:
             if el.downspout_ref is not None:    # it lets go at a leader, tested below
                 continue
-            xy = el.path[-1].xy_m
+            (px, py), (qx, qy) = el.path[-2].xy_m, el.path[-1].xy_m
+            run = math.hypot(qx - px, qy - py) or 1.0
+            throw = THROW_FT * _M_PER_FT
+            xy = (qx + (qx - px) / run * throw, qy + (qy - py) / run * throw)
         elif isinstance(el, Downspout):
             xy = el.position.xy_m
         else:
@@ -225,9 +235,10 @@ def applicability(ctx: EngineeringContext, wall, tiers: list[Tier]) -> list[Cond
         None if hits is None else not hits))
     wet = _toe_discharges(ctx, shape, resolved, face) if face is not None else None
     out.append(Condition(
-        "water kept off the toe", f"no gutter or leader lets go within {TOE_CLEAR_FT:g}' of "
-        "the toe", "yard side not established" if wet is None else
-        (", ".join(wet) + " lets go near the toe" if wet else "none"),
+        "water kept off the toe", f"no water lands within {TOE_CLEAR_FT:g}' of the toe (a "
+        f"gutter's lands {THROW_FT:g}' past its lip)",
+        "yard side not established" if wet is None else
+        (", ".join(wet) + " lands near the toe" if wet else "none"),
         None if wet is None else not wet))
     refusal = published_refusal(ctx, wall, tiers)
     out.append(Condition("tier independence (2H)", "no same-facing taller wall within 2H",
