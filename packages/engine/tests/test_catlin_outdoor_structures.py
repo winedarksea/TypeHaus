@@ -533,18 +533,17 @@ def test_the_apron_tops_out_level_with_the_wall_it_wraps_and_buries_its_base_cou
     for tag in _APRON_TAGS:
         leg = _wall(catlin_model, tag)
         assert abs(leg.z1_m - retaining.z1_m) < 1e-9, f"{tag} must cap level with W-SG-S"
-        # W-RG-EAST (off the chart, gate G9) keeps the old 4'-0" of six 8" courses; the four
-        # Table 1.3 legs are 4'-4": six 8" courses under a 4" AB capstone (2026-11-22).
-        capped = tag != "W-RG-EAST"
-        cap = 4 * INCH if capped else 0.0
+        # All five legs are 4'-4": six 8" courses under a 4" AB capstone (2026-11-22; W-RG-EAST
+        # joined 2026-11-23 once TR-SG-RUNNEL's spout and its basin moved off its toe).
+        cap = 4 * INCH
         assert abs((leg.z1_m - leg.z0_m) - (4 * FT + cap)) < 1e-9, tag
         # Whole courses: a dry-stacked wall cannot end mid-unit.
         courses = (leg.z1_m - leg.z0_m - cap) / (8 * INCH)
         assert abs(courses - round(courses)) < 1e-9, tag
         # The base course is BURIED, and by at least the ~6" an SRW this tall wants (AB's
-        # minimum): 8" on W-RG-EAST, 12" on the capped legs.
+        # minimum): 12" with the capstone.
         embedment_in = (yard_m - leg.z0_m) / INCH
-        assert embedment_in == pytest.approx(12.0 if capped else 8.0, abs=0.01), (tag, embedment_in)
+        assert embedment_in == pytest.approx(12.0, abs=0.01), (tag, embedment_in)
 
 
 def test_the_apron_clears_the_sunken_gardens_strip_footings(catlin_model) -> None:

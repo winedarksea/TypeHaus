@@ -80,8 +80,6 @@ DESIGN_METHOD: dict[str, str] = {
     "roof_beam": "ASD (published beam allowables against a service demand)",
     "veneer_beam": "LRFD (ACI 318-19 strength design at 1.4D); deflection at service loads "
                    "(Table 24.2.2)",
-    "tiered_retaining": "ASD (IRC R404.4 safety factors on service loads; IBC Table 1806.2 "
-                        "allowable bearing)",
     "thermal_break_transfer": "MIXED — ASD for soil, sliding and the foam's sustained-load "
                               "rule; LRFD for the plain-concrete near line and the "
                               "winter-tension bars (ACI 318-19, phi 0.60 / 0.90, 1.0T)",
@@ -117,7 +115,6 @@ LOAD_COMBINATIONS: dict[str, tuple[str, str]] = {
     "retaining_wall": ("1.6H (flexure and shear); service loads, FS >= 1.5 (stability)",
                        "ASCE 7-16 §2.3.1(6) / IBC 2018 §1605.2; IBC §1807.2.3"),
     "retaining_system": ("service loads, FS >= 1.5", "IBC 2018 §1807.2.3"),
-    "tiered_retaining": ("service loads, FS >= 1.5", "IRC R404.4"),
     "post_bearing": ("D + L, allowable stress design",
                      "AWC NDS 2018 §3.10; IRC R507.1 loads"),
     "spread_footing": ("D + L, allowable stress design against presumptive bearing",

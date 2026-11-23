@@ -3051,10 +3051,12 @@ BALCONY_LEADER = Downspout(
     diameter=inch(_SG_LEADER_DIA_IN), material="metal-dark-kstyle",
     gutter_ref="TR-SG-GUTTER", discharge_ref="daylight",
 )
-# ** TR-SG-RUNNEL: A 4" x 3" OPEN U-CHANNEL IN PLACE OF THE AB CAP ON W-RG-EAST-BALCONY. **
-# Seated on the top course (rim +3"), closed at its west end clear of PT-SG-BF3, falling
-# 1/4 in/ft east along the return to the corner block, south 1'-6" along W-RG-EAST's top,
-# then east through a bracketed 12" scupper past its yard face, so it lets go 3'-0" south of
+# ** TR-SG-RUNNEL: A 4" x 3" OPEN U-CHANNEL SEATED ON THE AB CAPSTONES OF W-RG-EAST-BALCONY. **
+# Seated on the cap (rim +3"; the cap top is the court datum), closed at its west end clear of
+# PT-SG-BF3, falling 1/4 in/ft east along the return to the corner block, south 1'-6" along
+# W-RG-EAST's cap, then east through a bracketed 12" scupper past its yard face and on 3'-0"
+# more, so it lets go 4'-0" off the toe (AB Table 1.3's water-off-the-toe row, owner
+# 2026-11-23) and 3'-0" south of
 # SL-SG-STAIRPAD's edge rather than 1'-6" (St Paul DSI: no icy hazard on a walkway). Square
 # legs, not a diagonal: the open-channel resolver bands each leg on its own axis. ~17 gpm off 200 sf at 8 in/hr against
 # ~35 gpm at half depth. It lands in FURN-SG-SPLASH-BASIN (plan/landscape.py), which spills
@@ -3064,7 +3066,7 @@ BALCONY_LEADER = Downspout(
 # (test_drainage_elements.py).
 _RUNNEL_Y = _SG_GUTTER_Y
 _RUNNEL_PATH = (pt(ft(27, 7), ft(_RUNNEL_Y)), pt(ft(31), ft(_RUNNEL_Y)),
-                pt(ft(31), ft(-12)), pt(ft(32, 6), ft(-12)))
+                pt(ft(31), ft(-12)), pt(ft(35, 6), ft(-12)))
 BALCONY_RUNNEL = Gutter(
     uid="41MPFYS8T8", tag="TR-SG-RUNNEL", kind=TrimKind.GUTTER, path=_RUNNEL_PATH,
     top_elevation=_ret_top + inch(3), depth=inch(3), thickness=inch(4),
