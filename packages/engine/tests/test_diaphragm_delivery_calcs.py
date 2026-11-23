@@ -64,7 +64,7 @@ def test_the_pinned_posts_split_their_drag_half_to_each_end(catlin_ctx) -> None:
     for axis, lb in _DELIVERED.items():
         assert wind.delivered_lb(axis) == pytest.approx(lb, abs=0.1)
     # §3b: the E-W resultant 3.077' off the joint, headers at their own centroid.
-    assert wind.resultant_ft("x") == pytest.approx(40.141, abs=0.002)
+    assert wind.resultant_ft("x") == pytest.approx(40.1376, abs=0.002)  # jacketed posts, 11-23
 
 
 def test_the_record_reproduces_sections_3_and_4(record) -> None:
