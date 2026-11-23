@@ -81,19 +81,26 @@ def test_the_layout_finding_passes_and_names_the_concrete_ends(catlin_ctx) -> No
     assert "none into the pour" in layout.message and "R703.8.4.1.1" in layout.message
 
 
-def test_the_ties_take_drag_and_wind_on_a_bond_break(catlin_ctx, catlin_model_ro) -> None:
-    """Owner, G8: a bond break at the base. Each tie carries wind (TN 3C Table 7, 2 p At) and the
-    wythe's friction drag over 65 ties; the friction is unsourced, so UNKNOWN naming it, with
-    the bound printed. Without the flashing runs the ties take k x the closure and it FAILs."""
+def test_the_slotted_tie_takes_drag_and_wind_on_a_bond_break(catlin_ctx) -> None:
+    """Owner, G8: a bond break at the base and an adjustable slotted tie (TMS 402-22 Table 6:
+    3,000 lb/in, 200 lb allowable, 330 lb design; TN 3C Table 7's 2.5 p At). Wind 133.1 lb plus
+    drag at a stated friction upper bound of 1.0 (49.3 lb over 65 ties) = 182.4 of 200: PASS."""
     force = next(f for f in _grade(catlin_ctx, "2024 IRC") if "bond break" in f.message)
-    assert force.result is Result.UNKNOWN
+    assert force.result is Result.PASS
     msg = force.message
+    assert "adjustable slotted tie (Hohmann & Barnard HB-213-2X" in msg
     assert "FL-B-BRICK-BASE-E, FL-B-BRICK-BASE-W" in msg
     assert "3,204 lb on 65 ties (13 stations x 5 rows) = 49.3 lb" in msg
-    assert "106.5 lb of 125" in msg and "friction up to 0.38" in msg
-    assert "drag alone for up to 2.54" in msg and "slotted tie" in msg
-    runs, bare = veneer_ties.base_flashing(catlin_model_ro, catlin_model_ro.wall("W-B-BRICK"))
-    assert runs == ["FL-B-BRICK-BASE-E", "FL-B-BRICK-BASE-W"] and bare < 1.0
+    assert "wind 2.5 p At = 2.5 x 19.93 psf x 2.67 sf = 133.1 lb" in msg
+    assert "UPPER BOUND, unverified" in msg
+    assert "drag 49.3 + wind 133.1 = 182.4 lb against 200 lb allowable, 330 lb design" in msg
+    assert "d/c 0.91" in msg
+
+
+def test_table_6_rows_are_the_published_ones() -> None:
+    assert veneer_ties.TIE_TABLE_6["adjustable_slotted"] == (3000.0, 200.0, 330.0)
+    assert veneer_ties.TIE_TABLE_6["adjustable_pintle"] == (2500.0, 125.0, 210.0)
+    assert veneer_ties.DETAIL_TIE_KIND == "adjustable_slotted"
 
 
 def test_a_wythe_with_no_flashing_runs_leaves_its_base_bare(catlin_model_ro) -> None:

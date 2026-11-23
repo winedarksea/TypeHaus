@@ -5,7 +5,7 @@
 `FT-B-S3` (the footings it is isolated from), `SG_VENEER_BEAM_14` (the assembly).
 **Written:** 2026-09-05, by hand. §6e re-worked 2026-09-21 (hooks, enclosing ties, footing
 dowels); §6f added 2026-09-22 (TMS ℓ/600, end fixity, the joint rows) and §6d superseded by it.
-**§6m (2026-11-23, owner G8: a bond break at the base) refines §6l:** the ties are graded on drag and wind, not travel. **§6l (2026-11-23, decisions 10/11/29) refines §6k:** ties on the 2024 IRC's W2.8 row and on the studs only, steel
+**§6n (2026-11-23, owner: adjustable slotted tie, stainless flashing) closes §6m's UNKNOWN.** **§6m (2026-11-23, owner G8: a bond break at the base) refines §6l:** the ties are graded on drag and wind, not travel. **§6l (2026-11-23, decisions 10/11/29) refines §6k:** ties on the 2024 IRC's W2.8 row and on the studs only, steel
 lintels over flat-headed reveals, the beam graded on its bed. **§6k (2026-11-04) is the basis now:** the beam is bedded on stone (`FB-SG-BRKBM`) flush on
 the house strips, a soil-supported veneer footing; `veneer_beam/W-SG-BRKBM` retired, and the
 brick stands 6 1/2" off the studs, inside the 2024 IRC's W2.8 tie row. §6j (the 11'-0" span
@@ -1098,6 +1098,39 @@ contact 9.7" of 12", peak **1,217 psf, 0.61** of 2,000. At 130 pcf brick (the ho
 
 **Not closed here:** the TJ-8000 rim joint 8.34" from the door's west jamb (see
 `sunken_door_band_header.md`).
+
+### 6n. The slotted tie on a stated friction bound, stainless flashing isolated from the zinc (2026-11-23, owner)
+
+**The tie.** TMS 402-22 Table 6 (BIA TN 3C, 2022): adjustable slotted **3,000 lb/in, 200 lb allowable,
+330 lb design** (the two-leg pintle it replaces: 2,500 / 125 / 210). TN 3C Table 7 puts a tie of stiffness
+2,500 < k <= 5,000 lb/in at **2.5 p At** (2 p At was the pintle's). The product is **Hohmann & Barnard
+HB-213-2X**: a plate anchor (14 or 12 ga, its depth "equal to the thickness of insulation", here 4", for
+rigid insulation up to 6") with 3/16" compressed-leg hooks (**W2.8, two legs**: 400H-2X, 4"; the pintle end
+lies 1 1/2"-2" in the brick, confirmed at the first course), "tested and designed to withstand over
+200-lbf, in tension or compression, at maximum allowed offset ... of 1 1/4"" (the data sheet). Its working
+load at a 1 1/4" offset and .05" deflection, from the sheet's table (cavities of 4 1/2" and 7 1/2", the
+6 1/2" between): **235 to 332 lb**, tension and compression, over the 200 lb the row allows. "Needs 3/4" to 1"
+minimum air cavity" (ours 1.94"); "H&B recommends 16" x 16" spacing" (ours 16" x 24" at most). The plate's
+slot as the table's "adjustable slotted" type is **my reading of the maker's sheet, which does not use that
+word**: H&B to confirm. Fastener not smaller than an 8d common nail, long enough through the 4" foam and 1/2"
+sheathing to seat in the stud. HDG (ASTM A153 B2) is the stock finish; stainless is on the sheet if wanted.
+
+**The grade, on a bound.** Wind 2.5 x 19.93 x 2.67 = **133.1 lb**; drag at a friction of **1.0**, a stated
+UPPER BOUND, unverified (no maker publishes it; McGinley and Borchelt, TMS J. 9(2), 1991, was not opened):
+1.0 x 49.3 = **49.3 lb**; together **182.4 lb of 200: d/c 0.91** (design strength 330). PASS without a
+sourced friction. It is over decision 30's 0.85 cost-review trigger, printed, not a limit (the product's own
+working load is 235 lb or more). A sourced friction replaces the bound (`veneer_ties.FRICTION_BRICK_ON_FLASHING`).
+
+**The flashing is Type 316 stainless** (`stainless-steel-flashing`, `plan/veneer_materials.py`; the court's salt:
+the house's standoff shims and screws are 316 for the same reason). Stainless and galvanized stay out of one
+joint, so **each head sheet stands on a 1/16" EPDM strip (`FL-B-BRICK-WIN-ISOL`, `-DOOR-ISOL`) laid on the HDG
+angle's top, its ends 1/2" past the sheet**, and is fixed with 316 screws; the sheet never touches the zinc.
+`structural.veneer_lintel` FAILs a stainless sheet lying on the galvanized angle with no EPDM strip between.
+The base sheet lies on concrete, under mortar and a dry bed; the HDG tie plates and hooks are in the mortar
+joints and the studs, not on the sheet.  No price is entered.
+
+**The rim joint (open, G-new).** Both moves (the seam, the door) are large and are the owner's to choose; see
+`sunken_door_band_header.md`.
 
 ## Sources
 
