@@ -92,7 +92,6 @@ DESIGN_METHOD: dict[str, str] = {
                       "published connector allowables)",
     "wood_roof_post": "ASD (AWC NDS 2018 reference design values x adjustment factors; "
                       "ICC-ES connector allowables)",
-    "band_header": "ASD (AWC NDS 2018; the LVL and rim-board makers' allowable design values)",
     "column_support": "LRFD (ACI 318-19 §22.8 bearing, §22.9 shear friction, §25.4 "
                       "development; ASCE 7-16 §2.3.1)",
     "base_rotation": "LRFD (ACI 318-19 §6.6.4.5 moment magnification at the factored "
