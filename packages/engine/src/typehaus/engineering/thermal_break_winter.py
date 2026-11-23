@@ -88,19 +88,23 @@ def winter_rows(ctx, board, free_bodies: dict, soil, states, missing, inputs,
     if not body or soil is None or not soil.at_rest_efp_psf_per_ft:
         return
     relax = H_RESISTING_FACTOR * soil.active_efp_psf_per_ft / soil.at_rest_efp_psf_per_ft
-    pcf, h, friction = max(((float(k), h, f) for k, (h, f) in body.items()),
-                           key=lambda r: (r[2] - relax * r[1], -r[0]))
+    # Rigid-plastic: the tension at a section through the side lines is the SMALLER side's
+    # friction — the house side of the strut, or the far side less the relaxed soil push.
+    rows = []
+    for k, (h, friction, house, how) in body.items():
+        far = max(0.0, friction - house - relax * h)
+        rows.append((min(house, far), float(k), h, friction, house, far, how))
+    total, pcf, h, friction, house, far, how = max(rows, key=lambda r: (r[0], -r[1]))
     lines = _runs(ctx, board.structure, board.ax)
     if not lines:
         missing.append(f"the side lines of loop {board.loop_ref} — the court's winter tension")
         return
-    total = max(0.0, friction - relax * h)
     demand = total / len(lines)
     inputs += [Quantity("winter_tension", demand, "lb", 1.0)]
-    head = (f"80 °F below set, the joint open: loop {board.loop_ref}'s base friction "
-            f"{friction:,.0f} lb less {relax:.2f} x its retained soil {h:,.0f} lb "
-            f"(K_a/K_0 {soil.active_efp_psf_per_ft:.0f}/{soil.at_rest_efp_psf_per_ft:.0f}, "
-            f"x0.9 resisting) at {pcf:.0f} pcf = {total:,.0f} lb over {len(lines)} side lines")
+    head = (f"80 °F below set, the joint open, rigid-plastic at {pcf:.0f} pcf: min(house side "
+            f"{house:,.0f}, far side {friction - house:,.0f} less {relax:.2f} x the retained "
+            f"soil {h:,.0f} = {far:,.0f}) = {total:,.0f} lb over {len(lines)} side lines "
+            f"({how})")
     runs, joints, spliced = [], [], []
     for members in lines.values():
         for lo, hi, wall, foot in members:

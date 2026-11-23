@@ -35,6 +35,7 @@ from typehaus.engineering.retaining_system_body import (
     deep_plane_body,
     footing_plane_body,
 )
+from typehaus.engineering.retaining_system_restraint import house_side_weight
 
 _M = 0.3048
 
@@ -56,7 +57,11 @@ CASES = (
     Case("perched", "sliding, perched at H/2", "footing", True),
     Case("retained full", "sliding, retained water to the terrace, court empty", "footing",
          False),
-    Case("flooded court", "sliding, flooded court", "footing", True),
+    Case("snow", "sliding, ground snow on the terrace", "footing", True),
+    # Whether the 50-year ground snow stands on the terrace while a blinded drain perches
+    # water at H/2 is an owner decision (free body §15j); reported until it is made.
+    Case("perched snow", "sliding, perched at H/2 under snowmelt", "footing", False),
+    Case("flooded court", "sliding, court flooded to its lowest threshold", "footing", True),
     Case("deep dry", "deep plane, dry", "deep", False),
     Case("deep, soakaway full", "deep plane, soakaway full to its lip", "deep", True),
     Case("deep flooded", "deep plane, flooded court", "deep", False),
@@ -92,15 +97,41 @@ def _lip_ft(ctx, body: Body) -> float | None:  # type: ignore[no-untyped-def]
     return max(lips) if lips else None
 
 
+def _threshold_ft(ctx, body: Body) -> float | None:  # type: ignore[no-untyped-def]
+    """The lowest door threshold opening onto a floor inside the loop: where a flooded court
+    overflows (into the house). None where no door opens onto it."""
+    from shapely.geometry import Polygon
+
+    loop = Polygon([pt for p in body.prisms if p.label.startswith("footing:") and p.shape
+                    is not None for pt in p.shape.exterior.coords]).convex_hull
+    decks = {s.tag for s in ctx.model.solids if s.category in ("slab", "slab_band")
+             and Polygon([(x / _M, y / _M) for x, y in s.outline]).buffer(0).within(
+                 loop.buffer(0.5))}
+    crests = []
+    for opening in ctx.model.openings:
+        doorway = getattr(opening, "doorway", None)
+        place = getattr(doorway, "exterior_placement", None)
+        floors = {f.deck_tag for f in getattr(doorway, "adjacent_floors", ()) or () if f}
+        crest = getattr(place, "threshold_crest_z_m", None)
+        if crest is not None and floors & decks:
+            crests.append(crest / _M)
+    return min(crests) if crests else None
+
+
 def waters(ctx, body: Body) -> tuple[dict[str, Water], list[str]]:  # type: ignore[no-untyped-def]
     floor = max(p.z1_ft for p in body.prisms if p.label.startswith("footing:"))
     top = max(p.top_ft for p in body.pushes)
     height = top - body.plane_ft
+    site = getattr(getattr(ctx.plan, "project", None), "site", None)
+    snow = getattr(site, "ground_snow_load_psf", None) or 0.0
+    flood = _threshold_ft(ctx, body) or floor
     out = {"dry": DRY, "deep dry": DRY,
            "perched": Water("perched", floor + height / 2.0),
+           "snow": Water("snow", snow_psf=snow),
+           "perched snow": Water("perched snow", floor + height / 2.0, snow_psf=snow),
            "retained full": Water("retained full", top),
-           "flooded court": Water("flooded court", floor, both_sides=True),
-           "deep flooded": Water("deep flooded", floor, both_sides=True)}
+           "flooded court": Water("flooded court", flood, both_sides=True),
+           "deep flooded": Water("deep flooded", flood, both_sides=True)}
     lip = _lip_ft(ctx, body)
     if lip is None:
         return out, ["an overflow_invert on the court's soakaway bed — the lip the deep "
@@ -119,6 +150,9 @@ class Graded:
     #: ``{pcf: (friction mobilised once backfilled, before the apron; the most any graded
     #: service case mobilises)}`` — what the joint row's post-backfill movement reads.
     mobilised: dict[float, tuple[float, float]] = dataclasses.field(default_factory=dict)
+    #: ``{pcf: (dry resultant, whole-body friction, house-side friction, how)}`` at the upper
+    #: (restraint) bed friction that the court's contraction rows grade at.
+    restraint: dict[float, tuple] = dataclasses.field(default_factory=dict)
 
 
 def grade(ctx, ref: str, walls: list, built_by_pcf: dict, soil) -> tuple[Graded | None, list[str]]:  # type: ignore[no-untyped-def]
@@ -128,6 +162,8 @@ def grade(ctx, ref: str, walls: list, built_by_pcf: dict, soil) -> tuple[Graded 
     missing: list[str] = []
     dry: dict[float, tuple[float, float]] = {}
     mobilised: dict[float, tuple[float, float]] = {}
+    restraint: dict[float, tuple] = {}
+    upper = restraint_friction(ctx, soil)
     tables = []
     for pcf, built in built_by_pcf.items():
         members = members_for(ctx, walls, built, soil, pcf)
@@ -142,6 +178,9 @@ def grade(ctx, ref: str, walls: list, built_by_pcf: dict, soil) -> tuple[Graded 
         levels, gap = waters(ctx, body)
         missing.extend(gap)
         dry[pcf] = (body.resultant(), body.friction * body.weight())
+        house, house_how = house_side_weight(ctx, ref, walls, members, body)
+        restraint[pcf] = (body.resultant(), upper * body.weight(), upper * house,
+                          f"mu {upper:.2f} x {house_how}")
         bare = dataclasses.replace(body, pushes=tuple(
             dataclasses.replace(p, lateral_plf=0.0) for p in body.pushes))
         service = [levels[k] for k in ("dry", "perched", "flooded court") if k in levels]
@@ -178,7 +217,7 @@ def grade(ctx, ref: str, walls: list, built_by_pcf: dict, soil) -> tuple[Graded 
               Quantity("body_weight_110", body110.weight(), "lb", 1.0),
               Quantity("body_resultant_110", body110.resultant(), "lb", 1.0))
     return Graded(tuple(states), tuple(pending), tuple(notes + tables), inputs, dry,
-                  mobilised), []
+                  mobilised, restraint), []
 
 
 def _how(case: Case, body: Body, water: Water, pcf: float) -> str:
@@ -223,3 +262,16 @@ def design_friction(ctx, soil) -> tuple[float, float, str, str]:  # type: ignore
                 + (f" — {params.source}" if params.source else ""))
     return aggregate_bed().friction_coefficient, soil.friction_coefficient, "presumptive", (
         "PRESUMPTIVE IBC Table 1806.2: class 3 on the stone, the site's class on the native")
+
+
+def restraint_friction(ctx, soil) -> float:  # type: ignore[no-untyped-def]
+    """The bed friction an UNFAVOURABLE (restraint) row grades at: the confirmed report
+    value, else the specified ``bed_friction_max``, else the design friction itself."""
+    site = getattr(getattr(ctx.plan, "project", None), "site", None)
+    confirmed = getattr(site, "confirmed_soil", None)
+    if confirmed is not None:
+        return confirmed.bed_friction
+    specified = getattr(site, "specified_soil", None)
+    if specified is not None and specified.bed_friction_max is not None:
+        return specified.bed_friction_max
+    return design_friction(ctx, soil)[0]

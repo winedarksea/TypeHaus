@@ -46,6 +46,7 @@ def joint_row(ctx, boards, products, temps, runs: dict, mobilised: dict | None):
     from typehaus.engineering.thermal_break_board import ALPHA_C_PER_F
 
     missing: list[str] = []
+    inputs: list[Quantity] = []
     capped = [(b, products[b.tag]) for b in boards
               if products.get(b.tag) is not None and products[b.tag].compliant is not None]
     if not capped or temps is None or not mobilised:
@@ -62,7 +63,11 @@ def joint_row(ctx, boards, products, temps, runs: dict, mobilised: dict | None):
     if not after:
         missing.append("the stripped slot's construction tolerance against the board (the "
                        "joint's as-built closure before any movement), stated on the model")
-    inputs = [Quantity("joint_thermal", thermal, "in", 0.0001),
+    if after:
+        # Cut to the slot after backfill: closure counts from the fitting temperature, which
+        # the note holds at the placement floor, so the specified range still governs.
+        inputs.append(Quantity("joint_fit_min_f", temps.set_f, "F", 1.0))
+    inputs += [Quantity("joint_thermal", thermal, "in", 0.0001),
               Quantity("joint_board_squeeze", squeeze, "in", 0.0001),
               Quantity("joint_slide", slide, "in", 0.0001)]
     which = ("boards set after backfill: only the increment from the backfilled court to "
@@ -72,7 +77,9 @@ def joint_row(ctx, boards, products, temps, runs: dict, mobilised: dict | None):
         f"thermal {thermal:.4f}\" + sliding {slide:.4f}\" ({which}: {moved:.3f} of the "
         f"friction at {pcf:.0f} pcf x {low:g}\", the lateral anchor; {moved * high:.3f}\" at "
         f"{high:g}\") against the compliant layer's {capacity:.3f}\" at its capped strain"
-        + (". Boards cut to the as-built slot: no pre-closure" if after else "")
+        + (f". Boards cut to the as-built slot (no pre-closure) with the concrete at or above "
+           f"{temps.set_f:g} F, the placement floor the closure counts from"
+           if after else "")
         + f". The ties go in with the boards and take the same {demand:.3f}\". The foam "
         f"board's own squeeze at the cap, up to {squeeze:.4f}\" off its rating, is not "
         f"credited"), missing, inputs

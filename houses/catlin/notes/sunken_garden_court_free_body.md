@@ -3355,6 +3355,101 @@ returns to the owner with the measured φ′.
 friction the joint row reads 0.0533 + (96,201 − 76,808) / 150,839 x 0.25 = 0.0854" against
 0.125", so 0.68.
 
+### 15i. The restraint side at an upper friction (owner, 2026-11-23) — superseded by §15j
+
+A specified MINIMUM friction cannot be what a row graded unfavourably by friction reads. The
+report will likely return more. Winter contraction is the only such row: sliding, the deep
+plane, the joint, corner delivery and the neutral point all improve as friction rises. Their
+basis stays the design friction 0.43; the neutral point gives the larger x there.
+
+There is no published row bounding concrete-on-#57 friction from above. The bound is
+therefore written into AN-SG-SOIL as an acceptance limit, `bed_friction_max` **0.82**. The
+winter row grades at the confirmed report value if one is entered, else at 0.82, and the
+confirmation check FAILs a report value outside 0.43-0.82. For reference, φ 40° for washed
+crushed stone gives about tan 0.84 (UNVERIFIED).
+
+**The side-run steel (owner chose "lighter"):** 2 #5 bundled at each edge of FT-SG-W1/E1,
+lapped by FT-SG-W2/E2's G3 splice bars at the joint. That is 2 x 4 x 10.0' = 80 LF, 83.4 lb.
+
+```
+side run (W1/E1)  As = 6 #4 + 4 #5 = 1.20 + 1.24 = 2.44 in²; 0.9 x 2.44 x 60,000 = 131,760 lb
+T = (0.82 x 377,384 − 0.60 x 76,808) / 2 = (309,455 − 46,085) / 2 = 131,685 lb   -> 0.999
+(0.82 is where T reaches 131,760: (2 x 131,760 + 46,085) / 377,384 = 0.8204, rounded down)
+E2|E1 joint       6 #4 + 6 #5 splices = 3.06 in², 165,240 lb                     -> 0.797
+```
+
+### 15j. Verifier round (2026-11-23)
+
+An independent verifier reproduced §15 within 2% and confirmed the 25'-0" face and the strut
+and tie. It raised the following, acted on here.
+
+**1. Winter tension is rigid-plastic at a section, and the 2 #5 per edge (§15i) are withdrawn.**
+The tension at a section through the side lines is the smaller side's friction:
+min(μ W_house, μ W_far − 0.6 T), shared by the two lines it cuts. The old row took the whole
+loop's friction as one side and put it on two lines. That is twice the global maximum.
+
+The house side of the strut, as an upper bound:
+
+```
+W1/E1 footings 22,050 + stems 27,204 (+1,368 of W2/E2 stem past the strut axis) = 50,621
+heel soil to the STEM TOP (not grade) at 130 pcf: 2 x 3 x 10.5 x 9.12 x 130    = 74,691
+W-SG-BRKBM, cast with W1/E1: 18 x 1 x 1.479 x 150                              =  3,994
+                                                                               129,306
+```
+
+Taking the soil to the stem top rather than grade adds 23,179 lb. That stands in for the
+porch, balcony and veneer dead W1/E1 carry; the verifier's own total with those was about
+122,000.
+
+At μ the per-line tension is μ x 129,306 / 2 on the existing 6 #4 (64,800 lb):
+
+| μ | d/c |
+|---|---|
+| 0.43 | 0.43 |
+| 0.70 | 0.70 |
+| 1.00 | **0.998** |
+
+The row passes at any plausible stone friction, so **no side-run steel is added** (owner rule:
+material only where a graded row clearly needs it). `bed_friction_max` = **1.00**, where the
+row reaches 1.0 (1.002, rounded down); AN-SG-SOIL prints it.
+
+**2. The fallback wall resists along one direction only.** Its credit K acts north-south, so
+FS is the root of |FS T − K ŷ| = μN. Staged backfill reads **1.543** (it was 1.608 as a friction
+prism); perched 1.614; flooded 1.805.
+
+**3. Board fitting temperature.** Fitted cold, summer closes the joint from that temperature:
+0.139" at 20 °F and 0.174" at 0 °F, both over 0.125". AN-SG-BLOCKOUTS now requires the boards
+fitted with the concrete at or above 50 °F, the placement floor the closure is counted from.
+The joint row carries it as an input.
+
+**4. Missed cases.**
+
+* **Ground snow on the terrace**, 50 psf as a K0 surcharge (`Site.ground_snow_load_psf`):
+  graded, **1.773**.
+* **Snow combined with perched water** (spring melt) reads **1.46 at μ 0.43**. Whether the
+  50-year ground snow stands on the terrace while a blinded drain perches water at H/2 is an
+  OWNER DECISION, so it is reported, not graded. A specified bed friction of 0.45 closes it
+  (1.53). The fallback would read about 1.51.
+* **The flood level is now the real overflow:** the court ponds until it overtops D-B-SUNKEN's
+  threshold crest, −102.14", 7.3" over the floor; the engine finds the lowest door threshold
+  opening onto the court. Flooded court **1.702**; deep plane flooded 1.37 (reported).
+* **Not covered (owner):**
+  - lateral frost thrust in the top 42" of retained fill against the stems;
+  - seasonal thermal ratcheting of the court under its sustained thrust.
+  Neither is graded. The drained stone column and the at-rest basis are the only mitigations
+  claimed.
+
+**5. Fallback dowels.**
+- #5 at 24", 30" straight into the lean wall (ACI 318-19 Table 25.4.2.3: 60,000 / (25 x 50)
+  x 0.625 = 30.0"), with a standard 90° hook into FT-SG-S's bottom mat (ℓdh about 7.1", §6b).
+- Shear friction, not roughened: 0.75 x 0.6 x 0.155 x 60,000 = 4,185 plf against 1.6 x 1,300 =
+  2,080 plf.
+- The wall does not reach the deep plane. G2 returns to the owner on the measured φ′.
+
+**6. Spans.** The plan-bending row spans 11.5' (FT-SG-E2/W2's own length, node at FT-SG-S's
+face). The strut row takes 16.33' (the axis length from the corner node). Each is the
+conservative span for its own row.
+
 ## Sources
 
 Every standard and document this note rests on, collected from the citations above.

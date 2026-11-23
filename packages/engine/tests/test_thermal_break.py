@@ -84,11 +84,14 @@ _PATH = {
 # §11m: the exact beam-on-bed solution (transfer matrices, not FE) and the winter bound.
 # The W1|W2 / E1|E2 joints were graded plain (44.07 psi vs 212.13, 0.2077) until 2026-10-11,
 # when FT-SG-W2/E2's 6 #4 were spliced across them: now 6 splice bars, cracked, as the run.
-# 2026-11-23 (free body §15h): the court body at 130 pcf on the SPECIFIED bed friction 0.43,
-# 0.43 x 377,384 = 162,275, less 0.60 x 76,808 = 116,190 over 2 lines = 58,095; court sliding
-# reads 162,275 / 1.5 = 108,183. The E2|E1 joint carries the G3 #5 splices too: 12 bars.
-_WINTER = {"court winter tension, side run": (58_095.2, 64_800.0, 0.89653),
-           "court winter tension, spliced joint": (58_095.2, 165_240.0, 0.35158)}
+# 2026-11-23 (free body §15j): winter contraction is rigid-plastic at a section through the
+# side lines — the smaller side's friction, the house side of the strut — graded at the
+# specified maximum bed friction 1.00: W1/E1 footings 22,050 + their stems 27,204 (+1,368 of
+# W2/E2 past the strut axis) + heel soil to the stem tops at 130 pcf 74,691 + W-SG-BRKBM 3,994
+# = 129,306 lb; 1.00 x 129,306 / 2 lines = 64,653 against the existing 6 #4 (64,800). The
+# E2|E1 joint: 6 #4 + 6 #5 splices (3.06 in², 165,240). Court sliding reads 0.43: 108,183.
+_WINTER = {"court winter tension, side run": (64_653.0, 64_800.0, 0.99773),
+           "court winter tension, spliced joint": (64_653.0, 165_240.0, 0.39127)}
 _LINE = {"house near-line plan flexure": (72_809.2, 287_262.1, 0.25346),
          "house near-line plan shear": (1_694.09, 18_384.78, 0.09215),
          "house slab-edge peak sustained load": (22.5404, 33.33, 0.67628), **_WINTER}
@@ -535,11 +538,11 @@ def test_the_line_solver_is_hetenyi_far_from_its_ends() -> None:
 
 
 def test_the_court_side_joint_is_spliced(records) -> None:
-    """§11m.2 (2026-10-11): 6 #4 in each braced run, and 6 #4 splice bars across W1|W2 /
-    E1|E2 (``BarSpec.continues_into``), so the joint is graded cracked, not plain."""
+    """§11m.2 / §15j: 6 #4 in each braced run, and 6 #4 + 6 #5 splice bars across W1|W2 /
+    E1|E2 (``BarSpec.continues_into``), so the joint is graded cracked."""
     record = records["TB-SG-W1"]
     assert _input(record, "winter_tension_steel") == pytest.approx(1.20)
-    assert _input(record, "winter_joint_steel") == pytest.approx(1.20)
+    assert _input(record, "winter_joint_steel") == pytest.approx(3.06)
     assert not any(n.startswith("WINTER JOINT") for n in record.notes)
     assert not [s for s in record.limit_states if "unreinforced joint" in s.name]
 

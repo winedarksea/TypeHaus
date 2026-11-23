@@ -68,6 +68,8 @@ class Water:
     #: True: the same level both sides, uplift on the body. False: retained side only, the
     #: bed under the footings draining (no uplift).
     both_sides: bool = False
+    #: Ground snow on the retained terrace, psf, carried as a K0 surcharge.
+    snow_psf: float = 0.0
 
 
 DRY = Water("dry")
@@ -113,11 +115,16 @@ class Body:
         earth = 0.5 * k0 * self.soil_pcf * dry * dry
         earth += k0 * (self.soil_pcf * dry * hw + 0.5 * sub * hw * hw)
         unbalanced_water = 0.0 if water.both_sides else 0.5 * WATER_PCF * hw * hw
-        return earth + unbalanced_water + push.lateral_plf
+        snow = k0 * water.snow_psf * depth
+        return earth + unbalanced_water + snow + push.lateral_plf
 
-    def resultant(self, water: Water = DRY) -> float:
+    def resultant_vector(self, water: Water = DRY) -> tuple[float, float]:
         rx = sum(self.thrust_per_ft(p, water) * p.width_ft * p.direction[0] for p in self.pushes)
         ry = sum(self.thrust_per_ft(p, water) * p.width_ft * p.direction[1] for p in self.pushes)
+        return rx, ry
+
+    def resultant(self, water: Water = DRY) -> float:
+        rx, ry = self.resultant_vector(water)
         return (rx * rx + ry * ry) ** 0.5
 
     def fs(self, water: Water = DRY) -> float:
