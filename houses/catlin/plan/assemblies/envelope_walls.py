@@ -148,8 +148,9 @@ EXT_2X6 = Assembly(
         #
         # ONE 8" FASTENMASTER TIMBERLOK (TLOK08) PER CROSSING, through girt (1-1/2") +
         # block (4-1/2") + sheathing (1/2"), 1-1/2" into the stud. One fastener pass, no
-        # nails, and it is the entire load path: the block bears the cladding's gravity in
-        # direct compression on the sheathing, so the screw is a pure withdrawal element.
+        # nails, and it is the entire load path. The wall is vertical, so the cladding's ~11 lb
+        # weight acts PARALLEL to the sheathing, hung off its face: it shears the block joint
+        # and pries the block onto the screw (D + 0.6W, notes/catlin_truss_engineering.md 3.5a).
         # Mark the stud line across the girt face as it is laid so the screw is not blind.
         #
         # THE CLAMPED STACK IS 6.0", not 6.5": girt 1-1/2" + block 4-1/2". The sheathing is

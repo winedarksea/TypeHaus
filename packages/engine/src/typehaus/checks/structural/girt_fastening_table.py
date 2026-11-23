@@ -13,6 +13,8 @@ stack.
 
 from __future__ import annotations
 
+import math
+
 #: Table 1A, OlyLog/TimberLOK, designation -> (overall length, thread length incl. tip), in.
 TIMBERLOK_1A = {"TLOK212": (2.5, 1.25), "TLOK04": (4.0, 2.0), "TLOK06": (6.0, 2.0),
                 "TLOK08": (8.0, 2.0), "TLOK10": (10.0, 2.0)}
@@ -31,15 +33,63 @@ MIN_SIDE_MEMBER_IN = 1.5
 PULL_THROUGH_LB = {0.57: 220.0, 0.55: 200.0, 0.50: 160.0, 0.46: 130.0,
                    0.43: 110.0, 0.42: 110.0}
 
-#: Table 3 footnote and §4.1.2: the reference values are dry-service; wet service takes the
-#: NDS C_M. 0.70 is the house's wet bound for a screw into treated pine (the door-sill course
-#: reads the same factor), printed beside the dry result and never applied to it.
+#: Table 4, OlyLog/TimberLOK, minimum overall length 2-1/2", 1-1/2" side member, 1" main member
+#: penetration (note 4: full thread embedment not required): Z (lbf) at the lower of the two
+#: members' SG 0.50 / 0.46 / 0.42. Footnote 2 lets a thicker side member be used where the
+#: row's main penetration is still achieved. (Zll, Z_perp); the lower governs here.
+LATERAL_LB = {0.50: (240.0, 220.0), 0.46: (220.0, 200.0), 0.42: (200.0, 180.0)}
+
+#: AWC NDS 2018 (read 2026-11-23): Table 2.3.2 wind/earthquake C_D 1.6 and dead 0.9; 11.3.2 caps
+#: connections at 1.6 and exempts metal strength; Table 11.3.1 applies C_D to lateral, withdrawal
+#: and pull-through; Table 11.3.3 wet service (in-service MC > 19%) C_M 0.7 for lateral
+#: dowel-type, lag/wood-screw withdrawal and round-head pull-through. ESR-1078 §4.1.2 sends the
+#: Tables 2-4 values to NDS 11.3. The 1,300 lbf tension is metal strength: no factor.
+C_D_WIND = 1.6
+C_D_DEAD = 0.9
 WET_SERVICE_FACTOR = 0.70
 
 #: Reaction factors from statics, not tables: an interior support of two equal spans takes
-#: 5wL/4 (the 2x4 girt over blocks) and of three or more takes 11wL/10 (the panel over girts).
+#: 5wL/4 (the 2x4 girt over blocks). The panel runs over five or more girts, and its worst
+#: interior reaction over three or more equal spans is the 4-span value, 8/7 wL (3 spans 1.10,
+#: 5 spans 1.132, many 1.134).
 GIRT_CONTINUITY = 1.25
-PANEL_CONTINUITY = 1.10
+PANEL_CONTINUITY = 8.0 / 7.0
+
+#: Gravity prying (note §3.5a). On a vertical wall the crossing's weight acts PARALLEL to the
+#: sheathing, hung off its face, so each block tips about its bottom edge and the screw, at the
+#: block's mid-height, takes the moment. Block face is a 2x4's 3-1/2" (``truss_girts``).
+BLOCK_FACE_IN = 3.5
+#: Panel dead load, psf: 24 ga standing seam (note §2), the heavier of the house's skins.
+PANEL_DEAD_PSF = 1.2
+LB_PER_IN3_PER_KG_M3 = 0.062428 / 1728.0
+
+
+def prying(block_in: float, course_in: float, girt_in: float, block_depth_in: float,
+           panel_in: float, density_kg_m3: float) -> tuple[float, float, float]:
+    """(crossing weight lb, moment about the block's bottom edge in-lb, screw tension lb).
+
+    Weights: the panel's tributary, the girt length of one block module, one block (face
+    3-1/2" square, ``block_depth_in`` deep), the two woods at ``density_kg_m3``. Each acts at
+    its own centroid's distance off the sheathing face; the screw is ``BLOCK_FACE_IN / 2``
+    above the pivot.
+    """
+    wood = density_kg_m3 * LB_PER_IN3_PER_KG_M3
+    parts = (
+        (PANEL_DEAD_PSF * tributary_area_ft2(block_in, course_in),
+         block_depth_in + girt_in + panel_in / 2.0),
+        (wood * girt_in * BLOCK_FACE_IN * block_in, block_depth_in + girt_in / 2.0),
+        (wood * BLOCK_FACE_IN * BLOCK_FACE_IN * block_depth_in, block_depth_in / 2.0),
+    )
+    weight = sum(w for w, _ in parts)
+    moment = sum(w * e for w, e in parts)
+    return weight, moment, moment / (BLOCK_FACE_IN / 2.0)
+
+
+def combined_allowable_lb(withdrawal_lb: float, lateral_lb: float, alpha_rad: float) -> float:
+    """NDS 2018 eq. 12.4-1: Z'a = W'p Z' / (W'p cos^2 a + Z' sin^2 a), a the angle between the
+    wood surface and the load. ``withdrawal_lb`` is W'p (adjusted W x thread penetration)."""
+    cos, sin = math.cos(alpha_rad), math.sin(alpha_rad)
+    return withdrawal_lb * lateral_lb / (withdrawal_lb * cos ** 2 + lateral_lb * sin ** 2)
 
 
 def row_at(table: dict[float, float], specific_gravity: float) -> float | None:
@@ -72,7 +122,7 @@ def tributary_area_ft2(block_spacing_in: float, course_spacing_in: float) -> flo
 
 def crossing_demand_lb(pressure_psf: float, block_spacing_in: float,
                        course_spacing_in: float) -> float:
-    """ASD reaction on one screw: pressure x tributary x girt and panel continuity.
+    """ASD 0.6W reaction on one screw: pressure x tributary x girt and panel continuity.
 
     The uniform-load tributary is the SIMPLE-span reaction; an interior screw of a girt
     continuous over the blocks, under a panel continuous over the girts, takes more.
