@@ -38,7 +38,7 @@ PHI_PLAIN = 0.60
 PHI_STM = 0.75
 #: A propped leg's share of its own thrust at the prop: fully fixed corner 3/8, pinned 1/2.
 STRUT_PROP_SHARE = (0.375, 0.500)
-_LONGITUDINAL = ("bottom-y", "edge-y")
+_LONGITUDINAL = ("bottom-y",)
 
 
 def cross_axis(ctx, cross):  # type: ignore[no-untyped-def]
@@ -176,8 +176,9 @@ def _bars(spec):  # type: ignore[no-untyped-def]
 
 
 def _toe_tie(ctx, wall) -> tuple[float, float, str] | None:  # type: ignore[no-untyped-def]
-    """``(As in², tie depth from the toe edge in, how)``: every ``edge-y`` bar, plus the one
-    distributed ``bottom-y`` bar in the outermost line — the bars a tie at the edge holds."""
+    """``(As in², tie centroid from the toe edge in, how)``: a ``count`` row's bundle at the
+    edge (``resolve/rebar/mats``: that many bars at EACH edge), plus the outermost bar of a
+    distributed ``spacing`` row — the bars a tie at the edge holds."""
     from typehaus.engineering.retaining_system_body import _footing_of
 
     footing = _footing_of(ctx, wall.tag)
@@ -185,13 +186,11 @@ def _toe_tie(ctx, wall) -> tuple[float, float, str] | None:  # type: ignore[no-u
     cover = spec.cover.inches if spec is not None and spec.cover is not None else 3.0
     area, moment, parts = 0.0, 0.0, []
     for bar, size in _bars(spec):
-        count = (bar.count or 0) if bar.role == "edge-y" else 1
-        if not count:
-            continue
-        depth = cover + size.diameter_in / 2.0
+        count = bar.count or 1
+        depth = cover + size.diameter_in / 2.0 + (count - 1) * size.diameter_in / 2.0
         area += count * size.area_in2
         moment += count * size.area_in2 * depth
-        parts.append(f"{count} #{bar.bar} ({bar.role})")
+        parts.append(f"{count} #{bar.bar}" + (" bundled" if bar.count else " (outermost)"))
     if not area:
         return None
     return area, moment / area, " + ".join(parts)

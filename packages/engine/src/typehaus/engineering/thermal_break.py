@@ -45,7 +45,11 @@ from typehaus.engineering.item import (
     item_id,
 )
 from typehaus.engineering.registry import EngineeringContext, calc, keys, oracled_by
-from typehaus.engineering.retaining_system import footing_shortfalls, loop_free_bodies
+from typehaus.engineering.retaining_system import (
+    footing_shortfalls,
+    loop_free_bodies,
+    loop_mobilisation,
+)
 from typehaus.engineering.thermal_break_joint import NAME as JOINT
 from typehaus.engineering.thermal_break_joint import joint_row
 from typehaus.resolve.slab_clip import floor_outline
@@ -124,12 +128,14 @@ def compute(ctx: EngineeringContext) -> list[EngineeringRecord]:
     for b in sorted(boards, key=lambda b: b.tag):
         groups.setdefault(b.loop_ref or b.tag, []).append(b)
     temps = brd.temps(ctx)
+    mobilised = loop_mobilisation(ctx)
     out = []
     for key, mine in sorted(groups.items()):
         joint = None
         if mine[0].loop_ref is not None:
             runs = {b.tag: geo.court_run_in(ctx, b) for b in mine}
-            joint = joint_row(mine, products, temps, runs, bodies.get(mine[0].loop_ref))
+            joint = joint_row(ctx, mine, products, temps, runs,
+                              mobilised.get(mine[0].loop_ref))
         out.append(_record(key, mine, graded, joint))
     return out
 

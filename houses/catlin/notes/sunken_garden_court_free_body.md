@@ -3233,13 +3233,82 @@ concrete-on-soil row applied to a native-on-native shear plane.
   A measured phi' for the native (a boring) is the input that would close it, against the
   owner's no-geotech decision.
 
-**G3, plan bending 2.85 on 1 #4.** Three #5 per edge, bundled at the edge, give a tie of
+**G3, plan bending 2.85 on 1 #4 (closed in §15g).** Three #5 per edge, bundled at the edge, give a tie of
 3 x 0.31 + 0.20 = 1.13 in² at z ≈ 38.7": 0.50. That is about 390 LF / 410 lb.
 
 **G8, the joint (§11r).** The options are a 3/4" or 1" EPDM layer (0.1875" / 0.25" at 25%, still
 short of the 0.69" band-top bound), or setting the boards after the three retained sides are
 backfilled, so that only thermal closure and later creep remain. A thicker layer moves the court
 line or the board plane.
+
+### 15g. G3 and G8 closed; G1/G2 options compared (2026-11-23)
+
+**G3 (owner approved).** 3 #5 are bundled at each edge of FT-SG-W2/E2 and lapped class B into
+FT-SG-S and FT-SG-W1/E1. The tie is 3 #5 (centroid 3.94") plus the outermost #4 (3.25"):
+As 1.13 in², centroid 3.82", z = 42 − 3.82 = 38.18". Tu = 82,708 x 12 / 38.18 = 25,995 against
+0.75 x 1.13 x 60,000 = 50,850, so **0.51**. It is laid as a `count` row (bars at each edge) and
+billed.
+
+**G8 (owner approved).** The boards and veneer ties go in after the three retained sides are
+backfilled, cut to the as-built slot. The backfill's own sliding is spent before the joint
+exists. What is left is thermal closure plus the increment from the backfilled court (no apron
+yet: 76,808 / 122,776 = 0.626 of its friction) to the worst graded service case (perched:
+96,201 / 122,776 = 0.784). That increment is taken at the lateral anchor of the motion band:
+IBC §1806.3.4 pairs twice the tabular lateral value with 1/2", so the tabular value takes 1/4".
+
+```
+0.0533 + (0.784 − 0.626) x 0.25 = 0.0533 + 0.0395 = 0.0928"  vs 0.125"   d/c 0.74
+(at the band's 1.0" top: 0.0533 + 0.158 = 0.211" — the sensitivity, printed)
+```
+
+AN-SG-PLACEMENTS, AN-SG-BLOCKOUTS and AN-SG-BACKFILL print the sequence. AN-SG-BACKFILL no
+longer prints FS values; its H/2 rule is G1's.
+
+**What each G1 row needs** (extra lateral resistance at the footing plane, 110 pcf, μ 0.35 on the
+stone): perched +21,526 lb; flooded +5,568; staged at H/2 about +23,500 (25,000 gives 1.52);
+retained to the terrace (reported) +69,896. The equivalent bare friction on the concrete/stone
+interface is μ 0.411 / 0.368 / 0.422 / 0.549.
+
+**What G2 needs** (deep plane): μ_eff = tan φ′ of 0.334 dry (18.5°), 0.439 with the soakaway full
+(23.7°), 0.503 flooded (26.7°).
+
+**Water levels, rechecked against the drains as drawn.**
+
+* *Soakaway full* is limited by FD-SG-OVERFLOW's lip, the field profile's underside at
+  −127 7/16" on FB-SG-W1. With the overflow working this is the highest routine water, 6" under
+  the footings, and it is the right graded level for the deep plane.
+* *Flooded court* needs that overflow blocked. Water then rises through the stone to the court
+  floor (the graded level) and on toward D-B-SUNKEN's sill, the next outlet, which is into the
+  house. It is an edge case, kept graded at the floor.
+* *Perched* is the drain column blinded. Its level, H/2, is a stated design case, not a drain
+  limit.
+
+**Code rows** (IBC 2018 Table 1806.2 as `soil.py` carries it; verbatim §1806 on UpCodes was read
+only on the 2024 text: §1806.3.1 lets lateral bearing combine with friction, and §1806.3.2
+caps the class-5 cohesion resistance at half the dead load):
+
+| Option | perched | flooded | staged H/2 | deep dry | deep lip | Quantity | Build |
+|---|---|---|---|---|---|---|---|
+| As drawn | 1.28 | 1.43 | 1.24 | 1.12 | 0.85 | — | — |
+| **A. Buried lean wall under FT-SG-S**, 12" x 4'-6" x 25', founded on the native bed bottom, through the stone to the footing underside; plain lean concrete, so the credit is capped by its flexure (φMn 3,600 ft-lb/ft at f'c 2,500, arm 2.77'), about 32,500 lb (the stone's class-3 passive would be 73,125) | 1.62 | 1.85 | 1.58 | ≈1.12 | ≈0.86 | 4.2 cy lean; #5 dowels or a 4" keyway into FT-SG-S | Formed with ordinary removable forms in the open bed dig, before any stone (one extra small pour and form visit); stone placed and plated both sides in lifts; FT-SG-S cast on it in placement 1. Long term: buried lean concrete in drained stone, no void, no rot. Splits FB-SG-S's soakaway lengthwise; joined round the ends. |
+| A', the stone-only key the review proposed (12" x 2'-6", cast with the footing in formed stone) | 1.60 | 1.67 | 1.60 | 1.12 | 0.85 | 2.3 cy | Needs a permanent rigid form in loose stone. Expanded-metal rib lath with no compressible layer can be credited. Plywood or EPS cannot: plywood rots to a gap, EPS is a gap, and the passive only comes after the gap closes. |
+| B. Native key below the deep plane, the same wall carried D into native, reinforced (plain fails at its plane moment) | (as A) | (as A) | (as A) | D 4': 1.82 | D 7': 1.51 | about 10.6 cy at D 7' | A 7' slot at −14'-7" needs shoring. Not recommended. |
+| C. Excavation observation, presumptive tables only | no change: the stone is class 3 μ 0.35 whatever the native is, and at-rest 60 is the same for every granular class | — | — | class 3 native (GW/GP): 1.57 | 1.20 | — | Cannot close G1 or the graded G2 row on its own. A class-5 (CL/ML) bed bottom is WORSE: cohesion 130 x 758 sf = 98.6 kip gives deep lip 0.63, so it is the fallback trigger. |
+| D. Soil report (1-2 borings at the court to about 20', groundwater, lab classification, φ′ and design friction) | needs μ ≥ 0.42 on stone | ≥ 0.37 | ≥ 0.42 | φ′ ≥ 18.5° | φ′ ≥ 23.7° (26.7° flooded) | no concrete | One visit before design is final. It also lifts "THE SOIL IS PRESUMED" off every record on the court. |
+
+**Plausibility of D** (general knowledge, UNVERIFIED for this parcel): compacted washed crushed
+stone has φ near 40° and concrete on it near 2/3 φ, about tan 27°, roughly 0.5. Twin Cities
+outwash sands and gravels and sandy Des Moines-lobe till usually test at φ′ around 28-34°. Each
+needed value sits below that range. A clay-loam till could fall short on the deep plane.
+
+**Recommendation.** **D, the soil report, as the primary route**: it is the only option that can
+close G2 without a 7' reinforced key, and on any granular result it closes G1 as well, with no
+concrete. **Fallback, printed with the excavation acceptance check:** if the report's φ′ or
+friction falls short, or the bed bottom is seen to be clay or silt (ASTM D2488 visual-manual),
+build A for G1. G2 then goes back to the owner with the measured φ′ (native key depth or a
+lowered lip). If the owner declines a report, **A alone** closes G1 (4.2 cy lean, one extra
+pour). G2 then rests on accepting the deep plane at 1.12 dry / 0.85 soakaway full under the
+presumptive μ 0.25, which is an owner decision, not a row that passes.
 
 ## Sources
 
