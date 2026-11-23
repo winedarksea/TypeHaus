@@ -244,16 +244,15 @@ def test_a_narrow_transition_behind_a_wildcard_is_shadowed():
 
 
 def test_suppressed_bindings_derive_no_detail_sheets(catlin_model_ro):
-    """Catlin end-to-end: the veneer reveals and the surviving assembly-change conditions
-    are present and bound, but scaffold nothing.
-
-    The brick veneer's reveals are this shape of suppression (TR-CATLIN-VENEER-OPENING)."""
+    """Catlin end-to-end: the surviving assembly-change conditions are present and bound, but
+    scaffold nothing. (The brick veneer's reveals were this shape of suppression until
+    2026-11-23: flat heads with flashed lintels draw their own sheet now.)"""
     from typehaus.emit.draw.details import derive_detail_slices
 
     cond_keys = {c.key for c in catlin_model_ro.conditions}
     assert "opening_perimeter:BASEMENT_BRICK_VENEER" in cond_keys
     derived_keys = {d.key for d in derive_detail_slices(catlin_model_ro)}
-    assert "opening_perimeter:BASEMENT_BRICK_VENEER" not in derived_keys
+    assert "opening_perimeter:BASEMENT_BRICK_VENEER" in derived_keys
     assert not {k for k in derived_keys if k.startswith("assembly_change:")}
 
 

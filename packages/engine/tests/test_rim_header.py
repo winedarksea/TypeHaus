@@ -41,6 +41,11 @@ def test_equivalent_uniform_matches_the_hand_numbers() -> None:
 def test_fastening_seat_introduction_and_jambs_are_graded_apart(catlin_ctx) -> None:
     by_title = {f.message.split(":")[0].split("D-B-SUNKEN ")[1]: f
                 for f in _findings(catlin_ctx)}
+    joint = next(f for f in _findings(catlin_ctx) if "rim joint" in f.message)
+    # TJ-8000 p.5: a joint at least 12" beyond the opening. The floors' seam is 8.34" from the
+    # west jamb and nothing bridges it: UNKNOWN, an open defect (notes §"The rim joint").
+    assert joint.result is Result.UNKNOWN and "8.34\"" in joint.message
+    by_title = {t: f for t, f in by_title.items() if "rim joint" not in t}
     assert set(by_title) == {
         "2-ply 1 1/4\" LSL rim header over 63.31\" (5.776 ft c-c, the 6 ft row)",
         "ply fastening", "seat load introduction", "jamb bearing, band to foundation"}

@@ -62,3 +62,33 @@ bed(16.0, label="beam widened 4in south")
 
 # --- 3. Tie tributary widths (§6l) --------------------------------------------------------
 print(f"tie: 2.67 sf over 24 in rows carries {2.67*144/24:.2f} in of width; 2.0 sf {2*144/24:.1f} in")
+
+# --- 4. Veneer wind base shear on the bed, and the brick density sensitivity (§6m) ---------------
+p_wind = 19.93                      # psf, ASD Zone 5 at the tie's 2.67 sf (L7's mean roof height)
+z1 = 16.0                           # in, first bed-joint tie row over the base
+V = p_wind * (z1 / 12) / 2          # plf at the beam top (pin at the flashing, first row above)
+Mw = V * Hb                         # lb-in per ft, 17.75 in over the bed
+def bed_wind(brick_plf, label):
+    own = 12 * Hb * 150 / 144
+    tot = brick_plf + own
+    res = (brick_plf * -7.8125 + own * -12.0) / tot
+    e0 = abs(res + 12.0)
+    e = e0 + Mw / tot
+    a_ = 6 - e
+    q = 2 * tot / (3 * a_ / 12)
+    print(f"{label}: total {tot:.1f} plf, e {e0:.2f} + wind {Mw/tot:.2f} = {e:.2f}, contact {3*a_:.2f}, "
+          f"peak {q:.0f} psf = {q/2000:.2f} of 2,000")
+print(f"wind base shear {V:.1f} plf x {Hb} in = {Mw:.0f} lb-in/ft")
+bed_wind(268.86, "brick 120 pcf (the house's 1920 kg/m3)")
+bed_wind(268.86 * 130 / 120, "brick 130 pcf (sensitivity)")
+q130_dead = 2 * (268.86 * 130 / 120 + 221.9) / (3 * (6 - abs((268.86 * 130 / 120 * -7.8125 + 221.9 * -12) / (268.86 * 130 / 120 + 221.9) + 12)) / 12)
+print(f"130 pcf, dead only: peak {q130_dead:.0f} psf = {q130_dead/2000:.2f}")
+
+# --- 5. Tie force: drag + wind against TMS 402-22 Table 6 (BIA TN 3C) ----------------------
+W = 268.86 / 7.4253 * (203 * 89.1045 - 14 * 20 - 63.3125 * 80) / 144     # net wythe weight, lb
+n = 13 * 5                                                              # stations x rows
+wind = 2.0 * p_wind * 2.67                                              # TN 3C Table 7, k <= 2500
+print(f"wythe {W:.0f} lb on {n} ties: {W/n:.1f} lb/tie per unit friction; wind {wind:.1f} of 125")
+print(f"friction bound, drag + wind <= 125: {(125-wind)/(W/n):.2f}; drag alone: {125/(W/n):.2f}; "
+      f"slotted 200: {(200-wind)/(W/n):.2f}")
+print(f"no bond break: {2500*0.0854:.0f} lb per tie (k x closure) against 125 allowable, 210 design")

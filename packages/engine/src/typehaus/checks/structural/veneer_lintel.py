@@ -13,7 +13,9 @@ other members meeting structural design; a larger angle of the same thickness on
 section, never subtracts it). **Stories above** are read off the model: anything framed
 over the wythe's top is a story the no-story column cannot answer, and the finding is UNKNOWN.
 
-**Not graded:** the flashing R703.8.5 puts at each lintel (the wall section carries it).
+**Flashing (R703.8.5):** an authored ``Flashing`` run hosted on the wythe, its top on the lintel's
+top and as long as the angle, must lie over each lintel; weeps (R703.8.6) are open joints named
+in ``notes/veneer_opening_detail.md``, not modelled.
 Oracle: ``houses/catlin/notes/sunken_garden_veneer_beam.md`` §6l, ``tests/test_veneer_lintel.py``.
 """
 
@@ -72,6 +74,22 @@ def _framed_over(ctx: CheckContext, wythe: Any, brick: Polygon) -> list[str]:
     return out
 
 
+def _head_flashing(ctx: CheckContext, wythe: Any, top_z: float, lo: float, hi: float):
+    """The tag of a Flashing run on the wythe at the lintel's top and as long as the angle."""
+    (ax, ay), (bx, by) = wythe.axis
+    length = math.hypot(bx - ax, by - ay)
+    u = ((bx - ax) / length, (by - ay) / length)
+    for el in ctx.plan.all_elements():
+        path = getattr(el, "path", None)
+        if (getattr(el, "host_ref", None) != wythe.tag or path is None
+                or abs(el.top_elevation.meters - top_z) > _HEAD_TOL_M):
+            continue
+        along = [(p.x.meters - ax) * u[0] + (p.y.meters - ay) * u[1] for p in path]
+        if min(along) <= lo + _IN and max(along) >= hi - _IN:
+            return el.tag
+    return None
+
+
 def _lintel(ctx: CheckContext, wythe: Any, opening: Any, head_z: float):
     """The authored steel Beam over the opening: bearing past each jamb, soffit on the head."""
     (ax, ay), (bx, by) = wythe.axis
@@ -87,7 +105,7 @@ def _lintel(ctx: CheckContext, wythe: Any, opening: Any, head_z: float):
             continue
         along = [(x - ax) * u[0] + (y - ay) * u[1] for x, y in solid.outline]
         if min(along) < hi and max(along) > lo:
-            return element, lo - min(along), max(along) - hi
+            return element, lo - min(along), max(along) - hi, solid.z1_m, (min(along), max(along))
     return None
 
 
@@ -110,7 +128,8 @@ def veneer_lintel(ctx: CheckContext) -> list[Finding]:
                      f"angle lintel under its head (R703.8.3)", tags, code=_CODE,
                 fix="author a Beam angle lintel, soffit on the head, bearing 4\" past each jamb"))
             continue
-        beam, west_m, east_m = found
+        beam, west_m, east_m, top_z, (lintel_lo, lintel_hi) = found
+        flashing = _head_flashing(ctx, wythe, top_z, lintel_lo, lintel_hi)
         tags += (beam.tag,)
         bearing = min(west_m, east_m) / _IN
         row = table_row(beam.size)
@@ -131,6 +150,9 @@ def veneer_lintel(ctx: CheckContext) -> list[Finding]:
             out.append(failed(_ID, f"{head} spans past the {row[1] / 12:g}' the table allows "
                                    f"that angle with no story above", tags, code=_CODE,
                               fix="a larger angle's row, or a lintel for the span"))
+        elif flashing is None:
+            out.append(unknown(_ID, f"{head}: no flashing run lies over the lintel (R703.8.5)",
+                               tags, code=_CODE))
         elif not _COATING.search(getattr(beam, "engineering_note", "") or ""):
             out.append(unknown(_ID, f"{head}: no corrosion protection is stated (R703.8.3: "
                                     f"rust-inhibitive paint, or galvanized or corrosion-"
@@ -140,6 +162,6 @@ def veneer_lintel(ctx: CheckContext) -> list[Finding]:
                 _ID, f"{head}: Table R703.8.3.1's {row[0][0]:g}x{row[0][1]:g}x{row[0][2]:g} "
                      f"row spans {row[1] / 12:g}' with no story above, {bearing:.2f}\" of "
                      f"bearing a side (4\" minimum), long leg vertical, galvanized or "
-                     f"corrosion-resistant; flashing over it per R703.8.5 is in the wall "
-                     f"section", tags, code=_CODE))
+                     f"corrosion-resistant; flashed over per R703.8.5 by {flashing}, weeps "
+                     f"per R703.8.6 in the detail notes", tags, code=_CODE))
     return out

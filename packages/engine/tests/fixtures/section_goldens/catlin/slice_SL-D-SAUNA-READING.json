@@ -1507,7 +1507,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CMFS02AAAA",
-      "tag": "bearing-block-0-003"
+      "tag": "bearing-block-0-002"
     },
     {
       "space": "model",
@@ -1555,7 +1555,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CMFS02AAAA",
-      "tag": "bearing-block-0-003/flange"
+      "tag": "bearing-block-0-002/flange"
     },
     {
       "space": "model",
@@ -1575,7 +1575,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CMFS02AAAA",
-      "tag": "bearing-block-0-003/flange"
+      "tag": "bearing-block-0-002/flange"
     },
     {
       "space": "model",

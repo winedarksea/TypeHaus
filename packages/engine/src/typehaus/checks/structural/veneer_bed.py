@@ -7,7 +7,10 @@ None is N/A, from every bedded wall examined.
 **What it grades**, at each interface it actually has (F-04):
 
 * the wythe's weight and the beam's own, per foot, taken from the assemblies' densities and
-  heights, acting at their centroids across the beam;
+  heights, acting at their centroids across the beam, plus **the veneer's wind base shear** at
+  the beam's top, 17.75" over the bed: the strip between the flashing (a pin) and the first tie
+  row takes half of p x its height at the base, p the ties' own ASD pressure, and the moment
+  that shear makes is the worst sign added to the eccentricity;
 * the resultant's offset from the contact's centre against the kern (B/6). Outside the kern
   the contact is partial, the far edge lifts and the peak is 2P / (3a) over 3a, ``a = B/2 - e``;
   at or past the edge there is no contact at all, which FAILs;
@@ -62,6 +65,21 @@ def _beam_plf(ctx: CheckContext, beam: Any) -> float | None:
     return layer.thickness_m * (beam.z1_m - beam.z0_m) * density * KG_PER_M_TO_PLF
 
 
+def _wind_base_shear_plf(ctx: CheckContext, wythe: Any) -> float:
+    """Half of p x the height below the first tie row, per foot of wythe, or 0 if unknown."""
+    from typehaus import veneer_tie_layout, veneer_ties
+    from typehaus.checks.structural.veneer_cavity import _wall_pressure_psf
+
+    pressure = _wall_pressure_psf(ctx)
+    reach = veneer_ties.measure(ctx.model, wythe) if veneer_ties.is_anchored_wythe(
+        ctx.model, wythe) else None
+    lay = (veneer_tie_layout.layout(ctx.model, wythe, reach, veneer_ties.tie_area_sf(pressure))
+           if reach is not None else None)
+    if pressure is None or lay is None or not lay.rows_in:
+        return 0.0
+    return pressure * (lay.rows_in[0] / 12.0) / 2.0
+
+
 @check(Tier.STRUCTURAL, _ID)
 def veneer_bed_bearing(ctx: CheckContext) -> list[Finding]:
     beds = {e.host_ref: e for e in ctx.plan.all_elements() if isinstance(e, FootingBedding)}
@@ -97,11 +115,18 @@ def veneer_bed_bearing(ctx: CheckContext) -> list[Finding]:
             continue
         total = own + sum(plf for _t, plf, _y in loads)
         resultant = (own * centre + sum(plf * y for _t, plf, y in loads)) / total
-        ecc = abs(resultant - centre)
+        ecc_dead = abs(resultant - centre)
+        shear = _wind_base_shear_plf(ctx, carried[0])
+        arm_in = (beam.z1_m - beam.z0_m) / _IN
+        ecc = ecc_dead + (shear * arm_in / total if shear else 0.0)
         kern = contact / 6.0
         sides = ", ".join(f"{t} {plf:.1f}" for t, plf, _y in loads)
+        wind = (f", wind base shear {shear:.1f} plf x {arm_in:.2f}\" = "
+                f"{shear * arm_in:.0f} lb-in/ft moves it {shear * arm_in / total:.2f}\" "
+                f"(worst sign)" if shear else "")
         head = (f"{beam.tag} on {bed.tag}: {sides} + beam {own:.1f} = {total:.1f} plf, resultant "
-                f"{ecc:.2f}\" off the {contact:g}\" contact's centre (kern {kern:.2f}\")")
+                f"{ecc_dead:.2f}\"{wind} = {ecc:.2f}\" off the {contact:g}\" contact's centre "
+                f"(kern {kern:.2f}\")")
         if ecc >= contact / 2.0:
             out.append(failed(_ID, f"{head}: past the contact's edge, the beam does not sit on "
                                    f"its bed", tags, code=_CODE,

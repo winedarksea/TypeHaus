@@ -108,6 +108,16 @@ jack studs (provided: 2) and Table R602.7.5's full-height studs each end: for a 
 rim over `D-B-SUNKEN` takes the whole 1,708 lb). It is a published table row, so it is a prescriptive
 read and not a seal. Under the 0.85 cost-review trigger (decision 30).
 
+## The rim joint (TJ-8000 p.5), open
+
+p.5's header application: "Locate joint a minimum of 12" beyond opening". `FS-M-WEST`'s edge rim ends at
+x=215.25" and `FS-M-EAST`'s begins at 216": the floors' seam at the 18' bearing line, **8.34" from the
+west jamb** (224.34"), 2.34" outside the pack. The header ply stops at the floor's outline (216") too,
+so nothing bridges the joint, and a floor's rim cannot be lengthened over its neighbour's.
+`structural.rim_header` grades it UNKNOWN. Options: move the seam 3.7" west (the bearing line moves);
+move the opening 3.7" east (the door, its RO and the PORCH packs above); or Weyerhaeuser confirms the
+splice (ForteWEB models one continuous piece).
+
 ## Not graded here
 
 Dry-use service (the band is inside the envelope; TJ-8000 p.5: dry-use only). Lateral support: the
