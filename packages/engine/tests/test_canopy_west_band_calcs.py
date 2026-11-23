@@ -22,28 +22,28 @@ _ITEM = "lateral_system/RF-BW-CANOPY"
 #: re-worked 2026-10-31 (16.661 psf, headers 23.4375' apart: the note's 10-31 amendment); and
 #: 2026-11-18 (§10: 16.6622 psf, headers 23.46875' apart, V 1,034.57 lb; the panel's 7/16" row).
 _ROWS = {
-    "W-BW-SCREEN unit shear": (190.27, 490.0),
+    "W-BW-SCREEN unit shear": (193.420, 490.0),
     "W-BW-SCREEN aspect ratio": (0.751, 3.5),
-    "SB-BW-BAND slat end, KBS1Z": (742.888, 993.218),
-    "SB-BW-BAND slat buckling": (742.888, 24904.1),
-    "SB-BW-BAND clipped end bearing on a post": (23.81, 251.25),
-    "SB-BW-BAND clipped end bearing on a plate": (25.30, 251.25),
-    "SB-BW-BAND centre post bending": (33.94, 1360.0),
-    "SB-BW-BAND centre post end ties": (476.63, 1390.0),
-    "SB-BW-BAND top plate screws into BM-BW-RW": (185.72, 664.099),
-    "SB-BW-BAND sill screws into W-BW-SCREEN's top plate": (129.321, 648.0),
-    "W-BW-SCREEN top plate end bearing on a chord": (98.53, 251.25),
-    "W-BW-SCREEN base plate and sill end bearing on a chord": (64.16, 251.25),
-    "BM-BW-RW eave collector clips": (172.43, 450.0),
+    "SB-BW-BAND slat end, KBS1Z": (755.206, 993.218),
+    "SB-BW-BAND slat buckling": (755.206, 24904.1),
+    "SB-BW-BAND clipped end bearing on a post": (24.209, 251.25),
+    "SB-BW-BAND clipped end bearing on a plate": (25.722, 251.25),
+    "SB-BW-BAND centre post bending": (34.505, 1360.0),
+    "SB-BW-BAND centre post end ties": (484.530, 1390.0),
+    "SB-BW-BAND top plate screws into BM-BW-RW": (188.801, 664.099),
+    "SB-BW-BAND sill screws into W-BW-SCREEN's top plate": (131.465, 648.0),
+    "W-BW-SCREEN top plate end bearing on a chord": (100.164, 251.25),
+    "W-BW-SCREEN base plate and sill end bearing on a chord": (65.223, 251.25),
+    "BM-BW-RW eave collector clips": (175.287, 450.0),
     # G5 (2026-11-23): the screen's shear leaves at its top plate through CN-BW-SCREEN-STRAP;
     # the chord hold-down and base shear rows carry no N-S (north_entry_piers.md §10p).
     # The deck row reads the SDPWS table allowable, 347.3 plf (canopy_garage_diaphragm.md §12a).
-    "diaphragm unit shear at W-BW-SCREEN": (172.43, 347.3),
-    "LSTA24 end straps, chord force + across share": (260.389, 823.3333333333334),
-    "BM-BW-RW chord into CN-BW-JOINT-1's block": (216.408, 450.0),
-    "BM-BW-RE chord into CN-BW-JOINT-7's block": (87.961, 450.0),
-    "W-G-W joint couple, E-W case": (4.606, 182.5),
-    "W-G-E joint couple, E-W case": (4.094, 182.5),
+    "diaphragm unit shear at W-BW-SCREEN": (175.287, 347.3),
+    "LSTA24 end straps, chord force + across share": (265.608, 823.3333333333334),
+    "BM-BW-RW chord into CN-BW-JOINT-1's block": (220.447, 450.0),
+    "BM-BW-RE chord into CN-BW-JOINT-7's block": (90.322, 450.0),
+    "W-G-W joint couple, E-W case": (4.730, 182.5),
+    "W-G-E joint couple, E-W case": (4.204, 182.5),
 }
 
 
@@ -67,8 +67,8 @@ def test_the_band_inputs_reproduce_section_1_and_4b(record) -> None:
     values = {q.name: q.value for q in record.inputs}
     assert values["band_height_W-BW-SCREEN"] == pytest.approx(2.34375, abs=1e-4)
     assert "overturning_height_W-BW-SCREEN" not in values
-    assert values["joint_couple_lb_ft"] == pytest.approx(2064.35, abs=1.0)
-    assert values["chord_force_open_front_lb"] == pytest.approx(87.961, abs=0.1)
+    assert values["joint_couple_lb_ft"] == pytest.approx(2119.74, abs=1.0)
+    assert values["chord_force_open_front_lb"] == pytest.approx(90.322, abs=0.1)
 
 
 def test_the_slat_band_reproduces_section_3a_and_3b(record) -> None:
@@ -77,7 +77,7 @@ def test_the_slat_band_reproduces_section_3a_and_3b(record) -> None:
     assert values["slat_bay_width_SB-BW-BAND"] == pytest.approx(24.375, abs=1e-3)
     assert values["slat_bay_height_SB-BW-BAND"] == pytest.approx(25.125, abs=1e-3)
     assert values["slats_crossing_mid_SB-BW-BAND"] == 1
-    assert values["slat_force_SB-BW-BAND"] == pytest.approx(742.888, abs=0.01)
+    assert values["slat_force_SB-BW-BAND"] == pytest.approx(755.206, abs=0.01)
     assert not any("band strap tension" in s.name for s in record.limit_states)
 
 
@@ -129,27 +129,27 @@ def test_an_unbridged_band_is_incomplete_by_name(catlin_ctx) -> None:
 def test_the_corner_band_is_graded_on_the_interpolated_open_knee(record) -> None:
     """§3b: 993.2 lb at 45.868°, 0.748 (10-31); nothing about the corner left INCOMPLETE."""
     state = next(s for s in record.limit_states if s.name == "SB-BW-BAND slat end, KBS1Z")
-    assert state.demand / state.capacity == pytest.approx(0.748, abs=5e-4)
+    assert state.demand / state.capacity == pytest.approx(0.760, abs=5e-4)
     assert "45.868° interpolated" in state.citation
 
 
 #: §5c, ``post -> {row: ratio}``; a chord's along rows and its column carry the band push.
 #: ACE6Z end caps at all four heads since 2026-10-28.
 _POSTS = {
-    "PT-BW-CW": {"ACE6Z head, uplift + lateral along the beam": 0.549,
+    "PT-BW-CW": {"ACE6Z head, uplift + lateral along the beam": 0.555,
                  "A35Z head, across the beam": 0.163,
                  "A35Z panel top plate into the post": 0.175,
                  "CBSTQ66Z-SDS2 base, uplift + lateral across the beam": 0.276,
                  "CBSTQ66Z-SDS2 base, uplift + lateral along the beam": 0.281,
-                 "NDS combined axial and bending": 0.536},
-    "PT-BW-CNW": {"ACE6Z head, uplift + lateral along the beam": 0.549,
+                 "NDS combined axial and bending": 0.543},
+    "PT-BW-CNW": {"ACE6Z head, uplift + lateral along the beam": 0.555,
                   "A35Z head, across the beam": 0.163,
-                  "NDS combined axial and bending": 0.536},
-    "PT-BW-RE": {"ACE6Z head, uplift + lateral along the beam": 0.232,
-                 "CBSTQ66Z-SDS2 base, uplift + lateral across the beam": 0.188,
-                 "NDS combined axial and bending": 0.225},
-    "PT-BW-RNE": {"ACE6Z head, uplift + lateral along the beam": 0.232,
-                  "CBSTQ66Z-SDS2 base, uplift + lateral along the beam": 0.158},
+                  "NDS combined axial and bending": 0.543},
+    "PT-BW-RE": {"ACE6Z head, uplift + lateral along the beam": 0.237,
+                 "CBSTQ66Z-SDS2 base, uplift + lateral across the beam": 0.206,
+                 "NDS combined axial and bending": 0.229},
+    "PT-BW-RNE": {"ACE6Z head, uplift + lateral along the beam": 0.237,
+                  "CBSTQ66Z-SDS2 base, uplift + lateral along the beam": 0.165},
 }
 
 
@@ -165,12 +165,13 @@ def test_every_post_has_a_rated_head_and_base(catlin_ctx, post) -> None:
 def test_the_chord_heads_carry_the_band_couple(catlin_ctx) -> None:
     """§5b: 428.9 + max(206.4 header depth, 49.3 brace couple) = 635.3 lb at a chord's head,
     and the compression bay's 519.175 lb push across the band at the sill top; x 0.99628 for
-    the 2026-10-31 pressure: 426.44 + 205.60 = 632.04, and 517.245."""
+    the 2026-10-31 pressure: 426.44 + 205.60 = 632.04, and 517.245; x 1.0166 for the east posts'
+    7 1/2" jackets (11-23): 635.51 and 525.86."""
     found = catlin_ctx.engineering["wood_roof_post/PT-BW-CW"]
     values = {q.name: q.value for q in found.inputs}
-    assert values["head_uplift_lb"] == pytest.approx(632.04, abs=0.2)
+    assert values["head_uplift_lb"] == pytest.approx(635.51, abs=0.2)
     assert values["plate_load_lb"] == pytest.approx(120.93, abs=0.05)
-    assert values["band_push_lb"] == pytest.approx(517.245, abs=0.05)
+    assert values["band_push_lb"] == pytest.approx(525.860, abs=0.05)  # x 1.0166, jacketed posts
     assert values["band_push_height_ft"] == pytest.approx(4 + 1.5 / 12, abs=1e-5)
 
 

@@ -63,7 +63,7 @@ N-S  gable triangle 2.222' x 26.667' = 59.259 sf x 16.661                      =
 half joins the deck, the base half goes down the pier):
 
 ```
-kdat   16.661 x (5.5/12) x 6.1771 = 47.17 lb per post -> 23.585 head, 23.585 base
+kdat   16.661 x (7.5/12) x 6.1771 = 64.32 lb per post -> 32.16 head, 32.16 base  (7 1/2" PVC jacket, 11-23)
 steel  16.661 x (4.0/12) x 6.1771 = 34.31 lb per post -> 17.15 head, 17.15 base
 ```
 
@@ -73,6 +73,8 @@ The screen's own face is not in the canopy's demand either; it is the landing ti
 ```
                 E-W                                  N-S
 kdat    623.60 + 2 x 23.585 =   670.77 lb     987.32 + 2 x 23.585 = 1,034.49 lb
+        2026-11-23 (jacketed posts): 623.60 + 64.32 = 687.92 lb; 987.32 + 64.32 = 1,051.64 lb
+        (engine 687.97 / 1,051.72). Rows below this line still quote the 5.5" face.
 steel   623.60 + 2 x 17.15  =   657.91 lb     987.32 + 2 x 17.15  = 1,021.63 lb
 ```
 
@@ -388,7 +390,7 @@ Fc*               525 x C_D 1.15 = 603.75 psi (snow)
 FcE               0.822 x 440,000 / 13.48² = 1,991 psi
 Cp                r = FcE/Fc* = 3.298, c = 0.8  ->  0.927
 axial             Fc' A = 603.75 x 0.927 x 5.5² = 16,938 lb; d/c = 3,397 / 16,938 = 0.201
-own drag          16.661 psf x 5.5/12 x 6.1771 = 47.17 lb, half at each end
+own drag          16.661 psf x 7.5/12 x 6.1771 = 64.32 lb, half at each end (the jacket, 11-23)
 bending           w = 7.636 plf, M = wL²/8 = 36.4 lb-ft; f_b = 36.4 x 12 / 27.73 = 15.8 psi vs wet Fb x C_D 1.6 = 1,360
 interaction       (f_c/Fc' + f_b/Fb') / (1 - f_c/FcE) = (0.2006 + 0.0116) / 0.9436 = 0.225
 IRC R507.4        6.177' < 14' 6x6 limit (cross-check; the roof's drift snow needs NDS)
@@ -407,8 +409,8 @@ Both go into the soil as a short pole, IBC 1807.3.2.1 non-constrained at S1 150 
 taken at d/3: `A = 2.34 P / (S1 b)`, `d = 0.5 A (1 + sqrt(1 + 4.36 h / A))`, iterated with S1 at d/3.
 
 ```
-kdat   14" pier: P = 23.585 + 16.661 x (14/12) x 3.0 = 23.585 + 58.31 = 81.90 lb
-       M at grade = 23.585 x 3.0 + 58.31 x 1.5 = 158.22 lb-ft    h = 1.932'     ->  d = 2.468'
+kdat   14" pier: P = 32.16 + 16.661 x (14/12) x 3.0 = 32.16 + 58.31 = 90.47 lb
+       M at grade = 32.16 x 3.0 + 58.31 x 1.5 = 183.95 lb-ft     h = 2.033'     ->  d = 2.59'
 steel  12" pier: P = 17.15 + 16.661 x 1.0 x 3.0 = 17.15 + 49.98 = 67.14 lb
        M at grade = 17.15 x 3.0 + 49.98 x 1.5 = 126.43 lb-ft     h = 1.883'     ->  d = 2.412'
 ```

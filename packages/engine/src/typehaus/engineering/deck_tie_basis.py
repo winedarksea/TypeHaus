@@ -153,6 +153,23 @@ def wall_ties(ctx: EngineeringContext, deck: Any) -> list[TieJoint]:
     return out
 
 
+def strap_point(ctx: EngineeringContext, wall_tag: str) -> tuple[float, float] | None:
+    """Plan point (ft) of a tension strap tying ``wall_tag`` to another wall, else ``None``."""
+    from typehaus.engineering.deck_tie import TENSION_TIE_ROLES
+    from typehaus.hardware.catalog import hardware_by_model
+    from typehaus.model.elements import Wall
+    from typehaus.model.structure import Connector
+
+    for el in ctx.plan.all_elements():
+        if not isinstance(el, Connector) or wall_tag not in el.connects:
+            continue
+        item = hardware_by_model(el.size or "")
+        if item is not None and item.role in TENSION_TIE_ROLES and any(
+                t != wall_tag and isinstance(ctx.plan.by_tag(t), Wall) for t in el.connects):
+            return _xy_ft(el.position)
+    return None
+
+
 def _plan_axis(ctx: EngineeringContext, tag: str) -> str | None:
     """"x" or "y" for a member authored between two nodes (a beam, a wall), else ``None``."""
     element = ctx.plan.by_tag(tag)
@@ -307,10 +324,12 @@ def loads_on(ctx: EngineeringContext, deck: Any, wind: DeckWind
                 if tag not in panels:
                     continue
                 (x0, y0), (x1, y1) = panels[tag]
+                # Where a collector strap takes the share out at the panel's top, it enters
+                # the tie system there (landing_tie.py, north_entry_piers.md §10p).
+                at = strap_point(ctx, tag) or ((x0 + x1) / 2, (y0 + y1) / 2)
                 wind_loads[axis].append(Load(
                     f"{tag} panel share of {roof.tag}",
-                    force if axis == "x" else 0.0, force if axis == "y" else 0.0,
-                    (x0 + x1) / 2, (y0 + y1) / 2))
+                    force if axis == "x" else 0.0, force if axis == "y" else 0.0, *at))
 
     for wall, (x0, y0), (x1, y1) in on_deck:
         resolved = ctx.model.wall(wall.tag)

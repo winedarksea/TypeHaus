@@ -697,24 +697,27 @@ pinned to them and correctly so. `integrity.reinforcement_layout`'s four anchora
 ### 6c. 2026-11-22 — footing piers, graded prescriptively (decision 16; review C-11, D4)
 
 All six piers are PINNED. The four landing piers are propped at the head by the tied landing
-(§10); `PT-BW-PE`/`-PNE` stand free under the pinned east posts. Each stands out of grade
-no more than a pedestal: tops at −1'-4 3/16" (landing) and +0'-2" (PE/PNE) against grade
-−2'-10", so exposed 1.48' (h/d 1.27 on 14", 1.48 on 12") and 3.00' (2.57 on 14"), all <= 3
-(ACI 318-19 §2.3, §14.3.3.1). Below grade the shaft is soil-embedded. Each is therefore the
-deck's R507.3 footing, not an R507.4 post: pad by `structural.deck_footing_size`, depth by
+(§10); `PT-BW-PE`/`-PNE` stand free under the pinned east posts. Tops at −1'-4 3/16"
+(landing) and +0'-2" (PE/PNE) against grade −2'-10": exposed 1.48' (h/d 1.27 on 14", 1.48 on
+12") and 3.00' (2.57 on 14"), all <= 3. IRC R507.3 / Figure R507.3 draw a concrete pier from
+the footing to the bearing and state NO height; the <= 3 cap is the ACI 318-19 plain-concrete
+pedestal definition (§2.3, §14.3.3.1) used as a conservative proxy, not an IRC rule. Below
+grade the shaft is soil-embedded. Each is the deck's R507.3 footing, not an R507.4 post: pad by `structural.deck_footing_size`, depth by
 `structural.frost_depth` (`engineering/footing_pier.py`). The eight items `deck_post/PT-BW-*`
 (6) and `column_base/PT-BW-PE`/`-PNE` leave the register.
 
 **PE/PNE as short poles — IBC 2018 §1807.3.2.1, Eq. 18-1** (non-constrained: no rigid floor
-at grade, no diaphragm above). Load §8 / canopy_garage_diaphragm.md §6: post half-drag 23.6 +
-pier drag 58.3 = **P 81.9 lb ASD at h 1.932'** above grade. b = 14" = 1.1667'; S1 = 150 psf/ft
+at grade, no diaphragm above). Load canopy_garage_diaphragm.md §2/§6, the post's drag on its
+7 1/2" PVC jacket (2026-11-23, verifier): post half-drag 16.661 x 7.5/12 x 6.1771 / 2 = 32.16 +
+pier drag 58.31 = **P 90.47 lb ASD**; M at grade 32.16 x 3.0 + 58.31 x 1.5 = 183.95 lb-ft,
+**h 2.033'** above grade. b = 14" = 1.1667'; S1 = 150 psf/ft
 x d/3 (Table 1806.2 class 4, GM, presumptive); no §1806.3.4 doubling; the pad is NOT credited
 — embedment is the shaft only, grade to pad top.
 
-    d = 2.47': S1 = 150 x 2.47/3 = 123.5 psf; A = 2.34 x 81.9 / (123.5 x 1.1667) = 1.330
-    d = 0.5 x 1.330 x (1 + sqrt(1 + 4.36 x 1.932 / 1.330)) = 0.665 x 3.708 = 2.466'  (converged)
-    PE : shaft grade -2.833' to pad top -8.953' = 6.12'   d/c 2.47/6.12 = 0.40
-    PNE: shaft grade -2.833' to pad top -6.333' = 3.50'   d/c 2.47/3.50 = 0.71
+    d = 2.59': S1 = 150 x 2.59/3 = 129.5 psf; A = 2.34 x 90.47 / (129.5 x 1.1667) = 1.401
+    d = 0.5 x 1.401 x (1 + sqrt(1 + 4.36 x 2.033 / 1.401)) = 0.7006 x 3.707 = 2.597 -> 2.59'
+    PE : shaft grade -2.833' to pad top -8.953' = 6.12'   d/c 2.59/6.12 = 0.42
+    PNE: shaft grade -2.833' to pad top -6.333' = 3.50'   d/c 2.59/3.50 = 0.74
 
 Graded in `structural.column_base` (`checks/structural/deck_piers.py`), PRESCRIPTIVE.
 **Bond breaker:** the top 42" of all six shafts are wrapped (two layers 6-mil poly, or a slip
@@ -1346,24 +1349,26 @@ The opposite sense of each tension tie bears (the filler at the strap line; FE's
 ```
 joints  strap x 6.036458 (W face of the screen, over the ZIP), DTT rod x 9.718750, y 43.3125
         N-S joints: xr 7.877604, dx -/+1.841146, J = 2 x 1.841146^2 = 6.779637
-N-S   ΣFy 1,124.92; M = 1,034.57 (6.182292 - 7.877604) + 90.35 (7.924479 - 7.877604) = -1,749.69 lb-ft
-      strap: 562.46 + 1,749.69 x 1.841146 / 6.779637 = 1,037.6 lb / 1,414.0      0.734 (governs)
-      DTT:   562.46 - 475.2 = 87.3 lb / 1,277.5                                 0.068
-E-W   ΣFx 580.3 lb, all to the HL43: 580.3 / 1,011.5                              0.574
+        The screen share enters AT THE STRAP (x 6.036458), not mid-screen (verifier, 11-23);
+        it is 1,051.72 lb with the east posts' drag on their 7 1/2" jackets.
+N-S   ΣFy 1,142.07; M = 1,051.72 (6.036458 - 7.877604) + 90.35 (7.924479 - 7.877604) = -1,932.16 lb-ft
+      strap: 571.04 + 1,932.16 x 1.841146 / 6.779637 = 1,095.8 lb / 1,414.0      0.775 (governs)
+      DTT:   571.04 - 524.7 = 46.3 lb / 1,277.5                                 0.036
+E-W   ΣFx 580.3 lb, all to the HL43: 580.3 / 1,011.5                    0.574 (owner reading)
       M 1,887.1 lb-ft: ±1,887.1 x 1.841146 / 6.779637 = ±512.5 lb N-S (strap 0.36, DTT 0.40)
 guard 200 lb at the screen's south end: DTT 353.0 / (1,277.5 / 1.6)               0.442
 ```
 
-`deck_tie/FS-BW-FLOOR` 0.784 → **0.734**, N-S at the strap. It stays in the register: the
+`deck_tie/FS-BW-FLOOR` 0.784 → **0.775**, N-S at the strap. It stays in the register: the
 demand is an elastic distribution with plan torsion, not a table read. Named on the record:
-the HL43's E-W row is an OWNER-ACCEPTED catalog reading — the figure's F1 bears along the
-grain, here the garage leg's lags bear across a vertical stud's grain. ESR-2330 §4.1 scopes the
+the HL43's E-W 0.574 is an OWNER-ACCEPTED reading OUTSIDE the published condition — the
+figure's F1 bears along the grain, here the garage leg's lags bear across a vertical stud's
+grain, and that bearing may be materially lower than the row. ESR-2330 §4.1 scopes the
 DTT2 to dry interior service; the catalog sells it for deck lateral ties and it is graded wet.
 
 **The screen's chords carry no N-S.** The canopy's screen share runs SB-BW-BAND → top plate →
 MSTA49Z → W-G-W; `lateral_band._strapped_out` drops the chord overturning, base shear,
-pull-out and pad rows (§6d), and `lateral_system/RF-BW-CANOPY` returns to the diaphragm row,
-0.907. Line 2's HL33HDG pair and tie block are retired. **Open detail:** the DTT's rod line
+pull-out and pad rows (§6d) from `lateral_system/RF-BW-CANOPY`. Line 2's HL33HDG pair and tie block are retired. **Open detail:** the DTT's rod line
 1 5/8" off FE's east face meets the D-G-SERVICE east jamb pack; the garage-side tie needs a
 nailer or filler on the drawing, set before drywall.
 

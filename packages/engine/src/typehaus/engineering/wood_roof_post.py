@@ -24,7 +24,8 @@ KIND = "wood_roof_post"
 #: 2: head and base lateral rows in both directions; the panel chords join (2026-09-30).
 #: 3: a slat band's outward push on its chords, N-S (2026-10-04).
 #: 4: chord push acts at the centroid of its actual brace landings (2026-10-25).
-BASIS_VERSION = "4"
+#: 5: drag on the face the wind sees, jacket and cavity included (2026-11-23).
+BASIS_VERSION = "5"
 BASIS = ("AWC NDS 2018 Supplement Table 4D, Southern Pine No. 2 timbers, wet-service row; "
          "NDS §3.7 column stability and §3.9 combined stress; ICC-ES ESR-2604 Table 3 "
          "(AC/ACE); ICC-ES ESR-3096 Table 5 (A35); ICC-ES ESR-3050 Table 2 (CBSTQ)")
@@ -65,6 +66,8 @@ class _Case:
     pressure_psf: float
     wind: Any
     wall: Any = None
+    #: The face the wind sees (``roof_lateral.drag_width_ft``); ``width_ft`` is the core.
+    drag_ft: float = 0.0
 
 
 def _posts(ctx: EngineeringContext) -> list[_Case]:
@@ -72,7 +75,7 @@ def _posts(ctx: EngineeringContext) -> list[_Case]:
     never by assembly tag) — pinned posts, and the chords a shear
     panel is framed around (``within_wall``), which the roof's demand leaves out but which
     carry the panel's out-of-plane load and their own ends' reactions all the same."""
-    from typehaus.engineering.roof_lateral import bearing_beams, roof_winds
+    from typehaus.engineering.roof_lateral import bearing_beams, drag_width_ft, roof_winds
     from typehaus.model.structure import Post
     from typehaus.resolve.assembly_material import assembly_structure_material
     from typehaus.resolve.framing.profiles import cross_section
@@ -89,7 +92,7 @@ def _posts(ctx: EngineeringContext) -> list[_Case]:
                 wall = ctx.plan.by_tag(post.within_wall) if post.within_wall else None
                 out[ref] = _Case(ref, (cross_section(post.size).width_m or 0.0) / 0.3048,
                                  post.height.inches / 12.0, post.supported_by,
-                                 wind.pressure_psf, wind, wall)
+                                 wind.pressure_psf, wind, wall, drag_width_ft(ctx, post))
     return sorted(out.values(), key=lambda c: c.tag)
 
 
@@ -192,7 +195,7 @@ def _one(ctx: EngineeringContext, case: _Case) -> EngineeringRecord:
     fce, cp = column_stability(length_in, fc_star)
     fc_prime = fc_star * cp
     fc_actual = axial / area
-    drag_plf = case.pressure_psf * case.width_ft
+    drag_plf = case.pressure_psf * case.drag_ft
     own_half = drag_plf * case.length_ft / 2.0
     base_ft = base.elevation.inches / 12.0
     plate, a_ft, plate_basis = _plate_load(ctx, case, header, base_ft)

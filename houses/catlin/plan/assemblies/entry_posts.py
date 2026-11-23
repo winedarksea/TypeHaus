@@ -8,6 +8,9 @@ POST_KDAT_WRAPPED_PVC = Assembly(
     layers=(
         Layer(name="6x6-kdat-core", material_ref="kdat", thickness=inch(5.5),
               function=LayerFunction.STRUCTURE),
+        # The drained cavity inside the 8x8-nominal (7 1/2") jacket; the wind sees 7 1/2".
+        Layer(name="drained-cavity", material_ref="air-barrier", thickness=inch(0.5),
+              function=LayerFunction.AIRGAP),
         Layer(name="vented-pvc-jacket", material_ref="pvc-cellular", thickness=inch(0.5),
               function=LayerFunction.FINISH),
     ),

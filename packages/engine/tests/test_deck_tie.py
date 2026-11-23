@@ -53,19 +53,21 @@ def test_the_loads_reproduce_section_10b(catlin_ctx):
     # §10o (2026-11-18): the landing is 3.3177' wide and the seat beams 3.0511' long, the
     # column line 3/16" west behind the garage's 7/16" ZIP.
     assert _input(record, "y:FS-BW-FLOOR deck wind") == pytest.approx(90.355, abs=0.01)
-    assert _input(record, "y:W-BW-SCREEN panel share") == pytest.approx(1034.57, abs=0.1)
+    assert _input(record, "y:W-BW-SCREEN panel share") == pytest.approx(1051.72, abs=0.1)
     canopy = catlin_ctx.engineering["lateral_system/RF-BW-CANOPY"]
     delivered = next(q.value for q in canopy.inputs if q.name == "delivered_shear_y")
     assert _input(record, "y:W-BW-SCREEN panel share") == pytest.approx(delivered)
 
 
 def test_the_verdicts_reproduce_section_10p(catlin_ctx):
-    """§10p: the screen's strap governs N-S at 0.734; E-W is the HL43's at 0.574."""
+    """§10p: the screen's strap governs N-S at 0.775 (its share entering at the strap, the
+    canopy posts' jacketed drag); E-W is the HL43's at 0.574 — an owner-accepted reading
+    outside the published condition."""
     record = catlin_ctx.engineering[_ITEM]
     assert record.status is Status.OK
     assert record.governing.name == "tie interaction, N-S wind"
     ns = _state(record, "tie interaction, N-S wind")
-    assert ns.ratio == pytest.approx(0.7338, abs=5e-4)
+    assert ns.ratio == pytest.approx(0.7749, abs=5e-4)
     assert "W-BW-SCREEN at W-G-W" in ns.citation
     ew = _state(record, "tie interaction, E-W wind")
     assert ew.ratio == pytest.approx(0.5737, abs=5e-4)
@@ -143,14 +145,15 @@ def test_the_bolt_group_arithmetic_by_hand():
     # One joint cannot take a moment: a mechanism, reported rather than graded.
     assert distribute(joints[:1], loads) == []
     # §10p: each direction shared among the joints that carry it (strap and DTT N-S only,
-    # HL43 E-W only). Strap Y = 562.46 + 1,749.69 x 1.841146 / 6.779637 = 1,037.6 lb.
+    # HL43 E-W only); the screen share enters at the strap. Strap Y = 562.46 + 1,900.55 x
+    # 1.841146 / 6.779637 = 1,078.6 lb.
     tie = [TieJoint("S", "G-W", ("a",), "MSTA49Z", 6.036458, 43.1458, "y"),
            TieJoint("D", "G-S", ("a",), "DTT2Z", 9.71875, 43.3125, "x"),
            TieJoint("H", "G-S", ("a",), "HL43HDG", 9.395833, 43.1458, "x")]
-    ns = [Load("screen", 0.0, 1034.57, 6.182292, 39.9), Load("deck", 0.0, 90.35, 7.924479, 39.9)]
+    ns = [Load("screen", 0.0, 1034.57, 6.036458, 39.9), Load("deck", 0.0, 90.35, 7.924479, 39.9)]
     (_, ys), (_, yd), (xh, yh) = distribute(tie, ns, 1.0, [(False, True), (False, True),
                                                             (True, False)])
-    assert ys == pytest.approx(1037.6, abs=0.2) and yd == pytest.approx(87.3, abs=0.2)
+    assert ys == pytest.approx(1078.6, abs=0.2) and yd == pytest.approx(46.3, abs=0.2)
     assert (xh, yh) == (0.0, 0.0)
 
 
