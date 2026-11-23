@@ -443,6 +443,7 @@ def test_draft_gate_opens_but_sealed_gate_still_requires_the_register(catlin_eng
 WORKED_KINDS = (
     "roof_beam", "glulam_beam", "column_head_joint",
     "deck_tie",
+    "deck_post",
 )
 
 

@@ -34,3 +34,29 @@ def general_development_in(bar_diameter_in: float, fc_psi: float, fy_psi: float,
     ld = (3.0 / 40.0 * fy_psi / math.sqrt(fc_psi) * psi_t * psi_e * psi_s / confinement
           * bar_diameter_in)
     return max(ld, MINIMUM_LENGTH_IN)
+
+
+def development_steps(*, bar_diameter_in: float, fc_psi: float, fy_psi: float,
+                      cover_to_centre_in: float, half_spacing_in: float, length_in: float,
+                      source: str = "ACI 318-19 §25.4.2.4"):  # noqa: ANN201
+    """The sheet's steps for ``length_in`` = :func:`general_development_in` of the same
+    inputs: the confinement term, ``psi_s`` and the equation."""
+    from typehaus.engineering.item import Step, num
+
+    c_b = min(cover_to_centre_in, half_spacing_in)
+    confinement = confinement_term(cover_to_centre_in, half_spacing_in, bar_diameter_in)
+    psi_s = 0.8 if bar_diameter_in <= SMALL_BAR_DIAMETER_IN else 1.0
+    return (
+        Step("c_b", "the lesser of the cover to the bar's centre and half the bar spacing",
+             c_b, "in", "min(cover, s / 2)",
+             f"min({num(cover_to_centre_in)}, {num(half_spacing_in)})", source),
+        Step("conf", "confinement term (c_b + K_tr) / d_b, no transverse steel counted, "
+             "not over 2.5", confinement, "", "min((c_b + 0) / d_b, 2.5)",
+             f"min({num(c_b)} / {num(bar_diameter_in)}, 2.5)", source),
+        Step("psi_s", "bar-size factor (0.8 for #6 and smaller)", psi_s, "", source=source),
+        Step("l_d", "straight development length, never under 12 in.", length_in, "in",
+             "(3/40) f_y psi_t psi_e psi_s d_b / (sqrt(f'c) conf)",
+             f"(3/40) x {num(fy_psi)} x 1 x 1 x {num(psi_s)} x {num(bar_diameter_in)} / "
+             f"(sqrt({num(fc_psi)}) x {num(confinement)})",
+             "psi_t 1.0 vertical bar; psi_e 1.0 zinc-coated (§25.4.2.5); lambda 1.0"),
+    )
