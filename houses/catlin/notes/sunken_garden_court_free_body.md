@@ -3426,9 +3426,8 @@ The joint row carries it as an input.
 
 * **Ground snow on the terrace**, 50 psf as a K0 surcharge (`Site.ground_snow_load_psf`):
   graded, **1.773**.
-* **Snow combined with perched water** (spring melt) reads **1.46 at μ 0.43**. Whether the
-  50-year ground snow stands on the terrace while a blinded drain perches water at H/2 is an
-  OWNER DECISION, so it is reported, not graded. A specified bed friction of 0.45 closes it
+* **Snow combined with perched water** (spring melt) reads **1.46 at μ 0.43**. The owner
+  states they are not concurrent (§15k). A specified bed friction of 0.45 closes it
   (1.53). The fallback would read about 1.51.
 * **The flood level is now the real overflow:** the court ponds until it overtops D-B-SUNKEN's
   threshold crest, −102.14", 7.3" over the floor; the engine finds the lowest door threshold
@@ -3449,6 +3448,16 @@ The joint row carries it as an input.
 **6. Spans.** The plan-bending row spans 11.5' (FT-SG-E2/W2's own length, node at FT-SG-S's
 face). The strut row takes 16.33' (the axis length from the corner node). Each is the
 conservative span for its own row.
+
+### 15k. Snow and perched water are not concurrent (owner, 2026-11-23)
+
+Owner's stated basis: the full 50 psf ground snow on the terrace and perched water at H/2 are
+not taken together, and each is graded alone. Snow alone gives 1.773 and perched water alone
+1.568. Combined they would read **FS 1.46** at μ 0.43, 110 pcf; that is printed once on the
+record and not graded. μ stays 0.43.
+
+**NOT COVERED (owner):** that combination; lateral frost thrust in the top 42" of retained
+fill; seasonal thermal ratcheting under the sustained thrust.
 
 ## Sources
 
