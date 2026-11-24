@@ -1265,6 +1265,16 @@ _PLAN_TIES = BarSpec(role="bottom-y", bar=5, count=3,
                      note="3 #5 bundled at EACH edge: the footing's plan-bending ties")
 
 
+def _heel_bar(mat: ReinforcementSpec, grows: float) -> ReinforcementSpec:
+    """Study lever: a grown heel may take a heavier top-x bar (bar size, spacing)."""
+    if not grows:
+        return mat
+    bars = tuple(b.model_copy(update={"bar": OPTION.heel_top_bar,
+                                      "spacing": inch(OPTION.heel_top_spacing_in)})
+                 if b.role == "top-x" else b for b in mat.bars)
+    return mat.model_copy(update={"bars": bars})
+
+
 def _spliced_mat(*into: str) -> ReinforcementSpec:
     base = _RETAINING_FOOTING_MAT.bars
     bars = tuple(b.model_copy(update={"continues_into": into}) if b.role == "bottom-y" else b
@@ -1272,11 +1282,17 @@ def _spliced_mat(*into: str) -> ReinforcementSpec:
     return _RETAINING_FOOTING_MAT.model_copy(update={"bars": bars})
 
 
+# Study levers: a heel extension grows the strip outboard only (offset is + into the court).
+_S_HEEL_IN = OPTION.south_heel_extension_in
+_SIDE_HEEL_IN = OPTION.side_heel_extension_in
+_SIDE_STRIP = (_RETAINING_FOOTING_WIDTH_IN + _SIDE_HEEL_IN,
+               _RETAINING_FOOTING_OFFSET_IN - _SIDE_HEEL_IN / 2.0)
 _STRIP_BY_WALL = {
-    "W-SG-S": (_RETAINING_FOOTING_WIDTH_IN + _SOUTH_EXT_IN,
-               _RETAINING_FOOTING_OFFSET_IN + _SOUTH_EXT_IN / 2.0, _SOUTH_FOOTING_MAT),
-    "W-SG-W2": _STRIP[:2] + (_spliced_mat("FT-SG-W1", "FT-SG-S"),),
-    "W-SG-E2": _STRIP[:2] + (_spliced_mat("FT-SG-E1", "FT-SG-S"),),
+    "W-SG-S": (_RETAINING_FOOTING_WIDTH_IN + _SOUTH_EXT_IN + _S_HEEL_IN,
+               _RETAINING_FOOTING_OFFSET_IN + (_SOUTH_EXT_IN - _S_HEEL_IN) / 2.0,
+               _heel_bar(_SOUTH_FOOTING_MAT, _S_HEEL_IN)),
+    "W-SG-W2": _SIDE_STRIP + (_heel_bar(_spliced_mat("FT-SG-W1", "FT-SG-S"), _SIDE_HEEL_IN),),
+    "W-SG-E2": _SIDE_STRIP + (_heel_bar(_spliced_mat("FT-SG-E1", "FT-SG-S"), _SIDE_HEEL_IN),),
 }
 
 # ** FT-SG-S OWNS THE TWO SOUTH CORNERS (2026-10-10, free body §12b). ** Each strip used to
@@ -1286,7 +1302,7 @@ _STRIP_BY_WALL = {
 # of the side strips and is the footing under W-SG-S and the south 4'-10" of W2/E2; the side
 # strips stop on its toe line. Its E-W mat runs wall to wall and is both their cantilever
 # steel there and the court's south tie.
-_SIDE_REACH_FT = (_RETAINING_FOOTING_WIDTH_IN / 2.0 - _RETAINING_FOOTING_OFFSET_IN) / 12.0
+_SIDE_REACH_FT = (_SIDE_STRIP[0] / 2.0 - _SIDE_STRIP[1]) / 12.0
 _SOUTH_REACH_FT = (_STRIP_BY_WALL["W-SG-S"][0] / 2.0 + _STRIP_BY_WALL["W-SG-S"][1]) / 12.0
 # ** FT-SG-W1/E1 RUN 0.685" PAST THEIR WALLS' NORTH END, TO -6" (2026-11-04). ** The veneer
 # beam's ends land there now, and it puts the footing-level boards (TB-SG-W1/E1) on the beam

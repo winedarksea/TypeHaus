@@ -17,6 +17,12 @@ class SunkenGardenOption:
     stem_thickness_in: float
     footing_width_in: float
     footing_toe_in: float
+    # Study levers (court sliding study, 2026-11-23): heel growth outboard, toe and outboard
+    # reach of the others unchanged. Zero is the drawn design.
+    south_heel_extension_in: float = 0.0
+    side_heel_extension_in: float = 0.0
+    heel_top_bar: int = 5
+    heel_top_spacing_in: float = 12.0
 
     @property
     def is_reference(self) -> bool:
@@ -41,6 +47,10 @@ def _option() -> SunkenGardenOption:
         stem_thickness_in=parameter("sunken_garden.stem_thickness_in", 12.0),
         footing_width_in=parameter("sunken_garden.footing_width_in", 84.0),
         footing_toe_in=parameter("sunken_garden.footing_toe_in", 36.0),
+        south_heel_extension_in=parameter("sunken_garden.south_heel_extension_in", 0.0),
+        side_heel_extension_in=parameter("sunken_garden.side_heel_extension_in", 0.0),
+        heel_top_bar=parameter("sunken_garden.heel_top_bar", 5),
+        heel_top_spacing_in=parameter("sunken_garden.heel_top_spacing_in", 12.0),
     )
     if option.planting_layout not in {"reference", "yard-grade", "against-wall", "setback"}:
         raise ValueError("sunken_garden.planting_layout must be reference, yard-grade, "
@@ -57,6 +67,8 @@ def _option() -> SunkenGardenOption:
         raise ValueError("sunken-garden stems must be 10 or 12 inches in the sizing study")
     if not 48.0 <= option.footing_width_in <= 84.0 or option.footing_width_in % 6:
         raise ValueError("sunken-garden footing width must be 48..84 inches in 6-inch steps")
+    if min(option.south_heel_extension_in, option.side_heel_extension_in) < 0.0:
+        raise ValueError("sunken-garden heel extensions grow the heel; they cannot cut it")
     heel = option.footing_width_in - option.stem_thickness_in - option.footing_toe_in
     if option.footing_toe_in < 12.0 or heel < 12.0:
         raise ValueError("sunken-garden footing toe and heel must each be at least 12 inches")
