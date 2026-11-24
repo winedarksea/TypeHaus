@@ -72,9 +72,9 @@ max_window_ro_bearing_in = 27.5
 # What it is compared against, once: ASCE 7-16 §7.3 balanced flat-roof snow at the site's
 # 50 psf ground snow, Ct 1.2 (unheated open), Ce = Is = 1.0 is 0.7 x 1.2 x 50 = 42 psf
 # (`deck_balanced_snow_psf`, the same figure `roof_beam_balanced_snow_psf` averages below).
-# `deck_snow_psf = 35` is the figure the house states for the MN roof snow on these decks:
-# IRC Table R507.6 is 40 psf live with snow not concurrent, so 35 is under the table's 40
-# and the table's live load governs (structural.deck_joist_span). Over 40 it would not.
+# `deck_snow_psf = 35` is NOT a design snow (the decks carry none, owner basis above). It is
+# the screen `structural.deck_joist_span` reads to confirm IRC Table R507.6 may be read at its
+# 40 psf live load: 35 is under 40, so the table's live load governs. Over 40 it would not.
 # The balanced 42 is above the 40 live; the reconciliation is the owner's basis above, not
 # a derived coverage. The 2.45 ft leeward drift off the house's south gable that the review
 # computes (50.3 psf at the wall) is not applied to these decks, by the same decision.
