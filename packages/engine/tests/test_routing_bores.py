@@ -146,8 +146,8 @@ def test_R602_6_exterior_is_a_weather_skin_and_lagging_stops_at_the_framing(catl
     assert roles.get("W-M-W3") == "bearing"  # authored BEARING outranks exterior (C2 E8)
     extra, phrase = lagging_at_framing(catlin_ctx)["PR-B-HW-SUITE"]
     assert extra == 0.0 and "stops at the framing" in phrase
-    # Whichever wall its bore lands in (W-S-SN3 since the 2026-11-13 re-route).
-    washed = [f for f in run_through_stud(catlin_ctx)
-              if f.element_tags[0] == "PR-B-HW-SUITE" and "would bore" in f.message]
-    assert washed and washed[0].result.value == "pass"
-    assert "stops at the framing" in washed[0].message
+    # It bored W-S-SN3's staggered 2x4 stud bare until SN3 went bearing 2x6 (7cb5425d8): it
+    # now stands in the cavity, and no lagged run in catlin bores a stud.
+    [cavity] = [f for f in run_through_stud(catlin_ctx)
+                if f.element_tags == ("PR-B-HW-SUITE", "W-S-SN3")]
+    assert cavity.result.value == "pass" and "stud cavity" in cavity.message
