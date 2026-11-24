@@ -172,7 +172,7 @@ lights, a charging outlet, the sump; heat and hot water only when there is sun t
 
 | Tier | Circuits | What it is |
 |---|---|---|
-| `ALWAYS_ON` | `CKT-FRIDGE`, `CKT-FREEZER`, `CKT-HA`, `CKT-LT-BACKUP`, `CKT-SUMP` | Food (one branch per appliance since 2026-11-19), network, two furnace-room cans + the kitchen tape, the alarms, the sump |
+| `ALWAYS_ON` | `CKT-FRIDGE`, `CKT-FREEZER`, `CKT-HA`, `CKT-LT-BACKUP`, `CKT-SUMP` | Food (one branch per appliance since 2026-11-19), network, the furnace-room strips + the kitchen tape, the alarms, the sump |
 | `SURPLUS` | `CKT-HP3`, `CKT-WH` | Heat into the open stair; hot water — on battery only on solar surplus |
 
 **ALWAYS_ON is what the battery is graded on.** **SURPLUS replaced SHED** ("drop on low
@@ -181,8 +181,8 @@ counted against autonomy, the 48 h cycle or the bridge. HA switches it
 ([smart_home.md](smart_home.md) rule 7); relays default OFF while islanded. The inverter
 carries it when it runs, so peak and surge still count both tiers.
 
-- **Lighting.** `CKT-LT-BACKUP` keeps `ED-B-FURNACE-CAN1/2` (the panels, the ESS closet, the
-  sump), the ESS closet light, the kitchen under-cabinet tape (`ED-M-KITCH-LT-PSU`, its own
+- **Lighting.** `CKT-LT-BACKUP` keeps the furnace-room strips `ED-B-FURNACE-STRIP1`-`3` (the panels,
+  the ESS closet, the sump), the ESS closet light, the kitchen under-cabinet tape (`ED-M-KITCH-LT-PSU`, its own
   switch `-SW-UC`) and every alarm. Everything else left it: the basement's cans, sconces and
   PSUs (and the stair-head can its 3-way shares) for `CKT-LT-BSMT`; the kitchen cans and the
   pantry PSU for `CKT-LT-MAIN`.
@@ -222,65 +222,67 @@ with no idle or efficiency.
 | `CKT-FRIDGE` | 460 | 0.13 | 59.8 W |
 | `CKT-FREEZER` | 340 | 0.13 | 44.2 W |
 | `CKT-HA` | 300 | 0.44 | 132.0 - 85.2 = 46.8 W |
-| `CKT-LT-BACKUP` | 95 | 0.40 | 38.1 W |
+| `CKT-LT-BACKUP` | 190 | 0.21 | 39.9 W |
 | `CKT-SUMP` | 1,164 (one M53, 9.7 A) | 0.025 | 29.1 W |
-| **always-on** | 2,359 | | **218.0 W** |
+| **always-on** | 2,454 | | **219.8 W** |
 | `CKT-HP3` | 1,850 (NEEP max, 17 °F) | 0.4 | 740.0 W |
 | `CKT-WH` | 1,440 (12.0 A, ENERGY STAR) | 0.05 | 72.0 W |
 | **surplus** | 3,290 | | **812.0 W** |
 
 `CKT-HA`'s shed: (12.95 + 20 + 12 + 15 + 15) / 0.88 = 74.95 / 0.88 = 85.2 W (the Omvi 3i's
 20 W since 2026-11-02; 76.1 W with the RLC-833A's 12).
-`CKT-LT-BACKUP`'s 95 VA: two cans 13, the closet light 9, the two kitchen TRADFRIs 30 each
-(the tape draws 25 W; the second driver was added 2026-11-08), the relays 3.6 + 9.6. Its 0.40
-is a blend: (13 + 60) x 5 h / 24 = 15.2 W of light, ~0.2 W closet, 13.2 W of relays at their
-rating, 12 x 0.75 = 9.0 W of alarms (AL-G-HEAT moved to the garage subpanel 2026-11-14);
-37.6 W / 95.2 VA = 0.39, kept at 0.40.
+`CKT-LT-BACKUP`'s 190 VA: three furnace-room strips 3 x 36 = 108 (since 2026-11-24; two
+6.5 W cans before), the closet light 9, the two kitchen TRADFRIs 30 each (the tape draws 25 W;
+the second driver was added 2026-11-08), the relays 3.6 + 9.6. Its 0.21 is a blend: 60 x 5 h /
+24 = 12.5 W of tape, 108 x 1 h / 24 = 4.5 W of strips (a service visit a day, an estimate),
+~0.2 W closet, 13.2 W of relays at their rating, 12 x 0.75 = 9.0 W of alarms (AL-G-HEAT moved
+to the garage subpanel 2026-11-14); 39.4 W / 190.2 VA = 0.207, kept at 0.21.
 
 **Battery-side draw** = AC / 0.94 + 55 W idle:
 
-- always-on: 218.0 / 0.94 + 55 = 231.9 + 55 = **286.9 W** (296.6 W with the RLC-833A; 321.0 W with the second sump,
+- always-on: 219.8 / 0.94 + 55 = 233.8 + 55 = **288.8 W** (286.9 W with the furnace cans, before
+  2026-11-24; 296.6 W with the RLC-833A; 321.0 W with the second sump,
   retired 2026-11-02; 407.0 W before that day's trim: lighting 579 -> 65 VA, two APs shed; 280.3 W
   with one kitchen driver, before 2026-11-08).
 - surplus, added load only (the idle is already counted): 812.0 / 0.94 = **863.8 W**.
 
 **Storage**: 14.3 kWh x 0.90 DoD = **12.87 kWh** usable.
 
-**Autonomy, no sun, always-on only**: 12,870 / 286.9 = **44.9 h**.
+**Autonomy, no sun, always-on only**: 12,870 / 288.8 = **44.6 h**.
 
 **48-hour cycle** (one strong day in two; array 18 x 410 W = 7.38 kW, bifacial rear gain not credited):
 
-- 48 h of always-on: 0.2869 x 48 = **13.77 kWh**.
-- Summer strong day, 3.0 kWh/kW: 22.14 kWh -> net **+8.37 kWh**. Passes (down to 13.77 /
-  7.38 = 1.87 kWh/kW).
+- 48 h of always-on: 0.2888 x 48 = **13.86 kWh**.
+- Summer strong day, 3.0 kWh/kW: 22.14 kWh -> net **+8.28 kWh**. Passes (down to 13.86 /
+  7.38 = 1.88 kWh/kW).
 - December strong day, 1.5 kWh/kW (`WINTER_STRONG_DAY_KWH_PER_KW`): 11.07 kWh -> net
-  **-2.70 kWh**. Fails (it was -5.85 at 5.28 kW).
+  **-2.79 kWh**. Fails (it was -5.85 at 5.28 kW).
 
 Solar is counted at the DC side and all load at 94%, which errs heavy: PV-to-battery is
 99.9%, and daytime loads run PV-to-AC near 97.5%.
 
 **Surplus** = strong day - 24 h of always-on (the day carries itself and refills the night):
 
-- summer: 22.14 - 0.2869 x 24 = 22.14 - 6.89 = **15.25 kWh** -> 15,250 / 863.8 = **17.7 h** of
+- summer: 22.14 - 0.2888 x 24 = 22.14 - 6.93 = **15.21 kWh** -> 15,210 / 863.8 = **17.6 h** of
   the surplus tier at its average;
-- December: 11.07 - 6.89 = **4.18 kWh** -> 4,180 / 863.8 = **4.8 h**. A December outage has
+- December: 11.07 - 6.93 = **4.14 kWh** -> 4,140 / 863.8 = **4.8 h**. A December outage has
   under five hours of surplus heat.
 
 **Darkness bridge**: the battery alone must carry the always-on tier from one evening's last
 sun through a dark day and the longest night after it. St Paul (44.98 N) at the winter
 solstice: cos H = (sin -0.833 - sin 44.98 sin -23.44) / (cos 44.98 cos -23.44)
 = (-0.01454 + 0.28118) / 0.64897 = 0.4109, H = 65.74°, day = 8.77 h, **night = 15.23 h**
-(`longest_night_hours`, from the site's own latitude). Needs 0.2869 x (24 + 15.23) =
-**11.26 kWh**; has 12.87. **Bridges**, with 1.61 kWh to spare.
+(`longest_night_hours`, from the site's own latitude). Needs 0.2888 x (24 + 15.23) =
+**11.33 kWh**; has 12.87. **Bridges**, with 1.54 kWh to spare.
 
-**Peak**: 5,649 VA connected on the microgrid (both tiers) against 8 kW continuous. Fits.
+**Peak**: 5,744 VA connected on the microgrid (both tiers) against 8 kW continuous. Fits.
 
 **Surge** (`Circuit.start_va`, else 3x running): each circuit's start with every other
 circuit running, the worst governing, against 16 kW:
 
-- `CKT-WH`, no published start: 3 x 1,440 + 5,649 - 1,440 = **8,529 VA** (governs);
+- `CKT-WH`, no published start: 3 x 1,440 + 5,744 - 1,440 = **8,624 VA** (governs);
 - `CKT-SUMP`: one start at the M98's 29.2 A (3,500 VA, so a 1/2 hp upsize stays covered;
-  the M53's own is 25.9 A): 3,500 + 5,649 - 1,164 = 7,985 VA;
+  the M53's own is 25.9 A): 3,500 + 5,744 - 1,164 = 8,080 VA;
 - `CKT-HP3`: an inverter compressor has no inrush, `start_va` = its 1,850 maximum.
 
 All fit. The old 6x figure for the sump was wrong: published starts run ~3x running.
@@ -480,7 +482,7 @@ Read: 12kPV spec sheet v1.0.9, 12kPV QSG v1.3.2, and the *18kPV & 12kPV + WallMo
 - A freeze drain-down plan (the battery cannot hold the house above freezing).
 - A small LFP UPS for HA, the router and the leak valve.
 - Meter the 12kPV's islanded idle and low-load efficiency, the alarms' standby and the
-  duty cycles; the bridge margin is 1.49 kWh.
+  duty cycles; the bridge margin is 1.54 kWh.
 - Rheem: confirm the PROPH80 T0 RH120-M has no element (the Use & Care alarm table says
   "defaults to elements"; the wiring diagram lists none), and get a port drawing for the
   HydroBoost side connections (notes/water_service.md §1).

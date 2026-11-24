@@ -3029,6 +3029,9 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "PROD-WAVEFORM-T8-95-50K" = { material = { low = 15, high = 25 }, labour = 0 }  # 24 ea
 # Q2 keyless lampholder (Leviton 9880) with an A19 LED.
 "ED-T-LT-KEYLESS" = { material = { low = 8, high = 18 }, labour = { low = 40, high = 90 } }  # 4 ea
+# Q2a (2026-11-24): the same lampholder with a cold-start 1600 lm 4000 K A21 (garage stair and
+# centre, where a $93-140 vaportight tube bought nothing): holder $8-18 + bulb ~$6-17.
+"ED-T-LT-KEYLESS-COLD" = { material = { low = 14, high = 35 }, labour = { low = 40, high = 90 } }  # 2 ea
 "ED-T-LT-PULLCHAIN" = { material = { low = 8, high = 18 }, labour = { low = 40, high = 90 } }  # 2 ea, Q3 — Leviton 9726-C (~$6, owner) + A19 LED, the under-stair storage (2026-11-15)
 "ED-T-LT-SPOT-SW" = { material = { low = 99, high = 130 }, labour = { low = 60, high = 140 } }  # 3 ea — same WAC Sprig as mark J; canopy toggle is the switch (2026-10-29); RM-M-BED's pair since 2026-11-02; the under-stair one went to Q3 2026-11-15
 "ED-T-LT-GROW-BAR" = { material = { low = 230, high = 290 }, labour = { low = 45, high = 100 } }  # 2 ea — Barron AG90-W-001 $220-261 + cable hangers (researched 2026-10-28)

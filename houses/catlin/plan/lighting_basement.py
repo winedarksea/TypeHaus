@@ -47,9 +47,8 @@ from typehaus import (
 from typehaus.model import Location, WallAttachment, m
 
 # --- Basement -------------------------------------------------------------------------
-# Only the furnace-room cans and the ESS closet light ride CKT-LT-BACKUP (2026-11-02,
-# notes/backup_power.md §5); everything else here, cans, sconces and the Q1 T8 strips, is on
-# CKT-LT-BSMT, each strip run on its own switch (NEC 210.7).
+# Only the furnace-room strips and the ESS closet light ride CKT-LT-BACKUP (2026-11-02,
+# notes/backup_power.md §5); everything else here is on CKT-LT-BSMT.
 # Q1 is surface (`drop` = its 2.5" height) or chain-hung (a larger `drop`).
 BASEMENT_LIGHTING = [
     # RM-B-GYM: ED-B-GYM-LT (plan/mep_electrical.py) is a lampless N3 fan on its own wall
@@ -120,23 +119,21 @@ BASEMENT_LIGHTING = [
                          wall_ref="W-B-CE", face="right", distance_from_start=inch(60),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 
-    # RM-B-WORKSHOP: five Q1 strips and one 5000 K can (2026-10-31; was two mark D 2x4
-    # panels, the documented revert). Bench row: two N-S at x=2'-8", y=6'-0"/10'-0", over
-    # FURN-B-WORKSHOP-BENCH-N/-S (x 0'-8"..3'-2", y 3'-6"..13'-6"), 6" behind the bench front
-    # so the light lands ahead of your head, 4 1/2" east of DU-B-ERV-R-BENCH, south ends clear
-    # of the y=3'-4" SAUNA-EXH duct. Aisle: a pair N-S at x=6'-6", y=8'-8"/12'-8" (joist
-    # mid-bays), and one E-W at y=4'-8" (a N-S strip there crosses the y=3'-4" duct). CAN1
-    # at (12'-3.6", 12'-8") lights WH/HW-header (NEC 210.70(C)). Strips surface on the
-    # FS-M-WEST gypsum, above the radials hung 8-15" lower. LT1/LT6 keep PANEL1/PANEL2's uids.
+    # RM-B-WORKSHOP: six Q1 strips on one 3-way pair (2026-11-24: one kind and switch group).
+    # Bench row LT1/LT2 N-S at x=2'-8" over FURN-B-WORKSHOP-BENCH-N/-S, 6" behind the bench
+    # front, south ends clear of the y=3'-4" SAUNA-EXH duct. Aisle: LT4/LT5 N-S at x=6'-6"
+    # (joist mid-bays), LT6 E-W at y=4'-8" (N-S there crosses that duct). Surface on the
+    # gypsum, above the radials hung 8-15" lower. LT7 E-W south of the water heater, lighting
+    # its approach and the HW header (NEC 210.70(C)), chain-hung 8" under DU-B-ERV-R-SAUNA-SUP.
     ElectricalDevice(uid="QTB0005AAA", tag="ED-B-WORKSHOP-LT1", kind=DeviceKind.LIGHT,
                      position=pt(ft(2, 8), ft(6)), type_ref="ED-T-LT-STRIP-T8",
                      circuit="CKT-LT-BSMT", room="RM-B-WORKSHOP",
-                     controlled_by=("ED-B-WORKSHOP-SW2",),
+                     controlled_by=("ED-B-WORKSHOP-SW", "ED-B-WORKSHOP-SW3"),
                      mount=Mount(kind=MountKind.CEILING, drop=inch(2.5)), rotation=deg(90)),
     ElectricalDevice(uid="9YNQEQAQF1", tag="ED-B-WORKSHOP-LT2", kind=DeviceKind.LIGHT,
                      position=pt(ft(2, 8), ft(10)), type_ref="ED-T-LT-STRIP-T8",
                      circuit="CKT-LT-BSMT", room="RM-B-WORKSHOP",
-                     controlled_by=("ED-B-WORKSHOP-SW2",),
+                     controlled_by=("ED-B-WORKSHOP-SW", "ED-B-WORKSHOP-SW3"),
                      mount=Mount(kind=MountKind.CEILING, drop=inch(2.5)), rotation=deg(90)),
     ElectricalDevice(uid="64P02WRNRK", tag="ED-B-WORKSHOP-LT4", kind=DeviceKind.LIGHT,
                      position=pt(ft(6, 6), ft(8, 8)), type_ref="ED-T-LT-STRIP-T8",
@@ -153,28 +150,20 @@ BASEMENT_LIGHTING = [
                      circuit="CKT-LT-BSMT", room="RM-B-WORKSHOP",
                      controlled_by=("ED-B-WORKSHOP-SW", "ED-B-WORKSHOP-SW3"),
                      mount=Mount(kind=MountKind.CEILING, drop=inch(2.5))),
-    ElectricalDevice(uid="E6HC520FMQ", tag="ED-B-WORKSHOP-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(12, 3.5), ft(12, 8)), type_ref="ED-T-LT-CAN4-5000",
+    ElectricalDevice(uid="E6HC520FMQ", tag="ED-B-WORKSHOP-LT7", kind=DeviceKind.LIGHT,
+                     position=pt(ft(11, 6), ft(12, 8)), type_ref="ED-T-LT-STRIP-T8",
                      circuit="CKT-LT-BSMT", room="RM-B-WORKSHOP",
                      controlled_by=("ED-B-WORKSHOP-SW", "ED-B-WORKSHOP-SW3"),
-                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # Two toggles in a 2-gang on W-B-HALL-W's workshop face, inside D-B-SHOP: room (LT4-6,
-    # CAN1) nearest the door, bench row (LT1-2) 4" north. The door's latch jamb has 5 5/8" of wall,
-    # so the gang is on the hinge side; at 90 degrees the leaf is clear of it. Distance is
-    # off the wall's north end.
+                     mount=Mount(kind=MountKind.CEILING, drop=inch(8))),
+    # A 1-gang on W-B-HALL-W's workshop face, inside D-B-SHOP. The door's latch jamb has
+    # 5 5/8" of wall, so it is on the hinge side; at 90 degrees the leaf is clear of it.
+    # Distance is off the wall's north end.
     ElectricalDevice(uid="QTB0007AAA", tag="ED-B-WORKSHOP-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-HBL-SW3",
                      circuit="CKT-LT-BSMT", room="RM-B-WORKSHOP",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-HALL-W", face="right", distance_from_start=inch(41),
-                         normal_gap=inch(0), rotation_offset=deg(0)))),
-    ElectricalDevice(uid="3WSW0XSFYZ", tag="ED-B-WORKSHOP-SW2", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-HBL-SW1",
-                     circuit="CKT-LT-BSMT", room="RM-B-WORKSHOP",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-HALL-W", face="right", distance_from_start=inch(37),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # Its 3-way partner at D-B-FURN, the room's second entry (NEC 210.70(C)(1)), on W-B-CW's
@@ -280,59 +269,40 @@ BASEMENT_LIGHTING = [
                          wall_ref="W-B-CS", face="left", distance_from_start=inch(52.625),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
-    # RM-B-FURNACE: two cans, not 2x4 panels — the ceiling is full of supply, drain and ERV
-    # runs, and each panel sat ~3" off a pipe. Re-typed in place (uids kept). Each station is
-    # a gap the 6" housing clears (electrical.ceiling_can_framing): CAN1 in the clear pocket
-    # south of the ERV by the utility sink, CAN2 at (2'-6", 25'-1.3") in front of PANEL/PANEL-2,
-    # 10" off the PLAY-SPARE and DATA-STUDY EMT.
-    ElectricalDevice(uid="QTB0008AAA", tag="ED-B-FURNACE-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(6, 11), ft(20, 9)), type_ref="ED-T-LT-CAN4",
+    # RM-B-FURNACE: three Q1 strips on one 3-way pair, all on CKT-LT-BACKUP (2026-11-24: one
+    # kind, circuit and switch group), so the panels and ESS controls stay lit in an outage.
+    # STRIP1/2 N-S at x=1'-7.25" in front of ED-B-PANEL-2, -BACKUP-PANEL, -PANEL and the
+    # backup enclosure (NEC 110.26(D)), chain-hung 9" under CD-B-DATA-STUDY and the EMT
+    # (bottom 7'-4" AFF). STRIP3 E-W in the south pocket beside the utility sink, lighting it
+    # and the ERV (210.70(C)); its box in the only 16" bay there (y 18'-8"..20'-0"), hung 15"
+    # under PR-M-S-BATH1-DRAIN and PR-B-MAIN-DRAIN (bottom 6'-10" AFF).
+    ElectricalDevice(uid="5FCBDBTYK0", tag="ED-B-FURNACE-STRIP1", kind=DeviceKind.LIGHT,
+                     position=pt(ft(1, 7.25), ft(26, 5.5)), type_ref="ED-T-LT-STRIP-T8",
                      circuit="CKT-LT-BACKUP", room="RM-B-FURNACE",
-                     controlled_by=("ED-B-FURNACE-SW",),
-                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    ElectricalDevice(uid="QTB0009AAA", tag="ED-B-FURNACE-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(2, 6), ft(25, 1.25)), type_ref="ED-T-LT-CAN4",
+                     controlled_by=("ED-B-FURNACE-SW2", "ED-B-FURNACE-SW3"),
+                     mount=Mount(kind=MountKind.CEILING, drop=inch(9)), rotation=deg(90)),
+    ElectricalDevice(uid="5TN9818FDS", tag="ED-B-FURNACE-STRIP2", kind=DeviceKind.LIGHT,
+                     position=pt(ft(1, 7.25), ft(30, 5.5)), type_ref="ED-T-LT-STRIP-T8",
                      circuit="CKT-LT-BACKUP", room="RM-B-FURNACE",
-                     controlled_by=("ED-B-FURNACE-SW",),
-                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # y=23'-0" is mid-room on the east wall face (W-B-STR3, framed 2x6), x=9'-5" to 9'-8 1/8"
-    # — 1" proud of the face — which is where you reach it walking in from D-B-FURN.
-    ElectricalDevice(uid="QTB000AAAA", tag="ED-B-FURNACE-SW", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-SW1",
+                     controlled_by=("ED-B-FURNACE-SW2", "ED-B-FURNACE-SW3"),
+                     mount=Mount(kind=MountKind.CEILING, drop=inch(9)), rotation=deg(90)),
+    ElectricalDevice(uid="80YS3B0N3S", tag="ED-B-FURNACE-STRIP3", kind=DeviceKind.LIGHT,
+                     position=pt(ft(5, 7), ft(19, 4)), type_ref="ED-T-LT-STRIP-T8",
+                     circuit="CKT-LT-BACKUP", room="RM-B-FURNACE",
+                     controlled_by=("ED-B-FURNACE-SW2", "ED-B-FURNACE-SW3"),
+                     mount=Mount(kind=MountKind.CEILING, drop=inch(15))),
+    # SW2 mid-room on W-B-STR3B's face (y=23'-0"); SW3 at D-B-FURN (210.70(C)(1): a control
+    # at each entry), on W-B-CW's furnace face at x=1'-0", latch side, under the 61"+ runs.
+    ElectricalDevice(uid="8SD6TT8XXZ", tag="ED-B-FURNACE-SW2", kind=DeviceKind.SWITCH,
+                     type_ref="ED-T-LEV-SW3",
                      circuit="CKT-LT-BACKUP", room="RM-B-FURNACE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-STR3B", face="right", distance_from_start=inch(30),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    # Two Q1 strips N-S at x=1'-7.2", y=26'-5.4"/30'-5.4", for NEC 110.26(D): parallel to and
-    # just in front of ED-B-PANEL-2, -BACKUP-PANEL, -PANEL, the patch box and the backup
-    # enclosure, in the lane between the panel faces and the ERV risers (x=2'-3"). Chain-hung
-    # 9": CD-B-DATA-STUDY runs under them 1/2" off the ceiling and four more EMT cross, so
-    # the strip top is 6.5" down, 0.7" under CD-B-GARAGE's bottom; bottom 7'-4" AFF, over
-    # the 6'-6" working-space headroom and the dry-fire lane's 6'-0". Own toggle, ganged 4"
-    # past ED-B-FURNACE-SW in the same stud bay: the cans stay on backup, the strips do not.
-    ElectricalDevice(uid="5FCBDBTYK0", tag="ED-B-FURNACE-STRIP1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(1, 7.25), ft(26, 5.5)), type_ref="ED-T-LT-STRIP-T8",
-                     circuit="CKT-LT-BSMT", room="RM-B-FURNACE",
-                     controlled_by=("ED-B-FURNACE-SW2", "ED-B-FURNACE-SW3"),
-                     mount=Mount(kind=MountKind.CEILING, drop=inch(9)), rotation=deg(90)),
-    ElectricalDevice(uid="5TN9818FDS", tag="ED-B-FURNACE-STRIP2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(1, 7.25), ft(30, 5.5)), type_ref="ED-T-LT-STRIP-T8",
-                     circuit="CKT-LT-BSMT", room="RM-B-FURNACE",
-                     controlled_by=("ED-B-FURNACE-SW2", "ED-B-FURNACE-SW3"),
-                     mount=Mount(kind=MountKind.CEILING, drop=inch(9)), rotation=deg(90)),
-    ElectricalDevice(uid="8SD6TT8XXZ", tag="ED-B-FURNACE-SW2", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-SW3",
-                     circuit="CKT-LT-BSMT", room="RM-B-FURNACE",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-STR3B", face="right", distance_from_start=inch(34),
-                         normal_gap=inch(0), rotation_offset=deg(0)))),
-    # The strips' 3-way partner at D-B-FURN (210.70(C)(1): a control at each entry), on
-    # W-B-CW's furnace face at x=1'-0", latch side, under the runs that cross at 61"+.
     ElectricalDevice(uid="JJ2EMNAQQ0", tag="ED-B-FURNACE-SW3", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW3",
-                     circuit="CKT-LT-BSMT", room="RM-B-FURNACE",
+                     circuit="CKT-LT-BACKUP", room="RM-B-FURNACE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-CW", face="left", distance_from_start=inch(12),

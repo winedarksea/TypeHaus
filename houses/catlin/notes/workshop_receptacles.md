@@ -81,11 +81,11 @@ steel box, raised cover and Matter-switch prices are estimates (`prices.toml`).
 
 ### Heavy-duty toggles (2026-11-20)
 
-- **Where:** basement workshop, garage and attic study, seven switches. Hubbell HBL extra-heavy-duty
-  black toggles, `HBL1221BK` single-pole (`ED-T-HBL-SW1`: `ED-B-WORKSHOP-SW2`, `ED-G-SW`,
+- **Where:** basement workshop, garage and attic study, six switches. Hubbell HBL extra-heavy-duty
+  black toggles, `HBL1221BK` single-pole (`ED-T-HBL-SW1`: `ED-G-SW`,
   `ED-G-SOFFIT-SW`, `ED-A-STUDY-SW`) and `HBL1223BK` 3-way (`ED-T-HBL-SW3`: `ED-B-WORKSHOP-SW`,
   `-SW3`, `ED-A-STUDY-STAIR-SW`). Every other switch stays Lever Edge, `ED-G-EXT-SW` included.
-- **Plates:** brushed stainless in the workshop and garage: Hubbell `SS2` (W-B-HALL-W 2-gang),
+- **Plates:** brushed stainless in the workshop and garage: Hubbell `SS1` (W-B-HALL-W, 1-gang since 2026-11-24),
   `SS1` (W-B-CW), and Kyle `SPSJS-T` toggle/Decora/toggle over the garage 3-gang (the blank-face
   GFCI between the switches takes the Decora opening, `plate="stainless"`). Reggio `1SPB` Sun
   Gold single toggle in the study, matching RM-S-SUITE's family; size assumed standard.

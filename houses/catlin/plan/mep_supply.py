@@ -529,7 +529,7 @@ SUPPLY = [
     # Tees off PR-B-HW-TRUNK's riser leg by the header (2026-11-09) and runs west at 95 1/2"
     # over the tank's ducts and PR-B-SAUNA-VENT, drops to 82 1/2" at x=8'-6" to pass
     # W-B-CW3 and the header's lanes, north to y=22'-10.8", then (2026-11-21, the ERV by the
-    # sink) back up to 95 1/2", 7/16" under ED-B-FURNACE-CAN1, north over the ERV's plenums
+    # sink) back up to 95 1/2", north over the ERV's plenums
     # and up into FS-M-MECH's y=26'-7 1/2" bay, west in it over the risers to its old riser.
     # The main-storey leg rises at x=5'-6 1/2" in W-M-STOS's last bay, west of D-M-MUD's
     # derived RO (owner, 2026-10-29), and jogs east over the plates in FS-S-WEST's
