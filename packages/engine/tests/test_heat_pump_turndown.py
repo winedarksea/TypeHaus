@@ -93,7 +93,8 @@ _CATLIN = {
     # 14,323 before the same fireplace/W-B-E1 move (a754a0c7f, 2026-11-05): +13.7 Btu/h.
     # 14,337 / 25.8 °F before ST-B2M widened to W-B-CN's framed face (2026-11-09).
     # 14,343 / 25.9 °F before the 84.5" dining triad (91a920d6e, 2026-11-16).
-    "EQ-M-HP2-OD": (14_420, 8_800, 5.0, 0.61, 26.2, not _ADVISED),
+    # 14,420 before W-B-S2-FR/-S3-FR rose 1 9/16" to meet the joists (eebf8f8f0, 2026-11-23).
+    "EQ-M-HP2-OD": (14_424, 8_800, 5.0, 0.61, 26.2, not _ADVISED),
     # D-M-ENTRY's Therma-Tru unit replaces its 36x80 void (2026-10-29): 905 -> 921.
     # 921 / 3.04 before RM-M-MUD-CLOSET went 13.84 -> 12.96 sf (2x6 STOS wall, 2026-11-01).
     # 919 before #112 (2026-11-01): the same ventilation-share dilution, 918.59 -> 918.46.

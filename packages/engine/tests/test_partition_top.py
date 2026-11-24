@@ -224,8 +224,10 @@ def test_the_three_count_rules_are_three_rows(sdpw_rows) -> None:
     # 69 -> 72 (2026-11-11): W-S-CLN-S runs full height under FS-ATTIC since SF-S-HP1 retired.
     # 108 -> 110 (2026-11-20): W-B-WELL-HEAD frames its own plates and crosses two joists.
     # 110 -> 108 (2026-11-20): FO-M-ERV-OA's north pack stops at x=55", short of W-B-ESS-W.
+    # 108 -> 109 (345438a75, 2026-11-22): FS-S-WEST's new north LSL edge rim; W-M-MECH-E's
+    # axis runs to the north wall's line and crosses it, as W-B-CE's does its rim (#112).
     assert counts == {
-        "partition top plate, perpendicular framing above": 108,
+        "partition top plate, perpendicular framing above": 109,
         "partition top plate, under a parallel member": 12,
         "partition top plate, blocking between parallel members": 72,
     }

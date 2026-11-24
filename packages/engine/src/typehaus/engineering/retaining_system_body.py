@@ -27,7 +27,7 @@ from dataclasses import dataclass, field
 from shapely.geometry import Polygon
 
 from typehaus.engineering.soil import CONCRETE_UNIT_WEIGHT_PCF, SOIL_UNIT_WEIGHT_BAND_PCF
-from typehaus.resolve.overlay import union_all as unary_union
+from typehaus.resolve.overlay import union_all
 
 _M = 0.3048
 WATER_PCF = 62.4
@@ -263,7 +263,7 @@ def footing_plane_body(ctx, cross_tag: str, walls: list, members: list[Member], 
         if solid is None:
             missing.append(f"a resolved footing under {wall.tag}")
             continue
-        poly = _poly(solid.outline).difference(unary_union(footprints)) if footprints \
+        poly = _poly(solid.outline).difference(union_all(footprints)) if footprints \
             else _poly(solid.outline)
         footprints.append(poly)
         footing_polys[wall.tag] = poly
@@ -271,7 +271,7 @@ def footing_plane_body(ctx, cross_tag: str, walls: list, members: list[Member], 
                             solid.z1_m / _M, CONCRETE_UNIT_WEIGHT_PCF, poly))
     cross = _solid(ctx, cross_tag, "beam")
     if cross is not None:
-        poly = _poly(cross.outline).difference(unary_union(footprints))
+        poly = _poly(cross.outline).difference(union_all(footprints))
         prisms.append(Prism(f"strut:{cross_tag}", poly.area, cross.z0_m / _M,
                             cross.z1_m / _M, CONCRETE_UNIT_WEIGHT_PCF))
     if missing:
@@ -285,17 +285,17 @@ def footing_plane_body(ctx, cross_tag: str, walls: list, members: list[Member], 
             missing.append(f"a resolved stem section on {wall.tag}")
             continue
         stem_ft = thickness if wall in walls else stem_ft
-        part = poly.difference(unary_union(stems)) if stems else poly
+        part = poly.difference(union_all(stems)) if stems else poly
         stems.append(poly)
         prisms.append(Prism(f"stem:{wall.tag}", part.area, wall.bottom_elevation.meters / _M,
                             wall.top_elevation.meters / _M, CONCRETE_UNIT_WEIGHT_PCF, part))
-    heels = unary_union([footing_polys[w.tag] for w in walls if w.tag in footing_polys])
-    outside = unary_union([_exterior(m, stem_ft) for m in members])
-    soil = heels.intersection(outside).difference(unary_union(stems))
+    heels = union_all([footing_polys[w.tag] for w in walls if w.tag in footing_polys])
+    outside = union_all([_exterior(m, stem_ft) for m in members])
+    soil = heels.intersection(outside).difference(union_all(stems))
     footing_top = max(p.z1_ft for p in prisms if p.label.startswith("footing:"))
     top = max(m.top_ft for m in members)
     columns = [s for s in ctx.model.solids if s.category == "drain_column"]
-    stone = unary_union([_poly(s.outline) for s in columns]).intersection(soil) \
+    stone = union_all([_poly(s.outline) for s in columns]).intersection(soil) \
         if columns else Polygon()
     col_top = max((s.z1_m / _M for s in columns
                    if not _poly(s.outline).intersection(soil).is_empty), default=footing_top)
@@ -304,7 +304,7 @@ def footing_plane_body(ctx, cross_tag: str, walls: list, members: list[Member], 
         # The drain column is stone, not soil, up to its own top.
         prisms.append(Prism("heel soil:drain column", stone.area, footing_top, col_top,
                             STONE_PCF - soil_pcf, stone))
-    extent = unary_union(list(footing_polys[w.tag] for w in walls if w.tag in footing_polys))
+    extent = union_all(list(footing_polys[w.tag] for w in walls if w.tag in footing_polys))
     pushes = tuple(Push(m.tag, m.push, _width(extent, m.axis_ft), m.top_ft, m.efp,
                         m.lateral_plf) for m in members)
     spliced = frozenset({w.tag for w in extra}
@@ -336,7 +336,7 @@ def deep_plane_body(ctx, body: Body, *, friction: float, native_pcf: float  # ty
         return None, ["a FootingBedding under the loop's footings (the deep plane's stone)"]
     plane = min((b.soakaway_z0_m if b.soakaway_z0_m is not None else b.z0_m) / _M
                 for b in beds)
-    loop = unary_union([_poly(s.outline) for s in ctx.model.solids
+    loop = union_all([_poly(s.outline) for s in ctx.model.solids
                         if s.tag in footing_tags and s.category in ("footing", "beam")])
     hull = loop.convex_hull
     floor = max(p.z1_ft for p in body.prisms if p.label.startswith("footing:"))
@@ -346,7 +346,7 @@ def deep_plane_body(ctx, body: Body, *, friction: float, native_pcf: float  # ty
         poly = _poly(bed.outline).intersection(hull)
         if poly.is_empty:
             continue
-        part = poly.difference(unary_union(counted)) if counted else poly
+        part = poly.difference(union_all(counted)) if counted else poly
         counted.append(poly)
         bottom = (bed.soakaway_z0_m if bed.soakaway_z0_m is not None else bed.z0_m) / _M
         prisms.append(Prism(f"bed stone:{bed.tag}", part.area, bottom, bed.z1_m / _M, STONE_PCF))
@@ -356,11 +356,11 @@ def deep_plane_body(ctx, body: Body, *, friction: float, native_pcf: float  # ty
         if above.area > 1e-6 and bed.z1_m / _M < floor:
             prisms.append(Prism(f"native core:{bed.tag}", above.area, bed.z1_m / _M, floor,
                                 native_pcf))
-    beds_poly = unary_union(counted)
+    beds_poly = union_all(counted)
     core = hull.difference(loop).difference(beds_poly)
     bands = [s for s in ctx.model.solids
              if s.category == "slab_band" and _poly(s.outline).within(hull.buffer(0.01))]
-    field = unary_union([_poly(s.outline) for s in bands])
+    field = union_all([_poly(s.outline) for s in bands])
     gravel = core.intersection(field) if bands else Polygon()
     field_z0 = min((s.z0_m / _M for s in bands), default=floor)
     prisms.append(Prism("native core", core.area, plane, floor, native_pcf))

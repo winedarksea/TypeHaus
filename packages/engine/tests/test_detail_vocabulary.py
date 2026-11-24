@@ -182,13 +182,13 @@ def test_recipes_and_reasons_do_not_overlap():
 def test_suppressed_transitions_scaffold_no_detail_sheets(catlin_model):
     """A ``suppress=True`` binding is coverage without a sheet.
 
-    ``TR-CATLIN-ASSEMBLY-JOG`` and ``TR-CATLIN-VENEER-OPENING`` bind their conditions (so
-    ``integrity.condition_coverage`` stays clean) but record that the derived cut cannot
-    show the junction — so nothing derives, rather than a sheet that lies by omission.
+    ``TR-CATLIN-ASSEMBLY-JOG`` binds its condition (so ``integrity.condition_coverage`` stays
+    clean) but records that the derived cut cannot show the junction — so nothing derives,
+    rather than a sheet that lies by omission. (``TR-CATLIN-VENEER-OPENING`` was suppressed
+    until 2026-11-23; its reveals now have lintels and flashing, and draw a sheet.)
     """
     keys = {d.key for d in derive_detail_slices(catlin_model)}
     assert not {k for k in keys if k.startswith("assembly_change:")}
-    assert "opening_perimeter:BASEMENT_BRICK_VENEER" not in keys
     suppressed = [t for t in catlin_model.plan.library.transitions if t.suppress]
     assert suppressed and all(t.suppress_reason.strip() for t in suppressed)
 
@@ -321,7 +321,7 @@ def test_the_garage_stem_no_longer_steps_out(catlin_model):
 def test_interior_partition_step_gets_no_shelf_flashing(catlin_model):
     """An interior wall stepping in leaves no weather ledge — flashing it would be fiction."""
     _derived, scene = _detail_scene(
-        catlin_model, "stack_width_change:INT_2X4_PARTITION_HALF|INT_2X6_STAGGERED_PLUMBING_HALF")
+        catlin_model, "stack_width_change:INT_2X4_PARTITION_HALF|INT_2X6_BRG_HALF")
     assert "stack-shelf-flashing" not in _component_tags(scene)
 
 
