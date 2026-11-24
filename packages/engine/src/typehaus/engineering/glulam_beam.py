@@ -455,13 +455,13 @@ def _one(ctx: EngineeringContext, tag: str, beam: Any, deck: Any) -> Engineering
         f"Reactions at the two columns (south, north): dead {dead_r[0]:,.0f} / "
         f"{dead_r[1]:,.0f} lb, live {live_r[0]:,.0f} / {live_r[1]:,.0f} lb, planter "
         f"{planter_r[0]:,.0f} / {planter_r[1]:,.0f} lb. The columns are loaded with THESE "
-        f"(`balcony_loads.column_statics`), not an equal split.",
-        (f"PLANTER: {allowance.describe()} (preferences.toml [structural] balcony_planter). "
+        f"(the beam statics, patterned live load), not an equal split.",
+        (f"PLANTER: {allowance.describe()} (the house's stated planter allowance). "
          f"It bears on a support directly on this beam, so none of it enters the plank or "
          f"the joists; it is dead load, cased with a planter over neither beam, one or both "
-         f"(this record is the planted case; `engineering/balcony_loads.py`)."
+         f"(this record is the planted case)."
          if allowance else
-         "PLANTER: none authored (preferences.toml [structural] balcony_planter)."),
+         "PLANTER: none stated (the house's planter allowance is absent)."),
         f"SERVICEABILITY: dead load with creep (NDS §3.5.2 K_cr bounded at "
         f"{CREEP_FACTOR_BOUND:g}) is {creep_in:.3f}\" on the back span, "
         f"{creep_in / (span_ft * 12.0) * 100.0:.2f}% of it; live-load deflection is graded above.",
