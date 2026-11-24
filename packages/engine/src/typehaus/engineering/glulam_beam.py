@@ -432,8 +432,8 @@ def _one(ctx: EngineeringContext, tag: str, beam: Any, deck: Any) -> Engineering
         f"table read. The supplier's deck-guide row that covers this beam is published "
         f"DRY-USE (AWC NDS 2018 Table 5.3.1 C_M: {WET_FB:.2f} on Fb, {WET_FV:.3f} on Fv, "
         f"{WET_FC_PERP:.2f} on Fc-perp, {WET_E:.3f} on E), and this beam stands in weather "
-        f"with no enclosure above it. `structural.deck_beam_span` refuses the row on "
-        f"`PublishedSpan.service_condition` and this record carries the verdict.",
+        f"with no enclosure above it. the deck-beam span check refuses the "
+        f"published row for a wet-service condition and this record carries the verdict.",
         f"THE SEAT is the authored one, {seat_in:g}\" ({seat_where}), not R507.6's 3\" minimum "
         f"that this record used to divide by: C_b {c_b:.3f} (NDS §3.10.4, a bearing under 6\" "
         f"at least 3\" in from the end — here {end_in:.2f}\" — and a flat plate, so the whole "

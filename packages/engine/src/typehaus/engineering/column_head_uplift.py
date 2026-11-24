@@ -95,8 +95,8 @@ def sealed_deck_uplift(ctx: EngineeringContext, pier: Any, notes: list[str]
         f"{net_psf:.1f} psf up reaches each beam through the ties at every joist crossing, "
         f"{net_psf:.1f} psf x {spacing_ft:g}' joist spacing x the beam's 9.75' strip = "
         f"{net_psf * spacing_ft * 9.75:,.0f} lb per tie, against the catalog's H10ASS uplift "
-        f"1,040 lb (Simpson C-C-2026 p.300, `library/hardware/roof_ties.py`; read there, since "
-        f"this package may not read the catalog): about 0.10. No check grades it yet, and the "
+        f"1,040 lb (Simpson C-C-2026 p.300, the connector catalog's H10ASS row; taken from the "
+        f"catalog, not recomputed here): about 0.10. No check grades it yet, and the "
         f"H2.5ASS on each beam's two end joists (a half strip) is not compared; the plank's own "
         f"fastening to the joists is outside this record too.")
     notes.append(

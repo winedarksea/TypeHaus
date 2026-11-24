@@ -339,15 +339,16 @@ def _one(ctx: EngineeringContext, wall_tag: str, piers: list[_Pier]) -> Engineer
         f"`deck_post/<column>` grades the column on.",
         "BEARING is graded on the compression block, not the gross section: the base is far "
         "outside the kern (D/8 on a circle), so the round bears on a circular segment. The "
-        "block is the column's own at each Pu (`deck_post._pm_point`); the force on it is "
-        "the compression of the couple the dowels close. √(A2/A1) is taken off the wall's "
+        "block is the column's own at each Pu (the P-M point on the deck_post sheet); the "
+        "force on it is the compression of the couple the dowels close. √(A2/A1) is taken "
+        "off the wall's "
         "width and is 1.0 where the round is as wide as the stem — ACI's confinement "
         "credit needs concrete beside the column, and there is none.",
         "DOWELS: one per vertical, one bar inside the cage (contact lap). Both orientations "
         "of the ring are run — a bar on the tension axis loads one dowel on a longer lever, "
         "two straddling it share a shorter one — and each state takes the worse.",
-        "SHEAR FRICTION: μ 1.0λ only where the dowel row authors "
-        "`joint_surface=\"roughened\"` (ACI's intentional 1/4-in. amplitude); otherwise "
+        "SHEAR FRICTION: μ 1.0λ only where the joint surface is drawn roughened "
+        "(ACI's intentional 1/4-in. amplitude); otherwise "
         "0.6λ. The couple's dowel tension is deducted from Avf, and no clamping from the "
         "axial load is credited.",
         "THE STEM (review B-05 / D-R3, verifier 2026-11-23). Below the dowels the head moment "
@@ -369,8 +370,9 @@ def _one(ctx: EngineeringContext, wall_tag: str, piers: list[_Pier]) -> Engineer
         "\"soil prop, joist end bearing\" row: direct bearing on the ledger face, Fc-perp, the "
         "joist's buckling E_min' reported). The ledger's Titen HD anchors, the LUS210SS "
         "fasteners and the plank carry NONE of it: the anchors keep the gravity shear the "
-        "Simpson letter L-A-THDSSLDGR23 grades (`structural.deck_ledger`) and would see tension "
-        "only if the soil's thrust reversed. That needs the porch framed before backfill and "
+        "Simpson letter L-A-THDSSLDGR23 grades (the deck-ledger anchor check) and would see "
+        "tension only if the soil's thrust reversed. That needs the porch framed before "
+        "backfill and "
         "the two sides backfilled together (`AN-SG-BACKFILL` (b), L1's sequence): a one-sided "
         "stage would load the far stem through the strut. No column prop rides it. A drawing "
         "note, `AN-SG-LEDGER-DOWELS`, keeps the ledger's Titen HD anchors off the dowels.",
